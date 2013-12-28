@@ -1,0 +1,3 @@
+INCLUDE_DIRECTORIES( /usr/local/include/osgbCollision /usr/local/include/osgbDynamics /usr/local/include/osgbInteraction /usr/local/include/bullet /usr/local/include/osgwQuery /usr/local/include/osgwControls /usr/local/include/osgwTools )
+# INCLUDE_DIRECTORIES( /usr/local/include/osg /usr/include/osgViewer /usr/local/include/)
+SET( LIBS ${LIBS} -L/usr/local/lib -losgbCollision -losgbDynamics -losgbInteraction -losgwControls -losgwTools -losgwQuery -lBulletCollision -lBulletDynamics  -lBulletSoftBody )

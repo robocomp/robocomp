@@ -1,0 +1,13 @@
+IF( "$ENV{FLYCAPTUREROOT}" STREQUAL "" )
+  MESSAGE(STATUS "FLYCAPTUREROOT environment variable not set." )
+  MESSAGE(STATUS "This can be done in your user .bashrc file by appending the corresponding line, e.g:" )
+  MESSAGE(STATUS "export FLYCAPTUREROOT=/usr/local/" )
+  SET(FLYCAPTURE_FOUND 0)
+ELSE( "$ENV{FLYCAPTUREROOT}" STREQUAL "" )
+  SET(FLYCAPTURE_LIBS -lflycapture)
+  SET( LIBS ${LIBS} ${GAZEBO_LIBS}  )
+  ADD_DEFINITIONS(-DCOMPILE_FLYCAPTURE=1)
+  SET(FLYCAPTURE_FOUND 1)
+  SET (LIBS ${LIBS} ${FLYCAPTURE_LIBS})
+ENDIF( "$ENV{FLYCAPTUREROOT}" STREQUAL "" )
+

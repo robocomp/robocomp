@@ -1,0 +1,28 @@
+SET(NPP_FOUND 0)
+
+IF( ${CMAKE_SIZEOF_VOID_P} STREQUAL 4 )
+  SET( HAVE_64_BIT 0 )
+ELSE( ${CMAKE_SIZEOF_VOID_P} STREQUAL 4 )
+  SET( HAVE_64_BIT 1 )
+ENDIF( ${CMAKE_SIZEOF_VOID_P} STREQUAL 4 )
+
+
+IF( "$ENV{NPPROOT}" STREQUAL "" )
+  MESSAGE(STATUS "NPPROOT environment variable not set." )
+  MESSAGE(STATUS "This can be done in your user .bashrc file by appending the corresponding line, e.g:" )
+  MESSAGE(STATUS "export NPPROOT=/opt/NPP" )
+ELSE( "$ENV{NPPROOT}" STREQUAL "" )
+  MESSAGE(STATUS "NPPROOT environment variable SET." )
+  IF( "${HAVE_64_BIT}" MATCHES "1")
+    SET(NPP_LIBS -lUtilNPP64 -lfreeimage -lnpp -lcudart )
+  ELSE( "${HAVE_64_BIT}" MATCHES "1")
+    SET(NPP_LIBS -lUtilNPP -lfreeimage -lnpp -lcudart )
+  ENDIF( "${HAVE_64_BIT}" MATCHES "1")
+  ADD_DEFINITIONS(-DCOMPILE_NPP=1)
+  ADD_DEFINITIONS(-DUSE_NPP=1)
+  ADD_DEFINITIONS(-DNPP_FOUND=1)
+  INCLUDE_DIRECTORIES($ENV{NPPROOT}/common/UtilNPP  $ENV{NPPROOT}/common/npp/include  /usr/local/cuda/include/ )
+  SET( LIBS ${LIBS} ${NPP_LIBS}  -L$ENV{NPPROOT}/common/npp/lib/ -L/usr/local/cuda/lib64/ -L/usr/local/cuda/lib/ -L$ENV{NPPROOT}/common/lib/ )
+  SET(NPP_FOUND 1)
+ENDIF( "$ENV{NPPROOT}" STREQUAL "" )
+
