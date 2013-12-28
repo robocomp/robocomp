@@ -1,7 +1,7 @@
 cmake_minimum_required( VERSION 2.6 )
 
 # IPP
-INCLUDE( $ENV{ROBOCOMP}/CMake/ipp.cmake )
+INCLUDE( $ENV{ROBOCOMP}/cmake/ipp.cmake )
 INCLUDE_DIRECTORIES( . .. )
 
 ADD_DEFINITIONS( -Wall -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB )

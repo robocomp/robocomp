@@ -1,0 +1,35 @@
+<innerModel>
+	<translation id="world" x="0" y="0" z="0">
+		<transform id="base">
+			<plane id="floor" nx="0" ny="1" nz="0" px="0" py="0" pz="0" />
+			<translation id="central" x="0" y="428" z="100">
+
+				<translation id="lowerPose" x="0" y="-308" z="0">
+					<rotation id="lowerRot" x="-0.0725" y="0" z="0">
+						<camera id="lowerCamera" width="320" height="240" focal="440" />
+					</rotation>
+				</translation>
+				<translation id="virtualPose" x="0" y="572" z="-100">
+					<rotation id="virtualRot" x="-1.57079632679" y="0" z="0">
+						<camera id="virtualCamera" width="320" height="240" focal="440" />
+					</rotation>
+				</translation>
+
+				<rotation id="tilt" x="-0.785981" y="0" z="0">
+					<translation id="leftMotor" x="-77.5" y="0" z="0">
+						<rotation id="leftPan" x="0" y="0.785981" z="0">
+							<camera id="leftCamera" width="320" height="240" focal="400" />
+						</rotation>
+					</translation>
+					<translation id="rightMotor" x="77.5" y="0" z="0">
+						<rotation id="rightPan" x="0" y="0" z="0">
+							<camera id="rightCamera" width="320" height="240" focal="400" />
+						</rotation>
+					</translation>
+				</rotation>
+			</translation>
+		</transform>
+	</translation>
+</innerModel>
+
+
