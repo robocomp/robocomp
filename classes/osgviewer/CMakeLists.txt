@@ -9,11 +9,11 @@ SET ( SOURCES
 )
 
 SET ( HEADERS
-	adapterwidget.h
-	findnamednode.h
-	getworldcoorofnode.h
-	osgview.h
-	viewerqt.h
+	include/osgviewer/adapterwidget.h
+	include/osgviewer/findnamednode.h
+	include/osgviewer/getworldcoorofnode.h
+	include/osgviewer/osgview.h
+	include/osgviewer/viewerqt.h
 )
 
 # RoboComp
@@ -31,6 +31,8 @@ QT4_WRAP_CPP( MOC_SOURCES ${HEADERS} )
 
 # OSG
 FIND_PACKAGE( osg REQUIRED )
+
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include )
 
 # Specify construction and link process
 #SET (LIBRARY_OUTPUT_PATH .)

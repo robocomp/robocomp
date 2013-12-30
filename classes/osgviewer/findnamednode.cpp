@@ -1,4 +1,4 @@
-#include "findnamednode.h"
+#include <osgviewer/findnamednode.h>
 
 FindNamedNode::FindNamedNode(const std::string& name)
  : osg::NodeVisitor(osg::NodeVisitor::TRAVERSE_ALL_CHILDREN ), _name( name ) 

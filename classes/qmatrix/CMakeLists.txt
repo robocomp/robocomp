@@ -13,9 +13,23 @@ FIND_PACKAGE( Qt4 REQUIRED )
 INCLUDE( ${QT_USE_FILE} )
 QT4_WRAP_CPP( MOC_SOURCES ${HEADERS} )
 
+SET ( HEADERS
+  include/QMat/qvec.h 
+  include/QMat/qessential.h 
+  include/QMat/qrtmat.h 
+  include/QMat/qmovingrobot.h 
+  include/QMat/qfundamental.h 
+  include/QMat/qmatrot.h 
+  include/QMat/qcamera.h 
+  include/QMat/qhomo.h 
+  include/QMat/qextrinsics.h 
+  include/QMat/qmat.h 
+  include/QMat/quaternion.h 
+  include/QMat/QMatAll
+  )
+
 # Sources set
 SET ( SOURCES
-  include/QMat/qmat.h
   qfundamental.cpp
   qessential.cpp
   qcamera.cpp
@@ -37,4 +51,4 @@ add_library(qmat SHARED ${SOURCES} ${MOC_SOURCES} ${RC_SOURCES} )
 target_link_libraries(qmat ${LIBS})
 
 INSTALL(FILES ${CMAKE_BINARY_DIR}/libqmat.so DESTINATION /opt/robocomp/lib/ )
-INSTALL(FILES include/QMat/qvec.h include/QMat/qessential.h include/QMat/qrtmat.h include/QMat/qmovingrobot.h include/QMat/qfundamental.h include/QMat/qmatrot.h include/QMat/qcamera.h include/QMat/qhomo.h include/QMat/qextrinsics.h include/QMat/qmat.h include/QMat/quaternion.h include/QMat/QMatAll DESTINATION /opt/robocomp/include/QMat )
+INSTALL(FILES ${HEADERS} DESTINATION /opt/robocomp/include/QMat )

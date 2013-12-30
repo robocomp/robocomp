@@ -1,4 +1,4 @@
-#include "adapterwidget.h"
+#include <osgviewer/adapterwidget.h>
 
 
 AdapterWidget::AdapterWidget( QWidget * parent, const char * name, const QGLWidget * shareWidget, WindowFlags f):

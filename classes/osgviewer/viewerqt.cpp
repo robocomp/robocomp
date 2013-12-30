@@ -1,4 +1,4 @@
-#include "viewerqt.h"
+#include <osgviewer/viewerqt.h>
 
 ViewerQT::ViewerQT(QWidget * parent, const char * name, const QGLWidget * shareWidget, WindowFlags f) : AdapterWidget(parent, name, shareWidget, f), osgViewer::Viewer()
 {

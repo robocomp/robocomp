@@ -1,4 +1,4 @@
-#include "getworldcoorofnode.h"
+#include <osgviewer/getworldcoorofnode.h>
 
 GetWorldCoorOfNode::GetWorldCoorOfNode()
  : osg::NodeVisitor(NodeVisitor::TRAVERSE_PARENTS), done(false)
