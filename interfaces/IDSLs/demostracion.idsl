@@ -1,0 +1,10 @@
+import "JointMotor.idsl";
+import "CommonHead.idsl";
+module RoboCompdemostracion{
+	interface demostracion{
+		MotorParamsList getAllMotorParams();
+		void  getAllMotorState(out MotorStateMap mstateMap);
+		void  setPosition(MotorGoalPosition goal)throws UnknownMotorException, HardwareFailedException;
+
+	};
+};

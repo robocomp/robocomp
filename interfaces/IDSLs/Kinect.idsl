@@ -1,0 +1,59 @@
+import "CommonHead.idsl";
+import "DifferentialRobot.idsl";
+module RoboCompKinect{
+	 exception HardwareFailedException { string what; };
+
+  /**  LED colours values  */
+  enum LedOptions { OFF, GREEN, RED, YELLOW, blinkGREEN, blinkREDYELLOW};
+
+  struct Point {
+	float x;
+	float y;
+	float z;
+	float w;
+  };
+
+  sequence<byte> rgbType;
+  sequence<short> irType;
+  sequence<float> depthType;
+  sequence<Point> pointType;
+	interface Kinect{
+		 /**@brief Set tilt kinect. The kinect can tilt from +31 to -31 degrees in what looks like 1 degree increments.
+			  The control input looks like 2*desired_degrees. */
+    void setTilt (float angle) throws HardwareFailedException;
+    
+    
+    /**@brief Get tilt kinect. The kinect can tilt from +31 to -31 degrees in what looks like 1 degree increments.
+			  The control input looks like 2*desired_degrees. */
+    void getTilt (out float angle) throws HardwareFailedException;
+    
+
+    /**@brief Set Led Color*/
+    void setLed (LedOptions ledValue) throws HardwareFailedException;
+    
+    /**@brief Get Led Color*/
+    void getLed (out LedOptions ledValue) throws HardwareFailedException;
+
+
+	/**@brief return the image RGB and the depth data of IR Camera  */
+	idempotent void getDataRGBZinIR(out rgbType rgbMatrix, out depthType depthMatrix, out RoboCompCommonHead::THeadState hState,
+     out RoboCompDifferentialRobot::TBaseState bState) throws HardwareFailedException;
+
+	/**@brief return the image RGB and the depth data of IR Camera moved to the camera RGB */
+    idempotent void getDataRGBZinRGB(out rgbType rgbMatrix, out depthType depthMatrix, out RoboCompCommonHead::THeadState hState,
+     out RoboCompDifferentialRobot::TBaseState bState) throws HardwareFailedException;
+
+	/**@brief return only the image IR */
+    idempotent void getDataIR(out irType irMatrix, out RoboCompCommonHead::THeadState hState,
+     out RoboCompDifferentialRobot::TBaseState bState) throws HardwareFailedException;
+
+    /**@brief Return RGBD parameters
+    * @return struct TRGBDParams
+    */
+    /*KinectParams getKinectParams();*/
+
+	void getRGB(out rgbType rgbMatrix);
+
+	void getXYZ(out pointType pointCloud);
+	};
+};

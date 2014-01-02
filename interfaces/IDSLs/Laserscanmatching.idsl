@@ -1,0 +1,31 @@
+import "../IDSLs/Laser.idsl";
+
+module RoboCompLaserscanmatching
+{
+  
+  sequence<float> Covariance;
+  
+  /**@brief struct Point */
+    struct Motion
+  {
+	float x;
+	float y;
+	float z;
+	float alpha;
+
+	Covariance R;
+  };
+  
+  /** \interface Laserscanmatching
+  *@brief interface Laserscanmatching
+  */ 	
+  interface Laserscanmatching
+  {
+	/**@brief displacement estimate from the scan matching algorithm */
+	Motion getDisplacement();
+	
+	/**@brief displacement estimate from the readings provided by the laser */
+	Motion computeDisplacement(RoboCompLaser::TLaserData datacurrent, RoboCompLaser::TLaserData dataref);
+	
+  };
+};

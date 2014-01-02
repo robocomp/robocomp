@@ -1,0 +1,8 @@
+module RoboCompBallTrackerFakeStartStop
+{
+	interface BallTrackerFakeStartStop
+	{
+		void start();
+		void stop();
+	};
+};

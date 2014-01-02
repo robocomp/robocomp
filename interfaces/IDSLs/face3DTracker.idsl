@@ -1,0 +1,8 @@
+module RoboCompface3DTracker{
+	
+	sequence<byte> imageType;
+
+	interface face3DTracker{
+		void setImage(imageType image);
+	};
+};

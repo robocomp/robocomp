@@ -1,0 +1,11 @@
+import "JointMotor.idsl";
+import "CommonHead.idsl";
+
+module RoboCompstewart3L1R{
+	interface stewart3L1R{
+		
+		RoboCompJointMotor::MotorParamsList getAllMotorParams();
+	                void  getAllMotorState(out RoboCompJointMotor::MotorStateMap mstateMap);
+	                void  setPosition(RoboCompJointMotor::MotorGoalPosition goal)throws RoboCompJointMotor::UnknownMotorException, RoboCompJointMotor::HardwareFailedException;
+	};
+};

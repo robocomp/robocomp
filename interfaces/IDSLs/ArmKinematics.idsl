@@ -1,0 +1,30 @@
+module RoboCompArmKinematics{
+	exception NonExistingTargetInDSR
+	{
+		string whatIs;
+	};
+	
+	struct Pose
+	{
+		int x;int y;int z;
+		float ax;float ay;float az;
+	};
+	struct TCurrentState
+	{
+		float error;
+		bool finished;
+	};
+	
+	interface ArmKinematics{
+		void setTarget(Pose p);
+		Pose getTip();
+		void getState(out TCurrentState state);
+		bool isMoving();
+		void stopArm();
+		void setTargetFromDSR(string target, string part) throws NonExistingTargetInDSR;
+		void gotoZeroPosition();
+		void sendBodyPartToRestPosition(string part);
+		void raiseBodyPart(string part);
+		void lowerBodyPart(string part);
+	};
+};

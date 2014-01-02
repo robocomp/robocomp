@@ -1,0 +1,13 @@
+module RoboCompSpeaker
+{
+  /** \interface Speaker
+  *@brief interface Speaker
+  */ 	
+  interface Speaker
+  {
+		void setVolume (int vol);
+		string getConsumption ();
+		void setMode(string mode);
+		string getState ();
+  };
+};

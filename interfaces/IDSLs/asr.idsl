@@ -1,0 +1,11 @@
+module RoboCompASR{
+	sequence <int> audioVector;
+	
+	interface ASR{
+		void listenWav(string path);
+		void listenVector(audioVector audio);
+		string getLastPhrase();
+		void resetPhraseBuffer();
+		bool phraseAvailable();
+	};
+};

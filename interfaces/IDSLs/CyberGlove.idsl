@@ -1,0 +1,32 @@
+module RoboCompCyberGlove{
+	enum SensorName{ThumbRotation,ThumbMPJ,ThumbIJ,TIAbduction,IndexMPJ,IndexPIJ,MiddleMPJ,MiddleIJ,IMAbduction,RingMPJ,RingPIJ,MRAbduction,PinkieMPJ,PinkiePIJ,RPAbduction,PinkieRotation, WristPitch,WristYaw,NULL };
+	
+	struct Sensor
+	{
+		SensorName id;
+		float value;
+	};
+	sequence<Sensor> SensorList;
+	
+	struct Orientation
+	{
+		float rx;
+		float ry;
+		float rz;
+	};
+	
+	struct Position
+	{
+		float x;
+		float y;
+		float z;
+	};
+	
+	interface CyberGlove{
+		Sensor getSensor(SensorName name);
+		SensorList getAllSensors();
+		
+		Orientation getOrientation();
+		Position getPosition();
+	};
+};

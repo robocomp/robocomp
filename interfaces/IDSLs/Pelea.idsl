@@ -1,0 +1,37 @@
+module RoboCompPelea
+{
+  sequence<string> TermSequence;
+
+  struct Predicate
+  {
+     	string type;
+      	string name;
+      	TermSequence terms;
+  };
+
+  sequence<Predicate> PredicateSequence;
+
+  struct Goal
+  {
+	  	string type;
+	  	int parent;
+	  	PredicateSequence predicates;
+  };
+
+  sequence<Goal> GoalSequence;
+
+  struct Action
+  {
+		string name;
+   		double start;
+	   	double duration;
+	   	int index;
+	   	TermSequence terms;
+  };      
+
+  interface Pelea
+  {
+      	Action getPlanInfo(GoalSequence goals);
+      	Action getNextAction();
+  };
+};

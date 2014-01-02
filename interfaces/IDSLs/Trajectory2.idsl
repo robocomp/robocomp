@@ -1,0 +1,6 @@
+module RoboCompTrajectory2 
+{
+        interface Trajectory2 {
+		
+        };
+};

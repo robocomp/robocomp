@@ -1,0 +1,9 @@
+module RoboCompMouth{
+  sequence<float> Dialog;  
+
+  interface Mouth
+  {
+	void moveMouth(Dialog d);
+	void selectMovement(int type);
+  };
+};

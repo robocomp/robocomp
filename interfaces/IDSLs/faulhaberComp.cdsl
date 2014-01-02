@@ -1,0 +1,18 @@
+import "../IDSLs/JointMotor.idsl";
+
+Component faulhaberComp{
+	Communications{
+		implements JointMotor;
+	};
+	
+	RoboCompClasses{
+		"/Classes/canbus/canbus.cpp";
+		"/Classes/canbus/faulhaberApi.h";
+		"/Classes/canbus/faulhaberApi.cpp";
+		"/Classes/canbus/canbus.cpp";
+	};
+	RoboCompModules{
+		faulhaber;
+	};
+	language Cpp;
+};

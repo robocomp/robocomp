@@ -1,0 +1,29 @@
+import "MSKRGBD.idsl";
+import "MSKBody.idsl";
+import "MSKFace.idsl";
+module RoboCompPersonPerceptor{
+	
+	enum IsFace {face, noface};
+	enum IsFrontal {frontal, nofrontal};
+	enum isTracked {tracked, notracked};
+	
+	struct SensedPeople{
+	
+		IsFace face;		
+		RoboCompMSKRGBD::TRGBImage faceImage;
+		RoboCompMSKRGBD::TRGBImage faceImageNorm;
+		RoboCompMSKFace::Eye leftEye;
+		RoboCompMSKFace::Eye rightEye;
+		IsFrontal frontal;
+		RoboCompMSKBody::SkeletonPoint position;
+		float distance; 
+		int id;
+		isTracked state;
+	};
+	
+	sequence<SensedPeople> SensedPeopleList;
+	
+	interface PersonPerceptor{
+		void newSensedPeopleListAvailable(SensedPeopleList peopleList);
+	};
+};

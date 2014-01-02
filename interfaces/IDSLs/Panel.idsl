@@ -1,0 +1,10 @@
+module RoboCompPanel{
+	struct panelPosition{
+		float x;
+		float y;
+		float z;
+	};
+	interface Panel{
+		void getPanelPosition(out panelPosition pposition);
+	};
+};

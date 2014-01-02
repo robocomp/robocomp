@@ -1,0 +1,7 @@
+module RoboCompG2oSlamBackEnd
+{
+	interface G2oSlamBackEnd
+	{
+		
+	};
+};

@@ -1,0 +1,10 @@
+module RoboCompEvaluadorOff
+{
+ sequence<float> RTMatrix;
+ dictionary<string,RTMatrix> RTMatrixList;
+
+
+	interface EvaluadorOff {
+	void getRTMatrixList(out RTMatrixList RTMatList);
+	};
+};

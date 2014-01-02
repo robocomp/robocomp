@@ -1,0 +1,38 @@
+cmake_minimum_required( VERSION 2.6 )
+
+# IPP
+INCLUDE( $ENV{ROBOCOMP}/cmake/ipp.cmake )
+INCLUDE_DIRECTORIES( . .. )
+
+ADD_DEFINITIONS( -Wall -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB )
+FIND_PACKAGE( Qt4 REQUIRED )
+
+# Qt4
+ADD_DEFINITIONS( -Wall -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB )
+FIND_PACKAGE( Qt4 REQUIRED )
+INCLUDE( ${QT_USE_FILE} )
+QT4_WRAP_CPP( MOC_SOURCES ${HEADERS} )
+
+# Sources set
+SET ( SOURCES
+  include/qmat/qmat.h
+  qfundamental.cpp
+  qessential.cpp
+  qcamera.cpp
+  qextrinsics.cpp
+  qmat.cpp
+  qmovingrobot.cpp
+  qvec.cpp
+  qmatrot.cpp
+  qrtmat.cpp
+  qhomo.cpp
+)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include )
+
+# Specify construction and link process
+# SET (LIBRARY_OUTPUT_PATH .)
+add_library(qmat SHARED ${SOURCES} ${MOC_SOURCES} ${RC_SOURCES} )
+target_link_libraries(qmat ${LIBS})
+
+INSTALL(FILES ${CMAKE_BINARY_DIR}/libqmat.so DESTINATION /opt/robocomp/lib/ )
+INSTALL(FILES include/qmat/qvec.h include/qmat/qessential.h include/qmatqrtmat.h include/qmat/qmovingrobot.h include/qmat/qfundamental.h include/qmat/qmatrot.h include/qmat/qcamera.h include/qmat/qhomo.h include/qmat/qextrinsics.h include/qmat/qmat.h include/qmat/quaternion.h include/qmat/QMatAll DESTINATION /opt/robocomp/include/QMat )

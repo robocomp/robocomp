@@ -1,0 +1,4 @@
+module RoboCompmultimodal{
+	interface multimodal{
+	};
+};

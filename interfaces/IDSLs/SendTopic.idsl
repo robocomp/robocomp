@@ -1,0 +1,8 @@
+module RoboCompSendTopic{
+	struct Message{
+		string content;
+	};
+	interface SendTopic{
+		void operacion(Message m);
+	};
+};

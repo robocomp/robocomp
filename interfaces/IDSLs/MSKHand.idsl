@@ -1,0 +1,41 @@
+module RoboCompMSKHand
+{
+	enum InteractionHandEventType{NoneEvent ,Grip, GripRelease};
+	enum InteractionHandType{None, Left, Right};
+
+	//Hand information
+	struct InteractionHandPointer
+	{
+
+	InteractionHandEventType HandEventType;
+        InteractionHandType HandType;
+        bool IsActive ;
+        bool IsInteractive ;
+        bool IsPressed ;
+        bool IsPrimaryForUser ;
+        bool IsTracked ;
+        double PressExtent ;
+        double RawX ;
+        double RawY ;
+        double RawZ ;
+        double X ;
+        double Y;
+	};
+
+	sequence <InteractionHandPointer> InteractionHandPointers;
+
+	//Hands user information
+	struct UserInfo
+	{
+		InteractionHandPointers HandPointers;
+		int SkeletonTrackingId;
+	};
+
+	//Output of the InteractionStream,Hands information of all the users in the scene
+	dictionary <int, UserInfo> UsersInfo;
+
+
+	interface MSKHand{
+		void newInteractionEvent(UsersInfo usersInf,long timestamp);
+	};
+};

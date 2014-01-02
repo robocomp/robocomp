@@ -1,0 +1,10 @@
+
+LaserProxy = laser:tcp -p 11003
+
+# Component properties
+#
+Ice.Warn.Connections=0
+Ice.Trace.Network=0
+Ice.Trace.Protocol=0
+Ice.ACM.Client=10
+Ice.ACM.Server=10

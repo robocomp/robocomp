@@ -1,0 +1,35 @@
+/** \mainpage RoboComp Interfaces: Rrtplanner2d.ice
+ *
+ * \section intro_sec Introduction
+* Interface for rrtplanner2dComp.
+*
+*
+*
+*    PORT  <br>
+*/
+
+import "RobotTrajectory.idsl";
+
+module RoboCompRrtplanner2d
+{
+  enum ExceptionReason { MaxIterationsReached, UnreachableTarget, TargetIsAnObstacle, NoException };
+  exception PlanningException { ExceptionReason reason; };
+
+  struct Position2D
+  {
+    double x;
+    double z;
+  };
+
+  sequence<Position2D> Trajectory2D;
+
+
+  /** \interface Rrtplanner2d
+  *@brief interface Rrtplanner2d
+  */
+  interface Rrtplanner2d
+  {
+    RoboCompRobotTrajectory::Trajectory getPathTo(Position2D to) throws PlanningException;
+  };
+};
+

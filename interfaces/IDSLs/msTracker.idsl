@@ -1,0 +1,31 @@
+module RoboCompmsTracker{
+	sequence<byte> imgType;
+	
+	struct trackerIdentifier {
+		int trackerID;	// Tracker's identifier
+	};
+	
+	struct datagetPositionout {
+		int x0;			// Top-left coords of tracked region in original image
+		int y0;
+		int x1;			// Bottom-right coords of tracked region in original image
+		int y1;		
+	};
+	
+	struct datasetTrackerin {
+		int trackerID;	// Tracker's identifier
+		int x0;			// Top-left coords of region to be tracked in original image
+		int y0;
+		int x1;			// Bottom-right coords of region to be tracked in original image
+		int y1;	
+		imgType image;	// Whole image containing region to be tracked	
+		int width;		// Image's width
+		int height;		// Image's height
+	};	
+
+	interface msTracker{
+		[query] void getPosition(trackerIdentifier id, out datagetPositionout position);
+		[command] void setTracker(datasetTrackerin trackerData);
+		[command] void removeTracker(trackerIdentifier id);
+	};
+};

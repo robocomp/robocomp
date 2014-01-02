@@ -1,0 +1,15 @@
+import "Ar.idsl";
+module RoboCompNavigator{
+
+	interface LocalNavigator{
+    	void stop();
+	 	bool isActive();
+    	bool goTo(float x, float z, float angle);
+    	void setOdometry(float x, float z, float angle);
+  	};
+  	
+  	interface LocalNavigatorReportState{
+		void reportRobotState( float distanceToGoal, float angToGoal, int timeElapsed, bool finish);
+		void reportRobotPose(float x, float z, float angle);
+    };
+};

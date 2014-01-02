@@ -1,0 +1,90 @@
+module RoboCompPatternBasedDifferentialRobot{
+
+  exception HardwareFailedException { string what; };
+
+	// Struct for speed commands
+	struct TBaseSpeed{
+		float adv;		// [mm/s]. Advance velocity; + -> front
+		float rot;		// [rad/s]. Rotation velocity; + -> clockwise
+	};
+	
+	// Struct for odometry	
+  	struct TBasePose{
+		float z;		// [mm] odometry z coordinate; + -> front
+		float x;		// [mm] odometry x coordinate; + -> right
+		float alpha;	// [rad] robot orientation; + -> clockwise
+	};	
+	
+	// Struct for Robot's current state
+	struct TBaseState{
+		TBasePose pose;		// position in space
+		TBaseSpeed speed;	// velocities
+	};
+	
+	interface PatternBasedDifferentialRobot{
+		// State and odometry
+		[query] void getBaseState(out TBaseState state) throws HardwareFailedException;
+		[command] void setOdometer(TBasePose pose) throws HardwareFailedException;
+		[command] void resetOdometer(TBasePose zeroPose) throws HardwareFailedException;
+		
+		// Movement comannds
+		[command] void setSpeedBase(TBaseSpeed speed) throws HardwareFailedException;
+		[command] void stopBase(TBaseSpeed zeroSpeed) throws HardwareFailedException;
+	};
+};
+
+/* OLD version
+
+
+  struct TMechParams
+  {
+    int wheelRadius;
+    int axisLength;
+    int encoderSteps;
+    int gearRatio;
+    float temp;
+    string device;
+    string handler;
+    float maxVelAdv;
+    float maxVelRot;
+  };
+
+  struct TBaseState
+  {
+    float x;
+    float correctedX;
+    float z;
+    float correctedZ;
+    float alpha;
+    float correctedAlpha;
+    float advV;
+    float rotV;
+    float adv;
+    float rot;
+    bool isMoving;
+    float voltage;
+  };
+  
+  struct TBasePose{
+  	int i;
+  	int z;
+  	float alpha;
+  };
+  
+  struct TBaseSpeed{
+  	float adv;
+  	float rot;
+  };
+ 
+  interface PatternBasedDifferentialRobot{
+		[query] void getBaseState(out TBaseState state) throws HardwareFailedException;
+    	[query] void getBasePose(out TBasePose pose) throws  HardwareFailedException;
+    	[command] void setSpeedBase(TBaseSpeed speed) throws HardwareFailedException;
+    	[command] void stopBase(TBaseSpeed zeroSpeed) throws HardwareFailedException;
+    	[command] void resetOdometer(TBasePose zeroPose) throws HardwareFailedException;
+    	[command] void setOdometer(TBaseState state) throws HardwareFailedException;
+    	[command] void setOdometerPose(TBasePose pose) throws HardwareFailedException;
+    	[command] void correctOdometer(TBasePose pose) throws HardwareFailedException;
+  };
+
+*/

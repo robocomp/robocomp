@@ -1,0 +1,5 @@
+module RoboCompArmKinematicsGoalReached{
+	interface ArmKinematicsGoalReached{
+		 void  goalReached(string part, bool active, bool success, float error);
+	};
+};

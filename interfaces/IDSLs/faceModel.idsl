@@ -1,0 +1,8 @@
+module RoboCompfaceModel{
+	
+	sequence<float> floatArray;
+	
+	interface faceModel{
+		void setHeadRT(floatArray RMat, floatArray TVec);
+	};
+};

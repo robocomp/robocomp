@@ -1,0 +1,135 @@
+import "MSKCommon.idsl";
+module RoboCompMSKSilhouette{
+
+	// Pose3D - 3D pose definition. It can code a relative (joint related) or absolute (world
+	
+	// related) frame   
+	
+	struct Pose3D {
+	
+		float rx;        //yaw
+		
+		float ry;        //pitch
+		
+		float rz;        //roll
+	
+	};
+	
+	// JointList - Map of joints names and poses.  Each joint has a name that act as the key in
+	
+	// the map. Its value is a Pose3D struct in coordinates relative to the camera (world)
+	
+	// frame of reference. Note that the complete kinematic tree is not described in this
+	
+	// interface. Each joint’s parent must be known to go from relative to absolute
+	
+	// coordinates.    
+	
+	dictionary<string, Pose3D> JointList;
+	
+	   
+	
+	// shapeState - Is there a shape/body on the scene?   
+	
+	enum shapeState {isShape, noShape};
+	
+	           // isShape - there is a shape/body on the FoV of the sensor
+	
+	// noShape - there is not a shape on the FoV of the sensor
+	
+	   
+	
+	// shapeType - Distinguishes between body and shape
+	
+	enum shapeType {Shape, Body};
+	
+	// Shape - there is a shape but without data on joints
+	
+	// Body - there is a shape and with data on the joints
+	
+	// TBody - structure of a body/shape (joints, identifier and type)
+	
+	struct TBody {  
+	
+		JointList joints;
+		
+		RoboCompMSKCommon::Id identifier; // Identifier of a body/shape.
+		
+		shapeType type;
+	
+	};
+	
+	// BodyList - A list storing all tentative bodies (persons) in the scene    
+	
+	dictionary<int, TBody> BodyList;
+	
+	   
+	
+	//structs for operation purposes
+	
+	struct BodyListData{
+	
+		BodyList bodyl;
+	
+	};
+	
+	   
+	
+	struct NumBodiesData{
+	
+	int num;
+	
+	};
+	
+	   
+	
+	struct ImgDepthData{
+	
+		RoboCompMSKCommon::TDepth image;
+	
+	};
+	
+	   
+	
+	struct JointData{
+	
+		RoboCompMSKCommon::Id identifier;
+	
+	string  nameJoint;
+	
+	};
+
+     
+
+	interface MSKSilhouette{    
+
+		// Implements -
+		
+		// Bodies -  
+		
+		void getBodyList(out BodyListData body);        
+		
+		void getRTMatrixList(RoboCompMSKCommon::Id identifier, out JointList jointl
+		);    
+		
+		void getBodyState(RoboCompMSKCommon::Id identifier, out shapeType shapet);    
+		
+		void getNumBodies(out NumBodiesData nbodies);    
+		
+		void getBody(RoboCompMSKCommon::Id identifier, out TBody body);
+		
+		// Useful -
+		
+		void  getJointPixelPosition(JointData data, out RoboCompMSKCommon::Position2D pxy);    
+		
+		void  pixelRGB2Dto3D(RoboCompMSKCommon::Position2D pxy, out RoboCompMSKCommon::Position2D traslation);
+		
+		void  getRGB(out RoboCompMSKCommon::TRGB imgRGB);
+		
+		void  getDepth(out ImgDepthData imgDepth);
+		
+		void  getRGBD(out RoboCompMSKCommon::TRGBD imgRGBD);
+	};
+ 
+};
+

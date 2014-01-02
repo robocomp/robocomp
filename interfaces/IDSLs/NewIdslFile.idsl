@@ -1,0 +1,4 @@
+module RoboCompNewIdslFile{
+	interface NewIdslFile{
+	};
+};

@@ -1,0 +1,11 @@
+import "AGMWorldModel.idsl";
+
+module RoboCompAGMAgent
+{
+	interface AGMAgentTopic
+	{
+		void modificationProposal(RoboCompAGMWorldModel::Event modification);
+		void update(RoboCompAGMWorldModel::Node nodeModification);
+	};
+};
+

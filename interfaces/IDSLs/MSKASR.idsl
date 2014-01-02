@@ -1,0 +1,23 @@
+module RoboCompMSKASR
+{
+
+sequence<string> WordsRecognized;
+
+// TSentence - Frase reconocida por el ASR
+
+struct TSentence 
+{
+WordsRecognized words;
+string grammarUsed;
+bool blockingCall;
+int acquisitionHour;
+int acquisitionSecs;
+int acquisitionDay;
+};
+
+interface MSKASR
+	{
+	// Publishes -
+	void newSentenceAvailable (TSentence sentence);
+	};
+};

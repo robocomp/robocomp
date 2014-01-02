@@ -1,0 +1,50 @@
+module RoboCompKinectReader{
+	struct TData{
+		double dist;
+		double angle;
+		double x;
+		double y;
+		double z;
+	};
+	
+	sequence <float> DepthSeq;
+	sequence <TData> TLaserData;
+	sequence <byte> rgbSeq;
+	
+	struct datagetKinectLinein {
+		int linenumber;
+	};
+	struct datagetKinectLineout {
+		TLaserData linescan; 
+		int width;
+	};
+	struct datagetKinectDepthImageout {
+		DepthSeq depthPixel;	// Depth image (width*height float) 
+		int width;				// Width
+		int height;				// Height
+	};
+	
+	struct datagetKinectRGBImageout {
+		rgbSeq rgbPixel;		// RGB image (standard 3-bytes RGB: width*height*3 uchar)
+		int width;				// Width
+		int height;				// Height
+	};
+	
+	struct datagetKinectRGBDImageout {
+		rgbSeq rgbPixel;		// RGB image (standard 3-bytes RGB: width*height*3 uchar)
+		DepthSeq depthPixel;	// Depth image (width*height float)
+		int width;				// Width
+		int height;				// Height
+	};	
+	
+	struct Quality{
+		byte qvga;				// if qvga=1, low-quality image (320x240) is provided
+	};
+	
+	interface KinectReader{
+		[query] void getKinectLine(datagetKinectLinein lineid, out datagetKinectLineout scannedline);
+		[query] void getKinectDepthImage(Quality q, out datagetKinectDepthImageout depthImage);	
+		[query] void getKinectRGBImage(Quality q, out datagetKinectRGBImageout rgbImage);	
+		[query] void getKinectRGBDImage(Quality q, out datagetKinectRGBDImageout rgbdImage);				
+	};
+};

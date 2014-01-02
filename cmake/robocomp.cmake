@@ -30,18 +30,18 @@ MACRO( ROBOCOMP_INITIALIZE )
 	ENDIF (NOT ${ICEROOT} EQUAL "")
   INCLUDE_DIRECTORIES (
     .
-    ${ARGN}/Classes/
-    ${ARGN}/Interfaces/
+    ${ARGN}/classes/
+    ${ARGN}/interfaces/
     ${CMAKE_BINARY_DIR}
     ${ICEROOT}/include/
   )
-  # Set Interfaces directory
-  SET(ROBOCOMP_INTERFACES_DIR "${ARGN}/Interfaces/")
+  # Set interfaces directory
+  SET(ROBOCOMP_INTERFACES_DIR "${ARGN}/interfaces/")
   # Set libraries
 
 #   SET( LIBS ${LIBS} -L/opt/robocomp/lib ${OSG_LIBRARY} ${OSGUTIL_LIBRARY} ${OSGDB_LIBRARY} ${OSGVIEWER_LIBRARY} ${OPENTHREADS_LIBRARY} robocomp_innermodel -lqmat -L${ICEROOT}/lib/ -L${ROBOCOMP_ROOT}/Classes -lIce -lIceUtil -lpthread -lIceStorm -lgsl -lblas ${QT_LIBRARIES} -losgGA -losgText -losgDB -losgUtil -losg -losgViewer)
 	SET( LIBS ${LIBS} -L/opt/robocomp/lib ${OSG_LIBRARY} ${OSGUTIL_LIBRARY} ${OSGDB_LIBRARY} ${OSGVIEWER_LIBRARY} ${OPENTHREADS_LIBRARY} -lqmat -L${ICEROOT}/lib/ -L${ROBOCOMP_ROOT}/Classes -lIce -lIceUtil -lpthread -lIceStorm -lgsl -lblas ${QT_LIBRARIES} -losgGA -losgText -losgDB -losgUtil -losg -losgViewer innermodel )
-  INCLUDE ( $ENV{ROBOCOMP}/cmake/ipp.cmake )
+  INCLUDE ( $ENV{ROBOCOMP}/cmake/modules/ipp.cmake )
 ENDMACRO( ROBOCOMP_INITIALIZE )
 
 
@@ -69,7 +69,7 @@ ENDMACRO( ROBOCOMP_LIBRARY )
 MACRO( ROBOCOMP_WRAP_ICE )
   # External Slice source paths
   SET (EXTERNAL_SLICE "")
-  SET (SLICE_PATH "$ENV{SLICE_PATH};/opt/robocomp/ThirdPartyInterfaces")
+  SET (SLICE_PATH "$ENV{SLICE_PATH};/opt/robocomp/ThirdPartyinterfaces")
   SET (INC_ROBOCOMPSLICE_PATH "true" )
   SET (ADDITIONAL_SLICE_INCLUDE_PATH "")
   FOREACH (SPATH ${SLICE_PATH})

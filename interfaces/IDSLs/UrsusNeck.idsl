@@ -1,0 +1,7 @@
+module RoboCompUrsusNeck{
+
+  interface UrsusNeck
+  {
+  	
+  };
+};

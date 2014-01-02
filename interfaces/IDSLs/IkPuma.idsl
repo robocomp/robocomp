@@ -1,0 +1,12 @@
+import "CommonHead.idsl";
+
+module RoboCompIkPuma
+{
+  /** \interface RGBD
+  *@brief interface RGBD
+  */
+  interface IkPuma
+  {
+    void setPosition(int x, int y, int z);
+  };
+};

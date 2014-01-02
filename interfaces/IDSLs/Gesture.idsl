@@ -1,0 +1,5 @@
+module RoboCompGesture{
+	interface Gesture{
+		
+	};
+};

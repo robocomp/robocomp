@@ -1,0 +1,9 @@
+module RoboCompISAM
+{
+	interface ISAM
+	{
+		void addXYROdometryMeasurement( string label, int nodeOrig, int nodeDest, float dx, float dy, float da, float sxx, float sxy, float sxt, float syy, float syt, float stt);
+	};
+};
+
+// sXX are entries of the upper triangular square root of the information matrix in row-first ordermodule RoboCompISAM{

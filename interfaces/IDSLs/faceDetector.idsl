@@ -1,0 +1,7 @@
+module RoboCompFaceDetector{
+	enum FaceDetectorState{Tracking, NoTarget };
+
+	interface FaceDetector{
+		FaceDetectorState getState();
+	};
+};

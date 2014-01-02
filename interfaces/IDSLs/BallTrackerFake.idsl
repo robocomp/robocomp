@@ -1,0 +1,15 @@
+module RoboCompBallTrackerFake
+{
+	struct Pose
+	{
+		float x;
+		float y;
+		float z;
+		string node;  //InnerModel node where the pose is refered
+	};
+	
+	interface BallTrackerFake
+	{
+		void ballPosition( Pose currentPose );  //Used as a publishing topic
+	};
+};

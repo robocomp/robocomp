@@ -1,0 +1,32 @@
+module RoboCompJoystickAdapter
+{
+  struct AxisParams    
+  {
+    string name;       
+    float value;
+  };
+  
+  struct ButtonParams
+  {
+	bool clicked;
+  };
+  
+  
+  sequence<AxisParams> AxisList;
+  sequence<ButtonParams> ButtonsList;
+  
+  struct TData
+  {
+    string id;  
+    AxisList axes;
+    ButtonsList buttons;
+    int velAxisIndex;
+    int dirAxisIndex;
+  };
+   
+    interface JoystickAdapter
+    {
+        idempotent void sendData(TData data);
+    };
+};
+

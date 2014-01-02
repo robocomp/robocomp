@@ -1,0 +1,33 @@
+module RoboCompDSR{
+
+	struct StatePelea{
+		string startingArea;	// Idetificador o etiqueta del area de inicio
+		string chargingArea;	// Identificador o etiqueta del area de carga
+		bool personDetected;
+		bool userAtSocialDistance;
+		bool userWithRobot;
+		bool userClassified;
+		bool productTopicDefined;
+		bool userIntentionDefined;
+		bool interestedUser;
+		bool userInPanel;
+		bool userOutPanelArea;
+		bool userShowPanel;
+		string atRobot;	// Identificar o etiqueta de donde se encuentra el robot
+		string atUser;	// Identificador o etiqueta de donde se encuentra el usuario
+	};
+	
+	interface DSR{
+		StatePelea getState();
+			
+		/// Generic node pose modification and access
+		// All get/sets and adds return false if an item or base doesn't exist.
+		/// This methods transforms FROM item TO base
+		bool setPosePersona(float x, float z, float angle);
+		bool setPoseRobot(float x, float z, float angle);
+		bool setPosePanel(float x, float z, float angle);
+		  
+ 
+	};
+};
+

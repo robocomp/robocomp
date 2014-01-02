@@ -1,0 +1,11 @@
+import "JointMotor.idsl";
+import "CommonHead.idsl";
+
+module RoboCompmuecasheadcontrol{
+	interface muecasheadcontrol{
+		MotorParamsList getAllMotorParams();
+		void  getAllMotorState(out MotorStateMap mstateMap);
+		void  setPosition(MotorGoalPosition goal)throws UnknownMotorException, HardwareFailedException;
+
+	};
+};

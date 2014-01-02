@@ -1,0 +1,38 @@
+module RoboCompExecutive{
+	//…
+	
+	enum gender{male, female};
+	//enum age{lt15, 15-40, 40-60, gt60}; //( 0: <15; 1: entre 15 y 40; 2: entre 40 y 60; 3: >60 )
+	enum age{lt15, bt1540, bt4060, gt60};
+	
+	sequence<string> phrases;
+
+	struct TProductTopicPhrasesData{  
+		gender personGender;
+		age personAge;
+		phrases topicPhrases;
+	};
+
+	struct TUserInterestData{
+		bool finalInterest;
+		phrases phrasesUsedInDialog;
+	};
+
+	struct retBool{
+		bool res;
+	};
+
+	struct modelData{
+		int blabla; //
+	};
+
+	interface Executive{		
+		void modelProposal(modelData md, out retBool res);
+		
+		//…
+		void getProductTopicPhrases(out TProductTopicPhrasesData data);
+		void setUserInterest(TUserInterestData data);
+	};
+
+
+};

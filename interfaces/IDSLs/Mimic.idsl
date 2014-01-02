@@ -1,0 +1,7 @@
+module RoboCompMimic
+{
+	interface Mimic
+	{
+		
+	};
+};

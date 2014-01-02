@@ -1,0 +1,89 @@
+import "MSKCommon.idsl";
+import "MSKSilhouette.idsl";
+
+module RoboCompMSKHead{
+
+	struct Eye {
+		float i; float j; // Eye position on the image
+	};
+
+	//  faceState - Is there a detailedFace on the scene?
+	
+	enum detailedFaceState {isFace, noFace};
+	
+	// isFace - there is a detailedFace on the FoV of the sensor
+	
+	// noFace - there is not a detailedFace on the FoV of the sensor
+	
+	// DetailedFace - structure of the detailedFace (face and eyes data, identifier)
+	
+	struct DetailedFace {
+	
+	    int identifier;
+	
+		//Face image (portion of the input image where the face is located)
+		
+		RoboCompMSKCommon::TRGB faceImage;    
+		
+		int height; int width;            // Size of the face image
+		
+		float yaw; float pitch; float roll;    // Orientation of the face image
+		
+		//Eyes position in the face image
+		
+		Eye leftEye;
+		
+		Eye rightEye;
+	
+	};
+
+	// FaceList - A list storing all faces in the scene
+	
+	dictionary<int, DetailedFace> detailedFaceList;
+	
+	//structs for operation purposes
+	
+	struct NFaces{
+	
+		int num;
+	
+	};
+	
+	struct detailedFaceData{
+	
+		detailedFaceList facelist;
+	
+	};
+	
+	struct detailedFaceStateData{
+	
+		detailedFaceState facestate;
+	
+	};
+
+	interface MSKHead{
+	
+		// Implements -
+		
+		// detailedFaces
+		
+		void geDetailedFaceList(out detailedFaceData faceList);
+	
+	    void getFaceState(int identifier, out detailedFaceStateData faceStateData);
+	
+	    void getNumFaces(out NFaces num);
+	
+	    void getFace(int identifier, out DetailedFace face);
+	
+	};
+
+	interface MSKHeadP{
+	
+		// Publishes -
+		
+		void newDetailedFaceAvailable (detailedFaceData faceList);
+	
+	};
+
+};
+

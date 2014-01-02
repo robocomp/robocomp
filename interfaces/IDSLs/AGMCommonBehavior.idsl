@@ -1,0 +1,37 @@
+module RoboCompAGMCommonBehavior
+{
+	enum StateEnum { Starting, Running, Stopped};
+	struct StateStruct
+	{
+		StateEnum state;
+		string info;
+	};
+
+	struct Parameter
+	{
+		bool editable;
+		string value;
+		string type;
+	};
+
+	dictionary<string, Parameter> ParameterMap;
+
+	interface AGMCommonBehavior
+	{
+		// Activation and state
+		bool activateAgent(ParameterMap prs);
+		bool deactivateAgent();
+		StateStruct getAgentState();
+
+		// Parameter
+		ParameterMap getAgentParameters();
+		bool setAgentParameters(ParameterMap prs);
+
+		// Misc
+		void killAgent();
+		int uptimeAgent();
+		bool reloadConfigAgent();
+	};
+
+};
+

@@ -1,0 +1,26 @@
+import "Camara.idsl";
+module RoboCompEjemplo1{	
+	
+	exception HWException{
+			string  what;
+	};	
+	sequence <int> imgype;
+	sequence <int> vector1;
+	sequence <vector1> vector2;
+	dictionary <int,string> dic1;
+	dictionary <string,vector2> dic2;
+	enum tipoenum{A,B};
+	struct estruct{
+		int num;
+		int num2;
+		vector1 v1;
+		dic1 diccionario;
+		RoboCompCamara::imgType s;				
+		int numAdri;
+	};		
+		
+	interface Ejemplo1{
+		idempotent int operacion (int p3, RoboCompCamara::imgType p4, out vector1 p2) throws HWException;
+		void operacionget(int p1, out int p2, vector1 p3);
+	};
+};

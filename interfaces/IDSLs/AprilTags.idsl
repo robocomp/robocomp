@@ -1,0 +1,5 @@
+module RoboCompAprilTags{
+	interface AprilTags{
+		void newAprilTag(int id, float tx, float ty, float tz, float rx, float ry, float rz);
+	};
+};

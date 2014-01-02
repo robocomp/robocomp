@@ -1,0 +1,22 @@
+module RoboCompTrackeropenni{
+   sequence<byte> imgType;
+   sequence<float> depthType;
+   sequence<float> RTMatrix;
+   sequence<float> joint;
+   dictionary<string,RTMatrix> RTMatrixList;
+   dictionary<string,joint> jointListType;
+   
+   struct pixel {int x;int y;};
+   dictionary<string,pixel> jointListPixelType;
+   
+   enum trackingState{NoTracking,Calibrating,LookingForPose,Tracking};
+
+  interface Trackeropenni
+  {
+  	void getRGB(out imgType imgRGB, out trackingState state);
+	void getRTMatrixList(out RTMatrixList RTMatList);
+	/**return joints position and confidence */
+	void getJointsPosition(out jointListType jointList);
+	void getJointsPixelPosition(out jointListPixelType jointListPixel);
+  };
+};

@@ -1,0 +1,19 @@
+import "JointMotor.idsl";
+module RoboCompUrsusArm
+{
+	enum Movement{hombroDS,hombroDB,hombroIS,hombroDB,codoDS,codoDB,codoIS,codoIB,holaD,holaI,openNiD,openNiI};
+	interface UrsusArm
+	{
+		void setMovement(Movement m);
+		void loadMovement(string movement,string arm);
+		void reloadMovement(string arm);
+		void repeat(float speed,int repetitions,string arm);
+		void setSpeed(float speed,string arm);
+		void pauseMovement(string arm);
+		void stopMovement(string arm);
+		void resumeMovement(string arm);
+		void goRestPosition(string arm);
+		void getAllMotorState(out RoboCompJointMotor::MotorStateMap mstateMap );
+		bool isBusy(string arm);
+	};
+};

@@ -1,0 +1,46 @@
+module RoboCompMSKCommon{
+
+	// Common - useful
+	
+	sequence <byte> TImg;  
+	
+	   
+	
+	sequence <short> TDepth;
+	
+	struct Position2D{
+	
+		int x;
+		
+		int y;
+	
+	};
+
+  
+	
+	struct Position3D{     //translation
+	
+		Position2D xy;  
+		
+		float z;    
+	
+	};
+	
+	struct TRGB{ // RGB image {
+	
+		TImg r; TImg g; TImg b;
+	
+	};
+	
+	struct TRGBD{ // RGB + Depth image {
+	
+		TRGB rgb;
+		
+		TDepth d;
+	
+	};
+	
+	struct Id{
+		int identifier;
+	};
+};
