@@ -1,4 +1,3 @@
-
 # Qt4
 ADD_DEFINITIONS( -Wall  -DQT_XML_LIB -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB )
 FIND_PACKAGE( Qt4 )
@@ -19,6 +18,10 @@ LINK_DIRECTORIES(${OSG_LIB_DIR})
 
 
 MACRO( ROBOCOMP_INITIALIZE )
+  set(RoboComp_VERSION 1.0 CACHE STRING "RoboComp version")
+  #set install dirs
+  set(BIN_INSTALL_DIR "/opt/robocomp-${RoboComp_VERSION}/bin")
+  set(CONFIG_INSTALL_DIR "/opt/robocomp-${RoboComp_VERSION}/etc-default")
   # Set root directory
   SET( ROBOCOMP_ROOT ${ARGN} )
   MESSAGE(STATUS "RoboComp root is now set to ${ROBOCOMP_ROOT}")
@@ -36,11 +39,11 @@ MACRO( ROBOCOMP_INITIALIZE )
     ${ICEROOT}/include/
   )
   # Set interfaces directory
-  SET(ROBOCOMP_INTERFACES_DIR "${ARGN}/interfaces/")
+  SET(RoboComp_INTERFACES_DIR "${ARGN}/interfaces/")
   # Set libraries
 
-#   SET( LIBS ${LIBS} -L/opt/robocomp/lib ${OSG_LIBRARY} ${OSGUTIL_LIBRARY} ${OSGDB_LIBRARY} ${OSGVIEWER_LIBRARY} ${OPENTHREADS_LIBRARY} robocomp_innermodel -lqmat -L${ICEROOT}/lib/ -L${ROBOCOMP_ROOT}/Classes -lIce -lIceUtil -lpthread -lIceStorm -lgsl -lblas ${QT_LIBRARIES} -losgGA -losgText -losgDB -losgUtil -losg -losgViewer)
-	SET( LIBS ${LIBS} -L/opt/robocomp/lib ${OSG_LIBRARY} ${OSGUTIL_LIBRARY} ${OSGDB_LIBRARY} ${OSGVIEWER_LIBRARY} ${OPENTHREADS_LIBRARY} -lqmat -L${ICEROOT}/lib/ -L${ROBOCOMP_ROOT}/Classes -lIce -lIceUtil -lpthread -lIceStorm -lgsl -lblas ${QT_LIBRARIES} -losgGA -losgText -losgDB -losgUtil -losg -losgViewer innermodel )
+#   SET( LIBS ${LIBS} -L/opt/robocomp/lib ${OSG_LIBRARY} ${OSGUTIL_LIBRARY} ${OSGDB_LIBRARY} ${OSGVIEWER_LIBRARY} ${OPENTHREADS_LIBRARY} robocomp_innermodel -lqmat -L${ICEROOT}/lib/ -L${ROBOCOMP_ROOT}/classes -lIce -lIceUtil -lpthread -lIceStorm -lgsl -lblas ${QT_LIBRARIES} -losgGA -losgText -losgDB -losgUtil -losg -losgViewer)
+	SET( LIBS ${LIBS} -L/opt/robocomp/lib ${OSG_LIBRARY} ${OSGUTIL_LIBRARY} ${OSGDB_LIBRARY} ${OSGVIEWER_LIBRARY} ${OPENTHREADS_LIBRARY} -lqmat -L${ICEROOT}/lib/ -L${ROBOCOMP_ROOT}/classes -lIce -lIceUtil -lpthread -lIceStorm -lgsl -lblas ${QT_LIBRARIES} -losgGA -losgText -losgDB -losgUtil -losg -losgViewer innermodel )
   INCLUDE ( $ENV{ROBOCOMP}/cmake/modules/ipp.cmake )
 ENDMACRO( ROBOCOMP_INITIALIZE )
 
@@ -53,12 +56,12 @@ MACRO( ROBOCOMP_LIBRARY )
 		SET(ROBOCOMP_LIBS ${ROBOCOMP_LIBS} -l${input_library} )
 	ELSE( EXISTS "/opt/robocomp/lib/lib${input_library}.so")
 		MESSAGE(STATUS "Library ${input_library} not found in /opt/robocomp/lib" )
-		IF (EXISTS "${ROBOCOMP_ROOT}/Classes/lib${input_library}.so")
+		IF (EXISTS "${ROBOCOMP_ROOT}/classes/lib${input_library}.so")
                 	MESSAGE(STATUS "Adding library ${input_library} " )
                 	SET(ROBOCOMP_LIBS ${ROBOCOMP_LIBS} -l${input_library} )
-		ELSE (EXISTS "${ROBOCOMP_ROOT}/Classes/lib${input_library}.so")
+		ELSE (EXISTS "${ROBOCOMP_ROOT}/classes/lib${input_library}.so")
 			MESSAGE(FATAL_ERROR "Library ${input_library} not found" )
-		ENDIF (EXISTS "${ROBOCOMP_ROOT}/Classes/lib${input_library}.so")
+		ENDIF (EXISTS "${ROBOCOMP_ROOT}/classes/lib${input_library}.so")
 	ENDIF( EXISTS "/opt/robocomp/lib/lib${input_library}.so")
   ENDFOREACH ( input_library )
   SET( LIBS ${LIBS} -L/opt/robocomp/lib/ ${ROBOCOMP_LIBS} )
@@ -74,14 +77,14 @@ MACRO( ROBOCOMP_WRAP_ICE )
   SET (ADDITIONAL_SLICE_INCLUDE_PATH "")
   FOREACH (SPATH ${SLICE_PATH})
      MESSAGE(STATUS "ACHO ${SLICE_PATH}")
-     IF( ${ROBOCOMP_INTERFACES_DIR} STREQUAL ${SPATH})
+     IF( ${RoboComp_INTERFACES_DIR} STREQUAL ${SPATH})
        SET(INC_ROBOCOMPSLICE_PATH "false")
-     ELSE( ${ROBOCOMP_INTERFACES_DIR} STREQUAL ${SPATH})
+     ELSE( ${RoboComp_INTERFACES_DIR} STREQUAL ${SPATH})
 			SET(ADDITIONAL_SLICE_INCLUDE_PATH ${ADDITIONAL_SLICE_INCLUDE_PATH} -I${SPATH})
-     ENDIF( ${ROBOCOMP_INTERFACES_DIR} STREQUAL ${SPATH})
+     ENDIF( ${RoboComp_INTERFACES_DIR} STREQUAL ${SPATH})
   ENDFOREACH (SPATH ${SLICE_PATH})
   IF (${INC_ROBOCOMPSLICE_PATH} STREQUAL "true")
-     SET (SLICE_PATH "${SLICE_PATH};${ROBOCOMP_INTERFACES_DIR}")
+     SET (SLICE_PATH "${SLICE_PATH};${RoboComp_INTERFACES_DIR}")
   ENDIF(${INC_ROBOCOMPSLICE_PATH} STREQUAL "true")
   MESSAGE(STATUS "$SLICE_PATH=\"${SLICE_PATH}\"")
   FOREACH (SPATH ${SLICE_PATH})
@@ -100,7 +103,7 @@ MACRO( ROBOCOMP_WRAP_ICE )
         MESSAGE(STATUS "Adding rule to generate ${input_file}.cpp and ${input_file}.h from ${SPATH}/${input_file}.ice  (${SLICECPP_PATH}slice2cpp)" )
         ADD_CUSTOM_COMMAND (
           OUTPUT ${input_file}.cpp ${input_file}.h
-          COMMAND ${SLICECPP_PATH}slice2cpp -I${ROBOCOMP_INTERFACES_DIR} ${ADDITIONAL_SLICE_INCLUDE_PATH} -I. ${SPATH}/${input_file}.ice --output-dir .
+          COMMAND ${SLICECPP_PATH}slice2cpp -I${RoboComp_INTERFACES_DIR} ${ADDITIONAL_SLICE_INCLUDE_PATH} -I. ${SPATH}/${input_file}.ice --output-dir .
           DEPENDS ${SPATH}/${input_file}.ice
           COMMENT "Generating ${input_file}.cpp and ${input_file}.h from ${input_file}.ice"
         )
@@ -121,7 +124,7 @@ INCLUDE_DIRECTORIES (
   ${CMAKE_CURRENT_BINARY_DIR}
   .
   /opt/robocomp/include/
-  ${ROBOCOMP_ROOT}/Classes/
+  ${ROBOCOMP_ROOT}/classes/
   ${CMAKE_BINARY_DIR}
 )
 
@@ -137,4 +140,3 @@ MACRO( ROBOCOMP_WRAP_PYTHON_UI )
     )
   ENDFOREACH( input_file )
 ENDMACRO( ROBOCOMP_WRAP_PYTHON_UI )
-

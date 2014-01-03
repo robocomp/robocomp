@@ -7,7 +7,7 @@ string(TOLOWER ${PROJECT_NAME} PROJECT_NAME_LOWER)
 #Set RoboComp directories
 set(RoboComp_LIBS_DIR ${RoboComp_SOURCE_DIR}/libs)
 set(RoboComp_CLASSES_DIR ${RoboComp_SOURCE_DIR}/classes)
-
+set(RoboComp_INTERFACES_DIR "${RoboComp_SOURCE_DIR}/interfaces/")
 ### ---[ Find universal dependencies
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules/" ${CMAKE_MODULE_PATH})
 
@@ -56,12 +56,11 @@ else(OPENMP_FOUND)
 endif()
 
 # Find QT4
-find_package(Qt4 REQUIRED)
-if (Qt4_FOUND)
+find_package(Qt4)
+if (QT4_FOUND)
   include(${QT_USE_FILE})
   add_definitions("-DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED")
-endif (Qt4_FOUND)
-
+endif (QT4_FOUND)
 
 #Find Doxygen and html help compiler if any
 find_package(Doxygen)
@@ -71,5 +70,6 @@ endif(DOXYGEN_FOUND)
 
 SUBDIRS(
 	libs
+	components
 	)
 

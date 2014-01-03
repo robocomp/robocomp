@@ -84,75 +84,56 @@ endmacro()
 
 ###############################################################################
 # Add an executable target.
-# _name The executable name.
-# _component The part of RoboComp that this library belongs to.
+# name The executable name.
+# component The part of RoboComp that this library belongs to.
 # ARGN the source files for the library.
 macro(RoboComp_ADD_EXECUTABLE name component)
     add_executable(${name} ${ARGN})
     # must link explicitly against boost.
 
     target_link_libraries(${name} ${Boost_LIBRARIES} pthread m ${CLANG_LIBRARIES})
-    #
-    # Only link if needed
-    if(WIN32 AND MSVC)
-      set_target_properties(${name} PROPERTIES LINK_FLAGS_RELEASE /OPT:REF
-                                                DEBUG_OUTPUT_NAME ${name}${CMAKE_DEBUG_POSTFIX}
-                                                RELEASE_OUTPUT_NAME ${name}${CMAKE_RELEASE_POSTFIX})
-    elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-      if(NOT CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-        set_target_properties(${name} PROPERTIES LINK_FLAGS -Wl)
-      endif()
-    elseif(__COMPILER_PATHSCALE)
-      set_target_properties(${name} PROPERTIES LINK_FLAGS -mp)
-    else()
-      set_target_properties(${name} PROPERTIES LINK_FLAGS -Wl,--as-needed)
-    endif()
-    #
-    if(USE_PROJECT_FOLDERS)
-      set_target_properties(${name} PROPERTIES FOLDER "Tools and demos")
-    endif(USE_PROJECT_FOLDERS)
 
     set(RoboComp_EXECUTABLES ${RoboComp_EXECUTABLES} ${name})
     install(TARGETS ${name} RUNTIME DESTINATION ${BIN_INSTALL_DIR}
-        COMPONENT pcl_${component})
+        COMPONENT RoboComp_${component})
 endmacro(RoboComp_ADD_EXECUTABLE)
 
 ###############################################################################
-# Get the include directory name of a subsystem - return _name if not set
-# _var Destination variable.
-# _name Name of the subsystem.
-macro(RoboComp_GET_LIB_INCLUDE_DIR _var _name)
-    GET_IN_MAP(${_var} RoboComp_LIB_INCLUDE ${_name})
-    if(NOT ${_var})
-      set (${_var} ${_name})
-    endif(NOT ${_var})
+# Get the include directory name of a subsystem - return name if not set
+# var Destination variable.
+# name Name of the subsystem.
+macro(RoboComp_GET_LIB_INCLUDE_DIR var name)
+    GET_IN_MAP(${var} RoboComp_LIB_INCLUDE ${name})
+    if(NOT ${var})
+      set (${var} ${name})
+    endif(NOT ${var})
 endmacro(RoboComp_GET_LIB_INCLUDE_DIR)
 
 ###############################################################################
 # Make one subsystem depend on one or more other subsystems, and disable it if
 # they are not being built.
-# _var The cumulative build variable. This will be set to FALSE if the
-#   dependencies are not met.
-# _name The name of the subsystem.
+# var The cumulative build variable. This will be set to FALSE if the
+#  dependencies are not met.
+# name The name of the subsystem.
 # ARGN The subsystems and external libraries to depend on.
-macro(RoboComp_LIB_DEPEND _var _name)
+macro(RoboComp_LIB_DEPEND var name)
     set(options)
     set(oneValueArgs)
     set(multiValueArgs DEPS EXT_DEPS OPT_DEPS)
     cmake_parse_arguments(LIB "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
     if(LIB_DEPS)
-        SET_IN_GLOBAL_MAP(RoboComp_LIB_DEPS ${_name} "${LIB_DEPS}")
+        SET_IN_GLOBAL_MAP(RoboComp_LIB_DEPS ${name} "${LIB_DEPS}")
     endif(LIB_DEPS)
     if(LIB_EXT_DEPS)
-        SET_IN_GLOBAL_MAP(RoboComp_LIB_EXT_DEPS ${_name} "${LIB_EXT_DEPS}")
+        SET_IN_GLOBAL_MAP(RoboComp_LIB_EXT_DEPS ${name} "${LIB_EXT_DEPS}")
     endif(LIB_EXT_DEPS)
     if(LIB_OPT_DEPS)
-        SET_IN_GLOBAL_MAP(RoboComp_LIB_OPT_DEPS ${_name} "${LIB_OPT_DEPS}")
+        SET_IN_GLOBAL_MAP(RoboComp_LIB_OPT_DEPS ${name} "${LIB_OPT_DEPS}")
     endif(LIB_OPT_DEPS)
 
-    foreach(_dep ${LIB_DEPS})
-            RoboComp_GET_LIB_INCLUDE_DIR(_include_dir ${_dep})
-            include_directories(${RoboComp_LIBS_DIR}/${_include_dir}/include)
-    endforeach(_dep)
+    foreach(dep ${LIB_DEPS})
+            RoboComp_GET_LIB_INCLUDE_DIR(include_dir ${dep})
+            include_directories(${RoboComp_LIBS_DIR}/${include_dir}/include)
+    endforeach(dep)
 
 endmacro(RoboComp_LIB_DEPEND)

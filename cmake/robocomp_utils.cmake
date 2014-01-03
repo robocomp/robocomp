@@ -13,8 +13,9 @@ macro(SET_INSTALL_DIRS)
         
     set(LIB_INSTALL_DIR "${INSTALL_DIR}/lib")
     set(INCLUDE_INSTALL_DIR "${INSTALL_DIR}/include")
-    set(DOC_INSTALL_DIR "${INSTALL_DIR}/share/doc")
+    set(DOC_INSTALL_DIR "${INSTALL_DIR}/doc")
     set(BIN_INSTALL_DIR "${INSTALL_DIR}/bin")
+    set(CONFIG_INSTALL_DIR "${INSTALL_DIR}/etc-default")
     set(PKGCFG_INSTALL_DIR "${LIB_INSTALL_DIR}/pkgconfig")
 endmacro(SET_INSTALL_DIRS)
 
