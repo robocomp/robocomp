@@ -7,7 +7,7 @@ string(TOLOWER ${PROJECT_NAME} PROJECT_NAME_LOWER)
 #Set RoboComp directories
 set(RoboComp_LIBS_DIR ${RoboComp_SOURCE_DIR}/libs)
 set(RoboComp_CLASSES_DIR ${RoboComp_SOURCE_DIR}/classes)
-set(RoboComp_INTERFACES_DIR "${RoboComp_SOURCE_DIR}/interfaces/")
+set(RoboComp_INTERFACES_DIR ${RoboComp_SOURCE_DIR}/interfaces)
 ### ---[ Find universal dependencies
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules/" ${CMAKE_MODULE_PATH})
 
