@@ -105,11 +105,15 @@ macro(RoboComp_ADD_COMPONENT component_name interfaces headers)
         
     endforeach (interface_name )
     
-    include_directories( ${RoboComp_CLASSES_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/${component_name}/src/  )
+    INCLUDE( ${QT_USE_FILE} )
+    
+    include_directories( ${RoboComp_CLASSES_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/${component_name}/src/ . ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_BINARY_DIR})
     
     QT4_WRAP_CPP( MOC_SOURCES ${headers} )
     
-    add_executable(${component_name} ${interface_files} ${MOC_SOURCES} ${ARGN})
+    #message("laser "  ${component_name} ${interface_files} ${ARGN} ${MOC_SOURCES})
+    
+    add_executable( ${component_name} ${interface_files} ${ARGN} ${MOC_SOURCES})
     
     set_target_properties( ${component_name} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${component_name}/bin/ )
     
@@ -118,6 +122,7 @@ macro(RoboComp_ADD_COMPONENT component_name interfaces headers)
     set(RoboComp_COMPONENTS ${RoboComp_COMPONENTS} ${component_name})
     install(TARGETS ${component_name} RUNTIME DESTINATION ${BIN_INSTALL_DIR}
         COMPONENT RoboComp_${component_name})
+        
 endmacro(RoboComp_ADD_COMPONENT)
 
 ###############################################################################
