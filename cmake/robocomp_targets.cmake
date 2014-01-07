@@ -115,7 +115,7 @@ macro(RoboComp_ADD_COMPONENT component_name interfaces headers)
     
     set_target_properties( ${component_name} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${component_name}/bin/ )
     
-    target_link_libraries( ${component_name} ${QT_LIBRARIES} -lIce -lIceUtil -lIceStorm -lgsl -lblas)
+    target_link_libraries( ${component_name} ${QT_LIBRARIES} -lIce -lIceUtil -lIceStorm -lgsl -lblas -lpthread )
 
     set(RoboComp_COMPONENTS ${RoboComp_COMPONENTS} ${component_name})
     install(TARGETS ${component_name} RUNTIME DESTINATION ${BIN_INSTALL_DIR}

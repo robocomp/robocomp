@@ -34,6 +34,7 @@ MACRO( ROBOCOMP_INITIALIZE )
   INCLUDE_DIRECTORIES (
     .
     ${ARGN}/classes/
+    ${ARGN}/libs/
     ${ARGN}/interfaces/
     ${CMAKE_BINARY_DIR}
     ${ICEROOT}/include/
