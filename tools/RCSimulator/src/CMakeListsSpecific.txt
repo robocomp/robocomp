@@ -1,0 +1,32 @@
+
+# Sources set
+LIST ( APPEND SOURCES
+	specificworker.cpp
+	specificworker_data.cpp
+	specificmonitor.cpp
+	servers.cpp
+)
+
+# Headers set
+LIST ( APPEND HEADERS
+	specificworker.h
+	specificmonitor.h
+)
+
+# Enable support for Bullet physics engine, if it's installed
+FIND_PACKAGE( Bullet )
+IF( BULLET_FOUND )
+	ADD_DEFINITIONS( -DUSE_BULLET )
+	INCLUDE_DIRECTORIES( ${BULLET_INCLUDE_DIR} )
+	LIST ( APPEND LIBS ${BULLET_LIBRARIES} osgbCollision )
+ENDIF()
+
+ADD_DEFINITIONS( -g -O3 -Werror -DINNER_MODEL_VERSION=2 )
+
+# IF(CMAKE_COMPILER_IS_GNUCXX)
+#     SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
+# ENDIF()
+# ADD_DEFINITIONS(
+#     -std=c++0x # Or -std=c++0x
+#     # Other flags
+# )
