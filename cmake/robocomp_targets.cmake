@@ -107,17 +107,15 @@ macro(RoboComp_ADD_COMPONENT component_name interfaces headers)
     
     INCLUDE( ${QT_USE_FILE} )
     
-    include_directories( ${RoboComp_CLASSES_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/${component_name}/src/ . ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_BINARY_DIR})
+    include_directories( ${RoboComp_CLASSES_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/${component_name}/src/ ${CMAKE_CURRENT_BINARY_DIR} )
     
     QT4_WRAP_CPP( MOC_SOURCES ${headers} )
-    
-    #message("laser "  ${component_name} ${interface_files} ${ARGN} ${MOC_SOURCES})
     
     add_executable( ${component_name} ${interface_files} ${ARGN} ${MOC_SOURCES})
     
     set_target_properties( ${component_name} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${component_name}/bin/ )
     
-    target_link_libraries( ${component_name} ${QT_LIBRARIES})
+    target_link_libraries( ${component_name} ${QT_LIBRARIES} -lIce -lIceUtil -lIceStorm -lgsl -lblas)
 
     set(RoboComp_COMPONENTS ${RoboComp_COMPONENTS} ${component_name})
     install(TARGETS ${component_name} RUNTIME DESTINATION ${BIN_INSTALL_DIR}

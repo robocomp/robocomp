@@ -59,7 +59,7 @@ endif()
 find_package(Qt4)
 if (QT4_FOUND)
   include(${QT_USE_FILE})
-  add_definitions("-DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED")
+  add_definitions( "-DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED -Wall -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB" )
 endif (QT4_FOUND)
 
 #Find Doxygen and html help compiler if any
