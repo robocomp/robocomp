@@ -36,10 +36,10 @@ ENDIF (LSICK_FOUND EQUAL 0)
 # Sources set
 SET ( SOURCES
   laserComp.cpp
-  laserI.cpp
   gazebohandler.cpp
   playerhandler.cpp
   hokuyogenerichandler.cpp
+  laserI.cpp
   hokuyohandler.cpp
   sickhandler.cpp
   $ENV{ROBOCOMP}/classes/rapplication/rapplication.cpp

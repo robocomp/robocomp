@@ -84,12 +84,48 @@ endmacro()
 
 ###############################################################################
 # Add an executable target.
+# component name of the component
+# interfaces the interfaces used by the component
+# ARGN the source files for the library.
+macro(RoboComp_ADD_COMPONENT component_name interfaces)
+
+  
+    foreach ( interface_name ${interfaces})
+      #message ("interface: " ${interface_name} )
+      #Do the dew: 
+      message(STATUS "Adding rule to generate ${interface_name}.cpp and ${interface_name}.h from ${RoboComp_INTERFACES_DIR}/${interface_name}.ice  (slice2cpp)" )
+      add_custom_command (
+          OUTPUT ${interface_name}.cpp ${interface_name}.h
+          COMMAND slice2cpp -I${RoboComp_INTERFACES_DIR} -I. ${RoboComp_INTERFACES_DIR}/${interface_name}.ice --output-dir .
+          #COMMAND /usr/bin/slice2cpp -I /home/spyke/robocomp/interfaces -I. /home/spyke/robocomp/interfaces/Laser.ice --output-dir .
+          DEPENDS ${RoboComp_INTERFACES_DIR}/${interface_name}.ice
+          COMMENT "Generating ${interface_name}.cpp and ${interface_name}.h from ${interface_name}.ice"
+        )
+      set(interface_files ${interface_files} ${interface_name}.cpp )
+        
+    endforeach (interface_name )
+    
+    include_directories( ${RoboComp_CLASSES_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/${component_name}/src/  )
+    
+    
+    add_executable(${component_name} ${interface_files} ${ARGN})
+    
+    set_target_properties( ${component_name} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${component_name}/bin/ )
+    
+    target_link_libraries( ${component_name} ${QT_LIBRARIES})
+
+    set(RoboComp_COMPONENTS ${RoboComp_COMPONENTS} ${component_name})
+    install(TARGETS ${component_name} RUNTIME DESTINATION ${BIN_INSTALL_DIR}
+        COMPONENT RoboComp_${component_name})
+endmacro(RoboComp_ADD_COMPONENT)
+
+###############################################################################
+# Add an executable target.
 # name The executable name.
 # component The part of RoboComp that this library belongs to.
 # ARGN the source files for the library.
 macro(RoboComp_ADD_EXECUTABLE name component)
     add_executable(${name} ${ARGN})
-    # must link explicitly against boost.
 
     target_link_libraries(${name} ${Boost_LIBRARIES} pthread m ${CLANG_LIBRARIES})
 
