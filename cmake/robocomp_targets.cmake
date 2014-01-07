@@ -87,7 +87,7 @@ endmacro()
 # component name of the component
 # interfaces the interfaces used by the component
 # ARGN the source files for the library.
-macro(RoboComp_ADD_COMPONENT component_name interfaces)
+macro(RoboComp_ADD_COMPONENT component_name interfaces headers)
 
   
     foreach ( interface_name ${interfaces})
@@ -107,8 +107,9 @@ macro(RoboComp_ADD_COMPONENT component_name interfaces)
     
     include_directories( ${RoboComp_CLASSES_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/${component_name}/src/  )
     
+    QT4_WRAP_CPP( MOC_SOURCES ${headers} )
     
-    add_executable(${component_name} ${interface_files} ${ARGN})
+    add_executable(${component_name} ${interface_files} ${MOC_SOURCES} ${ARGN})
     
     set_target_properties( ${component_name} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${component_name}/bin/ )
     
