@@ -1,4 +1,4 @@
-### ---[ RoboComp global CMake
+# RoboComp global CMake
 cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 
 project(RoboComp)
@@ -8,10 +8,10 @@ string(TOLOWER ${PROJECT_NAME} PROJECT_NAME_LOWER)
 set(RoboComp_LIBS_DIR ${RoboComp_SOURCE_DIR}/libs)
 set(RoboComp_CLASSES_DIR ${RoboComp_SOURCE_DIR}/classes)
 set(RoboComp_INTERFACES_DIR ${RoboComp_SOURCE_DIR}/interfaces)
-### ---[ Find universal dependencies
+# Find universal dependencies
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules/" ${CMAKE_MODULE_PATH})
 
-# ---[ Release/Debug specific flags
+# Release/Debug specific flags
 if(CMAKE_BUILD_TYPE STREQUAL "Release" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
   add_definitions("-DBOOST_DISABLE_ASSERTS -DEIGEN_NO_DEBUG")
 endif()
@@ -56,11 +56,21 @@ else(OPENMP_FOUND)
 endif()
 
 # Find QT4
-find_package(Qt4)
+find_package(Qt4 REQUIRED)
 if (QT4_FOUND)
   include(${QT_USE_FILE})
   add_definitions( "-DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED -Wall -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB" )
 endif (QT4_FOUND)
+
+# find Bullet	
+find_package( Bullet )
+if(BULLET_FOUND)
+	message("Bullet was FOUND, innermodel2 with physics support will be built")
+	add_deffinitions( -DUSE_BULLET )
+	include_directories( ${BULLET_INCLUDE_DIR} )
+else (BULLET_FOUND)
+	message("Bullet was NOT FOUND, only the basic innermodel will be build, NO PHYSICS SUPPORT")
+endif(BULLET_FOUND)
 
 #Find Doxygen and html help compiler if any
 find_package(Doxygen)
@@ -71,5 +81,8 @@ endif(DOXYGEN_FOUND)
 SUBDIRS(
 	libs
 	components
+# 	tools
 	)
+	
+
 

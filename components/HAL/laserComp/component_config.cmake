@@ -1,10 +1,10 @@
-SET(laser_interfaces
-     Laser;
+set(laser_interfaces
+     Laser
      DifferentialRobot
      )
      
 
-SET(laser_src
+set(laser_src
   laserComp/src/laserComp.cpp
   laserComp/src/laserI.cpp
   laserComp/src/gazebohandler.cpp
@@ -16,7 +16,7 @@ SET(laser_src
   ${RoboComp_SOURCE_DIR}/classes/q4serialport/q4serialport.cpp 
   )
   
-SET (laser_headers
+set(laser_headers
   laserComp/src/laserI.h
   laserComp/src/generichandler.h
   laserComp/src/hokuyogenerichandler.h

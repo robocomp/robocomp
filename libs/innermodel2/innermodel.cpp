@@ -17,7 +17,7 @@
  *    along with RoboComp.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "innermodel.h"
+#include <innermodel/innermodel.h>
 
 // Qt includes
 #include <QQueue>
