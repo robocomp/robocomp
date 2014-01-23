@@ -80,7 +80,7 @@ endif(DOXYGEN_FOUND)
 
 SUBDIRS(
 	libs
-	components
+#	components
 # 	tools
 	)
 	
