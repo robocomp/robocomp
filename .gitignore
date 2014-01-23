@@ -52,7 +52,6 @@ ui_*.py
 ehthumbs.db
 Thumbs.db
 
-Speech*
 fastdownward
 
 # Kdevelop files #
@@ -68,6 +67,7 @@ fastdownward
 RoboCompDSL
 RCDSLEditor
 build/
+components/
 
 # Image and other media files #
 ###############################
