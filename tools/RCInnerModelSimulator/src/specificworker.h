@@ -24,6 +24,7 @@
  
 // RoboComp includes
 #include <innermodel/innermodel.h>
+#include <innermodel/innermodelviewer.h>
 #include <InnerModelManager.h>
 #include <osgviewer/osgview.h>
 

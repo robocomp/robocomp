@@ -27,6 +27,7 @@
 #include <Ice/Ice.h>
 #include <Laser.h>
 #include <innermodel/innermodel.h>
+#include <osgviewer/osgview.h>
 
 // Simulator includes
 #include "config.h"
