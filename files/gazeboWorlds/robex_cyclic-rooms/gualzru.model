@@ -1,0 +1,235 @@
+<?xml version="1.0"?>
+
+<model:physical name="default_gualzru_model"
+  xmlns:xi="http://www.w3.org/2001/XInclude"
+  xmlns:model="http://playerstage.sourceforge.net/gazebo/xmlschema/#model" 
+  xmlns:sensor="http://playerstage.sourceforge.net/gazebo/xmlschema/#sensor" 
+  xmlns:body="http://playerstage.sourceforge.net/gazebo/xmlschema/#body" 
+  xmlns:geom="http://playerstage.sourceforge.net/gazebo/xmlschema/#geom" 
+  xmlns:joint="http://playerstage.sourceforge.net/gazebo/xmlschema/#joint" 
+  xmlns:controller="http://playerstage.sourceforge.net/gazebo/xmlschema/#joint" 
+  xmlns:interface="http://playerstage.sourceforge.net/gazebo/xmlschema/#joint" 
+  >
+
+<xyz>0 0 0.0</xyz>
+<rpy>0.0 0.0 0.0</rpy>
+
+<canonicalBody>chassis_body</canonicalBody>
+
+<body:box name="chassis_body">
+  <xyz>-0.1 0 0.11</xyz>
+  <rpy>0.0 0.0 0.0</rpy>
+  <geom:box name="chassis_geom">
+    <xyz>0 0 -0.03</xyz>
+      <size>0.6 0.6 0.1</size>
+    <mass>20.0</mass>
+    <mu1>1</mu1>
+    <visual>
+      <size>0.6 0.6 0.1</size>
+      <mesh>unit_box</mesh>
+      <material>Gazebo/White</material>
+    </visual>
+    <!-- Main mesh -->
+    <!--<visual>
+      <rpy>90 0 180</rpy>
+      <size>0.6 1.6 0.6</size>
+        <mesh>Gualzru.mesh</mesh>
+      <material>Gazebo/White</material>
+	</visual>-->
+    <!-- Screen       These visuals should be higher when using the actual mesh -->   
+    <visual> <rpy>0 -20 0</rpy> <xyz>0.082  -0.0087 0.9330</xyz> <size>0.006 0.208 0.152</size> <mesh>unit_box</mesh> <material>Gazebo/Black</material> </visual>
+    <!-- Right eye -->
+    <visual> <rpy>0 -20 0</rpy> <xyz>0.07   -0.108  1.2470</xyz> <size>0.05 0.03 0.07</size> <mesh>unit_sphere</mesh> <material>Gazebo/Green</material> </visual>
+    <visual> <rpy>0 -20 0</rpy> <xyz>0.0675 -0.108  1.2545</xyz> <size>0.05 0.03 0.07</size> <mesh>unit_sphere</mesh> <material>Gazebo/Green</material> </visual>
+    <visual> <rpy>0 -20 0</rpy> <xyz>0.065  -0.108  1.2620</xyz> <size>0.05 0.03 0.07</size> <mesh>unit_sphere</mesh> <material>Gazebo/Green</material> </visual>
+    <visual> <rpy>0 -20 0</rpy> <xyz>0.0625 -0.108  1.2695</xyz> <size>0.05 0.03 0.07</size> <mesh>unit_sphere</mesh> <material>Gazebo/Green</material> </visual>
+    <visual> <rpy>0 -20 0</rpy> <xyz>0.06   -0.108  1.2770</xyz> <size>0.05 0.03 0.07</size> <mesh>unit_sphere</mesh> <material>Gazebo/Green</material> </visual>
+    <visual> <rpy>0 -20 0</rpy> <xyz>0.0575 -0.108  1.2820</xyz> <size>0.05 0.03 0.07</size> <mesh>unit_sphere</mesh> <material>Gazebo/Green</material> </visual>
+    <visual> <rpy>0 -20 0</rpy> <xyz>0.055  -0.108  1.2870</xyz> <size>0.05 0.03 0.07</size> <mesh>unit_sphere</mesh> <material>Gazebo/Green</material> </visual>
+    <visual> <rpy>0 -20 0</rpy> <xyz>0.0525 -0.108  1.2920</xyz> <size>0.05 0.03 0.07</size> <mesh>unit_sphere</mesh> <material>Gazebo/Green</material> </visual>
+    <visual> <rpy>0 -20 0</rpy> <xyz>0.05   -0.108  1.2970</xyz> <size>0.05 0.03 0.07</size> <mesh>unit_sphere</mesh> <material>Gazebo/Green</material> </visual>
+    <!-- Left eye -->
+    <visual> <rpy>0 -20 0</rpy> <xyz>0.07   0.092  1.2470</xyz> <size>0.05 0.03 0.07</size> <mesh>unit_sphere</mesh> <material>Gazebo/Green</material> </visual>
+    <visual> <rpy>0 -20 0</rpy> <xyz>0.0675 0.092  1.2545</xyz> <size>0.05 0.03 0.07</size> <mesh>unit_sphere</mesh> <material>Gazebo/Green</material> </visual>
+    <visual> <rpy>0 -20 0</rpy> <xyz>0.065  0.092  1.2620</xyz> <size>0.05 0.03 0.07</size> <mesh>unit_sphere</mesh> <material>Gazebo/Green</material> </visual>
+    <visual> <rpy>0 -20 0</rpy> <xyz>0.0625 0.092  1.2695</xyz> <size>0.05 0.03 0.07</size> <mesh>unit_sphere</mesh> <material>Gazebo/Green</material> </visual>
+    <visual> <rpy>0 -20 0</rpy> <xyz>0.06   0.092  1.2770</xyz> <size>0.05 0.03 0.07</size> <mesh>unit_sphere</mesh> <material>Gazebo/Green</material> </visual>
+    <visual> <rpy>0 -20 0</rpy> <xyz>0.0575 0.092  1.2820</xyz> <size>0.05 0.03 0.07</size> <mesh>unit_sphere</mesh> <material>Gazebo/Green</material> </visual>
+    <visual> <rpy>0 -20 0</rpy> <xyz>0.055  0.092  1.2870</xyz> <size>0.05 0.03 0.07</size> <mesh>unit_sphere</mesh> <material>Gazebo/Green</material> </visual>
+    <visual> <rpy>0 -20 0</rpy> <xyz>0.0525 0.092  1.2920</xyz> <size>0.05 0.03 0.07</size> <mesh>unit_sphere</mesh> <material>Gazebo/Green</material> </visual>
+    <visual> <rpy>0 -20 0</rpy> <xyz>0.05   0.092  1.2970</xyz> <size>0.05 0.03 0.07</size> <mesh>unit_sphere</mesh> <material>Gazebo/Green</material> </visual>
+    <!-- Mouth -->
+    <visual> <rpy>0. 0 0</rpy> <xyz>0.1100 -0.0087 1.1600</xyz> <size>0.02 0.15 0.05</size> <mesh>unit_sphere</mesh> <material>Gazebo/Green</material> </visual>
+    <visual> <rpy>0. 0 0</rpy> <xyz>0.1100 -0.0087 1.1550</xyz> <size>0.02 0.13 0.05</size> <mesh>unit_sphere</mesh> <material>Gazebo/Green</material> </visual>
+    <visual> <rpy>0. 0 0</rpy> <xyz>0.1100 -0.0087 1.1520</xyz> <size>0.02 0.11 0.05</size> <mesh>unit_sphere</mesh> <material>Gazebo/Green</material> </visual>
+    <!-- Logo -->
+    <visual> <rpy>0. -8 0</rpy> <xyz>0.3 -0.0087 0.1</xyz> <size>0.02 0.47 0.12</size> <mesh>unit_box</mesh> <material>Gazebo/RoboLab</material> </visual>
+  </geom:box>
+</body:box>
+
+<body:cylinder name="left_wheel">
+  <xyz>0.12 -0.17 0.075</xyz>
+  <rpy>0 90 90</rpy>
+  <geom:cylinder name="left_wheel_geom">
+    <size>0.075 0.05</size>
+    <mass>0.5</mass>
+    <mu1>1.5</mu1>
+    <mu2>1.5</mu2>
+    <visual>
+      <rpy>0 0 0</rpy>
+      <size>0.15 0.15 0.05</size>
+      <mesh>unit_cylinder</mesh>
+      <material>Gazebo/Black</material>
+    </visual>
+  </geom:cylinder>
+</body:cylinder>
+
+<body:cylinder name="right_wheel">
+  <xyz>0.12 0.17 0.075</xyz>
+  <rpy>0 90 90</rpy>
+  <geom:cylinder name="right_wheel_geom">
+    <size>0.075 0.05</size>
+    <mass>0.5</mass>
+    <mu1>1.5</mu1>
+    <mu2>1.5</mu2>
+    <visual>
+      <rpy>0 0 0</rpy>
+      <size>0.15 0.15 0.05</size>
+      <mesh>unit_cylinder</mesh>
+      <material>Gazebo/Black</material>
+    </visual>
+  </geom:cylinder>
+</body:cylinder>
+
+<body:sphere name="castor_body">
+  <xyz>-0.350 0 0.04</xyz>
+  <rpy>0 0 0</rpy>
+  <geom:sphere name="castor_geom">
+    <size>0.04</size>
+    <mass>0.5</mass>
+    <mu1>0.1</mu1>
+    <visual>
+      <scale>0.04 0.04 0.04</scale>
+      <mesh>unit_sphere</mesh>
+      <material>Gazebo/Black</material>
+    </visual>
+  </geom:sphere>
+</body:sphere>
+
+<joint:hinge name="left_wheel_hinge">
+  <body1>left_wheel</body1>
+  <body2>chassis_body</body2>
+  <anchor>left_wheel</anchor>
+  <anchorOffset>0 0 0.0</anchorOffset>
+  <axis>0 1 0</axis>
+  <erp>0.8</erp>
+  <cfm>10e-5</cfm>
+</joint:hinge>
+
+<joint:hinge name="right_wheel_hinge">
+  <body1>right_wheel</body1>
+  <body2>chassis_body</body2>
+  <anchor>right_wheel</anchor>
+  <anchorOffset>0 0 0.0</anchorOffset>
+  <axis>0 1 0</axis>
+  <erp>0.8</erp>
+  <cfm>10e-5</cfm>
+</joint:hinge>
+
+<joint:ball name="ball_joint">
+  <body1>castor_body</body1>
+  <body2>chassis_body</body2>
+  <anchor>castor_body</anchor>
+  <erp>0.8</erp>
+  <cfm>10e-5</cfm>
+</joint:ball>
+
+<controller:differential_position2d name="controller1">
+  <leftJoint>left_wheel_hinge</leftJoint>
+  <rightJoint>right_wheel_hinge</rightJoint>
+  <wheelSeparation>0.39</wheelSeparation>
+  <wheelDiameter>0.15</wheelDiameter>
+  <torque>5.5</torque>
+  <interface:position name="position_iface_0"/>
+</controller:differential_position2d>
+
+<!--<model:physical name="laser">
+  <xyz>0.15 0 0.53</xyz>
+  <rpy>0.0 0.0 0.0</rpy>
+<attach>
+<parentBody>chassis_body</parentBody>
+<myBody>laser_body</myBody>
+</attach>
+</model:physical>-->
+
+<model:physical name="laser">
+  <xyz>0.15 0 0.53</xyz>
+  <rpy>0.0 0.0 0.0</rpy>
+  <include embedded="true">
+    <xi:include href="hokuyo.model" />
+  </include>
+</model:physical>
+
+<model:physical name="weight1">
+  <xyz>-0.25 0.2 0.023</xyz>
+  <rpy>0.0 0.0 0.0</rpy>
+  <include embedded="true">
+    <xi:include href="weight.model" />
+  </include>
+</model:physical>
+<model:physical name="weight2">
+  <xyz>-0.25 -0.2 0.023</xyz>
+  <rpy>0.0 0.0 0.0</rpy>
+  <include embedded="true">
+    <xi:include href="weight.model" />
+  </include>
+</model:physical>
+<model:physical name="weight3">
+  <xyz>-0.1 0.2 0.023</xyz>
+  <rpy>0.0 0.0 0.0</rpy>
+  <include embedded="true">
+    <xi:include href="weight.model" />
+  </include>
+</model:physical>
+<model:physical name="weight4">
+  <xyz>-0.1 -0.2 0.023</xyz>
+  <rpy>0.0 0.0 0.0</rpy>
+  <include embedded="true">
+    <xi:include href="weight.model" />
+  </include>
+</model:physical>
+
+<model:physical name="laser2">
+  <xyz>0.15 0 0.53</xyz>
+  <rpy>0.0 0.0 180.0</rpy>
+  <include embedded="true">
+    <xi:include href="hokuyo2.model" />
+  </include>
+</model:physical>
+
+
+<model:physical name="stereocam_model">
+ <xyz>0 0 1</xyz>
+ <rpy>0 0 0</rpy>
+ <body:empty name="stereocam_body">
+  <sensor:stereocamera name="stereocam_sensor">
+   <imageSize>640 480</imageSize>
+   <hfov>60</hfov>
+   <nearClip>0.1</nearClip>
+   <farClip>10</farClip>
+   <saveFrames>false</saveFrames>
+   <saveFramePath>frames</saveFramePath>
+   <baseline>0.2</baseline>
+   <controller:stereocamera name="stereo_camera_controller">
+    <interface:stereocamera name="stereo_iface_0" />
+    <interface:camera name="camera_iface_0" />
+    <interface:camera name="camera_iface_1" />
+    <leftcamera>camera_iface_0</leftcamera>
+    <rightcamera>camera_iface_1</rightcamera>
+   </controller:stereocamera>
+  </sensor:stereocamera>
+ </body:empty>
+</model:physical>
+
+
+</model:physical>

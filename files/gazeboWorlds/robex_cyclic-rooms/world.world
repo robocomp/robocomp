@@ -1,0 +1,391 @@
+<?xml version="1.0"?>
+
+<gazebo:world
+  xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:gazebo="http://playerstage.sourceforge.net/gazebo/xmlschema/#gz" xmlns:model="http://playerstage.sourceforge.net/gazebo/xmlschema/#model" xmlns:sensor="http://playerstage.sourceforge.net/gazebo/xmlschema/#sensor" xmlns:window="http://playerstage.sourceforge.net/gazebo/xmlschema/#window" xmlns:param="http://playerstage.sourceforge.net/gazebo/xmlschema/#param" xmlns:body="http://playerstage.sourceforge.net/gazebo/xmlschema/#body" xmlns:geom="http://playerstage.sourceforge.net/gazebo/xmlschema/#geom" xmlns:joint="http://playerstage.sourceforge.net/gazebo/xmlschema/#joint" xmlns:interface="http://playerstage.sourceforge.net/gazebo/xmlschema/#interface" xmlns:ui="http://playerstage.sourceforge.net/gazebo/xmlschema/#ui" xmlns:rendering="http://playerstage.sourceforge.net/gazebo/xmlschema/#rendering" xmlns:controller="http://playerstage.sourceforge.net/gazebo/xmlschema/#controller" xmlns:physics="http://playerstage.sourceforge.net/gazebo/xmlschema/#physics" >
+
+  <!--
+    ..
+    ..  M  I  S  C
+    ..
+    -->
+  <verbosity>5</verbosity>
+  <physics:ode>
+    <stepTime>0.015</stepTime>
+    <gravity>0 0 -19.8</gravity>
+    <cfm>10e-5</cfm>
+    <erp>0.3</erp>
+    <updateRate>-1</updateRate>
+  </physics:ode>
+  <rendering:gui>
+    <type>fltk</type>
+    <size>800 600</size>
+    <updateRate>-1</updateRate>
+    <pos>10 10</pos>
+    <frames>
+      <row height="100%">
+        <camera width="100%">
+          <xyz>0 0 10</xyz>
+          <rpy>180 90 180</rpy>
+        </camera>
+      </row>
+    </frames>
+  </rendering:gui>
+
+  <rendering:ogre>
+    <ambient>0.5 0.5 0.5 1.0</ambient>
+    <sky>
+      <material>Gazebo/CloudySky</material>
+    </sky>
+    <grid>false</grid>
+  </rendering:ogre>
+
+  <!-- P L A N E -->
+  <model:physical name="plane1_model">
+    <xyz>0 0 0</xyz>
+    <rpy>0 0 0</rpy>
+    <static>true</static>
+    <body:plane name="plane1_body">
+      <geom:plane name="plane1_geom">
+      <normal>0 0 1</normal>
+      <size>200 200</size>
+      <segments>10 10</segments>
+      <uvTile>1000 1000</uvTile>
+      <material>Gazebo/Gold</material>
+      <surface>
+        <mu1>10</mu1>
+        </surface>
+      </geom:plane>
+    </body:plane>
+  </model:physical>
+
+
+  <!-- R  O  B  O  T -->
+  <model:physical name="gualzru_model1">
+    <xyz>1 1 0</xyz>
+    <static>false</static>
+    <include embedded="true"><xi:include href="gualzru.model" /></include>
+  </model:physical>x
+
+  <!-- L  I  G  H  T -->
+  <model:renderable name="directional_white1">
+    <xyz>0 0.0 38.0</xyz>
+    <light>
+      <type>spot</type>
+      <spotCone>1000 1000 100</spotCone>
+      <direction>-0.1 0 -0.9</direction>
+      <diffuseColor>0.8 0.8 0.8</diffuseColor>
+      <specularColor>0.1 0.1 0.1</specularColor>
+      <range>40</range>
+      <attenuation>1 0 0</attenuation>
+    </light>
+  </model:renderable>
+
+
+  <!--
+    ..
+    ..  R  I  N  G
+    ..
+    -->
+  <model:physical name="box1_model">
+    <xyz>0 0 0.5</xyz>
+    <rpy>0.0 0.0 0.0</rpy>
+    <static>true</static>
+    <body:box name="box1_body">
+      <geom:box name="box1_geom"><size>2.3 0.05 1</size><mass>100.0</mass><visual><size>2.3 0.05  1</size><mesh>unit_box</mesh><material>Custom/Gotele</material><uvTile>16 8</uvTile></visual></geom:box>
+    </body:box>
+  </model:physical>
+  <model:physical name="box2_model">
+    <xyz>0 0 0.5</xyz>
+    <rpy>0.0 0.0 90.0</rpy>
+    <static>true</static>
+    <body:box name="box2_body">
+      <geom:box name="box2_geom"><size>2.3 0.05 1</size><mass>100.0</mass><visual><size>2.3 0.05 1</size><mesh>unit_box</mesh><material>Custom/Gotele</material><uvTile>16 8</uvTile></visual></geom:box>
+    </body:box>
+  </model:physical>
+  <model:physical name="box3_model">
+    <xyz>4 0 0.5</xyz>
+    <rpy>0.0 0.0 90.0</rpy>
+    <static>true</static>
+    <body:box name="box3_body">
+      <geom:box name="box3_geom"><size>8 0.05 1</size><mass>100.0</mass><visual><size>8 0.05  1</size><mesh>unit_box</mesh><material>Custom/Gotele</material><uvTile>16 8</uvTile></visual></geom:box>
+    </body:box>
+  </model:physical>
+  <model:physical name="box4_model">
+    <xyz>-4 0 0.5</xyz>
+    <rpy>0.0 0.0 90.0</rpy>
+    <static>true</static>
+    <body:box name="box4_body">
+      <geom:box name="box4_geom"><size>8 0.05 1</size><mass>100.0</mass><visual><size>8 0.05 1</size><mesh>unit_box</mesh><material>Custom/Gotele</material><uvTile>16 8</uvTile></visual></geom:box>
+    </body:box>
+  </model:physical>
+  <model:physical name="box5_model">
+    <xyz>0 4 0.5</xyz>
+    <rpy>0.0 0.0 0.0</rpy>
+    <static>true</static>
+    <body:box name="box5_body">
+      <geom:box name="box5_geom"><size>8 0.05 1</size><mass>100.0</mass><visual><size>8 0.05  1</size><mesh>unit_box</mesh><material>Custom/Gotele</material><uvTile>16 8</uvTile></visual></geom:box>
+    </body:box>
+  </model:physical>
+  <model:physical name="box6_model">
+    <xyz>0 -4 0.5</xyz>
+    <rpy>0.0 0.0 0.0</rpy>
+    <static>true</static>
+    <body:box name="box6_body">
+      <geom:box name="box6_geom"><size>8 0.05 1</size><mass>100.0</mass><visual><size>8 0.05 1</size><mesh>unit_box</mesh><material>Custom/Gotele</material><uvTile>16 8</uvTile></visual></geom:box>
+    </body:box>
+  </model:physical>
+
+  <model:physical name="box7_model">
+    <xyz>3.175 0 0.5</xyz>
+    <rpy>0.0 0.0 0.0</rpy>
+    <static>true</static>
+    <body:box name="box7_body">
+      <geom:box name="box7_geom"><size>1.65 0.05 1</size><mass>100.0</mass><visual><size>1.65 0.05  1</size><mesh>unit_box</mesh><material>Custom/Gotele</material><uvTile>16 8</uvTile></visual></geom:box>
+    </body:box>
+  </model:physical>
+  <model:physical name="box8_model">
+    <xyz>0 3.175 0.5</xyz>
+    <rpy>0.0 0.0 90.0</rpy>
+    <static>true</static>
+    <body:box name="box8_body">
+      <geom:box name="box8_geom"><size>1.65 0.05 1</size><mass>100.0</mass><visual><size>1.65 0.05 1</size><mesh>unit_box</mesh><material>Custom/Gotele</material><uvTile>16 8</uvTile></visual></geom:box>
+    </body:box>
+  </model:physical>
+  <model:physical name="box9_model">
+    <xyz>-3.175 0 0.5</xyz>
+    <rpy>0.0 0.0 0.0</rpy>
+    <static>true</static>
+    <body:box name="box9_body">
+      <geom:box name="box9_geom"><size>1.65 0.05 1</size><mass>100.0</mass><visual><size>1.65 0.05  1</size><mesh>unit_box</mesh><material>Custom/Gotele</material><uvTile>16 8</uvTile></visual></geom:box>
+    </body:box>
+  </model:physical>
+  <model:physical name="box10_model">
+    <xyz>0 -3.175 0.5</xyz>
+    <rpy>0.0 0.0 90.0</rpy>
+    <static>true</static>
+    <body:box name="box10_body">
+      <geom:box name="box10_geom"><size>1.65 0.05 1</size><mass>100.0</mass><visual><size>1.65 0.05 1</size><mesh>unit_box</mesh><material>Custom/Gotele</material><uvTile>16 8</uvTile></visual></geom:box>
+    </body:box>
+  </model:physical>
+
+
+
+
+<!--
+    ..
+    ..  OBSTACLES
+    ..
+    -->
+  <model:physical name="obstacle_Avr">    <!-- North-East room -->
+    <xyz>3.96 -1 0.4</xyz>
+    <static>true</static>
+    <body:box name="obstacle_Avr_body">
+      <geom:box name="obstacle_Avr_geom">
+        <size>0.03 0.6 0.8</size>
+        <mass>0.6</mass>
+        <visual><size>0.03 0.6 0.8</size><mesh>unit_box</mesh><material>Custom/Avr</material></visual>
+      </geom:box>
+    </body:box>
+  </model:physical>
+  <model:physical name="obstacle_Biblia">
+    <xyz>3.96 -3 0.4</xyz>
+    <static>true</static>
+    <body:box name="obstacle_Biblia_body">
+      <geom:box name="obstacle_Biblia_geom">
+        <size>0.03 0.5 0.8</size>
+        <mass>0.6</mass>
+        <visual><size>0.03 0.5 0.8</size><mesh>unit_box</mesh><material>Custom/Biblia</material></visual>
+      </geom:box>
+    </body:box>
+  </model:physical>
+  <model:physical name="PRML">
+    <rpy>0 0 90</rpy>
+    <xyz>3 -3.96 0.4</xyz>
+    <static>true</static>
+    <body:box name="prml_body">
+      <geom:box name="prml_geom">
+        <size>0.03 0.5 0.8</size>
+        <mass>0.6</mass>
+        <visual><size>0.03 0.5 0.8</size><mesh>unit_box</mesh><material>Custom/PRML</material></visual>
+      </geom:box>
+    </body:box>
+  </model:physical>
+  <model:physical name="obstacle_Monitor">
+    <rpy>0 0 90</rpy>
+    <xyz>1 -3.96 0.4</xyz>
+    <static>true</static>
+    <body:box name="obstacle_Monitor_body">
+      <geom:box name="obstacle_Monitor_geom">
+        <size>0.03 1.2 0.8</size>
+        <mass>0.6</mass>
+        <visual><size>0.03 1.2 0.8</size><mesh>unit_box</mesh><material>Custom/Monitor</material></visual>
+      </geom:box>
+    </body:box>
+  </model:physical>
+
+	<model:physical name="obstacle_Ceraeles">  <!-- North-West room -->
+    <xyz>3.96 3 0.4</xyz>
+    <static>true</static>
+    <body:box name="obstacle_Cereales_body">
+      <geom:box name="obstacle_Cereales_geom">
+        <size>0.03 0.6 0.8</size>
+        <mass>0.6</mass>
+        <visual><size>0.03 0.6 0.8</size><mesh>unit_box</mesh><material>Custom/Cereales</material></visual>
+      </geom:box>
+    </body:box>
+  </model:physical>
+  <model:physical name="ITCV">
+    <rpy>0 0 0</rpy>
+    <xyz>3.96 1 0.4</xyz>
+    <static>true</static>
+    <body:box name="itcv_body">
+      <geom:box name="itcv_geom">
+        <size>0.03 0.6 0.8</size>
+        <mass>0.6</mass>
+        <visual><size>0.03 0.6 0.8</size><mesh>unit_box</mesh><material>Custom/ITCV</material></visual>
+      </geom:box>
+    </body:box>
+  </model:physical>
+  <model:physical name="obstacle_Ositos">
+    <rpy>0 0 90</rpy>
+    <xyz>3 3.96 0.4</xyz>
+    <static>true</static>
+    <body:box name="obstacle_Ositos_body">
+      <geom:box name="obstacle_Ositos_geom">
+        <size>0.03 0.6 0.8</size>
+        <mass>0.6</mass>
+        <visual><size>0.03 0.6 0.8</size><mesh>unit_box</mesh><material>Custom/Ositos</material></visual>
+      </geom:box>
+    </body:box>
+  </model:physical>
+  <model:physical name="obstacle_Nesquik">
+    <rpy>0 0 90</rpy>
+    <xyz>0.6 3.4 0.4</xyz>
+    <static>true</static>
+    <body:box name="obstacle_Nesquik_body">
+      <geom:box name="obstacle_Nesquik_geom">
+        <size>1.2 1.2 1</size>
+        <mass>0.6</mass>
+        <visual><size>1.2 1.2 1</size><mesh>unit_box</mesh><material>Custom/Nesquik</material></visual>
+      </geom:box>
+    </body:box>
+  </model:physical>
+
+
+
+  <model:physical name="obstacle_Compo">   <!-- South-East room -->
+    <xyz>-3.96 -3.3 0.35</xyz>
+    <static>true</static>
+    <body:box name="obstacle_Compo_body">
+      <geom:box name="obstacle_Compo_geom">
+        <size>0.03 0.7 0.7</size>
+        <mass>0.6</mass>
+        <visual><size>0.03 0.7 0.7</size><mesh>unit_box</mesh><material>Custom/Compo</material></visual>
+      </geom:box>
+    </body:box>
+  </model:physical>
+  <model:physical name="obstacle_Cosa">
+    <xyz>-3.96 -1 0.35</xyz>
+    <static>true</static>
+    <body:box name="obstacle_Cosa_body">
+      <geom:box name="obstacle_Cosa_geom">
+        <size>0.03 0.7 0.7</size>
+        <mass>0.6</mass>
+        <visual><size>0.03 0.7 0.7</size><mesh>unit_box</mesh><material>Custom/Cosa</material></visual>
+      </geom:box>
+    </body:box>
+  </model:physical>
+  <model:physical name="obstacle_Estrella">
+    <rpy>0 0 90</rpy>
+    <xyz>-1 -3.96 0.4</xyz>
+    <static>true</static>
+    <body:box name="obstacle_Estrella_body">
+      <geom:box name="obstacle_Estrella_geom">
+        <size>0.3 0.8 1</size>
+        <mass>0.6</mass>
+        <visual><size>0.3 0.8 1</size><mesh>unit_box</mesh><material>Custom/Estrella</material></visual>
+      </geom:box>
+    </body:box>
+  </model:physical>
+  <model:physical name="obstacle_Papeles">
+    <rpy>0 0 90</rpy>
+    <xyz>-3 -3.96 0.4</xyz>
+    <static>true</static>
+    <body:box name="obstacle_Papeles_body">
+      <geom:box name="obstacle_Papeles_geom">
+        <size>0.03 0.6 0.8</size>
+        <mass>0.6</mass>
+        <visual><size>0.03 0.6 0.8</size><mesh>unit_box</mesh><material>Custom/Papeles</material></visual>
+      </geom:box>
+    </body:box>
+  </model:physical>
+
+
+
+  <model:physical name="obstacle_Cruz">  <!-- South-West room -->
+    <xyz>-3.96 1 0.3</xyz>
+    <static>true</static>
+    <body:box name="obstacle_Cruz_body">
+      <geom:box name="obstacle_Cruz_geom">
+        <size>0.03 0.7 0.35</size>
+        <mass>0.6</mass>
+        <visual><size>0.03 0.7 0.7</size><mesh>unit_box</mesh><material>Custom/Cruz</material></visual>
+      </geom:box>
+    </body:box>
+  </model:physical>
+  <model:physical name="CD_Badajoz">
+    <rpy>0 0 0</rpy>
+    <xyz>-3.96 3 0.5</xyz>
+    <static>true</static>
+    <body:cylinder name="cdbadajoz_body">
+      <geom:cylinder name="cdbadajoz_geom">
+        <size>2 1</size>
+        <mass>0.6</mass>
+         <visual><size>4 4 1</size><mesh>unit_cylinder</mesh><material>Custom/Badajoz</material></visual>
+      </geom:cylinder>
+    </body:cylinder>
+  </model:physical>
+  <model:physical name="obstacle_Kemix">
+    <rpy>0 0 90</rpy>
+    <xyz>-1.4 3.96 0.4</xyz>
+    <static>true</static>
+    <body:box name="obstacle_Kemix_body">
+      <geom:box name="obstacle_Kemix_geom">
+        <size>0.03 0.6 0.8</size>
+        <mass>0.6</mass>
+        <visual><size>0.03 0.6 0.8</size><mesh>unit_box</mesh><material>Custom/Kemix</material></visual>
+      </geom:box>
+    </body:box>
+  </model:physical>
+  <model:physical name="obstacle_MVG">
+    <rpy>0 0 90</rpy>
+    <xyz>-3 3.96 0.4</xyz>
+    <static>true</static>
+    <body:box name="obstacle_MVG_body">
+      <geom:box name="obstacle_MVG_geom">
+        <size>0.03 0.6 0.8</size>
+        <mass>0.6</mass>
+        <visual><size>0.03 0.6 0.8</size><mesh>unit_box</mesh><material>Custom/MVG</material></visual>
+      </geom:box>
+    </body:box>
+  </model:physical>
+
+
+
+
+  <model:physical name="obstacle_b">
+    <rpy>0 0 0</rpy>
+    <xyz>0.25 -0.25 0.183</xyz>
+    <static>true</static>
+    <body:box name="obstacle_b_body">
+      <geom:box name="obstacle_b_geom">
+        <size>0.25 0.25 1</size>
+        <mass>0.6</mass>
+        <visual><size>0.5 0.5 1</size><mesh>unit_box</mesh><material>Gazebo/Red</material></visual>
+      </geom:box>
+    </body:box>
+  </model:physical>
+
+
+
+</gazebo:world>
