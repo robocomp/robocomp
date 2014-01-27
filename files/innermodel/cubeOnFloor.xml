@@ -26,7 +26,7 @@
     </translation>
     
     <transform id="box_t" tx="0" ty="1000" tz="0">
-      <mesh id="box_mesh" file="/home/robocomp/robocomp/Files/osgModels/basics/cube.3ds" scale="500"/>
+      <mesh id="box_mesh" file="/home/robocomp/robocomp/files/osgModels/basics/cube.3ds" scale="500"/>
     </transform>
     
     <transform id="cabeza_sensores" tx="-2500" ty="2500" tz="-2500" rx="0.7" ry="0.70" rz="-0.4">
