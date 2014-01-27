@@ -67,7 +67,6 @@ fastdownward
 RoboCompDSL
 RCDSLEditor
 build/
-components/
 
 # Image and other media files #
 ###############################
