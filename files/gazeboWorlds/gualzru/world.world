@@ -1,0 +1,116 @@
+<?xml version="1.0"?>
+
+<gazebo:world 
+  xmlns:xi="http://www.w3.org/2001/XInclude"
+  xmlns:gazebo="http://playerstage.sourceforge.net/gazebo/xmlschema/#gz" 
+  xmlns:model="http://playerstage.sourceforge.net/gazebo/xmlschema/#model" 
+  xmlns:sensor="http://playerstage.sourceforge.net/gazebo/xmlschema/#sensor" 
+  xmlns:window="http://playerstage.sourceforge.net/gazebo/xmlschema/#window" 
+  xmlns:param="http://playerstage.sourceforge.net/gazebo/xmlschema/#param" 
+  xmlns:body="http://playerstage.sourceforge.net/gazebo/xmlschema/#body" 
+  xmlns:geom="http://playerstage.sourceforge.net/gazebo/xmlschema/#geom" 
+  xmlns:joint="http://playerstage.sourceforge.net/gazebo/xmlschema/#joint" 
+  xmlns:interface="http://playerstage.sourceforge.net/gazebo/xmlschema/#interface" 
+  xmlns:ui="http://playerstage.sourceforge.net/gazebo/xmlschema/#ui"
+  xmlns:rendering="http://playerstage.sourceforge.net/gazebo/xmlschema/#rendering" 
+  xmlns:controller="http://playerstage.sourceforge.net/gazebo/xmlschema/#controller"
+  xmlns:physics="http://playerstage.sourceforge.net/gazebo/xmlschema/#physics" >
+
+  <verbosity>4</verbosity>
+
+  <physics:ode>
+    <stepTime>0.05</stepTime>
+    <gravity>0 0 -10</gravity>
+    <cfm>10e-5</cfm>
+    <erp>0.3</erp>
+    <!-- updateRate: <0 == throttle simTime to match realTime.
+                      0 == No throttling
+                     >0 == Frequency at which to throttle the sim --> 
+    <updateRate>-1</updateRate>
+  </physics:ode>
+
+  <rendering:gui>
+    <type>fltk</type>
+    <size>800 600</size>
+    <pos>0 0</pos>
+    <xyz>0 0 0</xyz>
+    <rpy>0 0 0</rpy>
+  </rendering:gui>
+
+  <rendering:ogre>
+    <ambient>0.8 0.8 0.8 1.0</ambient>
+    <sky>
+      <material>Gazebo/CloudySky</material>
+    </sky>
+
+    <fog>
+      <color>1.0 1.0 1.0</color>
+      <linearStart>10</linearStart>
+      <linearEnd>100</linearEnd>
+    </fog>
+
+    <grid>false</grid>
+
+    <shadowTechnique>stencilModulative</shadowTechnique>
+    <!--<shadowTechnique>none</shadowTechnique>-->
+  </rendering:ogre>
+
+   <!-- Ground Plane -->
+  <model:physical name="plane1_model">
+    <xyz>0 0 0</xyz>
+    <rpy>0 0 0</rpy>
+    <static>true</static>
+
+    <body:plane name="plane1_body">
+      <geom:plane name="plane1_geom">
+        <normal>0 0 1</normal>
+        <size>2000 2000</size>
+        <segments>10 10</segments>
+        <uvTile>2000 2000</uvTile>
+        <material>Gazebo/GrayGrid</material>
+      </geom:plane>
+    </body:plane>
+  </model:physical>
+
+  <model:physical name="map">
+    <static>true</static>
+    <xyz>-33 -39 0</xyz>
+    <body:map name="map_body">
+      <geom:map name="map_geom">
+        <image>willowMap.png</image>
+        <threshold>200</threshold>
+        <granularity>2</granularity>
+        <negative>false</negative>
+        <scale>0.1</scale>
+        <material>Gazebo/Rocky</material>
+      </geom:map>
+    </body:map>
+  </model:physical>
+
+  <model:physical name="gualzru_model1">
+    <xyz>0 0 0.2</xyz>
+    <rpy>0 0 180</rpy>
+    <include embedded="true">
+      <xi:include href="gualzru.model" />
+    </include>
+  </model:physical>
+
+
+  <!-- White Point light -->
+  <model:renderable name="point_white">
+    <xyz>-3 0 5</xyz>
+    <static>true</static>
+
+    <light>
+      <type>point</type>
+      <diffuseColor>0.8 0.8 0.8</diffuseColor>
+      <specularColor>0.1 0.1 0.1</specularColor>
+      <range>20</range>
+
+      <!-- Constant(0-1) Linear(0-1) Quadratic -->
+      <attenuation>0.3 0.01 0</attenuation>
+    </light>
+  </model:renderable>
+
+
+</gazebo:world>

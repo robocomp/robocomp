@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+
+<model:physical name="weight_model"
+  xmlns:model="http://playerstage.sourceforge.net/gazebo/xmlschema/#model"
+  xmlns:controller="http://playerstage.sourceforge.net/gazebo/xmlschema/#controller"
+  xmlns:interface="http://playerstage.sourceforge.net/gazebo/xmlschema/#interface"
+  xmlns:sensor="http://playerstage.sourceforge.net/gazebo/xmlschema/#sensor"
+  xmlns:body="http://playerstage.sourceforge.net/gazebo/xmlschema/#body"
+  xmlns:geom="http://playerstage.sourceforge.net/gazebo/xmlschema/#geom"
+  xmlns:joint="http://playerstage.sourceforge.net/gazebo/xmlschema/#joint"
+  >
+
+  <xyz>0 0.0 0.0</xyz>
+  <rpy>0 0 0</rpy>
+  <canonicalBody>weight_body</canonicalBody>
+
+  <body:box name="weight_body">
+    <xyz>0.0 0.0 0.0</xyz>
+    <rpy>0.0 0.0 0.0</rpy>
+
+    <geom:box name="weight_geom1">
+      <xyz>0.0 0.0 0.0</xyz>
+      <rpy>0 0 90</rpy>
+      <size>0.001 0.001 0.001</size>
+      <mass>20</mass>
+      <visual>
+        <scale>0.05 0.05 0.05</scale>
+        <mesh>unit_box</mesh>
+        <material>Gazebo/Blue</material>
+      </visual>
+    </geom:box>
+  </body:box>
+</model:physical>

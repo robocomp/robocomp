@@ -1,0 +1,24 @@
+# udev recipe for USB-Serial adapters:
+#
+# 1.- Get your adapter ID:
+#  udevinfo --query=all --name=ttyUSB0 --attribute-walk | grep ATTRS\{serial | head -n 1
+#  or (UBUNTU)
+#  udevadm info -q all -n ttyUSB0 --attribute-walk | grep ATTRS\{serial | head -n 1
+
+#
+# 2.- Replace the adapter ID with yours and save the file as:
+#  /etc/udev/rules.d/666-robolab.rules
+#
+# 3.- Restart udev daemon with sudo /etc/init.d/udev restart
+#
+# 4.- The next time you plug in the adapter it should have a symbolic link named robex. If you are using several adapters, you can write several lines in the rules file.
+
+KERNEL=="ttyUSB[0-9]*", ATTRS{serial}=="FTFLQ2SK", SYMLINK="cejas"
+KERNEL=="ttyUSB[0-9]*", ATTRS{serial}=="A4SAHC1L", SYMLINK="base"
+KERNEL=="ttyUSB[0-9]*", ATTRS{serial}=="A4SAHCBD", SYMLINK="neck"
+
+BUS=="usb", ID=="0ab4:0010", MODE="777", GROUP="admin"
+
+# udev recipe for ieee1394 devices
+KERNEL=="raw1394", GROUP="video", MODE="0664"
+
