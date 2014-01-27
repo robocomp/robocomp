@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=1.0
+Value=1.0
+Type=Application
+Encoding=UTF-8
+Name=RCMonitor
+Comment=RCMonitor - Component monitoring tool
+Exec=/opt/robocomp/bin/rcmonitor
+Icon=
+Terminal=false
+Categories=RoboComp;
