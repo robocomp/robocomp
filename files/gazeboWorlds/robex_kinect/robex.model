@@ -1,0 +1,337 @@
+<?xml version="1.0"?>
+
+<model:physical name="default_robex_model"
+  xmlns:xi="http://www.w3.org/2001/XInclude"
+  xmlns:model="http://playerstage.sourceforge.net/gazebo/xmlschema/#model"
+  xmlns:sensor="http://playerstage.sourceforge.net/gazebo/xmlschema/#sensor"
+  xmlns:body="http://playerstage.sourceforge.net/gazebo/xmlschema/#body"
+  xmlns:geom="http://playerstage.sourceforge.net/gazebo/xmlschema/#geom"
+  xmlns:joint="http://playerstage.sourceforge.net/gazebo/xmlschema/#joint"
+  xmlns:controller="http://playerstage.sourceforge.net/gazebo/xmlschema/#joint"
+  xmlns:interface="http://playerstage.sourceforge.net/gazebo/xmlschema/#joint"
+  >
+
+<xyz>0 0 0.0</xyz>
+<rpy>0.0 0.0 0.0</rpy>
+
+<canonicalBody>chassis_body</canonicalBody>
+
+<body:box name="chassis_body">
+  <xyz>-0.1 0 0.11</xyz>
+  <rpy>0.0 0.0 0.0</rpy>
+  <geom:box name="chassis1_geom">
+    <xyz>0 0 0</xyz>
+    <size> 0.400  0.400  0.18</size>
+    <density>100.0</density>
+    <visual>
+      <size>0.4 0.4 0.18</size>
+      <mesh>unit_box</mesh>
+      <material>Gazebo/Grey</material>
+    </visual>
+  </geom:box>
+</body:box>
+
+<body:cylinder name="left_wheel">
+  <xyz>0 0.17 0.075</xyz>
+  <rpy>0 90 90</rpy>
+  <geom:cylinder name="left_wheel_geom">
+    <size>0.075 0.025</size>
+    <density>100</density>
+    <visual>
+      <rpy>0 0 0</rpy>
+      <size>0.15 0.15 0.025</size>
+      <mesh>unit_cylinder</mesh>
+      <material>Gazebo/Black</material>
+    </visual>
+  </geom:cylinder>
+</body:cylinder>
+
+<body:cylinder name="right_wheel">
+  <xyz>0 -0.17 0.075</xyz>
+  <rpy>0 90 90</rpy>
+  <geom:cylinder name="right_wheel_geom">
+    <size>0.075 0.025</size>
+    <density>100</density>
+    <visual>
+      <rpy>0 0 0</rpy>
+      <size>0.15 0.15 0.025</size>
+      <mesh>unit_cylinder</mesh>
+      <material>Gazebo/Black</material>
+    </visual>
+  </geom:cylinder>
+</body:cylinder>
+
+<body:sphere name="castor_body">
+  <xyz>-0.25 0 0.03</xyz>
+  <rpy>0 0 0</rpy>
+  <geom:sphere name="castor_geom">
+    <size>0.03</size>
+    <density>150</density>
+    <visual>
+      <size>0.06 0.06 0.06</size>
+      <mesh>unit_sphere</mesh>
+      <material>Gazebo/Black</material>
+    </visual>
+  </geom:sphere>
+</body:sphere>
+
+<joint:hinge name="left_wheel_hinge">
+  <body1>left_wheel</body1>
+  <body2>chassis_body</body2>
+  <anchor>left_wheel</anchor>
+  <anchorOffset>0 0 0</anchorOffset>
+  <axis>0 1 0</axis>
+  <erp>0.8</erp>
+  <cfm>10e-5</cfm>
+</joint:hinge>
+
+<joint:hinge name="right_wheel_hinge">
+  <body1>right_wheel</body1>
+  <body2>chassis_body</body2>
+  <anchor>right_wheel</anchor>
+  <anchorOffset>0 0 0</anchorOffset>
+  <axis>0 1 0</axis>
+  <erp>0.8</erp>
+  <cfm>10e-5</cfm>
+</joint:hinge>
+
+<joint:ball name="ball_joint">
+  <body1>castor_body</body1>
+  <body2>chassis_body</body2>
+  <anchor>castor_body</anchor>
+  <erp>0.8</erp>
+  <cfm>10e-5</cfm>
+</joint:ball>
+
+<controller:differential_position2d name="controller1">
+  <leftJoint>right_wheel_hinge</leftJoint>
+  <rightJoint>left_wheel_hinge</rightJoint>
+  <wheelSeparation>0.34</wheelSeparation>
+  <wheelDiameter>0.16</wheelDiameter>
+  <torque>5</torque>
+  <interface:position name="position_iface_0"/>
+</controller:differential_position2d>
+
+
+<body:cylinder name="neck_body">
+  <xyz>0 0 0.2875</xyz>
+  <rpy>0 0 0</rpy>
+  <static>false</static>
+  <geom:cylinder name="neck_geom">
+    <size>0.01 0.175</size>
+    <density>0.001</density>
+    <visual>
+      <rpy>0 0 0</rpy>
+      <size>0.02 0.02 0.175</size>
+      <material>Gazebo/Red</material>
+      <mesh>unit_cylinder</mesh>
+    </visual>
+  </geom:cylinder>
+</body:cylinder>
+
+<body:box name="tilt_body">
+  <xyz>0 0 0.375</xyz>
+  <rpy>0 0 0</rpy>
+  <static>false</static>
+  <geom:box name="tilt_geom">
+    <size>0.01 0.15 0.01</size>
+    <density>0.001</density>
+    <visual>
+      <rpy>0 0 0</rpy>
+      <size>0.01 0.15 0.01</size>
+      <material>Gazebo/Red</material>
+      <mesh>unit_box</mesh>
+    </visual>
+  </geom:box>
+</body:box>
+
+<body:cylinder name="leftpan_body">
+  <xyz>0 0.075 0.375</xyz>
+  <rpy>0 0 0</rpy>
+  <static>false</static>
+  <geom:cylinder name="leftpan_geom">
+    <size>0.001 0.001</size>
+    <density>0.001</density>
+    <visual>
+      <rpy>0 90 0</rpy>
+      <size>0.02 0.02 0.04</size>
+      <material>Gazebo/Black</material>
+      <mesh>unit_cylinder</mesh>
+    </visual>
+  </geom:cylinder>
+  <sensor:camera name="leftcamera_camera_sensor">
+    <imageSize>320 240</imageSize>
+    <hfov>56.144973871705908</hfov>
+    <vfov>43.602818972703624</vfov>
+    <nearClip>0.08</nearClip>
+    <farClip>20</farClip>
+    <saveFrames>false</saveFrames>
+    <saveFramePath>frames</saveFramePath>
+    <controller:generic_camera name="leftcamera_camera_controller">
+      <interface:camera name="camera_iface_0"/>
+    </controller:generic_camera>
+  </sensor:camera>
+</body:cylinder>
+
+<body:box name="kinect_body">
+ <xyz>0 0 0.375</xyz>
+ <rpy>0 0 0</rpy>
+ <geom:box name="kinect_geom">
+  <size>0.1 0.15 0.1</size>
+  <density>0.001</density>
+  <visual>
+   <size>0.04 0.12 0.03</size>
+   <material>Gazebo/Black</material>
+   <mesh>unit_box</mesh>
+  </visual>
+ </geom:box>
+ <sensor:stereocamera name="stereo_sensor">
+  <imageSize>320 240</imageSize>
+  <hfov>60</hfov>
+  <nearClip>0.1</nearClip>
+  <farClip>100</farClip>
+  <saveFrames>false</saveFrames>
+  <saveFramePath>frames</saveFramePath>
+  <baseline>0.2</baseline>
+  <controller:stereocamera name="stereo_camera_controller">
+   <interface:stereocamera name="d_iface_0" />
+   <interface:camera name="rgb_iface_0" />
+   <interface:camera name="rgb_iface_1" />
+   <leftcamera>camera_iface_0</leftcamera>
+   <rightcamera>camera_iface_1</rightcamera>
+  </controller:stereocamera>
+ </sensor:stereocamera>
+</body:box>
+
+
+<body:cylinder name="rightpan_body">
+  <xyz>0 -0.075 0.375</xyz>
+  <rpy>0 0 0</rpy>
+  <static>false</static>
+  <geom:cylinder name="rightpan_geom">
+    <size>0.001 0.001</size>
+    <density>0.001</density>
+    <visual>
+      <rpy>0 90 0</rpy>
+      <size>0.02 0.02 0.04</size>
+      <material>Gazebo/Black</material>
+      <mesh>unit_cylinder</mesh>
+    </visual>
+  </geom:cylinder>
+  <sensor:camera name="rightcamera_camera_sensor">
+  <imageSize>320 240</imageSize>
+    <hfov>56.144973871705908</hfov>
+    <vfov>43.602818972703624</vfov>
+    <nearClip>0.08</nearClip>
+    <farClip>20</farClip>
+    <saveFrames>false</saveFrames>
+    <saveFramePath>frames</saveFramePath>
+    <controller:generic_camera name="rightcamera_camera_controller">
+      <interface:camera name="camera_iface_1"/>
+    </controller:generic_camera>
+  </sensor:camera>
+</body:cylinder>
+
+<model:physical name="laser">
+  <xyz>0 0 0.3</xyz>
+  <rpy>0.0 0.0 0.0</rpy>
+  <include embedded="true">
+    <xi:include href="hokuyo.model" />
+  </include>
+</model:physical>
+
+
+<joint:hinge name="neck_hinge">
+  <body1>chassis_body</body1>
+  <body2>neck_body</body2>
+  <anchor>chassis_body</anchor>
+  <anchorOffset>0.1 0 0.1775</anchorOffset>
+  <axis>0 0 1</axis>
+  <lowStop>-180</lowStop>
+  <highStop>180</highStop>
+  <erp>0.1</erp>
+</joint:hinge>
+
+<joint:hinge name="tilt_hinge">
+  <body1>tilt_body</body1>
+  <body2>neck_body</body2>
+  <anchor>neck_body</anchor>
+  <anchorOffset>0 0 0.0875</anchorOffset>
+  <axis>0 1 0</axis>
+  <lowStop>-180</lowStop>
+  <highStop>180</highStop>
+  <erp>0.1</erp>
+</joint:hinge>
+
+<joint:hinge name="kinect_hinge">
+  <body1>kinect_body</body1>
+  <body2>tilt_body</body2>
+  <anchor>tilt_body</anchor>
+  <anchorOffset>0 0 0.0</anchorOffset>
+  <axis>1 0 0</axis>
+  <lowStop>0</lowStop>
+  <highStop>0</highStop>
+  <erp>0.1</erp>
+</joint:hinge>
+
+<joint:hinge name="leftpan_hinge">
+  <body1>tilt_body</body1>
+  <body2>leftpan_body</body2>
+  <anchor>tilt_body</anchor>
+  <anchorOffset>0.0 0.075 0.0</anchorOffset>
+  <axis>0 0 1</axis>
+  <lowStop>-180</lowStop>
+  <highStop>180</highStop>
+  <erp>0.1</erp>
+</joint:hinge>
+
+
+<joint:hinge name="rightpan_hinge">
+  <body1>tilt_body</body1>
+  <body2>rightpan_body</body2>
+  <anchor>tilt_body</anchor>
+  <anchorOffset>0.0 -0.075 0.0</anchorOffset>
+  <axis>0 0 1</axis>
+  <lowStop>-180</lowStop>
+  <highStop>180</highStop>
+  <erp>0.1</erp>
+</joint:hinge>
+
+
+<controller:generic_actarray name="NT2P_controller" n_actors="4">
+  <joint name="neck_hinge">
+    <force>1</force>
+    <gain>0.7</gain>
+    <tolerance>0.001</tolerance>
+    <axis>1 0 0</axis>
+    <lowStop>-180</lowStop>
+    <highStop>180</highStop>
+  </joint>
+  <joint name="tilt_hinge">
+    <force>1</force>
+    <gain>0.7</gain>
+    <tolerance>0.001</tolerance>
+    <axis>0 1 0</axis>
+    <lowStop>-90</lowStop>
+    <highStop>90</highStop>
+  </joint>
+  <joint name="leftpan_hinge">
+    <force>5</force>
+    <gain>1</gain>
+    <tolerance>0.0001</tolerance>
+    <axis>0 0 1</axis>
+    <lowStop>-90</lowStop>
+    <highStop>90</highStop>
+  </joint>
+  <joint name="rightpan_hinge">
+    <force>5</force>
+    <gain>1</gain>
+    <tolerance>0.0001</tolerance>
+    <axis>0 0 1</axis>
+    <lowStop>-90</lowStop>
+    <highStop>90</highStop>
+  </joint>
+  <interface:actarray name="NT2P_iface"/>
+</controller:generic_actarray>
+
+</model:physical>
