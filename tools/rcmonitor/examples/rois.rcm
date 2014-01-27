@@ -1,0 +1,7 @@
+/home/robocomp/robocomp/Interfaces/Roimant.ice
+roimant
+localhost
+tcp
+10013
+200
+rois.py

@@ -1,0 +1,7 @@
+/home/robocomp/robocomp/Interfaces/Tracker.ice
+tracker
+localhost
+tcp
+10009
+30
+tracker.py

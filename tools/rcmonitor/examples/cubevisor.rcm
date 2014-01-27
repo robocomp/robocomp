@@ -1,0 +1,8 @@
+/home/robocomp/robocomp/Interfaces/Cubevisor.ice
+cubevisor
+localhost
+tcp
+10088
+300
+cubevisor.py
+

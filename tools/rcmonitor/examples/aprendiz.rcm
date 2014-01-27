@@ -1,0 +1,7 @@
+/home/robocomp/robocomp/Interfaces/Aprendiz.ice
+aprendiz
+localhost
+tcp
+10114
+100
+aprendiz.py

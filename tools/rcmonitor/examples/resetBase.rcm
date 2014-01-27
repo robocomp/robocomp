@@ -1,0 +1,7 @@
+/home/robocomp/robocomp/Interfaces/DifferentialRobot.ice
+differentialrobot
+pulguita.local
+tcp
+10004
+30
+resetBase.py

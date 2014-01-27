@@ -1,0 +1,8 @@
+/home/robocomp/robocomp/Interfaces/JointMotor.ice
+jointmotor
+localhost
+tcp
+10141
+30
+jointMotorTest.py
+

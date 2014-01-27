@@ -1,0 +1,7 @@
+/home/robocomp/robocomp/Interfaces/Rrtplanner2d.ice
+rrtplanner2d
+localhost
+tcp
+10099
+500
+rrtplanner2d.py

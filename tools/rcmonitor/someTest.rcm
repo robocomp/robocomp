@@ -1,0 +1,35 @@
+#
+# This is an example file for rcompmonitor
+#
+# It must hav six non-commented lines:
+#  1.- Slice file path
+#  2.- Endpoint ID
+#  3.- Protocol
+#  4.- Component port
+#  5.- Update period (in mseconds)
+#  6.- Code file
+# 
+# Comments begin with '#' and are ignored.
+# Empty lines (or with whitespaces) are also ignored.
+#
+# The code file must correspond to what you would use
+# as code inside the application.
+#
+
+# Here comes the slice file
+/home/luisj/devel/robocomp/Interfaces/Camara.ice
+
+# Endpoint name
+camara
+
+# Protocol
+tcp
+
+# Port
+10001
+
+# Update period
+100
+
+# Code file
+/home/luisj/someTest.py

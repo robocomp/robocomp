@@ -1,0 +1,8 @@
+/home/robocomp/robocomp/Interfaces/Ultrasound.ice
+ultrasound
+localhost
+tcp
+10110
+30
+ultrasound.py
+

@@ -1,0 +1,8 @@
+Interfaces/RGBD.ice
+rgbd
+localhost
+tcp
+10096
+33
+rgbd.py
+

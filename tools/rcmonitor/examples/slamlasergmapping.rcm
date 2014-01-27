@@ -1,0 +1,7 @@
+/home/robocomp/robocomp/Interfaces/SlamLaser.ice
+slamlaser
+localhost
+tcp
+10059
+100
+slamlasergmapping.py

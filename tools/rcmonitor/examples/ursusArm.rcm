@@ -1,0 +1,8 @@
+/home/robocomp/robocomp/Interfaces/UrsusArm.ice
+ursusarm
+localhost
+tcp
+10169
+30
+ursusArm.py
+

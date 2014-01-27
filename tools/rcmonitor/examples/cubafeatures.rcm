@@ -1,0 +1,7 @@
+/home/robocomp/robocomp/Interfaces/Cubafeatures.ice
+cubafeatures
+localhost
+tcp
+10054
+100
+cubafeatures.py

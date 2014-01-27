@@ -1,0 +1,7 @@
+/Interfaces/Planning.ice
+planning
+localhost
+tcp
+10195
+30
+planning.py
