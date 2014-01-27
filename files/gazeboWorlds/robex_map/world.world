@@ -1,0 +1,104 @@
+<?xml version="1.0"?>
+
+<gazebo:world 
+  xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:gazebo="http://playerstage.sourceforge.net/gazebo/xmlschema/#gz" xmlns:model="http://playerstage.sourceforge.net/gazebo/xmlschema/#model" xmlns:sensor="http://playerstage.sourceforge.net/gazebo/xmlschema/#sensor" xmlns:window="http://playerstage.sourceforge.net/gazebo/xmlschema/#window" xmlns:param="http://playerstage.sourceforge.net/gazebo/xmlschema/#param" xmlns:body="http://playerstage.sourceforge.net/gazebo/xmlschema/#body" xmlns:geom="http://playerstage.sourceforge.net/gazebo/xmlschema/#geom" xmlns:joint="http://playerstage.sourceforge.net/gazebo/xmlschema/#joint" xmlns:interface="http://playerstage.sourceforge.net/gazebo/xmlschema/#interface" xmlns:ui="http://playerstage.sourceforge.net/gazebo/xmlschema/#ui" xmlns:rendering="http://playerstage.sourceforge.net/gazebo/xmlschema/#rendering" xmlns:controller="http://playerstage.sourceforge.net/gazebo/xmlschema/#controller" xmlns:physics="http://playerstage.sourceforge.net/gazebo/xmlschema/#physics" >
+
+  <!--
+    ..
+    ..  M  I  S  C
+    ..
+    -->
+  <verbosity>5</verbosity>
+  <physics:ode>
+    <stepTime>0.001</stepTime>
+    <gravity>0 0 -9.8</gravity>
+    <cfm>10e-5</cfm>
+    <erp>0.3</erp>
+    <updateRate>-1</updateRate>
+
+  <rendering:gui>
+    <type>fltk</type>
+    <size>1024 768</size>
+    <updateRate>-1</updateRate>
+    <pos>10 10</pos>
+    <frames>
+      <row height="100%">
+        <camera width="100%">
+          <xyz>0.98 -0.28 0.57</xyz>
+          <rpy>0 20.3 163</rpy>
+        </camera>
+      </row>
+    </frames>
+  </rendering:gui>
+
+  <rendering:ogre>
+    <ambient>0.5 0.5 0.5 1.0</ambient>
+    <sky>
+      <material>Gazebo/CloudySky</material>
+    </sky>
+    <grid>false</grid>
+  </rendering:ogre>
+
+  <!-- P L A N E -->
+  <model:physical name="plane1_model">
+    <xyz>0 0 0</xyz>
+    <rpy>0 0 0</rpy>
+    <static>true</static>
+    <body:plane name="plane1_body">
+      <geom:plane name="plane1_geom">
+      <normal>0 0 1</normal>
+      <size>200 200</size>
+      <segments>10 10</segments>
+      <uvTile>1000 1000</uvTile>
+      <material>Gazebo/White</material>
+      <surface>
+        <mu1>10</mu1>
+        </surface>
+      </geom:plane>
+    </body:plane>
+  </model:physical>
+
+
+  <model:physical name="map">
+    <xyz>-80 -80 0</xyz>
+    <static>true</static>
+    <body:map name="map_body">
+      <geom:map name="map_geom">
+        <image>cave.png</image>
+        <threshold>200</threshold>
+        <granularity>1</granularity>
+        <negative>false</negative>
+        <scale>0.26</scale>
+        <material>Gazebo/Rocky</material>
+      </geom:map>
+    </body:map>
+  </model:physical>
+
+
+
+  <!-- R  O  B  O  T -->
+  <model:physical name="robot">
+    <xyz>0 0 0.15</xyz>
+    <static>false</static>
+    <include embedded="true"><xi:include href="robex.model" /></include>
+  </model:physical>
+
+  <!-- L  I  G  H  T -->
+  <model:renderable name="directional_white5">
+    <xyz>0 0.0 8.0</xyz>
+    <light>
+      <type>spot</type>
+      <spotCone>1000 1000 100</spotCone>
+      <direction>-0.1 0 -0.9</direction>
+      <diffuseColor>0.8 0.8 0.8</diffuseColor>
+      <specularColor>0.1 0.1 0.1</specularColor>
+      <range>10</range>
+      <attenuation>1 0 0</attenuation>
+    </light>
+  </model:renderable>
+
+
+
+
+
+</gazebo:world>
