@@ -1,0 +1,40 @@
+<innerModel>
+	<transform id="world">	
+		<differentialrobot id="base" port="10000">
+
+		<!-- laser -->
+			<translation id="laserPose" tx="0" ty="200" tz="252">
+	<!--				<laser id="laser" port="20000" measures="100" min="100" max="30000" angle="3.141593" ifconfig="10000" />-->
+	<!-- 					<plane id="sensorL" nz="1" pz="-50" size="100" repeat="1" texture="#ff0000" /> -->
+			</translation> <!-- laser -->
+			
+			<!-- camera -->
+			<translation id="cameraPose" tx="0" ty="300" tz="252">
+	<!--				<laser id="laser" port="20000" measures="100" min="100" max="30000" angle="3.141593" ifconfig="10000" />-->
+	<!-- 			<plane id="sensorL" nz="1" pz="-50" size="100" repeat="1" texture="#ff0000" /> -->
+			</translation> <!-- laser -->
+
+			<translation id="robotGeometricCenter" tx="0" ty="0" tz="50">
+					<mesh id="base_mesh" file="/home/robocomp/robocomp/Files/osgModels/Gualzru/Gualzru.osg"   scale="25" rx="1.57079632679" rz="-1.57079632679" ty="100" tz="-150"/>
+			</translation>
+		</differentialrobot>
+		
+		<!--mesh and target-->		
+		<!--<transform id="robolab">-->
+			<!--<mesh id="robolab_mesh" file="/home/robocomp/viernes/robolab.ive" />-->
+			<transform id="target03" tx="2000" ty="300" tz="35" ry="-1.5707">
+				<!--<plane id="plane1" nz="1" pz="-50" size="100" repeat="1" texture="#ff0000" /> -->
+				<mesh id="target03_mesh" scale="50" file="/home/robocomp/robocomp/Files/osgModels/humanColor/jointbox_amarillo.osg"/>
+			</transform>
+			<transform id="target02" tx="190" ty="300" tz="2580" ry="3.141593">
+				<mesh id="target02_mesh" scale="50" file="/home/robocomp/robocomp/Files/osgModels/humanColor/jointbox_azul.osg"/>
+				<!--<plane id="plane2" nz="1" pz="-50" size="100" repeat="1" texture="#ff00ff" /> -->
+			</transform>			
+			<!--pared izquierda-->
+			<transform id="target01" tx="-1750" ty="300" tz="0" ry="1.5707">
+				<mesh id="target01_mesh" scale="50" file="/home/robocomp/robocomp/Files/osgModels/humanColor/jointbox_azul.osg"/>
+				<!-- <plane id="plane2" nz="1" pz="-50" size="100" repeat="1" texture="#ff00ff" /> -->
+			</transform>	
+		<!--</transform>-->
+	</transform>
+</innerModel>

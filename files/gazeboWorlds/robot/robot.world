@@ -1,0 +1,198 @@
+<?xml version="1.0"?>
+
+<gazebo:world
+  xmlns:xi="http://www.w3.org/2001/XInclude"
+ xmlns:gazebo="http://playerstage.sourceforge.net/gazebo/xmlschema/#gz" 
+xmlns:model="http://playerstage.sourceforge.net/gazebo/xmlschema/#model" 
+xmlns:sensor="http://playerstage.sourceforge.net/gazebo/xmlschema/#sensor" 
+xmlns:window="http://playerstage.sourceforge.net/gazebo/xmlschema/#window"
+ xmlns:param="http://playerstage.sourceforge.net/gazebo/xmlschema/#param" 
+xmlns:body="http://playerstage.sourceforge.net/gazebo/xmlschema/#body" 
+xmlns:geom="http://playerstage.sourceforge.net/gazebo/xmlschema/#geom"
+ xmlns:joint="http://playerstage.sourceforge.net/gazebo/xmlschema/#joint"
+ xmlns:interface="http://playerstage.sourceforge.net/gazebo/xmlschema/#interface"
+ xmlns:ui="http://playerstage.sourceforge.net/gazebo/xmlschema/#ui" 
+xmlns:rendering="http://playerstage.sourceforge.net/gazebo/xmlschema/#rendering"
+ xmlns:controller="http://playerstage.sourceforge.net/gazebo/xmlschema/#controller"
+ xmlns:physics="http://playerstage.sourceforge.net/gazebo/xmlschema/#physics" >
+
+  <!--
+    ..
+    ..  M  I  S  C
+    ..
+    -->
+  <verbosity>5</verbosity>
+  <physics:ode>
+    <stepTime>0.04</stepTime>
+    <gravity>0 0 -9.8</gravity>
+    <cfm>10e-5</cfm>
+    <erp>0.3</erp>
+    <updateRate>250</updateRate>
+  </physics:ode>
+  <rendering:gui>
+    <type>fltk</type>
+    <size>800 600</size>
+    <updateRate>-1</updateRate>
+    <pos>10 10</pos>
+    <frames>
+      <row height="100%">
+
+<!--En la nueva versión se soporta varias cámaras-->
+
+         <!-- <camera width="100%">
+          <xyz>-1 0 1</xyz>
+          <rpy>0 0 0</rpy>
+        </camera>-->
+	<camera width="100%">
+          <xyz>2 2 0.3</xyz>
+          <rpy>0 0 -110</rpy>
+	 </camera>
+	<!--<camera width="100%">
+          <xyz>0 0 10</xyz>
+          <rpy>180 90 180</rpy>
+        </camera>-->
+      </row>
+    </frames>
+  </rendering:gui>
+
+  <rendering:ogre>
+    <ambient>0.5 0.5 0.5 1.0</ambient>
+    <sky>
+      <material>Gazebo/CloudySky</material>
+    </sky>
+    <grid>false</grid>
+  </rendering:ogre>
+
+  <!-- P L A N E -->
+  <model:physical name="plane1_model">
+    <xyz>0 0 0</xyz>
+    <rpy>0 0 0</rpy>
+    <static>true</static>
+    <body:plane name="plane1_body">
+      <geom:plane name="plane1_geom">
+      <normal>0 0 1</normal>
+      <size>200 200</size>
+      <segments>10 10</segments>
+      <uvTile>1000 1000</uvTile>
+      <material>Gazebo/GrassFloor</material>
+      <surface>
+        <mu1>10</mu1>
+        </surface>
+      </geom:plane>
+    </body:plane>
+  </model:physical>
+
+
+  <!-- R  O  B  O  T -->
+<model:physical name="robot">
+    <xyz>0 0 0</xyz>
+    <static>false</static>
+    <include embedded="true"><xi:include href="robot.model"/></include>
+  </model:physical>
+<!--<model:physical name="epuck">
+    <xyz>0.6 0.6 0</xyz>
+    <static>false</static>
+    <include embedded="true"><xi:include href="models/epuck_new.model"/></include>
+  </model:physical>-->
+
+<!--<model:physical name="robot">
+    <xyz>0 0 0</xyz>
+    <static>false</static>
+    <include embedded="true"><xi:include href="models/default_robex_model.model" /></include>
+  </model:physical>-->
+	
+
+  <!-- L  I  G  H  T -->
+  <model:renderable name="directional_white1">
+    <xyz>0 0.0 38.0</xyz>
+    <light>
+      <type>spot</type>
+      <spotCone>1000 1000 100</spotCone>
+      <direction>-0.1 0 -0.9</direction>
+      <diffuseColor>0.8 0.8 0.8</diffuseColor>
+      <specularColor>0.1 0.1 0.1</specularColor>
+      <range>40</range>
+      <attenuation>1 0 0</attenuation>
+    </light>
+  </model:renderable>
+
+<!-- RING -->
+<model:physical name="box1_model">
+    <xyz>5 0 1</xyz>
+    <rpy>0.0 0.0 90.0</rpy>
+    <static>true</static>
+    <body:box name="box1_body">
+      <geom:box name="box1_geom">
+	<size>10 0.05 2</size>
+	<mass>100.0</mass>
+	<visual>
+		<size>10 0.05 2</size>
+		<mesh>unit_box</mesh>
+		<material>Custom/Gotele</material>
+		<uvTile>16 8</uvTile>
+	</visual>
+	</geom:box>
+	<geom:box name="poster1_geom">
+	<xyz>-0.5 0 0</xyz>
+	<size>2 0.05 0.3</size>
+	<mass>100.0</mass>
+	<visual>
+		<size>2 0.05 0.3</size>
+		<mesh>unit_box</mesh>
+		<material>Custom/alimerka</material>
+	</visual>
+	</geom:box>
+    </body:box>
+  </model:physical>
+<model:physical name="box2_model">
+    <xyz>-5 0 1</xyz>
+    <rpy>0.0 0.0 90.0</rpy>
+    <static>true</static>
+    <body:box name="box2_body">
+      <geom:box name="box2_geom">
+	<size>10 0.05 2</size>
+	<mass>100.0</mass>
+	<visual>
+		<size>10 0.05 2</size>
+		<mesh>unit_box</mesh>
+		<material>Custom/Gotele</material>
+		<uvTile>16 8</uvTile>
+	</visual>
+	</geom:box>
+    </body:box>
+  </model:physical>
+ <model:physical name="box3_model">
+    <xyz>0 -5 1</xyz>
+    <rpy>0.0 0.0 0.0</rpy>
+    <static>true</static>
+    <body:box name="box3_body">
+      <geom:box name="box3_geom">
+	<size>10 0.05 2</size>
+	<mass>100.0</mass>
+	<visual>
+		<size>10 0.05 2</size>
+		<mesh>unit_box</mesh>
+		<material>Custom/Gotele</material>
+		<uvTile>16 8</uvTile>
+	</visual>
+	</geom:box>
+    </body:box>
+  </model:physical>
+  <model:physical name="box4_model">
+    <xyz>0 5 1</xyz>
+    <rpy>0.0 0.0 0.0</rpy>
+    <static>true</static>
+    <body:box name="box4_body">
+      <geom:box name="box4_geom">
+	<size>10 0.05 2</size>
+	<mass>100.0</mass>
+	<visual>
+		<size>10 0.05 2</size>
+		<mesh>unit_box</mesh>
+		<material>Custom/Gotele</material>
+		<uvTile>16 8</uvTile>
+		</visual>
+	</geom:box>
+    </body:box>
+  </model:physical>
+</gazebo:world>

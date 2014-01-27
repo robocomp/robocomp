@@ -1,0 +1,30 @@
+<innerModel>
+	<translation id="world" tx="0" ty="0" tz="0">
+		<transform id="pose" tx="0" ty="0.8" tz="0">
+			<rotation id="yawRot" rx="-1.57079632675">
+				<joint id="yaw" port="20000">
+					<rotation id="yawRot1" rx="1.57079632675">
+						<rotation id="tiltRot" ry="1.57079632675">
+							<joint id="tilt" port="20000">
+								<rotation id="tiltRot1" ry="-1.57079632675">
+									<plane id="sensor" nz="1" pz="-0.1" size="0.2" repeat="1" texture="#0000ff" />
+									<imu id="imu" port="10000"/>
+									<rgbd id="primesense" focal="400" width="640" height="480" port="30000" />
+								</rotation>
+							</joint>
+						</rotation>
+					</rotation>
+				</joint>
+			</rotation>
+		</transform>
+		<translation id="room" tx="0" ty="0" tz="0">
+			<plane id="floor"   nx="0" ny="1" nz="0" px="0" py="0" pz="0" size="8" repeat="1" texture="#ea2800" />
+			<plane id="ceiling" nx="0" ny="1" nz="0" px="0" py="3" pz="0" size="8" repeat="1" texture="#ffffff" />
+			<plane id="left"    nx="1" ny="0" nz="0" px="-4" py="0" pz="0" size="8" repeat="1" texture="#ffffff" />
+			<plane id="right"   nx="1" ny="0" nz="0" px="4" py="0" pz="0" size="8" repeat="1" texture="#546f13" />
+			<plane id="back" nx="0" ny="0" nz="1" px="0" py="0" pz="-4" size="8" repeat="1" texture="#f16f13" />
+			<plane id="front" nx="0" ny="0" nz="1" px="0" py="0" pz="4" size="8" repeat="1" texture="#f16f13" />
+			<plane id="table" nx="0" ny="1" nz="0" px="3" py="0.8" pz="3" size="1" repeat="1" texture="#666666" />
+		</translation>
+	</translation>
+</innerModel>

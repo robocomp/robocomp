@@ -1,0 +1,123 @@
+<innerModel>
+	<transform id="world">
+		<transform id="piso" rx="1.57079632679" rz="3.14159265359" >
+			<transform id="pisoP" >
+<!--				<mesh id="pared1"       file="/home/robocomp/robocomp/Files/osgModels/piso_osg/pared1.osg"      scale="0.05" tx="-4.0" />
+				<mesh id="pared2"       file="/home/robocomp/robocomp/Files/osgModels/piso_osg/pared2.osg"      scale="0.05" tx="-4.0" />
+				<mesh id="pared3"       file="/home/robocomp/robocomp/Files/osgModels/piso_osg/pared3.osg"      scale="0.05" tx="-4.0" />
+				<mesh id="pared4"       file="/home/robocomp/robocomp/Files/osgModels/piso_osg/pared4.osg"      scale="0.05" tx="-4.0" />
+				<mesh id="pared5"       file="/home/robocomp/robocomp/Files/osgModels/piso_osg/pared5.osg"      scale="0.05" tx="-4.0" />
+				<mesh id="pared6"       file="/home/robocomp/robocomp/Files/osgModels/piso_osg/pared6.osg"      scale="0.05" tx="-4.0" />
+				<mesh id="pared7"       file="/home/robocomp/robocomp/Files/osgModels/piso_osg/pared7.osg"      scale="0.05" tx="-4.0" />
+				<mesh id="pared8"       file="/home/robocomp/robocomp/Files/osgModels/piso_osg/pared8.osg"      scale="0.05" tx="-4.0" />
+				<mesh id="pared9"       file="/home/robocomp/robocomp/Files/osgModels/piso_osg/pared9.osg"      scale="0.05" tx="-4.0" />
+				<mesh id="pared10"      file="/home/robocomp/robocomp/Files/osgModels/piso_osg/pared10.osg"     scale="0.05" tx="-4.0" />
+				<mesh id="pared11"      file="/home/robocomp/robocomp/Files/osgModels/piso_osg/pared11.osg"     scale="0.05" tx="-4.0" />
+				<mesh id="pilar1"       file="/home/robocomp/robocomp/Files/osgModels/piso_osg/pilar1.osg"      scale="0.05" tx="-4.0" />
+				<mesh id="pilar2"       file="/home/robocomp/robocomp/Files/osgModels/piso_osg/pilar2.osg"      scale="0.05" tx="-4.0" />
+				<mesh id="columna1"     file="/home/robocomp/robocomp/Files/osgModels/piso_osg/columna1.osg"    scale="0.05" tx="-4.0" />
+				<mesh id="columna2"     file="/home/robocomp/robocomp/Files/osgModels/piso_osg/columna2.osg"    scale="0.05" tx="-4.0" />
+				<mesh id="paredwc1"     file="/home/robocomp/robocomp/Files/osgModels/piso_osg/paredwc1.osg"    scale="0.05" tx="-4.0" />
+				<mesh id="paredwc2"     file="/home/robocomp/robocomp/Files/osgModels/piso_osg/paredwc2.osg"    scale="0.05" tx="-4.0" />
+				<mesh id="paredwc3"     file="/home/robocomp/robocomp/Files/osgModels/piso_osg/paredwc3.osg"    scale="0.05" tx="-4.0" />
+				<mesh id="indoor"       file="/home/robocomp/robocomp/Files/osgModels/piso_osg/indoor.osg"      scale="0.05" tx="-4.0" />
+				<mesh id="wcdoor"       file="/home/robocomp/robocomp/Files/osgModels/piso_osg/wcdoor.osg"      scale="0.05" tx="-4.0" />
+				<mesh id="cristalera2"  file="/home/robocomp/robocomp/Files/osgModels/piso_osg/cristalera2.osg" scale="0.05" tx="-4.0" />
+				<mesh id="tubes"        file="/home/robocomp/robocomp/Files/osgModels/piso_osg/tubes.osg"       scale="0.05" tx="-4.0" />
+				<mesh id="arch1"        file="/home/robocomp/robocomp/Files/osgModels/piso_osg/arch1.osg"       scale="0.05" tx="-4.0" />
+				<mesh id="arch2"        file="/home/robocomp/robocomp/Files/osgModels/piso_osg/arch2.osg"       scale="0.05" tx="-4.0" />-->
+				<mesh id="suelo"        file="/home/robocomp/robocomp/Files/osgModels/piso_osg/suelo.osg"       scale="0.05" tx="-4.0" />
+<!--				<mesh id="wc"           file="/home/robocomp/robocomp/Files/osgModels/piso_osg/wc.osg"          scale="0.05" tx="-4.0" />
+				<mesh id="lavabo"       file="/home/robocomp/robocomp/Files/osgModels/piso_osg/lavavo.osg"      scale="0.05" tx="-4.0" />
+				<mesh id="platoducha"   file="/home/robocomp/robocomp/Files/osgModels/piso_osg/platoducha.osg"  scale="0.05" tx="-4.0" />-->
+			</transform>
+		</transform>
+
+
+		<!--<transform id="pre_jointBase" rx="-1.5707963267948966" >
+			<joint id="r1" port="10067" >
+				<transform id="post_jointBase" rx="1.5707963267948966" >
+		-->			
+			<transform id="r1">
+				<mesh id="mesh_1a" file="/home/robocomp/robocomp/Files/osgModels/data/cylinder.osg" scale="0.005" rz="1.5707963267948966"/>
+
+
+								<transform id="palo1" ty="0.28">
+									<transform id="kk1" tz="0.025">
+										<rgbd id="camara1" focal="400" width="640" height="480" port="30000" />
+									</transform>
+ 									<mesh id="mesh_2" file="/home/robocomp/robocomp/Files/osgModels/data/cylinder.osg" scale="0.005" rz="1.5707963267948966"/> 
+									<transform id="palo2" ty="0.10">
+										<transform id="pre_jointCodo" ry="1.5707963267948966" >
+											<joint id="r4" port="10067" >
+												<transform id="post_jointCodo" ry="-1.5707963267948966" >
+													<transform id="palo3" ty="0.11">
+														<transform id="kk2" tz="0.025">
+															<rgbd id="camara2" focal="400" width="640" height="480" port="30000" />
+														</transform>
+															<mesh id="mesh_3" file="/home/robocomp/robocomp/Files/osgModels/data/cylinder.osg" scale="0.005" rz="1.5707963267948966"/> 
+														<transform id="griper" ty="0.205">
+														</transform>
+													</transform>
+												</transform>
+											</joint>
+										</transform>
+									</transform>
+								</transform>
+</transform>
+				<!--</transform>
+			</joint>        
+		</transform>-->
+
+		<transform tz="1">
+		<mesh id="cabeza_loki" file="/home/robocomp/robocomp/Files/osgModels/loki/cabeza_loki.osg" scale="1.0" />
+		</transform>
+
+		
+		<!-- Base de loki 
+		<differentialrobot id="base" port="40000" ty="0.00001">
+			<transform id="laserPose" tx="0" ty="1" tz="1">
+				<laser id="laser" />
+			</transform>
+
+			<transform  id="cambiocoordenadas" rx="1.57079632679" >
+				<mesh id="base_loki" file="/home/robocomp/robocomp/Files/osgModels/loki/base_loki.osg"  tx="0" ty="0" tz="0" rz="1.57079632679" scale="1.0"/>
+				<transform id="tronco" rz="-1.57079632679"  >
+					<mesh id="tronco_loki" file="/home/robocomp/robocomp/Files/osgModels/loki/tronco_loki.osg" tx="0.8687" ty="0" tz="-1.0125" scale="1.0" />
+					<transform id="cabeza"  tx="0.8688" ty="0" tz="-7.0265">
+						<rotation id="aa" rx="-1.57079632679">
+							<joint id="jointcabeza" port="20000">
+								<rotation id="a" rx="1.57079632679">
+									<mesh id="cabeza_loki" file="/home/robocomp/robocomp/Files/osgModels/loki/cabeza_loki.osg" scale="1.0" />
+									<transform id="cabeza_sensores" ry="-1.57079632679" rz="1.57079632679" tz="-0.5" tx="-0.5">
+										<imu id="imu" port="10000"/>
+										<rgbd id="primesense" focal="400" width="640" height="480" port="30000" />
+									</transform>
+								</rotation>
+							</joint>
+						</rotation>
+					</transform>
+					<transform id="boca"  >
+							<mesh id="boca_loki" file="/home/robocomp/robocomp/Files/osgModels/loki/boca_loki.osg" tx="0.7531" ty="0" tz="-6.9313" scale="1.0" />
+					</transform>
+					<transform id="brazo_1"   >
+						<mesh id="brazo_1_loki" file="/home/robocomp/robocomp/Files/osgModels/loki/brazo_1_loki.osg" tx="0.8688" ty="0.45" tz="-6.1656" scale="1.0" />
+						<transform id="brazo_2"  >
+							<mesh id="brazo_2_loki" file="/home/robocomp/robocomp/Files/osgModels/loki/brazo_2_loki.osg" tx="1.1188" ty="1.6643" tz="-5.9949" scale="1.0" />
+							<transform id="brazo_3" >
+								<mesh id="brazo_3_loki" file="/home/robocomp/robocomp/Files/osgModels/loki/brazo_3_loki.osg" tx="0.1203" ty="2.7125" tz="-4.7108" scale="1.0" />
+								<transform id="brazo_4" >
+									<mesh id="brazo_4_loki" file="/home/robocomp/robocomp/Files/osgModels/loki/brazo_4_loki.osg" tx="-0.8861" ty="2.2194" tz="-3.9029" scale="1.0" />
+									<transform id="mano" >
+										<mesh id="mano_loki" file="/home/robocomp/robocomp/Files/osgModels/loki/mano_semi_loki.osg" tx="-1.1170" ty="1.6156" tz="-3.4011" scale="1.0" />
+									</transform>
+								</transform>
+							</transform>
+						</transform>
+					</transform>
+				</transform>
+			</transform>
+		</differentialrobot> -->
+		
+	</transform>
+</innerModel>

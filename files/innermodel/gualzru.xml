@@ -1,0 +1,22 @@
+<innerModel>
+	<transform id="world">
+		<plane id="floor" ny="1" size="100000" repeat="1" texture="#666666" />
+		<transform id="rawOdometry">
+			<translation id="geometricCenterRaw" tx="0" ty="0" tz="-100">
+				<mesh id="rawOdometry_mesh" file="/home/robocomp/robocomp/Files/osgModels/RobEx/platform.osg" scale="50" rx="1.57" render="wireframe"  />
+			</translation>
+		</transform>
+
+		<transform id="base">
+			<translation id="robotGeometricCenter" tx="0" ty="0" tz="-285" >
+				<mesh id="base_mesh" file="/home/robocomp/robocomp/Files/osgModels/Gualzru/Gualzru.osg" scale="10" rx="1.57079632679" rz="-1.57079632679" ty="100" />
+			</translation>
+			<translation id="laser" tx="0" ty="-200" tz="0" />
+			<transform id="laser2" tx="0" ty="-200" tz="-40" ry="3.14159265" />
+		</transform>
+
+		<transform id="worldTemporalRef" />
+	</transform>
+</innerModel>
+
+

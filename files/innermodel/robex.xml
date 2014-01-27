@@ -1,0 +1,36 @@
+<innerModel>
+	<translation id="world" tx="0" ty="0" tz="0">
+		<transform id="base">
+			<translation id="laser" tx="0" ty="60" tz="0" />
+			<plane id="floor" nx="0" ny="1" nz="0" px="0" py="0" pz="0" />
+			<!-- Central reference  -->
+			<translation id="central" tx="0" ty="428" tz="100">
+
+				<!-- Pan movement -->
+				<rotation id="neck" rx="0" ry="0" rz="0">
+				  <!-- Tilt movement -->
+				  <rotation id="tilt" rx="0" ry="0" rz="0">
+					  <!-- Left motor translation -->
+					  <translation id="leftMotor" tx="-77.5" ty="0" tz="0">
+						  <!-- Left pan -->
+						  <rotation id="leftPan" rx="0" ry="0" rz="0">
+							  <!-- Left camera -->
+							  <camera id="leftCamera" width="320" height="240" focal="400" />
+						  </rotation>
+					  </translation>
+					  <!-- Right motor translation -->
+					  <translation id="rightMotor" tx="77.5" ty="0" tz="0">
+						  <!-- Right pan -->
+						  <rotation id="rightPan" rx="0" ry="0" rz="0">
+							  <!-- Right camera -->
+							  <camera id="rightCamera" width="320" height="240" focal="400" />
+						  </rotation>
+					  </translation>
+				  </rotation>
+				</rotation>
+			</translation>
+		</transform>
+	</translation>
+</innerModel>
+
+

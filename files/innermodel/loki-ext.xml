@@ -1,0 +1,188 @@
+<innerModel>
+	<transform id="world" >
+		<transform id="target2" tx="1" ty="0.5" tz="0.0"> 
+			<plane id="target2x" px="0.25" nx="1" size="0.01,0.01,0.5" repeat="1" texture="#ff0000" />
+			<plane id="target2y" py="0.25" nx="1" size="0.01,0.5,0.01" repeat="1" texture="#00ff00" />
+			<plane id="target2z" pz="0.25" nx="1" size="0.5,0.01,0.01" repeat="1" texture="#0000ff" />
+		</transform>	
+
+		<!-- Floor -->
+		<transform id="floor" >
+			<mesh id="floor_mesh" file="/home/robocomp/robocomp/Files/osgModels/piso_osg/suelo.osg"  rx="-1.5707963267948966" tx="-2" scale="0.01" />
+		</transform>
+
+		<differentialrobot id="robot" port="40010" ty="0.28" >
+			<transform  id="base_trans" >
+				<joint id="base" port="30000" axis="y" >
+				<mesh id="base_mesh" file="/home/robocomp/robocomp/Files/osgModels/loki/base_loki.osg"  rx="1.5707963267948966"  rz="-1.5707963267948966"  scale="0.1875"   />
+				<transform id="base_body" rx="-1.5707963267948966" ty="0.1875" tz="-0.16171875" >
+					<!-- Gira en Z -->
+					<joint id="body" port="30000" min="-1" max="1" axis="z" >
+						<mesh id="body_mesh" file="/home/robocomp/robocomp/Files/osgModels/loki/tronco_loki.osg" rx="3.14159265359" rz="-1.5707963267948966" scale="0.1875"    />
+						<mesh id="faldon2" file="/home/robocomp/robocomp/Files/osgModels/loki/faldon_loki.osg" rx="3.14159265359" rz="-1.5707963267948966" tz="-0.18" tx="0" ty="-0.15" scale="0.1875" />
+						<!-- <mesh id="faldon_mesh" file="/home/robocomp/robocomp/Files/osgModels/loki/FaldonOSG.osg"  rx="3.14159265359" rz="-1.5707963267948966" tz="0.18" tx="0" ty="-0.15" scale="0.1875" /> -->
+						<!-- Head -->
+						<!-- <transform id="cyclope" tz="0.04"    > -->
+						<transform id="cyclope" tz="1.20" >
+						<!-- La rotación en Z es para que uno de los ejes salga hacia adelante y corte al target -->
+						</transform>
+
+						<transform id="base_head" tz="1.1625"    >
+							<!-- Giro en X -->
+							<joint id="tilt" port="30000" min="-0.5" max="0.5" axis="x" home="0">
+								<transform id="axesaxes" > 
+								<plane id="xx" px="0.75" nx="1" size="0.030,0.030,1.50" repeat="1" texture="#ff0000" />
+								<plane id="yy" py="0.75" nx="1" size="0.030,1.50,0.030" repeat="1" texture="#00ff00" />
+								<plane id="zz" pz="0.75" nx="1" size="1.50,0.030,0.030" repeat="1" texture="#0000ff" />
+								</transform>
+								
+								<!-- Giro en Y -->
+								<transform id="rolll2_pre" rx="3.14159265359">
+									<joint id="roll" port="30000" axis="y" home="0">
+										<transform id="rolll2_pos" rx="-3.14159265359">
+											<!-- Giro en Z -->
+											<joint id="pan" port="30000" min="-1.40" max="1.40" axis="z" home="0">			
+												<mesh id="head_mesh" file="/home/robocomp/robocomp/Files/osgModels/loki/cabeza_loki.osg" rx="3.14159265359"  rz="-1.5707963267948966" scale="0.1875"  />
+												<transform id="head_mouth"  rx="1.5707963267948966" ty="-0.022"    tz="-0.0185"    >
+													<joint id="mouth" port="30000" axis="x">
+														<mesh id="mouth_mesh" file="/home/robocomp/robocomp/Files/osgModels/loki/boca_loki.osg" rz="-1.5707963267948966" rx="1.5707963267948966" scale="0.1875"    />
+													</joint>
+												</transform>		
+			
+									
+												<transform id="head_sensors" tz="0.13" ty="-0.06" rx="1.66">
+													<imu id="imu" port="10010"/>
+													<plane id="rgbd_mesh1" nz="1" pz="-0.01" size="0.08,0.05,0.02" repeat="1" texture="#ff0000" />
+													<rgbd id="rgbd" focal="583" width="640" height="480" port="30100" ifconfig="40000,50000" />
+												</transform>								
+											</joint>		<!--pan-->
+										</transform> <!--tilt pos-->
+									</joint>	<!--	roll-->
+								</transform>  <!--tilt 2 pre-->
+							</joint> <!--joint tilt-->
+						</transform>
+						<!-- Head end -->
+
+
+<!--	<transform id="axes" > 
+		<plane id="x" px="0.05" nx="1" size="0.001,0.001,0.1" repeat="1" texture="#ff0000" />
+		<plane id="y" py="0.05" nx="1" size="0.001,0.1,0.001" repeat="1" texture="#00ff00" />
+		<plane id="z" pz="0.05" nx="1" size="0.1,0.001,0.001" repeat="1" texture="#0000ff" />
+	</transform>-->
+	
+<!--<transform id="axes" > 
+		<plane id="x" px="0.75" nx="1" size="0.030,0.030,1.50" repeat="1" texture="#ff0000" />
+		<plane id="y" py="0.75" nx="1" size="0.030,1.50,0.030" repeat="1" texture="#00ff00" />
+		<plane id="z" pz="0.75" nx="1" size="1.50,0.030,0.030" repeat="1" texture="#0000ff" />
+</transform>	-->
+			
+						
+						<!-- Right Arm -->	
+						<transform id="arm_right_1" tx="0.06" tz="0.975" ry="1.5707963267948966" > 
+<!-- 							Gira en Z -->
+							<joint id="shoulder_right_1" port="30000" min="-3.14159265359" max="3.14159265359" axis="z">
+								<mesh id="shoulder_right_1_mesh" file="/home/robocomp/robocomp/Files/osgModels/loki/brazo_loki_1.osg" rx="1.5707963267948966"  scale="0.1875"    />
+								<transform id="arm_right_2" tz="0.225" >
+<!-- 									Gira en X -->
+									<joint id="shoulder_right_2" port="30000" min="-1.48352986419" max="1.48352986419" axis="x">
+										<mesh id="shoulder_right_2_mesh" file="/home/robocomp/robocomp/Files/osgModels/loki/brazo_loki_2.osg" ry="1.5707963267948966" tx="0.07" scale="0.1875"    />
+										<transform id="arm_right_3" tz="0.07"  >
+<!-- 											Gira en Z -->
+											<joint id="shoulder_right_3" port="30000" min="-3.14159265359" max="3.14159265359" axis="z">
+												<mesh id="shoulder_right_3_mesh" file="/home/robocomp/robocomp/Files/osgModels/loki/brazo_loki_3.osg" ry="1.5707963267948966"    scale="0.1875"    />
+												<transform id="arm_right_4" tz="0.165"    > <!--Codo-->
+<!-- 													Gira en X -->
+													<joint id="elbow_right" port="30000" min="-1.48352986419" max="1.48352986419" axis="x">
+														<mesh id="elbow_right_mesh" file="/home/robocomp/robocomp/Files/osgModels/loki/brazo_loki_4.osg" ry="1.5707963267948966"  tx="-0.045"   scale="0.1875"    />													
+														<transform id="arm_right_5" tz="0.07"    > <!--Giro1 muñeca-->
+<!-- 															Gira en Z-->
+															<joint id="wrist_right_1" port="30000" min="-3.14159265359" max="3.14159265359" axis="z">
+																<mesh id="wrist_right_mesh" file="/home/robocomp/robocomp/Files/osgModels/loki/brazo_loki_5.osg"  scale="0.1875"    />
+																<transform id="arm_right_6" tz="0.40" >
+<!-- 																	Prismatica en Z -->
+																	<joint id="wrist_right_2" port="30000" axis="z">
+<!-- 																	Gira en X -->
+																	<joint id="wrist_right_3" port="30000" min="-0.8" max="0.8" axis="x">
+<!-- 																	Gira en Y -->
+																	<joint id="wrist_right_4" port="30000" min="-0.8" max="0.8" axis="y">
+																		<transform id="arm_right_7" tx="0.0"    > <!--Mano-->
+																			<joint id="hand_right" port="30000">
+																				<mesh id="hand_right_mesh" file="/home/robocomp/robocomp/Files/osgModels/loki/mano_semi_loki.osg"  rx="-0.95" ry="0.0" rz="0.75" scale="0.1875" />
+																			</joint>
+																		</transform>
+																	</joint>
+																	</joint>
+																	</joint>
+																</transform>
+															</joint>
+														</transform>
+													</joint>
+												</transform>
+											</joint>
+										</transform>
+									</joint>
+								</transform>
+							</joint>
+						</transform>
+						<!-- Right Arm End -->	
+						
+						<!-- Left Arm -->	
+						<transform id="arm_left_1" tx="-0.06" tz="0.975" ry="-1.5707963267948966" > 
+						<transform id="niapa_arm_left_1" rz="1.5707963267948966" > 
+<!-- 							Gira en Z -->
+							<joint id="shoulder_left_1" port="30000" min="-3.14159265359" max="3.14159265359" axis="z">
+								<mesh id="shoulder_left_1_mesh" file="/home/robocomp/robocomp/Files/osgModels/loki/brazo_loki_1.osg" rx="1.5707963267948966"  scale="0.1875"    />
+								<transform id="arm_left_2" tz="0.225" >
+<!-- 									Gira en X -->
+									<joint id="shoulder_left_2" port="30000" min="-1.48352986419" max="1.48352986419" axis="x">
+										<mesh id="shoulder_left_2_mesh" file="/home/robocomp/robocomp/Files/osgModels/loki/brazo_loki_2.osg" ry="1.5707963267948966" tx="0.07" scale="0.1875"    />
+										<transform id="arm_left_3" tz="0.07"  >
+<!-- 											Gira en Z -->
+											<joint id="shoulder_left_3" port="30000" min="-3.14159265359" max="3.14159265359" axis="z">
+												<mesh id="shoulder_left_3_mesh" file="/home/robocomp/robocomp/Files/osgModels/loki/brazo_loki_3.osg" ry="1.5707963267948966"    scale="0.1875"    />
+												<transform id="arm_left_4" tz="0.165"    > <!--Codo-->
+<!-- 													Gira en X -->
+													<joint id="elbow_left" port="30000" min="-1.48352986419" max="1.48352986419" axis="x">
+														<mesh id="elbow_left_mesh" file="/home/robocomp/robocomp/Files/osgModels/loki/brazo_loki_4.osg" ry="1.5707963267948966"  tx="-0.045"   scale="0.1875"    />													
+														<transform id="arm_left_5" tz="0.07"    > <!--Giro1 muñeca-->
+<!-- 															Gira en Z-->
+															<joint id="wrist_left_1" port="30000" min="-3.14159265359" max="3.14159265359" axis="z">
+																<mesh id="wrist_left_mesh" file="/home/robocomp/robocomp/Files/osgModels/loki/brazo_loki_5.osg"  scale="0.1875"    />
+																<transform id="arm_left_6" tz="0.40" >
+<!-- 																	Prismatica en Z -->
+																	<joint id="wrist_left_2" port="30000" axis="z">
+<!-- 																	Gira en X -->
+																	<joint id="wrist_left_3" port="30000" min="-0.8" max="0.8" axis="x">
+<!-- 																	Gira en Y -->
+																	<joint id="wrist_left_4" port="30000" min="-0.8" max="0.8" axis="y">
+																		<transform id="arm_left_7" tx="0.0"    > <!--Mano-->
+																			<joint id="hand_left" port="30000">
+																				<mesh id="hand_left_mesh" file="/home/robocomp/robocomp/Files/osgModels/loki/mano_semi_loki.osg"  rx="-0.95" ry="0.0" rz="0.75" scale="0.1875" />
+																			</joint>
+																		</transform>
+																	</joint>
+																	</joint>
+																	</joint>
+																</transform>
+															</joint>
+														</transform>
+													</joint>
+												</transform>
+											</joint>
+										</transform>
+									</joint>
+								</transform>
+							</joint>
+						</transform>
+						</transform>
+						<!-- Left Arm End-->	
+					
+					</joint> <!-- joint tronco -->
+				</transform> <!-- base tronco -->
+				</joint> <!-- joint base -->
+			</transform> <!-- cambiocoordenadas -->
+		</differentialrobot> <!--base -->
+		
+	</transform>
+</innerModel>
+

@@ -1,0 +1,28 @@
+<innerModel>
+	<transform id="world" >
+		<pointcloud id="cloud" /> 
+		<transform id="cube_0">
+			<mesh id="cube" file="/home/robocomp/robocomp/Files/osgModels/basics/cubexxx.3ds" scale="500" rx="0" render="wireframe"/>
+		</transform>
+		<mesh id="rawOdometry_mesh" file="/home/robocomp/robocomp/Files/osgModels/axis.osg" scale="30" rx="1.57" render="wireframe" /> 
+	</transform>
+	<!--
+		<transform id="world">
+			<plane id="floor" ny="1" size="100000" repeat="1" />
+			<transform id="rawOdometry">
+				<translation id="geometricCenterRaw" tx="0" ty="0" tz="-100">
+					<mesh id="rawOdometry_mesh" file="/home/robocomp/robocomp/Files/osgModels/RobEx/platform.osg" scale="100" rx="1.57" />
+				</translation>
+			</transform>
+			
+			<transform id="base">
+				<translation id="robotGeometricCenter" tx="0" ty="0" tz="-285">
+					<mesh id="base_mesh" file="/home/robocomp/robocomp/Files/osgModels/Gualzru/Gualzru.osg" scale="10" ty="100" />
+				</translation>
+				<translation id="laser" tx="0" ty="-200" tz="0" />
+				<transform id="laser2" tx="0" ty="-200" tz="-40" ry="3.14159265" />
+			</transform>
+			
+			<transform id="worldTemporalRef" />
+		</transform>-->
+</innerModel>

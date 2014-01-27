@@ -1,0 +1,74 @@
+<innerModel>
+	<transform id="world">
+
+	        <transform id="piso">
+	            <mesh id="pared1" file="/home/daniel/piso_osg/pared1.osg" scale="0.1" />
+	            <mesh id="pared2" file="/home/daniel/piso_osg/pared2.osg" scale="0.1" />
+	            <mesh id="pared3" file="/home/daniel/piso_osg/pared3.osg" scale="0.1" />
+	            <mesh id="pared4" file="/home/daniel/piso_osg/pared4.osg" scale="0.1" />
+	            <mesh id="pared5" file="/home/daniel/piso_osg/pared5.osg" scale="0.1" />
+	            <mesh id="pared6" file="/home/daniel/piso_osg/pared6.osg" scale="0.1" />
+	            <mesh id="pared7" file="/home/daniel/piso_osg/pared7.osg" scale="0.1" />
+	            <mesh id="pared8" file="/home/daniel/piso_osg/pared8.osg" scale="0.1" />
+	            <mesh id="pared9" file="/home/daniel/piso_osg/pared9.osg" scale="0.1" />
+	            <mesh id="pared10" file="/home/daniel/piso_osg/pared10.osg" scale="0.1" />
+	            <mesh id="pared11" file="/home/daniel/piso_osg/pared11.osg" scale="0.1" />
+	            <mesh id="pilar1" file="/home/daniel/piso_osg/pilar1.osg" scale="0.1" />
+	            <mesh id="pilar2" file="/home/daniel/piso_osg/pilar2.osg" scale="0.1" />
+	            <mesh id="columna1" file="/home/daniel/piso_osg/columna1.osg" scale="0.1" />
+	            <mesh id="columna2" file="/home/daniel/piso_osg/columna2.osg" scale="0.1" />
+	            <mesh id="paredwc1" file="/home/daniel/piso_osg/paredwc1.osg" scale="0.1" />
+		    <mesh id="paredwc2" file="/home/daniel/piso_osg/paredwc2.osg" scale="0.1" />
+		    <mesh id="paredwc3" file="/home/daniel/piso_osg/paredwc3.osg" scale="0.1" />
+		    <mesh id="indoor" file="/home/daniel/piso_osg/indoor.osg" scale="0.1" />
+		    <mesh id="wcdoor" file="/home/daniel/piso_osg/wcdoor.osg" scale="0.1" />
+		    <mesh id="cristalera2" file="/home/daniel/piso_osg/cristalera2.osg" scale="0.1" />
+		    <mesh id="tubes" file="/home/daniel/piso_osg/tubes.osg" scale="0.1" />
+		    <mesh id="arch1" file="/home/daniel/piso_osg/arch1.osg" scale="0.1" />
+		    <mesh id="arch2" file="/home/daniel/piso_osg/arch2.osg" scale="0.1" />
+		    <mesh id="suelo" file="/home/daniel/piso_osg/suelo.osg" scale="0.1" />
+	        </transform>
+
+		<!-- Base de loki -->
+		<transform id="base">
+		    <mesh id="base_loki" file="/home/robocomp/robocomp/Files/osgModels/lokibase_loki.osg" scale="2.0" tx="8" tz="-4" rz = "1.57" />
+			<!-- Tronco de loki -->
+			<transform id="tronco">
+				<mesh id="tronco_loki" file="/home/robocomp/robocomp/Files/osgModels/lokitronco_loki.osg" scale="2.0" tx="8" tz="-4" rz = "1.57"/>
+				<!-- Cabeza de loki -->
+				<transform id="cabeza">
+		    			<mesh id="cabeza_loki" file="/home/robocomp/robocomp/Files/osgModels/lokicabeza_loki.osg" scale="2.0" tx="8" tz="-4" rz = "1.57"/>
+				</transform>
+				<!-- Boca de loki -->
+				<transform id="boca">
+		    			<mesh id="boca_loki" file="/home/robocomp/robocomp/Files/osgModels/lokiboca_loki.osg" scale="2.0" tx="8" tz="-4" rz = "1.57"/>
+				</transform>
+				<!-- Brazo de loki completo -->
+				<!-- Pieza 1 -->
+				<transform id="brazo_1">
+		    			<mesh id="brazo_1_loki" file="/home/robocomp/robocomp/Files/osgModels/lokibrazo_1_loki.osg" scale="2.0" tx="8" tz="-4" rz = "1.57"/>
+						<!-- Pieza 2 -->
+						<transform id="brazo_2">
+		    					<mesh id="brazo_2_loki" file="/home/robocomp/robocomp/Files/osgModels/lokibrazo_2_loki.osg" scale="2.0" tx="8" tz="-4" rz = "1.57"/>
+								<!-- Pieza 3 -->
+								<transform id="brazo_3">
+		    							<mesh id="brazo_3_loki" file="/home/robocomp/robocomp/Files/osgModels/lokibrazo_3_loki.osg" scale="2.0" tx="8" tz="-4" rz = "1.57"/>
+										<!-- Pieza 4 -->
+										<transform id="brazo_4">
+		    									<mesh id="brazo_4_loki" file="/home/robocomp/robocomp/Files/osgModels/lokibrazo_4_loki.osg" scale="2.0" tx="8" tz="-4" rz = "1.57"/>
+												<!-- Mano semiabierta -->
+												<transform id="mano">
+		    											<mesh id="mano_loki" file="/home/robocomp/robocomp/Files/osgModels/lokimano_semi_loki.osg" scale="2.0" tx="8" tz="-4" rz = "1.57"/>
+												</transform>
+										</transform>
+								</transform>
+						</transform>
+				</transform>
+		       	<!--tronco -->			
+			</transform>
+	       	<!--base -->
+		</transform>
+
+
+	</transform>
+</innerModel>

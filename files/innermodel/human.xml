@@ -1,0 +1,84 @@
+<innerModel>
+	<transform id="world" tx="0" ty="0" tz="0">
+
+		<!-- waist -->
+		<transform id="XN_SKEL_WAIST" >
+<!-- 			<mesh id="ewfewfewf_mesh" file="/home/robocomp/robocomp/Files/osgModels/human/jointbox.osg" scale="50" /> -->
+			<mesh id="XN_SKEL_WAIST_mesh" file="/home/robocomp/robocomp/Files/osgModels/human/TIOcintura.osg" scale="10" tx="0" ty="0" tz="0" rx="-1.5" rz="3.1415" />
+			<!-- torso -->
+			<transform id="XN_SKEL_TORSO" tx="0" ty="400" tz="0">
+				<mesh id="ewwfewf_mesh" file="/home/robocomp/robocomp/Files/osgModels/human/jointbox.osg" scale="50" />
+				<mesh id="XN_SKEL_TORSO_mesh" file="/home/robocomp/robocomp/Files/osgModels/human/TIOpecho.osg" scale="10" tx="0" ty="-205" tz="0" rx="-1.57" rz="3.1415" />
+				<!-- head -->
+				<transform id="XN_SKEL_HEAD" ty="220" >
+					<mesh id="ewffewf_mesh" file="/home/robocomp/robocomp/Files/osgModels/human/jointbox.osg" scale="50" />
+					<mesh id="XN_SKEL_HEAD_mesh" file="/home/robocomp/robocomp/Files/osgModels/human/TIOcabeza.osg" scale="10" tx="0" ty="0" tz="0" rx="-1.5" rz="3.1415" />
+				</transform>
+				<!-- head ends -->
+				<!-- left arm -->
+				<transform id="XN_SKEL_LEFT_SHOULDER" tx="-170" ty="170" tz="0">
+					<mesh id="XN_SKEL_LEFT_SHOULDER_mesh" file="/home/robocomp/robocomp/Files/osgModels/human/jointbox.osg" scale="50"  />
+					<mesh id="humerol_mesh" file="/home/robocomp/robocomp/Files/osgModels/human/TIObrazo.osg" scale="10" ry="-1.57" />
+					<transform id="XN_SKEL_LEFT_ELBOW" tx="-335" ty="0" tz="0">
+						<mesh id="XN_SKEL_LEFT_ELBOW_mesh" file="/home/robocomp/robocomp/Files/osgModels/human/jointbox.osg" scale="50"  />
+						<mesh id="radiol_mesh" file="/home/robocomp/robocomp/Files/osgModels/human/TIOantebrazo.osg" scale="10"  ry="-1.57" />
+						<transform id="XN_SKEL_LEFT_HAND" tx="-365" ty="0" tz="0">
+							<mesh id="XN_SKEL_LEFT_HAND_mesh" file="/home/robocomp/robocomp/Files/osgModels/human/jointbox.osg" scale="50"  />
+						</transform>
+					</transform>
+				</transform>
+				<!-- left arm ends -->
+				<!-- right arm -->
+				<transform id="XN_SKEL_RIGHT_SHOULDER" tx="170" ty="170" tz="0">
+					<mesh id="XN_SKEL_RIGHT_SHOULDER_mesh" file="/home/robocomp/robocomp/Files/osgModels/human/jointbox.osg" scale="50"  />
+					<mesh id="humeror_mesh" file="/home/robocomp/robocomp/Files/osgModels/human/TIObrazo.osg" scale="10"  ry="1.57" />
+					<transform id="XN_SKEL_RIGHT_ELBOW" tx="335" ty="0" tz="0">
+						<mesh id="XN_SKEL_RIGHT_ELBOW_mesh" file="/home/robocomp/robocomp/Files/osgModels/human/jointbox.osg" scale="50" />
+						<mesh id="radior_mesh" file="/home/robocomp/robocomp/Files/osgModels/human/TIOantebrazo.osg" scale="10" ry="1.57"/>
+						<transform id="XN_SKEL_RIGHT_HAND" tx="365" ty="0" tz="0">
+							<mesh id="XN_SKEL_RIGHT_HAND_mesh" file="/home/robocomp/robocomp/Files/osgModels/human/jointbox.osg" scale="50" />
+						</transform>
+					</transform>
+				</transform>
+				<!-- right arm ends -->
+			</transform>
+			<!-- torso ends -->
+			
+			<!-- left leg -->
+			<transform id="XN_SKEL_LEFT_HIP" tx="-100" ty="0" tz="0">
+				<mesh id="XN_SKEL_LEFT_HIP_mesh" file="/home/robocomp/robocomp/Files/osgModels/human/jointbox.osg" scale="50" />
+				<mesh id="LEFT_THIGH_mesh" file="/home/robocomp/robocomp/Files/osgModels/human/TIOmuslo.osg" scale="10" rx="1.57" rz="3.1415" />
+				<transform id="XN_SKEL_LEFT_KNEE" tx="0" ty="-425" tz="0">
+					<mesh id="XN_SKEL_LEFT_KNEE_mesh" file="/home/robocomp/robocomp/Files/osgModels/human/jointbox.osg" scale="50" />
+					<mesh id="LEFT_CALF_mesh" file="/home/robocomp/robocomp/Files/osgModels/human/TIOpantorrilla.osg" scale="10" rx="1.57" rz="3.1415" />
+					<transform id="XN_SKEL_LEFT_ANKLE" tx="0" ty="-425" tz="0">
+						<transform id="XN_SKEL_LEFT_FOOT" tx="0" ty="0" tz="220"/>
+						<mesh id="XN_SKEL_LEFT_FOOT_mesh" file="/home/robocomp/robocomp/Files/osgModels/human/jointbox.osg" scale="50" />
+					</transform>
+				</transform>
+			</transform>
+			<!-- left leg ends -->
+			
+			<!-- right leg -->
+			<transform id="XN_SKEL_RIGHT_HIP" tx="100" ty="0" tz="0">
+				<mesh id="XN_SKEL_RIGHT_HIP_mesh" file="/home/robocomp/robocomp/Files/osgModels/human/jointbox.osg" scale="50" />
+				<mesh id="RIGHT_THIGH_mesh" file="/home/robocomp/robocomp/Files/osgModels/human/TIOmuslo.osg" scale="10" rx="1.57" rz="3.1415" />
+				<transform id="XN_SKEL_RIGHT_KNEE" tx="0" ty="-425" tz="0">
+					<mesh id="XN_SKEL_RIGHT_KNEE_mesh" file="/home/robocomp/robocomp/Files/osgModels/human/jointbox.osg" scale="50" />
+					<mesh id="RIGHT_CALF_mesh" file="/home/robocomp/robocomp/Files/osgModels/human/TIOpantorrilla.osg" scale="10" rx="1.57" rz="3.1415" />
+					<transform id="XN_SKEL_RIGHT_ANKLE" tx="0" ty="-425" tz="0">
+						<transform id="XN_SKEL_RIGHT_FOOT" tx="0" ty="0" tz="220"/>
+						<mesh id="XN_SKEL_RIGHT_FOOT_mesh" file="/home/robocomp/robocomp/Files/osgModels/human/jointbox.osg" scale="50" />
+					</transform>
+				</transform>
+			</transform>
+			<!-- right leg ends -->
+			
+			
+			
+		</transform>
+		<!-- waist ends -->
+
+
+	</transform>
+</innerModel>

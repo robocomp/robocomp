@@ -1,0 +1,18 @@
+<innerModel>
+	<translation id="world" tx="0" ty="0" tz="0">
+
+		<differentialrobot id="base" port="40000" ty="0.00001">
+						<laser id="laser" port="20000" measures="100" min="20" max="30000" angle="4.7123889"/>
+		</differentialrobot>
+
+		<translation id="room" tx="0" ty="0" tz="0">
+			<plane id="floor"   nx="0" ny="1" nz="0" px="0" py="-4" pz="0" size="8" repeat="1" texture="#ea2800" />
+			<plane id="ceiling" nx="0" ny="1" nz="0" px="0" py="4" pz="0" size="8" repeat="1" texture="#ffffff" />
+			<plane id="left"    nx="1" ny="0" nz="0" px="-4" py="0" pz="0" size="8" repeat="1" texture="#ffffff" />
+			<plane id="right"   nx="1" ny="0" nz="0" px="4" py="0" pz="0" size="8" repeat="1" texture="#546f13" />
+			<plane id="back"    nx="0" ny="0" nz="1" px="0" py="0" pz="-4" size="8" repeat="1" texture="#f16f13" />
+			<plane id="front"   nx="0" ny="0" nz="1" px="0" py="0" pz="4" size="8" repeat="1" texture="#f16f13" />
+		</translation>
+
+	</translation>
+</innerModel>
