@@ -276,7 +276,7 @@ class OpenConnection(QDialog):
 			if len(directory)>0:
 				sliceOpts = sliceOpts + ' -I' + directory + ' '
 		sliceOpts = sliceOpts + ' -I. '
-		sliceOpts = sliceOpts + ' -I' + ROBOCOMP + '/Interfaces '
+		sliceOpts = sliceOpts + ' -I' + ROBOCOMP + '/interfaces '
 		sliceOpts = sliceOpts + ' --all'
 		print 'Slice options:', sliceOpts
 		self.sr = SliceReader(self.slicePath, sliceOpts)
