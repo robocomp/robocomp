@@ -40,7 +40,7 @@ class FaulHaberApi : public CanBus
  
 	//Position
 	int getPosition(int id);
-	int getPositionUrsus(int id);
+	int getPositionExternalEncoder(int id);
 	int syncGetPosition(int node_count,int* nodeIds,int* positions);//probar
 	void setPosition(int id, int position);
 	int syncSetPosition(int node_count,int* nodeIds,int* positions);//probar
@@ -50,6 +50,7 @@ class FaulHaberApi : public CanBus
 	
 	void goHome(int id);
 	
+	void setInternalEncoderValue(int id, int value);
 	
 	//Speed
 	int setVelocity(int id, int vel);//probar

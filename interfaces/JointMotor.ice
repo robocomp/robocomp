@@ -25,15 +25,17 @@ module RoboCompJointMotor{
 	};
 	dictionary<string, MotorState>MotorStateMap;
 	struct MotorParams{
-		bool invertedSign;
+		bool invertedSign; //Deprecated do not use this, unitrange should be used instead
 		byte busId;
 		float minPos;
-					float maxPos;
-					float maxVelocity;
-					float zeroPos;
-					float stepsRange;
-					float maxDegrees;
-					string name;
+		float maxPos;
+		float maxVelocity;
+		float zeroPos;
+		float stepsRange;
+		float maxDegrees; //Deprecated use unitrange
+		string name;
+		float offset;
+		float unitsRange;
 	};
 	sequence <MotorParams> MotorParamsList;
 	struct BusParams{

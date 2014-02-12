@@ -25,13 +25,15 @@ module RoboCompJointMotor{
   	{
     	string name;         // name of motor
     	byte busId;          // bus identificacion
-    	float minPos;        // rads
-    	float maxPos;        // rads
-    	float maxVelocity;   // rads/sec
-    	float zeroPos;       // rads
-    	float stepsRange;    // steps/revolution
-    	float maxDegrees;
-    	bool invertedSign;   // invert angle range
+    	float minPos;        // units
+    	float maxPos;        // units
+    	float maxVelocity;   // units/sec
+    	float zeroPos;       // units
+    	float stepsRange;    // stepsRange
+    	float maxDegrees;	  // DEPRECATED, DO NOT USE! use unitrange instead
+    	bool invertedSign;   //  (invert angle range) DEPRECATED, DO NOT USE! use unitrange instead 
+    	float offset; 		  // steps_value_at_zero_units
+		float unitsRange;     // units per stepsRange
   	};
   	sequence<MotorParams> MotorParamsList;
 

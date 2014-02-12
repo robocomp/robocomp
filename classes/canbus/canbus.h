@@ -51,6 +51,7 @@ class CanBus
 	void printMessageData(VSCAN_MSG msg);
 	
 	VSCAN_MSG buildMessageData(uint16_t type, uint8_t nodeId,uint8_t size,uint8_t CommandSpecifier, uint16_t obj_id,uint8_t obj_subid, uint32_t obj_data);
+	VSCAN_MSG buildRawMessageData(uint32_t ID, uint8_t Size, uint8_t D0, uint8_t D1, uint8_t D2, uint8_t D3, uint8_t D4, uint8_t D5, uint8_t D6, uint8_t D7);
 	
 	int readIntegerResponse(VSCAN_MSG msg);
 	

@@ -5,7 +5,7 @@
 */
 FaulHaberApi::FaulHaberApi(QString device, int baudRate) : CanBus(device, baudRate)
 {
-	qDebug()<<"binario"<<QString::number(16,2);
+	//qDebug()<<"binario"<<QString::number(16,2);
 }
 /**
 * \brief Default destructor
@@ -59,11 +59,12 @@ void FaulHaberApi::Init_Node(int id)
 int FaulHaberApi::getPosition(int id)
 {
 
-	qDebug()<<"read position"<<id;
-	msg = buildMessageData(WriteObjectId,id,8,0x41,0x6063,0x00,0x00000000);
-	printf("%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u \n", msg.Id, msg.Size, msg.Data[0], msg.Data[1], msg.Data[2], msg.Data[3], msg.Data[4], msg.Data[5], msg.Data[6], msg.Data[7], msg.Timestamp);
+	//qDebug()<<"read position"<<id;
+	//msg = buildMessageData(WriteObjectId,id,8,0x40,0x0000,0x00,0x00000000);
+    msg = buildMessageData(0x300,id,8,0x40,0x0000,0x00,0x00000000);
 	int a=writeWaitReadMessage(&msg);
-		printf("%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u \n", msg.Id, msg.Size, msg.Data[0], msg.Data[1], msg.Data[2], msg.Data[3], msg.Data[4], msg.Data[5], msg.Data[6], msg.Data[7], msg.Timestamp);
+	//printf("output  %#x, %#x, %#x, %#x, %#x, %#x, %#x, %#x, %#x, %#x \n ", msg.Id,msg.Size, msg.Data[0], msg.Data[1], msg.Data[2], msg.Data[3], msg.Data[4], msg.Data[5],	 msg.Data[6], msg.Data[7], msg.Timestamp );
+	
 	if(a == 1)
 		return readIntegerResponse(msg);
 	else
@@ -71,32 +72,35 @@ int FaulHaberApi::getPosition(int id)
 	
 }
 
-int FaulHaberApi::getPositionUrsus(int id)
+int FaulHaberApi::getPositionExternalEncoder(int id)
 {
 
-	qDebug()<<"read position"<<id;
-	//msg = buildMessageData(WriteObjectId,id,8,0x41,0x6063,0x00,0x00000000);
-	
-	qDebug()<<"read potenciometro"<<id;
+	//qDebug()<<"read position external encoder"<<id;
 	msg = buildMessageData(0x300,id,8,0xb2,0x0005,0x00,0x00000000);
-	printf("%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u \n", msg.Id, msg.Size, msg.Data[0], msg.Data[1], msg.Data[2], msg.Data[3], msg.Data[4], msg.Data[5], msg.Data[6], msg.Data[7], msg.Timestamp);
 	int a=writeWaitReadMessage(&msg);
-	  printf("Salida  %#x, %#x, %#x, %#x, %#x, %#x, %#x, %#x, %#x, %#x \n ", msg.Id,msg.Size,
-        msg.Data[0],
-        msg.Data[1],
-        msg.Data[2],
-        msg.Data[3],
-        msg.Data[4],
-        msg.Data[5],	
-        msg.Data[6],
-        msg.Data[7] );
-	  qDebug()<<readIntegerResponse(msg);
-
+	//printf("output  %#x, %#x, %#x, %#x, %#x, %#x, %#x, %#x, %#x, %#x \n ", msg.Id,msg.Size, msg.Data[0], msg.Data[1], msg.Data[2], msg.Data[3], msg.Data[4], msg.Data[5],	 msg.Data[6], msg.Data[7], msg.Timestamp );
+	
 	if(a == 1)
 		return readIntegerResponse(msg);
 	else
 		return -1;
 	
+}
+
+//sets value of motor internal encoder to value
+void FaulHaberApi::setInternalEncoderValue(int id, int value)
+{
+    unsigned char D3,D2,D1,D0;
+
+    D0 = (value & 0xFF000000 )/0X1000000;
+    D1 = (value & 0xFF0000 )/0X10000;
+    D2 = (value & 0xFF00 )/0X100;
+    D3 = (value & 0xFF );
+	
+   // Envio_Trama(Handle, (0x300+ID),5,0xB8,D3,D2,D1,D0,0x00,0x00,0x00); // LOAD ABSOLUTE
+	
+	msg = buildRawMessageData(0x300+id,5,0xB8,D3,D2,D1,D0,0x00,0x00,0x00);
+	writeWaitReadMessage(&msg);
 }
 
 int FaulHaberApi::syncGetPosition(int node_count,int* nodeIds,int* positions)
@@ -104,8 +108,8 @@ int FaulHaberApi::syncGetPosition(int node_count,int* nodeIds,int* positions)
 
 	for(int count=0;count<node_count;count++)
 	{
-		//msgs[count] = buildMessageData(WriteObjectId,nodeIds[count],8,0x41,0x6063,0x00,0x0000000000);
-		msgs[count] = buildMessageData(WriteObjectId,nodeIds[count],8,0xb2,0x0005,0x00,0x0000000000);
+		//msgs[count] = buildMessageData(WriteObjectId,nodeIds[count],8,0x40,0x0000,0x00,0x0000000000);
+		msgs[count] = buildMessageData(0x300,nodeIds[count],8,0x40,0x0000,0x00,0x0000000000);
 	}
 	int status = multiWriteWaitReadMessage(msgs, node_count);
 	int pos = 0;
@@ -124,6 +128,7 @@ int FaulHaberApi::syncGetPosition(int node_count,int* nodeIds,int* positions)
 	
 	return status;
 }
+
 void FaulHaberApi::setPosition(int id, int position)
 {
 	qDebug()<<"set position"<<id<<position;

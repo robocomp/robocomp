@@ -60,7 +60,7 @@ void qLog::setProxy(std::string endpoint,RoboCompLogger::LoggerPrx _prx)
 		prx = _prx;
 }
 #endif
-void qLog::send(std::string _file, int line,std::string func,std::string strng,std::string _type)
+void qLog::send(std::string _file, int line, std::string func, std::string strng, std::string _type)
 {
 	if (log=="none")
 		return;
@@ -74,10 +74,10 @@ void qLog::send(std::string _file, int line,std::string func,std::string strng,s
 		{
 			if(list1.contains("robocomp"))
 			{
-				if(list1.contains("Classes"))
-					sender = list1[list1.indexOf("Classes")+1].toStdString();
-				else if(list1.contains("HAL") or list1.contains("Essential"))
-					sender = list1[list1.indexOf("HAL")+1].toStdString();
+				if(list1.contains("classes"))
+					sender = list1[list1.indexOf("classes")+1].toStdString();
+				else if(list1.contains("hal") or list1.contains("essential"))
+					sender = list1[list1.indexOf("hal")+1].toStdString();
 				else
 					sender = list1[list1.indexOf("robocomp")+4].toStdString();
 			}
