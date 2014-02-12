@@ -1,0 +1,13 @@
+#INSTALL INSTRUCTIONS FOR CANBUS
+#download file from git annex (it actually downloads from vscom.de/420_download.htm)
+1.- git annex get canbus_driver.zip
+#unzip the file
+2.- unzip canbus_driver.zip
+#copy .h to includes
+3.- sudo cp vs_can_api.h /usr/include/
+#copy .so to lib files:
+
+#if the operating system is 32
+4.- sudo cp Linux/vs_can_api.so /usr/local/lib/
+#if the opreating sytem is 64 (copy and rename to vs_can_api.so)
+4.- sudo cp Linux\ x86-64/libvs_can_api_x86-64.so /usr/local/lib/libvs_can_api.so
