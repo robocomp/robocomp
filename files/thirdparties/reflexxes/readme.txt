@@ -2,7 +2,7 @@ Uncompress ReflexxesTypeII.zip
 
 sudo cp ReflexxesTypeII/include/*.h /usr/local/include
 cd ReflexxesTypeII/Linux
-sudo make clean64 all64
+make clean64 all64
 cd ../..
 sudo cp ReflexxesTypeII/Linux/x64/release/lib/shared/libReflexxesTypeII.so /usr/local/lib
 
