@@ -12,22 +12,32 @@
 module RoboCompAGMWorldModel{
 	dictionary<string, string>StringDictionary;
 	enum BehaviorResultType{InitialWorld, BehaviorBasedModification, BehaviorBasedNumericUpdate, StatusFailTimeout, StatusFailOther, StatusActive, StatusIdle};
+	
+	["cpp:comparable"]
 	struct Node{
 		StringDictionary attributes;
 		int nodeIdentifier;
 		string nodeType;
 	};
+
 	sequence <Node> NodeSequence;
+
+	["cpp:comparable"]
 	struct Edge{
 		int a;
 		int b;
 		string edgeType;
 	};
 	sequence <Edge> EdgeSequence;
-	struct World{
+
+	["cpp:comparable"]
+	struct World
+	{
 		NodeSequence nodes;
 		EdgeSequence edges;
 	};
+
+
 	struct Event{
 		BehaviorResultType why;
 		World backModel;
