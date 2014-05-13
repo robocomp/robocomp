@@ -31,12 +31,12 @@ InnerModelReader::InnerModelReader()
 
 bool InnerModelReader::load(const QString &file, InnerModel *model)
 {
- 	qDebug() << "InnerModelReader: reading" << qPrintable(file);
+ 	printf("InnerModelReader: reading %s\n", file.toStdString().c_str());
 	QDomDocument doc("mydocument");
 	QFile fich(file);
 	if (!fich.open(QIODevice::ReadOnly))
 	{
-		qDebug() << "Can't open" << qPrintable(file);
+		printf("Can't open %s\n", file.toStdString().c_str());
 		return false;
 	}
 
@@ -80,6 +80,7 @@ void InnerModelReader::recursive(QDomNode parentDomNode, InnerModel *model, Inne
 	  and parentDomNode.toElement().tagName().toLower() != QString("rotation").toLower()
 	  and parentDomNode.toElement().tagName().toLower() != QString("translation").toLower()
 	  and parentDomNode.toElement().tagName().toLower() != QString("joint").toLower()
+	  and parentDomNode.toElement().tagName().toLower() != QString("touchsensor").toLower()
 	  and parentDomNode.toElement().tagName().toLower() != QString("prismaticjoint").toLower()
 	  and parentDomNode.toElement().tagName().toLower() != QString("differentialrobot").toLower()
 	)
@@ -147,9 +148,16 @@ void InnerModelReader::recursive(QDomNode parentDomNode, InnerModel *model, Inne
 				imNode->addChild(tr);
 				node = tr;
 			}
+			else if (e.tagName().toLower() == "touchsensor")
+			{
+				InnerModelTransform * im = dynamic_cast<InnerModelTransform *>(imNode);
+				InnerModelTouchSensor *ts = model->newTouchSensor(e.attribute("id"), im, e.attribute("type", "0"), e.attribute("nx", "0").toFloat(), e.attribute("ny", "0").toFloat(), e.attribute("nz", "0").toFloat(), e.attribute("min", "-inf").toFloat(), e.attribute("max", "inf").toFloat(), e.attribute("port", "0").toInt());
+				imNode->addChild(ts);
+				node = ts;
+			}
 			else if (e.tagName().toLower() == "joint")
 			{
-				InnerModelTransform * im = dynamic_cast<InnerModelTransform *>(imNode );
+				InnerModelTransform * im = dynamic_cast<InnerModelTransform *>(imNode);
 				InnerModelJoint *jr = model->newJoint(e.attribute("id"),im, e.attribute("lx", "0").toFloat(), e.attribute("ly", "0").toFloat(), e.attribute("lz", "0").toFloat(),
 				  e.attribute("hx", "0").toFloat(), e.attribute("hy", "0").toFloat(), e.attribute("hz", "0").toFloat(),
 				  e.attribute("tx", "0").toFloat(), e.attribute("ty", "0").toFloat(), e.attribute("tz", "0").toFloat(), e.attribute("rx", "0").toFloat(), e.attribute("ry", "0").toFloat(), e.attribute("rz", "0").toFloat(), e.attribute("min", "-inf").toDouble(), e.attribute("max", "inf").toDouble(), e.attribute("port", "0").toInt(),e.attribute("axis","z").toStdString(), e.attribute("home", "0").toDouble());
@@ -185,14 +193,14 @@ void InnerModelReader::recursive(QDomNode parentDomNode, InnerModel *model, Inne
 			else if (e.tagName().toLower() == "imu")
 			{
 				InnerModelIMU *imu = model->newIMU(e.attribute("id"), imNode, e.attribute("port", "0").toInt());
-				printf("IMU: %s, port %d\n", imu->id.toStdString().c_str(), imu->port);
+// 				printf("IMU: %s, port %d\n", imu->id.toStdString().c_str(), imu->port);
 				imNode->addChild(imu);
 				node = imu;
 			}
 			else if (e.tagName().toLower() == "laser")
 			{
 				InnerModelLaser *laser = model->newLaser(e.attribute("id"), imNode, e.attribute("port", "0").toInt(), e.attribute("min").toInt(), e.attribute("max").toInt(), e.attribute("angle").toFloat(), e.attribute("measures").toInt(), e.attribute("ifconfig"));
-				printf("laser: %s, port %d\n", laser->id.toStdString().c_str(), laser->port);
+// 				printf("laser: %s, port %d\n", laser->id.toStdString().c_str(), laser->port);
 				imNode->addChild(laser);
 				node = laser;
 			}
@@ -203,17 +211,24 @@ void InnerModelReader::recursive(QDomNode parentDomNode, InnerModel *model, Inne
 					render = InnerModelMesh::WireframeRendering;
 				else if (e.attribute("render", "normal").toLower() == "normal")
 					render = InnerModelMesh::NormalRendering;
-				else qFatal("Rendering mode not valid \"render=%s\"\n", e.attribute("render", "normal").toStdString().c_str());
+				else
+				{
+					qFatal("Rendering mode not valid \"render=%s\"\n", e.attribute("render", "normal").toStdString().c_str());
+					return;
+				}
 				QString scale = e.attribute("scale", "1");
 				QStringList li = scale.split(",");
 				float scalex = li[0].toFloat();
 				float scaley;
 				float scalez;
-				if (li.size() == 2) scaley = li[1].toFloat();
+				if (li.size() == 2) { scaley = li[1].toFloat(); scalez = scalex; }
 				else if (li.size() == 3){ scaley = li[1].toFloat(); scalez = li[2].toFloat(); }
 				else if (li.size() == 1){ scaley = scalex; scalez = scalex;}
-				
-				else qFatal("too many numbers in mesh definition");
+				else
+				{
+					qFatal("too many numbers in mesh definition");
+					return;
+				}
 				InnerModelMesh *mesh = model->newMesh(e.attribute("id"), imNode, e.attribute("file"), scalex, scaley, scalez, render, e.attribute("tx").toFloat(), e.attribute("ty").toFloat(), e.attribute("tz").toFloat(), e.attribute("rx").toFloat(), e.attribute("ry").toFloat(), e.attribute("rz").toFloat());
 				imNode->addChild(mesh);
 				node = mesh;
@@ -231,10 +246,14 @@ void InnerModelReader::recursive(QDomNode parentDomNode, InnerModel *model, Inne
 				float width = li[0].toFloat();
 				float height;
 				float depth;
-				if (li.size() == 2) height = li[1].toFloat();
-				else if (li.size() == 3){ height = li[1].toFloat(); depth = li[2].toFloat(); }
-				else if (li.size() == 1){ height = width; depth = 0.05;}
-				else qFatal("too many numbers in plane definition");
+				if      (li.size() == 1) { height = width;           depth = height/100.;}
+				else if (li.size() == 2) { height = li[1].toFloat(); depth = qMin(width,height)/100.; }
+				else if (li.size() == 3) { height = li[1].toFloat(); depth = li[2].toFloat(); }
+				else
+				{
+					qFatal("too many numbers in plane definition");
+					return;
+				}
 				InnerModelPlane *plane = model->newPlane(e.attribute("id"), imNode, e.attribute("texture", ""), width, height, depth, e.attribute("repeat", "1000").toInt(), e.attribute("nx", "0").toFloat(), e.attribute("ny", "0").toFloat(), e.attribute("nz", "0").toFloat(), e.attribute("px", "0").toFloat(), e.attribute("py", "0").toFloat(), e.attribute("pz", "0").toFloat());
 				imNode->addChild(plane);
 				node = plane;
@@ -279,7 +298,11 @@ QMap<QString, QStringList> InnerModelReader::getValidNodeAttributes()
 	temporalList.clear();
 	temporalList << "id" << "lx" << "ly" << "lz" << "hx" << "hy" << "hz" <<  "tx" << "ty" << "tz" << "rx" << "ry" << "rz" << "min" << "max" << "port" << "axis" << "home";
 	nodeAttributes["joint"] = temporalList;
-	
+
+	temporalList.clear();
+	temporalList << "id" << "type" << "nx" << "ny" << "nz" << "min" << "max" << "port";
+	nodeAttributes["touchsensor"] = temporalList;
+
 	temporalList.clear();
 	temporalList << "id" << "min" << "max" << "position" << "offset" << "port" << "axis" << "home";
 	nodeAttributes["prismaticjoint"] = temporalList;

@@ -17,8 +17,24 @@
  *    along with RoboComp.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <innermodel/innermodel.h>
 #include <innermodel/innermodelreader.h>
 
+#include <osg/io_utils>
+#include <osgDB/ReadFile>
+#include <osg/Geode>
+
+#include <iostream>
+#include <fstream>
+
+bool InnerModel::support_fcl()
+{
+#if FCL_SUPPORT==1
+	return true;
+#else
+	return false;
+#endif
+}
 
 
 // ------------------------------------------------------------------------------------------------
@@ -75,7 +91,17 @@ void InnerModelNode::setParent(InnerModelNode *parent_)
 
 void InnerModelNode::addChild(InnerModelNode *child)
 {
-	children.append(child);
+	if (child->parent != this and child->parent != NULL)
+	{
+// 		printf("InnerModelNode::addChild this is weird\n");
+	}
+
+// 	std::cout << "addchild_p: "<< (void *)this << "  " << (void *)child << std::endl;
+// 	std::cout << "addchild_u: "<< (uint64_t)this << "  " << (uint64_t)child << std::endl;
+	if (not children.contains(child))
+	{
+		children.append(child);
+	}
 	child->parent = this;
 }
 
@@ -95,7 +121,8 @@ bool InnerModelNode::isFixed()
 
 
 
-void InnerModelNode::updateChildren() {
+void InnerModelNode::updateChildren()
+{
 	foreach(InnerModelNode *i, children)
 		i->update();
 }
@@ -132,19 +159,23 @@ InnerModel::InnerModel()
 	//   parent->addChild(tr);
 }
 
-
-
 InnerModel::InnerModel(const InnerModel &original)
 {
+	mutex = new QMutex(QMutex::Recursive);
+	root = new InnerModelTransform("root", "static", 0, 0, 0, 0, 0, 0, 0);
+	setRoot(root);
+	hash["root"] = root;
+	
+	QList<InnerModelNode *>::iterator i;
+	for (i=original.root->children.begin(); i!=original.root->children.end(); i++)
+	{
+		root->addChild((*i)->copyNode(hash, root));
+	}
 }
-
-
 
 InnerModel::~InnerModel()
 {
 }
-
-
 
 ///Remove sub tree and return sa list with his id
 void InnerModel::removeSubTree(InnerModelNode *node, QStringList *l)
@@ -189,9 +220,10 @@ bool InnerModel::save(QString path)
 }
 
 
-
+//Deprecated//
 InnerModel InnerModel::cloneFake(const QVec & basePose) const
 {
+	qDebug() << "DEPRECATED. USE COPY CONSTRUCTOR";
 	InnerModel rob( *this );
 	rob.updateTransformValues("base", basePose(0), 0, basePose(1), 0, basePose(2), 0 );
 	return rob;
@@ -372,7 +404,7 @@ void InnerModel::updateRotationValues(QString transformId, float rx, float ry, f
 void InnerModel::updateJointValue(QString jointId, float angle)
 {
 	cleanupTables();
-	
+
 	InnerModelJoint *j = dynamic_cast<InnerModelJoint *>(hash[jointId]);
 	if (j != NULL)
 	{
@@ -418,6 +450,8 @@ InnerModelTransform *InnerModel::newTransform(QString id, QString engine, InnerM
 	if (hash.contains(id)) qFatal("InnerModel::newTransform: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
 	InnerModelTransform *newnode = new InnerModelTransform(id, engine, tx, ty, tz, rx, ry, rz, mass, parent);
 	hash[id] = newnode;
+// 	std::cout << (void *)newnode << "  " << (uint64_t)newnode << std::endl;
+// 	parent->addChild(newnode);
 	return newnode;
 }
 
@@ -428,6 +462,17 @@ InnerModelJoint *InnerModel::newJoint(QString id, InnerModelTransform *parent,fl
 	if (hash.contains(id)) qFatal("InnerModel::newJoint: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
 	InnerModelJoint *newnode = new InnerModelJoint(id,lx,ly,lz,hx,hy,hz, tx, ty, tz, rx, ry, rz, min, max, port, axis, home, parent);
 	hash[id] = newnode;
+// 	parent->addChild(newnode);
+	return newnode;
+}
+
+
+InnerModelTouchSensor *InnerModel::newTouchSensor(QString id, InnerModelTransform *parent, QString stype, float nx, float ny, float nz, float min, float max, uint32_t port)
+{
+	if (hash.contains(id)) qFatal("InnerModel::newTouchSensor: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
+	InnerModelTouchSensor *newnode = new InnerModelTouchSensor(id, stype, nx, ny, nz, min, max, port, parent);
+	hash[id] = newnode;
+// 	parent->addChild(newnode);
 	return newnode;
 }
 
@@ -438,6 +483,7 @@ InnerModelPrismaticJoint *InnerModel::newPrismaticJoint(QString id, InnerModelTr
 	if (hash.contains(id)) qFatal("InnerModel::newPrismaticJoint: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
 	InnerModelPrismaticJoint *newnode = new InnerModelPrismaticJoint(id, min, max, value, offset, port, axis, home, parent);
 	hash[id] = newnode;
+// 	parent->addChild(newnode);
 	return newnode;
 }
 
@@ -448,6 +494,7 @@ InnerModelDifferentialRobot *InnerModel::newDifferentialRobot(QString id, InnerM
 	if (hash.contains(id)) qFatal("InnerModel::newDifferentialrobot: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
 	InnerModelDifferentialRobot *newnode = new InnerModelDifferentialRobot(id, tx, ty, tz, rx, ry, rz, port, parent);
 	hash[id] = newnode;
+// 	parent->addChild(newnode);
 	return newnode;
 }
 
@@ -458,6 +505,7 @@ InnerModelCamera *InnerModel::newCamera(QString id, InnerModelNode *parent, floa
 	if (hash.contains(id)) qFatal("InnerModel::newCamera: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
 	InnerModelCamera *newnode = new InnerModelCamera(id, width, height, focal, parent);
 	hash[id] = newnode;
+// 	parent->addChild(newnode);
 	return newnode;
 }
 
@@ -470,6 +518,7 @@ InnerModelRGBD *InnerModel::newRGBD(QString id, InnerModelNode *parent, float wi
 	if (hash.contains(id)) qFatal("InnerModel::newRGBD: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
 	InnerModelRGBD *newnode = new InnerModelRGBD(id, width, height, focal, noise, port, ifconfig, parent);
 	hash[id] = newnode;
+// 	parent->addChild(newnode);
 	return newnode;
 }
 
@@ -481,6 +530,7 @@ InnerModelIMU *InnerModel::newIMU(QString id, InnerModelNode *parent, uint32_t p
 	// 	printf("newIMU id=%s  parentId=%s port=%d\n", id.toStdString().c_str(), parent->id.toStdString().c_str(), port);
 	InnerModelIMU *newnode = new InnerModelIMU(id, port, parent);
 	hash[id] = newnode;
+// 	parent->addChild(newnode);
 	return newnode;
 }
 
@@ -492,6 +542,7 @@ InnerModelLaser *InnerModel::newLaser(QString id, InnerModelNode *parent, uint32
 	// 	printf("newLaser id=%s  parentId=%s port=%d min=%d max=%d angle=%f measures=%d\n", id.toStdString().c_str(), parent->id.toStdString().c_str(), port, min, max, angle, measures);
 	InnerModelLaser *newnode = new InnerModelLaser(id, port, min, max, angle, measures, ifconfig, parent);
 	hash[id] = newnode;
+// 	parent->addChild(newnode);
 	return newnode;
 }
 
@@ -502,6 +553,7 @@ InnerModelPlane *InnerModel::newPlane(QString id, InnerModelNode *parent, QStrin
 	if (hash.contains(id)) qFatal("InnerModel::newPlane: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
 	InnerModelPlane *newnode = new InnerModelPlane(id, texture, width, height, depth, repeat, nx, ny, nz, px, py, pz, parent);
 	hash[id] = newnode;
+// 	parent->addChild(newnode);
 	return newnode;
 }
 
@@ -512,6 +564,7 @@ InnerModelMesh *InnerModel::newMesh(QString id, InnerModelNode *parent, QString 
 	if (hash.contains(id)) qFatal("InnerModel::newMesh: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
 	InnerModelMesh *newnode = new InnerModelMesh(id, path, scalex, scaley, scalez, (InnerModelMesh::RenderingModes)render, tx, ty, tz, rx, ry, rz, parent);
 	hash[id] = newnode;
+// 	parent->addChild(newnode);
 	return newnode;
 }
 
@@ -529,7 +582,8 @@ InnerModelPointCloud *InnerModel::newPointCloud(QString id, InnerModelNode *pare
 	if (hash.contains(id)) qFatal("InnerModel::newPointCloud: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
 	InnerModelPointCloud *newnode = new InnerModelPointCloud(id, parent);
 	hash[id] = newnode;
-	printf("Inserted point cloud %s ptr(%p), on node %s\n", id.toStdString().c_str(), newnode, parent->id.toStdString().c_str());
+	//printf("Inserted point cloud %s ptr(%p), on node %s\n", id.toStdString().c_str(), newnode, parent->id.toStdString().c_str());
+// 	parent->addChild(newnode);
 	return newnode;
 }
 
@@ -559,6 +613,21 @@ InnerModelJoint *InnerModel::getJoint(const QString &id)
 			qFatal("No such joint %s", id.toStdString().c_str());
 		else
 			qFatal("%s doesn't seem to be a joint", id.toStdString().c_str());
+	}
+	return tr;
+}
+
+
+
+InnerModelTouchSensor *InnerModel::getTouchSensor(const QString &id)
+{
+	InnerModelTouchSensor *tr = dynamic_cast<InnerModelTouchSensor *>(hash[id]);
+	if (not tr)
+	{
+		if (not hash[id])
+			qFatal("No such touch sensor %s", id.toStdString().c_str());
+		else
+			qFatal("%s doesn't seem to be a touch sensor", id.toStdString().c_str());
 	}
 	return tr;
 }
@@ -1402,8 +1471,7 @@ QVec InnerModel::laserToBase(const QString & laserId, float r, float alpha)
 // InnerModelTransform
 // ------------------------------------------------------------------------------------------------
 
-InnerModelTransform::InnerModelTransform(QString id_, QString engine_, float tx_, float ty_, float tz_, float rx_, float ry_, float rz_, float mass_, InnerModelNode *parent_)
-: InnerModelNode(id_, parent_)
+InnerModelTransform::InnerModelTransform(QString id_, QString engine_, float tx_, float ty_, float tz_, float rx_, float ry_, float rz_, float mass_, InnerModelNode *parent_) : InnerModelNode(id_, parent_)
 {
 	engine = engine_;
 	set(rx_, ry_, rz_, tx_, ty_, tz_);
@@ -1529,13 +1597,29 @@ void InnerModelTransform::update(float tx_, float ty_, float tz_, float rx_, flo
 }
 
 
+InnerModelNode * InnerModelTransform::copyNode(QHash<QString, InnerModelNode *> &hash, InnerModelNode *parent)
+{
+	InnerModelTransform *ret = new InnerModelTransform(id, engine, backtX, backtY, backtZ, backrX, backrY, backrZ, mass, parent);
+	ret->level = level;
+	ret->fixed = fixed;
+	ret->children.clear();
+	ret->attributes.clear();
+	hash[id] = ret;
+
+	for (QList<InnerModelNode*>::iterator i=children.begin(); i!=children.end(); i++)
+	{
+		ret->addChild((*i)->copyNode(hash, ret));
+	}
+	
+	return ret;
+}
+
 
 // ------------------------------------------------------------------------------------------------
 // InnerModelJoint
 // ------------------------------------------------------------------------------------------------
 
-InnerModelJoint::InnerModelJoint(QString id_, float lx_, float ly_, float lz_, float hx_, float hy_, float hz_, float tx_, float ty_, float tz_, float rx_, float ry_, float rz_, float min_, float max_, uint32_t port_, std::string axis_, float home_, InnerModelTransform *parent_)
-: InnerModelTransform(id_,QString("static"),tx_,ty_,tz_,rx_,ry_,rz_, 0, parent_)
+InnerModelJoint::InnerModelJoint(QString id_, float lx_, float ly_, float lz_, float hx_, float hy_, float hz_, float tx_, float ty_, float tz_, float rx_, float ry_, float rz_, float min_, float max_, uint32_t port_, std::string axis_, float home_, InnerModelTransform *parent_) : InnerModelTransform(id_,QString("static"),tx_,ty_,tz_,rx_,ry_,rz_, 0, parent_)
 {
 // 		set(rx_, ry_, rz_, tx_, ty_, tz_);
 	backlX = lx_;
@@ -1651,7 +1735,9 @@ float InnerModelJoint::setAngle(float angle)
 	{
 		ret = min;
 	}
+
 	backrZ = ret;
+
 	if (axis == "x")
 	{
 		set(ret,0,0, 0,0,0);
@@ -1684,12 +1770,46 @@ QVec InnerModelJoint::unitaryAxis()
 
 
 
+InnerModelNode * InnerModelJoint::copyNode(QHash<QString, InnerModelNode *> &hash, InnerModelNode *parent)
+{
+	InnerModelJoint *ret;
+	if (axis == "x")
+	{
+		ret = new InnerModelJoint(id, backlX, backlY, backlZ, backhX, backhY, backhZ, backtX, backtY, backtZ, backrZ, 0, 0, min, max, port, axis, home, (InnerModelTransform *)parent);
+	}
+	else if (axis == "y")
+	{
+		ret = new InnerModelJoint(id, backlX, backlY, backlZ, backhX, backhY, backhZ, backtX, backtY, backtZ, 0, backrZ, 0, min, max, port, axis, home, (InnerModelTransform *)parent);
+	}
+	else if (axis == "z")
+	{
+		ret = new InnerModelJoint(id, backlX, backlY, backlZ, backhX, backhY, backhZ, backtX, backtY, backtZ, 0, 0, backrZ, min, max, port, axis, home, (InnerModelTransform *)parent);
+	}
+	else
+	{
+		fprintf(stderr, "InnerModel internal error: invalid axis %s.\n", axis.c_str());
+		exit(-1);
+	}
+	ret->level = level;
+	ret->fixed = fixed;
+	ret->children.clear();
+	ret->attributes.clear();
+	hash[id] = ret;
+
+	for (QList<InnerModelNode*>::iterator i=children.begin(); i!=children.end(); i++)
+	{
+		ret->addChild((*i)->copyNode(hash, ret));
+	}
+	
+	return ret;
+}
+
+
 // ------------------------------------------------------------------------------------------------
 // InnerModelPrismaticJoint
 // ------------------------------------------------------------------------------------------------
 
-InnerModelPrismaticJoint::InnerModelPrismaticJoint(QString id_, float min_, float max_, float val_, float offset_, uint32_t port_, std::string axis_, float home_, InnerModelTransform *parent_)
-: InnerModelTransform(id_,QString("static"),0,0,0,0,0,0, 0, parent_)
+InnerModelPrismaticJoint::InnerModelPrismaticJoint(QString id_, float min_, float max_, float val_, float offset_, uint32_t port_, std::string axis_, float home_, InnerModelTransform *parent_) : InnerModelTransform(id_,QString("static"),0,0,0,0,0,0, 0, parent_)
 {
 	min = min_;
 	max = max_;
@@ -1772,15 +1892,49 @@ float InnerModelPrismaticJoint::setPosition(float v)
 }
 
 
+InnerModelNode * InnerModelPrismaticJoint::copyNode(QHash<QString, InnerModelNode *> &hash, InnerModelNode *parent)
+{
+	InnerModelPrismaticJoint *ret = new InnerModelPrismaticJoint(id, min, max, value, offset, port, axis, home, (InnerModelTransform *) parent);
+	ret->level = level;
+	ret->fixed = fixed;
+	ret->children.clear();
+	ret->attributes.clear();
+	hash[id] = ret;
+
+	for (QList<InnerModelNode*>::iterator i=children.begin(); i!=children.end(); i++)
+	{
+		ret->addChild((*i)->copyNode(hash, ret));
+	}
+	
+	return ret;
+}
+
+
 
 // ------------------------------------------------------------------------------------------------
 // InnerModelDifferentialRobot
 // ------------------------------------------------------------------------------------------------
 
-InnerModelDifferentialRobot::InnerModelDifferentialRobot(QString id_, float tx_, float ty_, float tz_, float rx_, float ry_, float rz_, uint32_t port_, InnerModelTransform *parent_)
-: InnerModelTransform(id_,QString("static"),tx_,ty_,tz_,rx_,ry_,rz_, 0, parent_)
+InnerModelDifferentialRobot::InnerModelDifferentialRobot(QString id_, float tx_, float ty_, float tz_, float rx_, float ry_, float rz_, uint32_t port_, InnerModelTransform *parent_) : InnerModelTransform(id_,QString("static"),tx_,ty_,tz_,rx_,ry_,rz_, 0, parent_)
 {
 	port = port_;
+}
+
+InnerModelNode * InnerModelDifferentialRobot::copyNode(QHash<QString, InnerModelNode *> &hash, InnerModelNode *parent)
+{
+	InnerModelDifferentialRobot *ret = new InnerModelDifferentialRobot(id, backtX, backtY, backtZ, backrX, backrY, backrZ, port, (InnerModelTransform *)parent);
+	ret->level = level;
+	ret->fixed = fixed;
+	ret->children.clear();
+	ret->attributes.clear();
+	hash[id] = ret;
+
+	for (QList<InnerModelNode*>::iterator i=children.begin(); i!=children.end(); i++)
+	{
+		ret->addChild((*i)->copyNode(hash, ret));
+	}
+	
+	return ret;
 }
 
 
@@ -1789,9 +1943,9 @@ InnerModelDifferentialRobot::InnerModelDifferentialRobot(QString id_, float tx_,
 // InnerModelPlane
 // ------------------------------------------------------------------------------------------------
 
-InnerModelPlane::InnerModelPlane(QString id_, QString texture_, float width_, float height_,float depth_, int repeat_, float nx_, float ny_, float nz_, float px_, float py_, float pz_, InnerModelNode *parent_)
-: InnerModelNode(id_, parent_)
+InnerModelPlane::InnerModelPlane(QString id_, QString texture_, float width_, float height_,float depth_, int repeat_, float nx_, float ny_, float nz_, float px_, float py_, float pz_, InnerModelNode *parent_) : InnerModelNode(id_, parent_)
 {
+	if ( abs(nx_)<0.01 and abs(ny_)<0.01 and abs(nz_)<0.01 ) nz_ = -1;
 	normal = QVec::vec3(nx_, ny_, nz_);
 	point = QVec::vec3(px_, py_, pz_);
 	nx = ny = nz = px = py = pz = NULL;
@@ -1800,6 +1954,56 @@ InnerModelPlane::InnerModelPlane(QString id_, QString texture_, float width_, fl
 	height = height_;
 	depth = depth_;
 	repeat = repeat_;
+
+#if FCL_SUPPORT==1
+	std::vector<fcl::Vec3f> vertices;
+	vertices.push_back(fcl::Vec3f(-width/2., +height/2., -depth/2.)); // Front NW
+	vertices.push_back(fcl::Vec3f(+width/2., +height/2., -depth/2.)); // Front NE
+	vertices.push_back(fcl::Vec3f(-width/2., -height/2., -depth/2.)); // Front SW
+	vertices.push_back(fcl::Vec3f(+width/2., -height/2., -depth/2.)); // Front SE
+	vertices.push_back(fcl::Vec3f(-width/2., +height/2., +depth/2.)); // Back NW
+	vertices.push_back(fcl::Vec3f(+width/2., +height/2., +depth/2.)); // Back NE
+	vertices.push_back(fcl::Vec3f(-width/2., -height/2., +depth/2.)); // Back SW
+	vertices.push_back(fcl::Vec3f(+width/2., -height/2., +depth/2.)); // Back SE
+
+	osg::Matrix r;
+	r.makeRotate(osg::Vec3(0, 0, 1), osg::Vec3(normal(0), normal(1), -normal(2)));
+	QMat qmatmat(4,4);
+	for (int rro=0; rro<4; rro++)
+	{
+		for (int cco=0; cco<4; cco++)
+		{
+			qmatmat(rro,cco) = r(rro,cco);
+		}
+	}
+
+	for (size_t i=0; i<vertices.size(); i++)
+	{
+		fcl::Vec3f v = vertices[i];
+		const QVec rotated = (qmatmat*(QVec::vec3(v[0], v[1], v[2]).toHomogeneousCoordinates())).fromHomogeneousCoordinates();
+		vertices[i] = fcl::Vec3f(rotated(0)+px_, rotated(1)+py_, rotated(2)+pz_);
+	}
+
+	std::vector<fcl::Triangle> triangles;
+	triangles.push_back(fcl::Triangle(0,1,2)); // Front
+	triangles.push_back(fcl::Triangle(1,2,3));
+	triangles.push_back(fcl::Triangle(4,5,6)); // Back
+	triangles.push_back(fcl::Triangle(5,6,7));
+	triangles.push_back(fcl::Triangle(4,0,6)); // Left
+	triangles.push_back(fcl::Triangle(0,6,2));
+	triangles.push_back(fcl::Triangle(5,1,7)); // Right
+	triangles.push_back(fcl::Triangle(1,7,3));
+	triangles.push_back(fcl::Triangle(5,1,4)); // Top
+	triangles.push_back(fcl::Triangle(1,4,0));
+	triangles.push_back(fcl::Triangle(2,3,6)); // Bottom
+	triangles.push_back(fcl::Triangle(3,6,7));
+
+	fclMesh = FCLModelPtr(new FCLModel());
+	fclMesh->beginModel();
+	fclMesh->addSubModel(vertices, triangles);
+	fclMesh->endModel();
+	collisionObject = new fcl::CollisionObject(fclMesh);
+#endif
 }
 
 
@@ -1855,18 +2059,34 @@ void InnerModelPlane::update(float nx_, float ny_, float nz_, float px_, float p
 	fixed = true;
 }
 
+InnerModelNode * InnerModelPlane::copyNode(QHash<QString, InnerModelNode *> &hash, InnerModelNode *parent)
+{
+	InnerModelPlane *ret = new InnerModelPlane(id, texture, width, height, depth, repeat, normal(0), normal(1), normal(2), point(0), point(1), point(2), parent);
+	ret->level = level;
+	ret->fixed = fixed;
+	ret->children.clear();
+	ret->attributes.clear();
+	hash[id] = ret;
+	
+	for (QList<InnerModelNode*>::iterator i=children.begin(); i!=children.end(); i++)
+	{
+		ret->addChild((*i)->copyNode(hash, ret));
+	}
+	
+	return ret;
+}
+
 
 
 // ------------------------------------------------------------------------------------------------
 // InnerModelCamera
 // ------------------------------------------------------------------------------------------------
 
-InnerModelCamera::InnerModelCamera(QString id_, float width_, float height_, float focal_, InnerModelNode *parent_)
-: InnerModelNode(id_, parent_)
+InnerModelCamera::InnerModelCamera(QString id_, float width_, float height_, float focal_, InnerModelNode *parent_) : InnerModelNode(id_, parent_)
 {
 	camera = Cam(focal, focal, width/2., height/2.);
 	camera.setSize(width, height);
-	camera.print(id_);
+// 	camera.print(id_);
 	width = width_;
 	height = height_;
 	focal = focal_;
@@ -1897,16 +2117,35 @@ void InnerModelCamera::update()
 	updateChildren();
 }
 
+InnerModelNode * InnerModelCamera::copyNode(QHash<QString, InnerModelNode *> &hash, InnerModelNode *parent)
+{
+	InnerModelCamera *ret = new InnerModelCamera(id, width, height, focal, parent);
+	ret->level = level;
+	ret->fixed = fixed;
+	ret->children.clear();
+	ret->attributes.clear();
+	hash[id] = ret;
+
+	ret->camera = camera;
+	
+	for (QList<InnerModelNode*>::iterator i=children.begin(); i!=children.end(); i++)
+	{
+		ret->addChild((*i)->copyNode(hash, ret));
+	}
+	
+	return ret;
+}
+
 
 
 // ------------------------------------------------------------------------------------------------
-// InnerModelIMU
+// InnerModelRGBD
 // ------------------------------------------------------------------------------------------------
 
 InnerModelRGBD::InnerModelRGBD(QString id_, float width, float height, float focal, float _noise, uint32_t _port, QString _ifconfig, InnerModelNode *parent_) : InnerModelCamera(id_, width, height, focal, parent_)
 {
 	noise = _noise;
-	printf("InnerModelRGBD: %f {%d}\n", noise, port);
+// 	printf("InnerModelRGBD: %f {%d}\n", noise, port);
 	port = _port;
 	ifconfig = _ifconfig;
 }
@@ -1919,6 +2158,23 @@ void InnerModelRGBD::save(QTextStream &out, int tabs)
 	out << "<rgbd id=\"" << id << "\" width=\"" << camera.getWidth() << "\" height=\"" << camera.getHeight() << "\" focal=\"" << QString::number(camera.getFocal(), 'g', 10) << "\" />\n";
 }
 
+
+InnerModelNode * InnerModelRGBD::copyNode(QHash<QString, InnerModelNode *> &hash, InnerModelNode *parent)
+{
+	InnerModelRGBD *ret = new InnerModelRGBD(id, width, height, focal, noise, port, ifconfig, parent);
+	ret->level = level;
+	ret->fixed = fixed;
+	ret->children.clear();
+	ret->attributes.clear();
+	hash[id] = ret;
+	
+	for (QList<InnerModelNode*>::iterator i=children.begin(); i!=children.end(); i++)
+	{
+		ret->addChild((*i)->copyNode(hash, ret));
+	}
+	
+	return ret;
+}
 
 
 // ------------------------------------------------------------------------------------------------
@@ -1956,13 +2212,29 @@ void InnerModelIMU::update()
 }
 
 
+InnerModelNode * InnerModelIMU::copyNode(QHash<QString, InnerModelNode *> &hash, InnerModelNode *parent)
+{
+	InnerModelIMU *ret = new InnerModelIMU(id, port, parent);
+	ret->level = level;
+	ret->fixed = fixed;
+	ret->children.clear();
+	ret->attributes.clear();
+	hash[id] = ret;
+	
+	for (QList<InnerModelNode*>::iterator i=children.begin(); i!=children.end(); i++)
+	{
+		ret->addChild((*i)->copyNode(hash, ret));
+	}
+	
+	return ret;
+}
+
 
 // ------------------------------------------------------------------------------------------------
 // InnerModelLaser
 // ------------------------------------------------------------------------------------------------
 
-InnerModelLaser::InnerModelLaser(QString id_, uint32_t _port, uint32_t _min, uint32_t _max, float _angle, uint32_t _measures, QString _ifconfig, InnerModelNode *parent_)
-: InnerModelNode(id_, parent_)
+InnerModelLaser::InnerModelLaser(QString id_, uint32_t _port, uint32_t _min, uint32_t _max, float _angle, uint32_t _measures, QString _ifconfig, InnerModelNode *parent_) : InnerModelNode(id_, parent_)
 {
 	port = _port;
 	min = _min;
@@ -1997,22 +2269,36 @@ void InnerModelLaser::update()
 	updateChildren();
 }
 
+InnerModelNode * InnerModelLaser::copyNode(QHash<QString, InnerModelNode *> &hash, InnerModelNode *parent)
+{
+	InnerModelLaser *ret = new InnerModelLaser(id, port, min, max, angle, measures, ifconfig, parent);
+	ret->level = level;
+	ret->fixed = fixed;
+	ret->children.clear();
+	ret->attributes.clear();
+	hash[id] = ret;
+	
+	for (QList<InnerModelNode*>::iterator i=children.begin(); i!=children.end(); i++)
+	{
+		ret->addChild((*i)->copyNode(hash, ret));
+	}
+	
+	return ret;
+}
 
 
 // ------------------------------------------------------------------------------------------------
 // InnerModelMesh
 // ------------------------------------------------------------------------------------------------
 
-InnerModelMesh::InnerModelMesh(QString id_, QString meshPath_, float scale, RenderingModes render_, float tx_, float ty_, float tz_, float rx_, float ry_, float rz_, InnerModelNode *parent_)
-: InnerModelNode(id_, parent_)
+InnerModelMesh::InnerModelMesh(QString id_, QString meshPath_, float scale, RenderingModes render_, float tx_, float ty_, float tz_, float rx_, float ry_, float rz_, InnerModelNode *parent_) : InnerModelNode(id_, parent_)
 {
 	InnerModelMesh(id_,meshPath_,scale,scale,scale,render_,tx_,ty_,tz_,rx_,ry_,rz_,parent_);
 }
 
 
 
-InnerModelMesh::InnerModelMesh(QString id_, QString meshPath_, float scalex_, float scaley_, float scalez_, RenderingModes render_, float tx_, float ty_, float tz_, float rx_, float ry_, float rz_, InnerModelNode *parent_)
-: InnerModelNode(id_, parent_)
+InnerModelMesh::InnerModelMesh(QString id_, QString meshPath_, float scalex_, float scaley_, float scalez_, RenderingModes render_, float tx_, float ty_, float tz_, float rx_, float ry_, float rz_, InnerModelNode *parent_) : InnerModelNode(id_, parent_)
 {
 	id = id_;
 	render = render_;
@@ -2026,6 +2312,70 @@ InnerModelMesh::InnerModelMesh(QString id_, QString meshPath_, float scalex_, fl
 	rx = rx_;
 	ry = ry_;
 	rz = rz_;
+
+#if FCL_SUPPORT==1
+	// Get to the OSG geode
+	osg::Node *osgnode_ = osgDB::readNodeFile(meshPath.toStdString());
+	if (not osgnode_) printf("Could not open: '%s'.\n", meshPath.toStdString().c_str());
+	if (osgnode_ != NULL)
+	{
+		// Instanciate the vector of vertices and triangles (that's what we are looking for)
+		std::vector<fcl::Vec3f> vertices;
+		std::vector<fcl::Triangle> triangles;
+		CalculateTriangles calcTriangles(&vertices, &triangles);
+		osgnode_->accept(calcTriangles);
+
+// 		printf("id: %s\n", id.toStdString().c_str());
+// 		printf("scale: %f %f %f\n", scalex, scaley, scalez);
+// 		printf("points: %zu\n", vertices.size());
+// 		printf("triangles: %zu\n", triangles.size());
+
+		// Get the internal transformation matrix of the mesh
+		RTMat rtm(rx, ry, rz, tx, ty, tz);
+		// Transform each of the read vertices
+		for (size_t i=0; i<vertices.size(); i++)
+		{
+			fcl::Vec3f v = vertices[i];
+			const QMat v2 = (rtm * QVec::vec3(v[0]*scalex, v[1]*scaley, v[2]*scalez).toHomogeneousCoordinates()).fromHomogeneousCoordinates();
+			vertices[i] = fcl::Vec3f(v2(0), v2(1), v2(2));
+		}
+
+////
+////   UNCOMMENT THIS CODE TO GENERATE A POINTCLOUD OF THE POINTS IN THE MESHES
+////
+// std::ofstream outputFile;
+// outputFile.open((id.toStdString()+".pcd").c_str());
+// outputFile << "# .PCD v.7 - Point Cloud Data file format\n";
+// outputFile << "VERSION .7\n";
+// outputFile << "FIELDS x y z \n";
+// outputFile << "SIZE 4 4 4\n";
+// outputFile << "TYPE F F F\n";
+// outputFile << "COUNT 1 1 1\n";
+// outputFile << "WIDTH " << vertices.size() << "\n";
+// outputFile << "HEIGHT 1\n";
+// outputFile << "VIEWPOINT 0 0 0 1 0 0 0\n";
+// outputFile << "POINTS " << vertices.size() << "\n";
+// outputFile << "DATA ascii\n";
+// for (size_t i=0; i<vertices.size(); i++)
+// {
+// 	outputFile << vertices[i][0]/1000. << " " << vertices[i][1]/1000. << " " << vertices[i][2]/1000. << "\n";
+// }
+// outputFile.close();
+
+
+
+		// Associate the read vertices and triangles vectors to the FCL collision model object
+		fclMesh = FCLModelPtr(new FCLModel());
+		fclMesh->beginModel();
+		fclMesh->addSubModel(vertices, triangles);
+		fclMesh->endModel();
+		collisionObject = new fcl::CollisionObject(fclMesh);
+	}
+	else
+	{
+		qFatal("Failed to read mesh \"%s\" for collision support!\n", meshPath.toStdString().c_str());
+	}
+#endif
 }
 
 
@@ -2077,6 +2427,24 @@ bool InnerModelMesh::wireframeRendering() const {
 
 
 
+InnerModelNode * InnerModelMesh::copyNode(QHash<QString, InnerModelNode *> &hash, InnerModelNode *parent)
+{
+	InnerModelMesh *ret = new InnerModelMesh(id, meshPath, scalex, scaley, scalez, render, tx, ty, tz, rx, ry, rz, parent);
+	ret->level = level;
+	ret->fixed = fixed;
+	ret->children.clear();
+	ret->attributes.clear();
+	hash[id] = ret;
+
+	for (QList<InnerModelNode*>::iterator i=children.begin(); i!=children.end(); i++)
+	{
+		ret->addChild((*i)->copyNode(hash, ret));
+	}
+	
+	return ret;
+}
+
+
 // ------------------------------------------------------------------------------------------------
 // InnerModelPointCloud
 // ------------------------------------------------------------------------------------------------
@@ -2110,3 +2478,94 @@ void InnerModelPointCloud::update()
 	}
 	updateChildren();
 }
+
+
+
+InnerModelNode * InnerModelPointCloud::copyNode(QHash<QString, InnerModelNode *> &hash, InnerModelNode *parent)
+{
+	InnerModelPointCloud *ret = new InnerModelPointCloud(id, parent);
+	ret->level = level;
+	ret->fixed = fixed;
+	ret->children.clear();
+	ret->attributes.clear();
+	hash[id] = ret;
+
+	for (QList<InnerModelNode*>::iterator i=children.begin(); i!=children.end(); i++)
+	{
+		ret->addChild((*i)->copyNode(hash, ret));
+	}
+	
+	return ret;
+}
+
+
+
+// ------------------------------------------------------------------------------------------------
+// InnerModelTouchSensor
+// ------------------------------------------------------------------------------------------------
+
+InnerModelTouchSensor::InnerModelTouchSensor(QString id_, QString stype_, float nx_, float ny_, float nz_, float min_, float max_, uint32_t port_, InnerModelNode *parent_) : InnerModelNode(id_, parent_)
+{
+	id = id_;
+	nx = nx_;
+	ny = ny_;
+	nz = nz_;
+	min = min_;
+	max = max_;
+	stype = stype_;
+	port = port_;
+}
+
+InnerModelNode * InnerModelTouchSensor::copyNode(QHash<QString, InnerModelNode *> &hash, InnerModelNode *parent)
+{
+	InnerModelTouchSensor *ret = new InnerModelTouchSensor(id, stype, nx, ny, nz, min, max, port, parent);
+	ret->level = level;
+	ret->fixed = fixed;
+	ret->children.clear();
+	ret->attributes.clear();
+	hash[id] = ret;
+
+	for (QList<InnerModelNode*>::iterator i=children.begin(); i!=children.end(); i++)
+	{
+		ret->addChild((*i)->copyNode(hash, ret));
+	}
+	
+	return ret;
+}
+
+
+	
+// ----------------------------------------------------------------------------------------
+// ----------------------------------------------------------------------------------------
+// ----------------------------------------------------------------------------------------
+
+bool InnerModel::collide(const QString &a, const QString &b)
+{
+#if FCL_SUPPORT==1
+	InnerModelNode *n1 = getNode(a);
+	if (not n1) throw 1;
+	QMat r1q = getRotationMatrixTo("root", a);
+	fcl::Matrix3f R1( r1q(0,0), r1q(0,1), r1q(0,2), r1q(1,0), r1q(1,1), r1q(1,2), r1q(2,0), r1q(2,1), r1q(2,2) );
+	QVec t1v = getTranslationVectorTo("root", a);
+	fcl::Vec3f T1( t1v(0), t1v(1), t1v(2) );
+	n1->collisionObject->setTransform(R1, T1);
+
+	InnerModelNode *n2 = getNode(b);
+	if (not n1) throw 2;
+	QMat r2q = getRotationMatrixTo("root", b);
+	fcl::Matrix3f R2( r2q(0,0), r2q(0,1), r2q(0,2), r2q(1,0), r2q(1,1), r2q(1,2), r2q(2,0), r2q(2,1), r2q(2,2) );
+	QVec t2v = getTranslationVectorTo("root", b);
+	fcl::Vec3f T2( t2v(0), t2v(1), t2v(2) );
+	n2->collisionObject->setTransform(R2, T2);
+
+	fcl::CollisionRequest request;
+	fcl::CollisionResult result;
+	fcl::collide(n1->collisionObject, n2->collisionObject, request, result);
+
+	return result.isCollision();
+#else
+	qFatal("InnerModel was not compiled with collision support");
+	return false;
+#endif
+}
+

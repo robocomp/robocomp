@@ -130,7 +130,7 @@ protected:
 	osg::Vec3Array *cloudVertices;
 	osg::Vec4Array *colorsArray;
 	osg::Geometry *cloudGeometry;
-	osg::TemplateIndexArray <unsigned int, osg::Array::UIntArrayType,4,4> *colorIndexArray;
+// 	osg::TemplateIndexArray <unsigned int, osg::Array::UIntArrayType,4,4> *colorIndexArray;
 	osg::DrawArrays *arrays;
 	float pointSize;
 };

@@ -17,6 +17,7 @@
  *    along with RoboComp.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <innermodel/innermodel.h>
 #include <innermodel/innermodelviewer.h>
 
 
@@ -108,6 +109,7 @@ IMVPlane::IMVPlane(InnerModelPlane *plane, std::string imagenEntrada, osg::Vec4 
 	hints->setDetailRatio(2.0f);
 
 	osg::Box* myBox = new osg::Box(QVecToOSGVec(QVec::vec3(0,0,0)), plane->width, -plane->height, plane->depth);
+// 	osg::Box* myBox = new osg::Box(QVecToOSGVec(QVec::vec3(plane->point(0),-plane->point(1),plane->point(2))), plane->width, -plane->height, plane->depth);
 	planeDrawable = new osg::ShapeDrawable(myBox, hints);
 	planeDrawable->setColor(htmlStringToOsgVec4(QString::fromStdString(imagenEntrada)));
 
@@ -199,8 +201,8 @@ IMVPointCloud::IMVPointCloud(std::string id_) : osg::Geode()
 	*colorsArray = *colors;
 
 	/// Index array
-	colorIndexArray = new osg::TemplateIndexArray<unsigned int, osg::Array::UIntArrayType, 4, 4>;
-	colorIndexArray->resize(64);
+	//colorIndexArray = new osg::TemplateIndexArray<unsigned int, osg::Array::UIntArrayType, 4, 4>;
+	//colorIndexArray->resize(64);
 	/// DrawArrays
 	arrays = new osg::DrawArrays(osg::PrimitiveSet::POINTS, 0, cloudVertices->size());
 	/// Geometry
@@ -208,7 +210,7 @@ IMVPointCloud::IMVPointCloud(std::string id_) : osg::Geode()
 	cloudGeometry->setVertexArray(cloudVertices);
 	cloudGeometry->addPrimitiveSet(arrays);
 	cloudGeometry->setColorArray(colorsArray);
-//	cloudGeometry->setColorIndices(colorIndexArray);
+	//cloudGeometry->setColorIndices(colorIndexArray);
 	cloudGeometry->setColorBinding(osg::Geometry::BIND_PER_VERTEX);
 	/// Geode
 
@@ -228,8 +230,8 @@ void IMVPointCloud::update()
 	*cloudVertices = *points;
 	colorsArray = new osg::Vec4Array;
 	*colorsArray = *colors;
-	colorIndexArray = new osg::TemplateIndexArray<unsigned int, osg::Array::UIntArrayType, 4, 4>;
-	for (uint i=0; i<points->size(); i++) colorIndexArray->push_back(i);
+	//colorIndexArray = new osg::TemplateIndexArray<unsigned int, osg::Array::UIntArrayType, 4, 4>;
+	//for (uint i=0; i<points->size(); i++) colorIndexArray->push_back(i);
 	/// DrawArrays
 	arrays = new osg::DrawArrays(osg::PrimitiveSet::POINTS, 0, cloudVertices->size());
 	/// Geometry
@@ -238,7 +240,7 @@ void IMVPointCloud::update()
 	cloudGeometry->addPrimitiveSet(arrays);
 	cloudGeometry->getOrCreateStateSet()->setAttribute( new osg::Point(pointSize), osg::StateAttribute::ON );
 	cloudGeometry->setColorArray(colorsArray);
-//	cloudGeometry->setColorIndices(colorIndexArray);
+	//cloudGeometry->setColorIndices(colorIndexArray);
 	cloudGeometry->setColorBinding(osg::Geometry::BIND_PER_VERTEX);
 	/// Geode 2
 	addDrawable(cloudGeometry);
@@ -295,8 +297,7 @@ InnerModelViewer::~InnerModelViewer()
 
 void InnerModelViewer::recursiveConstructor(InnerModelNode *node, osg::Group *parent,QHash<QString, osg::MatrixTransform *> &mtsHash, QHash<QString, IMVMesh> &meshHash)
 {
-// void InnerModelViewer::recursiveConstructor(InnerModelNode *node, osg::Group *parent, QHash<QString, osg::MatrixTransform *> &mtsHash, QHash<QString, osg::Node *> &osgmeshesHash, QHash<QString, osg::MatrixTransform *> &osgmeshPatsHash)
-// {
+	InnerModelTouchSensor *touch;
 	InnerModelMesh *mesh;
 	InnerModelPointCloud *pointcloud;
 	InnerModelPlane *plane;
@@ -311,10 +312,10 @@ void InnerModelViewer::recursiveConstructor(InnerModelNode *node, osg::Group *pa
 	{
 		// Create and include MT
 		osg::MatrixTransform *mt = new osg::MatrixTransform;
-// 			qDebug()<<"Transform ID:"<<transformation->id<<"num children"<<parent->getNumChildren();
+		//qDebug()<<"Transform ID:"<<transformation->id<<"num children"<<parent->getNumChildren();
 		
 		if (parent) parent->addChild(mt);
-// 			qDebug()<<"parent children"<<parent->getNumChildren();
+		//qDebug()<<"parent children"<<parent->getNumChildren();
 		
  		mtsHash[transformation->id] = mt;
 		
@@ -334,8 +335,10 @@ void InnerModelViewer::recursiveConstructor(InnerModelNode *node, osg::Group *pa
 			cam.id = node->id;
 			// XML node for the camera
 			cam.RGBDNode = rgbd;
+			
 			// Viewer
 			cam.viewerCamera = new osgViewer::Viewer();
+		
 			double fov = 2. * atan2(cam.RGBDNode->height/2.0, cam.RGBDNode->focal);
 			double aspectRatio = cam.RGBDNode->width / cam.RGBDNode->height;
 			double zNear = 0.01, zFar = 10000.0;
@@ -346,7 +349,7 @@ void InnerModelViewer::recursiveConstructor(InnerModelNode *node, osg::Group *pa
 			cam.d->allocateImage(rgbd->width, rgbd->height, 1, GL_DEPTH_COMPONENT,GL_FLOAT);
 
 			cam.manipulator = new osgGA::TrackballManipulator();
-
+			
 			cam.viewerCamera->setSceneData(this);
 			cam.viewerCamera->setUpViewInWindow( 0, 0, rgbd->width, rgbd->height);
 			cam.viewerCamera->getCamera()->setClearMask(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -354,7 +357,12 @@ void InnerModelViewer::recursiveConstructor(InnerModelNode *node, osg::Group *pa
 			cam.viewerCamera->getCamera()->attach(osg::Camera::DEPTH_BUFFER, cam.d);
 			cam.viewerCamera->getCamera()->setProjectionMatrix(::osg::Matrix::perspective(fov*180./M_PIl, aspectRatio, zNear, zFar));
 			
-			RTMat rt= innerModel->getTransformationMatrix("root",cam.id);
+			// set windowName to innerModel id. Using Traits!
+// 			osg::ref_ptr< osg::GraphicsContext::Traits > traits =  new osg::GraphicsContext::Traits (*cam.viewerCamera->getCamera()->getGraphicsContext()->getTraits());
+// 			traits->windowName = cam.id.toStdString();
+// 			cam.viewerCamera->getCamera()->setGraphicsContext(osg::GraphicsContext::createGraphicsContext( traits.get() ));
+			
+			RTMat rt = innerModel->getTransformationMatrix("root", cam.id);
 			cam.viewerCamera->setCameraManipulator(cam.manipulator);
 			cam.viewerCamera->getCameraManipulator()->setByMatrix(QMatToOSGMat4(rt));
 			cameras[cam.id] = cam;
@@ -431,6 +439,9 @@ void InnerModelViewer::recursiveConstructor(InnerModelNode *node, osg::Group *pa
 		meshHash[mesh->id].meshMts= mt;
 		osgmeshmodes[mesh->id] = polygonMode;
 		smt->addChild(osgMesh);
+	}
+	else if ((touch = dynamic_cast<InnerModelTouchSensor *>(node)))
+	{
 	}
 	else
 	{

@@ -72,6 +72,8 @@ else (BULLET_FOUND)
 	message("Bullet was NOT FOUND, only the basic innermodel will be build, NO PHYSICS SUPPORT")
 endif(BULLET_FOUND)
 
+
+
 #Find Doxygen and html help compiler if any
 find_package(Doxygen)
 if(DOXYGEN_FOUND)
