@@ -1,4 +1,3 @@
-
 # Sources set
 LIST ( APPEND SOURCES
 	specificworker.cpp
@@ -12,21 +11,3 @@ LIST ( APPEND HEADERS
 	specificmonitor.h
 )
 
-# Enable support for Bullet physics engine, if it's installed
-# OPTION( USE_BULLET "Enable support for Bullet physics engine" OFF )
-#FIND_PACKAGE( Bullet )
-IF( BULLET_FOUND )
-	ADD_DEFINITIONS( -DUSE_BULLET )
-	INCLUDE_DIRECTORIES( ${BULLET_INCLUDE_DIRS} )
-	LIST ( APPEND LIBS ${BULLET_LIBRARIES} )
-	LIST ( APPEND SOURCES physicsWorld.cpp physicsMotion.cpp )
-ENDIF()
-
-ADD_DEFINITIONS( -DINNERMODELVERSION=2 )
-# IF(CMAKE_COMPILER_IS_GNUCXX)
-#     SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
-# ENDIF()
-# ADD_DEFINITIONS(
-#     -std=c++0x # Or -std=c++0x
-#     # Other flags
-# )

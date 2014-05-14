@@ -8,13 +8,6 @@ SET( QT_USE_QTSTATE TRUE )
 SET( QT_USE_QTSTATEMACHINE TRUE )
 INCLUDE( ${QT_USE_FILE} )
 
-# OSG
-FIND_PACKAGE(OpenThreads)
-FIND_PACKAGE(osg)
-FIND_PACKAGE(osgDB)
-FIND_PACKAGE(osgViewer) 
-INCLUDE_DIRECTORIES(${OPENTHREADS_INCLUDE_DIR} ${OSG_INCLUDE_DIR}) 
-LINK_DIRECTORIES(${OSG_LIB_DIR}) 
 
 
 MACRO( ROBOCOMP_INITIALIZE )
@@ -43,9 +36,12 @@ MACRO( ROBOCOMP_INITIALIZE )
   SET(RoboComp_INTERFACES_DIR "${ARGN}/interfaces/")
   # Set libraries
 
-#   SET( LIBS ${LIBS} -L/opt/robocomp/lib ${OSG_LIBRARY} ${OSGUTIL_LIBRARY} ${OSGDB_LIBRARY} ${OSGVIEWER_LIBRARY} ${OPENTHREADS_LIBRARY} robocomp_innermodel robocomp_qmat -L${ICEROOT}/lib/ -L${ROBOCOMP_ROOT}/classes -lIce -lIceUtil -lpthread -lIceStorm -lgsl -lblas ${QT_LIBRARIES} -losgGA -losgText -losgDB -losgUtil -losg -losgViewer)
-	SET( LIBS ${LIBS} -L/opt/robocomp/lib ${OSG_LIBRARY} ${OSGUTIL_LIBRARY} ${OSGDB_LIBRARY} ${OSGVIEWER_LIBRARY} ${OPENTHREADS_LIBRARY} robocomp_qmat -L${ICEROOT}/lib/ -L${ROBOCOMP_ROOT}/classes -lIce -lIceUtil -lpthread -lIceStorm -lblas -lgsl -lblas ${QT_LIBRARIES} -losgGA -losgText -losgDB -losgUtil -losg -losgViewer robocomp_innermodel )
+  message(STATUS ${OSGUTIL_LIBRARY})
+  message(STATUS ${OSGUTIL_LIBRARY})
+  message(STATUS ${OSGUTIL_LIBRARY})
+	SET( LIBS ${LIBS} -L/opt/robocomp/lib ${OSG_LIBRARY} -losgUtil -losgGA ${OSGDB_LIBRARY} ${OSGVIEWER_LIBRARY} ${OPENTHREADS_LIBRARY}  -L${ICEROOT}/lib/ -L${ROBOCOMP_ROOT}/classes -lIce -lIceUtil -lpthread -lIceStorm ${QT_LIBRARIES} blas cblas -lgslcblas robocomp_qmat robocomp_innermodel robocomp_osgviewer)
   INCLUDE ( $ENV{ROBOCOMP}/cmake/modules/ipp.cmake )
+ 
 ENDMACRO( ROBOCOMP_INITIALIZE )
 
 

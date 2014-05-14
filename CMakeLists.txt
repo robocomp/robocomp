@@ -62,7 +62,7 @@ if (QT4_FOUND)
   add_definitions( "-DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED -Wall -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB" )
 endif (QT4_FOUND)
 
-# find Bullet	
+# find Bullet
 find_package( Bullet )
 if(BULLET_FOUND)
 	message("Bullet was FOUND, innermodel2 with physics support will be built")
@@ -84,7 +84,7 @@ SUBDIRS(
 	libs
 #	components
 # 	tools
-	)
+)
 	
 
 

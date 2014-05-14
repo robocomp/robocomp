@@ -88,38 +88,35 @@ endmacro()
 # interfaces the interfaces used by the component
 # ARGN the source files for the library.
 macro(RoboComp_ADD_COMPONENT component_name interfaces headers)
-
-  
-    foreach ( interface_name ${interfaces})
-      #message ("interface: " ${interface_name} )
-      #Do the dew: 
-      message(STATUS "Adding rule to generate ${interface_name}.cpp and ${interface_name}.h from ${RoboComp_INTERFACES_DIR}/${interface_name}.ice  (slice2cpp)" )
-      add_custom_command (
-          OUTPUT ${interface_name}.cpp ${interface_name}.h
-          COMMAND slice2cpp -I${RoboComp_INTERFACES_DIR} -I. ${RoboComp_INTERFACES_DIR}/${interface_name}.ice --output-dir .
-          #COMMAND /usr/bin/slice2cpp -I /home/spyke/robocomp/interfaces -I. /home/spyke/robocomp/interfaces/Laser.ice --output-dir .
-          DEPENDS ${RoboComp_INTERFACES_DIR}/${interface_name}.ice
-          COMMENT "Generating ${interface_name}.cpp and ${interface_name}.h from ${interface_name}.ice"
-        )
-      set(interface_files ${interface_files} ${interface_name}.cpp )
+	foreach ( interface_name ${interfaces})
+		#message ("interface: " ${interface_name} )
+		#Do the dew: 
+		message(STATUS "Adding rule to generate ${interface_name}.cpp and ${interface_name}.h from ${RoboComp_INTERFACES_DIR}/${interface_name}.ice  (slice2cpp)" )
+		add_custom_command (
+			OUTPUT ${interface_name}.cpp ${interface_name}.h
+			COMMAND slice2cpp -I${RoboComp_INTERFACES_DIR} -I. ${RoboComp_INTERFACES_DIR}/${interface_name}.ice --output-dir .
+			#COMMAND /usr/bin/slice2cpp -I /home/spyke/robocomp/interfaces -I. /home/spyke/robocomp/interfaces/Laser.ice --output-dir .
+			DEPENDS ${RoboComp_INTERFACES_DIR}/${interface_name}.ice
+			COMMENT "Generating ${interface_name}.cpp and ${interface_name}.h from ${interface_name}.ice"
+		)
+		set(interface_files ${interface_files} ${interface_name}.cpp )
         
-    endforeach (interface_name )
+	endforeach (interface_name )
+
+	INCLUDE( ${QT_USE_FILE} )
     
-    INCLUDE( ${QT_USE_FILE} )
+	include_directories( ${RoboComp_CLASSES_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/${component_name}/src/ ${CMAKE_CURRENT_BINARY_DIR} )
     
-    include_directories( ${RoboComp_CLASSES_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/${component_name}/src/ ${CMAKE_CURRENT_BINARY_DIR} )
-    
-    QT4_WRAP_CPP( MOC_SOURCES ${headers} )
+	QT4_WRAP_CPP( MOC_SOURCES ${headers} )
     
     add_executable( ${component_name} ${interface_files} ${ARGN} ${MOC_SOURCES})
     
-    set_target_properties( ${component_name} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${component_name}/bin/ )
+	set_target_properties( ${component_name} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${component_name}/bin/ )
     
-    target_link_libraries( ${component_name} ${QT_LIBRARIES} -lIce -lIceUtil -lIceStorm -lgsl -lblas -lpthread )
+	target_link_libraries( ${component_name} ${QT_LIBRARIES} -lIce -lIceUtil -lIceStorm -lpthread )
 
-    set(RoboComp_COMPONENTS ${RoboComp_COMPONENTS} ${component_name})
-    install(TARGETS ${component_name} RUNTIME DESTINATION ${BIN_INSTALL_DIR}
-        COMPONENT RoboComp_${component_name})
+	set(RoboComp_COMPONENTS ${RoboComp_COMPONENTS} ${component_name})
+	install(TARGETS ${component_name} RUNTIME DESTINATION ${BIN_INSTALL_DIR} COMPONENT RoboComp_${component_name})
         
 endmacro(RoboComp_ADD_COMPONENT)
 
@@ -129,13 +126,10 @@ endmacro(RoboComp_ADD_COMPONENT)
 # component The part of RoboComp that this library belongs to.
 # ARGN the source files for the library.
 macro(RoboComp_ADD_EXECUTABLE name component)
-    add_executable(${name} ${ARGN})
-
-    target_link_libraries(${name} ${Boost_LIBRARIES} pthread m ${CLANG_LIBRARIES})
-
-    set(RoboComp_EXECUTABLES ${RoboComp_EXECUTABLES} ${name})
-    install(TARGETS ${name} RUNTIME DESTINATION ${BIN_INSTALL_DIR}
-        COMPONENT RoboComp_${component})
+	add_executable(${name} ${ARGN})
+	target_link_libraries(${name} ${Boost_LIBRARIES} pthread m ${CLANG_LIBRARIES})
+	set(RoboComp_EXECUTABLES ${RoboComp_EXECUTABLES} ${name})
+	install(TARGETS ${name} RUNTIME DESTINATION ${BIN_INSTALL_DIR} COMPONENT RoboComp_${component})
 endmacro(RoboComp_ADD_EXECUTABLE)
 
 ###############################################################################
@@ -143,10 +137,10 @@ endmacro(RoboComp_ADD_EXECUTABLE)
 # var Destination variable.
 # name Name of the subsystem.
 macro(RoboComp_GET_LIB_INCLUDE_DIR var name)
-    GET_IN_MAP(${var} RoboComp_LIB_INCLUDE ${name})
-    if(NOT ${var})
-      set (${var} ${name})
-    endif(NOT ${var})
+	GET_IN_MAP(${var} RoboComp_LIB_INCLUDE ${name})
+	if(NOT ${var})
+		set (${var} ${name})
+	endif(NOT ${var})
 endmacro(RoboComp_GET_LIB_INCLUDE_DIR)
 
 ###############################################################################
@@ -157,23 +151,21 @@ endmacro(RoboComp_GET_LIB_INCLUDE_DIR)
 # name The name of the subsystem.
 # ARGN The subsystems and external libraries to depend on.
 macro(RoboComp_LIB_DEPEND var name)
-    set(options)
-    set(oneValueArgs)
-    set(multiValueArgs DEPS EXT_DEPS OPT_DEPS)
-    cmake_parse_arguments(LIB "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
-    if(LIB_DEPS)
-        SET_IN_GLOBAL_MAP(RoboComp_LIB_DEPS ${name} "${LIB_DEPS}")
-    endif(LIB_DEPS)
-    if(LIB_EXT_DEPS)
-        SET_IN_GLOBAL_MAP(RoboComp_LIB_EXT_DEPS ${name} "${LIB_EXT_DEPS}")
-    endif(LIB_EXT_DEPS)
-    if(LIB_OPT_DEPS)
-        SET_IN_GLOBAL_MAP(RoboComp_LIB_OPT_DEPS ${name} "${LIB_OPT_DEPS}")
-    endif(LIB_OPT_DEPS)
-
-    foreach(dep ${LIB_DEPS})
-            RoboComp_GET_LIB_INCLUDE_DIR(include_dir ${dep})
-            include_directories(${RoboComp_LIBS_DIR}/${include_dir}/include)
-    endforeach(dep)
-
+	set(options)
+	set(oneValueArgs)
+	set(multiValueArgs DEPS EXT_DEPS OPT_DEPS)
+	cmake_parse_arguments(LIB "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
+	if(LIB_DEPS)
+		SET_IN_GLOBAL_MAP(RoboComp_LIB_DEPS ${name} "${LIB_DEPS}")
+	endif(LIB_DEPS)
+	if(LIB_EXT_DEPS)
+		SET_IN_GLOBAL_MAP(RoboComp_LIB_EXT_DEPS ${name} "${LIB_EXT_DEPS}")
+	endif(LIB_EXT_DEPS)
+	if(LIB_OPT_DEPS)
+		SET_IN_GLOBAL_MAP(RoboComp_LIB_OPT_DEPS ${name} "${LIB_OPT_DEPS}")
+	endif(LIB_OPT_DEPS)
+	foreach(dep ${LIB_DEPS})
+			RoboComp_GET_LIB_INCLUDE_DIR(include_dir ${dep})
+			include_directories(${RoboComp_LIBS_DIR}/${include_dir}/include)
+	endforeach(dep)
 endmacro(RoboComp_LIB_DEPEND)
