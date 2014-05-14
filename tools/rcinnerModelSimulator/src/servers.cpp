@@ -54,6 +54,53 @@ void JointMotorServer::shutdown()
 	adapter->destroy();
 }
 
+
+TouchSensorServer::TouchSensorServer(Ice::CommunicatorPtr communicator, SpecificWorker *worker_, uint32_t _port)
+{
+	port = _port;
+	worker = worker_;
+	std::stringstream out1;
+	out1 << port;
+	comm = communicator;
+	std::string name = std::string("TouchSensor") + out1.str();
+	std::string endp = std::string("tcp -p ")     + out1.str();
+
+	adapter = communicator->createObjectAdapterWithEndpoints(name, endp);
+	printf("Creating TouchSensor adapter <<%s>> with endpoint <<%s>>\n", name.c_str(), endp.c_str());
+	interface = new TouchSensorI(worker);
+	adapter->add(interface, communicator->stringToIdentity("touchsensor"));
+	adapter->activate();
+}
+void TouchSensorServer::add ( InnerModelTouchSensor *sensor )
+{
+	sensors.push_back(sensor);
+	interface->add(sensor->id);
+}
+void TouchSensorServer::remove(InnerModelTouchSensor *sensor)
+{
+	interface->remove(sensor->id);
+	sensors.erase(std::remove(sensors.begin(), sensors.end(), sensor), sensors.end());
+}
+bool TouchSensorServer::empty()
+{
+	if (sensors.size()==0)
+		return true;
+	return false;
+}
+void TouchSensorServer::shutdown()
+{
+	try
+	{
+		adapter->remove(comm->stringToIdentity("touchsensor"));
+	}
+	catch(Ice::ObjectAdapterDeactivatedException e)
+	{
+	}
+	adapter->destroy();
+}
+
+
+
 LaserServer::LaserServer ( Ice::CommunicatorPtr communicator, SpecificWorker *worker, uint32_t _port )
 {
 	port = _port;

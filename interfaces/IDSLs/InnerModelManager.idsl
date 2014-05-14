@@ -1,6 +1,6 @@
 module RoboCompInnerModelManager
 {
-	enum NodeType { Transform, Joint, DifferentialRobot, Plane, Camera, RGBD, IMU, Laser, Mesh, PointCloud };
+	enum NodeType { Transform, Joint, DifferentialRobot, Plane, Camera, RGBD, IMU, Laser, Mesh, PointCloud, TouchSensor };
 	
 	struct AttributeType {
 		string type;
@@ -134,5 +134,10 @@ module RoboCompInnerModelManager
     /// PointCloud
 //    void addPointCloud(string id);
     void setPointCloudData(string id, PointCloudVector cloud);
+
+
+		// Collision detection
+		bool collide(string a, string b);
+
 	};
 };

@@ -22,13 +22,13 @@
 // Qt includes
 #include <QObject>
  
-// RoboComp includes
 #include <innermodel/innermodel.h>
 #include <innermodel/innermodelviewer.h>
+
 #include <InnerModelManager.h>
 #include <osgviewer/osgview.h>
+#include <innermodel/innermodelviewer.h>
 
-// Simulator includes
 #include "genericworker.h"
 #include "servers.h"
 
@@ -41,7 +41,7 @@ private:
 	Data* d;
 
 public:
-	SpecificWorker ( MapPrx& _mprx, Ice::CommunicatorPtr _communicator, const char* _innerModelXML );
+	SpecificWorker(MapPrx& _mprx, Ice::CommunicatorPtr _communicator, const char* _innerModelXML, int ms);
 	~SpecificWorker();
 
 	osg::Group *getRootGroup();
@@ -125,6 +125,7 @@ public:
 	bool imm_removeNode ( const QString& server, const std::string& item );
 	void imm_getAllNodeInformation ( const QString& server, RoboCompInnerModelManager::NodeInformationSequence &nodesInfo );
 	void imm_setPointCloudData ( const QString& server, const std::string &id, const RoboCompInnerModelManager::PointCloudVector &cloud );
+	bool imm_collide(const string &a, const string &b);
 	
 	// ----------------------------------------------------------------------------------------
 	// JointMotor.ice

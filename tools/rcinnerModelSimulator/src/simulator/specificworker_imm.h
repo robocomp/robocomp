@@ -3,7 +3,7 @@
 // ------------------------------------------------------------------------------------------------
 
 // Moves item to the position defined by pose respect to the base
-bool SpecificWorker::imm_setPose(const QString& server, const std::string& base, const std::string& item, const RoboCompInnerModelManager::Pose3D& pose)
+bool SpecificWorker::imm_setPose(const QString &server, const std::string &base, const std::string &item, const RoboCompInnerModelManager::Pose3D &pose)
 {
 	QMutexLocker locker(mutex);
 
@@ -18,62 +18,25 @@ bool SpecificWorker::imm_setPose(const QString& server, const std::string& base,
 	aux = dynamic_cast<InnerModelTransform*>(d->getNode(qItem, m));
 	d->checkOperationInvalidNode(aux, m + qItem +"can't be use as item because it's not a InnerModelTransform node.");
 
-	///T[bi]=T[bp]*T[pi] ; (T[bp]-1)*T[bi]=T[pi]
-	///T[bi]
-	RTMat Tbi;
-	Tbi.setR(pose.rx,pose.ry,pose.rz);
-	Tbi.setTr(pose.x,pose.y,pose.z);
-
-	///Tbp Inverse = Tpb. This gets Tpb directly. It's the same
-	RTMat Tpb= d->innerModel->getTransformationMatrix(d->innerModel->getNode(qItem)->parent->id,qBase);
-	///New Tpi
-	RTMat Tpi=Tpb*Tbi;
-
-	QVec angles =Tpi.extractAnglesR();
-	QVec tr=Tpi.getTr();
-
-#ifdef INNERMODELMANAGERDEBUG
-	qDebug() <<"parent of "<<qItem<<innerModel->getNode(qItem)->parent->id;
-	qDebug() <<"T[pb]";
-	Tpb.getTr().print("Translation");
-	Tpb.extractAnglesR().print("angles");
-	qDebug() <<"---";
-	qDebug() <<"T[bi]";
-	Tbi.getTr().print("Translation");
-	Tbi.extractAnglesR().print("angles");
-	qDebug() <<"---";
-	qDebug() <<"T[pi]";
-	tr.print("translation");
-	angles.print("angles");
-	qDebug() <<"---";
-#endif
-
-	d->innerModel->updateTransformValues(qItem,tr.x(),tr.y(),tr.z(),angles.x(),angles.y(),angles.z());
-
-// 	if(collisiondetection->isChecked()) {
-// 		checkPoseCollision(qItem,m);
-// 	}
+	d->innerModel->updateTransformValues(qItem, pose.x, pose.y, pose.z, pose.rx, pose.ry, pose.rz, qBase);
 
 	return true;
 }
 
 
-bool SpecificWorker::imm_setPoseFromParent(const QString& server, const std::string& item, const RoboCompInnerModelManager::Pose3D& pose)
+bool SpecificWorker::imm_setPoseFromParent(const QString &server, const std::string &item, const RoboCompInnerModelManager::Pose3D &pose)
 {
 	QMutexLocker locker(mutex);
-	QString qItem = QString::fromStdString(item);
-	QString m = "RoboCompInnerModelManager::setPoseFromParent()";
 
-	InnerModelTransform *aux = dynamic_cast<InnerModelTransform*>(d->getNode(QString::fromStdString(item),m));
+	QString qItem = QString::fromStdString(item);
+	QString m="RoboCompInnerModelManager::setPose()";
+
+	//check type transform
+	InnerModelTransform *aux = NULL;
+	aux = dynamic_cast<InnerModelTransform*>(d->getNode(qItem, m));
 	d->checkOperationInvalidNode(aux, m + qItem +"can't be use as item because it's not a InnerModelTransform node.");
 
-	d->innerModel->updateTransformValues(qItem,pose.x, pose.y, pose.z, pose.rx , pose.ry, pose.rz);
-	//I think not necessary	
-	// 	d->innerModel->update();
-
-// 	if(collisiondetection->isChecked()) {
-// 		checkPoseCollision(qItem,m);
-// 	}
+	d->innerModel->updateTransformValues(qItem, pose.x, pose.y, pose.z, pose.rx, pose.ry, pose.rz);
 
 	return true;
 }
@@ -82,7 +45,7 @@ bool SpecificWorker::imm_setPoseFromParent(const QString& server, const std::str
 /// ---------------------------------------------------------------------------------------
 // Provides the pose of a certain item respect to the base.
 /// ---------------------------------------------------------------------------------------
-bool SpecificWorker::imm_getPose(const QString& server, const std::string& item, const std::string& base, RoboCompInnerModelManager::Pose3D& pose)
+bool SpecificWorker::imm_getPose(const QString &server, const std::string &base, const std::string &item, RoboCompInnerModelManager::Pose3D &pose)
 {
 	QMutexLocker locker(mutex);
 	QVec p;
@@ -90,7 +53,7 @@ bool SpecificWorker::imm_getPose(const QString& server, const std::string& item,
 	QString qItem = QString::fromStdString(item);
 	QString m="RoboCompInnerModelManager::getPose()";
 
-	//check type transform
+	// check type transform
 	InnerModelTransform *aux = dynamic_cast<InnerModelTransform*>(d->getNode(qBase, m));
 	d->checkOperationInvalidNode(aux, m + qBase +"can't be use as base because it's not a InnerModelTransform node.");
 	aux = NULL;
@@ -98,7 +61,7 @@ bool SpecificWorker::imm_getPose(const QString& server, const std::string& item,
 	d->checkOperationInvalidNode(aux, m + qItem +"can't be use as item because it's not a InnerModelTransform node.");
 
 	// calculate position
-	p = d->innerModel->transform(QString::fromUtf8(base.c_str()), QVec::vec3(0,0,0),QString::fromUtf8(item.c_str()));
+	p = d->innerModel->transform(QString::fromUtf8(base.c_str()), QVec::vec3(0,0,0), QString::fromUtf8(item.c_str()));
 	pose.x = p.x();
 	pose.y = p.y();
 	pose.z = p.z();
@@ -113,28 +76,13 @@ bool SpecificWorker::imm_getPose(const QString& server, const std::string& item,
 
 
 // Provides the pose of a certain item respect to the parent
-bool SpecificWorker::imm_getPoseFromParent(const QString& server, const std::string& item, RoboCompInnerModelManager::Pose3D& pose)
+bool SpecificWorker::imm_getPoseFromParent(const QString &server, const std::string &item, RoboCompInnerModelManager::Pose3D &pose)
 {
-// 	QMutexLocker locker(mutex);
-// 	QString m="RoboCompInnerModelManager::getPoseFromParent()";
-// 
-// 	InnerModelTransform *aux = dynamic_cast<InnerModelTransform*>(d->getNode(QString::fromStdString(item), m));
-// 	d->checkOperationInvalidNode(aux, m + aux->id +"can't be use as base because it's not a InnerModelTransform node.");
-// 
-// 	pose.x = aux->backtX;
-// 	pose.y = aux->backtY;
-// 	pose.z = aux->backtZ;
-// 	pose.rx = aux->backrX;
-// 	pose.ry = aux->backrY;
-// 	pose.rz = aux->backrZ;
-// 
-// 	return true;
-	
 	QMutexLocker locker(mutex);
 	QString m="RoboCompInnerModelManager::getPoseFromParent()";
 
 	InnerModelTransform *aux = dynamic_cast<InnerModelTransform*>(d->getNode(QString::fromStdString(item), m));
-	d->checkOperationInvalidNode(aux,m + aux->id +"can't be use as base because it's not a InnerModelTransform node.");
+	d->checkOperationInvalidNode(aux, m+aux->id+"can't be use as base because it's not a InnerModelTransform node.");
 
 	pose.x = aux->backtX;
 	pose.y = aux->backtY;
@@ -142,13 +90,13 @@ bool SpecificWorker::imm_getPoseFromParent(const QString& server, const std::str
 	pose.rx = aux->backrX;
 	pose.ry = aux->backrY;
 	pose.rz = aux->backrZ;
-	
+
 	return true;
 }
 
 
 // Provides the transform of a certain point expressed in Base to Item.
-bool SpecificWorker::imm_transform(const QString& server, const std::string& base, const std::string& item, const RoboCompInnerModelManager::coord3D& coordInItem, RoboCompInnerModelManager::coord3D& coordInBase)
+bool SpecificWorker::imm_transform(const QString &server, const std::string &base, const std::string &item, const RoboCompInnerModelManager::coord3D &coordInItem, RoboCompInnerModelManager::coord3D &coordInBase)
 {
 	QMutexLocker locker(mutex);
 	QVec p;
@@ -185,7 +133,7 @@ bool SpecificWorker::imm_transform(const QString& server, const std::string& bas
 	return true;
 }
 
-RoboCompInnerModelManager::Matrix SpecificWorker::imm_getTransformationMatrix(const std::string& item, const std::string& base)
+RoboCompInnerModelManager::Matrix SpecificWorker::imm_getTransformationMatrix(const std::string &item, const std::string &base)
 {
 // 	qFatal("Not well implemented yet.");
 	const QString qBase = QString::fromStdString(base);
@@ -226,7 +174,7 @@ RoboCompInnerModelManager::Matrix SpecificWorker::imm_getTransformationMatrix(co
 
 
 // Scales a mesh to a new size.
-bool SpecificWorker::imm_setScale(const QString& server, const std::string& item, float scaleX, float scaleY, float scaleZ)
+bool SpecificWorker::imm_setScale(const QString &server, const std::string &item, float scaleX, float scaleY, float scaleZ)
 {
 // 	QMutexLocker locker(mutex);
 // 	QString qItem = QString::fromStdString(item);
@@ -283,7 +231,7 @@ bool SpecificWorker::imm_setScale(const QString& server, const std::string& item
 }
 
 
-bool SpecificWorker::imm_setPlane(const QString& server, const std::string& item, const RoboCompInnerModelManager::Plane3D& plane)
+bool SpecificWorker::imm_setPlane(const QString &server, const std::string &item, const RoboCompInnerModelManager::Plane3D &plane)
 {
 // 	QMutexLocker locker(mutex);
 // 	QString m="RoboCompInnerModelManager::setPlane()";
@@ -312,7 +260,7 @@ bool SpecificWorker::imm_setPlane(const QString& server, const std::string& item
 // }
 
 
-void SpecificWorker::imm_setPointCloudData(const QString& server, const std::string& id, const RoboCompInnerModelManager::PointCloudVector& cloud)
+void SpecificWorker::imm_setPointCloudData(const QString &server, const std::string &id, const RoboCompInnerModelManager::PointCloudVector &cloud)
 {
 // 	QString m = QString("SpecificWorker::setPointCloudData");
 // 
@@ -353,7 +301,7 @@ void SpecificWorker::imm_setPointCloudData(const QString& server, const std::str
 }
 
 
-bool SpecificWorker::imm_addTransform(const QString& server, const std::string& item, const std::string& engine, const std::string& base, const RoboCompInnerModelManager::Pose3D& pose)
+bool SpecificWorker::imm_addTransform(const QString &server, const std::string &item, const std::string &engine, const std::string &base, const RoboCompInnerModelManager::Pose3D &pose)
 {
 	QMutexLocker locker(mutex);
 	InnerModelNode *parent = d->getNode(QString::fromStdString(base), "RoboCompInnerModelManager::addTransform()");
@@ -377,7 +325,7 @@ bool SpecificWorker::imm_addTransform(const QString& server, const std::string& 
 }
 
 
-bool SpecificWorker::imm_addJoint(const QString& server, const std::string& item, const std::string& base, const RoboCompInnerModelManager::jointType& j_)
+bool SpecificWorker::imm_addJoint(const QString &server, const std::string &item, const std::string &base, const RoboCompInnerModelManager::jointType &j_)
 {
 	RoboCompInnerModelManager::jointType j = j_;
 	if (j.axis == "")
@@ -405,7 +353,7 @@ bool SpecificWorker::imm_addJoint(const QString& server, const std::string& item
 }
 
 
-bool SpecificWorker::imm_addMesh(const QString& server, const std::string& item, const std::string& base, const RoboCompInnerModelManager::meshType& m)
+bool SpecificWorker::imm_addMesh(const QString &server, const std::string &item, const std::string &base, const RoboCompInnerModelManager::meshType &m)
 {
 	QMutexLocker locker(mutex);
 	QString msg="RoboCompInnerModelManager::addMesh()";
@@ -421,7 +369,8 @@ bool SpecificWorker::imm_addMesh(const QString& server, const std::string& item,
 	d->checkInvalidMeshValues(m,msg);
 
 	int render = m.render;
-	if(render!=0 && render!=1) {
+	if(render!=0 and render!=1)
+	{
 		render=0;
 	}
 	
@@ -452,7 +401,7 @@ bool SpecificWorker::imm_addMesh(const QString& server, const std::string& item,
 }
 
 
-bool SpecificWorker::imm_addPlane(const QString& server, const std::string& item, const std::string& base, const RoboCompInnerModelManager::Plane3D& p)
+bool SpecificWorker::imm_addPlane(const QString &server, const std::string &item, const std::string &base, const RoboCompInnerModelManager::Plane3D &p)
 {
 // 	QMutexLocker locker(mutex);
 // 
@@ -494,7 +443,7 @@ bool SpecificWorker::imm_addPlane(const QString& server, const std::string& item
 }
 
 
-bool SpecificWorker::imm_addAttribute(const QString& server, const std::string& idNode, const std::string& name, const std::string& type, const std::string& value)
+bool SpecificWorker::imm_addAttribute(const QString &server, const std::string &idNode, const std::string &name, const std::string &type, const std::string &value)
 {
 	QMutexLocker locker(mutex);
 	QString qIdNode=QString::fromStdString(idNode);
@@ -517,7 +466,7 @@ bool SpecificWorker::imm_addAttribute(const QString& server, const std::string& 
 }
 
 
-bool SpecificWorker::imm_setAttribute(const QString& server, const std::string& idNode, const std::string& name, const std::string& type, const std::string& value)
+bool SpecificWorker::imm_setAttribute(const QString &server, const std::string &idNode, const std::string &name, const std::string &type, const std::string &value)
 {
 	QMutexLocker locker(mutex);
 	QString qIdNode=QString::fromStdString(idNode);
@@ -537,7 +486,7 @@ bool SpecificWorker::imm_setAttribute(const QString& server, const std::string& 
 }
 
 
-bool SpecificWorker::imm_getAttribute(const QString& server, const std::string& idNode, const std::string& name, std::string& type, std::string& value)
+bool SpecificWorker::imm_getAttribute(const QString &server, const std::string &idNode, const std::string &name, std::string &type, std::string &value)
 {
 	QMutexLocker locker(mutex);
 	QString qIdNode=QString::fromStdString(idNode);
@@ -554,7 +503,7 @@ bool SpecificWorker::imm_getAttribute(const QString& server, const std::string& 
 }
 
 
-bool SpecificWorker::imm_removeAttribute(const QString& server, const std::string& idNode, const std::string& name)
+bool SpecificWorker::imm_removeAttribute(const QString &server, const std::string &idNode, const std::string &name)
 {
 	QMutexLocker locker(mutex);
 	QString qIdNode=QString::fromStdString(idNode);
@@ -570,7 +519,7 @@ bool SpecificWorker::imm_removeAttribute(const QString& server, const std::strin
 }
 
 
-bool SpecificWorker::imm_removeNode(const QString& server, const std::string& item)
+bool SpecificWorker::imm_removeNode(const QString &server, const std::string &item)
 {
 		QMutexLocker locker(mutex);
 	QString msg="RoboCompInnerModelManager::removeNode()";
@@ -651,8 +600,36 @@ bool SpecificWorker::imm_removeNode(const QString& server, const std::string& it
 }
 
 
-void SpecificWorker::imm_getAllNodeInformation(const QString& server, RoboCompInnerModelManager::NodeInformationSequence& nodesInfo)
+void SpecificWorker::imm_getAllNodeInformation(const QString &server, RoboCompInnerModelManager::NodeInformationSequence &nodesInfo)
 {
 	nodesInfo.clear();
 	d->getRecursiveNodeInformation(nodesInfo, d->innerModel->getRoot());
 }
+
+
+bool SpecificWorker::imm_collide(const string &a, const string &b)
+{
+	try
+	{
+		return d->innerModel->collide(QString::fromStdString(a), QString::fromStdString(b));
+	}
+	catch (int err)
+	{
+		RoboCompInnerModelManager::InnerModelManagerError ex;
+		ex.err = RoboCompInnerModelManager::NonExistingNode;
+		std::ostringstream oss;
+		oss << "InnerModelManager::collide: Error, cannot find node ";
+		if (err == 1)
+		{
+			oss << a;
+		}
+		else
+		{
+			oss << b;
+		}
+		ex.text = oss.str();
+		printf("ERROR: %s\n", ex.text.c_str());
+		throw ex;
+	}
+}
+

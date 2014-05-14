@@ -103,17 +103,34 @@ int robotSimulatorComp::run( int argc, char* argv[] )
 	// GUI application
 	QApplication a(argc, argv);
 	initialize();
-	
+
+	printf("---------------------------------------\n");
+	printf("--- FCL_SUPPORT: %d\n", InnerModel::support_fcl());
+	printf("---------------------------------------\n");
+
 	// Get the port number
 	int port = 11175;
-	if (argc == 4 and strcmp(argv[2], "-p")==0)
-		sscanf(argv[3], "%d", &port);
+	int ms = 120;
+	for (int params=2; params+1<argc; params+=2)
+	{
+		if (strcmp(argv[params],"-p")==0)
+		{
+			sscanf(argv[params+1], "%d", &port);
+		}
+		else if (strcmp(argv[params],"-f")==0)
+		{
+			sscanf(argv[params+1], "%d", &ms);
+		}
+	}
 	if (port > 65535 or port < 0)
 		qFatal("Port number must be in the range 0-1023 (requires root privileges) or 1024-65535 (no privileges needed). Default port number: 11175");
+	if (ms > 1000 or ms < 5)
+		qFatal("Simulation period must be in the range 5-1000. Default period length 120ms");
 	
 	// Create the worker
-	SpecificWorker* worker = new SpecificWorker( mprx, communicator(), argv[1] );
-	try {
+	SpecificWorker* worker = new SpecificWorker( mprx, communicator(), argv[1], ms );
+	try
+	{
 		// Server adapter creation and publication
 		char endpoint[1024];
 		sprintf(endpoint, "tcp -p %d", port);
@@ -132,7 +149,8 @@ int robotSimulatorComp::run( int argc, char* argv[] )
 		a.exec();
 		return EXIT_SUCCESS;
 	}
-	catch(const Ice::Exception& ex) {
+	catch(const Ice::Exception& ex)
+	{
 		cout << "[" << PROGRAM_NAME << "]: Exception raised on main thread: " << endl;
 		cout << ex;
 		a.quit();

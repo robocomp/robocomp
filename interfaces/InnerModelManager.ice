@@ -11,7 +11,7 @@
 
 module RoboCompInnerModelManager
 {
-	enum NodeType { Transform, Joint, DifferentialRobot, Plane, Camera, RGBD, IMU, Laser, Mesh, PointCloud };
+	enum NodeType { Transform, Joint, DifferentialRobot, Plane, Camera, RGBD, IMU, Laser, Mesh, PointCloud, TouchSensor };
 	
 	struct AttributeType {
 		string type;
@@ -144,8 +144,10 @@ module RoboCompInnerModelManager
 		/// Generic remove
 		// If an item doesn't exist or can't be removed, returns false. All item's children are erased.
 		bool removeNode(string item) throws InnerModelManagerError;
-    
-    
+
+		/// Collision detection
+		bool collide(string a, string b) throws InnerModelManagerError;
+
     /// PointCloud
 //    void addPointCloud(string id);
     void setPointCloudData(string id, PointCloudVector cloud);

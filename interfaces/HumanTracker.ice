@@ -10,19 +10,24 @@
 #define ROBOCOMPHUMANTRACKER_ICE
 
 module RoboCompHumanTracker{
-	sequence <byte> imgType;
-	sequence <float> depthType;
-				sequence <float> RTMatrix;
-				sequence <float> joint;
+	enum TrackingState{None, Calibrating, Tracked, ErrorNotInPose, ErrorHands, ErrorHead, ErrorLegs, ErrorTorso};
+	sequence <float> RTMatrix;
 				dictionary<string, RTMatrix>RTMatrixList;
-	dictionary<string, joint>jointListType;
-	enum trackingState{NoTracking, Calibrating, LookingForPose, Tracking};
+	sequence <float> joint;
+				dictionary<string, joint>jointListType;
+	struct TPerson{
+		TrackingState state;
+		jointListType joints;
+		RTMatrixList rotations;
+	};
+	dictionary<int, TPerson>PersonList;
 
 	interface HumanTracker{
-		trackingState getState();
-		void  getRTMatrixList(out RTMatrixList RTMatList);
-		void  getJointsPosition(out jointListType jointList);
-		void  getData(out RTMatrixList RTMatList, out jointListType jointList, out trackingState state);
+		void  getJointsPosition(int id, out jointListType jointList);
+		void  getRTMatrixList(int id, out RTMatrixList RTMatList);
+		void  getUserState(int id, out TrackingState state);
+		void  getUser(int id, out TPerson user);
+		void  getUsersList(out PersonList users);
 	};
 };
   

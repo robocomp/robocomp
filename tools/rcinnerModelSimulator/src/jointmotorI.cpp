@@ -102,7 +102,8 @@ void JointMotorI::remove(QString id)
 void JointMotorI::setPosition ( const MotorGoalPosition& goal, const Ice::Current& )
 {
 	const QString name = QString::fromStdString ( goal.name );
-	if ( jointIDs.contains ( name ) ) {
+	if ( jointIDs.contains ( name ) )
+	{
 		worker->jm_setPosition( name, goal );
 	}
 }
@@ -111,7 +112,8 @@ void JointMotorI::setPosition ( const MotorGoalPosition& goal, const Ice::Curren
 void JointMotorI::setVelocity ( const MotorGoalVelocity& goal, const Ice::Current& )
 {
 	const QString name = QString::fromStdString ( goal.name );
-	if ( jointIDs.contains ( name ) ) {
+	if ( jointIDs.contains ( name ) )
+	{
 		worker->jm_setVelocity( name, goal );
 	}
 }
@@ -119,7 +121,8 @@ void JointMotorI::setVelocity ( const MotorGoalVelocity& goal, const Ice::Curren
 
 void JointMotorI::setSyncPosition ( const MotorGoalPositionList& listGoals, const Ice::Current& ice )
 {
-	for ( uint i=0; i<listGoals.size(); i++ ) {
+	for ( uint i=0; i<listGoals.size(); i++ )
+	{
 		setPosition ( listGoals[i], ice );
 	}
 }
@@ -127,7 +130,8 @@ void JointMotorI::setSyncPosition ( const MotorGoalPositionList& listGoals, cons
 
 void JointMotorI::setSyncVelocity ( const MotorGoalVelocityList& listGoals, const Ice::Current& ice )
 {
-	for ( uint i=0; i<listGoals.size(); i++ ) {
+	for ( uint i=0; i<listGoals.size(); i++ )
+	{
 		setVelocity ( listGoals[i], ice );
 	}
 }
@@ -135,9 +139,10 @@ void JointMotorI::setSyncVelocity ( const MotorGoalVelocityList& listGoals, cons
 
 MotorParams JointMotorI::getMotorParams ( const string& motor, const Ice::Current& )
 {
-
-	for ( uint i=0; i<params.size(); ++i ) {
-		if ( params[i].name == motor ) {
+	for ( uint i=0; i<params.size(); ++i )
+	{
+		if ( params[i].name == motor )
+		{
 			return params[i];
 		}
 	}
@@ -147,7 +152,8 @@ MotorParams JointMotorI::getMotorParams ( const string& motor, const Ice::Curren
 
 MotorState JointMotorI::getMotorState ( const string& motor, const Ice::Current& )
 {
-	for( QStringList::const_iterator name = jointIDs.constBegin() ; name != jointIDs.constEnd() ; ++name ) {
+	for( QStringList::const_iterator name = jointIDs.constBegin() ; name != jointIDs.constEnd() ; ++name )
+	{
 		InnerModelJoint* joint = this->innerModel->getJoint ( *name );
 		states[name->toStdString()].pos = joint->getAngle();
 	}
@@ -157,7 +163,8 @@ MotorState JointMotorI::getMotorState ( const string& motor, const Ice::Current&
 
 MotorStateMap JointMotorI::getMotorStateMap ( const MotorList& mList, const Ice::Current& )
 {
-	for( QStringList::const_iterator name = jointIDs.constBegin() ; name != jointIDs.constEnd() ; ++name ) {
+	for( QStringList::const_iterator name = jointIDs.constBegin() ; name != jointIDs.constEnd() ; ++name )
+	{
 		InnerModelJoint* joint = this->innerModel->getJoint ( *name );
 		states[name->toStdString()].pos = joint->getAngle();
 	}
@@ -167,7 +174,8 @@ MotorStateMap JointMotorI::getMotorStateMap ( const MotorList& mList, const Ice:
 
 void JointMotorI::getAllMotorState ( MotorStateMap& mstateMap, const Ice::Current& )
 {
-	for( QStringList::const_iterator name = jointIDs.constBegin() ; name != jointIDs.constEnd() ; ++name ) {
+	for( QStringList::const_iterator name = jointIDs.constBegin() ; name != jointIDs.constEnd() ; ++name )
+	{
 		InnerModelJoint* joint = this->innerModel->getJoint ( *name );
 		states[name->toStdString()].pos = joint->getAngle();
 	}

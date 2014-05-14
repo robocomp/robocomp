@@ -72,6 +72,7 @@ public:
 	
 	void setPointCloudData ( const std::string &id, const RoboCompInnerModelManager::PointCloudVector &cloud, const Ice::Current& );
 
+	bool collide(const std::string &a, const std::string &b, const Ice::Current&);
 private:
 	SpecificWorker *worker;
 	QString id;

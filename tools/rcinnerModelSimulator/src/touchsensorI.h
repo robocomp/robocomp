@@ -16,8 +16,8 @@
  *    You should have received a copy of the GNU General Public License
  *    along with RoboComp.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef LASERI_H
-#define LASERI_H
+#ifndef TOUCHSENSORI_H
+#define TOUCHSENSORI_H
 
 // Qt includes
 #include <QMutex>
@@ -25,38 +25,39 @@
 
 // RoboComp includes
 #include <Ice/Ice.h>
-#include <Laser.h>
+#include <TouchSensor.h>
 #include <innermodel/innermodel.h>
 
 // Simulator includes
 #include "config.h"
 
-#include <osg/Group>
 
-using namespace RoboCompLaser;
 
 class SpecificWorker;
 
-class LaserI : public QObject , public virtual RoboCompLaser::Laser
-{
-	Q_OBJECT
-public:
-	LaserI ( SpecificWorker *_worker, QObject *parent = 0 );
-	~LaserI();
-	
-	void add ( QString id );
-	
-	TLaserData getLaserData ( const Ice::Current& = Ice::Current() );
-	TLaserData getLaserAndBStateData ( RoboCompDifferentialRobot::TBaseState& state, const Ice::Current& = Ice::Current() );
-	LaserConfData getLaserConfData ( const Ice::Current& = Ice::Current() );
+using namespace std;
+using namespace RoboCompTouchSensor;
 
-private:
-	QString id;
-	InnerModel *innerModel;
-	InnerModelLaser *laserNode;
-	osg::Group *group;
+
+
+class TouchSensorI : public QObject , public virtual RoboCompTouchSensor::TouchSensor
+{
+Q_OBJECT
+public:
+	TouchSensorI(SpecificWorker *_worker, QObject *parent = 0);
+	~TouchSensorI();
+
+	void add (QString id );
+	void remove(QString id);
+
+	RoboCompTouchSensor::SensorMap getValues(const Ice::Current&);
+
+// private:
 	SpecificWorker *worker;
-	LaserConfData laserConf;
+	InnerModel *innerModel;
+	QStringList sensorIDs;
+	
+	SensorMap sensorMap;
 	QMutex *mutex;
 };
 

@@ -9,13 +9,22 @@
 #ifndef ROBOCOMPNAVIGATOR_ICE
 #define ROBOCOMPNAVIGATOR_ICE
 
+#include <Ar.ice>
+
 module RoboCompNavigator{
+	struct Stage{
+		int x;
+		int z;
+	};
+	sequence <Stage> Trajectory;
 
 	interface LocalNavigator{
 		void  stop();
 		bool isActive();
 		bool goTo(float x, float z, float angle);
 		void  setOdometry(float x, float z, float angle);
+		void  setPathVel(Trajectory path, float advVel, float rotVel);
+		bool setOrientation(float angle); 
 	};
 	interface LocalNavigatorReportState{
 		void  reportRobotState(float distanceToGoal, float angToGoal, int timeElapsed, bool finish);

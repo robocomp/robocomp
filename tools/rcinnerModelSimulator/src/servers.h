@@ -6,6 +6,7 @@
 #include "jointmotorI.h"
 #include "laserI.h"
 #include "rgbdI.h"
+#include "touchsensorI.h"
 
 #include <CommonHead.h>
 
@@ -34,6 +35,23 @@ public:
 	Ice::ObjectAdapterPtr adapter;
 	JointMotorI *interface;
 	std::vector<InnerModelJoint *> joints;
+	SpecificWorker *worker;
+};
+
+class TouchSensorServer
+{
+public:
+	TouchSensorServer(Ice::CommunicatorPtr communicator, SpecificWorker *worker_, uint32_t _port);
+	void add(InnerModelTouchSensor *sensor);
+	void remove(InnerModelTouchSensor *sensor);
+	bool empty();
+	void shutdown();
+
+	uint32_t port;
+	Ice::CommunicatorPtr comm;
+	Ice::ObjectAdapterPtr adapter;
+	TouchSensorI *interface;
+	std::vector<InnerModelTouchSensor *> sensors;
 	SpecificWorker *worker;
 };
 
