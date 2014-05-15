@@ -234,12 +234,16 @@ class OpenConnection(QDialog):
 		# Automatically set endpoint port number
 		self.ui.endpointPort.setValue(int(config[4]))
 		# Automatically set code
+		codePath = root
+		if len(codePath)>0:
+			codePath += "/"
+		codePath += config[5]
 		try:
-			print 'Opening code file', config[5]
-			f = open(root + "/" + config[5], 'r')
+			print 'Opening code file <'+codePath+'>'
+			f = open(codePath, 'r')
 		except:
-			print 'Cannot open code file', config[5]
-			sys.exit()
+			print 'Cannot open code file <'+codePath+'>'
+			sys.exit(1)
 		self.slotAccepted1()
 		self.ui.textEdit.setText('')
 		#print '<CODE'
