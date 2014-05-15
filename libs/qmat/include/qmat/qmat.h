@@ -175,6 +175,7 @@ namespace RMat
 		QVec toVector() const;
 		QVec extractAnglesR() const;
 		bool extractAnglesR2(QVec &a, QVec &b) const;
+		QVec extractAnglesR3(QMat matrizRotacion); //<---- EN PRUEBAS
 
 
 		//Access operations

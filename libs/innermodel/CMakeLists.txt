@@ -39,5 +39,5 @@ ADD_DEFINITIONS(${QT_DEFINITIONS})
 RoboComp_ADD_LIBRARY(${OUT_FILE_NAME} SHARED ${LIB_NAME} ${srcs} ${incs} )
 RoboComp_ADD_INCLUDES(${LIB_NAME} ${LIB_NAME} ${incs})
 
-target_link_libraries( ${OUT_FILE_NAME} ${QT_LIBRARIES} -losg robocomp_qmat ${FCL_LIBS})
+target_link_libraries( ${OUT_FILE_NAME} ${QT_LIBRARIES} -losg -losgViewer robocomp_qmat ${FCL_LIBS})
 

@@ -100,8 +100,10 @@ namespace RMat
 
 		// Vector - Escalar methods
 		T norm2() const                                      { return sqrt(*this * *this); }
-		T max( int & pos) const;
+		T max( int & pos ) const;
+		T max() const;
 		T min( int & pos) const;
+		T min( ) const;
 		T minAbs( int & pos) const;
 		T maxAbs( int & pos) const;
 		T mean() const;
@@ -118,6 +120,7 @@ namespace RMat
 		QMat crossProductMatrix() const;
 		QMat toRowMatrix() const;
 		QMat toColumnMatrix() const;
+		bool isZero();
 
 		// Vector - QPoint
 		QPointF toQPointF() const;

@@ -45,7 +45,7 @@ RMat::QVec::QVec(const RMat::QMat & matrix) : QVector< T >(matrix.nCols() * matr
  * @param vector
  * @return true if both are equal, false if not
  */
-bool RMat::QVec::equals(const QVec & vector) const
+bool RMat::QVec::equals(const QVec & vector ) const
 {
 	if (size() != vector.size())
 		return false;
@@ -244,6 +244,22 @@ T RMat::QVec::min( int & pos) const
 }
 
 /**
+ * \brief Returns the minimun value and position of a vector
+ * @return min value
+ */
+T RMat::QVec::min( ) const
+{
+	T min = std::numeric_limits<T>::max();
+	for (int i = 0; i < size(); i++)
+		if ( operator[](i) < min)
+		{
+			min = operator[](i);
+		}
+	return min;
+}
+
+
+/**
  * \brief Returns the minimun absolute value and position of a vector
  * @return min value
  */
@@ -284,6 +300,23 @@ T RMat::QVec::max( int & pos) const
  * \brief Returns the maximun value and position of a vector
  * @return max value
  */
+T RMat::QVec::max( ) const
+{
+	T max = std::numeric_limits<T>::min();
+	for (int i = 0; i < size(); i++)
+	{
+		if ( operator[](i) > max)
+		{
+			max = operator[](i);
+		}
+	}
+	return max;
+}
+
+/**
+ * \brief Returns the maximun value and position of a vector
+ * @return max value
+ */
 T RMat::QVec::maxAbs( int & pos) const
 {
 	T max = std::numeric_limits<T>::min();
@@ -291,7 +324,7 @@ T RMat::QVec::maxAbs( int & pos) const
 	{
 		if ( fabs(operator[](i)) > max)
 		{
-			max = operator[](i);
+			max = fabs(operator[](i));
 			pos = i;
 		}
 	}
@@ -398,6 +431,15 @@ RMat::T RMat::QVec::angleOf2DSegment( const QVec & p) const
 	Q_ASSERT_X( size() == 2 and p.size()==2 , "QVec::angleOf2DSegment", "incorrect size of parameters");
 	
 	return atan2( p.x()-operator[](0), p.y()-operator[](1) );
+}
+
+
+bool RMat::QVec::isZero()
+{
+		for ( int i = 0; i < size(); i++ )
+				if( this->operator[](i) != 0 )
+					return false;
+		return true;
 }
 
 /// Static methods
@@ -548,6 +590,9 @@ const QVec RMat::QVec::gaussianSamples(const int dim, const T mean, const T stde
 }
 
 // Static methods
+
+
+
 
 /**
  * \brief Static method that computes a gaussian with 2*radius+1 elements and sigma stdev
