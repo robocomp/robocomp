@@ -1,0 +1,21 @@
+module RoboCompBodyInverseKinematicsç
+{
+	exception BIKException;
+	{
+		string text;
+	};
+	struct Pose6D
+	{
+		float x;
+		float y;
+		float z;
+		float rx;
+		float ry;
+		float rz;
+	};
+	
+	interface BodyInverseKinematics
+	{
+		bool setTarget(string bodyPart, Pose6D target) throws BIKException;
+	};
+};
