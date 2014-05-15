@@ -39,5 +39,5 @@ RoboComp_ADD_LIBRARY(${OUT_FILE_NAME}  SHARED ${LIB_NAME}  ${srcs} ${incs} )
 RoboComp_ADD_INCLUDES(${LIB_NAME} ${LIB_NAME} ${incs})
 
 
-target_link_libraries(${OUT_FILE_NAME} ${QT_LIBRARIES} -lgsl)
+target_link_libraries(${OUT_FILE_NAME} ${QT_LIBRARIES} -lgsl -lgslcblas -lm)
 
