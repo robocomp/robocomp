@@ -54,7 +54,7 @@
 #include <osgviewer/getworldcoorofnode.h>
 #include <osgviewer/viewerqt.h>
 #include <qmat/QMatAll>
-#include <innermodel/innermodel.h>
+#include "innermodel.h"
 
 
 

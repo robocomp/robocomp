@@ -20,13 +20,10 @@
 #include <innermodel/innermodelreader.h>
 
 
-
-
 InnerModelReader::InnerModelReader()
 {
 
 }
-
 
 
 bool InnerModelReader::load(const QString &file, InnerModel *model)

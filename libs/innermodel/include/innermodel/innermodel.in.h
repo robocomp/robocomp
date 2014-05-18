@@ -67,6 +67,9 @@ public:
 
 class InnerModelNode : public RTMat
 {
+	friend class InnerModelCamera;
+	friend class InnerModelRGBD;
+	friend class InnerModelReader;
 public:
 	struct AttributeType
 	{
@@ -270,8 +273,16 @@ protected:
 
 class InnerModelTransform : public InnerModelNode
 {
-public:
+	friend class InnerModel;
+	friend class InnerModelJoint;
+	friend class InnerModelPointCloud;
+	friend class InnerModelTouchSensor;
+	friend class InnerModelLaser;
+	friend class InnerModelDifferentialRobot;
+	friend class InnerModelPrismaticJoint;
+	friend class InnerModelReader;
 	InnerModelTransform(QString id_, QString engine_, float tx_, float ty_, float tz_, float rx_, float ry_, float rz_, float mass_, InnerModelNode *parent_=NULL);
+public:
 	void print(bool verbose);
 	void save(QTextStream &out, int tabs);
 	void setUpdatePointers(float *tx_, float *ty_, float *tz_, float *rx_, float *ry_, float *rz_);
@@ -295,8 +306,10 @@ public:
 
 class InnerModelJoint : public InnerModelTransform
 {
-public:
+	friend class InnerModel;
+	friend class InnerModelReader;
 	InnerModelJoint(QString id_, float lx_, float ly_, float lz_, float hx_, float hy_, float hz_, float tx_, float ty_, float tz_, float rx_, float ry_, float rz_, float min_=-INFINITY, float max_=INFINITY, uint32_t port_=0,std::string axis_="z", float home_=0, InnerModelTransform *parent_=NULL);
+public:
 	void print(bool verbose);
 	void save(QTextStream &out, int tabs);
 	void setUpdatePointers(float *lx_, float *ly_, float *lz_, float *hx_, float *hy_, float *hz_);
@@ -321,8 +334,10 @@ public:
 
 class InnerModelTouchSensor : public InnerModelNode
 {
-public:
+	friend class InnerModel;
+	friend class InnerModelReader;
 	InnerModelTouchSensor(QString id_, QString stype, float nx_, float ny_, float nz_, float min_=-INFINITY, float max_=INFINITY, uint32_t port_=0, InnerModelNode *parent_=NULL);
+public:
 	void print(bool verbose) {}
 	void save(QTextStream &out, int tabs) {}
 	QVec getMeasure() { return value; }
@@ -341,8 +356,10 @@ public:
 
 class InnerModelPrismaticJoint : public InnerModelTransform
 {
-public:
+	friend class InnerModel;
+	friend class InnerModelReader;
 	InnerModelPrismaticJoint(QString id_, float min_, float max_, float val_, float offset_, uint32_t port_=0, std::string axis_="z", float home_=0, InnerModelTransform *parent_=NULL);
+public:
 	void print(bool verbose);
 	void save(QTextStream &out, int tabs);
 	void update();
@@ -362,8 +379,10 @@ public:
 
 class InnerModelDifferentialRobot : public InnerModelTransform
 {
-public:
+	friend class InnerModel;
+	friend class InnerModelReader;
 	InnerModelDifferentialRobot(QString id_, float tx_, float ty_, float tz_, float rx_, float ry_, float rz_, uint32_t port_=0, InnerModelTransform *parent_=NULL);
+public:
 	virtual InnerModelNode *copyNode(QHash<QString, InnerModelNode *> &hash, InnerModelNode *parent);
 
 public:
@@ -374,8 +393,10 @@ public:
 
 class InnerModelPlane : public InnerModelNode
 {
-public:
+	friend class InnerModel;
+	friend class InnerModelReader;
 	InnerModelPlane(QString id_, QString texture_, float width_, float height_,float depth_, int repeat_, float nx_, float ny_, float nz_, float px_, float py_, float pz_, InnerModelNode *parent_=NULL);
+public:
 	void print(bool verbose);
 	void save(QTextStream &out, int tabs);
 	void setUpdatePointers(float *nx_, float *ny_, float *nz_, float *px_, float *py_, float *pz_);
@@ -396,8 +417,11 @@ public:
 
 class InnerModelCamera : public InnerModelNode
 {
-public:
+	friend class InnerModel;
+	friend class InnerModelRGBD;
+	friend class InnerModelReader;
 	InnerModelCamera(QString id_, float width_, float height_, float focal_, InnerModelNode *parent_=NULL);
+public:
 	void print(bool verbose);
 	void save(QTextStream &out, int tabs);
 	void update();
@@ -412,9 +436,11 @@ public:
 
 class InnerModelRGBD : public InnerModelCamera
 {
-public:
+	friend class InnerModel;
+	friend class InnerModelReader;
 	InnerModelRGBD(QString id_, float width, float height, float focal, float _noise, uint32_t _port, QString _ifconfig, InnerModelNode *parent_=NULL);
 	void save(QTextStream &out, int tabs);
+public:
 	virtual InnerModelNode *copyNode(QHash<QString, InnerModelNode *> &hash, InnerModelNode *parent);
 
 public:
@@ -427,8 +453,10 @@ public:
 
 class InnerModelIMU : public InnerModelNode
 {
-public:
+	friend class InnerModel;
+	friend class InnerModelReader;
 	InnerModelIMU(QString id_, uint32_t _port, InnerModelNode *parent_=NULL);
+public:
 	void save(QTextStream &out, int tabs);
 	void print(bool verbose);
 	void update();
@@ -442,8 +470,10 @@ public:
 
 class InnerModelLaser : public InnerModelNode
 {
-public:
+	friend class InnerModel;
+	friend class InnerModelReader;
 	InnerModelLaser(QString id_, uint32_t _port, uint32_t _min, uint32_t _max, float _angle, uint32_t _measures, QString _ifconfig, InnerModelNode *parent_=NULL);
+public:
 	void save(QTextStream &out, int tabs);
 	void print(bool verbose);
 	void update();
@@ -463,9 +493,13 @@ class InnerModelMesh : public InnerModelNode
 {
 public:
 	enum RenderingModes { NormalRendering=0, WireframeRendering=1};
-
+protected:
+	friend class InnerModel;
+	friend class InnerModelReader;
 	InnerModelMesh(QString id_, QString meshPath_, float scale, RenderingModes render_, float tx_, float ty_, float tz_, float rx_, float ry_, float rz_, InnerModelNode *parent_=NULL);
 	InnerModelMesh(QString id_, QString meshPath_, float scalex_, float scaley_, float scalez_, RenderingModes render_, float tx_, float ty_, float tz_, float rx_, float ry_, float rz_, InnerModelNode *parent_=NULL);
+public:
+
 	void save(QTextStream &out, int tabs);
 	void print(bool verbose);
 	void update();
@@ -486,8 +520,10 @@ public:
 
 class InnerModelPointCloud : public InnerModelNode
 {
-public:
+	friend class InnerModel;
+	friend class InnerModelReader;
 	InnerModelPointCloud(QString id_, InnerModelNode *parent_=NULL);
+public:
 	void save(QTextStream &out, int tabs);
 	void print(bool verbose);
 	void update();

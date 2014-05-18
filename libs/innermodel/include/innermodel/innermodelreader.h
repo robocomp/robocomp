@@ -24,7 +24,7 @@
 #include <QtXml/QtXml>
 
 // Robocomp includes
-#include <innermodel/innermodel.h>
+#include "innermodel.h"
 
 
 
