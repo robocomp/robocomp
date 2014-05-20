@@ -259,7 +259,7 @@ bool SpecificWorker::imm_setPlaneTexture(const QString &server, const std::strin
 	
 	QMutexLocker locker(mutex);
 	QString m="RoboCompInnerModelManager::setPlaneTextureº()";
-	printf("SETPLANETEXTURE %s: %s_%f_%f\n", item.c_str(), texture.c_str());
+	printf("SETPLANETEXTURE %s: %s\n", item.c_str(), texture.c_str());
 	InnerModelPlane *aux = dynamic_cast<InnerModelPlane*>(d->getNode(QString::fromStdString(item), m));
 	qDebug()<<"aux->texture"<<aux->texture<<"qstring"<<QString::fromStdString(texture);
 	
