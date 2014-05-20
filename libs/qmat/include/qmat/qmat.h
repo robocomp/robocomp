@@ -21,7 +21,7 @@
 #define QMAT_H
 
 #include <QtCore>
-#include <math.h>
+// #include <math.h>
 #include <vector>
 #include <limits>
 
@@ -175,7 +175,7 @@ namespace RMat
 		QVec toVector() const;
 		QVec extractAnglesR() const;
 		bool extractAnglesR2(QVec &a, QVec &b) const;
-		QVec extractAnglesR3(QMat matrizRotacion); //<---- EN PRUEBAS
+		QVec extractAnglesR3(const RMat::QMat& matrizRotacion); //<---- EN PRUEBAS
 
 
 		//Access operations
@@ -192,13 +192,12 @@ namespace RMat
 		static QMat diagonal ( const QMat &v );                                //!<Static version of void diagonal() to be used in initializing variables		
 		static QMat gaussian ( const int fi, const float mean, const float stdev); //!< Normal distributed column vector// deprecated to vec		
 		static QMat identity ( const int m );                                  //!<Static version of void loadIdentity to be used in initializing variables.
-		static QMat makeDiagonal ( QVec v );                                   // Deprecated
+		static QMat makeDiagonal ( const QVec &v );                            // Create a diagonal matrix from a vector
 		static QMat ones ( const int m, const int n );                         //!<Static version of void loadIdentity to be used in initializing variables.
 		static QMat random ( const int fi, const int co );                     //!<Static version of void random() to be used in initializing variables
 		static QMat vec3(T x, T y, T z);                                       // deprecated to vec
 		static QMat zeroes ( const int m, const int n );                       // Deprecated. Use zeros
 		static QMat zeros ( const int m, const int n );                        //!<Static version for creating a zeroed matrix.				  
-
 	       
 
 		public:

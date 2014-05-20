@@ -581,15 +581,13 @@ QMat QMat::diagonal ( const QMat & d )
  * @param v Vector to get diagonal values
  * @return QMat new diagonal matrix
  */
-QMat RMat::QMat::makeDiagonal ( QVec v )
+QMat RMat::QMat::makeDiagonal ( const QVec &v )
 {
-	QMat R ( v.size(),v.size() );
+	QMat R ( v.size(),v.size(), (T)0 );
 	int f = v.size();
 	for ( int i=0; i<f; i++ )
 		R ( i,i ) = v ( i );
 	return R;
-	qWarning ( "Deprecated. Use diagonal(const QMat & v)" );
-
 }
 /**
  * \brief Gets the diagonal of the matrix 
@@ -1182,7 +1180,7 @@ bool RMat::QMat::extractAnglesR2(QVec &a, QVec &b) const
 // de 6 ELEMENTOS: x1, y1, z1, x2, y2, z2 (ángulos y sus opuestos: signos comabiados) En el primer caso
 // X, Y, Z, X, Y, Z (ángulos repetidos) segundo caso.
 // DOCUMENTACIÓN: http://www.soi.city.ac.uk/~sbbh653/publications/euler.pdf
-QVec RMat::QMat::extractAnglesR3(QMat matrizRotacion) 
+QVec RMat::QMat::extractAnglesR3(const QMat &matrizRotacion) 
 {
 	// Ten en cuenta: matriz transpuesta y con signos cambiados.
 	QVec angulos;
