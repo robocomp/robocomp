@@ -131,6 +131,7 @@ module RoboCompInnerModelManager
 		bool getPose(string base, string item, out Pose3D pose) throws InnerModelManagerError;
 		bool getPoseFromParent(string item, out Pose3D pose) throws InnerModelManagerError;
 		bool setPlane(string item, Plane3D plane) throws InnerModelManagerError;
+		bool setPlaneTexture(string item, string texure) throws InnerModelManagerError;
 		bool transform(string base, string item, coord3D coordInItem,out coord3D coordInBase) throws InnerModelManagerError;
 		Matrix getTransformationMatrix(string base, string item) throws InnerModelManagerError;
 		bool setScale(string item, float scaleX,float scaleY, float scaleZ) throws InnerModelManagerError;

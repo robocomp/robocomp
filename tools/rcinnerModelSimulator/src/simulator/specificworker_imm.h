@@ -254,6 +254,35 @@ bool SpecificWorker::imm_setPlane(const QString &server, const std::string &item
 	return true;
 }
 
+bool SpecificWorker::imm_setPlaneTexture(const QString &server, const std::string &item, const std::string &texture)
+{
+	
+	QMutexLocker locker(mutex);
+	QString m="RoboCompInnerModelManager::setPlaneTextureº()";
+	printf("SETPLANETEXTURE %s: %s_%f_%f\n", item.c_str(), texture.c_str());
+	InnerModelPlane *aux = dynamic_cast<InnerModelPlane*>(d->getNode(QString::fromStdString(item), m));
+	qDebug()<<"aux->texture"<<aux->texture<<"qstring"<<QString::fromStdString(texture);
+	
+	aux->texture=QString::fromStdString(texture);
+	
+	osg::Image *image=NULL;
+	image = osgDB::readImageFile(texture);
+	if (not image)
+	{
+		qDebug() << "Couldn't load texture:" << texture.c_str();
+		throw "Couldn't load texture.";
+	}
+	
+	d->imv->planesHash[aux->id]->image =image;
+	d->imv->planesHash[aux->id]->texture->setImage(image);
+
+	qDebug()<<"change aux->texture"<<aux->texture;
+// 	d->checkOperationInvalidNode(aux,m + aux->id +"can't be use as base because it's not of the type InnerModelPlane.");
+// 	d->innerModel->updatePlaneValues(QString::fromStdString(item), plane.nx, plane.ny, plane.nz, plane.px, plane.py, plane.pz);
+	return true;
+}
+
+
 
 // void SpecificWorker::addPointCloud(const std::string &id)
 // {

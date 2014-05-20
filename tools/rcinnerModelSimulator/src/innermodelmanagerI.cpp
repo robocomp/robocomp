@@ -71,6 +71,10 @@ bool InnerModelManagerI::setPlane(const std::string &item, const RoboCompInnerMo
 {
 	return worker->imm_setPlane(id, item, plane);
 }
+bool InnerModelManagerI::setPlaneTexture(const std::string &item, const std::string &texture, const Ice::Current&)
+{
+	return worker->imm_setPlaneTexture(id, item, texture);
+}
 
 
 bool InnerModelManagerI::addTransform(const std::string &item, const std::string &engine, const std::string &base,const Pose3D &pose, const Ice::Current&)

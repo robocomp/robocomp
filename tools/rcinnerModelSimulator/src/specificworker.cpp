@@ -73,6 +73,8 @@ struct SpecificWorker::Data
 	InnerModelViewer* imv;
 	OsgView* viewer;
 	osgGA::TrackballManipulator* manipulator;
+	
+
 
 	#ifdef USE_BULLET
 	World* world;
@@ -673,17 +675,45 @@ SpecificWorker::SpecificWorker (MapPrx& _mprx, Ice::CommunicatorPtr _communicato
 	
 	// Initialize Inner model
 	d->innerModel = new InnerModel(_innerModelXML);
-	
 	// Initialize the Inner Model Viewer
 	QGLFormat fmt;
 	fmt.setDoubleBuffer (true);
 	QGLFormat::setDefaultFormat (fmt);
 	d->viewer = new OsgView (frameOSG);
 	d->imv = new InnerModelViewer (d->innerModel, "root", d->viewer->getRootGroup());
-	d->manipulator = new osgGA::TrackballManipulator();
-	d->manipulator->setHomePosition(osg::Vec3(0,0,2000),osg::Vec3(0.,0,-400.),osg::Vec3(0.,1.,0), false);
-	d->viewer->setCameraManipulator (d->manipulator);
-	d->imv->setMainCamera (d->manipulator, InnerModelViewer::TOP_POV);
+	d->manipulator = new osgGA::TrackballManipulator;
+	d->manipulator->computeHomePosition(d->viewer->getCamera(),false);
+	d->viewer->setCameraManipulator (d->manipulator,false);	
+	
+	
+	settings = new QSettings ("RoboComp", "RCIS");
+	QString path (_innerModelXML);
+	if (path == settings->value("path").toString() ) 
+	{
+	  //restore matrix view 
+	  QStringList l = settings->value("matrix").toStringList();
+	  osg::Matrixd m;
+	  for (int i=0; i<4; i++ )
+	  {
+	    for (int j=0; j<4; j++ )
+	    {
+  // 	    cout<< m(i,j)<<" ";
+// 	      l.append(s.number(m(i,j)));
+	      m(i,j)=l.takeFirst().toDouble();
+	      }
+  // 	    cout<<"\n";
+	  }
+	  
+	  std::cout<<m;
+	
+	  d->manipulator->setByMatrix(m);
+	
+	}
+	else
+	{
+	  settings->setValue("path",path);
+	  qDebug()<<"new path"<<path<<"\n";
+	}
 	
 	// Connect all the signals
 	connect (topView,   SIGNAL (clicked()), this, SLOT (setTopPOV()));
@@ -711,6 +741,7 @@ SpecificWorker::SpecificWorker (MapPrx& _mprx, Ice::CommunicatorPtr _communicato
 
 	// Initialize the timer
 	setPeriod(ms);
+	
 }
 
 
@@ -768,6 +799,7 @@ void SpecificWorker::compute()
 	lastTime = currentTime;
 	
 	QMutexLocker locker (mutex);
+	
 	
 	// Remove previous laser shapes
 	for (QHash<QString, IMVLaser>::iterator laser = d->imv->lasers.begin(); laser != d->imv->lasers.end(); laser++)
@@ -920,6 +952,28 @@ void SpecificWorker::setRightPOV()
 void SpecificWorker::closeEvent (QCloseEvent *event)
 {
 	event->accept();
+	std::cout<<d->manipulator->getMatrix();	
+	osg::Matrixd m = d->manipulator->getMatrix();	
+	QString s="";
+	QStringList l;
+	for (int i=0; i<4; i++ )
+	{
+	  for (int j=0; j<4; j++ )
+	  {
+// 	    cout<< m(i,j)<<" ";
+	    l.append(s.number(m(i,j)));
+	    }
+// 	    cout<<"\n";
+	}
+	
+// 	l.removeLast();
+	qDebug()<<"L"<<l;
+	
+	settings->setValue("matrix", l);	
+	qDebug()<<"toStringList"<< settings->value("matrix").toStringList();
+	settings->sync();
+	qDebug()<<settings->allKeys();
+	
 	exit (EXIT_SUCCESS);
 }
 

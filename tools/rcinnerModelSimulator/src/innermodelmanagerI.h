@@ -56,6 +56,7 @@ public:
 	bool setScale ( const std::string& item, float scaleX,float scaleY, float scaleZ, const Ice::Current& );
 	
 	bool setPlane ( const std::string& item, const Plane3D& pose, const Ice::Current& );
+	bool setPlaneTexture ( const std::string& item, const std::string& texture, const Ice::Current& );
 	bool addTransform ( const std::string& item, const std::string& engine, const std::string& base, const Pose3D& pose, const Ice::Current& );
 	bool addJoint ( const std::string& item,const std::string& base, const jointType& j, const Ice::Current& );
 	bool addMesh ( const std::string& item, const std::string& base, const meshType& m, const Ice::Current& );
