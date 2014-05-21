@@ -21,6 +21,7 @@
 
 // Qt includes
 #include <QObject>
+#include <QVariant>
  
 #include <innermodel/innermodel.h>
 #include <innermodel/innermodelviewer.h>
@@ -39,6 +40,7 @@ class SpecificWorker : public GenericWorker
 private:
 	struct Data;
 	Data* d;
+	QSettings *settings;
 
 public:
 	SpecificWorker(MapPrx& _mprx, Ice::CommunicatorPtr _communicator, const char* _innerModelXML, int ms);
@@ -114,6 +116,7 @@ public:
 	RoboCompInnerModelManager::Matrix imm_getTransformationMatrix(const std::string& item, const std::string& base);
 	bool imm_setScale ( const QString& server, const std::string& item, float scaleX, float scaleY, float scaleZ );
 	bool imm_setPlane ( const QString& server, const std::string& item, const RoboCompInnerModelManager::Plane3D& pose );
+	bool imm_setPlaneTexture ( const QString& server, const std::string& item, const std::string& texture );
 	bool imm_addTransform ( const QString& server, const std::string& item, const std::string& engine, const std::string& base, const RoboCompInnerModelManager::Pose3D& pose );
 	bool imm_addJoint ( const QString& server, const std::string& item,const std::string& base, const RoboCompInnerModelManager::jointType& j );
 	bool imm_addMesh ( const QString& server, const std::string& item, const std::string& base, const RoboCompInnerModelManager::meshType& m );

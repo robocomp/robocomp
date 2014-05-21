@@ -180,9 +180,10 @@ QVec QVec::subVector(const int firstIndex, const int lastIndex)
 	Q_ASSERT(firstIndex <= lastIndex);
 	Q_ASSERT(lastIndex < this->size());
 
+	int i,j;
 	QVec result(lastIndex - firstIndex +1);
-	for (int i = firstIndex; i <= lastIndex; i++)
-		result[i] = operator[](i);
+	for (i = firstIndex, j=0; i <= lastIndex; i++, j++)
+		result[j] = operator[](i);
 	return result;
 }
 
@@ -195,6 +196,7 @@ QVec QVec::subVector(const int firstIndex, const int lastIndex)
  */
 QVec QVec::scalarDivision(const T value) const
 {
+	Q_ASSERT(value != 0);
 	QVec result = *this;
 	for (int i = 0; i < size(); i++)
 	result[i] /= value;

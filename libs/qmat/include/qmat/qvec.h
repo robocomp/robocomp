@@ -74,7 +74,7 @@ namespace RMat
 
 		QMat operator|(const QVec &vector) const            { return externProduct(vector); }
 
-		operator QPointF() const
+		operator QPointF() const														//Returns a QPointF type from current vector
 		{
 			Q_ASSERT(size() > 1);
 			Q_ASSERT(size() < 4);
@@ -86,9 +86,9 @@ namespace RMat
 
 		//  Vector - Vector methods
 		void set(const T value)                              { fill( value ); }
-		QVec subVector(const int firstIndex, const int lastIndex);
-		QVec scalarDivision(const T value) const;
-		QVec scalarMultiplication(const T value) const;
+		QVec subVector(const int firstIndex, const int lastIndex);			//Returns a subvector starting at firstIndex and ending at lastIndex, both included
+		QVec scalarDivision(const T value) const;												//Divides all elements of the vector by value
+		QVec scalarMultiplication(const T value) const;									//Multiplies all elements of the vector by value
 		const QVec & inject(const QVec &vector, const int offset);
 		QVec pointProduct(const QVec &vector) const;
 		QVec normalize() const                               { return operator/(norm2()); }
@@ -112,8 +112,11 @@ namespace RMat
 		inline T x() const                                   { return this->operator[](0); }
 		inline T y() const                                   { return this->operator[](1); }
 		inline T z() const                                   { return this->operator[](2); }
+		inline T rx() const                                  { return this->operator[](3); }
+		inline T ry() const                                  { return this->operator[](4); }
+		inline T rz() const                                  { return this->operator[](5); }
 		inline T alfa() const                                { return this->operator[](2); }
-		inline T alpha() const                                { return this->operator[](2); }
+		inline T alpha() const                               { return this->operator[](2); }
 
 		// Vector - Matrix methods
 		QMat externProduct(const QVec &vector) const;
