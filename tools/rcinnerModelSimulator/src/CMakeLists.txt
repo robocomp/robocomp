@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 2.6)
 PROJECT( rcis )
 
+
 INCLUDE( CMakeListsSpecific.txt )
 
 # Source files
@@ -37,7 +38,7 @@ SET ( HEADERS
 )
 
 
-# Robocomp
+# RoboComp
 INCLUDE( $ENV{ROBOCOMP}/cmake/robocomp.cmake )
 ROBOCOMP_INITIALIZE( $ENV{ROBOCOMP}/ )
 ROBOCOMP_WRAP_ICE( Camera CommonBehavior CommonHead DifferentialRobot IMU InnerModelManager JointMotor Laser RGBD TouchSensor )
@@ -68,3 +69,12 @@ SET (EXECUTABLE_OUTPUT_PATH ../bin)
 ADD_EXECUTABLE( rcis ${SOURCES} ${MOC_SOURCES} ${RC_SOURCES} ${UI_HEADERS} )
 TARGET_LINK_LIBRARIES( rcis glut OpenThreads osgGA osgDB osgUtil osgText ${LIBS} ${STATIC_LIBS} ${QT_LIBRARIES} )
 INSTALL(FILES ${EXECUTABLE_OUTPUT_PATH}/rcis DESTINATION /opt/robocomp/bin/ PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE )
+
+
+
+
+
+
+
+
+

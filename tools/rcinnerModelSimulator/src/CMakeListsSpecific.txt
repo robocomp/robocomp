@@ -1,4 +1,3 @@
-
 # Sources set
 LIST ( APPEND SOURCES
 	specificworker.cpp
@@ -11,15 +10,6 @@ LIST ( APPEND HEADERS
 	specificworker.h
 	specificmonitor.h
 )
-
-ADD_DEFINITIONS( -DINNERMODELVERSION=2 )
-# IF(CMAKE_COMPILER_IS_GNUCXX)
-#     SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
-# ENDIF()
-# ADD_DEFINITIONS(
-#     -std=c++0x # Or -std=c++0x
-#     # Other flags
-# )
 
 SET(LIBS ${LIBS} -lboost_system)
 
