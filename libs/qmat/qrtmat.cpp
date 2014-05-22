@@ -17,9 +17,8 @@
  *    along with RoboComp.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-//RTMat cpp file
 #ifdef COMPILE_IPP
-#include <ippWrapper.h>
+#include <qmat/ippWrapper.h>
 #endif
 
 
