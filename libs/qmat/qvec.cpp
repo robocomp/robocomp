@@ -17,6 +17,7 @@
  *    along with RoboComp.  If not, see <http://www.gnu.org/licenses/>.
  */
 #ifdef COMPILE_IPP
+// #include <ippWrapper.h>
 #include <qmat/ippWrapper.h>
 #endif
 
@@ -162,8 +163,8 @@ const QVec & QVec::inject(const QVec &vector, const int offset)
 	Q_ASSERT ( size() >= vector.size() + offset );
 
 	const int s = vector.size();
-	for(int i=offset; i<s; i++)
-		operator[](i) =  vector.at(i-offset);
+	for(int i=offset, j=0; i<offset+s; i++, j++)
+		operator[](i) =  vector.at(j);
 
 	return *this;
 }
