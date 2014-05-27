@@ -358,9 +358,9 @@ void InnerModelViewer::recursiveConstructor(InnerModelNode *node, osg::Group *pa
 			cam.viewerCamera->getCamera()->setProjectionMatrix(::osg::Matrix::perspective(fov*180./M_PIl, aspectRatio, zNear, zFar));
 			
 			// set windowName to innerModel id. Using Traits!
-// 			osg::ref_ptr< osg::GraphicsContext::Traits > traits =  new osg::GraphicsContext::Traits (*cam.viewerCamera->getCamera()->getGraphicsContext()->getTraits());
-// 			traits->windowName = cam.id.toStdString();
-// 			cam.viewerCamera->getCamera()->setGraphicsContext(osg::GraphicsContext::createGraphicsContext( traits.get() ));
+			osg::ref_ptr< osg::GraphicsContext::Traits > traits =  new osg::GraphicsContext::Traits (*cam.viewerCamera->getCamera()->getGraphicsContext()->getTraits());
+			traits->windowName = cam.id.toStdString();
+			cam.viewerCamera->getCamera()->setGraphicsContext(osg::GraphicsContext::createGraphicsContext( traits.get() ));
 			
 			RTMat rt = innerModel->getTransformationMatrix("root", cam.id);
 			cam.viewerCamera->setCameraManipulator(cam.manipulator);
