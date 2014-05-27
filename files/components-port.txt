@@ -248,3 +248,4 @@ mmComp=12201
 MSKSilhouetteComp=12202
 ursusHeadComp=12203
 TrajectoryRobot2DComp=12204
+InverseKinematicsComp=12205

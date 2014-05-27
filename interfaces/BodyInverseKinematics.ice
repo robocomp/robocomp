@@ -19,27 +19,9 @@ module RoboCompBodyInverseKinematics{
 					float ry;
 					float rz;
 				};
-	struct WeightVector{
-		float x;
-					float y;
-					float z;
-					float rx;
-					float ry;
-					float rz;
-				};
-	struct Axis{
-		float x;
-					float y;
-					float z;
-				};
 
 	interface BodyInverseKinematics{
 		bool setTarget(string bodyPart, Pose6D target)throws BIKException;
-		void  setTargetPose6D(string bodyPart, Pose6D target, WeightVector weights)throws BIKException;
-		void  pointAxisTowardsTarget(string bodyPart, Pose6D target, string axis, bool axisConstraint, float axisAngleConstraint)throws BIKException;
-		void  advanceAlongAxis(string bodyPart, Axis ax, float dist)throws BIKException;
-		void  setFingers(float d)throws BIKException;
-		void  goHome(string part)throws BIKException;
 	};
 };
   

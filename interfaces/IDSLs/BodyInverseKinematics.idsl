@@ -1,6 +1,6 @@
-module RoboCompBodyInverseKinematicsç
+module RoboCompBodyInverseKinematics
 {
-	exception BIKException;
+	exception BIKException
 	{
 		string text;
 	};
