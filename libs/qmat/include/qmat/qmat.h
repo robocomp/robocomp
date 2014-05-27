@@ -174,8 +174,8 @@ namespace RMat
 		QMat toCrossProdForm() const;                 // deprecated to vec
 		QVec toVector() const;
 		QVec extractAnglesR() const;
+		QVec extractAnglesR_min() const;
 		bool extractAnglesR2(QVec &a, QVec &b) const;
-		QVec extractAnglesR3(const RMat::QMat& matrizRotacion); //<---- EN PRUEBAS
 
 
 		//Access operations

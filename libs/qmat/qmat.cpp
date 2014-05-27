@@ -1100,37 +1100,37 @@ QVec RMat::QMat::toVector() const
 	return result;
 }
 
-QVec RMat::QMat::extractAnglesR() const
-{
-	Q_ASSERT_X(canAllocateRotationMatrix(),"QMat::extractAngles_R", "Invalid matrix size in QMAt::extractAngles");
-	const float small = 0.00000001;
-
-	// Normal case. We check that atan2(sin(x)*cos(y)),  cos(x)*cos(y)) is not zero because cos(y) is zero
-	if (fabs(operator()(0,2)) <= 1.-small)
-	{
-		float rx = atan2(-operator()(1,2), operator()(2,2));
-		float rz = atan2(-operator()(0,1), operator()(0,0));
-		float ry = atan2( operator()(0,2), operator()(0,0)/cos(rz));
-		return QVec::vec3(rx, ry, rz);
-	}
-	else
-	{
-		float rx;
-		float ry;
-		float rz = 0;
-		if (-operator()(0,2)<0)
-		{
-			ry = M_PI/2.;
-			rx = atan2(operator()(1,0), operator()(1,1));
-		}
-		else
-		{
-			ry = -M_PI/2.;
-			rx = atan2(-operator()(1,0), operator()(1,1));
-		}
-		return QVec::vec3(rx, ry, rz);
-	}
-}
+// QVec RMat::QMat::extractAnglesR() const
+// {
+// 	Q_ASSERT_X(canAllocateRotationMatrix(),"QMat::extractAngles_R", "Invalid matrix size in QMAt::extractAngles");
+// 	const float small = 0.00000001;
+// 
+// 	// Normal case. We check that atan2(sin(x)*cos(y)),  cos(x)*cos(y)) is not zero because cos(y) is zero
+// 	if (fabs(operator()(0,2)) <= 1.-small)
+// 	{
+// 		float rx = atan2(-operator()(1,2), operator()(2,2));
+// 		float rz = atan2(-operator()(0,1), operator()(0,0));
+// 		float ry = atan2( operator()(0,2), operator()(0,0)/cos(rz));
+// 		return QVec::vec3(rx, ry, rz);
+// 	}
+// 	else
+// 	{
+// 		float rx;
+// 		float ry;
+// 		float rz = 0;
+// 		if (-operator()(0,2)<0)
+// 		{
+// 			ry = M_PI/2.;
+// 			rx = atan2(operator()(1,0), operator()(1,1));
+// 		}
+// 		else
+// 		{
+// 			ry = -M_PI/2.;
+// 			rx = atan2(-operator()(1,0), operator()(1,1));
+// 		}
+// 		return QVec::vec3(rx, ry, rz);
+// 	}
+// }
 
 
 bool RMat::QMat::extractAnglesR2(QVec &a, QVec &b) const
@@ -1180,7 +1180,7 @@ bool RMat::QMat::extractAnglesR2(QVec &a, QVec &b) const
 // de 6 ELEMENTOS: x1, y1, z1, x2, y2, z2 (ángulos y sus opuestos: signos comabiados) En el primer caso
 // X, Y, Z, X, Y, Z (ángulos repetidos) segundo caso.
 // DOCUMENTACIÓN: http://www.soi.city.ac.uk/~sbbh653/publications/euler.pdf
-QVec RMat::QMat::extractAnglesR3(const QMat &matrizRotacion) 
+QVec RMat::QMat::extractAnglesR() const
 {
 	// Ten en cuenta: matriz transpuesta y con signos cambiados.
 	QVec angulos;
@@ -1193,19 +1193,19 @@ QVec RMat::QMat::extractAnglesR3(const QMat &matrizRotacion)
 	/// este caso pero habría que comprobarlo, ya que en realidad no he mirado el código. No toco nada por si
 	/// acaso
 	/// -- Luis
-	if (fabs(matrizRotacion(0,2)) > 1 || fabs(matrizRotacion(0,2)) < 1)
+	if (fabs(operator()(0,2)) > 1 || fabs(operator()(0,2)) < 1)
 	{
 		// ROTACION EN Y
-		y1 = asin(matrizRotacion(0,2));
+		y1 = asin(operator()(0,2));
 		y2 = M_PI-y1;
 		
 		// ROTACION EN X
-		x1 = atan2((-matrizRotacion(1,2)/cos(y1)), (matrizRotacion(2,2)/cos(y1)));
-		x2 = atan2((-matrizRotacion(1,2)/cos(y2)), (matrizRotacion(2,2)/cos(y2)));
+		x1 = atan2((-operator()(1,2)/cos(y1)), (operator()(2,2)/cos(y1)));
+		x2 = atan2((-operator()(1,2)/cos(y2)), (operator()(2,2)/cos(y2)));
 		
 		//ROTACION EN Z
-		z1 = atan2((-matrizRotacion(0,1)/cos(y1)), (matrizRotacion(0,0)/cos(y1)));
-		z2 = atan2((-matrizRotacion(0,1)/cos(y2)), (matrizRotacion(0,0)/cos(y2)));
+		z1 = atan2((-operator()(0,1)/cos(y1)), (operator()(0,0)/cos(y1)));
+		z2 = atan2((-operator()(0,1)/cos(y2)), (operator()(0,0)/cos(y2)));
 		
 		angulos.push_back(x1);  angulos.push_back(y1);  angulos.push_back(z1); // ir por el camino 1
 		angulos.push_back(x2);  angulos.push_back(y2);  angulos.push_back(z2); // ir por el camino 2
@@ -1214,15 +1214,15 @@ QVec RMat::QMat::extractAnglesR3(const QMat &matrizRotacion)
 	{
 		// REVISAR LOS SIGNOS!!!
 		z = 0;
-		if (matrizRotacion(0,2) == 1)//Original if -sin(y)==-1 en el nuestro: if sin(y)==1
+		if (operator()(0,2) == 1)//Original if -sin(y)==-1 en el nuestro: if sin(y)==1
 		{
 			y = M_PI/2;
-			x = z + atan2( matrizRotacion(1,0), -matrizRotacion(2,0));// al final queda atan2(sin x, -(-cosx))-->atan2(sin x, cos x)
+			x = z + atan2( operator()(1,0), -operator()(2,0));// al final queda atan2(sin x, -(-cosx))-->atan2(sin x, cos x)
 		}
 		else //si sin(y)==-1 --> y = -pi/2
 		{
 			y = -M_PI/2;
-			x = -z +atan2(-matrizRotacion(1,0), matrizRotacion(2,0));
+			x = -z +atan2(-operator()(1,0), operator()(2,0));
 		}
 		angulos.push_back(x);  angulos.push_back(y);  angulos.push_back(z);
 		angulos.push_back(x);  angulos.push_back(y);  angulos.push_back(z); //Repetimos los ángulos, por ser coherentes....
@@ -1230,6 +1230,15 @@ QVec RMat::QMat::extractAnglesR3(const QMat &matrizRotacion)
 	return angulos;
 }
 
+QVec RMat::QMat::extractAnglesR_min() const
+{
+	QVec r = extractAnglesR();
+	QVec v1 = r.subVector(0,2);
+	QVec v2 = r.subVector(3,5);
+	if (v1.norm2() < v2.norm2())
+		return v1;
+	return v2;	
+}
 
 
 
