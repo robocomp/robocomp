@@ -675,6 +675,9 @@ SpecificWorker::SpecificWorker (MapPrx& _mprx, Ice::CommunicatorPtr _communicato
 	
 	// Initialize Inner model
 	d->innerModel = new InnerModel(_innerModelXML);
+	//add name of .xml
+	setWindowTitle(windowTitle() + "\t" + _innerModelXML);
+	
 	// Initialize the Inner Model Viewer
 	QGLFormat fmt;
 	fmt.setDoubleBuffer (true);
