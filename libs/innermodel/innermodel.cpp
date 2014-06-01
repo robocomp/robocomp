@@ -1294,28 +1294,28 @@ void InnerModel::setLists(const QString & origId, const QString & destId)
 /// Robex Base specific getters
 float InnerModel::getCameraFocal(const QString & cameraId) const
 {
-	return static_cast<InnerModelCamera *>(getNode(cameraId))->camera.getFocal();
+	return static_cast<InnerModelCamera *>(getNode(cameraId))->getFocal();
 }
 
 
 
 int InnerModel::getCameraWidth(QString cameraId)
 {
-	return getCamera(cameraId)->camera.getWidth();
+	return getCamera(cameraId)->getWidth();
 }
 
 
 
 int InnerModel::getCameraHeight(const QString & cameraId) const
 {
-	return static_cast<InnerModelCamera *>(getNode(cameraId))->camera.getHeight();
+	return static_cast<InnerModelCamera *>(getNode(cameraId))->getHeight();
 }
 
 
 
 int InnerModel::getCameraSize(const QString & cameraId) const
 {
-	return static_cast<InnerModelCamera *>(getNode(cameraId))->camera.getSize();
+	return static_cast<InnerModelCamera *>(getNode(cameraId))->getSize();
 }
 
 
