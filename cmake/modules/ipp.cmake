@@ -25,6 +25,7 @@ ELSE( "$ENV{IPPROOT}" STREQUAL "" )
 		ENDIF( $ENV{IPPROOT} MATCHES .*[6][4].*)
 
 		SET( LIBS ${LIBS} ${IPP_LIBS} -L$ENV{IPPROOT}/sharedlib/ -L$ENV{IPPROOT}/lib/ )
+		SET(IPP_LIBS_PATH -L$ENV{IPPROOT}/sharedlib/ -L$ENV{IPPROOT}/lib/ )
 		INCLUDE_DIRECTORIES( "$ENV{IPPROOT}/include/")
 	ENDIF ($ENV{IPPROOT} MATCHES .*composer.*)
 	IF( EXISTS "$ENV{IPPROOT}/include/ippi.h" OR EXISTS "$ENV{IPPROOT}/ipp/include/ippi.h" )

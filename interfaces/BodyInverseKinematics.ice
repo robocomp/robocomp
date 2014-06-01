@@ -32,14 +32,15 @@ module RoboCompBodyInverseKinematics{
 					float y;
 					float z;
 				};
+	enum caca{fff, ff};
 
 	interface BodyInverseKinematics{
-		bool setTarget(string bodyPart, Pose6D target)throws BIKException;
 		void  setTargetPose6D(string bodyPart, Pose6D target, WeightVector weights)throws BIKException;
-		void  pointAxisTowardsTarget(string bodyPart, Pose6D target, string axis, bool axisConstraint, float axisAngleConstraint)throws BIKException;
+		void  pointAxisTowardsTarget(string bodyPart, Pose6D target, Axis ax, bool axisConstraint, float axisAngleConstraint)throws BIKException;
 		void  advanceAlongAxis(string bodyPart, Axis ax, float dist)throws BIKException;
 		void  setFingers(float d)throws BIKException;
 		void  goHome(string part)throws BIKException;
+		void  setRobot(int type)throws BIKException;
 	};
 };
   

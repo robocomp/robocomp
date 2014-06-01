@@ -31,7 +31,7 @@ configure_file ("include/${LIB_NAME}/innermodel.in.h" "include/${LIB_NAME}/inner
 
 RoboComp_LIB_DEPEND(build ${LIB_NAME} DEPS ${LIB_DEPS} OPT_DEPS)
 set(OUT_FILE_NAME ${PROJECT_NAME_LOWER}_${LIB_NAME})
-include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/include )
+include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/include  ${CMAKE_CURRENT_BINARY_DIR}/libs )
 
 INCLUDE( ${QT_USE_FILE} )
 ADD_DEFINITIONS(${QT_DEFINITIONS})

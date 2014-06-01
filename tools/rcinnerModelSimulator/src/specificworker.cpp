@@ -675,6 +675,9 @@ SpecificWorker::SpecificWorker (MapPrx& _mprx, Ice::CommunicatorPtr _communicato
 	
 	// Initialize Inner model
 	d->innerModel = new InnerModel(_innerModelXML);
+	//add name of .xml
+	setWindowTitle(windowTitle() + "\t" + _innerModelXML);
+	
 	// Initialize the Inner Model Viewer
 	QGLFormat fmt;
 	fmt.setDoubleBuffer (true);
@@ -682,8 +685,8 @@ SpecificWorker::SpecificWorker (MapPrx& _mprx, Ice::CommunicatorPtr _communicato
 	d->viewer = new OsgView (frameOSG);
 	d->imv = new InnerModelViewer (d->innerModel, "root", d->viewer->getRootGroup());
 	d->manipulator = new osgGA::TrackballManipulator;
-	d->manipulator->computeHomePosition(d->viewer->getCamera(),false);
-	d->viewer->setCameraManipulator (d->manipulator,false);	
+	d->viewer->setCameraManipulator (d->manipulator,true);	
+	
 	
 	
 	settings = new QSettings ("RoboComp", "RCIS");
