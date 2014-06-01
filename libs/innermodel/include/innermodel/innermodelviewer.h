@@ -150,7 +150,7 @@ public:
 	void update();
 	void reloadMesh(QString id);
 	
-	void recursiveConstructor(InnerModelNode* node, osg::Group* parent, QHash< QString, osg::MatrixTransform* >& mtsHash, QHash< QString, IMVMesh >& meshHash, bool ignoreCameras);
+	void recursiveConstructor(InnerModelNode* node, osg::Group* parent, QHash< QString, osg::MatrixTransform* >& mtsHash, QHash< QString, IMVMesh >& meshHash, bool ignoreCameras=false);
 	void setMainCamera(osgGA::TrackballManipulator *manipulator, CameraView pov) const;
 	
 protected:
