@@ -142,16 +142,15 @@ class InnerModelViewer : public osg::Switch
 public:
 	enum CameraView { BACK_POV, FRONT_POV, LEFT_POV, RIGHT_POV, TOP_POV };
 	
-	InnerModelViewer(InnerModel *im, QString root="root", osg::Group *parent=NULL);
+	InnerModelViewer(InnerModel *im, QString root="root", osg::Group *parent=NULL, bool ignoreCameras=true);
 	~InnerModelViewer();
 	
-	///Return geode id if no geode, return null.
+	// Returns geode if 'id' corresponds to a geode, null otherwise.
 	osg::Geode* getGeode(QString id);
 	void update();
 	void reloadMesh(QString id);
 	
-	// 	void recursiveConstructor(InnerModelNode *node, osg::Group *parent, QHash<QString, osg::MatrixTransform *> &mtsHash, QHash<QString, osg::Node *> &osgmeshesHash, QHash<QString, osg::MatrixTransform *> &osgmeshPatsHash);
-	void recursiveConstructor(InnerModelNode* node, osg::Group* parent, QHash< QString, osg::MatrixTransform* >& mtsHash, QHash< QString, IMVMesh >& meshHash);
+	void recursiveConstructor(InnerModelNode* node, osg::Group* parent, QHash< QString, osg::MatrixTransform* >& mtsHash, QHash< QString, IMVMesh >& meshHash, bool ignoreCameras);
 	void setMainCamera(osgGA::TrackballManipulator *manipulator, CameraView pov) const;
 	
 protected:

@@ -266,7 +266,7 @@ void IMVPointCloud::setPointSize(float p)
 // InnerModelViewer
 // ------------------------------------------------------------------------------------------------
 
-InnerModelViewer::InnerModelViewer(InnerModel *im, QString root, osg::Group *parent) : osg::Switch()
+InnerModelViewer::InnerModelViewer(InnerModel *im, QString root, osg::Group *parent, bool ignoreCameras) : osg::Switch()
 {
 	// Initialize InnerModel pointer
 	innerModel = im;
@@ -279,7 +279,7 @@ InnerModelViewer::InnerModelViewer(InnerModel *im, QString root, osg::Group *par
 	}
 	// Recursive construction
 // 	recursiveConstructor(imnode, this, mts, osgmeshes, osgmeshPats);
-	recursiveConstructor(imnode, this,mts,meshHash ); //mts, osgmeshes, osgmeshPats);
+	recursiveConstructor(imnode, this, mts, meshHash, ignoreCameras); //mts, osgmeshes, osgmeshPats);
 	// Update
 	update();
 	if (parent)
@@ -295,7 +295,7 @@ InnerModelViewer::~InnerModelViewer()
 
 
 
-void InnerModelViewer::recursiveConstructor(InnerModelNode *node, osg::Group *parent,QHash<QString, osg::MatrixTransform *> &mtsHash, QHash<QString, IMVMesh> &meshHash)
+void InnerModelViewer::recursiveConstructor(InnerModelNode *node, osg::Group *parent,QHash<QString, osg::MatrixTransform *> &mtsHash, QHash<QString, IMVMesh> &meshHash, bool ignoreCameras)
 {
 	InnerModelTouchSensor *touch;
 	InnerModelMesh *mesh;
@@ -323,12 +323,12 @@ void InnerModelViewer::recursiveConstructor(InnerModelNode *node, osg::Group *pa
 
 		for(int i=0; i<node->children.size(); i++)
 		{
-			recursiveConstructor(node->children[i], mt, mtsHash, meshHash);// mtsHash, osgmeshesHash, osgmeshPatsHash);
+			recursiveConstructor(node->children[i], mt, mtsHash, meshHash, ignoreCameras);
 		}
 	}
 	else if ((rgbd = dynamic_cast<InnerModelRGBD *>(node)))
 	{
-		if (rgbd->port)
+		if ((not ignoreCameras) and rgbd->port)
 		{
 			IMVCamera cam;
 			// Camera ID
@@ -370,6 +370,9 @@ void InnerModelViewer::recursiveConstructor(InnerModelNode *node, osg::Group *pa
 	}
 	else if ((camera = dynamic_cast<InnerModelCamera *>(node)))
 	{
+		if (not ignoreCameras)
+		{
+		}
 	}
 	else if ((imu = dynamic_cast<InnerModelIMU *>(node)))
 	{

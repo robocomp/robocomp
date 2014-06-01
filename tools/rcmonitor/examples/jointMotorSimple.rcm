@@ -1,4 +1,4 @@
-/Interfaces/JointMotor.ice
+interfaces/JointMotor.ice
 jointmotor
 localhost
 tcp
