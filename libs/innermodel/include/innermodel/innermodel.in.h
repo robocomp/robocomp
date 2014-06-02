@@ -430,6 +430,10 @@ public:
 public:
 	Cam camera;
 	float width, height, focal;
+	float getWidth()  const { return width; }
+	float getHeight() const { return height; }
+	float getFocal()  const { return focal; }
+	float getSize()   const { return getWidth()*getHeight(); }
 };
 
 
