@@ -36,7 +36,7 @@ module RoboCompBodyInverseKinematics{
 					float z;
 				};
 	["cpp:comparable"]
-	struct State{
+	struct TargetState{
 		int elapsedTime;
 		int estimatedEndTime;
 		bool finish;
@@ -49,7 +49,7 @@ module RoboCompBodyInverseKinematics{
 		void  setFingers(float d)throws BIKException;
 		void  goHome(string part)throws BIKException;
 		void  setRobot(int type)throws BIKException;
-		State getState();
+		TargetState getState(string part);
 	};
 };
   
