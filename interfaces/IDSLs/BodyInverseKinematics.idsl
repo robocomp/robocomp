@@ -1,6 +1,6 @@
-module RoboCompBodyInverseKinematicsç
+module RoboCompBodyInverseKinematics
 {
-	exception BIKException;
+	exception BIKException
 	{
 		string text;
 	};
@@ -54,5 +54,7 @@ module RoboCompBodyInverseKinematicsç
 		
 		//Selects which output to send the final movements ((1) ROBOT vd (0) SIMULATOR)
 		void setRobot(int type) throws BIKException;
+		
+		//
 	};
 };
