@@ -11,6 +11,7 @@
 
 module RoboCompBodyInverseKinematics{
 	exception BIKException{string text;};
+	["cpp:comparable"]
 	struct Pose6D{
 		float x;
 					float y;
@@ -19,6 +20,7 @@ module RoboCompBodyInverseKinematics{
 					float ry;
 					float rz;
 				};
+	["cpp:comparable"]
 	struct WeightVector{
 		float x;
 					float y;
@@ -27,12 +29,18 @@ module RoboCompBodyInverseKinematics{
 					float ry;
 					float rz;
 				};
+	["cpp:comparable"]
 	struct Axis{
 		float x;
 					float y;
 					float z;
 				};
-	enum caca{fff, ff};
+	["cpp:comparable"]
+	struct State{
+		int elapsedTime;
+		int estimatedEndTime;
+		bool finish;
+	};
 
 	interface BodyInverseKinematics{
 		void  setTargetPose6D(string bodyPart, Pose6D target, WeightVector weights)throws BIKException;
@@ -41,6 +49,7 @@ module RoboCompBodyInverseKinematics{
 		void  setFingers(float d)throws BIKException;
 		void  goHome(string part)throws BIKException;
 		void  setRobot(int type)throws BIKException;
+		State getState();
 	};
 };
   

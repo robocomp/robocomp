@@ -29,6 +29,12 @@ module RoboCompBodyInverseKinematics
 		float z;
 	};
 	
+	struct State
+	{
+		bool finish;
+		int elapsedTime;
+		int estimatedEndTime;
+	};
 	
 	interface BodyInverseKinematics
 	{
@@ -55,6 +61,7 @@ module RoboCompBodyInverseKinematics
 		//Selects which output to send the final movements ((1) ROBOT vd (0) SIMULATOR)
 		void setRobot(int type) throws BIKException;
 		
+		State getState();
 		//
 	};
 };
