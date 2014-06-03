@@ -25,6 +25,7 @@
 #include <vector>
 #include <limits>
 
+//#include <eigen3/Eigen/Core>
 
 #include <gsl/gsl_math.h>
 #include <gsl/gsl_eigen.h>
@@ -216,6 +217,12 @@ namespace RMat
 				gsl_matrix_set(result, i, j, this->operator()(i, j));
 			return result;
 		}
+		
+// 		operator Eigen::MatrixXf () 
+// 		{
+// 			Eigen::MatrixXf  m = Eigen::Map<Eigen::MatrixXf> (this->getWriteData(),rows,cols);
+// 			return m;
+// 		}
 	};
 };
 
