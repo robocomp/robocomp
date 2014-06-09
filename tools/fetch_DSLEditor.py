@@ -47,8 +47,8 @@ def download(url,name):
     ret = os.system('tar -xzf DSLEditor.tar.gz')
     
     os.system('mv '+name+'/roboCompDSL roboCompDSL')
-    os.system('rm DSLEditor.tar.gz')
-    os.system('rm -r '+name)
+    #os.system('rm DSLEditor.tar.gz')
+    #os.system('rm -r '+name)
   else:
     print 'Error downloading, please try again'
     sys.exit(0)
