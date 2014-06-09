@@ -26,8 +26,8 @@ class C():
 
 
     arg = sys.argv
-    arg.append("--Ice.MessageSizeMax=400040004000400000")
-    self.ice = Ice.initialize(arg)
+    arg.append("--Ice.MessageSizeMax=4000000")
+    self.ic = Ice.initialize(arg)
     self.mods = modules
     self.prx = self.ic.stringToProxy(endpoint)
     self.proxy = self.mods['RoboCompCamera'].CameraPrx.checkedCast(self.prx)

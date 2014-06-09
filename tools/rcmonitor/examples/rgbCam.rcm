@@ -1,4 +1,4 @@
-Interfaces/Camera.ice
+interfaces/Camera.ice
 camera
 localhost
 tcp

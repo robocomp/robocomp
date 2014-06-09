@@ -251,3 +251,6 @@ TrajectoryRobot2DComp=12204
 InverseKinematicsComp=12205
 nuevoComp=12206
 lokiArmComp=12207
+relocalizadorComp=12208
+GetAprilTagsComp=12209
+MSKRGBDTopic=12210
