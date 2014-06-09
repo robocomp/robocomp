@@ -42,7 +42,7 @@ def checkExistence():
         sys.exit(0)
 
 def download(url,name):
-  ret = os.system('wget '+url)
+  ret = os.system('wget -c ' + url)
   if ret == 0:
     ret = os.system('tar -xzf DSLEditor.tar.gz')
     
