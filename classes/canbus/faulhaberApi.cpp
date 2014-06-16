@@ -278,7 +278,7 @@ float FaulHaberApi::convertir_Pasos_Radianes(int pasos, bool inverted)
 
 float FaulHaberApi::steps2units(float steps, float step_range, float unit_range, float offset)
 {
-		cout<<" steps2units: "<<steps<<" "<<step_range<<" "<<unit_range<<" "<<offset<<endl;
+		//cout<<" steps2units: "<<steps<<" "<<step_range<<" "<<unit_range<<" "<<offset<<endl;
         //return ((float)(p-steps_value_at_zero_units)) * (unit_range/step_range);
 		//return (float)(steps-offset) * (unit_range/(step_range-offset));
 		return (float) ( (steps - offset) * (unit_range / step_range) );
@@ -287,7 +287,7 @@ float FaulHaberApi::steps2units(float steps, float step_range, float unit_range,
 
 int FaulHaberApi::units2steps(float units, float step_range, float unit_range, float offset)
 {
-	 cout<<" units2steps: "<<units<<" "<<step_range<<" "<<unit_range<<" "<<offset<<endl;
+	 //cout<<" units2steps: "<<units<<" "<<step_range<<" "<<unit_range<<" "<<offset<<endl;
 	 //return (float)((units * (step_range - offset) / unit_range) + offset);
 	 return (float) (((units * step_range) / unit_range) + offset);  
 }
