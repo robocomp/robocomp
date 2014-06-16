@@ -42,13 +42,13 @@ def checkExistence():
         sys.exit(0)
 
 def download(url,name):
-  ret = os.system('wget '+url)
+  ret = os.system('wget -c ' + url)
   if ret == 0:
     ret = os.system('tar -xzf DSLEditor.tar.gz')
     
     os.system('mv '+name+'/roboCompDSL roboCompDSL')
-    os.system('rm DSLEditor.tar.gz')
-    os.system('rm -r '+name)
+    #os.system('rm DSLEditor.tar.gz')
+    #os.system('rm -r '+name)
   else:
     print 'Error downloading, please try again'
     sys.exit(0)

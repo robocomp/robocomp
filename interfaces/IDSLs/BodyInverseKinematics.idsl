@@ -41,7 +41,7 @@ module RoboCompBodyInverseKinematics
 		// Sets part tip position at 6dof target. Any of these 6 constraints can be relaxed by setting weights [x y z rx ry rz]to zero.
 		// For example, if we don't care about final orientation, set weights to [1 1 1 0 0 0]
 		//Values different to 0-1 can be used to ponderate the effect of each component of the error vector (i.e. radians vs meters). All ones is ok for most uses. 
-		void setTargetPose6D(string bodyPart, Pose6D target, WeightVector weights) throws BIKException;
+		void setTargetPose6D(string bodyPart, Pose6D target, WeightVector weights, float radius) throws BIKException;
 		
 		// Directs the part ip towards de target. For the target, only the translation components are used.
 		// "axis" is the tip's reference frame axis that will be aligned to the target. It can be either "x", "y" or "z"

@@ -43,7 +43,7 @@ module RoboCompBodyInverseKinematics{
 	};
 
 	interface BodyInverseKinematics{
-		void  setTargetPose6D(string bodyPart, Pose6D target, WeightVector weights)throws BIKException;
+		void  setTargetPose6D(string bodyPart, Pose6D target, WeightVector weights, float radius)throws BIKException;
 		void  pointAxisTowardsTarget(string bodyPart, Pose6D target, Axis ax, bool axisConstraint, float axisAngleConstraint)throws BIKException;
 		void  advanceAlongAxis(string bodyPart, Axis ax, float dist)throws BIKException;
 		void  setFingers(float d)throws BIKException;
