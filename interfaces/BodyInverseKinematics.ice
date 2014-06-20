@@ -50,6 +50,7 @@ module RoboCompBodyInverseKinematics{
 		void  goHome(string part)throws BIKException;
 		void  setRobot(int type)throws BIKException;
 		TargetState getState(string part);
+		void  stop(string part);
 	};
 };
   
