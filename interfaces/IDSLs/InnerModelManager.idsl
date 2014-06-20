@@ -76,6 +76,9 @@ module RoboCompInnerModelManager
 		float hy;
 		float hz;
 		float mass;
+		float min;
+		float max;
+		string axis;
 		int port;
 	};
 
@@ -129,6 +132,9 @@ module RoboCompInnerModelManager
 		/// Generic remove
 		// If an item doesn't exist or can't be removed, returns false. All item's children are erased.
 		bool removeNode(string item) throws InnerModelManagerError;
+
+		// Collision detection
+		bool collide(string a, string b);
     
     
     /// PointCloud
@@ -136,8 +142,7 @@ module RoboCompInnerModelManager
     void setPointCloudData(string id, PointCloudVector cloud);
 
 
-		// Collision detection
-		bool collide(string a, string b);
+		
 
 	};
 };
