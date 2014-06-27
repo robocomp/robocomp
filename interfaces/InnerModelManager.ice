@@ -9,149 +9,115 @@
 #ifndef ROBOCOMPINNERMODELMANAGER_ICE
 #define ROBOCOMPINNERMODELMANAGER_ICE
 
-module RoboCompInnerModelManager
-{
-	enum NodeType { Transform, Joint, DifferentialRobot, Plane, Camera, RGBD, IMU, Laser, Mesh, PointCloud, TouchSensor };
-	
-	struct AttributeType {
+module RoboCompInnerModelManager{
+	exception InnerModelManagerError{string text;};
+	enum NodeType{Transform, Joint, DifferentialRobot, Plane, Camera, RGBD, IMU, Laser, Mesh, PointCloud, TouchSensor};
+	["cpp:comparable"]
+	struct AttributeType{
 		string type;
 		string value;
 	};
-	dictionary<string, AttributeType> AttributeMap;
-	
-	struct NodeInformation
-	{
-		string id;
-		string parentId;
+	dictionary<string, AttributeType>AttributeMap;
+	["cpp:comparable"]
+	struct NodeInformation{
 		NodeType nType;
 		AttributeMap attributes;
-		//Key (string) is the name of the attribute
+		string id;
+		string parentId;
 	};
-	sequence<NodeInformation> NodeInformationSequence;
-
-	enum ErrorType { NonExistingNode, NonExistingAttribute, NodeAlreadyExists, AttributeAlreadyExists, InvalidPath, InvalidEngine, InvalidValues, OperationInvalidNode, InternalError, Collision};
-	exception InnerModelManagerError
-	{
-	  ErrorType err;
-	  string text;
-	};
-  
-  struct Colored3DPoint
-  {
-    float x;
-    float y;
-    float z;
-    byte r;
-    byte g;
-    byte b;
-  };
-  sequence<Colored3DPoint> PointCloudVector;
-
-	struct Plane3D
-	{
+	sequence <NodeInformation> NodeInformationSequence;
+	enum ErrorType{NonExistingNode, NonExistingAttribute, NodeAlreadyExists, AttributeAlreadyExists, InvalidPath, InvalidEngine, InvalidValues, OperationInvalidNode, InternalError, Collision};
+	["cpp:comparable"]
+	struct Colored3DPoint{
+		byte r;
+		byte g;
+		byte b;
+		float x;
+					float y;
+					float z;
+				};
+	sequence <Colored3DPoint> PointCloudVector;
+	["cpp:comparable"]
+	struct Plane3D{
 		float px;
-		float py;
-		float pz;
-		float nx;
-		float ny;
-		float nz;
-		float width;
-		float height;
-		float thickness;
-		string texture;
+					float py;
+					float pz;
+					float nx;
+					float ny;
+					float nz;
+					float width;
+					float height;
+					float thickness;
+					string texture;
 	};
-	struct coord3D
-	{
+	["cpp:comparable"]
+	struct coord3D{
 		float x;
-		float y;
-		float z;
-	};
-	
-	struct Pose3D
-	{
+					float y;
+					float z;
+				};
+	["cpp:comparable"]
+	struct Pose3D{
 		float x;
-		float y;
-		float z;
-		float rx;
-		float ry;
-		float rz;
-	};
-	
-	struct jointType
-	{
+					float y;
+					float z;
+					float rx;
+					float ry;
+					float rz;
+				};
+	["cpp:comparable"]
+	struct jointType{
 		Pose3D pose;
-		float lx;
-		float ly;
-		float lz;
-		float hx;
-		float hy;
-		float hz;
-		float mass;
-		float min;
-		float max;
-		string axis;
 		int port;
+		float lx;
+					float ly;
+					float lz;
+					float hx;
+					float hy;
+					float hz;
+					float mass;
+					float min;
+					float max;
+					string axis;
 	};
-
-	struct meshType
-	{
+	["cpp:comparable"]
+	struct meshType{
 		Pose3D pose;
+		int render;
 		float scaleX;
-		float scaleY;
-		float scaleZ;
-		int render; // 0 means normal mode, 1 wireframe mode
-		string meshPath;
+					float scaleY;
+					float scaleZ;
+					string meshPath;
 	};
-
-
 	sequence <float> FloatSeq;
-	struct Matrix
-	{
+				["cpp:comparable"]
+	struct Matrix{
+		FloatSeq data;
 		int cols;
 		int rows;
-		FloatSeq data;
 	};
 
-	interface InnerModelManager
-	{
-		/// Node addition
-		bool addTransform(string item, string engine, string base, Pose3D pose) throws InnerModelManagerError;
-		bool addJoint(string item, string base, jointType j) throws InnerModelManagerError;
-		bool addMesh(string item, string base, meshType m) throws InnerModelManagerError;
-		bool addPlane(string item, string base, Plane3D plane) throws InnerModelManagerError;
-
-		/// Node information access
-		void getAllNodeInformation(out NodeInformationSequence nodesInfo) throws InnerModelManagerError;
-
-		/// Generic node pose modification and access
-		// All get/sets and adds return false if an item or base doesn't exist.
-		/// This methods transforms FROM item TO base
-		bool setPose(string base, string item, Pose3D pose) throws InnerModelManagerError;
-		bool setPoseFromParent(string item, Pose3D pose) throws InnerModelManagerError;
-		bool getPose(string base, string item, out Pose3D pose) throws InnerModelManagerError;
-		bool getPoseFromParent(string item, out Pose3D pose) throws InnerModelManagerError;
-		bool setPlane(string item, Plane3D plane) throws InnerModelManagerError;
-		bool setPlaneTexture(string item, string texure) throws InnerModelManagerError;
-		bool transform(string base, string item, coord3D coordInItem,out coord3D coordInBase) throws InnerModelManagerError;
-		Matrix getTransformationMatrix(string base, string item) throws InnerModelManagerError;
-		bool setScale(string item, float scaleX,float scaleY, float scaleZ) throws InnerModelManagerError;
-
-		/// Attribute-related methods
-		bool addAttribute(string idNode, string name, string type, string value) throws InnerModelManagerError;
-		bool removeAttribute(string idNode, string name) throws InnerModelManagerError;
-		bool setAttribute(string idNode, string name, string type, string value) throws InnerModelManagerError;
-		bool getAttribute(string idNode, string name,  out string type, out string value) throws InnerModelManagerError;
-
-		/// Generic remove
-		// If an item doesn't exist or can't be removed, returns false. All item's children are erased.
-		bool removeNode(string item) throws InnerModelManagerError;
-
-		/// Collision detection
-		bool collide(string a, string b) throws InnerModelManagerError;
-
-    /// PointCloud
-//    void addPointCloud(string id);
-    void setPointCloudData(string id, PointCloudVector cloud);
+	interface InnerModelManager{
+		bool addTransform(string item, string engine, string base, Pose3D pose)throws InnerModelManagerError;
+		bool addJoint(string item, string base, jointType j)throws InnerModelManagerError;
+		bool addMesh(string item, string base, meshType m)throws InnerModelManagerError;
+		bool addPlane(string item, string base, Plane3D plane)throws InnerModelManagerError;
+		void  getAllNodeInformation(out NodeInformationSequence nodesInfo)throws InnerModelManagerError;
+		bool setPose(string base, string item, Pose3D pose)throws InnerModelManagerError;
+		bool setPoseFromParent(string item, Pose3D pose)throws InnerModelManagerError;
+		bool getPose(string base, string item, out Pose3D pose)throws InnerModelManagerError;
+		bool getPoseFromParent(string item, out Pose3D pose)throws InnerModelManagerError;
+		bool setPlane(string item, Plane3D plane)throws InnerModelManagerError;
+		bool transform(string base, string item, coord3D coordInItem, out coord3D coordInBase)throws InnerModelManagerError;
+		Matrix getTransformationMatrix(string base, string item)throws InnerModelManagerError;
+		bool setScale(string item, float scaleX, float scaleY, float scaleZ)throws InnerModelManagerError;
+		bool addAttribute(string idNode, string name, string type, string value)throws InnerModelManagerError;
+		bool removeAttribute(string idNode, string name)throws InnerModelManagerError;
+		bool setAttribute(string idNode, string name, string type, string value)throws InnerModelManagerError;
+		bool getAttribute(string idNode, string name, out string type, out string value)throws InnerModelManagerError;
+		bool removeNode(string item)throws InnerModelManagerError;
+		bool collide(string a, string b);
+		void  setPointCloudData(string id, PointCloudVector cloud);
 	};
 };
   
