@@ -254,3 +254,4 @@ lokiArmComp=12207
 relocalizadorComp=12208
 GetAprilTagsComp=12209
 MSKRGBDTopic=12210
+LokiArmTesterComp=12211
