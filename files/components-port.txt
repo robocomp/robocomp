@@ -254,3 +254,6 @@ lokiArmComp=12207
 relocalizadorComp=12208
 GetAprilTagsComp=12209
 MSKRGBDTopic=12210
+AsrGoogleComp=12211
+GoogleSpeechComp=12212
+TTSGoogleTopic=12213
