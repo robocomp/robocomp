@@ -13,6 +13,7 @@
 
 module RoboCompLaser{
 	sequence <int> shortVector;
+	["cpp:comparable"]
 	struct LaserConfData{
 		int staticConf;
 		int maxMeasures;
@@ -28,6 +29,7 @@ module RoboCompLaser{
 					string driver;
 		string device;
 	};
+	["cpp:comparable"]
 	struct TData{
 		float angle;
 					float dist;

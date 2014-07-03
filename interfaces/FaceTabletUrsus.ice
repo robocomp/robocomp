@@ -10,6 +10,7 @@
 #define ROBOCOMPFACETABLETURSUS_ICE
 
 module RoboCompFaceTabletUrsus{
+	["cpp:comparable"]
 	struct values{
 		int idES;
 		int flag;
