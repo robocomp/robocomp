@@ -12,18 +12,18 @@
 module RoboCompFaceTabletUrsus{
 	["cpp:comparable"]
 	struct values{
-		int idES;
-		int flag;
-		int rcy;
-		int rcd;
-		int gb;
-		int ab;
-		int tb;
-		int eb;
-		int poiX;
-		int poiY;
-		int podX;
-		int podY;
+		int idES;    //  1 anger - 2 fear- 3 sad - 4 Happy - 5 Neutral - 6 Confused
+		int flag;    //---------
+		int rcy;     //gradoCejaIzq
+		int rcd;     //gradoCejaDer
+		int gb;      //gradoBoca
+		int ab;      //aperturaBoca
+		int tb;      //tamBoca
+		int eb;      //estadoBoca
+		int poiX;    //posOjoIzqX
+		int poiY;    //posOjoIzqY
+		int podX;    //posOjoDerX
+		int podY;    //posOjoDerY
 	};
 	sequence <values> valuesList;
 
