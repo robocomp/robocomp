@@ -1,0 +1,24 @@
+module RoboCompFaceTabletUrsus{
+	
+		struct values {
+		int idES;
+		int flag; 
+		int rcy; 
+		int rcd; 
+		int gb; 
+		int ab; 
+		int tb; 
+		int eb;
+		int poiX; 
+		int poiY; 
+		int podX; 
+		int podY;
+		};
+		
+		sequence<values> valuesList;
+		
+		interface FaceTabletUrsus{
+			
+		void newFaceTabletUrsus(valuesList values);
+		};
+};

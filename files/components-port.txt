@@ -255,3 +255,7 @@ relocalizadorComp=12208
 GetAprilTagsComp=12209
 MSKRGBDTopic=12210
 LokiArmTesterComp=12211
+inversekinematicsAgentComp=12212
+TTSGoogleTopic=12213
+AsrGoogleComp=12214
+GoogleSpeechComp=12215
