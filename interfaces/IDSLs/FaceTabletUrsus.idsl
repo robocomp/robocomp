@@ -17,8 +17,9 @@ module RoboCompFaceTabletUrsus{
 		
 		sequence<values> valuesList;
 		
-		interface FaceTabletUrsus{
+		interface FaceTabletUrsus
+		{
 			
-		void newFaceTabletUrsus(valuesList values);
+			void newFaceTabletUrsus(valuesList values);
 		};
 };
