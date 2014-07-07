@@ -1,4 +1,4 @@
-/Interfaces/DifferentialRobot.ice
+/interfaces/DifferentialRobot.ice
 differentialrobot
 localhost
 tcp
