@@ -92,8 +92,8 @@ class C(QWidget):
 			painter.drawLine(0, yOff+x, self.width(), yOff+x)
 			painter.drawLine(0, yOff-x, self.width(), yOff-x)
 		# Draw base
-		painter.setPen(Qt.blue)
-		painter.setBrush(Qt.blue)
+		painter.setPen(Qt.red)
+		painter.setBrush(Qt.red)
 		try:
 			xPos = int( (self.bState.z/div)+xOff-9)
 			yPos = int( (self.bState.x/div)+yOff-9)
@@ -107,6 +107,28 @@ class C(QWidget):
 					print self.bState.z, self.bState.x, self.bState.alpha
 		except:
 			pass
+
+		# Draw base corr
+		painter.setPen(Qt.blue)
+		painter.setBrush(Qt.blue)
+		try:
+			xPos = int( (self.bState.correctedZ/div)+xOff-9)
+			yPos = int( (self.bState.correctedX/div)+yOff-9)
+			start = int(((-self.bState.correctedAlpha*180/math.pi)-180-20)*16)
+			if type(xPos) == type(yPos) and type(xPos) == type(start) and type(xPos) == type(int()):
+				try:
+					painter.drawPie(xPos, yPos, 18, 18, start, 20*2*16)
+				except:
+					print 'BASE :-('
+					print type(xPos-7)
+					print self.bState.correctedZ, self.bState.correctedX, self.bState.correctedAlpha
+		except:
+			pass
+		
+		print '-----------------------'
+		print self.bState.x, self.bState.z, self.bState.alpha
+		print self.bState.correctedX, self.bState.correctedZ, self.bState.correctedAlpha
+		print '-----------------------'
 
 		painter.end()
 		painter = None

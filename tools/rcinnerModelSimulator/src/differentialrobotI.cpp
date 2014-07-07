@@ -27,8 +27,7 @@ DifferentialRobotI::DifferentialRobotI ( SpecificWorker *_worker, QObject *paren
 	advVel = rotVel = 0;
 	gettimeofday ( &lastCommand_timeval, NULL );
 	updateInnerModelPose();
-	
-// 	bug = false;
+
 	zeroANG = 0;
 	zeroTR = RTMat(0,0,0, 0,0,0);
 }
@@ -74,11 +73,11 @@ void DifferentialRobotI::getBaseState ( TBaseState& state, const Ice::Current& )
 	state.x = retPOS(0);
 	state.z = retPOS(2);
 	state.alpha = pose.alpha - zeroANG;
-
-// 	if (bug)
-// 	{
-// 			printf("[%f, %f] (%f)\n", state.x, state.z, state.alpha);
-// 	}
+	
+	retPOS = (zeroTR * QVec::vec3(pose.correctedX, 0, pose.correctedZ).toHomogeneousCoordinates()).fromHomogeneousCoordinates();
+	state.correctedX = retPOS(0);
+	state.correctedZ = retPOS(2);
+	state.correctedAlpha = pose.correctedAlpha - zeroANG;
 }
 
 
@@ -95,7 +94,8 @@ void DifferentialRobotI::getBasePose ( Ice::Int& x, Ice::Int& z, Ice::Float& alp
 #define MILIMETERS_PER_UNIT 1.
 void DifferentialRobotI::updateInnerModelPose ( bool force )
 {
-	if ( ( fabs ( advVel ) < 0.00000001 and fabs ( rotVel ) < 0.00000001 ) and not force ) {
+	if ( ( fabs ( advVel ) < 0.00000001 and fabs ( rotVel ) < 0.00000001 ) and not force )
+	{
 		return;
 	}
 
@@ -104,58 +104,54 @@ void DifferentialRobotI::updateInnerModelPose ( bool force )
 	const double msecs = ( now.tv_sec - lastCommand_timeval.tv_sec ) *1000. + ( now.tv_usec - lastCommand_timeval.tv_usec ) /1000.;
 	lastCommand_timeval = now;
 	QVec newPos, noisyNewPos;
-	double noise = 0;
+	double noise = 0.001;
 	//With random noise:
-	QVec rndmRot = QVec::gaussianSamples ( 1, 0, 0.0000001*noise );
-	QVec rndmAdv = QVec::gaussianSamples ( 1, 0, 0.0000001*noise );
-	QVec rndmYaw = QVec::gaussianSamples ( 1, 0, 0.00001*noise );
+	QVec rndmRot = QVec::gaussianSamples ( 1, 0, 0.01*noise );
+	QVec rndmAdv = QVec::gaussianSamples ( 1, 0, 0.01*noise );
+	QVec rndmYaw = QVec::gaussianSamples ( 1, 0, 0.01*noise );
 
 
-
-	if ( fabs ( rotVel ) < 0.00000001 ) {
-		double Ax = ( advVel*rndmRot[0]*noise*0.1 ) *msecs / 1000.;
-		double Az = ( advVel+ ( rndmAdv[0]*noise ) ) *msecs / ( 1000. * MILIMETERS_PER_UNIT );
+	double Ax1, Az1;
+	double Ax2, Az2;
+	if ( fabs ( rotVel ) < 0.00000001 )
+	{
+		// With noise:
+		Ax1 = ( advVel*rndmRot[0]*noise*0.1 ) *msecs / 1000.;
+		Az1 = ( advVel+ ( rndmAdv[0]*noise ) ) *msecs / ( 1000. * MILIMETERS_PER_UNIT );
 		noisyNewAngle += rndmYaw[0]*noise;
-		noisyNewPos = innerModel->transform ( parent->id, QVec::vec3 ( Ax, 0, Az ), node->id );
-		innerModel->updateTransformValues ( node->id, noisyNewPos ( 0 ), noisyNewPos ( 1 ), noisyNewPos ( 2 ), 0, noisyNewAngle, 0 );
-		//Without noise:
-		Ax = 0;
-		Az = advVel * msecs / ( 1000. * MILIMETERS_PER_UNIT );
-		newPos = innerModel->transform ( parent->id, QVec::vec3 ( Ax, 0, Az ), node->id+"_odometry\"" );
-		innerModel->updateTransformValues ( node->id+"_odometry\"", newPos ( 0 ), newPos ( 1 ), newPos ( 2 ), 0, newAngle, 0 );
-	} else {
-		//With random noise:
+		// Without noise:
+		Ax2 = 0;
+		Az2 = advVel * msecs / ( 1000. * MILIMETERS_PER_UNIT );
+	}
+	else
+	{
+		// With noise:
 		double T = advVel*msecs / 1000.;
 		double Angle = msecs * rotVel / 1000.;
-
-		double Ax = ( ( 1-cos ( Angle ) ) /Angle ) *T* ( 1.+ ( rndmRot[0]*noise ) );
-		double Az = ( sin ( Angle ) /Angle ) *T* ( 1.+ ( rndmAdv[0]*noise ) );
-
+		Ax1 = ( ( 1-cos ( Angle ) ) /Angle ) *T* ( 1.+ ( rndmRot[0]*noise ) );
+		Az1 = ( sin ( Angle ) /Angle ) *T* ( 1.+ ( rndmAdv[0]*noise ) );
 		noisyNewAngle += Angle+ ( ( rndmYaw[0]*noise ) );
-		noisyNewPos = innerModel->transform ( parent->id, QVec::vec3 ( Ax, 0, Az ), node->id );
-		innerModel->updateTransformValues ( differentialIDs[0], noisyNewPos ( 0 ), noisyNewPos ( 1 ), noisyNewPos ( 2 ), 0, noisyNewAngle, 0 );
-
-		//Without noise
+		// Without noise
 		T = advVel*msecs / 1000.;
 		Angle = msecs * rotVel / 1000.;
-
-		Ax = ( ( 1-cos ( Angle ) ) /Angle ) *T;
-		Az = ( sin ( Angle ) /Angle ) *T;
-
+		Ax2 = ( ( 1-cos ( Angle ) ) /Angle ) *T;
+		Az2 = ( sin ( Angle ) /Angle ) *T;
 		newAngle += Angle;
-		newPos = innerModel->transform ( parent->id, QVec::vec3 ( Ax, 0, Az ), node->id+"_odometry\"" );
-		innerModel->updateTransformValues ( differentialIDs[0]+"_odometry\"", newPos ( 0 ), newPos ( 1 ), newPos ( 2 ), 0, newAngle, 0 );
 	}
+	noisyNewPos = innerModel->transform ( parent->id, QVec::vec3 ( Ax1, 0, Az1 ), node->id );
+	innerModel->updateTransformValues ( node->id, noisyNewPos ( 0 ), noisyNewPos ( 1 ), noisyNewPos ( 2 ), 0, noisyNewAngle, 0 );
+	newPos = innerModel->transform ( parent->id, QVec::vec3 ( Ax2, 0, Az2 ), node->id+"_odometry\"" );
+	innerModel->updateTransformValues ( node->id+"_odometry\"", newPos ( 0 ), newPos ( 1 ), newPos ( 2 ), 0, newAngle, 0 );
 
 	// Pose without noise (as if I moved perfectly)
 	pose.x = newPos ( 0 ) *MILIMETERS_PER_UNIT;
 	pose.z = newPos ( 2 ) *MILIMETERS_PER_UNIT;
 	pose.alpha = newAngle;
 
-	//noisy pose (real)
-	/*	pose.correctedX = noisyPose.x = noisyNewPos(0)*MILIMETERS_PER_UNIT;
-		pose.correctedZ = noisyPose.z = noisyNewPos(2)*MILIMETERS_PER_UNIT;
-		pose.correctedAlpha = noisyPose.alpha = noisyNewAngle;*/
+	// noisy pose (real)
+	pose.correctedX = noisyPose.x = noisyNewPos(0)*MILIMETERS_PER_UNIT;
+	pose.correctedZ = noisyPose.z = noisyNewPos(2)*MILIMETERS_PER_UNIT;
+	pose.correctedAlpha = noisyPose.alpha = noisyNewAngle;
 }
 
 
