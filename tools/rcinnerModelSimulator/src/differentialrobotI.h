@@ -64,7 +64,6 @@ private:
 	QStringList differentialIDs;
 	QMutex *mutex;
 	
-// 	bool bug;
 	RMat::RTMat zeroTR;
 	float  zeroANG;
 	
