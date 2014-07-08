@@ -65,7 +65,7 @@ private:
 	QMutex *mutex;
 	
 	RMat::RTMat zeroTR;
-	float  zeroANG;
+	float zeroANG;
 	
 	// Real Noisy Pose
 	TBaseState pose;
@@ -82,6 +82,10 @@ private:
 	InnerModelTransform *parent;
 	InnerModelDifferentialRobot *node;
 	InnerModelTransform *realNode;
+	
+	bool canMoveBaseTo(const QString nodeId, const QVec position, const double alpha);
+	void recursiveIncludeMeshes(InnerModelNode *node, QString robotId, bool inside, std::vector<QString> &in, std::vector<QString> &out);
+
 };
 
 #endif

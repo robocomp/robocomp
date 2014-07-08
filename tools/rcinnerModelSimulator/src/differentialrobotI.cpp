@@ -19,13 +19,13 @@
 #include "differentialrobotI.h"
 #include "specificworker.h"
 
-DifferentialRobotI::DifferentialRobotI ( SpecificWorker *_worker, QObject *parent ) : QThread ( parent )
+DifferentialRobotI::DifferentialRobotI(SpecificWorker *_worker, QObject *parent): QThread(parent)
 {
 	worker = _worker;
 	mutex = worker->mutex;
 	innerModel = worker->getInnerModel();
 	advVel = rotVel = 0;
-	gettimeofday ( &lastCommand_timeval, NULL );
+	gettimeofday(&lastCommand_timeval, NULL);
 	updateInnerModelPose();
 
 	zeroANG = 0;
@@ -33,14 +33,14 @@ DifferentialRobotI::DifferentialRobotI ( SpecificWorker *_worker, QObject *paren
 }
 
 
-void DifferentialRobotI::add ( QString id )
+void DifferentialRobotI::add(QString id)
 {
 	differentialIDs << id;
-	node = innerModel->getDifferentialRobot ( id );
-	parent = innerModel->getTransform ( node->parent->id );
-	newAngle = innerModel->getRotationMatrixTo ( parent->id, id ).extractAnglesR() ( 1 );
-	noisyNewAngle = innerModel->getRotationMatrixTo ( parent->id, id ).extractAnglesR() ( 1 );
-	realNode = innerModel->newTransform ( id+"_odometry\"", "static", parent, 0, 0, 0, 0, newAngle, 0 );
+	node = innerModel->getDifferentialRobot(id);
+	parent = innerModel->getTransform(node->parent->id);
+	newAngle = innerModel->getRotationMatrixTo(parent->id, id).extractAnglesR()(1);
+	noisyNewAngle = innerModel->getRotationMatrixTo(parent->id, id).extractAnglesR()(1);
+	realNode = innerModel->newTransform(id+"_odometry\"", "static", parent, 0, 0, 0, 0, newAngle, 0);
 }
 
 
@@ -52,7 +52,7 @@ void DifferentialRobotI::run()
 		mutex->lock();
 		updateInnerModelPose();
 		mutex->unlock();
-		usleep ( 10000 );
+		usleep(10000);
 	}
 }
 
@@ -64,9 +64,9 @@ DifferentialRobotI::~DifferentialRobotI()
 
 
 // Component functions, implementation
-void DifferentialRobotI::getBaseState ( TBaseState& state, const Ice::Current& )
+void DifferentialRobotI::getBaseState(TBaseState& state, const Ice::Current&)
 {
-	QMutexLocker locker ( mutex );
+	QMutexLocker locker(mutex);
 	
 	state = pose;
 	QVec retPOS = (zeroTR * QVec::vec3(pose.x, 0, pose.z).toHomogeneousCoordinates()).fromHomogeneousCoordinates();
@@ -81,9 +81,9 @@ void DifferentialRobotI::getBaseState ( TBaseState& state, const Ice::Current& )
 }
 
 
-void DifferentialRobotI::getBasePose ( Ice::Int& x, Ice::Int& z, Ice::Float& alpha, const Ice::Current& )
+void DifferentialRobotI::getBasePose(Ice::Int& x, Ice::Int& z, Ice::Float& alpha, const Ice::Current&)
 {
-	QMutexLocker locker ( mutex );
+	QMutexLocker locker(mutex);
 	QVec retPOS = (zeroTR * QVec::vec3(pose.x, 0, pose.z).toHomogeneousCoordinates()).fromHomogeneousCoordinates();
 	x = retPOS(0);
 	z = retPOS(2);
@@ -92,74 +92,128 @@ void DifferentialRobotI::getBasePose ( Ice::Int& x, Ice::Int& z, Ice::Float& alp
 
 
 #define MILIMETERS_PER_UNIT 1.
-void DifferentialRobotI::updateInnerModelPose ( bool force )
+void DifferentialRobotI::updateInnerModelPose(bool force)
 {
-	if ( ( fabs ( advVel ) < 0.00000001 and fabs ( rotVel ) < 0.00000001 ) and not force )
+	if ( (fabs(advVel)< 0.0001 and fabs(rotVel)< 0.0001) and not force)
 	{
 		return;
 	}
 
 	timeval now;
-	gettimeofday ( &now, NULL );
-	const double msecs = ( now.tv_sec - lastCommand_timeval.tv_sec ) *1000. + ( now.tv_usec - lastCommand_timeval.tv_usec ) /1000.;
+	gettimeofday(&now, NULL);
+	const double msecs = (now.tv_sec - lastCommand_timeval.tv_sec)*1000. +(now.tv_usec - lastCommand_timeval.tv_usec)/1000.;
 	lastCommand_timeval = now;
+	double Angle = 0.;
 	QVec newPos, noisyNewPos;
-	double noise = 0.001;
+	double noise = 0.1;
 	//With random noise:
-	QVec rndmRot = QVec::gaussianSamples ( 1, 0, 0.01*noise );
-	QVec rndmAdv = QVec::gaussianSamples ( 1, 0, 0.01*noise );
-	QVec rndmYaw = QVec::gaussianSamples ( 1, 0, 0.01*noise );
+	QVec rndmRot = QVec::gaussianSamples(1, 0, noise);
+	QVec rndmAdv = QVec::gaussianSamples(1, 0, noise);
+	QVec rndmYaw = QVec::gaussianSamples(1, 0, noise*0.01);
 
 
 	double Ax1, Az1;
 	double Ax2, Az2;
-	if ( fabs ( rotVel ) < 0.00000001 )
+	if (fabs(rotVel) < 0.0001)
 	{
 		// With noise:
-		Ax1 = ( advVel*rndmRot[0]*noise*0.1 ) *msecs / 1000.;
-		Az1 = ( advVel+ ( rndmAdv[0]*noise ) ) *msecs / ( 1000. * MILIMETERS_PER_UNIT );
-		noisyNewAngle += rndmYaw[0]*noise;
+		Ax1 = (advVel*rndmRot[0])*msecs / 1000.;
+		Az1 = (advVel+(rndmAdv[0]))*msecs / (1000.*MILIMETERS_PER_UNIT);
+		noisyNewAngle += rndmYaw[0];
 		// Without noise:
 		Ax2 = 0;
-		Az2 = advVel * msecs / ( 1000. * MILIMETERS_PER_UNIT );
+		Az2 = (advVel*msecs) / (1000.*MILIMETERS_PER_UNIT);
 	}
 	else
 	{
 		// With noise:
 		double T = advVel*msecs / 1000.;
-		double Angle = msecs * rotVel / 1000.;
-		Ax1 = ( ( 1-cos ( Angle ) ) /Angle ) *T* ( 1.+ ( rndmRot[0]*noise ) );
-		Az1 = ( sin ( Angle ) /Angle ) *T* ( 1.+ ( rndmAdv[0]*noise ) );
-		noisyNewAngle += Angle+ ( ( rndmYaw[0]*noise ) );
+		Angle = (msecs * (rotVel+(1.+rndmYaw[0]))) / 1000.;
+		Ax1 = ((1.-cos(Angle))/Angle)*T*(1.+(rndmRot[0]));
+		Az1 = (sin(Angle)/Angle)*T*(1.+(rndmAdv[0]));
 		// Without noise
 		T = advVel*msecs / 1000.;
 		Angle = msecs * rotVel / 1000.;
-		Ax2 = ( ( 1-cos ( Angle ) ) /Angle ) *T;
-		Az2 = ( sin ( Angle ) /Angle ) *T;
+		Ax2 = ((1-cos(Angle))/Angle)*T;
+		Az2 = (sin(Angle)/Angle)*T;
 		newAngle += Angle;
 	}
-	noisyNewPos = innerModel->transform ( parent->id, QVec::vec3 ( Ax1, 0, Az1 ), node->id );
-	innerModel->updateTransformValues ( node->id, noisyNewPos ( 0 ), noisyNewPos ( 1 ), noisyNewPos ( 2 ), 0, noisyNewAngle, 0 );
-	newPos = innerModel->transform ( parent->id, QVec::vec3 ( Ax2, 0, Az2 ), node->id+"_odometry\"" );
-	innerModel->updateTransformValues ( node->id+"_odometry\"", newPos ( 0 ), newPos ( 1 ), newPos ( 2 ), 0, newAngle, 0 );
+	noisyNewPos = innerModel->transform(parent->id, QVec::vec3(Ax1, 0, Az1), node->id);
+	if (canMoveBaseTo(node->id, noisyNewPos, noisyNewAngle+Angle+(rndmYaw[0]*noise) ))
+	{
+		innerModel->updateTransformValues(node->id, noisyNewPos(0), noisyNewPos(1), noisyNewPos(2), 0, noisyNewAngle, 0);
+		noisyNewAngle += Angle+((rndmYaw[0]*noise));
+		// Noisy pose(real)
+		pose.x     = noisyPose.x     = noisyNewPos(0)*MILIMETERS_PER_UNIT;
+		pose.z     = noisyPose.z     = noisyNewPos(2)*MILIMETERS_PER_UNIT;
+		pose.alpha = noisyPose.alpha = noisyNewAngle;
+	}
+	newPos = innerModel->transform(parent->id, QVec::vec3(Ax2, 0, Az2), node->id+"_odometry\"");
+	innerModel->updateTransformValues(node->id+"_odometry\"", newPos(0), newPos(1), newPos(2), 0, newAngle, 0);
 
 	// Pose without noise (as if I moved perfectly)
-	pose.x = newPos ( 0 ) *MILIMETERS_PER_UNIT;
-	pose.z = newPos ( 2 ) *MILIMETERS_PER_UNIT;
-	pose.alpha = newAngle;
+	pose.correctedX = newPos(0)*MILIMETERS_PER_UNIT;
+	pose.correctedZ = newPos(2)*MILIMETERS_PER_UNIT;
+	pose.correctedAlpha =  newAngle;
+}
 
-	// noisy pose (real)
-	pose.correctedX = noisyPose.x = noisyNewPos(0)*MILIMETERS_PER_UNIT;
-	pose.correctedZ = noisyPose.z = noisyNewPos(2)*MILIMETERS_PER_UNIT;
-	pose.correctedAlpha = noisyPose.alpha = noisyNewAngle;
+bool DifferentialRobotI::canMoveBaseTo(const QString nodeId, const QVec position, const double alpha)
+{
+	std::vector<QString> robotMeshes;
+	std::vector<QString> restMeshes;
+
+	recursiveIncludeMeshes(innerModel->getRoot(), nodeId, false, robotMeshes, restMeshes);
+	
+	printf("In: ");
+	for (int i=0; i<robotMeshes.size(); i++)
+		printf("%s ", robotMeshes[i].toStdString().c_str());
+	printf("\n");
+
+	printf("Out: ");
+	for (int i=0; i<restMeshes.size(); i++)
+		printf("%s ", restMeshes[i].toStdString().c_str());
+	printf("\n");
+
+	return true;
+}
+
+void DifferentialRobotI::recursiveIncludeMeshes(InnerModelNode *node, QString robotId, bool inside, std::vector<QString> &in, std::vector<QString> &out)
+{
+	if (node->id == robotId)
+	{
+		inside = true;
+	}
+	
+	InnerModelMesh *mesh;
+	InnerModelTransform *transformation;
+
+	// Find out which kind of node are we dealing with
+	if ((transformation = dynamic_cast<InnerModelTransform *>(node)))
+	{
+		for (int i=0; i<node->children.size(); i++)
+		{
+			recursiveIncludeMeshes(node->children[i], robotId, inside, in, out);
+		}
+	}
+	else if ((mesh = dynamic_cast<InnerModelMesh *>(node)))
+	{
+		if (inside)
+		{
+			in.push_back(mesh->id);
+		}
+		else
+		{
+			out.push_back(mesh->id);
+		}
+	}
 }
 
 
-void DifferentialRobotI::setSpeedBase ( Ice::Float adv, Ice::Float rot, const Ice::Current& )
+void DifferentialRobotI::setSpeedBase(Ice::Float adv, Ice::Float rot, const Ice::Current&)
 {
-	QMutexLocker locker ( mutex );
+	QMutexLocker locker(mutex);
 	updateInnerModelPose();
-	gettimeofday ( &lastCommand_timeval, NULL );
+	gettimeofday(&lastCommand_timeval, NULL);
 	advVel = adv;
 	rotVel = rot;
 	pose.advV = adv;
@@ -167,37 +221,37 @@ void DifferentialRobotI::setSpeedBase ( Ice::Float adv, Ice::Float rot, const Ic
 }
 
 
-void DifferentialRobotI::stopBase ( const Ice::Current& )
+void DifferentialRobotI::stopBase(const Ice::Current&)
 {
 	setSpeedBase(0,0);
 }
 
 
-void DifferentialRobotI::resetOdometer ( const Ice::Current& )
+void DifferentialRobotI::resetOdometer(const Ice::Current&)
 {
 	QMutexLocker locker(mutex);
 	zeroANG = pose.alpha;
-	zeroTR = RTMat(0, -pose.alpha, 0, 0, 0, 0) * RTMat(0, 0, 0, -pose.x, 0, -pose.z);
+	zeroTR = RTMat(0, -pose.alpha, 0, 0, 0, 0)* RTMat(0, 0, 0, -pose.x, 0, -pose.z);
 }
 
 
-void DifferentialRobotI::setOdometer ( const TBaseState& st, const Ice::Current& )
+void DifferentialRobotI::setOdometer(const TBaseState& st, const Ice::Current&)
 {
 	setOdometerPose(st.x, st.z, st.alpha);
 }
 
 
-void DifferentialRobotI::setOdometerPose ( Ice::Int x, Ice::Int z, Ice::Float alpha, const Ice::Current& )
+void DifferentialRobotI::setOdometerPose(Ice::Int x, Ice::Int z, Ice::Float alpha, const Ice::Current&)
 {
-	QMutexLocker locker ( mutex );
+	QMutexLocker locker(mutex);
 	zeroANG = pose.alpha-alpha;
-	zeroTR = RTMat(0,0,0,  x,0,z) *RTMat(0,alpha-pose.alpha,0, 0,0,0) * RTMat(0,0,0, -pose.x,0,-pose.z);
+	zeroTR = RTMat(0,0,0,  x,0,z)*RTMat(0,alpha-pose.alpha,0, 0,0,0)* RTMat(0,0,0, -pose.x,0,-pose.z);
 }
 
 
-void DifferentialRobotI::correctOdometer ( Ice::Int x, Ice::Int z, Ice::Float alpha, const Ice::Current& )
+void DifferentialRobotI::correctOdometer(Ice::Int x, Ice::Int z, Ice::Float alpha, const Ice::Current&)
 {
-	QMutexLocker locker ( mutex );
+	QMutexLocker locker(mutex);
 	pose.correctedX = x;
 	pose.correctedZ = z;
 	pose.correctedAlpha = alpha;
