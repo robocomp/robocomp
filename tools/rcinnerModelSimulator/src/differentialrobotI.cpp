@@ -159,20 +159,36 @@ void DifferentialRobotI::updateInnerModelPose(bool force)
 
 bool DifferentialRobotI::canMoveBaseTo(const QString nodeId, const QVec position, const double alpha)
 {
-	std::vector<QString> robotMeshes;
-	std::vector<QString> restMeshes;
+	std::vector<QString> robotNodes;
+	std::vector<QString> restNodes;
 
-	recursiveIncludeMeshes(innerModel->getRoot(), nodeId, false, robotMeshes, restMeshes);
+	recursiveIncludeMeshes(innerModel->getRoot(), nodeId, false, robotNodes, restNodes);
+
+// 	printf("In: ");
+// 	for (int i=0; i<robotNodes.size(); i++)
+// 	{
+// 		printf("%s ", robotNodes[i].toStdString().c_str());
+// 		InnerModelNode *node = innerModel->getNode(robotNodes[i]);
+// 	}
+// 	printf("\n");
+// 
+// 	printf("Out: ");
+// 	for (int i=0; i<restNodes.size(); i++)
+// 	{
+// 		printf("%s ", restNodes[i].toStdString().c_str());
+// 	}
+// 	printf("\n");
 	
-	printf("In: ");
-	for (int i=0; i<robotMeshes.size(); i++)
-		printf("%s ", robotMeshes[i].toStdString().c_str());
-	printf("\n");
-
-	printf("Out: ");
-	for (int i=0; i<restMeshes.size(); i++)
-		printf("%s ", restMeshes[i].toStdString().c_str());
-	printf("\n");
+	for (uint32_t in=0; in<robotNodes.size(); in++)
+	{
+		for (uint32_t out=0; out<restNodes.size(); out++)
+		{
+			if (innerModel->collide(robotNodes[in], restNodes[out]))
+			{
+				return false;
+			}
+		}
+	}
 
 	return true;
 }
@@ -185,9 +201,9 @@ void DifferentialRobotI::recursiveIncludeMeshes(InnerModelNode *node, QString ro
 	}
 	
 	InnerModelMesh *mesh;
+	InnerModelPlane *plane;
 	InnerModelTransform *transformation;
 
-	// Find out which kind of node are we dealing with
 	if ((transformation = dynamic_cast<InnerModelTransform *>(node)))
 	{
 		for (int i=0; i<node->children.size(); i++)
@@ -195,15 +211,15 @@ void DifferentialRobotI::recursiveIncludeMeshes(InnerModelNode *node, QString ro
 			recursiveIncludeMeshes(node->children[i], robotId, inside, in, out);
 		}
 	}
-	else if ((mesh = dynamic_cast<InnerModelMesh *>(node)))
+	else if ((mesh = dynamic_cast<InnerModelMesh *>(node)) or (plane = dynamic_cast<InnerModelPlane *>(node)))
 	{
 		if (inside)
 		{
-			in.push_back(mesh->id);
+			in.push_back(node->id);
 		}
 		else
 		{
-			out.push_back(mesh->id);
+			out.push_back(node->id);
 		}
 	}
 }
