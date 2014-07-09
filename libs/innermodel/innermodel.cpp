@@ -190,9 +190,13 @@ void InnerModel::removeSubTree(InnerModelNode *node, QStringList *l)
 	removeNode(node->id);
 }
 
-
-
-///get sub tree and return a list with his id
+/**
+ * @brief Returns a list of node's ID corresponding to the subtree starting at node
+ * 
+ * @param node starting node
+ * @param l pointer to QStringList
+ * @return void
+ */
 void InnerModel::getSubTree(InnerModelNode *node, QStringList *l)
 {
 	QList<InnerModelNode*>::iterator i;
@@ -200,12 +204,20 @@ void InnerModel::getSubTree(InnerModelNode *node, QStringList *l)
 	{
 		getSubTree(*i,l);
 	}
-	//node->parent->children.removeOne(node);
 	l->append(node->id);
-	//removeNode(node->id);
 }
 
 
+// void InnerModel::getSubTreeN(InnerModelNode *orig, InnerModelNode *ret)
+// {
+// 	//ASSERTS
+// 	
+// 	QList<InnerModelNode *>::iterator i;
+// 	for (i=orig->children.begin(); i!=orig->children.end(); i++)
+// 	{
+// 		ret->addChild((*i)->copyNode(hash, root));
+// 	}
+// }
 
 bool InnerModel::save(QString path)
 {
@@ -1588,6 +1600,17 @@ void InnerModelTransform::update()
 
 
 
+/**
+ * @brief Updates the internal values of the node from the values passed in the parameters
+ * 
+ * @param tx_ X Translation
+ * @param ty_ Y Translation
+ * @param tz_ Z Translation
+ * @param rx_ RX Rotation
+ * @param ry_ RY Rotation
+ * @param rz_ RZ Rotation
+ * @return void
+ */
 void InnerModelTransform::update(float tx_, float ty_, float tz_, float rx_, float ry_, float rz_)
 {
 	backrX = rx_; backrY = ry_; backrZ = rz_;
@@ -2436,6 +2459,18 @@ InnerModelNode * InnerModelMesh::copyNode(QHash<QString, InnerModelNode *> &hash
 	ret->attributes.clear();
 	hash[id] = ret;
 
+#if FCL_SUPPORT==1
+	// Associate the read vertices and triangles vectors to the FCL collision model object
+	ret->fclMesh = FCLModelPtr(new FCLModel(*fclMesh.get()));
+	ret->collisionObject = new fcl::CollisionObject(ret->fclMesh);
+
+#endif
+	
+	
+	
+	
+	
+	
 	for (QList<InnerModelNode*>::iterator i=children.begin(); i!=children.end(); i++)
 	{
 		ret->addChild((*i)->copyNode(hash, ret));
