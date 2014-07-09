@@ -109,7 +109,7 @@ void OmniRobotI::updateInnerModelPose(bool force)
 	const double noise = node->noise;
 	
 	// Random noise:
-	QVec rndmPos = QVec::gaussianSamples(1, 0, noise*(0.01*vel.norm2() + 0.1*rotVel));
+	QVec rndmPos = QVec::gaussianSamples(2, 0, noise*(0.01*vel.norm2() + 0.1*rotVel));
 	QVec rndmYaw = QVec::gaussianSamples(1, 0, noise*(0.01*vel.norm2() + 0.1*rotVel));
 
 	// Without noise
@@ -120,7 +120,7 @@ void OmniRobotI::updateInnerModelPose(bool force)
 	QVec backNoisyNewPos = innerModel->transform(parent->id, QVec::vec3(0,0,0), node->id);
 	float backNoisyAngle = noisyNewAngle;
 	noisyNewAngle += Angle + rndmYaw[0];
-	noisyNewPos = innerModel->transform(parent->id, QVec::vec3(T(0), 0, T(1)), node->id);
+	noisyNewPos = innerModel->transform(parent->id, QVec::vec3(T(0), 0, T(2)), node->id);
 	innerModel->updateTransformValues(node->id, noisyNewPos(0), noisyNewPos(1), noisyNewPos(2), 0, noisyNewAngle, 0);
 	if (canMoveBaseTo(node->id, noisyNewPos, noisyNewAngle+Angle+(rndmYaw[0]*noise) ))
 	{
