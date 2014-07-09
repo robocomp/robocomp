@@ -489,10 +489,21 @@ InnerModelPrismaticJoint *InnerModel::newPrismaticJoint(QString id, InnerModelTr
 
 
 
-InnerModelDifferentialRobot *InnerModel::newDifferentialRobot(QString id, InnerModelTransform *parent, float tx, float ty, float tz, float rx, float ry, float rz, uint32_t port)
+InnerModelDifferentialRobot *InnerModel::newDifferentialRobot(QString id, InnerModelTransform *parent, float tx, float ty, float tz, float rx, float ry, float rz, uint32_t port, float noise)
 {
-	if (hash.contains(id)) qFatal("InnerModel::newDifferentialrobot: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
-	InnerModelDifferentialRobot *newnode = new InnerModelDifferentialRobot(id, tx, ty, tz, rx, ry, rz, port, parent);
+	if (hash.contains(id)) qFatal("InnerModel::newDifferentialRobot: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
+	InnerModelDifferentialRobot *newnode = new InnerModelDifferentialRobot(id, tx, ty, tz, rx, ry, rz, port, noise, parent);
+	hash[id] = newnode;
+// 	parent->addChild(newnode);
+	return newnode;
+}
+
+
+
+InnerModelOmniRobot *InnerModel::newOmniRobot(QString id, InnerModelTransform *parent, float tx, float ty, float tz, float rx, float ry, float rz, uint32_t port, float noise)
+{
+	if (hash.contains(id)) qFatal("InnerModel::newOmniRobot: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
+	InnerModelOmniRobot *newnode = new InnerModelOmniRobot(id, tx, ty, tz, rx, ry, rz, port, noise, parent);
 	hash[id] = newnode;
 // 	parent->addChild(newnode);
 	return newnode;
@@ -763,6 +774,19 @@ InnerModelDifferentialRobot *InnerModel::getDifferentialRobot(const QString &id)
 			qFatal("No such differential robot %s", id.toStdString().c_str());
 		else
 			qFatal("%s doesn't seem to be a differential robot", id.toStdString().c_str());
+	}
+	return diff;
+}
+
+InnerModelOmniRobot *InnerModel::getOmniRobot(const QString &id)
+{
+	InnerModelOmniRobot *diff = dynamic_cast<InnerModelOmniRobot *>(hash[id]);
+	if (not diff)
+	{
+		if (not hash[id])
+			qFatal("No such omni robot %s", id.toStdString().c_str());
+		else
+			qFatal("%s doesn't seem to be a omni robot", id.toStdString().c_str());
 	}
 	return diff;
 }
@@ -1915,14 +1939,44 @@ InnerModelNode * InnerModelPrismaticJoint::copyNode(QHash<QString, InnerModelNod
 // InnerModelDifferentialRobot
 // ------------------------------------------------------------------------------------------------
 
-InnerModelDifferentialRobot::InnerModelDifferentialRobot(QString id_, float tx_, float ty_, float tz_, float rx_, float ry_, float rz_, uint32_t port_, InnerModelTransform *parent_) : InnerModelTransform(id_,QString("static"),tx_,ty_,tz_,rx_,ry_,rz_, 0, parent_)
+InnerModelDifferentialRobot::InnerModelDifferentialRobot(QString id_, float tx_, float ty_, float tz_, float rx_, float ry_, float rz_, uint32_t port_, float noise_, InnerModelTransform *parent_) : InnerModelTransform(id_,QString("static"),tx_,ty_,tz_,rx_,ry_,rz_, 0, parent_)
 {
 	port = port_;
+	noise = noise_;
 }
 
 InnerModelNode * InnerModelDifferentialRobot::copyNode(QHash<QString, InnerModelNode *> &hash, InnerModelNode *parent)
 {
-	InnerModelDifferentialRobot *ret = new InnerModelDifferentialRobot(id, backtX, backtY, backtZ, backrX, backrY, backrZ, port, (InnerModelTransform *)parent);
+	InnerModelDifferentialRobot *ret = new InnerModelDifferentialRobot(id, backtX, backtY, backtZ, backrX, backrY, backrZ, port, noise, (InnerModelTransform *)parent);
+	ret->level = level;
+	ret->fixed = fixed;
+	ret->children.clear();
+	ret->attributes.clear();
+	hash[id] = ret;
+
+	for (QList<InnerModelNode*>::iterator i=children.begin(); i!=children.end(); i++)
+	{
+		ret->addChild((*i)->copyNode(hash, ret));
+	}
+	
+	return ret;
+}
+
+
+
+// ------------------------------------------------------------------------------------------------
+// InnerModelOmniRobot
+// ------------------------------------------------------------------------------------------------
+
+InnerModelOmniRobot::InnerModelOmniRobot(QString id_, float tx_, float ty_, float tz_, float rx_, float ry_, float rz_, uint32_t port_, float noise_, InnerModelTransform *parent_) : InnerModelTransform(id_,QString("static"),tx_,ty_,tz_,rx_,ry_,rz_, 0, parent_)
+{
+	port = port_;
+	noise = noise_;
+}
+
+InnerModelNode * InnerModelOmniRobot::copyNode(QHash<QString, InnerModelNode *> &hash, InnerModelNode *parent)
+{
+	InnerModelOmniRobot *ret = new InnerModelOmniRobot(id, backtX, backtY, backtZ, backrX, backrY, backrZ, port, noise, (InnerModelTransform *)parent);
 	ret->level = level;
 	ret->fixed = fixed;
 	ret->children.clear();

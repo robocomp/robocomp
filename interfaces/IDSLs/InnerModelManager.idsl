@@ -1,6 +1,6 @@
 module RoboCompInnerModelManager
 {
-	enum NodeType { Transform, Joint, DifferentialRobot, Plane, Camera, RGBD, IMU, Laser, Mesh, PointCloud, TouchSensor };
+	enum NodeType { Transform, Joint, DifferentialRobot, OmniRobot, Plane, Camera, RGBD, IMU, Laser, Mesh, PointCloud, TouchSensor };
 	
 	struct AttributeType {
 		string type;

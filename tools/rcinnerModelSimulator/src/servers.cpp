@@ -167,23 +167,44 @@ void IMUServer::add ( InnerModelIMU *imu )
 }
 
 
-DifferentialRobotServer::DifferentialRobotServer ( Ice::CommunicatorPtr communicator, SpecificWorker *worker, uint32_t _port )
+DifferentialRobotServer::DifferentialRobotServer(Ice::CommunicatorPtr communicator, SpecificWorker *worker, uint32_t _port)
 {
 	port = _port;
 	std::stringstream out1;
 	out1 << port;
-	std::string name = std::string ( "DifferentialRobot" ) + out1.str();
-	std::string endp = std::string ( "tcp -p " ) + out1.str();
-	adapter = communicator->createObjectAdapterWithEndpoints ( name, endp );
-	printf ( "Creating DifferentialRobot adapter <<%s>> with endpoint <<%s>>\n", name.c_str(), endp.c_str() );
-	interface = new DifferentialRobotI ( worker );
-	adapter->add ( interface, communicator->stringToIdentity ( "differentialrobot" ) );
+	std::string name = std::string("DifferentialRobot") + out1.str();
+	std::string endp = std::string("tcp -p ") + out1.str();
+	adapter = communicator->createObjectAdapterWithEndpoints(name, endp);
+	printf("Creating DifferentialRobot adapter <<%s>> with endpoint <<%s>>\n", name.c_str(), endp.c_str());
+	interface = new DifferentialRobotI(worker);
+	adapter->add(interface, communicator->stringToIdentity("differentialrobot"));
 	adapter->activate();
 }
 
 void DifferentialRobotServer::add ( InnerModelDifferentialRobot *differentialrobot )
 {
-	differentialrobots.push_back ( differentialrobot );
-	interface->add ( differentialrobot->id );
+	differentialrobots.push_back(differentialrobot);
+	interface->add(differentialrobot->id);
+	interface->start();
+}
+
+OmniRobotServer::OmniRobotServer(Ice::CommunicatorPtr communicator, SpecificWorker *worker, uint32_t _port)
+{
+	port = _port;
+	std::stringstream out1;
+	out1 << port;
+	std::string name = std::string ("OmniRobot") + out1.str();
+	std::string endp = std::string ("tcp -p ") + out1.str();
+	adapter = communicator->createObjectAdapterWithEndpoints ( name, endp );
+	printf ( "Creating OmniRobot adapter <<%s>> with endpoint <<%s>>\n", name.c_str(), endp.c_str() );
+	interface = new OmniRobotI ( worker );
+	adapter->add ( interface, communicator->stringToIdentity("omnirobot"));
+	adapter->activate();
+}
+
+void OmniRobotServer::add(InnerModelOmniRobot *omnirobot)
+{
+	omnirobots.push_back(omnirobot);
+	interface->add(omnirobot->id);
 	interface->start();
 }

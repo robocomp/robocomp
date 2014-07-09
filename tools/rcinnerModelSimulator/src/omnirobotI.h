@@ -16,8 +16,8 @@
  *    You should have received a copy of the GNU General Public License
  *    along with RoboComp.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef DIFFERENTIALROBOTI_H
-#define DIFFERENTIALROBOTI_H
+#ifndef OMNIROBOTI_H
+#define OMNIROBOTI_H
 
 // Qt includes
 #include <QMutex>
@@ -26,7 +26,7 @@
 
 // RoboComp includes
 #include <Ice/Ice.h>
-#include <DifferentialRobot.h>
+#include <OmniRobot.h>
 #include <innermodel/innermodel.h>
 
 // Simulator includes
@@ -34,43 +34,43 @@
 
 
 
-using namespace RoboCompDifferentialRobot;
+using namespace RoboCompOmniRobot;
 
 class SpecificWorker;
 
-class DifferentialRobotI : public QThread, public virtual RoboCompDifferentialRobot::DifferentialRobot
+class OmniRobotI : public QThread, public virtual RoboCompOmniRobot::OmniRobot
 {
 	Q_OBJECT
 public:
-	DifferentialRobotI ( SpecificWorker *_worker, QObject *parent = 0 );
-	~DifferentialRobotI();
+	OmniRobotI ( SpecificWorker *_worker, QObject *parent = 0 );
+	~OmniRobotI();
 	
 	void add ( QString id );
 	void run();
 	void updateInnerModelPose ( bool force=false );
 	
-	void getBaseState ( RoboCompDifferentialRobot::TBaseState& state, const Ice::Current& = Ice::Current() );
+	void getBaseState ( RoboCompOmniRobot::TBaseState& state, const Ice::Current& = Ice::Current() );
 	void getBasePose ( Ice::Int& x, Ice::Int& z, Ice::Float& alpha, const Ice::Current& = Ice::Current() );
 	void setSpeedBase ( Ice::Float adv, Ice::Float rot, const Ice::Current& = Ice::Current() );
 	void stopBase ( const Ice::Current& = Ice::Current() );
 	void resetOdometer ( const Ice::Current& = Ice::Current() );
-	void setOdometer ( const RoboCompDifferentialRobot::TBaseState& state, const Ice::Current& = Ice::Current() );
+	void setOdometer ( const RoboCompOmniRobot::TBaseState& state, const Ice::Current& = Ice::Current() );
 	void setOdometerPose ( Ice::Int x, Ice::Int z, Ice::Float alpha, const Ice::Current& = Ice::Current() );
 	void correctOdometer ( Ice::Int x, Ice::Int z, Ice::Float alpha, const Ice::Current& = Ice::Current() );
 	
 private:
 	SpecificWorker *worker;
 	InnerModel *innerModel;
-	QStringList differentialIDs;
+	QStringList omniIDs;
 	QMutex *mutex;
 	
 	RMat::RTMat zeroTR;
 	float zeroANG;
 	
 	// Real Noisy Pose
-	RoboCompDifferentialRobot::TBaseState pose;
+	RoboCompOmniRobot::TBaseState pose;
 	// Odometry pose
-	RoboCompDifferentialRobot::TBaseState noisyPose;
+	RoboCompOmniRobot::TBaseState noisyPose;
 	// Real Angle
 	double newAngle;
 	//Noisy Angle
@@ -80,7 +80,7 @@ private:
 	float advVel, rotVel;
 
 	InnerModelTransform *parent;
-	InnerModelDifferentialRobot *node;
+	InnerModelOmniRobot *node;
 	InnerModelTransform *realNode;
 	
 	bool canMoveBaseTo(const QString nodeId, const QVec position, const double alpha);

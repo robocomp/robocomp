@@ -2,7 +2,7 @@
 // DifferentialRobot.ice
 // ------------------------------------------------------------------------------------------------
 
-void SpecificWorker::dfr_getBaseState ( const QString& server, TBaseState& state )
+void SpecificWorker::dfr_getBaseState ( const QString& server, RoboCompDifferentialRobot::TBaseState& state )
 {}
 
 
@@ -22,7 +22,7 @@ void SpecificWorker::dfr_resetOdometer ( const QString& server )
 {}
 
 
-void SpecificWorker::dfr_setOdometer ( const QString& server, const TBaseState& state )
+void SpecificWorker::dfr_setOdometer ( const QString& server, const RoboCompDifferentialRobot::TBaseState& state )
 {}
 
 

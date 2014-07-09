@@ -12,6 +12,7 @@ SET ( SOURCES
 	genericmonitor.cpp
 	cameraI.cpp
 	differentialrobotI.cpp
+	omnirobotI.cpp
 	imuI.cpp
 	innermodelmanagerI.cpp
 	jointmotorI.cpp
@@ -29,6 +30,7 @@ SET ( HEADERS
 	genericmonitor.h
 	cameraI.h
 	differentialrobotI.h
+	omnirobotI.h
 	imuI.h
 	innermodelmanagerI.h
 	jointmotorI.h
@@ -41,7 +43,7 @@ SET ( HEADERS
 # RoboComp
 INCLUDE( $ENV{ROBOCOMP}/cmake/robocomp.cmake )
 ROBOCOMP_INITIALIZE( $ENV{ROBOCOMP}/ )
-ROBOCOMP_WRAP_ICE( Camera CommonBehavior CommonHead DifferentialRobot IMU InnerModelManager JointMotor Laser RGBD TouchSensor )
+ROBOCOMP_WRAP_ICE( Camera CommonBehavior CommonHead DifferentialRobot OmniRobot IMU InnerModelManager JointMotor Laser RGBD TouchSensor )
 ROBOCOMP_LIBRARY( qmat )
 
 

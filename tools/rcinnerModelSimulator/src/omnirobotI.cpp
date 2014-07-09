@@ -16,10 +16,10 @@
  *    You should have received a copy of the GNU General Public License
  *    along with RoboComp.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "differentialrobotI.h"
+#include "omnirobotI.h"
 #include "specificworker.h"
 
-DifferentialRobotI::DifferentialRobotI(SpecificWorker *_worker, QObject *parent): QThread(parent)
+OmniRobotI::OmniRobotI(SpecificWorker *_worker, QObject *parent): QThread(parent)
 {
 	worker = _worker;
 	mutex = worker->mutex;
@@ -33,10 +33,10 @@ DifferentialRobotI::DifferentialRobotI(SpecificWorker *_worker, QObject *parent)
 }
 
 
-void DifferentialRobotI::add(QString id)
+void OmniRobotI::add(QString id)
 {
-	differentialIDs << id;
-	node = innerModel->getDifferentialRobot(id);
+	omniIDs << id;
+	node = innerModel->getOmniRobot(id);
 	parent = innerModel->getTransform(node->parent->id);
 	newAngle = innerModel->getRotationMatrixTo(parent->id, id).extractAnglesR()(1);
 	noisyNewAngle = innerModel->getRotationMatrixTo(parent->id, id).extractAnglesR()(1);
@@ -44,7 +44,7 @@ void DifferentialRobotI::add(QString id)
 }
 
 
-void DifferentialRobotI::run()
+void OmniRobotI::run()
 {
 	updateInnerModelPose(true);
 	while (true)
@@ -57,14 +57,14 @@ void DifferentialRobotI::run()
 }
 
 
-DifferentialRobotI::~DifferentialRobotI()
+OmniRobotI::~OmniRobotI()
 {
 	// Free component resources here
 }
 
 
 // Component functions, implementation
-void DifferentialRobotI::getBaseState(RoboCompDifferentialRobot::TBaseState& state, const Ice::Current&)
+void OmniRobotI::getBaseState(RoboCompOmniRobot::TBaseState& state, const Ice::Current&)
 {
 	QMutexLocker locker(mutex);
 	
@@ -81,7 +81,7 @@ void DifferentialRobotI::getBaseState(RoboCompDifferentialRobot::TBaseState& sta
 }
 
 
-void DifferentialRobotI::getBasePose(Ice::Int& x, Ice::Int& z, Ice::Float& alpha, const Ice::Current&)
+void OmniRobotI::getBasePose(Ice::Int& x, Ice::Int& z, Ice::Float& alpha, const Ice::Current&)
 {
 	QMutexLocker locker(mutex);
 	QVec retPOS = (zeroTR * QVec::vec3(pose.x, 0, pose.z).toHomogeneousCoordinates()).fromHomogeneousCoordinates();
@@ -92,7 +92,7 @@ void DifferentialRobotI::getBasePose(Ice::Int& x, Ice::Int& z, Ice::Float& alpha
 
 
 #define MILIMETERS_PER_UNIT 1.
-void DifferentialRobotI::updateInnerModelPose(bool force)
+void OmniRobotI::updateInnerModelPose(bool force)
 {
 	if ( (fabs(advVel)< 0.0001 and fabs(rotVel)< 0.0001) and not force)
 	{
@@ -186,7 +186,7 @@ void DifferentialRobotI::updateInnerModelPose(bool force)
 	pose.correctedAlpha =  newAngle;
 }
 
-bool DifferentialRobotI::canMoveBaseTo(const QString nodeId, const QVec position, const double alpha)
+bool OmniRobotI::canMoveBaseTo(const QString nodeId, const QVec position, const double alpha)
 {
 	std::vector<QString> robotNodes;
 	std::vector<QString> restNodes;
@@ -207,7 +207,7 @@ bool DifferentialRobotI::canMoveBaseTo(const QString nodeId, const QVec position
 	return true;
 }
 
-void DifferentialRobotI::recursiveIncludeMeshes(InnerModelNode *node, QString robotId, bool inside, std::vector<QString> &in, std::vector<QString> &out)
+void OmniRobotI::recursiveIncludeMeshes(InnerModelNode *node, QString robotId, bool inside, std::vector<QString> &in, std::vector<QString> &out)
 {
 	if (node->id == robotId)
 	{
@@ -239,7 +239,7 @@ void DifferentialRobotI::recursiveIncludeMeshes(InnerModelNode *node, QString ro
 }
 
 
-void DifferentialRobotI::setSpeedBase(Ice::Float adv, Ice::Float rot, const Ice::Current&)
+void OmniRobotI::setSpeedBase(Ice::Float adv, Ice::Float rot, const Ice::Current&)
 {
 	QMutexLocker locker(mutex);
 	updateInnerModelPose();
@@ -251,13 +251,13 @@ void DifferentialRobotI::setSpeedBase(Ice::Float adv, Ice::Float rot, const Ice:
 }
 
 
-void DifferentialRobotI::stopBase(const Ice::Current&)
+void OmniRobotI::stopBase(const Ice::Current&)
 {
 	setSpeedBase(0,0);
 }
 
 
-void DifferentialRobotI::resetOdometer(const Ice::Current&)
+void OmniRobotI::resetOdometer(const Ice::Current&)
 {
 	QMutexLocker locker(mutex);
 	zeroANG = pose.alpha;
@@ -265,13 +265,13 @@ void DifferentialRobotI::resetOdometer(const Ice::Current&)
 }
 
 
-void DifferentialRobotI::setOdometer(const RoboCompDifferentialRobot::TBaseState& st, const Ice::Current&)
+void OmniRobotI::setOdometer(const RoboCompOmniRobot::TBaseState& st, const Ice::Current&)
 {
 	setOdometerPose(st.x, st.z, st.alpha);
 }
 
 
-void DifferentialRobotI::setOdometerPose(Ice::Int x, Ice::Int z, Ice::Float alpha, const Ice::Current&)
+void OmniRobotI::setOdometerPose(Ice::Int x, Ice::Int z, Ice::Float alpha, const Ice::Current&)
 {
 	QMutexLocker locker(mutex);
 	zeroANG = pose.alpha-alpha;
@@ -279,7 +279,7 @@ void DifferentialRobotI::setOdometerPose(Ice::Int x, Ice::Int z, Ice::Float alph
 }
 
 
-void DifferentialRobotI::correctOdometer(Ice::Int x, Ice::Int z, Ice::Float alpha, const Ice::Current&)
+void OmniRobotI::correctOdometer(Ice::Int x, Ice::Int z, Ice::Float alpha, const Ice::Current&)
 {
 	QMutexLocker locker(mutex);
 	pose.correctedX = x;
