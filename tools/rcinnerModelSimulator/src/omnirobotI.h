@@ -45,18 +45,18 @@ public:
 	OmniRobotI ( SpecificWorker *_worker, QObject *parent = 0 );
 	~OmniRobotI();
 	
-	void add ( QString id );
+	void add(QString id);
 	void run();
-	void updateInnerModelPose ( bool force=false );
+	void updateInnerModelPose(bool force=false);
 	
-	void getBaseState ( RoboCompOmniRobot::TBaseState& state, const Ice::Current& = Ice::Current() );
-	void getBasePose ( Ice::Int& x, Ice::Int& z, Ice::Float& alpha, const Ice::Current& = Ice::Current() );
-	void setSpeedBase ( Ice::Float adv, Ice::Float rot, const Ice::Current& = Ice::Current() );
-	void stopBase ( const Ice::Current& = Ice::Current() );
-	void resetOdometer ( const Ice::Current& = Ice::Current() );
-	void setOdometer ( const RoboCompOmniRobot::TBaseState& state, const Ice::Current& = Ice::Current() );
-	void setOdometerPose ( Ice::Int x, Ice::Int z, Ice::Float alpha, const Ice::Current& = Ice::Current() );
-	void correctOdometer ( Ice::Int x, Ice::Int z, Ice::Float alpha, const Ice::Current& = Ice::Current() );
+	void getBaseState(RoboCompOmniRobot::TBaseState& state, const Ice::Current& = Ice::Current());
+	void getBasePose(Ice::Int& x, Ice::Int& z, Ice::Float& alpha, const Ice::Current& = Ice::Current());
+	void setSpeedBase(Ice::Float advx, Ice::Float advz, Ice::Float rot, const Ice::Current& = Ice::Current());
+	void stopBase(const Ice::Current& = Ice::Current());
+	void resetOdometer(const Ice::Current& = Ice::Current());
+	void setOdometer(const RoboCompOmniRobot::TBaseState& state, const Ice::Current& = Ice::Current());
+	void setOdometerPose(Ice::Int x, Ice::Int z, Ice::Float alpha, const Ice::Current& = Ice::Current());
+	void correctOdometer(Ice::Int x, Ice::Int z, Ice::Float alpha, const Ice::Current& = Ice::Current());
 	
 private:
 	SpecificWorker *worker;
@@ -77,7 +77,7 @@ private:
 	double noisyNewAngle;
 
 	timeval lastCommand_timeval;
-	float advVel, rotVel;
+	float advVelx, advVelz, rotVel;
 
 	InnerModelTransform *parent;
 	InnerModelOmniRobot *node;

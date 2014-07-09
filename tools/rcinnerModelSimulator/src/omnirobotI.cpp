@@ -24,7 +24,7 @@ OmniRobotI::OmniRobotI(SpecificWorker *_worker, QObject *parent): QThread(parent
 	worker = _worker;
 	mutex = worker->mutex;
 	innerModel = worker->getInnerModel();
-	advVel = rotVel = 0;
+	advVelx = advVelz = rotVel = 0;
 	gettimeofday(&lastCommand_timeval, NULL);
 	updateInnerModelPose();
 
@@ -94,7 +94,7 @@ void OmniRobotI::getBasePose(Ice::Int& x, Ice::Int& z, Ice::Float& alpha, const 
 #define MILIMETERS_PER_UNIT 1.
 void OmniRobotI::updateInnerModelPose(bool force)
 {
-	if ( (fabs(advVel)< 0.0001 and fabs(rotVel)< 0.0001) and not force)
+	if ( (fabs(advVelx)<0.0001 and fabs(advVelz)<0.0001 and fabs(rotVel)<0.0001) and not force)
 	{
 		return;
 	}
@@ -103,66 +103,24 @@ void OmniRobotI::updateInnerModelPose(bool force)
 	gettimeofday(&now, NULL);
 	const double msecs = (now.tv_sec - lastCommand_timeval.tv_sec)*1000. +(now.tv_usec - lastCommand_timeval.tv_usec)/1000.;
 	lastCommand_timeval = now;
-	double Angle = 0.;
+
+	QVec vel = QVec::vec3(advVelx, 0, advVelz);
 	QVec newPos, noisyNewPos;
 	const double noise = node->noise;
-	printf("noise: %f\n", noise);
-	//With random noise:
-	QVec rndmRot = QVec::gaussianSamples(1, 0, noise);
-	QVec rndmAdv = QVec::gaussianSamples(1, 0, noise);
-	QVec rndmYaw = QVec::gaussianSamples(1, 0, noise*0.01);
+	
+	// Random noise:
+	QVec rndmPos = QVec::gaussianSamples(1, 0, noise*(0.01*vel.norm2() + 0.1*rotVel));
+	QVec rndmYaw = QVec::gaussianSamples(1, 0, noise*(0.01*vel.norm2() + 0.1*rotVel));
 
-
-	double Ax1, Az1;
-	double Ax2, Az2;
-	if (fabs(rotVel) < 0.0001)
-	{
-		// With noise:
-		if (fabs(noise)>0.0000001)
-		{
-			Ax1 = (advVel*rndmRot[0])*msecs / 1000.;
-			Az1 = (advVel+(rndmAdv[0]))*msecs / (1000.*MILIMETERS_PER_UNIT);
-			noisyNewAngle += rndmYaw[0];
-		}
-		else
-		{
-			Ax1 = 0;
-			Az1 = (advVel*msecs) / (1000.*MILIMETERS_PER_UNIT);
-		}
-		// Without noise:
-		Ax2 = 0;
-		Az2 = (advVel*msecs) / (1000.*MILIMETERS_PER_UNIT);
-	}
-	else
-	{
-		double T;
-		// With noise:
-		if (fabs(noise)>0.0000001)
-		{
-			T = advVel*msecs / 1000.;
-			Angle = (msecs * (rotVel+(1.+rndmYaw[0]))) / 1000.;
-			Ax1 = ((1.-cos(Angle))/Angle)*T*(1.+(rndmRot[0]));
-			Az1 = (sin(Angle)/Angle)*T*(1.+(rndmAdv[0]));
-		}
-		else
-		{
-			T = advVel*msecs / 1000.;
-			Angle = msecs * rotVel / 1000.;
-			Ax1 = ((1.-cos(Angle))/Angle)*T;
-			Az1 = (sin(Angle)/Angle)*T;
-		}
-		// Without noise
-		T = advVel*msecs / 1000.;
-		Angle = msecs * rotVel / 1000.;
-		Ax2 = ((1.-cos(Angle))/Angle)*T;
-		Az2 = (sin(Angle)/Angle)*T;
-		newAngle += Angle;
-	}
+	// Without noise
+	QVec T = vel.operator*(msecs / 1000.);
+	float Angle  = rotVel*msecs / 1000.;
+	newAngle += Angle;
 	
 	QVec backNoisyNewPos = innerModel->transform(parent->id, QVec::vec3(0,0,0), node->id);
 	float backNoisyAngle = noisyNewAngle;
-	noisyNewAngle += Angle+((rndmYaw[0]*noise));
-	noisyNewPos = innerModel->transform(parent->id, QVec::vec3(Ax1, 0, Az1), node->id);
+	noisyNewAngle += Angle + rndmYaw[0];
+	noisyNewPos = innerModel->transform(parent->id, QVec::vec3(T(0), 0, T(1)), node->id);
 	innerModel->updateTransformValues(node->id, noisyNewPos(0), noisyNewPos(1), noisyNewPos(2), 0, noisyNewAngle, 0);
 	if (canMoveBaseTo(node->id, noisyNewPos, noisyNewAngle+Angle+(rndmYaw[0]*noise) ))
 	{
@@ -177,7 +135,7 @@ void OmniRobotI::updateInnerModelPose(bool force)
 		noisyNewPos = backNoisyNewPos;
 		innerModel->updateTransformValues(node->id, noisyNewPos(0), noisyNewPos(1), noisyNewPos(2), 0, noisyNewAngle, 0);
 	}
-	newPos = innerModel->transform(parent->id, QVec::vec3(Ax2, 0, Az2), node->id+"_odometry\"");
+	newPos = innerModel->transform(parent->id, QVec::vec3(T(0)+rndmPos[0], 0, T(2)+rndmPos[1]), node->id+"_odometry\"");
 	innerModel->updateTransformValues(node->id+"_odometry\"", newPos(0), newPos(1), newPos(2), 0, newAngle, 0);
 
 	// Pose without noise (as if I moved perfectly)
@@ -239,21 +197,23 @@ void OmniRobotI::recursiveIncludeMeshes(InnerModelNode *node, QString robotId, b
 }
 
 
-void OmniRobotI::setSpeedBase(Ice::Float adv, Ice::Float rot, const Ice::Current&)
+void OmniRobotI::setSpeedBase(Ice::Float advx, Ice::Float advz, Ice::Float rot, const Ice::Current&)
 {
 	QMutexLocker locker(mutex);
 	updateInnerModelPose();
 	gettimeofday(&lastCommand_timeval, NULL);
-	advVel = adv;
+	advVelx = advx;
+	advVelz = advz;
 	rotVel = rot;
-	pose.advV = adv;
+	pose.advVx = advx;
+	pose.advVz = advz;
 	pose.rotV = rot;
 }
 
 
 void OmniRobotI::stopBase(const Ice::Current&)
 {
-	setSpeedBase(0,0);
+	setSpeedBase(0.,0.,0.);
 }
 
 
