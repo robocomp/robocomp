@@ -50,7 +50,7 @@ class C(QWidget):
 		self.proxy = self.mods['RoboCompRGBD'].RGBDPrx.checkedCast(self.prx)
 		self.show()
 		
-		self.maxDepth = 10.0
+		self.maxDepth = 9.0
 		self.job()
 
 	def job(self):
@@ -73,7 +73,7 @@ class C(QWidget):
 		for i in range(len(self.depth)):
 			ascii = 0
 			try:
-				ascii = int(255.-255.*(self.depth[i] / 5. / 1000. ) )
+				ascii = int(255.-255.*(self.depth[i] / self.maxDepth / 1000. ) )
 				if ascii > 255: ascii = 255
 				if ascii < 0: ascii = 0
 			except:

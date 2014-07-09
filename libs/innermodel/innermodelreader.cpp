@@ -80,6 +80,7 @@ void InnerModelReader::recursive(QDomNode parentDomNode, InnerModel *model, Inne
 	  and parentDomNode.toElement().tagName().toLower() != QString("touchsensor").toLower()
 	  and parentDomNode.toElement().tagName().toLower() != QString("prismaticjoint").toLower()
 	  and parentDomNode.toElement().tagName().toLower() != QString("differentialrobot").toLower()
+	  and parentDomNode.toElement().tagName().toLower() != QString("omnirobot").toLower()
 	)
 		if (not parentDomNode.firstChild().isNull())
 			qFatal("Only <innerModel>, <transform>, <translation>, <rotation> <prismaticjoint> or <joint> nodes may have childs. Line %d (%s)", parentDomNode.lineNumber(), qPrintable(parentDomNode.toElement().tagName()));
@@ -171,7 +172,14 @@ void InnerModelReader::recursive(QDomNode parentDomNode, InnerModel *model, Inne
 			else if (e.tagName().toLower() == "differentialrobot")
 			{
 				InnerModelTransform * im = dynamic_cast<InnerModelTransform *>(imNode );
-				InnerModelDifferentialRobot *dr = model->newDifferentialRobot(e.attribute("id"), im, e.attribute("tx", "0").toFloat(), e.attribute("ty", "0").toFloat(), e.attribute("tz", "0").toFloat(), e.attribute("rx", "0").toFloat(), e.attribute("ry", "0").toFloat(), e.attribute("rz", "0").toFloat(), e.attribute("port", "0").toInt());
+				InnerModelDifferentialRobot *dr = model->newDifferentialRobot(e.attribute("id"), im, e.attribute("tx", "0").toFloat(), e.attribute("ty", "0").toFloat(), e.attribute("tz", "0").toFloat(), e.attribute("rx", "0").toFloat(), e.attribute("ry", "0").toFloat(), e.attribute("rz", "0").toFloat(), e.attribute("port", "0").toInt(), e.attribute("noise", "0").toFloat());
+				imNode->addChild(dr);
+				node = dr;
+			}
+			else if (e.tagName().toLower() == "omnirobot")
+			{
+				InnerModelTransform * im = dynamic_cast<InnerModelTransform *>(imNode );
+				InnerModelOmniRobot *dr = model->newOmniRobot(e.attribute("id"), im, e.attribute("tx", "0").toFloat(), e.attribute("ty", "0").toFloat(), e.attribute("tz", "0").toFloat(), e.attribute("rx", "0").toFloat(), e.attribute("ry", "0").toFloat(), e.attribute("rz", "0").toFloat(), e.attribute("port", "0").toInt(), e.attribute("noise", "0").toFloat());
 				imNode->addChild(dr);
 				node = dr;
 			}
@@ -305,8 +313,12 @@ QMap<QString, QStringList> InnerModelReader::getValidNodeAttributes()
 	nodeAttributes["prismaticjoint"] = temporalList;
 	
 	temporalList.clear();
-	temporalList << "id" << "tx" << "ty" << "tz" << "rx" << "ry" << "rz" << "port";
+	temporalList << "id" << "tx" << "ty" << "tz" << "rx" << "ry" << "rz" << "port" << "noise";
 	nodeAttributes["differentialrobot"] = temporalList;
+	
+	temporalList.clear();
+	temporalList << "id" << "tx" << "ty" << "tz" << "rx" << "ry" << "rz" << "port" << "noise";
+	nodeAttributes["omnirobot"] = temporalList;
 	
 	temporalList.clear();
 	temporalList << "id" << "width" << "height" << "focal" << "noise" << "port" << "ifconfig";

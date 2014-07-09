@@ -1,5 +1,5 @@
 /*
- *    Copyright (C) 2006-2010 by RoboLab - University of Extremadura
+ *    Copyright (C) 2006-2014 by RoboLab - University of Extremadura
  *
  *    This file is part of RoboComp
  *
@@ -89,12 +89,12 @@ public:
 	// ----------------------------------------------------------------------------------------
 	// DifferentialRobot.ice
 	// ----------------------------------------------------------------------------------------
-	void dfr_getBaseState ( const QString& server, TBaseState& state );
+	void dfr_getBaseState ( const QString& server, RoboCompDifferentialRobot::TBaseState& state );
 	void dfr_getBasePose ( const QString& server, int& x, int& z, float& alpha );
 	void dfr_setSpeedBase ( const QString& server, float adv, float rot );
 	void dfr_stopBase ( const QString& server );
 	void dfr_resetOdometer ( const QString& server );
-	void dfr_setOdometer ( const QString& server, const TBaseState& state );
+	void dfr_setOdometer ( const QString& server, const RoboCompDifferentialRobot::TBaseState& state );
 	void dfr_setOdometerPose ( const QString& server, int x, int z, float alpha );
 	void dfr_correctOdometer ( const QString& server, int x, int z, float alpha );
 	

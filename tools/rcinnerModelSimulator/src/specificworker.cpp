@@ -1,5 +1,5 @@
 /*
- *    Copyright (C) 2006-2010 by RoboLab - University of Extremadura
+ *    Copyright (C) 2006-2014 by RoboLab - University of Extremadura
  *
  *    This file is part of RoboComp
  *
@@ -88,6 +88,7 @@ struct SpecificWorker::Data
 	std::map<uint32_t, RGBDServer> rgbd_servers;
 	std::map<uint32_t, IMUServer> imu_servers;
 	std::map<uint32_t, DifferentialRobotServer> dfr_servers;
+	std::map<uint32_t, OmniRobotServer> omn_servers;
 
 	QList <JointMotorServer *> jointServersToShutDown;
 
@@ -360,6 +361,10 @@ struct SpecificWorker::Data
 		{
 			return RoboCompInnerModelManager::DifferentialRobot;
 		}
+		else if (dynamic_cast<InnerModelOmniRobot*> (node) != NULL)
+		{
+			return RoboCompInnerModelManager::OmniRobot;
+		}
 		else if (dynamic_cast<InnerModelPlane*> (node) != NULL)
 		{
 			return RoboCompInnerModelManager::Plane;
@@ -513,6 +518,17 @@ struct SpecificWorker::Data
 	}
 
 
+	void addOMN (InnerModelOmniRobot* node)
+	{
+		const uint32_t port = node->port;
+		if (omn_servers.count(port) == 0)
+		{
+			omn_servers.insert(std::pair<uint32_t, OmniRobotServer>(port, OmniRobotServer(communicator, worker, port)));
+		}
+		omn_servers.at(port).add(node);
+	}
+
+
 	void addIMU(InnerModelIMU* node)
 	{
 		const uint32_t port = node->port;
@@ -625,6 +641,13 @@ struct SpecificWorker::Data
 			{
 				//qDebug() << "DifferentialRobot " << differentialNode->id << differentialNode->port;
 				addDFR(differentialNode);
+			}
+			
+			InnerModelOmniRobot* omniNode = dynamic_cast<InnerModelOmniRobot *>(*it);
+			if (omniNode != NULL)
+			{
+				//qDebug() << "OmniRobot " << omniNode->id << omniNode->port;
+				addOMN(omniNode);
 			}
 			
 			InnerModelIMU* imuNode = dynamic_cast<InnerModelIMU *>(*it);
