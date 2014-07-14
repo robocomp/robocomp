@@ -234,7 +234,7 @@ void InnerModelReader::recursive(QDomNode parentDomNode, InnerModel *model, Inne
 					qFatal("too many numbers in mesh definition");
 					return;
 				}
-				InnerModelMesh *mesh = model->newMesh(e.attribute("id"), imNode, e.attribute("file"), scalex, scaley, scalez, render, e.attribute("tx").toFloat(), e.attribute("ty").toFloat(), e.attribute("tz").toFloat(), e.attribute("rx").toFloat(), e.attribute("ry").toFloat(), e.attribute("rz").toFloat());
+				InnerModelMesh *mesh = model->newMesh(e.attribute("id"), imNode, e.attribute("file"), scalex, scaley, scalez, render, e.attribute("tx").toFloat(), e.attribute("ty").toFloat(), e.attribute("tz").toFloat(), e.attribute("rx").toFloat(), e.attribute("ry").toFloat(), e.attribute("rz").toFloat(), e.attribute("collidable", "0").toInt()>0);
 				imNode->addChild(mesh);
 				node = mesh;
 			}
@@ -259,7 +259,7 @@ void InnerModelReader::recursive(QDomNode parentDomNode, InnerModel *model, Inne
 					qFatal("too many numbers in plane definition");
 					return;
 				}
-				InnerModelPlane *plane = model->newPlane(e.attribute("id"), imNode, e.attribute("texture", ""), width, height, depth, e.attribute("repeat", "1000").toInt(), e.attribute("nx", "0").toFloat(), e.attribute("ny", "0").toFloat(), e.attribute("nz", "0").toFloat(), e.attribute("px", "0").toFloat(), e.attribute("py", "0").toFloat(), e.attribute("pz", "0").toFloat());
+				InnerModelPlane *plane = model->newPlane(e.attribute("id"), imNode, e.attribute("texture", ""), width, height, depth, e.attribute("repeat", "1000").toInt(), e.attribute("nx", "0").toFloat(), e.attribute("ny", "0").toFloat(), e.attribute("nz", "0").toFloat(), e.attribute("px", "0").toFloat(), e.attribute("py", "0").toFloat(), e.attribute("pz", "0").toFloat(), e.attribute("collidable", "0").toInt()>0);
 				imNode->addChild(plane);
 				node = plane;
 			}
@@ -337,7 +337,7 @@ QMap<QString, QStringList> InnerModelReader::getValidNodeAttributes()
 	nodeAttributes["camera"] = temporalList;
 	
 	temporalList.clear();
-	temporalList << "id" << "file" << "scale" << "render" << "tx" << "ty" << "tz" << "rx" << "ry" << "rz";
+	temporalList << "id" << "file" << "scale" << "render" << "tx" << "ty" << "tz" << "rx" << "ry" << "rz" << "collidable";
 	nodeAttributes["mesh"] = temporalList;
 
 	temporalList.clear();
@@ -345,7 +345,7 @@ QMap<QString, QStringList> InnerModelReader::getValidNodeAttributes()
 	nodeAttributes["pointcloud"] = temporalList;
 	
 	temporalList.clear();
-	temporalList << "id" << "texture" << "repeat" << "size" << "nx" << "ny" << "nz" << "px" << "py" << "pz";
+	temporalList << "id" << "texture" << "repeat" << "size" << "nx" << "ny" << "nz" << "px" << "py" << "pz" << "collidable";
 	nodeAttributes["plane"] = temporalList;
 	
 	return nodeAttributes;

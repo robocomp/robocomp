@@ -54,6 +54,9 @@ InnerModelException::InnerModelException(const std::string &reason) : runtime_er
 
 InnerModelNode::InnerModelNode(QString id_, InnerModelNode *parent_) : RTMat()
 {
+#if FCL_SUPPORT==1
+	collidable = false;
+#endif
 	fixed = true;
 	parent = parent_;
 	if (parent)
@@ -571,10 +574,10 @@ InnerModelLaser *InnerModel::newLaser(QString id, InnerModelNode *parent, uint32
 
 
 
-InnerModelPlane *InnerModel::newPlane(QString id, InnerModelNode *parent, QString texture, float width, float height, float depth, int repeat, float nx, float ny, float nz, float px, float py, float pz)
+InnerModelPlane *InnerModel::newPlane(QString id, InnerModelNode *parent, QString texture, float width, float height, float depth, int repeat, float nx, float ny, float nz, float px, float py, float pz, bool collidable)
 {
 	if (hash.contains(id)) qFatal("InnerModel::newPlane: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
-	InnerModelPlane *newnode = new InnerModelPlane(id, texture, width, height, depth, repeat, nx, ny, nz, px, py, pz, parent);
+	InnerModelPlane *newnode = new InnerModelPlane(id, texture, width, height, depth, repeat, nx, ny, nz, px, py, pz, collidable, parent);
 	hash[id] = newnode;
 // 	parent->addChild(newnode);
 	return newnode;
@@ -582,10 +585,10 @@ InnerModelPlane *InnerModel::newPlane(QString id, InnerModelNode *parent, QStrin
 
 
 
-InnerModelMesh *InnerModel::newMesh(QString id, InnerModelNode *parent, QString path, float scalex, float scaley, float scalez, int render, float tx, float ty, float tz, float rx, float ry, float rz)
+InnerModelMesh *InnerModel::newMesh(QString id, InnerModelNode *parent, QString path, float scalex, float scaley, float scalez, int render, float tx, float ty, float tz, float rx, float ry, float rz, bool collidable)
 {
 	if (hash.contains(id)) qFatal("InnerModel::newMesh: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
-	InnerModelMesh *newnode = new InnerModelMesh(id, path, scalex, scaley, scalez, (InnerModelMesh::RenderingModes)render, tx, ty, tz, rx, ry, rz, parent);
+	InnerModelMesh *newnode = new InnerModelMesh(id, path, scalex, scaley, scalez, (InnerModelMesh::RenderingModes)render, tx, ty, tz, rx, ry, rz, collidable, parent);
 	hash[id] = newnode;
 // 	parent->addChild(newnode);
 	return newnode;
@@ -593,9 +596,9 @@ InnerModelMesh *InnerModel::newMesh(QString id, InnerModelNode *parent, QString 
 
 
 
-InnerModelMesh *InnerModel::newMesh(QString id, InnerModelNode *parent, QString path, float scale, int render, float tx, float ty, float tz, float rx, float ry, float rz)
+InnerModelMesh *InnerModel::newMesh(QString id, InnerModelNode *parent, QString path, float scale, int render, float tx, float ty, float tz, float rx, float ry, float rz, bool collidable)
 {
-	return newMesh(id,parent,path,scale,scale,scale,render,tx,ty,tz,rx,ry,rz);
+	return newMesh(id,parent,path,scale,scale,scale,render,tx,ty,tz,rx,ry,rz, collidable);
 }
 
 
@@ -2020,9 +2023,9 @@ InnerModelNode * InnerModelOmniRobot::copyNode(QHash<QString, InnerModelNode *> 
 // InnerModelPlane
 // ------------------------------------------------------------------------------------------------
 
-InnerModelPlane::InnerModelPlane(QString id_, QString texture_, float width_, float height_,float depth_, int repeat_, float nx_, float ny_, float nz_, float px_, float py_, float pz_, InnerModelNode *parent_) : InnerModelNode(id_, parent_)
+InnerModelPlane::InnerModelPlane(QString id_, QString texture_, float width_, float height_,float depth_, int repeat_, float nx_, float ny_, float nz_, float px_, float py_, float pz_, bool collidable_, InnerModelNode *parent_) : InnerModelNode(id_, parent_)
 {
-	if ( abs(nx_)<0.01 and abs(ny_)<0.01 and abs(nz_)<0.01 ) nz_ = -1;
+	if ( abs(nx_)<0.001 and abs(ny_)<0.001 and abs(nz_)<0.001 ) nz_ = -1;
 	normal = QVec::vec3(nx_, ny_, nz_);
 	point = QVec::vec3(px_, py_, pz_);
 	nx = ny = nz = px = py = pz = NULL;
@@ -2031,6 +2034,7 @@ InnerModelPlane::InnerModelPlane(QString id_, QString texture_, float width_, fl
 	height = height_;
 	depth = depth_;
 	repeat = repeat_;
+	collidable = collidable_;
 
 #if FCL_SUPPORT==1
 	std::vector<fcl::Vec3f> vertices;
@@ -2368,14 +2372,14 @@ InnerModelNode * InnerModelLaser::copyNode(QHash<QString, InnerModelNode *> &has
 // InnerModelMesh
 // ------------------------------------------------------------------------------------------------
 
-InnerModelMesh::InnerModelMesh(QString id_, QString meshPath_, float scale, RenderingModes render_, float tx_, float ty_, float tz_, float rx_, float ry_, float rz_, InnerModelNode *parent_) : InnerModelNode(id_, parent_)
+InnerModelMesh::InnerModelMesh(QString id_, QString meshPath_, float scale, RenderingModes render_, float tx_, float ty_, float tz_, float rx_, float ry_, float rz_, bool collidable,  InnerModelNode *parent_) : InnerModelNode(id_, parent_)
 {
-	InnerModelMesh(id_,meshPath_,scale,scale,scale,render_,tx_,ty_,tz_,rx_,ry_,rz_,parent_);
+	InnerModelMesh(id_,meshPath_,scale,scale,scale,render_,tx_,ty_,tz_,rx_,ry_,rz_, collidable, parent_);
 }
 
 
 
-InnerModelMesh::InnerModelMesh(QString id_, QString meshPath_, float scalex_, float scaley_, float scalez_, RenderingModes render_, float tx_, float ty_, float tz_, float rx_, float ry_, float rz_, InnerModelNode *parent_) : InnerModelNode(id_, parent_)
+InnerModelMesh::InnerModelMesh(QString id_, QString meshPath_, float scalex_, float scaley_, float scalez_, RenderingModes render_, float tx_, float ty_, float tz_, float rx_, float ry_, float rz_, bool collidable_, InnerModelNode *parent_) : InnerModelNode(id_, parent_)
 {
 	id = id_;
 	render = render_;
@@ -2389,6 +2393,7 @@ InnerModelMesh::InnerModelMesh(QString id_, QString meshPath_, float scalex_, fl
 	rx = rx_;
 	ry = ry_;
 	rz = rz_;
+	collidable = collidable_;
 
 #if FCL_SUPPORT==1
 	// Get to the OSG geode
