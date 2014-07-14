@@ -106,8 +106,8 @@ void DifferentialRobotI::updateInnerModelPose(bool force)
 	double Angle = 0.;
 	QVec newPos, noisyNewPos;
 	const double noise = node->noise;
-	printf("noise: %f\n", noise);
-	//With random noise:
+
+	// With random noise:
 	QVec rndmRot = QVec::gaussianSamples(1, 0, noise);
 	QVec rndmAdv = QVec::gaussianSamples(1, 0, noise);
 	QVec rndmYaw = QVec::gaussianSamples(1, 0, noise*0.01);

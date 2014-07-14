@@ -1,7 +1,7 @@
-import "IMU.idsl"
-import "DifferentialRobot.idsl"
-import "JointMotor.idsl"
-import "RGBD.idsl"
+import "/robocomp/interfaces/IDSLs/IMU.idsl";
+import "/robocomp/interfaces/IDSLs/DifferentialRobot.idsl";
+import "/robocomp/interfaces/IDSLs/JointMotor.idsl";
+import "/robocomp/interfaces/IDSLs/RGBD.idsl";
 
 module RoboCompCloudPrimitives
 {
