@@ -261,3 +261,4 @@ AsrGoogleComp=12214
 GoogleSpeechComp=12215
 FaceTabletUrsusComp=12216
 FaceTabletControlComp=12217
+apriltagsAgentComp=12218
