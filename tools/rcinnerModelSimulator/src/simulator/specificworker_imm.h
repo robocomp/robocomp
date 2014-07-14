@@ -321,7 +321,7 @@ void SpecificWorker::imm_setPointCloudData(const QString &server, const std::str
 	pcNode->colors->resize(points);
 	pcNode->setPointSize(1);
 	for(int i=0 ; i<points; i++) {
-		pcNode->points->operator[](i) = QVecToOSGVec(QVec::vec3(cloud[i].x, -cloud[i].y, cloud[i].z));
+		pcNode->points->operator[](i) = QVecToOSGVec(QVec::vec3(cloud[i].x, cloud[i].y, cloud[i].z));
 		pcNode->colors->operator[](i) = osg::Vec4f(float(cloud[i].r) /255, float(cloud[i].g) /255, float(cloud[i].b) /255, 1.f);
 	}
 	pcNode->update();
