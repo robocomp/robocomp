@@ -51,7 +51,7 @@ module RoboCompCuba2Dnaturallandmarks{
 	};
 
 	interface Cuba2Dnaturallandmarks{
-		void  newCubaFeatureList(out Features featuresList);
+		void  newCubaFeatureList(Features featuresList);
 	};
 };
   
