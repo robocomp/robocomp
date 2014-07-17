@@ -99,8 +99,8 @@ public:
 	QHash<QString,AttributeType> attributes;
 
 	// FCLModel
-#if FCL_SUPPORT==1
 	bool collidable;
+#if FCL_SUPPORT==1
 	FCLModelPtr fclMesh;
 	fcl::CollisionObject *collisionObject;
 #endif

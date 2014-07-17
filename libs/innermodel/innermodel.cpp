@@ -54,9 +54,8 @@ InnerModelException::InnerModelException(const std::string &reason) : runtime_er
 
 InnerModelNode::InnerModelNode(QString id_, InnerModelNode *parent_) : RTMat()
 {
-#if FCL_SUPPORT==1
 	collidable = false;
-#endif
+
 	fixed = true;
 	parent = parent_;
 	if (parent)

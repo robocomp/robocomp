@@ -67,6 +67,6 @@ module RoboCompBodyInverseKinematics
 		void stop( string part );
 		
 		//Changes the tip of the corresponding bodypart
-		void setNewTip( string part, Pose6D pose);
+		void setNewTip( string part, string transform, Pose6D pose);
 	};
 };
