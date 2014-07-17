@@ -200,9 +200,6 @@ IMVPointCloud::IMVPointCloud(std::string id_) : osg::Geode()
 	colorsArray = new osg::Vec4Array;
 	*colorsArray = *colors;
 
-	/// Index array
-	//colorIndexArray = new osg::TemplateIndexArray<unsigned int, osg::Array::UIntArrayType, 4, 4>;
-	//colorIndexArray->resize(64);
 	/// DrawArrays
 	arrays = new osg::DrawArrays(osg::PrimitiveSet::POINTS, 0, cloudVertices->size());
 	/// Geometry
@@ -210,7 +207,6 @@ IMVPointCloud::IMVPointCloud(std::string id_) : osg::Geode()
 	cloudGeometry->setVertexArray(cloudVertices);
 	cloudGeometry->addPrimitiveSet(arrays);
 	cloudGeometry->setColorArray(colorsArray);
-	//cloudGeometry->setColorIndices(colorIndexArray);
 	cloudGeometry->setColorBinding(osg::Geometry::BIND_PER_VERTEX);
 	/// Geode
 
@@ -230,8 +226,7 @@ void IMVPointCloud::update()
 	*cloudVertices = *points;
 	colorsArray = new osg::Vec4Array;
 	*colorsArray = *colors;
-	//colorIndexArray = new osg::TemplateIndexArray<unsigned int, osg::Array::UIntArrayType, 4, 4>;
-	//for (uint i=0; i<points->size(); i++) colorIndexArray->push_back(i);
+
 	/// DrawArrays
 	arrays = new osg::DrawArrays(osg::PrimitiveSet::POINTS, 0, cloudVertices->size());
 	/// Geometry
@@ -240,7 +235,6 @@ void IMVPointCloud::update()
 	cloudGeometry->addPrimitiveSet(arrays);
 	cloudGeometry->getOrCreateStateSet()->setAttribute( new osg::Point(pointSize), osg::StateAttribute::ON );
 	cloudGeometry->setColorArray(colorsArray);
-	//cloudGeometry->setColorIndices(colorIndexArray);
 	cloudGeometry->setColorBinding(osg::Geometry::BIND_PER_VERTEX);
 	/// Geode 2
 	addDrawable(cloudGeometry);

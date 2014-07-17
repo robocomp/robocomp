@@ -30,35 +30,50 @@ class C(QWidget):
 		self.ic = Ice.initialize(sys.argv)
 		self.mods = modules
 		self.prx = self.ic.stringToProxy(endpoint)
-		self.proxy = self.mods['RoboCompDifferentialRobot'].DifferentialRobotPrx.checkedCast(self.prx)
-		self.speedLabel = QLabel("Speed", self)
-		self.speedLabel.show()
-		self.speedLabel.move(5,8)
+		self.proxy = self.mods['RoboCompOmniRobot'].OmniRobotPrx.checkedCast(self.prx)
+
+		self.speedXLabel = QLabel("X", self)
+		self.speedXLabel.show()
+		self.speedXLabel.move(5,8)
+		self.speedX = QSpinBox(self)
+		self.speedX.setMaximum(1000)
+		self.speedX.setMinimum(-1000)
+		self.speedX.show()
+		self.speedX.setValue(0)
+		self.speedX.setSingleStep(25)
+		self.speedX.move(50,8)
+
+		self.speedZLabel = QLabel("Z", self)
+		self.speedZLabel.show()
+		self.speedZLabel.move(5,33)
+		self.speedZ = QSpinBox(self)
+		self.speedZ.setMaximum(1000)
+		self.speedZ.setMinimum(-1000)
+		self.speedZ.show()
+		self.speedZ.setValue(0)
+		self.speedZ.setSingleStep(25)
+		self.speedZ.move(50,33)
+		
 		self.steerLabel = QLabel('Steer', self)
 		self.steerLabel.show()
-		self.steerLabel.move(5,33)
-		self.speed = QSpinBox(self)
-		self.speed.setMaximum(1000)
-		self.speed.setMinimum(-1000)
-		self.speed.show()
-		self.speed.setValue(0)
-		self.speed.setSingleStep(25)
-		self.speed.move(50,5)
+		self.steerLabel.move(5,58)
 		self.steer = QDoubleSpinBox(self)
 		self.steer.setMaximum(3.14*10)
 		self.steer.setMinimum(-3.14*10)
 		self.steer.setSingleStep(0.05)
 		self.steer.setValue(0)
-		self.steer.move(50,30)
+		self.steer.move(50,58)
 		self.steer.show()
+
 		self.resetButton = QPushButton("reset", self)
-		self.resetButton.move(5,55)
+		self.resetButton.move(5,90)
 		self.resetButton.show()
 		self.connect(self.resetButton, SIGNAL('clicked()'), self.reset)
 		self.show()
 
 		self.cmdSteer = 0.
-		self.cmdSpeed = 0.
+		self.cmdSpeedX = 0.
+		self.cmdSpeedZ = 0.
 
 	def reset(self):
 		self.proxy.resetOdometer()
@@ -68,11 +83,13 @@ class C(QWidget):
 		if self.cmdSteer != float(self.steer.value()):
 			self.cmdSteer = float(self.steer.value())
 			sendCommand = True
-		if self.cmdSpeed != float(self.speed.value()):
-			self.cmdSpeed = float(self.speed.value())
+		if self.cmdSpeedX != float(self.speedX.value()):
+			self.cmdSpeedX = float(self.speedX.value())
 			sendCommand = True
-#		sendCommand = True
-		if sendCommand: self.proxy.setSpeedBase(float(self.speed.value()), float(self.steer.value()))
+		if self.cmdSpeedZ != float(self.speedZ.value()):
+			self.cmdSpeedZ = float(self.speedZ.value())
+			sendCommand = True
+		if sendCommand: self.proxy.setSpeedBase(float(self.speedX.value()), float(self.speedZ.value()), float(self.steer.value()))
 		self.bState = self.proxy.getBaseState()
 	def paintEvent(self, event=None):
 		xOff = self.width()/2.

@@ -9,5 +9,3 @@ module RoboCompASR{
 		bool phraseAvailable();
 	};
 };
-  
-#endif

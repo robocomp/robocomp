@@ -42,7 +42,7 @@ MACRO( ROBOCOMP_INITIALIZE )
 
   INCLUDE ( $ENV{ROBOCOMP}/cmake/modules/ipp.cmake )
 
-  SET( LIBS ${LIBS} -L/opt/robocomp/lib ${OSG_LIBRARY} -losgUtil -losgGA ${OSGDB_LIBRARY} ${OSGVIEWER_LIBRARY} ${OPENTHREADS_LIBRARY}  -L${ICEROOT}/lib/ -L${ROBOCOMP_ROOT}/classes -lIce -lIceUtil -lpthread -lIceStorm ${QT_LIBRARIES} robocomp_qmat ${IPP_LIBS} robocomp_innermodel robocomp_osgviewer)
+  SET( LIBS ${LIBS} -L/opt/robocomp/lib ${OSG_LIBRARY} -losgUtil -losgGA ${OSGDB_LIBRARY} ${OSGVIEWER_LIBRARY} ${OPENTHREADS_LIBRARY}  -L${ICEROOT}/lib/ -L${ROBOCOMP_ROOT}/classes -lIce -lIceUtil -lpthread -lIceStorm -lboost_system ${QT_LIBRARIES} robocomp_qmat ${IPP_LIBS} robocomp_innermodel robocomp_osgviewer)
  
 ENDMACRO( ROBOCOMP_INITIALIZE )
 
@@ -55,10 +55,10 @@ MACRO( ROBOCOMP_LIBRARY )
 		SET(ROBOCOMP_LIBS ${ROBOCOMP_LIBS} -lrobocomp_${input_library} )
 	ELSE( EXISTS "/opt/robocomp/lib/librobocomp_${input_library}.so")
 		MESSAGE(STATUS "Library ${input_library} not found in /opt/robocomp/lib" )
-		IF (EXISTS "${ROBOCOMP_ROOT}/classes/librocomp_${input_library}.so")
+		IF    (EXISTS "${ROBOCOMP_ROOT}/classes/librobocomp_${input_library}.so")
                 	MESSAGE(STATUS "Adding library ${input_library} " )
                 	SET(ROBOCOMP_LIBS ${ROBOCOMP_LIBS} -lrobocomp_${input_library} )
-		ELSE (EXISTS "${ROBOCOMP_ROOT}/classes/librobocomp_${input_library}.so")
+		ELSE  (EXISTS "${ROBOCOMP_ROOT}/classes/librobocomp_${input_library}.so")
 			MESSAGE(FATAL_ERROR "Library ${input_library} not found" )
 		ENDIF (EXISTS "${ROBOCOMP_ROOT}/classes/librobocomp_${input_library}.so")
 	ENDIF( EXISTS "/opt/robocomp/lib/librobocomp_${input_library}.so")

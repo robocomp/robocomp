@@ -39,7 +39,7 @@ namespace RMat
 		public:
 			Rot3DOnAxis(T alfa=0);
 			Rot3DOnAxis( const Rot3DOnAxis &m):QMat(m) {}
-			~Rot3DOnAxis() {}
+			virtual ~Rot3DOnAxis() {}
 			virtual void update(T alfa) = 0;
 			T getAlfa() const { return ang; }
 		protected:
@@ -52,7 +52,7 @@ namespace RMat
 			Rot3DOX(T alfa=0);
 			Rot3DOX( const Rot3DOX &m);
 			Rot3DOX( const Rot3DOnAxis &m):Rot3DOnAxis(m) {}
-			~Rot3DOX();
+			virtual ~Rot3DOX();
 			void update(T alfa);
 	};
 
@@ -63,7 +63,7 @@ namespace RMat
 			Rot3DCOX(T alfa=0);
 			Rot3DCOX( const Rot3DCOX &m);
 			Rot3DCOX( const Rot3DOnAxis &m):Rot3DOnAxis(m) {}
-			~Rot3DCOX();
+			virtual ~Rot3DCOX();
 			void update(T alfa);
 	};
 	
@@ -73,7 +73,7 @@ namespace RMat
 			Rot3DOY(T alfa=0);
 			Rot3DOY( const Rot3DOY &m);
 			Rot3DOY( const Rot3DOnAxis &m):Rot3DOnAxis(m) {}			
-			~Rot3DOY();
+			virtual ~Rot3DOY();
 			void update(T alfa);
 	};
 	//Rotation 3DC
@@ -83,7 +83,7 @@ namespace RMat
 			Rot3DCOY(T alfa=0);
 			Rot3DCOY( const Rot3DCOY &m);
 			Rot3DCOY( const Rot3DOnAxis &m):Rot3DOnAxis(m) {}			
-			~Rot3DCOY();
+			virtual ~Rot3DCOY();
 			void update(T alfa);
 	};
 	
@@ -93,7 +93,7 @@ namespace RMat
 			Rot3DOZ(T alfa=0);
 			Rot3DOZ( const Rot3DOZ &m);
 			Rot3DOZ( const Rot3DOnAxis &m):Rot3DOnAxis(m) {}			
-			~Rot3DOZ();
+			virtual ~Rot3DOZ();
 			void update(T alfa);
 	};
 	
@@ -103,7 +103,7 @@ namespace RMat
 			Rot3DCOZ(T alfa=0);
 			Rot3DCOZ( const Rot3DCOZ &m);
 			Rot3DCOZ( const Rot3DOnAxis &m):Rot3DOnAxis(m) {}			
-			~Rot3DCOZ();
+			virtual ~Rot3DCOZ();
 			void update(T alfa);
 	};
 	
@@ -112,7 +112,7 @@ namespace RMat
 		public:
 			Rot3D(T ox=0, T oy=0, T oz=0, bool XCW=true, bool YCW=true,bool ZCW=true);
 			Rot3D(const Rot3D &ex);
-			~Rot3D();
+			virtual ~Rot3D();
 			Rot3D operator= (const Rot3D&  ex);
 			void update(T ox, T oy, T oz);
 
@@ -127,7 +127,7 @@ namespace RMat
 		public:
 			Rot3DC(T ox=0, T oy=0, T oz=0, bool XCW=true, bool YCW=true,bool ZCW=true);
 			Rot3DC(const Rot3DC &ex);
-			~Rot3DC();
+			virtual ~Rot3DC();
 			Rot3DC operator= (const Rot3DC&  ex);
 			void update(T ox, T oy, T oz);
 
@@ -145,7 +145,7 @@ namespace RMat
 	{
 		public:
 			Rot2D(T alfa);
-			~Rot2D();
+			virtual ~Rot2D();
 			void update(T alfa);
 	};
 
@@ -156,7 +156,7 @@ namespace RMat
 	{
 		public:
 			Rot2DC(T alfa);
-			~Rot2DC();
+			virtual ~Rot2DC();
 			void update(T alfa);
 	};
 

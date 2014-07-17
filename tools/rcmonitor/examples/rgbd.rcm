@@ -3,6 +3,6 @@ rgbd
 localhost
 tcp
 10096
-33
+10
 rgbd.py
 

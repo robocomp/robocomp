@@ -2,6 +2,7 @@
 
 #include "cameraI.h"
 #include "differentialrobotI.h"
+#include "omnirobotI.h"
 #include "imuI.h"
 #include "jointmotorI.h"
 #include "laserI.h"
@@ -106,3 +107,16 @@ public:
 	DifferentialRobotI *interface;
 	std::vector<InnerModelDifferentialRobot *> differentialrobots;
 };
+
+class OmniRobotServer
+{
+public:
+	OmniRobotServer(Ice::CommunicatorPtr communicator, SpecificWorker *worker, uint32_t _port);
+	void add(InnerModelOmniRobot *omnirobot);
+
+	uint32_t port;
+	Ice::ObjectAdapterPtr adapter;
+	OmniRobotI *interface;
+	std::vector<InnerModelOmniRobot *> omnirobots;
+};
+

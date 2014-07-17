@@ -653,11 +653,11 @@ QVec RMat::QVec::toHomogeneousCoordinates() const
 QVec RMat::QVec::fromHomogeneousCoordinates() const
 {
 	Q_ASSERT( size() > 1);
-	T final = this->operator[](size()-1);
+	T final_l = this->operator[](size()-1);
 // 	Q_ASSERT( fabs(final)>0);
 	QVec res(size()-1);
 	for(int i=0;i< res.size();i++)
-		res(i) = this->operator[](i) / final;
+		res(i) = this->operator[](i) / final_l;
 	return res;
 }
 
