@@ -1,4 +1,4 @@
-import "DifferentialRobot.ice";
+import "/robocomp/interfaces/IDSLs/DifferentialRobot.idsl";
 
 module RoboCompRobotTrajectory
 {
