@@ -69,7 +69,7 @@ QT4_WRAP_UI( UI_HEADERS guiDlg.ui )
 # Specify construction and link process
 SET (EXECUTABLE_OUTPUT_PATH ../bin)
 ADD_EXECUTABLE( rcis ${SOURCES} ${MOC_SOURCES} ${RC_SOURCES} ${UI_HEADERS} )
-TARGET_LINK_LIBRARIES( rcis glut OpenThreads osgGA osgDB osgUtil osgText ${LIBS} ${STATIC_LIBS} ${QT_LIBRARIES} -lboost_system -lboost_thread -lboost_thread-mt)
+TARGET_LINK_LIBRARIES( rcis glut OpenThreads osgGA osgDB osgUtil osgText ${LIBS} ${STATIC_LIBS} ${QT_LIBRARIES} -lboost_system -lboost_thread )
 INSTALL(FILES ${EXECUTABLE_OUTPUT_PATH}/rcis DESTINATION /opt/robocomp/bin/ PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE )
 
 
