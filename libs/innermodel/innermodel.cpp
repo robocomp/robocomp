@@ -2248,9 +2248,9 @@ InnerModelNode * InnerModelCamera::copyNode(QHash<QString, InnerModelNode *> &ha
 InnerModelRGBD::InnerModelRGBD(QString id_, float width, float height, float focal, float _noise, uint32_t _port, QString _ifconfig, InnerModelNode *parent_) : InnerModelCamera(id_, width, height, focal, parent_)
 {
 	noise = _noise;
-// 	printf("InnerModelRGBD: %f {%d}\n", noise, port);
 	port = _port;
 	ifconfig = _ifconfig;
+	printf("InnerModelRGBD: %f {%d}\n", noise, port);
 }
 
 
@@ -2440,7 +2440,7 @@ InnerModelMesh::InnerModelMesh(QString id_, QString meshPath_, float scalex_, fl
 		for (size_t i=0; i<vertices.size(); i++)
 		{
 			fcl::Vec3f v = vertices[i];
-			const QMat v2 = (rtm * QVec::vec3(v[0]*scalex, v[1]*scaley, v[2]*scalez).toHomogeneousCoordinates()).fromHomogeneousCoordinates();
+			const QMat v2 = (rtm * QVec::vec3(v[0]*scalex, v[1]*scaley, -v[2]*scalez).toHomogeneousCoordinates()).fromHomogeneousCoordinates();
 			vertices[i] = fcl::Vec3f(v2(0), v2(1), v2(2));
 		}
 
@@ -2465,7 +2465,6 @@ for (size_t i=0; i<vertices.size(); i++)
 	outputFile << vertices[i][0]/1000. << " " << vertices[i][1]/1000. << " " << vertices[i][2]/1000. << "\n";
 }
 outputFile.close();
-
 
 
 		// Associate the read vertices and triangles vectors to the FCL collision model object
@@ -2677,15 +2676,15 @@ bool InnerModel::collide(const QString &a, const QString &b)
 	fcl::CollisionRequest request;
 	fcl::CollisionResult result;
 	
-	n1->collisionObject->computeAABB();
-	fcl::AABB a1 = n1->collisionObject->getAABB();
-	fcl::Vec3f v1 = a1.center();
+// 	n1->collisionObject->computeAABB();
+// 	fcl::AABB a1 = n1->collisionObject->getAABB();
+// 	fcl::Vec3f v1 = a1.center();
 
-	n2->collisionObject->computeAABB();
-	fcl::AABB a2 = n2->collisionObject->getAABB();
-	fcl::Vec3f v2 = a2.center();
+// 	n2->collisionObject->computeAABB();
+// 	fcl::AABB a2 = n2->collisionObject->getAABB();
+// 	fcl::Vec3f v2 = a2.center();
 	
-	printf("\n(%f,  %f,  %f)  --- (%f,  %f,  %f) --- (%f,  %f,  %f) [%f , %f , %f]  <<%d>>\n", v1[0], v1[1], v1[2], v2[0], v2[1], v2[2], (v1-v2)[0], (v1-v2)[1], (v1-v2)[2], a2.width(), a2.height(), a2.depth(), a1.overlap(a2));
+// 	printf("- (%f,  %f,  %f) --- (%f,  %f,  %f) [%f , %f , %f]  <<%f %d>>\n", v2[0], v2[1], v2[2], (v1-v2)[0], (v1-v2)[1], (v1-v2)[2], a2.width(), a2.height(), a2.depth(), a1.distance(a2), a1.overlap(a2));
 
 	fcl::collide(n1->collisionObject, n2->collisionObject, request, result);
 
