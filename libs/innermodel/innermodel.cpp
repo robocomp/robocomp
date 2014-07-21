@@ -2696,3 +2696,36 @@ bool InnerModel::collide(const QString &a, const QString &b)
 }
 
 
+/**
+ * @brief ...
+ * 
+ * @param a ...
+ * @param obj ...
+ * @return bool
+ */
+bool InnerModel::collide(const QString &a, const fcl::CollisionObject *obj)
+{
+#if FCL_SUPPORT==1
+	InnerModelNode *n1 = getNode(a);
+	if (not n1) throw 1;
+	QMat r1q = getRotationMatrixTo("root", a);
+	fcl::Matrix3f R1( r1q(0,0), r1q(0,1), r1q(0,2), r1q(1,0), r1q(1,1), r1q(1,2), r1q(2,0), r1q(2,1), r1q(2,2) );
+	QVec t1v = getTranslationVectorTo("root", a);
+	fcl::Vec3f T1( t1v(0), t1v(1), t1v(2) );
+	n1->collisionObject->setTransform(R1, T1);
+	
+	fcl::CollisionRequest request;
+	fcl::CollisionResult result;
+	
+	fcl::collide(n1->collisionObject, obj, request, result);
+
+	return result.isCollision();
+#else
+	qFatal("InnerModel was not compiled with collision support");
+	return false;
+#endif
+}
+
+
+
+
