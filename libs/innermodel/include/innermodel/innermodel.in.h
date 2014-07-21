@@ -259,6 +259,7 @@ public:
 
 	// FCL related
 	bool collide(const QString &a, const QString &b);
+	bool collide(const QString &a, const fcl::CollisionObject *obj);
 
 protected:
 	QMutex *mutex;
