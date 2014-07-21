@@ -139,6 +139,7 @@ void InnerModelNode::updateChildren()
 InnerModel::InnerModel(std::string xmlFilePath)
 {
 	mutex = new QMutex(QMutex::Recursive);
+	root = NULL;
 	if (not InnerModelReader::load(QString::fromStdString(xmlFilePath), this))
 	{
 		qFatal("InnerModelReader::load error using file %s\n", xmlFilePath.c_str());
@@ -153,6 +154,7 @@ InnerModel::InnerModel()
 	mutex = new QMutex(QMutex::Recursive);
 	// Set Root node
 	InnerModelTransform *root = new InnerModelTransform("root", "static", 0, 0, 0, 0, 0, 0, 0);
+	root->parent = NULL;
 	setRoot(root);
 	hash["root"] = root;
 	
@@ -160,6 +162,8 @@ InnerModel::InnerModel()
 	//   InnerModelTransform *tr = innerModel->newTransform("name", parent, rx, ry, rz, px, py, pz);
 	//   parent->addChild(tr);
 }
+
+
 
 InnerModel::InnerModel(const InnerModel &original)
 {
@@ -177,6 +181,11 @@ InnerModel::InnerModel(const InnerModel &original)
 
 InnerModel::~InnerModel()
 {
+}
+
+bool InnerModel::open(std::string xmlFilePath)
+{
+	return InnerModelReader::load(QString::fromStdString(xmlFilePath), this);
 }
 
 ///Remove sub tree and return sa list with his id

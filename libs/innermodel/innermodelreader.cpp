@@ -50,10 +50,15 @@ bool InnerModelReader::load(const QString &file, InnerModel *model)
 
 	QDomElement root = doc.documentElement();
 	if (root.tagName().toLower() != QString("innerModel").toLower())
+	{
 		qFatal("<innerModel> tag missing.");
-	InnerModelTransform *r = new InnerModelTransform(QString("root"), QString("static"), 0, 0, 0, 0, 0, 0, 0);
-	model->setRoot(r);
-	r->parent = NULL;
+	}
+	if (not model->getRoot())
+	{
+		InnerModelTransform *r = new InnerModelTransform(QString("root"), QString("static"), 0, 0, 0, 0, 0, 0, 0);
+		model->setRoot(r);
+		r->parent = NULL;
+	}
 	recursive(root, model, model->root);
 
 	fich.close();
