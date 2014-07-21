@@ -120,6 +120,7 @@ public:
 	InnerModel(const InnerModel &original);
 	~InnerModel();
 	friend class InnerModelReader;
+	bool open(std::string xmlFilePath);
 	bool save(QString path);
 
 	/// Auto update method
