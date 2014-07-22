@@ -261,3 +261,6 @@ AsrGoogleComp=12214
 GoogleSpeechComp=12215
 FaceTabletUrsusComp=12216
 FaceTabletControlComp=12217
+objectdetectortesterComp=12218
+objectDetectionTesterComp=12219
+objectDetectionComp=12220
