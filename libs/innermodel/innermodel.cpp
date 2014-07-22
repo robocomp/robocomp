@@ -54,6 +54,8 @@ InnerModelException::InnerModelException(const std::string &reason) : runtime_er
 
 InnerModelNode::InnerModelNode(QString id_, InnerModelNode *parent_) : RTMat()
 {
+	collidable = false;
+
 	fixed = true;
 	parent = parent_;
 	if (parent)
@@ -137,6 +139,7 @@ void InnerModelNode::updateChildren()
 InnerModel::InnerModel(std::string xmlFilePath)
 {
 	mutex = new QMutex(QMutex::Recursive);
+	root = NULL;
 	if (not InnerModelReader::load(QString::fromStdString(xmlFilePath), this))
 	{
 		qFatal("InnerModelReader::load error using file %s\n", xmlFilePath.c_str());
@@ -151,6 +154,7 @@ InnerModel::InnerModel()
 	mutex = new QMutex(QMutex::Recursive);
 	// Set Root node
 	InnerModelTransform *root = new InnerModelTransform("root", "static", 0, 0, 0, 0, 0, 0, 0);
+	root->parent = NULL;
 	setRoot(root);
 	hash["root"] = root;
 	
@@ -158,6 +162,8 @@ InnerModel::InnerModel()
 	//   InnerModelTransform *tr = innerModel->newTransform("name", parent, rx, ry, rz, px, py, pz);
 	//   parent->addChild(tr);
 }
+
+
 
 InnerModel::InnerModel(const InnerModel &original)
 {
@@ -175,6 +181,11 @@ InnerModel::InnerModel(const InnerModel &original)
 
 InnerModel::~InnerModel()
 {
+}
+
+bool InnerModel::open(std::string xmlFilePath)
+{
+	return InnerModelReader::load(QString::fromStdString(xmlFilePath), this);
 }
 
 ///Remove sub tree and return sa list with his id
@@ -571,10 +582,10 @@ InnerModelLaser *InnerModel::newLaser(QString id, InnerModelNode *parent, uint32
 
 
 
-InnerModelPlane *InnerModel::newPlane(QString id, InnerModelNode *parent, QString texture, float width, float height, float depth, int repeat, float nx, float ny, float nz, float px, float py, float pz)
+InnerModelPlane *InnerModel::newPlane(QString id, InnerModelNode *parent, QString texture, float width, float height, float depth, int repeat, float nx, float ny, float nz, float px, float py, float pz, bool collidable)
 {
 	if (hash.contains(id)) qFatal("InnerModel::newPlane: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
-	InnerModelPlane *newnode = new InnerModelPlane(id, texture, width, height, depth, repeat, nx, ny, nz, px, py, pz, parent);
+	InnerModelPlane *newnode = new InnerModelPlane(id, texture, width, height, depth, repeat, nx, ny, nz, px, py, pz, collidable, parent);
 	hash[id] = newnode;
 // 	parent->addChild(newnode);
 	return newnode;
@@ -582,10 +593,10 @@ InnerModelPlane *InnerModel::newPlane(QString id, InnerModelNode *parent, QStrin
 
 
 
-InnerModelMesh *InnerModel::newMesh(QString id, InnerModelNode *parent, QString path, float scalex, float scaley, float scalez, int render, float tx, float ty, float tz, float rx, float ry, float rz)
+InnerModelMesh *InnerModel::newMesh(QString id, InnerModelNode *parent, QString path, float scalex, float scaley, float scalez, int render, float tx, float ty, float tz, float rx, float ry, float rz, bool collidable)
 {
 	if (hash.contains(id)) qFatal("InnerModel::newMesh: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
-	InnerModelMesh *newnode = new InnerModelMesh(id, path, scalex, scaley, scalez, (InnerModelMesh::RenderingModes)render, tx, ty, tz, rx, ry, rz, parent);
+	InnerModelMesh *newnode = new InnerModelMesh(id, path, scalex, scaley, scalez, (InnerModelMesh::RenderingModes)render, tx, ty, tz, rx, ry, rz, collidable, parent);
 	hash[id] = newnode;
 // 	parent->addChild(newnode);
 	return newnode;
@@ -593,9 +604,9 @@ InnerModelMesh *InnerModel::newMesh(QString id, InnerModelNode *parent, QString 
 
 
 
-InnerModelMesh *InnerModel::newMesh(QString id, InnerModelNode *parent, QString path, float scale, int render, float tx, float ty, float tz, float rx, float ry, float rz)
+InnerModelMesh *InnerModel::newMesh(QString id, InnerModelNode *parent, QString path, float scale, int render, float tx, float ty, float tz, float rx, float ry, float rz, bool collidable)
 {
-	return newMesh(id,parent,path,scale,scale,scale,render,tx,ty,tz,rx,ry,rz);
+	return newMesh(id,parent,path,scale,scale,scale,render,tx,ty,tz,rx,ry,rz, collidable);
 }
 
 
@@ -2020,9 +2031,9 @@ InnerModelNode * InnerModelOmniRobot::copyNode(QHash<QString, InnerModelNode *> 
 // InnerModelPlane
 // ------------------------------------------------------------------------------------------------
 
-InnerModelPlane::InnerModelPlane(QString id_, QString texture_, float width_, float height_,float depth_, int repeat_, float nx_, float ny_, float nz_, float px_, float py_, float pz_, InnerModelNode *parent_) : InnerModelNode(id_, parent_)
+InnerModelPlane::InnerModelPlane(QString id_, QString texture_, float width_, float height_,float depth_, int repeat_, float nx_, float ny_, float nz_, float px_, float py_, float pz_, bool collidable_, InnerModelNode *parent_) : InnerModelNode(id_, parent_)
 {
-	if ( abs(nx_)<0.01 and abs(ny_)<0.01 and abs(nz_)<0.01 ) nz_ = -1;
+	if ( abs(nx_)<0.001 and abs(ny_)<0.001 and abs(nz_)<0.001 ) nz_ = -1;
 	normal = QVec::vec3(nx_, ny_, nz_);
 	point = QVec::vec3(px_, py_, pz_);
 	nx = ny = nz = px = py = pz = NULL;
@@ -2031,6 +2042,7 @@ InnerModelPlane::InnerModelPlane(QString id_, QString texture_, float width_, fl
 	height = height_;
 	depth = depth_;
 	repeat = repeat_;
+	collidable = collidable_;
 
 #if FCL_SUPPORT==1
 	std::vector<fcl::Vec3f> vertices;
@@ -2074,6 +2086,29 @@ InnerModelPlane::InnerModelPlane(QString id_, QString texture_, float width_, fl
 	triangles.push_back(fcl::Triangle(1,4,0));
 	triangles.push_back(fcl::Triangle(2,3,6)); // Bottom
 	triangles.push_back(fcl::Triangle(3,6,7));
+	
+////
+////   UNCOMMENT THIS CODE TO GENERATE A POINTCLOUD OF THE POINTS IN THE MESHES
+////
+// std::ofstream outputFile;
+// outputFile.open((id.toStdString()+".pcd").c_str());
+// outputFile << "# .PCD v.7 - Point Cloud Data file format\n";
+// outputFile << "VERSION .7\n";
+// outputFile << "FIELDS x y z \n";
+// outputFile << "SIZE 4 4 4\n";
+// outputFile << "TYPE F F F\n";
+// outputFile << "COUNT 1 1 1\n";
+// outputFile << "WIDTH " << vertices.size() << "\n";
+// outputFile << "HEIGHT 1\n";
+// outputFile << "VIEWPOINT 0 0 0 1 0 0 0\n";
+// outputFile << "POINTS " << vertices.size() << "\n";
+// outputFile << "DATA ascii\n";
+// for (size_t i=0; i<vertices.size(); i++)
+// {
+// 	outputFile << vertices[i][0]/1000. << " " << vertices[i][1]/1000. << " " << vertices[i][2]/1000. << "\n";
+// }
+// outputFile.close();
+
 
 	fclMesh = FCLModelPtr(new FCLModel());
 	fclMesh->beginModel();
@@ -2222,9 +2257,9 @@ InnerModelNode * InnerModelCamera::copyNode(QHash<QString, InnerModelNode *> &ha
 InnerModelRGBD::InnerModelRGBD(QString id_, float width, float height, float focal, float _noise, uint32_t _port, QString _ifconfig, InnerModelNode *parent_) : InnerModelCamera(id_, width, height, focal, parent_)
 {
 	noise = _noise;
-// 	printf("InnerModelRGBD: %f {%d}\n", noise, port);
 	port = _port;
 	ifconfig = _ifconfig;
+	printf("InnerModelRGBD: %f {%d}\n", noise, port);
 }
 
 
@@ -2368,14 +2403,14 @@ InnerModelNode * InnerModelLaser::copyNode(QHash<QString, InnerModelNode *> &has
 // InnerModelMesh
 // ------------------------------------------------------------------------------------------------
 
-InnerModelMesh::InnerModelMesh(QString id_, QString meshPath_, float scale, RenderingModes render_, float tx_, float ty_, float tz_, float rx_, float ry_, float rz_, InnerModelNode *parent_) : InnerModelNode(id_, parent_)
+InnerModelMesh::InnerModelMesh(QString id_, QString meshPath_, float scale, RenderingModes render_, float tx_, float ty_, float tz_, float rx_, float ry_, float rz_, bool collidable,  InnerModelNode *parent_) : InnerModelNode(id_, parent_)
 {
-	InnerModelMesh(id_,meshPath_,scale,scale,scale,render_,tx_,ty_,tz_,rx_,ry_,rz_,parent_);
+	InnerModelMesh(id_,meshPath_,scale,scale,scale,render_,tx_,ty_,tz_,rx_,ry_,rz_, collidable, parent_);
 }
 
 
 
-InnerModelMesh::InnerModelMesh(QString id_, QString meshPath_, float scalex_, float scaley_, float scalez_, RenderingModes render_, float tx_, float ty_, float tz_, float rx_, float ry_, float rz_, InnerModelNode *parent_) : InnerModelNode(id_, parent_)
+InnerModelMesh::InnerModelMesh(QString id_, QString meshPath_, float scalex_, float scaley_, float scalez_, RenderingModes render_, float tx_, float ty_, float tz_, float rx_, float ry_, float rz_, bool collidable_, InnerModelNode *parent_) : InnerModelNode(id_, parent_)
 {
 	id = id_;
 	render = render_;
@@ -2389,6 +2424,7 @@ InnerModelMesh::InnerModelMesh(QString id_, QString meshPath_, float scalex_, fl
 	rx = rx_;
 	ry = ry_;
 	rz = rz_;
+	collidable = collidable_;
 
 #if FCL_SUPPORT==1
 	// Get to the OSG geode
@@ -2413,13 +2449,13 @@ InnerModelMesh::InnerModelMesh(QString id_, QString meshPath_, float scalex_, fl
 		for (size_t i=0; i<vertices.size(); i++)
 		{
 			fcl::Vec3f v = vertices[i];
-			const QMat v2 = (rtm * QVec::vec3(v[0]*scalex, v[1]*scaley, v[2]*scalez).toHomogeneousCoordinates()).fromHomogeneousCoordinates();
+			const QMat v2 = (rtm * QVec::vec3(v[0]*scalex, v[1]*scaley, -v[2]*scalez).toHomogeneousCoordinates()).fromHomogeneousCoordinates();
 			vertices[i] = fcl::Vec3f(v2(0), v2(1), v2(2));
 		}
 
-////
-////   UNCOMMENT THIS CODE TO GENERATE A POINTCLOUD OF THE POINTS IN THE MESHES
-////
+// ////
+// ////   UNCOMMENT THIS CODE TO GENERATE A POINTCLOUD OF THE POINTS IN THE MESHES
+// ////
 // std::ofstream outputFile;
 // outputFile.open((id.toStdString()+".pcd").c_str());
 // outputFile << "# .PCD v.7 - Point Cloud Data file format\n";
@@ -2438,7 +2474,6 @@ InnerModelMesh::InnerModelMesh(QString id_, QString meshPath_, float scalex_, fl
 // 	outputFile << vertices[i][0]/1000. << " " << vertices[i][1]/1000. << " " << vertices[i][2]/1000. << "\n";
 // }
 // outputFile.close();
-
 
 
 		// Associate the read vertices and triangles vectors to the FCL collision model object
@@ -2649,6 +2684,17 @@ bool InnerModel::collide(const QString &a, const QString &b)
 
 	fcl::CollisionRequest request;
 	fcl::CollisionResult result;
+	
+// 	n1->collisionObject->computeAABB();
+// 	fcl::AABB a1 = n1->collisionObject->getAABB();
+// 	fcl::Vec3f v1 = a1.center();
+
+// 	n2->collisionObject->computeAABB();
+// 	fcl::AABB a2 = n2->collisionObject->getAABB();
+// 	fcl::Vec3f v2 = a2.center();
+	
+// 	printf("- (%f,  %f,  %f) --- (%f,  %f,  %f) [%f , %f , %f]  <<%f %d>>\n", v2[0], v2[1], v2[2], (v1-v2)[0], (v1-v2)[1], (v1-v2)[2], a2.width(), a2.height(), a2.depth(), a1.distance(a2), a1.overlap(a2));
+
 	fcl::collide(n1->collisionObject, n2->collisionObject, request, result);
 
 	return result.isCollision();
@@ -2657,4 +2703,38 @@ bool InnerModel::collide(const QString &a, const QString &b)
 	return false;
 #endif
 }
+
+
+/**
+ * @brief ...
+ * 
+ * @param a ...
+ * @param obj ...
+ * @return bool
+ */
+bool InnerModel::collide(const QString &a, const fcl::CollisionObject *obj)
+{
+#if FCL_SUPPORT==1
+	InnerModelNode *n1 = getNode(a);
+	if (not n1) throw 1;
+	QMat r1q = getRotationMatrixTo("root", a);
+	fcl::Matrix3f R1( r1q(0,0), r1q(0,1), r1q(0,2), r1q(1,0), r1q(1,1), r1q(1,2), r1q(2,0), r1q(2,1), r1q(2,2) );
+	QVec t1v = getTranslationVectorTo("root", a);
+	fcl::Vec3f T1( t1v(0), t1v(1), t1v(2) );
+	n1->collisionObject->setTransform(R1, T1);
+	
+	fcl::CollisionRequest request;
+	fcl::CollisionResult result;
+	
+	fcl::collide(n1->collisionObject, obj, request, result);
+
+	return result.isCollision();
+#else
+	qFatal("InnerModel was not compiled with collision support");
+	return false;
+#endif
+}
+
+
+
 

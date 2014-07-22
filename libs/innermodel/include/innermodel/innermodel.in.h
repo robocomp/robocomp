@@ -99,6 +99,7 @@ public:
 	QHash<QString,AttributeType> attributes;
 
 	// FCLModel
+	bool collidable;
 #if FCL_SUPPORT==1
 	FCLModelPtr fclMesh;
 	fcl::CollisionObject *collisionObject;
@@ -119,6 +120,7 @@ public:
 	InnerModel(const InnerModel &original);
 	~InnerModel();
 	friend class InnerModelReader;
+	bool open(std::string xmlFilePath);
 	bool save(QString path);
 
 	/// Auto update method
@@ -149,9 +151,9 @@ public:
 	InnerModelRGBD *newRGBD(QString id, InnerModelNode *parent, float width, float height, float focal, float noise, uint32_t port = 0, QString ifconfig="");
 	InnerModelIMU *newIMU(QString id, InnerModelNode *parent, uint32_t port = 0);
 	InnerModelLaser *newLaser(QString id, InnerModelNode *parent, uint32_t port = 0, uint32_t min=0, uint32_t max=30000, float angle = M_PIl, uint32_t measures = 360, QString ifconfig="");
-	InnerModelPlane *newPlane(QString id, InnerModelNode *parent, QString texture, float width, float height, float depth, int repeat, float nx=0, float ny=0, float nz=0, float px=0, float py=0, float pz=0);
-	InnerModelMesh *newMesh(QString id, InnerModelNode *parent, QString path, float scale, int render, float tx, float ty, float tz, float rx, float ry, float rz);
-	InnerModelMesh *newMesh(QString id, InnerModelNode *parent, QString path, float scalex, float scaley, float scalez, int render, float tx, float ty, float tz, float rx, float ry, float rz);
+	InnerModelPlane *newPlane(QString id, InnerModelNode *parent, QString texture, float width, float height, float depth, int repeat, float nx=0, float ny=0, float nz=0, float px=0, float py=0, float pz=0, bool collidable=0);
+	InnerModelMesh *newMesh(QString id, InnerModelNode *parent, QString path, float scale, int render, float tx, float ty, float tz, float rx, float ry, float rz, bool collidable=0);
+	InnerModelMesh *newMesh(QString id, InnerModelNode *parent, QString path, float scalex, float scaley, float scalez, int render, float tx, float ty, float tz, float rx, float ry, float rz, bool collidable=0);
 	InnerModelPointCloud *newPointCloud(QString id, InnerModelNode *parent);
 
 	InnerModelTransform *getTransform(const QString &id);
@@ -258,6 +260,7 @@ public:
 
 	// FCL related
 	bool collide(const QString &a, const QString &b);
+	bool collide(const QString &a, const fcl::CollisionObject *obj);
 
 protected:
 	QMutex *mutex;
@@ -413,7 +416,7 @@ class InnerModelPlane : public InnerModelNode
 {
 	friend class InnerModel;
 	friend class InnerModelReader;
-	InnerModelPlane(QString id_, QString texture_, float width_, float height_,float depth_, int repeat_, float nx_, float ny_, float nz_, float px_, float py_, float pz_, InnerModelNode *parent_=NULL);
+	InnerModelPlane(QString id_, QString texture_, float width_, float height_,float depth_, int repeat_, float nx_, float ny_, float nz_, float px_, float py_, float pz_, bool collidable, InnerModelNode *parent_=NULL);
 public:
 	void print(bool verbose);
 	void save(QTextStream &out, int tabs);
@@ -518,8 +521,8 @@ public:
 protected:
 	friend class InnerModel;
 	friend class InnerModelReader;
-	InnerModelMesh(QString id_, QString meshPath_, float scale, RenderingModes render_, float tx_, float ty_, float tz_, float rx_, float ry_, float rz_, InnerModelNode *parent_=NULL);
-	InnerModelMesh(QString id_, QString meshPath_, float scalex_, float scaley_, float scalez_, RenderingModes render_, float tx_, float ty_, float tz_, float rx_, float ry_, float rz_, InnerModelNode *parent_=NULL);
+	InnerModelMesh(QString id_, QString meshPath_, float scale, RenderingModes render_, float tx_, float ty_, float tz_, float rx_, float ry_, float rz_, bool collidable, InnerModelNode *parent_=NULL);
+	InnerModelMesh(QString id_, QString meshPath_, float scalex_, float scaley_, float scalez_, RenderingModes render_, float tx_, float ty_, float tz_, float rx_, float ry_, float rz_, bool collidable, InnerModelNode *parent_=NULL);
 public:
 
 	void save(QTextStream &out, int tabs);

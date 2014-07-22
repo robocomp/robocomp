@@ -1,5 +1,11 @@
+<<<<<<< HEAD
+import "CommonHead.idsl";
+import "CommonHead.idsl"
+import "DifferentialRobot.idsl"
+=======
 import "/robocomp/interfaces/IDSLs/CommonHead.idsl";
 import "/robocomp/interfaces/IDSLs/DifferentialRobot.idsl";
+>>>>>>> f3da79bfd0d47ef8745804e4b4040e923bcad177
 
 
 module RoboCompCamera

@@ -164,19 +164,19 @@ void DifferentialRobotI::updateInnerModelPose(bool force)
 	noisyNewAngle += Angle+((rndmYaw[0]*noise));
 	noisyNewPos = innerModel->transform(parent->id, QVec::vec3(Ax1, 0, Az1), node->id);
 	innerModel->updateTransformValues(node->id, noisyNewPos(0), noisyNewPos(1), noisyNewPos(2), 0, noisyNewAngle, 0);
-//	if (canMoveBaseTo(node->id, noisyNewPos, noisyNewAngle+Angle+(rndmYaw[0]*noise) ))
+	if (canMoveBaseTo(node->id, noisyNewPos, noisyNewAngle+Angle+(rndmYaw[0]*noise) ))
 	{
 		// Noisy pose(real)
 		pose.x     = noisyPose.x     = noisyNewPos(0)*MILIMETERS_PER_UNIT;
 		pose.z     = noisyPose.z     = noisyNewPos(2)*MILIMETERS_PER_UNIT;
 		pose.alpha = noisyPose.alpha = noisyNewAngle;
 	}
-// 	else
-// 	{
-// 		noisyNewAngle = backNoisyAngle;
-// 		noisyNewPos = backNoisyNewPos;
-// 		innerModel->updateTransformValues(node->id, noisyNewPos(0), noisyNewPos(1), noisyNewPos(2), 0, noisyNewAngle, 0);
-//  	}
+	else
+	{
+		noisyNewAngle = backNoisyAngle;
+		noisyNewPos = backNoisyNewPos;
+		innerModel->updateTransformValues(node->id, noisyNewPos(0), noisyNewPos(1), noisyNewPos(2), 0, noisyNewAngle, 0);
+ 	}
 	newPos = innerModel->transform(parent->id, QVec::vec3(Ax2, 0, Az2), node->id+"_odometry\"");
 	innerModel->updateTransformValues(node->id+"_odometry\"", newPos(0), newPos(1), newPos(2), 0, newAngle, 0);
 
@@ -227,13 +227,17 @@ void DifferentialRobotI::recursiveIncludeMeshes(InnerModelNode *node, QString ro
 	}
 	else if ((mesh = dynamic_cast<InnerModelMesh *>(node)) or (plane = dynamic_cast<InnerModelPlane *>(node)))
 	{
-		if (inside)
+		if (node->collidable)
 		{
-			in.push_back(node->id);
-		}
-		else
-		{
-			out.push_back(node->id);
+			//printf("collidable: %s\n", node->id.toStdString().c_str());
+			if (inside)
+			{
+				in.push_back(node->id);
+			}
+			else
+			{
+				out.push_back(node->id);
+			}
 		}
 	}
 }
