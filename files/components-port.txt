@@ -265,3 +265,4 @@ apriltagsAgentComp=12218
 LaserProfileExtractorComp=12219
 Cuba2DFeaturesComp=12220
 Cuba2DnaturallandmarksTopic=12221
+TrajectoryTesterComp=12222
