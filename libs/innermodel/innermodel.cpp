@@ -2090,24 +2090,24 @@ InnerModelPlane::InnerModelPlane(QString id_, QString texture_, float width_, fl
 ////
 ////   UNCOMMENT THIS CODE TO GENERATE A POINTCLOUD OF THE POINTS IN THE MESHES
 ////
-std::ofstream outputFile;
-outputFile.open((id.toStdString()+".pcd").c_str());
-outputFile << "# .PCD v.7 - Point Cloud Data file format\n";
-outputFile << "VERSION .7\n";
-outputFile << "FIELDS x y z \n";
-outputFile << "SIZE 4 4 4\n";
-outputFile << "TYPE F F F\n";
-outputFile << "COUNT 1 1 1\n";
-outputFile << "WIDTH " << vertices.size() << "\n";
-outputFile << "HEIGHT 1\n";
-outputFile << "VIEWPOINT 0 0 0 1 0 0 0\n";
-outputFile << "POINTS " << vertices.size() << "\n";
-outputFile << "DATA ascii\n";
-for (size_t i=0; i<vertices.size(); i++)
-{
-	outputFile << vertices[i][0]/1000. << " " << vertices[i][1]/1000. << " " << vertices[i][2]/1000. << "\n";
-}
-outputFile.close();
+// std::ofstream outputFile;
+// outputFile.open((id.toStdString()+".pcd").c_str());
+// outputFile << "# .PCD v.7 - Point Cloud Data file format\n";
+// outputFile << "VERSION .7\n";
+// outputFile << "FIELDS x y z \n";
+// outputFile << "SIZE 4 4 4\n";
+// outputFile << "TYPE F F F\n";
+// outputFile << "COUNT 1 1 1\n";
+// outputFile << "WIDTH " << vertices.size() << "\n";
+// outputFile << "HEIGHT 1\n";
+// outputFile << "VIEWPOINT 0 0 0 1 0 0 0\n";
+// outputFile << "POINTS " << vertices.size() << "\n";
+// outputFile << "DATA ascii\n";
+// for (size_t i=0; i<vertices.size(); i++)
+// {
+// 	outputFile << vertices[i][0]/1000. << " " << vertices[i][1]/1000. << " " << vertices[i][2]/1000. << "\n";
+// }
+// outputFile.close();
 
 
 	fclMesh = FCLModelPtr(new FCLModel());
@@ -2453,27 +2453,27 @@ InnerModelMesh::InnerModelMesh(QString id_, QString meshPath_, float scalex_, fl
 			vertices[i] = fcl::Vec3f(v2(0), v2(1), v2(2));
 		}
 
-////
-////   UNCOMMENT THIS CODE TO GENERATE A POINTCLOUD OF THE POINTS IN THE MESHES
-////
-std::ofstream outputFile;
-outputFile.open((id.toStdString()+".pcd").c_str());
-outputFile << "# .PCD v.7 - Point Cloud Data file format\n";
-outputFile << "VERSION .7\n";
-outputFile << "FIELDS x y z \n";
-outputFile << "SIZE 4 4 4\n";
-outputFile << "TYPE F F F\n";
-outputFile << "COUNT 1 1 1\n";
-outputFile << "WIDTH " << vertices.size() << "\n";
-outputFile << "HEIGHT 1\n";
-outputFile << "VIEWPOINT 0 0 0 1 0 0 0\n";
-outputFile << "POINTS " << vertices.size() << "\n";
-outputFile << "DATA ascii\n";
-for (size_t i=0; i<vertices.size(); i++)
-{
-	outputFile << vertices[i][0]/1000. << " " << vertices[i][1]/1000. << " " << vertices[i][2]/1000. << "\n";
-}
-outputFile.close();
+// ////
+// ////   UNCOMMENT THIS CODE TO GENERATE A POINTCLOUD OF THE POINTS IN THE MESHES
+// ////
+// std::ofstream outputFile;
+// outputFile.open((id.toStdString()+".pcd").c_str());
+// outputFile << "# .PCD v.7 - Point Cloud Data file format\n";
+// outputFile << "VERSION .7\n";
+// outputFile << "FIELDS x y z \n";
+// outputFile << "SIZE 4 4 4\n";
+// outputFile << "TYPE F F F\n";
+// outputFile << "COUNT 1 1 1\n";
+// outputFile << "WIDTH " << vertices.size() << "\n";
+// outputFile << "HEIGHT 1\n";
+// outputFile << "VIEWPOINT 0 0 0 1 0 0 0\n";
+// outputFile << "POINTS " << vertices.size() << "\n";
+// outputFile << "DATA ascii\n";
+// for (size_t i=0; i<vertices.size(); i++)
+// {
+// 	outputFile << vertices[i][0]/1000. << " " << vertices[i][1]/1000. << " " << vertices[i][2]/1000. << "\n";
+// }
+// outputFile.close();
 
 
 		// Associate the read vertices and triangles vectors to the FCL collision model object

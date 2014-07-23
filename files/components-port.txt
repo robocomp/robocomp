@@ -265,4 +265,10 @@ apriltagsAgentComp=12218
 LaserProfileExtractorComp=12219
 Cuba2DFeaturesComp=12220
 Cuba2DnaturallandmarksTopic=12221
+<<<<<<< HEAD
 TrajectoryTesterComp=12222
+=======
+objectdetectortesterComp=12222
+objectDetectionTesterComp=12223
+objectDetectionComp=12224
+>>>>>>> bdb6828b441c0ae783958eeea233ee3548d7a29d
