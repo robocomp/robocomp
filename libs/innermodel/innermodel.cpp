@@ -2716,9 +2716,9 @@ bool InnerModel::collide(const QString &a, const QString &b)
  * @param obj ...
  * @return bool
  */
+#if FCL_SUPPORT==1
 bool InnerModel::collide(const QString &a, const fcl::CollisionObject *obj)
 {
-#if FCL_SUPPORT==1
 	InnerModelNode *n1 = getNode(a);
 	if (not n1) throw 1;
 	QMat r1q = getRotationMatrixTo("root", a);
@@ -2733,11 +2733,8 @@ bool InnerModel::collide(const QString &a, const fcl::CollisionObject *obj)
 	fcl::collide(n1->collisionObject, obj, request, result);
 
 	return result.isCollision();
-#else
-	qFatal("InnerModel was not compiled with collision support");
-	return false;
-#endif
 }
+#endif
 
 
 
