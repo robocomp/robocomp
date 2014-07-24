@@ -344,7 +344,9 @@ void InnerModel::updateTransformValues(QString transformId, float tx, float ty, 
 			else if (hash[parentId] == NULL)
 				qDebug() << "There is no such" << parentId << "node";
 			else
-				qDebug() << "?????";
+			{
+			}
+				//qDebug() << "?????";
 		}
 		//always update
 		aux->update(tx,ty,tz,rx,ry,rz);
@@ -352,7 +354,9 @@ void InnerModel::updateTransformValues(QString transformId, float tx, float ty, 
 	else if (hash[transformId] == NULL)
 		qDebug() << "There is no such" << transformId << "node";
 	else
-		qDebug() << "?????";
+	{
+		//qDebug() << "?????";
+	}
 }
 
 

@@ -61,12 +61,12 @@ module RoboCompBodyInverseKinematics
 		//Selects which output to send the final movements ((1) ROBOT vd (0) SIMULATOR)
 		void setRobot(int type) throws BIKException;
 		
-		TargetState getState( string part);
+		TargetState getState(string part);
 		
 		//Empties the  target queue of the corresponding bodypart. The part stops when the current target is finished
-		void stop( string part );
+		void stop(string part);
 		
 		//Changes the tip of the corresponding bodypart
-		void setNewTip( string part, Pose6D pose);
+		void setNewTip(string part, string transform, Pose6D pose);
 	};
 };

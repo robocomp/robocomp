@@ -51,7 +51,7 @@ module RoboCompBodyInverseKinematics{
 		void  setRobot(int type)throws BIKException;
 		TargetState getState(string part);
 		void  stop(string part);
-		void  setNewTip(string part, Pose6D pose);
+		void  setNewTip(string part, string transform, Pose6D pose);
 	};
 };
   
