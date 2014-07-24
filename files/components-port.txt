@@ -209,7 +209,6 @@ msTrackerComp=10238
 KinectReaderComp=10239
 CompoNetPersonComp=10238
 RGBDBusComp=10239
-
 AGMCommonBehaviorComp=10240
 AGMAgentExample=10241
 AGMExecutiveTopic=10242
@@ -232,7 +231,6 @@ AprilTagsComp=10258
 fitterTestComp=10259
 AROdometryCorrectionComp=10260
 AprilTagsTopic=10261
-
 ISAMComp=10262
 evaluatorNavigatorComp=10263
 FovisComp=10264
@@ -265,3 +263,7 @@ apriltagsAgentComp=12218
 LaserProfileExtractorComp=12219
 Cuba2DFeaturesComp=12220
 Cuba2DnaturallandmarksTopic=12221
+TrajectoryTesterComp=12222
+objectdetectortesterComp=12222
+objectDetectionTesterComp=12223
+objectDetectionComp=12224

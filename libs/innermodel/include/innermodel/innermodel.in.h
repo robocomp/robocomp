@@ -99,8 +99,8 @@ public:
 	QHash<QString,AttributeType> attributes;
 
 	// FCLModel
-#if FCL_SUPPORT==1
 	bool collidable;
+#if FCL_SUPPORT==1
 	FCLModelPtr fclMesh;
 	fcl::CollisionObject *collisionObject;
 #endif
@@ -120,6 +120,7 @@ public:
 	InnerModel(const InnerModel &original);
 	~InnerModel();
 	friend class InnerModelReader;
+	bool open(std::string xmlFilePath);
 	bool save(QString path);
 
 	/// Auto update method
@@ -259,6 +260,7 @@ public:
 
 	// FCL related
 	bool collide(const QString &a, const QString &b);
+	bool collide(const QString &a, const fcl::CollisionObject *obj);
 
 protected:
 	QMutex *mutex;

@@ -54,9 +54,8 @@ InnerModelException::InnerModelException(const std::string &reason) : runtime_er
 
 InnerModelNode::InnerModelNode(QString id_, InnerModelNode *parent_) : RTMat()
 {
-#if FCL_SUPPORT==1
 	collidable = false;
-#endif
+
 	fixed = true;
 	parent = parent_;
 	if (parent)
@@ -140,6 +139,7 @@ void InnerModelNode::updateChildren()
 InnerModel::InnerModel(std::string xmlFilePath)
 {
 	mutex = new QMutex(QMutex::Recursive);
+	root = NULL;
 	if (not InnerModelReader::load(QString::fromStdString(xmlFilePath), this))
 	{
 		qFatal("InnerModelReader::load error using file %s\n", xmlFilePath.c_str());
@@ -154,6 +154,7 @@ InnerModel::InnerModel()
 	mutex = new QMutex(QMutex::Recursive);
 	// Set Root node
 	InnerModelTransform *root = new InnerModelTransform("root", "static", 0, 0, 0, 0, 0, 0, 0);
+	root->parent = NULL;
 	setRoot(root);
 	hash["root"] = root;
 	
@@ -161,6 +162,8 @@ InnerModel::InnerModel()
 	//   InnerModelTransform *tr = innerModel->newTransform("name", parent, rx, ry, rz, px, py, pz);
 	//   parent->addChild(tr);
 }
+
+
 
 InnerModel::InnerModel(const InnerModel &original)
 {
@@ -178,6 +181,11 @@ InnerModel::InnerModel(const InnerModel &original)
 
 InnerModel::~InnerModel()
 {
+}
+
+bool InnerModel::open(std::string xmlFilePath)
+{
+	return InnerModelReader::load(QString::fromStdString(xmlFilePath), this);
 }
 
 ///Remove sub tree and return sa list with his id
@@ -2082,6 +2090,29 @@ InnerModelPlane::InnerModelPlane(QString id_, QString texture_, float width_, fl
 	triangles.push_back(fcl::Triangle(1,4,0));
 	triangles.push_back(fcl::Triangle(2,3,6)); // Bottom
 	triangles.push_back(fcl::Triangle(3,6,7));
+	
+////
+////   UNCOMMENT THIS CODE TO GENERATE A POINTCLOUD OF THE POINTS IN THE MESHES
+////
+// std::ofstream outputFile;
+// outputFile.open((id.toStdString()+".pcd").c_str());
+// outputFile << "# .PCD v.7 - Point Cloud Data file format\n";
+// outputFile << "VERSION .7\n";
+// outputFile << "FIELDS x y z \n";
+// outputFile << "SIZE 4 4 4\n";
+// outputFile << "TYPE F F F\n";
+// outputFile << "COUNT 1 1 1\n";
+// outputFile << "WIDTH " << vertices.size() << "\n";
+// outputFile << "HEIGHT 1\n";
+// outputFile << "VIEWPOINT 0 0 0 1 0 0 0\n";
+// outputFile << "POINTS " << vertices.size() << "\n";
+// outputFile << "DATA ascii\n";
+// for (size_t i=0; i<vertices.size(); i++)
+// {
+// 	outputFile << vertices[i][0]/1000. << " " << vertices[i][1]/1000. << " " << vertices[i][2]/1000. << "\n";
+// }
+// outputFile.close();
+
 
 	fclMesh = FCLModelPtr(new FCLModel());
 	fclMesh->beginModel();
@@ -2230,9 +2261,9 @@ InnerModelNode * InnerModelCamera::copyNode(QHash<QString, InnerModelNode *> &ha
 InnerModelRGBD::InnerModelRGBD(QString id_, float width, float height, float focal, float _noise, uint32_t _port, QString _ifconfig, InnerModelNode *parent_) : InnerModelCamera(id_, width, height, focal, parent_)
 {
 	noise = _noise;
-// 	printf("InnerModelRGBD: %f {%d}\n", noise, port);
 	port = _port;
 	ifconfig = _ifconfig;
+	printf("InnerModelRGBD: %f {%d}\n", noise, port);
 }
 
 
@@ -2422,13 +2453,13 @@ InnerModelMesh::InnerModelMesh(QString id_, QString meshPath_, float scalex_, fl
 		for (size_t i=0; i<vertices.size(); i++)
 		{
 			fcl::Vec3f v = vertices[i];
-			const QMat v2 = (rtm * QVec::vec3(v[0]*scalex, v[1]*scaley, v[2]*scalez).toHomogeneousCoordinates()).fromHomogeneousCoordinates();
+			const QMat v2 = (rtm * QVec::vec3(v[0]*scalex, v[1]*scaley, -v[2]*scalez).toHomogeneousCoordinates()).fromHomogeneousCoordinates();
 			vertices[i] = fcl::Vec3f(v2(0), v2(1), v2(2));
 		}
 
-////
-////   UNCOMMENT THIS CODE TO GENERATE A POINTCLOUD OF THE POINTS IN THE MESHES
-////
+// ////
+// ////   UNCOMMENT THIS CODE TO GENERATE A POINTCLOUD OF THE POINTS IN THE MESHES
+// ////
 // std::ofstream outputFile;
 // outputFile.open((id.toStdString()+".pcd").c_str());
 // outputFile << "# .PCD v.7 - Point Cloud Data file format\n";
@@ -2447,7 +2478,6 @@ InnerModelMesh::InnerModelMesh(QString id_, QString meshPath_, float scalex_, fl
 // 	outputFile << vertices[i][0]/1000. << " " << vertices[i][1]/1000. << " " << vertices[i][2]/1000. << "\n";
 // }
 // outputFile.close();
-
 
 
 		// Associate the read vertices and triangles vectors to the FCL collision model object
@@ -2658,6 +2688,17 @@ bool InnerModel::collide(const QString &a, const QString &b)
 
 	fcl::CollisionRequest request;
 	fcl::CollisionResult result;
+	
+// 	n1->collisionObject->computeAABB();
+// 	fcl::AABB a1 = n1->collisionObject->getAABB();
+// 	fcl::Vec3f v1 = a1.center();
+
+// 	n2->collisionObject->computeAABB();
+// 	fcl::AABB a2 = n2->collisionObject->getAABB();
+// 	fcl::Vec3f v2 = a2.center();
+	
+// 	printf("- (%f,  %f,  %f) --- (%f,  %f,  %f) [%f , %f , %f]  <<%f %d>>\n", v2[0], v2[1], v2[2], (v1-v2)[0], (v1-v2)[1], (v1-v2)[2], a2.width(), a2.height(), a2.depth(), a1.distance(a2), a1.overlap(a2));
+
 	fcl::collide(n1->collisionObject, n2->collisionObject, request, result);
 
 	return result.isCollision();
@@ -2666,4 +2707,38 @@ bool InnerModel::collide(const QString &a, const QString &b)
 	return false;
 #endif
 }
+
+
+/**
+ * @brief ...
+ * 
+ * @param a ...
+ * @param obj ...
+ * @return bool
+ */
+bool InnerModel::collide(const QString &a, const fcl::CollisionObject *obj)
+{
+#if FCL_SUPPORT==1
+	InnerModelNode *n1 = getNode(a);
+	if (not n1) throw 1;
+	QMat r1q = getRotationMatrixTo("root", a);
+	fcl::Matrix3f R1( r1q(0,0), r1q(0,1), r1q(0,2), r1q(1,0), r1q(1,1), r1q(1,2), r1q(2,0), r1q(2,1), r1q(2,2) );
+	QVec t1v = getTranslationVectorTo("root", a);
+	fcl::Vec3f T1( t1v(0), t1v(1), t1v(2) );
+	n1->collisionObject->setTransform(R1, T1);
+	
+	fcl::CollisionRequest request;
+	fcl::CollisionResult result;
+	
+	fcl::collide(n1->collisionObject, obj, request, result);
+
+	return result.isCollision();
+#else
+	qFatal("InnerModel was not compiled with collision support");
+	return false;
+#endif
+}
+
+
+
 

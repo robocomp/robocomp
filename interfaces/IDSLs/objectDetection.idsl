@@ -1,0 +1,8 @@
+module RoboCompobjectDetection
+{
+	interface objectDetection
+	{
+		void setModel2Fit(string model);
+		void removePCwithinModel(string model);
+	};
+};
