@@ -16,9 +16,16 @@ module RoboCompTrajectoryRobot2D{
 					float y;
 					float z;
 				};
+	["cpp:comparable"]
+	struct NavState{
+		bool planning;
+		long elapsedTime;
+		long planningTime;
+	};
 
 	interface TrajectoryRobot2D{
 		void  go(TargetPose target);
+		NavState getState();
 	};
 };
   

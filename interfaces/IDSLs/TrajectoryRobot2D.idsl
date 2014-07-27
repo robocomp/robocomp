@@ -1,0 +1,22 @@
+module RoboCompTrajectoryRobot2D
+{
+	struct TargetPose
+	{
+		float x;
+		float y;
+		float z;
+	};
+	
+	struct NavState
+	{
+		long elapsedTime;
+		bool planning;
+		long planningTime;
+	};
+
+	interface TrajectoryRobot2D{
+		void  go(TargetPose target);
+		NavState getState();
+	};
+};
+  
