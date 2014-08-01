@@ -26,6 +26,7 @@ module RoboCompTrajectoryRobot2D{
 	interface TrajectoryRobot2D{
 		void  go(TargetPose target);
 		NavState getState();
+		void  stop();
 	};
 };
   
