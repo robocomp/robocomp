@@ -12,15 +12,20 @@
 module RoboCompTrajectoryRobot2D{
 	["cpp:comparable"]
 	struct TargetPose{
+		bool onlyRot;
 		float x;
-					float y;
-					float z;
-				};
+		float y;
+		float z;
+		float rx;
+		float ry;
+		float rz;
+		};
 	["cpp:comparable"]
 	struct NavState{
-		bool planning;
 		long elapsedTime;
+		long estimatedTime;
 		long planningTime;
+		string state;
 	};
 
 	interface TrajectoryRobot2D{
