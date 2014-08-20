@@ -698,6 +698,22 @@ SpecificWorker::SpecificWorker (MapPrx& _mprx, Ice::CommunicatorPtr _communicato
 	
 	// Initialize Inner model
 	d->innerModel = new InnerModel(_innerModelXML);
+	
+	QMat pp2 = d->innerModel->getTransformationMatrix("rgbd_t", "robot");
+	std::cout<<"mis cojones"<<std::endl;
+	for (int r=0; r<4; r++)
+	{
+		for (int c=0; c<4; c++)
+		{
+			std::cout<<pp2(r,c)<<" ";
+		}
+		std::cout<<std::endl;
+	}
+	std::cout<<" X: "<<pp2(0,3);
+	std::cout<<" Y: "<<pp2(1,3);
+	std::cout<<" Z: "<<pp2(2,3)<<std::endl;
+	
+	
 	//add name of .xml
 	setWindowTitle(windowTitle() + "\t" + _innerModelXML);
 	
