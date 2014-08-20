@@ -10,15 +10,18 @@
 #define ROBOCOMPJOYSTICKADAPTER_ICE
 
 module RoboCompJoystickAdapter{
+	["cpp:comparable"]
 	struct AxisParams{
 		float value;
 					string name;
 	};
+	["cpp:comparable"]
 	struct ButtonParams{
 		bool clicked;
 	};
 	sequence <AxisParams> AxisList;
 	sequence <ButtonParams> ButtonsList;
+	["cpp:comparable"]
 	struct TData{
 		AxisList axes;
 		ButtonsList buttons;

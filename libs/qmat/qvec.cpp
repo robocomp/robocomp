@@ -699,4 +699,34 @@ QVec RMat::QVec::line2DExplicitCoefsFrom2Points(const QVec & p1, const QVec & p2
 	return res;
 }
 
-
+std::ostream& 	operator << ( std::ostream &os, const RMat::QVec &vector )
+{
+	//os << "QVector(";
+	for(int i=0; i<vector.size();i++) 
+	{
+		os << vector[i];
+		if(i<vector.size()-1)  //To avoid space ater the alst number
+			os << " ";
+	}
+	//os << ")";
+	return os;
+};
+std::istream& operator >> ( std::istream &is, RMat::QVec &vector )
+	{
+		vector.resize(3);  //ÑAPA
+		
+		 is >> vector[0];
+		if((is.flags() & std::ios_base::skipws) == 0) 
+		{
+			char whitespace;
+			is >> whitespace;
+		}
+		is >> vector[1];
+		if((is.flags() & std::ios_base::skipws) == 0)
+		{
+			char whitespace;
+			is >> whitespace;
+		}
+		is >> vector[2]; 	
+		return is;
+	}

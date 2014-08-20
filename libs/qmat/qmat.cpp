@@ -1323,9 +1323,9 @@ const QMat QMat::getSubmatrix(const int firstRow, const int lastRow, const int f
 }
 
 /**
- * \brief Constructs a scale+rotation matrix for n dim vectors from corresponding intervals: \f$ (x1,y1) -> (x2,y2) \f$ in each dimension.
- *
- * This matrix can be used to transform magnitudes betweed different ranges. \n
+ * \brief Constructs am affine transformation matrix that converts N, D dimensional vectors. The affine conversion of each one is defined
+ * with two points satisfying the line equation of the transformation: \f$ (x1,y1) -> (x2,y2) \f$ in each dimension.
+ * The matrix can be used to transform magnitudes betweed different ranges. \n
  * The method computes the following line: \f$  y = x( (y2-y1)/(x2-x1) ) - x1( (y2-y1)/(x2-x1) ) + y1 \f$
  * where \f$ x1 = First.x(), y1 = Second.x(), x2 = First.y(), y2 = Second.y() ) \f$ \n
  * Multiply any vector augmented with an extra row set to 1, by the provided matrix to obtain the desired linear conversion

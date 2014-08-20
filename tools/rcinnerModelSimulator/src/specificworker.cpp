@@ -68,17 +68,11 @@ struct JointMovement
 struct SpecificWorker::Data
 {
 	// World
-	SpecificWorker* worker;
-	InnerModel* innerModel;
-	InnerModelViewer* imv;
-	OsgView* viewer;
-	osgGA::TrackballManipulator* manipulator;
-	
-
-
-	#ifdef USE_BULLET
-	World* world;
-	#endif
+	SpecificWorker *worker;
+	InnerModel *innerModel;
+	InnerModelViewer *imv;
+	OsgView *viewer;
+	osgGA::TrackballManipulator *manipulator;
 
 	// Handlers
 	Ice::CommunicatorPtr communicator;
@@ -115,9 +109,9 @@ struct SpecificWorker::Data
 	// ------------------------------------------------------------------------------------------------
 	
 	// Refills laserData with new values
-	RoboCompLaser::TLaserData LASER_createLaserData (const IMVLaser &laser)
+	RoboCompLaser::TLaserData LASER_createLaserData(const IMVLaser &laser)
 	{
-		// 	QMutexLocker locker (mutex);
+		QMutexLocker locker(worker->mutex);
 		static RoboCompLaser::TLaserData laserData;
 		int measures = laser.laserNode->measures;
 		QString id = laser.laserNode->id;
@@ -125,54 +119,61 @@ struct SpecificWorker::Data
 		float finAngle = laser.laserNode->angle/2;
 		float_t maxRange = laser.laserNode->max;
 
-		laserData.resize (measures);
+		laserData.resize(measures);
 
 		double angle = finAngle;  //variable to iterate angle increments
 		//El punto inicial es el origen del láser
-		const osg::Vec3 P = QVecToOSGVec (innerModel->laserToWorld (id, 0, 0));
-		const float incAngle = (fabs (iniAngle) + fabs (finAngle)) / (float) measures;
+		const osg::Vec3 P = QVecToOSGVec(innerModel->laserToWorld(id, 0, 0));
+		const float incAngle = (fabs(iniAngle)+fabs(finAngle)) / (float)measures;
 		osg::Vec3 Q,R;
 
+		printf("a\n");
+		QMutexLocker vm(worker->viewerMutex);
 		for (int i=0 ; i<measures; i++)
 		{
+			printf("%d (%d)\n", i, __LINE__);
 			laserData[i].angle = angle;
-			laserData[i].dist = maxRange;//*1000.;
-			laserDataCartArray[id]->operator[] (i) = QVecToOSGVec (innerModel->laserTo (id, id, angle, maxRange));
+			laserData[i].dist = maxRange;
+			laserDataCartArray[id]->operator[](i) = QVecToOSGVec(innerModel->laserTo(id, id, angle, maxRange));
 
 			//Calculamos el punto destino
-			Q = QVecToOSGVec (innerModel->laserTo ("root", id, maxRange, angle));
+			Q = QVecToOSGVec(innerModel->laserTo("root", id, maxRange, angle));
 			//Creamos el segmento de interseccion
-			osg::ref_ptr<osgUtil::LineSegmentIntersector> intersector = new osgUtil::LineSegmentIntersector (osgUtil::Intersector::MODEL, P, Q);
-			osgUtil::IntersectionVisitor visitor (intersector.get());
+			osg::ref_ptr<osgUtil::LineSegmentIntersector> intersector = new osgUtil::LineSegmentIntersector(osgUtil::Intersector::MODEL, P, Q);
+			printf("%d (%d)\n", i, __LINE__);
+			osgUtil::IntersectionVisitor visitor(intersector.get());
 
 			/// Pasando el visitor al root
-			viewer->getRootGroup()->accept (visitor);
+			printf("%d (%d)\n", i, __LINE__);
+			
+			viewer->getRootGroup()->accept(visitor);
+			printf("%d (%d)\n", i, __LINE__);
 
 			if (intersector->containsIntersections() and id!="laserSecurity")
 			{
-				osgUtil::LineSegmentIntersector::Intersection result = * (intersector->getIntersections().begin());
+				osgUtil::LineSegmentIntersector::Intersection result = *(intersector->getIntersections().begin());
 				R = result.getWorldIntersectPoint(); // in world space
 
 				R.x() = R.x() - P.x();
 				R.y() = R.y() - P.y();
 				R.z() = R.z() - P.z();
-				const float dist = sqrt (R.x() *R.x() + R.y() *R.y() + R.z() *R.z());
+				const float dist = sqrt(R.x() *R.x() + R.y() *R.y() + R.z() *R.z());
 
 				if (dist <= maxRange)
 				{
 					laserData[i].dist = dist;//*1000.;
-					laserDataCartArray[id]->operator[] (i) = QVecToOSGVec (innerModel->laserTo (id, id, dist, laserData[i].angle));
+					laserDataCartArray[id]->operator[](i) = QVecToOSGVec(innerModel->laserTo(id, id, dist, laserData[i].angle));
 				}
 			}
 			else
 			{
-				laserDataCartArray[id]->operator[] (i) = QVecToOSGVec (innerModel->laserTo (id, id, maxRange, laserData[i].angle));
+				laserDataCartArray[id]->operator[](i) = QVecToOSGVec(innerModel->laserTo(id, id, maxRange, laserData[i].angle));
 			}
 			angle -= incAngle;
 		}
 
 		///what does it mean? the point of the laser robot.
-		laserDataCartArray[id]->operator[] (measures) = QVecToOSGVec (innerModel->laserTo (id, id, 0.0001, 0.001));
+		laserDataCartArray[id]->operator[](measures) = QVecToOSGVec(innerModel->laserTo(id, id, 0.0001, 0.001));
 
 		return laserData;
 	}
@@ -183,7 +184,7 @@ struct SpecificWorker::Data
 
 
 	// Refills touch sensor with new values
-	RoboCompTouchSensor::SensorMap TOUCH_createTouchData (const IMVLaser &laser)
+	RoboCompTouchSensor::SensorMap TOUCH_createTouchData(const IMVLaser &laser)
 	{
 	}
 
@@ -193,9 +194,9 @@ struct SpecificWorker::Data
 
 
 	///--- useful functions.
-	InnerModelNode *getNode (const QString &id, const QString &msg)
+	InnerModelNode *getNode(const QString &id, const QString &msg)
 	{
-		InnerModelNode *node = innerModel->getNode (id);
+		InnerModelNode *node = innerModel->getNode(id);
 		if (node==NULL)
 		{
 			RoboCompInnerModelManager::InnerModelManagerError err;
@@ -212,7 +213,7 @@ struct SpecificWorker::Data
 	}
 
 
-	void checkOperationInvalidNode (InnerModelNode *node,QString msg)
+	void checkOperationInvalidNode(InnerModelNode *node,QString msg)
 	{
 		if (node==NULL)
 		{
@@ -229,12 +230,12 @@ struct SpecificWorker::Data
 	}
 
 
-	void checkNodeAlreadyExists (const QString &id, const QString &msg)
+	void checkNodeAlreadyExists(const QString &id, const QString &msg)
 	{
-		if (innerModel->getIDKeys().contains (id))
+		if (innerModel->getIDKeys().contains(id))
 		{
 			#ifdef INNERMODELMANAGERDEBUG
-				qDebug ("item already exist. %s\n", id.toStdString().c_str());
+				qDebug("item already exist. %s\n", id.toStdString().c_str());
 			#endif
 			RoboCompInnerModelManager::InnerModelManagerError err;
 			err.err = RoboCompInnerModelManager::NodeAlreadyExists;
@@ -246,10 +247,10 @@ struct SpecificWorker::Data
 	}
 
 
-	void checkInvalidMeshValues (RoboCompInnerModelManager::meshType m, QString msg)
+	void checkInvalidMeshValues(RoboCompInnerModelManager::meshType m, QString msg)
 	{
 		///check Scale
-		osg::Node *osgMesh = osgDB::readNodeFile (m.meshPath);
+		osg::Node *osgMesh = osgDB::readNodeFile(m.meshPath);
 		if (m.scaleX<0.0 or m.scaleY <0.0 or m.scaleZ <0.0)
 		{
 	#ifdef INNERMODELMANAGERDEBUG
@@ -267,7 +268,7 @@ struct SpecificWorker::Data
 		else if (osgMesh==NULL)
 		{
 	#ifdef INNERMODELMANAGERDEBUG
-			qDebug() <<"--- Fatal:"<<msg<<"meshPath:"<<QString::fromStdString (m.meshPath) <<"does not exist or no it is a type valid for his OpenSceneGraph.";
+			qDebug() <<"--- Fatal:"<<msg<<"meshPath:"<<QString::fromStdString(m.meshPath) <<"does not exist or no it is a type valid for his OpenSceneGraph.";
 	#endif
 
 			RoboCompInnerModelManager::InnerModelManagerError err;
@@ -280,12 +281,12 @@ struct SpecificWorker::Data
 	}
 
 
-	void AttributeAlreadyExists (InnerModelNode* node, QString attributeName, QString msg)
+	void AttributeAlreadyExists(InnerModelNode* node, QString attributeName, QString msg)
 	{
-		if (node->attributes.contains (attributeName))
+		if (node->attributes.contains(attributeName))
 		{
 	#ifdef INNERMODELMANAGERDEBUG
-			qDebug ("attribute already exist. %s\n", attributeName.toStdString().c_str());
+			qDebug("attribute already exist. %s\n", attributeName.toStdString().c_str());
 	#endif
 			RoboCompInnerModelManager::InnerModelManagerError err;
 			err.err = RoboCompInnerModelManager::AttributeAlreadyExists;
@@ -297,12 +298,12 @@ struct SpecificWorker::Data
 	}
 
 
-	void NonExistingAttribute (InnerModelNode* node, QString attributeName, QString msg)
+	void NonExistingAttribute(InnerModelNode* node, QString attributeName, QString msg)
 	{
-		if (node->attributes.contains (attributeName) ==false)
+		if (node->attributes.contains(attributeName) ==false)
 		{
 	#ifdef INNERMODELMANAGERDEBUG
-			qDebug ("attribute NO exist. %s\n", attributeName.toStdString().c_str());
+			qDebug("attribute NO exist. %s\n", attributeName.toStdString().c_str());
 	#endif
 			RoboCompInnerModelManager::InnerModelManagerError err;
 			err.err = RoboCompInnerModelManager::AttributeAlreadyExists;
@@ -314,7 +315,7 @@ struct SpecificWorker::Data
 	}
 
 
-	void getRecursiveNodeInformation (RoboCompInnerModelManager::NodeInformationSequence& nodesInfo, InnerModelNode* node)
+	void getRecursiveNodeInformation(RoboCompInnerModelManager::NodeInformationSequence& nodesInfo, InnerModelNode* node)
 	{
 		/// Add current node information
 		RoboCompInnerModelManager::NodeInformation ni;
@@ -323,77 +324,78 @@ struct SpecificWorker::Data
 		if (node->parent)
 		{
 			ni.parentId = node->parent->id.toStdString();
-		}else
+		}
+		else
 		{
 			ni.parentId = "";
 		}
-		ni.nType = getNodeType (node);
+		ni.nType = getNodeType(node);
 
 		RoboCompInnerModelManager::AttributeType a;
 		foreach (const QString &str, node->attributes.keys())
 		{
-			a.type=node->attributes.value (str).type.toStdString();
-			a.value=node->attributes.value (str).value.toStdString();
+			a.type=node->attributes.value(str).type.toStdString();
+			a.value=node->attributes.value(str).value.toStdString();
 			ni.attributes[str.toStdString()]=a;
 		}
-		nodesInfo.push_back (ni);
+		nodesInfo.push_back(ni);
 
 		/// Recursive call for all children
 		QList<InnerModelNode *>::iterator child;
 		for (child = node->children.begin(); child != node->children.end(); child++)
 		{
-			getRecursiveNodeInformation (nodesInfo, *child);
+			getRecursiveNodeInformation(nodesInfo, *child);
 		}
 	}
 
 
-	RoboCompInnerModelManager::NodeType getNodeType (InnerModelNode* node)
+	RoboCompInnerModelManager::NodeType getNodeType(InnerModelNode* node)
 	{
-		if (dynamic_cast<InnerModelJoint*> (node) != NULL)
+		if (dynamic_cast<InnerModelJoint*>(node) != NULL)
 		{
 			return RoboCompInnerModelManager::Joint;
 		}
-		else if (dynamic_cast<InnerModelTouchSensor*> (node) != NULL)
+		else if (dynamic_cast<InnerModelTouchSensor*>(node) != NULL)
 		{
 			return RoboCompInnerModelManager::TouchSensor;
 		}
-		else if (dynamic_cast<InnerModelDifferentialRobot*> (node) != NULL)
+		else if (dynamic_cast<InnerModelDifferentialRobot*>(node) != NULL)
 		{
 			return RoboCompInnerModelManager::DifferentialRobot;
 		}
-		else if (dynamic_cast<InnerModelOmniRobot*> (node) != NULL)
+		else if (dynamic_cast<InnerModelOmniRobot*>(node) != NULL)
 		{
 			return RoboCompInnerModelManager::OmniRobot;
 		}
-		else if (dynamic_cast<InnerModelPlane*> (node) != NULL)
+		else if (dynamic_cast<InnerModelPlane*>(node) != NULL)
 		{
 			return RoboCompInnerModelManager::Plane;
 		}
-		else if (dynamic_cast<InnerModelRGBD*> (node) != NULL)
+		else if (dynamic_cast<InnerModelRGBD*>(node) != NULL)
 		{
 			return RoboCompInnerModelManager::RGBD;
 		}
-		else if (dynamic_cast<InnerModelCamera*> (node) != NULL)
+		else if (dynamic_cast<InnerModelCamera*>(node) != NULL)
 		{
 			return RoboCompInnerModelManager::Camera;
 		}
-		else if (dynamic_cast<InnerModelIMU*> (node) != NULL)
+		else if (dynamic_cast<InnerModelIMU*>(node) != NULL)
 		{
 			return RoboCompInnerModelManager::IMU;
 		}
-		else if (dynamic_cast<InnerModelLaser*> (node) != NULL)
+		else if (dynamic_cast<InnerModelLaser*>(node) != NULL)
 		{
 			return RoboCompInnerModelManager::Laser;
 		}
-		else if (dynamic_cast<InnerModelMesh*> (node) != NULL)
+		else if (dynamic_cast<InnerModelMesh*>(node) != NULL)
 		{
 			return RoboCompInnerModelManager::Mesh;
 		}
-		else if (dynamic_cast<InnerModelPointCloud*> (node) != NULL)
+		else if (dynamic_cast<InnerModelPointCloud*>(node) != NULL)
 		{
 			return RoboCompInnerModelManager::PointCloud;
 		}
-		else if (dynamic_cast<InnerModelTransform*> (node) != NULL)
+		else if (dynamic_cast<InnerModelTransform*>(node) != NULL)
 		{
 			return RoboCompInnerModelManager::Transform;
 		}
@@ -410,44 +412,45 @@ struct SpecificWorker::Data
 
 
 	// Cambia el color de un mesh
-	void cambiaColor (QString id, osg::Vec4 color)
+	void cambiaColor(QString id, osg::Vec4 color)
 	{
 		osg::Node *node = imv->meshHash[id].osgmeshes;//imv->osgmeshes[id];
-		node = dynamic_cast<osg::Group*> (imv->meshHash[id].osgmeshes)->getChild (0);
+		node = dynamic_cast<osg::Group*>(imv->meshHash[id].osgmeshes)->getChild(0);
 		if (node)
 		{
 			osg::Material* mat = new osg::Material;
-			mat->setDiffuse (osg::Material::FRONT_AND_BACK, color);
-			node->getOrCreateStateSet()->setAttributeAndModes (mat, osg::StateAttribute::OVERRIDE);
+			mat->setDiffuse(osg::Material::FRONT_AND_BACK, color);
+			node->getOrCreateStateSet()->setAttributeAndModes(mat, osg::StateAttribute::OVERRIDE);
 		}
 	}
 
 
 	// Devuelve el colorido inicial a un mesh
-	void devuelveColor (QString id)
+	void devuelveColor(QString id)
 	{
 		osg::Node *node = imv->meshHash[id].osgmeshes;
-		node = dynamic_cast<osg::Group*> (imv->meshHash[id].osgmeshes)->getChild (0);
+		node = dynamic_cast<osg::Group*>(imv->meshHash[id].osgmeshes)->getChild(0);
 		if (node)
 		{
 			osg::Material* mat = new osg::Material;
-			node->getOrCreateStateSet()->setAttributeAndModes (mat, osg::StateAttribute::ON);
+			node->getOrCreateStateSet()->setAttributeAndModes(mat, osg::StateAttribute::ON);
 		}
 	}
 
 
 	// Activa / desactiva las luces
-	void changeLigthState (bool apagar)
+	void changeLigthState(bool apagar)
 	{
+		QMutexLocker vm(worker->viewerMutex);
 		osg::StateSet* state = viewer->getRootGroup()->getOrCreateStateSet();
 
-		switch (apagar)
+		switch(apagar)
 		{
 		case true: /// apagar luces
-			state->setMode (GL_LIGHTING, osg::StateAttribute::OFF);
+			state->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
 			break;
 		case false: /// encender luces
-			state->setMode (GL_LIGHTING, osg::StateAttribute::ON);
+			state->setMode(GL_LIGHTING, osg::StateAttribute::ON);
 			break;
 		}
 	}
@@ -459,9 +462,9 @@ struct SpecificWorker::Data
 		QHash<QString, JointMovement>::const_iterator iter;
 		for (iter = jointMovements.constBegin() ; iter != jointMovements.constEnd() ; ++iter)
 		{
-			InnerModelJoint* joint = this->innerModel->getJoint (iter.key());
+			InnerModelJoint* joint = this->innerModel->getJoint(iter.key());
 			const float angle = joint->getAngle();
-			const float amount = fminf (fabsf (iter->endPos - angle), iter->endSpeed * delta);
+			const float amount = fminf(fabsf(iter->endPos - angle), iter->endSpeed * delta);
 			switch (iter->mode)
 			{
 			case JointMovement::FixedPosition:
@@ -474,7 +477,7 @@ struct SpecificWorker::Data
 					joint->setAngle(angle - amount);
 				break;
 			case JointMovement::TargetSpeed:
-				joint->setAngle (angle + iter->endSpeed * delta);
+				joint->setAngle(angle + iter->endSpeed * delta);
 				break;
 			default:
 				break;
@@ -507,7 +510,7 @@ struct SpecificWorker::Data
 	}
 	
 
-	void addDFR (InnerModelDifferentialRobot* node)
+	void addDFR(InnerModelDifferentialRobot* node)
 	{
 		const uint32_t port = node->port;
 		if (dfr_servers.count(port) == 0)
@@ -518,7 +521,7 @@ struct SpecificWorker::Data
 	}
 
 
-	void addOMN (InnerModelOmniRobot* node)
+	void addOMN(InnerModelOmniRobot* node)
 	{
 		const uint32_t port = node->port;
 		if (omn_servers.count(port) == 0)
@@ -561,7 +564,7 @@ struct SpecificWorker::Data
 	}
 
 
-	void addLaser (InnerModelLaser* node)
+	void addLaser(InnerModelLaser* node)
 	{
 		const uint32_t port = node->port;
 		if (laser_servers.count(port) == 0)
@@ -572,7 +575,7 @@ struct SpecificWorker::Data
 	}
 
 
-	void addRGBD (InnerModelRGBD* node)
+	void addRGBD(InnerModelRGBD* node)
 	{
 		const uint32_t port = node->port;
 		if (rgbd_servers.count(port) == 0)
@@ -620,7 +623,7 @@ struct SpecificWorker::Data
 	}
 	
 	
-	void walkTree (InnerModelNode* node = NULL)
+	void walkTree(InnerModelNode* node = NULL)
 	{
 		if (node == NULL)
 		{
@@ -686,10 +689,10 @@ struct SpecificWorker::Data
 /**
 * \brief Default constructor
 */
-SpecificWorker::SpecificWorker (MapPrx& _mprx, Ice::CommunicatorPtr _communicator, const char* _innerModelXML, int ms) : GenericWorker (_mprx)
+SpecificWorker::SpecificWorker(MapPrx& _mprx, Ice::CommunicatorPtr _communicator, const char* _innerModelXML, int ms) : GenericWorker(_mprx)
 {
 	d = new Data;
-	
+	viewerMutex = new QMutex(QMutex::Recursive);
 	// Create the server handlers
 	d->worker = this;
 	d->communicator = _communicator;
@@ -719,17 +722,17 @@ SpecificWorker::SpecificWorker (MapPrx& _mprx, Ice::CommunicatorPtr _communicato
 	
 	// Initialize the Inner Model Viewer
 	QGLFormat fmt;
-	fmt.setDoubleBuffer (true);
-	QGLFormat::setDefaultFormat (fmt);
-	d->viewer = new OsgView (frameOSG);
-	d->imv = new InnerModelViewer (d->innerModel, "root", d->viewer->getRootGroup());
+	fmt.setDoubleBuffer(true);
+	QGLFormat::setDefaultFormat(fmt);
+	d->viewer = new OsgView(frameOSG);
+	d->imv = new InnerModelViewer(d->innerModel, "root", d->viewer->getRootGroup());
 	d->manipulator = new osgGA::TrackballManipulator;
-	d->viewer->setCameraManipulator (d->manipulator,true);	
+	d->viewer->setCameraManipulator(d->manipulator,true);	
 	
 	
 	
-	settings = new QSettings ("RoboComp", "RCIS");
-	QString path (_innerModelXML);
+	settings = new QSettings("RoboComp", "RCIS");
+	QString path(_innerModelXML);
 	if (path == settings->value("path").toString() ) 
 	{
 	  //restore matrix view 
@@ -758,17 +761,17 @@ SpecificWorker::SpecificWorker (MapPrx& _mprx, Ice::CommunicatorPtr _communicato
 	}
 	
 	// Connect all the signals
-	connect (topView,   SIGNAL (clicked()), this, SLOT (setTopPOV()));
-	connect (leftView,  SIGNAL (clicked()), this, SLOT (setLeftPOV()));
-	connect (rightView, SIGNAL (clicked()), this, SLOT (setRightPOV()));
-	connect (frontView, SIGNAL (clicked()), this, SLOT (setFrontPOV()));
-	connect (backView,  SIGNAL (clicked()), this, SLOT (setBackPOV()));
-	connect (sp_lightx,  SIGNAL (valueChanged(double)), this, SLOT (setLigthx(double)));
-	connect (sp_lighty,  SIGNAL (valueChanged(double)), this, SLOT (setLigthy(double)));
-	connect (sp_lightz,  SIGNAL (valueChanged(double)), this, SLOT (setLigthz(double)));
+	connect(topView,   SIGNAL(clicked()), this, SLOT(setTopPOV()));
+	connect(leftView,  SIGNAL(clicked()), this, SLOT(setLeftPOV()));
+	connect(rightView, SIGNAL(clicked()), this, SLOT(setRightPOV()));
+	connect(frontView, SIGNAL(clicked()), this, SLOT(setFrontPOV()));
+	connect(backView,  SIGNAL(clicked()), this, SLOT(setBackPOV()));
+	connect(sp_lightx,  SIGNAL(valueChanged(double)), this, SLOT(setLigthx(double)));
+	connect(sp_lighty,  SIGNAL(valueChanged(double)), this, SLOT(setLigthy(double)));
+	connect(sp_lightz,  SIGNAL(valueChanged(double)), this, SLOT(setLigthz(double)));
 	
-	connect (actionObject, SIGNAL (triggered()), this, SLOT (objectTriggered()));
-	connect (actionVisual, SIGNAL (triggered()), this, SLOT (visualTriggered()));
+	connect(actionObject, SIGNAL(triggered()), this, SLOT(objectTriggered()));
+	connect(actionVisual, SIGNAL(triggered()), this, SLOT(visualTriggered()));
 	
 	objectTriggered();
 	visualTriggered();
@@ -797,6 +800,7 @@ SpecificWorker::~SpecificWorker()
 
 osg::Group *SpecificWorker::getRootGroup()
 {
+	QMutexLocker vm(viewerMutex);
 	return d->viewer->getRootGroup();
 }
 
@@ -840,7 +844,7 @@ void SpecificWorker::compute()
 	const int elapsed = lastTime.msecsTo (currentTime);
 	lastTime = currentTime;
 	
-	QMutexLocker locker (mutex);
+	QMutexLocker locker(mutex);
 	
 	
 	// Remove previous laser shapes
@@ -848,60 +852,66 @@ void SpecificWorker::compute()
 	{
 		if (laser->osgNode->getNumChildren() > 0)
 		{
-			laser->osgNode->removeChild (0, laser->osgNode->getNumChildren());
+			laser->osgNode->removeChild(0, laser->osgNode->getNumChildren());
 		}
 	}
 	
 	// Camera render
 	QHash<QString, IMVCamera>::const_iterator i = d->imv->cameras.constBegin();
-	while (i != d->imv->cameras.constEnd())
 	{
-		RTMat rt= d->innerModel->getTransformationMatrix ("root",i.key());
-		///Put camera in her position.
-		d->imv->cameras[i.key()].viewerCamera->getCameraManipulator()->setByMatrix (QMatToOSGMat4 (rt));
+		QMutexLocker vm(viewerMutex);
 
-		for (int n=0; n<d->imv->cameras.size() ; ++n)
+		while (i != d->imv->cameras.constEnd())
 		{
-			d->imv->cameras[i.key()].viewerCamera->frame();
-		}
-		i++;
-	}
+			RTMat rt= d->innerModel->getTransformationMatrix("root",i.key());
+			///Put camera in her position.
+			d->imv->cameras[i.key()].viewerCamera->getCameraManipulator()->setByMatrix(QMatToOSGMat4(rt));
 
+			for (int n=0; n<d->imv->cameras.size() ; ++n)
+			{
+				d->imv->cameras[i.key()].viewerCamera->frame();
+			}
+			i++;
+		}
+	}
 	// Laser rendering
-	for (QHash<QString, IMVLaser>::iterator laser = d->imv->lasers.begin(); laser != d->imv->lasers.end(); laser++)
 	{
-		QString id=laser->laserNode->id;
+		QMutexLocker vm(viewerMutex);
+		for (QHash<QString, IMVLaser>::iterator laser = d->imv->lasers.begin(); laser != d->imv->lasers.end(); laser++)
+		{
+			QString id=laser->laserNode->id;
 
-		if (d->laserDataCartArray.contains (id) ==false)
-		{
-			//laserDataCartArray.insert(id);
-			osg::Vec3Array *v= new osg::Vec3Array();
-			v->resize (laser->laserNode->measures+1);
-			d->laserDataCartArray.insert (id,v);
-		}
+			if (d->laserDataCartArray.contains(id) ==false)
+			{
+				//laserDataCartArray.insert(id);
+				osg::Vec3Array *v= new osg::Vec3Array();
+				v->resize(laser->laserNode->measures+1);
+				d->laserDataCartArray.insert(id,v);
+			}
 
-		// create and insert laser data
-		d->laserDataArray.insert(laser->laserNode->id, d->LASER_createLaserData (laser.value()));
-		
-		// create and insert laser shape
-		osg::ref_ptr<osg::Node> p=NULL;
-		if (id=="laserSecurity")
-		{
-			p = d->viewer->addPolygon (* (d->laserDataCartArray[id]), osg::Vec4 (0.,0.,1.,0.4));
-		}
-		else
-		{
-			p = d->viewer->addPolygon (* (d->laserDataCartArray[id]));
-		}
-		if (p!=NULL)
-		{
-			laser->osgNode->addChild (p);
+			// create and insert laser data
+			d->worker = this;
+			d->laserDataArray.insert(laser->laserNode->id, d->LASER_createLaserData(laser.value()));
+			
+			// create and insert laser shape
+			osg::ref_ptr<osg::Node> p=NULL;
+			if (id=="laserSecurity")
+			{
+				p = d->viewer->addPolygon(*(d->laserDataCartArray[id]), osg::Vec4(0.,0.,1.,0.4));
+			}
+			else
+			{
+				p = d->viewer->addPolygon(*(d->laserDataCartArray[id]));
+			}
+			if (p!=NULL)
+			{
+				laser->osgNode->addChild(p);
+			}
 		}
 	}
-
 
 #ifdef INNERMODELMANAGERDEBUG
-	printf ("Elapsed time: %d\n", elapsed);
+	printf("Elapsed time: %d\n", elapsed);
 #endif
 	// Update joints and compute physic interactions
 	d->updateJoints(float(elapsed)/1000.0f);
@@ -917,21 +927,20 @@ void SpecificWorker::compute()
 	}
 	d->jointServersToShutDown.clear();
 	
+	
+		d->innerModel->update();
+
 	// Resize world widget if necessary, and render the world
-	if (d->viewer->size() != frameOSG->size())
 	{
-		d->viewer->setFixedSize (frameOSG->width(), frameOSG->height());
+		QMutexLocker vm(viewerMutex);
+		if (d->viewer->size() != frameOSG->size())
+		{
+			d->viewer->setFixedSize(frameOSG->width(), frameOSG->height());
+		}
+		d->imv->update();	
+		//osg render
+		d->viewer->frame();
 	}
-	
-	
-	d->innerModel->update();
-	d->imv->update();	
-#ifdef USE_BULLET
-	d->world->update(elapsed);
-#endif
-	//osg render
-	d->viewer->frame();
-	
 }
 
 
@@ -963,35 +972,40 @@ void SpecificWorker::visualTriggered()
 
 void SpecificWorker::setTopPOV()
 {
-	d->imv->setMainCamera (d->manipulator, InnerModelViewer::TOP_POV);
+	QMutexLocker vm(viewerMutex);
+	d->imv->setMainCamera(d->manipulator, InnerModelViewer::TOP_POV);
 }
 
 
 void SpecificWorker::setFrontPOV()
 {
-	d->imv->setMainCamera (d->manipulator, InnerModelViewer::FRONT_POV);
+	QMutexLocker vm(viewerMutex);
+	d->imv->setMainCamera(d->manipulator, InnerModelViewer::FRONT_POV);
 }
 
 
 void SpecificWorker::setBackPOV()
 {
-	d->imv->setMainCamera (d->manipulator, InnerModelViewer::BACK_POV);
+	QMutexLocker vm(viewerMutex);
+	d->imv->setMainCamera(d->manipulator, InnerModelViewer::BACK_POV);
 }
 
 
 void SpecificWorker::setLeftPOV()
 {
-	d->imv->setMainCamera (d->manipulator, InnerModelViewer::LEFT_POV);
+	QMutexLocker vm(viewerMutex);
+	d->imv->setMainCamera(d->manipulator, InnerModelViewer::LEFT_POV);
 }
 
 
 void SpecificWorker::setRightPOV()
 {
-	d->imv->setMainCamera (d->manipulator, InnerModelViewer::RIGHT_POV);
+	QMutexLocker vm(viewerMutex);
+	d->imv->setMainCamera(d->manipulator, InnerModelViewer::RIGHT_POV);
 }
 
 
-void SpecificWorker::closeEvent (QCloseEvent *event)
+void SpecificWorker::closeEvent(QCloseEvent *event)
 {
 	event->accept();
 	std::cout<<d->manipulator->getMatrix();	
@@ -1016,11 +1030,12 @@ void SpecificWorker::closeEvent (QCloseEvent *event)
 	settings->sync();
 	qDebug()<<settings->allKeys();
 	
-	exit (EXIT_SUCCESS);
+	exit(EXIT_SUCCESS);
 }
 
 void SpecificWorker::setLigthx(double v)
 {
+	QMutexLocker vm(viewerMutex);
 	osg::Vec4 p= d->viewer->getLight()->getPosition();	
 	p.set(v,p.y(),p.z(),p.w());
 	d->viewer->getLight()->setPosition(p);	
@@ -1028,6 +1043,7 @@ void SpecificWorker::setLigthx(double v)
 
 void SpecificWorker::setLigthy(double v)
 {
+	QMutexLocker vm(viewerMutex);
 	osg::Vec4 p= d->viewer->getLight()->getPosition();	
 	p.set(p.x(),v,p.z(),p.w());
 	d->viewer->getLight()->setPosition(p);	
@@ -1035,6 +1051,7 @@ void SpecificWorker::setLigthy(double v)
 
 void SpecificWorker::setLigthz(double v)
 {
+	QMutexLocker vm(viewerMutex);
 	osg::Vec4 p= d->viewer->getLight()->getPosition();	
 	p.set(p.x(),p.y(),v,p.w());
 	d->viewer->getLight()->setPosition(p);	
@@ -1047,7 +1064,7 @@ void SpecificWorker::setLigthz(double v)
 // ICE interfaces
 // ------------------------------------------------------------------------------------------------
 
-// void SpecificWorker::checkPoseCollision (QString node,QString msg)
+// void SpecificWorker::checkPoseCollision(QString node,QString msg)
 //
 //{
 // 	///por cada mesh descendiente chequear colisiones con todo el mundo menos con sus mesh hermanas
@@ -1057,17 +1074,17 @@ void SpecificWorker::setLigthz(double v)
 // 	QStringList l;
 // 	l.clear();
 // 
-// 	innerModel->getSubTree (innerModel->getNode (node),&l);
+// 	innerModel->getSubTree(innerModel->getNode(node),&l);
 // 
 // 	/// Checking
 // 	foreach (QString n, l)
 // 	{
 // 		/// Replicate plane removals
-// 		if (imv->meshHash.contains (n))
+// 		if (imv->meshHash.contains(n))
 // 		{
 // 			QList <QString> excludingList;
 // 			excludingList.clear();
-// 			detectarColision1toN (n,excludingList,msg);
+// 			detectarColision1toN(n,excludingList,msg);
 // 
 // 		}
 // 

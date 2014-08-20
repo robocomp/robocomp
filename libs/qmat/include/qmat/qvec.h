@@ -149,10 +149,12 @@ namespace RMat
 		static QVec zeros(const int s);
 		static QVec line2DImplicitCoefsFrom2Points(const QVec & p1, const QVec & p2);
 		static QVec line2DExplicitCoefsFrom2Points(const QVec & p1, const QVec & p2);
+		
 	};
+	
 };
 
 std::ostream& operator << ( std::ostream &os, const RMat::QVec &vector );
-
+std::istream& operator >> ( std::istream &is, RMat::QVec &vector );
 #endif
 
