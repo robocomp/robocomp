@@ -936,8 +936,7 @@ QVec InnerModel::compute3DPointFromImageAngles(const QString &firstCamera , cons
 	ray(1) = tan(left(1));
 	ray(2) = 1.;
 	pI = ray;//getRotationMatrixTo(refSystem, firstCamera)*ray;
-	
-	
+
 	pI(0)=pI(0)/pI(2);
 	pI(1)=pI(1)/pI(2);
 	pI(2)=1.;
@@ -950,8 +949,7 @@ QVec InnerModel::compute3DPointFromImageAngles(const QString &firstCamera , cons
 	pD(0)=pD(0)/pD(2);
 	pD(1)=pD(1)/pD(2);
 	pD(2)=1.;
-	
-	
+
 	n = pI ^ pD;
 	
 	A(0,0)=pI(0);  A(0,1)=-pD(0);  A(0,2)=n(0);
@@ -969,15 +967,40 @@ QVec InnerModel::compute3DPointFromImageAngles(const QString &firstCamera , cons
 	pR = (n*(abc(2)/2)) + pR;
 	
 	return pR;
-	
 }
 
 
 
 /// Information retrieval methods
 QVec InnerModel::transform(const QString &destId, const QVec &initVec, const QString &origId)
-{	
-	return (getTransformationMatrix(destId, origId) * initVec.toHomogeneousCoordinates()).fromHomogeneousCoordinates();
+{
+	if (initVec.size()==3)
+	{
+		return (getTransformationMatrix(destId, origId) * initVec.toHomogeneousCoordinates()).fromHomogeneousCoordinates();
+	}
+	else if (initVec.size()==6)
+	{
+		const QMat M = getTransformationMatrix(destId, origId);
+		const QVec a = (M * initVec.toHomogeneousCoordinates()).fromHomogeneousCoordinates();
+		const QVec b = M.extractAnglesR();
+		QVec ret(6);
+		ret(0) = a(0);
+		ret(1) = a(1);
+		ret(2) = a(2);
+		ret(3) = b(0);
+		ret(4) = b(1);
+		ret(5) = b(2);
+		return ret;
+	}
+	else
+	{
+		throw InnerModelException("InnerModel::transform was called with an unsupported vector size.");
+	}
+}
+
+QVec InnerModel::rotationAngles(const QString & destId, const QString & origId)
+{
+	return getTransformationMatrix(destId, origId).extractAnglesR();
 }
 
 QVec InnerModel::project(QString reference, QVec origVec, QString cameraId)

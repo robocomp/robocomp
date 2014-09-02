@@ -173,6 +173,7 @@ public:
 	/// Information retrieval methods
 	QVec transform(const QString & destId, const QVec &origVec, const QString & origId);
 	QVec transform(const QString & destId, const QString & origId) { return transform(destId, QVec::vec3(0,0,0), origId); }
+	QVec rotationAngles(const QString & destId, const QString & origId);
 	QVec project(QString reference, QVec origVec, QString cameraId);
 	QVec backProject(const QString &cameraId, const QVec &coord) ;//const;
 	void imageCoordToAngles(const QString &cameraId, QVec coord, float &pan, float &tilt, const QString & anglesRefS);

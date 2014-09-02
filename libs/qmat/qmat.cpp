@@ -1187,26 +1187,17 @@ QVec RMat::QMat::extractAnglesR() const
 	float x, y, z;
 	float x1, x2, y1, y2, z1, z2;
 	
-	/// WARNING: Esta condición es básicamente inútil: casi nunca vamos a tener un 1 exacto. Lo que se suele
-	/// hacer es comprobar que el número sea *cercano* a 1.  Esto es así porque (generalmente) a pesar de que
-	/// no sea 1 exacto podemos tener errores numéricos con números próximos. Supongo que es así también en
-	/// este caso pero habría que comprobarlo, ya que en realidad no he mirado el código. No toco nada por si
-	/// acaso
-	/// -- Luis
 	if (fabs(operator()(0,2)) > 1 || fabs(operator()(0,2)) < 1)
 	{
 		// ROTACION EN Y
 		y1 = asin(operator()(0,2));
 		y2 = M_PI-y1;
-		
 		// ROTACION EN X
 		x1 = atan2((-operator()(1,2)/cos(y1)), (operator()(2,2)/cos(y1)));
 		x2 = atan2((-operator()(1,2)/cos(y2)), (operator()(2,2)/cos(y2)));
-		
 		//ROTACION EN Z
 		z1 = atan2((-operator()(0,1)/cos(y1)), (operator()(0,0)/cos(y1)));
 		z2 = atan2((-operator()(0,1)/cos(y2)), (operator()(0,0)/cos(y2)));
-		
 		angulos.push_back(x1);  angulos.push_back(y1);  angulos.push_back(z1); // ir por el camino 1
 		angulos.push_back(x2);  angulos.push_back(y2);  angulos.push_back(z2); // ir por el camino 2
 	}
