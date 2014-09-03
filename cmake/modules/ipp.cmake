@@ -7,6 +7,7 @@ IF( "$ENV{IPPROOT}" STREQUAL "" )
 ELSE( "$ENV{IPPROOT}" STREQUAL "" )
 	IF ($ENV{IPPROOT} MATCHES .*composer.*)	#IPP 7.X
 		SET(IPP_LIBS -lippcore -lippcc -lippi -lipps -lippdc -lippm -lpthread -lippcc -lippcv -lippi -lippm -lippcv -liomp5)
+		SET(IPP_LIBS_PATH -L$ENV{IPPROOT}/sharedlib/ -L$ENV{IPPROOT}/lib/ -L$ENV{IPPROOT}/ipp/lib/intel64 )
 		SET( LIBS ${LIBS} ${IPP_LIBS} -L$ENV{IPPROOT}/../compiler/lib/ia32 -L$ENV{IPPROOT}/../compiler/lib/intel64 -L$ENV{IPPROOT}/ipp/lib/intel64/ -L$ENV{IPPROOT}/lib/intel64/ -L$ENV{IPPROOT}/ipp/lib/ia32/ -L$ENV{IPPROOT}/lib/ia32/ )
 		INCLUDE_DIRECTORIES( "$ENV{IPPROOT}/ipp/include/")
 		INCLUDE_DIRECTORIES( "$ENV{IPPROOT}/include/")

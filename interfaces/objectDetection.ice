@@ -17,6 +17,7 @@ module RoboCompobjectDetection{
 		void  projectInliers(string model);
 		void  convexHull(string model);
 		void  extractPolygon(string model);
+		void  ransac(string model);
 	};
 };
   
