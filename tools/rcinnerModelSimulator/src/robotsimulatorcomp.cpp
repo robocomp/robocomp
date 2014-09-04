@@ -126,9 +126,9 @@ int robotSimulatorComp::run( int argc, char* argv[] )
 		qFatal("Port number must be in the range 0-1023 (requires root privileges) or 1024-65535 (no privileges needed). Default port number: 11175");
 	if (ms > 1000 or ms < 5)
 		qFatal("Simulation period must be in the range 5-1000. Default period length 120ms");
-	
+
 	// Create the worker
-	SpecificWorker* worker = new SpecificWorker( mprx, communicator(), argv[1], ms );
+	SpecificWorker* worker = new SpecificWorker(mprx, communicator(), argv[1], ms);
 	try
 	{
 		// Server adapter creation and publication

@@ -28,6 +28,8 @@ public:
 	JointMotorServer(Ice::CommunicatorPtr communicator, SpecificWorker *worker_, uint32_t _port);
 	void add(InnerModelJoint *joint);
 	void remove(InnerModelJoint *joint);
+	void add(InnerModelPrismaticJoint *joint);
+	void remove(InnerModelPrismaticJoint *joint);
 	bool empty();
 	void shutdown();
 
@@ -35,7 +37,7 @@ public:
 	Ice::CommunicatorPtr comm;
 	Ice::ObjectAdapterPtr adapter;
 	JointMotorI *interface;
-	std::vector<InnerModelJoint *> joints;
+	std::vector<void *> joints;
 	SpecificWorker *worker;
 };
 

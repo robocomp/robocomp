@@ -20,11 +20,6 @@
 // Simulator includes
 #include "specificworker.h"
 
-#ifdef USE_BULLET
-#include "physicsMotion.h"
-#include "physicsWorld.h"
-#endif
-
 // Qt includes
 #include <QDropEvent>
 #include <QEvent>
@@ -127,11 +122,10 @@ struct SpecificWorker::Data
 		const float incAngle = (fabs(iniAngle)+fabs(finAngle)) / (float)measures;
 		osg::Vec3 Q,R;
 
-		printf("a\n");
 		QMutexLocker vm(worker->viewerMutex);
 		for (int i=0 ; i<measures; i++)
 		{
-			printf("%d (%d)\n", i, __LINE__);
+// 			printf("%d (%d)\n", i, __LINE__);
 			laserData[i].angle = angle;
 			laserData[i].dist = maxRange;
 			laserDataCartArray[id]->operator[](i) = QVecToOSGVec(innerModel->laserTo(id, id, angle, maxRange));
@@ -140,14 +134,14 @@ struct SpecificWorker::Data
 			Q = QVecToOSGVec(innerModel->laserTo("root", id, maxRange, angle));
 			//Creamos el segmento de interseccion
 			osg::ref_ptr<osgUtil::LineSegmentIntersector> intersector = new osgUtil::LineSegmentIntersector(osgUtil::Intersector::MODEL, P, Q);
-			printf("%d (%d)\n", i, __LINE__);
+// 			printf("%d (%d)\n", i, __LINE__);
 			osgUtil::IntersectionVisitor visitor(intersector.get());
 
 			/// Pasando el visitor al root
-			printf("%d (%d)\n", i, __LINE__);
+// 			printf("%d (%d)\n", i, __LINE__);
 			
 			viewer->getRootGroup()->accept(visitor);
-			printf("%d (%d)\n", i, __LINE__);
+// 			printf("%d (%d)\n", i, __LINE__);
 
 			if (intersector->containsIntersections() and id!="laserSecurity")
 			{
@@ -179,9 +173,6 @@ struct SpecificWorker::Data
 	}
 
 /*
-
-
-
 
 	// Refills touch sensor with new values
 	RoboCompTouchSensor::SensorMap TOUCH_createTouchData(const IMVLaser &laser)
@@ -281,7 +272,7 @@ struct SpecificWorker::Data
 	}
 
 
-	void AttributeAlreadyExists(InnerModelNode* node, QString attributeName, QString msg)
+	void AttributeAlreadyExists(InnerModelNode *node, QString attributeName, QString msg)
 	{
 		if (node->attributes.contains(attributeName))
 		{
@@ -298,7 +289,7 @@ struct SpecificWorker::Data
 	}
 
 
-	void NonExistingAttribute(InnerModelNode* node, QString attributeName, QString msg)
+	void NonExistingAttribute(InnerModelNode *node, QString attributeName, QString msg)
 	{
 		if (node->attributes.contains(attributeName) ==false)
 		{
@@ -315,7 +306,7 @@ struct SpecificWorker::Data
 	}
 
 
-	void getRecursiveNodeInformation(RoboCompInnerModelManager::NodeInformationSequence& nodesInfo, InnerModelNode* node)
+	void getRecursiveNodeInformation(RoboCompInnerModelManager::NodeInformationSequence& nodesInfo, InnerModelNode *node)
 	{
 		/// Add current node information
 		RoboCompInnerModelManager::NodeInformation ni;
@@ -349,7 +340,7 @@ struct SpecificWorker::Data
 	}
 
 
-	RoboCompInnerModelManager::NodeType getNodeType(InnerModelNode* node)
+	RoboCompInnerModelManager::NodeType getNodeType(InnerModelNode *node)
 	{
 		if (dynamic_cast<InnerModelJoint*>(node) != NULL)
 		{
@@ -418,7 +409,7 @@ struct SpecificWorker::Data
 		node = dynamic_cast<osg::Group*>(imv->meshHash[id].osgmeshes)->getChild(0);
 		if (node)
 		{
-			osg::Material* mat = new osg::Material;
+			osg::Material *mat = new osg::Material;
 			mat->setDiffuse(osg::Material::FRONT_AND_BACK, color);
 			node->getOrCreateStateSet()->setAttributeAndModes(mat, osg::StateAttribute::OVERRIDE);
 		}
@@ -432,7 +423,7 @@ struct SpecificWorker::Data
 		node = dynamic_cast<osg::Group*>(imv->meshHash[id].osgmeshes)->getChild(0);
 		if (node)
 		{
-			osg::Material* mat = new osg::Material;
+			osg::Material *mat = new osg::Material;
 			node->getOrCreateStateSet()->setAttributeAndModes(mat, osg::StateAttribute::ON);
 		}
 	}
@@ -442,7 +433,7 @@ struct SpecificWorker::Data
 	void changeLigthState(bool apagar)
 	{
 		QMutexLocker vm(worker->viewerMutex);
-		osg::StateSet* state = viewer->getRootGroup()->getOrCreateStateSet();
+		osg::StateSet *state = viewer->getRootGroup()->getOrCreateStateSet();
 
 		switch(apagar)
 		{
@@ -459,30 +450,41 @@ struct SpecificWorker::Data
 	// Update all the joint positions
 	void updateJoints(const float delta)
 	{
+// 	printf("%s: %d\n", __FILE__, __LINE__);
 		QHash<QString, JointMovement>::const_iterator iter;
 		for (iter = jointMovements.constBegin() ; iter != jointMovements.constEnd() ; ++iter)
 		{
-			InnerModelJoint* joint = this->innerModel->getJoint(iter.key());
-			const float angle = joint->getAngle();
-			const float amount = fminf(fabsf(iter->endPos - angle), iter->endSpeed * delta);
-			switch (iter->mode)
+			InnerModelNode *node = innerModel->getNode(iter.key());
+			InnerModelJoint *ajoint;
+			InnerModelPrismaticJoint *pjoint;
+			if ((ajoint = dynamic_cast<InnerModelJoint*>(node)) != NULL)
 			{
-			case JointMovement::FixedPosition:
-				joint->setAngle(iter->endPos);
-				break;
-			case JointMovement::TargetPosition:
-				if (iter->endPos > angle)
-					joint->setAngle(angle + amount);
-				else if (iter->endPos < angle)
-					joint->setAngle(angle - amount);
-				break;
-			case JointMovement::TargetSpeed:
-				joint->setAngle(angle + iter->endSpeed * delta);
-				break;
-			default:
-				break;
+				const float angle = ajoint->getAngle();
+				const float amount = fminf(fabsf(iter->endPos - angle), iter->endSpeed  *delta);
+				switch (iter->mode)
+				{
+				case JointMovement::FixedPosition:
+					ajoint->setAngle(iter->endPos);
+					break;
+				case JointMovement::TargetPosition:
+					if (iter->endPos > angle)
+						ajoint->setAngle(angle + amount);
+					else if (iter->endPos < angle)
+						ajoint->setAngle(angle - amount);
+					break;
+				case JointMovement::TargetSpeed:
+					ajoint->setAngle(angle + iter->endSpeed  *delta);
+					break;
+				default:
+					break;
+				}
+			}
+			else if ((pjoint = dynamic_cast<InnerModelPrismaticJoint*>(node)) != NULL)
+			{
+				pjoint->setPosition(iter->endPos);
 			}
 		}
+// 	printf("%s: %d\n", __FILE__, __LINE__);
 	}
 	
 	void updateTouchSensors()
@@ -496,21 +498,21 @@ struct SpecificWorker::Data
 				// touchIt->interface->sensorMap[touchIt->sensors[sss].id].value = XXX
 				InnerModelTouchSensor *sensorr = touchIt->second.sensors[sss];
 				std::string idd = sensorr->id.toStdString();
-				printf("%d: %s (%f)\n",
-
-					touchIt->second.port,
-							 
-					idd.c_str(), 
-					 
-					touchIt->second.interface->sensorMap[idd].value
-
-				);
+// 				printf("%d: %s (%f)\n",
+// 
+// 					touchIt->second.port,
+// 							 
+// 					idd.c_str(), 
+// 					 
+// 					touchIt->second.interface->sensorMap[idd].value
+// 
+// 				);
 			}
 		}
 	}
 	
 
-	void addDFR(InnerModelDifferentialRobot* node)
+	void addDFR(InnerModelDifferentialRobot *node)
 	{
 		const uint32_t port = node->port;
 		if (dfr_servers.count(port) == 0)
@@ -521,7 +523,7 @@ struct SpecificWorker::Data
 	}
 
 
-	void addOMN(InnerModelOmniRobot* node)
+	void addOMN(InnerModelOmniRobot *node)
 	{
 		const uint32_t port = node->port;
 		if (omn_servers.count(port) == 0)
@@ -532,7 +534,7 @@ struct SpecificWorker::Data
 	}
 
 
-	void addIMU(InnerModelIMU* node)
+	void addIMU(InnerModelIMU *node)
 	{
 		const uint32_t port = node->port;
 		if (imu_servers.count(port) == 0)
@@ -543,7 +545,7 @@ struct SpecificWorker::Data
 	}
 
 
-	void addJM(InnerModelJoint* node)
+	void addJM(InnerModelJoint *node)
 	{
 		const uint32_t port = node->port;
 		if (jm_servers.count(port) == 0)
@@ -553,7 +555,17 @@ struct SpecificWorker::Data
 		jm_servers.at(port).add(node);
 	}
 
-	void addTouch(InnerModelTouchSensor* node)
+	void addJM(InnerModelPrismaticJoint *node)
+	{
+		const uint32_t port = node->port;
+		if (jm_servers.count(port) == 0)
+		{
+			jm_servers.insert(std::pair<uint32_t, JointMotorServer>(port, JointMotorServer(communicator, worker, port)));
+		}
+		jm_servers.at(port).add(node);
+	}
+
+	void addTouch(InnerModelTouchSensor *node)
 	{
 		const uint32_t port = node->port;
 		if (touch_servers.count(port) == 0)
@@ -564,7 +576,7 @@ struct SpecificWorker::Data
 	}
 
 
-	void addLaser(InnerModelLaser* node)
+	void addLaser(InnerModelLaser *node)
 	{
 		const uint32_t port = node->port;
 		if (laser_servers.count(port) == 0)
@@ -575,7 +587,7 @@ struct SpecificWorker::Data
 	}
 
 
-	void addRGBD(InnerModelRGBD* node)
+	void addRGBD(InnerModelRGBD *node)
 	{
 		const uint32_t port = node->port;
 		if (rgbd_servers.count(port) == 0)
@@ -585,7 +597,7 @@ struct SpecificWorker::Data
 		rgbd_servers.at(port).add(node);
 	}
 
-	void removeJM(InnerModelJoint* node)
+	void removeJM(InnerModelJoint *node)
 	{
 		std::map<uint32_t, JointMotorServer>::iterator it;
 		for (it = jm_servers.begin(); it != jm_servers.end(); ++it)
@@ -623,7 +635,7 @@ struct SpecificWorker::Data
 	}
 	
 	
-	void walkTree(InnerModelNode* node = NULL)
+	void walkTree(InnerModelNode *node = NULL)
 	{
 		if (node == NULL)
 		{
@@ -639,35 +651,41 @@ struct SpecificWorker::Data
 		for (it=node->children.begin(); it!=node->children.end(); ++it)
 		{
 			//std::cout << "  --> " << (void *)*it << "  " << (uint64_t)*it << std::endl;
-			InnerModelDifferentialRobot* differentialNode = dynamic_cast<InnerModelDifferentialRobot *>(*it);
+			InnerModelDifferentialRobot *differentialNode = dynamic_cast<InnerModelDifferentialRobot *>(*it);
 			if (differentialNode != NULL)
 			{
 				//qDebug() << "DifferentialRobot " << differentialNode->id << differentialNode->port;
 				addDFR(differentialNode);
 			}
 			
-			InnerModelOmniRobot* omniNode = dynamic_cast<InnerModelOmniRobot *>(*it);
+			InnerModelOmniRobot *omniNode = dynamic_cast<InnerModelOmniRobot *>(*it);
 			if (omniNode != NULL)
 			{
 				//qDebug() << "OmniRobot " << omniNode->id << omniNode->port;
 				addOMN(omniNode);
 			}
 			
-			InnerModelIMU* imuNode = dynamic_cast<InnerModelIMU *>(*it);
+			InnerModelIMU *imuNode = dynamic_cast<InnerModelIMU *>(*it);
 			if (imuNode != NULL)
 			{
 				//qDebug() << "IMU " << imuNode->id << imuNode->port;
 				addIMU(imuNode);
 			}
 			
-			InnerModelJoint* jointNode = dynamic_cast<InnerModelJoint *>(*it);
+			InnerModelJoint *jointNode = dynamic_cast<InnerModelJoint *>(*it);
 			if (jointNode != NULL)
 			{
 				//qDebug() << "Joint " << (*it)->id;
 				addJM(jointNode);
 			}
+			InnerModelPrismaticJoint *pjointNode = dynamic_cast<InnerModelPrismaticJoint *>(*it);
+			if (pjointNode != NULL)
+			{
+				//qDebug() << "Joint " << (*it)->id;
+				addJM(pjointNode);
+			}
 
-			InnerModelTouchSensor* touchNode = dynamic_cast<InnerModelTouchSensor *>(*it);
+			InnerModelTouchSensor *touchNode = dynamic_cast<InnerModelTouchSensor *>(*it);
 			if (touchNode != NULL)
 			{
 				qDebug() << "Touch " << (*it)->id << "CALLING addTouch";
@@ -687,9 +705,9 @@ struct SpecificWorker::Data
 // ------------------------------------------------------------------------------------------------
 
 /**
-* \brief Default constructor
+ *\brief Default constructor
 */
-SpecificWorker::SpecificWorker(MapPrx& _mprx, Ice::CommunicatorPtr _communicator, const char* _innerModelXML, int ms) : GenericWorker(_mprx)
+SpecificWorker::SpecificWorker(MapPrx& _mprx, Ice::CommunicatorPtr _communicator, const char *_innerModelXML, int ms) : GenericWorker(_mprx)
 {
 	d = new Data;
 	viewerMutex = new QMutex(QMutex::Recursive);
@@ -776,7 +794,7 @@ SpecificWorker::SpecificWorker(MapPrx& _mprx, Ice::CommunicatorPtr _communicator
 
 
 /**
-* \brief Default destructor
+ *\brief Default destructor
 */
 SpecificWorker::~SpecificWorker()
 {

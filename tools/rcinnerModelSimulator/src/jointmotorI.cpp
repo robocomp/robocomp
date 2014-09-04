@@ -25,7 +25,7 @@
 /**
 * \brief Default constructor
 */
-JointMotorI::JointMotorI ( SpecificWorker *_worker, QObject *parent ) : QObject ( parent )
+JointMotorI::JointMotorI(SpecificWorker *_worker, QObject *parent) : QObject(parent)
 {
 	worker = _worker;
 	mutex = worker->mutex;       // Shared worker mutex
@@ -56,14 +56,25 @@ void JointMotorI::add(QString id)
 	MotorParams param;
 	param.invertedSign = false;
 	param.busId = jointIDs.size();
-	param.minPos = innerModel->getJoint ( id )->min;
-	param.maxPos = innerModel->getJoint ( id )->max;
+	
+	InnerModelNode *node = innerModel->getNode(id);
+	if (dynamic_cast<InnerModelJoint*>(node) != NULL)
+	{
+		param.minPos = dynamic_cast<InnerModelJoint*>(node)->min;
+		param.maxPos = dynamic_cast<InnerModelJoint*>(node)->max;
+	}
+	else if (dynamic_cast<InnerModelPrismaticJoint*>(node) != NULL)
+	{
+		param.minPos = dynamic_cast<InnerModelPrismaticJoint *>(node)->min;
+		param.maxPos = dynamic_cast<InnerModelPrismaticJoint *>(node)->max;
+	}
+
 	param.maxVelocity = 10000.;
 	param.zeroPos = 0.;
 	param.stepsRange = 0;
 	param.maxDegrees = 0;
 	param.name = id.toStdString();
-	params.push_back ( param );
+	params.push_back(param);
 
 	MotorState state;
 	state.p = 0;
@@ -84,7 +95,7 @@ void JointMotorI::remove(QString id)
 	jointIDs.removeAll(id);
 	states.erase(id.toStdString());
 
-	for(MotorParamsList::iterator iter=params.begin(); iter!=params.end(); )
+	for (MotorParamsList::iterator iter=params.begin(); iter!=params.end();)
 	{
 		if (iter->name == id.toStdString())
 			params.erase(iter);
@@ -99,99 +110,118 @@ void JointMotorI::remove(QString id)
 // Component functions, implementation
 
 
-void JointMotorI::setPosition ( const MotorGoalPosition& goal, const Ice::Current& )
+void JointMotorI::setPosition(const MotorGoalPosition &goal, const Ice::Current&)
 {
-	const QString name = QString::fromStdString ( goal.name );
-	if ( jointIDs.contains ( name ) )
+	const QString name = QString::fromStdString(goal.name);
+	if (jointIDs.contains(name))
 	{
-		worker->jm_setPosition( name, goal );
+		worker->jm_setPosition(name, goal);
 	}
 }
 
 
-void JointMotorI::setVelocity ( const MotorGoalVelocity& goal, const Ice::Current& )
+void JointMotorI::setVelocity(const MotorGoalVelocity &goal, const Ice::Current&)
 {
-	const QString name = QString::fromStdString ( goal.name );
-	if ( jointIDs.contains ( name ) )
+	const QString name = QString::fromStdString(goal.name);
+	if (jointIDs.contains(name))
 	{
-		worker->jm_setVelocity( name, goal );
+		worker->jm_setVelocity(name, goal);
 	}
 }
 
 
-void JointMotorI::setSyncPosition ( const MotorGoalPositionList& listGoals, const Ice::Current& ice )
+void JointMotorI::setSyncPosition(const MotorGoalPositionList &listGoals, const Ice::Current &ice)
 {
-	for ( uint i=0; i<listGoals.size(); i++ )
+	for (uint i=0; i<listGoals.size(); i++)
 	{
-		setPosition ( listGoals[i], ice );
+		setPosition(listGoals[i], ice);
 	}
 }
 
 
-void JointMotorI::setSyncVelocity ( const MotorGoalVelocityList& listGoals, const Ice::Current& ice )
+void JointMotorI::setSyncVelocity(const MotorGoalVelocityList &listGoals, const Ice::Current &ice)
 {
-	for ( uint i=0; i<listGoals.size(); i++ )
+	for (uint i=0; i<listGoals.size(); i++)
 	{
-		setVelocity ( listGoals[i], ice );
+		setVelocity(listGoals[i], ice);
 	}
 }
 
 
-MotorParams JointMotorI::getMotorParams ( const string& motor, const Ice::Current& )
+MotorParams JointMotorI::getMotorParams(const string &motor, const Ice::Current&)
 {
-	for ( uint i=0; i<params.size(); ++i )
+	for (uint i=0; i<params.size(); ++i)
 	{
-		if ( params[i].name == motor )
+		if (params[i].name == motor)
 		{
 			return params[i];
 		}
 	}
-	throw runtime_error ( std::string ( "RCRobotSimulator: JointMotorI::getMotorParams(): No motor named: " ) + motor );
+	throw runtime_error(std::string("RCRobotSimulator: JointMotorI::getMotorParams(): No motor named: ") + motor);
 }
 
 
-MotorState JointMotorI::getMotorState ( const string& motor, const Ice::Current& )
+MotorState JointMotorI::getMotorState(const string &motor, const Ice::Current&)
 {
-	for( QStringList::const_iterator name = jointIDs.constBegin() ; name != jointIDs.constEnd() ; ++name )
+	for (QStringList::const_iterator name = jointIDs.constBegin() ; name != jointIDs.constEnd() ; ++name)
 	{
-		InnerModelJoint* joint = this->innerModel->getJoint ( *name );
-		states[name->toStdString()].pos = joint->getAngle();
+		InnerModelNode *node = innerModel->getNode(*name);
+		if (dynamic_cast<InnerModelJoint*>(node) != NULL)
+		{
+			states[name->toStdString()].pos = dynamic_cast<InnerModelJoint*>(node)->getAngle();
+		}
+		else if (dynamic_cast<InnerModelPrismaticJoint*>(node) != NULL)
+		{
+			states[name->toStdString()].pos = dynamic_cast<InnerModelPrismaticJoint*>(node)->getPosition();
+		}
 	}
 	return states[motor];
 }
 
 
-MotorStateMap JointMotorI::getMotorStateMap ( const MotorList& mList, const Ice::Current& )
+MotorStateMap JointMotorI::getMotorStateMap(const MotorList &mList, const Ice::Current&)
 {
-	for( QStringList::const_iterator name = jointIDs.constBegin() ; name != jointIDs.constEnd() ; ++name )
+	for (QStringList::const_iterator name = jointIDs.constBegin() ; name != jointIDs.constEnd() ; ++name)
 	{
-		InnerModelJoint* joint = this->innerModel->getJoint ( *name );
-		states[name->toStdString()].pos = joint->getAngle();
+		InnerModelNode *node = innerModel->getNode(*name);
+		if (dynamic_cast<InnerModelJoint*>(node) != NULL)
+		{
+			states[name->toStdString()].pos = dynamic_cast<InnerModelJoint*>(node)->getAngle();
+		}
+		else if (dynamic_cast<InnerModelPrismaticJoint*>(node) != NULL)
+		{
+			states[name->toStdString()].pos = dynamic_cast<InnerModelPrismaticJoint*>(node)->getPosition();
+		}
 	}
 	return states;
 }
 
 
-void JointMotorI::getAllMotorState ( MotorStateMap& mstateMap, const Ice::Current& )
+void JointMotorI::getAllMotorState(MotorStateMap &mstateMap, const Ice::Current&)
 {
-	for( QStringList::const_iterator name = jointIDs.constBegin() ; name != jointIDs.constEnd() ; ++name )
+	for (QStringList::const_iterator name = jointIDs.constBegin() ; name != jointIDs.constEnd() ; ++name)
 	{
-		InnerModelJoint* joint = this->innerModel->getJoint ( *name );
-		states[name->toStdString()].pos = joint->getAngle();
+		InnerModelNode *node = innerModel->getNode(*name);
+		if (dynamic_cast<InnerModelJoint*>(node) != NULL)
+		{
+			states[name->toStdString()].pos = dynamic_cast<InnerModelJoint*>(node)->getAngle();
+		}
+		else if (dynamic_cast<InnerModelPrismaticJoint*>(node) != NULL)
+		{
+			states[name->toStdString()].pos = dynamic_cast<InnerModelPrismaticJoint*>(node)->getPosition();
+		}
 	}
 	mstateMap = states;
 }
 
 
-MotorParamsList JointMotorI::getAllMotorParams ( const Ice::Current& )
+MotorParamsList JointMotorI::getAllMotorParams(const Ice::Current&)
 {
-
 	return params;
 }
 
 
-RoboCompJointMotor::BusParams JointMotorI::getBusParams ( const Ice::Current& )
+RoboCompJointMotor::BusParams JointMotorI::getBusParams(const Ice::Current&)
 {
-
 	return busparams;
 }

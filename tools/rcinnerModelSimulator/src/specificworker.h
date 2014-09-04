@@ -30,7 +30,6 @@
 
 #include <InnerModelManager.h>
 #include <osgviewer/osgview.h>
-#include <innermodel/innermodelviewer.h>
 
 #include "genericworker.h"
 #include "servers.h"
