@@ -52,6 +52,7 @@ module RoboCompBodyInverseKinematics{
 		TargetState getState(string part);
 		void  stop(string part);
 		void  setNewTip(string part, string transform, Pose6D pose);
+		void  setJoint(string joint, float speed, float maxSpeed);
 	};
 };
   

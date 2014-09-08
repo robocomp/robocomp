@@ -26,6 +26,7 @@
 #include <qmat/qextrinsics.h>
 #include <qmat/qfundamental.h>
 #include <qmat/qessential.h>
+#include <qmat/qline2d.h>
 
 /** \mainpage RoboComp::Matrix class
  *

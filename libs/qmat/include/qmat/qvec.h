@@ -86,8 +86,8 @@ namespace RMat
 
 		//  Vector - Vector methods
 		void set(const T value)                              { fill( value ); }
-		QVec subVector(const int firstIndex, const int lastIndex);			//Returns a subvector starting at firstIndex and ending at lastIndex, both included
-		QVec scalarDivision(const T value) const;												//Divides all elements of the vector by value
+		QVec subVector(const int firstIndex, const int lastIndex) const;				//Returns a subvector starting at firstIndex and ending at lastIndex, both included
+		QVec scalarDivision(const T value) const;										//Divides all elements of the vector by value
 		QVec scalarMultiplication(const T value) const;									//Multiplies all elements of the vector by value
 		const QVec & inject(const QVec &vector, const int offset);
 		QVec pointProduct(const QVec &vector) const;

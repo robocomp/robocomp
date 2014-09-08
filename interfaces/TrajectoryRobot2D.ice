@@ -14,12 +14,12 @@ module RoboCompTrajectoryRobot2D{
 	struct TargetPose{
 		bool onlyRot;
 		float x;
-		float y;
-		float z;
-		float rx;
-		float ry;
-		float rz;
-		};
+					float y;
+					float z;
+					float rx;
+					float ry;
+					float rz;
+				};
 	["cpp:comparable"]
 	struct NavState{
 		long elapsedTime;
@@ -30,6 +30,7 @@ module RoboCompTrajectoryRobot2D{
 
 	interface TrajectoryRobot2D{
 		void  go(TargetPose target);
+		void  changeTarget(TargetPose target);
 		NavState getState();
 		void  stop();
 	};
