@@ -2715,11 +2715,14 @@ bool InnerModel::collide(const QString &a, const QString &b)
 // 	n1->collisionObject->computeAABB();
 // 	fcl::AABB a1 = n1->collisionObject->getAABB();
 // 	fcl::Vec3f v1 = a1.center();
-
+// 
 // 	n2->collisionObject->computeAABB();
 // 	fcl::AABB a2 = n2->collisionObject->getAABB();
 // 	fcl::Vec3f v2 = a2.center();
-	
+// 	
+// 	qDebug()<< a;
+// 	printf("- (%f,  %f,  %f) --- (%f,  %f,  %f) [%f , %f , %f]  <<%f %d>>\n", v1[0], v1[1], v1[2], (v1-v2)[0], (v1-v2)[1], (v1-v2)[2], a1.width(), a1.height(), a1.depth(), a1.distance(a2), a1.overlap(a2));
+// 	qDebug()<< b;
 // 	printf("- (%f,  %f,  %f) --- (%f,  %f,  %f) [%f , %f , %f]  <<%f %d>>\n", v2[0], v2[1], v2[2], (v1-v2)[0], (v1-v2)[1], (v1-v2)[2], a2.width(), a2.height(), a2.depth(), a1.distance(a2), a1.overlap(a2));
 
 	fcl::collide(n1->collisionObject, n2->collisionObject, request, result);
