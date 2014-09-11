@@ -12,6 +12,7 @@ set(srcs
     qmatrot.cpp
     qrtmat.cpp
     qhomo.cpp
+    qline2d.cpp
    )
 
 set(incs
@@ -26,6 +27,7 @@ set(incs
     include/${LIB_NAME}/qextrinsics.h 
     include/${LIB_NAME}/qmat.h 
     include/${LIB_NAME}/quaternion.h 
+    include/${LIB_NAME}/qline2d.h
     include/${LIB_NAME}/QMatAll
    )
 

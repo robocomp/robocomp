@@ -6,6 +6,8 @@ module RoboCompBodyInverseKinematics
 	};
 	struct Pose6D
 	{
+		//string bodyPart;
+		//string refSystem;
 		float x;
 		float y;
 		float z;
@@ -68,5 +70,8 @@ module RoboCompBodyInverseKinematics
 		
 		//Changes the tip of the corresponding bodypart
 		void setNewTip(string part, string transform, Pose6D pose);
+		
+		// Direct modification of a motor
+		void setJoint(string joint, float speed, float maxSpeed);
 	};
 };

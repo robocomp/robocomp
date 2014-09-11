@@ -175,7 +175,7 @@ const QVec & QVec::inject(const QVec &vector, const int offset)
  * @param lastIndex last position
  * @return extracted subvector
  */
-QVec QVec::subVector(const int firstIndex, const int lastIndex)
+QVec QVec::subVector(const int firstIndex, const int lastIndex) const
 {
 	Q_ASSERT(0 <= firstIndex);
 	Q_ASSERT(firstIndex <= lastIndex);
