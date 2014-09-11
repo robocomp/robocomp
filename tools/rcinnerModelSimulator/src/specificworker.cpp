@@ -106,7 +106,7 @@ struct SpecificWorker::Data
 	// Refills laserData with new values
 	RoboCompLaser::TLaserData LASER_createLaserData(const IMVLaser &laser)
 	{
-		QMutexLocker locker(worker->mutex);
+		//QMutexLocker locker(worker->mutex);
 		static RoboCompLaser::TLaserData laserData;
 		int measures = laser.laserNode->measures;
 		QString id = laser.laserNode->id;
@@ -122,7 +122,8 @@ struct SpecificWorker::Data
 		const float incAngle = (fabs(iniAngle)+fabs(finAngle)) / (float)measures;
 		osg::Vec3 Q,R;
 
-		QMutexLocker vm(worker->viewerMutex);
+		//QMutexLocker vm(worker->viewerMutex);
+		
 		for (int i=0 ; i<measures; i++)
 		{
 // 			printf("%d (%d)\n", i, __LINE__);
@@ -136,13 +137,13 @@ struct SpecificWorker::Data
 			osg::ref_ptr<osgUtil::LineSegmentIntersector> intersector = new osgUtil::LineSegmentIntersector(osgUtil::Intersector::MODEL, P, Q);
 // 			printf("%d (%d)\n", i, __LINE__);
 			osgUtil::IntersectionVisitor visitor(intersector.get());
-
+			
 			/// Pasando el visitor al root
 // 			printf("%d (%d)\n", i, __LINE__);
-			
 			viewer->getRootGroup()->accept(visitor);
+			
 // 			printf("%d (%d)\n", i, __LINE__);
-
+// 			qDebug()<<"nunchildrenROOT"<<viewer->getRootGroup()->getNumChildren();
 			if (intersector->containsIntersections() and id!="laserSecurity")
 			{
 				osgUtil::LineSegmentIntersector::Intersection result = *(intersector->getIntersections().begin());
@@ -165,10 +166,8 @@ struct SpecificWorker::Data
 			}
 			angle -= incAngle;
 		}
-
 		///what does it mean? the point of the laser robot.
 		laserDataCartArray[id]->operator[](measures) = QVecToOSGVec(innerModel->laserTo(id, id, 0.0001, 0.001));
-
 		return laserData;
 	}
 
@@ -789,6 +788,7 @@ SpecificWorker::SpecificWorker(MapPrx& _mprx, Ice::CommunicatorPtr _communicator
 
 	// Initialize the timer
 	setPeriod(ms);
+	qDebug()<<"period"<<Period;
 	
 }
 
@@ -877,7 +877,7 @@ void SpecificWorker::compute()
 			i++;
 		}
 	}
-	// Laser rendering
+	// Laser
 	{
 		QMutexLocker vm(viewerMutex);
 		for (QHash<QString, IMVLaser>::iterator laser = d->imv->lasers.begin(); laser != d->imv->lasers.end(); laser++)
@@ -943,6 +943,8 @@ void SpecificWorker::compute()
 		d->imv->update();	
 		//osg render
 		d->viewer->frame();
+		
+		
 	}
 }
 
