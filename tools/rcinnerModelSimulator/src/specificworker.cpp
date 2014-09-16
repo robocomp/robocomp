@@ -82,31 +82,31 @@ struct SpecificWorker::Data
 	QList <JointMotorServer *> jointServersToShutDown;
 
 	// Camera
-	
+
 	// DifferentialRobot
-	
+
 	// InnerModelManager
-	
+
 	// IMU
 	DataImu data_imu;
-	
+
 	// JointMotor
 	QHash<QString, JointMovement> jointMovements;
-	
+
 	// Laser
 	QMap<QString, RoboCompLaser::TLaserData> laserDataArray;
 	QMap<QString, osg::Vec3Array*> laserDataCartArray;
-	
+
 	// RGBD
-	
+
 	// ------------------------------------------------------------------------------------------------
 	// Private methods
 	// ------------------------------------------------------------------------------------------------
-	
+
 	// Refills laserData with new values
 	RoboCompLaser::TLaserData LASER_createLaserData(const IMVLaser &laser)
 	{
-		//QMutexLocker locker(worker->mutex);
+		QMutexLocker locker(worker->mutex);
 		static RoboCompLaser::TLaserData laserData;
 		int measures = laser.laserNode->measures;
 		QString id = laser.laserNode->id;
@@ -122,8 +122,8 @@ struct SpecificWorker::Data
 		const float incAngle = (fabs(iniAngle)+fabs(finAngle)) / (float)measures;
 		osg::Vec3 Q,R;
 
-		//QMutexLocker vm(worker->viewerMutex);
-		
+		QMutexLocker vm(worker->viewerMutex);
+
 		for (int i=0 ; i<measures; i++)
 		{
 // 			printf("%d (%d)\n", i, __LINE__);
@@ -137,11 +137,11 @@ struct SpecificWorker::Data
 			osg::ref_ptr<osgUtil::LineSegmentIntersector> intersector = new osgUtil::LineSegmentIntersector(osgUtil::Intersector::MODEL, P, Q);
 // 			printf("%d (%d)\n", i, __LINE__);
 			osgUtil::IntersectionVisitor visitor(intersector.get());
-			
+
 			/// Pasando el visitor al root
 // 			printf("%d (%d)\n", i, __LINE__);
 			viewer->getRootGroup()->accept(visitor);
-			
+
 // 			printf("%d (%d)\n", i, __LINE__);
 // 			qDebug()<<"nunchildrenROOT"<<viewer->getRootGroup()->getNumChildren();
 			if (intersector->containsIntersections() and id!="laserSecurity")
@@ -444,8 +444,8 @@ struct SpecificWorker::Data
 			break;
 		}
 	}
-	
-	
+
+
 	// Update all the joint positions
 	void updateJoints(const float delta)
 	{
@@ -485,7 +485,7 @@ struct SpecificWorker::Data
 		}
 // 	printf("%s: %d\n", __FILE__, __LINE__);
 	}
-	
+
 	void updateTouchSensors()
 	{
 		std::map<uint32_t, TouchSensorServer>::iterator touchIt;
@@ -498,18 +498,18 @@ struct SpecificWorker::Data
 				InnerModelTouchSensor *sensorr = touchIt->second.sensors[sss];
 				std::string idd = sensorr->id.toStdString();
 // 				printf("%d: %s (%f)\n",
-// 
+//
 // 					touchIt->second.port,
-// 							 
-// 					idd.c_str(), 
-// 					 
+//
+// 					idd.c_str(),
+//
 // 					touchIt->second.interface->sensorMap[idd].value
-// 
+//
 // 				);
 			}
 		}
 	}
-	
+
 
 	void addDFR(InnerModelDifferentialRobot *node)
 	{
@@ -622,8 +622,8 @@ struct SpecificWorker::Data
 			addLaser(it.value().laserNode);
 		}
 	}
-	
-	
+
+
 	void includeRGBDs()
 	{
 		QHash<QString, IMVCamera>::const_iterator it;
@@ -632,8 +632,8 @@ struct SpecificWorker::Data
 			addRGBD(it.value().RGBDNode);
 		}
 	}
-	
-	
+
+
 	void walkTree(InnerModelNode *node = NULL)
 	{
 		if (node == NULL)
@@ -656,21 +656,21 @@ struct SpecificWorker::Data
 				//qDebug() << "DifferentialRobot " << differentialNode->id << differentialNode->port;
 				addDFR(differentialNode);
 			}
-			
+
 			InnerModelOmniRobot *omniNode = dynamic_cast<InnerModelOmniRobot *>(*it);
 			if (omniNode != NULL)
 			{
 				//qDebug() << "OmniRobot " << omniNode->id << omniNode->port;
 				addOMN(omniNode);
 			}
-			
+
 			InnerModelIMU *imuNode = dynamic_cast<InnerModelIMU *>(*it);
 			if (imuNode != NULL)
 			{
 				//qDebug() << "IMU " << imuNode->id << imuNode->port;
 				addIMU(imuNode);
 			}
-			
+
 			InnerModelJoint *jointNode = dynamic_cast<InnerModelJoint *>(*it);
 			if (jointNode != NULL)
 			{
@@ -694,7 +694,7 @@ struct SpecificWorker::Data
 			walkTree(*it);
 		}
 	}
-	
+
 };
 
 
@@ -713,15 +713,15 @@ SpecificWorker::SpecificWorker(MapPrx& _mprx, Ice::CommunicatorPtr _communicator
 	// Create the server handlers
 	d->worker = this;
 	d->communicator = _communicator;
-	
+
 	d->laserDataCartArray.clear();
-	
+
 	// Initialize Inner model
 	d->innerModel = new InnerModel(_innerModelXML);
-	
+
 	//add name of .xml
 	setWindowTitle(windowTitle() + "\t" + _innerModelXML);
-	
+
 	// Initialize the Inner Model Viewer
 	QGLFormat fmt;
 	fmt.setDoubleBuffer(true);
@@ -729,15 +729,15 @@ SpecificWorker::SpecificWorker(MapPrx& _mprx, Ice::CommunicatorPtr _communicator
 	d->viewer = new OsgView(frameOSG);
 	d->imv = new InnerModelViewer(d->innerModel, "root", d->viewer->getRootGroup());
 	d->manipulator = new osgGA::TrackballManipulator;
-	d->viewer->setCameraManipulator(d->manipulator,true);	
-	
-	
-	
+	d->viewer->setCameraManipulator(d->manipulator,true);
+
+
+
 	settings = new QSettings("RoboComp", "RCIS");
 	QString path(_innerModelXML);
-	if (path == settings->value("path").toString() ) 
+	if (path == settings->value("path").toString() )
 	{
-	  //restore matrix view 
+	  //restore matrix view
 	  QStringList l = settings->value("matrix").toStringList();
 	  osg::Matrixd m;
 	  for (int i=0; i<4; i++ )
@@ -750,18 +750,18 @@ SpecificWorker::SpecificWorker(MapPrx& _mprx, Ice::CommunicatorPtr _communicator
 	      }
   // 	    cout<<"\n";
 	  }
-	  
+
 	  std::cout<<m;
-	
+
 	  d->manipulator->setByMatrix(m);
-	
+
 	}
 	else
 	{
 	  settings->setValue("path",path);
 	  qDebug()<<"new path"<<path<<"\n";
 	}
-	
+
 	// Connect all the signals
 	connect(topView,   SIGNAL(clicked()), this, SLOT(setTopPOV()));
 	connect(leftView,  SIGNAL(clicked()), this, SLOT(setLeftPOV()));
@@ -771,15 +771,15 @@ SpecificWorker::SpecificWorker(MapPrx& _mprx, Ice::CommunicatorPtr _communicator
 	connect(sp_lightx,  SIGNAL(valueChanged(double)), this, SLOT(setLigthx(double)));
 	connect(sp_lighty,  SIGNAL(valueChanged(double)), this, SLOT(setLigthy(double)));
 	connect(sp_lightz,  SIGNAL(valueChanged(double)), this, SLOT(setLigthz(double)));
-	
+
 	connect(actionObject, SIGNAL(triggered()), this, SLOT(objectTriggered()));
 	connect(actionVisual, SIGNAL(triggered()), this, SLOT(visualTriggered()));
-	
+
 	objectTriggered();
 	visualTriggered();
-	
+
 // 	d->innerModel->treePrint();
-	
+
 	// Start the physics simulation
 	#ifdef USE_BULLET
 	d->world = new World();
@@ -789,7 +789,7 @@ SpecificWorker::SpecificWorker(MapPrx& _mprx, Ice::CommunicatorPtr _communicator
 	// Initialize the timer
 	setPeriod(ms);
 	qDebug()<<"period"<<Period;
-	
+
 }
 
 
@@ -846,10 +846,10 @@ void SpecificWorker::compute()
 	QTime currentTime = QTime::currentTime();
 	const int elapsed = lastTime.msecsTo (currentTime);
 	lastTime = currentTime;
-	
+
 	QMutexLocker locker(mutex);
-	
-	
+
+
 	// Remove previous laser shapes
 	for (QHash<QString, IMVLaser>::iterator laser = d->imv->lasers.begin(); laser != d->imv->lasers.end(); laser++)
 	{
@@ -858,7 +858,7 @@ void SpecificWorker::compute()
 			laser->osgNode->removeChild(0, laser->osgNode->getNumChildren());
 		}
 	}
-	
+
 	// Camera render
 	QHash<QString, IMVCamera>::const_iterator i = d->imv->cameras.constBegin();
 	{
@@ -895,7 +895,7 @@ void SpecificWorker::compute()
 			// create and insert laser data
 			d->worker = this;
 			d->laserDataArray.insert(laser->laserNode->id, d->LASER_createLaserData(laser.value()));
-			
+
 			// create and insert laser shape
 			osg::ref_ptr<osg::Node> p=NULL;
 			if (id=="laserSecurity")
@@ -918,19 +918,19 @@ void SpecificWorker::compute()
 #endif
 	// Update joints and compute physic interactions
 	d->updateJoints(float(elapsed)/1000.0f);
-	
+
 	// Update touch sensors
 	d->updateTouchSensors();
-	
-	
+
+
 	// Shutdown empty servers
 	for (int i=0; i<d->jointServersToShutDown.size(); i++)
 	{
 		d->jointServersToShutDown[i]->shutdown();
 	}
 	d->jointServersToShutDown.clear();
-	
-	
+
+
 		d->innerModel->update();
 
 	// Resize world widget if necessary, and render the world
@@ -940,11 +940,11 @@ void SpecificWorker::compute()
 		{
 			d->viewer->setFixedSize(frameOSG->width(), frameOSG->height());
 		}
-		d->imv->update();	
+		d->imv->update();
 		//osg render
 		d->viewer->frame();
-		
-		
+
+
 	}
 }
 
@@ -1013,8 +1013,8 @@ void SpecificWorker::setRightPOV()
 void SpecificWorker::closeEvent(QCloseEvent *event)
 {
 	event->accept();
-	std::cout<<d->manipulator->getMatrix();	
-	osg::Matrixd m = d->manipulator->getMatrix();	
+	std::cout<<d->manipulator->getMatrix();
+	osg::Matrixd m = d->manipulator->getMatrix();
 	QString s="";
 	QStringList l;
 	for (int i=0; i<4; i++ )
@@ -1026,40 +1026,40 @@ void SpecificWorker::closeEvent(QCloseEvent *event)
 	    }
 // 	    cout<<"\n";
 	}
-	
+
 // 	l.removeLast();
 	qDebug()<<"L"<<l;
-	
-	settings->setValue("matrix", l);	
+
+	settings->setValue("matrix", l);
 	qDebug()<<"toStringList"<< settings->value("matrix").toStringList();
 	settings->sync();
 	qDebug()<<settings->allKeys();
-	
+
 	exit(EXIT_SUCCESS);
 }
 
 void SpecificWorker::setLigthx(double v)
 {
 	QMutexLocker vm(viewerMutex);
-	osg::Vec4 p= d->viewer->getLight()->getPosition();	
+	osg::Vec4 p= d->viewer->getLight()->getPosition();
 	p.set(v,p.y(),p.z(),p.w());
-	d->viewer->getLight()->setPosition(p);	
+	d->viewer->getLight()->setPosition(p);
 }
 
 void SpecificWorker::setLigthy(double v)
 {
 	QMutexLocker vm(viewerMutex);
-	osg::Vec4 p= d->viewer->getLight()->getPosition();	
+	osg::Vec4 p= d->viewer->getLight()->getPosition();
 	p.set(p.x(),v,p.z(),p.w());
-	d->viewer->getLight()->setPosition(p);	
+	d->viewer->getLight()->setPosition(p);
 }
 
 void SpecificWorker::setLigthz(double v)
 {
 	QMutexLocker vm(viewerMutex);
-	osg::Vec4 p= d->viewer->getLight()->getPosition();	
+	osg::Vec4 p= d->viewer->getLight()->getPosition();
 	p.set(p.x(),p.y(),v,p.w());
-	d->viewer->getLight()->setPosition(p);	
+	d->viewer->getLight()->setPosition(p);
 }
 
 
@@ -1074,13 +1074,13 @@ void SpecificWorker::setLigthz(double v)
 //{
 // 	///por cada mesh descendiente chequear colisiones con todo el mundo menos con sus mesh hermanas
 // #ifdef INNERMODELMANAGERDEBUG
-// 	qDebug() <<"checkPoseCollision"<<msg<<node<<"Are you crazy?";
+// 	qDebug() <<"checkPoseCollision"<<msg<<node<<"A?";
 // #endif
 // 	QStringList l;
 // 	l.clear();
-// 
+//
 // 	innerModel->getSubTree(innerModel->getNode(node),&l);
-// 
+//
 // 	/// Checking
 // 	foreach (QString n, l)
 // 	{
@@ -1090,9 +1090,9 @@ void SpecificWorker::setLigthz(double v)
 // 			QList <QString> excludingList;
 // 			excludingList.clear();
 // 			detectarColision1toN(n,excludingList,msg);
-// 
+//
 // 		}
-// 
+//
 // // 		/// Replicate plane removals
 // // 		if (imv->planeMts.contains(n))
 // // 		{
