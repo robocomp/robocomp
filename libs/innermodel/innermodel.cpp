@@ -2223,7 +2223,7 @@ InnerModelNode * InnerModelPlane::copyNode(QHash<QString, InnerModelNode *> &has
 
 InnerModelCamera::InnerModelCamera(QString id_, float width_, float height_, float focal_, InnerModelNode *parent_) : InnerModelNode(id_, parent_)
 {
-	camera = Cam(focal, focal, width/2., height/2.);
+	camera = Cam(focal_, focal_, width_/2., height_/2.);
 	camera.setSize(width, height);
 // 	camera.print(id_);
 	width = width_;
