@@ -778,13 +778,6 @@ SpecificWorker::SpecificWorker(MapPrx& _mprx, Ice::CommunicatorPtr _communicator
 	objectTriggered();
 	visualTriggered();
 
-// 	d->innerModel->treePrint();
-
-	// Start the physics simulation
-	#ifdef USE_BULLET
-	d->world = new World();
-	//d->startPhysics();
-	#endif
 
 	// Initialize the timer
 	setPeriod(ms);
@@ -853,6 +846,7 @@ void SpecificWorker::compute()
 	// Remove previous laser shapes
 	for (QHash<QString, IMVLaser>::iterator laser = d->imv->lasers.begin(); laser != d->imv->lasers.end(); laser++)
 	{
+		QMutexLocker locker(viewerMutex);
 		if (laser->osgNode->getNumChildren() > 0)
 		{
 			laser->osgNode->removeChild(0, laser->osgNode->getNumChildren());
@@ -943,8 +937,6 @@ void SpecificWorker::compute()
 		d->imv->update();
 		//osg render
 		d->viewer->frame();
-
-
 	}
 }
 
