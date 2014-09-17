@@ -84,7 +84,7 @@ Cam::Cam ( T Fx, T Fy, T Ox, T Oy ) :QMat ( 3,3 )
 	width = centroX *2;
 	height = centroY *2;
 	size = width * height;
-
+	
 	//Insert focus as negative quantity
 	this->operator()( 0,0 ) = Fx; this->operator()( 0,1 ) = 0.; this->operator()( 0,2 ) = Ox;
 	this->operator()( 1,0 ) = 0.;this->operator()( 1,1 ) = -Fy;this->operator()( 1,2 ) = Oy;
@@ -187,7 +187,7 @@ QMat RMat::Cam::project ( const QMat & p ) const
 QVec RMat::Cam::project ( const QVec &p ) const
 {
 #ifdef DEBUG
-	this->print("cam");
+	print("cam");
 #endif
 	QVec loc =  operator*(p);
 

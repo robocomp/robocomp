@@ -77,7 +77,7 @@ void InnerModelNode::treePrint(QString s, bool verbose)
 		if (verbose)
 			(*i)->print(verbose);
 		(*i)->treePrint(s+QString("  "), verbose);
-		
+
 	}
 }
 
@@ -157,7 +157,7 @@ InnerModel::InnerModel()
 	root->parent = NULL;
 	setRoot(root);
 	hash["root"] = root;
-	
+
 	// How to use:
 	//   InnerModelTransform *tr = innerModel->newTransform("name", parent, rx, ry, rz, px, py, pz);
 	//   parent->addChild(tr);
@@ -171,7 +171,7 @@ InnerModel::InnerModel(const InnerModel &original)
 	root = new InnerModelTransform("root", "static", 0, 0, 0, 0, 0, 0, 0);
 	setRoot(root);
 	hash["root"] = root;
-	
+
 	QList<InnerModelNode *>::iterator i;
 	for (i=original.root->children.begin(); i!=original.root->children.end(); i++)
 	{
@@ -203,7 +203,7 @@ void InnerModel::removeSubTree(InnerModelNode *node, QStringList *l)
 
 /**
  * @brief Returns a list of node's ID corresponding to the subtree starting at node
- * 
+ *
  * @param node starting node
  * @param l pointer to QStringList
  * @return void
@@ -222,7 +222,7 @@ void InnerModel::getSubTree(InnerModelNode *node, QStringList *l)
 // void InnerModel::getSubTreeN(InnerModelNode *orig, InnerModelNode *ret)
 // {
 // 	//ASSERTS
-// 	
+//
 // 	QList<InnerModelNode *>::iterator i;
 // 	for (i=orig->children.begin(); i!=orig->children.end(); i++)
 // 	{
@@ -235,7 +235,7 @@ bool InnerModel::save(QString path)
 	QFile file(path);
 	if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
 		return false;
-	
+
 	QTextStream out(&file);
 	root->save(out, 0);
 	file.close();
@@ -325,7 +325,7 @@ void InnerModel::setUpdatePlanePointers(QString planeId, float *nx, float *ny, f
 void InnerModel::updateTransformValues(QString transformId, float tx, float ty, float tz, float rx, float ry, float rz, QString parentId)
 {
 	cleanupTables();
-	
+
 	InnerModelTransform *aux = dynamic_cast<InnerModelTransform *>(hash[transformId]);
 	if (aux != NULL)
 	{
@@ -337,15 +337,15 @@ void InnerModel::updateTransformValues(QString transformId, float tx, float ty, 
 				RTMat Tbi;
 				Tbi.setTr( tx,ty,tz);
 				Tbi.setR ( rx,ry,rz);
-				
+
 				///Tbp Inverse = Tpb. This gets Tpb directly. It's the same
 				RTMat Tpb= getTransformationMatrix ( getNode ( transformId)->parent->id,parentId );
 				///New Tpi
 				RTMat Tpi=Tpb*Tbi;
-				
+
 				QVec angles =Tpi.extractAnglesR();
 				QVec tr=Tpi.getTr();
-				
+
 				rx=angles.x();ry=angles.y();rz=angles.z();
 				tx=tr.x();ty=tr.y();tz=tr.z();
 			}
@@ -372,7 +372,7 @@ void InnerModel::updateTransformValues(QString transformId, float tx, float ty, 
 void InnerModel::updatePlaneValues(QString planeId, float nx, float ny, float nz, float px, float py, float pz)
 {
 	cleanupTables();
-	
+
 	InnerModelPlane *plane = dynamic_cast<InnerModelPlane *>(hash[planeId]);
 	if (plane != NULL)
 	{
@@ -389,7 +389,7 @@ void InnerModel::updatePlaneValues(QString planeId, float nx, float ny, float nz
 void InnerModel::updateTranslationValues(QString transformId, float tx, float ty, float tz, QString parentId)
 {
 	cleanupTables();
-	
+
 	InnerModelTransform *aux = dynamic_cast<InnerModelTransform *>(hash[transformId]);
 	if (aux != NULL)
 	{
@@ -409,7 +409,7 @@ void InnerModel::updateTranslationValues(QString transformId, float tx, float ty
 void InnerModel::updateRotationValues(QString transformId, float rx, float ry, float rz, QString parentId)
 {
 	cleanupTables();
-	
+
 	InnerModelTransform *aux = dynamic_cast<InnerModelTransform *>(hash[transformId]);
 	if (aux != NULL)
 	{
@@ -448,7 +448,7 @@ void InnerModel::updateJointValue(QString jointId, float angle)
 void InnerModel::updatePrismaticJointPosition(QString jointId, float pos)
 {
 	cleanupTables();
-	
+
 	InnerModelPrismaticJoint *j = dynamic_cast<InnerModelPrismaticJoint *>(hash[jointId]);
 	if (j != NULL)
 	{
@@ -846,31 +846,31 @@ void InnerModel::updateStereoGeometry(const QString &firstCam, const QString &se
 QVec InnerModel::compute3DPointInCentral(const QString & firstCam, const QVec & first, const QString & secondCam, const QVec & second)
 {
 	T detA, a/*, b*/, c;
-	
+
 	QVec pI = this->getRotationMatrixTo("central", "firstCam") * static_cast<InnerModelCamera *>(hash[firstCam])->camera.getRayHomogeneous( first );
 	QVec pD = this->getRotationMatrixTo("central", "secondCam") * static_cast<InnerModelCamera *>(hash[secondCam])->camera.getRayHomogeneous( second );
 	// 	QVec pI = (centralToLeftMotor.getR().transpose() * leftMotorToLeftCamera.getR().transpose()) * leftCamera.getRayHomogeneous( left );
 	// 	QVec pD = (centralToRightMotor.getR().transpose() * rightMotorToRightCamera.getR().transpose()) * rightCamera.getRayHomogeneous( right );
-	
+
 	QVec n = QVec::vec3( pI(1)-pD(1) , -pI(0)+pD(0) , pI(0)*pD(1)-pD(0)*pI(1) );
-	
+
 	QMat A(3,3);
 	A(0,0)=pI(0);  A(0,1)=-pD(0);  A(0,2)=n(0);
 	A(1,0)=pI(1);  A(1,1)=-pD(1);  A(1,2)=n(1);
 	A(2,0)=1;      A(2,1)=-1;      A(2,2)=n(2);
-	
+
 	detA = A(0,0)*(A(1,1)*A(2,2)-A(1,2)*A(2,1))-A(0,1)*(A(1,0)*A(2,2)-A(1,2)*A(2,0))+A(0,2)*(A(1,0)*A(2,1)-A(1,1)*A(2,0));
-	
+
 	float baseLine = this->getBaseLine(); //NOT IMPLEMENTED
 	a = baseLine*(-pD(1)*n(2)+n(1))/detA;
 	// 	b = baseLine*(pI(1)*n(2)-n(1))/detA;
 	c = baseLine*(-pI(1)+pD(1))/detA;
-	
+
 	QVec res(3);
 	res(0) = (a*pI(0)-(baseLine/2.))+(c*n(0))/2.;
 	res(1) = a*pI(1) + c*n(1)/2.;
 	res(2) = a*pI(2) + c*n(2)/2.;
-	
+
 	return res;
 }
 
@@ -889,40 +889,40 @@ QVec InnerModel::compute3DPointFromImageCoords(const QString &firstCamera , cons
 {
 	QVec pI(3), pD(3), n(3), ray(3), T(3), TI(3), TD(3), pR(0), abc(3);
 	QMat A(3,3);
-	
+
 	ray = backProject(firstCamera, left);
 	pI = getRotationMatrixTo(refSystem, firstCamera)*ray;
-	
-	
+
+
 	pI(0)=pI(0)/pI(2);
 	pI(1)=pI(1)/pI(2);
 	pI(2)=1.;
-	
+
 	ray = backProject(secondCamera, right);
 	pD = getRotationMatrixTo(refSystem, secondCamera)*ray;
-	
+
 	pD(0)=pD(0)/pD(2);
 	pD(1)=pD(1)/pD(2);
 	pD(2)=1.;
-	
+
 	n = pI ^ pD;
-	
+
 	A(0,0)=pI(0);  A(0,1)=-pD(0);  A(0,2)=n(0);
 	A(1,0)=pI(1);  A(1,1)=-pD(1);  A(1,2)=n(1);
 	A(2,0)=pI(2);  A(2,1)=-pD(2);  A(2,2)=n(2);
-	
+
 	TI = getTranslationVectorTo(refSystem, firstCamera).fromHomogeneousCoordinates();
 	TD = getTranslationVectorTo(refSystem, secondCamera).fromHomogeneousCoordinates();
 	T = TD - TI ;
-	
+
 	abc = (A.invert())*T;
-	
+
 	pR = (pI*abc(0));
 	pR = pR + TI;
 	pR = (n*(abc(2)/2)) + pR;
-	
+
 	return pR;
-	
+
 }
 
 
@@ -931,7 +931,7 @@ QVec InnerModel::compute3DPointFromImageAngles(const QString &firstCamera , cons
 {
 	QVec pI(3), pD(3), n(3), ray(3), T(3), TI(3), TD(3), pR(0), abc(3);
 	QMat A(3,3);
-	
+
 	ray(0) = tan(left(0));
 	ray(1) = tan(left(1));
 	ray(2) = 1.;
@@ -940,32 +940,32 @@ QVec InnerModel::compute3DPointFromImageAngles(const QString &firstCamera , cons
 	pI(0)=pI(0)/pI(2);
 	pI(1)=pI(1)/pI(2);
 	pI(2)=1.;
-	
+
 	ray(0) = tan(right(0));
 	ray(1) = tan(right(1));
 	ray(2) = 1.;
 	pD = ray;//getRotationMatrixTo(refSystem, secondCamera)*ray;
-	
+
 	pD(0)=pD(0)/pD(2);
 	pD(1)=pD(1)/pD(2);
 	pD(2)=1.;
 
 	n = pI ^ pD;
-	
+
 	A(0,0)=pI(0);  A(0,1)=-pD(0);  A(0,2)=n(0);
 	A(1,0)=pI(1);  A(1,1)=-pD(1);  A(1,2)=n(1);
 	A(2,0)=pI(2);  A(2,1)=-pD(2);  A(2,2)=n(2);
-	
+
 	TI = getTranslationVectorTo(refSystem, firstCamera).fromHomogeneousCoordinates();
 	TD = getTranslationVectorTo(refSystem, secondCamera).fromHomogeneousCoordinates();
 	T = TD - TI;
-	
+
 	abc = (A.invert())*T;
-	
+
 	pR = (pI*abc(0));
 	pR = pR + TI;
 	pR = (n*(abc(2)/2)) + pR;
-	
+
 	return pR;
 }
 
@@ -1006,16 +1006,16 @@ QVec InnerModel::rotationAngles(const QString & destId, const QString & origId)
 QVec InnerModel::project(QString reference, QVec origVec, QString cameraId)
 {
 	origVec = transform(cameraId, origVec, reference);
-	
+
 	QVec pc;
 	InnerModelCamera *camera=NULL;
-	
+
 	camera = dynamic_cast<InnerModelCamera *>(hash[cameraId]);
 	if (not camera)
 		qFatal("No such %s camera", qPrintable(cameraId));
-	
+
 	pc = camera->camera.project(origVec);
-	
+
 	return QVec::vec3(pc(0), pc(1), origVec.norm2());
 }
 
@@ -1044,12 +1044,12 @@ QVec InnerModel::backProject( const QString &cameraId, const QVec &	coord) //con
 void InnerModel::imageCoordToAngles(const QString &cameraId, QVec coord, float &pan, float &tilt, const QString & anglesRefS)
 {
 	QVec ray = backProject(cameraId, coord);
-	
+
 	QVec finalRay = getRotationMatrixTo(anglesRefS, cameraId)*ray;
-	
+
 	pan = atan2(finalRay(0), finalRay(2));
 	tilt = atan2(finalRay(1), finalRay(2));
-	
+
 }
 
 
@@ -1057,18 +1057,18 @@ void InnerModel::imageCoordToAngles(const QString &cameraId, QVec coord, float &
 QVec InnerModel::anglesToImageCoord(const QString &cameraId, float pan, float tilt, const QString & anglesRefS)
 {
 	QVec p(3), ray(3);
-	
+
 	p(0) = tan(pan);
 	p(1) = tan(tilt);
 	p(2) = 1;
-	
+
 	ray = getRotationMatrixTo(cameraId, anglesRefS) * p;
 	ray(0)=ray(0)/ray(2);
 	ray(1)=ray(1)/ray(2);
 	ray(2)=1;
-	
+
 	return project(cameraId, ray, cameraId);
-	
+
 }
 
 
@@ -1092,7 +1092,7 @@ QVec InnerModel::projectFromCameraToPlane(const QString &to, const QVec &coord, 
 	QVec pCam(3);
 	QVec res(3);
 	float dxz, dyz;
-	
+
 	pCam(0) = -coord(0)+getCameraWidth(cameraId)/2;
 	pCam(1) = -(coord(1)-getCameraHeight(cameraId)/2);
 	pCam(2) = getCameraFocal(cameraId);
@@ -1101,21 +1101,21 @@ QVec InnerModel::projectFromCameraToPlane(const QString &to, const QVec &coord, 
 	QVec direc = pDest-pCent;
 	dxz = direc(0)/direc(2);
 	dyz = direc(1)/direc(2);
-	
+
 	res(2) = dist + vPlane(0)*(dxz*pCent(2)-pCent(0)) + vPlane(1)*(dyz*pCent(2)-pCent(1));
 	res(2) = res(2)/(vPlane(0)*dxz+vPlane(1)*dyz+vPlane(2));
 	res(0)=dxz*(res(2)-pCent(2))+pCent(0);
 	res(1)=dyz*(res(2)-pCent(2))+pCent(1);
-	
+
 	/*	res.print("res");
-	 * 
+	 *
 	 *	mSystem(0,0) = vPlane(0);         mSystem(0,1) = vPlane(1);         mSystem(0,2) = vPlane(2);
 	 *	mSystem(1,0) = 0;                 mSystem(1,1) = pCent(2)-pDest(2); mSystem(1,2) = pDest(1)-pCent(1);
 	 *	mSystem(2,0) = pDest(2)-pCent(2); mSystem(2,1) = 0;                 mSystem(2,2) = pCent(0)-pDest(0);
 	 *	tIndep(0) = dist;
 	 *	tIndep(1) = pCent(2)*(pDest(1)-pCent(1))+pCent(1)*(pCent(2)-pDest(2));
 	 *	tIndep(2) = pCent(0)*(pDest(2)-pCent(2))+pCent(2)*(pCent(0)-pDest(0));
-	 * 
+	 *
 	 * 	return (mSystem.invert())*tIndep;*/
 	return res;
 }
@@ -1154,7 +1154,7 @@ QVec InnerModel::horizonLine(QString planeId, QString cameraId, float heightOffs
 	QVec vec = QVec::vec3(plane->normal(0), plane->normal(1), plane->normal(2));
 	QVec normal = rtm*vec;
 	if (normal(1) <= 0.0000002) throw false;
-	
+
 	// Create two points
 	QVec p1=QVec::vec3(0., 0., 0.), p2=QVec::vec3(0., 0., 0.);
 	// Move both points forward
@@ -1171,7 +1171,7 @@ QVec InnerModel::horizonLine(QString planeId, QString cameraId, float heightOffs
 	// Compute image line
 	double dx=p2(0)-p1(0);
 	double dy=p2(1)-p1(1);
-	
+
 	if (abs(dx) <= 1)
 	{
 		if (abs(dy) <= 1) qFatal("Degenerated camera");
@@ -1189,7 +1189,7 @@ QVec InnerModel::horizonLine(QString planeId, QString cameraId, float heightOffs
 RTMat InnerModel::getTransformationMatrix(const QString &to, const QString &from)
 {
 	RTMat ret;
-	
+
 	QMutexLocker l(mutex);
 	if (localHashTr.contains(QPair<QString, QString>(to, from)))
 	{
@@ -1216,9 +1216,9 @@ RTMat InnerModel::getTransformationMatrix(const QString &to, const QString &from
 QMat InnerModel::getRotationMatrixTo(const QString &to, const QString &from)
 {
 	QMat rret = QMat::identity(3);
-	
+
 	QMutexLocker l(mutex);
-	
+
 	if (localHashRot.contains(QPair<QString, QString>(to, from)))
 	{
 		rret = localHashRot[QPair<QString, QString>(to, from)];
@@ -1227,7 +1227,7 @@ QMat InnerModel::getRotationMatrixTo(const QString &to, const QString &from)
 	{
 		setLists(from, to);
 		InnerModelTransform *tf=NULL;
-		
+
 		foreach (InnerModelNode *i, listA)
 		{
 			if ((tf=dynamic_cast<InnerModelTransform *>(i))!=NULL)
@@ -1244,7 +1244,7 @@ QMat InnerModel::getRotationMatrixTo(const QString &to, const QString &from)
 		}
 		localHashRot[QPair<QString, QString>(to, from)] = rret;
 	}
-	
+
 	return rret;
 }
 
@@ -1263,13 +1263,13 @@ QMat InnerModel::getHomographyMatrix(QString virtualCamera, QString plane, QStri
 	QVec planeN = getPlane(plane)->normal;
 	planeN = getRotationMatrixTo(sourceCamera, plane)*planeN;
 	QVec planePoint = transform(sourceCamera, getPlane(plane)->point, plane);
-	
+
 	QMat R  = getRotationMatrixTo(virtualCamera, sourceCamera);
 	QMat t  = transform(virtualCamera, QVec::vec3(0,0,0), sourceCamera);
 	QMat n  = QMat(planeN);
 	QMat K1 = getCamera(sourceCamera)->camera;
 	QMat K2 = getCamera(virtualCamera)->camera;
-	
+
 	double d = -(planePoint*planeN);
 	QMat H = K2 * ( R - ((t*n.transpose()) / d) ) * K1.invert();
 	return H;
@@ -1282,12 +1282,12 @@ QMat InnerModel::getAffineHomographyMatrix(QString virtualCamera, QString plane,
 	QVec planeN = getPlane(plane)->normal;
 	planeN = getRotationMatrixTo(sourceCamera, plane)*planeN;
 	QVec planePoint = transform(sourceCamera, getPlane(plane)->point, plane);
-	
+
 	QMat R  = getRotationMatrixTo(virtualCamera, sourceCamera);
 	QMat t  = transform(virtualCamera, QVec::vec3(0,0,0), sourceCamera);
 	QMat n  = QMat(planeN);
 	QMat K1 = getCamera(sourceCamera)->camera;
-	
+
 	double d = -(planePoint*planeN);
 	QMat H = ( R - ((t*n.transpose()) / d) ) * K1.invert();
 	for (int r=0;r<2;r++)
@@ -1303,12 +1303,12 @@ QMat InnerModel::getPlaneProjectionMatrix(QString virtualCamera, QString plane, 
 	QVec planeN = getPlane(plane)->normal;
 	planeN = getRotationMatrixTo(sourceCamera, plane)*planeN;
 	QVec planePoint = transform(sourceCamera, getPlane(plane)->point, plane);
-	
+
 	QMat R  = getRotationMatrixTo(virtualCamera, sourceCamera);
 	QMat t  = transform(virtualCamera, QVec::vec3(0,0,0), sourceCamera);
 	QMat n  = QMat(planeN);
 	QMat K1 = getCamera(sourceCamera)->camera;
-	
+
 	double d = -(planePoint*planeN);
 	QMat H = ( R - ((t*n.transpose()) / d) ) * K1.invert();
 	QMat HFinal(4,3);
@@ -1329,7 +1329,7 @@ void InnerModel::setLists(const QString & origId, const QString & destId)
 		throw InnerModelException("Cannot find node: \""+ origId.toStdString()+"\"");
 	if (!b)
 		throw InnerModelException("Cannot find node: "+ destId.toStdString()+"\"");
-	
+
 	int minLevel = a->level<b->level? a->level : b->level;
 	listA.clear();
 	while (a->level >= minLevel)
@@ -1342,7 +1342,7 @@ void InnerModel::setLists(const QString & origId, const QString & destId)
 		}
 		a=a->parent;
 	}
-	
+
 	listB.clear();
 	while (b->level >= minLevel)
 	{
@@ -1578,7 +1578,7 @@ void InnerModelTransform::print(bool verbose)
 void InnerModelTransform::save(QTextStream &out, int tabs)
 {
 	QList<InnerModelNode*>::iterator c;
-	
+
 	if (id == "root")
 	{
 		for (int i=0; i<tabs; i++) out << "\t";
@@ -1596,7 +1596,7 @@ void InnerModelTransform::save(QTextStream &out, int tabs)
 			out << "<rotation id=\"" << id << "\" tx=\""<< QString::number(backrX, 'g', 10) <<"\" ty=\""<< QString::number(backrY, 'g', 10) <<"\" tz=\""<< QString::number(backrZ, 'g', 10) <<"\">\n";
 		else
 			out << "<transform id=\"" << id << "\" tx=\""<< QString::number(backtX, 'g', 10) <<"\" ty=\""<< QString::number(backtY, 'g', 10) <<"\" tz=\""<< QString::number(backtZ, 'g', 10) <<"\"  rx=\""<< QString::number(backrX, 'g', 10) <<"\" ry=\""<< QString::number(backrY, 'g', 10) <<"\" rz=\""<< QString::number(backrZ, 'g', 10) <<"\">\n";
-					
+
 		for (c=children.begin(); c!=children.end(); c++)
 			(*c)->save(out, tabs+1);
 
@@ -1664,7 +1664,7 @@ void InnerModelTransform::update()
 
 /**
  * @brief Updates the internal values of the node from the values passed in the parameters
- * 
+ *
  * @param tx_ X Translation
  * @param ty_ Y Translation
  * @param tz_ Z Translation
@@ -1695,7 +1695,7 @@ InnerModelNode * InnerModelTransform::copyNode(QHash<QString, InnerModelNode *> 
 	{
 		ret->addChild((*i)->copyNode(hash, ret));
 	}
-	
+
 	return ret;
 }
 
@@ -1885,7 +1885,7 @@ InnerModelNode * InnerModelJoint::copyNode(QHash<QString, InnerModelNode *> &has
 	{
 		ret->addChild((*i)->copyNode(hash, ret));
 	}
-	
+
 	return ret;
 }
 
@@ -1990,7 +1990,7 @@ InnerModelNode * InnerModelPrismaticJoint::copyNode(QHash<QString, InnerModelNod
 	{
 		ret->addChild((*i)->copyNode(hash, ret));
 	}
-	
+
 	return ret;
 }
 
@@ -2019,7 +2019,7 @@ InnerModelNode * InnerModelDifferentialRobot::copyNode(QHash<QString, InnerModel
 	{
 		ret->addChild((*i)->copyNode(hash, ret));
 	}
-	
+
 	return ret;
 }
 
@@ -2048,7 +2048,7 @@ InnerModelNode * InnerModelOmniRobot::copyNode(QHash<QString, InnerModelNode *> 
 	{
 		ret->addChild((*i)->copyNode(hash, ret));
 	}
-	
+
 	return ret;
 }
 
@@ -2113,7 +2113,7 @@ InnerModelPlane::InnerModelPlane(QString id_, QString texture_, float width_, fl
 	triangles.push_back(fcl::Triangle(1,4,0));
 	triangles.push_back(fcl::Triangle(2,3,6)); // Bottom
 	triangles.push_back(fcl::Triangle(3,6,7));
-	
+
 ////
 ////   UNCOMMENT THIS CODE TO GENERATE A POINTCLOUD OF THE POINTS IN THE MESHES
 ////
@@ -2206,12 +2206,12 @@ InnerModelNode * InnerModelPlane::copyNode(QHash<QString, InnerModelNode *> &has
 	ret->children.clear();
 	ret->attributes.clear();
 	hash[id] = ret;
-	
+
 	for (QList<InnerModelNode*>::iterator i=children.begin(); i!=children.end(); i++)
 	{
 		ret->addChild((*i)->copyNode(hash, ret));
 	}
-	
+
 	return ret;
 }
 
@@ -2223,7 +2223,7 @@ InnerModelNode * InnerModelPlane::copyNode(QHash<QString, InnerModelNode *> &has
 
 InnerModelCamera::InnerModelCamera(QString id_, float width_, float height_, float focal_, InnerModelNode *parent_) : InnerModelNode(id_, parent_)
 {
-	camera = Cam(focal, focal, width/2., height/2.);
+	camera = Cam(focal_, focal_, width_/2., height_/2.);
 	camera.setSize(width, height);
 // 	camera.print(id_);
 	width = width_;
@@ -2266,12 +2266,12 @@ InnerModelNode * InnerModelCamera::copyNode(QHash<QString, InnerModelNode *> &ha
 	hash[id] = ret;
 
 	ret->camera = camera;
-	
+
 	for (QList<InnerModelNode*>::iterator i=children.begin(); i!=children.end(); i++)
 	{
 		ret->addChild((*i)->copyNode(hash, ret));
 	}
-	
+
 	return ret;
 }
 
@@ -2306,12 +2306,12 @@ InnerModelNode * InnerModelRGBD::copyNode(QHash<QString, InnerModelNode *> &hash
 	ret->children.clear();
 	ret->attributes.clear();
 	hash[id] = ret;
-	
+
 	for (QList<InnerModelNode*>::iterator i=children.begin(); i!=children.end(); i++)
 	{
 		ret->addChild((*i)->copyNode(hash, ret));
 	}
-	
+
 	return ret;
 }
 
@@ -2359,12 +2359,12 @@ InnerModelNode * InnerModelIMU::copyNode(QHash<QString, InnerModelNode *> &hash,
 	ret->children.clear();
 	ret->attributes.clear();
 	hash[id] = ret;
-	
+
 	for (QList<InnerModelNode*>::iterator i=children.begin(); i!=children.end(); i++)
 	{
 		ret->addChild((*i)->copyNode(hash, ret));
 	}
-	
+
 	return ret;
 }
 
@@ -2416,12 +2416,12 @@ InnerModelNode * InnerModelLaser::copyNode(QHash<QString, InnerModelNode *> &has
 	ret->children.clear();
 	ret->attributes.clear();
 	hash[id] = ret;
-	
+
 	for (QList<InnerModelNode*>::iterator i=children.begin(); i!=children.end(); i++)
 	{
 		ret->addChild((*i)->copyNode(hash, ret));
 	}
-	
+
 	return ret;
 }
 
@@ -2581,17 +2581,17 @@ InnerModelNode * InnerModelMesh::copyNode(QHash<QString, InnerModelNode *> &hash
 	ret->collisionObject = new fcl::CollisionObject(ret->fclMesh);
 
 #endif
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
 	for (QList<InnerModelNode*>::iterator i=children.begin(); i!=children.end(); i++)
 	{
 		ret->addChild((*i)->copyNode(hash, ret));
 	}
-	
+
 	return ret;
 }
 
@@ -2645,7 +2645,7 @@ InnerModelNode * InnerModelPointCloud::copyNode(QHash<QString, InnerModelNode *>
 	{
 		ret->addChild((*i)->copyNode(hash, ret));
 	}
-	
+
 	return ret;
 }
 
@@ -2680,12 +2680,12 @@ InnerModelNode * InnerModelTouchSensor::copyNode(QHash<QString, InnerModelNode *
 	{
 		ret->addChild((*i)->copyNode(hash, ret));
 	}
-	
+
 	return ret;
 }
 
 
-	
+
 // ----------------------------------------------------------------------------------------
 // ----------------------------------------------------------------------------------------
 // ----------------------------------------------------------------------------------------
@@ -2711,7 +2711,7 @@ bool InnerModel::collide(const QString &a, const QString &b)
 
 	fcl::CollisionRequest request;
 	fcl::CollisionResult result;
-	
+
 	n1->collisionObject->computeAABB();
 	fcl::AABB a1 = n1->collisionObject->getAABB();
 	fcl::Vec3f v1 = a1.center();
@@ -2719,11 +2719,13 @@ bool InnerModel::collide(const QString &a, const QString &b)
 	n2->collisionObject->computeAABB();
 	fcl::AABB a2 = n2->collisionObject->getAABB();
 	fcl::Vec3f v2 = a2.center();
+
 	
 	//qDebug()<< a;
 	//printf("- (%f,  %f,  %f) --- (%f,  %f,  %f) [%f , %f , %f]  <<%f %d>>\n", v1[0], v1[1], v1[2], (v1-v2)[0], (v1-v2)[1], (v1-v2)[2], a1.width(), a1.height(), a1.depth(), a1.distance(a2), a1.overlap(a2));
 	//qDebug()<< b;
 	//printf("- (%f,  %f,  %f) --- (%f,  %f,  %f) [%f , %f , %f]  <<%f %d>>\n", v2[0], v2[1], v2[2], (v1-v2)[0], (v1-v2)[1], (v1-v2)[2], a2.width(), a2.height(), a2.depth(), a1.distance(a2), a1.overlap(a2));
+
 
 	fcl::collide(n1->collisionObject, n2->collisionObject, request, result);
 
@@ -2737,7 +2739,7 @@ bool InnerModel::collide(const QString &a, const QString &b)
 
 /**
  * @brief ...
- * 
+ *
  * @param a ...
  * @param obj ...
  * @return bool
@@ -2752,10 +2754,10 @@ bool InnerModel::collide(const QString &a, const fcl::CollisionObject *obj)
 	QVec t1v = getTranslationVectorTo("root", a);
 	fcl::Vec3f T1( t1v(0), t1v(1), t1v(2) );
 	n1->collisionObject->setTransform(R1, T1);
-	
+
 	fcl::CollisionRequest request;
 	fcl::CollisionResult result;
-	
+
 	fcl::collide(n1->collisionObject, obj, request, result);
 
 	return result.isCollision();
