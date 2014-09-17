@@ -5,7 +5,7 @@
 
  	<!--		<plane id="prueba" nx="0.7" ny="0" nz="0.7" px="0" py="50" pz="0" size="1000,25,25" texture="#555555" #ee4400/> -->
 
-		   <!--    <plane id="ddG" ny="1"  px="-0" py="0" pz="0" size="5000,5000,10" texture="/home/robocomp/robocomp/files/osgModels/textures/wood.jpg" /> -->
+		       <plane id="ddG" ny="1"  px="-0" py="0" pz="0" size="5000,5000,10" texture="/home/robocomp/robocomp/files/osgModels/textures/wood.jpg" /> 
 	
 			<plane id="ddR" nx="1"  px="2500" py="200" pz="0" size="5000,500,10" texture="#eeeeee" />
 			<plane id="ddL" nx="1" px="-2500" py="200" pz="0" size="5000,500,10" texture="#eeeeee" />
