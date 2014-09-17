@@ -10,6 +10,7 @@
 #define ROBOCOMPOBJECTDETECTION_ICE
 
 module RoboCompobjectDetection{
+	sequence <string> listType;
 
 	interface objectDetection{
 		void  setModel2Fit(string model);
@@ -18,6 +19,11 @@ module RoboCompobjectDetection{
 		void  convexHull(string model);
 		void  extractPolygon(string model);
 		void  ransac(string model);
+		void  euclideanClustering(out int numClusters);
+		void  showObject(int numObject);
+		void  reset();
+		void  vfh(int numObject);
+		void  loadVFH();
 	};
 };
   

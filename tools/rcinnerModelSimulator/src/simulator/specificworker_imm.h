@@ -1,6 +1,7 @@
 // ------------------------------------------------------------------------------------------------
 // InnerModelManager.ice
 // ------------------------------------------------------------------------------------------------
+//#define INNERMODELMANAGERDEBUG
 
 // Moves item to the position defined by pose respect to the base
 bool SpecificWorker::imm_setPose(const QString &server, const std::string &base, const std::string &item, const RoboCompInnerModelManager::Pose3D &pose)
@@ -213,18 +214,18 @@ bool SpecificWorker::imm_setScale(const QString &server, const std::string &item
 	// 	d->innerModel->update();
 
 #ifdef INNERMODELMANAGERDEBUG
-	try {
-		checkPoseCollision(qItem,m);
-	} catch(RoboCompInnerModelManager::InnerModelManagerError err) {
-		std::cout<<err.what() <<" "<<err.text<< "\n";
-		std::cout<< "\n";
-		///come back to t= (t+1) -t
-
-		//to check => maybe using a tag in the xml (collide="true") to decide if allow collitions or not
-		//  innerModel->updateTransformValues(qItem,p.x, p.y, p.z, p.rx , p.ry, p.rz);
-		//  innerModel->update();
-		throw err;
-	}
+// 	try {
+// 		checkPoseCollision(qItem,m);
+// 	} catch(RoboCompInnerModelManager::InnerModelManagerError err) {
+// 		std::cout<<err.what() <<" "<<err.text<< "\n";
+// 		std::cout<< "\n";
+// 		///come back to t= (t+1) -t
+// 
+// 		//to check => maybe using a tag in the xml (collide="true") to decide if allow collitions or not
+// 		//  innerModel->updateTransformValues(qItem,p.x, p.y, p.z, p.rx , p.ry, p.rz);
+// 		//  innerModel->update();
+// 		throw err;
+// 	}
 #endif
 
 	return true;
@@ -604,12 +605,17 @@ bool SpecificWorker::imm_removeNode(const QString &server, const std::string &it
 	foreach(QString n, l) {
 		/// Replicate plane removals
 		if(d->imv->meshHash.contains(n)) {
-			( d->imv->meshHash[n].osgmeshPaths)->removeChild(0,2);
+			( d->imv->meshHash[n].osgmeshPaths->getParent(0))->removeChild(d->imv->meshHash[n].osgmeshPaths);
+			( d->imv->meshHash[n].osgmeshes->getParent(0))->removeChild(d->imv->meshHash[n].osgmeshes);
+			( d->imv->meshHash[n].meshMts->getParent(0))->removeChild(d->imv->meshHash[n].meshMts);
 			d->imv->meshHash.remove(n);
 // 			meshColision.remove(n);
 		}
 		/// Replicate transform removals
 		if(d->imv->mts.contains(n)) {
+ 			while(d->imv->mts[n]->getNumParents() > 0) {
+				(d->imv->mts[n]->getParent(0))->removeChild(d->imv->mts[n]);
+ 			}
 			d->imv->mts.remove(n);
 		}
 		/// Replicate plane removals
