@@ -431,7 +431,7 @@ public:
 public:
 	QVec normal, point;
 	QString texture;
-	float width, height,depth;
+	float width, height, depth;
 	int repeat;
 	float *nx, *ny, *nz;
 	float *px, *py, *pz;
