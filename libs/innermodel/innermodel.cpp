@@ -973,7 +973,7 @@ QVec InnerModel::compute3DPointFromImageAngles(const QString &firstCamera , cons
 
 /// Information retrieval methods
 QVec InnerModel::transform(const QString &destId, const QVec &initVec, const QString &origId)
-{
+{	
 	if (initVec.size()==3)
 	{
 		return (getTransformationMatrix(destId, origId) * initVec.toHomogeneousCoordinates()).fromHomogeneousCoordinates();
@@ -981,8 +981,8 @@ QVec InnerModel::transform(const QString &destId, const QVec &initVec, const QSt
 	else if (initVec.size()==6)
 	{
 		const QMat M = getTransformationMatrix(destId, origId);
-		const QVec a = (M * initVec.toHomogeneousCoordinates()).fromHomogeneousCoordinates();
-		const QVec b = M.extractAnglesR();
+		const QVec a = (M * initVec.subVector(0,2).toHomogeneousCoordinates()).fromHomogeneousCoordinates();
+		const QVec b = M.extractAnglesR_min();
 		QVec ret(6);
 		ret(0) = a(0);
 		ret(1) = a(1);
