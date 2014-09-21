@@ -13,7 +13,7 @@ JointMotorServer::JointMotorServer(Ice::CommunicatorPtr communicator, SpecificWo
 	comm = communicator;
 	std::string name = std::string("JointMotor") + out1.str();
 	std::string endp = std::string("tcp -p ")    + out1.str();
-	
+
 	adapter = communicator->createObjectAdapterWithEndpoints(name, endp);
 	printf("Creating JointMotor adapter <<%s>> with endpoint <<%s>>\n", name.c_str(), endp.c_str());
 	interface = new JointMotorI(worker);
@@ -26,6 +26,7 @@ void JointMotorServer::add(InnerModelJoint *joint)
 {
 	joints.push_back(joint);
 	interface->add(joint->id);
+	joint->setAngle(joint->home);
 }
 
 void JointMotorServer::add(InnerModelPrismaticJoint *joint)
@@ -62,7 +63,7 @@ void JointMotorServer::shutdown()
 	catch(Ice::ObjectAdapterDeactivatedException e)
 	{
 	}
-	
+
 	adapter->destroy();
 }
 

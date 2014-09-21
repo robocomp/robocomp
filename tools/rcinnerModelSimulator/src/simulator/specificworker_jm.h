@@ -87,7 +87,8 @@ RoboCompJointMotor::BusParams SpecificWorker::jm_getBusParams(const QString &ser
 
 
 void SpecificWorker::jm_setZeroPos(const QString &server, const std::string &motor)
-{}
+{
+}
 
 
 void SpecificWorker::jm_setSyncZeroPos(const QString &server)

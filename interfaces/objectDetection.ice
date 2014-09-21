@@ -19,6 +19,7 @@ module RoboCompobjectDetection{
 		void  convexHull(string model);
 		void  extractPolygon(string model);
 		void  ransac(string model);
+		void  normalSegmentation(string model);
 		void  euclideanClustering(out int numClusters);
 		void  showObject(int numObject);
 		void  reset();
