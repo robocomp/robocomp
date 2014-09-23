@@ -577,7 +577,7 @@ bool SpecificWorker::imm_removeNode(const QString &server, const std::string &it
 	l.clear();
 	
 	d->innerModel->getSubTree(node,&l);
-	l.size();
+// 	qDebug()<<"----------- l.size()"<<l.size();
 	///remove handlers and node
 	foreach (QString n, l)
 	{
@@ -605,6 +605,8 @@ bool SpecificWorker::imm_removeNode(const QString &server, const std::string &it
 	foreach(QString n, l) {
 		/// Replicate plane removals
 		if(d->imv->meshHash.contains(n)) {
+			qDebug()<<"Replicate plane removals";
+
 			( d->imv->meshHash[n].osgmeshPaths->getParent(0))->removeChild(d->imv->meshHash[n].osgmeshPaths);
 			( d->imv->meshHash[n].osgmeshes->getParent(0))->removeChild(d->imv->meshHash[n].osgmeshes);
 			( d->imv->meshHash[n].meshMts->getParent(0))->removeChild(d->imv->meshHash[n].meshMts);
@@ -613,20 +615,31 @@ bool SpecificWorker::imm_removeNode(const QString &server, const std::string &it
 		}
 		/// Replicate transform removals
 		if(d->imv->mts.contains(n)) {
+// 			qDebug()<<"/// Replicate transform removals"<<n<<d->imv->mts[n]->getNumParents();
  			while(d->imv->mts[n]->getNumParents() > 0) {
 				(d->imv->mts[n]->getParent(0))->removeChild(d->imv->mts[n]);
- 			}
-			d->imv->mts.remove(n);
+ 			}			
+ 			d->imv->mts.remove(n);
 		}
 		/// Replicate plane removals
 		if(d->imv->planeMts.contains(n)) {
+			qDebug()<<"/// Replicate plane removals";
 			while(d->imv->planeMts[n]->getNumParents() > 0) {
 				((osg::Group *)(d->imv->planeMts[n]->getParent(0)))->removeChild(d->imv->planeMts[n]);
 			}
 			d->imv->planeMts.remove(n);
 			d->imv->planesHash.remove(n);
+			
 		}
+		
 	}
+// 	qDebug()<<d->imv->meshHash.size();
+// 	qDebug()<<d->imv->mts.size();
+// 	qDebug()<<d->imv->planeMts.size();
+// 	qDebug()<<d->imv->planesHash.size();
+// 	qDebug()<<d->innerModel->getIDKeys().size();
+// 	d->innerModel->print();
+// 	qDebug()<<"----";
 //I think not necessary	
 // 	d->innerModel->update();
 // 	d->imv->update();
