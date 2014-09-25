@@ -78,10 +78,13 @@ public:
 		QString value;
 	};
 	InnerModelNode(QString id_, InnerModelNode *parent_=NULL);
-	virtual ~InnerModelNode(){
+	virtual ~InnerModelNode()
+	{
 #if FCL_SUPPORT==1
-		printf("ola k ase \n");
-	delete collisionObject;
+		if (collisionObject!=NULL)
+		{
+			collisionObject;
+		}
 #endif
 	}
 	void treePrint(QString s, bool verbose=false);
@@ -257,7 +260,7 @@ public:
 	QList<QString> getIDKeys() {return hash.keys(); }
 	InnerModelNode *getNode(const QString & id) const { if (hash.contains(id)) return hash[id]; else return NULL;}
 	void removeSubTree(InnerModelNode *item, QStringList *l);
-	void removeNode(const QString & id)  { InnerModelNode *dd = hash[id]; delete dd; hash.remove(id); }
+	void removeNode(const QString & id);
 	void getSubTree(InnerModelNode *node, QStringList *l);
 	/// Set debug level
 	int debugLevel(int level=-1) { static int debug_level=0; if (level>-1) debug_level=level; return debug_level; }

@@ -55,6 +55,7 @@ InnerModelException::InnerModelException(const std::string &reason) : runtime_er
 InnerModelNode::InnerModelNode(QString id_, InnerModelNode *parent_) : RTMat()
 {
 	collidable = false;
+	collisionObject = NULL;
 
 	fixed = true;
 	parent = parent_;
@@ -65,6 +66,7 @@ InnerModelNode::InnerModelNode(QString id_, InnerModelNode *parent_) : RTMat()
 	id = id_;
 	attributes.clear();
 }
+
 
 
 
@@ -181,6 +183,13 @@ InnerModel::InnerModel(const InnerModel &original)
 
 InnerModel::~InnerModel()
 {
+}
+
+void InnerModel::removeNode(const QString & id)
+{
+	InnerModelNode *dd = hash[id];
+	delete dd;
+	hash.remove(id);
 }
 
 bool InnerModel::open(std::string xmlFilePath)
@@ -973,7 +982,7 @@ QVec InnerModel::compute3DPointFromImageAngles(const QString &firstCamera , cons
 
 /// Information retrieval methods
 QVec InnerModel::transform(const QString &destId, const QVec &initVec, const QString &origId)
-{	
+{
 	if (initVec.size()==3)
 	{
 		return (getTransformationMatrix(destId, origId) * initVec.toHomogeneousCoordinates()).fromHomogeneousCoordinates();
@@ -2713,14 +2722,14 @@ bool InnerModel::collide(const QString &a, const QString &b)
 	fcl::CollisionResult result;
 
 	n1->collisionObject->computeAABB();
-	fcl::AABB a1 = n1->collisionObject->getAABB();
-	fcl::Vec3f v1 = a1.center();
+// 	fcl::AABB a1 = n1->collisionObject->getAABB();
+// 	fcl::Vec3f v1 = a1.center();
 
 	n2->collisionObject->computeAABB();
-	fcl::AABB a2 = n2->collisionObject->getAABB();
-	fcl::Vec3f v2 = a2.center();
+// 	fcl::AABB a2 = n2->collisionObject->getAABB();
+// 	fcl::Vec3f v2 = a2.center();
 
-	
+
 	//qDebug()<< a;
 	//printf("- (%f,  %f,  %f) --- (%f,  %f,  %f) [%f , %f , %f]  <<%f %d>>\n", v1[0], v1[1], v1[2], (v1-v2)[0], (v1-v2)[1], (v1-v2)[2], a1.width(), a1.height(), a1.depth(), a1.distance(a2), a1.overlap(a2));
 	//qDebug()<< b;
