@@ -55,7 +55,9 @@ InnerModelException::InnerModelException(const std::string &reason) : runtime_er
 InnerModelNode::InnerModelNode(QString id_, InnerModelNode *parent_) : RTMat()
 {
 	collidable = false;
+#if FCL_SUPPORT==1
 	collisionObject = NULL;
+#endif
 
 	fixed = true;
 	parent = parent_;
@@ -1556,6 +1558,9 @@ QVec InnerModel::laserToBase(const QString & laserId, float r, float alpha)
 
 InnerModelTransform::InnerModelTransform(QString id_, QString engine_, float tx_, float ty_, float tz_, float rx_, float ry_, float rz_, float mass_, InnerModelNode *parent_) : InnerModelNode(id_, parent_)
 {
+#if FCL_SUPPORT==1
+	collisionObject = NULL;
+#endif
 	engine = engine_;
 	set(rx_, ry_, rz_, tx_, ty_, tz_);
 	mass = mass_;
@@ -1715,6 +1720,9 @@ InnerModelNode * InnerModelTransform::copyNode(QHash<QString, InnerModelNode *> 
 
 InnerModelJoint::InnerModelJoint(QString id_, float lx_, float ly_, float lz_, float hx_, float hy_, float hz_, float tx_, float ty_, float tz_, float rx_, float ry_, float rz_, float min_, float max_, uint32_t port_, std::string axis_, float home_, InnerModelTransform *parent_) : InnerModelTransform(id_,QString("static"),tx_,ty_,tz_,rx_,ry_,rz_, 0, parent_)
 {
+#if FCL_SUPPORT==1
+	collisionObject = NULL;
+#endif
 // 		set(rx_, ry_, rz_, tx_, ty_, tz_);
 	backlX = lx_;
 	backlY = ly_;
@@ -1905,6 +1913,9 @@ InnerModelNode * InnerModelJoint::copyNode(QHash<QString, InnerModelNode *> &has
 
 InnerModelPrismaticJoint::InnerModelPrismaticJoint(QString id_, float min_, float max_, float val_, float offset_, uint32_t port_, std::string axis_, float home_, InnerModelTransform *parent_) : InnerModelTransform(id_,QString("static"),0,0,0,0,0,0, 0, parent_)
 {
+#if FCL_SUPPORT==1
+	collisionObject = NULL;
+#endif
 	min = min_;
 	max = max_;
 	port = port_;
@@ -2011,6 +2022,9 @@ InnerModelNode * InnerModelPrismaticJoint::copyNode(QHash<QString, InnerModelNod
 
 InnerModelDifferentialRobot::InnerModelDifferentialRobot(QString id_, float tx_, float ty_, float tz_, float rx_, float ry_, float rz_, uint32_t port_, float noise_, InnerModelTransform *parent_) : InnerModelTransform(id_,QString("static"),tx_,ty_,tz_,rx_,ry_,rz_, 0, parent_)
 {
+#if FCL_SUPPORT==1
+	collisionObject = NULL;
+#endif
 	port = port_;
 	noise = noise_;
 }
@@ -2040,6 +2054,9 @@ InnerModelNode * InnerModelDifferentialRobot::copyNode(QHash<QString, InnerModel
 
 InnerModelOmniRobot::InnerModelOmniRobot(QString id_, float tx_, float ty_, float tz_, float rx_, float ry_, float rz_, uint32_t port_, float noise_, InnerModelTransform *parent_) : InnerModelTransform(id_,QString("static"),tx_,ty_,tz_,rx_,ry_,rz_, 0, parent_)
 {
+#if FCL_SUPPORT==1
+	collisionObject = NULL;
+#endif
 	port = port_;
 	noise = noise_;
 }
@@ -2069,6 +2086,9 @@ InnerModelNode * InnerModelOmniRobot::copyNode(QHash<QString, InnerModelNode *> 
 
 InnerModelPlane::InnerModelPlane(QString id_, QString texture_, float width_, float height_,float depth_, int repeat_, float nx_, float ny_, float nz_, float px_, float py_, float pz_, bool collidable_, InnerModelNode *parent_) : InnerModelNode(id_, parent_)
 {
+#if FCL_SUPPORT==1
+	collisionObject = NULL;
+#endif
 	if ( abs(nx_)<0.001 and abs(ny_)<0.001 and abs(nz_)<0.001 ) nz_ = -1;
 	normal = QVec::vec3(nx_, ny_, nz_);
 	point = QVec::vec3(px_, py_, pz_);
@@ -2232,6 +2252,9 @@ InnerModelNode * InnerModelPlane::copyNode(QHash<QString, InnerModelNode *> &has
 
 InnerModelCamera::InnerModelCamera(QString id_, float width_, float height_, float focal_, InnerModelNode *parent_) : InnerModelNode(id_, parent_)
 {
+#if FCL_SUPPORT==1
+	collisionObject = NULL;
+#endif
 	camera = Cam(focal_, focal_, width_/2., height_/2.);
 	camera.setSize(width, height);
 // 	camera.print(id_);
@@ -2292,6 +2315,9 @@ InnerModelNode * InnerModelCamera::copyNode(QHash<QString, InnerModelNode *> &ha
 
 InnerModelRGBD::InnerModelRGBD(QString id_, float width, float height, float focal, float _noise, uint32_t _port, QString _ifconfig, InnerModelNode *parent_) : InnerModelCamera(id_, width, height, focal, parent_)
 {
+#if FCL_SUPPORT==1
+	collisionObject = NULL;
+#endif
 	noise = _noise;
 	port = _port;
 	ifconfig = _ifconfig;
@@ -2331,6 +2357,9 @@ InnerModelNode * InnerModelRGBD::copyNode(QHash<QString, InnerModelNode *> &hash
 
 InnerModelIMU::InnerModelIMU(QString id_, uint32_t _port, InnerModelNode *parent_) : InnerModelNode(id_, parent_)
 {
+#if FCL_SUPPORT==1
+	collisionObject = NULL;
+#endif
 	port = _port;
 }
 
@@ -2384,6 +2413,9 @@ InnerModelNode * InnerModelIMU::copyNode(QHash<QString, InnerModelNode *> &hash,
 
 InnerModelLaser::InnerModelLaser(QString id_, uint32_t _port, uint32_t _min, uint32_t _max, float _angle, uint32_t _measures, QString _ifconfig, InnerModelNode *parent_) : InnerModelNode(id_, parent_)
 {
+#if FCL_SUPPORT==1
+	collisionObject = NULL;
+#endif
 	port = _port;
 	min = _min;
 	max = _max;
@@ -2441,6 +2473,9 @@ InnerModelNode * InnerModelLaser::copyNode(QHash<QString, InnerModelNode *> &has
 
 InnerModelMesh::InnerModelMesh(QString id_, QString meshPath_, float scale, RenderingModes render_, float tx_, float ty_, float tz_, float rx_, float ry_, float rz_, bool collidable,  InnerModelNode *parent_) : InnerModelNode(id_, parent_)
 {
+#if FCL_SUPPORT==1
+	collisionObject = NULL;
+#endif
 	InnerModelMesh(id_,meshPath_,scale,scale,scale,render_,tx_,ty_,tz_,rx_,ry_,rz_, collidable, parent_);
 }
 
@@ -2448,6 +2483,9 @@ InnerModelMesh::InnerModelMesh(QString id_, QString meshPath_, float scale, Rend
 
 InnerModelMesh::InnerModelMesh(QString id_, QString meshPath_, float scalex_, float scaley_, float scalez_, RenderingModes render_, float tx_, float ty_, float tz_, float rx_, float ry_, float rz_, bool collidable_, InnerModelNode *parent_) : InnerModelNode(id_, parent_)
 {
+#if FCL_SUPPORT==1
+	collisionObject = NULL;
+#endif
 	id = id_;
 	render = render_;
 	meshPath = meshPath_;
@@ -2611,6 +2649,9 @@ InnerModelNode * InnerModelMesh::copyNode(QHash<QString, InnerModelNode *> &hash
 
 InnerModelPointCloud::InnerModelPointCloud(QString id_, InnerModelNode *parent_) : InnerModelNode(id_, parent_)
 {
+#if FCL_SUPPORT==1
+	collisionObject = NULL;
+#endif
 	id = id_;
 }
 
@@ -2666,6 +2707,10 @@ InnerModelNode * InnerModelPointCloud::copyNode(QHash<QString, InnerModelNode *>
 
 InnerModelTouchSensor::InnerModelTouchSensor(QString id_, QString stype_, float nx_, float ny_, float nz_, float min_, float max_, uint32_t port_, InnerModelNode *parent_) : InnerModelNode(id_, parent_)
 {
+#if FCL_SUPPORT==1
+	collisionObject = NULL;
+#endif
+
 	id = id_;
 	nx = nx_;
 	ny = ny_;
