@@ -83,7 +83,7 @@ public:
 #if FCL_SUPPORT==1
 		if (collisionObject!=NULL)
 		{
-			collisionObject;
+			delete collisionObject;
 		}
 #endif
 	}
