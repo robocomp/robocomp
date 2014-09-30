@@ -605,17 +605,20 @@ bool SpecificWorker::imm_removeNode(const QString &server, const std::string &it
 	foreach(QString n, l) {
 		/// Replicate plane removals
 		if(d->imv->meshHash.contains(n)) {
-			qDebug()<<"Replicate plane removals";
-
-			( d->imv->meshHash[n].osgmeshPaths->getParent(0))->removeChild(d->imv->meshHash[n].osgmeshPaths);
-			( d->imv->meshHash[n].osgmeshes->getParent(0))->removeChild(d->imv->meshHash[n].osgmeshes);
-			( d->imv->meshHash[n].meshMts->getParent(0))->removeChild(d->imv->meshHash[n].meshMts);
+// 			qDebug()<<"/// Replicate meshHash removals"<<n;			
+			while(d->imv->meshHash[n].osgmeshPaths->getNumParents() > 0)
+				( d->imv->meshHash[n].osgmeshPaths->getParent(0))->removeChild(d->imv->meshHash[n].osgmeshPaths);			
+			while(d->imv->meshHash[n].osgmeshes->getNumParents() > 0)
+				( d->imv->meshHash[n].osgmeshes->getParent(0))->removeChild(d->imv->meshHash[n].osgmeshes);
+			while(d->imv->meshHash[n].meshMts->getNumParents() > 0)	
+				( d->imv->meshHash[n].meshMts->getParent(0))->removeChild(d->imv->meshHash[n].meshMts);			
+				
 			d->imv->meshHash.remove(n);
 // 			meshColision.remove(n);
 		}
 		/// Replicate transform removals
 		if(d->imv->mts.contains(n)) {
-// 			qDebug()<<"/// Replicate transform removals"<<n<<d->imv->mts[n]->getNumParents();
+			qDebug()<<"/// Replicate transform removals";//<<n<<d->imv->mts[n]->getNumParents();
  			while(d->imv->mts[n]->getNumParents() > 0) {
 				(d->imv->mts[n]->getParent(0))->removeChild(d->imv->mts[n]);
  			}			
@@ -629,7 +632,6 @@ bool SpecificWorker::imm_removeNode(const QString &server, const std::string &it
 			}
 			d->imv->planeMts.remove(n);
 			d->imv->planesHash.remove(n);
-			
 		}
 		
 	}
