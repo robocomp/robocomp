@@ -107,6 +107,9 @@ struct SpecificWorker::Data
 	RoboCompLaser::TLaserData LASER_createLaserData(const IMVLaser &laser)
 	{
 		QMutexLocker locker(worker->mutex);
+		viewer->stopThreading();
+
+// 		printf("osg threads running... %d\n", viewer->areThreadsRunning());
 		static RoboCompLaser::TLaserData laserData;
 		int measures = laser.laserNode->measures;
 		QString id = laser.laserNode->id;
@@ -168,6 +171,8 @@ struct SpecificWorker::Data
 		}
 		///what does it mean? the point of the laser robot.
 		laserDataCartArray[id]->operator[](measures) = QVecToOSGVec(innerModel->laserTo(id, id, 0.0001, 0.001));
+
+		viewer->startThreading();
 		return laserData;
 	}
 

@@ -20,12 +20,12 @@
 
 RCDraw::RCDraw( int _width, int _height, uchar *img, QWidget *parent) : QGLWidget(parent), width(_width), height(_height)
 {
-	resize ( width, height );
-	win.setRect ( 0, 0, width, height );
+	resize(width, height);
+	win.setRect( 0, 0, width, height);
 
 	qimg = NULL;
-	if ( img != NULL )
-		qimg = new QImage ( img, width, height, QImage::Format_Indexed8 );
+	if (img != NULL)
+		qimg = new QImage(img, width, height, QImage::Format_Indexed8);
 
 	init();
 }
@@ -114,7 +114,7 @@ RCDraw::~RCDraw()
 {
 }
 
-bool RCDraw::autoResize()
+bool RCDraw::autoResize(bool ignoreAspectRatio)
 { 
 	if (parent())
 	{
@@ -123,6 +123,12 @@ bool RCDraw::autoResize()
 			setFixedSize(parentWidget()->width(), parentWidget()->height()); 
 			width = parentWidget()->width(); 
 			height = parentWidget()->height();
+			if (ignoreAspectRatio)
+			{
+				const int32_t ww = getWidth();
+				const int32_t hh = getHeight();
+				setWindow(QRect(0,0, ww*zoomMul, hh*zoomMul));
+			}
 			if (qimg)
 			{
 				qimg->scaled(width,height);

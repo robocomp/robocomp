@@ -10,7 +10,7 @@ module RoboCompTrajectoryRobot2D
 		float rz;
 		bool onlyRot;
 	};
-	
+
 	struct NavState
 	{
 		long elapsedTime;

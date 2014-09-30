@@ -618,7 +618,7 @@ bool SpecificWorker::imm_removeNode(const QString &server, const std::string &it
 		}
 		/// Replicate transform removals
 		if(d->imv->mts.contains(n)) {
-			qDebug()<<"/// Replicate transform removals";//<<n<<d->imv->mts[n]->getNumParents();
+//			qDebug()<<"/// Replicate transform removals";//<<n<<d->imv->mts[n]->getNumParents();
  			while(d->imv->mts[n]->getNumParents() > 0) {
 				(d->imv->mts[n]->getParent(0))->removeChild(d->imv->mts[n]);
  			}			
@@ -626,7 +626,7 @@ bool SpecificWorker::imm_removeNode(const QString &server, const std::string &it
 		}
 		/// Replicate plane removals
 		if(d->imv->planeMts.contains(n)) {
-			qDebug()<<"/// Replicate plane removals";
+//			qDebug()<<"/// Replicate plane removals";
 			while(d->imv->planeMts[n]->getNumParents() > 0) {
 				((osg::Group *)(d->imv->planeMts[n]->getParent(0)))->removeChild(d->imv->planeMts[n]);
 			}

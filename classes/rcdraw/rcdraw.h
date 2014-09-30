@@ -67,7 +67,7 @@ public:
 	void draw2DRoiOnFloor(const QPoint & center, const QMat & cov, const QColor & col, bool fill, int id);
 	void draw3DRoiOnFloor( const QVec & center, const QMat & cov, const QColor &, bool fill=false, int id =-1 );
 	void drawAxis(const QColor &, int w);
-	void drawAxis ( const QColor &c, int w, float step );
+	void drawAxis(const QColor &c, int w, float step);
 	void drawPerimeter(const QColor &c, int width, int margin);
 	void drawPerimeter(const QColor &c, int width);
 	void drawCrossHair(const QColor &c);
@@ -81,7 +81,7 @@ public:
 
 	uint32_t getWidth() { return width; }
 	uint32_t getHeight() { return height; }
-	bool autoResize();
+	bool autoResize(bool ignoreAspectRatio=false);
 	uchar *imageBuffer() { if (qimg != NULL) return qimg->bits(); return NULL; }
 	void removeImage() { if (qimg != NULL) delete qimg; qimg = NULL; }
 
@@ -160,7 +160,7 @@ protected:
 	QVec visibleCenter;
 
 signals:
-  	void iniMouseCoor(QPoint p);
+	void iniMouseCoor(QPoint p);
 	void endMouseCoor(QPoint p);
 	void newCoor(QPointF p);
 	void endCoor(QPointF p);
