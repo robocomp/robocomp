@@ -1,5 +1,5 @@
-import "/robocomp/interfaces/IDSLs/CommonHead.idsl";
-import "/robocomp/interfaces/IDSLs/DifferentialRobot.idsl";
+import "CommonHead.idsl";
+import "DifferentialRobot.idsl";
 
 module RoboCompCamera
 {
