@@ -30,6 +30,7 @@ module RoboCompTrajectoryRobot2D{
 
 	interface TrajectoryRobot2D{
 		void  go(TargetPose target);
+		void  goBackwards(TargetPose target);
 		void  changeTarget(TargetPose target);
 		NavState getState();
 		void  stop();

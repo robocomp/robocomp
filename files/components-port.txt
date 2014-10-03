@@ -275,3 +275,5 @@ hriComp=12229
 humanComp=12230
 navigationComp=12231
 objectComp=12232
+ASRComprehensionComp=12233
+ASRCommandTopic=12234

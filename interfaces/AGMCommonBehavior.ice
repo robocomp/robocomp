@@ -11,10 +11,12 @@
 
 module RoboCompAGMCommonBehavior{
 	enum StateEnum{Starting, Running, Stopped};
+	["cpp:comparable"]
 	struct StateStruct{
 		StateEnum state;
 		string info;
 	};
+	["cpp:comparable"]
 	struct Parameter{
 		bool editable;
 		string value;
