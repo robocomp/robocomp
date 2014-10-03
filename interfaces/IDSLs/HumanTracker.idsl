@@ -1,0 +1,26 @@
+module RoboCompHumanTracker
+{
+	enum TrackingState { None, Calibrating, Tracked, ErrorNotInPose, ErrorHands, ErrorHead, ErrorLegs, ErrorTorso };
+	sequence <float> RTMatrix;
+	dictionary<string, RTMatrix>RTMatrixList;
+
+	sequence <float> joint;
+	dictionary<string, joint>jointListType;
+
+	struct TPerson
+	{
+		TrackingState state;
+		jointListType joints;
+		RTMatrixList rotations;
+	};
+	dictionary<int, TPerson>PersonList;
+
+	interface HumanTracker
+	{
+		void  getJointsPosition(int id, out jointListType jointList);
+		void  getRTMatrixList(int id, out RTMatrixList RTMatList);
+		void  getUserState(int id, out TrackingState state);
+		void  getUser(int id, out TPerson user);
+		void  getUsersList(out PersonList users);
+	};
+};
