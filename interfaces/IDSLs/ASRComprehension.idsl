@@ -1,0 +1,7 @@
+module RoboCompASRComprehension
+{
+	interface ASRComprehension
+	{
+		void mode(string text);
+	};
+};

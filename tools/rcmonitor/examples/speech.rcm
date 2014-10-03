@@ -1,4 +1,4 @@
-interfaces/Speech.ice
+/interfaces/Speech.ice
 speech
 localhost
 tcp

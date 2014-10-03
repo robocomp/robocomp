@@ -1,0 +1,16 @@
+module RoboCompASRCommand
+{
+	sequence<string> TComplements;
+
+	struct Command
+	{
+		string action;
+		TComplements complements;
+	};
+
+	interface ASRCommand
+	{
+		void newCommand(Command c);
+	};
+};
+
