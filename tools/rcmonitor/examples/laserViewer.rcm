@@ -1,4 +1,4 @@
-/Interfaces/Laser.ice
+/interfaces/Laser.ice
 laser
 localhost
 tcp
