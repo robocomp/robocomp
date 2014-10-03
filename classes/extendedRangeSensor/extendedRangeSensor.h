@@ -22,7 +22,7 @@
 #include <DifferentialRobot.h>
 #include <Laser.h>
 
-#include <QMat/QMatAll>
+#include <qmat/QMatAll>
 #include <innermodel/innermodel.h>
 
 class TExt
