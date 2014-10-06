@@ -12,7 +12,7 @@
 module RoboCompTrajectoryRobot2D{
 	["cpp:comparable"]
 	struct TargetPose{
-		bool onlyRot;
+		bool doRotation;
 		float x;
 					float y;
 					float z;

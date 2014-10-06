@@ -8,7 +8,7 @@ module RoboCompTrajectoryRobot2D
 		float rx;
 		float ry;
 		float rz;
-		bool onlyRot;
+		bool doRotation;
 	};
 
 	struct NavState
