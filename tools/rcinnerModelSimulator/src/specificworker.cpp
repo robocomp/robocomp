@@ -107,8 +107,6 @@ struct SpecificWorker::Data
 	RoboCompLaser::TLaserData LASER_createLaserData(const IMVLaser &laser)
 	{
 		QMutexLocker locker(worker->mutex);
-		viewer->stopThreading();
-
 // 		printf("osg threads running... %d\n", viewer->areThreadsRunning());
 		static RoboCompLaser::TLaserData laserData;
 		int measures = laser.laserNode->measures;
@@ -132,7 +130,9 @@ struct SpecificWorker::Data
 // 			printf("%d (%d)\n", i, __LINE__);
 			laserData[i].angle = angle;
 			laserData[i].dist = maxRange;
-			laserDataCartArray[id]->operator[](i) = QVecToOSGVec(innerModel->laserTo(id, id, angle, maxRange));
+					
+			laserDataCartArray[id]->operator[](i) = QVecToOSGVec(innerModel->laserTo(id, id, angle, maxRange));	
+			
 
 			//Calculamos el punto destino
 			Q = QVecToOSGVec(innerModel->laserTo("root", id, maxRange, angle));
@@ -171,8 +171,7 @@ struct SpecificWorker::Data
 		}
 		///what does it mean? the point of the laser robot.
 		laserDataCartArray[id]->operator[](measures) = QVecToOSGVec(innerModel->laserTo(id, id, 0.0001, 0.001));
-
-		viewer->startThreading();
+// 		viewer->startThreading();
 		return laserData;
 	}
 
@@ -909,6 +908,8 @@ void SpecificWorker::compute()
 			{
 				laser->osgNode->addChild(p);
 			}
+// 			printf("%d (%d)\n", i, __LINE__);
+
 		}
 	}
 
@@ -930,7 +931,7 @@ void SpecificWorker::compute()
 	d->jointServersToShutDown.clear();
 
 
-		d->innerModel->update();
+		
 
 	// Resize world widget if necessary, and render the world
 	{
@@ -939,6 +940,7 @@ void SpecificWorker::compute()
 		{
 			d->viewer->setFixedSize(frameOSG->width(), frameOSG->height());
 		}
+		d->innerModel->update();
 		d->imv->update();
 		//osg render
 		d->viewer->frame();
