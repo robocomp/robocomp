@@ -13,7 +13,8 @@ module RoboCompobjectDetection{
 	sequence <string> listType;
 
 	interface objectDetection{
-		void  setModel2Fit(string model);
+		void  aprilFitModel(string model);
+		void  fitModel(string model);
 		void  getInliers(string model);
 		void  projectInliers(string model);
 		void  convexHull(string model);
