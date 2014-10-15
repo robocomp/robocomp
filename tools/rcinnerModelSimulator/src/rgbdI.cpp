@@ -63,14 +63,14 @@ void RGBDI::getData ( RoboCompRGBD::imgType& rgbMatrix, depthType& distanceMatri
 	ColorSeq color;
 	DepthSeq depth;
 	PointSeq points;
-	worker->rgbd_getImage ( id, color, depth, points, hState, bState );
+	worker->rgbd_getImage (id, color, depth, points, hState, bState );
 	
-	rgbMatrix.resize ( 640*480*3 );
-	distanceMatrix.resize ( 640*480 );
-	for ( int i=0; i<640*480; i++ ) {
-		rgbMatrix[3*i+0] = color[i].red;
-		rgbMatrix[3*i+1] = color[i].green;
-		rgbMatrix[3*i+2] = color[i].blue;
+	rgbMatrix.resize (color.size()*3);
+	distanceMatrix.resize (color.size());
+	for (uint32_t i=0; i<color.size(); i++ ) {
+		rgbMatrix[3*i + 0] = color[i].red;
+		rgbMatrix[3*i + 1] = color[i].green;
+		rgbMatrix[3*i + 2] = color[i].blue;
 		distanceMatrix[i] = depth[i];
 	}
 }

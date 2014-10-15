@@ -56,6 +56,7 @@ class C(QWidget):
 	def job(self):
 		try:
 			self.color, self.depth, self.headState, self.baseState = self.proxy.getData()
+			print len(self.color)
 			if (len(self.color) == 0) or (len(self.depth) == 0):
 				print 'Error retrieving images!'
 		except Ice.Exception:

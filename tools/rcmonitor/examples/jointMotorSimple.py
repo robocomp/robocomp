@@ -142,7 +142,7 @@ class C(QWidget):
 		goal.name = str(self.combo.currentText())
 		goal.maxAcc = 1.5
 		print goal.velocity, goal.name, goal.maxAcc
-		self.proxy.setReferenceVelocity(goal)
+		self.proxy.setVelocity(goal)
 	def enable(self):
 		self.proxy.enableBrakeMotor(str(self.combo.currentText()))
 	def disable(self):
