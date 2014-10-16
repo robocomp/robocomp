@@ -2,7 +2,7 @@ interfaces/RGBD.ice
 rgbd
 localhost
 tcp
-10096
+30000
 10
 rgbd.py
 

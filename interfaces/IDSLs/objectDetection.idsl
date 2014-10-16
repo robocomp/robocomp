@@ -5,7 +5,7 @@ module RoboCompobjectDetection
 	interface objectDetection
 	{
 		void aprilFitModel(string model);
-		void fitModel(string model);
+		void fitModel(string model, string method);
 		void getInliers(string model);
 		void projectInliers(string model);
 		void convexHull(string model);
