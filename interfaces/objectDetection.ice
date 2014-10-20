@@ -13,6 +13,7 @@ module RoboCompobjectDetection{
 	sequence <string> listType;
 
 	interface objectDetection{
+		void  mirrorPC();
 		void  aprilFitModel(string model);
 		void  fitModel(string model, string method);
 		void  getInliers(string model);
