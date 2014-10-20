@@ -110,7 +110,7 @@ int robotSimulatorComp::run( int argc, char* argv[] )
 
 	// Get the port number
 	int port = 11175;
-	int ms = 120;
+	int ms = 30;
 	for (int params=2; params+1<argc; params+=2)
 	{
 		if (strcmp(argv[params],"-p")==0)
