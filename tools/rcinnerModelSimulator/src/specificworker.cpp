@@ -130,9 +130,9 @@ struct SpecificWorker::Data
 // 			printf("%d (%d)\n", i, __LINE__);
 			laserData[i].angle = angle;
 			laserData[i].dist = maxRange;
-					
-			laserDataCartArray[id]->operator[](i) = QVecToOSGVec(innerModel->laserTo(id, id, angle, maxRange));	
-			
+
+			laserDataCartArray[id]->operator[](i) = QVecToOSGVec(innerModel->laserTo(id, id, angle, maxRange));
+
 
 			//Calculamos el punto destino
 			Q = QVecToOSGVec(innerModel->laserTo("root", id, maxRange, angle));
@@ -931,7 +931,7 @@ void SpecificWorker::compute()
 	d->jointServersToShutDown.clear();
 
 
-		
+
 
 	// Resize world widget if necessary, and render the world
 	{
