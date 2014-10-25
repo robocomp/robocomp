@@ -24,8 +24,10 @@ module RoboCompobjectDetection{
 		void  euclideanClustering(out int numClusters);
 		void  showObject(int numObject);
 		void  reset();
-		void  vfh(int numObject);
-		void  loadVFH();
+		void  mirrorPC();
+		void  reloadVFH();
+		void  loadTrainedVFH();
+		void  vfh(out listType guesses);
 	};
 };
   

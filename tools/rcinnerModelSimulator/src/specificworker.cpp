@@ -842,6 +842,7 @@ void SpecificWorker::compute()
 	static QTime lastTime = QTime::currentTime();
 	QTime currentTime = QTime::currentTime();
 	const int elapsed = lastTime.msecsTo (currentTime);
+// 	printf("elapsed %d\n", elapsed);
 	lastTime = currentTime;
 
 	QMutexLocker locker(mutex);
