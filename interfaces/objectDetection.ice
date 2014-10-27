@@ -25,9 +25,11 @@ module RoboCompobjectDetection{
 		void  showObject(int numObject);
 		void  reset();
 		void  mirrorPC();
+		void  mindTheGapPC();
 		void  reloadVFH();
 		void  loadTrainedVFH();
 		void  vfh(out listType guesses);
+		void  surfHomography(out listType guesses);
 	};
 };
   
