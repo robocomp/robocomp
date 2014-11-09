@@ -27,6 +27,13 @@
 #include <qmat/qmat.h>
 
 
+#ifdef PYTHON_BINDINGS_SUPPORT
+	#include <boost/python.hpp>
+	#include <boost/python/list.hpp>
+#else
+	dejew
+#endif
+
 namespace RMat
 {
 	typedef float T;
@@ -43,11 +50,26 @@ namespace RMat
 	{
 	public:
 		QVec() : QVector<T>()                                                                       {}
-		QVec(const int size, const T defaultValue = 0) : QVector< T >(size, defaultValue)           {}
+		QVec(const int size) : QVector< T >(size)                                                   {}
+		QVec(const int size, const T defaultValue) : QVector< T >(size, defaultValue)               {}
 		QVec(const RMat::QMat & matrix);
 		QVec(const QVec & v) : QVector<T>(v)                                                        {}
 		QVec(const QVector<T> &vector): QVector<T>(vector)                                          {}
 		QVec(const std::vector<T> &vector): QVector<T>(QVector<T>::fromStdVector( vector ))         {}
+#ifdef PYTHON_BINDINGS_SUPPORT
+		static std::vector<float> to_std_vector_QVec(const boost::python::list &ns)
+		{
+			std::vector<float> ret;
+			for (int i=0; i<len(ns); ++i)
+			{
+				ret.push_back(boost::python::extract<float>(ns[i]));
+			}
+			return ret;
+		}
+		QVec(const boost::python::list &v): QVector<T>(QVector<T>::fromStdVector(to_std_vector_QVec(v))) {}
+#else
+		dejew
+#endif
 		QVec(const QPoint &point): QVector< T >(2)          { operator[](0) = point.x(); operator[](1) = point.y(); }
 		QVec(const QPointF &point): QVector< T >(2)         { operator[](0) = point.x(); operator[](1) = point.y(); }
 
@@ -57,6 +79,8 @@ namespace RMat
 		// Vector - Vector operators
 		inline T & operator()(const int ind)                { return operator[](ind);}
 		inline T operator()(const int ind) const            { return operator[](ind);}
+		inline void setItem(const int ind, const T value)   { operator[](ind) = value; }
+		inline T getItem(const int ind) const               { return operator[](ind); }
 		T operator*(const QVec &vector) const               { return dotProduct(vector); }
 		QVec operator^(const QVec &vector) const            { return crossProduct(vector); }
 		QVec operator+(const QVec &vector) const;
@@ -74,7 +98,7 @@ namespace RMat
 
 		QMat operator|(const QVec &vector) const            { return externProduct(vector); }
 
-		operator QPointF() const														//Returns a QPointF type from current vector
+		operator QPointF() const //Returns a QPointF type from current vector
 		{
 			Q_ASSERT(size() > 1);
 			Q_ASSERT(size() < 4);
@@ -86,9 +110,9 @@ namespace RMat
 
 		//  Vector - Vector methods
 		void set(const T value)                              { fill( value ); }
-		QVec subVector(const int firstIndex, const int lastIndex) const;				//Returns a subvector starting at firstIndex and ending at lastIndex, both included
-		QVec scalarDivision(const T value) const;										//Divides all elements of the vector by value
-		QVec scalarMultiplication(const T value) const;									//Multiplies all elements of the vector by value
+		QVec subVector(const int firstIndex, const int lastIndex) const; //Returns a subvector starting at firstIndex and ending at lastIndex, both included
+		QVec scalarDivision(const T value) const;                        //Divides all elements of the vector by value
+		QVec scalarMultiplication(const T value) const;                  //Multiplies all elements of the vector by value
 		const QVec & inject(const QVec &vector, const int offset);
 		QVec pointProduct(const QVec &vector) const;
 		QVec normalize() const                               { return operator/(norm2()); }
@@ -130,6 +154,7 @@ namespace RMat
 
 		// Print
 		void print(const QString & s) const;
+		void prints(const std::string & s) const { print(QString::fromStdString(s)); }
 
 		//Geometry
 		T distanceTo2DLine( const QVec & line ) const;

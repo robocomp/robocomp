@@ -19,14 +19,34 @@ option (FCL_SUPPORT "Build with FCL support" OFF)
 if (FCL_SUPPORT)
 	SET (FCL_LIBS -lfcl -lccd )
 	ADD_DEFINITIONS(-DFCL_SUPPORT=1)
-	MESSAGE( STATUS "COMPILING WITH FCL SUPPORT" )
+	MESSAGE( STATUS "COMPILING WITH FCL SUPPORT  =  1" )
 	SET (FCL_SUPPORT_VALUE "1")
 else (FCL_SUPPORT)
-	MESSAGE( STATUS "COMPILING WITHOUT FCL SUPPORT" )
+	MESSAGE( STATUS "COMPILING WITHOUT FCL SUPPORT  = 0" )
 	SET (FCL_SUPPORT_VALUE "0")
 endif (FCL_SUPPORT)
 
 configure_file ("include/${LIB_NAME}/innermodel.in.h" "include/${LIB_NAME}/innermodel.h")
+
+   
+# Python bindings
+set(Boost_USE_STATIC_LIBS   OFF)
+set(Boost_USE_MULTITHREADED ON)
+if (PYTHON_BINDINGS_SUPPORT)
+	# Add bindings source code file
+	SET(srcs ${srcs} innermodel_python.cpp)
+	#find_package(Boost COMPONENTS system thread python REQUIRED)
+	SET(Boost_LIBRARIES -lboost_system -lboost_thread -lboost_python )
+	include_directories(${Boost_INCLUDE_DIRS})
+	link_directories(${Boost_LIBRARY_DIRS})
+	find_package(PythonLibs REQUIRED)
+	MESSAGE(STATUS "im PYTHON BINDINGS: DIRS ${PYTHON_INCLUDE_DIRS}")
+	MESSAGE(STATUS "im PYTHON BINDINGS: LIBS ${PYTHON_LIBRARIES}")
+	include_directories(${PYTHON_INCLUDE_DIRS})
+	link_directories(${PYTHON_LIBRARIES})
+endif (PYTHON_BINDINGS_SUPPORT)
+
+
 
 
 RoboComp_LIB_DEPEND(build ${LIB_NAME} DEPS ${LIB_DEPS} OPT_DEPS)
@@ -39,5 +59,5 @@ ADD_DEFINITIONS(${QT_DEFINITIONS})
 RoboComp_ADD_LIBRARY(${OUT_FILE_NAME} SHARED ${LIB_NAME} ${srcs} ${incs} )
 RoboComp_ADD_INCLUDES(${LIB_NAME} ${LIB_NAME} ${incs})
 
-target_link_libraries( ${OUT_FILE_NAME} ${QT_LIBRARIES} -losg -losgViewer robocomp_qmat ${FCL_LIBS})
+target_link_libraries( ${OUT_FILE_NAME} ${QT_LIBRARIES} -losg -losgViewer robocomp_qmat ${FCL_LIBS} ${PYTHON_LIBRARIES} ${Boost_LIBRARIES})
 

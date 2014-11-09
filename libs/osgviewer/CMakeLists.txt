@@ -34,4 +34,26 @@ RoboComp_ADD_LIBRARY(${OUT_FILE_NAME} SHARED ${LIB_NAME} ${srcs} ${MOC_SOURCES})
 RoboComp_ADD_INCLUDES(${LIB_NAME} ${LIB_NAME} ${incs})
 
 
+
 target_link_libraries(${OUT_FILE_NAME} ${QT_LIBRARIES})
+
+
+   
+# Python bindings
+set(Boost_USE_STATIC_LIBS   OFF)
+set(Boost_USE_MULTITHREADED ON)
+if (PYTHON_BINDINGS_SUPPORT)
+	# Add bindings source code file
+	SET(srcs ${srcs} innermodel_python.cpp)
+	#find_package(Boost COMPONENTS system thread python REQUIRED)
+	SET(Boost_LIBRARIES -lboost_system -lboost_thread -lboost_python)
+	include_directories(${Boost_INCLUDE_DIRS})
+	link_directories(${Boost_LIBRARY_DIRS})
+	find_package(PythonLibs REQUIRED)
+	MESSAGE(STATUS "osgv PYTHON BINDINGS: DIRS ${PYTHON_INCLUDE_DIRS}")
+	MESSAGE(STATUS "osgv PYTHON BINDINGS: LIBS ${PYTHON_LIBRARIES}")
+	include_directories(${PYTHON_INCLUDE_DIRS})
+	link_directories(${PYTHON_LIBRARIES})
+endif (PYTHON_BINDINGS_SUPPORT)
+
+

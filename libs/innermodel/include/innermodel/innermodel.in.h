@@ -141,6 +141,11 @@ public:
 	void cleanupTables();
 
 	/// Manual updat<< "hx" << "hy" << "hz" <<  "tx" << "ty" << "tz" << "rx" << "ry" << "rz" <<e method
+	void updateTransformValuesS(std::string transformId, float tx, float ty, float tz, float rx, float ry, float rz, std::string parentId="")
+	{
+		printf("this: %p %s\n", this, parentId.c_str());
+		updateTransformValues(QString::fromStdString(transformId), tx, ty, tz, rx, ry, rz, QString::fromStdString(parentId));
+	}
 	void updateTransformValues(QString transformId, float tx, float ty, float tz, float rx, float ry, float rz, QString parentId="");
 	void updateTranslationValues(QString transformId, float tx, float ty, float tz, QString parentId="");
 	void updateRotationValues(QString transformId, float rx, float ry, float rz,QString parentId="");
@@ -181,7 +186,13 @@ public:
 
 	/// Information retrieval methods
 	QVec transform(const QString & destId, const QVec &origVec, const QString & origId);
+	QVec transformS(const std::string & destId, const QVec &origVec, const std::string & origId)
+	{
+		return transform(QString::fromStdString(destId), origVec, QString::fromStdString(origId));
+	}
+
 	QVec transform(const QString & destId, const QString & origId) { return transform(destId, QVec::vec3(0,0,0), origId); }
+
 	QVec rotationAngles(const QString & destId, const QString & origId);
 	QVec project(QString reference, QVec origVec, QString cameraId);
 	QVec backProject(const QString &cameraId, const QVec &coord) ;//const;
