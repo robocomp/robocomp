@@ -30,8 +30,6 @@
 #ifdef PYTHON_BINDINGS_SUPPORT
 	#include <boost/python.hpp>
 	#include <boost/python/list.hpp>
-#else
-	dejew
 #endif
 
 namespace RMat
@@ -67,8 +65,6 @@ namespace RMat
 			return ret;
 		}
 		QVec(const boost::python::list &v): QVector<T>(QVector<T>::fromStdVector(to_std_vector_QVec(v))) {}
-#else
-		dejew
 #endif
 		QVec(const QPoint &point): QVector< T >(2)          { operator[](0) = point.x(); operator[](1) = point.y(); }
 		QVec(const QPointF &point): QVector< T >(2)         { operator[](0) = point.x(); operator[](1) = point.y(); }
@@ -174,9 +170,9 @@ namespace RMat
 		static QVec zeros(const int s);
 		static QVec line2DImplicitCoefsFrom2Points(const QVec & p1, const QVec & p2);
 		static QVec line2DExplicitCoefsFrom2Points(const QVec & p1, const QVec & p2);
-		
+
 	};
-	
+
 };
 
 std::ostream& operator << ( std::ostream &os, const RMat::QVec &vector );
