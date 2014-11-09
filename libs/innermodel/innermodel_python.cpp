@@ -20,12 +20,12 @@ BOOST_PYTHON_MODULE(librobocomp_innermodel)
 	 .def(init<std::string>())
 	 .def(init<InnerModel &>())
 	 .def("updateTransformValues", &InnerModel::updateTransformValuesS,
-	        ("transformId", "tx", "ty", "tz", "rx", "ry", "rz", arg("parentId")="")
+	        (arg("transformId"), arg("tx"), arg("ty"), arg("tz"), arg("rx"), arg("ry"), arg("rz"), arg("parentId")="")
 	     )
 	 .def("transform", &InnerModel::transformS)
     ;
 
-    
+
 /*
     	void updateTransformValues(QString transformId, float tx, float ty, float tz, float rx, float ry, float rz, QString parentId="");
 	void updateTranslationValues(QString transformId, float tx, float ty, float tz, QString parentId="");
