@@ -13,7 +13,6 @@ module RoboCompobjectDetection{
 	sequence <string> listType;
 
 	interface objectDetection{
-		void  mirrorPC();
 		void  aprilFitModel(string model);
 		void  fitModel(string model, string method);
 		void  getInliers(string model);
@@ -25,8 +24,12 @@ module RoboCompobjectDetection{
 		void  euclideanClustering(out int numClusters);
 		void  showObject(int numObject);
 		void  reset();
-		void  vfh(int numObject);
-		void  loadVFH();
+		void  mirrorPC();
+		void  mindTheGapPC();
+		void  reloadVFH();
+		void  loadTrainedVFH();
+		void  vfh(out listType guesses);
+		void  surfHomography(out listType guesses);
 	};
 };
   

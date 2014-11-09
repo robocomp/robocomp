@@ -11,3 +11,7 @@
 4.- sudo cp Linux/vs_can_api.so /usr/local/lib/
 #if the opreating sytem is 64 (copy and rename to vs_can_api.so)
 4.- sudo cp Linux\ x86-64/libvs_can_api_x86-64.so /usr/local/lib/libvs_can_api.so
+
+#You user should be in the group dialout
+5.- sudo usermod -a -G dialout userName
+

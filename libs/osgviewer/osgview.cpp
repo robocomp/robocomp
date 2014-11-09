@@ -8,7 +8,7 @@ osg::Camera* OsgView::createHUD()
     // set the projection matrix
     camera->setProjectionMatrix(osg::Matrix::ortho2D(0,640,0,480));
 
-    // set the view matrix    
+    // set the view matrix
     camera->setReferenceFrame(osg::Transform::ABSOLUTE_RF);
     camera->setViewMatrix(osg::Matrix::identity());
 
@@ -18,7 +18,7 @@ osg::Camera* OsgView::createHUD()
 
     // we don't want the camera to grab event focus from the viewers main camera(s).
     camera->setAllowEventFocus(false);
- 
+
     // add to this camera a subgraph to render
     {
 
@@ -29,20 +29,20 @@ osg::Camera* OsgView::createHUD()
         stateset->setMode(GL_LIGHTING,osg::StateAttribute::OFF);
 
         {
-            osg::BoundingBox bb;         
+            osg::BoundingBox bb;
             osg::Geometry* geom = new osg::Geometry;
 
             osg::Vec3Array* vertices = new osg::Vec3Array;
             float depth = -10000000000.;
-			
+
 			bb.set(0,0,depth,640,480,depth);
             vertices->push_back(osg::Vec3(bb.xMin(),bb.yMax(),depth));
             vertices->push_back(osg::Vec3(bb.xMin(),bb.yMin(),depth));
             vertices->push_back(osg::Vec3(bb.xMax(),bb.yMin(),depth));
             vertices->push_back(osg::Vec3(bb.xMax(),bb.yMax(),depth));
             geom->setVertexArray(vertices);
-			
-			
+
+
 
             osg::Vec3Array* normals = new osg::Vec3Array;
             normals->push_back(osg::Vec3(0.0f,0.0f,1.0f));
@@ -55,12 +55,12 @@ osg::Camera* OsgView::createHUD()
             geom->setColorBinding(osg::Geometry::BIND_OVERALL);
 
             geom->addPrimitiveSet(new osg::DrawArrays(GL_QUADS,0,4));
-			
+
 			osg::Vec2Array* texcoords = new osg::Vec2Array(4);
-			(*texcoords)[0].set(0.0f,0.0f); 
-			(*texcoords)[1].set(0.0f,1.0f); 
-			(*texcoords)[2].set(1.0f,1.0f);  
-			(*texcoords)[3].set(1.0f,0.0f);  
+			(*texcoords)[0].set(0.0f,0.0f);
+			(*texcoords)[1].set(0.0f,1.0f);
+			(*texcoords)[2].set(1.0f,1.0f);
+			(*texcoords)[3].set(1.0f,0.0f);
 			geom->setTexCoordArray(0,texcoords);
 
             osg::StateSet* stateset = geom->getOrCreateStateSet();
@@ -69,30 +69,30 @@ osg::Camera* OsgView::createHUD()
 //             stateset->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
 
             geode->addDrawable(geom);
-			
+
 			HUDTexture = new osg::Texture2D;
 
 			// protect from being optimized away as static state:
-			HUDTexture->setDataVariance(osg::Object::DYNAMIC); 
-			osgImage = new osg::Image(); 
+			HUDTexture->setDataVariance(osg::Object::DYNAMIC);
+			osgImage = new osg::Image();
 			osgImage.get()->allocateImage(640,480, 1, GL_RGB, GL_UNSIGNED_BYTE, 1);
-			
-			// load an image by reading a file: 
-// 			osgImage = osgDB::readImageFile("a.jpg");
-			
-				
 
-			// Assign the texture to the image we read from file: 
+			// load an image by reading a file:
+// 			osgImage = osgDB::readImageFile("a.jpg");
+
+
+
+			// Assign the texture to the image we read from file:
 			HUDTexture->setImage(osgImage);
 
-			// Create a new StateSet with default settings: 
+			// Create a new StateSet with default settings:
 			osg::StateSet* stateOne = new osg::StateSet();
 
-			// Assign texture unit 0 of our new StateSet to the texture 
+			// Assign texture unit 0 of our new StateSet to the texture
 			// we just created and enable the texture.
 			stateOne->setTextureAttributeAndModes(0,HUDTexture,osg::StateAttribute::ON);
 			// Associate this state set with the Geode that contains
-			// the pyramid: 
+			// the pyramid:
 			geode->setStateSet(stateOne);
 			stateOne = geode->getOrCreateStateSet();
 			stateOne->setMode(GL_LIGHTING,osg::StateAttribute::OFF);
@@ -107,7 +107,7 @@ osg::Camera* OsgView::createHUD()
 void OsgView::setImageHUD (osg::ref_ptr<osg::Image> i)
 {
 	HUDTexture->setImage(i);
-	
+
 }
 osg::ref_ptr<osg::Image> OsgView::getImageHUD ( )
 {
@@ -123,7 +123,7 @@ OsgView::OsgView(QWidget* parent, bool hud, const QGLWidget* shareWidget, Window
 	osg::DisplaySettings::instance()->setNumMultiSamples( 4 );
 	getCamera()->setViewport(new osg::Viewport(0,0,parent->width(),parent->height()));
 	getCamera()->setGraphicsContext(getGraphicsWindow());
-	
+
 	if (hud )
 	{
 		//matrix kinect
@@ -134,7 +134,7 @@ OsgView::OsgView(QWidget* parent, bool hud, const QGLWidget* shareWidget, Window
 		setThreadingModel(osgViewer::Viewer::SingleThreaded);
 		osg::DisplaySettings::instance()->setNumMultiSamples(4);
 		initHUD();
-		osgGA::TrackballManipulator *tBall = new osgGA::TrackballManipulator;	
+		osgGA::TrackballManipulator *tBall = new osgGA::TrackballManipulator;
 		///el eye en el cero, la camara en el 0 en X, 0 en Y, y a 4000 mirando al centro del eje de coordenadas, y arriba en sentido del eje Y+
 		tBall->setHomePosition(osg::Vec3(0.,0.,0.),osg::Vec3(0.f,0.,-4.),osg::Vec3(0.0f,1.f,0.0f), false);
 		setCameraManipulator( tBall );
@@ -150,7 +150,7 @@ OsgView::OsgView(QWidget* parent, bool hud, const QGLWidget* shareWidget, Window
 		tBall->setHomePosition(osg::Vec3(0,0,0),osg::Vec3(0.f,0.,-40.),osg::Vec3(0.0f,1.f,0.0f), false);
 		setCameraManipulator( tBall );
 	}
-	
+
 	show();
 }
 
@@ -167,19 +167,19 @@ OsgView::~OsgView()
 
 void OsgView::initHUD () {
 //Build basic scene
-	root = new osg::Group();	
-	osg::ref_ptr<osg::Group> group  = new osg::Group;	
-		
-	group->addChild(root.get());		
+	root = new osg::Group();
+	osg::ref_ptr<osg::Group> group  = new osg::Group;
+
+	group->addChild(root.get());
 	TextGeode = new osg::Geode();
-	textOne =  new osgText::Text();	
-		
+	textOne =  new osgText::Text();
+
 	TextGeode->addDrawable(textOne);
 	osg::Camera * c = createHUD();
 	c->addChild(TextGeode);
  	group->addChild(c);
 	setSceneData(group.get());
-	
+
 	connect(&timer, SIGNAL(timeout()), this, SLOT(updateGL()));
 	timer.start(60);
 }
@@ -196,8 +196,8 @@ void OsgView::init( )
 
 	// enable lighting
 	globalStateSet->setMode(GL_LIGHTING, osg::StateAttribute::ON);
- 
-	osg::Light* light = getLight();	
+
+	osg::Light* light = getLight();
 	light->setAmbient( osg::Vec4( 1.0f, 1., 1.,  1.f ));
 	light->setDiffuse( osg::Vec4( 1.0f, 1., 1.,  1.f ));
 	light->setPosition(osg::Vec4( 0.0f, 10.f, 0.f,    1.f));
@@ -259,7 +259,7 @@ osg::ShapeDrawable * OsgView::addBox(float px, float py, float pz, float sx, flo
 		getRootGroup()->addChild(*pat);
 	else
 		parentNode->addChild(*pat);
-	
+
 	return boxDrawable;
 }
 
@@ -470,7 +470,7 @@ void OsgView::addXYZAxisOnNode( osg::Group *node, float length, float radius, co
 {
 	// X Axis
 	QMat axis(3); axis.set(0.); axis(0) = length;
-	osg::Node *lineaX = addBasicLine(QVec::zeros(3), axis, radius, true, color);	
+	osg::Node *lineaX = addBasicLine(QVec::zeros(3), axis, radius, true, color);
 	//addArrow( QVec::vec3(0,0,0), axis, radius );
 	osgText::Text *textX = new osgText::Text();
 	textX->setText(osgText::String("X"));
@@ -479,7 +479,7 @@ void OsgView::addXYZAxisOnNode( osg::Group *node, float length, float radius, co
 	osg::Geode* shapeGeodeX = new osg::Geode();
 	shapeGeodeX->addDrawable( textX );
 	node->addChild(shapeGeodeX);
-	node->addChild(lineaX);	
+	node->addChild(lineaX);
 
 	// Y Axis
 	axis(0) = 0.; axis(1) = length;
