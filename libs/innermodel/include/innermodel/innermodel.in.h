@@ -143,7 +143,6 @@ public:
 	/// Manual updat<< "hx" << "hy" << "hz" <<  "tx" << "ty" << "tz" << "rx" << "ry" << "rz" <<e method
 	void updateTransformValuesS(std::string transformId, float tx, float ty, float tz, float rx, float ry, float rz, std::string parentId="")
 	{
-		printf("this: %p %s\n", this, parentId.c_str());
 		updateTransformValues(QString::fromStdString(transformId), tx, ty, tz, rx, ry, rz, QString::fromStdString(parentId));
 	}
 	void updateTransformValues(QString transformId, float tx, float ty, float tz, float rx, float ry, float rz, QString parentId="");

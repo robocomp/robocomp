@@ -34,7 +34,32 @@
 #include <gsl/gsl_randist.h>
 
 
+#ifdef PYTHON_BINDINGS_SUPPORT
+#include <boost/python.hpp>
+#include <boost/python/list.hpp>
+static std::vector<float> to_std_vector_QVec(const boost::python::list &ns)
+{
+	std::vector<float> ret;
+	for (int i=0; i<len(ns); ++i)
+	{
+		ret.push_back(boost::python::extract<float>(ns[i]));
+	}
+	return ret;
+}
+
+static std::vector<int> to_std_vector_Index(const boost::python::tuple &ns)
+{
+	std::vector<int32_t> ret;
+	for (int i=0; i<len(ns); ++i)
+	{
+		ret.push_back(boost::python::extract<int32_t>(ns[i]));
+	}
+	return ret;
+}
+#endif
+
 #define MAX_DIMENSION 100
+
 
 namespace RMat
 {
@@ -84,8 +109,18 @@ namespace RMat
 		inline T operator() (const int row) const                        { return getReadData()[row*cols]; }
 		inline void setItem(int i1, int i2, const T val)                 { operator()(i1, i2) = val; }
 		inline T getItem(int i1, int i2) const                           { return operator()(i1, i2); }
-		inline void setItemV(std::vector<int> i, const T val)             { operator()(i[0], i[1]) = val; }
-		inline T getItemV(std::vector<int> i) const                       { return operator()(i[0], i[1]); }
+#ifdef PYTHON_BINDINGS_SUPPORT
+		inline void setItemV(boost::python::tuple &v, T val)
+		{
+			std::vector<int32_t> i = to_std_vector_Index(v);
+			operator()(i[0], i[1]) = val;
+		}
+		inline T getItemV(boost::python::tuple &v) const
+		{
+			std::vector<int32_t> i = to_std_vector_Index(v);
+			return operator()(i[0], i[1]);
+		}
+#endif
 		inline int nRows() const                                         { return rows; }
 		inline int nCols() const                                         { return cols; }
 		int getDataSize() const                                          { return rows*cols; }

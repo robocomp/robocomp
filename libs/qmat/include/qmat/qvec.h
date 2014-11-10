@@ -55,15 +55,6 @@ namespace RMat
 		QVec(const QVector<T> &vector): QVector<T>(vector)                                          {}
 		QVec(const std::vector<T> &vector): QVector<T>(QVector<T>::fromStdVector( vector ))         {}
 #ifdef PYTHON_BINDINGS_SUPPORT
-		static std::vector<float> to_std_vector_QVec(const boost::python::list &ns)
-		{
-			std::vector<float> ret;
-			for (int i=0; i<len(ns); ++i)
-			{
-				ret.push_back(boost::python::extract<float>(ns[i]));
-			}
-			return ret;
-		}
 		QVec(const boost::python::list &v): QVector<T>(QVector<T>::fromStdVector(to_std_vector_QVec(v))) {}
 #endif
 		QVec(const QPoint &point): QVector< T >(2)          { operator[](0) = point.x(); operator[](1) = point.y(); }
@@ -113,7 +104,6 @@ namespace RMat
 		QVec pointProduct(const QVec &vector) const;
 		QVec normalize() const                               { return operator/(norm2()); }
 		QVec crossProduct(const QVec &vector) const;
-		QVec substract(const QVec &vector) const;
 		bool equals(const QVec &vector) const;
 		QVec toHomogeneousCoordinates() const;
 		QVec fromHomogeneousCoordinates() const;
@@ -122,12 +112,14 @@ namespace RMat
 		T norm2() const                                      { return sqrt(*this * *this); }
 		T max( int & pos ) const;
 		T max() const;
+		T maxP() const { return max(); }
 		T min( int & pos) const;
 		T min( ) const;
+		T minP() const { return min(); }
 		T minAbs( int & pos) const;
 		T maxAbs( int & pos) const;
-		T mean() const;
-		T variance() const;
+// 		T mean() const;
+// 		T variance() const;
 		T dotProduct(const QVec &vector) const;
 		inline T x() const                                   { return this->operator[](0); }
 		inline T y() const                                   { return this->operator[](1); }

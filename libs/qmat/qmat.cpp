@@ -896,15 +896,16 @@ QMat RMat::QMat::eigenValsVectors ( QVec & vals )
 void RMat::QMat::SVD(QMat & U, QMat & D, QMat & V)
 {
 #ifdef COMPILE_IPP
-	double ippA[rows*cols], ippU[rows*rows], ippD[rows*cols], ippV[cols*cols];
+// 	double ippA[rows*cols];
+	double ippU[rows*rows], ippD[rows*cols], ippV[cols*cols];
 	int i;
 	
 	U = QMat(rows, rows);
 	D = QMat(rows, cols);
 	V = QMat(cols, cols);
 
-	for(i=0; i<rows*cols;i++)
-	  ippA[i] = toData()[i];
+// 	for(i=0; i<rows*cols;i++)
+// 	  ippA[i] = toData()[i];
 	
 	
 	for(i=0; i<rows*rows;i++)
