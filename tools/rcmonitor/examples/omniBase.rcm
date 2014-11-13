@@ -2,6 +2,6 @@
 omnirobot
 localhost
 tcp
-10004
+12238
 30
 omniBase.py
