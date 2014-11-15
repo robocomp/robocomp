@@ -146,7 +146,9 @@ InnerModel::InnerModel(std::string xmlFilePath)
 	root = NULL;
 	if (not InnerModelReader::load(QString::fromStdString(xmlFilePath), this))
 	{
-		qFatal("InnerModelReader::load error using file %s\n", xmlFilePath.c_str());
+		QString error;
+		error.sprintf("InnerModelReader::load error using file %s\n", xmlFilePath.c_str());
+		throw error;
 	}
 }
 
@@ -485,7 +487,12 @@ void InnerModel::setRoot(InnerModelNode *node)
 
 InnerModelTransform *InnerModel::newTransform(QString id, QString engine, InnerModelNode *parent, float tx, float ty, float tz, float rx, float ry, float rz, float mass)
 {
-	if (hash.contains(id)) qFatal("InnerModel::newTransform: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
+	if (hash.contains(id))
+	{
+		QString error;
+		error.sprintf("InnerModel::newTransform: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
+		throw error;
+	}
 	InnerModelTransform *newnode = new InnerModelTransform(id, engine, tx, ty, tz, rx, ry, rz, mass, parent);
 	hash[id] = newnode;
 // 	std::cout << (void *)newnode << "  " << (uint64_t)newnode << std::endl;
@@ -497,7 +504,12 @@ InnerModelTransform *InnerModel::newTransform(QString id, QString engine, InnerM
 
 InnerModelJoint *InnerModel::newJoint(QString id, InnerModelTransform *parent,float lx, float ly, float lz,float hx, float hy, float hz, float tx, float ty, float tz, float rx, float ry, float rz, float min, float max, uint32_t port,std::string axis, float home)
 {
-	if (hash.contains(id)) qFatal("InnerModel::newJoint: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
+	if (hash.contains(id))
+	{
+		QString error;
+		error.sprintf("InnerModel::newJoint: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
+		throw error;
+	}
 	InnerModelJoint *newnode = new InnerModelJoint(id,lx,ly,lz,hx,hy,hz, tx, ty, tz, rx, ry, rz, min, max, port, axis, home, parent);
 	hash[id] = newnode;
 // 	parent->addChild(newnode);
@@ -507,7 +519,12 @@ InnerModelJoint *InnerModel::newJoint(QString id, InnerModelTransform *parent,fl
 
 InnerModelTouchSensor *InnerModel::newTouchSensor(QString id, InnerModelTransform *parent, QString stype, float nx, float ny, float nz, float min, float max, uint32_t port)
 {
-	if (hash.contains(id)) qFatal("InnerModel::newTouchSensor: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
+	if (hash.contains(id))
+	{
+		QString error;
+		error.sprintf("InnerModel::newTouchSensor: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
+		throw error;
+	}
 	InnerModelTouchSensor *newnode = new InnerModelTouchSensor(id, stype, nx, ny, nz, min, max, port, parent);
 	hash[id] = newnode;
 // 	parent->addChild(newnode);
@@ -518,7 +535,12 @@ InnerModelTouchSensor *InnerModel::newTouchSensor(QString id, InnerModelTransfor
 
 InnerModelPrismaticJoint *InnerModel::newPrismaticJoint(QString id, InnerModelTransform *parent, float min, float max, float value, float offset, uint32_t port,std::string axis, float home)
 {
-	if (hash.contains(id)) qFatal("InnerModel::newPrismaticJoint: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
+	if (hash.contains(id))
+	{
+		QString error;
+		error.sprintf("InnerModel::newPrismaticJoint: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
+		throw error;
+	}
 	InnerModelPrismaticJoint *newnode = new InnerModelPrismaticJoint(id, min, max, value, offset, port, axis, home, parent);
 	hash[id] = newnode;
 // 	parent->addChild(newnode);
@@ -529,7 +551,12 @@ InnerModelPrismaticJoint *InnerModel::newPrismaticJoint(QString id, InnerModelTr
 
 InnerModelDifferentialRobot *InnerModel::newDifferentialRobot(QString id, InnerModelTransform *parent, float tx, float ty, float tz, float rx, float ry, float rz, uint32_t port, float noise)
 {
-	if (hash.contains(id)) qFatal("InnerModel::newDifferentialRobot: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
+	if (hash.contains(id))
+	{
+		QString error;
+		error.sprintf("InnerModel::newDifferentialRobot: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
+		throw error;
+	}
 	InnerModelDifferentialRobot *newnode = new InnerModelDifferentialRobot(id, tx, ty, tz, rx, ry, rz, port, noise, parent);
 	hash[id] = newnode;
 // 	parent->addChild(newnode);
@@ -540,7 +567,12 @@ InnerModelDifferentialRobot *InnerModel::newDifferentialRobot(QString id, InnerM
 
 InnerModelOmniRobot *InnerModel::newOmniRobot(QString id, InnerModelTransform *parent, float tx, float ty, float tz, float rx, float ry, float rz, uint32_t port, float noise)
 {
-	if (hash.contains(id)) qFatal("InnerModel::newOmniRobot: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
+	if (hash.contains(id))
+	{
+		QString error;
+		error.sprintf("InnerModel::newOmniRobot: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
+		throw error;
+	}
 	InnerModelOmniRobot *newnode = new InnerModelOmniRobot(id, tx, ty, tz, rx, ry, rz, port, noise, parent);
 	hash[id] = newnode;
 // 	parent->addChild(newnode);
@@ -551,7 +583,12 @@ InnerModelOmniRobot *InnerModel::newOmniRobot(QString id, InnerModelTransform *p
 
 InnerModelCamera *InnerModel::newCamera(QString id, InnerModelNode *parent, float width, float height, float focal)
 {
-	if (hash.contains(id)) qFatal("InnerModel::newCamera: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
+	if (hash.contains(id))
+	{
+		QString error;
+		error.sprintf("InnerModel::newCamera: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
+		throw error;
+	}
 	InnerModelCamera *newnode = new InnerModelCamera(id, width, height, focal, parent);
 	hash[id] = newnode;
 // 	parent->addChild(newnode);
@@ -563,8 +600,17 @@ InnerModelCamera *InnerModel::newCamera(QString id, InnerModelNode *parent, floa
 InnerModelRGBD *InnerModel::newRGBD(QString id, InnerModelNode *parent, float width, float height, float focal, float noise, uint32_t port, QString ifconfig)
 {
 	if (noise < 0)
-		qFatal("InnerModel::newRGBD: noise can't have negative values");
-	if (hash.contains(id)) qFatal("InnerModel::newRGBD: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
+	{
+		QString error;
+		error.sprintf("InnerModel::newRGBD: noise can't have negative values");
+		throw error;
+	}
+	if (hash.contains(id))
+	{
+		QString error;
+		error.sprintf("InnerModel::newRGBD: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
+		throw error;
+	}
 	InnerModelRGBD *newnode = new InnerModelRGBD(id, width, height, focal, noise, port, ifconfig, parent);
 	hash[id] = newnode;
 // 	parent->addChild(newnode);
@@ -575,7 +621,12 @@ InnerModelRGBD *InnerModel::newRGBD(QString id, InnerModelNode *parent, float wi
 
 InnerModelIMU *InnerModel::newIMU(QString id, InnerModelNode *parent, uint32_t port)
 {
-	if (hash.contains(id)) qFatal("InnerModel::newIMU: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
+	if (hash.contains(id))
+	{
+		QString error;
+		error.sprintf("InnerModel::newIMU: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
+		throw error;
+	}
 	// 	printf("newIMU id=%s  parentId=%s port=%d\n", id.toStdString().c_str(), parent->id.toStdString().c_str(), port);
 	InnerModelIMU *newnode = new InnerModelIMU(id, port, parent);
 	hash[id] = newnode;
@@ -587,7 +638,12 @@ InnerModelIMU *InnerModel::newIMU(QString id, InnerModelNode *parent, uint32_t p
 
 InnerModelLaser *InnerModel::newLaser(QString id, InnerModelNode *parent, uint32_t port, uint32_t min, uint32_t max, float angle, uint32_t measures, QString ifconfig)
 {
-	if (hash.contains(id)) qFatal("InnerModel::newLaser: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
+	if (hash.contains(id))
+	{
+		QString error;
+		error.sprintf("InnerModel::newLaser: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
+		throw error;
+	}
 	// 	printf("newLaser id=%s  parentId=%s port=%d min=%d max=%d angle=%f measures=%d\n", id.toStdString().c_str(), parent->id.toStdString().c_str(), port, min, max, angle, measures);
 	InnerModelLaser *newnode = new InnerModelLaser(id, port, min, max, angle, measures, ifconfig, parent);
 	hash[id] = newnode;
@@ -599,7 +655,12 @@ InnerModelLaser *InnerModel::newLaser(QString id, InnerModelNode *parent, uint32
 
 InnerModelPlane *InnerModel::newPlane(QString id, InnerModelNode *parent, QString texture, float width, float height, float depth, int repeat, float nx, float ny, float nz, float px, float py, float pz, bool collidable)
 {
-	if (hash.contains(id)) qFatal("InnerModel::newPlane: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
+	if (hash.contains(id))
+	{
+		QString error;
+		error.sprintf("InnerModel::newPlane: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
+		throw error;
+	}
 	InnerModelPlane *newnode = new InnerModelPlane(id, texture, width, height, depth, repeat, nx, ny, nz, px, py, pz, collidable, parent);
 	hash[id] = newnode;
 // 	parent->addChild(newnode);
@@ -610,7 +671,12 @@ InnerModelPlane *InnerModel::newPlane(QString id, InnerModelNode *parent, QStrin
 
 InnerModelMesh *InnerModel::newMesh(QString id, InnerModelNode *parent, QString path, float scalex, float scaley, float scalez, int render, float tx, float ty, float tz, float rx, float ry, float rz, bool collidable)
 {
-	if (hash.contains(id)) qFatal("InnerModel::newMesh: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
+	if (hash.contains(id))
+	{
+		QString error;
+		error.sprintf("InnerModel::newMesh: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
+		throw error;
+	}
 	InnerModelMesh *newnode = new InnerModelMesh(id, path, scalex, scaley, scalez, (InnerModelMesh::RenderingModes)render, tx, ty, tz, rx, ry, rz, collidable, parent);
 	hash[id] = newnode;
 // 	parent->addChild(newnode);
@@ -628,7 +694,12 @@ InnerModelMesh *InnerModel::newMesh(QString id, InnerModelNode *parent, QString 
 
 InnerModelPointCloud *InnerModel::newPointCloud(QString id, InnerModelNode *parent)
 {
-	if (hash.contains(id)) qFatal("InnerModel::newPointCloud: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
+	if (hash.contains(id))
+	{
+		QString error;
+		error.sprintf("InnerModel::newPointCloud: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
+		throw error;
+	}
 	InnerModelPointCloud *newnode = new InnerModelPointCloud(id, parent);
 	hash[id] = newnode;
 	//printf("Inserted point cloud %s ptr(%p), on node %s\n", id.toStdString().c_str(), newnode, parent->id.toStdString().c_str());
@@ -643,10 +714,12 @@ InnerModelTransform *InnerModel::getTransform(const QString &id)
 	InnerModelTransform *tr = dynamic_cast<InnerModelTransform *>(hash[id]);
 	if (not tr)
 	{
+		QString error;
 		if (not hash[id])
-			qFatal("No such transform %s", id.toStdString().c_str());
+			error.sprintf("No such transform %s", id.toStdString().c_str());
 		else
-			qFatal("%s doesn't seem to be a transform", id.toStdString().c_str());
+			error.sprintf("%s doesn't seem to be a transform", id.toStdString().c_str());
+		throw error;
 	}
 	return tr;
 }
@@ -658,10 +731,12 @@ InnerModelJoint *InnerModel::getJoint(const QString &id)
 	InnerModelJoint *tr = dynamic_cast<InnerModelJoint *>(hash[id]);
 	if (not tr)
 	{
+		QString error;
 		if (not hash[id])
-			qFatal("No such joint %s", id.toStdString().c_str());
+			error.sprintf("No such joint %s", id.toStdString().c_str());
 		else
-			qFatal("%s doesn't seem to be a joint", id.toStdString().c_str());
+			error.sprintf("%s doesn't seem to be a joint", id.toStdString().c_str());
+		throw error;
 	}
 	return tr;
 }
@@ -673,10 +748,12 @@ InnerModelTouchSensor *InnerModel::getTouchSensor(const QString &id)
 	InnerModelTouchSensor *tr = dynamic_cast<InnerModelTouchSensor *>(hash[id]);
 	if (not tr)
 	{
+		QString error;
 		if (not hash[id])
-			qFatal("No such touch sensor %s", id.toStdString().c_str());
+			error.sprintf("No such touch sensor %s", id.toStdString().c_str());
 		else
-			qFatal("%s doesn't seem to be a touch sensor", id.toStdString().c_str());
+			error.sprintf("%s doesn't seem to be a touch sensor", id.toStdString().c_str());
+		throw error;
 	}
 	return tr;
 }
@@ -688,10 +765,12 @@ InnerModelPrismaticJoint *InnerModel::getPrismaticJoint(const QString &id)
 	InnerModelPrismaticJoint *tr = dynamic_cast<InnerModelPrismaticJoint *>(hash[id]);
 	if (not tr)
 	{
+		QString error;
 		if (not hash[id])
-			qFatal("No such joint %s", id.toStdString().c_str());
+			error.sprintf("No such joint %s", id.toStdString().c_str());
 		else
-			qFatal("%s doesn't seem to be a prismatic joint", id.toStdString().c_str());
+			error.sprintf("%s doesn't seem to be a prismatic joint", id.toStdString().c_str());
+		throw error;
 	}
 	return tr;
 }
@@ -703,10 +782,12 @@ InnerModelCamera *InnerModel::getCamera(const QString id)
 	InnerModelCamera *camera = dynamic_cast<InnerModelCamera *>(hash[id]);
 	if (not camera)
 	{
+		QString error;
 		if (not hash[id])
-			qFatal("No such camera %s", id.toStdString().c_str());
+			error.sprintf("No such camera %s", id.toStdString().c_str());
 		else
-			qFatal("%s doesn't seem to be a camera", id.toStdString().c_str());
+			error.sprintf("%s doesn't seem to be a camera", id.toStdString().c_str());
+		throw error;
 	}
 	return camera;
 }
@@ -718,10 +799,12 @@ InnerModelRGBD *InnerModel::getRGBD(const QString id)
 	InnerModelRGBD *camera = dynamic_cast<InnerModelRGBD *>(hash[id]);
 	if (not camera)
 	{
+		QString error;
 		if (not hash[id])
-			qFatal("No such camera %s", id.toStdString().c_str());
+			error.sprintf("No such camera %s", id.toStdString().c_str());
 		else
-			qFatal("%s doesn't seem to be a camera", id.toStdString().c_str());
+			error.sprintf("%s doesn't seem to be a camera", id.toStdString().c_str());
+		throw error;
 	}
 	return camera;
 }
@@ -733,10 +816,12 @@ InnerModelIMU *InnerModel::getIMU(const QString id)
 	InnerModelIMU *imu = dynamic_cast<InnerModelIMU *>(hash[id]);
 	if (not imu)
 	{
+		QString error;
 		if (not hash[id])
-			qFatal("No such innertial unit %s", id.toStdString().c_str());
+			error.sprintf("No such innertial unit %s", id.toStdString().c_str());
 		else
-			qFatal("%s doesn't seem to be an innertial unit", id.toStdString().c_str());
+			error.sprintf("%s doesn't seem to be an innertial unit", id.toStdString().c_str());
+		throw error;
 	}
 	return imu;
 }
@@ -748,10 +833,12 @@ InnerModelLaser *InnerModel::getLaser(const QString id)
 	InnerModelLaser *laser = dynamic_cast<InnerModelLaser *>(hash[id]);
 	if (not laser)
 	{
+		QString error;
 		if (not hash[id])
-			qFatal("No such laser %s", id.toStdString().c_str());
+			error.sprintf("No such laser %s", id.toStdString().c_str());
 		else
-			qFatal("%s doesn't seem to be an laser", id.toStdString().c_str());
+			error.sprintf("%s doesn't seem to be an laser", id.toStdString().c_str());
+		throw error;
 	}
 	return laser;
 }
@@ -763,10 +850,12 @@ InnerModelPlane *InnerModel::getPlane(const QString &id)
 	InnerModelPlane *plane = dynamic_cast<InnerModelPlane *>(hash[id]);
 	if (not plane)
 	{
+		QString error;
 		if (not hash[id])
-			qFatal("No such plane %s", id.toStdString().c_str());
+			error.sprintf("No such plane %s", id.toStdString().c_str());
 		else
-			qFatal("%s doesn't seem to be a plane", id.toStdString().c_str());
+			error.sprintf("%s doesn't seem to be a plane", id.toStdString().c_str());
+		throw error;
 	}
 	return plane;
 }
@@ -778,10 +867,12 @@ InnerModelMesh *InnerModel::getMesh(const QString &id)
 	InnerModelMesh *mesh = dynamic_cast<InnerModelMesh *>(hash[id]);
 	if (not mesh)
 	{
+		QString error;
 		if (not hash[id])
-			qFatal("No such mesh %s", id.toStdString().c_str());
+			error.sprintf("No such mesh %s", id.toStdString().c_str());
 		else
-			qFatal("%s doesn't seem to be a mesh", id.toStdString().c_str());
+			error.sprintf("%s doesn't seem to be a mesh", id.toStdString().c_str());
+		throw error;
 	}
 	return mesh;
 }
@@ -793,10 +884,12 @@ InnerModelPointCloud *InnerModel::getPointCloud(const QString &id)
 	InnerModelPointCloud *pointcloud = dynamic_cast<InnerModelPointCloud *>(hash[id]);
 	if (not pointcloud)
 	{
+		QString error;
 		if (not hash[id])
-			qFatal("No such pointcloud %s", id.toStdString().c_str());
+			error.sprintf("No such pointcloud %s", id.toStdString().c_str());
 		else
-			qFatal("%s doesn't seem to be a pointcloud", id.toStdString().c_str());
+			error.sprintf("%s doesn't seem to be a pointcloud", id.toStdString().c_str());
+		throw error;
 	}
 	return pointcloud;
 }
@@ -808,10 +901,12 @@ InnerModelDifferentialRobot *InnerModel::getDifferentialRobot(const QString &id)
 	InnerModelDifferentialRobot *diff = dynamic_cast<InnerModelDifferentialRobot *>(hash[id]);
 	if (not diff)
 	{
+		QString error;
 		if (not hash[id])
-			qFatal("No such differential robot %s", id.toStdString().c_str());
+			error.sprintf("No such differential robot %s", id.toStdString().c_str());
 		else
-			qFatal("%s doesn't seem to be a differential robot", id.toStdString().c_str());
+			error.sprintf("%s doesn't seem to be a differential robot", id.toStdString().c_str());
+		throw error;
 	}
 	return diff;
 }
@@ -821,10 +916,12 @@ InnerModelOmniRobot *InnerModel::getOmniRobot(const QString &id)
 	InnerModelOmniRobot *diff = dynamic_cast<InnerModelOmniRobot *>(hash[id]);
 	if (not diff)
 	{
+		QString error;
 		if (not hash[id])
-			qFatal("No such omni robot %s", id.toStdString().c_str());
+			error.sprintf("No such omni robot %s", id.toStdString().c_str());
 		else
-			qFatal("%s doesn't seem to be a omni robot", id.toStdString().c_str());
+			error.sprintf("%s doesn't seem to be a omni robot", id.toStdString().c_str());
+		throw error;
 	}
 	return diff;
 }
@@ -1023,7 +1120,11 @@ QVec InnerModel::project(QString reference, QVec origVec, QString cameraId)
 
 	camera = dynamic_cast<InnerModelCamera *>(hash[cameraId]);
 	if (not camera)
-		qFatal("No such %s camera", qPrintable(cameraId));
+	{
+		QString error;
+		error.sprintf("No such %s camera", qPrintable(cameraId));
+		throw error;
+	}
 
 	pc = camera->camera.project(origVec);
 
@@ -1185,7 +1286,12 @@ QVec InnerModel::horizonLine(QString planeId, QString cameraId, float heightOffs
 
 	if (abs(dx) <= 1)
 	{
-		if (abs(dy) <= 1) qFatal("Degenerated camera");
+		if (abs(dy) <= 1)
+		{
+			QString error;
+			error.sprintf("Degenerated camera");
+			throw error;
+		}
 		return QVec::vec3(-1, 0, p1(0));
 	}
 	else
@@ -1348,7 +1454,7 @@ void InnerModel::setLists(const QString & origId, const QString & destId)
 		listA.push_back(a);
 		if(a->parent == NULL)
 		{
-			// 			qFatal("InnerModel::setLists: It wouldn't be here!!!!");
+			// 			error.sprintf("InnerModel::setLists: It wouldn't be here!!!!");
 			break;
 		}
 		a=a->parent;
@@ -1360,7 +1466,7 @@ void InnerModel::setLists(const QString & origId, const QString & destId)
 		listB.push_front(b);
 		if(b->parent == NULL)
 		{
-			// 			qFatal("InnerModel::setLists: It wouldn't be here!!!!");
+			// 			error.sprintf("InnerModel::setLists: It wouldn't be here!!!!");
 			break;
 		}
 		b=b->parent;
@@ -1750,7 +1856,9 @@ InnerModelJoint::InnerModelJoint(QString id_, float lx_, float ly_, float lz_, f
 	}
 	else
 	{
-		qFatal("internal error, no such axis %s\n", axis.c_str());
+		QString error;
+		error.sprintf("internal error, no such axis %s\n", axis.c_str());
+		throw error;
 	}
 }
 
@@ -1854,8 +1962,9 @@ float InnerModelJoint::setAngle(float angle)
 	}
 	else
 	{
-		qFatal("internal error, no such axis %s\n", axis.c_str());
-		return 0;
+		QString error;
+		error.sprintf("internal error, no such axis %s\n", axis.c_str());
+		throw error;
 	}
 	return ret;
 }
@@ -1991,7 +2100,9 @@ float InnerModelPrismaticJoint::setPosition(float v)
 	}
 	else
 	{
-		qFatal("internal error, no such axis %s\n", axis.c_str());
+		QString error;
+		error.sprintf("internal error, no such axis %s\n", axis.c_str());
+		throw error;
 	}
 	return ret;
 }
@@ -2559,7 +2670,9 @@ InnerModelMesh::InnerModelMesh(QString id_, QString meshPath_, float scalex_, fl
 	}
 	else
 	{
-		qFatal("Failed to read mesh \"%s\" for collision support!\n", meshPath.toStdString().c_str());
+		QString error;
+		error.sprintf("Failed to read mesh \"%s\" for collision support!\n", meshPath.toStdString().c_str());
+		throw error;
 	}
 #endif
 }
@@ -2785,7 +2898,9 @@ bool InnerModel::collide(const QString &a, const QString &b)
 
 	return result.isCollision();
 #else
-	qFatal("InnerModel was not compiled with collision support");
+	QString error;
+	error.sprintf("InnerModel was not compiled with collision support");
+	throw error;
 	return false;
 #endif
 }

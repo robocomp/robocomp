@@ -3,6 +3,6 @@
 
 #define USE_QTGUI
 #define PROGRAM_NAME    "RCIS"
-#define SERVER_FULL_NAME   "RCOS"
+#define SERVER_FULL_NAME   "RCIS"
 
 #endif

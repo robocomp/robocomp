@@ -111,6 +111,7 @@ int robotSimulatorComp::run( int argc, char* argv[] )
 	// Get the port number
 	int port = 11175;
 	int ms = 30;
+
 	for (int params=2; params+1<argc; params+=2)
 	{
 		if (strcmp(argv[params],"-p")==0)
@@ -167,33 +168,33 @@ int main(int argc, char* argv[])
 	robotSimulatorComp app;
 
 	if (argc < 2)
-		qFatal("Usage: %s InnerModelFile.xml", argv[0]);
+		qFatal("Usage: %s InnerModelFile.xml [-p INNERMODEL_MANAGER_PORT] [-f MSECS]", argv[0]);
 
 	//  0 program_name
 	//  1 innermodel
 	//  2 optionally -p
 	//  3 optionally port
 	//  4
-	//  5 
-	//  6 
-	//  7 
+	//  5
+	//  6
+	//  7
 	//  8
 	//  9
 	// 10 0
-	
+
 	// Set arguments
 	int argcs = argc + 6;
-	
+
 	// Allog memory and end the arg list
 	char *argv2[argcs+1];
 	for (int i=0; i<argcs; i++)
 		argv2[i] = new char[i<argc?strlen(argv[i])+1:500];
 	argv2[argcs] = 0;
-	
+
 	// Copy existing args
 	for (int i=0; i<argc; ++i)
 		strcpy(argv2[i], argv[i]);
-	
+
 	strcpy( argv2[argc+0], "--Ice.Warn.Connections=0");
 	strcpy( argv2[argc+1], "--Ice.Trace.Network=0");
 	strcpy( argv2[argc+2], "--Ice.Trace.Protocol=0");
