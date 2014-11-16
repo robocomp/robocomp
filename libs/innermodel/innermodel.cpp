@@ -549,7 +549,7 @@ InnerModelPrismaticJoint *InnerModel::newPrismaticJoint(QString id, InnerModelTr
 
 
 
-InnerModelDifferentialRobot *InnerModel::newDifferentialRobot(QString id, InnerModelTransform *parent, float tx, float ty, float tz, float rx, float ry, float rz, uint32_t port, float noise)
+InnerModelDifferentialRobot *InnerModel::newDifferentialRobot(QString id, InnerModelTransform *parent, float tx, float ty, float tz, float rx, float ry, float rz, uint32_t port, float noise, bool collide)
 {
 	if (hash.contains(id))
 	{
@@ -557,7 +557,7 @@ InnerModelDifferentialRobot *InnerModel::newDifferentialRobot(QString id, InnerM
 		error.sprintf("InnerModel::newDifferentialRobot: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
 		throw error;
 	}
-	InnerModelDifferentialRobot *newnode = new InnerModelDifferentialRobot(id, tx, ty, tz, rx, ry, rz, port, noise, parent);
+	InnerModelDifferentialRobot *newnode = new InnerModelDifferentialRobot(id, tx, ty, tz, rx, ry, rz, port, noise, collide, parent);
 	hash[id] = newnode;
 // 	parent->addChild(newnode);
 	return newnode;
@@ -565,7 +565,7 @@ InnerModelDifferentialRobot *InnerModel::newDifferentialRobot(QString id, InnerM
 
 
 
-InnerModelOmniRobot *InnerModel::newOmniRobot(QString id, InnerModelTransform *parent, float tx, float ty, float tz, float rx, float ry, float rz, uint32_t port, float noise)
+InnerModelOmniRobot *InnerModel::newOmniRobot(QString id, InnerModelTransform *parent, float tx, float ty, float tz, float rx, float ry, float rz, uint32_t port, float noise, bool collide)
 {
 	if (hash.contains(id))
 	{
@@ -573,7 +573,7 @@ InnerModelOmniRobot *InnerModel::newOmniRobot(QString id, InnerModelTransform *p
 		error.sprintf("InnerModel::newOmniRobot: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
 		throw error;
 	}
-	InnerModelOmniRobot *newnode = new InnerModelOmniRobot(id, tx, ty, tz, rx, ry, rz, port, noise, parent);
+	InnerModelOmniRobot *newnode = new InnerModelOmniRobot(id, tx, ty, tz, rx, ry, rz, port, noise, collide, parent);
 	hash[id] = newnode;
 // 	parent->addChild(newnode);
 	return newnode;
@@ -2131,13 +2131,14 @@ InnerModelNode * InnerModelPrismaticJoint::copyNode(QHash<QString, InnerModelNod
 // InnerModelDifferentialRobot
 // ------------------------------------------------------------------------------------------------
 
-InnerModelDifferentialRobot::InnerModelDifferentialRobot(QString id_, float tx_, float ty_, float tz_, float rx_, float ry_, float rz_, uint32_t port_, float noise_, InnerModelTransform *parent_) : InnerModelTransform(id_,QString("static"),tx_,ty_,tz_,rx_,ry_,rz_, 0, parent_)
+InnerModelDifferentialRobot::InnerModelDifferentialRobot(QString id_, float tx_, float ty_, float tz_, float rx_, float ry_, float rz_, uint32_t port_, float noise_, bool collide_, InnerModelTransform *parent_) : InnerModelTransform(id_,QString("static"),tx_,ty_,tz_,rx_,ry_,rz_, 0, parent_)
 {
 #if FCL_SUPPORT==1
 	collisionObject = NULL;
 #endif
 	port = port_;
 	noise = noise_;
+	collide = collide_;
 }
 
 InnerModelNode * InnerModelDifferentialRobot::copyNode(QHash<QString, InnerModelNode *> &hash, InnerModelNode *parent)
@@ -2163,13 +2164,14 @@ InnerModelNode * InnerModelDifferentialRobot::copyNode(QHash<QString, InnerModel
 // InnerModelOmniRobot
 // ------------------------------------------------------------------------------------------------
 
-InnerModelOmniRobot::InnerModelOmniRobot(QString id_, float tx_, float ty_, float tz_, float rx_, float ry_, float rz_, uint32_t port_, float noise_, InnerModelTransform *parent_) : InnerModelTransform(id_,QString("static"),tx_,ty_,tz_,rx_,ry_,rz_, 0, parent_)
+InnerModelOmniRobot::InnerModelOmniRobot(QString id_, float tx_, float ty_, float tz_, float rx_, float ry_, float rz_, uint32_t port_, float noise_, bool collide_, InnerModelTransform *parent_) : InnerModelTransform(id_,QString("static"),tx_,ty_,tz_,rx_,ry_,rz_, 0, parent_)
 {
 #if FCL_SUPPORT==1
 	collisionObject = NULL;
 #endif
 	port = port_;
 	noise = noise_;
+	collide = collide_;
 }
 
 InnerModelNode * InnerModelOmniRobot::copyNode(QHash<QString, InnerModelNode *> &hash, InnerModelNode *parent)

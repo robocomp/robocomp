@@ -95,7 +95,6 @@ void OmniRobotI::getBasePose(Ice::Int& x, Ice::Int& z, Ice::Float& alpha, const 
 #define MILIMETERS_PER_UNIT 1.
 void OmniRobotI::updateInnerModelPose(bool force)
 {
-
 	if ( (fabs(advVelx)<0.0001 and fabs(advVelz)<0.0001 and fabs(rotVel)<0.0001) and not force)
 	{
 		return;
@@ -148,10 +147,14 @@ void OmniRobotI::updateInnerModelPose(bool force)
 
 bool OmniRobotI::canMoveBaseTo(const QString nodeId, const QVec position, const double alpha)
 {
+	if (not node->collide) return true;
+
+	printf("%s: %d\n", __FILE__, __LINE__);
 	std::vector<QString> robotNodes;
 	std::vector<QString> restNodes;
 
 	recursiveIncludeMeshes(innerModel->getRoot(), nodeId, false, robotNodes, restNodes);
+	printf("%s: %d\n", __FILE__, __LINE__);
 
 	for (uint32_t in=0; in<robotNodes.size(); in++)
 	{
@@ -159,11 +162,13 @@ bool OmniRobotI::canMoveBaseTo(const QString nodeId, const QVec position, const 
 		{
 			if (innerModel->collide(robotNodes[in], restNodes[out]))
 			{
+	printf("%s: %d\n", __FILE__, __LINE__);
 				return false;
 			}
 		}
 	}
 
+	printf("%s: %d\n", __FILE__, __LINE__);
 	return true;
 }
 

@@ -219,6 +219,8 @@ void DifferentialRobotI::updateInnerModelPose(bool force)
 
 bool DifferentialRobotI::canMoveBaseTo(const QString nodeId, const QVec position, const double alpha)
 {
+	if (not node->collide) return true;
+
 	std::vector<QString> robotNodes;
 	std::vector<QString> restNodes;
 
