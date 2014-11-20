@@ -28,6 +28,7 @@ module RoboCompobjectDetection{
 		void  mindTheGapPC();
 		void  reloadVFH();
 		void  loadTrainedVFH();
+		void  fitTheViewVFH();
 		void  vfh(out listType guesses);
 		void  surfHomography(out listType guesses);
 	};
