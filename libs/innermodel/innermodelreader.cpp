@@ -177,14 +177,14 @@ void InnerModelReader::recursive(QDomNode parentDomNode, InnerModel *model, Inne
 			else if (e.tagName().toLower() == "differentialrobot")
 			{
 				InnerModelTransform * im = dynamic_cast<InnerModelTransform *>(imNode );
-				InnerModelDifferentialRobot *dr = model->newDifferentialRobot(e.attribute("id"), im, e.attribute("tx", "0").toFloat(), e.attribute("ty", "0").toFloat(), e.attribute("tz", "0").toFloat(), e.attribute("rx", "0").toFloat(), e.attribute("ry", "0").toFloat(), e.attribute("rz", "0").toFloat(), e.attribute("port", "0").toInt(), e.attribute("noise", "0").toFloat());
+				InnerModelDifferentialRobot *dr = model->newDifferentialRobot(e.attribute("id"), im, e.attribute("tx", "0").toFloat(), e.attribute("ty", "0").toFloat(), e.attribute("tz", "0").toFloat(), e.attribute("rx", "0").toFloat(), e.attribute("ry", "0").toFloat(), e.attribute("rz", "0").toFloat(), e.attribute("port", "0").toInt(), e.attribute("noise", "0").toFloat(), e.attribute("collide", "0").toInt()>0);
 				imNode->addChild(dr);
 				node = dr;
 			}
 			else if (e.tagName().toLower() == "omnirobot")
 			{
 				InnerModelTransform * im = dynamic_cast<InnerModelTransform *>(imNode );
-				InnerModelOmniRobot *dr = model->newOmniRobot(e.attribute("id"), im, e.attribute("tx", "0").toFloat(), e.attribute("ty", "0").toFloat(), e.attribute("tz", "0").toFloat(), e.attribute("rx", "0").toFloat(), e.attribute("ry", "0").toFloat(), e.attribute("rz", "0").toFloat(), e.attribute("port", "0").toInt(), e.attribute("noise", "0").toFloat());
+				InnerModelOmniRobot *dr = model->newOmniRobot(e.attribute("id"), im, e.attribute("tx", "0").toFloat(), e.attribute("ty", "0").toFloat(), e.attribute("tz", "0").toFloat(), e.attribute("rx", "0").toFloat(), e.attribute("ry", "0").toFloat(), e.attribute("rz", "0").toFloat(), e.attribute("port", "0").toInt(), e.attribute("noise", "0").toFloat(), e.attribute("collide", "0").toInt()>0);
 				imNode->addChild(dr);
 				node = dr;
 			}
@@ -318,11 +318,11 @@ QMap<QString, QStringList> InnerModelReader::getValidNodeAttributes()
 	nodeAttributes["prismaticjoint"] = temporalList;
 	
 	temporalList.clear();
-	temporalList << "id" << "tx" << "ty" << "tz" << "rx" << "ry" << "rz" << "port" << "noise";
+	temporalList << "id" << "tx" << "ty" << "tz" << "rx" << "ry" << "rz" << "port" << "noise" << "collide";
 	nodeAttributes["differentialrobot"] = temporalList;
 	
 	temporalList.clear();
-	temporalList << "id" << "tx" << "ty" << "tz" << "rx" << "ry" << "rz" << "port" << "noise";
+	temporalList << "id" << "tx" << "ty" << "tz" << "rx" << "ry" << "rz" << "port" << "noise" << "collide";
 	nodeAttributes["omnirobot"] = temporalList;
 	
 	temporalList.clear();

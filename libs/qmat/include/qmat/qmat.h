@@ -34,7 +34,32 @@
 #include <gsl/gsl_randist.h>
 
 
+#ifdef PYTHON_BINDINGS_SUPPORT
+#include <boost/python.hpp>
+#include <boost/python/list.hpp>
+static std::vector<float> to_std_vector_QVec(const boost::python::list &ns)
+{
+	std::vector<float> ret;
+	for (int i=0; i<len(ns); ++i)
+	{
+		ret.push_back(boost::python::extract<float>(ns[i]));
+	}
+	return ret;
+}
+
+static std::vector<int> to_std_vector_Index(const boost::python::tuple &ns)
+{
+	std::vector<int32_t> ret;
+	for (int i=0; i<len(ns); ++i)
+	{
+		ret.push_back(boost::python::extract<int32_t>(ns[i]));
+	}
+	return ret;
+}
+#endif
+
 #define MAX_DIMENSION 100
+
 
 namespace RMat
 {
@@ -70,18 +95,32 @@ namespace RMat
 		QMat( const QList< QVec > & vectorList);
 		QMat( const QVec & vector, const bool rowVector = false);
 		QMat( const gsl_matrix *matrix);
-		
+
 		~QMat() {};
-		
-		
-		
+
+
+
 		QMat copy();
 		QMat & inject ( const QMat & matrix, const int foff, const int coff );
 		//Access functions
-		inline T & operator() ( const int row, const int column )        { return getWriteData()[row*cols+column]; }
-		inline T operator() ( const int row, const int column ) const    { return getReadData()[row*cols+column]; }
-		inline T & operator() ( const int row )                          { return getWriteData()[row*cols]; }
-		inline T operator() ( const int row ) const                      { return getReadData()[row*cols]; }
+		inline T & operator() (const int row, const int column)          { return getWriteData()[row*cols+column]; }
+		inline T operator() (const int row, const int column) const      { return getReadData()[row*cols+column]; }
+		inline T & operator() (const int row)                            { return getWriteData()[row*cols]; }
+		inline T operator() (const int row) const                        { return getReadData()[row*cols]; }
+		inline void setItem(int i1, int i2, const T val)                 { operator()(i1, i2) = val; }
+		inline T getItem(int i1, int i2) const                           { return operator()(i1, i2); }
+#ifdef PYTHON_BINDINGS_SUPPORT
+		inline void setItemV(boost::python::tuple &v, T val)
+		{
+			std::vector<int32_t> i = to_std_vector_Index(v);
+			operator()(i[0], i[1]) = val;
+		}
+		inline T getItemV(boost::python::tuple &v) const
+		{
+			std::vector<int32_t> i = to_std_vector_Index(v);
+			return operator()(i[0], i[1]);
+		}
+#endif
 		inline int nRows() const                                         { return rows; }
 		inline int nCols() const                                         { return cols; }
 		int getDataSize() const                                          { return rows*cols; }
@@ -163,6 +202,7 @@ namespace RMat
 		int maxDim();
 		inline bool equalSize ( const QMat & A, const QMat & B ) const;
 		void print ( const QString & s ) const;
+		void prints ( const std::string & s ) const { print(QString::fromStdString(s)); }
 
 		QMat sqrt();                          // Element square root
 		QMat cholesky();

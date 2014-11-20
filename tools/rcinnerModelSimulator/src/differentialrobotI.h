@@ -27,6 +27,8 @@
 // RoboComp includes
 #include <Ice/Ice.h>
 #include <DifferentialRobot.h>
+#include <OmniRobot.h>
+#include <omnirobotI.h>
 #include <innermodel/innermodel.h>
 
 // Simulator includes
@@ -35,6 +37,7 @@
 
 
 using namespace RoboCompDifferentialRobot;
+using namespace RoboCompOmniRobot;
 
 class SpecificWorker;
 
@@ -42,31 +45,31 @@ class DifferentialRobotI : public QThread, public virtual RoboCompDifferentialRo
 {
 	Q_OBJECT
 public:
-	DifferentialRobotI ( SpecificWorker *_worker, QObject *parent = 0 );
+	DifferentialRobotI(SpecificWorker *_worker, OmniRobotI *_omniI=NULL, QObject *parent = 0);
 	~DifferentialRobotI();
-	
-	void add ( QString id );
+
+	void add(QString id);
 	void run();
-	void updateInnerModelPose ( bool force=false );
-	
-	void getBaseState ( RoboCompDifferentialRobot::TBaseState& state, const Ice::Current& = Ice::Current() );
-	void getBasePose ( Ice::Int& x, Ice::Int& z, Ice::Float& alpha, const Ice::Current& = Ice::Current() );
-	void setSpeedBase ( Ice::Float adv, Ice::Float rot, const Ice::Current& = Ice::Current() );
-	void stopBase ( const Ice::Current& = Ice::Current() );
-	void resetOdometer ( const Ice::Current& = Ice::Current() );
-	void setOdometer ( const RoboCompDifferentialRobot::TBaseState& state, const Ice::Current& = Ice::Current() );
-	void setOdometerPose ( Ice::Int x, Ice::Int z, Ice::Float alpha, const Ice::Current& = Ice::Current() );
-	void correctOdometer ( Ice::Int x, Ice::Int z, Ice::Float alpha, const Ice::Current& = Ice::Current() );
-	
+	void updateInnerModelPose(bool force=false);
+
+	void getBaseState(RoboCompDifferentialRobot::TBaseState& state, const Ice::Current& = Ice::Current());
+	void getBasePose(Ice::Int& x, Ice::Int& z, Ice::Float& alpha, const Ice::Current& = Ice::Current());
+	void setSpeedBase(Ice::Float adv, Ice::Float rot, const Ice::Current& = Ice::Current());
+	void stopBase(const Ice::Current& = Ice::Current());
+	void resetOdometer(const Ice::Current& = Ice::Current());
+	void setOdometer(const RoboCompDifferentialRobot::TBaseState& state, const Ice::Current& = Ice::Current());
+	void setOdometerPose(Ice::Int x, Ice::Int z, Ice::Float alpha, const Ice::Current& = Ice::Current());
+	void correctOdometer(Ice::Int x, Ice::Int z, Ice::Float alpha, const Ice::Current& = Ice::Current());
+
 private:
 	SpecificWorker *worker;
 	InnerModel *innerModel;
 	QStringList differentialIDs;
 	QMutex *mutex;
-	
+
 	RMat::RTMat zeroTR;
 	float zeroANG;
-	
+
 	// Real Noisy Pose
 	RoboCompDifferentialRobot::TBaseState pose;
 	// Odometry pose
@@ -81,8 +84,10 @@ private:
 
 	InnerModelTransform *parent;
 	InnerModelDifferentialRobot *node;
+	InnerModelOmniRobot *nodeOmni;
+	OmniRobotI *omniI;
 	InnerModelTransform *realNode;
-	
+
 	bool canMoveBaseTo(const QString nodeId, const QVec position, const double alpha);
 	void recursiveIncludeMeshes(InnerModelNode *node, QString robotId, bool inside, std::vector<QString> &in, std::vector<QString> &out);
 

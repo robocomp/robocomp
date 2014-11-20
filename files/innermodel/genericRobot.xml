@@ -11,9 +11,12 @@
 			<translation id="robotGeometricCenter" tx="0" ty="0" tz="-285">
 				<mesh id="base_mesh" file="/home/robocomp/robocomp/files/osgModels/Gualzru/Gualzru.osg" scale="20" ty="10" ry="3.141592" rz="1.57" rx="-1.57" />
 			</translation>
-			<translation id="laser_t" tx="0" ty="-200" tz="0" >
+			<translation id="laser_t" tx="0" ty="200" tz="0" >
 				<laser id="laser" port="20000" measures="100" min="20" max="30000" angle="4.7123889"/>
 			</translation>
+			<transform id="rgb_t">
+				<camera id="rgb" focal="400" />
+			</transform>
 		</differentialrobot>
 
 		<transform id="worldTemporalRef" />

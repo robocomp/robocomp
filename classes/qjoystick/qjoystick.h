@@ -52,7 +52,7 @@ public:
         char name[128];
     };
     
-    QJoyStick(QString Device = DEFAULT_DEVICE, QObject *parent = 0);
+    QJoyStick(QString Device=DEFAULT_DEVICE, int32_t axes=2, QObject *parent = 0);
     ~QJoyStick();
 
     bool openQJoy();

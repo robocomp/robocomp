@@ -119,6 +119,7 @@ public:
 	uint32_t port;
 	Ice::ObjectAdapterPtr adapter;
 	OmniRobotI *interface;
+	DifferentialRobotI *interfaceDFR;
 	std::vector<InnerModelOmniRobot *> omnirobots;
 };
 

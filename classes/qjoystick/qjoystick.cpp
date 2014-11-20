@@ -18,11 +18,11 @@
  */
 #include "qjoystick.h"
 
-QJoyStick::QJoyStick(QString device, QObject *parent) : QThread(parent)
+QJoyStick::QJoyStick(QString device, int32_t axes, QObject *parent) : QThread(parent)
 {
     deviceName =  device ;
 
-    info.axes = 2;
+    info.axes = axes;
     info.buttons = 2;
     info.version = 0x000800;
     
@@ -37,23 +37,23 @@ QJoyStick::~QJoyStick()
 
 bool QJoyStick::openQJoy()
 {
-    qWarning( "[qjoystick]: Connecting to device: %s", deviceName.toAscii().data() );
-   
-    if((fd = open(deviceName.toAscii().data() , O_RDONLY))<0)
-    {
-        qWarning( "[qjoystick]: Failed opening device." );
-        return FALSE;
-    }
-            
+	qWarning( "[qjoystick]: Connecting to device: %s", deviceName.toAscii().data() );
 
-    ioctl(fd, JSIOCGVERSION, &(info.version));
-    ioctl(fd, JSIOCGAXES, &(info.axes));
-    ioctl(fd, JSIOCGBUTTONS, &(info.buttons));
-    ioctl(fd, JSIOCGNAME(JOYSTICK_VERSION_NAME_LENGTH), info.name);
-    
+	if((fd = open(deviceName.toAscii().data() , O_RDONLY))<0)
+	{
+		qWarning( "[qjoystick]: Failed opening device." );
+		return FALSE;
+	}
 
-    qWarning( "[qjoystick]: Device opened: name [%s], version [%8X], axes [%2d], buttons [%2d]", info.name, info.version, info.axes, info.buttons );
-    return TRUE;
+
+	ioctl(fd, JSIOCGVERSION, &(info.version));
+	ioctl(fd, JSIOCGAXES, &(info.axes));
+	ioctl(fd, JSIOCGBUTTONS, &(info.buttons));
+	ioctl(fd, JSIOCGNAME(JOYSTICK_VERSION_NAME_LENGTH), info.name);
+
+
+	qWarning("[qjoystick]: Device opened: name [%s], version [%8X], axes [%2d], buttons [%2d]", info.name, info.version, info.axes, info.buttons );
+	return TRUE;
 }
 
 bool QJoyStick::cmpJoyEv( js_event src, js_event dst )
@@ -63,12 +63,11 @@ bool QJoyStick::cmpJoyEv( js_event src, js_event dst )
 
 void QJoyStick::run( )
 {
-    for( ;; )
-    {
-     
-        if ( read(fd, &data, data_sz) == data_sz )
-             emit ( inputEvent( data.value, data.type, data.number ) );
-    }
+	for (;;)
+	{
+		if (read(fd, &data, data_sz) == data_sz)
+			emit (inputEvent(data.value, data.type, data.number));
+	}
 }
 
 void QJoyStick::stop()

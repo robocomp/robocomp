@@ -26,7 +26,8 @@ OmniRobotI::OmniRobotI(SpecificWorker *_worker, QObject *parent): QThread(parent
 	innerModel = worker->getInnerModel();
 	advVelx = advVelz = rotVel = 0;
 	gettimeofday(&lastCommand_timeval, NULL);
-	updateInnerModelPose();
+
+	// 	updateInnerModelPose();
 
 	zeroANG = 0;
 	zeroTR = RTMat(0,0,0, 0,0,0);
@@ -67,13 +68,13 @@ OmniRobotI::~OmniRobotI()
 void OmniRobotI::getBaseState(RoboCompOmniRobot::TBaseState& state, const Ice::Current&)
 {
 	QMutexLocker locker(mutex);
-	
+
 	state = pose;
 	QVec retPOS = (zeroTR * QVec::vec3(pose.x, 0, pose.z).toHomogeneousCoordinates()).fromHomogeneousCoordinates();
 	state.x = retPOS(0);
 	state.z = retPOS(2);
 	state.alpha = pose.alpha - zeroANG;
-	
+
 	retPOS = (zeroTR * QVec::vec3(pose.correctedX, 0, pose.correctedZ).toHomogeneousCoordinates()).fromHomogeneousCoordinates();
 	state.correctedX = retPOS(0);
 	state.correctedZ = retPOS(2);
@@ -107,7 +108,7 @@ void OmniRobotI::updateInnerModelPose(bool force)
 	QVec vel = QVec::vec3(advVelx, 0, advVelz);
 	QVec newPos, noisyNewPos;
 	const double noise = node->noise;
-	
+
 	// Random noise:
 	QVec rndmPos = QVec::gaussianSamples(2, 0, noise*(0.01*vel.norm2() + 0.1*rotVel));
 	QVec rndmYaw = QVec::gaussianSamples(1, 0, noise*(0.01*vel.norm2() + 0.1*rotVel));
@@ -116,7 +117,7 @@ void OmniRobotI::updateInnerModelPose(bool force)
 	QVec T = vel.operator*(msecs / 1000.);
 	float Angle  = rotVel*msecs / 1000.;
 	newAngle += Angle;
-	
+
 	QVec backNoisyNewPos = innerModel->transform(parent->id, QVec::vec3(0,0,0), node->id);
 	float backNoisyAngle = noisyNewAngle;
 	noisyNewAngle += Angle + rndmYaw[0];
@@ -146,10 +147,14 @@ void OmniRobotI::updateInnerModelPose(bool force)
 
 bool OmniRobotI::canMoveBaseTo(const QString nodeId, const QVec position, const double alpha)
 {
+	if (not node->collide) return true;
+
+	printf("%s: %d\n", __FILE__, __LINE__);
 	std::vector<QString> robotNodes;
 	std::vector<QString> restNodes;
 
 	recursiveIncludeMeshes(innerModel->getRoot(), nodeId, false, robotNodes, restNodes);
+	printf("%s: %d\n", __FILE__, __LINE__);
 
 	for (uint32_t in=0; in<robotNodes.size(); in++)
 	{
@@ -157,11 +162,13 @@ bool OmniRobotI::canMoveBaseTo(const QString nodeId, const QVec position, const 
 		{
 			if (innerModel->collide(robotNodes[in], restNodes[out]))
 			{
+	printf("%s: %d\n", __FILE__, __LINE__);
 				return false;
 			}
 		}
 	}
 
+	printf("%s: %d\n", __FILE__, __LINE__);
 	return true;
 }
 
@@ -171,7 +178,7 @@ void OmniRobotI::recursiveIncludeMeshes(InnerModelNode *node, QString robotId, b
 	{
 		inside = true;
 	}
-	
+
 	InnerModelMesh *mesh;
 	InnerModelPlane *plane;
 	InnerModelTransform *transformation;
