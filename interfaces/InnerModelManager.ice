@@ -145,6 +145,7 @@ module RoboCompInnerModelManager
 		/// Generic remove
 		// If an item doesn't exist or can't be removed, returns false. All item's children are erased.
 		bool removeNode(string item) throws InnerModelManagerError;
+		bool moveNode(string src, string dst) throws InnerModelManagerError;
 
 		/// Collision detection
 		bool collide(string a, string b) throws InnerModelManagerError;

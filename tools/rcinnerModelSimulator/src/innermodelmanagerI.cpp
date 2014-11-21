@@ -107,6 +107,12 @@ bool InnerModelManagerI::removeNode(const std::string &item, const Ice::Current&
 	
 }
 
+bool InnerModelManagerI::moveNode(const std::string &src, const std::string &dst, const Ice::Current&)
+{
+	return worker->imm_moveNode(id, src,dst);
+	
+}
+
 
 bool InnerModelManagerI::addAttribute(const string &idNode, const string &name, const string &type, const string &value, const Ice::Current&)
 {

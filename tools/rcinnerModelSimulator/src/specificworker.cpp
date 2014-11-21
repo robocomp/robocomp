@@ -782,27 +782,9 @@ SpecificWorker::SpecificWorker(MapPrx& _mprx, Ice::CommunicatorPtr _communicator
 	objectTriggered();
 	visualTriggered();
 
-
 	// Initialize the timer
 	setPeriod(ms);
 	qDebug()<<"period"<<Period;
-	
-	
-	d->innerModel->treePrint();
-	d->innerModel->treePrint("",true);
-	qDebug()<<"**************************************************************";
-	qDebug()<<"**************************************************************";
-	qDebug()<<"**************************************************************";
-	this->imm_moveNode("", "caja2", "caja1");
-	d->innerModel->treePrint();
-	d->innerModel->treePrint("",true);
-
-
-// 	qFatal("fary");
-	
-	
-	
-
 }
 
 
