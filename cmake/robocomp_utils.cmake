@@ -9,7 +9,7 @@
 
 macro(SET_INSTALL_DIRS)
     set(INSTALL_DIR
-        "/opt/${PROJECT_NAME_LOWER}-${RoboComp_VERSION}")
+        "/opt/${PROJECT_NAME_LOWER}")
         
     set(LIB_INSTALL_DIR "${INSTALL_DIR}/lib")
     set(INCLUDE_INSTALL_DIR "${INSTALL_DIR}/include")
