@@ -271,7 +271,9 @@ public:
 	InnerModelNode *getNode(const QString & id) const { if (hash.contains(id)) return hash[id]; else return NULL;}
 	void removeSubTree(InnerModelNode *item, QStringList *l);
 	void removeNode(const QString & id);
+	void moveSubTree(InnerModelNode *nodeSrc, InnerModelNode *nodeDst);
 	void getSubTree(InnerModelNode *node, QStringList *l);
+	void computeLevels(InnerModelNode *node);
 	/// Set debug level
 	int debugLevel(int level=-1) { static int debug_level=0; if (level>-1) debug_level=level; return debug_level; }
 

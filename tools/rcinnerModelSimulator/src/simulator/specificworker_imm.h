@@ -648,6 +648,109 @@ bool SpecificWorker::imm_removeNode(const QString &server, const std::string &it
 	
 	return true;
 }
+#define INNERMODELMANAGERDEBUG
+bool SpecificWorker::imm_moveNode(const QString &server, const std::string &src, const std::string &dst)
+{
+	QMutexLocker locker(mutex);
+	QString msg="RoboCompInnerModelManager::moveNode()";
+#ifdef INNERMODELMANAGERDEBUG
+	qDebug() <<msg<<QString::fromStdString(src)<<QString::fromStdString(dst);
+#endif
+
+	QString idSrc =QString::fromStdString(src);
+	QString idDst =QString::fromStdString(dst);
+	if(idSrc=="world" || idSrc=="root" ) {
+#ifdef INNERMODELMANAGERDEBUG
+		qDebug() <<msg<<idSrc<<"Can't move root elements";
+#endif
+		RoboCompInnerModelManager::InnerModelManagerError err;
+		err.err = RoboCompInnerModelManager::OperationInvalidNode;
+		std::ostringstream oss;
+		oss <<msg.toStdString() <<" error, cannot move Node: " <<idSrc.toStdString();
+		err.text = oss.str();
+		throw err;
+	}
+	
+	if(idDst =="root" ) {
+#ifdef INNERMODELMANAGERDEBUG
+		qDebug() <<msg<<idDst<<"Can't move to root elements";
+#endif
+		RoboCompInnerModelManager::InnerModelManagerError err;
+		err.err = RoboCompInnerModelManager::OperationInvalidNode;
+		std::ostringstream oss;
+		oss <<msg.toStdString() <<" Forbidden, cannot move Node: " <<idSrc.toStdString()<<"to"<<idDst.toStdString()<<"element";
+		err.text = oss.str();
+		throw err;
+	}
+	
+
+	InnerModelNode *nodeSrc = d->getNode(idSrc, msg);
+	d->checkOperationInvalidNode(nodeSrc,msg);
+	
+	InnerModelNode *nodeDst = d->getNode(idDst, msg);
+	d->checkOperationInvalidNode(nodeDst,msg);
+
+	QStringList l;
+	l.clear();
+	
+	//consigo ids para viewer
+	d->innerModel->getSubTree (nodeSrc,&l);
+	//muevo 
+	d->innerModel->moveSubTree(nodeSrc,nodeDst);
+	
+	
+	
+
+	/// Replicate InnerModel node removals in the InnerModelViewer tree. And in handlers Lists
+	foreach(QString n, l) {
+		/// Replicate plane removals
+		if(d->imv->meshHash.contains(n)) {
+// 			qDebug()<<"/// Replicate meshHash removals"<<n;			
+			while(d->imv->meshHash[n].osgmeshPaths->getNumParents() > 0)
+				( d->imv->meshHash[n].osgmeshPaths->getParent(0))->removeChild(d->imv->meshHash[n].osgmeshPaths);			
+			while(d->imv->meshHash[n].osgmeshes->getNumParents() > 0)
+				( d->imv->meshHash[n].osgmeshes->getParent(0))->removeChild(d->imv->meshHash[n].osgmeshes);
+			while(d->imv->meshHash[n].meshMts->getNumParents() > 0)	
+				( d->imv->meshHash[n].meshMts->getParent(0))->removeChild(d->imv->meshHash[n].meshMts);			
+				
+			d->imv->meshHash.remove(n);
+// 			meshColision.remove(n);
+		}
+		/// Replicate transform removals
+		if(d->imv->mts.contains(n)) {
+//			qDebug()<<"/// Replicate transform removals";//<<n<<d->imv->mts[n]->getNumParents();
+ 			while(d->imv->mts[n]->getNumParents() > 0) {
+				(d->imv->mts[n]->getParent(0))->removeChild(d->imv->mts[n]);
+ 			}			
+ 			d->imv->mts.remove(n);
+		}
+		/// Replicate plane removals
+		if(d->imv->planeMts.contains(n)) {
+//			qDebug()<<"/// Replicate plane removals";
+			while(d->imv->planeMts[n]->getNumParents() > 0) {
+				((osg::Group *)(d->imv->planeMts[n]->getParent(0)))->removeChild(d->imv->planeMts[n]);
+			}
+			d->imv->planeMts.remove(n);
+			d->imv->planesHash.remove(n);
+		}
+		
+	}
+	foreach(QString n, l) 
+	{
+		
+		d->imv->recursiveConstructor(d->innerModel->getNode(n), d->imv->mts[d->innerModel->getNode(n)->parent->id], d->imv->mts, d->imv->meshHash); // imv->osgmeshes,imv->osgmeshPats);
+	}
+	
+	
+// 	qDebug()<<d->imv->meshHash.size();
+// 	qDebug()<<d->imv->mts.size();
+// 	qDebug()<<d->imv->planeMts.size();
+// 	qDebug()<<d->imv->planesHash.size();
+// 	qDebug()<<d->innerModel->getIDKeys().size();
+// 	d->innerModel->print();
+	qDebug()<<"-- fin move Subtree --";
+	return true;
+}
 
 
 void SpecificWorker::imm_getAllNodeInformation(const QString &server, RoboCompInnerModelManager::NodeInformationSequence &nodesInfo)
