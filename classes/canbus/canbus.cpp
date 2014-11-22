@@ -6,6 +6,7 @@
 */
 CanBus::CanBus(QString device, int baudRate)
 {
+	printf("CanBus::CanBus:  %s %d\n", device.toStdString().c_str(), baudRate);
 	rDebug("CanBus initialize");
 	// Open and initialize the device
 	devHandler = VSCAN_Open(device.toAscii().data(),  VSCAN_MODE_NORMAL);
