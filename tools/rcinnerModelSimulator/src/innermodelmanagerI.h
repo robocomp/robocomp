@@ -68,6 +68,7 @@ public:
 	bool getAttribute ( const std::string& idNode, const std::string& name, std::string& type, std::string& value, const Ice::Current& );
 	
 	bool removeNode ( const std::string& item, const Ice::Current& );
+	bool moveNode ( const std::string& src, const std::string& dst, const Ice::Current& );
 	
 	void getAllNodeInformation ( NodeInformationSequence &nodesInfo, const Ice::Current& );
 	
