@@ -13,6 +13,9 @@ module RoboCompobjectDetection{
 	sequence <string> listType;
 
 	interface objectDetection{
+		void  statisticalOutliersRemoval();
+		void  passThrough();
+		void  grabThePointCloud();
 		void  aprilFitModel(string model);
 		void  fitModel(string model, string method);
 		void  getInliers(string model);
