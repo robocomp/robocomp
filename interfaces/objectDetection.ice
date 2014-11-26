@@ -34,6 +34,7 @@ module RoboCompobjectDetection{
 		void  fitTheViewVFH();
 		void  vfh(out listType guesses);
 		void  surfHomography(out listType guesses);
+		void  centroidBasedPose();
 	};
 };
   

@@ -1,0 +1,22 @@
+Replay.Aliases=Null
+Replay.Mode=replay
+Replay.File=null.rpl
+
+Null.Endpoints=tcp -p 10021
+Null.name=speech
+Null.identifier=NULL
+Null.slicePath=/home/lmanso/robocomp/Interfaces/Speech.ice
+Null.codePath=/home/lmanso/robocomp/Tools/replayComp/null.py
+Null.proxy=camera:tcp -p 10021
+
+
+# Component properties
+#
+Ice.Warn.Connections=0
+Ice.Trace.Network=0
+Ice.Trace.Protocol=0
+Ice.ACM.Client=10
+Ice.ACM.Server=10
+Ice.MessageSizeMax=20240
+
+
