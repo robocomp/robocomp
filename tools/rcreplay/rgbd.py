@@ -54,12 +54,7 @@ class RGBDGUI(QWidget):
 	def setMeasure(self, measure):
 		self.measure = measure
 	def paintEvent(self, event):
-		if self.measure:
-			self.painter = QPainter(self)
-			self.painter.setRenderHint(QPainter.Antialiasing, True)
-			image = QImage(self.measure[0], 640, 480, QImage.Format_RGB888)
-			self.painter.drawImage(QPointF(0, 0), image)
-		self.painter = None
+		pass
 
 class RGBDI(RoboCompRGBD.RGBD):
 	def __init__(self):
@@ -69,6 +64,8 @@ class RGBDI(RoboCompRGBD.RGBD):
 		self.configuration = configuration
 	def setMeasure(self, measure):
 		self.measure = measure
+	def getImage(self, measue):
+		return self.measure
 	def getMeasure(self):
 		return self.measure
 	def getData(self, current = None):
@@ -81,9 +78,9 @@ class RGBDRecorder:
 		global RoboCompRGBD
 		self.proxy = RoboCompRGBD.RGBDPrx.checkedCast(proxy)
 	def getConfiguration(self):
-		return self.proxy.getRGBDParams()
+		return True
 	def getMeasure(self):
-		self.measure = self.proxy.getData()
+		self.measure = self.proxy.getImage()
 		return self.measure
 	def measure(self):
 		return self.measure

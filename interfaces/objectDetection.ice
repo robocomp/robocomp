@@ -24,7 +24,7 @@ module RoboCompobjectDetection{
 		void  extractPolygon(string model);
 		void  ransac(string model);
 		void  normalSegmentation(string model);
-		void  euclideanClustering(out int numClusters);
+		void  euclideanClustering(out int numCluseters);
 		void  showObject(int numObject);
 		void  reset();
 		void  mirrorPC();
@@ -35,6 +35,7 @@ module RoboCompobjectDetection{
 		void  vfh(out listType guesses);
 		void  surfHomography(out listType guesses);
 		void  centroidBasedPose();
+		void  grabTheAR();
 	};
 };
   

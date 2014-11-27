@@ -302,7 +302,7 @@ class ReplayCompIce(QThread, QObject):
 			identifier = self.readAliasProperty(alias, 'identifier')
 			proxy = self.readAliasProperty(alias, 'proxy')
 			slicePath = self.readAliasProperty(alias, 'slicePath')
-			string_final = slicePath + ' -I' + ROBOCOMP + '/Interfaces/ '
+			string_final = slicePath + ' -I' + ROBOCOMP + '/interfaces/ '
 			for spath in SLICE_PATH.split(';'):
 				if len(spath) > 0:
 					string_final += ' -I' + spath
