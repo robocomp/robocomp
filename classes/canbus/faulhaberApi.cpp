@@ -5,6 +5,7 @@
 */
 FaulHaberApi::FaulHaberApi(QString device, int baudRate) : CanBus(device, baudRate)
 {
+	printf("FaulHaberApi: %s %d\n", device.toStdString().c_str(), baudRate);
 	//qDebug()<<"binario"<<QString::number(16,2);
 }
 /**
@@ -18,7 +19,7 @@ FaulHaberApi::~FaulHaberApi()
 void FaulHaberApi::Init_Node(int id)
 {
 	//tres tramas iniciales
-	
+
 	msg = buildMessageData(CanOpenId,id,2,0x01,0x0000,0x00,0x00000000);
 	writeWaitReadMessage(&msg);
 	writeWaitReadMessage(&msg);
@@ -26,31 +27,31 @@ void FaulHaberApi::Init_Node(int id)
 	writeWaitReadMessage(&msg);
 	writeWaitReadMessage(&msg);
 	writeWaitReadMessage(&msg);
-	
+
 	int result = 0;
 	//switch on disable
 	msg = buildMessageData(WriteObjectId,id,8,0x2B,0x6040,0x00,0x00000000);
 	result = writeWaitReadMessage(&msg);
-	
+
 	if(id == 3)
 		sleep(1);
 
 	//ready to switch on
 	msg = buildMessageData(WriteObjectId,id,8,0x2B,0x6040,0x00,0x00000006);
 	result += writeWaitReadMessage(&msg);
-	
+
 	//switch on voltage
 	msg = buildMessageData(WriteObjectId,id,8,0x2B,0x6040,0x00,0x00000007);
 	result += writeWaitReadMessage(&msg);
-	
+
 	//operation enabled
 	msg = buildMessageData(WriteObjectId,id,8,0x2B,0x6040,0x00,0x0000000F);
 	result += writeWaitReadMessage(&msg);
-	
-	
-/*	if (result != 4)
+
+
+	/*	if (result != 4)
 		qFatal("error setting up node");*/
-	
+
 	//2B => write??
 	//2F => read??
 

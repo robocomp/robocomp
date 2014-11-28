@@ -128,6 +128,7 @@ public:
 	bool imm_setAttribute(const QString& server, const std::string& idNode, const std::string& name, const std::string& type, const std::string& value);
 	bool imm_getAttribute(const QString& server, const std::string& idNode, const std::string& name, std::string& type, std::string& value);
 	bool imm_removeNode(const QString& server, const std::string& item);
+	bool imm_moveNode(const QString& server, const std::string &src, const std::string &dst);
 	void imm_getAllNodeInformation(const QString& server, RoboCompInnerModelManager::NodeInformationSequence &nodesInfo);
 	void imm_setPointCloudData(const QString& server, const std::string &id, const RoboCompInnerModelManager::PointCloudVector &cloud);
 	bool imm_collide(const string &a, const string &b);

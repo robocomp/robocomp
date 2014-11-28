@@ -782,11 +782,9 @@ SpecificWorker::SpecificWorker(MapPrx& _mprx, Ice::CommunicatorPtr _communicator
 	objectTriggered();
 	visualTriggered();
 
-
 	// Initialize the timer
 	setPeriod(ms);
 	qDebug()<<"period"<<Period;
-
 }
 
 
@@ -946,6 +944,7 @@ void SpecificWorker::compute()
 		//osg render
 		d->viewer->frame();
 	}
+	
 }
 
 

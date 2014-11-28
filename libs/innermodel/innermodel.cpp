@@ -112,7 +112,6 @@ void InnerModelNode::addChild(InnerModelNode *child)
 }
 
 
-
 void InnerModelNode::setFixed(bool f)
 {
 	fixed = f;
@@ -231,6 +230,34 @@ void InnerModel::getSubTree(InnerModelNode *node, QStringList *l)
 	l->append(node->id);
 }
 
+/**
+ * @brief Returns a list of node's ID corresponding to the subtree starting at node
+ *
+ * @param node starting node
+ * @param l pointer to QStringList
+ * @return void
+ */
+void InnerModel::moveSubTree(InnerModelNode *nodeSrc, InnerModelNode *nodeDst)
+{
+	nodeSrc->parent->children.removeOne(nodeSrc);
+	nodeDst->addChild(nodeSrc);
+	nodeSrc->setParent(nodeDst);
+	computeLevels(nodeDst);
+	
+
+}
+void InnerModel::computeLevels(InnerModelNode *node)
+{
+	if (node->parent != NULL )
+	{
+		node->level=node->parent->level+1;
+	}
+	QList<InnerModelNode*>::iterator i;
+	for (i=node->children.begin(); i!=node->children.end(); i++)
+	{
+		computeLevels(*i);
+	}
+}
 
 // void InnerModel::getSubTreeN(InnerModelNode *orig, InnerModelNode *ret)
 // {
