@@ -15,7 +15,7 @@ module RoboCompobjectDetection{
 	interface objectDetection{
 		void  statisticalOutliersRemoval();
 		void  passThrough();
-		void  grabThePointCloud();
+		void  grabThePointCloud(string image, string pcd);
 		void  aprilFitModel(string model);
 		void  fitModel(string model, string method);
 		void  getInliers(string model);
@@ -37,6 +37,7 @@ module RoboCompobjectDetection{
 		void  centroidBasedPose(out float x, out float y, out float theta);
 		void  segmentImage();
 		void  grabTheAR();
+		string getResult(string image, string pcd);
 	};
 };
   
