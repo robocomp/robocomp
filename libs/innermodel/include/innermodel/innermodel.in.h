@@ -171,6 +171,7 @@ public:
 
 	InnerModelTransform *getTransform(const QString &id);
 	InnerModelJoint *getJoint(const QString &id);
+	InnerModelJoint *getJoint(const std::string &id) { return getJoint(QString::fromStdString(id)); }
 	InnerModelTouchSensor *getTouchSensor(const QString &id);
 	InnerModelPrismaticJoint *getPrismaticJoint(const QString &id);
 	InnerModelDifferentialRobot *getDifferentialRobot(const QString &id);

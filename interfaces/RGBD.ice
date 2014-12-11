@@ -33,7 +33,7 @@ module RoboCompRGBD{
 	};
                 
 	sequence <float> DepthSeq;	
-    sequence <ColorRGB> ColorSeq;
+	sequence <ColorRGB> ColorSeq;
 	sequence <PointXYZ> PointSeq;
     
 	struct CameraParameters

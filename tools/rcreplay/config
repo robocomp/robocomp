@@ -1,0 +1,29 @@
+Replay.Aliases=DifferentialRobot,Laser
+Replay.Mode=replay
+Replay.File=capture2.rpl
+
+DifferentialRobot.Endpoints=tcp -p 11004
+DifferentialRobot.name=differentialrobot
+DifferentialRobot.identifier=differentialrobot_hal
+DifferentialRobot.slicePath=/home/robolab/robocomp/Interfaces/DifferentialRobot.ice
+DifferentialRobot.codePath=/home/robolab/robocomp/Tools/RCReplay/differentialRobot.py
+DifferentialRobot.proxy=differentialrobot:tcp -p 10004
+
+Laser.Endpoints=tcp -p 11003
+Laser.name=laser
+Laser.identifier=laser_hal
+Laser.slicePath=/home/robolab/robocomp/Interfaces/Laser.ice
+Laser.codePath=/home/robolab/robocomp/Tools/RCReplay/laser.py
+Laser.proxy=laser:tcp -p 10003
+
+
+# Component properties
+#
+Ice.Warn.Connections=0
+Ice.Trace.Network=0
+Ice.Trace.Protocol=0
+Ice.ACM.Client=10
+Ice.ACM.Server=10
+Ice.MessageSizeMax=20240
+
+
