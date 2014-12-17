@@ -19,6 +19,7 @@ module RoboCompAGMExecutive
 		/// For visualization purposes
 		void getData(out RoboCompAGMWorldModel::World world, out RoboCompAGMWorldModel::World target, out RoboCompPlanning::Plan plan);
 		void broadcastModel();
+		void broadcastPlan();
 	};
 
 	interface AGMExecutiveVisualizationTopic
@@ -26,7 +27,7 @@ module RoboCompAGMExecutive
 		void update(RoboCompAGMWorldModel::World world, RoboCompAGMWorldModel::World target, RoboCompPlanning::Plan plan);
 		void successFulChange(RoboCompPlanning::ActionSequence actions);
 		void aimedChange(RoboCompPlanning::Action action);
-		void  invalidChange(string agent);
+		void invalidChange(string agent);
 	};
 
 	interface AGMExecutiveTopic

@@ -13,26 +13,32 @@
 
 #include <Planning.ice>
 
-module RoboCompAGMExecutive{
-
-	interface AGMExecutive{
-		void  activate();
-		void  deactivate();
-		void  reset();
+module RoboCompAGMExecutive
+{
+	interface AGMExecutive
+	{
+		void activate();
+		void deactivate();
+		void reset();
 		bool modificationProposal(RoboCompAGMWorldModel::Event modification);
-		void  setMission(RoboCompAGMWorldModel::World world);
-		void  getData(out RoboCompAGMWorldModel::World world, out RoboCompAGMWorldModel::World target, out RoboCompPlanning::Plan plan);
-		void  broadcastModel();
+		void setMission(RoboCompAGMWorldModel::World world);
+		void getData(out RoboCompAGMWorldModel::World world, out RoboCompAGMWorldModel::World target, out RoboCompPlanning::Plan plan);
+		void broadcastModel();
+		void broadcastPlan();
 	};
-	interface AGMExecutiveVisualizationTopic{
-		void  update(RoboCompAGMWorldModel::World world, RoboCompAGMWorldModel::World target, RoboCompPlanning::Plan plan);
-		void  successFulChange(RoboCompPlanning::ActionSequence actions);
-		void  aimedChange(RoboCompPlanning::Action action);
-		void  invalidChange(string agent);
+
+	interface AGMExecutiveVisualizationTopic
+	{
+		void update(RoboCompAGMWorldModel::World world, RoboCompAGMWorldModel::World target, RoboCompPlanning::Plan plan);
+		void successFulChange(RoboCompPlanning::ActionSequence actions);
+		void aimedChange(RoboCompPlanning::Action action);
+		void invalidChange(string agent);
 	};
-	interface AGMExecutiveTopic{
-		void  modelModified(RoboCompAGMWorldModel::Event modification);
-		void  modelUpdated(RoboCompAGMWorldModel::Node modification);
+
+	interface AGMExecutiveTopic
+	{
+		void modelModified(RoboCompAGMWorldModel::Event modification);
+		void modelUpdated(RoboCompAGMWorldModel::Node modification);
 	};
 };
   
