@@ -1,8 +1,0 @@
-/home/robocomp/robocomp/Interfaces/Armrocio.ice
-armrocio
-localhost
-tcp
-10092
-100
-armRocio_bucle.py
-
