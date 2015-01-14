@@ -72,6 +72,6 @@ module RoboCompBodyInverseKinematics
 		void setNewTip(string part, string transform, Pose6D pose);
 		
 		// Direct modification of a motor
-		void setJoint(string joint, float speed, float maxSpeed);
+		void setJoint(string joint, float position, float maxSpeed);
 	};
 };
