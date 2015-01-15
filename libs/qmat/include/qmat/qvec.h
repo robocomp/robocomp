@@ -150,7 +150,7 @@ namespace RMat
 
 		//Static methods
 		static QVec vec6(T x=0., T y=0., T z=0., T rx=0., T ry=0., T rz=0.);
-		static QVec vec6(QVec t, QVec r);
+		static QVec vec6(QVec tv, QVec rv);
 		static QVec vec4(T x=0., T y=0., T z=0., T w=0.);
 		static QVec vec4(QVec v3, T n=0.);
 		static QVec vec3(T x=0., T y=0., T z=0.);
