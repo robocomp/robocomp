@@ -287,3 +287,4 @@ objectDetectionStaticComp=12240
 MSKBodyComp=12241
 Nuc2innerComp=12242
 MSKBodyEventTopic=12243
+AprilBasedLocalization=12244

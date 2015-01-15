@@ -448,6 +448,32 @@ bool RMat::QVec::isZero()
 /// Static methods
 
 
+QVec RMat::QVec::vec6(T x=0., T y=0., T z=0., T rx=0., T ry=0., T rz=0.)
+{
+	QVec R(6);
+	R(0)=x;
+	R(1)=y;
+	R(2)=z;
+	R(3)=rx;
+	R(4)=ry;
+	R(5)=rz;
+	return R;
+}
+
+QVec RMat::QVec::vec6(QVec t, QVec r)
+{
+	QVec R(6);
+	R(0)=t(0);
+	R(1)=t(1);
+	R(2)=t(2);
+	R(3)=r(0);
+	R(4)=r(1);
+	R(5)=r(2);
+	return R;
+}
+
+
+
 /**
  * \brief Static method that constructs a 4D-vector with given values
  * @param x
