@@ -23,7 +23,17 @@ BOOST_PYTHON_MODULE(librobocomp_innermodel)
 	        (arg("transformId"), arg("tx"), arg("ty"), arg("tz"), arg("rx"), arg("ry"), arg("rz"), arg("parentId")="")
 	     )
 	 .def("transform", &InnerModel::transformS)
+	 .def("getTransformationMatrix", &InnerModel::getTransformationMatrixS)
+	 .def("getParentIdentifier", &InnerModel::getParentIdentifierS)
+
     ;
+
+
+// 	class_<InnerModelTransform>("InnerModelTransform", init<>())
+// 	 .def("getParentId", &InnerModel::getParentId)
+// 	 .def("getParentTransform", &InnerModelTransform::getParentTransform)
+//     ;
+
 
 
 /*

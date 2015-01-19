@@ -243,7 +243,7 @@ void InnerModel::moveSubTree(InnerModelNode *nodeSrc, InnerModelNode *nodeDst)
 	nodeDst->addChild(nodeSrc);
 	nodeSrc->setParent(nodeDst);
 	computeLevels(nodeDst);
-	
+
 
 }
 void InnerModel::computeLevels(InnerModelNode *node)
@@ -1355,6 +1355,10 @@ RTMat InnerModel::getTransformationMatrix(const QString &to, const QString &from
 	return RTMat(ret);
 }
 
+RTMat InnerModel::getTransformationMatrixS(const std::string &destId, const std::string &origId)
+{
+	return getTransformationMatrix(QString::fromStdString(destId), QString::fromStdString(origId));
+}
 
 
 QMat InnerModel::getRotationMatrixTo(const QString &to, const QString &from)
@@ -2958,3 +2962,20 @@ bool InnerModel::collide(const QString &a, const fcl::CollisionObject *obj)
 
 
 
+QString InnerModel::getParentIdentifier(QString id)
+{
+	InnerModelNode *n = getNode(id);
+	if (n)
+	{
+		if (n->parent)
+			return n->parent->id;
+		else
+			return QString("");
+	}
+	return QString("");
+}
+
+std::string InnerModel::getParentIdentifierS(std::string id)
+{
+	return getParentIdentifier(QString::fromStdString(id)).toStdString();
+}
