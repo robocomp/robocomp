@@ -243,7 +243,7 @@ void InnerModel::moveSubTree(InnerModelNode *nodeSrc, InnerModelNode *nodeDst)
 	nodeDst->addChild(nodeSrc);
 	nodeSrc->setParent(nodeDst);
 	computeLevels(nodeDst);
-	
+
 
 }
 void InnerModel::computeLevels(InnerModelNode *node)
@@ -1355,6 +1355,10 @@ RTMat InnerModel::getTransformationMatrix(const QString &to, const QString &from
 	return RTMat(ret);
 }
 
+RTMat InnerModel::getTransformationMatrixS(const std::string &destId, const std::string &origId)
+{
+	return getTransformationMatrix(QString::fromStdString(destId), QString::fromStdString(origId));
+}
 
 
 QMat InnerModel::getRotationMatrixTo(const QString &to, const QString &from)
@@ -1512,7 +1516,15 @@ void InnerModel::setLists(const QString & origId, const QString & destId)
 /// Robex Base specific getters
 float InnerModel::getCameraFocal(const QString & cameraId) const
 {
-	return static_cast<InnerModelCamera *>(getNode(cameraId))->getFocal();
+	InnerModelCamera *cam = dynamic_cast<InnerModelCamera *>(getNode(cameraId));
+	if (not cam)
+	{
+		QString error;
+		       printf("InnerModel::getCameraFocal, no such camera %s\n", cameraId.toStdString().c_str());
+		error.sprintf("InnerModel::getCameraFocal, no such camera %s\n", cameraId.toStdString().c_str());
+		throw error;
+	}
+	return cam->getFocal();
 }
 
 
@@ -2958,3 +2970,20 @@ bool InnerModel::collide(const QString &a, const fcl::CollisionObject *obj)
 
 
 
+QString InnerModel::getParentIdentifier(QString id)
+{
+	InnerModelNode *n = getNode(id);
+	if (n)
+	{
+		if (n->parent)
+			return n->parent->id;
+		else
+			return QString("");
+	}
+	return QString("");
+}
+
+std::string InnerModel::getParentIdentifierS(std::string id)
+{
+	return getParentIdentifier(QString::fromStdString(id)).toStdString();
+}

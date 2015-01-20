@@ -54,7 +54,7 @@ namespace RMat
 
 		RTMat& operator= (const RTMat&  ex);
 		RTMat  operator* ( const RTMat & A ) const ;
-		QVec  operator* ( const QVec & v ) const ;	
+		QVec  operator* ( const QVec & v ) const ;
 //		RTMat  operator* ( const QMat & A ) const {};
 		void init( T ox, T oy, T oz, const QVec & t);
 		void set(T ox, T oy, T oz, T x, T y, T z);
@@ -74,7 +74,7 @@ namespace RMat
 		T getRyValue() const { return Ry->getAlfa(); }
 		Rot3DOZ getRz() const;
 		T getRzValue() const { return Rz->getAlfa(); }
-		RTMat invert();
+		RTMat invert() const;
 		QMat invertR();
 
 // 		QVec direct ( const QVec &p ) const;
@@ -90,7 +90,7 @@ namespace RMat
 		QMat R;
 		QVec Tr;
 	};
-	
+
 	//not clockwise
 	class RTMatC : public QMat
 	{
@@ -103,7 +103,7 @@ namespace RMat
 		RTMatC( T ox, T oy, T oz, T x, T y, T z);
 		~RTMatC();
 		RTMatC  operator* ( const RTMatC & A ) const ;
-		QVec  operator* ( const QVec & v ) const ;	
+		QVec  operator* ( const QVec & v ) const ;
 //		RTMatC  operator* ( const QMat & A ) const {};
 		void init( T ox, T oy, T oz, const QVec & t);
 		void set(T ox, T oy, T oz, T x, T y, T z);
@@ -121,7 +121,7 @@ namespace RMat
 		T getRyValue() const { return Ry.getAlfa(); }
 		Rot3DCOZ getRz() const;
 		T getRzValue() const { return Rz.getAlfa(); }
-		RTMatC invert();
+		RTMatC invert() const;
 		QMat invertR();
 
 // 		QVec direct ( const QVec &p ) const;
@@ -137,7 +137,7 @@ namespace RMat
 		QMat R;
 		QVec Tr;
 	};
-	
+
 };
 
 #endif
