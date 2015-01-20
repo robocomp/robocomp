@@ -1516,7 +1516,15 @@ void InnerModel::setLists(const QString & origId, const QString & destId)
 /// Robex Base specific getters
 float InnerModel::getCameraFocal(const QString & cameraId) const
 {
-	return static_cast<InnerModelCamera *>(getNode(cameraId))->getFocal();
+	InnerModelCamera *cam = dynamic_cast<InnerModelCamera *>(getNode(cameraId));
+	if (not cam)
+	{
+		QString error;
+		       printf("InnerModel::getCameraFocal, no such camera %s\n", cameraId.toStdString().c_str());
+		error.sprintf("InnerModel::getCameraFocal, no such camera %s\n", cameraId.toStdString().c_str());
+		throw error;
+	}
+	return cam->getFocal();
 }
 
 
