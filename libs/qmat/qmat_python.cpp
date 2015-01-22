@@ -4,6 +4,7 @@
 
 #include <qmat/qvec.h>
 #include <qmat/qmat.h>
+#include <qmat/qrtmat.h>
 
 using namespace boost::python;
 using namespace RMat;
@@ -12,7 +13,7 @@ using namespace RMat;
 BOOST_PYTHON_MODULE(librobocomp_qmat)
 {
 
-	class_<QVec>("QVec", init<>()) 
+	class_<QVec>("QVec", init<>())
 	 .def(init<int32_t>())
 	 .def(init<int32_t, float>())
 	 .def(init<boost::python::list>())
@@ -53,9 +54,11 @@ BOOST_PYTHON_MODULE(librobocomp_qmat)
 	 .def("size", &QVec::size)
     ;
 
-	class_<QMat>("QMat", init<>()) 
+	class_<QMat>("QMat", init<>())
 	 .def(init<int32_t, int32_t>())
 	 .def(init<int32_t, int32_t, float>())
+
+
 	 .def("__setitem__", &QMat::setItemV)
 	 .def("__getitem__", &QMat::getItemV)
 	 .def("set", &QMat::setItem)
@@ -68,20 +71,55 @@ BOOST_PYTHON_MODULE(librobocomp_qmat)
 	 .def(self / self)
 	 .def(self * int())
 	 .def("printmatrix", &QMat::prints)
+	 .def("invert", &QMat::invert)
 	 .def("nRows", &QMat::nRows)
 	 .def("nCols", &QMat::nCols)
 	 .def("transpose", &QMat::transpose)
 	 .def("t", &QMat::t)
 	 .def("determinant", &QMat::determinant)
 	 .def("trace", &QMat::trace)
-	 .def("invert", &QMat::invert)
 	 .def("extractAnglesR", &QMat::extractAnglesR)
 	 .def("extractAnglesR_min", &QMat::extractAnglesR_min)
 	 .def("sqrt", &QMat::sqrt)
 	 .def("cholesky", &QMat::cholesky)
 	 .def("eigenValsVectors", &QMat::eigenValsVectors)
+	 .def("getCol", &QMat::getCol)
+	 .def("getRow", &QMat::getRow)
+
     ;
-	
+
+	class_<RTMat>("RTMat", init<>())
+	 .def(init< optional<bool, bool, bool> >())
+	 .def(init< float, float, float, float, float, float, optional<bool, bool, bool> >())
+
+	 .def("__setitem__", &RTMat::setItemV)
+	 .def("__getitem__", &RTMat::getItemV)
+	 .def("set", &RTMat::setItem)
+	 .def("get", &RTMat::getItem)
+	 .def(self - self)
+	 .def(self + self)
+	 .def(self += self)
+	 .def(self -= self)
+	 .def(self * self)
+	 .def(self / self)
+	 // a method was here
+	 .def("printmatrix", &RTMat::prints)
+	 .def("invert", &RTMat::invert)
+	 .def("nRows", &RTMat::nRows)
+	 .def("nCols", &RTMat::nCols)
+	 .def("transpose", &RTMat::transpose)
+	 .def("t", &RTMat::t)
+	 .def("determinant", &RTMat::determinant)
+	 .def("trace", &RTMat::trace)
+	 .def("extractAnglesR", &RTMat::extractAnglesR)
+	 .def("extractAnglesR_min", &RTMat::extractAnglesR_min)
+	 .def("sqrt", &RTMat::sqrt)
+	 .def("cholesky", &RTMat::cholesky)
+	 .def("eigenValsVectors", &RTMat::eigenValsVectors)
+	 .def("getCol", &RTMat::getCol)
+	 .def("getRow", &RTMat::getRow)
+    ;
+
 }
 
 

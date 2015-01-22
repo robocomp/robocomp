@@ -10,12 +10,14 @@
 #define ROBOCOMPMSKBODY_ICE
 
 module RoboCompMSKBody{
+	["cpp:comparable"]
 	struct Vector4{
 		float W;
 					float X;
 					float Y;
 					float Z;
 				};
+	["cpp:comparable"]
 	struct Matrix4{
 		float M11;
 					float M12;
@@ -34,11 +36,13 @@ module RoboCompMSKBody{
 					float M43;
 					float M44;
 				};
+	["cpp:comparable"]
 	struct BoneRotation{
 		Matrix4 Matrix;
 		Vector4 Quaternion;
 	};
 	enum JointType{HipCenter, Spine, ShoulderCenter, Head, ShoulderLeft, ElbowLeft, WristLeft, HandLeft, ShoulderRight, ElbowRight, WristRight, HandRight, HipLeft, KneeLeft, AnkleLeft, FootLeft, HipRight, KneeRight, AnkleRight, FootRight};
+	["cpp:comparable"]
 	struct BoneOrientation{
 		BoneRotation AbsoluteRotation;
 		JointType EndJoint;
@@ -49,25 +53,30 @@ module RoboCompMSKBody{
 	enum FrameEdges{None, Right, Left, Top, Bottom};
 	enum stateType{NoTracking, PositionOnly, Tracking};
 	enum JointTrackingState{NotTracked, Inferred, Tracked};
+	["cpp:comparable"]
 	struct SkeletonPoint{
 		float X;
 					float Y;
 					float Z;
 				};
+	["cpp:comparable"]
 	struct DepthImagePoint{
 		int X;
 		int Y;
 		int Depth;
 	};
+	["cpp:comparable"]
 	struct ColorImagePoint{
 		int X;
 		int Y;
 	};
+	["cpp:comparable"]
 	struct Joint{
 		JointTrackingState state;
 		SkeletonPoint Position;
 	};
 	dictionary<JointType, Joint>JointList;
+	["cpp:comparable"]
 	struct TPerson{
 		JointList joints;
 		stateType state;

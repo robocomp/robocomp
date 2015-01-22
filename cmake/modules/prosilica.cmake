@@ -1,7 +1,7 @@
 IF( "$ENV{PROSILICAROOT}" STREQUAL "" )
   MESSAGE(STATUS "PROSILICAROOT environment variable not set." )
   MESSAGE(STATUS "This can be done in your user .bashrc file by appending the corresponding line, e.g:" )
-  MESSAGE(STATUS "export PROSILICAROOT=/usr/local/Prosilica" )
+  MESSAGE(STATUS "export PROSILICAROOT=/usr/local/" )
   MESSAGE(STATUS "You can download the Prosilica SDK from http://www.alliedvisiontec.com/fileadmin/content/PDF/Software/Prosilica_software/Prosilica_SDK/AVT_GigE_SDK_1.2.22_Linux.tar.gz")
   SET(PROSILICA_FOUND 0)
 ELSE( "$ENV{PROSILICAROOT}" STREQUAL "" )

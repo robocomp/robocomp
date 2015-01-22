@@ -69,7 +69,7 @@ namespace RMat
 	{
 	public:
 		DataBuffer(const int size): QSharedData(), dataSize(size), data(new T[dataSize]) { }
-		DataBuffer(const DataBuffer &tensorData): QSharedData(), dataSize(tensorData.dataSize), data(new T[dataSize]) { memcpy(getWriteData() , tensorData.getReadData(), dataSize*sizeof(T)); } 
+		DataBuffer(const DataBuffer &tensorData): QSharedData(), dataSize(tensorData.dataSize), data(new T[dataSize]) { memcpy(getWriteData() , tensorData.getReadData(), dataSize*sizeof(T)); }
 		~DataBuffer()                       { delete data; }
 		inline const T *getReadData() const { return data; }
 		inline T *getWriteData()            { return data; }
@@ -136,7 +136,7 @@ namespace RMat
 		const T* toDataConst() const                                     { return getReadData();} //deprecated use getReadData
 		int getCols() const                                              { return cols; }
 		int getRows() const                                              { return rows; }
-		
+
 		// Matrix - Matrix operators
 		QMat & operator= ( const QMat & A );
 		QMat   operator* ( const QMat & A ) const;
@@ -150,7 +150,7 @@ namespace RMat
 		QMat & operator/= ( const QMat & A );
 		QMat operator^ (const QMat & A);                                       // cross product
 		bool operator== (const QMat & A);
-		
+
 		// Matrix-vector operators
 		QVec operator*(const QVec &vector) const;
 
@@ -166,19 +166,19 @@ namespace RMat
 		QMat & operator-= ( const T &f );
 		QMat & operator/= ( const T &f );
 
-		
-		
+
+
 
 		//Matrix - scalar operations
-		
+
 		void set ( T v );
 		void makeDiagonal ( T d );        // Deprecated
 		void diagonal ( T d )             { makeDiagonal ( d ); };  //Renaming
-	
+
 		//Matrix - matrix operations
-		
+
 		QMat & makeUnitary();
-		QVec getDiagonal( );	
+		QVec getDiagonal( );
 		QMat transpose() const;
 		QMat t()                   { return transpose(); }; //deprecated
 		T determinant( ) const;
@@ -210,7 +210,7 @@ namespace RMat
 		void SVD(QMat & U, QMat & D, QMat & V);
 		QMat makeDefPos();
 		QMat matSqrt();                                                        //!< Matrix square root
-		T vectorNormL2() const;                       // deprecated to vec	
+		T vectorNormL2() const;                       // deprecated to vec
 		QMat fromStdVector( const std::vector<T> &);  // deprecated to vec
 		QMat toCrossProdForm() const;                 // deprecated to vec
 		QVec toVector() const;
@@ -230,21 +230,21 @@ namespace RMat
 
 		//Static members
 		static QMat afinTransformFromIntervals( const QList<QPair<QPointF,QPointF> > & intervals);
-		static QMat diagonal ( const QMat &v );                                //!<Static version of void diagonal() to be used in initializing variables		
-		static QMat gaussian ( const int fi, const float mean, const float stdev); //!< Normal distributed column vector// deprecated to vec		
+		static QMat diagonal ( const QMat &v );                                //!<Static version of void diagonal() to be used in initializing variables
+		static QMat gaussian ( const int fi, const float mean, const float stdev); //!< Normal distributed column vector// deprecated to vec
 		static QMat identity ( const int m );                                  //!<Static version of void loadIdentity to be used in initializing variables.
 		static QMat makeDiagonal ( const QVec &v );                            // Create a diagonal matrix from a vector
 		static QMat ones ( const int m, const int n );                         //!<Static version of void loadIdentity to be used in initializing variables.
 		static QMat random ( const int fi, const int co );                     //!<Static version of void random() to be used in initializing variables
 		static QMat vec3(T x, T y, T z);                                       // deprecated to vec
 		static QMat zeroes ( const int m, const int n );                       // Deprecated. Use zeros
-		static QMat zeros ( const int m, const int n );                        //!<Static version for creating a zeroed matrix.				  
-	       
+		static QMat zeros ( const int m, const int n );                        //!<Static version for creating a zeroed matrix.
+
 
 		public:
 		friend std::ostream & operator<< ( std::ostream & salida , const QMat & a );
-		
-		
+
+
 		//auxiliar
 		T maximumElement();
 		T minimumElement();
@@ -257,8 +257,8 @@ namespace RMat
 				gsl_matrix_set(result, i, j, this->operator()(i, j));
 			return result;
 		}
-		
-// 		operator Eigen::MatrixXf () 
+
+// 		operator Eigen::MatrixXf ()
 // 		{
 // 			Eigen::MatrixXf  m = Eigen::Map<Eigen::MatrixXf> (this->getWriteData(),rows,cols);
 // 			return m;

@@ -1,6 +1,6 @@
 /interfaces/DifferentialRobot.ice
 differentialrobot
-robonuc1.local
+localhost
 tcp
 10004
 30

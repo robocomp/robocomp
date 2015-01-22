@@ -1,4 +1,4 @@
-/home/robocomp/robocomp/Interfaces/CameraBus.ice
+/interfaces/CameraBus.ice
 camerabus
 localhost
 tcp
