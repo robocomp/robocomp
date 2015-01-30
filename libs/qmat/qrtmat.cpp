@@ -50,7 +50,7 @@ RTMat::RTMat(bool XCW, bool YCW, bool ZCW) : QMat ( 4,4 )
 	do_inject();
 }
 
-RTMat::RTMat(const RTMat & ex, bool XCW, bool YCW, bool ZCW) : QMat( ex ) 
+RTMat::RTMat(const RTMat & ex, bool XCW, bool YCW, bool ZCW) : QMat( ex )
 {
 	XC = XCW;
 	YC = YCW;
@@ -77,17 +77,17 @@ RTMat::RTMat(const RTMat & ex, bool XCW, bool YCW, bool ZCW) : QMat( ex )
 	do_inject();
 }
 
-RTMat& RMat::RTMat::operator= (const RTMat&  ex) 
+RTMat& RMat::RTMat::operator= (const RTMat&  ex)
 {
-	
+
 	XC = ex.XC;
 	YC = ex.YC;
 	ZC = ex.ZC;
-	
+
 	delete Rx;
 	delete Ry;
 	delete Rz;
-	
+
 	if(XC)
 		Rx = new Rot3DOX(ex.getRxValue());
 	else
@@ -109,7 +109,7 @@ RTMat& RMat::RTMat::operator= (const RTMat&  ex)
 	return *this;
 }
 
-RTMat::RTMat(const RTMat &ex) : QMat( ex ) 
+RTMat::RTMat(const RTMat &ex) : QMat( ex )
 {
 	XC = ex.XC;
 	YC = ex.YC;
@@ -137,13 +137,13 @@ RTMat::RTMat(const RTMat &ex) : QMat( ex )
 }
 
 
-RTMat::RTMat(const QMat &ex) : QMat( ex ) 
+RTMat::RTMat(const QMat &ex) : QMat( ex )
 {
 
 	Rx = NULL;
 	Ry = NULL;
 	Rz = NULL;
-  
+
 }
 
 
@@ -164,7 +164,7 @@ RTMat::RTMat ( T ox, T oy, T oz, const QVec & t, bool XCW, bool YCW, bool ZCW ) 
 		Rz = new Rot3DOZ(oz);
 	else
 		Rz = new Rot3DCOZ(oz);
-	
+
 	R = (*Rx)*(*Ry)*(*Rz);
 	Tr = t;
 	do_inject();
@@ -187,7 +187,7 @@ RMat::RTMat::RTMat(T ox, T oy, T oz, T x, T y, T z, bool XCW, bool YCW, bool ZCW
 		Rz = new Rot3DOZ(oz);
 	else
 		Rz = new Rot3DCOZ(oz);
-	
+
 	R = (*Rx)*(*Ry)*(*Rz);
 	Tr = QVec::vec3(x, y, z);
 	do_inject();
@@ -239,10 +239,10 @@ RTMat RMat::RTMat::operator *(const RTMat & A) const
  	for (int i=0; i<3; i++)
  		for (int j=0; j<3; j++)
  			rot(i,j) = C(i,j);
-	
-	for (int j=0; j<3; j++)		
+
+	for (int j=0; j<3; j++)
 	    t(j) = C(j,3);
-	
+
 	C.setR(rot);
 	C.setTr(t);
 // 	QVec angles = rot.extractAnglesR();
@@ -270,7 +270,7 @@ QVec RMat::RTMat::operator *(const QVec & vector) const
 // 		printf("\n");
 	}
 #endif
-	
+
 	return result;
 }
 
@@ -284,7 +284,7 @@ void RMat::RTMat::set(T ox, T oy, T oz, T x, T y, T z)
 	Rx->update( ox );
 	Ry->update( oy );
 	Rz->update( oz );
-	R = (*Rx)*(*Ry)*(*Rz);	
+	R = (*Rx)*(*Ry)*(*Rz);
 
 	do_inject();
 }
@@ -294,8 +294,8 @@ void RMat::RTMat::init(T ox, T oy, T oz, const QVec & t)
 {
 	Tr = t;
 	Rx->update( ox );
-	Ry->update( oy ); 
-	Rz->update( oz ); 
+	Ry->update( oy );
+	Rz->update( oz );
 	R = (*Rx)*(*Ry)*(*Rz);
 
 	do_inject();
@@ -310,8 +310,8 @@ void RTMat::setR( const QMat & rot)
 void RTMat::setR ( T ox, T oy, T oz)
 {
 	Rx->update( ox );
-	Ry->update( oy ); 
-	Rz->update( oz ); 
+	Ry->update( oy );
+	Rz->update( oz );
 	R = (*Rx)*(*Ry)*(*Rz);
 	do_inject();
 }
@@ -326,11 +326,11 @@ void RTMat::setRT ( T ox, T oy, T oz, const QVec & t )
 {
 	Rx->update( ox );
 	Ry->update( oy );
-	Rz->update( oz ); 
+	Rz->update( oz );
 	R = (*Rx)*(*Ry)*(*Rz);
 	Tr=t;
 	do_inject();
-  
+
 }
 
 
@@ -380,7 +380,7 @@ QMat RMat::RTMat::getR() const
 	return 	R;
 }
 
-RTMat RMat::RTMat::invert()
+RTMat RMat::RTMat::invert() const
 {
 	RTMat r;
  	r.R = R.transpose();
@@ -391,7 +391,7 @@ RTMat RMat::RTMat::invert()
 // 	r.inject( R.transpose() , 0 , 0 );
 // 	r.inject( R.transpose() * (Tr*-1) , 0 , 3);
 
- 	r(3,3) = 1.f; 
+ 	r(3,3) = 1.f;
 	return r;
 }
 
@@ -417,7 +417,7 @@ RTMatC::RTMatC() : QMat ( 4,4 )
 	do_inject();
 }
 
-RTMatC::RTMatC(const RTMatC & ex) : QMat( ex ) 
+RTMatC::RTMatC(const RTMatC & ex) : QMat( ex )
 {
 	Rx = ex.getRx();
 	Ry = ex.getRy();
@@ -499,7 +499,7 @@ QVec RMat::RTMatC::operator *(const QVec & vector) const
 		   result(i) += operator()(i,k) * vector(k);
 	}
 #endif
-	
+
 	return result;
 }
 
@@ -514,7 +514,7 @@ void RMat::RTMatC::set(T ox, T oy, T oz, T x, T y, T z)
 	Ry = Rot3DCOY( oy );
 	Rz = Rot3DCOZ( oz );
 	R = Rz*Ry*Rx;
-	
+
 
 	do_inject();
 }
@@ -524,8 +524,8 @@ void RMat::RTMatC::init(T ox, T oy, T oz, const QVec & t)
 {
 	Tr = t;
 	Rx = Rot3DCOX( ox );
-	Ry = Rot3DCOY( oy ); 
-	Rz = Rot3DCOZ( oz ); 
+	Ry = Rot3DCOY( oy );
+	Rz = Rot3DCOZ( oz );
 	R = Rz*Ry*Rx;
 
 	do_inject();
@@ -534,8 +534,8 @@ void RMat::RTMatC::init(T ox, T oy, T oz, const QVec & t)
 void RTMatC::setR ( T ox, T oy, T oz)
 {
 	Rx = Rot3DCOX( ox );
-	Ry = Rot3DCOY( oy ); 
-	Rz = Rot3DCOZ( oz ); 
+	Ry = Rot3DCOY( oy );
+	Rz = Rot3DCOZ( oz );
 	R = Rz*Ry*Rx;
 ;
 	( *this ).inject ( R , 0 , 0 );
@@ -551,7 +551,7 @@ void RTMatC::setRT ( T ox, T oy, T oz, const QVec & t )
 {
 	Rx = Rot3DCOX( ox );
 	Ry = Rot3DCOY( oy );
-	Rz = Rot3DCOZ( oz ); 
+	Rz = Rot3DCOZ( oz );
 	R = Rz*Ry*Rx;
 	Tr=t;
 	( *this ).inject ( R , 0, 0 );
@@ -604,7 +604,7 @@ QMat RMat::RTMatC::getR() const
 	   return Rz*Ry*Rx;
 }
 
-RTMatC RMat::RTMatC::invert()
+RTMatC RMat::RTMatC::invert() const
 {
 	RTMatC r;
  	r.R = R.transpose();
@@ -631,7 +631,7 @@ QMat RMat::RTMatC::invertR()
 
 /**
  * \brief Transforms from world towards robot reference frames: y = R' * (p - Tr)
- * @param p 
+ * @param p
  * @return coordinates of p as seen from next (towards robot tip) reference frame
  */
 // QVec RTMat::direct ( const QVec &p ) const
@@ -641,7 +641,7 @@ QMat RMat::RTMatC::invertR()
 
 /**
  * \brief Transforms from robot to world reference frames: y = R*p + Tr
- * @param p 
+ * @param p
  * @return coordinates of p as seen from previous (towards world) reference frame
  */
 // QVec RMat::RTMat::inverse ( const QVec & p ) const
@@ -651,7 +651,7 @@ QMat RMat::RTMatC::invertR()
 
 /**
  * \brief Transforms (only translation) from world towards robot reference frames: y = p - Tr)
- * @param p 
+ * @param p
  * @return coordinates of p as seen from next (towards robot tip) reference frame
  */
 
@@ -659,10 +659,10 @@ QMat RMat::RTMatC::invertR()
 // {
 // 	return p - Tr;
 // }
-// 
+//
 // /**
 //  * \brief Transforms (only translation) from robot to world reference frames: y = p + Tr
-//  * @param p 
+//  * @param p
 //  * @return coordinates of p as seen from previous (towards world) reference frame
 //  */
 // QVec RMat::RTMat::inverseTr ( const QVec & p ) const
