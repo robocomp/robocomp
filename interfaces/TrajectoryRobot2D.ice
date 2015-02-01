@@ -23,7 +23,13 @@ module RoboCompTrajectoryRobot2D{
 				};
 	["cpp:comparable"]
 	struct NavState{
-		long elapsedTime;
+		float x;
+					float z;
+					float ang;
+					float advV;
+					float rotV;
+					float distanceToTarget;
+					long elapsedTime;
 		long estimatedTime;
 		long planningTime;
 		string state;

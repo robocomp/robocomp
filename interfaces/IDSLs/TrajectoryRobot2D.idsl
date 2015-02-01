@@ -18,10 +18,17 @@ module RoboCompTrajectoryRobot2D
 
 	struct NavState
 	{
-		long elapsedTime;
+		long elapsedTime;						//milliseconds all
 		string state;
 		long estimatedTime;
 		long planningTime;
+		float x;								// x current position of robot
+		float z;								// z current position of robot
+		float ang;								// ry current angular position of the robot
+		float advV;								// current forward speed
+		float rotV;
+		float distanceToTarget;					// total distance to target
+		
 	};
 
 	interface TrajectoryRobot2D
