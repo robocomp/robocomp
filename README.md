@@ -41,24 +41,26 @@ Done! Now let's compile the whole thing:
     make
     sudo make install
     
-RoboComp's core libraries should be compiled and installed in */opt/robocomp*
+RoboComp's core libraries should now be compiled and installed in */opt/robocomp*
 
-Let's include now the robocomp's libraries in the linux cache:
+Let's now tell Linux where to find RoboComp's libraries:
 
     cd /etc
     sudo nano ld.so.conf
 
-add the following line:
+and add the following line:
 
     /opt/robocomp/libs/
    
-save and type:
+save the file and type:
 
     sudo ldconfig
 
+Done! Now let's have some fun.
+
 ###Installation of RCIS Robotics simulator
 
-From *robocom* root directory type:
+From *robocomp* root directory type:
 
     cd files/freedesktop
     chmod +x ./install.sh
@@ -66,7 +68,8 @@ From *robocom* root directory type:
     cd ..
     git annex get .
     
-It will take a little while to download all necessary textures.
+It will take a little while to download all necessary textures...
+
 Go now again to *robocomp* root directory and type:
 
     cd tools/rcinnermodelsimulator
