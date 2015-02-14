@@ -9,7 +9,7 @@ RoboComp is a Robotics framework providing a set of open-source, distributed, re
 
 Make sure you have installed the following packages from the Ubuntu repository:
 
-    apt-get install git git-annex cmake g++ libgsl0-dev libopenscenegraph-dev cmake-gui zeroc-ice35 freeglut3-dev libboost-system-dev libboost-thread-dev
+    apt-get install git git-annex cmake g++ libgsl0-dev libopenscenegraph-dev cmake-gui zeroc-ice35 freeglut3-dev libboost-system-dev libboost-thread-dev qt4-dev
 
 *cd* to your installation directory (if nothing better go to your home directory) and type:
 
@@ -18,19 +18,69 @@ Make sure you have installed the following packages from the Ubuntu repository:
 Edit your ~/.bashrc file and add these lines at the end:
 
     export ROBOCOMP=<installation-directory>/robocomp
+    export PATH=$PATH:/opt/robocomp/bin
    
 reload bash by typing: 
 
     source ~/.basrhrc
 
-Now type *cd* robocomp
+Now type:
 
+    cd robocomp
     cmake .
     make
     sudo make install
     
 RoboComp's core libraries should be compiled and installed in */opt/robocomp*
 
+Let's include now the robocomp's libraries in the linux cache:
+
+    cd /etc
+    sudo nano ld.so.conf
+
+add the following line:
+
+    /opt/robocomp/libs/
+   
+save and type:
+
+    sudo ldconfig
+
+###Installation of RCIS robotics simulator
+
+From *robocom* root directory type:
+
+    cd files/freedesktop
+    chmod +x ./install.sh
+    sudo ./install.sh
+    cd ..
+    git annex get .
+    
+It will take a little while to download all necessary textures.
+Go now again to *robocomp* root directory and type:
+
+    cd tools/rcinnermodelsimulator
+    cmake .
+    make
+    sudo make install
+
+Now let's run the simulator. Go to *robocomp* root directory and type:
+
+    cd files/innermodel
+    rcis betaworld.xml
+    
+Congratulations! RCIS should up and running with a simple robot on a wooden floor
+ 
+###Compiling a component
+
+
+
+
+    
+    
+    
+    
+    
 
 
 
