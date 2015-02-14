@@ -84,14 +84,18 @@ Now let's run the simulator. Go to *robocomp* root directory and type:
     
 Congratulations! RCIS should up and running with a simple robot endowed with a laser and an RGBD camera, moving on a wooden floor.
  
-###Installing components from github
+###Installing RoboLab's components from github
 
-Create anorer terminal un Yakuake and *cd* to *robocomp*. Then:
+Create another terminal in Yakuake and *cd* to *robocomp*. Then:
 
     cd components
     git clone https://github.com/robocomp/robocomp-robolab.git
     
-RoboLab's set of basic robotics components are now dowloaded. Connect a JoyStick to your USB port and:
+RoboLab's set of basic robotics components are now dowloaded. 
+
+###Connecting a JoyStick
+
+If you have a JoyStick around, connect it to the USB port and:
 
     cd robocomp-robolab/components/joystickComp
     cmake .
@@ -99,13 +103,23 @@ RoboLab's set of basic robotics components are now dowloaded. Connect a JoyStick
     cd bin
     ./startJoyStick.sh 
     
-Your joystick should be running now and moving it will make the robot advance and turn.
+Your joystick should be now running and moving it will make the robot to advance and turn at your will.
 
 ###Creating a new component with RoboComp's DSLEditor
     
-We will create now a new component that will connect to the RCIS simulator and run a simple controller for the robot, using the laser data.
+We will create now a new component that will connect to the RCIS simulator and run a simple controller for the robot, using the laser data. First we need to install the DSLEditor software that is runtime Eclipse application. 
 
+Create another terminal in Yakuake and *cd* to *robocomp* and *cd* again to your *robocomp* root directory. Then type:
 
+    cd tools
+    python fetch_DSLEditor.py
+    
+Select 32 or 64 bits according to your current linux installation. After a little while the DSLEditor will be installed under the *robocompDSL* directory:
+
+    cd robocompDSL/DSLEditor
+    ./DSLEditor
+    
+    
     
     
     
