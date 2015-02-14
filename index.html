@@ -29,9 +29,11 @@
       <div class="inner clearfix">
         <section id="main-content">
           <h3>
-<a id="welcome-to-github-pages" class="anchor" href="#welcome-to-github-pages" aria-hidden="true"><span class="octicon octicon-link"></span></a>Welcome to GitHub Pages.</h3>
+<a id="welcome-to-robocomp" class="anchor" href="#welcome-to-robocomp" aria-hidden="true"><span class="octicon octicon-link"></span></a>Welcome to RoboComp</h3>
 
-<p>This automatic page generator is the easiest way to create beautiful pages for all of your projects. Author your page content here using GitHub Flavored Markdown, select a template crafted by a designer, and publish. After your page is generated, you can check out the new branch:</p>
+<p>RoboComp is a robotics framework providing a set of open-source, distributed, real-time robotic and artificial vision software components and the necessary tools to create and manage them.</p>
+
+<p>It is mainly a response to the need of quickly creating and modifying software components communicating through publish interfaces. Components may require, subscribe, implement or publish interfaces. To build components, RoboComp provides 2 domain specific languages: IDSL and PDSL, and C++ and Python code generator. IDSL is a language used to define interfaces representing abstract functionalities shown by components, in a similar way as an include file does for a class in C++. PDSL includes IDSLs to define the actual components, specifying the interfaces they implement, publish, require o subscribes to, and other additional parameters. With this information, the code generator creates a C++/Python source subtree, based on CMake, that compiles and executes flawlessly. When some of these features have to be changed, the component can be easily regenerated and all the user specific code is preserved thanks to a simple inheritance mechanism.</p>
 
 <pre><code>$ cd your_repo_root/repo_name
 $ git fetch origin
