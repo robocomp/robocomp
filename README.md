@@ -10,17 +10,23 @@ interfaces in a seamless way. Building new components is done using two domain s
 
 Make sure you have installed the following packages from the Ubuntu repository:
 
-    apt-get install git git-annex cmake g++ libgsl0-dev libopenscenegraph-dev cmake-qt-gui zeroc-ice35 freeglut3-dev libboost-system-dev libboost-thread-dev qt4-dev-tools yakuake openjdk-7-jre kdevelop vim
+    sudo apt-get update
+    sudo apt-get install git git-annex cmake g++ libgsl0-dev libopenscenegraph-dev cmake-qt-gui zeroc-ice35 freeglut3-dev libboost-system-dev libboost-thread-dev qt4-dev-tools yakuake openjdk-7-jre kdevelop vim aptitude
     
 Start yakuake by typing Alt-F2 and yakuake in the pop up window
 Unroll yakuake terminal by pressing F12
     
 ###RoboComp core libraries
 
-*cd* to your installation directory (if nothing better go to your home directory) and type:
+*cd* to your home directory and type:
 
     git clone https://github.com/robocomp/robocomp.git
 
+Now we will create two symbolic links so RobComp can find everything. You will have to enter your passwd:
+
+    sudo ln -s /opt/robocomp-1.0 /opt/robocomp
+    sudo ln -s /home/<your-linux-user> /home/robocomp 
+    
 Edit your ~/.bashrc file and add these lines at the end:
 
     export ROBOCOMP=<installation-directory>/robocomp
@@ -29,11 +35,6 @@ Edit your ~/.bashrc file and add these lines at the end:
 reload bash by typing: 
 
     source ~/.basrhrc
-
-Now we will create two symbolic links so RobComp can find everything. You will have to enter your passwd:
-
-    sudo ln -s /opt/robocomp-1.0 /opt/robocomp
-    sudo ln -s /home/<your-linux-user> /home/robocomp 
 
 Done! Now let's compile the whole thing:
 
