@@ -85,7 +85,7 @@ Now let's run the simulator. Go to *robocomp* root directory and type:
     
 Congratulations! RCIS should up and running with a simple robot endowed with a laser and an RGBD camera, moving on a wooden floor.
  
-###Installing RoboLab's components from github
+###Installing RoboLab's components from GitHub
 
 Create another terminal in Yakuake and *cd* to *robocomp*. Then:
 
@@ -120,7 +120,20 @@ Select 32 or 64 bits according to your current linux installation. After a littl
     cd robocompDSL/DSLEditor
     ./DSLEditor
     
+Check that you have a *RoboComp* tab in the upper bar and that the *robocomp* directory appears in the Project Explorer. If it does not, right click in the *Project Explorer* pane and select *import*. Then select *General* and then *Existing Projects into Workspace*. Then select your *robocomp* directory and push *Finish*. 
+
+Now we need to bring up some handy tabs in the lowe pane. Select *Window* in the upper bar, then "Show View" and *Other* and again *Other*. Select *Interfaces* and double-click on it.
+
+We are ready now. Let's open a simple test component created for this example. Unfold the *robocomp* directory in the *Project Explorer* pane and then search for "Example.cdsl" and double click on it. The file will open in the syntax-sensitive editor. The first two lines import the two external interfaces that our component wil use:
+
+    DifferentialRobot.idsl
+    Laser.idsl
     
+You can open them from the *robocomp/interfaces/IDSLs* directory to see how they are defined. 
+
+The rest of the file sets the name of the component, *ExampleComp* and in the *Communications* sections defines its connectivity. *ExampleComp* **requires** two interfaces provided by two external components whose names will be specified later. *Requiring* means that our component will make remote procedure calls (RPC) to other components, passing them parameters and possibly obtaining in return some data.
+    
+More to come...
     
     
     
