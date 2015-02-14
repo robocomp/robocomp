@@ -9,7 +9,12 @@ RoboComp is a Robotics framework providing a set of open-source, distributed, re
 
 Make sure you have installed the following packages from the Ubuntu repository:
 
-    apt-get install git git-annex cmake g++ libgsl0-dev libopenscenegraph-dev cmake-gui zeroc-ice35 freeglut3-dev libboost-system-dev libboost-thread-dev qt4-dev
+    apt-get install git git-annex cmake g++ libgsl0-dev libopenscenegraph-dev cmake-gui zeroc-ice35 freeglut3-dev libboost-system-dev libboost-thread-dev qt4-dev yakuake
+    
+Start yakuake by typing Alt-F2 and yakuake in the pop up window
+Unroll yakuake terminal by pressing F12
+    
+###RoboComp core libraries
 
 *cd* to your installation directory (if nothing better go to your home directory) and type:
 
@@ -46,7 +51,7 @@ save and type:
 
     sudo ldconfig
 
-###Installation of RCIS robotics simulator
+###Installation of RCIS Robotics simulator
 
 From *robocom* root directory type:
 
@@ -69,13 +74,27 @@ Now let's run the simulator. Go to *robocomp* root directory and type:
     cd files/innermodel
     rcis betaworld.xml
     
-Congratulations! RCIS should up and running with a simple robot on a wooden floor
+Congratulations! RCIS should up and running with a simple robot endowed with a laser and an RGBD camera, moving on a wooden floor.
  
-###Compiling a component
+###Installing components from github
 
+Create anorer terminal un Yakuake and *cd* to *robocomp*. Then:
 
+    cd components
+    git clone https://github.com/robocomp/robocomp-robolab.git
+    
+RoboLab's set of basic robotics components are now dowloaded. Connect a JoyStick to your USB port and:
 
+    cd robocomp-robolab/components/joystickComp
+    cmake .
+    make
+    cd bin
+    ./startJoyStick.sh 
+    
+Your joystick should be running now and moving it will make the robot advance and turn.
 
+###Creating a new component with RoboComp's DSLEditor
+    
     
     
     
