@@ -10,7 +10,7 @@ interfaces in a seamless way. Building new components is done using two domain s
 
 Make sure you have installed the following packages from the Ubuntu repository:
 
-    apt-get install git git-annex cmake g++ libgsl0-dev libopenscenegraph-dev cmake-gui zeroc-ice35 freeglut3-dev libboost-system-dev libboost-thread-dev qt4-dev yakuake openjdk-7-jre
+    apt-get install git git-annex cmake g++ libgsl0-dev libopenscenegraph-dev cmake-gui zeroc-ice35 freeglut3-dev libboost-system-dev libboost-thread-dev qt4-dev yakuake openjdk-7-jre kdevelop
     
 Start yakuake by typing Alt-F2 and yakuake in the pop up window
 Unroll yakuake terminal by pressing F12
@@ -157,9 +157,27 @@ Save the file and click in the upper bar in the *RoboComp* tab. Select *Generate
     cmake .
     make
     cd bin
-    ./startMyFirsComp.sh
+    ./startMyFirsComp.sh   (you might have to type: chmod +x *.sh , in the bin directory
     
-and there is! your component is running. What! Dissapointed? Yeah, I know it does nothing, but it runs and it is yours! Now let's do some real programming.
+and there it is! your component is running. What! Dissapointed? Yeah, I know it does nothing, but it runs and it is yours! Now let's do some real programming.
+
+Stop the component with ./forceStopJoyStick.sh and start your favorite IDE. KDevelop will do it just fine. 
+
+    Select *Open/Import new project* in the *File* tab. 
+    Navigate to robocomp/components/mycomponents/myfirstcomp
+    Select the Makefile and open the project
+    
+In the *Project* panel to the left of the screen navigate to *src* and there select *specificworker.cpp* and open it. Open also *specificworker.h*
+
+Now copy this piece of code inside the *void compute()* method:
+
+    code here
+    
+Press F8 to compile and link. Go to Yakuake and restart the component. You should see the robot maneouvring aroung the box. Now is when Robotics begin!
+
+
+
+    
 
 
     
