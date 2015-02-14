@@ -150,7 +150,17 @@ The file now should look like this:
     language Cpp;
     };
 
-Save the file and click in the upper bar in *RoboComp* 
+Save the file and click in the upper bar in the *RoboComp* tab. Select *Generate Code*. After a little while the new source tree for your *MyFirstComp* component will be created. You can go back now to Yakuake and create a new tab. Then:
+
+    cd to robocomp root directory.
+    cd components/mycomponents/myfirstcomp
+    cmake .
+    make
+    cd bin
+    ./startMyFirsComp.sh
+    
+and there is! your component is running. What! Dissapointed? Yeah, I know it does nothing, but it runs and it is yours! Now let's do some real programming.
+
 
     
     
