@@ -29,7 +29,12 @@ reload bash by typing:
 
     source ~/.basrhrc
 
-Now type:
+Now we will create two symbolic links so RobComp can find everything. You will have to enter your passwd:
+
+    sudo ln -s /opt/robocomp-1.0 /opt/robocomp
+    sudo ln -s /home/<your-linux-user> /home/robocomp 
+
+Done! Now let's compile the whole thing:
 
     cd robocomp
     cmake .
@@ -95,7 +100,9 @@ Your joystick should be running now and moving it will make the robot advance an
 
 ###Creating a new component with RoboComp's DSLEditor
     
-    
+We will create now a new component that will connect to the RCIS simulator and run a simple controller for the robot, using the laser data.
+
+
     
     
     
