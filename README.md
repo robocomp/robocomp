@@ -124,17 +124,34 @@ Check that you have a *RoboComp* tab in the upper bar and that the *robocomp* di
 
 Now we need to bring up some handy tabs in the lowe pane. Select *Window* in the upper bar, then "Show View" and *Other* and again *Other*. Select *Interfaces* and double-click on it.
 
-We are ready now. Let's open a simple test component created for this example. Unfold the *robocomp* directory in the *Project Explorer* pane and then search for "Example.cdsl" and double click on it. The file will open in the syntax-sensitive editor. The first two lines import the two external interfaces that our component wil use:
+Now, in the left panel, unfold the *robocomp* directory down to *robocomp/components/* and then click with the right button. Select *New Folder* and enter *mycomponents* in the folder name. Do it again to create a new folder inside *mycomponents* named *mycomp*. Select *myfirstcomp* and then click on the *RoboComp* tab in the upper bar. Select *Create CDSL file* and fill the requested name with *MyFirstComp.cdsl*
+    
+The new file will open in the syntax-sensitive editor in the central panel. You can see the skeleton of a new empty component. Look for the tab *Interfaces* in the lower bar and select *DifferentialRobot.idsl*. Click on the green cross at the right of the bar and accept when prompted in a pop-up window. You will see something like:
 
-    DifferentialRobot.idsl
-    Laser.idsl
-    
-You can open them from the *robocomp/interfaces/IDSLs* directory to see how they are defined. 
+    import "/robocomp/interfaces/IDSLs/DifferentialRobot.idsl";
+    Component PFLocalizerComp{
+        Communications{
+            };
+            language Cpp;
+    };
 
-The rest of the file sets the name of the component, *ExampleComp* and in the *Communications* sections defines its connectivity. *ExampleComp* **requires** two interfaces provided by two external components whose names will be specified later. *Requiring* means that our component will make remote procedure calls (RPC) to other components, passing them parameters and possibly obtaining in return some data.
-    
-More to come...
-    
+Repeat the same steps to include *Laser.idsl*. Then add a *requires* statement:
+
+    requires DifferentialRobot, Laser;
+
+The file now should look like this:
+
+    import "/robocomp/interfaces/IDSLs/DifferentialRobot.idsl";
+    import "/robocomp/interfaces/IDSLs/Laser.idsl";
+    Component MyFirstComp{
+        Communications{
+            requires DifferentialRobot, Laser;
+        };
+    language Cpp;
+    };
+
+Save the file and click in the upper bar in *RoboComp* 
+
     
     
     
