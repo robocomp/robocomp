@@ -59,7 +59,7 @@ save the file and type:
 
 Done! Now let's have some fun.
 
-###Installation of RCIS Robotics simulator
+###Installation of the RCIS Robotics simulator
 
     cd ~/robocomp
     cd files/freedesktop
