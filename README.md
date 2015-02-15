@@ -128,7 +128,7 @@ Now we need to bring up some handy tabs in the lower pane. Select the *Window* t
 
 Now, in the left panel, unfold the *robocomp* directory down to *robocomp/components/* and then click on it with the right button. Select *New Folder* and enter *mycomponents* in the folder name. Do it again to create a new folder inside *mycomponents* named *mycomp*. Select *myfirstcomp* and then click on the *RoboComp* tab in the upper bar of the main window. Select *Create CDSL file* and fill the requested name with *MyFirstComp.cdsl*
     
-The new file will open inside a syntax-sensitive editor in the central panel. Ctrl-space gives you language available options. You can see the skeleton of a new empty component. Look for the tab *Interfaces* in the lower bar and select *DifferentialRobot.idsl*. Click on the green cross at the right of the bar to include it and accept when prompted in a pop-up window. You will see something like:
+The new file will open inside a syntax-sensitive editor in the central panel. Ctrl-space gives you syntactically correct options. You can see the skeleton of a new empty component. Look for the tab *Interfaces* in the lower bar and select *DifferentialRobot.idsl*. Click on the green cross at the right of the bar to include it and accept when prompted in a pop-up window. You will see something like:
 
     import "/robocomp/interfaces/IDSLs/DifferentialRobot.idsl";
     Component PFLocalizerComp{
