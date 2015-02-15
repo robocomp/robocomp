@@ -221,9 +221,10 @@ and then type:
     cmake .
     make
 
-Hereafter, Press F8 in KDevelop to compile and link. Then, go to Yakuake and restart the component. You should see the robot maneouvring aroung the box. Now is when Robotics start! Try to modify the code to let the robot go pass the blocking boxes.
+Hereafter, Press F8 in KDevelop to compile and link. Then, go to Yakuake and restart the component. You should see the robot maneouvring aroung the box. Now is when Robotics begin! Try to modify the code to let the robot go pass the blocking boxes.
 
 Yo can find more tutorials on RoboComp in http://robocomp.net
+Please, report any bugs to luis.manso@gmail.com
     
 
 
