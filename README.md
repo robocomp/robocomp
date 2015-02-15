@@ -80,9 +80,9 @@ And now compile the whole thing
 Now let's run the simulator. 
 
     cd ~/robocomp/files/innermodel
-    rcis betaworld.xml
+    rcis simpleworld.xml
     
-Congratulations! RCIS should up and running with a simple robot endowed with a laser and an RGBD camera, moving on a wooden floor.
+Congratulations! RCIS should up and running with a simple robot endowed with a laser and an RGBD camera, moving on a wooden floor. Don't forget to turn around the floor to see the robot from above.
  
 ###Installing RoboLab's components from GitHub
 
@@ -121,7 +121,8 @@ Select 32 or 64 bits according to your current linux installation. After a littl
     cd robocompDSL/DSLEditor
     ./DSLEditor
     
-Check that you have a *RoboComp* tab in the upper bar of the window and that the *robocomp* directory appears in the Project Explorer (left panel). If it does not, right click in the *Project Explorer* panel and select *import*. Then select *General* and then *Existing Projects into Workspace*. Then select your *robocomp* directory and push *Finish*. 
+
+Check that you have a *RoboComp* tab in the upper bar of the DSLEditor window and that the *robocomp* directory appears in the Project Explorer (left panel). If it does not, right click inside the *Project Explorer* panel and select *import*. Then select *General* and then *Existing Projects into Workspace*. Then select your *robocomp* directory and push *Finish*. 
 
 Now we need to bring up some handy tabs in the lower pane. Select the *Window* tab in the upper bar, then *Show View*, then *Other* and again *Other*. Select now *Interfaces* and double-click on it. Go back to the main window.
 
@@ -152,14 +153,17 @@ Save the file and click in the upper bar on the *RoboComp* tab. Select *Generate
     cd ~/robocomp/components/mycomponents/myfirstcomp
     cmake .
     make
-    cd bin
-    ./startMyFirsComp.sh   (you might have to type: chmod +x *.sh , in the bin directory
+    bin/myfirstcomp --Ice.Config=etc/generic_config
     
 and there it is! your component is running. 
 
 What! Dissapointed? Yeah, I know it does nothing, but it runs and it is yours! Now let's do some real programming.
 
-Stop the component with ./forceStopJoyStick.sh and start your favorite IDE. KDevelop will do it just fine and you have it already installed. Open it in another tab, from Ubuntu menu or with Alt-F2. Then:
+Stop the component with Ctrl Z and then type:
+
+    killall -9 myfirstcomp
+    
+Now start your favorite IDE. KDevelop will do it just fine and you have it already installed. Open it in another tab, from Ubuntu menu or with Alt-F2. Then:
 
     Click the *Project* tab in the upper bar
     Select *Open/Import Project*
@@ -168,14 +172,58 @@ Stop the component with ./forceStopJoyStick.sh and start your favorite IDE. KDev
     
 In the *Project* panel to the left of the screen, navigate to *src* and there select *specificworker.cpp* and open it. Open also *specificworker.h*
 
-Now copy this piece of code inside the *void compute()* method:
+Now replace the empty *void compute()* method with this compact version of the classic AVOID-FORWARD-STOP architecture proposed by R. Brooks in the late 80's:
 
-    code here
+    void SpecificWorker::compute( )
+    {
+    static	float rot = 0.1f;
+    static float adv = 100.f;
+    static float turnSwitch = 1;
+    const float advIncLow = 0.8;
+    const float advIncHigh = 2.f;
+    const float rotInc = 0.25;
+    const float rotMax = 0.4;
+    const float advMax = 200;
+    const float distThreshold = 500;
+    try
+    {
+        RoboCompLaser::TLaserData ldata = laser_proxy->getLaserData();
+        std::sort( ldata.begin(), ldata.end(), [](auto a, auto b){ return a.dist < b.dist; }) ;
+        if( ldata.front().dist < distThreshold) //milimetres
+        {
+            adv = adv * advIncLow; 
+            rot = rot + turnSwitch * rotInc;
+            if( rot < -rotMax) rot = -rotMax;
+            if( rot > rotMax) rot = rotMax;
+            differentialrobot_proxy->setSpeedBase(adv, rot);
+        }
+        else
+        {
+            adv = adv * advIncHigh; 
+            if( adv > advMax) adv = advMax;
+            rot = 0.f;
+            differentialrobot_proxy->setSpeedBase(adv, 0.f);		
+            turnSwitch = -turnSwitch;
+        }	
+    }
+    catch(const Ice::Exception &ex)
+    {
+        std::cout << ex << std::endl;
+    }
+}
     
-Press F8 to compile and link. Go to Yakuake and restart the component. You should see the robot maneouvring aroung the box. Now is when Robotics begin!
+To compile the fancy version of *std::sort* you will have to first add this line at the end of the file *CMakeListsSpecific.txt* located in the same *src* directory:
 
+    ADD_DEFINITIONS( -std=c++14 )
+    
+and then type:
 
-Yo can find more tutorials in http://robocomp.net
+    cmake .
+    make
+
+Hereafter, Press F8 in KDevelop to compile and link. Then, go to Yakuake and restart the component. You should see the robot maneouvring aroung the box. Now is when Robotics start! Try to modify the code to let the robot go pass the blocking boxes.
+
+Yo can find more tutorials on RoboComp in http://robocomp.net
     
 
 
