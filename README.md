@@ -176,20 +176,20 @@ Now replace the empty *void compute()* method with this compact version of the c
 
     void SpecificWorker::compute( )
     {
-    static	float rot = 0.1f;
-    static float adv = 100.f;
-    static float turnSwitch = 1;
-    const float advIncLow = 0.8;
-    const float advIncHigh = 2.f;
-    const float rotInc = 0.25;
-    const float rotMax = 0.4;
-    const float advMax = 200;
-    const float distThreshold = 500;
+        static	float rot = 0.1f;			// rads/sec
+        static float adv = 100.f;			// mm/sec
+        static float turnSwitch = 1;
+        const float advIncLow = 0.8;		// mm/sec
+        const float advIncHigh = 2.f;		// mm/sec
+        const float rotInc = 0.25;			// rads/sec
+        const float rotMax = 0.4;			// rads/sec
+        const float advMax = 200;			// milimetres/sec
+        const float distThreshold = 500; 	// milimetres
     try
     {
         RoboCompLaser::TLaserData ldata = laser_proxy->getLaserData();
         std::sort( ldata.begin(), ldata.end(), [](auto a, auto b){ return a.dist < b.dist; }) ;
-        if( ldata.front().dist < distThreshold) //milimetres
+        if( ldata.front().dist < distThreshold) 
         {
             adv = adv * advIncLow; 
             rot = rot + turnSwitch * rotInc;
