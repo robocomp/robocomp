@@ -112,9 +112,9 @@ and check where the JoyStick has been installed in /dev/input/jsX. If it is not 
     
 We will create now a new component that will connect to the RCIS simulator and run a simple controller for the robot, using the laser data. First we need to install the DSLEditor software that is runtime Eclipse application. 
 
-Create another terminal in Yakuake and *cd* to *robocomp* and *cd* again to your *robocomp* root directory. Then type:
+Create another terminal in Yakuake and type:
 
-    cd tools
+    cd ~/robocomp/tools
     python fetch_DSLEditor.py
     
 Select 32 or 64 bits according to your current linux installation. After a little while the DSLEditor will be installed under the *robocompDSL* directory:
@@ -122,13 +122,13 @@ Select 32 or 64 bits according to your current linux installation. After a littl
     cd robocompDSL/DSLEditor
     ./DSLEditor
     
-Check that you have a *RoboComp* tab in the upper bar and that the *robocomp* directory appears in the Project Explorer. If it does not, right click in the *Project Explorer* pane and select *import*. Then select *General* and then *Existing Projects into Workspace*. Then select your *robocomp* directory and push *Finish*. 
+Check that you have a *RoboComp* tab in the upper bar of the window and that the *robocomp* directory appears in the Project Explorer (left panel). If it does not, right click in the *Project Explorer* panel and select *import*. Then select *General* and then *Existing Projects into Workspace*. Then select your *robocomp* directory and push *Finish*. 
 
-Now we need to bring up some handy tabs in the lowe pane. Select *Window* in the upper bar, then "Show View" and *Other* and again *Other*. Select *Interfaces* and double-click on it.
+Now we need to bring up some handy tabs in the lower pane. Select the *Window* tab in the upper bar, then *Show View*, then *Other* and again *Other*. Select now *Interfaces* and double-click on it. Go back to the main window.
 
-Now, in the left panel, unfold the *robocomp* directory down to *robocomp/components/* and then click with the right button. Select *New Folder* and enter *mycomponents* in the folder name. Do it again to create a new folder inside *mycomponents* named *mycomp*. Select *myfirstcomp* and then click on the *RoboComp* tab in the upper bar. Select *Create CDSL file* and fill the requested name with *MyFirstComp.cdsl*
+Now, in the left panel, unfold the *robocomp* directory down to *robocomp/components/* and then click on it with the right button. Select *New Folder* and enter *mycomponents* in the folder name. Do it again to create a new folder inside *mycomponents* named *mycomp*. Select *myfirstcomp* and then click on the *RoboComp* tab in the upper bar of the main window. Select *Create CDSL file* and fill the requested name with *MyFirstComp.cdsl*
     
-The new file will open in the syntax-sensitive editor in the central panel. You can see the skeleton of a new empty component. Look for the tab *Interfaces* in the lower bar and select *DifferentialRobot.idsl*. Click on the green cross at the right of the bar and accept when prompted in a pop-up window. You will see something like:
+The new file will open inside a syntax-sensitive editor in the central panel. Ctrl-space gives you language available options. You can see the skeleton of a new empty component. Look for the tab *Interfaces* in the lower bar and select *DifferentialRobot.idsl*. Click on the green cross at the right of the bar to include it and accept when prompted in a pop-up window. You will see something like:
 
     import "/robocomp/interfaces/IDSLs/DifferentialRobot.idsl";
     Component PFLocalizerComp{
@@ -137,11 +137,7 @@ The new file will open in the syntax-sensitive editor in the central panel. You 
             language Cpp;
     };
 
-Repeat the same steps to include *Laser.idsl*. Then add a *requires* statement:
-
-    requires DifferentialRobot, Laser;
-
-The file now should look like this:
+Repeat the same steps to include *Laser.idsl* and then add a *requires* statement inside de *Communications* section. The file now should look like this:
 
     import "/robocomp/interfaces/IDSLs/DifferentialRobot.idsl";
     import "/robocomp/interfaces/IDSLs/Laser.idsl";
@@ -152,24 +148,26 @@ The file now should look like this:
     language Cpp;
     };
 
-Save the file and click in the upper bar in the *RoboComp* tab. Select *Generate Code*. After a little while the new source tree for your *MyFirstComp* component will be created. You can go back now to Yakuake and create a new tab. Then:
+Save the file and click in the upper bar on the *RoboComp* tab. Select *Generate Code*. After a little while the new source tree for your *MyFirstComp* component will be created. You can go back now to Yakuake and create a new tab to compile it. Then:
 
-    cd to robocomp root directory.
-    cd components/mycomponents/myfirstcomp
+    cd ~/robocomp/components/mycomponents/myfirstcomp
     cmake .
     make
     cd bin
     ./startMyFirsComp.sh   (you might have to type: chmod +x *.sh , in the bin directory
     
-and there it is! your component is running. What! Dissapointed? Yeah, I know it does nothing, but it runs and it is yours! Now let's do some real programming.
+and there it is! your component is running. 
 
-Stop the component with ./forceStopJoyStick.sh and start your favorite IDE. KDevelop will do it just fine. 
+What! Dissapointed? Yeah, I know it does nothing, but it runs and it is yours! Now let's do some real programming.
 
-    Select *Open/Import new project* in the *File* tab. 
-    Navigate to robocomp/components/mycomponents/myfirstcomp
-    Select the Makefile and open the project
+Stop the component with ./forceStopJoyStick.sh and start your favorite IDE. KDevelop will do it just fine and you have it already installed. Open it in another tab, from Ubuntu menu or with Alt-F2. Then:
+
+    Click the *Project* tab in the upper bar
+    Select *Open/Import Project*
+    Navigate to ~/robocomp/components/mycomponents/myfirstcomp
+    Select *Makefile* and open the project
     
-In the *Project* panel to the left of the screen navigate to *src* and there select *specificworker.cpp* and open it. Open also *specificworker.h*
+In the *Project* panel to the left of the screen, navigate to *src* and there select *specificworker.cpp* and open it. Open also *specificworker.h*
 
 Now copy this piece of code inside the *void compute()* method:
 
@@ -178,7 +176,7 @@ Now copy this piece of code inside the *void compute()* method:
 Press F8 to compile and link. Go to Yakuake and restart the component. You should see the robot maneouvring aroung the box. Now is when Robotics begin!
 
 
-
+Yo can find more tutorials in http://robocomp.net
     
 
 
