@@ -34,7 +34,7 @@ Edit your ~/.bashrc file and add these lines at the end:
    
 reload bash by typing: 
 
-    source ~/.basrhrc
+    source ~/.bashrc
 
 Done! Now let's compile the whole thing:
 
