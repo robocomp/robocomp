@@ -62,50 +62,51 @@ Done! Now let's have some fun.
 
 ###Installation of RCIS Robotics simulator
 
-From *robocomp* root directory type:
-
+    cd ~/robocomp
     cd files/freedesktop
     chmod +x ./install.sh
     sudo ./install.sh
     cd ..
     git annex get .
     
-It will take a little while to download all necessary textures...
+It will take a little while to download all necessary graphic textures used in the simulator...
 
-Go now again to *robocomp* root directory and type:
+And now compile the whole thing
 
-    cd tools/rcinnermodelsimulator
+    cd ~/robocomp/tools/rcinnermodelsimulator
     cmake .
     make
     sudo make install
 
-Now let's run the simulator. Go to *robocomp* root directory and type:
+Now let's run the simulator. 
 
-    cd files/innermodel
+    cd ~/robocomp/files/innermodel
     rcis betaworld.xml
     
 Congratulations! RCIS should up and running with a simple robot endowed with a laser and an RGBD camera, moving on a wooden floor.
  
 ###Installing RoboLab's components from GitHub
 
-Create another terminal in Yakuake and *cd* to *robocomp*. Then:
-
-    cd components
+    cd ~/robocomp/components
     git clone https://github.com/robocomp/robocomp-robolab.git
     
-RoboLab's set of basic robotics components are now dowloaded. 
+The RoboLab's set of basic robotics components are now dowloaded. You can see them in ~/robocomp/components/robocomp-robolab/components
 
 ###Connecting a JoyStick
 
 If you have a JoyStick around, connect it to the USB port and:
 
-    cd robocomp-robolab/components/joystickComp
+    cd ~/robocomp/components/robocomp-robolab/components/joystickComp
     cmake .
     make
     cd bin
     ./startJoyStick.sh 
     
-Your joystick should be now running and moving it will make the robot to advance and turn at your will.
+Your joystick should be now running and moving it will make the robot to advance and turn at your will. If the component does not start or the robot does not move:
+
+    stop joystickcomp with forceStopJoyStickComp.sh
+    
+and check where the JoyStick has been installed in /dev/input/jsX. If it is not /dev/input/js0, edit ~/robocomp/components/robocomp-robolab/components/joystickComp/etc/config change it accordingly and restart.
 
 ###Creating a new component with RoboComp's DSLEditor
     
