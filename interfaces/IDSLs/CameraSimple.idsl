@@ -1,4 +1,4 @@
-module RoboCompCamera
+module RoboCompCameraSimple
 {
   /**@brief exception hardware*/
   exception HardwareFailedException { string what; };
@@ -35,7 +35,7 @@ module RoboCompCamera
   /** \interface Camera
   *@brief interface Camera
   */
-  interface Camera
+  interface CameraSimple
   {
     /**@brief YUV420 format - 2 planes unpacked */
     idempotent void getYUVImage(int cam, out imgType roi) throws HardwareFailedException;

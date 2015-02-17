@@ -3,9 +3,8 @@
 #fetch DSLEditor from external server
 import sys,os,urllib
 
-url32 = "--output-document DSLEditor.tar.gz 'https://robocloud.unex.es/index.php/apps/files/ajax/download.php?dir=%2Fgit_heavy_files&files=DSLEditor_32_newPaths.tar.gz'"
-url64 = "--output-document DSLEditor.tar.gz 'https://robocloud.unex.es/index.php/apps/files/ajax/download.php?dir=%2Fgit_heavy_files&files=DSLEditor_64_newPaths.tar.gz'"
-
+url32 = " --no-check-certificate  -O DSLEditor.tar.gz 'https://robocloud.unex.es/public.php?service=files&t=59b9b4214d0de5e056184b93428d44fc&download&path=//DSLEditor_32_newPaths.tar'"
+url64 = " --no-check-certificate  -O DSLEditor.tar.gz 'https://robocloud.unex.es/public.php?service=files&t=ea06df490bddc28ceb64cfcbeccb3faa&download&path=//DSLEditor_64_newPaths.tar'"
 
 def yesNoInput(message):
   answer = ''

@@ -9,8 +9,15 @@
 #ifndef ROBOCOMPCAMERA_ICE
 #define ROBOCOMPCAMERA_ICE
 
+#include <CommonHead.ice>
+
+#include <DifferentialRobot.ice>
+
 module RoboCompCamera{
 	exception HardwareFailedException{string what;};
+	exception MovingImageException{string what;};
+	sequence <byte> imgType;
+	sequence <int> intVector;
 	["cpp:comparable"]
 	struct TCamParams{
 		int focal;
@@ -29,18 +36,30 @@ module RoboCompCamera{
 		int rightInverted;
 		int saturation;
 		int lineFreq;
+		bool talkToBase;
+		bool talkToJointMotor;
 		string name;
 		string driver;
 		string device;
 		string mode;
 	};
-	sequence <byte> imgType;
 
 	interface Camera{
 		idempotent 
-		void  getYUVImage(int cam, out imgType roi)throws HardwareFailedException;
+		void  getYUVImage(int cam, out imgType roi, out RoboCompCommonHead::THeadState hState, out RoboCompDifferentialRobot::TBaseState bState)throws HardwareFailedException;
 		idempotent 
-		void  getYImage(int cam, out imgType roi)throws HardwareFailedException;
+		void  getYImage(int cam, out imgType roi, out RoboCompCommonHead::THeadState hState, out RoboCompDifferentialRobot::TBaseState bState)throws MovingImageException;
+		idempotent 
+		void  getYLogPolarImage(int cam, out imgType roi, out RoboCompCommonHead::THeadState hState, out RoboCompDifferentialRobot::TBaseState bState)throws MovingImageException;
+		idempotent 
+		void  getYImageCR(int cam, int div, out imgType roi, out RoboCompCommonHead::THeadState hState, out RoboCompDifferentialRobot::TBaseState bState)throws MovingImageException;
+		idempotent 
+		void  getRGBPackedImage(int cam, out imgType roi, out RoboCompCommonHead::THeadState hState, out RoboCompDifferentialRobot::TBaseState bState)throws MovingImageException;
+		idempotent 
+		void  getYRGBImage(int cam, out imgType roi, out RoboCompCommonHead::THeadState hState, out RoboCompDifferentialRobot::TBaseState bState)throws MovingImageException;
+		TCamParams getCamParams();
+		idempotent 
+		void  setInnerImage(imgType roi);
 	};
 };
   
