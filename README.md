@@ -229,6 +229,8 @@ We recommend that you create a repository for your components (i.e. *mycomponent
 
     https://help.github.com/articles/create-a-repo/
     
+Now is good time to write down a short description of what your component does in the README.md file.
+
 Then we need to clean up the binary and generated files in *myfirstcomp*. Note that this is not necessary if you upload the component to the repo just after creating it with DSLEditor and before you type *cmake .*
 
     cd ~/robocomp/components/mycomponents/myfirstcomp
