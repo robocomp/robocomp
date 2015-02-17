@@ -99,6 +99,7 @@ If you have a JoyStick around, connect it to the USB port and:
     cmake .
     make
     cd bin
+    sudo addgroup tu-usuario dialout   //To solve some permissions issues un Ubuntu
     ./startJoyStick.sh 
     
 Your joystick should be now running and moving it will make the robot to advance and turn at your will. If the component does not start or the robot does not move:
