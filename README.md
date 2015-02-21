@@ -25,7 +25,6 @@ Unroll the Yakuake terminal by pressing F12
 Now we will create a symbolic link so RobComp can find everything. You will have to enter your passwd:
 
     sudo ln -s /home/<your-linux-user> /home/robocomp 
-    sudo ln -s /opt/robocomp-1.0 /opt/robocomp
     
 Edit your ~/.bashrc file and add these lines at the end:
 
