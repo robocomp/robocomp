@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+vv<!DOCTYPE html>
 <html>
   <head>
     <meta charset='utf-8'>
@@ -29,22 +29,33 @@
       <div class="inner clearfix">
         <section id="main-content">
           <h3>
-<a id="robocomp-social-management" class="anchor" href="#robocomp-social-management" aria-hidden="true"><span class="octicon octicon-link"></span></a>1.- RoboComp Social Managment</h3>
+<a id="robocomp-social-management" class="anchor" href="#robocomp-social-management" aria-hidden="true"><span class="octicon octicon-link"></span></a>1.- RoboComp tutorial, social management and documentation</h3>
 
-<p>RoboComp is a very complex open source robotics framework, documentation is a very important part of it. We just moved our repositories from sourceforge to github. But we are still in the need of porting some other social tools like the website, the wiki and some tutorials. Clarifiying the usage of RoboComp is an important asset towards achieven a full open source development model that could help us improve the framework and help the open source robotics community. Some work on documenting easing the installation process of the framework is also needed. Achieving an easy to understand documentation and set up would make easier to spread the knowledge about the framework and usage among the open source community.</p>
+<p>Website needs to be ported to github pages, along with the old wiki and all its tutorials. A markdown language will be used to write new posts and website updates. Old tutorials need to be ported and polished to make it understandable by final users. Also, new tutorials have to be developed using RoboComp’s robotics simulator, that guide the new users through the subtleties of distributed programming in robotic architectures. This package also includes work on automated installation scripts using CMake in order to ease the usage of the framework and reduce the learning curve. Generic knowledge of website and wiki administration is needed.  
+This is a key task for our project as it would bring more attention to it as it will open the development to new people interested in the field. This will “open” the project to new users and developers on the open source community. </p>
 
-<p>Current instructions to download, install and start using the software are in <a href="http://www.github.com/robocomp/robocomp">Github</a>.</p>
+<p>Required student level: intermediate programming and systems administration.</p>
 
 <h3>
 <a id="computer-vision-stack" class="anchor" href="#computer-vision-stack" aria-hidden="true"><span class="octicon octicon-link"></span></a>2.- Computer vision components and libraries management</h3>
 
-<p>Among the main stacks of robocomp is the computer vision stack. There are currently plenty of components performing computer vision algorithms.  Comming up with a well documented and structured stack and libraries that can perform the main state of the art vision algotihms will help any new developer to easily perform vision task without much effort. Among the key tasks on this idea would be to create and select the componentsa and libraries performing vision tasks and group them together and document them. Some algorithms could also be added to complete the tools. </p>
+<p>Among the main stacks of robocomp is the computer vision stack. There are currently plenty of components performing computer vision algorithms.  Coming up with a well documented and structured stack and libraries that can perform the main state of the art vision algorithms will help any new developer to easily perform vision task without much effort. Among the key tasks on this idea would be to create and select the components and libraries performing vision tasks and group them together and document them. Some algorithms could also be added to complete the tools. </p>
+
+<p>Required student level: intermediate computer vision knowledge, C++ programming, basic CMake knowledge </p>
 
 <h3>
-<a id="cmake-buidling-system-desing" class="anchor" href="#cmake-buidling-system-desing" aria-hidden="true"><span class="octicon octicon-link"></span></a>3.- Cmake bulding system design</h3>
+<a id="cmake-buidling-system-desing" class="anchor" href="#cmake-buidling-system-desing" aria-hidden="true"><span class="octicon octicon-link"></span></a>3.- RoboComp Building system and installation tools</h3>
 
 
-<p>Current cmake building system when run from the root of the project is only ablot to build libraries and some tools. It would be nice to come up with a CMake structure that can build the entire system, including all components, without breaking current dependencies and leaving the option to compile per component. Components and libraries dependencies should be taken into account. This works needs also to take into account the dependencies between components that can be stored in an xml like files within the component itself.   </p>
+<p>Current CMake building system when run from the root of the project is only able to build libraries and some tools. It would be nice to come up with a CMake structure that can build the entire system, including all components, without breaking current dependencies and leaving the option to compile per component. Components and libraries dependencies should be taken into account. This works needs also to take into account the dependencies between components that can be stored in an xml like files within the component itself.   </p>
+
+<p>Required student level: intermediate CMake knowledge, programming in C++, basic knowledge of shell scripting </p>
+
+<a id="cmake-buidling-system-desing" class="anchor" href="#cmake-buidling-system-desing" aria-hidden="true"><span class="octicon octicon-link"></span></a>3.- </h3>
+
+<p>When creating a specific robot architecture, many components have to be brought into a common deployment environment. Each component has its runtime configuration and network parameters that have to be declared in a common deployment file, from where the complete system can be brought to life. This task proposes the design of domain specific language to facilitate the creation of deployment files that are syntactically and semantically correct. We will be using Python as the development language with pyparsing and cog as DSL generation tools.</p>
+
+<p>Required student level: intermediate programming with Python and introductory knowledge of formal languages</p>
 
 
 <h3>
