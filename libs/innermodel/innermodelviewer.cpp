@@ -144,7 +144,10 @@ IMVPlane::IMVPlane(InnerModelPlane *plane, std::string imagenEntrada, osg::Vec4 
 		osg::StateSet *sphereStateSet = getOrCreateStateSet();
 		sphereStateSet->ref();
 		sphereStateSet->setAttribute(material);
-		sphereStateSet->setTextureMode(0,GL_TEXTURE_GEN_R,osg::StateAttribute::ON);
+#ifdef __arm__
+#else
+		sphereStateSet->setTextureMode(0, GL_TEXTURE_GEN_R, osg::StateAttribute::ON);
+#endif
 		sphereStateSet->setTextureAttributeAndModes(0, texture, osg::StateAttribute::ON);
 	}
 }
@@ -168,10 +171,18 @@ void IMVPlane::performUpdate()
 	if (dirty)
 	{
 		if (backData != data)
-			image->setImage(width, height, 3, GL_RGB8 ,GL_RGB, GL_UNSIGNED_BYTE, data, osg::Image::NO_DELETE, 1);
-		else
-			image->dirty();
+		{
+#ifdef __arm__
+			image->setImage(width, height, 3, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE, data, osg::Image::NO_DELETE, 1);
+#else
+			image->setImage(width, height, 3, GL_RGB8, GL_RGB, GL_UNSIGNED_BYTE, data, osg::Image::NO_DELETE, 1);
+#endif
 
+		}
+		else
+		{
+			image->dirty();
+		}
 		dirty = false;
 		backData = data;
 	}
