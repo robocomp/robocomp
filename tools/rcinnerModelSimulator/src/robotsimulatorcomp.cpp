@@ -118,7 +118,7 @@ int robotSimulatorComp::run( int argc, char* argv[] )
 		{
 			sscanf(argv[params+1], "%d", &port);
 		}
-		else if (strcmp(argv[params],"-f")==0)
+		else if (strcmp(argv[params],"-f")==0 )
 		{
 			sscanf(argv[params+1], "%d", &ms);
 		}
@@ -183,7 +183,7 @@ int main(int argc, char* argv[])
 	// 10 0
 
 	// Set arguments
-	int argcs = argc + 6;
+	int argcs = argc + 10;
 
 	// Allog memory and end the arg list
 	char *argv2[argcs+1];
@@ -201,6 +201,12 @@ int main(int argc, char* argv[])
 	strcpy( argv2[argc+3], "--Ice.ACM.Client=10");
 	strcpy( argv2[argc+4], "--Ice.ACM.Server=10");
 	strcpy( argv2[argc+5], "--Ice.MessageSizeMax=20480");
+	strcpy( argv2[argc+6], "--Ice.ThreadPool.Client.Size=3");
+	strcpy( argv2[argc+7], "--Ice.ThreadPool.Client.SizeMax=15");
+	strcpy( argv2[argc+8], "--Ice.ThreadPool.Server.Size=3");
+	strcpy( argv2[argc+9], "--Ice.ThreadPool.Server.SizeMax=15");
+	
+	
 
 	printf("Args:\n");
 	for (int i=0; i<argcs; i++)

@@ -1,31 +1,43 @@
 module RoboCompTrajectoryRobot2D
 {
+	exception RoboCompException
+	{
+	  string text;
+	};
+	
 	struct TargetPose
 	{
-		float x;
+		float x;								// millimeters
 		float y;
 		float z;
-		float rx;
-		float ry;
+		float rx;	
+		float ry;								//radians
 		float rz;
-		bool doRotation;
+		bool doRotation;						// if True orientates the robot at ry radians with the world z axis (around world's yaxis)
 	};
 
 	struct NavState
 	{
-		long elapsedTime;
+		long elapsedTime;						//milliseconds all
 		string state;
 		long estimatedTime;
 		long planningTime;
+		float x;								// x current position of robot
+		float z;								// z current position of robot
+		float ang;								// ry current angular position of the robot
+		float advV;								// current forward speed
+		float rotV;
+		float distanceToTarget;					// total distance to target
+		
 	};
 
 	interface TrajectoryRobot2D
 	{
-		void go(TargetPose target);
-		void goBackwards(TargetPose target);
-		void changeTarget(TargetPose target);
-		NavState getState();
-		void stop();
+		void go(TargetPose target) throws RoboCompException;			// Takes the robot to target. ry is orientation if doRotation is True
+		void goBackwards(TargetPose target) throws RoboCompException;	// Moves the robot directly backwards
+		void changeTarget(TargetPose target)throws RoboCompException;	// Change last point of curent trajectory
+		NavState getState();											// Get current state
+		void stop();													// Stop the robot
 	};
 };
   

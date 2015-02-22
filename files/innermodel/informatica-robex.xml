@@ -1,0 +1,34 @@
+<innerModel>
+	<transform id="world">
+		
+		<transform id="target2" tx="0" ty="0" tz="0"> 
+			<plane id="target2x" px="500" nx="1" size="10,10,1000" repeat="1" texture="#ff0000" />
+			<plane id="target2y" py="500" nx="1" size="10,1000,10" repeat="1" texture="#00ff00" />
+			<plane id="target2z" pz="500" nx="1" size="1000,10,10" repeat="1" texture="#0000ff" />
+		</transform>	
+		
+		<transform id="floor">
+			
+			<mesh  id="pabellonInformatica" file="/home/robocomp/robocomp/files/osgModels/edificios/informatica.ive"  tx="0" ty="-250" tz="0" rx="1.57079632679" scale="1000" />
+		
+			<differentialrobot id="base" port="10004">
+				<mesh id="base_robex" file="/home/robocomp/robocomp/files/osgModels/robex/robex.ive"  tx="0" ty="0" tz="-180" scale="1000" />
+
+				<translation id="laserPose" tx="0" ty="40" tz="0">
+					<laser id="laser" port="10003" measures="100" min="100" max="4000" angle="3" ifconfig="10000" />
+						<plane id="sensorL" nz="1" pz="-200" size="100" repeat="1" texture="#ff0000" /> 
+				</translation>	
+
+				<transform id="camera" ty="210" tz="180">
+						<imu id="imu" port="10010"/>
+						<rgbd id="rgbd" focal="480" width="640" height="480" port="10096" noise="0.00" ifconfig="40000,50000" />
+						<plane id="rgbd_mesh1" nz="1" pz="-200" size="200,50,10" repeat="1" texture="#550000" />
+				</transform>
+				<translation id="robotGeometricCenter" tx="0" ty="0" tz="50">
+				</translation>
+			</differentialrobot>	
+		
+		</transform>
+	</transform>
+</innerModel>
+

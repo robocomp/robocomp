@@ -284,3 +284,12 @@ OmniRobotComp=12238
 BaseUrsusComp=12239
 UrsusCommonJointComp=12240
 objectDetectionStaticComp=12240
+<<<<<<< HEAD
+PruebaComp=12241
+=======
+MSKBodyComp=12241
+Nuc2innerComp=12242
+MSKBodyEventTopic=12243
+AprilBasedLocalization=12244
+>>>>>>> refs/remotes/origin/master
+MyFirstComp=12245

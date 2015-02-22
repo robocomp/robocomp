@@ -98,6 +98,7 @@ public:
 	bool isFixed();
 	void updateChildren();
 
+
 //protected:
 
 	QString id;
@@ -204,6 +205,7 @@ public:
 
 	/// Matrix transformation retrieval methods
 	RTMat getTransformationMatrix(const QString &destId, const QString &origId);
+	RTMat getTransformationMatrixS(const std::string &destId, const std::string &origId);
 	QMat getRotationMatrixTo(const QString &to, const QString &from);
 	QVec getTranslationVectorTo(const QString &to, const QString &from);
 	QMat getHomographyMatrix(QString destCamera, QString plane, QString sourceCamera);
@@ -280,6 +282,8 @@ public:
 
 	InnerModelNode *getRoot() { return root; }
 
+	QString getParentIdentifier(QString id);
+	std::string getParentIdentifierS(std::string id);
 
 	// FCL related
 	bool collide(const QString &a, const QString &b);
