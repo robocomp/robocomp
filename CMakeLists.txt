@@ -35,7 +35,7 @@ SET_INSTALL_DIRS()
 # set(RoboComp_OUTPUT_BIN_DIR ${RoboComp_BINARY_DIR}/bin)
 # make_directory(${RoboComp_OUTPUT_LIB_DIR})
 # make_directory(${RoboComp_OUTPUT_BIN_DIR})
-# 
+#
 # set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${RoboComp_OUTPUT_LIB_DIR}")
 # set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${RoboComp_OUTPUT_BIN_DIR}")
 # set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${RoboComp_OUTPUT_LIB_DIR}")
@@ -88,9 +88,10 @@ endif(DOXYGEN_FOUND)
 
 SUBDIRS(
 	libs
-# 	tools
+	tools/robocompdsl
+	tools/rcinnerModelSimulator
 #	components
 )
-	
+
 
 
