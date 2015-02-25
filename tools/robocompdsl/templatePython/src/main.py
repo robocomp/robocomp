@@ -158,6 +158,10 @@ Z()
 
 import sys, traceback, Ice, IceStorm, subprocess, threading, time, Queue, os
 
+# Ctrl+c handling
+import signal
+signal.signal(signal.SIGINT, signal.SIG_DFL)
+
 from PySide import *
 
 from specificworker import *
