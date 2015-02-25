@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE language SYSTEM "language.dtd">
+<language name="CDSL by RoboComp"
+          section="Sources" 
+          version="1.23"
+          kateversion="2.5" 
+          extensions="*.idsl"
+          mimetype="text/x-idsl" 
+          priority="8"
+	  indenter="cdsl"
+          author="RoboLab people"
+          >
+  <highlighting>
+    <list name="keywords">
+      <item> import </item>
+      <item> Component </item>
+      <item> Communications </item>
+      <item> requires </item>
+      <item> publishes </item>
+      <item> implements </item>
+      <item> subscribes </item>
+      <item> language </item>
+      <item> Ui </item>
+    </list>
+    <contexts>
+      <context attribute="Normal Text" lineEndContext="#stay" name="Normal">
+        <RegExpr attribute="Keyword" context="#stay" String="\b(begin|case|record)(?=(\{[^}]*(\}|$)|\(\*.*(\*\)|$))*([\s]|$|//))" insensitive="true" beginRegion="Region1"/>
+        <RegExpr attribute="ISO/Delphi Extended" context="#stay" String="\b((object|class)(?=(\(.*\))?(\{[^}]*(\}|$)|\(\*.*(\*\)|$))*;?([\s]|$|//))|try(?=(\{[^}]*(\}|$)|\(\*.*(\*\)|$))*([\s]|$|//)))" insensitive="true" beginRegion="Region1"/>
+	<RegExpr attribute="Keyword" context="#stay" String="\bend(?=((\{[^}]*(\}|$)|\(\*.*(\*\)|$))*)([.;\s]|$)|//|$)" insensitive="true" endRegion="Region1"/>
+
+        <keyword attribute="Keyword" context="#stay" String="keywords"/>
+        <keyword attribute="ISO/Delphi Extended" context="#stay" String="ISO/Delphi Extended"/>
+        <keyword attribute="Type" context="#stay" String="types"/>
+        <Float attribute="Number" context="#stay"/>
+	<Int attribute="Number" context="#stay"/>
+	<DetectChar attribute="Hex" context="Hex" char="$" />
+	<DetectChar attribute="String" context="CharNum" char="#" />
+        <DetectChar attribute="String" context="String" char="&apos;" />
+        <StringDetect attribute="Directive" context="Prep1" String="(*$"/>
+        <Detect2Chars attribute="Directive" context="Prep2" char="{" char1="$"/>
+        <DetectChar attribute="Comment" context="Comment1" char="{"            beginRegion="Region2"/>
+        <Detect2Chars attribute="Comment" context="Comment2" char="(" char1="*" beginRegion="Region3"/>
+        <Detect2Chars attribute="Comment" context="Comment3" char="/" char1="/"/>
+      </context>
+      <context attribute="String" lineEndContext="#pop" name="CharNum">
+	      <DetectChar attribute="Hex" context="HexCharNum" char="$" />
+	      <RegExpr String="[^0-9]" context="#pop"/>
+      </context>
+      <context attribute="Hex" lineEndContext="#pop" name="HexCharNum">
+	      <RegExpr String="[^a-fA-F0-9]" context="#pop#pop"/>
+      </context>
+      <context attribute="Hex" lineEndContext="#pop" name="Hex">
+	      <RegExpr String="[^a-fA-F0-9]" context="#pop"/>
+      </context>
+      <context attribute="String" lineEndContext="#pop" name="String">
+        <DetectChar attribute="String" context="#pop" char="&apos;"/>
+      </context>
+      <context attribute="Directive" lineEndContext="#pop" name="Prep1">
+        <Detect2Chars attribute="Directive" context="#pop" char="*" char1=")"/>
+      </context>
+      <context attribute="Directive" lineEndContext="#pop" name="Prep2">
+        <DetectChar attribute="Directive" context="#pop" char="}"/>
+      </context>
+      <context attribute="Comment" lineEndContext="#stay" name="Comment1">
+        <keyword attribute="Alert" context="#stay" String="attention" />
+        <DetectChar attribute="Comment" context="#pop" char="}"              endRegion="Region2"/>
+      </context>
+      <context attribute="Comment" lineEndContext="#stay" name="Comment2">
+        <keyword attribute="Alert" context="#stay" String="attention" />
+        <Detect2Chars attribute="Comment" context="#pop" char="*" char1=")"   endRegion="Region3"/>
+      </context>
+      <context attribute="Comment" lineEndContext="#pop" name="Comment3">
+        <keyword attribute="Alert" context="#stay" String="attention" />
+      </context>
+    </contexts>
+    <itemDatas>
+      <itemData name="Normal Text" defStyleNum="dsNormal"  />
+      <itemData name="Hex"         defStyleNum="dsBaseN"   />
+      <itemData name="Keyword"     defStyleNum="dsKeyword" />
+      <itemData name="ISO/Delphi Extended"  defStyleNum="dsKeyword" color="#000080" />
+      <itemData name="Type"  defStyleNum="dsDataType"/>
+      <itemData name="Number"      defStyleNum="dsDecVal" />
+      <itemData name="String"      defStyleNum="dsString" />
+      <itemData name="Directive"   defStyleNum="dsOthers" />
+      <itemData name="Comment"     defStyleNum="dsComment" />
+      <itemData name="Alert"        defStyleNum="dsAlert" />
+    </itemDatas>
+  </highlighting>
+  <general>
+    <keywords casesensitive="0" />
+    <comments>
+      <comment name="singleLine" start="//" />
+    </comments>
+  </general>
+</language>
