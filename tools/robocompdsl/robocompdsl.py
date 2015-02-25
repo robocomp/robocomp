@@ -9,13 +9,45 @@
 
 import sys, os, subprocess
 
+def generateDummyCDSL(path):
+	if os.path.exists(path):
+		print "File", path, "already exists.\nExiting..."
+	else:
+		print "Generating dummy CDSL file:", path
+		open(path, "w").write("""import "/robocomp/interfaces/IDSLs/import1.idsl";
+import "/robocomp/interfaces/IDSLs/import2.idsl";
+import "/robocomp/interfaces/IDSLs/import3.idsl";
+
+Component name
+{
+	Communications
+	{
+		implements interfaceName;
+		requires otherName;
+		subscribesTo topicToSubscribeTo;
+		publishes topicToPublish;
+	};
+	language Cpp;
+	gui Qt(QWidget);
+};\n\n""")
+
+correct = True
 if len(sys.argv) < 3:
+	if len(sys.argv) == 2 and sys.argv[1].endswith(".cdsl"):
+		generateDummyCDSL(sys.argv[1])
+		sys.exit(0)
+	else: correct = False
+if not correct:
 	print 'Usage:\n\t'+sys.argv[0]+'   INPUT_FILE.CDSL   OUTPUT_DIRECTORY'
 	sys.exit(-1)
+
 inputFile  = sys.argv[1]
 outputPath = sys.argv[2]
 
 sys.path.append('/opt/robocomp/python')
+
+from cogapp import Cog
+
 
 
 from parseCDSL import *
@@ -92,7 +124,7 @@ if component['language'].lower() == 'cpp':
 		print 'Generating', ofile, 'from', ifile
 		run = "cog.py -z -d -D theCDSL="+inputFile + " -D theIDSLs="+imports + " -o " + ofile + " " + ifile
 		run = run.split(' ')
-		ret = subprocess.check_call(run)
+		ret = Cog().main(run)
 		if ret != 0:
 			print 'ERROR'
 			sys.exyt(-1)
@@ -107,7 +139,7 @@ if component['language'].lower() == 'cpp':
 			# Call cog
 			run = "cog.py -z -d -D theCDSL="+inputFile  + " -D theIDSLs="+imports + " -D theInterface="+im + " -o " + ofile + " " + "/opt/robocomp/share/robocompdsl/templateCPP/" + f
 			run = run.split(' ')
-			ret = subprocess.check_call(run)
+			ret = Cog().main(run)
 			if ret != 0:
 				print 'ERROR'
 				sys.exyt(-1)
@@ -143,7 +175,7 @@ elif component['language'].lower() == 'python':
 		print 'Generating', ofile, 'from', ifile
 		run = "cog.py -z -d -D theCDSL="+inputFile + " -D theIDSLs="+imports + " -o " + ofile + " " + ifile
 		run = run.split(' ')
-		ret = subprocess.check_call(run)
+		ret = Cog().main(run)
 		if ret != 0:
 			print 'ERROR'
 			sys.exyt(-1)
@@ -159,7 +191,7 @@ elif component['language'].lower() == 'python':
 			# Call cog
 			run = "cog.py -z -d -D theCDSL="+inputFile  + " -D theIDSLs="+imports + " -D theInterface="+im + " -o " + ofile + " " + "/opt/robocomp/share/robocompdsl/templatePython/" + f
 			run = run.split(' ')
-			ret = subprocess.check_call(run)
+			ret = Cog().main(run)
 			if ret != 0:
 				print 'ERROR'
 				sys.exyt(-1)

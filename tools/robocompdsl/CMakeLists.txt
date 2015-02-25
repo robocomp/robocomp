@@ -10,5 +10,5 @@ INSTALL(PROGRAMS "robocompdsl.py" DESTINATION /opt/robocomp/bin RENAME robocompd
 
 INSTALL(DIRECTORY "templateCPP" DESTINATION /opt/robocomp/share/robocompdsl )
 INSTALL(DIRECTORY "templatePython" DESTINATION /opt/robocomp/share/robocompdsl )
-
+INSTALL(DIRECTORY "cogapp" DESTINATION /opt/robocomp/python )
 
