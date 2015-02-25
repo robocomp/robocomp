@@ -39,8 +39,8 @@ if len(sys.argv) < 3:
 	else: correct = False
 if not correct:
 	print 'Usage:'
-	print '\ta) to generate code from a CDSL file: '+sys.argv[0]+'   INPUT_FILE.CDSL   OUTPUT_DIRECTORY'
-	print '\tb) to generate a CDSL file: '+sys.argv[0]+'   NEW_COMPONENT_DESCRIPTOR.CDSL'
+	print '\ta) to generate code from a CDSL file:     '+sys.argv[0].split('/')[-1]+'   INPUT_FILE.CDSL   OUTPUT_DIRECTORY'
+	print '\tb) to generate a new CDSL file:           '+sys.argv[0].split('/')[-1]+'   NEW_COMPONENT_DESCRIPTOR.CDSL'
 	sys.exit(-1)
 
 inputFile  = sys.argv[1]
