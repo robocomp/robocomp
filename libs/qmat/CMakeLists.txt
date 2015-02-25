@@ -56,7 +56,7 @@ endif (PYTHON_BINDINGS_SUPPORT)
 set(OUT_FILE_NAME ${PROJECT_NAME_LOWER}_${LIB_NAME})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include )
 
-INCLUDE ( $ENV{ROBOCOMP}/cmake/modules/ipp.cmake )
+#INCLUDE ( $ENV{ROBOCOMP}/cmake/modules/ipp.cmake )
 
 INCLUDE( ${QT_USE_FILE} )
 ADD_DEFINITIONS(${QT_DEFINITIONS})
