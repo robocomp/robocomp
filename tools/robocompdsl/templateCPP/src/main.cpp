@@ -273,7 +273,7 @@ Z()
 ::run(int argc, char* argv[])
 {
 [[[cog
-	if component['gui']:
+	if component['gui'] != "none":
 		cog.outl("#ifdef USE_QTGUI")
 		cog.outl("QApplication a(argc, argv);  // GUI application")
 		cog.outl("#else")

@@ -217,7 +217,7 @@ class CommonBehaviorI(RoboCompCommonBehavior.CommonBehavior):
 
 if __name__ == '__main__':
 [[[cog
-	if component['gui']:
+	if component['gui'] != "none":
 		cog.outl('<TABHERE>app = QtGui.QApplication(sys.argv)')
 	else:
 		cog.outl('<TABHERE>app = QtCore.QCoreApplication(sys.argv)')
