@@ -48,12 +48,17 @@ Z()
 #    You should have received a copy of the GNU General Public License
 #    along with RoboComp.  If not, see <http://www.gnu.org/licenses/>.
 
+import sys
 from PySide import *
 
 [[[cog
 A()
 if component['gui'] != 'none':
-	cog.out('from ui_mainUI import *')
+	cog.outl('try:')
+	cog.outl('<TABHERE>from ui_mainUI import *')
+	cog.outl('except:')
+	cog.outl('<TABHERE>print "Can\'t import UI file. Did you run \'make\'?"')
+	cog.outl('<TABHERE>sys.exit(-1)')
 Z()
 ]]]
 [[[end]]]

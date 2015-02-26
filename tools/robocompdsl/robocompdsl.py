@@ -129,7 +129,7 @@ if component['language'].lower() == 'cpp':
 		ret = Cog().main(run)
 		if ret != 0:
 			print 'ERROR'
-			sys.exyt(-1)
+			sys.exit(-1)
 		replaceTagsInFile(outputPath + '/' + f)
 	#
 	# Generate interface-dependent files
