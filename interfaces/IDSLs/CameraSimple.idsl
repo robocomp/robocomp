@@ -43,4 +43,29 @@ module RoboCompCameraSimple
     /**@brief Luminance - 1 Plane */
     idempotent void getYImage(int cam, out imgType roi) throws HardwareFailedException;
   };
+
+module RoboCompCameraSimple{
+	exception HardwareFailedException{string what;};
+	struct TCamParams{
+		int focal;
+		int width;
+		int height;
+		int size;
+		int FPS;
+		int timerPeriod;
+		int inverted;
+		int rotated;
+		int saturation;
+		int lineFreq;
+		string name;
+		string driver;
+		string device;
+		string mode;
+	};
+	sequence <byte> TImg;
+
+	interface CameraSimple
+	{
+		idempotent TImg getYUVImage() throws HardwareFailedException;
+	};
 };

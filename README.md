@@ -189,7 +189,7 @@ Now replace the empty *void compute()* method with this compact version of the c
     try
     {
         RoboCompLaser::TLaserData ldata = laser_proxy->getLaserData();
-        std::sort( ldata.begin(), ldata.end(), [](auto a, auto b){ return a.dist < b.dist; }) ;
+        std::sort( ldata.begin(), ldata.end(), [](RoboCompLaser::TData a, RoboCompLaser::TData b){ return     a.dist < b.dist; }) ;
         if( ldata.front().dist < distThreshold) 
         {
             adv = adv * advIncLow; 
@@ -215,7 +215,7 @@ Now replace the empty *void compute()* method with this compact version of the c
     
 To compile the fancy version of *std::sort* you will have to first add this line at the end of the file *CMakeListsSpecific.txt* located in the same *src* directory:
 
-    ADD_DEFINITIONS( -std=c++14 )
+    ADD_DEFINITIONS( -std=c++11 )
     
 and then type:
 

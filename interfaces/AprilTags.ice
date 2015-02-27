@@ -14,12 +14,12 @@ module RoboCompAprilTags{
 	struct tag{
 		int id;
 		float tx;
-					float ty;
-					float tz;
-					float rx;
-					float ry;
-					float rz;
-				};
+		float ty;
+		float tz;
+		float rx;
+		float ry;
+		float rz;
+	};
 	sequence <tag> tagsList;
 
 	interface AprilTags{

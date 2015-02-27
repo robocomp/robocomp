@@ -1,0 +1,73 @@
+[[[cog
+
+import sys
+sys.path.append('/opt/robocomp/python')
+
+import cog
+def A():
+	cog.out('<@@<')
+def Z():
+	cog.out('>@@>')
+def TAB():
+	cog.out('<TABHERE>')
+def SPACE(i=0):
+	s = ''
+	if i>0:
+		s = str(i)
+	cog.out('<S'+s+'>')
+
+from parseCDSL import *
+component = CDSLParsing.fromFile(theCDSL)
+
+
+text = False
+for im in component['implements']:
+	if text == False:
+		cog.outl('# Endpoints for implemented interfaces')
+		text = True
+	cog.outl(im+".Endpoints=tcp -p 0")
+if text:
+	cog.out('\n\n')
+
+
+text = False
+for sb in component['subscribesTo']:
+	if text == False:
+		cog.outl('# Endpoints for subscriptions')
+		text = True
+	cog.outl(sb+"Topic.Endpoints=tcp -p 0")
+if text:
+	cog.out('\n\n')
+
+
+text = False
+for rq in component['requires']:
+	if text == False:
+		cog.outl('# Proxies for required interfaces')
+		text = True
+	cog.outl(rq + "Proxy = " + rq.lower() + ":tcp -h localhost -p 0")
+if text:
+	cog.out('\n\n')
+
+text = False
+for pb in component['publishes']:
+	if text == False:
+		cog.outl('# Proxies for published topics')
+		text = True
+	cog.outl(pb + "Proxy = " + pb.lower() + ":tcp -h localhost -p 0")
+if text:
+	cog.out('\n')
+]]]
+[[[end]]]
+
+# This property is used by the clients to connect to IceStorm.
+TopicManager.Proxy=IceStorm/TopicManager:default -p 9999
+
+
+Ice.Warn.Connections=0
+Ice.Trace.Network=0
+Ice.Trace.Protocol=0
+Ice.ACM.Client=10
+Ice.ACM.Server=10
+
+
