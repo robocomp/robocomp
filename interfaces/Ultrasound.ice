@@ -12,25 +12,19 @@ module RoboCompUltrasound
 		int baudRate;
 		int basicPeriod;
 	};
-	struct SensorParams
+	struct SensorData
 	{
-		string device;
-		int busId;
-		string name;
-		
+		float dist;
+		float ang;
 	};
-	sequence<SensorParams> SensorParamsList;
 
-	sequence<int> SensorsState;
+	dictionary<string, SensorParams> SensorMap;
 
 	interface Ultrasound
 	{
 		BusParams getBusParams();
-		SensorParams getSensorParams(string sensor);
-		SensorParamsList getAllSensorParams();
-
-		int getSensorDistance(string sensor) throws UnknownSensorException, HardwareFailedException; 
-		SensorsState getAllSensorDistances() throws UnknownSensorException, HardwareFailedException; 
+		SensorData getSensorData(string sensor);
+		SensorMap getAllSensorData();
 
     };
 };
