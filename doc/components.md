@@ -1,1 +1,1 @@
-#Software components
+#Software components: a brief introduction
