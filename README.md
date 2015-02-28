@@ -1,7 +1,7 @@
 [RoboComp](http://robocomp.net)
 ===============================
 
-by [RoboLab](http://robolab.unex.es)
+by [RoboLab](http://robolab.unex.es), [ISIS](http://www.grupoisis.uma.es/index.php?option=com_jresearch&view=staff&Itemid=3&lang=es) and many other collaborators.
 
 RoboComp is an open-source Robotics framework providing the tools to create and modify software components that communicate through public interfaces. Components may *require*, *subscribe*, *implement* or *publish*
 interfaces in a seamless way. Building new components is done using two domain specific languages, IDSL and CDSL. With IDSL you define an interface and with CDSL you specify how the component will communicate with the world. With this information, a code generator creates C++ and/or Python sources, based on CMake, that compile and execute flawlessly. When some of these features have to be changed, the component can be easily regenerated and all the user specific code is preserved thanks to a simple inheritance mechanism.
@@ -11,7 +11,11 @@ interfaces in a seamless way. Building new components is done using two domain s
 Make sure you have installed the following packages from the Ubuntu repository:
 
     sudo apt-get update
-    sudo apt-get install git git-annex cmake g++ libgsl0-dev libopenscenegraph-dev cmake-qt-gui zeroc-ice35 freeglut3-dev libboost-system-dev libboost-thread-dev qt4-dev-tools yakuake openjdk-7-jre kdevelop vim aptitude nano
+    sudo apt-get install git git-annex cmake g++ libgsl0-dev libopenscenegraph-dev cmake-qt-gui zeroc-ice35 freeglut3-dev libboost-system-dev libboost-thread-dev qt4-dev-tools yakuake openjdk-7-jre python-pyparsing python-numpy python-pyside pyside-tools
+    
+You might also want these nice developer tools:
+
+    sudo apt-get kdevelop vim aptitude nano 
     
 Start Yakuake by typing Alt-F2, and then *yakuake* in the pop up window
 Unroll the Yakuake terminal by pressing F12
