@@ -11,7 +11,7 @@ interfaces in a seamless way. Building new components is done using two domain s
 Make sure you have installed the following packages from the Ubuntu repository:
 
     sudo apt-get update
-    sudo apt-get install git git-annex cmake g++ libgsl0-dev libopenscenegraph-dev cmake-qt-gui zeroc-ice35 freeglut3-dev libboost-system-dev libboost-thread-dev qt4-dev-tools yakuake openjdk-7-jre python-pyparsing python-numpy python-pyside pyside-tools
+    sudo apt-get install git git-annex cmake g++ libgsl0-dev libopenscenegraph-dev cmake-qt-gui zeroc-ice35 freeglut3-dev libboost-system-dev libboost-thread-dev qt4-dev-tools yakuake openjdk-7-jre python-pip  python-pyparsing python-numpy python-pyside pyside-tools
     
 You might also want these nice developer tools:
 
