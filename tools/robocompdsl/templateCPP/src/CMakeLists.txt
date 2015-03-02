@@ -33,7 +33,7 @@ Z()
  )
 IF(NOT EXISTS $ENV{ROBOCOMP}/cmake)
 MESSAGE(FATAL_ERROR "
- ROBOCOMPROOT variable not set, check your bashrc profile!
+ ROBOCOMP variable not set, check your bashrc profile!
 ")
 ENDIF(NOT EXISTS $ENV{ROBOCOMP}/cmake)
 INCLUDE( $ENV{ROBOCOMP}/cmake/robocomp.cmake )
