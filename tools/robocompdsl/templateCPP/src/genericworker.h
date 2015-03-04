@@ -57,6 +57,12 @@ Z()
 #include <stdint.h>
 #include <qlog/qlog.h>
 
+[[[cog
+if component['gui'] != 'none':
+	cog.outl("#include <ui_mainUI.h>")
+]]]
+[[[end]]]
+
 #include <CommonBehavior.h>
 [[[cog
 
@@ -83,11 +89,22 @@ for m in pool.modulePool:
 ]]]
 [[[end]]]
 
-class GenericWorker : public QObject
+class GenericWorker : 
+[[[cog
+if component['gui'] != 'none':
+	cog.outl("""#ifdef USE_QTGUI
+public QWidget, public Ui_guiDlg
+#else
+public QObject
+#endif""")
+else:
+	cog.outl("public QObject")
+]]]
+[[[end]]]
 {
 Q_OBJECT
 public:
-	GenericWorker(MapPrx& mprx, QObject *parent = 0);
+	GenericWorker(MapPrx& mprx);
 	virtual ~GenericWorker();
 	virtual void killYourSelf();
 	virtual void setPeriod(int p);

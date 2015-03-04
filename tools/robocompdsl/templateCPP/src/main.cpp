@@ -275,7 +275,7 @@ Z()
 [[[cog
 	if component['gui'] != "none":
 		cog.outl("#ifdef USE_QTGUI")
-		cog.outl("QApplication a(argc, argv);  // GUI application")
+		cog.outl("<TABHERE>QApplication a(argc, argv);  // GUI application")
 		cog.outl("#else")
 		cog.outl("<TABHERE>QCoreApplication a(argc, argv);  // NON-GUI application")
 		cog.outl("#endif")
