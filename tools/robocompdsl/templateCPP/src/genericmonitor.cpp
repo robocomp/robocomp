@@ -106,7 +106,7 @@ void GenericMonitor::readPConfParams(RoboCompCommonBehavior::ParameterList &para
 	//nothing to do
 }
 
-//Ice Methods to read from file 
+//Ice method to read a variable from file 
 //name, parameter config value
 //return value of parameter config 
 //default value for the parameter
@@ -116,22 +116,22 @@ bool GenericMonitor::configGetString( const std::string name, std::string&value,
 {
 	value = communicator->getProperties()->getProperty( name );
 
- 	if ( value.length() == 0)
+	if ( value.length() == 0)
 	{
-	   if (default_value.length() != 0)
+		if (default_value.length() != 0)
 		{
-		  value = default_value;
-		  return false;
+			value = default_value;
+			return false;
 		}
 		else if (default_value.length() == 0)
 		{
-			 QString error = QString("empty configuration string, not default value for")+QString::fromStdString(name);
-			 qDebug() << error;
-			 throw error;
+			QString error = QString("empty configuration string, not default value for")+QString::fromStdString(name);
+			qDebug() << error;
+			throw error;
 		}
 	}
 
- 	if (list != NULL)
+	if (list != NULL)
 	{
 		if (list->contains(QString::fromStdString(value)) == false)
 		{
@@ -143,6 +143,65 @@ bool GenericMonitor::configGetString( const std::string name, std::string&value,
 		throw error;
 	}
 
+	auto parts = QString::fromStdString(value).split("@");
+	QString variableName=QString::fromStdString(name);
+	
+	
+	if (parts.size() > 1)
+	{
+		if (parts[0].size() > 0)
+		{
+			variableName = parts[0];
+		}
+		parts.removeFirst();
+		value = std::string("@") + parts.join("@").toStdString();
+	}
+	
+// 	printf("variableName = %s\n", variableName.toStdString().c_str());
+// 	printf("value = %s\n", value.c_str());
+	
+	
+	if (value[0]=='@')
+	{
+		QString qstr = QString::fromStdString(value).remove(0,1);
+		QFile ff(qstr);
+		if (not ff.exists())
+		{
+			qFatal("Not such file: %s\n", qstr.toStdString().c_str());
+		}
+		if (!ff.open(QIODevice::ReadOnly | QIODevice::Text))
+		{
+			qFatal("Can't open file: %s\n", qstr.toStdString().c_str());
+		}
+
+		bool found = false;
+		while (!ff.atEnd())
+		{
+			QString content = QString(ff.readLine()).simplified();
+// 			printf("line: %s\n", content.toStdString().c_str());
+			
+			if (content.startsWith(variableName))
+			{
+// 				printf("swn %s\n", content.toStdString().c_str());
+				content = content.right(content.size()-variableName.size()).simplified();
+// 				printf("swn %s\n", content.toStdString().c_str());
+				if (content.startsWith("="))
+				{
+					content = content.remove(0,1).simplified();
+					value = content.toStdString();
+					found = true;
+				}
+				else
+				{
+					printf("warning (=) %s\n", content.toStdString().c_str());
+				}
+				
+			}
+		}
+		if (not found)
+		{
+		}
+	}
 	std::cout << name << " " << value << std::endl;
-	return true;
+	return true; 
 }

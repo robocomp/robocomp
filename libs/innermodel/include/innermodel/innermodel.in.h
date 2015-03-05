@@ -216,33 +216,17 @@ public:
 	void print(QString s="") { treePrint(s, true); }
 	void treePrint(QString s="", bool verbose=false) { root->treePrint(QString(s), verbose); }
 
-	/// Robex Base specific getters
-	QVec robotToWorld(const QVec & vec);
 	/**
 	 * @brief Returns the x,y,z coordinates of the center of reference of the robot. No angle is computed
 	 *
 	 * @return QVec
 	 **/
-	QVec robotInWorld();
-	float getBaseX();
-	float getBaseZ();
-	float getBaseAngle();
-	float getBaseRadius();
+
 	float getCameraFocal(const QString &cameraId ) const;
 	int getCameraWidth( QString cameraId );
 	int getCameraHeight(const QString &cameraId ) const;
 	int getCameraSize(const QString &cameraId ) const;
-	void getFundamental(float h[3][3]) const;
-	QMat getFundamental() const;
 
-	inline QVec getBaseCoordinates() { return transform("world", QVec::vec3(0,0,0), "base");};
-	inline T getBaseLine() const { return 0;/*return rightCamTranslationToLeftCam().vectorNormL2(); */ }
-	/**
-	 * @brief Return the current pose (x,z,angle) of the robot in the world reference frame.
-	 *
-	 * @return QVec
-	 **/
-	QVec getBaseOdometry();
 
 	/// Stereo computations
 	void updateStereoGeometry( const QString &firstCam, const QString & secondCam );
@@ -254,8 +238,6 @@ public:
 	/// Setters for model parameters
 
 	/// Laser stuff
-	QVec laserToWorld( const QString &laserId , const QVec &p) { return laserTo("world", laserId, p); }
-	QVec laserToWorld( const QString &laserId , float r, float alfa) { return laserTo("world", laserId, r, alfa);	}
 	QVec laserTo(const QString &dest, const QString & laserId , const QVec &p);
 	QVec laserTo(const QString &dest, const QString & laserId , float r, float alfa);
 	QVec laserToRefFrame(const QString & laserId , float r, float alpha, const QString & refFrame) { return laserTo(refFrame, laserId, r, alpha); }
@@ -267,8 +249,6 @@ public:
 	struct TFrustrum { TPlane left; TPlane top; TPlane right; TPlane down; TPlane near; TPlane far;};
 	TFrustrum frustrumLeft, frustrumThird, frustrumRight;
 
-	/// Cloning
-	InnerModel cloneFake( const QVec & basePose) const;
 
 	QList<QString> getIDKeys() {return hash.keys(); }
 	InnerModelNode *getNode(const QString & id) const { if (hash.contains(id)) return hash[id]; else return NULL;}
@@ -300,8 +280,6 @@ protected:
 	void setLists(const QString &origId, const QString &destId);
 	QList<InnerModelNode *> listA, listB;
 
-	QFundamental fundamental;
-	QEssential essential;
 };
 
 
