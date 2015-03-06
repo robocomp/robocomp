@@ -32,9 +32,9 @@
 */
 class GenericMonitor : public QThread
 {
-  Q_OBJECT
+Q_OBJECT
   
-  public:
+public:
 	GenericMonitor(GenericWorker *_worker, Ice::CommunicatorPtr _communicator);
 	virtual ~GenericMonitor();
 	
@@ -53,7 +53,7 @@ class GenericMonitor : public QThread
 	virtual void run() = 0;
 	virtual void initialize() = 0;
 	
-  protected:
+protected:
 	int period;
 	GenericWorker *worker;
 	Ice::CommunicatorPtr communicator;
@@ -63,10 +63,14 @@ class GenericMonitor : public QThread
 	
 	virtual bool sendParamsToWorker(RoboCompCommonBehavior::ParameterList params) = 0;
 	virtual bool checkParams(RoboCompCommonBehavior::ParameterList l) = 0;
-	
-	bool configGetString( const std::string name, std::string &value,  const std::string default_value, QStringList *list = NULL);
-  signals:
+
+	       bool configGetString(                                   const std::string name, std::string &value, const std::string default_value, QStringList *list = NULL);
+public:
+	static bool configGetString(Ice::CommunicatorPtr communicator, const std::string name, std::string &value, const std::string default_value, QStringList *list = NULL);
+
+signals:
 	void kill();
+
 };
 
 #endif // GENERICMONITOR_H

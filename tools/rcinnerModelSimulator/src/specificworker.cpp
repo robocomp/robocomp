@@ -119,7 +119,7 @@ struct SpecificWorker::Data
 
 		double angle = finAngle;  //variable to iterate angle increments
 		//El punto inicial es el origen del láser
-		const osg::Vec3 P = QVecToOSGVec(innerModel->laserToWorld(id, 0, 0));
+		const osg::Vec3 P = QVecToOSGVec(innerModel->laserTo("root", id, 0, 0));
 		const float incAngle = (fabs(iniAngle)+fabs(finAngle)) / (float)measures;
 		osg::Vec3 Q,R;
 

@@ -19,7 +19,11 @@ component = CDSLParsing.fromFile(theCDSL)
 REQUIRE_STR = """
 <TABHERE>try
 <TABHERE>{
-<TABHERE><TABHERE><LOWER>_proxy = <NORMAL>Prx::uncheckedCast( communicator()->stringToProxy( getProxyString("<NORMAL>Proxy") ) );
+<TABHERE><TABHERE>if (not GenericMonitor::configGetString(communicator(), prefix+"<NORMAL>Proxy", proxy, ""))
+<TABHERE><TABHERE>{
+<TABHERE><TABHERE><TABHERE>cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy <NORMAL>Proxy";
+<TABHERE><TABHERE>}
+<TABHERE><TABHERE><LOWER>_proxy = <NORMAL>Prx::uncheckedCast( communicator()->stringToProxy( proxy ) );
 <TABHERE>}
 <TABHERE>catch(const Ice::Exception& ex)
 <TABHERE>{
@@ -32,7 +36,11 @@ REQUIRE_STR = """
 
 SUBSCRIBESTO_STR = """
 <TABHERE><TABHERE>// Server adapter creation and publication
-<TABHERE><TABHERE>Ice::ObjectAdapterPtr <NORMAL>_adapter = communicator()->createObjectAdapter("<NORMAL>Topic");
+<TABHERE><TABHERE>if (not GenericMonitor::configGetString(communicator(), prefix+"<NORMAL>Topic", tmp, ""))
+<TABHERE><TABHERE>{
+<TABHERE><TABHERE><TABHERE>cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy <NORMAL>Proxy";
+<TABHERE><TABHERE>}
+<TABHERE><TABHERE>Ice::ObjectAdapterPtr <NORMAL>_adapter = communicator()->createObjectAdapterWithEndpoints("<LOWER>", tmp);
 <TABHERE><TABHERE><NORMAL>Ptr <LOWER>I_ = new <NORMAL>I(worker);
 <TABHERE><TABHERE>Ice::ObjectPrx <LOWER>_proxy = <NORMAL>_adapter->addWithUUID(<LOWER>I_)->ice_oneway();
 <TABHERE><TABHERE>IceStorm::TopicPrx <LOWER>_topic;
@@ -82,7 +90,12 @@ PUBLISHES_STR = """
 
 IMPLEMENTS_STR = """
 <TABHERE><TABHERE>// Server adapter creation and publication
-<TABHERE><TABHERE>Ice::ObjectAdapterPtr adapter<NORMAL> = communicator()->createObjectAdapter("<NORMAL>Comp");
+
+<TABHERE><TABHERE>if (not GenericMonitor::configGetString(communicator(), prefix+"<NORMAL>.Endpoints", tmp, ""))
+<TABHERE><TABHERE>{
+<TABHERE><TABHERE><TABHERE>cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy <NORMAL>";
+<TABHERE><TABHERE>}
+<TABHERE><TABHERE>Ice::ObjectAdapterPtr <NORMAL>_adapter = communicator()->createObjectAdapterWithEndpoints("<LOWER>", tmp);
 <TABHERE><TABHERE><NORMAL>I *<LOWER> = new <NORMAL>I(worker);
 <TABHERE><TABHERE>adapter<NORMAL>->add(<LOWER>, communicator()->stringToIdentity("<LOWER>"));
 """
@@ -243,6 +256,7 @@ Z()
 {
 private:
 	void initialize();
+	std::string prefix;
 	MapPrx mprx;
 
 public:
@@ -292,7 +306,7 @@ for rq in component['requires'] + component['publishes']:
 ]]]
 [[[end]]]
 
-	string proxy;
+	string proxy, tmp;
 	initialize();
 
 [[[cog
@@ -388,17 +402,26 @@ Z()
 [[[end]]]
 app;
 
-	// Search in argument list for --Ice.Config= argument
+	// Search in argument list for --Ice.Config= argument and prefix (if exist)
 	for (int i = 1; i < argc; ++i)
 	{
 		arg = argv[i];
-		if ( arg.find ( "--Ice.Config=", 0 ) != string::npos )
+		if (arg.find ( "--Ice.Config=", 0 ) != string::npos )
 			hasConfig = true;
+		if (arg.find ( "--prefix=", 0 ) != string::npos )
+		{
+			hasConfig = true;
+		}
 	}
 
-	if ( hasConfig )
-		return app.main( argc, argv );
+// 	app.prefix = 
+	if (hasConfig)
+	{
+		return app.main(argc, argv);
+	}
 	else
-		return app.main(argc, argv, "../etc/config"); // "config" is the default config file name
+	{
+		return app.main(argc, argv, "etc/config"); // "config" is the default config file name
+	}
 }
 

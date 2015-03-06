@@ -112,7 +112,12 @@ void GenericMonitor::readPConfParams(RoboCompCommonBehavior::ParameterList &para
 //default value for the parameter
 //return false if the parameter does not exist. Throw exception in other case.
 //if you need one parameter mandatory you can pass empty string in default_value
-bool GenericMonitor::configGetString( const std::string name, std::string&value,  const std::string default_value, QStringList *list)
+bool GenericMonitor::configGetString(                                   const std::string name, std::string &value, const std::string default_value, QStringList *list)
+{
+	return configGetString(communicator, name, value, default_value, list);
+}
+
+bool GenericMonitor::configGetString(Ice::CommunicatorPtr communicator, const std::string name, std::string &value, const std::string default_value, QStringList *list)
 {
 	value = communicator->getProperties()->getProperty( name );
 
