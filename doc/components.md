@@ -31,7 +31,6 @@ RoboComp's components model is quite simple and we always try to simplify it eve
         gui Qt(QWidget);
     };
 
-
-
+Using these two DSLs, RoboComp can generate the source code of the component using a tool designed to this end. The complete, functioning code of a component is created ready to be compiled and executed. We use a smart inheritance mechanism to separate the generic stuff from the user specific stuff and, based on it, the next time you generate a component, your code will remain untouched but access to new defined proxies will be there.
 
 
