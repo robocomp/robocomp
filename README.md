@@ -262,7 +262,7 @@ You can go now to GitHub and chek that your sources are there!
     
   
 
-Yo can find more tutorials on RoboComp in [Read more words!](docs/more_words.md)
+Yo can find more tutorials on RoboComp in [tutorials!](docs/tutorials.md)
 
 Please, report any bugs to pbustos@unex.es
     
