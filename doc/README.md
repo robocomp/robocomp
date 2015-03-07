@@ -7,21 +7,21 @@
 
 [Maintaining your own repository of components!](using_github.md)
 
-[InnerModel, RoboComp's internal representation of reality!]()
+[InnerModel, RoboComp's internal representation of reality!]
 
-[Using E. Olson's AprilTags in RoboComp!]()
+[Using E. Olson's AprilTags in RoboComp!]
 
-[Creation of a new Python/C++ component using RoboComp's new component generator!]()
+[Creation of a new Python/C++ component using RoboComp's new component generator!]
 
-[RoboComp's robots: Ursus, Loki and the others!]()
+[RoboComp's robots: Ursus, Loki and the others!]
 
-[robocomp-robolab components!]()
+[robocomp-robolab components!]
 
-[The BodyInverseKinematics (BIK) component!]()
+[The BodyInverseKinematics (BIK) component!]
 
-[The Navigation (TRAJ) component!]()
+[The Navigation (TRAJ) component!]
 
-[RoboCog, a Cognitive Architecture built with RoboComp!]()
+[RoboCog, a Cognitive Architecture built with RoboComp!]
 
 
 
