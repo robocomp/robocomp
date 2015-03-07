@@ -1,4 +1,4 @@
-###Creating a new component with Eclipse based RoboComp's DSLEditor
+#Creating a new component with Eclipse based RoboComp's DSLEditor
     
 We will create now a new component that will connect to the RCIS simulator and run a simple controller for the robot, using the laser data. First we need to install the DSLEditor software that is runtime Eclipse application. 
 
