@@ -103,14 +103,14 @@ If you have a JoyStick around, connect it to the USB port and:
     cmake .
     make
     cd bin
-    sudo addgroup tu-usuario dialout   //To solve some permissions issues un Ubuntu
+    sudo addgroup your-user dialout   //To solve some permissions issues un Ubuntu
     ./startJoyStick.sh 
     
-Your joystick should be now running and moving it will make the robot to advance and turn at your will. If the component does not start or the robot does not move:
+Your joystick should be now running and moving it will make the robot to advance and turn at your will. If the component does not start or the robot does not move stop joystickcomp with:
 
-    stop joystickcomp with forceStopJoyStickComp.sh
+    ./forceStopJoyStickComp.sh
     
-and check where the JoyStick has been installed in /dev/input/jsX. If it is not /dev/input/js0, edit ~/robocomp/components/robocomp-robolab/components/joystickComp/etc/config change it accordingly and restart.
+and check where the JoyStick has been installed in /dev/input/jsX. If it is not /dev/input/js0, edit ~/robocomp/components/robocomp-robolab/components/joystickComp/etc/config change it accordingly and restart. Note that you might want to save the *config* file to the component's home directory so it does not interfere with future github updates.
 
 ###Creating a new component with RoboComp's DSLEditor
     
