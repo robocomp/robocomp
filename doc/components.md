@@ -1,13 +1,37 @@
-#Software components in Robotics, a brief introduction
+#Software components in RoboComp, a brief introduction
 
-Two major problems encountered when creating large, complex software are scalability and reusability. These problems become especially acute when it comes to writing the software that controls today robots. Robotics is the mixed bag of technology, where almost everything finds its way through. Also, Robotics is the place where our dreams of intelligent machines meet, in an endless attempt to build a truly useful tool for our daily lives. Because of this, we organize the software for our robots in big architectures that try to reproduce whatever we understand by intelligent behavior. The most audacious architectures are called *cognitive architectures* and try to integrate all levels of behavior and reasoning needed to achieve intelligence. Some of them have been with us for more than 30 years, [SOAR](http://soar.eecs.umich.edu/)
+Two major problems encountered when creating large, complex software are scalability and reusability. These problems become especially acute when it comes to writing the software that controls today robots. Robotics is the mixed bag of technology, where almost everything finds its way through. Also, Robotics is the place where our dreams of intelligent machines meet, in an endless attempt to build a truly useful tool for our daily lives. Because of this, we organize the software for our robots in big architectures that try to reproduce whatever we understand by intelligent behavior. The most audacious architectures are called *cognitive architectures* and try to integrate all levels of behavior and reasoning needed to achieve intelligence. Some of them have been with us for more than 30 years, [SOAR.](http://soar.eecs.umich.edu/)
 
-The problem with building these little monsters is that you need a very powerful underlying infrastructure that lets you build and modify software created by many people and that has to execute on real, moving machines. Also, everybody expect robots to be smarter than they really are and that is a lot of preassure. Components provide a new, developing technology that can be very helpful here. Components are *programs that communicate* and as such, they are built with everything at hand, libraries, objects, threads, sockets, lambda functions and any other thing you can come up with to code a program. Also, components need a way to communicate among them and here is where communication middlewares get in. If you want to communicate programs written in different languages, running across the internet, executing on different hardware architectures -even browsers- then you cannot get along with a socket. You really need a middleware. Putting together these to elements, programs and a communication middleware, you almost come up with a component. One more thing is needed, a model for your components. You need to define what is a generic component and consequently how its internal structure is going to be, its directory and building ecosystem, how it has to be documented, its default behavior, how it will be deployed and its modes of communicating. There are several proposals that do exactly this, being the most famous [CORBA](http://www.corba.org)
+The problem with building these little monsters is that you need a very powerful underlying infrastructure that lets you build and modify software created by many people and that has to execute on real, moving machines. Also, everybody expect robots to be smarter than they really are and that is a lot of preassure. Components provide a new, developing technology that can be very helpful here. Components are *programs that communicate* and as such, they are built with everything at hand, libraries, objects, threads, sockets, lambda functions and any other thing you can come up with to code a program. Also, components need a way to communicate among them and here is where communication middlewares get in. If you want to communicate programs written in different languages, running across the internet, executing on different hardware architectures -even browsers- then you cannot get along with a socket. You really need a middleware. Putting together these to elements, programs and a communication middleware, you almost come up with a component. One more thing is needed, a model for your components. You need to define what is a generic component and consequently how its internal structure is going to be, its directory and building ecosystem, how it has to be documented, its default behavior, how it will be deployed and its modes of communicating. There are several proposals that do exactly this, being the most famous [CORBA.](http://www.corba.org)
 
-The component-oriented programming emerged as a solution to such problems. It is an approach that does not necessarily have to do with concurrency and distributed computing, but with how software is organized. The object-oriented programming represented a major advance on structured programming, however, when the number of classes and their interdependencies increases, too difficult to understand the overall system. It is therefore beneficial to have a greater degree of encapsulation, which combines several related classes under a single interface, and for understanding the system with less detailed. The component-oriented programming, which was proposed to solve such problems, many see it as the next step after object-oriented programming.
+In RoboComp (2005-) we have created our own component model, inspired by the [ORCA](http://orca-robotics.sourceforge.net/) model and making it evolve to fit our needs along these years. As a middleware, RoboComp primarily uses [Ice](www.zeroc.com) and there is ongoing experimental work to make RoboComp middleware agnostic, so its components can be re-generated to use other middlewares such as [DDS](http://portals.omg.org/dds/).
 
-From a design point of view can be seen as a great class to offer public methods. The only difference from this point of view is that the complexity introduced by the classes of dependent component (or class) that are not the domain of the problem disappears because the interface hides the component. A component can be arbitrarily complex, but a step back, all you see is the interface offered. This is what defines it as a component.
+RoboComp's components model is quite simple and we always try to simplify it even more. It can be best explained through two Domain Specific Languages (DSLs) that have been created to define a component at a very high level of abstraction. **IDSL** stands for Interface DSL and currently is a subset of Ice's Slice interface language. With IDSL you write the data structures and functions that a component can implement, require, subscribe to or publish. A component can implement several interfaces, offering different views of its internal functioning. Also, the same interface can be implemented by many components. This is an example of a simple interface written in IDSL:
 
-Therefore, if each component performs a series of tasks or answer a series of orders, who need to handle that communication. 
+    module RoboCompSpeech
+    {
+      interface Speech
+      {
+         bool say(string text,bool owerwrite);
+         bool isBusy();
+      };
+    };
 
-To use component-oriented programming has split the software design into pieces that provide an interface. In return we get more reusability, using the same components in different contexts, thus significantly reducing time, cost and effort of developing new applications, while increasing flexibility, reusability and reliability of them. It will be easier to isolate and find bugs, getting eliminate the need to consider hundreds of classes to understand the developed software.
+**CDSL** stands for Component DSL and allows the user to specifiy its name, accesible interfaces, communication connections, target language and other available modules or libraries that you want to include in the building scripts.
+
+    import "/robocomp/interfaces/IDSLs/DifferentialRobot.idsl";
+    import "/robocomp/interfaces/IDSLs/Laser.idsl";
+    Component prueba
+    {
+        Communications
+        {
+          requires DifferentialRobot, Laser;
+        };
+        language cpp;
+        gui Qt(QWidget);
+    };
+
+
+
+
+
