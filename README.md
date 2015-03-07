@@ -112,7 +112,7 @@ Your joystick should be now running and moving it will make the robot to advance
     
 and check where the JoyStick has been installed in /dev/input/jsX. If it is not /dev/input/js0, edit ~/robocomp/components/robocomp-robolab/components/joystickComp/etc/config change it accordingly and restart. Note that you might want to save the *config* file to the component's home directory so it does not interfere with future github updates.
 
-Yo can find more tutorials on RoboComp in [tutorials!](doc/tutorials.md)
+Yo can find more tutorials on RoboComp in [tutorials!](doc/README.md)
 
 Please, report any bugs to pbustos@unex.es
     
