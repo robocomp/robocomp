@@ -15,7 +15,7 @@ Make sure you have installed the following packages from the Ubuntu repository:
     
 You might also want these nice developer tools:
 
-    sudo apt-get kdevelop vim aptitude nano 
+    sudo apt-get install kdevelop vim aptitude nano 
     
 Start Yakuake by typing Alt-F2, and then *yakuake* in the pop up window
 Unroll the Yakuake terminal by pressing F12
@@ -261,9 +261,8 @@ now we are ready:
 You can go now to GitHub and chek that your sources are there!
     
   
-    
 
-Yo can find more tutorials on RoboComp in http://robocomp.net
+Yo can find more tutorials on RoboComp in [Read more words!](docs/more_words.md)
 
 Please, report any bugs to pbustos@unex.es
     
