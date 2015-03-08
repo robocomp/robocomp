@@ -60,7 +60,6 @@
 					<laser id="laser" port="10003" measures="100" min="100" max="30000" angle="3" ifconfig="10000" />
 						<plane id="sensorL" nz="1" pz="-200" size="100" repeat="1" texture="#ff0000" /> 
 				</translation>	
-
 				<transform id="camera" ty="210" tz="180">
 						<imu id="imu" port="10010"/>
 						<rgbd id="rgbd" focal="480" width="640" height="480" port="10096" noise="0.00" ifconfig="40000,50000" />

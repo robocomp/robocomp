@@ -183,10 +183,6 @@ struct SpecificWorker::Data
 	}
 
 */
-
-
-
-
 	///--- useful functions.
 	InnerModelNode *getNode(const QString &id, const QString &msg)
 	{
@@ -734,8 +730,9 @@ SpecificWorker::SpecificWorker(MapPrx& _mprx, Ice::CommunicatorPtr _communicator
 	d->imv = new InnerModelViewer(d->innerModel, "root", d->viewer->getRootGroup());
 	d->manipulator = new osgGA::TrackballManipulator;
 	d->viewer->setCameraManipulator(d->manipulator,true);
-
-
+	
+	//Add mouse pick handler
+	d->viewer->addEventHandler(new PickHandler(rcis_mousepicker_proxy));
 
 	settings = new QSettings("RoboComp", "RCIS");
 	QString path(_innerModelXML);
@@ -781,7 +778,10 @@ SpecificWorker::SpecificWorker(MapPrx& _mprx, Ice::CommunicatorPtr _communicator
 
 	objectTriggered();
 	visualTriggered();
-
+	
+	d->viewer->realize();
+	
+	//d->viewer->setThreadingModel( osgViewer::ViewerBase::ThreadPerCamera);
 	// Initialize the timer
 	setPeriod(ms);
 	qDebug()<<"period"<<Period;
@@ -928,9 +928,6 @@ void SpecificWorker::compute()
 		d->jointServersToShutDown[i]->shutdown();
 	}
 	d->jointServersToShutDown.clear();
-
-
-
 
 	// Resize world widget if necessary, and render the world
 	{

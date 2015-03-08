@@ -65,6 +65,7 @@
 // RoboComp includes
 #include <Ice/Ice.h>
 #include <Ice/Application.h>
+#include <IceStorm/IceStorm.h>
 
 // Simulator includes
 #include <qlog/qlog.h>
@@ -75,7 +76,7 @@
 #include "genericworker.h"
 #include "servers.h"
 #include "specificworker.h"
-
+#include <RCISMousePicker.h> 
 #include "ui_guiDlg.h"
 
 
@@ -127,6 +128,40 @@ int robotSimulatorComp::run( int argc, char* argv[] )
 		qFatal("Port number must be in the range 0-1023 (requires root privileges) or 1024-65535 (no privileges needed). Default port number: 11175");
 	if (ms > 1000 or ms < 5)
 		qFatal("Simulation period must be in the range 5-1000. Default period length 120ms");
+
+	//Talk to STORM and setup mouse publishing stuff
+	IceStorm::TopicManagerPrx topicManager;
+	IceStorm::TopicPrx rcis_mousepicker_topic;
+	Ice::ObjectPrx rcis_mousepicker_pub;
+	RoboCompRCISMousePicker::RCISMousePickerPrx rcis_mousepicker;
+	RoboCompRCISMousePicker::RCISMousePickerPrx rcis_mousepicker_proxy;
+	try
+	{ 	
+		topicManager = IceStorm::TopicManagerPrx::checkedCast(communicator()->stringToProxy("IceStorm/TopicManager:tcp -p 9999"));
+		int contador = 0;
+		while (!rcis_mousepicker_topic and ++contador<50)
+		{
+			try
+			{ rcis_mousepicker_topic = topicManager->retrieve("RCISMousePicker"); }
+			catch (const IceStorm::NoSuchTopic&)
+			{
+				try	{ rcis_mousepicker_topic = topicManager->create("RCISMousePicker");	}
+				catch (const IceStorm::TopicExists&){ qDebug() << "Another client already created the topic RCISMousePicker"; }
+			}
+			rcis_mousepicker_pub = rcis_mousepicker_topic->getPublisher()->ice_oneway();
+			rcis_mousepicker = RCISMousePickerPrx::uncheckedCast(rcis_mousepicker_pub);
+			mprx["RCISMousePickerPub"] = (::IceProxy::Ice::Object*)(&rcis_mousepicker);
+ 			rcis_mousepicker_proxy = (*(RCISMousePickerPrx*)mprx["RCISMousePickerPub"]);
+ 			//qDebug() << "koool0";
+		}
+		if(contador>=50)
+			qFatal("Aborting. Could not connect to STORM although it is alive");
+	}
+	catch( const Ice::Exception &ex)
+	{	
+		mprx["RCISMousePickerPub"] = NULL;
+		qDebug() <<__FUNCTION__ << "Warning! STORM not found. RCISMousePicker topic will NOT be published";
+	}
 
 	// Create the worker
 	SpecificWorker* worker = new SpecificWorker(mprx, communicator(), argv[1], ms);
