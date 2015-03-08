@@ -1,0 +1,15 @@
+module RoboCompRCISMousePicker
+{
+	struct Pick	//Name and object world coordinates
+	{
+		string objectName;
+		float x;
+		float y;
+		float z;
+	};
+	
+	interface RCISMousePicker
+	{
+		void setPick( Pick myPick);	
+	};
+};
