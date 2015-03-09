@@ -46,7 +46,7 @@ class CDSLParsing:
 		implementsList = Group(CaselessLiteral('implements')    + identifier + ZeroOrMore(Suppress(Word(',')) + identifier) + semicolon)
 		requiresList   = Group(CaselessLiteral('requires')      + identifier + ZeroOrMore(Suppress(Word(',')) + identifier) + semicolon)
 		subscribesList = Group(CaselessLiteral('subscribesTo')  + identifier + ZeroOrMore(Suppress(Word(',')) + identifier) + semicolon)
-		publishesList  = Group(CaselessLiteral('publishesList') + identifier + ZeroOrMore(Suppress(Word(',')) + identifier) + semicolon)
+		publishesList  = Group(CaselessLiteral('publishes')     + identifier + ZeroOrMore(Suppress(Word(',')) + identifier) + semicolon)
 		communicationList = implementsList | requiresList | subscribesList | publishesList
 		communications = Group( Suppress(CaselessLiteral("communications")) + op + ZeroOrMore(communicationList) + cl + semicolon)
 		
