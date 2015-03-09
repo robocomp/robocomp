@@ -38,24 +38,27 @@ class CDSLParsing:
 		opp       = Suppress(Word("("))
 		clp       = Suppress(Word(")"))
 		identifier = Word( alphas+"_", alphanums+"_" )
-		
+
 		# Imports
-		idslImport  = Suppress(Word("import")) + quote +  CharsNotIn("\";").setResultsName('path') + quote + semicolon
+		idslImport  = Suppress(CaselessLiteral("import")) + quote +  CharsNotIn("\";").setResultsName('path') + quote + semicolon
 		idslImports = OneOrMore(idslImport)
 		# Communications
-		implementsList = Group(Word('implements')    + identifier + ZeroOrMore(Suppress(Word(',')) + identifier) + semicolon)
-		requiresList   = Group(Word('requires')      + identifier + ZeroOrMore(Suppress(Word(',')) + identifier) + semicolon)
-		subscribesList = Group(Word('subscribesTo')  + identifier + ZeroOrMore(Suppress(Word(',')) + identifier) + semicolon)
-		publishesList  = Group(Word('publishesList') + identifier + ZeroOrMore(Suppress(Word(',')) + identifier) + semicolon)
+		implementsList = Group(CaselessLiteral('implements')    + identifier + ZeroOrMore(Suppress(Word(',')) + identifier) + semicolon)
+		requiresList   = Group(CaselessLiteral('requires')      + identifier + ZeroOrMore(Suppress(Word(',')) + identifier) + semicolon)
+		subscribesList = Group(CaselessLiteral('subscribesTo')  + identifier + ZeroOrMore(Suppress(Word(',')) + identifier) + semicolon)
+		publishesList  = Group(CaselessLiteral('publishesList') + identifier + ZeroOrMore(Suppress(Word(',')) + identifier) + semicolon)
 		communicationList = implementsList | requiresList | subscribesList | publishesList
-		communications = Group( Suppress(Word("Communications")) + op + ZeroOrMore(communicationList) + cl + semicolon)
-		# Language
-		language = Suppress(Word("language")) + (CaselessLiteral("cpp")|CaselessLiteral("python")) + semicolon
-		# GUI
-		gui = Group(Optional(Suppress(Word("gui")) + Word("Qt") + opp + identifier + clp + semicolon ))
+		communications = Group( Suppress(CaselessLiteral("communications")) + op + ZeroOrMore(communicationList) + cl + semicolon)
 		
-		componentContents = communications.setResultsName('communications') & language.setResultsName('language') & gui.setResultsName('gui')
-		component = Suppress(Word("Component")) + identifier.setResultsName("name") + op + componentContents.setResultsName("properties") + cl + semicolon		
+		# Language
+		language = Suppress(CaselessLiteral("language")) + (CaselessLiteral("cpp")|CaselessLiteral("python")) + semicolon
+		# GUI
+		gui = Group(Optional(Suppress(CaselessLiteral("gui")) + CaselessLiteral("Qt") + opp + identifier + clp + semicolon ))
+		# additional options
+		options = Group(Optional(Suppress(CaselessLiteral("options")) + identifier + ZeroOrMore(Suppress(Word(',')) + identifier) + semicolon))
+		
+		componentContents = communications.setResultsName('communications') & language.setResultsName('language') & gui.setResultsName('gui') & options.setResultsName('options')
+		component = Suppress(CaselessLiteral("component")) + identifier.setResultsName("name") + op + componentContents.setResultsName("properties") + cl + semicolon		
 
 		CDSL = idslImports.setResultsName("imports") + component.setResultsName("component")
 		CDSL.ignore( cppStyleComment )
@@ -87,12 +90,26 @@ class CDSLParsing:
 	def component(tree, start=''):
 		component = {}
 		
+		# Set options
+		component['options'] = []
+		try:
+			for op in tree['properties']['options']:
+				component['options'].append(op.lower())
+		except:
+			traceback.print_exc()
+		
 		# Component name
 		component['name'] = tree['component']['name']
 		# Imports
 		component['imports'] = []
 		component['recursiveImports'] = []
-		for imp in tree['imports']:
+		imprts = tree['imports']
+		if 'agmagent' in component['options']:
+			imprts = ['/robocomp/interfaces/IDSLs/AGMAgent.idsl', '/robocomp/interfaces/IDSLs/AGMExecutive.idsl', '/robocomp/interfaces/IDSLs/AGMCommonBehavior.idsl', '/robocomp/interfaces/IDSLs/AGMWorldModel.idsl']
+			for i in tree['imports']:
+				if not i in imprts:
+					imprts.append(i)
+		for imp in imprts:
 			component['imports'].append(imp)
 			
 			#print 'moduleee', imp
@@ -125,6 +142,7 @@ class CDSLParsing:
 				sys.exit(1)
 		except:
 			pass
+		
 
 		# Communications
 		component['implements']   = []
@@ -140,6 +158,17 @@ class CDSLParsing:
 				for interface in comm[1:]: component['publishes'].append(interface)
 			if comm[0] == 'subscribesTo':
 				for interface in comm[1:]: component['subscribesTo'].append(interface)
+		# Handle options for communications
+		if 'agmagent' in component['options']:
+			if not 'AGMCommonBehavior' in component['implements']:
+				component['implements']   = ['AGMCommonBehavior'] + component['implements']
+			if not 'AGMAgentTopic' in component['publishes']:
+				component['publishes']    = ['AGMAgentTopic']     + component['publishes']
+			if not 'AGMExecutiveTopic' in component['subscribesTo']:
+				component['subscribesTo'] = ['AGMExecutiveTopic'] + component['subscribesTo']
+
+
+
 		return component
 
 if __name__ == '__main__':

@@ -53,7 +53,19 @@ Z()
 /**
 * \brief Default constructor
 */
-GenericWorker::GenericWorker(MapPrx& mprx, QObject *parent) : QObject(parent)
+GenericWorker::GenericWorker(MapPrx& mprx) :
+[[[cog
+if component['gui'] != 'none':
+	cog.outl("""#ifdef USE_QTGUI
+Ui_guiDlg()
+#else
+QObject()
+#endif
+""")
+else:
+	cog.outl("QObject()")
+]]]
+[[[end]]]
 {
 [[[cog
 for rq in component['requires']:
@@ -68,6 +80,16 @@ for pb in component['publishes']:
 [[[end]]]
 
 	mutex = new QMutex();
+
+[[[cog
+if component['gui'] != 'none':
+	cog.outl("""#ifdef USE_QTGUI
+		setupUi(this);
+		show();
+	#endif""")
+]]]
+[[[end]]]
+		
 	Period = BASIC_PERIOD;
 	connect(&timer, SIGNAL(timeout()), this, SLOT(compute()));
 }

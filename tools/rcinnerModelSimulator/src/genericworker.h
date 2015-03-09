@@ -25,6 +25,7 @@
 #include <qlog/qlog.h>
 #include <ui_guiDlg.h>
 #include <DifferentialRobot.h>
+#include <RCISMousePicker.h>
 #include <Camera.h>
 #include <Laser.h>
 #include <RGBD.h>
@@ -43,6 +44,7 @@ using namespace std;
 using namespace RoboCompDifferentialRobot;
 using namespace RoboCompCamera;
 using namespace RoboCompLaser;
+using namespace RoboCompRCISMousePicker;
 
 class GenericWorker : public QMainWindow, public Ui_guiDlg
 {
@@ -52,7 +54,7 @@ public:
 	virtual ~GenericWorker();
 	virtual void killYourSelf();
 	virtual void setPeriod ( int p );
-	
+	RCISMousePickerPrx rcis_mousepicker_proxy;
 	QMutex *mutex;                //Shared mutex with servant
 
 protected:

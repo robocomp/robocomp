@@ -43,7 +43,7 @@ SET ( HEADERS
 # RoboComp
 INCLUDE( $ENV{ROBOCOMP}/cmake/robocomp.cmake )
 ROBOCOMP_INITIALIZE( $ENV{ROBOCOMP}/ )
-ROBOCOMP_WRAP_ICE( Camera CommonBehavior CommonHead DifferentialRobot OmniRobot IMU InnerModelManager JointMotor Laser RGBD TouchSensor )
+ROBOCOMP_WRAP_ICE( Camera CommonBehavior CommonHead DifferentialRobot OmniRobot IMU InnerModelManager JointMotor Laser RGBD TouchSensor RCISMousePicker)
 ROBOCOMP_LIBRARY( qmat )
 
 
@@ -55,7 +55,7 @@ INCLUDE( $ENV{ROBOCOMP}/cmake/modules/ipp.cmake )
 INCLUDE ($ENV{ROBOCOMP}/cmake/modules/opensg.cmake )
 
 # Qt4
-ADD_DEFINITIONS( -Wall -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB )
+ADD_DEFINITIONS( -Wall -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB --std=c++11)
 FIND_PACKAGE( Qt4 REQUIRED )
 SET( QT_USE_QTGUI TRUE )
 SET( QT_USE_QTOPENGL TRUE )

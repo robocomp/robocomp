@@ -25,7 +25,12 @@ component = CDSLParsing.fromFile(theCDSL)
 #define CONFIG_H
 
 // Comment out this line if your application has a QtGui
-//#define USE_QTGUI
+[[[cog
+if component['gui'] != 'none':
+	cog.outl("#define USE_QTGUI\n")
+]]]
+[[[end]]]
+
 #define PROGRAM_NAME    "
 [[[cog
 A()

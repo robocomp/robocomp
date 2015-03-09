@@ -283,17 +283,6 @@ bool InnerModel::save(QString path)
 }
 
 
-//Deprecated//
-InnerModel InnerModel::cloneFake(const QVec & basePose) const
-{
-	qDebug() << "DEPRECATED. USE COPY CONSTRUCTOR";
-	InnerModel rob( *this );
-	rob.updateTransformValues("base", basePose(0), 0, basePose(1), 0, basePose(2), 0 );
-	return rob;
-}
-
-
-
 /// Auto update method
 void InnerModel::update()
 {
@@ -955,69 +944,6 @@ InnerModelOmniRobot *InnerModel::getOmniRobot(const QString &id)
 
 
 
-/// Stereo geometry
-
-/**
- * \brief Computes essential and fundamental matrices for the pair of cameras stated in the parameters
- * @param firstCam id of the firt camera
- * @param secondCam id of the second camera
- */
-// TODO COMPROBAR
-void InnerModel::updateStereoGeometry(const QString &firstCam, const QString &secondCam)
-{
-	this->essential.set(this->getRotationMatrixTo(secondCam, firstCam), this->getTranslationVectorTo(secondCam, firstCam) );
-	this->fundamental.set( essential, dynamic_cast<InnerModelCamera *>(hash[firstCam])->camera, dynamic_cast<InnerModelCamera *>(hash[secondCam])->camera );
-}
-
-
-
-/**
- * \brief Computes de 3D triangulation of two correspondent image points in robot reference system
- * @param left 2D image reference system point
- * @param right 2D image reference system point
- * @return 3D point in robot(base) reference system
- */
-// TODO COMPROBAR
-QVec InnerModel::compute3DPointInCentral(const QString & firstCam, const QVec & first, const QString & secondCam, const QVec & second)
-{
-	T detA, a/*, b*/, c;
-
-	QVec pI = this->getRotationMatrixTo("central", "firstCam") * static_cast<InnerModelCamera *>(hash[firstCam])->camera.getRayHomogeneous( first );
-	QVec pD = this->getRotationMatrixTo("central", "secondCam") * static_cast<InnerModelCamera *>(hash[secondCam])->camera.getRayHomogeneous( second );
-	// 	QVec pI = (centralToLeftMotor.getR().transpose() * leftMotorToLeftCamera.getR().transpose()) * leftCamera.getRayHomogeneous( left );
-	// 	QVec pD = (centralToRightMotor.getR().transpose() * rightMotorToRightCamera.getR().transpose()) * rightCamera.getRayHomogeneous( right );
-
-	QVec n = QVec::vec3( pI(1)-pD(1) , -pI(0)+pD(0) , pI(0)*pD(1)-pD(0)*pI(1) );
-
-	QMat A(3,3);
-	A(0,0)=pI(0);  A(0,1)=-pD(0);  A(0,2)=n(0);
-	A(1,0)=pI(1);  A(1,1)=-pD(1);  A(1,2)=n(1);
-	A(2,0)=1;      A(2,1)=-1;      A(2,2)=n(2);
-
-	detA = A(0,0)*(A(1,1)*A(2,2)-A(1,2)*A(2,1))-A(0,1)*(A(1,0)*A(2,2)-A(1,2)*A(2,0))+A(0,2)*(A(1,0)*A(2,1)-A(1,1)*A(2,0));
-
-	float baseLine = this->getBaseLine(); //NOT IMPLEMENTED
-	a = baseLine*(-pD(1)*n(2)+n(1))/detA;
-	// 	b = baseLine*(pI(1)*n(2)-n(1))/detA;
-	c = baseLine*(-pI(1)+pD(1))/detA;
-
-	QVec res(3);
-	res(0) = (a*pI(0)-(baseLine/2.))+(c*n(0))/2.;
-	res(1) = a*pI(1) + c*n(1)/2.;
-	res(2) = a*pI(2) + c*n(2)/2.;
-
-	return res;
-}
-
-
-
-//
-// TODO COMPROBAR
-QVec InnerModel::compute3DPointInRobot(const QString & firstCamera, const QVec & left, const QString & secondCamera, const QVec & right)
-{
-	return transform("central", this->compute3DPointInCentral( firstCamera, left, secondCamera, right), "base");
-}
-
 
 
 QVec InnerModel::compute3DPointFromImageCoords(const QString &firstCamera , const QVec & left, const QString & secondCamera , const QVec & right, const QString & refSystem)
@@ -1550,88 +1476,6 @@ int InnerModel::getCameraSize(const QString & cameraId) const
 
 
 
-/**
- * \brief Returns current copy of fundamenta matrix as a float h[3][3] array
- * @param h[][] [3][3] preallocates array of floats to contain de fundamental matrix
- */
-void InnerModel::getFundamental(float h[3][3]) const
-{
-	h[0][0] = fundamental(0,0);
-	h[0][1] = fundamental(0,1);
-	h[0][2] = fundamental(0,2);
-	h[1][0] = fundamental(1,0);
-	h[1][1] = fundamental(1,1);
-	h[1][2] = fundamental(1,2);
-	h[2][0] = fundamental(2,0);
-	h[2][1] = fundamental(2,1);
-	h[2][2] = fundamental(2,2);
-}
-
-
-
-QMat InnerModel::getFundamental() const
-{
-	return fundamental;
-}
-
-
-
-//
-QVec InnerModel::robotToWorld(const QVec & vec)
-{
-	return transform("world", vec, "base");
-}
-
-
-
-//
-QVec InnerModel::robotInWorld()
-{
-	return transform("world", QVec::vec3(0,0,0), "base");
-}
-
-
-
-//
-float InnerModel::getBaseX()
-{
-	return transform("world", QVec::vec3(0,0,0), "base")(0);
-}
-
-
-
-//
-float InnerModel::getBaseZ()
-{
-	return transform("world", QVec::vec3(0,0,0), "base")(2);
-}
-
-
-
-//
-float InnerModel::getBaseAngle()
-{
-	return getRotationMatrixTo("world", "base").extractAnglesR()(1);
-}
-
-
-
-float InnerModel::getBaseRadius() //OJO Get from XML file
-{
-	return 200.f;
-}
-
-
-
-//
-QVec InnerModel::getBaseOdometry()
-{
-	QVec res = transform("world", QVec::vec3(0,0,0), "base");
-	res(1) = res(2);
-	res(2) = getRotationMatrixTo("world", "base").extractAnglesR()(1);
-	return res;
-}
-
 
 
 ////////////////////////////////////////////
@@ -1663,38 +1507,6 @@ QVec InnerModel::laserTo(const QString &dest, const QString & laserId , float r,
 	p(2) = r * cos(alpha);
 	return transform(dest, p , laserId);
 }
-
-
-
-/**
- * \brief Converts a 3D point en WRS to Laser reference system
- * @param world 3D coordinates of a world point as a 3-vector
- * @return 3D coordinates of given point seen from Laser reference system
- */
-//
-QVec InnerModel::worldToLaser(const QString & laserId, const QVec & p)
-{
-	return transform(laserId, p, "world");
-}
-
-
-
-/**
- * \brief Converts a 3D point in Laser (range,angle) coordinates to Robot reference system
- * @param r range measure
- * @param alfa angle measure
- * @return 3-vector of 3D point in Robot reference system
- */
-//
-QVec InnerModel::laserToBase(const QString & laserId, float r, float alpha)
-{
-	QVec p(3);
-	p(0) = r * sin ( alpha ) ;
-	p(2) = r * cos ( alpha ) ;
-	p(1) = 0 ; // Laser reference system
-	return transform("base", p , laserId);
-}
-
 
 
 // ------------------------------------------------------------------------------------------------

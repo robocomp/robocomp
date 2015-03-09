@@ -67,7 +67,6 @@ void JointMotorServer::shutdown()
 	adapter->destroy();
 }
 
-
 TouchSensorServer::TouchSensorServer(Ice::CommunicatorPtr communicator, SpecificWorker *worker_, uint32_t _port)
 {
 	port = _port;

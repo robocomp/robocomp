@@ -33,7 +33,7 @@ Z()
  )
 IF(NOT EXISTS $ENV{ROBOCOMP}/cmake)
 MESSAGE(FATAL_ERROR "
- ROBOCOMPROOT variable not set, check your bashrc profile!
+ ROBOCOMP variable not set, check your bashrc profile!
 ")
 ENDIF(NOT EXISTS $ENV{ROBOCOMP}/cmake)
 INCLUDE( $ENV{ROBOCOMP}/cmake/robocomp.cmake )
@@ -93,6 +93,12 @@ SET( QT_USE_QTXML TRUE )
 SET( QT_USE_QTSTATE TRUE )
 SET( QT_USE_QTSTATEMACHINE TRUE )
 INCLUDE( ${QT_USE_FILE} )
+
+[[[cog
+if component['gui'] != 'none':
+	cog.outl("QT4_WRAP_UI( UI_HEADERS mainUI.ui )")
+]]]
+[[[end]]]
 QT4_WRAP_CPP( MOC_SOURCES ${HEADERS} )
 
 # Specify construction and link process
