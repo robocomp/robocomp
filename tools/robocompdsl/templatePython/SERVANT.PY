@@ -96,6 +96,7 @@ cog.outl('\nclass ' + theInterface+ 'I('+theInterface+'):')
 						else: delim = ', '
 						paramStrB += delim + p['name']
 
+
 				cog.outl('<TABHERE>def ' + name + '(self, ' + paramStrA + 'c):')
 				cog.out('<TABHERE><TABHERE>return self.worker.'+name+'(')
 				cog.out(paramStrB)

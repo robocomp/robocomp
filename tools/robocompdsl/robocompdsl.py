@@ -180,7 +180,7 @@ elif component['language'].lower() == 'python':
 		ret = Cog().main(run)
 		if ret != 0:
 			print 'ERROR'
-			sys.exyt(-1)
+			sys.exit(-1)
 		replaceTagsInFile(ofile)
 		if f == 'src/main.py': os.chmod(ofile, os.stat(ofile).st_mode | 0111 )
 	#
