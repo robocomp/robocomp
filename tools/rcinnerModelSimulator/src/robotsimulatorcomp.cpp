@@ -160,8 +160,9 @@ int robotSimulatorComp::run( int argc, char* argv[] )
 	catch( const Ice::Exception &ex)
 	{	
 		mprx["RCISMousePickerPub"] = NULL;
-		qDebug() <<__FUNCTION__ << "Warning! STORM not found. RCISMousePicker topic will NOT be published";
+		qDebug() << "Warning: STORM not found. RCISMousePicker topic will NOT be published";
 	}
+	printf("aaa\n");
 
 	// Create the worker
 	SpecificWorker* worker = new SpecificWorker(mprx, communicator(), argv[1], ms);

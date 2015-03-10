@@ -15,23 +15,44 @@ def TAB():
 from parseCDSL import *
 component = CDSLParsing.fromFile(theCDSL)
 
+def getNameNumber(aalist):
+	somelist = [str(x) for x in aalist]
+	somelist.sort()
+	lastNum = 0
+	ret = []
+	for rqi, rq in enumerate(somelist):
+		dup = False
+		if rqi < len(somelist)-1:
+			if rq == somelist[rqi+1]:
+				dup = True
+		if rqi > 0:
+			if rq == somelist[rqi-1]:
+				dup = True
+		name = rq
+		num = ''
+		if dup:
+			lastNum += 1
+			num = str(lastNum)
+			name = rq
+		ret.append([name, num])
+	return ret
 
 REQUIRE_STR = """
 <TABHERE>try
 <TABHERE>{
-<TABHERE><TABHERE>if (not GenericMonitor::configGetString(communicator(), prefix+"<NORMAL>Proxy", proxy, ""))
+<TABHERE><TABHERE>if (not GenericMonitor::configGetString(communicator(), prefix+"<NORMAL>Proxy<PROXYNUMBER>", proxy, ""))
 <TABHERE><TABHERE>{
 <TABHERE><TABHERE><TABHERE>cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy <NORMAL>Proxy";
 <TABHERE><TABHERE>}
-<TABHERE><TABHERE><LOWER>_proxy = <NORMAL>Prx::uncheckedCast( communicator()->stringToProxy( proxy ) );
+<TABHERE><TABHERE><PROXYNAME> = <NORMAL>Prx::uncheckedCast( communicator()->stringToProxy( proxy ) );
 <TABHERE>}
 <TABHERE>catch(const Ice::Exception& ex)
 <TABHERE>{
 <TABHERE><TABHERE>cout << "[" << PROGRAM_NAME << "]: Exception: " << ex;
 <TABHERE><TABHERE>return EXIT_FAILURE;
 <TABHERE>}
-<TABHERE>rInfo("<NORMAL>Proxy initialized Ok!");
-<TABHERE>mprx["<NORMAL>Proxy"] = (::IceProxy::Ice::Object*)(&<LOWER>_proxy);//Remote server proxy creation example
+<TABHERE>rInfo("<NORMAL>Proxy<PROXYNUMBER> initialized Ok!");
+<TABHERE>mprx["<NORMAL>Proxy<PROXYNUMBER>"] = (::IceProxy::Ice::Object*)(&<PROXYNAME>);//Remote server proxy creation example
 """
 
 SUBSCRIBESTO_STR = """
@@ -42,7 +63,7 @@ SUBSCRIBESTO_STR = """
 <TABHERE><TABHERE>}
 <TABHERE><TABHERE>Ice::ObjectAdapterPtr <NORMAL>_adapter = communicator()->createObjectAdapterWithEndpoints("<LOWER>", tmp);
 <TABHERE><TABHERE><NORMAL>Ptr <LOWER>I_ = new <NORMAL>I(worker);
-<TABHERE><TABHERE>Ice::ObjectPrx <LOWER>_proxy = <NORMAL>_adapter->addWithUUID(<LOWER>I_)->ice_oneway();
+<TABHERE><TABHERE>Ice::ObjectPrx <PROXYNAME> = <NORMAL>_adapter->addWithUUID(<LOWER>I_)->ice_oneway();
 <TABHERE><TABHERE>IceStorm::TopicPrx <LOWER>_topic;
 <TABHERE><TABHERE>if(!<LOWER>_topic){
 <TABHERE><TABHERE>try {
@@ -59,7 +80,7 @@ SUBSCRIBESTO_STR = """
 <TABHERE><TABHERE><TABHERE>}
 <TABHERE><TABHERE>}
 <TABHERE><TABHERE>IceStorm::QoS qos;
-<TABHERE><TABHERE><LOWER>_topic->subscribeAndGetPublisher(qos, <LOWER>_proxy);
+<TABHERE><TABHERE><LOWER>_topic->subscribeAndGetPublisher(qos, <PROXYNAME>);
 <TABHERE><TABHERE>}
 <TABHERE><TABHERE><NORMAL>_adapter->activate();
 """
@@ -106,7 +127,7 @@ IMPLEMENTS_STR = """
 [[[cog
 A()
 import datetime
-cog.out(str(datetime.date.today().year))
+cog.out(' ' + str(datetime.date.today().year))
 Z()
 ]]]
 [[[end]]]
@@ -300,9 +321,8 @@ Z()
 	int status=EXIT_SUCCESS;
 
 [[[cog
-for rq in component['requires'] + component['publishes']:
-	req = rq.split('/')[-1].split('.')[0]
-	cog.outl('<TABHERE>'+req+'Prx '+req.lower() +'_proxy;')
+for name, num in getNameNumber(component['requires'] + component['publishes']):
+	cog.outl('<TABHERE>'+name+'Prx '+name.lower()+num +'_proxy;')
 ]]]
 [[[end]]]
 
@@ -310,8 +330,8 @@ for rq in component['requires'] + component['publishes']:
 	initialize();
 
 [[[cog
-for rq in component['requires']:
-	w = REQUIRE_STR.replace("<NORMAL>", rq).replace("<LOWER>", rq.lower())
+for name, num in getNameNumber(component['requires']):
+	w = REQUIRE_STR.replace("<NORMAL>", name).replace("<LOWER>", name.lower()).replace("<PROXYNAME>", name.lower()+num).replace("<PROXYNUMBER>", num)
 	cog.outl(w)
 ]]]
 [[[end]]]
@@ -396,7 +416,7 @@ int main(int argc, char* argv[])
 
 [[[cog
 A()
-cog.out(' ' + component['name'] + ' ')
+cog.out('<TABHERE>' + component['name'] + ' ')
 Z()
 ]]]
 [[[end]]]
