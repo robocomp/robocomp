@@ -66,10 +66,6 @@ Done! Now let's have some fun.
 ###Installation of the RCIS Robotics simulator
 
     cd ~/robocomp
-    cd files/freedesktop
-    chmod +x ./install.sh
-    sudo ./install.sh
-    cd ..
     git annex get .
     
 It will take a little while to download all necessary graphic textures used in the simulator...
