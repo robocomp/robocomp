@@ -1,0 +1,97 @@
+<innerModel>
+	<transform id="world">
+		<transform id="floor">
+		    <plane id="floor_plane" ny="1"  px="-0" py="0" pz="0" size="5000,5000,10" texture="/home/robocomp/robocomp/files/osgModels/textures/wood.jpg" /> 
+	
+			<plane id="ddR" nx="1"  px="2500" py="200" pz="0" size="5000,500,10" texture="#eeeeee" />
+			<plane id="ddL" nx="1" px="-2500" py="200" pz="0" size="5000,500,10" texture="#eeeeee" />
+			
+			<plane id="ddF" nz="1"  pz="2500" py="200" px="0" size="5000,500,10" texture="#555555" />
+			<plane id="ddB" nz="1" pz="-2500" py="200" px="0" size="5000,500,10" texture="#555555" />
+			
+			<plane id="ddR2" nx="1" px="2500" py="200" pz="0" size="5000,500,13" texture="#eeeeee" />
+			<plane id="ddL2" nx="1" px="-2500" py="200" pz="0" size="5000,500,13" texture="#eeeeee" />
+			
+			<plane id="ddF2" nz="1" pz="2500" py="200" px="0" size="5000,500,13" texture="#555555" />
+			<plane id="ddB2" nz="1" pz="-2500" py="200" px="0" size="5000,500,13" texture="#555555" />
+
+			<transform id="target00" tz="2480" ty="350" ry="3.14159265359">
+				<plane id="planeTag00" nz="-1" size="-216,279,10"   texture="/home/robocomp/robocomp/files/innermodel/tar36h11-0.png" />
+			</transform>
+			<transform id="target01" tx="2480" ty="350"  ry="-1.570796326794896" >
+				<plane id="planeTag01" nz="-1" size="-216,279,10"  texture="/home/robocomp/robocomp/files/innermodel/tar36h11-1.png" />
+			</transform>	
+			<transform id="target02" tz="-2480" ty="350">
+				<plane id="planeTag02" nz="-1" size="-216,279,10"   texture="/home/robocomp/robocomp/files/innermodel/tar36h11-2.png" />
+			</transform>
+			<transform id="target03" tx="-2480" ty="350" ry="1.570796326794896" >
+				<plane id="planeTag03" nz="-1" size="-216,279,10"  texture="/home/robocomp/robocomp/files/innermodel/tar36h11-3.png" />
+			</transform>
+		</transform>
+
+		<!--OBSTACLES-->
+		<transform id="valla1" tx="0" tz="1100" ty="0" >
+			<plane id="cajaMesh1" nz="1" nx="-1.3" size="50,400,3800"  texture="/home/robocomp/robocomp/files/osgModels/textures/Metal.jpg" />
+		</transform>
+
+		<transform id="valla2" tx="2000" tz="900" ty="0" >
+			<plane id="cajaMesh2" nx="1" size="50,400,900"  texture="/home/robocomp/robocomp/files/osgModels/textures/Metal.jpg" />
+		</transform>
+
+		<transform id="valla3" tx="1500" tz="1300" ty="0" >
+			<plane id="cajaMesh13" nz="1" size="50,400,700"  texture="/home/robocomp/robocomp/files/osgModels/textures/Metal.jpg" />
+		</transform>
+		
+		<transform id="caja3" tx="-1300" tz="-1200" ty="0" >
+			<plane id="cajaMesh3" nx="1" size="400,400,400"  texture="/home/robocomp/robocomp/files/osgModels/textures/Metal.jpg" />
+		</transform>-->
+		
+		<transform id="caja4" tx="1300" tz="-1200" ty="0" >
+			<plane id="cajaMesh4" nx="1" size="400,400,400"  texture="/home/robocomp/robocomp/files/osgModels/textures/Metal.jpg" />
+		</transform>
+		
+		<transform id="caja5" tx="0" tz="-1500" ty="0" >
+			<plane id="cajaMesh5" nx="1" size="400,400,400"  texture="/home/robocomp/robocomp/files/osgModels/textures/Metal.jpg" />
+		</transform>
+		
+			<omnirobot id="robot" port="12238">
+				<mesh id="base_robex" file="/home/robocomp/robocomp/files/osgModels/robex/robex.ive"  tx="0" ty="0" tz="-180" scale="1000" />
+				<translation id="laserPose" tx="0" ty="110" tz="30">
+					<laser id="laser" port="10003" measures="100" min="100" max="30000" angle="3" ifconfig="10000" />
+						<plane id="sensorL" nz="1" pz="-20" size="100,50,10" repeat="1" texture="#ff0000" /> 
+				</translation>	
+				<transform id="camera" ty="210" tz="180">
+						<imu id="imu" port="10010"/>
+						<rgbd id="rgbd" focal="480" width="640" height="480" port="10096" noise="0.00" ifconfig="40000,50000" />
+						<plane id="rgbd_mesh1" nz="1" pz="-200" size="200,50,10" repeat="1" texture="#550000" />
+				</transform>
+				<translation id="robotGeometricCenter" tx="0" ty="0" tz="50">
+				</translation>
+			</omnirobot>
+	</transform>
+
+<!--
+	</innerModel>
+	<mesh  id="mesa2" file="/home/robocomp/robocomp/files/osgModels/mobiliario/mesa_redonda.osg"  tx="0" ty="8" tz="-2000" rx="1.5707963" scale="100" />
+	<mesh  id="mesa3" file="/home/robocomp/robocomp/files/osgModels/mobiliario/mesa_redonda.osg"  tx="-4000" ty="8" tz="0" rx="1.5707963" scale="100" />
+	<mesh  id="mesa4" file="/home/robocomp/robocomp/files/osgModels/mobiliario/mesa_redonda.osg"  tx="1600" ty="8" tz="0" rx="1.5707963" scale="50,50,100" />
+-->
+	
+<!--			<transform id="cameraAxis" tx="0" ty="100" tz="0"> 
+				<plane id="camx" px="0.25" nx="1" size="10,10,800" repeat="1" texture="#ff0000" />
+				<plane id="camy" py="0.25" nx="1" size="10,800,10" repeat="1" texture="#00ff00" /> 
+				<plane id="camz" pz="0.25" nx="1" size="800,10,10" repeat="1" texture="#0000ff" />
+			</transform>
+-->	
+
+<!--		<transform id="target3axis" tx="0" ty="100" tz="0.0"> 
+					<plane id="target3x" px="0.25" nx="1" size="5,5,500" repeat="1" texture="#ff0000" />
+					<plane id="target3y" py="0.25" nx="1" size="10,800,10" repeat="1" texture="#00ff00" />
+					<plane id="target3z" pz="0.25" nx="1" size="800,10,10" repeat="1" texture="#0000ff" />
+				</transform>	
+	-->
+
+	
+</innerModel>
+
+
