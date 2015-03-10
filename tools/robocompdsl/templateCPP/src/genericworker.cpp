@@ -68,8 +68,8 @@ else:
 [[[end]]]
 {
 [[[cog
-for rq in component['requires']:
-	cog.outl("<TABHERE>"+rq.lower()+"_proxy = (*("+rq+"Prx*)mprx[\""+rq+"Proxy\"]);")
+for name, num in getNameNumber(component['requires']):
+	cog.outl("<TABHERE>"+name.lower()+num+"_proxy = (*("+name+"Prx*)mprx[\""+name+"Proxy"+num+"\"]);")	
 ]]]
 [[[end]]]
 

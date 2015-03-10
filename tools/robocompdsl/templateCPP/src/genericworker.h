@@ -113,14 +113,8 @@ public:
 	QMutex *mutex;
 
 [[[cog
-for req in component['requires']:
-	cog.outl("<TABHERE>"+req+"Prx " + req.lower() + "_proxy;")
-]]]
-[[[end]]]
-
-[[[cog
-for pub in component['publishes']:
-	cog.outl("<TABHERE>"+pub+"Prx "    + pub.lower() + ";")
+for name, num in getNameNumber(component['requires']+component['publishes']):
+	cog.outl('<TABHERE>'+name+'Prx '+name.lower()+num +'_proxy;')
 ]]]
 [[[end]]]
 
