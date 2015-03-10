@@ -89,7 +89,7 @@ endif(DOXYGEN_FOUND)
 SUBDIRS(
 	libs
 	tools/robocompdsl
-#	tools/rcinnerModelSimulator
+	tools/rcinnerModelSimulator
 #	components
 )
 
