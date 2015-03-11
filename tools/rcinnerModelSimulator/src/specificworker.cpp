@@ -127,26 +127,19 @@ struct SpecificWorker::Data
 
 		for (int i=0 ; i<measures; i++)
 		{
-// 			printf("%d (%d)\n", i, __LINE__);
 			laserData[i].angle = angle;
 			laserData[i].dist = maxRange;
-
 			laserDataCartArray[id]->operator[](i) = QVecToOSGVec(innerModel->laserTo(id, id, angle, maxRange));
-
 
 			//Calculamos el punto destino
 			Q = QVecToOSGVec(innerModel->laserTo("root", id, maxRange, angle));
 			//Creamos el segmento de interseccion
 			osg::ref_ptr<osgUtil::LineSegmentIntersector> intersector = new osgUtil::LineSegmentIntersector(osgUtil::Intersector::MODEL, P, Q);
-// 			printf("%d (%d)\n", i, __LINE__);
 			osgUtil::IntersectionVisitor visitor(intersector.get());
 
 			/// Pasando el visitor al root
-// 			printf("%d (%d)\n", i, __LINE__);
 			viewer->getRootGroup()->accept(visitor);
 
-// 			printf("%d (%d)\n", i, __LINE__);
-// 			qDebug()<<"nunchildrenROOT"<<viewer->getRootGroup()->getNumChildren();
 			if (intersector->containsIntersections() and id!="laserSecurity")
 			{
 				osgUtil::LineSegmentIntersector::Intersection result = *(intersector->getIntersections().begin());
@@ -169,7 +162,7 @@ struct SpecificWorker::Data
 			}
 			angle -= incAngle;
 		}
-		///what does it mean? the point of the laser robot.
+		// the point of the laser robot
 		laserDataCartArray[id]->operator[](measures) = QVecToOSGVec(innerModel->laserTo(id, id, 0.0001, 0.001));
 // 		viewer->startThreading();
 		return laserData;
@@ -729,6 +722,7 @@ SpecificWorker::SpecificWorker(MapPrx& _mprx, Ice::CommunicatorPtr _communicator
 	d->viewer = new OsgView(frameOSG);
 	d->imv = new InnerModelViewer(d->innerModel, "root", d->viewer->getRootGroup());
 	d->manipulator = new osgGA::TrackballManipulator;
+// 	d->manipulator->setHomePosition(osg::Vec3d(0, 10000, 0), osg::Vec3d(0, 0, 0), osg::Vec3d(0, 0, -10000), true);
 	d->viewer->setCameraManipulator(d->manipulator, true);
 	
 	// Add mouse pick handler
@@ -737,34 +731,29 @@ SpecificWorker::SpecificWorker(MapPrx& _mprx, Ice::CommunicatorPtr _communicator
 		d->viewer->addEventHandler(new PickHandler(rcis_mousepicker_proxy));
 	}
 
+	
 	settings = new QSettings("RoboComp", "RCIS");
 	QString path(_innerModelXML);
 	if (path == settings->value("path").toString() )
 	{
-	  //restore matrix view
-	  QStringList l = settings->value("matrix").toStringList();
-	  osg::Matrixd m;
-	  for (int i=0; i<4; i++ )
-	  {
-	    for (int j=0; j<4; j++ )
-	    {
-  // 	    cout<< m(i,j)<<" ";
-// 	      l.append(s.number(m(i,j)));
-	      m(i,j)=l.takeFirst().toDouble();
-	      }
-  // 	    cout<<"\n";
-	  }
-
-	  std::cout<<m;
-
-	  d->manipulator->setByMatrix(m);
-
+		//restore matrix view
+		QStringList l = settings->value("matrix").toStringList();
+		osg::Matrixd m;
+		for (int i=0; i<4; i++ )
+		{
+			for (int j=0; j<4; j++ )
+			{
+				m(i,j)=l.takeFirst().toDouble();
+			}
+		}
+		d->manipulator->setByMatrix(m);
 	}
 	else
 	{
-	  settings->setValue("path",path);
-	  qDebug()<<"new path"<<path<<"\n";
+		settings->setValue("path",path);
+		setTopPOV();
 	}
+	
 
 	// Connect all the signals
 	connect(topView,   SIGNAL(clicked()), this, SLOT(setTopPOV()));
@@ -867,7 +856,7 @@ void SpecificWorker::compute()
 		while (i != d->imv->cameras.constEnd())
 		{
 			RTMat rt= d->innerModel->getTransformationMatrix("root",i.key());
-			///Put camera in her position.
+			// Put camera in its position
 			d->imv->cameras[i.key()].viewerCamera->getCameraManipulator()->setByMatrix(QMatToOSGMat4(rt));
 
 			for (int n=0; n<d->imv->cameras.size() ; ++n)
@@ -1012,27 +1001,18 @@ void SpecificWorker::setRightPOV()
 void SpecificWorker::closeEvent(QCloseEvent *event)
 {
 	event->accept();
-	std::cout<<d->manipulator->getMatrix();
 	osg::Matrixd m = d->manipulator->getMatrix();
 	QString s="";
 	QStringList l;
 	for (int i=0; i<4; i++ )
 	{
-	  for (int j=0; j<4; j++ )
-	  {
-// 	    cout<< m(i,j)<<" ";
-	    l.append(s.number(m(i,j)));
-	    }
-// 	    cout<<"\n";
+		for (int j=0; j<4; j++ )
+		{
+			l.append(s.number(m(i,j)));
+		}
 	}
-
-// 	l.removeLast();
-	qDebug()<<"L"<<l;
-
 	settings->setValue("matrix", l);
-	qDebug()<<"toStringList"<< settings->value("matrix").toStringList();
 	settings->sync();
-	qDebug()<<settings->allKeys();
 
 	exit(EXIT_SUCCESS);
 }

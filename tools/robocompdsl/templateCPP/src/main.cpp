@@ -20,11 +20,11 @@ component = CDSLParsing.fromFile(theCDSL)
 REQUIRE_STR = """
 <TABHERE>try
 <TABHERE>{
-<TABHERE><TABHERE>if (not GenericMonitor::configGetString(communicator(), prefix+"<NORMAL>Proxy<PROXYNUMBER>", proxy, ""))
+<TABHERE><TABHERE>if (not GenericMonitor::configGetString(communicator(), prefix+"<NORMAL><PROXYNUMBER>Proxy", proxy, ""))
 <TABHERE><TABHERE>{
 <TABHERE><TABHERE><TABHERE>cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy <NORMAL>Proxy";
 <TABHERE><TABHERE>}
-<TABHERE><TABHERE><PROXYNAME> = <NORMAL>Prx::uncheckedCast( communicator()->stringToProxy( proxy ) );
+<TABHERE><TABHERE><PROXYNAME>_proxy = <NORMAL>Prx::uncheckedCast( communicator()->stringToProxy( proxy ) );
 <TABHERE>}
 <TABHERE>catch(const Ice::Exception& ex)
 <TABHERE>{
@@ -32,7 +32,7 @@ REQUIRE_STR = """
 <TABHERE><TABHERE>return EXIT_FAILURE;
 <TABHERE>}
 <TABHERE>rInfo("<NORMAL>Proxy<PROXYNUMBER> initialized Ok!");
-<TABHERE>mprx["<NORMAL>Proxy<PROXYNUMBER>"] = (::IceProxy::Ice::Object*)(&<PROXYNAME>);//Remote server proxy creation example
+<TABHERE>mprx["<NORMAL>Proxy<PROXYNUMBER>"] = (::IceProxy::Ice::Object*)(&<PROXYNAME>_proxy);//Remote server proxy creation example
 """
 
 SUBSCRIBESTO_STR = """
