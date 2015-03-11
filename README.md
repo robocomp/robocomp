@@ -70,13 +70,6 @@ Done! Now let's have some fun.
     
 It will take a little while to download all necessary graphic textures used in the simulator...
 
-And now compile the whole thing
-
-    cd ~/robocomp/tools/rcinnermodelsimulator
-    cmake .
-    make
-    sudo make install
-
 Now let's run the simulator. 
 
     cd ~/robocomp/files/innermodel
