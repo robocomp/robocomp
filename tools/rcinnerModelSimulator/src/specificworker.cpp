@@ -731,7 +731,7 @@ SpecificWorker::SpecificWorker(MapPrx& _mprx, Ice::CommunicatorPtr _communicator
 		d->viewer->addEventHandler(new PickHandler(rcis_mousepicker_proxy));
 	}
 
-	
+/*	
 	settings = new QSettings("RoboComp", "RCIS");
 	QString path(_innerModelXML);
 	if (path == settings->value("path").toString() )
@@ -750,9 +750,9 @@ SpecificWorker::SpecificWorker(MapPrx& _mprx, Ice::CommunicatorPtr _communicator
 	}
 	else
 	{
-		settings->setValue("path",path);
+		settings->setValue("path",path);*/
 		setTopPOV();
-	}
+// 	}
 	
 
 	// Connect all the signals

@@ -313,13 +313,11 @@ for name, num in getNameNumber(component['requires'] + component['publishes']):
 for name, num in getNameNumber(component['requires']):
 	w = REQUIRE_STR.replace("<NORMAL>", name).replace("<LOWER>", name.lower()).replace("<PROXYNAME>", name.lower()+num).replace("<PROXYNUMBER>", num)
 	cog.outl(w)
-]]]
-[[[end]]]
 
-	IceStorm::TopicManagerPrx topicManager = IceStorm::TopicManagerPrx::checkedCast(communicator()->propertyToProxy("TopicManager.Proxy"));
+if len(component['publishes'])>0 or len(component['subscribesTo'])>0:
+	cog.outl('IceStorm::TopicManagerPrx topicManager = IceStorm::TopicManagerPrx::checkedCast(communicator()->propertyToProxy("TopicManager.Proxy"));')
 
 
-[[[cog
 for pb in component['publishes']:
 	w = PUBLISHES_STR.replace("<NORMAL>", pb).replace("<LOWER>", pb.lower())
 	cog.outl(w)
