@@ -55,7 +55,7 @@ Let's now tell Linux where to find RoboComp's libraries:
 
 and add the following line:
 
-    /opt/robocomp/libs/
+    /opt/robocomp/lib/
    
 save the file and type:
 

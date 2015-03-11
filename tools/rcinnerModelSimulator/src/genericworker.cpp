@@ -22,17 +22,14 @@
 */
 GenericWorker::GenericWorker ( MapPrx& mprx ) : Ui_guiDlg()
 {
-	rcis_mousepicker_proxy = (*(RCISMousePickerPrx*)mprx["RCISMousePickerPub"]);
+	if (mprx["RCISMousePickerPub"])
+		rcis_mousepicker_proxy = (*(RCISMousePickerPrx*)mprx["RCISMousePickerPub"]);
+	else
+		rcis_mousepicker_proxy = NULL;
  	
 	mutex = new QMutex ( QMutex::Recursive );
 	setupUi ( this );
 	show();	
-// 	if( mprx["RCISMousePickerPub"] != NULL )
-// 	{	
-// 		rcis_mousepicker_proxy = (*(RCISMousePickerPrx*)mprx["RCISMousePickerPub"]);
-// 	}
-// 	else
-// 		rcis_mousepicker_proxy = NULL;
 	
 	Period = BASIC_PERIOD;
 	connect ( &timer, SIGNAL ( timeout() ), this, SLOT ( compute() ) );

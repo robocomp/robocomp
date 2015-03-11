@@ -611,9 +611,9 @@ QMat QMat::transpose( ) const
 #ifdef COMPILE_IPP
 	ippmTranspose_m_32f ( toDataConst(), cols*sizeof ( T ), sizeof ( T ), cols, rows, C.toData(), rows*sizeof ( T ), sizeof ( T ) );
 #else
-	for ( int i=0; i<rows; i++ )
-		for ( int j=0; j<cols; j++ )
-			C(i,j) = operator()(j,i);
+	for (int fila=0; fila<rows; fila++ )
+		for ( int columna=0; columna<cols; columna++ )
+			C(columna,fila) = operator()(fila,columna);
 #endif
 	return C;
 }

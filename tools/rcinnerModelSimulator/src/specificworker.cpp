@@ -729,10 +729,13 @@ SpecificWorker::SpecificWorker(MapPrx& _mprx, Ice::CommunicatorPtr _communicator
 	d->viewer = new OsgView(frameOSG);
 	d->imv = new InnerModelViewer(d->innerModel, "root", d->viewer->getRootGroup());
 	d->manipulator = new osgGA::TrackballManipulator;
-	d->viewer->setCameraManipulator(d->manipulator,true);
+	d->viewer->setCameraManipulator(d->manipulator, true);
 	
-	//Add mouse pick handler
-	d->viewer->addEventHandler(new PickHandler(rcis_mousepicker_proxy));
+	// Add mouse pick handler
+	if (rcis_mousepicker_proxy)
+	{
+		d->viewer->addEventHandler(new PickHandler(rcis_mousepicker_proxy));
+	}
 
 	settings = new QSettings("RoboComp", "RCIS");
 	QString path(_innerModelXML);
