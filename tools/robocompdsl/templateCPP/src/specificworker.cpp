@@ -100,54 +100,31 @@ void SpecificWorker::compute()
 
 
 [[[cog
-if 'implements' in component:
-	for imp in component['implements']:
-		module = pool.moduleProviding(imp)
-		for interface in module['interfaces']:
-			if interface['name'] == imp:
-				for mname in interface['methods']:
-					method = interface['methods'][mname]
-					paramStrA = ''
-					for p in method['params']:
-						if paramStrA == '': delim = ''
-						else: delim = ', '
-						if p['decorator'] == 'out':
-							const = ''
-						else:
-							const = 'const '
-						if  p['type'] in [ 'int' ]:
+ll = []
+if 'implements'   in component: ll += component['implements']
+if 'subscribesTo' in component: ll += component['subscribesTo']
+for imp in ll:
+	module = pool.moduleProviding(imp)
+	for interface in module['interfaces']:
+		if interface['name'] == imp:
+			for mname in interface['methods']:
+				method = interface['methods'][mname]
+				paramStrA = ''
+				for p in method['params']:
+					if paramStrA == '': delim = ''
+					else: delim = ', '
+					# decorator
+					ampersand = '&'
+					if p['decorator'] == 'out':
+						const = ''
+					else:
+						const = 'const '
+						if p['type'].lower() in ['int', '::ice::int', 'float', '::ice::float']:
 							ampersand = ''
-						else:
-							ampersand = '&'
-						paramStrA += const + p['type'] + ' ' + ampersand + p['name'] + delim
-					cog.outl(method['return'] + ' SpecificWorker::' + method['name'] + '(' + paramStrA + ")\n{\n}\n")
+					paramStrA += delim + const + p['type'] + ' ' + ampersand + p['name']
+				cog.outl(method['return'] + ' SpecificWorker::' + method['name'] + '(' + paramStrA + ")\n{\n}\n")
 ]]]
 [[[end]]]
 
-[[[cog
-if 'subscribesTo' in component:
-	for sub in component['subscribesTo']:
-		module = pool.moduleProviding(sub)
-		for interface in module['interfaces']:
-			if interface['name'] == sub:
-				for mname in interface['methods']:
-					method = interface['methods'][mname]
-					paramStrA = ''
-					for p in method['params']:
-						if paramStrA == '': delim = ''
-						else: delim = ', '
-						if p['decorator'] == 'out':
-							const = ''
-						else:
-							const = 'const '
-						if  p['type'] in [ 'int' ]:
-							ampersand = ''
-						else:
-							ampersand = '&'
-						paramStrA += const + p['type'] + ' ' + ampersand + p['name'] + delim
-
-						cog.outl(method['return'] + ' SpecificWorker::' + method['name'] + '(' + paramStrA + ")\n{\n}\n")
-]]]
-[[[end]]]
 
 

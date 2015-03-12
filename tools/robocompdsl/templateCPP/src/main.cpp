@@ -20,9 +20,9 @@ component = CDSLParsing.fromFile(theCDSL)
 REQUIRE_STR = """
 <TABHERE>try
 <TABHERE>{
-<TABHERE><TABHERE>if (not GenericMonitor::configGetString(communicator(), prefix+"<NORMAL><PROXYNUMBER>Proxy", proxy, ""))
+<TABHERE><TABHERE>if (not GenericMonitor::configGetString(communicator(), prefix, "<NORMAL><PROXYNUMBER>Proxy", proxy, ""))
 <TABHERE><TABHERE>{
-<TABHERE><TABHERE><TABHERE>cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy <NORMAL>Proxy";
+<TABHERE><TABHERE><TABHERE>cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy <NORMAL>Proxy\\n";
 <TABHERE><TABHERE>}
 <TABHERE><TABHERE><PROXYNAME>_proxy = <NORMAL>Prx::uncheckedCast( communicator()->stringToProxy( proxy ) );
 <TABHERE>}
@@ -37,7 +37,7 @@ REQUIRE_STR = """
 
 SUBSCRIBESTO_STR = """
 <TABHERE><TABHERE>// Server adapter creation and publication
-<TABHERE><TABHERE>if (not GenericMonitor::configGetString(communicator(), prefix+"<NORMAL>Topic", tmp, ""))
+<TABHERE><TABHERE>if (not GenericMonitor::configGetString(communicator(), prefix, "<NORMAL>Topic", tmp, ""))
 <TABHERE><TABHERE>{
 <TABHERE><TABHERE><TABHERE>cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy <NORMAL>Proxy";
 <TABHERE><TABHERE>}
@@ -91,12 +91,11 @@ PUBLISHES_STR = """
 
 IMPLEMENTS_STR = """
 <TABHERE><TABHERE>// Server adapter creation and publication
-
-<TABHERE><TABHERE>if (not GenericMonitor::configGetString(communicator(), prefix+"<NORMAL>.Endpoints", tmp, ""))
+<TABHERE><TABHERE>if (not GenericMonitor::configGetString(communicator(), prefix, "<NORMAL>.Endpoints", tmp, ""))
 <TABHERE><TABHERE>{
 <TABHERE><TABHERE><TABHERE>cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy <NORMAL>";
 <TABHERE><TABHERE>}
-<TABHERE><TABHERE>Ice::ObjectAdapterPtr <NORMAL>_adapter = communicator()->createObjectAdapterWithEndpoints("<LOWER>", tmp);
+<TABHERE><TABHERE>Ice::ObjectAdapterPtr adapter<NORMAL> = communicator()->createObjectAdapterWithEndpoints("<LOWER>", tmp);
 <TABHERE><TABHERE><NORMAL>I *<LOWER> = new <NORMAL>I(worker);
 <TABHERE><TABHERE>adapter<NORMAL>->add(<LOWER>, communicator()->stringToIdentity("<LOWER>"));
 """
@@ -255,6 +254,11 @@ Z()
 [[[end]]]
 : public RoboComp::Application
 {
+public:
+[[[cog
+cog.out('<TABHERE>' + component['name'] + ' (QString prfx) { prefix = prfx.toStdString(); }')
+]]]
+[[[end]]]
 private:
 	void initialize();
 	std::string prefix;
@@ -328,8 +332,8 @@ for pb in component['publishes']:
 	GenericWorker *worker = new SpecificWorker(mprx);
 	//Monitor thread
 	GenericMonitor *monitor = new SpecificMonitor(worker,communicator());
-	QObject::connect(monitor,SIGNAL(kill()),&a,SLOT(quit()));
-	QObject::connect(worker,SIGNAL(kill()),&a,SLOT(quit()));
+	QObject::connect(monitor, SIGNAL(kill()), &a, SLOT(quit()));
+	QObject::connect(worker, SIGNAL(kill()), &a, SLOT(quit()));
 	monitor->start();
 
 	if ( !monitor->isRunning() )
@@ -337,10 +341,15 @@ for pb in component['publishes']:
 	try
 	{
 		// Server adapter creation and publication
-		Ice::ObjectAdapterPtr adapterCommonBehavior = communicator()->createObjectAdapter("CommonBehavior");
+		if (not GenericMonitor::configGetString(communicator(), prefix, "CommonBehavior.Endpoints", tmp, ""))
+		{
+			cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy CommonBehavior\n";
+		}
+		Ice::ObjectAdapterPtr adapterCommonBehavior = communicator()->createObjectAdapterWithEndpoints("commonbehavior", tmp);
 		CommonBehaviorI *commonbehaviorI = new CommonBehaviorI(monitor );
 		adapterCommonBehavior->add(commonbehaviorI, communicator()->stringToIdentity("commonbehavior"));
 		adapterCommonBehavior->activate();
+
 
 
 [[[cog
@@ -392,25 +401,33 @@ int main(int argc, char* argv[])
 	bool hasConfig = false;
 	string arg;
 
+	// Search in argument list for --Ice.Config= and --prefix= argument (if exist)
+	QString prefix("");
+	for (int i = 1; i < argc; ++i)
+	{
+		arg = argv[i];
+		if (arg.find("--Ice.Config=", 0) != string::npos)
+		{
+			hasConfig = true;
+		}
+		QString prfx = QString("--prefix=");
+		if (arg.find(prfx.toStdString(), 0) == 0)
+		{
+			prefix = QString::fromStdString(arg).remove(0, prfx.size());
+			if (prefix.size()>0)
+				prefix += QString(".");
+			printf("Configuration prefix: <%s>\n", prefix.toStdString().c_str());
+		}
+	}
+
 [[[cog
 A()
 cog.out('<TABHERE>' + component['name'] + ' ')
 Z()
 ]]]
 [[[end]]]
-app;
+app(prefix);
 
-	// Search in argument list for --Ice.Config= argument and prefix (if exist)
-	for (int i = 1; i < argc; ++i)
-	{
-		arg = argv[i];
-		if (arg.find ( "--Ice.Config=", 0 ) != string::npos )
-			hasConfig = true;
-		if (arg.find ( "--prefix=", 0 ) != string::npos )
-		{
-			hasConfig = true;
-		}
-	}
 
 // 	app.prefix = 
 	if (hasConfig)

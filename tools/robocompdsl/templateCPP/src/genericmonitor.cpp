@@ -112,14 +112,15 @@ void GenericMonitor::readPConfParams(RoboCompCommonBehavior::ParameterList &para
 //default value for the parameter
 //return false if the parameter does not exist. Throw exception in other case.
 //if you need one parameter mandatory you can pass empty string in default_value
-bool GenericMonitor::configGetString(                                   const std::string name, std::string &value, const std::string default_value, QStringList *list)
+bool GenericMonitor::configGetString(const std::string p, const std::string name, std::string &value, const std::string default_value, QStringList *list)
 {
-	return configGetString(communicator, name, value, default_value, list);
+	return GenericMonitor::configGetString(communicator, p, name, value, default_value, list);
 }
 
-bool GenericMonitor::configGetString(Ice::CommunicatorPtr communicator, const std::string name, std::string &value, const std::string default_value, QStringList *list)
+bool GenericMonitor::configGetString(Ice::CommunicatorPtr communicator, const std::string p, const std::string name, std::string &value, const std::string default_value, QStringList *list)
 {
-	value = communicator->getProperties()->getProperty( name );
+	std::string compound = p+name;
+	value = communicator->getProperties()->getProperty(compound);
 
 	if ( value.length() == 0)
 	{
@@ -130,7 +131,7 @@ bool GenericMonitor::configGetString(Ice::CommunicatorPtr communicator, const st
 		}
 		else if (default_value.length() == 0)
 		{
-			QString error = QString("empty configuration string, not default value for")+QString::fromStdString(name);
+			QString error = QString("Error: can't get configuration string for variable without default value: ")+QString::fromStdString(compound);
 			qDebug() << error;
 			throw error;
 		}
@@ -140,8 +141,8 @@ bool GenericMonitor::configGetString(Ice::CommunicatorPtr communicator, const st
 	{
 		if (list->contains(QString::fromStdString(value)) == false)
 		{
-			qFatal("Reading config file: %s is not a valid string", name.c_str());
-			rError("Reading config file:"+name+" is not a valid string");
+			qFatal("Reading config file: %s is not a valid string", compound.c_str());
+			rError("Reading config file:"+compound+" is not a valid string");
 		}
 		QString error = QString("not valid configuration value");
 		qDebug() << error;
@@ -149,7 +150,7 @@ bool GenericMonitor::configGetString(Ice::CommunicatorPtr communicator, const st
 	}
 
 	auto parts = QString::fromStdString(value).split("@");
-	QString variableName=QString::fromStdString(name);
+	QString variableName=QString::fromStdString(compound);
 	
 	
 	if (parts.size() > 1)
@@ -207,6 +208,6 @@ bool GenericMonitor::configGetString(Ice::CommunicatorPtr communicator, const st
 		{
 		}
 	}
-	std::cout << name << " " << value << std::endl;
+	std::cout << compound << " " << value << std::endl;
 	return true; 
 }

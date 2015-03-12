@@ -64,9 +64,9 @@ protected:
 	virtual bool sendParamsToWorker(RoboCompCommonBehavior::ParameterList params) = 0;
 	virtual bool checkParams(RoboCompCommonBehavior::ParameterList l) = 0;
 
-	       bool configGetString(                                   const std::string name, std::string &value, const std::string default_value, QStringList *list = NULL);
+	bool configGetString(const std::string p, const std::string name, std::string &value, const std::string default_value, QStringList *list = NULL);
 public:
-	static bool configGetString(Ice::CommunicatorPtr communicator, const std::string name, std::string &value, const std::string default_value, QStringList *list = NULL);
+	static bool configGetString(Ice::CommunicatorPtr communicator, const std::string p, const std::string name, std::string &value, const std::string default_value, QStringList *list=NULL);
 
 signals:
 	void kill();
