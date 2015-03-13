@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<rcmanager>
+
+ <generalInformation>
+  <editor path="kate" />
+  <timeouts fixed="1000" blink="300" />
+  <clicks switch="2" interval="400" />
+  <graph alpha="80" active="true" scale="200" />
+  <graphTiming idletime="1000" focustime="500" fasttime="10" fastperiod="2000" />
+ </generalInformation>
+
+ <node alias="acpi" endpoint="acpi: tcp -p 10025">
+  <dependence alias="speech" />
+  <workingDir path="/home/robocomp/robocomp/components/acpiComp/" />
+  <upCommand command="bin/component --Ice.Config=/home/robocomp/robocomp/components/robocomp-ursus-rockin/etc/ursus.conf --prefix=ACPI" />
+  <downCommand command="killall -9 acpi" />
+  <configFile path="/home/robocomp/robocomp/components/robocomp-ursus-rockin/etc/ursus.conf" />
+  <xpos value="0" />
+  <ypos value="-100" />
+  <radius value="10.0" />
+ </node>
+
+ <node alias="speech" endpoint="speech: tcp -p 10021">
+  <workingDir path="/home/orens/robocomp/Components/RoboLab/Stable/speechComp/" />
+  <upCommand command="./startSpeech.sh" />
+  <downCommand command="./stopSpeech.sh" />
+  <configFile path="/home/orens/robocomp/Components/RoboLab/Stable/speechComp/etc/config" />
+  <xpos value="0" />
+  <ypos value="100" />
+  <radius value="10.0" />
+ </node>
+
+</rcmanager>
