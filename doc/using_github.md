@@ -25,7 +25,7 @@ now we are ready:
     cd ~/robocomp/components/mycomponents
     git init
     git remote add origin "https://github.com/myaccount/mycomponents.git"
-    git add mycomponents
+    git add myfirstcomp
     git push -u origin master
     
 You can go now to GitHub and chek that your sources are there!
