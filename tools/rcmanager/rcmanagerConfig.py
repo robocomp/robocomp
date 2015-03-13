@@ -203,22 +203,15 @@ def getConfigFromFile(path):
 		return [], getDefaultValues()
 
 	data = file.read()
-	print data
 	xmldoc = libxml2.parseDoc(data)
-	print 'oeeee'
 
 
 	root = xmldoc.children
 	if root is not None:
 		components, newDict = parsercmanager(root)
-		print 'components'
-		print components
-		print 'newDict'
-		print newDict
 
 	for k, v in newDict.iteritems():
 		dict[k] = v
-	print newDict.keys()
 
 	xmldoc.freeDoc()
 
@@ -418,12 +411,14 @@ def parseRadius(node, comp):
 
 
 
-if __name__ == "__main__":
-	c = []
-	d = {}
-	c, d = getConfigFromFile(filePath)
-	print '\nDict:\n'
-	print d
-	print '\nComponents\n'
-	print c
-	writeConfigToFile(d, c, '2.xml')
+#if __name__ == "__main__":
+	#c = []
+	#d = {}
+	#c, d = getConfigFromFile(filePath)
+	#print '\nDict:\n'
+	#print d
+	#print '\nComponents\n'
+	#print c
+	#writeConfigToFile(d, c, '2.xml')
+
+

@@ -39,6 +39,10 @@ import rcmanagerConfig
 
 global_ic = Ice.initialize(sys.argv)
 
+# Ctrl+c handling
+import signal
+signal.signal(signal.SIGINT, signal.SIG_DFL)
+
 
 dict = rcmanagerConfig.getDefaultValues()
 initDir = os.getcwd()
@@ -148,10 +152,11 @@ class TheThing(QtGui.QDialog):
 		self.requests = set()
 
 		# Icon and system's tray stuff
-		self.iconOK = QtGui.QIcon(QtGui.QPixmap(self.root+'share/drawing_red.png'))
-		self.iconFULL = QtGui.QIcon(QtGui.QPixmap(self.root+'share/drawing_green.png'))
-		self.iconChange1 = QtGui.QIcon(QtGui.QPixmap(self.root+'share/drawing_right.png'))
-		self.iconChange2 = QtGui.QIcon(QtGui.QPixmap(self.root+'share/drawing_left.png'))
+		self.iconOK = QtGui.QIcon(QtGui.QPixmap('/opt/robocomp/share/rcmanager/drawing_red.png'))
+		print self.iconOK
+		self.iconFULL = QtGui.QIcon(QtGui.QPixmap('/opt/robocomp/share/rcmanager/drawing_green.png'))
+		self.iconChange1 = QtGui.QIcon(QtGui.QPixmap('/opt/robocomp/share/rcmanager/drawing_right.png'))
+		self.iconChange2 = QtGui.QIcon(QtGui.QPixmap('/opt/robocomp/share/rcmanager/drawing_left.png'))
 		self.setWindowIcon(self.iconOK)
 		self.state = 0
 		self.doExit = False
@@ -348,6 +353,8 @@ class TheThing(QtGui.QDialog):
 	def graphUpdate(self):
 		global dict
 		self.canvas.checkForNewComponents(self)
+		
+		self.canvas.center()
 		if self.doSimulation:
 			self.canvas.step(self)
 		self.canvas.update()
@@ -706,10 +713,28 @@ class GraphView(QtGui.QWidget):
 		for iterr in self.compList:
 			iterr.x += iterr.vel_x
 			iterr.y += iterr.vel_y
+
+	def center(self):
+		total = 0
+		totalx = 0.
+		totaly = 0.
+		for iterr in self.compList:
+			totalx += iterr.x
+			totaly += iterr.y
+			total += 1
+		meanx = totalx / total
+		meany = totaly / total
+		for iterr in self.compList:
+			iterr.x -= meanx
+			iterr.y -= meany
+		#print iterr.x, iterr.y
+
 	def paintNode(self, node):
-		w2 = self.width()/2
-		h2 = self.height()/2
+		w2 = self.parent().width()/2
+		h2 = self.parent().height()/2
 		global dict
+		
+
 		if node.on:
 			self.painter.setBrush(QtGui.QColor(0, 255, 0, dict['alpha']))
 			self.painter.setPen(QtGui.QColor(0, 255, 0))
@@ -717,12 +742,16 @@ class GraphView(QtGui.QWidget):
 			self.painter.setBrush(QtGui.QColor(255, 0, 0, dict['alpha']))
 			self.painter.setPen(QtGui.QColor(255, 0, 0))
 		self.painter.drawEllipse(node.x-node.r+w2, node.y-node.r+h2, node.r*2, node.r*2)
+
+		print self.parent().width(), self.height()
+		print node.x-node.r+w2, node.y-node.r+h2, node.r*2, node.r*2
+
 		#print(node.x-node.r, node.y-node.r, node.r*2, node.r*2)
 		self.painter.drawText(QtCore.QPoint(node.x-node.r+w2, node.y-node.r-3+h2), node.name)
 
 	def paintEvent(self, event):
-		w2 = self.width()/2
-		h2 = self.height()/2
+		w2 = self.parent().width()/2
+		h2 = self.parent().height()/2
 		nodosAPintar = [] + self.compList
 		if self.VisualNodeCogia: nodosAPintar.append(self.VisualNodeCogia)
 
@@ -771,8 +800,8 @@ class GraphView(QtGui.QWidget):
 	def mouseDoubleClickEvent(self, e):
 		self.showNodeMenu(e, True)
 	def showNodeMenu(self, e, forceDialog=False):
-		w2 = self.width()/2
-		h2 = self.height()/2
+		w2 = self.parent().width()/2
+		h2 = self.parent().height()/2
 		x = e.x()-w2
 		y = e.y()-h2
 		if self.ui: self.ui.close()
@@ -808,8 +837,8 @@ class GraphView(QtGui.QWidget):
 			self.VisualNodeCogia = None
 			self.emit(QtCore.SIGNAL("nodeReleased()"))
 	def mouseMoveEvent(self, e):
-		w2 = self.width()/2
-		h2 = self.height()/2
+		w2 = self.parent().width()/2
+		h2 = self.parent().height()/2
 		self.repaint()
 		if self.VisualNodeCogia != None:
 			self.VisualNodeCogia.x = e.x()-self.ox-w2

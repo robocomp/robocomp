@@ -28,6 +28,8 @@ SET( DEST_DIR "/opt/robocomp/bin/")
 ROBOCOMP_WRAP_PYTHON_UI( formManager editorForm )
 INSTALL(FILES rcmanager DESTINATION ${DEST_DIR} PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE )
 INSTALL(FILES rcmanager.py rcmanagerEditor.py rcmanagerConfig.py ui_formManager.py ui_editorForm.py DESTINATION ${DEST_DIR} PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ  WORLD_EXECUTE )
-INSTALL(FILES share/drawing_left.png share/drawing_right.png share/drawing_red.png share/drawing_green.png share/up.png share/down.png share/pixmap.png  DESTINATION ${DEST_DIR} PERMISSIONS OWNER_READ OWNER_WRITE WORLD_READ )
+
+INSTALL(DIRECTORY "share/rcmanager" DESTINATION /opt/robocomp/share )
+
 
 
