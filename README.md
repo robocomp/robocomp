@@ -69,9 +69,7 @@ Now let's run the simulator.
     
 Congratulations! RCIS should be up and running with a simple robot endowed with a laser and an RGBD camera, moving on a wooden floor. Don't forget to turn around the floor to see the robot from above.
  
-###Connecting a JoyStick
-
-####Installing RoboLab's components from GitHub
+####Installing some RoboLab's components from GitHub
 
 The software of the robots using RoboComp is composed of different software components working together, communicating among them. What we just installed is just the core of RoboComp (the simulator, a component generator and some libraries). To have other features like joystick control we have to run additional software components available from other repositories, for example robocomp-robolab:
 
@@ -80,7 +78,7 @@ The software of the robots using RoboComp is composed of different software comp
     
 The RoboLab's set of basic robotics components are now dowloaded. You can see them in ~/robocomp/components/robocomp-robolab/components
 
-####Running joystickComp
+####Connecting a JoyStick
 
 If you have a joystick around, connect it to the USB port and:
 
