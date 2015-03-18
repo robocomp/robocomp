@@ -1,17 +1,11 @@
-import "MSKHead.idsl";
+module RoboComppersonClassification{
 
-module RoboCompPersonClassification{
-	enum genderClass{man, woman};
-	enum ageRange{kid, young, adult, senior};
-	
-    struct classificationResult{
-        genderClass  gender;
-        float genderProb;
-        ageRange age;
-        float ageProb;
-    };
+	struct CLASSRESULT{
+		int gender;// gender=0 woman, gender=1 man
+		int age;// 0: <15; 1: entre 15 y 40; 2: entre 40 y 60; 3: >60
+	};
 
 	interface personClassification{
-		void classification(RoboCompMSKHead::DetailedFace faceimage, out classificationResult result);
-    };
+		void Classification(out CLASSRESULT classificationResult);
+	};
 };
