@@ -9,7 +9,7 @@ Create another terminal in Yakuake and type:
     
 Select 32 or 64 bits according to your current linux installation. After a little while the DSLEditor will be installed under the *robocompDSL* directory:
 
-    cd robocompDSL/DSLEditor
+    cd roboCompDSL/DSLEditor
     ./DSLEditor
     
 
