@@ -28,6 +28,8 @@ signal.signal(signal.SIGINT, signal.SIG_DFL)
 
 from PySide import *
 
+import subprocess
+
 class GenericWorker(QtCore.QObject):
 	kill = QtCore.Signal()
 
@@ -79,11 +81,12 @@ class RCRemoteI(RCRemote):
 
 
 class SpecificWorker(GenericWorker):
-	def __init__(self, proxy_map):
+	def __init__(self, proxy_map, passwd):
 		super(SpecificWorker, self).__init__(proxy_map)
 		self.timer.timeout.connect(self.compute)
 		self.Period = 2000
 		self.timer.start(self.Period)
+		self.passwd = passwd
 
 	def setParams(self, params):
 		#try:
@@ -97,7 +100,7 @@ class SpecificWorker(GenericWorker):
 
 	@QtCore.Slot()
 	def compute(self):
-		print 'SpecificWorker.compute...'
+		#print 'SpecificWorker.compute...'
 		#try:
 		#	differentialrobot_proxy.setSpeed(100, 0)
 		#except Ice.Exception, e:
@@ -110,10 +113,18 @@ class SpecificWorker(GenericWorker):
 	# run
 	#
 	def run(self, password, path, binary, arguments, yakuakeTabName):
-		#
-		# YOUR CODE HERE
-		#
 		print password, path, binary, arguments, yakuakeTabName
+		print 'BINARY', binary
+		print 'PATH', path
+		print 'TABNAME', yakuakeTabName
+		print 'ARGS', arguments
+
+		if password != self.passwd:
+			print 'WRONG PASSWORD', passwd
+			return False
+		else:
+			p = subprocess.Popen(['/opt/robocomp/bin/rcremoteshell', binary, path, yakuakeTabName]+arguments)
+
 		return True
 
 
@@ -125,9 +136,12 @@ if __name__ == '__main__':
 	status = 0
 	mprx = {}
 
+	if len(sys.argv) < 2:
+		print 'EXAMPLE: rcremoteserver <password>'
+		sys.exit(-1)
 
 	if status == 0:
-		worker = SpecificWorker(mprx)
+		worker = SpecificWorker(mprx, sys.argv[1])
 
 		adapter = ic.createObjectAdapterWithEndpoints('rcremote', 'tcp -p 4242')
 		adapter.add(RCRemoteI(worker), ic.stringToIdentity('rcremote'))

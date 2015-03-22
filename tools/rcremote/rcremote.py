@@ -42,6 +42,9 @@ Ice.loadSlice(preStr+"RCRemote.ice")
 import RoboCompRemote
 
 
+if len(sys.argv) < 6:
+	print "EXAMPLE: rcremote localhost passwordhere mytabname /home/robocomp touch argument1 argument2"
+
 if __name__ == '__main__':
 	app = QtCore.QCoreApplication(sys.argv)
 	ic = Ice.initialize(sys.argv)
@@ -69,11 +72,11 @@ if __name__ == '__main__':
 
 
 	if status == 0:
-		password = 'pass'
-		path = '/'
-		binary = 'dede'
-		arguments = ['a', 'b', 'c']
-		yakuakeTabName = 'tabname'
+		password = sys.argv[2]
+		yakuakeTabName = sys.argv[3]
+		path = sys.argv[4]
+		binary = sys.argv[5]
+		arguments = sys.argv[6:]
 		if rcremote_proxy.run(password, path, binary, arguments, yakuakeTabName):
 			print 'ok'
 			sys.exit(0)

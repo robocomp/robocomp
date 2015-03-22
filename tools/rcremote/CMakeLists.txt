@@ -4,6 +4,7 @@ PROJECT( rcremote )
 
 INSTALL(PROGRAMS "rcremote.py" DESTINATION /opt/robocomp/bin RENAME rcremote )
 INSTALL(PROGRAMS "rcremoteserver.py" DESTINATION /opt/robocomp/bin RENAME rcremoteserver )
+INSTALL(PROGRAMS "rcremoteshell.sh" DESTINATION /opt/robocomp/bin RENAME rcremoteshell )
 
 
 
