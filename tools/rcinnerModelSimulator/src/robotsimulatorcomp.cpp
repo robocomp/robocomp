@@ -160,7 +160,7 @@ int robotSimulatorComp::run( int argc, char* argv[] )
 	catch( const Ice::Exception &ex)
 	{	
 		mprx["RCISMousePickerPub"] = NULL;
-		qDebug() <<__FUNCTION__ << "Warning! STORM not found. RCISMousePicker topic will NOT be published";
+		qDebug() << "Warning: STORM not found. RCISMousePicker topic will NOT be published";
 	}
 
 	// Create the worker
@@ -241,10 +241,8 @@ int main(int argc, char* argv[])
 	strcpy( argv2[argc+8], "--Ice.ThreadPool.Server.Size=3");
 	strcpy( argv2[argc+9], "--Ice.ThreadPool.Server.SizeMax=15");
 	
-	
-
-	printf("Args:\n");
-	for (int i=0; i<argcs; i++)
-	printf(" %s\n", argv2[i]);
+// 	printf("Args:\n");
+// 	for (int i=0; i<argcs; i++)
+// 		printf(" %s\n", argv2[i]);
 	return app.main( argcs, argv2 );
 }

@@ -90,7 +90,8 @@ SUBDIRS(
 	libs
 	tools/robocompdsl
 	tools/rcinnerModelSimulator
-#	components
+	tools/rcmanager
+	tools/rcremote
 )
 
 

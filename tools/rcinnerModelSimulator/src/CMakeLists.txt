@@ -39,12 +39,18 @@ SET ( HEADERS
 	touchsensorI.h
 )
 
+SET(LIBS -L${CMAKE_BUILD_DIR} ${LIBS} )
+
 
 # RoboComp
 INCLUDE( $ENV{ROBOCOMP}/cmake/robocomp.cmake )
 ROBOCOMP_INITIALIZE( $ENV{ROBOCOMP}/ )
 ROBOCOMP_WRAP_ICE( Camera CommonBehavior CommonHead DifferentialRobot OmniRobot IMU InnerModelManager JointMotor Laser RGBD TouchSensor RCISMousePicker)
-ROBOCOMP_LIBRARY( qmat )
+SET(ROBOCOMP_LIBS ${ROBOCOMP_LIBS} -lrobocomp_qmat )
+
+include_directories($ENV{ROBOCOMP}/libs/innermodel/include)
+include_directories($ENV{ROBOCOMP}/libs/qmat/include)
+include_directories($ENV{ROBOCOMP}/libs/osgviewer/include)
 
 
 # IPP

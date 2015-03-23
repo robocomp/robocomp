@@ -1,0 +1,355 @@
+<ui version="4.0" >
+ <class>Form</class>
+ <widget class="QWidget" name="Form" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>768</width>
+    <height>539</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>managerComp file editor</string>
+  </property>
+  <widget class="QTableWidget" name="table" >
+   <property name="geometry" >
+    <rect>
+     <x>4</x>
+     <y>170</y>
+     <width>761</width>
+     <height>361</height>
+    </rect>
+   </property>
+   <property name="sortingEnabled" >
+    <bool>false</bool>
+   </property>
+   <column>
+    <property name="text" >
+     <string>Alias</string>
+    </property>
+   </column>
+   <column>
+    <property name="text" >
+     <string>Deps</string>
+    </property>
+   </column>
+   <column>
+    <property name="text" >
+     <string>Endpoint</string>
+    </property>
+   </column>
+   <column>
+    <property name="text" >
+     <string>Path</string>
+    </property>
+   </column>
+   <column>
+    <property name="text" >
+     <string>Up Command</string>
+    </property>
+   </column>
+   <column>
+    <property name="text" >
+     <string>Down Command</string>
+    </property>
+   </column>
+   <column>
+    <property name="text" >
+     <string>Config</string>
+    </property>
+   </column>
+  </widget>
+  <widget class="QGroupBox" name="groupBox_2" >
+   <property name="geometry" >
+    <rect>
+     <x>650</x>
+     <y>10</y>
+     <width>111</width>
+     <height>81</height>
+    </rect>
+   </property>
+   <property name="title" >
+    <string>Components</string>
+   </property>
+   <widget class="QPushButton" name="newButton" >
+    <property name="geometry" >
+     <rect>
+      <x>10</x>
+      <y>20</y>
+      <width>91</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>New</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="deleteButton" >
+    <property name="geometry" >
+     <rect>
+      <x>10</x>
+      <y>45</y>
+      <width>91</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>Delete</string>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QGroupBox" name="groupBox" >
+   <property name="geometry" >
+    <rect>
+     <x>650</x>
+     <y>90</y>
+     <width>111</width>
+     <height>71</height>
+    </rect>
+   </property>
+   <property name="title" >
+    <string>File</string>
+   </property>
+   <widget class="QPushButton" name="readButton" >
+    <property name="geometry" >
+     <rect>
+      <x>10</x>
+      <y>18</y>
+      <width>91</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>Read</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="writeButton" >
+    <property name="geometry" >
+     <rect>
+      <x>10</x>
+      <y>43</y>
+      <width>91</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>Write</string>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QFrame" name="frame" >
+   <property name="geometry" >
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>641</width>
+     <height>161</height>
+    </rect>
+   </property>
+   <property name="frameShape" >
+    <enum>QFrame::StyledPanel</enum>
+   </property>
+   <property name="frameShadow" >
+    <enum>QFrame::Raised</enum>
+   </property>
+   <widget class="QLineEdit" name="upLine" >
+    <property name="geometry" >
+     <rect>
+      <x>10</x>
+      <y>80</y>
+      <width>300</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="readOnly" >
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pathButton" >
+    <property name="geometry" >
+     <rect>
+      <x>555</x>
+      <y>30</y>
+      <width>75</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string> browse</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_2" >
+    <property name="geometry" >
+     <rect>
+      <x>10</x>
+      <y>10</y>
+      <width>56</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>Alias:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_6" >
+    <property name="geometry" >
+     <rect>
+      <x>330</x>
+      <y>60</y>
+      <width>121</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>Down Command:</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="downLine" >
+    <property name="geometry" >
+     <rect>
+      <x>330</x>
+      <y>80</y>
+      <width>300</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="readOnly" >
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_5" >
+    <property name="geometry" >
+     <rect>
+      <x>10</x>
+      <y>60</y>
+      <width>121</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>Up Command:</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="pathLine" >
+    <property name="geometry" >
+     <rect>
+      <x>230</x>
+      <y>30</y>
+      <width>311</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="readOnly" >
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="aliasLine" >
+    <property name="geometry" >
+     <rect>
+      <x>10</x>
+      <y>30</y>
+      <width>211</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="readOnly" >
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="endpointLine" >
+    <property name="geometry" >
+     <rect>
+      <x>220</x>
+      <y>130</y>
+      <width>190</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="readOnly" >
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_3" >
+    <property name="geometry" >
+     <rect>
+      <x>220</x>
+      <y>110</y>
+      <width>56</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>Endpoint</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_4" >
+    <property name="geometry" >
+     <rect>
+      <x>230</x>
+      <y>10</y>
+      <width>56</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>Path:</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="dependencesLine" >
+    <property name="geometry" >
+     <rect>
+      <x>10</x>
+      <y>130</y>
+      <width>200</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="readOnly" >
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_7" >
+    <property name="geometry" >
+     <rect>
+      <x>10</x>
+      <y>110</y>
+      <width>91</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>Dependences</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="configLine" >
+    <property name="geometry" >
+     <rect>
+      <x>420</x>
+      <y>130</y>
+      <width>211</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="readOnly" >
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_8" >
+    <property name="geometry" >
+     <rect>
+      <x>420</x>
+      <y>110</y>
+      <width>111</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>Configuration file</string>
+    </property>
+   </widget>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

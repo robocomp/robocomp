@@ -54,7 +54,7 @@ Z()
 #    along with RoboComp.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-import sys, os, Ice
+import sys, os, Ice, traceback
 
 from PySide import *
 from genericworker import *
@@ -94,28 +94,23 @@ class SpecificWorker(GenericWorker):
 		self.timer.start(self.Period)
 
 	def setParams(self, params):
-		#// 	try
-		#// 	{
-		#// 		RoboCompCommonBehavior::Parameter par = params.at("InnerModelPath");
-		#// 		innermodel_path=par.value;
-		#// 		innermodel = new InnerModel(innermodel_path);
-		#// 	}
-		#// 	catch(std::exception e) { qFatal("Error reading config params"); }
+		#try:
+		#	par = params["InnerModelPath"]
+		#	innermodel_path=par.value
+		#	innermodel = InnerModel(innermodel_path)
+		#except:
+		#	tracebak.print_exc()
+		#	print "Error reading config params"
 		return True
 
 	@QtCore.Slot()
 	def compute(self):
 		print 'SpecificWorker.compute...'
-		#// 	try
-		#// 	{
-		#// 		camera_proxy->getYImage(0,img, cState, bState);
-		#// 		memcpy(image_gray.data, &img[0], m_width*m_height*sizeof(uchar));
-		#// 		searchTags(image_gray);
-		#// 	}
-		#// 	catch(const Ice::Exception &e)
-		#// 	{
-		#// 		std::cout << "Error reading from Camera" << e << std::endl;
-		#// 	}
+		#try:
+		#	differentialrobot_proxy.setSpeed(100, 0)
+		#except Ice.Exception, e:
+		#	tracebak.print_exc()
+		#	print e
 		return True
 
 [[[cog
@@ -143,6 +138,10 @@ for imp in lst:
 						outValues.append([p['type'], p['name']])
 					else:
 						paramStrA += ', ' +  p['name']
+				cog.outl('')
+				cog.outl('<TABHERE>#')
+				cog.outl('<TABHERE># ' + method['name'])
+				cog.outl('<TABHERE>#')
 				cog.outl('<TABHERE>def ' + method['name'] + '(self' + paramStrA + "):")
 				if method['return'] != 'void': cog.outl("<TABHERE><TABHERE>ret = "+method['return']+'()')
 				cog.outl("<TABHERE><TABHERE>#")

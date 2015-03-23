@@ -20,24 +20,35 @@
 
 
 qLog* qLog::logger = NULL;
+
+
 qLog::qLog()
 {
   log = "local"; 
 }
-qLog::~qLog(){
+
+
+qLog::~qLog()
+{
 }
 
-qLog* qLog::getInstance(){
-	if(logger==NULL)
+qLog* qLog::getInstance()
+{
+	if (logger==NULL)
 	    logger=new qLog();
 	return logger;
 }
+
+
 void qLog::showConsole()
 {
       printf("%s::%s::%s::%i::%s::%s::%s\n", timeStamp.c_str(), type.c_str(), file.c_str(), nLine, sender.c_str(), method.c_str(), message.c_str());
 }
+
+
 #if COMPILE_LOGGERCOMP==1
-void qLog::sendLogger(){
+void qLog::sendLogger()
+{
 	mess.sender = sender;
 	mess.method = method;
 	mess.file = file;
@@ -46,13 +57,17 @@ void qLog::sendLogger(){
 	mess.message = message;
 	mess.type = type;	
 	mess.fullpath = fullpath;
-	try{
+	try
+	{
 		prx->sendMessage(mess);
-	}catch( const Ice::Exception& ex)
+	}
+	catch( const Ice::Exception& ex)
 	{
 		std::cout<<"Exception::Fail sending to Logger:"<<ex<<endl;
 	}
 }
+
+
 void qLog::setProxy(std::string endpoint,RoboCompLogger::LoggerPrx _prx)
 {
 	log=QString(endpoint.c_str());
@@ -60,11 +75,14 @@ void qLog::setProxy(std::string endpoint,RoboCompLogger::LoggerPrx _prx)
 		prx = _prx;
 }
 #endif
+
+
 void qLog::send(std::string _file, int line, std::string func, std::string strng, std::string _type)
 {
 	if (log=="none")
 		return;
-	else{
+	else
+	{
 		//prepare message
 		fullpath = _file;
 		sender = "";
@@ -75,11 +93,13 @@ void qLog::send(std::string _file, int line, std::string func, std::string strng
 			if(list1.contains("robocomp"))
 			{
 				if(list1.contains("classes"))
+				{
 					sender = list1[list1.indexOf("classes")+1].toStdString();
+				}
 				else if(list1.contains("hal") or list1.contains("essential"))
+				{
 					sender = list1[list1.indexOf("hal")+1].toStdString();
-				else
-					sender = list1[list1.indexOf("robocomp")+4].toStdString();
+				}
 			}
 		}
 	    file = list1[list1.size()-1].toStdString();
@@ -100,10 +120,14 @@ void qLog::send(std::string _file, int line, std::string func, std::string strng
 			#endif
       }
 }
-void qLog::send(std::string file, int line,std::string func, QString strng,std::string type){
+
+void qLog::send(std::string file, int line,std::string func, QString strng,std::string type)
+{
       send(file,line,func,strng.toStdString(),type);
 }
-void qLog::send(std::string file, int line,std::string func, const char* strng,std::string type){
+
+void qLog::send(std::string file, int line,std::string func, const char* strng,std::string type)
+{
       send(file,line,func,std::string(strng),type);
 }
 

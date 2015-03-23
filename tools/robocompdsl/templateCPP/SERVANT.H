@@ -150,14 +150,13 @@ I();
 				
 				paramStr = ''
 				for p in method['params']:
+					ampersand = '&'
 					if p['decorator'] == 'out':
 						const = ''
 					else:
 						const = 'const '
-					if  p['type'] in [ 'int' ]:
-						ampersand = ''
-					else:
-						ampersand = '&'
+						if p['type'].lower() in ['int', '::ice::int', 'float', '::ice::float']:
+							ampersand = ''
 					paramStr += const + p['type'] + ' ' + ampersand + p['name'] + ', '
 
 				cog.outl('<TABHERE>' + ret + ' ' + name + '(' + paramStr + 'const Ice::Current&);')
