@@ -99,7 +99,7 @@ class SpecificWorker(GenericWorker):
 		#	innermodel_path=par.value
 		#	innermodel = InnerModel(innermodel_path)
 		#except:
-		#	tracebak.print_exc()
+		#	traceback.print_exc()
 		#	print "Error reading config params"
 		return True
 
@@ -109,7 +109,7 @@ class SpecificWorker(GenericWorker):
 		#try:
 		#	differentialrobot_proxy.setSpeed(100, 0)
 		#except Ice.Exception, e:
-		#	tracebak.print_exc()
+		#	traceback.print_exc()
 		#	print e
 		return True
 
