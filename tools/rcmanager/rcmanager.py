@@ -721,19 +721,25 @@ class GraphView(QtGui.QWidget):
 		for iterr in self.compList:
 			totalx += iterr.x
 			totaly += iterr.y
-			total += 1
+			total  += 1
+		if self.VisualNodeCogia:
+			totalx += self.VisualNodeCogia.x
+			totaly += self.VisualNodeCogia.y
+			total  += 1
+
 		meanx = totalx / total
 		meany = totaly / total
 		for iterr in self.compList:
 			iterr.x -= meanx
 			iterr.y -= meany
-		#print iterr.x, iterr.y
-
+		if self.VisualNodeCogia:
+			self.VisualNodeCogia.x -= meanx
+			self.VisualNodeCogia.y -= meany
+			
 	def paintNode(self, node):
 		w2 = self.parent().width()/2
 		h2 = self.parent().height()/2
 		global dict
-		
 
 		if node.on:
 			self.painter.setBrush(QtGui.QColor(0, 255, 0, dict['alpha']))
@@ -743,8 +749,8 @@ class GraphView(QtGui.QWidget):
 			self.painter.setPen(QtGui.QColor(255, 0, 0))
 		self.painter.drawEllipse(node.x-node.r+w2, node.y-node.r+h2, node.r*2, node.r*2)
 
-		print self.parent().width(), self.height()
-		print node.x-node.r+w2, node.y-node.r+h2, node.r*2, node.r*2
+		#print self.parent().width(), self.height()
+		#print node.x-node.r+w2, node.y-node.r+h2, node.r*2, node.r*2
 
 		#print(node.x-node.r, node.y-node.r, node.r*2, node.r*2)
 		self.painter.drawText(QtCore.QPoint(node.x-node.r+w2, node.y-node.r-3+h2), node.name)
@@ -821,7 +827,7 @@ class GraphView(QtGui.QWidget):
 					self.oy = y - b.y
 		if VisualNode:
 			if e.button() == 2 or forceDialog:
-				self.ui = CommandDialog(self, self.compList[minIndex].x+w2, self.compList[minIndex].y+w2)
+				self.ui = CommandDialog(self, self.compList[minIndex].x+w2, self.compList[minIndex].y+h2)
 				self.ui.idx = minIndex
 				self.connect(self.ui, QtCore.SIGNAL('up()'), self.up)
 				self.connect(self.ui, QtCore.SIGNAL('down()'), self.down)
