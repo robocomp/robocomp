@@ -41,9 +41,21 @@ preStr = "-I"+ROBOCOMP+"/interfaces/ --all "+ROBOCOMP+"/interfaces/"
 Ice.loadSlice(preStr+"RCRemote.ice")
 import RoboCompRemote
 
+def getPassFor(host_param):
+	for line in open(os.getenv("HOME")+'/.rcremote', 'r').readlines():
+		s = line.strip().split('#', 1)
+		if len(s) < 2:
+			continue
+		host = s[0]
+		password = s[1]
+		if host == host_param:
+			return password
+	raise Exception("can't find password for "+host+" in ~/.rcremote  (format 'host#password')")
 
-if len(sys.argv) < 6:
-	print "EXAMPLE: rcremote localhost passwordhere mytabname /home/robocomp touch argument1 argument2"
+
+if len(sys.argv) < 5:
+	print "EXAMPLE: rcremote localhost mytabname /home/robocomp touch argument1 argument2"
+	sys.exit(-1)
 
 if __name__ == '__main__':
 	app = QtCore.QCoreApplication(sys.argv)
@@ -72,12 +84,11 @@ if __name__ == '__main__':
 
 
 	if status == 0:
-		password = sys.argv[2]
-		yakuakeTabName = sys.argv[3]
-		path = sys.argv[4]
-		binary = sys.argv[5]
-		arguments = sys.argv[6:]
-		if rcremote_proxy.run(password, path, binary, arguments, yakuakeTabName):
+		yakuakeTabName = sys.argv[2]
+		path = sys.argv[3]
+		binary = sys.argv[4]
+		arguments = sys.argv[5:]
+		if rcremote_proxy.run(getPassFor(sys.argv[1]), path, binary, arguments, yakuakeTabName):
 			print 'ok'
 			sys.exit(0)
 		else:

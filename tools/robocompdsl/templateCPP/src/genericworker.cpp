@@ -74,8 +74,8 @@ for name, num in getNameNumber(component['requires']):
 [[[end]]]
 
 [[[cog
-for pb in component['publishes']:
-	cog.outl("<TABHERE>"+pb.lower()+" = (*("+pb+"Prx*)mprx[\""+pb+"Pub\"]);")
+for name, num in getNameNumber(component['publishes']):
+	cog.outl("<TABHERE>"+name.lower()+num+"_proxy = (*("+name+"Prx*)mprx[\""+name+"Pub"+num+"\"]);")
 ]]]
 [[[end]]]
 
