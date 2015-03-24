@@ -20,7 +20,7 @@
 #    along with RoboComp.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-import sys, traceback, Ice, os
+import sys, traceback, Ice, os, copy
 
 import signal
 signal.signal(signal.SIGINT, signal.SIG_DFL) # Ctrl+c handling
@@ -58,13 +58,14 @@ if len(sys.argv) < 5:
 	sys.exit(-1)
 
 if __name__ == '__main__':
+	argv = copy.deepcopy(sys.argv)
 	app = QtCore.QCoreApplication(sys.argv)
 	ic = Ice.initialize(sys.argv)
 	status = 0
 	mprx = {}
 	try:
 		try:
-			proxyString = "rcremote:tcp -p 4242 -h " + sys.argv[1]
+			proxyString = "rcremote:tcp -p 4242 -h " + argv[1]
 			try:
 				basePrx = ic.stringToProxy(proxyString)
 				rcremote_proxy = RoboCompRemote.RCRemotePrx.checkedCast(basePrx)
@@ -84,11 +85,16 @@ if __name__ == '__main__':
 
 
 	if status == 0:
-		yakuakeTabName = sys.argv[2]
-		path = sys.argv[3]
-		binary = sys.argv[4]
-		arguments = sys.argv[5:]
-		if rcremote_proxy.run(getPassFor(sys.argv[1]), path, binary, arguments, yakuakeTabName):
+		print argv
+		host = argv[1]
+		yakuakeTabName = argv[2]
+		path = argv[3]
+		binary = argv[4]
+		arguments = argv[5:]
+		print 'path', path
+		print 'binary', binary
+		print 'arguments', arguments
+		if rcremote_proxy.run(getPassFor(host), path, binary, arguments, yakuakeTabName):
 			print 'ok'
 			sys.exit(0)
 		else:
