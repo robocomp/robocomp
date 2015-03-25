@@ -12,7 +12,7 @@ RoboComp's components model is quite simple and we always try to simplify it eve
     {
       interface Speech
       {
-         bool say(string text,bool owerwrite);
+         bool say(string text,bool overwrite);
          bool isBusy();
       };
     };
