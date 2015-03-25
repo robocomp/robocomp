@@ -727,14 +727,18 @@ class GraphView(QtGui.QWidget):
 			totaly += self.VisualNodeCogia.y
 			total  += 1
 
-		meanx = totalx / total
-		meany = totaly / total
-		for iterr in self.compList:
-			iterr.x -= meanx
-			iterr.y -= meany
-		if self.VisualNodeCogia:
-			self.VisualNodeCogia.x -= meanx
-			self.VisualNodeCogia.y -= meany
+		if abs(totalx) > 0.001:
+			meanx = totalx / total
+			for iterr in self.compList:
+				iterr.x -= meanx
+			if self.VisualNodeCogia:
+				self.VisualNodeCogia.x -= meanx
+		if abs(totaly) > 0.001:
+			meany = totaly / total
+			for iterr in self.compList:
+				iterr.y -= meany
+			if self.VisualNodeCogia:
+				self.VisualNodeCogia.y -= meany
 			
 	def paintNode(self, node):
 		w2 = self.parent().width()/2
