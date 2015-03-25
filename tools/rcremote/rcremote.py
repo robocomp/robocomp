@@ -60,7 +60,7 @@ if len(sys.argv) < 5:
 if __name__ == '__main__':
 	argv = copy.deepcopy(sys.argv)
 	app = QtCore.QCoreApplication(sys.argv)
-	ic = Ice.initialize(sys.argv)
+	ic = Ice.initialize(['me'])
 	status = 0
 	mprx = {}
 	try:
