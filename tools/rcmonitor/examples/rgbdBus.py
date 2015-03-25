@@ -97,7 +97,6 @@ class C(QWidget):
 		if (len(self.color) == 3*640*480 or len(self.depth) == 640*480):
 			w=640
 			h=480
-			
 		elif (len(self.color) == 3*320*240 or len(self.depth) == (640*480)/2):
 			w=320
 			h=240
