@@ -103,6 +103,11 @@ and check where the joystick device file has been created (e.g., /dev/input/js0)
 
 Yo can find more tutorials on RoboComp in [tutorials!](doc/README.md)
 
+Drop comments and ask questions in:
+
+- https://groups.google.com/forum/?hl=es#!forum/robocomp-dev
+- https://gitter.im/robocomp
+
 Please, report any bugs to pbustos@unex.es
 
 
