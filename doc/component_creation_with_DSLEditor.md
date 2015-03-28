@@ -10,7 +10,7 @@ Create another terminal in Yakuake and type:
 Select 32 or 64 bits according to your current linux installation. After a little while the DSLEditor will be installed under the *robocompDSL* directory:
 
     cd roboCompDSL/DSLEditor
-    ./DSLEditor
+    UBUNTU_MENUPROXY= ./DSLEditor
     
 
 Check that you have a *RoboComp* tab in the upper bar of the DSLEditor window and that the *robocomp* directory appears in the Project Explorer (left panel). If it does not, right click inside the *Project Explorer* panel and select *import*. Then select *General* and then *Existing Projects into Workspace*. Then select your *robocomp* directory and push *Finish*. 
