@@ -11,6 +11,7 @@
 
 module RoboCompRGBDBus{
 	exception HardwareFailedException{string what;};
+	["cpp:comparable"]
 	struct CameraParams{
 		int colorWidth;
 		int colorHeight;
@@ -19,13 +20,14 @@ module RoboCompRGBDBus{
 		int depthHeight;
 		int depthFPS;
 		float colorFocal;
-		float depthFocal;
-		string name;
+					float depthFocal;
+					string name;
 	};
 	dictionary<string, CameraParams>CameraParamsMap;
 	sequence <string> CameraList;
 	sequence <byte> ColorBuffer;
-	sequence <short> DepthBuffer;
+	sequence <float> DepthBuffer;
+				["cpp:comparable"]
 	struct Image{
 		CameraParams camera;
 		ColorBuffer colorImage;
@@ -36,14 +38,15 @@ module RoboCompRGBDBus{
 		long depthTimestamp;
 	};
 	dictionary<string, Image>ImageMap;
+	["cpp:comparable"]
 	struct Point3D{
 		byte r;
 		byte g;
 		byte b;
 		float x;
-		float y;
-		float z;
-	};
+					float y;
+					float z;
+				};
 	sequence <Point3D> PointCloud;
 	dictionary<string, PointCloud>PointCloudMap;
 
