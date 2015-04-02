@@ -7,6 +7,8 @@
 
 [Maintaining your own repository of components](using_github.md)
 
+[Using robocompdsl tool](robocompdsl.md)
+
 [InnerModel, RoboComp's internal representation of reality]
 
 [Using E. Olson's AprilTags in RoboComp]
