@@ -13,21 +13,21 @@ Even tough writing CDSL files is easy --their structure is simple and the number
 
 This will generate a CDSL file with the following content:
 
- import "/robocomp/interfaces/IDSLs/import1.idsl";
- import "/robocomp/interfaces/IDSLs/import2.idsl";
+    import "/robocomp/interfaces/IDSLs/import1.idsl";
+    import "/robocomp/interfaces/IDSLs/import2.idsl";
  
- Component CHANGETHECOMPONENTNAME
- {
- 	Communications
- 	{
- 		implements interfaceName;
- 		requires otherName;
- 		subscribesTo topicToSubscribeTo;
- 		publishes topicToPublish;
- 	};
- 	language Cpp;
- 	gui Qt(QWidget);
- };
+    Component CHANGETHECOMPONENTNAME
+    {
+    	Communications
+    	{
+    		implements interfaceName;
+    		requires otherName;
+    		subscribesTo topicToSubscribeTo;
+    		publishes topicToPublish;
+    	};
+    	language Cpp;
+    	gui Qt(QWidget);
+    };
 
 
 
