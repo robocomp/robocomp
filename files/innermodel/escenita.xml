@@ -1,37 +1,37 @@
 <innerModel>
 	<transform id="world">
 		<transform id="mesh1">
-			<mesh id="columna1" file="/home/daniel/data/palma.osg" scale="1" tx="0" tz="0" ty="0"  />
+			<mesh id="columna1" file="/home/robocomp/robocomp/files/osgModels/data/palma.osg" scale="1" tx="0" tz="0" ty="0"  />
 		</transform>
 		
 		<transform id="mesh2">
-			<mesh id="columna2" file="/home/daniel/data/columna.osg" scale="1" tx="10" tz="0" ty="0"  />
+			<mesh id="columna2" file="/home/robocomp/robocomp/files/osgModels/data/columna.osg" scale="1" tx="10" tz="0" ty="0"  />
 		</transform>
 		
 		<transform id="meshe1">
 		</transform>
 		<transform id="mesh3">
-			<mesh id="armario1" file="/home/daniel/data/armario.osg" scale="1" tx="20" tz="0" ty="5"  />
+			<mesh id="armario1" file="/home/robocomp/robocomp/files/osgModels/data/armario.osg" scale="1" tx="20" tz="0" ty="5"  />
 		</transform>
 		
 		<transform id="mesh4">
-			<mesh id="frigo1" file="/home/daniel/data/frigorifico.osg" scale="1" tx="30" tz="0" ty="0"  />
+			<mesh id="frigo1" file="/home/robocomp/robocomp/files/osgModels/data/frigorifico.osg" scale="1" tx="30" tz="0" ty="0"  />
 		</transform>
 		
 		<transform id="mesh5">
-			<mesh id="balon1" file="/home/daniel/data/balonplaya.osg" scale="2" tx="40" tz="0" ty="0"  />
+			<mesh id="balon1" file="/home/robocomp/robocomp/files/osgModels/data/balonplaya.osg" scale="2" tx="40" tz="0" ty="0"  />
 			<transform id="mesh6">
-				<mesh id="balon2" file="/home/daniel/data/balonplaya.osg" scale="1" tx="30" tz="0" ty="5"  />
+				<mesh id="balon2" file="/home/robocomp/robocomp/files/osgModels/data/balonplaya.osg" scale="1" tx="30" tz="0" ty="5"  />
 			</transform>
 			<transform id="mesh7">
-				<mesh id="balon3" file="/home/daniel/data/balonplaya.osg" scale="1" tx="35" tz="0" ty="-5"  />
+				<mesh id="balon3" file="/home/robocomp/robocomp/files/osgModels/data/balonplaya.osg" scale="1" tx="35" tz="0" ty="-5"  />
 			</transform>
 		</transform>
 		
 		<transform id="mesh8">
-			<mesh id="palma6" file="/home/daniel/data/armariox4.osg" scale="1" tx="20" tz="0" ty="15"  />
+			<mesh id="palma6" file="/home/robocomp/robocomp/files/osgModels/data/armariox4.osg" scale="1" tx="20" tz="0" ty="15"  />
 			<transform id="mesh9">
-				<mesh id="palma7" file="/home/daniel/data/silla2.osg" scale="1" tx="30" tz="0" ty="10"  />
+				<mesh id="palma7" file="/home/robocomp/robocomp/files/osgModels/data/silla2.osg" scale="1" tx="30" tz="0" ty="10"  />
 			</transform>
 		</transform>
 	</transform>
