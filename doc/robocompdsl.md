@@ -4,7 +4,11 @@
 
 This new version can only be used from the command line, but the languages used to define components and their interfaces remain mostly the same: **CDSL** to specify components and **IDSL** to specify interfaces. The only difference with the old RoboCompDSLEditor tool is that the reserved keywords (are now case independent). Take a look to the tutorial ["a brief introduction to Components"](components.md) for an introduction to the concept of component generation and the languages involved.
 
-There are three tasks we can acomplish using **robocompdsl**: generating a CDSL template file, generating the code for a previously existing CDSL file, and regenerating the code for an already generated component.
+There are three tasks we can acomplish using **robocompdsl**: 
+
+*generating a CDSL template file
+*generating the code for a previously existing CDSL file
+*regenerating the code for an already generated component.
 
 ## Generating a CDSL template file
 Even tough writing CDSL files is easy --their structure is simple and the number of reserved words is very limited-- robocompdsl can generate template CDSL files to be used as a guide when writing CDSL files.
