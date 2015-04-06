@@ -6,9 +6,9 @@ This new version can only be used from the command line, but the languages used 
 
 There are three tasks we can acomplish using **robocompdsl**: 
 
-*generating a CDSL template file
-*generating the code for a previously existing CDSL file
-*regenerating the code for an already generated component.
+* generating a CDSL template file
+* generating the code for a previously existing CDSL file
+* regenerating the code for an already generated component.
 
 ## Generating a CDSL template file
 Even tough writing CDSL files is easy --their structure is simple and the number of reserved words is very limited-- robocompdsl can generate template CDSL files to be used as a guide when writing CDSL files.
