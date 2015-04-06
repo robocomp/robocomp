@@ -1,4 +1,4 @@
-########## How to contribute to robocomp github repository #############
+#How to contribute to robocomp github repository
 
 In brief the steps involved will be:
 * Fork the robocomp repository
