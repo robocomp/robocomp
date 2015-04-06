@@ -51,11 +51,39 @@ In
    
 you can find an example of a configuration file. We can find there the following lines:
 
+    GetAprilTagsComp.Endpoints=tcp -p 12210                     //Port where GetAprilTags iface is served
+    CommonBehavior.Endpoints=tcp -p 11258                       //Not of use for the user now
+    CameraProxy = camera:tcp -h localhost -p 10001              //Port where a camera is located
+    RGBDProxy = rgbd:tcp -h localhost -p 10096                  //Port where a RGBD camera is located
+    RGBDBusProxy = rgbdbus:tcp -h localhost -p 10239            //Port where a bus of RGBDs is located
+    AprilTagsProxy = apriltags:tcp -h localhost -p 10261        //Not of use for the user
+    TopicManager.Proxy=IceStorm/TopicManager:default -p 9999    //Port where STROM broker is located
+    InnerModelPath=/home/robocomp/robocomp/files/innermodel/simpleworld.xml
+
+
+    InputInterface = RGBD                                       //Current input iface to be used
+    AprilTagsFamily = tagCodes36h11                             //Tags family. See AprilTags paper
+    AprilTagsSize = 0.17                                        //Tag default real size in meters
+    ID:0-10 = 0.17   #tag size in meters                        //Tags numbers 1-10 real size in meters
+    ID:11-20 = 0.17   #tag size in meters                       //Tags numbers 11-20 real size in meters
+    ID:21-30 = 0.17   #tag size in meters                       //Tags numbers 21-30 real size in meters
+
+Each tag has an ID that is printed inside the surrounding square using Hamming code. Instructions to print tags can be found [here](http://april.eecs.umich.edu/wiki/index.php/AprilTags). The algorithm needs the real size of the tag to estimate its position and orientation in space. We can give the component tags of different sizes, as long as they correspond to different ranges of IDs, as specified in the configuration file above.
 
 ##Starting the component
-To start the component we need whether a real camera connected to the cameraV4lComp component or the RCIS simulator started with a file that includes virtual tags, such as *simpleworld.xml*. 
+To start the component we need whether a real camera connected to the cameraV4lComp component or the RCIS simulator started with a file that includes virtual tags, such as *simpleworld.xml*. Once RCIS is up and running, it will provide the RGBD.idsl interface (nor Camera.idsl for now) at port 10096, which is what the configuration file states. To avoid changing the *generic_config* file in the repository, we can copy it to the component's home directory, so changes will remain untouched by future git pulls:
 
-Once RCIS is up and running, it will attend the 
+    cp ~/robocomp/components/robocomp-robolab/components/apriltagsComp
+    cp /etc/generic_config config
+
+So, to begin we type:
+
+    cd ~/robocomp/components/robocomp-robolab/components/apriltagsComp
+    bin/apriltagscomp --Ice.Config=config
+    
+If the robot's camera is pointing towards one of the tags, you should see in the terminal lines showing the ID and pose of each visible tag.
+
+    
     
 
 
