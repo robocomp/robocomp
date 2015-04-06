@@ -17,11 +17,9 @@
 
 [InnerModel, RoboComp's internal representation of reality]
 
-[Using E. Olson's AprilTags in RoboComp]
-
 [RoboComp's robots: Ursus, Loki and the others]
 
-[robocomp-robolab components]
+[**robocomp-robolab** components]
 
 [The BodyInverseKinematics (BIK) component]
 
