@@ -34,7 +34,7 @@ The indication that the repo is forked can be observed as follows:
 
 Open a terminal and move to home directory and type: 
 	
-	git clone *<link to the forked repository>*
+	git clone <link to the forked repository>
 
 ![](https://github.com/abhi-kumar/robocomp/blob/how-to-contribute/cloned.jpg)
 
