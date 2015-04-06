@@ -1,4 +1,4 @@
-#Using robocompdsl
+#Using robocompdsl: the command-line component generator
 
 **robocompdsl** is the new tool used in RoboComp to automatically generate components and modify their main properties once they have been generated (e.g., communication requirements, UI type). It is one of the core tools of the framework so, if you installed RoboComp, you can start using it right away.
 
