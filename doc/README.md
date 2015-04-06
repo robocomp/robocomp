@@ -13,7 +13,7 @@
 
 [The E. Olson's AprilTags component](apriltags.md)
 
-[Creating a Python component using **robocompdsl**](robocompdsl_python.md)
+[Creating a Python component using **robocompdsl** that subscribes to *apriltagsComp*](robocompdsl_python.md)
 
 [InnerModel, RoboComp's internal representation of reality]
 
