@@ -15,8 +15,6 @@
 
 [Using E. Olson's AprilTags in RoboComp]
 
-[Creation of a new Python/C++ component using RoboComp's new component generator]
-
 [RoboComp's robots: Ursus, Loki and the others]
 
 [robocomp-robolab components]
