@@ -43,9 +43,7 @@ We should have a binary now:
     
 
 ##Configuration parameters
-As any other component, *apriltagsComp* needs a *config* file to start. 
-
-In
+As any other component, *apriltagsComp* needs a *config* file to start. In
 
     ~/robocomp/components/robocomp-robolab/components/apriltagsComp/etc/generic_config
    
