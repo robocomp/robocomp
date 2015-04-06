@@ -7,7 +7,9 @@
 
 [Maintaining your own repository of components](using_github.md)
 
-[Using robocompdsl tool](robocompdsl.md)
+[Creation of a new component using the new **robocompdsl** command line tool](robocompdsl.md)
+
+[How to contribute to RoboComp using the GitHub branching mechanism](contribute/contribute.md)
 
 [InnerModel, RoboComp's internal representation of reality]
 
