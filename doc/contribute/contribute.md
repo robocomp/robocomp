@@ -33,7 +33,8 @@ The indication that the repo is forked can be observed as follows:
 2) Cloning the the repository:
 
 Open a terminal and move to home directory and type: 
-	git clone <link to the forked repository>
+	
+	git clone *<link to the forked repository>*
 
 ![](https://github.com/abhi-kumar/robocomp/blob/how-to-contribute/cloned.jpg)
 
@@ -43,19 +44,22 @@ Open a terminal and move to home directory and type:
 Open a terminal and move the “pwd” to the place where the forked repository is present.
 
 *  To see a list of all branches present and to see the current working branch type and execute 
+	
 	git branch -a
 
 ![](https://github.com/abhi-kumar/robocomp/blob/how-to-contribute/branch.jpg)
 
 
 * Create a new branch to work on. There is no restriction wrt the naming of the branch.
-	git branch <branch_name> 
+	
+	git branch *<branch_name>* 
 
 ![](https://github.com/abhi-kumar/robocomp/blob/how-to-contribute/branched.jpg)
 
 
 * To switch to the branch that you created to work on execute,
-	git checkout <branch_name>
+	
+	git checkout *<branch_name>*
 
 ![](https://github.com/abhi-kumar/robocomp/blob/how-to-contribute/switched.jpg)
 
@@ -70,25 +74,29 @@ Demo : Lets make changes to Readme.md
 5) Commit the changes made
 
 * To get a list of all the files to which changes have been made type,
+	
 	git status 
 
 ![](https://github.com/abhi-kumar/robocomp/blob/how-to-contribute/status.jpg)
 
 
 * Next add only those files which we want to commit by typing 
-	git add <filename>
+
+	git add *<filename>*
 
 ![](https://github.com/abhi-kumar/robocomp/blob/how-to-contribute/add.jpg)
 
 
 *  Now commit the changes bu using command
-	git commit -m '<heading>'
+
+	git commit -m *'<heading>'*
 
 ![](https://github.com/abhi-kumar/robocomp/blob/how-to-contribute/commit.jpg)
 
 
 6) Push the commit to repository
-	git push origin <current_working_branch_name>
+
+	git push origin *<current_working_branch_name>*
 
 ![](https://github.com/abhi-kumar/robocomp/blob/how-to-contribute/push.jpg)
 
