@@ -89,7 +89,7 @@ Demo : Lets make changes to Readme.md
 
 *  Now commit the changes bu using command
 
-	git commit -m '<heading>'
+	git commit -m 'commit message'
 
 ![](https://github.com/abhi-kumar/robocomp/blob/how-to-contribute/commit.jpg)
 
