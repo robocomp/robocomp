@@ -31,34 +31,34 @@
 
 		<!-- Base de loki -->
 		<transform id="base">
-		    <mesh id="base_loki" file="/home/robocomp/robocomp/Files/osgModels/lokibase_loki.osg" scale="2.0" tx="8" tz="-4" rz = "1.57" />
+		    <mesh id="base_loki" file="/home/robocomp/robocomp/files/osgModels/lokibase_loki.osg" scale="2.0" tx="8" tz="-4" rz = "1.57" />
 			<!-- Tronco de loki -->
 			<transform id="tronco">
-				<mesh id="tronco_loki" file="/home/robocomp/robocomp/Files/osgModels/lokitronco_loki.osg" scale="2.0" tx="8" tz="-4" rz = "1.57"/>
+				<mesh id="tronco_loki" file="/home/robocomp/robocomp/files/osgModels/lokitronco_loki.osg" scale="2.0" tx="8" tz="-4" rz = "1.57"/>
 				<!-- Cabeza de loki -->
 				<transform id="cabeza">
-		    			<mesh id="cabeza_loki" file="/home/robocomp/robocomp/Files/osgModels/lokicabeza_loki.osg" scale="2.0" tx="8" tz="-4" rz = "1.57"/>
+		    			<mesh id="cabeza_loki" file="/home/robocomp/robocomp/files/osgModels/lokicabeza_loki.osg" scale="2.0" tx="8" tz="-4" rz = "1.57"/>
 				</transform>
 				<!-- Boca de loki -->
 				<transform id="boca">
-		    			<mesh id="boca_loki" file="/home/robocomp/robocomp/Files/osgModels/lokiboca_loki.osg" scale="2.0" tx="8" tz="-4" rz = "1.57"/>
+		    			<mesh id="boca_loki" file="/home/robocomp/robocomp/files/osgModels/lokiboca_loki.osg" scale="2.0" tx="8" tz="-4" rz = "1.57"/>
 				</transform>
 				<!-- Brazo de loki completo -->
 				<!-- Pieza 1 -->
 				<transform id="brazo_1">
-		    			<mesh id="brazo_1_loki" file="/home/robocomp/robocomp/Files/osgModels/lokibrazo_1_loki.osg" scale="2.0" tx="8" tz="-4" rz = "1.57"/>
+		    			<mesh id="brazo_1_loki" file="/home/robocomp/robocomp/files/osgModels/lokibrazo_1_loki.osg" scale="2.0" tx="8" tz="-4" rz = "1.57"/>
 						<!-- Pieza 2 -->
 						<transform id="brazo_2">
-		    					<mesh id="brazo_2_loki" file="/home/robocomp/robocomp/Files/osgModels/lokibrazo_2_loki.osg" scale="2.0" tx="8" tz="-4" rz = "1.57"/>
+		    					<mesh id="brazo_2_loki" file="/home/robocomp/robocomp/files/osgModels/lokibrazo_2_loki.osg" scale="2.0" tx="8" tz="-4" rz = "1.57"/>
 								<!-- Pieza 3 -->
 								<transform id="brazo_3">
-		    							<mesh id="brazo_3_loki" file="/home/robocomp/robocomp/Files/osgModels/lokibrazo_3_loki.osg" scale="2.0" tx="8" tz="-4" rz = "1.57"/>
+		    							<mesh id="brazo_3_loki" file="/home/robocomp/robocomp/files/osgModels/lokibrazo_3_loki.osg" scale="2.0" tx="8" tz="-4" rz = "1.57"/>
 										<!-- Pieza 4 -->
 										<transform id="brazo_4">
-		    									<mesh id="brazo_4_loki" file="/home/robocomp/robocomp/Files/osgModels/lokibrazo_4_loki.osg" scale="2.0" tx="8" tz="-4" rz = "1.57"/>
+		    									<mesh id="brazo_4_loki" file="/home/robocomp/robocomp/files/osgModels/lokibrazo_4_loki.osg" scale="2.0" tx="8" tz="-4" rz = "1.57"/>
 												<!-- Mano semiabierta -->
 												<transform id="mano">
-		    											<mesh id="mano_loki" file="/home/robocomp/robocomp/Files/osgModels/lokimano_semi_loki.osg" scale="2.0" tx="8" tz="-4" rz = "1.57"/>
+		    											<mesh id="mano_loki" file="/home/robocomp/robocomp/files/osgModels/lokimano_semi_loki.osg" scale="2.0" tx="8" tz="-4" rz = "1.57"/>
 												</transform>
 										</transform>
 								</transform>
