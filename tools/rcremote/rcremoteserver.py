@@ -61,8 +61,22 @@ try:
 except:
 	pass
 if len(ROBOCOMP)<1:
-	print 'ROBOCOMP environment variable not set! Exiting.'
-	sys.exit()
+	print 'ROBOCOMP environment variable not set! Trying to read ~/.robocomp'
+	try:
+		lines = [x.strip() for x in open(os.getenv("HOME")+'/.robocomp', 'r').readlines() if len(x.strip())>0 and x[0] != '#']
+	except:
+		print 'can\'t read file'
+		sys.exit()
+	if len(lines) != 1:
+		print 'empty?'
+		sys.exit()
+	if lines[0][0] != '/':
+		print 'we need an absolute path in ~/.robocomp'
+		sys.exit()
+	ROBOCOMP = lines[0]
+	print "Read $ROBOCOMP from ~/.robocomp <"+ROBOCOMP+">"
+		
+	
 
 
 preStr = "-I"+ROBOCOMP+"/interfaces/ --all "+ROBOCOMP+"/interfaces/"

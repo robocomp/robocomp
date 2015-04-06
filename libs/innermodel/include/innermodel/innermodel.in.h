@@ -270,6 +270,8 @@ public:
 	bool collide(const QString &a, const fcl::CollisionObject *obj);
 #endif
 
+	QMat jacobian(QStringList &listaJoints, const QVec &motores, const QString &endEffector);
+	
 protected:
 	QMutex *mutex;
 	InnerModelNode *root;

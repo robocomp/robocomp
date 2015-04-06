@@ -436,7 +436,7 @@ app(prefix);
 	}
 	else
 	{
-		return app.main(argc, argv, "etc/config"); // "config" is the default config file name
+		return app.main(argc, argv, "config"); // "config" is the default config file name
 	}
 }
 
