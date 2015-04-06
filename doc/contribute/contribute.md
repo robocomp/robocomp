@@ -14,7 +14,7 @@ In brief the steps involved will be:
 * Pull a request for the commit made
 * Start a discussion regarding you commit
 
-Now each and every step will be explained in detail:
+In detail explanation: 
 
 1) Forking the repository:
 
@@ -24,14 +24,17 @@ Click on the fork option as shown below:
 
 ![](https://github.com/abhi-kumar/robocomp/blob/how-to-contribute/fork.jpg)
 
+
 The indication that the repo is forked can be observed as follows:
 
 ![](https://github.com/abhi-kumar/robocomp/blob/how-to-contribute/forked.jpg)
-
  
+
 2) Cloning the the repository:
 
-Open a terminal and move to home directory and type: git clone <link to the forked repository>
+Open a terminal and move to home directory and type: 
+	
+	git clone <link to the forked repository>
 
 ![](https://github.com/abhi-kumar/robocomp/blob/how-to-contribute/cloned.jpg)
 
@@ -40,44 +43,60 @@ Open a terminal and move to home directory and type: git clone <link to the fork
 
 Open a terminal and move the “pwd” to the place where the forked repository is present.
 
-* First command is “git branch -a”, it provides a list of all branches present and indicates the current working branch
+*  To see a list of all branches present and to see the current working branch type and execute:
+
+	git branch
 
 ![](https://github.com/abhi-kumar/robocomp/blob/how-to-contribute/branch.jpg)
 
-* To Create a new branch type “git branch <branch_name>”. There is no restriction to the <branch_name>, but it is desirable to be related to the changes being made.
+
+* Create a new branch to work on. There is no restriction wrt the naming of the branch:
+
+	git branch <branch_name>
 
 ![](https://github.com/abhi-kumar/robocomp/blob/how-to-contribute/branched.jpg)
 
-* Next step is to switch to that branch, so type “git checkout <branch_name>”
+
+* To switch to the branch that you created to work on execute:
+
+	git checkout <branch_name>
 
 ![](https://github.com/abhi-kumar/robocomp/blob/how-to-contribute/switched.jpg)
 
 
 4) Making changes:
 
-Demo : Lets make changes Readme.md
+Demo : Lets make changes to Readme.md
 
 ![](https://github.com/abhi-kumar/robocomp/blob/how-to-contribute/changes.jpg)
 
 
 5) Commit the changes made
 
-* First type “ git status”, this command lists all the files to which changes have been made
+* To get a list of all the files to which changes have been made type:
+
+	git status
 
 ![](https://github.com/abhi-kumar/robocomp/blob/how-to-contribute/status.jpg)
 
-* Next step is to add only those files which we want to commit by typing “git add <filename>”
+
+* Next add only those files which we want to commit by typing:
+
+	git add <filename>
 
 ![](https://github.com/abhi-kumar/robocomp/blob/how-to-contribute/add.jpg)
 
-* Now its time to commit the changes, so use command “ git commit -m '<heading>' "
+
+*  Now commit the changes by using command:
+
+	git commit -m 'commit message'
 
 ![](https://github.com/abhi-kumar/robocomp/blob/how-to-contribute/commit.jpg)
 
 
-6) Push the commit to repository
+6) Push the commit to repository:
 
-Use the command “git push origin <current_working_branch_name>”
+	git push origin <current_working_branch_name>
 
 ![](https://github.com/abhi-kumar/robocomp/blob/how-to-contribute/push.jpg)
 
@@ -87,7 +106,4 @@ Use the command “git push origin <current_working_branch_name>”
 ![](https://github.com/abhi-kumar/robocomp/blob/how-to-contribute/pull.jpg)
 
 
-8) Now its time to discuss over the pull-request in detail with the rest of the contributing team
-
-
-!!!!!CHEERS!!!!!!! 
+8) Discuss the commits you have made with the rest of the contributing team.
