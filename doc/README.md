@@ -7,9 +7,13 @@
 
 [Maintaining your own repository of components](using_github.md)
 
-[Creation of a new component using the new **robocompdsl** command line tool](robocompdsl.md)
-
 [How to contribute to RoboComp using the GitHub branching mechanism](contribute/contribute.md)
+
+[Using the new **robocompdsl** component generation command line tool](robocompdsl.md)
+
+[The E. Olson's AprilTags component](apriltags.md)
+
+[Creating a Python component using **robocompdsl**](robocompdsl_python.md)
 
 [InnerModel, RoboComp's internal representation of reality]
 
