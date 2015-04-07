@@ -44,11 +44,11 @@ if text:
 
 
 text = False
-for rq in component['requires']:
+for name, number in getNameNumber(component['requires']):
 	if text == False:
 		cog.outl('# Proxies for required interfaces')
 		text = True
-	cog.outl(rq + "Proxy = " + rq.lower() + ":tcp -h localhost -p 0")
+	cog.outl(name + number + "Proxy = " + name.lower() + ":tcp -h localhost -p 0")
 if text:
 	cog.out('\n\n')
 

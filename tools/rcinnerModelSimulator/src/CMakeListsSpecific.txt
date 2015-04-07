@@ -3,6 +3,7 @@ LIST ( APPEND SOURCES
 	specificworker.cpp
 	specificmonitor.cpp
 	servers.cpp
+	pickhandler.cpp
 )
 
 # Headers set

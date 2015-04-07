@@ -121,9 +121,7 @@
 		</transform>
 		-->
 	
-
-		<transform id="caca" tz="-1000"  >
-			<differentialrobot id="base" port="10004">
+			<differentialrobot id="robot" port="10004">
 							
 				<mesh id="base_robex" file="/home/robocomp/robocomp/files/osgModels/robex/robex.ive"  tx="0" ty="0" tz="-180" scale="1000" />
 	
@@ -186,7 +184,7 @@
 										<transform id="arm_right_4" ty="-18"  tz="185"     > <!--Codo-->
 <!-- 											Gira en X -->
 											<mesh id="elbow_right_mesh" file="/home/robocomp/robocomp/files/osgModels/basics/cube.3ds" ty="-22" tz="-22" scale="20"    />
-											<joint id="elbow_right" port="20000" min="0" max="3" axis="x" home="0" >
+											<joint id="elbow_right" port="20000" min="0" max="3" axis="x" home="1" >
 												<mesh id="elbow_right_1_mesh2" file="/home/robocomp/robocomp/files/osgModels/basics/cylinder.3ds" tz="18" scale="10,10,20"    />
 												<transform id="axisArm4" tx="0" ty="0" tz="0"> 
 													<plane id="axisArm4x" px="50" nx="1" size="2,2,100" repeat="1" texture="#ff0000" />
@@ -290,7 +288,6 @@
 					</joint>
 				</transform>
 			</differentialrobot>
-		</transform>
 	</transform>
 
 <!--

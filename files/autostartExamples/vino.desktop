@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=vino
+GenericName=vino
+Comment=vino
+Exec=/usr/lib/vino/vino-server
+Terminal=false
+Type=Application
+StartupNotify=false
+

@@ -109,17 +109,15 @@ I()
 				
 				paramStrA = ''
 				for p in method['params']:
+					ampersand = '&'
 					if p['decorator'] == 'out':
 						const = ''
 					else:
 						const = 'const '
-					if  p['type'] in [ 'int' ]:
-						ampersand = ''
-					else:
-						ampersand = '&'
+						if p['type'].lower() in ['int', '::ice::int', 'float', '::ice::float']:
+							ampersand = ''
 					paramStrA += const + p['type'] + ' ' + ampersand + p['name'] + ', '
 
-					
 				paramStrB = ''
 				for p in method['params']:
 					if paramStrB == '': delim = ''

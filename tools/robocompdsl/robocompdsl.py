@@ -16,9 +16,8 @@ def generateDummyCDSL(path):
 		print "Generating dummy CDSL file:", path
 		open(path, "w").write("""import "/robocomp/interfaces/IDSLs/import1.idsl";
 import "/robocomp/interfaces/IDSLs/import2.idsl";
-import "/robocomp/interfaces/IDSLs/import3.idsl";
 
-Component name
+Component CHANGETHECOMPONENTNAME
 {
 	Communications
 	{
@@ -115,8 +114,9 @@ if component['language'].lower() == 'cpp':
 	#
 	# Generate regular files
 	#
-	files = [ 'CMakeLists.txt', 'DoxyFile', 'README-STORM.txt', 'etc/config', 'src/main.cpp', 'src/CMakeLists.txt', 'src/CMakeListsSpecific.txt', 'src/commonbehaviorI.h', 'src/commonbehaviorI.cpp', 'src/genericmonitor.h', 'src/genericmonitor.cpp', 'src/config.h', 'src/specificmonitor.h', 'src/specificmonitor.cpp', 'src/genericworker.h', 'src/genericworker.cpp', 'src/specificworker.h', 'src/specificworker.cpp', 'src/specificmonitor.h', 'src/specificmonitor.cpp', 'src/mainUI.ui' ]
-	specificFiles = [ 'src/specificworker.h', 'src/specificworker.cpp', 'src/CMakeListsSpecific.txt', 'src/mainUI.ui' ]
+	files = [ 'CMakeLists.txt', 'DoxyFile', 'README-STORM.txt', 'README.md', 'etc/config', 'src/main.cpp', 'src/CMakeLists.txt', 'src/CMakeListsSpecific.txt', 'src/commonbehaviorI.h', 'src/commonbehaviorI.cpp', 'src/genericmonitor.h', 'src/genericmonitor.cpp', 'src/config.h', 'src/specificmonitor.h', 'src/specificmonitor.cpp', 'src/genericworker.h', 'src/genericworker.cpp', 'src/specificworker.h', 'src/specificworker.cpp', 'src/specificmonitor.h', 'src/specificmonitor.cpp', 'src/mainUI.ui' ]
+	
+	specificFiles = [ 'src/specificworker.h', 'src/specificworker.cpp', 'src/CMakeListsSpecific.txt', 'src/mainUI.ui', 'src/specificmonitor.h', 'src/specificmonitor.cpp', 'README.md' ]
 	for f in files:
 		ofile = outputPath + '/' + f
 		if f in specificFiles and os.path.exists(ofile):
@@ -130,7 +130,7 @@ if component['language'].lower() == 'cpp':
 		if ret != 0:
 			print 'ERROR'
 			sys.exit(-1)
-		replaceTagsInFile(outputPath + '/' + f)
+		replaceTagsInFile(ofile)
 	#
 	# Generate interface-dependent files
 	#
@@ -163,8 +163,8 @@ elif component['language'].lower() == 'python':
 	#
 	# Generate regular files
 	#
-	files = [ 'CMakeLists.txt', 'DoxyFile', 'README-STORM.txt', 'etc/config', 'src/main.py', 'src/genericworker.py', 'src/specificworker.py', 'src/mainUI.ui' ]
-	specificFiles = [ 'src/specificworker.py', 'src/mainUI.ui' ]
+	files = [ 'CMakeLists.txt', 'DoxyFile', 'README-STORM.txt', 'README.md', 'etc/config', 'src/main.py', 'src/genericworker.py', 'src/specificworker.py', 'src/mainUI.ui' ]
+	specificFiles = [ 'src/specificworker.py', 'src/mainUI.ui', 'README.md' ]
 	for f in files:
 		if f == 'src/main.py':
 			ofile = outputPath + '/src/' + component['name'] + '.py'
@@ -180,7 +180,7 @@ elif component['language'].lower() == 'python':
 		ret = Cog().main(run)
 		if ret != 0:
 			print 'ERROR'
-			sys.exyt(-1)
+			sys.exit(-1)
 		replaceTagsInFile(ofile)
 		if f == 'src/main.py': os.chmod(ofile, os.stat(ofile).st_mode | 0111 )
 	#

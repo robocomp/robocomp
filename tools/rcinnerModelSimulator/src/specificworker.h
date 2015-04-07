@@ -33,7 +33,27 @@
 
 #include "genericworker.h"
 #include "servers.h"
+#include "pickhandler.h"
 
+//////////////////////
+// RENDERER THREAD
+///////////////////////
+
+// class RenderThread : public QThread
+// {
+// 	public:
+// 		RenderThread() : QThread(), viewerPtr(0) {}
+// 		virtual ~RenderThread()
+// 		{ 
+// 			if (viewerPtr) viewerPtr->setDone(true); wait(); 
+// 		}			
+// 		osgViewer::Viewer* viewerPtr;
+// 	protected:
+// 		virtual void run()
+// 		{ 
+// 			if (viewerPtr) viewerPtr->run(); 		
+// 		}
+// };
 
 class SpecificWorker : public GenericWorker
 {
@@ -170,5 +190,7 @@ public:
 	void rgbd_getData(const QString& server, RoboCompRGBD::imgType& rgbMatrix, depthType& distanceMatrix, RoboCompJointMotor::MotorStateMap& hState, RoboCompDifferentialRobot::TBaseState& bState);
 	void rgbd_getImage(const QString& server, ColorSeq& color, DepthSeq& depth, PointSeq& points, RoboCompJointMotor::MotorStateMap& hState, RoboCompDifferentialRobot::TBaseState& bState);
 };
+
+
 
 #endif

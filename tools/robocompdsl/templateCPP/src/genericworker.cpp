@@ -68,14 +68,14 @@ else:
 [[[end]]]
 {
 [[[cog
-for rq in component['requires']:
-	cog.outl("<TABHERE>"+rq.lower()+"_proxy = (*("+rq+"Prx*)mprx[\""+rq+"Proxy\"]);")
+for name, num in getNameNumber(component['requires']):
+	cog.outl("<TABHERE>"+name.lower()+num+"_proxy = (*("+name+"Prx*)mprx[\""+name+"Proxy"+num+"\"]);")	
 ]]]
 [[[end]]]
 
 [[[cog
-for pb in component['publishes']:
-	cog.outl("<TABHERE>"+pb.lower()+" = (*("+pb+"Prx*)mprx[\""+pb+"Pub\"]);")
+for name, num in getNameNumber(component['publishes']):
+	cog.outl("<TABHERE>"+name.lower()+num+"_proxy = (*("+name+"Prx*)mprx[\""+name+"Pub"+num+"\"]);")
 ]]]
 [[[end]]]
 

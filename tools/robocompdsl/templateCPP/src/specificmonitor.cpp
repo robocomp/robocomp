@@ -65,6 +65,7 @@ void SpecificMonitor::initialize()
 	}
 	state = RoboCompCommonBehavior::Running;
 }
+
 bool SpecificMonitor::sendParamsToWorker(RoboCompCommonBehavior::ParameterList params)
 {
 	if(checkParams(params))
@@ -80,16 +81,24 @@ bool SpecificMonitor::sendParamsToWorker(RoboCompCommonBehavior::ParameterList p
 	return false;
 
 }
+
 ///Local Component parameters read at start
 ///Reading parameters from config file or passed in command line, with Ice machinery
 ///We need to supply a list of accepted values to each call
 void SpecificMonitor::readConfig(RoboCompCommonBehavior::ParameterList &params )
 {
 // 	RoboCompCommonBehavior::Parameter aux;
-// 
 // 	aux.editable = true;
-// 	configGetString( "InnerModelPath", aux.value, "");
-// 	params["InnerModelPath"] = aux;
+// 	QString name = PROGRAM_NAME;
+// 	
+// 	configGetString(name+".param_name", aux.value, "default");
+// 	//Check valid ranges
+// 	if( aux.value != "val1" and aux.value != "val2")
+// 	{
+// 		std::cout << __FUNCTION__ << "Warning. Wrong XXX value. Using default xxx" << std::endl;
+// 		params[name+".param_name"] = "xxx";
+// 	}
+// 	params[name+".param_name"] = aux;
 }
 
 //comprueba que los parametros sean correctos y los transforma a la estructura del worker

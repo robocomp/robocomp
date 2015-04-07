@@ -11,6 +11,28 @@ debug = False
 
 from parseIDSL import *
 
+def getNameNumber(aalist):
+	somelist = [str(x) for x in aalist]
+	somelist.sort()
+	lastNum = 0
+	ret = []
+	for rqi, rq in enumerate(somelist):
+		dup = False
+		if rqi < len(somelist)-1:
+			if rq == somelist[rqi+1]:
+				dup = True
+		if rqi > 0:
+			if rq == somelist[rqi-1]:
+				dup = True
+		name = rq
+		num = ''
+		if dup:
+			lastNum += 1
+			num = str(lastNum)
+			name = rq
+		ret.append([name, num])
+	return ret
+
 class CDSLParsing:
 	@staticmethod
 	def fromFile(filename, verbose=False, includeIncludes=True):
@@ -46,7 +68,7 @@ class CDSLParsing:
 		implementsList = Group(CaselessLiteral('implements')    + identifier + ZeroOrMore(Suppress(Word(',')) + identifier) + semicolon)
 		requiresList   = Group(CaselessLiteral('requires')      + identifier + ZeroOrMore(Suppress(Word(',')) + identifier) + semicolon)
 		subscribesList = Group(CaselessLiteral('subscribesTo')  + identifier + ZeroOrMore(Suppress(Word(',')) + identifier) + semicolon)
-		publishesList  = Group(CaselessLiteral('publishesList') + identifier + ZeroOrMore(Suppress(Word(',')) + identifier) + semicolon)
+		publishesList  = Group(CaselessLiteral('publishes')     + identifier + ZeroOrMore(Suppress(Word(',')) + identifier) + semicolon)
 		communicationList = implementsList | requiresList | subscribesList | publishesList
 		communications = Group( Suppress(CaselessLiteral("communications")) + op + ZeroOrMore(communicationList) + cl + semicolon)
 		

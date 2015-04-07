@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=yakuake
+GenericName=yakuake
+Comment=yakuake
+Exec=yakuake
+Terminal=false
+Type=Application
+StartupNotify=false
+
+
+
