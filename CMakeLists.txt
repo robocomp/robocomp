@@ -97,12 +97,12 @@ SUBDIRS(
 
 add_custom_target(mrproper
   COMMAND ${CMAKE_MAKE_PROGRAM} clean
-  COMMAND find $ENV{ROBOCOMP} -name CMakeFiles -exec rm -rf {} \;
-  COMMAND find $ENV{ROBOCOMP} -name CMakeCache.txt -exec rm {} \;
-  COMMAND find $ENV{ROBOCOMP} -name cmake_install.cmake -exec rm {} \;
-  COMMAND find $ENV{ROBOCOMP} -name Makefile -exec rm {} \;
-  COMMAND find $ENV{ROBOCOMP} -name \*.kd\* -exec rm {} \;
-  COMMAND find $ENV{ROBOCOMP} -name \*_moc\* -exec rm {} \;
-  COMMAND find $ENV{ROBOCOMP} -name Makefile -exec rm {} \;
+#   COMMAND find $ENV{ROBOCOMP} -name CMakeFiles -exec rm -rf {} \;
+#   COMMAND find $ENV{ROBOCOMP} -name CMakeCache.txt -exec rm {} \;
+#   COMMAND find $ENV{ROBOCOMP} -name cmake_install.cmake -exec rm {} \;
+#   COMMAND find $ENV{ROBOCOMP} -name Makefile -exec rm {} \;
+#   COMMAND find $ENV{ROBOCOMP} -name *.kd* -exec rm {} \;
+#   COMMAND find $ENV{ROBOCOMP} -name *_moc* -exec rm {} \;
+#   COMMAND find $ENV{ROBOCOMP} -name Makefile -exec rm {} \;
 )
 
