@@ -18,6 +18,7 @@ module RoboCompCamera{
 	exception MovingImageException{string what;};
 	sequence <byte> imgType;
 	sequence <int> intVector;
+	["cpp:comparable"]
 	struct TCamParams{
 		int focal;
 		int width;

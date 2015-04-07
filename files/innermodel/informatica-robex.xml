@@ -14,10 +14,10 @@
 			<differentialrobot id="base" port="10004">
 				<mesh id="base_robex" file="/home/robocomp/robocomp/files/osgModels/robex/robex.ive"  tx="0" ty="0" tz="-180" scale="1000" />
 
-				<translation id="laserPose" tx="0" ty="40" tz="0">
+		<!--		<translation id="laserPose" tx="0" ty="40" tz="0">
 					<laser id="laser" port="10003" measures="100" min="100" max="4000" angle="3" ifconfig="10000" />
 						<plane id="sensorL" nz="1" pz="-200" size="100" repeat="1" texture="#ff0000" /> 
-				</translation>	
+				</translation>	-->
 
 				<transform id="camera" ty="210" tz="180">
 						<imu id="imu" port="10010"/>
