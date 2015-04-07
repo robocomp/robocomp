@@ -2,17 +2,17 @@
 <innerModel>
 	<transform id="world" tx="0" ty="0" tz="0">
 		<transform id="XN_SKEL_TORSO" tx="0" ty="0" tz="0">
-			<mesh id="XN_SKEL_TORSO_mesh" file="/home/salabeta/robocomp/Files/osgModels/aprendiz/baseneck.osg" scale="50" tx="0" ty="0" tz="0" rx="0" ry="0" rz="0" />			
+			<mesh id="XN_SKEL_TORSO_mesh" file="/home/salabeta/robocomp/files/osgModels/aprendiz/baseneck.osg" scale="50" tx="0" ty="0" tz="0" rx="0" ry="0" rz="0" />			
 				<transform id="XN_SKEL_LEFT_SHOULDER" tx="-700" ty="600" tz="0">
-					<mesh id="XN_SKEL_LEFT_SHOULDER_mesh" file="/home/salabeta/robocomp/Files/osgModels/aprendiz/baseneck.osg" scale="50" tx="0" ty="0" tz="0" rx="0" ry="0" rz="1.57" />
+					<mesh id="XN_SKEL_LEFT_SHOULDER_mesh" file="/home/salabeta/robocomp/files/osgModels/aprendiz/baseneck.osg" scale="50" tx="0" ty="0" tz="0" rx="0" ry="0" rz="1.57" />
 					<transform id="humero" tx="-350" ty="0" tz="0" rz="0">
-						<mesh id="humero_mesh" file="/home/salabeta/robocomp/Files/osgModels/aprendiz/support.osg" scale="50" tx="0" ty="0" tz="0" rx="0" ry="0" rz="1.57" />						
+						<mesh id="humero_mesh" file="/home/salabeta/robocomp/files/osgModels/aprendiz/support.osg" scale="50" tx="0" ty="0" tz="0" rx="0" ry="0" rz="1.57" />						
 						<transform id="XN_SKEL_LEFT_ELBOW" tx="-350" ty="0" tz="0">
-							<mesh id="XN_SKEL_LEFT_ELBOW_mesh" file="/home/salabeta/robocomp/Files/osgModels/aprendiz/baseneck.osg" scale="50" tx="0" ty="0" tz="0" rx="0" ry="0" rz="1.57" />
+							<mesh id="XN_SKEL_LEFT_ELBOW_mesh" file="/home/salabeta/robocomp/files/osgModels/aprendiz/baseneck.osg" scale="50" tx="0" ty="0" tz="0" rx="0" ry="0" rz="1.57" />
 							<transform id="radio" tx="-350" ty="0" tz="0" rz="0">
-								<mesh id="radio_mesh" file="/home/salabeta/robocomp/Files/osgModels/aprendiz/support.osg" scale="50" tx="0" ty="0" tz="0" rx="0" ry="0" rz="1.57" />
+								<mesh id="radio_mesh" file="/home/salabeta/robocomp/files/osgModels/aprendiz/support.osg" scale="50" tx="0" ty="0" tz="0" rx="0" ry="0" rz="1.57" />
 									<transform id="XN_SKEL_LEFT_HAND" tx="-350" ty="0" tz="0">
-										<mesh id="XN_SKEL_LEFT_HAND_mesh" file="/home/salabeta/robocomp/Files/osgModels/aprendiz/baseneck.osg" scale="50" tx="0" ty="0" tz="0" rx="0" ry="0" rz="1.57" />
+										<mesh id="XN_SKEL_LEFT_HAND_mesh" file="/home/salabeta/robocomp/files/osgModels/aprendiz/baseneck.osg" scale="50" tx="0" ty="0" tz="0" rx="0" ry="0" rz="1.57" />
 									</transform>
 							</transform>
 						</transform>
@@ -21,15 +21,15 @@
 				
 <!-- 				//brazo derecho segun openi -->
 				<transform id="XN_SKEL_RIGHT_SHOULDER" tx="700" ty="600" tz="0">
-					<mesh id="XN_SKEL_RIGHT_SHOULDER_mesh" file="/home/salabeta/robocomp/Files/osgModels/aprendiz/baseneck.osg" scale="50" tx="0" ty="0" tz="0" rx="0" ry="0" rz="1.57" />
+					<mesh id="XN_SKEL_RIGHT_SHOULDER_mesh" file="/home/salabeta/robocomp/files/osgModels/aprendiz/baseneck.osg" scale="50" tx="0" ty="0" tz="0" rx="0" ry="0" rz="1.57" />
 					<transform id="humero" tx="350" ty="0" tz="0" rz="0">
-						<mesh id="humero_mesh" file="/home/salabeta/robocomp/Files/osgModels/aprendiz/support.osg" scale="50" tx="0" ty="0" tz="0" rx="0" ry="0" rz="1.57" />						
+						<mesh id="humero_mesh" file="/home/salabeta/robocomp/files/osgModels/aprendiz/support.osg" scale="50" tx="0" ty="0" tz="0" rx="0" ry="0" rz="1.57" />						
 						<transform id="XN_SKEL_RIGHT_ELBOW" tx="350" ty="0" tz="0">
-							<mesh id="XN_SKEL_RIGHT_ELBOW_mesh" file="/home/salabeta/robocomp/Files/osgModels/aprendiz/baseneck.osg" scale="50" tx="0" ty="0" tz="0" rx="0" ry="0" rz="1.57" />
+							<mesh id="XN_SKEL_RIGHT_ELBOW_mesh" file="/home/salabeta/robocomp/files/osgModels/aprendiz/baseneck.osg" scale="50" tx="0" ty="0" tz="0" rx="0" ry="0" rz="1.57" />
 							<transform id="radio" tx="350" ty="0" tz="0" rz="0">
-								<mesh id="radio_mesh" file="/home/salabeta/robocomp/Files/osgModels/aprendiz/support.osg" scale="50" tx="0" ty="0" tz="0" rx="0" ry="0" rz="1.57" />
+								<mesh id="radio_mesh" file="/home/salabeta/robocomp/files/osgModels/aprendiz/support.osg" scale="50" tx="0" ty="0" tz="0" rx="0" ry="0" rz="1.57" />
 									<transform id="XN_SKEL_RIGHT_HAND" tx="350" ty="0" tz="0">
-										<mesh id="XN_SKEL_RIGHT_HAND_mesh" file="/home/salabeta/robocomp/Files/osgModels/aprendiz/baseneck.osg" scale="50" tx="0" ty="0" tz="0" rx="0" ry="0" rz="1.57" />
+										<mesh id="XN_SKEL_RIGHT_HAND_mesh" file="/home/salabeta/robocomp/files/osgModels/aprendiz/baseneck.osg" scale="50" tx="0" ty="0" tz="0" rx="0" ry="0" rz="1.57" />
 									</transform>
 							</transform>
 						</transform>

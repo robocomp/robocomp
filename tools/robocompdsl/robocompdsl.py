@@ -16,9 +16,8 @@ def generateDummyCDSL(path):
 		print "Generating dummy CDSL file:", path
 		open(path, "w").write("""import "/robocomp/interfaces/IDSLs/import1.idsl";
 import "/robocomp/interfaces/IDSLs/import2.idsl";
-import "/robocomp/interfaces/IDSLs/import3.idsl";
 
-Component name
+Component CHANGETHECOMPONENTNAME
 {
 	Communications
 	{

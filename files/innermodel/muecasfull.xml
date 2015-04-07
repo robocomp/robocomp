@@ -7,12 +7,12 @@
 			<transform id="head_PAT">
 			<transform id="head_emotions" >
 				
-				<mesh id="head_mesh" file="/home/felipe/robocomp/Files/osgModels/muecas/zeropivot.osg" />
+				<mesh id="head_mesh" file="/home/felipe/robocomp/files/osgModels/muecas/zeropivot.osg" />
 
 			<transform id="mouth" ty="1.4" tz="1.4">
 				<transform id="mouth_emotions" >
 					<transform id="mouth_motor">
-				<mesh id="mouth_mesh" file="/home/felipe/robocomp/Files/osgModels/muecas/jaw.osg" />
+				<mesh id="mouth_mesh" file="/home/felipe/robocomp/files/osgModels/muecas/jaw.osg" />
 			   </transform>
 				</transform>
 			</transform>
@@ -23,25 +23,25 @@
 						<transform id="left_eye"  tx="-2.7">
 								<transform id="left_eyeball">
 								<transform id="left_eyeball_emotions">
-								<mesh id="lefteye_mesh" file="/home/felipe/robocomp/Files/osgModels/muecas/eye.osg" />
+								<mesh id="lefteye_mesh" file="/home/felipe/robocomp/files/osgModels/muecas/eye.osg" />
 								</transform>
 								</transform>
 							
 								<transform id="left_eye_superior_eyelid">
 								<transform id="left_eye_superior_eyelid_emotions">
-								<mesh id="eyeliduA_mesh" file="/home/felipe/robocomp/Files/osgModels/muecas/uppereyelid.osg" />
+								<mesh id="eyeliduA_mesh" file="/home/felipe/robocomp/files/osgModels/muecas/uppereyelid.osg" />
 								</transform>
 								</transform>
 							
 								<transform id="left_eye_inferior_eyelid">
 								<transform id="left_eye_inferior_eyelid_emotions">
-								<mesh id="eyeliduB_mesh" file="/home/felipe/robocomp/Files/osgModels/muecas/lowereyelid.osg" />
+								<mesh id="eyeliduB_mesh" file="/home/felipe/robocomp/files/osgModels/muecas/lowereyelid.osg" />
 								</transform>
 								</transform>
 								
 								<transform id="left_eyebrow" ty="1.98" tz="-0.8">
 								<transform id="left_eyebrow_emotions">  
-								<mesh id="left_eyebrow_mesh" file="/home/felipe/robocomp/Files/osgModels/muecas/browleft222.osg"  />
+								<mesh id="left_eyebrow_mesh" file="/home/felipe/robocomp/files/osgModels/muecas/browleft222.osg"  />
 								</transform>
 								</transform>
 							
@@ -51,25 +51,25 @@
 					<transform id="right_eye" tx="2.7" >
 								<transform id="right_eyeball_emotions"> 
 								<transform id="right_eyeball">
-								<mesh id="righteye_mesh" file="/home/felipe/robocomp/Files/osgModels/muecas/eye.osg" />
+								<mesh id="righteye_mesh" file="/home/felipe/robocomp/files/osgModels/muecas/eye.osg" />
 								</transform>
 								</transform>
 
 								<transform id="right_eye_superior_eyelid">
 								<transform id="right_eye_superior_eyelid_emotions">
-								<mesh id="eyeliduA_mesh" file="/home/felipe/robocomp/Files/osgModels/muecas/uppereyelid.osg" />
+								<mesh id="eyeliduA_mesh" file="/home/felipe/robocomp/files/osgModels/muecas/uppereyelid.osg" />
 								</transform>
 								</transform>
 								
 								<transform id="right_eye_inferior_eyelid">
 								<transform id="right_eye_inferior_eyelid_emotions">
-								<mesh id="eyeliduB_mesh" file="/home/felipe/robocomp/Files/osgModels/muecas/lowereyelid.osg" />
+								<mesh id="eyeliduB_mesh" file="/home/felipe/robocomp/files/osgModels/muecas/lowereyelid.osg" />
 								</transform>
 								</transform>
 								
 								<transform id="right_eyebrow" ty="1.98" tz="-0.8">
 								<transform id="right_eyebrow_emotions">
-								<mesh id="right_eyebrow_mesh" file="/home/felipe/robocomp/Files/osgModels/muecas/browright222.osg" />
+								<mesh id="right_eyebrow_mesh" file="/home/felipe/robocomp/files/osgModels/muecas/browright222.osg" />
 								</transform>
 								</transform>	
 								
@@ -83,25 +83,25 @@
 		
 		
 				<transform id="base_neck" ty="-3.7" >
-				<mesh id="baseneck_mesh" file="/home/felipe/robocomp/Files/osgModels/muecas/baseneck.osg" />
+				<mesh id="baseneck_mesh" file="/home/felipe/robocomp/files/osgModels/muecas/baseneck.osg" />
 				</transform>
 			
 				<transform id="base1_neck" ty="-6.7" >
-				<mesh id="baseneck1_mesh" file="/home/felipe/robocomp/Files/osgModels/muecas/baseneck2.osg" />
+				<mesh id="baseneck1_mesh" file="/home/felipe/robocomp/files/osgModels/muecas/baseneck2.osg" />
 				</transform>
 			
 				<transform id="base2_neck" ty="-9.7" >
-				<mesh id="baseneck2_mesh" file="/home/felipe/robocomp/Files/osgModels/muecas/baseneck.osg"/>
+				<mesh id="baseneck2_mesh" file="/home/felipe/robocomp/files/osgModels/muecas/baseneck.osg"/>
 				</transform>
 			
 				<transform id="support_neck" ty="-2" >
-				<mesh id="supportneck_mesh" file="/home/felipe/robocomp/Files/osgModels/muecas/support.osg" />
+				<mesh id="supportneck_mesh" file="/home/felipe/robocomp/files/osgModels/muecas/support.osg" />
 				</transform>
 			
 				<transform id="supportA_neck" tx="0.65" ty="-0.2" tz="-0.5" >
 				<transform id="supportA_neckY">
 				<transform id="supportA_neckY_emotions">
-				<mesh id="supportAneck_mesh" file="/home/felipe/robocomp/Files/osgModels/muecas/testssss.osg" />
+				<mesh id="supportAneck_mesh" file="/home/felipe/robocomp/files/osgModels/muecas/testssss.osg" />
 				</transform>
 				</transform>
 				</transform>
@@ -109,7 +109,7 @@
 				<transform id="supportB_neck" tx="-0.65" ty="-0.2" tz="-0.5" >
 				<transform id="supportB_neckY">
 				<transform id="supportB_neckY_emotions">
-				<mesh id="supportBneck_mesh" file="/home/felipe/robocomp/Files/osgModels/muecas/testssss.osg" />
+				<mesh id="supportBneck_mesh" file="/home/felipe/robocomp/files/osgModels/muecas/testssss.osg" />
 				</transform>
 				</transform>
 				</transform>
@@ -117,7 +117,7 @@
 				<transform id="supportC_neck" ty="-0.2" tz="0.8" ry="1.5"  >
 				<transform id="supportC_neckY">
 				<transform id="supportC_neckY_emotions">
-				<mesh id="supportCneck_mesh" file="/home/felipe/robocomp/Files/osgModels/muecas/testssss.osg" />
+				<mesh id="supportCneck_mesh" file="/home/felipe/robocomp/files/osgModels/muecas/testssss.osg" />
 				</transform>
 				</transform>
 				</transform>
@@ -129,50 +129,50 @@
 					<transform id="body"  rx="-1.57079633" >
 		  
 							<transform id="chest" >
-							<mesh id="chest_mesh" file="/home/felipe/robocomp/Files/osgModels/muecas/cubo.osg"  ty="-10"/>
+							<mesh id="chest_mesh" file="/home/felipe/robocomp/files/osgModels/muecas/cubo.osg"  ty="-10"/>
 							</transform>
 							
 							<transform id="spine">
-							<mesh id="spine_mesh" file="/home/felipe/robocomp/Files/osgModels/muecas/tubo.osg" ty="-5"  rz="1.57079633"/>
+							<mesh id="spine_mesh" file="/home/felipe/robocomp/files/osgModels/muecas/tubo.osg" ty="-5"  rz="1.57079633"/>
 							</transform>
 								
 							<transform id="backpack">
-							<mesh id="backpack_mesh" file="/home/felipe/robocomp/Files/osgModels/muecas/backpack.osg"/>
+							<mesh id="backpack_mesh" file="/home/felipe/robocomp/files/osgModels/muecas/backpack.osg"/>
 							</transform>
 			  
 							<transform id="thor">
-							<mesh id="thor_mesh" file="/home/felipe/robocomp/Files/osgModels/muecas/thor.osg" ty="-90" tz="10"  rx="1.57" rz="1.57079633" />
+							<mesh id="thor_mesh" file="/home/felipe/robocomp/files/osgModels/muecas/thor.osg" ty="-90" tz="10"  rx="1.57" rz="1.57079633" />
 							</transform>
 							
 										<transform id="base_left" tx="-8.5" ty="-16">
-											<mesh id="base_left_mesh" file="/home/felipe/robocomp/Files/osgModels/muecas/base.osg"  rx="1.57079633"/>
+											<mesh id="base_left_mesh" file="/home/felipe/robocomp/files/osgModels/muecas/base.osg"  rx="1.57079633"/>
 		  
 										<transform id="shoulder_left" tx="-10" >
-											<mesh id="shoulder_left_mesh" file="/home/felipe/robocomp/Files/osgModels/muecas/hombro.osg"/>
+											<mesh id="shoulder_left_mesh" file="/home/felipe/robocomp/files/osgModels/muecas/hombro.osg"/>
 			  
 										<transform id="armleft" tx="-10" >
-											<mesh id="armleft_mesh" file="/home/felipe/robocomp/Files/osgModels/muecas/brazo.osg" tz="0" ty="-0.4"/>
+											<mesh id="armleft_mesh" file="/home/felipe/robocomp/files/osgModels/muecas/brazo.osg" tz="0" ty="-0.4"/>
 			  
 										<transform id="elbowleft" tx="-30" >
-											<mesh id="elbowleft_mesh" file="/home/felipe/robocomp/Files/osgModels/muecas/antebrazo.osg" ty="-0.4"/>
+											<mesh id="elbowleft_mesh" file="/home/felipe/robocomp/files/osgModels/muecas/antebrazo.osg" ty="-0.4"/>
 			  
 										<transform id="forearmleft" tx="-17" >
-											<mesh id="forearmleft_mesh" file="/home/felipe/robocomp/Files/osgModels/muecas/muneca1.osg" />
+											<mesh id="forearmleft_mesh" file="/home/felipe/robocomp/files/osgModels/muecas/muneca1.osg" />
 			  
 										<transform id="wristleft" tx="-8" >
-										<mesh id="wristleft_mesh" file="/home/felipe/robocomp/Files/osgModels/muecas/muneca22.osg"  />
+										<mesh id="wristleft_mesh" file="/home/felipe/robocomp/files/osgModels/muecas/muneca22.osg"  />
 			  
 										<transform id="handleft">
-										<mesh id="handleft_mesh" file="/home/felipe/robocomp/Files/osgModels/muecas/hand.osg"/>
+										<mesh id="handleft_mesh" file="/home/felipe/robocomp/files/osgModels/muecas/hand.osg"/>
 				  
 										<transform id="fingerAleft">
-										<mesh id="fingerAleft_mesh" file="/home/felipe/robocomp/Files/osgModels/muecas/finger.osg"/>
+										<mesh id="fingerAleft_mesh" file="/home/felipe/robocomp/files/osgModels/muecas/finger.osg"/>
 				  
 										<transform id="fingerBleft">
-										<mesh id="fingerBleft_mesh" file="/home/felipe/robocomp/Files/osgModels/muecas/finger.osg"/>
+										<mesh id="fingerBleft_mesh" file="/home/felipe/robocomp/files/osgModels/muecas/finger.osg"/>
 				  
 										<transform id="fingerCleft">
-										<mesh id="fingerCleft_mesh" file="/home/felipe/robocomp/Files/osgModels/muecas/finger.osg"/>
+										<mesh id="fingerCleft_mesh" file="/home/felipe/robocomp/files/osgModels/muecas/finger.osg"/>
 										
 										</transform>	
 										</transform>	       

@@ -14,12 +14,12 @@
 		</translation>
 			<transform id="tableplace" tx="0" ty="0" tz="3">
 				<!--<plane id="table"  nx="0" ny="1" nz="0" px="0"  py="0"  pz="0"  size="1" repeat="1" texture="#666666" />-->
-				<mesh id="mesa" file="/home/robocomp/robocomp/Files/osgModels/mobiliario/mesa_centro.osg"  tx="0" ty="0" tz="0" rx="1.57079632679" rz="-1.57079632679" scale="0.25"/>
+				<mesh id="mesa" file="/home/robocomp/robocomp/files/osgModels/mobiliario/mesa_centro.osg"  tx="0" ty="0" tz="0" rx="1.57079632679" rz="-1.57079632679" scale="0.25"/>
 			</transform> 
 
 		<!-- Base de gualzru -->
 		<differentialrobot id="base" port="40000" ty="0.00001">
-			<mesh id="base_gualzru" file="/home/robocomp/robocomp/Files/osgModels/Gualzru/Gualzru.osg"  tx="0" ty="0.16" tz="0" rx="1.57079632679" rz="-1.57079632679" scale="0.025"/>
+			<mesh id="base_gualzru" file="/home/robocomp/robocomp/files/osgModels/Gualzru/Gualzru.osg"  tx="0" ty="0.16" tz="0" rx="1.57079632679" rz="-1.57079632679" scale="0.025"/>
 			<transform id="cabeza" ty="1.7" tz="0.05" >
 				<rotation id="prejoint_jointcabeza" ry="1.57079632679">
 					<joint id="jointcabeza" port="20000">
@@ -35,7 +35,7 @@
 			</transform> <!-- cabeza -->
 		</differentialrobot> <!--base -->
 		<transform id="tazaplace" tx="0" ty="0" tz="-5">
-			<mesh id="taza" file="/home/robocomp/robocomp/Files/osgModels/mobiliario/taza.osg"  tx="0" ty="0" tz="0" rx="1.57079632679" rz="-1.57079632679" scale="0.25"/>
+			<mesh id="taza" file="/home/robocomp/robocomp/files/osgModels/mobiliario/taza.osg"  tx="0" ty="0" tz="0" rx="1.57079632679" rz="-1.57079632679" scale="0.25"/>
 		</transform>
 	</transform>
 </innerModel>

@@ -1,6 +1,8 @@
 [RoboComp](http://robocomp.net)
 ===============================
 
+[![Join the chat at https://gitter.im/robocomp/robocomp](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/robocomp/robocomp?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 by [RoboLab](http://robolab.unex.es), [ISIS](http://www.grupoisis.uma.es/index.php?option=com_jresearch&view=staff&Itemid=3&lang=es) and many other collaborators.
 
 RoboComp is an open-source Robotics framework providing the tools to create and modify software components that communicate through public interfaces. Components may *require*, *subscribe*, *implement* or *publish*
@@ -100,6 +102,11 @@ Your joystick should be now running. It will make the robot advance and turn at 
 and check where the joystick device file has been created (e.g., /dev/input/js0). If it is not /dev/input/js0, edit ~/robocomp/components/robocomp-robolab/components/joystickComp/etc/config change it accordingly and restart. Note that you might want to save the *config* file to the component's home directory so it does not interfere with future github updates.
 
 Yo can find more tutorials on RoboComp in [tutorials!](doc/README.md)
+
+Drop comments and ask questions in:
+
+- https://groups.google.com/forum/?hl=es#!forum/robocomp-dev
+- https://gitter.im/robocomp
 
 Please, report any bugs to pbustos@unex.es
 
