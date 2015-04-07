@@ -1,41 +1,41 @@
 <innerModel>
 	<transform id="world" tx="0" ty="0" tz="0"  rx="0" ry="0" rz="0">
 		<transform id="XN_SKEL_TORSO" tx="0" ty="0" tz="0"  rx="-1.570000052" ry="0" rz="0">
-			<mesh id="XN_SKEL_TORSO_mesh" file="/home/robocomp/robocomp/Files/osgModels/humanColor/pecho.osg" scale="10" tx="0" ty="0" tz="0" rx="1.570000052" ry="0" rz="0" />
+			<mesh id="XN_SKEL_TORSO_mesh" file="/home/robocomp/robocomp/files/osgModels/humanColor/pecho.osg" scale="10" tx="0" ty="0" tz="0" rx="1.570000052" ry="0" rz="0" />
 			<transform id="XN_SKEL_NECK" tx="0" ty="0" tz="300"  rx="0" ry="0" rz="0">
-				<mesh id="XN_SKEL_NECK_mesh" file="/home/robocomp/robocomp/Files/osgModels/humanColor/cabeza.osg" scale="10" tx="0" ty="0" tz="75" rx="1.570000052" ry="3.140000105" rz="0" />
+				<mesh id="XN_SKEL_NECK_mesh" file="/home/robocomp/robocomp/files/osgModels/humanColor/cabeza.osg" scale="10" tx="0" ty="0" tz="75" rx="1.570000052" ry="3.140000105" rz="0" />
 			</transform>
 			<transform id="XN_SKEL_WAIST" tx="0" ty="0" tz="-200"  rx="0" ry="0" rz="0">
-				<mesh id="XN_SKEL_WAIST_mesh" file="/home/robocomp/robocomp/Files/osgModels/humanColor/cintura.osg" scale="10" tx="0" ty="0" tz="0" rx="3.140000105" ry="0" rz="0" />
+				<mesh id="XN_SKEL_WAIST_mesh" file="/home/robocomp/robocomp/files/osgModels/humanColor/cintura.osg" scale="10" tx="0" ty="0" tz="0" rx="3.140000105" ry="0" rz="0" />
 				<!--<transform id="XN_SKEL_LEFT_HIP" tx="-150" ty="0" tz="-200"  rx="-3.140000105" ry="0" rz="0">
-					<mesh id="XN_SKEL_LEFT_HIP_mesh" file="/home/robocomp/robocomp/Files/osgModels/humanColor/muslo.osg" scale="10" tx="0" ty="0" tz="0" rx="-3.140000105" ry="0" rz="0" />
+					<mesh id="XN_SKEL_LEFT_HIP_mesh" file="/home/robocomp/robocomp/files/osgModels/humanColor/muslo.osg" scale="10" tx="0" ty="0" tz="0" rx="-3.140000105" ry="0" rz="0" />
 					<transform id="XN_SKEL_LEFT_KNEE" tx="0" ty="0" tz="500"  rx="0" ry="0" rz="0">
-						<mesh id="XN_SKEL_LEFT_KNEE_mesh" file="/home/robocomp/robocomp/Files/osgModels/humanColor/pantorrilla.osg" scale="10" tx="0" ty="0" tz="0" rx="-3.140000105" ry="0" rz="0" />
+						<mesh id="XN_SKEL_LEFT_KNEE_mesh" file="/home/robocomp/robocomp/files/osgModels/humanColor/pantorrilla.osg" scale="10" tx="0" ty="0" tz="0" rx="-3.140000105" ry="0" rz="0" />
 						<transform id="XN_SKEL_LEFT_FOOT" tx="0" ty="0" tz="400"  rx="0" ry="0" rz="0">
 						</transform>
 					</transform>
 				</transform>
 				<transform id="XN_SKEL_RIGHT_HIP" tx="150" ty="0" tz="-200"  rx="3.140000105" ry="0" rz="0">
-					<mesh id="XN_SKEL_RIGHT_HIP_mesh" file="/home/robocomp/robocomp/Files/osgModels/humanColor/muslo.osg" scale="10" tx="0" ty="0" tz="0" rx="-3.140000105" ry="0" rz="0" />
+					<mesh id="XN_SKEL_RIGHT_HIP_mesh" file="/home/robocomp/robocomp/files/osgModels/humanColor/muslo.osg" scale="10" tx="0" ty="0" tz="0" rx="-3.140000105" ry="0" rz="0" />
 					<transform id="XN_SKEL_RIGHT_KNEE" tx="0" ty="0" tz="500"  rx="0" ry="0" rz="0">
-						<mesh id="XN_SKEL_RIGHT_KNEE_mesh" file="/home/robocomp/robocomp/Files/osgModels/humanColor/pantorrilla.osg" scale="10" tx="0" ty="0" tz="0" rx="-3.140000105" ry="0" rz="0" />
+						<mesh id="XN_SKEL_RIGHT_KNEE_mesh" file="/home/robocomp/robocomp/files/osgModels/humanColor/pantorrilla.osg" scale="10" tx="0" ty="0" tz="0" rx="-3.140000105" ry="0" rz="0" />
 						<transform id="XN_SKEL_RIGHT_FOOT" tx="0" ty="0" tz="400"  rx="0" ry="0" rz="0">
 						</transform>
 					</transform>
 				</transform>-->
 			</transform>
 			<transform id="XN_SKEL_LEFT_SHOULDER" tx="-250" ty="0" tz="200"  rx="0" ry="-1.570000052" rz="1.570000052">
-				<mesh id="XN_SKEL_LEFT_SHOULDER_mesh" file="/home/robocomp/robocomp/Files/osgModels/humanColor/brazo.osg" scale="10" tx="0" ty="0" tz="0" rx="3.140000105" ry="0" rz="1.570000052" />
+				<mesh id="XN_SKEL_LEFT_SHOULDER_mesh" file="/home/robocomp/robocomp/files/osgModels/humanColor/brazo.osg" scale="10" tx="0" ty="0" tz="0" rx="3.140000105" ry="0" rz="1.570000052" />
 				<transform id="XN_SKEL_LEFT_ELBOW" tx="0" ty="0" tz="400"  rx="1.570000052" ry="0" rz="0">
-					<mesh id="XN_SKEL_LEFT_ELBOW_mesh" file="/home/robocomp/robocomp/Files/osgModels/humanColor/antebrazo.osg" scale="10" tx="0" ty="0" tz="0" rx="3.140000105" ry="0" rz="1.570000052" />
+					<mesh id="XN_SKEL_LEFT_ELBOW_mesh" file="/home/robocomp/robocomp/files/osgModels/humanColor/antebrazo.osg" scale="10" tx="0" ty="0" tz="0" rx="3.140000105" ry="0" rz="1.570000052" />
 					<transform id="XN_SKEL_LEFT_HAND" tx="0" ty="0" tz="400"  rx="0" ry="0" rz="0">
 					</transform>
 				</transform>
 			</transform>
 			<transform id="XN_SKEL_RIGHT_SHOULDER" tx="250" ty="0" tz="200"  rx="0" ry="1.570000052" rz="-1.570000052">
-				<mesh id="XN_SKEL_RIGHT_SHOULDER_mesh" file="/home/robocomp/robocomp/Files/osgModels/humanColor/brazo.osg" scale="10" tx="0" ty="0" tz="0" rx="3.140000105" ry="0" rz="1.570000052" />
+				<mesh id="XN_SKEL_RIGHT_SHOULDER_mesh" file="/home/robocomp/robocomp/files/osgModels/humanColor/brazo.osg" scale="10" tx="0" ty="0" tz="0" rx="3.140000105" ry="0" rz="1.570000052" />
 				<transform id="XN_SKEL_RIGHT_ELBOW" tx="0" ty="0" tz="400"  rx="1.570000052" ry="0" rz="0">
-					<mesh id="XN_SKEL_RIGHT_ELBOW_mesh" file="/home/robocomp/robocomp/Files/osgModels/humanColor/antebrazo.osg" scale="10" tx="0" ty="0" tz="0" rx="3.140000105" ry="0" rz="1.570000052" />
+					<mesh id="XN_SKEL_RIGHT_ELBOW_mesh" file="/home/robocomp/robocomp/files/osgModels/humanColor/antebrazo.osg" scale="10" tx="0" ty="0" tz="0" rx="3.140000105" ry="0" rz="1.570000052" />
 					<transform id="XN_SKEL_RIGHT_HAND" tx="0" ty="0" tz="400"  rx="0" ry="0" rz="0">
 					</transform>
 				</transform>
@@ -43,18 +43,18 @@
 		</transform>
 <!-- 		<transform id="XN_ESCENARIO_ARBOL" tx="100" ty="-1700" tz="700"  rx="1.5" ry="0" rz="0"> -->
 		<transform id="XN_ESCENARIO_ARBOL" tx="0" ty="0" tz="0"  rx="1.5" ry="0" rz="0">	
-			<mesh id="XN_ESCENARIO_ARBOL_mesh" file="/home/robocomp/robocomp/Files/osgModels/escenarioArbol/arbol_macetero.osg" scale="30" tx="0" ty="0" tz="0" rx="0" ry="0" rz="0" />
+			<mesh id="XN_ESCENARIO_ARBOL_mesh" file="/home/robocomp/robocomp/files/osgModels/escenarioArbol/arbol_macetero.osg" scale="30" tx="0" ty="0" tz="0" rx="0" ry="0" rz="0" />
 		</transform>
 <!-- 		<transform id="XN_CESTA" tx="300" ty="-1700" tz="200"  rx="1.5" ry="0" rz="0"> -->
 		<transform id="XN_CESTA" tx="0" ty="0" tz="0"  rx="1.5" ry="0" rz="0">
-			<mesh id="XN_CESTA_mesh" file="/home/robocomp/robocomp/Files/osgModels/escenarioArbol/cesta.osg" scale="30" tx="0" ty="0" tz="0" rx="0" ry="0" rz="0" />
+			<mesh id="XN_CESTA_mesh" file="/home/robocomp/robocomp/files/osgModels/escenarioArbol/cesta.osg" scale="30" tx="0" ty="0" tz="0" rx="0" ry="0" rz="0" />
 		</transform>
 		<transform id="XN_MANZANA_MOVIL" tx="10000" ty="10000" tz="10000"  rx="1.570000052" ry="0" rz="0">
-			<mesh id="XN_MANZANA_MOVIL_mesh" file="/home/robocomp/robocomp/Files/osgModels/escenarioArbol/manzana_verde.osg" scale="3" tx="0" ty="0" tz="0" rx="0" ry="0" rz="0" />
+			<mesh id="XN_MANZANA_MOVIL_mesh" file="/home/robocomp/robocomp/files/osgModels/escenarioArbol/manzana_verde.osg" scale="3" tx="0" ty="0" tz="0" rx="0" ry="0" rz="0" />
 		</transform>
 		<transform id="XN_MANZANA_ANIMADA" tx="-320" ty="1000" tz="2300"  rx="1.570000052" ry="0" rz="0">
 <!-- 		<transform id="XN_MANZANA_ANIMADA" tx="-250" ty="1400" tz="0"  rx="1.570000052" ry="0" rz="0"> -->
-			<mesh id="XN_MANZANA_ANIMADA_mesh" file="/home/robocomp/robocomp/Files/osgModels/escenarioArbol/manzana_verde_animada.osg" scale="3" tx="0" ty="0" tz="0" rx="0" ry="0" rz="0" />
+			<mesh id="XN_MANZANA_ANIMADA_mesh" file="/home/robocomp/robocomp/files/osgModels/escenarioArbol/manzana_verde_animada.osg" scale="3" tx="0" ty="0" tz="0" rx="0" ry="0" rz="0" />
 		</transform>
 	</transform>
 </innerModel>

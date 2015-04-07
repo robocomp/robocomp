@@ -2,9 +2,9 @@
 	<transform id="world" >
 		<pointcloud id="cloud" /> 
 		<transform id="cube_0">
-			<mesh id="cube" file="/home/robocomp/robocomp/Files/osgModels/basics/cubexxx.3ds" scale="500" rx="0" render="wireframe"/>
+			<mesh id="cube" file="/home/robocomp/robocomp/files/osgModels/basics/cubexxx.3ds" scale="500" rx="0" render="wireframe"/>
 		</transform>
-		<mesh id="rawOdometry_mesh" file="/home/robocomp/robocomp/Files/osgModels/axis.osg" scale="30" rx="1.57" render="wireframe" /> 
+		<mesh id="rawOdometry_mesh" file="/home/robocomp/robocomp/files/osgModels/axis.osg" scale="30" rx="1.57" render="wireframe" /> 
 	</transform>
 	<!--
 		<transform id="world">
