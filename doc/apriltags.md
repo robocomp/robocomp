@@ -1,8 +1,8 @@
-#AprilTagsComp: wrapping AprilTags in RoboComp
+#aprilTagsComp: wrapping E. Olson's AprilTags in RoboComp
 
-AprilTags is an augmented reality tag system developed by E. Olson at U. of Michigan, USA. A complete explanation and related papers can be found [here](http://april.eecs.umich.edu/wiki/index.php/AprilTags). There is a C++ version written by Michael Kaes [here](http://people.csail.mit.edu/kaess/apriltags/) which is the one we use.
+AprilTags is an augmented reality tag system developed by E. Olson at the U. of Michigan, USA. A complete explanation and related papers can be found [here](http://april.eecs.umich.edu/wiki/index.php/AprilTags). There is a C++ version written by Michael Kaes [here](http://people.csail.mit.edu/kaess/apriltags/) which is the one we use.
 
-April tags are AR tags designed to be easily detected by (robot) cameras. Understand them as a visual fiducial (artificial features) system that uses a 2D bar code style “tag”, allowing full 6 DOF localization of features from a single image. It is designed such that the camera can detect these tags even at odd conditions. When the tag is seen by the camera, the algorithm computes the tag's complete pose defining its own reference system relative to the camera (i.e Location of the tag is known). This reference system is defined as follows: If we look perpendicularly to a non rotated tag, The Z+ axis comes out towards us from the center of the tag plane, The X+ axis points leftwards and the Y+ axis points upwards (a left-hand reference system). The values computed by *apriltagsComp* are the translation vector from the camera to the center of the tag's reference system, and the three Euler angles that encode the relative orientation of the tag's reference system wrt to the camera reference system.
+April tags are AR tags designed to be esily detected by (robot) cameras. When the tag is seen by the camera, the algorithm computes the tag's complete pose defining its own reference system relative to the camera. This reference system is defined as follows: if we look perpendicularly to a non rotated tag, the Z+ axis comes out away from us from the center of the tag plane, the X+ axis points rightwards and the Y+ axis points upwards (a left-hand reference system). The values computed by *apriltagsComp* are the translation vector from the camera to the center of the tag's reference system, and the three Euler angles that encode the relative orientation of the tag's reference system wrt to the camera reference system.
 
 The *AprilTags.cdsl* file specifies how *apriltagsComp* has been generated and how it can be re-generated:
 
@@ -20,7 +20,7 @@ The *AprilTags.cdsl* file specifies how *apriltagsComp* has been generated and h
         language Cpp;
     };
 
-This files tells us that the component requires -will be calling- three RoboComp interfaces: Camera, RGBDBus, RGBD, which are normal and depth camera's interfaces written in RoboComp's IDSL language. You can find those files in *~/robocomp/interfaces/IDSLs*. Also, the component will publish the data defined in the *AprilTags* interface and will implement the *GetAprilTags* interface. This means that using images provided by a component implementing the camera or RGBD interfaces, it will try to detect any tags in them and compute their 6D pose. Finally, it will publish a vector with all the tags id's and poses to the Ice's STORM broker, and also it will attend to any direct requests (remote procedure calls) received from other components through the *GetAprilTags* interface. So it is a rather serviceable and handy component!
+This files tells us that the component requires -will be calling- three RoboComp interfaces: Camera, RGBDBus y RGBD, which are normal and depth camera's interfaces written in RoboComp's IDSL language. You can find those files in *~/robocomp/interfaces/IDSLs*. Also, the component will publish the data defined in the *AprilTags* interface and will implement the *GetAprilTags* interface. This means that using images provided by a component implementing the camera or RGBD interfaces, it will try to detect any tags in them and compute their 6D pose. Finally, it will publish a vector with all the tags id's and poses to the Ice's STORM broker, and also it will attend any direct requests (remote procedure calls) received from other components through the *GetAprilTags* interface. So it is a rather serviceable and handy component!
 
 To access **apriltagsComp** you need to install from *http://github.org/robocomp* the repository named *robocomp-robolab*. 
 
@@ -31,7 +31,7 @@ Once downloaded, *apriltagsComp* can be found in:
 
     ~/robocomp/components/robocomp-robolab/components/apriltagsComp
     
-First, read the *README.TXT* file and follow instructions thereby. Once the library has been installed in /usr/local, we can proceed to compile the component:
+First, read the *INSTALL_APRILTAGS_LIB.TXT* file and follow instructions thereby. Once the library has been installed in /usr/local, we can proceed to compile the component:
 
     cd ~/robocomp/components/robocomp-robolab/components/apriltagsComp
     cmake .
@@ -69,7 +69,7 @@ you can find an example of a configuration file. We can find there the following
 Each tag has an ID that is printed inside the surrounding square using Hamming code. Instructions to print tags can be found [here](http://april.eecs.umich.edu/wiki/index.php/AprilTags). The algorithm needs the real size of the tag to estimate its position and orientation in space. We can give the component tags of different sizes, as long as they correspond to different ranges of IDs, as specified in the configuration file above.
 
 ##Starting the component
-To start the component we need a real camera connected to the cameraV4lComp component or the RCIS simulator started with a file that includes virtual tags, such as *simpleworld.xml*. Once RCIS is up and running, it will provide the RGBD.idsl interface (not Camera.idsl for now) at port 10096, which is what the configuration file states. To avoid changing the *generic_config* file in the repository, we can copy it to the component's home directory, so changes will remain untouched by future git pulls:
+To start the component we need whether a real camera connected to the cameraV4lComp component or the RCIS simulator started with a file that includes virtual tags, such as *simpleworld.xml*. Once RCIS is up and running, it will provide the RGBD.idsl interface (nor Camera.idsl for now) at port 10096, which is what the configuration file states. To avoid changing the *generic_config* file in the repository, we can copy it to the component's home directory, so changes will remain untouched by future git pulls:
 
     cp ~/robocomp/components/robocomp-robolab/components/apriltagsComp
     cp /etc/generic_config config
@@ -80,14 +80,5 @@ So, to begin we type:
     bin/apriltagscomp --Ice.Config=config
     
 If the robot's camera is pointing towards one of the tags, you should see in the terminal lines showing the ID and pose of each visible tag.
-
-    
-    
-
-
-    
-
-
-
 
 
