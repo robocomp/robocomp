@@ -12,7 +12,7 @@
 module RoboCompSpeech{
 
 	interface Speech{
-		bool say(string text, bool owerwrite);
+		bool say(string text, bool overwrite);
 		bool isBusy();
 	};
 };

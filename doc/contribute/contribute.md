@@ -12,7 +12,7 @@ In brief the steps involved will be:
 * Push to repository
 * Compare changes
 * Pull a request for the commit made
-* Start a discussion regarding you commit
+* Start a discussion over the commits made
 
 In detail explanation: 
 
@@ -45,28 +45,28 @@ Open a terminal and move the “pwd” to the place where the forked repository 
 
 *  To see a list of all branches present and to see the current working branch type and execute:
 
-	git branch
+	`git branch`
 
 ![](https://github.com/abhi-kumar/robocomp/blob/how-to-contribute/branch.jpg)
 
 
 * Create a new branch to work on. There is no restriction wrt the naming of the branch:
 
-	git branch <branch_name>
+	`git branch <branch_name>`
 
 ![](https://github.com/abhi-kumar/robocomp/blob/how-to-contribute/branched.jpg)
 
 
 * To switch to the branch that you created to work on execute:
 
-	git checkout <branch_name>
+	`git checkout <branch_name>`
 
 ![](https://github.com/abhi-kumar/robocomp/blob/how-to-contribute/switched.jpg)
 
 
 4) Making changes:
 
-Demo : Lets make changes to Readme.md
+Demo : Lets make changes to *Readme.md*
 
 ![](https://github.com/abhi-kumar/robocomp/blob/how-to-contribute/changes.jpg)
 
@@ -75,21 +75,21 @@ Demo : Lets make changes to Readme.md
 
 * To get a list of all the files to which changes have been made type:
 
-	git status
+	`git status`
 
 ![](https://github.com/abhi-kumar/robocomp/blob/how-to-contribute/status.jpg)
 
 
 * Next add only those files which we want to commit by typing:
 
-	git add <filename>
+	`git add <filename>`
 
 ![](https://github.com/abhi-kumar/robocomp/blob/how-to-contribute/add.jpg)
 
 
 *  Now commit the changes by using command:
 
-	git commit -m 'commit message'
+	`git commit -m 'commit message'`
 
 ![](https://github.com/abhi-kumar/robocomp/blob/how-to-contribute/commit.jpg)
 
