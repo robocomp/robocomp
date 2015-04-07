@@ -34,7 +34,7 @@ The indication that the repo is forked can be observed as follows:
 
 Open a terminal and move to home directory and type: 
 	
-	`git clone <link to the forked repository>`
+	git clone <link to the forked repository>
 
 ![](https://github.com/abhi-kumar/robocomp/blob/how-to-contribute/cloned.jpg)
 
@@ -96,7 +96,7 @@ Demo : Lets make changes to *Readme.md*
 
 6) Push the commit to repository:
 
-	`git push origin <current_working_branch_name>`
+	git push origin <current_working_branch_name>
 
 ![](https://github.com/abhi-kumar/robocomp/blob/how-to-contribute/push.jpg)
 
