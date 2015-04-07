@@ -64,7 +64,7 @@ Z()
     
 After editing the new config file we can run the component:
 
-	`bin/`
+	bin/
 
 ```cog
 A()

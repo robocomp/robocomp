@@ -1,4 +1,4 @@
-[[[cog
+```cog
 
 import sys
 sys.path.append('/opt/robocomp/python')
@@ -19,26 +19,27 @@ def SPACE(i=0):
 from parseCDSL import *
 component = CDSLParsing.fromFile(theCDSL)
 
-]]]
-[[[end]]]
+```
+
 #
-[[[cog
+```cog
 A()
 cog.out(' ' + component['name'])
-]]]
-[[[end]]]
+```
+
 
 Intro to component here
 
 
 ## Configuration parameters
 As any other component,
-[[[cog
+
+```cog
 A()
 cog.out(' *' + component['name'] + '* ')
 Z()
-]]]
-[[[end]]]
+```
+
 needs a configuration file to start. In
 
     etc/config
@@ -52,36 +53,23 @@ you can find an example of a configuration file. We can find there the following
 To avoid changing the *config* file in the repository, we can copy it to the component's home directory, so changes will remain untouched by future git pulls:
 
     cd
-[[[cog
+
+```cog
 A()
 cog.out(' <' + component['name'] + ' \'s path> ')
 Z()
-]]]
-[[[end]]]
+```
 
     cp etc/config config
     
 After editing the new config file we can run the component:
 
-    bin/
-[[[cog
+	bin/
+
+```cog
 A()
 cog.out(component['name'] + ' ')
 Z()
-]]]
-[[[end]]]
+```
     --Ice.Config=config
-
-
-
-
-    
-    
-
-
-    
-
-
-
-
 
