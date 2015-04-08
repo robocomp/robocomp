@@ -45,7 +45,7 @@ Done! Now let's compile and install the whole thing:
     make
     sudo make install
     
-The RoboComp's core libraries and simulator should now be compiled and installed in */opt/robocomp*
+The RoboComp's core libraries and simulator should now be compiled and installed in `/opt/robocomp`
 
 Let's now tell Linux where to find RoboComp's libraries:
 
@@ -82,7 +82,7 @@ The software of the robots using RoboComp is composed of different software comp
     cd ~/robocomp/components
     git clone https://github.com/robocomp/robocomp-robolab.git
     
-The RoboLab's set of basic robotics components are now dowloaded. You can see them in ~/robocomp/components/robocomp-robolab/components
+The RoboLab's set of basic robotics components are now dowloaded. You can see them in `~/robocomp/components/robocomp-robolab/components`
 
 ####Connecting a JoyStick
 
@@ -99,9 +99,9 @@ Your joystick should be now running. It will make the robot advance and turn at 
 
     ./forceStopJoyStickComp.sh
     
-and check where the joystick device file has been created (e.g., /dev/input/js0). If it is not /dev/input/js0, edit ~/robocomp/components/robocomp-robolab/components/joystickComp/etc/config change it accordingly and restart. Note that you might want to save the *config* file to the component's home directory so it does not interfere with future github updates.
+and check where the joystick device file has been created (e.g., `/dev/input/js0`). If it is not `/dev/input/js0`, edit `~/robocomp/components/robocomp-robolab/components/joystickComp/etc/config` change it accordingly and restart. Note that you might want to save the *config* file to the component's home directory so it does not interfere with future github updates.
 
-Yo can find more tutorials on RoboComp in [tutorials!](doc/README.md)
+You can find more tutorials on RoboComp in [tutorials!](doc/README.md)
 
 Drop comments and ask questions in:
 
