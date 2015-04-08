@@ -39,7 +39,7 @@ bool QJoyStick::openQJoy()
 {
 	qWarning( "[qjoystick]: Connecting to device: %s", deviceName.toAscii().data() );
 
-	if((fd = open(deviceName.toAscii().data() , O_RDONLY))<0)
+	if ((fd = open(deviceName.toAscii().data() , O_RDONLY))<0)
 	{
 		qWarning( "[qjoystick]: Failed opening device." );
 		return FALSE;
@@ -66,7 +66,9 @@ void QJoyStick::run( )
 	for (;;)
 	{
 		if (read(fd, &data, data_sz) == data_sz)
+		{
 			emit (inputEvent(data.value, data.type, data.number));
+		}
 	}
 }
 
