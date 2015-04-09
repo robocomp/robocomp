@@ -33,7 +33,7 @@ MACRO( ROBOCOMP_INITIALIZE )
     ${ICEROOT}/include/
   )
   # Set interfaces directory
-  SET(RoboComp_INTERFACES_DIR "${ARGN}/interfaces")
+  SET(RoboComp_INTERFACES_DIR "${ARGN}interfaces")
   # Set libraries
 
   message(STATUS ${OSGUTIL_LIBRARY})
