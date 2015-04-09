@@ -26,14 +26,14 @@ MACRO( ROBOCOMP_INITIALIZE )
 	ENDIF (NOT ${ICEROOT} EQUAL "")
   INCLUDE_DIRECTORIES (
     .
-    ${ARGN}/classes/
-    ${ARGN}/libs/
-    ${ARGN}/interfaces/
+    ${ARGN}classes/
+    ${ARGN}libs/
+    ${ARGN}interfaces/
     ${CMAKE_BINARY_DIR}
     ${ICEROOT}/include/
   )
   # Set interfaces directory
-  SET(RoboComp_INTERFACES_DIR "${ARGN}/interfaces/")
+  SET(RoboComp_INTERFACES_DIR "${ARGN}/interfaces")
   # Set libraries
 
   message(STATUS ${OSGUTIL_LIBRARY})
