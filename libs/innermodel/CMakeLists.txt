@@ -9,7 +9,7 @@ set(srcs
 )
 
 set(incs
-    include/${LIB_NAME}/innermodel.h
+    ${CMAKE_CURRENT_BINARY_DIR}/include/${LIB_NAME}/innermodel.h
     include/${LIB_NAME}/innermodelreader.h
     include/${LIB_NAME}/innermodelviewer.h
 )
