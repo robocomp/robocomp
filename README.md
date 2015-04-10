@@ -41,11 +41,13 @@ make bash process the modified file by typing:
 Done! Now let's compile and install the whole thing:
 
     cd robocomp
-    cmake .
+    mkdir build
+    cd build
+    cmake ..
     make
     sudo make install
     
-The RoboComp's core libraries and simulator should now be compiled and installed in `/opt/robocomp`
+The RoboComp's core libraries and simulator should now be compiled and installed in `/opt/robocomp`.
 
 Let's now tell Linux where to find RoboComp's libraries:
 
