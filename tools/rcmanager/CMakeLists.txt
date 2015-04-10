@@ -14,11 +14,9 @@ MACRO( ROBOCOMP_WRAP_PYTHON_UI )
 ENDMACRO( ROBOCOMP_WRAP_PYTHON_UI )
 
 MESSAGE(STATUS "Adding rule to generate the rcmanager executable" )
-ADD_CUSTOM_COMMAND (
-	OUTPUT rcmanager
-	COMMAND gcc rcmanager.c -o rcmanager
-	COMMAND chmod 755 rcmanager
-)
+
+ADD_EXECUTABLE( rcmanager rcmanager.c )
+
 ADD_CUSTOM_TARGET(exec_rcmanager ALL DEPENDS rcmanager )
 
 
