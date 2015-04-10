@@ -42,6 +42,17 @@ Done! Now let's compile and install the whole thing:
 
     cd robocomp
     cmake .
+#IF the cmake . returns " file Internal CMake error when trying to open file: <file_name> for writing.Use the following commands
+    sudo gedit ~/.profile
+	Add these lines at the end:
+	export ROBOCOMP=/home/<your-linux-user>/robocomp
+    	export PATH=$PATH:/opt/robocomp/bin
+    sudo gedit /etc/sudoers
+	Add these lines at the end:
+	Defaults   env_keep += "ROBOCOMP" 
+#Also you must add other environment variables such as ICEROOT, SLCIEPATH, etc.
+#LOG out and again log-in to process the changes
+    sudo cmake.
     make
     sudo make install
     
