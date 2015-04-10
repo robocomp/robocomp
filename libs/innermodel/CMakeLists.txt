@@ -27,6 +27,9 @@ else (FCL_SUPPORT)
 	SET (FCL_SUPPORT_VALUE "0")
 endif (FCL_SUPPORT)
 
+
+include_directories("${CMAKE_CURRENT_BINARY_DIR}/include")
+
 configure_file ("include/${LIB_NAME}/innermodel.in.h" "include/${LIB_NAME}/innermodel.h")
 
    

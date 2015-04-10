@@ -20,13 +20,9 @@
 #ifndef INNERMODELREADER_H
 #define INNERMODELREADER_H
 
-// Qt includes
 #include <QtXml/QtXml>
 
-// Robocomp includes
-#include "innermodel.h"
-
-
+#include <innermodel/innermodel.h>
 
 class InnerModelReader
 {
