@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=rcremoteserver
+GenericName=rcremoteserver
+Comment=rcremoteserver
+Exec=python /opt/robocomp/bin/rcremoteserver YOURPASSWORDHERE
+Terminal=true
+Type=Application
+StartupNotify=false
+

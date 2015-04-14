@@ -2,40 +2,40 @@
 	<transform id="world">
 		<transform id="piso" tz="-600" tx="-800" rx="1.57079632679" rz="3.14159265359" >
 			<transform id="pisoP" >
-			    <mesh id="pared1" file="/home/robocomp/robocomp/Files/osgModels/piso_osg/pared1.osg"           scale="10" />
-			    <mesh id="pared2" file="/home/robocomp/robocomp/Files/osgModels/piso_osg/pared2.osg"           scale="10" />
-			    <mesh id="pared3" file="/home/robocomp/robocomp/Files/osgModels/piso_osg/pared3.osg"           scale="10" />
-			    <mesh id="pared4" file="/home/robocomp/robocomp/Files/osgModels/piso_osg/pared4.osg"           scale="10" />
-			    <mesh id="pared5" file="/home/robocomp/robocomp/Files/osgModels/piso_osg/pared5.osg"           scale="10" />
-			    <mesh id="pared6" file="/home/robocomp/robocomp/Files/osgModels/piso_osg/pared6.osg"           scale="10" />
-			    <mesh id="pared7" file="/home/robocomp/robocomp/Files/osgModels/piso_osg/pared7.osg"           scale="10" />
-			    <mesh id="pared8" file="/home/robocomp/robocomp/Files/osgModels/piso_osg/pared8.osg"           scale="10" />
-			    <mesh id="pared9" file="/home/robocomp/robocomp/Files/osgModels/piso_osg/pared9.osg"           scale="10" />
-			    <mesh id="pared10" file="/home/robocomp/robocomp/Files/osgModels/piso_osg/pared10.osg"         scale="10" />
-			    <mesh id="pared11" file="/home/robocomp/robocomp/Files/osgModels/piso_osg/pared11.osg"         scale="10" />
-			    <mesh id="pilar1" file="/home/robocomp/robocomp/Files/osgModels/piso_osg/pilar1.osg"           scale="10" />
-			    <mesh id="pilar2" file="/home/robocomp/robocomp/Files/osgModels/piso_osg/pilar2.osg"           scale="10" />
-			    <mesh id="columna1" file="/home/robocomp/robocomp/Files/osgModels/piso_osg/columna1.osg"       scale="10" />
-			    <mesh id="columna2" file="/home/robocomp/robocomp/Files/osgModels/piso_osg/columna2.osg"       scale="10" />
-			    <mesh id="paredwc1" file="/home/robocomp/robocomp/Files/osgModels/piso_osg/paredwc1.osg"       scale="10" />
-			    <mesh id="paredwc2" file="/home/robocomp/robocomp/Files/osgModels/piso_osg/paredwc2.osg"       scale="10" />
-			    <mesh id="paredwc3" file="/home/robocomp/robocomp/Files/osgModels/piso_osg/paredwc3.osg"       scale="10" />
-			    <mesh id="indoor" file="/home/robocomp/robocomp/Files/osgModels/piso_osg/indoor.osg"           scale="10" />
-			    <mesh id="wcdoor" file="/home/robocomp/robocomp/Files/osgModels/piso_osg/wcdoor.osg"           scale="10" />
-			    <mesh id="cristalera2" file="/home/robocomp/robocomp/Files/osgModels/piso_osg/cristalera2.osg" scale="10" />
-			    <mesh id="tubes" file="/home/robocomp/robocomp/Files/osgModels/piso_osg/tubes.osg"             scale="10" />
-			    <mesh id="arch1" file="/home/robocomp/robocomp/Files/osgModels/piso_osg/arch1.osg"             scale="10" />
-			    <mesh id="arch2" file="/home/robocomp/robocomp/Files/osgModels/piso_osg/arch2.osg"             scale="10" />
-			    <mesh id="suelo" file="/home/robocomp/robocomp/Files/osgModels/piso_osg/suelo.osg"             scale="10" />
-				<mesh id="nevera" file="/home/robocomp/robocomp/Files/osgModels/piso_osg/nevera.osg" 		   scale="10"  tx="-1200" ty="-700" tz="0" />
-				<mesh id="nevera2" file="/home/robocomp/robocomp/Files/osgModels/piso_osg/nevera.osg" 		   scale="10"  tx="-1200" ty="0" tz="0" />
-				<mesh id="nevera2a" file="/home/robocomp/robocomp/Files/osgModels/piso_osg/nevera.osg" 		   scale="10"  tx="-1200" ty="700" tz="0" />
-				<mesh id="nevera2b" file="/home/robocomp/robocomp/Files/osgModels/piso_osg/nevera.osg" 		   scale="10"  tx="-1200" ty="1400" tz="0" />
-				<mesh id="nevera2c" file="/home/robocomp/robocomp/Files/osgModels/piso_osg/nevera.osg" 		   scale="10"  tx="-1200" ty="2000" tz="0" />
+			    <mesh id="pared1" file="/home/robocomp/robocomp/files/osgModels/piso_osg/pared1.osg"           scale="10" />
+			    <mesh id="pared2" file="/home/robocomp/robocomp/files/osgModels/piso_osg/pared2.osg"           scale="10" />
+			    <mesh id="pared3" file="/home/robocomp/robocomp/files/osgModels/piso_osg/pared3.osg"           scale="10" />
+			    <mesh id="pared4" file="/home/robocomp/robocomp/files/osgModels/piso_osg/pared4.osg"           scale="10" />
+			    <mesh id="pared5" file="/home/robocomp/robocomp/files/osgModels/piso_osg/pared5.osg"           scale="10" />
+			    <mesh id="pared6" file="/home/robocomp/robocomp/files/osgModels/piso_osg/pared6.osg"           scale="10" />
+			    <mesh id="pared7" file="/home/robocomp/robocomp/files/osgModels/piso_osg/pared7.osg"           scale="10" />
+			    <mesh id="pared8" file="/home/robocomp/robocomp/files/osgModels/piso_osg/pared8.osg"           scale="10" />
+			    <mesh id="pared9" file="/home/robocomp/robocomp/files/osgModels/piso_osg/pared9.osg"           scale="10" />
+			    <mesh id="pared10" file="/home/robocomp/robocomp/files/osgModels/piso_osg/pared10.osg"         scale="10" />
+			    <mesh id="pared11" file="/home/robocomp/robocomp/files/osgModels/piso_osg/pared11.osg"         scale="10" />
+			    <mesh id="pilar1" file="/home/robocomp/robocomp/files/osgModels/piso_osg/pilar1.osg"           scale="10" />
+			    <mesh id="pilar2" file="/home/robocomp/robocomp/files/osgModels/piso_osg/pilar2.osg"           scale="10" />
+			    <mesh id="columna1" file="/home/robocomp/robocomp/files/osgModels/piso_osg/columna1.osg"       scale="10" />
+			    <mesh id="columna2" file="/home/robocomp/robocomp/files/osgModels/piso_osg/columna2.osg"       scale="10" />
+			    <mesh id="paredwc1" file="/home/robocomp/robocomp/files/osgModels/piso_osg/paredwc1.osg"       scale="10" />
+			    <mesh id="paredwc2" file="/home/robocomp/robocomp/files/osgModels/piso_osg/paredwc2.osg"       scale="10" />
+			    <mesh id="paredwc3" file="/home/robocomp/robocomp/files/osgModels/piso_osg/paredwc3.osg"       scale="10" />
+			    <mesh id="indoor" file="/home/robocomp/robocomp/files/osgModels/piso_osg/indoor.osg"           scale="10" />
+			    <mesh id="wcdoor" file="/home/robocomp/robocomp/files/osgModels/piso_osg/wcdoor.osg"           scale="10" />
+			    <mesh id="cristalera2" file="/home/robocomp/robocomp/files/osgModels/piso_osg/cristalera2.osg" scale="10" />
+			    <mesh id="tubes" file="/home/robocomp/robocomp/files/osgModels/piso_osg/tubes.osg"             scale="10" />
+			    <mesh id="arch1" file="/home/robocomp/robocomp/files/osgModels/piso_osg/arch1.osg"             scale="10" />
+			    <mesh id="arch2" file="/home/robocomp/robocomp/files/osgModels/piso_osg/arch2.osg"             scale="10" />
+			    <mesh id="suelo" file="/home/robocomp/robocomp/files/osgModels/piso_osg/suelo.osg"             scale="10" />
+				<mesh id="nevera" file="/home/robocomp/robocomp/files/osgModels/piso_osg/nevera.osg" 		   scale="10"  tx="-1200" ty="-700" tz="0" />
+				<mesh id="nevera2" file="/home/robocomp/robocomp/files/osgModels/piso_osg/nevera.osg" 		   scale="10"  tx="-1200" ty="0" tz="0" />
+				<mesh id="nevera2a" file="/home/robocomp/robocomp/files/osgModels/piso_osg/nevera.osg" 		   scale="10"  tx="-1200" ty="700" tz="0" />
+				<mesh id="nevera2b" file="/home/robocomp/robocomp/files/osgModels/piso_osg/nevera.osg" 		   scale="10"  tx="-1200" ty="1400" tz="0" />
+				<mesh id="nevera2c" file="/home/robocomp/robocomp/files/osgModels/piso_osg/nevera.osg" 		   scale="10"  tx="-1200" ty="2000" tz="0" />
 	
-				<mesh id="nevera3" file="/home/robocomp/robocomp/Files/osgModels/piso_osg/nevera.osg" 		   scale="10"  tx="-5500" ty="1500" tz="0" />
-				<mesh id="nevera4" file="/home/robocomp/robocomp/Files/osgModels/piso_osg/nevera.osg" 		   scale="10"  tx="-4500" ty="300" tz="0" />
-				<mesh id="nevera5" file="/home/robocomp/robocomp/Files/osgModels/piso_osg/nevera.osg" 		   scale="10"  tx="-5500" ty="-1000" tz="0" />
+				<mesh id="nevera3" file="/home/robocomp/robocomp/files/osgModels/piso_osg/nevera.osg" 		   scale="10"  tx="-5500" ty="1500" tz="0" />
+				<mesh id="nevera4" file="/home/robocomp/robocomp/files/osgModels/piso_osg/nevera.osg" 		   scale="10"  tx="-4500" ty="300" tz="0" />
+				<mesh id="nevera5" file="/home/robocomp/robocomp/files/osgModels/piso_osg/nevera.osg" 		   scale="10"  tx="-5500" ty="-1000" tz="0" />
 	
 			</transform>
 		</transform>
@@ -64,7 +64,7 @@
 			</translation> <!-- laser -->
 
 			<translation id="robotGeometricCenter" tx="0" ty="0" tz="50">
-				<mesh id="base_mesh" file="/home/robocomp/robocomp/Files/osgModels/Gualzru/Gualzru.osg"   scale="25" rx="1.57079632679" rz="-1.57079632679" ty="100" tz="-150"/>
+				<mesh id="base_mesh" file="/home/robocomp/robocomp/files/osgModels/Gualzru/Gualzru.osg"   scale="25" rx="1.57079632679" rz="-1.57079632679" ty="100" tz="-150"/>
 			</translation>
 		</differentialrobot>
 

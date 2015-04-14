@@ -47,6 +47,7 @@ add_custom_target(uninstall "${CMAKE_COMMAND}" -P
                   "${RoboComp_BINARY_DIR}/uninstall_target.cmake")
 
 # RoboComp global dependencies
+find_package(OpenMP REQUIRED) ## search OpenMP libs
 if(OPENMP_FOUND)
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
@@ -91,8 +92,19 @@ SUBDIRS(
 	tools/robocompdsl
 	tools/rcinnerModelSimulator
 	tools/rcmanager
+	tools/rcmonitor
 	tools/rcremote
 )
 
 
+add_custom_target(mrproper
+  COMMAND ${CMAKE_MAKE_PROGRAM} clean
+#   COMMAND find $ENV{ROBOCOMP} -name CMakeFiles -exec rm -rf {} \;
+#   COMMAND find $ENV{ROBOCOMP} -name CMakeCache.txt -exec rm {} \;
+#   COMMAND find $ENV{ROBOCOMP} -name cmake_install.cmake -exec rm {} \;
+#   COMMAND find $ENV{ROBOCOMP} -name Makefile -exec rm {} \;
+#   COMMAND find $ENV{ROBOCOMP} -name *.kd* -exec rm {} \;
+#   COMMAND find $ENV{ROBOCOMP} -name *_moc* -exec rm {} \;
+#   COMMAND find $ENV{ROBOCOMP} -name Makefile -exec rm {} \;
+)
 

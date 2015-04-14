@@ -18,15 +18,15 @@ module RoboCompUltrasound
 		float ang;
 	};
 
-	dictionary<string, SensorParams> SensorMap;
+	dictionary<string, SensorData> SensorMap;
 
 	interface Ultrasound
 	{
 		BusParams getBusParams();
 		SensorData getSensorData(string sensor);
-		SensorMap getAllSensorData();
+		string getAllSensorData();
 
-    };
+    	};
 };
 
 #endif

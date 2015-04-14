@@ -16,7 +16,7 @@
 		</transform>
 
 		<differentialrobot id="base" port="10004">
-			<mesh  id="base_gualzru" file="/home/robocomp/robocomp/Files/osgModels/Gualzru/Gualzru.osg"  tx="0" ty="170" tz="-150" rx="1.5707963" rz="-1.5707963" scale="25" />
+			<mesh  id="base_gualzru" file="/home/robocomp/robocomp/files/osgModels/Gualzru/Gualzru.osg"  tx="0" ty="170" tz="-150" rx="1.5707963" rz="-1.5707963" scale="25" />
 			<!--<transform id="laserPose" ty="900">
 				<laser id="laser" port="10003" measures="120" min="100" max="30000" angle="3.141593" ifconfig="10004" />
 			</transform>-->		

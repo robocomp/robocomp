@@ -20,7 +20,7 @@
 #    along with RoboComp.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-import sys, traceback, Ice, os
+import sys, traceback, Ice, os, copy
 
 import signal
 signal.signal(signal.SIGINT, signal.SIG_DFL) # Ctrl+c handling
@@ -41,18 +41,31 @@ preStr = "-I"+ROBOCOMP+"/interfaces/ --all "+ROBOCOMP+"/interfaces/"
 Ice.loadSlice(preStr+"RCRemote.ice")
 import RoboCompRemote
 
+def getPassFor(host_param):
+	for line in open(os.getenv("HOME")+'/.rcremote', 'r').readlines():
+		s = line.strip().split('#', 1)
+		if len(s) < 2:
+			continue
+		host = s[0]
+		password = s[1]
+		if host == host_param:
+			return password
+	raise Exception("can't find password for "+host+" in ~/.rcremote  (format 'host#password')")
 
-if len(sys.argv) < 6:
-	print "EXAMPLE: rcremote localhost passwordhere mytabname /home/robocomp touch argument1 argument2"
+
+if len(sys.argv) < 5:
+	print "EXAMPLE: rcremote localhost mytabname /home/robocomp touch argument1 argument2"
+	sys.exit(-1)
 
 if __name__ == '__main__':
+	argv = copy.deepcopy(sys.argv)
 	app = QtCore.QCoreApplication(sys.argv)
-	ic = Ice.initialize(sys.argv)
+	ic = Ice.initialize(['me'])
 	status = 0
 	mprx = {}
 	try:
 		try:
-			proxyString = "rcremote:tcp -p 4242 -h " + sys.argv[1]
+			proxyString = "rcremote:tcp -p 4242 -h " + argv[1]
 			try:
 				basePrx = ic.stringToProxy(proxyString)
 				rcremote_proxy = RoboCompRemote.RCRemotePrx.checkedCast(basePrx)
@@ -72,12 +85,16 @@ if __name__ == '__main__':
 
 
 	if status == 0:
-		password = sys.argv[2]
-		yakuakeTabName = sys.argv[3]
-		path = sys.argv[4]
-		binary = sys.argv[5]
-		arguments = sys.argv[6:]
-		if rcremote_proxy.run(password, path, binary, arguments, yakuakeTabName):
+		print argv
+		host = argv[1]
+		yakuakeTabName = argv[2]
+		path = argv[3]
+		binary = argv[4]
+		arguments = argv[5:]
+		print 'path', path
+		print 'binary', binary
+		print 'arguments', arguments
+		if rcremote_proxy.run(getPassFor(host), path, binary, arguments, yakuakeTabName):
 			print 'ok'
 			sys.exit(0)
 		else:

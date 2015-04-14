@@ -1,7 +1,7 @@
 <innerModel>
 	<transform id="world" tx="0" ty="0" tz="0"  rx="0" ry="0" rz="0">
 		<transform id="XN_ESCENARIO_ARBOL" tx="0" ty="0" tz="0"  rx="1.5" ry="0" rz="0">
-			<mesh id="XN_ESCENARIO_ARBOL_mesh" file="/home/robocomp/robocomp/Files/osgModels/escenarioArbol/escenarioArbol.osg" scale="1" tx="0" ty="0" tz="0" rx="0" ry="0" rz="0" />
+			<mesh id="XN_ESCENARIO_ARBOL_mesh" file="/home/robocomp/robocomp/files/osgModels/escenarioArbol/escenarioArbol.osg" scale="1" tx="0" ty="0" tz="0" rx="0" ry="0" rz="0" />
 		</transform>
 	</transform>
 </innerModel>

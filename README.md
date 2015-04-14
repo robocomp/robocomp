@@ -1,6 +1,8 @@
 [RoboComp](http://robocomp.net)
 ===============================
 
+[![Join the chat at https://gitter.im/robocomp/robocomp](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/robocomp/robocomp?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 by [RoboLab](http://robolab.unex.es), [ISIS](http://www.grupoisis.uma.es/index.php?option=com_jresearch&view=staff&Itemid=3&lang=es) and many other collaborators.
 
 RoboComp is an open-source Robotics framework providing the tools to create and modify software components that communicate through public interfaces. Components may *require*, *subscribe*, *implement* or *publish*
@@ -11,7 +13,7 @@ interfaces in a seamless way. Building new components is done using two domain s
 Make sure you have installed the following packages from the Ubuntu repository:
 
     sudo apt-get update
-    sudo apt-get install git git-annex cmake g++ libgsl0-dev libopenscenegraph-dev cmake-qt-gui zeroc-ice35 freeglut3-dev libboost-system-dev libboost-thread-dev qt4-dev-tools yakuake openjdk-7-jre python-pip  python-pyparsing python-numpy python-pyside pyside-tools libxt-dev libgl1-mesa-dev-lts-utopic libglu1-mesa-dev pyqt4-dev-tools qt4-designer 
+    sudo apt-get install git git-annex cmake g++ libgsl0-dev libopenscenegraph-dev cmake-qt-gui zeroc-ice35 freeglut3-dev libboost-system-dev libboost-thread-dev qt4-dev-tools yakuake openjdk-7-jre python-pip  python-pyparsing python-numpy python-pyside pyside-tools libxt-dev pyqt4-dev-tools qt4-designer 
     
 ###RoboComp core libraries
 
@@ -39,11 +41,13 @@ make bash process the modified file by typing:
 Done! Now let's compile and install the whole thing:
 
     cd robocomp
-    cmake .
+    mkdir build
+    cd build
+    cmake ..
     make
     sudo make install
     
-The RoboComp's core libraries and simulator should now be compiled and installed in */opt/robocomp*
+The RoboComp's core libraries and simulator should now be compiled and installed in `/opt/robocomp`.
 
 Let's now tell Linux where to find RoboComp's libraries:
 
@@ -80,7 +84,7 @@ The software of the robots using RoboComp is composed of different software comp
     cd ~/robocomp/components
     git clone https://github.com/robocomp/robocomp-robolab.git
     
-The RoboLab's set of basic robotics components are now dowloaded. You can see them in ~/robocomp/components/robocomp-robolab/components
+The RoboLab's set of basic robotics components are now dowloaded. You can see them in `~/robocomp/components/robocomp-robolab/components`
 
 ####Connecting a JoyStick
 
@@ -97,9 +101,14 @@ Your joystick should be now running. It will make the robot advance and turn at 
 
     ./forceStopJoyStickComp.sh
     
-and check where the joystick device file has been created (e.g., /dev/input/js0). If it is not /dev/input/js0, edit ~/robocomp/components/robocomp-robolab/components/joystickComp/etc/config change it accordingly and restart. Note that you might want to save the *config* file to the component's home directory so it does not interfere with future github updates.
+and check where the joystick device file has been created (e.g., `/dev/input/js0`). If it is not `/dev/input/js0`, edit `~/robocomp/components/robocomp-robolab/components/joystickComp/etc/config` change it accordingly and restart. Note that you might want to save the *config* file to the component's home directory so it does not interfere with future github updates.
 
-Yo can find more tutorials on RoboComp in [tutorials!](doc/README.md)
+You can find more tutorials on RoboComp in [tutorials!](doc/README.md)
+
+Drop comments and ask questions in:
+
+- https://groups.google.com/forum/?hl=es#!forum/robocomp-dev
+- https://gitter.im/robocomp
 
 Please, report any bugs to pbustos@unex.es
 

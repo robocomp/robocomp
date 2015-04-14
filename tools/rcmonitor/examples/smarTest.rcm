@@ -1,8 +1,0 @@
-/home/robocomp/robocomp/Interfaces/Smar.ice
-smar
-localhost
-tcp
-10105
-30
-smarTest.py
-

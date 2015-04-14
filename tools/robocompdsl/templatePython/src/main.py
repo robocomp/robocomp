@@ -223,7 +223,11 @@ if __name__ == '__main__':
 		cog.outl('<TABHERE>app = QtCore.QCoreApplication(sys.argv)')
 ]]]
 [[[end]]]
-	ic = Ice.initialize(sys.argv)
+	params = copy.deepcopy(sys.argv)
+	if len(params) > 1:
+		if not params[1].startswith('--Ice.Config='):
+			params[1] = '--Ice.Config=' + params[1]
+	ic = Ice.initialize(params)
 	status = 0
 	mprx = {}
 [[[cog

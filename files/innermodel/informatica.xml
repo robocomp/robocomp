@@ -34,7 +34,7 @@
 				</translation> <!-- laser -->
 
 				<translation id="robotGeometricCenter" tx="0" ty="0" tz="50">
-					<mesh id="base_mesh" file="/home/robocomp/robocomp/Files/osgModels/Gualzru/Gualzru.osg"   scale="25" rx="1.57079632679" rz="-1.57079632679" ty="100" tz="-150"/>
+					<mesh id="base_mesh" file="/home/robocomp/robocomp/files/osgModels/Gualzru/Gualzru.osg"   scale="25" rx="1.57079632679" rz="-1.57079632679" ty="100" tz="-150"/>
 				</translation>
 		</differentialrobot>
 		
