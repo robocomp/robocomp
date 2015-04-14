@@ -311,7 +311,7 @@ void InnerModelReader::recursive(QDomNode parentDomNode, InnerModel *model, Inne
 			{
 				include(e.attribute("path"), model, imNode);
 			}
-			else if (e.tagName().toLower() == "include")
+			else if (e.tagName().toLower() == "axes")
 			{
 				float lengths[3], widths[3];
 				
@@ -340,12 +340,15 @@ void InnerModelReader::recursive(QDomNode parentDomNode, InnerModel *model, Inne
 
 				
 				InnerModelPlane *plane;
+
 				
-				plane = model->newPlane(e.attribute("id")+"x", imNode, "#ff0000", widths[0], widths[0], lengths[0], 1,   1,0,0,   0,0,0,  false);
+				plane = model->newPlane(e.attribute("id")+"x", imNode, "#ff0000", widths[0], widths[0], lengths[0], 1,   1,0,0,   lengths[0]/2,0,0,  false);
 				imNode->addChild(plane);
-				plane = model->newPlane(e.attribute("id")+"y", imNode, "#00ff00", widths[1], widths[1], lengths[1], 1,   0,1,0,   0,0,0,  false);
+				plane = model->newPlane(e.attribute("id")+"y", imNode, "#00ff00", widths[1], lengths[1], widths[1], 1,   1,0,0,   0,lengths[1]/2,0,  false);
 				imNode->addChild(plane);
-				plane = model->newPlane(e.attribute("id")+"z", imNode, "#0000ff", widths[2], widths[2], lengths[2], 1,   0,0,1,   0,0,0,  false);
+				plane = model->newPlane(e.attribute("id")+"z", imNode, "#0000ff", lengths[2], widths[2], widths[2], 1,   1,0,0,   0,0,lengths[2]/2,  false);
+				imNode->addChild(plane);
+				plane = model->newPlane(e.attribute("id")+"c", imNode, "#ffffff", widths[0]*1.3, widths[1]*1.3, widths[2]*1.3,                       1,   1,0,0,   0,0,0,  false);
 				imNode->addChild(plane);
 
 
