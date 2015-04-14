@@ -1,0 +1,15 @@
+module RoboCompBeacons{
+	
+	struct BeaconsData{
+		int id;
+		int pow;
+	};
+	
+	sequence<BeaconsData> beaconsarray;
+
+	interface Beacons
+	{
+		 void getBeacons(out beaconsarray bdata);
+ 	};
+
+};
