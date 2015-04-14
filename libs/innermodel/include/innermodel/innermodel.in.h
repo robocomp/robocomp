@@ -278,6 +278,7 @@ protected:
 	QHash<QString, InnerModelNode *> hash;
 	QHash<QPair<QString, QString>, RTMat> localHashTr;
 	QHash<QPair<QString, QString>, QMat> localHashRot;
+	
 	void setLists(const QString &origId, const QString &destId);
 	QList<InnerModelNode *> listA, listB;
 

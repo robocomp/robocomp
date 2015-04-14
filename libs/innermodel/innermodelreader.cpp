@@ -65,6 +65,40 @@ bool InnerModelReader::load(const QString &file, InnerModel *model)
 	return true;
 }
 
+bool InnerModelReader::include(const QString &file, InnerModel *model, InnerModelNode *node)
+{
+ 	printf("InnerModelReader: reading include %s\n", file.toStdString().c_str());
+	QDomDocument doc("mydocument");
+	QFile fich(file);
+	if (!fich.open(QIODevice::ReadOnly))
+	{
+		printf("Can't open %s\n", file.toStdString().c_str());
+		return false;
+	}
+
+	QString errorMsg;
+	int errorLine, errorColumn;
+	if (!doc.setContent(&fich, &errorMsg, &errorLine, &errorColumn)) 
+	{
+		qDebug() << "Can't set document content from" << qPrintable(file);
+		qDebug() << "line:" << errorLine << "  column:" << errorColumn;
+		qDebug() << "error:" << errorMsg;
+		fich.close();
+		return false;
+	}
+
+	QDomElement root = doc.documentElement();
+	if (root.tagName().toLower() != QString("innerModel").toLower())
+	{
+		qFatal("<innerModel> tag missing.");
+	}
+
+	recursive(root, model, node);
+
+	fich.close();
+	return true;
+}
+
 
 
 InnerModelReader::~InnerModelReader()
@@ -273,6 +307,24 @@ void InnerModelReader::recursive(QDomNode parentDomNode, InnerModel *model, Inne
 				qFatal("Tag <innerModel> can only be the root tag.");
 				return;
 			}
+			else if (e.tagName().toLower() == "include")
+			{
+				include(e.attribute("path"), model, imNode);
+/*				printf("<<< include\n");
+				InnerModel *newIm = new InnerModel(e.attribute("path").toStdString());  // <include path="huihuiuih.xml" />
+				InnerModelNode *incRoot = newIm->getRoot();
+				
+				for (int i=0; i<incRoot->children.size(); i++)
+				{
+					incRoot->children[i]->parent = imNode;
+					model->hash[incRoot->children[i]->id] = incRoot->children[i];
+					imNode->addChild(incRoot->children[i]);
+				}
+				
+// 				incRoot->children.clear();
+// 				delete newIm;
+				printf("include >>>\n");
+*/			}
 			else
 			{
 				qFatal("%s is not a valid tag name.\n", qPrintable(e.tagName()));
@@ -352,6 +404,10 @@ QMap<QString, QStringList> InnerModelReader::getValidNodeAttributes()
 	temporalList.clear();
 	temporalList << "id" << "texture" << "repeat" << "size" << "nx" << "ny" << "nz" << "px" << "py" << "pz" << "collide";
 	nodeAttributes["plane"] = temporalList;
+
+	temporalList.clear();
+	temporalList << "path";
+	nodeAttributes["include"] = temporalList;
 	
 	return nodeAttributes;
 }
