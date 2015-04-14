@@ -310,21 +310,49 @@ void InnerModelReader::recursive(QDomNode parentDomNode, InnerModel *model, Inne
 			else if (e.tagName().toLower() == "include")
 			{
 				include(e.attribute("path"), model, imNode);
-/*				printf("<<< include\n");
-				InnerModel *newIm = new InnerModel(e.attribute("path").toStdString());  // <include path="huihuiuih.xml" />
-				InnerModelNode *incRoot = newIm->getRoot();
+			}
+			else if (e.tagName().toLower() == "include")
+			{
+				float lengths[3], widths[3];
 				
-				for (int i=0; i<incRoot->children.size(); i++)
+				float defaultLength = e.attribute("length", "-1").toFloat();
+				float defaultWidth = e.attribute("width", "-1").toFloat();
+				for (int i=0;i<3;i++)
 				{
-					incRoot->children[i]->parent = imNode;
-					model->hash[incRoot->children[i]->id] = incRoot->children[i];
-					imNode->addChild(incRoot->children[i]);
+					lengths[i]=defaultLength<0?200:defaultLength;
+					widths[i]=defaultWidth<0?15:defaultWidth;
 				}
+
+				float xLength = e.attribute("xlength", "-1").toFloat();
+				if (xLength>0) lengths[0]=xLength;
+				float xWidth = e.attribute("xwidth", "-1").toFloat();
+				if (xWidth>0) widths[0]=xWidth;
 				
-// 				incRoot->children.clear();
-// 				delete newIm;
-				printf("include >>>\n");
-*/			}
+				float yLength = e.attribute("ylength", "-1").toFloat();
+				if (yLength>0) lengths[1]=yLength;
+				float yWidth = e.attribute("ywidth", "-1").toFloat();
+				if (yWidth>0) widths[1]=yWidth;
+				
+				float zLength = e.attribute("zlength", "-1").toFloat();
+				if (zLength>0) lengths[2]=zLength;
+				float zWidth = e.attribute("zwidth", "-1").toFloat();
+				if (zWidth>0) widths[2]=zWidth;
+
+				
+				InnerModelPlane *plane;
+				
+				plane = model->newPlane(e.attribute("id")+"x", imNode, "#ff0000", widths[0], widths[0], lengths[0], 1,   1,0,0,   0,0,0,  false);
+				imNode->addChild(plane);
+				plane = model->newPlane(e.attribute("id")+"y", imNode, "#00ff00", widths[1], widths[1], lengths[1], 1,   0,1,0,   0,0,0,  false);
+				imNode->addChild(plane);
+				plane = model->newPlane(e.attribute("id")+"z", imNode, "#0000ff", widths[2], widths[2], lengths[2], 1,   0,0,1,   0,0,0,  false);
+				imNode->addChild(plane);
+
+
+
+				node = plane;
+				
+			}
 			else
 			{
 				qFatal("%s is not a valid tag name.\n", qPrintable(e.tagName()));
@@ -408,6 +436,10 @@ QMap<QString, QStringList> InnerModelReader::getValidNodeAttributes()
 	temporalList.clear();
 	temporalList << "path";
 	nodeAttributes["include"] = temporalList;
+
+	temporalList.clear();
+	temporalList << "id" << "length" << "width" << "lengthx" << "widthx" << "lengthy" << "widthy" << "lengthz" << "widthz";
+	nodeAttributes["axes"] = temporalList;
 	
 	return nodeAttributes;
 }

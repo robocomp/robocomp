@@ -39,15 +39,11 @@ set(Boost_USE_MULTITHREADED ON)
 if (PYTHON_BINDINGS_SUPPORT)
 	# Add bindings source code file
 	SET(srcs ${srcs} innermodel_python.cpp)
-	#find_package(Boost COMPONENTS system thread python REQUIRED)
-	SET(Boost_LIBRARIES -lboost_system -lboost_thread -lboost_python )
-	include_directories(${Boost_INCLUDE_DIRS})
-	link_directories(${Boost_LIBRARY_DIRS})
+	find_package(Boost COMPONENTS system thread python REQUIRED)
 	find_package(PythonLibs REQUIRED)
-	MESSAGE(STATUS "im PYTHON BINDINGS: DIRS ${PYTHON_INCLUDE_DIRS}")
-	MESSAGE(STATUS "im PYTHON BINDINGS: LIBS ${PYTHON_LIBRARIES}")
-	include_directories(${PYTHON_INCLUDE_DIRS})
-	link_directories(${PYTHON_LIBRARIES})
+	MESSAGE(STATUS "im PYTHON BINDINGS: DIRS ${PYTHON_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS}")
+	MESSAGE(STATUS "im PYTHON BINDINGS: LIBS ${PYTHON_LIBRARIES} ${Boost_LIBRARY_DIRS_DIRS}")
+	link_directories(${PYTHON_LIBRARIES} ${Boost_LIBRARY_DIRS_DIRS})
 endif (PYTHON_BINDINGS_SUPPORT)
 
 
@@ -55,7 +51,7 @@ endif (PYTHON_BINDINGS_SUPPORT)
 
 RoboComp_LIB_DEPEND(build ${LIB_NAME} DEPS ${LIB_DEPS} OPT_DEPS)
 set(OUT_FILE_NAME ${PROJECT_NAME_LOWER}_${LIB_NAME})
-include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/include  ${CMAKE_CURRENT_BINARY_DIR}/libs )
+include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/include  ${CMAKE_CURRENT_BINARY_DIR}/libs ${PYTHON_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS} )
 
 INCLUDE( ${QT_USE_FILE} )
 ADD_DEFINITIONS(${QT_DEFINITIONS})

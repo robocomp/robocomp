@@ -72,6 +72,23 @@ INCLUDE( ${QT_USE_FILE} )
 QT4_WRAP_CPP( MOC_SOURCES ${HEADERS} )
 QT4_WRAP_UI( UI_HEADERS guiDlg.ui )
 
+
+
+# Python bindings
+set(Boost_USE_STATIC_LIBS   OFF)
+set(Boost_USE_MULTITHREADED ON)
+if (PYTHON_BINDINGS_SUPPORT)
+	# Add bindings source code file
+	SET(srcs ${srcs} innermodel_python.cpp)
+	find_package(Boost COMPONENTS system thread python REQUIRED)
+	find_package(PythonLibs REQUIRED)
+	MESSAGE(STATUS "im PYTHON BINDINGS: DIRS ${PYTHON_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS}")
+	MESSAGE(STATUS "im PYTHON BINDINGS: LIBS ${PYTHON_LIBRARIES} ${Boost_LIBRARY_DIRS_DIRS}")
+	link_directories(${PYTHON_LIBRARIES} ${Boost_LIBRARY_DIRS_DIRS})
+endif (PYTHON_BINDINGS_SUPPORT)
+
+include_directories( ${PYTHON_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
+
 # Specify construction and link process
 # SET (EXECUTABLE_OUTPUT_PATH ../bin)
 ADD_EXECUTABLE( rcis ${SOURCES} ${MOC_SOURCES} ${RC_SOURCES} ${UI_HEADERS} )
