@@ -1,15 +1,10 @@
 module RoboCompBeacons{
-	
-	struct BeaconsData{
-		int id;
-		int pow;
-	};
-	
-	sequence<BeaconsData> beaconsarray;
+		
+	sequence<int> IndexList;
 
 	interface Beacons
 	{
-		 void getBeacons(out beaconsarray bdata);
+		 void getBeacons(out IndexList indices, out IndexList potencia);
  	};
 
 };
