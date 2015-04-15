@@ -198,10 +198,11 @@ void OsgView::init( )
 	globalStateSet->setMode(GL_LIGHTING, osg::StateAttribute::ON);
 
 	osg::Light* light = getLight();
-	light->setAmbient( osg::Vec4( 1.0f, 1., 1.,  1.f ));
-	light->setDiffuse( osg::Vec4( 1.0f, 1., 1.,  1.f ));
-	light->setPosition(osg::Vec4( 0.0f, 10.f, 0.f,    1.f));
-	light->setDirection(osg::Vec3(0.0f, -1.0f, 0.0f));
+	light->setAmbient(  osg::Vec4( 0.4f,    0.4f, 0.4f,  1.f ));
+	light->setDiffuse(  osg::Vec4( 0.8f,    0.8f, 0.8f,  1.f ));
+	light->setSpecular( osg::Vec4( 0.2f,    0.2f, 0.2f,  1.f ));
+	light->setPosition( osg::Vec4( 0.0f, 3000.0f, 0.0f,  1.f));
+// 	light->setDirection(osg::Vec3(0.0f, -1.0f, 0.0f));
 
 	osg::ref_ptr<osg::LightSource> lightSource = new osg::LightSource;
 	lightSource->setLight(light);
