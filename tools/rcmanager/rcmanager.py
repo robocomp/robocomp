@@ -620,6 +620,7 @@ class GraphNode:
 class GraphView(QtGui.QWidget):
 	def __init__(self, parent=None):
 		QtGui.QWidget.__init__(self, parent)
+		self.tab = parent
 		self.initialize()
 	def initialize(self):
 		global dict
@@ -742,7 +743,7 @@ class GraphView(QtGui.QWidget):
 			
 	def paintNode(self, node):
 		w2 = self.parent().width()/2
-		h2 = self.parent().height()/2
+		h2 = self.parent().height()/2+30
 		global dict
 
 		if node.on:
@@ -760,8 +761,8 @@ class GraphView(QtGui.QWidget):
 		self.painter.drawText(QtCore.QPoint(node.x-node.r+w2, node.y-node.r-3+h2), node.name)
 
 	def paintEvent(self, event):
-		w2 = self.parent().width()/2
-		h2 = self.parent().height()/2
+		w2 = self.tab.width()/2
+		h2 = self.tab.height()/2+30
 		nodosAPintar = [] + self.compList
 		if self.VisualNodeCogia: nodosAPintar.append(self.VisualNodeCogia)
 
@@ -811,7 +812,7 @@ class GraphView(QtGui.QWidget):
 		self.showNodeMenu(e, True)
 	def showNodeMenu(self, e, forceDialog=False):
 		w2 = self.parent().width()/2
-		h2 = self.parent().height()/2
+		h2 = self.parent().height()/2 + 30
 		x = e.x()-w2
 		y = e.y()-h2
 		if self.ui: self.ui.close()
@@ -848,7 +849,7 @@ class GraphView(QtGui.QWidget):
 			self.emit(QtCore.SIGNAL("nodeReleased()"))
 	def mouseMoveEvent(self, e):
 		w2 = self.parent().width()/2
-		h2 = self.parent().height()/2
+		h2 = self.parent().height()/2+30
 		self.repaint()
 		if self.VisualNodeCogia != None:
 			self.VisualNodeCogia.x = e.x()-self.ox-w2
