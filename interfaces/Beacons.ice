@@ -3,7 +3,7 @@
 
 module RoboCompBeacons{
 
-        sequence<int> IndexList        
+        sequence<int> IndexList;        
 
 	interface Beacons
 	{
