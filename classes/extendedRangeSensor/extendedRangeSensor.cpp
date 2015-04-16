@@ -144,7 +144,7 @@ void ExtendedRangeSensor::update(const RoboCompLaser::TLaserData &laserData)
 	QVec l;
 	for (int i=0; i<dataExtended.size(); i++)
 	{
-		l = innerModel->worldToLaser("laser", dataExtendedBack[i].world);
+		l = innerModel->transform("laser", dataExtendedBack[i].world, "world");
 		float sens = l.norm2();
 		if (sens > maxDist)
 			sens = maxDist;
@@ -182,7 +182,7 @@ void ExtendedRangeSensor::setExtended(int i, float dist, bool visit, float certa
 {
 	if (i<0 or i>=dataExtended.size()) return;
 	dataExtended[i].dist = dist;
-	QVec v = innerModel->laserToWorld("laser", dist, dataExtended[i].angle);
+	QVec v = innerModel->laserTo("laser", "world", dist, dataExtended[i].angle);
 	dataExtended[i].world = v;
 	dataExtended[i].visit = visit;
 	dataExtended[i].certainty = certainty;

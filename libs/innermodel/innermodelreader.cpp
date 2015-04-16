@@ -65,6 +65,40 @@ bool InnerModelReader::load(const QString &file, InnerModel *model)
 	return true;
 }
 
+bool InnerModelReader::include(const QString &file, InnerModel *model, InnerModelNode *node)
+{
+ 	printf("InnerModelReader: reading include %s\n", file.toStdString().c_str());
+	QDomDocument doc("mydocument");
+	QFile fich(file);
+	if (!fich.open(QIODevice::ReadOnly))
+	{
+		printf("Can't open %s\n", file.toStdString().c_str());
+		return false;
+	}
+
+	QString errorMsg;
+	int errorLine, errorColumn;
+	if (!doc.setContent(&fich, &errorMsg, &errorLine, &errorColumn)) 
+	{
+		qDebug() << "Can't set document content from" << qPrintable(file);
+		qDebug() << "line:" << errorLine << "  column:" << errorColumn;
+		qDebug() << "error:" << errorMsg;
+		fich.close();
+		return false;
+	}
+
+	QDomElement root = doc.documentElement();
+	if (root.tagName().toLower() != QString("innerModel").toLower())
+	{
+		qFatal("<innerModel> tag missing.");
+	}
+
+	recursive(root, model, node);
+
+	fich.close();
+	return true;
+}
+
 
 
 InnerModelReader::~InnerModelReader()
@@ -273,6 +307,55 @@ void InnerModelReader::recursive(QDomNode parentDomNode, InnerModel *model, Inne
 				qFatal("Tag <innerModel> can only be the root tag.");
 				return;
 			}
+			else if (e.tagName().toLower() == "include")
+			{
+				include(e.attribute("path"), model, imNode);
+			}
+			else if (e.tagName().toLower() == "axes")
+			{
+				float lengths[3], widths[3];
+				
+				float defaultLength = e.attribute("length", "-1").toFloat();
+				float defaultWidth = e.attribute("width", "-1").toFloat();
+				for (int i=0;i<3;i++)
+				{
+					lengths[i]=defaultLength<0?200:defaultLength;
+					widths[i]=defaultWidth<0?15:defaultWidth;
+				}
+
+				float xLength = e.attribute("xlength", "-1").toFloat();
+				if (xLength>0) lengths[0]=xLength;
+				float xWidth = e.attribute("xwidth", "-1").toFloat();
+				if (xWidth>0) widths[0]=xWidth;
+				
+				float yLength = e.attribute("ylength", "-1").toFloat();
+				if (yLength>0) lengths[1]=yLength;
+				float yWidth = e.attribute("ywidth", "-1").toFloat();
+				if (yWidth>0) widths[1]=yWidth;
+				
+				float zLength = e.attribute("zlength", "-1").toFloat();
+				if (zLength>0) lengths[2]=zLength;
+				float zWidth = e.attribute("zwidth", "-1").toFloat();
+				if (zWidth>0) widths[2]=zWidth;
+
+				
+				InnerModelPlane *plane;
+
+				
+				plane = model->newPlane(e.attribute("id")+"x", imNode, "#ff0000", widths[0], widths[0], lengths[0], 1,   1,0,0,   lengths[0]/2,0,0,  false);
+				imNode->addChild(plane);
+				plane = model->newPlane(e.attribute("id")+"y", imNode, "#00ff00", widths[1], lengths[1], widths[1], 1,   1,0,0,   0,lengths[1]/2,0,  false);
+				imNode->addChild(plane);
+				plane = model->newPlane(e.attribute("id")+"z", imNode, "#0000ff", lengths[2], widths[2], widths[2], 1,   1,0,0,   0,0,lengths[2]/2,  false);
+				imNode->addChild(plane);
+				plane = model->newPlane(e.attribute("id")+"c", imNode, "#ffffff", widths[0]*1.3, widths[1]*1.3, widths[2]*1.3,                       1,   1,0,0,   0,0,0,  false);
+				imNode->addChild(plane);
+
+
+
+				node = plane;
+				
+			}
 			else
 			{
 				qFatal("%s is not a valid tag name.\n", qPrintable(e.tagName()));
@@ -352,6 +435,14 @@ QMap<QString, QStringList> InnerModelReader::getValidNodeAttributes()
 	temporalList.clear();
 	temporalList << "id" << "texture" << "repeat" << "size" << "nx" << "ny" << "nz" << "px" << "py" << "pz" << "collide";
 	nodeAttributes["plane"] = temporalList;
+
+	temporalList.clear();
+	temporalList << "path";
+	nodeAttributes["include"] = temporalList;
+
+	temporalList.clear();
+	temporalList << "id" << "length" << "width" << "lengthx" << "widthx" << "lengthy" << "widthy" << "lengthz" << "widthz";
+	nodeAttributes["axes"] = temporalList;
 	
 	return nodeAttributes;
 }

@@ -112,4 +112,15 @@ and then type:
     cmake .
     make
 
-Hereafter, Press F8 in KDevelop to compile and link. Then, go to Yakuake and restart the component. You should see the robot maneouvring aroung the box. Now is when Robotics begin! Try to modify the code to let the robot go pass the blocking boxes.
+Hereafter, Press F8 in KDevelop to compile and link. Then, go to Yakuake and restart the component. 
+
+Let us take InnerModel *simpleworld.xml* as an example. Open a new tab in Yakuake and execute
+
+	cd robocomp/files/innermodel
+	rcis simpleworld.xml
+
+Now you should see 2 windows. Now in Yakuake go back to tab where you had compiled *myfirstcomp* and run
+
+	bin/myfirstcomp --Ice.Config=etc/generic_config
+
+You should see the robot maneouvring aroung the box. Now is when Robotics begin! Try to modify the code to let the robot go pass the blocking boxes.

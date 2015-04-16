@@ -12,8 +12,6 @@ set(srcs
 
 set(incs
 	include/${LIB_NAME}/adapterwidget.h
-	include/${LIB_NAME}/findnamednode.h
-	include/${LIB_NAME}/getworldcoorofnode.h
 	include/${LIB_NAME}/osgview.h
 	include/${LIB_NAME}/viewerqt.h
    )

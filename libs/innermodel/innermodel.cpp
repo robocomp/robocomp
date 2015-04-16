@@ -1,5 +1,5 @@
 /*
- *    Copyright (C) 2010-2013 by RoboLab - University of Extremadura
+ *    Copyright (C) 2010-2015 by RoboLab - University of Extremadura
  *
  *    This file is part of RoboComp
  *

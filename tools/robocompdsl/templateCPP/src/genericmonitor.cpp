@@ -119,7 +119,9 @@ bool GenericMonitor::configGetString(const std::string prefix, const std::string
 
 bool GenericMonitor::configGetString(Ice::CommunicatorPtr communicator, const std::string prefix, const std::string name, std::string &value, const std::string default_value, QStringList *list)
 {
-	std::string compound = prefix+name;
+	std::string compound = name;
+	if (prefix.size() > 0) compound = prefix+std::string(".")+name;
+
 	value = communicator->getProperties()->getProperty(compound);
 
 	if ( value.length() == 0)

@@ -241,7 +241,7 @@ public:
 	QVec laserTo(const QString &dest, const QString & laserId , const QVec &p);
 	QVec laserTo(const QString &dest, const QString & laserId , float r, float alfa);
 	QVec laserToRefFrame(const QString & laserId , float r, float alpha, const QString & refFrame) { return laserTo(refFrame, laserId, r, alpha); }
-	QVec worldToLaser( const QString & laserId , const QVec & p);
+	QVec toLaser(const QString & laserId , const QVec & p);
 
 	/// Frustrum
 	struct TPlane { QVec n; float d; };
@@ -278,6 +278,7 @@ protected:
 	QHash<QString, InnerModelNode *> hash;
 	QHash<QPair<QString, QString>, RTMat> localHashTr;
 	QHash<QPair<QString, QString>, QMat> localHashRot;
+	
 	void setLists(const QString &origId, const QString &destId);
 	QList<InnerModelNode *> listA, listB;
 

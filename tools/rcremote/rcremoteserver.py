@@ -143,6 +143,17 @@ class SpecificWorker(GenericWorker):
 
 
 
+def getPassFor(host_param):
+	for line in open(os.getenv("HOME")+'/.rcremote', 'r').readlines():
+		s = line.strip().split('#', 1)
+		if len(s) < 2:
+			continue
+		host = s[0]
+		password = s[1]
+		if host == host_param:
+			return password
+	raise Exception("can't find password for "+host+" in ~/.rcremote  (format 'host#password')")
+
 
 if __name__ == '__main__':
 	app = QtCore.QCoreApplication(sys.argv)
@@ -151,11 +162,19 @@ if __name__ == '__main__':
 	mprx = {}
 
 	if len(sys.argv) < 2:
-		print 'EXAMPLE: rcremoteserver <password>'
-		sys.exit(-1)
+		try:
+			print 'Reading password from ~/.rcremote...'
+			password = getPassFor('localhost')
+			print 'ok.'
+		except:
+			print 'Couldn\'t read password from file!'
+			print '\nUsage: rcremoteserver <password>'
+			sys.exit(-1)
+	else:
+		passwd = sys.argv[1]
 
 	if status == 0:
-		worker = SpecificWorker(mprx, sys.argv[1])
+		worker = SpecificWorker(mprx, password)
 
 		adapter = ic.createObjectAdapterWithEndpoints('rcremote', 'tcp -p 4242')
 		adapter.add(RCRemoteI(worker), ic.stringToIdentity('rcremote'))

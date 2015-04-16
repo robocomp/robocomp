@@ -1,0 +1,10 @@
+module RoboCompBeacons{
+		
+	sequence<int> IndexList;
+
+	interface Beacons
+	{
+		 void getBeacons(out IndexList indices, out IndexList potencia);
+ 	};
+
+};
