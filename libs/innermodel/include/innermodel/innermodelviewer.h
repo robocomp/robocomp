@@ -49,8 +49,7 @@
 #include <QtOpenGL/QGLWidget>
 
 #include <osgviewer/adapterwidget.h>
-#include <osgviewer/findnamednode.h>
-#include <osgviewer/getworldcoorofnode.h>
+#include <osgviewer/osgview.h>
 #include <osgviewer/viewerqt.h>
 #include <qmat/QMatAll>
 

@@ -153,7 +153,6 @@ class TheThing(QtGui.QDialog):
 
 		# Icon and system's tray stuff
 		self.iconOK = QtGui.QIcon(QtGui.QPixmap('/opt/robocomp/share/rcmanager/drawing_red.png'))
-		print self.iconOK
 		self.iconFULL = QtGui.QIcon(QtGui.QPixmap('/opt/robocomp/share/rcmanager/drawing_green.png'))
 		self.iconChange1 = QtGui.QIcon(QtGui.QPixmap('/opt/robocomp/share/rcmanager/drawing_right.png'))
 		self.iconChange2 = QtGui.QIcon(QtGui.QPixmap('/opt/robocomp/share/rcmanager/drawing_left.png'))
@@ -163,9 +162,6 @@ class TheThing(QtGui.QDialog):
 		self.systray = None
 		self.blinkTimer = QtCore.QTimer()
 		self.doDock = False
-
-		# Read file configuration
-		self.readConfig()
 
 		# Make an initial check
 		self.checkAll(initial=True)
