@@ -136,7 +136,7 @@ class TheThing(QtGui.QDialog):
 		self.canvasFastTimer = QtCore.QTimer()
 		self.connect(self.canvasTimer, QtCore.SIGNAL("timeout()"), self.graphUpdate)
 		self.connect(self.canvasFastTimer, QtCore.SIGNAL("timeout()"), self.graphFastEnds)
-		if dict['dock'] == 'true': 
+		if dict['dock'] == 'true':
 			self.changeDock()
 
 		# Variables needed to switch the state of components when double-clicking over them.
@@ -241,7 +241,7 @@ class TheThing(QtGui.QDialog):
 			self.readConfig()
 		else:
 			print 'len(cfgFile) == 0'
-		
+
 
 	# Save the current configuration to a new file
 	def saveFile(self):
@@ -353,7 +353,7 @@ class TheThing(QtGui.QDialog):
 	def graphUpdate(self):
 		global dict
 		self.canvas.checkForNewComponents(self)
-		
+
 		self.canvas.center()
 		if self.doSimulation:
 			self.canvas.step(self)
@@ -424,8 +424,8 @@ class TheThing(QtGui.QDialog):
 			QtGui.QMessageBox.warning(self, 'Warning', msg)
 		self.setFastState()
 
-		# Call-back when 
-		
+		# Call-back when
+
 
 
 	#
@@ -452,7 +452,7 @@ class TheThing(QtGui.QDialog):
 		self.ui.upEdit.setText(info.compup)
 		self.ui.downEdit.setText(info.compdown)
 		self.ui.cfgEdit.setText(info.configFile)
-	
+
 	def checkAll(self, initial=False):
 		allOk = True
 		for numItem in range(0, len(self.compConfig)):
@@ -474,7 +474,7 @@ class TheThing(QtGui.QDialog):
 			self.log('Now \"' + comp + '\" is up.')
 		for comp in self.back_comps.difference(self.componentChecker.workingComponents):
 			self.log('Now \"' + comp + '\" is down.')
-		
+
 		if self.wantsDocking():
 			if allOk and len(self.compConfig) > 0:
 				self.systray.setIcon(self.iconFULL)
@@ -681,10 +681,10 @@ class GraphView(QtGui.QWidget):
 				ix = iterr.x - iterr2.x
 				iy = iterr.y - iterr2.y
 				while ix == 0 and iy == 0:
-					iterr.x = iterr.x + random.uniform(-0.00000000001, 0.00000000001)/10000.
-					iterr2.x = iterr2.x + random.uniform(-0.00000000001, 0.00000000001)/10000.
-					iterr.y = iterr.y + random.uniform(-0.00000000001, 0.00000000001)/10000.
-					iterr2.y = iterr2.y + random.uniform(-0.00000000001, 0.00000000001)/10000.
+					iterr.x = iterr.x + random.uniform(  -10, 10)
+					iterr2.x = iterr2.x + random.uniform(-10, 10)
+					iterr.y = iterr.y + random.uniform(  -10, 10)
+					iterr2.y = iterr2.y + random.uniform(-10, 10)
 					ix = iterr.x - iterr2.x
 					iy = iterr.y - iterr2.y
 
@@ -740,7 +740,7 @@ class GraphView(QtGui.QWidget):
 				iterr.y -= meany
 			if self.VisualNodeCogia:
 				self.VisualNodeCogia.y -= meany
-			
+
 	def paintNode(self, node):
 		w2 = self.parent().width()/2
 		h2 = self.parent().height()/2+30
