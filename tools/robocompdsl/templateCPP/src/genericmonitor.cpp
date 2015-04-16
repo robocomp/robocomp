@@ -211,3 +211,4 @@ bool GenericMonitor::configGetString(Ice::CommunicatorPtr communicator, const st
 	std::cout << compound << " " << value << std::endl;
 	return true;
 }
+
