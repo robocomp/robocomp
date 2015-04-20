@@ -666,7 +666,7 @@ class GraphView(QtGui.QWidget):
 				newOne.r = float(parentComp.r)
 				self.compList.append(newOne)
 				anyone = True
-		if anyone == True: self.step(self)
+		#if anyone == True: self.step(self)
 	def step(self, parent):
 		#
 		# Compute velocities

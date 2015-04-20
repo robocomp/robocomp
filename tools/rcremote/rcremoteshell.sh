@@ -14,6 +14,7 @@ echo "params" $params
 qdbus org.kde.yakuake /yakuake/sessions org.kde.yakuake.addSession
 sess=`qdbus org.kde.yakuake /yakuake/sessions org.kde.yakuake.activeSessionId`
 qdbus org.kde.yakuake /yakuake/sessions org.kde.yakuake.runCommand "cd ${cwdv}"
+qdbus org.kde.yakuake /yakuake/sessions org.kde.yakuake.runCommand "make -j1"
 qdbus org.kde.yakuake /yakuake/sessions org.kde.yakuake.runCommand "$binary $params"
 qdbus org.kde.yakuake /yakuake/tabs org.kde.yakuake.setTabTitle $sess $tabname
 
