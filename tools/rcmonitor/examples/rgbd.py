@@ -45,26 +45,37 @@ class C(QWidget):
 		self.ic = Ice.initialize(arg)
 		self.mods = modules
 		self.prx = self.ic.stringToProxy(endpoint)
-		print endpoint
+		print "endpoint", endpoint
+		print "prx", self.prx
 		print self.mods.keys()
+		print "ya"
 		self.proxy = self.mods['RoboCompRGBD'].RGBDPrx.checkedCast(self.prx)
+		print "yaya"
 		self.show()
 		
 		self.maxDepth = 9.0
 		self.job()
 
 	def job(self):
+		print "hola"
 		try:
 			self.color, self.depth, self.headState, self.baseState = self.proxy.getData()
-			print len(self.color)
+			#print len(self.color)
 			if (len(self.color) == 0) or (len(self.depth) == 0):
 				print 'Error retrieving images!'
 		except Ice.Exception:
 			traceback.print_exc()
 
 	def paintEvent(self, event=None):
-		if (len(self.color) != 3*640*480) or (len(self.depth) != 640*480):
-			#print 'we shall not paint!'
+		if (len(self.color) == 3*640*480) and (len(self.depth) == 640*480):
+			width = 640
+			height = 480
+		elif (len(self.color) == 3*320*240) and (len(self.depth) == 320*240):
+			width = 320
+			height = 240
+			#print "color", len(self.color), "depth", len(self.depth)
+		else:
+			print 'we shall not paint!'
 			return
 		
 		painter = QPainter(self)
@@ -81,8 +92,8 @@ class C(QWidget):
 				pass
 			if ascii > 255: ascii = 255
 			v += chr(ascii)
-		image = QImage(self.color, 640, 480, QImage.Format_RGB888)
-		imageGrey = QImage(v, 640, 480, QImage.Format_Indexed8)
+		image = QImage(self.color, width, height, QImage.Format_RGB888)
+		imageGrey = QImage(v, width, height, QImage.Format_Indexed8)
 		for i in range(256):
 			imageGrey.setColor(i, QColor(i,i,i).rgb())
 		painter.drawImage(QPointF(self.ui.frameRGB.x(), self.ui.frameRGB.y()), image)
