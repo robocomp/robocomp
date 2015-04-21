@@ -48,13 +48,12 @@
 #include <QtGui>
 #include <QtOpenGL/QGLWidget>
 
-// Robocomp includes
 #include <osgviewer/adapterwidget.h>
-#include <osgviewer/findnamednode.h>
-#include <osgviewer/getworldcoorofnode.h>
+#include <osgviewer/osgview.h>
 #include <osgviewer/viewerqt.h>
 #include <qmat/QMatAll>
-#include "innermodel.h"
+
+#include <innermodel/innermodel.h>
 
 
 

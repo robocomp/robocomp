@@ -33,12 +33,12 @@
 class GenericMonitor : public QThread
 {
 Q_OBJECT
-  
+
 public:
 	GenericMonitor(GenericWorker *_worker, Ice::CommunicatorPtr _communicator);
 	virtual ~GenericMonitor();
-	
-	
+
+
     //CommonBehavior
 	int getPeriod();
 	void setPeriod(int period);
@@ -47,12 +47,12 @@ public:
 	RoboCompCommonBehavior::ParameterList getParameterList();
 	void setParameterList(RoboCompCommonBehavior::ParameterList l);
 	RoboCompCommonBehavior::State getState();
-	
+
 	void readPConfParams(RoboCompCommonBehavior::ParameterList &params);
 	virtual void readConfig(RoboCompCommonBehavior::ParameterList &params ) = 0;
 	virtual void run() = 0;
 	virtual void initialize() = 0;
-	
+
 protected:
 	int period;
 	GenericWorker *worker;
@@ -60,13 +60,13 @@ protected:
 	QTime initialTime;
 	RoboCompCommonBehavior::ParameterList config_params;
 	RoboCompCommonBehavior::State state;
-	
+
 	virtual bool sendParamsToWorker(RoboCompCommonBehavior::ParameterList params) = 0;
 	virtual bool checkParams(RoboCompCommonBehavior::ParameterList l) = 0;
 
-	bool configGetString(const std::string p, const std::string name, std::string &value, const std::string default_value, QStringList *list = NULL);
+	bool configGetString(const std::string prefix, const std::string name, std::string &value, const std::string default_value, QStringList *list = NULL);
 public:
-	static bool configGetString(Ice::CommunicatorPtr communicator, const std::string p, const std::string name, std::string &value, const std::string default_value, QStringList *list=NULL);
+	static bool configGetString(Ice::CommunicatorPtr communicator, const std::string prefix, const std::string name, std::string &value, const std::string default_value, QStringList *list=NULL);
 
 signals:
 	void kill();

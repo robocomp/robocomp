@@ -136,7 +136,7 @@ class TheThing(QtGui.QDialog):
 		self.canvasFastTimer = QtCore.QTimer()
 		self.connect(self.canvasTimer, QtCore.SIGNAL("timeout()"), self.graphUpdate)
 		self.connect(self.canvasFastTimer, QtCore.SIGNAL("timeout()"), self.graphFastEnds)
-		if dict['dock'] == 'true': 
+		if dict['dock'] == 'true':
 			self.changeDock()
 
 		# Variables needed to switch the state of components when double-clicking over them.
@@ -153,7 +153,6 @@ class TheThing(QtGui.QDialog):
 
 		# Icon and system's tray stuff
 		self.iconOK = QtGui.QIcon(QtGui.QPixmap('/opt/robocomp/share/rcmanager/drawing_red.png'))
-		print self.iconOK
 		self.iconFULL = QtGui.QIcon(QtGui.QPixmap('/opt/robocomp/share/rcmanager/drawing_green.png'))
 		self.iconChange1 = QtGui.QIcon(QtGui.QPixmap('/opt/robocomp/share/rcmanager/drawing_right.png'))
 		self.iconChange2 = QtGui.QIcon(QtGui.QPixmap('/opt/robocomp/share/rcmanager/drawing_left.png'))
@@ -163,9 +162,6 @@ class TheThing(QtGui.QDialog):
 		self.systray = None
 		self.blinkTimer = QtCore.QTimer()
 		self.doDock = False
-
-		# Read file configuration
-		self.readConfig()
 
 		# Make an initial check
 		self.checkAll(initial=True)
@@ -241,7 +237,7 @@ class TheThing(QtGui.QDialog):
 			self.readConfig()
 		else:
 			print 'len(cfgFile) == 0'
-		
+
 
 	# Save the current configuration to a new file
 	def saveFile(self):
@@ -353,7 +349,7 @@ class TheThing(QtGui.QDialog):
 	def graphUpdate(self):
 		global dict
 		self.canvas.checkForNewComponents(self)
-		
+
 		self.canvas.center()
 		if self.doSimulation:
 			self.canvas.step(self)
@@ -424,8 +420,8 @@ class TheThing(QtGui.QDialog):
 			QtGui.QMessageBox.warning(self, 'Warning', msg)
 		self.setFastState()
 
-		# Call-back when 
-		
+		# Call-back when
+
 
 
 	#
@@ -452,7 +448,7 @@ class TheThing(QtGui.QDialog):
 		self.ui.upEdit.setText(info.compup)
 		self.ui.downEdit.setText(info.compdown)
 		self.ui.cfgEdit.setText(info.configFile)
-	
+
 	def checkAll(self, initial=False):
 		allOk = True
 		for numItem in range(0, len(self.compConfig)):
@@ -474,7 +470,7 @@ class TheThing(QtGui.QDialog):
 			self.log('Now \"' + comp + '\" is up.')
 		for comp in self.back_comps.difference(self.componentChecker.workingComponents):
 			self.log('Now \"' + comp + '\" is down.')
-		
+
 		if self.wantsDocking():
 			if allOk and len(self.compConfig) > 0:
 				self.systray.setIcon(self.iconFULL)
@@ -620,6 +616,7 @@ class GraphNode:
 class GraphView(QtGui.QWidget):
 	def __init__(self, parent=None):
 		QtGui.QWidget.__init__(self, parent)
+		self.tab = parent
 		self.initialize()
 	def initialize(self):
 		global dict
@@ -669,7 +666,7 @@ class GraphView(QtGui.QWidget):
 				newOne.r = float(parentComp.r)
 				self.compList.append(newOne)
 				anyone = True
-		if anyone == True: self.step(self)
+		#if anyone == True: self.step(self)
 	def step(self, parent):
 		#
 		# Compute velocities
@@ -680,10 +677,10 @@ class GraphView(QtGui.QWidget):
 				ix = iterr.x - iterr2.x
 				iy = iterr.y - iterr2.y
 				while ix == 0 and iy == 0:
-					iterr.x = iterr.x + random.uniform(-0.00000000001, 0.00000000001)/10000.
-					iterr2.x = iterr2.x + random.uniform(-0.00000000001, 0.00000000001)/10000.
-					iterr.y = iterr.y + random.uniform(-0.00000000001, 0.00000000001)/10000.
-					iterr2.y = iterr2.y + random.uniform(-0.00000000001, 0.00000000001)/10000.
+					iterr.x = iterr.x + random.uniform(  -10, 10)
+					iterr2.x = iterr2.x + random.uniform(-10, 10)
+					iterr.y = iterr.y + random.uniform(  -10, 10)
+					iterr2.y = iterr2.y + random.uniform(-10, 10)
 					ix = iterr.x - iterr2.x
 					iy = iterr.y - iterr2.y
 
@@ -739,10 +736,10 @@ class GraphView(QtGui.QWidget):
 				iterr.y -= meany
 			if self.VisualNodeCogia:
 				self.VisualNodeCogia.y -= meany
-			
+
 	def paintNode(self, node):
 		w2 = self.parent().width()/2
-		h2 = self.parent().height()/2
+		h2 = self.parent().height()/2+30
 		global dict
 
 		if node.on:
@@ -760,8 +757,8 @@ class GraphView(QtGui.QWidget):
 		self.painter.drawText(QtCore.QPoint(node.x-node.r+w2, node.y-node.r-3+h2), node.name)
 
 	def paintEvent(self, event):
-		w2 = self.parent().width()/2
-		h2 = self.parent().height()/2
+		w2 = self.tab.width()/2
+		h2 = self.tab.height()/2+30
 		nodosAPintar = [] + self.compList
 		if self.VisualNodeCogia: nodosAPintar.append(self.VisualNodeCogia)
 
@@ -811,7 +808,7 @@ class GraphView(QtGui.QWidget):
 		self.showNodeMenu(e, True)
 	def showNodeMenu(self, e, forceDialog=False):
 		w2 = self.parent().width()/2
-		h2 = self.parent().height()/2
+		h2 = self.parent().height()/2 + 30
 		x = e.x()-w2
 		y = e.y()-h2
 		if self.ui: self.ui.close()
@@ -848,7 +845,7 @@ class GraphView(QtGui.QWidget):
 			self.emit(QtCore.SIGNAL("nodeReleased()"))
 	def mouseMoveEvent(self, e):
 		w2 = self.parent().width()/2
-		h2 = self.parent().height()/2
+		h2 = self.parent().height()/2+30
 		self.repaint()
 		if self.VisualNodeCogia != None:
 			self.VisualNodeCogia.x = e.x()-self.ox-w2

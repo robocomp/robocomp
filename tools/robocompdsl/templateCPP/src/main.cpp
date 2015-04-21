@@ -398,19 +398,24 @@ for st in component['subscribesTo']:
 
 int main(int argc, char* argv[])
 {
-	bool hasConfig = false;
 	string arg;
-
-	// Search in argument list for --Ice.Config= and --prefix= argument (if exist)
+	
+	// Set config file
+	std::string configFile = "config";
+	if (argc > 1)
+	{
+		std::string initIC("--Ice.Config=");
+		size_t pos = std::string(argv[1]).find(initIC)
+		if (pos == 0)
+			configFile = std::string(argv[1]+initIC.size());
+	}
+		
+	// Search in argument list for --prefix= argument (if exist)
 	QString prefix("");
-	for (int i = 1; i < argc; ++i)
+	QString prfx = QString("--prefix=");
+	for (int i = 2; i < argc; ++i)
 	{
 		arg = argv[i];
-		if (arg.find("--Ice.Config=", 0) != string::npos)
-		{
-			hasConfig = true;
-		}
-		QString prfx = QString("--prefix=");
 		if (arg.find(prfx.toStdString(), 0) == 0)
 		{
 			prefix = QString::fromStdString(arg).remove(0, prfx.size());
@@ -428,15 +433,6 @@ Z()
 [[[end]]]
 app(prefix);
 
-
-// 	app.prefix = 
-	if (hasConfig)
-	{
-		return app.main(argc, argv);
-	}
-	else
-	{
-		return app.main(argc, argv, "config"); // "config" is the default config file name
-	}
+	return app.main(argc, argv, configFile);
 }
 

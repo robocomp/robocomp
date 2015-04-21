@@ -69,7 +69,7 @@ void GenericMonitor::killYourSelf()
 	rDebug("Killing myself");
 	worker->killYourSelf();
 	emit kill();
-	
+
 }
 /**
 * \brief Get Component time awake
@@ -83,16 +83,16 @@ int GenericMonitor::timeAwake()
 * \brief Return components parameters
 * @return  AttrList Configuration parameters list
 */
-RoboCompCommonBehavior::ParameterList GenericMonitor::getParameterList() 
-{ 
+RoboCompCommonBehavior::ParameterList GenericMonitor::getParameterList()
+{
 	return config_params;
 }
 /**
 * \brief Change configurations parameters to worker
 * @param l Configuration parameters list
 */
-void GenericMonitor::setParameterList(RoboCompCommonBehavior::ParameterList l) 
-{ 
+void GenericMonitor::setParameterList(RoboCompCommonBehavior::ParameterList l)
+{
 	rInfo("Changing configuration params");
 	sendParamsToWorker(l);
 }
@@ -106,20 +106,22 @@ void GenericMonitor::readPConfParams(RoboCompCommonBehavior::ParameterList &para
 	//nothing to do
 }
 
-//Ice method to read a variable from file 
+//Ice method to read a variable from file
 //name, parameter config value
-//return value of parameter config 
+//return value of parameter config
 //default value for the parameter
 //return false if the parameter does not exist. Throw exception in other case.
 //if you need one parameter mandatory you can pass empty string in default_value
-bool GenericMonitor::configGetString(const std::string p, const std::string name, std::string &value, const std::string default_value, QStringList *list)
+bool GenericMonitor::configGetString(const std::string prefix, const std::string name, std::string &value, const std::string default_value, QStringList *list)
 {
-	return GenericMonitor::configGetString(communicator, p, name, value, default_value, list);
+	return GenericMonitor::configGetString(communicator, prefix, name, value, default_value, list);
 }
 
-bool GenericMonitor::configGetString(Ice::CommunicatorPtr communicator, const std::string p, const std::string name, std::string &value, const std::string default_value, QStringList *list)
+bool GenericMonitor::configGetString(Ice::CommunicatorPtr communicator, const std::string prefix, const std::string name, std::string &value, const std::string default_value, QStringList *list)
 {
-	std::string compound = p+name;
+	std::string compound = name;
+	if (prefix.size() > 0) compound = prefix+std::string(".")+name;
+
 	value = communicator->getProperties()->getProperty(compound);
 
 	if ( value.length() == 0)
@@ -151,8 +153,8 @@ bool GenericMonitor::configGetString(Ice::CommunicatorPtr communicator, const st
 
 	auto parts = QString::fromStdString(value).split("@");
 	QString variableName=QString::fromStdString(compound);
-	
-	
+
+
 	if (parts.size() > 1)
 	{
 		if (parts[0].size() > 0)
@@ -162,11 +164,11 @@ bool GenericMonitor::configGetString(Ice::CommunicatorPtr communicator, const st
 		parts.removeFirst();
 		value = std::string("@") + parts.join("@").toStdString();
 	}
-	
+
 // 	printf("variableName = %s\n", variableName.toStdString().c_str());
 // 	printf("value = %s\n", value.c_str());
-	
-	
+
+
 	if (value[0]=='@')
 	{
 		QString qstr = QString::fromStdString(value).remove(0,1);
@@ -185,7 +187,7 @@ bool GenericMonitor::configGetString(Ice::CommunicatorPtr communicator, const st
 		{
 			QString content = QString(ff.readLine()).simplified();
 // 			printf("line: %s\n", content.toStdString().c_str());
-			
+
 			if (content.startsWith(variableName))
 			{
 // 				printf("swn %s\n", content.toStdString().c_str());
@@ -201,7 +203,7 @@ bool GenericMonitor::configGetString(Ice::CommunicatorPtr communicator, const st
 				{
 					printf("warning (=) %s\n", content.toStdString().c_str());
 				}
-				
+
 			}
 		}
 		if (not found)
@@ -209,5 +211,6 @@ bool GenericMonitor::configGetString(Ice::CommunicatorPtr communicator, const st
 		}
 	}
 	std::cout << compound << " " << value << std::endl;
-	return true; 
+	return true;
 }
+

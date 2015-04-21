@@ -50,9 +50,8 @@
 #include <osg/TexMat>
 #include <osgUtil/Tessellator>
 #include <osgUtil/IntersectVisitor>
-#include <osgviewer/findnamednode.h>
+//#include <osgviewer/findnamednode.h>
 #include <osgviewer/viewerqt.h>
-#include <osgviewer/getworldcoorofnode.h>
 #include <osg/io_utils>
 
 #include <qmat/QMatAll>

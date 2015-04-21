@@ -20,13 +20,9 @@
 #ifndef INNERMODELREADER_H
 #define INNERMODELREADER_H
 
-// Qt includes
 #include <QtXml/QtXml>
 
-// Robocomp includes
-#include "innermodel.h"
-
-
+#include <innermodel/innermodel.h>
 
 class InnerModelReader
 {
@@ -35,6 +31,7 @@ public:
 	~InnerModelReader();
 	static bool load(const QString &file, InnerModel *model);
 private:
+	static bool include(const QString &file, InnerModel *model, InnerModelNode *node);
 	static void recursive(QDomNode parentDomNode, InnerModel *model, InnerModelNode *imNode);
 	static QMap<QString, QStringList> getValidNodeAttributes();
 };
