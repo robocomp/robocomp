@@ -48,6 +48,7 @@ ROBOCOMP_INITIALIZE( $ENV{ROBOCOMP}/ )
 ROBOCOMP_WRAP_ICE( Camera CommonBehavior CommonHead DifferentialRobot OmniRobot IMU InnerModelManager JointMotor Laser RGBD TouchSensor RCISMousePicker)
 SET(ROBOCOMP_LIBS ${ROBOCOMP_LIBS} -lrobocomp_qmat )
 
+include_directories(${CMAKE_CURRENT_BINARY_DIR}/../../../libs/innermodel/include )
 include_directories($ENV{ROBOCOMP}/libs/innermodel/include)
 include_directories($ENV{ROBOCOMP}/libs/qmat/include)
 include_directories($ENV{ROBOCOMP}/libs/osgviewer/include)
@@ -87,7 +88,7 @@ if (PYTHON_BINDINGS_SUPPORT)
 	link_directories(${PYTHON_LIBRARIES} ${Boost_LIBRARY_DIRS_DIRS})
 endif (PYTHON_BINDINGS_SUPPORT)
 
-include_directories( ${PYTHON_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
+include_directories( ${PYTHON_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS} )
 
 # Specify construction and link process
 # SET (EXECUTABLE_OUTPUT_PATH ../bin)

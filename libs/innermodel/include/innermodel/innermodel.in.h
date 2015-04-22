@@ -241,7 +241,6 @@ public:
 	QVec laserTo(const QString &dest, const QString & laserId , const QVec &p);
 	QVec laserTo(const QString &dest, const QString & laserId , float r, float alfa);
 	QVec laserToRefFrame(const QString & laserId , float r, float alpha, const QString & refFrame) { return laserTo(refFrame, laserId, r, alpha); }
-	QVec toLaser(const QString & laserId , const QVec & p);
 
 	/// Frustrum
 	struct TPlane { QVec n; float d; };
