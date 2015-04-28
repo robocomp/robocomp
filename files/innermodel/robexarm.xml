@@ -19,7 +19,7 @@
 			<transform  id="base_trans" >
 				<joint id="base" port="20000" axis="y" home="0">
 <!-- 				<mesh id="base_mesh_old" file="/home/robocomp/robocomp/Files/osgModels/loki/base_loki.osg"  rx="1.5707963267948966"  rz="-1.5707963267948966"  scale="0.1875"   /> -->
-				<mesh id="base_mesh" file="/home/robocomp/robocomp/files/osgModels/RobEx/robex.ive"  tx="0" ty="0" tz="0" scale="1000"  />
+				<mesh id="base_mesh" file="/home/robocomp/robocomp/files/osgModels/robex/robex.ive"  tx="0" ty="0" tz="0" scale="1000"  />
 				<transform id="base_body" rx="-1.5707963267948966" ty="187.5" tz="-100" >
 					<!-- Gira en Z -->
 					<joint id="body" port="20000" min="-1" max="1" axis="z" >

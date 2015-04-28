@@ -2704,6 +2704,30 @@ InnerModelNode * InnerModelTouchSensor::copyNode(QHash<QString, InnerModelNode *
 // ----------------------------------------------------------------------------------------
 // ----------------------------------------------------------------------------------------
 
+
+bool InnerModel::collidable(const QString &a)
+{
+	InnerModelNode *node;
+	
+	try
+	{
+		node = hash[a];
+	}
+	catch(...)
+	{
+		printf("No node %s\n", a.toStdString().c_str());
+	}
+
+	if (node)
+	{
+		if (node->collidable)
+			return true;
+		return false;
+	}
+	return false;
+}
+
+	
 bool InnerModel::collide(const QString &a, const QString &b)
 {
 #if FCL_SUPPORT==1
