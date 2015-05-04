@@ -1,0 +1,20 @@
+module RoboCompIMUPub
+{
+
+  struct QuatRotation{
+		float w;
+		float x;
+		float y;
+		float z;
+		 
+		 };
+		
+  interface IMUPub
+  {
+
+    // Returns IMU orientation
+    void setOrientation(QuatRotation myquat);
+	 
+
+  };
+};
