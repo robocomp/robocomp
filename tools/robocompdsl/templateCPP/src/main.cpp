@@ -361,8 +361,8 @@ for im in component['implements']:
 
 
 [[[cog
-for st in component['subscribesTo']:
-	w = SUBSCRIBESTO_STR.replace("<NORMAL>", st).replace("<LOWER>", st.lower())
+for name, num in getNameNumber(component['subscribesTo']):
+	w = SUBSCRIBESTO_STR.replace("<NORMAL>", name).replace("<LOWER>", name.lower()).replace("<PROXYNAME>", name.lower()+num).replace("<PROXYNUMBER>", num)
 	cog.out(w)
 ]]]
 [[[end]]]
@@ -399,17 +399,17 @@ for st in component['subscribesTo']:
 int main(int argc, char* argv[])
 {
 	string arg;
-	
+
 	// Set config file
 	std::string configFile = "config";
 	if (argc > 1)
 	{
 		std::string initIC("--Ice.Config=");
-		size_t pos = std::string(argv[1]).find(initIC)
+		size_t pos = std::string(argv[1]).find(initIC);
 		if (pos == 0)
 			configFile = std::string(argv[1]+initIC.size());
 	}
-		
+
 	// Search in argument list for --prefix= argument (if exist)
 	QString prefix("");
 	QString prfx = QString("--prefix=");
@@ -433,6 +433,6 @@ Z()
 [[[end]]]
 app(prefix);
 
-	return app.main(argc, argv, configFile);
+	return app.main(argc, argv, configFile.c_str());
 }
 
