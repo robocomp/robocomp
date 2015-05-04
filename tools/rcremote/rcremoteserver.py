@@ -171,7 +171,7 @@ if __name__ == '__main__':
 			print '\nUsage: rcremoteserver <password>'
 			sys.exit(-1)
 	else:
-		passwd = sys.argv[1]
+		password = sys.argv[1]
 
 	if status == 0:
 		worker = SpecificWorker(mprx, password)
