@@ -11,6 +11,36 @@ debug = False
 
 from parseIDSL import *
 
+
+def decoratorAndType_to_const_ampersand(decorator, vtype):
+	ampersand = ' & '
+	const = ' '
+	
+	if vtype in [ 'float', 'int']:  # MAIN BASIC TYPES
+		if decorator in [ 'out' ]: #out
+			ampersand = ' &'
+			const = ' '
+		else:                      #read-only
+			ampersand = ' '
+			const = 'const '
+	elif vtype in [ 'bool' ]:                      # BOOL SEEMS TO BE SPECIAL
+		const = ' '
+		if decorator in [ 'out' ]: # out
+			ampersand = ' & '
+		else:                      #read-only
+			ampersand = ' '
+	else:                                       # GENERIC, USED FOR STRUCTURES MAINLY
+		if decorator in [ 'out' ]: #out 
+			ampersand = ' & '
+			const = ' '
+		else:                       # read-only
+			ampersand = ' & '
+			const = 'const '
+	
+	return const, ampersand
+
+
+
 def getNameNumber(aalist):
 	somelist = [str(x) for x in aalist]
 	somelist.sort()

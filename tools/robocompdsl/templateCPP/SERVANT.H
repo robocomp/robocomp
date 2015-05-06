@@ -150,13 +150,7 @@ I();
 				
 				paramStr = ''
 				for p in method['params']:
-					ampersand = '&'
-					if p['decorator'] == 'out':
-						const = ''
-					else:
-						const = 'const '
-						if p['type'].lower() in ['int', '::ice::int', 'float', '::ice::float']:
-							ampersand = ''
+					const, ampersand = decoratorAndType_to_const_ampersand(p['decorator'], p['type'])
 					paramStr += const + p['type'] + ' ' + ampersand + p['name'] + ', '
 
 				cog.outl('<TABHERE>' + ret + ' ' + name + '(' + paramStr + 'const Ice::Current&);')

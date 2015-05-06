@@ -109,13 +109,7 @@ I()
 				
 				paramStrA = ''
 				for p in method['params']:
-					ampersand = '&'
-					if p['decorator'] == 'out':
-						const = ''
-					else:
-						const = 'const '
-						if p['type'].lower() in ['int', '::ice::int', 'float', '::ice::float']:
-							ampersand = ''
+					const, ampersand = decoratorAndType_to_const_ampersand(p['decorator'], p['type'])
 					paramStrA += const + p['type'] + ' ' + ampersand + p['name'] + ', '
 
 				paramStrB = ''
