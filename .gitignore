@@ -9,4 +9,4 @@ ui_*
 *.so
 moc_*cxx
 cmake_install.cmake
-
+build/*
