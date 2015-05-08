@@ -13,6 +13,8 @@ module RoboCompJointMotor{
 	exception HardwareFailedException{string what;};
 	exception OutOfRangeException{string what;};
 	exception UnknownMotorException{string what;};
+	exception CollisionException{string what;};
+	["cpp:comparable"]
 	struct MotorState{
 		int p;
 		int v;
@@ -24,20 +26,22 @@ module RoboCompJointMotor{
 					string timeStamp;
 	};
 	dictionary<string, MotorState>MotorStateMap;
+	["cpp:comparable"]
 	struct MotorParams{
-		bool invertedSign; //Deprecated do not use this, unitrange should be used instead
+		bool invertedSign;
 		byte busId;
 		float minPos;
-		float maxPos;
-		float maxVelocity;
-		float zeroPos;
-		float stepsRange;
-		float maxDegrees; //Deprecated use unitrange
-		string name;
-		float offset;
-		float unitsRange;
+					float maxPos;
+					float maxVelocity;
+					float zeroPos;
+					float stepsRange;
+					float maxDegrees;
+					float offset;
+					float unitsRange;
+					string name;
 	};
 	sequence <MotorParams> MotorParamsList;
+	["cpp:comparable"]
 	struct BusParams{
 		int numMotors;
 		int baudRate;
@@ -45,12 +49,14 @@ module RoboCompJointMotor{
 		string handler;
 		string device;
 	};
+	["cpp:comparable"]
 	struct MotorGoalPosition{
 		float position;
 					float maxSpeed;
 					string name;
 	};
 	sequence <MotorGoalPosition> MotorGoalPositionList;
+	["cpp:comparable"]
 	struct MotorGoalVelocity{
 		float velocity;
 					float maxAcc;
@@ -60,7 +66,7 @@ module RoboCompJointMotor{
 	sequence <string> MotorList;
 
 	interface JointMotor{
-		void  setPosition(MotorGoalPosition goal)throws UnknownMotorException, HardwareFailedException;
+		void  setPosition(MotorGoalPosition goal)throws UnknownMotorException, HardwareFailedException, CollisionException;
 		void  setVelocity(MotorGoalVelocity goal)throws UnknownMotorException, HardwareFailedException;
 		void  setZeroPos(string name)throws UnknownMotorException, HardwareFailedException;
 		void  setSyncPosition(MotorGoalPositionList listGoals)throws UnknownMotorException, HardwareFailedException;

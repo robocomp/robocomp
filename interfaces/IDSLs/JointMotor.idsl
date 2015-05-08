@@ -9,7 +9,9 @@ module RoboCompJointMotor{
 	exception UnknownMotorException{
 		string  what;
 	};
-	
+	exception CollisionException{
+		string what;
+	};
 	struct  MotorState{    // In Radians
 		float pos;         //rads
     	float vel;         //rads/sg
@@ -66,7 +68,7 @@ module RoboCompJointMotor{
 	
 	interface JointMotor
 	{
-		void setPosition(MotorGoalPosition goal) throws UnknownMotorException, HardwareFailedException;         
+		void setPosition(MotorGoalPosition goal) throws UnknownMotorException, HardwareFailedException, CollisionException;         
     	void setVelocity(MotorGoalVelocity goal) throws UnknownMotorException, HardwareFailedException; 
     	void setZeroPos(string name) throws UnknownMotorException, HardwareFailedException;
     	void setSyncPosition(MotorGoalPositionList listGoals) throws UnknownMotorException, HardwareFailedException;
