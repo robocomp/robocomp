@@ -108,3 +108,17 @@ add_custom_target(mrproper
    COMMAND find $ENV{ROBOCOMP} -name Makefile -exec rm {} "\\;"
 )
 
+#For packaging
+include(${RoboComp_SOURCE_DIR}/cmake/package_details.cmake)
+
+# "make spackage for ppa"
+add_custom_target(spackage 
+              ${CMAKE_COMMAND} 
+              -D SRC_DIR:STRING=${RoboComp_SOURCE_DIR}
+              -D MY_VERSION:STRING=${RoboComp_VERSION} 
+              -C ${CMAKE_SOURCE_DIR}/cmake/package_details.cmake
+              -P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/source_package.cmake 
+            )
+
+#packaging
+include(CPack)
