@@ -40,6 +40,7 @@ make bash process the modified file by typing:
 
 Done! Now let's compile and install the whole thing:
 
+    sudo rm -r /opt/robocomp
     cd robocomp
     mkdir build
     cd build
