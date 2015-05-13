@@ -156,7 +156,7 @@ Z()
 #
 #
 
-import sys, traceback, Ice, IceStorm, subprocess, threading, time, Queue, os
+import sys, traceback, Ice, IceStorm, subprocess, threading, time, Queue, os, copy
 
 # Ctrl+c handling
 import signal
@@ -227,6 +227,8 @@ if __name__ == '__main__':
 	if len(params) > 1:
 		if not params[1].startswith('--Ice.Config='):
 			params[1] = '--Ice.Config=' + params[1]
+	elif len(params) == 0:
+		params.append('--Ice.Config=config')
 	ic = Ice.initialize(params)
 	status = 0
 	mprx = {}
