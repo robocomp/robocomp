@@ -14,27 +14,27 @@ module RoboCompBodyInverseKinematics{
 	["cpp:comparable"]
 	struct Pose6D{
 		float x;
-					float y;
-					float z;
-					float rx;
-					float ry;
-					float rz;
-				};
+		float y;
+		float z;
+		float rx;
+		float ry;
+		float rz;
+	};
 	["cpp:comparable"]
 	struct WeightVector{
 		float x;
-					float y;
-					float z;
-					float rx;
-					float ry;
-					float rz;
-				};
+		float y;
+		float z;
+		float rx;
+		float ry;
+		float rz;
+	};
 	["cpp:comparable"]
 	struct Axis{
 		float x;
-					float y;
-					float z;
-				};
+		float y;
+		float z;
+	};
 	["cpp:comparable"]
 	struct TargetState{
 		int elapsedTime;

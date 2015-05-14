@@ -407,7 +407,13 @@ int main(int argc, char* argv[])
 		std::string initIC("--Ice.Config=");
 		size_t pos = std::string(argv[1]).find(initIC);
 		if (pos == 0)
+		{
 			configFile = std::string(argv[1]+initIC.size());
+		}
+		else
+		{
+			configFile = std::string(argv[1]);
+		}
 	}
 
 	// Search in argument list for --prefix= argument (if exist)
