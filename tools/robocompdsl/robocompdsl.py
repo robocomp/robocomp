@@ -14,10 +14,10 @@ def generateDummyCDSL(path):
 		print "File", path, "already exists.\nExiting..."
 	else:
 		print "Generating dummy CDSL file:", path
-		open(path, "w").write("""import "/robocomp/interfaces/IDSLs/import1.idsl";
+		string = """import "/robocomp/interfaces/IDSLs/import1.idsl";
 import "/robocomp/interfaces/IDSLs/import2.idsl";
 
-Component CHANGETHECOMPONENTNAME
+Component <CHANGETHECOMPONENTNAME>
 {
 	Communications
 	{
@@ -28,7 +28,10 @@ Component CHANGETHECOMPONENTNAME
 	};
 	language Cpp;
 	gui Qt(QWidget);
-};\n\n""")
+};\n\n"""
+		name = path.split('/')[-1].split('.')[0]
+		string = string.replace('<CHANGETHECOMPONENTNAME>', 'name')
+		open(path, "w").write()
 
 correct = True
 if len(sys.argv) < 3:
@@ -144,7 +147,7 @@ if component['language'].lower() == 'cpp':
 			ret = Cog().main(run)
 			if ret != 0:
 				print 'ERROR'
-				sys.exyt(-1)
+				sys.exit(-1)
 			replaceTagsInFile(ofile)
 elif component['language'].lower() == 'python':
 	#
@@ -196,7 +199,7 @@ elif component['language'].lower() == 'python':
 			ret = Cog().main(run)
 			if ret != 0:
 				print 'ERROR'
-				sys.exyt(-1)
+				sys.exit(-1)
 			replaceTagsInFile(ofile)
 else:
 	print 'Unsupported language', component['language']

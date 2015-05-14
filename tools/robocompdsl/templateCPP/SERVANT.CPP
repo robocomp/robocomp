@@ -28,11 +28,11 @@ if module == None:
 
 ]]]
 [[[end]]]
- *    Copyright (C) 
+ *    Copyright (C)
 [[[cog
 A()
 import datetime
-cog.out(str(datetime.date.today().year))
+cog.out(' '+str(datetime.date.today().year))
 Z()
 ]]]
 [[[end]]]
@@ -103,10 +103,10 @@ I()
 		if interface['name'] == theInterface:
 			for mname in interface['methods']:
 				method = interface['methods'][mname]
-				
+
 				ret = method['return']
 				name = method['name']
-				
+
 				paramStrA = ''
 				for p in method['params']:
 					const, ampersand = decoratorAndType_to_const_ampersand(p['decorator'], p['type'])
@@ -120,7 +120,10 @@ I()
 
 				cog.outl(ret + ' ' + theInterface + 'I::' + name + '(' + paramStrA + 'const Ice::Current&)')
 				cog.outl('{')
-				cog.out('<TABHERE>worker->'+name+'(')
+				cog.out('<TABHERE>')
+				if ret != 'void':
+					cog.out('return ')
+				cog.out('worker->'+name+'(')
 				cog.out(paramStrB)
 				cog.out(');\n')
 				cog.outl('}\n')
