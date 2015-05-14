@@ -1,0 +1,5 @@
+#!/bin/bash
+set -e
+echo "export ROBOCOMP=/home/$(whoami)/robocomp" >> ~/.bashrc
+echo "export PATH=$PATH:/opt/robocomp/bin" >> ~/.bashrc
+source ~/.bashrc
