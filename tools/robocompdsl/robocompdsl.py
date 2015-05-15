@@ -30,8 +30,8 @@ Component <CHANGETHECOMPONENTNAME>
 	gui Qt(QWidget);
 };\n\n"""
 		name = path.split('/')[-1].split('.')[0]
-		string = string.replace('<CHANGETHECOMPONENTNAME>', 'name')
-		open(path, "w").write()
+		string = string.replace('<CHANGETHECOMPONENTNAME>', name)
+		open(path, "w").write(string)
 
 correct = True
 if len(sys.argv) < 3:

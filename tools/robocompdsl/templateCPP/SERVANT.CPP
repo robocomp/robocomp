@@ -109,7 +109,7 @@ I()
 
 				paramStrA = ''
 				for p in method['params']:
-					const, ampersand = decoratorAndType_to_const_ampersand(p['decorator'], p['type'])
+					const, ampersand = decoratorAndType_to_const_ampersand(p['decorator'], p['type'], modulePool)
 					paramStrA += const + p['type'] + ' ' + ampersand + p['name'] + ', '
 
 				paramStrB = ''

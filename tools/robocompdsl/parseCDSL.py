@@ -12,30 +12,80 @@ debug = False
 from parseIDSL import *
 
 
-def decoratorAndType_to_const_ampersand(decorator, vtype):
+def getTypeFromModule(vtype, module):
+	for t in module['types']:
+		if t['name'] == vtype:
+			return t['type']
+	return None
+
+
+def getKindFromPool(vtype, modulePool, debug=False):
+	if debug: print vtype
+	split = vtype.split("::")
+	if debug: print split
+	if len(split) > 1:
+		vtype = split[1]
+		mname = split[0]
+		if debug: print 'SPLIT (' + vtype+'), (' + mname + ')'
+		if mname in modulePool.modulePool:
+			if debug: print 'dentro SPLIT (' + vtype+'), (' + mname + ')'
+			r = getTypeFromModule(vtype, modulePool.modulePool[mname])
+			if r != None: return r
+		if mname.startswith("RoboComp"):
+			if mname[8:] in modulePool.modulePool:
+				r = getTypeFromModule(vtype, modulePool.modulePool[mname[8:]])
+				if r != None: return r
+	else:
+		if debug: print 'no split'
+		for module in modulePool.modulePool:
+			if debug: print '  '+str(module)
+			r = getTypeFromModule(vtype, modulePool.modulePool[module])
+			if r != None: return r
+
+
+def decoratorAndType_to_const_ampersand(decorator, vtype, modulePool):
 	ampersand = ' & '
 	const = ' '
-	
-	if vtype in [ 'float', 'int']:  # MAIN BASIC TYPES
+
+	if vtype in [ 'float', 'int' ]:                    # MAIN BASIC TYPES
 		if decorator in [ 'out' ]: #out
 			ampersand = ' &'
 			const = ' '
 		else:                      #read-only
 			ampersand = ' '
 			const = 'const '
-	elif vtype in [ 'bool' ]:                      # BOOL SEEMS TO BE SPECIAL
+	elif vtype in [ 'bool' ]:                          # BOOL SEEM TO BE SPECIAL
 		const = ' '
 		if decorator in [ 'out' ]: # out
-			ampersand = ' & '
+			ampersand = ' &'
 		else:                      #read-only
 			ampersand = ' '
-	else:                                       # GENERIC, USED FOR STRUCTURES MAINLY
-		if decorator in [ 'out' ]: #out 
-			ampersand = ' & '
+	elif vtype in [ 'string' ]:                          # STRINGS
+		if decorator in [ 'out' ]: # out
 			const = ' '
-		else:                       # read-only
-			ampersand = ' & '
+			ampersand = ' &'
+		else:                      #read-only
 			const = 'const '
+			ampersand = ' &'
+	else:                                              # GENERIC, USED FOR USER-DEFINED DATA TYPES
+		kind = getKindFromPool(vtype, modulePool)
+		if kind == None:
+			kind = getKindFromPool(vtype, modulePool, debug=True)
+			raise Exception('error, unknown data structure, map or sequence '+vtype)
+		else:
+			if kind == 'enum':                                         # ENUM
+				const = ' '
+				if decorator in [ 'out' ]: # out
+					ampersand = ' &'
+				else:                      #read-only
+					ampersand = ' '
+			else:                                                      # THE REST
+				if decorator in [ 'out' ]: #out 
+					ampersand = ' &'
+					const = ' '
+				else:                       # read-only
+					ampersand = ' &'
+					const = 'const '
 	
 	return const, ampersand
 

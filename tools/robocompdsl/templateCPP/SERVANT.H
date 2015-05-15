@@ -150,7 +150,7 @@ I();
 				
 				paramStr = ''
 				for p in method['params']:
-					const, ampersand = decoratorAndType_to_const_ampersand(p['decorator'], p['type'])
+					const, ampersand = decoratorAndType_to_const_ampersand(p['decorator'], p['type'], modulePool)
 					paramStr += const + p['type'] + ' ' + ampersand + p['name'] + ', '
 
 				cog.outl('<TABHERE>' + ret + ' ' + name + '(' + paramStr + 'const Ice::Current&);')
