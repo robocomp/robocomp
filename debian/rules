@@ -18,6 +18,9 @@ binary-indep:
 binary-arch:
 	cd $(BUILDDIR); make install DESTDIR=../debian/tmp ..
 	mkdir debian/tmp/DEBIAN
+	cp debian/preinst debian/tmp/DEBIAN
+	cp debian/postinst debian/tmp/DEBIAN
+	cp debian/postrm debian/tmp/DEBIAN
 	dpkg-gencontrol -probocomp
 	dpkg --build debian/tmp ..
 
