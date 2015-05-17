@@ -1,19 +1,18 @@
 #!/usr/bin/python
 
+from __future__ import print_function
 import os
+import sys
 import argparse
 import shutil
-import sys
 
 def create_toplevel(ws_path):
     src = os.getenv('ROBOCOMP','/opt/robocomp') + '/cmake/toplevel.cmake'
     dst = os.path.join(ws_path,"toplevel.cmake")
-    print src
-    print dst
-
+    
     #test if path exists
     if not os.path.exists(src):
-        raise RuntimeError("couldnt find toplevel cmake, make sure ROBOCOMP is properly installed")
+        raise RuntimeError("couldnt find toplevel cmake, make sure ROBOCOMP is properly installed\n")
     
     #try to create simlink
     try:
@@ -30,7 +29,6 @@ def init_ws(ws_path):
      * create a smlink/copy the toplevel cmake
      * create src, build, devel folders
     '''
-    create_toplevel(ws_path)
     try:
         os.system('touch %s' % (str(".rc_workspace")))
 
@@ -40,16 +38,22 @@ def init_ws(ws_path):
             if not os.path.exists(dir_path):
                 os.makedirs(dir_path)
     except Exception as createEx:
-        # TODO undo init_ws
         raise RuntimeError("couldnt create files/folders in current directory: \n %s " % (str(createEx)))
+
+    pathstr = str(os.path.abspath(ws_path))
+
+    #copy all files in the current dir into src dir
+    for file in os.listdir(pathstr):
+        if file in dirs: continue
+        os.system("mv ./" + file + " ./src")
+
+    create_toplevel(ws_path+'/src')
     
     #update the list of workspaces
-    pathstr = str(os.path.abspath(ws_path))
     home = os.path.expanduser("~")
     if not os.path.exists(os.path.join(home,".config/RoboComp")):
         os.makedirs(os.path.join(home,".config/RoboComp"))
     config_file = open(os.path.join(home,".config/RoboComp/rc_workspace.config"),"a+")    
-    print pathstr
     config_file.write(pathstr)
     config_file.write("\n")
     config_file.close()
@@ -74,6 +78,8 @@ def main():
     except Exception as e:
         sys.stderr.write(str(e))
         sys.exit(2)
+    else:
+        sys.stdout.write("sucessfully initialized robocomp workspace in %s \n" % (str(os.path.abspath(workspace))) )
 
 if __name__ == '__main__':
     main()
