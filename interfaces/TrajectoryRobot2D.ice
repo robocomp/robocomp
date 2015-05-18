@@ -37,6 +37,7 @@ module RoboCompTrajectoryRobot2D{
 
 	interface TrajectoryRobot2D{
 		void  go(TargetPose target)throws RoboCompException;
+		void  goReferenced(TargetPose target, float xRef, float zRef, float threshold) throws RoboCompException;
 		void  goBackwards(TargetPose target)throws RoboCompException;
 		void  changeTarget(TargetPose target)throws RoboCompException;
 		NavState getState();
