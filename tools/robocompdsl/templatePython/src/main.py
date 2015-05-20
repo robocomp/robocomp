@@ -45,10 +45,10 @@ SUBSCRIBESTO_STR = """
 <TABHERE><TABHERE><TABHERE>try:
 <TABHERE><TABHERE><TABHERE><TABHERE><LOWER>_topic = topicManager.retrieve("<NORMAL>")
 <TABHERE><TABHERE><TABHERE><TABHERE>subscribeDone = True
-<TABHERE><TABHERE><TABHERE>except e:
-<TABHERE><TABHERE><TABHERE><TABHERE>print e
-<TABHERE><TABHERE><TABHERE><TABHERE>print "Error. Topic does not exist"
+<TABHERE><TABHERE><TABHERE>except Ice.Exception, e:
+<TABHERE><TABHERE><TABHERE><TABHERE>print "Error. Topic does not exist (yet)"
 <TABHERE><TABHERE><TABHERE><TABHERE>status = 0
+<TABHERE><TABHERE><TABHERE><TABHERE>time.sleep(1)
 <TABHERE><TABHERE>qos = {}
 <TABHERE><TABHERE><LOWER>_topic.subscribeAndGetPublisher(qos, <LOWER>_proxy)
 <TABHERE><TABHERE><NORMAL>_adapter.activate()
