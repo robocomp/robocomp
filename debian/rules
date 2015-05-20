@@ -1,0 +1,35 @@
+#!/usr/bin/make -f
+
+BUILDDIR = build_dir
+export ROBOCOMP=$(shell pwd)
+
+# secondly called by launchpad
+build:	
+	mkdir $(BUILDDIR);
+	cd $(BUILDDIR); cmake -DCMAKE_BUILD_TYPE=Release  ..
+	make -C $(BUILDDIR)
+
+# thirdly called by launchpad
+binary: binary-indep binary-arch
+
+binary-indep:
+	# nothing to be done
+
+binary-arch:
+	cd $(BUILDDIR); make install DESTDIR=../debian/tmp ..
+	mkdir debian/tmp/DEBIAN
+	cp debian/preinst debian/tmp/DEBIAN
+	cp debian/postinst debian/tmp/DEBIAN
+	cp debian/postrm debian/tmp/DEBIAN
+	dpkg-gencontrol -probocomp
+	dpkg --build debian/tmp ..
+
+# firstly called by launchpad
+clean:
+	rm -f debian/files
+	rm -rf debian/tmp 
+	rm -f build
+	rm -rf $(BUILDDIR)
+
+.PHONY: binary binary-arch binary-indep clean
+
