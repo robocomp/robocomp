@@ -1,0 +1,4 @@
+#!/bin/bash
+set -e
+sudo echo "/opt/robocomp/lib">> /etc/ld.so.conf
+sudo ldconfig
