@@ -597,3 +597,31 @@ void InnerModelViewer::setMainCamera(osgGA::TrackballManipulator *manipulator, C
 
 	manipulator->setRotation(mRot);
 }
+
+void InnerModelViewer::setCameraCenter(OsgView *view, const QVec eye_)
+{
+        eye = eye_;
+        lookAt(view, eye, to, up);
+}
+
+void InnerModelViewer::setLookTowards(OsgView *view, const QVec to_, const QVec up_)
+{
+        to = to_;
+        up = up_;
+        lookAt(view, eye, to, up);
+}
+
+void InnerModelViewer::lookAt(OsgView *view, const QVec eye_, const QVec to_, const QVec up_)
+{
+        eye = eye_;
+        to = to_;
+        up = up_;
+        osgGA::CameraManipulator *tb = view->getCameraManipulator();
+        osg::Vec3d oeye = OsgView::qvecToVec3(eye);
+        osg::Vec3d oto  = OsgView::qvecToVec3(to);
+        osg::Vec3d oup  = OsgView::qvecToVec3(up);
+        tb->setHomePosition(oeye, oto, oup, true);
+        tb->setByMatrix(osg::Matrixf::lookAt(oeye, oto, oup));
+        view->setCameraManipulator(tb);
+}
+

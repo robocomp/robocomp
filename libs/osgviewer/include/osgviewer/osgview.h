@@ -159,12 +159,12 @@ public:
 	QMutex mutex;
 
 	inline void printFPS();
-	inline osg::Vec3 qmatToVec3(const RMat::QMat & m);
-	inline osg::Vec3 qvecToVec3(const RMat::QVec & m);
-	inline osg::Vec4 qvecToVec4(const RMat::QVec & m);
-	inline RMat::QMat vec3ToQMat(const osg::Vec3f & m);
-	inline RMat::QVec vec3ToQVec(const osg::Vec3f & m);
-	inline RMat::QVec vec4ToQVec(const osg::Vec4f & m);
+	static osg::Vec3 qmatToVec3(const RMat::QMat & m);
+	static osg::Vec3 qvecToVec3(const RMat::QVec & m);
+	static osg::Vec4 qvecToVec4(const RMat::QVec & m);
+	static RMat::QMat vec3ToQMat(const osg::Vec3f & m);
+	static RMat::QVec vec3ToQVec(const osg::Vec3f & m);
+	static RMat::QVec vec4ToQVec(const osg::Vec4f & m);
 
 signals:
 	void newWorld3DCoor( const QVec & vec);

@@ -168,6 +168,13 @@ public:
 	QHash<QString, IMVPlane *> planesHash;
 	QHash<QString, IMVCamera> cameras;
 	QHash<QString, IMVLaser> lasers;
+        
+public:
+        void setCameraCenter(OsgView *view, const QVec center_);
+        void setLookTowards(OsgView *view, const QVec to_, const QVec up_);
+        void lookAt(OsgView *view, const QVec center_, const QVec to_, const QVec up_);
+private:
+        QVec eye, up, to;
 };
 
 #endif

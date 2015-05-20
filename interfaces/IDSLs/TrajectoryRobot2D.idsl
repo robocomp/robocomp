@@ -33,10 +33,10 @@ module RoboCompTrajectoryRobot2D
 
 	interface TrajectoryRobot2D
 	{
-		void go(TargetPose target) throws RoboCompException;			// Takes the robot to target. ry is orientation if doRotation is True
-		void goReferenced(TargetPose target, float xRef, float zRef, float threshold) throws RoboCompException;			// Takes the robot to target. ry is orientation if doRotation is True
-		void goBackwards(TargetPose target) throws RoboCompException;	// Moves the robot directly backwards
-		void changeTarget(TargetPose target)throws RoboCompException;	// Change last point of curent trajectory
+		float go(TargetPose target) throws RoboCompException; // Takes the robot to target. ry is orientation if doRotation is True
+		float goReferenced(TargetPose target, float xRef, float zRef, float threshold) throws RoboCompException; // ry is orientation if doRotation is True
+		float goBackwards(TargetPose target) throws RoboCompException;	// Moves the robot directly backwards
+		float changeTarget(TargetPose target)throws RoboCompException;	// Change last point of curent trajectory
 		NavState getState();											// Get current state
 		void stop();													// Stop the robot
 	};

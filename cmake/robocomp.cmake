@@ -34,10 +34,7 @@ MACRO( ROBOCOMP_INITIALIZE )
   )
   # Set interfaces directory
   SET(RoboComp_INTERFACES_DIR "${ARGN}/interfaces/")
-  # Set libraries
 
-  message(STATUS ${OSGUTIL_LIBRARY})
-  message(STATUS ${OSGUTIL_LIBRARY})
   message(STATUS ${OSGUTIL_LIBRARY})
 
 #   INCLUDE ( $ENV{ROBOCOMP}/cmake/modules/ipp.cmake )
@@ -65,7 +62,7 @@ ENDMACRO( ROBOCOMP_LIBRARY )
 MACRO( ROBOCOMP_WRAP_ICE )
   # External Slice source paths
   SET (EXTERNAL_SLICE "")
-  SET (SLICE_PATH "$ENV{SLICE_PATH};/opt/robocomp/ThirdPartyinterfaces")
+  SET (SLICE_PATH "$ENV{SLICE_PATH};/opt/robocomp/interfaces")
   SET (INC_ROBOCOMPSLICE_PATH "true" )
   SET (ADDITIONAL_SLICE_INCLUDE_PATH "")
   FOREACH (SPATH ${SLICE_PATH})
