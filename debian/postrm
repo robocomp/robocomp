@@ -3,5 +3,5 @@ set -e
 sudo sed -i "/\/opt\/robocomp\/lib/d" /etc/ld.so.conf
 sudo ldconfig
 sed -i "/export ROBOCOMP=/d" ~/.bashrc
-sed -i "/export PATH=$PATH:\/opt\/robocomp\/bin/d" ~/.bashrc
+sed -i "/export PATH=\$PATH:\/opt\/robocomp\/bin/d" ~/.bashrc
 source ~/.bashrc

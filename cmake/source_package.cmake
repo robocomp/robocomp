@@ -3,7 +3,7 @@ find_program(DEBUILD_EXECUTABLE debuild)
 find_program(DPUT_EXECUTABLE dput)
 
 if(NOT DEBUILD_EXECUTABLE OR NOT DPUT_EXECUTABLE)
-  MESSAGE(WARNING "could'nt find debuild or deput" )
+  MESSAGE(WARNING "could'nt find debuild or dput" )
   return()
 endif(NOT DEBUILD_EXECUTABLE OR NOT DPUT_EXECUTABLE)
 
@@ -74,8 +74,8 @@ file(MAKE_DIRECTORY ${DEBIAN_SOURCE_DIR}/debian)
 
  ##############################################################################
  #extra control files
- MESSAGE(STATUS  "copying postinst and preinst")
-  file(COPY ${DEB_SRC_DIR}/debian/postinst ${DEB_SRC_DIR}/debian/preinst
+ MESSAGE(STATUS  "copying postinst and preinst and postrm")
+  file(COPY ${DEB_SRC_DIR}/debian/postinst ${DEB_SRC_DIR}/debian/preinst ${DEB_SRC_DIR}/debian/postrm
         DESTINATION ${DEBIAN_SOURCE_DIR}/debian
        )
 
@@ -139,9 +139,9 @@ file(APPEND ${DEBIAN_CONTROL} "\n"
   execute_process(COMMAND date -R  OUTPUT_VARIABLE DATE_TIME)
   file(STRINGS "${DEB_SRC_DIR}/debian/changelog" lineOne REGEX "urgency=low")
   message(STATUS "line ${lineOne}")
-  string(REGEX MATCH " \\(${RELEASE_PACKAGE_VERSION}-0[0-9]+" var ${lineOne})
+  string(REGEX MATCH " \\(${RELEASE_PACKAGE_VERSION}-0ppa[0-9]+" var ${lineOne})
   string(LENGTH ${RELEASE_PACKAGE_VERSION} len)
-  MATH(EXPR len "${len}+4")
+  MATH(EXPR len "${len}+7")
   string(SUBSTRING ${var} ${len} -1 PPA_NUMBER)
   
   if(${DEB_SOURCE_CHANGES} MATCHES CHANGED)
@@ -151,7 +151,7 @@ file(APPEND ${DEBIAN_CONTROL} "\n"
   endif()
 
   file(WRITE ${DEBIAN_CHANGELOG}
-    "${CPACK_DEBIAN_PACKAGE_NAME} (${RELEASE_PACKAGE_VERSION}-0${PPA_NUMBER}) ${RELEASE}; urgency=low\n\n"
+    "${CPACK_DEBIAN_PACKAGE_NAME} (${RELEASE_PACKAGE_VERSION}-0ppa${PPA_NUMBER}) ${RELEASE}; urgency=low\n\n"
     "  * Package built with CMake\n\n"
     " -- ${CPACK_PACKAGE_CONTACT}  ${DATE_TIME}"
     )
@@ -169,7 +169,7 @@ file(APPEND ${DEBIAN_CONTROL} "\n"
     message( STATUS " running for ${DEBUILD_EXECUTABLE} -S ${DEBUILD_OPTIONS}  ")
     message( STATUS " in directory  ${DEBIAN_SOURCE_DIR} ")
     execute_process(
-        COMMAND ${DEBUILD_EXECUTABLE} -S ${DEBUILD_OPTIONS} 
+        COMMAND ${DEBUILD_EXECUTABLE} -k${PPA_PGP_KEY} -S ${DEBUILD_OPTIONS} 
         WORKING_DIRECTORY ${DEBIAN_SOURCE_DIR}
     )
     

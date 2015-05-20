@@ -9,7 +9,7 @@ message(STATUS "SRC_DIR is = ${SRC_DIR}")
 message(STATUS "Version  = " ${MY_VERSION})
 
 set(CPACK_GENERATOR "DEB" CACHE string "generator" )
-set(CPACK_PACKAGE_CONTACT "nithin murali <imnmfotmal@gmail.com>" CACHE STRING "email")
+set(CPACK_PACKAGE_CONTACT "Luis J. Manso <lmanso@unex.es>" CACHE STRING "email")
 set(CPACK_PACKAGE_NAME "robocomp" CACHE STRING "name")
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Robotics Framework" CACHE STRING "descr")
 SET(CPACK_PACKAGE_DESCRIPTION_FILE "${SRC_DIR}/debian/README.Debian" CACHE STRING "package desc file")
@@ -19,10 +19,11 @@ SET(CPACK_RESOURCE_FILE_LICENSE "${SRC_DIR}/debian/copyright" CACHE STRING "copy
 SET(CPACK_PACKAGE_VERSION ${MY_VERSION} CACHE STRING "version")
 set(CPACK_DEBIAN_PACKAGE_PRIORITY "optional" CACHE STRING "priority")
 set(CPACK_DEBIAN_DISTRIBUTION_NAME ubuntu CACHE STRING "dist-name")
-set(CPACK_DEBIAN_PACKAGE_CONTROL_EXTRA "${SRC_DIR}/debian/postinst;${SRC_DIR}/debian/prerm;${SRC_DIR}/debian/postrm"  CACHE STRING "control extra" )
+set(CPACK_DEBIAN_PACKAGE_CONTROL_EXTRA "${SRC_DIR}/debian/postinst;${SRC_DIR}/debian/preinst;${SRC_DIR}/debian/postrm"  CACHE STRING "control extra" )
 set(DEB_SRC_DIR ${SRC_DIR} CACHE STRING "src dir" )
 set(CPACK_DEBIAN_CHANGELOG "  * Latest development version." CACHE STRING "name")
 set(CPACK_SOURCE_IGNORE_FILES .git)
+set(PPA_PGP_KEY "nithin murali" CACHE STRING "ppa pgp key")
 set(DEB_SOURCE_CHANGES "CHANGED" CACHE STRING "source chaged since last upload")
 
 #get the architecture of the machine
