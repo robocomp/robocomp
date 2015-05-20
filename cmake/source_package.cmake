@@ -138,11 +138,8 @@ file(APPEND ${DEBIAN_CONTROL} "\n"
   set(DEBIAN_CHANGELOG ${DEBIAN_SOURCE_DIR}/debian/changelog)
   execute_process(COMMAND date -R  OUTPUT_VARIABLE DATE_TIME)
   file(STRINGS "${DEB_SRC_DIR}/debian/changelog" lineOne REGEX "urgency=low")
-  message(STATUS "line ${lineOne}")
-  string(REGEX MATCH " \\(${RELEASE_PACKAGE_VERSION}-0ppa[0-9]+" var ${lineOne})
-  string(LENGTH ${RELEASE_PACKAGE_VERSION} len)
-  MATH(EXPR len "${len}+7")
-  string(SUBSTRING ${var} ${len} -1 PPA_NUMBER)
+  string(REGEX MATCH "-0ppa[0-9]+" var ${lineOne})
+  string(SUBSTRING ${var} 5 -1 PPA_NUMBER)
   
   if(${DEB_SOURCE_CHANGES} MATCHES CHANGED)
     set(PPA_NUMBER 1)

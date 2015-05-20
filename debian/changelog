@@ -1,5 +1,5 @@
-robocomp (1.1-0ppa1) trusty; urgency=low
+robocomp (1.0-0ppa1) trusty; urgency=low
 
   * Package built with CMake
 
- -- nithin murali <imnmfotmal@gmail.com>  Tue, 19 May 2015 03:48:01 +0530
+ -- Luis J. Manso <lmanso@unex.es>  Wed, 20 May 2015 09:05:52 +0530
