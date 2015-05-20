@@ -1,8 +1,4 @@
 .*~
-*~
-*~
-*.a
-*.a
 bin
 bin/
 bin-debug/
@@ -10,10 +6,6 @@ bin-release/
 build/*
 CloudPrimitives.cpp
 CloudPrimitives.h
-CMakeCache.txt
-CMakeCache.txt
-CMakeFiles
-CMakeFiles
 cmake_install.cmake
 CommonBehavior.cpp
 CommonBehavior.h
@@ -66,8 +58,6 @@ log
 Makefile
 moc_*
 moc*.cxx
-*.o
-*.o
 *.pcd
 *.pddl
 Planning.cpp
@@ -76,14 +66,6 @@ Planning.h
 RGBD.cpp
 RGBD.h
 .settings/
-*.so
-*.so
 Speech*
-ui_*
-ui_*
 ui_*.h
 ui_**.pyc
-WorldModel.cpp
-WorldModel.cpp
-WorldModel.h
-WorldModel.h
