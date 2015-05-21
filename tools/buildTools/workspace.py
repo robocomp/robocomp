@@ -20,17 +20,20 @@ class Workspace:
         home = os.path.expanduser("~")
         if not os.path.exists(os.path.join(home,".config/RoboComp")):
             os.makedirs(os.path.join(home,".config/RoboComp"))
-        config_file = open(os.path.join(home,".config/RoboComp/rc_workspace.config"),"r")    
-        self.workspace_paths = config_file.readlines()
-        self.workspace_paths = [ string.strip(x) for x in self.workspace_paths ]
-        config_file.close()
+        try:
+            config_file = open(os.path.join(home,".config/RoboComp/rc_workspace.config"),"r")    
+            self.workspace_paths = config_file.readlines()
+            self.workspace_paths = [ string.strip(x) for x in self.workspace_paths ]
+            config_file.close()            
+        except Exception, e:
+            pass
 
     '''initiate a catkin workspace at the given path'''
     def init_ws(self, ws_path):
-
+        
         def create_toplevel(src_path):
             src = os.getenv('ROBOCOMP','/opt/robocomp') + '/cmake/toplevel.cmake'
-            dst = os.path.join(src_path,"toplevel.cmake")
+            dst = os.path.join(src_path,"CMakeLists.txt")
             
             #test if path exists
             if not os.path.exists(src):
@@ -46,8 +49,7 @@ class Workspace:
                     raise RuntimeError('Could neither copy or simlink %s to %s : \n %s \n %s' % (src,dst,str(symlinkEx),str(copyEx)))
 
         try:
-            os.system('touch %s' % (str(".rc_workspace")))
-
+            os.system('touch {0}/{1}'.format(ws_path,str(".rc_workspace")))
             dirs = ["src","build","devel"]
             for dir in dirs:
                 dir_path = os.path.join(ws_path,dir)
@@ -57,10 +59,10 @@ class Workspace:
             raise RuntimeError("couldnt create files/folders in current directory: \n %s " % (str(createEx)))
 
         pathstr = str(os.path.abspath(ws_path))
-
+        
         #copy all files in the current dir into src dir
         for file in os.listdir(pathstr):
-            if file in dirs: continue
+            if file in dirs or file in [".rc_workspace"] : continue
             os.system("mv ./" + file + " ./src")
 
         create_toplevel(ws_path+'/src')
@@ -79,7 +81,8 @@ class Workspace:
     def find_component_exec(self, component):
         componentPath = ''
         for path in self.workspace_paths:
-            path = string.strip(path) + '/devel'
+            #path = string.strip(path) + '/devel'  for now we are not shifting the executables
+            path = string.strip(path) + '/src'
             for file in os.listdir(path):
                 if string.lower(str(file)) == string.lower(component) and os.path.isdir(os.path.join(path,component)):
                     if os.path.exists(os.path.join(path,component,'bin',component) ):
