@@ -85,7 +85,7 @@ class Workspace:
             path = string.strip(path) + '/src'
             for file in os.listdir(path):
                 if string.lower(str(file)) == string.lower(component) and os.path.isdir(os.path.join(path,component)):
-                    if os.path.exists(os.path.join(path,component,'bin',component) ):
+                    if os.path.exists(os.path.join(path,component,'bin',string.lower(component)) ):
                         componentPath = os.path.join(path,component,'bin')
         if componentPath != '':
             return componentPath
@@ -98,8 +98,26 @@ class Workspace:
         for path in self.workspace_paths:
             path = string.strip(path) + '/src'
             for file in os.listdir(path):
-                if lower(str(file)) == lower(component) and os.path.isdir(os.path.join(path,component)):
+                if str(file) == component and os.path.isdir(os.path.join(path,component)):
                     componentPath = os.path.join(path,component)
-        return componentPath
+        if componentPath != '':
+            return componentPath
+        else:
+            return False
+
+    ''' search and return a dictionry of file paths given component name and file name
+        component - name of component as string
+        file      - list of tuple of filnames and path
+    '''
+    def search_for_file(self,component,files):
+        filedict = []
+        path = self.find_component_src(component)
+        for sfile in files:
+            for root, dirs, files in os.walk(path):
+                #print(files)
+                if sfile in files:
+                    tmptuple = (sfile,os.path.join(root, sfile))
+                    filedict.append(tmptuple)
+        return filedict
 
 rc_ws = Workspace()
