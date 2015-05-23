@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>aprilTagsComp, Wrapping E. Olson's AprilTags in RoboComp</title>
+	
+	<meta name="description" content="AprilTags is an augmented reality tag system developed by E. Olson at the U. of Michigan, USA. A complete explanation and related papers can be ...">
+	
+	<meta name="author" content="Robocomp">
+
+	<!-- Enable responsive viewport -->
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
+	<!--[if lt IE 9]>
+	<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+
+	<!-- Le styles -->
+	<link href="/assets/resources/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+	<link href="/assets/resources/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+	<link href="/assets/resources/syntax/syntax.css" rel="stylesheet">
+	<link href="/assets/css/style.css" rel="stylesheet">
+
+	<!-- Le fav and touch icons -->
+	<!-- Update these with your own images
+	<link rel="shortcut icon" href="images/favicon.ico">
+	<link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+	<link rel="apple-touch-icon" sizes="72x72" href="images/apple-touch-icon-72x72.png">
+	<link rel="apple-touch-icon" sizes="114x114" href="images/apple-touch-icon-114x114.png">
+	-->
+
+	<link rel="alternate" type="application/rss+xml" title="" href="/feed.xml">
+</head>
+
+<body>
+	<nav class="navbar navbar-default visible-xs" role="navigation">
+		<!-- Brand and toggle get grouped for better mobile display -->
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			
+			<a type="button" class="navbar-toggle nav-link" href="http://github.com/robocomp">
+				<i class="fa fa-github"></i>
+			</a>
+			
+			
+			
+			<a type="button" class="navbar-toggle nav-link" href="mailto:ljmanso@unex.es">
+				<i class="fa fa-envelope"></i>
+			</a>
+			
+			<a class="navbar-brand" href="/">
+				<img src="/assets/dp.jpeg" class="img-circle" />
+				
+			</a>
+		</div>
+
+		<!-- Collect the nav links, forms, and other content for toggling -->
+		<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+			<ul class="nav navbar-nav">
+				<li class="active"><a href="/">Home</a></li>
+				<li><a href="/categories.html">Categories</a></li>
+				<li><a href="/tags.html">Tags</a></li>
+			</ul>
+		</div><!-- /.navbar-collapse -->
+	</nav>
+
+	<!-- nav-menu-dropdown -->
+	<div class="btn-group hidden-xs" id="nav-menu">
+		<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+			<i class="fa fa-bars"></i>
+		</button>
+		<ul class="dropdown-menu" role="menu">
+			<li><a href="/"><i class="fa fa-home"></i>Home</a></li>
+			<li><a href="/categories.html"><i class="fa fa-folder"></i>Categories</a></li>
+			<li><a href="/tags.html"><i class="fa fa-tags"></i>Tags</a></li>
+			<li class="divider"></li>
+			<li><a href="#"><i class="fa fa-arrow-up"></i>Top of Page</a></li>
+		</ul>
+	</div>
+
+	<div class="col-sm-3 sidebar hidden-xs">
+		<!-- sidebar.html -->
+<header class="sidebar-header" role="banner">
+	<a href="/">
+		<img src="/assets/dp.jpeg" class="img-circle" />
+	</a>
+	<h3 class="title">
+        <a href="/"></a>
+    </h3>
+</header>
+
+
+<div id="bio" class="text-center">
+	Robotics Framework
+</div>
+
+
+<div id="contact-list" class="text-center">
+	<ul class="list-unstyled list-inline">
+		
+		<li>
+			<a class="btn btn-default btn-sm" href="https://github.com/robocomp">
+				<i class="fa fa-github-alt fa-lg"></i>
+			</a>
+		</li>
+		
+		
+		
+		<li>
+			<a class="btn btn-default btn-sm" href="mailto:ljmanso@unex.es">
+				<i class="fa fa-envelope fa-lg"></i>
+			</a>
+		</li>
+		
+	</ul>
+	<ul id="contact-list-secondary" class="list-unstyled list-inline">
+		
+		
+		<li>
+			<a class="btn btn-default btn-sm" href="/feed.xml">
+				<i class="fa fa-rss fa-lg"></i>
+			</a>
+		</li>
+	</ul>
+</div>
+<!-- sidebar.html end -->
+
+	</div>
+
+	<div class="col-sm-9 col-sm-offset-3">
+		<div class="page-header">
+  <h1>aprilTagsComp, Wrapping E. Olson's AprilTags in RoboComp </h1>
+</div>
+	
+<article>
+
+	<div class="col-sm-10">
+	 <span class="post-date">
+	   
+	   May 
+	   23rd,
+	     
+	   2015
+	 </span>
+	  <div class="article_body">
+	  <h1 id="apriltagscomp-wrapping-e-olsons-apriltags-in-robocomp">aprilTagsComp: wrapping E. Olson’s AprilTags in RoboComp</h1>
+
+<p>AprilTags is an augmented reality tag system developed by E. Olson at the U. of Michigan, USA. A complete explanation and related papers can be found <a href="http://april.eecs.umich.edu/wiki/index.php/AprilTags">here</a>. There is a C++ version written
+ by Michael Kaes <a href="http://people.csail.mit.edu/kaess/apriltags/">here</a> which is the one we use.</p>
+
+<p>April tags are AR tags designed to be easily detected by (robot) cameras. Understand them as a visual fiducial (artificial features) system that uses a 2D bar code style “tag”, allowing full 6 DOF localization of features from a single image. It is designed to encode smaller data (between 4 and 12 bits) and also these tags can be detected by the camera even at odd conditions. When the tag is seen by the camera, the algorithm computes the tag’s complete pose defining its own reference system relative to the camera (i.e Location of the tag is known with high accuracy). This reference system is defined as follows: If we look perpendicularly to a non rotated tag, The Z+ axis comes out towards us from the center of the tag plane, The X+ axis points leftwards and the Y+ axis points upwards (a left-hand reference system). The values computed by <em>apriltagsComp</em> are the translation vector from the camera to the center of the tag’s reference system, and the three Euler angles that encode the relative orientation of the tag’s reference system wrt to the camera reference system.</p>
+
+<p>The <em>AprilTags.cdsl</em> file specifies how <em>apriltagsComp</em> has been generated and how it can be re-generated:</p>
+
+<pre><code>import "/robocomp/interfaces/IDSLs/GetAprilTags.idsl";
+import "/robocomp/interfaces/IDSLs/AprilTags.idsl";
+import "/robocomp/interfaces/IDSLs/RGBD.idsl";
+import "/robocomp/interfaces/IDSLs/RGBDBus.idsl";
+import "/robocomp/interfaces/IDSLs/Camera.idsl";
+Component AprilTagsComp{
+    Communications{
+            requires Camera, RGBDBus, RGBD;
+            publishes AprilTags;
+            implements GetAprilTags;
+    };
+    language Cpp;
+};
+</code></pre>
+
+<p>This files tells us that the component requires -will be calling- three RoboComp interfaces: Camera, RGBDBus y RGBD, which are normal and depth camera’s interfaces written in RoboComp’s IDSL language. You can find those files in <em>~/robocomp/interfaces/IDSLs</em>. Also, the component will publish the data defined in the <em>AprilTags</em> interface and will implement the <em>GetAprilTags</em> interface. This means that using images provided by a component implementing the camera or RGBD interfaces, it will try to detect any tags in them and compute their 6D pose. Finally, it will publish a vector with all the tags id’s and poses to the Ice’s STORM broker, and also it will attend any direct requests (remote procedure calls) received from other components through the <em>GetAprilTags</em> interface. So it is a rather serviceable and handy component!</p>
+
+<p>To access <strong>apriltagsComp</strong> you need to install from <em>http://github.org/robocomp</em> the repository named <em>robocomp-robolab</em>.</p>
+
+<pre><code>cd ~/robocomp/components
+git clone https://github.com/robocomp/robocomp-robolab.git
+</code></pre>
+
+<p>Once downloaded, <em>apriltagsComp</em> can be found in:</p>
+
+<pre><code>~/robocomp/components/robocomp-robolab/components/apriltagsComp
+</code></pre>
+
+<p>First, read the <em>INSTALL_APRILTAGS_LIB.TXT</em> file and follow instructions thereby. Once the library has been installed in /usr/local, we can proceed to compile the component:</p>
+
+<pre><code>cd ~/robocomp/components/robocomp-robolab/components/apriltagsComp
+cmake .
+make
+</code></pre>
+
+<p>We should have a binary now:</p>
+
+<pre><code>~/robocomp/components/robocomp-robolab/components/apriltagsComp/bin/apriltagscomp
+</code></pre>
+
+<h2 id="configuration-parameters">Configuration parameters</h2>
+<p>As any other component, <em>apriltagsComp</em> needs a <em>config</em> file to start. In</p>
+
+<pre><code>~/robocomp/components/robocomp-robolab/components/apriltagsComp/etc/generic_config
+</code></pre>
+
+<p>you can find an example of a configuration file. We can find there the following lines:</p>
+
+<pre><code>GetAprilTagsComp.Endpoints=tcp -p 12210                     //Port where GetAprilTags iface is served
+CommonBehavior.Endpoints=tcp -p 11258                       //Not of use for the user now
+CameraProxy = camera:tcp -h localhost -p 10001              //Port where a camera is located
+RGBDProxy = rgbd:tcp -h localhost -p 10096                  //Port where a RGBD camera is located
+RGBDBusProxy = rgbdbus:tcp -h localhost -p 10239            //Port where a bus of RGBDs is located
+AprilTagsProxy = apriltags:tcp -h localhost -p 10261        //Not of use for the user
+TopicManager.Proxy=IceStorm/TopicManager:default -p 9999    //Port where STROM broker is located
+InnerModelPath=/home/robocomp/robocomp/files/innermodel/simpleworld.xml
+
+
+InputInterface = RGBD                                       //Current input iface to be used
+AprilTagsFamily = tagCodes36h11                             //Tags family. See AprilTags paper
+AprilTagsSize = 0.17                                        //Tag default real size in meters
+ID:0-10 = 0.17   #tag size in meters                        //Tags numbers 1-10 real size in meters
+ID:11-20 = 0.17   #tag size in meters                       //Tags numbers 11-20 real size in meters
+ID:21-30 = 0.17   #tag size in meters                       //Tags numbers 21-30 real size in meters
+</code></pre>
+
+<p>AprilTagsFamily is a set of tags, There are different families like 36h10,25h9,16h5 however <em>tagCodes36h11</em> is recommended. Each tag has an ID that is printed inside the surrounding square using Hamming code. Instructions to print tags and other tag families can be found <a href="http://april.eecs.umich.edu/wiki/index.php/AprilTags">here</a>. The algorithm needs the real size of the tag to estimate its position and orientation in space. We can give the component tags of different sizes, As long as they correspond to different ranges of IDs, as specified in the configuration file above.</p>
+
+<h2 id="starting-the-component">Starting the component</h2>
+<p>To start the component we need a real camera connected to the cameraV4lComp component or the RCIS simulator started with a file that includes virtual tags, such as <em>simpleworld.xml</em>, Tutorial can be found <a href="virtualapriltagstutorial.md">here</a>. Once RCIS is up and running, It will provide the RGBD.idsl interface (not Camera.idsl for now) at port 10096, which is what the configuration file states. To avoid changing the <em>generic_config</em> file in the repository, We can copy it to the component’s home directory, So changes will remain untouched by future git pulls:</p>
+
+<pre><code>cp ~/robocomp/components/robocomp-robolab/components/apriltagsComp
+cp /etc/generic_config config
+</code></pre>
+
+<p>So, to begin we type:</p>
+
+<pre><code>cd ~/robocomp/components/robocomp-robolab/components/apriltagsComp
+bin/apriltagscomp --Ice.Config=config
+</code></pre>
+
+<p>If the robot’s camera is pointing towards one of the tags, You should see in the terminal lines showing the ID and pose of each visible tag.</p>
+
+
+	  </div>
+
+		
+		<ul class="tag_box list-unstyled list-inline">
+		  <li><i class="fa fa-folder-open"></i></li>
+		  
+		  
+			 
+				<li><a href="/categories.html#tutorial-ref">
+					tutorial <span>(7)</span>
+					
+				</a></li>
+			
+		  
+		</ul>
+		  
+
+		
+		<ul class="list-inline">
+		  <li><i class="fa fa-tags"></i></li>
+		  
+		  
+			 
+				<li>
+					<a href="/tags.html#AprilTags-ref">
+					AprilTags <span>(2)</span>
+					
+					</a>
+				</li>
+			
+		  
+		  
+		</ul>
+		  
+
+		<hr>
+
+		<div>
+      <section class="share col-sm-6">
+        <h4 class="section-title">Share Post</h4>
+        <a class="btn btn-default btn-sm twitter" href="http://twitter.com/share?text=aprilTagsComp, Wrapping E. Olson's AprilTags in RoboComp"
+           onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+          <i class="fa fa-twitter fa-lg"></i>
+          Twitter
+        </a>
+        <a class="btn btn-default btn-sm facebook" href="https://www.facebook.com/sharer/sharer.php"
+           onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+          <i class="fa fa-facebook fa-lg"></i>
+          Facebook
+        </a>
+        <a class="btn btn-default btn-sm gplus"
+           onclick="window.open('https://plus.google.com/share?url='+window.location.href, 'google-plus-share', 'width=490,height=530');return false;">
+          <i class="fa fa-google-plus fa-lg"></i>
+          Google+
+        </a>
+      </section>
+
+      <section class="col-sm-6 author">
+        <img src="/assets/dp.jpeg" class="img-rounded author-image" />
+        <h4 class="section-title author-name">Robocomp</h4>
+        <p class="author-bio">Robotics Framework</p>
+      </section>
+    </div>
+
+    <div class="clearfix"></div>
+
+		<ul class="pager">
+		  
+		  <li class="previous"><a href="/post/2015/05/23/README.html" title="Tutorials Directory">&larr; Previous</a></li>
+		  
+		  
+		  <li class="next"><a href="/tutorial/2015/05/23/apritagstutorial.html" title="aprilTagsComp, Tutorial to simulate virtual apriltags">Next &rarr;</a></li>
+		  
+		</ul>
+
+		<hr>
+	</div>
+	
+	<div class="col-sm-2 sidebar-2">
+	
+	</div>
+</article>
+<div class="clearfix"></div>
+
+
+
+		<footer>
+			<hr/>
+			<p>
+				&copy; 2015 Robocomp with Jekyll. Theme: <a href="https://github.com/dbtek/dbyll">dbyll</a> by dbtek.
+			</p>
+		</footer>
+	</div>
+
+	<script type="text/javascript" src="/assets/resources/jquery/jquery.min.js"></script>
+	<script type="text/javascript" src="/assets/resources/bootstrap/js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="/assets/js/app.js"></script>
+</body>
+</html>
+

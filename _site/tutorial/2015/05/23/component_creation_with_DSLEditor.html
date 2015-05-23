@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Creating a new component with eclipse based RoboComp's DSLEditor</title>
+	
+	<meta name="description" content="We will create now a new component that will connect to the RCIS simulator and run a simple controller for the robot, using the laser data. First we need to install the DSLEditor software that is runtime Eclipse application...">
+	
+	<meta name="author" content="Robocomp">
+
+	<!-- Enable responsive viewport -->
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
+	<!--[if lt IE 9]>
+	<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+
+	<!-- Le styles -->
+	<link href="/assets/resources/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+	<link href="/assets/resources/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+	<link href="/assets/resources/syntax/syntax.css" rel="stylesheet">
+	<link href="/assets/css/style.css" rel="stylesheet">
+
+	<!-- Le fav and touch icons -->
+	<!-- Update these with your own images
+	<link rel="shortcut icon" href="images/favicon.ico">
+	<link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+	<link rel="apple-touch-icon" sizes="72x72" href="images/apple-touch-icon-72x72.png">
+	<link rel="apple-touch-icon" sizes="114x114" href="images/apple-touch-icon-114x114.png">
+	-->
+
+	<link rel="alternate" type="application/rss+xml" title="" href="/feed.xml">
+</head>
+
+<body>
+	<nav class="navbar navbar-default visible-xs" role="navigation">
+		<!-- Brand and toggle get grouped for better mobile display -->
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			
+			<a type="button" class="navbar-toggle nav-link" href="http://github.com/robocomp">
+				<i class="fa fa-github"></i>
+			</a>
+			
+			
+			
+			<a type="button" class="navbar-toggle nav-link" href="mailto:ljmanso@unex.es">
+				<i class="fa fa-envelope"></i>
+			</a>
+			
+			<a class="navbar-brand" href="/">
+				<img src="/assets/dp.jpeg" class="img-circle" />
+				
+			</a>
+		</div>
+
+		<!-- Collect the nav links, forms, and other content for toggling -->
+		<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+			<ul class="nav navbar-nav">
+				<li class="active"><a href="/">Home</a></li>
+				<li><a href="/categories.html">Categories</a></li>
+				<li><a href="/tags.html">Tags</a></li>
+			</ul>
+		</div><!-- /.navbar-collapse -->
+	</nav>
+
+	<!-- nav-menu-dropdown -->
+	<div class="btn-group hidden-xs" id="nav-menu">
+		<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+			<i class="fa fa-bars"></i>
+		</button>
+		<ul class="dropdown-menu" role="menu">
+			<li><a href="/"><i class="fa fa-home"></i>Home</a></li>
+			<li><a href="/categories.html"><i class="fa fa-folder"></i>Categories</a></li>
+			<li><a href="/tags.html"><i class="fa fa-tags"></i>Tags</a></li>
+			<li class="divider"></li>
+			<li><a href="#"><i class="fa fa-arrow-up"></i>Top of Page</a></li>
+		</ul>
+	</div>
+
+	<div class="col-sm-3 sidebar hidden-xs">
+		<!-- sidebar.html -->
+<header class="sidebar-header" role="banner">
+	<a href="/">
+		<img src="/assets/dp.jpeg" class="img-circle" />
+	</a>
+	<h3 class="title">
+        <a href="/"></a>
+    </h3>
+</header>
+
+
+<div id="bio" class="text-center">
+	Robotics Framework
+</div>
+
+
+<div id="contact-list" class="text-center">
+	<ul class="list-unstyled list-inline">
+		
+		<li>
+			<a class="btn btn-default btn-sm" href="https://github.com/robocomp">
+				<i class="fa fa-github-alt fa-lg"></i>
+			</a>
+		</li>
+		
+		
+		
+		<li>
+			<a class="btn btn-default btn-sm" href="mailto:ljmanso@unex.es">
+				<i class="fa fa-envelope fa-lg"></i>
+			</a>
+		</li>
+		
+	</ul>
+	<ul id="contact-list-secondary" class="list-unstyled list-inline">
+		
+		
+		<li>
+			<a class="btn btn-default btn-sm" href="/feed.xml">
+				<i class="fa fa-rss fa-lg"></i>
+			</a>
+		</li>
+	</ul>
+</div>
+<!-- sidebar.html end -->
+
+	</div>
+
+	<div class="col-sm-9 col-sm-offset-3">
+		<div class="page-header">
+  <h1>Creating a new component with eclipse based RoboComp's DSLEditor </h1>
+</div>
+	
+<article>
+
+	<div class="col-sm-10">
+	 <span class="post-date">
+	   
+	   May 
+	   23rd,
+	     
+	   2015
+	 </span>
+	  <div class="article_body">
+	  <h1 id="creating-a-new-component-with-eclipse-based-robocomps-dsleditor">Creating a new component with Eclipse based RoboComp’s DSLEditor</h1>
+
+<p>We will create now a new component that will connect to the RCIS simulator and run a simple controller for the robot, using the laser data. First we need to install the DSLEditor software that is runtime Eclipse application.</p>
+
+<p>Create another terminal in Yakuake and type:</p>
+
+<pre><code>cd ~/robocomp/tools
+python fetch_DSLEditor.py
+</code></pre>
+
+<p>Select 32 or 64 bits according to your current linux installation. After a little while the DSLEditor will be installed under the <em>robocompDSL</em> directory:</p>
+
+<pre><code>cd roboCompDSL/DSLEditor
+./DSLEditor
+</code></pre>
+
+<p>Check that you have a <em>RoboComp</em> tab in the upper bar of the DSLEditor window and that the <em>robocomp</em> directory appears in the Project Explorer (left panel). If it does not, right click inside the <em>Project Explorer</em> panel and select <em>import</em>. Then select <em>General</em> and then <em>Existing Projects into Workspace</em>. Then select your <em>robocomp</em> directory and push <em>Finish</em>.</p>
+
+<p>Now we need to bring up some handy tabs in the lower pane. Select the <em>Window</em> tab in the upper bar, then <em>Show View</em>, then <em>Other</em> and again <em>Other</em>. Select now <em>Interfaces</em> and double-click on it. Go back to the main window.</p>
+
+<p>Now, in the left panel, unfold the <em>robocomp</em> directory down to <em>robocomp/components/</em> and then click on it with the right button. Select <em>New Folder</em> and enter <em>mycomponents</em> in the folder name. Do it again to create a new folder inside <em>mycomponents</em> named <em>myfirstcomp</em>. Select <em>myfirstcomp</em> and then click on the <em>RoboComp</em> tab in the upper bar of the main window. Select <em>Create CDSL file</em> and fill the requested name with <em>MyFirstComp.cdsl</em></p>
+
+<p>The new file will open inside a syntax-sensitive editor in the central panel. Ctrl-space gives you syntactically correct options. You can see the skeleton of a new empty component. Look for the tab <em>Interfaces</em> in the lower bar and select <em>DifferentialRobot.idsl</em>. Click on the green cross at the right of the bar to include it and accept when prompted in a pop-up window. You will see something like:</p>
+
+<pre><code>import "/robocomp/interfaces/IDSLs/DifferentialRobot.idsl";
+Component PFLocalizerComp{
+    Communications{
+        };
+        language Cpp;
+};
+</code></pre>
+
+<p>Repeat the same steps to include <em>Laser.idsl</em> and then add a <em>requires</em> statement inside de <em>Communications</em> section. The file now should look like this:</p>
+
+<pre><code>import "/robocomp/interfaces/IDSLs/DifferentialRobot.idsl";
+import "/robocomp/interfaces/IDSLs/Laser.idsl";
+Component MyFirstComp{
+    Communications{
+        requires DifferentialRobot, Laser;
+    };
+language Cpp;
+};
+</code></pre>
+
+<p>Save the file and click in the upper bar on the <em>RoboComp</em> tab. Select <em>Generate Code</em>. After a little while the new source tree for your <em>MyFirstComp</em> component will be created. You can go back now to Yakuake and create a new tab to compile it. Then:</p>
+
+<pre><code>cd ~/robocomp/components/mycomponents/myfirstcomp
+cmake .
+make
+bin/myfirstcomp --Ice.Config=etc/generic_config
+</code></pre>
+
+<p>and there it is! your component is running.</p>
+
+<p>What! Dissapointed? Yeah, I know it does nothing, but it runs and it is yours! Now let’s do some real programming.</p>
+
+<p>Stop the component with Ctrl Z and then type:</p>
+
+<pre><code>killall -9 myfirstcomp
+</code></pre>
+
+<p>Now start your favorite IDE. KDevelop will do it just fine and you have it already installed. Open it in another tab, from Ubuntu menu or with Alt-F2. Then:</p>
+
+<pre><code>Click the *Project* tab in the upper bar
+Select *Open/Import Project*
+Navigate to ~/robocomp/components/mycomponents/myfirstcomp
+Select *Makefile* and open the project
+</code></pre>
+
+<p>In the <em>Project</em> panel to the left of the screen, navigate to <em>src</em> and there select <em>specificworker.cpp</em> and open it. Open also <em>specificworker.h</em></p>
+
+<p>Now replace the empty <em>void compute()</em> method with this compact version of the classic AVOID-FORWARD-STOP architecture proposed by R. Brooks in the late 80’s:</p>
+
+<pre><code>void SpecificWorker::compute( )
+{
+    static	float rot = 0.1f;			// rads/sec
+    static float adv = 100.f;			// mm/sec
+    static float turnSwitch = 1;
+    const float advIncLow = 0.8;		// mm/sec
+    const float advIncHigh = 2.f;		// mm/sec
+    const float rotInc = 0.25;			// rads/sec
+    const float rotMax = 0.4;			// rads/sec
+    const float advMax = 200;			// milimetres/sec
+    const float distThreshold = 500; 	// milimetres
+try
+{
+    RoboCompLaser::TLaserData ldata = laser_proxy-&gt;getLaserData();
+    std::sort( ldata.begin(), ldata.end(), [](RoboCompLaser::TData a, RoboCompLaser::TData b){ return     a.dist &lt; b.dist; }) ;
+    if( ldata.front().dist &lt; distThreshold) 
+    {
+        adv = adv * advIncLow; 
+        rot = rot + turnSwitch * rotInc;
+        if( rot &lt; -rotMax) rot = -rotMax;
+        if( rot &gt; rotMax) rot = rotMax;
+        differentialrobot_proxy-&gt;setSpeedBase(adv, rot);
+    }
+    else
+    {
+        adv = adv * advIncHigh; 
+        if( adv &gt; advMax) adv = advMax;
+        rot = 0.f;
+        differentialrobot_proxy-&gt;setSpeedBase(adv, 0.f);		
+        turnSwitch = -turnSwitch;
+    }	
+}
+catch(const Ice::Exception &amp;ex)
+{
+    std::cout &lt;&lt; ex &lt;&lt; std::endl;
+}
+}
+</code></pre>
+
+<p>To compile the fancy version of <em>std::sort</em> you will have to first add this line at the end of the file <em>CMakeListsSpecific.txt</em> located in the same <em>src</em> directory:</p>
+
+<pre><code>ADD_DEFINITIONS( -std=c++11 )
+</code></pre>
+
+<p>and then type:</p>
+
+<pre><code>cmake .
+make
+</code></pre>
+
+<p>Hereafter, Press F8 in KDevelop to compile and link. Then, go to Yakuake and restart the component.</p>
+
+<p>Let us take InnerModel <em>simpleworld.xml</em> as an example. Open a new tab in Yakuake and execute</p>
+
+<pre><code>cd robocomp/files/innermodel
+rcis simpleworld.xml
+</code></pre>
+
+<p>Now you should see 2 windows. Now in Yakuake go back to tab where you had compiled <em>myfirstcomp</em> and run</p>
+
+<pre><code>bin/myfirstcomp --Ice.Config=etc/generic_config
+</code></pre>
+
+<p>You should see the robot maneouvring aroung the box. Now is when Robotics begin! Try to modify the code to let the robot go pass the blocking boxes.</p>
+
+	  </div>
+
+		
+		<ul class="tag_box list-unstyled list-inline">
+		  <li><i class="fa fa-folder-open"></i></li>
+		  
+		  
+			 
+				<li><a href="/categories.html#tutorial-ref">
+					tutorial <span>(7)</span>
+					
+				</a></li>
+			
+		  
+		</ul>
+		  
+
+		
+		<ul class="list-inline">
+		  <li><i class="fa fa-tags"></i></li>
+		  
+		  
+			 
+				<li>
+					<a href="/tags.html#DSLEditor-ref">
+					DSLEditor <span>(1)</span>
+					
+					</a>
+				</li>
+			
+		  
+		  
+		</ul>
+		  
+
+		<hr>
+
+		<div>
+      <section class="share col-sm-6">
+        <h4 class="section-title">Share Post</h4>
+        <a class="btn btn-default btn-sm twitter" href="http://twitter.com/share?text=Creating a new component with eclipse based RoboComp's DSLEditor"
+           onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+          <i class="fa fa-twitter fa-lg"></i>
+          Twitter
+        </a>
+        <a class="btn btn-default btn-sm facebook" href="https://www.facebook.com/sharer/sharer.php"
+           onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+          <i class="fa fa-facebook fa-lg"></i>
+          Facebook
+        </a>
+        <a class="btn btn-default btn-sm gplus"
+           onclick="window.open('https://plus.google.com/share?url='+window.location.href, 'google-plus-share', 'width=490,height=530');return false;">
+          <i class="fa fa-google-plus fa-lg"></i>
+          Google+
+        </a>
+      </section>
+
+      <section class="col-sm-6 author">
+        <img src="/assets/dp.jpeg" class="img-rounded author-image" />
+        <h4 class="section-title author-name">Robocomp</h4>
+        <p class="author-bio">Robotics Framework</p>
+      </section>
+    </div>
+
+    <div class="clearfix"></div>
+
+		<ul class="pager">
+		  
+		  <li class="previous"><a href="/tutorial/2015/05/23/apritagstutorial.html" title="aprilTagsComp, Tutorial to simulate virtual apriltags">&larr; Previous</a></li>
+		  
+		  
+		  <li class="next"><a href="/post/2015/05/23/components.html" title="Software components in RoboComp, A brief introduction">Next &rarr;</a></li>
+		  
+		</ul>
+
+		<hr>
+	</div>
+	
+	<div class="col-sm-2 sidebar-2">
+	
+	</div>
+</article>
+<div class="clearfix"></div>
+
+
+
+		<footer>
+			<hr/>
+			<p>
+				&copy; 2015 Robocomp with Jekyll. Theme: <a href="https://github.com/dbtek/dbyll">dbyll</a> by dbtek.
+			</p>
+		</footer>
+	</div>
+
+	<script type="text/javascript" src="/assets/resources/jquery/jquery.min.js"></script>
+	<script type="text/javascript" src="/assets/resources/bootstrap/js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="/assets/js/app.js"></script>
+</body>
+</html>
+

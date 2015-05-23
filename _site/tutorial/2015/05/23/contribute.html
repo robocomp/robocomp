@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>How to contribute to robocomp github repository</title>
+	
+	<meta name="description" content="Step by step guide to contribute to robocomp github repository">
+	
+	<meta name="author" content="Robocomp">
+
+	<!-- Enable responsive viewport -->
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
+	<!--[if lt IE 9]>
+	<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+
+	<!-- Le styles -->
+	<link href="/assets/resources/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+	<link href="/assets/resources/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+	<link href="/assets/resources/syntax/syntax.css" rel="stylesheet">
+	<link href="/assets/css/style.css" rel="stylesheet">
+
+	<!-- Le fav and touch icons -->
+	<!-- Update these with your own images
+	<link rel="shortcut icon" href="images/favicon.ico">
+	<link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+	<link rel="apple-touch-icon" sizes="72x72" href="images/apple-touch-icon-72x72.png">
+	<link rel="apple-touch-icon" sizes="114x114" href="images/apple-touch-icon-114x114.png">
+	-->
+
+	<link rel="alternate" type="application/rss+xml" title="" href="/feed.xml">
+</head>
+
+<body>
+	<nav class="navbar navbar-default visible-xs" role="navigation">
+		<!-- Brand and toggle get grouped for better mobile display -->
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			
+			<a type="button" class="navbar-toggle nav-link" href="http://github.com/robocomp">
+				<i class="fa fa-github"></i>
+			</a>
+			
+			
+			
+			<a type="button" class="navbar-toggle nav-link" href="mailto:ljmanso@unex.es">
+				<i class="fa fa-envelope"></i>
+			</a>
+			
+			<a class="navbar-brand" href="/">
+				<img src="/assets/dp.jpeg" class="img-circle" />
+				
+			</a>
+		</div>
+
+		<!-- Collect the nav links, forms, and other content for toggling -->
+		<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+			<ul class="nav navbar-nav">
+				<li class="active"><a href="/">Home</a></li>
+				<li><a href="/categories.html">Categories</a></li>
+				<li><a href="/tags.html">Tags</a></li>
+			</ul>
+		</div><!-- /.navbar-collapse -->
+	</nav>
+
+	<!-- nav-menu-dropdown -->
+	<div class="btn-group hidden-xs" id="nav-menu">
+		<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+			<i class="fa fa-bars"></i>
+		</button>
+		<ul class="dropdown-menu" role="menu">
+			<li><a href="/"><i class="fa fa-home"></i>Home</a></li>
+			<li><a href="/categories.html"><i class="fa fa-folder"></i>Categories</a></li>
+			<li><a href="/tags.html"><i class="fa fa-tags"></i>Tags</a></li>
+			<li class="divider"></li>
+			<li><a href="#"><i class="fa fa-arrow-up"></i>Top of Page</a></li>
+		</ul>
+	</div>
+
+	<div class="col-sm-3 sidebar hidden-xs">
+		<!-- sidebar.html -->
+<header class="sidebar-header" role="banner">
+	<a href="/">
+		<img src="/assets/dp.jpeg" class="img-circle" />
+	</a>
+	<h3 class="title">
+        <a href="/"></a>
+    </h3>
+</header>
+
+
+<div id="bio" class="text-center">
+	Robotics Framework
+</div>
+
+
+<div id="contact-list" class="text-center">
+	<ul class="list-unstyled list-inline">
+		
+		<li>
+			<a class="btn btn-default btn-sm" href="https://github.com/robocomp">
+				<i class="fa fa-github-alt fa-lg"></i>
+			</a>
+		</li>
+		
+		
+		
+		<li>
+			<a class="btn btn-default btn-sm" href="mailto:ljmanso@unex.es">
+				<i class="fa fa-envelope fa-lg"></i>
+			</a>
+		</li>
+		
+	</ul>
+	<ul id="contact-list-secondary" class="list-unstyled list-inline">
+		
+		
+		<li>
+			<a class="btn btn-default btn-sm" href="/feed.xml">
+				<i class="fa fa-rss fa-lg"></i>
+			</a>
+		</li>
+	</ul>
+</div>
+<!-- sidebar.html end -->
+
+	</div>
+
+	<div class="col-sm-9 col-sm-offset-3">
+		<div class="page-header">
+  <h1>How to contribute to robocomp github repository </h1>
+</div>
+	
+<article>
+
+	<div class="col-sm-10">
+	 <span class="post-date">
+	   
+	   May 
+	   23rd,
+	     
+	   2015
+	 </span>
+	  <div class="article_body">
+	  <h1 id="how-to-contribute-to-robocomp-github-repository">How to contribute to robocomp github repository</h1>
+
+<p>In brief the steps involved will be:
+* Fork the robocomp repository
+* Clone the repository
+* Create a new branch
+* Switch to the created branch
+* Make suitable changes
+* Test the changes
+* Add the files you want to commit
+* Commit the files
+* Push to repository
+* Compare changes
+* Pull a request for the commit made
+* Start a discussion over the commits made</p>
+
+<p>In detail explanation:</p>
+
+<p>1) Forking the repository:</p>
+
+<p>Open the robocomp github repository : <a href="https://github.com/robocomp/robocomp">https://github.com/robocomp/robocomp</a></p>
+
+<p>Click on the fork option as shown below:</p>
+
+<p><img src="https://github.com/abhi-kumar/robocomp/blob/how-to-contribute/fork.jpg" alt="" /></p>
+
+<p>The indication that the repo is forked can be observed as follows:</p>
+
+<p><img src="https://github.com/abhi-kumar/robocomp/blob/how-to-contribute/forked.jpg" alt="" /></p>
+
+<p>2) Cloning the the repository:</p>
+
+<p>Open a terminal and move to home directory and type:</p>
+
+<pre><code>git clone &lt;link to the forked repository&gt;
+</code></pre>
+
+<p><img src="https://github.com/abhi-kumar/robocomp/blob/how-to-contribute/cloned.jpg" alt="" /></p>
+
+<p>3) Creating a branch:</p>
+
+<p>Open a terminal and move the “pwd” to the place where the forked repository is present.</p>
+
+<ul>
+  <li>
+    <p>To see a list of all branches present and to see the current working branch type and execute:</p>
+
+    <p><code>git branch</code></p>
+  </li>
+</ul>
+
+<p><img src="https://github.com/abhi-kumar/robocomp/blob/how-to-contribute/branch.jpg" alt="" /></p>
+
+<ul>
+  <li>
+    <p>Create a new branch to work on. There is no restriction wrt the naming of the branch:</p>
+
+    <p><code>git branch &lt;branch_name&gt;</code></p>
+  </li>
+</ul>
+
+<p><img src="https://github.com/abhi-kumar/robocomp/blob/how-to-contribute/branched.jpg" alt="" /></p>
+
+<ul>
+  <li>
+    <p>To switch to the branch that you created to work on execute:</p>
+
+    <p><code>git checkout &lt;branch_name&gt;</code></p>
+  </li>
+</ul>
+
+<p><img src="https://github.com/abhi-kumar/robocomp/blob/how-to-contribute/switched.jpg" alt="" /></p>
+
+<p>4) Making changes:</p>
+
+<p>Demo : Lets make changes to <em>Readme.md</em></p>
+
+<p><img src="https://github.com/abhi-kumar/robocomp/blob/how-to-contribute/changes.jpg" alt="" /></p>
+
+<p>5) Commit the changes made</p>
+
+<ul>
+  <li>
+    <p>To get a list of all the files to which changes have been made type:</p>
+
+    <p><code>git status</code></p>
+  </li>
+</ul>
+
+<p><img src="https://github.com/abhi-kumar/robocomp/blob/how-to-contribute/status.jpg" alt="" /></p>
+
+<ul>
+  <li>
+    <p>Next add only those files which we want to commit by typing:</p>
+
+    <p><code>git add &lt;filename&gt;</code></p>
+  </li>
+</ul>
+
+<p><img src="https://github.com/abhi-kumar/robocomp/blob/how-to-contribute/add.jpg" alt="" /></p>
+
+<ul>
+  <li>
+    <p>Now commit the changes by using command:</p>
+
+    <p><code>git commit -m 'commit message'</code></p>
+  </li>
+</ul>
+
+<p><img src="https://github.com/abhi-kumar/robocomp/blob/how-to-contribute/commit.jpg" alt="" /></p>
+
+<p>6) Push the commit to repository:</p>
+
+<pre><code>git push origin &lt;current_working_branch_name&gt;
+</code></pre>
+
+<p><img src="https://github.com/abhi-kumar/robocomp/blob/how-to-contribute/push.jpg" alt="" /></p>
+
+<p>7) Compare and pull request</p>
+
+<p><img src="https://github.com/abhi-kumar/robocomp/blob/how-to-contribute/pull.jpg" alt="" /></p>
+
+<p>8) Discuss the commits you have made with the rest of the contributing team.</p>
+
+	  </div>
+
+		
+		<ul class="tag_box list-unstyled list-inline">
+		  <li><i class="fa fa-folder-open"></i></li>
+		  
+		  
+			 
+				<li><a href="/categories.html#tutorial-ref">
+					tutorial <span>(7)</span>
+					
+				</a></li>
+			
+		  
+		</ul>
+		  
+
+		
+		<ul class="list-inline">
+		  <li><i class="fa fa-tags"></i></li>
+		  
+		  
+			 
+				<li>
+					<a href="/tags.html#Github-ref">
+					Github <span>(1)</span>
+					
+					</a>
+				</li>
+			
+		  
+		  
+		</ul>
+		  
+
+		<hr>
+
+		<div>
+      <section class="share col-sm-6">
+        <h4 class="section-title">Share Post</h4>
+        <a class="btn btn-default btn-sm twitter" href="http://twitter.com/share?text=How to contribute to robocomp github repository"
+           onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+          <i class="fa fa-twitter fa-lg"></i>
+          Twitter
+        </a>
+        <a class="btn btn-default btn-sm facebook" href="https://www.facebook.com/sharer/sharer.php"
+           onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+          <i class="fa fa-facebook fa-lg"></i>
+          Facebook
+        </a>
+        <a class="btn btn-default btn-sm gplus"
+           onclick="window.open('https://plus.google.com/share?url='+window.location.href, 'google-plus-share', 'width=490,height=530');return false;">
+          <i class="fa fa-google-plus fa-lg"></i>
+          Google+
+        </a>
+      </section>
+
+      <section class="col-sm-6 author">
+        <img src="/assets/dp.jpeg" class="img-rounded author-image" />
+        <h4 class="section-title author-name">Robocomp</h4>
+        <p class="author-bio">Robotics Framework</p>
+      </section>
+    </div>
+
+    <div class="clearfix"></div>
+
+		<ul class="pager">
+		  
+		  <li class="previous"><a href="/post/2015/05/23/components.html" title="Software components in RoboComp, A brief introduction">&larr; Previous</a></li>
+		  
+		  
+		  <li class="next"><a href="/tutorial/2015/05/23/packaging.html" title="Packaging RoboComp">Next &rarr;</a></li>
+		  
+		</ul>
+
+		<hr>
+	</div>
+	
+	<div class="col-sm-2 sidebar-2">
+	
+	</div>
+</article>
+<div class="clearfix"></div>
+
+
+
+		<footer>
+			<hr/>
+			<p>
+				&copy; 2015 Robocomp with Jekyll. Theme: <a href="https://github.com/dbtek/dbyll">dbyll</a> by dbtek.
+			</p>
+		</footer>
+	</div>
+
+	<script type="text/javascript" src="/assets/resources/jquery/jquery.min.js"></script>
+	<script type="text/javascript" src="/assets/resources/bootstrap/js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="/assets/js/app.js"></script>
+</body>
+</html>
+

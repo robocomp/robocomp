@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Chroot environment</title>
+	
+	<meta name="description" content="A chroot is a way of isolating applications from the rest of your computer, by putting them in a jail. This is particularly useful if you are testing an application which could potentially alter important system files, or which may be insecure....">
+	
+	<meta name="author" content="Robocomp">
+
+	<!-- Enable responsive viewport -->
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
+	<!--[if lt IE 9]>
+	<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+
+	<!-- Le styles -->
+	<link href="/assets/resources/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+	<link href="/assets/resources/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+	<link href="/assets/resources/syntax/syntax.css" rel="stylesheet">
+	<link href="/assets/css/style.css" rel="stylesheet">
+
+	<!-- Le fav and touch icons -->
+	<!-- Update these with your own images
+	<link rel="shortcut icon" href="images/favicon.ico">
+	<link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+	<link rel="apple-touch-icon" sizes="72x72" href="images/apple-touch-icon-72x72.png">
+	<link rel="apple-touch-icon" sizes="114x114" href="images/apple-touch-icon-114x114.png">
+	-->
+
+	<link rel="alternate" type="application/rss+xml" title="" href="/feed.xml">
+</head>
+
+<body>
+	<nav class="navbar navbar-default visible-xs" role="navigation">
+		<!-- Brand and toggle get grouped for better mobile display -->
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			
+			<a type="button" class="navbar-toggle nav-link" href="http://github.com/robocomp">
+				<i class="fa fa-github"></i>
+			</a>
+			
+			
+			
+			<a type="button" class="navbar-toggle nav-link" href="mailto:ljmanso@unex.es">
+				<i class="fa fa-envelope"></i>
+			</a>
+			
+			<a class="navbar-brand" href="/">
+				<img src="/assets/dp.jpeg" class="img-circle" />
+				
+			</a>
+		</div>
+
+		<!-- Collect the nav links, forms, and other content for toggling -->
+		<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+			<ul class="nav navbar-nav">
+				<li class="active"><a href="/">Home</a></li>
+				<li><a href="/categories.html">Categories</a></li>
+				<li><a href="/tags.html">Tags</a></li>
+			</ul>
+		</div><!-- /.navbar-collapse -->
+	</nav>
+
+	<!-- nav-menu-dropdown -->
+	<div class="btn-group hidden-xs" id="nav-menu">
+		<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+			<i class="fa fa-bars"></i>
+		</button>
+		<ul class="dropdown-menu" role="menu">
+			<li><a href="/"><i class="fa fa-home"></i>Home</a></li>
+			<li><a href="/categories.html"><i class="fa fa-folder"></i>Categories</a></li>
+			<li><a href="/tags.html"><i class="fa fa-tags"></i>Tags</a></li>
+			<li class="divider"></li>
+			<li><a href="#"><i class="fa fa-arrow-up"></i>Top of Page</a></li>
+		</ul>
+	</div>
+
+	<div class="col-sm-3 sidebar hidden-xs">
+		<!-- sidebar.html -->
+<header class="sidebar-header" role="banner">
+	<a href="/">
+		<img src="/assets/dp.jpeg" class="img-circle" />
+	</a>
+	<h3 class="title">
+        <a href="/"></a>
+    </h3>
+</header>
+
+
+<div id="bio" class="text-center">
+	Robotics Framework
+</div>
+
+
+<div id="contact-list" class="text-center">
+	<ul class="list-unstyled list-inline">
+		
+		<li>
+			<a class="btn btn-default btn-sm" href="https://github.com/robocomp">
+				<i class="fa fa-github-alt fa-lg"></i>
+			</a>
+		</li>
+		
+		
+		
+		<li>
+			<a class="btn btn-default btn-sm" href="mailto:ljmanso@unex.es">
+				<i class="fa fa-envelope fa-lg"></i>
+			</a>
+		</li>
+		
+	</ul>
+	<ul id="contact-list-secondary" class="list-unstyled list-inline">
+		
+		
+		<li>
+			<a class="btn btn-default btn-sm" href="/feed.xml">
+				<i class="fa fa-rss fa-lg"></i>
+			</a>
+		</li>
+	</ul>
+</div>
+<!-- sidebar.html end -->
+
+	</div>
+
+	<div class="col-sm-9 col-sm-offset-3">
+		<div class="page-header">
+  <h1>Chroot environment </h1>
+</div>
+	
+<article>
+
+	<div class="col-sm-10">
+	 <span class="post-date">
+	   
+	   May 
+	   23rd,
+	     
+	   2015
+	 </span>
+	  <div class="article_body">
+	  <h1 id="chroot-environment">Chroot environment</h1>
+
+<p>A chroot is a way of isolating applications from the rest of your computer, by putting them in a jail. This is particularly useful if you are testing an application which could potentially alter important system files, or which may be insecure.
+A chroot is basically a special directory on your computer which prevents applications, if run from inside that directory, from accessing files outside the directory. In many ways, a chroot is like installing another operating system inside your existing operating system. 
+The following are some possible uses of chroots:</p>
+
+<ol>
+  <li>Isolating insecure and unstable applications</li>
+  <li>Running 32-bit applications on 64-bit systems</li>
+  <li>Testing new packages before installing them on the production system</li>
+  <li>Running older versions of applications on more modern versions of Ubuntu</li>
+  <li>Building new packages, allowing careful control over the dependency packages which are installed</li>
+</ol>
+
+<p>This manual will follow the steps specified in the <a href="https://help.ubuntu.com/community/BasicChroot">official page of Ubuntu</a>. And the system we will install as tutorial is Ubuntu 14.04 Trusty amd64.</p>
+
+<h2 id="brief-explanation">Brief Explanation</h2>
+<p>Imagine you have your Robocomp version well installed and working really fine in your system (i.e. Ubuntu 14.04 amd64), but you need to upgrade your ICE or OpenCV or PCL or whatever third-party library to a new version. You don’t want to risk your well functional version of Robocomp and it’s dependencies removing the current version and installing the new one (this usually affects other packages and libraries), and you don’t have time enough to make a whole fresh installation in other partition or virtual machine, so the fastest solution is to create a jail containing the same distribution of your main system (Ubuntu 14.04 amd64) with chroot and test Robocomp with the new version of the library you need without touching your fine Robocomp installation.
+Realize that creating a chrooted environment in your machine makes your system believe that your root directory (“/”) is in another place than the actual root of the system (like I explain on the wiki, the process in which you launch chroot believes that the root directory is in / while actually it is in /var/chroot/trusty_x64/, not letting you touch anything outside that directory and therefore not risking your current installation).
+Another practical use for chroot is to test an especific program or library in a different distribution or architecture. For example, if you are working in Ubuntu 14.04 amd64 and you want to test if a library that you are using works fine in Debian Wheezy or Ubuntu 14.10 or Ubuntu 14.04 i386.</p>
+
+<h2 id="creating-a-chroot">Creating a chroot</h2>
+
+<ol>
+  <li>
+    <p>First of all we need to install the tools to make a chroot in out system.</p>
+
+    <p><code>sudo apt-get install debootstrap schroot</code></p>
+  </li>
+  <li>
+    <p>Create a folder where the chroot is going to be installed. You need to make the folder using administrator permission (with <em>sudo</em> i.e). We will put the chroot up in <em>/var/chroot/trusty_x64</em></p>
+
+    <p><code>sudo mkdir /var/chroot &amp;&amp; sudo mkdir /var/chroot/trusty_x64</code></p>
+  </li>
+  <li>
+    <p>Create a configuration file for schroot. For our example, we will create a file named trusty_x64.conf in <em>/etc/schroot/chroot.d/</em></p>
+
+    <p><code>sudo gedit /etc/schroot/chroot.d/trusty_x64.conf</code></p>
+
+    <p>And write the following inside: (Change the <username> to actual username, example "root-users=abhi"</username></p>
+
+    <p><code>
+ [trusty_x64]
+ description=Ubuntu trusty 14.04 for amd64
+ directory=/var/chroot/trusty_x64
+ root-users=&lt;USERNAME&gt;
+ type=directory
+ users=testuser
+</code>
+  - The first line is the name of the chroot thatis going to be created.
+  - <strong>description</strong> is a short description of the chroot.
+  - <strong>directory</strong> the path where the chroot is going to be installed. Note that is the same path that we specified in step 2.
+  - <strong>root-users</strong> list of users that are allowed in our chroot without password.
+  - <strong>type</strong>  The type of the chroot. Valid types are ‘plain’, ‘directory’, ‘file’, ‘block-device’ and ‘lvm-snapshot’. If empty or omitted, the default type is ‘plain’.
+  - <strong>users</strong> list of users that are allowed access to the chroot.</p>
+
+    <p>see <a href="http://manpages.ubuntu.com/manpages/hardy/man5/schroot.conf.5.html">schroot.config</a> for further information.</p>
+  </li>
+  <li>
+    <p>Run Debootstrap. This step will download and unpack a basic ubuntu or debian system to the chroot directory we created in step 2.</p>
+
+    <p><code>sudo debootstrap --variant=buildd --arch amd64 trusty /var/chroot/trusty_x64 http://archive.ubuntu.com/ubuntu</code></p>
+
+    <p>In our example, we are creating a chroot of an Ubuntu 14.04 64-bit distribution, but this command allows some different commands that can satisfy our needs, for instance, if we want to install the same distribution but the 32-bit version, we have to type:</p>
+
+    <p><code>sudo debootstrap --variant=buildd --arch i386 trusty /var/chroot/trusty http://archive.ubuntu.com/ubuntu</code></p>
+
+    <p>Note that we have to do the proper changes creating a different schroot configuration file (i.e. <em>/etc/schroot/chroot.d/trusty</em>) and a different folder for the new chroot (i.e. <em>/var/chroot/trusty</em>)</p>
+
+    <p>If we want to create a chroot for a Debian version (i.e. Debian Wheezy (stable)) we have to type:</p>
+
+    <p><code>sudo debootstrap --variant=buildd --arch amd64 wheezy /var/chroot/wheezy_x64 http://ftp.debian.org/debian</code></p>
+  </li>
+  <li>
+    <p>Checking the chroot. To be sure that everything went ok, we can type the following command, that will list all the available chroot enviroments in out system.</p>
+
+    <p><code>schroot -l</code></p>
+
+    <p>If trusty_x64 appears, we can start working in our chrooted environment typing:</p>
+
+    <p><code>schroot -c trusty_x64 -u root</code></p>
+
+    <p>The prompt of the chrooted environment should be like:</p>
+
+    <p><code>(trusty_x64)root@abhi-Inspiron-7520:/home/abhi#</code></p>
+
+    <p><strong>NOTE</strong> This step is not mandatory.
+ <strong>NOTE</strong> For convenience, the default schroot configuration rebinds the /home directory on the host system so that it appears in the chroot system. This could be unexpected because it means that you can accidentally delete or otherwise damage things in /home on the host system. To change this behaviour we can run the following command in the host system:</p>
+
+    <p><code>sudo gedit /etc/schroot/default/fstab</code></p>
+
+    <p>And comment the /home line:</p>
+
+    <p><code>
+# fstab: static file system information for chroots.
+# Note that the mount point will be prefixed by the chroot path
+# (CHROOT_PATH)
+#
+# &lt;file system&gt; &lt;mount point&gt;   &lt;type&gt;  &lt;options&gt;       &lt;dump&gt;  &lt;pass&gt;
+/proc           /proc           none    rw,bind        0       0
+/sys            /sys            none    rw,bind        0       0
+/dev            /dev            none    rw,bind         0       0
+/dev/pts        /dev/pts        none    rw,bind         0       0
+#/home          /home           none    rw,bind         0       0
+/tmp            /tmp            none    rw,bind         0       0
+</code></p>
+  </li>
+</ol>
+
+<p>And that’s it! Now we have a whole very basic system in which we can test out programs and libraries.</p>
+
+<h2 id="troubleshooting">Troubleshooting</h2>
+
+<ul>
+  <li>If you get locale warnings in the chroot like <strong>“Locale not supported by C library.”</strong> or <strong>“perl: warning: Setting locale failed.”</strong>, then try one or more of these commands:</li>
+</ul>
+
+<p><code>
+    sudo dpkg-reconfigure locales
+    sudo apt-get install language-pack-en
+    sudo locale-gen en_US.UTF-8
+    sudo dpkg-reconfigure locales
+</code>
+  if the problem persist check out this <a href="http://perlgeek.de/en/article/set-up-a-clean-utf8-environment">page</a>.</p>
+
+<ul>
+  <li>
+    <p>To get access to the intertet within the chroot, you have to type:</p>
+
+    <p><code>sudo cp /etc/resolv.conf /var/chroot/trusty_x64/etc/resolv.conf</code></p>
+  </li>
+  <li>
+    <p>You might want to have the proper sources.list in order to be able to install packages from Ubuntu official repositories like universe or multiverse, and the security updates. If you make a chroot installation, the sources.list will be the most basic one, like:</p>
+
+    <p><code>deb http://archive.ubuntu.com/ubuntu trusty main</code></p>
+
+    <p>You can generate a more complete sources.list file in this pages <a href="http://repogen.simplylinux.ch/">Ubuntu</a> and <a href="http://debgen.simplylinux.ch/">Debian</a></p>
+  </li>
+</ul>
+
+<h2 id="external-links">External Links</h2>
+
+<p><a href="https://help.ubuntu.com/community/BasicChroot">Ubuntu official chroot manual</a></p>
+
+<p><a href="https://help.ubuntu.com/community/DebootstrapChroot">Ubuntu official deboostrap manual</a></p>
+
+<p><a href="http://perlgeek.de/en/article/set-up-a-clean-utf8-environment">PerlGeek troubleshooting</a></p>
+
+<p><a href="http://manpages.ubuntu.com/manpages/hardy/man5/schroot.conf.5.html">Schroot conf manual</a></p>
+
+<p><a href="http://manpages.ubuntu.com/manpages/trusty/en/man8/debootstrap.8.html">Debootstap manual</a></p>
+
+<p><a href="http://repogen.simplylinux.ch/">Sources.list for Ubuntu</a></p>
+
+<p><a href="http://debgen.simplylinux.ch/">Sources.list for Debian</a></p>
+
+
+	  </div>
+
+		
+		<ul class="tag_box list-unstyled list-inline">
+		  <li><i class="fa fa-folder-open"></i></li>
+		  
+		  
+			 
+				<li><a href="/categories.html#post-ref">
+					post <span>(4)</span>
+					
+				</a></li>
+			
+		  
+		</ul>
+		  
+
+		
+		<ul class="list-inline">
+		  <li><i class="fa fa-tags"></i></li>
+		  
+		  
+			 
+				<li>
+					<a href="/tags.html#Chroot environment-ref">
+					Chroot environment <span>(1)</span>
+					
+					</a>
+				</li>
+			
+		  
+		  
+		</ul>
+		  
+
+		<hr>
+
+		<div>
+      <section class="share col-sm-6">
+        <h4 class="section-title">Share Post</h4>
+        <a class="btn btn-default btn-sm twitter" href="http://twitter.com/share?text=Chroot environment"
+           onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+          <i class="fa fa-twitter fa-lg"></i>
+          Twitter
+        </a>
+        <a class="btn btn-default btn-sm facebook" href="https://www.facebook.com/sharer/sharer.php"
+           onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+          <i class="fa fa-facebook fa-lg"></i>
+          Facebook
+        </a>
+        <a class="btn btn-default btn-sm gplus"
+           onclick="window.open('https://plus.google.com/share?url='+window.location.href, 'google-plus-share', 'width=490,height=530');return false;">
+          <i class="fa fa-google-plus fa-lg"></i>
+          Google+
+        </a>
+      </section>
+
+      <section class="col-sm-6 author">
+        <img src="/assets/dp.jpeg" class="img-rounded author-image" />
+        <h4 class="section-title author-name">Robocomp</h4>
+        <p class="author-bio">Robotics Framework</p>
+      </section>
+    </div>
+
+    <div class="clearfix"></div>
+
+		<ul class="pager">
+		  
+		  <li class="previous"><a href="/post/2015/05/23/Debian_packaging.html" title="Introduction to debian packaging">&larr; Previous</a></li>
+		  
+		  
+		  <li class="next"><a href="/post/2015/05/23/README.html" title="Tutorials Directory">Next &rarr;</a></li>
+		  
+		</ul>
+
+		<hr>
+	</div>
+	
+	<div class="col-sm-2 sidebar-2">
+	
+	</div>
+</article>
+<div class="clearfix"></div>
+
+
+
+		<footer>
+			<hr/>
+			<p>
+				&copy; 2015 Robocomp with Jekyll. Theme: <a href="https://github.com/dbtek/dbyll">dbyll</a> by dbtek.
+			</p>
+		</footer>
+	</div>
+
+	<script type="text/javascript" src="/assets/resources/jquery/jquery.min.js"></script>
+	<script type="text/javascript" src="/assets/resources/bootstrap/js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="/assets/js/app.js"></script>
+</body>
+</html>
+

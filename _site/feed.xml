@@ -1,0 +1,864 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+	<channel>
+		<title></title>
+		<description>Robotics Framework</description>
+		<link>/</link>
+		<atom:link href="/feed.xml" rel="self" type="application/rss+xml" />
+		
+			<item>
+				<title>Maintaining your own repository of components in GitHub</title>
+				<description>&lt;h1 id=&quot;maintaining-your-own-repository-of-components-in-github&quot;&gt;Maintaining your own repository of components in GitHub&lt;/h1&gt;
+
+&lt;p&gt;We recommend that you create a repository for your components (i.e. &lt;em&gt;mycomponents&lt;/em&gt; directory in the example before) in your GitHub account (or other similar site) and pull/clone it in &lt;em&gt;~/robocomp/components&lt;/em&gt; whenever yo need it. For example, if your GitHub account is &lt;em&gt;myaccount&lt;/em&gt;, first log in with your browser and create a new repository named &lt;em&gt;mycomponents&lt;/em&gt; following this instructions:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;https://help.github.com/articles/create-a-repo/
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Now is good time to write down a short description of what your component does in the README.md file.&lt;/p&gt;
+
+&lt;p&gt;Then we need to clean up the binary and generated files in &lt;em&gt;myfirstcomp&lt;/em&gt;. Note that this is not necessary if you upload the component to the repo just after creating it with DSLEditor and before you type &lt;em&gt;cmake .&lt;/em&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;cd ~/robocomp/components/mycomponents/myfirstcomp
+make clean
+sudo rm -r CMakeFiles
+rm CMakeCache.txt
+rm cmake_install.cmake
+rm Makefile
+rm *.kd*
+rm src/moc*
+sudo rm -r src/CMakeFiles
+rm src/cmake_install.cmake
+rm src/Makefile
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;now we are ready:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;cd ~/robocomp/components/mycomponents
+git init
+git remote add origin &quot;https://github.com/myaccount/mycomponents.git&quot;
+git add mycomponents
+git push -u origin master
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;You can go now to GitHub and chek that your sources are there!&lt;/p&gt;
+
+</description>
+				<pubDate>Sat, 23 May 2015 00:00:00 +0530</pubDate>
+				<link>/tutorial/2015/05/23/using_github.html</link>
+				<guid isPermaLink="true">/tutorial/2015/05/23/using_github.html</guid>
+			</item>
+		
+			<item>
+				<title>Using robocompdsl, The command line component generator</title>
+				<description>&lt;h1 id=&quot;using-robocompdsl-the-command-line-component-generator&quot;&gt;Using robocompdsl: the command line component generator&lt;/h1&gt;
+
+&lt;p&gt;&lt;strong&gt;robocompdsl&lt;/strong&gt; is the new tool used in RoboComp to automatically generate components and modify their main properties once they have been generated (e.g., communication requirements, UI type). It is one of the core tools of the framework so, if you installed RoboComp, you can start using it right away.&lt;/p&gt;
+
+&lt;p&gt;This new version can only be used from the command line, but the languages used to define components and their interfaces remain mostly the same: &lt;strong&gt;CDSL&lt;/strong&gt; to specify components and &lt;strong&gt;IDSL&lt;/strong&gt; to specify interfaces. The only difference with the old RoboCompDSLEditor tool is that the reserved keywords (are now case independent). Take a look to the tutorial &lt;a href=&quot;components.md&quot;&gt;“a brief introduction to Components”&lt;/a&gt; for an introduction to the concept of component generation and the languages involved.&lt;/p&gt;
+
+&lt;p&gt;There are three tasks we can acomplish using &lt;strong&gt;robocompdsl&lt;/strong&gt;:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;generating a CDSL template file&lt;/li&gt;
+  &lt;li&gt;generating the code for a previously existing CDSL file&lt;/li&gt;
+  &lt;li&gt;regenerating the code for an already generated component.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;generating-a-cdsl-template-file&quot;&gt;Generating a CDSL template file&lt;/h2&gt;
+&lt;p&gt;Even tough writing CDSL files is easy –their structure is simple and the number of reserved words is very limited– robocompdsl can generate template CDSL files to be used as a guide when writing CDSL files.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ robocompdsl path/to/mycomponent/mycomponent.cdsl
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This will generate a CDSL file with the following content:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;import &quot;/robocomp/interfaces/IDSLs/import1.idsl&quot;;
+import &quot;/robocomp/interfaces/IDSLs/import2.idsl&quot;;
+ 
+Component CHANGETHECOMPONENTNAME
+{
+	Communications
+	{
+		implements interfaceName;
+		requires otherName;
+		subscribesTo topicToSubscribeTo;
+		publishes topicToPublish;
+	};
+	language Cpp;
+	gui Qt(QWidget);
+};
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The CDSL language is described in the tutorial &lt;a href=&quot;components.md&quot;&gt;“A brief introduction to Components”&lt;/a&gt;. Just don’t forget to change the name of the component.&lt;/p&gt;
+
+&lt;h2 id=&quot;generating-a-component-given-a-cdsl-file&quot;&gt;Generating a component given a CDSL file&lt;/h2&gt;
+&lt;p&gt;Once we have our CDSL file we can generate the component’s source code running robocompdsl with the CDSL file as first argument and the directory where the code should be placed as the second argument.&lt;/p&gt;
+
+&lt;p&gt;From the component’s directory:
+    $ cd path/to/mycomponent
+    $ robocompdsl mycomponent.cdsl .&lt;/p&gt;
+
+&lt;p&gt;Or somewhere else:
+    $ robocompdsl path/to/mycomponent/mycomponent.cdsl path/to/mycomponent&lt;/p&gt;
+
+&lt;p&gt;These commands will generate the C++ or Python code in the specified directory.&lt;/p&gt;
+
+&lt;h2 id=&quot;updating-the-source-code-of-a-component-after-modifying-its-cdsl-file&quot;&gt;Updating the source code of a component after modifying its CDSL file&lt;/h2&gt;
+&lt;p&gt;Once we generated our component we might change our mind and decide to add a new connection to another interface or to publish a new topic. In these cases we can regenerate the code of the component just by changing the &lt;em&gt;.cdsl&lt;/em&gt; file and executing again the command.&lt;/p&gt;
+
+&lt;p&gt;As you might have learned from the tutorial &lt;a href=&quot;components.md&quot;&gt;“A brief introduction to Components”&lt;/a&gt; RoboComp components are divided in specific code (files where you write your code) and generic code (autogenerated code which doesn’t need to be edited). Running robocompdsl again on the same directory will ony overwrite these generic files. To ensure robocompdsl doesn’t overwrite the changes you made to the specific files these are left unchanged, so the component might not compile after regeneration (e.g., you might need to add new methods).&lt;/p&gt;
+
+</description>
+				<pubDate>Sat, 23 May 2015 00:00:00 +0530</pubDate>
+				<link>/tutorial/2015/05/23/robocompdsl.html</link>
+				<guid isPermaLink="true">/tutorial/2015/05/23/robocompdsl.html</guid>
+			</item>
+		
+			<item>
+				<title>Packaging RoboComp</title>
+				<description>&lt;h1 id=&quot;packaging-robocomp&quot;&gt;Packaging Robocomp&lt;/h1&gt;
+
+&lt;h2 id=&quot;deb-packages&quot;&gt;deb packages&lt;/h2&gt;
+
+&lt;p&gt;we are using Cpack integrated with CMake for packaging robocomp.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;cd ~/robocomp
+mkdir build
+cmake ..
+make package
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;will create a .deb package which we can install using any packaging application like dpkg. To install the created package, just double click on it(open with Software Center) or in terminal type :&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;dpkg -i &amp;lt;packagename&amp;gt;.deb
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&quot;source-packages-for-ppa&quot;&gt;source packages for ppa&lt;/h2&gt;
+
+&lt;p&gt;launchpad will only accept source packages and not binary.Launchpad will then build the packages. For building source packages we are using debuild which is a wrapper around the &lt;em&gt;dpkg-buildpackage + lintian&lt;/em&gt;. so you will need to install debuild and dput on your system;&lt;/p&gt;
+
+&lt;p&gt;The source_package.cmake script is used to create debian source package.&lt;/p&gt;
+
+&lt;p&gt;The main CMakeLists.txt file defines a target &lt;code&gt;spackage&lt;/code&gt; that builds the source package in build/Debian with &lt;code&gt;make spackage&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;For uploading the package to ppa, First change the &lt;strong&gt;PPA_PGP_KEY&lt;/strong&gt; in &lt;a href=&quot;../cmake/package_details.cmake#L26&quot;&gt;package_details.cmake&lt;/a&gt; to details to the contact of the PGP key  details registered with your ppa account.Then create a source package by building the target &lt;em&gt;spackage&lt;/em&gt;.Once the Source package is build successfully, upload it to your ppa by:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;cd Debian/
+dput ppa:&amp;lt;lp-username&amp;gt;/&amp;lt;ppa-name&amp;gt; packet-source.changes
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;building of source package can be tested with:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;cd Debian/robocomp-&amp;lt;version&amp;gt;
+debuild -i -us -uc
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&quot;note&quot;&gt;Note:&lt;/h3&gt;
+
+&lt;p&gt;If you want to upload another source package to ppa which doesn’t have any changes in the source but maybe in the debian files. you can build the spackage after commenting out &lt;code&gt;set(DEB_SOURCE_CHANGES &quot;CHANGED&quot; CACHE STRING &quot;source changed since last upload&quot;)&lt;/code&gt; in &lt;a href=&quot;../cmake/package_details.cmake#L27&quot;&gt;package_details.cmake&lt;/a&gt; so that the the script will only increase the ppa version number and wont include the source package for uploading to ppa (which otherwise will give an error).&lt;/p&gt;
+</description>
+				<pubDate>Sat, 23 May 2015 00:00:00 +0530</pubDate>
+				<link>/tutorial/2015/05/23/packaging.html</link>
+				<guid isPermaLink="true">/tutorial/2015/05/23/packaging.html</guid>
+			</item>
+		
+			<item>
+				<title>How to contribute to robocomp github repository</title>
+				<description>&lt;h1 id=&quot;how-to-contribute-to-robocomp-github-repository&quot;&gt;How to contribute to robocomp github repository&lt;/h1&gt;
+
+&lt;p&gt;In brief the steps involved will be:
+* Fork the robocomp repository
+* Clone the repository
+* Create a new branch
+* Switch to the created branch
+* Make suitable changes
+* Test the changes
+* Add the files you want to commit
+* Commit the files
+* Push to repository
+* Compare changes
+* Pull a request for the commit made
+* Start a discussion over the commits made&lt;/p&gt;
+
+&lt;p&gt;In detail explanation:&lt;/p&gt;
+
+&lt;p&gt;1) Forking the repository:&lt;/p&gt;
+
+&lt;p&gt;Open the robocomp github repository : &lt;a href=&quot;https://github.com/robocomp/robocomp&quot;&gt;https://github.com/robocomp/robocomp&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;Click on the fork option as shown below:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://github.com/abhi-kumar/robocomp/blob/how-to-contribute/fork.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;The indication that the repo is forked can be observed as follows:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://github.com/abhi-kumar/robocomp/blob/how-to-contribute/forked.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;2) Cloning the the repository:&lt;/p&gt;
+
+&lt;p&gt;Open a terminal and move to home directory and type:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;git clone &amp;lt;link to the forked repository&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://github.com/abhi-kumar/robocomp/blob/how-to-contribute/cloned.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;3) Creating a branch:&lt;/p&gt;
+
+&lt;p&gt;Open a terminal and move the “pwd” to the place where the forked repository is present.&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;To see a list of all branches present and to see the current working branch type and execute:&lt;/p&gt;
+
+    &lt;p&gt;&lt;code&gt;git branch&lt;/code&gt;&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://github.com/abhi-kumar/robocomp/blob/how-to-contribute/branch.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;Create a new branch to work on. There is no restriction wrt the naming of the branch:&lt;/p&gt;
+
+    &lt;p&gt;&lt;code&gt;git branch &amp;lt;branch_name&amp;gt;&lt;/code&gt;&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://github.com/abhi-kumar/robocomp/blob/how-to-contribute/branched.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;To switch to the branch that you created to work on execute:&lt;/p&gt;
+
+    &lt;p&gt;&lt;code&gt;git checkout &amp;lt;branch_name&amp;gt;&lt;/code&gt;&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://github.com/abhi-kumar/robocomp/blob/how-to-contribute/switched.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;4) Making changes:&lt;/p&gt;
+
+&lt;p&gt;Demo : Lets make changes to &lt;em&gt;Readme.md&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://github.com/abhi-kumar/robocomp/blob/how-to-contribute/changes.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;5) Commit the changes made&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;To get a list of all the files to which changes have been made type:&lt;/p&gt;
+
+    &lt;p&gt;&lt;code&gt;git status&lt;/code&gt;&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://github.com/abhi-kumar/robocomp/blob/how-to-contribute/status.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;Next add only those files which we want to commit by typing:&lt;/p&gt;
+
+    &lt;p&gt;&lt;code&gt;git add &amp;lt;filename&amp;gt;&lt;/code&gt;&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://github.com/abhi-kumar/robocomp/blob/how-to-contribute/add.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;Now commit the changes by using command:&lt;/p&gt;
+
+    &lt;p&gt;&lt;code&gt;git commit -m &#39;commit message&#39;&lt;/code&gt;&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://github.com/abhi-kumar/robocomp/blob/how-to-contribute/commit.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;6) Push the commit to repository:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;git push origin &amp;lt;current_working_branch_name&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://github.com/abhi-kumar/robocomp/blob/how-to-contribute/push.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;7) Compare and pull request&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://github.com/abhi-kumar/robocomp/blob/how-to-contribute/pull.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;8) Discuss the commits you have made with the rest of the contributing team.&lt;/p&gt;
+</description>
+				<pubDate>Sat, 23 May 2015 00:00:00 +0530</pubDate>
+				<link>/tutorial/2015/05/23/contribute.html</link>
+				<guid isPermaLink="true">/tutorial/2015/05/23/contribute.html</guid>
+			</item>
+		
+			<item>
+				<title>Software components in RoboComp, A brief introduction</title>
+				<description>&lt;h1 id=&quot;software-components-in-robocomp-a-brief-introduction&quot;&gt;Software components in RoboComp, a brief introduction&lt;/h1&gt;
+
+&lt;p&gt;Two major problems encountered when creating large, complex software are scalability and reusability. These problems become especially acute when it comes to writing the software that controls today robots. Robotics is the mixed bag of technology, where almost everything finds its way through. Also, Robotics is the place where our dreams of intelligent machines meet, in an endless attempt to build a truly useful tool for our daily lives. Because of this, we organize the software for our robots in big architectures that try to reproduce whatever we understand by intelligent behavior. The most audacious architectures are called &lt;em&gt;cognitive architectures&lt;/em&gt; and try to integrate all levels of behavior and reasoning needed to achieve intelligence. Some of them have been with us for more than 30 years, &lt;a href=&quot;http://soar.eecs.umich.edu/&quot;&gt;SOAR.&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;The problem with building these little monsters is that you need a very powerful underlying infrastructure that lets you build and modify software created by many people and that has to execute on real, moving machines. Also, everybody expect robots to be smarter than they really are and that is a lot of preassure. Components provide a new, developing technology that can be very helpful here. Components are &lt;em&gt;programs that communicate&lt;/em&gt; and as such, they are built with everything at hand, libraries, objects, threads, sockets, lambda functions and any other thing you can come up with to code a program. Also, components need a way to communicate among them and here is where communication middlewares get in. If you want to communicate programs written in different languages, running across the internet, executing on different hardware architectures -even browsers- then you cannot get along with a socket. You really need a middleware. Putting together these to elements, programs and a communication middleware, you almost come up with a component. One more thing is needed, a model for your components. You need to define what is a generic component and consequently how its internal structure is going to be, its directory and building ecosystem, how it has to be documented, its default behavior, how it will be deployed and its modes of communicating. There are several proposals that do exactly this, being the most famous &lt;a href=&quot;http://www.corba.org&quot;&gt;CORBA.&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;In RoboComp (2005-) we have created our own component model, inspired by the &lt;a href=&quot;http://orca-robotics.sourceforge.net/&quot;&gt;ORCA&lt;/a&gt; model and making it evolve to fit our needs along these years. As a middleware, RoboComp primarily uses &lt;a href=&quot;www.zeroc.com&quot;&gt;Ice&lt;/a&gt; and there is ongoing experimental work to make RoboComp middleware agnostic, so its components can be re-generated to use other middlewares such as &lt;a href=&quot;http://portals.omg.org/dds/&quot;&gt;DDS&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;RoboComp’s components model is quite simple and we always try to simplify it even more. It can be best explained through two Domain Specific Languages (DSLs) that have been created to define a component at a very high level of abstraction. &lt;strong&gt;IDSL&lt;/strong&gt; stands for “Interface Definition Specific Language” and currently is a subset of Ice’s Slice interface language. With IDSL you write the data structures and functions that a component can implement, require, subscribe to or publish. A component can implement several interfaces, offering different views of its internal functioning. Also, the same interface can be implemented by many components. This is an example of a simple interface written in IDSL:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;module RoboCompSpeech
+{
+  interface Speech
+  {
+     bool say(string text,bool overwrite);
+     bool isBusy();
+  };
+};
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;strong&gt;CDSL&lt;/strong&gt; stands for “Component Definition Specific Language” and allows the user to specifiy its name, accesible interfaces, communication connections, target language and other available modules or libraries that you want to include in the building scripts.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;import &quot;/robocomp/interfaces/IDSLs/DifferentialRobot.idsl&quot;;
+import &quot;/robocomp/interfaces/IDSLs/Laser.idsl&quot;;
+Component prueba
+{
+    Communications
+    {
+      requires DifferentialRobot, Laser;
+    };
+    language cpp;
+    gui Qt(QWidget);
+};
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Using these two DSLs, RoboComp can generate the source code of the component using a tool designed to this end. The complete, functioning code of a component is created ready to be compiled and executed. We use a smart inheritance mechanism to separate the generic stuff from the user specific stuff and, based on it, the next time you generate a component, your code will remain untouched but access to new defined proxies will be there.&lt;/p&gt;
+
+</description>
+				<pubDate>Sat, 23 May 2015 00:00:00 +0530</pubDate>
+				<link>/post/2015/05/23/components.html</link>
+				<guid isPermaLink="true">/post/2015/05/23/components.html</guid>
+			</item>
+		
+			<item>
+				<title>Creating a new component with eclipse based RoboComp's DSLEditor</title>
+				<description>&lt;h1 id=&quot;creating-a-new-component-with-eclipse-based-robocomps-dsleditor&quot;&gt;Creating a new component with Eclipse based RoboComp’s DSLEditor&lt;/h1&gt;
+
+&lt;p&gt;We will create now a new component that will connect to the RCIS simulator and run a simple controller for the robot, using the laser data. First we need to install the DSLEditor software that is runtime Eclipse application.&lt;/p&gt;
+
+&lt;p&gt;Create another terminal in Yakuake and type:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;cd ~/robocomp/tools
+python fetch_DSLEditor.py
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Select 32 or 64 bits according to your current linux installation. After a little while the DSLEditor will be installed under the &lt;em&gt;robocompDSL&lt;/em&gt; directory:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;cd roboCompDSL/DSLEditor
+./DSLEditor
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Check that you have a &lt;em&gt;RoboComp&lt;/em&gt; tab in the upper bar of the DSLEditor window and that the &lt;em&gt;robocomp&lt;/em&gt; directory appears in the Project Explorer (left panel). If it does not, right click inside the &lt;em&gt;Project Explorer&lt;/em&gt; panel and select &lt;em&gt;import&lt;/em&gt;. Then select &lt;em&gt;General&lt;/em&gt; and then &lt;em&gt;Existing Projects into Workspace&lt;/em&gt;. Then select your &lt;em&gt;robocomp&lt;/em&gt; directory and push &lt;em&gt;Finish&lt;/em&gt;.&lt;/p&gt;
+
+&lt;p&gt;Now we need to bring up some handy tabs in the lower pane. Select the &lt;em&gt;Window&lt;/em&gt; tab in the upper bar, then &lt;em&gt;Show View&lt;/em&gt;, then &lt;em&gt;Other&lt;/em&gt; and again &lt;em&gt;Other&lt;/em&gt;. Select now &lt;em&gt;Interfaces&lt;/em&gt; and double-click on it. Go back to the main window.&lt;/p&gt;
+
+&lt;p&gt;Now, in the left panel, unfold the &lt;em&gt;robocomp&lt;/em&gt; directory down to &lt;em&gt;robocomp/components/&lt;/em&gt; and then click on it with the right button. Select &lt;em&gt;New Folder&lt;/em&gt; and enter &lt;em&gt;mycomponents&lt;/em&gt; in the folder name. Do it again to create a new folder inside &lt;em&gt;mycomponents&lt;/em&gt; named &lt;em&gt;myfirstcomp&lt;/em&gt;. Select &lt;em&gt;myfirstcomp&lt;/em&gt; and then click on the &lt;em&gt;RoboComp&lt;/em&gt; tab in the upper bar of the main window. Select &lt;em&gt;Create CDSL file&lt;/em&gt; and fill the requested name with &lt;em&gt;MyFirstComp.cdsl&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;The new file will open inside a syntax-sensitive editor in the central panel. Ctrl-space gives you syntactically correct options. You can see the skeleton of a new empty component. Look for the tab &lt;em&gt;Interfaces&lt;/em&gt; in the lower bar and select &lt;em&gt;DifferentialRobot.idsl&lt;/em&gt;. Click on the green cross at the right of the bar to include it and accept when prompted in a pop-up window. You will see something like:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;import &quot;/robocomp/interfaces/IDSLs/DifferentialRobot.idsl&quot;;
+Component PFLocalizerComp{
+    Communications{
+        };
+        language Cpp;
+};
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Repeat the same steps to include &lt;em&gt;Laser.idsl&lt;/em&gt; and then add a &lt;em&gt;requires&lt;/em&gt; statement inside de &lt;em&gt;Communications&lt;/em&gt; section. The file now should look like this:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;import &quot;/robocomp/interfaces/IDSLs/DifferentialRobot.idsl&quot;;
+import &quot;/robocomp/interfaces/IDSLs/Laser.idsl&quot;;
+Component MyFirstComp{
+    Communications{
+        requires DifferentialRobot, Laser;
+    };
+language Cpp;
+};
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Save the file and click in the upper bar on the &lt;em&gt;RoboComp&lt;/em&gt; tab. Select &lt;em&gt;Generate Code&lt;/em&gt;. After a little while the new source tree for your &lt;em&gt;MyFirstComp&lt;/em&gt; component will be created. You can go back now to Yakuake and create a new tab to compile it. Then:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;cd ~/robocomp/components/mycomponents/myfirstcomp
+cmake .
+make
+bin/myfirstcomp --Ice.Config=etc/generic_config
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;and there it is! your component is running.&lt;/p&gt;
+
+&lt;p&gt;What! Dissapointed? Yeah, I know it does nothing, but it runs and it is yours! Now let’s do some real programming.&lt;/p&gt;
+
+&lt;p&gt;Stop the component with Ctrl Z and then type:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;killall -9 myfirstcomp
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Now start your favorite IDE. KDevelop will do it just fine and you have it already installed. Open it in another tab, from Ubuntu menu or with Alt-F2. Then:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;Click the *Project* tab in the upper bar
+Select *Open/Import Project*
+Navigate to ~/robocomp/components/mycomponents/myfirstcomp
+Select *Makefile* and open the project
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;In the &lt;em&gt;Project&lt;/em&gt; panel to the left of the screen, navigate to &lt;em&gt;src&lt;/em&gt; and there select &lt;em&gt;specificworker.cpp&lt;/em&gt; and open it. Open also &lt;em&gt;specificworker.h&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;Now replace the empty &lt;em&gt;void compute()&lt;/em&gt; method with this compact version of the classic AVOID-FORWARD-STOP architecture proposed by R. Brooks in the late 80’s:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;void SpecificWorker::compute( )
+{
+    static	float rot = 0.1f;			// rads/sec
+    static float adv = 100.f;			// mm/sec
+    static float turnSwitch = 1;
+    const float advIncLow = 0.8;		// mm/sec
+    const float advIncHigh = 2.f;		// mm/sec
+    const float rotInc = 0.25;			// rads/sec
+    const float rotMax = 0.4;			// rads/sec
+    const float advMax = 200;			// milimetres/sec
+    const float distThreshold = 500; 	// milimetres
+try
+{
+    RoboCompLaser::TLaserData ldata = laser_proxy-&amp;gt;getLaserData();
+    std::sort( ldata.begin(), ldata.end(), [](RoboCompLaser::TData a, RoboCompLaser::TData b){ return     a.dist &amp;lt; b.dist; }) ;
+    if( ldata.front().dist &amp;lt; distThreshold) 
+    {
+        adv = adv * advIncLow; 
+        rot = rot + turnSwitch * rotInc;
+        if( rot &amp;lt; -rotMax) rot = -rotMax;
+        if( rot &amp;gt; rotMax) rot = rotMax;
+        differentialrobot_proxy-&amp;gt;setSpeedBase(adv, rot);
+    }
+    else
+    {
+        adv = adv * advIncHigh; 
+        if( adv &amp;gt; advMax) adv = advMax;
+        rot = 0.f;
+        differentialrobot_proxy-&amp;gt;setSpeedBase(adv, 0.f);		
+        turnSwitch = -turnSwitch;
+    }	
+}
+catch(const Ice::Exception &amp;amp;ex)
+{
+    std::cout &amp;lt;&amp;lt; ex &amp;lt;&amp;lt; std::endl;
+}
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;To compile the fancy version of &lt;em&gt;std::sort&lt;/em&gt; you will have to first add this line at the end of the file &lt;em&gt;CMakeListsSpecific.txt&lt;/em&gt; located in the same &lt;em&gt;src&lt;/em&gt; directory:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;ADD_DEFINITIONS( -std=c++11 )
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;and then type:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;cmake .
+make
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Hereafter, Press F8 in KDevelop to compile and link. Then, go to Yakuake and restart the component.&lt;/p&gt;
+
+&lt;p&gt;Let us take InnerModel &lt;em&gt;simpleworld.xml&lt;/em&gt; as an example. Open a new tab in Yakuake and execute&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;cd robocomp/files/innermodel
+rcis simpleworld.xml
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Now you should see 2 windows. Now in Yakuake go back to tab where you had compiled &lt;em&gt;myfirstcomp&lt;/em&gt; and run&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;bin/myfirstcomp --Ice.Config=etc/generic_config
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;You should see the robot maneouvring aroung the box. Now is when Robotics begin! Try to modify the code to let the robot go pass the blocking boxes.&lt;/p&gt;
+</description>
+				<pubDate>Sat, 23 May 2015 00:00:00 +0530</pubDate>
+				<link>/tutorial/2015/05/23/component_creation_with_DSLEditor.html</link>
+				<guid isPermaLink="true">/tutorial/2015/05/23/component_creation_with_DSLEditor.html</guid>
+			</item>
+		
+			<item>
+				<title>aprilTagsComp, Tutorial to simulate virtual apriltags</title>
+				<description>&lt;h1 id=&quot;apriltagscomp--tutorial-to-simulate-virtual-apriltags&quot;&gt;aprilTagsComp : Tutorial to simulate virtual apriltags&lt;/h1&gt;
+
+&lt;p&gt;If you haven’t already, Then do read about aprilTagsComp &lt;a href=&quot;apriltags.md&quot;&gt;here&lt;/a&gt; for better understanding. In this tutorial you will learn the actual functionality of apriltags.&lt;/p&gt;
+
+&lt;p&gt;First make sure you have installed apriltags. Please follow the steps that is given in &lt;em&gt;INSTALL_APRILTAGS_LIB.TXT&lt;/em&gt;. Then move to the apriltagscomp folder&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;cd ~/robocomp/components/robocomp-robolab/components/apriltagsComp
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Compile by executing&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;cmake.
+make
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Now that you have compiled the component and have the binary generated. Open a new tab in yakuake or terminal and execute&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;cd robocomp/files/innermodel
+rcis simpleworld.xml
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Here we will considering &lt;em&gt;simpleworld.xml&lt;/em&gt; as an example since it has virtual apriltags and a robot with a camera is present for simulation. After execution you should now see two windows, One showing the robot camera’s view pointing at one of the apriltags and the other with the site map showing the robot and two virtual apriltags.&lt;/p&gt;
+
+&lt;p&gt;Now go back to the terminal where you had compiled the apriltagsComp and execute&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;bin/apriltagscomp --Ice.Config=etc/generic_config
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;You should now see the following output.&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;
+user@username:~/robocomp/components/robocomp-robolab/components/apriltagsComp$ bin/apriltagscomp --Ice.Config=etc/generic_config
+[/home/username/robocomp/classes/rapplication/rapplication.cpp]: Loading [camera:tcp -h localhost -p 10001] proxy at &#39;CameraProxy&#39;...
+18:20:19:421::Info::apriltagscomp.cpp::139::/home/username/robocomp/components/robocomp-robolab/components/apriltagsComp/src/apriltagscomp.cpp::run::CameraProxy initialized Ok!
+[/home/username/robocomp/classes/rapplication/rapplication.cpp]: Loading [rgbd:tcp -h localhost -p 10096] proxy at &#39;RGBDProxy&#39;...
+18:20:19:421::Info::apriltagscomp.cpp::150::/home/username/robocomp/components/robocomp-robolab/components/apriltagsComp/src/apriltagscomp.cpp::run::RGBDProxy initialized Ok!
+[/home/username/robocomp/classes/rapplication/rapplication.cpp]: Loading [rgbdbus:tcp -h localhost -p 10239] proxy at &#39;RGBDBusProxy&#39;...
+18:20:19:421::Info::apriltagscomp.cpp::161::/home/username/robocomp/components/robocomp-robolab/components/apriltagsComp/src/apriltagscomp.cpp::run::RGBDBusProxy initialized Ok!
+18:20:19:423::Debug::genericworker.cpp::53::/home/username/robocomp/components/robocomp-robolab/components/apriltagsComp/src/genericworker.cpp::setPeriod::Period changed100
+18:20:19:423::Info::specificmonitor.cpp::56::/home/username/robocomp/components/robocomp-robolab/components/apriltagsComp/src/specificmonitor.cpp::initialize::Starting monitor ...
+InputInterface RGBD
+AprilTagsFamily tagCodes36h11
+ID:0-10 0.17
+ID:11-20 0.17
+ID:21-30 0.17
+InnerModelPath /home/robocomp/robocomp/files/innermodel/simpleworld.xml
+RoboCompAprilTagsComp::AprilTagsComp started
+InnerModelReader: reading /home/robocomp/robocomp/files/innermodel/simpleworld.xml
+InnerModelRGBD: 0.000000 {10096}
+&quot;/home/robocomp/robocomp/files/innermodel/simpleworld.xml&quot;   &quot;rgbd&quot; 
+FOCAL LENGHT: 480 
+  6.45862 fps
+  7.17213 fps
+  7.09036 fps
+  6.94859 fps
+  7.09561 fps
+  7.01433 fps
+  7.09569 fps
+  7.02332 fps
+  7.24122 fps
+  7.17631 fps
+  6.85862 fps
+  7.00415 fps
+  7.14883 fps
+  6.92038 fps
+  7.03233 fps
+&lt;/code&gt;&lt;/p&gt;
+
+</description>
+				<pubDate>Sat, 23 May 2015 00:00:00 +0530</pubDate>
+				<link>/tutorial/2015/05/23/apritagstutorial.html</link>
+				<guid isPermaLink="true">/tutorial/2015/05/23/apritagstutorial.html</guid>
+			</item>
+		
+			<item>
+				<title>aprilTagsComp, Wrapping E. Olson's AprilTags in RoboComp</title>
+				<description>&lt;h1 id=&quot;apriltagscomp-wrapping-e-olsons-apriltags-in-robocomp&quot;&gt;aprilTagsComp: wrapping E. Olson’s AprilTags in RoboComp&lt;/h1&gt;
+
+&lt;p&gt;AprilTags is an augmented reality tag system developed by E. Olson at the U. of Michigan, USA. A complete explanation and related papers can be found &lt;a href=&quot;http://april.eecs.umich.edu/wiki/index.php/AprilTags&quot;&gt;here&lt;/a&gt;. There is a C++ version written
+ by Michael Kaes &lt;a href=&quot;http://people.csail.mit.edu/kaess/apriltags/&quot;&gt;here&lt;/a&gt; which is the one we use.&lt;/p&gt;
+
+&lt;p&gt;April tags are AR tags designed to be easily detected by (robot) cameras. Understand them as a visual fiducial (artificial features) system that uses a 2D bar code style “tag”, allowing full 6 DOF localization of features from a single image. It is designed to encode smaller data (between 4 and 12 bits) and also these tags can be detected by the camera even at odd conditions. When the tag is seen by the camera, the algorithm computes the tag’s complete pose defining its own reference system relative to the camera (i.e Location of the tag is known with high accuracy). This reference system is defined as follows: If we look perpendicularly to a non rotated tag, The Z+ axis comes out towards us from the center of the tag plane, The X+ axis points leftwards and the Y+ axis points upwards (a left-hand reference system). The values computed by &lt;em&gt;apriltagsComp&lt;/em&gt; are the translation vector from the camera to the center of the tag’s reference system, and the three Euler angles that encode the relative orientation of the tag’s reference system wrt to the camera reference system.&lt;/p&gt;
+
+&lt;p&gt;The &lt;em&gt;AprilTags.cdsl&lt;/em&gt; file specifies how &lt;em&gt;apriltagsComp&lt;/em&gt; has been generated and how it can be re-generated:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;import &quot;/robocomp/interfaces/IDSLs/GetAprilTags.idsl&quot;;
+import &quot;/robocomp/interfaces/IDSLs/AprilTags.idsl&quot;;
+import &quot;/robocomp/interfaces/IDSLs/RGBD.idsl&quot;;
+import &quot;/robocomp/interfaces/IDSLs/RGBDBus.idsl&quot;;
+import &quot;/robocomp/interfaces/IDSLs/Camera.idsl&quot;;
+Component AprilTagsComp{
+    Communications{
+            requires Camera, RGBDBus, RGBD;
+            publishes AprilTags;
+            implements GetAprilTags;
+    };
+    language Cpp;
+};
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This files tells us that the component requires -will be calling- three RoboComp interfaces: Camera, RGBDBus y RGBD, which are normal and depth camera’s interfaces written in RoboComp’s IDSL language. You can find those files in &lt;em&gt;~/robocomp/interfaces/IDSLs&lt;/em&gt;. Also, the component will publish the data defined in the &lt;em&gt;AprilTags&lt;/em&gt; interface and will implement the &lt;em&gt;GetAprilTags&lt;/em&gt; interface. This means that using images provided by a component implementing the camera or RGBD interfaces, it will try to detect any tags in them and compute their 6D pose. Finally, it will publish a vector with all the tags id’s and poses to the Ice’s STORM broker, and also it will attend any direct requests (remote procedure calls) received from other components through the &lt;em&gt;GetAprilTags&lt;/em&gt; interface. So it is a rather serviceable and handy component!&lt;/p&gt;
+
+&lt;p&gt;To access &lt;strong&gt;apriltagsComp&lt;/strong&gt; you need to install from &lt;em&gt;http://github.org/robocomp&lt;/em&gt; the repository named &lt;em&gt;robocomp-robolab&lt;/em&gt;.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;cd ~/robocomp/components
+git clone https://github.com/robocomp/robocomp-robolab.git
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Once downloaded, &lt;em&gt;apriltagsComp&lt;/em&gt; can be found in:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;~/robocomp/components/robocomp-robolab/components/apriltagsComp
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;First, read the &lt;em&gt;INSTALL_APRILTAGS_LIB.TXT&lt;/em&gt; file and follow instructions thereby. Once the library has been installed in /usr/local, we can proceed to compile the component:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;cd ~/robocomp/components/robocomp-robolab/components/apriltagsComp
+cmake .
+make
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;We should have a binary now:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;~/robocomp/components/robocomp-robolab/components/apriltagsComp/bin/apriltagscomp
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&quot;configuration-parameters&quot;&gt;Configuration parameters&lt;/h2&gt;
+&lt;p&gt;As any other component, &lt;em&gt;apriltagsComp&lt;/em&gt; needs a &lt;em&gt;config&lt;/em&gt; file to start. In&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;~/robocomp/components/robocomp-robolab/components/apriltagsComp/etc/generic_config
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;you can find an example of a configuration file. We can find there the following lines:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;GetAprilTagsComp.Endpoints=tcp -p 12210                     //Port where GetAprilTags iface is served
+CommonBehavior.Endpoints=tcp -p 11258                       //Not of use for the user now
+CameraProxy = camera:tcp -h localhost -p 10001              //Port where a camera is located
+RGBDProxy = rgbd:tcp -h localhost -p 10096                  //Port where a RGBD camera is located
+RGBDBusProxy = rgbdbus:tcp -h localhost -p 10239            //Port where a bus of RGBDs is located
+AprilTagsProxy = apriltags:tcp -h localhost -p 10261        //Not of use for the user
+TopicManager.Proxy=IceStorm/TopicManager:default -p 9999    //Port where STROM broker is located
+InnerModelPath=/home/robocomp/robocomp/files/innermodel/simpleworld.xml
+
+
+InputInterface = RGBD                                       //Current input iface to be used
+AprilTagsFamily = tagCodes36h11                             //Tags family. See AprilTags paper
+AprilTagsSize = 0.17                                        //Tag default real size in meters
+ID:0-10 = 0.17   #tag size in meters                        //Tags numbers 1-10 real size in meters
+ID:11-20 = 0.17   #tag size in meters                       //Tags numbers 11-20 real size in meters
+ID:21-30 = 0.17   #tag size in meters                       //Tags numbers 21-30 real size in meters
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;AprilTagsFamily is a set of tags, There are different families like 36h10,25h9,16h5 however &lt;em&gt;tagCodes36h11&lt;/em&gt; is recommended. Each tag has an ID that is printed inside the surrounding square using Hamming code. Instructions to print tags and other tag families can be found &lt;a href=&quot;http://april.eecs.umich.edu/wiki/index.php/AprilTags&quot;&gt;here&lt;/a&gt;. The algorithm needs the real size of the tag to estimate its position and orientation in space. We can give the component tags of different sizes, As long as they correspond to different ranges of IDs, as specified in the configuration file above.&lt;/p&gt;
+
+&lt;h2 id=&quot;starting-the-component&quot;&gt;Starting the component&lt;/h2&gt;
+&lt;p&gt;To start the component we need a real camera connected to the cameraV4lComp component or the RCIS simulator started with a file that includes virtual tags, such as &lt;em&gt;simpleworld.xml&lt;/em&gt;, Tutorial can be found &lt;a href=&quot;virtualapriltagstutorial.md&quot;&gt;here&lt;/a&gt;. Once RCIS is up and running, It will provide the RGBD.idsl interface (not Camera.idsl for now) at port 10096, which is what the configuration file states. To avoid changing the &lt;em&gt;generic_config&lt;/em&gt; file in the repository, We can copy it to the component’s home directory, So changes will remain untouched by future git pulls:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;cp ~/robocomp/components/robocomp-robolab/components/apriltagsComp
+cp /etc/generic_config config
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;So, to begin we type:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;cd ~/robocomp/components/robocomp-robolab/components/apriltagsComp
+bin/apriltagscomp --Ice.Config=config
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;If the robot’s camera is pointing towards one of the tags, You should see in the terminal lines showing the ID and pose of each visible tag.&lt;/p&gt;
+
+</description>
+				<pubDate>Sat, 23 May 2015 00:00:00 +0530</pubDate>
+				<link>/tutorial/2015/05/23/apriltags.html</link>
+				<guid isPermaLink="true">/tutorial/2015/05/23/apriltags.html</guid>
+			</item>
+		
+			<item>
+				<title>Tutorials Directory</title>
+				<description>&lt;h1 id=&quot;tutorials-for-robocomp&quot;&gt;Tutorials for RoboComp&lt;/h1&gt;
+
+&lt;p&gt;&lt;a href=&quot;components.md&quot;&gt;A Brief introduction to Components&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;component_creation_with_DSLEditor.md&quot;&gt;Creation of a new component using RoboComp’s Eclipse based DSLEditor&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;using_github.md&quot;&gt;Maintaining your own repository of components&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;contribute/contribute.md&quot;&gt;How to contribute to RoboComp using the GitHub branching mechanism&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;robocompdsl.md&quot;&gt;Using the new &lt;strong&gt;robocompdsl&lt;/strong&gt; component generation command line tool&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/robocomp/robocomp-robolab/blob/master/components/apriltagsComp/README.md&quot;&gt;The E. Olson’s AprilTags component&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;robocompdsl_python.md&quot;&gt;Creating a Python component using &lt;strong&gt;robocompdsl&lt;/strong&gt; that subscribes to &lt;em&gt;apriltagsComp&lt;/em&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;[InnerModel, RoboComp’s internal representation of reality]&lt;/p&gt;
+
+&lt;p&gt;[RoboComp’s robots: Ursus, Loki and the others]&lt;/p&gt;
+
+&lt;p&gt;[&lt;strong&gt;robocomp-robolab&lt;/strong&gt; components]&lt;/p&gt;
+
+&lt;p&gt;[The BodyInverseKinematics (BIK) component]&lt;/p&gt;
+
+&lt;p&gt;[The Navigation (TRAJ) component]&lt;/p&gt;
+
+&lt;p&gt;[RoboCog, a Cognitive Architecture built with RoboComp]&lt;/p&gt;
+
+</description>
+				<pubDate>Sat, 23 May 2015 00:00:00 +0530</pubDate>
+				<link>/post/2015/05/23/README.html</link>
+				<guid isPermaLink="true">/post/2015/05/23/README.html</guid>
+			</item>
+		
+			<item>
+				<title>Chroot environment</title>
+				<description>&lt;h1 id=&quot;chroot-environment&quot;&gt;Chroot environment&lt;/h1&gt;
+
+&lt;p&gt;A chroot is a way of isolating applications from the rest of your computer, by putting them in a jail. This is particularly useful if you are testing an application which could potentially alter important system files, or which may be insecure.
+A chroot is basically a special directory on your computer which prevents applications, if run from inside that directory, from accessing files outside the directory. In many ways, a chroot is like installing another operating system inside your existing operating system. 
+The following are some possible uses of chroots:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Isolating insecure and unstable applications&lt;/li&gt;
+  &lt;li&gt;Running 32-bit applications on 64-bit systems&lt;/li&gt;
+  &lt;li&gt;Testing new packages before installing them on the production system&lt;/li&gt;
+  &lt;li&gt;Running older versions of applications on more modern versions of Ubuntu&lt;/li&gt;
+  &lt;li&gt;Building new packages, allowing careful control over the dependency packages which are installed&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;This manual will follow the steps specified in the &lt;a href=&quot;https://help.ubuntu.com/community/BasicChroot&quot;&gt;official page of Ubuntu&lt;/a&gt;. And the system we will install as tutorial is Ubuntu 14.04 Trusty amd64.&lt;/p&gt;
+
+&lt;h2 id=&quot;brief-explanation&quot;&gt;Brief Explanation&lt;/h2&gt;
+&lt;p&gt;Imagine you have your Robocomp version well installed and working really fine in your system (i.e. Ubuntu 14.04 amd64), but you need to upgrade your ICE or OpenCV or PCL or whatever third-party library to a new version. You don’t want to risk your well functional version of Robocomp and it’s dependencies removing the current version and installing the new one (this usually affects other packages and libraries), and you don’t have time enough to make a whole fresh installation in other partition or virtual machine, so the fastest solution is to create a jail containing the same distribution of your main system (Ubuntu 14.04 amd64) with chroot and test Robocomp with the new version of the library you need without touching your fine Robocomp installation.
+Realize that creating a chrooted environment in your machine makes your system believe that your root directory (“/”) is in another place than the actual root of the system (like I explain on the wiki, the process in which you launch chroot believes that the root directory is in / while actually it is in /var/chroot/trusty_x64/, not letting you touch anything outside that directory and therefore not risking your current installation).
+Another practical use for chroot is to test an especific program or library in a different distribution or architecture. For example, if you are working in Ubuntu 14.04 amd64 and you want to test if a library that you are using works fine in Debian Wheezy or Ubuntu 14.10 or Ubuntu 14.04 i386.&lt;/p&gt;
+
+&lt;h2 id=&quot;creating-a-chroot&quot;&gt;Creating a chroot&lt;/h2&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;First of all we need to install the tools to make a chroot in out system.&lt;/p&gt;
+
+    &lt;p&gt;&lt;code&gt;sudo apt-get install debootstrap schroot&lt;/code&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Create a folder where the chroot is going to be installed. You need to make the folder using administrator permission (with &lt;em&gt;sudo&lt;/em&gt; i.e). We will put the chroot up in &lt;em&gt;/var/chroot/trusty_x64&lt;/em&gt;&lt;/p&gt;
+
+    &lt;p&gt;&lt;code&gt;sudo mkdir /var/chroot &amp;amp;&amp;amp; sudo mkdir /var/chroot/trusty_x64&lt;/code&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Create a configuration file for schroot. For our example, we will create a file named trusty_x64.conf in &lt;em&gt;/etc/schroot/chroot.d/&lt;/em&gt;&lt;/p&gt;
+
+    &lt;p&gt;&lt;code&gt;sudo gedit /etc/schroot/chroot.d/trusty_x64.conf&lt;/code&gt;&lt;/p&gt;
+
+    &lt;p&gt;And write the following inside: (Change the &lt;username&gt; to actual username, example &quot;root-users=abhi&quot;&lt;/username&gt;&lt;/p&gt;
+
+    &lt;p&gt;&lt;code&gt;
+ [trusty_x64]
+ description=Ubuntu trusty 14.04 for amd64
+ directory=/var/chroot/trusty_x64
+ root-users=&amp;lt;USERNAME&amp;gt;
+ type=directory
+ users=testuser
+&lt;/code&gt;
+  - The first line is the name of the chroot thatis going to be created.
+  - &lt;strong&gt;description&lt;/strong&gt; is a short description of the chroot.
+  - &lt;strong&gt;directory&lt;/strong&gt; the path where the chroot is going to be installed. Note that is the same path that we specified in step 2.
+  - &lt;strong&gt;root-users&lt;/strong&gt; list of users that are allowed in our chroot without password.
+  - &lt;strong&gt;type&lt;/strong&gt;  The type of the chroot. Valid types are ‘plain’, ‘directory’, ‘file’, ‘block-device’ and ‘lvm-snapshot’. If empty or omitted, the default type is ‘plain’.
+  - &lt;strong&gt;users&lt;/strong&gt; list of users that are allowed access to the chroot.&lt;/p&gt;
+
+    &lt;p&gt;see &lt;a href=&quot;http://manpages.ubuntu.com/manpages/hardy/man5/schroot.conf.5.html&quot;&gt;schroot.config&lt;/a&gt; for further information.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Run Debootstrap. This step will download and unpack a basic ubuntu or debian system to the chroot directory we created in step 2.&lt;/p&gt;
+
+    &lt;p&gt;&lt;code&gt;sudo debootstrap --variant=buildd --arch amd64 trusty /var/chroot/trusty_x64 http://archive.ubuntu.com/ubuntu&lt;/code&gt;&lt;/p&gt;
+
+    &lt;p&gt;In our example, we are creating a chroot of an Ubuntu 14.04 64-bit distribution, but this command allows some different commands that can satisfy our needs, for instance, if we want to install the same distribution but the 32-bit version, we have to type:&lt;/p&gt;
+
+    &lt;p&gt;&lt;code&gt;sudo debootstrap --variant=buildd --arch i386 trusty /var/chroot/trusty http://archive.ubuntu.com/ubuntu&lt;/code&gt;&lt;/p&gt;
+
+    &lt;p&gt;Note that we have to do the proper changes creating a different schroot configuration file (i.e. &lt;em&gt;/etc/schroot/chroot.d/trusty&lt;/em&gt;) and a different folder for the new chroot (i.e. &lt;em&gt;/var/chroot/trusty&lt;/em&gt;)&lt;/p&gt;
+
+    &lt;p&gt;If we want to create a chroot for a Debian version (i.e. Debian Wheezy (stable)) we have to type:&lt;/p&gt;
+
+    &lt;p&gt;&lt;code&gt;sudo debootstrap --variant=buildd --arch amd64 wheezy /var/chroot/wheezy_x64 http://ftp.debian.org/debian&lt;/code&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Checking the chroot. To be sure that everything went ok, we can type the following command, that will list all the available chroot enviroments in out system.&lt;/p&gt;
+
+    &lt;p&gt;&lt;code&gt;schroot -l&lt;/code&gt;&lt;/p&gt;
+
+    &lt;p&gt;If trusty_x64 appears, we can start working in our chrooted environment typing:&lt;/p&gt;
+
+    &lt;p&gt;&lt;code&gt;schroot -c trusty_x64 -u root&lt;/code&gt;&lt;/p&gt;
+
+    &lt;p&gt;The prompt of the chrooted environment should be like:&lt;/p&gt;
+
+    &lt;p&gt;&lt;code&gt;(trusty_x64)root@abhi-Inspiron-7520:/home/abhi#&lt;/code&gt;&lt;/p&gt;
+
+    &lt;p&gt;&lt;strong&gt;NOTE&lt;/strong&gt; This step is not mandatory.
+ &lt;strong&gt;NOTE&lt;/strong&gt; For convenience, the default schroot configuration rebinds the /home directory on the host system so that it appears in the chroot system. This could be unexpected because it means that you can accidentally delete or otherwise damage things in /home on the host system. To change this behaviour we can run the following command in the host system:&lt;/p&gt;
+
+    &lt;p&gt;&lt;code&gt;sudo gedit /etc/schroot/default/fstab&lt;/code&gt;&lt;/p&gt;
+
+    &lt;p&gt;And comment the /home line:&lt;/p&gt;
+
+    &lt;p&gt;&lt;code&gt;
+# fstab: static file system information for chroots.
+# Note that the mount point will be prefixed by the chroot path
+# (CHROOT_PATH)
+#
+# &amp;lt;file system&amp;gt; &amp;lt;mount point&amp;gt;   &amp;lt;type&amp;gt;  &amp;lt;options&amp;gt;       &amp;lt;dump&amp;gt;  &amp;lt;pass&amp;gt;
+/proc           /proc           none    rw,bind        0       0
+/sys            /sys            none    rw,bind        0       0
+/dev            /dev            none    rw,bind         0       0
+/dev/pts        /dev/pts        none    rw,bind         0       0
+#/home          /home           none    rw,bind         0       0
+/tmp            /tmp            none    rw,bind         0       0
+&lt;/code&gt;&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;And that’s it! Now we have a whole very basic system in which we can test out programs and libraries.&lt;/p&gt;
+
+&lt;h2 id=&quot;troubleshooting&quot;&gt;Troubleshooting&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;If you get locale warnings in the chroot like &lt;strong&gt;“Locale not supported by C library.”&lt;/strong&gt; or &lt;strong&gt;“perl: warning: Setting locale failed.”&lt;/strong&gt;, then try one or more of these commands:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;code&gt;
+    sudo dpkg-reconfigure locales
+    sudo apt-get install language-pack-en
+    sudo locale-gen en_US.UTF-8
+    sudo dpkg-reconfigure locales
+&lt;/code&gt;
+  if the problem persist check out this &lt;a href=&quot;http://perlgeek.de/en/article/set-up-a-clean-utf8-environment&quot;&gt;page&lt;/a&gt;.&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;To get access to the intertet within the chroot, you have to type:&lt;/p&gt;
+
+    &lt;p&gt;&lt;code&gt;sudo cp /etc/resolv.conf /var/chroot/trusty_x64/etc/resolv.conf&lt;/code&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;You might want to have the proper sources.list in order to be able to install packages from Ubuntu official repositories like universe or multiverse, and the security updates. If you make a chroot installation, the sources.list will be the most basic one, like:&lt;/p&gt;
+
+    &lt;p&gt;&lt;code&gt;deb http://archive.ubuntu.com/ubuntu trusty main&lt;/code&gt;&lt;/p&gt;
+
+    &lt;p&gt;You can generate a more complete sources.list file in this pages &lt;a href=&quot;http://repogen.simplylinux.ch/&quot;&gt;Ubuntu&lt;/a&gt; and &lt;a href=&quot;http://debgen.simplylinux.ch/&quot;&gt;Debian&lt;/a&gt;&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;external-links&quot;&gt;External Links&lt;/h2&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://help.ubuntu.com/community/BasicChroot&quot;&gt;Ubuntu official chroot manual&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://help.ubuntu.com/community/DebootstrapChroot&quot;&gt;Ubuntu official deboostrap manual&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://perlgeek.de/en/article/set-up-a-clean-utf8-environment&quot;&gt;PerlGeek troubleshooting&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://manpages.ubuntu.com/manpages/hardy/man5/schroot.conf.5.html&quot;&gt;Schroot conf manual&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://manpages.ubuntu.com/manpages/trusty/en/man8/debootstrap.8.html&quot;&gt;Debootstap manual&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://repogen.simplylinux.ch/&quot;&gt;Sources.list for Ubuntu&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://debgen.simplylinux.ch/&quot;&gt;Sources.list for Debian&lt;/a&gt;&lt;/p&gt;
+
+</description>
+				<pubDate>Sat, 23 May 2015 00:00:00 +0530</pubDate>
+				<link>/post/2015/05/23/How_To_Make_Chroot_Environment.html</link>
+				<guid isPermaLink="true">/post/2015/05/23/How_To_Make_Chroot_Environment.html</guid>
+			</item>
+		
+	</channel>
+</rss>
