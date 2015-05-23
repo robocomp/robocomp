@@ -1,5 +1,6 @@
 #!/bin/bash
 set -e
-echo "export ROBOCOMP=/home/$(whoami)/robocomp" >> ~/.bashrc
-echo 'export PATH=$PATH:/opt/robocomp/bin' >> ~/.bashrc
-source ~/.bashrc
+user="$(users| awk '{print $1;}')"
+echo "export ROBOCOMP=/home/$user/robocomp" >> /home/$user/.bashrc
+echo 'export PATH=$PATH:/opt/robocomp/bin' >> /home/$user/.bashrc
+source /home/$user/.bashrc
