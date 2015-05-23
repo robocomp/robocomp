@@ -23,6 +23,7 @@ set(CPACK_DEBIAN_PACKAGE_CONTROL_EXTRA "${SRC_DIR}/debian/postinst;${SRC_DIR}/de
 set(DEB_SRC_DIR ${SRC_DIR} CACHE STRING "src dir" )
 set(CPACK_DEBIAN_CHANGELOG "  * Latest development version." CACHE STRING "name")
 set(CPACK_SOURCE_IGNORE_FILES .git)
+set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${MY_VERSION}-${CPACK_DEBIAN_DISTRIBUTION_NAME}")
 set(PPA_PGP_KEY "nithin murali" CACHE STRING "ppa pgp key")
 set(DEB_SOURCE_CHANGES "CHANGED" CACHE STRING "source chaged since last upload")
 
@@ -36,18 +37,26 @@ message(STATUS "architecture is: ${DEB_ARCHITECTURE}")
 set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE ${DEB_ARCHITECTURE} CACHE STRING "cpack arch")
 
 #find and set dependencies (build and package)
-set(DEBSRC_BUILD_DEPENDS debhelper cmake libgsl0-dev libopenscenegraph-dev cmake-qt-gui freeglut3-dev libboost-system-dev libboost-thread-dev openjdk-7-jre libxt-dev pyqt4-dev-tools qt4-designer qt4-dev-tools zeroc-ice35 yakuake python-pip python-pyparsing python-numpy python-pyside pyside-tools libqt4-dev qt4-qmake libqt4-opengl-dev  CACHE STRINGS "build-dep")
-set(DEBSRC_PACKAGE_DEPENDS git-annex zeroc-ice35 python-pip python-pyparsing python-numpy python-pyside pyside-tools qt4-designer yakuake CACHE STRING "name")
+set(DEBSRC_BUILD_DEPENDS debhelper cmake libgsl0-dev libopenscenegraph-dev cmake-qt-gui freeglut3-dev libboost-system-dev libboost-thread-dev openjdk-7-jre libxt-dev pyqt4-dev-tools qt4-designer qt4-dev-tools zeroc-ice35 yakuake python-pip python-pyparsing python-numpy python-pyside pyside-tools libqt4-dev qt4-qmake libqt4-opengl-dev CACHE STRINGS "build-dep")
+set(DEBSRC_PACKAGE_DEPENDS g++ libgsl0-dev libopenscenegraph-dev cmake-qt-gui zeroc-ice35 freeglut3-dev libboost-system-dev libboost-thread-dev qt4-dev-tools yakuake openjdk-7-jre python-pip  python-pyparsing python-numpy python-pyside pyside-tools libxt-dev pyqt4-dev-tools qt4-designer CACHE STRING "name")
 
 #As CPack wants dependencies as a single comma separated string
 set(CPACK_DEBIAN_PACKAGE_DEPENDS)
 foreach(DEP ${DEBSRC_PACKAGE_DEPENDS})
-    set(CPACK_DEBIAN_PACKAGE_DEPEND "${CPACK_DEBIAN_PACKAGE_DEPENDS}, ${DEP}")
+    if(CPACK_DEBIAN_PACKAGE_DEPENDS)
+        set(CPACK_DEBIAN_PACKAGE_DEPENDS "${CPACK_DEBIAN_PACKAGE_DEPENDS}, ${DEP}")
+    else()
+        set(CPACK_DEBIAN_PACKAGE_DEPENDS ${DEP})
+    endif()
 endforeach(DEP ${DEBSRC_PACKAGE_DEPENDS})  
 
 set(CPACK_DEBIAN_BUILD_DEPENDS)
 foreach(DEP ${DEBSRC_BUILD_DEPENDS})
-    set(CPACK_DEBIAN_BUILD_DEPENDS "${CPACK_DEBIAN_BUILD_DEPENDS}, ${DEP}")
+    if(CPACK_DEBIAN_BUILD_DEPENDS)
+        set(CPACK_DEBIAN_BUILD_DEPENDS "${CPACK_DEBIAN_BUILD_DEPENDS}, ${DEP}")
+    else()
+        set(CPACK_DEBIAN_BUILD_DEPENDS ${DEP})
+    endif()
 endforeach(DEP ${DEBSRC_BUILD_DEPENDS})
 
 #generate changelog
