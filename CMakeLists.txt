@@ -110,6 +110,7 @@ add_custom_target(mrproper
 
 #For packaging
 include(${RoboComp_SOURCE_DIR}/cmake/package_details.cmake)
+CONFIGURE_FILE("${RoboComp_SOURCE_DIR}/debian/fixup_deb.sh.in" "${CMAKE_CURRENT_BINARY_DIR}/fixup_deb.sh" @ONLY IMMEDIATE)
 
 # "make spackage for ppa"
 add_custom_target(spackage 
