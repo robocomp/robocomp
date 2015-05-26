@@ -37,8 +37,9 @@ module RoboCompAGMExecutive
 
 	interface AGMExecutiveTopic
 	{
-		void modelModified(RoboCompAGMWorldModel::Event modification);
-		void modelUpdated(RoboCompAGMWorldModel::Node modification);
+		void structuralChange(RoboCompAGMWorldModel::Event modification);
+		void symbolUpdated(RoboCompAGMWorldModel::Node modification);
+		void edgeUpdated(RoboCompAGMWorldModel::Edge modification);
 	};
 };
   
