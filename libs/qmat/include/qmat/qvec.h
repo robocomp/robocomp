@@ -121,14 +121,14 @@ namespace RMat
 // 		T mean() const;
 // 		T variance() const;
 		T dotProduct(const QVec &vector) const;
-		inline T x() const                                   { return this->operator[](0); }
-		inline T y() const                                   { return this->operator[](1); }
-		inline T z() const                                   { return this->operator[](2); }
-		inline T rx() const                                  { return this->operator[](3); }
-		inline T ry() const                                  { return this->operator[](4); }
-		inline T rz() const                                  { return this->operator[](5); }
-		inline T alfa() const                                { return this->operator[](2); }
-		inline T alpha() const                               { return this->operator[](2); }
+		inline T x() const       { Q_ASSERT(size()>0); return this->operator[](0); }
+		inline T y() const       { Q_ASSERT(size()>1); return this->operator[](1); }
+		inline T z() const       { Q_ASSERT(size()>2); return this->operator[](2); }
+		inline T rx() const      { Q_ASSERT(size()>3); return this->operator[](3); }
+		inline T ry() const      { Q_ASSERT(size()>4); return this->operator[](4); }
+		inline T rz() const      { Q_ASSERT(size()>5); return this->operator[](5); }
+		inline T alfa() const    { Q_ASSERT(size()>2); return this->operator[](2); }
+		inline T alpha() const   { Q_ASSERT(size()>2); return this->operator[](2); }
 
 		// Vector - Matrix methods
 		QMat externProduct(const QVec &vector) const;
