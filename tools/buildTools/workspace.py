@@ -92,26 +92,32 @@ class Workspace:
         else:
             return False
 
-    ''' find component soruce directory'''
+    ''' find component soruce directory
+        component - component name
+        return    - the component directory in src
+    '''
     def find_component_src(self,component):
-        componentPath = ''
+        componentPath = []
         for path in self.workspace_paths:
             path = string.strip(path) + '/src'
             for file in os.listdir(path):
                 if str(file) == component and os.path.isdir(os.path.join(path,component)):
-                    componentPath = os.path.join(path,component)
-        if componentPath != '':
-            return componentPath
-        else:
+                    componentPath.append(os.path.join(path,component))
+        if len(componentPath) == 0:
             return False
+        else:
+            return componentPath
 
     ''' search and return a dictionry of file paths given component name and file name
+        if duplicate components are found first to found id chosen
         component - name of component as string
         file      - list of tuple of filnames and path
     '''
     def search_for_file(self,component,files):
         filedict = []
         path = self.find_component_src(component)
+        componentPath = path[0]
+        
         for sfile in files:
             for root, dirs, files in os.walk(path):
                 #print(files)
