@@ -82,7 +82,7 @@ article .share .gplus:hover {
 }
 
 .page-header {
-	color: #201f72;
+	color: #393939;
 	text-shadow: 1px 1px 1px rgba(150, 150, 150, 1);
 }
 
@@ -105,8 +105,8 @@ article {
 	padding: 0 5% 0;
 }
 
-article.home div a, article.home pre a { color: #3e3ccb; }
-article.home div a:hover, article.home pre a:hover { color: #504df4; text-decoration: none; }
+article.home div a, article.home pre a { color: #393939; }
+article.home div a:hover, article.home pre a:hover { color: #393939; text-decoration: none; }
 article img { max-width: 100%; }
 
 h1,h2,h3,h4,h5,h6 { font-family: 'Ubuntu', sans-serif; }
@@ -117,20 +117,20 @@ article.home h4,
 article.home h5,
 article.home h6 {
 	font-family: 'Ubuntu', sans-serif;
-	color: #2d2ba0;
+	color: #393939;
 }
 
 article.home h1 a,
 article.home h2 a,
 article.home h3 a,
 article.home h4 a {
-	color: #2d2ba0;
+	color: #295B18;
 }
 article.home h1 a:hover,
 article.home h2 a:hover,
 article.home h3 a:hover,
 article.home h4 a:hover {
-	color: #504df4;
+	color: #4DAB2D;
 }
 
 .author .author-image {
@@ -182,4 +182,6 @@ footer {
 ul.dropdown-menu>li>a>i.fa {
     width: 1.3em;
 }
+
+
 
