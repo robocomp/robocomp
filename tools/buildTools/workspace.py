@@ -126,4 +126,4 @@ class Workspace:
                     filedict.append(tmptuple)
         return filedict
 
-rc_ws = Workspace()
+workspace = Workspace()

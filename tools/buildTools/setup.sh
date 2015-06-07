@@ -33,3 +33,15 @@ rccd()
     fi
 
 }
+
+#verify the workspaces
+cd ~/.config/RoboComp
+while read -r line || [[ -n $line ]] && [[ flag -eq 0 ]] ; do
+
+    #echo $file;
+    if [[ ! -f "$line/.catkin_workspace" ]] ; then
+        
+    fi;
+
+done < ~/.config/RoboComp/rc_workspace.config ;
+
