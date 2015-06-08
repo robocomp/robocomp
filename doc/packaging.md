@@ -9,9 +9,9 @@ we are using Cpack integrated with CMake for packaging robocomp.
     cmake ..
     make package
 
-will create a .deb package which we can install using any packaging application like dpkg. To install the created package, just double click on it(open with Software Center) or in terminal type :
+will create a .deb package which we can install using any packaging application like dpkg. The fixup_deb.sh script will fix the control file permissions in the script. To install the created package, just double click on it(open with Software Center) or in terminal type :
 
-    dpkg -i <packagename>.deb
+    sudo dpkg -i <packagename>.deb 
 
 ##source packages for ppa
 
@@ -33,4 +33,5 @@ building of source package can be tested with:
 
 ###Note:
 
- If you want to upload another source package to ppa which doesn't have any changes in the source but maybe in the debian files. you can build the spackage after commenting out `set(DEB_SOURCE_CHANGES "CHANGED" CACHE STRING "source changed since last upload")` in [package_details.cmake](../cmake/package_details.cmake#L27) so that the the script will only increase the ppa version number and wont include the source package for uploading to ppa (which otherwise will give an error).
+If you want to upload another source package to ppa which doesn't have any changes in the source but maybe in the debian files. you can build the spackage after commenting out `set(DEB_SOURCE_CHANGES "CHANGED" CACHE STRING "source changed since last upload")` in [package_details.cmake](../cmake/package_details.cmake#L27) so that the the script will only increase the ppa version number and won't include the source package for uploading to ppa (which otherwise will give an error).
+
