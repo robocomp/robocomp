@@ -170,7 +170,8 @@ ROBOCOMP = ''
 try:
 	ROBOCOMP = os.environ['ROBOCOMP']
 except:
-	pass
+	print '$ROBOCOMP environment variable not set, using the default value /opt/robocomp'
+	ROBOCOMP = '/opt/robocomp'
 if len(ROBOCOMP)<1:
 	print 'ROBOCOMP environment variable not set! Exiting.'
 	sys.exit()

@@ -6,7 +6,9 @@ we are using Cpack integrated with CMake for packaging robocomp.
 
     cd ~/robocomp
     mkdir build
+    cd build
     cmake ..
+    cmake-gui .. # optional
     make package
 
 will create a .deb package which we can install using any packaging application like dpkg. The fixup_deb.sh script will fix the control file permissions in the script. To install the created package, just double click on it(open with Software Center) or in terminal type :

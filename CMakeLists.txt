@@ -97,10 +97,10 @@ SUBDIRS(
 )
 
 # Install rules necessary to allow compiling components without the robocomp's source code
-INSTALL(DIRECTORY "interfaces" DESTINATION /opt/robocomp/interfaces )
-INSTALL(DIRECTORY "cmake" DESTINATION /opt/robocomp/cmake )
-#INSTALL(DIRECTORY "files" DESTINATION /opt/robocomp/files )
-INSTALL(DIRECTORY "classes" DESTINATION /opt/robocomp/classes )
+INSTALL(DIRECTORY "interfaces" DESTINATION /opt/robocomp/ )
+INSTALL(DIRECTORY "cmake" DESTINATION /opt/robocomp/ )
+#INSTALL(DIRECTORY "files" DESTINATION /opt/robocomp/ )
+INSTALL(DIRECTORY "classes" DESTINATION /opt/robocomp/ )
 
 
 add_custom_target(mrproper
@@ -116,6 +116,7 @@ add_custom_target(mrproper
 
 #For packaging
 include(${RoboComp_SOURCE_DIR}/cmake/package_details.cmake)
+CONFIGURE_FILE("${RoboComp_SOURCE_DIR}/debian/fixup_deb.sh.in" "${CMAKE_CURRENT_BINARY_DIR}/fixup_deb.sh" @ONLY IMMEDIATE)
 
 # "make spackage for ppa"
 add_custom_target(spackage 

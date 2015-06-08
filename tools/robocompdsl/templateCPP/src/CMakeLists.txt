@@ -31,11 +31,17 @@ Z()
 ]]]
 [[[end]]]
  )
+
+ 
+IF ( "$ENV{ROBOCOMP}" STREQUAL "")
+  MESSAGE(WARNING "ROBOCOMP variable not set. Using the default value: /opt/robocomp")
+  SET (ENV{ROBOCOMP} "/opt/robocomp/")
+ENDIF ( "$ENV{ROBOCOMP}" STREQUAL "")
+
 IF(NOT EXISTS $ENV{ROBOCOMP}/cmake)
-MESSAGE(FATAL_ERROR "
- ROBOCOMP variable not set, check your bashrc profile!
-")
+  MESSAGE(FATAL_ERROR "Couldn't find RoboComp in $ENV{ROBOCOMP}! Exiting...")
 ENDIF(NOT EXISTS $ENV{ROBOCOMP}/cmake)
+
 INCLUDE( $ENV{ROBOCOMP}/cmake/robocomp.cmake )
 INCLUDE ( CMakeListsSpecific.txt)
 
