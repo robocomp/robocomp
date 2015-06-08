@@ -27,33 +27,26 @@ Once you save the file as `XYZ.md`. It will be saved as draft and not published 
 
 At the header of every article/post you write. Always add this
 
-
-```
----
-layout:
-title: 
-categories:
-tags:
-description:
----
-```
+    ---
+    layout:
+    title: 
+    categories:
+    tags:
+    description:
+    ---
 
 
 Layout can be `post`, `page` or `default`. Always set the layout as `post`. The title is the title of the post. Categories and Tags should be set accoridingly whichever is applicable. This is helpful in navigating or finding posts on same topic. Description is a short explanation or gist of the entire post.
 
 A sample header looks like this.
 
-
-```
----
-layout: post
-title: Write a post for robocomp, A step by step guide.
-categories: [Tutorial]
-tags: [General]
-description: In detail explanation as to how to write a post for robocomp
----
-```
-
+    ---
+    layout: post
+    title: Write a post for robocomp, A step by step guide.
+    categories: [Tutorial]
+    tags: [General]
+    description: In detail explanation as to how to write  a post for robocomp
+    ---
 
 After adding the header you can proceed writing the post by using Github Markdown language. Now for the most important step. To publish the post or to change the post from draft to final you will have to rename the file to
 
