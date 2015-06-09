@@ -3,7 +3,7 @@
 
 [![Join the chat at https://gitter.im/robocomp/robocomp](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/robocomp/robocomp?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-#How does the component rcremote work?
+#How these two components work?
 
 To understand how this component works, we need to have very clear the client-server structure. For example, suppose we have a robot (with his own computer) and our computer, and the robot acts as a server and our computer as a client that needs to access to the robot's services (applications). In this case, the server program (rcremoteserver) will be runned into the robot and the client program (rcremote) will be executed into our computer.
 The behaviour of both programs is very similar: both use a default port (4242), an IP address and a password, and work with TCP protocol...
