@@ -3,7 +3,8 @@ from __future__ import print_function
 import argparse
 import os
 import string
-import workspace
+from workspace import workspace as WS
+
 
 
 ''' edit files of robocomp compoent '''
@@ -17,7 +18,7 @@ def main():
     sfile = args.file[0]
     component = args.component[0]
 
-    filelist = workspace.rc_ws.search_for_file(component,[str(sfile)])
+    filelist = WS.search_for_file(component,[str(sfile)])
     if len(filelist) == 0:
         parser.error("couldnt find the file {0} in {1}".format(sfile,component))
     

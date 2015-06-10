@@ -4,7 +4,7 @@ from __future__ import print_function
 import os
 import sys
 import argparse
-import workspace as WS
+from workspace import workspace as WS
 
 def main():
     parser = argparse.ArgumentParser(description="initialize a robocomp workspace")
@@ -22,7 +22,7 @@ def main():
 
     #try creating a workspace
     try:
-        WS.rc_ws.init_ws(workspace)
+        WS.init_ws(workspace)
     except Exception as e:
         sys.stderr.write(str(e))
         sys.exit(2)

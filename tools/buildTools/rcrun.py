@@ -4,7 +4,7 @@ from __future__ import print_function
 import argparse
 import os
 import string
-import workspace
+from workspace import workspace as WS
 
 def main():
     parser = argparse.ArgumentParser(description="Tool for locating and running a robocomp component")
@@ -36,7 +36,7 @@ def main():
         parser.error("No component specified")
 
     ##search for the component
-    componentPath = workspace.rc_ws.find_component_exec(component)
+    componentPath = WS.find_component_exec(component)
     componentPathetc = componentPath[:-4]
 
     if not componentPath:
