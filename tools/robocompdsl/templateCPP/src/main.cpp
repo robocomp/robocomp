@@ -95,9 +95,10 @@ IMPLEMENTS_STR = """
 <TABHERE><TABHERE>{
 <TABHERE><TABHERE><TABHERE>cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy <NORMAL>";
 <TABHERE><TABHERE>}
-<TABHERE><TABHERE>Ice::ObjectAdapterPtr adapter<NORMAL> = communicator()->createObjectAdapterWithEndpoints("<LOWER>", tmp);
+<TABHERE><TABHERE>Ice::ObjectAdapterPtr adapter<NORMAL> = communicator()->createObjectAdapterWithEndpoints("<NORMAL>", tmp);
 <TABHERE><TABHERE><NORMAL>I *<LOWER> = new <NORMAL>I(worker);
 <TABHERE><TABHERE>adapter<NORMAL>->add(<LOWER>, communicator()->stringToIdentity("<LOWER>"));
+<TABHERE><TABHERE>adapter<NORMAL>->activate();
 """
 
 ]]]
@@ -407,7 +408,13 @@ int main(int argc, char* argv[])
 		std::string initIC("--Ice.Config=");
 		size_t pos = std::string(argv[1]).find(initIC);
 		if (pos == 0)
+		{
 			configFile = std::string(argv[1]+initIC.size());
+		}
+		else
+		{
+			configFile = std::string(argv[1]);
+		}
 	}
 
 	// Search in argument list for --prefix= argument (if exist)

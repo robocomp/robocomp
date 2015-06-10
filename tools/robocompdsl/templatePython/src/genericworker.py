@@ -105,7 +105,7 @@ Z()
 [[[end]]]
 		
 		
-		self.mutex = QtCore.QMutex()
+		self.mutex = QtCore.QMutex(QtCore.QMutex.Recursive)
 		self.Period = 30
 		self.timer = QtCore.QTimer(self)
 

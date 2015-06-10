@@ -43,7 +43,7 @@ SET(LIBS -L${CMAKE_BUILD_DIR} ${LIBS} )
 
 
 # RoboComp
-INCLUDE( $ENV{ROBOCOMP}/cmake/robocomp.cmake )
+INCLUDE( $ENV{ROBOCOMP}/cmake/robocompLocal.cmake )
 ROBOCOMP_INITIALIZE( $ENV{ROBOCOMP}/ )
 ROBOCOMP_WRAP_ICE( Camera CommonBehavior CommonHead DifferentialRobot OmniRobot IMU InnerModelManager JointMotor Laser RGBD TouchSensor RCISMousePicker)
 SET(ROBOCOMP_LIBS ${ROBOCOMP_LIBS} -lrobocomp_qmat )

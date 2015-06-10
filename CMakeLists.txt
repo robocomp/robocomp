@@ -96,6 +96,12 @@ SUBDIRS(
 	tools/rcremote
 )
 
+# Install rules necessary to allow compiling components without the robocomp's source code
+INSTALL(DIRECTORY "interfaces" DESTINATION /opt/robocomp/interfaces )
+INSTALL(DIRECTORY "cmake" DESTINATION /opt/robocomp/cmake )
+#INSTALL(DIRECTORY "files" DESTINATION /opt/robocomp/files )
+INSTALL(DIRECTORY "classes" DESTINATION /opt/robocomp/classes )
+
 
 add_custom_target(mrproper
   COMMAND ${CMAKE_MAKE_PROGRAM} clean

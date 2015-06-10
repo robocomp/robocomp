@@ -14,7 +14,7 @@ will create a .deb package which we can install using any packaging application 
 
     sudo dpkg -i <packagename>.deb
 
-##source packages for ppa
+##Uploading package to ppa
 
 launchpad will only accept source packages and not binary.Launchpad will then build the packages. For building source packages we are using debuild which is a wrapper around the *dpkg-buildpackage + lintian*. so you will need to install debuild and dput on your system;
 
@@ -32,6 +32,18 @@ building of source package can be tested with:
     cd Debian/robocomp-<version>
     debuild -i -us -uc
 
+If you are uploading a new version of robocomp, change the version number  accordingly in the [toplevel cmake](../CMakeLists.txt#L31) before building, and then upload the source package as mentioned.
+
 ###Note:
 
- If you want to upload another source package to ppa which doesn't have any changes in the source but maybe in the debian files. you can build the spackage after commenting out `set(DEB_SOURCE_CHANGES "CHANGED" CACHE STRING "source changed since last upload")` in [package_details.cmake](../cmake/package_details.cmake#L27) so that the the script will only increase the ppa version number and won't include the source package for uploading to ppa (which otherwise will give an error).
+If you want to upload another source package to ppa which doesn't have any changes in the source but maybe in the debian files. you can build the spackage after commenting out `set(DEB_SOURCE_CHANGES "CHANGED" CACHE STRING "source changed since last upload")` in [package_details.cmake](../cmake/package_details.cmake#L27) so that the the script will only increase the ppa version number and won't include the source package for uploading to ppa (which otherwise will give an error).
+
+##Installing robocomp from ppa
+
+First you will need to add the ppa in your sources, and then install robocomp package.
+
+    sudo add-apt-repository ppa:<lp-username>/robocomp
+    sudo apt-get update
+    sudo apt-get install robocomp
+
+this will install robocomp along with basic components into /opt/robocomp.

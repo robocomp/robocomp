@@ -14,8 +14,10 @@
 module RoboCompAGMAgent{
 
 	interface AGMAgentTopic{
-		void  modificationProposal(RoboCompAGMWorldModel::Event modification);
-		void  update(RoboCompAGMWorldModel::Node nodeModification);
+		void structuralChange(RoboCompAGMWorldModel::Event modification);
+		void symbolUpdated(RoboCompAGMWorldModel::Node nodeModification);
+		void edgeUpdated(RoboCompAGMWorldModel::Edge edgeModification);
+
 	};
 };
   

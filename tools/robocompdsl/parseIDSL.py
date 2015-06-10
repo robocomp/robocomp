@@ -50,7 +50,7 @@ class IDSLParsing:
 
 
 		dictionaryDef = Word("dictionary") + lt + CharsNotIn("<>;") + gt + identifier.setResultsName('name') + semicolon
-		sequenceDef   = Word("sequance")   + lt + CharsNotIn("<>;") + gt + identifier.setResultsName('name') + semicolon
+		sequenceDef   = Word("sequence")   + lt + CharsNotIn("<>;") + gt + identifier.setResultsName('name') + semicolon
 		enumDef       = Word("enum")       + identifier.setResultsName('name') + op + CharsNotIn("{}") + cl + semicolon
 		structDef     = Word("struct")     + identifier.setResultsName('name') + op + CharsNotIn("{}") + cl + semicolon
 		exceptionDef  = Word("exception")  + identifier.setResultsName('name') + op + CharsNotIn("{}") + cl + semicolon
@@ -110,7 +110,7 @@ class IDSLParsing:
 				#print 'has', IDSLParsing.gimmeIDSL(imp)['imports']
 				#print ''
 				module['imports'] += imp + '#' + IDSLParsing.gimmeIDSL(imp)['imports']
-		#print tree['module']['contents']
+		# INTERFACES DEFINED IN THE MODULE
 		module['interfaces'] = []
 		for contentDef in tree['module']['contents']:
 			if contentDef[0] == 'interface':
@@ -142,6 +142,23 @@ class IDSLParsing:
 					except:
 						interface['methods'][method['name']]['throws'] = 'nothing'
 				module['interfaces'].append(interface)
+		# TYPES DEFINED IN THE MODULE
+		module['types'] = []
+		#print '---\n---\nPARSE IDSL TYPES'
+		for contentDef in tree['module']['contents']:
+			#print contentDef[0]
+			if contentDef[0] in [ 'enum', 'struct', 'exception' ]:
+				typedef = { 'name':contentDef[1], 'type':contentDef[0]}
+				#print typedef
+				module['types'].append(typedef)
+			elif contentDef[0] in [ 'sequence', 'dictionary' ]:
+				typedef = { 'name':contentDef[-1], 'type':contentDef[0]}
+				#print typedef
+				module['types'].append(typedef)
+			elif contentDef[0] in ['interface']:
+				pass
+			else:
+				print 'Unknown module content', contentDef
 		return module
 
 	@staticmethod
@@ -168,6 +185,8 @@ class IDSLParsing:
 class IDSLPool:
 	def __init__(self, files):
 		self.modulePool = {}
+		self.includeInPool(files, self.modulePool)
+	def includeInPool(self, files, modulePool):
 		pathList = []
 		fileList = []
 		for p in [f for f in files.split('#') if len(f)>0]:
@@ -178,16 +197,21 @@ class IDSLPool:
 		pathList.append('/home/robocomp/robocomp/interfaces/IDSLs/')
 		for f in fileList:
 			filename = f.split('.')[0]
-			for p in pathList:
-				try:
-					path = p+'/'+f
-					self.modulePool[filename] = IDSLParsing.fromFile(path)
-					break
-				except IOError, e:
-					pass
-			if not filename in self.modulePool:
-				print 'Couldn\'t locate ', f
-				sys.exit(-1)
+			if not filename in modulePool:
+				for p in pathList:
+					try:
+						path = p+'/'+f
+						module = IDSLParsing.fromFile(path)
+						modulePool[filename] = module
+						#for importf in module['imports'].split('#'):
+							#print 'aqui', importf
+						self.includeInPool(module['imports'], modulePool)
+						break
+					except IOError, e:
+						pass
+				if not filename in self.modulePool:
+					print 'Couldn\'t locate ', f
+					sys.exit(-1)
 
 	def moduleProviding(self, interface):
 		for module in self.modulePool:
