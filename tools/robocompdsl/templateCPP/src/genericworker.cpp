@@ -79,7 +79,7 @@ for name, num in getNameNumber(component['publishes']):
 ]]]
 [[[end]]]
 
-	mutex = new QMutex();
+	mutex = new QMutex(QMutex::Recursive);
 
 [[[cog
 if component['gui'] != 'none':
