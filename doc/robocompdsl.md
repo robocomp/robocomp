@@ -11,7 +11,7 @@ There are three tasks we can acomplish using **robocompdsl**:
 * regenerating the code for an already generated component.
 
 ## Generating a CDSL template file
-Even tough writing CDSL files is easy --their structure is simple and the number of reserved words is very limited-- robocompdsl can generate template CDSL files to be used as a guide when writing CDSL files.
+Even though writing CDSL files is easy --their structure is simple and the number of reserved words is very limited-- robocompdsl can generate template CDSL files to be used as a guide when writing CDSL files.
 
     $ robocompdsl path/to/mycomponent/mycomponent.cdsl
 

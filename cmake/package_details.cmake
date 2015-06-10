@@ -39,14 +39,14 @@ set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE ${DEB_ARCHITECTURE} CACHE STRING "cpack ar
 #find and set dependencies (build and package)
 set(DEBSRC_BUILD_DEPENDS debhelper cmake libgsl0-dev libopenscenegraph-dev cmake-qt-gui freeglut3-dev libboost-system-dev libboost-thread-dev openjdk-7-jre libxt-dev pyqt4-dev-tools qt4-designer qt4-dev-tools zeroc-ice35 yakuake python-pip python-pyparsing python-numpy python-pyside pyside-tools libqt4-dev qt4-qmake libqt4-opengl-dev CACHE STRINGS "build-dep")
 set(DEBSRC_PACKAGE_DEPENDS g++ libgsl0-dev libopenscenegraph-dev cmake-qt-gui zeroc-ice35 freeglut3-dev libboost-system-dev libboost-thread-dev qt4-dev-tools yakuake openjdk-7-jre python-pip  python-pyparsing python-numpy python-pyside pyside-tools libxt-dev pyqt4-dev-tools qt4-designer CACHE STRING "name")
- 
+
 #As CPack wants dependencies as a single comma separated string
 set(CPACK_DEBIAN_PACKAGE_DEPENDS)
 foreach(DEP ${DEBSRC_PACKAGE_DEPENDS})
     if(CPACK_DEBIAN_PACKAGE_DEPENDS)
         set(CPACK_DEBIAN_PACKAGE_DEPENDS "${CPACK_DEBIAN_PACKAGE_DEPENDS}, ${DEP}")
     else()
-       set(CPACK_DEBIAN_PACKAGE_DEPENDS ${DEP})
+        set(CPACK_DEBIAN_PACKAGE_DEPENDS ${DEP})
     endif()
 endforeach(DEP ${DEBSRC_PACKAGE_DEPENDS})  
 
