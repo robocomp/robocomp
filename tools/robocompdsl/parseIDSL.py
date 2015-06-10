@@ -85,6 +85,7 @@ class IDSLParsing:
 			else:
 				fileList.append(p)
 		pathList.append('/home/robocomp/robocomp/interfaces/IDSLs/')
+		pathList.append('/opt/robocomp/interfaces/IDSLs/')
 		filename = name.split('.')[0]
 		for p in pathList:
 			try:
@@ -195,6 +196,7 @@ class IDSLPool:
 			else:
 				fileList.append(p)
 		pathList.append('/home/robocomp/robocomp/interfaces/IDSLs/')
+		pathList.append('/opt/robocomp/interfaces/IDSLs/')
 		for f in fileList:
 			filename = f.split('.')[0]
 			if not filename in modulePool:
