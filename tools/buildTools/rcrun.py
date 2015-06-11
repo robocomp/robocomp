@@ -6,6 +6,18 @@ import os
 import string
 from workspace import workspace as WS
 
+def find_script(action,component):
+    paths = WS.find_component_exec(component)
+    pathsrc = WS.find_component_src(component)
+    pathsrc = [ os.path.join(x,'bin') for x in pathsrc]
+    pathsrc.append(paths)
+    for path in pathsrc:
+        for file in os.listdir(path):
+            if file[-3:] == '.sh' or file[-5:] == '.bash':
+                if string.lower(file[:len(action)])==string.lower(action):
+                    return os.path.join(path,file)
+    return False
+
 def main():
     parser = argparse.ArgumentParser(description="Tool for locating and running a robocomp component")
     group = parser.add_mutually_exclusive_group(required = True)
@@ -20,14 +32,25 @@ def main():
 
     #if stop command no need for searching and all
     if args.stop:
-        command = "killall " + str(args.stop[0])
+        stpath = find_script("stop",args.stop[0]);
+        if stpath:
+            #print("using script {0}".format(stpath))
+            command = stpath
+        else:
+            command = "killall " + str(args.stop[0])
         os.system(command)
         return
     elif args.fstop:
-        command = "killall -9 " + str(args.fstop[0])
+        sfpath = find_script("forcestop",args.stop[0]);
+        if sfpath:
+            #print("using script {0}".format(sfpath))
+            command = sfpath
+        else:
+            command = "killall -9 " + str(args.fstop[0])
         os.system(command)
         return
     
+    #get component name
     if args.start:
         component = str(args.start[0])
     elif args.component:
@@ -35,7 +58,7 @@ def main():
     else:
         parser.error("No component specified")
 
-    ##search for the component
+    #search for the component
     componentPath = WS.find_component_exec(component)
     componentPathetc = componentPath[:-4]
 
@@ -71,10 +94,23 @@ def main():
         ice_config = args.config[0]
 
     #execute the command
+    spath = find_script("start",component);
+    sdpath = find_script("startdebug",component);
+    print(spath)
     if args.start:
-        command = componentPath + "/" + string.lower(component) + " --Ice.Config=" + ice_config
+        if spath and not (args.config or args.cfile or args.debug):
+            command = spath
+        elif sdpath and args.debug:
+            command = sdpath
+        else:
+            command = componentPath + "/" + string.lower(component) + " --Ice.Config=" + ice_config
     else:
-        command = componentPath + "/" + string.lower(component) + " --Ice.Config=" + ice_config
+        if spath and not (args.config or args.cfile or args.debug):
+            command = spath
+        elif sdpath and args.debug:
+            command = sdpath
+        else:
+            command = componentPath + "/" + string.lower(component) + " --Ice.Config=" + ice_config
     
     print("executing : "+command)
     os.system(command)
