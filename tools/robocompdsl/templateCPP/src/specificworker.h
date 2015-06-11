@@ -55,6 +55,23 @@ Z()
        @author authorname
 */
 
+
+
+[[[cog
+
+try:
+	if 'agmagent' in [ x.lower() for x in component['options'] ]:
+		cog.outl("// THIS IS AN AGENT")
+
+except:
+	pass
+
+]]]
+[[[end]]]
+
+
+
+
 #ifndef SPECIFICWORKER_H
 #define SPECIFICWORKER_H
 
