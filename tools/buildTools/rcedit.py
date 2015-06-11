@@ -31,10 +31,10 @@ def main():
         print("This is a non-unique file, please one of the following:\n")
         count=1
         for fpath in filelist:
-            print(count+') '+fpath[1])
+            print(str(count)+') '+fpath[1])
             count += 1
         option = input("please selact a file : ")
-        command = editor + " " + filelist[option][1]
+        command = editor + " " + filelist[option-1][1]
 
     try:
         #print(command)

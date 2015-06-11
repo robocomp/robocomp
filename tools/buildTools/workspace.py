@@ -117,9 +117,8 @@ class Workspace:
         filedict = []
         path = self.find_component_src(component)
         componentPath = path[0]
-        
         for sfile in files:
-            for root, dirs, files in os.walk(path):
+            for root, dirs, files in os.walk(componentPath):
                 #print(files)
                 if sfile in files:
                     tmptuple = (sfile,os.path.join(root, sfile))
