@@ -56,6 +56,19 @@ Z()
 */
 SpecificWorker::SpecificWorker(MapPrx& mprx) : GenericWorker(mprx)
 {
+
+[[[cog
+
+try:
+	if 'agmagent' in [ x.lower() for x in component['options'] ]:
+		cog.outl("<TABHERE>active = false;")
+		cog.outl("<TABHERE>worldModel = AGMModel::SPtr(new AGMModel());")
+		cog.outl("<TABHERE>worldModel->name = "+"\"worldModel\";")
+except:
+	pass
+
+]]]
+[[[end]]]
 }
 
 /**

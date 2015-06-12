@@ -63,6 +63,7 @@ try:
 	if 'agmagent' in [ x.lower() for x in component['options'] ]:
 		cog.outl("// THIS IS AN AGENT")
 
+
 except:
 	pass
 
@@ -78,6 +79,18 @@ except:
 #include <genericworker.h>
 #include <innermodel/innermodel.h>
 
+[[[cog
+
+try:
+	if 'agmagent' in [ x.lower() for x in component['options'] ]:
+		cog.outl("#include <agm.h>")
+
+
+except:
+	pass
+
+]]]
+[[[end]]]
 
 class SpecificWorker : public GenericWorker
 {
@@ -121,6 +134,25 @@ public slots:
 	void compute(); 	
 
 private:
+[[[cog
+
+try:
+	if 'agmagent' in [ x.lower() for x in component['options'] ]:
+		cog.outl("<TABHERE>std::string action;")
+		cog.outl("<TABHERE>ParameterMap params;")
+		cog.outl("<TABHERE>AGMModel::SPtr worldModel;")
+		cog.outl("<TABHERE>InnerModel *innerModel;")
+		cog.outl("<TABHERE>bool active;")
+		
+		cog.outl("private:")
+		cog.outl("<TABHERE>bool setParametersAndPossibleActivation(const ParameterMap &prs, bool &reactivated);")
+		cog.outl("<TABHERE>void sendModificationProposal(AGMModel::SPtr &worldModel, AGMModel::SPtr &newModel);")
+except:
+	pass
+
+]]]
+[[[end]]]
+	
 };
 
 #endif
