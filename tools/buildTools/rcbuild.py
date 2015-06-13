@@ -12,9 +12,19 @@ def main():
     args = parser.parse_args()
 
     if not args.component:
+        cpath = os.path.abspath('.')
+        wspath = WS.find_workspace(cpath)
         if os.path.exists(".rc_workspace"):
-            print("1")
             os.chdir("./build")
+            os.system("cmake ../src")
+        elif wspath:
+            rest = cpath[len(wspath):].split('/')
+            # if len(rest) >= 3:
+            #     componentPath = os.path.join(wspath,rest[1],rest[2])
+            #     os.chdir(wspath+"/build")
+            #     os.system("cmake " + componentPath)
+            # else:
+            os.chdir(wspath+"/build")
             os.system("cmake ../src")
         else:
             parser.error("This is not a valid robocomp workspace")

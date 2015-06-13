@@ -117,6 +117,7 @@ class Workspace:
         filedict = []
         path = self.find_component_src(component)
         componentPath = path[0]
+
         for sfile in files:
             for root, dirs, files in os.walk(componentPath):
                 #print(files)
@@ -124,5 +125,12 @@ class Workspace:
                     tmptuple = (sfile,os.path.join(root, sfile))
                     filedict.append(tmptuple)
         return filedict
+
+    '''check if the given path is inside a workspace'''
+    def find_workspace(self,path):
+        for ws in self.workspace_paths:
+            if path[:len(ws)] == ws:
+                return ws
+        return False
 
 workspace = Workspace()

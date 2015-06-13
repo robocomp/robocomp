@@ -35,12 +35,16 @@ rccd()
 }
 
 #verify the workspaces
-cd ~/.config/RoboComp
-touch .rc_workspace_tmp
-while read -r line || [[ -n $line ]] && [[ flag -eq 0 ]] ; do
-    #echo $file;
-    if [[ -f "$line/.rc_workspace" ]] ; then
-        echo $line >> .rc_workspace_tmp
-    fi;
-done < ~/.config/RoboComp/rc_workspace.config ;
-mv .rc_workspace_tmp rc_workspace.config
+if [[ -f ~/.config/RoboComp/rc_workspace.config ]]; then
+
+    cd ~/.config/RoboComp
+    touch .rc_workspace_tmp
+    while read -r line || [[ -n $line ]] && [[ flag -eq 0 ]] ; do
+        #echo $file;
+        if [[ -f "$line/.rc_workspace" ]] ; then
+            echo $line >> .rc_workspace_tmp
+        fi;
+    done < ~/.config/RoboComp/rc_workspace.config ;
+    mv .rc_workspace_tmp rc_workspace.config
+
+fi
