@@ -3,6 +3,7 @@ layout: post
 title: aprilTagsComp, Tutorial to simulate virtual apriltags
 categories: [Tutorial]
 tags: [AprilTags]
+permalink: /april
 description: If you haven't already, Then do read about aprilTagsComp[here](apriltags.md )for better understanding. In this tutorial you will learn the actual functionality of apriltags...
 ---
 
