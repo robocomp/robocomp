@@ -89,7 +89,7 @@ void SpecificMonitor::readConfig(RoboCompCommonBehavior::ParameterList &params )
 {
 // 	RoboCompCommonBehavior::Parameter aux;
 // 	aux.editable = true;
-// 	QString name = PROGRAM_NAME;
+// 	string name = PROGRAM_NAME;
 // 	
 // 	configGetString(name+".param_name", aux.value, "default");
 // 	//Check valid ranges

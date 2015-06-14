@@ -34,7 +34,7 @@ if component['gui'] != 'none':
 #define PROGRAM_NAME    "
 [[[cog
 A()
-cog.out(' ' + component['name'])
+cog.out(component['name'])
 Z()
 ]]]
 [[[end]]]
