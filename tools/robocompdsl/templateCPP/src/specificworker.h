@@ -143,8 +143,6 @@ try:
 		cog.outl("<TABHERE>AGMModel::SPtr worldModel;")
 		cog.outl("<TABHERE>InnerModel *innerModel;")
 		cog.outl("<TABHERE>bool active;")
-		
-		cog.outl("private:")
 		cog.outl("<TABHERE>bool setParametersAndPossibleActivation(const ParameterMap &prs, bool &reactivated);")
 		cog.outl("<TABHERE>void sendModificationProposal(AGMModel::SPtr &worldModel, AGMModel::SPtr &newModel);")
 except:
