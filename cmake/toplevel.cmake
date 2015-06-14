@@ -18,6 +18,8 @@ MACRO(SUBDIRLIST result curdir)
   SET(${result} ${dirlist})
 ENDMACRO()
 
+set(WORKSPACE_SOURCE_PATH "${CMAKE_CURRENT_SOURCE_DIR}" CACHE STRING "workspace source path")
+
 #ADD the components
 SUBDIRLIST(SUBDIRS ${CMAKE_CURRENT_SOURCE_DIR})
 string(ASCII 27 Esc)
@@ -25,8 +27,8 @@ set(ColourReset "${Esc}[m")
 set(Red         "${Esc}[31m")
 
 FOREACH(SUBDIR ${SUBDIRS})
-    message(STATUS "${Red}Configuring Component ${SUBDIR} ${ColourReset}")
-    IF(NOT EXISTS "${SUBDIR}/.ignore_comp")
+    IF(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${SUBDIR}/.ignore_comp")
+        message(STATUS "${Red}Configuring Component ${SUBDIR} ${ColourReset}")
         ADD_SUBDIRECTORY(${SUBDIR})
     ENDIF()
 ENDFOREACH()
