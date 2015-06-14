@@ -3,7 +3,6 @@ layout: post
 title: aprilTagsComp, Wrapping E. Olson's AprilTags in RoboComp
 categories: [Tutorial]
 tags: [AprilTags]
-permalink: /april
 description: AprilTags is an augmented reality tag system developed by E. Olson at the U. of Michigan, USA. A complete explanation and related papers can be ...
 ---
 #aprilTagsComp: wrapping E. Olson's AprilTags in RoboComp
