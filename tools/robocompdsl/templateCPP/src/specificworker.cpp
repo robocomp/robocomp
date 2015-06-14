@@ -135,9 +135,42 @@ for imp in ll:
 						if p['type'].lower() in ['int', '::ice::int', 'float', '::ice::float']:
 							ampersand = ''
 					paramStrA += delim + const + p['type'] + ' ' + ampersand + p['name']
-				cog.outl(method['return'] + ' SpecificWorker::' + method['name'] + '(' + paramStrA + ")\n{\n}\n")
+				bodyCode=""
+				###################################### 
+				#code for subscribesTo AGMExecutiveTopic
+				###################################### 
+				if method['name'] == 'structuralChange':
+					bodyCode = "<TABHERE>mutex->lock();\n <TABHERE>AGMModelConverter::fromIceToInternal(modification.newModel, worldModel);\n <TABHERE>mutex->unlock();"
+				if method['name'] == 'symbolUpdated' or method['name'] == 'edgeUpdated':
+					bodyCode = "<TABHERE>mutex->lock();\n <TABHERE>AGMModelConverter::includeIceModificationInInternalModel(modification, worldModel);\n <TABHERE>mutex->unlock();"
+					
+				###################################### 
+				#code for implements AGMCommonBehavior.
+				###################################### 
+				if method['name'] == 'activateAgent':
+					bodyCode = "/*<TABHERE>bool activated = false;\n<TABHERE>if (setParametersAndPossibleActivation(prs, activated))\n<TABHERE>{\n<TABHERE><TABHERE>if (not activated)\n<TABHERE><TABHERE>{\n<TABHERE><TABHERE><TABHERE>return activate(p);\n<TABHERE><TABHERE>}\n<TABHERE>}\n<TABHERE>else\n<TABHERE>{\n<TABHERE><TABHERE>return false;\n<TABHERE>}\n<TABHERE>return true;*/"
+					
+				if method['name'] == 'deactivateAgent':
+					bodyCode = "//<TABHERE>return deactivate();"
+					
+				if method['name'] == 'getAgentState':
+					bodyCode = "<TABHERE>StateStruct s;\n<TABHERE>/*if (isActive())\n<TABHERE>{\n<TABHERE><TABHERE>s.state = Running;\n<TABHERE>}\n<TABHERE>else\n<TABHERE>{\n<TABHERE><TABHERE>s.state = Stopped;\n<TABHERE>}\n<TABHERE>s.info = p.action.name;*/\n<TABHERE>return s;"
+					
+				if method['name'] == 'getAgentParameters':
+					bodyCode = "<TABHERE>return params;"
+					
+				if method['name'] == 'setAgentParameters':
+					bodyCode = "<TABHERE>bool activated = false;\n<TABHERE>//return setParametersAndPossibleActivation(prs, activated);"
+					
+				if method['name'] == 'uptimeAgent':
+					bodyCode = "<TABHERE>return 0;"
+				if method['name'] == 'reloadConfigAgent':
+					bodyCode = "<TABHERE>return true;"
+					
+				cog.outl(method['return'] + ' SpecificWorker::' + method['name'] + '(' + paramStrA + ")\n{\n"+bodyCode+"\n}\n")
 ]]]
 [[[end]]]
+
 
 
 
