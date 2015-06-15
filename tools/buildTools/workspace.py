@@ -133,4 +133,17 @@ class Workspace:
                 return ws
         return False
 
+    ''' return all components paths given workspaces'''
+    def list_packages(self,ws_paths):
+        components = []
+        for ws in ws_paths:
+            if self.find_workspace(ws)==False:
+                continue
+            srcpath = ws + '/src'
+            for component in os.listdir(srcpath):
+                if os.path.isdir(os.path.join(srcpath, component))==False:
+                    continue
+                components.append(os.path.join(srcpath, component))
+        return components
+
 workspace = Workspace()
