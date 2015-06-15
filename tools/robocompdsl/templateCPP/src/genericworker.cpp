@@ -83,7 +83,7 @@ for name, num in getNameNumber(component['publishes']):
 
 [[[cog
 if component['gui'] != 'none':
-	cog.outl("""#ifdef USE_QTGUI
+	cog.outl("""<TABHERE>#ifdef USE_QTGUI
 		setupUi(this);
 		show();
 	#endif""")
