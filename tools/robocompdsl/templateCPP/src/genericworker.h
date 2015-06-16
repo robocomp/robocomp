@@ -72,6 +72,19 @@ for m in pool.modulePool:
 ]]]
 [[[end]]]
 
+[[[cog
+
+try:
+	if 'agmagent' in [ x.lower() for x in component['options'] ]:
+		cog.outl("#include <agm.h>")
+
+
+except:
+	pass
+
+]]]
+[[[end]]]
+
 
 #define CHECK_PERIOD 5000
 #define BASIC_PERIOD 100
@@ -88,6 +101,26 @@ for m in pool.modulePool:
 
 ]]]
 [[[end]]]
+
+[[[cog
+
+try:
+	if 'agmagent' in [ x.lower() for x in component['options'] ]:
+		cog.outl("""
+		struct BehaviorParameters 
+		{
+			RoboCompPlanning::Action action;
+			std::vector< std::vector <std::string> > plan;
+		};""")
+
+
+except:
+	pass
+
+]]]
+[[[end]]]
+
+
 
 class GenericWorker : 
 [[[cog
@@ -111,6 +144,20 @@ public:
 	
 	virtual bool setParams(RoboCompCommonBehavior::ParameterList params) = 0;
 	QMutex *mutex;
+[[[cog
+
+try:
+	if 'agmagent' in [ x.lower() for x in component['options'] ]:
+		cog.outl("<TABHERE>bool activate(const BehaviorParameters& parameters);")
+		cog.outl("<TABHERE>bool deactivate();")
+		cog.outl("<TABHERE>bool isActive() { return active; }")
+		cog.outl("<TABHERE>RoboCompAGMWorldModel::BehaviorResultType status();")
+except:
+	pass
+
+]]]
+[[[end]]]
+	
 
 [[[cog
 for name, num in getNameNumber(component['requires']+component['publishes']):
@@ -151,6 +198,22 @@ for imp in ll:
 protected:
 	QTimer timer;
 	int Period;
+[[[cog
+try:
+	if 'agmagent' in [ x.lower() for x in component['options'] ]:
+		cog.outl("<TABHERE>bool active;")
+		cog.outl("<TABHERE>AGMModel::SPtr worldModel;")
+		cog.outl("<TABHERE>BehaviorParameters p;")
+		cog.outl("<TABHERE>ParameterMap params;")
+		cog.outl("<TABHERE>int iter;")
+		cog.outl("<TABHERE>bool setParametersAndPossibleActivation(const ParameterMap &prs, bool &reactivated);")
+		cog.outl("<TABHERE>RoboCompPlanning::Action createAction(std::string s);")
+except:
+	pass
+
+]]]
+[[[end]]]
+
 public slots:
 	virtual void compute() = 0;
 signals:

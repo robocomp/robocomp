@@ -107,7 +107,20 @@ if component['gui'] != 'none':
 [[[end]]]
 QT4_WRAP_CPP( MOC_SOURCES ${HEADERS} )
 
+
 # Specify construction and link process
+[[[cog
+
+try:
+	if 'agmagent' in [ x.lower() for x in component['options'] ]:
+		cog.outl("SET(LIBS ${LIBS} -lagm)")
+
+
+except:
+	pass
+
+]]]
+[[[end]]]
 ADD_EXECUTABLE(
 [[[cog
 A()
