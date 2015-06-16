@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.4
+#!/usr/bin/env python2.7
 #
 #  -----------------------
 #  ----- rcmanager -----
@@ -27,6 +27,7 @@
 
 # Importamos el modulo libxml2
 import libxml2
+from PyQt4 import QtCore, QtGui, Qt
 
 filePath = 'rcmanager.xml'
 
@@ -45,6 +46,7 @@ class CompInfo:
 		self.x = 0
 		self.y = 0
 		self.r = 10
+		
 	def __repr__(self):
 		string = ''
 		string = string + '[' + self.alias + ']:\n'
@@ -162,7 +164,8 @@ def writeConfigToFile(dict, components, path):
 		writeToFile(file, '  <configFile path="' + comp.configFile + '" />')
 		writeToFile(file, '  <xpos value="' + str(comp.x) + '" />')
 		writeToFile(file, '  <ypos value="' + str(comp.y) + '" />')
-		writeToFile(file, '  <radius value="' + str(comp.r) + '" />')
+		writeToFile(file, '  <radius value="' + str(comp.r)     + '" />')
+		writeToFile(file, '  <color value="'  + str(comp.htmlcolor) + '" />')
 		writeToFile(file, ' </node>\n')
 
 	writeToFile(file, '</rcmanager>')
@@ -270,6 +273,8 @@ def parseNode(node, components):
 		component = CompInfo()
 		component.alias = parseSingleValue(node, 'alias', False)
 		component.endpoint = parseSingleValue(node, 'endpoint', False)
+		component.color = None
+		component.htmlcolor = None
 		mandatory = 0
 		block_optional = 0
 		while child is not None:
@@ -297,18 +302,20 @@ def parseNode(node, components):
 					block_optional = block_optional + 4
 				elif child.name == "dependence":
 					parseDependence(child, component)
+				elif child.name == "color":
+					parseColor(child, component)
 				elif stringIsUseful(str(child.properties)):
 					print '    tssssssss'+str(child.properties)
 					print 'ERROR when parsing rcmanager: '+str(child.name)+': '+str(child.properties)
 			child = child.next
 		if mandatory<15:
-			if mandatory^15 == 1: print 'ERROR Not all mandatory labels were specified (workingDir)'
+			if   mandatory^15 == 1: print 'ERROR Not all mandatory labels were specified (workingDir)'
 			elif mandatory^15 == 2: print 'ERROR Not all mandatory labels were specified (upCommand)'
 			elif mandatory^15 == 4: print 'ERROR Not all mandatory labels were specified (downCommand)'
 			elif mandatory^15 == 8: print 'ERROR Not all mandatory labels were specified (configFile)'
 			raise str(mandatory)
 		if block_optional<7 and block_optional != 0:
-			if block_optional^7 == 1: print 'ERROR Not all pos-radius labels were specified (xpos)'
+			if   block_optional^7 == 1: print 'ERROR Not all pos-radius labels were specified (xpos)'
 			elif block_optional^7 == 2: print 'ERROR Not all pos-radius labels were specified (ypos)'
 			elif block_optional^7 == 4: print 'ERROR Not all pos-radius labels were specified (radius)'
 			raise str(block_optional)
@@ -383,9 +390,10 @@ def parseSimulation(node, dict):
 #
 # Node subfunctions
 #
-def parseSingleValue(node, arg, doCheck=True):
+def parseSingleValue(node, arg, doCheck=True, optional=False):
 	if node.children != None and doCheck == True: print 'WARNING: No children expected'
-	if not node.hasProp(arg): print 'WARNING: ' + arg + ' attribute expected'
+	if not node.hasProp(arg) and not optional:
+		print 'WARNING: ' + arg + ' attribute expected'
 	else:
 		ret = node.prop(arg)
 		node.unsetProp(arg)
@@ -394,6 +402,27 @@ def parseSingleValue(node, arg, doCheck=True):
 
 def parseDependence(node, comp):
 	comp.dependences.append(parseSingleValue(node, 'alias'))
+def parseColor(node, comp):
+	comp.color = None
+	x = parseSingleValue(node, 'value', optional=True)
+	if x == None:
+		return
+	valid = True
+	if len(x) != 7:
+		valid = False
+	else:
+		if x[0] != "#": valid = False
+		else:
+			print x[1:2], x[3:4], x[5:6]
+			r = int(x[1:3], 16)
+			g = int(x[3:5], 16)
+			b = int(x[5:7], 16)
+			print r, g, b
+	if not valid:
+		print 'can\'t parse color', x
+		sys.exit(0)
+	comp.color = QtGui.QColor(r,g,b)
+	comp.htmlcolor = x
 def parseWorkingDir(node, comp):
 	comp.workingdir = parseSingleValue(node, 'path')
 def parseUpCommand(node, comp):
