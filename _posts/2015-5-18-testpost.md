@@ -1,6 +1,6 @@
 ---
 layout: default
-permalink: /mercedes
+permalink: /merce
 ---
 
 #Mercedes
