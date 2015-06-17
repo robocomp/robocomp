@@ -52,12 +52,6 @@ sys.path.append('/opt/robocomp/bin')
 
 import rcmanagerEditor
 
-# VisualNode class: It just stores visual related information.
-class VisualNode:
-	def __init__(self):
-		self.x = 0
-		self.y = 0
-		self.r = 10
 
 # CommandDialog class: It's the dialog sending "up()/down() component X signal to the main
 class CommandDialog(QtGui.QWidget):
@@ -604,6 +598,8 @@ class TheThing(QtGui.QDialog):
 class GraphNode:
 	def __init__(self):
 		self.name = ''
+		self.color = None
+		self.htmlcolor = None
 		self.deps = []
 		self.on = False
 		self.x = 0.
@@ -659,6 +655,8 @@ class GraphView(QtGui.QWidget):
 						break
 			if notFound:
 				newOne = GraphNode()
+				newOne.color = parentComp.color
+				newOne.htmlcolor = parentComp.htmlcolor
 				newOne.name = parentComp.alias
 				newOne.deps = parentComp.dependences
 				newOne.x = float(parentComp.x)
@@ -750,11 +748,13 @@ class GraphView(QtGui.QWidget):
 			self.painter.setPen(QtGui.QColor(255, 0, 0))
 		self.painter.drawEllipse(node.x-node.r+w2, node.y-node.r+h2, node.r*2, node.r*2)
 
-		#print self.parent().width(), self.height()
-		#print node.x-node.r+w2, node.y-node.r+h2, node.r*2, node.r*2
-
-		#print(node.x-node.r, node.y-node.r, node.r*2, node.r*2)
 		self.painter.drawText(QtCore.QPoint(node.x-node.r+w2, node.y-node.r-3+h2), node.name)
+
+		if node.color != None:
+			self.painter.setBrush(node.color)
+			self.painter.setPen(node.color)
+			self.painter.drawEllipse(node.x-node.r/2+w2, node.y-node.r/2+h2, node.r, node.r)
+
 
 	def paintEvent(self, event):
 		w2 = self.tab.width()/2
@@ -840,7 +840,6 @@ class GraphView(QtGui.QWidget):
 	def mouseReleaseEvent(self, e):
 		if self.VisualNodeCogia != None:
 			self.compList.append(self.VisualNodeCogia)
-			self.VisualNodeCogia = VisualNode()
 			self.VisualNodeCogia = None
 			self.emit(QtCore.SIGNAL("nodeReleased()"))
 	def mouseMoveEvent(self, e):
