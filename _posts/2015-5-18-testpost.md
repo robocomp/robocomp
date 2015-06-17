@@ -1,5 +1,5 @@
 ---
-layout: default
+layout: post
 title: testpost
 categories: [Tutorial]
 tags: [Test]
