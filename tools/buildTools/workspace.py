@@ -50,11 +50,12 @@ class Workspace:
 
         try:
             os.system('touch {0}/{1}'.format(ws_path,str(".rc_workspace")))
-            dirs = ["src","build","devel"]
+            dirs = ["src","build","install"]
             for dir in dirs:
                 dir_path = os.path.join(ws_path,dir)
                 if not os.path.exists(dir_path):
                     os.makedirs(dir_path)
+            os.system('touch {0}/install/{1}'.format(ws_path,str(".rc_install")))
         except Exception as createEx:
             raise RuntimeError("couldnt create files/folders in current directory: \n %s " % (str(createEx)))
 
@@ -91,6 +92,9 @@ class Workspace:
             return componentPath
         else:
             return False
+
+    def find_component_installed():
+        pass
 
     ''' find component soruce directory
         component - component name
