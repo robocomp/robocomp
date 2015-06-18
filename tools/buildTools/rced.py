@@ -20,15 +20,16 @@ def main():
 
     filelist = WS.search_for_file(component,[str(sfile)])
     if len(filelist) == 0:
-        parser.error("couldnt find the file {0} in {1}".format(sfile,component))
+        parser.error("couldnt find the file {0} in {1} source ".format(sfile,component))
     
-    #get editor command
-    editor = 'vim'
-
+    editor = os.environ.get('EDITOR')
+    if not editor:
+        editor = 'vim'
+    
     if len(filelist) == 1:
         command = editor +  " " + filelist[0][1]
     else:
-        print("This is a non-unique file, please one of the following:\n")
+        print("This is a non-unique file, please select one of the following:\n")
         count=1
         for fpath in filelist:
             print(str(count)+') '+fpath[1])
@@ -40,7 +41,7 @@ def main():
         #print(command)
         os.system(command)
     except Exception as openEx:
-        print("Cant open the specifiled file : %s" % (str(openEx)) )
+        print("Cant open the specifiled file for editing : %s" % (str(openEx)) )
 
 
 if __name__ == '__main__':
