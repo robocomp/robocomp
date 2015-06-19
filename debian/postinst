@@ -2,3 +2,5 @@
 set -e
 sudo echo "/opt/robocomp/lib">> /etc/ld.so.conf
 sudo ldconfig
+sudo echo 'source /opt/robocomp/share/setup.sh' >> /etc/profile
+source /etc/profile

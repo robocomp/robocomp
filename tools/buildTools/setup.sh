@@ -1,5 +1,11 @@
 #!/usr/bin/bash
 
+#setup env variables
+export ROBOCOMP=/opt/robocomp
+export PATH=$PATH:/opt/robocomp/bin
+export PYTHONPATH=/opt/robocomp/python:$PYTHONPATH
+
+cpwd=$(pwd);
 rccd()
 {
     flag=0;
@@ -48,3 +54,6 @@ if [[ -f ~/.config/RoboComp/rc_workspace.config ]]; then
     mv .rc_workspace_tmp rc_workspace.config
 
 fi
+
+cd $cpwd
+
