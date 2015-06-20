@@ -21,19 +21,24 @@ def find_script(action,component):
 def main():
     parser = argparse.ArgumentParser(description="Tool for locating and running a robocomp component")
     group = parser.add_mutually_exclusive_group(required = True)
+    cgroup = parser.add_mutually_exclusive_group()
     group.add_argument('component', nargs='?', help='start a component')
     group.add_argument('-s', '--start', nargs = 1, help="start a component")
     group.add_argument('-st', '--stop', nargs = 1, help="stop a component")
     group.add_argument('-fst', '--fstop', nargs = 1, help=" force start a component")
-    parser.add_argument('-d', '--debug', action = 'store_true' , help="start a component")
-    parser.add_argument('-cf', '--cfile', nargs = 1 , help="use custom ice config file (absolute path)")
-    parser.add_argument('-c', '--config', nargs = 1 , help="ice config file to choose from default config directory")
+    cgroup.add_argument('-d', '--debug', action = 'store_true' , help="start a component in debug mode")
+    cgroup.add_argument('-cf', '--cfile', nargs = 1 , help="use custom ice config file (absolute path)")
+    cgroup.add_argument('-c', '--config', nargs = 1 , help="ice config file to choose from default config directory")
+    parser.add_argument('-gc','--ignore_scripts', action='store_true',help="ignore all the script files if found")
     args = parser.parse_args()
 
     #if stop command no need for searching and all
     if args.stop:
+        if not WS.find_component_exec(args.stop[0]):
+            args.error("couldnt find the component %s in any of the workspaces" % (args.stop[0]))
+            return
         stpath = find_script("stop",args.stop[0]);
-        if stpath:
+        if stpath and not args.ignore_scripts:
             #print("using script {0}".format(stpath))
             command = stpath
         else:
@@ -41,8 +46,11 @@ def main():
         os.system(command)
         return
     elif args.fstop:
-        sfpath = find_script("forcestop",args.stop[0]);
-        if sfpath:
+        if not WS.find_component_exec(args.fstop[0]):
+            parser.error("couldnt find the component %s in any of the workspaces" % (args.fstop[0]))
+            return
+        sfpath = find_script("forcestop",args.fstop[0]);
+        if sfpath and not args.ignore_scripts:
             #print("using script {0}".format(sfpath))
             command = sfpath
         else:
@@ -76,38 +84,50 @@ def main():
     '''
     configFiles = []
     configPath = componentPathetc + '/etc'
+    ice_config = ""
     for root, dirs, files in os.walk(configPath): configFiles = files
-    if len(configFiles) == 1:
-        ice_config = configPath + "/" + configFiles[0]
+    if len(configFiles)==0:
+        parser.error("couldnt find any config file in the etc directory, please specify a custom config file\n")
     else:
-        if "config" in configFiles:
-            ice_config = configPath + "/config"
-        elif 'generic_config' in  configFiles:
-            ice_config = configPath + "/generic_config"
+        if args.debug:
+            for file in configFiles:
+                if file.endswith('.debug'): ice_config = configPath + "/" + file    
+            if len(ice_config) < 9:
+                parser.error("couldnt find any debug config file in the etc directory, please specify a custom config file\n")  
         else:
-            ice_config = configPath + "/" + configFiles[0]
+            if len(configFiles)==1 :
+                ice_config = configPath + "/" + configFiles[0]
+            else:
+                if "config" in configFiles:
+                    ice_config = configPath + "/config"
+                elif 'generic_config' in  configFiles:
+                    ice_config = configPath + "/generic_config"
+                else:
+                    ice_config = configPath + "/" + configFiles[0]
     
     if args.config:
         if args.config[0] in configFiles:
             ice_config = configPath + "/" + args.config[0]
+        else:
+            parser.error("couldnt find config file '{0}' in the etc directory".format(args.config[0]))
     elif args.cfile:
         ice_config = args.config[0]
 
     #execute the command
     spath = find_script("start",component);
     sdpath = find_script("startdebug",component);
-    print(spath)
+    
     if args.start:
-        if spath and not (args.config or args.cfile or args.debug):
+        if spath and not (args.config or args.cfile or args.debug) and not args.ignore_scripts:
             command = spath
-        elif sdpath and args.debug:
+        elif sdpath and args.debug  and not args.ignore_scripts:
             command = sdpath
         else:
             command = componentPath + "/" + string.lower(component) + " --Ice.Config=" + ice_config
     else:
-        if spath and not (args.config or args.cfile or args.debug):
+        if spath and not (args.config or args.cfile or args.debug) and not args.ignore_scripts:
             command = spath
-        elif sdpath and args.debug:
+        elif sdpath and args.debug and not args.ignore_scripts:
             command = sdpath
         else:
             command = componentPath + "/" + string.lower(component) + " --Ice.Config=" + ice_config
