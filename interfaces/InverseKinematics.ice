@@ -45,7 +45,6 @@ module RoboCompInverseKinematics{
 	struct TargetState{
 		bool finish;
 		int elapsedTime;
-		int estimatedEndTime;
 		float errorT;
 		float errorR;
 		MotorList motors;
@@ -56,10 +55,10 @@ module RoboCompInverseKinematics{
 		int			setTargetPose6D		(string bodyPart, Pose6D target, WeightVector weights)throws IKException;
 		int   		setTargetAlignaxis	(string bodyPart, Pose6D target, Axis ax) throws IKException;
 		int 		setTargetAdvanceAxis(string bodyPart, Axis ax, float dist) throws IKException;
-		bool 		getPartState		(string bodyPart);
+		bool 		getPartState		(string bodyPart) throws IKException;
 
 		void  		goHome			(string bodyPart) throws IKException;
-		void  		stop			(string bodyPart);
+		void  		stop			(string bodyPart) throws IKException;
 	};
 };
   
