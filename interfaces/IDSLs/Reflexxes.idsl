@@ -1,0 +1,12 @@
+module RoboCompReflexxes
+{
+	struct Motor
+	{
+		string name;
+		float angle;
+	};
+	sequence<Motor> MotorAngleList;
+	
+	void setJointPosition(MotorAngleList newAnglesOfMotors);
+	bool getStatePosition(MotorAngleList anglesOfMotors);
+};
