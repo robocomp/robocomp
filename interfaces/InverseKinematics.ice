@@ -60,6 +60,7 @@ module RoboCompInverseKinematics{
 		void  		goHome			(string bodyPart) throws IKException;
 		void  		stop			(string bodyPart) throws IKException;
 		void 		setJoint		(string joint, float angle, float maxSpeed)throws IKException;
+		void  		setFingers		(float d)throws IKException;
 	};
 };
   
