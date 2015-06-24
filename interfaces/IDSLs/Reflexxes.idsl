@@ -7,6 +7,9 @@ module RoboCompReflexxes
 	};
 	sequence<Motor> MotorAngleList;
 	
-	void setJointPosition(MotorAngleList newAnglesOfMotors);
-	bool getStatePosition(MotorAngleList anglesOfMotors);
+	interface Reflexxes
+	{
+		void setJointPosition(MotorAngleList newAnglesOfMotors);
+		bool getStatePosition(MotorAngleList anglesOfMotors);
+	};
 };

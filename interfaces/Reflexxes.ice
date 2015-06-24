@@ -10,14 +10,16 @@
 #define ROBOCOMPREFLEXXES_ICE
 
 module RoboCompReflexxes{
-	struct Motor
-	{
+	["cpp:comparable"]
+	struct Motor{
 		string name;
 		float angle;
 	};
 	sequence<Motor> MotorAngleList;
 	
-	void setJointPosition(MotorAngleList newAnglesOfMotors);
-	bool getStatePosition(MotorAngleList anglesOfMotors);
+	interface Reflexxes{
+		void setJointPosition(MotorAngleList newAnglesOfMotors);
+		bool getStatePosition(MotorAngleList anglesOfMotors);
+	};
 };
 #endif
