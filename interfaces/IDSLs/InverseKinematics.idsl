@@ -39,6 +39,7 @@ module RoboCompInverseKinematics
 	struct TargetState
 	{
 		bool finish;
+		string state;
 		int elapsedTime;
 		float errorT;
 		float errorR;
