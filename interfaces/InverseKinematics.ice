@@ -44,6 +44,7 @@ module RoboCompInverseKinematics{
 	["cpp:comparable"]
 	struct TargetState{
 		bool finish;
+		string state;
 		int elapsedTime;
 		float errorT;
 		float errorR;
