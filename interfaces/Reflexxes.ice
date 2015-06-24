@@ -14,6 +14,7 @@ module RoboCompReflexxes{
 	struct Motor{
 		string name;
 		float angle;
+		float speed;
 	};
 	sequence<Motor> MotorAngleList;
 	
