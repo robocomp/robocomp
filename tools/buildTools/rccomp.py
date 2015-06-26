@@ -16,7 +16,9 @@ def main():
         for component in components:
             componentsname.append(component.split('/')[ len(component.split('/')) -1 ])
         opstring = "   ".join(componentsname)
-    print(opstring)
+        print(opstring)
+    else:
+        parser.error("sorry no such option is available ")
 
 if __name__ == '__main__':
     main()
