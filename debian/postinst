@@ -1,6 +1,7 @@
 #!/bin/bash
 set -e
+user="$(users| awk '{print $1;}')"
 sudo echo "/opt/robocomp/lib">> /etc/ld.so.conf
 sudo ldconfig
-sudo echo 'source /opt/robocomp/share/setup.sh' >> /etc/profile
-source /etc/profile
+sudo echo 'source /opt/robocomp/share/setup.sh' >> /home/$user/.bashrc
+source /home/$user/.bashrc
