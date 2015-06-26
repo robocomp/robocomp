@@ -3,5 +3,5 @@ set -e
 user="$(users| awk '{print $1;}')"
 sudo sed -i "/\/opt\/robocomp\/lib/d" /etc/ld.so.conf
 sudo ldconfig
-sudo sed -i "source \/opt\/robocomp\/share\/setup.sh" /etc/profile
+sudo sed -i "/source \/opt\/robocomp\/share\/setup/d" /etc/profile
 source /etc/profile
