@@ -45,7 +45,7 @@ def build_docs(component,install=False,installpath='/opt/robocomp'):
     if install == True:
         try:
             os.system('mkdir -p '+installpath+'/doc')
-            os.system('cp -R doc/html '+installpath+'/doc/'+string.lower(component))
+            os.system(' sudo cp -R doc/html '+installpath+'/doc/'+string.lower(component))
         except Exception, e:
             pass
     else:
@@ -73,7 +73,7 @@ def main():
             os.chdir("./build")
             os.system("cmake ../src")
             if args.installdoc or args.doc:
-                print("Docs can oly be generated for one component at a time")
+                print("\n\nDocs can oly be generated for one component at a time\n")
             else:
                 if args.install:
                     os.system('sudo make install')
