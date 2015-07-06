@@ -51,15 +51,16 @@ module RoboCompInverseKinematics{
 		MotorList motors;
 	};
 
-	interface InverseKinematics{
-		TargetState getTargetState		(string bodyPart, int targetID);
-		int			setTargetPose6D		(string bodyPart, Pose6D target, WeightVector weights)throws IKException;
-		int   		setTargetAlignaxis	(string bodyPart, Pose6D target, Axis ax) throws IKException;
-		int 		setTargetAdvanceAxis(string bodyPart, Axis ax, float dist) throws IKException;
-		bool 		getPartState		(string bodyPart);
+	interface InverseKinematics
+	{
+		TargetState getTargetState(string bodyPart, int targetID);
+		int setTargetPose6D(string bodyPart, Pose6D target, WeightVector weights) throws IKException;
+		int setTargetAlignaxis(string bodyPart, Pose6D target, Axis ax) throws IKException;
+		int setTargetAdvanceAxis(string bodyPart, Axis ax, float dist) throws IKException;
+		bool getPartState(string bodyPart);
 
-		void  		goHome			(string bodyPart) throws IKException;
-		void  		stop			(string bodyPart);
+		void goHome(string bodyPart) throws IKException;
+		void stop(string bodyPart);
 	};
 };
   
