@@ -1,0 +1,8 @@
+/interfaces/TrajectoryRobot2D.ice
+trajectoryrobot2d
+localhost
+tcp
+12204
+30
+trajectoryrobot2d.py
+

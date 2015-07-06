@@ -44,23 +44,24 @@ module RoboCompInverseKinematics{
 	["cpp:comparable"]
 	struct TargetState{
 		bool finish;
+		string state;
 		int elapsedTime;
-		int estimatedEndTime;
 		float errorT;
 		float errorR;
 		MotorList motors;
 	};
 
-	interface InverseKinematics
-	{
+	interface InverseKinematics{
 		TargetState getTargetState(string bodyPart, int targetID);
-		int setTargetPose6D(string bodyPart, Pose6D target, WeightVector weights) throws IKException;
+		int setTargetPose6D(string bodyPart, Pose6D target, WeightVector weights)throws IKException;
 		int setTargetAlignaxis(string bodyPart, Pose6D target, Axis ax) throws IKException;
-		int setTargetAdvanceAxis(string bodyPart, Axis ax, float dist) throws IKException;
-		bool getPartState(string bodyPart);
+		int etTargetAdvanceAxis(string bodyPart, Axis ax, float dist) throws IKException;
+		bool getPartState(string bodyPart) throws IKException;
 
 		void goHome(string bodyPart) throws IKException;
-		void stop(string bodyPart);
+		void stop(string bodyPart) throws IKException;
+		void setJoint(string joint, float angle, float maxSpeed)throws IKException;
+		void setFingers(float d)throws IKException;
 	};
 };
   

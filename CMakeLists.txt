@@ -93,7 +93,8 @@ SUBDIRS(
 	tools/rcinnerModelSimulator
 	tools/rcmanager
 	tools/rcmonitor
-	tools/rcremote
+  tools/rcremote
+	tools/buildTools
 )
 
 # Install rules necessary to allow compiling components without the robocomp's source code

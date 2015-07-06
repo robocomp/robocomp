@@ -31,7 +31,7 @@ if( CPACK_DEBIAN_PACKAGE_SOURCE_COPY )
   execute_process(COMMAND ${CPACK_DEBIAN_PACKAGE_SOURCE_COPY} "${CMAKE_SOURCE_DIR}" "${DEBIAN_SOURCE_ORIG_DIR}")
 else( CPACK_DEBIAN_PACKAGE_SOURCE_COPY )
   MESSAGE(STATUS "Copying files from ${DEB_SRC_DIR} to ${DEBIAN_SOURCE_ORIG_DIR}")
-  file(COPY "${DEB_SRC_DIR}/" DESTINATION "${DEBIAN_SOURCE_ORIG_DIR}" REGEX build|debian|components EXCLUDE)
+  file(COPY "${DEB_SRC_DIR}/" DESTINATION "${DEBIAN_SOURCE_ORIG_DIR}" REGEX "(build|debian|components)$" EXCLUDE)
   MESSAGE(STATUS "Removing .git from source-orig-dir. ")
   execute_process(COMMAND ${CMAKE_COMMAND} -E remove_directory "${DEBIAN_SOURCE_ORIG_DIR}/.git")
  #MESSAGE(STATUS "Removing non-essential components from source-orig-dir ")
@@ -83,6 +83,11 @@ file(MAKE_DIRECTORY ${DEBIAN_SOURCE_DIR}/debian)
  #copying rule file
  MESSAGE(STATUS  "copying rules")
   file(COPY ${DEB_SRC_DIR}/debian/rules DESTINATION ${DEBIAN_SOURCE_DIR}/debian)
+
+##############################################################################
+ #copying fix_up file
+ MESSAGE(STATUS  "copying ")
+  file(COPY ${DEB_SRC_DIR}/debian/fixup_deb.sh.in DESTINATION ${DEBIAN_SOURCE_DIR}/debian)
 
 ##############################################################################
  #copying readme file

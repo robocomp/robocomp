@@ -1,6 +1,6 @@
-#Packaging Robocomp
+-#Packaging Robocomp
 
-##deb packages
+##deb binary packages
 
 we are using Cpack integrated with CMake for packaging robocomp.
 
@@ -32,7 +32,7 @@ For uploading the package to ppa, First change the **PPA\_PGP\_KEY** in [package
 building of source package can be tested with:
     
     cd Debian/robocomp-<version>
-    debuild -i -us -uc
+    debuild -i -us -uc -S
 
 If you are uploading a new version of robocomp, change the version number  accordingly in the [toplevel cmake](../CMakeLists.txt#L31) before building, and then upload the source package as mentioned.
 

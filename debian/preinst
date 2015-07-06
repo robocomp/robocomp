@@ -1,6 +1,2 @@
 #!/bin/bash
 set -e
-user="$(users| awk '{print $1;}')"
-sudo echo "export ROBOCOMP=/home/$user/robocomp" >> /etc/profile
-sudo echo 'export PATH=$PATH:/opt/robocomp/bin' >> /etc/profile
-source /etc/profile

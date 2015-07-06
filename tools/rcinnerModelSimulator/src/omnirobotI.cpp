@@ -110,8 +110,8 @@ void OmniRobotI::updateInnerModelPose(bool force)
 	const double noise = node->noise;
 
 	// Random noise:
-	QVec rndmPos = QVec::gaussianSamples(2, 0, noise*(0.01*vel.norm2() + 0.1*rotVel));
-	QVec rndmYaw = QVec::gaussianSamples(1, 0, noise*(0.01*vel.norm2() + 0.1*rotVel));
+	QVec rndmPos = QVec::gaussianSamples(2, 0, msecs*noise*(0.001 *vel.norm2() + 0.01 *rotVel));
+	QVec rndmYaw = QVec::gaussianSamples(1, 0, msecs*noise*(0.0001*vel.norm2() + 0.001*rotVel));
 
 	// Without noise
 	QVec T = vel.operator*(msecs / 1000.);

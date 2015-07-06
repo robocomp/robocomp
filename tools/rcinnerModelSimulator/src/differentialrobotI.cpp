@@ -192,7 +192,7 @@ void DifferentialRobotI::updateInnerModelPose(bool force)
 
 	QVec backNoisyNewPos = innerModel->transform(parent->id, QVec::vec3(0,0,0), id);
 	float backNoisyAngle = noisyNewAngle;
-	noisyNewAngle += Angle+((rndmYaw[0]*noise));
+	noisyNewAngle += Angle+((rndmYaw[0]));
 	noisyNewPos = innerModel->transform(parent->id, QVec::vec3(Ax1, 0, Az1), id);
 	innerModel->updateTransformValues(id, noisyNewPos(0), noisyNewPos(1), noisyNewPos(2), 0, noisyNewAngle, 0);
 	if (canMoveBaseTo(id, noisyNewPos, noisyNewAngle+Angle+(rndmYaw[0]*noise) ))
