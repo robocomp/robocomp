@@ -52,16 +52,16 @@ module RoboCompInverseKinematics{
 	};
 
 	interface InverseKinematics{
-		TargetState getTargetState(string bodyPart, int targetID);
-		int setTargetPose6D(string bodyPart, Pose6D target, WeightVector weights)throws IKException;
-		int setTargetAlignaxis(string bodyPart, Pose6D target, Axis ax) throws IKException;
-		int etTargetAdvanceAxis(string bodyPart, Axis ax, float dist) throws IKException;
-		bool getPartState(string bodyPart) throws IKException;
+		TargetState getTargetState		(string bodyPart, int targetID);
+		int			setTargetPose6D		(string bodyPart, Pose6D target, WeightVector weights)throws IKException;
+		int   		setTargetAlignaxis	(string bodyPart, Pose6D target, Axis ax) throws IKException;
+		int 		setTargetAdvanceAxis(string bodyPart, Axis ax, float dist) throws IKException;
+		bool 		getPartState		(string bodyPart) throws IKException;
 
-		void goHome(string bodyPart) throws IKException;
-		void stop(string bodyPart) throws IKException;
-		void setJoint(string joint, float angle, float maxSpeed)throws IKException;
-		void setFingers(float d)throws IKException;
+		void  		goHome			(string bodyPart) throws IKException;
+		void  		stop			(string bodyPart) throws IKException;
+		void 		setJoint		(string joint, float angle, float maxSpeed)throws IKException;
+		void  		setFingers		(float d)throws IKException;
 	};
 };
   
