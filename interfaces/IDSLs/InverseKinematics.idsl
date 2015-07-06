@@ -4,6 +4,7 @@ module RoboCompInverseKinematics
 	{
 		string text;
 	};
+
 	struct Pose6D
 	{
 		//string bodyPart;
@@ -15,6 +16,7 @@ module RoboCompInverseKinematics
 		float ry;
 		float rz;
 	};
+
 	struct WeightVector //Multiplies the error vector as E(q) = e' W e;
 	{
 		float x;
@@ -24,18 +26,22 @@ module RoboCompInverseKinematics
 		float ry;
 		float rz;
 	};
+
 	struct Axis
 	{
 		float x;
 		float y;
 		float z;
 	};
+
 	struct Motor
 	{
 		string name;
 		float angle;
 	};
+
 	sequence<Motor> MotorList;
+
 	struct TargetState
 	{
 		bool finish;

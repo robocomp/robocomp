@@ -11,8 +11,10 @@
 
 module RoboCompInverseKinematics{
 	exception IKException{string text;};
+
 	["cpp:comparable"]
-	struct Pose6D{
+	struct Pose6D
+	{
 		float x;
 		float y;
 		float z;
@@ -20,8 +22,10 @@ module RoboCompInverseKinematics{
 		float ry;
 		float rz;
 	};
+
 	["cpp:comparable"]
-	struct WeightVector{
+	struct WeightVector
+	{
 		float x;
 		float y;
 		float z;
@@ -29,20 +33,27 @@ module RoboCompInverseKinematics{
 		float ry;
 		float rz;
 	};
+
 	["cpp:comparable"]
-	struct Axis{
+	struct Axis
+	{
 		float x;
 		float y;
 		float z;
 	};
+
 	["cpp:comparable"]
-	struct Motor{
+	struct Motor
+	{
 		string name;
 		float angle;
 	};
+
 	sequence<Motor> MotorList;
+
 	["cpp:comparable"]
-	struct TargetState{
+	struct TargetState
+	{
 		bool finish;
 		string state;
 		int elapsedTime;
@@ -51,17 +62,18 @@ module RoboCompInverseKinematics{
 		MotorList motors;
 	};
 
-	interface InverseKinematics{
-		TargetState getTargetState		(string bodyPart, int targetID);
-		int			setTargetPose6D		(string bodyPart, Pose6D target, WeightVector weights)throws IKException;
-		int   		setTargetAlignaxis	(string bodyPart, Pose6D target, Axis ax) throws IKException;
-		int 		setTargetAdvanceAxis(string bodyPart, Axis ax, float dist) throws IKException;
-		bool 		getPartState		(string bodyPart) throws IKException;
+	interface InverseKinematics
+	{
+		TargetState getTargetState(string bodyPart, int targetID);
+		int setTargetPose6D(string bodyPart, Pose6D target, WeightVector weights)throws IKException;
+		int setTargetAlignaxis(string bodyPart, Pose6D target, Axis ax) throws IKException;
+		int setTargetAdvanceAxis(string bodyPart, Axis ax, float dist) throws IKException;
+		bool getPartState(string bodyPart) throws IKException;
 
-		void  		goHome			(string bodyPart) throws IKException;
-		void  		stop			(string bodyPart) throws IKException;
-		void 		setJoint		(string joint, float angle, float maxSpeed)throws IKException;
-		void  		setFingers		(float d)throws IKException;
+		void goHome(string bodyPart) throws IKException;
+		void stop(string bodyPart) throws IKException;
+		void setJoint(string joint, float angle, float maxSpeed)throws IKException;
+		void setFingers(float d)throws IKException;
 	};
 };
   
