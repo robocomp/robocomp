@@ -74,7 +74,7 @@ public:
 	void setClearColor(QVec color) { getCamera()->setClearColor(osg::Vec4(color(0), color(1), color(2), (color.size()>3?color(3):1))); }
 // 	QVector<laserMeasure> laserData;
 
-	OsgView(QWidget * parent,  bool hud= false,  const QGLWidget * shareWidget = 0, WindowFlags f = 0);
+	OsgView(QWidget *parent=NULL,  bool hud= false,  const QGLWidget * shareWidget = 0, WindowFlags f = 0);
 	~OsgView();
 	virtual void paintGL();
 	osgViewer::GraphicsWindow* getGraphicsWindow() { return _gw.get(); }
