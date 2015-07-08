@@ -12,7 +12,7 @@
 module AprilBasedLocalization{
 	
 	interface AprilBasedLocalization{
-		void  newPose(float x, float z, float alpha);
+		void  newAprilBasedPose(float x, float z, float alpha);
 	};
 };
   
