@@ -1,4 +1,4 @@
-module CGR{
+module RoboCompCGR{
 
 	interface CGR{
 		void newCGRPose(float x, float z, float alpha);

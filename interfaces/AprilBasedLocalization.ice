@@ -6,10 +6,10 @@
 //  Source: AprilBasedLocalization.idsl
 //  
 //******************************************************************   
-#ifndef APRILBASEDLOCALIZATION_ICE
-#define APRILBASEDLOCALIZATION_ICE
+#ifndef ROBOCOMPAPRILBASEDLOCALIZATION_ICE
+#define ROBOCOMPAPRILBASEDLOCALIZATION_ICE
 
-module AprilBasedLocalization{
+module RoboCompAprilBasedLocalization{
 	
 	interface AprilBasedLocalization{
 		void  newAprilBasedPose(float x, float z, float alpha);

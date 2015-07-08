@@ -6,10 +6,10 @@
 //  Source: CGR.idsl
 //  
 //******************************************************************   
-#ifndef CGR_ICE
-#define CGR_ICE
+#ifndef ROBOCOMPCGR_ICE
+#define ROBOCOMPCGR_ICE
 
-module CGR{
+module RoboCompCGR{
 	
 	interface CGR{
 		void  newCGRPose(float x, float z, float alpha);
