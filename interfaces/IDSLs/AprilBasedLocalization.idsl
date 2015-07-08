@@ -1,0 +1,6 @@
+module AprilBasedLocalization{
+
+	interface AprilBasedLocalization{
+		void newPose(float x, float z, float alpha);
+	};
+};
