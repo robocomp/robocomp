@@ -25,11 +25,17 @@ def build_component(bcomponent,install):
     #build
     os.chdir(srcpath)
     os.chdir("../build")
-    os.system("cmake ../src")
-    if install == True:
+    if install != 'notgiven' and install:
+        os.system("cmake ../src -DRC_COMPONENT_INSTALL_PATH='"+str(os.path.abspath(install)) + "'")
+    else:
+        os.system('cmake ../src')
+
+    if install == 'notgiven':
+        os.system('make')
+    elif install == None:
         os.system("sudo make install")
     else:
-        os.system("make")
+        os.system("make install ")
     
     #unignore other components
     for comp in ignored_comps:
@@ -58,7 +64,7 @@ def main():
     parser = argparse.ArgumentParser(description="configures and build components ")
     group = parser.add_mutually_exclusive_group()
     parser.add_argument('component', nargs='?', help='name of the component to build, if omitted curent workspace is build')
-    group.add_argument('-i','--install', action = 'store_true' , help="build and install the components")
+    group.add_argument('-i','--install',nargs='?' , default = 'notgiven' , help="install the component(s) to given path(relative from build space or abs), defaults to /opt/robocomp")
     group.add_argument('--doc', action = 'store_true' , help="generate documentation")
     group.add_argument('--installdoc', action = 'store_true' , help="install documentation")
     
@@ -80,14 +86,21 @@ def main():
                     build_component(rest[2],args.install)
             else:
                 os.chdir(wspath+"/build")
-                os.system("cmake ../src")
+                
+                if args.install != 'notgiven' and args.install:
+                    os.system("cmake ../src -DRC_COMPONENT_INSTALL_PATH='"+str(os.path.abspath(args.install)) + "'")
+                else:
+                    os.system('cmake ../src')
+
                 if args.installdoc or args.doc:
                     print("\nDocs can oly be generated for one component at a time")
                 else:
-                    if args.install:
-                        os.system('sudo make install')
-                    else:
+                    if args.install == 'notgiven':
                         os.system('make')
+                    elif args.install == None:
+                        os.system("sudo make install")
+                    else:
+                        os.system("make install ")
         else:
             parser.error("This is not a valid robocomp workspace")
     

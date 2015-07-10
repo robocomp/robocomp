@@ -6,6 +6,9 @@ import os
 import string
 from workspace import workspace as WS
 
+####TO-DO ###
+#run installed components
+
 def find_script(action,component):
     paths = WS.find_component_exec(component)
     pathsrc = WS.find_component_src(component)
