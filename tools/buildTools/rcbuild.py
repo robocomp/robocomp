@@ -47,7 +47,7 @@ def build_docs(component,install=False,installpath='/opt/robocomp'):
             os.system('mkdir -p '+installpath+'/doc')
             os.system(' sudo cp -R doc/html '+installpath+'/doc/'+string.lower(component))
         except Exception, e:
-            pass
+            raise RuntimeError("couldnt install doc files {0}".format(e))
     else:
         try:
             os.system('doxygen Doxyfile')    
@@ -66,23 +66,14 @@ def main():
 
     if not args.component:
         cpath = os.path.abspath('.')
-        wspath = WS.find_workspace(cpath)
+        wspath = WS.find_workspace(cpath) #see if path consisits of an workspace 
         
-        if os.path.exists(".rc_workspace"):
-            #if we are at the workspace base directory
-            os.chdir("./build")
-            os.system("cmake ../src")
-            if args.installdoc or args.doc:
-                print("\n\nDocs can oly be generated for one component at a time\n")
-            else:
-                if args.install:
-                    os.system('sudo make install')
-                else:
-                    os.system('make')
-        elif wspath:
+        if wspath:
             #if we are inside a workspace
+            
             rest = cpath[len(wspath):].split('/')
             if len(rest) >= 3 and rest[1] =='src' :
+                #if we are inside a component source directory
                 if args.doc or args.installdoc:
                     build_docs(rest[2],args.installdoc)
                 else:
@@ -91,7 +82,7 @@ def main():
                 os.chdir(wspath+"/build")
                 os.system("cmake ../src")
                 if args.installdoc or args.doc:
-                    print("Docs can oly be generated for one component at a time")
+                    print("\nDocs can oly be generated for one component at a time")
                 else:
                     if args.install:
                         os.system('sudo make install')

@@ -48,6 +48,10 @@ class Workspace:
                 except Exception as copyEx:
                     raise RuntimeError('Could neither copy or simlink %s to %s : \n %s \n %s' % (src,dst,str(symlinkEx),str(copyEx)))
 
+        #if already in a workspace, throw error
+        if self.find_workspace(ws_path):
+            raise RuntimeError("Sorry, you cant create workspace inside an existing one \n")
+
         try:
             os.system('touch {0}/{1}'.format(ws_path,str(".rc_workspace")))
             dirs = ["src","build","install"]
