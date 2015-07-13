@@ -64,6 +64,8 @@ try:
 		cog.outl("<TABHERE>active = false;")
 		cog.outl("<TABHERE>worldModel = AGMModel::SPtr(new AGMModel());")
 		cog.outl("<TABHERE>worldModel->name = "+"\"worldModel\";")
+		cog.outl("<TABHERE>innerModel = new InnerModel();")
+		
 except:
 	pass
 
@@ -169,9 +171,9 @@ for imp in ll:
 				#code for subscribesTo AGMExecutiveTopic
 				###################################### 
 				if method['name'] == 'structuralChange':
-					bodyCode = "<TABHERE>mutex->lock();\n <TABHERE>AGMModelConverter::fromIceToInternal(modification.newModel, worldModel);\n <TABHERE>mutex->unlock();"
+					bodyCode = "<TABHERE>mutex->lock();\n <TABHERE>AGMModelConverter::fromIceToInternal(modification.newModel, worldModel);\n \nagmInner.setWorld(worldModel)\n;innerModel = agmInner.extractInnerModel();\n<TABHERE>mutex->unlock();"
 				if method['name'] == 'symbolUpdated' or method['name'] == 'edgeUpdated':
-					bodyCode = "<TABHERE>mutex->lock();\n <TABHERE>AGMModelConverter::includeIceModificationInInternalModel(modification, worldModel);\n <TABHERE>mutex->unlock();"
+					bodyCode = "<TABHERE>mutex->lock();\n <TABHERE>AGMModelConverter::includeIceModificationInInternalModel(modification, worldModel);\n \nagmInner.setWorld(worldModel)\n;innerModel = agmInner.extractInnerModel();\n<TABHERE>mutex->unlock();"
 					
 				###################################### 
 				#code for implements AGMCommonBehavior.
