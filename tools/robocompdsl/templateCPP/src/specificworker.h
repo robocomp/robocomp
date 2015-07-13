@@ -79,19 +79,6 @@ except:
 #include <genericworker.h>
 #include <innermodel/innermodel.h>
 
-[[[cog
-
-try:
-	if 'agmagent' in [ x.lower() for x in component['options'] ]:
-		cog.outl("#include <agm.h>")
-
-
-except:
-	pass
-
-]]]
-[[[end]]]
-
 class SpecificWorker : public GenericWorker
 {
 Q_OBJECT
