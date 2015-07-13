@@ -171,9 +171,9 @@ for imp in ll:
 				#code for subscribesTo AGMExecutiveTopic
 				###################################### 
 				if method['name'] == 'structuralChange':
-					bodyCode = "<TABHERE>mutex->lock();\n <TABHERE>AGMModelConverter::fromIceToInternal(modification.newModel, worldModel);\n \nagmInner.setWorld(worldModel);\ninnerModel = agmInner.extractInnerModel();\n<TABHERE>mutex->unlock();"
+					bodyCode = "<TABHERE>mutex->lock();\n <TABHERE>AGMModelConverter::fromIceToInternal(modification.newModel, worldModel);\n \n<TABHERE>agmInner.setWorld(worldModel);\n<TABHERE>innerModel = agmInner.extractInnerModel();\n<TABHERE>mutex->unlock();"
 				if method['name'] == 'symbolUpdated' or method['name'] == 'edgeUpdated':
-					bodyCode = "<TABHERE>mutex->lock();\n <TABHERE>AGMModelConverter::includeIceModificationInInternalModel(modification, worldModel);\n \nagmInner.setWorld(worldModel);\ninnerModel = agmInner.extractInnerModel();\n<TABHERE>mutex->unlock();"
+					bodyCode = "<TABHERE>mutex->lock();\n <TABHERE>AGMModelConverter::includeIceModificationInInternalModel(modification, worldModel);\n \n<TABHERE>agmInner.setWorld(worldModel);\n<TABHERE>innerModel = agmInner.extractInnerModel();\n<TABHERE>mutex->unlock();"
 					
 				###################################### 
 				#code for implements AGMCommonBehavior.
