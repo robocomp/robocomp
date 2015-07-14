@@ -77,6 +77,7 @@ for m in pool.modulePool:
 try:
 	if 'agmagent' in [ x.lower() for x in component['options'] ]:
 		cog.outl("#include <agm.h>")
+		cog.outl("#include <agmInner/agmInner.h>")
 
 
 except:
@@ -205,6 +206,7 @@ try:
 		cog.outl("<TABHERE>AGMModel::SPtr worldModel;")
 		cog.outl("<TABHERE>BehaviorParameters p;")
 		cog.outl("<TABHERE>ParameterMap params;")
+		cog.outl("<TABHERE>AgmInner agmInner;")
 		cog.outl("<TABHERE>int iter;")
 		cog.outl("<TABHERE>bool setParametersAndPossibleActivation(const ParameterMap &prs, bool &reactivated);")
 		cog.outl("<TABHERE>RoboCompPlanning::Action createAction(std::string s);")

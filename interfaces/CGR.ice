@@ -11,8 +11,11 @@
 
 module RoboCompCGR{
 	
+	interface CGRTopic{
+		void  newCGRPose(float poseUncertainty, float x, float z, float alpha);
+	};
 	interface CGR{
-		void  newCGRPose(float x, float z, float alpha);
+		void resetPose(float x, float z, float alpha);
 	};
 };
   
