@@ -13,6 +13,14 @@ def complete_components(prefix, parsed_args, **kwargs):
         componentsname.append(component.split('/')[ len(component.split('/')) -1 ])
     return (componentname for componentname in componentsname if componentname.startswith(prefix))
 
+def complete_scripts(prefix, parsed_args, **kwargs):
+    configPath = WS.find_component_exec('testcomp1')
+    if not configPath: return
+    configPath = configPath[:-4]+ '/etc'
+    configFiles = []
+    for root, dirs, files in os.walk(configPath): configFiles = files
+    return (configfile for configfile in configFiles if configfile.startswith(prefix))
+
 def find_script(action,component):
     paths = WS.find_component_exec(component)
     pathsrc = WS.find_component_src(component)
@@ -35,7 +43,7 @@ def main():
     group.add_argument('-fst', '--fstop', action = 'store_true' , help=" force stop component")
     cgroup.add_argument('-d', '--debug', action = 'store_true' , help="start a component in debug mode")
     cgroup.add_argument('-cf', '--cfile', nargs = 1 , help="use custom ice config file (absolute path)")
-    cgroup.add_argument('-c', '--config', nargs = 1 , help="ice config file to choose from default config directory")
+    cgroup.add_argument('-c', '--config', nargs = 1 , help="ice config file to choose from default config directory").completer = complete_scripts
     parser.add_argument('-is','--ignore_scripts', action='store_true',help="ignore all the script files if found")
     
     argcomplete.autocomplete(parser)
