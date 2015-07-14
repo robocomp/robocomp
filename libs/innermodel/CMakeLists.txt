@@ -6,12 +6,14 @@ set(srcs
 	innermodel.cpp
 	innermodelreader.cpp
 	innermodelviewer.cpp
+	innermodeldraw.cpp
 )
 
 set(incs
     ${CMAKE_CURRENT_BINARY_DIR}/include/${LIB_NAME}/innermodel.h
     include/${LIB_NAME}/innermodelreader.h
     include/${LIB_NAME}/innermodelviewer.h
+    include/${LIB_NAME}/innermodeldraw.h
 )
     
 # FCL
@@ -32,9 +34,9 @@ include_directories("${CMAKE_CURRENT_BINARY_DIR}/include")
 
 configure_file ("include/${LIB_NAME}/innermodel.in.h" "include/${LIB_NAME}/innermodel.h")
 
-   
+
 # Python bindings
-set(Boost_USE_STATIC_LIBS   OFF)
+set(Boost_USE_STATIC_LIBS OFF)
 set(Boost_USE_MULTITHREADED ON)
 if (PYTHON_BINDINGS_SUPPORT)
 	# Add bindings source code file

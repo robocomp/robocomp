@@ -116,12 +116,20 @@ osg::ref_ptr<osg::Image> OsgView::getImageHUD ( )
 
 OsgView::OsgView(QWidget* parent, bool hud, const QGLWidget* shareWidget, WindowFlags f): QGLWidget(parent, shareWidget, f) , osgViewer::Viewer()
 {
-	_gw = new osgViewer::GraphicsWindowEmbedded(0,0,parent->width(),parent->height());
-	setParent( parent);
 	setFocusPolicy(Qt::StrongFocus);
-	resize(parent->width(), parent->height());
+	if (parent)
+	{
+		_gw = new osgViewer::GraphicsWindowEmbedded(0,0,parent->width(),parent->height());
+		setParent( parent);
+		resize(parent->width(), parent->height());
+	}
+	else
+	{
+		_gw = new osgViewer::GraphicsWindowEmbedded(0,0,800,800);
+		resize(800,800);
+	}
 	osg::DisplaySettings::instance()->setNumMultiSamples( 4 );
-	getCamera()->setViewport(new osg::Viewport(0,0,parent->width(),parent->height()));
+	getCamera()->setViewport(new osg::Viewport(0, 0, width(), height()));
 	getCamera()->setGraphicsContext(getGraphicsWindow());
 
 	if (hud )
@@ -141,7 +149,7 @@ OsgView::OsgView(QWidget* parent, bool hud, const QGLWidget* shareWidget, Window
 	}
 	else
 	{
-		getCamera()->setProjectionMatrixAsPerspective(55.0f, static_cast<double>(parent->width())/static_cast<double>(parent->height()), 0.000001, 100000.0);
+		getCamera()->setProjectionMatrixAsPerspective(55.0f, static_cast<double>(width())/static_cast<double>(height()), 0.000001, 100000.0);
 		getCamera()->setClearColor(osg::Vec4(0.,0.,0.,1.));
  		setThreadingModel(osgViewer::Viewer::SingleThreaded);
 		osg::DisplaySettings::instance()->setNumMultiSamples( 4 );

@@ -6,6 +6,7 @@
 #include <qmat/qmat.h>
 
 #include <innermodel/innermodel.h>
+#include <innermodel/innermodeldraw.h>
 
 using namespace RMat;
 using namespace boost::python;
@@ -20,13 +21,35 @@ BOOST_PYTHON_MODULE(librobocomp_innermodel)
 	 .def(init<std::string>())
 	 .def(init<InnerModel &>())
 	 .def("updateTransformValues", &InnerModel::updateTransformValuesS,
-	        (arg("transformId"), arg("tx"), arg("ty"), arg("tz"), arg("rx"), arg("ry"), arg("rz"), arg("parentId")="")
+	     (
+	         arg("transformId"),
+	         arg("tx"), arg("ty"), arg("tz"),
+	         arg("rx"), arg("ry"), arg("rz"),
+	         arg("parentId")=""
 	     )
+	 )
 	 .def("transform", &InnerModel::transformS)
 	 .def("getTransformationMatrix", &InnerModel::getTransformationMatrixS)
 	 .def("getParentIdentifier", &InnerModel::getParentIdentifierS)
-
     ;
+	
+	/*
+	class_<InnerModelDraw>("OsgView", init<>());
+	
+	class_<InnerModelDraw>("InnerModelDraw", init<>())
+	 .def("createViewer", &InnerModelDraw::createViewer)
+	 .def("addPlane_ignoreExisting", &InnerModelDraw::addPlane_ignoreExisting,
+	     (
+	        arg("innerViewer"),
+	        arg("id"),
+	        arg("root"),
+	        arg("pose"),
+	        arg("normal"),
+	        arg("color"),
+	        arg("size")
+	     )
+	 )
+	;*/
 
 
 // 	class_<InnerModelTransform>("InnerModelTransform", init<>())

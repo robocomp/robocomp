@@ -1,0 +1,6 @@
+module RoboCompAprilBasedLocalization{
+
+	interface AprilBasedLocalization{
+		void newAprilBasedPose(float x, float z, float alpha);
+	};
+};
