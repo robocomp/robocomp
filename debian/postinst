@@ -5,3 +5,6 @@ sudo echo "/opt/robocomp/lib">> /etc/ld.so.conf
 sudo ldconfig
 sudo echo 'source /opt/robocomp/share/setup.sh' >> /home/$user/.bashrc
 source /home/$user/.bashrc
+
+#activate argcomplete
+sudo activate-global-python-argcomplete
