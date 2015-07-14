@@ -24,7 +24,7 @@ def main():
     
     editor = os.environ.get('EDITOR')
     if not editor:
-        editor = 'vim'
+        editor = 'vi'
     
     if len(filelist) == 1:
         command = editor +  " " + filelist[0][1]
