@@ -1,10 +1,17 @@
-#!/usr/bin/python
-
+#!/usr/bin/env python
+# PYTHON_ARGCOMPLETE_OK
 from __future__ import print_function
+import argparse, argcomplete
 import os
 import sys
-import argparse
 from workspace import workspace as WS
+
+def complete_components(prefix, parsed_args, **kwargs):
+    components = WS.list_packages(WS.workspace_paths)
+    componentsname=[]
+    for component in components:
+        componentsname.append(component.split('/')[ len(component.split('/')) -1 ])
+    return (componentname for componentname in componentsname if componentname.startswith(prefix))
 
 def build_component(bcomponent,install):
     paths = WS.find_component_src(bcomponent)
@@ -63,11 +70,12 @@ def build_docs(component,install=False,installpath='/opt/robocomp'):
 def main():
     parser = argparse.ArgumentParser(description="configures and build components ")
     group = parser.add_mutually_exclusive_group()
-    parser.add_argument('component', nargs='?', help='name of the component to build, if omitted curent workspace is build')
+    parser.add_argument('component', nargs='?', help='name of the component to build, if omitted curent workspace is build').completer = complete_components
     group.add_argument('-i','--install',nargs='?' , default = 'notgiven' , help="install the component(s) to given path(relative from build space or abs), defaults to /opt/robocomp")
     group.add_argument('--doc', action = 'store_true' , help="generate documentation")
     group.add_argument('--installdoc', action = 'store_true' , help="install documentation")
     
+    argcomplete.autocomplete(parser)
     args = parser.parse_args()
 
     if not args.component:

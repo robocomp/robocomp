@@ -6,16 +6,12 @@ import os
 import string
 from workspace import workspace as WS
 
-####TO-DO ###
-#run installed components?
-
 def complete_components(prefix, parsed_args, **kwargs):
     components = WS.list_packages(WS.workspace_paths)
     componentsname=[]
     for component in components:
         componentsname.append(component.split('/')[ len(component.split('/')) -1 ])
     return (componentname for componentname in componentsname if componentname.startswith(prefix))
-
 
 def find_script(action,component):
     paths = WS.find_component_exec(component)
