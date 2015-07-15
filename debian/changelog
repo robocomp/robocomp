@@ -2,4 +2,4 @@ robocomp (1.0-0ppa1) trusty; urgency=low
 
   * Package built with CMake
 
- -- Luis J. Manso <lmanso@unex.es>  Fri, 26 Jun 2015 05:42:55 +0530
+ -- Luis J. Manso <lmanso@unex.es>  Wed, 15 Jul 2015 13:18:20 +0530
