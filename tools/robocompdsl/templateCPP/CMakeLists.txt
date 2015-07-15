@@ -28,7 +28,7 @@ SET(RC_COMPONENT_DEVEL_PATH "${CMAKE_CURRENT_SOURCE_DIR}" CACHE STRING "componen
 #SET(RC_COMPONENT_DEVEL_PATH "${WORKSPACE_PATH}/devel"  CACHE STRING "component binary path")
 SET(RC_COMPONENT_INSTALL_PATH "/opt/robocomp" CACHE STRING "component install path")
 
-#commented as we are now devel is merged into source space
+#commented as now devel is merged into source space
 #get_filename_component( COMPONENT_NAME ${CMAKE_CURRENT_SOURCE_DIR} DIRECTORY)
 #STRING(REPLACE "${COMPONENT_NAME}/" " " COMPONENT_NAME  ${RC_COMPONENT_PATH})
 #STRING(STRIP ${COMPONENT_NAME} COMPONENT_NAME)

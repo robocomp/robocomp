@@ -1,13 +1,15 @@
-#!/usr/bin/python
-
+#!/usr/bin/env python
+# PYTHON_ARGCOMPLETE_OK
 from __future__ import print_function
 import os
-import argparse
+import argparse, argcomplete
 from workspace import workspace as WS
 
 def main():
     parser = argparse.ArgumentParser(description="provides various info about components")
     parser.add_argument('argument', nargs='?', choices=['list'])
+    
+    argcomplete.autocomplete(parser)
     args = parser.parse_args()
 
     if args.argument=='list':
