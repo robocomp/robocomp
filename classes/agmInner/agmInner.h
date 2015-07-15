@@ -24,10 +24,12 @@
 #define AGMINNER_H
 
 #include <innermodel/innermodel.h>
+#include <qmat/QMatAll>
 #include <agm.h>
 #include <qt4/QtCore/QHash>
 #include <qt4/QtCore/QList>
 #include <qt4/QtCore/QString>
+#include <qt4/QtCore/QStringList>
 #include <iostream>
 #include <string>
 
@@ -46,7 +48,9 @@ public:
 	InnerModel* extractInnerModel(QString imNodeName="world");
 	void recorrer(InnerModel* imNew, int& symbolID);
 	void edgeToInnerModel(AGMModelEdge edge, InnerModel* imNew);
+	QList< int > getLinkedID(int symbolID, string linkType);
 	void checkLoop(int& symbolID, QList< int >& visited, string linkType, bool& loop);
+	void updateAgmWithInnerModel(InnerModel* im);
 
 
 private:

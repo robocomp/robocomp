@@ -21,6 +21,7 @@
  
 
 #include "agmInner.h"
+#include <innermodel/innermodel.h>
 
 AgmInner::AgmInner()
 {
@@ -181,7 +182,7 @@ void AgmInner::edgeToInnerModel(AGMModelEdge edge, InnerModel* imNew)
 // 		nodeA->print(true);
 // 		qDebug()<<"---------";
 	}
-	//TODO hacer que por defecto si en el .xml de agm no se especifican valores de RT ponerlos a 0.
+	
 	float tx,ty,tz,rx,ry,rz;
 	tx=ty=tz=rx=ry=rz=0.;
 	tx = str2float(edge->attributes["tx"]);
@@ -197,5 +198,63 @@ void AgmInner::edgeToInnerModel(AGMModelEdge edge, InnerModel* imNew)
 	nodeA->addChild(nodeB);
 
 }
+
+QList<int> AgmInner::getLinkedID (int symbolID, string linkType)
+{
+	const AGMModelSymbol::SPtr &symbol = worldModel->getSymbol(symbolID);
+	QList<int> l;
+	for (AGMModelSymbol::iterator edge_itr=symbol->edgesBegin(worldModel); edge_itr!=symbol->edgesEnd(worldModel); edge_itr++)
+	{
+		//std::cout<<(*edge_itr).toString(worldModel)<<"\n";			
+		//comprobamos el id del simbolo para evitar los arcos que le llegan y seguir solo los que salen del nodo
+		if ((*edge_itr)->getLabel() == linkType && (*edge_itr)->getSymbolPair().first==symbolID )
+		{
+			
+			l.append((*edge_itr)->getSymbolPair().second);
+		}
+	}
+	return l;
+}
+
+void AgmInner::updateAgmWithInnerModel(InnerModel* im)
+{
+	/// Vector of the edges that the model holds.
+	std::vector<AGMModelEdge> edges;
+	std::cout << "myvector contains:"<<worldModel->edges.size();
+
+	///tal vez sería bueno recorrer primero innerModel con include_im y crear attributes name por cada symbolo, pq puede haberse insertado algun nodo nuevo.
+	for (std::vector<AGMModelEdge>::iterator it = worldModel->edges.begin() ; it != worldModel->edges.end(); ++it)
+	{
+		std::cout << ' ' << (*it)->toString(worldModel);
+		if ((*it)->getLabel()=="RT" )
+		{
+			string songName;
+			
+			//obtengo del symbol hijo el atribute name
+			songName= (worldModel->getSymbol((*it)->getSymbolPair().second))->attributes["name"];
+			std::cout <<"\t"<<songName<<"\n";
+			try 
+			{
+				InnerModelTransform *node= im->getTransform (QString::fromStdString(songName));
+				(*it)->setAttribute("tx",float2str( node->getTr().x() ));
+				(*it)->setAttribute("ty",float2str( node->getTr().y() ));
+				(*it)->setAttribute("tz",float2str( node->getTr().z() ));
+				(*it)->setAttribute("rx",float2str( node->getRxValue()));
+				(*it)->setAttribute("ry",float2str( node->getRyValue()));
+				(*it)->setAttribute("rz",float2str( node->getRzValue()));
+			}
+			catch (QString error)
+			{
+				qDebug()<<"EXCEPTION"<<error;
+			}
+			
+			
+		}
+		std::cout << '\n';
+	}
+// 	myvector contains:9 isKitchen object_3 roomSt_4 room object_3 roomSt_4 explored object_3 roomSt_4 free robot_1 robotSt_2 in robot_1 object_3 in world_20 robot_1 RT world_20 robot_1 RT world_20 transform_21 RT world_20 transform_22
+
+}
+
 
 
