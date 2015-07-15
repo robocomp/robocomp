@@ -272,7 +272,7 @@ public:
 void
 [[[cog
 A()
-cog.out(' ' + component['name'])
+cog.out(' ::' + component['name'])
 Z()
 ]]]
 [[[end]]]
@@ -286,7 +286,7 @@ Z()
 int
 [[[cog
 A()
-cog.out(' ' + component['name'])
+cog.out(' ::' + component['name'])
 Z()
 ]]]
 [[[end]]]
