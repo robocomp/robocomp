@@ -48,6 +48,10 @@ class Workspace:
                 except Exception as copyEx:
                     raise RuntimeError('Could neither copy or simlink %s to %s : \n %s \n %s' % (src,dst,str(symlinkEx),str(copyEx)))
 
+        #if already in a workspace, throw error
+        if self.find_workspace(ws_path):
+            raise RuntimeError("Sorry, you cant create workspace inside an existing one \n")
+
         try:
             os.system('touch {0}/{1}'.format(ws_path,str(".rc_workspace")))
             dirs = ["src","build","install"]
@@ -113,22 +117,32 @@ class Workspace:
             return componentPath
 
     ''' search and return a dictionry of file paths given component name and file name
-        if duplicate components are found first to found id chosen
+        if duplicate components are found first to found is chosen
         component - name of component as string
-        file      - list of tuple of filnames and path
+        files     - list of files to search for; if files[0]=* all files are returned
+        return    - list of tuple of filnames and path
     '''
-    def search_for_file(self,component,files):
+    def search_for_file(self,component,sfiles):
         filedict = []
+        allfiledict = []
+        #aa = [('testcomp1.cdsl', '/home/nithin/tmp/rc/rc_ws/src/testcomp1/testcomp1.cdsl'), ('README.md', '/home/nithin/tmp/rc/rc_ws/src/testcomp1/README.md')]
         path = self.find_component_src(component)
+        #return aa
         componentPath = path[0]
 
-        for sfile in files:
-            for root, dirs, files in os.walk(componentPath):
-                #print(files)
+        for sfile in sfiles:
+            for root, dirs, files in os.walk(componentPath):                
+                for tfile in files:
+                    tmptuple = (tfile,os.path.join(root, tfile))
+                    allfiledict.append(tmptuple)
                 if sfile in files:
                     tmptuple = (sfile,os.path.join(root, sfile))
                     filedict.append(tmptuple)
-        return filedict
+
+        if sfile[0] == '*' :
+            return allfiledict
+        else:
+            return filedict
 
     '''check if the given path is inside a workspace'''
     def find_workspace(self,path):
