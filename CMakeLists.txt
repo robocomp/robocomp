@@ -93,7 +93,8 @@ SUBDIRS(
 	tools/rcinnerModelSimulator
 	tools/rcmanager
 	tools/rcmonitor
-  tools/rcremote
+	tools/rcremote
+	tools/rcnode
 	tools/buildTools
 )
 

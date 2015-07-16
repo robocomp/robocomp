@@ -1,10 +1,25 @@
-#!/usr/bin/python
-
+#!/usr/bin/env python
+# PYTHON_ARGCOMPLETE_OK
 from __future__ import print_function
-import argparse
+import argparse, argcomplete
 import os
 import string
 from workspace import workspace as WS
+
+def complete_components(prefix, parsed_args, **kwargs):
+    components = WS.list_packages(WS.workspace_paths)
+    componentsname=[]
+    for component in components:
+        componentsname.append(component.split('/')[ len(component.split('/')) -1 ])
+    return (componentname for componentname in componentsname if componentname.startswith(prefix))
+
+def complete_scripts(prefix, parsed_args, **kwargs):
+    configPath = WS.find_component_exec('testcomp1')
+    if not configPath: return
+    configPath = configPath[:-4]+ '/etc'
+    configFiles = []
+    for root, dirs, files in os.walk(configPath): configFiles = files
+    return (configfile for configfile in configFiles if configfile.startswith(prefix))
 
 def find_script(action,component):
     paths = WS.find_component_exec(component)
@@ -22,50 +37,47 @@ def main():
     parser = argparse.ArgumentParser(description="Tool for locating and running a robocomp component")
     group = parser.add_mutually_exclusive_group(required = True)
     cgroup = parser.add_mutually_exclusive_group()
-    group.add_argument('component', nargs='?', help='start a component')
-    group.add_argument('-s', '--start', nargs = 1, help="start a component")
-    group.add_argument('-st', '--stop', nargs = 1, help="stop a component")
-    group.add_argument('-fst', '--fstop', nargs = 1, help=" force start a component")
+    parser.add_argument('component', help='component name').completer = complete_components
+    group.add_argument('-s', '--start', action = 'store_true' , help="start component")
+    group.add_argument('-st', '--stop', action = 'store_true' , help="stop component")
+    group.add_argument('-fst', '--fstop', action = 'store_true' , help=" force stop component")
     cgroup.add_argument('-d', '--debug', action = 'store_true' , help="start a component in debug mode")
     cgroup.add_argument('-cf', '--cfile', nargs = 1 , help="use custom ice config file (absolute path)")
-    cgroup.add_argument('-c', '--config', nargs = 1 , help="ice config file to choose from default config directory")
-    parser.add_argument('-gc','--ignore_scripts', action='store_true',help="ignore all the script files if found")
+    cgroup.add_argument('-c', '--config', nargs = 1 , help="ice config file to choose from default config directory").completer = complete_scripts
+    parser.add_argument('-is','--ignore_scripts', action='store_true',help="ignore all the script files if found")
+    
+    argcomplete.autocomplete(parser)
     args = parser.parse_args()
 
+    component = args.component
+    
     #if stop command no need for searching and all
     if args.stop:
-        if not WS.find_component_exec(args.stop[0]):
+        if not WS.find_component_exec(component):
             args.error("couldnt find the component %s in any of the workspaces" % (args.stop[0]))
             return
-        stpath = find_script("stop",args.stop[0]);
+        stpath = find_script("stop",component);
         if stpath and not args.ignore_scripts:
             #print("using script {0}".format(stpath))
             command = stpath
         else:
-            command = "killall " + str(args.stop[0])
+            command = "killall " + str(component)
         os.system(command)
         return
     elif args.fstop:
-        if not WS.find_component_exec(args.fstop[0]):
+        if not WS.find_component_exec(component):
             parser.error("couldnt find the component %s in any of the workspaces" % (args.fstop[0]))
             return
-        sfpath = find_script("forcestop",args.fstop[0]);
+        sfpath = find_script("forcestop",component);
         if sfpath and not args.ignore_scripts:
             #print("using script {0}".format(sfpath))
             command = sfpath
         else:
-            command = "killall -9 " + str(args.fstop[0])
+            command = "killall -9 " + str(component)
         os.system(command)
         return
     
-    #get component name
-    if args.start:
-        component = str(args.start[0])
-    elif args.component:
-        component = args.component
-    else:
-        parser.error("No component specified")
-
+    
     #search for the component
     componentPath = WS.find_component_exec(component)
     componentPathetc = componentPath[:-4]
@@ -80,7 +92,7 @@ def main():
         else if it has file named config the it will be used 
         if it has file named generic_config it will be used
         else we will use a random file
-        used defined config file will override all the above
+        user defined config file will override all the above
     '''
     configFiles = []
     configPath = componentPathetc + '/etc'
