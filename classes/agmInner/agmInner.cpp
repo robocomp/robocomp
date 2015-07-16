@@ -33,6 +33,8 @@ AgmInner::AgmInner()
 void AgmInner::setWorld(AGMModel::SPtr model)
 {
 	worldModel = model;
+	//idea...
+	innerModel= extractInnerModel();
 }
 AGMModel::SPtr AgmInner::getWorld()
 {
@@ -218,8 +220,8 @@ QList<int> AgmInner::getLinkedID (int symbolID, string linkType)
 
 void AgmInner::updateAgmWithInnerModel(InnerModel* im)
 {
-	/// Vector of the edges that the model holds.
-	std::vector<AGMModelEdge> edges;
+	
+	/// Vector of the edges that the model holds.	
 	std::cout << "myvector contains:"<<worldModel->edges.size();
 
 	///tal vez sería bueno recorrer primero innerModel con include_im y crear attributes name por cada symbolo, pq puede haberse insertado algun nodo nuevo.

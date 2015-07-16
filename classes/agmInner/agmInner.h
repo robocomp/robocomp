@@ -51,6 +51,8 @@ public:
 	QList< int > getLinkedID(int symbolID, string linkType);
 	void checkLoop(int& symbolID, QList< int >& visited, string linkType, bool& loop);
 	void updateAgmWithInnerModel(InnerModel* im);
+	//idea
+	
 
 
 private:
