@@ -33,38 +33,59 @@ class C(QWidget):
 		self.prx = self.ic.stringToProxy(endpoint)
 		self.proxy = self.mods['RoboCompTrajectoryRobot2D'].TrajectoryRobot2DPrx.checkedCast(self.prx)
 
+		self.positionXLabel = QLabel("X", self)
+		self.positionXLabel.show()
+		self.positionXLabel.move(5,8)
+		self.positionX = QSpinBox(self)
+		self.positionX.setMaximum(10000)
+		self.positionX.setMinimum(-10000)
+		self.positionX.show()
+		self.positionX.setValue(0)
+		self.positionX.setSingleStep(25)
+		self.positionX.move(50,8)
 
-		self.a()
-		#self.b()
-		sys.exit(1)
+		self.positionZLabel = QLabel("Z", self)
+		self.positionZLabel.show()
+		self.positionZLabel.move(5,33)
+		self.positionZ = QSpinBox(self)
+		self.positionZ.setMaximum(10000)
+		self.positionZ.setMinimum(-10000)
+		self.positionZ.show()
+		self.positionZ.setValue(0)
+		self.positionZ.setSingleStep(25)
+		self.positionZ.move(50,33)
+		
+		self.steerLabel = QLabel('Angle', self)
+		self.steerLabel.show()
+		self.steerLabel.move(5,58)
+		self.steer = QDoubleSpinBox(self)
+		self.steer.setMaximum(3.14*10)
+		self.steer.setMinimum(-3.14*10)
+		self.steer.setSingleStep(0.05)
+		self.steer.setValue(0)
+		self.steer.move(50,58)
+		self.steer.show()
 
+		self.resetButton = QPushButton("go", self)
+		self.resetButton.move(5,90)
+		self.resetButton.show()
+		self.connect(self.resetButton, SIGNAL('clicked()'), self.go)
+		self.show()
+		
 	def job(self):
 		pass
 
 
-	def a(self):
+	def go(self):
 		print 'a1'
 		tp = self.mods['RoboCompTrajectoryRobot2D'].TargetPose()
-		tp.x = 1240
-		tp.z = -600
+		tp.x = self.positionX.value()
+		tp.z = self.positionZ.value()
 		tp.y = 0
 		tp.rx = 0
-		tp.ry = 3.141592
+		tp.ry = self.steer.value()
 		tp.rz = 0
 		tp.onlyRot = True
 		self.proxy.go(tp)
 		print 'a2'
-
-	def b(self):
-		print 'b1'
-		tp = self.mods['RoboCompTrajectoryRobot2D'].TargetPose()
-		tp.x = 0
-		tp.z = 0
-		tp.y = 0
-		tp.rx = 0
-		tp.ry = 3.141592
-		tp.rz = 0
-		tp.onlyRot = True
-		self.proxy.go(tp)
-		print 'b2'
 

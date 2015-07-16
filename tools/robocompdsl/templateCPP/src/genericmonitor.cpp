@@ -58,8 +58,8 @@ int GenericMonitor::getPeriod()
 */
 void GenericMonitor::setPeriod(int _period)
 {
-	worker->setPeriod(_period);
 	period =_period;
+	worker->setPeriod(_period);
 }
 /**
 * \brief Kill component

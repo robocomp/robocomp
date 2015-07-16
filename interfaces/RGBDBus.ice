@@ -20,8 +20,8 @@ module RoboCompRGBDBus{
 		int depthHeight;
 		int depthFPS;
 		float colorFocal;
-					float depthFocal;
-					string name;
+		float depthFocal;
+		string name;
 	};
 	dictionary<string, CameraParams>CameraParamsMap;
 	sequence <string> CameraList;

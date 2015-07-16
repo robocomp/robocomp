@@ -434,7 +434,7 @@ int main(int argc, char* argv[])
 
 [[[cog
 A()
-cog.out('<TABHERE>' + component['name'] + ' ')
+cog.out('<TABHERE>::' + component['name'] + ' ')
 Z()
 ]]]
 [[[end]]]
