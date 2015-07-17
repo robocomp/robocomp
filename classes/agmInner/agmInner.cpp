@@ -158,7 +158,7 @@ void AgmInner::checkLoop(int& symbolID, QList<int> &visited, string linkType, bo
 void AgmInner::edgeToInnerModel(AGMModelEdge edge, InnerModel* imNew) 
 {
 	InnerModelNode* nodeA = NULL;
-	InnerModelNode* nodeB = NULL;
+	//InnerModelNode* nodeB = NULL;
 
 	int first = edge->getSymbolPair().first;
 	int second = edge->getSymbolPair().second;	
@@ -167,7 +167,7 @@ void AgmInner::edgeToInnerModel(AGMModelEdge edge, InnerModel* imNew)
 	const AGMModelSymbol::SPtr &symbolB = worldModel->getSymbol(second);
 
 	QString nameA = QString::fromStdString(symbolA->attributes["name"]);
-	QString nameB = QString::fromStdString(symbolB->attributes["name"]);
+	//QString nameB = QString::fromStdString(symbolB->attributes["name"]);
 	
 // 	qDebug()<<"insertar en new InnerModel "<<nameA<<"--"<< QString::fromStdString ( edge->getLabel() ) <<"-->"<<nameB;//<<tx<<ty<<tz<<rx<<ry<<rz;
 // 	qDebug()<<"equivalente al enlace en AGM "<<QString::fromStdString (symbolA->toString())<<"--"<< QString::fromStdString ( edge->getLabel() ) <<"-->"<<QString::fromStdString (symbolB->toString());//<<tx<<ty<<tz<<rx<<ry<<rz;
@@ -178,7 +178,8 @@ void AgmInner::edgeToInnerModel(AGMModelEdge edge, InnerModel* imNew)
 	//entiendo que sino exite lo cuelgo del root, Estará vacio...
 	if (nodeA==NULL)
 	{
-		nodeA = imNew->newTransform(nameA, "static",imNew->getRoot());
+		//original
+		nodeA = imNew->newTransform(nameA, "static",imNew->getRoot());				
 		imNew->getRoot()->addChild(nodeA);
 // 		qDebug()<<"NODE A ERA NULL NO EXISTIA"<<nameA<<"node A->print(verbose):";
 // 		nodeA->print(true);
@@ -194,12 +195,226 @@ void AgmInner::edgeToInnerModel(AGMModelEdge edge, InnerModel* imNew)
 	rx = str2float(edge->attributes["rx"]);
 	ry = str2float(edge->attributes["ry"]);
 	rz = str2float(edge->attributes["rz"]);
-	nodeB = imNew->newTransform (nameB, "static",nodeA,tx,ty,tz,rx,ry,rz);	
-	if (nodeB==NULL)
-		qFatal("MAAAAAL edgeToInnerModel() nodeB == null ");
-	nodeA->addChild(nodeB);
+	
+	//original
+	//nodeB = imNew->newTransform (nameB, "static",nodeA,tx,ty,tz,rx,ry,rz);	
+// 	if (nodeB==NULL)
+// 		qFatal("MAAAAAL edgeToInnerModel() nodeB == null ");	
+	//original
+	//nodeA->addChild(nodeB);	
+	
+	try
+	{
+		insertSymbolToInnerModelNode(imNew,nodeA, symbolB,tx,ty,tz,rx,ry,rz);		
+	}
+	catch(string e)
+	{
+		std::cout<<e<<"\n";
+		qFatal("insertSymbolToInnerModelNode");
+	}
+	
+	
 
 }
+void AgmInner::insertSymbolToInnerModelNode(InnerModel* imNew,InnerModelNode *parentNode, AGMModelSymbol::SPtr s, float tx, float ty, float tz, float rx, float ry, float rz)
+{
+	
+	QString nodeName = QString::fromStdString(s->attributes["name"]);
+	std::cout<<"addding "<<s->attributes["name"];
+	if (s->symbolType=="transform")
+	{
+		std::cout<<"\t type: "<<s->symbolType <<"\n";
+		QString engine =QString::fromStdString(s->attributes["engine"] );
+		float mass =str2float( s->attributes["mass"] );
+		
+		try
+		{
+			InnerModelTransform* tf=imNew->newTransform (nodeName, engine,parentNode,tx,ty,tz,rx,ry,rz, mass);
+			parentNode->addChild(tf);
+		}
+		catch (...)
+		{
+			qDebug()<<"Existe";
+		}
+	}
+	else if (s->symbolType=="plane")
+	{
+		std::cout<<"\t type: "<<s->symbolType <<"\n";
+		float width, height, depth;		
+		width= str2float(s->attributes["width"]); height= str2float(s->attributes["height"]); depth=str2float(s->attributes["depth"]);
+		
+		float nx,ny,nz,px,py,pz;
+		nx =str2float( s->attributes["nx"] );ny =str2float( s->attributes["ny"] ); nz =str2float( s->attributes["nz"] );
+		px =str2float( s->attributes["px"] );py =str2float( s->attributes["py"] ); pz =str2float( s->attributes["pz"] );
+				
+		bool collidable = false;
+		if (s->attributes["collidable"]=="true")
+			collidable = true;
+		int repeat;
+		repeat = str2int(s->attributes["repeat"]);
+		QString texture;
+		texture =QString::fromStdString(s->attributes["texture"]);				
+		
+		try
+		{
+			InnerModelPlane *plane=imNew->newPlane (nodeName,parentNode, texture,width,height,depth, repeat,nx,ny,nz,px,py,pz,collidable);
+			parentNode->addChild(plane);
+		}
+		catch (...)
+		{
+			qDebug()<<"Existe";
+		}
+
+	}
+	else if (s->symbolType=="mesh")
+	{
+		std::cout<<"\t type: "<<s->symbolType <<"\n";
+		
+		QString meshPath;
+		
+		meshPath=QString::fromStdString(s->attributes["meshPath"]);
+		float scalex,scaley,scalez;
+		scalex=str2float(s->attributes["scalex"]);scaley=str2float(s->attributes["scaley"]);scalez=str2float(s->attributes["scalez"]);
+		
+		bool collidable = false;
+		if (s->attributes["collidable"]=="true")
+			collidable = true;
+		
+		//enum RenderingModes { NormalRendering=0, WireframeRendering=1};
+		int render;
+		render = InnerModelMesh::NormalRendering;
+		if (s->attributes["render"] == "WireframeRendering")
+			render = InnerModelMesh::WireframeRendering;
+		try
+		{
+			InnerModelMesh *mesh=imNew->newMesh(nodeName,parentNode,meshPath,scalex,scaley,scalez,render,tx,ty,tz,rx,ry,rz, collidable);
+			parentNode->addChild(mesh);
+		}
+		catch (...)
+		{
+			qDebug()<<"Existe";
+		}
+	}
+	else if (s->symbolType=="rgbd")
+	{
+		std::cout<<"\t type: "<<s->symbolType <<"\n";
+		
+		int port;		
+		port =str2int(s->attributes["port"]);
+		float noise, focal, height, width;
+		noise = str2float(s->attributes["noise"]);
+		focal = str2float(s->attributes["focal"]);
+		height = str2float(s->attributes["height"]);
+		width = str2float(s->attributes["width"]);				
+		
+		QString ifconfig;
+		ifconfig=QString::fromStdString(s->attributes["ifconfig"]);
+		
+		try
+		{
+			InnerModelRGBD *rgbd=imNew->newRGBD(nodeName,parentNode,width,height,focal,noise,port,ifconfig);
+			parentNode->addChild(rgbd);
+		}
+		catch (...)
+		{
+			qDebug()<<"Existe";
+		}
+	}
+	else if (s->symbolType=="camera")
+	{
+		std::cout<<"\t type: "<<s->symbolType <<"\n";
+				
+		float focal, height, width;		
+		focal = str2float(s->attributes["focal"]);
+		height = str2float(s->attributes["height"]);
+		width = str2float(s->attributes["width"]);				
+		
+		try
+		{
+			InnerModelCamera *c =imNew->newCamera(nodeName,parentNode,width,height,focal);
+			parentNode->addChild(c);
+		}
+		catch (...)
+		{
+			qDebug()<<"Existe";
+		}
+	}
+	else if (s->symbolType=="omniRobot")
+	{
+		std::cout<<"\t type: "<<s->symbolType <<"\n";
+		int port =str2int(s->attributes["port"]);
+		float noise = str2float(s->attributes["noise"]);
+		
+		bool collide = false;
+		if (s->attributes["collide"]=="true")
+			collide = true;
+		
+		try
+		{
+			InnerModelOmniRobot *omni = imNew->newOmniRobot(nodeName,dynamic_cast<InnerModelTransform*>(parentNode),tx,ty,tz,rx,ry,rz,port,noise,collide);		
+			parentNode->addChild(omni);
+		}
+		catch (...)
+		{
+			qDebug()<<"Existe";
+		}
+	}
+	else if (s->symbolType=="joint")
+	{
+		std::cout<<"\t type: "<<s->symbolType <<"\n";
+		//QString id_, float lx_, float ly_, float lz_, float hx_, float hy_, float hz_, float tx_, float ty_, float tz_, float rx_, ;
+		//float ry_, float rz_, float min_, float max_, uint32_t port_, std::string axis_, float home_, 
+		
+		///ESTO NO SE USA EN NINGUN InnerModel.XML
+		float lx =0.;// str2float(s->attributes["lx"] );
+		float ly =0.;// str2float(s->attributes["ly"] );
+		float lz =0.;// str2float(s->attributes["lz"] );
+		float hx =0.;// str2float(s->attributes["hx"] );
+		float hy =0.;// str2float(s->attributes["hy"] );
+		float hz =0.;// str2float(s->attributes["hz"] );
+		
+		int port =str2int(s->attributes["port"]);		
+		float min = str2float(s->attributes["min"]);
+		float max = str2float(s->attributes["max"]);
+		float home = str2float(s->attributes["home"]);
+		string axis=s->attributes["axis"];
+		
+		
+		try
+		{
+			InnerModelJoint *joint = innerModel->newJoint(nodeName,dynamic_cast<InnerModelTransform*>(parentNode),lx,ly,lz,hx,hy,hz,tx,ty,tz,rx,ry,rz,min,max,port,axis,home);		
+			parentNode->addChild(joint);
+		}
+		catch (...)
+		{
+			qDebug()<<"Existe";
+		}
+
+	}
+	else
+	{
+		QStringList l;
+		l<<"robot"<<"object"<<"roomSt"<<"robotSt"<<"world"<<"objectSt";
+	
+		if ( l.contains(QString::fromStdString(s->symbolType)) )
+		{
+			std::cout<<"\t AGM SYMBOL, id imNode "<<s->toString()<<" type transform " <<"\n";
+			InnerModelTransform* tf = imNew->newTransform (QString::fromStdString(s->toString()), "static",parentNode);	
+			parentNode->addChild(tf);
+		}
+		
+		else 
+		{
+			string err;			
+			err = "\nsymbol "+ s->toString() + " the type is unknown or not implemented yet\n";
+			std::cout<<err;
+			throw err;
+		}
+		
+	}
+	
+}
+
 
 QList<int> AgmInner::getLinkedID (int symbolID, string linkType)
 {

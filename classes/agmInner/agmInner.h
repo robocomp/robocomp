@@ -52,11 +52,13 @@ public:
 	QList< int > getLinkedID(int symbolID, string linkType);
 	void checkLoop(int& symbolID, QList< int >& visited, string linkType, bool& loop);
 	void updateAgmWithInnerModel(InnerModel* im);
+	void insertSymbolToInnerModelNode(InnerModel* imNew, InnerModelNode *parentNode, AGMModelSymbol::SPtr s, float tx = 0, float ty = 0, float tz = 0, float rx = 0, float ry = 0, float rz = 0);
 	//idea
 
 private:
     AGMModel::SPtr worldModel;
     InnerModel *innerModel;
+	
 };
 
 #endif // AGMINNER_H
