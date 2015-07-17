@@ -258,5 +258,41 @@ void AgmInner::updateAgmWithInnerModel(InnerModel* im)
 
 }
 
+AGMModel::SPtr AgmInner::extractAGM()
+{
+	AGMModel::SPtr  agmModel = AGMModel::SPtr(new AGMModel(worldModel));
+	QList<int>l;
+	
+	for (AGMModel::iterator symbol_itr=agmModel->begin(); symbol_itr!=agmModel->end(); symbol_itr++)
+	{
+		std::cout<<" delete? "<<(*symbol_itr)->toString()<<"\n";
+		bool removeSymbol = true;
+		for (AGMModelSymbol::iterator  edge_itr=symbol_itr->edgesBegin(agmModel); edge_itr!=symbol_itr->edgesEnd(agmModel); edge_itr++)
+		{
+			std::cout<<"\t"<<(*edge_itr).toString(agmModel);
+			//comprobamos el id del simbolo para evitar los arcos que le llegan y seguir solo los que salen del nodo
+			if ((*edge_itr)->getLabel() != "RT" )//&& ( (*edge_itr)->symbolPair.first==(*symbol_itr)->identifier) )
+			{				
+				removeSymbol=false;				
+				break;
+			}
+		}
+		if (removeSymbol)
+		{	
+			std::cout<<"\t yes delete "<<(*symbol_itr)->toString()<<" ";
+			//std::cout<<agmModel->removeSymbol((*symbol_itr))<<"\n";
+			l.append((*symbol_itr)->identifier);
+		}
+		std::cout<<"\n";
+	}
+	for (int i = 0; i < l.size(); ++i) 
+	{
+		agmModel->removeSymbol(l.at(i));
+	}
+	std::cout<<"agmModel->numberOfSymbols() "<<agmModel->numberOfSymbols()<<"\n";
+	return agmModel;
+}
+
+
 
 

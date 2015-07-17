@@ -46,14 +46,13 @@ public:
 	AGMModel::SPtr getWorld();
 	int findName(QString n);	
 	InnerModel* extractInnerModel(QString imNodeName="world");
+	AGMModel::SPtr extractAGM();
 	void recorrer(InnerModel* imNew, int& symbolID);
 	void edgeToInnerModel(AGMModelEdge edge, InnerModel* imNew);
 	QList< int > getLinkedID(int symbolID, string linkType);
 	void checkLoop(int& symbolID, QList< int >& visited, string linkType, bool& loop);
 	void updateAgmWithInnerModel(InnerModel* im);
 	//idea
-	
-
 
 private:
     AGMModel::SPtr worldModel;
