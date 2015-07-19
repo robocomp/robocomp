@@ -74,7 +74,8 @@ class C(QWidget):
 #		sendCommand = True
 		if sendCommand: self.proxy.setSpeedBase(float(self.speed.value()), float(self.steer.value()))
 		self.bState = self.proxy.getBaseState()
-		print self.bState
+		print 'corrected', self.bState.correctedX, self.bState.correctedZ, self.bState.correctedAlpha
+
 	def paintEvent(self, event=None):
 		xOff = self.width()/2.
 		yOff = self.height()/2.
