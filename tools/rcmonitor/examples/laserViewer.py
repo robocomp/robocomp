@@ -51,6 +51,8 @@ class C(QWidget):
 			self.data, basura = self.proxy.getLaserAndBStateData()
 			print '-----'
 			print len(self.data), ' ',  basura.x, ' ', basura.z, ' ', basura.alpha
+			print self.data[0]
+			print self.data[-1]
 		except:
 			print 'No laser connection.'
 		return None
