@@ -419,11 +419,11 @@ def parseColor(node, comp):
 			b = int(x[5:7], 16)
 			print r, g, b
 	if not valid:
-		comp.color = QtGui.QColor(127,127,217)
-		comp.htmlcolor = "#666666"
-	else:
-		comp.color = QtGui.QColor(r,g,b)
-		comp.htmlcolor = x
+		r = int(155)
+		g = int(155)
+		b = int(155)
+	comp.color = QtGui.QColor(r,g,b)
+	comp.htmlcolor = x
 def parseWorkingDir(node, comp):
 	comp.workingdir = parseSingleValue(node, 'path')
 def parseUpCommand(node, comp):

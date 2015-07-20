@@ -18,7 +18,7 @@
 #    along with RoboComp.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-import Ice, sys, math, traceback
+import Ice, sys, math, traceback, time
 
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
@@ -28,6 +28,8 @@ from random import uniform
 class C(QWidget):
 	def __init__(self, endpoint, modules):
 		QWidget.__init__(self)
+		
+		
 		self.t = 0.
 		self.ic = Ice.initialize(sys.argv)
 		self.mods = modules
@@ -41,7 +43,7 @@ class C(QWidget):
 		self.positionX.setMaximum(10000)
 		self.positionX.setMinimum(-10000)
 		self.positionX.show()
-		self.positionX.setValue(0)
+		self.positionX.setValue(500)
 		self.positionX.setSingleStep(25)
 		self.positionX.move(50,8)
 
@@ -52,7 +54,7 @@ class C(QWidget):
 		self.positionZ.setMaximum(10000)
 		self.positionZ.setMinimum(-10000)
 		self.positionZ.show()
-		self.positionZ.setValue(0)
+		self.positionZ.setValue(900)
 		self.positionZ.setSingleStep(25)
 		self.positionZ.move(50,33)
 		
@@ -75,14 +77,14 @@ class C(QWidget):
 		self.positionRangeXmin.setMaximum(10000)
 		self.positionRangeXmin.setMinimum(-10000)
 		self.positionRangeXmin.show()
-		self.positionRangeXmin.setValue(0)
+		self.positionRangeXmin.setValue(600)
 		self.positionRangeXmin.setSingleStep(25)
 		self.positionRangeXmin.move(255,8)
 		self.positionRangeXmax = QSpinBox(self)
 		self.positionRangeXmax.setMaximum(10000)
 		self.positionRangeXmax.setMinimum(-10000)
 		self.positionRangeXmax.show()
-		self.positionRangeXmax.setValue(0)
+		self.positionRangeXmax.setValue(6000)
 		self.positionRangeXmax.setSingleStep(25)
 		self.positionRangeXmax.move(335,8)
 
@@ -94,36 +96,17 @@ class C(QWidget):
 		self.positionRangeZmin.setMaximum(10000)
 		self.positionRangeZmin.setMinimum(-10000)
 		self.positionRangeZmin.show()
-		self.positionRangeZmin.setValue(0)
+		self.positionRangeZmin.setValue(600)
 		self.positionRangeZmin.setSingleStep(25)
 		self.positionRangeZmin.move(255,33)
 		self.positionRangeZmax = QSpinBox(self)
 		self.positionRangeZmax.setMaximum(10000)
 		self.positionRangeZmax.setMinimum(-10000)
 		self.positionRangeZmax.show()
-		self.positionRangeZmax.setValue(0)
+		self.positionRangeZmax.setValue(1100)
 		self.positionRangeZmax.setSingleStep(25)
 		self.positionRangeZmax.move(335,33)
 
-		self.steerRangeLabel = QLabel('R.Angle', self)
-		self.steerRangeLabel.show()
-		self.steerRangeLabel.move(205,58)
-		self.steerRangemin = QDoubleSpinBox(self)
-		self.steerRangemin.setMaximum(3.14*10)
-		self.steerRangemin.setMinimum(-3.14*10)
-		self.steerRangemin.setSingleStep(0.05)
-		self.steerRangemin.setValue(0)
-		self.steerRangemin.move(255,58)
-		self.steerRangemin.show()
-		
-		self.steerRangemax = QDoubleSpinBox(self)
-		self.steerRangemax.setMaximum(3.14*10)
-		self.steerRangemax.setMinimum(-3.14*10)
-		self.steerRangemax.setSingleStep(0.05)
-		self.steerRangemax.setValue(0)
-		self.steerRangemax.move(335,58)
-		self.steerRangemax.show()
-		w
 		self.numTargetsLabel = QLabel('Targets', self)
 		self.numTargetsLabel.show()
 		self.numTargetsLabel.move(205,80)
@@ -131,8 +114,8 @@ class C(QWidget):
 		self.numTargets.setMaximum(10000)
 		self.numTargets.setMinimum(-10000)
 		self.numTargets.show()
-		self.numTargets.setValue(0)
-		self.numTargets.setSingleStep(25)
+		self.numTargets.setValue(50)
+		self.numTargets.setSingleStep(1)
 		self.numTargets.move(255,80)
 
 		self.resetButton = QPushButton("go", self)
@@ -147,47 +130,79 @@ class C(QWidget):
 		self.connect(self.resetButton, SIGNAL('clicked()'), self.goAll)
 		self.show()
 		
+		self.doJob = False
+		self.salida = open("trajSalida.txt", "w")
+		
+
 	def job(self):
-		pass
+		if not self.doJob: return
+	
+
+		tp = self.mods['RoboCompTrajectoryRobot2D'].TargetPose()
+
+		while self.numTargets.value() > 0:
+			print "targets left: ", self.numTargets.value()
+			tp.x = uniform(self.minRangeX, self.maxRangeX)
+			tp.z = uniform(self.minRangeZ, self.maxRangeZ)
+			tp.y = 0
+			tp.rx = 0
+			tp.ry = 0
+			tp.rz = 0
+			tp.doRotation = False
+			self.goSomewhere(tp)
+			
+			tp.x = 1647.
+			tp.z = 750.
+			tp.y = 0
+			tp.rx = 0
+			tp.ry = 0
+			tp.rz = 0
+			tp.doRotation = False
+			self.goSomewhere(tp)
+			
+			self.numTargets.setValue(self.numTargets.value()-2)
+			
+			if self.numTargets.value() <= 0:
+				print "done!"
 
 
 	def go(self):
-		print 'a1'
 		tp = self.mods['RoboCompTrajectoryRobot2D'].TargetPose()
 		tp.x = self.positionX.value()
 		tp.z = self.positionZ.value()
 		tp.y = 0
-		tp.rx = 0
-		tp.ry = self.steer.value()
-		tp.rz = 0
+		tp.rx = tp.ry = tp.rz = 0
 		tp.onlyRot = True
 		self.proxy.go(tp)
-		print 'a2'
 
 	def goAll(self):
-		print 'a1'
-		tp = self.mods['RoboCompTrajectoryRobot2D'].TargetPose()
+		self.doJob = True
+		self.minRangeX = self.positionRangeXmin.value()
+		self.maxRangeX = self.positionRangeXmax.value()
+		self.minRangeZ = self.positionRangeZmin.value()
+		self.maxRangeZ = self.positionRangeZmax.value()
 
-		minRangeX = self.positionRangeXmin.value()
-		maxRangeX = self.positionRangeXmax.value()
-		minRangeZ = self.positionRangeZmin.value()
-		maxRangeZ = self.positionRangeZmax.value()
-		minRangeSteer = self.steerRangemin.value()
-		maxRangeSteer = self.steerRangemax.value()
-		numTargets = self.numTargets.value()
-
-		while numTargets > 0:			
-			tp.x = uniform(minRangeX,maxRangeX)
-			tp.z = uniform(minRangeZ,maxRangeZ)
-			tp.y = 0
-			tp.rx = 0
-			tp.ry = uniform(minRangeSteer,maxRangeSteer)
-			tp.rz = 0
-			self.proxy.go(tp)
+	def goSomewhere(self, tp):
+			strS = str(tp.x)+" "+str(tp.z)+" "+str(tp.ry)+" "+QTime().currentTime().toString()+"\n"
+			print strS
+			self.salida.write(strS)
+			
+			goOk = False
+			while not goOk:
+				try:
+					self.proxy.go(tp)
+					goOk = True
+				except:
+					time.sleep(10)
+			time.sleep(5)
 			while True:
-				state = self.proxy.getState()
+				stateOk = False
+				while not stateOk:
+					try:
+						state = self.proxy.getState()
+						stateOk = True
+					except:
+						time.sleep(10)
 				state = state.state
 				if state == "IDLE":
-					print "in target number: "+str(self.numTargets.value() - numTargets)
-					numTargets -= 1
 					break
