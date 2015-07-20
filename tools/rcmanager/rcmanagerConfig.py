@@ -26,7 +26,7 @@
 
 
 # Importamos el modulo libxml2
-import libxml2
+import libxml2, sys
 from PyQt4 import QtCore, QtGui, Qt
 
 filePath = 'rcmanager.xml'
@@ -419,10 +419,11 @@ def parseColor(node, comp):
 			b = int(x[5:7], 16)
 			print r, g, b
 	if not valid:
-		print 'can\'t parse color', x
-		sys.exit(0)
-	comp.color = QtGui.QColor(r,g,b)
-	comp.htmlcolor = x
+		comp.color = QtGui.QColor(127,127,217)
+		comp.htmlcolor = "#666666"
+	else:
+		comp.color = QtGui.QColor(r,g,b)
+		comp.htmlcolor = x
 def parseWorkingDir(node, comp):
 	comp.workingdir = parseSingleValue(node, 'path')
 def parseUpCommand(node, comp):
