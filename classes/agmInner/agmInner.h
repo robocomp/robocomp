@@ -44,7 +44,8 @@ public:
 	//const AGMModel::SPtr &src
 	void setWorld(AGMModel::SPtr model);
 	AGMModel::SPtr getWorld();
-	int findName(QString n);	
+	int findName(QString n);
+	int findName(const AGMModel::SPtr &m, QString n);		
 	InnerModel* extractInnerModel(QString imNodeName="world");
 	AGMModel::SPtr extractAGM();
 	void recorrer(InnerModel* imNew, int& symbolID);
@@ -53,7 +54,7 @@ public:
 	void checkLoop(int& symbolID, QList< int >& visited, string linkType, bool& loop);
 	void updateAgmWithInnerModel(InnerModel* im);
 	void insertSymbolToInnerModelNode(InnerModel* imNew, InnerModelNode *parentNode, AGMModelSymbol::SPtr s, float tx = 0, float ty = 0, float tz = 0, float rx = 0, float ry = 0, float rz = 0);
-	//idea
+	AGMModel::SPtr remove_ImOriginal(string agmFilePath, string imFilePath);
 
 private:
     AGMModel::SPtr worldModel;

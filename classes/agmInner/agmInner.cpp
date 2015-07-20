@@ -73,6 +73,32 @@ int AgmInner::findName(QString n)
 	return -1;
 }
 
+
+/**
+ * @brief Search the name of the innermodel node,(the name is the unique key for innerModel ), in the AGM Model parameter. The innermodel id is stored in the attribute "name" of each symbol. 
+ * It is found, return the id of the symbol, the unique key for AGMSymbols, otherwise returns -1.
+ * 
+ * @param n value of the attribute field name...
+ * @return symbol ID, -1 if it is not found
+ */
+int AgmInner::findName(const AGMModel::SPtr &m, QString n)
+{
+	for (uint32_t i=0; i<m->symbols.size(); ++i)
+	{	
+		if (m->symbols[i]->attributes.find("name") != m->symbols[i]->attributes.end() )
+		{
+			if (m->symbols[i]->attributes["name"] == n.toStdString() )
+			{
+// 				qDebug()<<"findName: FOUND"<<n<<m->symbols[i]->identifier;
+				return m->symbols[i]->identifier;
+			}
+		}
+	}	
+// 	qDebug()<<"findName: NO ENCONTRADO"<<n<<-1;
+	return -1;
+}
+
+
 /**
  * @brief 1 Find transform node reading his attribute "name" to get his corresponding symbol ID
  * 2 Go through rt edge starting from the agm symbol found before. Format Link a-RT->b
@@ -508,6 +534,44 @@ AGMModel::SPtr AgmInner::extractAGM()
 	return agmModel;
 }
 
+
+/**
+ * @brief Elimina del AGM en caliente, los nodos del innerModel original que no esten en el agm original. 
+ * 
+ * @param agmFilePath ...
+ * @param imFilePath ...
+ * @return AGMModel::SPtr limpio de innerModel (normalmente el propio del robot) pero con la info geometrica (RT) actualizadas para los symbolos del mundo "exterior" 
+ */
+AGMModel::SPtr  AgmInner::remove_ImOriginal(string agmFilePath, string imFilePath)
+{
+	AGMModel::SPtr  agmTmp = AGMModel::SPtr(new AGMModel());
+	cout<<"agmFilePath: " <<agmFilePath<<"\n";
+	
+	
+	AGMModelConverter::fromXMLToInternal(agmFilePath, agmTmp);	
+	InnerModel *imTmp= new InnerModel (imFilePath); 
+	
+	std::cout<<agmTmp->numberOfSymbols()<<" "<<agmTmp->numberOfEdges()<<"\n";
+	AGMModelPrinter::printWorld(agmTmp);
+	imTmp->treePrint();
+
+	//if imNode not in agmOriginal, remove the symbol associated to the node in the agmCaliente if exist
+	foreach (QString n, imTmp->getIDKeys() )
+	{
+		qDebug()<<n;
+		//findName in the original
+		if (findName(agmTmp,n)==-1 )
+		{
+			int symbolID=findName(n);
+			if (symbolID!=-1)
+			{
+				qDebug()<<"remove en el agmCaliente :"<<symbolID<<QString::fromStdString( worldModel->getSymbol(symbolID)->toString());
+			}
+		}
+	}
+	
+	return agmTmp;
+}
 
 
 
