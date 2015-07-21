@@ -1564,7 +1564,7 @@ void InnerModelTransform::save(QTextStream &out, int tabs)
 		if (gui_translation and not gui_rotation)
 			out << "<translation id=\"" << id << "\" tx=\""<< QString::number(backtX, 'g', 10) <<"\" ty=\""<< QString::number(backtY, 'g', 10) <<"\" tz=\""<< QString::number(backtZ, 'g', 10) <<"\">\n";
 		else if (gui_rotation and not gui_translation)
-			out << "<rotation id=\"" << id << "\" tx=\""<< QString::number(backrX, 'g', 10) <<"\" ty=\""<< QString::number(backrY, 'g', 10) <<"\" tz=\""<< QString::number(backrZ, 'g', 10) <<"\">\n";
+			out << "<rotation id=\"" << id << "\" rx=\""<< QString::number(backrX, 'g', 10) <<"\" ry=\""<< QString::number(backrY, 'g', 10) <<"\" rz=\""<< QString::number(backrZ, 'g', 10) <<"\">\n";
 		else
 			out << "<transform id=\"" << id << "\" tx=\""<< QString::number(backtX, 'g', 10) <<"\" ty=\""<< QString::number(backtY, 'g', 10) <<"\" tz=\""<< QString::number(backtZ, 'g', 10) <<"\"  rx=\""<< QString::number(backrX, 'g', 10) <<"\" ry=\""<< QString::number(backrY, 'g', 10) <<"\" rz=\""<< QString::number(backrZ, 'g', 10) <<"\">\n";
 
@@ -1730,8 +1730,18 @@ void InnerModelJoint::print(bool verbose)
 
 void InnerModelJoint::save(QTextStream &out, int tabs)
 {
+	QList<InnerModelNode*>::iterator c;
+	//<joint id="head_yaw_joint" port="10067" axis="z" home="0" min="-1" max="1">
 	for (int i=0; i<tabs; i++) out << "\t";
-	out << "### joints cannot be saved yet ###\n";
+	out << "<joint id=\"" << id << "\" port=\"" << port << "\" axis=\"" <<QString::fromStdString( axis)<<"\" home=\""<< QString::number(home, 'g', 10)
+	<<"\" min=\""<< QString::number(min, 'g', 10)<<"\" max=\""<< QString::number(max, 'g', 10)<<"\" >\n";   
+	for (c=children.begin(); c!=children.end(); c++)
+			(*c)->save(out, tabs+1);
+	
+	for (int i=0; i<tabs; i++) out << "\t";
+	out << "</joint>\n";
+	
+
 }
 
 
@@ -2149,8 +2159,12 @@ void InnerModelPlane::print(bool verbose)
 
 void InnerModelPlane::save(QTextStream &out, int tabs)
 {
+// 	float width, height, depth;
 	for (int i=0; i<tabs; i++) out << "\t";
-	out << "<plane id=\"" << id << "\" texture=\"" << texture << "\" repeat=\"" << QString::number(repeat, 'g', 10) << "\" nx=\"" << QString::number(normal(0), 'g', 10) << "\" ny=\"" << QString::number(normal(1), 'g', 10) << "\" nz=\"" << QString::number(normal(2), 'g', 10) << "\" px=\"" << QString::number(point(0), 'g', 10) << "\" py=\"" << QString::number(point(1), 'g', 10) << "\" pz=\"" << QString::number(point(2), 'g', 10) << "\" />\n";
+	out << "<plane id=\"" << id << "\" texture=\"" << texture << "\" size=\"" << QString::number(width,'g', 10)<<","<<QString::number( height,'g', 10)<<","<<QString::number( depth,'g', 10)  
+	<< "\" repeat=\"" << QString::number(repeat, 'g', 10) << "\" nx=\"" << QString::number(normal(0), 'g', 10) << "\" ny=\"" << QString::number(normal(1), 'g', 10) << "\" nz=\"" 
+	<< QString::number(normal(2), 'g', 10) << "\" px=\"" << QString::number(point(0), 'g', 10) << "\" py=\"" << QString::number(point(1), 'g', 10) 
+	<< "\" pz=\"" << QString::number(point(2), 'g', 10) << "\" />\n";
 }
 
 
@@ -2239,7 +2253,7 @@ void InnerModelCamera::print(bool verbose)
 void InnerModelCamera::save(QTextStream &out, int tabs)
 {
 	for (int i=0; i<tabs; i++) out << "\t";
-	out << "<camera id=\"" << id << "\" width=\"" << camera.getWidth() << "\" height=\"" << camera.getHeight() << "\" focal=\"" << QString::number(camera.getFocal(), 'g', 10) << "\" />\n";
+	out << "<camera id=\"" << id << "\" width=\"" << QString::number(width, 'g', 10) << "\" height=\"" << QString::number(height, 'g', 10) << "\" focal=\"" << QString::number(camera.getFocal(), 'g', 10) << "\" />\n";
 }
 
 
@@ -2292,8 +2306,11 @@ InnerModelRGBD::InnerModelRGBD(QString id_, float width, float height, float foc
 
 void InnerModelRGBD::save(QTextStream &out, int tabs)
 {
+	
+// 	<rgbd id="laser" focal="120" width="160" height="120" port="10097" ifconfig="10068,10004" />
 	for (int i=0; i<tabs; i++) out << "\t";
-	out << "<rgbd id=\"" << id << "\" width=\"" << camera.getWidth() << "\" height=\"" << camera.getHeight() << "\" focal=\"" << QString::number(camera.getFocal(), 'g', 10) << "\" />\n";
+	out << "<rgbd id=\"" << id << "\" width=\"" <<QString::number( width, 'g', 10) << "\" height=\"" <<QString::number(  height, 'g', 10)  << "\" focal=\"" << QString::number(camera.getFocal(), 'g', 10)
+	<<"\" port=\""<<port<<"\" ifconfig=\""<<ifconfig<<"\" noise=\""<<QString::number(noise, 'g', 10)<< "\" />\n";
 }
 
 
