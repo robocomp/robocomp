@@ -80,6 +80,9 @@ class C(QWidget):
 		for wm in range(10):
 			w = 1000. * (1.+wm) * self.spinBox.value()
 			painter.drawEllipse(QRectF(0.5*self.width()-w/2., 0.5*self.height()-w/2., w, w))
+		for wm in range(5):
+			w = 200. * (1.+wm) * self.spinBox.value()
+			painter.drawEllipse(QRectF(0.5*self.width()-w/2., 0.5*self.height()-w/2., w, w))
 		#painter.drawLine(QPoint(0.5*self.width(), 0.5*self.height()), QPoint(0.5*self.width(), 0.5*self.height()+20))
 		#painter.drawLine(QPoint(0.5*self.width(), 0.5*self.height()), QPoint(0.5*self.width()+5, 0.5*self.height()+20))
 		#painter.drawLine(QPoint(0.5*self.width(), 0.5*self.height()), QPoint(0.5*self.width()-5, 0.5*self.height()+20))
