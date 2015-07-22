@@ -34,7 +34,7 @@ void AgmInner::setWorld(AGMModel::SPtr model)
 {
 	worldModel = model;
 	//idea...
-	innerModel= extractInnerModel();
+	///innerModel= extractInnerModel();
 }
 AGMModel::SPtr AgmInner::getWorld()
 {
