@@ -15,6 +15,10 @@
 
 [Creating a Python component using **robocompdsl** that subscribes to *apriltagsComp*](robocompdsl_python.md)
 
+[Packaging Robocomp ](packaging.md)
+
+[ Introduction to Build tools ](buildTools.md)
+
 [InnerModel, RoboComp's internal representation of reality]
 
 [RoboComp's robots: Ursus, Loki and the others]
