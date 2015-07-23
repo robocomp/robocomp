@@ -28,7 +28,7 @@ include(${RoboComp_SOURCE_DIR}/cmake/robocomp_targets.cmake)
 #SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O4")
 
 include(${RoboComp_SOURCE_DIR}/cmake/robocomp_utils.cmake)
-set(RoboComp_VERSION 1.0 CACHE STRING "RoboComp version")
+set(RoboComp_VERSION 1.01 CACHE STRING "RoboComp version")
 SET_INSTALL_DIRS()
 
 # set(RoboComp_OUTPUT_LIB_DIR ${RoboComp_BINARY_DIR}/libs)
@@ -93,7 +93,8 @@ SUBDIRS(
 	tools/rcinnerModelSimulator
 	tools/rcmanager
 	tools/rcmonitor
-  tools/rcremote
+	tools/rcremote
+	tools/rcnode
 	tools/buildTools
 )
 

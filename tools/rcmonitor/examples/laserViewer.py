@@ -50,7 +50,15 @@ class C(QWidget):
 		try:
 			self.data, basura = self.proxy.getLaserAndBStateData()
 			print '-----'
-			print len(self.data), ' ',  basura.x, ' ', basura.z, ' ', basura.alpha
+			m = -1
+			M = -1
+			for d in self.data:
+				if m == -1 or d.dist < m:
+					m = d.dist
+				if M == -1 or d.dist > M:
+					M = d.dist
+			print len(self.data), ' from', m, 'to', M
+			
 		except:
 			print 'No laser connection.'
 		return None
@@ -71,6 +79,9 @@ class C(QWidget):
 
 		for wm in range(10):
 			w = 1000. * (1.+wm) * self.spinBox.value()
+			painter.drawEllipse(QRectF(0.5*self.width()-w/2., 0.5*self.height()-w/2., w, w))
+		for wm in range(5):
+			w = 200. * (1.+wm) * self.spinBox.value()
 			painter.drawEllipse(QRectF(0.5*self.width()-w/2., 0.5*self.height()-w/2., w, w))
 		#painter.drawLine(QPoint(0.5*self.width(), 0.5*self.height()), QPoint(0.5*self.width(), 0.5*self.height()+20))
 		#painter.drawLine(QPoint(0.5*self.width(), 0.5*self.height()), QPoint(0.5*self.width()+5, 0.5*self.height()+20))
