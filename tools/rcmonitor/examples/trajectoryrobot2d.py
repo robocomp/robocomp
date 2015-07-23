@@ -171,8 +171,11 @@ class C(QWidget):
 		tp.x = self.positionX.value()
 		tp.z = self.positionZ.value()
 		tp.y = 0
-		tp.rx = tp.ry = tp.rz = 0
-		tp.onlyRot = True
+		tp.rx = tp.rz = 0
+		tp.ry = self.steer.value()
+		tp.doRotation = True
+		print 'T', tp.x, tp.y, tp.z
+		print 'R', tp.rx, tp.ry, tp.rz
 		self.proxy.go(tp)
 
 	def goAll(self):

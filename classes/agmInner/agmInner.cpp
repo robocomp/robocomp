@@ -246,10 +246,10 @@ void AgmInner::insertSymbolToInnerModelNode(InnerModel* imNew,InnerModelNode *pa
 {
 	
 	QString nodeName = QString::fromStdString(s->attributes["name"]);
-	std::cout<<"addding "<<s->attributes["name"];
+// 	std::cout<<"adding "<<s->attributes["name"];
 	if (s->symbolType=="transform")
 	{
-		std::cout<<"\t type: "<<s->symbolType <<"\n";
+		//std::cout<<"\t type: "<<s->symbolType <<"\n";
 		QString engine =QString::fromStdString(s->attributes["engine"] );
 		float mass =str2float( s->attributes["mass"] );
 		
@@ -260,12 +260,12 @@ void AgmInner::insertSymbolToInnerModelNode(InnerModel* imNew,InnerModelNode *pa
 		}
 		catch (...)
 		{
-			qDebug()<<"Existe";
+			qDebug()<<"Existe"<<nodeName;
 		}
 	}
 	else if (s->symbolType=="plane")
 	{
-		std::cout<<"\t type: "<<s->symbolType <<"\n";
+// // 		std::cout<<"\t type: "<<s->symbolType <<"\n";
 		float width, height, depth;		
 		width= str2float(s->attributes["width"]); height= str2float(s->attributes["height"]); depth=str2float(s->attributes["depth"]);
 		
@@ -294,11 +294,12 @@ void AgmInner::insertSymbolToInnerModelNode(InnerModel* imNew,InnerModelNode *pa
 	}
 	else if (s->symbolType=="mesh")
 	{
-		std::cout<<"\t type: "<<s->symbolType <<"\n";
+// 		std::cout<<"\t type: "<<s->symbolType <<"\n";
 		
 		QString meshPath;
 		
-		meshPath=QString::fromStdString(s->attributes["meshPath"]);
+		meshPath=QString::fromStdString(s->attributes["path"]);
+		
 		float scalex,scaley,scalez;
 		scalex=str2float(s->attributes["scalex"]);scaley=str2float(s->attributes["scaley"]);scalez=str2float(s->attributes["scalez"]);
 		
@@ -323,7 +324,7 @@ void AgmInner::insertSymbolToInnerModelNode(InnerModel* imNew,InnerModelNode *pa
 	}
 	else if (s->symbolType=="rgbd")
 	{
-		std::cout<<"\t type: "<<s->symbolType <<"\n";
+// 		std::cout<<"\t type: "<<s->symbolType <<"\n";
 		
 		int port;		
 		port =str2int(s->attributes["port"]);
@@ -348,7 +349,7 @@ void AgmInner::insertSymbolToInnerModelNode(InnerModel* imNew,InnerModelNode *pa
 	}
 	else if (s->symbolType=="camera")
 	{
-		std::cout<<"\t type: "<<s->symbolType <<"\n";
+// 		std::cout<<"\t type: "<<s->symbolType <<"\n";
 				
 		float focal, height, width;		
 		focal = str2float(s->attributes["focal"]);
@@ -367,7 +368,7 @@ void AgmInner::insertSymbolToInnerModelNode(InnerModel* imNew,InnerModelNode *pa
 	}
 	else if (s->symbolType=="omniRobot")
 	{
-		std::cout<<"\t type: "<<s->symbolType <<"\n";
+// 		std::cout<<"\t type: "<<s->symbolType <<"\n";
 		int port =str2int(s->attributes["port"]);
 		float noise = str2float(s->attributes["noise"]);
 		
@@ -387,7 +388,7 @@ void AgmInner::insertSymbolToInnerModelNode(InnerModel* imNew,InnerModelNode *pa
 	}
 	else if (s->symbolType=="joint")
 	{
-		std::cout<<"\t type: "<<s->symbolType <<"\n";
+// 		std::cout<<"\t type: "<<s->symbolType <<"\n";
 		//QString id_, float lx_, float ly_, float lz_, float hx_, float hy_, float hz_, float tx_, float ty_, float tz_, float rx_, ;
 		//float ry_, float rz_, float min_, float max_, uint32_t port_, std::string axis_, float home_, 
 		
