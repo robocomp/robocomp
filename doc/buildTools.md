@@ -8,9 +8,9 @@ This will initialize a Robocomp workspace in the current/specified directory.
 ###rcbuild
 When invoked form workspace without any arguments if not inside source path, it will build all the non-ignored components inside the workspace,  if inside any component source directory it will build only that component. But if a component is specified it will build it.
     
-     rcbuild [-h] [-i | --doc | --installdoc] [component]
+     rcbuild [-h] [-i [INSTALL] | --doc | --installdoc] [component]
 
-The `doc` will generate documentation, `installdoc` will install the docs to install path, `install` will build and install the components. currently you can only generate docs for one component at a time.
+The `doc` will generate documentation, `installdoc` will install the docs to install path, `install` will build and install the components to the specified directory if nothing is specified it will be installed to `/opt/robocomp`. currently you can only generate docs for one component at a time.
 
 
 ###rccomp

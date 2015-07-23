@@ -7,6 +7,10 @@
 
 [Maintaining your own repository of components](using_github.md)
 
+[Introduction to workspace model](workspaceModel.md)
+
+[Introduction to Build tools ](buildTools.md)
+
 [How to contribute to RoboComp using the GitHub branching mechanism](contribute/contribute.md)
 
 [Using the new **robocompdsl** component generation command line tool](robocompdsl.md)
@@ -16,8 +20,6 @@
 [Creating a Python component using **robocompdsl** that subscribes to *apriltagsComp*](robocompdsl_python.md)
 
 [Packaging Robocomp ](packaging.md)
-
-[ Introduction to Build tools ](buildTools.md)
 
 [InnerModel, RoboComp's internal representation of reality]
 
