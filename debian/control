@@ -3,7 +3,7 @@ Section: devel
 Priority: optional
 Maintainer: nithin <imnmfotmal@gmail.com>
 Build-Depends: debhelper (>= 8.0.0), cmake, g++ (>= 4.8.0), libgsl0-dev, libopenscenegraph-dev, cmake-qt-gui, freeglut3-dev, libboost-system-dev, libboost-thread-dev, openjdk-7-jre, libxt-dev, pyqt4-dev-tools, qt4-designer, qt4-dev-tools, zeroc-ice35, yakuake, python-pip, python-pyparsing, python-numpy, python-pyside, pyside-tools, libqt4-dev, qt4-qmake, libqt4-opengl-dev
-Standards-Version: 3.9.5
+Standards-Version: 3.9.6
 Homepage:https://robocomp.github.io/robocomp
 Vcs-Git: https://github.com/robocomp/robocomp.git
 
