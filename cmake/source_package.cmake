@@ -114,7 +114,7 @@ MESSAGE(STATUS "   build-depency: " ${DEBSRC_BUILD_DEPENDS})
   endforeach(DEP ${DEBSRC_BUILD_DEPENDS})
 
   file(APPEND ${DEBIAN_CONTROL} "\n"
-    "Standards-Version: 3.9.5\n"
+    "Standards-Version: 3.9.6\n"
     "Homepage: ${CPACK_PACKAGE_VENDOR}\n"
     "Vcs-Git:https://github.com/robocomp/robocomp.git\n"
     "\n"
