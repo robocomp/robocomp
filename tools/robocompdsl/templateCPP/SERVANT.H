@@ -148,10 +148,15 @@ I();
 				ret = method['return']
 				name = method['name']
 				
+				
 				paramStr = ''
 				for p in method['params']:
+					
 					const, ampersand = decoratorAndType_to_const_ampersand(p['decorator'], p['type'], modulePool)
-					paramStr += const + p['type'] + ' ' + ampersand + p['name'] + ', '
+					if p['type'] == 'long':
+						paramStr += const + 'Ice::Long' + ' ' + ampersand + p['name'] + ', '
+					else:
+						paramStr += const + p['type'] + ' ' + ampersand + p['name'] + ', '
 
 				cog.outl('<TABHERE>' + ret + ' ' + name + '(' + paramStr + 'const Ice::Current&);')
 

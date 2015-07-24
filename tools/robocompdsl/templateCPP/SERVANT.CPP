@@ -110,7 +110,10 @@ I()
 				paramStrA = ''
 				for p in method['params']:
 					const, ampersand = decoratorAndType_to_const_ampersand(p['decorator'], p['type'], modulePool)
-					paramStrA += const + p['type'] + ' ' + ampersand + p['name'] + ', '
+					if p['type'] == 'long':
+						paramStrA += const + 'Ice::Long' + ' ' + ampersand + p['name'] + ', '
+					else:
+						paramStrA += const + p['type'] + ' ' + ampersand + p['name'] + ', '
 
 				paramStrB = ''
 				for p in method['params']:

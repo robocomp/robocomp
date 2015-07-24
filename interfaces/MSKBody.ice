@@ -56,9 +56,9 @@ module RoboCompMSKBody{
 	["cpp:comparable"]
 	struct SkeletonPoint{
 		float X;
-					float Y;
-					float Z;
-				};
+		float Y;
+		float Z;
+	};
 	["cpp:comparable"]
 	struct DepthImagePoint{
 		int X;
