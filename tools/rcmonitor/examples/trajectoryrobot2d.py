@@ -68,6 +68,9 @@ class C(QWidget):
 		self.steer.setValue(0)
 		self.steer.move(50,58)
 		self.steer.show()
+		self.dsteer = QCheckBox("do steer", self)
+		self.dsteer.move(50,88)
+		self.dsteer.show()
 
 
 		self.positionRangeXLabel = QLabel("Range X", self)
@@ -79,14 +82,14 @@ class C(QWidget):
 		self.positionRangeXmin.show()
 		self.positionRangeXmin.setValue(600)
 		self.positionRangeXmin.setSingleStep(25)
-		self.positionRangeXmin.move(255,8)
+		self.positionRangeXmin.move(285,8)
 		self.positionRangeXmax = QSpinBox(self)
 		self.positionRangeXmax.setMaximum(10000)
 		self.positionRangeXmax.setMinimum(-10000)
 		self.positionRangeXmax.show()
 		self.positionRangeXmax.setValue(6000)
 		self.positionRangeXmax.setSingleStep(25)
-		self.positionRangeXmax.move(335,8)
+		self.positionRangeXmax.move(365,8)
 
 
 		self.positionRangeZLabel = QLabel("Range Z", self)
@@ -98,34 +101,34 @@ class C(QWidget):
 		self.positionRangeZmin.show()
 		self.positionRangeZmin.setValue(600)
 		self.positionRangeZmin.setSingleStep(25)
-		self.positionRangeZmin.move(255,33)
+		self.positionRangeZmin.move(285,33)
 		self.positionRangeZmax = QSpinBox(self)
 		self.positionRangeZmax.setMaximum(10000)
 		self.positionRangeZmax.setMinimum(-10000)
 		self.positionRangeZmax.show()
 		self.positionRangeZmax.setValue(1100)
 		self.positionRangeZmax.setSingleStep(25)
-		self.positionRangeZmax.move(335,33)
+		self.positionRangeZmax.move(365,33)
 
 		self.numTargetsLabel = QLabel('Targets', self)
 		self.numTargetsLabel.show()
-		self.numTargetsLabel.move(205,80)
+		self.numTargetsLabel.move(205,60)
 		self.numTargets = QSpinBox(self)
 		self.numTargets.setMaximum(10000)
 		self.numTargets.setMinimum(-10000)
 		self.numTargets.show()
 		self.numTargets.setValue(50)
 		self.numTargets.setSingleStep(1)
-		self.numTargets.move(255,80)
+		self.numTargets.move(285,60)
 
 		self.resetButton = QPushButton("go", self)
-		self.resetButton.move(5,90)
+		self.resetButton.move(5,120)
 		self.resetButton.show()
 		self.connect(self.resetButton, SIGNAL('clicked()'), self.go)
 		self.show()
 
 		self.resetButton = QPushButton("goAll", self)
-		self.resetButton.move(355,90)
+		self.resetButton.move(285,90)
 		self.resetButton.show()
 		self.connect(self.resetButton, SIGNAL('clicked()'), self.goAll)
 		self.show()
@@ -173,7 +176,8 @@ class C(QWidget):
 		tp.y = 0
 		tp.rx = tp.rz = 0
 		tp.ry = self.steer.value()
-		tp.doRotation = True
+		tp.doRotation = self.dsteer.isChecked()
+		
 		print 'T', tp.x, tp.y, tp.z
 		print 'R', tp.rx, tp.ry, tp.rz
 		self.proxy.go(tp)
