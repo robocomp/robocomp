@@ -229,6 +229,16 @@ void InnerModel::getSubTree(InnerModelNode *node, QStringList *l)
 	}
 	l->append(node->id);
 }
+void InnerModel::getSubTree(InnerModelNode *node, QList<InnerModelNode *> *l)
+{
+	QList<InnerModelNode*>::iterator i;
+	for (i=node->children.begin(); i!=node->children.end(); i++)
+	{
+		l->append((*i));
+		getSubTree(*i,l);
+	}
+	
+}
 
 /**
  * @brief Returns a list of node's ID corresponding to the subtree starting at node
@@ -1732,9 +1742,11 @@ void InnerModelJoint::save(QTextStream &out, int tabs)
 {
 	QList<InnerModelNode*>::iterator c;
 	//<joint id="head_yaw_joint" port="10067" axis="z" home="0" min="-1" max="1">
-	for (int i=0; i<tabs; i++) out << "\t";
+	for (int i=0; i<tabs; i++) out << "\t";	
 	out << "<joint id=\"" << id << "\" port=\"" << port << "\" axis=\"" <<QString::fromStdString( axis)<<"\" home=\""<< QString::number(home, 'g', 10)
-	<<"\" min=\""<< QString::number(min, 'g', 10)<<"\" max=\""<< QString::number(max, 'g', 10)<<"\" >\n";   
+	<<"\" min=\""<< QString::number(min, 'g', 10)<<"\" max=\""<< QString::number(max, 'g', 10)
+	<< "\" tx=\""<< QString::number(backtX, 'g', 10) <<"\" ty=\""<< QString::number(backtY, 'g', 10) <<"\" tz=\""<< QString::number(backtZ, 'g', 10) 
+	<<"\"  rx=\""<< QString::number(backrX, 'g', 10) <<"\" ry=\""<< QString::number(backrY, 'g', 10) <<"\" rz=\""<< QString::number(backrZ, 'g', 10) <<"\">\n";
 	for (c=children.begin(); c!=children.end(); c++)
 			(*c)->save(out, tabs+1);
 	
