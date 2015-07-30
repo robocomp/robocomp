@@ -59,7 +59,7 @@ public:
 	//includes methods
 	void include_im(QHash<QString, int32_t>  match, InnerModel *im);
 	void innerToAGM(InnerModelNode* node, int &symbolID, QList<QString>  lNode);
-	AGMModelSymbol::SPtr ImNodeToSymbol(InnerModelNode* node);
+	map< string, string > ImNodeToSymbol(InnerModelNode* node);
 	void  remove_Im( InnerModel*imTmp);
 
 

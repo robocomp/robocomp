@@ -223,21 +223,21 @@ void AgmInner::edgeToInnerModel(AGMModelEdge edge, InnerModel* imNew)
 	rz = str2float(edge->attributes["rz"]);
 	
 	//original
-	nodeB = imNew->newTransform (nameB, "static",nodeA,tx,ty,tz,rx,ry,rz);	
-	if (nodeB==NULL)
-		qFatal("MAAAAAL edgeToInnerModel() nodeB == null ");	
-// 	original
-	nodeA->addChild(nodeB);	
+// 	nodeB = imNew->newTransform (nameB, "static",nodeA,tx,ty,tz,rx,ry,rz);	
+// 	if (nodeB==NULL)
+// 		qFatal("MAAAAAL edgeToInnerModel() nodeB == null ");	
+// // 	original
+// 	nodeA->addChild(nodeB);	
 	
-// 	try
-// 	{
-// 		insertSymbolToInnerModelNode(imNew,nodeA, symbolB,tx,ty,tz,rx,ry,rz);		
-// 	}
-// 	catch(string e)
-// 	{
-// 		std::cout<<e<<"\n";
-// 		qFatal("insertSymbolToInnerModelNode");
-// 	}
+	try
+	{
+		insertSymbolToInnerModelNode(imNew,nodeA, symbolB,tx,ty,tz,rx,ry,rz);		
+	}
+	catch(string e)
+	{
+		std::cout<<e<<"\n";
+		qFatal("insertSymbolToInnerModelNode");
+	}
 // 	
 	
 
@@ -247,15 +247,31 @@ void AgmInner::insertSymbolToInnerModelNode(InnerModel* imNew,InnerModelNode *pa
 	
 	QString nodeName = QString::fromStdString(s->attributes["imName"]);
  	std::cout<<"adding "<<s->attributes["imName"];
-	std::cout<<" value "<<s->getAttribute("imType")<<"\n";
+	std::cout<<" value "<<s->getAttribute("imType");
 	std::cout<<" value "<<s->attributes.size()<<"\n";
 // try 
 // {
 	if (s->getAttribute("imType")=="transform")
 	{
 		//std::cout<<"\t type: "<<s->getAttribute("imType") <<"\n";
-		QString engine =QString::fromStdString(s->attributes["engine"] );
-		float mass =str2float( s->attributes["mass"] );
+		QString engine ="static";
+		float mass =0.;
+		try
+		{
+			 engine=QString::fromStdString(s->getAttribute("engine"));
+		}
+		catch (...)
+		{
+			std::cout<<"\tattribute engine not found \n";			
+		}		
+		try
+		{
+			mass = str2float(s->getAttribute("mass"));
+		 }
+		catch (...)
+		{
+			std::cout<<"\tattribute mass not found \n";			
+		}		
 		
 		try
 		{
@@ -639,7 +655,17 @@ void AgmInner::include_im(QHash<QString, int32_t>  match, InnerModel *im)
 	{
 		try
 		{
-			AGMModelSymbol::SPtr symbol =worldModel->getSymbolByIdentifier(lSymbols.at(i));
+			 
+			AGMModelSymbol::SPtr symbol = worldModel->getSymbolByIdentifier(lSymbols.at(i));
+// 			symbol->setAttribute("imName",match.key(lSymbols.at(i)).toStdString());
+// 			symbol->setAttribute("imType",match.key(lSymbols.at(i)).toStdString());
+			std::map<std::string, std::string> attributes = ImNodeToSymbol(im->getNode(lNode.at(i)));
+			for (auto m : attributes)
+			{
+				symbol->setAttribute(m.first,m.second);				
+			}
+			
+// 			symbol->setAttribute();
 			
 			try
 			{
@@ -650,6 +676,7 @@ void AgmInner::include_im(QHash<QString, int32_t>  match, InnerModel *im)
 				std::cout<<"AGMSymbol "<< symbol->toString()<<" ";
 				std::cout<<"must be the attribute imName, ADDING [imName , "<<match.key(lSymbols.at(i)).toStdString()<<" ]\n";
 				symbol->setAttribute("imName",match.key(lSymbols.at(i)).toStdString());
+				
 			}			
 			try
 			{
@@ -670,7 +697,7 @@ void AgmInner::include_im(QHash<QString, int32_t>  match, InnerModel *im)
 		}
 	}
 	
-	//comprobar que todos los symbolos de los enlaces RT de agm tienen attribute name
+	//comprobar que todos los symbolos de los enlaces RT de agm tienen attribute name y todos los de innermodel
 	for (std::vector<AGMModelEdge>::iterator it = worldModel->edges.begin() ; it != worldModel->edges.end(); ++it)
 	{
 		//std::cout << ' ' << (*it)->toString(worldModel);
@@ -687,6 +714,7 @@ void AgmInner::include_im(QHash<QString, int32_t>  match, InnerModel *im)
 				std::cout<<"must be the attribute imName, ADDING [imName , "<<symbolA->toString()<<" ]\n";
 				symbolA->setAttribute("imName",symbolA->toString());
 				symbolA->setAttribute("imType","transform");
+				
 			}	
 			AGMModelSymbol::SPtr symbolB = worldModel->getSymbol((*it)->getSymbolPair().second);
 			try
@@ -770,8 +798,11 @@ void AgmInner::innerToAGM(InnerModelNode* node, int &symbolID, QList<QString>  l
 			{	
 				qDebug()<<node->id<<"link"<<(*i)->id;
 				//symbol
-				AGMModelSymbol::SPtr newSym = ImNodeToSymbol((*i));				
-								
+				std::map<std::string, std::string> attrs;
+				attrs = ImNodeToSymbol((*i));	
+				int32_t id =worldModel->getNewId();
+				AGMModelSymbol::SPtr newSym = worldModel->newSymbol(id,attrs["imType"],attrs);
+				
 				//edge 
 				std::map<std::string, std::string> linkAttrs;
 
@@ -781,7 +812,7 @@ void AgmInner::innerToAGM(InnerModelNode* node, int &symbolID, QList<QString>  l
 				linkAttrs.insert ( std::pair<std::string,std::string>("rx",float2str((*i)->getRxValue())));
 				linkAttrs.insert ( std::pair<std::string,std::string>("ry",float2str((*i)->getRyValue())));
 				linkAttrs.insert ( std::pair<std::string,std::string>("rz",float2str((*i)->getRzValue())));
-				int32_t id = newSym->identifier;
+				
 				worldModel->addEdgeByIdentifiers(p,id,"RT",linkAttrs);
 				innerToAGM((*i),id,lNode);
 			}
@@ -791,15 +822,15 @@ void AgmInner::innerToAGM(InnerModelNode* node, int &symbolID, QList<QString>  l
 	}	
 }
 
-AGMModelSymbol::SPtr AgmInner::ImNodeToSymbol(InnerModelNode* node)
+std::map<std::string, std::string> AgmInner::ImNodeToSymbol(InnerModelNode* node)
 {
 	
 				
-	
+	qDebug()<<node->id;
 	std::map<std::string, std::string> attrs;
 	attrs.insert ( std::pair<std::string,std::string>("imName",node->id.toStdString()) );
 	
-	AGMModelSymbol::SPtr newSym;
+	
 	
 	//TODO innerModelNode cast to the type and translate the name.
 	// attribute "type" = mesh,plane,joint..
@@ -816,6 +847,7 @@ AGMModelSymbol::SPtr AgmInner::ImNodeToSymbol(InnerModelNode* node)
 // 		attrs.insert ( std::pair<std::string,std::string>("hx",float2str(joint->backhX) ) );
 // 		attrs.insert ( std::pair<std::string,std::string>("hy",float2str(joint->backhY) ) );
 // 		attrs.insert ( std::pair<std::string,std::string>("hz",float2str(joint->backhZ) ) );
+		
 		
 		attrs.insert ( std::pair<std::string,std::string>("min",float2str(joint->min) ) );
 		attrs.insert ( std::pair<std::string,std::string>("max",float2str(joint->max) ) );
@@ -885,18 +917,14 @@ AGMModelSymbol::SPtr AgmInner::ImNodeToSymbol(InnerModelNode* node)
 	else if (dynamic_cast<InnerModelOmniRobot*>(node) != NULL)
 	{
 		InnerModelOmniRobot *omni = dynamic_cast<InnerModelOmniRobot*>(node);
-		//uint32_t port;
-		//float noise;
-		//bool collide;
-		attrs.insert ( std::pair<std::string,std::string>("port",int2str(omni->port)) );
+		attrs.insert ( std::pair<std::string,std::string>("port",int2str(omni->port)) );		
 		attrs.insert ( std::pair<std::string,std::string>("noise",float2str(omni->noise)) );
 		
 		string v="false";
 		if (omni->collide)
 			v="true";
 		attrs.insert ( std::pair<std::string,std::string>("collide",v) );
-				
-		type = "omniRobot";
+		type="omniRobot";
 		attrs.insert ( std::pair<std::string,std::string>("imType",type ) );
 	}
 	else if (dynamic_cast<InnerModelPlane*>(node) != NULL)
@@ -1020,11 +1048,7 @@ AGMModelSymbol::SPtr AgmInner::ImNodeToSymbol(InnerModelNode* node)
 		string err;			
 		err = "error: Type of node " + node->id.toStdString() + " is unknown.";
 		throw err;
-	}
-	
-	///new id for the symbol
-	int32_t id =worldModel->getNewId();	
-	return worldModel->newSymbol(id,type,attrs);
-
+	}		
+	return attrs;
 }
 
