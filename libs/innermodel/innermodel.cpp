@@ -2173,10 +2173,11 @@ void InnerModelPlane::save(QTextStream &out, int tabs)
 {
 // 	float width, height, depth;
 	for (int i=0; i<tabs; i++) out << "\t";
-	out << "<plane id=\"" << id << "\" texture=\"" << texture << "\" size=\"" << QString::number(width,'g', 10)<<","<<QString::number( height,'g', 10)<<","<<QString::number( depth,'g', 10)  
-	<< "\" repeat=\"" << QString::number(repeat, 'g', 10) << "\" nx=\"" << QString::number(normal(0), 'g', 10) << "\" ny=\"" << QString::number(normal(1), 'g', 10) << "\" nz=\"" 
+	out << "<plane id=\"" << id << "\" texture=\"" << texture << "\" size=\"" << QString::number(width,'g', 10)<<","<<QString::number( height,'g', 10)<<","
+	<<QString::number( depth,'g', 10) << "\" repeat=\"" << QString::number(repeat, 'g', 10) << "\" nx=\"" << QString::number(normal(0), 'g', 10) 
+	<< "\" ny=\"" << QString::number(normal(1), 'g', 10) << "\" nz=\"" 
 	<< QString::number(normal(2), 'g', 10) << "\" px=\"" << QString::number(point(0), 'g', 10) << "\" py=\"" << QString::number(point(1), 'g', 10) 
-	<< "\" pz=\"" << QString::number(point(2), 'g', 10) << "\" />\n";
+	<< "\" pz=\"" << QString::number(point(2), 'g', 10) <<"\" collide=\""<< QString::number(collidable,'g',10)<< "\" />\n";
 }
 
 
@@ -2564,7 +2565,11 @@ InnerModelMesh::InnerModelMesh(QString id_, QString meshPath_, float scalex_, fl
 void InnerModelMesh::save(QTextStream &out, int tabs)
 {
 	for (int i=0; i<tabs; i++) out << "\t";
-	out << "<mesh id=\""<<id<<"\"" <<" file=\"" << meshPath << "\" scale=\"" << QString::number(scalex, 'g', 10) << ","<< QString::number(scaley, 'g', 10)<< ","<< QString::number(scalez, 'g', 10) << "\" tx=\"" << QString::number(tx, 'g', 10) << "\" ty=\"" << QString::number(ty, 'g', 10) << "\" tz=\"" << QString::number(tz, 'g', 10) << "\" rx=\"" << QString::number(rx, 'g', 10) << "\" ry=\"" << QString::number(ry, 'g', 10) << "\" rz=\"" << QString::number(rz, 'g', 10) << "\" />\n";
+	out << "<mesh id=\""<<id<<"\"" <<" file=\"" << meshPath 
+	<< "\" scale=\"" << QString::number(scalex, 'g', 10) << ","<< QString::number(scaley, 'g', 10)<< ","<< QString::number(scalez, 'g', 10) 
+	<< "\" tx=\"" << QString::number(tx, 'g', 10) << "\" ty=\"" << QString::number(ty, 'g', 10) << "\" tz=\"" << QString::number(tz, 'g', 10) 
+	<< "\" rx=\"" << QString::number(rx, 'g', 10) << "\" ry=\"" << QString::number(ry, 'g', 10) << "\" rz=\"" << QString::number(rz, 'g', 10) 
+	<<"\" collide=\""<< QString::number(collidable,'g',10)<< "\" />\n";
 }
 
 

@@ -388,13 +388,36 @@ void AgmInner::insertSymbolToInnerModelNode(InnerModel* imNew,InnerModelNode *pa
 	}
 	else if (s->getAttribute("imType")=="omniRobot")
 	{
+		int port=0;
+		float noise =0.; 
 		std::cout<<"\t type: "<<s->getAttribute("imType") <<"\n";
-		int port =str2int(s->attributes["port"]);
-		float noise = str2float(s->attributes["noise"]);
-		
+		try
+		{
+			 port= str2int(s->getAttribute("port"));
+		}
+		catch (...)
+		{
+// 			std::cout<<"\tattribute not found \n";			
+		}		
+		try
+		{
+			noise = str2float(s->getAttribute("mass"));
+		 }
+		catch (...)
+		{
+// 			std::cout<<"\tattribute not found \n";			
+		}		
+				
 		bool collide = false;
-		if (s->attributes["collide"]=="true")
-			collide = true;
+		try
+		{
+			if (s->getAttribute("collide")=="true")
+				collide = true;
+		}
+		catch (...)
+		{
+// 			std::cout<<"\tattribute not found \n";			
+		}
 		
 		try
 		{
@@ -646,6 +669,7 @@ void AgmInner::include_im(QHash<QString, int32_t>  match, InnerModel *im)
 		if (node==NULL)
 		{
 			qDebug()<<"node"<<lNode.at(i)<<"doesn't exist";
+			qDebug()<<lNode;
 			qFatal("abort, not node");
 		}
 	}
