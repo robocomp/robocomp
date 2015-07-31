@@ -109,9 +109,7 @@ int AgmInner::findName(const AGMModel::SPtr &m, QString n)
  */
 InnerModel* AgmInner::extractInnerModel(QString imNodeName)
 {
-	
-	
-	InnerModel *imNew = new InnerModel() ;
+	InnerModel *imNew = new InnerModel();
 
 	int symbolID = findName(imNodeName);
 // 	symbolID=5;
@@ -223,21 +221,21 @@ void AgmInner::edgeToInnerModel(AGMModelEdge edge, InnerModel* imNew)
 	rz = str2float(edge->attributes["rz"]);
 	
 	//original
-// 	nodeB = imNew->newTransform (nameB, "static",nodeA,tx,ty,tz,rx,ry,rz);	
-// 	if (nodeB==NULL)
-// 		qFatal("MAAAAAL edgeToInnerModel() nodeB == null ");	
-// // 	original
-// 	nodeA->addChild(nodeB);	
+	nodeB = imNew->newTransform (nameB, "static",nodeA,tx,ty,tz,rx,ry,rz);	
+	if (nodeB==NULL)
+		qFatal("MAAAAAL edgeToInnerModel() nodeB == null ");	
+// 	original
+	nodeA->addChild(nodeB);	
 	
-	try
-	{
-		insertSymbolToInnerModelNode(imNew,nodeA, symbolB,tx,ty,tz,rx,ry,rz);		
-	}
-	catch(string e)
-	{
-		std::cout<<e<<"\n";
-		qFatal("insertSymbolToInnerModelNode");
-	}
+// 	try
+// 	{
+// 		insertSymbolToInnerModelNode(imNew,nodeA, symbolB,tx,ty,tz,rx,ry,rz);		
+// 	}
+// 	catch(string e)
+// 	{
+// 		std::cout<<e<<"\n";
+// 		qFatal("insertSymbolToInnerModelNode");
+// 	}
 // 	
 	
 
@@ -401,7 +399,7 @@ void AgmInner::insertSymbolToInnerModelNode(InnerModel* imNew,InnerModelNode *pa
 		}		
 		try
 		{
-			noise = str2float(s->getAttribute("mass"));
+			noise = str2float(s->getAttribute("noise"));
 		 }
 		catch (...)
 		{
