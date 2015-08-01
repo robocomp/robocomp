@@ -53,6 +53,7 @@ class C(QWidget):
 		print "yaya"
 		self.show()
 		
+		self.lalala = 0
 		self.maxDepth = 9.0
 		self.job()
 
@@ -93,6 +94,9 @@ class C(QWidget):
 			if ascii > 255: ascii = 255
 			v += chr(ascii)
 		image = QImage(self.color, width, height, QImage.Format_RGB888)
+		self.lalala+=1
+		image.save("images/image"+str(self.lalala)+'.png')
+		print "lalala: ", str(self.lalala)
 		imageGrey = QImage(v, width, height, QImage.Format_Indexed8)
 		for i in range(256):
 			imageGrey.setColor(i, QColor(i,i,i).rgb())

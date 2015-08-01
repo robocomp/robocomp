@@ -55,6 +55,13 @@ public:
 	void updateAgmWithInnerModel(InnerModel* im);
 	void insertSymbolToInnerModelNode(InnerModel* imNew, InnerModelNode *parentNode, AGMModelSymbol::SPtr s, float tx = 0, float ty = 0, float tz = 0, float rx = 0, float ry = 0, float rz = 0);
 	AGMModel::SPtr remove_ImOriginal(string agmFilePath, string imFilePath);
+	
+	//includes methods
+	void include_im(QHash<QString, int32_t>  match, InnerModel *im);
+	void innerToAGM(InnerModelNode* node, int &symbolID, QList<QString>  lNode);
+	map< string, string > ImNodeToSymbol(InnerModelNode* node);
+	void  remove_Im( InnerModel*imTmp);
+
 
 private:
     AGMModel::SPtr worldModel;
