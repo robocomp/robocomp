@@ -1,0 +1,15 @@
+CommonBehavior.Endpoints=tcp -p 1
+
+
+# Proxies for required interfaces
+rcdnsProxy = rcdns:tcp -h localhost -p 11233
+
+
+
+Ice.Warn.Connections=0
+Ice.Trace.Network=0
+Ice.Trace.Protocol=0
+Ice.ACM.Client=10
+Ice.ACM.Server=10
+
+

@@ -1,0 +1,30 @@
+module RoboCompRCDNS
+{ 
+	/** \interface RCDNS
+	*@brief interface RCDNS
+	*/
+
+	
+	struct ipInfo{
+		string publicIP;
+		string privateIP;
+		string hostName;
+	};
+	
+	struct DNSdata{
+		ipInfo host;
+		string idComp;
+		int port;
+	};
+	sequence <DNSdata> DnsHostsSeq;
+	interface rcdns
+	{
+		int giveMePort(string idComp, ipInfo hostInfo);
+		int getComponentPort(string idComp, string host);
+		string getComponentId(int port, string host);
+		string getComponentHostNameById(string idComp);
+		string getComponentHostNameByPort(int port);
+		DnsHostsSeq getAllCompsHost(string host);
+		DnsHostsSeq getAllComps();
+	};
+};

@@ -1,0 +1,8 @@
+import "/robocomp/interfaces/IDSLs/rcdns.idsl";
+
+Component clientDNScpp{
+	Communications{
+		requires rcdns;
+	};
+	language cpp;
+};
