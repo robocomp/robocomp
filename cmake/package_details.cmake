@@ -26,7 +26,7 @@ set(CPACK_DEBIAN_CHANGELOG "  * Latest development version." CACHE STRING "name"
 set(CPACK_SOURCE_IGNORE_FILES .git)
 set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${MY_VERSION}-${CPACK_DEBIAN_DISTRIBUTION_NAME}")
 set(PPA_PGP_KEY "nithin murali" CACHE STRING "1CF615C5")
-set(DEB_SOURCE_CHANGES "NOTCHANGED" CACHE STRING "source chaged since last upload")
+set(DEB_SOURCE_CHANGES "CHANGED" CACHE STRING "source chaged since last upload")
 
 #get the architecture of the machine
 execute_process(

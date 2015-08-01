@@ -1,4 +1,4 @@
-robocomp (1.0-ubuntu1~vivid1-0ppa2) vivid; urgency=low
+robocomp (1.0-ubuntu1~vivid1-0ppa1) vivid; urgency=low
 
   * Package built with CMake
 
