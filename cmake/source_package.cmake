@@ -150,12 +150,13 @@ foreach(RELEASE ${CPACK_DEBIAN_DISTRIBUTION_RELEASES})
     string(REGEX MATCH "-0ppa[0-9]+" var ${lineOne})
     string(SUBSTRING ${var} 5 -1 PPA_NUMBER)
     
-    if(${DEB_SOURCE_CHANGES} MATCHES CHANGED)
+    message(STATUS "num ${var}")
+    if(${DEB_SOURCE_CHANGES} MATCHES "^CHANGED$")
       set(PPA_NUMBER 1)
     else()
       MATH(EXPR PPA_NUMBER "${PPA_NUMBER}+1")
     endif()
-
+    message(STATUS "ppa num ${PPA_NUMBER}")
     file(WRITE ${DEBIAN_CHANGELOG}
       "${CPACK_DEBIAN_PACKAGE_NAME} (${RELEASE_PACKAGE_VERSION}-0ppa${PPA_NUMBER}) ${RELEASE}; urgency=low\n\n"
       "  * Package built with CMake\n\n"
