@@ -15,33 +15,40 @@ module RoboCompTrajectoryRobot2D{
 	struct TargetPose{
 		bool doRotation;
 		float x;
-					float y;
-					float z;
-					float rx;
-					float ry;
-					float rz;
-				};
+		float y;
+		float z;
+		float rx;
+		float ry;
+		float rz;
+	};
+
 	["cpp:comparable"]
 	struct NavState{
 		float x;
-					float z;
-					float ang;
-					float advV;
-					float rotV;
-					float distanceToTarget;
-					long elapsedTime;
+		float z;
+		float ang;
+		float advV;
+		float rotV;
+		float distanceToTarget;
+		long elapsedTime;
 		long estimatedTime;
 		long planningTime;
 		string state;
 	};
+	
+	dictionary<string, string> NavigationParameterMap;
 
-	interface TrajectoryRobot2D{
-		float go(TargetPose target)throws RoboCompException;
+	interface TrajectoryRobot2D
+	{
+		float go(TargetPose target) throws RoboCompException;
 		float goReferenced(TargetPose target, float xRef, float zRef, float threshold) throws RoboCompException;
-		float goBackwards(TargetPose target)throws RoboCompException;
-		float changeTarget(TargetPose target)throws RoboCompException;
+		float goBackwards(TargetPose target) throws RoboCompException;
+		float changeTarget(TargetPose target) throws RoboCompException;
 		NavState getState();
 		void stop();
+		
+		void mapBasedTarget(NavigationParameterMap parameters);
+
 	};
 };
 
