@@ -33,8 +33,6 @@
 
 #include <genericworker.h>
 #include <innermodel/innermodel.h>
-// #include <qt4/Qt/qnetworkinterface.h>
-// #include <qt4/Qt/qhostaddress.h>
 #include <qt4/QtNetwork/QNetworkInterface>
 #include <qt4/QtNetwork/QHostAddress>
 #include <qt4/QtNetwork/QHostInfo>
