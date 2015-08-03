@@ -237,8 +237,6 @@ public:
 	QVec compute3DPointFromImageCoords(const QString &firstCamera , const QVec & left, const QString & secondCamera , const QVec & right, const QString & refSystem);
 	QVec compute3DPointFromImageAngles(const QString &firstCamera , const QVec & left, const QString & secondCamera , const QVec & right, const QString & refSystem);
 
-	/// Setters for model parameters
-
 	/// Laser stuff
 	QVec laserTo(const QString &dest, const QString & laserId , const QVec &p);
 	QVec laserTo(const QString &dest, const QString & laserId , float r, float alfa);

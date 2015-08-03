@@ -185,4 +185,6 @@ foreach(RELEASE ${CPACK_DEBIAN_DISTRIBUTION_RELEASES})
 endforeach(RELEASE ${CPACK_DEBIAN_DISTRIBUTION_RELEASES})
 
 ##############################################################################
-message(STATUS " run  dput ppa:your-lp-id/ppa ${SOURCE_CHANGES_FILE} from ./Debian for uploading to ppa" )
+message(STATUS " run  dput ppa:your-lp-id/robocomp ${SOURCE_CHANGES_FILE} from ./Debian for uploading to ppa" )
+
+
