@@ -33,6 +33,11 @@
 
 #include <genericworker.h>
 #include <innermodel/innermodel.h>
+// #include <qt4/Qt/qnetworkinterface.h>
+// #include <qt4/Qt/qhostaddress.h>
+#include <qt4/QtNetwork/QNetworkInterface>
+#include <qt4/QtNetwork/QHostAddress>
+#include <qt4/QtNetwork/QHostInfo>
 
 class SpecificWorker : public GenericWorker
 {
@@ -42,6 +47,7 @@ public:
 	~SpecificWorker();
 	bool setParams(RoboCompCommonBehavior::ParameterList params);
 	
+	void requestRealPort();
 	void requestPort(string idComp, RoboCompRCDNS::ipInfo hostData);
 	void requestPortOfComponent(string idComp, string host);
 	void requestIdOfComponent(int port, string host);

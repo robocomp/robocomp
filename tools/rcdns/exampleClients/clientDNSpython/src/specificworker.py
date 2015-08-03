@@ -54,6 +54,7 @@ class SpecificWorker(GenericWorker):
 		print 'SpecificWorker.compute...'
 
 		self.insertComps()
+		self.insertRealComp()
 		##############################
 		i=0
 		while i<233:
@@ -108,6 +109,60 @@ class SpecificWorker(GenericWorker):
 ###############################################
 #			SERVANTS
 ###############################################
+
+	def insertRealComp(self):
+		hostData = ipInfo()
+		listIface = QtNetwork.QNetworkInterface.allInterfaces()
+		if listIface:
+			for iface in listIface:
+				print iface
+				flags = iface.flags()
+				isLoopback = flags & QtNetwork.QNetworkInterface.IsLoopBack
+				isP2P = flags & QtNetwork.QNetworkInterface.IsPointToPoint
+				isRunning = flags & QtNetwork.QNetworkInterface.IsRunning
+
+				if not isRunning:
+					continue
+				#// We only want valid interfaces that aren't loopback/virtual and not point to point
+				if not iface.isValid() or isLoopback or isP2P:
+					continue
+				addresses = iface.allAddresses()
+				for address in addresses:
+					if address == QtNetwork.QHostAddress.LocalHost:
+						continue
+					if not address.toIPv4Address():
+						continue
+					ip = address.toString()
+					if not ip:
+						continue
+										
+					print iface.name(),ip
+					ipCablePub = False
+					ipCablePriv = False
+					if "10." in ip or "127.16." in ip or "192.168." in ip:
+						if "eth" in iface.name():
+							hostData.privateIP = ip
+							ipCablePub = True
+						elif "wlan" in iface.name() and ipCablePub is False:
+							hostData.privateIP = ip
+					else:
+						if "eth" in iface.name():
+							hostData.publicIP = ip
+							ipCablePriv = True
+						elif "wlan" in iface.name() and ipCablePriv == False:
+							hostData.publicIP = ip
+					hostData.hostName = QtNetwork.QHostInfo.localHostName()+'.local'
+		print hostData
+		if hostData.publicIP == '' and hostData.privateIP == '' and hostData.hostName == '':
+			print "ERROR! WITH YOURS NETWORK INTERFACES"
+		else:
+			if hostData.publicIP != '' and hostData.privateIP != '' and hostData.hostName != '':
+				print "ou yeah!"
+			else:
+				print "WARNING! NOT CONFIGURATION COMPLETE"
+			self.rcdns_proxy.giveMePort('REALCOMP',hostData)
+
+
 	def insertComps(self):
 		for i in range(0,233):
 			hostData = ipInfo()
