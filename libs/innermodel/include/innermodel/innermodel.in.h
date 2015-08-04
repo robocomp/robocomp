@@ -193,8 +193,12 @@ public:
 	}
 	QVec transform6D(const QString & destId, const QVec &origVec, const QString & origId) { Q_ASSERT(origVec.size() == 6); return transform(destId, origVec, origId); }
 
-	QVec transform6D(const QString & destId,const QString & origId) { return transform(destId, QVec::vec6(0,0,0,0,0,0), origId);  }
+	QVec transform6D(const QString & destId,const QString & origId) { return transform(destId, QVec::vec6(0,0,0,0,0,0), origId); }
 	QVec transform(const QString & destId,  const QString & origId) { return transform(destId, QVec::vec3(0,0,0), origId); }
+	QVec transformS(const std::string & destId,  const std::string & origId)
+	{
+		return transform(QString::fromStdString(destId), QVec::vec3(0,0,0), QString::fromStdString(origId));
+	}
 
 	QVec rotationAngles(const QString & destId, const QString & origId);
 	QVec project(QString reference, QVec origVec, QString cameraId);

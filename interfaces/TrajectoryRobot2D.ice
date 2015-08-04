@@ -10,9 +10,12 @@
 #define ROBOCOMPTRAJECTORYROBOT2D_ICE
 
 module RoboCompTrajectoryRobot2D{
+
 	exception RoboCompException{string text;};
+
 	["cpp:comparable"]
-	struct TargetPose{
+	struct TargetPose
+	{
 		bool doRotation;
 		float x;
 		float y;
@@ -23,7 +26,8 @@ module RoboCompTrajectoryRobot2D{
 	};
 
 	["cpp:comparable"]
-	struct NavState{
+	struct NavState
+	{
 		float x;
 		float z;
 		float ang;
