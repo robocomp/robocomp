@@ -76,7 +76,7 @@ PUBLISHES_STR = """
 
 IMPLEMENTS_STR = """
 <TABHERE><TABHERE>adapter = ic.createObjectAdapter('<NORMAL>')
-<TABHERE><TABHERE>adapter.add(<NORMAL>I(worker), ic.stringToIdentity('<LOWER>'))
+<TABHERE><TABHERE>adapter.add(<NORMAL>I(worker, ic), ic.stringToIdentity('<LOWER>'))
 <TABHERE><TABHERE>adapter.activate()
 """
 ]]]
