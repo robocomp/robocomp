@@ -2425,7 +2425,10 @@ InnerModelLaser::InnerModelLaser(QString id_, uint32_t _port, uint32_t _min, uin
 void InnerModelLaser::save(QTextStream &out, int tabs)
 {
 	for (int i=0; i<tabs; i++) out << "\t";
-	out << "<laser id=\"" << id << "\" />\n";
+
+	out << "<laser id=\"" << id <<"\" port=\""<<port<<"\" min=\""<< QString::number(min,'g',10)<<"\" max=\""<<QString::number(max,'g',10)
+	<<"\" measures=\""<<QString::number(measures,'g',10)<<"\" angle=\""<<QString::number(angle,'g',10)
+	<<"\" ifconfig=\""<<ifconfig<< "\" />\n";
 }
 
 
