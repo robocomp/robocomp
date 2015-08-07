@@ -48,6 +48,17 @@ class Workspace:
                 except Exception as copyEx:
                     raise RuntimeError('Could neither copy or simlink %s to %s : \n %s \n %s' % (src,dst,str(symlinkEx),str(copyEx)))
 
+        def update_wsfile(workspacePath):
+            if string.strip(workspacePath) not in self.workspace_paths:
+                #update the list of workspaces
+                home = os.path.expanduser("~")
+                if not os.path.exists(os.path.join(home,".config/RoboComp")):
+                    os.makedirs(os.path.join(home,".config/RoboComp"))
+                config_file = open(os.path.join(home,".config/RoboComp/rc_workspace.config"),"a+")    
+                config_file.write(workspacePath)
+                config_file.write("\n")
+                config_file.close()
+
         #if already in a workspace, throw error
         if self.find_workspace(ws_path):
             raise RuntimeError("Sorry, you cant create workspace inside an existing one \n")
@@ -71,16 +82,7 @@ class Workspace:
             os.system("mv ./" + file + " ./src")
 
         create_toplevel(ws_path+'/src')
-
-        if string.strip(pathstr) not in self.workspace_paths:
-            #update the list of workspaces
-            home = os.path.expanduser("~")
-            if not os.path.exists(os.path.join(home,".config/RoboComp")):
-                os.makedirs(os.path.join(home,".config/RoboComp"))
-            config_file = open(os.path.join(home,".config/RoboComp/rc_workspace.config"),"a+")    
-            config_file.write(pathstr)
-            config_file.write("\n")
-            config_file.close()
+        update_wsfile(pathstr)
 
     ''' find the directory containing component exexutable'''
     def find_component_exec(self, component):

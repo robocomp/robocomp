@@ -1,5 +1,5 @@
-robocomp (1.0-ubuntu1~vivid1-0ppa1) vivid; urgency=low
+robocomp (1.0-ubuntu1~trusty1-0ppa1) trusty; urgency=low
 
-  * Package built with CMake
+  * Initial Release
 
- -- Luis J. Manso <lmanso@unex.es>  Sat, 01 Aug 2015 11:40:55 +0530
+ -- Luis J. Manso <lmanso@unex.es>  Mon, 03 Aug 2015 02:45:57 +0530

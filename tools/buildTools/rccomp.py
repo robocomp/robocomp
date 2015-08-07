@@ -6,7 +6,7 @@ import argparse, argcomplete
 from workspace import workspace as WS
 
 def main():
-    parser = argparse.ArgumentParser(description="provides various info about components")
+    parser = argparse.ArgumentParser(description="provides various info about components/workspaces")
     parser.add_argument('argument', nargs='?', choices=['list'])
     
     argcomplete.autocomplete(parser)

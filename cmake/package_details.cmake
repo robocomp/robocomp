@@ -19,7 +19,7 @@ SET(CPACK_RESOURCE_FILE_LICENSE "${SRC_DIR}/debian/copyright" CACHE STRING "copy
 SET(CPACK_PACKAGE_VERSION ${MY_VERSION} CACHE STRING "version")
 set(CPACK_DEBIAN_PACKAGE_PRIORITY "optional" CACHE STRING "priority")
 set(CPACK_DEBIAN_DISTRIBUTION_NAME ubuntu CACHE STRING "dist-name")
-set(CPACK_DEBIAN_DISTRIBUTION_RELEASES "vivid utopic trusty"  CACHE STRING "dists")
+set(CPACK_DEBIAN_DISTRIBUTION_RELEASES vivid utopic trusty  CACHE STRING "dists")
 set(CPACK_DEBIAN_PACKAGE_CONTROL_EXTRA "${SRC_DIR}/debian/postinst;${SRC_DIR}/debian/preinst;${SRC_DIR}/debian/postrm"  CACHE STRING "control extra" )
 set(DEB_SRC_DIR ${SRC_DIR} CACHE STRING "src dir" )
 set(CPACK_DEBIAN_CHANGELOG "  * Latest development version." CACHE STRING "name")
