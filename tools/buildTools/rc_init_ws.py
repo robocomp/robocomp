@@ -21,8 +21,11 @@ def main():
         parser.error('Workspace "%s" does not exist' % workspace)
 
     #verify that this is not an existing workspace
-    if os.path.exists( os.path.join(workspace,"toplevel.cmake")):
-        parser.error('Workspace "%s" is alreay an workspace' % workspace)
+    if os.path.exists( os.path.join(workspace,".rc_workspace")):
+        print('\nWorkspace "%s" is alreay an workspace' % workspace)
+        if WS.register_workspace(workspace):
+            print("Re-registred this workspace\n")
+        return
 
     #try creating a workspace
     try:
@@ -32,7 +35,7 @@ def main():
         sys.exit(2)
     else:
         sys.stdout.write("sucessfully initialized robocomp workspace in %s \n" % (str(os.path.abspath(workspace))) )
-
+        sys.stdout.write("To remove this workspace delete the file .rc_workspace\n")
 if __name__ == '__main__':
     main()
 

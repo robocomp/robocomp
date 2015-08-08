@@ -7,7 +7,7 @@ from workspace import workspace as WS
 
 def main():
     parser = argparse.ArgumentParser(description="provides various info about components/workspaces")
-    parser.add_argument('argument', nargs='?', choices=['list'])
+    parser.add_argument('argument', nargs='?', choices=['list','listws'])
     
     argcomplete.autocomplete(parser)
     args = parser.parse_args()
@@ -19,6 +19,12 @@ def main():
             componentsname.append(component.split('/')[ len(component.split('/')) -1 ])
         opstring = "   ".join(componentsname)
         print(opstring)
+    elif args.argument == 'listws':
+        home = os.path.expanduser("~")
+        print("registered workspaces are : \n")
+        with open(os.path.join(home,".config/RoboComp/rc_workspace.config")) as f:
+            print(f.read())
+        print("\tuse 'rc_init_ws' to register a workspace")
     else:
         parser.error("sorry no such option is available ")
 

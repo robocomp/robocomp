@@ -1,7 +1,7 @@
 #Build tools
 
 ###rc_init_ws
-This will initialize a Robocomp workspace in the current/specified directory.
+This will initialize a Robocomp workspace in the current/specified directory. If this is a workspace (has a .rc_workspace file) then it will register it as an workspace on your computer. To de-register a workspace just delete the .rc_workspace file.
     
     rc_init_ws [path]
 
@@ -14,7 +14,11 @@ The `doc` will generate documentation, `installdoc` will install the docs to ins
 
 
 ###rccomp
-This dosent have much functions as of now. `rccomp list` will list all the components.
+This dosent have much functions as of now.
+    
+    usage: rccomp [-h] [{list,listws}]
+ 
+ `rccomp list` will list all the components in registered workspaces and `rccomp listws` will list all the components in registered workspaces.
 
 
 ###rced
