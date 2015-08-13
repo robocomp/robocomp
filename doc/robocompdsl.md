@@ -66,7 +66,7 @@ These commands will generate the C++ (or Python) code in the specified directory
 Check that the *rcis* simulator is up and running. You should have two open windows, one with a camara looking at the world and another with the subjective camera of the robot. In not, in a new terminal type,
 
     cd ~/robocomp/files/innermodel
-    rcis simpleWorld.xml
+    rcis simpleworld.xml
     
 Now, goto to the src subdirectory of the new component, 
 
