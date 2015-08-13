@@ -19,7 +19,6 @@ This will generate a CDSL file with the following content:
 
     import "/robocomp/interfaces/IDSLs/import1.idsl";
     import "/robocomp/interfaces/IDSLs/import2.idsl";
- 
     Component CHANGETHECOMPONENTNAME
     {
     	Communications
@@ -37,7 +36,19 @@ The CDSL language is described in the tutorial ["A brief introduction to Compone
 
  
 ## Generating a component given a CDSL file
-Once we have our CDSL file we can generate the component's source code running robocompdsl with the CDSL file as first argument and the directory where the code should be placed as the second argument.
+ 
+Let's change the template file above by something like this, 
+
+    import "/robocomp/interfaces/IDSLs/DifferentialRobot.idsl";
+    import "/robocomp/interfaces/IDSLs/Laser.idsl";
+    Component MyFirstComp{
+        Communications{
+            requires DifferentialRobot, Laser;
+        };
+    language Cpp;
+    };
+    
+and save it as *mycomponent.cdsl*. Now run again robocompdsl with the CDSL file as first argument and the directory where the code should be placed as the second argument.
 
 From the component's directory:
     $ cd path/to/mycomponent
@@ -46,8 +57,87 @@ From the component's directory:
 Or somewhere else:
     $ robocompdsl path/to/mycomponent/mycomponent.cdsl path/to/mycomponent
 
-These commands will generate the C++ or Python code in the specified directory.
+These commands will generate the C++ (or Python) code in the specified directory.
 
+## Modfiying the component to write a simple controller for the robot
+Check that the *rcis* simulator is up and running. You should have two open windows, one with a camara looking at the world and another with the subjective camera of the robot. In not, in a new terminal type,
+
+    cd ~/robocomp/files/innermodel
+    rcis simpleWorld.xml
+    
+Now, goto to the src subdirectory of the new component, 
+
+    cd path/to/mycomponent/src
+    
+and open *specificworker.cpp* in your favorite editor. Go to the **void SpecificWorker::compute()** method and replace it with,
+
+    void SpecificWorker::compute( )
+    {
+        static  float rot = 0.1f;           // rads/sec
+        static float adv = 100.f;           // mm/sec
+        static float turnSwitch = 1;        // bool switch
+        const float advIncLow = 0.8;        // mm/sec
+        const float advIncHigh = 2.f;       // mm/sec
+        const float rotInc = 0.25;          // rads/sec
+        const float rotMax = 0.4;           // rads/sec
+        const float advMax = 200;           // milimetres/sec
+        const float distThreshold = 500;    // milimetres
+        try
+        {
+            RoboCompLaser::TLaserData ldata = laser_proxy->getLaserData();
+           std::sort( ldata.begin()+35, ldata.end()-35, [](RoboCompLaser::TData a, RoboCompLaser::TData b){ return     a.dist < b.dist; }) ;
+            if( ldata.front().dist < distThreshold) 
+            {
+                adv = adv * advIncLow; 
+                rot = rot + turnSwitch * rotInc;
+                if( rot < -rotMax) rot = -rotMax;
+                if( rot > rotMax) rot = rotMax;
+                differentialrobot_proxy->setSpeedBase(adv, rot);
+            }
+            else
+            {
+                adv = adv * advIncHigh; 
+                if( adv > advMax) adv = advMax;
+                rot = 0.f;
+                differentialrobot_proxy->setSpeedBase(adv, 0.f);        
+               turnSwitch = -turnSwitch;
+            }   
+        }
+        catch(const Ice::Exception &ex)
+        {
+            std::cout << ex << std::endl;
+        }
+    }
+
+save and, 
+
+    cd ..
+    make
+    
+Now we need to tell the component where to find the DifferentialRobot and the Laser interfaces. Of course they are implemented by the rcis simulator so we only need to change the ports in the configuration file,
+
+     cd path/to/mycomponent/etc
+     gedit config
+     
+    CommonBehavior.Endpoints=tcp -p **11000**
+    # Proxies for required interfaces
+    LaserProxy = laser:tcp -h localhost -p **10003**
+    DifferentialRobotProxy = differentialrobot:tcp -h localhost -p **10004**
+    Ice.Warn.Connections=0
+    Ice.Trace.Network=0
+    Ice.Trace.Protocol=0
+    Ice.ACM.Client=10
+    Ice.ACM.Server=10
+
+Save and 
+
+    cd ..
+
+Now start the component,
+
+    bin/mycomponent --Ice.Config=etc/config
+
+and watch the robot avoiding obstacles!
 
 ## Updating the source code of a component after modifying its CDSL file
 Once we generated our component we might change our mind and decide to add a new connection to another interface or to publish a new topic. In these cases we can regenerate the code of the component just by changing the *.cdsl* file and executing again the command.
