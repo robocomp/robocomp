@@ -3,7 +3,7 @@
 
 [A Brief introduction to Components](components.md)
 
-[Creation of a new component using RoboComp's Eclipse based DSLEditor](component_creation_with_DSLEditor.md)
+[Using the new **robocompdsl** component generation command line tool](robocompdsl.md)
 
 [Maintaining your own repository of components](using_github.md)
 
@@ -12,8 +12,6 @@
 [Introduction to Build tools ](buildTools.md)
 
 [How to contribute to RoboComp using the GitHub branching mechanism](contribute/contribute.md)
-
-[Using the new **robocompdsl** component generation command line tool](robocompdsl.md)
 
 [The E. Olson's AprilTags component](https://github.com/robocomp/robocomp-robolab/blob/master/components/apriltagsComp/README.md)
 
