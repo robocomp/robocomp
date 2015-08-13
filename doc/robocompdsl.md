@@ -51,11 +51,14 @@ Let's change the template file above by something like this,
 and save it as *mycomponent.cdsl*. Now run again robocompdsl with the CDSL file as first argument and the directory where the code should be placed as the second argument.
 
 From the component's directory:
-    $ cd path/to/mycomponent
-    $ robocompdsl mycomponent.cdsl .
+    
+    cd path/to/mycomponent
+    robocompdsl mycomponent.cdsl .
 
+Watch the dot at the end!
 Or somewhere else:
-    $ robocompdsl path/to/mycomponent/mycomponent.cdsl path/to/mycomponent
+
+    robocompdsl path/to/mycomponent/mycomponent.cdsl path/to/mycomponent
 
 These commands will generate the C++ (or Python) code in the specified directory.
 
@@ -114,15 +117,19 @@ save and,
     cd ..
     make
     
+Note that we are using a lambda function as a parameter to the std::sort function so you will need a gcc compiler version equal or newer than 4.9. Check with gcc -v. If you don't have it, substitute the sort method with your own sorting procedure.
+
 Now we need to tell the component where to find the DifferentialRobot and the Laser interfaces. Of course they are implemented by the rcis simulator so we only need to change the ports in the configuration file,
 
      cd path/to/mycomponent/etc
      gedit config
      
-    CommonBehavior.Endpoints=tcp -p **11000**
+Change in the editor the port numbers located after *-p* 
+     
+    CommonBehavior.Endpoints=tcp -p 11000
     # Proxies for required interfaces
-    LaserProxy = laser:tcp -h localhost -p **10003**
-    DifferentialRobotProxy = differentialrobot:tcp -h localhost -p **10004**
+    LaserProxy = laser:tcp -h localhost -p 10003
+    DifferentialRobotProxy = differentialrobot:tcp -h localhost -p 10004
     Ice.Warn.Connections=0
     Ice.Trace.Network=0
     Ice.Trace.Protocol=0
@@ -137,7 +144,7 @@ Now start the component,
 
     bin/mycomponent --Ice.Config=etc/config
 
-and watch the robot avoiding obstacles!
+and watch the robot avoiding obstacles! Change the code to improve the behavior of the robot.
 
 ## Updating the source code of a component after modifying its CDSL file
 Once we generated our component we might change our mind and decide to add a new connection to another interface or to publish a new topic. In these cases we can regenerate the code of the component just by changing the *.cdsl* file and executing again the command.
