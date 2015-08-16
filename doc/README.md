@@ -3,7 +3,7 @@
 
 [A Brief introduction to Components](components.md)
 
-[Using the new **robocompdsl** component generation command line tool](robocompdsl.md)
+[Using the **robocompdsl** component generation command line tool](robocompdsl.md)
 
 [Maintaining your own repository of components](using_github.md)
 
