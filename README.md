@@ -10,7 +10,7 @@ interfaces in a seamless way. Building new components is done using two domain s
 
 If you already have RoboComp installed, jump to [tutorials!](doc/README.md) to start coding!
 
-#Installation in Ubuntu ( tested in 14.04 and 14.10)
+#Installation in Ubuntu ( tested in 14.04, 14.10 and 15.04)
 
 Make sure you have installed the following packages from the Ubuntu repository:
 
