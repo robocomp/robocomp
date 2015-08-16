@@ -15,7 +15,7 @@
 
 [Coding examples](code-examples)
 
-[Packaging Robocomp ](packaging.md)
+[Packaging Robocomp ](packaging/packaging.md)
 
 <!-- [List of **robocomp-robolab** components]
 -->
