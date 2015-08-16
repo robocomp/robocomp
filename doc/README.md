@@ -17,9 +17,8 @@
 
 [Packaging Robocomp ](packaging.md)
 
-[List of **robocomp-robolab** components]
-
-[RoboCog, a Cognitive Architecture built with RoboComp]
+<!-- [List of **robocomp-robolab** components]
+-->
 
 
 
