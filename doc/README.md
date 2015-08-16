@@ -7,11 +7,13 @@
 
 [Maintaining your own repository of components](using_github.md)
 
-[Introduction to workspace model](workspaceModel.md)
+[Understanding RoboComp's workspaces](workspaceModel.md)
 
-[Introduction to Build tools ](buildTools.md)
+[RoboComp's  build tools ](buildTools.md)
 
 [How to contribute to RoboComp using the GitHub branching mechanism](contribute/contribute.md)
+
+[Coding examples](code-examples)
 
 [The E. Olson's AprilTags component](https://github.com/robocomp/robocomp-robolab/blob/master/components/apriltagsComp/README.md)
 
