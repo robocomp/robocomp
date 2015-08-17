@@ -20,7 +20,7 @@ sudo apt-get install robocomp
 Remember to start a new bash session before continue using RoboComp: new variables included must be included in your shell environment.
 
 
-#Installation in from source
+#Installation from source
 If you are not an Ubuntu user, need to modify the core of RoboComp, or just feel like installing from sources, you can follow these instructions (they have been tested in Ubuntu 14.04, 14.10 and 15.04). If you're not in any of these scenarios, please use the packaged version.
 
 ##Requirements
