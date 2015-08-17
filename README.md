@@ -78,8 +78,7 @@ save the file and type:
 
 Done! Now let's have some fun.
 
-#Running the RCIS Robotics simulator
-
+#Testing the installation using the RCIS robotics simulator
 We will first fetch some meshes and textures used by the simulator (it will take a while):
 
     cd ~/robocomp
