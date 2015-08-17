@@ -10,8 +10,8 @@ interfaces in a seamless way. Building new components is done using two domain s
 
 If you already have RoboComp installed, jump to [tutorials!](doc/README.md) to start coding!
 
-#Installation in Ubuntu from PPA (Ubuntu 14.10 - 15.04)
-If you are not planning on modifying RoboComp itself (its libraries or tools), there's no need to go through all the compilation process. In this case, Ubuntu users can install a packaged version of RoboComp. Just run the following commands:
+#Installation in Ubuntu from PPA
+If you are not planning on modifying RoboComp itself (its libraries or tools), there's no need to go through all the compilation process. In this case, Ubuntu (versions from 14.10 to 15.04) users can install a packaged version of RoboComp. Just run the following commands:
 
 sudo add-apt-repository ppa:luis-manso/robocomp
 sudo apt-get update
