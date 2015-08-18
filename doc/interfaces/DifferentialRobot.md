@@ -1,6 +1,6 @@
-#Interface - DifferentialRobot
+#Interface - DifferentialRobot.idsl
 
-DIfferentialRobot offers command that helps it to program the motion of the bot.
+The DifferentialRobot interface offers data structures and methods to access a differential robot base.
 
 #setSpeedBase(x, y)
 This function is used to set the speed of the bot `x` in millimeters/sec and also to specify the rotating angle `y` in rad/sec for the bot to rotate.
