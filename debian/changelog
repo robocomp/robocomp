@@ -1,5 +1,5 @@
-robocomp (1.0-ubuntu1~trusty1-0ppa1) trusty; urgency=low
+robocomp (1.04-ubuntu1~vivid1-0ppa1) vivid; urgency=low
 
   * Initial Release
 
- -- Luis J. Manso <lmanso@unex.es>  Mon, 03 Aug 2015 02:45:57 +0530
+ -- Luis J. Manso <lmanso@unex.es>  Sun, 02 Aug 2015 23:31:12 +0200

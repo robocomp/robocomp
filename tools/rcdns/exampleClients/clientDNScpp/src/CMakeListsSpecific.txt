@@ -15,5 +15,7 @@ SET ( HEADERS
 
 INCLUDE($ENV{ROBOCOMP}/cmake/modules/ipp.cmake)
 
+set (SPECIFIC_LIBS -lQtNetwork)
+
 ADD_DEFINITIONS( -std=c++11 )
 

@@ -42,6 +42,12 @@ bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
 
 void SpecificWorker::compute()
 {
+/*
+ * 		examples to use method
+ * 
+ */
+	requestRealPort();
+	
 	RoboCompRCDNS::ipInfo hostInfo;
 	hostInfo.publicIP = "158.49.247.2";
 	hostInfo.privateIP = "192.168.1.2";
@@ -95,6 +101,107 @@ void SpecificWorker::requestPort(string idComp, RoboCompRCDNS::ipInfo host)
 		std::cout << "Error reading from DNS" << e << std::endl;
 	}
 
+}
+
+void SpecificWorker::requestRealPort()
+{
+	RoboCompRCDNS::ipInfo hostData;
+	QList<QNetworkInterface> ifaces = QNetworkInterface::allInterfaces();
+	if ( !ifaces.isEmpty() )
+	{
+		for(int i=0; i < ifaces.size(); i++)
+		{
+			unsigned int flags = ifaces[i].flags();
+			bool isLoopback = (bool)(flags & QNetworkInterface::IsLoopBack);
+			bool isP2P = (bool)(flags & QNetworkInterface::IsPointToPoint);
+			bool isRunning = (bool)(flags & QNetworkInterface::IsRunning);
+
+			// If this interface isn't running, we don't care about it
+			if ( !isRunning ) continue;
+			// We only want valid interfaces that aren't loopback/virtual and not point to point
+			if ( !ifaces[i].isValid() || isLoopback || isP2P ) continue;
+			QList<QHostAddress> addresses = ifaces[i].allAddresses();
+			for(int a=0; a < addresses.size(); a++)
+			{
+				// Ignore local host
+				if ( addresses[a] == QHostAddress::LocalHost ) continue;
+
+				// Ignore non-ipv4 addresses
+				if ( !addresses[a].toIPv4Address() ) continue;
+
+				QString ip = addresses[a].toString();
+				if ( ip.isEmpty() ) continue;
+				printf("iface: %s          ip: %s \n",ifaces[i].name().toStdString().c_str(),ip.toStdString().c_str());
+				bool ipCablePub = false;
+				bool ipCablePriv = false;
+				if ("10." == ip.left(3) || "127.16." == ip.left(6) || "192.168." == ip.left(8))
+				{
+					if ("eth" == ifaces[i].name().left(3))
+					{
+						hostData.privateIP = ip.toStdString();
+						ipCablePub = true;
+					}
+					else 
+					{
+						if ("wlan" == ifaces[i].name().left(4) && !ipCablePub)
+						{
+							hostData.privateIP = ip.toStdString();
+						}
+						else 
+						{
+							if ("eth" == ifaces[i].name().left(3))
+							{
+								hostData.publicIP = ip.toStdString();
+								ipCablePriv = true;
+							}
+							else 
+							{
+								if ("wlan" == ifaces[i].name().left(4) && !ipCablePriv)
+								{
+									hostData.publicIP = ip.toStdString();
+								}
+							}
+						}
+					}
+				}
+			}
+			hostData.hostName = QHostInfo::localHostName().toStdString() + ".local";
+			printf("public IP: %s, privateIP: %s, hostName: %s\n",hostData.publicIP.c_str(),hostData.privateIP.c_str(),hostData.hostName.c_str());
+			if (hostData.publicIP == "" && hostData.privateIP == "" && hostData.hostName == "")
+			{
+				printf("ERROR! WITH YOURS NETWORK INTERFACES\n");
+			}
+			else
+			{
+				if (hostData.publicIP != "" && hostData.privateIP != "" && hostData.hostName != "")
+				{
+					printf("ou yeah!\n");
+				}
+				else
+				{
+					printf("WARNING! NOT CONFIGURATION COMPLETE");
+				}
+				
+				try
+				{
+					int n = rcdns_proxy->giveMePort("REAL COMP", hostData);
+					if (n == 0)
+					{
+						printf("Fatal Error. The component already exit!\n");
+					}
+					else
+					{
+						printf("asignado para el componente: %s, el puerto %d en el host: %s\n","REAL COMP",n,hostData.hostName.c_str());
+					}
+
+				}
+				catch(const Ice::Exception &e)
+				{
+					std::cout << "Error reading from DNS" << e << std::endl;
+				}
+			}
+		}
+	}
 }
 
 void SpecificWorker::requestPortOfComponent(string idComp, string host)

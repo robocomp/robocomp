@@ -1053,7 +1053,9 @@ QVec InnerModel::transform(const QString &destId, const QVec &initVec, const QSt
 	{
 		const QMat M = getTransformationMatrix(destId, origId);
 		const QVec a = (M * initVec.subVector(0,2).toHomogeneousCoordinates()).fromHomogeneousCoordinates();
-		const QVec b = M.extractAnglesR_min();
+		const Rot3D R(initVec(3), initVec(4), initVec(5));
+		
+		const QVec b = (M.getSubmatrix(0,2,0,2)*R).extractAnglesR_min();
 		QVec ret(6);
 		ret(0) = a(0);
 		ret(1) = a(1);
@@ -2423,7 +2425,10 @@ InnerModelLaser::InnerModelLaser(QString id_, uint32_t _port, uint32_t _min, uin
 void InnerModelLaser::save(QTextStream &out, int tabs)
 {
 	for (int i=0; i<tabs; i++) out << "\t";
-	out << "<laser id=\"" << id << "\" />\n";
+
+	out << "<laser id=\"" << id <<"\" port=\""<<port<<"\" min=\""<< QString::number(min,'g',10)<<"\" max=\""<<QString::number(max,'g',10)
+	<<"\" measures=\""<<QString::number(measures,'g',10)<<"\" angle=\""<<QString::number(angle,'g',10)
+	<<"\" ifconfig=\""<<ifconfig<< "\" />\n";
 }
 
 

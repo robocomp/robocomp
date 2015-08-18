@@ -1,37 +1,25 @@
-#Tutorials for RoboComp
+#Tutorials
 
 
 [A Brief introduction to Components](components.md)
 
-[Creation of a new component using RoboComp's Eclipse based DSLEditor](component_creation_with_DSLEditor.md)
+[Understanding RoboComp's Workspaces](workspaceModel.md)
+
+[Understanding RoboComp's Interfaces](interfaces/README.md)
+
+[Using the **robocompdsl** component generation command line tool](robocompdsl.md)
 
 [Maintaining your own repository of components](using_github.md)
 
-[Introduction to workspace model](workspaceModel.md)
-
-[Introduction to Build tools ](buildTools.md)
+[RoboComp's  build tools ](buildTools.md)
 
 [How to contribute to RoboComp using the GitHub branching mechanism](contribute/contribute.md)
 
-[Using the new **robocompdsl** component generation command line tool](robocompdsl.md)
+[Coding examples](code-examples/README.md)
 
-[The E. Olson's AprilTags component](https://github.com/robocomp/robocomp-robolab/blob/master/components/apriltagsComp/README.md)
+[Packaging Robocomp ](packaging/packaging.md)
 
-[Creating a Python component using **robocompdsl** that subscribes to *apriltagsComp*](robocompdsl_python.md)
-
-[Packaging Robocomp ](packaging.md)
-
-[InnerModel, RoboComp's internal representation of reality]
-
-[RoboComp's robots: Ursus, Loki and the others]
-
-[**robocomp-robolab** components]
-
-[The BodyInverseKinematics (BIK) component]
-
-[The Navigation (TRAJ) component]
-
-[RoboCog, a Cognitive Architecture built with RoboComp]
+[List of **robocomp-robolab** components](robocomp-robolab-components.md)
 
 
 

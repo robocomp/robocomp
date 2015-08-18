@@ -191,10 +191,14 @@ public:
 	{
 		return transform(QString::fromStdString(destId), origVec, QString::fromStdString(origId));
 	}
-	QVec transform6D(const QString & destId, const QVec &origVec, const QString & origId) { Q_ASSERT(origVec.size() == 6); return transform(destId, origVec, origId); }
+	QVec transform6D(const QString &destId, const QVec &origVec, const QString & origId) { Q_ASSERT(origVec.size() == 6); return transform(destId, origVec, origId); }
 
-	QVec transform6D(const QString & destId,const QString & origId) { return transform(destId, QVec::vec6(0,0,0,0,0,0), origId);  }
-	QVec transform(const QString & destId,  const QString & origId) { return transform(destId, QVec::vec3(0,0,0), origId); }
+	QVec transform6D(const QString &destId, const QString & origId) { return transform(destId, QVec::vec6(0,0,0,0,0,0), origId); }
+	QVec transform(  const QString &destId, const QString & origId) { return transform(destId, QVec::vec3(0,0,0), origId); }
+	QVec transformS( const std::string &destId, const std::string &origId)
+	{
+		return transform(QString::fromStdString(destId), QVec::vec3(0,0,0), QString::fromStdString(origId));
+	}
 
 	QVec rotationAngles(const QString & destId, const QString & origId);
 	QVec project(QString reference, QVec origVec, QString cameraId);
@@ -236,8 +240,6 @@ public:
 	QVec compute3DPointInRobot(const QString &firstCamera , const QVec & left, const QString & secondCamera , const QVec & right);
 	QVec compute3DPointFromImageCoords(const QString &firstCamera , const QVec & left, const QString & secondCamera , const QVec & right, const QString & refSystem);
 	QVec compute3DPointFromImageAngles(const QString &firstCamera , const QVec & left, const QString & secondCamera , const QVec & right, const QString & refSystem);
-
-	/// Setters for model parameters
 
 	/// Laser stuff
 	QVec laserTo(const QString &dest, const QString & laserId , const QVec &p);
