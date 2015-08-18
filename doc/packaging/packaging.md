@@ -53,7 +53,7 @@ now copy the contents of the signed file and paste in launchpad
 
 ###Wrapping Up
 Now everything is set up. make sure you have some key in `OPENPGP Keys` section and also the signed code of code of conduct as `Yes` as shown.
-![](../images/launchpad.png)
+![](launchpad.png)
 
 ##Uploading package to ppa
 
