@@ -5,7 +5,7 @@
 
 [Understanding RoboComp's Workspaces](workspaceModel.md)
 
-[Understanding RoboComp's Interfaces](interfaces/interfaces.md)
+[Understanding RoboComp's Interfaces](interfaces/README.md)
 
 [Using the **robocompdsl** component generation command line tool](robocompdsl.md)
 
