@@ -1,2 +1,3 @@
+In this section you can find tutorials to start coding with RoboComp. There are several levels of difficulty:
 
-[Creating a Python component using **robocompdsl** that subscribes to *apriltagsComp*](robocompdsl_python.md)
+[Getting started ](getting-started)
