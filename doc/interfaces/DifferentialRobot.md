@@ -2,7 +2,7 @@
 
 The DifferentialRobot interface offers data structures and methods to access a differential robot base.
 
-#setSpeedBase(x, y)
+**setSpeedBase(x, y)**
 This function is used to set the speed of the bot `x` in millimeters/sec and also to specify the rotating angle `y` in rad/sec for the bot to rotate.
 
 	differentialrobot_proxy->setSpeedBase(x, y);
