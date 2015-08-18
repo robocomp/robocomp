@@ -15,7 +15,7 @@
 
 [How to contribute to RoboComp using the GitHub branching mechanism](contribute/contribute.md)
 
-[Coding examples](code-examples)
+[Coding examples](code-examples/README.md)
 
 [Packaging Robocomp ](packaging/packaging.md)
 
