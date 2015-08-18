@@ -100,7 +100,7 @@ The software of the robots using RoboComp is composed of different software comp
     
 The RoboLab's set of basic robotics components are now dowloaded. You can see them in `~/robocomp/components/robocomp-robolab/components`
 
-##Connecting a JoyStick
+##Connecting a JoyStick (y no JS available skip to the next section)
 
 If you have a joystick around, connect it to the USB port and:
 
@@ -117,7 +117,21 @@ Your joystick should be now running. It will make the robot advance and turn at 
     
 and check where the joystick device file has been created (e.g., `/dev/input/js0`). If it is not `/dev/input/js0`, edit `~/robocomp/components/robocomp-robolab/components/joystickComp/etc/config` change it accordingly and restart. Note that you might want to save the *config* file to the component's home directory so it does not interfere with future github updates.
 
-You can find more tutorials on RoboComp in [tutorials!](doc/README.md)
+
+##Using the keyboard as a JoyStick
+
+If you don't have a JoyStick install this componentent,
+
+    cd ~robocomp/components/robocomp-robolab/components/keyboardrobotcontroller
+    cmake .
+    make
+    src/keyboardcontroller.py --Ice.Config=etc/config
+    
+and use the arrow keys to navigate the robot, the space bar to stop it an 'q' to exit.
+
+
+---------------------------------------------------------------------
+You can find more tutorials on RoboComp in [tutorials!](doc/README.md) or read them in [readthedocs](http://robocomp.readthedocs.org/en/latest/)
 
 Drop comments and ask questions in:
 
