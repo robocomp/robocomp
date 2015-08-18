@@ -3,7 +3,9 @@
 
 [A Brief introduction to Components](components.md)
 
-[Understanding RoboComp's workspaces](workspaceModel.md)
+[Understanding RoboComp's Workspaces](workspaceModel.md)
+
+[Understanding RoboComp's Interfaces](interfaces/interfaces.md)
 
 [Using the **robocompdsl** component generation command line tool](robocompdsl.md)
 
