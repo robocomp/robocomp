@@ -1,7 +1,7 @@
 #Build tools
 
 ###rc_init_ws
-This will initialize a Robocomp workspace in the current/specified directory. If this is already a workspace (has a .rc_workspace file) then it will register it as an workspace on your computer. To de-register a workspace just delete the .rc_workspace file. The build tools will fond only those workspaces which are registered on your computer.
+This will initialize a Robocomp workspace in the current/specified directory. If this is already a workspace (has a .rc_workspace file) then it will register it as an workspace on your computer. To de-register a workspace just delete the .rc_workspace file. The build tools will find only those workspaces which are registered on your computer.
     
     rc_init_ws [path]
 

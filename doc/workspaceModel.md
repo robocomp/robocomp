@@ -4,7 +4,7 @@ The Robocomp workspace is for those who are developing components rather than th
 
 ###The recommended layout for development is as follows:
 
-![ Robocomp workspace model](workspace_model.jpg "Robocomp workspace model")
+![ Robocomp workspace model](workspace_model.png "Robocomp workspace model")
 
 ##Elements of workspace
 

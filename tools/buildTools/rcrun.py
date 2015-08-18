@@ -83,7 +83,10 @@ def main():
     componentPathetc = componentPath[:-4]
 
     if not componentPath:
-        print("couldnt find the component %s in any of the workspaces" % (component))
+        if not WS.find_component_src(component):
+            print("couldnt find the component %s in any of the workspaces" % (component))
+        else:
+            print("couldnt find the target please build it first using rcbuild %s " % (component))
         return
     
     #find the config file
