@@ -19,8 +19,7 @@
 
 [Packaging Robocomp ](packaging/packaging.md)
 
-<!-- [List of **robocomp-robolab** components]
--->
+[List of **robocomp-robolab** components](robocomp-robolab-components.md)
 
 
 
