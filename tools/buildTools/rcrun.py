@@ -80,15 +80,16 @@ def main():
     
     #search for the component
     componentPath = WS.find_component_exec(component)
-    componentPathetc = componentPath[:-4]
-
+    
     if not componentPath:
         if not WS.find_component_src(component):
             print("couldnt find the component %s in any of the workspaces" % (component))
         else:
             print("couldnt find the target please build it first using rcbuild %s " % (component))
         return
-    
+
+    componentPathetc = componentPath[:-4]
+
     #find the config file
     '''
         if only one file is present in the etc directory then it will be used
