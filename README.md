@@ -61,7 +61,9 @@ Done! Now let's compile and install the whole thing:
     cmake ..
     make
     sudo make install
-    
+
+If you want to compile Robocomp with support for FCL, follow the instructions in "Robocomp with FCL (The Flexible Collision Library) support"
+
 The RoboComp's core libraries and simulator should now be compiled and installed in `/opt/robocomp`.
 
 Let's now tell Linux where to find RoboComp's libraries:
@@ -128,6 +130,62 @@ If you don't have a JoyStick install this componentent,
     src/keyboardcontroller.py --Ice.Config=etc/config
     
 and use the arrow keys to navigate the robot, the space bar to stop it an 'q' to exit.
+
+
+##Robocomp with FCL (The Flexible Collision Library) support
+
+sudo aptitude install libeigen3-dev libboost-filesystem1.54-dev libboost-test-dev libboost-program-options-dev
+
+- Install LIBCCD:
+    cd ~/software
+    git clone https://github.com/danfis/libccd.git
+    cd libccd
+    mkdir build
+    cd build
+    cmake ..
+    make
+    sudo make install
+
+- Install FCL:
+    cd ~/software
+    git clone https://github.com/flexible-collision-library/fcl.git
+    cd fcl
+    mkdir build
+    cd build
+    cmake ..
+    make
+    sudo make install
+
+- Install LIBNABO:
+    cd /software
+    git clone https://github.com/ethz-asl/libnabo.git
+    cd libnabo
+    mkdir build
+    cd build
+    cmake ..
+    make
+    sudo make install
+
+- Install LIBPOINTMATCHER:
+    cd ~/software
+    git clone https://github.com/ethz-asl/libpointmatcher.git
+    cd libpointmatcher
+    mkdir build
+    cd build
+    cmake ..
+    make
+    sudo make install
+
+- Comiling Robocomp
+    cd ~/robocomp/build
+    cmake-gui ..
+
+    select checkbox FCL_SUPPORT
+    push configure button
+    push generate button
+    exit
+    make
+    sudo make install
 
 
 ---------------------------------------------------------------------
