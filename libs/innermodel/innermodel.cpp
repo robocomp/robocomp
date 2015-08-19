@@ -188,7 +188,7 @@ InnerModel::~InnerModel()
 {
 	foreach (QString id, getIDKeys())
 	{
-		qDebug()<<id;
+		//qDebug()<<id;
 		InnerModelNode *dd = hash[id];
 		delete dd;		
 	}

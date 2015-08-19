@@ -296,6 +296,7 @@ InnerModelViewer::InnerModelViewer(InnerModel *im, QString root, osg::Group *par
 InnerModelViewer::~InnerModelViewer()
 {
 
+
 }
 
 
