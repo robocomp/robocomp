@@ -1,3 +1,5 @@
-[The E. Olson's AprilTags component](https://github.com/robocomp/robocomp-robolab/blob/master/components/apriltagsComp/README.md)
+In this section you can find tutorials to start coding with RoboComp. 
 
-[Creating a Python component using **robocompdsl** that subscribes to *apriltagsComp*](robocompdsl_python.md)
+There are several levels of difficulty:
+
+[Getting started ](getting-started/README.md)

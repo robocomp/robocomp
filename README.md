@@ -8,16 +8,28 @@ by [RoboLab](http://robolab.unex.es), [ISIS](http://www.grupoisis.uma.es/index.p
 RoboComp is an open-source Robotics framework providing the tools to create and modify software components that communicate through public interfaces. Components may *require*, *subscribe*, *implement* or *publish*
 interfaces in a seamless way. Building new components is done using two domain specific languages, IDSL and CDSL. With IDSL you define an interface and with CDSL you specify how the component will communicate with the world. With this information, a code generator creates C++ and/or Python sources, based on CMake, that compile and execute flawlessly. When some of these features have to be changed, the component can be easily regenerated and all the user specific code is preserved thanks to a simple inheritance mechanism.
 
-If you already have RoboComp installed, jump to [tutorials!](doc/README.md) to start coding!
+If you already have RoboComp installed, jump to [tutorials!](doc/README.md) to start coding! or read them in [readthedocs](http://robocomp.readthedocs.org/en/latest/)
 
-#Installation in Ubuntu ( tested in 14.04, 14.10 and 15.04)
+#Installation in Ubuntu from PPA
+If you are not planning on modifying RoboComp itself (its libraries or tools), there's no need to go through all the compilation process. In this case, Ubuntu users of versions from 14.10 to 15.04 can install a packaged version of RoboComp. Just run the following commands:
 
+sudo add-apt-repository ppa:luis-manso/robocomp
+sudo apt-get update
+sudo apt-get install robocomp
+
+Remember to start a new bash session before continue using RoboComp: new variables included must be included in your shell environment.
+
+
+#Installation from source
+If you are not an Ubuntu user, need to modify the core of RoboComp, or just feel like installing from sources, you can follow these instructions (they have been tested in Ubuntu 14.04, 14.10 and 15.04). If you're not in any of these scenarios, please use the packaged version.
+
+##Requirements
 Make sure you have installed the following packages from the Ubuntu repository:
 
     sudo apt-get update
     sudo apt-get install git git-annex cmake g++ libgsl0-dev libopenscenegraph-dev cmake-qt-gui zeroc-ice35 freeglut3-dev libboost-system-dev libboost-thread-dev qt4-dev-tools yakuake openjdk-7-jre python-pip  python-pyparsing python-numpy python-pyside pyside-tools libxt-dev pyqt4-dev-tools qt4-designer 
     
-###RoboComp core libraries
+##Installation itself
 
 *cd* to your home directory (you are probably in it already) and type:
 
@@ -49,7 +61,9 @@ Done! Now let's compile and install the whole thing:
     cmake ..
     make
     sudo make install
-    
+
+If you want to compile Robocomp with support for FCL, follow the instructions in "Robocomp with FCL (The Flexible Collision Library) support"
+
 The RoboComp's core libraries and simulator should now be compiled and installed in `/opt/robocomp`.
 
 Let's now tell Linux where to find RoboComp's libraries:
@@ -66,8 +80,7 @@ save the file and type:
 
 Done! Now let's have some fun.
 
-###Running the RCIS Robotics simulator
-
+#Testing the installation using the RCIS robotics simulator
 We will first fetch some meshes and textures used by the simulator (it will take a while):
 
     cd ~/robocomp
@@ -89,7 +102,7 @@ The software of the robots using RoboComp is composed of different software comp
     
 The RoboLab's set of basic robotics components are now dowloaded. You can see them in `~/robocomp/components/robocomp-robolab/components`
 
-####Connecting a JoyStick
+##Connecting a JoyStick (y no JS available skip to the next section)
 
 If you have a joystick around, connect it to the USB port and:
 
@@ -106,7 +119,81 @@ Your joystick should be now running. It will make the robot advance and turn at 
     
 and check where the joystick device file has been created (e.g., `/dev/input/js0`). If it is not `/dev/input/js0`, edit `~/robocomp/components/robocomp-robolab/components/joystickComp/etc/config` change it accordingly and restart. Note that you might want to save the *config* file to the component's home directory so it does not interfere with future github updates.
 
-You can find more tutorials on RoboComp in [tutorials!](doc/README.md)
+
+##Using the keyboard as a JoyStick
+
+If you don't have a JoyStick install this componentent,
+
+    cd ~robocomp/components/robocomp-robolab/components/keyboardrobotcontroller
+    cmake .
+    make
+    src/keyboardcontroller.py --Ice.Config=etc/config
+    
+and use the arrow keys to navigate the robot, the space bar to stop it an 'q' to exit.
+
+
+##Robocomp with FCL (The Flexible Collision Library) support
+```
+sudo aptitude install libeigen3-dev libboost-filesystem1.54-dev libboost-test-dev libboost-program-options-dev
+```
+- Install LIBCCD:
+```
+cd ~/software
+git clone https://github.com/danfis/libccd.git
+cd libccd
+mkdir build
+cd build
+cmake ..
+make
+sudo make install
+```
+- FCL:
+```
+cd ~/software
+git clone https://github.com/flexible-collision-library/fcl.git
+cd fcl
+mkdir build
+cd build
+cmake ..
+make
+sudo make install
+```
+- LIBNABO:
+```
+cd ~/software
+git clone https://github.com/ethz-asl/libnabo.git
+cd libnabo
+mkdir build
+cd build
+cmake ..
+make
+sudo make install
+```
+- LIBPOINTMATCHER:
+```
+cd ~/software
+git clone https://github.com/ethz-asl/libpointmatcher.git
+cd libpointmatcher
+mkdir build
+cd build
+cmake ..
+make
+sudo make install
+```
+- Compiling Robocomp
+```
+cd ~/robocomp/build
+cmake-gui ..
+select checkbox FCL_SUPPORT
+push configure button
+push generate button
+exit
+
+make
+sudo make install
+```
+---------------------------------------------------------------------
+You can find more tutorials on RoboComp in [tutorials!](doc/README.md) or read them in [readthedocs](http://robocomp.readthedocs.org/en/latest/)
 
 Drop comments and ask questions in:
 
