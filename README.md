@@ -133,11 +133,11 @@ and use the arrow keys to navigate the robot, the space bar to stop it an 'q' to
 
 
 ##Robocomp with FCL (The Flexible Collision Library) support
-'''
+```
     sudo aptitude install libeigen3-dev libboost-filesystem1.54-dev libboost-test-dev libboost-program-options-dev
-
+```
 - Install LIBCCD:
-
+```
     cd ~/software
     git clone https://github.com/danfis/libccd.git
     cd libccd
@@ -146,9 +146,9 @@ and use the arrow keys to navigate the robot, the space bar to stop it an 'q' to
     cmake ..
     make
     sudo make install
-
+```
 - Install FCL:
-
+```
     cd ~/software
     git clone https://github.com/flexible-collision-library/fcl.git
     cd fcl
@@ -157,9 +157,9 @@ and use the arrow keys to navigate the robot, the space bar to stop it an 'q' to
     cmake ..
     make
     sudo make install
-
+```
 - Install LIBNABO:
-
+```
     cd ~/software
     git clone https://github.com/ethz-asl/libnabo.git
     cd libnabo
@@ -168,9 +168,9 @@ and use the arrow keys to navigate the robot, the space bar to stop it an 'q' to
     cmake ..
     make
     sudo make install
-
+```
 - Install LIBPOINTMATCHER:
-
+```
     cd ~/software
     git clone https://github.com/ethz-asl/libpointmatcher.git
     cd libpointmatcher
@@ -179,9 +179,9 @@ and use the arrow keys to navigate the robot, the space bar to stop it an 'q' to
     cmake ..
     make
     sudo make install
-
+```
 - Comiling Robocomp
-
+```
     cd ~/robocomp/build
     cmake-gui ..
 
@@ -191,7 +191,7 @@ and use the arrow keys to navigate the robot, the space bar to stop it an 'q' to
     exit
     make
     sudo make install
-'''
+```
 ---------------------------------------------------------------------
 You can find more tutorials on RoboComp in [tutorials!](doc/README.md) or read them in [readthedocs](http://robocomp.readthedocs.org/en/latest/)
 
