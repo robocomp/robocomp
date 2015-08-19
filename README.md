@@ -13,9 +13,9 @@ If you already have RoboComp installed, jump to [tutorials!](doc/README.md) to s
 #Installation in Ubuntu from PPA
 If you are not planning on modifying RoboComp itself (its libraries or tools), there's no need to go through all the compilation process. In this case, Ubuntu users of versions from 14.10 to 15.04 can install a packaged version of RoboComp. Just run the following commands:
 
-sudo add-apt-repository ppa:luis-manso/robocomp
-sudo apt-get update
-sudo apt-get install robocomp
+    sudo add-apt-repository ppa:luis-manso/robocomp
+    sudo apt-get update
+    sudo apt-get install robocomp
 
 Remember to start a new bash session before continue using RoboComp: new variables included must be included in your shell environment.
 
