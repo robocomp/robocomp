@@ -1,6 +1,6 @@
 #Roobocomp Workspace Model
 
-The Robocomp workspace is for those who are developing components rather than the framework itself. The main advantage of having a workspace is that it will make the work-flow much easier. Workspace basically organizes the development. For example, currently for building or running a component you have to go to its directory, create a build directory and then use cmake, while in using workspace and build tools you could achieve the same in one command.
+The Robocomp workspace is for those who are developing components rather than the framework itself. The main advantage of having a workspace is that it will make the work-flow much easier. Workspace basically organizes the development. For example, currently for building or running a component you have to go to its directory, create a build directory and then use cmake, while by using workspace and build tools you could achieve the same in a single command.
 
 ###The recommended layout for development is as follows:
 

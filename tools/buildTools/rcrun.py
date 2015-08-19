@@ -34,7 +34,7 @@ def find_script(action,component):
     return False
 
 def main():
-    parser = argparse.ArgumentParser(description="Tool for locating and running a robocomp component")
+    parser = argparse.ArgumentParser(description="Locate and run a robocomp component")
     group = parser.add_mutually_exclusive_group(required = True)
     cgroup = parser.add_mutually_exclusive_group()
     parser.add_argument('component', help='component name').completer = complete_components
