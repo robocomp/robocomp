@@ -65,7 +65,7 @@ for pb in component['publishes']:
 #	cog.out('\n')
 
 if storm:
-	cog.outl('This property is used by the clients to connect to IceStorm.')
+	cog.outl('# This property is used by the clients to connect to IceStorm.')
 	cog.outl('TopicManager.Proxy=IceStorm/TopicManager:default -p 9999')
 
 ]]]
