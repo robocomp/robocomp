@@ -213,10 +213,10 @@ void AgmInner::insertSymbolToInnerModelNode(InnerModel* imNew,InnerModelNode *pa
 try 
 	{
 	QString nodeName = QString::fromStdString(s->getAttribute("imName"));
- 	std::cout<<"\nadding "<<nodeName.toStdString();
-	std::cout<<" type "<<s->getAttribute("imType");
-	std::cout<<" parent->id "<<parentNode->id.toStdString();
-	std::cout<<" attrs.size() "<<s->attributes.size()<<"\n";
+//  	std::cout<<"\nadding "<<nodeName.toStdString();
+// 	std::cout<<" type "<<s->getAttribute("imType");
+// 	std::cout<<" parent->id "<<parentNode->id.toStdString();
+// 	std::cout<<" attrs.size() "<<s->attributes.size()<<"\n";
 	
  
 	if (s->getAttribute("imType")=="transform")
@@ -659,7 +659,7 @@ try
 	}
 	else if (s->getAttribute("imType")=="joint")
 	{
-		std::cout<<"\t type: "<<s->getAttribute("imType") <<"\n";
+// 		std::cout<<"\t type: "<<s->getAttribute("imType") <<"\n";
 		//QString id_, float lx_, float ly_, float lz_, float hx_, float hy_, float hz_, float tx_, float ty_, float tz_, float rx_, ;
 		//float ry_, float rz_, float min_, float max_, uint32_t port_, std::string axis_, float home_, 
 		
@@ -831,9 +831,8 @@ QList<int> AgmInner::getLinkedID (int symbolID, string linkType)
 
 void AgmInner::updateAgmWithInnerModel(InnerModel* im)
 {
-	
 	/// Vector of the edges that the model holds.	
-	std::cout << "myvector contains:"<<worldModel->edges.size();
+	std::cout << "worldModel->edges.size(): "<<worldModel->edges.size();
 
 	///tal vez sería bueno recorrer primero innerModel con include_im y crear attributes name por cada symbolo, pq puede haberse insertado algun nodo nuevo.
 	for (std::vector<AGMModelEdge>::iterator it = worldModel->edges.begin() ; it != worldModel->edges.end(); ++it)
@@ -844,29 +843,76 @@ void AgmInner::updateAgmWithInnerModel(InnerModel* im)
 			string songName;
 			
 			//obtengo del symbol hijo el atribute name
-			songName= (worldModel->getSymbol((*it)->getSymbolPair().second))->attributes["name"];
-			std::cout <<"\t"<<songName<<"\n";
-			try 
-			{
-				InnerModelTransform *node= im->getTransform (QString::fromStdString(songName));
-				(*it)->setAttribute("tx",float2str( node->getTr().x() ));
-				(*it)->setAttribute("ty",float2str( node->getTr().y() ));
-				(*it)->setAttribute("tz",float2str( node->getTr().z() ));
-				(*it)->setAttribute("rx",float2str( node->getRxValue()));
-				(*it)->setAttribute("ry",float2str( node->getRyValue()));
-				(*it)->setAttribute("rz",float2str( node->getRzValue()));
+			try{
+				songName= (worldModel->getSymbol( (*it)->getSymbolPair().second) )->getAttribute("imName");
+				std::cout <<"\t"<<songName<<"\n";
+				try 
+				{
+					InnerModelTransform *node= im->getTransform (QString::fromStdString(songName));
+					(*it)->setAttribute("tx",float2str( node->getTr().x() ));
+					(*it)->setAttribute("ty",float2str( node->getTr().y() ));
+					(*it)->setAttribute("tz",float2str( node->getTr().z() ));
+					(*it)->setAttribute("rx",float2str( node->getRxValue()));
+					(*it)->setAttribute("ry",float2str( node->getRyValue()));
+					(*it)->setAttribute("rz",float2str( node->getRzValue()));
+				}
+				catch (...)
+				{
+					qDebug()<<"edge EXCEPTION couldn't find attribute";
+				}
 			}
-			catch (QString error)
+			catch (...)
 			{
-				qDebug()<<"EXCEPTION"<<error;
+				qDebug()<<"EXCEPTION,RT label connect to a symbol without imName";
+				std::cout<<(worldModel->getSymbol( (*it)->getSymbolPair().second))->toString(true);
 			}
-			
-			
 		}
 		std::cout << '\n';
 	}
-// 	myvector contains:9 isKitchen object_3 roomSt_4 room object_3 roomSt_4 explored object_3 roomSt_4 free robot_1 robotSt_2 in robot_1 object_3 in world_20 robot_1 RT world_20 robot_1 RT world_20 transform_21 RT world_20 transform_22
+}
 
+//AGMMisc::publishEdgeUpdate(edge,agmagenttopic_proxy);
+void AgmInner::updateAgmWithInnerModelAndPublish(InnerModel* im, AGMAgentTopicPrx &agmagenttopic_proxy)
+{
+	/// Vector of the edges that the model holds.	
+	std::cout << "worldModel->edges.size(): "<<worldModel->edges.size();
+
+	///tal vez sería bueno recorrer primero innerModel con include_im y crear attributes name por cada symbolo, pq puede haberse insertado algun nodo nuevo.
+	for (std::vector<AGMModelEdge>::iterator it = worldModel->edges.begin() ; it != worldModel->edges.end(); ++it)
+	{
+		std::cout << ' ' << (*it)->toString(worldModel);
+		if ((*it)->getLabel()=="RT" )
+		{
+			string songName;
+			
+			//obtengo del symbol hijo el atribute name
+			try{
+				songName= (worldModel->getSymbol( (*it)->getSymbolPair().second) )->getAttribute("imName");
+				std::cout <<"\t"<<songName<<"\n";
+				try 
+				{
+					InnerModelTransform *node= im->getTransform (QString::fromStdString(songName));
+					(*it)->setAttribute("tx",float2str( node->getTr().x() ));
+					(*it)->setAttribute("ty",float2str( node->getTr().y() ));
+					(*it)->setAttribute("tz",float2str( node->getTr().z() ));
+					(*it)->setAttribute("rx",float2str( node->getRxValue()));
+					(*it)->setAttribute("ry",float2str( node->getRyValue()));
+					(*it)->setAttribute("rz",float2str( node->getRzValue()));
+					AGMMisc::publishEdgeUpdate((*it),agmagenttopic_proxy);
+				}
+				catch (...)
+				{
+					qDebug()<<"edge EXCEPTION couldn't find attribute";
+				}
+			}
+			catch (...)
+			{
+				qDebug()<<"EXCEPTION,RT label connect to a symbol without imName";
+				std::cout<<(worldModel->getSymbol( (*it)->getSymbolPair().second))->toString(true);
+			}
+		}
+		std::cout << '\n';
+	}
 }
 
 AGMModel::SPtr AgmInner::extractAGM()

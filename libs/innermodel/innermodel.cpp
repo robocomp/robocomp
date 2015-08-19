@@ -186,6 +186,18 @@ InnerModel::InnerModel(const InnerModel &original)
 
 InnerModel::~InnerModel()
 {
+	foreach (QString id, getIDKeys())
+	{
+		qDebug()<<id;
+		InnerModelNode *dd = hash[id];
+		delete dd;		
+	}
+	
+	hash.clear();
+	localHashRot.clear();
+	localHashTr.clear();
+	listA.clear();
+	listB.clear();
 }
 
 void InnerModel::removeNode(const QString & id)
@@ -2159,6 +2171,7 @@ InnerModelPlane::InnerModelPlane(QString id_, QString texture_, float width_, fl
 	fclMesh->addSubModel(vertices, triangles);
 	fclMesh->endModel();
 	collisionObject = new fcl::CollisionObject(fclMesh);
+	
 #endif
 }
 
@@ -2555,6 +2568,7 @@ InnerModelMesh::InnerModelMesh(QString id_, QString meshPath_, float scalex_, fl
 		fclMesh->addSubModel(vertices, triangles);
 		fclMesh->endModel();
 		collisionObject = new fcl::CollisionObject(fclMesh);
+		
 	}
 	else
 	{
