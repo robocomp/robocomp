@@ -83,7 +83,8 @@ public:
 #if FCL_SUPPORT==1
 		if (collisionObject!=NULL)
 		{
-			delete collisionObject;
+			
+			delete collisionObject;						
 		}
 #endif
 	}
@@ -131,7 +132,7 @@ public:
 	~InnerModel();
 	friend class InnerModelReader;
 	bool open(std::string xmlFilePath);
-	bool save(QString path);
+	bool save(QString path);	
 
 	/// Auto update method
 	void update();
@@ -548,6 +549,7 @@ public:
 	bool normalRendering() const;
 	bool wireframeRendering() const;
 	virtual InnerModelNode *copyNode(QHash<QString, InnerModelNode *> &hash, InnerModelNode *parent);
+	
 
 public:
 	RenderingModes render;
