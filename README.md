@@ -137,6 +137,7 @@ and use the arrow keys to navigate the robot, the space bar to stop it an 'q' to
 sudo aptitude install libeigen3-dev libboost-filesystem1.54-dev libboost-test-dev libboost-program-options-dev
 
 - Install LIBCCD:
+
     cd ~/software
     git clone https://github.com/danfis/libccd.git
     cd libccd
@@ -147,6 +148,7 @@ sudo aptitude install libeigen3-dev libboost-filesystem1.54-dev libboost-test-de
     sudo make install
 
 - Install FCL:
+
     cd ~/software
     git clone https://github.com/flexible-collision-library/fcl.git
     cd fcl
@@ -157,6 +159,7 @@ sudo aptitude install libeigen3-dev libboost-filesystem1.54-dev libboost-test-de
     sudo make install
 
 - Install LIBNABO:
+
     cd /software
     git clone https://github.com/ethz-asl/libnabo.git
     cd libnabo
@@ -167,6 +170,7 @@ sudo aptitude install libeigen3-dev libboost-filesystem1.54-dev libboost-test-de
     sudo make install
 
 - Install LIBPOINTMATCHER:
+
     cd ~/software
     git clone https://github.com/ethz-asl/libpointmatcher.git
     cd libpointmatcher
@@ -177,6 +181,7 @@ sudo aptitude install libeigen3-dev libboost-filesystem1.54-dev libboost-test-de
     sudo make install
 
 - Comiling Robocomp
+
     cd ~/robocomp/build
     cmake-gui ..
 
