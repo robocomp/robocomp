@@ -1254,6 +1254,8 @@ std::map<std::string, std::string> AgmInner::ImNodeToSymbol(InnerModelNode* node
 		attrs.insert ( std::pair<std::string,std::string>("port",int2str(joint->port) ) );
 		attrs.insert ( std::pair<std::string,std::string>("axis",joint->axis) );
 		attrs.insert ( std::pair<std::string,std::string>("home",float2str(joint->home)) );
+		attrs.insert ( std::pair<std::string,std::string>("angle",float2str(joint->getAngle())) );
+		
 		type= "joint";
 		attrs.insert ( std::pair<std::string,std::string>("imType",type ) );
 	}
