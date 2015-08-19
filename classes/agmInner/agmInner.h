@@ -62,6 +62,9 @@ public:
 	void innerToAGM(InnerModelNode* node, int &symbolID, QList<QString>  lNode);
 	map< string, string > ImNodeToSymbol(InnerModelNode* node);
 	void  remove_Im( InnerModel*imTmp);
+	
+	void updateImNodeFromEdge(AGMModelEdge edge, InnerModel *innerModel);
+
 
 
 private:

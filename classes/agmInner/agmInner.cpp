@@ -1451,4 +1451,40 @@ std::map<std::string, std::string> AgmInner::ImNodeToSymbol(InnerModelNode* node
 	}		
 	return attrs;
 }
+void AgmInner::updateImNodeFromEdge(AGMModelEdge edge, InnerModel* inner)
+{
+	
+		if (edge->getLabel()=="RT" )
+		{
+			string songName;
+			//obtengo del symbol hijo el atribute name
+			try{
+				songName= (worldModel->getSymbol( edge->getSymbolPair().second) )->getAttribute("imName");
+				std::cout <<"\t"<<songName<<"\n";
+				try 
+				{
+					
+					float tx,ty,tz,rx,ry,rz;
+					tx=str2float(edge->getAttribute("tx"));
+					ty=str2float(edge->getAttribute("ty"));
+					tz=str2float(edge->getAttribute("tz"));
+					
+					rx=str2float(edge->getAttribute("rx"));
+					ry=str2float(edge->getAttribute("ry"));
+					rz=str2float(edge->getAttribute("rz"));
+					
+					inner->updateTransformValues(QString::fromStdString(songName),tx,ty,tz,rx,ry,rz);
+				}
+				catch (...)
+				{
+					qDebug()<<"edge EXCEPTION couldn't find attribute";
+				}
+			}
+			catch (...)
+			{
+				qDebug()<<"EXCEPTION,RT label connect to a symbol without imName";
+				std::cout<<(worldModel->getSymbol( edge->getSymbolPair().second))->toString(true);
+			}
+		}
+}
 
