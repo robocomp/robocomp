@@ -47,10 +47,11 @@ To use the interface Laser first we define a vector to any variable, In this exa
         float dist;
     };
     
-And getLaserData() is the function that does the actual task of getting the distance measurements hence laser_proxy->getLaserData();
+And getLaserData() is the function that does the actual task of getting the distance measurements hence laser_proxy->getLaserData() in c++;
 Thus the code in the specificworker of the calling component will be
 
-	RoboCompLaser::TLaserData ldata = laser_proxy->getLaserData();
+	RoboCompLaser::TLaserData ldata = laser_proxy->getLaserData(); //c++
+	ldata = laser_proxy.getLaserData(); //python
 
 This stores the data that is generated using getLaserData into the vector ldata.
 
