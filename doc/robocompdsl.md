@@ -45,7 +45,7 @@ Let's change the template file above by something like this,
         Communications{
             requires DifferentialRobot, Laser;
         };
-    language Cpp;
+    language Cpp; //language Python;
     };
     
 and save it as *mycomponent.cdsl*. Now run again robocompdsl with the CDSL file as first argument and the directory where the code should be placed as the second argument.
@@ -73,51 +73,91 @@ Now, goto to the src subdirectory of the new component,
     cd path/to/mycomponent/src
     
 and open *specificworker.cpp* in your favorite editor. Go to the **void SpecificWorker::compute()** method and replace it with,
+```
+void SpecificWorker::compute( )
+{
 
-    void SpecificWorker::compute( )
+    const float threshold = 200;
+    float rot = 1.5707;	
+	
+    
+
+    try
     {
-        static  float rot = 0.1f;           // rads/sec
-        static float adv = 100.f;           // mm/sec
-        static float turnSwitch = 1;        // bool switch
-        const float advIncLow = 0.8;        // mm/sec
-        const float advIncHigh = 2.f;       // mm/sec
-        const float rotInc = 0.25;          // rads/sec
-        const float rotMax = 0.4;           // rads/sec
-        const float advMax = 200;           // milimetres/sec
-        const float distThreshold = 500;    // milimetres
-        try
-        {
-            RoboCompLaser::TLaserData ldata = laser_proxy->getLaserData();
-           std::sort( ldata.begin()+35, ldata.end()-35, [](RoboCompLaser::TData a, RoboCompLaser::TData b){ return     a.dist < b.dist; }) ;
-            if( ldata.front().dist < distThreshold) 
-            {
-                adv = adv * advIncLow; 
-                rot = rot + turnSwitch * rotInc;
-                if( rot < -rotMax) rot = -rotMax;
-                if( rot > rotMax) rot = rotMax;
-                differentialrobot_proxy->setSpeedBase(adv, rot);
-            }
-            else
-            {
-                adv = adv * advIncHigh; 
-                if( adv > advMax) adv = advMax;
-                rot = 0.f;
-                differentialrobot_proxy->setSpeedBase(adv, 0.f);        
-               turnSwitch = -turnSwitch;
-            }   
-        }
-        catch(const Ice::Exception &ex)
-        {
-            std::cout << ex << std::endl;
-        }
+        RoboCompLaser::TLaserData ldata = laser_proxy->getLaserData();
+        std::sort( ldata.begin(), ldata.end(), [](RoboCompLaser::TData a, RoboCompLaser::TData b){ return     a.dist < b.dist; }) ;
+        
+	
+	 if( ldata.front().dist < threshold)
+	{
+ 	differentialrobot_proxy->setSpeedBase(5, rot);
+	usleep(1250000);
+	std::cout << ldata.front().dist << std::endl;	
+	differentialrobot_proxy->setSpeedBase(200, 0);
+	usleep(500000);
+	rot = rot + 0.12;
+	if( rot > 3 * 1.5707 )
+	{
+	 rot = 1.5707;
+	}
+	}
+	
+	else
+	{
+	differentialrobot_proxy->setSpeedBase(200, 0); 
+  	usleep(500000);
+	std::cout << ldata.front().dist << std::endl;
+  	}
+
+       	
+    }
+    catch(const Ice::Exception &ex)
+    {
+        std::cout << ex << std::endl;
     }
 
+}
+```
 save and, 
 
     cd ..
     make
     
 Note that we are using a lambda function as a parameter to the std::sort function so you will need a gcc compiler version equal or newer than 4.9. Check with gcc -v. If you don't have it, substitute the sort method with your own sorting procedure.
+
+If you have generated the code using python the replace the *specificworker.py* found in the src folder with this code
+
+		def compute(self):
+			print 'SpecificWorker.compute...'
+			rot = 0.7
+			try:
+				ldata = []
+				d = []
+				ldata = self.laser_proxy.getLaserData();
+				for i in range(0,len(ldata)):
+					dis = ldata[i]
+					y = dis.dist
+					d.append(y)
+				d.sort()
+				distance = d[0]
+				print distance
+				if distance < 400:
+					self.differentialrobot_proxy.setSpeedBase(0, rot)
+					time.sleep(1)
+					rot = rot+ 0.5
+					if rot > 3:
+						rot = 1
+					self.differentialrobot_proxy.setSpeedBase(70, 0)
+					time.sleep(1)
+				else:
+					self.differentialrobot_proxy.setSpeedBase(100, 0)
+					time.sleep(1)
+			except Ice.Exception, e:
+				traceback.print_exc()
+				print e
+			return True
+
+Save the file.
 
 Now we need to tell the component where to find the DifferentialRobot and the Laser interfaces. Of course they are implemented by the rcis simulator so we only need to change the ports in the configuration file,
 
@@ -142,7 +182,13 @@ Save and
 
 Now start the component,
 
+For c++,
+
     bin/mycomponent --Ice.Config=etc/config
+
+For Python,
+
+    python bin/mycomponent --Ice.Config=etc/config
 
 and watch the robot avoiding obstacles! Change the code to improve the behavior of the robot.
 
