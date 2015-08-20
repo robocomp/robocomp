@@ -54,7 +54,7 @@ Z()
 #    along with RoboComp.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-import sys, os, Ice, traceback
+import sys, os, Ice, traceback, time
 
 from PySide import *
 from genericworker import *
@@ -108,7 +108,7 @@ class SpecificWorker(GenericWorker):
 	def compute(self):
 		print 'SpecificWorker.compute...'
 		#try:
-		#	differentialrobot_proxy.setSpeed(100, 0)
+		#	self.differentialrobot_proxy.setSpeedBase(100, 0)
 		#except Ice.Exception, e:
 		#	traceback.print_exc()
 		#	print e
