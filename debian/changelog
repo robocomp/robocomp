@@ -1,5 +1,5 @@
 robocomp (1.01-ubuntu1~vivid1-0ppa1) vivid; urgency=low
 
-  * Package built with CMake
+  * Initial Release
 
  -- Luis J. Manso <lmanso@unex.es>  Tue, 18 Aug 2015 19:30:09 +0200

@@ -25,7 +25,8 @@ rccd()
         cd $line;cd src;
         for file in *; do
             #echo $file;
-            if [[ "$file" == "$1" ]] && [[ -d "$file" ]] ; then
+            lfile=${$file,,}
+            if [[ "$lfile" == "$1" ]] && [[ -d "$file" ]] ; then
                 cd $file;
                 flag=1;
                 break;

@@ -11,6 +11,7 @@ class Workspace:
     
     workspace_paths = []
     numOfws = 0
+    robocomp_dir = ''
 
     ''' constructor'''
     def __init__(self):
@@ -18,15 +19,39 @@ class Workspace:
     
     def update_pathlist(self):
         home = os.path.expanduser("~")
+        config_file_path = os.path.join(home,".config/RoboComp/rc_workspace.config")
+        
         if not os.path.exists(os.path.join(home,".config/RoboComp")):
             os.makedirs(os.path.join(home,".config/RoboComp"))
+        
+        #add all folders in components directory as 
+        #if not os.path.isfile(config_file_path):
+        #    config_file = open(config_file_path, 'a').close()
+        #    for folders in os.listdir(os.path.join(home,'robocomp/components')):
+        #        if os.path.isdir(os.path.join(path,str(folders))):
+        #            config_file.write( os.path.join(path,str(folders)) )
+
         try:
-            config_file = open(os.path.join(home,".config/RoboComp/rc_workspace.config"),"r")    
+            config_file = open(config_file_path,"r")    
             self.workspace_paths = config_file.readlines()
             self.workspace_paths = [ string.strip(x) for x in self.workspace_paths ]
             config_file.close()            
         except Exception, e:
             pass
+    
+    def register_workspace(self,workspacePath):
+        if string.strip(workspacePath) not in self.workspace_paths:
+            #update the list of workspaces
+            home = os.path.expanduser("~")
+            if not os.path.exists(os.path.join(home,".config/RoboComp")):
+                os.makedirs(os.path.join(home,".config/RoboComp"))
+            config_file = open(os.path.join(home,".config/RoboComp/rc_workspace.config"),"a+")
+            config_file.write(workspacePath)
+            config_file.write("\n")
+            config_file.close()
+            return True
+        else:
+            return False
 
     '''initiate a catkin workspace at the given path'''
     def init_ws(self, ws_path):
@@ -66,21 +91,16 @@ class Workspace:
         pathstr = str(os.path.abspath(ws_path))
         
         #copy all files in the current dir into src dir
+        print("copying all files in workspce directory into src/ directory\n")
         for file in os.listdir(pathstr):
             if file in dirs or file in [".rc_workspace"] : continue
-            os.system("mv ./" + file + " ./src")
+            try:
+                os.system("mv ./" + file + " ./src")
+            except Exception as copyEx:
+                print("couldnt copy all files\n")
 
         create_toplevel(ws_path+'/src')
-
-        if string.strip(pathstr) not in self.workspace_paths:
-            #update the list of workspaces
-            home = os.path.expanduser("~")
-            if not os.path.exists(os.path.join(home,".config/RoboComp")):
-                os.makedirs(os.path.join(home,".config/RoboComp"))
-            config_file = open(os.path.join(home,".config/RoboComp/rc_workspace.config"),"a+")    
-            config_file.write(pathstr)
-            config_file.write("\n")
-            config_file.close()
+        self.register_workspace(pathstr)
 
     ''' find the directory containing component exexutable'''
     def find_component_exec(self, component):
@@ -96,9 +116,6 @@ class Workspace:
             return componentPath
         else:
             return False
-
-    def find_component_installed():
-        pass
 
     ''' find component soruce directory
         component - component name

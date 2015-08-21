@@ -34,7 +34,7 @@ def find_script(action,component):
     return False
 
 def main():
-    parser = argparse.ArgumentParser(description="Tool for locating and running a robocomp component")
+    parser = argparse.ArgumentParser(description="Locate and run a robocomp component")
     group = parser.add_mutually_exclusive_group(required = True)
     cgroup = parser.add_mutually_exclusive_group()
     parser.add_argument('component', help='component name').completer = complete_components
@@ -80,12 +80,16 @@ def main():
     
     #search for the component
     componentPath = WS.find_component_exec(component)
+    
+    if not componentPath:
+        if not WS.find_component_src(component):
+            print("couldnt find the component %s in any of the workspaces" % (component))
+        else:
+            print("couldnt find the target please build it first using rcbuild %s " % (component))
+        return
+
     componentPathetc = componentPath[:-4]
 
-    if not componentPath:
-        print("couldnt find the component %s in any of the workspaces" % (component))
-        return
-    
     #find the config file
     '''
         if only one file is present in the etc directory then it will be used
