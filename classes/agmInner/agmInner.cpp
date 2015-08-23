@@ -192,7 +192,7 @@ void AgmInner::edgeToInnerModel(AGMModelEdge edge, InnerModel* imNew, bool ignor
 	nodeA=imNew->getNode(nameA);
 	if (nodeA==NULL)
 	{	
-		qDebug()<<"node A null"<<nameA;
+// 		qDebug()<<"node A null"<<nameA;
 		insertSymbolToInnerModelNode(imNew,imNew->getRoot(), symbolA,tx,ty,tz,rx,ry,rz, ignoreMeshes);
 		nodeA=imNew->getNode(nameA);
 	}
@@ -230,7 +230,7 @@ try
 		}
 		catch (...)
 		{
-			std::cout<<"\tattribute engine not found \n";			
+			//std::cout<<"\tattribute engine not found \n";			
 		}		
 		try
 		{
@@ -238,7 +238,7 @@ try
 		 }
 		catch (...)
 		{
-			std::cout<<"\tattribute mass not found \n";			
+			//std::cout<<"\tattribute mass not found \n";			
 		}		
 		
 		try
@@ -510,7 +510,7 @@ try
 		}
 		catch (...)
 		{
-			qDebug()<<"\tExists rgbd"<<nodeName;
+// 			qDebug()<<"\trgbd error"<<nodeName;
 		}
 	}
 	else if (s->getAttribute("imType")=="camera")
@@ -655,7 +655,7 @@ try
 		}
 		catch (...)
 		{
-			qDebug()<<"\tExists Laser"<<nodeName;
+// 			qDebug()<<"\tExists Laser"<<nodeName;
 		}
 	}
 	else if (s->getAttribute("imType")=="joint")
