@@ -62,10 +62,17 @@ int AgmInner::findName(QString n)
 	{	
 		if (worldModel->symbols[i]->attributes.find("imName") != worldModel->symbols[i]->attributes.end() )
 		{
-			if (worldModel->symbols[i]->attributes["imName"] == n.toStdString() )
+			try 
 			{
-// 				qDebug()<<"findName: FOUND"<<n<<worldModel->symbols[i]->identifier;
-				return worldModel->symbols[i]->identifier;
+				if (worldModel->symbols[i]->getAttribute("imName") == n.toStdString() )
+				{
+					qDebug()<<"findName: FOUND"<<n<<worldModel->symbols[i]->identifier;
+					return worldModel->symbols[i]->identifier;
+				}
+			}
+			catch (...)
+			{
+				std::cout<<"attribue name for symbol "<< worldModel->symbols[i]->symbolType <<" "<<i<<" not found \n";
 			}
 		}
 	}	
@@ -880,13 +887,16 @@ void AgmInner::updateAgmWithInnerModelAndPublish(InnerModel* im, AGMAgentTopicPr
 	///tal vez sería bueno recorrer primero innerModel con include_im y crear attributes name por cada symbolo, pq puede haberse insertado algun nodo nuevo.
 	for (std::vector<AGMModelEdge>::iterator it = worldModel->edges.begin() ; it != worldModel->edges.end(); ++it)
 	{
-		std::cout << ' ' << (*it)->toString(worldModel);
+		std::cout << ' ' << (*it)->toString(worldModel)<<"\n";
 		if ((*it)->getLabel()=="RT" )
 		{
 			string songName;
 			
 			//obtengo del symbol hijo el atribute name
 			try{
+				string type = (worldModel->getSymbol( (*it)->getSymbolPair().second) )->getAttribute("imType");
+				if ( type =="mesh" or type =="plane" )					
+					continue;
 				songName= (worldModel->getSymbol( (*it)->getSymbolPair().second) )->getAttribute("imName");
 				std::cout <<"\t"<<songName<<"\n";
 				try 
@@ -899,10 +909,12 @@ void AgmInner::updateAgmWithInnerModelAndPublish(InnerModel* im, AGMAgentTopicPr
 					(*it)->setAttribute("ry",float2str( node->getRyValue()));
 					(*it)->setAttribute("rz",float2str( node->getRzValue()));
 					AGMMisc::publishEdgeUpdate((*it),agmagenttopic_proxy);
+					usleep(10000);
 				}
 				catch (...)
 				{
-					qDebug()<<"edge EXCEPTION couldn't find attribute";
+					std::cout << '\t' << (*it)->toString(worldModel);
+					qDebug()<<"\tedge EXCEPTION couldn't find attribute";
 				}
 			}
 			catch (...)
@@ -989,13 +1001,17 @@ AGMModel::SPtr  AgmInner::remove_ImOriginal(string agmFilePath, string imFilePat
 	return agmTmp;
 }
 
-void  AgmInner::remove_Im( InnerModel*imTmp)
+void  AgmInner::remove_Im( InnerModel *imTmp)
 {
 	//if imNode not in agmOriginal, remove the symbol associated to the node in the agmCaliente if exist
+	imTmp->save("imTmp.xml");
+	qDebug()<<imTmp->getIDKeys();
 	foreach (QString n, imTmp->getIDKeys() )
 	{
 		qDebug()<<n;
-		int symbolID=findName(n);
+		
+		int symbolID=-1;
+		symbolID=findName(n);
 		if (symbolID!=-1)
 		{
 			qDebug()<<"remove en el agmCaliente :"<<symbolID<<QString::fromStdString( worldModel->getSymbol(symbolID)->toString());
@@ -1051,9 +1067,7 @@ void AgmInner::include_im(QHash<QString, int32_t>  match, InnerModel *im)
 			for (auto m : attributes)
 			{
 				symbol->setAttribute(m.first,m.second);				
-			}
-			
-// 			symbol->setAttribute();
+			}			
 			
 			try
 			{
@@ -1254,6 +1268,7 @@ std::map<std::string, std::string> AgmInner::ImNodeToSymbol(InnerModelNode* node
 		attrs.insert ( std::pair<std::string,std::string>("port",int2str(joint->port) ) );
 		attrs.insert ( std::pair<std::string,std::string>("axis",joint->axis) );
 		attrs.insert ( std::pair<std::string,std::string>("home",float2str(joint->home)) );
+		//CAUTION no se si es neceario
 		attrs.insert ( std::pair<std::string,std::string>("angle",float2str(joint->getAngle())) );
 		
 		type= "joint";
