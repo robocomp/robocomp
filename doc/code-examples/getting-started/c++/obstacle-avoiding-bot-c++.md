@@ -110,4 +110,4 @@ come back to the previous tab of the terminal and now run the above component by
 
 	bin/obstacle --Ice.Config=etc/config
 
-You will now see the bot moving around avoiding obstacle and outputting the distance measurements on the command window.
+You will now see the bot moving around avoiding obstacle and outputting the distance measurements on the command window. The code for this component can be found [here](https://github.com/rajathkumarmp/RoboComp-Components/tree/master/lasercomp-2)
