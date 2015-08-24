@@ -86,6 +86,7 @@ public:
 			
 			delete collisionObject;						
 		}
+		fclMesh.reset();
 #endif
 	}
 	void treePrint(QString s, bool verbose=false);
