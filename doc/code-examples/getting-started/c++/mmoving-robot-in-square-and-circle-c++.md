@@ -18,7 +18,7 @@ This should have created a dummy cdsl file now edit the cdsl file
 
 The square.cdsl should import DifferntialRobot interface hence the cdsl file should look like this
 
-	import "/robocomp/interfaces/IDSLs/Laser.idsl";
+	import "/robocomp/interfaces/IDSLs/DifferentialRobot.idsl";
 	Component square
 	{
 		Communications{

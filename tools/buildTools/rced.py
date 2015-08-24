@@ -22,7 +22,7 @@ def complete_files(prefix, parsed_args  , **kwargs):
     
 
 def main():
-    parser = argparse.ArgumentParser(description="initialize a robocomp workspace")
+    parser = argparse.ArgumentParser(description="directly edit a file within any component")
     parser.add_argument('component', nargs=1, help='name of the component').completer = complete_components
     parser.add_argument('file', nargs=1, help='name of the file of the given component you need to edit').completer = complete_files
     

@@ -52,15 +52,15 @@ module RoboCompJointMotor{
 	["cpp:comparable"]
 	struct MotorGoalPosition{
 		float position;
-					float maxSpeed;
-					string name;
+		float maxSpeed;
+		string name;
 	};
 	sequence <MotorGoalPosition> MotorGoalPositionList;
 	["cpp:comparable"]
 	struct MotorGoalVelocity{
 		float velocity;
-					float maxAcc;
-					string name;
+		float maxAcc;
+		string name;
 	};
 	sequence <MotorGoalVelocity> MotorGoalVelocityList;
 	sequence <string> MotorList;

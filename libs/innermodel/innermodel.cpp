@@ -2327,7 +2327,6 @@ InnerModelRGBD::InnerModelRGBD(QString id_, float width, float height, float foc
 	noise = _noise;
 	port = _port;
 	ifconfig = _ifconfig;
-	printf("InnerModelRGBD: %f {%d}\n", noise, port);
 }
 
 

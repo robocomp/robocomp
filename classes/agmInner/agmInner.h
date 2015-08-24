@@ -46,15 +46,15 @@ public:
 	AGMModel::SPtr getWorld();
 	int findName(QString n);
 	int findName(const AGMModel::SPtr &m, QString n);		
-	InnerModel* extractInnerModel(QString imNodeName="world");
+	InnerModel* extractInnerModel(QString imNodeName="world", bool ignoreMeshes=false);
 	AGMModel::SPtr extractAGM();
-	void recorrer(InnerModel* imNew, int& symbolID);
-	void edgeToInnerModel(AGMModelEdge edge, InnerModel* imNew);
+	void recorrer(InnerModel* imNew, int& symbolID, bool ignoreMeshes);
+	void edgeToInnerModel(AGMModelEdge edge, InnerModel* imNew, bool ignoreMeshes);
 	QList< int > getLinkedID(int symbolID, string linkType);
 	void checkLoop(int& symbolID, QList< int >& visited, string linkType, bool& loop);
 	void updateAgmWithInnerModel(InnerModel* im);
 	void updateAgmWithInnerModelAndPublish(InnerModel* im, AGMAgentTopicPrx &agmagenttopic_proxy);
-	void insertSymbolToInnerModelNode(InnerModel* imNew, InnerModelNode *parentNode, AGMModelSymbol::SPtr s, float tx = 0, float ty = 0, float tz = 0, float rx = 0, float ry = 0, float rz = 0);
+	void insertSymbolToInnerModelNode(InnerModel* imNew, InnerModelNode *parentNode, AGMModelSymbol::SPtr s, float tx = 0, float ty = 0, float tz = 0, float rx = 0, float ry = 0, float rz = 0, bool ignoreMeshes=false);
 	AGMModel::SPtr remove_ImOriginal(string agmFilePath, string imFilePath);
 	
 	//includes methods
