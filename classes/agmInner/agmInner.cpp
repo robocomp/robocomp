@@ -199,7 +199,7 @@ void AgmInner::edgeToInnerModel(AGMModelEdge edge, InnerModel* imNew, bool ignor
 
 	try
 	{
-		insertSymbolToInnerModelNode(imNew,nodeA, symbolB,tx,ty,tz,rx,ry,rz);		
+		insertSymbolToInnerModelNode(imNew,nodeA, symbolB,tx,ty,tz,rx,ry,rz, ignoreMeshes);
 	}
 	catch(string e)
 	{
