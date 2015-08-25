@@ -77,4 +77,4 @@ Save it and run the component by executing
 
 	python src/pydist.py --Ice.Config=etc/config
 
-The distance and angle of the obstacles are outputted on the command window
+The distance and angle of the obstacles are outputted on the command window. The entire component can be found [here](https://github.com/rajathkumarmp/RoboComp-Python-Components/tree/master/LaserAngleCOmp)
