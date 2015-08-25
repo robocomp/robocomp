@@ -86,6 +86,9 @@ if component['gui'] != 'none':
 	cog.outl("""<TABHERE>#ifdef USE_QTGUI
 		setupUi(this);
 		show();
+	#else
+		//ALERT: Aniadido probar mucho
+		setPeriod(CHECK_PERIOD);
 	#endif""")
 ]]]
 [[[end]]]
