@@ -86,13 +86,10 @@ if component['gui'] != 'none':
 	cog.outl("""<TABHERE>#ifdef USE_QTGUI
 		setupUi(this);
 		show();
-	#else
-		//ALERT: Aniadido probar mucho
-		setPeriod(CHECK_PERIOD);
 	#endif""")
 ]]]
 [[[end]]]
-		
+ 	setPeriod(0);
 	Period = BASIC_PERIOD;
 	connect(&timer, SIGNAL(timeout()), this, SLOT(compute()));
 // 	timer.start(Period);
