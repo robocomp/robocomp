@@ -1509,3 +1509,11 @@ void AgmInner::updateImNodeFromEdge(AGMModelEdge edge, InnerModel* inner)
 		}
 }
 
+void AgmInner::updateImNodeFromEdge(const RoboCompAGMWorldModel::Edge& edge, InnerModel* innerModel)
+{
+	AGMModelEdge dst;
+	AGMModelConverter::fromIceToInternal(edge,dst);
+	updateImNodeFromEdge(dst,innerModel);
+}
+
+

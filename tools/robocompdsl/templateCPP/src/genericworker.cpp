@@ -89,7 +89,7 @@ if component['gui'] != 'none':
 	#endif""")
 ]]]
 [[[end]]]
-		
+ 	setPeriod(0);
 	Period = BASIC_PERIOD;
 	connect(&timer, SIGNAL(timeout()), this, SLOT(compute()));
 // 	timer.start(Period);
