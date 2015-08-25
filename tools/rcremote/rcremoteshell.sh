@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+
+# The documentation is in qdbusviewer. To install: sudo apt-get install qt5-default qttools5-dev-tools
 binary=$1
 cwdv=$2
 tabname=$3
