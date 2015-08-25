@@ -210,8 +210,7 @@ QMat & QMat::inject ( const QMat & A, const int roff, const int coff )
 {
 	if ( (rows < A.nRows()+roff) or (cols < A.nCols()+coff) )
 	{
-		qFatal("QMat::inject inject destination matrix not big enough");
-		throw "";
+		throw "QMat::inject inject destination matrix not big enough";
 	}
 #ifdef COMPILE_IPP
 	ippmCopy_ma_32f_SS ( A.toDataConst(), A.nRows() *A.nCols() *sizeof ( T ), A.nCols() *sizeof ( T ), sizeof ( T ), toData() + ( roff*cols+coff ),rows*cols*sizeof ( T ), cols*sizeof ( T ), sizeof ( T ),  A.nCols(), A.nRows(), 1 );
