@@ -2513,7 +2513,8 @@ InnerModelMesh::InnerModelMesh(QString id_, QString meshPath_, float scalex_, fl
 
 #if FCL_SUPPORT==1
 	// Get to the OSG geode
-	osg::Node *osgnode_ = osgDB::readNodeFile(meshPath.toStdString());
+	//osg::Node *osgnode_ = osgDB::readNodeFile(meshPath.toStdString());
+	osg::ref_ptr<osg::Node> osgnode_ = osgDB::readNodeFile(meshPath.toStdString()); 
 	if (not osgnode_) printf("Could not open: '%s'.\n", meshPath.toStdString().c_str());
 	if (osgnode_ != NULL)
 	{
@@ -2577,7 +2578,6 @@ InnerModelMesh::InnerModelMesh(QString id_, QString meshPath_, float scalex_, fl
 	}
 #endif
 }
-
 
 
 void InnerModelMesh::save(QTextStream &out, int tabs)

@@ -429,7 +429,9 @@ void InnerModelViewer::recursiveConstructor(InnerModelNode *node, osg::Group *pa
 		/// osgmeshPatsHash[mesh->id] = mt;
 		meshHash[mesh->id].osgmeshPaths = mt;
 		// Create mesh
-		osg::Node *osgMesh = osgDB::readNodeFile(mesh->meshPath.toStdString());
+		//CAUTION
+		//osg::Node *osgMesh = osgDB::readNodeFile(mesh->meshPath.toStdString());
+		osg::ref_ptr<osg::Node> osgMesh = osgDB::readNodeFile(mesh->meshPath.toStdString());
 		if (!osgMesh)
 			printf("Could not find %s osg.\n", mesh->meshPath.toStdString().c_str());
 // 		osg::Group *oM = dynamic_cast<osg::Group *>(osgMesh);
@@ -482,7 +484,9 @@ void InnerModelViewer::reloadMesh(QString id)
 		printf("Internal error\n");
 		return;
 	}
-	osg::Node *osgMesh = osgDB::readNodeFile(mesh->meshPath.toStdString());
+	//CAUTION
+	//osg::Node *osgMesh = osgDB::readNodeFile(mesh->meshPath.toStdString());
+	osg::ref_ptr<osg::Node> osgMesh = osgDB::readNodeFile(mesh->meshPath.toStdString());
 	if (not osgMesh)
 	{
 		printf("Could not find %s osg.\n", mesh->meshPath.toStdString().c_str());

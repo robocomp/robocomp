@@ -550,7 +550,6 @@ public:
 	bool normalRendering() const;
 	bool wireframeRendering() const;
 	virtual InnerModelNode *copyNode(QHash<QString, InnerModelNode *> &hash, InnerModelNode *parent);
-	
 
 public:
 	RenderingModes render;
