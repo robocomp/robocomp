@@ -52,5 +52,5 @@ execute the component
 
 	python src/componentname.py --Ice.Config=etc/config
 
-Now you will find the obstacle avoiding bot is successfully implemented
+Now you will find the obstacle avoiding bot is successfully implemented. The code for the entire component can be found [here](https://github.com/rajathkumarmp/RoboComp-Python-Components/tree/master/ObstacleAvoidBot)
 

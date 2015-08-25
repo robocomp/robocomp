@@ -95,6 +95,6 @@ come back to the previous tab of the terminal and now run the above component by
 
 You will now see the bot outputting the distance measurements on the command window.
 
-Here the bot moves in random and you will see the results on the command window. The code for this component `Tutorial-3/thirdcomp` can be found on github [here](https://github.com/rajathkumarmp/RoboComp-Tutorial)
+Here the bot moves in random and you will see the results on the command window. The code for this component `Tutorial-3/thirdcomp` can be found on github [here](https://github.com/rajathkumarmp/RoboComp-Components/tree/master/lasercomp-1)
 
 As an exercise you can try building a obstacle avoiding bot using the same interfaces that you have learnt now.
