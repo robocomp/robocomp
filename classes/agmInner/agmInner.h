@@ -64,6 +64,7 @@ public:
 	void  remove_Im( InnerModel*imTmp);
 	
 	void updateImNodeFromEdge(AGMModelEdge edge, InnerModel *innerModel);
+	void updateImNodeFromEdge(const RoboCompAGMWorldModel::Edge& edge, InnerModel *innerModel);
 
 
 
