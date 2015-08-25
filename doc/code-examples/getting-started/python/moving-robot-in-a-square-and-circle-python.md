@@ -77,6 +77,6 @@ this should run the component and you will be able to see the bot moving in a sq
 Now that you have understood and created a basic python component you can now extend this code and make it move in a circle. The algorithm is as follows
 	
 	self.differentialrobot_proxy.setSpeedBase(10, 0.87)
-	time.delay(0.5)
+	time.sleep(0.5)
 
-Svae the component and run it similarly as you did for square. 
+Svae the component and run it similarly as you did for square. The code for the entire component can be found [here](https://github.com/rajathkumarmp/RoboComp-Python-Components)
