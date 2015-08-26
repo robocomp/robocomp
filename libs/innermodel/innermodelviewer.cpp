@@ -90,7 +90,9 @@ IMVPlane::IMVPlane(InnerModelPlane *plane, std::string imagenEntrada, osg::Vec4 
 
 	// Open image
 	image = NULL;
-	osg::TessellationHints* hints;
+	//CAUTION
+	//osg::TessellationHints* hints;
+	osg::ref_ptr<osg::TessellationHints> hints;
 	if (imagenEntrada.size()>0 and not constantColor)
 	{
 		if (imagenEntrada == "custom")
@@ -108,7 +110,9 @@ IMVPlane::IMVPlane(InnerModelPlane *plane, std::string imagenEntrada, osg::Vec4 
 	hints = new osg::TessellationHints;
 	hints->setDetailRatio(2.0f);
 
-	osg::Box* myBox = new osg::Box(QVecToOSGVec(QVec::vec3(0,0,0)), plane->width, -plane->height, plane->depth);
+	//CAUTION
+	//osg::Box* myBox = new osg::Box(QVecToOSGVec(QVec::vec3(0,0,0)), plane->width, -plane->height, plane->depth);
+	osg::ref_ptr<osg::Box> myBox = new osg::Box(QVecToOSGVec(QVec::vec3(0,0,0)), plane->width, -plane->height, plane->depth);
 // 	osg::Box* myBox = new osg::Box(QVecToOSGVec(QVec::vec3(plane->point(0),-plane->point(1),plane->point(2))), plane->width, -plane->height, plane->depth);
 	planeDrawable = new osg::ShapeDrawable(myBox, hints);
 	planeDrawable->setColor(htmlStringToOsgVec4(QString::fromStdString(imagenEntrada)));
@@ -137,7 +141,8 @@ IMVPlane::IMVPlane(InnerModelPlane *plane, std::string imagenEntrada, osg::Vec4 
 		texture->setResizeNonPowerOfTwoHint(false);
 
 		// Material
-		osg::Material *material = new osg::Material();
+		//osg::Material *material = new osg::Material();
+		osg::ref_ptr<osg::Material> material = new osg::Material();
 		material->setTransparency( osg::Material::FRONT_AND_BACK, transparencia);
 		material->setEmission(osg::Material::FRONT, osg::Vec4(0.8, 0.8, 0.8, 0.5));
 		// Assign the material and texture to the plane
@@ -152,6 +157,10 @@ IMVPlane::IMVPlane(InnerModelPlane *plane, std::string imagenEntrada, osg::Vec4 
 	}
 }
 
+IMVPlane::~IMVPlane ( )
+{
+
+}
 
 
 void IMVPlane::updateBuffer(uint8_t *data_, int32_t width_, int32_t height_)
@@ -270,8 +279,7 @@ void IMVPointCloud::setPointSize(float p)
 // ------------------------------------------------------------------------------------------------
 // InnerModelViewer
 // ------------------------------------------------------------------------------------------------
-
-InnerModelViewer::InnerModelViewer(InnerModel *im, QString root, osg::Group *parent, bool ignoreCameras) : osg::Switch()
+InnerModelViewer::InnerModelViewer(InnerModel *im, QString root,  osg::Group *parent, bool ignoreCameras) : osg::Switch()
 {
 	// Initialize InnerModel pointer
 	innerModel = im;
@@ -282,8 +290,6 @@ InnerModelViewer::InnerModelViewer(InnerModel *im, QString root, osg::Group *par
 		qDebug() << "InnerModelViewer::InnerModelViewer(): Error: Specified root node" << root << "not found.";
 		throw "InnerModelViewer::InnerModelViewer(): Error: Specified root node not found.";
 	}
-	// Recursive construction
-// 	recursiveConstructor(imnode, this, mts, osgmeshes, osgmeshPats);
 	recursiveConstructor(imnode, this, mts, meshHash, ignoreCameras); //mts, osgmeshes, osgmeshPats);
 	// Update
 	update();
@@ -295,13 +301,12 @@ InnerModelViewer::InnerModelViewer(InnerModel *im, QString root, osg::Group *par
 
 InnerModelViewer::~InnerModelViewer()
 {
-
-
+	delete innerModel;
 }
 
 
-
-void InnerModelViewer::recursiveConstructor(InnerModelNode *node, osg::Group *parent,QHash<QString, osg::MatrixTransform *> &mtsHash, QHash<QString, IMVMesh> &meshHash, bool ignoreCameras)
+//CAUTION
+void InnerModelViewer::recursiveConstructor(InnerModelNode *node, osg::Group* parent,QHash<QString, osg::MatrixTransform *> &mtsHash, QHash<QString, IMVMesh> &meshHash, bool ignoreCameras)
 {
 	InnerModelTouchSensor *touch;
 	InnerModelMesh *mesh;
@@ -317,16 +322,16 @@ void InnerModelViewer::recursiveConstructor(InnerModelNode *node, osg::Group *pa
 	if ((transformation = dynamic_cast<InnerModelTransform *>(node)))
 	{
 		// Create and include MT
-		osg::MatrixTransform *mt = new osg::MatrixTransform;
-		//qDebug()<<"Transform ID:"<<transformation->id<<"num children"<<parent->getNumChildren();
-		
+		//CAUTION
+// 		osg::MatrixTransform *mt = new osg::MatrixTransform;
+		osg::ref_ptr<osg::MatrixTransform> mt = new osg::MatrixTransform;
+
 		if (parent) parent->addChild(mt);
-		//qDebug()<<"parent children"<<parent->getNumChildren();
 		
  		mtsHash[transformation->id] = mt;
 		
 		mt->setMatrix(QMatToOSGMat4(*transformation));
-
+		
 		for(int i=0; i<node->children.size(); i++)
 		{
 			recursiveConstructor(node->children[i], mt, mtsHash, meshHash, ignoreCameras);
@@ -355,7 +360,7 @@ void InnerModelViewer::recursiveConstructor(InnerModelNode *node, osg::Group *pa
 			cam.d->allocateImage(rgbd->width, rgbd->height, 1, GL_DEPTH_COMPONENT,GL_FLOAT);
 
 			cam.manipulator = new osgGA::TrackballManipulator();
-			
+			//CAUTION check y cambiar tb camera			
 			cam.viewerCamera->setSceneData(this);
 			cam.viewerCamera->setUpViewInWindow( 0, 0, rgbd->width, rgbd->height);
 			cam.viewerCamera->getCamera()->setClearMask(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -395,7 +400,9 @@ void InnerModelViewer::recursiveConstructor(InnerModelNode *node, osg::Group *pa
 	else if ((plane = dynamic_cast<InnerModelPlane *>(node)))
 	{
 		// Create plane's specific mt
-		osg::MatrixTransform *mt = new osg::MatrixTransform;
+// 		osg::MatrixTransform *mt = new osg::MatrixTransform;
+		//CAUTION
+		osg::ref_ptr<osg::MatrixTransform> mt = new osg::MatrixTransform;
 		planeMts[plane->id] = mt;
 		IMVPlane *imvplane = new IMVPlane(plane, plane->texture.toStdString(), osg::Vec4(0.8,0.5,0.5,0.5), 0); 
 		planesHash[node->id] = imvplane;
@@ -411,8 +418,9 @@ void InnerModelViewer::recursiveConstructor(InnerModelNode *node, osg::Group *pa
 	}
 	else if ((mesh = dynamic_cast<InnerModelMesh *>(node)))
 	{
-		// Create mesh's specific mt
-		osg::MatrixTransform *mt = new osg::MatrixTransform;
+		// Create mesh's specific mt		
+// 		osg::MatrixTransform *mt = new osg::MatrixTransform;
+		osg::ref_ptr<osg::MatrixTransform> mt = new osg::MatrixTransform;
 		
 // 			qDebug()<<"Mesh ID:"<<mesh->id<<"num children"<<parent->getNumChildren();
 		
@@ -423,7 +431,10 @@ void InnerModelViewer::recursiveConstructor(InnerModelNode *node, osg::Group *pa
 		rtmat.setR (mesh->rx, mesh->ry, mesh->rz);
 		rtmat.setTr(mesh->tx, mesh->ty, mesh->tz);
 		mt->setMatrix(QMatToOSGMat4(rtmat));
-		osg::MatrixTransform *smt = new osg::MatrixTransform;
+		
+// 		osg::MatrixTransform *smt = new osg::MatrixTransform;
+		osg::ref_ptr<osg::MatrixTransform> smt = new osg::MatrixTransform; 		
+		
 		smt->setMatrix(osg::Matrix::scale(mesh->scalex,mesh->scaley,mesh->scalez));
 		mt->addChild(smt);
 		/// osgmeshPatsHash[mesh->id] = mt;
@@ -435,8 +446,9 @@ void InnerModelViewer::recursiveConstructor(InnerModelNode *node, osg::Group *pa
 		if (!osgMesh)
 			printf("Could not find %s osg.\n", mesh->meshPath.toStdString().c_str());
 // 		osg::Group *oM = dynamic_cast<osg::Group *>(osgMesh);
-
-		osg::PolygonMode* polygonMode = new osg::PolygonMode();
+		
+		osg::ref_ptr<osg::PolygonMode> polygonMode = new osg::PolygonMode();
+		//osg::PolygonMode* polygonMode = new osg::PolygonMode();
 		if (mesh->render == InnerModelMesh::WireframeRendering) // wireframe
 			polygonMode->setMode(osg::PolygonMode::FRONT_AND_BACK, osg::PolygonMode::LINE);
 		else
@@ -459,6 +471,11 @@ void InnerModelViewer::recursiveConstructor(InnerModelNode *node, osg::Group *pa
 		qDebug() << "InnerModelReader::InnerModelReader(): Error: Unknown type of node";
 		throw "InnerModelReader::InnerModelReader(): Error: Unknown type of node";
 	}
+// 	qDebug()<<"size mts mtsHash "<<mts.size()<<mtsHash.size();
+// 	qDebug()<<"end of recursiveConstructor mtsHash.keys()"<<mtsHash.keys();
+// 	qDebug()<<"end of recursiveConstructor mts.keys()"<<mts.keys();
+	
+	
 }
 
 
@@ -509,7 +526,10 @@ void InnerModelViewer::reloadMesh(QString id)
 
 osg::Geode* InnerModelViewer::getGeode(QString id)
 {
-	osg::Group *osgMesh = dynamic_cast<osg::Group *>(meshHash[id].osgmeshes);
+	//CAUTION	
+	//original
+	//osg::Group *osgMesh = dynamic_cast<osg::Group *>(meshHash[id].osgmeshes);
+	osg::Group *osgMesh = dynamic_cast<osg::Group *>(meshHash[id].osgmeshes.get());
 	osg::Geode *geode=NULL;
 	while (geode==NULL)
 	{
@@ -531,6 +551,7 @@ void InnerModelViewer::update()
 			mts[key]->setMatrix(QMatToOSGMat4(*node));
 		}
 	}
+
 	foreach(QString key, planeMts.keys())
 	{
 		osg::MatrixTransform *mt = planeMts[key];

@@ -79,7 +79,8 @@ struct IMVCamera
 struct IMVLaser
 {
 	InnerModelLaser *laserNode;
-	osg::Switch *osgNode;
+	//osg::Switch *osgNode;
+	osg::ref_ptr<osg::Switch> osgNode;
 	QString id;
 };
 
@@ -87,9 +88,12 @@ struct IMVLaser
 
 struct IMVMesh
 {
-	osg::Node * osgmeshes;
-	osg::MatrixTransform * osgmeshPaths;
-	osg::MatrixTransform * meshMts;
+	osg::ref_ptr<osg::Node> osgmeshes;
+	osg::ref_ptr<osg::MatrixTransform> osgmeshPaths;
+	osg::ref_ptr<osg::MatrixTransform> meshMts;
+// 	osg::Node * osgmeshes;
+// 	osg::MatrixTransform * osgmeshPaths;
+// 	osg::MatrixTransform * meshMts;
 };
 
 
@@ -99,6 +103,7 @@ class IMVPlane : public osg::Geode
 	friend class InnerModelViewer;
 public:
 	IMVPlane(InnerModelPlane *plane, std::string imagenEntrada, osg::Vec4 valoresMaterial, float transparencia);
+	~IMVPlane();
 	void updateBuffer(uint8_t *data_, int32_t width_, int32_t height_);
 	void performUpdate();
 
@@ -106,9 +111,13 @@ public:
 	uint8_t *data;
 	bool dirty;
 	int32_t width, height;
-	osg::Texture2D* texture;
-	osg::ShapeDrawable *planeDrawable;
-	osg::Image *image;
+	osg::ref_ptr<osg::Texture2D> texture;
+	osg::ref_ptr<osg::ShapeDrawable> planeDrawable;
+	osg::ref_ptr<osg::Image> image;
+	
+// 	osg::Texture2D* texture;
+// 	osg::ShapeDrawable *planeDrawable;
+// 	osg::Image *image;
 };
 
 
@@ -141,14 +150,13 @@ class InnerModelViewer : public osg::Switch
 public:
 	enum CameraView { BACK_POV, FRONT_POV, LEFT_POV, RIGHT_POV, TOP_POV };
 
-	InnerModelViewer(InnerModel *im, QString root="root", osg::Group *parent=NULL, bool ignoreCameras=false);
+	InnerModelViewer(InnerModel *im, QString root="root", osg::Group *parent=NULL, bool ignoreCameras=false);	
 	~InnerModelViewer();
 
 	// Returns geode if 'id' corresponds to a geode, null otherwise.
 	osg::Geode* getGeode(QString id);
 	void update();
-	void reloadMesh(QString id);
-
+	void reloadMesh(QString id);	
 	void recursiveConstructor(InnerModelNode* node, osg::Group* parent, QHash< QString, osg::MatrixTransform* >& mtsHash, QHash< QString, IMVMesh >& meshHash, bool ignoreCameras=false);
 	void setMainCamera(osgGA::TrackballManipulator *manipulator, CameraView pov) const;
 
@@ -156,13 +164,19 @@ protected:
 	void setOSGMatrixTransformForPlane(osg::MatrixTransform *mt, InnerModelPlane *plane);
 
 public:
-	InnerModel *innerModel;
-	//QHash<QString, osg::Node *> osgmeshes;
-	QHash<QString, osg::PolygonMode *> osgmeshmodes;
-	// 	QHash<QString, osg::MatrixTransform *> osgmeshPats;
+	InnerModel *innerModel;	
+	
+	//CAUTION
+	//QHash<QString, osg::PolygonMode *> osgmeshmodes;
+	QHash<QString, osg::ref_ptr<osg::PolygonMode > > osgmeshmodes;
+	
+	//CAUTION
 	QHash<QString, osg::MatrixTransform *> mts;
-	QHash<QString, osg::MatrixTransform *> planeMts;
-	// 	QHash<QString, osg::MatrixTransform *> meshMts;
+// 	QHash<QString, osg::ref_ptr<osg::MatrixTransform > > mts;
+	//CAUTION
+// 	QHash<QString, osg::MatrixTransform *> planeMts;
+	QHash<QString, osg::ref_ptr<osg::MatrixTransform > > planeMts;
+	
 	QHash<QString, IMVMesh> meshHash;
 	QHash<QString, IMVPointCloud *> pointCloudsHash;
 	QHash<QString, IMVPlane *> planesHash;

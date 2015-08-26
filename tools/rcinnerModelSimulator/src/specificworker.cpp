@@ -398,7 +398,7 @@ struct SpecificWorker::Data
 	void cambiaColor(QString id, osg::Vec4 color)
 	{
 		osg::Node *node = imv->meshHash[id].osgmeshes;//imv->osgmeshes[id];
-		node = dynamic_cast<osg::Group*>(imv->meshHash[id].osgmeshes)->getChild(0);
+		node = dynamic_cast<osg::Group*>(imv->meshHash[id].osgmeshes.get())->getChild(0);
 		if (node)
 		{
 			osg::Material *mat = new osg::Material;
@@ -412,7 +412,7 @@ struct SpecificWorker::Data
 	void devuelveColor(QString id)
 	{
 		osg::Node *node = imv->meshHash[id].osgmeshes;
-		node = dynamic_cast<osg::Group*>(imv->meshHash[id].osgmeshes)->getChild(0);
+		node = dynamic_cast<osg::Group*>(imv->meshHash[id].osgmeshes.get())->getChild(0);
 		if (node)
 		{
 			osg::Material *mat = new osg::Material;

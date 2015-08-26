@@ -186,6 +186,8 @@ InnerModel::InnerModel(const InnerModel &original)
 
 InnerModel::~InnerModel()
 {
+  	printf("\n\n%s: %d\n\n", __FILE__, __LINE__);
+
 	foreach (QString id, getIDKeys())
 	{
 		//qDebug()<<id;
