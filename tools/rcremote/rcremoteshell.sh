@@ -27,7 +27,7 @@ do
 		fourGroundProcessID=`qdbus org.kde.yakuake /Sessions/$session org.kde.konsole.Session.foregroundProcessId`
       
 		# If the ids are the same, the user process is death
-		if [ $processID == $fourGroundProcessID ]; then
+		if [ "$processID" = "$fourGroundProcessID" ]; then
 			qdbus org.kde.yakuake /yakuake/sessions org.kde.yakuake.runCommandInTerminal $sessionID "echo $flag"
 			qdbus org.kde.yakuake /yakuake/sessions org.kde.yakuake.runCommandInTerminal $sessionID "make -j1"
 			qdbus org.kde.yakuake /yakuake/sessions org.kde.yakuake.runCommandInTerminal $sessionID "$binary $params"
