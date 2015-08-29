@@ -152,7 +152,7 @@ def getPassFor(host_param):
 		password = s[1]
 		if host == host_param:
 			return password
-	raise Exception("can't find password for "+host+" in ~/.rcremote  (format 'host#password')")
+	raise Exception("can't find password for "+host_param+" in ~/.rcremote  (format 'host#password')")
 
 
 if __name__ == '__main__':
