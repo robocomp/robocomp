@@ -350,7 +350,7 @@ void InnerModelViewer::recursiveConstructor(InnerModelNode *node, osg::Group* pa
 			// Viewer
 			cam.viewerCamera = new osgViewer::Viewer();
 		
-			double fov = 2. * atan2(cam.RGBDNode->height/2.0, cam.RGBDNode->focal);
+			double fov = 2. * atan2(0.5*cam.RGBDNode->height, cam.RGBDNode->focal);
 			double aspectRatio = cam.RGBDNode->width / cam.RGBDNode->height;
 			double zNear = 0.01, zFar = 10000.0;
 			// Images

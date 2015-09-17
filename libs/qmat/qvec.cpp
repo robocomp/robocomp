@@ -162,9 +162,8 @@ const QVec & QVec::inject(const QVec &vector, const int offset)
 {
 	Q_ASSERT ( size() >= vector.size() + offset );
 
-	const int s = vector.size();
-	for(int i=offset, j=0; i<offset+s; i++, j++)
-		operator[](i) =  vector.at(j);
+	for (int j=0; j<vector.size(); j++)
+		operator()(j+offset) = vector.at(j);
 
 	return *this;
 }

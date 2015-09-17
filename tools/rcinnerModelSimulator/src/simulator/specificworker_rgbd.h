@@ -77,6 +77,8 @@ void SpecificWorker::rgbd_getImage ( const QString& server, ColorSeq& color, Dep
 	QMutexLocker locker ( mutex );
 	IMVCamera &cam = d->imv->cameras[server];
 
+
+	
 	QStringList cameraConfig = cam.RGBDNode->ifconfig.split ( "," );
 	if (cameraConfig.size() > 1)
 	{
@@ -107,6 +109,7 @@ void SpecificWorker::rgbd_getImage ( const QString& server, ColorSeq& color, Dep
 	const float focal = ( float ) cam.RGBDNode->focal;
 	double fovy, aspectRatio, Zn, Zf;
 	cam.viewerCamera->getCamera()->getProjectionMatrixAsPerspective ( fovy, aspectRatio, Zn, Zf );
+	printf("fov: %g, aspect: %g\n", fovy, aspectRatio);
 
 	static QVec rndm = QVec::gaussianSamples(1000001, 1, noise);
 	static bool rndmInit = false;
