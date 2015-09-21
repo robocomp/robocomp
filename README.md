@@ -184,7 +184,9 @@ sudo make install
 ```
 cd ~/robocomp/build
 cmake-gui ..
+```
 select checkbox FCL_SUPPORT
+```
 push configure button
 push generate button
 exit
