@@ -21,6 +21,8 @@
 
 [List of **robocomp-robolab** components](robocomp-robolab-components.md)
 
+[Compiling RoboComp with collision detection](Compiling RoboComp with collision detection.md)
+
 
 
 
