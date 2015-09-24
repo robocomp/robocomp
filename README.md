@@ -102,7 +102,7 @@ The software of the robots using RoboComp is composed of different software comp
     
 The RoboLab's set of basic robotics components are now dowloaded. You can see them in `~/robocomp/components/robocomp-robolab/components`
 
-##Connecting a JoyStick (y no JS available skip to the next section)
+##Connecting a JoyStick (if no JoyStick available skip to the next section)
 
 If you have a joystick around, connect it to the USB port and:
 
