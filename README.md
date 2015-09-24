@@ -133,7 +133,7 @@ and use the arrow keys to navigate the robot, the space bar to stop it an 'q' to
 
 
 ---------------------------------------------------------------------
-You can find more tutorials on RoboComp in [tutorials!](doc/README.md) or read them in [readthedocs](http://robocomp.readthedocs.org/en/latest/)
+You can find more tutorials on RoboComp in [tutorials!](doc/README.md) 
 
 Drop comments and ask questions in:
 
