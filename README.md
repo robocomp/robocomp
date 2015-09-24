@@ -62,7 +62,7 @@ Done! Now let's compile and install the whole thing:
     make
     sudo make install
 
-If you want to compile Robocomp with support for FCL, follow the instructions in "Robocomp with FCL (The Flexible Collision Library) support"
+If you want to compile Robocomp with support for FCL, follow the instructions in the [Robocomp with FCL](Compiling RoboComp with collision detection.md) tutorial"
 
 The RoboComp's core libraries and simulator should now be compiled and installed in `/opt/robocomp`.
 
