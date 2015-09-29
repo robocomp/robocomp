@@ -12,6 +12,7 @@ There are three tasks we can acomplish using **robocompdsl**:
 
 ## Generating a CDSL template file
 Even though writing CDSL files is easy --their structure is simple and the number of reserved words is very limited-- robocompdsl can generate template CDSL files to be used as a guide when writing CDSL files.
+Start by creating a new directory for your component named, for instance, *mycomponent*. Then run the code generator:
 
     $ robocompdsl path/to/mycomponent/mycomponent.cdsl
 
@@ -45,6 +46,7 @@ Let's change the template file above by something like this,
         Communications{
             requires DifferentialRobot, Laser;
         };
+    gui Qt(QWidget);
     language Cpp; //language Python;
     };
     
@@ -56,9 +58,6 @@ From the component's directory:
     robocompdsl mycomponent.cdsl .
 
 Watch the dot at the end!
-Or somewhere else:
-
-    robocompdsl path/to/mycomponent/mycomponent.cdsl path/to/mycomponent
 
 These commands will generate the C++ (or Python) code in the specified directory.
 
@@ -76,46 +75,29 @@ and open *specificworker.cpp* in your favorite editor. Go to the **void Specific
 ```
 void SpecificWorker::compute( )
 {
-
-    const float threshold = 200;
-    float rot = 1.5707;	
-	
-    
+    const float threshold = 200; //millimeters
+    float rot = 0.6;  //rads per second
 
     try
     {
-        RoboCompLaser::TLaserData ldata = laser_proxy->getLaserData();
-        std::sort( ldata.begin(), ldata.end(), [](RoboCompLaser::TData a, RoboCompLaser::TData b){ return     a.dist < b.dist; }) ;
+        RoboCompLaser::TLaserData ldata = laser_proxy->getLaserData();  //read laser data 
+        std::sort( ldata.begin(), ldata.end(), [](RoboCompLaser::TData a, RoboCompLaser::TData b){ return     a.dist < b.dist; }) ;  //sort laser data from small to large distances using a lambda function.
         
-	
-	 if( ldata.front().dist < threshold)
+	if( ldata.front().dist < threshold)
 	{
- 	differentialrobot_proxy->setSpeedBase(5, rot);
-	usleep(1250000);
-	std::cout << ldata.front().dist << std::endl;	
-	differentialrobot_proxy->setSpeedBase(200, 0);
-	usleep(500000);
-	rot = rot + 0.12;
-	if( rot > 3 * 1.5707 )
-	{
-	 rot = 1.5707;
+		std::cout << ldata.front().dist << std::endl;
+ 		differentialrobot_proxy->setSpeedBase(5, rot);
+		usleep(rand()%(1500000-100000 + 1) + 100000;);  //random wait between 1.5s and 0.1sec
 	}
-	}
-	
 	else
 	{
-	differentialrobot_proxy->setSpeedBase(200, 0); 
-  	usleep(500000);
-	std::cout << ldata.front().dist << std::endl;
+		differentialrobot_proxy->setSpeedBase(200, 0); 
   	}
-
-       	
     }
     catch(const Ice::Exception &ex)
     {
         std::cout << ex << std::endl;
     }
-
 }
 ```
 save and, 
