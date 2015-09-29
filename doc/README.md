@@ -7,7 +7,7 @@
 
 [Understanding RoboComp's Interfaces](interfaces/README.md)
 
-[Using the **robocompdsl** component generation command line tool](robocompdsl.md)
+[Creating my first component using **robocompdsl**](robocompdsl.md)
 
 [Maintaining your own repository of components](using_github.md)
 
