@@ -126,14 +126,8 @@ If you have generated the code using python the replace the *specificworker.py* 
 				if distance < 400:
 					self.differentialrobot_proxy.setSpeedBase(0, rot)
 					time.sleep(1)
-					rot = rot+ 0.5
-					if rot > 3:
-						rot = 1
-					self.differentialrobot_proxy.setSpeedBase(70, 0)
-					time.sleep(1)
 				else:
 					self.differentialrobot_proxy.setSpeedBase(100, 0)
-					time.sleep(1)
 			except Ice.Exception, e:
 				traceback.print_exc()
 				print e
@@ -141,9 +135,10 @@ If you have generated the code using python the replace the *specificworker.py* 
 
 Save the file.
 
-Now we need to tell the component where to find the DifferentialRobot and the Laser interfaces. Of course they are implemented by the rcis simulator, Run rcis <innemodel> and you can find the port numbers for each interface, so now we only need to change the ports in the configuration file,
+Now we need to tell the component where to find the DifferentialRobot and the Laser interfaces. Of course they are implemented by the rcis simulator, Run rcis <innemodel> and you can find the port numbers for each interface, so now we only need to change the ports in the configuration file. Copy the configuration file to your component home directory:
 
-     cd path/to/mycomponent/etc
+     cd path/to/mycomponent
+     cp etc/config .
      gedit config
      
 Change in the editor the port numbers located after *-p* 
@@ -172,7 +167,8 @@ For Python,
 
     python bin/mycomponent --Ice.Config=etc/config
 
-and watch the robot avoiding obstacles! Change the code to improve the behavior of the robot.
+and watch the robot avoiding obstacles! 
+Change the code to improve this simple behavior of the robot. Stop the component by closing its ui window, modify, recompile and execute again.
 
 ## Updating the source code of a component after modifying its CDSL file
 Once we generated our component we might change our mind and decide to add a new connection to another interface or to publish a new topic. In these cases we can regenerate the code of the component just by changing the *.cdsl* file and executing again the command.
