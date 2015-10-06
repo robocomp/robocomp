@@ -1,0 +1,1 @@
+IceBox.Service.IceStorm=IceStormService,35:createIceStorm --Ice.Config=config.icestorm

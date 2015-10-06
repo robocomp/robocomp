@@ -1,0 +1,6 @@
+IceStorm.TopicManager.Endpoints=tcp -p 9999
+IceStorm.Publish.Endpoints=tcp -p 9998
+IceStorm.Transient=1
+DemoFreeze.DbEnv.IceStorm.DbHome=
+
+
