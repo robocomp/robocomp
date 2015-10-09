@@ -21,7 +21,7 @@ module RoboCompAGMExecutive
 		void deactivate();
 		void reset();
 		bool modificationProposal(RoboCompAGMWorldModel::Event modification);
-		void setMission(RoboCompAGMWorldModel::World world);
+		void setMission(string path);
 		void getData(out RoboCompAGMWorldModel::World world, out RoboCompAGMWorldModel::World target, out RoboCompPlanning::Plan plan);
 		void broadcastModel();
 		void broadcastPlan();

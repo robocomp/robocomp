@@ -14,7 +14,7 @@ module RoboCompAGMExecutive
 		bool modificationProposal(RoboCompAGMWorldModel::Event modification);
 
 		// For setting the mission
-		void setMission(RoboCompAGMWorldModel::World world);
+		void setMission(sring path);
 
 		/// For visualization purposes
 		void getData(out RoboCompAGMWorldModel::World world, out RoboCompAGMWorldModel::World target, out RoboCompPlanning::Plan plan);

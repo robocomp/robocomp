@@ -753,7 +753,7 @@ class GraphView(QtGui.QWidget):
 		if node.color != None:
 			self.painter.setBrush(node.color)
 			self.painter.setPen(node.color)
-			self.painter.drawEllipse(node.x-node.r/2+w2, node.y-node.r/2+h2, node.r, node.r)
+			self.painter.drawEllipse(node.x-node.r/4+w2, node.y-node.r/4+h2, node.r/2, node.r/2)
 
 
 	def paintEvent(self, event):
