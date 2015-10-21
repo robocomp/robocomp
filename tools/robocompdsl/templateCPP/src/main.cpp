@@ -16,7 +16,6 @@ from parseCDSL import *
 component = CDSLParsing.fromFile(theCDSL)
 
 
-
 REQUIRE_STR = """
 <TABHERE>try
 <TABHERE>{
@@ -217,8 +216,16 @@ Z()
 #include "commonbehaviorI.h"
 
 [[[cog
-for implement in component['implements'] + component['subscribesTo']:
+for implement in component['implements']:
 	cog.outl('#include <'+implement.lower()+'I.h>')
+
+usingROS = False
+for subscribe in component['subscribesTo']:
+	if communicationIsIce(subscribe):
+		cog.outl('#include <'+subscribe[0].lower()+'I.h>')
+	else:
+		usingROS = True
+		cog.outl('//#include <ROS '+subscribe[0].lower()+'I.h>')
 
 cog.outl('')
 
@@ -320,12 +327,18 @@ for name, num in getNameNumber(component['requires']):
 	cog.outl(w)
 
 if len(component['publishes'])>0 or len(component['subscribesTo'])>0:
-	cog.outl('IceStorm::TopicManagerPrx topicManager = IceStorm::TopicManagerPrx::checkedCast(communicator()->propertyToProxy("TopicManager.Proxy"));')
+	cog.outl('<TABHERE>IceStorm::TopicManagerPrx topicManager = IceStorm::TopicManagerPrx::checkedCast(communicator()->propertyToProxy("TopicManager.Proxy"));')
 
 
 for pb in component['publishes']:
 	w = PUBLISHES_STR.replace("<NORMAL>", pb).replace("<LOWER>", pb.lower())
 	cog.outl(w)
+
+
+if usingROS:
+	cog.outl("<TABHERE>ros::init(argc, argv, \""+component['name']+"\");")
+
+
 ]]]
 [[[end]]]
 
@@ -367,9 +380,13 @@ for im in component['implements']:
 [[[end]]]
 
 
+
 [[[cog
 for name, num in getNameNumber(component['subscribesTo']):
-	w = SUBSCRIBESTO_STR.replace("<NORMAL>", name).replace("<LOWER>", name.lower()).replace("<PROXYNAME>", name.lower()+num).replace("<PROXYNUMBER>", num)
+	if communicationIsIce(name):
+		w = SUBSCRIBESTO_STR.replace("<NORMAL>", name[0]).replace("<LOWER>", name[0].lower()).replace("<PROXYNAME>", name[0].lower()+num).replace("<PROXYNUMBER>", num)
+	else:
+		w = '  //codigo para ROS de ' + name[0]
 	cog.out(w)
 ]]]
 [[[end]]]

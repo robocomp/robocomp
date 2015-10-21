@@ -144,61 +144,61 @@ void SpecificWorker::compute()
 
 
 [[[cog
-ll = []
-if 'implements'   in component: ll += component['implements']
-if 'subscribesTo' in component: ll += component['subscribesTo']
-for imp in ll:
-	module = pool.moduleProviding(imp)
-	for interface in module['interfaces']:
-		if interface['name'] == imp:
-			for mname in interface['methods']:
-				method = interface['methods'][mname]
-				paramStrA = ''
-				for p in method['params']:
-					if paramStrA == '': delim = ''
-					else: delim = ', '
-					# decorator
-					ampersand = '&'
-					if p['decorator'] == 'out':
-						const = ''
-					else:
-						const = 'const '
-						if p['type'].lower() in ['int', '::ice::int', 'float', '::ice::float']:
-							ampersand = ''
-					paramStrA += delim + const + p['type'] + ' ' + ampersand + p['name']
-				bodyCode=""
-				###################################### 
-				#code for subscribesTo AGMExecutiveTopic
-				###################################### 
-				if method['name'] == 'structuralChange':
-					bodyCode = "<TABHERE>mutex->lock();\n <TABHERE>AGMModelConverter::fromIceToInternal(modification.newModel, worldModel);\n \n<TABHERE>agmInner.setWorld(worldModel);\n<TABHERE>delete innerModel;\n<TABHERE>innerModel = agmInner.extractInnerModel();\n<TABHERE>mutex->unlock();"
-				if method['name'] == 'symbolUpdated' or method['name'] == 'edgeUpdated':
-					bodyCode = "<TABHERE>mutex->lock();\n <TABHERE>AGMModelConverter::includeIceModificationInInternalModel(modification, worldModel);\n \n<TABHERE>agmInner.setWorld(worldModel);\n<TABHERE>delete innerModel;\n<TABHERE>innerModel = agmInner.extractInnerModel();\n<TABHERE>mutex->unlock();"
-					
-				###################################### 
-				#code for implements AGMCommonBehavior.
-				###################################### 
-				if method['name'] == 'activateAgent':
-					bodyCode = "<TABHERE>bool activated = false;\n<TABHERE>if (setParametersAndPossibleActivation(prs, activated))\n<TABHERE>{\n<TABHERE><TABHERE>if (not activated)\n<TABHERE><TABHERE>{\n<TABHERE><TABHERE><TABHERE>return activate(p);\n<TABHERE><TABHERE>}\n<TABHERE>}\n<TABHERE>else\n<TABHERE>{\n<TABHERE><TABHERE>return false;\n<TABHERE>}\n<TABHERE>return true;"
-					
-				if method['name'] == 'deactivateAgent':
-					bodyCode = "<TABHERE>return deactivate();"
-					
-				if method['name'] == 'getAgentState':
-					bodyCode = "<TABHERE>StateStruct s;\n<TABHERE>if (isActive())\n<TABHERE>{\n<TABHERE><TABHERE>s.state = Running;\n<TABHERE>}\n<TABHERE>else\n<TABHERE>{\n<TABHERE><TABHERE>s.state = Stopped;\n<TABHERE>}\n<TABHERE>s.info = p.action.name;\n<TABHERE>return s;"
-					
-				if method['name'] == 'getAgentParameters':
-					bodyCode = "<TABHERE>return params;"
-					
-				if method['name'] == 'setAgentParameters':
-					bodyCode = "<TABHERE>bool activated = false;\n<TABHERE>return setParametersAndPossibleActivation(prs, activated);"
-					
-				if method['name'] == 'uptimeAgent':
-					bodyCode = "<TABHERE>return 0;"
-				if method['name'] == 'reloadConfigAgent':
-					bodyCode = "<TABHERE>return true;"
-					
-				cog.outl(method['return'] + ' SpecificWorker::' + method['name'] + '(' + paramStrA + ")\n{\n"+bodyCode+"\n}\n")
+
+if 'implements' in component:
+	for imp in component['implements']:
+		module = pool.moduleProviding(imp)
+		for interface in module['interfaces']:
+			if interface['name'] == imp:
+				for mname in interface['methods']:
+					method = interface['methods'][mname]
+					paramStrA = ''
+					for p in method['params']:
+						if paramStrA == '': delim = ''
+						else: delim = ', '
+						# decorator
+						ampersand = '&'
+						if p['decorator'] == 'out':
+							const = ''
+						else:
+							const = 'const '
+							if p['type'].lower() in ['int', '::ice::int', 'float', '::ice::float']:
+								ampersand = ''
+						paramStrA += delim + const + p['type'] + ' ' + ampersand + p['name']
+					bodyCode = bodyCodeFromName(method['name'])
+					cog.outl(method['return'] + ' SpecificWorker::' + method['name'] + '(' + paramStrA + ")\n{\n"+bodyCode+"\n}\n")
+
+	
+
+if 'subscribesTo' in component:
+	for imp in component['subscribesTo']:
+		if communicationIsIce(imp):
+			module = pool.moduleProviding(imp[0])
+			for interface in module['interfaces']:
+				if interface['name'] == imp[0]:
+					for mname in interface['methods']:
+						method = interface['methods'][mname]
+						paramStrA = ''
+						for p in method['params']:
+							if paramStrA == '': delim = ''
+							else: delim = ', '
+							# decorator
+							ampersand = '&'
+							if p['decorator'] == 'out':
+								const = ''
+							else:
+								const = 'const '
+								if p['type'].lower() in ['int', '::ice::int', 'float', '::ice::float']:
+									ampersand = ''
+							paramStrA += delim + const + p['type'] + ' ' + ampersand + p['name']
+						bodyCode = bodyCodeFromName(method['name'])
+						cog.outl(method['return'] + ' SpecificWorker::' + method['name'] + '(' + paramStrA + ")\n{\n"+bodyCode+"\n}\n")
+		else:
+			cog.outl("// ROS CODE FOR FUNCTION X")
+
+
+
+
 ]]]
 [[[end]]]
 

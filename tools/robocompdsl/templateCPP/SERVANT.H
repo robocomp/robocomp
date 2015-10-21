@@ -20,9 +20,11 @@ if component == None:
 
 from parseIDSL import *
 modulePool = IDSLPool(theIDSLs)
-module = modulePool.moduleProviding(theInterface)
+
+theInterface = theInterface.split(';')
+module = modulePool.moduleProviding(theInterface[0])
 if module == None:
-	print('Can\'t locate', theIDSLs)
+	print('Can\'t locate', theInterface)
 	sys.exit(1)
 
 
@@ -56,7 +58,7 @@ Z()
 #ifndef 
 [[[cog
 A()
-cog.out(theInterface.upper())
+cog.out(theInterface[0].upper())
 Z()
 ]]]
 [[[end]]]
@@ -64,7 +66,7 @@ _H
 #define 
 [[[cog
 A()
-cog.out(theInterface.upper())
+cog.out(theInterface[0].upper())
 Z()
 ]]]
 [[[end]]]
@@ -99,7 +101,7 @@ Z()
 class 
 [[[cog
 A()
-cog.out(theInterface)
+cog.out(theInterface[0])
 Z()
 ]]]
 [[[end]]]
@@ -113,7 +115,7 @@ Z()
 ::
 [[[cog
 A()
-cog.out(theInterface)
+cog.out(theInterface[0])
 Z()
 ]]]
 [[[end]]]
@@ -124,7 +126,7 @@ public:
 	
 [[[cog
 A()
-cog.out(theInterface)
+cog.out(theInterface[0])
 Z()
 ]]]
 [[[end]]]
@@ -132,7 +134,7 @@ I( GenericWorker *_worker, QObject *parent = 0 );
 	~
 	[[[cog
 A()
-cog.out(theInterface)
+cog.out(theInterface[0])
 Z()
 ]]]
 [[[end]]]
@@ -141,7 +143,7 @@ I();
 [[[cog
 
 	for interface in module['interfaces']:
-		if interface['name'] == theInterface:
+		if interface['name'] == theInterface[0]:
 			for mname in interface['methods']:
 				method = interface['methods'][mname]
 				

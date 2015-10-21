@@ -88,31 +88,56 @@ public:
 	bool setParams(RoboCompCommonBehavior::ParameterList params);
 
 [[[cog
-ll = []
-if 'implements'   in component: ll += component['implements']
-if 'subscribesTo' in component: ll += component['subscribesTo']
-for imp in ll:
-	module = pool.moduleProviding(imp)
-	for interface in module['interfaces']:
-		if interface['name'] == imp:
-			for mname in interface['methods']:
-				method = interface['methods'][mname]
-				paramStrA = ''
-				for p in method['params']:
-					# delim
-					if paramStrA == '': delim = ''
-					else: delim = ', '
-					# decorator
-					ampersand = '&'
-					if p['decorator'] == 'out':
-						const = ''
-					else:
-						const = 'const '
-						if p['type'].lower() in ['int', '::ice::int', 'float', '::ice::float']:
-							ampersand = ''
-					# STR
-					paramStrA += delim + const + p['type'] + ' ' + ampersand + p['name']
-				cog.outl("<TABHERE>" + method['return'] + ' ' + method['name'] + '(' + paramStrA + ");")
+if 'implements' in component:
+	for imp in component['implements']:
+		module = pool.moduleProviding(imp)
+		for interface in module['interfaces']:
+			if interface['name'] == imp:
+				for mname in interface['methods']:
+					method = interface['methods'][mname]
+					paramStrA = ''
+					for p in method['params']:
+						# delim
+						if paramStrA == '': delim = ''
+						else: delim = ', '
+						# decorator
+						ampersand = '&'
+						if p['decorator'] == 'out':
+							const = ''
+						else:
+							const = 'const '
+							if p['type'].lower() in ['int', '::ice::int', 'float', '::ice::float']:
+								ampersand = ''
+						# STR
+						paramStrA += delim + const + p['type'] + ' ' + ampersand + p['name']
+					cog.outl("<TABHERE>" + method['return'] + ' ' + method['name'] + '(' + paramStrA + ");")
+
+if 'subscribesTo' in component:
+	for imp in component['subscribesTo']:
+		if communicationIsIce(imp):
+			module = pool.moduleProviding(imp[0])
+			for interface in module['interfaces']:
+				if interface['name'] == imp[0]:
+					for mname in interface['methods']:
+						method = interface['methods'][mname]
+						paramStrA = ''
+						for p in method['params']:
+							# delim
+							if paramStrA == '': delim = ''
+							else: delim = ', '
+							# decorator
+							ampersand = '&'
+							if p['decorator'] == 'out':
+								const = ''
+							else:
+								const = 'const '
+								if p['type'].lower() in ['int', '::ice::int', 'float', '::ice::float']:
+									ampersand = ''
+							# STR
+							paramStrA += delim + const + p['type'] + ' ' + ampersand + p['name']
+						cog.outl("<TABHERE>" + method['return'] + ' ' + method['name'] + '(' + paramStrA + ");")
+		else:
+			cog.outl("<TABHERE>" + method['return'] + ' ' + method['name'] + "();")
 
 ]]]
 [[[end]]]
