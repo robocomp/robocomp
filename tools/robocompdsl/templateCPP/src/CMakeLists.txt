@@ -57,8 +57,14 @@ SET ( SOURCES
   genericworker.cpp
   specificworker.cpp
 [[[cog
-for im in component['implements'] + component['subscribesTo']:
-	cog.outl('<S2>' + im.lower() + 'I.cpp')
+for implement in component['implements']:
+	cog.outl('<S2>' + implement.lower() + 'I.cpp')
+
+for subscribe in component['subscribesTo']:
+	if communicationIsIce(subscribe):
+		cog.outl('<S2>' + subscribe[0].lower() + 'I.cpp')
+	else:
+		cog.outl('<S2>ROS' + subscribe[0].lower() + 'I.cpp')
 ]]]
 [[[end]]]
 )
@@ -72,11 +78,29 @@ SET ( HEADERS
   genericworker.h
   specificworker.h
 [[[cog
-for im in component['implements'] + component['subscribesTo']:
-		cog.outl('<S2>'+im.lower() + 'I.h')
+
+usingROS=False
+
+for implement in component['implements']:
+	cog.outl('<S2>'+implement.lower() + 'I.h')
+
+for subscribe in component['subscribesTo']:
+	if communicationIsIce(subscribe):
+		cog.outl('<S2>'+subscribe[0].lower() + 'I.h')
+	else:
+		cog.outl('<S2>ROS'+subscribe[0].lower() + 'I.h')
+		usingROS = True
+
+cog.outl(')\n')
+
+if usingROS:
+	cog.outl('find_package(catkin REQUIRED)')
+	cog.outl('include_directories(  ${catkin_INCLUDE_DIRS} )')
+	cog.outl('SET ( LIBS ${LIBS} ${catkin_LIBRARIES} -L/opt/ros/jade/lib -lroscpp -lrosconsole -lroscpp_serialization) # -lrosbag')
 ]]]
 [[[end]]]
-)
+
+
 #ROBOCOMP
 ROBOCOMP_INITIALIZE( $ENV{ROBOCOMP}/ )
 ROBOCOMP_WRAP_ICE( CommonBehavior 

@@ -20,7 +20,9 @@ if component == None:
 
 from parseIDSL import *
 modulePool = IDSLPool(theIDSLs)
-module = modulePool.moduleProviding(theInterface)
+
+theInterface = theInterface.split(';')
+module = modulePool.moduleProviding(theInterface[0])
 if module == None:
 	print('Can\'t locate', theIDSLs)
 	sys.exit(1)
@@ -56,21 +58,21 @@ Z()
 #include "
 [[[cog
 A()
-cog.out(theInterface.lower())
+cog.out(theInterface[0].lower())
 Z()
 ]]]
 [[[end]]]
 I.h"
 
 [[[cog
-cog.out(theInterface)
+cog.out(theInterface[0])
 Z()
 ]]]
 [[[end]]]
 I::
 [[[cog
 A()
-cog.out(theInterface)
+cog.out(theInterface[0])
 Z()
 ]]]
 [[[end]]]
@@ -82,14 +84,14 @@ I(GenericWorker *_worker, QObject *parent) : QObject(parent)
 
 
 [[[cog
-cog.out(theInterface)
+cog.out(theInterface[0])
 Z()
 ]]]
 [[[end]]]
 I::~
 [[[cog
 A()
-cog.out(theInterface)
+cog.out(theInterface[0])
 Z()
 ]]]
 [[[end]]]
@@ -100,7 +102,7 @@ I()
 [[[cog
 
 	for interface in module['interfaces']:
-		if interface['name'] == theInterface:
+		if interface['name'] == theInterface[0]:
 			for mname in interface['methods']:
 				method = interface['methods'][mname]
 
@@ -121,7 +123,7 @@ I()
 					else: delim = ', '
 					paramStrB += delim + p['name']
 
-				cog.outl(ret + ' ' + theInterface + 'I::' + name + '(' + paramStrA + 'const Ice::Current&)')
+				cog.outl(ret + ' ' + theInterface[0] + 'I::' + name + '(' + paramStrA + 'const Ice::Current&)')
 				cog.outl('{')
 				cog.out('<TABHERE>')
 				if ret != 'void':

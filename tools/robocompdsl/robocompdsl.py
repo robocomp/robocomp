@@ -137,12 +137,24 @@ if component['language'].lower() == 'cpp':
 	#
 	# Generate interface-dependent files
 	#
-	for im in component['implements']+component['subscribesTo']:
+	for im in component['implements']:
 		for f in [ "SERVANT.H", "SERVANT.CPP"]:
 			ofile = outputPath + '/src/' + im.lower() + 'I.' + f.split('.')[-1].lower()
 			print 'Generating', ofile, ' (servant for', im + ')'
 			# Call cog
 			run = "cog.py -z -d -D theCDSL="+inputFile  + " -D theIDSLs="+imports + " -D theInterface="+im + " -o " + ofile + " " + "/opt/robocomp/share/robocompdsl/templateCPP/" + f
+			run = run.split(' ')
+			ret = Cog().main(run)
+			if ret != 0:
+				print 'ERROR'
+				sys.exit(-1)
+			replaceTagsInFile(ofile)
+	for im in component['subscribesTo']:
+		for f in [ "SERVANT.H", "SERVANT.CPP"]:
+			ofile = outputPath + '/src/' + im[0].lower() + 'I.' + f.split('.')[-1].lower()
+			print 'Generating', ofile, ' (servant for', im[0] + ')'
+			# Call cog
+			run = "cog.py -z -d -D theCDSL="+inputFile  + " -D theIDSLs="+imports + " -D theInterface="+str(';'.join(im)) + " -o " + ofile + " " + "/opt/robocomp/share/robocompdsl/templateCPP/" + f
 			run = run.split(' ')
 			ret = Cog().main(run)
 			if ret != 0:
