@@ -99,6 +99,7 @@ IMPLEMENTS_STR = """
 <TABHERE><TABHERE><NORMAL>I *<LOWER> = new <NORMAL>I(worker);
 <TABHERE><TABHERE>adapter<NORMAL>->add(<LOWER>, communicator()->stringToIdentity("<LOWER>"));
 <TABHERE><TABHERE>adapter<NORMAL>->activate();
+<TABHERE><TABHERE>cout << "[" << PROGRAM_NAME << "]: <NORMAL> adapter created in port " << tmp << endl;
 """
 
 ]]]
