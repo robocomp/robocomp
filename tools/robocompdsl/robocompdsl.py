@@ -126,14 +126,15 @@ if component['language'].lower() == 'cpp':
 			print 'Not overwriting specific file "'+ ofile +'", saving it to '+ofile+'.new'
 			ofile += '.new'
 		ifile = "/opt/robocomp/share/robocompdsl/templateCPP/" + f
-		print 'Generating', ofile, 'from', ifile
-		run = "cog.py -z -d -D theCDSL="+inputFile + " -D theIDSLs="+imports + " -o " + ofile + " " + ifile
-		run = run.split(' ')
-		ret = Cog().main(run)
-		if ret != 0:
-			print 'ERROR'
-			sys.exit(-1)
-		replaceTagsInFile(ofile)
+		if f != 'src/mainUI.ui' or component['gui'] != 'none':
+			print 'Generating', ofile, 'from', ifile
+			run = "cog.py -z -d -D theCDSL="+inputFile + " -D theIDSLs="+imports + " -o " + ofile + " " + ifile
+			run = run.split(' ')
+			ret = Cog().main(run)
+			if ret != 0:
+				print 'ERROR'
+				sys.exit(-1)
+			replaceTagsInFile(ofile)
 	#
 	# Generate interface-dependent files
 	#
