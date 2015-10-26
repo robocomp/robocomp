@@ -25,7 +25,6 @@
 
 #include <innermodel/innermodel.h>
 #include <qmat/QMatAll>
-#include <agm.h>
 #include <qt4/QtCore/QHash>
 #include <qt4/QtCore/QList>
 #include <qt4/QtCore/QString>
@@ -33,6 +32,9 @@
 #include <iostream>
 #include <string>
 
+#ifndef Q_MOC_RUN
+	#include <agm.h>
+#endif
 
 using namespace std;
 
