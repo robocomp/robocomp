@@ -21,21 +21,41 @@
 
 using namespace RMat;
 
-QEssential::QEssential() :  QMat ( 3,3 )
+QEssential::QEssential() :  QMat(3,3)
 {
 }
 
-QEssential::QEssential(const QEssential & c)
+QEssential::QEssential(const QMat &rot, const QMat &trans) : QMat(3,3)
+{
+	set(rot, trans);
+}
+
+QEssential::QEssential(const QMat &rot, const QVec &trans) : QMat(3,3)
+{
+	set(rot, trans);
+}
+
+QEssential::QEssential(const QEssential &c)
 {
 }
 
-QEssential::~ QEssential()
+QEssential::~QEssential()
 {
 }
 
-void QEssential::set(const QMat & rot, const QMat & trans)
+void QEssential::set(const QMat &rot, const QMat &trans)
 {
-	QMat tx = trans.toCrossProdForm();
-	(*this).inject(tx * rot,0,0);
+// 	rot.print("rot");
+// 	trans.print("trans");
+	(*this).inject(trans * rot,0,0);
 }
+
+void QEssential::set(const QMat &rot, const QVec &trans)
+{
+	QMat T = trans.crossProductMatrix();
+	set(rot, T);
+}
+
+
+
 

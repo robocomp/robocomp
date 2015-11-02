@@ -49,8 +49,8 @@ namespace RMat
 
 		/** Resets the fundamental matrix: Given the essential matrix and both camera matrices rebuilds the fundamental matrix. **/
 		void set( const QEssential & essential, const Cam & kL, const Cam & kR );
-		QLineF getEpipolarR(const QPoint & pI);
-		QLineF getEpipolarL(const QPoint & pD);
+		QLineF getEpipolarR(const QPoint & pI, float x1=0, float x2=320);
+		QLineF getEpipolarL(const QPoint & pD, float x1=0, float x2=320);
 		T getDistToEpipolar(const QPoint & pI, const QPoint & pD);
 
 	private:

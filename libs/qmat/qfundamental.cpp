@@ -45,10 +45,12 @@ void RMat::QFundamental::set(const QEssential & essential, const Cam & kL, const
 	( *this ).inject(kR.transpose().invert() * ( essential * kL.invert()), 0,0);
 }
 
-QLineF RMat::QFundamental::getEpipolarL(const QPoint & pI)
+QLineF RMat::QFundamental::getEpipolarL(const QPoint & pI, float x1, float x2)
 {
 	QVec p(3);
-	p(0)=pI.x();p(1)=pI.y();p(2)=1.;
+	p(0)=pI.x();
+	p(1)=pI.y();
+	p(2)=1.;
 	//p.transpose().print("antes punto");
 	//(*this).print("antes fund");
 	
@@ -61,22 +63,24 @@ QLineF RMat::QFundamental::getEpipolarL(const QPoint & pI)
 	// para x=320: y = (-cf - ax)/b
 	// res.print("paramsR");
 	if (res(1)!=0)
-		return QLineF(0., -res(2)/res(1), 320., ((-res(2)-res(0)*320.)/res(1)));
+		return QLineF(x1, ((-res(2)-res(0)*x1)/res(1)), x2, ((-res(2)-res(0)*x2)/res(1)));
 	// Si b==0: ax + by + cf = 0 == ax + cf donde a,b,c están en res y x,y,focal son puntos cualesquiera de la imagen derecha
 	// para y= 0: x = -cf/a
 	// para y= 240: x = -cf/a
 	// res.print("paramsR");
 	else if (res(0)!=0)
-		return QLineF(-res(2)/res(0), 0, -res(2)/res(0), 240);
+		return QLineF(-res(2)/res(0), 0, -res(2)/res(0), 480);
 	// Degenerated case
 	qFatal("Degenerated camera!");
 	return QLineF(0,0,0,0);
 }
 
-QLineF RMat::QFundamental::getEpipolarR(const QPoint & pD)
+QLineF RMat::QFundamental::getEpipolarR(const QPoint & pD, float x1, float x2)
 {
 	QMat p(3);
-	p(0)=pD.x();p(1)=pD.y();p(2)=1.;
+	p(0)=pD.x();
+	p(1)=pD.y();
+	p(2)=1.;
 	QMat res = operator*(p);
 	//res.print("epi");
 	
@@ -84,7 +88,7 @@ QLineF RMat::QFundamental::getEpipolarR(const QPoint & pD)
 	//para x=0 y = -cf/b
 	//para x=320 y = (-cf - ax)/b
 	//res.print("paramsL");
-	return QLineF(0.,-res(2)/res(1),320.,(-res(2) - res(0)*320.)/res(1));
+	return QLineF(x1, (-res(2) - res(0)*x1)/res(1), x2, (-res(2) - res(0)*x2)/res(1));
 }
 
 T RMat::QFundamental::getDistToEpipolar(const QPoint & pI, const QPoint & pD)

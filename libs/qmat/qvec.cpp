@@ -146,9 +146,19 @@ QMat RMat::QVec::crossProductMatrix() const
 	Q_ASSERT( size() == 3);
 
 	QMat R (3,3);
-	R(0,0) = 0.;			R(0,1) = -operator[](2); 	R(0,2) = operator[](1);
-	R(1,0) = operator[](2);	R(1,1) = 0.;				R(1,2) = -operator[](0);
-	R(2,0) = -operator[](1);R(2,1) = operator[](0);		R(2,2) = 0.;
+	
+	R(0,0) = 0.;
+	R(0,1) = -operator[](2);
+	R(0,2) = operator[](1);
+	
+	R(1,0) = operator[](2);
+	R(1,1) = 0.;
+	R(1,2) = -operator[](0);
+	
+	R(2,0) = -operator[](1);
+	R(2,1) = operator[](0);
+	R(2,2) = 0.;
+	
 	return R;
 }
 

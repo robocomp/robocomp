@@ -36,10 +36,13 @@ namespace RMat
 	{
 		public:
 			QEssential();
-			QEssential( const QEssential & c);
+			QEssential(const QMat &rot, const QVec &trans);
+			QEssential(const QMat &rot, const QMat &trans);
+			QEssential(const QEssential &c);
 			~QEssential();
-			
-			void set( const QMat & rot, const QMat & trans);
+
+			void set(const QMat &rot, const QVec &trans);
+			void set(const QMat &rot, const QMat &trans);
 
 
 		private:
