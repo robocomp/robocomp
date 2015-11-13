@@ -12,11 +12,13 @@
 module RoboCompMSKRGBD{
 	sequence <byte> TRGB;
 	sequence <short> TDepth;
+	["cpp:comparable"]
 	struct TRGBImage{
 		TRGB image;
 		int height;
 		int width;
 	};
+	["cpp:comparable"]
 	struct TDepthImage{
 		TDepth image;
 		int height;
