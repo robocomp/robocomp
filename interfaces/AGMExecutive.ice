@@ -40,6 +40,7 @@ module RoboCompAGMExecutive
 		void structuralChange(RoboCompAGMWorldModel::Event modification);
 		void symbolUpdated(RoboCompAGMWorldModel::Node modification);
 		void edgeUpdated(RoboCompAGMWorldModel::Edge modification);
+		void edgesUpdated(RoboCompAGMWorldModel::EdgeSequence modifications);
 	};
 };
   

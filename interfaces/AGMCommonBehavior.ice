@@ -11,16 +11,18 @@
 
 module RoboCompAGMCommonBehavior{
 
-	enum StateEnum{Starting, Running, Stopped};
+	enum StateEnum { Starting, Running, Stopped };
 
 	["cpp:comparable"]
-	struct StateStruct{
+	struct StateStruct
+	{
 		StateEnum state;
 		string info;
 	};
 
 	["cpp:comparable"]
-	struct Parameter{
+	struct Parameter
+	{
 		bool editable;
 		string value;
 		string type;
@@ -28,13 +30,14 @@ module RoboCompAGMCommonBehavior{
 
 	dictionary<string, Parameter>ParameterMap;
 
-	interface AGMCommonBehavior{
+	interface AGMCommonBehavior
+	{
 		bool activateAgent(ParameterMap prs);
 		bool deactivateAgent();
 		StateStruct getAgentState();
 		ParameterMap getAgentParameters();
 		bool setAgentParameters(ParameterMap prs);
-		void  killAgent();
+		void killAgent();
 		int uptimeAgent();
 		bool reloadConfigAgent();
 	};
