@@ -192,11 +192,15 @@ if 'implements' in component:
 					cog.outl("<TABHERE>virtual " + method['return'] + ' ' + method['name'] + '(' + paramStrA + ") = 0;")
 
 if 'subscribesTo' in component:
+	print(component['subscribesTo'])
 	for imp in component['subscribesTo']:
+		print('imp1', imp)
 		if communicationIsIce(imp):
-			module = pool.moduleProviding(imp[0])
+			module = pool.moduleProviding(imp)
+			print('a', module.keys())
 			for interface in module['interfaces']:
-				if interface['name'] == imp[0]:
+				print('b')
+				if interface['name'] == imp:
 					for mname in interface['methods']:
 						method = interface['methods'][mname]
 						paramStrA = ''
