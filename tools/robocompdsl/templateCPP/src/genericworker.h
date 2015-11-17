@@ -113,8 +113,6 @@ try:
 			RoboCompPlanning::Action action;
 			std::vector< std::vector <std::string> > plan;
 		};""")
-
-
 except:
 	pass
 
@@ -194,13 +192,13 @@ if 'implements' in component:
 if 'subscribesTo' in component:
 	print(component['subscribesTo'])
 	for imp in component['subscribesTo']:
-		print('imp1', imp)
-		if communicationIsIce(imp):
-			module = pool.moduleProviding(imp)
-			print('a', module.keys())
+		nname = imp
+		while type(nname) != type(''):			
+			nname = nname[0]
+		if communicationIsIce(nname):
+			module = pool.moduleProviding(nname)
 			for interface in module['interfaces']:
-				print('b')
-				if interface['name'] == imp:
+				if interface['name'] == nname:
 					for mname in interface['methods']:
 						method = interface['methods'][mname]
 						paramStrA = ''

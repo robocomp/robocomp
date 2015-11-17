@@ -61,10 +61,13 @@ for implement in component['implements']:
 	cog.outl('<S2>' + implement.lower() + 'I.cpp')
 
 for subscribe in component['subscribesTo']:
+	subs = subscribe
+	while type(subs) != type(''):
+		subs = subs[0]
 	if communicationIsIce(subscribe):
-		cog.outl('<S2>' + subscribe[0].lower() + 'I.cpp')
+		cog.outl('<S2>' + subs.lower() + 'I.cpp')
 	else:
-		cog.outl('<S2>ROS' + subscribe[0].lower() + 'I.cpp')
+		cog.outl('<S2>ROS' + subs.lower() + 'I.cpp')
 ]]]
 [[[end]]]
 )
@@ -85,10 +88,13 @@ for implement in component['implements']:
 	cog.outl('<S2>'+implement.lower() + 'I.h')
 
 for subscribe in component['subscribesTo']:
+	subs = subscribe
+	while type(subs) != type(''):
+		subs = subs[0]
 	if communicationIsIce(subscribe):
-		cog.outl('<S2>'+subscribe[0].lower() + 'I.h')
+		cog.outl('<S2>'+subs.lower() + 'I.h')
 	else:
-		cog.outl('<S2>ROS'+subscribe[0].lower() + 'I.h')
+		cog.outl('<S2>ROS'+subs.lower() + 'I.h')
 		usingROS = True
 
 cog.outl(')\n')

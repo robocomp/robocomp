@@ -270,8 +270,6 @@ class CDSLParsing:
 			if not 'AGMExecutiveTopic' in component['subscribesTo']:
 				component['subscribesTo'] = ['AGMExecutiveTopic'] + component['subscribesTo']
 
-
-
 		return component
 
 def communicationIsIce(sb):
@@ -281,9 +279,7 @@ def communicationIsIce(sb):
 		if sb[1] == 'ros'.lower():
 			isIce = False
 		elif sb[1] != 'ice'.lower() :
-			print('Only ICE and ROS are supported')
-			print(sb)
-			print(type(sb))
+			print('Only ICE and ROS are supported') 
 			sys.exit(-1)
 	return isIce
 

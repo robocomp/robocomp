@@ -138,7 +138,11 @@ if component['language'].lower() == 'cpp':
 	#
 	# Generate interface-dependent files
 	#
+	print 'IMPLEMENTS'
 	for im in component['implements']:
+		if type(im) == type([]):
+			im = im[0]
+		print im
 		for f in [ "SERVANT.H", "SERVANT.CPP"]:
 			ofile = outputPath + '/src/' + im.lower() + 'I.' + f.split('.')[-1].lower()
 			print 'Generating', ofile, ' (servant for', im + ')'
@@ -150,12 +154,20 @@ if component['language'].lower() == 'cpp':
 				print 'ERROR'
 				sys.exit(-1)
 			replaceTagsInFile(ofile)
+	print 'SUBSCRIBES'
 	for im in component['subscribesTo']:
+		if type(im) != type(''):
+			im = im[0]
 		for f in [ "SERVANT.H", "SERVANT.CPP"]:
-			ofile = outputPath + '/src/' + im[0].lower() + 'I.' + f.split('.')[-1].lower()
-			print 'Generating', ofile, ' (servant for', im[0] + ')'
+			print ('aaaaa', im)
+			ofile = outputPath + '/src/' + im.lower() + 'I.' + f.split('.')[-1].lower()
+			print 'Generating', ofile, ' (servant for', im + ')'
 			# Call cog
-			run = "cog.py -z -d -D theCDSL="+inputFile  + " -D theIDSLs="+imports + " -D theInterface="+str(';'.join(im)) + " -o " + ofile + " " + "/opt/robocomp/share/robocompdsl/templateCPP/" + f
+			theInterfaceStr = im
+			if type(theInterfaceStr) == type([]):
+				theInterfaceStr = str(';'.join(im))
+			run = "cog.py -z -d -D theCDSL="+inputFile  + " -D theIDSLs="+imports + " -D theInterface="+theInterfaceStr + " -o " + ofile + " " + "/opt/robocomp/share/robocompdsl/templateCPP/" + f
+			print run
 			run = run.split(' ')
 			ret = Cog().main(run)
 			if ret != 0:

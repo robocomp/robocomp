@@ -970,22 +970,19 @@ InnerModelOmniRobot *InnerModel::getOmniRobot(const QString &id)
 
 
 
-QVec InnerModel::compute3DPointFromImageCoords(const QString &firstCamera , const QVec & left, const QString & secondCamera , const QVec & right, const QString & refSystem)
+QVec InnerModel::compute3DPointFromImageCoords(const QString &firstCamera, const QVec &left, const QString &secondCamera, const QVec &right, const QString &refSystem)
 {
 	QVec pI(3), pD(3), n(3), ray(3), T(3), TI(3), TD(3), pR(0), abc(3);
 	QMat A(3,3);
 
 	ray = backProject(firstCamera, left);
 	pI = getRotationMatrixTo(refSystem, firstCamera)*ray;
-
-
 	pI(0)=pI(0)/pI(2);
 	pI(1)=pI(1)/pI(2);
 	pI(2)=1.;
 
 	ray = backProject(secondCamera, right);
 	pD = getRotationMatrixTo(refSystem, secondCamera)*ray;
-
 	pD(0)=pD(0)/pD(2);
 	pD(1)=pD(1)/pD(2);
 	pD(2)=1.;
@@ -1007,7 +1004,6 @@ QVec InnerModel::compute3DPointFromImageCoords(const QString &firstCamera , cons
 	pR = (n*(abc(2)/2)) + pR;
 
 	return pR;
-
 }
 
 
