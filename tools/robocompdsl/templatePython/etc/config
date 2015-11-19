@@ -49,14 +49,7 @@ for rq in component['requires']:
 if text:
 	cog.out('\n\n')
 
-text = False
-for pb in component['publishes']:
-	if text == False:
-		cog.outl('# Proxies for published topics')
-		text = True
-	cog.outl(pb + "Proxy = " + pb.lower() + ":tcp -h localhost -p 0")
-if text:
-	cog.out('\n')
+
 ]]]
 [[[end]]]
 
