@@ -41,10 +41,13 @@ for sb in component['subscribesTo']:
 		text = True
 	storm = True
 
+	xx = sb
+	while type(xx[0]) != type(''):
+		xx = xx[0]
 	if communicationIsIce(sb):
-		cog.outl(sb[0][0]+"Topic.Endpoints=tcp -p 0")
+		cog.outl(xx+"Topic.Endpoints=tcp -p 0")
 	else:
-		cog.outl(sb[0][0]+"Topic.Endpoints=whatever " + sb[0][0] + " for ROS")
+		cog.outl(xx+"Topic.Endpoints=whatever " + xx + " for ROS")
 
 if text:
 	cog.out('\n\n')
