@@ -147,9 +147,12 @@ void SpecificWorker::compute()
 
 if 'implements' in component:
 	for imp in component['implements']:
-		module = pool.moduleProviding(imp)
+		nname = imp
+		while type(nname) != type(''):			
+			nname = nname[0]
+		module = pool.moduleProviding(nname)
 		for interface in module['interfaces']:
-			if interface['name'] == imp:
+			if interface['name'] == nname:
 				for mname in interface['methods']:
 					method = interface['methods'][mname]
 					paramStrA = ''
@@ -172,10 +175,13 @@ if 'implements' in component:
 
 if 'subscribesTo' in component:
 	for imp in component['subscribesTo']:
-		if communicationIsIce(imp):
-			module = pool.moduleProviding(imp[0])
+		nname = imp
+		while type(nname) != type(''):			
+			nname = nname[0]
+		if communicationIsIce(nname):
+			module = pool.moduleProviding(nname)
 			for interface in module['interfaces']:
-				if interface['name'] == imp[0]:
+				if interface['name'] == nname:
 					for mname in interface['methods']:
 						method = interface['methods'][mname]
 						paramStrA = ''

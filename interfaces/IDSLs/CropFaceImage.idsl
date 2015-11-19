@@ -1,0 +1,16 @@
+import "MSKRGBD.idsl";
+import "MSKFace.idsl";
+module RoboCompCropFaceImage{
+	struct SensedFace{
+		RoboCompMSKRGBD::TRGBImage faceImage;
+		RoboCompMSKRGBD::TRGBImage faceImageNorm;
+		RoboCompMSKFace::Eye leftEye;
+		RoboCompMSKFace::Eye rightEye;
+		int id;
+	};
+	
+	sequence<SensedFace> SensedFaceList;
+	
+	interface CropFaceImage{
+	};
+};

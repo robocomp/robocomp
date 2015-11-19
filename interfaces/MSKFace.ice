@@ -12,6 +12,7 @@
 #include <MSKRGBD.ice>
 
 module RoboCompMSKFace{
+	["cpp:comparable"]
 	struct Vector3DF{
 		float X;
 					float Y;
@@ -19,15 +20,18 @@ module RoboCompMSKFace{
 				};
 	enum FeaturePoint{TopSkull, TopRightForehead, FP2, FP3, FP4, FP5, FP6, MiddleTopDipUpperLip, F8, AboveChin, BottomOfChin, F11, FP12, FP13, FP14, RightOfRightEyebrow, MiddleTopOfRightEyebrow, LeftOfRightEyebrow, MiddleBottomOfRightEyebrow, AboveMidUpperRightEyelid, OuterCornerOfRightEye, MiddleTopRightEyelid, MiddleBottomRightEyelid, InnerCornerRightEye, UnderMidBottomRightEyelid, FP25, FP26, FP27, FP28, FP29, RightSideOfChin, OutsideRightCornerMouth, RightOfChin, RightTopDipUpperLip, TopLeftForehead, FP35, FP36, FP37, FP38, FP39, MiddleTopLowerLip, MiddleBottomLowerLip, FP42, FP43, FP44, FP45, FP46, FP47, LeftOfLeftEyebrow, MiddleTopOfLeftEyebrow, RightOfLeftEyebrow, MiddleBottomOfLeftEyebrow, AboveMidUpperLeftEyelid, OuterCornerOfLeftEye, MiddleTopLeftEyelid, MiddleBottomLeftEyelid, InnerCornerLeftEye, UnderMidBottomLeftEyelid, FP58, FP59, FP60, FP61, FP62, LeftSideOfCheek, OutsideLeftCornerMouth, LeftOfChin, LeftTopDipUpperLip, OuterTopRightPupil, OuterBottomRightPupil, OuterTopLeftPupil, OuterBottomLeftPupil, InnerTopRightPupil, InnerBottomRightPupil, InnerTopLeftPupil, InnerBottomLeftPupil, FP75, FP76, FP77, FP78, RightTopUpperLip, LeftTopUpperLip, RightBottomUpperLip, LeftBottomUpperLip, RightTopLowerLip, LeftTopLowerLip, RightBottomLowerLip, LeftBottomLowerLip, MiddleBottomUpperLip, LeftCornerMouth, RightCornerMouth, BottomOfRightCheek, BottomOfLeftCheek, FP92, FP93, FP94, AboveThreeFourthRightEyelid, AboveThreeFourthLeftEyelid, ThreeFourthTopRightEyelid, ThreeFourthTopLeftEyelid, ThreeFourthBottomRightEyelid, ThreeFourthBottomLeftEyelid, BelowThreeFourthRightEyelid, BelowThreeFourthLeftEyelid, AboveOneFourthRightEyelid, AboveOneFourthLeftEyelid, OneFourthTopRightEyelid, OneFourthTopLeftEyelid, OneFourthBottomRightEyelid, OneFourthBottomLeftEyelid, FP109, FP110, FP111, FP112, FP113, FP114, FP115, FP116, FP117, FP118, FP119, FP120};
 	enum AnimationUnit{LipRaiser, JawLower, LipStretcher, BrowLower, LipCornerDepressor, BrowRaiser};
+	["cpp:comparable"]
 	struct PointF{
 		float X;
 					float Y;
 				};
+	["cpp:comparable"]
 	struct FaceTriangle{
 		int First;
 		int Second;
 		int Third;
 	};
+	["cpp:comparable"]
 	struct Eye{
 		float x;
 					float y;
@@ -38,6 +42,7 @@ module RoboCompMSKFace{
 	dictionary<AnimationUnit, float>animationUnitCoefficients;
 	dictionary<FeaturePoint, PointF>projected3DShape;
 	sequence <FaceTriangle> triangles;
+	["cpp:comparable"]
 	struct DetailedFace{
 		Vector3DF translation;
 		Eye leftEye;

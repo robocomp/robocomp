@@ -264,23 +264,22 @@ class CDSLParsing:
 		# Handle options for communications
 		if 'agmagent' in component['options']:
 			if not 'AGMCommonBehavior' in component['implements']:
-				component['implements']   = ['AGMCommonBehavior'] + component['implements']
+				component['implements'] =   ['AGMCommonBehavior'] + component['implements']
 			if not 'AGMAgentTopic' in component['publishes']:
-				component['publishes']    = ['AGMAgentTopic']     + component['publishes']
+				component['publishes'] =    ['AGMAgentTopic']     + component['publishes']
 			if not 'AGMExecutiveTopic' in component['subscribesTo']:
 				component['subscribesTo'] = ['AGMExecutiveTopic'] + component['subscribesTo']
-
-
 
 		return component
 
 def communicationIsIce(sb):
 	isIce = True
-	if len(sb) > 1:
+	
+	if len(sb) > 1 and type(sb)==type([]):
 		if sb[1] == 'ros'.lower():
 			isIce = False
 		elif sb[1] != 'ice'.lower() :
-			print('Only ICE and ROS are supported')
+			print('Only ICE and ROS are supported') 
 			sys.exit(-1)
 	return isIce
 

@@ -1,0 +1,26 @@
+import "MSKFace.idsl";
+import "MSKRGBD.idsl";
+module RoboCompFaceRecognition{
+	
+	struct SensedFace{
+		RoboCompMSKRGBD::TRGBImage faceImage;
+		RoboCompMSKRGBD::TRGBImage faceImageNorm;
+		RoboCompMSKFace::Eye leftEye;
+		RoboCompMSKFace::Eye rightEye;
+		int id;
+	};
+	
+	sequence<SensedFace> SensedFaceList;
+	
+	struct FaceClass
+	{
+		int fid;
+		string fclass;
+	};
+	 
+	sequence<FaceClass> vectorClasses;
+	
+	interface FaceRecognition{
+		 vectorClasses getClass();
+	};
+};

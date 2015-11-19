@@ -222,11 +222,14 @@ for implement in component['implements']:
 
 usingROS = False
 for subscribe in component['subscribesTo']:
+	subs = subscribe
+	while type(subs) != type(''):
+		subs = subs[0]
 	if communicationIsIce(subscribe):
-		cog.outl('#include <'+subscribe[0].lower()+'I.h>')
+		cog.outl('#include <'+subs.lower()+'I.h>')
 	else:
 		usingROS = True
-		cog.outl('//#include <ROS '+subscribe[0].lower()+'I.h>')
+		cog.outl('//#include <ROS '+subs.lower()+'I.h>')
 
 cog.outl('')
 
@@ -375,6 +378,7 @@ if usingROS:
 
 [[[cog
 for im in component['implements']:
+	print ('iiiiiiiiiiiiii', im)
 	w = IMPLEMENTS_STR.replace("<NORMAL>", im).replace("<LOWER>", im.lower())
 	cog.outl(w)
 ]]]
@@ -385,7 +389,11 @@ for im in component['implements']:
 [[[cog
 for name, num in getNameNumber(component['subscribesTo']):
 	if communicationIsIce(name):
-		w = SUBSCRIBESTO_STR.replace("<NORMAL>", name[0]).replace("<LOWER>", name[0].lower()).replace("<PROXYNAME>", name[0].lower()+num).replace("<PROXYNUMBER>", num)
+		nname = name
+		while type(nname) != type(''):
+			nname = name[0]
+		print('a', nname)
+		w = SUBSCRIBESTO_STR.replace("<NORMAL>", nname).replace("<LOWER>", nname.lower()).replace("<PROXYNAME>", nname.lower()+num).replace("<PROXYNUMBER>", num)
 	else:
 		w = '  //codigo para ROS de ' + name[0]
 	cog.out(w)

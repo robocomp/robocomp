@@ -11,13 +11,15 @@
 
 #include <AGMWorldModel.ice>
 
-module RoboCompAGMAgent{
+module RoboCompAGMAgent
+{
 
-	interface AGMAgentTopic{
+	interface AGMAgentTopic
+	{
 		void structuralChange(RoboCompAGMWorldModel::Event modification);
 		void symbolUpdated(RoboCompAGMWorldModel::Node nodeModification);
 		void edgeUpdated(RoboCompAGMWorldModel::Edge edgeModification);
-
+		void edgesUpdated(RoboCompAGMWorldModel::EdgeSequence edgeModifications);
 	};
 };
   

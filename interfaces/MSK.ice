@@ -1,4 +1,4 @@
-module RobocompMSKRGBD{
+module RoboCompMSKRGBD{
 
 	sequence<byte> TRGB;
 	sequence<short> TDepth;
@@ -126,6 +126,9 @@ module RoboCompMSKBody
 	{
 		int X;
 		int Y;
+		byte R;
+		byte G;
+		byte B;
 	};
 
 	struct Joint
@@ -140,10 +143,11 @@ module RoboCompMSKBody
 	{
         JointList joints;
 		stateType state;
-		int TrackingId;
         SkeletonPoint Position;
        	BoneOrientations boneOrien;
         FrameEdges ClippedEdges; 
+		int TrackingId;
+		ColorImagePoint spineJointColor;
     };
 	
 	dictionary<int,TPerson> PersonList;
@@ -151,34 +155,20 @@ module RoboCompMSKBody
 	sequence <byte> TImg;  
 	sequence <short> TDepth;
 
-/*	struct TRGBD
-	{
-	TImg r;
-	TImg g;
-	TImg b;
-	//TShort d;
-	short d;
-	};
 
-	struct TRGB
-	{
-	TImg r;
-	TImg g;
-	TImg b;	
-	};
-*/
 
-	interface MSKBody
+	// Not implemented!
+
+	interface MSKBody 
 	{
-			//basic		
+		//basic		
 		void getUserList( out PersonList personListIn);
 		void getRTMatrixList(int id, out JointList jointListIn );
 		stateType getUserState(int id);
 		int getNumUsers();
 		void getPerson(int TrackingId, out TPerson person);
-		
 
-			//useful
+		//useful
 		void  getJointPixelPosition(int id, JointType  nameJoint, out ColorImagePoint point);
 		
 		//Mapping functions
@@ -188,14 +178,13 @@ module RoboCompMSKBody
 		void  skeletonPointToDepthImagePoint (SkeletonPoint point3D, out DepthImagePoint depthPoint);
 		void  depthImagePointToSkeletonPoint(DepthImagePoint depthPoint, out SkeletonPoint point3D);
 		void  depthImagePointToColorImagePoint(DepthImagePoint depthPoint, out ColorImagePoint point);
-		
-
-
+	
 		//void  getRGB(out TRGB imgRGB); //?? un pixel?
 		void  getDepth(out TDepth imgDepth);
-	//	void  getRGBD(out TRGBD imgRGBD); // ???
+		//void  getRGBD(out TRGBD imgRGBD); // ???
     };
-
+	
+	// 
 	
 
 	interface MSKBodyEvent
@@ -215,81 +204,6 @@ module RoboCompMSKFace
 		float Z;
 
 	}; 
-
-/*	enum FeaturePoint
-    {
-        TopSkull = 0,
-        TopRightForehead = 1,
-        MiddleTopDipUpperLip = 7,
-        AboveChin = 9,
-        BottomOfChin = 10,
-        RightOfRightEyebrow = 15,
-        MiddleTopOfRightEyebrow = 16,
-        LeftOfRightEyebrow = 17,
-        MiddleBottomOfRightEyebrow = 18,
-        AboveMidUpperRightEyelid = 19,
-        OuterCornerOfRightEye = 20,
-        MiddleTopRightEyelid = 21,
-        MiddleBottomRightEyelid = 22,
-        InnerCornerRightEye = 23,
-        UnderMidBottomRightEyelid = 24,
-        RightSideOfChin = 30,
-        OutsideRightCornerMouth = 31,
-        RightOfChin = 32,
-        RightTopDipUpperLip = 33,
-        TopLeftForehead = 34,
-        MiddleTopLowerLip = 40,
-        MiddleBottomLowerLip = 41,
-        LeftOfLeftEyebrow = 48,
-        MiddleTopOfLeftEyebrow = 49,
-        RightOfLeftEyebrow = 50,
-        MiddleBottomOfLeftEyebrow = 51,
-        AboveMidUpperLeftEyelid = 52,
-        OuterCornerOfLeftEye = 53,
-        MiddleTopLeftEyelid = 54,
-        MiddleBottomLeftEyelid = 55,
-        InnerCornerLeftEye = 56,
-        UnderMidBottomLeftEyelid = 57,
-        LeftSideOfCheek = 63,
-        OutsideLeftCornerMouth = 64,
-        LeftOfChin = 65,
-        LeftTopDipUpperLip = 66,
-        OuterTopRightPupil = 67,
-        OuterBottomRightPupil = 68,
-        OuterTopLeftPupil = 69,
-        OuterBottomLeftPupil = 70,
-        InnerTopRightPupil = 71,
-        InnerBottomRightPupil = 72,
-        InnerTopLeftPupil = 73,
-        InnerBottomLeftPupil = 74,
-        RightTopUpperLip = 79,
-        LeftTopUpperLip = 80,
-        RightBottomUpperLip = 81,
-        LeftBottomUpperLip = 82,
-        RightTopLowerLip = 83,
-        LeftTopLowerLip = 84,
-        RightBottomLowerLip = 85,
-        LeftBottomLowerLip = 86,
-        MiddleBottomUpperLip = 87,
-        LeftCornerMouth = 88,
-        RightCornerMouth = 89,
-        BottomOfRightCheek = 90,
-        BottomOfLeftCheek = 91,
-        AboveThreeFourthRightEyelid = 95,
-        AboveThreeFourthLeftEyelid = 96,
-        ThreeFourthTopRightEyelid = 97,
-        ThreeFourthTopLeftEyelid = 98,
-        ThreeFourthBottomRightEyelid = 99,
-        ThreeFourthBottomLeftEyelid = 100,
-        BelowThreeFourthRightEyelid = 101,
-        BelowThreeFourthLeftEyelid = 102,
-        AboveOneFourthRightEyelid = 103,
-        AboveOneFourthLeftEyelid = 104,
-        OneFourthTopRightEyelid = 105,
-        OneFourthTopLeftEyelid = 106,
-        OneFourthBottomRightEyelid = 107,
-        OneFourthBottomLeftEyelid = 108,
-    };*/
 
 	enum FeaturePoint
     {
@@ -461,30 +375,31 @@ module RoboCompMSKFace
 	// DetailedFace - structure of the detailedFace (face and eyes data, identifier)
 	struct DetailedFace
 	{
-		//Face image (portion of the input image where the face is located)
-		RobocompMSKRGBD::TRGBImage faceImage;
+		Vector3DF translation;
+		//Eyes position in the face image
+		Eye leftEye; 
+		Eye rightEye;
+		Shape3D Shape3DFace;
+		animationUnitCoefficients animationCoefficients;
+		projected3DShape projected3DShapeMap;
+		triangles faceTriangles;
+
 		int left;
 		int right;
 		int top;
 		int bottom;
 		int height;
 		int width;		// Size of the face image
+		// Identifier
+		int identifier;
+		bool invalid;
+
 		float yaw;
 		float pitch;
 		float roll; // Orientation of the face image 
 
-       Vector3DF translation;
-
-		//Eyes position in the face image
-		Eye leftEye; Eye rightEye;
-		// Identifier
-		int identifier;
-		bool invalid;
-		Shape3D Shape3DFace;
-		animationUnitCoefficients animationCoefficients;
-		projected3DShape projected3DShapeMap;
-		triangles faceTriangles;
-
+		//Face image (portion of the input image where the face is located)
+		RoboCompMSKRGBD::TRGBImage faceImage;       
 	};
 
 	// FaceMap - A map storing all faces in the scene
@@ -560,7 +475,3 @@ module RoboCompMSKHand
 		void newInteractionEvent(UsersInfo usersInf,long timestamp);
 	};
 };
-
-
-  
-

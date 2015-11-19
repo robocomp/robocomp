@@ -114,10 +114,13 @@ if 'implements' in component:
 
 if 'subscribesTo' in component:
 	for imp in component['subscribesTo']:
-		if communicationIsIce(imp):
-			module = pool.moduleProviding(imp[0])
+		nname = imp
+		while type(nname) != type(''):			
+			nname = nname[0]
+		if communicationIsIce(nname):
+			module = pool.moduleProviding(nname)
 			for interface in module['interfaces']:
-				if interface['name'] == imp[0]:
+				if interface['name'] == nname:
 					for mname in interface['methods']:
 						method = interface['methods'][mname]
 						paramStrA = ''

@@ -113,8 +113,6 @@ try:
 			RoboCompPlanning::Action action;
 			std::vector< std::vector <std::string> > plan;
 		};""")
-
-
 except:
 	pass
 
@@ -192,11 +190,15 @@ if 'implements' in component:
 					cog.outl("<TABHERE>virtual " + method['return'] + ' ' + method['name'] + '(' + paramStrA + ") = 0;")
 
 if 'subscribesTo' in component:
+	print(component['subscribesTo'])
 	for imp in component['subscribesTo']:
-		if communicationIsIce(imp):
-			module = pool.moduleProviding(imp[0])
+		nname = imp
+		while type(nname) != type(''):			
+			nname = nname[0]
+		if communicationIsIce(nname):
+			module = pool.moduleProviding(nname)
 			for interface in module['interfaces']:
-				if interface['name'] == imp[0]:
+				if interface['name'] == nname:
 					for mname in interface['methods']:
 						method = interface['methods'][mname]
 						paramStrA = ''
