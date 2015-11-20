@@ -378,7 +378,6 @@ if usingROS:
 
 [[[cog
 for im in component['implements']:
-	print ('iiiiiiiiiiiiii', im)
 	w = IMPLEMENTS_STR.replace("<NORMAL>", im).replace("<LOWER>", im.lower())
 	cog.outl(w)
 ]]]
@@ -392,7 +391,6 @@ for name, num in getNameNumber(component['subscribesTo']):
 		nname = name
 		while type(nname) != type(''):
 			nname = name[0]
-		print('a', nname)
 		w = SUBSCRIBESTO_STR.replace("<NORMAL>", nname).replace("<LOWER>", nname.lower()).replace("<PROXYNAME>", nname.lower()+num).replace("<PROXYNUMBER>", num)
 	else:
 		w = '  //codigo para ROS de ' + name[0]

@@ -190,7 +190,6 @@ if 'implements' in component:
 					cog.outl("<TABHERE>virtual " + method['return'] + ' ' + method['name'] + '(' + paramStrA + ") = 0;")
 
 if 'subscribesTo' in component:
-	print(component['subscribesTo'])
 	for imp in component['subscribesTo']:
 		nname = imp
 		while type(nname) != type(''):			

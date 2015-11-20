@@ -21,7 +21,6 @@ if component == None:
 from parseIDSL import *
 modulePool = IDSLPool(theIDSLs)
 
-print ('antes', theInterface)
 theInterface = theInterface.split(';')
 while type(theInterface) != type(''):
 	theInterface = theInterface[0]
