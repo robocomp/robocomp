@@ -47,14 +47,14 @@ def decoratorAndType_to_const_ampersand(decorator, vtype, modulePool):
 	ampersand = ' & '
 	const = ' '
 
-	if vtype in [ 'float', 'int', 'short', 'long' ]:                    # MAIN BASIC TYPES
+	if vtype in [ 'float', 'int', 'short', 'long', 'double' ]: # MAIN BASIC TYPES
 		if decorator in [ 'out' ]: #out
 			ampersand = ' &'
 			const = ' '
 		else:                      #read-only
 			ampersand = ' '
 			const = 'const '
-	elif vtype in [ 'bool' ]:                          # BOOL SEEM TO BE SPECIAL
+	elif vtype in [ 'bool' ]:                                  # BOOL SEEM TO BE SPECIAL
 		const = ' '
 		if decorator in [ 'out' ]: # out
 			ampersand = ' &'

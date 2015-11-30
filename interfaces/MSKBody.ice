@@ -189,7 +189,7 @@ module RoboCompMSKBody
 
 	interface MSKBodyEvent
 	{
-		void newMSKBodyEvent(PersonList people,long timestamp);
+		void newMSKBodyEvent(PersonList people, long timestamp);
     };
 };
 

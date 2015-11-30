@@ -812,8 +812,8 @@ void AgmInner::checkLoop(int& symbolID, QList<int> &visited, string linkType, bo
 		if ((*edge_itr)->getLabel() == linkType && (*edge_itr)->getSymbolPair().first==symbolID )
 		{
 			int second = (*edge_itr)->getSymbolPair().second;
-			qDebug()<<symbolID<<"--"<<QString::fromStdString(linkType)<<"-->"<<second;
-			qDebug()<<"\tvisited"<<visited;									
+			//qDebug()<<symbolID<<"--"<<QString::fromStdString(linkType)<<"-->"<<second;
+			//qDebug()<<"\tvisited"<<visited;
 			checkLoop(second,visited, linkType,loop);
 		}
 	}
@@ -888,7 +888,7 @@ void AgmInner::updateAgmWithInnerModelAndPublish(InnerModel* im, AGMAgentTopicPr
 	///tal vez sería bueno recorrer primero innerModel con include_im y crear attributes name por cada symbolo, pq puede haberse insertado algun nodo nuevo.
 	for (std::vector<AGMModelEdge>::iterator it = worldModel->edges.begin() ; it != worldModel->edges.end(); ++it)
 	{
-		std::cout << ' ' << (*it)->toString(worldModel)<<"\n";
+		//std::cout << ' ' << (*it)->toString(worldModel)<<"\n";
 		if ((*it)->getLabel()=="RT" )
 		{
 			string songName;
@@ -899,23 +899,36 @@ void AgmInner::updateAgmWithInnerModelAndPublish(InnerModel* im, AGMAgentTopicPr
 				if ( type =="mesh" or type =="plane" )					
 					continue;
 				songName= (worldModel->getSymbol( (*it)->getSymbolPair().second) )->getAttribute("imName");
-				std::cout <<"\t"<<songName<<"\n";
+				//std::cout <<"\t"<<songName<<"\n";
 				try 
 				{
-					InnerModelTransform *node= im->getTransform (QString::fromStdString(songName));
-					(*it)->setAttribute("tx",float2str( node->getTr().x() ));
-					(*it)->setAttribute("ty",float2str( node->getTr().y() ));
-					(*it)->setAttribute("tz",float2str( node->getTr().z() ));
-					(*it)->setAttribute("rx",float2str( node->getRxValue()));
-					(*it)->setAttribute("ry",float2str( node->getRyValue()));
-					(*it)->setAttribute("rz",float2str( node->getRzValue()));
+					InnerModelTransform *node = im->getTransform (QString::fromStdString(songName));
+					try
+					{
+						(*it)->setAttribute("tx",float2str( node->getTr().x() ));
+						(*it)->setAttribute("ty",float2str( node->getTr().y() ));
+						(*it)->setAttribute("tz",float2str( node->getTr().z() ));
+						(*it)->setAttribute("rx",float2str( node->getRxValue()));
+						(*it)->setAttribute("ry",float2str( node->getRyValue()));
+						(*it)->setAttribute("rz",float2str( node->getRzValue()));
+					}
+					catch (...)
+					{
+						
+// 						(*it)->setAttribute("tx",float2str(0));
+// 						(*it)->setAttribute("ty",float2str(0));
+// 						(*it)->setAttribute("tz",float2str(0));
+// 						(*it)->setAttribute("rx",float2str(0));
+// 						(*it)->setAttribute("ry",float2str(0));
+// 						(*it)->setAttribute("rz",float2str(0));						
+// 						qDebug()<<"\tedge EXCEPTION couldn't find attribute";
+					}
 					AGMMisc::publishEdgeUpdate((*it),agmagenttopic_proxy);
-					usleep(10000);
+					usleep(500);
 				}
-				catch (...)
+				catch (QString e)
 				{
-					std::cout << '\t' << (*it)->toString(worldModel);
-					qDebug()<<"\tedge EXCEPTION couldn't find attribute";
+// 					std::cout << '\tcan\'t get transform child ' << (*it)->toString(worldModel);
 				}
 			}
 			catch (...)
@@ -924,7 +937,7 @@ void AgmInner::updateAgmWithInnerModelAndPublish(InnerModel* im, AGMAgentTopicPr
 				std::cout<<(worldModel->getSymbol( (*it)->getSymbolPair().second))->toString(true);
 			}
 		}
-		std::cout << '\n';
+		//std::cout << '\n';
 	}
 }
 

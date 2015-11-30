@@ -142,12 +142,12 @@ module RoboCompMSKBody
 	struct TPerson
 	{
         JointList joints;
-		stateType state;
+	stateType state;
         SkeletonPoint Position;
        	BoneOrientations boneOrien;
         FrameEdges ClippedEdges; 
-		int TrackingId;
-		ColorImagePoint spineJointColor;
+	int TrackingId;
+	ColorImagePoint spineJointColor;
     };
 	
 	dictionary<int,TPerson> PersonList;
