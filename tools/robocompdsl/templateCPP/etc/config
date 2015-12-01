@@ -42,7 +42,7 @@ for sb in component['subscribesTo']:
 	storm = True
 
 	xx = sb
-	while type(xx[0]) != type(''):
+	while type(xx) != type(''):
 		xx = xx[0]
 	if communicationIsIce(sb):
 		cog.outl(str(xx)+"Topic.Endpoints=tcp -p 0")
