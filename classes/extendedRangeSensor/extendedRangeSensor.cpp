@@ -18,8 +18,9 @@
  */
 #include "extendedRangeSensor.h"
 
-ExtendedRangeSensor::ExtendedRangeSensor(const RoboCompLaser::TLaserData &laserData, const RoboCompDifferentialRobot::TBaseState &bState, InnerModel *innerModel_, float extensionRange_, float maxDist_)
+ExtendedRangeSensor::ExtendedRangeSensor(const RoboCompLaser::TLaserData &laserData, const RoboCompDifferentialRobot::TBaseState &bState, InnerModel *innerModel_, float extensionRange_, float maxDist_, QString laserName_)
 {
+	laserName = laserName_;
 	innerModel = innerModel_;
 	extensionRange = extensionRange_;
 	maxDist = maxDist_;
@@ -137,18 +138,17 @@ void ExtendedRangeSensor::update(const RoboCompLaser::TLaserData &laserData)
 	/// a) Inicialización
 	for (int i=0; i<dataExtended.size(); i++)
 	{
-		dataExtended[i].visit = false;
+		setExtended(i, maxDist, false);
 	}
 
 	/// b) Transformación a t+1
 	QVec l;
 	for (int i=0; i<dataExtended.size(); i++)
 	{
-		l = innerModel->transform("laser", dataExtendedBack[i].world, "root");
+		l = innerModel->transform(laserName, dataExtendedBack[i].world, "root");
 		float sens = l.norm2();
-		if (sens > maxDist)
-			sens = maxDist;
-		setExtended(angleToExtendedIndex(atan2(l(0), l(2))), sens, true);
+		if (sens < maxDist)
+			setExtended(angleToExtendedIndex(atan2(l(0), l(2))), sens, true);
 	}
 
 	/// c) copiamos datos leídos sobre datos extendidos
@@ -162,11 +162,11 @@ void ExtendedRangeSensor::update(const RoboCompLaser::TLaserData &laserData)
 	}
 
 	/// d) interpolación de los puntos no visitados
-	interpolation();
+// 	interpolation();
 
 	/// e) copy edges
-	dataExtended[0] = dataExtended[1];
-	dataExtended[dataExtended.size()-1] = dataExtended[dataExtended.size()-2];
+// 	dataExtended[0] = dataExtended[1];
+// 	dataExtended[dataExtended.size()-1] = dataExtended[dataExtended.size()-2];
 
 	/// Make a copy
 	for(int h=0; h<dataExtended.size(); h++)
@@ -182,7 +182,7 @@ void ExtendedRangeSensor::setExtended(int i, float dist, bool visit, float certa
 {
 	if (i<0 or i>=dataExtended.size()) return;
 	dataExtended[i].dist = dist;
-	QVec v = innerModel->laserTo("laser", "root", dist, dataExtended[i].angle);
+	QVec v = innerModel->laserTo(laserName, "root", dist, dataExtended[i].angle);
 	dataExtended[i].world = v;
 	dataExtended[i].visit = visit;
 	dataExtended[i].certainty = certainty;
