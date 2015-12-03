@@ -38,7 +38,6 @@
 
 using namespace std;
 
-
 class AgmInner
 {
 public:
@@ -47,29 +46,44 @@ public:
 	//const AGMModel::SPtr &src
 	void setWorld(AGMModel::SPtr model);
 	AGMModel::SPtr getWorld();
+	
+	//return the symbolID of the node that includes the innerModel name n.
 	int findName(QString n);
-	int findName(const AGMModel::SPtr &m, QString n);		
-	InnerModel* extractInnerModel(QString imNodeName="world", bool ignoreMeshes=false);
+	int findName(const AGMModel::SPtr &m, QString n);
+	
+	//return only the symbolic part of the graph
 	AGMModel::SPtr extractAGM();
+	
+	//this three functions work together.
+	InnerModel* extractInnerModel(QString imNodeName="world", bool ignoreMeshes=false);
 	void recorrer(InnerModel* imNew, int& symbolID, bool ignoreMeshes);
 	void edgeToInnerModel(AGMModelEdge edge, InnerModel* imNew, bool ignoreMeshes);
-	QList< int > getLinkedID(int symbolID, string linkType);
+	//*********************************************
+	
+	//find a loop from a symbolID throught a fixed linkType
 	void checkLoop(int& symbolID, QList< int >& visited, string linkType, bool& loop);
+	
+	//
 	void updateAgmWithInnerModel(InnerModel* im);
 	void updateAgmWithInnerModelAndPublish(InnerModel* im, AGMAgentTopicPrx &agmagenttopic_proxy);
 	void insertSymbolToInnerModelNode(InnerModel* imNew, InnerModelNode *parentNode, AGMModelSymbol::SPtr s, float tx = 0, float ty = 0, float tz = 0, float rx = 0, float ry = 0, float rz = 0, bool ignoreMeshes=false);
 	AGMModel::SPtr remove_ImOriginal(string agmFilePath, string imFilePath);
 	
-	//includes methods
+	//list of symbols from a symbolID throught a specific linkType
+	QList< int > getLinkedID(int symbolID, string linkType);
+	
+	//update innermodel node from edges
+	void updateImNodeFromEdge(AGMModelEdge edge, InnerModel *innerModel);
+	void updateImNodeFromEdge(const RoboCompAGMWorldModel::Edge& edge, InnerModel *innerModel);
+	
+	//includes methods this methods work together
+	//Insert innermodel in AGM graph matching nodes from innerModel to their correspondent symbols. 
 	void include_im(QHash<QString, int32_t>  match, InnerModel *im);
 	void innerToAGM(InnerModelNode* node, int &symbolID, QList<QString>  lNode);
 	map< string, string > ImNodeToSymbol(InnerModelNode* node);
-	void  remove_Im( InnerModel*imTmp);
 	
-	void updateImNodeFromEdge(AGMModelEdge edge, InnerModel *innerModel);
-	void updateImNodeFromEdge(const RoboCompAGMWorldModel::Edge& edge, InnerModel *innerModel);
-
-
+	//Dado un innerModel (impTmp) elimina de  AGM todos los symbolos que lo forman.
+	void  remove_Im( InnerModel*imTmp);
 
 private:
     AGMModel::SPtr worldModel;
