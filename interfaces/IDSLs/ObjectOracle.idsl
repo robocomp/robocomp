@@ -1,0 +1,24 @@
+module RoboCompObjectOracle
+{
+    struct ColorRGB
+    {
+        byte red;
+        byte green;
+        byte blue;
+    };
+
+    struct Label
+    {
+        string name;
+        float belive;
+    };
+
+    sequence<ColorRGB> ColorSeq;
+
+	sequence<Label> ResultList;
+	
+	interface ObjectOracle
+	{
+		void getLabelsFromImage(ColorSeq image, out ResultList result);
+	};
+};
