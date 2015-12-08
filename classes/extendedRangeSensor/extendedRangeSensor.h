@@ -73,7 +73,7 @@ class ExtendedRangeSensor
 {
 public:
 	///
-	ExtendedRangeSensor(const RoboCompLaser::TLaserData &laserData, const RoboCompDifferentialRobot::TBaseState &bState, InnerModel *innerModel_, float extensionRange_, float maxDist_);
+	ExtendedRangeSensor(const RoboCompLaser::TLaserData &laserData, const RoboCompDifferentialRobot::TBaseState &bState, InnerModel *innerModel_, float extensionRange_, float maxDist_, QString laserName);
 	///
 	void update(const RoboCompLaser::TLaserData &laserData);
 
@@ -91,6 +91,7 @@ private:
 	void setExtended(int index, float dist, bool visit=false, float certainty=1.);
 	void interpolation(int first=-1, int last=-1);
 
+	QString laserName;
 	int LECTURAS;
 	int TAM_DATAEXT;
 	float extensionRange, maxDist;
