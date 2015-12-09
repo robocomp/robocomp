@@ -427,14 +427,13 @@ struct SpecificWorker::Data
 		QMutexLocker vm(worker->viewerMutex);
 		osg::StateSet *state = viewer->getRootGroup()->getOrCreateStateSet();
 
-		switch(apagar)
-		{
-		case true: /// apagar luces
+		if(apagar)
+		{/// apagar luces
 			state->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
-			break;
-		case false: /// encender luces
+		}
+		else
+		{/// encender luces
 			state->setMode(GL_LIGHTING, osg::StateAttribute::ON);
-			break;
 		}
 	}
 

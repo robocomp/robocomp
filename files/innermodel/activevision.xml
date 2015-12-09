@@ -15,8 +15,10 @@
 <!--			<plane id="ddB" nz="1" pz="-2500" py="200" px="0" size="5000,500,10" texture="#555555" />
 			<plane id="ddB2" nz="1" pz="-2500" py="200" px="0" size="5000,500,13" texture="#555555" />-->
 
-			<transform id="t_table" tz="900" >
-				<mesh id="table" file="/home/robocomp/robocomp/files/osgModels/mobiliario/mes_comedor.osg"  tz="-100" rx="1.572" scale="100" />
+
+			<transform id="t_table" tz="900">
+				<mesh id="table" file="/home/robocomp/robocomp/files/osgModels/mobiliario/mes_comedor.osg" tz="-100" rx="1.572" scale="100" />
+			</transform>
 <!-- 			<plane id="table_top" ny="1" py="710" pz="900" size="1350,900,120" repeat="1" texture="#000000" /> -->
 <!--			<mesh id="table" file="/home/robocomp/robocomp/files/osgModels/mobiliario/Table2.3DS"  tz="900" ty="0" rx="1.572" scale="30" />-->
 			</transform>

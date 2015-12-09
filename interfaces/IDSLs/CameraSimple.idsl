@@ -1,71 +1,21 @@
 module RoboCompCameraSimple
 {
-  /**@brief exception hardware*/
   exception HardwareFailedException { string what; };
 
-  /** \struct TCamParams
-  *@brief struct camera params
-  */
-  struct TCamParams
+  sequence<byte> ImgType;
+
+  struct TImage
   {
-    string name;
-    string driver;
-    string device;
-    string mode;
-    int focal;
+
     int width;
     int height;
-    int size;
-    int numCams;
-    int FPS;
-    int timerPeriod;
-    int leftCamera;
-    int rightCamera;
-    int bothCameras;
-    int inverted;
-    int rotated;
-    int leftInverted;
-    int rightInverted;
-    int saturation;
-    int lineFreq;
+    int depth;
+    ImgType image;
   };
 
-  sequence<byte> imgType;
  
-  /** \interface Camera
-  *@brief interface Camera
-  */
   interface CameraSimple
   {
-    /**@brief YUV420 format - 2 planes unpacked */
-    idempotent void getYUVImage(int cam, out imgType roi) throws HardwareFailedException;
-
-    /**@brief Luminance - 1 Plane */
-    idempotent void getYImage(int cam, out imgType roi) throws HardwareFailedException;
+    idempotent void getImage(out TImage im) throws HardwareFailedException;
   };
-
-module RoboCompCameraSimple{
-	exception HardwareFailedException{string what;};
-	struct TCamParams{
-		int focal;
-		int width;
-		int height;
-		int size;
-		int FPS;
-		int timerPeriod;
-		int inverted;
-		int rotated;
-		int saturation;
-		int lineFreq;
-		string name;
-		string driver;
-		string device;
-		string mode;
-	};
-	sequence <byte> TImg;
-
-	interface CameraSimple
-	{
-		idempotent TImg getYUVImage() throws HardwareFailedException;
-	};
 };

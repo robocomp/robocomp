@@ -47,14 +47,14 @@ def decoratorAndType_to_const_ampersand(decorator, vtype, modulePool):
 	ampersand = ' & '
 	const = ' '
 
-	if vtype in [ 'float', 'int', 'short', 'long' ]:                    # MAIN BASIC TYPES
+	if vtype in [ 'float', 'int', 'short', 'long', 'double' ]: # MAIN BASIC TYPES
 		if decorator in [ 'out' ]: #out
 			ampersand = ' &'
 			const = ' '
 		else:                      #read-only
 			ampersand = ' '
 			const = 'const '
-	elif vtype in [ 'bool' ]:                          # BOOL SEEM TO BE SPECIAL
+	elif vtype in [ 'bool' ]:                                  # BOOL SEEM TO BE SPECIAL
 		const = ' '
 		if decorator in [ 'out' ]: # out
 			ampersand = ' &'
@@ -92,8 +92,7 @@ def decoratorAndType_to_const_ampersand(decorator, vtype, modulePool):
 
 
 def getNameNumber(aalist):
-	somelist = [str(x) for x in aalist]
-	somelist.sort()
+	somelist = sorted(aalist)
 	lastNum = 0
 	ret = []
 	for rqi, rq in enumerate(somelist):
@@ -139,15 +138,17 @@ class CDSLParsing:
 		cl        = Suppress(Word("}"))
 		opp       = Suppress(Word("("))
 		clp       = Suppress(Word(")"))
+		
 		identifier = Word( alphas+"_", alphanums+"_" )
+		commIdentifier = Group(identifier.setResultsName('identifier') + Optional(opp + (CaselessLiteral("ice")|CaselessLiteral("ros")).setResultsName("type") + clp))
 
 		# Imports
 		idslImport  = Suppress(CaselessLiteral("import")) + quote +  CharsNotIn("\";").setResultsName('path') + quote + semicolon
-		idslImports = OneOrMore(idslImport)
+		idslImports = ZeroOrMore(idslImport)
 		# Communications
 		implementsList = Group(CaselessLiteral('implements')    + identifier + ZeroOrMore(Suppress(Word(',')) + identifier) + semicolon)
 		requiresList   = Group(CaselessLiteral('requires')      + identifier + ZeroOrMore(Suppress(Word(',')) + identifier) + semicolon)
-		subscribesList = Group(CaselessLiteral('subscribesTo')  + identifier + ZeroOrMore(Suppress(Word(',')) + identifier) + semicolon)
+		subscribesList = Group(CaselessLiteral('subscribesTo')  + commIdentifier + ZeroOrMore(Suppress(Word(',')) + commIdentifier) + semicolon)
 		publishesList  = Group(CaselessLiteral('publishes')     + identifier + ZeroOrMore(Suppress(Word(',')) + identifier) + semicolon)
 		communicationList = implementsList | requiresList | subscribesList | publishesList
 		communications = Group( Suppress(CaselessLiteral("communications")) + op + ZeroOrMore(communicationList) + cl + semicolon)
@@ -160,7 +161,7 @@ class CDSLParsing:
 		options = Group(Optional(Suppress(CaselessLiteral("options")) + identifier + ZeroOrMore(Suppress(Word(',')) + identifier) + semicolon))
 		
 		componentContents = communications.setResultsName('communications') & language.setResultsName('language') & gui.setResultsName('gui') & options.setResultsName('options')
-		component = Suppress(CaselessLiteral("component")) + identifier.setResultsName("name") + op + componentContents.setResultsName("properties") + cl + semicolon		
+		component = Suppress(CaselessLiteral("component")) + identifier.setResultsName("name") + op + componentContents.setResultsName("properties") + cl + semicolon
 
 		CDSL = idslImports.setResultsName("imports") + component.setResultsName("component")
 		CDSL.ignore( cppStyleComment )
@@ -263,15 +264,59 @@ class CDSLParsing:
 		# Handle options for communications
 		if 'agmagent' in component['options']:
 			if not 'AGMCommonBehavior' in component['implements']:
-				component['implements']   = ['AGMCommonBehavior'] + component['implements']
+				component['implements'] =   ['AGMCommonBehavior'] + component['implements']
 			if not 'AGMAgentTopic' in component['publishes']:
-				component['publishes']    = ['AGMAgentTopic']     + component['publishes']
+				component['publishes'] =    ['AGMAgentTopic']     + component['publishes']
 			if not 'AGMExecutiveTopic' in component['subscribesTo']:
 				component['subscribesTo'] = ['AGMExecutiveTopic'] + component['subscribesTo']
 
-
-
 		return component
+
+def communicationIsIce(sb):
+	isIce = True
+	
+	if len(sb) > 1 and type(sb)==type([]):
+		if sb[1] == 'ros'.lower():
+			isIce = False
+		elif sb[1] != 'ice'.lower() :
+			print('Only ICE and ROS are supported') 
+			sys.exit(-1)
+	return isIce
+
+def bodyCodeFromName(name):
+	bodyCode=""
+	###################################### 
+	#code for subscribesTo AGMExecutiveTopic
+	###################################### 
+	if name == 'structuralChange':
+		bodyCode = "<TABHERE>mutex->lock();\n <TABHERE>AGMModelConverter::fromIceToInternal(modification.newModel, worldModel);\n \n<TABHERE>agmInner.setWorld(worldModel);\n<TABHERE>delete innerModel;\n<TABHERE>innerModel = agmInner.extractInnerModel();\n<TABHERE>mutex->unlock();"
+	if name == 'symbolUpdated' or name == 'edgeUpdated':
+		bodyCode = "<TABHERE>mutex->lock();\n <TABHERE>AGMModelConverter::includeIceModificationInInternalModel(modification, worldModel);\n \n<TABHERE>agmInner.setWorld(worldModel);\n<TABHERE>delete innerModel;\n<TABHERE>innerModel = agmInner.extractInnerModel();\n<TABHERE>mutex->unlock();"
+		
+	###################################### 
+	#code for implements AGMCommonBehavior.
+	###################################### 
+	if name == 'activateAgent':
+		bodyCode = "<TABHERE>bool activated = false;\n<TABHERE>if (setParametersAndPossibleActivation(prs, activated))\n<TABHERE>{\n<TABHERE><TABHERE>if (not activated)\n<TABHERE><TABHERE>{\n<TABHERE><TABHERE><TABHERE>return activate(p);\n<TABHERE><TABHERE>}\n<TABHERE>}\n<TABHERE>else\n<TABHERE>{\n<TABHERE><TABHERE>return false;\n<TABHERE>}\n<TABHERE>return true;"
+		
+	if name == 'deactivateAgent':
+		bodyCode = "<TABHERE>return deactivate();"
+		
+	if name == 'getAgentState':
+		bodyCode = "<TABHERE>StateStruct s;\n<TABHERE>if (isActive())\n<TABHERE>{\n<TABHERE><TABHERE>s.state = Running;\n<TABHERE>}\n<TABHERE>else\n<TABHERE>{\n<TABHERE><TABHERE>s.state = Stopped;\n<TABHERE>}\n<TABHERE>s.info = p.action.name;\n<TABHERE>return s;"
+		
+	if name == 'getAgentParameters':
+		bodyCode = "<TABHERE>return params;"
+		
+	if name == 'setAgentParameters':
+		bodyCode = "<TABHERE>bool activated = false;\n<TABHERE>return setParametersAndPossibleActivation(prs, activated);"
+		
+	if name == 'uptimeAgent':
+		bodyCode = "<TABHERE>return 0;"
+	if name == 'reloadConfigAgent':
+		bodyCode = "<TABHERE>return true;"
+
+	return bodyCode
 
 if __name__ == '__main__':
 	CDSLParsing.fromFile(sys.argv[1])

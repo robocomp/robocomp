@@ -20,12 +20,15 @@ if component == None:
 
 from parseIDSL import *
 modulePool = IDSLPool(theIDSLs)
+
+theInterface = theInterface.split(';')
+while type(theInterface) != type(''):
+	theInterface = theInterface[0]
+
 module = modulePool.moduleProviding(theInterface)
 if module == None:
-	print('Can\'t locate', theIDSLs)
+	print('Can\'t locate', theInterface)
 	sys.exit(1)
-
-
 ]]]
 [[[end]]]
  *    Copyright (C) 

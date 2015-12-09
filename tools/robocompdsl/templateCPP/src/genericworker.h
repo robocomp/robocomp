@@ -113,8 +113,6 @@ try:
 			RoboCompPlanning::Action action;
 			std::vector< std::vector <std::string> > plan;
 		};""")
-
-
 except:
 	pass
 
@@ -167,31 +165,62 @@ for name, num in getNameNumber(component['requires']+component['publishes']):
 [[[end]]]
 
 [[[cog
-ll = []
-if 'implements'   in component: ll += component['implements']
-if 'subscribesTo' in component: ll += component['subscribesTo']
-for imp in ll:
-	module = pool.moduleProviding(imp)
-	for interface in module['interfaces']:
-		if interface['name'] == imp:
-			for mname in interface['methods']:
-				method = interface['methods'][mname]
-				paramStrA = ''
-				for p in method['params']:
-					# delim
-					if paramStrA == '': delim = ''
-					else: delim = ', '
-					# decorator
-					ampersand = '&'
-					if p['decorator'] == 'out':
-						const = ''
-					else:
-						const = 'const '
-						if p['type'].lower() in ['int', '::ice::int', 'float', '::ice::float']:
-							ampersand = ''
-					# STR
-					paramStrA += delim + const + p['type'] + ' ' + ampersand + p['name']
-				cog.outl("<TABHERE>virtual " + method['return'] + ' ' + method['name'] + '(' + paramStrA + ") = 0;")
+if 'implements' in component:
+	for imp in component['implements']:
+		module = pool.moduleProviding(imp)
+		for interface in module['interfaces']:
+			if interface['name'] == imp:
+				for mname in interface['methods']:
+					method = interface['methods'][mname]
+					paramStrA = ''
+					for p in method['params']:
+						# delim
+						if paramStrA == '': delim = ''
+						else: delim = ', '
+						# decorator
+						ampersand = '&'
+						if p['decorator'] == 'out':
+							const = ''
+						else:
+							const = 'const '
+							if p['type'].lower() in ['int', '::ice::int', 'float', '::ice::float']:
+								ampersand = ''
+						# STR
+						paramStrA += delim + const + p['type'] + ' ' + ampersand + p['name']
+					cog.outl("<TABHERE>virtual " + method['return'] + ' ' + method['name'] + '(' + paramStrA + ") = 0;")
+
+if 'subscribesTo' in component:
+	for imp in component['subscribesTo']:
+		nname = imp
+		while type(nname) != type(''):			
+			nname = nname[0]
+		if communicationIsIce(nname):
+			module = pool.moduleProviding(nname)
+			for interface in module['interfaces']:
+				if interface['name'] == nname:
+					for mname in interface['methods']:
+						method = interface['methods'][mname]
+						paramStrA = ''
+						for p in method['params']:
+							# delim
+							if paramStrA == '': delim = ''
+							else: delim = ', '
+							# decorator
+							ampersand = '&'
+							if p['decorator'] == 'out':
+								const = ''
+							else:
+								const = 'const '
+								if p['type'].lower() in ['int', '::ice::int', 'float', '::ice::float']:
+									ampersand = ''
+							# STR
+							paramStrA += delim + const + p['type'] + ' ' + ampersand + p['name']
+							cog.outl("<TABHERE>virtual " + method['return'] + ' ' + method['name'] + '(' + paramStrA + ") = 0;")
+		else:
+			cog.outl("<TABHERE>virtual ROS" + method['return'] + ' ' + method['name'] + "() = 0;")
+	
+
+				
 ]]]
 [[[end]]]
 

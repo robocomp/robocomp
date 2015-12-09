@@ -40,7 +40,15 @@ for sb in component['subscribesTo']:
 		cog.outl('# Endpoints for subscriptions')
 		text = True
 	storm = True
-	cog.outl(sb+"Topic.Endpoints=tcp -p 0")
+
+	xx = sb
+	while type(xx) != type(''):
+		xx = xx[0]
+	if communicationIsIce(sb):
+		cog.outl(str(xx)+"Topic.Endpoints=tcp -p 0")
+	else:
+		cog.outl(str(xx)+"Topic.Endpoints=whatever " + str(xx) + " for ROS")
+
 if text:
 	cog.out('\n\n')
 

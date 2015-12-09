@@ -126,23 +126,44 @@ if component['language'].lower() == 'cpp':
 			print 'Not overwriting specific file "'+ ofile +'", saving it to '+ofile+'.new'
 			ofile += '.new'
 		ifile = "/opt/robocomp/share/robocompdsl/templateCPP/" + f
-		print 'Generating', ofile, 'from', ifile
-		run = "cog.py -z -d -D theCDSL="+inputFile + " -D theIDSLs="+imports + " -o " + ofile + " " + ifile
-		run = run.split(' ')
-		ret = Cog().main(run)
-		if ret != 0:
-			print 'ERROR'
-			sys.exit(-1)
-		replaceTagsInFile(ofile)
+		if f != 'src/mainUI.ui' or component['gui'] != 'none':
+			print 'Generating', ofile, 'from', ifile
+			run = "cog.py -z -d -D theCDSL="+inputFile + " -D theIDSLs="+imports + " -o " + ofile + " " + ifile
+			run = run.split(' ')
+			ret = Cog().main(run)
+			if ret != 0:
+				print 'ERROR'
+				sys.exit(-1)
+			replaceTagsInFile(ofile)
 	#
 	# Generate interface-dependent files
 	#
-	for im in component['implements']+component['subscribesTo']:
+	for im in component['implements']:
+		if type(im) == type([]):
+			im = im[0]
 		for f in [ "SERVANT.H", "SERVANT.CPP"]:
 			ofile = outputPath + '/src/' + im.lower() + 'I.' + f.split('.')[-1].lower()
 			print 'Generating', ofile, ' (servant for', im + ')'
 			# Call cog
 			run = "cog.py -z -d -D theCDSL="+inputFile  + " -D theIDSLs="+imports + " -D theInterface="+im + " -o " + ofile + " " + "/opt/robocomp/share/robocompdsl/templateCPP/" + f
+			run = run.split(' ')
+			ret = Cog().main(run)
+			if ret != 0:
+				print 'ERROR'
+				sys.exit(-1)
+			replaceTagsInFile(ofile)
+	for im in component['subscribesTo']:
+		if type(im) != type(''):
+			im = im[0]
+		for f in [ "SERVANT.H", "SERVANT.CPP"]:
+			ofile = outputPath + '/src/' + im.lower() + 'I.' + f.split('.')[-1].lower()
+			print 'Generating', ofile, ' (servant for', im + ')'
+			# Call cog
+			theInterfaceStr = im
+			if type(theInterfaceStr) == type([]):
+				theInterfaceStr = str(';'.join(im))
+			run = "cog.py -z -d -D theCDSL="+inputFile  + " -D theIDSLs="+imports + " -D theInterface="+theInterfaceStr + " -o " + ofile + " " + "/opt/robocomp/share/robocompdsl/templateCPP/" + f
+			#print run
 			run = run.split(' ')
 			ret = Cog().main(run)
 			if ret != 0:

@@ -16,7 +16,6 @@ from parseCDSL import *
 component = CDSLParsing.fromFile(theCDSL)
 
 
-
 REQUIRE_STR = """
 <TABHERE>try
 <TABHERE>{
@@ -99,6 +98,7 @@ IMPLEMENTS_STR = """
 <TABHERE><TABHERE><NORMAL>I *<LOWER> = new <NORMAL>I(worker);
 <TABHERE><TABHERE>adapter<NORMAL>->add(<LOWER>, communicator()->stringToIdentity("<LOWER>"));
 <TABHERE><TABHERE>adapter<NORMAL>->activate();
+<TABHERE><TABHERE>cout << "[" << PROGRAM_NAME << "]: <NORMAL> adapter created in port " << tmp << endl;
 """
 
 ]]]
@@ -217,8 +217,19 @@ Z()
 #include "commonbehaviorI.h"
 
 [[[cog
-for implement in component['implements'] + component['subscribesTo']:
+for implement in component['implements']:
 	cog.outl('#include <'+implement.lower()+'I.h>')
+
+usingROS = False
+for subscribe in component['subscribesTo']:
+	subs = subscribe
+	while type(subs) != type(''):
+		subs = subs[0]
+	if communicationIsIce(subscribe):
+		cog.outl('#include <'+subs.lower()+'I.h>')
+	else:
+		usingROS = True
+		cog.outl('//#include <ROS '+subs.lower()+'I.h>')
 
 cog.outl('')
 
@@ -320,12 +331,18 @@ for name, num in getNameNumber(component['requires']):
 	cog.outl(w)
 
 if len(component['publishes'])>0 or len(component['subscribesTo'])>0:
-	cog.outl('IceStorm::TopicManagerPrx topicManager = IceStorm::TopicManagerPrx::checkedCast(communicator()->propertyToProxy("TopicManager.Proxy"));')
+	cog.outl('<TABHERE>IceStorm::TopicManagerPrx topicManager = IceStorm::TopicManagerPrx::checkedCast(communicator()->propertyToProxy("TopicManager.Proxy"));')
 
 
 for pb in component['publishes']:
 	w = PUBLISHES_STR.replace("<NORMAL>", pb).replace("<LOWER>", pb.lower())
 	cog.outl(w)
+
+
+if usingROS:
+	cog.outl("<TABHERE>ros::init(argc, argv, \""+component['name']+"\");")
+
+
 ]]]
 [[[end]]]
 
@@ -367,9 +384,16 @@ for im in component['implements']:
 [[[end]]]
 
 
+
 [[[cog
 for name, num in getNameNumber(component['subscribesTo']):
-	w = SUBSCRIBESTO_STR.replace("<NORMAL>", name).replace("<LOWER>", name.lower()).replace("<PROXYNAME>", name.lower()+num).replace("<PROXYNUMBER>", num)
+	if communicationIsIce(name):
+		nname = name
+		while type(nname) != type(''):
+			nname = name[0]
+		w = SUBSCRIBESTO_STR.replace("<NORMAL>", nname).replace("<LOWER>", nname.lower()).replace("<PROXYNAME>", nname.lower()+num).replace("<PROXYNUMBER>", num)
+	else:
+		w = '  //codigo para ROS de ' + name[0]
 	cog.out(w)
 ]]]
 [[[end]]]
