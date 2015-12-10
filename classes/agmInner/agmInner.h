@@ -41,15 +41,20 @@ using namespace std;
 
 class AgmInner
 {
-public:
-// 	AgmInner();
-// 	~AgmInner();
-	//const AGMModel::SPtr &src
-// 	void setWorld(AGMModel::SPtr model);
-// 	AGMModel::SPtr getWorld();
+private:
+	//funcion recursiva auxiliar para la extracción de innermodel
+	static void recorrer( AGMModel::SPtr &worldModel, InnerModel* imNew, int& symbolID, bool ignoreMeshes);
 	
-	//return the symbolID of the node that includes the innerModel name n.
-	//int findName(QString n);
+	//find a loop from a symbolID throught a fixed linkType
+	static void checkLoop( AGMModel::SPtr &worldModel, int& symbolID, QList< int >& visited, string linkType, bool& loop);
+	
+	static void recursiveInsertion(AGMModel::SPtr &worldModel, InnerModelNode* node, int &symbolID);
+	static void innerToAGM(AGMModel::SPtr &worldModel, InnerModelNode* node, int &symbolID, QList<QString>  lNode);
+	static map< string, string > ImNodeToSymbol(InnerModelNode* node);
+
+public:
+	
+	//return the symbolID of the node that includes the innerModel name n.	
 	static int findSymbolIDWithInnerModelName(AGMModel::SPtr &m, QString n);
 	
 	//return only the symbolic part of the graph
@@ -69,27 +74,22 @@ public:
 	static void updateImNodeFromEdge( AGMModel::SPtr &worldModel, AGMModelEdge edge, InnerModel *innerModel);
 	static void updateImNodeFromEdge( AGMModel::SPtr &worldModel, const RoboCompAGMWorldModel::Edge& edge, InnerModel *innerModel);
 	
-		//includes methods this methods work together
+	//DEPRECATED
 	//Insert innermodel in AGM graph matching nodes from innerModel to their correspondent symbols. 
 	//este método empareja diferentes nodos a diferentes símbolos
 	//excesivo
 	static  void include_im(AGMModel::SPtr &worldModel, QHash<QString, int32_t>  match, InnerModel *im);
 	
-	//si el símbolo no tiene el atributo imType. 
+	//incluye innermodel desde el símbolo symbolID
+	//si el símbolo no tiene el atributo imType se crea. Con la unión del type + _ + symbolID
 	static void includeInnerModel(AGMModel::SPtr &worldModel, int symbolID, InnerModel *im);
-	
 	
 	//Dado un innerModel (impTmp) elimina de AGM todos los symbolos que lo forman. 
 	//Para borrar subgrafos, como la persona por ejemplo.
-	static void  remove_Im(AGMModel::SPtr &worldModel, InnerModel*imTmp);
-	
+	static void  removeInnerModel(AGMModel::SPtr &worldModel, InnerModel*imTmp);
 
-	static void recorrer( AGMModel::SPtr &worldModel, InnerModel* imNew, int& symbolID, bool ignoreMeshes);
+	//static void recorrer( AGMModel::SPtr &worldModel, InnerModel* imNew, int& symbolID, bool ignoreMeshes);
 	static void edgeToInnerModel( AGMModel::SPtr &worldModel, AGMModelEdge edge, InnerModel* imNew, bool ignoreMeshes);
-	
-	
-	//find a loop from a symbolID throught a fixed linkType
-	static void checkLoop( AGMModel::SPtr &worldModel, int& symbolID, QList< int >& visited, string linkType, bool& loop);
 	
 	//Convierte el símbolo s en un nodo de innerModel, y lo inserta como hijo de parentNode en imNew.
 	static void insertSymbolToInnerModelNode(AGMModel::SPtr &worldModel, InnerModel* imNew, InnerModelNode *parentNode, AGMModelSymbol::SPtr s, float tx = 0, float ty = 0, float tz = 0, float rx = 0, float ry = 0, float rz = 0, bool ignoreMeshes=false);
@@ -100,15 +100,8 @@ public:
 	//list of id symbols from a symbolID throught a specific linkType
 // 	QList< int > getLinkedID(int symbolID, string linkType);
 	
-	static void recursiveInsertion(AGMModel::SPtr &worldModel, InnerModelNode* node, int &symbolID);
-	static void innerToAGM(AGMModel::SPtr &worldModel, InnerModelNode* node, int &symbolID, QList<QString>  lNode);
-	static map< string, string > ImNodeToSymbol(InnerModelNode* node);
 
 
-// private:
-//     AGMModel::SPtr worldModel;
-   // InnerModel *innerModel;
-	
 };
 
 #endif // AGMINNER_H

@@ -18,7 +18,7 @@
  */
 #include "extendedRangeSensor.h"
 
-ExtendedRangeSensor::ExtendedRangeSensor(const RoboCompLaser::TLaserData &laserData, const RoboCompDifferentialRobot::TBaseState &bState, InnerModel *innerModel_, float extensionRange_, float maxDist_, QString laserName_)
+ExtendedRangeSensor::ExtendedRangeSensor(const RoboCompLaser::TLaserData &laserData, const RoboCompDifferentialRobot::TBaseState &bState, InnerModel *innerModel_, double extensionRange_, double maxDist_, QString laserName_)
 {
 	laserName = laserName_;
 	innerModel = innerModel_;
@@ -44,8 +44,8 @@ ExtendedRangeSensor::ExtendedRangeSensor(const RoboCompLaser::TLaserData &laserD
 
 void ExtendedRangeSensor::medianFilter(RoboCompLaser::TLaserData *laserData)
 {
-	float window[5];
-	float x[laserData->size()];
+	double window[5];
+	double x[laserData->size()];
 
 	for (int32_t i=2; i<(int)laserData->size()-2; ++i)
 	{
@@ -60,7 +60,7 @@ void ExtendedRangeSensor::medianFilter(RoboCompLaser::TLaserData *laserData)
 			for (int k = j + 1; k < 5; ++k)
 				if (window[k] < window[min])
 					min = k;
-			const float temp = window[j];
+			const double temp = window[j];
 			window[j] = window[min];
 			window[min] = temp;
 		}
@@ -119,14 +119,15 @@ double ExtendedRangeSensor::extIndToRads ( int ind )
  * @param angle
  * @return
  */
-int ExtendedRangeSensor::angleToExtendedIndex( float angle)
+int ExtendedRangeSensor::angleToExtendedIndex( double angle)
 {
 	while (angle>M_PI)  angle -= 2.*M_PI;
 	while (angle<-M_PI) angle += 2.*M_PI;
 
-	float ret;
+	double ret;
+// 	angle += extensionRange/2.;
 	ret = (angle * dataExtended.size())/extensionRange;
-	ret = ret + dataExtended.size()/2.;
+	ret += dataExtended.size()/2;
 	return int32_t(ret);
 }
 
@@ -138,24 +139,36 @@ void ExtendedRangeSensor::update(const RoboCompLaser::TLaserData &laserData)
 	/// a) Inicialización
 	for (int i=0; i<dataExtended.size(); i++)
 	{
-		setExtended(i, maxDist, false);
+		setExtended(i, maxDist, true);
 	}
 
 	/// b) Transformación a t+1
-	QVec l;
-	for (int i=0; i<dataExtended.size(); i++)
+	for (int i=0; i<dataExtendedBack.size(); i++)
 	{
-		l = innerModel->transform(laserName, dataExtendedBack[i].world, "root");
-		float sens = l.norm2();
+		QVec l = innerModel->transform(laserName, dataExtendedBack[i].world, "root");
+		double sens = l.norm2();
+		double angle = atan2(l(0), l(2));
+		printf("%g -> %g\n", dataExtendedBack[i].angle, angle);
+		int index = angleToExtendedIndex(angle);
+		if (fabs(angle) > extensionRange/2. and sens < maxDist)
+		{
+// 			printf ("%g (%g)-> %d %d\n", double(180.*angle/M_PIl), double(sens), i, index);
+// 			dataExtendedBack[i].world.print("w");
+		}
 		if (sens < maxDist)
-			setExtended(angleToExtendedIndex(atan2(l(0), l(2))), sens, true);
+		{
+			if (index >= 0 and index < dataExtended.size())
+			{
+				setExtended(index, sens, true);
+			}
+		}
 	}
 
 	/// c) copiamos datos leídos sobre datos extendidos
 	for (unsigned int i=0; i<laserData.size(); i++)
 	{
 		const int32_t index = angleToExtendedIndex(laserData[i].angle);
-		float sens = laserData[i].dist;
+		double sens = laserData[i].dist;
 		if (sens > maxDist)
 			sens = maxDist;
 		setExtended(index, sens, true);
@@ -164,9 +177,6 @@ void ExtendedRangeSensor::update(const RoboCompLaser::TLaserData &laserData)
 	/// d) interpolación de los puntos no visitados
 // 	interpolation();
 
-	/// e) copy edges
-// 	dataExtended[0] = dataExtended[1];
-// 	dataExtended[dataExtended.size()-1] = dataExtended[dataExtended.size()-2];
 
 	/// Make a copy
 	for(int h=0; h<dataExtended.size(); h++)
@@ -178,11 +188,11 @@ void ExtendedRangeSensor::update(const RoboCompLaser::TLaserData &laserData)
 }
 
 
-void ExtendedRangeSensor::setExtended(int i, float dist, bool visit, float certainty)
+void ExtendedRangeSensor::setExtended(int i, double dist, bool visit, double certainty)
 {
-	if (i<0 or i>=dataExtended.size()) return;
+	if (i<0 or i>=dataExtended.size()) qFatal("%s %d: i<0 or i>=dataExtended.size()\n", __FILE__, __LINE__);
 	dataExtended[i].dist = dist;
-	QVec v = innerModel->laserTo(laserName, "root", dist, dataExtended[i].angle);
+	QVec v = innerModel->laserTo("root", laserName, dist, dataExtended[i].angle);
 	dataExtended[i].world = v;
 	dataExtended[i].visit = visit;
 	dataExtended[i].certainty = certainty;
@@ -190,72 +200,45 @@ void ExtendedRangeSensor::setExtended(int i, float dist, bool visit, float certa
 
 void ExtendedRangeSensor::interpolation(int first, int last)
 {
-	if (first == -1 or first < 0) first = 0;
-	if (last  == -1 or last >= dataExtended.size()) last = dataExtended.size()-1;
-
-	int firstVisited = dataExtended.size();
-	int lastVisited = -1;
+	Q_ASSERT(first<last);
+	Q_ASSERT(first > 0 and first < dataExtended.size());
+	Q_ASSERT(last  > 0 and  last < dataExtended.size());
 
 	for (int i=first; i<=last; i++)
 	{
-		if (dataExtended[i].visit == true)
+		if (dataExtended[i].visit != true or dataExtended[i].dist > maxDist-1)
 		{
-			if (i < firstVisited) firstVisited = i;
-			if (i > lastVisited)  lastVisited =  i;
-		}
-	}
-
-	int lastGap = last - lastVisited;
-	Q_ASSERT(lastGap >=0);
-	int firstGap = firstVisited - first;
-	Q_ASSERT(firstGap >=0);
-	int borderGap = firstGap + lastGap;
-	Q_ASSERT(firstVisited < dataExtended.size() and lastVisited < dataExtended.size());
-
-	/// Tope circular
-	if (first==0 and last==dataExtended.size()-1)
-	{
-		if (firstGap != 0)
-		{
-			setExtended(0, ((double)firstGap*dataExtended[lastVisited].dist + (double)lastGap*dataExtended[firstVisited].dist) / (double)(borderGap), true);
-		}
-		if (lastGap != 0)
-		{
-			setExtended(dataExtended.size()-1, ((double)firstGap*dataExtended[lastVisited].dist + (double)lastGap*dataExtended[firstVisited].dist) / (double)(borderGap), true);
-		}
-	}
-	/// Tope no circular
-	else
-	{
-		if (firstGap != 0) first += firstGap;
-		if (lastGap != 0) last -= lastGap;
-	}
-
-	Q_ASSERT(first>=0 and first < dataExtended.size()-1 and last>=0 and last < dataExtended.size() and first <= last);
-
-	int le,ri;
-	for (int i=first+1; i<=last; i++)
-	{
-		if (dataExtended[i].visit == false)
-		{
-			for (le=i+1; le<last; ++le) if (dataExtended[le].visit == true) break; //towards left
-			for (ri=i-1; ri>=first; --ri) if (dataExtended[ri].visit == true) break; //towards right
-			uint gap = abs(ri-le);
-			if (gap <= 26)
+			printf("notvistied %d\n", i);
+			for (int o = 1; o<2; o++)
 			{
-				setExtended(i, ((double)(le-i)*dataExtended[ri].dist + (double)(i-ri)*dataExtended[le].dist)/(double)((i-ri)+(le-i)), false);
+				if (i+o < dataExtended.size())
+				{
+					if (dataExtended[i+o].visit == true and dataExtended[i+o].dist < maxDist)
+					{
+						setExtended(i, dataExtended[i+o].dist, false);
+						break;
+					}
+				}
+				if (i-o > -1)
+				{
+					if (dataExtended[i-o].visit == true and dataExtended[i-o].dist < maxDist)
+					{
+						setExtended(i, dataExtended[i-o].dist, false);
+						break;
+					}
+				}
 			}
 		}
 	}
 }
 
 
-void ExtendedRangeSensor::relax(const float quantity, InnerModel *im, const QString &platformRef, const QString &worldRef)
-{
-	for (uint32_t i=0; i<size(); i++)
-	{
-		dataExtended[i].relax(quantity, im, platformRef, worldRef);
-// 		laserDataExtCopy[i].dist += q;
-	}
-}
+// void ExtendedRangeSensor::relax(const double quantity, InnerModel *im, const QString &platformRef, const QString &worldRef)
+// {
+// 	for (uint32_t i=0; i<size(); i++)
+// 	{
+// 		dataExtended[i].relax(quantity, im, platformRef, worldRef);
+// // 		laserDataExtCopy[i].dist += q;
+// 	}
+// }
 

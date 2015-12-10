@@ -53,48 +53,48 @@ public:
 		world = m2.world;
 		return *this;
 	}
-	void relax(const float quantity, InnerModel *im, const QString &platformRef, const QString &worldRef)
-	{
-		dist += quantity;
-		QVec l = im->transform(platformRef, world, worldRef);
-		float newNorm = l.norm2() + quantity;
-		l = l.normalize();
-		world = im->transform(worldRef, l.operator*(newNorm), platformRef);
-	}
+// 	void relax(const double quantity, InnerModel *im, const QString &platformRef, const QString &worldRef)
+// 	{
+// 		dist += quantity;
+// 		QVec l = im->transform(platformRef, world, worldRef);
+// 		double newNorm = l.norm2() + quantity;
+// 		l = l.normalize();
+// 		world = im->transform(worldRef, l.operator*(newNorm), platformRef);
+// 	}
 public:
-	float dist;
-	float angle;
+	double dist;
+	double angle;
 	QVec world;
 	bool visit;
-	float certainty;
+	double certainty;
 };
 
 class ExtendedRangeSensor
 {
 public:
 	///
-	ExtendedRangeSensor(const RoboCompLaser::TLaserData &laserData, const RoboCompDifferentialRobot::TBaseState &bState, InnerModel *innerModel_, float extensionRange_, float maxDist_, QString laserName);
+	ExtendedRangeSensor(const RoboCompLaser::TLaserData &laserData, const RoboCompDifferentialRobot::TBaseState &bState, InnerModel *innerModel_, double extensionRange_, double maxDist_, QString laserName);
 	///
 	void update(const RoboCompLaser::TLaserData &laserData);
 
 	///
 	RoboCompLaser::TLaserData getData() { return laserDataExtCopy; }
 	inline RoboCompLaser::TData getData(int32_t i) { return laserDataExtCopy[i]; }
-	inline float getRange(uint i) { return dataExtended[i].dist; }
+	inline double getRange(uint i) { return dataExtended[i].dist; }
 	inline QMat getWorld(uint i) { return dataExtended[i].world; }
 	inline uint size() { return dataExtended.size(); }
 
-	void relax(const float quantity, InnerModel *im, const QString &platformRef, const QString &worldRef);
+// 	void relax(const double quantity, InnerModel *im, const QString &platformRef, const QString &worldRef);
 
 
 private:
-	void setExtended(int index, float dist, bool visit=false, float certainty=1.);
+	void setExtended(int index, double dist, bool visit=false, double certainty=1.);
 	void interpolation(int first=-1, int last=-1);
 
 	QString laserName;
 	int LECTURAS;
 	int TAM_DATAEXT;
-	float extensionRange, maxDist;
+	double extensionRange, maxDist;
 	QVector<TExt> dataExtended;
 	RoboCompLaser::TLaserData laserDataExtCopy;
 
@@ -105,7 +105,7 @@ int32_t pm;
 	void medianFilter(RoboCompLaser::TLaserData *laserData);
 	int laserIndToExtInd(int ind);
 	double extIndToRads(int ind);
-	int angleToExtendedIndex(float angle);
+	int angleToExtendedIndex(double angle);
 
 
 };

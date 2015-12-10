@@ -1003,20 +1003,20 @@ AGMModel::SPtr AgmInner::extractSymbolicGraph(AGMModel::SPtr &worldModel)
 // 	return agmTmp;
 // }
 
-void  AgmInner::remove_Im(AGMModel::SPtr &worldModel, InnerModel *imTmp)
+void  AgmInner::removeInnerModel(AGMModel::SPtr &worldModel, InnerModel *imTmp)
 {
 	//if imNode not in agmOriginal, remove the symbol associated to the node in the agmCaliente if exist
-	imTmp->save("imTmp.xml");
-	qDebug()<<imTmp->getIDKeys();
+	//imTmp->save("imTmp.xml");
+	//qDebug()<<imTmp->getIDKeys();
 	foreach (QString n, imTmp->getIDKeys() )
 	{
-		qDebug()<<n;
+		//qDebug()<<n;
 
 		int symbolID=-1;
 		symbolID=findSymbolIDWithInnerModelName(worldModel, n);
 		if (symbolID!=-1)
 		{
-			qDebug()<<"remove en el agmCaliente :"<<symbolID<<QString::fromStdString( worldModel->getSymbol(symbolID)->toString());
+			//qDebug()<<"remove en el agmCaliente :"<<symbolID<<QString::fromStdString( worldModel->getSymbol(symbolID)->toString());
 			worldModel->removeSymbol(symbolID);
 		}
 	}
