@@ -45,8 +45,6 @@ private:
 	//funcion recursiva auxiliar para la extracción de innermodel
 	static void recorrer( AGMModel::SPtr &worldModel, InnerModel* imNew, int& symbolID, bool ignoreMeshes);
 	
-	//find a loop from a symbolID throught a fixed linkType
-	static void checkLoop( AGMModel::SPtr &worldModel, int& symbolID, QList< int >& visited, string linkType, bool& loop);
 	
 	static void recursiveInsertion(AGMModel::SPtr &worldModel, InnerModelNode* node, int &symbolID);
 	static void innerToAGM(AGMModel::SPtr &worldModel, InnerModelNode* node, int &symbolID, QList<QString>  lNode);
@@ -93,6 +91,9 @@ public:
 	
 	//Convierte el símbolo s en un nodo de innerModel, y lo inserta como hijo de parentNode en imNew.
 	static void insertSymbolToInnerModelNode(AGMModel::SPtr &worldModel, InnerModel* imNew, InnerModelNode *parentNode, AGMModelSymbol::SPtr s, float tx = 0, float ty = 0, float tz = 0, float rx = 0, float ry = 0, float rz = 0, bool ignoreMeshes=false);
+	
+	//find a loop from a symbolID throught a fixed linkType
+	static void checkLoop( AGMModel::SPtr &worldModel, int& symbolID, QList< int >& visited, string linkType, bool& loop);
 	
 	//Deprecated (no se cual fue su objetivo)
 	//static AGMModel::SPtr remove_ImOriginal(string agmFilePath, string imFilePath);
