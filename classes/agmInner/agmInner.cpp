@@ -149,8 +149,7 @@ void AgmInner::recorrer(AGMModel::SPtr &worldModel, InnerModel* imNew, int& symb
 
 
 /**
- * @brief ..transform the information contains in an AGM edge in two InnerModelNode, adding the information stored in the label RT
- * to the father's transformation .
+ * @brief Función auxiliar para extractInnerModel y recorrer. Extrae la información del arco y sigue con el proceso de creacción del árbol de innermodel
  *
  * @param edge AGMModelEdge...
  * @param imNew ...
@@ -213,7 +212,10 @@ void AgmInner::edgeToInnerModel(AGMModel::SPtr &worldModel, AGMModelEdge edge, I
 		qFatal("insertSymbolToInnerModelNode");
 	}
 }
-
+/**
+ * @brief Función auxiliar para extractInnerModel. Extrae la información relevante del símbolo de AGM. Creea el nodo de innerModel y lo inserta en lugar correcto en el proceso de creacción del árbol de innermodel.
+ *
+ */
 
 void AgmInner::insertSymbolToInnerModelNode(AGMModel::SPtr &worldModel, InnerModel* imNew,InnerModelNode *parentNode, AGMModelSymbol::SPtr s, float tx, float ty, float tz, float rx, float ry, float rz, bool ignoreMeshes)
 {

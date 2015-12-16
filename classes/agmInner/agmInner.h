@@ -44,10 +44,21 @@ class AgmInner
 private:
 	//funcion recursiva auxiliar para la extracción de innermodel
 	static void recorrer( AGMModel::SPtr &worldModel, InnerModel* imNew, int& symbolID, bool ignoreMeshes);
+        
+        //Función auxiliar para extractInnerModel. Extrae la información del arco y sigue con el proceso de creacción del árbol de innermodel
+	static void edgeToInnerModel( AGMModel::SPtr &worldModel, AGMModelEdge edge, InnerModel* imNew, bool ignoreMeshes);
 	
+	//Convierte el símbolo s en un nodo de innerModel, y lo inserta como hijo de parentNode en imNew.
+	static void insertSymbolToInnerModelNode(AGMModel::SPtr &worldModel, InnerModel* imNew, InnerModelNode *parentNode, AGMModelSymbol::SPtr s, float tx = 0, float ty = 0, float tz = 0, float rx = 0, float ry = 0, float rz = 0, bool ignoreMeshes=false);
 	
+	//Funcion auxiliar para insertar el arbol de innermodel en el grafo AGM
 	static void recursiveInsertion(AGMModel::SPtr &worldModel, InnerModelNode* node, int &symbolID);
+        
+        //DEPRECATED
+        //Función auxiliar para include_im.
 	static void innerToAGM(AGMModel::SPtr &worldModel, InnerModelNode* node, int &symbolID, QList<QString>  lNode);
+        
+        //Extrae de un nodo de innermodel la información relevante a incorporar en el símbolo. En la forma de sus atributos.
 	static map< string, string > ImNodeToSymbol(InnerModelNode* node);
 
 public:
@@ -86,12 +97,6 @@ public:
 	//Para borrar subgrafos, como la persona por ejemplo.
 	static void  removeInnerModel(AGMModel::SPtr &worldModel, InnerModel*imTmp);
 
-	//static void recorrer( AGMModel::SPtr &worldModel, InnerModel* imNew, int& symbolID, bool ignoreMeshes);
-	static void edgeToInnerModel( AGMModel::SPtr &worldModel, AGMModelEdge edge, InnerModel* imNew, bool ignoreMeshes);
-	
-	//Convierte el símbolo s en un nodo de innerModel, y lo inserta como hijo de parentNode en imNew.
-	static void insertSymbolToInnerModelNode(AGMModel::SPtr &worldModel, InnerModel* imNew, InnerModelNode *parentNode, AGMModelSymbol::SPtr s, float tx = 0, float ty = 0, float tz = 0, float rx = 0, float ry = 0, float rz = 0, bool ignoreMeshes=false);
-	
 	//find a loop from a symbolID throught a fixed linkType
 	static void checkLoop( AGMModel::SPtr &worldModel, int& symbolID, QList< int >& visited, string linkType, bool& loop);
 	
