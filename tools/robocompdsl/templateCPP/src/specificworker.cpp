@@ -18,6 +18,8 @@ if component == None:
 	print('Can\'t locate', theCDSLs)
 	sys.exit(1)
 
+	
+
 from parseIDSL import *
 pool = IDSLPool(theIDSLs)
 
@@ -176,7 +178,7 @@ if 'implements' in component:
 if 'subscribesTo' in component:
 	for imp in component['subscribesTo']:
 		nname = imp
-		while type(nname) != type(''):			
+		while type(nname) != type(''):
 			nname = nname[0]
 		if communicationIsIce(nname):
 			module = pool.moduleProviding(nname)
