@@ -76,7 +76,7 @@ PUBLISHES_STR = """
 
 IMPLEMENTS_STR = """
 <TABHERE><TABHERE>adapter = ic.createObjectAdapter('<NORMAL>')
-<TABHERE><TABHERE>adapter.add(<NORMAL>I(worker, ic), ic.stringToIdentity('<LOWER>'))
+<TABHERE><TABHERE>adapter.add(<NORMAL>I(worker), ic.stringToIdentity('<LOWER>'))
 <TABHERE><TABHERE>adapter.activate()
 """
 ]]]
@@ -177,7 +177,7 @@ if len(ROBOCOMP)<1:
 	sys.exit()
 
 
-preStr = "-I"+ROBOCOMP+"/interfaces/ --all "+ROBOCOMP+"/interfaces/"
+preStr = "-I"+ROBOCOMP+"/interfaces/ -I/opt/robocomp/interfaces/ --all "+ROBOCOMP+"/interfaces/"
 Ice.loadSlice(preStr+"CommonBehavior.ice")
 import RoboCompCommonBehavior
 [[[cog
