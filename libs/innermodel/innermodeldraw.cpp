@@ -18,7 +18,7 @@
 */
 
 
-#include "innermodeldraw.h"
+#include <innermodeldraw.h>
 
 InnerModelDraw::InnerModelDraw()
 {
@@ -202,11 +202,11 @@ bool InnerModelDraw::addPlane_notExisting(InnerModelViewer *innerViewer, const Q
 	return true;
 }
 
+
+
 void InnerModelDraw::drawLine(InnerModelViewer *innerViewer, QString name, QString parent, const QVec& normalVector, const QVec &center, float length, float width, QString texture)
 {
-
 	InnerModelDraw::addPlane_ignoreExisting(innerViewer, name, parent, center, normalVector, texture, QVec::vec3(length, width, width));
-
 }
 
 

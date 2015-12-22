@@ -30,7 +30,7 @@ else (FCL_SUPPORT)
 endif (FCL_SUPPORT)
 
 
-include_directories("${CMAKE_CURRENT_BINARY_DIR}/include")
+include_directories( ${CMAKE_CURRENT_BINARY_DIR}/include include/innermodel )
 
 configure_file ("include/${LIB_NAME}/innermodel.in.h" "include/${LIB_NAME}/innermodel.h")
 
