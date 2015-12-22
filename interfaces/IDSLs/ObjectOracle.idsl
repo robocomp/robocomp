@@ -20,5 +20,6 @@ module RoboCompObjectOracle
 	interface ObjectOracle
 	{
 		void getLabelsFromImage(ColorSeq image, out ResultList result);
+		void semanticDistance(string word1, string word2, out float result);
 	};
 };
