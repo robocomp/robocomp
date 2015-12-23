@@ -110,7 +110,6 @@ bool InnerModelDraw::setPlaneTexture(InnerModelViewer *innerViewer, const QStrin
 		{
 			throw "Couldn't load texture.";
 		}
-
 		innerViewer->planesHash[aux->id]->image =image;
 		innerViewer->planesHash[aux->id]->texture->setImage(image);
 	}
@@ -187,26 +186,21 @@ bool InnerModelDraw::addPlane_ignoreExisting(InnerModelViewer *innerViewer, cons
 
 bool InnerModelDraw::addPlane_notExisting(InnerModelViewer *innerViewer, const QString &item, const QString &base, const QVec &p, const QVec &n, const QString &texture, const QVec &size)
 {
-			printf("%s %d\n",__FUNCTION__, __LINE__);
 	InnerModelNode *parent = innerViewer->innerModel->getNode(base);
 	if (parent == NULL)
 	{
-		printf("%s: parent not exists\n", __FUNCTION__);
+		//printf("%s: parent does not exist\n", __FUNCTION__);
 		return false;
 	}
 	InnerModelPlane *plane = innerViewer->innerModel->newPlane(item, parent, texture, size(0), size(1), size(2), 1, n(0), n(1), n(2), p(0), p(1), p(2));
 	parent->addChild(plane);
-
 	innerViewer->recursiveConstructor(plane, innerViewer->mts[parent->id], innerViewer->mts, innerViewer->meshHash);
-
 	return true;
 }
 
 void InnerModelDraw::drawLine(InnerModelViewer *innerViewer, QString name, QString parent, const QVec& normalVector, const QVec &center, float length, float width, QString texture)
 {
-
 	InnerModelDraw::addPlane_ignoreExisting(innerViewer, name, parent, center, normalVector, texture, QVec::vec3(length, width, width));
-
 }
 
 
@@ -230,6 +224,8 @@ void InnerModelDraw::removeObject(InnerModelViewer *innerViewer, QString name)
 {
 	if (innerViewer->innerModel->getNode(name))
 		removeNode(innerViewer, name);
+	else
+		qDebug() << __FUNCTION__ << "Object " << name << "does not exist. Could not be removed";
 }
 
 
