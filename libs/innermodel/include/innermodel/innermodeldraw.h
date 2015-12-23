@@ -60,6 +60,9 @@ public:
  * @param texture ...
  * @return void
  */
+	
+	static bool addPlane_ignoreExisting(InnerModelViewer *innerViewer, const QString &a, const QString &b, const QVec &p, const QVec &n, const QString &texture, const QVec &size);
+	static void drawLine(InnerModelViewer *innerViewer, QString name, QString parent, const QVec &normalVector, const QVec &center, float length, float width, QString texture = "#550000");
 	static void drawLine2Points(InnerModelViewer *innerViewer, QString name, QString parent, const QVec& p1, const QVec& p2, float width, QString texture);
 	static void removeObject(InnerModelViewer *innerViewer, QString name);
 	static bool removeNode(InnerModelViewer *innerViewer, const QString &item);

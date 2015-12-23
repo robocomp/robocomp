@@ -18,7 +18,7 @@
 */
 
 
-#include "innermodeldraw.h"
+#include <innermodeldraw.h>
 
 InnerModelDraw::InnerModelDraw()
 {
@@ -197,6 +197,8 @@ bool InnerModelDraw::addPlane_notExisting(InnerModelViewer *innerViewer, const Q
 	innerViewer->recursiveConstructor(plane, innerViewer->mts[parent->id], innerViewer->mts, innerViewer->meshHash);
 	return true;
 }
+
+
 
 void InnerModelDraw::drawLine(InnerModelViewer *innerViewer, QString name, QString parent, const QVec& normalVector, const QVec &center, float length, float width, QString texture)
 {
