@@ -1,0 +1,7 @@
+module RoboCompSemanticSimilarity
+{
+	interface SemanticSimilarity 
+	{
+		void w2vDistance(string word1, string word2, out float result);
+	};
+};
