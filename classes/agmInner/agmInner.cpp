@@ -149,7 +149,7 @@ void AgmInner::recorrer(AGMModel::SPtr &worldModel, InnerModel* imNew, int& symb
 
 
 /**
- * @brief Función auxiliar para extractInnerModel y recorrer. Extrae la información del arco y sigue con el proceso de creacción del árbol de innermodel
+ * @brief Función auxiliar para extractInnerModel. Extrae la información del arco y sigue con el proceso de creacción del árbol de innermodel
  *
  * @param edge AGMModelEdge...
  * @param imNew ...
