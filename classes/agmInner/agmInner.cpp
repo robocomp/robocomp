@@ -843,12 +843,12 @@ void AgmInner::checkLoop(AGMModel::SPtr &worldModel, int& symbolID, QList<int> &
 void AgmInner::updateAgmWithInnerModel(AGMModel::SPtr &worldModel, InnerModel* im)
 {
 	/// Vector of the edges that the model holds.
-	std::cout << "worldModel->edges.size(): "<<worldModel->edges.size();
+// 	std::cout << "worldModel->edges.size(): "<<worldModel->edges.size();
 
 	///tal vez sería bueno recorrer primero innerModel con include_im y crear attributes name por cada symbolo, pq puede haberse insertado algun nodo nuevo.
 	for (std::vector<AGMModelEdge>::iterator it = worldModel->edges.begin() ; it != worldModel->edges.end(); ++it)
 	{
-		std::cout << ' ' << (*it)->toString(worldModel);
+// 		std::cout << ' ' << (*it)->toString(worldModel);
 		if ((*it)->getLabel()=="RT" )
 		{
 			string songName;
@@ -856,7 +856,7 @@ void AgmInner::updateAgmWithInnerModel(AGMModel::SPtr &worldModel, InnerModel* i
 			//obtengo del symbol hijo el atribute name
 			try{
 				songName= (worldModel->getSymbol( (*it)->getSymbolPair().second) )->getAttribute("imName");
-				std::cout <<"\t"<<songName<<"\n";
+// 				std::cout <<"\t"<<songName<<"\n";
 				try
 				{
 					InnerModelTransform *node= im->getTransform (QString::fromStdString(songName));
@@ -878,7 +878,7 @@ void AgmInner::updateAgmWithInnerModel(AGMModel::SPtr &worldModel, InnerModel* i
 				std::cout<<(worldModel->getSymbol( (*it)->getSymbolPair().second))->toString(true);
 			}
 		}
-		std::cout << '\n';
+// 		std::cout << '\n';
 	}
 }
 
@@ -888,7 +888,7 @@ void AgmInner::updateAgmWithInnerModelAndPublish(AGMModel::SPtr &worldModel, Inn
 	/// Vector of the edges that the model holds.
 // 	std::cout << "worldModel->edges.size(): "<<worldModel->edges.size();
 
-	///tal vez sería bueno recorrer primero innerModel con include_im y crear attributes name por cada symbolo, pq puede haberse insertado algun nodo nuevo.
+	
 	for (std::vector<AGMModelEdge>::iterator it = worldModel->edges.begin() ; it != worldModel->edges.end(); ++it)
 	{
 // 		std::cout << ' ' << (*it)->toString(worldModel)<<"\n";
@@ -917,8 +917,7 @@ void AgmInner::updateAgmWithInnerModelAndPublish(AGMModel::SPtr &worldModel, Inn
 				}
 				catch (...)
 				{
-					std::cout << '\t' << (*it)->toString(worldModel);
-					qDebug()<<"\tedge EXCEPTION couldn't find attribute";
+// 					qDebug()<<__FUNCTION__<<" This node doesn't has include in the current InnerModel, it doesn't need to be updated "<<QString::fromStdString(songName);
 				}
 			}
 			catch (...)
