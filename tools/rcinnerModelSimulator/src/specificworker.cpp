@@ -737,20 +737,26 @@ SpecificWorker::SpecificWorker(MapPrx& _mprx, Ice::CommunicatorPtr _communicator
 	{
 		//restore matrix view
 		QStringList l = settings->value("matrix").toStringList();
-		osg::Matrixd m;
-		for (int i=0; i<4; i++ )
+		if (l.size() > 0)
 		{
-			for (int j=0; j<4; j++ )
+			osg::Matrixd m;
+			for (int i=0; i<4; i++ )
 			{
-				m(i,j)=l.takeFirst().toDouble();
+				for (int j=0; j<4; j++ )
+				{
+					m(i,j)=l.takeFirst().toDouble();
+				}
 			}
+			d->manipulator->setByMatrix(m);
 		}
-		d->manipulator->setByMatrix(m);
+		else
+		{
+			setTopPOV();
+		}
 	}
 	else
 	{
 		settings->setValue("path",path);
-// 		setTopPOV();
  	}
 
  		
