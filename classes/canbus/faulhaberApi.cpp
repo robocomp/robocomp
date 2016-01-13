@@ -64,13 +64,15 @@ int FaulHaberApi::getPosition(int id)
 	//msg = buildMessageData(WriteObjectId,id,8,0x40,0x0000,0x00,0x00000000);
     msg = buildMessageData(0x300,id,8,0x40,0x0000,0x00,0x00000000);
 	int a=writeWaitReadMessage(&msg);
-	//printf("output  %#x, %#x, %#x, %#x, %#x, %#x, %#x, %#x, %#x, %#x \n ", msg.Id,msg.Size, msg.Data[0], msg.Data[1], msg.Data[2], msg.Data[3], msg.Data[4], msg.Data[5],	 msg.Data[6], msg.Data[7], msg.Timestamp );
+	
 	
 	if(a == 1)
 		return readIntegerResponse(msg);
 	else
+	{
+		printf("output  %lx, %x, %x, %x, %x, %x, %x, %x, %x, %x %d\n ", msg.Id, msg.Size, msg.Data[0], msg.Data[1], msg.Data[2], msg.Data[3], msg.Data[4], msg.Data[5],	 msg.Data[6], msg.Data[7], msg.Timestamp);
 		return -1;
-	
+	}
 }
 
 int FaulHaberApi::getPositionExternalEncoder(int id)
@@ -117,7 +119,7 @@ int FaulHaberApi::syncGetPosition(int node_count,int* nodeIds,int* positions)
 	for(int count=0;count<node_count;count++)
 	{
 		pos = 0;
-		while( nodeIds[pos] != msgs[count].Id %0x10)
+		while ((int64_t)nodeIds[pos] != (int64_t)msgs[count].Id %0x10)
 		{
 			pos++;
 			if(pos > node_count +1)
@@ -163,7 +165,7 @@ int FaulHaberApi::syncSetPosition(int node_count,int* nodeIds,int* positions)
 void FaulHaberApi::goHome(int id)
 {
 	msg = buildFaulhaberCommand(id,0x2F,0); //go end track
-	int status = writeWaitReadMessage(&msg);
+	/*int status = */writeWaitReadMessage(&msg);
 //	qDebug()<<"go home result"<<status;
 }
 
@@ -171,7 +173,7 @@ void FaulHaberApi::goHome(int id)
 void FaulHaberApi::setZero(int id)
 {
 	msg = buildFaulhaberCommand(id,0xB8,0);//set position
-	int status = writeWaitReadMessage(&msg);
+	/*int status =*/ writeWaitReadMessage(&msg);
 //	qDebug()<<"set home position result "<<status;
 }
 
@@ -180,13 +182,13 @@ void FaulHaberApi::setZero(int id)
 void FaulHaberApi::setAceleration(int id, int aceleration)
 {
 	msg = buildMessageData(WriteObjectId,id,8,0x23,0x6083,0x00,aceleration);	
-	int status = writeWaitReadMessage(&msg);
+	/*int status =*/ writeWaitReadMessage(&msg);
 //	qDebug()<<"set aceleration"<<status;
 }
 void FaulHaberApi::setDeceleration(int id, int deceleration)
 {
 	msg = buildMessageData(WriteObjectId,id,8,0x23,0x6084,0x00,deceleration);	
-	int status = writeWaitReadMessage(&msg);
+	/*int status = */writeWaitReadMessage(&msg);
 //	qDebug()<<"set deceleration"<<status;
 }
 
@@ -212,14 +214,14 @@ int FaulHaberApi::syncSetVelocity(int node_count,int* nodeIds,int* velocities)
 void FaulHaberApi::enableControlPositionMode(int id)
 {
 	msg = buildMessageData(WriteObjectId,id,8,0x2F,0x6060,0x00,0x00000001);
-	int status = writeWaitReadMessage(&msg);
+	/*int status =*/ writeWaitReadMessage(&msg);
 //	qDebug()<<"enable mode result:"<<status;
 }
 
 void FaulHaberApi::enableCommandMode(int id)
 {
 	msg = buildMessageData(WriteObjectId,id,8,0x2F,0x6060,0x00,0x000000FF);
-	int status = writeWaitReadMessage(&msg);
+	/*int status = */writeWaitReadMessage(&msg);
 //	qDebug()<<"enable mode result "<<status;
 }
 
