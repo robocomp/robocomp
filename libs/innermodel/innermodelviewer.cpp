@@ -503,7 +503,7 @@ void InnerModelViewer::reloadMesh(QString id)
 	}
 	//CAUTION
 	//osg::Node *osgMesh = osgDB::readNodeFile(mesh->meshPath.toStdString());
-	osg::ref_ptr<osg::Node> osgMesh = osgDB::readNodeFile(mesh->meshPath.toStdString());
+	osg::ref_ptr<osg::Node> osgMesh = osgDB::readNodeFiles(mesh->meshPath.toStdString());
 	if (not osgMesh)
 	{
 		printf("Could not find %s osg.\n", mesh->meshPath.toStdString().c_str());
