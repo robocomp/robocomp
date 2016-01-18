@@ -289,9 +289,9 @@ def bodyCodeFromName(name):
 	#code for subscribesTo AGMExecutiveTopic
 	###################################### 
 	if name == 'structuralChange':
-		bodyCode = "<TABHERE>mutex->lock();\n <TABHERE>AGMModelConverter::fromIceToInternal(modification.newModel, worldModel);\n \n<TABHERE>agmInner.setWorld(worldModel);\n<TABHERE>delete innerModel;\n<TABHERE>innerModel = agmInner.extractInnerModel();\n<TABHERE>mutex->unlock();"
+		bodyCode = "<TABHERE>mutex->lock();\n <TABHERE>AGMModelConverter::fromIceToInternal(modification.newModel, worldModel);\n \n<TABHERE>delete innerModel;\n<TABHERE>innerModel = agmInner.extractInnerModel(worldModel);\n<TABHERE>mutex->unlock();"
 	if name == 'symbolUpdated' or name == 'edgeUpdated':
-		bodyCode = "<TABHERE>mutex->lock();\n <TABHERE>AGMModelConverter::includeIceModificationInInternalModel(modification, worldModel);\n \n<TABHERE>agmInner.setWorld(worldModel);\n<TABHERE>delete innerModel;\n<TABHERE>innerModel = agmInner.extractInnerModel();\n<TABHERE>mutex->unlock();"
+		bodyCode = "<TABHERE>mutex->lock();\n <TABHERE>AGMModelConverter::includeIceModificationInInternalModel(modification, worldModel);\n \n<TABHERE>delete innerModel;\n<TABHERE>innerModel = agmInner.extractInnerModel(worldModel);\n<TABHERE>mutex->unlock();"
 		
 	###################################### 
 	#code for implements AGMCommonBehavior.

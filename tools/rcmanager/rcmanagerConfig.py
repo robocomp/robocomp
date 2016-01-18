@@ -233,7 +233,6 @@ def parsercmanager(node):
 				elif child.name == "node":
 					parseNode(child, components)
 				elif stringIsUseful(str(node.properties)):
-					print '    tssssssss'+str(node.properties)
 					print 'ERROR when parsing rcmanager: '+str(child.name)+': '+str(child.properties)
 			child = child.next
 
@@ -257,12 +256,11 @@ def parseGeneralInformation(node, dict):
 				elif child.name == "simulation":
 					parseSimulation(child, dict)
 				elif stringIsUseful(str(child.properties)):
-					print '    tssssssss'+str(child.properties)
 					print 'ERROR when parsing generalInformation: '+str(child.name)+': '+str(child.properties)
 			child = child.next
 	elif node.type == "text":
 		if stringIsUseful(str(node.properties)):
-			print '    tssssssss'+str(node.properties)
+			print ''+str(node.properties)
 	else:
 		print "error: " + str(node.name)
 
@@ -305,7 +303,6 @@ def parseNode(node, components):
 				elif child.name == "color":
 					parseColor(child, component)
 				elif stringIsUseful(str(child.properties)):
-					print '    tssssssss'+str(child.properties)
 					print 'ERROR when parsing rcmanager: '+str(child.name)+': '+str(child.properties)
 			child = child.next
 		if mandatory<15:
@@ -413,11 +410,9 @@ def parseColor(node, comp):
 	else:
 		if x[0] != "#": valid = False
 		else:
-			print x[1:2], x[3:4], x[5:6]
 			r = int(x[1:3], 16)
 			g = int(x[3:5], 16)
 			b = int(x[5:7], 16)
-			print r, g, b
 	if not valid:
 		r = int(155)
 		g = int(155)
