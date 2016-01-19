@@ -244,9 +244,7 @@ public:
 	QVec compute3DPointFromImageAngles(const QString &firstCamera , const QVec & left, const QString & secondCamera , const QVec & right, const QString & refSystem);
 
 	/// Laser stuff
-	QVec laserTo(const QString &dest, const QString & laserId , const QVec &p);
 	QVec laserTo(const QString &dest, const QString & laserId , float r, float alfa);
-	QVec laserToRefFrame(const QString & laserId , float r, float alpha, const QString & refFrame) { return laserTo(refFrame, laserId, r, alpha); }
 
 	/// Frustrum
 	struct TPlane { QVec n; float d; };
