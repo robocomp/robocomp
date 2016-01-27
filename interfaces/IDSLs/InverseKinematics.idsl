@@ -55,7 +55,7 @@ module RoboCompInverseKinematics
 	interface InverseKinematics
 	{
 		TargetState getTargetState(string bodyPart, int targetID);
-		int setTargetPose6D(string bodyPart, Pose6D target, WeightVector weights)throws IKException;
+		int setTargetPose6D(string bodyPart, Pose6D target, WeightVector weights, float thresholdT, float thresholdR)throws IKException;
 		int setTargetAlignaxis(string bodyPart, Pose6D target, Axis ax) throws IKException;
 		int setTargetAdvanceAxis(string bodyPart, Axis ax, float dist) throws IKException;
 		bool getPartState(string bodyPart) throws IKException;
