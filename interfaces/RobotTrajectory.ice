@@ -12,15 +12,17 @@
 #include <DifferentialRobot.ice>
 
 module RoboCompRobotTrajectory{
-	struct State{
+	struct State
+	{
 		string message;
 	};
-	struct Stage{
+	struct Stage
+	{
 		int x;
 		int z;
 		bool pureRotation;
 		float alpha;
-				};
+	};
 	sequence <Stage> Trajectory;
 
 	interface RobotTrajectory{
@@ -50,9 +52,11 @@ module RoboCompRobotTrajectory{
 		void  getTrajectory(out Trajectory path);
 		bool isStopped();
 		void  resetOdometer();
-		void  setOdometer(robocompdsl.impl.InterfacesImpl@4f6d6ceb (eProxyURI: file:/home/jmartinez/robocomp/Interfaces/IDSLs/RobotTrajectory.idsl#xtextLink_::0.0.0.1.26.1.0.1::1::/0)::robocompdsl.impl.SequenceImpl@1909e10a (eProxyURI: file:/home/jmartinez/robocomp/Interfaces/IDSLs/RobotTrajectory.idsl#xtextLink_::0.0.0.1.26.1.0.1::2::/2) state);
+		void  setOdometer(State state);
 	};
-	interface RobotTrajectoryStorm{
+
+	interface RobotTrajectoryStorm
+	{
 		void  getState(State message);
 	};
 };
