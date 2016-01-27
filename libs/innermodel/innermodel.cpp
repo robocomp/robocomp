@@ -1497,20 +1497,6 @@ int InnerModel::getCameraSize(const QString & cameraId) const
 
 
 
-////////////////////////////////////////////
-// LASER
-////////////////////////////////////////////
-/**
- * \brief Local laser measure with index i in laser array is converted to Any RS
- * @param i indexof laser array
- * @return 3Dpoint in World RS
- */
-QVec InnerModel::laserTo(const QString &dest, const QString & laserId, const QVec &p)
-{
-	return transform(dest, p, laserId);
-}
-
-
 
 /**
  * \brief Local laser measure of range r and angle alfa is converted to Any RS
@@ -1522,9 +1508,9 @@ QVec InnerModel::laserTo(const QString &dest, const QString & laserId , float r,
 {
 	QVec p(3);
 	p(0) = r * sin(alpha);
-	p(1) = 0 ;
+	p(1) = 0;
 	p(2) = r * cos(alpha);
-	return transform(dest, p , laserId);
+	return transform(dest, p, laserId);
 }
 
 

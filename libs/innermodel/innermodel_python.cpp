@@ -13,7 +13,7 @@ using namespace boost::python;
 
 // using namespace InnerModel;
 
-
+/*
 BOOST_PYTHON_MODULE(librobocomp_innermodel)
 {
 
@@ -32,8 +32,9 @@ BOOST_PYTHON_MODULE(librobocomp_innermodel)
 	 .def("getTransformationMatrix", &InnerModel::getTransformationMatrixS)
 	 .def("getParentIdentifier", &InnerModel::getParentIdentifierS)
     ;
-	
-	/*
+	*/
+
+/*
 	class_<InnerModelDraw>("OsgView", init<>());
 	
 	class_<InnerModelDraw>("InnerModelDraw", init<>())
@@ -103,6 +104,6 @@ BOOST_PYTHON_MODULE(librobocomp_innermodel)
 */
 
 
-}
+// }
 
 
