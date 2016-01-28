@@ -61,11 +61,18 @@ module RoboCompInverseKinematics{
 		float errorR;
 		MotorList motors;
 	};
+	
+	["cpp:comparable"]
+	dictionary<string, string> StringMap;
+	["cpp:comparable"]
+	dictionary<string, float> ScalarMap;
+	
 
 	interface InverseKinematics
 	{
 		TargetState getTargetState(string bodyPart, int targetID);
-		int setTargetPose6D(string bodyPart, Pose6D target, WeightVector weights)throws IKException;
+		int setTargetPose6D(string bodyPart, Pose6D target, WeightVector weights) throws IKException;
+		int mapBasedTarget(string bodyPart, StringMap strings, ScalarMap scalars) throws IKException;
 		int setTargetAlignaxis(string bodyPart, Pose6D target, Axis ax) throws IKException;
 		int setTargetAdvanceAxis(string bodyPart, Axis ax, float dist) throws IKException;
 		bool getPartState(string bodyPart) throws IKException;
