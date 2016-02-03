@@ -1,0 +1,14 @@
+import "AGMWorldModel2.idsl";
+
+module RoboCompAGMAgent
+{
+	interface AGMAgentTopic
+	{
+		void symbolUpdate(RoboCompAGMWorldModel::Node n);
+		void symbolsUpdate(RoboCompAGMWorldModel::NodeSequence ns);
+
+		void edgeUpdate(RoboCompAGMWorldModel::Edge e);
+		void edgesUpdate(RoboCompAGMWorldModel::EdgeSequence es);
+	};
+};
+
