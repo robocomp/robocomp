@@ -16,6 +16,10 @@ module RoboCompAGMExecutive
 
 		// For agents
 		ProposalError modificationProposal(RoboCompAGMWorldModel::World w, string sender, string log);
+		void symbolUpdate( RoboCompAGMWorldModel::Node n);
+		void symbolsUpdate(RoboCompAGMWorldModel::NodeSequence ns);
+		void edgeUpdated( RoboCompAGMWorldModel::Edge e);
+		void edgesUpdated(RoboCompAGMWorldModel::EdgeSequence es);
 
 		// For setting the mission
 		void setMission(string path);
