@@ -15,7 +15,7 @@ module RoboCompAGMExecutive
 		void deactivate();
 
 		// For agents
-		ProposalError modificationProposal(RoboCompAGMWorldModel::World w, string sender, string log);
+		ProposalError structuralChangeProposal(RoboCompAGMWorldModel::World w, string sender, string log);
 		void symbolUpdate( RoboCompAGMWorldModel::Node n);
 		void symbolsUpdate(RoboCompAGMWorldModel::NodeSequence ns);
 		void edgeUpdated( RoboCompAGMWorldModel::Edge e);
@@ -30,7 +30,7 @@ module RoboCompAGMExecutive
 		RoboCompAGMWorldModel::Edge getEdge(int srcIdentifier, int dstIdentifier, string label);
 
 		// For visualization purposes
-		void getData(out RoboCompAGMWorldModel::World world, out RoboCompAGMWorldModel::World target, out RoboCompPlanning::Plan plan);
+		void getData(out RoboCompAGMWorldModel::World world, out string target, out RoboCompPlanning::Plan plan);
 		void broadcastModel();
 		void broadcastPlan();
 	};
@@ -47,7 +47,7 @@ module RoboCompAGMExecutive
 		void structuralChange(RoboCompAGMWorldModel::World w);
 
 		void symbolUpdated(RoboCompAGMWorldModel::Node n);
-		void symbolUpdated(RoboCompAGMWorldModel::NodeSequence ns);
+		void symbolsUpdated(RoboCompAGMWorldModel::NodeSequence ns);
 
 		void edgeUpdated(RoboCompAGMWorldModel::Edge e);
 		void edgesUpdated(RoboCompAGMWorldModel::EdgeSequence es);
