@@ -20,6 +20,11 @@ module RoboCompAGMExecutive
 		// For setting the mission
 		void setMission(string path);
 
+		// Access to the graph structure
+		RoboCompAGMWorldModel::World getModel();
+		RoboCompAGMWorldModel::Node getNode(int identifier);
+		RoboCompAGMWorldModel::Edge getEdge(int srcIdentifier, int dstIdentifier, string label);
+
 		// For visualization purposes
 		void getData(out RoboCompAGMWorldModel::World world, out RoboCompAGMWorldModel::World target, out RoboCompPlanning::Plan plan);
 		void broadcastModel();
