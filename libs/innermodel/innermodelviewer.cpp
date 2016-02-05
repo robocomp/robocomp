@@ -358,9 +358,8 @@ void InnerModelViewer::recursiveConstructor(InnerModelNode *node, osg::Group* pa
 			cam.rgb->allocateImage(rgbd->width, rgbd->height, 1, GL_RGB, GL_UNSIGNED_BYTE);
 			cam.d = new osg::Image;
 			cam.d->allocateImage(rgbd->width, rgbd->height, 1, GL_DEPTH_COMPONENT,GL_FLOAT);
-
 			cam.manipulator = new osgGA::TrackballManipulator();
-			//CAUTION check y cambiar tb camera			
+			// CAUTION check y cambiar tb camera
 			cam.viewerCamera->setSceneData(this);
 			cam.viewerCamera->setUpViewInWindow( 0, 0, rgbd->width, rgbd->height);
 			cam.viewerCamera->getCamera()->setClearMask(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

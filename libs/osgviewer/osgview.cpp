@@ -128,7 +128,7 @@ OsgView::OsgView(QWidget* parent, bool hud, const QGLWidget* shareWidget, Window
 		_gw = new osgViewer::GraphicsWindowEmbedded(0,0,800,800);
 		resize(800,800);
 	}
-	osg::DisplaySettings::instance()->setNumMultiSamples( 4 );
+// 	osg::DisplaySettings::instance()->setNumMultiSamples( 4 );
 	getCamera()->setViewport(new osg::Viewport(0, 0, width(), height()));
 	getCamera()->setGraphicsContext(getGraphicsWindow());
 
@@ -140,7 +140,7 @@ OsgView::OsgView(QWidget* parent, bool hud, const QGLWidget* shareWidget, Window
 		getCamera()->setClearMask(GL_DEPTH_BUFFER_BIT);
 	// 	getCamera()->setComputeNearFarMode(osg::CullSettings::DO_NOT_COMPUTE_NEAR_FAR);
 		setThreadingModel(osgViewer::Viewer::SingleThreaded);
-		osg::DisplaySettings::instance()->setNumMultiSamples(4);
+// 		osg::DisplaySettings::instance()->setNumMultiSamples(4);
 		initHUD();
 		osgGA::TrackballManipulator *tBall = new osgGA::TrackballManipulator;
 		///el eye en el cero, la camara en el 0 en X, 0 en Y, y a 4000 mirando al centro del eje de coordenadas, y arriba en sentido del eje Y+
@@ -152,7 +152,7 @@ OsgView::OsgView(QWidget* parent, bool hud, const QGLWidget* shareWidget, Window
 		getCamera()->setProjectionMatrixAsPerspective(55.0f, static_cast<double>(width())/static_cast<double>(height()), 0.000001, 100000.0);
 		getCamera()->setClearColor(osg::Vec4(0.,0.,0.,1.));
  		setThreadingModel(osgViewer::Viewer::SingleThreaded);
-		osg::DisplaySettings::instance()->setNumMultiSamples( 4 );
+// 		osg::DisplaySettings::instance()->setNumMultiSamples( 4 );
 		init();
 		osgGA::TrackballManipulator *tBall = new osgGA::TrackballManipulator;
 		tBall->setHomePosition(osg::Vec3(0,0,0),osg::Vec3(0.f,0.,-40.),osg::Vec3(0.0f,1.f,0.0f), false);
