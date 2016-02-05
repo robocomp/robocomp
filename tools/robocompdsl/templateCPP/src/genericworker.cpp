@@ -154,12 +154,6 @@ try:
 		return ret;
 	}	
 	
-	RoboCompAGMWorldModel::BehaviorResultType GenericWorker::status()
-	{
-		if (active)
-			return RoboCompAGMWorldModel::StatusActive;
-		return RoboCompAGMWorldModel::StatusIdle;
-	}
 	
 	bool GenericWorker::activate(const BehaviorParameters &prs)
 	{

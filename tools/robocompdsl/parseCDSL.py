@@ -208,7 +208,7 @@ class CDSLParsing:
 		component['recursiveImports'] = []
 		imprts = tree['imports']
 		if 'agmagent' in component['options']:
-			imprts = ['/robocomp/interfaces/IDSLs/AGMExecutive2.idsl', '/robocomp/interfaces/IDSLs/AGMCommonBehavior2.idsl', '/robocomp/interfaces/IDSLs/AGMWorldModel2.idsl']
+			imprts = ['/robocomp/interfaces/IDSLs/AGMExecutive.idsl', '/robocomp/interfaces/IDSLs/AGMCommonBehavior.idsl', '/robocomp/interfaces/IDSLs/AGMWorldModel.idsl']
 			for i in tree['imports']:
 				if not i in imprts:
 					imprts.append(i)

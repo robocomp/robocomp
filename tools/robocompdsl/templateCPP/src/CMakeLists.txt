@@ -104,11 +104,6 @@ for subscribe in component['subscribesTo']:
 		cog.outl('<S2>ROS'+subs.lower() + 'I.h')
 		usingROS = True
 
-try:
-	if 'agmagent' in [ x.lower() for x in component['options'] ]:
-		cog.outl("  $ENV{ROBOCOMP}/classes/agmInner/agmInner.h")
-except:
-	pass
 cog.outl(')\n')
 
 if usingROS:

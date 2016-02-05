@@ -150,7 +150,6 @@ try:
 		cog.outl("<TABHERE>bool activate(const BehaviorParameters& parameters);")
 		cog.outl("<TABHERE>bool deactivate();")
 		cog.outl("<TABHERE>bool isActive() { return active; }")
-		cog.outl("<TABHERE>RoboCompAGMWorldModel::BehaviorResultType status();")
 except:
 	pass
 
