@@ -167,6 +167,7 @@ for name, num in getNameNumber(component['requires']+component['publishes']):
 [[[cog
 if 'implements' in component:
 	for imp in component['implements']:
+		print (imp)
 		module = pool.moduleProviding(imp)
 		for interface in module['interfaces']:
 			if interface['name'] == imp:
@@ -194,9 +195,14 @@ if 'subscribesTo' in component:
 		nname = imp
 		while type(nname) != type(''):			
 			nname = nname[0]
+		print ("Looking for ", nname, pool)
+		module = pool.moduleProviding(nname)
+		print (module, type(module))
 		if communicationIsIce(nname):
-			module = pool.moduleProviding(nname)
+			print (nname, type(nname), '049')
+			print (nname, type(nname), '099')
 			for interface in module['interfaces']:
+				print (interface, type(interface))
 				if interface['name'] == nname:
 					for mname in interface['methods']:
 						method = interface['methods'][mname]

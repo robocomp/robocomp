@@ -22,64 +22,6 @@
 
 #include <agmInner/agmInner.h>
 
-// // AgmInner::AgmInner()
-// // {
-// // // 	worldModel = AGMModel::SPtr(new AGMModel());
-// // // 	worldModel->name = "worldModel";
-// // // 	innerModel = new InnerModel();
-// // }
-// // 
-// // // void AgmInner::setWorld(AGMModel::SPtr model)
-// // // {
-// // // // 	worldModel = model;
-// // // 	//idea...
-// // // 	///innerModel= extractInnerModel();
-// // // }
-// // // AGMModel::SPtr AgmInner::getWorld()
-// // // {
-// // // 	return worldModel;
-// // // }
-// // 
-// // 
-// // AgmInner::~AgmInner()
-// // {
-// // 
-// // }
-// 
-// 
-// ///functions
-// /**
-//  * @brief Search the name of the innermodel node,(the name is the unique key for innerModel ), inside de AGM Model. The innermodel id is stored in the attribute "name" of each symbol.
-//  * It is found, return the id of the symbol, the unique key for AGMSymbols, otherwise returns -1.
-//  *
-//  * @param n value of the attribute field name...
-//  * @return symbol ID, -1 if it is not found
-//  */
-// // int AgmInner::findName(QString n)
-// // {
-// // 	for (uint32_t i=0; i<worldModel->symbols.size(); ++i)
-// // 	{
-// // 		if (worldModel->symbols[i]->attributes.find("imName") != worldModel->symbols[i]->attributes.end() )
-// // 		{
-// // 			try
-// // 			{
-// // 				if (worldModel->symbols[i]->getAttribute("imName") == n.toStdString() )
-// // 				{
-// // // 					qDebug()<<"findName: FOUND"<<n<<worldModel->symbols[i]->identifier;
-// // 					return worldModel->symbols[i]->identifier;
-// // 				}
-// // 			}
-// // 			catch (...)
-// // 			{
-// // 				std::cout<<"attribue name for symbol "<< worldModel->symbols[i]->symbolType <<" "<<i<<" not found \n";
-// // 			}
-// // 		}
-// // 	}
-// // // 	qDebug()<<"findName: NO ENCONTRADO"<<n<<-1;
-// // 	return -1;
-// // }
-// 
-// 
 /**
  * @brief Search the name of the innermodel node,(the name is the unique key for innerModel ), in the AGM Model parameter. The innermodel id is stored in the attribute "name" of each symbol.
  * It is found, return the id of the symbol, the unique key for AGMSymbols, otherwise returns -1.
@@ -882,8 +824,8 @@ void AgmInner::updateAgmWithInnerModel(AGMModel::SPtr &worldModel, InnerModel* i
 	}
 }
 
-//AGMMisc::publishEdgeUpdate(edge,agmagenttopic_proxy);
-void AgmInner::updateAgmWithInnerModelAndPublish(AGMModel::SPtr &worldModel, InnerModel* im, AGMAgentTopicPrx &agmagenttopic_proxy)
+//AGMMisc::publishEdgeUpdate(edge,agmexecutive_proxy);
+void AgmInner::updateAgmWithInnerModelAndPublish(AGMModel::SPtr &worldModel, InnerModel* im, AGMExecutivePrx &agmexecutive_proxy)
 {
 	/// Vector of the edges that the model holds.
 // 	std::cout << "worldModel->edges.size(): "<<worldModel->edges.size();
@@ -912,7 +854,7 @@ void AgmInner::updateAgmWithInnerModelAndPublish(AGMModel::SPtr &worldModel, Inn
 					(*it)->setAttribute("rx",float2str( node->getRxValue()));
 					(*it)->setAttribute("ry",float2str( node->getRyValue()));
 					(*it)->setAttribute("rz",float2str( node->getRzValue()));
-					AGMMisc::publishEdgeUpdate((*it),agmagenttopic_proxy);
+					AGMMisc::publishEdgeUpdate((*it),agmexecutive_proxy);
 					usleep(10000);
 				}
 				catch (...)

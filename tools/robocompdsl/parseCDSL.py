@@ -208,7 +208,7 @@ class CDSLParsing:
 		component['recursiveImports'] = []
 		imprts = tree['imports']
 		if 'agmagent' in component['options']:
-			imprts = ['/robocomp/interfaces/IDSLs/AGMAgent.idsl', '/robocomp/interfaces/IDSLs/AGMExecutive.idsl', '/robocomp/interfaces/IDSLs/AGMCommonBehavior.idsl', '/robocomp/interfaces/IDSLs/AGMWorldModel.idsl']
+			imprts = ['/robocomp/interfaces/IDSLs/AGMExecutive2.idsl', '/robocomp/interfaces/IDSLs/AGMCommonBehavior2.idsl', '/robocomp/interfaces/IDSLs/AGMWorldModel2.idsl']
 			for i in tree['imports']:
 				if not i in imprts:
 					imprts.append(i)
@@ -265,8 +265,8 @@ class CDSLParsing:
 		if 'agmagent' in component['options']:
 			if not 'AGMCommonBehavior' in component['implements']:
 				component['implements'] =   ['AGMCommonBehavior'] + component['implements']
-			if not 'AGMAgentTopic' in component['publishes']:
-				component['publishes'] =    ['AGMAgentTopic']     + component['publishes']
+			if not 'AGMExecutive' in component['requires']:
+				component['requires'] =   ['AGMExecutive'] + component['implements']
 			if not 'AGMExecutiveTopic' in component['subscribesTo']:
 				component['subscribesTo'] = ['AGMExecutiveTopic'] + component['subscribesTo']
 
@@ -286,15 +286,15 @@ def communicationIsIce(sb):
 def bodyCodeFromName(name):
 	bodyCode=""
 	###################################### 
-	#code for subscribesTo AGMExecutiveTopic
+	# code to implement subscription to AGMExecutiveTopic
 	###################################### 
 	if name == 'structuralChange':
 		bodyCode = "<TABHERE>mutex->lock();\n <TABHERE>AGMModelConverter::fromIceToInternal(modification.newModel, worldModel);\n \n<TABHERE>delete innerModel;\n<TABHERE>innerModel = agmInner.extractInnerModel(worldModel);\n<TABHERE>mutex->unlock();"
-	if name == 'symbolUpdated' or name == 'edgeUpdated':
-		bodyCode = "<TABHERE>mutex->lock();\n <TABHERE>AGMModelConverter::includeIceModificationInInternalModel(modification, worldModel);\n \n<TABHERE>delete innerModel;\n<TABHERE>innerModel = agmInner.extractInnerModel(worldModel);\n<TABHERE>mutex->unlock();"
+	if name == 'symbolUpdated' or name == 'edgeUpdated' or name == 'symbolsUpdated' or name == 'edgesUpdated':
+		bodyCode = "<TABHERE>QMutexLocker locker(mutex);\n<TABHERE>AGMModelConverter::includeIceModificationInInternalModel(modification, worldModel);\n \n<TABHERE>delete innerModel;\n<TABHERE>innerModel = agmInner.extractInnerModel(worldModel);"
 		
 	###################################### 
-	#code for implements AGMCommonBehavior.
+	# code to implement AGMCommonBehavior.
 	###################################### 
 	if name == 'activateAgent':
 		bodyCode = "<TABHERE>bool activated = false;\n<TABHERE>if (setParametersAndPossibleActivation(prs, activated))\n<TABHERE>{\n<TABHERE><TABHERE>if (not activated)\n<TABHERE><TABHERE>{\n<TABHERE><TABHERE><TABHERE>return activate(p);\n<TABHERE><TABHERE>}\n<TABHERE>}\n<TABHERE>else\n<TABHERE>{\n<TABHERE><TABHERE>return false;\n<TABHERE>}\n<TABHERE>return true;"
