@@ -266,7 +266,7 @@ class CDSLParsing:
 			if not 'AGMCommonBehavior' in component['implements']:
 				component['implements'] =   ['AGMCommonBehavior'] + component['implements']
 			if not 'AGMExecutive' in component['requires']:
-				component['requires'] =   ['AGMExecutive'] + component['implements']
+				component['requires'] =   ['AGMExecutive'] + component['requires']
 			if not 'AGMExecutiveTopic' in component['subscribesTo']:
 				component['subscribesTo'] = ['AGMExecutiveTopic'] + component['subscribesTo']
 

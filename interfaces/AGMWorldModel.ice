@@ -30,9 +30,9 @@ module RoboCompAGMWorldModel
 	["cpp:comparable"]
 	struct World
 	{
-		int version;
 		NodeSequence nodes;
 		EdgeSequence edges;
+		int version;
 	};
 
 };
