@@ -3,8 +3,7 @@
 
 module RoboCompAGMWorldModel
 {
-
-	dictionary<string, string>StringDictionary;
+	dictionary<string, string> StringDictionary;
 
 	["cpp:comparable"]
 	struct Node
