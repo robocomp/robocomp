@@ -108,8 +108,24 @@ void AgmInner::edgeToInnerModel(AGMModel::SPtr &worldModel, AGMModelEdge edge, I
 	const AGMModelSymbol::SPtr &symbolA = worldModel->getSymbol(first);
 	const AGMModelSymbol::SPtr &symbolB = worldModel->getSymbol(second);
 
-	QString nameA = QString::fromStdString(symbolA->getAttribute("imName"));
-	QString nameB = QString::fromStdString(symbolB->getAttribute("imName"));
+	QString nameA, nameB;
+	
+	try
+	{
+		nameA = QString::fromStdString(symbolA->getAttribute("imName"));
+	}
+	catch(...)
+	{
+		printf("Couldn't find attribute imName for %s\n", nameA.toStdString().c_str());
+	}
+	try
+	{
+		nameB = QString::fromStdString(symbolB->getAttribute("imName"));
+	}
+	catch(...)
+	{
+		printf("Couldn't find attribute imName for %s\n", nameB.toStdString().c_str());
+	}
 
 // 	qDebug()<<"insertar en new InnerModel "<<nameA<<"--"<< QString::fromStdString ( edge->getLabel() ) <<"-->"<<nameB;//<<tx<<ty<<tz<<rx<<ry<<rz;
 // 	qDebug()<<"equivalente al enlace en AGM "<<QString::fromStdString (symbolA->toString())<<"--"<< QString::fromStdString ( edge->getLabel() ) <<"-->"<<QString::fromStdString (symbolB->toString());//<<tx<<ty<<tz<<rx<<ry<<rz;
