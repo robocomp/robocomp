@@ -15,7 +15,6 @@
 <!--			<plane id="ddB" nz="1" pz="-2500" py="200" px="0" size="5000,500,10" texture="#555555" />
 			<plane id="ddB2" nz="1" pz="-2500" py="200" px="0" size="5000,500,13" texture="#555555" />-->
 
-
 			<transform id="t_table" tz="900">
 				<mesh id="table" file="/home/robocomp/robocomp/files/osgModels/mobiliario/mes_comedor.osg" tz="-100" rx="1.572" scale="100" />
 			</transform>
