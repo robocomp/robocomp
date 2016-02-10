@@ -9,7 +9,7 @@
 #ifndef ROBOCOMPLEGCONTROLLER_ICE
 #define ROBOCOMPLEGCONTROLLER_ICE
 
-module RoboComplegController
+module RoboCompLegController
 {
 	struct PoseLeg
 	{
@@ -38,7 +38,7 @@ module RoboComplegController
 		bool ismoving;
 	};
 	
-	interface legController
+	interface LegController
 	{
 		void setIKLeg(PoseLeg p);
 		void setFKLeg(AnglesLeg al);
