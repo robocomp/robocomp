@@ -19,6 +19,13 @@ module RoboCompLegController
 		float vel;		//rad/s
 		string ref;
 	};
+	struct PoseBody
+	{
+		float rx;		//rad
+		float ry;		//rad
+		float rz;		//rad
+		float vel;		//rad/s
+	};
 	struct AnglesLeg
 	{
 		float q1; 	//rad
@@ -41,6 +48,7 @@ module RoboCompLegController
 	interface LegController
 	{
 		void setIKLeg(PoseLeg p);
+		void setIKBody(PoseBody p);
 		void setFKLeg(AnglesLeg al);
 		StateLeg getStateLeg();
 	};
