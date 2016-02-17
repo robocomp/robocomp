@@ -66,8 +66,6 @@ for subscribe in component['subscribesTo']:
 		subs = subs[0]
 	if communicationIsIce(subscribe):
 		cog.outl('<S2>' + subs.lower() + 'I.cpp')
-	else:
-		cog.outl('<S2>ROS' + subs.lower() + 'I.cpp')
 		
 try:
 	if 'agmagent' in [ x.lower() for x in component['options'] ]:
@@ -101,7 +99,6 @@ for subscribe in component['subscribesTo']:
 	if communicationIsIce(subscribe):
 		cog.outl('<S2>'+subs.lower() + 'I.h')
 	else:
-		cog.outl('<S2>ROS'+subs.lower() + 'I.h')
 		usingROS = True
 
 try:
@@ -112,6 +109,7 @@ except:
 cog.outl(')\n')
 
 if usingROS:
+	cog.outl('#ROS')
 	cog.outl('find_package(catkin REQUIRED)')
 	cog.outl('include_directories(  ${catkin_INCLUDE_DIRS} )')
 	cog.outl('SET ( LIBS ${LIBS} ${catkin_LIBRARIES} -L/opt/ros/jade/lib -lroscpp -lrosconsole -lroscpp_serialization)')

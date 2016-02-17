@@ -66,15 +66,16 @@ if component['gui'] != 'none':
 #include <CommonBehavior.h>
 
 [[[cog
-for subscribe in component['subscribesTo']:
-	subs = subscribe
-	while type(subs) != type(''):
-		subs = subs[0]
-	if not communicationIsIce(subscribe):
-		usingROS = True
-		cog.outl('#include <std_msgs/'+subs.lower()+'.h>')
+usingROS = False
+if 'subscribesTo' in component:
+	for subscribe in component['subscribesTo']:
+		subs = subscribe
+		while type(subs) != type(''):
+			subs = subs[0]
+		if not communicationIsIce(subscribe):
+			usingROS = True
+			cog.outl('#include <std_msgs/'+subs+'.h>')
 
-cog.outl('')
 if usingROS:
 	cog.outl('#include <ros/ros.h>')
 ]]]
@@ -210,7 +211,7 @@ if 'subscribesTo' in component:
 		nname = imp
 		while type(nname) != type(''):			
 			nname = nname[0]
-		if communicationIsIce(nname):
+		if communicationIsIce(imp):
 			module = pool.moduleProviding(nname)
 			for interface in module['interfaces']:
 				if interface['name'] == nname:
@@ -233,7 +234,7 @@ if 'subscribesTo' in component:
 							paramStrA += delim + const + p['type'] + ' ' + ampersand + p['name']
 							cog.outl("<TABHERE>virtual " + method['return'] + ' ' + method['name'] + '(' + paramStrA + ") = 0;")
 		else:
-			cog.outl("<TABHERE>virtual void ROS" + nname.lower() + '(const std_msgs::' + nname.lower() + "::ConstPtr& recv" + nname.lower() + ") = 0;")
+			cog.outl("<TABHERE>virtual void ROS" + nname.lower() + '(const std_msgs::' + nname + "::ConstPtr& recv" + nname + ") = 0;")
 	
 
 				
@@ -263,13 +264,14 @@ except:
 
 private:
 [[[cog
-for subscribe in component['subscribesTo']:
-	subs = subscribe
-	while type(subs) != type(''):
-		subs = subs[0]
-	if not communicationIsIce(subscribe):
-		cog.outl('ros::NodeHandle n'+subs.lower()+';')
-		cog.outl('ros::Subscriber sub'+subs.lower()+';')
+if 'subscribesTo' in component:
+	for subscribe in component['subscribesTo']:
+		subs = subscribe
+		while type(subs) != type(''):
+			subs = subs[0]
+		if not communicationIsIce(subscribe):
+			cog.outl('ros::NodeHandle n'+subs+';')
+			cog.outl('ros::Subscriber sub'+subs+';')
 ]]]
 [[[end]]]
 

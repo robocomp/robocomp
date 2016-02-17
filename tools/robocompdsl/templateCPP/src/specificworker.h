@@ -117,7 +117,7 @@ if 'subscribesTo' in component:
 		nname = imp
 		while type(nname) != type(''):			
 			nname = nname[0]
-		if communicationIsIce(nname):
+		if communicationIsIce(imp):
 			module = pool.moduleProviding(nname)
 			for interface in module['interfaces']:
 				if interface['name'] == nname:
@@ -140,7 +140,7 @@ if 'subscribesTo' in component:
 							paramStrA += delim + const + p['type'] + ' ' + ampersand + p['name']
 						cog.outl("<TABHERE>" + method['return'] + ' ' + method['name'] + '(' + paramStrA + ");")
 		else:
-			cog.outl("<TABHERE>" + method['return'] + ' ' + method['name'] + "();")
+			cog.outl("<TABHERE>")
 
 ]]]
 [[[end]]]

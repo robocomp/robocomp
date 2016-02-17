@@ -277,8 +277,7 @@ class CDSLParsing:
 
 def communicationIsIce(sb):
 	isIce = True
-	
-	if len(sb) > 1 and type(sb)==type([]):
+	if len(sb) == 2:
 		if sb[1] == 'ros'.lower():
 			isIce = False
 		elif sb[1] != 'ice'.lower() :

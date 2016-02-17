@@ -180,7 +180,7 @@ if 'subscribesTo' in component:
 		nname = imp
 		while type(nname) != type(''):
 			nname = nname[0]
-		if communicationIsIce(nname):
+		if communicationIsIce(imp):
 			module = pool.moduleProviding(nname)
 			for interface in module['interfaces']:
 				if interface['name'] == nname:
