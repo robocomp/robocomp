@@ -64,6 +64,22 @@ if component['gui'] != 'none':
 [[[end]]]
 
 #include <CommonBehavior.h>
+
+[[[cog
+for subscribe in component['subscribesTo']:
+	subs = subscribe
+	while type(subs) != type(''):
+		subs = subs[0]
+	if not communicationIsIce(subscribe):
+		usingROS = True
+		cog.outl('#include <std_msgs/'+subs.lower()+'.h>')
+
+cog.outl('')
+if usingROS:
+	cog.outl('#include <ros/ros.h>')
+]]]
+[[[end]]]
+
 [[[cog
 
 for m in pool.modulePool:
@@ -217,7 +233,7 @@ if 'subscribesTo' in component:
 							paramStrA += delim + const + p['type'] + ' ' + ampersand + p['name']
 							cog.outl("<TABHERE>virtual " + method['return'] + ' ' + method['name'] + '(' + paramStrA + ") = 0;")
 		else:
-			cog.outl("<TABHERE>virtual ROS" + method['return'] + ' ' + method['name'] + "() = 0;")
+			cog.outl("<TABHERE>virtual void ROS" + nname.lower() + '(const std_msgs::' + nname.lower() + "::ConstPtr& recv" + nname.lower() + ") = 0;")
 	
 
 				
@@ -242,6 +258,18 @@ try:
 except:
 	pass
 
+]]]
+[[[end]]]
+
+private:
+[[[cog
+for subscribe in component['subscribesTo']:
+	subs = subscribe
+	while type(subs) != type(''):
+		subs = subs[0]
+	if not communicationIsIce(subscribe):
+		cog.outl('ros::NodeHandle n'+subs.lower()+';')
+		cog.outl('ros::Subscriber sub'+subs.lower()+';')
 ]]]
 [[[end]]]
 
