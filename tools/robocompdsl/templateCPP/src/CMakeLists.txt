@@ -114,7 +114,7 @@ cog.outl(')\n')
 if usingROS:
 	cog.outl('find_package(catkin REQUIRED)')
 	cog.outl('include_directories(  ${catkin_INCLUDE_DIRS} )')
-	cog.outl('SET ( LIBS ${LIBS} ${catkin_LIBRARIES} -L/opt/ros/jade/lib -lroscpp -lrosconsole -lroscpp_serialization) # -lrosbag')
+	cog.outl('SET ( LIBS ${LIBS} ${catkin_LIBRARIES} -L/opt/ros/jade/lib -lroscpp -lrosconsole -lroscpp_serialization)')
 ]]]
 [[[end]]]
 
