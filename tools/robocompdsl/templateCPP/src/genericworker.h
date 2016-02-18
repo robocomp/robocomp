@@ -234,7 +234,7 @@ if 'subscribesTo' in component:
 							paramStrA += delim + const + p['type'] + ' ' + ampersand + p['name']
 							cog.outl("<TABHERE>virtual " + method['return'] + ' ' + method['name'] + '(' + paramStrA + ") = 0;")
 		else:
-			cog.outl("<TABHERE>virtual void ROS" + nname.lower() + '(const std_msgs::' + nname + "::ConstPtr& recv" + nname + ") = 0;")
+			cog.outl("<TABHERE>virtual void ros" + nname + '(const std_msgs::' + nname + "::ConstPtr& recv" + nname + ") = 0;")
 	
 
 				

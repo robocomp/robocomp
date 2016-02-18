@@ -140,7 +140,7 @@ if 'subscribesTo' in component:
 							paramStrA += delim + const + p['type'] + ' ' + ampersand + p['name']
 						cog.outl("<TABHERE>" + method['return'] + ' ' + method['name'] + '(' + paramStrA + ");")
 		else:
-			cog.outl("<TABHERE>")
+			cog.outl("<TABHERE>void ros"+nname+'(const std_msgs::'+nname+'::ConstPtr& recv'+nname+');')
 
 ]]]
 [[[end]]]

@@ -142,6 +142,21 @@ void SpecificWorker::compute()
 // 	{
 // 		std::cout << "Error reading from Camera" << e << std::endl;
 // 	}
+[[[cog
+
+usingROS = False
+if 'subscribesTo' in component:
+	for imp in component['subscribesTo']:
+		nname = imp
+		while type(nname) != type(''):
+			nname = nname[0]
+		if not communicationIsIce(imp):
+			usingROS = True
+if usingROS:
+	cog.outl("<TABHERE>ros::spinOnce();")
+
+]]]
+[[[end]]]
 }
 
 
@@ -202,7 +217,7 @@ if 'subscribesTo' in component:
 						bodyCode = bodyCodeFromName(method['name'])
 						cog.outl(method['return'] + ' SpecificWorker::' + method['name'] + '(' + paramStrA + ")\n{\n"+bodyCode+"\n}\n")
 		else:
-			cog.outl("// ROS CODE FOR FUNCTION X")
+			cog.outl("void SpecificWorker::ros"+nname+'(const std_msgs::'+nname+'ConstPtr& recv'+nname+")\n{\n}")
 
 
 

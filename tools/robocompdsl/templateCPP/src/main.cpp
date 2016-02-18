@@ -229,7 +229,6 @@ for subscribe in component['subscribesTo']:
 		cog.outl('#include <'+subs.lower()+'I.h>')
 	else:
 		usingROS = True
-		cog.outl('//#include <ROS '+subs.lower()+'I.h>')
 
 cog.outl('')
 

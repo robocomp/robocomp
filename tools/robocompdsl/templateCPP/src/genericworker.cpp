@@ -87,6 +87,16 @@ if component['gui'] != 'none':
 		setupUi(this);
 		show();
 	#endif""")
+
+if 'subscribesTo' in component:
+	for subscribe in component['subscribesTo']:
+		subs = subscribe
+		while type(subs) != type(''):
+			subs = subs[0]
+		if not communicationIsIce(subscribe):
+			usingROS = True
+			cog.outl('<TABHERE>sub'+subs+' = n' +subs+'.subscribe("chatter", 1000, &GenericWorker::ros'+subs+', this);')
+			
 ]]]
 [[[end]]]
 	Period = BASIC_PERIOD;
