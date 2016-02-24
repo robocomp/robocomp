@@ -109,7 +109,7 @@ void AgmInner::edgeToInnerModel(AGMModel::SPtr &worldModel, AGMModelEdge edge, I
 	const AGMModelSymbol::SPtr &symbolB = worldModel->getSymbol(second);
 
 	QString nameA, nameB;
-	
+
 	try
 	{
 		nameA = QString::fromStdString(symbolA->getAttribute("imName"));
@@ -178,17 +178,21 @@ void AgmInner::edgeToInnerModel(AGMModel::SPtr &worldModel, AGMModelEdge edge, I
 void AgmInner::insertSymbolToInnerModelNode(AGMModel::SPtr &worldModel, InnerModel* imNew,InnerModelNode *parentNode, AGMModelSymbol::SPtr s, float tx, float ty, float tz, float rx, float ry, float rz, bool ignoreMeshes)
 {
 
-try
+	try
 	{
+printf("%s : %d\n", __FILE__, __LINE__);
+
 	QString nodeName = QString::fromStdString(s->getAttribute("imName"));
 //  	std::cout<<"\nadding "<<nodeName.toStdString();
 // 	std::cout<<" type "<<s->getAttribute("imType");
 // 	std::cout<<" parent->id "<<parentNode->id.toStdString();
 // 	std::cout<<" attrs.size() "<<s->attributes.size()<<"\n";
 
+printf("%s : %d\n", __FILE__, __LINE__);
 
 	if (s->getAttribute("imType")=="transform")
 	{
+printf("%s : %d\n", __FILE__, __LINE__);
 		//std::cout<<"\t type: "<<s->getAttribute("imType") <<"\n";
 		QString engine ="static";
 		float mass =0.;
@@ -218,9 +222,12 @@ try
 		{
 			qDebug()<<"\tExiste transform "<<nodeName;
 		}
+printf("%s : %d\n", __FILE__, __LINE__);
+
 	}
 	else if (s->getAttribute("imType")=="plane")
 	{
+printf("%s : %d\n", __FILE__, __LINE__);
 // // 		std::cout<<"\t type: "<<s->getAttribute("imType") <<"\n";
 		float width=0.;
 		float height=0.;
@@ -347,6 +354,8 @@ try
 	}
 	else if (s->getAttribute("imType")=="mesh")
 	{
+printf("%s : %d\n", __FILE__, __LINE__);
+
 		if (ignoreMeshes) return;
 // 		std::cout<<"\t type: "<<s->getAttribute("imType") <<"\n";
 		QString meshPath="";
@@ -424,6 +433,8 @@ try
 	}
 	else if (s->getAttribute("imType")=="rgbd")
 	{
+printf("%s : %d\n", __FILE__, __LINE__);
+
 // 		std::cout<<"\t type: "<<s->getAttribute("imType") <<"\n";
 
 		int port=0;
@@ -483,6 +494,8 @@ try
 	}
 	else if (s->getAttribute("imType")=="camera")
 	{
+printf("%s : %d\n", __FILE__, __LINE__);
+
 // 		std::cout<<"\t type: "<<s->getAttribute("imType") <<"\n";
 
 		float focal, height, width;
@@ -628,6 +641,8 @@ try
 	}
 	else if (s->getAttribute("imType")=="joint")
 	{
+printf("%s : %d\n", __FILE__, __LINE__);
+
 // 		std::cout<<"\t type: "<<s->getAttribute("imType") <<"\n";
 		//QString id_, float lx_, float ly_, float lz_, float hx_, float hy_, float hz_, float tx_, float ty_, float tz_, float rx_, ;
 		//float ry_, float rz_, float min_, float max_, uint32_t port_, std::string axis_, float home_,
@@ -791,7 +806,7 @@ void AgmInner::checkLoop(AGMModel::SPtr &worldModel, int& symbolID, QList<int> &
 // 		//comprobamos el id del simbolo para evitar los arcos que le llegan y seguir solo los que salen del nodo
 // 		if ((*edge_itr)->getLabel() == linkType && (*edge_itr)->getSymbolPair().first==symbolID )
 // 		{
-// 
+//
 // 			l.append((*edge_itr)->getSymbolPair().second);
 // 		}
 // 	}
@@ -846,7 +861,7 @@ void AgmInner::updateAgmWithInnerModelAndPublish(AGMModel::SPtr &worldModel, Inn
 	/// Vector of the edges that the model holds.
 // 	std::cout << "worldModel->edges.size(): "<<worldModel->edges.size();
 
-	
+
 	for (std::vector<AGMModelEdge>::iterator it = worldModel->edges.begin() ; it != worldModel->edges.end(); ++it)
 	{
 // 		std::cout << ' ' << (*it)->toString(worldModel)<<"\n";
@@ -935,15 +950,15 @@ AGMModel::SPtr AgmInner::extractSymbolicGraph(AGMModel::SPtr &worldModel)
 // {
 // 	AGMModel::SPtr  agmTmp = AGMModel::SPtr(new AGMModel());
 // 	cout<<"agmFilePath: " <<agmFilePath<<"\n";
-// 
-// 
+//
+//
 // 	AGMModelConverter::fromXMLToInternal(agmFilePath, agmTmp);
 // 	InnerModel *imTmp= new InnerModel (imFilePath);
-// 
+//
 // 	std::cout<<agmTmp->numberOfSymbols()<<" "<<agmTmp->numberOfEdges()<<"\n";
 // 	AGMModelPrinter::printWorld(agmTmp);
 // 	imTmp->treePrint();
-// 
+//
 // 	//if imNode not in agmOriginal, remove the symbol associated to the node in the agmCaliente if exist
 // 	foreach (QString n, imTmp->getIDKeys() )
 // 	{
@@ -958,7 +973,7 @@ AGMModel::SPtr AgmInner::extractSymbolicGraph(AGMModel::SPtr &worldModel)
 // 			}
 // 		}
 // 	}
-// 
+//
 // 	return agmTmp;
 // }
 
@@ -1159,14 +1174,14 @@ void AgmInner::includeInnerModel(AGMModel::SPtr &worldModel, int symbolID, Inner
 		std::cout<<"AGMSymbol does not has imType attribute adding default value transform \n";
 		symbol->setAttribute("imType","transform");
 	}
-	
+
 	try
 	{
 		symbol->getAttribute("imName");
 	}
 	catch (...)
 	{
-		string imName =symbol->symbolType+"_"+int2str(symbolID);
+		string imName = symbol->symbolType+"_"+int2str(symbolID);
 		std::cout<<"AGMSymbol: "<< symbol->toString()<<" does not has imName attribute. Adding imName: "<<imName<<"\n";
 		symbol->setAttribute("imName",imName);
 	}
@@ -1176,10 +1191,7 @@ void AgmInner::includeInnerModel(AGMModel::SPtr &worldModel, int symbolID, Inner
 
 void AgmInner::recursiveInsertion(AGMModel::SPtr &worldModel, InnerModelNode* node, int &symbolID)
 {
-	QList<InnerModelNode*>::iterator i;
-// 	int p=symbolID;
-
-	for (i=node->children.begin(); i!=node->children.end(); i++)
+	for (QList<InnerModelNode*>::iterator i=node->children.begin(); i!=node->children.end(); i++)
 	{
 		qDebug()<<node->id<<"link"<<(*i)->id;
 		//symbol
