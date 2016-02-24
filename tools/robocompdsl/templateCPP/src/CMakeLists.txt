@@ -135,6 +135,7 @@ SET( QT_USE_QTOPENGL TRUE )
 SET( QT_USE_QTXML TRUE )
 SET( QT_USE_QTSTATE TRUE )
 SET( QT_USE_QTSTATEMACHINE TRUE )
+SET( CMAKE_AUTOMOC TRUE )
 INCLUDE( ${QT_USE_FILE} )
 
 [[[cog
@@ -142,7 +143,7 @@ if component['gui'] != 'none':
 	cog.outl("QT4_WRAP_UI( UI_HEADERS mainUI.ui )")
 ]]]
 [[[end]]]
-QT4_WRAP_CPP( MOC_SOURCES ${HEADERS} )
+
 
 
 # Specify construction and link process
