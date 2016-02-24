@@ -1158,7 +1158,6 @@ void AgmInner::includeInnerModel(AGMModel::SPtr &worldModel, int symbolID, Inner
 	{
 		std::cout<<"AGMSymbol does not has imType attribute adding default value transform \n";
 		symbol->setAttribute("imType","transform");
-	
 	}
 	
 	try
@@ -1168,10 +1167,10 @@ void AgmInner::includeInnerModel(AGMModel::SPtr &worldModel, int symbolID, Inner
 	catch (...)
 	{
 		string imName =symbol->symbolType+"_"+int2str(symbolID);
-		std::cout<<"AGMSymbol: "<< symbol->toString()<<" does not has imName attribute. Adding imName: "<<imName<<"\n";		
+		std::cout<<"AGMSymbol: "<< symbol->toString()<<" does not has imName attribute. Adding imName: "<<imName<<"\n";
 		symbol->setAttribute("imName",imName);
 	}
-	recursiveInsertion(worldModel,im->getRoot(),symbolID);
+	recursiveInsertion(worldModel, im->getRoot(), symbolID);
 
 }
 
@@ -1182,44 +1181,48 @@ void AgmInner::recursiveInsertion(AGMModel::SPtr &worldModel, InnerModelNode* no
 
 	for (i=node->children.begin(); i!=node->children.end(); i++)
 	{
-		//Search name (key) of the innerModel node in AGM
-		int existingID = findSymbolIDWithInnerModelName (worldModel, (*i)->id ) ;
-		if ( existingID == -1 )
+		qDebug()<<node->id<<"link"<<(*i)->id;
+		//symbol
+		std::map<std::string, std::string> attrs;
+		attrs = ImNodeToSymbol((*i));
+
+		//edge
+		std::map<std::string, std::string> linkAttrs;
+		if (attrs["imType"] == "mesh")
 		{
-			qDebug()<<node->id<<"link"<<(*i)->id;
-			//symbol
-			std::map<std::string, std::string> attrs;
-			attrs = ImNodeToSymbol((*i));
-			int32_t id =worldModel->getNewId();
-			AGMModelSymbol::SPtr newSym = worldModel->newSymbol(id,attrs["imType"],attrs);
-
-			//edge
-			std::map<std::string, std::string> linkAttrs;
-			if (newSym->typeString()=="mesh")
-			{
-				InnerModelMesh* mesh = dynamic_cast<InnerModelMesh*>((*i));
-				linkAttrs.insert ( std::pair<std::string,std::string>("tx",float2str(mesh->tx)) );
-				linkAttrs.insert ( std::pair<std::string,std::string>("ty",float2str(mesh->ty)) );
-				linkAttrs.insert ( std::pair<std::string,std::string>("tz",float2str(mesh->tz)) );
-				linkAttrs.insert ( std::pair<std::string,std::string>("rx",float2str(mesh->rx)) );
-				linkAttrs.insert ( std::pair<std::string,std::string>("ry",float2str(mesh->ry)) );
-				linkAttrs.insert ( std::pair<std::string,std::string>("rz",float2str(mesh->rz)) );
-			}
-			else
-			{
-				linkAttrs.insert ( std::pair<std::string,std::string>("tx",float2str((*i)->getTr().x())) );
-				linkAttrs.insert ( std::pair<std::string,std::string>("ty",float2str((*i)->getTr().y())) );
-				linkAttrs.insert ( std::pair<std::string,std::string>("tz",float2str((*i)->getTr().z())) );
-				linkAttrs.insert ( std::pair<std::string,std::string>("rx",float2str((*i)->getRxValue())));
-				linkAttrs.insert ( std::pair<std::string,std::string>("ry",float2str((*i)->getRyValue())));
-				linkAttrs.insert ( std::pair<std::string,std::string>("rz",float2str((*i)->getRzValue())));
-			}
-
-			worldModel->addEdgeByIdentifiers(p,id,"RT",linkAttrs);
-			recursiveInsertion(worldModel, (*i),id);
+			InnerModelMesh* mesh = dynamic_cast<InnerModelMesh*>((*i));
+			linkAttrs.insert(std::pair<std::string,std::string>("tx", float2str(mesh->tx)) );
+			linkAttrs.insert(std::pair<std::string,std::string>("ty", float2str(mesh->ty)) );
+			linkAttrs.insert(std::pair<std::string,std::string>("tz", float2str(mesh->tz)) );
+			linkAttrs.insert(std::pair<std::string,std::string>("rx", float2str(mesh->rx)) );
+			linkAttrs.insert(std::pair<std::string,std::string>("ry", float2str(mesh->ry)) );
+			linkAttrs.insert(std::pair<std::string,std::string>("rz", float2str(mesh->rz)) );
 		}
 		else
-			recursiveInsertion(worldModel, (*i),existingID);
+		{
+			linkAttrs.insert(std::pair<std::string,std::string>("tx", float2str((*i)->getTr().x())) );
+			linkAttrs.insert(std::pair<std::string,std::string>("ty", float2str((*i)->getTr().y())) );
+			linkAttrs.insert(std::pair<std::string,std::string>("tz", float2str((*i)->getTr().z())) );
+			linkAttrs.insert(std::pair<std::string,std::string>("rx", float2str((*i)->getRxValue())));
+			linkAttrs.insert(std::pair<std::string,std::string>("ry", float2str((*i)->getRyValue())));
+			linkAttrs.insert(std::pair<std::string,std::string>("rz", float2str((*i)->getRzValue())));
+		}
+
+
+		//Search name (key) of the innerModel node in AGM
+		int existingID = findSymbolIDWithInnerModelName(worldModel, (*i)->id );
+		if (existingID == -1)
+		{
+			int32_t id = worldModel->getNewId();
+			AGMModelSymbol::SPtr newSym = worldModel->newSymbol(id, attrs["imType"], attrs);
+			worldModel->addEdgeByIdentifiers(symbolID, id, "RT", linkAttrs);
+			recursiveInsertion(worldModel, (*i), id);
+		}
+		else
+		{
+			worldModel->addEdgeByIdentifiers(symbolID, existingID, "RT", linkAttrs);
+			recursiveInsertion(worldModel, (*i), existingID);
+		}
 	}
 }
 
