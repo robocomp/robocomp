@@ -1177,7 +1177,7 @@ void AgmInner::includeInnerModel(AGMModel::SPtr &worldModel, int symbolID, Inner
 void AgmInner::recursiveInsertion(AGMModel::SPtr &worldModel, InnerModelNode* node, int &symbolID)
 {
 	QList<InnerModelNode*>::iterator i;
-	int p=symbolID;
+// 	int p=symbolID;
 
 	for (i=node->children.begin(); i!=node->children.end(); i++)
 	{
