@@ -102,7 +102,7 @@ void AgmInner::edgeToInnerModel(AGMModel::SPtr &worldModel, AGMModelEdge edge, I
 	InnerModelNode* nodeA = NULL;
 	//InnerModelNode* nodeB = NULL;
 
-	int first = edge->getSymbolPair().first;
+	int first = edge->getSymbolPair().first;    
 	int second = edge->getSymbolPair().second;
 
 	const AGMModelSymbol::SPtr &symbolA = worldModel->getSymbol(first);
@@ -116,15 +116,21 @@ void AgmInner::edgeToInnerModel(AGMModel::SPtr &worldModel, AGMModelEdge edge, I
 	}
 	catch(...)
 	{
-		printf("Couldn't find attribute imName for %s\n", nameA.toStdString().c_str());
+		string defaultName = symbolA->symbolType +"_"+int2str(symbolA->identifier);
+		printf("Couldn't find attribute imName for %s . Creating a default name: %s \n", nameA.toStdString().c_str(), defaultName.c_str());
+		symbolA->setAttribute("imName", defaultName);
+		symbolA->setAttribute("imType", "transform");		
 	}
 	try
 	{
-		nameB = QString::fromStdString(symbolB->getAttribute("imName"));
+		nameB = QString::fromStdString(symbolB->getAttribute("imName"));		
 	}
 	catch(...)
 	{
-		printf("Couldn't find attribute imName for %s\n", nameB.toStdString().c_str());
+		string defaultName = symbolB->symbolType +"_"+int2str(symbolB->identifier);
+		printf("Couldn't find attribute imName for %s. Creating a default name: %s\n", nameB.toStdString().c_str(), defaultName.c_str());
+		symbolB->setAttribute("imName", defaultName);
+		symbolB->setAttribute("imType", "transform");
 	}
 
 // 	qDebug()<<"insertar en new InnerModel "<<nameA<<"--"<< QString::fromStdString ( edge->getLabel() ) <<"-->"<<nameB;//<<tx<<ty<<tz<<rx<<ry<<rz;
