@@ -105,8 +105,8 @@ void AgmInner::edgeToInnerModel(AGMModel::SPtr &worldModel, AGMModelEdge edge, I
 	int first = edge->getSymbolPair().first;    
 	int second = edge->getSymbolPair().second;
 
-	const AGMModelSymbol::SPtr &symbolA = worldModel->getSymbol(first);
-	const AGMModelSymbol::SPtr &symbolB = worldModel->getSymbol(second);
+	AGMModelSymbol::SPtr &symbolA = worldModel->getSymbol(first);
+	AGMModelSymbol::SPtr &symbolB = worldModel->getSymbol(second);
 
 	QString nameA, nameB;
 	
