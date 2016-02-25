@@ -259,6 +259,14 @@ protected:
 	QTimer timer;
 	int Period;
 [[[cog
+if 'publishes' in component:
+	for publish in component['publishes']:
+		pubs = publish
+		while type(pubs) != type(''):
+			pubs = pubs[0]
+		if not communicationIsIce(publish):
+			cog.outl('<TABHERE>ros::NodeHandle npub'+pubs+';')
+			cog.outl('<TABHERE>ros::Publisher pub'+pubs+';')
 try:
 	if 'agmagent' in [ x.lower() for x in component['options'] ]:
 		cog.outl("<TABHERE>bool active;")
@@ -285,15 +293,6 @@ if 'subscribesTo' in component:
 		if not communicationIsIce(subscribe):
 			cog.outl('<TABHERE>ros::NodeHandle nsub'+subs+';')
 			cog.outl('<TABHERE>ros::Subscriber sub'+subs+';')
-			
-if 'publishes' in component:
-	for publish in component['publishes']:
-		pubs = publish
-		while type(pubs) != type(''):
-			pubs = pubs[0]
-		if not communicationIsIce(publish):
-			cog.outl('<TABHERE>ros::NodeHandle npub'+pubs+';')
-			cog.outl('<TABHERE>ros::Publisher pubs'+pubs+';')
 ]]]
 [[[end]]]
 

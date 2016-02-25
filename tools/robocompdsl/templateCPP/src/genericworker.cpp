@@ -95,7 +95,7 @@ if 'subscribesTo' in component:
 		while type(subs) != type(''):
 			subs = subs[0]
 		if not communicationIsIce(subscribe):
-			cog.outl('<TABHERE>sub'+subs+' = n' +subs+'.subscribe("chatter", 1000, &GenericWorker::ros'+subs+', this);')
+			cog.outl('<TABHERE>sub'+subs+' = nsub' +subs+'.subscribe("chatter", 1000, &GenericWorker::ros'+subs+', this);')
 
 if 'publishes' in component:
 	for publish in component['publishes']:
@@ -103,7 +103,7 @@ if 'publishes' in component:
 		while type(pubs) != type(''):
 			pubs = pubs[0]
 		if not communicationIsIce(publish):
-			cog.outl('<TABHERE>pub'+pubs+' = n'+pubs+'.advertise<std_msgs::'+pubs+'>(n'+pubs+'.resolveName("chatter"), 1000);')
+			cog.outl('<TABHERE>pub'+pubs+' = npub'+pubs+'.advertise<std_msgs::'+pubs+'>(npub'+pubs+'.resolveName("chatter"), 1000);')
 
 ]]]
 [[[end]]]
