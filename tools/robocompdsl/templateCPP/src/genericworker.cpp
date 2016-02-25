@@ -75,7 +75,8 @@ for name, num in getNameNumber(component['requires']):
 
 [[[cog
 for name, num in getNameNumber(component['publishes']):
-	cog.outl("<TABHERE>"+name.lower()+num+"_proxy = (*("+name+"Prx*)mprx[\""+name+"Pub"+num+"\"]);")
+	if communicationIsIce(name):
+		cog.outl("<TABHERE>"+name.lower()+num+"_proxy = (*("+name+"Prx*)mprx[\""+name+"Pub"+num+"\"]);")
 ]]]
 [[[end]]]
 
@@ -94,9 +95,16 @@ if 'subscribesTo' in component:
 		while type(subs) != type(''):
 			subs = subs[0]
 		if not communicationIsIce(subscribe):
-			usingROS = True
 			cog.outl('<TABHERE>sub'+subs+' = n' +subs+'.subscribe("chatter", 1000, &GenericWorker::ros'+subs+', this);')
-			
+
+if 'publishes' in component:
+	for publish in component['publishes']:
+		pubs = publish
+		while type(pubs) != type(''):
+			pubs = pubs[0]
+		if not communicationIsIce(publish):
+			cog.outl('<TABHERE>pub'+pubs+' = n'+pubs+'.advertise<std_msgs::'+pubs+'>(n'+pubs+'.resolveName("chatter"), 1000);')
+
 ]]]
 [[[end]]]
 	Period = BASIC_PERIOD;

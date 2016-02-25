@@ -317,7 +317,8 @@ Z()
 
 [[[cog
 for name, num in getNameNumber(component['requires'] + component['publishes']):
-	cog.outl('<TABHERE>'+name+'Prx '+name.lower()+num +'_proxy;')
+		if communicationIsIce(name):
+			cog.outl('<TABHERE>'+name+'Prx '+name.lower()+num +'_proxy;')
 ]]]
 [[[end]]]
 
@@ -334,8 +335,9 @@ if len(component['publishes'])>0 or len(component['subscribesTo'])>0:
 
 
 for pb in component['publishes']:
-	w = PUBLISHES_STR.replace("<NORMAL>", pb).replace("<LOWER>", pb.lower())
-	cog.outl(w)
+	if communicationIsIce(pb):
+		w = PUBLISHES_STR.replace("<NORMAL>", pb).replace("<LOWER>", pb.lower())
+		cog.outl(w)
 
 
 if usingROS:
@@ -391,9 +393,7 @@ for name, num in getNameNumber(component['subscribesTo']):
 		while type(nname) != type(''):
 			nname = name[0]
 		w = SUBSCRIBESTO_STR.replace("<NORMAL>", nname).replace("<LOWER>", nname.lower()).replace("<PROXYNAME>", nname.lower()+num).replace("<PROXYNUMBER>", num)
-	else:
-		w = '  //codigo para ROS de ' + name[0]
-	cog.out(w)
+		cog.out(w)
 ]]]
 [[[end]]]
 

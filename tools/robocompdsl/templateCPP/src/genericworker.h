@@ -67,6 +67,7 @@ if component['gui'] != 'none':
 
 [[[cog
 usingROS = False
+includeMap = {}
 if 'subscribesTo' in component:
 	for subscribe in component['subscribesTo']:
 		subs = subscribe
@@ -74,10 +75,21 @@ if 'subscribesTo' in component:
 			subs = subs[0]
 		if not communicationIsIce(subscribe):
 			usingROS = True
-			cog.outl('#include <std_msgs/'+subs+'.h>')
+			includeMap[subs] = '#include <std_msgs/'+subs+'.h>'
+
+if 'publishes' in component:
+	for publish in component['publishes']:
+		pubs = publish
+		while type(pubs) != type(''):
+			pubs = pubs[0]
+		if not communicationIsIce(publish):
+			usingROS = True
+			includeMap[pubs] = '#include <std_msgs/'+pubs+'.h>'
 
 if usingROS:
 	cog.outl('#include <ros/ros.h>')
+	for s in includeMap: 
+		cog.outl(includeMap[s])
 ]]]
 [[[end]]]
 
@@ -177,7 +189,8 @@ except:
 
 [[[cog
 for name, num in getNameNumber(component['requires']+component['publishes']):
-	cog.outl('<TABHERE>'+name+'Prx '+name.lower()+num +'_proxy;')
+	if communicationIsIce(name):
+		cog.outl('<TABHERE>'+name+'Prx '+name.lower()+num +'_proxy;')
 ]]]
 [[[end]]]
 
@@ -270,8 +283,17 @@ if 'subscribesTo' in component:
 		while type(subs) != type(''):
 			subs = subs[0]
 		if not communicationIsIce(subscribe):
-			cog.outl('ros::NodeHandle n'+subs+';')
-			cog.outl('ros::Subscriber sub'+subs+';')
+			cog.outl('<TABHERE>ros::NodeHandle nsub'+subs+';')
+			cog.outl('<TABHERE>ros::Subscriber sub'+subs+';')
+			
+if 'publishes' in component:
+	for publish in component['publishes']:
+		pubs = publish
+		while type(pubs) != type(''):
+			pubs = pubs[0]
+		if not communicationIsIce(publish):
+			cog.outl('<TABHERE>ros::NodeHandle npub'+pubs+';')
+			cog.outl('<TABHERE>ros::Publisher pubs'+pubs+';')
 ]]]
 [[[end]]]
 

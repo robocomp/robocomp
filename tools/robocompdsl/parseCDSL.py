@@ -146,10 +146,10 @@ class CDSLParsing:
 		idslImport  = Suppress(CaselessLiteral("import")) + quote +  CharsNotIn("\";").setResultsName('path') + quote + semicolon
 		idslImports = ZeroOrMore(idslImport)
 		# Communications
-		implementsList = Group(CaselessLiteral('implements')    + identifier + ZeroOrMore(Suppress(Word(',')) + identifier) + semicolon)
-		requiresList   = Group(CaselessLiteral('requires')      + identifier + ZeroOrMore(Suppress(Word(',')) + identifier) + semicolon)
+		implementsList = Group(CaselessLiteral('implements')    + commIdentifier + ZeroOrMore(Suppress(Word(',')) + commIdentifier) + semicolon)
+		requiresList   = Group(CaselessLiteral('requires')      + commIdentifier + ZeroOrMore(Suppress(Word(',')) + commIdentifier) + semicolon)
 		subscribesList = Group(CaselessLiteral('subscribesTo')  + commIdentifier + ZeroOrMore(Suppress(Word(',')) + commIdentifier) + semicolon)
-		publishesList  = Group(CaselessLiteral('publishes')     + identifier + ZeroOrMore(Suppress(Word(',')) + identifier) + semicolon)
+		publishesList  = Group(CaselessLiteral('publishes')     + commIdentifier + ZeroOrMore(Suppress(Word(',')) + commIdentifier) + semicolon)
 		communicationList = implementsList | requiresList | subscribesList | publishesList
 		communications = Group( Suppress(CaselessLiteral("communications")) + op + ZeroOrMore(communicationList) + cl + semicolon)
 		
