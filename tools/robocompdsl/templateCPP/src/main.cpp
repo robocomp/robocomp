@@ -317,7 +317,11 @@ Z()
 	int status=EXIT_SUCCESS;
 
 [[[cog
-for name, num in getNameNumber(component['requires'] + component['publishes']):
+for namea, num in getNameNumber(component['requires'] + component['publishes']):
+	if type(namea) == str:
+		name = namea
+	else:
+		name = namea[0]
 	cog.outl('<TABHERE>'+name+'Prx '+name.lower()+num +'_proxy;')
 ]]]
 [[[end]]]
@@ -326,7 +330,11 @@ for name, num in getNameNumber(component['requires'] + component['publishes']):
 	initialize();
 
 [[[cog
-for name, num in getNameNumber(component['requires']):
+for namea, num in getNameNumber(component['requires']):
+	if type(namea) == str:
+		name = namea
+	else:
+		name = namea[0]
 	w = REQUIRE_STR.replace("<NORMAL>", name).replace("<LOWER>", name.lower()).replace("<PROXYNAME>", name.lower()+num).replace("<PROXYNUMBER>", num)
 	cog.outl(w)
 

@@ -54,7 +54,11 @@ if text:
 
 
 text = False
-for name, number in getNameNumber(component['requires']):
+for namea, number in getNameNumber(component['requires']):
+	if type(namea) == str:
+		name = namea
+	else:
+		name = namea[0]
 	if text == False:
 		cog.outl('# Proxies for required interfaces')
 		text = True

@@ -68,7 +68,11 @@ else:
 [[[end]]]
 {
 [[[cog
-for name, num in getNameNumber(component['requires']):
+for namea, num in getNameNumber(component['requires']):
+	if type(namea) == str:
+		name = namea
+	else:
+		name = namea[0]
 	cog.outl("<TABHERE>"+name.lower()+num+"_proxy = (*("+name+"Prx*)mprx[\""+name+"Proxy"+num+"\"]);")	
 ]]]
 [[[end]]]
