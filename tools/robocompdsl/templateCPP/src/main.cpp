@@ -217,8 +217,12 @@ Z()
 #include "commonbehaviorI.h"
 
 [[[cog
-for implement in component['implements']:
-	cog.outl('#include <'+implement.lower()+'I.h>')
+for ima in component['implements']:
+	if type(ima) == str:
+		im = ima
+	else:
+		im = ima[0]
+	cog.outl('#include <'+im.lower()+'I.h>')
 
 usingROS = False
 for subscribe in component['subscribesTo']:
@@ -385,7 +389,11 @@ if usingROS:
 
 
 [[[cog
-for im in component['implements']:
+for ima in component['implements']:
+	if type(ima) == str:
+		im = ima
+	else:
+		im = ima[0]
 	w = IMPLEMENTS_STR.replace("<NORMAL>", im).replace("<LOWER>", im.lower())
 	cog.outl(w)
 ]]]

@@ -57,8 +57,12 @@ SET ( SOURCES
   genericworker.cpp
   specificworker.cpp
 [[[cog
-for implement in component['implements']:
-	cog.outl('<S2>' + implement.lower() + 'I.cpp')
+for ima in component['implements']:
+	if type(ima) == str:
+		im = ima
+	else:
+		im = ima[0]
+	cog.outl('<S2>' + im.lower() + 'I.cpp')
 
 for subscribe in component['subscribesTo']:
 	subs = subscribe
@@ -91,8 +95,12 @@ SET ( HEADERS
 
 usingROS=False
 
-for implement in component['implements']:
-	cog.outl('<S2>'+implement.lower() + 'I.h')
+for ima in component['implements']:
+	if type(ima) == str:
+		im = ima
+	else:
+		im = ima[0]
+	cog.outl('<S2>'+im.lower() + 'I.h')
 
 for subscribe in component['subscribesTo']:
 	subs = subscribe

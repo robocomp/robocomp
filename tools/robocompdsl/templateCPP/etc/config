@@ -25,7 +25,11 @@ component = CDSLParsing.fromFile(theCDSL)
 storm = False
 
 text = False
-for im in component['implements']:
+for ima in component['implements']:
+	if type(ima) == str:
+		im = ima
+	else:
+		im = ima[0]
 	if text == False:
 		cog.outl('# Endpoints for implemented interfaces')
 		text = True

@@ -169,7 +169,11 @@ for namea, num in getNameNumber(component['requires']+component['publishes']):
 
 [[[cog
 if 'implements' in component:
-	for imp in component['implements']:
+	for impa in component['implements']:
+		if type(impa) == str:
+			imp = impa
+		else:
+			imp = impa[0]
 		module = pool.moduleProviding(imp)
 		for interface in module['interfaces']:
 			if interface['name'] == imp:
