@@ -254,6 +254,24 @@ if 'subscribesTo' in component:
 ]]]
 [[[end]]]
 
+[[[cog
+if 'subscribesTo' in component:
+	for subscribe in component['subscribesTo']:
+		subs = subscribe
+		while type(subs) != type(''):
+			subs = subs[0]
+		if not communicationIsIce(subscribe):
+			cog.outl('<TABHERE>void setROSSub'+subs+'(std::string s, int max);')
+
+if 'publishes' in component:
+	for publish in component['publishes']:
+		pubs = publish
+		while type(pubs) != type(''):
+			pubs = pubs[0]
+		if not communicationIsIce(publish):
+			cog.outl('<TABHERE>void setROSPub'+pubs+'(std::string s, int max);')
+]]]
+[[[end]]]
 
 protected:
 	QTimer timer;

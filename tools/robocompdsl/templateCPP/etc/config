@@ -46,8 +46,6 @@ for sb in component['subscribesTo']:
 		xx = xx[0]
 	if communicationIsIce(sb):
 		cog.outl(str(xx)+"Topic.Endpoints=tcp -p 0")
-	else:
-		cog.outl(str(xx)+"Topic.Endpoints=whatever " + str(xx) + " for ROS")
 
 if text:
 	cog.out('\n\n')
@@ -76,6 +74,27 @@ if storm:
 	cog.outl('# This property is used by the clients to connect to IceStorm.')
 	cog.outl('TopicManager.Proxy=IceStorm/TopicManager:default -p 9999')
 
+]]]
+[[[end]]]
+
+[[[cog
+if 'subscribesTo' in component:
+	for subscribe in component['subscribesTo']:
+		subs = subscribe
+		while type(subs) != type(''):
+			subs = subs[0]
+		if not communicationIsIce(subscribe):
+			cog.outl('ROSSubscription'+subs+'.TopicName=sub'+subs)
+			cog.outl('ROSSubscription'+subs+'.MaximumSize=1000')
+
+if 'publishes' in component:
+	for publish in component['publishes']:
+		pubs = publish
+		while type(pubs) != type(''):
+			pubs = pubs[0]
+		if not communicationIsIce(publish):
+			cog.outl('ROSPublication'+pubs+'.TopicName=pub'+pubs)
+			cog.outl('ROSPublication'+pubs+'.MaximumSize=1000')
 ]]]
 [[[end]]]
 

@@ -314,11 +314,15 @@ Z()
 ]]]
 [[[end]]]
 	int status=EXIT_SUCCESS;
+	
 
 [[[cog
 for name, num in getNameNumber(component['requires'] + component['publishes']):
 		if communicationIsIce(name):
 			cog.outl('<TABHERE>'+name+'Prx '+name.lower()+num +'_proxy;')
+			
+if usingROS:
+	cog.outl("<TABHERE>int rosMaximumSize;")
 ]]]
 [[[end]]]
 
@@ -349,6 +353,32 @@ if usingROS:
 
 
 	SpecificWorker *worker = new SpecificWorker(mprx);
+	
+[[[cog
+if 'subscribesTo' in component:
+	for subscribe in component['subscribesTo']:
+		subs = subscribe
+		while type(subs) != type(''):
+			subs = subs[0]
+		if not communicationIsIce(subscribe):
+			cog.outl('<TABHERE>GenericMonitor::configGetString(communicator(), prefix, "ROSSubscription'+subs+'.MaximumSize", tmp, "");')
+			cog.outl('<TABHERE>istringstream(tmp) >> rosMaximumSize;')
+			cog.outl('<TABHERE>GenericMonitor::configGetString(communicator(), prefix, "ROSSubscription'+subs+'.TopicName", tmp, "");')
+			cog.outl('<TABHERE>worker->setROSSub'+subs+'(tmp, rosMaximumSize);')
+
+if 'publishes' in component:
+	for publish in component['publishes']:
+		pubs = publish
+		while type(pubs) != type(''):
+			pubs = pubs[0]
+		if not communicationIsIce(publish):
+			cog.outl('<TABHERE>GenericMonitor::configGetString(communicator(), prefix, "ROSPublication'+pubs+'.MaximumSize", tmp, "");')
+			cog.outl('<TABHERE>istringstream(tmp) >> rosMaximumSize;')
+			cog.outl('<TABHERE>GenericMonitor::configGetString(communicator(), prefix, "ROSPublication'+pubs+'.TopicName", tmp, "");')
+			cog.outl('<TABHERE>worker->setROSPub'+pubs+'(tmp, rosMaximumSize);')
+]]]
+[[[end]]]
+	
 	//Monitor thread
 	SpecificMonitor *monitor = new SpecificMonitor(worker,communicator());
 	QObject::connect(monitor, SIGNAL(kill()), &a, SLOT(quit()));
