@@ -9,10 +9,12 @@
 #ifndef ROBOCOMPOBJECTDETECTION_ICE
 #define ROBOCOMPOBJECTDETECTION_ICE
 
-module RoboCompobjectDetection{
+module RoboCompobjectDetection
+{
 	sequence <string> listType;
 	
-	interface objectDetection{
+	interface objectDetection
+	{
 		void  statisticalOutliersRemoval();
 		void  passThrough();
 		void  grabThePointCloud(string image, string pcd);
@@ -37,7 +39,7 @@ module RoboCompobjectDetection{
 		void  centroidBasedPose(out float x, out float y, out float theta);
 		void  segmentImage();
 		void  grabTheAR();
-		void getPose(out float x, out float y, out float z, out float rx, out float ry, out float rz);
+		void  getPose(out float x, out float y, out float z, out float rx, out float ry, out float rz);
 	};
 };
   
