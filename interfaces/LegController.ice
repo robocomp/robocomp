@@ -47,9 +47,9 @@ module RoboCompLegController
 	sequence<PoseLeg> ListPoseLeg;
 	interface LegController
 	{
-		void setListIKLeg(ListPoseLeg ps);
-		void setIKLeg(PoseLeg p);
-		void setIKBody(PoseBody p);
+		bool setListIKLeg(ListPoseLeg ps, bool simu);
+		bool setIKLeg(PoseLeg p, bool simu);
+		bool setIKBody(PoseBody p, bool simu);
 		void setFKLeg(AnglesLeg al);
 		StateLeg getStateLeg();
 	};
