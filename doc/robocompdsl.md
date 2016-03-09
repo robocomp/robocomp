@@ -102,7 +102,9 @@ void SpecificWorker::compute( )
 ```
 save and, 
 
+##Added the cmake command 
     cd ..
+    cmake .
     make
     
 Note that we are using a lambda function as a parameter to the std::sort function so you will need a gcc compiler version equal or newer than 4.9. Check with gcc -v. If you don't have it, substitute the sort method with your own sorting procedure.
