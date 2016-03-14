@@ -134,7 +134,7 @@ If you don't have a JoyStick install this componentent,
     cd ~robocomp/components/robocomp-robolab/components/keyboardrobotcontroller
     cmake .
     make
-    src/keyboardrobotcontroller.py --Ice.Config=etc/config
+    src/keyboardrobotcontroller.py --Ice.Config=/etc/config
     
 and use the arrow keys to navigate the robot, the space bar to stop it an 'q' to exit.
 
