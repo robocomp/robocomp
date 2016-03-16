@@ -1,5 +1,0 @@
-module RoboCompReceiverTopic{
-	interface ReceiverTopic{
-		void getData();
-	};
-};

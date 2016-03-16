@@ -1,6 +1,0 @@
-module RoboCompDialogsWaf{
-	interface DialogsWaf
-	{
-		void newSentence(string command, float confidence);
-	};
-};
