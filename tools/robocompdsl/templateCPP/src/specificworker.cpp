@@ -126,6 +126,16 @@ except:
 
 	
 	timer.start(Period);
+	
+[[[cog
+try:
+	if 'agmagent' in [ x.lower() for x in component['options'] ]:
+		cog.outl("<TABHERE>RoboCompAGMWorldModel::World w = agmexecutive_proxy->getModel();")
+		cog.outl("<TABHERE>structuralChange(w);")
+except:
+	pass
+]]]
+[[[end]]]
 
 	return true;
 }
