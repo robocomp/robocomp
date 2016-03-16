@@ -21,7 +21,7 @@ module RoboCompCAISpeechEchord{
 	interface AgentToSpeechComp{
 		void  setTestConfig(TestConfig config);
 		void  setText(string label);
-		void  canAnswer(bool timeToAnswer);
+		void  canAnswer(bool timeToAnswer, int questionNumber);
 	};
 	interface SpeechCompToAgent{
 		void  finishSpeakingEvent(bool finish);
