@@ -293,7 +293,7 @@ def bodyCodeFromName(name):
 	# code to implement subscription to AGMExecutiveTopic
 	###################################### 
 	if name == 'structuralChange':
-		bodyCode = "<TABHERE>mutex->lock();\n <TABHERE>AGMModelConverter::fromIceToInternal(modification.newModel, worldModel);\n \n<TABHERE>delete innerModel;\n<TABHERE>innerModel = agmInner.extractInnerModel(worldModel);\n<TABHERE>mutex->unlock();"
+		bodyCode = "<TABHERE>mutex->lock();\n <TABHERE>AGMModelConverter::fromIceToInternal(w, worldModel);\n \n<TABHERE>delete innerModel;\n<TABHERE>innerModel = agmInner.extractInnerModel(worldModel);\n<TABHERE>mutex->unlock();"
 	if name == 'symbolUpdated' or name == 'edgeUpdated' or name == 'symbolsUpdated' or name == 'edgesUpdated':
 		bodyCode = "<TABHERE>QMutexLocker locker(mutex);\n<TABHERE>AGMModelConverter::includeIceModificationInInternalModel(modification, worldModel);\n \n<TABHERE>delete innerModel;\n<TABHERE>innerModel = agmInner.extractInnerModel(worldModel);"
 		

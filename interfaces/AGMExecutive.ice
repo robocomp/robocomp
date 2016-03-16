@@ -46,11 +46,11 @@ module RoboCompAGMExecutive
 	{
 		void structuralChange(RoboCompAGMWorldModel::World w);
 
-		void symbolUpdated(RoboCompAGMWorldModel::Node n);
-		void symbolsUpdated(RoboCompAGMWorldModel::NodeSequence ns);
+		void symbolUpdated(RoboCompAGMWorldModel::Node modification);
+		void symbolsUpdated(RoboCompAGMWorldModel::NodeSequence modification);
 
-		void edgeUpdated(RoboCompAGMWorldModel::Edge e);
-		void edgesUpdated(RoboCompAGMWorldModel::EdgeSequence es);
+		void edgeUpdated(RoboCompAGMWorldModel::Edge modification);
+		void edgesUpdated(RoboCompAGMWorldModel::EdgeSequence modification);
 	};
 };
   

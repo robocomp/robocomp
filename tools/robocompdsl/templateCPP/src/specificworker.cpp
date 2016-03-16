@@ -264,7 +264,7 @@ bool SpecificWorker::setParametersAndPossibleActivation(const ParameterMap &prs,
 	{
 		AGMModelPrinter::printWorld(newModel);""")
 		agentName=component['name']
-		cog.outl("<TABHERE><TABHERE>AGMMisc::publishModification(newModel, agmagenttopic_proxy, worldModel,\""+ agentName+"Agent\");")
+		cog.outl("<TABHERE><TABHERE>AGMMisc::publishModification(newModel, agmexecutive_proxy, \""+ agentName+"Agent\");")
 		cog.outl ("""<TABHERE>}
 	catch(...)
 	{
