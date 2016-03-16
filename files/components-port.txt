@@ -296,3 +296,4 @@ MyFirstComp=12245
 BIK=12246
 CameraV4l=12247
 movearmComp=12248
+personComp=12249
