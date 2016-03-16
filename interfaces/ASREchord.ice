@@ -20,9 +20,20 @@ module RoboCompASREchord{
 		bool blockingCall;
 		string grammarUsed;
 	};
+	["cpp:comparable"]
+	struct TestConfig{
+		string testType;
+		string language;
+		string tense;
+		string person;
+	};
 
 	interface MSKASREvent{
 		void  newSentenceAvailable(TSentence sentence);
+	};
+	interface MSKASRConfig{
+		void  setTestConfig(TestConfig config);
+		void  setTestQuestion(int questionNumber);
 	};
 };
   
