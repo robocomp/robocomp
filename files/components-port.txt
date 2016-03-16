@@ -296,4 +296,11 @@ MyFirstComp=12245
 BIK=12246
 CameraV4l=12247
 movearmComp=12248
+<<<<<<< HEAD
+pruebaTopic=12249
+MSKFaceEventTopic=12250
+aliceComp=12251
+bobComp=12252
+=======
 personComp=12249
+>>>>>>> 9993d09c37a1802b7c811463d5733ca549aca4b0
