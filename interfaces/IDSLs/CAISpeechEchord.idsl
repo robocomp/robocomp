@@ -1,0 +1,22 @@
+module RoboCompCAISpeechEchord
+{
+	struct TestConfig
+	{
+		string testType;
+		string language;
+		string tense;
+		string person;	
+	};
+	
+	interface AgentToSpeechComp
+	{
+		void setTestConfig(TestConfig config);
+		void setText(string label);
+	};
+	interface SpeechCompToAgent
+	{
+		void finishSpeakingEvent(bool speaking);
+		void setAnswer(string answer);
+	};
+	
+};
