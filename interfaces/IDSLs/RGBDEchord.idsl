@@ -1,0 +1,30 @@
+module RoboCompRGBDEchord{
+
+	sequence<byte> TRGB;
+	sequence<short> TDepth;
+
+	struct TRGBImage{
+		TRGB image;
+		int height;
+		int width;
+	};
+
+	struct TDepthImage{
+		TDepth image;
+		int height;
+		int width;
+	};
+
+	interface MSKRGBDEvent{
+		
+		void newRGBImageAvailable(TRGBImage RGBImage);
+		void newDepthImageAvailable(TDepthImage depthImage);
+		
+	};
+	interface MSKRGBD{
+		
+		void getRGBImage(out TRGBImage RGBImage);
+		void getDepthImage(out TDepthImage depthImage);
+		
+	};
+};
