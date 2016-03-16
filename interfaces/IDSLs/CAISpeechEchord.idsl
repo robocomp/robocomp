@@ -15,7 +15,7 @@ module RoboCompCAISpeechEchord
 	};
 	interface SpeechCompToAgent
 	{
-		void finishSpeakingEvent(bool speaking);
+		void finishSpeakingEvent(bool finish);
 		void setAnswer(string answer);
 	};
 	

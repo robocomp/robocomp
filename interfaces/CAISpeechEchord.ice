@@ -23,7 +23,7 @@ module RoboCompCAISpeechEchord{
 		void  setText(string label);
 	};
 	interface SpeechCompToAgent{
-		void  finishSpeakingEvent(bool speaking);
+		void  finishSpeakingEvent(bool finish);
 		void  setAnswer(string answer);
 	};
 };

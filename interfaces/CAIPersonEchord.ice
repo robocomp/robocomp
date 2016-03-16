@@ -12,7 +12,7 @@
 module RoboCompCAIPersonEchord{
 
 	interface PersonCompToAgent{
-		void  IsPersonWithRobot(out bool personWithRobot);
+		void  IsPersonWithRobot(bool personWithRobot);
 	};
 };
   
