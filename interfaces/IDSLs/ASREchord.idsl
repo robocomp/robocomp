@@ -15,9 +15,23 @@ module RoboCompASREchord
 		int acquisitionDay;
 	};
 	
+	struct TestConfig
+	{
+		string testType;
+		string language;
+		string tense;
+		string person;	
+	};
+	
 	interface MSKASREvent
 	{
 		// Publishes -
 		void newSentenceAvailable (TSentence sentence);
+	};
+	interface MSKASRConfig //Interfaz entre el agente speech y el winKinectComp
+	{
+		void setTestConfig(TestConfig config);
+		void setTestQuestion(int questionNumber);
+		
 	};
 };
