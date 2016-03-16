@@ -27,6 +27,11 @@ module RoboCompPlanning{
 		float cost;
 	};
 
+	interface PlanReceiver
+	{
+		void setPlan(Plan p);
+	};
+
 	interface Planning
 	{
 		bool getSolution(string Domain, string Problem, out Plan solution)throws ServerException;
