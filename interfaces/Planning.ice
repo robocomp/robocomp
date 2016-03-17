@@ -42,7 +42,7 @@ module RoboCompPlanning{
 	interface PeleaAgent
 	{
 		void stateChanged(StringDictionary state);
-	}
+	};
 };
   
 #endif
