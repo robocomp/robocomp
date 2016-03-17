@@ -9,17 +9,12 @@
 #ifndef ROBOCOMPCAISPEECHECHORD_ICE
 #define ROBOCOMPCAISPEECHECHORD_ICE
 
+#include <ASREchord.ice>
+
 module RoboCompCAISpeechEchord{
-	["cpp:comparable"]
-	struct TestConfig{
-		string testType;
-		string language;
-		string tense;
-		string person;
-	};
 
 	interface AgentToSpeechComp{
-		void  setTestConfig(TestConfig config);
+		void  setTestConfig(RoboCompASREchord::TestConfig config);
 		void  setText(string label);
 		void  canAnswer(bool timeToAnswer, int questionNumber);
 	};
