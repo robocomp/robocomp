@@ -12,6 +12,7 @@
 module RoboCompPlanning{
 	exception ServerException{string what;};
 	sequence <string> StringVector;
+	dictionary<string,string> StringDictionary;
 
 	struct Action
 	{
@@ -37,6 +38,11 @@ module RoboCompPlanning{
 		bool getSolution(string Domain, string Problem, out Plan solution)throws ServerException;
 		bool getNextAction(string Problem, out Plan solution)throws ServerException;
 	};
+	
+	interface PeleaAgent
+	{
+		void stateChanged(StringDictionary state);
+	}
 };
   
 #endif

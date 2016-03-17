@@ -3,6 +3,7 @@ module RoboCompPlanning
 	exception ServerException{string what;};
 	
 	sequence <string> StringVector;
+	dictionary<string,sstring> StringDictionary;
 
 	struct Action
 	{
