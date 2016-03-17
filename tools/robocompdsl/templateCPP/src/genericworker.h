@@ -202,6 +202,9 @@ if 'subscribesTo' in component:
 		while type(nname) != type(''):
 			nname = nname[0]
 		module = pool.moduleProviding(nname)
+		if module == None:
+			print ('\nCan\'t find module providing', nname, '\n')
+			sys.exit(-1)
 		if communicationIsIce(nname):
 			for interface in module['interfaces']:
 				if interface['name'] == nname:
