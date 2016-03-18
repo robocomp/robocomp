@@ -73,11 +73,6 @@ for subscribe in component['subscribesTo']:
 	else:
 		cog.outl('<S2>ROS' + subs.lower() + 'I.cpp')
 		
-try:
-	if 'agmagent' in [ x.lower() for x in component['options'] ]:
-		cog.outl("  $ENV{ROBOCOMP}/classes/agmInner/agmInner.cpp")
-except:
-	pass
 
 ]]]
 [[[end]]]
