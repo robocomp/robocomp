@@ -83,36 +83,18 @@ except:
 [[[end]]]
 )
 
-# Headers set
-SET ( HEADERS
-  ${HEADERS}
-  genericmonitor.h
-  specificmonitor.h
-  commonbehaviorI.h
-  genericworker.h
-  specificworker.h
 [[[cog
 
 usingROS=False
-
-for ima in component['implements']:
-	if type(ima) == str:
-		im = ima
-	else:
-		im = ima[0]
-	cog.outl('<S2>'+im.lower() + 'I.h')
 
 for subscribe in component['subscribesTo']:
 	subs = subscribe
 	while type(subs) != type(''):
 		subs = subs[0]
 	if communicationIsIce(subscribe):
-		cog.outl('<S2>'+subs.lower() + 'I.h')
+		pass
 	else:
-		cog.outl('<S2>ROS'+subs.lower() + 'I.h')
 		usingROS = True
-
-cog.outl(')\n')
 
 if usingROS:
 	cog.outl('find_package(catkin REQUIRED)')

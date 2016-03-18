@@ -90,36 +90,36 @@ bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
 [[[cog
 try:
 	if 'agmagent' in [ x.lower() for x in component['options'] ]:
-		cog.outl("""//       THE FOLLOWING IS JUST AN EXAMPLE for AGENTS
-// 	try
-// 	{
-// 		RoboCompCommonBehavior::Parameter par = params.at("NameAgent.InnerModel") ;
-// 		if( QFile(QString::fromStdString(par.value)).exists() == true)
-// 		{
-// 			qDebug() << __FILE__ << __FUNCTION__ << __LINE__ << "Reading Innermodel file " << QString::fromStdString(par.value);
-// 			innerModel = new InnerModel(par.value);
-// 			qDebug() << __FILE__ << __FUNCTION__ << __LINE__ << "Innermodel file read OK!" ;
-// 		}
-// 		else
-// 		{
-// 			qDebug() << __FILE__ << __FUNCTION__ << __LINE__ << "Innermodel file " << QString::fromStdString(par.value) << " does not exists";
-// 			qFatal("Exiting now.");
-// 		}
-// 	}
-// 	catch(std::exception e)
-// 	{
-// 		qFatal("Error reading config params");
-// 	}""")
+		cog.outl("""//	THE FOLLOWING IS JUST AN EXAMPLE for AGENTS
+//	try
+//	{
+//		RoboCompCommonBehavior::Parameter par = params.at("NameAgent.InnerModel") ;
+//		if( QFile(QString::fromStdString(par.value)).exists() == true)
+//		{
+//			qDebug() << __FILE__ << __FUNCTION__ << __LINE__ << "Reading Innermodel file " << QString::fromStdString(par.value);
+//			innerModel = new InnerModel(par.value);
+//			qDebug() << __FILE__ << __FUNCTION__ << __LINE__ << "Innermodel file read OK!" ;
+//		}
+//		else
+//		{
+//			qDebug() << __FILE__ << __FUNCTION__ << __LINE__ << "Innermodel file " << QString::fromStdString(par.value) << " does not exists";
+//			qFatal("Exiting now.");
+//		}
+//	}
+//	catch(std::exception e)
+//	{
+//		qFatal("Error reading config params");
+//	}""")
 except:
 	cog.outl("""//       THE FOLLOWING IS JUST AN EXAMPLE for components
 //
-// 	try
-// 	{
-// 		RoboCompCommonBehavior::Parameter par = params.at("InnerModelPath");
-// 		innermodel_path=par.value;
-// 		innermodel = new InnerModel(innermodel_path);
-// 	}
-// 	catch(std::exception e) { qFatal("Error reading config params"); }""")
+//	try
+//	{
+//		RoboCompCommonBehavior::Parameter par = params.at("InnerModelPath");
+//		innermodel_path=par.value;
+//		innermodel = new InnerModel(innermodel_path);
+//	}
+//	catch(std::exception e) { qFatal("Error reading config params"); }""")
 
 ]]]
 [[[end]]]	
@@ -130,8 +130,16 @@ except:
 [[[cog
 try:
 	if 'agmagent' in [ x.lower() for x in component['options'] ]:
-		cog.outl("<TABHERE>RoboCompAGMWorldModel::World w = agmexecutive_proxy->getModel();")
-		cog.outl("<TABHERE>structuralChange(w);")
+		cog.outl("<TABHERE>try")
+		cog.outl("<TABHERE>{")
+		cog.outl("<TABHERE><TABHERE>RoboCompAGMWorldModel::World w = agmexecutive_proxy->getModel();")
+		cog.outl("<TABHERE><TABHERE>structuralChange(w);")
+		cog.outl("<TABHERE>}")
+		cog.outl("<TABHERE>catch(...)")
+		cog.outl("<TABHERE>{")
+		cog.outl("<TABHERE><TABHERE>printf(\"The executive is probably not running, waiting for first AGM model publication...\");")
+		cog.outl("<TABHERE>}")
+
 except:
 	pass
 ]]]
