@@ -22,7 +22,7 @@ before_install:
   - sudo apt-get install libgsl0-dev libopenscenegraph-dev zeroc-ice freeglut3-dev libboost-system-dev libboost-thread-dev qt4-dev-tools pyside-tools libxt-dev pyqt4-dev-tools libboost-test-dev libboost-filesystem-dev
 
 script:
-  - mkdir build
-  - cd build
-  - cmake -DCMAKE_CXX_COMPILER=$COMPILER .. && make
+#  - mkdir build
+#  - cd build
+  - cmake -DCMAKE_CXX_COMPILER=$COMPILER . && make
 
