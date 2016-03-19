@@ -25,5 +25,3 @@ script:
 #  - mkdir build
 #  - cd build
   - cmake -DCMAKE_CXX_COMPILER=$COMPILER -DROBOCOMP=$HOME/robocomp . && make
-
-
