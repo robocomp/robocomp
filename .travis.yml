@@ -16,7 +16,7 @@ matrix:
 before_install:
   - sudo apt-get update -qq
   - sudo apt-get install -y libopencv-dev
-  - sudo apt-get install libgsl0-dev libopenscenegraph-dev zeroc-ice35 freeglut3-dev libboost-system-dev libboost-thread-dev qt4-dev-tools pyside-tools libxt-dev pyqt4-dev-tools libboost-test-dev libboost-filesystem-dev
+  - sudo apt-get install libgsl0-dev libopenscenegraph-dev zeroc-ice freeglut3-dev libboost-system-dev libboost-thread-dev qt4-dev-tools pyside-tools libxt-dev pyqt4-dev-tools libboost-test-dev libboost-filesystem-dev
 script:
   - mkdir build
   - cd build
