@@ -1,7 +1,7 @@
 <innerModel>
 	<transform id="world">
 		<transform id="floor">
-	    <plane id="ddG" ny="1"  px="-0" py="0" pz="0" size="2500,2500,10" texture="#003300" /> 
+	    		<plane id="ddG" ny="1"  px="-0" py="0" pz="0" size="2500,2500,10" texture="#003300" />
 			<transform id="base" ty="100">	
 				<mesh id="bodyMesh" file="/home/robocomp/robocomp/files/osgModels/hexapod/body.osg" rx="0" ry="0" rz="0" tx="-102" ty="0" tz="133" scale="1000" />
 				<mesh id="bodyMesh2" file="/home/robocomp/robocomp/files/osgModels/hexapod/body.osg" rx="0" ry="0" rz="0" tx="-102" ty="35" tz="133" scale="1000" />
@@ -107,7 +107,8 @@
 								<transform id="arm3motor3T" ty="-14.5" tz="64.5">	
 									<joint id="arm3motor3" axis="x" min="-1.5707963267948966" max="1.5707963267948966" home="0" port="20000">
 										<mesh id="arm3L3Mesh" file="/home/robocomp/robocomp/files/osgModels/hexapod/link3.osg" rx="-1.5707963267948966" ry="1.5707963267948966" rz="0" tx="0" ty="2" tz="12" scale="1000" />
-										<transform id="arm3TipT" rx="-0.96" ty="-90.3" tz="87.8">	
+										<transform id="arm3TipT" rx="-0.96" ty="-90.3" tz="87.8">
+											<plane id="axisA3Tx" px="0" nx="1" size="5,5,5" repeat="1" texture="#ff0000" />	
 										</transform>
 									</joint>
 								</transform>	
@@ -129,6 +130,7 @@
 									<joint id="arm4motor3" axis="x" min="-1.5707963267948966" max="1.5707963267948966" home="0" port="20000">
 										<mesh id="arm4L3Mesh" file="/home/robocomp/robocomp/files/osgModels/hexapod/link3.osg" rx="0" ry="-1.5707963267948966" rz="1.5707963267948966" tx="0" ty="-2" tz="12" scale="1000" />
 										<transform id="arm4TipT" rx="-0.96" ty="90.3" tz="87.8">	
+											<plane id="axisA4Tx" px="0" nx="1" size="5,5,5" repeat="1" texture="#ff0000" />
 										</transform>
 									</joint>
 								</transform>	
@@ -149,6 +151,7 @@
 									<joint id="arm5motor3" axis="x" min="-1.5707963267948966" max="1.5707963267948966" home="0" port="20000">
 										<mesh id="arm5L3Mesh" file="/home/robocomp/robocomp/files/osgModels/hexapod/link3.osg" rx="-1.5707963267948966" ry="1.5707963267948966" rz="0" tx="0" ty="2" tz="12" scale="1000" />
 										<transform id="arm5TipT" rx="-0.96" ty="-90.3" tz="87.8">	
+											<plane id="axisA5Tx" px="0" nx="1" size="5,5,5" repeat="1" texture="#ff0000" />	
 										</transform>
 									</joint>
 								</transform>	
@@ -170,6 +173,7 @@
 									<joint id="arm6motor3" axis="x" min="-1.5707963267948966" max="1.5707963267948966" home="0" port="20000">
 										<mesh id="arm6L3Mesh" file="/home/robocomp/robocomp/files/osgModels/hexapod/link3.osg" rx="0" ry="-1.5707963267948966" rz="1.5707963267948966" tx="0" ty="-2" tz="12" scale="1000" />
 										<transform id="arm6TipT" rx="-0.96" ty="90.3" tz="87.8">	
+											<plane id="axisA6Tx" px="0" nx="1" size="5,5,5" repeat="1" texture="#ff0000" />	
 										</transform>
 									</joint>
 								</transform>	

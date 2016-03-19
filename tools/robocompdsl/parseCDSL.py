@@ -206,7 +206,10 @@ class CDSLParsing:
 		# Imports
 		component['imports'] = []
 		component['recursiveImports'] = []
-		imprts = tree['imports']
+		try:
+			imprts = tree['imports']
+		except:
+			imprts = []
 		if 'agmagent' in component['options']:
 			imprts = ['/robocomp/interfaces/IDSLs/AGMAgent.idsl', '/robocomp/interfaces/IDSLs/AGMExecutive.idsl', '/robocomp/interfaces/IDSLs/AGMCommonBehavior.idsl', '/robocomp/interfaces/IDSLs/AGMWorldModel.idsl']
 			for i in tree['imports']:
