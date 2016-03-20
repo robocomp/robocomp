@@ -12,6 +12,7 @@ matrix:
           packages:
             - g++-5
             - zeroc-ice35
+            - libzeroc-ice35-dev  
       env: COMPILER=g++-5
       
 before_install:
