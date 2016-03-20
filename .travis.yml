@@ -22,4 +22,5 @@ before_install:
 script:
   - pwd
   - ls
+  - export ROBOCOMP="."
   - cmake -DCMAKE_CXX_COMPILER=$COMPILER . && make
