@@ -11,12 +11,13 @@ matrix:
             - ubuntu-toolchain-r-test
           packages:
             - g++-5
+	    - zeroc-ice35
       env: COMPILER=g++-5
       
 before_install:
   - sudo apt-get update -qq
   - sudo apt-get install -y libopencv-dev
-  - sudo apt-get install libgsl0-dev libopenscenegraph-dev zeroc-ice freeglut3-dev libboost-system-dev libboost-thread-dev qt4-dev-tools 
+  - sudo apt-get install libgsl0-dev libopenscenegraph-dev freeglut3-dev libboost-system-dev libboost-thread-dev qt4-dev-tools 
   - sudo apt-get install pyside-tools libxt-dev pyqt4-dev-tools libboost-test-dev libboost-filesystem-dev
 
 script:
