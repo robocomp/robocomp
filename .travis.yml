@@ -20,7 +20,6 @@ before_install:
   - sudo apt-get install pyside-tools libxt-dev pyqt4-dev-tools libboost-test-dev libboost-filesystem-dev
 
 script:
+  - cd $ROBOCOMP
   - pwd
-  - mkdir build
-  - cd build
-  - cmake -DCMAKE_CXX_COMPILER=$COMPILER .. && make
+  - cmake -DCMAKE_CXX_COMPILER=$COMPILER . && make
