@@ -11,7 +11,7 @@ matrix:
             - ubuntu-toolchain-r-test
           packages:
             - g++-5
-	    - zeroc-ice35
+            - zeroc-ice35
       env: COMPILER=g++-5
       
 before_install:
