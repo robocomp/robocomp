@@ -22,5 +22,5 @@ before_install:
 script:
   - pwd
   - ls
-  - export ROBOCOMP="."
+  - export ROBOCOMP="/home/travis/build/robocomp/robocomp"
   - cmake -DCMAKE_CXX_COMPILER=$COMPILER . && make
