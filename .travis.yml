@@ -34,6 +34,7 @@ before_install:
 
 script:
   - pwd
+  - updatedb
   - locate ProxyF.h
   - ls
   - ls /home/travis/robocomp
