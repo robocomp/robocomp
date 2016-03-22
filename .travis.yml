@@ -34,11 +34,6 @@ before_install:
   - sudo apt-get install -y zeroc-ice35 libzeroc-ice35-dev slice2cpp ice35-translators
 
 script:
-  - pwd
-  - updatedb
-  - locate ProxyF.h
-  - ls
-  - ls /home/travis/robocomp
   - export ROBOCOMP="/home/travis/build/robocomp/robocomp"
   - cmake -DCMAKE_CXX_COMPILER=$COMPILER . && make
 
