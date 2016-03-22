@@ -1,0 +1,21 @@
+module RoboCompLogger
+{
+  struct LogMessage
+  {
+    string sender;
+    string method;
+    string file;
+    int line;
+    string timeStamp;
+    string message;
+    ///info, error, debug,
+    string type;	
+    string fullpath;
+  };
+
+  interface Logger
+  {
+    void sendMessage(LogMessage m);
+  };
+};
+
