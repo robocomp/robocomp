@@ -27,4 +27,5 @@ script:
   - ls
   - ls /home/travis/robocomp
   - export ROBOCOMP="/home/travis/build/robocomp/robocomp"
-  - cmake -DCMAKE_CXX_COMPILER=$COMPILER . && make
+  - cmake -DCMAKE_CXX_COMPILER=$COMPILER .
+  - make
