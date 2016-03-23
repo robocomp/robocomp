@@ -4,7 +4,7 @@ Component rclogger
 {
 	Communications
 	{
-		implements Logger;
+		subscribesTo Logger;
 	};
 	language Cpp;
 	gui Qt(QWidget);

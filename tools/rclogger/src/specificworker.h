@@ -22,15 +22,12 @@
        @author authorname
 */
 
-
-
-
-
-
-
 #ifndef SPECIFICWORKER_H
 #define SPECIFICWORKER_H
 
+#include <QSqlDatabase>
+#include <QSqlQuery>
+#include "loggerdlgcontrol.h"
 #include <genericworker.h>
 #include <innermodel/innermodel.h>
 
@@ -45,9 +42,17 @@ public:
 	void sendMessage(const LogMessage &m);
 
 public slots:
-	void compute(); 	
+	void compute();
 
 private:
+	QTimer timer;
+	QSqlDatabase baseDatos;
+	QSqlQuery insert;
+	QString dbname;
+	LoggerDlgControl *lg;
+	
+	bool createTable();
+
 	
 };
 

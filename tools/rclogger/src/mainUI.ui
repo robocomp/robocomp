@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>LoggerDlg</class>
- <widget class="QWidget" name="LoggerDlg">
+ <class>guiDlg</class>
+ <widget class="QWidget" name="guiDlg">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1058</width>
-    <height>574</height>
+    <width>1064</width>
+    <height>583</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -150,7 +150,7 @@
                  </font>
                 </property>
                 <property name="text">
-                 <string>sender</string>
+                 <string>Sender</string>
                 </property>
                 <property name="checked">
                  <bool>true</bool>
@@ -165,7 +165,7 @@
                  </font>
                 </property>
                 <property name="text">
-                 <string>method</string>
+                 <string>Method</string>
                 </property>
                 <property name="checked">
                  <bool>true</bool>
@@ -180,7 +180,7 @@
                  </font>
                 </property>
                 <property name="text">
-                 <string>file</string>
+                 <string>File</string>
                 </property>
                 <property name="checked">
                  <bool>true</bool>
@@ -195,7 +195,7 @@
                  </font>
                 </property>
                 <property name="text">
-                 <string>line</string>
+                 <string>Line</string>
                 </property>
                 <property name="checked">
                  <bool>true</bool>
@@ -513,7 +513,7 @@
            <item>
             <widget class="QLabel" name="label_3">
              <property name="text">
-              <string>selection</string>
+              <string>Selection</string>
              </property>
             </widget>
            </item>
@@ -570,7 +570,7 @@
             <item>
              <widget class="QPushButton" name="pBsql">
               <property name="text">
-               <string>exec</string>
+               <string>Exec</string>
               </property>
              </widget>
             </item>
@@ -593,7 +593,7 @@
             </sizepolicy>
            </property>
            <property name="title">
-            <string>selection</string>
+            <string>Selection</string>
            </property>
            <property name="checkable">
             <bool>false</bool>
@@ -605,7 +605,7 @@
             <item>
              <widget class="QLabel" name="label">
               <property name="text">
-               <string>sender</string>
+               <string>Sender</string>
               </property>
              </widget>
             </item>
@@ -619,7 +619,7 @@
             <item>
              <widget class="QLabel" name="label_2">
               <property name="text">
-               <string>time stamp</string>
+               <string>TimeStamp</string>
               </property>
              </widget>
             </item>
@@ -646,13 +646,13 @@
             <item>
              <widget class="QGroupBox" name="typeBox">
               <property name="title">
-               <string>type</string>
+               <string>Type</string>
               </property>
               <layout class="QHBoxLayout" name="horizontalLayout">
                <item>
                 <widget class="QCheckBox" name="cBError">
                  <property name="text">
-                  <string>error</string>
+                  <string>Error</string>
                  </property>
                  <property name="checked">
                   <bool>true</bool>
@@ -662,7 +662,7 @@
                <item>
                 <widget class="QCheckBox" name="cBInfo">
                  <property name="text">
-                  <string>info</string>
+                  <string>Info</string>
                  </property>
                  <property name="checked">
                   <bool>true</bool>
@@ -672,7 +672,7 @@
                <item>
                 <widget class="QCheckBox" name="cBDebug">
                  <property name="text">
-                  <string>debug</string>
+                  <string>Debug</string>
                  </property>
                  <property name="checked">
                   <bool>true</bool>

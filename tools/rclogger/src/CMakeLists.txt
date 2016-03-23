@@ -29,6 +29,17 @@ SET ( SOURCES
   loggerI.cpp
 )
 
+# Headers set
+SET ( HEADERS
+  ${HEADERS}
+  genericmonitor.h
+  specificmonitor.h
+  commonbehaviorI.h
+  genericworker.h
+  specificworker.h
+  loggerI.h
+)
+
 
 
 #ROBOCOMP

@@ -28,15 +28,8 @@ QObject()
 #endif
 
 {
-
-
 	mutex = new QMutex(QMutex::Recursive);
-
-	#ifdef USE_QTGUI
-		setupUi(this);
-		show();
-	#endif
-	Period = BASIC_PERIOD;
+        Period = BASIC_PERIOD;
 	connect(&timer, SIGNAL(timeout()), this, SLOT(compute()));
 // 	timer.start(Period);
 }

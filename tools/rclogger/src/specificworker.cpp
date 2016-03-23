@@ -23,7 +23,24 @@
 */
 SpecificWorker::SpecificWorker(MapPrx& mprx) : GenericWorker(mprx)
 {
+	baseDatos = QSqlDatabase::addDatabase("QSQLITE");
+	baseDatos.setDatabaseName("bd.db");
+	if (!baseDatos.open())
+            qDebug()<<"Base de Datos no pudo ser abierta";
 
+	
+	QStringList ltables=baseDatos.tables();
+	if(!ltables.contains("logger"))
+            qDebug()<<"creacion tabla"<< createTable();
+
+	
+	//preparacion de las sentencias
+	insert = QSqlQuery ();
+	insert.prepare(QString("INSERT INTO logger (TimeStamp,Type,Sender,Method,Message,File,Line,FullPath) VALUES (:timeStamp,:type,:sender,:method,:message,:file,:line,:fullpath)"));
+
+	//creacion de la clase de visualizacion
+	lg=new LoggerDlgControl(&baseDatos, this);    
+        show();
 }
 
 /**
@@ -31,18 +48,12 @@ SpecificWorker::SpecificWorker(MapPrx& mprx) : GenericWorker(mprx)
 */
 SpecificWorker::~SpecificWorker()
 {
-	
+	baseDatos.close();
 }
 
 bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
 {
-
-
-
-	
 	timer.start(Period);
-	
-
 	return true;
 }
 
@@ -61,10 +72,33 @@ void SpecificWorker::compute()
 }
 
 
-void SpecificWorker::sendMessage(const LogMessage &m)
-{
 
+/**
+ * \brief Initialize table if not exists
+*/
+bool SpecificWorker::createTable(){
+    QSqlQuery create;
+    create.prepare(QString("CREATE TABLE logger (TimeStamp VARCHAR(20),Type VARCHAR(7), Sender VARCHAR(20),Method VARCHAR(12),Message VARCHAR(50),File VARCHAR(12),Line INTEGER,FullPath VARCHAR(100), PRIMARY KEY(TimeStamp,Sender DESC))"));
+    return create.exec();
 }
+/**
+ * \brief Insert a new row 
+ * @param m Struct contains message information to be inserted
+*/
+
+void SpecificWorker::sendMessage(const RoboCompLogger::LogMessage &m)
+{
+    insert.bindValue(":timestamp",m.timeStamp.c_str());
+    insert.bindValue(":type",m.type.c_str());
+    insert.bindValue(":sender",m.sender.c_str());
+    insert.bindValue(":method",m.method.c_str());
+    insert.bindValue(":message",m.message.c_str());
+    insert.bindValue(":file",m.file.c_str());
+    insert.bindValue(":line",m.line);
+    insert.bindValue(":fullpath",m.fullpath.c_str());
+    //return insert.exec();
+}
+
 
 
 

@@ -126,6 +126,7 @@ int ::rclogger::run(int argc, char* argv[])
 	string proxy, tmp;
 	initialize();
 
+	IceStorm::TopicManagerPrx topicManager = IceStorm::TopicManagerPrx::checkedCast(communicator()->propertyToProxy("TopicManager.Proxy"));
 
 
 	SpecificWorker *worker = new SpecificWorker(mprx);
@@ -158,20 +159,36 @@ int ::rclogger::run(int argc, char* argv[])
 
 
 
+
+
+
 		// Server adapter creation and publication
-		if (not GenericMonitor::configGetString(communicator(), prefix, "Logger.Endpoints", tmp, ""))
+		if (not GenericMonitor::configGetString(communicator(), prefix, "LoggerTopic.Endpoints", tmp, ""))
 		{
-			cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy Logger";
+			cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy LoggerProxy";
 		}
-		Ice::ObjectAdapterPtr adapterLogger = communicator()->createObjectAdapterWithEndpoints("Logger", tmp);
-		LoggerI *logger = new LoggerI(worker);
-		adapterLogger->add(logger, communicator()->stringToIdentity("logger"));
-		adapterLogger->activate();
-		cout << "[" << PROGRAM_NAME << "]: Logger adapter created in port " << tmp << endl;
-
-
-
-
+		Ice::ObjectAdapterPtr Logger_adapter = communicator()->createObjectAdapterWithEndpoints("logger", tmp);
+		LoggerPtr loggerI_ = new LoggerI(worker);
+		Ice::ObjectPrx logger = Logger_adapter->addWithUUID(loggerI_)->ice_oneway();
+		IceStorm::TopicPrx logger_topic;
+		if(!logger_topic){
+		try {
+			logger_topic = topicManager->create("Logger");
+		}
+		catch (const IceStorm::TopicExists&) {
+		//Another client created the topic
+		try{
+			logger_topic = topicManager->retrieve("Logger");
+		}
+		catch(const IceStorm::NoSuchTopic&)
+		{
+			//Error. Topic does not exist
+			}
+		}
+		IceStorm::QoS qos;
+		logger_topic->subscribeAndGetPublisher(qos, logger);
+		}
+		Logger_adapter->activate();
 
 		// Server adapter creation and publication
 		cout << SERVER_FULL_NAME " started" << endl;
