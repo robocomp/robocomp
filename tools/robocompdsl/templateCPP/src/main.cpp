@@ -346,7 +346,11 @@ if len(component['publishes'])>0 or len(component['subscribesTo'])>0:
 	cog.outl('<TABHERE>IceStorm::TopicManagerPrx topicManager = IceStorm::TopicManagerPrx::checkedCast(communicator()->propertyToProxy("TopicManager.Proxy"));')
 
 
-for pb in component['publishes']:
+for pba in component['publishes']:
+	if type(pba) == str:
+		pb = pba
+	else:
+		pb = pba[0]
 	w = PUBLISHES_STR.replace("<NORMAL>", pb).replace("<LOWER>", pb.lower())
 	cog.outl(w)
 
