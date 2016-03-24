@@ -21,6 +21,7 @@
 #
 
 import sys, traceback, Ice, IceStorm, subprocess, threading, time, Queue, os
+import hashlib
 
 # Ctrl+c handling
 import signal
@@ -88,8 +89,8 @@ class RCRemoteI(RCRemote):
 	def __init__(self, worker):
 		self.worker = worker
 
-	def run(self, password, path, binary, arguments, yakuakeTabName, c):
-		return self.worker.run(password, path, binary, arguments, yakuakeTabName)
+	def run(self, stuff, hashedPassword, path, binary, arguments, yakuakeTabName, c):
+		return self.worker.run(stuff, hashedPassword, path, binary, arguments, yakuakeTabName)
 
 
 
@@ -126,15 +127,14 @@ class SpecificWorker(GenericWorker):
 	#
 	# run
 	#
-	def run(self, password, path, binary, arguments, yakuakeTabName):
-		print password, path, binary, arguments, yakuakeTabName
+	def run(self, stuff, hashedPassword, path, binary, arguments, yakuakeTabName):
 		print 'BINARY', binary
 		print 'PATH', path
 		print 'TABNAME', yakuakeTabName
 		print 'ARGS', arguments
-
-		if password != self.passwd:
-			print 'WRONG PASSWORD', passwd
+		
+		if hashedPassword != hashlib.sha224(stuff+self.passwd).hexdigest():
+			print 'WRONG PASSWORD', hashedPassword
 			return False
 		else:
 			p = subprocess.Popen(['/opt/robocomp/bin/rcremoteshell', binary, path, yakuakeTabName]+arguments)
