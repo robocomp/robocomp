@@ -224,7 +224,7 @@ int main(int argc, char* argv[])
 	string arg;
 
 	// Set config file
-	std::string configFile = "config";
+	std::string configFile = "/opt/robocomp/etc-default/rclogger.conf";
 	if (argc > 1)
 	{
 		std::string initIC("--Ice.Config=");
