@@ -34,8 +34,8 @@ qLog::~qLog()
 
 qLog* qLog::getInstance()
 {
-	if (logger==NULL)
-	    logger=new qLog();
+	if (logger == NULL)
+		logger = new qLog();
 	return logger;
 }
 

@@ -29,8 +29,8 @@ SpecificWorker::SpecificWorker(MapPrx& mprx) : GenericWorker(mprx)
             qDebug()<<"Base de Datos no pudo ser abierta";
 
 	
-	QStringList ltables=baseDatos.tables();
-	if(!ltables.contains("logger"))
+	QStringList ltables = baseDatos.tables();
+	if (!ltables.contains("logger"))
             qDebug()<<"creacion tabla"<< createTable();
 
 	
@@ -39,8 +39,10 @@ SpecificWorker::SpecificWorker(MapPrx& mprx) : GenericWorker(mprx)
 	insert.prepare(QString("INSERT INTO logger (TimeStamp,Type,Sender,Method,Message,File,Line,FullPath) VALUES (:timeStamp,:type,:sender,:method,:message,:file,:line,:fullpath)"));
 
 	//creacion de la clase de visualizacion
-	lg=new LoggerDlgControl(&baseDatos, this);    
+	lg = new LoggerDlgControl(&baseDatos, this);    
         show();
+
+	connect(&timer, SIGNAL(timeout()), this, SLOT(compute()));
 }
 
 /**
@@ -59,16 +61,7 @@ bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
 
 void SpecificWorker::compute()
 {
-// 	try
-// 	{
-// 		camera_proxy->getYImage(0,img, cState, bState);
-// 		memcpy(image_gray.data, &img[0], m_width*m_height*sizeof(uchar));
-// 		searchTags(image_gray);
-// 	}
-// 	catch(const Ice::Exception &e)
-// 	{
-// 		std::cout << "Error reading from Camera" << e << std::endl;
-// 	}
+	printf(".\n");
 }
 
 
