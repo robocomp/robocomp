@@ -78,12 +78,11 @@ for namea, num in getNameNumber(component['requires']):
 [[[end]]]
 
 [[[cog
-for name, num in getNameNumber(component['publishes']):
+for namea, num in getNameNumber(component['publishes']):
 	if type(namea) == str:
 		name = namea
 	else:
 		name = namea[0]
-
 	cog.outl("<TABHERE>"+name.lower()+num+"_proxy = (*("+name+"Prx*)mprx[\""+name+"Pub"+num+"\"]);")
 ]]]
 [[[end]]]
