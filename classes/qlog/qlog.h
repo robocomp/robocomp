@@ -28,6 +28,7 @@ using namespace std;
 #endif
 
 #define SetLoggerInstance(x) loggerInstance = x
+#define rDebug2(strng) qLog::getInstance()->send(std::string(__FILE__),__LINE__,std::string(__func__),boost::str(boost::format strng ),std::string("Debug"))
 #define rDebug(strng) qLog::getInstance()->send(std::string(__FILE__),__LINE__,std::string(__func__),strng,std::string("Debug"))
 #define rInfo(strng) qLog::getInstance()->send(std::string(__FILE__),__LINE__,std::string(__func__),strng,std::string("Info"))
 #define rError(strng) qLog::getInstance()->send(std::string(__FILE__),__LINE__,std::string(__func__),strng,std::string("Error"))

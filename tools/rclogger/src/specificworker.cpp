@@ -88,7 +88,7 @@ bool SpecificWorker::createTable()
 void SpecificWorker::sendMessage(const RoboCompLogger::LogMessage &m)
 {
 // 	printf("%s: %d\n", __FILE__, __LINE__);
-	printf("message: %s\n", m.message.c_str());
+	printf("%s: %s(%d): %s\n", m.sender.c_str(), m.file.c_str(), m.line, m.message.c_str());
 	insert.bindValue(":timestamp",m.timeStamp.c_str());
 	insert.bindValue(":type",m.type.c_str());
 	insert.bindValue(":sender",m.sender.c_str());
