@@ -34,15 +34,15 @@ using namespace std;
 
 class qLog
 {
-  private:
+private:
 #if COMPILE_LOGGERCOMP==1
 	RoboCompLogger::LogMessage mess;
 	RoboCompLogger::LoggerPrx prx;
-  public:
-	void setProxy(std::string endpoint,RoboCompLogger::LoggerPrx _prx);  
+public:
+	void setProxy(std::string endpoint,RoboCompLogger::LoggerPrx _prx);
 	void sendLogger();
 #endif
-  private:
+private:
 	 std::string file;
 	 std::string func;
 	 int nLine;
@@ -53,13 +53,13 @@ class qLog
 	 std::string sender;
 	 std::string method;
 	 
-	 QString log;
-     static qLog *logger;
-	 void showConsole();
+	QString log;
+	static qLog *logger;
+	void showConsole();
   public:
-    ~qLog();
- 	qLog();
- 	static qLog* getInstance();
+	~qLog();
+	qLog();
+	static qLog* getInstance();
 	void send(std::string file, int line,std::string func, std::string strng,std::string type);
 	void send(std::string file, int line,std::string func, const char* strng,std::string type);
 	void send(std::string file, int line,std::string func, QString strng,std::string type);
