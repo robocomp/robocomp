@@ -1,0 +1,10 @@
+module RoboCompCAIPersonEchord
+{
+	
+ 	interface PersonCompToAgent{
+ 		
+ 		void IsPersonWithRobot(bool personWithRobot);
+ 		
+ 	}; 
+	
+};

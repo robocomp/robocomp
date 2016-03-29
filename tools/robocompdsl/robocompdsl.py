@@ -138,7 +138,11 @@ if component['language'].lower() == 'cpp':
 	#
 	# Generate interface-dependent files
 	#
-	for im in component['implements']:
+	for ima in component['implements']:
+		if type(ima) == str:
+			im = ima
+		else:
+			im = ima[0]
 		if type(im) == type([]):
 			im = im[0]
 		for f in [ "SERVANT.H", "SERVANT.CPP"]:

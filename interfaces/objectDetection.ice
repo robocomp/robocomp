@@ -9,16 +9,18 @@
 #ifndef ROBOCOMPOBJECTDETECTION_ICE
 #define ROBOCOMPOBJECTDETECTION_ICE
 
-module RoboCompobjectDetection{
+module RoboCompobjectDetection
+{
 	sequence <string> listType;
-
-	interface objectDetection{
+	
+	interface objectDetection
+	{
 		void  statisticalOutliersRemoval();
 		void  passThrough();
 		void  grabThePointCloud(string image, string pcd);
 		void  aprilFitModel(string model);
 		void  fitModel(string model, string method);
-		void  getInliers(string model);
+ 		void  getInliers(string model);
 		void  projectInliers(string model);
 		void  convexHull(string model);
 		void  extractPolygon(string model);
@@ -29,7 +31,7 @@ module RoboCompobjectDetection{
 		void  reset();
 		void  mirrorPC();
 		void  mindTheGapPC();
-		void  reloadVFH();
+		void  reloadVFH(string pathToSet);
 		void  loadTrainedVFH();
 		void  fitTheViewVFH();
 		void  vfh(out listType guesses);
@@ -37,7 +39,7 @@ module RoboCompobjectDetection{
 		void  centroidBasedPose(out float x, out float y, out float theta);
 		void  segmentImage();
 		void  grabTheAR();
-		string getResult(string image, string pcd);
+		void  getPose(out float x, out float y, out float z, out float rx, out float ry, out float rz);
 	};
 };
   

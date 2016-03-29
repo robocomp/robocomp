@@ -28,21 +28,22 @@ using namespace std;
 #endif
 
 #define SetLoggerInstance(x) loggerInstance = x
+#define rDebug2(strng) qLog::getInstance()->send(std::string(__FILE__),__LINE__,std::string(__func__),boost::str(boost::format strng ),std::string("Debug"))
 #define rDebug(strng) qLog::getInstance()->send(std::string(__FILE__),__LINE__,std::string(__func__),strng,std::string("Debug"))
 #define rInfo(strng) qLog::getInstance()->send(std::string(__FILE__),__LINE__,std::string(__func__),strng,std::string("Info"))
 #define rError(strng) qLog::getInstance()->send(std::string(__FILE__),__LINE__,std::string(__func__),strng,std::string("Error"))
 
 class qLog
 {
-  private:
+private:
 #if COMPILE_LOGGERCOMP==1
 	RoboCompLogger::LogMessage mess;
 	RoboCompLogger::LoggerPrx prx;
-  public:
-	void setProxy(std::string endpoint,RoboCompLogger::LoggerPrx _prx);  
+public:
+	void setProxy(std::string endpoint,RoboCompLogger::LoggerPrx _prx);
 	void sendLogger();
 #endif
-  private:
+private:
 	 std::string file;
 	 std::string func;
 	 int nLine;
@@ -53,13 +54,13 @@ class qLog
 	 std::string sender;
 	 std::string method;
 	 
-	 QString log;
-     static qLog *logger;
-	 void showConsole();
+	QString log;
+	static qLog *logger;
+	void showConsole();
   public:
-    ~qLog();
- 	qLog();
- 	static qLog* getInstance();
+	~qLog();
+	qLog();
+	static qLog* getInstance();
 	void send(std::string file, int line,std::string func, std::string strng,std::string type);
 	void send(std::string file, int line,std::string func, const char* strng,std::string type);
 	void send(std::string file, int line,std::string func, QString strng,std::string type);

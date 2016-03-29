@@ -1,0 +1,12 @@
+import "/robocomp/interfaces/IDSLs/Logger.idsl";
+
+Component rclogger
+{
+	Communications
+	{
+		subscribesTo Logger;
+	};
+	language Cpp;
+	gui Qt(QWidget);
+};
+
