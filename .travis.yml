@@ -1,0 +1,39 @@
+sudo: required
+dist: trusty
+language: cpp
+
+matrix:
+  include:
+    - compiler: gcc
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-5
+            - zeroc-ice35
+            - libzeroc-ice35-dev  
+            - slice2cpp
+            - libopencv-dev
+            - libgsl0-dev
+            - libopenscenegraph-dev
+            - freeglut3-dev
+            - libboost-system-dev
+            - libboost-thread-dev
+            - qt4-dev-tools
+            - pyside-tools
+            - libxt-dev
+            - pyqt4-dev-tools
+            - libboost-test-dev
+            - libboost-filesystem-dev
+            - ice35-translators
+      env: COMPILER=g++-5
+      
+before_install:
+  - sudo apt-get update -qq
+  - sudo apt-get install -y zeroc-ice35 libzeroc-ice35-dev slice2cpp ice35-translators
+
+script:
+  - export ROBOCOMP="/home/travis/build/robocomp/robocomp"
+  - cmake -DCMAKE_CXX_COMPILER=$COMPILER . && make
+
