@@ -85,6 +85,9 @@ if 'publishes' in component:
 		if not communicationIsIce(publish):
 			usingROS = True
 			includeMap[pubs] = '#include <std_msgs/'+pubs+'.h>'
+#if 'imports' in component:
+#	for import in component['imports']:
+		includeMap[import] = '#include "import.h"'
 
 if usingROS:
 	cog.outl('#include <ros/ros.h>')
