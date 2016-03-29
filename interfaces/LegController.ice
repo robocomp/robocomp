@@ -11,6 +11,11 @@
 
 module RoboCompLegController
 {
+
+	exception HardwareFailedException{string  what;};
+	exception ImpossiblePositionException{string  what;};
+	exception ImpossibleAnglesException{string  what;};
+
 	struct PoseLeg
 	{
 		float x;		//mm
@@ -28,16 +33,16 @@ module RoboCompLegController
 	};
 	struct AnglesLeg
 	{
-		float q1; 	//rad
+		float q1;		//rad
 		float q2;		//rad
 		float q3;		//rad
 		float vel;		//rad/s
 	};
 	struct StateLeg
 	{
-		float posclavicula; 	//rad
-		float poshombro; 	//rad
-		float poscodo; 		//rad
+		float q1; 	//rad
+		float q2; 	//rad
+		float q3; 		//rad
 		float x;		//mm
 		float y;		//mm
 		float z;		//mm
@@ -47,11 +52,11 @@ module RoboCompLegController
 	sequence<PoseLeg> ListPoseLeg;
 	interface LegController
 	{
-		bool setListIKLeg(ListPoseLeg ps, bool simu);
-		bool setIKLeg(PoseLeg p, bool simu);
-		bool setIKBody(PoseBody p, bool simu);
-		void setFKLeg(AnglesLeg al);
-		StateLeg getStateLeg();
+		bool setListIKLeg(ListPoseLeg ps, bool simu) throws ImpossiblePositionException, HardwareFailedException;
+		bool setIKLeg(PoseLeg p, bool simu) throws ImpossiblePositionException, HardwareFailedException;
+		bool setIKBody(PoseBody p, bool simu) throws ImpossiblePositionException, HardwareFailedException;
+		bool setFKLeg(AnglesLeg al, bool simu) throws ImpossibleAnglesException, HardwareFailedException;
+		StateLeg getStateLeg() throws HardwareFailedException;
 	};
 };
 
