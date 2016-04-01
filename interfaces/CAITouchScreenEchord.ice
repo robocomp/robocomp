@@ -17,6 +17,7 @@ module RoboCompCAITouchScreenEchord{
 		void  setTestConfig(RoboCompASREchord::TestConfig config);
 		void  setText(string label);
 		void  canAnswer(bool timeToAnswer, int questionNumber);
+		void  clearText();
 	};
 	interface TouchScreenCompToAgent{
 		void  finishWrittingEvent(bool finish);
