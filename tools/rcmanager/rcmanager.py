@@ -169,6 +169,12 @@ class TheThing(QtGui.QDialog):
 		self.menu.setFixedWidth(300);
 		self.menuFile = self.menu.addMenu('File')
 		self.menuSim = self.menu.addMenu('Simulation')
+		self.menuActions = self.menu.addMenu('Actions')
+
+		self.actionKillAll = self.menuActions.addAction('kill all')
+		self.connect(self.actionKillAll, QtCore.SIGNAL("triggered(bool)"), self.killall)
+		#self.actionRunAll = self.menuActions.addAction('run all')
+		#self.connect(self.actionRunAll, QtCore.SIGNAL("triggered(bool)"), self.runall)
 
 		self.actionOpen = self.menuFile.addAction('Open')
 		self.connect(self.actionOpen, QtCore.SIGNAL("triggered(bool)"), self.openFile)
@@ -376,6 +382,10 @@ class TheThing(QtGui.QDialog):
 	def down(self):
 		self.bg_exec(str(self.ui.downEdit.text()), self.ui.wdEdit.text())
 		self.clearFocus()
+
+	def killall(self):
+		for info in self.compConfig:
+			self.bg_exec(str(info.compdown), str(info.workingdir))
 
 	# Run the configured file editor
 	def config(self):
