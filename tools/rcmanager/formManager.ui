@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>322</width>
-    <height>470</height>
+    <width>387</width>
+    <height>518</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -29,22 +29,6 @@
    <property name="sizeConstraint">
     <enum>QLayout::SetNoConstraint</enum>
    </property>
-   <item>
-    <spacer name="verticalSpacer">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeType">
-      <enum>QSizePolicy::Fixed</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>20</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
    <item>
     <layout class="QVBoxLayout" name="verticalLayout_3">
      <property name="sizeConstraint">
@@ -114,7 +98,7 @@
                  </property>
                  <property name="icon">
                   <iconset>
-                   <normaloff>../../../../../../../../../../../../opt/managerComp/share/down.png</normaloff>../../../../../../../../../../../../opt/rcmanager/share/down.png</iconset>
+                   <normaloff>../../../../../../../../../../../../opt/managerComp/share/down.png</normaloff>../../../../../../../../../../../../opt/managerComp/share/down.png</iconset>
                  </property>
                 </widget>
                </item>

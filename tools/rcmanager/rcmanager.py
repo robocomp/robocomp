@@ -124,10 +124,11 @@ class TheThing(QtGui.QDialog):
 		self.ui.setupUi(self)
 		self.canvas = GraphView(self.ui.graphTab)
 		self.canvas.setGeometry(0, 0, 531, 581)
-		self.connect(self.canvas, QtCore.SIGNAL("nodeReleased()"), self.setFastState)
 		self.canvas.show()
 		self.canvasTimer = QtCore.QTimer()
 		self.canvasFastTimer = QtCore.QTimer()
+		self.connect(self.canvas, QtCore.SIGNAL("nodeReleased()"), self.setFastState)
+		self.setFastState(True)
 		self.connect(self.canvasTimer, QtCore.SIGNAL("timeout()"), self.graphUpdate)
 		self.connect(self.canvasFastTimer, QtCore.SIGNAL("timeout()"), self.graphFastEnds)
 		if dict['dock'] == 'true':
@@ -165,8 +166,8 @@ class TheThing(QtGui.QDialog):
 		self.timer.start(dict['fixed'])
 
 
-		self.menu = QtGui.QMenuBar(self)
-		self.menu.setFixedWidth(300);
+		self.menu = QtGui.QMenuBar(None)
+		self.ui.verticalLayout_3.insertWidget(0, self.menu)
 		self.menuFile = self.menu.addMenu('File')
 		self.menuSim = self.menu.addMenu('Simulation')
 		self.menuActions = self.menu.addMenu('Actions')
