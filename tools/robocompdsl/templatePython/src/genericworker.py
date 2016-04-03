@@ -83,7 +83,11 @@ Z()
 
 
 [[[cog
-for rq in component['requires']:
+for rqa in component['requires']:
+	if type(rqa) == type(''):
+		rq = rqa
+	else:
+		rq = rqa[0]
 	cog.outl("<TABHERE><TABHERE>self."+rq.lower()+"_proxy = mprx[\""+rq+"Proxy\"]")
 ]]]
 [[[end]]]

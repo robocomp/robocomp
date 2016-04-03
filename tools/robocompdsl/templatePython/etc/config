@@ -41,7 +41,11 @@ if text:
 
 
 text = False
-for rq in component['requires']:
+for rqa in component['requires']:
+	if type(rqa) == type(''):
+		rq = rqa
+	else:
+		rq = rqa[0]
 	if text == False:
 		cog.outl('# Proxies for required interfaces')
 		text = True

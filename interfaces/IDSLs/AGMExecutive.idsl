@@ -3,9 +3,9 @@ import "Planning.idsl";
 
 module RoboCompAGMExecutive
 {
-	exception Locked {};
-	exception OldModel {};
-	exception InvalidChange  {};
+	exception Locked { };
+	exception OldModel { };
+	exception InvalidChange { };
 
 	interface AGMExecutive
 	{
