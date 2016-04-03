@@ -124,10 +124,11 @@ class TheThing(QtGui.QDialog):
 		self.ui.setupUi(self)
 		self.canvas = GraphView(self.ui.graphTab)
 		self.canvas.setGeometry(0, 0, 531, 581)
-		self.connect(self.canvas, QtCore.SIGNAL("nodeReleased()"), self.setFastState)
 		self.canvas.show()
 		self.canvasTimer = QtCore.QTimer()
 		self.canvasFastTimer = QtCore.QTimer()
+		self.connect(self.canvas, QtCore.SIGNAL("nodeReleased()"), self.setFastState)
+		self.setFastState(True)
 		self.connect(self.canvasTimer, QtCore.SIGNAL("timeout()"), self.graphUpdate)
 		self.connect(self.canvasFastTimer, QtCore.SIGNAL("timeout()"), self.graphFastEnds)
 		if dict['dock'] == 'true':
@@ -165,10 +166,16 @@ class TheThing(QtGui.QDialog):
 		self.timer.start(dict['fixed'])
 
 
-		self.menu = QtGui.QMenuBar(self)
-		self.menu.setFixedWidth(300);
+		self.menu = QtGui.QMenuBar(None)
+		self.ui.verticalLayout_3.insertWidget(0, self.menu)
 		self.menuFile = self.menu.addMenu('File')
 		self.menuSim = self.menu.addMenu('Simulation')
+		self.menuActions = self.menu.addMenu('Actions')
+
+		self.actionKillAll = self.menuActions.addAction('kill all')
+		self.connect(self.actionKillAll, QtCore.SIGNAL("triggered(bool)"), self.killall)
+		#self.actionRunAll = self.menuActions.addAction('run all')
+		#self.connect(self.actionRunAll, QtCore.SIGNAL("triggered(bool)"), self.runall)
 
 		self.actionOpen = self.menuFile.addAction('Open')
 		self.connect(self.actionOpen, QtCore.SIGNAL("triggered(bool)"), self.openFile)
@@ -376,6 +383,10 @@ class TheThing(QtGui.QDialog):
 	def down(self):
 		self.bg_exec(str(self.ui.downEdit.text()), self.ui.wdEdit.text())
 		self.clearFocus()
+
+	def killall(self):
+		for info in self.compConfig:
+			self.bg_exec(str(info.compdown), str(info.workingdir))
 
 	# Run the configured file editor
 	def config(self):
