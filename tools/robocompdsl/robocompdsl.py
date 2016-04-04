@@ -237,7 +237,7 @@ else:
 				ofile = inputFile.split('.')[0].lower() + "." + f.split('.')[-1].lower()
 				print 'Generating', ofile, ' (servant for', inputFile.split('.')[0].lower() + ')'
 				# Call cog
-				run = "cog.py -z -d" + " -D theIDSL="+inputFile+ " -o " + ofile + " " + "/home/daniel/Escritorio/" + f
+				run = "cog.py -z -d" + " -D theIDSL="+inputFile+ " -o " + ofile + " " + "/opt/robocomp/share/robocompdsl/templateCPP/" + f
 				run = run.split(' ')
 				ret = Cog().main(run)
 				if ret != 0:
