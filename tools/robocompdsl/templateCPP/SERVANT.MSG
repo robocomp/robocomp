@@ -1,0 +1,36 @@
+[[[cog
+
+import sys
+sys.path.append('/opt/robocomp/python')
+
+import cog
+def A():
+	cog.out('<@@<')
+def Z():
+	cog.out('>@@>')
+def TAB():
+	cog.out('<TABHERE>')
+def SPACE(i=0):
+	s = ''
+	if i>0:
+		s = str(i)
+	cog.out('<S'+s+'>')
+
+from parseIDSL import *
+customTypesList = []
+idsl = IDSLParsing.fromFile(sys.argv[1])
+for imp in idsl['module']['contents']:
+	if imp['type'] in ('sequence', 'dictionary'):
+		customTypesList.append(imp)
+	if imp['type'] == 'struct':
+		for structVar in imp['structIdentifiers']:
+			wascustomType = False
+			for customType in customTypesList:
+				if structVar[0] == customType['name']:
+					cog.outl(customType['typeSequence'] +"[] " + structVar[1]+";")
+					wascustomType = True
+					break
+			if not wascustomType:
+				cog.outl(structVar[0]+" "+structVar[1]+";")
+]]]
+[[[end]]]
