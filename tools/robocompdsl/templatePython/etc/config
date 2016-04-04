@@ -67,16 +67,9 @@ for namea, number in getNameNumber(component['requires']):
 if text:
 	cog.out('\n\n')
 
-#text = False
+
 for pb in component['publishes']:
 	storm = True
-#	if text == False:
-#		cog.outl('# Proxies for published topics')
-#		text = True
-#	cog.outl(pb + "Proxy = " + pb.lower() + ":tcp -h localhost -p 0")
-#if text:
-#	cog.out('\n')
-
 if storm:
 	cog.outl('# This property is used by the clients to connect to IceStorm.')
 	cog.outl('TopicManager.Proxy=IceStorm/TopicManager:default -p 9999')
