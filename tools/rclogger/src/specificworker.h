@@ -29,7 +29,6 @@
 #include <QSqlQuery>
 #include "loggerdlgcontrol.h"
 #include <genericworker.h>
-#include <innermodel/innermodel.h>
 
 class SpecificWorker : public GenericWorker
 {
