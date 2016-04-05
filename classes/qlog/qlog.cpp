@@ -79,7 +79,7 @@ void qLog::setProxy(std::string endpoint, RoboCompLogger::LoggerPrx _prx)
 
 void qLog::send(std::string _file, int line, std::string func, std::string strng, std::string _type)
 {
-	printf("send: %s %s\n", log.toStdString().c_str(), strng.c_str());
+//	printf("send: %s %s\n", log.toStdString().c_str(), strng.c_str());
 	if (log == "none")
 		return;
 	else
@@ -88,26 +88,11 @@ void qLog::send(std::string _file, int line, std::string func, std::string strng
 		fullpath = _file;
 		sender = "";
 		QStringList list1 = QString::fromStdString(_file).split("/");
-		sender = _file;
-		if (QString::fromStdString(_file).contains("robocomp",Qt::CaseInsensitive) == true)
-		{
-			if (list1.contains("robocomp"))
-			{
-				if (list1.contains("classes"))
-				{
-					sender = list1[list1.indexOf("classes")+1].toStdString();
-				}
-				else if (list1.contains("hal") or list1.contains("essential"))
-				{
-					sender = list1[list1.indexOf("hal")+1].toStdString();
-				}
-			}
-		}
+		sender = PROGRAM_NAME;
 		file = list1[list1.size()-1].toStdString();
 		method = func;
 		nLine = line;
-		// timeStamp = QDateTime::currentDateTime().toString("yyyy.MM.dd hh:mm:ss:zzz").toStdString();
-		timeStamp = QDateTime::currentDateTime().toString("hh:mm:ss:zzz").toStdString();
+		timeStamp = QDateTime::currentDateTime().toString("yyyy.MM.dd hh:mm:ss:zzz").toStdString();
 		message = strng;
 		type = _type;
 		fullpath = _file;

@@ -3,18 +3,20 @@
 SET ( SOURCES
   specificworker.cpp
   specificmonitor.cpp
-  loggerdlgcontrol.cpp
 )
 
 # Headers set
 SET ( HEADERS
   specificworker.h
   specificmonitor.h
-  loggerdlgcontrol.h
 )
 
 INCLUDE($ENV{ROBOCOMP}/cmake/modules/ipp.cmake)
 SET( QT_USE_QTSQL TRUE )
 
+
 ADD_DEFINITIONS( -std=c++11 )
+
+
+INSTALL(DIRECTORY "../icons" DESTINATION /opt/robocomp/share/rclogger )
 
