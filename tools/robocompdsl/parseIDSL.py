@@ -44,7 +44,7 @@ class IDSLParsing:
 		idslImports = ZeroOrMore(idslImport)
 		
 		structDef     = Word("struct").setResultsName('type') + identifier.setResultsName('name') + op + structIdentifers.setResultsName("structIdentifiers") + cl + semicolon
-		dictionaryDef = Word("dictionary").setResultsName('type') + lt + typeIdentifier.setResultsName('typeDictionary') + gt + identifier.setResultsName('name') + semicolon
+		dictionaryDef = Word("dictionary").setResultsName('type') + lt + CharsNotIn("<>") + gt + identifier.setResultsName('name') + semicolon
 		sequenceDef   = Word("sequence").setResultsName('type')   + lt + typeIdentifier.setResultsName('typeSequence') + gt + identifier.setResultsName('name') + semicolon
 		enumDef       = Word("enum").setResultsName('type')       + identifier.setResultsName('name') + op + CharsNotIn("{}") + cl + semicolon
 		exceptionDef  = Word("exception").setResultsName('type')  + identifier.setResultsName('name') + op + CharsNotIn("{}") + cl + semicolon
