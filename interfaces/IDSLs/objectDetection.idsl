@@ -28,7 +28,7 @@ module RoboCompobjectDetection
 		void  centroidBasedPose(out float x, out float y, out float theta);
 		void  segmentImage();
 		void  grabTheAR();
-		void  findTheObject(string objectTofind);
+		bool  findTheObject(string objectTofind);
 		void  getPose(out float x,out float y,out float z);
 		void  getRotation(out float rx,out float ry,out float rz);
 	};
