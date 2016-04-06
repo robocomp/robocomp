@@ -27,9 +27,7 @@
 
 #include <QSqlDatabase>
 #include <QSqlQuery>
-//#include "loggerdlgcontrol.h"
 #include <genericworker.h>
-#include <innermodel/innermodel.h>
 #include <QtGui>
 #include <QtCore>
 #include <QAction>
