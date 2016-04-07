@@ -87,7 +87,6 @@ if storm:
 ]]]
 [[[end]]]
 
-
 Ice.Warn.Connections=0
 Ice.Trace.Network=0
 Ice.Trace.Protocol=0

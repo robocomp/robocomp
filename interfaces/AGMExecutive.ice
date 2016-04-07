@@ -39,9 +39,9 @@ module RoboCompAGMExecutive
 
 	interface AGMExecutiveVisualizationTopic
 	{
-		void update(RoboCompAGMWorldModel::World world, RoboCompAGMWorldModel::World target, RoboCompPlanning::Plan plan);
-		void successFulChange(RoboCompPlanning::ActionSequence actions);
-		void aimedChange(RoboCompPlanning::Action action);
+		void update(RoboCompAGMWorldModel::World world, string mission, RoboCompPlanning::Plan plan);
+		//void successFulChange(RoboCompPlanning::ActionSequence actions);
+		//void aimedChange(RoboCompPlanning::Action action);
 	};
 
 	interface AGMExecutiveTopic
