@@ -254,7 +254,11 @@ try:
 except:
 	pass
 
-for pb in component['publishes']:
+for pba in component['publishes']:
+	if type(pba) == type(''):
+		pb = pba
+	else:
+		pb = pba[0]
 	w = PUBLISHES_STR.replace("<NORMAL>", pb).replace("<LOWER>", pb.lower())
 	cog.outl(w)
 
@@ -270,7 +274,11 @@ if len(component['requires']) > 0 or len(component['publishes']) > 0 or len(comp
 		worker = SpecificWorker(mprx)
 
 [[[cog
-for im in component['implements']:
+for ima in component['implements']:
+	if type(ima) == type(''):
+		im = ima
+	else:
+		im = ima[0]
 	w = IMPLEMENTS_STR.replace("<NORMAL>", im).replace("<LOWER>", im.lower())
 	cog.outl(w)
 
