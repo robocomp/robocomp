@@ -1,6 +1,3 @@
-#ifndef LOGGER_ICE
-#define LOGGER_ICE
-
 /** \mainpage RoboComp Interfaces: Logger.ice
  *
  * \section intro_sec Introduction
@@ -27,4 +24,4 @@ module RoboCompLogger
 	};
 };
 
-#endif
+
