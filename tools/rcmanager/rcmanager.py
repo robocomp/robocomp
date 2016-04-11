@@ -79,30 +79,31 @@ class CommandDialog(QtGui.QWidget):
 
 # ComponentChecker class: Threaded endpoint-pinging class.
 class ComponentChecker(threading.Thread):
-	def __init__(self):
+	def __init__(self, endpoint):
 		threading.Thread.__init__(self)
 		self.daemon = True
 		self.reset()
 		self.exit = False
+		self.alive = False
+		self.aPrx = None
+		try:
+			self.aPrx = global_ic.stringToProxy(endpoint)
+			self.aPrx.ice_timeout(1)
+		except:
+			print "Error creating proxy to " + endpoint
+			exit()
+			
 	def run(self):
 		global global_ic
 		while self.exit == False:
-			for k, v in self.componentsToCheck.iteritems():
-				aPrx = None
-				try:
-					aPrx = global_ic.stringToProxy(v)
-				except:
-					self.workingComponents.discard(k)
-				try:
-					aPrx.ice_timeout(1)
-					aPrx.ice_ping()
-					self.workingComponents.add(k)
-				except:
-					self.workingComponents.discard(k)
-			time.sleep(0.1)
+			try:
+				self.aPrx.ice_ping()
+				self.alive = True
+			except:
+				self.alive = False
+			time.sleep(0.5)
 	def reset(self):
-		self.componentsToCheck = {}
-		self.workingComponents = set()
+		self.alive = False
 	def stop(self):
 		self.exit = True
 	def runrun(self):
@@ -114,7 +115,7 @@ class ComponentChecker(threading.Thread):
 class TheThing(QtGui.QDialog):
 	def __init__(self):
 		# Create a component checker
-		self.componentChecker = ComponentChecker()
+		self.componentChecker = {}
 		self.configFile = os.path.expanduser('~/rcmanager.xml')
 		# Gui config
 		global dict
@@ -365,7 +366,8 @@ class TheThing(QtGui.QDialog):
 
 	# Retuns True if the specified component is up, otherwise returns False
 	def itsUp(self, compNumber):
-		if self.componentChecker.workingComponents.__contains__(self.compConfig[compNumber].alias): return True
+		if self.compConfig[compNumber].alias in self.componentChecker:
+			return self.componentChecker[self.compConfig[compNumber]].alive 
 		return False
 
 	# Queues the user's request to change the state of a given component, turning it off if it's on and viceversa.
@@ -407,14 +409,14 @@ class TheThing(QtGui.QDialog):
 		for k, v in newDict.iteritems():
 			dict[k] = v
 
-		self.componentChecker.reset()
+		self.componentChecker.clear()
 		for listItem in newList:
 			item = QtGui.QListWidgetItem()
 			item.setText(listItem.alias)
 			self.ui.checkList.insertItem(0, item)
 			self.compConfig.insert(0, listItem)
-			self.componentChecker.componentsToCheck[listItem.alias] = listItem.endpoint
-		self.componentChecker.runrun()
+			self.componentChecker[listItem.alias] = ComponentChecker(listItem.endpoint)
+			self.componentChecker[listItem.alias].runrun()
 
 		self.log('Configuration loaded')
 
@@ -456,33 +458,35 @@ class TheThing(QtGui.QDialog):
 
 	def checkAll(self, initial=False):
 		allOk = True
+		workingComponents = set()
 		for numItem in range(0, len(self.compConfig)):
 			ok = True
 			itemConfig = self.compConfig[numItem]
 			item = self.ui.checkList.item(numItem)
-			if self.componentChecker.workingComponents.__contains__(itemConfig.alias):
+			if (itemConfig.alias in self.componentChecker) and (self.componentChecker[itemConfig.alias].alive):
 				item.setTextColor(QtGui.QColor(0, 255, 0))
+				workingComponents.add(itemConfig.alias)
 			else:
 				item.setTextColor(QtGui.QColor(255, 0, 0))
 				allOk = False
 
-		if self.componentChecker.workingComponents != self.back_comps:
+		if workingComponents != self.back_comps:
 			if allOk == False:
 				self.blinkTimer.stop()
 				self.blinkTimer.start(dict['blink'])
 
-		for comp in self.componentChecker.workingComponents.difference(self.back_comps):
+		for comp in workingComponents.difference(self.back_comps):
 			self.log('Now \"' + comp + '\" is up.')
-		for comp in self.back_comps.difference(self.componentChecker.workingComponents):
+		for comp in self.back_comps.difference(workingComponents):
 			self.log('Now \"' + comp + '\" is down.')
 
 		if self.wantsDocking():
 			if allOk and len(self.compConfig) > 0:
 				self.systray.setIcon(self.iconFULL)
-			elif self.componentChecker.workingComponents != self.back_comps:
+			elif workingComponents != self.back_comps:
 				self.systray.setIcon(self.iconOK)
 
-		self.back_comps = self.componentChecker.workingComponents.copy()
+		self.back_comps = workingComponents.copy()
 		self.upRequests()
 
 	def upRequests(self):
@@ -491,7 +495,7 @@ class TheThing(QtGui.QDialog):
 			itsconfig = self.getConfigByAlias(alias)
 			unavailableDependences = []
 			for dep in itsconfig.dependences:
-				if not self.componentChecker.workingComponents.__contains__(dep):
+				if not dep in self.componentChecker:
 					unavailableDependences.append(dep)
 			if len(unavailableDependences) == 0:
 				print 'rcmanager:', alias, 'is now ready to run.'
@@ -558,12 +562,12 @@ class TheThing(QtGui.QDialog):
 			self.hide()
 		elif self.wantsDocking():
 			closeevent.accept()
-			self.componentChecker.stop()
+			for key, checker in self.componentChecker.iteritems():
+				checker.stop()
 #		else:
 #			closeevent.accept()
 #			self.forceExit()
 #			sys.exit(0)
-		self.componentChecker.exit = True
 
 
 	#
@@ -652,17 +656,15 @@ class GraphView(QtGui.QWidget):
 			notFound = True
 			if self.VisualNodeCogia:
 				if self.VisualNodeCogia.name == parentComp.alias:
-					if parent.componentChecker.componentsToCheck.has_key(self.VisualNodeCogia.name):
+					if self.VisualNodeCogia.name in parent.componentChecker:
 						notFound = False
-						if parent.componentChecker.workingComponents.__contains__(self.VisualNodeCogia.name): self.VisualNodeCogia.on = True
-						else: self.VisualNodeCogia.on = False
+						self.VisualNodeCogia = parent.componentChecker[self.VisualNodeCogia.name].alive 
 					break
 			if notFound:
 				for myComp in self.compList:
 					if myComp.name == parentComp.alias:
 						notFound = False
-						if parent.componentChecker.workingComponents.__contains__(myComp.name): myComp.on = True
-						else: myComp.on = False
+						myComp.on = parent.componentChecker[myComp.name].alive
 						break
 			if notFound:
 				newOne = GraphNode()
