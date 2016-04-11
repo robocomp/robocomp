@@ -236,7 +236,11 @@ if __name__ == '__main__':
 [[[cog
 if len(component['requires']) > 0 or len(component['publishes']) > 0 or len(component['subscribesTo']) > 0:
 	cog.outl('<TABHERE>try:')
-for rq in component['requires']:
+for rqa in component['requires']:
+	if type(rqa) == type(''):
+		rq = rqa
+	else:
+		rq = rqa[0]
 	w = REQUIRE_STR.replace("<NORMAL>", rq).replace("<LOWER>", rq.lower())
 	cog.outl(w)
 

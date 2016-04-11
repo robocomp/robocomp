@@ -19,6 +19,7 @@
 #ifndef QLOG_H
 #define QLOG_H
 
+#include "config.h"
 #include <QtCore>
 #include <iostream>
 using namespace std;
