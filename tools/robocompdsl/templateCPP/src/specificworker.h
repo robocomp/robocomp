@@ -117,30 +117,27 @@ if 'subscribesTo' in component:
 		nname = imp
 		while type(nname) != type(''):			
 			nname = nname[0]
-		if communicationIsIce(imp):
-			module = pool.moduleProviding(nname)
-			for interface in module['interfaces']:
-				if interface['name'] == nname:
-					for mname in interface['methods']:
-						method = interface['methods'][mname]
-						paramStrA = ''
-						for p in method['params']:
-							# delim
-							if paramStrA == '': delim = ''
-							else: delim = ', '
-							# decorator
-							ampersand = '&'
-							if p['decorator'] == 'out':
-								const = ''
-							else:
-								const = 'const '
-								if p['type'].lower() in ['int', '::ice::int', 'float', '::ice::float']:
-									ampersand = ''
-							# STR
-							paramStrA += delim + const + p['type'] + ' ' + ampersand + p['name']
-						cog.outl("<TABHERE>" + method['return'] + ' ' + method['name'] + '(' + paramStrA + ");")
-		else:
-			cog.outl("<TABHERE>void ros"+nname+'(const std_msgs::'+nname+'::ConstPtr& recv'+nname+');')
+		module = pool.moduleProviding(nname)
+		for interface in module['interfaces']:
+			if interface['name'] == nname:
+				for mname in interface['methods']:
+					method = interface['methods'][mname]
+					paramStrA = ''
+					for p in method['params']:
+						# delim
+						if paramStrA == '': delim = ''
+						else: delim = ', '
+						# decorator
+						ampersand = '&'
+						if p['decorator'] == 'out':
+							const = ''
+						else:
+							const = 'const '
+							if p['type'].lower() in ['int', '::ice::int', 'float', '::ice::float']:
+								ampersand = ''
+						# STR
+						paramStrA += delim + const + p['type'] + ' ' + ampersand + p['name']
+					cog.outl("<TABHERE>" + method['return'] + ' ' + method['name'] + '(' + paramStrA + ");")
 
 ]]]
 [[[end]]]

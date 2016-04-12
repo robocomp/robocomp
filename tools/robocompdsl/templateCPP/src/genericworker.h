@@ -249,32 +249,27 @@ if 'subscribesTo' in component:
 		if module == None:
 			print ('\nCan\'t find module providing', nname, '\n')
 			sys.exit(-1)
-		if communicationIsIce(nname):
-			for interface in module['interfaces']:
-				if interface['name'] == nname:
-					for mname in interface['methods']:
-						method = interface['methods'][mname]
-						paramStrA = ''
-						for p in method['params']:
-							# delim
-							if paramStrA == '': delim = ''
-							else: delim = ', '
-							# decorator
-							ampersand = '&'
-							if p['decorator'] == 'out':
-								const = ''
-							else:
-								const = 'const '
-								if p['type'].lower() in ['int', '::ice::int', 'float', '::ice::float']:
-									ampersand = ''
-							# STR
-							paramStrA += delim + const + p['type'] + ' ' + ampersand + p['name']
-							cog.outl("<TABHERE>virtual " + method['return'] + ' ' + method['name'] + '(' + paramStrA + ") = 0;")
-		else:
-			cog.outl("<TABHERE>virtual void ros" + nname + '(const std_msgs::' + nname + "::ConstPtr& recv" + nname + ") = 0;")
-	
+		for interface in module['interfaces']:
+			if interface['name'] == nname:
+				for mname in interface['methods']:
+					method = interface['methods'][mname]
+					paramStrA = ''
+					for p in method['params']:
+						# delim
+						if paramStrA == '': delim = ''
+						else: delim = ', '
+						# decorator
+						ampersand = '&'
+						if p['decorator'] == 'out':
+							const = ''
+						else:
+							const = 'const '
+							if p['type'].lower() in ['int', '::ice::int', 'float', '::ice::float']:
+								ampersand = ''
+						# STR
+						paramStrA += delim + const + p['type'] + ' ' + ampersand + p['name']
+						cog.outl("<TABHERE>virtual " + method['return'] + ' ' + method['name'] + '(' + paramStrA + ") = 0;")
 
-				
 ]]]
 [[[end]]]
 
@@ -284,6 +279,20 @@ protected:
 [[[cog
 if component['usingROS']:
 	cog.outl("<TABHERE>ros::NodeHandle node;")
+for imp in component['subscribesTo']:
+	nname = imp
+	while type(nname) != type(''):
+		nname = nname[0]
+	module = pool.moduleProviding(nname)
+	if module == None:
+		print ('\nCan\'t find module providing', nname, '\n')
+		sys.exit(-1)
+	if not communicationIsIce(imp):
+		for interface in module['interfaces']:
+			if interface['name'] == nname:
+				for mname in interface['methods']:
+					method = interface['methods'][mname]
+					cog.outl("<TABHERE>ros::Subscriber "+nname+"_"+mname+";")
 if 'publishes' in component:
 	for publish in component['publishes']:
 		pubs = publish

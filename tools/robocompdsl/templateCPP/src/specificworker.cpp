@@ -213,29 +213,26 @@ if 'subscribesTo' in component:
 		nname = imp
 		while type(nname) != type(''):
 			nname = nname[0]
-		if communicationIsIce(imp):
-			module = pool.moduleProviding(nname)
-			for interface in module['interfaces']:
-				if interface['name'] == nname:
-					for mname in interface['methods']:
-						method = interface['methods'][mname]
-						paramStrA = ''
-						for p in method['params']:
-							if paramStrA == '': delim = ''
-							else: delim = ', '
-							# decorator
-							ampersand = '&'
-							if p['decorator'] == 'out':
-								const = ''
-							else:
-								const = 'const '
-								if p['type'].lower() in ['int', '::ice::int', 'float', '::ice::float']:
-									ampersand = ''
-							paramStrA += delim + const + p['type'] + ' ' + ampersand + p['name']
-						bodyCode = bodyCodeFromName(method['name'])
-						cog.outl(method['return'] + ' SpecificWorker::' + method['name'] + '(' + paramStrA + ")\n{\n"+bodyCode+"\n}\n")
-		else:
-			cog.outl("void SpecificWorker::ros"+nname+'(const std_msgs::'+nname+'ConstPtr& recv'+nname+")\n{\n}")
+		module = pool.moduleProviding(nname)
+		for interface in module['interfaces']:
+			if interface['name'] == nname:
+				for mname in interface['methods']:
+					method = interface['methods'][mname]
+					paramStrA = ''
+					for p in method['params']:
+						if paramStrA == '': delim = ''
+						else: delim = ', '
+						# decorator
+						ampersand = '&'
+						if p['decorator'] == 'out':
+							const = ''
+						else:
+							const = 'const '
+							if p['type'].lower() in ['int', '::ice::int', 'float', '::ice::float']:
+								ampersand = ''
+						paramStrA += delim + const + p['type'] + ' ' + ampersand + p['name']
+					bodyCode = bodyCodeFromName(method['name'])
+					cog.outl(method['return'] + ' SpecificWorker::' + method['name'] + '(' + paramStrA + ")\n{\n"+bodyCode+"\n}\n")
 
 
 

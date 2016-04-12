@@ -85,27 +85,6 @@ if storm:
 ]]]
 [[[end]]]
 
-[[[cog
-if 'subscribesTo' in component:
-	for subscribe in component['subscribesTo']:
-		subs = subscribe
-		while type(subs) != type(''):
-			subs = subs[0]
-		if not communicationIsIce(subscribe):
-			cog.outl('ROSSubscription'+subs+'.TopicName=sub'+subs)
-			cog.outl('ROSSubscription'+subs+'.MaximumSize=1000')
-
-if 'publishes' in component:
-	for publish in component['publishes']:
-		pubs = publish
-		while type(pubs) != type(''):
-			pubs = pubs[0]
-		if not communicationIsIce(publish):
-			cog.outl('ROSPublication'+pubs+'.TopicName=pub'+pubs)
-			cog.outl('ROSPublication'+pubs+'.MaximumSize=1000')
-]]]
-[[[end]]]
-
 Ice.Warn.Connections=0
 Ice.Trace.Network=0
 Ice.Trace.Protocol=0
