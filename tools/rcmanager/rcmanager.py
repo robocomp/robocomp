@@ -497,7 +497,7 @@ class TheThing(QtGui.QDialog):
 			itsconfig = self.getConfigByAlias(alias)
 			unavailableDependences = []
 			for dep in itsconfig.dependences:
-				if not dep in self.componentChecker:
+				if (not dep in self.componentChecker) or (not self.componentChecker[dep].alive):
 					unavailableDependences.append(dep)
 			if len(unavailableDependences) == 0:
 				print 'rcmanager:', alias, 'is now ready to run.'

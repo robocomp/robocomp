@@ -3,16 +3,20 @@
 SET ( SOURCES
   specificworker.cpp
   specificmonitor.cpp
+  exportCSVWidget.cpp
 )
 
 # Headers set
 SET ( HEADERS
   specificworker.h
   specificmonitor.h
+  exportCSVWidget.h
 )
 
 INCLUDE($ENV{ROBOCOMP}/cmake/modules/ipp.cmake)
 SET( QT_USE_QTSQL TRUE )
+
+QT4_WRAP_UI( UI_HEADERS exportCSV.ui )
 
 ADD_DEFINITIONS( -std=c++11 )
 
