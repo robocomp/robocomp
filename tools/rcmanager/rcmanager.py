@@ -91,7 +91,9 @@ class ComponentChecker(threading.Thread):
 			self.aPrx.ice_timeout(1)
 		except:
 			print "Error creating proxy to " + endpoint
-			exit()
+			if len(endpoint) == 0:
+				print 'please, provide an endpoint'
+			raise
 			
 	def run(self):
 		global global_ic
