@@ -77,19 +77,7 @@ for subscribe in component['subscribesTo']:
 )
 
 [[[cog
-
-usingROS=False
-
-for subscribe in component['subscribesTo']:
-	subs = subscribe
-	while type(subs) != type(''):
-		subs = subs[0]
-	if communicationIsIce(subscribe):
-		pass
-	else:
-		usingROS = True
-
-if usingROS:
+if component['usingROS']:
 	cog.outl('#ROS')
 	cog.outl('find_package(catkin REQUIRED)')
 	cog.outl('include_directories(  ${catkin_INCLUDE_DIRS} )')
@@ -104,7 +92,8 @@ ROBOCOMP_WRAP_ICE( CommonBehavior
 [[[cog
 A()
 for im in component['recursiveImports']:
-	cog.out(im.split('/')[-1].split('.')[0] + ' ')
+	if communicationIsIce(im):
+		cog.out(im.split('/')[-1].split('.')[0] + ' ')
 Z()
 ]]]
 [[[end]]]

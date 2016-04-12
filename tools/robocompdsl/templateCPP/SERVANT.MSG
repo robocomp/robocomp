@@ -18,7 +18,7 @@ def SPACE(i=0):
 
 from parseIDSL import *
 customTypesList = []
-idsl = IDSLParsing.fromFile(theIDSL)
+idsl = IDSLParsing.fromFileIDSL(theIDSL)
 for imp in idsl['module']['contents']:
 	if imp['type'] in ('sequence', 'struct'):
 		customTypesList.append(imp)
@@ -28,14 +28,21 @@ for imp in idsl['module']['contents']:
 			for customType in customTypesList:
 				if structVar[0] == customType['name']:
 					if customType['type'] == 'sequence':
-						cog.outl(customType['typeSequence'] +"[] " + structVar[1]+";")
+						if customType['typeSequence'] in ('float','int','uint'):
+							cog.outl(customType['typeSequence'] +"32[] " + structVar[1]+"")
+						else:
+							cog.outl(customType['typeSequence'] +"[] " + structVar[1]+"")
 						wascustomType = True
 						break
 					elif structVar[0] == 'struct':
-						cog.outl(customType['name'] +" " + structVar[1]+";")
+						cog.outl(customType['name'] +" " + structVar[1]+"")
 						wascustomType = True
 						break
 			if not wascustomType:
-				cog.outl(structVar[0]+" "+structVar[1]+";")
+				if structVar[0] in ('float','int','uint'):
+					cog.outl(structVar[0]+"32 "+structVar[1]+"")
+				else:
+					str = structVar[0]+" "+structVar[1]+""
+					cog.outl(str.replace("::", "/"))
 ]]]
 [[[end]]]

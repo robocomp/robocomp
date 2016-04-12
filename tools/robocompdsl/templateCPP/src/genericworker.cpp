@@ -73,17 +73,14 @@ for namea, num in getNameNumber(component['requires']):
 		name = namea
 	else:
 		name = namea[0]
-	cog.outl("<TABHERE>"+name.lower()+num+"_proxy = (*("+name+"Prx*)mprx[\""+name+"Proxy"+num+"\"]);")	
-]]]
-[[[end]]]
+	cog.outl("<TABHERE>"+name.lower()+num+"_proxy = (*("+name+"Prx*)mprx[\""+name+"Proxy"+num+"\"]);")
 
-[[[cog
 for namea, num in getNameNumber(component['publishes']):
 	if type(namea) == str:
 		name = namea
 	else:
 		name = namea[0]
-	if communicationIsIce(name):
+	if communicationIsIce(namea):
 		cog.outl("<TABHERE>"+name.lower()+num+"_proxy = (*("+name+"Prx*)mprx[\""+name+"Pub"+num+"\"]);")
 ]]]
 [[[end]]]
@@ -91,6 +88,13 @@ for namea, num in getNameNumber(component['publishes']):
 	mutex = new QMutex(QMutex::Recursive);
 
 [[[cog
+if 'publishes' in component:
+	for publish in component['publishes']:
+		pubs = publish
+		while type(pubs) != type(''):
+			pubs = pubs[0]
+		if not communicationIsIce(publish):
+			cog.outl("<TABHERE>"+pubs.lower()+"_proxy = new Publisher"+pubs+"(&node);")
 if component['gui'] != 'none':
 	cog.outl("""<TABHERE>#ifdef USE_QTGUI
 		setupUi(this);
@@ -102,27 +106,6 @@ if component['gui'] != 'none':
 	connect(&timer, SIGNAL(timeout()), this, SLOT(compute()));
 // 	timer.start(Period);
 }
-
-[[[cog
-if 'subscribesTo' in component:
-	for subscribe in component['subscribesTo']:
-		subs = subscribe
-		while type(subs) != type(''):
-			subs = subs[0]
-		if not communicationIsIce(subscribe):
-			cog.outl('void GenericWorker::setROSSub'+subs+'(std::string s, int max)\n{\n')
-			cog.outl('<TABHERE>sub'+subs+' = nsub'+subs+'.subscribe(s, max, &GenericWorker::ros'+subs+', this);\n}\n')
-
-if 'publishes' in component:
-	for publish in component['publishes']:
-		pubs = publish
-		while type(pubs) != type(''):
-			pubs = pubs[0]
-		if not communicationIsIce(publish):
-			cog.outl('void GenericWorker::setROSPub'+pubs+'(std::string s, int max)\n{\n')
-			cog.outl('<TABHERE>pub'+pubs+' = npub'+pubs+'.advertise<std_msgs::'+pubs+'>(npub'+pubs+'.resolveName(s), max);\n}\n')
-]]]
-[[[end]]]
 
 /**
 * \brief Default destructor

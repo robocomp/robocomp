@@ -55,8 +55,6 @@ Z()
        @author authorname
 */
 
-
-
 [[[cog
 
 try:
@@ -69,8 +67,6 @@ except:
 
 ]]]
 [[[end]]]
-
-
 
 
 #ifndef SPECIFICWORKER_H

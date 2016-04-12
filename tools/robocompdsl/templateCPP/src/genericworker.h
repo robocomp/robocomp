@@ -20,6 +20,7 @@ if component == None:
 
 from parseIDSL import *
 pool = IDSLPool(theIDSLs)
+includeList = pool.rosImports()
 
 
 ]]]
@@ -66,45 +67,10 @@ if component['gui'] != 'none':
 #include <CommonBehavior.h>
 
 [[[cog
-usingROS = False
-includeMap = {}
-if 'subscribesTo' in component:
-	for subscribe in component['subscribesTo']:
-		subs = subscribe
-		while type(subs) != type(''):
-			subs = subs[0]
-		if not communicationIsIce(subscribe):
-			usingROS = True
-			includeMap[subs] = '#include <std_msgs/'+subs+'.h>'
-
-if 'publishes' in component:
-	for publish in component['publishes']:
-		pubs = publish
-		while type(pubs) != type(''):
-			pubs = pubs[0]
-		if not communicationIsIce(publish):
-			usingROS = True
-			includeMap[pubs] = '#include <std_msgs/'+pubs+'.h>'
-#if 'imports' in component:
-#	for import in component['imports']:
-		includeMap[import] = '#include "import.h"'
-
-if usingROS:
+if component['usingROS']:
 	cog.outl('#include <ros/ros.h>')
-	for s in includeMap: 
-		cog.outl(includeMap[s])
-]]]
-[[[end]]]
-
-[[[cog
-
-for m in pool.modulePool:
-	cog.outl("#include <"+m+".h>")
-
-]]]
-[[[end]]]
-
-[[[cog
+	for include in includeList:
+		cog.outl('#include <'+include+'.h>')
 
 try:
 	if 'agmagent' in [ x.lower() for x in component['options'] ]:
@@ -113,10 +79,8 @@ try:
 
 except:
 	pass
-
 ]]]
 [[[end]]]
-
 
 #define CHECK_PERIOD 5000
 #define BASIC_PERIOD 100
@@ -150,6 +114,54 @@ except:
 ]]]
 [[[end]]]
 
+[[[cog
+if component['usingROS']:
+	#CREANDO CLASES PARA LOS PUBLISHERS
+	for imp in component['publishes']:
+		nname = imp
+		while type(nname) != type(''):
+			nname = nname[0]
+		module = pool.moduleProviding(nname)
+		if module == None:
+			print ('\nCan\'t find module providing', nname, '\n')
+			sys.exit(-1)
+		if not communicationIsIce(imp):
+			cog.outl("<TABHERE>//class for rosPublisher")
+			cog.outl("class Publisher"+nname+"\n{\npublic:")
+			for interface in module['interfaces']:
+				if interface['name'] == nname:
+					for mname in interface['methods']:
+						method = interface['methods'][mname]
+						cog.outl("<TABHERE>ros::Publisher pub_"+mname+";")
+			cog.outl("<TABHERE>Publisher"+nname+"(ros::NodeHandle *node)\n<TABHERE>{")
+			for interface in module['interfaces']:
+				if interface['name'] == nname:
+					for mname in interface['methods']:
+						method = interface['methods'][mname]
+						for p in method['params']:
+							s = "\""+nname+"_"+mname+"\""
+							if '::' in p['type']:
+								cog.outl("<TABHERE><TABHERE>pub_"+mname+" = node->advertise<"+p['type']+">(node->resolveName("+s+"), 1000);")
+							else:
+								cog.outl("<TABHERE><TABHERE>pub_"+mname+" = node->advertise<"+module['name']+"::"+p['type']+">(node->resolveName("+s+"), 1000);")
+			cog.outl("<TABHERE>}")
+			cog.outl("<TABHERE>~Publisher"+nname+"(){}")
+			for interface in module['interfaces']:
+				if interface['name'] == nname:
+					for mname in interface['methods']:
+						method = interface['methods'][mname]
+						for p in method['params']:
+							if '::' in p['type']:
+								cog.outl("<TABHERE>void "+mname+"("+p['type']+" "+mname+"Item)")
+								cog.outl("<TABHERE>{\n<TABHERE><TABHERE>pub_"+mname+".publish("+mname+"Item"+");")
+								cog.outl("<TABHERE>}")
+							else:
+								cog.outl("<TABHERE>void "+mname+"("+module['name']+"::"+p['type']+" "+mname+"Item)")
+								cog.outl("<TABHERE>{\n<TABHERE><TABHERE>pub_"+mname+".publish("+mname+"Item"+");")
+								cog.outl("<TABHERE>}")
+			cog.outl("};")
+]]]
+[[[end]]]
 
 
 class GenericWorker : 
@@ -194,7 +206,7 @@ for namea, num in getNameNumber(component['requires']+component['publishes']):
 		name = namea
 	else:
 		name = namea[0]
-	if communicationIsIce(name):
+	if communicationIsIce(namea):
 		cog.outl('<TABHERE>'+name+'Prx '+name.lower()+num +'_proxy;')
 ]]]
 [[[end]]]
@@ -266,37 +278,19 @@ if 'subscribesTo' in component:
 ]]]
 [[[end]]]
 
-[[[cog
-if 'subscribesTo' in component:
-	for subscribe in component['subscribesTo']:
-		subs = subscribe
-		while type(subs) != type(''):
-			subs = subs[0]
-		if not communicationIsIce(subscribe):
-			cog.outl('<TABHERE>void setROSSub'+subs+'(std::string s, int max);')
-
-if 'publishes' in component:
-	for publish in component['publishes']:
-		pubs = publish
-		while type(pubs) != type(''):
-			pubs = pubs[0]
-		if not communicationIsIce(publish):
-			cog.outl('<TABHERE>void setROSPub'+pubs+'(std::string s, int max);')
-]]]
-[[[end]]]
-
 protected:
 	QTimer timer;
 	int Period;
 [[[cog
+if component['usingROS']:
+	cog.outl("<TABHERE>ros::NodeHandle node;")
 if 'publishes' in component:
 	for publish in component['publishes']:
 		pubs = publish
 		while type(pubs) != type(''):
 			pubs = pubs[0]
 		if not communicationIsIce(publish):
-			cog.outl('<TABHERE>ros::NodeHandle npub'+pubs+';')
-			cog.outl('<TABHERE>ros::Publisher pub'+pubs+';')
+			cog.outl("<TABHERE>Publisher"+pubs+" *"+pubs.lower()+"_proxy;")
 try:
 	if 'agmagent' in [ x.lower() for x in component['options'] ]:
 		cog.outl("<TABHERE>bool active;")
@@ -313,17 +307,7 @@ except:
 [[[end]]]
 
 private:
-[[[cog
-if 'subscribesTo' in component:
-	for subscribe in component['subscribesTo']:
-		subs = subscribe
-		while type(subs) != type(''):
-			subs = subs[0]
-		if not communicationIsIce(subscribe):
-			cog.outl('<TABHERE>ros::NodeHandle nsub'+subs+';')
-			cog.outl('<TABHERE>ros::Subscriber sub'+subs+';')
-]]]
-[[[end]]]
+
 
 public slots:
 	virtual void compute() = 0;

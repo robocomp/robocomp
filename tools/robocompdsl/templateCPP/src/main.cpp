@@ -231,14 +231,8 @@ for subscribe in component['subscribesTo']:
 		subs = subs[0]
 	if communicationIsIce(subscribe):
 		cog.outl('#include <'+subs.lower()+'I.h>')
-	else:
-		usingROS = True
 
 cog.outl('')
-
-for imp in component['imports']:
-	incl = imp.split('/')[-1].split('.')[0]
-	cog.outl('#include <'+incl+'.h>')
 
 ]]]
 [[[end]]]
@@ -252,8 +246,9 @@ using namespace RoboCompCommonBehavior;
 
 [[[cog
 for imp in component['imports']:
-	incl = imp.split('/')[-1].split('.')[0]
-	cog.outl('using namespace RoboComp'+incl+';')
+	if imp in component['recursiveImports']:
+		incl = imp.split('/')[-1].split('.')[0]
+		cog.outl('using namespace RoboComp'+incl+';')
 
 ]]]
 [[[end]]]
@@ -325,10 +320,8 @@ for namea, num in getNameNumber(component['requires'] + component['publishes']):
 		name = namea
 	else:
 		name = namea[0]
-		if communicationIsIce(name):
+		if communicationIsIce(namea):
 			cog.outl('<TABHERE>'+name+'Prx '+name.lower()+num +'_proxy;')
-if usingROS:
-	cog.outl("<TABHERE>int rosMaximumSize;")
 ]]]
 [[[end]]]
 
@@ -343,8 +336,15 @@ for namea, num in getNameNumber(component['requires']):
 		name = namea[0]
 	w = REQUIRE_STR.replace("<NORMAL>", name).replace("<LOWER>", name.lower()).replace("<PROXYNAME>", name.lower()+num).replace("<PROXYNUMBER>", num)
 	cog.outl(w)
-
-if len(component['publishes'])>0 or len(component['subscribesTo'])>0:
+	
+need_topic=False
+for pub in component['publishes']:
+	if communicationIsIce(pub):
+		need_topic = True
+for pub in component['subscribesTo']:
+	if communicationIsIce(pub):
+		need_topic = True
+if need_topic:
 	cog.outl('<TABHERE>IceStorm::TopicManagerPrx topicManager = IceStorm::TopicManagerPrx::checkedCast(communicator()->propertyToProxy("TopicManager.Proxy"));')
 
 
@@ -353,12 +353,12 @@ for pba in component['publishes']:
 		pb = pba
 	else:
 		pb = pba[0]
-	if communicationIsIce(pb):
+	if communicationIsIce(pba):
 		w = PUBLISHES_STR.replace("<NORMAL>", pb).replace("<LOWER>", pb.lower())
 		cog.outl(w)
 
 
-if usingROS:
+if component['usingROS']:
 	cog.outl("<TABHERE>ros::init(argc, argv, \""+component['name']+"\");")
 
 
@@ -367,32 +367,6 @@ if usingROS:
 
 
 	SpecificWorker *worker = new SpecificWorker(mprx);
-	
-[[[cog
-if 'subscribesTo' in component:
-	for subscribe in component['subscribesTo']:
-		subs = subscribe
-		while type(subs) != type(''):
-			subs = subs[0]
-		if not communicationIsIce(subscribe):
-			cog.outl('<TABHERE>GenericMonitor::configGetString(communicator(), prefix, "ROSSubscription'+subs+'.MaximumSize", tmp, "");')
-			cog.outl('<TABHERE>istringstream(tmp) >> rosMaximumSize;')
-			cog.outl('<TABHERE>GenericMonitor::configGetString(communicator(), prefix, "ROSSubscription'+subs+'.TopicName", tmp, "");')
-			cog.outl('<TABHERE>worker->setROSSub'+subs+'(tmp, rosMaximumSize);')
-
-if 'publishes' in component:
-	for publish in component['publishes']:
-		pubs = publish
-		while type(pubs) != type(''):
-			pubs = pubs[0]
-		if not communicationIsIce(publish):
-			cog.outl('<TABHERE>GenericMonitor::configGetString(communicator(), prefix, "ROSPublication'+pubs+'.MaximumSize", tmp, "");')
-			cog.outl('<TABHERE>istringstream(tmp) >> rosMaximumSize;')
-			cog.outl('<TABHERE>GenericMonitor::configGetString(communicator(), prefix, "ROSPublication'+pubs+'.TopicName", tmp, "");')
-			cog.outl('<TABHERE>worker->setROSPub'+pubs+'(tmp, rosMaximumSize);')
-]]]
-[[[end]]]
-	
 	//Monitor thread
 	SpecificMonitor *monitor = new SpecificMonitor(worker,communicator());
 	QObject::connect(monitor, SIGNAL(kill()), &a, SLOT(quit()));
@@ -436,10 +410,10 @@ for ima in component['implements']:
 
 [[[cog
 for name, num in getNameNumber(component['subscribesTo']):
+	nname = name
+	while type(nname) != type(''):
+		nname = name[0]
 	if communicationIsIce(name):
-		nname = name
-		while type(nname) != type(''):
-			nname = name[0]
 		w = SUBSCRIBESTO_STR.replace("<NORMAL>", nname).replace("<LOWER>", nname.lower()).replace("<PROXYNAME>", nname.lower()+num).replace("<PROXYNUMBER>", num)
 		cog.out(w)
 ]]]
