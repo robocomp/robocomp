@@ -112,10 +112,12 @@ SpecificWorker::SpecificWorker(MapPrx& mprx) : GenericWorker(mprx)
 	mainMenu->setFixedWidth(300);
 	menuFile = mainMenu->addMenu("File");
 	actionExit = menuFile->addAction("Exit");
-
+	menuExport = mainMenu->addMenu("Export data");
+	actionCSV = menuExport->addAction("Export to csv");
 
 	connect(actionExit,SIGNAL(triggered(bool)),this,SLOT(forceExit()));
-        show();
+	connect(actionCSV,SIGNAL(triggered(bool)),this,SLOT(exportCSV()));
+	show();
 }
 
 /**
@@ -514,6 +516,10 @@ void SpecificWorker::forceExit()
 }
 
 
-
+void SpecificWorker::exportCSV()
+{
+	ExportCSVWidget *widget = new ExportCSVWidget(tModel);
+	widget->show();
+}
 
 
