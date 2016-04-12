@@ -135,23 +135,22 @@ if sys.argv[1].endswith(".cdsl"):
 		# Generate interface-dependent files
 		#
 		for ima in component['implements']:
-			if type(ima) == str:
-				im = ima
-			else:
-				im = ima[0]
-			if type(im) == type([]):
+			im = ima
+			if type(im) != type(''):
 				im = im[0]
-			for f in [ "SERVANT.H", "SERVANT.CPP"]:
-				ofile = outputPath + '/src/' + im.lower() + 'I.' + f.split('.')[-1].lower()
-				print 'Generating', ofile, ' (servant for', im + ')'
-				# Call cog
-				run = "cog.py -z -d -D theCDSL="+inputFile  + " -D theIDSLs="+imports + " -D theInterface="+im + " -o " + ofile + " " + "/opt/robocomp/share/robocompdsl/templateCPP/" + f
-				run = run.split(' ')
-				ret = Cog().main(run)
-				if ret != 0:
-					print 'ERROR'
-					sys.exit(-1)
-				replaceTagsInFile(ofile)
+			if communicationIsIce(ima):
+				for f in [ "SERVANT.H", "SERVANT.CPP"]:
+					ofile = outputPath + '/src/' + im.lower() + 'I.' + f.split('.')[-1].lower()
+					print 'Generating', ofile, ' (servant for', im + ')'
+					# Call cog
+					run = "cog.py -z -d -D theCDSL="+inputFile  + " -D theIDSLs="+imports + " -D theInterface="+im + " -o " + ofile + " " + "/opt/robocomp/share/robocompdsl/templateCPP/" + f
+					run = run.split(' ')
+					ret = Cog().main(run)
+					if ret != 0:
+						print 'ERROR'
+						sys.exit(-1)
+					replaceTagsInFile(ofile)
+					
 		for imp in component['subscribesTo']:
 			im = imp
 			if type(im) != type(''):
@@ -228,19 +227,38 @@ if sys.argv[1].endswith(".cdsl"):
 		print 'Unsupported language', component['language']
 elif sys.argv[1].endswith(".idsl"):
 	from parseIDSL import *
-	idsl = IDSLParsing.fromFile(inputFile)
+	imported = []
+	idsl = IDSLParsing.fromFileIDSL(inputFile)
 	if not os.path.exists(outputPath):
 		creaDirectorio(outputPath)
-	for imp in idsl['module']['contents']:
-		if imp['type'] == 'struct':
-			for f in [ "SERVANT.MSG"]:
-				ofile = imp['name'] + "." + f.split('.')[-1].lower()
-				print 'Generating', ofile, ' (servant for', inputFile.split('.')[0].lower() + ')'
-				# Call cog
-				run = "cog.py -z -d" + " -D structName=" + imp['name'] +" -D theIDSL="+inputFile+ " -o " + ofile + " " + "/opt/robocomp/share/robocompdsl/templateCPP/" + f
-				run = run.split(' ')
-				ret = Cog().main(run)
-				if ret != 0:
-					print 'ERROR'
-					sys.exit(-1)
-				replaceTagsInFile(ofile)
+
+	def generarMSG(inputFile, imported):
+		idsl = IDSLParsing.fromFileIDSL(inputFile)
+		for imp in idsl['module']['contents']:
+			if imp['type'] == 'struct':
+				for f in [ "SERVANT.MSG"]:
+					ofile =imp['name'] + "." + f.split('.')[-1].lower()
+					print 'Generating', ofile, ' (servant for', inputFile.split('.')[0].lower() + ')'
+					# Call cog
+					run = "cog.py -z -d" + " -D structName=" + imp['name'] +" -D theIDSL="+inputFile+ " -o " + ofile + " " + "/opt/robocomp/share/robocompdsl/templateCPP/" + f
+					run = run.split(' ')
+					ret = Cog().main(run)
+					if ret != 0:
+						print 'ERROR'
+						sys.exit(-1)
+					replaceTagsInFile(ofile)
+					command ="/opt/ros/jade/share/gencpp/cmake/../../../lib/gencpp/gen_cpp.py " +outputPath+"/"+ofile+ " -Istd_msgs:/opt/ros/jade/share/std_msgs/cmake/../msg -I" + idsl['module']['name'] + ":" + outputPath
+					for impo in imported:
+						if not impo == idsl['module']['name']:
+							command = command + " -I" + impo + ":" + outputPath
+					if not os.path.exists(outputPath):
+						os.mkdir(directory)
+					command = command + " -p "+ idsl['module']['name'] + " -o "+ outputPath+"/"+idsl['module']['name']+ " -e /opt/ros/jade/share/gencpp/cmake/.."
+					os.system(command)
+		return idsl['module']['name']
+
+	for importIDSL in idsl['imports']:
+		imported.append(generarMSG(importIDSL, []))
+
+	generarMSG(inputFile, imported)
+	os.system("rm "+outputPath+"/*.msg")
