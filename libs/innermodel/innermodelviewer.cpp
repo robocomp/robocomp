@@ -301,7 +301,7 @@ InnerModelViewer::InnerModelViewer(InnerModel *im, QString root,  osg::Group *pa
 
 InnerModelViewer::~InnerModelViewer()
 {
-	delete innerModel;
+// 	delete innerModel;
 }
 
 
