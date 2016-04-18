@@ -69,21 +69,26 @@ if len(ROBOCOMP)<1:
 	print 'genericworker.py: ROBOCOMP environment variable not set! Exiting.'
 	sys.exit()
 
-
-preStr = "-I"+ROBOCOMP+"/interfaces/ --all "+ROBOCOMP+"/interfaces/"
 [[[cog
 for imp in component['imports']:
-	module = IDSLParsing.gimmeIDSL(imp.split('/')[-1])
-	incl = imp.split('/')[-1].split('.')[0]
-	cog.outl('Ice.loadSlice(preStr+"'+incl+'.ice")')
-	cog.outl('from '+module['name']+' import *')
+	if imp in component['recursiveImports']:
+		cog.outl('preStr = "-I"+ROBOCOMP+"/interfaces/ --all "+ROBOCOMP+"/interfaces/"')
+		module = IDSLParsing.gimmeIDSL(imp.split('/')[-1])
+		incl = imp.split('/')[-1].split('.')[0]
+		cog.outl('Ice.loadSlice(preStr+"'+incl+'.ice")')
+		cog.outl('from '+module['name']+' import *')
 ]]]
 [[[end]]]
 
 
 [[[cog
-	for im in component['implements']+component['subscribesTo']:
-		cog.outl('from ' + im.lower() + 'I import *')
+	for imp in component['implements']+component['subscribesTo']:
+		if type(imp) == str:
+			im = imp
+		else:
+			im = imp[0]
+		if communicationIsIce(imp):
+			cog.outl('from ' + im.lower() + 'I import *')
 ]]]
 [[[end]]]
 
@@ -125,9 +130,13 @@ try:
 except:
 	pass
 for imp in lst:
-	module = pool.moduleProviding(imp)
+	if type(imp) == str:
+		im = imp
+	else:
+		im = imp[0]
+	module = pool.moduleProviding(im)
 	for interface in module['interfaces']:
-		if interface['name'] == imp:
+		if interface['name'] == im:
 			for mname in interface['methods']:
 				method = interface['methods'][mname]
 				outValues = []

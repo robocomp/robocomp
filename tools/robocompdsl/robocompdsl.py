@@ -211,18 +211,21 @@ if sys.argv[1].endswith(".cdsl"):
 		#
 		# Generate interface-dependent files
 		#
-		for im in component['implements']+component['subscribesTo']:
-			for f in [ "SERVANT.PY"]:
-				ofile = outputPath + '/src/' + im.lower() + 'I.' + f.split('.')[-1].lower()
-				print 'Generating', ofile, ' (servant for', im + ')'
-				# Call cog
-				run = "cog.py -z -d -D theCDSL="+inputFile  + " -D theIDSLs="+imports + " -D theInterface="+im + " -o " + ofile + " " + "/opt/robocomp/share/robocompdsl/templatePython/" + f
-				run = run.split(' ')
-				ret = Cog().main(run)
-				if ret != 0:
-					print 'ERROR'
-					sys.exit(-1)
-				replaceTagsInFile(ofile)
+		for imp in component['implements']+component['subscribesTo']:
+			if type(imp) != type(''):
+				im = imp[0]
+			if communicationIsIce(imp):
+				for f in [ "SERVANT.PY"]:
+					ofile = outputPath + '/src/' + im.lower() + 'I.' + f.split('.')[-1].lower()
+					print 'Generating', ofile, ' (servant for', im + ')'
+					# Call cog
+					run = "cog.py -z -d -D theCDSL="+inputFile  + " -D theIDSLs="+imports + " -D theInterface="+im + " -o " + ofile + " " + "/opt/robocomp/share/robocompdsl/templatePython/" + f
+					run = run.split(' ')
+					ret = Cog().main(run)
+					if ret != 0:
+						print 'ERROR'
+						sys.exit(-1)
+					replaceTagsInFile(ofile)
 	else:
 		print 'Unsupported language', component['language']
 elif sys.argv[1].endswith(".idsl"):
@@ -247,14 +250,18 @@ elif sys.argv[1].endswith(".idsl"):
 						print 'ERROR'
 						sys.exit(-1)
 					replaceTagsInFile(ofile)
-					command ="/opt/ros/jade/share/gencpp/cmake/../../../lib/gencpp/gen_cpp.py " +outputPath+"/"+ofile+ " -Istd_msgs:/opt/ros/jade/share/std_msgs/cmake/../msg -I" + idsl['module']['name'] + ":" + outputPath
+					commandCPP = "/opt/ros/jade/share/gencpp/cmake/../../../lib/gencpp/gen_cpp.py " +outputPath+"/"+ofile+ " -Istd_msgs:/opt/ros/jade/share/std_msgs/cmake/../msg -I" + idsl['module']['name'] + ":" + outputPath
+					commandPY  = "/opt/ros/jade/share/gencpp/cmake/../../../lib/genpy/genmsg_py.py " +outputPath+"/"+ofile+ " -Istd_msgs:/opt/ros/jade/share/std_msgs/cmake/../msg -I" + idsl['module']['name'] + ":" + outputPath
 					for impo in imported:
 						if not impo == idsl['module']['name']:
-							command = command + " -I" + impo + ":" + outputPath
+							commandCPP = commandCPP + " -I" + impo + ":" + outputPath
+							commandPY  = commandPY + " -I" + impo + ":" + outputPath
 					if not os.path.exists(outputPath):
 						os.mkdir(directory)
-					command = command + " -p "+ idsl['module']['name'] + " -o "+ outputPath+"/"+idsl['module']['name']+ " -e /opt/ros/jade/share/gencpp/cmake/.."
-					os.system(command)
+					commandCPP = commandCPP + " -p "+ idsl['module']['name'] + " -o "+ outputPath+"/"+idsl['module']['name']+ " -e /opt/ros/jade/share/gencpp/cmake/.."
+					commandPY = commandPY + " -p "+ idsl['module']['name'] + " -o "+ outputPath+"/"+idsl['module']['name']
+					os.system(commandCPP)
+					os.system(commandPY)
 		return idsl['module']['name']
 
 	for importIDSL in idsl['imports']:

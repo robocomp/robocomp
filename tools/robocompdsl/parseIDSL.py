@@ -171,11 +171,14 @@ class IDSLParsing:
 				print 'Unknown module content', contentDef
 		# STRUCTS DEFINED IN THE MODULE
 		module['structs'] = []
+		module['simpleStructs'] = []
 		for contentDef in tree['module']['contents']:
 			if contentDef['type'] == 'struct':
-				structdef = { 'name':tree['module']['name']+"/"+contentDef['name'], 'type':contentDef['type']}
+				structdef       = { 'name':tree['module']['name']+"/"+contentDef['name'], 'type':contentDef['type']}
+				simpleStructdef = { 'name':tree['module']['name'], 'strName':contentDef['name']}
 				#print structdef
 				module['structs'].append(structdef)
+				module['simpleStructs'].append(simpleStructdef)
 
 		return module
 
@@ -245,6 +248,13 @@ class IDSLPool:
 			for m in self.modulePool[module]['structs']:
 				includesList.append(m['name'])
 		return includesList
+	
+	def rosModulesImports(self):
+		modulesList = []
+		for module in self.modulePool:
+			for m in self.modulePool[module]['simpleStructs']:
+				modulesList.append(m)
+		return modulesList
 	
 
 if __name__ == '__main__':

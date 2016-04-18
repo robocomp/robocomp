@@ -89,7 +89,7 @@ for namea, num in getNameNumber(component['publishes']):
 
 [[[cog
 if component['usingROS']:
-	#CREANDO CLASES PARA LOS PUBLISHERS
+	#INICIALIZANDO SUBSCRIBERS
 	for imp in component['subscribesTo']:
 		nname = imp
 		while type(nname) != type(''):

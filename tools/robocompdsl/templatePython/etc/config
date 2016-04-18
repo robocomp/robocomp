@@ -21,7 +21,11 @@ component = CDSLParsing.fromFile(theCDSL)
 
 
 text = False
-for im in component['implements']:
+for imp in component['implements']:
+	if type(imp) == str:
+		im = imp
+	else:
+		im = imp[0]
 	if text == False:
 		cog.outl('# Endpoints for implemented interfaces')
 		text = True
@@ -31,7 +35,11 @@ if text:
 
 
 text = False
-for sb in component['subscribesTo']:
+for sub in component['subscribesTo']:
+	if type(sub) == str:
+		sb = sub
+	else:
+		sb = sub[0]
 	if text == False:
 		cog.outl('# Endpoints for subscriptions')
 		text = True
@@ -41,7 +49,11 @@ if text:
 
 
 text = False
-for rq in component['requires']:
+for req in component['requires']:
+	if type(req) == str:
+		rq = req
+	else:
+		rq = req[0]
 	if text == False:
 		cog.outl('# Proxies for required interfaces')
 		text = True

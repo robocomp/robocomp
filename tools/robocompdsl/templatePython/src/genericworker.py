@@ -19,6 +19,7 @@ if component == None:
 
 from parseIDSL import *
 pool = IDSLPool(theIDSLs)
+modulesList = pool.rosModulesImports()
 
 ]]]
 [[[end]]]
@@ -52,6 +53,10 @@ import sys
 from PySide import *
 
 [[[cog
+if component['usingROS']:
+	cog.outl('import rospy')
+	for include in modulesList:
+		cog.outl("from "+include['name']+".msg import "+include['strName'])
 A()
 if component['gui'] != 'none':
 	cog.outl('try:')
@@ -63,6 +68,41 @@ Z()
 ]]]
 [[[end]]]
 
+[[[cog
+if component['usingROS']:
+	#CREANDO CLASES PARA LOS PUBLISHERS
+	for imp in component['publishes']:
+		nname = imp
+		while type(nname) != type(''):
+			nname = nname[0]
+		module = pool.moduleProviding(nname)
+		if module == None:
+			print ('\nCan\'t find module providing', nname, '\n')
+			sys.exit(-1)
+		if not communicationIsIce(imp):
+			cog.outl("#class for rosPublisher")
+			cog.outl("class Publisher"+nname+"():")
+			cog.outl("<TABHERE>def __init__(self):")
+			for interface in module['interfaces']:
+				if interface['name'] == nname:
+					cog.outl("<TABHERE><TABHERE>self.pub = {}")
+					for mname in interface['methods']:
+						method = interface['methods'][mname]
+						for p in method['params']:
+							s = "\""+nname+"_"+mname+"\""
+							if '::' in p['type']:
+								cog.outl("<TABHERE><TABHERE>self.pub[\'"+mname+"\'] = rospy.Publisher("+s+", "+p['type'].split('::')[1]+", queue_size=1000)")
+							else:
+								cog.outl("<TABHERE><TABHERE>self.pub[\'"+mname+"\'] = rospy.Publisher("+s+", "+p['type']+", queue_size=1000)")
+			for interface in module['interfaces']:
+				if interface['name'] == nname:
+					for mname in interface['methods']:
+						method = interface['methods'][mname]
+						for p in method['params']:
+							cog.outl("<TABHERE>def "+mname+"(self, "+p['name']+"):")
+							cog.outl("<TABHERE><TABHERE>self.pub[\'"+mname+"\'].publish("+p['name']+")")
+]]]
+[[[end]]]
 
 class GenericWorker(
 [[[cog
@@ -83,14 +123,23 @@ Z()
 
 
 [[[cog
-for rq in component['requires']:
-	cog.outl("<TABHERE><TABHERE>self."+rq.lower()+"_proxy = mprx[\""+rq+"Proxy\"]")
-]]]
-[[[end]]]
+for req in component['requires']:
+	if type(req) == str:
+		rq = req
+	else:
+		rq = req[0]
+	if communicationIsIce(req):
+		cog.outl("<TABHERE><TABHERE>self."+rq.lower()+"_proxy = mprx[\""+rq+"Proxy\"]")
 
-[[[cog
 for pb in component['publishes']:
-	cog.outl("<TABHERE><TABHERE>self."+pb.lower()+" = mprx[\""+pb+"Pub\"]")
+	if type(pb) == str:
+		pub = pb
+	else:
+		pub = pb[0]
+	if communicationIsIce(pb):
+		cog.outl("<TABHERE><TABHERE>self."+pub.lower()+" = mprx[\""+pub+"Pub\"]")
+	else:
+		cog.outl("<TABHERE><TABHERE>self."+pub.lower()+" = Publisher"+nname+"()")
 ]]]
 [[[end]]]
 
@@ -103,7 +152,6 @@ if component['gui'] != 'none':
 Z()
 ]]]
 [[[end]]]
-		
 		
 		self.mutex = QtCore.QMutex(QtCore.QMutex.Recursive)
 		self.Period = 30
