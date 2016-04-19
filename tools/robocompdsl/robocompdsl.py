@@ -243,7 +243,7 @@ elif sys.argv[1].endswith(".idsl"):
 					ofile =imp['name'] + "." + f.split('.')[-1].lower()
 					print 'Generating', ofile, ' (servant for', inputFile.split('.')[0].lower() + ')'
 					# Call cog
-					run = "cog.py -z -d" + " -D structName=" + imp['name'] +" -D theIDSL="+inputFile+ " -o " + ofile + " " + "/opt/robocomp/share/robocompdsl/templateCPP/" + f
+					run = "cog.py -z -d" + " -D structName=" + imp['name'] +" -D theIDSL="+inputFile+ " -o " + ofile + " " + "/opt/robocomp/share/robocompdsl/" + f
 					run = run.split(' ')
 					ret = Cog().main(run)
 					if ret != 0:
