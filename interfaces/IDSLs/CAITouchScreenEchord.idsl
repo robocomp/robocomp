@@ -1,18 +1,21 @@
 import "ASREchord.idsl";
-module RoboCompCAISpeechEchord
+module RoboCompCAITouchScreenEchord
 {
 	
-	interface AgentToSpeechComp
+	interface AgentToTouchScreenComp
 	{
 		void setTestConfig(RoboCompASREchord::TestConfig config);
 		void setText(string label);
 		void canAnswer(bool timeToAnswer, int questionNumber);
-		void stopSpeaking();
+		void clearText();
 	};
-	interface SpeechCompToAgent
+	interface TouchScreenCompToAgent
 	{
-		void finishSpeakingEvent(bool finish);
+		void finishWrittingEvent(bool finish);
 		void setAnswer(string answer);
+		void stopTest();
+		void resumeTest();
 	};
 	
 };
+

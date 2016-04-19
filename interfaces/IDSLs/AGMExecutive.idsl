@@ -3,7 +3,9 @@ import "Planning.idsl";
 
 module RoboCompAGMExecutive
 {
-	enum ProposalError { NoError, Locked, OldModel, InvalidChange };
+	exception Locked { };
+	exception OldModel { };
+	exception InvalidChange { };
 
 	interface AGMExecutive
 	{
@@ -12,10 +14,10 @@ module RoboCompAGMExecutive
 		void deactivate();
 
 		// For agents
-		ProposalError structuralChangeProposal(RoboCompAGMWorldModel::World w, string sender, string log);
-		void symbolUpdate( RoboCompAGMWorldModel::Node n);
+		void structuralChangeProposal(RoboCompAGMWorldModel::World w, string sender, string log) throws Locked, OldModel, InvalidChange;
+		void symbolUpdate(RoboCompAGMWorldModel::Node n);
 		void symbolsUpdate(RoboCompAGMWorldModel::NodeSequence ns);
-		void edgeUpdated( RoboCompAGMWorldModel::Edge e);
+		void edgeUpdated(RoboCompAGMWorldModel::Edge e);
 		void edgesUpdated(RoboCompAGMWorldModel::EdgeSequence es);
 
 		// For setting the mission

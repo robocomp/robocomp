@@ -29,7 +29,7 @@ REQUIRE_STR = """
 <TABHERE><TABHERE><TABHERE><TABHERE>mprx["<NORMAL>Proxy"] = <LOWER>_proxy
 <TABHERE><TABHERE><TABHERE>except Ice.Exception:
 <TABHERE><TABHERE><TABHERE><TABHERE>print 'Cannot connect to the remote object (<NORMAL>)', proxyString
-	<TABHERE><TABHERE><TABHERE><TABHERE>#traceback.print_exc()
+<TABHERE><TABHERE><TABHERE><TABHERE>#traceback.print_exc()
 <TABHERE><TABHERE><TABHERE><TABHERE>status = 1
 <TABHERE><TABHERE>except Ice.Exception, e:
 <TABHERE><TABHERE><TABHERE>print e
@@ -178,6 +178,7 @@ if len(ROBOCOMP)<1:
 	print 'ROBOCOMP environment variable not set! Exiting.'
 	sys.exit()
 
+
 preStr = "-I"+ROBOCOMP+"/interfaces/ -I/opt/robocomp/interfaces/ --all "+ROBOCOMP+"/interfaces/"
 Ice.loadSlice(preStr+"CommonBehavior.ice")
 import RoboCompCommonBehavior
@@ -191,6 +192,7 @@ for imp in component['imports']:
 		cog.outl('import '+module['name']+'')
 ]]]
 [[[end]]]
+
 
 class CommonBehaviorI(RoboCompCommonBehavior.CommonBehavior):
 	def __init__(self, _handler, _communicator):
