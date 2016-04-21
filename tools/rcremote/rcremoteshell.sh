@@ -6,7 +6,7 @@ binary=$1
 cwdv=$2
 tabname=$3
 params="${4} ${5} ${6} ${7} ${8} ${9} ${11} ${12} ${13} ${14} ${15} ${16} ${17} ${18} ${19} ${20}"
-flag=0
+flag="0"
 
 echo "yo" $0
 echo "bin" $binary
@@ -21,7 +21,7 @@ for sessionID in $sessionList
 do
 	sessionName=`qdbus org.kde.yakuake /yakuake/tabs org.kde.yakuake.tabTitle $sessionID`
 	if [ "$sessionName" = "$tabname" ]; then
-		flag=1
+		flag="1"
 		session=`expr $sessionID + 1`
 		processID=`qdbus org.kde.yakuake /Sessions/$session org.kde.konsole.Session.processId`
 		fourGroundProcessID=`qdbus org.kde.yakuake /Sessions/$session org.kde.konsole.Session.foregroundProcessId`
@@ -29,7 +29,6 @@ do
 		# If the ids are the same, the user process is death
 		if [ "$processID" = "$fourGroundProcessID" ];
 		then
-			qdbus org.kde.yakuake /yakuake/sessions org.kde.yakuake.runCommandInTerminal $sessionID "$binary $params"		
 			qdbus org.kde.yakuake /yakuake/sessions org.kde.yakuake.runCommandInTerminal $sessionID "cd ${cwdv}"
 			qdbus org.kde.yakuake /yakuake/sessions org.kde.yakuake.runCommandInTerminal $sessionID "echo $flag"
 			qdbus org.kde.yakuake /yakuake/sessions org.kde.yakuake.runCommandInTerminal $sessionID "make -j1"
@@ -40,7 +39,7 @@ do
 	fi
 done
 
-if [ $flag == 0 ]; then
+if [ "$flag" == "0" ]; then
 	qdbus org.kde.yakuake /yakuake/sessions org.kde.yakuake.addSession
 	sess=`qdbus org.kde.yakuake /yakuake/sessions org.kde.yakuake.activeSessionId`
 	qdbus org.kde.yakuake /yakuake/tabs org.kde.yakuake.setTabTitle $sess $tabname	
