@@ -81,6 +81,7 @@ class CommandDialog(QtGui.QWidget):
 class ComponentChecker(threading.Thread):
 	def __init__(self, endpoint):
 		threading.Thread.__init__(self)
+		self.mutex = QtCore.QMutex(QtCore.QMutex.Recursive)
 		self.daemon = True
 		self.reset()
 		self.exit = False
@@ -97,13 +98,23 @@ class ComponentChecker(threading.Thread):
 		global global_ic
 		while self.exit == False:
 			try:
+				self.mutex.lock()
 				self.aPrx.ice_ping()
 				self.alive = True
 			except:
 				self.alive = False
+			finally:
+				self.mutex.unlock()
 			time.sleep(0.5)
 	def reset(self):
+		self.mutex.lock()
 		self.alive = False
+		self.mutex.lock()
+	def isalive(self):
+		self.mutex.lock()
+		r = self.alive
+		self.mutex.lock()
+		return r
 	def stop(self):
 		self.exit = True
 	def runrun(self):
@@ -367,7 +378,7 @@ class TheThing(QtGui.QDialog):
 	# Retuns True if the specified component is up, otherwise returns False
 	def itsUp(self, compNumber):
 		if self.compConfig[compNumber].alias in self.componentChecker:
-			return self.componentChecker[self.compConfig[compNumber]].alive 
+			return self.componentChecker[self.compConfig[compNumber]].isalive()
 		return False
 
 	# Queues the user's request to change the state of a given component, turning it off if it's on and viceversa.
@@ -463,7 +474,7 @@ class TheThing(QtGui.QDialog):
 			ok = True
 			itemConfig = self.compConfig[numItem]
 			item = self.ui.checkList.item(numItem)
-			if (itemConfig.alias in self.componentChecker) and (self.componentChecker[itemConfig.alias].alive):
+			if (itemConfig.alias in self.componentChecker) and (self.componentChecker[itemConfig.alias].isalive()):
 				item.setTextColor(QtGui.QColor(0, 255, 0))
 				workingComponents.add(itemConfig.alias)
 			else:
@@ -495,7 +506,7 @@ class TheThing(QtGui.QDialog):
 			itsconfig = self.getConfigByAlias(alias)
 			unavailableDependences = []
 			for dep in itsconfig.dependences:
-				if (not dep in self.componentChecker) or (not self.componentChecker[dep].alive):
+				if (not dep in self.componentChecker) or (not self.componentChecker[dep].isalive()):
 					unavailableDependences.append(dep)
 			if len(unavailableDependences) == 0:
 				print 'rcmanager:', alias, 'is now ready to run.'
@@ -658,13 +669,13 @@ class GraphView(QtGui.QWidget):
 				if self.VisualNodeCogia.name == parentComp.alias:
 					if self.VisualNodeCogia.name in parent.componentChecker:
 						notFound = False
-						self.VisualNodeCogia = parent.componentChecker[self.VisualNodeCogia.name].alive 
+						self.VisualNodeCogia.on = parent.componentChecker[self.VisualNodeCogia.name].isalive()
 					break
 			if notFound:
 				for myComp in self.compList:
 					if myComp.name == parentComp.alias:
 						notFound = False
-						myComp.on = parent.componentChecker[myComp.name].alive
+						myComp.on = parent.componentChecker[myComp.name].isalive()
 						break
 			if notFound:
 				newOne = GraphNode()
