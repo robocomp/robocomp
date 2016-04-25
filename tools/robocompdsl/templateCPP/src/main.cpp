@@ -222,7 +222,8 @@ for ima in component['implements']:
 		im = ima
 	else:
 		im = ima[0]
-	cog.outl('#include <'+im.lower()+'I.h>')
+	if communicationIsIce(ima):
+		cog.outl('#include <'+im.lower()+'I.h>')
 
 usingROS = False
 for subscribe in component['subscribesTo']:
@@ -334,8 +335,9 @@ for namea, num in getNameNumber(component['requires']):
 		name = namea
 	else:
 		name = namea[0]
-	w = REQUIRE_STR.replace("<NORMAL>", name).replace("<LOWER>", name.lower()).replace("<PROXYNAME>", name.lower()+num).replace("<PROXYNUMBER>", num)
-	cog.outl(w)
+	if communicationIsIce(namea):
+		w = REQUIRE_STR.replace("<NORMAL>", name).replace("<LOWER>", name.lower()).replace("<PROXYNAME>", name.lower()+num).replace("<PROXYNUMBER>", num)
+		cog.outl(w)
 	
 need_topic=False
 for pub in component['publishes']:
@@ -401,8 +403,9 @@ for ima in component['implements']:
 		im = ima
 	else:
 		im = ima[0]
-	w = IMPLEMENTS_STR.replace("<NORMAL>", im).replace("<LOWER>", im.lower())
-	cog.outl(w)
+	if communicationIsIce(ima):
+		w = IMPLEMENTS_STR.replace("<NORMAL>", im).replace("<LOWER>", im.lower())
+		cog.outl(w)
 ]]]
 [[[end]]]
 

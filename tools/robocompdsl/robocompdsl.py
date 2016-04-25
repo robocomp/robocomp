@@ -238,12 +238,12 @@ elif sys.argv[1].endswith(".idsl"):
 	def generarMSG(inputFile, imported):
 		idsl = IDSLParsing.fromFileIDSL(inputFile)
 		for imp in idsl['module']['contents']:
-			if imp['type'] == 'struct':
+			if imp['type'] in ['struct','sequence']:
 				for f in [ "SERVANT.MSG"]:
 					ofile =imp['name'] + "." + f.split('.')[-1].lower()
 					print 'Generating', ofile, ' (servant for', inputFile.split('.')[0].lower() + ')'
 					# Call cog
-					run = "cog.py -z -d" + " -D structName=" + imp['name'] +" -D theIDSL="+inputFile+ " -o " + ofile + " " + "/opt/robocomp/share/robocompdsl/" + f
+					run = "cog.py -z -d" + " -D structName=" + imp['name'] +" -D theIDSL="+inputFile+ " -o " + ofile + " " + "/opt/robocomp/share/robocompdsl/templateCPP/" + f
 					run = run.split(' ')
 					ret = Cog().main(run)
 					if ret != 0:
@@ -257,11 +257,45 @@ elif sys.argv[1].endswith(".idsl"):
 							commandCPP = commandCPP + " -I" + impo + ":" + outputPath
 							commandPY  = commandPY + " -I" + impo + ":" + outputPath
 					if not os.path.exists(outputPath):
-						os.mkdir(directory)
+						creaDirectorio(outputPath)
 					commandCPP = commandCPP + " -p "+ idsl['module']['name'] + " -o "+ outputPath+"/"+idsl['module']['name']+ " -e /opt/ros/jade/share/gencpp/cmake/.."
 					commandPY = commandPY + " -p "+ idsl['module']['name'] + " -o "+ outputPath+"/"+idsl['module']['name']
 					os.system(commandCPP)
 					os.system(commandPY)
+		for imp in idsl['module']['contents']:
+			if imp['type'] == 'interface':
+				for method in imp['methods']:
+					if 'params' in method:
+						if len(method['params']) == 2:
+							for f in [ "SERVANT.SRV"]:
+								ofile =method['name'] + "." + f.split('.')[-1].lower()
+								print 'Generating', ofile, ' (servant for', inputFile.split('.')[0].lower() + ')'
+								# Call cog
+								run = "cog.py -z -d" + " -D methodName=" + method['name'] +" -D theIDSL="+inputFile+ " -o " + ofile + " " + "/opt/robocomp/share/robocompdsl/templateCPP/" + f
+								run = run.split(' ')
+								ret = Cog().main(run)
+								if ret != 0:
+									print 'ERROR'
+									sys.exit(-1)
+								replaceTagsInFile(ofile)
+								commandCPP = "/opt/ros/jade/share/gencpp/cmake/../../../lib/gencpp/gen_cpp.py " +outputPath+"/"+ofile+ " -Istd_msgs:/opt/ros/jade/share/std_msgs/cmake/../msg -Istd_srvs:/opt/ros/jade/share/std_srv/cmake/../srv -I" + idsl['module']['name'] + ":" + outputPath
+								commandPY  = "/opt/ros/jade/share/gencpp/cmake/../../../lib/genpy/gensrv_py.py " +outputPath+"/"+ofile+ " -Istd_msgs:/opt/ros/jade/share/std_msgs/cmake/../msg -Istd_srvs:/opt/ros/jade/share/std_srv/cmake/../srv -I" + idsl['module']['name'] + ":" + outputPath
+								for impo in imported:
+									if not impo == idsl['module']['name']:
+										commandCPP = commandCPP + " -I" + impo + ":" + outputPath
+										commandPY  = commandPY + " -I" + impo + ":" + outputPath
+								if not os.path.exists(outputPath):
+									creaDirectorio(outputPath)
+								commandCPP = commandCPP + " -p "+ idsl['module']['name'] + " -o "+ outputPath+"/"+idsl['module']['name']+ " -e /opt/ros/jade/share/gencpp/cmake/.."
+								commandPY = commandPY + " -p "+ idsl['module']['name'] + " -o "+ outputPath+"/"+idsl['module']['name']
+								os.system(commandCPP)
+								os.system(commandPY)
+						else:
+							#print "error: service with too many params. Form is: void method(type inVar, out type outVar);"
+							print "sys.exit(-1)"
+					else:
+						#print "error: service without params. Form is: void method(type inVar, out type outVar);"
+						print "sys.exit(-1)"
 		return idsl['module']['name']
 
 	for importIDSL in idsl['imports']:
@@ -269,3 +303,4 @@ elif sys.argv[1].endswith(".idsl"):
 
 	generarMSG(inputFile, imported)
 	os.system("rm "+outputPath+"/*.msg")
+	os.system("rm "+outputPath+"/*.srv")

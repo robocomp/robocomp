@@ -74,7 +74,7 @@ class IDSLParsing:
 
 
 		remoteMethodDef  = Group(Optional(decoratorDef) + retValDef + typeIdentifier.setResultsName('name') + opp + Optional(          params).setResultsName('params') + clp + Optional(raiseDef) + semicolon )
-		interfaceDef    = Word("interface").setResultsName('type')  + typeIdentifier.setResultsName('name') + op + Group(ZeroOrMore(remoteMethodDef)) + cl + semicolon
+		interfaceDef    = Word("interface").setResultsName('type')  + typeIdentifier.setResultsName('name') + op + Group(ZeroOrMore(remoteMethodDef)).setResultsName('methods') + cl + semicolon
 
 		moduleContent = Group(structDef | enumDef | exceptionDef | dictionaryDef | sequenceDef | interfaceDef)
 		module = Suppress(Word("module")) + identifier.setResultsName("name") + op + ZeroOrMore(moduleContent).setResultsName("contents") + cl + semicolon
@@ -169,6 +169,13 @@ class IDSLParsing:
 				pass
 			else:
 				print 'Unknown module content', contentDef
+		# SEQUENCES DEFINED IN THE MODULE
+		module['sequences'] = []
+		for contentDef in tree['module']['contents']:
+			if contentDef['type'] == 'sequence':
+				seqdef       = { 'name':tree['module']['name']+"/"+contentDef['name'], 'type':contentDef['type']}
+				#print structdef
+				module['sequences'].append(seqdef)
 		# STRUCTS DEFINED IN THE MODULE
 		module['structs'] = []
 		module['simpleStructs'] = []
@@ -234,7 +241,11 @@ class IDSLPool:
 				if not filename in self.modulePool:
 					print 'Couldn\'t locate ', f
 					sys.exit(-1)
-
+	def IDSLsModule(self, module):
+		for filename in self.modulePool.keys():
+			if self.modulePool[filename] == module:
+				return '/opt/robocomp/interfaces/IDSLs/'+filename+'.idsl'
+		
 	def moduleProviding(self, interface):
 		for module in self.modulePool:
 			for m in self.modulePool[module]['interfaces']:
@@ -246,6 +257,8 @@ class IDSLPool:
 		includesList = []
 		for module in self.modulePool:
 			for m in self.modulePool[module]['structs']:
+				includesList.append(m['name'])
+			for m in self.modulePool[module]['sequences']:
 				includesList.append(m['name'])
 		return includesList
 	

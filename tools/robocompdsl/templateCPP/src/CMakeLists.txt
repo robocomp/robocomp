@@ -62,7 +62,8 @@ for ima in component['implements']:
 		im = ima
 	else:
 		im = ima[0]
-	cog.outl('<S2>' + im.lower() + 'I.cpp')
+	if communicationIsIce(ima):
+		cog.outl('<S2>' + im.lower() + 'I.cpp')
 
 for subscribe in component['subscribesTo']:
 	subs = subscribe

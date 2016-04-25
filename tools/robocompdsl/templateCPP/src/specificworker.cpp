@@ -161,82 +161,100 @@ void SpecificWorker::compute()
 // 		std::cout << "Error reading from Camera" << e << std::endl;
 // 	}
 [[[cog
-
-usingROS = False
-if 'subscribesTo' in component:
-	for imp in component['subscribesTo']:
-		nname = imp
-		while type(nname) != type(''):
-			nname = nname[0]
-		if not communicationIsIce(imp):
-			usingROS = True
-if usingROS:
-	cog.outl("<TABHERE>ros::spinOnce();")
-
+if component['usingROS']:
+	cog.outl("<TABHERE>ros::spinOnce")
 ]]]
 [[[end]]]
 }
 
 
 [[[cog
-
 if 'implements' in component:
-	for imp in component['implements']:
-		nname = imp
-		while type(nname) != type(''):			
-			nname = nname[0]
-		module = pool.moduleProviding(nname)
+	for impa in component['implements']:
+		if type(impa) == str:
+			imp = impa
+		else:
+			imp = impa[0]
+		module = pool.moduleProviding(imp)
 		for interface in module['interfaces']:
-			if interface['name'] == nname:
+			if interface['name'] == imp:
 				for mname in interface['methods']:
 					method = interface['methods'][mname]
 					paramStrA = ''
-					for p in method['params']:
-						if paramStrA == '': delim = ''
-						else: delim = ', '
-						# decorator
-						ampersand = '&'
-						if p['decorator'] == 'out':
-							const = ''
-						else:
-							const = 'const '
-							if p['type'].lower() in ['int', '::ice::int', 'float', '::ice::float']:
-								ampersand = ''
-						paramStrA += delim + const + p['type'] + ' ' + ampersand + p['name']
 					bodyCode = bodyCodeFromName(method['name'])
-					cog.outl(method['return'] + ' SpecificWorker::' + method['name'] + '(' + paramStrA + ")\n{\n"+bodyCode+"\n}\n")
-
-	
+					if communicationIsIce(impa):
+						for p in method['params']:
+							# delim
+							if paramStrA == '': delim = ''
+							else: delim = ', '
+							# decorator
+							ampersand = '&'
+							if p['decorator'] == 'out':
+								const = ''
+							else:
+								const = 'const '
+								if p['type'].lower() in ['int', '::ice::int', 'float', '::ice::float']:
+									ampersand = ''
+							# STR
+							paramStrA += delim + const + p['type'] + ' ' + ampersand + p['name']
+						cog.outl(method['return'] + ' SpecificWorker::' + method['name'] + '(' + paramStrA + ")\n{\n"+bodyCode+"\n}\n")
+					else:
+						paramStrA = module['name'] +"::"+method['name']+"::Request &req, "+module['name']+"::"+method['name']+"::Response &res"
+						cog.outl('bool SpecificWorker::' + method['name'] + '(' + paramStrA + ")\n{\n"+bodyCode+"\n}\n")
 
 if 'subscribesTo' in component:
-	for imp in component['subscribesTo']:
-		nname = imp
-		while type(nname) != type(''):
-			nname = nname[0]
-		module = pool.moduleProviding(nname)
+	for impa in component['subscribesTo']:
+		if type(impa) == str:
+			imp = impa
+		else:
+			imp = impa[0]
+		module = pool.moduleProviding(imp)
+		if module == None:
+			print ('\nCan\'t find module providing', imp, '\n')
+			sys.exit(-1)
 		for interface in module['interfaces']:
-			if interface['name'] == nname:
+			if interface['name'] == imp:
 				for mname in interface['methods']:
 					method = interface['methods'][mname]
 					paramStrA = ''
-					for p in method['params']:
-						if paramStrA == '': delim = ''
-						else: delim = ', '
-						# decorator
-						ampersand = '&'
-						if p['decorator'] == 'out':
-							const = ''
-						else:
-							const = 'const '
-							if p['type'].lower() in ['int', '::ice::int', 'float', '::ice::float']:
-								ampersand = ''
-						paramStrA += delim + const + p['type'] + ' ' + ampersand + p['name']
 					bodyCode = bodyCodeFromName(method['name'])
-					cog.outl(method['return'] + ' SpecificWorker::' + method['name'] + '(' + paramStrA + ")\n{\n"+bodyCode+"\n}\n")
-
-
-
-
+					if communicationIsIce(impa):
+						for p in method['params']:
+							# delim
+							if paramStrA == '': delim = ''
+							else: delim = ', '
+							# decorator
+							ampersand = '&'
+							if p['decorator'] == 'out':
+								const = ''
+							else:
+								const = 'const '
+								if p['type'].lower() in ['int', '::ice::int', 'float', '::ice::float']:
+									ampersand = ''
+							# STR
+							paramStrA += delim + const + p['type'] + ' ' + ampersand + p['name']
+						cog.outl(method['return'] + ' SpecificWorker::' + method['name'] + '(' + paramStrA + ")\n{\n"+bodyCode+"\n}\n")
+					else:
+						for p in method['params']:
+							# delim
+							if paramStrA == '': delim = ''
+							else: delim = ', '
+							# decorator
+							ampersand = '&'
+							if p['decorator'] == 'out':
+								const = ''
+							else:
+								const = 'const '
+								ampersand = ''
+							if p['type'] in ('float','int','uint'):
+								p['type'] = "std_msgs::"+p['type'].capitalize()+"32"
+							elif p['type'] == 'string':
+								p['type'] = "std_msgs::String"
+							elif not '::' in p['type']:
+								p['type'] = module['name']+"::"+p['type']
+							# STR
+							paramStrA += delim + p['type'] + ' ' + p['name']
+						cog.outl('void SpecificWorker::' + method['name'] + '(' + paramStrA + ")\n{\n"+bodyCode+"\n}\n")
 ]]]
 [[[end]]]
 

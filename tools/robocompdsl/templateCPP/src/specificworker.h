@@ -96,48 +96,75 @@ if 'implements' in component:
 				for mname in interface['methods']:
 					method = interface['methods'][mname]
 					paramStrA = ''
-					for p in method['params']:
-						# delim
-						if paramStrA == '': delim = ''
-						else: delim = ', '
-						# decorator
-						ampersand = '&'
-						if p['decorator'] == 'out':
-							const = ''
-						else:
-							const = 'const '
-							if p['type'].lower() in ['int', '::ice::int', 'float', '::ice::float']:
-								ampersand = ''
-						# STR
-						paramStrA += delim + const + p['type'] + ' ' + ampersand + p['name']
-					cog.outl("<TABHERE>" + method['return'] + ' ' + method['name'] + '(' + paramStrA + ");")
+					if communicationIsIce(impa):
+						for p in method['params']:
+							# delim
+							if paramStrA == '': delim = ''
+							else: delim = ', '
+							# decorator
+							ampersand = '&'
+							if p['decorator'] == 'out':
+								const = ''
+							else:
+								const = 'const '
+								if p['type'].lower() in ['int', '::ice::int', 'float', '::ice::float']:
+									ampersand = ''
+							# STR
+							paramStrA += delim + const + p['type'] + ' ' + ampersand + p['name']
+						cog.outl("<TABHERE>" + method['return'] + ' ' + method['name'] + '(' + paramStrA + ");")
+					else:
+						paramStrA = module['name'] +"::"+method['name']+"::Request &req, "+module['name']+"::"+method['name']+"::Response &res"
+						cog.outl("<TABHERE>bool " + method['name'] + '(' + paramStrA + ");")
 
 if 'subscribesTo' in component:
-	for imp in component['subscribesTo']:
-		nname = imp
-		while type(nname) != type(''):			
-			nname = nname[0]
-		module = pool.moduleProviding(nname)
+	for impa in component['subscribesTo']:
+		if type(impa) == str:
+			imp = impa
+		else:
+			imp = impa[0]
+		module = pool.moduleProviding(imp)
 		for interface in module['interfaces']:
-			if interface['name'] == nname:
+			if interface['name'] == imp:
 				for mname in interface['methods']:
 					method = interface['methods'][mname]
 					paramStrA = ''
-					for p in method['params']:
-						# delim
-						if paramStrA == '': delim = ''
-						else: delim = ', '
-						# decorator
-						ampersand = '&'
-						if p['decorator'] == 'out':
-							const = ''
-						else:
-							const = 'const '
-							if p['type'].lower() in ['int', '::ice::int', 'float', '::ice::float']:
+					if communicationIsIce(impa):
+						for p in method['params']:
+							# delim
+							if paramStrA == '': delim = ''
+							else: delim = ', '
+							# decorator
+							ampersand = '&'
+							if p['decorator'] == 'out':
+								const = ''
+							else:
+								const = 'const '
+								if p['type'].lower() in ['int', '::ice::int', 'float', '::ice::float']:
+									ampersand = ''
+							# STR
+							paramStrA += delim + const + p['type'] + ' ' + ampersand + p['name']
+						cog.outl("<TABHERE>" + method['return'] + ' ' + method['name'] + '(' + paramStrA + ");")
+					else:
+						for p in method['params']:
+							# delim
+							if paramStrA == '': delim = ''
+							else: delim = ', '
+							# decorator
+							ampersand = '&'
+							if p['decorator'] == 'out':
+								const = ''
+							else:
+								const = 'const '
 								ampersand = ''
-						# STR
-						paramStrA += delim + const + p['type'] + ' ' + ampersand + p['name']
-					cog.outl("<TABHERE>" + method['return'] + ' ' + method['name'] + '(' + paramStrA + ");")
+							if p['type'] in ('float','int','uint'):
+								p['type'] = "std_msgs::"+p['type'].capitalize()+"32"
+							elif p['type'] == 'string':
+								p['type'] = "std_msgs::String"
+							elif not '::' in p['type']:
+								p['type'] = module['name']+"::"+p['type']
+							# STR
+							paramStrA += delim + p['type'] + ' ' + p['name']
+						cog.outl("<TABHERE>void " + method['name'] + '(' + paramStrA + ");")
 
 ]]]
 [[[end]]]
