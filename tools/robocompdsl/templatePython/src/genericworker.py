@@ -55,6 +55,7 @@ from PySide import *
 [[[cog
 if component['usingROS']:
 	cog.outl('import rospy')
+	cog.outl('from std_msgs.msg import *')
 	for include in modulesList:
 		cog.outl("from "+include['name']+".msg import "+include['strName'])
 A()
@@ -90,7 +91,11 @@ if component['usingROS']:
 						method = interface['methods'][mname]
 						for p in method['params']:
 							s = "\""+nname+"_"+mname+"\""
-							if '::' in p['type']:
+							if p['type'] in ('float','int','uint'):
+								cog.outl("<TABHERE><TABHERE>self.pub[\'"+mname+"\'] = rospy.Publisher("+s+", "+p['type'].capitalize()+"32, queue_size=1000)")
+							elif p['type'] == 'string':
+								cog.outl("<TABHERE><TABHERE>self.pub[\'"+mname+"\'] = rospy.Publisher("+s+", String, queue_size=1000)")
+							elif '::' in p['type']:
 								cog.outl("<TABHERE><TABHERE>self.pub[\'"+mname+"\'] = rospy.Publisher("+s+", "+p['type'].split('::')[1]+", queue_size=1000)")
 							else:
 								cog.outl("<TABHERE><TABHERE>self.pub[\'"+mname+"\'] = rospy.Publisher("+s+", "+p['type']+", queue_size=1000)")

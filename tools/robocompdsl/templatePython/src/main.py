@@ -264,7 +264,11 @@ for sub in component['subscribesTo']:
 					method = interface['methods'][mname]
 					for p in method['params']:
 						s = "\""+nname+"_"+mname+"\""
-						if '::' in p['type']:
+						if p['type'] in ('float','int','uint'):
+							cog.outl("<TABHERE><TABHERE>rospy.Subscriber("+s+", "+p['type'].capitalize()+"32, worker."+method['name']+")")
+						elif p['type'] == 'string':
+							cog.outl("<TABHERE><TABHERE>rospy.Subscriber("+s+", String, worker."+method['name']+")")
+						elif '::' in p['type']:
 							cog.outl("<TABHERE><TABHERE>rospy.Subscriber("+s+", "+p['type'].split('::')[1]+", worker."+method['name']+")")
 						else:
 							cog.outl("<TABHERE><TABHERE>rospy.Subscriber("+s+", "+p['type']+", worker."+method['name']+")")

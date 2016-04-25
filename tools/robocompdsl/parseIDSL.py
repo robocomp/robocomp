@@ -171,11 +171,14 @@ class IDSLParsing:
 				print 'Unknown module content', contentDef
 		# SEQUENCES DEFINED IN THE MODULE
 		module['sequences'] = []
+		module['simpleSequences'] = []
 		for contentDef in tree['module']['contents']:
 			if contentDef['type'] == 'sequence':
 				seqdef       = { 'name':tree['module']['name']+"/"+contentDef['name'], 'type':contentDef['type']}
+				simpleSeqdef = { 'name':tree['module']['name'], 'strName':contentDef['name']}
 				#print structdef
 				module['sequences'].append(seqdef)
+				module['simpleSequences'].append(simpleSeqdef)
 		# STRUCTS DEFINED IN THE MODULE
 		module['structs'] = []
 		module['simpleStructs'] = []
@@ -266,6 +269,8 @@ class IDSLPool:
 		modulesList = []
 		for module in self.modulePool:
 			for m in self.modulePool[module]['simpleStructs']:
+				modulesList.append(m)
+			for m in self.modulePool[module]['simpleSequences']:
 				modulesList.append(m)
 		return modulesList
 	
