@@ -263,6 +263,19 @@ class IDSLPool:
 				includesList.append(m['name'])
 			for m in self.modulePool[module]['sequences']:
 				includesList.append(m['name'])
+			stdIncludes = {}
+			for interface in self.modulePool[module]['interfaces']:
+				for mname in interface['methods']:
+					method = interface['methods'][mname]
+					for p in method['params']:
+						if p['type'] in ('int','float','uint'):
+							m = "std_msgs/"+p['type'].capitalize()+"32"
+							stdIncludes[p['type']] = m
+						elif p['type'] == 'string':
+							m = "std_msgs/String"
+							stdIncludes[p['type']] = m
+			for std in stdIncludes.values():
+				includesList.append(std)
 		return includesList
 	
 	def rosModulesImports(self):

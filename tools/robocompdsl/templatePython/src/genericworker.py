@@ -69,7 +69,7 @@ if component['usingROS']:
 			for interface in module['interfaces']:
 				if interface['name'] == im:
 					for mname in interface['methods']:
-						srvIncludes[mname] = 'from '+module['name']+'.srv import '+mname
+						srvIncludes[module['name']] = 'from '+module['name']+'.srv import *'
 	for imp in component['implements']:
 		if type(imp) == str:
 			im = imp
@@ -80,7 +80,7 @@ if component['usingROS']:
 			for interface in module['interfaces']:
 				if interface['name'] == im:
 					for mname in interface['methods']:
-						srvIncludes[mname] = 'from '+module['name']+'.srv import '+mname
+						srvIncludes[module['name']] = 'from '+module['name']+'.srv import *'
 	for srv in srvIncludes.values():
 		cog.outl(srv)
 A()
