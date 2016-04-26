@@ -122,10 +122,6 @@ class SpecificWorker(GenericWorker):
 [[[cog
 lst = []
 try:
-	lst += component['implements']
-except:
-	pass
-try:
 	lst += component['subscribesTo']
 except:
 	pass
@@ -177,6 +173,22 @@ for imp in lst:
 						if first:
 							first = False
 					cog.out("]\n")
+for imp in component['implements']:
+	if type(imp) == str:
+		im = imp
+	else:
+		im = imp[0]
+	module = pool.moduleProviding(im)
+	for interface in module['interfaces']:
+		if interface['name'] == im:
+			for mname in interface['methods']:
+				method = interface['methods'][mname]
+				cog.outl('<TABHERE>def ' + method['name'] + "(self, req):")
+				cog.outl("<TABHERE><TABHERE>#")
+				cog.outl("<TABHERE><TABHERE># YOUR CODE HERE")
+				cog.outl("<TABHERE><TABHERE>#Example ret = req.a + req.b")
+				cog.outl("<TABHERE><TABHERE>#")
+				cog.outl("<TABHERE><TABHERE>return "+method['name']+"Response(ret)")
 ]]]
 [[[end]]]
 

@@ -274,6 +274,23 @@ for sub in component['subscribesTo']:
 							cog.outl("<TABHERE><TABHERE>rospy.Subscriber("+s+", "+p['type']+", worker."+method['name']+")")
 	else:
 		needIce = True
+for imp in component['implements']:
+	nname = imp
+	while type(nname) != type(''):
+		nname = nname[0]
+	module = pool.moduleProviding(nname)
+	if module == None:
+		print ('\nCan\'t find module providing', nname, '\n')
+		sys.exit(-1)
+	if not communicationIsIce(imp):
+		for interface in module['interfaces']:
+			if interface['name'] == nname:
+				for mname in interface['methods']:
+					method = interface['methods'][mname]
+					s = "\""+nname+"_"+mname+"\""
+					cog.outl("<TABHERE><TABHERE>rospy.Service("+s+", "+mname+", worker."+method['name']+")")
+	else:
+		needIce = True
 
 	if needIce:
 		cog.outl('<TABHERE>try:')
