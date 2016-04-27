@@ -155,12 +155,14 @@ class CDSLParsing:
 		
 		# Language
 		language = Suppress(CaselessLiteral("language")) + (CaselessLiteral("cpp")|CaselessLiteral("python")) + semicolon
+		# Qtversion
+		qtVersion = Group(Optional(Suppress(CaselessLiteral("useQt")) + (CaselessLiteral("qt4")|CaselessLiteral("qt5")) + semicolon))
 		# GUI
 		gui = Group(Optional(Suppress(CaselessLiteral("gui")) + CaselessLiteral("Qt") + opp + identifier + clp + semicolon ))
 		# additional options
 		options = Group(Optional(Suppress(CaselessLiteral("options")) + identifier + ZeroOrMore(Suppress(Word(',')) + identifier) + semicolon))
 		
-		componentContents = communications.setResultsName('communications') & language.setResultsName('language') & gui.setResultsName('gui') & options.setResultsName('options')
+		componentContents = communications.setResultsName('communications') & language.setResultsName('language') & gui.setResultsName('gui') & options.setResultsName('options') & qtVersion.setResultsName('useQt')
 		component = Suppress(CaselessLiteral("component")) + identifier.setResultsName("name") + op + componentContents.setResultsName("properties") + cl + semicolon
 
 		CDSL = idslImports.setResultsName("imports") + component.setResultsName("component")
@@ -243,6 +245,13 @@ class CDSLParsing:
 		#print component['recursiveImports']
 		# Language
 		component['language'] = tree['properties']['language'][0]
+		# qtVersion
+		component['useQt'] = 'none'
+		try:
+			component['useQt'] = tree['properties']['useQt'][0]
+			pass
+		except:
+			pass
 		# GUI
 		component['gui'] = 'none'
 		try:
