@@ -162,7 +162,7 @@ void SpecificWorker::compute()
 // 	}
 [[[cog
 if component['usingROS']:
-	cog.outl("<TABHERE>ros::spinOnce")
+	cog.outl("<TABHERE>ros::spinOnce();")
 ]]]
 [[[end]]]
 }
