@@ -29,7 +29,6 @@
 #include <QSqlQuery>
 //#include "loggerdlgcontrol.h"
 #include <genericworker.h>
-#include <innermodel/innermodel.h>
 #include <QtGui>
 #include <QtCore>
 #include <QAction>
@@ -43,6 +42,7 @@
 #include <qsqlrecord.h>
 #include <QSqlDatabase>
 #include "ui_mainUI.h"
+#include "exportCSVWidget.h"
 
 #define UPDATE_TIME 250
 class QEnterAwareTable : public QTableView
@@ -92,6 +92,8 @@ public:
 private:
 	QMenuBar *mainMenu;
 	QMenu *menuFile;
+	QMenu *menuExport;
+	QAction *actionCSV;
 	QAction *actionExit;
 	QSqlQuery senders,rowcount;
 	QSqlTableModel *tModel;
@@ -116,7 +118,7 @@ private:
         
 public slots:
 	void compute();
-        void update();  
+	void update();  
 	void timeFilter(QDateTime t);
 	void senderFilter();
 	void typeFilter();
@@ -141,6 +143,7 @@ public slots:
 	void on_colFile_clicked();
 	void on_colLine_clicked();
 	void forceExit();
+	void exportCSV();
         
 private:
 	QTimer timer;
