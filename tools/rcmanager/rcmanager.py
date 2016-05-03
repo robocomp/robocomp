@@ -111,11 +111,11 @@ class ComponentChecker(threading.Thread):
 	def reset(self):
 		self.mutex.lock()
 		self.alive = False
-		self.mutex.lock()
+		self.mutex.unlock()
 	def isalive(self):
 		self.mutex.lock()
 		r = self.alive
-		self.mutex.lock()
+		self.mutex.unlock()
 		return r
 	def stop(self):
 		self.exit = True
