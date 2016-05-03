@@ -22,14 +22,22 @@ module RoboCompLegController
 		float y;		//mm
 		float z;		//mm
 		float vel;		//rad/s
+		string name;
 		string ref;
 	};
 	struct PoseBody
-	{
+	{	
+		float px;		//mm
+		float py;		//mm
+		float pz;		//mm		
+		float x;		//mm
+		float y;		//mm
+		float z;		//mm
 		float rx;		//rad
 		float ry;		//rad
 		float rz;		//rad
 		float vel;		//rad/s
+		string ref;
 	};
 	struct AnglesLeg
 	{
@@ -38,15 +46,21 @@ module RoboCompLegController
 		float q3;		//rad
 		float vel;		//rad/s
 	};
+	struct Statemotor
+	{
+		string name;
+		float pos;
+	};
 	struct StateLeg
 	{
-		float q1; 	//rad
-		float q2; 	//rad
-		float q3; 		//rad
+		Statemotor q1; 	//rad
+		Statemotor q2; 	//rad
+		Statemotor q3; 		//rad
 		float x;		//mm
 		float y;		//mm
 		float z;		//mm
 		string ref;
+		string name;
 		bool ismoving;
 	};
 	sequence<PoseLeg> ListPoseLeg;
