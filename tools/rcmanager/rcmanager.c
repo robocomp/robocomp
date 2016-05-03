@@ -28,7 +28,6 @@ int main(int argc, char **argv) {
 	}
 
 	i = system(str);
-	printf("sytem\n");
 	free(str);
 	return i;
 }
