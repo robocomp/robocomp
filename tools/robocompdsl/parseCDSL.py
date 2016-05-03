@@ -157,12 +157,14 @@ class CDSLParsing:
 		language = Suppress(CaselessLiteral("language")) + (CaselessLiteral("cpp")|CaselessLiteral("python")) + semicolon
 		# Qtversion
 		qtVersion = Group(Optional(Suppress(CaselessLiteral("useQt")) + (CaselessLiteral("qt4")|CaselessLiteral("qt5")) + semicolon))
+		# useViewer
+		useViewer = Group(Optional(Suppress(CaselessLiteral("useViewer")) + (CaselessLiteral("true")|CaselessLiteral("false")) + semicolon))
 		# GUI
 		gui = Group(Optional(Suppress(CaselessLiteral("gui")) + CaselessLiteral("Qt") + opp + identifier + clp + semicolon ))
 		# additional options
 		options = Group(Optional(Suppress(CaselessLiteral("options")) + identifier + ZeroOrMore(Suppress(Word(',')) + identifier) + semicolon))
 		
-		componentContents = communications.setResultsName('communications') & language.setResultsName('language') & gui.setResultsName('gui') & options.setResultsName('options') & qtVersion.setResultsName('useQt')
+		componentContents = communications.setResultsName('communications') & language.setResultsName('language') & gui.setResultsName('gui') & options.setResultsName('options') & qtVersion.setResultsName('useQt') & useViewer.setResultsName('useViewer')
 		component = Suppress(CaselessLiteral("component")) + identifier.setResultsName("name") + op + componentContents.setResultsName("properties") + cl + semicolon
 
 		CDSL = idslImports.setResultsName("imports") + component.setResultsName("component")
@@ -249,6 +251,13 @@ class CDSLParsing:
 		component['useQt'] = 'none'
 		try:
 			component['useQt'] = tree['properties']['useQt'][0]
+			pass
+		except:
+			pass
+		# useViewer
+		component['useViewer'] = 'false'
+		try:
+			component['useViewer'] = tree['properties']['useViewer'][0]
 			pass
 		except:
 			pass

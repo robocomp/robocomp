@@ -60,7 +60,18 @@ SpecificWorker::SpecificWorker(MapPrx& mprx) : GenericWorker(mprx)
 {
 
 [[[cog
-
+if component['useViewer'] == "true":
+	cog.outl("#ifdef USE_QTGUI")
+	cog.outl("<TABHERE>imv = NULL;")
+	cog.outl("<TABHERE>osgView = new OsgView(this);")
+	cog.outl("<TABHERE>osgGA::TrackballManipulator *tb = new osgGA::TrackballManipulator;")
+	cog.outl("<TABHERE>osg::Vec3d eye(osg::Vec3(4000.,4000.,-1000.));")
+	cog.outl("<TABHERE>osg::Vec3d center(osg::Vec3(0.,0.,-0.));")
+	cog.outl("<TABHERE>osg::Vec3d up(osg::Vec3(0.,1.,0.));")
+	cog.outl("<TABHERE>tb->setHomePosition(eye, center, up, true);")
+	cog.outl("<TABHERE>tb->setByMatrix(osg::Matrixf::lookAt(eye,center,up));")
+ 	cog.outl("<TABHERE>osgView->setCameraManipulator(tb);")
+	cog.outl("#endif")
 try:
 	if 'agmagent' in [ x.lower() for x in component['options'] ]:
 		cog.outl("<TABHERE>active = false;")
@@ -120,7 +131,10 @@ except:
 //		innermodel = new InnerModel(innermodel_path);
 //	}
 //	catch(std::exception e) { qFatal("Error reading config params"); }""")
-
+if component['useViewer'] == "true":
+	cog.outl("#ifdef USE_QTGUI")
+	cog.outl("<TABHERE>imv = new InnerModelViewer (innerModel, \"root\", osgView->getRootGroup(), true);")
+	cog.outl("#endif")
 ]]]
 [[[end]]]	
 
@@ -163,6 +177,11 @@ void SpecificWorker::compute()
 [[[cog
 if component['usingROS']:
 	cog.outl("<TABHERE>ros::spinOnce();")
+if component['useViewer'] == "true":
+	cog.outl("#ifdef USE_QTGUI")
+	cog.outl("<TABHERE>if (imv) imv->update();")
+	cog.outl("<TABHERE>osgView->frame();")
+	cog.outl("#endif")
 ]]]
 [[[end]]]
 }
