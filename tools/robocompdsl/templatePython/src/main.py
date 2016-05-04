@@ -237,8 +237,12 @@ if __name__ == '__main__':
 	ic = Ice.initialize(params)
 	status = 0
 	mprx = {}
+	parameters = {}
+	for i in ic.getProperties():
+		parameters[str(i)] = str(ic.getProperties().getProperty(i))
 	if status == 0:
 		worker = SpecificWorker(mprx)
+		worker.setParams(parameters)
 [[[cog
 if component['usingROS']:
 	cog.outl("<TABHERE><TABHERE>rospy.init_node(\""+component['name']+"\", anonymous=True)")
@@ -344,6 +348,7 @@ for req in component['requires']:
 ]]]
 [[[end]]]
 
+
 [[[cog
 for im in component['implements']:
 	if type(im) == str:
@@ -365,8 +370,6 @@ for sut in component['subscribesTo']:
 		cog.outl(w)
 ]]]
 [[[end]]]
-
-#<TABHERE><TABHERE>adapter.add(CommonBehaviorI(<LOWER>I, ic), ic.stringToIdentity('commonbehavior'))
 
 		app.exec_()
 
