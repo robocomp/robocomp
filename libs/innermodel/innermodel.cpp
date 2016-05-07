@@ -478,14 +478,14 @@ void InnerModel::updateRotationValues(QString transformId, float rx, float ry, f
 
 
 
-void InnerModel::updateJointValue(QString jointId, float angle)
+void InnerModel::updateJointValue(QString jointId, float angle, bool force)
 {
 	cleanupTables();
 
 	InnerModelJoint *j = dynamic_cast<InnerModelJoint *>(hash[jointId]);
 	if (j != NULL)
 	{
-		j->setAngle(angle);
+		j->setAngle(angle, force);
 	}
 	else if (hash[jointId] == NULL)
 		qDebug() << "There is no such" << jointId << "node";
@@ -1798,10 +1798,10 @@ float InnerModelJoint::getAngle()
 
 
 
-float InnerModelJoint::setAngle(float angle)
+float InnerModelJoint::setAngle(float angle, bool force)
 {
 	float ret;
-	if (angle <= max and angle >= min)
+	if ((angle <= max and angle >= min) or force)
 	{
 		ret = angle;
 	}

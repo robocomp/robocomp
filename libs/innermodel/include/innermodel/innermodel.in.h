@@ -21,6 +21,7 @@
 #define FCL_SUPPORT @FCL_SUPPORT_VALUE@
 
 #if FCL_SUPPORT==1
+#include <boost/shared_ptr.hpp>
 #include <fcl/collision.h>
 #include <fcl/narrowphase/narrowphase.h>
 #include <fcl/ccd/motion.h>
@@ -151,7 +152,7 @@ public:
 	void updateTransformValues(QString transformId, float tx, float ty, float tz, float rx, float ry, float rz, QString parentId="");
 	void updateTranslationValues(QString transformId, float tx, float ty, float tz, QString parentId="");
 	void updateRotationValues(QString transformId, float rx, float ry, float rz,QString parentId="");
-	void updateJointValue(QString jointId, float angle);
+	void updateJointValue(QString jointId, float angle, bool force=false);
 	void updatePrismaticJointPosition(QString jointId, float position);
 	void updatePlaneValues(QString planeId, float nx, float ny, float nz, float px, float py, float pz);
 
@@ -337,7 +338,7 @@ public:
 	void update();
 	void update(float lx_, float ly_, float lz_, float hx_, float hy_, float hz_);
 	float getAngle();
-	float setAngle(float angle);
+	float setAngle(float angle, bool force=false);
 	QVec unitaryAxis();
 	virtual InnerModelNode *copyNode(QHash<QString, InnerModelNode *> &hash, InnerModelNode *parent);
 
