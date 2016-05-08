@@ -877,27 +877,27 @@ void SpecificWorker::compute()
 			i++;
 		}
 	}
-// 	// Laser
-// 	{
-// 		QMutexLocker vm(viewerMutex);
-// 		QMutexLocker lcds(d->laserDataCartArray_mutex);
-// 		for (QHash<QString, IMVLaser>::iterator laser = d->imv->lasers.begin(); laser != d->imv->lasers.end(); laser++)
-// 		{
-// 			QString id=laser->laserNode->id;
-// 
-// 			if (d->laserDataCartArray.contains(id) ==false)
-// 			{
-// 				//laserDataCartArray.insert(id);
-// 				osg::Vec3Array *v= new osg::Vec3Array();
-// 				v->resize(laser->laserNode->measures+1);
-// 				d->laserDataCartArray.insert(id,v);
-// 			}
-// 
-// 			// create and insert laser data
-// 			d->worker = this;
-// 			d->laserDataArray.insert(laser->laserNode->id, d->LASER_createLaserData(laser.value()));
-// 
-// 			// create and insert laser shape
+	// Laser
+	{
+		QMutexLocker vm(viewerMutex);
+		QMutexLocker lcds(d->laserDataCartArray_mutex);
+		for (QHash<QString, IMVLaser>::iterator laser = d->imv->lasers.begin(); laser != d->imv->lasers.end(); laser++)
+		{
+			QString id=laser->laserNode->id;
+
+			if (d->laserDataCartArray.contains(id) == false)
+			{
+				//laserDataCartArray.insert(id);
+				osg::Vec3Array *v= new osg::Vec3Array();
+				v->resize(laser->laserNode->measures+1);
+				d->laserDataCartArray.insert(id,v);
+			}
+
+			// create and insert laser data
+			d->worker = this;
+			d->laserDataArray.insert(laser->laserNode->id, d->LASER_createLaserData(laser.value()));
+
+			// create and insert laser shape
 // 			osg::ref_ptr<osg::Node> p=NULL;
 // 			if (id=="laserSecurity")
 // 			{
@@ -911,10 +911,10 @@ void SpecificWorker::compute()
 // 			{
 // 				laser->osgNode->addChild(p);
 // 			}
-// // 			printf("%d (%d)\n", i, __LINE__);
-// 
-// 		}
-// 	}
+// 			printf("%d (%d)\n", i, __LINE__);
+
+		}
+	}
 
 #ifdef INNERMODELMANAGERDEBUG
 	printf("Elapsed time: %d\n", elapsed);
