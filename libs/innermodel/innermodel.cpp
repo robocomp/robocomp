@@ -1104,6 +1104,25 @@ QVec InnerModel::project(QString reference, QVec origVec, QString cameraId)
 }
 
 
+QVec InnerModel::project(const QString &cameraId, const QVec &origVec)
+{
+	QVec pc;
+	InnerModelCamera *camera=NULL;
+
+	camera = dynamic_cast<InnerModelCamera *>(hash[cameraId]);
+	if (not camera)
+	{
+		QString error;
+		error.sprintf("No such %s camera", qPrintable(cameraId));
+		throw error;
+	}
+
+	pc = camera->camera.project(origVec);
+
+	return QVec::vec3(pc(0), pc(1), origVec.norm2());
+}
+
+
 
 /**
  * \brief Retro-projection function, defines a line in the camera reference system which can be parametrized by the depth s with the expression:
