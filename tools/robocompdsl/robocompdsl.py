@@ -291,11 +291,11 @@ elif sys.argv[1].endswith(".idsl"):
 								os.system(commandCPP)
 								os.system(commandPY)
 						else:
-							#print "error: service with too many params. Form is: void method(type inVar, out type outVar);"
-							print "sys.exit(-1)"
+							print "error: service with too many params. Form is: void method(type inVar, out type outVar);"
+							sys.exit(-1)
 					else:
-						#print "error: service without params. Form is: void method(type inVar, out type outVar);"
-						print "sys.exit(-1)"
+						print "error: service without params. Form is: void method(type inVar, out type outVar);"
+						sys.exit(-1)
 		return idsl['module']['name']
 
 	for importIDSL in idsl['imports']:
