@@ -9,6 +9,90 @@
 
 import sys, os, subprocess
 
+def generateHeaders(idslFile, outputPath, comp): #idslFile es el fichero idsl importando en el cdsl outputPath es outputPath+/src/
+	imported = []
+	idsl = IDSLParsing.fromFileIDSL(idslFile)
+	if not os.path.exists(outputPath):
+		creaDirectorio(outputPath)
+
+	def generarH(idslFile, imported):
+		idsl = IDSLParsing.fromFileIDSL(idslFile)
+		for imp in idsl['module']['contents']:
+			if imp['type'] in ['struct','sequence']:
+				for f in [ "SERVANT.MSG"]:
+					ofile = outputPath+"/"+imp['name'] + "." + f.split('.')[-1].lower()
+					print 'Generating', ofile, ' (servant for', idslFile.split('.')[0].lower() + ')'
+					# Call cog
+					run = "cog.py -z -d" + " -D structName=" + imp['name'] +" -D theIDSL="+idslFile+ " -o " + ofile + " " + "/opt/robocomp/share/robocompdsl/templateCPP/" + f
+					run = run.split(' ')
+					ret = Cog().main(run)
+					if ret != 0:
+						print 'ERROR'
+						sys.exit(-1)
+					replaceTagsInFile(ofile)
+					commandCPP = "/opt/ros/jade/share/gencpp/cmake/../../../lib/gencpp/gen_cpp.py " +ofile+ " -Istd_msgs:/opt/ros/jade/share/std_msgs/cmake/../msg -I" + idsl['module']['name'] + ":" + outputPath
+					commandPY  = "/opt/ros/jade/share/gencpp/cmake/../../../lib/genpy/genmsg_py.py " +ofile+ " -Istd_msgs:/opt/ros/jade/share/std_msgs/cmake/../msg -I" + idsl['module']['name'] + ":" + outputPath
+					for impo in imported:
+						if not impo == idsl['module']['name']:
+							commandCPP = commandCPP + " -I" + impo + ":" + outputPath
+							commandPY  = commandPY + " -I" + impo + ":" + outputPath
+					if not os.path.exists(outputPath):
+						creaDirectorio(outputPath)
+					commandCPP = commandCPP + " -p "+ idsl['module']['name'] + " -o "+ outputPath+"/"+idsl['module']['name']+ " -e /opt/ros/jade/share/gencpp/cmake/.."
+					commandPY = commandPY + " -p "+ idsl['module']['name'] + " -o "+ outputPath+"/"+idsl['module']['name']
+					if comp['language'].lower() == 'cpp':
+						os.system(commandCPP)
+					else:
+						os.system(commandPY)
+		for imp in idsl['module']['contents']:
+			if imp['type'] == 'interface':
+				for ima in component['implements']+component['requires']:
+					im = ima
+					if type(im) != type(''):
+						im = im[0]
+					if not communicationIsIce(ima) and im == imp['name']:
+						for method in imp['methods']:
+							if 'params' in method:
+								if len(method['params']) == 2:
+									for f in [ "SERVANT.SRV"]:
+										ofile = outputPath+"/"+method['name'] + "." + f.split('.')[-1].lower()
+										print 'Generating', ofile, ' (servant for', idslFile.split('.')[0].lower() + ')'
+										# Call cog
+										run = "cog.py -z -d" + " -D methodName=" + method['name'] +" -D theIDSL="+idslFile+ " -o " + ofile + " " + "/opt/robocomp/share/robocompdsl/templateCPP/" + f
+										run = run.split(' ')
+										ret = Cog().main(run)
+										if ret != 0:
+											print 'ERROR'
+											sys.exit(-1)
+										replaceTagsInFile(ofile)
+										commandCPP = "/opt/ros/jade/share/gencpp/cmake/../../../lib/gencpp/gen_cpp.py " +ofile+ " -Istd_msgs:/opt/ros/jade/share/std_msgs/cmake/../msg -Istd_srvs:/opt/ros/jade/share/std_srv/cmake/../srv -I" + idsl['module']['name'] + ":" + outputPath
+										commandPY  = "/opt/ros/jade/share/gencpp/cmake/../../../lib/genpy/gensrv_py.py " +ofile+ " -Istd_msgs:/opt/ros/jade/share/std_msgs/cmake/../msg -Istd_srvs:/opt/ros/jade/share/std_srv/cmake/../srv -I" + idsl['module']['name'] + ":" + outputPath
+										for impo in imported:
+											if not impo == idsl['module']['name']:
+												commandCPP = commandCPP + " -I" + impo + ":" + outputPath
+												commandPY  = commandPY + " -I" + impo + ":" + outputPath
+										if not os.path.exists(outputPath):
+											creaDirectorio(outputPath)
+										commandCPP = commandCPP + " -p "+ idsl['module']['name'] + " -o "+ outputPath+"/"+idsl['module']['name']+ " -e /opt/ros/jade/share/gencpp/cmake/.."
+										commandPY = commandPY + " -p "+ idsl['module']['name'] + " -o "+ outputPath+"/"+idsl['module']['name']
+										if comp['language'].lower() == 'cpp':
+											os.system(commandCPP)
+										else:
+											os.system(commandPY)
+								else:
+									print "error: service with too many params. Form is: void method(type inVar, out type outVar);"
+									#sys.exit(-1)
+							else:
+								print "error: service without params. Form is: void method(type inVar, out type outVar);"
+								#sys.exit(-1)
+		return idsl['module']['name']
+
+	for importIDSL in idsl['imports']:
+		imported.append(generarH("/opt/robocomp/interfaces/IDSLs/"+importIDSL, []))
+
+	generarH(idslFile, imported)
+	os.system("rm "+outputPath+"/*.msg")
+	os.system("rm "+outputPath+"/*.srv")
 #
 # Misc functions
 #
@@ -74,6 +158,7 @@ from cogapp import Cog
 
 if sys.argv[1].endswith(".cdsl"):
 	from parseCDSL import *
+	from parseIDSL import *
 	component = CDSLParsing.fromFile(inputFile)
 
 	#########################################
@@ -110,6 +195,8 @@ if sys.argv[1].endswith(".cdsl"):
 			print 'There was a problem creating a directory'
 			sys.exit(1)
 			pass
+		for imp in component['imports']:
+			generateHeaders("/opt/"+imp, outputPath+"/src", component)
 		#
 		# Generate regular files
 		#
@@ -250,18 +337,6 @@ elif sys.argv[1].endswith(".idsl"):
 						print 'ERROR'
 						sys.exit(-1)
 					replaceTagsInFile(ofile)
-					commandCPP = "/opt/ros/jade/share/gencpp/cmake/../../../lib/gencpp/gen_cpp.py " +outputPath+"/"+ofile+ " -Istd_msgs:/opt/ros/jade/share/std_msgs/cmake/../msg -I" + idsl['module']['name'] + ":" + outputPath
-					commandPY  = "/opt/ros/jade/share/gencpp/cmake/../../../lib/genpy/genmsg_py.py " +outputPath+"/"+ofile+ " -Istd_msgs:/opt/ros/jade/share/std_msgs/cmake/../msg -I" + idsl['module']['name'] + ":" + outputPath
-					for impo in imported:
-						if not impo == idsl['module']['name']:
-							commandCPP = commandCPP + " -I" + impo + ":" + outputPath
-							commandPY  = commandPY + " -I" + impo + ":" + outputPath
-					if not os.path.exists(outputPath):
-						creaDirectorio(outputPath)
-					commandCPP = commandCPP + " -p "+ idsl['module']['name'] + " -o "+ outputPath+"/"+idsl['module']['name']+ " -e /opt/ros/jade/share/gencpp/cmake/.."
-					commandPY = commandPY + " -p "+ idsl['module']['name'] + " -o "+ outputPath+"/"+idsl['module']['name']
-					os.system(commandCPP)
-					os.system(commandPY)
 		for imp in idsl['module']['contents']:
 			if imp['type'] == 'interface':
 				for method in imp['methods']:
@@ -278,29 +353,8 @@ elif sys.argv[1].endswith(".idsl"):
 									print 'ERROR'
 									sys.exit(-1)
 								replaceTagsInFile(ofile)
-								commandCPP = "/opt/ros/jade/share/gencpp/cmake/../../../lib/gencpp/gen_cpp.py " +outputPath+"/"+ofile+ " -Istd_msgs:/opt/ros/jade/share/std_msgs/cmake/../msg -Istd_srvs:/opt/ros/jade/share/std_srv/cmake/../srv -I" + idsl['module']['name'] + ":" + outputPath
-								commandPY  = "/opt/ros/jade/share/gencpp/cmake/../../../lib/genpy/gensrv_py.py " +outputPath+"/"+ofile+ " -Istd_msgs:/opt/ros/jade/share/std_msgs/cmake/../msg -Istd_srvs:/opt/ros/jade/share/std_srv/cmake/../srv -I" + idsl['module']['name'] + ":" + outputPath
-								for impo in imported:
-									if not impo == idsl['module']['name']:
-										commandCPP = commandCPP + " -I" + impo + ":" + outputPath
-										commandPY  = commandPY + " -I" + impo + ":" + outputPath
-								if not os.path.exists(outputPath):
-									creaDirectorio(outputPath)
-								commandCPP = commandCPP + " -p "+ idsl['module']['name'] + " -o "+ outputPath+"/"+idsl['module']['name']+ " -e /opt/ros/jade/share/gencpp/cmake/.."
-								commandPY = commandPY + " -p "+ idsl['module']['name'] + " -o "+ outputPath+"/"+idsl['module']['name']
-								os.system(commandCPP)
-								os.system(commandPY)
-						else:
-							print "error: service with too many params. Form is: void method(type inVar, out type outVar);"
-							sys.exit(-1)
-					else:
-						print "error: service without params. Form is: void method(type inVar, out type outVar);"
-						sys.exit(-1)
 		return idsl['module']['name']
 
 	for importIDSL in idsl['imports']:
 		imported.append(generarMSG(importIDSL, []))
-
 	generarMSG(inputFile, imported)
-	os.system("rm "+outputPath+"/*.msg")
-	os.system("rm "+outputPath+"/*.srv")
