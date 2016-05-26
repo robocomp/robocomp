@@ -195,8 +195,6 @@ if sys.argv[1].endswith(".cdsl"):
 			print 'There was a problem creating a directory'
 			sys.exit(1)
 			pass
-		for imp in component['imports']:
-			generateHeaders("/opt/"+imp, outputPath+"/src", component)
 		#
 		# Generate regular files
 		#
@@ -315,6 +313,9 @@ if sys.argv[1].endswith(".cdsl"):
 					replaceTagsInFile(ofile)
 	else:
 		print 'Unsupported language', component['language']
+	if component['usingROS']:
+		for imp in component['imports']:
+			generateHeaders("/opt/"+imp, outputPath+"/src", component)
 elif sys.argv[1].endswith(".idsl"):
 	from parseIDSL import *
 	imported = []
