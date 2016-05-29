@@ -31,6 +31,10 @@ from PySide import *
 
 import subprocess
 
+from collections import namedtuple
+Execution = namedtuple('Execution', 'path', 'binary', 'arguments', 'yakuakeTabName')
+
+
 class GenericWorker(QtCore.QObject):
 	kill = QtCore.Signal()
 
@@ -133,12 +137,15 @@ class SpecificWorker(GenericWorker):
 		print 'TABNAME', yakuakeTabName
 		print 'ARGS', arguments
 		
+		locker = QtCore.QMutexLocker(self.mutex)
+		time.sleep(0.5)
 		if hashedPassword != hashlib.sha224(stuff+self.passwd).hexdigest():
 			print 'WRONG PASSWORD', hashedPassword
 			return False
 		else:
 			p = subprocess.Popen(['/opt/robocomp/bin/rcremoteshell', binary, path, yakuakeTabName]+arguments)
 
+		time.sleep(0.5)
 		return True
 
 
