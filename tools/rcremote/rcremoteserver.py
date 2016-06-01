@@ -32,7 +32,7 @@ from PySide import *
 import subprocess
 
 from collections import namedtuple
-Execution = namedtuple('Execution', 'path', 'binary', 'arguments', 'yakuakeTabName')
+Execution = namedtuple('Execution', ['path', 'binary', 'arguments', 'yakuakeTabName'])
 
 
 class GenericWorker(QtCore.QObject):
