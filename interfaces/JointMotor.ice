@@ -83,8 +83,10 @@ module RoboCompJointMotor{
 	interface JointMotorPublish
 	{
 		void motorStates(MotorStateMap mstateMap);
-	}
+	};
 
 };
 
 #endif
+
+
