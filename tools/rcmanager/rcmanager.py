@@ -165,7 +165,7 @@ class TheThing(QtGui.QDialog):
 		self.timer = QtCore.QTimer()
 		self.timer.start(dict['fixed'])
 
-
+		#Menu bar defining.
 		self.menu = QtGui.QMenuBar(None)
 		self.ui.verticalLayout_3.insertWidget(0, self.menu)
 		self.menuFile = self.menu.addMenu('File')
