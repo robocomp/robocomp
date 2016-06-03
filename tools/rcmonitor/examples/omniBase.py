@@ -94,7 +94,7 @@ class C(QWidget):
 	def paintEvent(self, event=None):
 		xOff = self.width()/2.
 		yOff = self.height()/2.
-		print self.bState.x, self.bState.z, self.bState.alpha
+		print 'corr', self.bState.correctedX, self.bState.correctedZ, self.bState.correctedAlpha
 
 		xPos = 0
 		yPos = 0
@@ -121,7 +121,6 @@ class C(QWidget):
 				except:
 					print 'BASE :-('
 					print type(xPos-7)
-					print self.bState.z, self.bState.x, self.bState.alpha
 		except:
 			pass
 
@@ -137,8 +136,6 @@ class C(QWidget):
 					painter.drawPie(xPos, yPos, 18, 18, start, 20*2*16)
 				except:
 					print 'BASE :-('
-					print type(xPos-7)
-					print self.bState.correctedZ, self.bState.correctedX, self.bState.correctedAlpha
 		except:
 			pass
 		
