@@ -35,7 +35,7 @@ import Ice
 from PyQt4 import QtCore, QtGui, Qt
 from ui_formManager import Ui_Form
 
-import rcmanagerConfig
+import rcmanagerConfig  
 
 global_ic = Ice.initialize(sys.argv)
 
@@ -53,7 +53,9 @@ sys.path.append('/opt/robocomp/bin')
 import rcmanagerEditor
 
 
-# CommandDialog class: It's the dialog sending "up()/down() component X signal to the main
+# CommandDialog class: It's the dialog sending "up()/down() component X signal to the main,
+# Appears when we righ click on a component in component tree
+
 class CommandDialog(QtGui.QWidget):
 	def __init__(self, parent, x, y):
 		QtGui.QWidget.__init__(self)
@@ -68,7 +70,7 @@ class CommandDialog(QtGui.QWidget):
 		self.button3 = QtGui.QPushButton(self)
 		self.button3.setGeometry(0, 50, 100, 25)
 		self.button3.setText('edit config')
-		self.show()
+		self.show() 
 		self.connect(self.button1, QtCore.SIGNAL('clicked()'), self.but1)
 		self.connect(self.button2, QtCore.SIGNAL('clicked()'), self.but2)
 		self.connect(self.button3, QtCore.SIGNAL('clicked()'), self.but3)
@@ -105,7 +107,7 @@ class ComponentChecker(threading.Thread):
 		self.workingComponents = set()
 	def stop(self):
 		self.exit = True
-	def runrun(self):
+	def runrun(self): 
 		if not self.isAlive(): self.start()
 
 #
@@ -115,7 +117,7 @@ class TheThing(QtGui.QDialog):
 	def __init__(self):
 		# Create a component checker
 		self.componentChecker = ComponentChecker()
-		self.configFile = os.path.expanduser('~/rcmanager.xml')
+		self.configFile = os.path.expanduser('~/rcmanager.xml') 
 		# Gui config
 		global dict
 		QtGui.QDialog.__init__(self)
@@ -125,7 +127,7 @@ class TheThing(QtGui.QDialog):
 		self.canvas = GraphView(self.ui.graphTab)
 		self.canvas.setGeometry(0, 0, 531, 581)
 		self.canvas.show()
-		self.canvasTimer = QtCore.QTimer()
+		self.canvasTimer = QtCore.QTimer()	
 		self.canvasFastTimer = QtCore.QTimer()
 		self.connect(self.canvas, QtCore.SIGNAL("nodeReleased()"), self.setFastState)
 		self.setFastState(True)
@@ -235,7 +237,7 @@ class TheThing(QtGui.QDialog):
 
 		if len(self.configFile) > 0:
 			if self.canvas.ui != None: self.canvas.ui.close()
-			self.readConfig()
+			self.readConfig()	
 		else:
 			print 'len(cfgFile) == 0'
 
@@ -280,12 +282,12 @@ class TheThing(QtGui.QDialog):
 	def sSimulation(self):
 		global dict
 		self.doSimulation = not self.doSimulation
-		if self.doSimulation == False:
+		if self.doSimulation == False:##To stop simulation
 			self.actionSS.setText('Start')
 			if self.fastState == False:
 				self.canvasTimer.start(dict['focustime'])
 			dict['active'] = 'false'
-		else:
+		else:##To run simulation
 			self.actionSS.setText('Stop')
 			self.setFastState()
 			if self.fastState == False:
@@ -413,13 +415,15 @@ class TheThing(QtGui.QDialog):
 			item.setText(listItem.alias)
 			self.ui.checkList.insertItem(0, item)
 			self.compConfig.insert(0, listItem)
-			self.componentChecker.componentsToCheck[listItem.alias] = listItem.endpoint
-		self.componentChecker.runrun()
+			self.componentChecker.componentsToCheck[listItem.alias] = listItem.endpoint ##Filling the list of nodes to check 
+		self.componentChecker.runrun() ##Start the checker if it is not running
 
 		self.log('Configuration loaded')
 
 		n = rcmanagerConfig.unconnectedGroups(newList)
-		if n > 1:
+		
+
+		if n > 1: ##Used to print a warning message if there are some unconnected nodes
 			msg = 'WARNING: ' + str(n) + ' unconnected component groups'
 			self.log(msg)
 			QtGui.QMessageBox.warning(self, 'Warning', msg)
@@ -450,7 +454,7 @@ class TheThing(QtGui.QDialog):
 		info = self.compConfig[self.ui.checkList.currentRow()]
 		self.ui.checkEdit.setText(info.endpoint)
 		self.ui.wdEdit.setText(info.workingdir)
-		self.ui.upEdit.setText(info.compup)
+		self.ui.upEdit.setText(info.compup)self.runEdi
 		self.ui.downEdit.setText(info.compdown)
 		self.ui.cfgEdit.setText(info.configFile)
 
@@ -460,7 +464,7 @@ class TheThing(QtGui.QDialog):
 			ok = True
 			itemConfig = self.compConfig[numItem]
 			item = self.ui.checkList.item(numItem)
-			if self.componentChecker.workingComponents.__contains__(itemConfig.alias):
+			if self.componentChecker.workingComponents.__contains__(itemConfig.alias):	
 				item.setTextColor(QtGui.QColor(0, 255, 0))
 			else:
 				item.setTextColor(QtGui.QColor(255, 0, 0))
@@ -606,6 +610,9 @@ class TheThing(QtGui.QDialog):
 		e.accept()
 
 
+##
+#This class contains the details of the nodes which is neccessary to draw the component
+##
 class GraphNode:
 	def __init__(self):
 		self.name = ''
@@ -628,6 +635,7 @@ class GraphView(QtGui.QWidget):
 	def initialize(self):
 		global dict
 		self.compList = []
+
 
 		self.VisualNodeCogia = None
 		self.ox = 0
@@ -664,7 +672,7 @@ class GraphView(QtGui.QWidget):
 						if parent.componentChecker.workingComponents.__contains__(myComp.name): myComp.on = True
 						else: myComp.on = False
 						break
-			if notFound:
+			if notFound:##Which means that there is a component which is not selected or displayed in the graph
 				newOne = GraphNode()
 				newOne.color = parentComp.color
 				newOne.htmlcolor = parentComp.htmlcolor
@@ -676,16 +684,17 @@ class GraphView(QtGui.QWidget):
 				self.compList.append(newOne)
 				anyone = True
 		#if anyone == True: self.step(self)
+	
 	def step(self, parent):
 		#
-		# Compute velocities
+		# Compute velocities and change the coordinates of components
 		for iterr in self.compList:
 			force_x = force_y = 0.
 			for iterr2 in self.compList:
 				if iterr.name == iterr2.name: continue
 				ix = iterr.x - iterr2.x
 				iy = iterr.y - iterr2.y
-				while ix == 0 and iy == 0:
+				while ix == 0 and iy == 0: ##Make sure they donot coincide 
 					iterr.x = iterr.x + random.uniform(  -10, 10)
 					iterr2.x = iterr2.x + random.uniform(-10, 10)
 					iterr.y = iterr.y + random.uniform(  -10, 10)
@@ -694,7 +703,7 @@ class GraphView(QtGui.QWidget):
 					iy = iterr.y - iterr2.y
 
 				angle = math.atan2(iy, ix)
-				dist2 = ((abs((iy*iy) + (ix*ix))) ** 0.5) ** 2.
+				dist2 = ((abs((iy*iy) + (ix*ix))) ** 0.5) ** 2. ##?
 				if dist2 < self.spring_length: dist2 = self.spring_length
 				force = self.field_force_multiplier / dist2
 				force_x += force * math.cos(angle)
@@ -719,7 +728,8 @@ class GraphView(QtGui.QWidget):
 		for iterr in self.compList:
 			iterr.x += iterr.vel_x
 			iterr.y += iterr.vel_y
-
+##
+#This function will the shifts coordinates of all components equally so the average is at origin.Its use?Still working..
 	def center(self):
 		total = 0
 		totalx = 0.
@@ -746,7 +756,7 @@ class GraphView(QtGui.QWidget):
 			if self.VisualNodeCogia:
 				self.VisualNodeCogia.y -= meany
 
-	def paintNode(self, node):
+	def paintNode(self, node): ##For drawing the node
 		w2 = self.parent().width()/2
 		h2 = self.parent().height()/2+30
 		global dict
@@ -767,7 +777,7 @@ class GraphView(QtGui.QWidget):
 			self.painter.drawEllipse(node.x-node.r/4+w2, node.y-node.r/4+h2, node.r/2, node.r/2)
 
 
-	def paintEvent(self, event):
+	def paintEvent(self, event): ##Draws the component tree
 		w2 = self.tab.width()/2
 		h2 = self.tab.height()/2+30
 		nodosAPintar = [] + self.compList
@@ -776,7 +786,7 @@ class GraphView(QtGui.QWidget):
 		self.painter = QtGui.QPainter(self)
 		self.painter.setRenderHint(QtGui.QPainter.Antialiasing, True)
 
-		for i in nodosAPintar:
+		for i in nodosAPintar: ## For drawing the dependency arrows
 			xo = i.x
 			yo = i.y
 			for j in  nodosAPintar:
@@ -807,7 +817,7 @@ class GraphView(QtGui.QWidget):
 					self.painter.drawPie(px+w2, py+h2, 20, 20, abs((angle+180-16)*16), 32*16)
 
 		self.painter.setFont(QtGui.QFont("Arial", 13));
-		for i in self.compList:
+		for i in self.compList:##For drawing the nodes
 			self.paintNode(i)
 		if self.VisualNodeCogia:
 			self.paintNode(self.VisualNodeCogia)
