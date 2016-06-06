@@ -557,7 +557,7 @@ void RCDraw::draw2DRoiOnFloor(const QPoint & center, const QMat & cov, const QCo
 
 	float ang = phi*180/M_PI + (M_PI/2);
 
-	if ( isnan(sigma1)==false and isinf(sigma1)==false and isnan(sigma2)==false and isinf(sigma2)==false)
+	if ( std::isnan(sigma1)==false and std::isinf(sigma1)==false and std::isnan(sigma2)==false and std::isinf(sigma2)==false)
 	{
 		TEllipse e;
 		e.center = center;
@@ -601,7 +601,7 @@ void RCDraw::draw3DRoiOnFloor(const QVec & center, const QMat & cov, const QColo
 	else
 		ang = phi*180/M_PI;*/
 
-	if ( isnan(sigma1)==false and isinf(sigma1)==false and isnan(sigma2)==false and isinf(sigma2)==false)
+	if ( std::isnan(sigma1)==false and std::isinf(sigma1)==false and std::isnan(sigma2)==false and std::isinf(sigma2)==false)
 	{
 		TEllipse e;
 		e.center.setX( center.x());
