@@ -22,6 +22,8 @@
 #include "config.h"
 #include <QtCore>
 #include <iostream>
+#include <boost/format.hpp> 
+
 using namespace std;
 
 #if COMPILE_LOGGERCOMP==1
