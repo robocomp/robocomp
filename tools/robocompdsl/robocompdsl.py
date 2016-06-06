@@ -28,10 +28,31 @@ Component <CHANGETHECOMPONENTNAME>
 	};
 	language Cpp;
 	gui Qt(QWidget);
+	statemachine ./file.smdsl;
 };\n\n"""
+		stringstatemachine = """name_machine[parallel]{
+    states name_state *[, name_state];
+    [initial_state name_state;]
+    [end_state name_state;]
+    [transition{
+        name_state => name_state *[, name_state];
+        *[name_state => name_state *[, name_state];]
+    };]
+};
+
+[name_state [:parent_state][parallel]{
+    states name_state *[, name_state];
+    [initial_state name_state;]
+    [end_state name_state;]
+    [transition{
+        name_state => name_state *[, name_state];
+        *[name_state => name_state *[, name_state];]
+    };]
+};]"""
 		name = path.split('/')[-1].split('.')[0]
 		string = string.replace('<CHANGETHECOMPONENTNAME>', name)
 		open(path, "w").write(string)
+		open("statemachine.smdsl", "w").write(stringstatemachine)
 
 correct = True
 if len(sys.argv) < 3:
@@ -55,6 +76,7 @@ from cogapp import Cog
 
 
 from parseCDSL import *
+
 component = CDSLParsing.fromFile(inputFile)
 
 #########################################

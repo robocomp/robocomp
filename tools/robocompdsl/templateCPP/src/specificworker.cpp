@@ -13,7 +13,9 @@ def TAB():
 	cog.out('<TABHERE>')
 
 from parseCDSL import *
+from parseSMDSL import *
 component = CDSLParsing.fromFile(theCDSL)
+sm = SMDSLparsing.fromFile(component['statemachine'])
 if component == None:
 	print('Can\'t locate', theCDSLs)
 	sys.exit(1)
@@ -120,11 +122,12 @@ except:
 // 		innermodel = new InnerModel(innermodel_path);
 // 	}
 // 	catch(std::exception e) { qFatal("Error reading config params"); }""")
-
+if component['statemachine'] != 'none':
+    cog.outl("<TABHERE>" + sm['machine']['name'] + ".start();")
 ]]]
 [[[end]]]	
 
-	
+
 	timer.start(Period);
 
 	return true;
@@ -143,8 +146,30 @@ void SpecificWorker::compute()
 // 		std::cout << "Error reading from Camera" << e << std::endl;
 // 	}
 }
-
-
+[[[cog
+if component['statemachine'] != 'none':
+    for state in sm['machine']['contents']['states']:
+        cod = "void SpecificWorker::fun_" + state + "()\n{\n\n}\n"
+        cog.outl(cod)
+    if sm['machine']['contents']['initialstate'] != "none":
+        cod = "void SpecificWorker::fun_" + sm['machine']['contents']['initialstate'][0] + "()\n{\n\n}\n"
+        cog.outl(cod)
+    if sm['machine']['contents']['finalstate'] != "none":
+        cod = "void SpecificWorker::fun_" + sm['machine']['contents']['finalstate'][0] + "()\n{\n\n}\n"
+        cog.outl(cod)
+    if sm['substates'] != "none":
+        for substates in sm['substates']:
+            for state in substates['contents']['states']:
+                cod = "void SpecificWorker::fun_" + state + "()\n{\n\n}\n"
+                cog.outl(cod)
+            if substates['contents']['initialstate'] != "none":
+                cod = "void SpecificWorker::fun_" + substates['contents']['initialstate'][0] + "()\n{\n\n}\n"
+                cog.outl(cod)
+            if substates['contents']['finalstate'] != "none":
+                cod = "void SpecificWorker::fun_" + substates['contents']['finalstate'][0] + "()\n{\n\n}\n"
+                cog.outl(cod)
+]]]
+[[[end]]]
 [[[cog
 
 if 'implements' in component:

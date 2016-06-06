@@ -11,14 +11,15 @@ def Z():
 	cog.out('>@@>')
 def TAB():
 	cog.out('<TABHERE>')
-
+from parseSMDSL import *
 from parseCDSL import *
+from parseIDSL import *
 component = CDSLParsing.fromFile(theCDSL)
+sm = SMDSLparsing.fromFile(component['statemachine'])
 if component == None:
 	print('Can\'t locate', theCDSLs)
 	sys.exit(1)
 
-from parseIDSL import *
 pool = IDSLPool(theIDSLs)
 
 
@@ -67,6 +68,38 @@ else:
 ]]]
 [[[end]]]
 {
+
+[[[cog
+if component['statemachine'] != 'none':
+    if sm['machine']['contents']['transition'] != "none":
+        for transi in sm['machine']['contents']['transition']:
+            cod = "<TABHERE>" + transi['src'] + "->addTransition("
+            for dest in transi['dest']:
+                aux=cod
+                aux+="this, SIGNAL("+transi['src'] + "to" + dest+"()), " + dest + ");"
+                cog.outl(aux)
+    if sm['substates'] != "none":
+        for substates in sm['substates']:
+            if substates['contents']['transition'] != "none":
+                for transi in substates['contents']['transition']:
+                    cod = "<TABHERE>" + transi['src'] + "->addTransition("
+                    for dest in transi['dest']:
+                        aux=cod
+                        aux+="this, SIGNAL("+transi['src'] + "to" + dest+"()), " + dest + ");"
+                        cog.outl(aux)
+    for state in sm['machine']['contents']['states']:
+        cod = "<TABHERE>" + sm['machine']['name'] +  ".addState(" + state + ");"
+        cog.outl(cod)
+    for state in sm['machine']['contents']['states']:
+        cod = "<TABHERE>QObject::connect(" + state + ", SIGNAL(entered()), this, SLOT(fun_" + state + "()));"
+        cog.outl(cod)
+    if sm['substates'] != "none":
+        for substates in sm['substates']:
+            for state in substates['contents']['states']:
+                cod = "<TABHERE>QObject::connect(" + state + ", SIGNAL(entered()), this, SLOT(fun_" + state + "()));"
+                cog.outl(cod)
+]]]
+[[[end]]]
 [[[cog
 for name, num in getNameNumber(component['requires']):
 	cog.outl("<TABHERE>"+name.lower()+num+"_proxy = (*("+name+"Prx*)mprx[\""+name+"Proxy"+num+"\"]);")	

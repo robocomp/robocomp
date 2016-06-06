@@ -13,7 +13,9 @@ def TAB():
 	cog.out('<TABHERE>')
 
 from parseCDSL import *
+from parseSMDSL import *
 component = CDSLParsing.fromFile(theCDSL)
+sm = SMDSLparsing.fromFile(component['statemachine'])
 if component == None:
 	print('Can\'t locate', theCDSLs)
 	sys.exit(1)
@@ -146,7 +148,7 @@ if 'subscribesTo' in component:
 [[[end]]]
 
 public slots:
-	void compute(); 	
+	void compute();
 
 private:
 [[[cog
@@ -163,6 +165,32 @@ try:
 except:
 	pass
 
+]]]
+[[[end]]]
+
+private slots:
+[[[cog
+if component['statemachine'] != 'none':
+    for state in sm['machine']['contents']['states']:
+        cod = "<TABHERE>void fun_" + state + "();"
+        cog.outl(cod)
+    if sm['machine']['contents']['initialstate'] != "none":
+        cod = "<TABHERE>void fun_" + sm['machine']['contents']['initialstate'][0] + "();"
+        cog.outl(cod)
+    if sm['machine']['contents']['finalstate'] != "none":
+        cod = "<TABHERE>void fun_" + sm['machine']['contents']['finalstate'][0] + "();"
+        cog.outl(cod)
+    if sm['substates'] != "none":
+        for substates in sm['substates']:
+            for state in substates['contents']['states']:
+                cod = "<TABHERE>void fun_" + state + "();"
+                cog.outl(cod)
+            if substates['contents']['initialstate'] != "none":
+                cod = "<TABHERE>void fun_" + substates['contents']['initialstate'][0] + "();"
+                cog.outl(cod)
+            if substates['contents']['finalstate'] != "none":
+                cod = "<TABHERE>void fun_" + substates['contents']['finalstate'][0] + "();"
+                cog.outl(cod)
 ]]]
 [[[end]]]
 	

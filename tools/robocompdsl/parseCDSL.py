@@ -159,8 +159,9 @@ class CDSLParsing:
 		gui = Group(Optional(Suppress(CaselessLiteral("gui")) + CaselessLiteral("Qt") + opp + identifier + clp + semicolon ))
 		# additional options
 		options = Group(Optional(Suppress(CaselessLiteral("options")) + identifier + ZeroOrMore(Suppress(Word(',')) + identifier) + semicolon))
-		
-		componentContents = communications.setResultsName('communications') & language.setResultsName('language') & gui.setResultsName('gui') & options.setResultsName('options')
+		# Statemachine
+		statemachine = Suppress(CaselessLiteral("statemachine")) + Word(alphas + "_" + alphanums + "." + alphas) + semicolon
+		componentContents = communications.setResultsName('communications') & language.setResultsName('language') & statemachine.setResultsName('statemachine') & gui.setResultsName('gui') & options.setResultsName('options')
 		component = Suppress(CaselessLiteral("component")) + identifier.setResultsName("name") + op + componentContents.setResultsName("properties") + cl + semicolon
 
 		CDSL = idslImports.setResultsName("imports") + component.setResultsName("component")
@@ -235,6 +236,13 @@ class CDSLParsing:
 		#print component['recursiveImports']
 		# Language
 		component['language'] = tree['properties']['language'][0]
+		# Statemachine
+		component['statemachine'] = 'none'
+		try:
+			statemachine = tree['properties']['statemachine'][0]
+			component['statemachine'] = statemachine
+		except:
+			pass
 		# GUI
 		component['gui'] = 'none'
 		try:
