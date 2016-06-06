@@ -88,16 +88,28 @@ if component['statemachine'] != 'none':
                         aux+="this, SIGNAL("+transi['src'] + "to" + dest+"()), " + dest + ");"
                         cog.outl(aux)
     for state in sm['machine']['contents']['states']:
-        cod = "<TABHERE>" + sm['machine']['name'] +  ".addState(" + state + ");"
-        cog.outl(cod)
-    for state in sm['machine']['contents']['states']:
-        cod = "<TABHERE>QObject::connect(" + state + ", SIGNAL(entered()), this, SLOT(fun_" + state + "()));"
-        cog.outl(cod)
+        cog.outl("<TABHERE>" + sm['machine']['name'] +  ".addState(" + state + ");")
+        cog.outl("<TABHERE>QObject::connect(" + state + ", SIGNAL(entered()), this, SLOT(fun_" + state + "()));")
+    if sm['machine']['contents']['initialstate'][0] is not "none":
+        state = sm['machine']['contents']['initialstate'][0]
+        cog.outl("<TABHERE>" + sm['machine']['name'] +  ".addState(" + state + ");")
+        cog.outl("<TABHERE>" + sm['machine']['name'] +  ".setInitialState(" + state +");")
+        cog.outl("<TABHERE>QObject::connect(" + state + ", SIGNAL(entered()), this, SLOT(fun_" + state + "()));")
+    if sm['machine']['contents']['finalstate'][0] is not "none":
+        state = sm['machine']['contents']['finalstate'][0]
+        cog.outl("<TABHERE>" + sm['machine']['name'] +  ".addState(" + state + ");")
+        cog.outl("<TABHERE>QObject::connect(" + state + ", SIGNAL(entered()), this, SLOT(fun_" + state + "()));")
     if sm['substates'] != "none":
         for substates in sm['substates']:
+            if substates['contents']['initialstate'] is not "none":
+                state = substates['contents']['initialstate']
+                cog.outl("<TABHERE>" + substates['parent'] +  "->setInitialState(" + state +");")
+                cog.outl("<TABHERE>QObject::connect(" + state + ", SIGNAL(entered()), this, SLOT(fun_" + state + "()));")
+            if substates['contents']['finalstate'] is not "none":
+                state = substates['contents']['finalstate']
+                cog.outl("<TABHERE>QObject::connect(" + state + ", SIGNAL(entered()), this, SLOT(fun_" + state + "()));")
             for state in substates['contents']['states']:
-                cod = "<TABHERE>QObject::connect(" + state + ", SIGNAL(entered()), this, SLOT(fun_" + state + "()));"
-                cog.outl(cod)
+                cog.outl("<TABHERE>QObject::connect(" + state + ", SIGNAL(entered()), this, SLOT(fun_" + state + "()));")
 ]]]
 [[[end]]]
 [[[cog
