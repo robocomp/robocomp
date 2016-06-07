@@ -171,26 +171,24 @@ except:
 private slots:
 [[[cog
 if component['statemachine'] != 'none':
+    specificationfun = ""
     for state in sm['machine']['contents']['states']:
-        cod = "<TABHERE>void fun_" + state + "();"
-        cog.outl(cod)
+        specificationfun += "<TABHERE>void fun_" + state + "();\n"
     if sm['machine']['contents']['initialstate'] != "none":
-        cod = "<TABHERE>void fun_" + sm['machine']['contents']['initialstate'][0] + "();"
-        cog.outl(cod)
+        specificationfun += "<TABHERE>void fun_" + sm['machine']['contents']['initialstate'][0] + "();\n"
     if sm['machine']['contents']['finalstate'] != "none":
-        cod = "<TABHERE>void fun_" + sm['machine']['contents']['finalstate'][0] + "();"
-        cog.outl(cod)
+        specificationfun += "<TABHERE>void fun_" + sm['machine']['contents']['finalstate'][0] + "();\n"
     if sm['substates'] != "none":
         for substates in sm['substates']:
             for state in substates['contents']['states']:
-                cod = "<TABHERE>void fun_" + state + "();"
-                cog.outl(cod)
+                specificationfun += "<TABHERE>void fun_" + state + "();\n"
             if substates['contents']['initialstate'] != "none":
-                cod = "<TABHERE>void fun_" + substates['contents']['initialstate'][0] + "();"
-                cog.outl(cod)
+                specificationfun += "<TABHERE>void fun_" + substates['contents']['initialstate'][0] + "();\n"
             if substates['contents']['finalstate'] != "none":
-                cod = "<TABHERE>void fun_" + substates['contents']['finalstate'][0] + "();"
-                cog.outl(cod)
+                specificationfun += "<TABHERE>void fun_" + substates['contents']['finalstate'][0] + "();\n"
+    cog.outl("//Specification slot funtions State Machine")
+    cog.outl(specificationfun)
+    cog.outl("//--------------------")
 ]]]
 [[[end]]]
 	

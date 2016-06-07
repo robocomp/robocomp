@@ -12,7 +12,9 @@ def TAB():
 	cog.out('<TABHERE>')
 
 from parseCDSL import *
+form parseSMDSL import *
 component = CDSLParsing.fromFile(theCDSL)
+sm = SMDSLparsing.fromFile(component['statemachine'])
 if component == None:
 	print('Can\'t locate', theCDSLs)
 	sys.exit(1)
@@ -103,7 +105,28 @@ if component['gui'] != 'none':
 Z()
 ]]]
 [[[end]]]
-		
+[[[cog
+if sm is not "none":
+	codStateMachine = ""
+	codQStateParallel = ""
+	Machine = sm['machine']['name']
+	codStateMachine = "<TABHERE><TABHERE>self." + Machine + "= QStateMachine()"
+
+	for state in sm['machine']['contents']['states']:
+		aux = "<TABHERE><TABHERE>self." + state + " = QState(self."Machine");\n"
+		if sm['substates'] is not "none":
+			for substates in sm['substates']:
+				if state == substates['parent']:
+					if substates['parallel'] is "parallel":
+						aux = "<TABHERE>QState *" + state + " = new QState(" + QState +");\n"
+						break
+		if "ParallelStates" in aux:
+			codQStateParallel += aux
+		else:
+			codQState += aux
+			cog.outl()
+]]]
+[[[end]]]
 		
 		self.mutex = QtCore.QMutex(QtCore.QMutex.Recursive)
 		self.Period = 30
