@@ -22,7 +22,7 @@ class SMDSLparsing:
             print 'Error reading', filename
             traceback.print_exc()
             print 'Error reading', filename
-            sys.exit(1)
+            sys.sys.exit(-1)
         ret['filename'] = filename
         return ret
 
@@ -83,12 +83,22 @@ class SMDSLparsing:
             component['machine']['contents']['states'] = "none"
         try:
             component['machine']['contents']['finalstate'] = tree['machine']['contents']['finalstate']
+            for state in component['machine']['contents']['states']:
+                if component['machine']['contents']['finalstate'][0] == state:
+                    print"Error: this final state " + component['machine']['contents']['finalstate'][0] + " is in states"
         except:
             component['machine']['contents']['finalstate'] = "none"
         try:
             component['machine']['contents']['initialstate'] = tree['machine']['contents']['initialstate']
+            for state in component['machine']['contents']['states']:
+                if component['machine']['contents']['initialstate'][0] == state:
+                    print"Error: this initial state " + component['machine']['contents']['initialstate'][0] + " is in states"
+                     
+            if component['machine']['contents']['finalstate'] != "none":
+                if component['machine']['contents']['initialstate'][0] == component['machine']['contents']['finalstate'][0]:
+                    print"Error: initial state is equal final state"
         except:
-            component['machine']['contents']['initialstate'] = "none"
+            print "Error: The state machine needs initial state"
         try:
             component['machine']['contents']['transition'] = tree['machine']['contents']['transition']
         except:
@@ -109,25 +119,54 @@ class SMDSLparsing:
                 try:
                     a['parent'] = sub['parent'][0]
                 except:
-                    print"Error missing parent"
-                    exit(1)
+                    print"Error: substate missing parent"
+                    sys.exit(-1)
                 a['contents'] = {}
-                try:
-                    a['contents']['states'] = sub['contents']['states']
-                except:
-                    a['contents']['states'] = "none"
-                try:
-                    a['contents']['finalstate'] = sub['contents']['finalstate'][0]
-                except:
-                    a['contents']['finalstate'] = "none"
-                try:
-                    a['contents']['initialstate'] = sub['contents']['initialstate'][0]
-                except:
-                    a['contents']['initialstate'] = "none"
-                try:
-                    a['contents']['transition'] = sub['contents']['transition']
-                except:
-                    a['contents']['transition'] = "none"
+                if a['parallel'] is not "none":
+                    try:
+                        a['contents']['states'] = sub['contents']['states']
+                    except:
+                        print"Error: substate " + a['parent'] + " missing states"
+                    try:
+                        a['contents']['finalstate'] = sub['contents']['finalstate'][0]
+                        print"Error substate " + a['parent'] + " can't have final state"
+                    except:
+                        a['contents']['finalstate'] = "none"
+                    try:
+                        a['contents']['initialstate'] = sub['contents']['initialstate'][0]
+                        print"Error substate " + a['parent'] + " can't have initial state"
+                    except:
+                        a['contents']['initialstate'] = "none"
+                    try:
+                        a['contents']['transition'] = sub['contents']['transition']
+                        print"Error substate " + a['parent'] + " can't have transitions"
+                    except:
+                        a['contents']['transition'] = "none"
+                else:
+                    try:
+                        a['contents']['states'] = sub['contents']['states']
+                    except:
+                        a['contents']['states'] = "none"
+                    try:
+                        a['contents']['finalstate'] = sub['contents']['finalstate'][0]
+                        for state in a['contents']['states']:
+                            if a['contents']['finalstate'] == state:
+                                print"Error: substate " + a['parent'] + " this final state " + a['contents']['finalstate'] + " is in states"
+                    except:
+                        a['contents']['finalstate'] = "none"
+                    try:
+                        a['contents']['initialstate'] = sub['contents']['initialstate'][0]
+                        for state in a['contents']['states']:
+                            if a['contents']['initialstate'] == state:
+                                print"Error: " + a['parent'] + " this initial state " + a['contents']['initialstate'] + " is in states"
+                        if a['contents']['initialstate'] == a['contents']['finalstate']:
+                            print"Error: " + a['parent'] + " initial state is equal final state"
+                    except:
+                        print"Error substate " + a['parent'] + " needs initial state"
+                    try:
+                        a['contents']['transition'] = sub['contents']['transition']
+                    except:
+                        a['contents']['transition'] = "none"
                 component['substates'].append(a)
 
         return component
