@@ -76,6 +76,12 @@ Z()
 ]]]
 [[[end]]]
 ):
+[[[cog
+#if sm is not "none":
+	#cog.outl("<TABHERE>QtCore.__metaclass__  =  ABCMeta")
+]]]
+[[[end]]]
+
 	kill = QtCore.Signal()
 [[[cog
 if component['statemachine'] != 'none':
@@ -131,18 +137,19 @@ if sm is not "none":
 	Machine = sm['machine']['name']
 	codStateMachine = "<TABHERE><TABHERE>self." + Machine + "= QtCore.QStateMachine()"
 
-	for state in sm['machine']['contents']['states']:
-		aux = "<TABHERE><TABHERE>self." + state + " = QtCore.QState(self." + Machine + ")\n"
-		if sm['substates'] is not "none":
-			for substates in sm['substates']:
-				if state == substates['parent']:
-					if substates['parallel'] is "parallel":
-						aux = "<TABHERE><TABHERE>self." + state + " = QtCore.QState(QtCore.QState.ParallelStates, self." + Machine +")\n"
-						break
-		if "ParallelStates" in aux:
-			codQStateParallel += aux
-		else:
-			codQState += aux
+	if sm['machine']['contents']['states'] is not "none":
+		for state in sm['machine']['contents']['states']:
+			aux = "<TABHERE><TABHERE>self." + state + " = QtCore.QState(self." + Machine + ")\n"
+			if sm['substates'] is not "none":
+				for substates in sm['substates']:
+					if state == substates['parent']:
+						if substates['parallel'] is "parallel":
+							aux = "<TABHERE><TABHERE>self." + state + " = QtCore.QState(QtCore.QState.ParallelStates, self." + Machine +")\n"
+							break
+			if "ParallelStates" in aux:
+				codQStateParallel += aux
+			else:
+				codQState += aux
 	if sm['machine']['contents']['initialstate'] != "none":
 		state = sm['machine']['contents']['initialstate'][0]
 		aux = "<TABHERE><TABHERE>self." + state + " = QtCore.QState(self." + Machine +")\n"
@@ -170,19 +177,20 @@ if sm is not "none":
 	codQFinalState = ""
 	if sm['substates'] != "none":
 		for substates in sm['substates']:
-			for state in substates['contents']['states']:
-				aux = "<TABHERE><TABHERE>self." + state + " = QtCore.QState(self." + substates['parent'] + ")\n"
-				for sub in sm['substates']:
-					if state == sub['parent']:
-						if sub['parallel'] is "parallel":
-							aux = "<TABHERE><TABHERE>self." + state + " = QtCore.QState(QtCore.QState.ParallelStates, self." + substates['parent'] + ")\n"
-							break
-				if "ParallelStates" in aux:
-					codQStateParallel += aux
-				else:
-					codQState += aux
+			if substates['contents']['states'] is not "none":
+				for state in substates['contents']['states']:
+					aux = "<TABHERE><TABHERE>self." + state + " = QtCore.QState(self." + substates['parent'] + ")\n"
+					for sub in sm['substates']:
+						if state == sub['parent']:
+							if sub['parallel'] is "parallel":
+								aux = "<TABHERE><TABHERE>self." + state + " = QtCore.QState(QtCore.QState.ParallelStates, self." + substates['parent'] + ")\n"
+								break
+					if "ParallelStates" in aux:
+						codQStateParallel += aux
+					else:
+						codQState += aux
 			if substates['contents']['initialstate'] != "none":
-				aux = "<TABHERE><TABHERE>self." + substates['contents']['initialstate'][0] + " = QtCore.QState(self." + substates['parent'][0] + ")\n"
+				aux = "<TABHERE><TABHERE>self." + substates['contents']['initialstate'] + " = QtCore.QState(self." + substates['parent'] + ")\n"
 				for sub in sm['substates']:
 					if state == sub['parent']:
 						if sub['parallel'] is "parallel":
@@ -193,7 +201,7 @@ if sm is not "none":
 				else:
 					codQState += aux
 			if substates['contents']['finalstate'] != "none":
-				codQFinalState += "<TABHERE><TABHERE>self." + substates['contents']['finalstate'][0] + " = QtCore.QFinalState(self." + substates['parent'][0] + ")\n"
+				codQFinalState += "<TABHERE><TABHERE>self." + substates['contents']['finalstate'] + " = QtCore.QFinalState(self." + substates['parent'] + ")\n"
 			cog.outl(codStateMachine)
 			cog.outl(codQState)
 			cog.outl(codQFinalState)
@@ -236,8 +244,9 @@ if sm is not "none":
 			if substates['contents']['finalstate'] is not "none":
 				state = substates['contents']['finalstate']
 				codConnect += "<TABHERE><TABHERE>self." + state + ".entered.connect(self.fun_" + state + ")\n"
-			for state in substates['contents']['states']:
-				codConnect += "<TABHERE><TABHERE>self." + state + ".entered.connect(self.fun_" + state + ")\n"
+			if substates['contents']['states'] is not "none":
+				for state in substates['contents']['states']:
+					codConnect += "<TABHERE><TABHERE>self." + state + ".entered.connect(self.fun_" + state + ")\n"
 	cog.outl("#Initialization State machine")
 	cog.outl(codaddTransition)
 	cog.outl(codaddState)
@@ -254,23 +263,30 @@ if sm is not "none":
 [[[cog
 if component['statemachine'] != 'none':
 	codVirtuals = ""
+	codcompsubclas = ""
 	for state in sm['machine']['contents']['states']:
-		codVirtuals += "<TABHERE>#\n<TABHERE># fun_" + state + "\n<TABHERE>#\n<TABHERE>@QtCore.Slot()\n<TABHERE>def fun_" + state + "(self):\n<TABHERE><TABHERE><TABHERE>return\n\n"
+		codVirtuals += "<TABHERE>@QtCore.Slot()\n<TABHERE>def fun_" + state + '(self):\n<TABHERE><TABHERE>print "Error: lack fun_' + state + ' in Specificworker"\n<TABHERE><TABHERE>sys.exit(-1)\n\n'
 	if sm['machine']['contents']['initialstate'] != "none":
-		codVirtuals += "<TABHERE>#\n<TABHERE># fun_" + sm['machine']['contents']['initialstate'][0] + "\n<TABHERE>#\n<TABHERE>@QtCore.Slot()\n<TABHERE>def fun_" + sm['machine']['contents']['initialstate'][0] + "(self):\n<TABHERE><TABHERE><TABHERE>return\n\n"
+		codVirtuals += "<TABHERE>@QtCore.Slot()\n<TABHERE>def fun_" + \
+					   sm['machine']['contents']['initialstate'][0] + '(self):\n<TABHERE><TABHERE>print "Error: lack fun_' + sm['machine']['contents']['initialstate'][0] + ' in Specificworker"\n<TABHERE><TABHERE>sys.exit(-1)\n\n'
 	if sm['machine']['contents']['finalstate'] != "none":
-		codVirtuals += "<TABHERE>#\n<TABHERE># fun_" + sm['machine']['contents']['finalstate'][0] + "<TABHERE>#\n<TABHERE>@QtCore.Slot()\n<TABHERE>def fun_" + sm['machine']['contents']['finalstate'][0] + "(self):\n<TABHERE><TABHERE><TABHERE>return\n\n"
+		codVirtuals += "<TABHERE>@QtCore.Slot()\n<TABHERE>def fun_" + \
+					   sm['machine']['contents']['finalstate'][0] + '(self):\n<TABHERE><TABHERE>print "Error: lack fun_' + sm['machine']['contents']['finalstate'][0] + ' in Specificworker"\n<TABHERE><TABHERE>sys.exit(-1)\n\n'
 	if sm['substates'] != "none":
 		for substates in sm['substates']:
-			for state in substates['contents']['states']:
-				codVirtuals += "<TABHERE>#\n<TABHERE># fun_" + state + "\n<TABHERE>#\n<TABHERE>@QtCore.Slot()\n<TABHERE>def fun_" + state + "(self):\n<TABHERE><TABHERE><TABHERE>return\n\n"
+			if substates['contents']['states'] is not "none":
+				for state in substates['contents']['states']:
+					codVirtuals += "<TABHERE>@QtCore.Slot()\n<TABHERE>def fun_" + state + '(self):\n<TABHERE><TABHERE>print "Error: lack fun_' + state + ' in Specificworker"\n<TABHERE><TABHERE>sys.exit(-1)\n\n'
 			if substates['contents']['initialstate'] != "none":
-				codVirtuals += "<TABHERE>#\n<TABHERE># fun_" + substates['contents']['initialstate'][0] + "\n<TABHERE>#\n<TABHERE>@QtCore.Slot()\n<TABHERE>def fun_" + substates['contents']['initialstate'][0] + "(self):\n<TABHERE><TABHERE><TABHERE>return\n\n"
+				codVirtuals += "<TABHERE>@QtCore.Slot()\n<TABHERE>def fun_" + \
+							   substates['contents']['initialstate'] + '(self):\n<TABHERE><TABHERE>print "Error: lack fun_' + substates['contents']['initialstate'] + ' in Specificworker"\n<TABHERE><TABHERE>sys.exit(-1)\n\n'
 			if substates['contents']['finalstate'] != "none":
-				codVirtuals += "<TABHERE>#\n<TABHERE># fun_" + substates['contents']['finalstate'][0] + "\n<TABHERE>#\n<TABHERE>@QtCore.Slot()\n<TABHERE>def fun_" + substates['contents']['finalstate'][0] + "(self):\n<TABHERE><TABHERE><TABHERE>return\n\n"
-	cog.outl("#Slots funtion State Machine")
-	cog.outl(codVirtuals)
-	cog.outl("#-------------------------")
+				codVirtuals += "<TABHERE>@QtCore.Slot()\n<TABHERE>def fun_" + \
+							   substates['contents']['finalstate'] + '(self):\n<TABHERE><TABHERE>print "Error: lack fun_' + substates['contents']['finalstate'] + ' in Specificworker"\n<TABHERE><TABHERE>sys.exit(-1)\n\n'
+		cog.outl("#Slots funtion State Machine")
+		cog.outl(codVirtuals)
+		cog.outl("#-------------------------")
+
 ]]]
 [[[end]]]
 	@QtCore.Slot()

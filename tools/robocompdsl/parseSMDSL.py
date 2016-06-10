@@ -77,7 +77,10 @@ class SMDSLparsing:
         component['machine'] = {}
         component['machine']['name'] = tree['machine']['name']
         component['machine']['contents'] = {}
-        component['machine']['contents']['states'] = tree['machine']['contents']['states']
+        try:
+            component['machine']['contents']['states'] = tree['machine']['contents']['states']
+        except:
+            component['machine']['contents']['states'] = "none"
         try:
             component['machine']['contents']['finalstate'] = tree['machine']['contents']['finalstate']
         except:
@@ -109,7 +112,10 @@ class SMDSLparsing:
                     print"Error missing parent"
                     exit(1)
                 a['contents'] = {}
-                a['contents']['states'] = sub['contents']['states']
+                try:
+                    a['contents']['states'] = sub['contents']['states']
+                except:
+                    a['contents']['states'] = "none"
                 try:
                     a['contents']['finalstate'] = sub['contents']['finalstate'][0]
                 except:

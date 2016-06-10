@@ -28,10 +28,10 @@ Component <CHANGETHECOMPONENTNAME>
 	};
 	language Cpp;
 	gui Qt(QWidget);
-	statemachine ./file.smdsl;
+	statemachine statemachine.smdsl;
 };\n\n"""
-		stringstatemachine = """name_machine[parallel]{
-    states name_state *[, name_state];
+		stringstatemachine = """name_machine{
+    [states name_state *[, name_state];]
     [initial_state name_state;]
     [end_state name_state;]
     [transition{
@@ -40,7 +40,7 @@ Component <CHANGETHECOMPONENTNAME>
     };]
 };
 
-[name_state [:parent_state][parallel]{
+[:parent_state [parallel]{
     states name_state *[, name_state];
     [initial_state name_state;]
     [end_state name_state;]

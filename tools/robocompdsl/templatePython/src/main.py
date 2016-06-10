@@ -263,6 +263,7 @@ if len(component['requires']) > 0 or len(component['publishes']) > 0 or len(comp
 
 
 	if status == 0:
+		#GenericWorker.register(SpecificWorker)
 		worker = SpecificWorker(mprx)
 
 [[[cog

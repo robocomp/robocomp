@@ -157,12 +157,13 @@ if component['statemachine'] != 'none':
         implementationfun += "void SpecificWorker::fun_" + sm['machine']['contents']['finalstate'][0] + "()\n{\n\n}\n\n"
     if sm['substates'] != "none":
         for substates in sm['substates']:
-            for state in substates['contents']['states']:
-                implementationfun += "void SpecificWorker::fun_" + state + "()\n{\n\n}\n\n"
+            if substates['contents']['states'] is not "none":
+                for state in substates['contents']['states']:
+                    implementationfun += "void SpecificWorker::fun_" + state + "()\n{\n\n}\n\n"
             if substates['contents']['initialstate'] != "none":
-                implementationfun += "void SpecificWorker::fun_" + substates['contents']['initialstate'][0] + "()\n{\n\n}\n\n"
+                implementationfun += "void SpecificWorker::fun_" + substates['contents']['initialstate'] + "()\n{\n\n}\n\n"
             if substates['contents']['finalstate'] != "none":
-                implementationfun += "void SpecificWorker::fun_" + substates['contents']['finalstate'][0] + "()\n{\n\n}\n\n"
+                implementationfun += "void SpecificWorker::fun_" + substates['contents']['finalstate'] + "()\n{\n\n}\n\n"
     cog.outl(implementationfun)
 ]]]
 [[[end]]]

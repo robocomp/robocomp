@@ -123,20 +123,22 @@ if sm is not "none":
 [[[cog
 if component['statemachine'] != 'none':
 	codVirtuals = ""
-	for state in sm['machine']['contents']['states']:
-		codVirtuals += "<TABHERE>#\n<TABHERE># fun_" + state + "\n<TABHERE>#\n<TABHERE>@QtCore.Slot()\n<TABHERE>def fun_" + state + "(self):\n<TABHERE><TABHERE><TABHERE>return\n\n"
+	if sm['machine']['contents']['states'] is not "none":
+		for state in sm['machine']['contents']['states']:
+			codVirtuals += "<TABHERE>#\n<TABHERE># fun_" + state + "\n<TABHERE>#\n<TABHERE>@QtCore.Slot()\n<TABHERE>def fun_" + state + "(self):\n<TABHERE><TABHERE>pass\n\n"
 	if sm['machine']['contents']['initialstate'] != "none":
-		codVirtuals += "<TABHERE>#\n<TABHERE># fun_" + sm['machine']['contents']['initialstate'][0] + "\n<TABHERE>#\n<TABHERE>@QtCore.Slot()\n<TABHERE>def fun_" + sm['machine']['contents']['initialstate'][0] + "(self):\n<TABHERE><TABHERE><TABHERE>return\n\n"
+		codVirtuals += "<TABHERE>#\n<TABHERE># fun_" + sm['machine']['contents']['initialstate'][0] + "\n<TABHERE>#\n<TABHERE>@QtCore.Slot()\n<TABHERE>def fun_" + sm['machine']['contents']['initialstate'][0] + "(self):\n<TABHERE><TABHERE>pass\n\n"
 	if sm['machine']['contents']['finalstate'] != "none":
-		codVirtuals += "<TABHERE>#\n<TABHERE># fun_" + sm['machine']['contents']['finalstate'][0] + "<TABHERE>#\n<TABHERE>@QtCore.Slot()\n<TABHERE>def fun_" + sm['machine']['contents']['finalstate'][0] + "(self):\n<TABHERE><TABHERE><TABHERE>return\n\n"
+		codVirtuals += "<TABHERE>#\n<TABHERE># fun_" + sm['machine']['contents']['finalstate'][0] + "<TABHERE>#\n<TABHERE>@QtCore.Slot()\n<TABHERE>def fun_" + sm['machine']['contents']['finalstate'][0] + "(self):\n<TABHERE><TABHERE>pass\n\n"
 	if sm['substates'] != "none":
 		for substates in sm['substates']:
-			for state in substates['contents']['states']:
-				codVirtuals += "<TABHERE>#\n<TABHERE># fun_" + state + "\n<TABHERE>#\n<TABHERE>@QtCore.Slot()\n<TABHERE>def fun_" + state + "(self):\n<TABHERE><TABHERE><TABHERE>return\n\n"
+			if substates['contents']['states'] is not "none":
+				for state in substates['contents']['states']:
+					codVirtuals += "<TABHERE>#\n<TABHERE># fun_" + state + "\n<TABHERE>#\n<TABHERE>@QtCore.Slot()\n<TABHERE>def fun_" + state + "(self):\n<TABHERE><TABHERE>pass\n\n"
 			if substates['contents']['initialstate'] != "none":
-				codVirtuals += "<TABHERE>#\n<TABHERE># fun_" + substates['contents']['initialstate'][0] + "\n<TABHERE>#\n<TABHERE>@QtCore.Slot()\n<TABHERE>def fun_" + substates['contents']['initialstate'][0] + "(self):\n<TABHERE><TABHERE><TABHERE>return\n\n"
+				codVirtuals += "<TABHERE>#\n<TABHERE># fun_" + substates['contents']['initialstate'] + "\n<TABHERE>#\n<TABHERE>@QtCore.Slot()\n<TABHERE>def fun_" + substates['contents']['initialstate'] + "(self):\n<TABHERE><TABHERE>pass\n\n"
 			if substates['contents']['finalstate'] != "none":
-				codVirtuals += "<TABHERE>#\n<TABHERE># fun_" + substates['contents']['finalstate'][0] + "\n<TABHERE>#\n<TABHERE>@QtCore.Slot()\n<TABHERE>def fun_" + substates['contents']['finalstate'][0] + "(self):\n<TABHERE><TABHERE><TABHERE>return\n\n"
+				codVirtuals += "<TABHERE>#\n<TABHERE># fun_" + substates['contents']['finalstate'] + "\n<TABHERE>#\n<TABHERE>@QtCore.Slot()\n<TABHERE>def fun_" + substates['contents']['finalstate'] + "(self):\n<TABHERE><TABHERE>pass\n\n"
 	cog.outl("#Slots funtion State Machine")
 	cog.outl(codVirtuals)
 	cog.outl("#-------------------------")
