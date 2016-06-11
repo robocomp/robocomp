@@ -100,12 +100,13 @@ class ComponentChecker(threading.Thread):
 		global global_ic
 		while self.exit == False:
 			try:
-				self.mutex.lock()
 				self.aPrx.ice_ping()
+				self.mutex.lock()
 				self.alive = True
+				self.mutex.unlock()
 			except:
+				self.mutex.lock()
 				self.alive = False
-			finally:
 				self.mutex.unlock()
 			time.sleep(0.5)
 	def reset(self):
@@ -171,9 +172,6 @@ class TheThing(QtGui.QDialog):
 		self.systray = None
 		self.blinkTimer = QtCore.QTimer()
 		self.doDock = False
-
-		# Make an initial check
-		self.checkAll(initial=True)
 
 		# Set the fixed timeout for component checking
 		self.timer = QtCore.QTimer()
