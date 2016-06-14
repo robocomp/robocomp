@@ -24,18 +24,16 @@ do
 		flag="1"
 		session=`expr $sessionID + 1`
 		processID=`qdbus org.kde.yakuake /Sessions/$session org.kde.konsole.Session.processId`
-		fourGroundProcessID=`qdbus org.kde.yakuake /Sessions/$session org.kde.konsole.Session.foregroundProcessId`
+		foreGroundProcessID=`qdbus org.kde.yakuake /Sessions/$session org.kde.konsole.Session.foregroundProcessId`
       
 		# If the ids are the same, the user process is death
-		if [ "$processID" = "$fourGroundProcessID" ];
+		if [ "$processID" = "$foreGroundProcessID" ];
 		then
 			qdbus org.kde.yakuake /yakuake/sessions org.kde.yakuake.runCommandInTerminal $sessionID "cd ${cwdv}"
 			qdbus org.kde.yakuake /yakuake/sessions org.kde.yakuake.runCommandInTerminal $sessionID "echo $flag"
 			qdbus org.kde.yakuake /yakuake/sessions org.kde.yakuake.runCommandInTerminal $sessionID "make -j1"
 			qdbus org.kde.yakuake /yakuake/sessions org.kde.yakuake.runCommandInTerminal $sessionID "$binary $params"	
 		fi
-		
-	#ELSE LANZAR UNA EXCEPCION
 	fi
 done
 
