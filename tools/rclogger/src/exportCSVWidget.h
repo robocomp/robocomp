@@ -16,43 +16,39 @@
  *    You should have received a copy of the GNU General Public License
  *    along with RoboComp.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "genericworker.h"
-/**
-* \brief Default constructor
-*/
-GenericWorker::GenericWorker(MapPrx& mprx) :
-#ifdef USE_QTGUI
-Ui_guiDlg()
-#else
-QObject()
-#endif
-
-{
-	mutex = new QMutex(QMutex::Recursive);
-	Period = BASIC_PERIOD;
-	connect(&timer, SIGNAL(timeout()), this, SLOT(compute()));
-}
 
 /**
-* \brief Default destructor
+       \brief
+       @author authorname
 */
-GenericWorker::~GenericWorker()
-{
 
-}
-void GenericWorker::killYourSelf()
-{
-	rDebug("Killing myself");
-	emit kill();
-}
-/**
-* \brief Change compute period
-* @param per Period in ms
-*/
-void GenericWorker::setPeriod(int p)
-{
-	rDebug("Period changed"+QString::number(p));
-	Period = p;
-	timer.start(Period);
-}
+#ifndef EXPORTCSVWIDGET_H
+#define EXPORTCSVWIDGET_H
 
+#include <QtGui>
+#include <QSqlTableModel>
+#include <stdint.h>
+#include <fstream>
+#include <qlog/qlog.h>
+#include <ui_exportCSV.h>
+
+using namespace std;
+
+class ExportCSVWidget : public QDialog, public Ui_exportCSV
+{
+Q_OBJECT
+private:
+	QSqlTableModel *data;
+	QString columnNames;
+	QList<int> selectedColumns;
+	
+public:
+	ExportCSVWidget(QSqlTableModel *tModel);
+	~ExportCSVWidget();
+	void prepareColumns();	
+	void exportToFile(QString filename);
+public slots:
+	void exportData();
+	
+};
+#endif 

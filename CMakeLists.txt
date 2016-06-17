@@ -1,6 +1,10 @@
 # RoboComp global CMake
 cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 
+
+ADD_DEFINITIONS( -std=c++11 )
+
+
 project(RoboComp)
 string(TOLOWER ${PROJECT_NAME} PROJECT_NAME_LOWER)
 
@@ -92,6 +96,7 @@ SUBDIRS(
 	tools/robocompdsl
 	tools/rcinnerModelSimulator
 	tools/rcmanager
+	tools/rclogger
 	tools/rcmonitor
 	tools/rcremote
 	tools/rcnode

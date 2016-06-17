@@ -6,7 +6,9 @@
 
 module RoboCompAGMExecutive
 {
-	enum ProposalError { NoError, Locked, OldModel, InvalidChange };
+	exception Locked {};
+	exception OldModel {};
+	exception InvalidChange  {};
 
 	interface AGMExecutive
 	{
@@ -15,10 +17,10 @@ module RoboCompAGMExecutive
 		void deactivate();
 
 		// Agents' API
-		ProposalError structuralChangeProposal(RoboCompAGMWorldModel::World w, string sender, string log);
-		void symbolUpdate( RoboCompAGMWorldModel::Node n);
+		void structuralChangeProposal(RoboCompAGMWorldModel::World w, string sender, string log) throws Locked, OldModel, InvalidChange;
+		void symbolUpdate(RoboCompAGMWorldModel::Node n);
 		void symbolsUpdate(RoboCompAGMWorldModel::NodeSequence ns);
-		void edgeUpdate( RoboCompAGMWorldModel::Edge e);
+		void edgeUpdate(RoboCompAGMWorldModel::Edge e);
 		void edgesUpdate(RoboCompAGMWorldModel::EdgeSequence es);
 
 		// To setting the mission given a target path
@@ -37,9 +39,9 @@ module RoboCompAGMExecutive
 
 	interface AGMExecutiveVisualizationTopic
 	{
-		void update(RoboCompAGMWorldModel::World world, RoboCompAGMWorldModel::World target, RoboCompPlanning::Plan plan);
-		void successFulChange(RoboCompPlanning::ActionSequence actions);
-		void aimedChange(RoboCompPlanning::Action action);
+		void update(RoboCompAGMWorldModel::World world, string mission, RoboCompPlanning::Plan plan);
+		//void successFulChange(RoboCompPlanning::ActionSequence actions);
+		//void aimedChange(RoboCompPlanning::Action action);
 	};
 
 	interface AGMExecutiveTopic

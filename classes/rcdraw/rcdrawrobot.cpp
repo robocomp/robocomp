@@ -92,8 +92,9 @@ void RCDrawRobot::drawRobotTrail(InnerModel * innerModel, int QUEUE_SIZE)
 	QLine rightWheel(QPoint(rightWheelP1.x(), rightWheelP1.z()),QPoint(rightWheelP2.x(),rightWheelP2.z()));
 
 	//drawEllipse( QPointF( b(0),b(2) ) , radio, radio, Qt::red );
-	drawSquare( QPointF( (int) rint(geomCenter(0)), (int) rint(geomCenter(2)) ), 2*radio, 2*radio, Qt::green, true, -1, -innerModel->getBaseAngle() );
-	drawEllipse( QPointF( innerModel->getBaseX(), innerModel->getBaseZ() ), radio/6, radio/6, Qt::red, true );
+	QVec base  = innerModel->transform6D("world", "base");
+	drawSquare( QPointF( (int) rint(geomCenter(0)), (int) rint(geomCenter(2)) ), 2*radio, 2*radio, Qt::green, true, -1, -base(4) );
+	drawEllipse( QPointF(base(0), base(2) ), radio/6, radio/6, Qt::red, true );
 
 	//Wheels
 	drawLine( leftWheel, Qt::black, 60);
@@ -108,7 +109,8 @@ void RCDrawRobot::drawRobotTrail(InnerModel * innerModel, int QUEUE_SIZE)
 	if((geomCenter(2)-visibleCenter(1))>-win.y()-win.height())
 		visibleCenter(1)=geomCenter(2);
 	
-	trajec.enqueue(QPointF(innerModel->getBaseX(),innerModel->getBaseZ()));
+	
+	trajec.enqueue(QPointF(base(0), base(2)));
 	if( trajec.size() > QUEUE_SIZE and trajec.isEmpty()==false) 
 		trajec.dequeue();
 	foreach(QPointF p, trajec)

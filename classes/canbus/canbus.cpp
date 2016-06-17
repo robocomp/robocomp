@@ -80,8 +80,8 @@ int CanBus::writeWaitReadMessage(VSCAN_MSG* msg)
 		printf("writeWaitReadMessage() ERROR: El comando no se escribio correctamente\n");
 		return -1;
 	}
-	if(msg->Id == 0x0)
-		return 1;
+//	if(msg->Id == 0x0)
+//		return 1;
 	
 	usleep(2000);
 	

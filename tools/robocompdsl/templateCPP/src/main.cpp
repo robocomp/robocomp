@@ -197,6 +197,8 @@ Z()
  * ...
  *
  */
+#include <signal.h>
+
 // QT includes
 #include <QtCore>
 #include <QtGui>
@@ -318,6 +320,17 @@ Z()
 		cog.outl("<TABHERE>QCoreApplication a(argc, argv);  // NON-GUI application")
 ]]]
 [[[end]]]
+
+
+	sigset_t sigs;
+	sigemptyset(&sigs);
+	sigaddset(&sigs, SIGHUP);
+	sigaddset(&sigs, SIGINT);
+	sigaddset(&sigs, SIGTERM);
+	sigprocmask(SIG_UNBLOCK, &sigs, 0);
+
+
+
 	int status=EXIT_SUCCESS;
 
 [[[cog

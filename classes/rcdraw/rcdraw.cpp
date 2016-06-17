@@ -16,6 +16,8 @@
  *    You should have received a copy of the GNU General Public License
  *    along with RoboComp.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <cmath>
+
 #include "rcdraw.h"
 
 RCDraw::RCDraw( int _width, int _height, uchar *img, QWidget *parent) : QGLWidget(parent), width(_width), height(_height)

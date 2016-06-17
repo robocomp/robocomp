@@ -82,7 +82,11 @@ for imp in component['imports']:
 
 
 [[[cog
-	for im in component['implements']+component['subscribesTo']:
+	for ima in component['implements']+component['subscribesTo']:
+		if type(ima) == type(''):
+			im = ima
+		else:
+			im = ima[0]
 		cog.outl('from ' + im.lower() + 'I import *')
 ]]]
 [[[end]]]
@@ -124,8 +128,9 @@ try:
 	lst += component['subscribesTo']
 except:
 	pass
+
 for imp in lst:
-	module = pool.moduleProviding(imp)
+	module = pool.moduleProviding(imp[0])
 	for interface in module['interfaces']:
 		if interface['name'] == imp:
 			for mname in interface['methods']:

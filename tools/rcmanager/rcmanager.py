@@ -35,7 +35,7 @@ import Ice
 from PyQt4 import QtCore, QtGui, Qt
 from ui_formManager import Ui_Form
 
-import rcmanagerConfig  
+import rcmanagerConfig
 
 global_ic = Ice.initialize(sys.argv)
 
@@ -53,9 +53,7 @@ sys.path.append('/opt/robocomp/bin')
 import rcmanagerEditor
 
 
-# CommandDialog class: It's the dialog sending "up()/down() component X signal to the main,
-# Appears when we righ click on a component in component tree
-
+# CommandDialog class: It's the dialog sending "up()/down() component X signal to the main
 class CommandDialog(QtGui.QWidget):
 	def __init__(self, parent, x, y):
 		QtGui.QWidget.__init__(self)
@@ -70,7 +68,7 @@ class CommandDialog(QtGui.QWidget):
 		self.button3 = QtGui.QPushButton(self)
 		self.button3.setGeometry(0, 50, 100, 25)
 		self.button3.setText('edit config')
-		self.show() 
+		self.show()
 		self.connect(self.button1, QtCore.SIGNAL('clicked()'), self.but1)
 		self.connect(self.button2, QtCore.SIGNAL('clicked()'), self.but2)
 		self.connect(self.button3, QtCore.SIGNAL('clicked()'), self.but3)
@@ -81,33 +79,48 @@ class CommandDialog(QtGui.QWidget):
 
 # ComponentChecker class: Threaded endpoint-pinging class.
 class ComponentChecker(threading.Thread):
-	def __init__(self):
+	def __init__(self, endpoint):
 		threading.Thread.__init__(self)
+		self.mutex = QtCore.QMutex(QtCore.QMutex.Recursive)
 		self.daemon = True
 		self.reset()
 		self.exit = False
+		self.alive = False
+		self.aPrx = None
+		try:
+			self.aPrx = global_ic.stringToProxy(endpoint)
+			self.aPrx.ice_timeout(1)
+		except:
+			print "Error creating proxy to " + endpoint
+			if len(endpoint) == 0:
+				print 'please, provide an endpoint'
+			raise
+			
 	def run(self):
 		global global_ic
 		while self.exit == False:
-			for k, v in self.componentsToCheck.iteritems():
-				aPrx = None
-				try:
-					aPrx = global_ic.stringToProxy(v)
-				except:
-					self.workingComponents.discard(k)
-				try:
-					aPrx.ice_timeout(1)
-					aPrx.ice_ping()
-					self.workingComponents.add(k)
-				except:
-					self.workingComponents.discard(k)
-			time.sleep(0.1)
+			try:
+				self.aPrx.ice_ping()
+				self.mutex.lock()
+				self.alive = True
+				self.mutex.unlock()
+			except:
+				self.mutex.lock()
+				self.alive = False
+				self.mutex.unlock()
+			time.sleep(0.5)
 	def reset(self):
-		self.componentsToCheck = {}
-		self.workingComponents = set()
+		self.mutex.lock()
+		self.alive = False
+		self.mutex.unlock()
+	def isalive(self):
+		self.mutex.lock()
+		r = self.alive
+		self.mutex.unlock()
+		return r
 	def stop(self):
 		self.exit = True
-	def runrun(self): 
+	def runrun(self):
 		if not self.isAlive(): self.start()
 
 #
@@ -116,8 +129,8 @@ class ComponentChecker(threading.Thread):
 class TheThing(QtGui.QDialog):
 	def __init__(self):
 		# Create a component checker
-		self.componentChecker = ComponentChecker()
-		self.configFile = os.path.expanduser('~/rcmanager.xml') 
+		self.componentChecker = {}
+		self.configFile = os.path.expanduser('~/rcmanager.xml')
 		# Gui config
 		global dict
 		QtGui.QDialog.__init__(self)
@@ -127,7 +140,7 @@ class TheThing(QtGui.QDialog):
 		self.canvas = GraphView(self.ui.graphTab)
 		self.canvas.setGeometry(0, 0, 531, 581)
 		self.canvas.show()
-		self.canvasTimer = QtCore.QTimer()	
+		self.canvasTimer = QtCore.QTimer()
 		self.canvasFastTimer = QtCore.QTimer()
 		self.connect(self.canvas, QtCore.SIGNAL("nodeReleased()"), self.setFastState)
 		self.setFastState(True)
@@ -160,14 +173,11 @@ class TheThing(QtGui.QDialog):
 		self.blinkTimer = QtCore.QTimer()
 		self.doDock = False
 
-		# Make an initial check
-		self.checkAll(initial=True)
-
 		# Set the fixed timeout for component checking
 		self.timer = QtCore.QTimer()
 		self.timer.start(dict['fixed'])
 
-		#Menu bar defining.
+
 		self.menu = QtGui.QMenuBar(None)
 		self.ui.verticalLayout_3.insertWidget(0, self.menu)
 		self.menuFile = self.menu.addMenu('File')
@@ -237,7 +247,7 @@ class TheThing(QtGui.QDialog):
 
 		if len(self.configFile) > 0:
 			if self.canvas.ui != None: self.canvas.ui.close()
-			self.readConfig()	
+			self.readConfig()
 		else:
 			print 'len(cfgFile) == 0'
 
@@ -282,12 +292,12 @@ class TheThing(QtGui.QDialog):
 	def sSimulation(self):
 		global dict
 		self.doSimulation = not self.doSimulation
-		if self.doSimulation == False:##To stop simulation
+		if self.doSimulation == False:
 			self.actionSS.setText('Start')
 			if self.fastState == False:
 				self.canvasTimer.start(dict['focustime'])
 			dict['active'] = 'false'
-		else:##To run simulation
+		else:
 			self.actionSS.setText('Stop')
 			self.setFastState()
 			if self.fastState == False:
@@ -367,7 +377,8 @@ class TheThing(QtGui.QDialog):
 
 	# Retuns True if the specified component is up, otherwise returns False
 	def itsUp(self, compNumber):
-		if self.componentChecker.workingComponents.__contains__(self.compConfig[compNumber].alias): return True
+		if self.compConfig[compNumber].alias in self.componentChecker:
+			return self.componentChecker[self.compConfig[compNumber]].isalive()
 		return False
 
 	# Queues the user's request to change the state of a given component, turning it off if it's on and viceversa.
@@ -409,21 +420,19 @@ class TheThing(QtGui.QDialog):
 		for k, v in newDict.iteritems():
 			dict[k] = v
 
-		self.componentChecker.reset()
+		self.componentChecker.clear()
 		for listItem in newList:
 			item = QtGui.QListWidgetItem()
 			item.setText(listItem.alias)
 			self.ui.checkList.insertItem(0, item)
 			self.compConfig.insert(0, listItem)
-			self.componentChecker.componentsToCheck[listItem.alias] = listItem.endpoint ##Filling the list of nodes to check 
-		self.componentChecker.runrun() ##Start the checker if it is not running
+			self.componentChecker[listItem.alias] = ComponentChecker(listItem.endpoint)
+			self.componentChecker[listItem.alias].runrun()
 
 		self.log('Configuration loaded')
 
 		n = rcmanagerConfig.unconnectedGroups(newList)
-		
-
-		if n > 1: ##Used to print a warning message if there are some unconnected nodes
+		if n > 1:
 			msg = 'WARNING: ' + str(n) + ' unconnected component groups'
 			self.log(msg)
 			QtGui.QMessageBox.warning(self, 'Warning', msg)
@@ -454,39 +463,41 @@ class TheThing(QtGui.QDialog):
 		info = self.compConfig[self.ui.checkList.currentRow()]
 		self.ui.checkEdit.setText(info.endpoint)
 		self.ui.wdEdit.setText(info.workingdir)
-		self.ui.upEdit.setText(info.compup)self.runEdi
+		self.ui.upEdit.setText(info.compup)
 		self.ui.downEdit.setText(info.compdown)
 		self.ui.cfgEdit.setText(info.configFile)
 
 	def checkAll(self, initial=False):
 		allOk = True
+		workingComponents = set()
 		for numItem in range(0, len(self.compConfig)):
 			ok = True
 			itemConfig = self.compConfig[numItem]
 			item = self.ui.checkList.item(numItem)
-			if self.componentChecker.workingComponents.__contains__(itemConfig.alias):	
+			if (itemConfig.alias in self.componentChecker) and (self.componentChecker[itemConfig.alias].isalive()):
 				item.setTextColor(QtGui.QColor(0, 255, 0))
+				workingComponents.add(itemConfig.alias)
 			else:
 				item.setTextColor(QtGui.QColor(255, 0, 0))
 				allOk = False
 
-		if self.componentChecker.workingComponents != self.back_comps:
+		if workingComponents != self.back_comps:
 			if allOk == False:
 				self.blinkTimer.stop()
 				self.blinkTimer.start(dict['blink'])
 
-		for comp in self.componentChecker.workingComponents.difference(self.back_comps):
+		for comp in workingComponents.difference(self.back_comps):
 			self.log('Now \"' + comp + '\" is up.')
-		for comp in self.back_comps.difference(self.componentChecker.workingComponents):
+		for comp in self.back_comps.difference(workingComponents):
 			self.log('Now \"' + comp + '\" is down.')
 
 		if self.wantsDocking():
 			if allOk and len(self.compConfig) > 0:
 				self.systray.setIcon(self.iconFULL)
-			elif self.componentChecker.workingComponents != self.back_comps:
+			elif workingComponents != self.back_comps:
 				self.systray.setIcon(self.iconOK)
 
-		self.back_comps = self.componentChecker.workingComponents.copy()
+		self.back_comps = workingComponents.copy()
 		self.upRequests()
 
 	def upRequests(self):
@@ -495,7 +506,7 @@ class TheThing(QtGui.QDialog):
 			itsconfig = self.getConfigByAlias(alias)
 			unavailableDependences = []
 			for dep in itsconfig.dependences:
-				if not self.componentChecker.workingComponents.__contains__(dep):
+				if (not dep in self.componentChecker) or (not self.componentChecker[dep].isalive()):
 					unavailableDependences.append(dep)
 			if len(unavailableDependences) == 0:
 				print 'rcmanager:', alias, 'is now ready to run.'
@@ -562,12 +573,12 @@ class TheThing(QtGui.QDialog):
 			self.hide()
 		elif self.wantsDocking():
 			closeevent.accept()
-			self.componentChecker.stop()
+			for key, checker in self.componentChecker.iteritems():
+				checker.stop()
 #		else:
 #			closeevent.accept()
 #			self.forceExit()
 #			sys.exit(0)
-		self.componentChecker.exit = True
 
 
 	#
@@ -610,9 +621,6 @@ class TheThing(QtGui.QDialog):
 		e.accept()
 
 
-##
-#This class contains the details of the nodes which is neccessary to draw the component
-##
 class GraphNode:
 	def __init__(self):
 		self.name = ''
@@ -635,7 +643,6 @@ class GraphView(QtGui.QWidget):
 	def initialize(self):
 		global dict
 		self.compList = []
-
 
 		self.VisualNodeCogia = None
 		self.ox = 0
@@ -660,19 +667,17 @@ class GraphView(QtGui.QWidget):
 			notFound = True
 			if self.VisualNodeCogia:
 				if self.VisualNodeCogia.name == parentComp.alias:
-					if parent.componentChecker.componentsToCheck.has_key(self.VisualNodeCogia.name):
+					if self.VisualNodeCogia.name in parent.componentChecker:
 						notFound = False
-						if parent.componentChecker.workingComponents.__contains__(self.VisualNodeCogia.name): self.VisualNodeCogia.on = True
-						else: self.VisualNodeCogia.on = False
+						self.VisualNodeCogia.on = parent.componentChecker[self.VisualNodeCogia.name].isalive()
 					break
 			if notFound:
 				for myComp in self.compList:
 					if myComp.name == parentComp.alias:
 						notFound = False
-						if parent.componentChecker.workingComponents.__contains__(myComp.name): myComp.on = True
-						else: myComp.on = False
+						myComp.on = parent.componentChecker[myComp.name].isalive()
 						break
-			if notFound:##Which means that there is a component which is not selected or displayed in the graph
+			if notFound:
 				newOne = GraphNode()
 				newOne.color = parentComp.color
 				newOne.htmlcolor = parentComp.htmlcolor
@@ -684,17 +689,16 @@ class GraphView(QtGui.QWidget):
 				self.compList.append(newOne)
 				anyone = True
 		#if anyone == True: self.step(self)
-	
 	def step(self, parent):
 		#
-		# Compute velocities and change the coordinates of components
+		# Compute velocities
 		for iterr in self.compList:
 			force_x = force_y = 0.
 			for iterr2 in self.compList:
 				if iterr.name == iterr2.name: continue
 				ix = iterr.x - iterr2.x
 				iy = iterr.y - iterr2.y
-				while ix == 0 and iy == 0: ##Make sure they donot coincide 
+				while ix == 0 and iy == 0:
 					iterr.x = iterr.x + random.uniform(  -10, 10)
 					iterr2.x = iterr2.x + random.uniform(-10, 10)
 					iterr.y = iterr.y + random.uniform(  -10, 10)
@@ -703,7 +707,7 @@ class GraphView(QtGui.QWidget):
 					iy = iterr.y - iterr2.y
 
 				angle = math.atan2(iy, ix)
-				dist2 = ((abs((iy*iy) + (ix*ix))) ** 0.5) ** 2. ##?
+				dist2 = ((abs((iy*iy) + (ix*ix))) ** 0.5) ** 2.
 				if dist2 < self.spring_length: dist2 = self.spring_length
 				force = self.field_force_multiplier / dist2
 				force_x += force * math.cos(angle)
@@ -728,8 +732,7 @@ class GraphView(QtGui.QWidget):
 		for iterr in self.compList:
 			iterr.x += iterr.vel_x
 			iterr.y += iterr.vel_y
-##
-#This function will the shifts coordinates of all components equally so the average is at origin.Its use?Still working..
+
 	def center(self):
 		total = 0
 		totalx = 0.
@@ -756,7 +759,7 @@ class GraphView(QtGui.QWidget):
 			if self.VisualNodeCogia:
 				self.VisualNodeCogia.y -= meany
 
-	def paintNode(self, node): ##For drawing the node
+	def paintNode(self, node):
 		w2 = self.parent().width()/2
 		h2 = self.parent().height()/2+30
 		global dict
@@ -777,7 +780,7 @@ class GraphView(QtGui.QWidget):
 			self.painter.drawEllipse(node.x-node.r/4+w2, node.y-node.r/4+h2, node.r/2, node.r/2)
 
 
-	def paintEvent(self, event): ##Draws the component tree
+	def paintEvent(self, event):
 		w2 = self.tab.width()/2
 		h2 = self.tab.height()/2+30
 		nodosAPintar = [] + self.compList
@@ -786,7 +789,7 @@ class GraphView(QtGui.QWidget):
 		self.painter = QtGui.QPainter(self)
 		self.painter.setRenderHint(QtGui.QPainter.Antialiasing, True)
 
-		for i in nodosAPintar: ## For drawing the dependency arrows
+		for i in nodosAPintar:
 			xo = i.x
 			yo = i.y
 			for j in  nodosAPintar:
@@ -817,7 +820,7 @@ class GraphView(QtGui.QWidget):
 					self.painter.drawPie(px+w2, py+h2, 20, 20, abs((angle+180-16)*16), 32*16)
 
 		self.painter.setFont(QtGui.QFont("Arial", 13));
-		for i in self.compList:##For drawing the nodes
+		for i in self.compList:
 			self.paintNode(i)
 		if self.VisualNodeCogia:
 			self.paintNode(self.VisualNodeCogia)

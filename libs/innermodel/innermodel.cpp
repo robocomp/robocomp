@@ -478,14 +478,14 @@ void InnerModel::updateRotationValues(QString transformId, float rx, float ry, f
 
 
 
-void InnerModel::updateJointValue(QString jointId, float angle)
+void InnerModel::updateJointValue(QString jointId, float angle, bool force)
 {
 	cleanupTables();
 
 	InnerModelJoint *j = dynamic_cast<InnerModelJoint *>(hash[jointId]);
 	if (j != NULL)
 	{
-		j->setAngle(angle);
+		j->setAngle(angle, force);
 	}
 	else if (hash[jointId] == NULL)
 		qDebug() << "There is no such" << jointId << "node";
@@ -1087,6 +1087,25 @@ QVec InnerModel::project(QString reference, QVec origVec, QString cameraId)
 {
 	origVec = transform(cameraId, origVec, reference);
 
+	QVec pc;
+	InnerModelCamera *camera=NULL;
+
+	camera = dynamic_cast<InnerModelCamera *>(hash[cameraId]);
+	if (not camera)
+	{
+		QString error;
+		error.sprintf("No such %s camera", qPrintable(cameraId));
+		throw error;
+	}
+
+	pc = camera->camera.project(origVec);
+
+	return QVec::vec3(pc(0), pc(1), origVec.norm2());
+}
+
+
+QVec InnerModel::project(const QString &cameraId, const QVec &origVec)
+{
 	QVec pc;
 	InnerModelCamera *camera=NULL;
 
@@ -1798,10 +1817,10 @@ float InnerModelJoint::getAngle()
 
 
 
-float InnerModelJoint::setAngle(float angle)
+float InnerModelJoint::setAngle(float angle, bool force)
 {
 	float ret;
-	if (angle <= max and angle >= min)
+	if ((angle <= max and angle >= min) or force)
 	{
 		ret = angle;
 	}
@@ -2796,9 +2815,11 @@ bool InnerModel::collide(const QString &a, const QString &b)
 // 	qDebug()<< b;
 // 	printf("- (%f,  %f,  %f) --- (%f,  %f,  %f) [%f , %f , %f]  <<%f %d>>\n", v2[0], v2[1], v2[2], (v1-v2)[0], (v1-v2)[1], (v1-v2)[2], a2.width(), a2.height(), a2.depth(), a1.distance(a2), a1.overlap(a2));
 
-	fcl::collide(n1->collisionObject, n2->collisionObject, request, result);
-
-// 	printf("collision result %d\n", result.isCollision());
+	// NOTE: Un poco de documentacion nunca esta mal, sabeis --> http://gamma.cs.unc.edu/FCL/fcl_docs/webpage/generated/namespacefcl.html
+	// std::size_t 	collide (const CollisionObject *o1, const CollisionObject *o2, const CollisionRequest &request, CollisionResult &result)
+	fcl::collide(                  n1->collisionObject,       n2->collisionObject,                         request,                  result);
+	// return binary collision result --> http://gamma.cs.unc.edu/FCL/fcl_docs/webpage/generated/structfcl_1_1CollisionResult.html#ed599cb31600ec6d0585d9adb4cde946
+	// True if There are collisions, and false if there arent collisions.
 	return result.isCollision();
 #else
 	QString error;

@@ -96,6 +96,7 @@ struct SpecificWorker::Data
 	// Laser
 	QMap<QString, RoboCompLaser::TLaserData> laserDataArray;
 	QMap<QString, osg::Vec3Array*> laserDataCartArray;
+	QMutex *laserDataCartArray_mutex;
 
 	// RGBD
 
@@ -106,7 +107,9 @@ struct SpecificWorker::Data
 	// Refills laserData with new values
 	RoboCompLaser::TLaserData LASER_createLaserData(const IMVLaser &laser)
 	{
+		QMutexLocker vm(worker->viewerMutex);
 		QMutexLocker locker(worker->mutex);
+		QMutexLocker ldc(laserDataCartArray_mutex);
 // 		printf("osg threads running... %d\n", viewer->areThreadsRunning());
 		static RoboCompLaser::TLaserData laserData;
 		int measures = laser.laserNode->measures;
@@ -114,7 +117,6 @@ struct SpecificWorker::Data
 		float iniAngle = -laser.laserNode->angle/2;
 		float finAngle = laser.laserNode->angle/2;
 		float_t maxRange = laser.laserNode->max;
-
 		laserData.resize(measures);
 
 		double angle = finAngle;  //variable to iterate angle increments
@@ -123,13 +125,14 @@ struct SpecificWorker::Data
 		const float incAngle = (fabs(iniAngle)+fabs(finAngle)) / (float)measures;
 		osg::Vec3 Q,R;
 
-		QMutexLocker vm(worker->viewerMutex);
 
 		for (int i=0 ; i<measures; i++)
 		{
 			laserData[i].angle = angle;
 			laserData[i].dist = maxRange;
-			laserDataCartArray[id]->operator[](i) = QVecToOSGVec(innerModel->laserTo(id, id, angle, maxRange));
+
+	
+			laserDataCartArray[id]->operator[](i) = QVecToOSGVec(QVec::vec3(maxRange*sin(angle), 0, maxRange*cos(angle)));
 
 			//Calculamos el punto destino
 			Q = QVecToOSGVec(innerModel->laserTo("root", id, maxRange, angle));
@@ -163,7 +166,7 @@ struct SpecificWorker::Data
 			angle -= incAngle;
 		}
 		// the point of the laser robot
-		laserDataCartArray[id]->operator[](measures) = QVecToOSGVec(innerModel->laserTo(id, id, 0.0001, 0.001));
+// 		laserDataCartArray[id]->operator[](measures) = QVecToOSGVec(innerModel->laserTo(id, id, 0.0001, 0.001));
 // 		viewer->startThreading();
 		return laserData;
 	}
@@ -706,6 +709,7 @@ SpecificWorker::SpecificWorker(MapPrx& _mprx, Ice::CommunicatorPtr _communicator
 	d->worker = this;
 	d->communicator = _communicator;
 
+	d->laserDataCartArray_mutex = new QMutex(QMutex::Recursive);
 	d->laserDataCartArray.clear();
 
 	// Initialize Inner model
@@ -845,15 +849,15 @@ void SpecificWorker::compute()
 	QMutexLocker locker(mutex);
 
 
-	// Remove previous laser shapes
-	for (QHash<QString, IMVLaser>::iterator laser = d->imv->lasers.begin(); laser != d->imv->lasers.end(); laser++)
-	{
-		QMutexLocker locker(viewerMutex);
-		if (laser->osgNode->getNumChildren() > 0)
-		{
-			laser->osgNode->removeChild(0, laser->osgNode->getNumChildren());
-		}
-	}
+// 	// Remove previous laser shapes
+// 	for (QHash<QString, IMVLaser>::iterator laser = d->imv->lasers.begin(); laser != d->imv->lasers.end(); laser++)
+// 	{
+// 		QMutexLocker locker(viewerMutex);
+// 		if (laser->osgNode->getNumChildren() > 0)
+// 		{
+// 			laser->osgNode->removeChild(0, laser->osgNode->getNumChildren());
+// 		}
+// 	}
 
 	// Camera render
 	QHash<QString, IMVCamera>::const_iterator i = d->imv->cameras.constBegin();
@@ -876,11 +880,12 @@ void SpecificWorker::compute()
 	// Laser
 	{
 		QMutexLocker vm(viewerMutex);
+		QMutexLocker lcds(d->laserDataCartArray_mutex);
 		for (QHash<QString, IMVLaser>::iterator laser = d->imv->lasers.begin(); laser != d->imv->lasers.end(); laser++)
 		{
 			QString id=laser->laserNode->id;
 
-			if (d->laserDataCartArray.contains(id) ==false)
+			if (d->laserDataCartArray.contains(id) == false)
 			{
 				//laserDataCartArray.insert(id);
 				osg::Vec3Array *v= new osg::Vec3Array();
@@ -893,19 +898,19 @@ void SpecificWorker::compute()
 			d->laserDataArray.insert(laser->laserNode->id, d->LASER_createLaserData(laser.value()));
 
 			// create and insert laser shape
-			osg::ref_ptr<osg::Node> p=NULL;
-			if (id=="laserSecurity")
-			{
-				p = d->viewer->addPolygon(*(d->laserDataCartArray[id]), osg::Vec4(0.,0.,1.,0.4));
-			}
-			else
-			{
-				p = d->viewer->addPolygon(*(d->laserDataCartArray[id]));
-			}
-			if (p!=NULL)
-			{
-				laser->osgNode->addChild(p);
-			}
+// 			osg::ref_ptr<osg::Node> p=NULL;
+// 			if (id=="laserSecurity")
+// 			{
+// 				p = d->viewer->addPolygon(*(d->laserDataCartArray[id]), osg::Vec4(0.,0.,1.,0.4));
+// 			}
+// 			else
+// 			{
+// 				p = d->viewer->addPolygon(*(d->laserDataCartArray[id]));
+// 			}
+// 			if (p!=NULL)
+// 			{
+// 				laser->osgNode->addChild(p);
+// 			}
 // 			printf("%d (%d)\n", i, __LINE__);
 
 		}
