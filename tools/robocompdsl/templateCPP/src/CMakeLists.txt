@@ -57,8 +57,12 @@ SET ( SOURCES
   genericworker.cpp
   specificworker.cpp
 [[[cog
-for implement in component['implements']:
-	cog.outl('<S2>' + implement.lower() + 'I.cpp')
+for ima in component['implements']:
+	if type(ima) == str:
+		im = ima
+	else:
+		im = ima[0]
+	cog.outl('<S2>' + im.lower() + 'I.cpp')
 
 for subscribe in component['subscribesTo']:
 	subs = subscribe
@@ -69,47 +73,23 @@ for subscribe in component['subscribesTo']:
 	else:
 		cog.outl('<S2>ROS' + subs.lower() + 'I.cpp')
 		
-try:
-	if 'agmagent' in [ x.lower() for x in component['options'] ]:
-		cog.outl("  $ENV{ROBOCOMP}/classes/agmInner/agmInner.cpp")
-except:
-	pass
 
 ]]]
 [[[end]]]
 )
 
-# Headers set
-SET ( HEADERS
-  ${HEADERS}
-  genericmonitor.h
-  specificmonitor.h
-  commonbehaviorI.h
-  genericworker.h
-  specificworker.h
 [[[cog
 
 usingROS=False
-
-for implement in component['implements']:
-	cog.outl('<S2>'+implement.lower() + 'I.h')
 
 for subscribe in component['subscribesTo']:
 	subs = subscribe
 	while type(subs) != type(''):
 		subs = subs[0]
 	if communicationIsIce(subscribe):
-		cog.outl('<S2>'+subs.lower() + 'I.h')
+		pass
 	else:
-		cog.outl('<S2>ROS'+subs.lower() + 'I.h')
 		usingROS = True
-
-try:
-	if 'agmagent' in [ x.lower() for x in component['options'] ]:
-		cog.outl("  $ENV{ROBOCOMP}/classes/agmInner/agmInner.h")
-except:
-	pass
-cog.outl(')\n')
 
 if usingROS:
 	cog.outl('find_package(catkin REQUIRED)')

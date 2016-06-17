@@ -146,10 +146,10 @@ class CDSLParsing:
 		idslImport  = Suppress(CaselessLiteral("import")) + quote +  CharsNotIn("\";").setResultsName('path') + quote + semicolon
 		idslImports = ZeroOrMore(idslImport)
 		# Communications
-		implementsList = Group(CaselessLiteral('implements')    + identifier + ZeroOrMore(Suppress(Word(',')) + identifier) + semicolon)
-		requiresList   = Group(CaselessLiteral('requires')      + identifier + ZeroOrMore(Suppress(Word(',')) + identifier) + semicolon)
+		implementsList = Group(CaselessLiteral('implements')    + commIdentifier + ZeroOrMore(Suppress(Word(',')) + commIdentifier) + semicolon)
+		requiresList   = Group(CaselessLiteral('requires')      + commIdentifier + ZeroOrMore(Suppress(Word(',')) + commIdentifier) + semicolon)
 		subscribesList = Group(CaselessLiteral('subscribesTo')  + commIdentifier + ZeroOrMore(Suppress(Word(',')) + commIdentifier) + semicolon)
-		publishesList  = Group(CaselessLiteral('publishes')     + identifier + ZeroOrMore(Suppress(Word(',')) + identifier) + semicolon)
+		publishesList  = Group(CaselessLiteral('publishes')     + commIdentifier + ZeroOrMore(Suppress(Word(',')) + commIdentifier) + semicolon)
 		communicationList = implementsList | requiresList | subscribesList | publishesList
 		communications = Group( Suppress(CaselessLiteral("communications")) + op + ZeroOrMore(communicationList) + cl + semicolon)
 		
@@ -211,10 +211,11 @@ class CDSLParsing:
 		except:
 			imprts = []
 		if 'agmagent' in component['options']:
-			imprts = ['/robocomp/interfaces/IDSLs/AGMAgent.idsl', '/robocomp/interfaces/IDSLs/AGMExecutive.idsl', '/robocomp/interfaces/IDSLs/AGMCommonBehavior.idsl', '/robocomp/interfaces/IDSLs/AGMWorldModel.idsl']
+			imprts = ['/robocomp/interfaces/IDSLs/AGMExecutive.idsl', '/robocomp/interfaces/IDSLs/AGMCommonBehavior.idsl', '/robocomp/interfaces/IDSLs/AGMWorldModel.idsl']
 			for i in tree['imports']:
 				if not i in imprts:
 					imprts.append(i)
+
 		for imp in imprts:
 			component['imports'].append(imp)
 			
@@ -268,8 +269,8 @@ class CDSLParsing:
 		if 'agmagent' in component['options']:
 			if not 'AGMCommonBehavior' in component['implements']:
 				component['implements'] =   ['AGMCommonBehavior'] + component['implements']
-			if not 'AGMAgentTopic' in component['publishes']:
-				component['publishes'] =    ['AGMAgentTopic']     + component['publishes']
+			if not 'AGMExecutive' in component['requires']:
+				component['requires'] =   ['AGMExecutive'] + component['requires']
 			if not 'AGMExecutiveTopic' in component['subscribesTo']:
 				component['subscribesTo'] = ['AGMExecutiveTopic'] + component['subscribesTo']
 
@@ -289,15 +290,15 @@ def communicationIsIce(sb):
 def bodyCodeFromName(name):
 	bodyCode=""
 	###################################### 
-	#code for subscribesTo AGMExecutiveTopic
+	# code to implement subscription to AGMExecutiveTopic
 	###################################### 
 	if name == 'structuralChange':
-		bodyCode = "<TABHERE>mutex->lock();\n <TABHERE>AGMModelConverter::fromIceToInternal(modification.newModel, worldModel);\n \n<TABHERE>delete innerModel;\n<TABHERE>innerModel = agmInner.extractInnerModel(worldModel);\n<TABHERE>mutex->unlock();"
-	if name == 'symbolUpdated' or name == 'edgeUpdated':
-		bodyCode = "<TABHERE>mutex->lock();\n <TABHERE>AGMModelConverter::includeIceModificationInInternalModel(modification, worldModel);\n \n<TABHERE>delete innerModel;\n<TABHERE>innerModel = agmInner.extractInnerModel(worldModel);\n<TABHERE>mutex->unlock();"
+		bodyCode = "<TABHERE>mutex->lock();\n <TABHERE>AGMModelConverter::fromIceToInternal(w, worldModel);\n \n<TABHERE>delete innerModel;\n<TABHERE>innerModel = AGMInner::extractInnerModel(worldModel);\n<TABHERE>mutex->unlock();"
+	if name == 'symbolUpdated' or name == 'edgeUpdated' or name == 'symbolsUpdated' or name == 'edgesUpdated':
+		bodyCode = "<TABHERE>QMutexLocker locker(mutex);\n<TABHERE>AGMModelConverter::includeIceModificationInInternalModel(modification, worldModel);\n \n<TABHERE>delete innerModel;\n<TABHERE>innerModel = AGMInner::extractInnerModel(worldModel);"
 		
 	###################################### 
-	#code for implements AGMCommonBehavior.
+	# code to implement AGMCommonBehavior.
 	###################################### 
 	if name == 'activateAgent':
 		bodyCode = "<TABHERE>bool activated = false;\n<TABHERE>if (setParametersAndPossibleActivation(prs, activated))\n<TABHERE>{\n<TABHERE><TABHERE>if (not activated)\n<TABHERE><TABHERE>{\n<TABHERE><TABHERE><TABHERE>return activate(p);\n<TABHERE><TABHERE>}\n<TABHERE>}\n<TABHERE>else\n<TABHERE>{\n<TABHERE><TABHERE>return false;\n<TABHERE>}\n<TABHERE>return true;"

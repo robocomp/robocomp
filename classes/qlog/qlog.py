@@ -30,7 +30,7 @@ if len(ROBOCOMP)<1:
 	print 'ROBOCOMP environment variable not set! Exiting.'
 	sys.exit()
 
-Ice.loadSlice(ROBOCOMP+"/Interfaces/Logger.ice")
+Ice.loadSlice(ROBOCOMP+"/interfaces/Logger.ice")
 import RoboCompLogger
 
 
@@ -55,7 +55,7 @@ class qlog ():
 		i = 0
 		while (sender[i]!="robocomp"):
 			i += 1
-		if(sender[i+1]=="Classes"):
+		if(sender[i+1]=="classes"):
 			sender=sender[i+2]
 		else:
 			if(sender[i+2]=="HAL"):

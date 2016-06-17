@@ -77,7 +77,6 @@ for m in pool.modulePool:
 try:
 	if 'agmagent' in [ x.lower() for x in component['options'] ]:
 		cog.outl("#include <agm.h>")
-		cog.outl("#include <agmInner/agmInner.h>")
 
 
 except:
@@ -150,7 +149,6 @@ try:
 		cog.outl("<TABHERE>bool activate(const BehaviorParameters& parameters);")
 		cog.outl("<TABHERE>bool deactivate();")
 		cog.outl("<TABHERE>bool isActive() { return active; }")
-		cog.outl("<TABHERE>RoboCompAGMWorldModel::BehaviorResultType status();")
 except:
 	pass
 
@@ -159,14 +157,22 @@ except:
 	
 
 [[[cog
-for name, num in getNameNumber(component['requires']+component['publishes']):
+for namea, num in getNameNumber(component['requires']+component['publishes']):
+	if type(namea) == str:
+		name = namea
+	else:
+		name = namea[0]
 	cog.outl('<TABHERE>'+name+'Prx '+name.lower()+num +'_proxy;')
 ]]]
 [[[end]]]
 
 [[[cog
 if 'implements' in component:
-	for imp in component['implements']:
+	for impa in component['implements']:
+		if type(impa) == str:
+			imp = impa
+		else:
+			imp = impa[0]
 		module = pool.moduleProviding(imp)
 		for interface in module['interfaces']:
 			if interface['name'] == imp:
@@ -192,10 +198,13 @@ if 'implements' in component:
 if 'subscribesTo' in component:
 	for imp in component['subscribesTo']:
 		nname = imp
-		while type(nname) != type(''):			
+		while type(nname) != type(''):
 			nname = nname[0]
+		module = pool.moduleProviding(nname)
+		if module == None:
+			print ('\nCan\'t find module providing', nname, '\n')
+			sys.exit(-1)
 		if communicationIsIce(nname):
-			module = pool.moduleProviding(nname)
 			for interface in module['interfaces']:
 				if interface['name'] == nname:
 					for mname in interface['methods']:
@@ -215,7 +224,7 @@ if 'subscribesTo' in component:
 									ampersand = ''
 							# STR
 							paramStrA += delim + const + p['type'] + ' ' + ampersand + p['name']
-							cog.outl("<TABHERE>virtual " + method['return'] + ' ' + method['name'] + '(' + paramStrA + ") = 0;")
+						cog.outl("<TABHERE>virtual " + method['return'] + ' ' + method['name'] + '(' + paramStrA + ") = 0;")
 		else:
 			cog.outl("<TABHERE>virtual ROS" + method['return'] + ' ' + method['name'] + "() = 0;")
 	
@@ -235,7 +244,6 @@ try:
 		cog.outl("<TABHERE>AGMModel::SPtr worldModel;")
 		cog.outl("<TABHERE>BehaviorParameters p;")
 		cog.outl("<TABHERE>ParameterMap params;")
-		cog.outl("<TABHERE>AgmInner agmInner;")
 		cog.outl("<TABHERE>int iter;")
 		cog.outl("<TABHERE>bool setParametersAndPossibleActivation(const ParameterMap &prs, bool &reactivated);")
 		cog.outl("<TABHERE>RoboCompPlanning::Action createAction(std::string s);")

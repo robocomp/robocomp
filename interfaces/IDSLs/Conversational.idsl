@@ -1,7 +1,0 @@
-module RoboCompConversational{
-	interface Conversational{
-		void start();
-		void stop();
-		void sayHello();     
-	};
-};

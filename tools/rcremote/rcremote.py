@@ -22,10 +22,16 @@
 
 import sys, traceback, Ice, os, copy
 
-import signal
+import signal, hashlib
 signal.signal(signal.SIGINT, signal.SIG_DFL) # Ctrl+c handling
 
 from PySide import *
+
+import string
+import random
+def random_stuff_generator(size=16, chars=string.ascii_uppercase + string.digits):
+	return ''.join(random.choice(chars) for _ in range(size))
+
 
 ROBOCOMP = ''
 try:
@@ -94,7 +100,10 @@ if __name__ == '__main__':
 		print 'path', path
 		print 'binary', binary
 		print 'arguments', arguments
-		if rcremote_proxy.run(getPassFor(host), path, binary, arguments, yakuakeTabName):
+		randomStuff = random_stuff_generator()
+		password = getPassFor(host)
+		hashedPassword = hashlib.sha224(randomStuff+password).hexdigest()
+		if rcremote_proxy.run(randomStuff, hashedPassword, path, binary, arguments, yakuakeTabName):
 			print 'ok'
 			sys.exit(0)
 		else:

@@ -68,13 +68,21 @@ else:
 [[[end]]]
 {
 [[[cog
-for name, num in getNameNumber(component['requires']):
+for namea, num in getNameNumber(component['requires']):
+	if type(namea) == str:
+		name = namea
+	else:
+		name = namea[0]
 	cog.outl("<TABHERE>"+name.lower()+num+"_proxy = (*("+name+"Prx*)mprx[\""+name+"Proxy"+num+"\"]);")	
 ]]]
 [[[end]]]
 
 [[[cog
-for name, num in getNameNumber(component['publishes']):
+for namea, num in getNameNumber(component['publishes']):
+	if type(namea) == str:
+		name = namea
+	else:
+		name = namea[0]
 	cog.outl("<TABHERE>"+name.lower()+num+"_proxy = (*("+name+"Prx*)mprx[\""+name+"Pub"+num+"\"]);")
 ]]]
 [[[end]]]
@@ -120,112 +128,106 @@ void GenericWorker::setPeriod(int p)
 [[[cog
 try:
 	if 'agmagent' in [ x.lower() for x in component['options'] ]:
-		cog.outl("""RoboCompPlanning::Action GenericWorker::createAction(std::string s)  // ESTO PODRIA ESTAR AUTOGENERADO
+		cog.outl("""RoboCompPlanning::Action GenericWorker::createAction(std::string s)
+{
+	// Remove useless characters
+	char chars[]="()";
+		for (unsigned int i=0; i<strlen(chars); ++i)
 	{
-		// Remove useless characters
-		char chars[]="()";
-	    for (unsigned int i=0; i<strlen(chars); ++i)
-		{
-			s.erase(std::remove(s.begin(), s.end(), chars[i]), s.end());
-		}
-	
-	    // Initialize string parsing
-		RoboCompPlanning::Action ret;
-		istringstream iss(s);
-	
-		// Get action (first segment)
-		if (not iss)
-		{
-			printf("agent %s: received invalid action (%s) -> (%d)\\n", PROGRAM_NAME, __FILE__, __LINE__);
-			exit(-1);
-		}
-		else
-		{
-			iss >> ret.name;
-		}
-	
-		do
-		{
-			std::string ss;
-			iss >> ss;
-			ret.symbols.push_back(ss);
-		} while (iss);
-	
-		return ret;
-	}	
-	
-	RoboCompAGMWorldModel::BehaviorResultType GenericWorker::status()
-	{
-		if (active)
-			return RoboCompAGMWorldModel::StatusActive;
-		return RoboCompAGMWorldModel::StatusIdle;
+		s.erase(std::remove(s.begin(), s.end(), chars[i]), s.end());
 	}
-	
-	bool GenericWorker::activate(const BehaviorParameters &prs)
+
+		// Initialize string parsing
+	RoboCompPlanning::Action ret;
+	istringstream iss(s);
+
+	// Get action (first segment)
+	if (not iss)
 	{
-		printf("Worker::activate\\n");
-		mutex->lock();
-		p = prs;
-		active = true;
-		iter = 0;
-		mutex->unlock();
-		return active;
+		printf("agent %s: received invalid action (%s) -> (%d)\\n", PROGRAM_NAME, __FILE__, __LINE__);
+		exit(-1);
 	}
-	
-	bool GenericWorker::deactivate() 
+	else
 	{
-		printf("Worker::deactivate\\n");
-		mutex->lock();
-		active = false;
-		iter = 0;
-		mutex->unlock();
-		return active;
+		iss >> ret.name;
 	}
-	
-	bool GenericWorker::setParametersAndPossibleActivation(const ParameterMap &prs, bool &reactivated)
+
+	do
 	{
-		// We didn't reactivate the component
-		reactivated = false;
-	
-		// Update parameters
-		for (ParameterMap::const_iterator it=prs.begin(); it!=prs.end(); it++)
+		std::string ss;
+		iss >> ss;
+		ret.symbols.push_back(ss);
+	} while (iss);
+
+	return ret;
+}	
+
+
+bool GenericWorker::activate(const BehaviorParameters &prs)
+{
+	printf("Worker::activate\\n");
+	mutex->lock();
+	p = prs;
+	active = true;
+	iter = 0;
+	mutex->unlock();
+	return active;
+}
+
+bool GenericWorker::deactivate() 
+{
+	printf("Worker::deactivate\\n");
+	mutex->lock();
+	active = false;
+	iter = 0;
+	mutex->unlock();
+	return active;
+}
+
+bool GenericWorker::setParametersAndPossibleActivation(const ParameterMap &prs, bool &reactivated)
+{
+	// We didn't reactivate the component
+	reactivated = false;
+
+	// Update parameters
+	for (ParameterMap::const_iterator it=prs.begin(); it!=prs.end(); it++)
+	{
+		params[it->first] = it->second;
+	}
+
+	try
+	{
+		// Action
+		p.action = createAction(params["action"].value);
+
+		// Fill received plan
+		p.plan.clear();
+		QStringList actionList = QString::fromStdString(params["plan"].value).split(QRegExp("[()]+"), QString::SkipEmptyParts);
+		for (int32_t actionString=0; actionString<actionList.size(); actionString++)
 		{
-			params[it->first] = it->second;
-		}
-	
-		try
-		{
-			// Action
-			p.action = createAction(params["action"].value);
-	
-			// Fill received plan
-			p.plan.clear();
-			QStringList actionList = QString::fromStdString(params["plan"].value).split(QRegExp("[()]+"), QString::SkipEmptyParts);
-			for (int32_t actionString=0; actionString<actionList.size(); actionString++)
+			std::vector<string> elementsVec;
+			QStringList elements = actionList[actionString].remove(QChar('\\n')).split(QRegExp("\\\\s+"), QString::SkipEmptyParts);
+			for (int32_t elem=0; elem<elements.size(); elem++)
 			{
-				std::vector<string> elementsVec;
-				QStringList elements = actionList[actionString].remove(QChar('\\n')).split(QRegExp("\\\\s+"), QString::SkipEmptyParts);
-				for (int32_t elem=0; elem<elements.size(); elem++)
-				{
-					elementsVec.push_back(elements[elem].toStdString());
-				}
-				p.plan.push_back(elementsVec);
+				elementsVec.push_back(elements[elem].toStdString());
 			}
+			p.plan.push_back(elementsVec);
 		}
-		catch (...)
-		{
-			return false;
-		}
-	
-		// Check if we should reactivate the component
-		if (isActive())
-		{
-			activate(p);
-			reactivated = true;
-		}
-	
-		return true;
-	}""")
+	}
+	catch (...)
+	{
+		return false;
+	}
+
+	// Check if we should reactivate the component
+	if (isActive())
+	{
+		activate(p);
+		reactivated = true;
+	}
+
+	return true;
+}""")
 except:
 	pass
 
