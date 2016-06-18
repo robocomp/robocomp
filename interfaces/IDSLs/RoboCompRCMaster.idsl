@@ -28,10 +28,13 @@ module RoboCompRCMaster
 	interface rcmaster
 	{
 
-		// register a component (and assaign port) , and monitor (restart if fail?)
-		int registerComp(compData compInfo, bool monitor );
+		// register a component (and assaign ports) , and monitor (restart if fail?)
+		interfaceData registerComp(compData compInfo, bool monitor );
 		
-		//get all comps which pass the filter
+		//just update the database, dont assign ports
+		updateDb(compDB components);
+
+		//get all comps which pass the filter 
 		compDB getComps(compData filter);
 
 		//an simple funcion to find components with single interface
