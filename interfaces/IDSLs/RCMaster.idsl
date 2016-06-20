@@ -5,7 +5,7 @@ module RoboCompRCMaster
 	*/
 
 	
-	//informatin about the host
+	//information about the host
 	struct hostInfo {
 		string publicIP;
 		string privateIP;
@@ -29,25 +29,25 @@ module RoboCompRCMaster
 	{
 
 		// register a component (and assaign ports) , and monitor (restart if fail?)
-		interfaceData registerComp(compData compInfo, bool monitor );
+		void registerComp(compData compInfo, bool monitor , out interfaceData idata);
 		
 		//just update the database, dont assign ports
-		updateDb(compDB components);
+		void updateDb(compDB components);
 
 		//get all comps which pass the filter 
-		compDB getComps(compData filter);
+		void getComps(compData filter, out compDB comps);
 
-		//an simple funcion to find components with single interface
-		getComPort(string compName, string hostName);
+		//an simple funcion to find port of components with single interface
+		int getComPort(string compName, string hostName);
 
 		//flush the current db
 		flush();
 
 		// sync request from another master
-		compDB sync(hostInfo sourceHost);
+		sync(hostInfo sourceHost, out compDB db);
 
 		//initiate sync with anoter host
-		syncwithhost(hostInfo remoteHost);
+		void syncwithhost(hostInfo remoteHost);
 
 	};
 };
