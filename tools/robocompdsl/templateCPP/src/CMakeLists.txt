@@ -77,7 +77,7 @@ for subscribe in component['subscribesTo']:
 )
 
 [[[cog
-if component['usingROS']:
+if component['usingROS'] == True:
 	cog.outl('#ROS')
 	cog.outl('find_package(catkin REQUIRED)')
 	cog.outl('include_directories(  ${catkin_INCLUDE_DIRS} )')

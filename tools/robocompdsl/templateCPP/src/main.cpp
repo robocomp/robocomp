@@ -225,7 +225,6 @@ for ima in component['implements']:
 	if communicationIsIce(ima):
 		cog.outl('#include <'+im.lower()+'I.h>')
 
-usingROS = False
 for subscribe in component['subscribesTo']:
 	subs = subscribe
 	while type(subs) != type(''):
@@ -234,6 +233,10 @@ for subscribe in component['subscribesTo']:
 		cog.outl('#include <'+subs.lower()+'I.h>')
 
 cog.outl('')
+
+for imp in component['recursiveImports']:
+	incl = imp.split('/')[-1].split('.')[0]
+	cog.outl('#include <'+incl+'.h>')
 
 ]]]
 [[[end]]]
@@ -246,10 +249,9 @@ using namespace std;
 using namespace RoboCompCommonBehavior;
 
 [[[cog
-for imp in component['imports']:
-	if imp in component['recursiveImports']:
-		incl = imp.split('/')[-1].split('.')[0]
-		cog.outl('using namespace RoboComp'+incl+';')
+for imp in component['recursiveImports']:
+	incl = imp.split('/')[-1].split('.')[0]
+	cog.outl('using namespace RoboComp'+incl+';')
 
 ]]]
 [[[end]]]
@@ -360,7 +362,7 @@ for pba in component['publishes']:
 		cog.outl(w)
 
 
-if component['usingROS']:
+if component['usingROS'] == True:
 	cog.outl("<TABHERE>ros::init(argc, argv, \""+component['name']+"\");")
 
 

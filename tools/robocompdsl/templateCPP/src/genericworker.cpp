@@ -89,7 +89,7 @@ for namea, num in getNameNumber(component['publishes']):
 	mutex = new QMutex(QMutex::Recursive);
 
 [[[cog
-if component['usingROS']:
+if component['usingROS'] == True:
 	#INICIALIZANDO SUBSCRIBERS
 	for imp in component['subscribesTo']:
 		nname = imp

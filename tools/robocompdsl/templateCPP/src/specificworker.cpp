@@ -175,7 +175,7 @@ void SpecificWorker::compute()
 // 		std::cout << "Error reading from Camera" << e << std::endl;
 // 	}
 [[[cog
-if component['usingROS']:
+if component['usingROS'] == True:
 	cog.outl("<TABHERE>ros::spinOnce();")
 if component['useViewer'] == "true":
 	cog.outl("#ifdef USE_QTGUI")

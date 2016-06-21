@@ -67,7 +67,10 @@ if component['gui'] != 'none':
 #include <CommonBehavior.h>
 
 [[[cog
-if component['usingROS']:
+for imp in component['recursiveImports']:
+	incl = imp.split('/')[-1].split('.')[0]
+	cog.outl('#include <'+incl+'.h>')
+if component['usingROS'] == True:
 	cog.outl('#include <ros/ros.h>')
 	for include in includeList:
 		cog.outl('#include <'+include+'.h>')
@@ -140,7 +143,7 @@ except:
 [[[end]]]
 
 [[[cog
-if component['usingROS']:
+if component['usingROS'] == True:
 	#CREANDO CLASES PARA LOS PUBLISHERS
 	for imp in component['publishes']:
 		nname = imp
@@ -421,7 +424,7 @@ protected:
 	QTimer timer;
 	int Period;
 [[[cog
-if component['usingROS']:
+if component['usingROS'] == True:
 	cog.outl("<TABHERE>ros::NodeHandle node;")
 for imp in component['subscribesTo']:
 	nname = imp
