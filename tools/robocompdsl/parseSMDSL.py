@@ -137,11 +137,6 @@ class SMDSLparsing:
                         print"Error substate " + a['parent'] + " can't have initial state"
                     except:
                         a['contents']['initialstate'] = "none"
-                    try:
-                        a['contents']['transition'] = sub['contents']['transition']
-                        print"Error substate " + a['parent'] + " can't have transitions"
-                    except:
-                        a['contents']['transition'] = "none"
                 else:
                     try:
                         a['contents']['states'] = sub['contents']['states']
@@ -163,10 +158,10 @@ class SMDSLparsing:
                             print"Error: " + a['parent'] + " initial state is equal final state"
                     except:
                         print"Error substate " + a['parent'] + " needs initial state"
-                    try:
-                        a['contents']['transition'] = sub['contents']['transition']
-                    except:
-                        a['contents']['transition'] = "none"
+                try:
+                    a['contents']['transition'] = sub['contents']['transition']
+                except:
+                    a['contents']['transition'] = "none"
                 component['substates'].append(a)
 
         return component
