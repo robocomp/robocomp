@@ -7,7 +7,7 @@ module RoboCompRemote
 
 	interface RCRemote
 	{
-		bool run(string password, string path, string binary, stringList arguments, string yakuakeTabName);
+		bool run(string randomstuff, string stuffPasswordHashed, string path, string binary, stringList arguments, string yakuakeTabName);
 	};
 };
 

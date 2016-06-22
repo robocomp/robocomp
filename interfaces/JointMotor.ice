@@ -79,6 +79,14 @@ module RoboCompJointMotor{
 		MotorParamsList getAllMotorParams();
 		BusParams getBusParams();
 	};
+
+	interface JointMotorPublish
+	{
+		void motorStates(MotorStateMap mstateMap);
+	};
+
 };
 
 #endif
+
+

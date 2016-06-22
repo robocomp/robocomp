@@ -170,7 +170,9 @@ def writeConfigToFile(dict, components, path):
 
 	writeToFile(file, '</rcmanager>')
 
-
+##
+#This contain the class which contain general information.Data is written into xml file under the element name generalinformation
+##
 def getDefaultValues():
 	dict = {}
 	dict['path'] =                   'kedit'
@@ -220,7 +222,7 @@ def getConfigFromFile(path):
 
 	return components, dict
 
-def parsercmanager(node):
+def parsercmanager(node): ##Its not the same node in graph tree.This node indicate a class containing all types and attributes from the .xml file.
 	components = []
 	dict = {}
 
@@ -238,7 +240,7 @@ def parsercmanager(node):
 
 	return components, dict
 
-def parseGeneralInformation(node, dict):
+def parseGeneralInformation(node, dict): ##This node indicates class containing the element tree of the container class with node name generalInformation
 	if node.type == "element" and node.name == "generalInformation":
 		child = node.children
 		while child is not None:
@@ -323,6 +325,8 @@ def parseNode(node, components):
 	else:
 		print "error: "+str(node.name)
 
+##
+#For checking whether the read line is a comment or null line or some syntax error in html
 
 def stringIsUseful(string):
 	if len(string) == 0: return False
@@ -385,7 +389,7 @@ def parseSimulation(node, dict):
 
 
 #
-# Node subfunctions
+# Node subfunctions.Check for the attribute value of the node element with attribute name 'arg' 
 #
 def parseSingleValue(node, arg, doCheck=True, optional=False):
 	if node.children != None and doCheck == True: print 'WARNING: No children expected'

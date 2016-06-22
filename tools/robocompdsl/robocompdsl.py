@@ -160,7 +160,11 @@ if component['language'].lower() == 'cpp':
 	#
 	# Generate interface-dependent files
 	#
-	for im in component['implements']:
+	for ima in component['implements']:
+		if type(ima) == str:
+			im = ima
+		else:
+			im = ima[0]
 		if type(im) == type([]):
 			im = im[0]
 		for f in [ "SERVANT.H", "SERVANT.CPP"]:
@@ -232,8 +236,13 @@ elif component['language'].lower() == 'python':
 	#
 	# Generate interface-dependent files
 	#
-	for im in component['implements']+component['subscribesTo']:
+	for ima in component['implements']+component['subscribesTo']:
+		if type(ima) == type(''):
+			im = ima
+		else:
+			im = ima[0]
 		for f in [ "SERVANT.PY"]:
+			#print (outputPath, im, f)
 			ofile = outputPath + '/src/' + im.lower() + 'I.' + f.split('.')[-1].lower()
 			print 'Generating', ofile, ' (servant for', im + ')'
 			# Call cog

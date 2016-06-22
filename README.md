@@ -130,7 +130,6 @@ and check where the joystick device file has been created (e.g., `/dev/input/js0
 
 If you don't have a JoyStick install this componentent,
 
-##Added missing'/' and corrected the name.
     cd ~robocomp/components/robocomp-robolab/components/keyboardrobotcontroller
     cmake .
     make

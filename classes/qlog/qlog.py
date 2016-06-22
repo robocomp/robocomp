@@ -30,17 +30,16 @@ if len(ROBOCOMP)<1:
 	print 'ROBOCOMP environment variable not set! Exiting.'
 	sys.exit()
 
-Ice.loadSlice(ROBOCOMP+"/Interfaces/Logger.ice")
+Ice.loadSlice(ROBOCOMP+"/interfaces/Logger.ice")
 import RoboCompLogger
 
 
 
-class qlog ():
-	def __init__(self,_loggerPrx,_logger):
-		self.logger = _logger
-		if( _logger == "both" or _logger == "logger"):
-		    self.loggerPrx = _loggerPrx
-	def message(self,msg,_type):
+class qlog():
+	def __init__(self, _loggerPrx, logger_mode):
+		self.logger_mode = logger_mode
+		self.loggerPrx = _loggerPrx
+	def message(self, msg, _type):
 		m = RoboCompLogger.LogMessage()
 		m.message = msg
 		m.file = str(inspect.stack()[2][0].f_code.co_filename).split('/')[-1]
@@ -55,13 +54,13 @@ class qlog ():
 		i = 0
 		while (sender[i]!="robocomp"):
 			i += 1
-		if(sender[i+1]=="Classes"):
+		if(sender[i+1]=="classes"):
 			sender=sender[i+2]
 		else:
 			if(sender[i+2]=="HAL"):
 				sender = sender[i+3]
 			else:
-				sender=sender[i+4]
+				sender = sender[i+4]
 		m.sender = sender
 		self.Log = m
 
@@ -71,8 +70,8 @@ class qlog ():
 		self.loggerPrx.sendMessage(self.Log)
 	def send(self,m,_type):
 		self.message(m,_type)
-		if(self.logger=="local" or self.logger=="both"):
+		if(self.logger_mode=="local" or self.logger_mode=="both"):
 			self.messageToconsole();
-		if(self.logger=="logger" or self.logger=="both"):
+		if(self.logger_mode=="logger" or self.logger_mode=="both"):
 			self.messageTologger();
 		    

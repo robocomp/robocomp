@@ -197,6 +197,8 @@ Z()
  * ...
  *
  */
+#include <signal.h>
+
 // QT includes
 #include <QtCore>
 #include <QtGui>
@@ -217,8 +219,12 @@ Z()
 #include "commonbehaviorI.h"
 
 [[[cog
-for implement in component['implements']:
-	cog.outl('#include <'+implement.lower()+'I.h>')
+for ima in component['implements']:
+	if type(ima) == str:
+		im = ima
+	else:
+		im = ima[0]
+	cog.outl('#include <'+im.lower()+'I.h>')
 
 usingROS = False
 for subscribe in component['subscribesTo']:
@@ -314,10 +320,25 @@ Z()
 		cog.outl("<TABHERE>QCoreApplication a(argc, argv);  // NON-GUI application")
 ]]]
 [[[end]]]
+
+
+	sigset_t sigs;
+	sigemptyset(&sigs);
+	sigaddset(&sigs, SIGHUP);
+	sigaddset(&sigs, SIGINT);
+	sigaddset(&sigs, SIGTERM);
+	sigprocmask(SIG_UNBLOCK, &sigs, 0);
+
+
+
 	int status=EXIT_SUCCESS;
 
 [[[cog
-for name, num in getNameNumber(component['requires'] + component['publishes']):
+for namea, num in getNameNumber(component['requires'] + component['publishes']):
+	if type(namea) == str:
+		name = namea
+	else:
+		name = namea[0]
 	cog.outl('<TABHERE>'+name+'Prx '+name.lower()+num +'_proxy;')
 ]]]
 [[[end]]]
@@ -326,7 +347,11 @@ for name, num in getNameNumber(component['requires'] + component['publishes']):
 	initialize();
 
 [[[cog
-for name, num in getNameNumber(component['requires']):
+for namea, num in getNameNumber(component['requires']):
+	if type(namea) == str:
+		name = namea
+	else:
+		name = namea[0]
 	w = REQUIRE_STR.replace("<NORMAL>", name).replace("<LOWER>", name.lower()).replace("<PROXYNAME>", name.lower()+num).replace("<PROXYNUMBER>", num)
 	cog.outl(w)
 
@@ -334,7 +359,11 @@ if len(component['publishes'])>0 or len(component['subscribesTo'])>0:
 	cog.outl('<TABHERE>IceStorm::TopicManagerPrx topicManager = IceStorm::TopicManagerPrx::checkedCast(communicator()->propertyToProxy("TopicManager.Proxy"));')
 
 
-for pb in component['publishes']:
+for pba in component['publishes']:
+	if type(pba) == str:
+		pb = pba
+	else:
+		pb = pba[0]
 	w = PUBLISHES_STR.replace("<NORMAL>", pb).replace("<LOWER>", pb.lower())
 	cog.outl(w)
 
@@ -377,7 +406,11 @@ if usingROS:
 
 
 [[[cog
-for im in component['implements']:
+for ima in component['implements']:
+	if type(ima) == str:
+		im = ima
+	else:
+		im = ima[0]
 	w = IMPLEMENTS_STR.replace("<NORMAL>", im).replace("<LOWER>", im.lower())
 	cog.outl(w)
 ]]]

@@ -26,8 +26,14 @@
    <string>RCManager</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_4">
+   <property name="spacing">
+    <number>0</number>
+   </property>
    <property name="sizeConstraint">
     <enum>QLayout::SetNoConstraint</enum>
+   </property>
+   <property name="margin">
+    <number>0</number>
    </property>
    <item>
     <layout class="QVBoxLayout" name="verticalLayout_3">

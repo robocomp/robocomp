@@ -1,6 +1,0 @@
-module RoboCompPersona 
-{
-	interface Persona {
-		
-	};
-};

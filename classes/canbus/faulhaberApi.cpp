@@ -65,6 +65,8 @@ int FaulHaberApi::getPosition(int id)
     msg = buildMessageData(0x300,id,8,0x40,0x0000,0x00,0x00000000);
 	int a=writeWaitReadMessage(&msg);
 	
+	if (id == 1)
+		printf("output  %lx, %x, %x, %x, %x, %x, %x, %x, %x, %x %d\n ", msg.Id, msg.Size, msg.Data[0], msg.Data[1], msg.Data[2], msg.Data[3], msg.Data[4], msg.Data[5],	 msg.Data[6], msg.Data[7], msg.Timestamp);
 	
 	if(a == 1)
 		return readIntegerResponse(msg);

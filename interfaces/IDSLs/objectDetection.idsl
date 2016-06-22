@@ -1,6 +1,6 @@
 module RoboCompobjectDetection
 {
-	sequence<string> listType;
+	sequence <string> listType;
 	
 	interface objectDetection
 	{
@@ -9,7 +9,7 @@ module RoboCompobjectDetection
 		void grabThePointCloud(string image, string pcd);
 		void aprilFitModel(string model);
 		void fitModel(string model, string method);
-		void getInliers(string model);
+ 		void getInliers(string model);
 		void projectInliers(string model);
 		void convexHull(string model);
 		void extractPolygon(string model);
@@ -20,15 +20,16 @@ module RoboCompobjectDetection
 		void reset();
 		void mirrorPC();
 		void mindTheGapPC();
-		void reloadVFH();
+		void reloadVFH(string pathToSet);
 		void loadTrainedVFH();
 		void fitTheViewVFH();
-		void vfh(out listType guesses );
+		void vfh(out listType guesses);
 		void surfHomography(out listType guesses);
 		void centroidBasedPose(out float x, out float y, out float theta);
 		void segmentImage();
 		void grabTheAR();
-		string getResult(string image, string pcd);
-
+		bool findTheObject(string objectTofind);
+		void getPose(out float x,out float y,out float z);
+		void getRotation(out float rx,out float ry,out float rz);
 	};
 };
