@@ -1,0 +1,53 @@
+module RoboCompRCMaster
+{ 
+	/** \interface RCMaster
+	*@brief interface RCMaster
+	*/
+
+	
+	//information about the host
+	struct hostInfo {
+		string publicIP;
+		string privateIP;
+		string hostName;
+	};
+	
+	//stores interface name and its assigned port
+	dictionary <Sting, int> interfaceData;
+	
+	//stores info about an component
+	struct compData {
+		string compName;
+		hostInfo host;
+		interfaceData interfaces;
+	};
+
+	//database of all registred components
+	sequence <compData> compDB;
+	
+	interface rcmaster
+	{
+
+		// register a component (and assaign ports) , and monitor (restart if fail?)
+		void registerComp(compData compInfo, bool monitor , out interfaceData idata);
+		
+		//just update the database, dont assign ports
+		void updateDb(compDB components);
+
+		//get all comps which pass the filter 
+		void getComps(compData filter, out compDB comps);
+
+		//an simple funcion to find port of components with single interface
+		int getComPort(string compName, string hostName);
+
+		//flush the current db
+		flush();
+
+		// sync request from another master
+		sync(hostInfo sourceHost, out compDB db);
+
+		//initiate sync with anoter host
+		void syncwithhost(hostInfo remoteHost);
+
+	};
+};
