@@ -23,7 +23,7 @@
 
 [Compiling RoboComp with collision detection](Compiling RoboComp with collision detection.md)
 
-
+[Generate State Machine with robocompdsl](Generate_State_Machine_With_robocompcdsl.md)
 
 
 

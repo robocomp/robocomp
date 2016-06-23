@@ -1,7 +1,5 @@
 #Generate Componet with State Machine
 
-###In C++
-
 Usualy, when we create a component, this componet used a State Machine. So we must create a state machine from scratch. With robocomp it is now much easier. 
 
 These are the steps to create a state machine with robocomp:
@@ -36,54 +34,96 @@ When you run this line two files are created component.cdsl and statemachine.smd
 
 For example:
 
-![State Machine](/img/StateMachine.jpg)
+![State Machine](img/StateMachine.jpg)
 
 This is the code of the state machine:
 
-	Machine_testcpp{
-	    states test2, test3, test4, test5;
-	    initial_state test1;
-	    end_state test6;
+	Machine_Statecpp{
+	    states State2, State3, State4, State5;
+	    initial_state State1;			// It may not be contained in the states list. initial_state is required
+	    end_state State6;				// It may not be contained in the states list. initial_state and end_state can't be equal
 	    transition{
-		test1 => test1, test2;
-		test2 => test3, test5, test6;
-		test3 => test3, test4;
-		test4 => test5;
-		test5 => test6;
+		State1 => State1, State2;
+		State2 => State3, State5, State6;
+		State3 => State3, State4;
+		State4 => State5;
+		State5 => State6;
 	    };
 	};
 
-	:test1 parallel{
-	    states test1sub1, test1sub2;
+	:State1 parallel{				// If it is parallel, it can't have initial_state and end state
+	    states State11, State12;
 	    transition{
-		test1sub1 => test1sub1;
-		test1sub2 => test1sub2;
+		State11 => State11;
+		State12 => State12;
 	    };
 	};
 
-	:test1sub2{
-	    initial_state test1sub21;
-	    end_state test1sub22;
+	:State12{
+	    initial_state State121;			// If it isn't parallel, initial_state is required
+	    end_state State122;
 	    transition{
-		test1sub21 => test1sub21,test1sub22;
+		State121 => State121,State122;
 	    };
 	};
 
-	:test3 parallel{
-	    states test3sub1, test3sub2, test3sub3;
+	:State3 parallel{
+	    states State31, State32, State33;
 	    transition{
-		test3sub1 => test3sub1;
-		test3sub2 => test3sub2;
+		State31 => State31;
+		State32 => State32;
 	    };
 	};
 
-	:test5{
-	    states test5sub2;
-	    initial_state test5sub1;
+	:State5{
+	    states State52;
+	    initial_state State51;
 	    transition{
-		test5sub1 => test1sub2;
-		test1sub2 => test5sub1;
+		State51 => State12;
+		State12 => State51;
 	    };
 	};
 
+Robocomp need the following line to implement the state machine. Online This will be contained in mycomponet.cdsl:
+
+	statemachine statemachine.smdsl;
+
+For example:
+
+	import "/robocomp/interfaces/IDSLs/import1.idsl";
+	import "/robocomp/interfaces/IDSLs/import2.idsl";
+
+	Component mycomponet
+	{
+		Communications
+		{
+			implements interfaceName;
+			requires otherName;
+			subscribesTo topicToSubscribeTo;
+			publishes topicToPublish;
+		};
+		language Cpp;
+		gui Qt(QWidget);
+		statemachine statemachine.smdsl;
+	};
+
+After executing the following line:
+
+	robocompdsl mycomponet.cdsl .
+
+The code is generated. Each state has a method, this method is modified which it is  executed when it enters this state.
+
+To move from one state to another, we will emit the signal with the following structure "statesrctostatedst".
+
+###In C++
+
+For example:
+
+	emit State1toState2;
+
+###In Python
+
+For example:
+
+	self.State1toState2.emit
 
