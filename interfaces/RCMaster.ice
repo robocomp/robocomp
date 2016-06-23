@@ -49,10 +49,10 @@ module RoboCompRCMaster
 		int getComPort(string compName, string hostName);
 
 		//flush the current db
-		flush();
+		void flush();
 
 		// sync request from another master
-		sync(hostInfo sourceHost, out compDB db);
+		void sync(hostInfo sourceHost, out compDB db);
 
 		//initiate sync with anoter host
 		void syncwithhost(hostInfo remoteHost);
