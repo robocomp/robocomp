@@ -2820,6 +2820,11 @@ bool InnerModel::collide(const QString &a, const QString &b)
 	fcl::collide(                  n1->collisionObject,       n2->collisionObject,                         request,                  result);
 	// return binary collision result --> http://gamma.cs.unc.edu/FCL/fcl_docs/webpage/generated/structfcl_1_1CollisionResult.html#ed599cb31600ec6d0585d9adb4cde946
 	// True if There are collisions, and false if there arent collisions.
+	fcl::DistanceResult dist_result;
+	fcl::DistanceRequest dist_request;
+	fcl::distance(n1->collisionObject, n2->collisionObject, dist_request, dist_result);
+	printf("check objects %s => %s\n", a.toStdString().c_str(),b.toStdString().c_str());
+	printf("collision distance => %f, collide => %d\n",dist_result.min_distance, result.isCollision());
 	return result.isCollision();
 #else
 	QString error;
@@ -2829,6 +2834,40 @@ bool InnerModel::collide(const QString &a, const QString &b)
 #endif
 }
 
+float InnerModel::distance(const QString &a, const QString &b)
+{
+#if FCL_SUPPORT==1
+	InnerModelNode *n1 = getNode(a);
+	if (not n1) throw 1;
+	QMat r1q = getRotationMatrixTo("root", a);
+	fcl::Matrix3f R1( r1q(0,0), r1q(0,1), r1q(0,2), r1q(1,0), r1q(1,1), r1q(1,2), r1q(2,0), r1q(2,1), r1q(2,2) );
+	QVec t1v = getTranslationVectorTo("root", a);
+	fcl::Vec3f T1( t1v(0), t1v(1), t1v(2) );
+	n1->collisionObject->setTransform(R1, T1);
+
+	InnerModelNode *n2 = getNode(b);
+	if (not n1) throw 2;
+	QMat r2q = getRotationMatrixTo("root", b);
+	fcl::Matrix3f R2( r2q(0,0), r2q(0,1), r2q(0,2), r2q(1,0), r2q(1,1), r2q(1,2), r2q(2,0), r2q(2,1), r2q(2,2) );
+	QVec t2v = getTranslationVectorTo("root", b);
+	fcl::Vec3f T2( t2v(0), t2v(1), t2v(2) );
+	n2->collisionObject->setTransform(R2, T2);
+
+	fcl::DistanceResult result;
+	fcl::DistanceRequest request;
+
+	n1->collisionObject->computeAABB();
+	n2->collisionObject->computeAABB();
+
+	fcl::distance(n1->collisionObject, n2->collisionObject, request, result);
+	return result.min_distance;
+#else
+	QString error;
+	error.sprintf("InnerModel was not compiled with collision support");
+	throw error;
+	return -1;
+#endif
+}
 
 /**
  * @brief ...
