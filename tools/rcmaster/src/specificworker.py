@@ -47,6 +47,8 @@ class SpecificWorker(GenericWorker):
 		self.Period = 2000
 		self.timer.start(self.Period)
 		self.compdb = RoboCompRCDNS.compDB()
+		self.compcache = RoboCompRCDNS.compDB()
+		self.savebit = False
 
 	def setParams(self, params):
 		#try:
@@ -61,6 +63,9 @@ class SpecificWorker(GenericWorker):
 	@QtCore.Slot()
 	def compute(self):
 		print 'SpecificWorker.compute...'
+		if savebit:
+			self.savedb()
+		#ping all componsnts and cache is necc
 		return True
 
 	def checkComp(self, comp):
@@ -68,12 +73,22 @@ class SpecificWorker(GenericWorker):
 		if comp.name == "":
 			return False
 		#check valid host
-		if comp.host.hostName == "":
+		try:
+			s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		except socket.error, msg:
+			print 'Failed to create socket. Error message : ' + msg[1]
+		try:
+			remote_ip = socket.gethostbyname(comp.host.hostName)
+		except socket.gaierror:
+			print 'Hostname could not be resolved'
 			return False
+		if remote_ip != comp.host.publicIP:
+			return False
+		
 		#check valid interfaces
 		pass
 
-	def get_open_port():
+	def get_open_port(self):
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try:
         	s.bind(("",0))
@@ -83,6 +98,12 @@ class SpecificWorker(GenericWorker):
         port = s.getsockname()[1]
         s.close()
         return port
+
+    def savedb(self):
+    	pass
+
+    def loaddb(self):
+    	pass
 
 ################################
 ############ Servents ##########
@@ -114,26 +135,37 @@ class SpecificWorker(GenericWorker):
 	def registerComp(self, compInfo, monitor):
 		'''
 		register a compoenntand assagin a port to it
+		@TODO monitor, multiple component for oad balencing
 		'''
 		idata = interfaceData()
 		if not checkComp(compInfo):
 			print "Not a valid component"
+			raise InvalidComponent
 
 		for comp in self.compdb:
 			if comp.name == compInfo.name:
 				print comp.name,'already exit in host',comp.host.hostName,'with interfaces',comp.interfaces
-				return idata
+				raise DuplicateComponent
 		
-		for interfaceName in compInfo.interfaces:
-			port = get_open_port()
-			if port != -1:
-				compInfo.interfaces[interfaceName] = port
-			else:
-				print "ERROR:Cant assign port to all interfaces"
-				return idata
-			
+		cacheFound = False
+		for cachedcomp in compcache:
+			if cachedcomp.name == compInfo.name and cachedcomp.host == compInfo.host and cachedcomp.interfaces.keys() == compInfo.interfaces.keys():
+				compInfo.interfaces = cachedcomp.interfaces
+				cacheFound = True
+				break
+
+		if cacheFound:
+			for interfaceName in compInfo.interfaces:
+				port = get_open_port()
+				if port != -1:
+					compInfo.interfaces[interfaceName] = port
+				else:
+					print "ERROR: Cant assign port to all interfaces"
+					raise PortAssignError
+		
 		self.compdb.append(compInfo)
-		print 'New component registred: ',comp.host,comp.idComp,comp.port
+		self.savebit = True
+		print 'New component registred: ',comp.host,comp.idComp
 		idata = compInfo.interfaces
 		return idata
 
@@ -142,22 +174,31 @@ class SpecificWorker(GenericWorker):
 	# getComps
 	#
 	def getComps(self, filter, block):
-		#
-		# YOUR CODE HERE
-		#
-		comps = compDB()
-		return comps
-
+		# @TODO block
+		if filter.name != '':
+			return [x for x in compdb if x.name == filter.name]
+		
+		tempdb = self.compdb
+		if tempdb.host.name != '':
+			tempdb = [x for x in tempdb if x.host.name == filter.host.name]	
+		if tempdb.host.publicIP != '':
+			tempdb = [x for x in tempdb if x.host.publicIP == filter.host.publicIP]	
+		if tempdb.host.privateIP != '':
+			tempdb = [x for x in tempdb if x.host.privateIP == filter.host.privateIP]	
+		if len(tempdb.interfaces) != 0:
+			tempdb = [x for x in tempdb if filter.tempdb.interfaces.keys() in x.tempdb.interfaces.keys()]	
+		return tempdb
 
 	#
 	# getComPort
 	#
 	def getComPort(self, compName, hostName, block):
-		ret = int()
-		#
-		# YOUR CODE HERE
-		#
-		return ret
+		for comp in compdb:
+			if comp.name == compName and comp.host.name == hostName:
+				if len(comp.interfaces) != 1:
+					raise InvalidComponent
+				return comp.interfaces.values()[0]
+		raise ComponentNotFound
 
 
 	#
