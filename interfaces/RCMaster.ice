@@ -25,7 +25,7 @@ module RoboCompRCMaster
 	
 	//stores info about an component
 	struct compData {
-		string compName;
+		string name;
 		hostInfo host;
 		interfaceData interfaces;
 	};
@@ -43,10 +43,10 @@ module RoboCompRCMaster
 		void updateDb(compDB components);
 
 		//get all comps which pass the filter 
-		void getComps(compData filter, out compDB comps);
+		void getComps(compData filter, bool block, out compDB comps);
 
 		//an simple funcion to find port of components with single interface
-		int getComPort(string compName, string hostName);
+		int getComPort(string compName, string hostName, bool block);
 
 		//flush the current db
 		void flush();
