@@ -62,6 +62,7 @@ module RoboCompLegController
 		string ref;
 		string name;
 		bool ismoving;
+		float PreassureSensor;
 	};
 	sequence<PoseLeg> ListPoseLeg;
 	interface LegController
@@ -71,6 +72,7 @@ module RoboCompLegController
 		bool setIKBody(PoseBody p, bool simu) throws ImpossiblePositionException, HardwareFailedException;
 		bool setFKLeg(AnglesLeg al, bool simu) throws ImpossibleAnglesException, HardwareFailedException;
 		StateLeg getStateLeg() throws HardwareFailedException;
+		bool move(float x, float y) throws ImpossiblePositionException, HardwareFailedException;
 	};
 };
 
