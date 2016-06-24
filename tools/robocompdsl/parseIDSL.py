@@ -74,7 +74,7 @@ class IDSLParsing:
 
 
 		remoteMethodDef  = Group(Optional(decoratorDef) + retValDef + typeIdentifier.setResultsName('name') + opp + Optional(          params).setResultsName('params') + clp + Optional(raiseDef) + semicolon )
-		interfaceDef    = Word("interface").setResultsName('type')  + typeIdentifier.setResultsName('name') + op + Group(ZeroOrMore(remoteMethodDef)).setResultsName('methods') + cl + semicolon
+		interfaceDef    = Word('interface').setResultsName('type')  + typeIdentifier.setResultsName('name') + op + Group(ZeroOrMore(remoteMethodDef)).setResultsName('methods') + cl + semicolon
 
 		moduleContent = Group(structDef | enumDef | exceptionDef | dictionaryDef | sequenceDef | interfaceDef)
 		module = Suppress(Word("module")) + identifier.setResultsName("name") + op + ZeroOrMore(moduleContent).setResultsName("contents") + cl + semicolon

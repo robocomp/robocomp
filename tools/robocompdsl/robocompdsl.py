@@ -86,9 +86,11 @@ def generateHeaders(idslFile, outputPath, comp): #idslFile es el fichero idsl im
 								print "error: service without params. Form is: void method(type inVar, out type outVar);"
 								#sys.exit(-1)
 		return idsl['module']['name']
-
-	for importIDSL in idsl['imports']:
-		imported.append(generarH("/opt/robocomp/interfaces/IDSLs/"+importIDSL, []))
+	try:
+		for importIDSL in idsl['imports']:
+			imported.append(generarH("/opt/robocomp/interfaces/IDSLs/"+importIDSL, []))
+	except:
+		pass
 
 	generarH(idslFile, imported)
 	os.system("rm "+outputPath+"/*.msg")
