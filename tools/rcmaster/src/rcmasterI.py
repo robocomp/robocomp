@@ -45,10 +45,10 @@ class rcmasterI(rcmaster):
 		return self.worker.updateDb(components)
 	def registerComp(self, compInfo, monitor, c):
 		return self.worker.registerComp(compInfo, monitor)
-	def getComps(self, filter, c):
-		return self.worker.getComps(filter)
-	def getComPort(self, compName, hostName, c):
-		return self.worker.getComPort(compName, hostName)
+	def getComps(self, filter, block, c):
+		return self.worker.getComps(filter, block)
+	def getComPort(self, compName, hostName, block, c):
+		return self.worker.getComPort(compName, hostName, block)
 	def sync(self, sourceHost, c):
 		return self.worker.sync(sourceHost)
 	def flush(self, c):
