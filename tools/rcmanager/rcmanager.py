@@ -89,7 +89,7 @@ class ComponentChecker(threading.Thread):
 		self.aPrx = None
 		try:
 			self.aPrx = global_ic.stringToProxy(endpoint)
-			self.aPrx.ice_timeout(1)
+			self.aPrx.ice_timeout(10)
 		except:
 			print "Error creating proxy to " + endpoint
 			if len(endpoint) == 0:
