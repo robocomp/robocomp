@@ -2820,11 +2820,6 @@ bool InnerModel::collide(const QString &a, const QString &b)
 	fcl::collide(                  n1->collisionObject,       n2->collisionObject,                         request,                  result);
 	// return binary collision result --> http://gamma.cs.unc.edu/FCL/fcl_docs/webpage/generated/structfcl_1_1CollisionResult.html#ed599cb31600ec6d0585d9adb4cde946
 	// True if There are collisions, and false if there arent collisions.
-	fcl::DistanceResult dist_result;
-	fcl::DistanceRequest dist_request;
-	fcl::distance(n1->collisionObject, n2->collisionObject, dist_request, dist_result);
-	printf("check objects %s => %s\n", a.toStdString().c_str(),b.toStdString().c_str());
-	printf("collision distance => %f, collide => %d\n",dist_result.min_distance, result.isCollision());
 	return result.isCollision();
 #else
 	QString error;
