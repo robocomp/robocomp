@@ -50,8 +50,6 @@ for sb in component['subscribesTo']:
 		xx = xx[0]
 	if communicationIsIce(sb):
 		cog.outl(str(xx)+"Topic.Endpoints=tcp -p 0")
-	else:
-		cog.outl(str(xx)+"Topic.Endpoints=whatever " + str(xx) + " for ROS")
 
 if text:
 	cog.out('\n\n')

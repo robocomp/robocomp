@@ -155,12 +155,16 @@ class CDSLParsing:
 		
 		# Language
 		language = Suppress(CaselessLiteral("language")) + (CaselessLiteral("cpp")|CaselessLiteral("python")) + semicolon
+		# Qtversion
+		qtVersion = Group(Optional(Suppress(CaselessLiteral("useQt")) + (CaselessLiteral("qt4")|CaselessLiteral("qt5")) + semicolon))
+		# useViewer
+		useViewer = Group(Optional(Suppress(CaselessLiteral("useViewer")) + (CaselessLiteral("true")|CaselessLiteral("false")) + semicolon))
 		# GUI
 		gui = Group(Optional(Suppress(CaselessLiteral("gui")) + CaselessLiteral("Qt") + opp + identifier + clp + semicolon ))
 		# additional options
 		options = Group(Optional(Suppress(CaselessLiteral("options")) + identifier + ZeroOrMore(Suppress(Word(',')) + identifier) + semicolon))
 		
-		componentContents = communications.setResultsName('communications') & language.setResultsName('language') & gui.setResultsName('gui') & options.setResultsName('options')
+		componentContents = communications.setResultsName('communications') & language.setResultsName('language') & gui.setResultsName('gui') & options.setResultsName('options') & qtVersion.setResultsName('useQt') & useViewer.setResultsName('useViewer')
 		component = Suppress(CaselessLiteral("component")) + identifier.setResultsName("name") + op + componentContents.setResultsName("properties") + cl + semicolon
 
 		CDSL = idslImports.setResultsName("imports") + component.setResultsName("component")
@@ -218,10 +222,8 @@ class CDSLParsing:
 
 		for imp in imprts:
 			component['imports'].append(imp)
-			
-			#print 'moduleee', imp
 			imp2 = imp.split('/')[-1]
-			component['recursiveImports'] += [imp2]
+			#print 'moduleee', imp
 			try:
 				importedModule = IDSLParsing.gimmeIDSL(imp2)
 			except:
@@ -229,13 +231,36 @@ class CDSLParsing:
 				traceback.print_exc()
 				print 'Error reading IMPORT', imp2
 				os._exit(1)
-
-			component['recursiveImports'] += [x for x in importedModule['imports'].split('#') if len(x)>0]
-			#print 'moduleee', imp, 'done'
+			# En recursiveImports iran los imports necesarios para una comunicacion ICE 
+			importable = False
+			for interf in importedModule['interfaces']:
+				for comm in tree['properties']['communications']:
+					for interface in comm[1:]:
+						if communicationIsIce(interface):
+							if interf['name'] == interface[0]:
+								importable = True
+			if importable:
+				component['recursiveImports'] += [imp2]
+				component['recursiveImports'] += [x for x in importedModule['imports'].split('#') if len(x)>0]
+				#print 'moduleee', imp, 'done'
 			
 		#print component['recursiveImports']
 		# Language
 		component['language'] = tree['properties']['language'][0]
+		# qtVersion
+		component['useQt'] = 'none'
+		try:
+			component['useQt'] = tree['properties']['useQt'][0]
+			pass
+		except:
+			pass
+		# useViewer
+		component['useViewer'] = 'false'
+		try:
+			component['useViewer'] = tree['properties']['useViewer'][0]
+			pass
+		except:
+			pass
 		# GUI
 		component['gui'] = 'none'
 		try:
@@ -256,15 +281,28 @@ class CDSLParsing:
 		component['requires']     = []
 		component['publishes']    = []
 		component['subscribesTo'] = []
+		component['usingROS'] = "None"
 		for comm in tree['properties']['communications']:
 			if comm[0] == 'implements':
-				for interface in comm[1:]: component['implements'].append(interface)
+				for interface in comm[1:]: 
+					component['implements'].append(interface)
+					if not communicationIsIce(interface):
+						component['usingROS'] = True
 			if comm[0] == 'requires':
-				for interface in comm[1:]: component['requires'].append(interface)
+				for interface in comm[1:]: 
+					component['requires'].append(interface)
+					if not communicationIsIce(interface):
+						component['usingROS'] = True
 			if comm[0] == 'publishes':
-				for interface in comm[1:]: component['publishes'].append(interface)
+				for interface in comm[1:]: 
+					component['publishes'].append(interface)
+					if not communicationIsIce(interface):
+						component['usingROS'] = True
 			if comm[0] == 'subscribesTo':
-				for interface in comm[1:]: component['subscribesTo'].append(interface)
+				for interface in comm[1:]: 
+					component['subscribesTo'].append(interface)
+					if not communicationIsIce(interface):
+						component['usingROS'] = True
 		# Handle options for communications
 		if 'agmagent' in component['options']:
 			if not 'AGMCommonBehavior' in component['implements']:
@@ -278,8 +316,7 @@ class CDSLParsing:
 
 def communicationIsIce(sb):
 	isIce = True
-	
-	if len(sb) > 1 and type(sb)==type([]):
+	if len(sb) == 2:
 		if sb[1] == 'ros'.lower():
 			isIce = False
 		elif sb[1] != 'ice'.lower() :

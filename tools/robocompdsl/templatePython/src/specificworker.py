@@ -69,25 +69,26 @@ if len(ROBOCOMP)<1:
 	print 'genericworker.py: ROBOCOMP environment variable not set! Exiting.'
 	sys.exit()
 
-
-preStr = "-I"+ROBOCOMP+"/interfaces/ --all "+ROBOCOMP+"/interfaces/"
 [[[cog
 for imp in component['imports']:
-	module = IDSLParsing.gimmeIDSL(imp.split('/')[-1])
-	incl = imp.split('/')[-1].split('.')[0]
-	cog.outl('Ice.loadSlice(preStr+"'+incl+'.ice")')
-	cog.outl('from '+module['name']+' import *')
+	if imp in component['recursiveImports']:
+		cog.outl('preStr = "-I"+ROBOCOMP+"/interfaces/ --all "+ROBOCOMP+"/interfaces/"')
+		module = IDSLParsing.gimmeIDSL(imp.split('/')[-1])
+		incl = imp.split('/')[-1].split('.')[0]
+		cog.outl('Ice.loadSlice(preStr+"'+incl+'.ice")')
+		cog.outl('from '+module['name']+' import *')
 ]]]
 [[[end]]]
 
 
 [[[cog
-	for ima in component['implements']+component['subscribesTo']:
-		if type(ima) == type(''):
-			im = ima
+	for imp in component['implements']+component['subscribesTo']:
+		if type(imp) == str:
+			im = imp
 		else:
-			im = ima[0]
-		cog.outl('from ' + im.lower() + 'I import *')
+			im = imp[0]
+		if communicationIsIce(imp):
+			cog.outl('from ' + im.lower() + 'I import *')
 ]]]
 [[[end]]]
 
@@ -121,18 +122,17 @@ class SpecificWorker(GenericWorker):
 [[[cog
 lst = []
 try:
-	lst += component['implements']
-except:
-	pass
-try:
 	lst += component['subscribesTo']
 except:
 	pass
-
 for imp in lst:
-	module = pool.moduleProviding(imp[0])
+	if type(imp) == str:
+		im = imp
+	else:
+		im = imp[0]
+	module = pool.moduleProviding(im)
 	for interface in module['interfaces']:
-		if interface['name'] == imp:
+		if interface['name'] == im:
 			for mname in interface['methods']:
 				method = interface['methods'][mname]
 				outValues = []
@@ -173,6 +173,22 @@ for imp in lst:
 						if first:
 							first = False
 					cog.out("]\n")
+for imp in component['implements']:
+	if type(imp) == str:
+		im = imp
+	else:
+		im = imp[0]
+	module = pool.moduleProviding(im)
+	for interface in module['interfaces']:
+		if interface['name'] == im:
+			for mname in interface['methods']:
+				method = interface['methods'][mname]
+				cog.outl('<TABHERE>def ' + method['name'] + "(self, req):")
+				cog.outl("<TABHERE><TABHERE>#")
+				cog.outl("<TABHERE><TABHERE># YOUR CODE HERE")
+				cog.outl("<TABHERE><TABHERE>#Example ret = req.a + req.b")
+				cog.outl("<TABHERE><TABHERE>#")
+				cog.outl("<TABHERE><TABHERE>return "+method['name']+"Response(ret)")
 ]]]
 [[[end]]]
 

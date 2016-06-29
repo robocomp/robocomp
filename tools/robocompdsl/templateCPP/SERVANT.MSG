@@ -1,0 +1,53 @@
+[[[cog
+
+import sys
+sys.path.append('/opt/robocomp/python')
+
+import cog
+def A():
+	cog.out('<@@<')
+def Z():
+	cog.out('>@@>')
+def TAB():
+	cog.out('<TABHERE>')
+def SPACE(i=0):
+	s = ''
+	if i>0:
+		s = str(i)
+	cog.out('<S'+s+'>')
+
+from parseIDSL import *
+customTypesList = []
+idsl = IDSLParsing.fromFileIDSL(theIDSL)
+for imp in idsl['module']['contents']:
+	if imp['type'] in ('sequence', 'struct'):
+		customTypesList.append(imp)
+	if imp['type'] == 'struct' and imp['name'] == structName:
+		for structVar in imp['structIdentifiers']:
+			wascustomType = False
+			for customType in customTypesList:
+				if structVar[0] == customType['name']:
+					if customType['type'] == 'sequence':
+						if customType['typeSequence'] in ('float','int','uint'):
+							cog.outl(customType['typeSequence'] +"32[] " + structVar[1])
+						else:
+							cog.outl(customType['typeSequence'] +"[] " + structVar[1])
+						wascustomType = True
+						break
+					elif structVar[0] == 'struct':
+						cog.outl(customType['name'] +" " + structVar[1])
+						wascustomType = True
+						break
+			if not wascustomType:
+				if structVar[0] in ('float','int','uint'):
+					cog.outl(structVar[0]+"32 "+structVar[1])
+				else:
+					str = structVar[0]+" "+structVar[1]
+					cog.outl(str.replace("::", "/"))
+	elif imp['type'] == 'sequence' and imp['name'] == structName:
+		if imp['typeSequence'] in ('float','int','uint'):
+			cog.outl(imp['typeSequence'] +"32[] " + structName)
+		elif imp['typeSequence'] == 'byte':
+			cog.outl('int8[] ' + structName)
+]]]
+[[[end]]]

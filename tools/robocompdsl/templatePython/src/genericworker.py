@@ -19,6 +19,7 @@ if component == None:
 
 from parseIDSL import *
 pool = IDSLPool(theIDSLs)
+modulesList = pool.rosModulesImports()
 
 ]]]
 [[[end]]]
@@ -52,6 +53,36 @@ import sys
 from PySide import *
 
 [[[cog
+if component['usingROS']:
+	cog.outl('import rospy')
+	cog.outl('from std_msgs.msg import *')
+	for include in modulesList:
+		cog.outl("from "+include['name']+".msg import "+include['strName'])
+	srvIncludes = {}
+	for imp in component['requires']:
+		if type(imp) == str:
+			im = imp
+		else:
+			im = imp[0]
+		if not communicationIsIce(imp):
+			module = pool.moduleProviding(im)
+			for interface in module['interfaces']:
+				if interface['name'] == im:
+					for mname in interface['methods']:
+						srvIncludes[module['name']] = 'from '+module['name']+'.srv import *'
+	for imp in component['implements']:
+		if type(imp) == str:
+			im = imp
+		else:
+			im = imp[0]
+		if not communicationIsIce(imp):
+			module = pool.moduleProviding(im)
+			for interface in module['interfaces']:
+				if interface['name'] == im:
+					for mname in interface['methods']:
+						srvIncludes[module['name']] = 'from '+module['name']+'.srv import *'
+	for srv in srvIncludes.values():
+		cog.outl(srv)
 A()
 if component['gui'] != 'none':
 	cog.outl('try:')
@@ -63,6 +94,73 @@ Z()
 ]]]
 [[[end]]]
 
+[[[cog
+if component['usingROS']:
+	#CREANDO CLASES PARA LOS PUBLISHERS
+	for imp in component['publishes']:
+		nname = imp
+		while type(nname) != type(''):
+			nname = nname[0]
+		module = pool.moduleProviding(nname)
+		if module == None:
+			print ('\nCan\'t find module providing', nname, '\n')
+			sys.exit(-1)
+		if not communicationIsIce(imp):
+			cog.outl("#class for rosPublisher")
+			cog.outl("class Publisher"+nname+"():")
+			cog.outl("<TABHERE>def __init__(self):")
+			for interface in module['interfaces']:
+				if interface['name'] == nname:
+					for mname in interface['methods']:
+						method = interface['methods'][mname]
+						for p in method['params']:
+							s = "\""+nname+"_"+mname+"\""
+							if p['type'] in ('float','int','uint'):
+								cog.outl("<TABHERE><TABHERE>self.pub_"+mname+" = rospy.Publisher("+s+", "+p['type'].capitalize()+"32, queue_size=1000)")
+							elif p['type'] == 'string':
+								cog.outl("<TABHERE><TABHERE>self.pub_"+mname+" = rospy.Publisher("+s+", String, queue_size=1000)")
+							elif '::' in p['type']:
+								cog.outl("<TABHERE><TABHERE>self.pub_"+mname+" = rospy.Publisher("+s+", "+p['type'].split('::')[1]+", queue_size=1000)")
+							else:
+								cog.outl("<TABHERE><TABHERE>self.pub_"+mname+" = rospy.Publisher("+s+", "+p['type']+", queue_size=1000)")
+			for interface in module['interfaces']:
+				if interface['name'] == nname:
+					for mname in interface['methods']:
+						method = interface['methods'][mname]
+						for p in method['params']:
+							cog.outl("<TABHERE>def "+mname+"(self, "+p['name']+"):")
+							cog.outl("<TABHERE><TABHERE>self.pub_"+mname+".publish("+p['name']+")")
+	#CREANDO CLASES PARA LOS REQUIRES
+	for imp in component['requires']:
+		nname = imp
+		while type(nname) != type(''):
+			nname = nname[0]
+		module = pool.moduleProviding(nname)
+		if module == None:
+			print ('\nCan\'t find module providing', nname, '\n')
+			sys.exit(-1)
+		if not communicationIsIce(imp):
+			cog.outl("#class for rosServiceClient")
+			cog.outl("class ServiceClient"+nname+"():")
+			cog.outl("<TABHERE>def __init__(self):")
+			for interface in module['interfaces']:
+				if interface['name'] == nname:
+					for mname in interface['methods']:
+						method = interface['methods'][mname] #for p in method['params']:
+						s = "\""+nname+"_"+mname+"\""
+						cog.outl("<TABHERE><TABHERE>self.srv_"+mname+" = rospy.ServiceProxy("+s+", "+mname+")")
+			for interface in module['interfaces']:
+				if interface['name'] == nname:
+					for mname in interface['methods']:
+						method = interface['methods'][mname]
+						paramStrA = ''
+						for p in method['params']:
+							# delim
+							if paramStrA == '': paramStrA = p['name']
+						cog.outl("<TABHERE>def "+mname+"(self, "+paramStrA+"):")
+						cog.outl("<TABHERE><TABHERE>return self.srv_"+mname+"("+paramStrA+")")
+]]]
+[[[end]]]
 
 class GenericWorker(
 [[[cog
@@ -83,22 +181,25 @@ Z()
 
 
 [[[cog
-for namea in component['requires']:
-	if type(namea) == str:
-		name = namea
+for req in component['requires']:
+	if type(req) == str:
+		rq = req
 	else:
-		name = namea[0]
-		cog.outl("<TABHERE><TABHERE>self."+name.lower()+"_proxy = mprx[\""+name+"Proxy\"]")
-]]]
-[[[end]]]
+		rq = req[0]
+	if communicationIsIce(req):
+		cog.outl("<TABHERE><TABHERE>self."+rq.lower()+"_proxy = mprx[\""+rq+"Proxy\"]")
+	else:
+		cog.outl("<TABHERE><TABHERE>self."+rq.lower()+" = ServiceClient"+nname+"()")
 
-[[[cog
-for pba in component['publishes']:
-	if type(pba) == type(''):
-		pb = pba
+for pb in component['publishes']:
+	if type(pb) == str:
+		pub = pb
 	else:
-		pb = pba[0]
-	cog.outl("<TABHERE><TABHERE>self."+pb.lower()+" = mprx[\""+pb+"Pub\"]")
+		pub = pb[0]
+	if communicationIsIce(pb):
+		cog.outl("<TABHERE><TABHERE>self."+pub.lower()+" = mprx[\""+pub+"Pub\"]")
+	else:
+		cog.outl("<TABHERE><TABHERE>self."+pub.lower()+" = Publisher"+nname+"()")
 ]]]
 [[[end]]]
 
