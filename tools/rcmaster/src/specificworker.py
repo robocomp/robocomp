@@ -72,6 +72,7 @@ class SpecificWorker(GenericWorker):
 		#check valid name
 		if comp.name == "":
 			return False
+		
 		#check valid host
 		try:
 			s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -88,10 +89,10 @@ class SpecificWorker(GenericWorker):
 		#check valid interfaces
 		pass
 
-	def get_open_port(self):
+	def get_open_port(self, portnum=0):
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try:
-        	s.bind(("",0))
+    		s.bind(("",portnum))
 		except socket.error , msg:
     		print 'Cant assign port. Error Code : ' + str(msg[0]) + ' Message ' + msg[1]
     		return -1
@@ -134,7 +135,7 @@ class SpecificWorker(GenericWorker):
 	#
 	def registerComp(self, compInfo, monitor):
 		'''
-		register a compoenntand assagin a port to it
+		register a compoent and assagin a port to it
 		@TODO monitor, multiple component for oad balencing
 		'''
 		idata = interfaceData()
@@ -147,25 +148,29 @@ class SpecificWorker(GenericWorker):
 				print comp.name,'already exit in host',comp.host.hostName,'with interfaces',comp.interfaces
 				raise DuplicateComponent
 		
-		cacheFound = False
+		for interface , port in compdb.interfaces:
+			port = 0
+
 		for cachedcomp in compcache:
 			if cachedcomp.name == compInfo.name and cachedcomp.host == compInfo.host and cachedcomp.interfaces.keys() == compInfo.interfaces.keys():
 				compInfo.interfaces = cachedcomp.interfaces
-				cacheFound = True
 				break
 
-		if cacheFound:
-			for interfaceName in compInfo.interfaces:
+		for interfaceName in compInfo.interfaces:
+			port = get_open_port(compInfo.interfaces[interfaceName])
+			if port == -1:
+				print "couldnt assign cached port ",compInfo.interfaces[interfaceName]
 				port = get_open_port()
-				if port != -1:
-					compInfo.interfaces[interfaceName] = port
-				else:
-					print "ERROR: Cant assign port to all interfaces"
-					raise PortAssignError
+			
+			if port != -1:
+				compInfo.interfaces[interfaceName] = port
+			else:
+				print "ERROR: Cant assign port to all interfaces"
+				raise PortAssignError
 		
 		self.compdb.append(compInfo)
 		self.savebit = True
-		print 'New component registred: ',comp.host,comp.idComp
+		print 'New component registred: ',comp.host, comp.name
 		idata = compInfo.interfaces
 		return idata
 
@@ -193,6 +198,7 @@ class SpecificWorker(GenericWorker):
 	# getComPort
 	#
 	def getComPort(self, compName, hostName, block):
+		# @TODO block
 		for comp in compdb:
 			if comp.name == compName and comp.host.name == hostName:
 				if len(comp.interfaces) != 1:
