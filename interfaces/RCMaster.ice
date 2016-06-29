@@ -13,51 +13,65 @@
 module RoboCompRCMaster
 { 
 	
-	//information about the host
-	struct hostInfo {
-		string publicIP;
-		string privateIP;
-		string hostName;
-	};
-	
-	//stores interface name and its assigned port
-	dictionary <Sting, int> interfaceData;
-	
-	//stores info about an component
-	struct compData {
-		string name;
-		hostInfo host;
-		interfaceData interfaces;
-	};
+    //information about the host
+    struct hostInfo {
+        string publicIP;
+        string privateIP;
+        string hostName;
+    };
+    
+    //stores interface name and its assigned port
+    dictionary <Sting, int> interfaceData;
+    
+    //stores info about an component
+    struct compData {
+        string name;
+        hostInfo host;
+        interfaceData interfaces;
+    };
 
-	//database of all registred components
-	sequence <compData> compDB;
-	
-	interface rcmaster
-	{
+    //database of all registred components
+    sequence <compData> compDB;
 
-		// register a component (and assaign ports) , and monitor (restart if fail?)
-		void registerComp(compData compInfo, bool monitor , out interfaceData idata);
-		
-		//just update the database, dont assign ports
-		void updateDb(compDB components);
+    //cache db
+    dictionary <compData, int> cacheDb;
 
-		//get all comps which pass the filter 
-		void getComps(compData filter, bool block, out compDB comps);
+    //Exceptions
+    exception InvalidComponent{ compData component; };
+    
+    exception DuplicateComponent{ compData component; };
+    
+    exception ComponentNotFound { compData component; };
+    
+    exception PortAssignError {
+        int port;
+        string errorMessage;
+    };
 
-		//an simple funcion to find port of components with single interface
-		int getComPort(string compName, string hostName, bool block);
 
-		//flush the current db
-		void flush();
+    
+    interface rcmaster
+    {
 
-		// sync request from another master
-		void sync(hostInfo sourceHost, out compDB db);
+        // register a component (and assaign ports) , and monitor (restart if fail?)
+        void registerComp(compData compInfo, bool monitor , out interfaceData idata)
+            throws InvalidComponent, DuplicateComponent, PortAssignError;
+        
+        //just update the database, dont assign ports
+        void updateDb(compDB components)
+            throws InvalidComponent, DuplicateComponent;
 
-		//initiate sync with anoter host
-		void syncwithhost(hostInfo remoteHost);
+        //get all comps which pass the filter 
+        idempotent void getComps(compData filter, bool block, out compDB comps);
 
-	};
+        //an simple funcion to find port of components with single interface
+        idempotent int getComPort(string compName, string hostName, bool block)
+            throws ComponentNotFound;
+
+        //flush the current cache or/and db
+        idempotent void flush(bool maindb);
+
+    };
 };
 
 
