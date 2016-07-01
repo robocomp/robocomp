@@ -19,13 +19,18 @@
 #
 
 import Ice, sys, math, traceback
-import random, time
+import time
+from random import randint
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from PyQt4.Qt import *
 
-#Position dictionary:{'name':(,x,y,z,rx,ry,rz),...}
-posDict = {'zero':(0,0,800,0,0,0)}
+#Position dictionary: could contain:  
+# 6D postion ==> 'name':(,x,y,z,rx,ry,rz)
+# or joint positions ==> 'name':[('motor1',angle1),('motor2',angle2)...]
+posDict = {'zero':(0,0,800,0,0,0),'outofview':[('armY',0.0),('armX1',0.0),('armX2',0.0),('wristX',0.0)],'otra':(0,0,800,0,0,0)}
+
+
 #Body part to send commands:
 bodyPart = "ARM"
 
@@ -38,6 +43,10 @@ class C(QWidget):
 		self.prx = self.ic.stringToProxy(endpoint)
 		self.proxy = self.mods['RoboCompInverseKinematics'].InverseKinematicsPrx.checkedCast(self.prx)
 		self.show()
+
+		self.timer = QTimer()
+		self.connect(self.timer,SIGNAL('timeout()'),self.test)
+		self.test = False
 
 		self.combo = QComboBox(self)
 		self.combo.show()
@@ -53,6 +62,12 @@ class C(QWidget):
 		self.setPosition.move(self.combo.x()+self.combo.width(),0)
 		self.connect(self.setPosition, SIGNAL('clicked()'), self.set_position_list );
 		self.setPosition.resize(200, 50)
+
+		self.ramdomMove = QPushButton("Test", self)
+		self.ramdomMove.show()
+		self.ramdomMove.move(self.setPosition.x()+self.setPosition.width(),0)
+		self.connect(self.ramdomMove, SIGNAL('clicked()'), self.enableTest );
+		self.ramdomMove.resize(200, 50)
 
 		self.label1 = QLabel('X, Y, Z',self)
 		self.label1.show()
@@ -127,19 +142,7 @@ class C(QWidget):
 
 	def job(self):
 		pass
-#		self.states = self.proxy.getAllMotorState()
-		#for k in self.states.keys():
-			#print k, self.states[k].pos
-		#print '-------'
-#		state = self.states[str(self.combo.currentText())]
-#		self.readLabel.setText(QString.number(state.pos))
-#		self.templabel.setText(QString.number(state.temperature))
-		#self.clicked()
-#		string = "overheat(>60):   "
-#		for k in self.states.keys():
-#			if(self.states[k].temperature > 60):
-#				string = string + k + "(" + str(self.states[k].temperature) +")   "
-#		self.warninglabel.setText(string)
+
 
 	def set_position(self):
 		target = self.mods['RoboCompInverseKinematics'].Pose6D()
@@ -155,17 +158,34 @@ class C(QWidget):
 	def set_position_list(self):
 		target = self.mods['RoboCompInverseKinematics'].Pose6D()
 		values = posDict[str(self.combo.currentText())]
-		target.x = values[0]
-		target.y = values[1]
-		target.z = values[2]
-		target.rx = values[3]
-		target.ry = values[4]
-		target.rz = values[5]
-		self.sendMove(target)
+		print "\nMove: " + str(self.combo.currentText())
+		if isinstance(values,tuple):
+			print '6D move'
+			print values
+			target.x = values[0]
+			target.y = values[1]
+			target.z = values[2]
+			target.rx = values[3]
+			target.ry = values[4]
+			target.rz = values[5]
+			self.sendMove(target)
+		elif isinstance(values,list):
+			print 'Joint move'
+			for item in values:
+				print item
+				self.setJoint(item[0],item[1])
+		else: 
+			print "Unknow movement type, check movements list"
 
 	def stop(self):
 		try:
 			self.proxy.stop(bodyPart)
+		except:
+			print sys.exc_info()[0]
+
+	def setJoint(self, joint, angle,vel=0.5):
+		try:
+			self.proxy.setJoint(joint, angle,vel)
 		except:
 			print sys.exc_info()[0]
 
@@ -182,4 +202,17 @@ class C(QWidget):
 		except:
 			print sys.exc_info()[0]
 
-
+	def test(self):
+		aux ='\n\nMove\n'
+		self.combo.setCurrentIndex(randint(0,self.combo.count()-1))
+		self.set_position_list()
+		time.sleep(3)
+	
+	def enableTest(self):
+		if self.test:
+			self.ramdomMove.setText('Start test')
+			self.timer.stop()
+		else:
+			self.ramdomMove.setText('Stop test')
+			self.timer.start(1)
+		self.test = not self.test
