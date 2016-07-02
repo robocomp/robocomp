@@ -61,9 +61,9 @@ class SpecificWorker(GenericWorker):
 		self.timer.timeout.connect(self.compute)
 		self.Period = 2000
 		self.timer.start(self.Period)
-		self.compdb = RoboCompRCDNS.compDB()
-		self.compcache = RoboCompRCDNS.cacheDb()
-		self.cache_ttyl = int(round(self.cache_ttyl/self.period))
+		self.compdb = []
+		self.compcache = dict()
+		self.cache_ttyl = int(round(self.cache_ttyl/self.Period))
 		self.savebit = False
 		self.ic = Ice.initialize()
 
@@ -79,26 +79,28 @@ class SpecificWorker(GenericWorker):
 	@QtCore.Slot()
 	def compute(self):
 		print 'SpecificWorker.compute...'
-		if savebit:
+		if self.savebit:
 			self.savedb()
-		## TODO
+		
 		#ping all componsnts and cache is necc
-		for comp in compdb:
+		for comp in self.compdb:
 			for interface in comp.interfaces:
 				proxy = interface.name+':'+interface.protocol+" -h "+comp.host.publicIP+' -p '+str(interface.port)
-				basePrx = ic.stringToProxy(proxy)
+				basePrx = self.ic.stringToProxy(proxy)
 				try:
 					basePrx.ice_ping()
 				except ConnectionRefusedException: #wbt other except @TODO
-					compdb.remove(comp)
-					compcache[comp] = self.cache_ttyl
+					print "caching component ", comp.name
+					self.compdb.remove(comp)
+					self.compcache[comp] = self.cache_ttyl
 		
 		#invalidate cache based on ttyl
-		for cachedComp,ttyl in compcache:
+		for cachedComp,ttyl in self.compcache:
 			ttyl = ttyl-1
 			if ttyl < 0:
-				del compcache[cachedcomp]
-
+				print "removing ", cachedcomp.name,"from cache"
+				del self.compcache[cachedcomp]
+		## TODO
 		#notify port changes or crash to the cmponents conected to crasehd one
 		return True
 
@@ -183,7 +185,7 @@ class SpecificWorker(GenericWorker):
 		if assignPort == True:
 			
 			# set the caches port for the components
-			for cachedcomp in compcache.keys():
+			for cachedcomp in self.compcache.keys():
 				if cachedcomp == compInfo:
 					compInfo.interfaces = cachedcomp.interfaces
 					break
@@ -213,7 +215,7 @@ class SpecificWorker(GenericWorker):
 	def getComps(self, filter, block):
 		# @TODO block
 		if filter.name != '':
-			return [x for x in compdb if x.name == filter.name]
+			return [x for x in self.compdb if x.name == filter.name]
 		
 		tempdb = self.compdb
 		if filter.host.name != '':
@@ -231,7 +233,7 @@ class SpecificWorker(GenericWorker):
 	#
 	def getComPort(self, compName, hostName, block):
 		# @TODO block
-		for comp in compdb:
+		for comp in self.compdb:
 			if comp.name == compName and comp.host.name == hostName:
 				if len(comp.interfaces) != 1:
 					raise InvalidComponent
@@ -242,11 +244,11 @@ class SpecificWorker(GenericWorker):
 	#
 	# flush
 	#
-	def flush(self):
-		#
-		# YOUR CODE HERE
-		#
-		pass
+	def flush(self, maindb):
+		self.compdb = []
+		if maindb:
+			self.compcache = []
+		
 
 
 

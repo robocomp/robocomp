@@ -125,9 +125,9 @@ if __name__ == '__main__':
 
 		# Remote object connection for DifferentialRobot
 		try:
-			mprx["databasePath"] = ic.getProperties().getProperty('dbPath')
-			mprx["cachettyl"] = ic.getProperties().getProperty('cachettyl')
-			mprx["componentsToStart"] = ic.getProperties().getProperty('componentsToStart').split(',')
+			mprx["databasePath"] = ic.getProperties().getProperty('rcmaster.dbPath')
+			mprx["cachettyl"] = ic.getProperties().getProperty('rcmaster.cachettyl')
+			mprx["componentsToStart"] = ic.getProperties().getProperty('rcmaster.componentsToStart').split(',')
 		except Ice.Exception, e:
 			print e
 			print 'Cannot get all properties.'
