@@ -1,6 +1,7 @@
-# Endpoints for implemented interfaces
+# Endpoints for rcmaster
 rcmaster.Endpoints=tcp -p 0
-
+rcmster.dbPath=~/.config/RoboComp
+rcmaster.componentsToStart=rclogger
 
 
 # This property is used by the clients to connect to IceStorm.

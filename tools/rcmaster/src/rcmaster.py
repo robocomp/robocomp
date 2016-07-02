@@ -121,15 +121,30 @@ if __name__ == '__main__':
 	status = 0
 	mprx = {}
 
+	try:
+
+		# Remote object connection for DifferentialRobot
+		try:
+			mprx["databasePath"] = ic.getProperties().getProperty('dbPath')
+			mprx["componentsToStart"] = ic.getProperties().getProperty('componentsToStart').split(',')
+		except Ice.Exception, e:
+			print e
+			print 'Cannot get all properties.'
+			status = 1
+
+	except:
+			traceback.print_exc()
+			status = 1
+
 
 	if status == 0:
 		worker = SpecificWorker(mprx)
 
-
 		adapter = ic.createObjectAdapter('rcmaster')
 		adapter.add(rcmasterI(worker), ic.stringToIdentity('rcmaster'))
 		adapter.activate()
-
+		masteruri = adapter.getPublishedEndpoints()[0].toString().split(" ")
+		os.environ["RCMASTER_URI"] = str(masteruri[2] + ':' + masteruri[4])
 
 #		adapter.add(CommonBehaviorI(<LOWER>I, ic), ic.stringToIdentity('commonbehavior'))
 

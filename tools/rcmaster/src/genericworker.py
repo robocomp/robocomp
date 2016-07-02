@@ -27,8 +27,7 @@ class GenericWorker(QtCore.QObject):
 	def __init__(self, mprx):
 		super(GenericWorker, self).__init__()
 
-
-
+		self.db_path = mprx["databasePath"]
 		
 		
 		self.mutex = QtCore.QMutex(QtCore.QMutex.Recursive)

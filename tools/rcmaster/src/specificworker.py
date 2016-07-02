@@ -47,17 +47,17 @@ class SpecificWorker(GenericWorker):
 		self.Period = 2000
 		self.timer.start(self.Period)
 		self.compdb = RoboCompRCDNS.compDB()
-		self.compcache = RoboCompRCDNS.compDB()
+		self.compcache = RoboCompRCDNS.cacheDb()
 		self.savebit = False
+		self.ic = Ice.initialize()
 
 	def setParams(self, params):
-		#try:
-		#	par = params["InnerModelPath"]
-		#	innermodel_path=par.value
-		#	innermodel = InnerModel(innermodel_path)
-		#except:
-		#	traceback.print_exc()
-		#	print "Error reading config params"
+		# try:
+		# 	par = params["InnerModelPath"]
+			
+		# except:
+		# 	traceback.print_exc()
+		# 	print "Error reading config params"
 		return True
 
 	@QtCore.Slot()
@@ -65,7 +65,20 @@ class SpecificWorker(GenericWorker):
 		print 'SpecificWorker.compute...'
 		if savebit:
 			self.savedb()
+		## TODO
 		#ping all componsnts and cache is necc
+		for comp in compdb:
+			for interfaceName, port in comp.interfaces:
+				proxy = interfaceName+':'+"tcp"+" -h "+comp.host.publicIP+' -p '+str(port)
+				basePrx = ic.stringToProxy(proxy)
+				try:
+					basePrx.ice_ping()
+				except ConnectionRefusedException:
+					compdb.remove(comp)
+					compcache[comp]
+
+		#notify port changes or crash to the cmponents conected to crasehd one
+		#invalidate cache based on ttyl
 		return True
 
 	def checkComp(self, comp):
@@ -74,99 +87,90 @@ class SpecificWorker(GenericWorker):
 			return False
 		
 		#check valid host
-		try:
-			s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		except socket.error, msg:
-			print 'Failed to create socket. Error message : ' + msg[1]
-		try:
-			remote_ip = socket.gethostbyname(comp.host.hostName)
-		except socket.gaierror:
-			print 'Hostname could not be resolved'
-			return False
-		if remote_ip != comp.host.publicIP:
-			return False
+		remote_ip = ''
+		if comp.host.hostName != '':
+			try:
+				remote_ip = socket.gethostbyname(comp.host.hostName)
+			except socket.gaierror:
+				print 'Hostname could not be resolved'
+				return False
 		
+		if comp.host.privateIP == '' and remote_ip == '':
+			return False
+		elif comp.host.privateIP == '':
+			comp.host.privateIP = remote_ip
+
 		#check valid interfaces
-		pass
+		return True
 
 	def get_open_port(self, portnum=0):
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        try:
-    		s.bind(("",portnum))
+		s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		try:
+			s.bind(("",portnum))
 		except socket.error , msg:
-    		print 'Cant assign port. Error Code : ' + str(msg[0]) + ' Message ' + msg[1]
-    		return -1
-        port = s.getsockname()[1]
-        s.close()
-        return port
+			print 'Cant assign port. Error Code : ' + str(msg[0]) + ' Message ' + msg[1]
+			return -1, msg
+		port = s.getsockname()[1]
+		s.close()
+		return port,""
 
-    def savedb(self):
-    	pass
+	def savedb(self):
+		pass
 
-    def loaddb(self):
-    	pass
+	def loaddb(self):
+		pass
 
 ################################
 ############ Servents ##########
 ################################
-
-	#
-	# syncwithhost
-	#
-	def syncwithhost(self, remoteHost):
-		#
-		# YOUR CODE HERE
-		#
-		pass
 
 
 	#
 	# updateDb
 	#
 	def updateDb(self, components):
-		#
-		# YOUR CODE HERE
-		#
-		pass
+		for comp in components:
+			self.registerComp(comp, False, False)
 
 
 	#
 	# registerComp
 	#
-	def registerComp(self, compInfo, monitor):
+	def registerComp(self, compInfo, monitor, assignPort=True):
 		'''
 		register a compoent and assagin a port to it
-		@TODO monitor, multiple component for oad balencing
+		@TODO monitor, multiple component for load balencing
 		'''
 		idata = interfaceData()
 		if not checkComp(compInfo):
 			print "Not a valid component"
-			raise InvalidComponent
+			raise InvalidComponent(compInfo, "")
 
 		for comp in self.compdb:
 			if comp.name == compInfo.name:
-				print comp.name,'already exit in host',comp.host.hostName,'with interfaces',comp.interfaces
-				raise DuplicateComponent
+				print comp.name,'already exists in host',comp.host.hostName,'with interfaces',comp.interfaces
+				raise DuplicateComponent(compInfo)
 		
-		for interface , port in compdb.interfaces:
-			port = 0
+		if assignPort == True:
+			for interface , port in compdb.interfaces:
+				port = 0
 
-		for cachedcomp in compcache:
-			if cachedcomp.name == compInfo.name and cachedcomp.host == compInfo.host and cachedcomp.interfaces.keys() == compInfo.interfaces.keys():
-				compInfo.interfaces = cachedcomp.interfaces
-				break
+			for cachedcomp in compcache:
+				if cachedcomp.name == compInfo.name and cachedcomp.host == compInfo.host and cachedcomp.interfaces.keys() == compInfo.interfaces.keys():
+					compInfo.interfaces = cachedcomp.interfaces
+					break
 
-		for interfaceName in compInfo.interfaces:
-			port = get_open_port(compInfo.interfaces[interfaceName])
-			if port == -1:
-				print "couldnt assign cached port ",compInfo.interfaces[interfaceName]
-				port = get_open_port()
-			
-			if port != -1:
-				compInfo.interfaces[interfaceName] = port
-			else:
-				print "ERROR: Cant assign port to all interfaces"
-				raise PortAssignError
+			for interfaceName in compInfo.interfaces:
+				port, msg = get_open_port(compInfo.interfaces[interfaceName])
+				if port == -1:
+					print "couldnt assign cached port ",compInfo.interfaces[interfaceName]
+					port,msg = get_open_port()
+				
+				if port != -1:
+					compInfo.interfaces[interfaceName] = port
+				else:
+					print "ERROR: Cant assign port to all interfaces"
+					raise PortAssignError(0, msg)
 		
 		self.compdb.append(compInfo)
 		self.savebit = True
@@ -205,17 +209,6 @@ class SpecificWorker(GenericWorker):
 					raise InvalidComponent
 				return comp.interfaces.values()[0]
 		raise ComponentNotFound
-
-
-	#
-	# sync
-	#
-	def sync(self, sourceHost):
-		#
-		# YOUR CODE HERE
-		#
-		db = compDB()
-		return db
 
 
 	#

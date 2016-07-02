@@ -39,20 +39,16 @@ class rcmasterI(rcmaster):
 	def __init__(self, worker):
 		self.worker = worker
 
-	def syncwithhost(self, remoteHost, c):
-		return self.worker.syncwithhost(remoteHost)
-	def updateDb(self, components, c):
-		return self.worker.updateDb(components)
-	def registerComp(self, compInfo, monitor, c):
-		return self.worker.registerComp(compInfo, monitor)
 	def getComps(self, filter, block, c):
 		return self.worker.getComps(filter, block)
 	def getComPort(self, compName, hostName, block, c):
 		return self.worker.getComPort(compName, hostName, block)
-	def sync(self, sourceHost, c):
-		return self.worker.sync(sourceHost)
-	def flush(self, c):
-		return self.worker.flush()
+	def updateDb(self, components, c):
+		return self.worker.updateDb(components)
+	def registerComp(self, compInfo, monitor, c):
+		return self.worker.registerComp(compInfo, monitor)
+	def flush(self, maindb, c):
+		return self.worker.flush(maindb)
 
 
 
