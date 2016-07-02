@@ -21,29 +21,29 @@ from PySide import *
 
 
 class GenericWorker(QtCore.QObject):
-	kill = QtCore.Signal()
+    kill = QtCore.Signal()
 
 
-	def __init__(self, mprx):
-		super(GenericWorker, self).__init__()
+    def __init__(self, mprx):
+        super(GenericWorker, self).__init__()
 
-		self.db_path = mprx["databasePath"]
-		self.cache_ttyl = int(mprx["cachettyl"])
-		
-		self.mutex = QtCore.QMutex(QtCore.QMutex.Recursive)
-		self.Period = 30
-		self.timer = QtCore.QTimer(self)
+        self.db_path = mprx["databasePath"]
+        self.cache_ttyl = int(mprx["cachettyl"])
+        
+        self.mutex = QtCore.QMutex(QtCore.QMutex.Recursive)
+        self.Period = 30
+        self.timer = QtCore.QTimer(self)
 
 
-	@QtCore.Slot()
-	def killYourSelf(self):
-		rDebug("Killing myself")
-		self.kill.emit()
+    @QtCore.Slot()
+    def killYourSelf(self):
+        rDebug("Killing myself")
+        self.kill.emit()
 
-	# \brief Change compute period
-	# @param per Period in ms
-	@QtCore.Slot(int)
-	def setPeriod(self, p):
-		print "Period changed", p
-		Period = p
-		timer.start(Period)
+    # \brief Change compute period
+    # @param per Period in ms
+    @QtCore.Slot(int)
+    def setPeriod(self, p):
+        print "Period changed", p
+        Period = p
+        timer.start(Period)
