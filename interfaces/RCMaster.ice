@@ -21,10 +21,16 @@ module RoboCompRCMaster
     };
     
     //stores interface name and its assigned port
-    dictionary <Sting, int> interfaceData;
+    //dictionary <Sting, int> interfaceData;
+    struct interfaceData{
+        string name;
+        int port=0;
+        string protocol="tcp";
+    };
     
     //stores info about an component
     struct compData {
+        string uid;
         string name;
         hostInfo host;
         interfaceData interfaces;
@@ -37,7 +43,10 @@ module RoboCompRCMaster
     dictionary <compData, int> cacheDb;
 
     //Exceptions
-    exception InvalidComponent{ compData component; };
+    exception InvalidComponent{ 
+        compData component;
+        string message;
+    };
     
     exception DuplicateComponent{ compData component; };
     
@@ -54,7 +63,7 @@ module RoboCompRCMaster
     {
 
         // register a component (and assaign ports) , and monitor (restart if fail?)
-        void registerComp(compData compInfo, bool monitor , out interfaceData idata)
+        void registerComp(compData compInfo, bool monitor, bool assignPort, out interfaceData idata)
             throws InvalidComponent, DuplicateComponent, PortAssignError;
         
         //just update the database, dont assign ports
