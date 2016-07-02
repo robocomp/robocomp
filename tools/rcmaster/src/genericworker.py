@@ -28,7 +28,7 @@ class GenericWorker(QtCore.QObject):
 		super(GenericWorker, self).__init__()
 
 		self.db_path = mprx["databasePath"]
-		
+		self.cache_ttyl = mprx["cachettyl"]
 		
 		self.mutex = QtCore.QMutex(QtCore.QMutex.Recursive)
 		self.Period = 30

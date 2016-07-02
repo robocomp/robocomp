@@ -37,6 +37,21 @@ preStr = "-I"+ROBOCOMP+"/interfaces/ --all "+ROBOCOMP+"/interfaces/"
 Ice.loadSlice(preStr+"RCMaster.ice")
 from RoboCompRCMaster import *
 
+# # redefine the hash funtion for component
+# def generateCompId(self):
+# 	''' 
+# 		generate unique id for the component
+# 	'''
+# 	hstr = self.name + host.__hash__()
+# 	for interface in self.interfaces:
+# 		hstr = hstr + interface.name
+# 	return hash(hstr)
+# compData.__hash__ = generateCompId
+
+#redefine hash function for interface
+def newhash(self):
+	return hash(self.name)
+interfaceData.__hash__ = newhash
 
 from rcmasterI import *
 
@@ -48,6 +63,7 @@ class SpecificWorker(GenericWorker):
 		self.timer.start(self.Period)
 		self.compdb = RoboCompRCDNS.compDB()
 		self.compcache = RoboCompRCDNS.cacheDb()
+		self.cache_ttyl = int(round(self.cache_ttyl/self.period))
 		self.savebit = False
 		self.ic = Ice.initialize()
 
@@ -68,17 +84,22 @@ class SpecificWorker(GenericWorker):
 		## TODO
 		#ping all componsnts and cache is necc
 		for comp in compdb:
-			for interfaceName, port in comp.interfaces:
-				proxy = interfaceName+':'+"tcp"+" -h "+comp.host.publicIP+' -p '+str(port)
+			for interface in comp.interfaces:
+				proxy = interface.name+':'+interface.protocol+" -h "+comp.host.publicIP+' -p '+str(interface.port)
 				basePrx = ic.stringToProxy(proxy)
 				try:
 					basePrx.ice_ping()
-				except ConnectionRefusedException:
+				except ConnectionRefusedException: #wbt other except @TODO
 					compdb.remove(comp)
-					compcache[comp]
+					compcache[comp] = self.cache_ttyl
+		
+		#invalidate cache based on ttyl
+		for cachedComp,ttyl in compcache:
+			ttyl = ttyl-1
+			if ttyl < 0:
+				del compcache[cachedcomp]
 
 		#notify port changes or crash to the cmponents conected to crasehd one
-		#invalidate cache based on ttyl
 		return True
 
 	def checkComp(self, comp):
@@ -104,6 +125,9 @@ class SpecificWorker(GenericWorker):
 		return True
 
 	def get_open_port(self, portnum=0):
+		'''
+			get an open port for component
+		'''
 		s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		try:
 			s.bind(("",portnum))
@@ -142,32 +166,36 @@ class SpecificWorker(GenericWorker):
 		@TODO monitor, multiple component for load balencing
 		'''
 		idata = interfaceData()
+
+		#check if component is valid
 		if not checkComp(compInfo):
 			print "Not a valid component"
 			raise InvalidComponent(compInfo, "")
 
+		compInfo.uid = generateCompId(compInfo)
+
+		#check if entry already exists
 		for comp in self.compdb:
 			if comp.name == compInfo.name:
-				print comp.name,'already exists in host',comp.host.hostName,'with interfaces',comp.interfaces
+				print comp.name,'already exists in host',comp.host.hostName
 				raise DuplicateComponent(compInfo)
 		
 		if assignPort == True:
-			for interface , port in compdb.interfaces:
-				port = 0
-
-			for cachedcomp in compcache:
-				if cachedcomp.name == compInfo.name and cachedcomp.host == compInfo.host and cachedcomp.interfaces.keys() == compInfo.interfaces.keys():
+			
+			# set the caches port for the components
+			for cachedcomp in compcache.keys():
+				if cachedcomp == compInfo:
 					compInfo.interfaces = cachedcomp.interfaces
 					break
 
-			for interfaceName in compInfo.interfaces:
-				port, msg = get_open_port(compInfo.interfaces[interfaceName])
+			for interface in compInfo.interfaces:
+				port, msg = get_open_port(interface.port)
 				if port == -1:
-					print "couldnt assign cached port ",compInfo.interfaces[interfaceName]
+					print "couldnt assign cached port ",interface.port
 					port,msg = get_open_port()
 				
 				if port != -1:
-					compInfo.interfaces[interfaceName] = port
+					interface.port = port
 				else:
 					print "ERROR: Cant assign port to all interfaces"
 					raise PortAssignError(0, msg)
@@ -188,14 +216,14 @@ class SpecificWorker(GenericWorker):
 			return [x for x in compdb if x.name == filter.name]
 		
 		tempdb = self.compdb
-		if tempdb.host.name != '':
+		if filter.host.name != '':
 			tempdb = [x for x in tempdb if x.host.name == filter.host.name]	
-		if tempdb.host.publicIP != '':
+		if filter.host.publicIP != '':
 			tempdb = [x for x in tempdb if x.host.publicIP == filter.host.publicIP]	
-		if tempdb.host.privateIP != '':
+		if filter.host.privateIP != '':
 			tempdb = [x for x in tempdb if x.host.privateIP == filter.host.privateIP]	
-		if len(tempdb.interfaces) != 0:
-			tempdb = [x for x in tempdb if filter.tempdb.interfaces.keys() in x.tempdb.interfaces.keys()]	
+		if len(filter.interfaces) != 0:
+			tempdb = [x for x in tempdb if x.interfaces == filter.interfaces ]	
 		return tempdb
 
 	#
@@ -207,7 +235,7 @@ class SpecificWorker(GenericWorker):
 			if comp.name == compName and comp.host.name == hostName:
 				if len(comp.interfaces) != 1:
 					raise InvalidComponent
-				return comp.interfaces.values()[0]
+				return comp.interfaces[0].port
 		raise ComponentNotFound
 
 

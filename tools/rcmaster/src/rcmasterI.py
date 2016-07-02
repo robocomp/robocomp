@@ -35,6 +35,7 @@ preStr = "-I"+ROBOCOMP+"/interfaces/ --all "+ROBOCOMP+"/interfaces/"
 Ice.loadSlice(preStr+"rcmaster.ice")
 from RoboCompRCMaster import *
 
+
 class rcmasterI(rcmaster):
 	def __init__(self, worker):
 		self.worker = worker

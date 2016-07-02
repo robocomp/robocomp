@@ -20,20 +20,20 @@ module RoboCompRCMaster
         string hostName;
     };
     
-    //stores interface name and its assigned port
-    //dictionary <Sting, int> interfaceData;
+    //stores interface info
     struct interfaceData{
         string name;
         int port=0;
         string protocol="tcp";
     };
+    sequence <interfaceData> interfaceList;
     
     //stores info about an component
     struct compData {
         string uid;
         string name;
         hostInfo host;
-        interfaceData interfaces;
+        interfaceList interfaces;
     };
 
     //database of all registred components
