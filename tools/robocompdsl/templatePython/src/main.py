@@ -240,33 +240,15 @@ if __name__ == '__main__':
 	for i in ic.getProperties():
 		parameters[str(i)] = str(ic.getProperties().getProperty(i))
 [[[cog
-needIce = False
-for req in component['requires']:
-	if communicationIsIce(req):
-		needIce = True
-for pub in component['publishes']:
-	if communicationIsIce(pub):
-		needIce = True
-for sub in component['subscribesTo']:
-	if communicationIsIce(sub):
-		needIce = True
-for imp in component['implements']:
-	if communicationIsIce(imp):
-		needIce = True
-#ice
-	if needIce:
-		cog.outl('<TABHERE>try:')
-for req in component['requires']:
-	if type(req) == str:
-		rq = req
-	else:
-		rq = req[0]
-	if communicationIsIce(req):
-		w = REQUIRE_STR.replace("<NORMAL>", rq).replace("<LOWER>", rq.lower())
-		cog.outl(w)
 
 try:
 	needIce = False
+	for req in component['requires']:
+		if communicationIsIce(req):
+			needIce = True
+	for imp in component['implements']:
+		if communicationIsIce(imp):
+			needIce = True
 	for pub in component['publishes']:
 		if communicationIsIce(pub):
 			needIce = True
@@ -282,6 +264,15 @@ try:
 except:
 	pass
 
+for req in component['requires']:
+	if type(req) == str:
+		rq = req
+	else:
+		rq = req[0]
+	if communicationIsIce(req):
+		w = REQUIRE_STR.replace("<NORMAL>", rq).replace("<LOWER>", rq.lower())
+		cog.outl(w)
+
 for pb in component['publishes']:
 	if type(pb) == str:
 		pub = pb
@@ -290,11 +281,28 @@ for pb in component['publishes']:
 	if communicationIsIce(pb):
 		w = PUBLISHES_STR.replace("<NORMAL>", pub).replace("<LOWER>", pub.lower())
 		cog.outl(w)
-#finICE
+
+cog.outl("<TABHERE>if status == 0:")
+cog.outl("<TABHERE><TABHERE>worker = SpecificWorker(mprx)")
+cog.outl("<TABHERE><TABHERE>worker.setParams(parameters)")
+for im in component['implements']:
+	if type(im) == str:
+		imp = im
+	else:
+		imp = im[0]
+	if communicationIsIce(im):
+		w = IMPLEMENTS_STR.replace("<NORMAL>", imp).replace("<LOWER>", imp.lower())
+		cog.outl(w)
+
+for sut in component['subscribesTo']:
+	if type(sut) == str:
+		st = sut
+	else:
+		st = sut[0]
+	if communicationIsIce(sut):
+		w = SUBSCRIBESTO_STR.replace("<NORMAL>", st).replace("<LOWER>", st.lower())
+		cog.outl(w)
 if component['usingROS'] == True:
-	cog.outl("<TABHERE>if status == 0:")
-	cog.outl("<TABHERE><TABHERE>worker = SpecificWorker(mprx)")
-	cog.outl("<TABHERE><TABHERE>worker.setParams(parameters)")
 	cog.outl("<TABHERE><TABHERE>rospy.init_node(\""+component['name']+"\", anonymous=True)")
 for sub in component['subscribesTo']:
 	nname = sub
@@ -336,66 +344,6 @@ for imp in component['implements']:
 					s = "\""+nname+"_"+mname+"\""
 					cog.outl("<TABHERE><TABHERE>rospy.Service("+s+", "+mname+", worker."+method['name']+")")
 
-
-	if needIce:
-		cog.outl('<TABHERE>try:')
-for req in component['requires']:
-	if type(req) == str:
-		rq = req
-	else:
-		rq = req[0]
-	if communicationIsIce(req):
-		w = REQUIRE_STR.replace("<NORMAL>", rq).replace("<LOWER>", rq.lower())
-		cog.outl(w)
-
-try:
-	needIce = False
-	for pub in component['publishes']:
-		if communicationIsIce(pub):
-			needIce = True
-	for sub in component['subscribesTo']:
-		if communicationIsIce(sub):
-			needIce = True
-	if needIce:
-		cog.outl("""
-<TABHERE><TABHERE># Topic Manager
-<TABHERE><TABHERE>proxy = ic.getProperties().getProperty("TopicManager.Proxy")
-<TABHERE><TABHERE>obj = ic.stringToProxy(proxy)
-<TABHERE><TABHERE>topicManager = IceStorm.TopicManagerPrx.checkedCast(obj)""")
-except:
-	pass
-
-for pb in component['publishes']:
-	if type(pb) == str:
-		pub = pb
-	else:
-		pub = pb[0]
-	if communicationIsIce(pb):
-		w = PUBLISHES_STR.replace("<NORMAL>", pub).replace("<LOWER>", pub.lower())
-		cog.outl(w)
-]]]
-[[[end]]]
-
-
-[[[cog
-for im in component['implements']:
-	if type(im) == str:
-		imp = im
-	else:
-		imp = im[0]
-	if communicationIsIce(im):
-		w = IMPLEMENTS_STR.replace("<NORMAL>", imp).replace("<LOWER>", imp.lower())
-		cog.outl(w)
-
-
-for sut in component['subscribesTo']:
-	if type(sut) == str:
-		st = sut
-	else:
-		st = sut[0]
-	if communicationIsIce(sut):
-		w = SUBSCRIBESTO_STR.replace("<NORMAL>", st).replace("<LOWER>", st.lower())
-		cog.outl(w)
 ]]]
 [[[end]]]
 
