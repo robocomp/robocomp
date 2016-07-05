@@ -85,6 +85,7 @@ if component['usingROS'] == True:
 		cog.outl(srv)
 A()
 if component['gui'] != 'none':
+	cog.outl('')
 	cog.outl('try:')
 	cog.outl('<TABHERE>from ui_mainUI import *')
 	cog.outl('except:')
