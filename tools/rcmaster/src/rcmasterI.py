@@ -40,10 +40,10 @@ class rcmasterI(rcmaster):
 	def __init__(self, worker):
 		self.worker = worker
 
-	def getComps(self, filter, block, c):
-		return self.worker.getComps(filter, block)
-	def getComPort(self, compName, hostName, block, c):
-		return self.worker.getComPort(compName, hostName, block)
+	def getComps(self, filter, timeOut, c):
+		return self.worker.getComps(filter, timeOut)
+	def getComPort(self, compName, hostName, timeOut, c):
+		return self.worker.getComPort(compName, hostName, timeOut)
 	def updateDb(self, components, c):
 		return self.worker.updateDb(components)
 	def registerComp(self, compInfo, monitor, assignPort, c):

@@ -71,10 +71,10 @@ module RoboCompRCMaster
             throws InvalidComponent, DuplicateComponent;
 
         //get all comps which pass the filter 
-        idempotent void getComps(compData filter, bool block, out compDB comps);
+        idempotent void getComps(compData filter, int timeOut, out compDB comps);
 
         //an simple funcion to find port of components with single interface
-        idempotent int getComPort(string compName, string hostName, bool block)
+        idempotent int getComPort(string compName, string hostName, int timeOut)
             throws ComponentNotFound;
 
         //flush the current cache or/and db

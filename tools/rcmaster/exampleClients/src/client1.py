@@ -135,7 +135,7 @@ if __name__ == '__main__':
                     print "Connecting to rcmaster " ,rcmaster_uri
                     rcmaster_proxy = RoboCompRCMaster.rcmasterPrx.checkedCast(basePrx)
                 except Ice.ConnectionRefusedException:
-                    raise Exception("RCMaster in not running")
+                    raise Exception("RCMaster is not running")
                 
                 compInfo = RoboCompRCMaster.compData(name="client1")
                 compInfo.interfaces = [RoboCompRCMaster.interfaceData('asr')]

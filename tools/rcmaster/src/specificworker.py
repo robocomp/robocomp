@@ -67,6 +67,7 @@ class SpecificWorker(GenericWorker):
         self.compcache = dict()
         self.cache_ttyl = int(round(self.cache_ttyl / self.Period))
         self.savebit = False
+        self.blocking_timeout_step = 5
         self.ic = Ice.initialize()
 
     def setParams(self, params):
@@ -118,11 +119,21 @@ class SpecificWorker(GenericWorker):
         # check valid host
         remote_ip = ''
         if comp.host.hostName != '':
-            try:
-                remote_ip = socket.gethostbyname(comp.host.hostName)
-            except socket.gaierror:
-                print 'Hostname could not be resolved'
-                return False
+            if comp.host.hostName="localhost":
+                s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+                try:
+                    s.connect(('8.8.8.8', 0))
+                    comp.host.privateIP = s.getsockname()[0]
+                except:
+                    comp.host.privateIP = '127.0.0.1'
+                finally:
+                    s.close()
+            else:
+                try:
+                    remote_ip = socket.gethostbyname(comp.host.hostName)
+                except socket.gaierror:
+                    print 'Hostname could not be resolved'
+                    return False
 
         if comp.host.privateIP == '' and remote_ip == '':
             return False
@@ -167,7 +178,7 @@ class SpecificWorker(GenericWorker):
     #
     # registerComp
     #
-    def registerComp(self, compInfo, monitor, assignPort=True):
+    def registerComp(self, compInfo, monitor, assignPort):
         '''
         register a compoent and assagin a port to it
         @TODO monitor, multiple component for load balencing
@@ -216,7 +227,7 @@ class SpecificWorker(GenericWorker):
     #
     # getComps
     #
-    def getComps(self, filter, block):
+    def getComps(self, filter, timeOut):
         # @TODO block
         tempdb = self.compdb
 
@@ -232,39 +243,39 @@ class SpecificWorker(GenericWorker):
             tempdb = [x for x in tempdb if x.interfaces == filter.interfaces]
         
         if len(tempdb) == 0:
-            if block:
-                while True:
+            if timeOut > 0:
+                while timeOut > 0:
                     try:
                         tempdb = self.getComps(filter,False)
                     except ComponentNotFound:
-                        time.sleep(5)
+                        timeOut=timeOut-self.blocking_timeout_step
+                        time.sleep(self.blocking_timeout_step)
                     else:
                         return tempdb
-            else:
-                raise ComponentNotFound
+            raise ComponentNotFound
         else:
             return tempdb
 
     #
     # getComPort
     #
-    def getComPort(self, compName, hostName, block):
+    def getComPort(self, compName, hostName, timeOut):
         # @TODO block
         for comp in self.compdb:
             if comp.name == compName and comp.host.hostName == hostName:
                 if len(comp.interfaces) != 1:
                     raise InvalidComponent
                 return comp.interfaces[0].port
-        if block:
-            while True:
+        if timeOut > 0:
+            while timeOut > 0:
                 try:
                     port = self.getComPort(compName,hostName,False)
                 except ComponentNotFound:
-                    time.sleep(5)
+                    timeOut=timeOut-self.blocking_timeout_step
+                    time.sleep(self.blocking_timeout_step)
                 else:
-                    return port
-        else:
-            raise ComponentNotFound
+                    return port    
+        raise ComponentNotFound
 
     #
     # flush
