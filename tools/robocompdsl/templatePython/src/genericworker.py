@@ -53,7 +53,7 @@ import sys
 from PySide import *
 
 [[[cog
-if component['usingROS']:
+if component['usingROS'] == True:
 	cog.outl('import rospy')
 	cog.outl('from std_msgs.msg import *')
 	for include in modulesList:
@@ -95,7 +95,7 @@ Z()
 [[[end]]]
 
 [[[cog
-if component['usingROS']:
+if component['usingROS'] == True:
 	#CREANDO CLASES PARA LOS PUBLISHERS
 	for imp in component['publishes']:
 		nname = imp
