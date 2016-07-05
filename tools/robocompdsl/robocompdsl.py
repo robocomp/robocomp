@@ -315,7 +315,8 @@ if sys.argv[1].endswith(".cdsl"):
 					replaceTagsInFile(ofile)
 	else:
 		print 'Unsupported language', component['language']
-	if component['usingROS']:
+		
+	if component['usingROS'] and str(component['usingROS'])!='None':
 		for imp in component['imports']:
 			generateHeaders("/opt/"+imp, outputPath+"/src", component)
 elif sys.argv[1].endswith(".idsl"):
