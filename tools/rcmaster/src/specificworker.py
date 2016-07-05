@@ -211,18 +211,17 @@ class SpecificWorker(GenericWorker):
         self.compdb.append(compInfo)
         self.savebit = True
         print 'New component registred: ', compInfo,'\n'
-        idata = compInfo.interfaces
-        return idata
+        return compInfo.interfaces
 
     #
     # getComps
     #
     def getComps(self, filter, block):
         # @TODO block
-        if filter.name != '':
-            return [x for x in self.compdb if x.name == filter.name]
-
         tempdb = self.compdb
+
+        if filter.name != '':
+            tempdb = [x for x in tempdb if x.name == filter.name]
         if filter.host.name != '':
             tempdb = [x for x in tempdb if x.host.name == filter.host.name]
         if filter.host.privateIP != '':
@@ -231,7 +230,20 @@ class SpecificWorker(GenericWorker):
             tempdb = [x for x in tempdb if x.host.privateIP == filter.host.privateIP]
         if len(filter.interfaces) != 0:
             tempdb = [x for x in tempdb if x.interfaces == filter.interfaces]
-        return tempdb
+        
+        if len(tempdb) == 0:
+            if block:
+                while True:
+                    try:
+                        tempdb = self.getComps(filter,False)
+                    except ComponentNotFound:
+                        time.sleep(5)
+                    else:
+                        return tempdb
+            else:
+                raise ComponentNotFound
+        else:
+            return tempdb
 
     #
     # getComPort
@@ -243,7 +255,16 @@ class SpecificWorker(GenericWorker):
                 if len(comp.interfaces) != 1:
                     raise InvalidComponent
                 return comp.interfaces[0].port
-        raise ComponentNotFound
+        if block:
+            while True:
+                try:
+                    port = self.getComPort(compName,hostName,False)
+                except ComponentNotFound:
+                    time.sleep(5)
+                else:
+                    return port
+        else:
+            raise ComponentNotFound
 
     #
     # flush
