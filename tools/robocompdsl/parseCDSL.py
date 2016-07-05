@@ -244,7 +244,7 @@ class CDSLParsing:
 				component['recursiveImports'] += [x for x in importedModule['imports'].split('#') if len(x)>0]
 				#print 'moduleee', imp, 'done'
 			
-		#print component['recursiveImports']
+		print component['recursiveImports']
 		# Language
 		component['language'] = tree['properties']['language'][0]
 		# qtVersion

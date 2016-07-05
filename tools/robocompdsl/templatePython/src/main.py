@@ -184,12 +184,11 @@ Ice.loadSlice(preStr+"CommonBehavior.ice")
 import RoboCompCommonBehavior
 
 [[[cog
-for imp in component['imports']:
-	if imp in component['recursiveImports']:
-		module = IDSLParsing.gimmeIDSL(imp.split('/')[-1])
-		incl = imp.split('/')[-1].split('.')[0]
-		cog.outl('Ice.loadSlice(preStr+"'+incl+'.ice")')
-		cog.outl('import '+module['name']+'')
+for imp in component['recursiveImports']:
+	module = IDSLParsing.gimmeIDSL(imp.split('/')[-1])
+	incl = imp.split('/')[-1].split('.')[0]
+	cog.outl('Ice.loadSlice(preStr+"'+incl+'.ice")')
+	cog.outl('import '+module['name']+'')
 ]]]
 [[[end]]]
 
@@ -240,11 +239,8 @@ if __name__ == '__main__':
 	parameters = {}
 	for i in ic.getProperties():
 		parameters[str(i)] = str(ic.getProperties().getProperty(i))
-	if status == 0:
-		worker = SpecificWorker(mprx)
-		worker.setParams(parameters)
 [[[cog
-if component['usingROS']:
+if component['usingROS'] == True:
 	cog.outl("<TABHERE><TABHERE>rospy.init_node(\""+component['name']+"\", anonymous=True)")
 needIce = False
 for req in component['requires']:
@@ -332,21 +328,11 @@ for pb in component['publishes']:
 	if communicationIsIce(pb):
 		w = PUBLISHES_STR.replace("<NORMAL>", pub).replace("<LOWER>", pub.lower())
 		cog.outl(w)
-
-needIce = False
-for req in component['requires']:
-	if communicationIsIce(req):
-		needIce = True
-	for pub in component['publishes']:
-		if communicationIsIce(pub):
-			needIce = True
-	for sub in component['subscribesTo']:
-		if communicationIsIce(sub):
-			needIce = True
-	if needIce:
-		cog.outl("""<TABHERE>except:\n<TABHERE><TABHERE>traceback.print_exc()\n<TABHERE><TABHERE>status = 1""")
 ]]]
 [[[end]]]
+	if status == 0:
+		worker = SpecificWorker(mprx)
+		worker.setParams(parameters)
 
 
 [[[cog
