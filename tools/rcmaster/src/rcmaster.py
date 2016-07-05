@@ -130,11 +130,12 @@ if __name__ == '__main__':
 
         # Remote object connection for DifferentialRobot
         try:
-            mprx["databasePath"] = ic.getProperties().getProperty('rcmaster.dbPath')
+            mprx["databasePath"] = ic.getProperties().getProperty('rcmster.dbPath')
             mprx["cachettyl"] = ic.getProperties().getProperty('rcmaster.cachettyl')
             mprx["componentsToStart"] = ic.getProperties().getProperty('rcmaster.componentsToStart').split(',')
 
-            if '' in mprx.values():
+            if '' in mprx.values(): # @TODO improve
+                print mprx.values()
                 raise Ice.UserException("Cannot get all properties.")
         except Ice.Exception, e:
             print e
@@ -152,8 +153,20 @@ if __name__ == '__main__':
         adapter.add(rcmasterI(worker), ic.stringToIdentity('rcmaster'))
         adapter.activate()
         masteruri = adapter.getPublishedEndpoints()[0].toString().split(" ")
-        os.environ["RCMASTER_URI"] = str(masteruri[2] + ':' + masteruri[4])
-
+        
+        #write to config file
+        try:
+            f = open(os.path.join(os.path.expanduser('~'), ".config/RoboComp/rcmaster.config"),'r+')
+            configs = f.read().splitlines()
+            if len(configs) == 0:configs = ['']
+            f.close()
+        except :
+            configs = ['']
+        f = open(os.path.join(os.path.expanduser('~'), ".config/RoboComp/rcmaster.config"), 'w')
+        configs[0] = str(masteruri[2] + ':' + masteruri[4])
+        f.write("\n".join(configs));f.close()
+        print "starting rcmaster on ",masteruri[2],"in port ",masteruri[4]
+        
         #       adapter.add(CommonBehaviorI(<LOWER>I, ic), ic.stringToIdentity('commonbehavior'))
 
         app.exec_()

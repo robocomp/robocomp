@@ -46,8 +46,8 @@ class rcmasterI(rcmaster):
 		return self.worker.getComPort(compName, hostName, block)
 	def updateDb(self, components, c):
 		return self.worker.updateDb(components)
-	def registerComp(self, compInfo, monitor, c):
-		return self.worker.registerComp(compInfo, monitor)
+	def registerComp(self, compInfo, monitor, assignPort, c):
+		return self.worker.registerComp(compInfo, monitor, assignPort)
 	def flush(self, maindb, c):
 		return self.worker.flush(maindb)
 

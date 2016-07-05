@@ -82,26 +82,29 @@ class SpecificWorker(GenericWorker):
     @QtCore.Slot()
     def compute(self):
         print 'SpecificWorker.compute...'
+        print 'no of components registred :',len(self.compdb)
+        print 'no of components cached :',len(self.compcache)
         if self.savebit:
             self.savedb()
 
         # ping all componsnts and cache is necc
         for comp in self.compdb:
             for interface in comp.interfaces:
-                proxy = interface.name + ':' + interface.protocol + " -h " + comp.host.publicIP + ' -p ' + str(
+                proxy = interface.name + ':' + interface.protocol + " -h " + comp.host.privateIP + ' -p ' + str(
                     interface.port)
+                # print proxy
                 basePrx = self.ic.stringToProxy(proxy)
                 try:
                     basePrx.ice_ping()
-                except ConnectionRefusedException:  # wbt other except @TODO
+                except Ice.ConnectionRefusedException:  # wbt other except @TODO
                     print "caching component ", comp.name
                     self.compdb.remove(comp)
                     self.compcache[comp] = self.cache_ttyl
 
         # invalidate cache based on ttyl
-        for cachedComp, ttyl in self.compcache:
-            ttyl = ttyl - 1
-            if ttyl < 0:
+        for cachedComp in self.compcache.keys():
+            self.compcache[cachedComp] = self.compcache[cachedComp] - 1
+            if self.compcache[cachedComp] < 0:
                 print "removing ", cachedComp.name, "from cache"
                 del self.compcache[cachedComp]
         ## TODO
@@ -205,7 +208,7 @@ class SpecificWorker(GenericWorker):
 
         self.compdb.append(compInfo)
         self.savebit = True
-        print 'New component registred: ', comp.host, comp.name
+        print 'New component registred: ', compInfo,'\n'
         idata = compInfo.interfaces
         return idata
 
@@ -220,8 +223,8 @@ class SpecificWorker(GenericWorker):
         tempdb = self.compdb
         if filter.host.name != '':
             tempdb = [x for x in tempdb if x.host.name == filter.host.name]
-        if filter.host.publicIP != '':
-            tempdb = [x for x in tempdb if x.host.publicIP == filter.host.publicIP]
+        if filter.host.privateIP != '':
+            tempdb = [x for x in tempdb if x.host.privateIP == filter.host.privateIP]
         if filter.host.privateIP != '':
             tempdb = [x for x in tempdb if x.host.privateIP == filter.host.privateIP]
         if len(filter.interfaces) != 0:

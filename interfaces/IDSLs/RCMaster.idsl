@@ -9,7 +9,7 @@ module RoboCompRCMaster
     struct hostInfo {
         string publicIP;
         string privateIP;
-        string hostName;
+        string hostName="localhost";
     };
     
     //stores interface info
@@ -55,7 +55,7 @@ module RoboCompRCMaster
     {
 
         // register a component (and assaign ports) , and monitor (restart if fail?)
-        void registerComp(compData compInfo, bool monitor, bool assignPort, out interfaceData idata)
+        void registerComp(compData compInfo, bool monitor, bool assignPort, out interfaceList idata)
             throws InvalidComponent, DuplicateComponent, PortAssignError;
         
         //just update the database, dont assign ports
