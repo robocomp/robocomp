@@ -52,7 +52,6 @@ from RoboCompRCMaster import *
 def newhash(self):
     return hash(self.name)
 
-
 interfaceData.__hash__ = newhash
 
 from rcmasterI import *
@@ -190,8 +189,11 @@ class SpecificWorker(GenericWorker):
 
             # set the caches port for the components
             for cachedcomp in self.compcache.keys():
-                if cachedcomp == compInfo:
+                if cachedcomp.name == compInfo.name:
+                    print "This is a cached component ..."
                     compInfo.interfaces = cachedcomp.interfaces
+                    print "removing ", cachedcomp.name, "from cache"
+                    del self.compcache[cachedcomp]
                     break
 
             for interface in compInfo.interfaces:
@@ -237,7 +239,7 @@ class SpecificWorker(GenericWorker):
     def getComPort(self, compName, hostName, block):
         # @TODO block
         for comp in self.compdb:
-            if comp.name == compName and comp.host.name == hostName:
+            if comp.name == compName and comp.host.hostName == hostName:
                 if len(comp.interfaces) != 1:
                     raise InvalidComponent
                 return comp.interfaces[0].port
@@ -247,6 +249,8 @@ class SpecificWorker(GenericWorker):
     # flush
     #
     def flush(self, maindb):
-        self.compdb = []
+        print "Flusshing the cache ..."
+        self.compcache = []
         if maindb:
-            self.compcache = []
+            self.compdb = []
+            print "Flusshing the mainDB ..."

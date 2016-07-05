@@ -126,25 +126,22 @@ if __name__ == '__main__':
 
         # Remote object connection for rcmaster
         try:
-            proxyString = ic.getProperties().getProperty('rcmasterProxy')
+            
             try:
                 with open(os.path.join(os.path.expanduser('~'), ".config/RoboComp/rcmaster.config"), 'r') as f:
                     rcmaster_uri = f.readline().strip().split(":")
-                print "connecting to rcmaster " ,rcmaster_uri
                 basePrx = ic.stringToProxy("rcmaster:tcp -h "+rcmaster_uri[0]+" -p "+rcmaster_uri[1])
                 try:
+                    print "Connecting to rcmaster " ,rcmaster_uri
                     rcmaster_proxy = RoboCompRCMaster.rcmasterPrx.checkedCast(basePrx)
                 except Ice.ConnectionRefusedException:
                     raise Exception("RCMaster in not running")
                 
-                compInfo = RoboCompRCMaster.compData()
-                compInfo.name = "client1"
-                interface = RoboCompRCMaster.interfaceData()
-                interface.name = 'asr'
-                compInfo.interfaces = [interface]
-                print compInfo
+                compInfo = RoboCompRCMaster.compData(name="client1")
+                compInfo.interfaces = [RoboCompRCMaster.interfaceData('asr')]
                 idata = rcmaster_proxy.registerComp(compInfo,False,True)
                 print idata
+
                 mprx["rcmasterProxy"] = rcmaster_proxy
             except Ice.Exception:
                 print 'Cannot connect to the remote object (rcmaster)'

@@ -2,7 +2,7 @@
 rcmaster.Endpoints=tcp -p 0
 rcmster.dbPath=/var/tmp/RoboComp
 rcmaster.componentsToStart=rclogger
-rcmaster.cachettyl=20000
+rcmaster.cachettyl=2000000
 
 
 # This property is used by the clients to connect to IceStorm.
