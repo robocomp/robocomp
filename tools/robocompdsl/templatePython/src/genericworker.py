@@ -49,8 +49,44 @@ Z()
 #    You should have received a copy of the GNU General Public License
 #    along with RoboComp.  If not, see <http://www.gnu.org/licenses/>.
 
-import sys
+import sys, Ice
 from PySide import *
+
+ROBOCOMP = ''
+try:
+	ROBOCOMP = os.environ['ROBOCOMP']
+except:
+	print '$ROBOCOMP environment variable not set, using the default value /opt/robocomp'
+	ROBOCOMP = '/opt/robocomp'
+if len(ROBOCOMP)<1:
+	print 'genericworker.py: ROBOCOMP environment variable not set! Exiting.'
+	sys.exit()
+
+preStr = "-I"+ROBOCOMP+"/interfaces/ -I/opt/robocomp/interfaces/ --all "+ROBOCOMP+"/interfaces/"
+Ice.loadSlice(preStr+"CommonBehavior.ice")
+import RoboCompCommonBehavior
+
+[[[cog
+for imp in component['recursiveImports']:
+	cog.outl('preStr = "-I"+ROBOCOMP+"/interfaces/ --all "+ROBOCOMP+"/interfaces/"')
+	module = IDSLParsing.gimmeIDSL(imp.split('/')[-1])
+	incl = imp.split('/')[-1].split('.')[0]
+	cog.outl('Ice.loadSlice(preStr+"'+incl+'.ice")')
+	cog.outl('from '+module['name']+' import *')
+]]]
+[[[end]]]
+
+
+[[[cog
+	for imp in component['implements']+component['subscribesTo']:
+		if type(imp) == str:
+			im = imp
+		else:
+			im = imp[0]
+		if communicationIsIce(imp):
+			cog.outl('from ' + im.lower() + 'I import *')
+]]]
+[[[end]]]
 
 [[[cog
 if component['usingROS'] == True:

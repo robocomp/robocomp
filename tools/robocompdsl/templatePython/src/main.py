@@ -158,7 +158,7 @@ Z()
 #
 #
 
-import sys, traceback, Ice, IceStorm, subprocess, threading, time, Queue, os, copy
+import sys, traceback, IceStorm, subprocess, threading, time, Queue, os, copy
 
 # Ctrl+c handling
 import signal
@@ -167,30 +167,6 @@ signal.signal(signal.SIGINT, signal.SIG_DFL)
 from PySide import *
 
 from specificworker import *
-
-ROBOCOMP = ''
-try:
-	ROBOCOMP = os.environ['ROBOCOMP']
-except:
-	print '$ROBOCOMP environment variable not set, using the default value /opt/robocomp'
-	ROBOCOMP = '/opt/robocomp'
-if len(ROBOCOMP)<1:
-	print 'ROBOCOMP environment variable not set! Exiting.'
-	sys.exit()
-
-
-preStr = "-I"+ROBOCOMP+"/interfaces/ -I/opt/robocomp/interfaces/ --all "+ROBOCOMP+"/interfaces/"
-Ice.loadSlice(preStr+"CommonBehavior.ice")
-import RoboCompCommonBehavior
-
-[[[cog
-for imp in component['recursiveImports']:
-	module = IDSLParsing.gimmeIDSL(imp.split('/')[-1])
-	incl = imp.split('/')[-1].split('.')[0]
-	cog.outl('Ice.loadSlice(preStr+"'+incl+'.ice")')
-	cog.outl('import '+module['name']+'')
-]]]
-[[[end]]]
 
 
 class CommonBehaviorI(RoboCompCommonBehavior.CommonBehavior):
