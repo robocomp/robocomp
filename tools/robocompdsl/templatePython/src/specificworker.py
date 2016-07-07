@@ -96,9 +96,16 @@ for imp in component['imports']:
 class SpecificWorker(GenericWorker):
 	def __init__(self, proxy_map):
 		super(SpecificWorker, self).__init__(proxy_map)
-		self.timer.timeout.connect(self.compute)
-		self.Period = 2000
-		self.timer.start(self.Period)
+[[[cog
+if component['statemachine'] is 'none':
+	cog.outl("self.timer.timeout.connect(self.compute)")
+	cog.outl("self.Period = 2000")
+	cog.outl("self.timer.start(self.Period)")
+]]]
+[[[end]]]
+
+
+
 [[[cog
 if sm is not "none":
 	cog.outl("<TABHERE><TABHERE>self." + sm['machine']['name'] + ".start()")
@@ -114,18 +121,18 @@ if sm is not "none":
 		#	traceback.print_exc()
 		#	print "Error reading config params"
 		return True
-
-	@QtCore.Slot()
-	def compute(self):
-		print 'SpecificWorker.compute...'
-		#try:
-		#	self.differentialrobot_proxy.setSpeedBase(100, 0)
-		#except Ice.Exception, e:
-		#	traceback.print_exc()
-		#	print e
-		return True
 [[[cog
-if component['statemachine'] != 'none':
+if component['statemachine'] is 'none':
+	cog.outl("<TABHERE>@QtCore.Slot()")
+	cog.outl("<TABHERE>def compute(self):")
+	cog.outl("<TABHERE><TABHERE>print 'SpecificWorker.compute...'")
+	cog.outl("<TABHERE><TABHERE>#try:")
+	cog.outl("<TABHERE><TABHERE>#	self.differentialrobot_proxy.setSpeedBase(100, 0)")
+	cog.outl("<TABHERE><TABHERE>#except Ice.Exception, e:")
+	cog.outl("<TABHERE><TABHERE>#	traceback.print_exc()")
+	cog.outl("<TABHERE><TABHERE>"#	print e)
+	cog.outl("<TABHERE><TABHERE>return True")
+else:
 	codVirtuals = ""
 	if sm['machine']['contents']['states'] is not "none":
 		for state in sm['machine']['contents']['states']:
