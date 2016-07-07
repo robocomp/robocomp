@@ -29,6 +29,7 @@ class GenericWorker(QtCore.QObject):
 
 
 		self.rcmaster_proxy = mprx["rcmasterProxy"]
+		self.test_proxy = mprx["testProxy"]
 
 		
 		

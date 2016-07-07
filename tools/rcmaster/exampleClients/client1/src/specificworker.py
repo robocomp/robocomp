@@ -38,6 +38,8 @@ Ice.loadSlice(preStr+"RCMaster.ice")
 from RoboCompRCMaster import *
 Ice.loadSlice(preStr+"ASR.ice")
 from RoboCompASR import *
+Ice.loadSlice(preStr+"Test.ice")
+from RoboCompTest import *
 
 
 from asrI import *

@@ -83,6 +83,8 @@ Ice.loadSlice(preStr+"RCMaster.ice")
 import RoboCompRCMaster
 Ice.loadSlice(preStr+"ASR.ice")
 import RoboCompASR
+Ice.loadSlice(preStr+"Test.ice")
+import RoboCompTest
 
 
 class CommonBehaviorI(RoboCompCommonBehavior.CommonBehavior):
@@ -126,30 +128,50 @@ if __name__ == '__main__':
 
         # Remote object connection for rcmaster
         try:
-            
+            with open(os.path.join(os.path.expanduser('~'), ".config/RoboComp/rcmaster.config"), 'r') as f:
+                rcmaster_uri = f.readline().strip().split(":")
+            basePrx = ic.stringToProxy("rcmaster:tcp -h "+rcmaster_uri[0]+" -p "+rcmaster_uri[1])
             try:
-                with open(os.path.join(os.path.expanduser('~'), ".config/RoboComp/rcmaster.config"), 'r') as f:
-                    rcmaster_uri = f.readline().strip().split(":")
-                basePrx = ic.stringToProxy("rcmaster:tcp -h "+rcmaster_uri[0]+" -p "+rcmaster_uri[1])
-                try:
-                    print "Connecting to rcmaster " ,rcmaster_uri
-                    rcmaster_proxy = RoboCompRCMaster.rcmasterPrx.checkedCast(basePrx)
-                except Ice.ConnectionRefusedException:
-                    raise Exception("RCMaster is not running")
-                
-                compInfo = RoboCompRCMaster.compData(name="client1")
-                compInfo.interfaces = [RoboCompRCMaster.interfaceData('asr')]
-                idata = rcmaster_proxy.registerComp(compInfo,False,True)
-                print idata
+                print "Connecting to rcmaster " ,rcmaster_uri
+                rcmaster_proxy = RoboCompRCMaster.rcmasterPrx.checkedCast(basePrx)
+            except Ice.ConnectionRefusedException:
+                raise Exception("RCMaster is not running")
 
-                mprx["rcmasterProxy"] = rcmaster_proxy
-            except Ice.Exception:
-                print 'Cannot connect to the remote object (rcmaster)'
-                traceback.print_exc()
-                status = 1
+            compInfo = RoboCompRCMaster.compData(name="client1")
+            compInfo.interfaces = [RoboCompRCMaster.interfaceData('asr')]
+            idata = rcmaster_proxy.registerComp(compInfo,False,True)
+            print idata
+
+            mprx["rcmasterProxy"] = rcmaster_proxy
+        except Ice.Exception:
+            print 'Cannot connect to the remote object (rcmaster)'
+            traceback.print_exc()
+            status = 1
+
+
+        # Remote object connection for test
+        try:
+            
+            while True:
+                try:
+                    port = rcmaster_proxy.getComPort("client3","localhost",0);
+                    basePrx = ic.stringToProxy("test:tcp -h localhost -p "+str(port))
+                    test_proxy = RoboCompTest.testPrx.checkedCast(basePrx)
+                    mprx["testProxy"] = test_proxy
+                    test_proxy.printmsg("helllo from client1");
+                except RoboCompRCMaster.ComponentNotFound:
+                    print 'Cannot connect to client3'
+                    time.sleep(3)
+                except Ice.Exception:
+                    print 'Cannot connect to the remote object (client3)'
+                    traceback.print_exc()
+                    status = 1
+                else:
+                    break
+                    
         except Ice.Exception, e:
             print e
-            print 'Cannot get rcmasterProxy property.'
+            print 'Cannot get testProxy property.'
             status = 1
 
     except:
@@ -161,7 +183,7 @@ if __name__ == '__main__':
         worker = SpecificWorker(mprx)
 
 
-        adapter = ic.createObjectAdapterWithEndpoints('ASR',idata[0].protocol+' -h localhost -p '+str(idata[0].port))
+        adapter = ic.createObjectAdapterWithEndpoints('asr',idata[0].protocol+' -h localhost -p '+str(idata[0].port))
         adapter.add(ASRI(worker), ic.stringToIdentity('asr'))
         adapter.activate()
 

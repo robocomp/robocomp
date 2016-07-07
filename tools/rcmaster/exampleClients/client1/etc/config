@@ -4,6 +4,7 @@ ASR.Endpoints=tcp -p 0
 
 # Proxies for required interfaces
 rcmasterProxy = rcmaster:tcp -h localhost -p 0
+testProxy = test:tcp -h localhost -p 0
 
 
 
