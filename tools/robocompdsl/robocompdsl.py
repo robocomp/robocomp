@@ -17,6 +17,8 @@ def generateHeaders(idslFile, outputPath, comp): #idslFile es el fichero idsl im
 
 	def generarH(idslFile, imported):
 		idsl = IDSLParsing.fromFileIDSL(idslFile)
+		os.system("rm "+outputPath + "/" + idsl['module']['name'] + "/msg/__init__.py")
+		os.system("rm "+outputPath + "/" + idsl['module']['name'] + "/srv/__init__.py")
 		for imp in idsl['module']['contents']:
 			if imp['type'] in ['struct','sequence']:
 				for f in [ "SERVANT.MSG"]:
@@ -38,12 +40,16 @@ def generateHeaders(idslFile, outputPath, comp): #idslFile es el fichero idsl im
 							commandPY  = commandPY + " -I" + impo + ":" + outputPath
 					if not os.path.exists(outputPath):
 						creaDirectorio(outputPath)
-					commandCPP = commandCPP + " -p "+ idsl['module']['name'] + " -o "+ outputPath+"/"+idsl['module']['name']+ " -e /opt/ros/kinetic/share/gencpp/cmake/.."
-					commandPY = commandPY + " -p "+ idsl['module']['name'] + " -o "+ outputPath+"/"+idsl['module']['name']
+					commandCPP = commandCPP + " -p "+ idsl['module']['name'] + " -o " + outputPath + "/" + idsl['module']['name'] + "/msg"+ " -e /opt/ros/kinetic/share/gencpp/cmake/.."
+					commandPY = commandPY + " -p "+ idsl['module']['name'] + " -o " + outputPath + "/" + idsl['module']['name'] + "/msg"
 					if comp['language'].lower() == 'cpp':
 						os.system(commandCPP)
 					else:
 						os.system(commandPY)
+					fileInit = open(outputPath + "/" + idsl['module']['name'] + "/msg/__init__.py", 'a')
+					fileInit.write("from ._"+imp['name']+" import *\n")
+					fileInit.close()
+					open(outputPath + "/" + idsl['module']['name'] + "/__init__.py", 'w')
 		for imp in idsl['module']['contents']:
 			if imp['type'] == 'interface':
 				for ima in component['implements']+component['requires']:
@@ -73,12 +79,16 @@ def generateHeaders(idslFile, outputPath, comp): #idslFile es el fichero idsl im
 												commandPY  = commandPY + " -I" + impo + ":" + outputPath
 										if not os.path.exists(outputPath):
 											creaDirectorio(outputPath)
-										commandCPP = commandCPP + " -p "+ idsl['module']['name'] + " -o "+ outputPath+"/"+idsl['module']['name']+ " -e /opt/ros/kinetic/share/gencpp/cmake/.."
-										commandPY = commandPY + " -p "+ idsl['module']['name'] + " -o "+ outputPath+"/"+idsl['module']['name']
+										commandCPP = commandCPP + " -p "+ idsl['module']['name'] + " -o "+ outputPath+"/"+idsl['module']['name'] + "/srv" + " -e /opt/ros/kinetic/share/gencpp/cmake/.."
+										commandPY = commandPY + " -p "+ idsl['module']['name'] + " -o "+ outputPath+"/"+idsl['module']['name'] + "/srv"
 										if comp['language'].lower() == 'cpp':
 											os.system(commandCPP)
 										else:
 											os.system(commandPY)
+										fileInit = open(outputPath + "/" + idsl['module']['name'] + "/srv/__init__.py", 'a')
+										fileInit.write("from ._"+imp['name']+" import *\n")
+										fileInit.close()
+										open(outputPath + "/" + idsl['module']['name'] + "/__init__.py", 'w')
 								else:
 									print "error: service with too many params. Form is: void method(type inVar, out type outVar);"
 									#sys.exit(-1)
@@ -358,7 +368,9 @@ elif sys.argv[1].endswith(".idsl"):
 									sys.exit(-1)
 								replaceTagsInFile(ofile)
 		return idsl['module']['name']
-
-	for importIDSL in idsl['imports']:
-		imported.append(generarMSG(importIDSL, []))
+	try:
+		for importIDSL in idsl['imports']:
+			imported.append(generarMSG(importIDSL, []))
+	except:
+		pass
 	generarMSG(inputFile, imported)
