@@ -146,7 +146,7 @@ if __name__ == '__main__':
 
         # Remote object connection for test
         try:
-            
+
             while True:
                 try:
                     port = rcmaster_proxy.getComPort("client3","localhost",0);
@@ -155,7 +155,7 @@ if __name__ == '__main__':
                     mprx["testProxy"] = test_proxy
                     test_proxy.printmsg("helllo from client1");
                 except RoboCompRCMaster.ComponentNotFound:
-                    print 'Cannot connect to client3'
+                    print 'waiting for client3'
                     time.sleep(3)
                 except Ice.Exception:
                     print 'Cannot connect to the remote object (client3)'
@@ -181,7 +181,7 @@ if __name__ == '__main__':
         compInfo.interfaces = [RoboCompRCMaster.interfaceData('asr')]
         idata = rcmaster_proxy.registerComp(compInfo,False,True)
         print idata
-        
+
         adapter = ic.createObjectAdapterWithEndpoints('asr',idata[0].protocol+' -h localhost -p '+str(idata[0].port))
         adapter.add(ASRI(worker), ic.stringToIdentity('asr'))
         adapter.activate()

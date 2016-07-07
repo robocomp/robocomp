@@ -24,13 +24,13 @@ from genericworker import *
 
 ROBOCOMP = ''
 try:
-	ROBOCOMP = os.environ['ROBOCOMP']
+    ROBOCOMP = os.environ['ROBOCOMP']
 except:
-	print '$ROBOCOMP environment variable not set, using the default value /opt/robocomp'
-	ROBOCOMP = '/opt/robocomp'
+    print '$ROBOCOMP environment variable not set, using the default value /opt/robocomp'
+    ROBOCOMP = '/opt/robocomp'
 if len(ROBOCOMP)<1:
-	print 'genericworker.py: ROBOCOMP environment variable not set! Exiting.'
-	sys.exit()
+    print 'genericworker.py: ROBOCOMP environment variable not set! Exiting.'
+    sys.exit()
 
 
 preStr = "-I"+ROBOCOMP+"/interfaces/ --all "+ROBOCOMP+"/interfaces/"
@@ -45,85 +45,96 @@ from RoboCompTest import *
 from asrI import *
 
 class SpecificWorker(GenericWorker):
-	def __init__(self, proxy_map):
-		super(SpecificWorker, self).__init__(proxy_map)
-		self.timer.timeout.connect(self.compute)
-		self.Period = 2000
-		self.timer.start(self.Period)
+    def __init__(self, proxy_map):
+        super(SpecificWorker, self).__init__(proxy_map)
+        self.timer.timeout.connect(self.compute)
+        self.Period = 2000
+        self.timer.start(self.Period)
 
-	def setParams(self, params):
-		#try:
-		#	par = params["InnerModelPath"]
-		#	innermodel_path=par.value
-		#	innermodel = InnerModel(innermodel_path)
-		#except:
-		#	traceback.print_exc()
-		#	print "Error reading config params"
-		return True
+    def setParams(self, params):
+        #try:
+        #    par = params["InnerModelPath"]
+        #    innermodel_path=par.value
+        #    innermodel = InnerModel(innermodel_path)
+        #except:
+        #    traceback.print_exc()
+        #    print "Error reading config params"
+        return True
 
-	@QtCore.Slot()
-	def compute(self):
-		print 'SpecificWorker.compute...'
-		#try:
-		#	self.differentialrobot_proxy.setSpeedBase(100, 0)
-		#except Ice.Exception, e:
-		#	traceback.print_exc()
-		#	print e
-		return True
+    @QtCore.Slot()
+    def compute(self):
+        print 'SpecificWorker.compute...'
+        #try:
+        #    self.differentialrobot_proxy.setSpeedBase(100, 0)
+        #except Ice.Exception, e:
+        #    traceback.print_exc()
+        #    print e
+        return True
 
+    def waitForComp(self, compInfo):
+        while True:
+            try:
+                comps = rcmaster_proxy.getComps(compName)
+                
+                basePrx = ic.stringToProxy("test:tcp -h localhost -p " + str(port))
+                proxy = RoboCompTest.testPrx.checkedCast(basePrx)
+            except RoboCompRCMaster.ComponentNotFound:
+                print 'waiting for client3'
+                time.sleep(3)
+            except Ice.Exception:
+                print 'Cannot connect to the remote object (client3)'
+                traceback.print_exc()
+                status = 1
+            else:
+                break
 
-	#
-	# listenWav
-	#
-	def listenWav(self, path):
-		#
-		# YOUR CODE HERE
-		#
-		pass
-
-
-	#
-	# listenVector
-	#
-	def listenVector(self, audio):
-		#
-		# YOUR CODE HERE
-		#
-		pass
-
-
-	#
-	# resetPhraseBuffer
-	#
-	def resetPhraseBuffer(self):
-		#
-		# YOUR CODE HERE
-		#
-		pass
+    #
+    # listenWav
+    #
+    def listenWav(self, path):
+        #
+        # YOUR CODE HERE
+        #
+        pass
 
 
-	#
-	# getLastPhrase
-	#
-	def getLastPhrase(self):
-		ret = string()
-		#
-		# YOUR CODE HERE
-		#
-		return ret
+    #
+    # listenVector
+    #
+    def listenVector(self, audio):
+        #
+        # YOUR CODE HERE
+        #
+        pass
 
 
-	#
-	# phraseAvailable
-	#
-	def phraseAvailable(self):
-		ret = bool()
-		#
-		# YOUR CODE HERE
-		#
-		return ret
+    #
+    # resetPhraseBuffer
+    #
+    def resetPhraseBuffer(self):
+        #
+        # YOUR CODE HERE
+        #
+        pass
 
 
+    #
+    # getLastPhrase
+    #
+    def getLastPhrase(self):
+        ret = string()
+        #
+        # YOUR CODE HERE
+        #
+        return ret
 
 
-
+    #
+    # phraseAvailable
+    #
+    def phraseAvailable(self):
+        ret = bool()
+        #
+        # YOUR CODE HERE
+        #
+        return ret

@@ -39,7 +39,7 @@ from RoboCompRCMaster import *
 
 # # redefine the hash funtion for component
 # def generateCompId(self):
-#   ''' 
+#   '''
 #       generate unique id for the component
 #   '''
 #   hstr = self.name + host.__hash__()
@@ -221,7 +221,7 @@ class SpecificWorker(GenericWorker):
     # getComps
     #
     def getComps(self, filter, timeOut):
-        # @TODO block
+        # @TODO remove timeOut
         tempdb = self.compdb
 
         if filter.name != '':
@@ -234,7 +234,7 @@ class SpecificWorker(GenericWorker):
             tempdb = [x for x in tempdb if x.host.privateIP == filter.host.privateIP]
         if len(filter.interfaces) != 0:
             tempdb = [x for x in tempdb if x.interfaces == filter.interfaces]
-        
+
         if len(tempdb) == 0:
             if timeOut > 0:
                 while timeOut > 0:
@@ -267,7 +267,7 @@ class SpecificWorker(GenericWorker):
                     timeOut=timeOut-self.blocking_timeout_step
                     time.sleep(self.blocking_timeout_step)
                 else:
-                    return port    
+                    return port
         raise ComponentNotFound
 
     #
