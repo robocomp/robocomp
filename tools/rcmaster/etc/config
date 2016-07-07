@@ -1,5 +1,5 @@
 # Endpoints for rcmaster
-rcmaster.Endpoints=tcp -p 0
+rcmaster.Endpoints=tcp -h localhost -p 0
 rcmster.dbPath=/var/tmp/RoboComp
 rcmaster.componentsToStart=rclogger
 rcmaster.cachettyl=2000000

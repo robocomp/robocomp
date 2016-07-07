@@ -119,15 +119,8 @@ class SpecificWorker(GenericWorker):
         # check valid host
         remote_ip = ''
         if comp.host.hostName != '':
-            if comp.host.hostName="localhost":
-                s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-                try:
-                    s.connect(('8.8.8.8', 0))
-                    comp.host.privateIP = s.getsockname()[0]
-                except:
-                    comp.host.privateIP = '127.0.0.1'
-                finally:
-                    s.close()
+            if comp.host.hostName=="localhost":
+                comp.host.privateIP = '127.0.0.1'
             else:
                 try:
                     remote_ip = socket.gethostbyname(comp.host.hostName)
@@ -192,7 +185,7 @@ class SpecificWorker(GenericWorker):
 
         # check if entry already exists
         for comp in self.compdb:
-            if comp.name == compInfo.name:
+            if comp.name == compInfo.name and comp.host.hostName == compInfo.host.hostName:
                 print comp.name, 'already exists in host', comp.host.hostName
                 raise DuplicateComponent(compInfo)
 
