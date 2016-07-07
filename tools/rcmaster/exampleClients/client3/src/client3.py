@@ -134,11 +134,6 @@ if __name__ == '__main__':
                 rcmaster_proxy = RoboCompRCMaster.rcmasterPrx.checkedCast(basePrx)
             except Ice.ConnectionRefusedException:
                 raise Exception("RCMaster is not running")
-            
-            compInfo = RoboCompRCMaster.compData(name="client3")
-            compInfo.interfaces = [RoboCompRCMaster.interfaceData('test')]
-            idata = rcmaster_proxy.registerComp(compInfo,False,True)
-            print idata
 
             mprx["rcmasterProxy"] = rcmaster_proxy
         except Ice.Exception:
@@ -154,6 +149,11 @@ if __name__ == '__main__':
     if status == 0:
         worker = SpecificWorker(mprx)
 
+            
+        compInfo = RoboCompRCMaster.compData(name="client3")
+        compInfo.interfaces = [RoboCompRCMaster.interfaceData('test')]
+        idata = rcmaster_proxy.registerComp(compInfo,False,True)
+        print idata
 
         adapter = ic.createObjectAdapterWithEndpoints('test',idata[0].protocol+' -h localhost -p '+str(idata[0].port))
         adapter.add(testI(worker), ic.stringToIdentity('test'))

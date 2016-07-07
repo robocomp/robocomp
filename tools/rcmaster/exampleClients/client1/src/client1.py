@@ -137,11 +137,6 @@ if __name__ == '__main__':
             except Ice.ConnectionRefusedException:
                 raise Exception("RCMaster is not running")
 
-            compInfo = RoboCompRCMaster.compData(name="client1")
-            compInfo.interfaces = [RoboCompRCMaster.interfaceData('asr')]
-            idata = rcmaster_proxy.registerComp(compInfo,False,True)
-            print idata
-
             mprx["rcmasterProxy"] = rcmaster_proxy
         except Ice.Exception:
             print 'Cannot connect to the remote object (rcmaster)'
@@ -168,7 +163,7 @@ if __name__ == '__main__':
                     status = 1
                 else:
                     break
-                    
+
         except Ice.Exception, e:
             print e
             print 'Cannot get testProxy property.'
@@ -182,7 +177,11 @@ if __name__ == '__main__':
     if status == 0:
         worker = SpecificWorker(mprx)
 
-
+        compInfo = RoboCompRCMaster.compData(name="client1")
+        compInfo.interfaces = [RoboCompRCMaster.interfaceData('asr')]
+        idata = rcmaster_proxy.registerComp(compInfo,False,True)
+        print idata
+        
         adapter = ic.createObjectAdapterWithEndpoints('asr',idata[0].protocol+' -h localhost -p '+str(idata[0].port))
         adapter.add(ASRI(worker), ic.stringToIdentity('asr'))
         adapter.activate()
