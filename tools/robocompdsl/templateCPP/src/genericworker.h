@@ -246,11 +246,12 @@ protected:
 if sm is not "none":
     codQState = ""
     codQStateMachine = ""
-
+    lsstates = ""
     codQStateMachine = "<TABHERE>QStateMachine " + sm['machine']['name'] + ";\n"
     if sm['machine']['contents']['states'] is not "none":
         for state in sm['machine']['contents']['states']:
             aux = "<TABHERE>QState *" + state + " = new QState();\n"
+            lsstates += state +","
             if sm['substates'] is not "none":
                 for substates in sm['substates']:
                     if state == substates['parent']:
@@ -261,6 +262,7 @@ if sm is not "none":
     if sm['machine']['contents']['initialstate'] != "none":
         state = sm['machine']['contents']['initialstate'][0]
         aux = "<TABHERE>QState *" + state + " = new QState();\n"
+        lsstates += state +","
         if sm['substates'] is not "none":
             for substates in sm['substates']:
                 if state == substates['parent']:
@@ -273,13 +275,14 @@ if sm is not "none":
     if sm['machine']['contents']['finalstate'] != "none":
         state = sm['machine']['contents']['finalstate'][0]
         codQState +="<TABHERE>QFinalState *" + state + " = new QFinalState();\n"
-
+        lsstates += state +","
 
     if sm['substates'] != "none":
         for substates in sm['substates']:
             if substates['contents']['states'] is not "none":
                 for state in substates['contents']['states']:
                     aux = "<TABHERE>QState *" + state + " = new QState(" + substates['parent'] +");\n"
+                    lsstates += state +","
                     for sub in sm['substates']:
                         if state == sub['parent']:
                             if sub['parallel'] is "parallel":
@@ -288,6 +291,7 @@ if sm is not "none":
                     codQState += aux
             if substates['contents']['initialstate'] != "none":
                 aux = "<TABHERE>QState *" + substates['contents']['initialstate'] + " = new QState(" + substates['parent'] + ");\n"
+                lsstates += state +","
                 for sub in sm['substates']:
                     if state == sub['parent']:
                         if sub['parallel'] is "parallel":
@@ -296,6 +300,9 @@ if sm is not "none":
                 codQState += aux
             if substates['contents']['finalstate'] != "none":
                 codQState += "<TABHERE>QFinalState *" + substates['contents']['finalstate'] + " = new QFinalState(" +substates['parent'] + ");\n"
+                lsstates += state +","
+
+
 
     cog.outl("//State Machine")
     cog.outl(codQStateMachine)
@@ -325,7 +332,6 @@ except:
 [[[end]]]
 
 public slots:
-	virtual void compute() = 0;
 [[[cog
 if component['statemachine'] != 'none':
     codVirtuals = ""
@@ -348,6 +354,8 @@ if component['statemachine'] != 'none':
     cog.outl("//Slots funtion State Machine")
     cog.outl(codVirtuals)
     cog.outl("//-------------------------")
+else:
+    cog.outl("<TABHERE>virtual void compute() = 0;")
 ]]]
 [[[end]]]
 signals:

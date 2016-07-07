@@ -152,27 +152,7 @@ if 'subscribesTo' in component:
 [[[end]]]
 
 public slots:
-	void compute();
 
-private:
-[[[cog
-
-try:
-	if 'agmagent' in [ x.lower() for x in component['options'] ]:
-		cog.outl("<TABHERE>std::string action;")
-		cog.outl("<TABHERE>ParameterMap params;")
-		cog.outl("<TABHERE>AGMModel::SPtr worldModel;")
-		cog.outl("<TABHERE>InnerModel *innerModel;")
-		cog.outl("<TABHERE>bool active;")
-		cog.outl("<TABHERE>bool setParametersAndPossibleActivation(const ParameterMap &prs, bool &reactivated);")
-		cog.outl("<TABHERE>void sendModificationProposal(AGMModel::SPtr &worldModel, AGMModel::SPtr &newModel);")
-except:
-	pass
-
-]]]
-[[[end]]]
-
-private slots:
 [[[cog
 if component['statemachine'] != 'none':
     specificationfun = ""
@@ -195,8 +175,30 @@ if component['statemachine'] != 'none':
     cog.outl("//Specification slot funtions State Machine")
     cog.outl(specificationfun)
     cog.outl("//--------------------")
+else:
+    cog.outl("void compute();")
 ]]]
 [[[end]]]
+private:
+[[[cog
+
+try:
+	if 'agmagent' in [ x.lower() for x in component['options'] ]:
+		cog.outl("<TABHERE>std::string action;")
+		cog.outl("<TABHERE>ParameterMap params;")
+		cog.outl("<TABHERE>AGMModel::SPtr worldModel;")
+		cog.outl("<TABHERE>InnerModel *innerModel;")
+		cog.outl("<TABHERE>bool active;")
+		cog.outl("<TABHERE>bool setParametersAndPossibleActivation(const ParameterMap &prs, bool &reactivated);")
+		cog.outl("<TABHERE>void sendModificationProposal(AGMModel::SPtr &worldModel, AGMModel::SPtr &newModel);")
+except:
+	pass
+
+]]]
+[[[end]]]
+
+private slots:
+
 	
 };
 

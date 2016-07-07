@@ -154,24 +154,30 @@ except:
 	return true;
 }
 
-void SpecificWorker::compute()
-{
-// 	try
-// 	{
-// 		camera_proxy->getYImage(0,img, cState, bState);
-// 		memcpy(image_gray.data, &img[0], m_width*m_height*sizeof(uchar));
-// 		searchTags(image_gray);
-// 	}
-// 	catch(const Ice::Exception &e)
-// 	{
-// 		std::cout << "Error reading from Camera" << e << std::endl;
-// 	}
-}
+
+[[[cog
+if component['statemachine'] is 'none':
+    cog.outl("void SpecificWorker::compute()")
+    cog.outl("{")
+    cog.outl("// 	try")
+    cog.outl("// 	{")
+    cog.outl("// 		camera_proxy->getYImage(0,img, cState, bState);")
+    cog.outl("// 		memcpy(image_gray.data, &img[0], m_width*m_height*sizeof(uchar));")
+    cog.outl("// 		searchTags(image_gray);")
+    cog.outl("// 	}")
+    cog.outl("// 	catch(const Ice::Exception &e)")
+    cog.outl("// 	{")
+    cog.outl('// 		std::cout << "Error reading from Camera" << e << std::endl;')
+    cog.outl("// 	}")
+    cog.outl("}")
+]]]
+[[[end]]]
 [[[cog
 if component['statemachine'] != 'none':
     implementationfun = "\n"
-    for state in sm['machine']['contents']['states']:
-        implementationfun += "void SpecificWorker::fun_" + state + "()\n{\n\n}\n\n"
+    if sm['machine']['contents']['states'] is not "none":
+        for state in sm['machine']['contents']['states']:
+            implementationfun += "void SpecificWorker::fun_" + state + "()\n{\n\n}\n\n"
     if sm['machine']['contents']['initialstate'] != "none":
         implementationfun += "void SpecificWorker::fun_" + sm['machine']['contents']['initialstate'][0] + "()\n{\n\n}\n\n"
     if sm['machine']['contents']['finalstate'] != "none":
