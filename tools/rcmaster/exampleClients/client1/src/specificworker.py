@@ -64,28 +64,37 @@ class SpecificWorker(GenericWorker):
     @QtCore.Slot()
     def compute(self):
         print 'SpecificWorker.compute...'
-        #try:
-        #    self.differentialrobot_proxy.setSpeedBase(100, 0)
-        #except Ice.Exception, e:
-        #    traceback.print_exc()
-        #    print e
+        try:
+            self.proxyData["client3"]["testProxy"].printmsg("hello from client1")
+        except Ice.SocketException:
+            self.waitForComp("client3")
         return True
 
-    def waitForComp(self, compInfo):
+    def waitForComp(self, compName):
+        self.timer.stop()
+        ic = Ice.initialize()
+        interfacesNames = self.proxyData[compName].keys()
+        interfacesNames.remove("casterFun")
+        dg = str(self.proxyData[compName][interfacesNames[0]].ice_datagram())
+        host = dg[ dg.find('-h')+3:dg.find("-p")-1]
         while True:
             try:
-                comps = rcmaster_proxy.getComps(compName)
-                
-                basePrx = ic.stringToProxy("test:tcp -h localhost -p " + str(port))
-                proxy = RoboCompTest.testPrx.checkedCast(basePrx)
-            except RoboCompRCMaster.ComponentNotFound:
+                interfaces = self.proxyData["rcmaster"]["rcmasterProxy"].getComp(compName,host)
+                for iface in interfaces:
+                    basePrx = ic.stringToProxy(iface.name+":"+iface.protocol+" -h "+host+" -p "+str(iface.port))
+                    self.proxyData[compName][str(iface.name+"Proxy")] = self.proxyData[compName]["casterFun"](basePrx)
+            except ComponentNotFound:
                 print 'waiting for client3'
                 time.sleep(3)
+            except Ice.SocketException:
+                # rcmaster has note detected the crash wait for some time
+                time.sleep(5)
             except Ice.Exception:
-                print 'Cannot connect to the remote object (client3)'
+                print 'Cannot connect to the remote object '+compName
                 traceback.print_exc()
-                status = 1
+                time.sleep(3)
             else:
+                self.timer.start(self.Period)
                 break
 
     #

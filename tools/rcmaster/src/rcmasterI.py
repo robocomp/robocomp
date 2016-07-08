@@ -28,7 +28,7 @@ except:
 if len(ROBOCOMP)<1:
 	print 'ROBOCOMP environment variable not set! Exiting.'
 	sys.exit()
-	
+
 
 preStr = "-I"+ROBOCOMP+"/interfaces/ --all "+ROBOCOMP+"/interfaces/"
 
@@ -40,18 +40,15 @@ class rcmasterI(rcmaster):
 	def __init__(self, worker):
 		self.worker = worker
 
-	def getComps(self, filter, timeOut, c):
-		return self.worker.getComps(filter, timeOut)
-	def getComPort(self, compName, hostName, timeOut, c):
-		return self.worker.getComPort(compName, hostName, timeOut)
 	def updateDb(self, components, c):
 		return self.worker.updateDb(components)
 	def registerComp(self, compInfo, monitor, assignPort, c):
 		return self.worker.registerComp(compInfo, monitor, assignPort)
+	def getComps(self, filter, c):
+		return self.worker.getComps(filter)
+	def getComPort(self, compName, privateIP, c):
+		return self.worker.getComPort(compName, privateIP)
+	def getComp(self, compName, privateIP, c):
+		return self.worker.getComp(compName, privateIP)
 	def flush(self, maindb, c):
 		return self.worker.flush(maindb)
-
-
-
-
-

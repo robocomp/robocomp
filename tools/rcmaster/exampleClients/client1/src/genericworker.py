@@ -28,9 +28,7 @@ class GenericWorker(QtCore.QObject):
         super(GenericWorker, self).__init__()
 
 
-        self.rcmaster_proxy = mprx["rcmasterProxy"]
-        self.test_proxy = mprx["testProxy"]
-
+        self.proxyData = mprx["proxyData"]
 
 
         self.mutex = QtCore.QMutex(QtCore.QMutex.Recursive)

@@ -28,10 +28,10 @@ class GenericWorker(QtCore.QObject):
 		super(GenericWorker, self).__init__()
 
 
-		self.rcmaster_proxy = mprx["rcmasterProxy"]
+		self.proxyData = mprx
 
-		
-		
+
+
 		self.mutex = QtCore.QMutex(QtCore.QMutex.Recursive)
 		self.Period = 30
 		self.timer = QtCore.QTimer(self)

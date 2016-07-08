@@ -124,6 +124,10 @@ if __name__ == '__main__':
     ic = Ice.initialize(params)
     status = 0
     mprx = {}
+    proxyData = {"rcmaster":{},"client3":{}}
+    proxyData["rcmaster"]["casterFun"] = RoboCompRCMaster.rcmasterPrx.checkedCast
+    proxyData["client3"]["casterFun"] = RoboCompTest.testPrx.checkedCast
+
     try:
 
         # Remote object connection for rcmaster
@@ -134,10 +138,9 @@ if __name__ == '__main__':
             try:
                 print "Connecting to rcmaster " ,rcmaster_uri
                 rcmaster_proxy = RoboCompRCMaster.rcmasterPrx.checkedCast(basePrx)
-            except Ice.ConnectionRefusedException:
+            except Ice.SocketException:
                 raise Exception("RCMaster is not running")
-
-            mprx["rcmasterProxy"] = rcmaster_proxy
+            proxyData["rcmaster"]["rcmasterProxy"] = rcmaster_proxy
         except Ice.Exception:
             print 'Cannot connect to the remote object (rcmaster)'
             traceback.print_exc()
@@ -146,19 +149,17 @@ if __name__ == '__main__':
 
         # Remote object connection for test
         try:
-
             while True:
                 try:
-                    port = rcmaster_proxy.getComPort("client3","localhost",0);
+                    port = rcmaster_proxy.getComPort("client3","localhost");
                     basePrx = ic.stringToProxy("test:tcp -h localhost -p "+str(port))
                     test_proxy = RoboCompTest.testPrx.checkedCast(basePrx)
-                    mprx["testProxy"] = test_proxy
-                    test_proxy.printmsg("helllo from client1");
+                    proxyData["client3"]["testProxy"] = test_proxy
                 except RoboCompRCMaster.ComponentNotFound:
-                    print 'waiting for client3'
+                    print 'waiting for test interface'
                     time.sleep(3)
                 except Ice.Exception:
-                    print 'Cannot connect to the remote object (client3)'
+                    print 'Cannot connect to the remote object (test)'
                     traceback.print_exc()
                     status = 1
                 else:
@@ -175,6 +176,7 @@ if __name__ == '__main__':
 
 
     if status == 0:
+        mprx["proxyData"] = proxyData
         worker = SpecificWorker(mprx)
 
         compInfo = RoboCompRCMaster.compData(name="client1")

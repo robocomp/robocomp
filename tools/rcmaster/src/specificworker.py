@@ -96,7 +96,7 @@ class SpecificWorker(GenericWorker):
                 basePrx = self.ic.stringToProxy(proxy)
                 try:
                     basePrx.ice_ping()
-                except Ice.ConnectionRefusedException:  # wbt other except @TODO
+                except Ice.SocketException:  # wbt other except @TODO
                     print "caching component ", comp.name
                     self.compdb.remove(comp)
                     self.compcache[comp] = self.cache_ttyl
@@ -107,8 +107,6 @@ class SpecificWorker(GenericWorker):
             if self.compcache[cachedComp] < 0:
                 print "removing ", cachedComp.name, "from cache"
                 del self.compcache[cachedComp]
-        ## TODO
-        # notify port changes or crash to the cmponents conected to crasehd one
         return True
 
     def checkComp(self, comp):
@@ -220,8 +218,7 @@ class SpecificWorker(GenericWorker):
     #
     # getComps
     #
-    def getComps(self, filter, timeOut):
-        # @TODO remove timeOut
+    def getComps(self, filter):
         tempdb = self.compdb
 
         if filter.name != '':
@@ -233,18 +230,9 @@ class SpecificWorker(GenericWorker):
         if filter.host.privateIP != '':
             tempdb = [x for x in tempdb if x.host.privateIP == filter.host.privateIP]
         if len(filter.interfaces) != 0:
-            tempdb = [x for x in tempdb if x.interfaces == filter.interfaces]
+            tempdb = [x for x in tempdb if filter.interfaces in x.interfaces ]
 
         if len(tempdb) == 0:
-            if timeOut > 0:
-                while timeOut > 0:
-                    try:
-                        tempdb = self.getComps(filter,False)
-                    except ComponentNotFound:
-                        timeOut=timeOut-self.blocking_timeout_step
-                        time.sleep(self.blocking_timeout_step)
-                    else:
-                        return tempdb
             raise ComponentNotFound
         else:
             return tempdb
@@ -252,22 +240,24 @@ class SpecificWorker(GenericWorker):
     #
     # getComPort
     #
-    def getComPort(self, compName, hostName, timeOut):
-        # @TODO block
+    def getComPort(self, compName, privateIP):
+        return self.getComp(compName, privateIP)[0].port
+
+    #
+    # getComp
+    #
+    def getComp(self, compName, privateIP):
+        # id passed an hostname convert to ip
+        try:
+            socket.inet_aton(privateIP)
+        except socket.error:
+            privateIP = socket.gethostbyname(privateIP)
+
         for comp in self.compdb:
-            if comp.name == compName and comp.host.hostName == hostName:
+            if comp.name == compName and comp.host.privateIP == privateIP:
                 if len(comp.interfaces) != 1:
                     raise InvalidComponent
-                return comp.interfaces[0].port
-        if timeOut > 0:
-            while timeOut > 0:
-                try:
-                    port = self.getComPort(compName,hostName,False)
-                except ComponentNotFound:
-                    timeOut=timeOut-self.blocking_timeout_step
-                    time.sleep(self.blocking_timeout_step)
-                else:
-                    return port
+                return comp.interfaces
         raise ComponentNotFound
 
     #
