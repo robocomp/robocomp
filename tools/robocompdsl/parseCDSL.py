@@ -160,7 +160,7 @@ class CDSLParsing:
 		# additional options
 		options = Group(Optional(Suppress(CaselessLiteral("options")) + identifier + ZeroOrMore(Suppress(Word(',')) + identifier) + semicolon))
 		# Statemachine
-		statemachine = Group(Optional(Suppress(CaselessLiteral("statemachine")) + Word(alphas + "_" + alphanums + "." + alphas) + semicolon))
+		statemachine = Group(Optional(Suppress(CaselessLiteral("statemachine")) + quote +  CharsNotIn("\";").setResultsName('path') + quote + semicolon))
 		componentContents = communications.setResultsName('communications') & language.setResultsName('language') & statemachine.setResultsName('statemachine') & gui.setResultsName('gui') & options.setResultsName('options')
 		component = Suppress(CaselessLiteral("component")) + identifier.setResultsName("name") + op + componentContents.setResultsName("properties") + cl + semicolon
 
