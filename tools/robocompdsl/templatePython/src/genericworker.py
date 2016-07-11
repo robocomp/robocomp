@@ -218,25 +218,25 @@ Z()
 
 
 [[[cog
-for req in component['requires']:
+for req, num in getNameNumber(component['requires']):
 	if type(req) == str:
 		rq = req
 	else:
 		rq = req[0]
 	if communicationIsIce(req):
-		cog.outl("<TABHERE><TABHERE>self."+rq.lower()+"_proxy = mprx[\""+rq+"Proxy\"]")
+		cog.outl("<TABHERE><TABHERE>self."+rq.lower()+num+"_proxy = mprx[\""+rq+"Proxy"+num+"\"]")
 	else:
-		cog.outl("<TABHERE><TABHERE>self."+rq.lower()+" = ServiceClient"+nname+"()")
+		cog.outl("<TABHERE><TABHERE>self."+rq.lower()+" = ServiceClient"+rq+"()")
 
-for pb in component['publishes']:
+for pb, num in getNameNumber(component['publishes']):
 	if type(pb) == str:
 		pub = pb
 	else:
 		pub = pb[0]
 	if communicationIsIce(pb):
-		cog.outl("<TABHERE><TABHERE>self."+pub.lower()+" = mprx[\""+pub+"Pub\"]")
+		cog.outl("<TABHERE><TABHERE>self."+pub.lower()+num+" = mprx[\""+pub+"Pub"+num+"\"]")
 	else:
-		cog.outl("<TABHERE><TABHERE>self."+pub.lower()+" = Publisher"+nname+"()")
+		cog.outl("<TABHERE><TABHERE>self."+pub.lower()+" = Publisher"+pub+"()")
 ]]]
 [[[end]]]
 

@@ -98,10 +98,10 @@ def getNameNumber(aalist):
 	for rqi, rq in enumerate(somelist):
 		dup = False
 		if rqi < len(somelist)-1:
-			if rq == somelist[rqi+1]:
+			if str(rq) == str(somelist[rqi+1]):
 				dup = True
 		if rqi > 0:
-			if rq == somelist[rqi-1]:
+			if str(rq) == str(somelist[rqi-1]):
 				dup = True
 		name = rq
 		num = ''

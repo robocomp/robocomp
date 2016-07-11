@@ -22,11 +22,11 @@ pool = IDSLPool(theIDSLs)
 REQUIRE_STR = """
 <TABHERE><TABHERE># Remote object connection for <NORMAL>
 <TABHERE><TABHERE>try:
-<TABHERE><TABHERE><TABHERE>proxyString = ic.getProperties().getProperty('<NORMAL>Proxy')
+<TABHERE><TABHERE><TABHERE>proxyString = ic.getProperties().getProperty('<NORMAL><NUM>Proxy')
 <TABHERE><TABHERE><TABHERE>try:
 <TABHERE><TABHERE><TABHERE><TABHERE>basePrx = ic.stringToProxy(proxyString)
-<TABHERE><TABHERE><TABHERE><TABHERE><LOWER>_proxy = RoboComp<NORMAL>.<NORMAL>Prx.checkedCast(basePrx)
-<TABHERE><TABHERE><TABHERE><TABHERE>mprx["<NORMAL>Proxy"] = <LOWER>_proxy
+<TABHERE><TABHERE><TABHERE><TABHERE><LOWER><NUM>_proxy = <NORMAL>Prx.checkedCast(basePrx)
+<TABHERE><TABHERE><TABHERE><TABHERE>mprx["<NORMAL>Proxy<NUM>"] = <LOWER><NUM>_proxy
 <TABHERE><TABHERE><TABHERE>except Ice.Exception:
 <TABHERE><TABHERE><TABHERE><TABHERE>print 'Cannot connect to the remote object (<NORMAL>)', proxyString
 <TABHERE><TABHERE><TABHERE><TABHERE>#traceback.print_exc()
@@ -72,7 +72,7 @@ PUBLISHES_STR = """
 <TABHERE><TABHERE><TABHERE><TABHERE>except:
 <TABHERE><TABHERE><TABHERE><TABHERE><TABHERE>print 'Another client created the <NORMAL> topic? ...'
 <TABHERE><TABHERE>pub = topic.getPublisher().ice_oneway()
-<TABHERE><TABHERE><LOWER>Topic = <NORMAL>Prx.uncheckedCast(pub)
+<TABHERE><TABHERE><LOWER>opic = <NORMAL>Prx.uncheckedCast(pub)
 <TABHERE><TABHERE>mprx["<NORMAL>Pub"] = <LOWER>Topic
 """
 
@@ -240,16 +240,16 @@ try:
 except:
 	pass
 
-for req in component['requires']:
+for req, num in getNameNumber(component['requires']):
 	if type(req) == str:
 		rq = req
 	else:
 		rq = req[0]
 	if communicationIsIce(req):
-		w = REQUIRE_STR.replace("<NORMAL>", rq).replace("<LOWER>", rq.lower())
+		w = REQUIRE_STR.replace("<NORMAL>", rq).replace("<LOWER>", rq.lower()).replace("<NUM>",num)
 		cog.outl(w)
 
-for pb in component['publishes']:
+for pb, num in getNameNumber(component['publishes']):
 	if type(pb) == str:
 		pub = pb
 	else:

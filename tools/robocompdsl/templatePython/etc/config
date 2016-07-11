@@ -49,7 +49,7 @@ if text:
 
 
 text = False
-for req in component['requires']:
+for req, num in getNameNumber(component['requires']):
 	if type(req) == str:
 		rq = req
 	else:
@@ -57,7 +57,7 @@ for req in component['requires']:
 	if text == False:
 		cog.outl('# Proxies for required interfaces')
 		text = True
-	cog.outl(rq + "Proxy = " + rq.lower() + ":tcp -h localhost -p 0")
+	cog.outl(rq + num + "Proxy = " + rq.lower() + ":tcp -h localhost -p 0")
 if text:
 	cog.out('\n\n')
 
