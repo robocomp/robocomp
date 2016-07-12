@@ -21,8 +21,7 @@ component = CDSLParsing.fromFile(theCDSL)
 
 ]]]
 [[[end]]]
-
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 2.8.11)
 PROJECT( 
 [[[cog
 A()
@@ -62,7 +61,8 @@ for ima in component['implements']:
 		im = ima
 	else:
 		im = ima[0]
-	cog.outl('<S2>' + im.lower() + 'I.cpp')
+	if communicationIsIce(ima):
+		cog.outl('<S2>' + im.lower() + 'I.cpp')
 
 for subscribe in component['subscribesTo']:
 	subs = subscribe
@@ -70,8 +70,6 @@ for subscribe in component['subscribesTo']:
 		subs = subs[0]
 	if communicationIsIce(subscribe):
 		cog.outl('<S2>' + subs.lower() + 'I.cpp')
-	else:
-		cog.outl('<S2>ROS' + subs.lower() + 'I.cpp')
 		
 
 ]]]
@@ -79,22 +77,11 @@ for subscribe in component['subscribesTo']:
 )
 
 [[[cog
-
-usingROS=False
-
-for subscribe in component['subscribesTo']:
-	subs = subscribe
-	while type(subs) != type(''):
-		subs = subs[0]
-	if communicationIsIce(subscribe):
-		pass
-	else:
-		usingROS = True
-
-if usingROS:
+if component['usingROS'] == True:
+	cog.outl('#ROS')
 	cog.outl('find_package(catkin REQUIRED)')
 	cog.outl('include_directories(  ${catkin_INCLUDE_DIRS} )')
-	cog.outl('SET ( LIBS ${LIBS} ${catkin_LIBRARIES} -L/opt/ros/jade/lib -lroscpp -lrosconsole -lroscpp_serialization) # -lrosbag')
+	cog.outl('SET ( LIBS ${LIBS} ${catkin_LIBRARIES} -L/opt/ros/jade/lib -lroscpp -lrosconsole -lroscpp_serialization)')
 ]]]
 [[[end]]]
 
@@ -105,31 +92,46 @@ ROBOCOMP_WRAP_ICE( CommonBehavior
 [[[cog
 A()
 for im in component['recursiveImports']:
-	cog.out(im.split('/')[-1].split('.')[0] + ' ')
+	if communicationIsIce(im):
+		cog.out(im.split('/')[-1].split('.')[0] + ' ')
 Z()
 ]]]
 [[[end]]]
 )
 SET (EXECUTABLE_OUTPUT_PATH ${RC_COMPONENT_DEVEL_PATH}/bin)
 
-# Qt4
-ADD_DEFINITIONS( -Wall -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB )
-FIND_PACKAGE( Qt4 REQUIRED )
-SET( QT_USE_QTGUI TRUE )
-SET( QT_USE_QTOPENGL TRUE )
-SET( QT_USE_QTXML TRUE )
-SET( QT_USE_QTSTATE TRUE )
-SET( QT_USE_QTSTATEMACHINE TRUE )
-SET( CMAKE_AUTOMOC TRUE )
-INCLUDE( ${QT_USE_FILE} )
-
 [[[cog
-if component['gui'] != 'none':
-	cog.outl("QT4_WRAP_UI( UI_HEADERS mainUI.ui )")
+if component['useQt'] == 'qt5':
+	cog.outl("# Qt5")
+	cog.outl("ADD_DEFINITIONS( -Wall -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB -fPIC)")
+	cog.outl("FIND_PACKAGE(Qt5Core REQUIRED)")
+	cog.outl("FIND_PACKAGE(Qt5Gui REQUIRED)")
+	cog.outl("FIND_PACKAGE(Qt5Xml REQUIRED)")
+	cog.outl("FIND_PACKAGE(Qt5Widgets REQUIRED)")
+	cog.outl("find_package(Qt5OpenGL REQUIRED)")
+	cog.outl("message(STATUS, ${Qt5Widgets_INCLUDE_DIRS})")
+	cog.outl("include_directories(${Qt5Widgets_INCLUDE_DIRS})")
+	cog.outl("include_directories(${Qt5Core_INCLUDE_DIRS})")
+	cog.outl("include_directories(${Qt5_INCLUDE_DIRS})")
+	cog.outl("SET (LIBS ${LIBS} ${Qt5Widgets_LIBRARIES} ${Qt5Core_LIBRARIES} ${Qt5_LIBRARIES})" )
+	if component['gui'] != 'none':
+		cog.outl("QT5_WRAP_UI( UI_HEADERS mainUI.ui )")
+	cog.outl("SET( CMAKE_AUTOMOC TRUE )")
+else:
+	cog.outl("# Qt4")
+	cog.outl("ADD_DEFINITIONS( -Wall -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB )")
+	cog.outl("FIND_PACKAGE( Qt4 REQUIRED )")
+	cog.outl("SET( QT_USE_QTGUI TRUE )")
+	cog.outl("SET( QT_USE_QTOPENGL TRUE )")
+	cog.outl("SET( QT_USE_QTXML TRUE )")
+	cog.outl("SET( QT_USE_QTSTATE TRUE )")
+	cog.outl("SET( QT_USE_QTSTATEMACHINE TRUE )")
+	cog.outl("SET( CMAKE_AUTOMOC TRUE )")
+	cog.outl("INCLUDE( ${QT_USE_FILE} )")
+	if component['gui'] != 'none':
+		cog.outl("QT4_WRAP_UI( UI_HEADERS mainUI.ui )")
 ]]]
 [[[end]]]
-
-
 
 # Specify construction and link process
 [[[cog
@@ -156,10 +158,12 @@ TARGET_LINK_LIBRARIES(
 [[[cog
 A()
 cog.out(' ' + component['name'] + ' ')
+if not component['useQt'] == 'qt5':
+	cog.out('${QT_LIBRARIES} ')
 Z()
 ]]]
 [[[end]]]
-${QT_LIBRARIES} ${LIBS} ${STATIC_LIBS} ${SPECIFIC_LIBS})
+${LIBS} ${STATIC_LIBS} ${SPECIFIC_LIBS})
 INSTALL(FILES ${EXECUTABLE_OUTPUT_PATH}/
 [[[cog
 A()
