@@ -63,7 +63,7 @@ class SpecificWorker(GenericWorker):
 
     @QtCore.Slot()
     def compute(self):
-        print 'SpecificWorker.compute...'
+        print '\nSpecificWorker.compute...'
         try:
             self.proxyData["client3"]["testProxy"].printmsg("hello from client1")
         except Ice.SocketException:
@@ -88,7 +88,7 @@ class SpecificWorker(GenericWorker):
                 time.sleep(3)
             except Ice.SocketException:
                 # rcmaster has note detected the crash wait for some time
-                time.sleep(5)
+                time.sleep(3)
             except Ice.Exception:
                 print 'Cannot connect to the remote object '+compName
                 traceback.print_exc()

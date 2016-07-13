@@ -81,9 +81,7 @@ class SpecificWorker(GenericWorker):
 
     @QtCore.Slot()
     def compute(self):
-        print 'SpecificWorker.compute...'
-        print 'no of components registred :',len(self.compdb)
-        print 'no of components cached :',len(self.compcache)
+        # print 'SpecificWorker.compute...'
         if self.savebit:
             self.savedb()
 
@@ -100,6 +98,7 @@ class SpecificWorker(GenericWorker):
                     print "caching component ", comp.name
                     self.compdb.remove(comp)
                     self.compcache[comp] = self.cache_ttyl
+                    self.show_stats()
 
         # invalidate cache based on ttyl
         for cachedComp in self.compcache.keys():
@@ -107,6 +106,7 @@ class SpecificWorker(GenericWorker):
             if self.compcache[cachedComp] < 0:
                 print "removing ", cachedComp.name, "from cache"
                 del self.compcache[cachedComp]
+                self.show_stats()
         return True
 
     def checkComp(self, comp):
@@ -154,6 +154,12 @@ class SpecificWorker(GenericWorker):
     def loaddb(self):
         pass
 
+    def show_stats(self):
+        print "\n\n ---- STATS ----"
+        print 'no of components registred :',len(self.compdb)
+        print 'no of components cached :',len(self.compcache)
+        print "\n------------------------------\n"
+        
     ################################
     ############ Servents ##########
     ################################
@@ -213,6 +219,7 @@ class SpecificWorker(GenericWorker):
         self.compdb.append(compInfo)
         self.savebit = True
         print 'New component registred: ', compInfo,'\n'
+        self.show_stats()
         return compInfo.interfaces
 
     #
@@ -269,3 +276,4 @@ class SpecificWorker(GenericWorker):
         if maindb:
             self.compdb = []
             print "Flusshing the mainDB ..."
+        self.show_stats()
