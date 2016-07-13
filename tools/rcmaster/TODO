@@ -1,11 +1,9 @@
 TODO
 ---------
 improve saving rcmaster uri
-work on getting ip
 use logging component
-change hostname to ip in getcompport
 give compoennt details in CompoenntNotFoundException
-
+what is rcmaster caches the compoenent before the interface is started
 
 
 ---------------------------------------------
