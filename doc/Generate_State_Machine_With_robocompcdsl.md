@@ -86,7 +86,7 @@ This is the code of the state machine:
 
 Robocomp need the following line to implement the state machine. Online This will be contained in mycomponet.cdsl:
 
-	statemachine statemachine.smdsl;
+	statemachine "statemachine.smdsl";
 
 For example:
 
@@ -104,7 +104,7 @@ For example:
 		};
 		language Cpp;
 		gui Qt(QWidget);
-		statemachine statemachine.smdsl;
+		statemachine "statemachine.smdsl";
 	};
 
 After executing the following line:
