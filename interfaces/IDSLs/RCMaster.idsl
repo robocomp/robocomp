@@ -19,20 +19,22 @@ module RoboCompRCMaster
         string protocol="tcp";
     };
     sequence <interfaceData> interfaceList;
+    enum CompStatus { Active, Stopped };
 
     //stores info about an component
     struct compData {
         string uid;
         string name;
+        CompStatus status = Active;
         hostInfo host;
         interfaceList interfaces;
     };
 
     //database of all registred components
-    sequence <compData> compDB;
+    dictionary <string, compData> compDB;
 
     //cache db
-    dictionary <compData, int> cacheDb;
+    dictionary <string, int> cacheDb;
 
     //Exceptions
     exception InvalidComponent{
