@@ -2,6 +2,7 @@ module RoboCompCGR{
 
 	interface CGRTopic{
 		void newCGRPose(float poseUncertainty, float x, float z, float alpha);
+		void newCGRCorrection(float poseUncertainty, float x1, float z1, float a1, float x2, float z2, float a2);
 	};
 	interface CGR{
 		void resetPose(float x, float z, float alpha);
