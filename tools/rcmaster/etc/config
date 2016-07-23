@@ -14,5 +14,5 @@ Ice.Trace.Network=0
 Ice.Trace.Protocol=0
 Ice.ACM.Client=10
 Ice.ACM.Server=10
-Ice.Warn.UnknownProperties=n0
+Ice.Warn.UnknownProperties=0
 

@@ -63,7 +63,7 @@ class SpecificWorker(GenericWorker):
         self.timer.timeout.connect(self.compute)
         self.Period = 2000
         self.timer.start(self.Period)
-        self.compdb = []
+        self.compdb = dict()
         self.compcache = dict()
         self.cache_ttyl = int(round(self.cache_ttyl / self.Period))
         self.savebit = False
@@ -86,27 +86,36 @@ class SpecificWorker(GenericWorker):
             self.savedb()
 
         # ping all componsnts and cache is necc
-        for comp in self.compdb:
+        for uid in self.compdb:
+            comp = self.compdb[uid]
+            if comp.status != CompStatus.Active:
+                continue
             for interface in comp.interfaces:
                 proxy = interface.name + ':' + interface.protocol + " -h " + comp.host.privateIP + ' -p ' + str(
                     interface.port)
-                # print proxy
+                
                 basePrx = self.ic.stringToProxy(proxy)
+                # see if the component is up, else cache it
                 try:
                     basePrx.ice_ping()
                 except Ice.SocketException:  # wbt other except @TODO
                     print "caching component ", comp.name
-                    self.compdb.remove(comp)
-                    self.compcache[comp] = self.cache_ttyl
+                    comp.status = CompStatus.Stopped
+                    self.compcache[uid] = self.cache_ttyl
                     self.show_stats()
 
         # invalidate cache based on ttyl
-        for cachedComp in self.compcache.keys():
-            self.compcache[cachedComp] = self.compcache[cachedComp] - 1
-            if self.compcache[cachedComp] < 0:
-                print "removing ", cachedComp.name, "from cache"
-                del self.compcache[cachedComp]
-                self.show_stats()
+        for uid in self.compcache.keys():
+            self.compcache[uid] = self.compcache[uid] - 1
+            if self.compcache[uid] < 0:
+                try:
+                    print "removing ", self.compdb[uid].name, "from cache"
+                    del self.compdb[uid]
+                    del self.compcache[uid]
+                    self.show_stats()
+                except KeyError:
+                    print "cache and db mismatch ",uid
+                    continue
         return True
 
     def checkComp(self, comp):
@@ -139,14 +148,31 @@ class SpecificWorker(GenericWorker):
             get an open port for component
         '''
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        try:
-            s.bind(("", portnum))
-        except socket.error, msg:
-            print 'Cant assign port. Error Code : ' + str(msg[0]) + ' Message ' + msg[1]
-            return -1, msg
-        port = s.getsockname()[1]
+        msg = ""
+        port = -1
+        if portnum != 0:
+            if s.connect_ex(('127.0.0.1',portnum)) ==0 :
+                msg = "Cant assign port, Alrady in use"
+            else:
+                port = portnum 
+        else:
+            try:
+                s.bind(("", portnum))
+            except socket.error, msg:
+                msg = 'Cant assign port. Error Code : ' + str(msg[0]) + ' Message ' + msg[1]
+            else:
+                port = s.getsockname()[1]
+
         s.close()
-        return port, ""
+        return port, msg
+
+    def generate_uid(self, comp):
+        if not self.checkComp(comp):
+            raise InvalidComponent(comp, "")
+        uid = comp.name+comp.host.privateIP
+        for interface in comp.interfaces:
+            uid = uid+interface.name
+        return str(hash(uid))
 
     def savedb(self):
         pass
@@ -156,8 +182,10 @@ class SpecificWorker(GenericWorker):
 
     def show_stats(self):
         print "\n\n ---- STATS ----"
-        print 'no of components registred :',len(self.compdb)
+        print 'no of components registred :',(len(self.compdb)-len(self.compcache))
+        # print self.compdb
         print 'no of components cached :',len(self.compcache)
+        # print self.compcache
         print "\n------------------------------\n"
         
     ################################
@@ -183,28 +211,30 @@ class SpecificWorker(GenericWorker):
         idata = interfaceData()
 
         # check if component is valid
-        if not self.checkComp(compInfo):
-            print "Not a valid component"
-            raise InvalidComponent(compInfo, "")
+        compInfo.uid = self.generate_uid(compInfo)
 
         # check if entry already exists
-        for comp in self.compdb:
-            if comp.name == compInfo.name and comp.host.hostName == compInfo.host.hostName:
-                print comp.name, 'already exists in host', comp.host.hostName
+        for uid in self.compdb:
+            if uid == '':
+                raise Exception("Invalid uid")
+            if uid == compInfo.uid and self.compdb[uid] == CompStatus.Active:
+                print compInfo.name, 'already exists in host', compInfo.host.hostName
                 raise DuplicateComponent(compInfo)
 
         if assignPort:
 
-            # set the caches port for the components
-            for cachedcomp in self.compcache.keys():
-                if cachedcomp.name == compInfo.name:
+            # if its a cached component retrive data
+            for uid in self.compcache.keys():
+                if uid == compInfo.uid:
                     print "This is a cached component ..."
-                    compInfo.interfaces = cachedcomp.interfaces
-                    print "removing ", cachedcomp.name, "from cache"
-                    del self.compcache[cachedcomp]
+                    compInfo.interfaces = self.compdb[uid].interfaces
+                    print "removing ", self.compdb[uid].name, "from cache"
+                    del self.compcache[uid]
+                    self.compdb[uid].status = CompStatus.Active
                     break
 
             for interface in compInfo.interfaces:
+                print interface
                 port, msg = self.get_open_port(interface.port)
                 if port == -1:
                     print "couldnt assign cached port ", interface.port
@@ -216,7 +246,9 @@ class SpecificWorker(GenericWorker):
                     print "ERROR: Cant assign port to all interfaces"
                     raise PortAssignError(0, msg)
 
-        self.compdb.append(compInfo)
+        # compInfo.uid = self.generate_uid(compInfo)
+        compInfo.status = CompStatus.Active
+        self.compdb[compInfo.uid] = compInfo
         self.savebit = True
         print 'New component registred: ', compInfo,'\n'
         self.show_stats()
@@ -229,15 +261,15 @@ class SpecificWorker(GenericWorker):
         tempdb = self.compdb
 
         if filter.name != '':
-            tempdb = [x for x in tempdb if x.name == filter.name]
+            tempdb = {uid:comp for (uid,comp) in tempdb if comp.name == filter.name}
         if filter.host.name != '':
-            tempdb = [x for x in tempdb if x.host.name == filter.host.name]
+            tempdb = {uid:comp for (uid,comp) in tempdb if comp.host.name == filter.host.name}
         if filter.host.privateIP != '':
-            tempdb = [x for x in tempdb if x.host.privateIP == filter.host.privateIP]
-        if filter.host.privateIP != '':
-            tempdb = [x for x in tempdb if x.host.privateIP == filter.host.privateIP]
+            tempdb = {uid:comp for (uid,comp) in tempdb if comp.host.privateIP == filter.host.privateIP}
+        if filter.host.publicIP != '':
+            tempdb = {uid:comp for (uid,comp) in tempdb if comp.host.publicIP == filter.host.publicIP}
         if len(filter.interfaces) != 0:
-            tempdb = [x for x in tempdb if filter.interfaces in x.interfaces ]
+            tempdb = {uid:comp for (uid,comp) in tempdb if filter.interfaces in comp.interfaces}
 
         if len(tempdb) == 0:
             raise ComponentNotFound
@@ -254,13 +286,15 @@ class SpecificWorker(GenericWorker):
     # getComp
     #
     def getComp(self, compName, privateIP):
-        # id passed an hostname convert to ip
+        # if passed an hostname convert to ip
         try:
             socket.inet_aton(privateIP)
         except socket.error:
             privateIP = socket.gethostbyname(privateIP)
 
-        for comp in self.compdb:
+        for comp in self.compdb.itervalues():
+            if comp.status != CompStatus.Active:
+                continue
             if comp.name == compName and comp.host.privateIP == privateIP:
                 if len(comp.interfaces) != 1:
                     raise InvalidComponent
@@ -272,8 +306,10 @@ class SpecificWorker(GenericWorker):
     #
     def flush(self, maindb):
         print "Flusshing the cache ..."
-        self.compcache = []
+        for uid in self.compcache:
+            self.compdb.pop(uid)
+        self.compcache = dict()
         if maindb:
-            self.compdb = []
+            self.compdb = dict()
             print "Flusshing the mainDB ..."
         self.show_stats()
