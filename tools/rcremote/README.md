@@ -1,12 +1,9 @@
 rcremote and rcremoteserver
 ===============================
 
-[![Join the chat at https://gitter.im/robocomp/robocomp](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/robocomp/robocomp?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+Running a component network in a robot can be time-consuming when the number of components grows. To mitigate this problem, RoboComp provides the RCManager tool. After defining which commands should be used to run components, RCManager can successfully deploy a component network. Despite it is extremely useful there are still two limitations to overcome: a) advanced robots are usually composed of multiple computers, 
 
-#How these two components work?
 
-To understand how these components work, we need to have very clear the client-server structure. For example, suppose we have a robot (with his own computer) and our computer, and the robot acts as a server and our computer as a client that needs to access to the robot's services (applications). In this case, the server program (rcremoteserver) will be runned into the robot and the client program (rcremote) will be executed into our computer.
-The behaviour of both programs is very similar: both use a default port (4242), an IP address and a password, and work with TCP protocol...
 
 1) rcremoteserver: the server uses its localhost as IP and takes the password that is passed as an input parameter to allow clients to connect or not --> Usage: `rcremoteserver password`
 
