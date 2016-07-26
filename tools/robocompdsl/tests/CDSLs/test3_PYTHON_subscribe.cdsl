@@ -1,0 +1,11 @@
+import "/robocomp/interfaces/IDSLs/Test.idsl";
+
+Component subscribe
+{
+	Communications
+	{
+		subscribesTo publishTest;
+	};
+	language python;
+	gui Qt(QWidget);
+};
