@@ -144,7 +144,7 @@ Component <CHANGETHECOMPONENTNAME>
 	};
 	language Cpp;
 	gui Qt(QWidget);
-	statemachine statemachine.smdsl;
+	statemachine "statemachine.smdsl";
 };\n\n"""
 		stringstatemachine = """name_machine{
     [states name_state *[, name_state];]
