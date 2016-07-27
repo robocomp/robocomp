@@ -73,7 +73,7 @@ module RoboCompLegController
 		bool setIKBody(PoseBody p, bool simu) throws ImpossiblePositionException, HardwareFailedException;
 		bool setFKLeg(AnglesLeg al, bool simu) throws ImpossibleAnglesException, HardwareFailedException;
 		StateLeg getStateLeg() throws HardwareFailedException;
-		void move(float x, float y) throws ImpossiblePositionException, HardwareFailedException;
+		void move(float x, float y, string state) throws ImpossiblePositionException, HardwareFailedException;
 	};
 };
 
