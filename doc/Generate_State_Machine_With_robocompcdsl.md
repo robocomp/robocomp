@@ -22,23 +22,23 @@ Now, we that execute the next line for generate the files in which our component
 When you run this line two files are created mycomponent.cdsl and statemachine.smdsl. In stachine.smdsl we have to define our state machine, following the next struct:
 
 	name_machine{
-	    [states name_state *[, name_state];]
-	    [initial_state name_state;]
-	    [end_state name_state;]
-	    [transition{
-		name_state => name_state *[, name_state];
-		*[name_state => name_state *[, name_state];]
-	    };]
+		[states name_state *[, name_state];]
+		[initial_state name_state;]
+		[end_state name_state;]
+		[transition{
+			name_state => name_state *[, name_state];
+			*[name_state => name_state *[, name_state];]
+		};]
 	};
 
 	[:parent_state [parallel]{
-	    states name_state *[, name_state];
-	    [initial_state name_state;]
-	    [end_state name_state;]
-	    [transition{
-		name_state => name_state *[, name_state];
-		*[name_state => name_state *[, name_state];]
-	    };]
+		states name_state *[, name_state];
+		[initial_state name_state;]
+		[end_state name_state;]
+		[transition{
+			name_state => name_state *[, name_state];
+			*[name_state => name_state *[, name_state];]
+		};]
 	};]
 
 For example of mycomponent.cdsl:
@@ -69,13 +69,13 @@ For example:
 On this component we will define a state machine that simulate the function of a semaphore. For it, we copy and paste the next definition of the state machine in file statemachine.smdsl:
 
 	Semaphore{
-	    states green, orange;
-	    initial_state red;			// It may not be contained in the states list. initial_state is required
-	    transition{
-		red => green;
-		green => orange;
-		orange => red;
-	    };
+		states green, orange;
+		initial_state red;			// It may not be contained in the states list. initial_state is required
+		transition{
+			red => green;
+			green => orange;
+			orange => red;
+		};
 	};
 
 For that robocompcdsl will generate the code of component, we will run the next line:
@@ -277,49 +277,49 @@ For example:
 This is the code of the state machine:
 
 	Machine_Statecpp{
-	    states State2, State3, State4, State5;
-	    initial_state State1;			// It may not be contained in the states list. initial_state is required
-	    end_state State6;				// It may not be contained in the states list. initial_state and end_state can't be equal
-	    transition{
-		State1 => State1, State2;
-		State2 => State3, State5, State6;
-		State3 => State3, State4;
-		State4 => State5;
-		State5 => State6;
-	    };
+		states State2, State3, State4, State5;
+		initial_state State1;			// It may not be contained in the states list. initial_state is required
+		end_state State6;				// It may not be contained in the states list. initial_state and end_state can't be equal
+		transition{
+			State1 => State1, State2;
+			State2 => State3, State5, State6;
+			State3 => State3, State4;
+			State4 => State5;
+			State5 => State6;
+		};
 	};
 
 	:State1 parallel{				// If it is parallel, it can't have initial_state and end state
-	    states State11, State12;
-	    transition{
-		State11 => State11;
-		State12 => State12;
-	    };
+		states State11, State12;
+		transition{
+			State11 => State11;
+			State12 => State12;
+		};
 	};
 
 	:State12{
-	    initial_state State121;			// If it isn't parallel, initial_state is required
-	    end_state State122;
-	    transition{
-		State121 => State121,State122;
-	    };
+		initial_state State121;			// If it isn't parallel, initial_state is required
+		end_state State122;
+		transition{
+			State121 => State121,State122;
+		};
 	};
 
 	:State3 parallel{
-	    states State31, State32, State33;
-	    transition{
-		State31 => State31;
-		State32 => State32;
-	    };
+		states State31, State32, State33;
+		transition{
+			State31 => State31;
+			State32 => State32;
+		};
 	};
 
 	:State5{
-	    states State52;
-	    initial_state State51;
-	    transition{
-		State51 => State12;
-		State12 => State51;
-	    };
+		states State52;
+		initial_state State51;
+		transition{
+			State51 => State12;
+			State12 => State51;
+		};
 	};
 
 Robocomp need the following line to implement the state machine. Online This will be contained in mycomponet.cdsl:
