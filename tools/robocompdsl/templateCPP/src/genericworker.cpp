@@ -80,7 +80,6 @@ if component['statemachine'] != 'none':
         for transi in sm['machine']['contents']['transition']:
             for dest in transi['dest']:
                 codaddTransition += "<TABHERE>" + transi['src'] + "->addTransition(" + "this, SIGNAL("+transi['src'] + "to" + dest+"()), " + dest + ");\n"
-
     if sm['substates'] != "none":
         for substates in sm['substates']:
             if substates['contents']['transition'] != "none":
@@ -99,10 +98,11 @@ if component['statemachine'] != 'none':
         codConnect += "<TABHERE>QObject::connect(" + state + ", SIGNAL(entered()), this, SLOT(fun_" + state + "()));\n"
         states += state + ","
     if sm['machine']['contents']['finalstate'] is not "none":
-        state = sm['machine']['contents']['finalstate']
+        state = sm['machine']['contents']['finalstate'][0]
         codaddState += "<TABHERE>" + sm['machine']['name'] +  ".addState(" + state + ");\n"
         codConnect += "<TABHERE>QObject::connect(" + state + ", SIGNAL(entered()), this, SLOT(fun_" + state + "()));\n"
         states += state + ","
+
     if sm['substates'] != "none":
         for substates in sm['substates']:
             if substates['contents']['initialstate'] is not "none":
