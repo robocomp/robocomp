@@ -65,29 +65,39 @@ class SpecificWorker(GenericWorker):
     def compute(self):
         print '\nSpecificWorker.compute...'
         try:
-            self.proxyData["client3"]["testProxy"].printmsg("hello from client1")
+            self.proxyData["testProxy"].printmsg("hello from client1")
         except Ice.SocketException:
-            self.waitForComp("client3")
+            self.waitForComp("client3","test")
         return True
 
-    def waitForComp(self, compName):
+    def waitForComp(self, compName, interfaceName, updateAll=False):
+        '''
+        to be called when an interface call fails and need to wait for
+         componet hosting that interface
+
+        compName - name of the component to wait for
+        interfaceName - name of the interface failed
+        updateAll - update all proxies hosted by this component
+        '''
         self.timer.stop()
         ic = Ice.initialize()
-        interfacesNames = self.proxyData[compName].keys()
-        interfacesNames.remove("casterFun")
-        dg = str(self.proxyData[compName][interfacesNames[0]].ice_datagram())
+        
+        dg = str(self.proxyData[str(interfaceName)+"Proxy"].ice_datagram())
         host = dg[ dg.find('-h')+3:dg.find("-p")-1]
+        
         while True:
             try:
-                interfaces = self.proxyData["rcmaster"]["rcmasterProxy"].getComp(compName,host)
+                interfaces = self.proxyData["rcmasterProxy"].getComp(compName,host)
                 for iface in interfaces:
-                    basePrx = ic.stringToProxy(iface.name+":"+iface.protocol+" -h "+host+" -p "+str(iface.port))
-                    self.proxyData[compName][str(iface.name+"Proxy")] = self.proxyData[compName]["casterFun"](basePrx)
+                    if updateAll or iface.name == interfaceName:
+                        basePrx = ic.stringToProxy(iface.name+":"+iface.protocol+" -h "+host+" -p "+str(iface.port))
+                        self.proxyData[str(iface.name+"Proxy")] = getattr(self.castData[compName],"testPrx").checkedCast(basePrx)
+
             except ComponentNotFound:
-                print 'waiting for client3'
+                print 'waiting for '+ compName
                 time.sleep(3)
             except Ice.SocketException:
-                # rcmaster has note detected the crash wait for some time
+                # rcmaster has not detected the crash wait for some time
                 time.sleep(3)
             except Ice.Exception:
                 print 'Cannot connect to the remote object '+compName

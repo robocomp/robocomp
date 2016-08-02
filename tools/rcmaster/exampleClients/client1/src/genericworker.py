@@ -29,6 +29,7 @@ class GenericWorker(QtCore.QObject):
 
 
         self.proxyData = mprx["proxyData"]
+        self.castData = mprx["castData"]
 
 
         self.mutex = QtCore.QMutex(QtCore.QMutex.Recursive)
