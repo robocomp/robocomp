@@ -164,6 +164,7 @@ except:
 
 void SpecificWorker::compute()
 {
+//computeCODE
 // 	try
 // 	{
 // 		camera_proxy->getYImage(0,img, cState, bState);
@@ -216,10 +217,10 @@ if 'implements' in component:
 									ampersand = ''
 							# STR
 							paramStrA += delim + const + p['type'] + ' ' + ampersand + p['name']
-						cog.outl(method['return'] + ' SpecificWorker::' + method['name'] + '(' + paramStrA + ")\n{\n"+bodyCode+"\n}\n")
+						cog.outl(method['return'] + ' SpecificWorker::' + method['name'] + '(' + paramStrA + ")\n{\n//implementCODE\n"+bodyCode+"\n}\n")
 					else:
 						paramStrA = module['name'] +"::"+method['name']+"::Request &req, "+module['name']+"::"+method['name']+"::Response &res"
-						cog.outl('bool SpecificWorker::' + method['name'] + '(' + paramStrA + ")\n{\n"+bodyCode+"\n}\n")
+						cog.outl('bool SpecificWorker::' + method['name'] + '(' + paramStrA + ")\n{\n//implementCODE\n"+bodyCode+"\n}\n")
 
 if 'subscribesTo' in component:
 	for impa in component['subscribesTo']:

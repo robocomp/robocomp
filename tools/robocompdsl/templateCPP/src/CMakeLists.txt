@@ -81,7 +81,8 @@ if component['usingROS'] == True:
 	cog.outl('#ROS')
 	cog.outl('find_package(catkin REQUIRED)')
 	cog.outl('include_directories(  ${catkin_INCLUDE_DIRS} )')
-	cog.outl('SET ( LIBS ${LIBS} ${catkin_LIBRARIES} -L/opt/ros/jade/lib -lroscpp -lrosconsole -lroscpp_serialization)')
+	cog.outl('include_directories(  "/opt/ros/kinetic/include" )')
+	cog.outl('SET ( LIBS ${LIBS} ${catkin_LIBRARIES} -L/opt/ros/kinetic/lib -lroscpp -lrosconsole -lroscpp_serialization -lrostime -lxmlrpcpp -lcpp_common -lrosconsole_log4cxx -lrosconsole_backend_interface)')
 ]]]
 [[[end]]]
 

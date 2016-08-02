@@ -250,16 +250,6 @@ for imp in component['recursiveImports']:
 using namespace std;
 using namespace RoboCompCommonBehavior;
 
-[[[cog
-for imp in component['recursiveImports']:
-	incl = imp.split('/')[-1].split('.')[0]
-	cog.outl('using namespace RoboComp'+incl+';')
-
-]]]
-[[[end]]]
-
-
-
 class
 [[[cog
 A()
