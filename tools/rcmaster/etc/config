@@ -1,8 +1,8 @@
-# Endpoints for rcmaster
+# rcmaster config params
 rcmaster.Endpoints=tcp -h localhost -p 0
-rcmster.dbPath=/var/tmp/RoboComp
+rcmaster.dbPath=/var/tmp/RoboComp
 rcmaster.componentsToStart=rclogger
-rcmaster.cachettyl=2000000
+rcmaster.cachettyl=200
 
 
 # This property is used by the clients to connect to IceStorm.

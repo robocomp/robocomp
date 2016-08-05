@@ -130,7 +130,7 @@ if __name__ == '__main__':
 
         # Remote object connection for DifferentialRobot
         try:
-            mprx["databasePath"] = ic.getProperties().getProperty('rcmster.dbPath')
+            mprx["databasePath"] = ic.getProperties().getProperty('rcmaster.dbPath')
             mprx["cachettyl"] = ic.getProperties().getProperty('rcmaster.cachettyl')
             mprx["componentsToStart"] = ic.getProperties().getProperty('rcmaster.componentsToStart').split(',')
 

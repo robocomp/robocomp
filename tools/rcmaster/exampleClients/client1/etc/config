@@ -1,11 +1,5 @@
-# Endpoints for implemented interfaces
-ASR.Endpoints=tcp -p 0
-
-
-# Proxies for required interfaces
-rcmasterProxy = rcmaster:tcp -h localhost -p 0
-testProxy = test:tcp -h localhost -p 0
-
+# Name of the component
+Ice.ProgramName=client1
 
 
 # This property is used by the clients to connect to IceStorm.
@@ -17,5 +11,6 @@ Ice.Trace.Network=0
 Ice.Trace.Protocol=0
 Ice.ACM.Client=10
 Ice.ACM.Server=10
+Ice.Warn.UnknownProperties=0
 
 

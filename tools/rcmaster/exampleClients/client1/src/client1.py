@@ -123,9 +123,14 @@ if __name__ == '__main__':
         params.append('--Ice.Config=config')
     ic = Ice.initialize(params)
     status = 0
+    
     mprx = {}
-    castData = {"rcmaster":RoboCompRCMaster,"client3":RoboCompTest}
+    mprx["name"] = ic.getProperties().getProperty('Ice.ProgramName');
+
+    print mprx["name"]
     proxyData = {}
+    proxyData["rcmaster"] = {"comp":"rcmaster","caster":RoboCompRCMaster.rcmasterPrx.checkedCast,"name":"rcmaster"}
+    proxyData["test"] = {"comp":"client3","caster":RoboCompTest.testPrx.checkedCast,"name":"test"}
 
     try:
 
@@ -139,7 +144,7 @@ if __name__ == '__main__':
                 rcmaster_proxy = RoboCompRCMaster.rcmasterPrx.checkedCast(basePrx)
             except Ice.SocketException:
                 raise Exception("RCMaster is not running")
-            proxyData["rcmasterProxy"] = rcmaster_proxy
+            proxyData["rcmaster"]["proxy"] = rcmaster_proxy
         except Ice.Exception:
             print 'Cannot connect to the remote object (rcmaster)'
             traceback.print_exc()
@@ -150,10 +155,10 @@ if __name__ == '__main__':
         try:
             while True:
                 try:
-                    port = rcmaster_proxy.getComPort("client3","localhost");
+                    port = rcmaster_proxy.getComPort(proxyData["test"]["comp"],"localhost");
                     basePrx = ic.stringToProxy("test:tcp -h localhost -p "+str(port))
                     test_proxy = RoboCompTest.testPrx.checkedCast(basePrx)
-                    proxyData["testProxy"] = test_proxy
+                    proxyData["test"]["proxy"] = test_proxy
                 except RoboCompRCMaster.ComponentNotFound:
                     print 'waiting for test interface'
                     time.sleep(3)
@@ -176,10 +181,9 @@ if __name__ == '__main__':
 
     if status == 0:
         mprx["proxyData"] = proxyData
-        mprx["castData"] = castData
         worker = SpecificWorker(mprx)
 
-        compInfo = RoboCompRCMaster.compData(name="client1")
+        compInfo = RoboCompRCMaster.compData(name=mprx["name"])
         compInfo.interfaces = [RoboCompRCMaster.interfaceData('asr')]
         idata = rcmaster_proxy.registerComp(compInfo,False,True)
         print idata

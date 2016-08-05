@@ -28,7 +28,7 @@ class GenericWorker(QtCore.QObject):
 		super(GenericWorker, self).__init__()
 
 
-		self.proxyData = mprx
+		self.proxyData = mprx["proxyData"]
 
 
 
