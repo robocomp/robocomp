@@ -1,10 +1,5 @@
 # Endpoints for implemented interfaces
-test.Endpoints=tcp -p 0
-
-
-# Proxies for required interfaces
-rcmasterProxy = rcmaster:tcp -h localhost -p 0
-
+Ice.ProgramName=client3
 
 
 # This property is used by the clients to connect to IceStorm.

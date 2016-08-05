@@ -130,7 +130,8 @@ if __name__ == '__main__':
     print mprx["name"]
     proxyData = {}
     proxyData["rcmaster"] = {"comp":"rcmaster","caster":RoboCompRCMaster.rcmasterPrx.checkedCast,"name":"rcmaster"}
-    proxyData["test"] = {"comp":"client3","caster":RoboCompTest.testPrx.checkedCast,"name":"test"}
+    proxyData["test1"] = {"comp":"client31","caster":RoboCompTest.testPrx.checkedCast,"name":"test"}
+    proxyData["test2"] = {"comp":"client32","caster":RoboCompTest.testPrx.checkedCast,"name":"test"}
 
     try:
 
@@ -151,16 +152,39 @@ if __name__ == '__main__':
             status = 1
 
 
-        # Remote object connection for test
+        # Remote object connection for test1
         try:
             while True:
                 try:
-                    port = rcmaster_proxy.getComPort(proxyData["test"]["comp"],"localhost");
+                    port = rcmaster_proxy.getComPort(proxyData["test1"]["comp"],"localhost");
                     basePrx = ic.stringToProxy("test:tcp -h localhost -p "+str(port))
                     test_proxy = RoboCompTest.testPrx.checkedCast(basePrx)
-                    proxyData["test"]["proxy"] = test_proxy
+                    proxyData["test1"]["proxy"] = test_proxy
                 except RoboCompRCMaster.ComponentNotFound:
-                    print 'waiting for test interface'
+                    print 'waiting for test1 interface'
+                    time.sleep(3)
+                except Ice.Exception:
+                    print 'Cannot connect to the remote object (test)'
+                    traceback.print_exc()
+                    status = 1
+                else:
+                    break
+
+        except Ice.Exception, e:
+            print e
+            print 'Cannot get testProxy property.'
+            status = 1
+
+        # Remote object connection for test2
+        try:
+            while True:
+                try:
+                    port = rcmaster_proxy.getComPort(proxyData["test2"]["comp"],"localhost");
+                    basePrx = ic.stringToProxy("test:tcp -h localhost -p "+str(port))
+                    test_proxy = RoboCompTest.testPrx.checkedCast(basePrx)
+                    proxyData["test2"]["proxy"] = test_proxy
+                except RoboCompRCMaster.ComponentNotFound:
+                    print 'waiting for test2 interface'
                     time.sleep(3)
                 except Ice.Exception:
                     print 'Cannot connect to the remote object (test)'

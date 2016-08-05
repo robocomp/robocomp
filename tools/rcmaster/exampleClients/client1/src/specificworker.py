@@ -65,9 +65,17 @@ class SpecificWorker(GenericWorker):
     def compute(self):
         print '\nSpecificWorker.compute...'
         try:
-            self.proxyData["test"]["proxy"].printmsg("hello from " + self.name)
+            self.proxyData["test1"]["proxy"].printmsg("hello from " + self.name)
         except Ice.SocketException:
-            self.waitForComp("test",True)
+            print "exception t1"
+            self.waitForComp("test1",True)
+
+        try:
+            self.proxyData["test2"]["proxy"].printmsg("hello from " + self.name)
+        except Ice.SocketException:
+            print "exception t2"
+            self.waitForComp("test2",True)
+        
         return True
 
     def waitForComp(self, interfaceName, updateAll=False):
@@ -86,11 +94,13 @@ class SpecificWorker(GenericWorker):
         compName = self.proxyData[interfaceName]["comp"]
         # create name to dummy name map
         nameMap = {v["name"]:k for (k,v) in self.proxyData.iteritems() if v["comp"] == compName }
-        print nameMap
+        # print nameMap
         
         while True:
             try:
                 interfaces = self.proxyData["rcmaster"]["proxy"].getComp(compName,host)
+                print interfaces
+
                 for iface in interfaces:
                     if iface.name == self.proxyData[interfaceName]["name"] or updateAll:
                         basePrx = ic.stringToProxy(iface.name+":"+iface.protocol+" -h "+host+" -p "+str(iface.port))                        
@@ -98,6 +108,7 @@ class SpecificWorker(GenericWorker):
                             self.proxyData[nameMap[iface.name]]["proxy"] = self.proxyData[nameMap[iface.name]]["caster"](basePrx)
                         except KeyError:
                             # we dont use this interface
+                            # print "key err"
                             continue
 
             except ComponentNotFound:
