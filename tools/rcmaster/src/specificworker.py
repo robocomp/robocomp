@@ -217,7 +217,7 @@ class SpecificWorker(GenericWorker):
         for uid in self.compdb:
             if uid == '':
                 raise Exception("Invalid uid")
-            if uid == compInfo.uid and self.compdb[uid] == CompStatus.Active:
+            if uid == compInfo.uid and self.compdb[uid].status == CompStatus.Active:
                 print compInfo.name, 'already exists in host', compInfo.host.hostName
                 raise DuplicateComponent(compInfo)
 
