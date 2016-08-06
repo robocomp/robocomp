@@ -72,7 +72,7 @@ PUBLISHES_STR = """
 <TABHERE><TABHERE><TABHERE><TABHERE>except:
 <TABHERE><TABHERE><TABHERE><TABHERE><TABHERE>print 'Another client created the <NORMAL> topic? ...'
 <TABHERE><TABHERE>pub = topic.getPublisher().ice_oneway()
-<TABHERE><TABHERE><LOWER>opic = <NORMAL>Prx.uncheckedCast(pub)
+<TABHERE><TABHERE><LOWER>Topic = <NORMAL>Prx.uncheckedCast(pub)
 <TABHERE><TABHERE>mprx["<NORMAL>Pub"] = <LOWER>Topic
 """
 

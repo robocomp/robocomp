@@ -49,7 +49,6 @@ def generateHeaders(idslFile, outputPath, comp): #idslFile es el fichero idsl im
 					fileInit = open(outputPath + "/" + idsl['module']['name'] + "/__init__.py", 'a')
 					fileInit.write("from ._"+imp['name']+" import *\n")
 					fileInit.close()
-					open(outputPath + "/" + idsl['module']['name'] + "/__init__.py", 'w')
 		for imp in idsl['module']['contents']:
 			if imp['type'] == 'interface':
 				for ima in component['implements']+component['requires']:
@@ -86,9 +85,8 @@ def generateHeaders(idslFile, outputPath, comp): #idslFile es el fichero idsl im
 										else:
 											os.system(commandPY)
 										fileInit = open(outputPath + "/" + idsl['module']['name'] + "/__init__.py", 'a')
-										fileInit.write("from ._"+imp['name']+" import *\n")
+										fileInit.write("from ._"+method['name']+" import *\n")
 										fileInit.close()
-										open(outputPath + "/" + idsl['module']['name'] + "/__init__.py", 'w')
 								else:
 									print "error: service with too many params. Form is: void method(type inVar, out type outVar);"
 									#sys.exit(-1)

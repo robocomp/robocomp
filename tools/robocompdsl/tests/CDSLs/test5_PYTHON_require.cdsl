@@ -4,7 +4,7 @@ Component require
 {
 	Communications
 	{
-		requires JointMotor;
+		requires JointMotor, JointMotor;
 	};
 	language python;
 	gui Qt(QWidget);

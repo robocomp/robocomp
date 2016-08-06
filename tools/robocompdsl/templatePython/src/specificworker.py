@@ -79,6 +79,7 @@ class SpecificWorker(GenericWorker):
 	@QtCore.Slot()
 	def compute(self):
 		print 'SpecificWorker.compute...'
+		#computeCODE
 		#try:
 		#	self.differentialrobot_proxy.setSpeedBase(100, 0)
 		#except Ice.Exception, e:
@@ -118,7 +119,7 @@ for imp in lst:
 				cog.outl('<TABHERE>def ' + method['name'] + '(self' + paramStrA + "):")
 				if method['return'] != 'void': cog.outl("<TABHERE><TABHERE>ret = "+method['return']+'()')
 				cog.outl("<TABHERE><TABHERE>#")
-				cog.outl("<TABHERE><TABHERE># YOUR CODE HERE")
+				cog.outl("<TABHERE><TABHERE>#subscribesToCODE")
 				cog.outl("<TABHERE><TABHERE>#")
 				if len(outValues) == 0:
 					cog.outl("<TABHERE><TABHERE>pass\n")
@@ -153,7 +154,7 @@ for imp in component['implements']:
 					method = interface['methods'][mname]
 					cog.outl('<TABHERE>def ' + method['name'] + "(self, req):")
 					cog.outl("<TABHERE><TABHERE>#")
-					cog.outl("<TABHERE><TABHERE># YOUR CODE HERE")
+					cog.outl("<TABHERE><TABHERE>#implementCODE")
 					cog.outl("<TABHERE><TABHERE>#Example ret = req.a + req.b")
 					cog.outl("<TABHERE><TABHERE>#")
 					cog.outl("<TABHERE><TABHERE>return "+method['name']+"Response(ret)")
@@ -179,7 +180,7 @@ for imp in component['implements']:
 					cog.outl('<TABHERE>def ' + method['name'] + '(self' + paramStrA + "):")
 					if method['return'] != 'void': cog.outl("<TABHERE><TABHERE>ret = "+method['return']+'()')
 					cog.outl("<TABHERE><TABHERE>#")
-					cog.outl("<TABHERE><TABHERE># YOUR CODE HERE")
+					cog.outl("<TABHERE><TABHERE>#implementCODE")
 					cog.outl("<TABHERE><TABHERE>#")
 					if len(outValues) == 0:
 						cog.outl("<TABHERE><TABHERE>pass\n")
