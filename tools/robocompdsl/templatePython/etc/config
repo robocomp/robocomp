@@ -21,6 +21,9 @@ component = CDSLParsing.fromFile(theCDSL)
 
 storm = False
 
+cog.outl('# General properties of Component')
+cog.outl('Ice.ProgramName='+component['name'])
+
 text = False
 for ima in component['implements']:
 	if type(ima) == str:
@@ -54,20 +57,6 @@ if text:
 	cog.out('\n\n')
 
 
-text = False
-for namea, number in getNameNumber(component['requires']):
-	if type(namea) == str:
-		name = namea
-	else:
-		name = namea[0]
-	if text == False:
-		cog.outl('# Proxies for required interfaces')
-		text = True
-	cog.outl(name + number + "Proxy = " + name.lower() + ":tcp -h localhost -p 0")
-if text:
-	cog.out('\n\n')
-
-
 for pb in component['publishes']:
 	storm = True
 if storm:
@@ -83,5 +72,6 @@ Ice.Trace.Network=0
 Ice.Trace.Protocol=0
 Ice.ACM.Client=10
 Ice.ACM.Server=10
+Ice.Warn.UnknownProperties=0
 
 
