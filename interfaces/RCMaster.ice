@@ -85,6 +85,9 @@ module RoboCompRCMaster
         //flush the current cache or/and db
         idempotent void flush(bool maindb);
 
+        //get current status of database
+        idempotent string getStat(bool showNames);
+
     };
 };
 

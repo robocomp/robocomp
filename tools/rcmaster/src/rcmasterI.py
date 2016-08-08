@@ -52,3 +52,5 @@ class rcmasterI(rcmaster):
 		return self.worker.getComp(compName, privateIP)
 	def flush(self, maindb, c):
 		return self.worker.flush(maindb)
+	def getStat(self, showNames, c):
+		return self.worker.getStat(showNames)

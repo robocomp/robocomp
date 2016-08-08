@@ -313,3 +313,16 @@ class SpecificWorker(GenericWorker):
             self.compdb = dict()
             print "Flusshing the mainDB ..."
         self.show_stats()
+
+
+    def getStat(self, showNames):
+        statStr = ''
+        if showNames:
+            statStr = 'registred : ',(len(self.compdb)-len(self.compcache)) + " ; "
+            statStr = statStr + 'registred : ',len(self.compcache) + " ; "
+        else:
+            comps = " ".join(str(x.name) for x in self.compdb if x.status == CompStatus.Active)
+            cached_comps = " ".join(str(x.name) for x in self.compdb if x.status != CompStatus.Active)
+            statStr = 'registred : ' + comps + " ; "
+            statStr = statStr + 'registred : ' + cached_comps + " ; "
+        return statStr
