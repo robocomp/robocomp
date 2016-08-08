@@ -156,15 +156,18 @@ if __name__ == '__main__':
         mprx["proxyData"] = proxyData
         worker = SpecificWorker(mprx)
 
-
+        # get port for all interfaces
         compInfo = RoboCompRCMaster.compData(name=mprx["name"])
         compInfo.interfaces = [RoboCompRCMaster.interfaceData('test')]
         idata = rcmaster_proxy.registerComp(compInfo,False,True)
-        print idata
+        
+        # activate all interfaces
+        for iface in idata:
+            adapter = ic.createObjectAdapterWithEndpoints(iface.name, iface.protocol+' -h localhost -p '+str(iface.port))
+            adapter.add(testI(worker), ic.stringToIdentity(iface.name))
+            adapter.activate()
+            print "activated interface :", (iface)
 
-        adapter = ic.createObjectAdapterWithEndpoints('test',idata[0].protocol+' -h localhost -p '+str(idata[0].port))
-        adapter.add(testI(worker), ic.stringToIdentity('test'))
-        adapter.activate()
 
 
 #       adapter.add(CommonBehaviorI(<LOWER>I, ic), ic.stringToIdentity('commonbehavior'))

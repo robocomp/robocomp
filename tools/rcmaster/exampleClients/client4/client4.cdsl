@@ -1,11 +1,11 @@
 import "/robocomp/interfaces/IDSLs/RCMaster.idsl";
-import "/robocomp/interfaces/IDSLs/ASR.idsl";
 import "/robocomp/interfaces/IDSLs/Test.idsl";
+import "/robocomp/interfaces/IDSLs/ASR.idsl";
 
-Component client1{
+Component client4{
 	Communications{
-		requires rcmaster, test, test;
-		implements ASR;
+		requires rcmaster, test;
+		implements test, ASR;
 	};
 	language Python;
 };

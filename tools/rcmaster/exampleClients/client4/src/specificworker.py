@@ -36,12 +36,13 @@ if len(ROBOCOMP)<1:
 preStr = "-I"+ROBOCOMP+"/interfaces/ --all "+ROBOCOMP+"/interfaces/"
 Ice.loadSlice(preStr+"RCMaster.ice")
 from RoboCompRCMaster import *
-Ice.loadSlice(preStr+"ASR.ice")
-from RoboCompASR import *
 Ice.loadSlice(preStr+"Test.ice")
 from RoboCompTest import *
+Ice.loadSlice(preStr+"ASR.ice")
+from RoboCompASR import *
 
 
+from testI import *
 from asrI import *
 
 class SpecificWorker(GenericWorker):
@@ -50,33 +51,6 @@ class SpecificWorker(GenericWorker):
         self.timer.timeout.connect(self.compute)
         self.Period = 2000
         self.timer.start(self.Period)
-
-    def setParams(self, params):
-        #try:
-        #    par = params["InnerModelPath"]
-        #    innermodel_path=par.value
-        #    innermodel = InnerModel(innermodel_path)
-        #except:
-        #    traceback.print_exc()
-        #    print "Error reading config params"
-        return True
-
-    @QtCore.Slot()
-    def compute(self):
-        # print '\nSpecificWorker.compute...'
-        try:
-            self.proxyData["test1"]["proxy"].printmsg("hello from " + self.name)
-        except Ice.SocketException:
-            print "exception t1"
-            self.waitForComp("test1",True)
-
-        try:
-            self.proxyData["test2"]["proxy"].printmsg("hello from " + self.name)
-        except Ice.SocketException:
-            print "exception t2"
-            self.waitForComp("test2",True)
-        
-        return True
 
     def waitForComp(self, interfaceName, updateAll=False):
         '''
@@ -99,7 +73,7 @@ class SpecificWorker(GenericWorker):
         while True:
             try:
                 interfaces = self.proxyData["rcmaster"]["proxy"].getComp(compName,host)
-                # print interfaces
+                print interfaces
 
                 for iface in interfaces:
                     if iface.name == self.proxyData[interfaceName]["name"] or updateAll:
@@ -110,8 +84,8 @@ class SpecificWorker(GenericWorker):
                             # we dont use this interface
                             # print "key err"
                             continue
-                print "Connected to " + compName
-            except ( ComponentNotFound, Ice.SocketException) as e:
+
+            except (ComponentNotFound, Ice.SocketException) as e:
                 print 'waiting for '+ compName
                 time.sleep(3)
             except Ice.Exception:
@@ -121,6 +95,34 @@ class SpecificWorker(GenericWorker):
             else:
                 self.timer.start(self.Period)
                 break
+
+
+    def setParams(self, params):
+        #try:
+        #   par = params["InnerModelPath"]
+        #   innermodel_path=par.value
+        #   innermodel = InnerModel(innermodel_path)
+        #except:
+        #   traceback.print_exc()
+        #   print "Error reading config params"
+        return True
+
+    @QtCore.Slot()
+    def compute(self):
+        try:
+            self.proxyData["test"]["proxy"].printmsg("hello from " + self.name)
+        except Ice.SocketException:
+            print "exception test"
+            self.waitForComp("test",True)
+        return True
+
+
+    #
+    # printmsg
+    #
+    def printmsg(self, message):
+        print "Message:" + message
+
 
     #
     # listenWav
@@ -172,3 +174,8 @@ class SpecificWorker(GenericWorker):
         # YOUR CODE HERE
         #
         return ret
+
+
+
+
+

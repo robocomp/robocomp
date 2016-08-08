@@ -20,7 +20,7 @@
 #    along with RoboComp.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-# \mainpage RoboComp::client1
+# \mainpage RoboComp::client4
 #
 # \section intro_sec Introduction
 #
@@ -48,7 +48,7 @@
 #
 # \subsection execution_ssec Execution
 #
-# Just: "${PATH_TO_BINARY}/client1 --Ice.Config=${PATH_TO_CONFIG_FILE}"
+# Just: "${PATH_TO_BINARY}/client4 --Ice.Config=${PATH_TO_CONFIG_FILE}"
 #
 # \subsection running_ssec Once running
 #
@@ -81,10 +81,10 @@ Ice.loadSlice(preStr+"CommonBehavior.ice")
 import RoboCompCommonBehavior
 Ice.loadSlice(preStr+"RCMaster.ice")
 import RoboCompRCMaster
-Ice.loadSlice(preStr+"ASR.ice")
-import RoboCompASR
 Ice.loadSlice(preStr+"Test.ice")
 import RoboCompTest
+Ice.loadSlice(preStr+"ASR.ice")
+import RoboCompASR
 
 
 class CommonBehaviorI(RoboCompCommonBehavior.CommonBehavior):
@@ -123,15 +123,13 @@ if __name__ == '__main__':
         params.append('--Ice.Config=config')
     ic = Ice.initialize(params)
     status = 0
-    
     mprx = {}
     mprx["name"] = ic.getProperties().getProperty('Ice.ProgramName');
-
     print mprx["name"]
+
     proxyData = {}
     proxyData["rcmaster"] = {"comp":"rcmaster","caster":RoboCompRCMaster.rcmasterPrx.checkedCast,"name":"rcmaster"}
-    proxyData["test1"] = {"comp":"client31","caster":RoboCompTest.testPrx.checkedCast,"name":"test"}
-    proxyData["test2"] = {"comp":"client32","caster":RoboCompTest.testPrx.checkedCast,"name":"test"}
+    proxyData["test"] = {"comp":"client3","caster":RoboCompTest.testPrx.checkedCast,"name":"test"}
 
     try:
 
@@ -156,12 +154,12 @@ if __name__ == '__main__':
         try:
             while True:
                 try:
-                    port = rcmaster_proxy.getComPort(proxyData["test1"]["comp"],"localhost");
+                    port = rcmaster_proxy.getComPort(proxyData["test"]["comp"],"localhost");
                     basePrx = ic.stringToProxy("test:tcp -h localhost -p "+str(port))
                     test_proxy = RoboCompTest.testPrx.checkedCast(basePrx)
-                    proxyData["test1"]["proxy"] = test_proxy
+                    proxyData["test"]["proxy"] = test_proxy
                 except RoboCompRCMaster.ComponentNotFound:
-                    print 'waiting for test1 interface'
+                    print 'waiting for test interface'
                     time.sleep(3)
                 except Ice.Exception:
                     print 'Cannot connect to the remote object (test)'
@@ -175,41 +173,19 @@ if __name__ == '__main__':
             print 'Cannot get testProxy property.'
             status = 1
 
-        # Remote object connection for test2
-        try:
-            while True:
-                try:
-                    port = rcmaster_proxy.getComPort(proxyData["test2"]["comp"],"localhost");
-                    basePrx = ic.stringToProxy("test:tcp -h localhost -p "+str(port))
-                    test_proxy = RoboCompTest.testPrx.checkedCast(basePrx)
-                    proxyData["test2"]["proxy"] = test_proxy
-                except RoboCompRCMaster.ComponentNotFound:
-                    print 'waiting for test2 interface'
-                    time.sleep(3)
-                except Ice.Exception:
-                    print 'Cannot connect to the remote object (test)'
-                    traceback.print_exc()
-                    status = 1
-                else:
-                    break
-
-        except Ice.Exception, e:
-            print e
-            print 'Cannot get testProxy property.'
-            status = 1
 
     except:
             traceback.print_exc()
             status = 1
 
-
     if status == 0:
         mprx["proxyData"] = proxyData
         worker = SpecificWorker(mprx)
 
+
         # get port for all interfaces
         compInfo = RoboCompRCMaster.compData(name=mprx["name"])
-        compInfo.interfaces = [RoboCompRCMaster.interfaceData('ASR')]
+        compInfo.interfaces = [RoboCompRCMaster.interfaceData('test'),RoboCompRCMaster.interfaceData('ASR')]
         idata = rcmaster_proxy.registerComp(compInfo,False,True)
         
         # activate all interfaces
@@ -217,7 +193,7 @@ if __name__ == '__main__':
             adapter = ic.createObjectAdapterWithEndpoints(iface.name, iface.protocol+' -h localhost -p '+str(iface.port))
             adapter.add(testI(worker), ic.stringToIdentity(iface.name))
             adapter.activate()
-            print "activated interface :", (iface)
+            print "activated interface :", iface
 
 
 #       adapter.add(CommonBehaviorI(<LOWER>I, ic), ic.stringToIdentity('commonbehavior'))
