@@ -12,7 +12,6 @@ RoboCompDSL's User Guide
 5. [ROS Middleware Components](#ros)
     1. [1.- Require / Implement](#Rreq-imp)
     2. [2.- Publish / Subscribe](#Rpub-sub)
-    3. [3.- Using Gazebo](#gazebo)
 6. [Future improvements](#future)
 
 <div id='introduction'/>
@@ -392,8 +391,7 @@ With Subscriber we has no problems with parameters. The use of data types of you
 
 Send us any questions or problems you may have.
 
-<div id='gazebo'/>
-### 3.- Using Gazebo
+Check out this tutorial [Using Gazebo with RoboComp](https://github.com/robocomp/robocomp/blob/highlyunstable/doc/usingGazebo.md).
 
 <div id='future'/>
 ## Future improvements
