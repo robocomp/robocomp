@@ -93,7 +93,8 @@ If we want create an IDSL compatible with ROS and ICE Middlewares, we must pay a
 
     1.- Services have two parameters and return void/bool.
     2.- Topics have a single parameter and return void.
-    3.- Only simple data structures like primitive types (int, float, etc.), structures or arrays are allowed.
+    3.- Only simple data structures like primitive types (int, float, etc.), structures 
+    or arrays are allowed.
 
 Any IDSL which follow the restrictions, can be used for both ROS as ICE.
 
@@ -130,7 +131,8 @@ And implement:
     	language Cpp;
     	gui Qt(QWidget);
     };
-You can simply write *implements Plane;*, ICE is the default middleware.
+    
+You can simply write *requires Plane;* ICE is the default middleware.
 Now, let's use RoboCompDSL to generate our components.
 
     $ robocompdsl robocompdsl path/to/mycomponent/mycomponent.cdsl output/path
@@ -174,16 +176,221 @@ Finally, you have 2 components communicating by ICE Middleware. Enjoy!
 <div id='Ipub-sub'/>
 ### 2.- Publish / Subscribe
 
+As we did above, we are going to create our CDSLs for this case:
+
+    import "/robocomp/interfaces/IDSLs/Plane.idsl";
+    Component planePublisher
+    {
+    	Communications
+    	{
+    		publishes Plane(ice);
+    	};
+    	language Cpp;
+    	gui Qt(QWidget);
+    };
+    
+And subscriber:
+
+    import "/robocomp/interfaces/IDSLs/Plane.idsl";
+    Component planeSubscriber
+    {
+    	Communications
+    	{
+    		subscribesTo Plane(ice);
+    	};
+    	language Cpp;
+    	gui Qt(QWidget);
+    };
+
+
+The process for generating components is similar.
+
+    $ robocompdsl robocompdsl path/to/mycomponent/mycomponent.cdsl output/path
+    
+You can use this example of *SpecificWorker::compute()* in your Publish Component:
+
+    void SpecificWorker::compute()
+    {
+    	Dimensions dims;
+    	dims.width = 200;
+    	dims.height = 300;
+    	string name = "newName1";
+    	plane_proxy->newPlaneName(name);
+    	plane_proxy->newDimensions(dims);
+    	dims.width = 400;
+    	dims.height = 400;
+    	name = "newName2";
+    	plane_proxy->newPlaneName(name);
+    	plane_proxy->newDimensions(dims);
+    	dims.height = 600;
+    	name = "newName3";
+    	plane_proxy->newPlaneName(name);
+    	plane_proxy->newDimensions(dims);
+    }
+
+Rewrite all necessary methods in your *specificworker.cpp* of Subscriber Component. Here is an example:
+
+    void SpecificWorker::newDimensions(const Dimensions &dims)
+    {
+    	printf("New Dimension. Width: %d - Height: %d\n",dims.width, dims.height);
+    }
+    void SpecificWorker::newPlaneName(const string &planeName)
+    {
+    	printf("New name. Name: %s\n", planeName.c_str());
+    }
+
+As you can see, this section is as above but with minor differences.
+
 <div id='ros'/>
 ## ROS Middleware Components
 
 In this section we will create components which communicate via ROS Middleware using *Plane.idsl*.
+The use of the types is a little different to what we saw with ICE Middleware.
 
 <div id='Rreq-imp'/>  
 ### 1.- Require / Implement
 
+Our CDSLs:
+
+    import "/robocomp/interfaces/IDSLs/Plane.idsl";
+    Component planeClient
+    {
+    	Communications
+    	{
+    		requires planeSetup(ros);
+    	};
+    	language Cpp;
+    	gui Qt(QWidget);
+    };
+
+And Implement:
+
+    import "/robocomp/interfaces/IDSLs/Plane.idsl";
+    Component planeServer
+    {
+    	Communications
+    	{
+    		implements planeSetup(ros);
+    	};
+    	language Cpp;
+    	gui Qt(QWidget);
+    };
+
+If you want use ROS Middleware, you must use **(ros)** option for each interface.
+After generating component, rewrite our specific code.
+
+An example of *SpecificWorker::compute()* for your Require Component:
+
+    void SpecificWorker::compute()
+    {
+    	RoboCompPlane::Dimensions dims;
+    	std_msgs::Int32 width;
+    	std_msgs::String name, lastName;
+    	width.data = 300;
+    	name.data = "name1";
+    	planesetup_proxy->setWidth(width, dims);
+    	planesetup_proxy->setName(name, lastName);
+    	width.data = 100;
+    	name.data = "name2";
+    	planesetup_proxy->setWidth(width, dims);
+    	planesetup_proxy->setName(name, lastName);
+    	width.data = 200;
+    	name.data = "name3";
+    	planesetup_proxy->setWidth(width, dims);
+    	planesetup_proxy->setName(name, lastName);
+    	ros::spinOnce();    //Don't remove this line
+    }
+    
+Notice that ROS uses its own data types and how they are used. It is simple, right?
+Hint: *Remember use .data in your variables*.
+
+Rewrite all methods in your Implement Component. An example:
+
+    bool SpecificWorker::setWidth(RoboCompPlane::setWidth::Request &req, RoboCompPlane::setWidth::Response &res)
+    {
+    	printf("Changing width value %d\n", req.width);
+    	res.dims.width = req.width; //return value (not necessary)
+    	return true;
+    }
+    bool SpecificWorker::setName(RoboCompPlane::setName::Request &req, RoboCompPlane::setName::Response &res)
+    {
+    	printf("Changing name value %s\n", req.name.c_str());
+    	res.lastName = req.name; //return value (not necessary)
+    	return true;
+    }
+    
+2 points (If you are a familiar user with ROS, you will have no problem understanding this):
+    1.- ROS Services will always return a bool.
+    2.- Your method has 2 parameters (Request and Response).
+
 <div id='Rpub-sub'/>
 ### 2.- Publish / Subscribe
+
+Publshers/Subscribers have less difficulty. Let's create our CDSLs like ICE but with **(ros)**:
+
+    import "/robocomp/interfaces/IDSLs/Plane.idsl";
+    Component planePublisher
+    {
+    	Communications
+    	{
+    		publishes Plane(ros);
+    	};
+    	language Cpp;
+    	gui Qt(QWidget);
+    };
+    
+And Subscriber:
+
+    import "/robocomp/interfaces/IDSLs/Plane.idsl";
+    Component planeSubscriber
+    {
+    	Communications
+    	{
+    		subscribesTo Plane(ros);
+    	};
+    	language Cpp;
+    	gui Qt(QWidget);
+    };
+    
+If you want to generate components in Python, change **language Cpp** for **language python**.
+An example of *SpecificWorker::compute()* for your Publisher Component:
+
+    void SpecificWorker::compute()
+    {
+    	RoboCompPlane::Dimensions dims;
+    	dims.width = 200;
+    	dims.height = 300;
+    	std_msgs::String name;
+    	name.data  = "newName1";
+    	plane_proxy->newPlaneName(name);
+    	plane_proxy->newDimensions(dims);
+    	dims.width = 400;
+    	dims.height = 400;
+    	name.data  = "newName2";
+    	plane_proxy->newPlaneName(name);
+    	plane_proxy->newDimensions(dims);
+    	dims.height = 600;
+    	name.data  = "newName3";
+    	plane_proxy->newPlaneName(name);
+    	plane_proxy->newDimensions(dims);
+    	ros::spinOnce();    //Don't remove this line
+    }
+
+Same code that your Require Component.
+Example with methods *specificworker.cpp* of Subscriber Component:
+
+    void SpecificWorker::newDimensions(RoboCompPlane::Dimensions dims)
+    {
+    	printf("new Dimension. Width: %d - Height: %d\n",dims.width, dims.height);
+    }
+    void SpecificWorker::newPlaneName(std_msgs::String planeName)
+    {
+    	printf("new Name. Name: %s\n", planeName.data.c_str());
+    }
+
+With Subscriber we has no problems with parameters. The use of data types of your parameters is the same as we do in the compute(). So we have minor differences between ICE and ROS Middleware. If you pay attention to the differences shown in this guide, you will not have problems.
+
+Send us any questions or problems you may have.
 
 <div id='gazebo'/>
 ### 3.- Using Gazebo
