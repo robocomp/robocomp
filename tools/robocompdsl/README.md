@@ -31,6 +31,52 @@ This will generate a CDSL file with the following content:
 
 ## Generating an IDSL file
 
+Components communicate through interfaces, so we have to generate an IDSL. Let's start with a simple but complete IDSL named *Plane.idsl*:
+
+        import "Point.idsl";
+        module RoboCompPlane
+        {
+          sequence<RoboCompPoint::PointXY> Points;
+        
+          struct Dimensions
+          {
+            int width;
+            int height;
+          };
+          
+          interface planeSetup
+          {
+        	void setWidth(int width, out Dimensions dims);
+        	void setHeight(int height, out Dimensions dims);
+        	void setName(string name,  out string lastName);
+        	void addPoint(RoboCompPoint::PointXY point,  out Points pts);
+          };
+            interface Plane
+          {
+        	void newPlaneName(string planeName);
+        	void newDimensions(Dimensions dims);
+          };
+        };
+
+That IDSL imports other IDSL named *Point.idsl* which only has a structure:
+
+        module RoboCompPoint
+        {
+        	struct PointXY
+        	{
+        		int x;
+        		int y;
+        	};
+        };
+
+If we want create an IDSL compatible with ROS and ICE Middlewares, we must pay attention to 3 restrictions.
+
+    1.- Services have two parameters and return void/bool.
+    2.- Topics have a single parameter and return void.
+    3.- Only simple data structures like primitive types (int, float, etc.), structures or arrays are allowed.
+
+Any IDSL which follow the restrictions, can be used for both ROS as ICE.
+
 ## ICE Middleware Components
 
 ## ROS Middleware Components
