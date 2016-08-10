@@ -328,6 +328,11 @@ for namea, num in getNameNumber(component['requires'] + component['publishes']):
 		name = namea[0]
 		if communicationIsIce(namea):
 			cog.outl('<TABHERE>'+name+'Prx '+name.lower()+num +'_proxy;')
+try:
+	if 'agmagent' in [ x.lower() for x in component['options'] ]:
+		cog.outl("<TABHERE>AGMExecutivePrx agmexecutive_proxy;")
+except:
+	pass
 ]]]
 [[[end]]]
 
