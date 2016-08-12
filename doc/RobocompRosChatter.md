@@ -2,6 +2,8 @@ RoboComp Component & Ros Node chatter
 ============
 
 Here we will create a RoboComp Component which can communicate with a Ros Node using Ros Middleware.
+The Ros Node which we will use can be found [here]()
+
 Steps:
 
 1. Analyze the Ros Node.
@@ -74,11 +76,11 @@ To see if everything worked, try to insert this code in your subscribe method:
     	for(int i=0;i<img.image.size();i++)
     		printf("value of img.image[%d] = %d\n", i, img.image[i]);
 
+Launch your component and enjoy!
+> We assume that Talker and **roscore** are running.
 
-Launch **roscore** and  your component (we assume that Talker is running).
+> If you get an error like this:
 
-If you get an error like this:
+> [ERROR] [1471018647.418758838]: Client [/listener] wants topic /chatter to have datatype/md5sum [RoboCompListener/Image/**5d96ac93c863cbaa85815010f7256b9a**], but our version has [beginner_tutorials/image/**163b37c985fb24d5121dd98a6a240a84**]. Dropping connection.
 
-[ERROR] [1471018647.418758838]: Client [/listener] wants topic /chatter to have datatype/md5sum [RoboCompListener/Image/**5d96ac93c863cbaa85815010f7256b9a**], but our version has [beginner_tutorials/image/**163b37c985fb24d5121dd98a6a240a84**]. Dropping connection.
-
-Then you have not generated an identical message structure.
+> Then you have not generated an identical message structure.
