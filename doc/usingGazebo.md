@@ -1,2 +1,0 @@
-Using Gazebo with RoboComp
-============
