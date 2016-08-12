@@ -103,7 +103,7 @@ if component['usingROS'] == True:
 			for interface in module['interfaces']:
 				if interface['name'] == nname:
 					for mname in interface['methods']:
-						s = "\""+nname+"_"+mname+"\""
+						s = "\""+mname+"\""
 						cog.outl("<TABHERE>"+nname+"_"+mname+" = node.subscribe("+s+", 1000, &GenericWorker::"+mname+", this);")
 	#INICIALIZANDO IMPLEMENTS
 	for imp in component['implements']:
@@ -118,7 +118,7 @@ if component['usingROS'] == True:
 			for interface in module['interfaces']:
 				if interface['name'] == nname:
 					for mname in interface['methods']:
-						s = "\""+nname+"_"+mname+"\""
+						s = "\""+mname+"\""
 						cog.outl("<TABHERE>"+nname+"_"+mname+" = node.advertiseService("+s+", &GenericWorker::"+mname+", this);")
 if 'publishes' in component:
 	for publish in component['publishes']:

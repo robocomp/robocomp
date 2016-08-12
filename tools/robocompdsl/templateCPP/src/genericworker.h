@@ -180,7 +180,7 @@ if component['usingROS'] == True:
 					for mname in interface['methods']:
 						method = interface['methods'][mname]
 						for p in method['params']:
-							s = "\""+nname+"_"+mname+"\""
+							s = "\""+mname+"\""
 							if p['type'] in ('float','int','uint'):
 								cog.outl("<TABHERE><TABHERE>pub_"+mname+" = node->advertise<std_msgs::"+p['type'].capitalize()+"32>(node->resolveName("+s+"), 1000);")
 							elif p['type'] == ('string'):
@@ -236,7 +236,7 @@ if component['usingROS'] == True:
 				if interface['name'] == nname:
 					for mname in interface['methods']:
 						method = interface['methods'][mname]
-						s = "\""+nname+"_"+mname+"\""
+						s = "\""+mname+"\""
 						cog.outl("<TABHERE><TABHERE>srv_"+mname+" = node->serviceClient<"+module['name']+"::"+mname+">(node->resolveName("+s+"), 1000);")
 			cog.outl("<TABHERE>}")
 			cog.outl("<TABHERE>~ServiceClient"+nname+"(){}")
