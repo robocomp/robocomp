@@ -71,9 +71,9 @@ And use RoboCompDSL to generate your component.
 
 To see if everything worked, try to insert this code in your subscribe method:
 
-    	printf("Name: %s, size: %d\n", str(img.name), img.size);
-    	for(int i=0;i<img.image.size();i++)
-    		printf("value of img.image[%d] = %d\n", i, img.image[i]);
+    printf("Name: %s, size: %d\n", img.name.c_str(), img.size);
+    for(int i=0;i<img.image.size();i++)
+        printf("value of img.image[%d] = %d\n", i, img.image[i]);
 
 Launch your component and enjoy!
 > We assume that Talker and **roscore** are running.
