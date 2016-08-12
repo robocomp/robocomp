@@ -49,7 +49,6 @@ Let's generate our IDSL:
 **The names of the variables must be identical to those used in the message!**
 
 We have created a structure Image and a topic called chatter. You can use int32/uint32 instead int/uint.
-Here begins the easy part.
 
 ### Generate our RoboComp Component
 
