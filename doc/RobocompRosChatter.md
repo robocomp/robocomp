@@ -2,7 +2,7 @@ RoboComp Component & Ros Node chatter
 ============
 
 Here we will create a RoboComp Component which can communicate with a Ros Node using Ros Middleware.
-The Ros Node which we will use can be found [here](https://github.com/robocomp/robocomp/tree/highlyunstable/doc/src/beginner_tutorials)
+The Ros Node which we will use can be found [here](https://github.com/robocomp/robocomp/tree/highlyunstable/doc/src/beginner_tutorials).
 
 Steps:
 
