@@ -391,7 +391,7 @@ With Subscriber we has no problems with parameters. The use of data types of you
 
 Send us any questions or problems you may have.
 
-Check out this tutorial [RoboComp Component & Ros Node chatter](https://github.com/robocomp/robocomp/blob/highlyunstable/doc/RoboCompRosChatter.md).
+Check out this tutorial [RoboComp Component & Ros Node chatter](https://github.com/robocomp/robocomp/blob/highlyunstable/doc/RobocompRosChatter.md).
 
 <div id='future'/>
 ## Future improvements
