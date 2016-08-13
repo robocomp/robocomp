@@ -329,46 +329,18 @@ if sys.argv[1].endswith(".cdsl"):
 			generateHeaders("/opt/"+imp, outputPath+"/src", component)
 elif sys.argv[1].endswith(".idsl"):
 	from parseIDSL import *
-	imported = []
 	idsl = IDSLParsing.fromFileIDSL(inputFile)
 	if not os.path.exists(outputPath):
 		creaDirectorio(outputPath)
 
-	def generarMSG(inputFile, imported):
-		idsl = IDSLParsing.fromFileIDSL(inputFile)
-		for imp in idsl['module']['contents']:
-			if imp['type'] in ['struct','sequence']:
-				for f in [ "SERVANT.MSG"]:
-					ofile =imp['name'] + "." + f.split('.')[-1].lower()
-					print 'Generating', ofile, ' (servant for', inputFile.split('.')[0].lower() + ')'
-					# Call cog
-					run = "cog.py -z -d" + " -D structName=" + imp['name'] +" -D theIDSL="+inputFile+ " -o " + ofile + " " + "/opt/robocomp/share/robocompdsl/templateCPP/" + f
-					run = run.split(' ')
-					ret = Cog().main(run)
-					if ret != 0:
-						print 'ERROR'
-						sys.exit(-1)
-					replaceTagsInFile(ofile)
-		for imp in idsl['module']['contents']:
-			if imp['type'] == 'interface':
-				for method in imp['methods']:
-					if 'params' in method:
-						if len(method['params']) == 2:
-							for f in [ "SERVANT.SRV"]:
-								ofile =method['name'] + "." + f.split('.')[-1].lower()
-								print 'Generating', ofile, ' (servant for', inputFile.split('.')[0].lower() + ')'
-								# Call cog
-								run = "cog.py -z -d" + " -D methodName=" + method['name'] +" -D theIDSL="+inputFile+ " -o " + ofile + " " + "/opt/robocomp/share/robocompdsl/templateCPP/" + f
-								run = run.split(' ')
-								ret = Cog().main(run)
-								if ret != 0:
-									print 'ERROR'
-									sys.exit(-1)
-								replaceTagsInFile(ofile)
-		return idsl['module']['name']
-	try:
-		for importIDSL in idsl['imports']:
-			imported.append(generarMSG(importIDSL, []))
-	except:
-		pass
-	generarMSG(inputFile, imported)
+	for f in [ "TEMPLATE.ICE"]:
+		ofile =inputFile.split('.')[0]+'.ice'
+		print 'Generating ICE file ', ofile
+		# Call cog
+		run = "cog.py -z -d" + " -D theIDSL="+inputFile+ " -o " + ofile + " " + "/opt/robocomp/share/robocompdsl/" + f
+		run = run.split(' ')
+		ret = Cog().main(run)
+		if ret != 0:
+			print 'ERROR'
+			sys.exit(-1)
+		replaceTagsInFile(ofile)

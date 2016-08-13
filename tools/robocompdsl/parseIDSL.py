@@ -59,10 +59,10 @@ class IDSLParsing:
 		idslImports = ZeroOrMore(idslImport)
 		
 		structDef     = Word("struct").setResultsName('type') + identifier.setResultsName('name') + op + structIdentifers.setResultsName("structIdentifiers") + cl + semicolon
-		dictionaryDef = Word("dictionary").setResultsName('type') + lt + CharsNotIn("<>") + gt + identifier.setResultsName('name') + semicolon
+		dictionaryDef = Word("dictionary").setResultsName('type') + lt + CharsNotIn("<>").setResultsName('content') + gt + identifier.setResultsName('name') + semicolon
 		sequenceDef   = Word("sequence").setResultsName('type')   + lt + typeIdentifier.setResultsName('typeSequence') + gt + identifier.setResultsName('name') + semicolon
-		enumDef       = Word("enum").setResultsName('type')       + identifier.setResultsName('name') + op + CharsNotIn("{}") + cl + semicolon
-		exceptionDef  = Word("exception").setResultsName('type')  + identifier.setResultsName('name') + op + CharsNotIn("{}") + cl + semicolon
+		enumDef       = Word("enum").setResultsName('type')       + identifier.setResultsName('name') + op + CharsNotIn("{}").setResultsName('content') + cl + semicolon
+		exceptionDef  = Word("exception").setResultsName('type')  + identifier.setResultsName('name') + op + CharsNotIn("{}").setResultsName('content') + cl + semicolon
 
 		raiseDef       = Suppress(Word("throws")) + typeIdentifier + ZeroOrMore( Literal(',') + typeIdentifier )
 		decoratorDef    = Literal('idempotent') | Literal('out')
@@ -73,7 +73,7 @@ class IDSLParsing:
 		params        = firstParam + ZeroOrMore(nextParam)
 
 
-		remoteMethodDef  = Group(Optional(decoratorDef) + retValDef + typeIdentifier.setResultsName('name') + opp + Optional(          params).setResultsName('params') + clp + Optional(raiseDef) + semicolon )
+		remoteMethodDef  = Group(Optional(decoratorDef.setResultsName('decorator')) + retValDef.setResultsName('ret') + typeIdentifier.setResultsName('name') + opp + Optional(          params).setResultsName('params') + clp + Optional(raiseDef.setResultsName('raise')) + semicolon )
 		interfaceDef    = Word('interface').setResultsName('type')  + typeIdentifier.setResultsName('name') + op + Group(ZeroOrMore(remoteMethodDef)).setResultsName('methods') + cl + semicolon
 
 		moduleContent = Group(structDef | enumDef | exceptionDef | dictionaryDef | sequenceDef | interfaceDef)
