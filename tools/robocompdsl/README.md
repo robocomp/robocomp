@@ -101,6 +101,12 @@ Any IDSL which follow the restrictions, can be used for both ROS as ICE.
 <div id='iceFile'/>
 ## Generating an ICE file from an IDSL
 
+If we are going to use ICE Middleware, we need create our .ice files like we did with .idsl files. Let's use RoboCompDSL for this:
+
+    $ robocompdsl path/to/myIDSL/myIDSL.idsl output/path/iceFile
+    
+**Remember save your .ice file in (/robocomp/interfaces/).**
+
 <div id='ice'/>
 ## ICE Middleware Components
 
