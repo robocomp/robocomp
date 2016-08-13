@@ -6,10 +6,11 @@ RoboCompDSL's User Guide
 2. [Generating a CDSL template file](#cdsl)
 3. [Generating an IDSL file](#idsl)
     1. [Restrictions](#restrictions)
-4. [ICE Middleware Components](#ice)
+4. [Generating an ICE file from an IDSL](#iceFile)
+5. [ICE Middleware Components](#ice)
     1. [1.- Require / Implement](#Ireq-imp)
     2. [2.- Publish / Subscribe](#Ipub-sub)
-5. [ROS Middleware Components](#ros)
+6. [ROS Middleware Components](#ros)
     1. [1.- Require / Implement](#Rreq-imp)
     2. [2.- Publish / Subscribe](#Rpub-sub)
 6. [Future improvements](#future)
@@ -96,6 +97,9 @@ If we want create an IDSL compatible with ROS and ICE Middlewares, we must pay a
     or arrays are allowed.
 
 Any IDSL which follow the restrictions, can be used for both ROS as ICE.
+
+<div id='iceFile'/>
+## Generating an ICE file from an IDSL
 
 <div id='ice'/>
 ## ICE Middleware Components
