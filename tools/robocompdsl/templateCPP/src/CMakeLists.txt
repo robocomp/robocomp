@@ -95,6 +95,13 @@ A()
 for im in component['recursiveImports']:
 	if communicationIsIce(im):
 		cog.out(im.split('/')[-1].split('.')[0] + ' ')
+try:
+	if 'agmagent' in [ x.lower() for x in component['options'] ]:
+		cog.out("AGMExecutive AGMWorldModel Planning AGMCommonBehavior ")
+
+
+except:
+	pass
 Z()
 ]]]
 [[[end]]]
