@@ -1,32 +1,35 @@
 import  pexpect, sys
 from os import environ
 from time import sleep
+import unittest
 
 class Comp:
-    
     def __init__(self, name, cmd):
         self.name = name
         self.cmd = cmd.split(" ")
+        self.staus = 0
+        self.output = ''
+        self.process = ''
 
     def start(self):
+        self.status = 0
+        self.output = ''
         self.process = pexpect.spawn(self.cmd[0],self.cmd[1:],timeout=None,env=environ.copy()) 
 
     def stop(self):
         self.process.sendcontrol('c')
-        sleep(3)
+        # sleep(3)
         self.process.kill(0)
 
     def getOutput(self):
-        # self.process.expect(pexpect.EOF)
-        return self.process.before
-        # pass
+        l = self.process.buffer
+        self.output = self.output + str(l)
+        return self.output
 
     def getCurrentOutput(self):
-        line = self.process.readline()
+        line = str(self.process.readline())
+        self.output = self.output + line
         return line.strip()
-        # sys.stdout.write(line)
-        # sys.stdout.flush()
-    
 
     def checkInOutput(self, texts, timeOut=30, pattern=False):
         try:
@@ -34,6 +37,8 @@ class Comp:
                 index = self.process.expect(texts, timeOut)
             else:
                 index = self.process.expect_exact(texts, timeOut)
+            
+            self.output = self.output + self.process.before + self.process.after
             if index == 0:
                 return True
             elif index == 1:
@@ -44,57 +49,52 @@ class Comp:
             return False
         return False
 
-class Tester:
-    def __init__(self):
-
-        self.master = Comp("rcmaster","../src/rcmaster.py --Ice.Config=../etc/config")
-        self.comp1 = Comp("comp1","./clients/client1/src/client1.py --Ice.Config=clients/client1/etc/config")
-        self.comp3 = Comp("comp3","./clients/client3/src/client3.py --Ice.Config=clients/client3/etc/config")
-        self.comp4 = Comp("comp4","./clients/client4/src/client4.py --Ice.Config=clients/client4/etc/config")
-
-    def run_tests(self):
-        num_passed = []
-        num_failed = []
-
-        # test is rcmaster is starting # 1
-        number = 1
-        self.master.start()
-        op = self.master.checkInOutput(["starting rcmaster"],10)
-        if op:
-            print "Test"+number+" passed"
-            num_passed.append(number)
+    def getStatus(self):
+        if self.process == '':
+            return False
         else:
-            print "Test"+number+" failed"
-            print "Master Logs: "
-            print self.master.getOutput()        
-            num_failed.append(number)
-        self.master.stop()
-
-        # test if a compoennt is starting # 2
-        number = 2
-        self.master.start()
-        op1 = self.master.checkInOutput(["Starting rcmaster"],10)
-        self.comp3.start()
-        op2 = self.comp3.checkInOutput(["Component Started"],5)
-        if op1 and op2:
-            print "Test"+number+" passed"
-            num_passed.append(number)
-        else:
-            print "Test"+number+" failed"
-            print "Master Logs: "
-            print self.master.getOutput()        
-            num_failed.append(number)
-        self.master.stop()
-        self.comp3.stop()
+            self.status = self.process.isalive()
+            return self.status
 
 
+class RCmasterTestCase(unittest.TestCase):
+    def setUp(self):
+        self.comps = dict()
+
+        self.comps["master"] = Comp("rcmaster","../src/rcmaster.py --Ice.Config=../etc/config")
+        self.comps["comp1"] = Comp("comp1","./clients/client1/src/client1.py --Ice.Config=clients/client1/etc/config")
+        self.comps["comp3"] = Comp("comp3","./clients/client3/src/client3.py --Ice.Config=clients/client3/etc/config")
+        self.comps["comp4"] = Comp("comp4","./clients/client4/src/client4.py --Ice.Config=clients/client4/etc/config")
+
+    def tearDown(self):
+        # stop all running comps
+        for name, comp in self.comps.iteritems():
+            if comp.getStatus() == True:
+                comp.stop()
+
+
+    def test_rcaster_start(self):
+        self.comps["master"].start()
+        op1 = self.comps["master"].checkInOutput(["Starting rcmaster"],10)
+        self.assertTrue(op1,msg="master cant start")
+
+    # @unittest.skip("test skipping")
+    def test_component_registration(self):
+        self.comps["master"].start()
+        op1 = self.comps["master"].checkInOutput(["Starting rcmaster"],10)
+        self.assertTrue(op1,msg="master cant start")
+        self.comps["comp3"].start()
+        op2 = self.comps["comp3"].checkInOutput(["Component Started"],5)
+        self.assertTrue(op2,msg="component cant start")
 
 if __name__ == '__main__':
-    tester = Tester()
-    tester.run_tests()
+    unittest.main()
 
-    # master = Comp("rcmaster","../src/rcmaster.py --Ice.Config=../etc/config")
-    # master.start()
-    # sleep(3)
-    # print master.getOutput()
-    # master.stop()
+    # comps = dict()
+    # comps["master"] = Comp("rcmaster","../src/rcmaster.py --Ice.Config=../etc/config")
+    # comps["master"].start()
+    # print "st ",comps["master"].getStatus()
+    # # print "h",comps["master"].getOutput()
+    # op = comps["master"].checkInOutput(["Starting rcmaster"],10)
+    # print op
+    # comps["master"].stop()
