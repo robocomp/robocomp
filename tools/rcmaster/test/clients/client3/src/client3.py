@@ -167,7 +167,7 @@ if __name__ == '__main__':
             adapter.add(testI(worker), ic.stringToIdentity(iface.name))
             adapter.activate()
             print "activated interface :", (iface)
-
+        print "Component Started"
 
 
 #       adapter.add(CommonBehaviorI(<LOWER>I, ic), ic.stringToIdentity('commonbehavior'))
