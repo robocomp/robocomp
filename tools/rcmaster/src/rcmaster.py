@@ -128,7 +128,6 @@ if __name__ == '__main__':
 
     try:
 
-        # Remote object connection for DifferentialRobot
         try:
             mprx["databasePath"] = ic.getProperties().getProperty('rcmaster.dbPath')
             mprx["cachettyl"] = ic.getProperties().getProperty('rcmaster.cachettyl')
@@ -141,6 +140,22 @@ if __name__ == '__main__':
             print e
             print 'Cannot get all properties.'
             status = 1
+
+        # check if rcmaster is already running
+        try:
+            with open(os.path.join(os.path.expanduser('~'), ".config/RoboComp/rcmaster.config"), 'r') as f:
+                rcmaster_uri = f.readline().strip().split(":")
+            basePrx = ic.stringToProxy("rcmaster:tcp -h "+rcmaster_uri[0]+" -p "+rcmaster_uri[1])
+            try:
+                rcmaster_proxy = RoboCompRCMaster.rcmasterPrx.checkedCast(basePrx)
+            except Ice.SocketException:
+                pass
+            else:
+                raise Exception("Another instance of RCMaster is running")
+        except Ice.Exception:
+            traceback.print_exc()
+            status = 1
+
 
     except:
         traceback.print_exc()
@@ -165,7 +180,7 @@ if __name__ == '__main__':
         f = open(os.path.join(os.path.expanduser('~'), ".config/RoboComp/rcmaster.config"), 'w')
         configs[0] = str(masteruri[2] + ':' + masteruri[4])
         f.write("\n".join(configs));f.close()
-        print "starting rcmaster on ",masteruri[2],"in port ",masteruri[4]
+        print " Starting rcmaster on ",masteruri[2],"in port ",masteruri[4]
         
         #       adapter.add(CommonBehaviorI(<LOWER>I, ic), ic.stringToIdentity('commonbehavior'))
 
