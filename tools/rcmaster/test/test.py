@@ -9,7 +9,8 @@ class Comp:
         self.cmd = cmd.split(" ")
         self.staus = 0
         self.output = ''
-        self.process = ''
+        self.process = pexpect.spawn('true')
+        self.process.kill(0)
 
     def start(self):
         self.status = 0
@@ -18,7 +19,6 @@ class Comp:
 
     def stop(self):
         self.process.sendcontrol('c')
-        # sleep(3)
         self.process.kill(0)
 
     def getOutput(self):
@@ -50,11 +50,8 @@ class Comp:
         return False
 
     def getStatus(self):
-        if self.process == '':
-            return False
-        else:
-            self.status = self.process.isalive()
-            return self.status
+        self.status = self.process.isalive()
+        return self.status
 
 
 class RCmasterTestCase(unittest.TestCase):
@@ -86,6 +83,9 @@ class RCmasterTestCase(unittest.TestCase):
         self.comps["comp3"].start()
         op2 = self.comps["comp3"].checkInOutput(["Component Started"],5)
         self.assertTrue(op2,msg="component cant start")
+        op2 = self.comps["master"].checkInOutput(["name = client3"],5)
+        self.assertTrue(op2,msg="component not registred")
+
 
 if __name__ == '__main__':
     unittest.main()
