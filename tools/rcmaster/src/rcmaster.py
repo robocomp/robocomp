@@ -56,6 +56,7 @@
 #
 
 import sys, traceback, Ice, IceStorm, subprocess, threading, time, Queue, os, copy
+from re import search
 
 # Ctrl+c handling
 import signal
@@ -122,7 +123,13 @@ if __name__ == '__main__':
             params[1] = '--Ice.Config=' + params[1]
     elif len(params) == 1:
         params.append('--Ice.Config=config')
-    ic = Ice.initialize(params)
+    ic = Ice.initialize(params)    
+    for param in params:
+        if param.startswith('--'):
+            name = search('--(.*)=',param).group(1)
+            val = search('=(.*)',param).group(1)
+            if name != '' and val != '':
+                ic.getProperties().setProperty(name,val)
     status = 0
     mprx = {}
 
@@ -180,7 +187,7 @@ if __name__ == '__main__':
         f = open(os.path.join(os.path.expanduser('~'), ".config/RoboComp/rcmaster.config"), 'w')
         configs[0] = str(masteruri[2] + ':' + masteruri[4])
         f.write("\n".join(configs));f.close()
-        print "rcmaster started on ",masteruri[2],"in port ",masteruri[4]
+        print "rcmaster Started on ",masteruri[2],"in port ",masteruri[4]
         
         #       adapter.add(CommonBehaviorI(<LOWER>I, ic), ic.stringToIdentity('commonbehavior'))
 

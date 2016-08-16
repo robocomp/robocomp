@@ -31,7 +31,7 @@ class Comp:
         else:
             self.extra_params = param
 
-    def start(self):
+    def start(self, confirm=False):
         ''''
         start the comp
         '''
@@ -44,8 +44,10 @@ class Comp:
         fcmd = fcmd.split(" ")
         # print fcmd
         self.process = pexpect.spawn(fcmd[0],fcmd[1:],timeout=None,env=environ.copy())
-        # if confirm:
-        #     return self.checkInOutput(["Component started",self.name+" started"],5)
+        if confirm:
+            op = self.checkInOutput(["(Component|rcmaster) Started"],5,True)
+            if op == 0:
+                raise Exception(self.name +"cant start")
 
     def stop(self):
         '''
@@ -133,27 +135,23 @@ class RCmasterTestCase(unittest.TestCase):
 
     # @unittest.skip("test skipping")
     def test_rcmaster_start(self):
-        self.comps["master"].start()
-        op1 = self.comps["master"].checkInOutput(["(Component|rcmaster) started"],10,True)
+        self.comps["master"].start(False)
+        op1 = self.comps["master"].checkInOutput(["rcmaster Started"],10,True)
         self.assertTrue(op1,msg="master cant start")
         
-    @unittest.skip("test skipping")
+    # @unittest.skip("test skipping")
     def test_multiple_master(self):
-        self.comps["master"].start()
-        op1 = self.comps["master"].checkInOutput(["Starting rcmaster"],10)
-        self.assertTrue(op1,msg="master cant start")
+        self.comps["master"].start(True)
 
         master1 = self.getDuplComp("master","master1")
         master1.start()
         op1 = master1.checkInOutput(["Another instance of RCMaster is running"],10)
         self.assertTrue(op1,msg="multiple masters can run!!!")
-        master1.stop
+        master1.stop()
     
-    @unittest.skip("test skipping")
+    # @unittest.skip("test skipping")
     def test_component_registration(self):
-        self.comps["master"].start()
-        op1 = self.comps["master"].checkInOutput(["Starting rcmaster"],10)
-        self.assertTrue(op1,msg="master cant start")
+        self.comps["master"].start(True)
         
         self.comps["client3"].start()
         op2 = self.comps["client3"].checkInOutput(["Component Started"],5)
@@ -161,57 +159,48 @@ class RCmasterTestCase(unittest.TestCase):
         op2 = self.comps["master"].checkInOutput(["name = client3"],5)
         self.assertTrue(op2,msg="component not registred")
 
-    @unittest.skip("test skipping")
+    # @unittest.skip("test skipping")
     def test_multiple_same_interface(self):
-        self.comps["master"].start()
-        op1 = self.comps["master"].checkInOutput(["Starting rcmaster"],10)
-        self.assertTrue(op1,msg="master cant start")
+        self.comps["master"].start(True)
         
         self.comps["client1"].start()
-        op1 = self.comps["client1"].checkInOutput(["waiting for"],10)
+        op1 = self.comps["client1"].checkInOutput(["waiting for"],5)
         self.assertTrue(op1,msg="comp1 not waiting for test interface")
         
         comp31 = self.getDuplComp("client3","client31")
-        comp31.start()
-        op1 = comp31.checkInOutput(["Component Started"],5)
-        self.assertTrue(op1,msg="component cant start")
+        comp31.start(True)
         op2 = self.comps["master"].checkInOutput(["name = client31"],5)
         self.assertTrue(op2,msg="client31 not registred")
 
         comp32 = self.getDuplComp("client3","client32")
-        comp32.start()
-        op1 = comp32.checkInOutput(["Component Started"],5)
-        self.assertTrue(op1,msg="component cant start")
+        comp32.start(True)
         op2 = self.comps["master"].checkInOutput(["name = client32"],5)
         self.assertTrue(op2,msg="client32 not registred")
 
-        op1 = comp31.checkInOutput(["hello from client1"],10)
-        op2 = comp32.checkInOutput(["hello from client1"],10)
-        self.assertTrue(op1,msg="cant recive msg from comp1")
+        op1 = comp31.checkInOutput(["hello from client1"],5)
+        op2 = comp32.checkInOutput(["hello from client1"],5)
+        self.assertTrue(op1,msg="cant recive msg from client1")
 
         comp31.stop()
         op1 = self.comps["client1"].checkInOutput(["waiting for"],10)
         self.assertTrue(op1,msg="comp1 not waiting for test interface after reset")
         comp32.stop()
 
-    @unittest.skip("test skipping")
+    # @unittest.skip("test skipping")
     def test_caching(self):
         self.comps["master"].add_param("--rcmaster.cachettyl=2000")
-        self.comps["master"].start()
-        # op1 = self.comps["master"].checkInOutput(["Starting rcmaster"],10)
-        # self.assertTrue(op1,msg="master cant start")
+        self.comps["master"].start(True)
 
         self.comps["client3"].start()
-        # op2 = self.comps["master"].checkInOutput(["name = client3"],5)
-        # self.assertTrue(op2,msg="component not registred")
+        op2 = self.comps["master"].checkInOutput(["name = client3"],5)
+        self.assertTrue(op2,msg="component not registred")
         self.comps["client3"].stop()
 
         op1 = self.comps["master"].checkInOutput(["caching component  client3"],5)
         self.assertTrue(op1,msg="master not caching")
         
-        op1 = self.comps["master"].checkInOutput(["removing  client3 from cache"],5)
+        op1 = self.comps["master"].checkInOutput(["removing  client3 from cache"], 10, True)
         self.assertTrue(op1,msg="master not removing cached client")
-
 
 
 
