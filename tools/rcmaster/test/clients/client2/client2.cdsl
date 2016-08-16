@@ -1,0 +1,10 @@
+import "/robocomp/interfaces/IDSLs/RCMaster.idsl";
+import "/robocomp/interfaces/IDSLs/Test.idsl";
+
+Component client2{
+	Communications{
+		requires rcmaster;
+		implements test;
+	};
+	language Cpp;
+};

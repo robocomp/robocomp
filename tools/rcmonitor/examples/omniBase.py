@@ -112,9 +112,9 @@ class C(QWidget):
 		painter.setPen(Qt.red)
 		painter.setBrush(Qt.red)
 		try:
-			xPos = int( (self.bState.z/div)+xOff-9)
-			yPos = int( (self.bState.x/div)+yOff-9)
-			start = int(((-self.bState.alpha*180/math.pi)-180-20)*16)
+			xPos = int( (self.bState.x/div)+xOff-9)
+			yPos = int(-(self.bState.z/div)+yOff-9)
+			start = int(((-self.bState.alpha*180/math.pi)-90-20)*16)
 			if type(xPos) == type(yPos) and type(xPos) == type(start) and type(xPos) == type(int()):
 				try:
 					painter.drawPie(xPos, yPos, 18, 18, start, 20*2*16)
@@ -128,9 +128,9 @@ class C(QWidget):
 		painter.setPen(Qt.blue)
 		painter.setBrush(Qt.blue)
 		try:
-			xPos = int( (self.bState.correctedZ/div)+xOff-9)
-			yPos = int( (self.bState.correctedX/div)+yOff-9)
-			start = int(((-self.bState.correctedAlpha*180/math.pi)-180-20)*16)
+			xPos = int( (self.bState.correctedX/div)+xOff-9)
+			yPos = int(-(self.bState.correctedZ/div)+yOff-9)
+			start = int(((-self.bState.correctedAlpha*180/math.pi)-90-20)*16)
 			if type(xPos) == type(yPos) and type(xPos) == type(start) and type(xPos) == type(int()):
 				try:
 					painter.drawPie(xPos, yPos, 18, 18, start, 20*2*16)

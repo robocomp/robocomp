@@ -1,0 +1,22 @@
+TODO
+---------
+improve saving rcmaster uri
+use logging component
+give compoennt details in CompoenntNotFoundException
+what is rcmaster caches the compoenent before the interface is started
+
+
+---------------------------------------------
+
+
+import sys, os, Ice, traceback, time, socket
+ROBOCOMP = '/opt/robocomp'
+preStr = "-I" + ROBOCOMP + "/interfaces/ --all " + ROBOCOMP + "/interfaces/"
+Ice.loadSlice(preStr + "RCMaster.ice")
+import RoboCompRCMaster 
+ic = Ice.initialize()
+
+with open(os.path.join(os.path.expanduser('~'), ".config/RoboComp/rcmaster.config"), 'r') as f:
+    rcmaster_uri = f.readline().strip().split(":")
+basePrx = ic.stringToProxy("rcmaster:tcp -h "+rcmaster_uri[0]+" -p "+rcmaster_uri[1])
+rcmaster_proxy = RoboCompRCMaster.rcmasterPrx.checkedCast(basePrx)
