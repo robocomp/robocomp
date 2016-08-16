@@ -45,6 +45,12 @@ This will generate a CDSL file with the following content:
         gui Qt(QWidget);
     };
 
+> If you are using [Kate](https://kate-editor.org), you can add our [Syntax Highlighting File](https://github.com/robocomp/robocomp/blob/highlyunstable/tools/robocompdsl/kate/cdsl.xml).
+
+> Just copy **cdsl.xml** to /home/**your-linux-user**/.local/share/katepart5/syntax/cdsl.xml
+
+> and restart Kate.
+
 <div id='idsl'/>
 ## Generating an IDSL file
 
