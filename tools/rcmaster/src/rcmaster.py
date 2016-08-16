@@ -180,7 +180,7 @@ if __name__ == '__main__':
         f = open(os.path.join(os.path.expanduser('~'), ".config/RoboComp/rcmaster.config"), 'w')
         configs[0] = str(masteruri[2] + ':' + masteruri[4])
         f.write("\n".join(configs));f.close()
-        print " Starting rcmaster on ",masteruri[2],"in port ",masteruri[4]
+        print "rcmaster started on ",masteruri[2],"in port ",masteruri[4]
         
         #       adapter.add(CommonBehaviorI(<LOWER>I, ic), ic.stringToIdentity('commonbehavior'))
 
