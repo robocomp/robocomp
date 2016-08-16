@@ -36,7 +36,7 @@
        </size>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
@@ -244,7 +244,7 @@
             </property>
             <property name="icon">
              <iconset>
-              <normaloff>share/rcmanager/simulionOn.png</normaloff>share/rcmanager/simulionOn.png</iconset>
+              <normaloff>../../../../../opt/robocomp/share/rcmanager/simulionOn.png</normaloff>../../../../../opt/robocomp/share/rcmanager/simulionOn.png</iconset>
             </property>
            </widget>
           </item>
@@ -268,7 +268,7 @@
             </property>
             <property name="icon">
              <iconset>
-              <normaloff>share/rcmanager/simulatorOFF.png</normaloff>share/rcmanager/simulatorOFF.png</iconset>
+              <normaloff>../../../../../opt/robocomp/share/rcmanager/simulatorOFF.png</normaloff>../../../../../opt/robocomp/share/rcmanager/simulatorOFF.png</iconset>
             </property>
            </widget>
           </item>
@@ -282,7 +282,7 @@
             </property>
             <property name="icon">
              <iconset>
-              <normaloff>share/rcmanager/1465394550_Settings.png</normaloff>share/rcmanager/1465394550_Settings.png</iconset>
+              <normaloff>../../../../../opt/robocomp/share/rcmanager/1465394550_Settings.png</normaloff>../../../../../opt/robocomp/share/rcmanager/1465394550_Settings.png</iconset>
             </property>
            </widget>
           </item>
@@ -296,7 +296,7 @@
             </property>
             <property name="icon">
              <iconset>
-              <normaloff>share/rcmanager/refresh.png</normaloff>share/rcmanager/refresh.png</iconset>
+              <normaloff>../../../../../opt/robocomp/share/rcmanager/refresh.png</normaloff>../../../../../opt/robocomp/share/rcmanager/refresh.png</iconset>
             </property>
            </widget>
           </item>
@@ -339,7 +339,7 @@
              </property>
              <property name="icon">
               <iconset>
-               <normaloff>share/rcmanager/refresh.png</normaloff>share/rcmanager/refresh.png</iconset>
+               <normaloff>../../../../../opt/robocomp/share/rcmanager/refresh.png</normaloff>../../../../../opt/robocomp/share/rcmanager/refresh.png</iconset>
              </property>
             </widget>
            </item>
@@ -353,7 +353,7 @@
              </property>
              <property name="icon">
               <iconset>
-               <normaloff>share/rcmanager/networkSettings.png</normaloff>share/rcmanager/networkSettings.png</iconset>
+               <normaloff>../../../../../opt/robocomp/share/rcmanager/networkSettings.png</normaloff>../../../../../opt/robocomp/share/rcmanager/networkSettings.png</iconset>
              </property>
             </widget>
            </item>
@@ -367,7 +367,7 @@
              </property>
              <property name="icon">
               <iconset>
-               <normaloff>share/rcmanager/1465594390_sign-add.png</normaloff>share/rcmanager/1465594390_sign-add.png</iconset>
+               <normaloff>../../../../../opt/robocomp/share/rcmanager/1465594390_sign-add.png</normaloff>../../../../../opt/robocomp/share/rcmanager/1465594390_sign-add.png</iconset>
              </property>
             </widget>
            </item>
@@ -381,7 +381,7 @@
              </property>
              <property name="icon">
               <iconset>
-               <normaloff>share/rcmanager/1465394550_Settings.png</normaloff>share/rcmanager/1465394550_Settings.png</iconset>
+               <normaloff>../../../../../opt/robocomp/share/rcmanager/1465394550_Settings.png</normaloff>../../../../../opt/robocomp/share/rcmanager/1465394550_Settings.png</iconset>
              </property>
             </widget>
            </item>
@@ -568,7 +568,7 @@
             </property>
             <property name="icon">
              <iconset>
-              <normaloff>share/rcmanager/1465608687_search.png</normaloff>share/rcmanager/1465608687_search.png</iconset>
+              <normaloff>../../../../../opt/robocomp/share/rcmanager/1465608687_search.png</normaloff>../../../../../opt/robocomp/share/rcmanager/1465608687_search.png</iconset>
             </property>
            </widget>
           </item>
@@ -582,7 +582,7 @@
             </property>
             <property name="icon">
              <iconset>
-              <normaloff>share/rcmanager/1465594390_sign-add.png</normaloff>share/rcmanager/1465594390_sign-add.png</iconset>
+              <normaloff>../../../../../opt/robocomp/share/rcmanager/1465594390_sign-add.png</normaloff>../../../../../opt/robocomp/share/rcmanager/1465594390_sign-add.png</iconset>
             </property>
            </widget>
           </item>
@@ -645,7 +645,7 @@
   <action name="actionOpen">
    <property name="icon">
     <iconset>
-     <normaloff>share/rcmanager/1465393728_open-file.png</normaloff>share/rcmanager/1465393728_open-file.png</iconset>
+     <normaloff>../../../../../opt/robocomp/share/rcmanager/1465393728_open-file.png</normaloff>../../../../../opt/robocomp/share/rcmanager/1465393728_open-file.png</iconset>
    </property>
    <property name="text">
     <string>Open</string>
@@ -657,7 +657,7 @@
   <action name="actionSave">
    <property name="icon">
     <iconset>
-     <normaloff>share/rcmanager/1465394415_floppy.png</normaloff>share/rcmanager/1465394415_floppy.png</iconset>
+     <normaloff>../../../../../opt/robocomp/share/rcmanager/1465394415_floppy.png</normaloff>../../../../../opt/robocomp/share/rcmanager/1465394415_floppy.png</iconset>
    </property>
    <property name="text">
     <string>Save</string>
@@ -684,7 +684,7 @@
   <action name="actionSetting">
    <property name="icon">
     <iconset>
-     <normaloff>share/rcmanager/1465394550_Settings.png</normaloff>share/rcmanager/1465394550_Settings.png</iconset>
+     <normaloff>../../../../../opt/robocomp/share/rcmanager/1465394550_Settings.png</normaloff>../../../../../opt/robocomp/share/rcmanager/1465394550_Settings.png</iconset>
    </property>
    <property name="text">
     <string>Setting</string>
@@ -698,7 +698,7 @@
   <action name="actionON">
    <property name="icon">
     <iconset>
-     <normaloff>share/rcmanager/simulionOn.png</normaloff>share/rcmanager/simulionOn.png</iconset>
+     <normaloff>../../../../../opt/robocomp/share/rcmanager/simulionOn.png</normaloff>../../../../../opt/robocomp/share/rcmanager/simulionOn.png</iconset>
    </property>
    <property name="text">
     <string>ON</string>
@@ -707,7 +707,7 @@
   <action name="actionOFF">
    <property name="icon">
     <iconset>
-     <normaloff>share/rcmanager/simulatorOFF.png</normaloff>share/rcmanager/simulatorOFF.png</iconset>
+     <normaloff>../../../../../opt/robocomp/share/rcmanager/simulatorOFF.png</normaloff>../../../../../opt/robocomp/share/rcmanager/simulatorOFF.png</iconset>
    </property>
    <property name="text">
     <string>OFF</string>

@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/h20/robocomp/tools/rcmanager/formManager.ui'
 #
-# Created: Tue Aug 16 22:34:36 2016
+# Created: Tue Aug 16 22:49:23 2016
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -113,7 +113,7 @@ class Ui_MainWindow(object):
         self.gridLayout_7.addItem(spacerItem6, 5, 0, 1, 1)
         self.toolButton_7 = QtGui.QToolButton(self.tab_3)
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(_fromUtf8("share/rcmanager/simulionOn.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap(_fromUtf8("../../../../../opt/robocomp/share/rcmanager/simulionOn.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.toolButton_7.setIcon(icon)
         self.toolButton_7.setObjectName(_fromUtf8("toolButton_7"))
         self.gridLayout_7.addWidget(self.toolButton_7, 2, 0, 1, 1)
@@ -123,19 +123,19 @@ class Ui_MainWindow(object):
         self.gridLayout_7.addWidget(self.verticalSlider, 0, 0, 1, 1)
         self.toolButton_8 = QtGui.QToolButton(self.tab_3)
         icon1 = QtGui.QIcon()
-        icon1.addPixmap(QtGui.QPixmap(_fromUtf8("share/rcmanager/simulatorOFF.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon1.addPixmap(QtGui.QPixmap(_fromUtf8("../../../../../opt/robocomp/share/rcmanager/simulatorOFF.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.toolButton_8.setIcon(icon1)
         self.toolButton_8.setObjectName(_fromUtf8("toolButton_8"))
         self.gridLayout_7.addWidget(self.toolButton_8, 3, 0, 1, 1)
         self.toolButton_10 = QtGui.QToolButton(self.tab_3)
         icon2 = QtGui.QIcon()
-        icon2.addPixmap(QtGui.QPixmap(_fromUtf8("share/rcmanager/1465394550_Settings.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon2.addPixmap(QtGui.QPixmap(_fromUtf8("../../../../../opt/robocomp/share/rcmanager/1465394550_Settings.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.toolButton_10.setIcon(icon2)
         self.toolButton_10.setObjectName(_fromUtf8("toolButton_10"))
         self.gridLayout_7.addWidget(self.toolButton_10, 4, 0, 1, 1)
         self.toolButton_6 = QtGui.QToolButton(self.tab_3)
         icon3 = QtGui.QIcon()
-        icon3.addPixmap(QtGui.QPixmap(_fromUtf8("share/rcmanager/refresh.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon3.addPixmap(QtGui.QPixmap(_fromUtf8("../../../../../opt/robocomp/share/rcmanager/refresh.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.toolButton_6.setIcon(icon3)
         self.toolButton_6.setObjectName(_fromUtf8("toolButton_6"))
         self.gridLayout_7.addWidget(self.toolButton_6, 1, 0, 1, 1)
@@ -165,13 +165,13 @@ class Ui_MainWindow(object):
         self.horizontalLayout_2.addWidget(self.toolButton_3)
         self.toolButton_4 = QtGui.QToolButton(self.widget_2)
         icon4 = QtGui.QIcon()
-        icon4.addPixmap(QtGui.QPixmap(_fromUtf8("share/rcmanager/networkSettings.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon4.addPixmap(QtGui.QPixmap(_fromUtf8("../../../../../opt/robocomp/share/rcmanager/networkSettings.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.toolButton_4.setIcon(icon4)
         self.toolButton_4.setObjectName(_fromUtf8("toolButton_4"))
         self.horizontalLayout_2.addWidget(self.toolButton_4)
         self.toolButton_5 = QtGui.QToolButton(self.widget_2)
         icon5 = QtGui.QIcon()
-        icon5.addPixmap(QtGui.QPixmap(_fromUtf8("share/rcmanager/1465594390_sign-add.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon5.addPixmap(QtGui.QPixmap(_fromUtf8("../../../../../opt/robocomp/share/rcmanager/1465594390_sign-add.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.toolButton_5.setIcon(icon5)
         self.toolButton_5.setObjectName(_fromUtf8("toolButton_5"))
         self.horizontalLayout_2.addWidget(self.toolButton_5)
@@ -252,7 +252,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout.addWidget(self.lineEdit)
         self.toolButton_2 = QtGui.QToolButton(self.widget)
         icon6 = QtGui.QIcon()
-        icon6.addPixmap(QtGui.QPixmap(_fromUtf8("share/rcmanager/1465608687_search.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon6.addPixmap(QtGui.QPixmap(_fromUtf8("../../../../../opt/robocomp/share/rcmanager/1465608687_search.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.toolButton_2.setIcon(icon6)
         self.toolButton_2.setObjectName(_fromUtf8("toolButton_2"))
         self.horizontalLayout.addWidget(self.toolButton_2)
@@ -281,12 +281,12 @@ class Ui_MainWindow(object):
         MainWindow.addDockWidget(QtCore.Qt.DockWidgetArea(2), self.dockWidget_2)
         self.actionOpen = QtGui.QAction(MainWindow)
         icon7 = QtGui.QIcon()
-        icon7.addPixmap(QtGui.QPixmap(_fromUtf8("share/rcmanager/1465393728_open-file.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon7.addPixmap(QtGui.QPixmap(_fromUtf8("../../../../../opt/robocomp/share/rcmanager/1465393728_open-file.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.actionOpen.setIcon(icon7)
         self.actionOpen.setObjectName(_fromUtf8("actionOpen"))
         self.actionSave = QtGui.QAction(MainWindow)
         icon8 = QtGui.QIcon()
-        icon8.addPixmap(QtGui.QPixmap(_fromUtf8("share/rcmanager/1465394415_floppy.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon8.addPixmap(QtGui.QPixmap(_fromUtf8("../../../../../opt/robocomp/share/rcmanager/1465394415_floppy.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.actionSave.setIcon(icon8)
         self.actionSave.setObjectName(_fromUtf8("actionSave"))
         self.actionEdit = QtGui.QAction(MainWindow)
@@ -344,7 +344,7 @@ class Ui_MainWindow(object):
         self.toolBar.addSeparator()
 
         self.retranslateUi(MainWindow)
-        self.tabWidget.setCurrentIndex(1)
+        self.tabWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):

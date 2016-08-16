@@ -1442,7 +1442,7 @@ def searchForChild(Xmlnode,Name):##Will search in tree for node with name Name
 	return False
 
 def getDefaultIconPath():
-	return os.getcwd()+"/share/rcmanager/1465594390_sign-add.png" #THis is the default icon can be changed by users choice
+	return "/opt/robocomp/share/rcmanager/1465594390_sign-add.png" #THis is the default icon can be changed by users choice
 
 
 def upComponent(component,Logger):#Just Up the component
