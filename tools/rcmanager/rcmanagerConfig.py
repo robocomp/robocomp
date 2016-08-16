@@ -417,8 +417,7 @@ class connectionBuilder(QtGui.QDialog):## This is used to set connection between
 		self.parent.NetworkScene.addItem(self.connection)
 		self.close()
 		self.parent.NetworkScene.update()
-		self.parent.refreshCodeFromTree()
-		self.logger.logData("Connection Made From "+self.fromComponent.alias+" to "+self.toComponent.alias)
+		self.parent.refreshCodeFrom 	+self.toComponent.alias)
 		self.BuildingStatus=False
 		self.UI.lineEdit.setText("")
 		self.UI.lineEdit_2.setText("")
@@ -1201,6 +1200,8 @@ class BackgroundMenu(QtGui.QMenu):
 
 class NetworkValues():##This will contain Values about the network
 	def __init__(self):
+		self.xstrech=1
+		self.ystrech=1
 		self.spring_length=100
 		self.field_force_multiplier=20000
 		self.hookes_constant=.07
@@ -1274,6 +1275,9 @@ def parseGeneralInformation(node, generalSettings,logger): ##Takes care of readi
 					generalSettings.field_force_multiplier=float(parseSingleValue(child,"fieldforce"))
 					generalSettings.hookes_constant=float(parseSingleValue(child,"hookes"))
 					generalSettings.roza=1- float(parseSingleValue(child,"friction"))
+				elif child.name=="multipliplier"
+					generalSettings.xstrech=float(parseSingleValue(child,"x"))
+					generalSettings.ystrech=float(parseSingleValue(child,"y"))
 			child=child.next
 
 		logger.logData("General Information Successfully read")
@@ -1320,13 +1324,13 @@ def parseNode(node, components,generalSettings,logger):#To get the properties of
 				elif child.name == "xpos":
 					x=parseSingleValue(child, 'value')
 					try :
-						comp.x=float(x)
+						comp.x=float(x)*generalSettings.xstrech
 					except :
 						logger.logData("Error in Reading Position Value of "+comp.alias,"R")
 				elif child.name == "ypos":
 					y = float(parseSingleValue(child, 'value'))					
 					try :
-						comp.y=float(y)
+						comp.y=float(y)*generalSettings.ystrech
 					except :
 						logger.logData("Error in Reading Position Value of "+comp.alias,"R")
 				
@@ -1381,6 +1385,7 @@ def getXmlFromNetwork(NetworkSettings, components,logger):
 	for x in NetworkSettings.Groups:
 		string=string+'\t\t<group name="'+x.groupName+'" iconfile="'+x.groupIconFilePath+'" />\n'
 
+	string=string+'\t\t<multipliplier x="'+str(NetworkSettings.xstrech)+'" y="'+str(NetworkSettings.ystrech)+'" />\n'	
 	string=string+'\t\t<simulation hookes="'+str(NetworkSettings.hookes_constant)+'" friction="'+str(1-NetworkSettings.roza)+'" springlength="'+str(NetworkSettings.spring_length)+'" fieldforce="'+str(NetworkSettings.field_force_multiplier)+'"/>\n'
 	string=string+'\n\t</generalInformation>\n'
 	

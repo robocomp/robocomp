@@ -243,6 +243,8 @@ class MainClass(QtGui.QMainWindow):
 			self.networkSettings=Settings
 			self.componentList=List
 			try :
+				#if self.areTheyTooClose()==True:
+					#self.theyAreTooClose()
 				self.currentComponent=self.componentList[0]
 				self.ipCount()
 				self.setAllIpColor()
@@ -259,6 +261,11 @@ class MainClass(QtGui.QMainWindow):
 				self.refreshCodeFromTree()		
 			except Exception,e:
 				self.Logger.logData("File updation from Code Failed "+str(e),"R")
+	#def theyAreTooClose(self):
+	#	pass
+	#def areTheyTooClose(self):
+	#	count=0
+	#	for x in self.componentList()
 	def printTemplSettings(self):
 		pass
 	def addComponentTempl(self):
