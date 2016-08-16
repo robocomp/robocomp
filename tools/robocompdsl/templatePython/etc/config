@@ -24,19 +24,6 @@ storm = False
 cog.outl('# General properties of Component')
 cog.outl('Ice.ProgramName='+component['name'])
 
-text = False
-for ima in component['implements']:
-	if type(ima) == str:
-		im = ima
-	else:
-		im = ima[0]
-	if text == False:
-		cog.outl('# Endpoints for implemented interfaces')
-		text = True
-	cog.outl(im+".Endpoints=tcp -p 0")
-if text:
-	cog.out('\n\n')
-
 
 text = False
 for sb in component['subscribesTo']:
