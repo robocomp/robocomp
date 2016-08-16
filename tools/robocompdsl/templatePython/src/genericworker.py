@@ -81,16 +81,8 @@ Z()
 	def __init__(self, mprx):
 		super(GenericWorker, self).__init__()
 
-
-[[[cog
-for namea in component['requires']:
-	if type(namea) == str:
-		name = namea
-	else:
-		name = namea[0]
-		cog.outl("<TABHERE><TABHERE>self."+name.lower()+"_proxy = mprx[\""+name+"Proxy\"]")
-]]]
-[[[end]]]
+		self.name = mprx["name"]
+		self.proxyData = mprx["proxyData"]
 
 [[[cog
 for pba in component['publishes']:

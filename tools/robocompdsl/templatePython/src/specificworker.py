@@ -97,6 +97,49 @@ class SpecificWorker(GenericWorker):
 		self.timer.timeout.connect(self.compute)
 		self.Period = 2000
 		self.timer.start(self.Period)
+    
+    def waitForComp(self, interfaceName, updateAll=False):
+        '''
+         To be called when an interface call fails and need to wait
+         untill the interface is up
+
+        interfaceName - name of the interface failed
+        updateAll - update all proxies hosted by this failed component
+        '''
+        self.timer.stop()
+        ic = Ice.initialize()
+        
+        dg = str(self.proxyData[interfaceName]["proxy"].ice_datagram())
+        host = dg[ dg.find('-h')+3:dg.find("-p")-1]
+        compName = self.proxyData[interfaceName]["comp"]
+        # create name to dummy name map
+        nameMap = {v["name"]:k for (k,v) in self.proxyData.iteritems() if v["comp"] == compName }
+        
+        while True:
+            try:
+                interfaces = self.proxyData["rcmaster"]["proxy"].getComp(compName,host)
+                print interfaces
+
+                for iface in interfaces:
+                    if iface.name == self.proxyData[interfaceName]["name"] or updateAll:
+                        basePrx = ic.stringToProxy(iface.name+":"+iface.protocol+" -h "+host+" -p "+str(iface.port))                        
+                        try:
+                            self.proxyData[nameMap[iface.name]]["proxy"] = self.proxyData[nameMap[iface.name]]["caster"](basePrx)
+                        except KeyError:
+                            # we dont use this interface
+                            # print "key err"
+                            continue
+
+            except (ComponentNotFound, Ice.SocketException) as e:
+                print 'waiting for '+ compName
+                time.sleep(3)
+            except Ice.Exception:
+                print 'Cannot connect to the remote object '+compName
+                traceback.print_exc()
+                time.sleep(3)
+            else:
+                self.timer.start(self.Period)
+                break
 
 	def setParams(self, params):
 		#try:
