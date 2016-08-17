@@ -175,7 +175,7 @@ class GroupBuilder_Ui_Dialog(object):
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 
     def retranslateUi(self, Dialog):
-        Dialog.setWindowTitle(_translate("Dialog", "Dialog", None))
+        Dialog.setWindowTitle(_translate("Dialog", "Group Builder", None))
         self.label.setText(_translate("Dialog", "Group Name", None))
         self.label_2.setText(_translate("Dialog", "Icon File         ", None))
         self.pushButton.setText(_translate("Dialog", "Browse", None))
@@ -264,7 +264,7 @@ class AddToGroup_Ui_Dialog(object):
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 
     def retranslateUi(self, Dialog):
-        Dialog.setWindowTitle(_translate("Dialog", "Dialog", None))
+    	Dialog.setWindowTitle(_translate("Dialog", "Group Selector", None))
         self.pushButton_2.setText(_translate("Dialog", "Cancel", None))
         self.pushButton.setText(_translate("Dialog", "Ok", None))
 
@@ -376,7 +376,7 @@ class ConnectionBuilder_Ui_Dialog(object):
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 
     def retranslateUi(self, Dialog):
-        Dialog.setWindowTitle(_translate("Dialog", "Dialog", None))
+        Dialog.setWindowTitle(_translate("Dialog", "Connection Builder", None))
         self.label_2.setText(_translate("Dialog", "From", None))
         self.label.setText(_translate("Dialog", "To", None))
         self.pushButton_2.setText(_translate("Dialog", "Cancel", None))
@@ -490,7 +490,7 @@ class NetworkSettings_Ui_Dialog(object):
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 
     def retranslateUi(self, Dialog):
-        Dialog.setWindowTitle(_translate("Dialog", "Dialog", None))
+        Dialog.setWindowTitle(_translate("Dialog", "NetworkSettings", None))
         self.pushButton_2.setText(_translate("Dialog", "Apply", None))
         self.pushButton_3.setText(_translate("Dialog", "Cancel", None))
         self.pushButton.setText(_translate("Dialog", "OK", None))
@@ -538,7 +538,7 @@ class SaveWarning_Ui_Dialog(object):
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 
     def retranslateUi(self, Dialog):
-        Dialog.setWindowTitle(_translate("Dialog", "Dialog", None))
+        Dialog.setWindowTitle(_translate("Dialog", "Save Warning", None))
         self.pushButton.setText(_translate("Dialog", "Don\'t Save", None))
         self.pushButton_2.setText(_translate("Dialog", "Save", None))
         self.pushButton_3.setText(_translate("Dialog", "Cancel", None))
