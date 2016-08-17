@@ -1525,7 +1525,7 @@ def getXmlFromNetwork(NetworkSettings, components,logger):
 		string=string+'\t\t<configFile path="' + comp.configFile + '" />\n'
 		string=string+'\t\t<xpos value="' + str(comp.x) + '" />\n'
 		string=string+'\t\t<ypos value="' + str(comp.y) + '" />\n'
-		string=string+'\t\t<icon value="'+str(comp.IconFilePath)+'"/>\n'
+		#string=string+'\t\t<icon value="'+str(comp.IconFilePath)+'"/>\n'
 		string=string+'\t\t<ip value="'+str(comp.Ip)+'"/>\n'
 		string=string+'\t</node>\n'
 

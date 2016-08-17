@@ -217,6 +217,7 @@ class MainClass(QtGui.QMainWindow):
 			self.CodeEditor.font=font
 			self.Logger.logData("New font set for code Editor")
 	def refreshCodeFromTree(self):
+		self.HadChanged=True
 		string=rcmanagerConfig.getXmlFromNetwork(self.networkSettings,self.componentList,self.Logger)
 		self.CodeEditor.setText(string)
 		self.Logger.logData("Code Updated SucceFully from the graph")
@@ -497,26 +498,30 @@ class MainClass(QtGui.QMainWindow):
 		except:
 			self.Logger.logData("Couldn't Read from File")
 		self.refreshTreeFromCode()
-
+		self.HadChanged=False
 	def setAllGraphicsData(self):
 		for x in self.componentList:
 			x.setGraphicsData()
 	def StatusBarFileNameWrite(self,string):
 		Label=QtGui.QLabel(string)
 		self.UI.statusbar.addWidget(Label)
-	def saveXmlFile(self):##To save the entire treesetting into a xml file::Unfinished
+	def saveXmlFile(self):##To save the entire treesetting into a xml file
 		try:
 			saveFileName=QtGui.QFileDialog.getSaveFileName(self,'Save File',initDir,'*.xml')
-			string=rcmanagerConfig.getXmlFromNetwork(self.networkSettings,self.componentList)
+			saveFileName=str(saveFileName)
+			if saveFileName.endswith(".xml")==False:
+				saveFileName=saveFileName+".xml"
+			string=self.CodeEditor.text()
 			try:
 				file = open(saveFileName, 'w')
+				file.write(string)
 			except:
 				raise Exception("Can't Open"+saveFileName)
-			rcmanagerConfig.writeToFile(file,string)
+			#rcmanagerConfig.writeToFile(file,string)
 
 			self.Logger.logData("Saved to File "+saveFileName+" ::SuccessFull")
-		except:
-			self.Logger.logData("Saving to File"+saveFileName+" ::Failed","R")
+		except Exception,e:
+			self.Logger.logData("Saving to File"+saveFileName+" ::Failed."+str(e),"R")
 	
 	#def saveTofile(fileName):#Save to this filename
 	#	rcmanagerConfig.writeConfigToFile(self.networkSettings,self.componentList,fileName)
