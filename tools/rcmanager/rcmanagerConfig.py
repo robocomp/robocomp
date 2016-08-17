@@ -681,7 +681,7 @@ class VisualNode(QtGui.QGraphicsItem):##Visual Node GraphicsItem
 	def setIcon(self,icon=None):
 		self.Icon=icon
 	def paintMainShape(self,painter): ##This will draw the basic shape of a node.The big square and its containing elements
-		pen=QtGui.QPen(QtGui.QColor.fromRgb(0,0,0))
+		pen=QtGui.QPen(QtGui.QColor.fromRgb(self.parent.nodeColor[0],self.parent.nodeColor[1],self.parent.nodeColor[2]))
 		pen.setWidth(3)
 		painter.setPen(pen)
 		brush=QtGui.QBrush(QtGui.QColor.fromRgb(94,94,94))
@@ -979,7 +979,7 @@ class CompInfo(QtCore.QObject):##This contain the general Information about the 
 		self.Ip=""
 		self.IconFilePath=getDefaultIconPath()
 		self.status=False
-
+		self.nodeColor=[0,1,2]
 		self.tempx=0 #This will be used sometime for temporary changes
 		self.tempy=0 #This will be used sometime for temporary changes
 
@@ -1442,7 +1442,8 @@ def parseNode(node, components,generalSettings,logger):#To get the properties of
 						comp.y=float(y)
 					except :
 						logger.logData("Error in Reading Position Value of "+comp.alias,"R")
-				
+				#elif child.name=="color":
+				#	comp.nodeColor=getColorFromString(parseSingleValue(child,"value"))
 				elif child.name == "dependence":
 					comp.dependences.append(parseSingleValue(child, 'alias'))
 				elif child.name == "ip":
@@ -1461,7 +1462,12 @@ def parseNode(node, components,generalSettings,logger):#To get the properties of
 		print "error: "+str(node.name)
 	
 	comp.CheckItem.start()
-
+def getColorFromString(string):
+	color=[]
+	color[0]=int(string.__getslice__(1,2),16)
+	color[1]=int(string.__getslice__(3,4),16)
+	color[2]=int(string.__getslice__(5,6),16)
+	return color
 def stringIsUseful(string):
 	if len(string) == 0: return False
 	if string[0] == '#': return False
