@@ -705,6 +705,7 @@ class VisualNode(QtGui.QGraphicsItem):##Visual Node GraphicsItem
 		painter.setBrush(self.IpColor)  ## Drawing the Icon display rectangle
 		painter.drawRect(self.IconRect)
 		
+		painter.setPen(QtGui.QColor.fromRgb(0,0,0))
 		
 	def drawUpPort(self,painter,brush):##The bulging arcs will can be calleds as the port because all connection starts from there
 		painter.setBrush(brush)
@@ -979,7 +980,7 @@ class CompInfo(QtCore.QObject):##This contain the general Information about the 
 		self.Ip=""
 		self.IconFilePath=getDefaultIconPath()
 		self.status=False
-		self.nodeColor=[0,1,2]
+		self.nodeColor=[0,0,0]
 		self.tempx=0 #This will be used sometime for temporary changes
 		self.tempy=0 #This will be used sometime for temporary changes
 
@@ -1349,6 +1350,7 @@ def getDataFromString(data,logger):#Data is a string in xml format containing in
 def parsercmanager(node,logger): #Call seperate functions for general settings and nodes
 	components = []
 	generalSettings=NetworkValues()
+	print "Inside parsercmanager"
 	if node.type == "element" and node.name == "rcmanager":
 		child = node.children
 		while child is not None:
@@ -1356,6 +1358,7 @@ def parsercmanager(node,logger): #Call seperate functions for general settings a
 				if child.name == "generalInformation":
 					parseGeneralInformation(child, generalSettings,logger)
 				elif child.name == "node":
+					#print "parseing node"
 					parseNode(child,components,generalSettings, logger)
 				elif stringIsUseful(str(node.properties)):
 					print 'ERROR when parsing rcmanager: '+str(child.name)+': '+str(child.properties)
@@ -1430,6 +1433,8 @@ def parseNode(node, components,generalSettings,logger):#To get the properties of
 					comp.compdown = parseSingleValue(child, 'command')
 				elif child.name == "configFile":
 					comp.configFile = parseSingleValue(child, 'path')
+				elif child.name=="radius":##To be backward compatible with older tool
+					pass
 				elif child.name == "xpos":
 					x=parseSingleValue(child, 'value')
 					try :
@@ -1442,8 +1447,8 @@ def parseNode(node, components,generalSettings,logger):#To get the properties of
 						comp.y=float(y)
 					except :
 						logger.logData("Error in Reading Position Value of "+comp.alias,"R")
-				#elif child.name=="color":
-				#	comp.nodeColor=getColorFromString(parseSingleValue(child,"value"))
+				elif child.name=="color":
+					comp.nodeColor=getColorFromString(parseSingleValue(child,"value"))
 				elif child.name == "dependence":
 					comp.dependences.append(parseSingleValue(child, 'alias'))
 				elif child.name == "ip":
@@ -1463,10 +1468,12 @@ def parseNode(node, components,generalSettings,logger):#To get the properties of
 	
 	comp.CheckItem.start()
 def getColorFromString(string):
+	#print string
 	color=[]
-	color[0]=int(string.__getslice__(1,2),16)
-	color[1]=int(string.__getslice__(3,4),16)
-	color[2]=int(string.__getslice__(5,6),16)
+	color.append(int(string.__getslice__(1,3),16))
+	color.append(int(string.__getslice__(3,5),16))
+	color.append(int(string.__getslice__(5,7),16))
+	#print color
 	return color
 def stringIsUseful(string):
 	if len(string) == 0: return False
