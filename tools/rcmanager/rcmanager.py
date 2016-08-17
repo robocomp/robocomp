@@ -84,7 +84,8 @@ class MainClass(QtGui.QMainWindow):
 
 		self.connectionBuilder=rcmanagerConfig.connectionBuilder(self,self.Logger)##This will take care of connection building between components
 
-		
+		self.PositionMultiplier=rcmanagerConfig.PositionMultiplier(self.Logger)
+
 		self.groupBuilder=rcmanagerConfig.GroupBuilder(self,self.Logger)##It will help to create a new group
 		#setting the code Editor
 		
@@ -130,6 +131,7 @@ class MainClass(QtGui.QMainWindow):
 		self.connect(self.graphTree.BackPopUpMenu.ActionAdd,QtCore.SIGNAL("triggered(bool)"),self.addNewNode)		
 		self.connect(self.graphTree.BackPopUpMenu.ActionSettings,QtCore.SIGNAL("triggered(bool)"),self.setNetworkSettings)
 		self.connect(self.graphTree.BackPopUpMenu.ActionNewGroup,QtCore.SIGNAL("triggered(bool)"),self.addNewGroup)
+		self.connect(self.graphTree.BackPopUpMenu.ActionStretch,QtCore.SIGNAL("triggered(bool)"),self.stretchGraph)
 
 		self.connect(self.graphTree.CompoPopUpMenu.ActionDelete,QtCore.SIGNAL("triggered(bool)"),self.deleteSelectedComponent)
 		self.connect(self.graphTree.CompoPopUpMenu.ActionUp,QtCore.SIGNAL("triggered(bool)"),self.upSelectedComponent)
@@ -153,21 +155,8 @@ class MainClass(QtGui.QMainWindow):
 		self.connect(self.UI.toolButton,QtCore.SIGNAL("clicked()"),self.addNewComponent)
 		self.Logger.logData("Tool Started")
 
-	##The following function beginning with hover is for showing help of each Button
-	def hoverAddComponent(self):
-		self.UI.statusbar.showMessage("Add a new Component",3000)
-	def hoverXmlSettings(self):
-		self.UI.statusbar.showMessage("Edit Xml Settings",3000)
-	def hoverRefreshFromTree(self):
-		self.UI.statusbar.showMessage("Update the XML code from network Tree",3000)
-	def hoverNetworkTreeSettings(self):
-		self.UI.statusbar.showMessage("Edit Network Tree Settings",3000)
-	def hoverPrintDefaultNode(self):
-		self.UI.statusbar.showMessage("Add New Node",3000)
-	def hoverPrintDefaultSettings(self):
-		self.UI.statusbar.showMessage("Add Settings Element",3000)
-	def hoverRefreshFromXml(self):
-		self.UI.statusbar.showMessage("Update the Tree From the Xml Code",3000)
+	def stretchGraph(self):
+		self.PositionMultiplier.updateStretch(self.componentList,self.networkSettings)
 
 	def upGroup(self):
 		component=self.graphTree.CompoPopUpMenu.currentComponent.parent
@@ -397,11 +386,14 @@ class MainClass(QtGui.QMainWindow):
 
 				angle = math.atan2(iy, ix)
 				dist2 = ((abs((iy*iy) + (ix*ix))) ** 0.5) ** 2.
-				if dist2 < self.networkSettings.spring_length: dist2 = self.networkSettings.spring_length
+				if dist2 < self.networkSettings.spring_length: 
+					dist2 = self.networkSettings.spring_length
 				force = self.networkSettings.field_force_multiplier / dist2
 				force_x += force * math.cos(angle)
 				force_y += force * math.sin(angle)
 
+			for iterr2 in self.componentList:
+				
 				if iterr2.alias in iterr.dependences or iterr.alias in iterr2.dependences:
 					ix = iterr.x - iterr2.x
 					iy = iterr.y - iterr2.y

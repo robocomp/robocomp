@@ -417,7 +417,8 @@ class connectionBuilder(QtGui.QDialog):## This is used to set connection between
 		self.parent.NetworkScene.addItem(self.connection)
 		self.close()
 		self.parent.NetworkScene.update()
-		self.parent.refreshCodeFrom 	+self.toComponent.alias)
+		self.parent.refreshCodeFromTree()
+		self.logger.logData("Connection Made From "+self.fromComponent.alias+" to "+self.toComponent.alias)
 		self.BuildingStatus=False
 		self.UI.lineEdit.setText("")
 		self.UI.lineEdit_2.setText("")
@@ -979,6 +980,9 @@ class CompInfo(QtCore.QObject):##This contain the general Information about the 
 		self.IconFilePath=getDefaultIconPath()
 		self.status=False
 
+		self.tempx=0 #This will be used sometime for temporary changes
+		self.tempy=0 #This will be used sometime for temporary changes
+
 		self.CommonProxy=commonBehaviorComponent(self)
 		
 		self.CheckItem=ComponentChecker(self)##Checking the status of component
@@ -1092,6 +1096,108 @@ class DirectoryItem(QtGui.QPushButton):#This will be listed on the right most si
 			self.parent.CommonProxy.setVisibility(False)
 
 ##
+#This classes will take care of multiplying the position.That is if the nodes are too close to each other they will strech them
+##
+class PositionMultiplier_Ui_Dialog(object):
+    def setupUi(self, Dialog):
+        Dialog.setObjectName(_fromUtf8("Dialog"))
+        Dialog.setWindowModality(QtCore.Qt.WindowModal)
+        Dialog.resize(415, 119)
+        self.gridLayout = QtGui.QGridLayout(Dialog)
+        self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
+        self.verticalLayout = QtGui.QVBoxLayout()
+        self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
+        self.horizontalLayout_3 = QtGui.QHBoxLayout()
+        self.horizontalLayout_3.setObjectName(_fromUtf8("horizontalLayout_3"))
+        self.label_2 = QtGui.QLabel(Dialog)
+        self.label_2.setObjectName(_fromUtf8("label_2"))
+        self.horizontalLayout_3.addWidget(self.label_2)
+        self.doubleSpinBox_2 = QtGui.QDoubleSpinBox(Dialog)
+        self.doubleSpinBox_2.setProperty("value", 1.0)
+        self.doubleSpinBox_2.setObjectName(_fromUtf8("doubleSpinBox_2"))
+        self.horizontalLayout_3.addWidget(self.doubleSpinBox_2)
+        self.verticalLayout.addLayout(self.horizontalLayout_3)
+        self.horizontalLayout = QtGui.QHBoxLayout()
+        self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
+        self.label = QtGui.QLabel(Dialog)
+        self.label.setObjectName(_fromUtf8("label"))
+        self.horizontalLayout.addWidget(self.label)
+        self.doubleSpinBox = QtGui.QDoubleSpinBox(Dialog)
+        self.doubleSpinBox.setProperty("value", 1.0)
+        self.doubleSpinBox.setObjectName(_fromUtf8("doubleSpinBox"))
+        self.horizontalLayout.addWidget(self.doubleSpinBox)
+        self.verticalLayout.addLayout(self.horizontalLayout)
+        self.horizontalLayout_5 = QtGui.QHBoxLayout()
+        self.horizontalLayout_5.setObjectName(_fromUtf8("horizontalLayout_5"))
+        spacerItem = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        self.horizontalLayout_5.addItem(spacerItem)
+        self.pushButton_2 = QtGui.QPushButton(Dialog)
+        self.pushButton_2.setObjectName(_fromUtf8("pushButton_2"))
+        self.horizontalLayout_5.addWidget(self.pushButton_2)
+        self.pushButton = QtGui.QPushButton(Dialog)
+        self.pushButton.setObjectName(_fromUtf8("pushButton"))
+        self.horizontalLayout_5.addWidget(self.pushButton)
+        self.verticalLayout.addLayout(self.horizontalLayout_5)
+        self.gridLayout.addLayout(self.verticalLayout, 0, 0, 1, 1)
+
+        self.retranslateUi(Dialog)
+        QtCore.QMetaObject.connectSlotsByName(Dialog)
+
+    def retranslateUi(self, Dialog):
+        Dialog.setWindowTitle(_translate("Dialog", "Position Multiplier", None))
+        self.label_2.setText(_translate("Dialog", "XStretch", None))
+        self.label.setText(_translate("Dialog", "YStretch", None))
+        self.pushButton_2.setText(_translate("Dialog", "Apply", None))
+        self.pushButton.setText(_translate("Dialog", "OK", None))
+
+
+class PositionMultiplier(QtGui.QDialog):
+	def __init__(self,logger):
+		QtGui.QDialog.__init__(self)
+		self.logger=logger
+		self.UI=PositionMultiplier_Ui_Dialog()
+		self.UI.setupUi(self)
+		self.currentXstretch=1
+		self.currentYstretch=1
+		self.compList=[]
+		self.settings=None
+		self.ChangePermanently=False
+		self.connect(self.UI.pushButton,QtCore.SIGNAL("clicked()"),self.setPermanent)
+		self.connect(self.UI.pushButton_2,QtCore.SIGNAL("clicked()"),self.setTemporary)
+	def updateStretch(self,compList,settings):
+		self.show()
+		self.compList=compList
+		self.settings
+		self.UI.doubleSpinBox.setValue(1)
+		self.UI.doubleSpinBox_2.setValue(1)
+		self.ChangePermanently=False
+		for x in self.compList:
+			x.tempx=x.x
+			x.temy=x.y
+	def setTemporary(self):
+		for x in self.compList:
+			x.tempx=x.x*self.UI.doubleSpinBox_2.value()
+			x.tempy=x.y*self.UI.doubleSpinBox.value()
+		for x in self.compList:
+			x.graphicsItem.setPos(QtCore.QPointF(x.tempx,x.tempy))
+			x.graphicsItem.updateforDrag()
+	def setPermanent(self):
+		self.ChangePermanently=True
+		self.close()
+		for x in self.compList:
+			x.x=x.tempx
+			x.y=x.tempy		
+		for x in self.compList:
+			x.graphicsItem.setPos(QtCore.QPointF(x.x,x.y))
+			x.graphicsItem.updateforDrag()
+	def closeEvent(self,event):		
+		if self.ChangePermanently==True:
+			self.logger.logData("Graph Stretched")
+		else:
+			for x in self.compList:
+				x.graphicsItem.setPos(QtCore.QPointF(x.x,x.y))
+				x.graphicsItem.updateforDrag()
+##
 #This class will communicate with the common behavior component..On construction
 ##
 class commonBehaviorComponent(threading.Thread):
@@ -1181,7 +1287,12 @@ class BackgroundMenu(QtGui.QMenu):
 		self.ActionSearch=QtGui.QAction("Search",parent)
 		self.ActionAdd=QtGui.QAction("Add Component",parent)
 		self.ActionNewGroup=QtGui.QAction("New Group",parent)
-
+		self.ActionStretch=QtGui.QAction("Stretch",parent)
+		
+		self.GraphMenu=QtGui.QMenu("Graph",parent)
+		self.GraphMenu.addAction(self.ActionStretch)
+		
+		self.addMenu(self.GraphMenu)
 		self.addAction(self.ActionUp)
 		self.addAction(self.ActionDown)
 		self.addAction(self.ActionAdd)
@@ -1275,9 +1386,7 @@ def parseGeneralInformation(node, generalSettings,logger): ##Takes care of readi
 					generalSettings.field_force_multiplier=float(parseSingleValue(child,"fieldforce"))
 					generalSettings.hookes_constant=float(parseSingleValue(child,"hookes"))
 					generalSettings.roza=1- float(parseSingleValue(child,"friction"))
-				elif child.name=="multipliplier"
-					generalSettings.xstrech=float(parseSingleValue(child,"x"))
-					generalSettings.ystrech=float(parseSingleValue(child,"y"))
+				
 			child=child.next
 
 		logger.logData("General Information Successfully read")
@@ -1324,13 +1433,13 @@ def parseNode(node, components,generalSettings,logger):#To get the properties of
 				elif child.name == "xpos":
 					x=parseSingleValue(child, 'value')
 					try :
-						comp.x=float(x)*generalSettings.xstrech
+						comp.x=float(x)
 					except :
 						logger.logData("Error in Reading Position Value of "+comp.alias,"R")
 				elif child.name == "ypos":
 					y = float(parseSingleValue(child, 'value'))					
 					try :
-						comp.y=float(y)*generalSettings.ystrech
+						comp.y=float(y)
 					except :
 						logger.logData("Error in Reading Position Value of "+comp.alias,"R")
 				
@@ -1385,7 +1494,7 @@ def getXmlFromNetwork(NetworkSettings, components,logger):
 	for x in NetworkSettings.Groups:
 		string=string+'\t\t<group name="'+x.groupName+'" iconfile="'+x.groupIconFilePath+'" />\n'
 
-	string=string+'\t\t<multipliplier x="'+str(NetworkSettings.xstrech)+'" y="'+str(NetworkSettings.ystrech)+'" />\n'	
+		
 	string=string+'\t\t<simulation hookes="'+str(NetworkSettings.hookes_constant)+'" friction="'+str(1-NetworkSettings.roza)+'" springlength="'+str(NetworkSettings.spring_length)+'" fieldforce="'+str(NetworkSettings.field_force_multiplier)+'"/>\n'
 	string=string+'\n\t</generalInformation>\n'
 	
