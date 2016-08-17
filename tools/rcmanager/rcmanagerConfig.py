@@ -1185,8 +1185,8 @@ class PositionMultiplier(QtGui.QDialog):
 		self.ChangePermanently=True
 		self.close()
 		for x in self.compList:
-			x.x=x.tempx
-			x.y=x.tempy		
+			x.x=x.x*self.UI.doubleSpinBox_2.value()
+			x.y=x.y*self.UI.doubleSpinBox.value()
 		for x in self.compList:
 			x.graphicsItem.setPos(QtCore.QPointF(x.x,x.y))
 			x.graphicsItem.updateforDrag()
