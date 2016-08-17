@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '/home/h20/robocomp/tools/rcmanager/formManager.ui'
+# Form implementation generated from reading ui file 'formManager.ui'
 #
-# Created: Tue Aug 16 22:49:23 2016
+# Created: Thu Aug 18 02:39:24 2016
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -314,6 +314,8 @@ class Ui_MainWindow(object):
         self.actionEditor_2.setObjectName(_fromUtf8("actionEditor_2"))
         self.actionControlPanel = QtGui.QAction(MainWindow)
         self.actionControlPanel.setObjectName(_fromUtf8("actionControlPanel"))
+        self.actionSet_Log_File = QtGui.QAction(MainWindow)
+        self.actionSet_Log_File.setObjectName(_fromUtf8("actionSet_Log_File"))
         self.menuFile.addAction(self.actionOpen)
         self.menuFile.addAction(self.actionSave)
         self.menuFile.addAction(self.actionUndock)
@@ -326,6 +328,7 @@ class Ui_MainWindow(object):
         self.menuSimulations.addAction(self.menuSimulator.menuAction())
         self.menuSimulations.addAction(self.menuControl_Panel.menuAction())
         self.menuSimulations.addAction(self.menuEditor.menuAction())
+        self.menuSimulations.addAction(self.actionSet_Log_File)
         self.menuEdit.addAction(self.actionSetting)
         self.menuView_2.addAction(self.actionEditor_2)
         self.menuView_2.addAction(self.actionControlPanel)
@@ -406,4 +409,15 @@ class Ui_MainWindow(object):
         self.actionSetting_4.setText(_translate("MainWindow", "Setting", None))
         self.actionEditor_2.setText(_translate("MainWindow", "Editor", None))
         self.actionControlPanel.setText(_translate("MainWindow", "ControlPanel", None))
+        self.actionSet_Log_File.setText(_translate("MainWindow", "Set Log File", None))
+
+
+if __name__ == "__main__":
+    import sys
+    app = QtGui.QApplication(sys.argv)
+    MainWindow = QtGui.QMainWindow()
+    ui = Ui_MainWindow()
+    ui.setupUi(MainWindow)
+    MainWindow.show()
+    sys.exit(app.exec_())
 

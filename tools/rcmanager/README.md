@@ -35,14 +35,21 @@ Normally we need to be running the [`rcremoteserver`](https://github.com/robocom
 
 We can either run an already built xml file in rcmanager..Or you can built an entire tree through rcmanager.The advantage of the second one is you can debug the xml file dynamically.
 
+
 If you are running an already built xml file run the command ..
 
-    rcmanager pathToFile
+    rcmanager pathToFile logfileName
+or 
 
+    rcmanager pathToFile
 
 Otherwise you can open the file after opening the tool by the command.
     
     rcmanager 
+
+or  
+
+    rcmanager logFileName
 
 ##Sample XML File
     
@@ -107,6 +114,13 @@ New component can be added either by right clicking on background and selecting 
 
 There is a optional data of 'ip address'.If not given tool will take it as local host.
 
+There is a new option for logging data into file.You can either set the logFile by.
+
+    tools>Set LogFile
+
+#Or 
+    
+Enter the logFile name along with the tool starting command.The log filename should endwith .log
 
 ##Using the xml file build for old tool.
 

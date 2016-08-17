@@ -452,6 +452,7 @@
     <addaction name="menuSimulator"/>
     <addaction name="menuControl_Panel"/>
     <addaction name="menuEditor"/>
+    <addaction name="actionSet_Log_File"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
@@ -731,6 +732,11 @@
   <action name="actionControlPanel">
    <property name="text">
     <string>ControlPanel</string>
+   </property>
+  </action>
+  <action name="actionSet_Log_File">
+   <property name="text">
+    <string>Set Log File</string>
    </property>
   </action>
  </widget>

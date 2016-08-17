@@ -102,11 +102,74 @@ class ComponentGroup():##On working condition
 			downComponent(x,Logger)
 
 
+##
+#This is used to set The log file
+##
+
+class LogFileSetter_Ui_Dialog(object):
+    def setupUi(self, Dialog):
+        Dialog.setObjectName(_fromUtf8("Dialog"))
+        Dialog.resize(453, 84)
+        self.gridLayout = QtGui.QGridLayout(Dialog)
+        self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
+        self.verticalLayout = QtGui.QVBoxLayout()
+        self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
+        self.horizontalLayout = QtGui.QHBoxLayout()
+        self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
+        self.lineEdit = QtGui.QLineEdit(Dialog)
+        self.lineEdit.setObjectName(_fromUtf8("lineEdit"))
+        self.horizontalLayout.addWidget(self.lineEdit)
+        self.pushButton = QtGui.QPushButton(Dialog)
+        self.pushButton.setObjectName(_fromUtf8("pushButton"))
+        self.horizontalLayout.addWidget(self.pushButton)
+        self.verticalLayout.addLayout(self.horizontalLayout)
+        self.horizontalLayout_2 = QtGui.QHBoxLayout()
+        self.horizontalLayout_2.setObjectName(_fromUtf8("horizontalLayout_2"))
+        spacerItem = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        self.horizontalLayout_2.addItem(spacerItem)
+        self.pushButton_2 = QtGui.QPushButton(Dialog)
+        self.pushButton_2.setObjectName(_fromUtf8("pushButton_2"))
+        self.horizontalLayout_2.addWidget(self.pushButton_2)
+        self.verticalLayout.addLayout(self.horizontalLayout_2)
+        self.gridLayout.addLayout(self.verticalLayout, 0, 0, 1, 1)
+
+        self.retranslateUi(Dialog)
+        QtCore.QMetaObject.connectSlotsByName(Dialog)
+
+    def retranslateUi(self, Dialog):
+        Dialog.setWindowTitle(_translate("Dialog", "Log File", None))
+        self.pushButton.setText(_translate("Dialog", "Browse", None))
+        self.pushButton_2.setText(_translate("Dialog", "Ok", None))
+
+class LogFileSetter(QtGui.QDialog):
+	def  __init__(self,parent,logger):
+		QtGui.QDialog.__init__(self)
+		self.parent=parent
+		self.logger=logger
+		self.UI=LogFileSetter_Ui_Dialog()
+		self.UI.setupUi(self)
+		self.connect(self.UI.pushButton,QtCore.SIGNAL("clicked()"),self.browse)
+		self.connect(self.UI.pushButton_2,QtCore.SIGNAL("clicked()"),self.ok)
+	def setFile(self):
+		self.show()
+		self.UI.lineEdit.setText(self.logger.filename)
+	def browse(self):
+		filename=QtGui.QFileDialog.getSaveFileName(self,'Save File',os.getcwd(),'*.log')
+		filename=str(filename)
+		if filename.endswith(".log")==False:
+			filename=filename+".log"
+		self.UI.lineEdit.setText(filename)
+	def ok(self):
+		self.logger.setFile(str(self.UI.lineEdit.text()))
+		self.close()
+		
+
 class Logger():##This will be used to log data
 	def __init__(self,logArea,file=None):
 		self.logArea=logArea
 		self.file=file
-	
+		self.fileWrite=False
+		self.filenam=""
 	def logData(self,text=" ",arg="G"):#To log into the textEdit widget
 		if arg=="G":
 			color=QtGui.QColor.fromRgb(0,255,0)
@@ -116,7 +179,16 @@ class Logger():##This will be used to log data
 		self.logArea.setTextColor(color)
 		self.logArea.append(time +"  >>  "+ text)
 
+		if self.fileWrite==True:
+			self.file.write("\n"+time +"  >>  "+ text)
+			self.file.flush()
 
+	def setFile(self,filename):
+		
+			self.filename=filename
+			self.file = open(filename, 'a')
+			self.fileWrite=True
+			self.logData("\nStarted Logging into "+self.filename)
 
 ##
 #This Class will take care of the Building process of a new group..THe first class is its GUI. second class is its backbone
@@ -1350,7 +1422,7 @@ def getDataFromString(data,logger):#Data is a string in xml format containing in
 def parsercmanager(node,logger): #Call seperate functions for general settings and nodes
 	components = []
 	generalSettings=NetworkValues()
-	print "Inside parsercmanager"
+	#print "Inside parsercmanager"
 	if node.type == "element" and node.name == "rcmanager":
 		child = node.children
 		while child is not None:

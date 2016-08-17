@@ -80,6 +80,7 @@ class MainClass(QtGui.QMainWindow):
 		#To track the changes in the network both functionaly and visually
 		self.HadChanged=False
 		
+		self.LogFileSetter=rcmanagerConfig.LogFileSetter(self,self.Logger)
 		self.simulatorTimer=QtCore.QTimer()
 
 		self.connectionBuilder=rcmanagerConfig.connectionBuilder(self,self.Logger)##This will take care of connection building between components
@@ -115,6 +116,8 @@ class MainClass(QtGui.QMainWindow):
 		#self.connect(self.UI.toolButton_3,QtCore.SIGNAL("hovered()"),self.hoverRefreshFromXml)
 		#self.connect(self.UI.toolButton_10,QtCore.SIGNAL("hovered()"),self.hoverNetworkTreeSettings)
 		#self.connect(self.UI.toolButton_6,QtCore.SIGNAL("hovered()"),self.hoverRefreshFromTree)
+		self.connect(self.UI.actionSet_Log_File,QtCore.SIGNAL("triggered(bool)"),self.setLogFile)
+
 		self.connect(self.UI.tabWidget,QtCore.SIGNAL("currentChanged(int)"),self.tabIndexChanged)
 		self.connect(self.UI.actionSave,QtCore.SIGNAL("triggered(bool)"),self.saveXmlFile)
 		self.connect(self.UI.actionOpen,QtCore.SIGNAL("triggered(bool)"),self.openXmlFile)
@@ -154,6 +157,9 @@ class MainClass(QtGui.QMainWindow):
 		self.connect(self.UI.toolButton_10,QtCore.SIGNAL("clicked()"),self.getNetworkSetting)
 		self.connect(self.UI.toolButton,QtCore.SIGNAL("clicked()"),self.addNewComponent)
 		self.Logger.logData("Tool Started")
+
+	def setLogFile(self):
+		self.LogFileSetter.setFile() 
 
 	def stretchGraph(self):
 		self.PositionMultiplier.updateStretch(self.componentList,self.networkSettings)
@@ -591,12 +597,25 @@ if __name__ == '__main__':
 	window.show()
 	if sys.argv.__len__()>1:
 		try:
+			if sys.argv.__len__()>3:
+				raise Exception("Only two args allowed:: Eg\n rcmanager FileName logFileName")
+			
 			if sys.argv.__len__()>2:
-				raise Exception("Only one arg allowed:: Eg\n rcmanager FileName")
-			window.filePath=sys.argv[1]
-			window.openXmlFile(terminalArg=True)
+				if sys.argv[2].endswith(".log"):
+					window.Logger.setFile(sys.argv[2])
+				else:
+					raise Exception("The log file should end with .log")
+
+			if sys.argv[1].endswith(".xml"):
+				window.filePath=sys.argv[1]
+				window.openXmlFile(terminalArg=True)
+			elif sys.argv[1].endswith(".log"):
+				window.Logger.setFile(sys.argv[1])
+			else:
+				raise Exception("The target should be an .xml file or log File should be .log file")
+			
 		except Exception,e:
-			print "helo"+str(e)
+			print "Errorrr ::"+str(e)
 			sys.exit()
 	try:
 		ret = app.exec_()
