@@ -120,22 +120,20 @@ if __name__ == '__main__':
         if not params[1].startswith('--Ice.Config='):
             params[1] = '--Ice.Config=' + params[1]
     elif len(params) == 1:
-        params.append('--Ice.Config=config')
+        params.append('--Ice.Config=etc/config')
     ic = Ice.initialize(params)
     status = 0
-    
+
     mprx = {}
     mprx["name"] = ic.getProperties().getProperty('Ice.ProgramName');
 
     print mprx["name"]
     proxyData = {}
-    proxyData["rcmaster"] = {"comp":"rcmaster","caster":RoboCompRCMaster.rcmasterPrx.checkedCast,"name":"rcmaster"}
-    proxyData["test1"] = {"comp":"client31","caster":RoboCompTest.testPrx.checkedCast,"name":"test"}
-    proxyData["test2"] = {"comp":"client32","caster":RoboCompTest.testPrx.checkedCast,"name":"test"}
 
     try:
 
         # Remote object connection for rcmaster
+        proxyData["rcmaster"] = {"comp":"rcmaster","caster":RoboCompRCMaster.rcmasterPrx.checkedCast,"name":"rcmaster"}
         try:
             with open(os.path.join(os.path.expanduser('~'), ".config/RoboComp/rcmaster.config"), 'r') as f:
                 rcmaster_uri = f.readline().strip().split(":")
@@ -153,6 +151,7 @@ if __name__ == '__main__':
 
 
         # Remote object connection for test1
+        proxyData["test1"] = {"comp":"client31","caster":RoboCompTest.testPrx.checkedCast,"name":"test"}
         try:
             while True:
                 try:
@@ -176,6 +175,7 @@ if __name__ == '__main__':
             status = 1
 
         # Remote object connection for test2
+        proxyData["test2"] = {"comp":"client32","caster":RoboCompTest.testPrx.checkedCast,"name":"test"}
         try:
             while True:
                 try:
@@ -211,15 +211,15 @@ if __name__ == '__main__':
         compInfo = RoboCompRCMaster.compData(name=mprx["name"])
         compInfo.interfaces = [RoboCompRCMaster.interfaceData('ASR')]
         idata = rcmaster_proxy.registerComp(compInfo,False,True)
-        
+
         # activate all interfaces
         for iface in idata:
             adapter = ic.createObjectAdapterWithEndpoints(iface.name, iface.protocol+' -h localhost -p '+str(iface.port))
             workerObj = globals()[str(iface.name)+'I'](worker)
-            adapter.add(workerObj, ic.stringToIdentity(iface.name))
+            adapter.add(workerObj, ic.stringToIdentity(str(iface.name).lower()))
             adapter.activate()
             print "activated interface :", (iface)
-
+        print "Component Started"
 
 #       adapter.add(CommonBehaviorI(<LOWER>I, ic), ic.stringToIdentity('commonbehavior'))
 

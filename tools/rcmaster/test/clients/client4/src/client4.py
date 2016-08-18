@@ -120,7 +120,7 @@ if __name__ == '__main__':
         if not params[1].startswith('--Ice.Config='):
             params[1] = '--Ice.Config=' + params[1]
     elif len(params) == 1:
-        params.append('--Ice.Config=config')
+        params.append('--Ice.Config=etc/config')
     ic = Ice.initialize(params)
     status = 0
     mprx = {}
@@ -167,7 +167,6 @@ if __name__ == '__main__':
                     status = 1
                 else:
                     break
-
         except Ice.Exception, e:
             print e
             print 'Cannot get testProxy property.'
@@ -185,9 +184,11 @@ if __name__ == '__main__':
 
         # get port for all interfaces
         compInfo = RoboCompRCMaster.compData(name=mprx["name"])
-        compInfo.interfaces = [RoboCompRCMaster.interfaceData('test'),RoboCompRCMaster.interfaceData('ASR')]
+        compInfo.interfaces = []
+        compInfo.interfaces.append(RoboCompRCMaster.interfaceData('test'))
+        compInfo.interfaces.append(RoboCompRCMaster.interfaceData('ASR'))
         idata = rcmaster_proxy.registerComp(compInfo,False,True)
-        
+
         # activate all interfaces
         for iface in idata:
             adapter = ic.createObjectAdapterWithEndpoints(iface.name, iface.protocol+' -h localhost -p '+str(iface.port))
@@ -195,7 +196,7 @@ if __name__ == '__main__':
             adapter.add(workerObj, ic.stringToIdentity(iface.name))
             adapter.activate()
             print "activated interface :", iface
-
+        print "Component Started"
 
 #       adapter.add(CommonBehaviorI(<LOWER>I, ic), ic.stringToIdentity('commonbehavior'))
 

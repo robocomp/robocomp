@@ -118,17 +118,17 @@ if __name__ == '__main__':
         if not params[1].startswith('--Ice.Config='):
             params[1] = '--Ice.Config=' + params[1]
     elif len(params) == 1:
-        params.append('--Ice.Config=config')
+        params.append('--Ice.Config=etc/config')
     ic = Ice.initialize(params)
     status = 0
-    
+
     mprx = {}
     mprx["name"] = ic.getProperties().getProperty('Ice.ProgramName');
 
     print mprx["name"]
     proxyData = {}
     proxyData["rcmaster"] = {"comp":"rcmaster","caster":RoboCompRCMaster.rcmasterPrx.checkedCast,"name":"rcmaster"}
-    
+
     try:
 
         # Remote object connection for rcmaster
@@ -160,7 +160,7 @@ if __name__ == '__main__':
         compInfo = RoboCompRCMaster.compData(name=mprx["name"])
         compInfo.interfaces = [RoboCompRCMaster.interfaceData('test')]
         idata = rcmaster_proxy.registerComp(compInfo,False,True)
-        
+
         # activate all interfaces
         for iface in idata:
             adapter = ic.createObjectAdapterWithEndpoints(iface.name, iface.protocol+' -h localhost -p '+str(iface.port))
