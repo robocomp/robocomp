@@ -136,6 +136,7 @@ class MainClass(QtGui.QMainWindow):
 		self.connect(self.graphTree.BackPopUpMenu.ActionNewGroup,QtCore.SIGNAL("triggered(bool)"),self.addNewGroup)
 		self.connect(self.graphTree.BackPopUpMenu.ActionStretch,QtCore.SIGNAL("triggered(bool)"),self.stretchGraph)
 
+		self.connect(self.graphTree.CompoPopUpMenu.ActionEdit,QtCore.SIGNAL("triggered(bool)"),self.EditSelectedComponent)
 		self.connect(self.graphTree.CompoPopUpMenu.ActionDelete,QtCore.SIGNAL("triggered(bool)"),self.deleteSelectedComponent)
 		self.connect(self.graphTree.CompoPopUpMenu.ActionUp,QtCore.SIGNAL("triggered(bool)"),self.upSelectedComponent)
 		self.connect(self.graphTree.CompoPopUpMenu.ActionAddToGroup,QtCore.SIGNAL("triggered(bool)"),self.addComponentToGroup)
@@ -157,6 +158,9 @@ class MainClass(QtGui.QMainWindow):
 		self.connect(self.UI.toolButton_10,QtCore.SIGNAL("clicked()"),self.getNetworkSetting)
 		self.connect(self.UI.toolButton,QtCore.SIGNAL("clicked()"),self.addNewComponent)
 		self.Logger.logData("Tool Started")
+	def EditSelectedComponent(self):	
+		self.UI.tabWidget.setCurrentIndex(2)
+		self.CodeEditor.findFirst(self.graphTree.CompoPopUpMenu.currentComponent.parent.alias,False,True,True,True)
 
 	def setLogFile(self):
 		self.LogFileSetter.setFile() 
@@ -268,13 +272,14 @@ class MainClass(QtGui.QMainWindow):
 
 
 				for x in self.componentList:
-					if self.seachInsideList(List,x.alias)==False:
+					if self.searchInsideList(List,x.alias)==False:
 						self.Logger.logData("Deleted the older component ::"+x.alias)##If new tree does have this	
 						self.deleteComponent(x)
 
 				for x in self.componentList:
 					for y in List:
-						self.copyAndUpdate(x,y)
+						if x.alias==y.alias:
+							self.copyAndUpdate(x,y)
 
 	def copyAndUpdate(self,original,temp):
 		if original.x!=temp.x or original.y!=temp.y:
@@ -303,7 +308,7 @@ class MainClass(QtGui.QMainWindow):
 				comp=searchforComponent(x)
 				self.setAconnection(comp,original)
 		for x in original.dependences:##For deleting unwanted connection if needed
-				name=x
+			name=x
 			if temp.dependences.__contains__(x)==False:
 				original.dependences.remove(x)
 				for y in original.asEnd:
@@ -319,9 +324,15 @@ class MainClass(QtGui.QMainWindow):
 			original.CheckItem.initializeComponent()
 
 
-	def searchInsideList(self,ist,name):
+	def searchInsideList(self,List,name):
+		flag=0
 		for x in List:
+			if x.alias==name:
+				flag+=1
+				return True
 
+		if flag==0:
+			return False
 	def printTemplSettings(self):
 		pass
 	def addComponentTempl(self):
@@ -638,6 +649,7 @@ class MainClass(QtGui.QMainWindow):
 			x.fromComponent.asBeg.remove(x)
 			self.NetworkScene.removeItem(x)
 
+		component.group.removeComponent(component)
 		component.CheckItem.stop()
 		self.NetworkScene.removeItem(component.graphicsItem)
 		self.NetworkScene.update()

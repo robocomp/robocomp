@@ -940,16 +940,16 @@ class ComponentChecker(threading.Thread):#This will check the status of componen
 		return self.started
 	def initializeComponent(self):#Called to set the component and to initialize the Ice proxy
 		self.mutex.lock()
-			try:
-				ic=Ice.initialize(sys.argv)
-				self.aPrx = ic.stringToProxy(self.component.endpoint)
-				if self.aPrx!= None:
-					self.aPrx.ice_timeout(1)
-				self.started=True
-			except :
-				print "Error creating proxy to " + self.component.endpoint
-				if len(self.component.endpoint) == 0:
-					print 'please, provide an endpoint'
+		try:
+			ic=Ice.initialize(sys.argv)
+			self.aPrx = ic.stringToProxy(self.component.endpoint)
+			if self.aPrx!= None:
+				self.aPrx.ice_timeout(1)
+			self.started=True
+		except :
+			print "Error creating proxy to " + self.component.endpoint
+			if len(self.component.endpoint) == 0:
+				print 'please, provide an endpoint'
 		self.mutex.unlock()
 	def run(self):
 		#global global_ic
@@ -1159,15 +1159,16 @@ class DirectoryItem(QtGui.QPushButton):#This will be listed on the right most si
 		self.parent.View.CompoPopUpMenu.popup(event.globalPos())
 
 	def clickEvent(self):#What happens when clicked
-		print "Clicked"+ self.parent.alias
+		#print "Clicked"+ self.parent.alias
 		index=self.parent.mainWindow.UI.tabWidget.currentIndex()
-		print index
+		#print index
 		self.parent.mainWindow.currentComponent=self.parent
 		if index==0:
 			self.parent.CommonProxy.setVisibility(True)
 			#print "Set visiblitiy true"
-		if index==1 or index==2:
-			self.parent.CommonProxy.setVisibility(False)
+		if index==2:
+			self.parent.mainWindow.CodeEditor.findFirst(self.parent.alias,False,True,True,True)
+
 
 ##
 #This classes will take care of multiplying the position.That is if the nodes are too close to each other they will strech them
@@ -1322,7 +1323,7 @@ class ComponentMenu(QtGui.QMenu):
 		
 		self.ActionUp=QtGui.QAction("Up",parent)
 		self.ActionDown=QtGui.QAction("Down",parent)
-		self.ActionSettings=QtGui.QAction("Settings",parent)
+		self.ActionEdit=QtGui.QAction("Edit",parent)
 		self.ActionControl=QtGui.QAction("Control",parent)
 		self.ActionNewConnection=QtGui.QAction("New Connection",parent)
 		self.ActionAddToGroup=QtGui.QAction("Add to Group",parent)
@@ -1343,7 +1344,8 @@ class ComponentMenu(QtGui.QMenu):
 		self.addAction(self.ActionNewConnection)
 		self.addMenu(self.GroupMenu)
 		self.addAction(self.ActionControl)
-		self.addAction(self.ActionSettings)
+		self.addAction(self.ActionEdit)
+
 	def setComponent(self,component):
 		self.currentComponent=component
 
