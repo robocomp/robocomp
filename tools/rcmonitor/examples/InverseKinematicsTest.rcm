@@ -1,0 +1,8 @@
+interfaces/InverseKinematics.ice
+inversekinematics
+localhost
+tcp
+10241
+30
+InverseKinematicsTest.py
+
