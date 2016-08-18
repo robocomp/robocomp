@@ -25,7 +25,7 @@
 #
 
 
-# Importamos el modulo libxml2
+
 import libxml2, sys,threading,Ice ,time,os 
 from PyQt4 import QtCore, QtGui, Qt,Qsci
 filePath = 'rcmanager.xml'
@@ -169,7 +169,7 @@ class Logger():##This will be used to log data
 		self.logArea=logArea
 		self.file=file
 		self.fileWrite=False
-		self.filenam=""
+		self.filename=""
 	def logData(self,text=" ",arg="G"):#To log into the textEdit widget
 		if arg=="G":
 			color=QtGui.QColor.fromRgb(0,255,0)
