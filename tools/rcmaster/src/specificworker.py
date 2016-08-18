@@ -93,7 +93,7 @@ class SpecificWorker(GenericWorker):
             for interface in comp.interfaces:
                 proxy = interface.name + ':' + interface.protocol + " -h " + comp.host.privateIP + ' -p ' + str(
                     interface.port)
-                
+
                 basePrx = self.ic.stringToProxy(proxy)
                 # see if the component is up, else cache it
                 try:
@@ -103,6 +103,8 @@ class SpecificWorker(GenericWorker):
                     comp.status = CompStatus.Stopped
                     self.compcache[uid] = self.cache_ttyl
                     self.show_stats()
+                except Ice.ObjectNotExistException:
+                    print "cant find proxy: ",proxy
 
         # invalidate cache based on ttyl
         for uid in self.compcache.keys():
