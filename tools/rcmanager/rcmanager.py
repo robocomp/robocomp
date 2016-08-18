@@ -227,41 +227,101 @@ class MainClass(QtGui.QMainWindow):
 		string=rcmanagerConfig.getXmlFromNetwork(self.networkSettings,self.componentList,self.Logger)
 		self.CodeEditor.setText(string)
 		self.Logger.logData("Code Updated SucceFully from the graph")
-	def refreshTreeFromCode(self):#This will refresh the code (Not to file)and draw the new tree
+	def refreshTreeFromCode(self,firstTime=False):#This will refresh the code (Not to file)and draw the new tree
 		#print "Refreshing"
 		try:
 			List,Settings=rcmanagerConfig.getDataFromString(str(self.CodeEditor.text()),self.Logger)
 		except Exception,e:
 			self.Logger.logData("Error while updating tree from Code::"+str(e), "R")
 		else:
-			self.removeAllComponents()
-			self.NetworkScene.clear()
-			self.networkSettings=Settings
-			self.componentList=List
-			try :
-				#if self.areTheyTooClose()==True:
-					#self.theyAreTooClose()
-				self.currentComponent=self.componentList[0]
-				self.ipCount()
-				self.setAllIpColor()
-				self.setAllGraphicsData()
-				self.drawAllComponents()
-				self.setConnectionItems()
-				self.drawAllConnection()
-				self.setComponentVariables()
-				self.setDirectoryItems()
-				self.FileOpenStatus=True
-				self.UserBuiltNetworkStatus=True
-				#self.HadChanged=False
-				self.Logger.logData("File Updated SuccessFully from the Code Editor")
-				self.refreshCodeFromTree()		
+			if firstTime==True:
+				self.removeAllComponents()
+				self.NetworkScene.clear()
+				self.networkSettings=Settings
+				self.componentList=List
+				try :
+					#if self.areTheyTooClose()==True:
+						#self.theyAreTooClose()
+					self.currentComponent=self.componentList[0]
+					self.ipCount()
+					self.setAllIpColor()
+					self.setAllGraphicsData()
+					self.drawAllComponents()
+					self.setConnectionItems()
+					self.drawAllConnection()
+					self.setComponentVariables()
+					self.setDirectoryItems()
+					self.FileOpenStatus=True
+					self.UserBuiltNetworkStatus=True
+					#self.HadChanged=False
+					self.Logger.logData("File Updated SuccessFully from the Code Editor")
+					self.refreshCodeFromTree()		
+				except Exception,e:
+					self.Logger.logData("File updation from Code Failed "+str(e),"R")
+
+			else:
+				for x in List:
+					try:
+						comp=self.searchforComponent(x.alias)
+					except:
+						self.componentList.append(x)##This will add a new component
+
+
+				for x in self.componentList:
+					if self.seachInsideList(List,x.alias)==False:
+						self.Logger.logData("Deleted the older component ::"+x.alias)##If new tree does have this	
+						self.deleteComponent(x)
+
+				for x in self.componentList:
+					for y in List:
+						self.copyAndUpdate(x,y)
+
+	def copyAndUpdate(self,original,temp):
+		if original.x!=temp.x or original.y!=temp.y:
+			original.x=temp.x
+			original.y=temp.y
+			original.graphicsItem.setPos(original.x,original.y)
+			original.graphicsItem.updateforDrag()	
+			self.Logger.logData("Position Updated of ::"+original.alias)
+		
+		original.workingdir=temp.workingdir
+		original.compup=temp.compup
+		original.compdown=temp.compdown
+		original.configFile=temp.configFile
+		original.nodeColor=temp.nodeColor
+
+		if original.groupName!=temp.groupName:
+			try:
+				group=rcmanagerConfig.searchForGroupName(self.networkSettings,original.groupName)
+				group.addComponent(original)
 			except Exception,e:
-				self.Logger.logData("File updation from Code Failed "+str(e),"R")
-	#def theyAreTooClose(self):
-	#	pass
-	#def areTheyTooClose(self):
-	#	count=0
-	#	for x in self.componentList()
+				self.Logger.logData(str(e),"R")
+
+		for x in temp.dependences: ##For adding new connection if needed
+			if original.dependences.__contains__(x)==False:
+				original.dependences.append(x)
+				comp=searchforComponent(x)
+				self.setAconnection(comp,original)
+		for x in original.dependences:##For deleting unwanted connection if needed
+				name=x
+			if temp.dependences.__contains__(x)==False:
+				original.dependences.remove(x)
+				for y in original.asEnd:
+					if y.fromComponent.alias==name:
+						original.asEnd.remove(y)
+
+		if original.Ip!=temp.Ip:
+			original.Ip=temp.Ip
+			self.ipCount()
+			self.setAllIpColor()
+
+		if original.endpoint!=temp.endpoint:
+			original.CheckItem.initializeComponent()
+
+
+	def searchInsideList(self,ist,name):
+		for x in List:
+
 	def printTemplSettings(self):
 		pass
 	def addComponentTempl(self):
@@ -502,8 +562,8 @@ class MainClass(QtGui.QMainWindow):
 			string=rcmanagerConfig.getStringFromFile(self.filePath)
 			self.CodeEditor.setText(string)
 		except:
-			self.Logger.logData("Couldn't Read from File")
-		self.refreshTreeFromCode()
+			self.Logger.logData("Couldn't Read from File")	
+		self.refreshTreeFromCode(firstTime=True)
 		self.HadChanged=False
 	def setAllGraphicsData(self):
 		for x in self.componentList:

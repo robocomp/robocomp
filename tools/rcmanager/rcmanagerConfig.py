@@ -939,17 +939,18 @@ class ComponentChecker(threading.Thread):#This will check the status of componen
 	def haveStarted(self):
 		return self.started
 	def initializeComponent(self):#Called to set the component and to initialize the Ice proxy
-		try:
-			ic=Ice.initialize(sys.argv)
-			self.aPrx = ic.stringToProxy(self.component.endpoint)
-			if self.aPrx!= None:
-				self.aPrx.ice_timeout(1)
-			self.started=True
-		except :
-			print "Error creating proxy to " + self.component.endpoint
-			if len(self.component.endpoint) == 0:
-				print 'please, provide an endpoint'
-
+		self.mutex.lock()
+			try:
+				ic=Ice.initialize(sys.argv)
+				self.aPrx = ic.stringToProxy(self.component.endpoint)
+				if self.aPrx!= None:
+					self.aPrx.ice_timeout(1)
+				self.started=True
+			except :
+				print "Error creating proxy to " + self.component.endpoint
+				if len(self.component.endpoint) == 0:
+					print 'please, provide an endpoint'
+		self.mutex.unlock()
 	def run(self):
 		#global global_ic
 		while self.exit == False:
