@@ -1,3 +1,4 @@
+
 module RoboCompRCMaster
 {
     /** \interface RCMaster
@@ -9,14 +10,14 @@ module RoboCompRCMaster
     struct hostInfo {
         string publicIP;
         string privateIP;
-        string hostName="localhost";
+        string hostName;
     };
 
     //stores interface info
     struct interfaceData{
         string name;
-        int port=0;
-        string protocol="tcp";
+        int port;
+        string protocol;
     };
     sequence <interfaceData> interfaceList;
     enum CompStatus { Active, Stopped };
@@ -25,7 +26,7 @@ module RoboCompRCMaster
     struct compData {
         string uid;
         string name;
-        CompStatus status = Active;
+        CompStatus status;
         hostInfo host;
         interfaceList interfaces;
     };

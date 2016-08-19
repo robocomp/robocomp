@@ -91,7 +91,7 @@ class SpecificWorker(GenericWorker):
             if comp.status != CompStatus.Active:
                 continue
             for interface in comp.interfaces:
-                proxy = interface.name + ':' + interface.protocol + " -h " + comp.host.privateIP + ' -p ' + str(
+                proxy = interface.name.lower() + ':' + interface.protocol + " -h " + comp.host.privateIP + ' -p ' + str(
                     interface.port)
 
                 basePrx = self.ic.stringToProxy(proxy)
@@ -173,7 +173,7 @@ class SpecificWorker(GenericWorker):
             raise InvalidComponent(comp, "")
         uid = comp.name+comp.host.privateIP
         for interface in comp.interfaces:
-            uid = uid+interface.name
+            uid = uid+interface.name.lower()
         return str(hash(uid))
 
     def savedb(self):
