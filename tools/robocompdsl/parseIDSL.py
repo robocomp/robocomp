@@ -47,11 +47,12 @@ class IDSLParsing:
 		cl        = Suppress(Word("}"))
 		opp       = Suppress(Word("("))
 		clp       = Suppress(Word(")"))
-		lt       = Suppress(Word("<"))
-		gt       = Suppress(Word(">"))
+		lt        = Suppress(Word("<"))
+		gt        = Suppress(Word(">"))
+		eq        = Suppress(Word("="))
 		identifier        = Word(alphas+"_",alphanums+"_")
 		typeIdentifier    = Word(alphas+"_",alphanums+"_:")
-		structIdentifer   = Group(typeIdentifier.setResultsName('type') + identifier.setResultsName('identifier') + semicolon)
+		structIdentifer   = Group(typeIdentifier.setResultsName('type') + identifier.setResultsName('identifier') + Optional(eq) + Optional(CharsNotIn(";").setResultsName('defaultValue')) + semicolon)
 		structIdentifers  = Group(structIdentifer + OneOrMore(structIdentifer))
 
 		## Imports

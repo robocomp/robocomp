@@ -45,7 +45,11 @@ for content in idsl['module']['contents']:
 	if content['type'] == 'struct':
 		cog.outl("<TABHERE>struct "+content['name']+"\n<TABHERE>{")
 		for var in content['structIdentifiers']:
-			cog.outl("<TABHERE><TABHERE> "+var['type']+" "+var['identifier']+";")
+			cog.out("<TABHERE><TABHERE> "+var['type']+" "+var['identifier'])
+			try:
+				cog.outl(" =" + var['defaultValue'] + ";")
+			except:
+				cog.outl(";")
 		cog.outl("<TABHERE>};")
 	if content['type'] == 'interface':
 		cog.outl("<TABHERE>interface "+content['name']+"\n<TABHERE>{")
