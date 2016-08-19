@@ -60,6 +60,8 @@ class SpecificWorker(GenericWorker):
         interfaceName - name of the interface failed
         updateAll - update all proxies hosted by this failed component
         '''
+        if interfaceName not in self.proxyData:
+            raise Exception("interface not found: "+str(interfaceName))
         self.timer.stop()
         ic = Ice.initialize()
         
@@ -92,6 +94,10 @@ class SpecificWorker(GenericWorker):
                 print 'Cannot connect to the remote object '+compName
                 traceback.print_exc()
                 time.sleep(3)
+            else KeyError:
+                raise Exception("RcMaster Proxy not found")
+                self.timer.start(self.Period)
+                break
             else:
                 self.timer.start(self.Period)
                 break

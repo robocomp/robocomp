@@ -1,0 +1,20 @@
+CommonBehavior.Endpoints=tcp -p 1
+
+
+# Endpoints for implemented interfaces
+ASR.Endpoints=tcp -p 0
+
+
+# Proxies for required interfaces
+test1Proxy = test:tcp -h localhost -p 0
+test2Proxy = test:tcp -h localhost -p 0
+
+
+
+Ice.Warn.Connections=0
+Ice.Trace.Network=0
+Ice.Trace.Protocol=0
+Ice.ACM.Client=10
+Ice.ACM.Server=10
+
+
