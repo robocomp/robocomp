@@ -387,7 +387,7 @@ class GroupSelector(QtGui.QDialog):
 
 
 ##
-#This is inherited tool Button ..Main reason was to show its purpose while hovering the button
+#This is inherited tool Button ..Main reason was to show its purpose while hovering the button(Not using anymore)
 ##
 
 class toolButton(QtGui.QToolButton):
@@ -922,11 +922,10 @@ class NodeConnection(QtGui.QGraphicsItem):
 ##
 				
 class ComponentChecker(threading.Thread):#This will check the status of components
-	def __init__(self,component,logger=None):	
-		self.logger=logger
-
+	def __init__(self,component):	
 		threading.Thread.__init__(self)
 		self.component=component
+		self.transmitter=QtCore.QObject()
 		self.mutex = QtCore.QMutex(QtCore.QMutex.Recursive)
 		self.daemon = True
 		self.reset()
@@ -951,6 +950,11 @@ class ComponentChecker(threading.Thread):#This will check the status of componen
 				print 'please, provide an endpoint'
 
 	def run(self):
+
+		if self.aPrx==None:
+
+			self.initializeComponent()
+
 		#global global_ic
 		while self.exit == False:
 			if self.started:
@@ -987,14 +991,17 @@ class ComponentChecker(threading.Thread):#This will check the status of componen
 	def runrun(self):
 		if not self.isAlive(): self.start()#Note this is different isalive
 	def changed(self):
-		if self.alive==False:
-			if self.logger!=None:
-				self.logger.logData("Component :: "+self.component.alias+" Is now Up")
-		if self.alive==True:
-			if self.logger!=None:
-				self.logger.logData("Component:: "+self.component.alias+ " Is Down","R")
+		
 		self.component.status=not self.alive
 		self.component.graphicsItem.update()
+
+		
+		if self.alive==False:
+			print "Component "+self.component.alias+ " UP"  ##Couldn't log into the main page..Because the logger QOWidge cannot be used in another thread..
+		if self.alive==True:
+			print "Component "+self.component.alias+ " Down"
+		
+		
 
 ##
 #This widget is used to display the details of a component when hovering over the nodes
@@ -1007,11 +1014,13 @@ class ShowItemDetails(QtGui.QWidget):##This contains the GUI and internal proces
 		self.component=None
 		self.setParent(parent)
 		self.detailString=" "
-		self.label=QtGui.QTextEdit(self)
-		self.label.setGeometry(0,0,150,150)
+		self.label=QtGui.QLabel(self)
+		self.label.setGeometry(0,0,200,150)
 		self.isShowing=False
+		self.setAutoFillBackground(True)
 		self.hide()
 	def showdetails(self,x,y,item=None):
+		self.item=item
 		string=""
 		string=string+"Name ::"+item.alias+"\n"
 		string=string+"Group Name:: "+item.groupName+"\n"
@@ -1020,8 +1029,13 @@ class ShowItemDetails(QtGui.QWidget):##This contains the GUI and internal proces
 		self.setGeometry(x,y,150,150)
 	  	self.isShowing=True
 	  	self.show()
-	def mousePressEvent(self,event):
-		self.hide()
+	#def contextMenuEvent(self,event):
+	#	print "hello"
+	#	GloPos=event.globalPos()
+	#	self.hide()
+	#	self.parent.graphTree.CompoPopUpMenu.setComponent(self.item.graphicsItem)
+	#	self.CompoPopUpMenu.popup(GloPos)
+		
 
 
 #	
@@ -1482,7 +1496,7 @@ def parseNode(node, components,generalSettings,logger):#To get the properties of
 	if node.type == "element" and node.name == "node":
 		child = node.children
 		comp = CompInfo()
-		comp.CheckItem.setLogger(logger)
+		#comp.CheckItem.setLogger(logger)
 		comp.alias = parseSingleValue(node, 'alias', False)
 		#print "Started reading component:: "+comp.alias
 		comp.DirectoryItem.setText(comp.alias)

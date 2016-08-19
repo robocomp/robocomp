@@ -241,6 +241,7 @@ class MainClass(QtGui.QMainWindow):
 			try :
 				#if self.areTheyTooClose()==True:
 					#self.theyAreTooClose()
+				self.connectAllCheckerSignals()
 				self.currentComponent=self.componentList[0]
 				self.ipCount()
 				self.setAllIpColor()
@@ -262,6 +263,16 @@ class MainClass(QtGui.QMainWindow):
 	#def areTheyTooClose(self):
 	#	count=0
 	#	for x in self.componentList()
+	def connectAllCheckerSignals(self):
+		for x in self.componentList:
+			self.connectCheckerSignal(x)
+	def connectCheckerSignal(self,item):
+		self.connect(item.CheckItem.transmitter,QtCore.SIGNAL("Up()"),self.printCurrentComponentUp)
+		self.connect(item.CheckItem.transmitter,QtCore.SIGNAL("Down()"),self.printCurrentComponentDown)
+	def printCurrentComponentUp(self):
+		self.Logger.logData(self.currentComponent.alias+" Is UP")
+	def printCurrentComponentDown(self):
+		self.Logger.logData(self.currentComponent.alias+" Is Down")	
 	def printTemplSettings(self):
 		pass
 	def addComponentTempl(self):
@@ -354,12 +365,14 @@ class MainClass(QtGui.QMainWindow):
 		for x in self.componentList.__iter__():
 			try:
 				rcmanagerConfig.upComponent(x,self.Logger)
+				time.sleep(.5)##System may crash otherwise..
 			except Exception, e:
 				pass
 	def downAllComponents(self):#To set all components in down position
 		for x in self.componentList.__iter__():
 			try:
 				rcmanagerConfig.downComponent(x,self.Logger)
+				time.sleep(.5)
 			except Exception,e :
 				pass
 	def simulatorSettings(self):##To edit the simulatorSettings:Unfinished
