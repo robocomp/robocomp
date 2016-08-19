@@ -649,7 +649,8 @@ class MainClass(QtGui.QMainWindow):
 			x.fromComponent.asBeg.remove(x)
 			self.NetworkScene.removeItem(x)
 
-		component.group.removeComponent(component)
+		if component.group!=None:	
+			component.group.removeComponent(component)
 		component.CheckItem.stop()
 		self.NetworkScene.removeItem(component.graphicsItem)
 		self.NetworkScene.update()

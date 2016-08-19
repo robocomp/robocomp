@@ -1676,3 +1676,10 @@ def downComponent(component,Logger):#To down a particular component
 			pass
 		finally:
 			pass
+
+
+def getXmlNode(editor,name):
+	flag=False
+	while flag==False:
+		editor.findFirst(name,False,True,True,True)
+		CursPoint=editor.getCursorPosition()
