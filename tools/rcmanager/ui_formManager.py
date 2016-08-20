@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'formManager.ui'
+# Form implementation generated from reading ui file '/home/h20/robocomp/tools/rcmanager/formManager.ui'
 #
-# Created: Thu Aug 18 02:39:24 2016
+# Created: Sat Aug 20 19:41:09 2016
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -269,7 +269,7 @@ class Ui_MainWindow(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollArea.setObjectName(_fromUtf8("scrollArea"))
         self.scrollAreaWidgetContents = QtGui.QWidget()
-        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 236, 173))
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 236, 260))
         self.scrollAreaWidgetContents.setObjectName(_fromUtf8("scrollAreaWidgetContents"))
         self.verticalLayout = QtGui.QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
@@ -318,7 +318,6 @@ class Ui_MainWindow(object):
         self.actionSet_Log_File.setObjectName(_fromUtf8("actionSet_Log_File"))
         self.menuFile.addAction(self.actionOpen)
         self.menuFile.addAction(self.actionSave)
-        self.menuFile.addAction(self.actionUndock)
         self.menuFile.addAction(self.actionExit)
         self.menuSimulator.addAction(self.actionSetting_2)
         self.menuSimulator.addAction(self.actionON)
@@ -340,7 +339,6 @@ class Ui_MainWindow(object):
         self.toolBar.addAction(self.actionSave)
         self.toolBar.addAction(self.actionOpen)
         self.toolBar.addSeparator()
-        self.toolBar.addAction(self.actionSetting)
         self.toolBar.addSeparator()
         self.toolBar.addAction(self.actionOFF)
         self.toolBar.addAction(self.actionON)
@@ -410,14 +408,4 @@ class Ui_MainWindow(object):
         self.actionEditor_2.setText(_translate("MainWindow", "Editor", None))
         self.actionControlPanel.setText(_translate("MainWindow", "ControlPanel", None))
         self.actionSet_Log_File.setText(_translate("MainWindow", "Set Log File", None))
-
-
-if __name__ == "__main__":
-    import sys
-    app = QtGui.QApplication(sys.argv)
-    MainWindow = QtGui.QMainWindow()
-    ui = Ui_MainWindow()
-    ui.setupUi(MainWindow)
-    MainWindow.show()
-    sys.exit(app.exec_())
 
