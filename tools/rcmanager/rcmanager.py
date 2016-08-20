@@ -58,7 +58,7 @@ class MainClass(QtGui.QMainWindow):
 
 		self.UI=ui_formManager.Ui_MainWindow()
 		self.UI.setupUi(self)
-		
+		self.UI.tabWidget.removeTab(0)
 		self.Logger=rcmanagerConfig.Logger(self.UI.textBrowser)
 
 		self.SaveWarning=rcmanagerConfig.SaveWarningDialog(self)
@@ -365,7 +365,6 @@ class MainClass(QtGui.QMainWindow):
 		for x in self.componentList.__iter__():
 			try:
 				rcmanagerConfig.upComponent(x,self.Logger)
-				time.sleep(.5)##System may crash otherwise..
 			except Exception, e:
 				pass
 	def downAllComponents(self):#To set all components in down position
