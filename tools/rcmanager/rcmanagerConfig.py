@@ -1067,7 +1067,7 @@ class ShowItemDetails(QtGui.QWidget):##This contains the GUI and internal proces
 #
 
 class CompInfo(QtCore.QObject):##This contain the general Information about the Components which is read from the files and created
-	def __init__(self,view=None,mainWindow=None):
+	def __init__(self,view=None,mainWindow=None,name="Component"):
 
 		QtCore.QObject.__init__(self)
 		self.vel_x=0
@@ -1082,7 +1082,7 @@ class CompInfo(QtCore.QObject):##This contain the general Information about the 
 		self.workingdir = ''
 		self.compup = ''
 		self.compdown = ''
-		self.alias = 'Component'
+		self.alias =name
 		self.dependences = []
 		self.configFile = ''
 		self.x = 0##This is not reliable >>Have to fix the bug

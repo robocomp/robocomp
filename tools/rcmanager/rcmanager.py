@@ -632,8 +632,8 @@ class MainClass(QtGui.QMainWindow):
 
 	def addNewComponent(self,pos=QtCore.QPointF()):#The final function which takes care of adding new component default zero
 	
-		component=rcmanagerConfig.CompInfo(view=self.graphTree,mainWindow=self)
-		component.CheckItem.setLogger(self.Logger)
+		component=rcmanagerConfig.CompInfo(view=self.graphTree,mainWindow=self,name="Component"+str(self.componentList.__len__()))
+		#component.CheckItem.setLogger(self.Logger)
 		self.componentList.append(component)
 		component.x=pos.x()
 		component.y=pos.y()
@@ -642,7 +642,8 @@ class MainClass(QtGui.QMainWindow):
 		self.refreshCodeFromTree()
 		component.DirectoryItem.setParent(self.UI.scrollAreaWidgetContents)
 		self.UI.verticalLayout.insertWidget(self.UI.verticalLayout.count()-1,component.DirectoryItem)
-
+		self.UI.tabWidget.setCurrentIndex(1)
+		self.CodeEditor.findFirst("Component"+str(self.componentList.__len__()),False,True,True,True)
 	def deleteComponent(self,component):##This will delete the component Not completed 
 		
 		#	print component.alias
