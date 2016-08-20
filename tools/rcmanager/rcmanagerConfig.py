@@ -1098,7 +1098,7 @@ class CompInfo(QtCore.QObject):##This contain the general Information about the 
 		
 		self.CheckItem=ComponentChecker(self)##Checking the status of component
 		self.graphicsItem=VisualNode(parent=self)
-		self.DirectoryItem=DirectoryItem(parent=self)
+		self.DirectoryItem=DirectoryItem(parent=self,name=self.alias)
 		#self.Controller=ComponentController(parent=self)
 	def setGroup(self,group):
 		self.group=group
@@ -1179,13 +1179,13 @@ class ComponentScene(QtGui.QGraphicsScene):#The scene onwhich we are drawing the
 			
 class DirectoryItem(QtGui.QPushButton):#This will be listed on the right most side of the software
 
-	def __init__(self,parent=None,args=None):
+	def __init__(self,parent=None,args=None,name="Component"):
 		QtGui.QPushButton.__init__(self,args)
 		self.parent=parent
 		self.args=args
 		self.connect(self,QtCore.SIGNAL("clicked()"),self.clickEvent)
 		QtGui.QPushButton.setIcon(self,QtGui.QIcon(QtGui.QPixmap(getDefaultIconPath())))
-		self.setText("Component")
+		self.setText(name)
 	def setIcon(self,arg):
 		self.Icon=QtGui.QIcon()
 		self.Icon.addPixmap(arg)
@@ -1368,7 +1368,7 @@ class ComponentMenu(QtGui.QMenu):
 		self.ActionRemoveFromGroup=QtGui.QAction("Remove Group",parent)
 		self.ActionUpGroup=QtGui.QAction("UP All",parent)
 		self.ActionDownGroup=QtGui.QAction("DOWN All",parent)
-		self.ActionFreq=QtGui.QAction("Freq",parent)
+		#self.ActionFreq=QtGui.QAction("Freq",parent)
 
 		self.GroupMenu=QtGui.QMenu("Group",parent)
 		self.GroupMenu.addAction(self.ActionAddToGroup)
@@ -1376,7 +1376,7 @@ class ComponentMenu(QtGui.QMenu):
 		self.GroupMenu.addAction(self.ActionUpGroup)
 		self.GroupMenu.addAction(self.ActionDownGroup)
 
-		self.addAction(self.ActionFreq)
+		#self.addAction(self.ActionFreq)
 		self.addAction(self.ActionDelete)
 		self.addAction(self.ActionUp)
 		self.addAction(self.ActionDown)

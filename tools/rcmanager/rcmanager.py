@@ -149,13 +149,16 @@ class MainClass(QtGui.QMainWindow):
 		#self.connect(self.graphTree.CompoPopUpMenu.ActionFreq,QtCore.SIGNAL("triggered(bool)"),self.getFreq)
 
 		self.connect(self.UI.toolButton_2,QtCore.SIGNAL("clicked()"),self.searchEnteredAlias)
+		self.connect(self.UI.toolButton_7,QtCore.SIGNAL("clicked()"),self.simulatorOn)
+		self.connect(self.UI.toolButton_8,QtCore.SIGNAL("clicked()"),self.simulatorOff)
+
 		self.connect(self.SaveWarning,QtCore.SIGNAL("save()"),self.saveXmlFile)
 		self.connect(self.UI.toolButton_3,QtCore.SIGNAL("clicked()"),self.refreshTreeFromCode)
 		self.connect(self.UI.toolButton_4,QtCore.SIGNAL("clicked()"),self.addNetworkTempl)
 		self.connect(self.UI.toolButton_5,QtCore.SIGNAL("clicked()"),self.addComponentTempl)
 		self.connect(self.UI.toolButton_6,QtCore.SIGNAL("clicked()"),self.refreshCodeFromTree)
 		self.connect(self.UI.toolButton_9,QtCore.SIGNAL("clicked()"),self.editorFontSettings)
-		self.connect(self.UI.toolButton_10,QtCore.SIGNAL("clicked()"),self.getNetworkSetting)
+		#self.connect(self.UI.toolButton_10,QtCore.SIGNAL("clicked()"),self.getNetworkSetting)(Once finished Uncomment this)
 		self.connect(self.UI.toolButton,QtCore.SIGNAL("clicked()"),self.addNewComponent)
 		self.Logger.logData("Tool Started")
 	def getFreq(self):
@@ -268,6 +271,7 @@ class MainClass(QtGui.QMainWindow):
 					self.Logger.logData("File updation from Code Failed "+str(e),"R")
 
 			else:
+				self.networkSettings=Settings
 				for x in List:
 					try:
 						comp=self.searchforComponent(x.alias)
@@ -643,7 +647,7 @@ class MainClass(QtGui.QMainWindow):
 		component.DirectoryItem.setParent(self.UI.scrollAreaWidgetContents)
 		self.UI.verticalLayout.insertWidget(self.UI.verticalLayout.count()-1,component.DirectoryItem)
 		self.UI.tabWidget.setCurrentIndex(1)
-		self.CodeEditor.findFirst("Component"+str(self.componentList.__len__()),False,True,True,True)
+		self.CodeEditor.findFirst("Component"+str(self.componentList.__len__()-1),False,True,True,True)
 	def deleteComponent(self,component):##This will delete the component Not completed 
 		
 		#	print component.alias

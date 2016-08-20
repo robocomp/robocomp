@@ -36,7 +36,7 @@
        </size>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
@@ -221,7 +221,21 @@
           <property name="horizontalSpacing">
            <number>0</number>
           </property>
-          <item row="5" column="0">
+          <item row="1" column="0">
+           <widget class="QToolButton" name="toolButton_6">
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Update The code From Graph&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="text">
+             <string>...</string>
+            </property>
+            <property name="icon">
+             <iconset>
+              <normaloff>../../../../../opt/robocomp/share/rcmanager/refresh.png</normaloff>../../../../../opt/robocomp/share/rcmanager/refresh.png</iconset>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="0">
            <spacer name="verticalSpacer_2">
             <property name="orientation">
              <enum>Qt::Vertical</enum>
@@ -269,34 +283,6 @@
             <property name="icon">
              <iconset>
               <normaloff>../../../../../opt/robocomp/share/rcmanager/simulatorOFF.png</normaloff>../../../../../opt/robocomp/share/rcmanager/simulatorOFF.png</iconset>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="0">
-           <widget class="QToolButton" name="toolButton_10">
-            <property name="toolTip">
-             <string>Graph Settings</string>
-            </property>
-            <property name="text">
-             <string>...</string>
-            </property>
-            <property name="icon">
-             <iconset>
-              <normaloff>../../../../../opt/robocomp/share/rcmanager/1465394550_Settings.png</normaloff>../../../../../opt/robocomp/share/rcmanager/1465394550_Settings.png</iconset>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="0">
-           <widget class="QToolButton" name="toolButton_6">
-            <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Update The code From Graph&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-            </property>
-            <property name="text">
-             <string>...</string>
-            </property>
-            <property name="icon">
-             <iconset>
-              <normaloff>../../../../../opt/robocomp/share/rcmanager/refresh.png</normaloff>../../../../../opt/robocomp/share/rcmanager/refresh.png</iconset>
             </property>
            </widget>
           </item>
@@ -422,7 +408,6 @@
     </property>
     <addaction name="actionOpen"/>
     <addaction name="actionSave"/>
-    <addaction name="actionUndock"/>
     <addaction name="actionExit"/>
    </widget>
    <widget class="QMenu" name="menuSimulations">
@@ -504,7 +489,6 @@
    <addaction name="actionSave"/>
    <addaction name="actionOpen"/>
    <addaction name="separator"/>
-   <addaction name="actionSetting"/>
    <addaction name="separator"/>
    <addaction name="actionOFF"/>
    <addaction name="actionON"/>
@@ -619,7 +603,7 @@
           <x>0</x>
           <y>0</y>
           <width>236</width>
-          <height>173</height>
+          <height>260</height>
          </rect>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout">
