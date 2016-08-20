@@ -284,7 +284,7 @@ class MainClass(QtGui.QMainWindow):
 					for y in List:
 						if x.alias==y.alias:
 							self.copyAndUpdate(x,y)
-
+				self.Logger.logData("Tree Updated succesfully From File")
 	def copyAndUpdate(self,original,temp):
 		if original.x!=temp.x or original.y!=temp.y:
 			original.x=temp.x
