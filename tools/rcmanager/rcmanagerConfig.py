@@ -32,6 +32,24 @@ filePath = 'rcmanager.xml'
 from time import localtime, strftime##To log data
 
 
+ROBOCOMP = ''
+try:
+	ROBOCOMP = os.environ['ROBOCOMP']
+except:
+	print '$ROBOCOMP environment variable not set, using the default value /opt/robocomp'
+	ROBOCOMP = '/opt/robocomp'
+if len(ROBOCOMP)<1:
+	print 'ROBOCOMP environment variable not set! Exiting.'
+	sys.exit()
+
+
+
+preStr = "-I"+ROBOCOMP+"/interfaces/ --all "+ROBOCOMP+"/interfaces/"
+Ice.loadSlice(preStr+"CommonBehavior.ice")
+import RoboCompCommonBehavior
+Ice.loadSlice(preStr+"DifferentialRobot.ice")
+import RoboCompDifferentialRobot
+
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -933,6 +951,11 @@ class ComponentChecker(threading.Thread):#This will check the status of componen
 		self.alive = False
 		self.aPrx = None
 		self.started=False
+	def getFreq(self):
+		self.mutex.lock()
+		self.object=RoboCompCommonBehavior.CommonBehaviorPrx.checkedCast(self.aPrx)
+		print self.object.getFreq()
+		self.mutex.unlock()
 	def setLogger(self,logger):
 		self.logger=logger
 	def haveStarted(self):
@@ -1180,7 +1203,7 @@ class DirectoryItem(QtGui.QPushButton):#This will be listed on the right most si
 		if index==0:
 			self.parent.CommonProxy.setVisibility(True)
 			#print "Set visiblitiy true"
-		if index==2:
+		if index==1:
 			self.parent.mainWindow.CodeEditor.findFirst(self.parent.alias,False,True,True,True)
 
 
@@ -1345,13 +1368,15 @@ class ComponentMenu(QtGui.QMenu):
 		self.ActionRemoveFromGroup=QtGui.QAction("Remove Group",parent)
 		self.ActionUpGroup=QtGui.QAction("UP All",parent)
 		self.ActionDownGroup=QtGui.QAction("DOWN All",parent)
-		
+		self.ActionFreq=QtGui.QAction("Freq",parent)
+
 		self.GroupMenu=QtGui.QMenu("Group",parent)
 		self.GroupMenu.addAction(self.ActionAddToGroup)
 		self.GroupMenu.addAction(self.ActionRemoveFromGroup)
 		self.GroupMenu.addAction(self.ActionUpGroup)
 		self.GroupMenu.addAction(self.ActionDownGroup)
 
+		self.addAction(self.ActionFreq)
 		self.addAction(self.ActionDelete)
 		self.addAction(self.ActionUp)
 		self.addAction(self.ActionDown)

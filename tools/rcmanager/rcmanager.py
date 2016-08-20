@@ -146,7 +146,7 @@ class MainClass(QtGui.QMainWindow):
 		self.connect(self.graphTree.CompoPopUpMenu.ActionRemoveFromGroup,QtCore.SIGNAL("triggered(bool)"),self.componentRemoveFromGroup)
 		self.connect(self.graphTree.CompoPopUpMenu.ActionUpGroup,QtCore.SIGNAL("triggered(bool)"),self.upGroup)
 		self.connect(self.graphTree.CompoPopUpMenu.ActionDownGroup,QtCore.SIGNAL("triggered(bool)"),self.downGroup)
-		
+		#self.connect(self.graphTree.CompoPopUpMenu.ActionFreq,QtCore.SIGNAL("triggered(bool)"),self.getFreq)
 
 		self.connect(self.UI.toolButton_2,QtCore.SIGNAL("clicked()"),self.searchEnteredAlias)
 		self.connect(self.SaveWarning,QtCore.SIGNAL("save()"),self.saveXmlFile)
@@ -158,8 +158,11 @@ class MainClass(QtGui.QMainWindow):
 		self.connect(self.UI.toolButton_10,QtCore.SIGNAL("clicked()"),self.getNetworkSetting)
 		self.connect(self.UI.toolButton,QtCore.SIGNAL("clicked()"),self.addNewComponent)
 		self.Logger.logData("Tool Started")
+	def getFreq(self):
+		comp=self.graphTree.CompoPopUpMenu.currentComponent.parent 
+		comp.CheckItem.getFreq()
 	def EditSelectedComponent(self):	
-		self.UI.tabWidget.setCurrentIndex(2)
+		self.UI.tabWidget.setCurrentIndex(1)
 		self.CodeEditor.findFirst(self.graphTree.CompoPopUpMenu.currentComponent.parent.alias,False,True,True,True)
 
 	def setLogFile(self):
