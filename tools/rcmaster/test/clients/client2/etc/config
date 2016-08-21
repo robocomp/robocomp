@@ -2,11 +2,13 @@ CommonBehavior.Endpoints=tcp -p 1
 
 
 # Endpoints for implemented interfaces
-test.Endpoints=tcp -p 0
+ASR.Endpoints=tcp -p 0
 
 
 # Proxies for required interfaces
+testProxy = test:tcp -h localhost -p 0
 rcmasterProxy = rcmaster:tcp -h localhost -p 0
+testProxy = test:tcp -h localhost -p 0
 
 
 

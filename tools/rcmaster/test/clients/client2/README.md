@@ -1,14 +1,14 @@
 ```
 ```
 #
-``` client2
+``` client4
 ```
 Intro to component here
 
 
 ## Configuration parameters
 As any other component,
-``` *client2* ```
+``` *client4* ```
 needs a configuration file to start. In
 
     etc/config
@@ -23,7 +23,7 @@ To avoid changing the *config* file in the repository, we can copy it to the com
 
     cd
 
-``` <client2 's path> ```
+``` <client4 's path> ```
 
     cp etc/config config
     
@@ -31,6 +31,6 @@ After editing the new config file we can run the component:
 
     bin/
 
-```client2 ```
+```client4 ```
 
     --Ice.Config=config

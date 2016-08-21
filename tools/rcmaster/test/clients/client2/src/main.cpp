@@ -18,11 +18,11 @@
  */
 
 
-/** \mainpage RoboComp::client2
+/** \mainpage RoboComp::client4
  *
  * \section intro_sec Introduction
  *
- * The client2 component...
+ * The client4 component...
  *
  * \section interface_sec Interface
  *
@@ -34,7 +34,7 @@
  * ...
  *
  * \subsection install2_ssec Compile and install
- * cd client2
+ * cd client4
  * <br>
  * cmake . && make
  * <br>
@@ -52,13 +52,15 @@
  *
  * \subsection execution_ssec Execution
  *
- * Just: "${PATH_TO_BINARY}/client2 --Ice.Config=${PATH_TO_CONFIG_FILE}"
+ * Just: "${PATH_TO_BINARY}/client4 --Ice.Config=${PATH_TO_CONFIG_FILE}"
  *
  * \subsection running_ssec Once running
  *
  * ...
  *
  */
+#include <signal.h>
+
 // QT includes
 #include <QtCore>
 #include <QtGui>
@@ -78,10 +80,11 @@
 #include "specificmonitor.h"
 #include "commonbehaviorI.h"
 
-#include <testI.h>
+#include <asrI.h>
 
 #include <RCMaster.h>
 #include <Test.h>
+#include <ASR.h>
 
 
 // User includes here
@@ -92,13 +95,14 @@ using namespace RoboCompCommonBehavior;
 
 using namespace RoboCompRCMaster;
 using namespace RoboCompTest;
+using namespace RoboCompASR;
 
 
 
-class client2 : public RoboComp::Application
+class client4 : public RoboComp::Application
 {
 public:
-	client2 (QString prfx) { prefix = prfx.toStdString(); }
+	client4 (QString prfx) { prefix = prfx.toStdString(); }
 private:
 	void initialize();
 	std::string prefix;
@@ -108,22 +112,69 @@ public:
 	virtual int run(int, char*[]);
 };
 
-void ::client2::initialize()
+void ::client4::initialize()
 {
 	// Config file properties read example
 	// configGetString( PROPERTY_NAME_1, property1_holder, PROPERTY_1_DEFAULT_VALUE );
 	// configGetInt( PROPERTY_NAME_2, property1_holder, PROPERTY_2_DEFAULT_VALUE );
 }
 
-int ::client2::run(int argc, char* argv[])
+int ::client4::run(int argc, char* argv[])
 {
 	QCoreApplication a(argc, argv);  // NON-GUI application
+
+
+	sigset_t sigs;
+	sigemptyset(&sigs);
+	sigaddset(&sigs, SIGHUP);
+	sigaddset(&sigs, SIGINT);
+	sigaddset(&sigs, SIGTERM);
+	sigprocmask(SIG_UNBLOCK, &sigs, 0);
+
+
+
 	int status=EXIT_SUCCESS;
 
+	testPrx test1_proxy;
+	testPrx test2_proxy;
 	rcmasterPrx rcmaster_proxy;
 
 	string proxy, tmp;
 	initialize();
+
+
+	try
+	{
+		if (not GenericMonitor::configGetString(communicator(), prefix, "test1Proxy", proxy, ""))
+		{
+			cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy testProxy\n";
+		}
+		test1_proxy = testPrx::uncheckedCast( communicator()->stringToProxy( proxy ) );
+	}
+	catch(const Ice::Exception& ex)
+	{
+		cout << "[" << PROGRAM_NAME << "]: Exception: " << ex;
+		return EXIT_FAILURE;
+	}
+	rInfo("testProxy1 initialized Ok!");
+	mprx["testProxy1"] = (::IceProxy::Ice::Object*)(&test1_proxy);//Remote server proxy creation example
+
+
+	try
+	{
+		if (not GenericMonitor::configGetString(communicator(), prefix, "test2Proxy", proxy, ""))
+		{
+			cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy testProxy\n";
+		}
+		test2_proxy = testPrx::uncheckedCast( communicator()->stringToProxy( proxy ) );
+	}
+	catch(const Ice::Exception& ex)
+	{
+		cout << "[" << PROGRAM_NAME << "]: Exception: " << ex;
+		return EXIT_FAILURE;
+	}
+	rInfo("testProxy2 initialized Ok!");
+	mprx["testProxy2"] = (::IceProxy::Ice::Object*)(&test2_proxy);//Remote server proxy creation example
 
 
 	try
@@ -175,15 +226,15 @@ int ::client2::run(int argc, char* argv[])
 
 
 		// Server adapter creation and publication
-		if (not GenericMonitor::configGetString(communicator(), prefix, "test.Endpoints", tmp, ""))
+		if (not GenericMonitor::configGetString(communicator(), prefix, "ASR.Endpoints", tmp, ""))
 		{
-			cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy test";
+			cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy ASR";
 		}
-		Ice::ObjectAdapterPtr adaptertest = communicator()->createObjectAdapterWithEndpoints("test", tmp);
-		testI *test = new testI(worker);
-		adaptertest->add(test, communicator()->stringToIdentity("test"));
-		adaptertest->activate();
-		cout << "[" << PROGRAM_NAME << "]: test adapter created in port " << tmp << endl;
+		Ice::ObjectAdapterPtr adapterASR = communicator()->createObjectAdapterWithEndpoints("ASR", tmp);
+		ASRI *asr = new ASRI(worker);
+		adapterASR->add(asr, communicator()->stringToIdentity("asr"));
+		adapterASR->activate();
+		cout << "[" << PROGRAM_NAME << "]: ASR adapter created in port " << tmp << endl;
 
 
 
@@ -252,7 +303,7 @@ int main(int argc, char* argv[])
 			printf("Configuration prefix: <%s>\n", prefix.toStdString().c_str());
 		}
 	}
-	::client2 app(prefix);
+	::client4 app(prefix);
 
 	return app.main(argc, argv, configFile.c_str());
 }

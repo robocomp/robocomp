@@ -41,6 +41,7 @@ bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
 
 	
 	timer.start(Period);
+	
 
 	return true;
 }
@@ -60,9 +61,29 @@ void SpecificWorker::compute()
 }
 
 
-void SpecificWorker::printmsg(const string &message)
+void SpecificWorker::listenWav(const string &path)
 {
 
+}
+
+void SpecificWorker::listenVector(const audioVector &audio)
+{
+
+}
+
+void SpecificWorker::resetPhraseBuffer()
+{
+
+}
+
+string SpecificWorker::getLastPhrase()
+{
+ return string("");
+}
+
+bool SpecificWorker::phraseAvailable()
+{
+	return false;
 }
 
 

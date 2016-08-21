@@ -16,29 +16,33 @@
  *    You should have received a copy of the GNU General Public License
  *    along with RoboComp.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef TEST_H
-#define TEST_H
+#ifndef ASR_H
+#define ASR_H
 
 // QT includes
 #include <QtCore/QObject>
 
 // Ice includes
 #include <Ice/Ice.h>
-#include <Test.h>
+#include <ASR.h>
 
 #include <config.h>
 #include "genericworker.h"
 
-using namespace RoboCompTest;
+using namespace RoboCompASR;
 
-class testI : public QObject , public virtual RoboCompTest::test
+class ASRI : public QObject , public virtual RoboCompASR::ASR
 {
 Q_OBJECT
 public:
-	testI( GenericWorker *_worker, QObject *parent = 0 );
-	~testI();
+	ASRI( GenericWorker *_worker, QObject *parent = 0 );
+	~ASRI();
 	
-	void printmsg(const string  &message, const Ice::Current&);
+	void listenWav(const string  &path, const Ice::Current&);
+	void listenVector(const audioVector  &audio, const Ice::Current&);
+	void resetPhraseBuffer(const Ice::Current&);
+	string getLastPhrase(const Ice::Current&);
+	bool phraseAvailable(const Ice::Current&);
 
 	QMutex *mutex;
 private:

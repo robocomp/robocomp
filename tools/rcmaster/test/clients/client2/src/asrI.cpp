@@ -16,22 +16,42 @@
  *    You should have received a copy of the GNU General Public License
  *    along with RoboComp.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "testI.h"
+#include "asrI.h"
 
-testI::testI(GenericWorker *_worker, QObject *parent) : QObject(parent)
+ASRI::ASRI(GenericWorker *_worker, QObject *parent) : QObject(parent)
 {
 	worker = _worker;
 	mutex = worker->mutex;       // Shared worker mutex
 }
 
 
-testI::~testI()
+ASRI::~ASRI()
 {
 }
 
-void testI::printmsg(const string  &message, const Ice::Current&)
+void ASRI::listenWav(const string  &path, const Ice::Current&)
 {
-	worker->printmsg(message);
+	worker->listenWav(path);
+}
+
+void ASRI::listenVector(const audioVector  &audio, const Ice::Current&)
+{
+	worker->listenVector(audio);
+}
+
+void ASRI::resetPhraseBuffer(const Ice::Current&)
+{
+	worker->resetPhraseBuffer();
+}
+
+string ASRI::getLastPhrase(const Ice::Current&)
+{
+	return worker->getLastPhrase();
+}
+
+bool ASRI::phraseAvailable(const Ice::Current&)
+{
+	return worker->phraseAvailable();
 }
 
 

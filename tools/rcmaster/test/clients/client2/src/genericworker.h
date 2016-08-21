@@ -26,10 +26,10 @@
 
 
 #include <CommonBehavior.h>
-#include <Test.h>
+
 #include <RCMaster.h>
-
-
+#include <Test.h>
+#include <ASR.h>
 
 #define CHECK_PERIOD 5000
 #define BASIC_PERIOD 100
@@ -39,6 +39,7 @@ typedef map <string,::IceProxy::Ice::Object*> MapPrx;
 using namespace std;
 
 using namespace RoboCompTest;
+using namespace RoboCompASR;
 using namespace RoboCompRCMaster;
 
 
@@ -59,13 +60,21 @@ public:
 	
 
 	rcmasterPrx rcmaster_proxy;
+	testPrx test1_proxy;
+	testPrx test2_proxy;
 
-	virtual void printmsg(const string &message) = 0;
-
+	virtual void listenWav(const string &path) = 0;
+	virtual void listenVector(const audioVector &audio) = 0;
+	virtual void resetPhraseBuffer() = 0;
+	virtual string getLastPhrase() = 0;
+	virtual bool phraseAvailable() = 0;
 
 protected:
 	QTimer timer;
 	int Period;
+
+private:
+
 
 public slots:
 	virtual void compute() = 0;

@@ -24,10 +24,6 @@
 
 
 
-
-
-
-
 #ifndef SPECIFICWORKER_H
 #define SPECIFICWORKER_H
 
@@ -42,12 +38,17 @@ public:
 	~SpecificWorker();
 	bool setParams(RoboCompCommonBehavior::ParameterList params);
 
-	void printmsg(const string &message);
+	void listenWav(const string &path);
+	void listenVector(const audioVector &audio);
+	void resetPhraseBuffer();
+	string getLastPhrase();
+	bool phraseAvailable();
 
 public slots:
 	void compute(); 	
 
 private:
+	InnerModel *innerModel;
 	
 };
 

@@ -23,8 +23,9 @@
 GenericWorker::GenericWorker(MapPrx& mprx) :
 QObject()
 {
+	test1_proxy = (*(testPrx*)mprx["testProxy"]);
 	rcmaster_proxy = (*(rcmasterPrx*)mprx["rcmasterProxy"]);
-
+	test1_proxy = (*(testPrx*)mprx["testProxy"]);
 
 	mutex = new QMutex(QMutex::Recursive);
 

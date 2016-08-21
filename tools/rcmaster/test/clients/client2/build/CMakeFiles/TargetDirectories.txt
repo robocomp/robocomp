@@ -1,0 +1,2 @@
+/home/nithin/robocomp/tools/rcmaster/test/clients/client2/build/src/CMakeFiles/client4.dir
+/home/nithin/robocomp/tools/rcmaster/test/clients/client2/build/src/CMakeFiles/client4_automoc.dir
