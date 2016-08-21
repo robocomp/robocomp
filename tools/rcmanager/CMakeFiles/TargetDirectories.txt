@@ -1,0 +1,4 @@
+/home/h20/robocomp/tools/rcmanager/CMakeFiles/exec_rcmanager.dir
+/home/h20/robocomp/tools/rcmanager/CMakeFiles/rcmanager.dir
+/home/h20/robocomp/tools/rcmanager/CMakeFiles/ui_editorForm.dir
+/home/h20/robocomp/tools/rcmanager/CMakeFiles/ui_formManager.dir
