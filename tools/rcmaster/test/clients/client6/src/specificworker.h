@@ -34,9 +34,10 @@ class SpecificWorker : public GenericWorker
 {
 Q_OBJECT
 public:
-	SpecificWorker(MapPrx& mprx);	
+	SpecificWorker(MapPrx& mprx, Mapiface& miface);
 	~SpecificWorker();
 	bool setParams(RoboCompCommonBehavior::ParameterList params);
+	void waitforComp(::IceProxy::Ice::Object* proxy, string interfaceName);
 
 	void listenWav(const string &path);
 	void listenVector(const audioVector &audio);

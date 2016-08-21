@@ -24,21 +24,43 @@
 #include <stdint.h>
 #include <qlog/qlog.h>
 
+// ICE includes
+#include <Ice/Ice.h>
+#include <Ice/Application.h>
+
 
 #include <CommonBehavior.h>
 
+#include <RCMaster.h>
 #include <Test.h>
 #include <ASR.h>
 
 #define CHECK_PERIOD 5000
 #define BASIC_PERIOD 100
 
+struct ifaceData
+{
+	string alias;
+	string name;
+	string comp;
+	ifaceData()
+	{}
+	ifaceData(string  ialias, string iname, string icomp)
+	{
+		alias = ialias;
+		name = iname;
+		comp = icomp;
+	}
+};
+
 typedef map <string,::IceProxy::Ice::Object*> MapPrx;
+typedef map <string, ifaceData> Mapiface;
 
 using namespace std;
 
 using namespace RoboCompTest;
 using namespace RoboCompASR;
+using namespace RoboCompRCMaster;
 
 
 
@@ -48,17 +70,20 @@ public QObject
 {
 Q_OBJECT
 public:
-	GenericWorker(MapPrx& mprx);
+	GenericWorker(MapPrx& mprx, Mapiface& miface);
 	virtual ~GenericWorker();
 	virtual void killYourSelf();
 	virtual void setPeriod(int p);
 	
 	virtual bool setParams(RoboCompCommonBehavior::ParameterList params) = 0;
 	QMutex *mutex;
+	Mapiface& ifaces;
+
 	
 
 	testPrx test1_proxy;
 	testPrx test2_proxy;
+	rcmasterPrx rcmaster_proxy;
 
 	virtual void listenWav(const string &path) = 0;
 	virtual void listenVector(const audioVector &audio) = 0;
