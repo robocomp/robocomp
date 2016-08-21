@@ -24,6 +24,7 @@ component = CDSLParsing.fromFile(theCDSL)
 
 cog.outl('# General properties of Component')
 cog.outl('Ice.ProgramName='+component['name'])
+cog.out('\n\n')
 
 storm = False
 

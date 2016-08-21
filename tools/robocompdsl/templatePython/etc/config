@@ -21,6 +21,7 @@ component = CDSLParsing.fromFile(theCDSL)
 
 cog.outl('# General properties of Component')
 cog.outl('Ice.ProgramName='+component['name'])
+cog.out('\n\n')
 
 text = False
 for sub in component['subscribesTo']:
