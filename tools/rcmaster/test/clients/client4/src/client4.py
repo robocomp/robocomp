@@ -191,9 +191,9 @@ if __name__ == '__main__':
 
         # activate all interfaces
         for iface in idata:
-            adapter = ic.createObjectAdapterWithEndpoints(iface.name, iface.protocol+' -h localhost -p '+str(iface.port))
+            adapter = ic.createObjectAdapterWithEndpoints(iface.name.lower(), iface.protocol+' -h localhost -p '+str(iface.port))
             workerObj = globals()[str(iface.name)+'I'](worker)
-            adapter.add(workerObj, ic.stringToIdentity(iface.name))
+            adapter.add(workerObj, ic.stringToIdentity(iface.name.lower()))
             adapter.activate()
             print "activated interface :", iface
         print "Component Started"

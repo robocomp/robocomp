@@ -94,7 +94,7 @@ class SpecificWorker(GenericWorker):
                 print 'Cannot connect to the remote object '+compName
                 traceback.print_exc()
                 time.sleep(3)
-            else KeyError:
+            except KeyError:
                 raise Exception("RcMaster Proxy not found")
                 self.timer.start(self.Period)
                 break
