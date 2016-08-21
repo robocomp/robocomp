@@ -56,7 +56,7 @@ Z()
 /**
 * \brief Default constructor
 */
-SpecificWorker::SpecificWorker(MapPrx& mprx) : GenericWorker(mprx)
+SpecificWorker::SpecificWorker(MapPrx& mprx, Mapiface& miface) : GenericWorker(mprx, miface)
 {
 
 [[[cog
@@ -162,6 +162,99 @@ except:
 	return true;
 }
 
+void SpecificWorker::waitforComp(::IceProxy::Ice::Object* proxy, string interfaceName)
+{
+
+	timer.stop();
+	sleep(3);
+	bool flag = false;
+	for(auto const &iface : ifaces) 
+	{
+		if( iface.second.alias.compare(interfaceName)==0)
+		{
+			flag = true;
+			break;
+		}
+	}
+	if (flag==false)
+	{
+		timer.start(Period);
+		throw("interface "+interfaceName+" dosent exist");
+	}
+
+	string host;
+[[[cog
+for namea, num in getNameNumber(component['requires']):
+	if type(namea) == str:
+		name = namea
+	else:
+		name = namea[0]
+	if name == "rcmaster":
+		continue
+	if communicationIsIce(namea):
+		cog.outl('''<TABHERE>if (interfaceName.compare("'''+name+num+'''")==0){
+<TABHERE><TABHERE>'''+name+'''Prx proxyf = (*('''+name+'''Prx*)proxy);
+<TABHERE><TABHERE>host = proxyf->ice_toString();
+<TABHERE>}''')
+]]]
+[[[end]]]
+
+	host = host.substr(host.find("-h")+3,(host.find("-p")-host.find("-h")-3));
+
+	Ice::CommunicatorPtr ic;
+    ic = Ice::initialize();
+	string compName = ifaces[interfaceName].comp;//neep compMap
+
+	while (true)
+	{
+		try
+		{
+			interfaceList interfaces = rcmaster_proxy->getComp(compName,host);
+			string port = "0";
+			for (auto const &iface :interfaces)
+			{
+[[[cog
+for namea, num in getNameNumber(component['requires']):
+	if type(namea) == str:
+		name = namea
+	else:
+		name = namea[0]
+	if name == "rcmaster":
+		continue
+	if communicationIsIce(namea):
+		cog.outl('''<TABHERE><TABHERE><TABHERE><TABHERE>if (iface.name.compare("'''+name+num+'''")==0)				{
+<TABHERE><TABHERE><TABHERE><TABHERE><TABHERE>port = std::to_string(iface.port);
+<TABHERE><TABHERE><TABHERE><TABHERE><TABHERE>string proxyStr = "'''+name+''':"+iface.protocol+" -h "+host+" -p "+port;
+<TABHERE><TABHERE><TABHERE><TABHERE><TABHERE>test2_proxy = testPrx::uncheckedCast( ic->stringToProxy( proxyStr ) );
+<TABHERE><TABHERE><TABHERE><TABHERE>}''')
+]]]
+[[[end]]]
+			}
+		}
+		catch (const ComponentNotFound& ex)
+		{
+			cout<< "waiting for "<< compName<<endl;
+			sleep(3);
+			continue;
+		}
+		catch  (const Ice::SocketException& ex)
+		{
+			cout<< "waiting for "<< compName<<endl;
+			sleep(3);
+			continue;
+		}
+		catch (const Ice::Exception& ex)
+		{
+			cout<<"Cannot connect to the remote object "<<compName;
+			sleep(3);
+			continue;
+		}		
+		timer.start(Period);
+		break;
+	}
+
+}
+
 void SpecificWorker::compute()
 {
 // 	try
@@ -170,10 +263,16 @@ void SpecificWorker::compute()
 // 		memcpy(image_gray.data, &img[0], m_width*m_height*sizeof(uchar));
 // 		searchTags(image_gray);
 // 	}
+// 	catch ( const Ice::SocketException& ex)
+//	{
+//		waitforComp((::IceProxy::Ice::Object*)(&camera_proxy),"camera");
+//	}
 // 	catch(const Ice::Exception &e)
 // 	{
 // 		std::cout << "Error reading from Camera" << e << std::endl;
 // 	}
+// 		try
+
 [[[cog
 if component['usingROS'] == True:
 	cog.outl("<TABHERE>ros::spinOnce();")
