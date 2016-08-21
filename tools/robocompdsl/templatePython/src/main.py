@@ -20,49 +20,49 @@ from parseIDSL import *
 pool = IDSLPool(theIDSLs)
 
 REQUIRE_STR = """
-<TABHERE><TABHERE># Remote object connection for <NORMALx>
-<TABHERE><TABHERE>proxyData["<NORMALx>"] = {"comp":"COMP NAME HERE","caster":RoboComp<NORMAL>.<NORMAL>Prx.checkedCast,"name":"<NORMAL>"}
-<TABHERE><TABHERE>try:
-<TABHERE><TABHERE><TABHERE>while True:
-<TABHERE><TABHERE><TABHERE><TABHERE>try:
-<TABHERE><TABHERE><TABHERE><TABHERE><TABHERE>port = rcmaster_proxy.getComPort(proxyData["<NORMALx>"]["comp"],"localhost");
-<TABHERE><TABHERE><TABHERE><TABHERE><TABHERE>basePrx = ic.stringToProxy(proxyData["<NORMALx>"]["name"]+":tcp -h localhost -p "+str(port))
-<TABHERE><TABHERE><TABHERE><TABHERE><TABHERE><NORMAL>_proxy = proxyData["<NORMALx>"]["caster"](basePrx)
-<TABHERE><TABHERE><TABHERE><TABHERE><TABHERE>proxyData["<NORMALx>"]["proxy"] = <NORMAL>_proxy
-<TABHERE><TABHERE><TABHERE><TABHERE>except RoboCompRCMaster.ComponentNotFound:
-<TABHERE><TABHERE><TABHERE><TABHERE><TABHERE>print 'waiting for <NORMALx> interface'
-<TABHERE><TABHERE><TABHERE><TABHERE><TABHERE>time.sleep(3)
-<TABHERE><TABHERE><TABHERE><TABHERE>except Ice.Exception:
-<TABHERE><TABHERE><TABHERE><TABHERE><TABHERE>print 'Cannot connect to the remote object (<NORMAL>)'
-<TABHERE><TABHERE><TABHERE><TABHERE><TABHERE>traceback.print_exc()
-<TABHERE><TABHERE><TABHERE><TABHERE><TABHERE>status = 1
-<TABHERE><TABHERE><TABHERE><TABHERE>else:
-<TABHERE><TABHERE><TABHERE><TABHERE><TABHERE>break
-<TABHERE><TABHERE>except Ice.Exception, e:
-<TABHERE><TABHERE><TABHERE>print e
-<TABHERE><TABHERE><TABHERE>print 'Cannot get <NORMAL>Proxy property.'
-<TABHERE><TABHERE><TABHERE>status = 1
+<TABHERE># Remote object connection for <NORMAL><NUM>
+<TABHERE>proxyData["<NORMAL><NUM>"] = {"comp":"@@COMP NAME HERE@@","caster":<NORMAL>Prx.checkedCast,"name":"<NORMAL>"}
+<TABHERE>try:
+<TABHERE><TABHERE>while True:
+<TABHERE><TABHERE><TABHERE>try:
+<TABHERE><TABHERE><TABHERE><TABHERE>interfaces = rcmaster_proxy.getComp(proxyData["<NORMAL><NUM>"]["comp"],"localhost");
+<TABHERE><TABHERE><TABHERE><TABHERE>iface = [x for x in interfaces if x.name == proxyData["<NORMAL><NUM>"]["name"]][0]
+<TABHERE><TABHERE><TABHERE><TABHERE>basePrx = ic.stringToProxy(proxyData["<NORMAL><NUM>"]["name"]+":"+iface.protocol+" -h localhost -p "+str(iface.port))
+<TABHERE><TABHERE><TABHERE><TABHERE>proxyData["<NORMAL><NUM>"]["proxy"] = proxyData["<NORMAL><NUM>"]["caster"](basePrx)
+<TABHERE><TABHERE><TABHERE>except ComponentNotFound:
+<TABHERE><TABHERE><TABHERE><TABHERE>print 'waiting for <NORMAL><NUM> interface'
+<TABHERE><TABHERE><TABHERE>except IndexError:
+<TABHERE><TABHERE><TABHERE><TABHERE>raise Exception(proxyData["<NORMAL><NUM>"]["comp"]+" dosnt provide"+proxyData["<NORMAL><NUM>"]["name"])
+<TABHERE><TABHERE><TABHERE><TABHERE>time.sleep(3)
+<TABHERE><TABHERE><TABHERE>except Ice.Exception:
+<TABHERE><TABHERE><TABHERE><TABHERE>print 'Cannot connect to the remote object (<NORMAL>)'
+<TABHERE><TABHERE><TABHERE><TABHERE>traceback.print_exc()
+<TABHERE><TABHERE><TABHERE><TABHERE>status = 1
+<TABHERE><TABHERE><TABHERE>else:
+<TABHERE><TABHERE><TABHERE><TABHERE>break
+<TABHERE>except Ice.Exception, e:
+<TABHERE><TABHERE>print e
+<TABHERE><TABHERE>print 'Cannot get <NORMAL>Proxy property.'
+<TABHERE><TABHERE>status = 1
 """
 
-
 REQUIRE_STR_RCMASTER="""
-<TABHERE><TABHERE># Remote object connection for rcmaster
-<TABHERE><TABHERE>proxyData["rcmaster"] = {"comp":"rcmaster","caster":RoboCompRCMaster.rcmasterPrx.checkedCast,"name":"rcmaster"}
+<TABHERE># Remote object connection for rcmaster
+<TABHERE>proxyData["rcmaster"] = {"comp":"rcmaster","caster":rcmasterPrx.checkedCast,"name":"rcmaster"}
+<TABHERE>try:
+<TABHERE><TABHERE>with open(os.path.join(os.path.expanduser('~'), ".config/RoboComp/rcmaster.config"), 'r') as f:
+<TABHERE><TABHERE><TABHERE>rcmaster_uri = f.readline().strip().split(":")
+<TABHERE><TABHERE>basePrx = ic.stringToProxy("rcmaster:tcp -h "+rcmaster_uri[0]+" -p "+rcmaster_uri[1])
 <TABHERE><TABHERE>try:
-<TABHERE><TABHERE><TABHERE>with open(os.path.join(os.path.expanduser('~'), ".config/RoboComp/rcmaster.config"), 'r') as f:
-<TABHERE><TABHERE><TABHERE><TABHERE>rcmaster_uri = f.readline().strip().split(":")
-<TABHERE><TABHERE><TABHERE>basePrx = ic.stringToProxy("rcmaster:tcp -h "+rcmaster_uri[0]+" -p "+rcmaster_uri[1])
-<TABHERE><TABHERE><TABHERE>try:
-<TABHERE><TABHERE><TABHERE><TABHERE>print "Connecting to rcmaster " ,rcmaster_uri
-<TABHERE><TABHERE><TABHERE><TABHERE>rcmaster_proxy = RoboCompRCMaster.rcmasterPrx.checkedCast(basePrx)
-<TABHERE><TABHERE><TABHERE>except Ice.SocketException:
-<TABHERE><TABHERE><TABHERE><TABHERE>raise Exception("RCMaster is not running")
-<TABHERE><TABHERE><TABHERE>proxyData["rcmaster"]["proxy"] = rcmaster_proxy
-<TABHERE><TABHERE>except Ice.Exception:
-<TABHERE><TABHERE><TABHERE>print 'Cannot connect to the remote object (rcmaster)'
-<TABHERE><TABHERE><TABHERE>traceback.print_exc()
-<TABHERE><TABHERE><TABHERE>status = 1
-
+<TABHERE><TABHERE><TABHERE>print "Connecting to rcmaster " ,rcmaster_uri
+<TABHERE><TABHERE><TABHERE>rcmaster_proxy = rcmasterPrx.checkedCast(basePrx)
+<TABHERE><TABHERE>except Ice.SocketException:
+<TABHERE><TABHERE><TABHERE>raise Exception("RCMaster is not running")
+<TABHERE><TABHERE>proxyData["rcmaster"]["proxy"] = rcmaster_proxy
+<TABHERE>except Ice.Exception:
+<TABHERE><TABHERE>print 'Cannot connect to the remote object (rcmaster)'
+<TABHERE><TABHERE>traceback.print_exc()
+<TABHERE><TABHERE>status = 1
 """
 
 SUBSCRIBESTO_STR = """
@@ -104,7 +104,7 @@ PUBLISHES_STR = """
 <TABHERE><TABHERE>mprx["<NORMAL>Pub"] = <LOWER>Topic
 """
 
-IMPLEMENTS_STR = """compInfo.interfaces.append(RoboCompRCMaster.interfaceData("<NORMAL>"))"""
+IMPLEMENTS_STR = """<TABHERE><TABHERE>compInfo.interfaces.append(interfaceData("<NORMAL>"))"""
 
 ]]]
 [[[end]]]
@@ -237,35 +237,12 @@ if __name__ == '__main__':
 	ic = Ice.initialize(params)
 	status = 0
 	mprx = {}
-    mprx["name"] = ic.getProperties().getProperty('Ice.ProgramName');
-    proxyData = {}
-
-[[[cog
-if len(component['requires']) > 0 or len(component['publishes']) > 0 or len(component['subscribesTo']) > 0:
-	cog.outl('<TABHERE>try:')
-icount = dict()
-for rqa in component['requires']:
-	if type(rqa) == type(''):
-		rq = rqa
-	else:
-		rq = rqa[0]
-	if rq in icount:
-		icount[rq] = icount[rq] + 1
-		rqx = rq + str(icount[rq])
-	else:
-		icount[rq] = 0
-		rqx = rq
-	if rq.lower() == "rcmaster":
-		w = REQUIRE_STR_RCMASTER
-	else:
-		w = REQUIRE_STR.replace("<NORMAL>", rq).replace("<NORMALx>", rqx).replace("<LOWER>", rq.lower())
-	cog.outl(w)
-=======
+	mprx["name"] = ic.getProperties().getProperty('Ice.ProgramName')
+	proxyData = {}
 	parameters = {}
 	for i in ic.getProperties():
 		parameters[str(i)] = str(ic.getProperties().getProperty(i))
 [[[cog
->>>>>>> c1cb2481b7290b1ab8d6f18a82596838328d29c9
 
 try:
 	needIce = False
@@ -283,20 +260,25 @@ try:
 			needIce = True
 	if needIce:
 		cog.outl("""
-<TABHERE><TABHERE># Topic Manager
-<TABHERE><TABHERE>proxy = ic.getProperties().getProperty("TopicManager.Proxy")
-<TABHERE><TABHERE>obj = ic.stringToProxy(proxy)
-<TABHERE><TABHERE>topicManager = IceStorm.TopicManagerPrx.checkedCast(obj)""")
+<TABHERE># Topic Manager
+<TABHERE>proxy = ic.getProperties().getProperty("TopicManager.Proxy")
+<TABHERE>obj = ic.stringToProxy(proxy)
+<TABHERE>topicManager = IceStorm.TopicManagerPrx.checkedCast(obj)""")
 except:
 	pass
 
 for req, num in getNameNumber(component['requires']):
+	if num == '1':
+		num = ''
 	if type(req) == str:
 		rq = req
 	else:
 		rq = req[0]
 	if communicationIsIce(req):
-		w = REQUIRE_STR.replace("<NORMAL>", rq).replace("<LOWER>", rq.lower()).replace("<NUM>",num)
+		if rq.lower() == "rcmaster":
+			w = REQUIRE_STR_RCMASTER
+		else:
+			w = REQUIRE_STR.replace("<NORMAL>", rq).replace("<NUM>", num).replace("<LOWER>", rq.lower())
 		cog.outl(w)
 
 for pb, num in getNameNumber(component['publishes']):
@@ -309,16 +291,33 @@ for pb, num in getNameNumber(component['publishes']):
 		cog.outl(w)
 
 cog.outl("<TABHERE>if status == 0:")
+cog.outl("<TABHERE><TABHERE>mprx['proxyData'] = proxyData")
 cog.outl("<TABHERE><TABHERE>worker = SpecificWorker(mprx)")
 cog.outl("<TABHERE><TABHERE>worker.setParams(parameters)")
-for im in component['implements']:
-	if type(im) == str:
-		imp = im
-	else:
-		imp = im[0]
-	if communicationIsIce(im):
-		w = IMPLEMENTS_STR.replace("<NORMAL>", imp).replace("<LOWER>", imp.lower())
+
+if len(component['implements']) > 0:
+	cog.outl("""<TABHERE><TABHERE>worker = SpecificWorker(mprx)
+<TABHERE><TABHERE>compInfo = compData(name=mprx["name"])
+<TABHERE><TABHERE>compInfo.interfaces = []""")
+	for ima in component['implements']:
+		if type(ima) == type(''):
+			im = ima
+		else:
+			im = ima[0]
+		w = IMPLEMENTS_STR.replace("<NORMAL>", im).replace("<LOWER>", im.lower())
 		cog.outl(w)
+
+	cog.outl("""<TABHERE><TABHERE>idata = rcmaster_proxy.registerComp(compInfo,False,True)
+		
+<TABHERE><TABHERE># activate all interfaces
+<TABHERE><TABHERE>for iface in idata:
+<TABHERE><TABHERE><TABHERE>adapter = ic.createObjectAdapterWithEndpoints(iface.name.lower(), iface.protocol+' -h localhost -p '+str(iface.port))
+<TABHERE><TABHERE><TABHERE>workerObj = globals()[str(iface.name)+'I'](worker)
+<TABHERE><TABHERE><TABHERE>adapter.add(workerObj, ic.stringToIdentity(str(iface.name).lower()))
+<TABHERE><TABHERE><TABHERE>adapter.activate()
+<TABHERE><TABHERE><TABHERE>print "activated interface :", iface
+<TABHERE><TABHERE>print "Component Started"
+""")
 
 for sut in component['subscribesTo']:
 	if type(sut) == str:
