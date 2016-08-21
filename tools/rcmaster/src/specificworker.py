@@ -282,24 +282,30 @@ class SpecificWorker(GenericWorker):
     # getComPort
     #
     def getComPort(self, compName, privateIP):
-        return self.getComp(compName, privateIP)[0].port
+        interfaces = self.getComp(compName, privateIP)
+        if len(interfaces) != 1:
+            raise InvalidComponent
+        return interfaces[0].port
 
     #
     # getComp
     #
     def getComp(self, compName, privateIP):
         # if passed an hostname convert to ip
+        privateIP=privateIP.strip()
         try:
             socket.inet_aton(privateIP)
         except socket.error:
-            privateIP = socket.gethostbyname(privateIP)
+            try:
+                privateIP = socket.gethostbyname(privateIP)
+            except socket.gaierror, err:
+                print "cant resolve hostname :",privateIP,err
+                raise InvalidComponent
 
         for comp in self.compdb.itervalues():
             if comp.status != CompStatus.Active:
                 continue
             if comp.name == compName and comp.host.privateIP == privateIP:
-                if len(comp.interfaces) != 1:
-                    raise InvalidComponent
                 return comp.interfaces
         raise ComponentNotFound
 

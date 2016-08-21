@@ -60,3 +60,9 @@ which impliments test interface:
 
 now you should be able to see client3 printing message from client4. While starting
 and killing each components you should be able to see rcmaster printing relevent information
+
+##Try this
+
+client3 <-| <- client4  <-| <- client1
+          | <- clinet41 <-|
+
