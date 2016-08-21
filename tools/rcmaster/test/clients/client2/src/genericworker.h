@@ -19,6 +19,11 @@
 #ifndef GENERICWORKER_H
 #define GENERICWORKER_H
 
+// ICE includes
+#include <Ice/Ice.h>
+#include <Ice/Application.h>
+
+
 #include "config.h"
 #include <QtGui>
 #include <stdint.h>
@@ -34,7 +39,23 @@
 #define CHECK_PERIOD 5000
 #define BASIC_PERIOD 100
 
+struct ifaceData
+{
+	string alias;
+	string name;
+	string comp;
+	ifaceData()
+	{}
+	ifaceData(string  ialias, string iname, string icomp)
+	{
+		alias = ialias;
+		name = iname;
+		comp = icomp;
+	}
+};
+
 typedef map <string,::IceProxy::Ice::Object*> MapPrx;
+typedef map <string, ifaceData> Mapiface;
 
 using namespace std;
 
@@ -50,7 +71,7 @@ public QObject
 {
 Q_OBJECT
 public:
-	GenericWorker(MapPrx& mprx);
+	GenericWorker(MapPrx& mprx, Mapiface& miface);
 	virtual ~GenericWorker();
 	virtual void killYourSelf();
 	virtual void setPeriod(int p);
@@ -58,7 +79,8 @@ public:
 	virtual bool setParams(RoboCompCommonBehavior::ParameterList params) = 0;
 	QMutex *mutex;
 	
-
+	Mapiface& ifaces;
+	
 	rcmasterPrx rcmaster_proxy;
 	testPrx test1_proxy;
 	testPrx test2_proxy;

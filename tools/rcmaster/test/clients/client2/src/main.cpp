@@ -72,6 +72,7 @@
 
 #include <rapplication/rapplication.h>
 #include <qlog/qlog.h>
+#include <fstream>
 
 #include "config.h"
 #include "genericmonitor.h"
@@ -107,6 +108,7 @@ private:
 	void initialize();
 	std::string prefix;
 	MapPrx mprx;
+	Mapiface ifaces;
 
 public:
 	virtual int run(int, char*[]);
@@ -139,51 +141,48 @@ int ::client4::run(int argc, char* argv[])
 	testPrx test2_proxy;
 	rcmasterPrx rcmaster_proxy;
 
-	string proxy, tmp;
+	string proxy, tmp,ComponentName;
 	initialize();
 
-
-	try
+	
+	if (not GenericMonitor::configGetString(communicator(), prefix, "Ice.ProgramName", ComponentName, ""))
 	{
-		if (not GenericMonitor::configGetString(communicator(), prefix, "test1Proxy", proxy, ""))
-		{
-			cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy testProxy\n";
-		}
-		test1_proxy = testPrx::uncheckedCast( communicator()->stringToProxy( proxy ) );
-	}
-	catch(const Ice::Exception& ex)
-	{
-		cout << "[" << PROGRAM_NAME << "]: Exception: " << ex;
+		cout << "[" << PROGRAM_NAME << "]: Can't read Component Name\n";
 		return EXIT_FAILURE;
 	}
-	rInfo("testProxy1 initialized Ok!");
-	mprx["testProxy1"] = (::IceProxy::Ice::Object*)(&test1_proxy);//Remote server proxy creation example
 
-
+	// Remote object connection for rcmaster
+	ifaces["rcmaster"] = ifaceData("rcmaster","rcmaster","rcmaster");
 	try
 	{
-		if (not GenericMonitor::configGetString(communicator(), prefix, "test2Proxy", proxy, ""))
+		string proxyStr = "rcmaster:tcp -h ";
+		try
 		{
-			cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy testProxy\n";
+			std::string port, host, line;
+			ifstream infile(string(getenv("HOME"))+string("/.config/RoboComp/rcmaster.config"));
+			getline(infile, line);
+			std::size_t pos = line.find(":");
+			host = line.substr (0,pos);
+			proxyStr += line.substr (0,pos);
+			proxyStr += " -p " + line.substr (pos+1);
+			infile.close();
 		}
-		test2_proxy = testPrx::uncheckedCast( communicator()->stringToProxy( proxy ) );
-	}
-	catch(const Ice::Exception& ex)
-	{
-		cout << "[" << PROGRAM_NAME << "]: Exception: " << ex;
-		return EXIT_FAILURE;
-	}
-	rInfo("testProxy2 initialized Ok!");
-	mprx["testProxy2"] = (::IceProxy::Ice::Object*)(&test2_proxy);//Remote server proxy creation example
-
-
-	try
-	{
-		if (not GenericMonitor::configGetString(communicator(), prefix, "rcmasterProxy", proxy, ""))
+		catch(...)
 		{
-			cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy rcmasterProxy\n";
+			cout << "[" << PROGRAM_NAME << "]: Exception: " << "Cant get rcmaster proxy";
+			return EXIT_FAILURE;
 		}
-		rcmaster_proxy = rcmasterPrx::uncheckedCast( communicator()->stringToProxy( proxy ) );
+		cout<<proxyStr<<endl;
+		try
+		{
+			rcmaster_proxy = rcmasterPrx::uncheckedCast( communicator()->stringToProxy(proxyStr) );	
+		}
+		catch(Ice::SocketException)
+		{
+			cout << "[" << PROGRAM_NAME << "]: Exception: " << "RCmaster not running";
+			return EXIT_FAILURE;
+		}
+
 	}
 	catch(const Ice::Exception& ex)
 	{
@@ -191,11 +190,87 @@ int ::client4::run(int argc, char* argv[])
 		return EXIT_FAILURE;
 	}
 	rInfo("rcmasterProxy initialized Ok!");
-	mprx["rcmasterProxy"] = (::IceProxy::Ice::Object*)(&rcmaster_proxy);//Remote server proxy creation example
+	mprx["rcmasterProxy"] = (::IceProxy::Ice::Object*)(&rcmaster_proxy);
+
+		// Remote conneciton for test1
+	ifaces["test1"] = ifaceData("test1","test","client31");
+	while (true)
+	{
+		try
+		{
+			interfaceList interfaces = rcmaster_proxy->getComp(ifaces["test1"].comp,"localhost");
+			interfaceData iface;
+			for(auto const &ifc : interfaces)
+			{
+				if (ifc.name == ifaces["test1"].name)
+				{
+					iface = ifc;
+					break;
+				}
+			}
+			string port = std::to_string(iface.port);
+			string proxy = iface.name+":"+iface.protocol+" -h localhost "+" -p "+port;
+			cout<<proxy<<endl;
+			test1_proxy = testPrx::uncheckedCast( communicator()->stringToProxy( proxy ) );
+			break;
+		}
+		catch (ComponentNotFound)
+		{
+			cout << "[" << PROGRAM_NAME << "]:" << "waiting for test1 interface"<<endl;
+			sleep(3);
+			continue;
+		}
+		catch(const Ice::Exception& ex)
+		{
+			cout << "[" << PROGRAM_NAME << "]: Exception: " << ex;
+			return EXIT_FAILURE;
+		}
+	}
+	rInfo("testProxy1 initialized Ok!");
+	mprx["testProxy1"] = (::IceProxy::Ice::Object*)(&test1_proxy);//Remote server proxy creation example
+
+
+	//Remote Conneciton for test2
+	ifaces["test2"] = ifaceData("test2","test","client32");
+	while (true)
+	{
+		try
+		{
+			interfaceList interfaces = rcmaster_proxy->getComp(ifaces["test2"].comp,"localhost");
+			interfaceData iface;
+			for(auto const &ifc : interfaces)
+			{
+				if (ifc.name == ifaces["test1"].name)
+				{
+					iface = ifc;
+					break;
+				}
+			}
+			string port = std::to_string(iface.port);
+			string proxy = iface.name+":"+iface.protocol+" -h localhost "+" -p "+port;
+			test2_proxy = testPrx::uncheckedCast( communicator()->stringToProxy( proxy ) );
+			break;
+		}
+		catch (ComponentNotFound)
+		{
+			cout << "[" << PROGRAM_NAME << "]:" << "waiting for test interface"<<endl;
+			sleep(3);
+			continue;
+		}
+		catch(const Ice::Exception& ex)
+		{
+			cout << "[" << PROGRAM_NAME << "]: Exception: " << ex;
+			return EXIT_FAILURE;
+		}
+	}
+	rInfo("testProxy2 initialized Ok!");
+	mprx["testProxy2"] = (::IceProxy::Ice::Object*)(&test2_proxy);//Remote server proxy creation example
 
 
 
-	SpecificWorker *worker = new SpecificWorker(mprx);
+
+
+	SpecificWorker *worker = new SpecificWorker(mprx, ifaces);
 	//Monitor thread
 	SpecificMonitor *monitor = new SpecificMonitor(worker,communicator());
 	QObject::connect(monitor, SIGNAL(kill()), &a, SLOT(quit()));
@@ -209,28 +284,34 @@ int ::client4::run(int argc, char* argv[])
 	{
 		usleep(10000);
 	}
-	
 	try
 	{
+		// // Server adapter creation and publication
+		// if (not GenericMonitor::configGetString(communicator(), prefix, "CommonBehavior.Endpoints", tmp, ""))
+		// {
+		// 	cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy CommonBehavior\n";
+		// }
+		// Ice::ObjectAdapterPtr adapterCommonBehavior = communicator()->createObjectAdapterWithEndpoints("commonbehavior", tmp);
+		// CommonBehaviorI *commonbehaviorI = new CommonBehaviorI(monitor );
+		// adapterCommonBehavior->add(commonbehaviorI, communicator()->stringToIdentity("commonbehavior"));
+		// adapterCommonBehavior->activate();
+
+		// Register Compoennt 
+        compData compInfo;
+        compInfo.name = ComponentName;
+        interfaceData idatap;
+        idatap.name = "ASR";
+        compInfo.interfaces.push_back(idatap);
+        interfaceList idatas;
+        rcmaster_proxy->registerComp(compInfo,false,true,idatas);
+        map<string,string> portMap;
+		for (auto const &idata :idatas)
+        	portMap[idata.name] = std::to_string(idata.port);
+
+
 		// Server adapter creation and publication
-		if (not GenericMonitor::configGetString(communicator(), prefix, "CommonBehavior.Endpoints", tmp, ""))
-		{
-			cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy CommonBehavior\n";
-		}
-		Ice::ObjectAdapterPtr adapterCommonBehavior = communicator()->createObjectAdapterWithEndpoints("commonbehavior", tmp);
-		CommonBehaviorI *commonbehaviorI = new CommonBehaviorI(monitor );
-		adapterCommonBehavior->add(commonbehaviorI, communicator()->stringToIdentity("commonbehavior"));
-		adapterCommonBehavior->activate();
-
-
-
-
-		// Server adapter creation and publication
-		if (not GenericMonitor::configGetString(communicator(), prefix, "ASR.Endpoints", tmp, ""))
-		{
-			cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy ASR";
-		}
-		Ice::ObjectAdapterPtr adapterASR = communicator()->createObjectAdapterWithEndpoints("ASR", tmp);
+		//Activate ASR interface
+		Ice::ObjectAdapterPtr adapterASR = communicator()->createObjectAdapterWithEndpoints("ASR","default -p "+portMap["ASR"]);
 		ASRI *asr = new ASRI(worker);
 		adapterASR->add(asr, communicator()->stringToIdentity("asr"));
 		adapterASR->activate();
@@ -245,10 +326,10 @@ int ::client4::run(int argc, char* argv[])
 
 		// User defined QtGui elements ( main window, dialogs, etc )
 
-#ifdef USE_QTGUI
+	#ifdef USE_QTGUI
 		//ignoreInterrupt(); // Uncomment if you want the component to ignore console SIGINT signal (ctrl+c).
 		a.setQuitOnLastWindowClosed( true );
-#endif
+	#endif
 		// Run QT Application Event Loop
 		a.exec();
 		status = EXIT_SUCCESS;
@@ -260,9 +341,9 @@ int ::client4::run(int argc, char* argv[])
 		cout << "[" << PROGRAM_NAME << "]: Exception raised on main thread: " << endl;
 		cout << ex;
 
-#ifdef USE_QTGUI
+	#ifdef USE_QTGUI
 		a.quit();
-#endif
+	#endif
 		monitor->exit(0);
 }
 

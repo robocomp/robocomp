@@ -20,13 +20,15 @@
 /**
 * \brief Default constructor
 */
-GenericWorker::GenericWorker(MapPrx& mprx) :
-QObject()
+GenericWorker::GenericWorker(MapPrx& mprx, Mapiface& miface) :
+QObject(), ifaces(miface)
 {
-	test1_proxy = (*(testPrx*)mprx["testProxy"]);
+	//ifaces = miface;
+	test1_proxy = (*(testPrx*)mprx["testProxy1"]);
 	rcmaster_proxy = (*(rcmasterPrx*)mprx["rcmasterProxy"]);
-	test1_proxy = (*(testPrx*)mprx["testProxy"]);
+	test2_proxy = (*(testPrx*)mprx["testProxy2"]);
 
+	cout<<"genericworker: init\n";
 	mutex = new QMutex(QMutex::Recursive);
 
 	Period = BASIC_PERIOD;
