@@ -34,12 +34,12 @@ REQUIRE_STR = """
 <TABHERE><TABHERE><TABHERE>}
 <TABHERE><TABHERE><TABHERE>string port = std::to_string(iface.port);
 <TABHERE><TABHERE><TABHERE>string proxy = iface.name+":"+iface.protocol+" -h localhost "+" -p "+port;
-<TABHERE><TABHERE><TABHERE><PROXYNAME>_proxy = testPrx::uncheckedCast( communicator()->stringToProxy( proxy ) );
+<TABHERE><TABHERE><TABHERE><PROXYNAME>_proxy = <NORMAL>Prx::uncheckedCast( communicator()->stringToProxy( proxy ) );
 <TABHERE><TABHERE><TABHERE>break;
 <TABHERE><TABHERE>}
 <TABHERE><TABHERE>catch (ComponentNotFound)
 <TABHERE><TABHERE>{
-<TABHERE><TABHERE><TABHERE>cout << "[" << PROGRAM_NAME << "]:" << "waiting for test1 interface"<<endl;
+<TABHERE><TABHERE><TABHERE>cout << "[" << PROGRAM_NAME << "]:" << "waiting for <NORMAL><PROXYNUMBER> interface"<<endl;
 <TABHERE><TABHERE><TABHERE>sleep(3);
 <TABHERE><TABHERE><TABHERE>continue;
 <TABHERE><TABHERE>}
@@ -154,7 +154,7 @@ IMPLEMENTS_STR = """<TABHERE><TABHERE>//Activate <NORMAL> interface
 <TABHERE><TABHERE><NORMAL>I *<LOWER> = new <NORMAL>I(worker);
 <TABHERE><TABHERE>adapter<NORMAL>->add(<LOWER>, communicator()->stringToIdentity("<LOWER>"));
 <TABHERE><TABHERE>adapter<NORMAL>->activate();
-<TABHERE><TABHERE>cout << "[" << PROGRAM_NAME << "]: <NORMAL> adapter created in port " << tmp << endl;
+<TABHERE><TABHERE>cout << "[" << PROGRAM_NAME << "]: <NORMAL> adapter created in port " <<portMap["<NORMAL>"]<< endl;
 """
 
 ]]]

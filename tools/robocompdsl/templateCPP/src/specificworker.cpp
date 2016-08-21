@@ -225,7 +225,7 @@ for namea, num in getNameNumber(component['requires']):
 		cog.outl('''<TABHERE><TABHERE><TABHERE><TABHERE>if (iface.name.compare("'''+name+num+'''")==0)				{
 <TABHERE><TABHERE><TABHERE><TABHERE><TABHERE>port = std::to_string(iface.port);
 <TABHERE><TABHERE><TABHERE><TABHERE><TABHERE>string proxyStr = "'''+name+''':"+iface.protocol+" -h "+host+" -p "+port;
-<TABHERE><TABHERE><TABHERE><TABHERE><TABHERE>test2_proxy = testPrx::uncheckedCast( ic->stringToProxy( proxyStr ) );
+<TABHERE><TABHERE><TABHERE><TABHERE><TABHERE>'''+name.lower()+num+'''_proxy = '''+name+'''Prx::uncheckedCast( ic->stringToProxy( proxyStr ) );
 <TABHERE><TABHERE><TABHERE><TABHERE>}''')
 ]]]
 [[[end]]]
