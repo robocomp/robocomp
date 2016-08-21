@@ -313,13 +313,13 @@ class SpecificWorker(GenericWorker):
     # flush
     #
     def flush(self, maindb):
-        print "Flusshing the cache ..."
+        print "Flushing the cache ..."
         for uid in self.compcache:
             self.compdb.pop(uid)
         self.compcache = dict()
         if maindb:
             self.compdb = dict()
-            print "Flusshing the mainDB ..."
+            print "Flushing the mainDB ..."
         self.show_stats()
 
 
