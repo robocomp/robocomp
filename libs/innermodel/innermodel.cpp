@@ -199,6 +199,18 @@ InnerModel::~InnerModel()
 	listB.clear();
 }
 
+InnerModel* InnerModel::copy()
+{
+	InnerModel *inner = new InnerModel();
+	
+	QList<InnerModelNode *>::iterator i;
+	for (i=root->children.begin(); i!=root->children.end(); i++)
+	{
+		inner->root->addChild((*i)->copyNode(inner->hash, inner->root));
+	}
+	return inner;
+}
+
 void InnerModel::removeNode(const QString & id)
 {
 	InnerModelNode *dd = hash[id];
