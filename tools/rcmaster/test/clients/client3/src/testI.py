@@ -32,7 +32,7 @@ if len(ROBOCOMP)<1:
 
 preStr = "-I"+ROBOCOMP+"/interfaces/ --all "+ROBOCOMP+"/interfaces/"
 
-Ice.loadSlice(preStr+"Test.ice")
+Ice.loadSlice(preStr+"RCMaster.ice")
 from RoboCompTest import *
 
 class testI(test):

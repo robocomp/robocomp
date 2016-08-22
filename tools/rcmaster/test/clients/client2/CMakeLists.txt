@@ -1,19 +1,19 @@
+cmake_minimum_required( VERSION 2.8 )
 
-cmake_minimum_required(VERSION 2.6)
-PROJECT(  client2 )
+SET(RC_COMPONENT_PATH ${CMAKE_CURRENT_SOURCE_DIR} CACHE STRING "component base path" FORCE)
+SET(RC_COMPONENT_DEVEL_PATH "${CMAKE_CURRENT_SOURCE_DIR}" CACHE STRING "component binary path" FORCE)
+#SET(RC_COMPONENT_DEVEL_PATH "${WORKSPACE_PATH}/devel"  CACHE STRING "component binary path")
+SET(RC_COMPONENT_INSTALL_PATH "/opt/robocomp" CACHE STRING "component install path")
 
-SET(RC_COMPONENT_PATH ${CMAKE_CURRENT_SOURCE_DIR} CACHE STRING "component base path") 
-SET(RC_COMPONENT_DEVEL_PATH ${CMAKE_CURRENT_SOURCE_DIR} CACHE STRING "component inary path")
+#commented as now devel is merged into source space
+#get_filename_component( COMPONENT_NAME ${CMAKE_CURRENT_SOURCE_DIR} DIRECTORY)
+#STRING(REPLACE "${COMPONENT_NAME}/" " " COMPONENT_NAME  ${RC_COMPONENT_PATH})
+#STRING(STRIP ${COMPONENT_NAME} COMPONENT_NAME)
+#SET(COMPONENT_NAME ${COMPONENT_NAME} CACHE STRING "component name" FORCE)
 
-MACRO( WRAP_PYTHON_UI )
-  FOREACH( input_file ${ARGN} )
-    ADD_CUSTOM_COMMAND (
-      OUTPUT src/ui_${input_file}.py
-      COMMAND pyside-uic src/${input_file}.ui -o src/ui_${input_file}.py
-      DEPENDS src/${input_file}.ui
-      COMMENT "Generating src/ui_${input_file}.py from src/${input_file}.ui"
-    )
-    ADD_CUSTOM_TARGET(ui_${input_file} ALL DEPENDS src/ui_${input_file}.py )
-  ENDFOREACH( input_file )
-ENDMACRO( WRAP_PYTHON_UI )
+SUBDIRS( src )
 
+INSTALL(FILES etc/config DESTINATION ${RC_COMPONENT_INSTALL_PATH}/etc-default/ RENAME client2.conf )
+
+#ADD_CUSTOM_TARGET(doc doxygen Doxyfile)
+#ADD_CUSTOM_TARGET(installdoc mkdir -p ${RC_COMPONENT_INSTALL_PATH}/doc COMMAND cp -R doc/html ${RC_COMPONENT_INSTALL_PATH}/doc/client2 )

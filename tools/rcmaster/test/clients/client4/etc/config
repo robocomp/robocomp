@@ -1,5 +1,6 @@
-# Endpoints for implemented interfaces
+# General properties of Component
 Ice.ProgramName=client4
+
 
 
 # This property is used by the clients to connect to IceStorm.

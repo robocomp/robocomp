@@ -1,5 +1,5 @@
 import "/robocomp/interfaces/IDSLs/RCMaster.idsl";
-import "/robocomp/interfaces/IDSLs/Test.idsl";
+import "/robocomp/interfaces/IDSLs/TestComp.idsl";
 
 Component client3{
 	Communications{

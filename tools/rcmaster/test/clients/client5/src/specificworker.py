@@ -95,6 +95,7 @@ class SpecificWorker(GenericWorker):
 	@QtCore.Slot()
 	def compute(self):
 		print 'SpecificWorker.compute...'
+		#computeCODE
 		# try:
 		# 	self.proxyData["differentialrobot"]["proxy"].setSpeedBase(100, 0)
 		# except Ice.SocketException:
@@ -110,7 +111,7 @@ class SpecificWorker(GenericWorker):
 	#
 	def listenWav(self, path):
 		#
-		# YOUR CODE HERE
+		#implementCODE
 		#
 		pass
 
@@ -120,7 +121,7 @@ class SpecificWorker(GenericWorker):
 	#
 	def listenVector(self, audio):
 		#
-		# YOUR CODE HERE
+		#implementCODE
 		#
 		pass
 
@@ -130,7 +131,7 @@ class SpecificWorker(GenericWorker):
 	#
 	def resetPhraseBuffer(self):
 		#
-		# YOUR CODE HERE
+		#implementCODE
 		#
 		pass
 
@@ -141,7 +142,7 @@ class SpecificWorker(GenericWorker):
 	def getLastPhrase(self):
 		ret = string()
 		#
-		# YOUR CODE HERE
+		#implementCODE
 		#
 		return ret
 
@@ -152,7 +153,7 @@ class SpecificWorker(GenericWorker):
 	def phraseAvailable(self):
 		ret = bool()
 		#
-		# YOUR CODE HERE
+		#implementCODE
 		#
 		return ret
 
@@ -162,7 +163,7 @@ class SpecificWorker(GenericWorker):
 	#
 	def printmsg(self, message):
 		#
-		# YOUR CODE HERE
+		#implementCODE
 		#
 		pass
 

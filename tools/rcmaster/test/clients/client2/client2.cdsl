@@ -1,10 +1,10 @@
 import "/robocomp/interfaces/IDSLs/RCMaster.idsl";
-import "/robocomp/interfaces/IDSLs/Test.idsl";
+import "/robocomp/interfaces/IDSLs/TestComp.idsl";
 
 Component client2{
-    Communications{
-        requires rcmaster;
-    	subscribesTo test;
-    };
-    language Python;
+	Communications{
+		requires rcmaster, test;
+		implements test;
+	};
+	language Cpp;
 };

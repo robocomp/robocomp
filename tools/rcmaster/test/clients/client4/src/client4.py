@@ -55,7 +55,7 @@
 #
 #
 
-import sys, traceback, Ice, IceStorm, subprocess, threading, time, Queue, os, copy
+import sys, traceback, IceStorm, subprocess, threading, time, Queue, os, copy
 
 # Ctrl+c handling
 import signal
@@ -65,146 +65,125 @@ from PySide import *
 
 from specificworker import *
 
-ROBOCOMP = ''
-try:
-    ROBOCOMP = os.environ['ROBOCOMP']
-except:
-    print '$ROBOCOMP environment variable not set, using the default value /opt/robocomp'
-    ROBOCOMP = '/opt/robocomp'
-if len(ROBOCOMP)<1:
-    print 'ROBOCOMP environment variable not set! Exiting.'
-    sys.exit()
-
-
-preStr = "-I"+ROBOCOMP+"/interfaces/ -I/opt/robocomp/interfaces/ --all "+ROBOCOMP+"/interfaces/"
-Ice.loadSlice(preStr+"CommonBehavior.ice")
-import RoboCompCommonBehavior
-Ice.loadSlice(preStr+"RCMaster.ice")
-import RoboCompRCMaster
-Ice.loadSlice(preStr+"Test.ice")
-import RoboCompTest
-Ice.loadSlice(preStr+"ASR.ice")
-import RoboCompASR
-
 
 class CommonBehaviorI(RoboCompCommonBehavior.CommonBehavior):
-    def __init__(self, _handler, _communicator):
-        self.handler = _handler
-        self.communicator = _communicator
-    def getFreq(self, current = None):
-        self.handler.getFreq()
-    def setFreq(self, freq, current = None):
-        self.handler.setFreq()
-    def timeAwake(self, current = None):
-        try:
-            return self.handler.timeAwake()
-        except:
-            print 'Problem getting timeAwake'
-    def killYourSelf(self, current = None):
-        self.handler.killYourSelf()
-    def getAttrList(self, current = None):
-        try:
-            return self.handler.getAttrList(self.communicator)
-        except:
-            print 'Problem getting getAttrList'
-            traceback.print_exc()
-            status = 1
-            return
+	def __init__(self, _handler, _communicator):
+		self.handler = _handler
+		self.communicator = _communicator
+	def getFreq(self, current = None):
+		self.handler.getFreq()
+	def setFreq(self, freq, current = None):
+		self.handler.setFreq()
+	def timeAwake(self, current = None):
+		try:
+			return self.handler.timeAwake()
+		except:
+			print 'Problem getting timeAwake'
+	def killYourSelf(self, current = None):
+		self.handler.killYourSelf()
+	def getAttrList(self, current = None):
+		try:
+			return self.handler.getAttrList(self.communicator)
+		except:
+			print 'Problem getting getAttrList'
+			traceback.print_exc()
+			status = 1
+			return
 
 
 
 if __name__ == '__main__':
-    app = QtCore.QCoreApplication(sys.argv)
-    params = copy.deepcopy(sys.argv)
-    if len(params) > 1:
-        if not params[1].startswith('--Ice.Config='):
-            params[1] = '--Ice.Config=' + params[1]
-    elif len(params) == 1:
-        params.append('--Ice.Config=etc/config')
-    ic = Ice.initialize(params)
-    status = 0
-    mprx = {}
-    mprx["name"] = ic.getProperties().getProperty('Ice.ProgramName');
-    print mprx["name"]
+	app = QtCore.QCoreApplication(sys.argv)
+	params = copy.deepcopy(sys.argv)
+	if len(params) > 1:
+		if not params[1].startswith('--Ice.Config='):
+			params[1] = '--Ice.Config=' + params[1]
+	elif len(params) == 1:
+		params.append('--Ice.Config=config')
+	ic = Ice.initialize(params)
+	status = 0
+	mprx = {}
+	mprx["name"] = ic.getProperties().getProperty('Ice.ProgramName')
+	proxyData = {}
+	parameters = {}
+	for i in ic.getProperties():
+		parameters[str(i)] = str(ic.getProperties().getProperty(i))
 
-    proxyData = {}
-    proxyData["rcmaster"] = {"comp":"rcmaster","caster":RoboCompRCMaster.rcmasterPrx.checkedCast,"name":"rcmaster"}
-    proxyData["test"] = {"comp":"client3","caster":RoboCompTest.testPrx.checkedCast,"name":"test"}
+	# Topic Manager
+	proxy = ic.getProperties().getProperty("TopicManager.Proxy")
+	obj = ic.stringToProxy(proxy)
+	topicManager = IceStorm.TopicManagerPrx.checkedCast(obj)
 
-    try:
-
-        # Remote object connection for rcmaster
-        try:
-            with open(os.path.join(os.path.expanduser('~'), ".config/RoboComp/rcmaster.config"), 'r') as f:
-                rcmaster_uri = f.readline().strip().split(":")
-            basePrx = ic.stringToProxy("rcmaster:tcp -h "+rcmaster_uri[0]+" -p "+rcmaster_uri[1])
-            try:
-                print "Connecting to rcmaster " ,rcmaster_uri
-                rcmaster_proxy = RoboCompRCMaster.rcmasterPrx.checkedCast(basePrx)
-            except Ice.SocketException:
-                raise Exception("RCMaster is not running")
-            proxyData["rcmaster"]["proxy"] = rcmaster_proxy
-        except Ice.Exception:
-            print 'Cannot connect to the remote object (rcmaster)'
-            traceback.print_exc()
-            status = 1
-
-
-        # Remote object connection for test1
-        try:
-            while True:
-                try:
-                    port = rcmaster_proxy.getComPort(proxyData["test"]["comp"],"localhost");
-                    basePrx = ic.stringToProxy("test:tcp -h localhost -p "+str(port))
-                    test_proxy = RoboCompTest.testPrx.checkedCast(basePrx)
-                    proxyData["test"]["proxy"] = test_proxy
-                except RoboCompRCMaster.ComponentNotFound:
-                    print 'waiting for test interface'
-                    time.sleep(3)
-                except Ice.Exception:
-                    print 'Cannot connect to the remote object (test)'
-                    traceback.print_exc()
-                    status = 1
-                else:
-                    break
-        except Ice.Exception, e:
-            print e
-            print 'Cannot get testProxy property.'
-            status = 1
+	# Remote object connection for rcmaster
+	proxyData["rcmaster"] = {"comp":"rcmaster","caster":rcmasterPrx.checkedCast,"name":"rcmaster"}
+	try:
+		with open(os.path.join(os.path.expanduser('~'), ".config/RoboComp/rcmaster.config"), 'r') as f:
+			rcmaster_uri = f.readline().strip().split(":")
+		basePrx = ic.stringToProxy("rcmaster:tcp -h "+rcmaster_uri[0]+" -p "+rcmaster_uri[1])
+		try:
+			print "Connecting to rcmaster " ,rcmaster_uri
+			rcmaster_proxy = rcmasterPrx.checkedCast(basePrx)
+		except Ice.SocketException:
+			raise Exception("RCMaster is not running")
+		proxyData["rcmaster"]["proxy"] = rcmaster_proxy
+	except Ice.Exception:
+		print 'Cannot connect to the remote object (rcmaster)'
+		traceback.print_exc()
+		status = 1
 
 
-    except:
-            traceback.print_exc()
-            status = 1
+	# Remote object connection for test
+	proxyData["test"] = {"comp":"client3","caster":testPrx.checkedCast,"name":"test"}
+	try:
+		while True:
+			try:
+				interfaces = rcmaster_proxy.getComp(proxyData["test"]["comp"],"localhost");
+				iface = [x for x in interfaces if x.name == proxyData["test"]["name"]][0]
+				basePrx = ic.stringToProxy(proxyData["test"]["name"]+":"+iface.protocol+" -h localhost -p "+str(iface.port))
+				proxyData["test"]["proxy"] = proxyData["test"]["caster"](basePrx)
+			except ComponentNotFound:
+				print 'waiting for test interface'
+				time.sleep(1)
+			except IndexError:
+				raise Exception(proxyData["test"]["comp"]+" dosnt provide"+proxyData["test"]["name"])
+				time.sleep(3)
+			except Ice.Exception:
+				print 'Cannot connect to the remote object (test)'
+				traceback.print_exc()
+				status = 1
+			else:
+				break
+	except Ice.Exception, e:
+		print e
+		print 'Cannot get testProxy property.'
+		status = 1
 
-    if status == 0:
-        mprx["proxyData"] = proxyData
-        worker = SpecificWorker(mprx)
+	if status == 0:
+		mprx['proxyData'] = proxyData
+		worker = SpecificWorker(mprx)
+		worker.setParams(parameters)
+		worker = SpecificWorker(mprx)
+		compInfo = compData(name=mprx["name"])
+		compInfo.interfaces = []
+		compInfo.interfaces.append(interfaceData("test"))
+		compInfo.interfaces.append(interfaceData("ASR"))
+		idata = rcmaster_proxy.registerComp(compInfo,False,True)
+		
+		# activate all interfaces
+		for iface in idata:
+			adapter = ic.createObjectAdapterWithEndpoints(iface.name.lower(), iface.protocol+' -h localhost -p '+str(iface.port))
+			workerObj = globals()[str(iface.name)+'I'](worker)
+			adapter.add(workerObj, ic.stringToIdentity(str(iface.name).lower()))
+			adapter.activate()
+			print "activated interface :", iface
+		print "Component Started"
 
 
-        # get port for all interfaces
-        compInfo = RoboCompRCMaster.compData(name=mprx["name"])
-        compInfo.interfaces = []
-        compInfo.interfaces.append(RoboCompRCMaster.interfaceData('test'))
-        compInfo.interfaces.append(RoboCompRCMaster.interfaceData('ASR'))
-        idata = rcmaster_proxy.registerComp(compInfo,False,True)
+		app.exec_()
 
-        # activate all interfaces
-        for iface in idata:
-            adapter = ic.createObjectAdapterWithEndpoints(iface.name.lower(), iface.protocol+' -h localhost -p '+str(iface.port))
-            workerObj = globals()[str(iface.name)+'I'](worker)
-            adapter.add(workerObj, ic.stringToIdentity(iface.name.lower()))
-            adapter.activate()
-            print "activated interface :", iface
-        print "Component Started"
-
-#       adapter.add(CommonBehaviorI(<LOWER>I, ic), ic.stringToIdentity('commonbehavior'))
-
-        app.exec_()
-
-    if ic:
-        try:
-            ic.destroy()
-        except:
-            traceback.print_exc()
-            status = 1
+	if ic:
+		try:
+			ic.destroy()
+		except:
+			traceback.print_exc()
+			status = 1

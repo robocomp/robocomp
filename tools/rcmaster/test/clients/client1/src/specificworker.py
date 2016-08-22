@@ -17,32 +17,10 @@
 #    along with RoboComp.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-import sys, os, Ice, traceback, time
+import sys, os, traceback, time
 
 from PySide import *
 from genericworker import *
-
-ROBOCOMP = ''
-try:
-    ROBOCOMP = os.environ['ROBOCOMP']
-except:
-    print '$ROBOCOMP environment variable not set, using the default value /opt/robocomp'
-    ROBOCOMP = '/opt/robocomp'
-if len(ROBOCOMP)<1:
-    print 'genericworker.py: ROBOCOMP environment variable not set! Exiting.'
-    sys.exit()
-
-
-preStr = "-I"+ROBOCOMP+"/interfaces/ --all "+ROBOCOMP+"/interfaces/"
-Ice.loadSlice(preStr+"RCMaster.ice")
-from RoboCompRCMaster import *
-Ice.loadSlice(preStr+"ASR.ice")
-from RoboCompASR import *
-Ice.loadSlice(preStr+"Test.ice")
-from RoboCompTest import *
-
-
-from asrI import *
 
 class SpecificWorker(GenericWorker):
     def __init__(self, proxy_map):
@@ -51,41 +29,23 @@ class SpecificWorker(GenericWorker):
         self.Period = 2000
         self.timer.start(self.Period)
 
-    def setParams(self, params):
-        #try:
-        #    par = params["InnerModelPath"]
-        #    innermodel_path=par.value
-        #    innermodel = InnerModel(innermodel_path)
-        #except:
-        #    traceback.print_exc()
-        #    print "Error reading config params"
-        return True
-
-    @QtCore.Slot()
-    def compute(self):
-        # print '\nSpecificWorker.compute...'
-        try:
-            self.proxyData["test1"]["proxy"].printmsg("hello from " + self.name)
-        except Ice.SocketException:
-            print "exception t1"
-            self.waitForComp("test1",True)
-
-        try:
-            self.proxyData["test2"]["proxy"].printmsg("hello from " + self.name)
-        except Ice.SocketException:
-            print "exception t2"
-            self.waitForComp("test2",True)
-        
-        return True
-
+class SpecificWorker(GenericWorker):
+    def __init__(self, proxy_map):
+        super(SpecificWorker, self).__init__(proxy_map)
+        self.timer.timeout.connect(self.compute)
+        self.Period = 2000
+        self.timer.start(self.Period)
+    
     def waitForComp(self, interfaceName, updateAll=False):
         '''
-        to be called when an interface call fails and need to wait for
-         componet hosting that interface
+         To be called when an interface call fails and need to wait
+         untill the interface is up
 
         interfaceName - name of the interface failed
         updateAll - update all proxies hosted by this failed component
         '''
+        if interfaceName not in self.proxyData:
+            raise Exception("interface :"+interfaceName+"dosent exist")
         self.timer.stop()
         ic = Ice.initialize()
         
@@ -94,12 +54,10 @@ class SpecificWorker(GenericWorker):
         compName = self.proxyData[interfaceName]["comp"]
         # create name to dummy name map
         nameMap = {v["name"]:k for (k,v) in self.proxyData.iteritems() if v["comp"] == compName }
-        # print nameMap
         
         while True:
             try:
                 interfaces = self.proxyData["rcmaster"]["proxy"].getComp(compName,host)
-                # print interfaces
 
                 for iface in interfaces:
                     if iface.name == self.proxyData[interfaceName]["name"] or updateAll:
@@ -108,26 +66,53 @@ class SpecificWorker(GenericWorker):
                             self.proxyData[nameMap[iface.name]]["proxy"] = self.proxyData[nameMap[iface.name]]["caster"](basePrx)
                         except KeyError:
                             # we dont use this interface
-                            # print "key err"
                             continue
-                print "Connected to " + compName
-            except ( ComponentNotFound, Ice.SocketException) as e:
+            except (ComponentNotFound, Ice.SocketException) as e:
                 print 'waiting for '+ compName
                 time.sleep(3)
             except Ice.Exception:
                 print 'Cannot connect to the remote object '+compName
                 traceback.print_exc()
                 time.sleep(3)
+            except KeyError:
+                self.timer.start(self.Period)
+                raise Exception("Cant get proxy for rcmaster")
+                break
             else:
                 self.timer.start(self.Period)
                 break
+
+    def setParams(self, params):
+        #try:
+        #   par = params["InnerModelPath"]
+        #   innermodel_path=par.value
+        #   innermodel = InnerModel(innermodel_path)
+        #except:
+        #   traceback.print_exc()
+        #   print "Error reading config params"
+        return True
+
+    @QtCore.Slot()
+    def compute(self):
+        try:
+            self.proxyData["test"]["proxy"].printmsg("hello from " + self.name)
+        except Ice.SocketException:
+            print "exception test"
+            self.waitForComp("test",True)
+        try:
+            self.proxyData["test2"]["proxy"].printmsg("hello from " + self.name)
+        except Ice.SocketException:
+            print "exception test"
+            self.waitForComp("test",True)
+        return True
+
 
     #
     # listenWav
     #
     def listenWav(self, path):
         #
-        # YOUR CODE HERE
+        #implementCODE
         #
         pass
 
@@ -137,7 +122,7 @@ class SpecificWorker(GenericWorker):
     #
     def listenVector(self, audio):
         #
-        # YOUR CODE HERE
+        #implementCODE
         #
         pass
 
@@ -147,7 +132,7 @@ class SpecificWorker(GenericWorker):
     #
     def resetPhraseBuffer(self):
         #
-        # YOUR CODE HERE
+        #implementCODE
         #
         pass
 
@@ -158,7 +143,7 @@ class SpecificWorker(GenericWorker):
     def getLastPhrase(self):
         ret = string()
         #
-        # YOUR CODE HERE
+        #implementCODE
         #
         return ret
 
@@ -169,6 +154,11 @@ class SpecificWorker(GenericWorker):
     def phraseAvailable(self):
         ret = bool()
         #
-        # YOUR CODE HERE
+        #implementCODE
         #
         return ret
+
+
+
+
+

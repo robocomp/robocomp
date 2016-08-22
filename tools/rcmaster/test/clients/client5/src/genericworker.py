@@ -38,7 +38,7 @@ Ice.loadSlice(preStr+"RCMaster.ice")
 from RoboCompRCMaster import *
 preStr = "-I"+ROBOCOMP+"/interfaces/ --all "+ROBOCOMP+"/interfaces/"
 Ice.loadSlice(preStr+"Test.ice")
-from RoboCompTest import *
+from RoboCompTests import *
 preStr = "-I"+ROBOCOMP+"/interfaces/ --all "+ROBOCOMP+"/interfaces/"
 Ice.loadSlice(preStr+"ASR.ice")
 from RoboCompASR import *
