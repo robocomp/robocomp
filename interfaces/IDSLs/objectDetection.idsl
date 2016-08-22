@@ -33,5 +33,3 @@ module RoboCompobjectDetection
 		void getRotation(out float rx,out float ry,out float rz);
 	};
 };
-
-
