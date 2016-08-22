@@ -136,6 +136,7 @@ public:
 	friend class InnerModelReader;
 	bool open(std::string xmlFilePath);
 	bool save(QString path);	
+	InnerModel* copy();
 
 	/// Auto update method
 	void update();
