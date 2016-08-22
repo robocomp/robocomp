@@ -118,12 +118,13 @@ class CommonBehaviorI(RoboCompCommonBehavior.CommonBehavior):
 if __name__ == '__main__':
     app = QtCore.QCoreApplication(sys.argv)
     params = copy.deepcopy(sys.argv)
+    bin_path = os.path.dirname(os.path.abspath(__file__))
     if len(params) > 1:
         if not params[1].startswith('--Ice.Config=') and not params[1].startswith("--"):
             params[1] = '--Ice.Config=' + params[1]
     elif len(params) == 1:
-        params.append('--Ice.Config=etc/config')
-    ic = Ice.initialize(params)    
+        params.append('--Ice.Config='+bin_path+'/config')
+    ic = Ice.initialize(params)
     for param in params:
         if param.startswith('--'):
             name = search('--(.*)=',param).group(1)
