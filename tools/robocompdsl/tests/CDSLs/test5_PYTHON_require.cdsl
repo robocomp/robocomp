@@ -1,0 +1,11 @@
+import "/robocomp/interfaces/IDSLs/JointMotor.idsl";
+
+Component require
+{
+	Communications
+	{
+		requires JointMotor, JointMotor;
+	};
+	language python;
+	gui Qt(QWidget);
+};

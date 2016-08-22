@@ -141,7 +141,18 @@ using namespace std;
 
 pool = IDSLPool(theIDSLs)
 for m in pool.modulePool:
-	cog.outl("using namespace "+pool.modulePool[m]['name']+";")
+	rosModule = False
+	for imp in component['subscribesTo']+component['publishes']:
+		if type(imp) == str:
+			im = imp
+		else:
+			im = imp[0]
+		if not communicationIsIce(imp):
+			module = pool.moduleProviding(im)
+			if module['name'] == pool.modulePool[m]['name']:
+				rosModule = True
+	if rosModule == False:
+		cog.outl("using namespace "+pool.modulePool[m]['name']+";")
 
 ]]]
 [[[end]]]
@@ -189,7 +200,7 @@ if component['usingROS'] == True:
 					for mname in interface['methods']:
 						method = interface['methods'][mname]
 						for p in method['params']:
-							s = "\""+nname+"_"+mname+"\""
+							s = "\""+mname+"\""
 							if p['type'] in ('float','int','uint'):
 								cog.outl("<TABHERE><TABHERE>pub_"+mname+" = node->advertise<std_msgs::"+p['type'].capitalize()+"32>(node->resolveName("+s+"), 1000);")
 							elif p['type'] == ('string'):
@@ -245,7 +256,7 @@ if component['usingROS'] == True:
 				if interface['name'] == nname:
 					for mname in interface['methods']:
 						method = interface['methods'][mname]
-						s = "\""+nname+"_"+mname+"\""
+						s = "\""+mname+"\""
 						cog.outl("<TABHERE><TABHERE>srv_"+mname+" = node->serviceClient<"+module['name']+"::"+mname+">(node->resolveName("+s+"), 1000);")
 			cog.outl("<TABHERE>}")
 			cog.outl("<TABHERE>~ServiceClient"+nname+"(){}")

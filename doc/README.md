@@ -23,6 +23,7 @@
 
 [Compiling RoboComp with collision detection](Compiling RoboComp with collision detection.md)
 
+[RoboComp Component & Ros Node chatter](RobocompRosChatter.md)
 
 
 

@@ -68,12 +68,8 @@ if len(ROBOCOMP)<1:
 	
 
 [[[cog
-for imp in component['recursiveImports']:
-	incl = imp.split('/')[-1].split('.')[0]
-	if incl.lower() == theInterface:
-		break
 cog.outl('preStr = "-I"+ROBOCOMP+"/interfaces/ --all "+ROBOCOMP+"/interfaces/"')
-cog.outl('\nIce.loadSlice(preStr+"'+incl+'.ice")')
+cog.outl('\nIce.loadSlice(preStr+"'+theIDSLs.split('.')[0]+'.ice")')
 cog.outl('from ' + module['name'] + ' import *')
 cog.outl('\nclass ' + theInterface+ 'I('+theInterface+'):')
 ]]]

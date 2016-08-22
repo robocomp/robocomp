@@ -93,7 +93,7 @@ if component['usingROS'] == True:
 	cog.outl('import rospy')
 	cog.outl('from std_msgs.msg import *')
 	for include in modulesList:
-		cog.outl("from "+include['name']+".msg import "+include['strName'])
+		cog.outl("from "+include['name']+" import "+include['strName'])
 	srvIncludes = {}
 	for imp in component['requires']:
 		if type(imp) == str:
@@ -105,7 +105,7 @@ if component['usingROS'] == True:
 			for interface in module['interfaces']:
 				if interface['name'] == im:
 					for mname in interface['methods']:
-						srvIncludes[module['name']] = 'from '+module['name']+'.srv import *'
+						srvIncludes[module['name']] = 'from '+module['name']+' import *'
 	for imp in component['implements']:
 		if type(imp) == str:
 			im = imp
@@ -116,7 +116,7 @@ if component['usingROS'] == True:
 			for interface in module['interfaces']:
 				if interface['name'] == im:
 					for mname in interface['methods']:
-						srvIncludes[module['name']] = 'from '+module['name']+'.srv import *'
+						srvIncludes[module['name']] = 'from '+module['name']+' import *'
 	for srv in srvIncludes.values():
 		cog.outl(srv)
 A()
@@ -226,7 +226,7 @@ for req, num in getNameNumber(component['requires']):
 	else:
 		rq = req[0]
 	if not communicationIsIce(req):
-		cog.outl("<TABHERE><TABHERE>self."+rq.lower()+" = ServiceClient"+rq+"()")
+		cog.outl("<TABHERE><TABHERE>self."+rq.lower()+"_proxy = ServiceClient"+rq+"()")
 
 for pb, num in getNameNumber(component['publishes']):
 	if type(pb) == str:
@@ -234,9 +234,9 @@ for pb, num in getNameNumber(component['publishes']):
 	else:
 		pub = pb[0]
 	if communicationIsIce(pb):
-		cog.outl("<TABHERE><TABHERE>self."+pub.lower()+num+" = mprx[\""+pub+"Pub"+num+"\"]")
+		cog.outl("<TABHERE><TABHERE>self."+pub.lower()+num+"_proxy = mprx[\""+pub+"Pub"+num+"\"]")
 	else:
-		cog.outl("<TABHERE><TABHERE>self."+pub.lower()+" = Publisher"+pub+"()")
+		cog.outl("<TABHERE><TABHERE>self."+pub.lower()+"_proxy = Publisher"+pub+"()")
 ]]]
 [[[end]]]
 

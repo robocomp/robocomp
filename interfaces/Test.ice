@@ -6,14 +6,23 @@
 //  Source: Test.idsl
 //  
 //******************************************************************   
-#ifndef ROBOCOMPTEST_ICE
-#define ROBOCOMPTEST_ICE
+#ifndef ROBOCOMPTESTS_ICE
+#define ROBOCOMPTESTS_ICE
 
-module RoboCompTest{
+module RoboCompTests{
 
 	interface test{
 		void  printmsg(string message);
 	};
+
+	["cpp:comparable"]
+	interface serviceTest{
+		idempotent void srvTest(int id, out int idTest);
+	};
+
+	interface publishTest{
+		void msgTest(int id);
+	};
 };
-  
+
 #endif

@@ -1,0 +1,11 @@
+import "/robocomp/interfaces/IDSLs/JointMotor.idsl";
+
+Component implement1
+{
+	Communications
+	{
+		implements JointMotor;
+	};
+	language cpp;
+	gui Qt(QWidget);
+};
