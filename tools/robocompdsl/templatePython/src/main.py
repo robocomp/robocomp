@@ -31,6 +31,7 @@ REQUIRE_STR = """
 <TABHERE><TABHERE><TABHERE><TABHERE>proxyData["<NORMAL><NUM>"]["proxy"] = proxyData["<NORMAL><NUM>"]["caster"](basePrx)
 <TABHERE><TABHERE><TABHERE>except ComponentNotFound:
 <TABHERE><TABHERE><TABHERE><TABHERE>print 'waiting for <NORMAL><NUM> interface'
+<TABHERE><TABHERE><TABHERE><TABHERE>time.sleep(1)
 <TABHERE><TABHERE><TABHERE>except IndexError:
 <TABHERE><TABHERE><TABHERE><TABHERE>raise Exception(proxyData["<NORMAL><NUM>"]["comp"]+" dosnt provide"+proxyData["<NORMAL><NUM>"]["name"])
 <TABHERE><TABHERE><TABHERE><TABHERE>time.sleep(3)
@@ -268,6 +269,14 @@ except:
 	pass
 
 for req, num in getNameNumber(component['requires']):
+	if type(req) == str:
+		rq = req
+	else:
+		rq = req[0]
+	if communicationIsIce(req) and rq == 'rcmaster':
+		cog.outl(REQUIRE_STR_RCMASTER)
+
+for req, num in getNameNumber(component['requires']):
 	if num == '1':
 		num = ''
 	if type(req) == str:
@@ -276,7 +285,7 @@ for req, num in getNameNumber(component['requires']):
 		rq = req[0]
 	if communicationIsIce(req):
 		if rq.lower() == "rcmaster":
-			w = REQUIRE_STR_RCMASTER
+			continue
 		else:
 			w = REQUIRE_STR.replace("<NORMAL>", rq).replace("<NUM>", num).replace("<LOWER>", rq.lower())
 		cog.outl(w)
