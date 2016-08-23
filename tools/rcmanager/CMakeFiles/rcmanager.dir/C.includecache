@@ -1,0 +1,20 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/h20/robocomp/tools/rcmanager/rcmanager.c
+unistd.h
+-
+stdio.h
+-
+stdlib.h
+-
+string.h
+-
+malloc.h
+-
+
