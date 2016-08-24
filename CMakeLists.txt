@@ -137,3 +137,5 @@ add_custom_target(spackage
 #packaging
 include(CPack)
 add_custom_command(TARGET package POST_BUILD COMMAND bash fixup_deb.sh; WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} )
+
+execute_process (COMMAND bash ${RoboComp_SOURCE_DIR}/script.sh)
