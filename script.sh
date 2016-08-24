@@ -2,13 +2,13 @@
 # @Author: doody
 # @Date:   2016-07-21 12:30:59
 # @Last Modified by:   swapsharma
-# @Last Modified time: 2016-07-31 17:13:05
+# @Last Modified time: 2016-08-24 23:51:02
 # @Todo: Support for all major os
 # @Todo: Need to make script more robust
 
 # To install git-annex
 echo "Cloning git-annex repository ..."
-git clone git://git-annex.branchable.com/ ~/git-annex
+git clone https://github.com/joeyh/git-annex.git ~/git-annex
 
 echo "Installing stack ..."
 # Install stack
