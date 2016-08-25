@@ -1,4 +1,4 @@
-CommonBehavior.Endpoints=tcp -p 1
+CommonBehavior.Endpoints=tcp -p 0
 
 
 [[[cog
@@ -22,21 +22,11 @@ def SPACE(i=0):
 from parseCDSL import *
 component = CDSLParsing.fromFile(theCDSL)
 
+cog.outl('# General properties of Component')
+cog.outl('Ice.ProgramName='+component['name'])
+cog.out('\n\n')
+
 storm = False
-
-text = False
-for ima in component['implements']:
-	if type(ima) == str:
-		im = ima
-	else:
-		im = ima[0]
-	if text == False:
-		cog.outl('# Endpoints for implemented interfaces')
-		text = True
-	cog.outl(im+".Endpoints=tcp -p 0")
-if text:
-	cog.out('\n\n')
-
 
 text = False
 for sb in component['subscribesTo']:
@@ -51,20 +41,6 @@ for sb in component['subscribesTo']:
 	if communicationIsIce(sb):
 		cog.outl(str(xx)+"Topic.Endpoints=tcp -p 0")
 
-if text:
-	cog.out('\n\n')
-
-
-text = False
-for namea, number in getNameNumber(component['requires']):
-	if type(namea) == str:
-		name = namea
-	else:
-		name = namea[0]
-	if text == False:
-		cog.outl('# Proxies for required interfaces')
-		text = True
-	cog.outl(name + number + "Proxy = " + name.lower() + ":tcp -h localhost -p 0")
 if text:
 	cog.out('\n\n')
 

@@ -66,6 +66,59 @@ class SpecificWorker(GenericWorker):
 		self.Period = 2000
 		self.timer.start(self.Period)
 
+class SpecificWorker(GenericWorker):
+	def __init__(self, proxy_map):
+		super(SpecificWorker, self).__init__(proxy_map)
+		self.timer.timeout.connect(self.compute)
+		self.Period = 2000
+		self.timer.start(self.Period)
+	
+	def waitForComp(self, interfaceName, updateAll=False):
+		'''
+		 To be called when an interface call fails and need to wait
+		 untill the interface is up
+
+		interfaceName - name of the interface failed
+		updateAll - update all proxies hosted by this failed component
+		'''
+		if interfaceName not in self.proxyData:
+			raise Exception("interface :"+interfaceName+"dosent exist")
+		self.timer.stop()
+		ic = Ice.initialize()
+		
+		dg = str(self.proxyData[interfaceName]["proxy"].ice_datagram())
+		host = dg[ dg.find('-h')+3:dg.find("-p")-1]
+		compName = self.proxyData[interfaceName]["comp"]
+		# create name to dummy name map
+		nameMap = {v["name"]:k for (k,v) in self.proxyData.iteritems() if v["comp"] == compName }
+		
+		while True:
+			try:
+				interfaces = self.proxyData["rcmaster"]["proxy"].getComp(compName,host)
+
+				for iface in interfaces:
+					if iface.name == self.proxyData[interfaceName]["name"] or updateAll:
+						basePrx = ic.stringToProxy(iface.name+":"+iface.protocol+" -h "+host+" -p "+str(iface.port))                        
+						try:
+							self.proxyData[nameMap[iface.name]]["proxy"] = self.proxyData[nameMap[iface.name]]["caster"](basePrx)
+						except KeyError:
+							# we dont use this interface
+							continue
+			except (ComponentNotFound, Ice.SocketException) as e:
+				print 'waiting for '+ compName
+				time.sleep(3)
+			except Ice.Exception:
+				print 'Cannot connect to the remote object '+compName
+				traceback.print_exc()
+				time.sleep(3)
+			except KeyError:
+				self.timer.start(self.Period)
+				raise Exception("Cant get proxy for rcmaster")
+				break
+			else:
+				self.timer.start(self.Period)
+				break
+
 	def setParams(self, params):
 		#try:
 		#	par = params["InnerModelPath"]
@@ -80,11 +133,13 @@ class SpecificWorker(GenericWorker):
 	def compute(self):
 		print 'SpecificWorker.compute...'
 		#computeCODE
-		#try:
-		#	self.differentialrobot_proxy.setSpeedBase(100, 0)
-		#except Ice.Exception, e:
-		#	traceback.print_exc()
-		#	print e
+		# try:
+		# 	self.proxyData["differentialrobot"]["proxy"].setSpeedBase(100, 0)
+		# except Ice.SocketException:
+		# 	self.waitForComp("differentialrobot",True)
+		# except Ice.Exception, e:
+		# 	traceback.print_exc()
+		# 	print e			
 		return True
 
 [[[cog

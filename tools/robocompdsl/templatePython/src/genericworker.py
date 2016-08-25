@@ -216,6 +216,8 @@ Z()
 	def __init__(self, mprx):
 		super(GenericWorker, self).__init__()
 
+		self.name = mprx["name"]
+		self.proxyData = mprx["proxyData"]
 
 [[[cog
 for req, num in getNameNumber(component['requires']):
@@ -223,9 +225,7 @@ for req, num in getNameNumber(component['requires']):
 		rq = req
 	else:
 		rq = req[0]
-	if communicationIsIce(req):
-		cog.outl("<TABHERE><TABHERE>self."+rq.lower()+num+"_proxy = mprx[\""+rq+"Proxy"+num+"\"]")
-	else:
+	if not communicationIsIce(req):
 		cog.outl("<TABHERE><TABHERE>self."+rq.lower()+"_proxy = ServiceClient"+rq+"()")
 
 for pb, num in getNameNumber(component['publishes']):
