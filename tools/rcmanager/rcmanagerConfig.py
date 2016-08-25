@@ -25,12 +25,30 @@
 #
 
 
-# Importamos el modulo libxml2
+
 import libxml2, sys,threading,Ice ,time,os 
 from PyQt4 import QtCore, QtGui, Qt,Qsci
 filePath = 'rcmanager.xml'
 from time import localtime, strftime##To log data
 
+
+ROBOCOMP = ''
+try:
+	ROBOCOMP = os.environ['ROBOCOMP']
+except:
+	print '$ROBOCOMP environment variable not set, using the default value /opt/robocomp'
+	ROBOCOMP = '/opt/robocomp'
+if len(ROBOCOMP)<1:
+	print 'ROBOCOMP environment variable not set! Exiting.'
+	sys.exit()
+
+
+
+preStr = "-I"+ROBOCOMP+"/interfaces/ --all "+ROBOCOMP+"/interfaces/"
+Ice.loadSlice(preStr+"CommonBehavior.ice")
+import RoboCompCommonBehavior
+Ice.loadSlice(preStr+"DifferentialRobot.ice")
+import RoboCompDifferentialRobot
 
 
 try:
@@ -169,7 +187,7 @@ class Logger():##This will be used to log data
 		self.logArea=logArea
 		self.file=file
 		self.fileWrite=False
-		self.filenam=""
+		self.filename=""
 	def logData(self,text=" ",arg="G"):#To log into the textEdit widget
 		if arg=="G":
 			color=QtGui.QColor.fromRgb(0,255,0)
@@ -387,7 +405,7 @@ class GroupSelector(QtGui.QDialog):
 
 
 ##
-#This is inherited tool Button ..Main reason was to show its purpose while hovering the button
+#This is inherited tool Button ..Main reason was to show its purpose while hovering the button(Not using anymore)
 ##
 
 class toolButton(QtGui.QToolButton):
@@ -922,11 +940,10 @@ class NodeConnection(QtGui.QGraphicsItem):
 ##
 				
 class ComponentChecker(threading.Thread):#This will check the status of components
-	def __init__(self,component,logger=None):	
-		self.logger=logger
-
+	def __init__(self,component):	
 		threading.Thread.__init__(self)
 		self.component=component
+		self.transmitter=QtCore.QObject()
 		self.mutex = QtCore.QMutex(QtCore.QMutex.Recursive)
 		self.daemon = True
 		self.reset()
@@ -934,11 +951,17 @@ class ComponentChecker(threading.Thread):#This will check the status of componen
 		self.alive = False
 		self.aPrx = None
 		self.started=False
+	def getFreq(self):
+		self.mutex.lock()
+		self.object=RoboCompCommonBehavior.CommonBehaviorPrx.checkedCast(self.aPrx)
+		print self.object.getFreq()
+		self.mutex.unlock()
 	def setLogger(self,logger):
 		self.logger=logger
 	def haveStarted(self):
 		return self.started
 	def initializeComponent(self):#Called to set the component and to initialize the Ice proxy
+		self.mutex.lock()
 		try:
 			ic=Ice.initialize(sys.argv)
 			self.aPrx = ic.stringToProxy(self.component.endpoint)
@@ -950,7 +973,14 @@ class ComponentChecker(threading.Thread):#This will check the status of componen
 			if len(self.component.endpoint) == 0:
 				print 'please, provide an endpoint'
 
+		self.mutex.unlock()
+
 	def run(self):
+
+		if self.aPrx==None:
+
+			self.initializeComponent()
+
 		#global global_ic
 		while self.exit == False:
 			if self.started:
@@ -987,14 +1017,17 @@ class ComponentChecker(threading.Thread):#This will check the status of componen
 	def runrun(self):
 		if not self.isAlive(): self.start()#Note this is different isalive
 	def changed(self):
-		if self.alive==False:
-			if self.logger!=None:
-				self.logger.logData("Component :: "+self.component.alias+" Is now Up")
-		if self.alive==True:
-			if self.logger!=None:
-				self.logger.logData("Component:: "+self.component.alias+ " Is Down","R")
+		
 		self.component.status=not self.alive
 		self.component.graphicsItem.update()
+
+		
+		if self.alive==False:
+			print "Component "+self.component.alias+ " UP"  ##Couldn't log into the main page..Because the logger QOWidge cannot be used in another thread..
+		if self.alive==True:
+			print "Component "+self.component.alias+ " Down"
+		
+		
 
 ##
 #This widget is used to display the details of a component when hovering over the nodes
@@ -1007,11 +1040,13 @@ class ShowItemDetails(QtGui.QWidget):##This contains the GUI and internal proces
 		self.component=None
 		self.setParent(parent)
 		self.detailString=" "
-		self.label=QtGui.QTextEdit(self)
-		self.label.setGeometry(0,0,150,150)
+		self.label=QtGui.QLabel(self)
+		self.label.setGeometry(0,0,200,150)
 		self.isShowing=False
+		self.setAutoFillBackground(True)
 		self.hide()
 	def showdetails(self,x,y,item=None):
+		self.item=item
 		string=""
 		string=string+"Name ::"+item.alias+"\n"
 		string=string+"Group Name:: "+item.groupName+"\n"
@@ -1020,8 +1055,14 @@ class ShowItemDetails(QtGui.QWidget):##This contains the GUI and internal proces
 		self.setGeometry(x,y,150,150)
 	  	self.isShowing=True
 	  	self.show()
-	def mousePressEvent(self,event):
-		self.hide()
+
+	#def contextMenuEvent(self,event):
+	#	print "hello"
+	#	GloPos=event.globalPos()
+	#	self.hide()
+	#	self.parent.graphTree.CompoPopUpMenu.setComponent(self.item.graphicsItem)
+	#	self.CompoPopUpMenu.popup(GloPos)
+		
 
 
 #	
@@ -1029,7 +1070,7 @@ class ShowItemDetails(QtGui.QWidget):##This contains the GUI and internal proces
 #
 
 class CompInfo(QtCore.QObject):##This contain the general Information about the Components which is read from the files and created
-	def __init__(self,view=None,mainWindow=None):
+	def __init__(self,view=None,mainWindow=None,name="Component"):
 
 		QtCore.QObject.__init__(self)
 		self.vel_x=0
@@ -1044,7 +1085,7 @@ class CompInfo(QtCore.QObject):##This contain the general Information about the 
 		self.workingdir = ''
 		self.compup = ''
 		self.compdown = ''
-		self.alias = 'Component'
+		self.alias =name
 		self.dependences = []
 		self.configFile = ''
 		self.x = 0##This is not reliable >>Have to fix the bug
@@ -1060,7 +1101,7 @@ class CompInfo(QtCore.QObject):##This contain the general Information about the 
 		
 		self.CheckItem=ComponentChecker(self)##Checking the status of component
 		self.graphicsItem=VisualNode(parent=self)
-		self.DirectoryItem=DirectoryItem(parent=self)
+		self.DirectoryItem=DirectoryItem(parent=self,name=self.alias)
 		#self.Controller=ComponentController(parent=self)
 	def setGroup(self,group):
 		self.group=group
@@ -1141,13 +1182,14 @@ class ComponentScene(QtGui.QGraphicsScene):#The scene onwhich we are drawing the
 			
 class DirectoryItem(QtGui.QPushButton):#This will be listed on the right most side of the software
 
-	def __init__(self,parent=None,args=None):
+	def __init__(self,parent=None,args=None,name="Component"):
 		QtGui.QPushButton.__init__(self,args)
 		self.parent=parent
 		self.args=args
 		self.connect(self,QtCore.SIGNAL("clicked()"),self.clickEvent)
 		QtGui.QPushButton.setIcon(self,QtGui.QIcon(QtGui.QPixmap(getDefaultIconPath())))
-		self.setText("Component")
+		self.setText(name)
+
 	def setIcon(self,arg):
 		self.Icon=QtGui.QIcon()
 		self.Icon.addPixmap(arg)
@@ -1158,15 +1200,16 @@ class DirectoryItem(QtGui.QPushButton):#This will be listed on the right most si
 		self.parent.View.CompoPopUpMenu.popup(event.globalPos())
 
 	def clickEvent(self):#What happens when clicked
-		print "Clicked"+ self.parent.alias
+		#print "Clicked"+ self.parent.alias
 		index=self.parent.mainWindow.UI.tabWidget.currentIndex()
-		print index
+		#print index
 		self.parent.mainWindow.currentComponent=self.parent
 		if index==0:
 			self.parent.CommonProxy.setVisibility(True)
 			#print "Set visiblitiy true"
-		if index==1 or index==2:
-			self.parent.CommonProxy.setVisibility(False)
+		if index==1:
+			self.parent.mainWindow.CodeEditor.findFirst(self.parent.alias,False,True,True,True)
+
 
 ##
 #This classes will take care of multiplying the position.That is if the nodes are too close to each other they will strech them
@@ -1321,7 +1364,7 @@ class ComponentMenu(QtGui.QMenu):
 		
 		self.ActionUp=QtGui.QAction("Up",parent)
 		self.ActionDown=QtGui.QAction("Down",parent)
-		self.ActionSettings=QtGui.QAction("Settings",parent)
+		self.ActionEdit=QtGui.QAction("Edit",parent)
 		self.ActionControl=QtGui.QAction("Control",parent)
 		self.ActionNewConnection=QtGui.QAction("New Connection",parent)
 		self.ActionAddToGroup=QtGui.QAction("Add to Group",parent)
@@ -1329,20 +1372,23 @@ class ComponentMenu(QtGui.QMenu):
 		self.ActionRemoveFromGroup=QtGui.QAction("Remove Group",parent)
 		self.ActionUpGroup=QtGui.QAction("UP All",parent)
 		self.ActionDownGroup=QtGui.QAction("DOWN All",parent)
-		
+		#self.ActionFreq=QtGui.QAction("Freq",parent)
+
 		self.GroupMenu=QtGui.QMenu("Group",parent)
 		self.GroupMenu.addAction(self.ActionAddToGroup)
 		self.GroupMenu.addAction(self.ActionRemoveFromGroup)
 		self.GroupMenu.addAction(self.ActionUpGroup)
 		self.GroupMenu.addAction(self.ActionDownGroup)
 
+		#self.addAction(self.ActionFreq)
 		self.addAction(self.ActionDelete)
 		self.addAction(self.ActionUp)
 		self.addAction(self.ActionDown)
 		self.addAction(self.ActionNewConnection)
 		self.addMenu(self.GroupMenu)
 		self.addAction(self.ActionControl)
-		self.addAction(self.ActionSettings)
+		self.addAction(self.ActionEdit)
+
 	def setComponent(self,component):
 		self.currentComponent=component
 
@@ -1482,7 +1528,7 @@ def parseNode(node, components,generalSettings,logger):#To get the properties of
 	if node.type == "element" and node.name == "node":
 		child = node.children
 		comp = CompInfo()
-		comp.CheckItem.setLogger(logger)
+		#comp.CheckItem.setLogger(logger)
 		comp.alias = parseSingleValue(node, 'alias', False)
 		#print "Started reading component:: "+comp.alias
 		comp.DirectoryItem.setText(comp.alias)
@@ -1673,3 +1719,10 @@ def downComponent(component,Logger):#To down a particular component
 			pass
 		finally:
 			pass
+
+
+def getXmlNode(editor,name):
+	flag=False
+	while flag==False:
+		editor.findFirst(name,False,True,True,True)
+		CursPoint=editor.getCursorPosition()

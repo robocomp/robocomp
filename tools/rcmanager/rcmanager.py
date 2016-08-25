@@ -58,7 +58,7 @@ class MainClass(QtGui.QMainWindow):
 
 		self.UI=ui_formManager.Ui_MainWindow()
 		self.UI.setupUi(self)
-		
+		self.UI.tabWidget.removeTab(0)
 		self.Logger=rcmanagerConfig.Logger(self.UI.textBrowser)
 
 		self.SaveWarning=rcmanagerConfig.SaveWarningDialog(self)
@@ -136,6 +136,7 @@ class MainClass(QtGui.QMainWindow):
 		self.connect(self.graphTree.BackPopUpMenu.ActionNewGroup,QtCore.SIGNAL("triggered(bool)"),self.addNewGroup)
 		self.connect(self.graphTree.BackPopUpMenu.ActionStretch,QtCore.SIGNAL("triggered(bool)"),self.stretchGraph)
 
+		self.connect(self.graphTree.CompoPopUpMenu.ActionEdit,QtCore.SIGNAL("triggered(bool)"),self.EditSelectedComponent)
 		self.connect(self.graphTree.CompoPopUpMenu.ActionDelete,QtCore.SIGNAL("triggered(bool)"),self.deleteSelectedComponent)
 		self.connect(self.graphTree.CompoPopUpMenu.ActionUp,QtCore.SIGNAL("triggered(bool)"),self.upSelectedComponent)
 		self.connect(self.graphTree.CompoPopUpMenu.ActionAddToGroup,QtCore.SIGNAL("triggered(bool)"),self.addComponentToGroup)
@@ -145,18 +146,27 @@ class MainClass(QtGui.QMainWindow):
 		self.connect(self.graphTree.CompoPopUpMenu.ActionRemoveFromGroup,QtCore.SIGNAL("triggered(bool)"),self.componentRemoveFromGroup)
 		self.connect(self.graphTree.CompoPopUpMenu.ActionUpGroup,QtCore.SIGNAL("triggered(bool)"),self.upGroup)
 		self.connect(self.graphTree.CompoPopUpMenu.ActionDownGroup,QtCore.SIGNAL("triggered(bool)"),self.downGroup)
-		
+		#self.connect(self.graphTree.CompoPopUpMenu.ActionFreq,QtCore.SIGNAL("triggered(bool)"),self.getFreq)
 
 		self.connect(self.UI.toolButton_2,QtCore.SIGNAL("clicked()"),self.searchEnteredAlias)
+		self.connect(self.UI.toolButton_7,QtCore.SIGNAL("clicked()"),self.simulatorOn)
+		self.connect(self.UI.toolButton_8,QtCore.SIGNAL("clicked()"),self.simulatorOff)
+
 		self.connect(self.SaveWarning,QtCore.SIGNAL("save()"),self.saveXmlFile)
 		self.connect(self.UI.toolButton_3,QtCore.SIGNAL("clicked()"),self.refreshTreeFromCode)
 		self.connect(self.UI.toolButton_4,QtCore.SIGNAL("clicked()"),self.addNetworkTempl)
 		self.connect(self.UI.toolButton_5,QtCore.SIGNAL("clicked()"),self.addComponentTempl)
 		self.connect(self.UI.toolButton_6,QtCore.SIGNAL("clicked()"),self.refreshCodeFromTree)
 		self.connect(self.UI.toolButton_9,QtCore.SIGNAL("clicked()"),self.editorFontSettings)
-		self.connect(self.UI.toolButton_10,QtCore.SIGNAL("clicked()"),self.getNetworkSetting)
+		#self.connect(self.UI.toolButton_10,QtCore.SIGNAL("clicked()"),self.getNetworkSetting)(Once finished Uncomment this)
 		self.connect(self.UI.toolButton,QtCore.SIGNAL("clicked()"),self.addNewComponent)
 		self.Logger.logData("Tool Started")
+	def getFreq(self):
+		comp=self.graphTree.CompoPopUpMenu.currentComponent.parent 
+		comp.CheckItem.getFreq()
+	def EditSelectedComponent(self):	
+		self.UI.tabWidget.setCurrentIndex(1)
+		self.CodeEditor.findFirst(self.graphTree.CompoPopUpMenu.currentComponent.parent.alias,False,True,True,True)
 
 	def setLogFile(self):
 		self.LogFileSetter.setFile() 
@@ -227,41 +237,111 @@ class MainClass(QtGui.QMainWindow):
 		string=rcmanagerConfig.getXmlFromNetwork(self.networkSettings,self.componentList,self.Logger)
 		self.CodeEditor.setText(string)
 		self.Logger.logData("Code Updated SucceFully from the graph")
-	def refreshTreeFromCode(self):#This will refresh the code (Not to file)and draw the new tree
+	def refreshTreeFromCode(self,firstTime=False):#This will refresh the code (Not to file)and draw the new tree
 		#print "Refreshing"
 		try:
 			List,Settings=rcmanagerConfig.getDataFromString(str(self.CodeEditor.text()),self.Logger)
 		except Exception,e:
 			self.Logger.logData("Error while updating tree from Code::"+str(e), "R")
 		else:
-			self.removeAllComponents()
-			self.NetworkScene.clear()
-			self.networkSettings=Settings
-			self.componentList=List
-			try :
-				#if self.areTheyTooClose()==True:
-					#self.theyAreTooClose()
-				self.currentComponent=self.componentList[0]
-				self.ipCount()
-				self.setAllIpColor()
-				self.setAllGraphicsData()
-				self.drawAllComponents()
-				self.setConnectionItems()
-				self.drawAllConnection()
-				self.setComponentVariables()
-				self.setDirectoryItems()
-				self.FileOpenStatus=True
-				self.UserBuiltNetworkStatus=True
-				#self.HadChanged=False
-				self.Logger.logData("File Updated SuccessFully from the Code Editor")
-				self.refreshCodeFromTree()		
+
+			if firstTime==True:
+				self.removeAllComponents()
+				self.NetworkScene.clear()
+				self.networkSettings=Settings
+				self.componentList=List
+				try :
+					#if self.areTheyTooClose()==True:
+						#self.theyAreTooClose()
+					self.currentComponent=self.componentList[0]
+					self.ipCount()
+					self.setAllIpColor()
+					self.setAllGraphicsData()
+					self.drawAllComponents()
+					self.setConnectionItems()
+					self.drawAllConnection()
+					self.setComponentVariables()
+					self.setDirectoryItems()
+					self.FileOpenStatus=True
+					self.UserBuiltNetworkStatus=True
+					#self.HadChanged=False
+					self.Logger.logData("File Updated SuccessFully from the Code Editor")
+					self.refreshCodeFromTree()		
+				except Exception,e:
+					self.Logger.logData("File updation from Code Failed "+str(e),"R")
+
+			else:
+				self.networkSettings=Settings
+				for x in List:
+					try:
+						comp=self.searchforComponent(x.alias)
+					except:
+						self.componentList.append(x)##This will add a new component
+
+
+				for x in self.componentList:
+					if self.searchInsideList(List,x.alias)==False:
+						self.Logger.logData("Deleted the older component ::"+x.alias)##If new tree does have this	
+						self.deleteComponent(x)
+
+				for x in self.componentList:
+					for y in List:
+						if x.alias==y.alias:
+							self.copyAndUpdate(x,y)
+				self.Logger.logData("Tree Updated succesfully From File")
+	def copyAndUpdate(self,original,temp):
+		if original.x!=temp.x or original.y!=temp.y:
+			original.x=temp.x
+			original.y=temp.y
+			original.graphicsItem.setPos(original.x,original.y)
+			original.graphicsItem.updateforDrag()	
+			self.Logger.logData("Position Updated of ::"+original.alias)
+		
+		original.workingdir=temp.workingdir
+		original.compup=temp.compup
+		original.compdown=temp.compdown
+		original.configFile=temp.configFile
+		original.nodeColor=temp.nodeColor
+
+		if original.groupName!=temp.groupName:
+			try:
+				group=rcmanagerConfig.searchForGroupName(self.networkSettings,original.groupName)
+				group.addComponent(original)
 			except Exception,e:
-				self.Logger.logData("File updation from Code Failed "+str(e),"R")
-	#def theyAreTooClose(self):
-	#	pass
-	#def areTheyTooClose(self):
-	#	count=0
-	#	for x in self.componentList()
+				self.Logger.logData(str(e),"R")
+
+		for x in temp.dependences: ##For adding new connection if needed
+			if original.dependences.__contains__(x)==False:
+				original.dependences.append(x)
+				comp=searchforComponent(x)
+				self.setAconnection(comp,original)
+		for x in original.dependences:##For deleting unwanted connection if needed
+			name=x
+			if temp.dependences.__contains__(x)==False:
+				original.dependences.remove(x)
+				for y in original.asEnd:
+					if y.fromComponent.alias==name:
+						original.asEnd.remove(y)
+
+		if original.Ip!=temp.Ip:
+			original.Ip=temp.Ip
+			self.ipCount()
+			self.setAllIpColor()
+
+		if original.endpoint!=temp.endpoint:
+			original.CheckItem.initializeComponent()
+
+
+	def searchInsideList(self,List,name):
+		flag=0
+		for x in List:
+			if x.alias==name:
+				flag+=1
+				return True
+
+		if flag==0:
+			return False
+
 	def printTemplSettings(self):
 		pass
 	def addComponentTempl(self):
@@ -360,6 +440,7 @@ class MainClass(QtGui.QMainWindow):
 		for x in self.componentList.__iter__():
 			try:
 				rcmanagerConfig.downComponent(x,self.Logger)
+				time.sleep(.5)
 			except Exception,e :
 				pass
 	def simulatorSettings(self):##To edit the simulatorSettings:Unfinished
@@ -502,8 +583,8 @@ class MainClass(QtGui.QMainWindow):
 			string=rcmanagerConfig.getStringFromFile(self.filePath)
 			self.CodeEditor.setText(string)
 		except:
-			self.Logger.logData("Couldn't Read from File")
-		self.refreshTreeFromCode()
+			self.Logger.logData("Couldn't Read from File")	
+		self.refreshTreeFromCode(firstTime=True)
 		self.HadChanged=False
 	def setAllGraphicsData(self):
 		for x in self.componentList:
@@ -555,8 +636,8 @@ class MainClass(QtGui.QMainWindow):
 
 	def addNewComponent(self,pos=QtCore.QPointF()):#The final function which takes care of adding new component default zero
 	
-		component=rcmanagerConfig.CompInfo(view=self.graphTree,mainWindow=self)
-		component.CheckItem.setLogger(self.Logger)
+		component=rcmanagerConfig.CompInfo(view=self.graphTree,mainWindow=self,name="Component"+str(self.componentList.__len__()))
+		#component.CheckItem.setLogger(self.Logger)
 		self.componentList.append(component)
 		component.x=pos.x()
 		component.y=pos.y()
@@ -565,7 +646,8 @@ class MainClass(QtGui.QMainWindow):
 		self.refreshCodeFromTree()
 		component.DirectoryItem.setParent(self.UI.scrollAreaWidgetContents)
 		self.UI.verticalLayout.insertWidget(self.UI.verticalLayout.count()-1,component.DirectoryItem)
-
+		self.UI.tabWidget.setCurrentIndex(1)
+		self.CodeEditor.findFirst("Component"+str(self.componentList.__len__()-1),False,True,True,True)
 	def deleteComponent(self,component):##This will delete the component Not completed 
 		
 		#	print component.alias
@@ -578,6 +660,8 @@ class MainClass(QtGui.QMainWindow):
 			x.fromComponent.asBeg.remove(x)
 			self.NetworkScene.removeItem(x)
 
+		if component.group!=None:	
+			component.group.removeComponent(component)
 		component.CheckItem.stop()
 		self.NetworkScene.removeItem(component.graphicsItem)
 		self.NetworkScene.update()
