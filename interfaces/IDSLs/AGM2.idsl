@@ -51,7 +51,8 @@ module RoboCompAGM
 
 	struct StructuralChangeProposal
 	{
-		World w;
+		World world;
+		Plan plan;
 		string sender;
 		string log;
 	};
