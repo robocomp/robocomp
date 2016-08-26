@@ -96,10 +96,11 @@ for im in component['recursiveImports']:
 	if communicationIsIce(im):
 		cog.out(im.split('/')[-1].split('.')[0] + ' ')
 try:
-	if 'agmagent' in [ x.lower() for x in component['options'] ]:
+	options = [ x.lower() for x in component['options'] ]
+	if 'agmagent' in options:
 		cog.out("AGMExecutive AGMWorldModel Planning AGMCommonBehavior ")
-
-
+	elif 'agm2agent' in options or 'agm2agentICE' in options or 'agm2agentROS' in options:
+		cog.out("AGM2 ")
 except:
 	pass
 Z()
@@ -145,9 +146,11 @@ else:
 [[[cog
 
 try:
-	if 'agmagent' in [ x.lower() for x in component['options'] ]:
+	options = [ x.lower() for x in component['options'] ]
+	if 'agmagent' in options:
 		cog.outl("SET(LIBS ${LIBS} -lagm)")
-
+	elif 'agm2agent' in options or  'agm2agentICE' in options or  'agm2agentROS' in options:
+		cog.outl("SET(LIBS ${LIBS} -lagm2)")
 
 except:
 	pass

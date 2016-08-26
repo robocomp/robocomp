@@ -10,7 +10,7 @@ module RoboCompAGM
 		string second;
 	};
 
-	vector<StringPair> StringDictionary;
+	sequence<StringPair> StringDictionary;
 
 	struct Node
 	{
@@ -70,7 +70,7 @@ module RoboCompAGM
 		void getModel(bool unused, RoboCompAGMWorldModel::World ret);
 		void getNode(int identifier, RoboCompAGMWorldModel::Node ret);
 		void getEdge(RoboCompAGMWorldModel::Edge input, RoboCompAGMWorldModel::Edge ret);
-	}
+	};
 
 	interface AGMDSRTopic
 	{

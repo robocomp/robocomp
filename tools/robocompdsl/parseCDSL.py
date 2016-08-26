@@ -219,6 +219,11 @@ class CDSLParsing:
 			for i in tree['imports']:
 				if not i in imprts:
 					imprts.append(i)
+		if 'agm2agentICE' in component['options'] or 'agm2agentROS' in component['options'] or 'agm2agent' in component['options']:
+			imprts = ['/robocomp/interfaces/IDSLs/AGM2.idsl']
+			for i in tree['imports']:
+				if not i in imprts:
+					imprts.append(i)
 
 		for imp in imprts:
 			component['imports'].append(imp)
@@ -311,6 +316,20 @@ class CDSLParsing:
 				component['requires'] =   ['AGMExecutive'] + component['requires']
 			if not 'AGMExecutiveTopic' in component['subscribesTo']:
 				component['subscribesTo'] = ['AGMExecutiveTopic'] + component['subscribesTo']
+		if 'agm2agentROS' in component['options'] or 'agm2agentICE' in component['options'] or 'agm2agent' in component['options'] :
+			agm2agent_requires = [['AGMExecutiveService','ice'], ['AGMExecutiveService','ice']]
+			agm2agent_subscribesTo = [['AGMExecutiveTopic','ice'], ['AGMDSRTopic','ice']]
+			if 'agm2agentROS' in component['options']:
+				agm2agent_requires = [['AGMExecutiveService','ros'], ['AGMExecutiveService','ros']]
+				agm2agent_subscribesTo = [['AGMExecutiveTopic','ros'], ['AGMDSRTopic','ros']]
+			# AGM2 agents REQUIRES
+			for agm2agent_req in agm2agent_requires:
+				if not agm2agent_req in component['requires']:
+					component['requires'] =   [agm2agent_req] + component['requires']
+			# AGM2 agents SUBSCRIBES
+			for agm2agent_sub in agm2agent_subscribesTo:
+				if not agm2agent_sub in component['subscribesTo']:
+					component['subscribesTo'] = [agm2agent_sub] + component['subscribesTo']
 
 		return component
 
@@ -358,6 +377,19 @@ def bodyCodeFromName(name):
 		bodyCode = "<TABHERE>return true;"
 
 	return bodyCode
+
+
+def isAGM1Agent(component):
+	options = component['options']
+	return 'agmagent' in [ x.lower() for x in options]
+
+def isAGM2Agent(component):
+	valid = ['agm2agent', 'agm2agentROS', 'agm2agentICE']
+	options = component['options']
+	for v in valid:
+		if v in options:
+			return True
+	return False
 
 if __name__ == '__main__':
 	CDSLParsing.fromFile(sys.argv[1])

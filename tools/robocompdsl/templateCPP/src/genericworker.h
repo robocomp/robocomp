@@ -101,8 +101,11 @@ if component['usingROS'] == True:
 		cog.outl(srv)
 
 try:
-	if 'agmagent' in [ x.lower() for x in component['options'] ]:
+	options = [ x.lower() for x in component['options'] ]
+	if 'agmagent' in options:
 		cog.outl("#include <agm.h>")
+	if 'agm2agent' in options or 'agm2agentICE' in options or'agm2agentROS' in options:
+		cog.outl("#include <agm2.h>")
 
 
 except:
