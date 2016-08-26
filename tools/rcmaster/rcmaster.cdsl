@@ -1,0 +1,8 @@
+import "/robocomp/interfaces/IDSLs/RCMaster.idsl";
+
+Component rcmaster{
+	Communications{
+		implements rcmaster;
+	};
+	language Python;
+};

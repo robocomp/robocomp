@@ -73,7 +73,7 @@ if component['useViewer'] == "true":
  	cog.outl("<TABHERE>osgView->setCameraManipulator(tb);")
 	cog.outl("#endif")
 try:
-	if 'agmagent' in [ x.lower() for x in component['options'] ]:
+	if isAGM1Agent(component):
 		cog.outl("<TABHERE>active = false;")
 		cog.outl("<TABHERE>worldModel = AGMModel::SPtr(new AGMModel());")
 		cog.outl("<TABHERE>worldModel->name = "+"\"worldModel\";")

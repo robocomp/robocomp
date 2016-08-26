@@ -972,7 +972,9 @@ class ComponentChecker(threading.Thread):#This will check the status of componen
 			print "Error creating proxy to " + self.component.endpoint
 			if len(self.component.endpoint) == 0:
 				print 'please, provide an endpoint'
+
 		self.mutex.unlock()
+
 	def run(self):
 
 		if self.aPrx==None:
@@ -1053,6 +1055,7 @@ class ShowItemDetails(QtGui.QWidget):##This contains the GUI and internal proces
 		self.setGeometry(x,y,150,150)
 	  	self.isShowing=True
 	  	self.show()
+
 	#def contextMenuEvent(self,event):
 	#	print "hello"
 	#	GloPos=event.globalPos()
@@ -1186,6 +1189,7 @@ class DirectoryItem(QtGui.QPushButton):#This will be listed on the right most si
 		self.connect(self,QtCore.SIGNAL("clicked()"),self.clickEvent)
 		QtGui.QPushButton.setIcon(self,QtGui.QIcon(QtGui.QPixmap(getDefaultIconPath())))
 		self.setText(name)
+
 	def setIcon(self,arg):
 		self.Icon=QtGui.QIcon()
 		self.Icon.addPixmap(arg)
