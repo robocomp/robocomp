@@ -96,6 +96,6 @@ module RoboCompAGM
 		void planUpdate(Plan plan);
 	};
 
-}
+};
 
 #endif
