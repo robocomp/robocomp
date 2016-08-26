@@ -33,9 +33,9 @@ import sys, time, traceback, os, math, random, threading, time
 import Ice
 
 from PyQt4 import QtCore, QtGui, Qt
-from ui_formManager import Ui_Form
+from ui_formManagerSimple import Ui_Form
 
-import rcmanagerConfig
+import rcmanagerConfigSimple
 
 global_ic = Ice.initialize(sys.argv)
 
@@ -44,7 +44,7 @@ import signal
 signal.signal(signal.SIGINT, signal.SIG_DFL)
 
 
-dict = rcmanagerConfig.getDefaultValues()
+dict = rcmanagerConfigSimple.getDefaultValues()
 initDir = os.getcwd()
 
 sys.path.append('.')
@@ -264,7 +264,7 @@ class TheThing(QtGui.QDialog):
 						c1.x = c2.x
 						c1.y = c2.y
 						c1.r = c2.r
-			rcmanagerConfig.writeConfigToFile(dict, self.compConfig, s)
+			rcmanagerConfigSimple.writeConfigToFile(dict, self.compConfig, s)
 
 	# Dock icon blinking method.
 	def changeDock(self):
@@ -415,7 +415,7 @@ class TheThing(QtGui.QDialog):
 		self.back_comps = set()
 		self.requests = set()
 
-		newList, newDict = rcmanagerConfig.getConfigFromFile(self.configFile)
+		newList, newDict = rcmanagerConfigSimple.getConfigFromFile(self.configFile)
 
 		for k, v in newDict.iteritems():
 			dict[k] = v
@@ -431,7 +431,7 @@ class TheThing(QtGui.QDialog):
 
 		self.log('Configuration loaded')
 
-		n = rcmanagerConfig.unconnectedGroups(newList)
+		n = rcmanagerConfigSimple.unconnectedGroups(newList)
 		if n > 1:
 			msg = 'WARNING: ' + str(n) + ' unconnected component groups'
 			self.log(msg)

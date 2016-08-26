@@ -34,9 +34,9 @@ import sys, time, traceback, os
 import Ice
 
 from PyQt4 import QtCore, QtGui, Qt
-from ui_editorForm import Ui_Form
+from ui_editorFormSimple import Ui_Form
 
-import rcmanagerConfig
+import rcmanagerConfigSimple
 
 configFile = os.path.expanduser('~/.rcmanager')
 

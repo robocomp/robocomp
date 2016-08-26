@@ -20,14 +20,14 @@ MESSAGE(STATUS "Adding rule to generate the rcmanagerimple executable" )
 # Program destination directory
 SET( DEST_DIR "/opt/robocomp/bin/")
 
-ROBOCOMP_WRAP_PYTHON_UI( formManager editorForm )
+ROBOCOMP_WRAP_PYTHON_UI( formManagerSimple editorFormSimple )
 ADD_EXECUTABLE( rcmanagersimple rcmanagersimple.c )
 ADD_CUSTOM_TARGET(exec_rcmanagersimple ALL DEPENDS rcmanagersimple  )
 
 INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/rcmanagersimple DESTINATION ${DEST_DIR} PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE )
 INSTALL(FILES rcmanagersimple.py rcmanagerEditorSimple.py rcmanagerConfigSimple.py ${CMAKE_CURRENT_BINARY_DIR}/ui_formManagerSimple.py ${CMAKE_CURRENT_BINARY_DIR}/ui_editorFormSimple.py DESTINATION ${DEST_DIR} PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ  WORLD_EXECUTE )
 
-INSTALL(DIRECTORY "share/rcmanager" DESTINATION /opt/robocomp/share )
+INSTALL(DIRECTORY "share/rcmanagerSimple" DESTINATION /opt/robocomp/share )
 
 
 
