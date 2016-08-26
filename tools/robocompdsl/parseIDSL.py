@@ -261,9 +261,9 @@ class IDSLPool:
 		includesList = []
 		for module in self.modulePool:
 			for m in self.modulePool[module]['structs']:
-				includesList.append(m['name'])
+				includesList.append(m['name'].split('/')[0]+"ROS/"+m['name'].split('/')[1])
 			for m in self.modulePool[module]['sequences']:
-				includesList.append(m['name'])
+				includesList.append(m['name'].split('/')[0]+"ROS/"+m['name'].split('/')[1])
 			stdIncludes = {}
 			for interface in self.modulePool[module]['interfaces']:
 				for mname in interface['methods']:

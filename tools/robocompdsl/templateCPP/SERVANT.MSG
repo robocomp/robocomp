@@ -29,13 +29,13 @@ for imp in idsl['module']['contents']:
 				if structVar[0] == customType['name']:
 					if customType['type'] == 'sequence':
 						if customType['typeSequence'] in ('float','int','uint'):
-							cog.outl(customType['typeSequence'] +"32[] " + structVar[1])
+							cog.outl(customType['typeSequence'].replace('/','ROS/') +"32[] " + structVar[1])
 						else:
-							cog.outl(customType['typeSequence'] +"[] " + structVar[1])
+							cog.outl(customType['typeSequence'].replace('/','ROS/') +"[] " + structVar[1])
 						wascustomType = True
 						break
 					elif structVar[0] == 'struct':
-						cog.outl(customType['name'] +" " + structVar[1])
+						cog.outl(customType['name'].replace('/','ROS/') +" " + structVar[1])
 						wascustomType = True
 						break
 			if not wascustomType:

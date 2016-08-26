@@ -121,8 +121,11 @@ if 'implements' in component:
 							paramStrA += delim + const + p['type'] + ' ' + ampersand + p['name']
 						cog.outl("<TABHERE>" + method['return'] + ' ' + method['name'] + '(' + paramStrA + ");")
 					else:
-						paramStrA = module['name'] +"::"+method['name']+"::Request &req, "+module['name']+"::"+method['name']+"::Response &res"
-						cog.outl("<TABHERE>bool " + method['name'] + '(' + paramStrA + ");")
+						paramStrA = module['name'] +"ROS::"+method['name']+"::Request &req, "+module['name']+"ROS::"+method['name']+"::Response &res"
+						if imp in component['iceInterfaces']:
+							cog.outl("<TABHERE>bool ROS" + method['name'] + '(' + paramStrA + ");")
+						else:
+							cog.outl("<TABHERE>bool " + method['name'] + '(' + paramStrA + ");")
 
 if 'subscribesTo' in component:
 	for impa in component['subscribesTo']:
@@ -169,10 +172,13 @@ if 'subscribesTo' in component:
 							elif p['type'] == 'string':
 								p['type'] = "std_msgs::String"
 							elif not '::' in p['type']:
-								p['type'] = module['name']+"::"+p['type']
+								p['type'] = module['name']+"ROS::"+p['type']
 							# STR
 							paramStrA += delim + p['type'] + ' ' + p['name']
-						cog.outl("<TABHERE>void " + method['name'] + '(' + paramStrA + ");")
+						if imp in component['iceInterfaces']:
+							cog.outl("<TABHERE>void ROS" + method['name'] + '(' + paramStrA + ");")
+						else:
+							cog.outl("<TABHERE>void " + method['name'] + '(' + paramStrA + ");")
 
 ]]]
 [[[end]]]

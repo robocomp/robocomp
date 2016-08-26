@@ -219,8 +219,11 @@ if 'implements' in component:
 							paramStrA += delim + const + p['type'] + ' ' + ampersand + p['name']
 						cog.outl(method['return'] + ' SpecificWorker::' + method['name'] + '(' + paramStrA + ")\n{\n//implementCODE\n"+bodyCode+"\n}\n")
 					else:
-						paramStrA = module['name'] +"::"+method['name']+"::Request &req, "+module['name']+"::"+method['name']+"::Response &res"
-						cog.outl('bool SpecificWorker::' + method['name'] + '(' + paramStrA + ")\n{\n//implementCODE\n"+bodyCode+"\n}\n")
+						paramStrA = module['name'] +"ROS::"+method['name']+"::Request &req, "+module['name']+"ROS::"+method['name']+"::Response &res"
+						if imp in component['iceInterfaces']:
+							cog.outl('bool SpecificWorker::ROS' + method['name'] + '(' + paramStrA + ")\n{\n//implementCODE\n"+bodyCode+"\n}\n")
+						else:
+							cog.outl('bool SpecificWorker::' + method['name'] + '(' + paramStrA + ")\n{\n//implementCODE\n"+bodyCode+"\n}\n")
 
 if 'subscribesTo' in component:
 	for impa in component['subscribesTo']:
@@ -271,10 +274,13 @@ if 'subscribesTo' in component:
 							elif p['type'] == 'string':
 								p['type'] = "std_msgs::String"
 							elif not '::' in p['type']:
-								p['type'] = module['name']+"::"+p['type']
+								p['type'] = module['name']+"ROS::"+p['type']
 							# STR
 							paramStrA += delim + p['type'] + ' ' + p['name']
-						cog.outl('void SpecificWorker::' + method['name'] + '(' + paramStrA + ")\n{\n//subscribesToCODE\n"+bodyCode+"\n}\n")
+						if imp in component['iceInterfaces']:
+							cog.outl('void SpecificWorker::ROS' + method['name'] + '(' + paramStrA + ")\n{\n//subscribesToCODE\n"+bodyCode+"\n}\n")
+						else:
+							cog.outl('void SpecificWorker::' + method['name'] + '(' + paramStrA + ")\n{\n//subscribesToCODE\n"+bodyCode+"\n}\n")
 ]]]
 [[[end]]]
 

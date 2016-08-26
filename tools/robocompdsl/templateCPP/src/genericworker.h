@@ -85,7 +85,7 @@ if component['usingROS'] == True:
 			for interface in module['interfaces']:
 				if interface['name'] == im:
 					for mname in interface['methods']:
-						srvIncludes[mname] = '#include <'+module['name']+'/'+mname+'.h>'
+						srvIncludes[mname] = '#include <'+module['name']+'ROS/'+mname+'.h>'
 	for imp in component['implements']:
 		if type(imp) == str:
 			im = imp
@@ -96,7 +96,7 @@ if component['usingROS'] == True:
 			for interface in module['interfaces']:
 				if interface['name'] == im:
 					for mname in interface['methods']:
-						srvIncludes[mname] = '#include <'+module['name']+'/'+mname+'.h>'
+						srvIncludes[mname] = '#include <'+module['name']+'ROS/'+mname+'.h>'
 	for srv in srvIncludes.values():
 		cog.outl(srv)
 
@@ -125,15 +125,16 @@ using namespace std;
 pool = IDSLPool(theIDSLs)
 for m in pool.modulePool:
 	rosModule = False
-	for imp in component['subscribesTo']+component['publishes']:
+	for imp in component['subscribesTo']+component['publishes']+component['implements']+component['requires']:
 		if type(imp) == str:
 			im = imp
 		else:
 			im = imp[0]
 		if not communicationIsIce(imp):
-			module = pool.moduleProviding(im)
-			if module['name'] == pool.modulePool[m]['name']:
-				rosModule = True
+			if im not in component['iceInterfaces']:
+				module = pool.moduleProviding(im)
+				if module['name'] == pool.modulePool[m]['name']:
+					rosModule = True
 	if rosModule == False:
 		cog.outl("using namespace "+pool.modulePool[m]['name']+";")
 
@@ -191,7 +192,7 @@ if component['usingROS'] == True:
 							elif '::' in p['type']:
 								cog.outl("<TABHERE><TABHERE>pub_"+mname+" = node->advertise<"+p['type']+">(node->resolveName("+s+"), 1000);")
 							else:
-								cog.outl("<TABHERE><TABHERE>pub_"+mname+" = node->advertise<"+module['name']+"::"+p['type']+">(node->resolveName("+s+"), 1000);")
+								cog.outl("<TABHERE><TABHERE>pub_"+mname+" = node->advertise<"+module['name']+"ROS::"+p['type']+">(node->resolveName("+s+"), 1000);")
 			cog.outl("<TABHERE>}")
 			cog.outl("<TABHERE>~Publisher"+nname+"(){}")
 			for interface in module['interfaces']:
@@ -208,11 +209,11 @@ if component['usingROS'] == True:
 								cog.outl("<TABHERE>{\n<TABHERE><TABHERE>pub_"+mname+".publish("+p['name']+");")
 								cog.outl("<TABHERE>}")
 							elif '::' in p['type']:
-								cog.outl("<TABHERE>void "+mname+"("+p['type']+" "+p['name']+")")
+								cog.outl("<TABHERE>void "+mname+"("+p['type'].replace("::","ROS::")+" "+p['name']+")")
 								cog.outl("<TABHERE>{\n<TABHERE><TABHERE>pub_"+mname+".publish("+p['name']+");")
 								cog.outl("<TABHERE>}")
 							else:
-								cog.outl("<TABHERE>void "+mname+"("+module['name']+"::"+p['type']+" "+p['name']+")")
+								cog.outl("<TABHERE>void "+mname+"("+module['name']+"ROS::"+p['type']+" "+p['name']+")")
 								cog.outl("<TABHERE>{\n<TABHERE><TABHERE>pub_"+mname+".publish("+p['name']+");")
 								cog.outl("<TABHERE>}")
 			cog.outl("};")
@@ -240,7 +241,7 @@ if component['usingROS'] == True:
 					for mname in interface['methods']:
 						method = interface['methods'][mname]
 						s = "\""+mname+"\""
-						cog.outl("<TABHERE><TABHERE>srv_"+mname+" = node->serviceClient<"+module['name']+"::"+mname+">(node->resolveName("+s+"), 1000);")
+						cog.outl("<TABHERE><TABHERE>srv_"+mname+" = node->serviceClient<"+module['name']+"ROS::"+mname+">(node->resolveName("+s+"), 1000);")
 			cog.outl("<TABHERE>}")
 			cog.outl("<TABHERE>~ServiceClient"+nname+"(){}")
 			theIdsl = pool.IDSLsModule(module)
@@ -250,7 +251,7 @@ if component['usingROS'] == True:
 					for mname in interface['methods']:
 						method = interface['methods'][mname]
 						methodDef     = "<TABHERE>bool "+mname+"("
-						methodContent ="<TABHERE>{\n<TABHERE><TABHERE>"+ module['name']+"::"+mname+" srv;\n"
+						methodContent ="<TABHERE>{\n<TABHERE><TABHERE>"+ module['name']+"ROS::"+mname+" srv;\n"
 						firstParam = True
 						for p in method['params']:
 							for im in idsl['module']['contents']:
@@ -271,10 +272,10 @@ if component['usingROS'] == True:
 									methodDef     += "std_msgs::String "+p['name']+", "
 									methodContent +="<TABHERE><TABHERE>srv.request."+p['name']+" = "+p['name']+".data;\n"
 								elif '::' in p['type']:
-									methodDef     += p['type']+" "+p['name']+", "
+									methodDef     += p['type'].replace("::","ROS::")+" "+p['name']+", "
 									methodContent +="<TABHERE><TABHERE>srv.request."+p['name']+" = "+p['name']+";\n"
 								else:
-									methodDef     += module['name']+"::"+p['type']+" "+p['name']+", "
+									methodDef     += module['name']+"ROS::"+p['type']+" "+p['name']+", "
 								methodContent += "<TABHERE><TABHERE>if(srv_"+mname+".call(srv))\n<TABHERE><TABHERE>{\n"
 								firstParam = False
 							else:
@@ -286,10 +287,10 @@ if component['usingROS'] == True:
 									methodDef     += "std_msgs::String &"+p['name']+") "
 									methodContent += "<TABHERE><TABHERE><TABHERE>"+p['name']+".data = srv.response."+p['name']+";\n"
 								elif '::' in p['type']:
-									methodDef     += p['type']+" "&+p['name']+") "
+									methodDef     += p['type'].replace("::","ROS::")+" "&+p['name']+") "
 									methodContent += "<TABHERE><TABHERE><TABHERE>"+p['name']+" = srv.response."+p['name']+";\n"
 								else:
-									methodDef     += module['name']+"::"+p['type']+" &"+p['name']+") "
+									methodDef     += module['name']+"ROS::"+p['type']+" &"+p['name']+") "
 								methodContent += "<TABHERE><TABHERE><TABHERE>return true;\n<TABHERE><TABHERE>}\n<TABHERE><TABHERE>return false;"
 						cog.outl(methodDef)
 						cog.outl(methodContent)
@@ -376,8 +377,11 @@ if 'implements' in component:
 							paramStrA += delim + const + p['type'] + ' ' + ampersand + p['name']
 						cog.outl("<TABHERE>virtual " + method['return'] + ' ' + method['name'] + '(' + paramStrA + ") = 0;")
 					else:
-						paramStrA = module['name'] +"::"+method['name']+"::Request &req, "+module['name']+"::"+method['name']+"::Response &res"
-						cog.outl("<TABHERE>virtual bool " + method['name'] + '(' + paramStrA + ") = 0;")
+						paramStrA = module['name'] +"ROS::"+method['name']+"::Request &req, "+module['name']+"ROS::"+method['name']+"::Response &res"
+						if imp in component['iceInterfaces']:
+							cog.outl("<TABHERE>virtual bool ROS" + method['name'] + '(' + paramStrA + ") = 0;")
+						else:
+							cog.outl("<TABHERE>virtual bool " + method['name'] + '(' + paramStrA + ") = 0;")
 if 'subscribesTo' in component:
 	for impa in component['subscribesTo']:
 		if type(impa) == str:
@@ -426,10 +430,13 @@ if 'subscribesTo' in component:
 							elif p['type'] == 'string':
 								p['type'] = "std_msgs::String"
 							elif not '::' in p['type']:
-								p['type'] = module['name']+"::"+p['type']
+								p['type'] = module['name']+"ROS::"+p['type']
 							# STR
 							paramStrA += delim + p['type'] + ' ' + p['name']
-						cog.outl("<TABHERE>virtual void " + method['name'] + '(' + paramStrA + ") = 0;")
+						if imp in component['iceInterfaces']:
+							cog.outl("<TABHERE>virtual void ROS" + method['name'] + '(' + paramStrA + ") = 0;")
+						else:
+							cog.outl("<TABHERE>virtual void " + method['name'] + '(' + paramStrA + ") = 0;")
 
 ]]]
 [[[end]]]
@@ -474,14 +481,20 @@ if 'publishes' in component:
 		while type(pubs) != type(''):
 			pubs = pubs[0]
 		if not communicationIsIce(publish):
-			cog.outl("<TABHERE>Publisher"+pubs+" *"+pubs.lower()+"_proxy;")
+			if pubs in component['iceInterfaces']:
+				cog.outl("<TABHERE>Publisher"+pubs+" *"+pubs.lower()+"_rosproxy;")
+			else:
+				cog.outl("<TABHERE>Publisher"+pubs+" *"+pubs.lower()+"_proxy;")
 if 'requires' in component:
 	for require in component['requires']:
 		req = require
 		while type(req) != type(''):
 			req = req[0]
 		if not communicationIsIce(require):
-			cog.outl("<TABHERE>ServiceClient"+req+" *"+req.lower()+"_proxy;")
+			if req in component['iceInterfaces']:
+				cog.outl("<TABHERE>ServiceClient"+req+" *"+req.lower()+"_rosproxy;")
+			else:
+				cog.outl("<TABHERE>ServiceClient"+req+" *"+req.lower()+"_proxy;")
 try:
 	if 'agmagent' in [ x.lower() for x in component['options'] ]:
 		cog.outl("<TABHERE>bool active;")

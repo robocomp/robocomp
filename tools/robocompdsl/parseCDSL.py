@@ -282,6 +282,8 @@ class CDSLParsing:
 		
 
 		# Communications
+		component['rosInterfaces']= []
+		component['iceInterfaces']= []
 		component['implements']   = []
 		component['requires']     = []
 		component['publishes']    = []
@@ -291,22 +293,34 @@ class CDSLParsing:
 			if comm[0] == 'implements':
 				for interface in comm[1:]: 
 					component['implements'].append(interface)
-					if not communicationIsIce(interface):
+					if communicationIsIce(interface):
+						component['iceInterfaces'].append(interface[0])
+					else:
+						component['rosInterfaces'].append(interface[0])
 						component['usingROS'] = True
 			if comm[0] == 'requires':
 				for interface in comm[1:]: 
 					component['requires'].append(interface)
-					if not communicationIsIce(interface):
+					if communicationIsIce(interface):
+						component['iceInterfaces'].append(interface[0])
+					else:
+						component['rosInterfaces'].append(interface[0])
 						component['usingROS'] = True
 			if comm[0] == 'publishes':
-				for interface in comm[1:]: 
+				for interface in comm[1:]:
 					component['publishes'].append(interface)
-					if not communicationIsIce(interface):
+					if communicationIsIce(interface):
+						component['iceInterfaces'].append(interface[0])
+					else:
+						component['rosInterfaces'].append(interface[0])
 						component['usingROS'] = True
 			if comm[0] == 'subscribesTo':
 				for interface in comm[1:]: 
 					component['subscribesTo'].append(interface)
-					if not communicationIsIce(interface):
+					if communicationIsIce(interface):
+						component['iceInterfaces'].append(interface[0])
+					else:
+						component['rosInterfaces'].append(interface[0])
 						component['usingROS'] = True
 		# Handle options for communications
 		if 'agmagent' in component['options']:

@@ -224,9 +224,15 @@ for req, num in getNameNumber(component['requires']):
 	else:
 		rq = req[0]
 	if communicationIsIce(req):
-		cog.outl("<TABHERE><TABHERE>self."+rq.lower()+num+"_proxy = mprx[\""+rq+"Proxy"+num+"\"]")
+		if rq in component['rosInterfaces']:
+			cog.outl("<TABHERE><TABHERE>self."+rq.lower()+num+"_iceproxy = mprx[\""+rq+"ICEProxy"+num+"\"]")
+		else:
+			cog.outl("<TABHERE><TABHERE>self."+rq.lower()+num+"_proxy = mprx[\""+rq+"Proxy"+num+"\"]")
 	else:
-		cog.outl("<TABHERE><TABHERE>self."+rq.lower()+"_proxy = ServiceClient"+rq+"()")
+		if rq in component['iceInterfaces']:
+			cog.outl("<TABHERE><TABHERE>self."+rq.lower()+"_rosproxy = ServiceClient"+rq+"()")
+		else:
+			cog.outl("<TABHERE><TABHERE>self."+rq.lower()+"_proxy = ServiceClient"+rq+"()")
 
 for pb, num in getNameNumber(component['publishes']):
 	if type(pb) == str:
@@ -234,9 +240,15 @@ for pb, num in getNameNumber(component['publishes']):
 	else:
 		pub = pb[0]
 	if communicationIsIce(pb):
-		cog.outl("<TABHERE><TABHERE>self."+pub.lower()+num+"_proxy = mprx[\""+pub+"Pub"+num+"\"]")
+		if pub in component['rosInterfaces']:
+			cog.outl("<TABHERE><TABHERE>self."+pub.lower()+num+"_iceproxy = mprx[\""+pub+"ICEPub"+num+"\"]")
+		else:
+			cog.outl("<TABHERE><TABHERE>self."+pub.lower()+num+"_proxy = mprx[\""+pub+"Pub"+num+"\"]")
 	else:
-		cog.outl("<TABHERE><TABHERE>self."+pub.lower()+"_proxy = Publisher"+pub+"()")
+		if pub in component['iceInterfaces']:
+			cog.outl("<TABHERE><TABHERE>self."+pub.lower()+"_rosproxy = Publisher"+pub+"()")
+		else:
+			cog.outl("<TABHERE><TABHERE>self."+pub.lower()+"_proxy = Publisher"+pub+"()")
 ]]]
 [[[end]]]
 

@@ -17,7 +17,6 @@ def SPACE(i=0):
 	cog.out('<S'+s+'>')
 
 from parseIDSL import *
-customTypesList = []
 idsl = IDSLParsing.fromFileIDSL(theIDSL)
 for imp in idsl['module']['contents']:
 	if imp['type'] == 'interface':
@@ -35,7 +34,7 @@ for imp in idsl['module']['contents']:
 							if param[0] in ('float','int','uint'):
 								param[0] = param[0] + "32"
 							str = param[0] + " " + param[1]
-							cog.outl(str.replace("::", "/"))
+							cog.outl(str.replace("::", "ROS/"))
 						else:
 							cog.outl("---")
 							for im in idsl['module']['contents']:
@@ -48,6 +47,6 @@ for imp in idsl['module']['contents']:
 								param[1] = param[1] + "32"
 							param[1] = param[1].replace("byte","int8")
 							str = param[1] + " " + param[2]
-							cog.outl(str.replace("::", "/"))
+							cog.outl(str.replace("::", "ROS/"))
 ]]]
 [[[end]]]

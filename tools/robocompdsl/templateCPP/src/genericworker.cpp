@@ -104,7 +104,10 @@ if component['usingROS'] == True:
 				if interface['name'] == nname:
 					for mname in interface['methods']:
 						s = "\""+mname+"\""
-						cog.outl("<TABHERE>"+nname+"_"+mname+" = node.subscribe("+s+", 1000, &GenericWorker::"+mname+", this);")
+						if nname in component['iceInterfaces']:
+							cog.outl("<TABHERE>"+nname+"_"+mname+" = node.subscribe("+s+", 1000, &GenericWorker::ROS"+mname+", this);")
+						else:
+							cog.outl("<TABHERE>"+nname+"_"+mname+" = node.subscribe("+s+", 1000, &GenericWorker::"+mname+", this);")
 	#INICIALIZANDO IMPLEMENTS
 	for imp in component['implements']:
 		nname = imp
@@ -119,21 +122,30 @@ if component['usingROS'] == True:
 				if interface['name'] == nname:
 					for mname in interface['methods']:
 						s = "\""+mname+"\""
-						cog.outl("<TABHERE>"+nname+"_"+mname+" = node.advertiseService("+s+", &GenericWorker::"+mname+", this);")
+						if nname in component['iceInterfaces']:
+							cog.outl("<TABHERE>"+nname+"_"+mname+" = node.advertiseService("+s+", &GenericWorker::ROS"+mname+", this);")
+						else:
+							cog.outl("<TABHERE>"+nname+"_"+mname+" = node.advertiseService("+s+", &GenericWorker::"+mname+", this);")
 if 'publishes' in component:
 	for publish in component['publishes']:
 		pubs = publish
 		while type(pubs) != type(''):
 			pubs = pubs[0]
 		if not communicationIsIce(publish):
-			cog.outl("<TABHERE>"+pubs.lower()+"_proxy = new Publisher"+pubs+"(&node);")
+			if pubs in component['iceInterfaces']:
+				cog.outl("<TABHERE>"+pubs.lower()+"_rosproxy = new Publisher"+pubs+"(&node);")
+			else:
+				cog.outl("<TABHERE>"+pubs.lower()+"_proxy = new Publisher"+pubs+"(&node);")
 if 'requires' in component:
 	for require in component['requires']:
 		req = require
 		while type(req) != type(''):
 			req = req[0]
 		if not communicationIsIce(require):
-			cog.outl("<TABHERE>"+req.lower()+"_proxy = new ServiceClient"+req+"(&node);")
+			if req in component['iceInterfaces']:
+				cog.outl("<TABHERE>"+req.lower()+"_rosproxy = new ServiceClient"+req+"(&node);")
+			else:
+				cog.outl("<TABHERE>"+req.lower()+"_proxy = new ServiceClient"+req+"(&node);")
 if component['gui'] != 'none':
 	cog.outl("""<TABHERE>#ifdef USE_QTGUI
 		setupUi(this);
