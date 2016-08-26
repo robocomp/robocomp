@@ -58,10 +58,6 @@ Z()
 #include <stdint.h>
 #include <qlog/qlog.h>
 
-// ICE includes
-#include <Ice/Ice.h>
-#include <Ice/Application.h>
-
 [[[cog
 if component['gui'] != 'none':
 	cog.outl("#include <ui_mainUI.h>")
@@ -117,23 +113,7 @@ except:
 #define CHECK_PERIOD 5000
 #define BASIC_PERIOD 100
 
-struct ifaceData
-{
-	string alias;
-	string name;
-	string comp;
-	ifaceData()
-	{}
-	ifaceData(string  ialias, string iname, string icomp)
-	{
-		alias = ialias;
-		name = iname;
-		comp = icomp;
-	}
-};
-
 typedef map <string,::IceProxy::Ice::Object*> MapPrx;
-typedef map <string, ifaceData> Mapiface;
 
 using namespace std;
 
@@ -331,15 +311,13 @@ else:
 {
 Q_OBJECT
 public:
-	GenericWorker(MapPrx& mprx, Mapiface& miface);
+	GenericWorker(MapPrx& mprx);
 	virtual ~GenericWorker();
 	virtual void killYourSelf();
 	virtual void setPeriod(int p);
 	
 	virtual bool setParams(RoboCompCommonBehavior::ParameterList params) = 0;
 	QMutex *mutex;
-	Mapiface& ifaces;
-
 [[[cog
 
 try:

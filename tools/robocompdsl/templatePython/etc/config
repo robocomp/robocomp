@@ -19,9 +19,20 @@ def SPACE(i=0):
 from parseCDSL import *
 component = CDSLParsing.fromFile(theCDSL)
 
-cog.outl('# General properties of Component')
-cog.outl('Ice.ProgramName='+component['name'])
-cog.out('\n\n')
+
+text = False
+for imp in component['implements']:
+	if type(imp) == str:
+		im = imp
+	else:
+		im = imp[0]
+	if text == False:
+		cog.outl('# Endpoints for implemented interfaces')
+		text = True
+	cog.outl(im+".Endpoints=tcp -p 0")
+if text:
+	cog.out('\n\n')
+
 
 text = False
 for sub in component['subscribesTo']:
@@ -35,6 +46,21 @@ for sub in component['subscribesTo']:
 	cog.outl(sb+"Topic.Endpoints=tcp -p 0")
 if text:
 	cog.out('\n\n')
+
+
+text = False
+for req, num in getNameNumber(component['requires']):
+	if type(req) == str:
+		rq = req
+	else:
+		rq = req[0]
+	if text == False:
+		cog.outl('# Proxies for required interfaces')
+		text = True
+	cog.outl(rq + num + "Proxy = " + rq.lower() + ":tcp -h localhost -p 0")
+if text:
+	cog.out('\n\n')
+
 
 ]]]
 [[[end]]]

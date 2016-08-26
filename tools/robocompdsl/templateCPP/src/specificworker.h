@@ -87,10 +87,9 @@ class SpecificWorker : public GenericWorker
 {
 Q_OBJECT
 public:
-	SpecificWorker(MapPrx& mprx, Mapiface& miface);
+	SpecificWorker(MapPrx& mprx);	
 	~SpecificWorker();
 	bool setParams(RoboCompCommonBehavior::ParameterList params);
-	void waitforComp(::IceProxy::Ice::Object* proxy, string interfaceName);
 
 [[[cog
 if 'implements' in component:

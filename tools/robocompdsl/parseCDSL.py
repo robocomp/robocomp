@@ -92,7 +92,7 @@ def decoratorAndType_to_const_ampersand(decorator, vtype, modulePool):
 
 
 def getNameNumber(aalist):
-	somelist = sorted(aalist, key=lambda x: x[0][0], reverse=True)
+	somelist = sorted(aalist)
 	lastNum = 0
 	ret = []
 	for rqi, rq in enumerate(somelist):

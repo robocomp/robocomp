@@ -53,17 +53,17 @@ Z()
 /**
 * \brief Default constructor
 */
-GenericWorker::GenericWorker(MapPrx& mprx, Mapiface& miface) :
+GenericWorker::GenericWorker(MapPrx& mprx) :
 [[[cog
 if component['gui'] != 'none':
 	cog.outl("""#ifdef USE_QTGUI
-Ui_guiDlg(), ifaces(miface)
+Ui_guiDlg()
 #else
-QObject(), ifaces(miface)
+QObject()
 #endif
 """)
 else:
-	cog.outl("QObject(), ifaces(miface)")
+	cog.outl("QObject()")
 ]]]
 [[[end]]]
 {
