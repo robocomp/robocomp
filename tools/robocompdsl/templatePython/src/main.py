@@ -236,7 +236,11 @@ try:
 <TABHERE><TABHERE># Topic Manager
 <TABHERE><TABHERE>proxy = ic.getProperties().getProperty("TopicManager.Proxy")
 <TABHERE><TABHERE>obj = ic.stringToProxy(proxy)
-<TABHERE><TABHERE>topicManager = IceStorm.TopicManagerPrx.checkedCast(obj)""")
+<TABHERE><TABHERE>try:
+<TABHERE><TABHERE><TABHERE>topicManager = IceStorm.TopicManagerPrx.checkedCast(obj)
+<TABHERE><TABHERE>except Ice.ConnectionRefusedException, e:
+<TABHERE><TABHERE><TABHERE>print 'Cannot connect to IceStorm! ('+proxy+')'
+<TABHERE><TABHERE><TABHERE>sys.exit(-1)""")
 except:
 	pass
 

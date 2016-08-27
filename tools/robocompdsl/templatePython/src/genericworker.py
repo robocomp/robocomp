@@ -72,7 +72,7 @@ for imp in component['recursiveImports']:
 	module = IDSLParsing.gimmeIDSL(imp.split('/')[-1])
 	incl = imp.split('/')[-1].split('.')[0]
 	cog.outl('Ice.loadSlice(preStr+"'+incl+'.ice")')
-	cog.outl('from '+module['name']+' import *')
+	cog.outl('from '+ module['name'] +' import *')
 ]]]
 [[[end]]]
 

@@ -1,7 +1,7 @@
 #ifndef ROBOCOMPAGM2_ICE
 #define ROBOCOMPAGM2_ICE
 
-module RoboCompAGM
+module RoboCompAGM2
 {
 
 	struct StringPair
@@ -52,31 +52,32 @@ module RoboCompAGM
 		float cost;
 	};
 
-	struct StructuralChangeProposal
+	struct StructuralChangeStruct
 	{
-		RoboCompAGMWorldModel::World w;
+		World model;
+		Plan changes;
 		string sender;
 		string log;
 	};
 
+	// Agents' API
 	interface AGMDSRService
 	{
-		// Agents' API
-		void structuralChangeProposal(StructuralChangeProposal, int ret); // Ok, Locked, OldModel, InvalidChange
-		void symbolUpdate(RoboCompAGMWorldModel::Node n, int ret);
-		void symbolsUpdate(RoboCompAGMWorldModel::NodeSequence ns, int ret);
-		void edgeUpdate(RoboCompAGMWorldModel::Edge e, int ret);
-		void edgesUpdate(RoboCompAGMWorldModel::EdgeSequence es, int ret);
-		void getModel(bool unused, RoboCompAGMWorldModel::World ret);
-		void getNode(int identifier, RoboCompAGMWorldModel::Node ret);
-		void getEdge(RoboCompAGMWorldModel::Edge input, RoboCompAGMWorldModel::Edge ret);
+		void structuralChangeProposal(StructuralChangeStruct proposal, int ret); // Ok, Locked, OldModel, InvalidChange
+		void symbolUpdate(Node n, int ret);
+		void symbolsUpdate(NodeSequence ns, int ret);
+		void edgeUpdate(Edge e, int ret);
+		void edgesUpdate(EdgeSequence es, int ret);
+		void getModel(bool unused, World ret);
+		void getNode(int identifier, Node ret);
+		void getEdge(Edge input, Edge ret);
 	};
 
 	interface AGMDSRTopic
 	{
-		void structuralChange(RoboCompAGMWorldModel::World w);
-		void symbolsUpdated(RoboCompAGMWorldModel::NodeSequence modification);
-		void edgesUpdated(RoboCompAGMWorldModel::EdgeSequence modification);
+		void structuralChange(World w);
+		void symbolsUpdated(NodeSequence modification);
+		void edgesUpdated(EdgeSequence modification);
 	};
 
 
@@ -84,7 +85,7 @@ module RoboCompAGM
 	interface AGMExecutiveService
 	{
 		void setMission(string path, int ret);
-		void getPlan(bool unused, Plan plan);
+		void getPlan(bool unused, Plan currentPlan);
 		void getTarget(bool unused, string target);
 		void broadcastModel(bool unusedI, bool unusedR);
 		void broadcastPlan(bool unusedI, bool unusedR);
@@ -93,7 +94,7 @@ module RoboCompAGM
 
 	interface AGMExecutiveTopic
 	{
-		void planUpdate(Plan plan);
+		void planUpdate(Plan newPlan);
 	};
 
 };

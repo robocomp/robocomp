@@ -1,4 +1,4 @@
-module RoboCompAGM
+module RoboCompAGM2
 {
 
 	struct StringPair
@@ -49,10 +49,10 @@ module RoboCompAGM
 		float cost;
 	};
 
-	struct StructuralChangeProposal
+	struct StructuralChangeStruct
 	{
-		World world;
-		Plan plan;
+		World model;
+		Plan changes;
 		string sender;
 		string log;
 	};
@@ -60,7 +60,7 @@ module RoboCompAGM
 	// Agents' API
 	interface AGMDSRService
 	{
-		void structuralChangeProposal(StructuralChangeProposal p, int ret); // Ok, Locked, OldModel, InvalidChange
+		void structuralChangeProposal(StructuralChangeStruct proposal, int ret); // Ok, Locked, OldModel, InvalidChange
 		void symbolUpdate(Node n, int ret);
 		void symbolsUpdate(NodeSequence ns, int ret);
 		void edgeUpdate(Edge e, int ret);
@@ -82,7 +82,7 @@ module RoboCompAGM
 	interface AGMExecutiveService
 	{
 		void setMission(string path, int ret);
-		void getPlan(bool unused, Plan plan);
+		void getPlan(bool unused, Plan currentPlan);
 		void getTarget(bool unused, string target);
 		void broadcastModel(bool unusedI, bool unusedR);
 		void broadcastPlan(bool unusedI, bool unusedR);
@@ -91,7 +91,7 @@ module RoboCompAGM
 
 	interface AGMExecutiveTopic
 	{
-		void planUpdate(Plan plan);
+		void planUpdate(Plan newPlan);
 	};
 
 };
