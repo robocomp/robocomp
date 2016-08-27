@@ -92,8 +92,31 @@ for imp in component['recursiveImports']:
 if component['usingROS'] == True:
 	cog.outl('import rospy')
 	cog.outl('from std_msgs.msg import *')
-	for include in modulesList:
-		cog.outl("from "+include['name']+" import "+include['strName'])
+	msgIncludes = {}
+	for imp in component['publishes']:
+		if type(imp) == str:
+			im = imp
+		else:
+			im = imp[0]
+		if not communicationIsIce(imp):
+			module = pool.moduleProviding(im)
+			for interface in module['interfaces']:
+				if interface['name'] == im:
+					for mname in interface['methods']:
+						msgIncludes[module['name']] = 'try:\n<TABHERE>from '+module['name']+'ROS.msg import *\nexcept:\n<TABHERE>print \"couldn\'t load msg\"'
+	for imp in component['subscribesTo']:
+		if type(imp) == str:
+			im = imp
+		else:
+			im = imp[0]
+		if not communicationIsIce(imp):
+			module = pool.moduleProviding(im)
+			for interface in module['interfaces']:
+				if interface['name'] == im:
+					for mname in interface['methods']:
+						msgIncludes[module['name']] = 'try:\n<TABHERE>from '+module['name']+'ROS.msg import *\nexcept:\n<TABHERE>print \"couldn\'t load msg\"'
+	for msg in msgIncludes.values():
+		cog.outl(msg)
 	srvIncludes = {}
 	for imp in component['requires']:
 		if type(imp) == str:
@@ -105,7 +128,7 @@ if component['usingROS'] == True:
 			for interface in module['interfaces']:
 				if interface['name'] == im:
 					for mname in interface['methods']:
-						srvIncludes[module['name']] = 'from '+module['name']+' import *'
+						srvIncludes[module['name']] = 'from '+module['name']+'ROS.srv import *'
 	for imp in component['implements']:
 		if type(imp) == str:
 			im = imp
@@ -116,7 +139,7 @@ if component['usingROS'] == True:
 			for interface in module['interfaces']:
 				if interface['name'] == im:
 					for mname in interface['methods']:
-						srvIncludes[module['name']] = 'from '+module['name']+' import *'
+						srvIncludes[module['name']] = 'from '+module['name']+'ROS.srv import *'
 	for srv in srvIncludes.values():
 		cog.outl(srv)
 A()
@@ -151,7 +174,7 @@ if component['usingROS'] == True:
 					for mname in interface['methods']:
 						method = interface['methods'][mname]
 						for p in method['params']:
-							s = "\""+nname+"_"+mname+"\""
+							s = "\""+mname+"\""
 							if p['type'] in ('float','int','uint'):
 								cog.outl("<TABHERE><TABHERE>self.pub_"+mname+" = rospy.Publisher("+s+", "+p['type'].capitalize()+"32, queue_size=1000)")
 							elif p['type'] == 'string':
@@ -184,7 +207,7 @@ if component['usingROS'] == True:
 				if interface['name'] == nname:
 					for mname in interface['methods']:
 						method = interface['methods'][mname] #for p in method['params']:
-						s = "\""+nname+"_"+mname+"\""
+						s = "\""+mname+"\""
 						cog.outl("<TABHERE><TABHERE>self.srv_"+mname+" = rospy.ServiceProxy("+s+", "+mname+")")
 			for interface in module['interfaces']:
 				if interface['name'] == nname:
@@ -224,10 +247,7 @@ for req, num in getNameNumber(component['requires']):
 	else:
 		rq = req[0]
 	if communicationIsIce(req):
-		if rq in component['rosInterfaces']:
-			cog.outl("<TABHERE><TABHERE>self."+rq.lower()+num+"_iceproxy = mprx[\""+rq+"ICEProxy"+num+"\"]")
-		else:
-			cog.outl("<TABHERE><TABHERE>self."+rq.lower()+num+"_proxy = mprx[\""+rq+"Proxy"+num+"\"]")
+		cog.outl("<TABHERE><TABHERE>self."+rq.lower()+num+"_proxy = mprx[\""+rq+"Proxy"+num+"\"]")
 	else:
 		if rq in component['iceInterfaces']:
 			cog.outl("<TABHERE><TABHERE>self."+rq.lower()+"_rosproxy = ServiceClient"+rq+"()")
@@ -240,10 +260,7 @@ for pb, num in getNameNumber(component['publishes']):
 	else:
 		pub = pb[0]
 	if communicationIsIce(pb):
-		if pub in component['rosInterfaces']:
-			cog.outl("<TABHERE><TABHERE>self."+pub.lower()+num+"_iceproxy = mprx[\""+pub+"ICEPub"+num+"\"]")
-		else:
-			cog.outl("<TABHERE><TABHERE>self."+pub.lower()+num+"_proxy = mprx[\""+pub+"Pub"+num+"\"]")
+		cog.outl("<TABHERE><TABHERE>self."+pub.lower()+num+"_proxy = mprx[\""+pub+"Pub"+num+"\"]")
 	else:
 		if pub in component['iceInterfaces']:
 			cog.outl("<TABHERE><TABHERE>self."+pub.lower()+"_rosproxy = Publisher"+pub+"()")

@@ -26,10 +26,11 @@ for imp in component['implements']:
 		im = imp
 	else:
 		im = imp[0]
-	if text == False:
-		cog.outl('# Endpoints for implemented interfaces')
-		text = True
-	cog.outl(im+".Endpoints=tcp -p 0")
+	if communicationIsIce(imp):
+		if text == False:
+			cog.outl('# Endpoints for implemented interfaces')
+			text = True
+		cog.outl(im+".Endpoints=tcp -p 0")
 if text:
 	cog.out('\n\n')
 
@@ -40,10 +41,11 @@ for sub in component['subscribesTo']:
 		sb = sub
 	else:
 		sb = sub[0]
-	if text == False:
-		cog.outl('# Endpoints for subscriptions')
-		text = True
-	cog.outl(sb+"Topic.Endpoints=tcp -p 0")
+	if communicationIsIce(sub):
+		if text == False:
+			cog.outl('# Endpoints for subscriptions')
+			text = True
+		cog.outl(sb+"Topic.Endpoints=tcp -p 0")
 if text:
 	cog.out('\n\n')
 
@@ -54,10 +56,11 @@ for req, num in getNameNumber(component['requires']):
 		rq = req
 	else:
 		rq = req[0]
-	if text == False:
-		cog.outl('# Proxies for required interfaces')
-		text = True
-	cog.outl(rq + num + "Proxy = " + rq.lower() + ":tcp -h localhost -p 0")
+	if communicationIsIce(req):
+		if text == False:
+			cog.outl('# Proxies for required interfaces')
+			text = True
+		cog.outl(rq + num + "Proxy = " + rq.lower() + ":tcp -h localhost -p 0")
 if text:
 	cog.out('\n\n')
 

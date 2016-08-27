@@ -132,9 +132,7 @@ for m in pool.modulePool:
 			im = imp[0]
 		if not communicationIsIce(imp):
 			if im not in component['iceInterfaces']:
-				module = pool.moduleProviding(im)
-				if module['name'] == pool.modulePool[m]['name']:
-					rosModule = True
+				rosModule = True
 	if rosModule == False:
 		cog.outl("using namespace "+pool.modulePool[m]['name']+";")
 

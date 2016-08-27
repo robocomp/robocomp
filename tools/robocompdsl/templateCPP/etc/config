@@ -71,7 +71,7 @@ if text:
 	cog.out('\n\n')
 
 #text = False
-for pb in component['publishes']:
+for namea in component['publishes']:
 	storm = True
 #	if text == False:
 #		cog.outl('# Proxies for published topics')

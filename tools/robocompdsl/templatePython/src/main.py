@@ -294,15 +294,15 @@ for sub in component['subscribesTo']:
 				for mname in interface['methods']:
 					method = interface['methods'][mname]
 					for p in method['params']:
-						s = "\""+nname+"_"+mname+"\""
+						s = "\""+mname+"\""
 						if p['type'] in ('float','int','uint'):
-							cog.outl("<TABHERE><TABHERE>rospy.Subscriber("+s+", "+p['type'].capitalize()+"32, worker."+method['name']+")")
+							cog.outl("<TABHERE><TABHERE>rospy.Subscriber("+s+", "+p['type'].capitalize()+"32, worker.ROS"+method['name']+")")
 						elif p['type'] == 'string':
-							cog.outl("<TABHERE><TABHERE>rospy.Subscriber("+s+", String, worker."+method['name']+")")
+							cog.outl("<TABHERE><TABHERE>rospy.Subscriber("+s+", String, worker.ROS"+method['name']+")")
 						elif '::' in p['type']:
-							cog.outl("<TABHERE><TABHERE>rospy.Subscriber("+s+", "+p['type'].split('::')[1]+", worker."+method['name']+")")
+							cog.outl("<TABHERE><TABHERE>rospy.Subscriber("+s+", "+p['type'].split('::')[1]+", worker.ROS"+method['name']+")")
 						else:
-							cog.outl("<TABHERE><TABHERE>rospy.Subscriber("+s+", "+p['type']+", worker."+method['name']+")")
+							cog.outl("<TABHERE><TABHERE>rospy.Subscriber("+s+", "+p['type']+", worker.ROS"+method['name']+")")
 
 for imp in component['implements']:
 	nname = imp
@@ -317,8 +317,8 @@ for imp in component['implements']:
 			if interface['name'] == nname:
 				for mname in interface['methods']:
 					method = interface['methods'][mname]
-					s = "\""+nname+"_"+mname+"\""
-					cog.outl("<TABHERE><TABHERE>rospy.Service("+s+", "+mname+", worker."+method['name']+")")
+					s = "\""+mname+"\""
+					cog.outl("<TABHERE><TABHERE>rospy.Service("+s+", "+mname+", worker.ROS"+method['name']+")")
 
 ]]]
 [[[end]]]

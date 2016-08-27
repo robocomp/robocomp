@@ -17,8 +17,8 @@ def generateHeaders(idslFile, outputPath, comp): #idslFile es el fichero idsl im
 
 	def generarH(idslFile, imported):
 		idsl = IDSLParsing.fromFileIDSL(idslFile)
-		os.system("rm "+outputPath + "/" + idsl['module']['name'] + "ROS/__init__.py")
-		os.system("rm "+outputPath + "/" + idsl['module']['name'] + "ROS/__init__.py")
+		os.system("rm "+outputPath + "/" + idsl['module']['name'] + "ROS/msg/__init__.py")
+		os.system("rm "+outputPath + "/" + idsl['module']['name'] + "ROS/srv/__init__.py")
 		for imp in idsl['module']['contents']:
 			if imp['type'] in ['struct','sequence']:
 				for f in [ "SERVANT.MSG"]:
@@ -41,14 +41,17 @@ def generateHeaders(idslFile, outputPath, comp): #idslFile es el fichero idsl im
 					if not os.path.exists(outputPath):
 						creaDirectorio(outputPath)
 					commandCPP = commandCPP + " -p "+ idsl['module']['name'] + "ROS -o " + outputPath + "/" + idsl['module']['name'] + "ROS -e /opt/ros/kinetic/share/gencpp/cmake/.."
-					commandPY = commandPY + " -p "+ idsl['module']['name'] + "ROS -o " + outputPath + "/" + idsl['module']['name'] +"ROS"
+					commandPY = commandPY + " -p "+ idsl['module']['name'] + "ROS -o " + outputPath + "/" + idsl['module']['name'] +"ROS/msg"
 					if comp['language'].lower() == 'cpp':
 						os.system(commandCPP)
 					else:
 						os.system(commandPY)
-					fileInit = open(outputPath + "/" + idsl['module']['name'] + "ROS/__init__.py", 'a')
-					fileInit.write("from ._"+imp['name']+" import *\n")
-					fileInit.close()
+					try:
+						fileInit = open(outputPath + "/" + idsl['module']['name'] + "ROS/msg/__init__.py", 'a')
+						fileInit.write("from ._"+imp['name']+" import *\n")
+						fileInit.close()
+					except:
+						pass
 		for imp in idsl['module']['contents']:
 			if imp['type'] == 'interface':
 				for ima in component['implements']+component['requires']:
@@ -79,20 +82,24 @@ def generateHeaders(idslFile, outputPath, comp): #idslFile es el fichero idsl im
 										if not os.path.exists(outputPath):
 											creaDirectorio(outputPath)
 										commandCPP = commandCPP + " -p "+ idsl['module']['name'] + "ROS -o "+ outputPath+"/"+idsl['module']['name'] + "ROS -e /opt/ros/kinetic/share/gencpp/cmake/.."
-										commandPY = commandPY + " -p "+ idsl['module']['name'] + "ROS -o "+ outputPath+"/"+idsl['module']['name'] +"ROS" 
+										commandPY = commandPY + " -p "+ idsl['module']['name'] + "ROS -o "+ outputPath+"/"+idsl['module']['name'] +"ROS/srv" 
 										if comp['language'].lower() == 'cpp':
 											os.system(commandCPP)
 										else:
 											os.system(commandPY)
-										fileInit = open(outputPath + "/" + idsl['module']['name'] + "ROS/__init__.py", 'a')
-										fileInit.write("from ._"+method['name']+" import *\n")
-										fileInit.close()
+										try:
+											fileInit = open(outputPath + "/" + idsl['module']['name'] + "ROS/srv/__init__.py", 'a')
+											fileInit.write("from ._"+method['name']+" import *\n")
+											fileInit.close()
+										except:
+											pass
 								else:
 									print "error: service with too many params. Form is: void method(type inVar, out type outVar);"
 									sys.exit(-1)
 							else:
 								print "error: service without params. Form is: void method(type inVar, out type outVar);"
 								sys.exit(-1)
+		os.system("touch "+outputPath + "/" + idsl['module']['name'] + "ROS/__init__.py")
 		return idsl['module']['name']+"ROS"
 	try:
 		for importIDSL in idsl['imports']:
