@@ -21,6 +21,8 @@
 
 #include <innermodel/innermodel.h>
 #include <innermodel/innermodelviewer.h>
+#include <innermodel/innermodeltransform.h>
+#include <innermodel/innermodeljoint.h>
 
 
 using namespace RMat;

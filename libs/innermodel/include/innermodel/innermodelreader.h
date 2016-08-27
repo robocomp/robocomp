@@ -23,6 +23,7 @@
 #include <QtXml/QtXml>
 
 #include <innermodel/innermodel.h>
+#include <innermodel/innermodeljoint.h>
 
 class InnerModelReader
 {

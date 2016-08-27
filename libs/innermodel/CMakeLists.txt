@@ -7,6 +7,10 @@ set(srcs
 	innermodelreader.cpp
 	innermodelviewer.cpp
 	innermodeldraw.cpp
+	innermodelexception.cpp
+	innermodelnode.cpp
+	innermodeltransform.cpp
+	innermodeljoint.cpp
 )
 
 set(incs
