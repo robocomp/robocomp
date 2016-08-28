@@ -195,13 +195,17 @@ if component['useViewer'] == "true":
 	cog.outl("<TABHERE>InnerModelViewer *imv;")
 	cog.outl("#endif")
 try:
-	if 'agmagent' in [ x.lower() for x in component['options'] ]:
+	if isAGM1Agent(component):
 		cog.outl("<TABHERE>std::string action;")
 		cog.outl("<TABHERE>ParameterMap params;")
 		cog.outl("<TABHERE>AGMModel::SPtr worldModel;")
 		cog.outl("<TABHERE>bool active;")
 		cog.outl("<TABHERE>bool setParametersAndPossibleActivation(const ParameterMap &prs, bool &reactivated);")
 		cog.outl("<TABHERE>void sendModificationProposal(AGMModel::SPtr &worldModel, AGMModel::SPtr &newModel);")
+	elif isAGM2Agent(component):
+		cog.outl("<TABHERE>std::string action;")
+		cog.outl("<TABHERE>AGMModel::SPtr worldModel;")
+		cog.outl("<TABHERE>bool active;")
 except:
 	pass
 

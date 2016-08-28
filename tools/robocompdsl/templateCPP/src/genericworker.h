@@ -70,6 +70,8 @@ if component['gui'] != 'none':
 for imp in component['recursiveImports']:
 	incl = imp.split('/')[-1].split('.')[0]
 	cog.outl('#include <'+incl+'.h>')
+
+
 if component['usingROS'] == True:
 	cog.outl('#include <ros/ros.h>')
 	for include in includeList:
@@ -101,13 +103,11 @@ if component['usingROS'] == True:
 		cog.outl(srv)
 
 try:
-	options = [ x.lower() for x in component['options'] ]
-	if 'agmagent' in options:
+	if isAGM1Agent(component):
 		cog.outl("#include <agm.h>")
-	if 'agm2agent' in options or 'agm2agentICE' in options or'agm2agentROS' in options:
+	if isAGM2Agent(component):
+		cog.outl("#include <AGM2.h>")
 		cog.outl("#include <agm2.h>")
-
-
 except:
 	pass
 ]]]

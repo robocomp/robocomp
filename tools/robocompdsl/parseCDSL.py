@@ -214,12 +214,12 @@ class CDSLParsing:
 			imprts = tree['imports']
 		except:
 			imprts = []
-		if 'agmagent' in component['options']:
+		if isAGM1Agent(component):
 			imprts = ['/robocomp/interfaces/IDSLs/AGMExecutive.idsl', '/robocomp/interfaces/IDSLs/AGMCommonBehavior.idsl', '/robocomp/interfaces/IDSLs/AGMWorldModel.idsl']
 			for i in tree['imports']:
 				if not i in imprts:
 					imprts.append(i)
-		if 'agm2agentICE' in component['options'] or 'agm2agentROS' in component['options'] or 'agm2agent' in component['options']:
+		if isAGM2Agent(component):
 			imprts = ['/robocomp/interfaces/IDSLs/AGM2.idsl']
 			for i in tree['imports']:
 				if not i in imprts:
@@ -228,7 +228,6 @@ class CDSLParsing:
 		for imp in imprts:
 			component['imports'].append(imp)
 			imp2 = imp.split('/')[-1]
-			#print 'moduleee', imp
 			try:
 				importedModule = IDSLParsing.gimmeIDSL(imp2)
 			except:
@@ -236,7 +235,7 @@ class CDSLParsing:
 				traceback.print_exc()
 				print 'Error reading IMPORT', imp2
 				os._exit(1)
-			# En recursiveImports iran los imports necesarios para una comunicacion ICE 
+			# recursiveImports holds the necessary imports
 			importable = False
 			for interf in importedModule['interfaces']:
 				for comm in tree['properties']['communications']:
@@ -247,9 +246,7 @@ class CDSLParsing:
 			if importable:
 				component['recursiveImports'] += [imp2]
 				component['recursiveImports'] += [x for x in importedModule['imports'].split('#') if len(x)>0]
-				#print 'moduleee', imp, 'done'
 			
-		#print component['recursiveImports']
 		# Language
 		component['language'] = tree['properties']['language'][0]
 		# qtVersion
@@ -323,17 +320,17 @@ class CDSLParsing:
 						component['rosInterfaces'].append(interface[0])
 						component['usingROS'] = True
 		# Handle options for communications
-		if 'agmagent' in component['options']:
+		if isAGM1Agent(component):
 			if not 'AGMCommonBehavior' in component['implements']:
 				component['implements'] =   ['AGMCommonBehavior'] + component['implements']
 			if not 'AGMExecutive' in component['requires']:
 				component['requires'] =   ['AGMExecutive'] + component['requires']
 			if not 'AGMExecutiveTopic' in component['subscribesTo']:
 				component['subscribesTo'] = ['AGMExecutiveTopic'] + component['subscribesTo']
-		if 'agm2agentROS' in component['options'] or 'agm2agentICE' in component['options'] or 'agm2agent' in component['options'] :
+		if isAGM2Agent(component):
 			agm2agent_requires = [['AGMExecutiveService','ice'], ['AGMExecutiveService','ice']]
 			agm2agent_subscribesTo = [['AGMExecutiveTopic','ice'], ['AGMDSRTopic','ice']]
-			if 'agm2agentROS' in component['options']:
+			if isAGM2AgentROS(component):
 				agm2agent_requires = [['AGMExecutiveService','ros'], ['AGMExecutiveService','ros']]
 				agm2agent_subscribesTo = [['AGMExecutiveTopic','ros'], ['AGMDSRTopic','ros']]
 			# AGM2 agents REQUIRES
@@ -344,7 +341,6 @@ class CDSLParsing:
 			for agm2agent_sub in agm2agent_subscribesTo:
 				if not agm2agent_sub in component['subscribesTo']:
 					component['subscribesTo'] = [agm2agent_sub] + component['subscribesTo']
-
 		return component
 
 def communicationIsIce(sb):
@@ -399,6 +395,14 @@ def isAGM1Agent(component):
 
 def isAGM2Agent(component):
 	valid = ['agm2agent', 'agm2agentROS', 'agm2agentICE']
+	options = component['options']
+	for v in valid:
+		if v in options:
+			return True
+	return False
+
+def isAGM2AgentROS(component):
+	valid = ['agm2agentROS']
 	options = component['options']
 	for v in valid:
 		if v in options:

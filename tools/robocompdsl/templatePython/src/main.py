@@ -162,7 +162,6 @@ import sys, traceback, IceStorm, subprocess, threading, time, Queue, os, copy
 
 # Ctrl+c handling
 import signal
-signal.signal(signal.SIGINT, signal.SIG_DFL)
 
 from PySide import *
 
@@ -327,6 +326,7 @@ for imp in component['implements']:
 ]]]
 [[[end]]]
 
+		signal.signal(signal.SIGINT, signal.SIG_DFL)
 		app.exec_()
 
 	if ic:
