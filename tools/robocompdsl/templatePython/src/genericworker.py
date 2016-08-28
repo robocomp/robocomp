@@ -21,6 +21,25 @@ from parseIDSL import *
 pool = IDSLPool(theIDSLs)
 modulesList = pool.rosModulesImports()
 
+ice_requires,ice_impliments = False,False
+for require in component['requires']:
+	req = require
+	while type(req) != type(''):
+		req = req[0]
+	if communicationIsIce(req):
+		ice_requires=True
+		break
+for impa in component['implements']:
+	if type(impa) == str:
+		imp = impa
+	else:
+		imp = impa[0]
+	if communicationIsIce(imp):
+		ice_impliments =True
+		break
+use_rcmaster = (ice_requires or ice_impliments)
+
+
 ]]]
 [[[end]]]
 #
@@ -68,11 +87,14 @@ import RoboCompCommonBehavior
 
 [[[cog
 for imp in component['recursiveImports']:
-	cog.outl('preStr = "-I"+ROBOCOMP+"/interfaces/ --all "+ROBOCOMP+"/interfaces/"')
 	module = IDSLParsing.gimmeIDSL(imp.split('/')[-1])
 	incl = imp.split('/')[-1].split('.')[0]
 	cog.outl('Ice.loadSlice(preStr+"'+incl+'.ice")')
 	cog.outl('from '+module['name']+' import *')
+if use_rcmaster:
+	cog.outl('Ice.loadSlice(preStr+"RCMaster.ice")')
+	cog.outl('from RoboCompRCMaster import *')
+
 ]]]
 [[[end]]]
 
@@ -217,9 +239,11 @@ Z()
 		super(GenericWorker, self).__init__()
 
 		self.name = mprx["name"]
-		self.proxyData = mprx["proxyData"]
 
 [[[cog
+if ice_requires:
+	cog.outl('<TABHERE><TABHERE>self.proxyData = mprx["proxyData"]')
+
 for req, num in getNameNumber(component['requires']):
 	if type(req) == str:
 		rq = req

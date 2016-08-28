@@ -87,10 +87,37 @@ class SpecificWorker : public GenericWorker
 {
 Q_OBJECT
 public:
-	SpecificWorker(MapPrx& mprx, Mapiface& miface);
+[[[cog
+use_rcmaster,ice_requires,ice_impliments = False,False,False
+for require in component['requires']:
+	req = require
+	while type(req) != type(''):
+		req = req[0]
+	if communicationIsIce(req):
+		ice_requires=True
+		break
+for impa in component['implements']:
+	if type(impa) == str:
+		imp = impa
+	else:
+		imp = impa[0]
+	if communicationIsIce(imp):
+		ice_impliments =True
+		break
+use_rcmaster = (ice_requires or ice_impliments)
+
+
+if use_rcmaster and ice_requires:
+	cog.outl("""SpecificWorker(MapPrx& mprx, Mapiface& miface);""")
+else:
+	cog.outl("""SpecificWorker(MapPrx& mprx);""")
+if use_rcmaster and ice_requires:
+	cog.outl("""void waitforComp(::IceProxy::Ice::Object* proxy, string interfaceName);""")
+
+]]]
+[[[end]]]
 	~SpecificWorker();
 	bool setParams(RoboCompCommonBehavior::ParameterList params);
-	void waitforComp(::IceProxy::Ice::Object* proxy, string interfaceName);
 
 [[[cog
 if 'implements' in component:

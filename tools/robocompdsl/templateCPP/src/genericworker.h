@@ -25,7 +25,7 @@ includeList = pool.rosImports()
 
 ]]]
 [[[end]]]
- *    Copyright (C) 
+ *    Copyright (C)
 [[[cog
 A()
 import datetime
@@ -58,9 +58,36 @@ Z()
 #include <stdint.h>
 #include <qlog/qlog.h>
 
-// ICE includes
-#include <Ice/Ice.h>
-#include <Ice/Application.h>
+[[[cog
+use_rcmaster,ice_requires,ice_impliments = False,False,False
+for require in component['requires']:
+	req = require
+	while type(req) != type(''):
+		req = req[0]
+	if communicationIsIce(req):
+		ice_requires=True
+		break
+for impa in component['implements']:
+	if type(impa) == str:
+		imp = impa
+	else:
+		imp = impa[0]
+	if communicationIsIce(imp):
+		ice_impliments =True
+		break
+use_rcmaster = (ice_requires or ice_impliments)
+
+
+if use_rcmaster:
+	cog.outl('''
+	// ICE includes
+	#include <Ice/Ice.h>
+	#include <Ice/Application.h>
+	#include <RCMaster.h>
+	''')
+]]]
+[[[end]]]
+
 
 [[[cog
 if component['gui'] != 'none':
@@ -117,23 +144,31 @@ except:
 #define CHECK_PERIOD 5000
 #define BASIC_PERIOD 100
 
-struct ifaceData
-{
-	string alias;
-	string name;
-	string comp;
-	ifaceData()
-	{}
-	ifaceData(string  ialias, string iname, string icomp)
+[[[cog
+if use_rcmaster:
+	cog.outl('''
+	struct ifaceData
 	{
-		alias = ialias;
-		name = iname;
-		comp = icomp;
-	}
-};
+		string alias;
+		string name;
+		string comp;
+		ifaceData()
+		{}
+		ifaceData(string  ialias, string iname, string icomp)
+		{
+			alias = ialias;
+			name = iname;
+			comp = icomp;
+		}
+	};
+	typedef map <string, ifaceData> Mapiface;
+	using namespace RoboCompRCMaster;
+	''');
+]]]
+[[[end]]]
+
 
 typedef map <string,::IceProxy::Ice::Object*> MapPrx;
-typedef map <string, ifaceData> Mapiface;
 
 using namespace std;
 
@@ -162,7 +197,7 @@ for m in pool.modulePool:
 try:
 	if 'agmagent' in [ x.lower() for x in component['options'] ]:
 		cog.outl("""
-		struct BehaviorParameters 
+		struct BehaviorParameters
 		{
 			RoboCompPlanning::Action action;
 			std::vector< std::vector <std::string> > plan;
@@ -316,7 +351,7 @@ if component['usingROS'] == True:
 [[[end]]]
 
 
-class GenericWorker : 
+class GenericWorker :
 [[[cog
 if component['gui'] != 'none':
 	cog.outl("""#ifdef USE_QTGUI
@@ -331,16 +366,25 @@ else:
 {
 Q_OBJECT
 public:
-	GenericWorker(MapPrx& mprx, Mapiface& miface);
+[[[cog
+if use_rcmaster and ice_requires:
+	cog.outl('''GenericWorker(MapPrx& mprx, Mapiface& miface);''')
+else:
+	cog.outl('''GenericWorker(MapPrx& mprx);''')
+]]]
+[[[end]]]
+
+
 	virtual ~GenericWorker();
 	virtual void killYourSelf();
 	virtual void setPeriod(int p);
-	
+
 	virtual bool setParams(RoboCompCommonBehavior::ParameterList params) = 0;
 	QMutex *mutex;
-	Mapiface& ifaces;
 
 [[[cog
+if use_rcmaster and ice_requires:
+	cog.outl('<TABHERE>Mapiface& ifaces;');
 
 try:
 	if 'agmagent' in [ x.lower() for x in component['options'] ]:
@@ -352,7 +396,7 @@ except:
 
 ]]]
 [[[end]]]
-	
+
 
 [[[cog
 for namea, num in getNameNumber(component['requires']+component['publishes']):
@@ -362,6 +406,8 @@ for namea, num in getNameNumber(component['requires']+component['publishes']):
 		name = namea[0]
 	if communicationIsIce(namea):
 		cog.outl('<TABHERE>'+name+'Prx '+name.lower()+num +'_proxy;')
+if use_rcmaster and ice_requires:
+	cog.outl('<TABHERE>rcmasterPrx rcmaster_proxy;')
 ]]]
 [[[end]]]
 

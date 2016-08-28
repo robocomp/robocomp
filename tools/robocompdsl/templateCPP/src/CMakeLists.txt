@@ -92,9 +92,13 @@ ROBOCOMP_INITIALIZE( $ENV{ROBOCOMP}/ )
 ROBOCOMP_WRAP_ICE( CommonBehavior 
 [[[cog
 A()
+use_rcmaster=False
 for im in component['recursiveImports']:
 	if communicationIsIce(im):
+		use_rcmaster=True
 		cog.out(im.split('/')[-1].split('.')[0] + ' ')
+if use_rcmaster:
+	cog.out(' RCMaster ')
 try:
 	if 'agmagent' in [ x.lower() for x in component['options'] ]:
 		cog.out("AGMExecutive AGMWorldModel Planning AGMCommonBehavior ")

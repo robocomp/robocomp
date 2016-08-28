@@ -19,6 +19,23 @@ component = CDSLParsing.fromFile(theCDSL)
 from parseIDSL import *
 pool = IDSLPool(theIDSLs)
 
+ice_requires,ice_impliments = False,False
+for require in component['requires']:
+	req = require
+	while type(req) != type(''):
+		req = req[0]
+	if communicationIsIce(req):
+		ice_requires=True
+		break
+for impa in component['implements']:
+	if type(impa) == str:
+		imp = impa
+	else:
+		imp = impa[0]
+	if communicationIsIce(imp):
+		ice_impliments =True
+		break
+
 REQUIRE_STR = """
 <TABHERE># Remote object connection for <NORMAL><NUM>
 <TABHERE>proxyData["<NORMAL><NUM>"] = {"comp":"@@COMP NAME HERE@@","caster":<NORMAL>Prx.checkedCast,"name":"<NORMAL>"}
@@ -268,27 +285,24 @@ try:
 except:
 	pass
 
-for req, num in getNameNumber(component['requires']):
-	if type(req) == str:
-		rq = req
-	else:
-		rq = req[0]
-	if communicationIsIce(req) and rq == 'rcmaster':
-		cog.outl(REQUIRE_STR_RCMASTER)
 
-for req, num in getNameNumber(component['requires']):
-	if num == '1':
-		num = ''
-	if type(req) == str:
-		rq = req
-	else:
-		rq = req[0]
-	if communicationIsIce(req):
-		if rq.lower() == "rcmaster":
-			continue
+if ice_requires or ice_impliments:
+	cog.outl(REQUIRE_STR_RCMASTER)
+
+if ice_requires:
+	for req, num in getNameNumber(component['requires']):
+		if num == '1':
+			num = ''
+		if type(req) == str:
+			rq = req
 		else:
-			w = REQUIRE_STR.replace("<NORMAL>", rq).replace("<NUM>", num).replace("<LOWER>", rq.lower())
-		cog.outl(w)
+			rq = req[0]
+		if communicationIsIce(req):
+			if rq.lower() == "rcmaster":
+				continue
+			else:
+				w = REQUIRE_STR.replace("<NORMAL>", rq).replace("<NUM>", num).replace("<LOWER>", rq.lower())
+			cog.outl(w)
 
 for pb, num in getNameNumber(component['publishes']):
 	if type(pb) == str:
@@ -300,11 +314,12 @@ for pb, num in getNameNumber(component['publishes']):
 		cog.outl(w)
 
 cog.outl("<TABHERE>if status == 0:")
-cog.outl("<TABHERE><TABHERE>mprx['proxyData'] = proxyData")
+if ice_requires:
+	cog.outl("<TABHERE><TABHERE>mprx['proxyData'] = proxyData")
 cog.outl("<TABHERE><TABHERE>worker = SpecificWorker(mprx)")
 cog.outl("<TABHERE><TABHERE>worker.setParams(parameters)")
 
-if len(component['implements']) > 0:
+if ice_impliments:
 	cog.outl("""<TABHERE><TABHERE>worker = SpecificWorker(mprx)
 <TABHERE><TABHERE>compInfo = compData(name=mprx["name"])
 <TABHERE><TABHERE>compInfo.interfaces = []""")

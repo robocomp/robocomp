@@ -24,7 +24,7 @@ pool = IDSLPool(theIDSLs)
 
 ]]]
 [[[end]]]
- *    Copyright (C) 
+ *    Copyright (C)
 [[[cog
 A()
 import datetime
@@ -53,21 +53,52 @@ Z()
 /**
 * \brief Default constructor
 */
-GenericWorker::GenericWorker(MapPrx& mprx, Mapiface& miface) :
+
 [[[cog
+use_rcmaster,ice_requires,ice_impliments = False,False,False
+for require in component['requires']:
+	req = require
+	while type(req) != type(''):
+		req = req[0]
+	if communicationIsIce(req):
+		ice_requires=True
+		break
+for impa in component['implements']:
+	if type(impa) == str:
+		imp = impa
+	else:
+		imp = impa[0]
+	if communicationIsIce(imp):
+		ice_impliments =True
+		break
+use_rcmaster = (ice_requires or ice_impliments)
+
+
+stw = ''
+if use_rcmaster and ice_requires:
+	cog.outl('GenericWorker::GenericWorker(MapPrx& mprx, Mapiface& miface) :')
+	stw = """, ifaces(miface)"""
+else:
+	cog.outl('GenericWorker::GenericWorker(MapPrx& mprx) :')
+
 if component['gui'] != 'none':
 	cog.outl("""#ifdef USE_QTGUI
-Ui_guiDlg(), ifaces(miface)
+Ui_guiDlg()"+stw+"
 #else
-QObject(), ifaces(miface)
+QObject()"+stw+"
 #endif
 """)
 else:
-	cog.outl("QObject(), ifaces(miface)")
+	cog.outl("QObject()"+stw)
+
 ]]]
 [[[end]]]
 {
 [[[cog
+
+if use_rcmaster and ice_requires:
+	cog.outl('<TABHERE>rcmaster_proxy = (*(rcmasterPrx*)mprx["rcmasterProxy"]);')
+
 for namea, num in getNameNumber(component['requires']):
 	if type(namea) == str:
 		name = namea
@@ -204,7 +235,7 @@ try:
 	} while (iss);
 
 	return ret;
-}	
+}
 
 
 bool GenericWorker::activate(const BehaviorParameters &prs)
@@ -218,7 +249,7 @@ bool GenericWorker::activate(const BehaviorParameters &prs)
 	return active;
 }
 
-bool GenericWorker::deactivate() 
+bool GenericWorker::deactivate()
 {
 	printf("Worker::deactivate\\n");
 	mutex->lock();

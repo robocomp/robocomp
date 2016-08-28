@@ -72,52 +72,62 @@ class SpecificWorker(GenericWorker):
 		self.timer.timeout.connect(self.compute)
 		self.Period = 2000
 		self.timer.start(self.Period)
-	
-	def waitForComp(self, interfaceName, updateAll=False):
-		'''
-		 To be called when an interface call fails and need to wait
-		 untill the interface is up
+[[[cog
+ice_requires = False
+for require in component['requires']:
+    req = require
+    while type(req) != type(''):
+        req = req[0]
+    if communicationIsIce(req):
+        ice_requires=True
+        break
 
-		interfaceName - name of the interface failed
-		updateAll - update all proxies hosted by this failed component
-		'''
-		if interfaceName not in self.proxyData:
-			raise Exception("interface :"+interfaceName+"dosent exist")
-		self.timer.stop()
-		ic = Ice.initialize()
-		
-		dg = str(self.proxyData[interfaceName]["proxy"].ice_datagram())
-		host = dg[ dg.find('-h')+3:dg.find("-p")-1]
-		compName = self.proxyData[interfaceName]["comp"]
-		# create name to dummy name map
-		nameMap = {v["name"]:k for (k,v) in self.proxyData.iteritems() if v["comp"] == compName }
-		
-		while True:
-			try:
-				interfaces = self.proxyData["rcmaster"]["proxy"].getComp(compName,host)
-
-				for iface in interfaces:
-					if iface.name == self.proxyData[interfaceName]["name"] or updateAll:
-						basePrx = ic.stringToProxy(iface.name+":"+iface.protocol+" -h "+host+" -p "+str(iface.port))                        
-						try:
-							self.proxyData[nameMap[iface.name]]["proxy"] = self.proxyData[nameMap[iface.name]]["caster"](basePrx)
-						except KeyError:
-							# we dont use this interface
-							continue
-			except (ComponentNotFound, Ice.SocketException) as e:
-				print 'waiting for '+ compName
-				time.sleep(3)
-			except Ice.Exception:
-				print 'Cannot connect to the remote object '+compName
-				traceback.print_exc()
-				time.sleep(3)
-			except KeyError:
-				self.timer.start(self.Period)
-				raise Exception("Cant get proxy for rcmaster")
-				break
-			else:
-				self.timer.start(self.Period)
-				break
+if ice_requires:
+    cog.outl('''
+<TABHERE>def waitForComp(self, interfaceName, updateAll=False):
+<TABHERE><TABHERE>""""
+<TABHERE><TABHERE>To be called when an interface call fails and need to wait
+<TABHERE><TABHERE>untill the interface is up
+<TABHERE><TABHERE>interfaceName - name of the interface failed
+<TABHERE><TABHERE>updateAll - update all proxies hosted by this failed component
+<TABHERE><TABHERE>"""
+<TABHERE><TABHERE>if interfaceName not in self.proxyData:
+<TABHERE><TABHERE><TABHERE>raise Exception("interface :"+interfaceName+"dosent exist")
+<TABHERE><TABHERE>self.timer.stop()
+<TABHERE><TABHERE>ic = Ice.initialize()        
+<TABHERE><TABHERE>dg = str(self.proxyData[interfaceName]["proxy"].ice_datagram())
+<TABHERE><TABHERE>host = dg[ dg.find('-h')+3:dg.find("-p")-1]
+<TABHERE><TABHERE>compName = self.proxyData[interfaceName]["comp"]
+<TABHERE><TABHERE># create name to dummy name map
+<TABHERE><TABHERE>nameMap = {v["name"]:k for (k,v) in self.proxyData.iteritems() if v["comp"] == compName }
+<TABHERE><TABHERE>while True:
+<TABHERE><TABHERE><TABHERE>try:
+<TABHERE><TABHERE><TABHERE><TABHERE>interfaces = self.proxyData["rcmaster"]["proxy"].getComp(compName,host)
+<TABHERE><TABHERE><TABHERE><TABHERE>for iface in interfaces:
+<TABHERE><TABHERE><TABHERE><TABHERE><TABHERE>if iface.name == self.proxyData[interfaceName]["name"] or updateAll:
+<TABHERE><TABHERE><TABHERE><TABHERE><TABHERE><TABHERE>basePrx = ic.stringToProxy(iface.name+":"+iface.protocol+" -h "+host+" -p "+str(iface.port))                        
+<TABHERE><TABHERE><TABHERE><TABHERE><TABHERE><TABHERE>try:
+<TABHERE><TABHERE><TABHERE><TABHERE><TABHERE><TABHERE><TABHERE>self.proxyData[nameMap[iface.name]]["proxy"] = self.proxyData[nameMap[iface.name]]["caster"](basePrx)
+<TABHERE><TABHERE><TABHERE><TABHERE><TABHERE><TABHERE>except KeyError:
+<TABHERE><TABHERE><TABHERE><TABHERE><TABHERE><TABHERE><TABHERE># we dont use this interface
+<TABHERE><TABHERE><TABHERE><TABHERE><TABHERE><TABHERE><TABHERE>continue
+<TABHERE><TABHERE><TABHERE>except (ComponentNotFound, Ice.SocketException) as e:
+<TABHERE><TABHERE><TABHERE><TABHERE>print 'waiting for '+ compName
+<TABHERE><TABHERE><TABHERE><TABHERE>time.sleep(3)
+<TABHERE><TABHERE><TABHERE>except Ice.Exception:
+<TABHERE><TABHERE><TABHERE><TABHERE>print 'Cannot connect to the remote object '+compName
+<TABHERE><TABHERE><TABHERE><TABHERE>traceback.print_exc()
+<TABHERE><TABHERE><TABHERE><TABHERE>time.sleep(3)
+<TABHERE><TABHERE><TABHERE>except KeyError:
+<TABHERE><TABHERE><TABHERE><TABHERE>self.timer.start(self.Period)
+<TABHERE><TABHERE><TABHERE><TABHERE>raise Exception("Cant get proxy for rcmaster")
+<TABHERE><TABHERE><TABHERE><TABHERE>break
+<TABHERE><TABHERE><TABHERE>else:
+<TABHERE><TABHERE><TABHERE><TABHERE>self.timer.start(self.Period)
+<TABHERE><TABHERE><TABHERE><TABHERE>break
+''')
+]]]
+[[[end]]]
 
 	def setParams(self, params):
 		#try:
