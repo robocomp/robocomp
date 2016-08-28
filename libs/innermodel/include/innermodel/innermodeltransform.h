@@ -24,15 +24,15 @@
 class InnerModelTransform : public InnerModelNode
 {
 	public:
-		friend class InnerModel;
-		friend class InnerModelJoint;
-		friend class InnerModelPointCloud;
-		friend class InnerModelTouchSensor;
-		friend class InnerModelLaser;
-		friend class InnerModelDifferentialRobot;
-		friend class InnerModelOmniRobot;
-		friend class InnerModelPrismaticJoint;
-		friend class InnerModelReader;
+// 		friend class InnerModel;
+// 		friend class InnerModelJoint;
+// 		friend class InnerModelPointCloud;
+// 		friend class InnerModelTouchSensor;
+// 		friend class InnerModelLaser;
+// 		friend class InnerModelDifferentialRobot;
+// 		friend class InnerModelOmniRobot;
+// 		friend class InnerModelPrismaticJoint;
+// 		friend class InnerModelReader;
 
 		InnerModelTransform(QString id_, QString engine_, float tx_, float ty_, float tz_, float rx_, float ry_, float rz_, float mass_, InnerModelNode *parent_=NULL);
 		virtual ~InnerModelTransform();

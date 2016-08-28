@@ -54,15 +54,18 @@
 #include <qmat/QMatAll>
 
 #include <innermodel/innermodel.h>
-
-
+#include <innermodel/innermodelnode.h>
+#include <innermodel/innermodeljoint.h>
+#include <innermodel/innermodeltouchsensor.h>
+#include <innermodel/innermodeldifferentialrobot.h>
+#include <innermodel/innermodelomnirobot.h>
+#include <innermodel/innermodelprismaticjoint.h>
+#include <innermodel/innermodelcamera.h>
 
 osg::Vec3 QVecToOSGVec(const QVec &vec);
 osg::Vec4 htmlStringToOsgVec4(QString color);
 QString osgVec4ToHtmlString(osg::Vec4 color);
 osg::Matrix QMatToOSGMat4(const RTMat &nodeB);
-
-
 
 struct IMVCamera
 {

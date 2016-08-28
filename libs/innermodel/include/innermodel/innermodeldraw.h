@@ -23,7 +23,10 @@
 #include <innermodel/innermodelviewer.h>
 #include <innermodel/innermodeltransform.h>
 #include <innermodel/innermodeljoint.h>
-
+#include <innermodel/innermodelplane.h>
+#include <innermodel/innermodelmesh.h>
+#include <innermodel/innermodelcamera.h>
+#include <innermodel/innermodelpointcloud.h>
 
 using namespace RMat;
 

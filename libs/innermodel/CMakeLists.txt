@@ -11,6 +11,17 @@ set(srcs
 	innermodelnode.cpp
 	innermodeltransform.cpp
 	innermodeljoint.cpp
+	innermodelomnirobot.cpp
+	innermodeldifferentialrobot
+	innermodelprismaticjoint.cpp
+	innermodelplane.cpp 
+	innermodelcamera.cpp 
+	innermodelrgbd.cpp
+	innermodellaser.cpp
+	innermodelimu.cpp 
+	innermodelpointcloud.cpp 
+	innermodelmesh.cpp 
+	innermodeltouchsensor.cpp
 )
 
 set(incs
