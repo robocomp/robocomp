@@ -328,10 +328,10 @@ class CDSLParsing:
 			if not 'AGMExecutiveTopic' in component['subscribesTo']:
 				component['subscribesTo'] = ['AGMExecutiveTopic'] + component['subscribesTo']
 		if isAGM2Agent(component):
-			agm2agent_requires = [['AGMExecutiveService','ice'], ['AGMExecutiveService','ice']]
+			agm2agent_requires = [['AGMDSRService','ice']]
 			agm2agent_subscribesTo = [['AGMExecutiveTopic','ice'], ['AGMDSRTopic','ice']]
 			if isAGM2AgentROS(component):
-				agm2agent_requires = [['AGMExecutiveService','ros'], ['AGMExecutiveService','ros']]
+				agm2agent_requires = [['AGMExecutiveService','ros']]
 				agm2agent_subscribesTo = [['AGMExecutiveTopic','ros'], ['AGMDSRTopic','ros']]
 			# AGM2 agents REQUIRES
 			for agm2agent_req in agm2agent_requires:
