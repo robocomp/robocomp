@@ -38,19 +38,20 @@ for impa in component['implements']:
 
 REQUIRE_STR = """
 <TABHERE># Remote object connection for <NORMAL><NUM>
-<TABHERE>proxyData["<NORMAL><NUM>"] = {"comp":"@@COMP NAME HERE@@","caster":<NORMAL>Prx.checkedCast,"name":"<NORMAL>"}
+<TABHERE>component = str(ic.getProperties().getProperty("Interfaces.<NORMAL><NUM>.component"))
+<TABHERE>proxyData["<LOWER><NUM>"] = {"comp":component,"caster":<NORMAL>Prx.checkedCast,"name":"<NORMAL>"}
 <TABHERE>try:
 <TABHERE><TABHERE>while True:
 <TABHERE><TABHERE><TABHERE>try:
-<TABHERE><TABHERE><TABHERE><TABHERE>interfaces = rcmaster_proxy.getComp(proxyData["<NORMAL><NUM>"]["comp"],"localhost");
-<TABHERE><TABHERE><TABHERE><TABHERE>iface = [x for x in interfaces if x.name == proxyData["<NORMAL><NUM>"]["name"]][0]
-<TABHERE><TABHERE><TABHERE><TABHERE>basePrx = ic.stringToProxy(proxyData["<NORMAL><NUM>"]["name"]+":"+iface.protocol+" -h localhost -p "+str(iface.port))
-<TABHERE><TABHERE><TABHERE><TABHERE>proxyData["<NORMAL><NUM>"]["proxy"] = proxyData["<NORMAL><NUM>"]["caster"](basePrx)
+<TABHERE><TABHERE><TABHERE><TABHERE>interfaces = rcmaster_proxy.getComp(proxyData["<LOWER><NUM>"]["comp"],"localhost");
+<TABHERE><TABHERE><TABHERE><TABHERE>iface = [x for x in interfaces if x.name == proxyData["<LOWER><NUM>"]["name"]][0]
+<TABHERE><TABHERE><TABHERE><TABHERE>basePrx = ic.stringToProxy(proxyData["<LOWER><NUM>"]["name"]+":"+iface.protocol+" -h localhost -p "+str(iface.port))
+<TABHERE><TABHERE><TABHERE><TABHERE>proxyData["<LOWER><NUM>"]["proxy"] = proxyData["<LOWER><NUM>"]["caster"](basePrx)
 <TABHERE><TABHERE><TABHERE>except ComponentNotFound:
 <TABHERE><TABHERE><TABHERE><TABHERE>print 'waiting for <NORMAL><NUM> interface'
 <TABHERE><TABHERE><TABHERE><TABHERE>time.sleep(1)
 <TABHERE><TABHERE><TABHERE>except IndexError:
-<TABHERE><TABHERE><TABHERE><TABHERE>raise Exception(proxyData["<NORMAL><NUM>"]["comp"]+" dosnt provide"+proxyData["<NORMAL><NUM>"]["name"])
+<TABHERE><TABHERE><TABHERE><TABHERE>raise Exception(proxyData["<LOWER><NUM>"]["comp"]+" dosnt provide"+proxyData["<LOWER><NUM>"]["name"])
 <TABHERE><TABHERE><TABHERE><TABHERE>time.sleep(3)
 <TABHERE><TABHERE><TABHERE>except Ice.Exception:
 <TABHERE><TABHERE><TABHERE><TABHERE>print 'Cannot connect to the remote object (<NORMAL>)'

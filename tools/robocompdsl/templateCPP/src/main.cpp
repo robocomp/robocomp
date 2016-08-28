@@ -17,7 +17,11 @@ component = CDSLParsing.fromFile(theCDSL)
 
 
 REQUIRE_STR = """
-<TABHERE>ifaces["<NORMAL><PROXYNUMBER>"] = ifaceData("<NORMAL><PROXYNUMBER>","<NORMAL>","@@COMP NAME@@");
+<TABHERE>if (not GenericMonitor::configGetString(communicator(), prefix, "<LOWER><PROXYNUMBER>Proxy.component", proxyComp, "")){
+<TABHERE><TABHERE>cout << "[" << PROGRAM_NAME << "]: Can't read <LOWER><PROXYNUMBER>Proxy component Name"<<endl;
+<TABHERE><TABHERE>return EXIT_FAILURE;
+<TABHERE>}
+<TABHERE>ifaces["<NORMAL><PROXYNUMBER>"] = ifaceData("<NORMAL><PROXYNUMBER>","<NORMAL>",proxyComp);
 <TABHERE>while (true)
 <TABHERE>{
 <TABHERE><TABHERE>try
@@ -421,7 +425,7 @@ if use_rcmaster:
 ]]]
 [[[end]]]
 
-	string proxy, tmp,ComponentName;
+	string proxy, tmp,ComponentName,proxyComp;
 	initialize();
 
 	if (not GenericMonitor::configGetString(communicator(), prefix, "Ice.ProgramName", ComponentName, ""))

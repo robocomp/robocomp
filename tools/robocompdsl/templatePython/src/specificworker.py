@@ -91,6 +91,7 @@ if ice_requires:
 <TABHERE><TABHERE>interfaceName - name of the interface failed
 <TABHERE><TABHERE>updateAll - update all proxies hosted by this failed component
 <TABHERE><TABHERE>"""
+<TABHERE><TABHERE>interfaceName = interfaceName.lower()
 <TABHERE><TABHERE>if interfaceName not in self.proxyData:
 <TABHERE><TABHERE><TABHERE>raise Exception("interface :"+interfaceName+"dosent exist")
 <TABHERE><TABHERE>self.timer.stop()
@@ -108,6 +109,7 @@ if ice_requires:
 <TABHERE><TABHERE><TABHERE><TABHERE><TABHERE><TABHERE>basePrx = ic.stringToProxy(iface.name+":"+iface.protocol+" -h "+host+" -p "+str(iface.port))                        
 <TABHERE><TABHERE><TABHERE><TABHERE><TABHERE><TABHERE>try:
 <TABHERE><TABHERE><TABHERE><TABHERE><TABHERE><TABHERE><TABHERE>self.proxyData[nameMap[iface.name]]["proxy"] = self.proxyData[nameMap[iface.name]]["caster"](basePrx)
+<TABHERE><TABHERE><TABHERE><TABHERE><TABHERE><TABHERE><TABHERE>exec('self.'+interfaceName+'_proxy = self.proxyData[nameMap[iface.name]]["proxy"]') in locals()
 <TABHERE><TABHERE><TABHERE><TABHERE><TABHERE><TABHERE>except KeyError:
 <TABHERE><TABHERE><TABHERE><TABHERE><TABHERE><TABHERE><TABHERE># we dont use this interface
 <TABHERE><TABHERE><TABHERE><TABHERE><TABHERE><TABHERE><TABHERE>continue

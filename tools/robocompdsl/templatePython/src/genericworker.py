@@ -251,6 +251,8 @@ for req, num in getNameNumber(component['requires']):
 		rq = req[0]
 	if not communicationIsIce(req):
 		cog.outl("<TABHERE><TABHERE>self."+rq.lower()+"_proxy = ServiceClient"+rq+"()")
+	else:
+		cog.outl("<TABHERE><TABHERE>self."+rq.lower()+"_proxy = self.proxyData['"+rq.lower()+num+"']['proxy']")
 
 for pb, num in getNameNumber(component['publishes']):
 	if type(pb) == str:
