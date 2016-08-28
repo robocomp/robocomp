@@ -143,6 +143,8 @@ class SpecificWorker(GenericWorker):
             comp.host.privateIP = remote_ip
 
         # check valid interfaces
+        if len(comp.interfaces)==0:
+            return False
         return True
 
     def get_open_port(self, portnum=0):
@@ -156,7 +158,7 @@ class SpecificWorker(GenericWorker):
             if s.connect_ex(('127.0.0.1',portnum)) ==0 :
                 msg = "Cant assign port, Alrady in use"
             else:
-                port = portnum 
+                port = portnum
         else:
             try:
                 s.bind(("", portnum))
@@ -189,7 +191,7 @@ class SpecificWorker(GenericWorker):
         print 'no of components cached :',len(self.compcache)
         # print self.compcache
         print "\n------------------------------\n"
-        
+
     ################################
     ############ Servents ##########
     ################################
