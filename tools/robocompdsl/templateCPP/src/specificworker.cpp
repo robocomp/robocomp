@@ -78,6 +78,11 @@ try:
 		cog.outl("<TABHERE>worldModel = AGMModel::SPtr(new AGMModel());")
 		cog.outl("<TABHERE>worldModel->name = "+"\"worldModel\";")
 		cog.outl("<TABHERE>innerModel = new InnerModel();")
+	if isAGM2Agent(component):
+		cog.outl("<TABHERE>active = false;")
+		cog.outl("<TABHERE>worldModel = AGMModel::SPtr(new AGMModel());")
+		cog.outl("<TABHERE>worldModel->name = "+"\"worldModel\";")
+		cog.outl("<TABHERE>innerModel = new InnerModel();")
 		
 except:
 	pass
