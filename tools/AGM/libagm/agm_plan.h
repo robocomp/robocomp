@@ -2,7 +2,6 @@
 #define AGMJUPLAN_H
 
 
-#include <vector>
 #include <map>
 #include <boost/algorithm/string.hpp>
 
