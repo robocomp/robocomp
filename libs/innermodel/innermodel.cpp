@@ -106,6 +106,13 @@ InnerModel* InnerModel::copy()
 	return inner;
 }
 
+// template <typename TNode> void InnerModel::get(TNode *node, QString id)
+// { 
+// 	InnerModelNode *n = getNode(id);	
+// 	if ( auto res = dynamic_cast<TNode*>(n) != nullptr) node = res;
+// 	else {	std::exception e("Nope"); 	throw e; 		}
+// } 
+	
 void InnerModel::removeNode(const QString & id)
 {
 	QMutexLocker l(mutex);

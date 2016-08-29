@@ -36,7 +36,7 @@
 #include <innermodel/innermodeltouchsensor.h>
 
 // FCL
-#define FCL_SUPPORT 1
+#define FCL_SUPPORT 0
 
 #if FCL_SUPPORT==1
 #include <boost/shared_ptr.hpp>
@@ -82,7 +82,10 @@ class InnerModel
 		bool save(QString path);	
 		InnerModel* copy();
 
-		/// Auto update method
+		///////////////////////
+		/// Tree update methods
+		///////////////////////
+		void setRoot(InnerModelNode *node);
 		void update();
 		void setUpdateRotationPointers(QString rotationId, float *x, float *y, float *z);
 		void setUpdateTranslationPointers(QString translationId, float *x, float *y, float *z);
@@ -98,26 +101,25 @@ class InnerModel
 		void updatePlaneValues(QString planeId, float nx, float ny, float nz, float px, float py, float pz);
 
 		////////////////////////////////
-		/// Model construction methods
-		///////////////////////////////
-		void setRoot(InnerModelNode *node);
-		InnerModelTransform *newTransform(QString id, QString engine, InnerModelNode *parent, float tx=0, float ty=0, float tz=0, float rx=0, float ry=0, float rz=0, float mass=0);
-		InnerModelJoint *newJoint(QString id, InnerModelTransform* parent, float lx = 0, float ly = 0, float lz = 0, float hx = 0, float hy = 0, float hz = 0,  float tx = 0, float ty = 0, float tz = 0, float rx = 0, float ry = 0, float rz = 0, float min=-INFINITY, float max=INFINITY, uint32_t port = 0, std::string axis = "z", float home=0);
-		InnerModelTouchSensor *newTouchSensor(QString id, InnerModelTransform* parent, QString type, float nx = 0, float ny = 0, float nz = 0, float min=0, float max=INFINITY, uint32_t port=0);
-		InnerModelPrismaticJoint *newPrismaticJoint(QString id, InnerModelTransform* parent, float min=-INFINITY, float max=INFINITY, float value=0, float offset=0, uint32_t port = 0, std::string axis = "z", float home=0);
-		InnerModelDifferentialRobot *newDifferentialRobot(QString id, InnerModelTransform* parent, float tx = 0, float ty = 0, float tz = 0, float rx = 0, float ry = 0, float rz = 0, uint32_t port = 0, float noise=0., bool collide=false);
-		InnerModelOmniRobot *newOmniRobot(QString id, InnerModelTransform* parent, float tx = 0, float ty = 0, float tz = 0, float rx = 0, float ry = 0, float rz = 0, uint32_t port = 0, float noise=0., bool collide=false);
-		InnerModelCamera *newCamera(QString id, InnerModelNode *parent, float width, float height, float focal);
-		InnerModelRGBD *newRGBD(QString id, InnerModelNode *parent, float width, float height, float focal, float noise, uint32_t port = 0, QString ifconfig="");
-		InnerModelIMU *newIMU(QString id, InnerModelNode *parent, uint32_t port = 0);
-		InnerModelLaser *newLaser(QString id, InnerModelNode *parent, uint32_t port = 0, uint32_t min=0, uint32_t max=30000, float angle = M_PIl, uint32_t measures = 360, QString ifconfig="");
-		InnerModelPlane *newPlane(QString id, InnerModelNode *parent, QString texture, float width, float height, float depth, int repeat, float nx=0, float ny=0, float nz=0, float px=0, float py=0, float pz=0, bool collidable=0);
-		InnerModelMesh *newMesh(QString id, InnerModelNode *parent, QString path, float scale, int render, float tx, float ty, float tz, float rx, float ry, float rz, bool collidable=0);
-		InnerModelMesh *newMesh(QString id, InnerModelNode *parent, QString path, float scalex, float scaley, float scalez, int render, float tx, float ty, float tz, float rx, float ry, float rz, bool collidable=0);
-		InnerModelPointCloud *newPointCloud(QString id, InnerModelNode *parent);
+		/// Factory constructors
+		///////////////////////////////	
+		InnerModelTransform* newTransform(QString id, QString engine, InnerModelNode *parent, float tx=0, float ty=0, float tz=0, float rx=0, float ry=0, float rz=0, float mass=0);
+		InnerModelJoint* newJoint(QString id, InnerModelTransform* parent, float lx = 0, float ly = 0, float lz = 0, float hx = 0, float hy = 0, float hz = 0,  float tx = 0, float ty = 0, float tz = 0, float rx = 0, float ry = 0, float rz = 0, float min=-INFINITY, float max=INFINITY, uint32_t port = 0, std::string axis = "z", float home=0);
+		InnerModelTouchSensor* newTouchSensor(QString id, InnerModelTransform* parent, QString type, float nx = 0, float ny = 0, float nz = 0, float min=0, float max=INFINITY, uint32_t port=0);
+		InnerModelPrismaticJoint* newPrismaticJoint(QString id, InnerModelTransform* parent, float min=-INFINITY, float max=INFINITY, float value=0, float offset=0, uint32_t port = 0, std::string axis = "z", float home=0);
+		InnerModelDifferentialRobot* newDifferentialRobot(QString id, InnerModelTransform* parent, float tx = 0, float ty = 0, float tz = 0, float rx = 0, float ry = 0, float rz = 0, uint32_t port = 0, float noise=0., bool collide=false);
+		InnerModelOmniRobot* newOmniRobot(QString id, InnerModelTransform* parent, float tx = 0, float ty = 0, float tz = 0, float rx = 0, float ry = 0, float rz = 0, uint32_t port = 0, float noise=0., bool collide=false);
+		InnerModelCamera* newCamera(QString id, InnerModelNode *parent, float width, float height, float focal);
+		InnerModelRGBD* newRGBD(QString id, InnerModelNode *parent, float width, float height, float focal, float noise, uint32_t port = 0, QString ifconfig="");
+		InnerModelIMU* newIMU(QString id, InnerModelNode *parent, uint32_t port = 0);
+		InnerModelLaser* newLaser(QString id, InnerModelNode *parent, uint32_t port = 0, uint32_t min=0, uint32_t max=30000, float angle = M_PIl, uint32_t measures = 360, QString ifconfig="");
+		InnerModelPlane* newPlane(QString id, InnerModelNode *parent, QString texture, float width, float height, float depth, int repeat, float nx=0, float ny=0, float nz=0, float px=0, float py=0, float pz=0, bool collidable=0);
+		InnerModelMesh* newMesh(QString id, InnerModelNode *parent, QString path, float scale, int render, float tx, float ty, float tz, float rx, float ry, float rz, bool collidable=0);
+		InnerModelMesh* newMesh(QString id, InnerModelNode *parent, QString path, float scalex, float scaley, float scalez, int render, float tx, float ty, float tz, float rx, float ry, float rz, bool collidable=0);
+		InnerModelPointCloud* newPointCloud(QString id, InnerModelNode *parent);
 
 		////////////////////////////////
-		/// Specific nodes retrival methods
+		/// Derived nodes retrival methods
 		///////////////////////////////
 		InnerModelTransform *getTransform(const QString &id);
 		InnerModelJoint *getJoint(const QString &id);
@@ -135,7 +137,7 @@ class InnerModel
 		InnerModelPointCloud *getPointCloud(const QString &id);
 
 		///////////////////////////////////
-		/// Information retrieval methods
+		/// Kinematic transformation methods
 		////////////////////////////////////
 		QVec transform(const QString & destId, const QVec &origVec, const QString & origId);
 		QVec transformS(const std::string & destId, const QVec &origVec, const std::string & origId);
@@ -145,7 +147,7 @@ class InnerModel
 		QVec transformS( const std::string &destId, const std::string &origId);
 	
 		////////////////////////////////////////////
-		/// Matrix transformation retrieval methods
+		/// Transformation matrix retrieval methods
 		///////////////////////////////////////////
 		RTMat getTransformationMatrix(const QString &destId, const QString &origId);
 		RTMat getTransformationMatrixS(const std::string &destId, const std::string &origId);
@@ -154,10 +156,18 @@ class InnerModel
 		QVec rotationAngles(const QString & destId, const QString & origId);
 			
 		/////////////////////////////////////////////
-		///// Graoh editing methods
+		/// Graoh editing methods
 		/////////////////////////////////////////////
 		QList<QString> getIDKeys() {return hash.keys(); }
 		InnerModelNode *getNode(const QString & id) const { if (hash.contains(id)) return hash[id]; else return NULL;}
+		template <typename TNode> void get(TNode* node, QString id)
+		{ 
+			InnerModelNode *n = getNode(id);	
+			TNode *res;
+			if ( res = dynamic_cast<TNode*>(n)) 
+				node = res;
+			else {	std::exception e;	throw e; 		}
+		} 
 		void removeSubTree(InnerModelNode *item, QStringList *l);
 		void removeNode(const QString & id);
 		void moveSubTree(InnerModelNode *nodeSrc, InnerModelNode *nodeDst);
@@ -198,6 +208,7 @@ class InnerModel
 		void print(QString s="") { treePrint(s, true); }
 		void treePrint(QString s="", bool verbose=false) { root->treePrint(QString(s), verbose); }
 
+	
 		///////////////////////////////////////
 		/// Camera methods
 		//////////////////////////////////////

@@ -610,7 +610,7 @@ const QVec RMat::QVec::uniformVector(const int dim, const float min, const float
  */
 const QVec RMat::QVec::gaussianSamples(const int dim, const T mean, const T stdev)
 {
-	QVec R(dim);
+		QVec R(dim);
 	static unsigned int Seed = QTime::currentTime().msec();
 #ifdef COMPILE_IPP
 	ippsRandGauss_Direct_32f(R.getWriteData(), dim, mean, stdev, &Seed);
@@ -625,11 +625,17 @@ const QVec RMat::QVec::gaussianSamples(const int dim, const T mean, const T stde
 
 #endif
   	return R;
+		
+	// 	static unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+	//   static std::default_random_engine generator (seed);
+	// 	std::normal_distribution<float> distribution(mean, stdev);
+  // 	QVec R(dim);
+  //	for(int i=0;i<dim;i++)
+  // 		R(i) = distribution(generator);
+  //
+ 	// return R;
+  
 }
-
-// Static methods
-
-
 
 
 /**
