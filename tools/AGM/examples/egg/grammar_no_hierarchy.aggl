@@ -1,0 +1,12 @@
+spacePattern=3
+lineThickness=2
+fontName=Arial
+name=grammar
+vertexDiameter=40
+shortPattern=1
+nodeThickness=2
+fontSize=14
+longPattern=3
+===
+
+include(general.aggl)

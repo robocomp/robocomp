@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>843</width>
+    <height>549</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>AGM graph viewer</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="verticalLayout_3">
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout"/>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>843</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuEdit">
+    <property name="title">
+     <string>Edit</string>
+    </property>
+    <addaction name="actionChangeAppearance"/>
+    <addaction name="actionChangeFont"/>
+   </widget>
+   <widget class="QMenu" name="menuLayout">
+    <property name="title">
+     <string>Layout</string>
+    </property>
+    <addaction name="actionAutomatic"/>
+    <addaction name="actionManual"/>
+   </widget>
+   <addaction name="menuEdit"/>
+   <addaction name="menuLayout"/>
+  </widget>
+  <action name="actionChangeAppearance">
+   <property name="text">
+    <string>Change node appearance</string>
+   </property>
+  </action>
+  <action name="actionChangeWidth">
+   <property name="text">
+    <string>Change width</string>
+   </property>
+  </action>
+  <action name="actionChangeFont">
+   <property name="text">
+    <string>Change font</string>
+   </property>
+  </action>
+  <action name="actionSaveAs">
+   <property name="text">
+    <string>Save as</string>
+   </property>
+  </action>
+  <action name="actionOpen">
+   <property name="text">
+    <string>Open</string>
+   </property>
+  </action>
+  <action name="actionQuit">
+   <property name="text">
+    <string>Quit</string>
+   </property>
+  </action>
+  <action name="actionGraphmar">
+   <property name="text">
+    <string>AGMEditor</string>
+   </property>
+  </action>
+  <action name="actionAddRule">
+   <property name="text">
+    <string>Add new rule</string>
+   </property>
+  </action>
+  <action name="actionRemoveCurrentRule">
+   <property name="text">
+    <string>Remove current rule</string>
+   </property>
+  </action>
+  <action name="actionExport">
+   <property name="text">
+    <string>Export to SVG current rule</string>
+   </property>
+  </action>
+  <action name="actionExportAllRules">
+   <property name="text">
+    <string>Export to SVG all rules</string>
+   </property>
+  </action>
+  <action name="actionGenerateCode">
+   <property name="text">
+    <string>Generate PDDL files</string>
+   </property>
+  </action>
+  <action name="actionRenameCurrentRule">
+   <property name="text">
+    <string>Rename current rule</string>
+   </property>
+  </action>
+  <action name="actionNew_agent">
+   <property name="text">
+    <string>New agent</string>
+   </property>
+  </action>
+  <action name="actionRemove_selected_agent">
+   <property name="text">
+    <string>Remove current agent</string>
+   </property>
+  </action>
+  <action name="actionNew_configuration">
+   <property name="text">
+    <string>New configuration</string>
+   </property>
+  </action>
+  <action name="actionRemove_current_config">
+   <property name="text">
+    <string>Remove current configuration</string>
+   </property>
+  </action>
+  <action name="actionNew_agent_state">
+   <property name="text">
+    <string>New state for the current agent</string>
+   </property>
+  </action>
+  <action name="actionRemove_current_agent_state">
+   <property name="text">
+    <string>Remove current agent state</string>
+   </property>
+  </action>
+  <action name="actionExportAllRulesPNG">
+   <property name="text">
+    <string>Export to PNG all rules</string>
+   </property>
+  </action>
+  <action name="actionSave">
+   <property name="text">
+    <string>Save</string>
+   </property>
+  </action>
+  <action name="actionAutomatic">
+   <property name="text">
+    <string>Automatic</string>
+   </property>
+  </action>
+  <action name="actionManual">
+   <property name="text">
+    <string>Manual</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

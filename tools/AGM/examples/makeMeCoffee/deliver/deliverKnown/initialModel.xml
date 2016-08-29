@@ -1,0 +1,231 @@
+<AGMModel>
+
+	<!--
+	R O O M S
+	-->
+	<symbol id="3" type="object">
+		<attribute key="x" value="-2000" />
+		<attribute key="z" value="-2000" />
+	</symbol>
+	<symbol id="4" type="roomSt" />
+	<link src="3" dst="4" label="isHall" />
+	<link src="3" dst="4" label="room" />
+	<link src="3" dst="4" label="explored" />
+
+	<symbol id="5" type="object">
+		<attribute key="x" value="-2000" />
+		<attribute key="z" value="-2000" />
+	</symbol>
+	<symbol id="6" type="roomSt" />
+	<link src="5" dst="6" label="room" />
+	<link src="5" dst="6" label="isLivingRoom" />
+	<link src="5" dst="6" label="explored" />
+
+	<symbol id="7" type="object">
+		<attribute key="x" value="-2000" />
+		<attribute key="z" value="-2000" />
+	</symbol>
+	<symbol id="8" type="roomSt" />
+	<link src="7" dst="8" label="room" />
+	<link src="7" dst="8" label="isBedroom" />
+	<link src="7" dst="8" label="noExplored" />
+
+	<symbol id="9" type="object">
+		<attribute key="x" value="-2000" />
+		<attribute key="z" value="-2000" />
+	</symbol>
+	<symbol id="10" type="roomSt" />
+	<link src="9" dst="10" label="room" />
+	<link src="9" dst="10" label="isKitchen" />
+	<link src="9" dst="10" label="explored" />
+
+	<symbol id="11" type="object">
+		<attribute key="x" value="-2000" />
+		<attribute key="z" value="-2000" />
+	</symbol>
+	<symbol id="12" type="roomSt" />
+	<link src="11" dst="12" label="room" />
+	<link src="11" dst="12" label="isDiningRoom" />
+	<link src="11" dst="12" label="explored" />
+
+	<symbol id="13" type="object">
+		<attribute key="x" value="-2000" />
+		<attribute key="z" value="-2000" />
+	</symbol>
+	<symbol id="14" type="roomSt" />
+	<link src="13" dst="14" label="room" />
+	<link src="13" dst="14" label="isPatio" />
+	<link src="13" dst="14" label="explored" />
+
+	<link src="3" dst="5" label="transitable" />
+	<link src="5" dst="3" label="transitable" />
+	<link src="7" dst="5" label="transitable" />
+	<link src="5" dst="7" label="transitable" />
+	<link src="9" dst="5" label="transitable" />
+	<link src="5" dst="9" label="transitable" />
+	<link src="11" dst="5" label="transitable" />
+	<link src="5" dst="11" label="transitable" />
+	<link src="11" dst="13" label="transitable" />
+	<link src="13" dst="11" label="transitable" />
+
+
+	<!--
+	R O B O T
+	-->
+	<symbol id="1" type="robot">
+	</symbol>
+	<!-- hall??? -->
+	<!-- <link src="1" dst="3" label="in" /> -->
+	<!-- livingroom -->
+	<link src="1" dst="5" label="in" />
+
+	<!--
+	O B J E C T S    I N    B E D R O O M
+	-->
+	<symbol id="15" type="object">
+	</symbol>
+	<link src="1" dst="15" label="know" />
+	<link src="15" dst="7" label="in" />
+	<symbol id="32" type="objectSt">
+	</symbol>
+	<link src="15" dst="32" label="bed" />
+	<link src="15" dst="32" label="hasStatus" />
+	<link src="15" dst="32" label="noSee" />
+	<link src="15" dst="32" label="classified" />
+	<link src="15" dst="32" label="noReach" />
+	<link src="15" dst="32" label="position" />
+	<link src="15" dst="32" label="reachable" />
+
+	<!--
+	O B J E C T S    I N    K I T C H E N
+	-->
+	<symbol id="16" type="object">
+	</symbol>
+	<link src="1" dst="16" label="know" />
+	<link src="16" dst="9" label="in" />
+	<symbol id="33" type="objectSt">
+	</symbol>
+	<link src="16" dst="33" label="fridge" />
+	<link src="16" dst="33" label="hasStatus" />
+	<link src="16" dst="33" label="noSee" />
+	<link src="16" dst="33" label="classified" />
+	<link src="16" dst="33" label="noReach" />
+	<link src="16" dst="33" label="position" />
+	<link src="16" dst="33" label="reachable" />
+
+	<symbol id="17" type="object">
+	</symbol>
+	<link src="1" dst="17" label="know" />
+	<link src="17" dst="9" label="in" />
+	<symbol id="34" type="objectSt">
+	</symbol>
+	<link src="17" dst="34" label="stove" />
+	<link src="17" dst="34" label="hasStatus" />
+	<link src="17" dst="34" label="noSee" />
+	<link src="17" dst="34" label="classified" />
+	<link src="17" dst="34" label="noReach" />
+	<link src="17" dst="34" label="position" />
+	<link src="17" dst="34" label="reachable" />
+
+	<symbol id="18" type="object">
+	</symbol>
+	<link src="1" dst="18" label="know" />
+	<link src="18" dst="9" label="in" />
+	<symbol id="35" type="objectSt">
+	</symbol>
+	<link src="18" dst="35" label="stove" />
+	<link src="18" dst="35" label="hasStatus" />
+	<link src="18" dst="35" label="noSee" />
+	<link src="18" dst="35" label="classified" />
+	<link src="18" dst="35" label="noReach" />
+	<link src="18" dst="35" label="position" />
+	<link src="18" dst="35" label="reachable" />
+
+	<!--
+	O B J E C T S    I N    D I N I N G    R O O M
+	-->
+	<symbol id="19" type="object">
+	</symbol>
+	<link src="1" dst="19" label="know" />
+	<link src="19" dst="11" label="in" />
+	<symbol id="36" type="objectSt">
+	</symbol>
+	<link src="19" dst="36" label="table" />
+	<link src="19" dst="36" label="hasStatus" />
+	<link src="19" dst="36" label="noSee" />
+	<link src="19" dst="36" label="classified" />
+	<link src="19" dst="36" label="noReach" />
+	<link src="19" dst="36" label="position" />
+	<link src="19" dst="36" label="reachable" />
+
+	<!--
+	O B J E C T S    I N    L I V I N G    R O O M
+	-->
+	<symbol id="20" type="object">
+	</symbol>
+	<link src="1" dst="20" label="know" />
+	<link src="20" dst="5" label="in" />
+	<symbol id="21" type="objectSt">
+	</symbol>
+	<link src="20" dst="21" label="noSee" />
+	<link src="20" dst="21" label="hasStatus" />
+	<link src="20" dst="21" label="noReach" />
+	<link src="20" dst="21" label="reachable" />
+	<link src="20" dst="21" label="position" />
+	<link src="20" dst="21" label="classified" />
+	<link src="20" dst="21" label="table" />
+
+	<symbol id="30" type="object">
+	</symbol>
+	<link src="1" dst="30" label="know" />
+	<link src="30" dst="20" label="in" />
+	<link src="30" dst="5" label="in" />
+	<symbol id="31" type="objectSt">
+	</symbol>
+	<link src="30" dst="31" label="noSee" />
+	<link src="30" dst="31" label="hasStatus" />
+	<link src="30" dst="31" label="noReach" />
+	<link src="30" dst="31" label="reachable" />
+	<link src="30" dst="31" label="position" />
+	<link src="30" dst="31" label="classified" />
+	<link src="30" dst="31" label="glasses" />
+
+
+
+	<!--
+	P E R S O N S
+	-->
+	<symbol id="22" type="person">
+	</symbol>
+	<symbol id="23" type="personSt">
+	</symbol>
+	<link src="22" dst="23" label="granny" />
+	<link src="22" dst="23" label="noLocalized" />
+	<link src="1" dst="22" label="know" />
+
+	<symbol id="24" type="person">
+	</symbol>
+	<symbol id="25" type="personSt">
+	</symbol>
+	<link src="24" dst="25" label="deliGuy" />
+	<link src="24" dst="25" label="noLocalized" />
+	<link src="1" dst="24" label="know" />
+
+	<symbol id="26" type="person">
+	</symbol>
+	<symbol id="27" type="personSt">
+	</symbol>
+	<link src="26" dst="27" label="doctor" />
+	<link src="26" dst="27" label="noLocalized" />
+	<link src="1" dst="26" label="know" />
+
+	<symbol id="28" type="person">
+	</symbol>
+	<symbol id="29" type="personSt">
+	</symbol>
+	<link src="28" dst="29" label="mailman" />
+	<link src="28" dst="29" label="noLocalized" />
+	<link src="1" dst="28" label="know" />
+
+
+</AGMModel>

@@ -58,17 +58,14 @@ try:
 except KeyError:
 	print '$ROBOCOMP environment variable not set, using the default value /opt/robocomp'
 	ROBOCOMP = '/opt/robocomp'
-if len(ROBOCOMP)<1:
-	print 'genericworker.py: ROBOCOMP environment variable not set! Exiting.'
-	sys.exit()
 
-preStr = "-I"+ROBOCOMP+"/interfaces/ -I/opt/robocomp/interfaces/ --all "+ROBOCOMP+"/interfaces/"
+preStr = "-I/opt/robocomp/interfaces/ -I"+ROBOCOMP+"/interfaces/ --all /opt/robocomp/interfaces/"
 Ice.loadSlice(preStr+"CommonBehavior.ice")
 import RoboCompCommonBehavior
 
 [[[cog
 for imp in component['recursiveImports']:
-	cog.outl('preStr = "-I"+ROBOCOMP+"/interfaces/ --all "+ROBOCOMP+"/interfaces/"')
+	cog.outl('preStr = "-I/opt/robocomp/interfaces/ -I"+ROBOCOMP+"/interfaces/ --all /opt/robocomp/interfaces/"')
 	module = IDSLParsing.gimmeIDSL(imp.split('/')[-1])
 	incl = imp.split('/')[-1].split('.')[0]
 	cog.outl('Ice.loadSlice(preStr+"'+incl+'.ice")')

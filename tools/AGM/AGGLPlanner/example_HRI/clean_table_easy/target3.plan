@@ -1,0 +1,6 @@
+findObjectVisually@{'r': '1'}
+findObjectVisually@{'r': '1'}
+recognizeObjMug@{'c': '3', 'o': '4', 'other': '11', 's': '6', 'r': '1', 'po': '8', 'se': '9'}
+recognizeObjTable@{'c': '10', 'o': '11', 's': '13', 'r': '1', 'po': '15', 'se': '16'}
+tellHumanAboutTable@{'c': '10', 'h': '2', 'm': '18', 'o': '11', 'p': '15', 'r': '1', 'sr': '13'}
+tellHumanAboutMug@{'c': '3', 'sr': '6', 'cont2': '20', 'm': '17', 'o': '4', 'p': '8', 'r': '1', 'cont1': '11', 'h': '2'}

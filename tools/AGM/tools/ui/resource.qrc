@@ -1,0 +1,5 @@
+<RCC>
+  <qresource prefix="p">
+    <file>splitter.png</file>
+  </qresource>
+</RCC>

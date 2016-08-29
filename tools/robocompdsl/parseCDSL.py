@@ -331,7 +331,8 @@ class CDSLParsing:
 			agm2agent_requires = [['AGMDSRService','ice']]
 			agm2agent_subscribesTo = [['AGMExecutiveTopic','ice'], ['AGMDSRTopic','ice']]
 			if isAGM2AgentROS(component):
-				agm2agent_requires = [['AGMExecutiveService','ros']]
+				print("AGMATENTROS")
+				agm2agent_requires = [['AGMDSRService','ros']]
 				agm2agent_subscribesTo = [['AGMExecutiveTopic','ros'], ['AGMDSRTopic','ros']]
 			# AGM2 agents REQUIRES
 			for agm2agent_req in agm2agent_requires:
@@ -394,10 +395,10 @@ def isAGM1Agent(component):
 	return 'agmagent' in [ x.lower() for x in options]
 
 def isAGM2Agent(component):
-	valid = ['agm2agent', 'agm2agentROS', 'agm2agentICE']
+	valid = ['agm2agent', 'agm2agentros', 'agm2agentice']
 	options = component['options']
 	for v in valid:
-		if v in options:
+		if v.lower() in options:
 			return True
 	return False
 
@@ -405,7 +406,7 @@ def isAGM2AgentROS(component):
 	valid = ['agm2agentROS']
 	options = component['options']
 	for v in valid:
-		if v in options:
+		if v.lower() in options:
 			return True
 	return False
 

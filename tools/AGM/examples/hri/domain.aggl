@@ -1,0 +1,496 @@
+spacePattern=3
+lineThickness=2
+fontName=Arial
+name=domain
+vertexDiameter=40
+shortPattern=1
+nodeThickness=2
+fontSize=12
+longPattern=3
+===
+
+include(/home/robocomp/AGM/examples/makeMeCoffee/domain_basic.aggl)
+
+hierarchical hierarchicalFindMilkInTable : active(1)
+{
+	{
+		contst:objectSt(95,110)
+		container:object(-130,110)
+		robot:robot(-325,0)
+		room:object(-325,110)
+		container->contst(table)
+		robot->container(know)
+		robot->room(in)
+		container->room(in)
+		container->contst(explored)*
+	}
+	=>
+	{
+		status:objectSt(95,0)
+		object:object(-130,0)
+		container:object(-130,110)
+		room:object(-325,110)
+		contst:objectSt(95,110)
+		robot:robot(-325,0)
+		container->contst(table)
+		robot->object(know)
+		object->status(see)
+		object->status(classified)
+		object->status(milk)
+		object->status(reach)
+		object->status(position)
+		object->status(reachable)
+		object->status(hasStatus)
+		object->container(in)
+		robot->container(know)
+		robot->room(in)
+		container->room(in)
+		container->contst(explored)*
+	}
+	effect
+	{
+		(forall
+			something:object
+			(when
+				(in container something)
+				(in object something)
+			)
+		)
+	}
+}
+
+hierarchical hierarchicalFindMilkInTable_noReach : active(1)
+{
+	{
+		contst:objectSt(95,110)
+		container:object(-130,110)
+		robot:robot(-325,0)
+		room:object(-325,110)
+		container->contst(table)
+		robot->container(know)
+		robot->room(in)
+		container->room(in)
+		container->contst(explored)*
+	}
+	=>
+	{
+		status:objectSt(95,0)
+		object:object(-130,0)
+		container:object(-130,110)
+		room:object(-325,110)
+		contst:objectSt(95,110)
+		robot:robot(-325,0)
+		container->contst(table)
+		robot->object(know)
+		object->status(see)
+		object->status(classified)
+		object->status(milk)
+		object->status(noReach)
+		object->status(position)
+		object->status(reachable)
+		object->status(hasStatus)
+		object->container(in)
+		robot->container(know)
+		robot->room(in)
+		container->room(in)
+		container->contst(explored)*
+	}
+	effect
+	{
+		(forall
+			something:object
+			(when
+				(in container something)
+				(in object something)
+			)
+		)
+	}
+}
+
+hierarchical hierarchicalFindMugInTable : active(1)
+{
+	{
+		contst:objectSt(95,110)
+		container:object(-130,110)
+		robot:robot(-325,0)
+		room:object(-325,110)
+		container->contst(explored)*
+		container->contst(table)
+		robot->container(know)
+		robot->room(in)
+		container->room(in)
+	}
+	=>
+	{
+		status:objectSt(95,0)
+		object:object(-130,0)
+		container:object(-130,110)
+		room:object(-325,110)
+		contst:objectSt(95,110)
+		robot:robot(-325,0)
+		container->contst(explored)*
+		container->contst(table)
+		container->contst(reach)
+		robot->object(know)
+		object->status(see)
+		object->status(classified)
+		object->status(mug)
+		object->status(reach)
+		object->status(position)
+		object->status(reachable)
+		object->status(hasStatus)
+		object->container(in)
+		robot->container(know)
+		robot->room(in)
+		container->room(in)
+	}
+	effect
+	{
+		(forall
+			something:object
+			(when
+				(in container something)
+				(in object something)
+			)
+		)
+	}
+}
+
+hierarchical hierarchicalFindMugInTable_noReach : active(1)
+{
+	{
+		contst:objectSt(95,110)
+		container:object(-130,110)
+		robot:robot(-325,0)
+		room:object(-325,110)
+		container->contst(explored)*
+		container->contst(table)
+		container->contst(reach)
+		robot->container(know)
+		robot->room(in)
+		container->room(in)
+	}
+	=>
+	{
+		status:objectSt(95,0)
+		object:object(-130,0)
+		container:object(-130,110)
+		room:object(-325,110)
+		contst:objectSt(95,110)
+		robot:robot(-325,0)
+		container->contst(explored)*
+		container->contst(table)
+		container->contst(reach)
+		robot->object(know)
+		object->status(see)
+		object->status(classified)
+		object->status(mug)
+		object->status(noReach)
+		object->status(position)
+		object->status(reachable)
+		object->status(hasStatus)
+		object->container(in)
+		robot->container(know)
+		robot->room(in)
+		container->room(in)
+	}
+	effect
+	{
+		(forall
+			something:object
+			(when
+				(in container something)
+				(in object something)
+			)
+		)
+	}
+}
+
+hierarchical hierarchicalFindGlassesInTable : active(1)
+{
+	{
+		contst:objectSt(95,110)
+		container:object(-130,110)
+		robot:robot(-325,0)
+		room:object(-325,110)
+		container->contst(explored)*
+		container->contst(table)
+		robot->container(know)
+		robot->room(in)
+		container->room(in)
+	}
+	=>
+	{
+		status:objectSt(95,0)
+		object:object(-130,0)
+		container:object(-130,110)
+		room:object(-325,110)
+		contst:objectSt(95,110)
+		robot:robot(-325,0)
+		container->contst(explored)*
+		container->contst(table)
+		robot->object(know)
+		object->status(see)
+		object->status(classified)
+		object->status(glasses)
+		object->status(reach)
+		object->status(position)
+		object->status(reachable)
+		object->status(hasStatus)
+		object->container(in)
+		robot->container(know)
+		robot->room(in)
+		container->room(in)
+	}
+	effect
+	{
+		(forall
+			something:object
+			(when
+				(in container something)
+				(in object something)
+			)
+		)
+	}
+}
+
+hierarchical hierarchicalFindGlassesInTable_noReach : active(1)
+{
+	{
+		contst:objectSt(95,110)
+		container:object(-130,110)
+		robot:robot(-325,0)
+		room:object(-325,110)
+		container->contst(explored)*
+		container->contst(table)
+		robot->container(know)
+		robot->room(in)
+		container->room(in)
+	}
+	=>
+	{
+		status:objectSt(95,0)
+		object:object(-130,0)
+		container:object(-130,110)
+		room:object(-325,110)
+		contst:objectSt(95,110)
+		robot:robot(-325,0)
+		container->contst(explored)*
+		container->contst(table)
+		robot->object(know)
+		object->status(see)
+		object->status(classified)
+		object->status(glasses)
+		object->status(noReach)
+		object->status(position)
+		object->status(reachable)
+		object->status(hasStatus)
+		object->container(in)
+		robot->container(know)
+		robot->room(in)
+		container->room(in)
+	}
+	effect
+	{
+		(forall
+			something:object
+			(when
+				(in container something)
+				(in object something)
+			)
+		)
+	}
+}
+
+hierarchical hierarchicalFindCoffeePotInTable : active(1)
+{
+	{
+		contst:objectSt(95,110)
+		container:object(-130,110)
+		robot:robot(-325,0)
+		room:object(-325,110)
+		container->contst(table)
+		robot->container(know)
+		robot->room(in)
+		container->room(in)
+		container->contst(explored)*
+	}
+	=>
+	{
+		status:objectSt(95,0)
+		object:object(-130,0)
+		container:object(-130,110)
+		room:object(-325,110)
+		contst:objectSt(95,110)
+		robot:robot(-325,0)
+		container->contst(table)
+		robot->object(know)
+		object->status(see)
+		object->status(classified)
+		object->status(coffeepot)
+		object->status(reach)
+		object->status(position)
+		object->status(reachable)
+		object->status(hasStatus)
+		object->container(in)
+		robot->container(know)
+		robot->room(in)
+		container->room(in)
+		container->contst(explored)*
+	}
+	effect
+	{
+		(forall
+			something:object
+			(when
+				(in container something)
+				(in object something)
+			)
+		)
+	}
+}
+
+hierarchical hierarchicalFindCoffeePotInTable_noReach : active(1)
+{
+	{
+		contst:objectSt(95,110)
+		container:object(-130,110)
+		robot:robot(-325,0)
+		room:object(-325,110)
+		container->contst(table)
+		robot->container(know)
+		robot->room(in)
+		container->room(in)
+		container->contst(explored)*
+	}
+	=>
+	{
+		status:objectSt(95,0)
+		object:object(-130,0)
+		container:object(-130,110)
+		room:object(-325,110)
+		contst:objectSt(95,110)
+		robot:robot(-325,0)
+		container->contst(table)
+		robot->object(know)
+		object->status(see)
+		object->status(classified)
+		object->status(coffeepot)
+		object->status(reach)
+		object->status(position)
+		object->status(reachable)
+		object->status(hasStatus)
+		object->container(in)
+		robot->container(know)
+		robot->room(in)
+		container->room(in)
+		container->contst(explored)*
+	}
+	effect
+	{
+		(forall
+			something:object
+			(when
+				(in container something)
+				(in object something)
+			)
+		)
+	}
+}
+
+hierarchical robotMovesObjectFromContainer : active(1)
+{
+	{
+		roomst:roomSt(-950,0)
+		room:object(-755,0)
+		object:object(-390,0)
+		robot:robot(-575,0)
+		c2:object(-650,100)
+		c1:object(-665,-100)
+		os:objectSt(-215,0)
+		robot->object(know)
+		robot->c2(know)
+		robot->c1(know)
+		object->c1(in)
+		object->c1(reach)
+		room->roomst(room)
+		c1->room(in)
+		c2->room(in)
+		robot->room(in)
+	}
+	=>
+	{
+		roomst:roomSt(-950,0)
+		room:object(-755,0)
+		object:object(-390,0)
+		robot:robot(-575,0)
+		c2:object(-650,100)
+		c1:object(-665,-100)
+		os:objectSt(-215,0)
+		robot->object(know)
+		robot->c2(know)
+		robot->c1(know)
+		object->c2(in)
+		object->c2(reach)
+		object->c1(reach)
+		object->os(reach)
+		room->roomst(room)
+		c1->room(in)
+		c2->room(in)
+		robot->room(in)
+	}
+}
+
+
+hierarchical robotDeliversObject : active(1)
+{
+	{
+		roomst:roomSt(-950,0)
+		room:object(-755,0)
+		object:object(-390,0)
+		robot:robot(-575,0)
+		person:person(-650,100)
+		robot->object(know)
+		room->roomst(room)
+		person->room(in)
+	}
+	=>
+	{
+		roomst:roomSt(-950,0)
+		room:object(-755,0)
+		object:object(-390,0)
+		robot:robot(-575,0)
+		person:person(-650,100)
+		robot->object(know)
+		object->person(in)
+		room->roomst(room)
+		person->room(in)
+		robot->room(in)
+	}
+	effect
+	{
+		(and
+			(forall
+				previousroom:object
+				(when
+					(and
+						(not (= previousroom room))
+						(in previousroom robot)
+					)
+					(not (in previousroom robot))
+				)
+			)
+			(forall
+				previouscontainer:object
+				(when
+					(and
+						(not (= previouscontainer person))
+						(in previouscontainer object)
+					)
+					(not (in previouscontainer object))
+				)
+			)
+		)
+	}
+}
+

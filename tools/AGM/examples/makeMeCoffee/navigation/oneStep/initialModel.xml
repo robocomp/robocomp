@@ -1,0 +1,147 @@
+<AGMModel>
+
+	<!--
+	##
+	## R O O M S
+	##
+	-->
+	<symbol id="3" type="object">
+		<attribute key="x" value="-2000" />
+		<attribute key="z" value="-2000" />
+	</symbol>
+	<symbol id="4" type="roomSt" />
+	<link src="3" dst="4" label="room" />
+	<link src="3" dst="4" label="isHall" />
+
+	<symbol id="5" type="object">
+		<attribute key="x" value="-2000" />
+		<attribute key="z" value="-2000" />
+	</symbol>
+	<symbol id="6" type="roomSt" />
+	<link src="5" dst="6" label="room" />
+	<link src="5" dst="6" label="isLivingRoom" />
+
+	<symbol id="7" type="object">
+		<attribute key="x" value="-2000" />
+		<attribute key="z" value="-2000" />
+	</symbol>
+	<symbol id="8" type="roomSt" />
+	<link src="7" dst="8" label="room" />
+	<link src="7" dst="8" label="isBedobject" />
+
+	<symbol id="9" type="object">
+		<attribute key="x" value="-2000" />
+		<attribute key="z" value="-2000" />
+	</symbol>
+	<symbol id="10" type="roomSt" />
+	<link src="9" dst="10" label="room" />
+	<link src="9" dst="10" label="isKitchen" />
+
+	<symbol id="11" type="object">
+		<attribute key="x" value="-2000" />
+		<attribute key="z" value="-2000" />
+	</symbol>
+	<symbol id="12" type="roomSt" />
+	<link src="11" dst="12" label="room" />
+	<link src="11" dst="12" label="isDiningRoom" />
+
+	<symbol id="13" type="object">
+		<attribute key="x" value="-2000" />
+		<attribute key="z" value="-2000" />
+	</symbol>
+	<symbol id="14" type="roomSt" />
+	<link src="13" dst="14" label="room" />
+	<link src="13" dst="14" label="isPatio" />
+
+	<link src="3" dst="5" label="transitable" />
+	<link src="5" dst="3" label="transitable" />
+	<link src="7" dst="5" label="transitable" />
+	<link src="5" dst="7" label="transitable" />
+	<link src="9" dst="5" label="transitable" />
+	<link src="5" dst="9" label="transitable" />
+	<link src="11" dst="5" label="transitable" />
+	<link src="5" dst="11" label="transitable" />
+	<link src="11" dst="13" label="transitable" />
+	<link src="13" dst="11" label="transitable" />
+
+	
+	<!--
+   ##
+   ## R O B O T
+   ##
+   -->
+	<symbol id="1" type="robot">
+	</symbol>
+	<symbol id="2" type="status">
+	</symbol>
+	<link src="1" dst="2" label="free" />
+	<link src="1" dst="3" label="in" />
+
+
+	<!--
+   ##
+   ## G R A N N Y
+   ##
+   -->
+	<symbol id="22" type="person">
+	</symbol>
+	<symbol id="23" type="status">
+	</symbol>
+	<link src="22" dst="23" label="granny" />
+	<link src="22" dst="7" label="in" />
+
+
+	<!--
+   ##
+   ## O B J E C T S    I N    B E D R O O M
+   ##
+   -->
+	<symbol id="15" type="bed">
+	</symbol>
+	<link src="15" dst="7" label="in" />
+
+
+	<!--
+   ##
+   ## O B J E C T S    I N    K I T C H E N
+   ##
+   -->
+	<symbol id="16" type="fridge">
+	</symbol>
+	<link src="16" dst="9" label="in" />
+	<symbol id="17" type="stove">
+	</symbol>
+	<link src="17" dst="9" label="in" />
+	<symbol id="18" type="stove">
+	</symbol>
+	<link src="18" dst="9" label="in" />
+
+
+	<!--
+   ##
+   ## O B J E C T S    I N    D I N I N G    R O O M
+   ##
+   -->
+	<symbol id="19" type="table">
+	</symbol>
+	<link src="19" dst="11" label="in" />
+
+
+	<!--
+   ##
+   ## O B J E C T S    I N    L I V I N G    R O O M
+   ##
+   -->
+	<symbol id="20" type="table">
+	</symbol>
+	<link src="20" dst="5" label="in" />
+	<symbol id="21" type="couch">
+	</symbol>
+	<link src="21" dst="5" label="in" />
+
+	
+	
+
+		
+
+</AGMModel>

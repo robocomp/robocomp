@@ -1,0 +1,18 @@
+<AGMModel>
+
+	<symbol id="3" type="obj"  x="0" y="+150" />
+	<symbol id="4" type="objs" x="0" y="+250" />
+	<symbol id="5" type="obj"  x="110" y="+150" />
+	<symbol id="6" type="objs" x="110" y="+250" />
+
+	<link src="3" dst="4" label="contenedor" />
+	<link src="3" dst="4" label="apagado" />
+	<link src="3" dst="4" label="fuego" />
+
+	<link src="5" dst="6" label="contenedor" />
+	<link src="5" dst="6" label="apagado" />
+	<link src="5" dst="6" label="frigo" />
+
+<!-- 	<link src="1" dst="5" label="en" /> -->
+
+</AGMModel>

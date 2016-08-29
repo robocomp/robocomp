@@ -1,0 +1,68 @@
+<AGMModel>
+
+	<symbol id="1"  type="robot"  x="-300" y="0" />
+	<symbol id="2"  type="human"  x="300"  y="0" />
+	<link src="1" dst="2" label="interacting" />
+
+	<!-- ROBOT -->
+	<symbol id="3"  type="object" x="-610" y="+290" /> <link src="1" dst="3" label="know" />
+	<symbol id="4"  type="object" x="-425" y="+220" /> <link src="1" dst="4" label="know" />
+	<symbol id="5"  type="object" x="-185" y="+150" /> <link src="1" dst="5" label="know" />
+	<symbol id="6"  type="object" x="0" y="+80"  /> <link src="1" dst="6" label="know" />
+
+	<symbol id="7"  type="status" x="-610" y="+410" /> <link src="3" dst="7"  label="has" />
+	<symbol id="8"  type="status" x="-425" y="+340" /> <link src="4" dst="8"  label="has" />
+	<symbol id="9"  type="status" x="-185" y="+270" /> <link src="5" dst="9"  label="has" />
+	<symbol id="10" type="status" x="-0" y="+200" /> <link src="6" dst="10" label="has" />
+
+	<symbol id="11" type="box" x="-675" y="+540" /> <link src="7" dst="11"  label="link" />
+	<symbol id="12" type="reach" x="-545" y="+540" /> <link src="7" dst="12"  label="link" />
+	<symbol id="27" type="reachable" x="-610" y="+590" /> <link src="7" dst="27"  label="link" />
+	<symbol id="351" type="position" x="-675" y="+640" /> <link src="7" dst="351"  label="link" />
+	<symbol id="352" type="classified" x="-545" y="+640" /> <link src="7" dst="352"  label="link" />
+
+	<symbol id="13" type="mug" x="-490" y="+470" /> <link src="8" dst="13"  label="link" />
+	<symbol id="14" type="reach" x="-360" y="+470" /> <link src="8" dst="14"  label="link" />
+	<symbol id="28" type="reachable" x="-425" y="+520" /> <link src="8" dst="28"  label="link" />
+	<symbol id="361" type="position" x="-490" y="+570" /> <link src="8" dst="361"  label="link" />
+	<symbol id="362" type="classified" x="-360" y="+570" /> <link src="8" dst="362"  label="link" />
+
+	<symbol id="15" type="table" x="-250" y="+400" /> <link src="9" dst="15"  label="link" />
+	<symbol id="16" type="reach" x="-120" y="+400" /> <link src="9" dst="16"  label="link" />
+	<symbol id="29" type="reachable" x="-185" y="+450" /> <link src="9" dst="29"  label="link" />
+	<symbol id="371" type="position" x="-250" y="+500" /> <link src="9" dst="371"  label="link" />
+	<symbol id="372" type="classified" x="-120" y="+500" /> <link src="9" dst="372"  label="link" />
+
+	<symbol id="17" type="mug" x="-65" y="+330" /> <link src="10" dst="17"  label="link" />
+	<symbol id="18" type="notReach" x="65"  y="+330" /> <link src="10" dst="18"  label="link" />
+	<symbol id="30" type="notReachable" x="0"  y="+380" /> <link src="10" dst="30"  label="link" />
+	<symbol id="381" type="position" x="-65" y="+430" /> <link src="10" dst="381"  label="link" />
+	<symbol id="382" type="classified" x="65"  y="+430" /> <link src="10" dst="382"  label="link" />
+
+	<link src="10" dst="5" label="in" />
+	<link src="8" dst="5" label="in" />
+	<link src="7" dst="5" label="in" />
+
+	<!-- HUMAN -->
+	<symbol id="332" type="object" x="150" y="+290" /> <link src="2" dst="332" label="know" /> <link src="3" dst="332" label="eq" />
+	<symbol id="19"  type="object" x="300" y="+150" /> <link src="2" dst="19" label="know" /> <link src="5" dst="19" label="eq" />
+
+	<symbol id="73"  type="status" x="150" y="+410" /> <link src="332" dst="73"  label="has" />
+	<symbol id="21"  type="status" x="300" y="+270" /> <link src="19" dst="21"  label="has" />
+
+	<symbol id="23" type="table" x="250" y="+400" /> <link src="21" dst="23"  label="link" />
+	<symbol id="24" type="reach" x="350" y="+400" /> <link src="21" dst="24"  label="link" />
+	<symbol id="31" type="reachable" x="300" y="+450" /> <link src="21" dst="31"  label="link" />
+	<symbol id="401" type="position" x="250" y="+500" /> <link src="21" dst="401"  label="link" />
+	<symbol id="402" type="classified" x="350" y="+500" /> <link src="21" dst="402"  label="link" />
+
+	<symbol id="111" type="box" x="200" y="+540" /> <link src="73" dst="111"  label="link" />
+	<symbol id="112" type="reach" x="100" y="+540" /> <link src="73" dst="112"  label="link" />
+	<symbol id="127" type="reachable" x="150" y="+590" /> <link src="73" dst="127"  label="link" />
+	<symbol id="411" type="position" x="200" y="+640" /> <link src="73" dst="411"  label="link" />
+	<symbol id="412" type="classified" x="100" y="+640" /> <link src="73" dst="412"  label="link" />
+
+	<link src="73" dst="19" label="in" />
+
+
+</AGMModel>

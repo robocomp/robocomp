@@ -1,0 +1,11 @@
+*.pyc
+*~
+CMakeFiles
+CMakeCache.txt
+Makefile
+ui_*
+*.pddl
+*.o
+*.so
+cmake_install.cmake
+

@@ -68,7 +68,7 @@ if len(ROBOCOMP)<1:
 	
 
 [[[cog
-cog.outl('preStr = "-I"+ROBOCOMP+"/interfaces/ --all "+ROBOCOMP+"/interfaces/"')
+cog.outl('preStr = "-I/opt/robocomp/interfaces/ -I"+ROBOCOMP+"/interfaces/ --all /opt/robocomp/interfaces/"')
 cog.outl('\nIce.loadSlice(preStr+"'+theIDSLs.split('.')[0]+'.ice")')
 cog.outl('from ' + module['name'] + ' import *')
 cog.outl('\nclass ' + theInterface+ 'I('+theInterface+'):')

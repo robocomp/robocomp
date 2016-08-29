@@ -1,0 +1,75 @@
+spacePattern=3
+lineThickness=2
+fontName=Arial
+name=grammar
+vertexDiameter=40
+shortPattern=1
+nodeThickness=2
+fontSize=14
+longPattern=3
+===
+move : active(100)
+{
+	{
+		a:place(-270,-45)
+		s:on(-85,-235)
+		r:robot(-85,-120)
+		b:place(105,-40)
+		r->a(link)
+		a->b(link)
+		r->s(link)
+	}
+	=>
+	{
+		a:place(-310,-35)
+		s:on(-95,-235)
+		r:robot(-90,-120)
+		b:place(140,-35)
+		r->b(link)
+		a->b(link)
+		r->s(link)
+	}
+}
+
+activate : active(30)
+{
+	{
+		s:off(0,5)
+		r:robot(0,-120)
+		r->s(link)
+	}
+	=>
+	{
+		s:on(0,5)
+		r:robot(0,-120)
+		r->s(link)
+	}
+}
+
+deactivate : active(30)
+{
+	{
+		s:on(0,5)
+		r:robot(0,-120)
+		r->s(link)
+	}
+	=>
+	{
+		s:off(0,5)
+		r:robot(0,-120)
+		r->s(link)
+	}
+}
+
+three : active(10)
+{
+	move as m1
+	move as m2
+	move as m3
+	where:
+	m1.r = m2.r = m3.r
+	m1.b = m2.a
+	m2.b = m3.a
+}
+
+

@@ -1,0 +1,469 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1375</width>
+    <height>967</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>AGGLEditor</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="verticalLayout_3">
+    <item>
+     <widget class="QSplitter" name="splitter">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+        <horstretch>1</horstretch>
+        <verstretch>1</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>10</width>
+        <height>10</height>
+       </size>
+      </property>
+      <property name="autoFillBackground">
+       <bool>true</bool>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QSplitter::handle { background-image: url(:/p/splitter.png); }</string>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+      <property name="handleWidth">
+       <number>6</number>
+      </property>
+      <widget class="QWidget" name="layoutWidget">
+       <layout class="QVBoxLayout" name="layoutUp">
+        <item>
+         <layout class="QVBoxLayout" name="layoutNormal">
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout">
+            <item>
+             <widget class="QLabel" name="label_2">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>Left Hand Side  (LHS)</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="label">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>Right Hand Side  (RHS)</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QWidget" name="spacee" native="true"/>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_2">
+            <item>
+             <widget class="QWidget" name="lhsParentWidget" native="true">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                <horstretch>1</horstretch>
+                <verstretch>1</verstretch>
+               </sizepolicy>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QWidget" name="rhsParentWidget" native="true">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                <horstretch>1</horstretch>
+                <verstretch>1</verstretch>
+               </sizepolicy>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_3">
+            <item>
+             <widget class="QCheckBox" name="passiveCheckBox">
+              <property name="text">
+               <string>passive rule</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="hierarchicalCheckBox">
+              <property name="text">
+               <string>hierarchical</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="horizontalSpacer">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="QLabel" name="label_3">
+              <property name="text">
+               <string>Cost</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QSpinBox" name="cost">
+              <property name="maximum">
+               <number>99999</number>
+              </property>
+              <property name="value">
+               <number>1</number>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="layoutWidget">
+       <layout class="QVBoxLayout" name="layoutDown">
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_4">
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout">
+            <item>
+             <widget class="QLabel" name="label_4">
+              <property name="text">
+               <string>Rules</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QListWidget" name="rulesList">
+              <property name="enabled">
+               <bool>true</bool>
+              </property>
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                <horstretch>1</horstretch>
+                <verstretch>1</verstretch>
+               </sizepolicy>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout_2">
+            <item>
+             <widget class="QLabel" name="label_5">
+              <property name="text">
+               <string>Tools</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QListWidget" name="toolsList">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                <horstretch>1</horstretch>
+                <verstretch>1</verstretch>
+               </sizepolicy>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QVBoxLayout" name="layoutCombo">
+            <item>
+             <widget class="QLabel" name="comboRuleLabel">
+              <property name="text">
+               <string>Combo rule editor</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPlainTextEdit" name="comboRuleTextEdit"/>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout_5">
+            <item>
+             <widget class="QLabel" name="label_6">
+              <property name="text">
+               <string>Parameters</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QTextEdit" name="textParameters">
+              <property name="tabStopWidth">
+               <number>20</number>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout_6">
+            <item>
+             <widget class="QLabel" name="label_7">
+              <property name="text">
+               <string>Precondition</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QTextEdit" name="textPrecondition">
+              <property name="tabStopWidth">
+               <number>20</number>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout_4">
+            <item>
+             <widget class="QLabel" name="label_8">
+              <property name="text">
+               <string>Effect</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QTextEdit" name="textEffect">
+              <property name="tabStopWidth">
+               <number>20</number>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1375</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionOpen"/>
+    <addaction name="actionSave"/>
+    <addaction name="actionSaveAs"/>
+    <addaction name="actionQuit"/>
+   </widget>
+   <widget class="QMenu" name="menuAbout">
+    <property name="title">
+     <string>More</string>
+    </property>
+    <addaction name="actionGraphmar"/>
+   </widget>
+   <widget class="QMenu" name="menuEdit">
+    <property name="title">
+     <string>Edit</string>
+    </property>
+    <addaction name="actionChangeAppearance"/>
+    <addaction name="actionChangeFont"/>
+   </widget>
+   <widget class="QMenu" name="menuRules">
+    <property name="title">
+     <string>Rules</string>
+    </property>
+    <addaction name="actionAddRule"/>
+    <addaction name="actionRemoveCurrentRule"/>
+    <addaction name="actionRenameCurrentRule"/>
+   </widget>
+   <widget class="QMenu" name="menuTools">
+    <property name="title">
+     <string>Tools</string>
+    </property>
+    <addaction name="actionExport"/>
+    <addaction name="actionExportAllRules"/>
+    <addaction name="actionExportAllRulesPNG"/>
+    <addaction name="actionGenerateCode"/>
+    <addaction name="actionGenerateAGGLPlanner"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuTools"/>
+   <addaction name="menuEdit"/>
+   <addaction name="menuRules"/>
+   <addaction name="menuAbout"/>
+  </widget>
+  <action name="actionChangeAppearance">
+   <property name="text">
+    <string>Change node appearance</string>
+   </property>
+  </action>
+  <action name="actionChangeWidth">
+   <property name="text">
+    <string>Change width</string>
+   </property>
+  </action>
+  <action name="actionChangeFont">
+   <property name="text">
+    <string>Change font</string>
+   </property>
+  </action>
+  <action name="actionSaveAs">
+   <property name="text">
+    <string>Save as</string>
+   </property>
+  </action>
+  <action name="actionOpen">
+   <property name="text">
+    <string>Open</string>
+   </property>
+  </action>
+  <action name="actionQuit">
+   <property name="text">
+    <string>Quit</string>
+   </property>
+  </action>
+  <action name="actionGraphmar">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>AGMEditor</string>
+   </property>
+  </action>
+  <action name="actionAddRule">
+   <property name="text">
+    <string>Add new rule</string>
+   </property>
+  </action>
+  <action name="actionRemoveCurrentRule">
+   <property name="text">
+    <string>Remove current rule</string>
+   </property>
+  </action>
+  <action name="actionExport">
+   <property name="text">
+    <string>Export to SVG current rule</string>
+   </property>
+  </action>
+  <action name="actionExportAllRules">
+   <property name="text">
+    <string>Export to SVG all rules</string>
+   </property>
+  </action>
+  <action name="actionGenerateCode">
+   <property name="text">
+    <string>Generate PDDL domain</string>
+   </property>
+  </action>
+  <action name="actionRenameCurrentRule">
+   <property name="text">
+    <string>Rename current rule</string>
+   </property>
+  </action>
+  <action name="actionNew_agent">
+   <property name="text">
+    <string>New agent</string>
+   </property>
+  </action>
+  <action name="actionRemove_selected_agent">
+   <property name="text">
+    <string>Remove current agent</string>
+   </property>
+  </action>
+  <action name="actionNew_configuration">
+   <property name="text">
+    <string>New configuration</string>
+   </property>
+  </action>
+  <action name="actionRemove_current_config">
+   <property name="text">
+    <string>Remove current configuration</string>
+   </property>
+  </action>
+  <action name="actionNew_agent_state">
+   <property name="text">
+    <string>New state for the current agent</string>
+   </property>
+  </action>
+  <action name="actionRemove_current_agent_state">
+   <property name="text">
+    <string>Remove current agent state</string>
+   </property>
+  </action>
+  <action name="actionExportAllRulesPNG">
+   <property name="text">
+    <string>Export to PNG all rules</string>
+   </property>
+  </action>
+  <action name="actionSave">
+   <property name="text">
+    <string>Save</string>
+   </property>
+  </action>
+  <action name="actionGenerateAGGLPlanner">
+   <property name="text">
+    <string>Generate AGGLPlanner domain</string>
+   </property>
+  </action>
+  <action name="actionAdvanced">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>show advanced mode</string>
+   </property>
+  </action>
+ </widget>
+ <resources>
+  <include location="resource.qrc"/>
+ </resources>
+ <connections/>
+</ui>

@@ -1,0 +1,48 @@
+spacePattern=3
+lineThickness=2
+fontName=Arial
+name=domain
+vertexDiameter=40
+shortPattern=1
+nodeThickness=2
+fontSize=12
+longPattern=3
+===
+
+include(/home/robocomp/robocomp/components/robocomp-ursus-rockin/etc/domain_basic.aggl)
+
+findGrannyAndDeliver : active(1)
+{
+	findGranny as find
+	deliverObject as deliver
+	where:
+	deliver.robot = find.robot
+	deliver.room = find.room
+	deliver.person = find.person
+}
+
+reachAndGrasp : active(1)
+{
+	setObjectReach as reach
+	graspObject as grasp
+	where:
+	reach.object = grasp.object
+	reach.status = grasp.status
+}
+
+findMilk : active(1)
+{
+	findObjectVisuallyInTable as find
+	recognizeObjFails as fail
+	tellHumanAboutUnknownObject as tell
+	personClassifiesMilkPot as milk
+	where:
+	find.status = fail.status = tell.statusr = milk.statusr
+	find.object = fail.object = tell.objectr = milk.objectr
+	find.robot = fail.robot = tell.robot = milk.robot
+	tell.person = milk.person
+	tell.objecth = milk.objecth
+	tell.statush = milk.statush
+}
+
+

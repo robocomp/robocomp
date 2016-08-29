@@ -1,0 +1,374 @@
+/**
+\mainpage main page
+
+
+\section intro_sec Introduction
+<table border="0">
+<tr>
+<td>
+<strong>AGM</strong> (Active Grammar-based modeling) is a modern core for robotic architectures capable of performing <strong>perception-aware planning</strong> (that means that, besides any regular planning-related task, you can use AGM to plan goals that involve detecting and modeling new objects). AGM relies on a visual language named <strong>AGGL</strong> (Active Graph Grammar Language) that is used describe the possible changes that robots can make to their world models and the behavior that they should adopt if such changes are desired. In conjunction with an AI planner, AGGL descriptions are used by AGM to reason about what to do depending on the robots' current goal and world model.
+
+<strong>AGGL</strong> (Active Graph Grammar Language) is a powerful (yet easy to understand) visual language that is used describe the possible changes that robots can make to their world models and the behavior that they should adopt if such changes are desired. The description of these changes, expressed as graph-grammar rules, can be used for several purposes:
+
+<ul>
+<li>Generating plans to modify the world or the relationship between the robot and the world</li>
+<li>Generating plans to perceive the world</li>
+<li>Verifying world model modifications</li>
+</ul>
+</td>
+<td>
+<img src="AGGLEditor_B.png" width="700px">
+</td>
+</tr>
+</table>
+
+\section more_sec Read more
+\ref agmworks
+<br />
+\ref components
+<br />
+\ref installation
+<br />
+\ref tutorials
+<br />
+\ref papers
+
+
+\page agmworks How does AGM work?
+
+In the context of AGM, behavior is the phenomena resulting from the coordinated interaction between the main modules of the architecture. In every AGM-based architecture, we can find three types of modules:
+- a pool of <b><em>agents</em></b>, which are the modules that do the "real work" (e.g., by interacting with the physical environment)
+- a <b><em>grammar-based controller</em></b>, in charge of controlling the agents and managing the robot's model of the environment
+- and a <b><em>planner</em></b>, which used by the controller to find plans and verify structural changes in the robot's knowledge
+
+\image html wholePicture.png
+
+Each grammar-based controller is composed of three elements:
+- The current world <b><em>model</em></b>. This is one of the most novel elements of the architecture. AGM models can contain not only symbolic information but also metric information.
+- The <b><em>grammar</em></b> of the world, which is specified using the AGGL language. The main advantage of AGGL against other similar languages is that it is a visual language and thus can be easily interpreted by persons which are not experts in automated planning.
+- The <b><em>mission</em></b> of the robot, which is also stored in a separate file.
+- The <b><em>executive</em></b>, which is the software in charge of controlling the previous elements
+1
+
+AGM works as a loop where the beggining of each cycle is triggered by world model change proposals from one of the agents. When an agent which finishes performing an action, perceiving a new world element or any modification in the environment that should affect the robot's behavior, it proposes world model changes to the executive. These changes are verified by the executive and, if they are correct, the world model is updated and broadcasted to all of the agents and the plan is updated. Again, after performing some action or detecting that the world model should be updated, these agents propose model changes.
+
+AGM provides the executive and the planner. The rest of the elements of the architecture --the agents and the grammar-- is domain-dependent and depends on the tasks each robot is required to perform.
+
+
+**/
+
+
+/**
+\page installation Installation
+
+\tableofcontents
+
+\section download Download
+
+Despite we haven't made any release yet, the repository is quite stable and is unlikely to be broken. You can download a repository snapshot using this <a href="https://github.com/ljmanso/AGM/archive/master.zip">link</a> or clone the repository using a git client.
+\code{.sh}
+git clone git://github.com/ljmanso/AGM.git
+\endcode
+
+\section install Install
+
+In addition the regular C++ requirements for the library, you will need to install some dependencies for the editor. Some of them are mandatory (PySide) and others are optional, depending on what you intend to do, specially if you want to export AGGL rules to PNG files (numpy, ImageOps). In Debian-based GNU/Linux distributions these dependencies can be installed using the following commands (as root):
+
+Mandatory dependencies:
+\code{.sh}
+apt-get install cmake python python-pyside
+\endcode
+
+Optional dependencies:
+\code{.sh}
+apt-get install python-numpy python-imaging
+\endcode
+
+Once the dependencies have been installed AGM can be installed using a script that allows users to select which optional features to activate (you can also run cmake-gui manually if you wish):
+
+\code{.sh}
+sh compile.sh
+\endcode
+
+In case you decide to use the script you will be asked whether or not you want RoboComp and Python support.
+
+\section compilationproblems Common compilation problems
+
+\subsection lackdeps Lack of dependencies
+
+Lack of required dependencies is the most common issue when compiling, make sure you installed all of them. In case you are using a Debian-based distribution (and it's not very outdated) you can try running the instDep.sh script. Basically, the required dependencies are:
+
+- cmake
+- g++
+- python
+- PyPy
+- PySide
+- RoboComp: Optional. Required if it is desired to use AGM with RoboComp.
+- libboost-python: Optional. Required for libAGM Python bindings.
+
+**/
+
+
+
+/**
+\page executive AGM Executive
+
+\tableofcontents
+
+Before learning about how to use the AGM executive you should already know how the AGM architecture works. Read the \ref agmworks "corresponding tutorial" otherwise.
+
+AGM has been used in actual robots using a Python-based executive along with <a style="text-decoration: underline;" href="https://github.com/robocomp/robocomp">RoboComp</a>. The executive is shipped with AGM in the <i>tools/AGMExecutive_robocomp</i> subdirectory. The use and configuration of the executive is quite straightforward:
+\code{.sh}
+python AGMExecutive_robocomp.py --Ice.Config=configFile
+\endcode
+where configFile is a file containing the configuration of the executive:
+\code{.sh}
+AGMExecutive.Endpoints=tcp -p 10198
+AGMCommonBehavior.Endpoints=tcp -p 11198
+AGMAgentTopic.Endpoints=tcp -p 12198
+
+# REMOTE  PROXIES
+PlanningProxy = planning:tcp              -h localhost -p 10195
+IceStormProxy = IceStorm/TopicManager:tcp -p 9999
+
+# AGM - File paths
+AGGLPath = <<PATH TO THE AGGL DOMAIN>>
+InitialModelPath = <<PATH TO THE INITIAL WORLD STATE>>
+InitialMissionPath = <<PATH TO THE MISSION's GOALS>>
+
+# AGENT specification
+AGENTS = navigation,object,grasping,hri
+navigation  = agmcommonbehavior:tcp -h localhost -p 10330
+object      = agmcommonbehavior:tcp -h localhost -p 10331
+grasping    = agmcommonbehavior:tcp -h localhost -p 10332
+hri         = agmcommonbehavior:tcp -h localhost -p 10333
+\endcode
+
+*/
+
+
+
+
+/**
+\page agmmodelstutorial How does an AGM model look like?
+
+\tableofcontents
+
+AGM models are graph-like structures with typed and attributed nodes and edges. Edges are identified by the source and destination nodes and their type. Edges are identified by an unique numeric identifier.
+
+\section agmmodelnode Nodes
+The library that implements the core of AGM (libagm).
+
+The API of the library is available here.
+
+\section agmmodeledge Edges
+The visual editor, AGGLEditor, eases the process of designing grammars. It's use is described in its own page: \ref AGGLEditor.
+
+
+**/
+
+/**
+\page components What do I get with AGM?
+
+\tableofcontents
+
+
+The project is composed of four different elements:
+<ul>
+	<li>libAGM, the framework-agnostic library that is used to implement AGM executives (<strong>libagm</strong>).</li>
+	<li>The AGGL visual editor (<strong>AGGLEditor</strong>).</li>
+	<li>A problem visualizer (<strong>agm_xmlViewer</strong>).</li>
+	<li>An AGGL to PDDL compiler (<strong>aggl2pddl</strong>).</li>
+	<li>An PDDL problem generator (<strong>agm_xml2problem</strong>).</li>
+	<li>The implementation of an executive designed to work with the <a href="http://robocomp.org">RoboComp framework</a> (<strong>RoboCompAGMExecutive</strong>).</li>
+</ul>
+
+\section compagm AGM library
+The library that implements the core of AGM (libagm).
+
+The API of the library is available here.
+
+\section compaggleditor AGGL Visual editor
+The visual editor, AGGLEditor, eases the process of designing grammars. It's use is described in its own page: \ref AGGLEditor.
+
+\section compprobvisual Problem visualizer
+Usage:
+\code{.sh}
+agm_xmlViewer initialWorld.xml goalPattern.xml
+\endcode
+
+\section compcompiler AGGL to PDDL domain compiler
+Usage:
+\code{.sh}
+aggl2pddl -i grammar.aggl -p activeRules.pddl -f activeAndPassiveRules.pddl
+\endcode
+
+\section compproblemgen PDDL problem generator
+Usage:
+\code{.sh}
+agm_xml2problem initialWorld.xml goal.xml problem.pddl [unknownMemorySize]
+\endcode
+
+\section compexecutive The AGM executive
+There's a AGM executive that works with the <a href="http://robocomp.org">RoboComp</a> framework.
+
+It is described in a separate page (\ref executive).
+
+**/
+
+/**
+\page AGGLEditor AGGLEditor
+
+\tableofcontents
+
+\section AGGLEditor_intro Introduction
+Writing planning domains where actions allow resizing the world model at planning-time in regular languages can be daunting, specially if the context of the actions is of a considerable size. AGGL is a planning domain specification language that aims for making this task easier. AGGLEditor is a visual editor used for writing AGGL domain files. Take the following rule as an example:
+
+\image html AGGLEditor.png
+
+The corresponding PDDL code would be the following. It looks pretty nasty, right? You don't want to write that code manually. That's what AGGLEditor is for. We want to make designing graph grammars easier.
+
+\code{.lisp}
+(:action tellHumanAboutMug
+                :parameters ( ?vc ?vsr ?vm ?vo ?vp ?vr ?vcont1 ?vcont2 ?vh ?vListAGMInternal ?vlist0 ?vlist1 ?vlist2 ?vlist3 ?vlist4 ?vlist5 ?vlist6 ?vlist7 )
+                :precondition (and (ISclassified ?vc) (ISstatus ?vsr) (ISmug ?vm) (ISobject ?vo) (ISposition ?vp) (ISrobot ?vr) (ISobject ?vcont1) (ISobject ?vcont2) (IShuman ?vh) (firstunknown ?vlist7) (unknownorder ?vlist7 ?vlist6) (unknownorder ?vlist6 ?vlist5) (unknownorder ?vlist5 ?vlist4) (unknownorder ?vlist4 ?vlist3) (unknownorder ?vlist3 ?vlist2) (unknownorder ?vlist2 ?vlist1) (unknownorder ?vlist1 ?vlist0) (unknownorder ?vlist0 ?vListAGMInternal) (diff ?vo ?vcont1) (diff ?vo ?vcont2) (diff ?vcont1 ?vcont2) (diff ?vListAGMInternal ?vlist0) (diff ?vListAGMInternal ?vlist1) (diff ?vListAGMInternal ?vlist2) (diff ?vListAGMInternal ?vlist3) (diff ?vListAGMInternal ?vlist4) (diff ?vListAGMInternal ?vlist5) (diff ?vListAGMInternal ?vlist6) (diff ?vListAGMInternal ?vlist7) (diff ?vlist0 ?vlist1) (diff ?vlist0 ?vlist2) (diff ?vlist0 ?vlist3) (diff ?vlist0 ?vlist4) (diff ?vlist0 ?vlist5) (diff ?vlist0 ?vlist6) (diff ?vlist0 ?vlist7) (diff ?vlist1 ?vlist2) (diff ?vlist1 ?vlist3) (diff ?vlist1 ?vlist4) (diff ?vlist1 ?vlist5) (diff ?vlist1 ?vlist6) (diff ?vlist1 ?vlist7) (diff ?vlist2 ?vlist3) (diff ?vlist2 ?vlist4) (diff ?vlist2 ?vlist5) (diff ?vlist2 ?vlist6) (diff ?vlist2 ?vlist7) (diff ?vlist3 ?vlist4) (diff ?vlist3 ?vlist5) (diff ?vlist3 ?vlist6) (diff ?vlist3 ?vlist7) (diff ?vlist4 ?vlist5) (diff ?vlist4 ?vlist6) (diff ?vlist4 ?vlist7) (diff ?vlist5 ?vlist6) (diff ?vlist5 ?vlist7) (diff ?vlist6 ?vlist7) (know ?vr ?vo) (interacting ?vr ?vh) (link ?vsr ?vp) (has ?vo ?vsr) (link ?vsr ?vc) (link ?vsr ?vm) (in ?vsr ?vcont1) (eq ?vcont1 ?vcont2) )
+                :effect (and (not (firstunknown ?vlist7)) (not (unknownorder ?vlist7 ?vlist6)) (not (unknownorder ?vlist6 ?vlist5)) (not (unknownorder ?vlist5 ?vlist4)) (not (unknownorder ?vlist4 ?vlist3)) (not (unknownorder ?vlist3 ?vlist2)) (not (unknownorder ?vlist2 ?vlist1)) (not (unknownorder ?vlist1 ?vlist0)) (not (unknownorder ?vlist0 ?vListAGMInternal)) (firstunknown ?vListAGMInternal) (ISclassified ?vlist7) (ISobject ?vlist6) (ISreach ?vlist5) (ISsee ?vlist4) (ISmug ?vlist3) (ISstatus ?vlist2) (ISreachable ?vlist1) (ISposition ?vlist0) (link ?vlist2 ?vlist7) (link ?vlist2 ?vlist1) (eq ?vo ?vlist6) (link ?vlist2 ?vlist0) (know ?vh ?vlist6) (in ?vlist2 ?vcont2) (has ?vlist6 ?vlist2) (link ?vlist2 ?vlist3) (link ?vlist2 ?vlist5) (link ?vlist2 ?vlist4) (increase (total-cost) 1) )
+        )
+\endcode
+
+
+\section AGGLEditor_us_cr Create & save AGGL files
+As in most programs with a user interface, there is a open and a save option in the 'File' section of the main menu. Unless a grammar file is specified as the first argument of the program (case in which such file is opened), it starts with an empty grammar.
+
+\section AGGLEditor_us_crru Create & delete rules
+In the main menu of the editor, select the corresponding option to create or delete rules. It also lets users to rename rules. In the case of deletion or renaming, the operation will be applied to the rule currently selected.
+
+\section AGGLEditor_us_crsy Create delete & modify symbols
+Creation, deletion and modification of symbols is performed selecting the corresponding option in the 'Tools' pan of the editor. The following operations can be applied to symbols:
+- <b>add:</b> click on the position where it is desired to create a new symbol, whether in the area designed for the LHS or RHS
+- <b>remove:</b> click over the symbol to be deleted
+- <b>change type:</b> click over the symbol whose type is to be modified
+- <b>move:</b> click over the symbol whose type is to be modified
+
+
+\section AGGLEditor_us_cred Create, delete & modify edge labels
+Creation, deletion and modification of the edges is performed selecting the corresponding option in the 'Tools' pan of the editor. The following operations can be applied to edges:
+- <b>add:</b> press the left button of the mouse in the source node of the edge and release the button in the destination node
+- <b>remove:</b> click over the label of the edge to be deleted
+- <b>edit an edge's label:</b> click over the label to be modified
+
+
+\section AGGLEditor_generatePDDL Generate PDDL code
+In case you want to use a PDDL planner you can export the grammar to PDDL using the option 'Tools' -> 'Generate PDDL domain' in the main menu of the program. You will be asked for two file names. The first file (FULL) will contain the whole set of rules (it is supposed to be used for model verification purposes), the second file will contain only active rules (it is supposed to be used for regular planning pruposes).
+
+\section AGGLEditor_generatePNG Export rules to PNG or SVG
+To document how your robot works, or to share your domain definition with others as image files, the AGGL editor allows you to export the grammar to PNG or SVG files. To do this, select the corresponding tool within the 'Tools' section of the main menu.
+
+**/
+
+
+/**
+\page agglplanner agglplanner
+
+\section introduction Introduction to agglplanner
+Despite AGGL domains can be compiled into PDDL domains, enabling using most modern PDDL planners to be used with AGGL domains after translation, you can also choose to direclty use the AGGL planner. Most modern PDDL planners work in a two-stage fashion: first, they instantiate all the possible world states; then, they search for the cheapest path to a state meeting the goal conditions. This allows the search stage to use sophisticated heuristics that can only be applied after a full instantiation of the state space. These planners work this way because they assume that it's worth to instantiate the whole state space. However, if the state space is huge (as happens in dynamically-sized worlds), this assuption doesn't hold. Additionally, when instantiating the whole state space, almost all planners perform <em>symbol grounding</em>, which is extremelly slow when the planning actions deal with a considerable number of symbols.
+
+The development of the AGGL planner started because we realized that these scenarios are quite common, respectively:
+ - when the world size is variable (e.g., the robot is able to create and delete symbols as a consequence of its actions)
+ - when the actions are inherently complex, taking into account more than a few symbols (e.g., in HRI domains where it's mandatory to consider the robot itself, its beliefs, its position, a person, the location of such person, and the beliefs of such person)
+
+Unlike most modern AI planners, the AGGL planner works performing an A* search, so it's not necessary to instantiate all the world states. Despite this design decission makes impossible for the AGGL planner to use the efficient heuristics used by other planners, we found that for realistically complex domains where the world state has not a fixed size it's faster to use an A* search. Moreover, AGGL planner does not perform symbol grounding.
+
+Instead of making the planner interpret the domain and perform the search, we use an intermediate code generation step which converts the goal of the planner to a Python function returning the heuristic for the specific goal; and the rules of the AGGL domain to Python functions generating new world states. This way we managed to write the AGGL planner itself in less than five hundred lines of code. Used in conjunction with PyPy, a fast implementation of the Python language, agglplanner can outperform modern AI planners.
+
+\section agglplannerusage agglplanner's usage
+As introduced in the previous section, before the search process is performed, the target and the AGGL domain are first translated into Python code. The domain is translated to Python code using the aggl2agglpy command:
+\code{.sh}
+aggl2agglpy -i agglDomain.aggl -a activeRules.aggl.py -f activeAndPassiveRules.aggl.py
+\endcode
+This command produces two output files, the first one contains only the rules that can be proactively triggered by the robot, the second one contains also rules triggered by exogenous events.
+
+The target code is also translated to Python code using the aggl2agglpy command:
+\code{.sh}
+aggl2agglpy -x targetPattern.xml -o targetCode.py
+\endcode
+
+Once the code is generated, the search process can be run using the agglplanner command:
+\code{.sh}
+agglplanner domain.aggl.py init.xml targetCode.py
+\endcode
+where domain.aggl.py is the Python code generated from a AGGL domain, init.xml is an XML file describing the initial world state, and targetCode.py is the a target python code file generated using aggl2agglpy.
+
+The whole process can be done using the agglplan command, assuming we are insterested in using the active rules of the domain for the search of a solution:
+\code{.sh}
+ljmanso@acho:~$ cd ~/AGM/examples/logistics/
+ljmanso@acho:~/AGM/examples/logistics$ agglplan domain1.aggl init0.xml goal0.xml 
+Generating search code... done
+Running the planner...
+End: goal achieved
+Got 1  plans!
+-----  R  E  S  U  L  T  S  -----
+Cost 4
+Score 302
+Length 4
+----------------
+DRIVETRUCK@{'lo2': '8', 'ci': '10', 'lo1': '6', 'tr': '2'}
+LOADTRUCK@{'obj': '1', 'truck': '2', 'loc': '8'}
+DRIVETRUCK@{'lo2': '6', 'ci': '10', 'lo1': '8', 'tr': '2'}
+UNLOADTRUCK@{'obj': '1', 'truck': '2', 'loc': '6'}
+----------------
+Explored 7 nodes
+It took 1.07220196724 seconds
+ljmanso@acho:~/AGM/examples/logistics$
+\endcode
+
+The previous example find a plan to find the pattern of the folowing graph:
+\image html goal2.png
+starting from the world model defined in the following graph:
+\image html init2.png
+using the domain defined in <a style="text-decoration: underline;" href="https://github.com/ljmanso/AGM/blob/master/examples/logistics/domain1.aggl">thisfile</a>.
+
+
+\section agglplannerdesign agglplanner's design
+As aforementioned, agglplanner uses an intermediate code generation step which converts the goal of the planner to a Python function returning the heuristic for the specific goal; and the rules of the AGGL domain to Python functions generating new world states.
+
+The code generation of the heuristic is implemented in generateTarget(graph)
+
+*/
+
+
+/**
+\page tutorials Tutorials
+
+ - The concept behind AGM: \ref agmworks "how does AGM work in a robot?"
+ - AGM models: \ref agmmodelstutorial
+ - What do I get with AGM? \ref components "AGM components"
+ - How to install AGM: \ref installation "AGM installation"
+ - Creating an AGGL domain: \ref AGGLEditor "using aggleditor"
+ - Using the \ref agglplanner "AGGL planner"
+ - How to use AGM in a robot: \ref executive "the AGM executive"
+
+*/
+
+
+/**
+\page papers Scientific papers where AGM or AGGL were used or described
+<ul>
+  <li>
+    <a href="http://www.intechopen.com/download/pdf/49713"><b>A Perception-aware Architecture for Autonomous Robots</b></a>,<br/>
+    L.J. Manso, P. Bustos, P. Bachiller, P. Núñez.<br />
+    In International Journal of Advanced Robotic Systems (ISSN 1729-8806), InTech, Vol. 12, No. 174, 2015. DOI: 10.5772/61742 
+  </li>
+  <li>
+    <a href="http://ljmanso.com/files/planning_hri_reacts2015.pdf"><b>Planning Human-Robot Interaction Tasks using Graph Models</b></a>,<br />
+    L.J. Manso, P. Bustos, R. Alami, G. Milliez, P. Núñez.<br />
+    In Proceedings of International Workshop on Recognition and Action for Scene Understanding (REACTS 2015), pp. 15-27, 2015. 
+  </li>
+   <li>
+    <a href="http://ljmanso.com/thesis.pdf"><b>Perception as Stochastic Sampling on Dynamic Graph Spaces,</b></a>,<br />
+    L.J. Manso.<br />
+    PhD thesis. Cáceres Polytechnic School, University of Extremadura. 2013. 
+  </li>
+</ul>
+
+*/

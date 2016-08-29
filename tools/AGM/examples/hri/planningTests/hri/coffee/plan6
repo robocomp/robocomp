@@ -1,0 +1,16 @@
+findObjectVisuallyInTable@{'container': '7', 'room': '3', 'contst': '8', 'robot': '1'}
+setObjectReach@{'status': '109', 'object': '110', 'room': '3', 'robot': '9'}
+robotMovesObjectFromContainer@{'roomst': '4', 'room': '3', 'object': '110', 'robot': '1', 'c2': '5', 'c1': '7', 'os': '109'}
+recognizeObjTable@{'status': '109', 'object': '110', 'robot': '1'}
+findObjectVisuallyInTable@{'status': '111', 'object': '112', 'container': '110', 'room': '3', 'contst': '109', 'robot': '1'}
+setObjectReach@{'status': '111', 'object': '112', 'room': '3', 'robot': '110'}
+recognizeObjMug@{'status': '111', 'object': '112', 'robot': '1'}
+setObjectReach@{'status': '10', 'object': '9', 'room': '5', 'robot': '112'}
+findObjectVisuallyInTable@{'status': '113', 'object': '114', 'container': '110', 'room': '3', 'contst': '109', 'robot': '1'}
+recognizeObjFails@{'status': '113', 'object': '114', 'robot': '1'}
+tellHumanAboutUnknownObject@{'statusr': '113', 'objecth': '115', 'robot': '1', 'conth': '105', 'person': '20', 'objectr': '114', 'contr': '5', 'statush': '116'}
+personClassifiesMilkPot@{'statusr': '113', 'objecth': '115', 'robot': '1', 'person': '20', 'objectr': '114', 'statush': '116'}
+setObjectReach@{'status': '113', 'object': '114', 'room': '110', 'robot': '112'}
+graspObject@{'table': '110', 'object': '114', 'robot': '1', 'room': '3'}
+tellHumanAboutMug@{'statusr': '111', 'objecth': '117', 'robot': '1', 'person': '20', 'objectr': '112', 'cont1': '5', 'cont2': '105', 'statush': '118'}
+tellHumanAboutCoffeePot@{'statusr': '10', 'objecth': '119', 'robot': '1', 'person': '20', 'objectr': '9', 'cont1': '5', 'cont2': '105', 'statush': '120'}

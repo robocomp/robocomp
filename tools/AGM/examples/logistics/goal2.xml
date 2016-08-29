@@ -1,0 +1,24 @@
+<AGMModel>
+	<symbol id="7" type="LCTN" x="-80" y="50">
+		<attribute key="alias" value="BOS-PO" />
+	</symbol>
+	<symbol id="9" type="LCTN" x="330" y="50">
+		<attribute key="alias" value="LA-PO" />
+	</symbol>
+
+	<symbol id="19" type="OBJ" x="-400" y="-230">
+		<attribute key="alias" value="package1" />
+	</symbol>
+	<link src="19" dst="7" label="at" />
+
+	<symbol id="20" type="OBJ" x="-330" y="-230">
+		<attribute key="alias" value="package2" />
+	</symbol>
+	<link src="20" dst="9" label="at" />
+
+	<symbol id="21" type="OBJ" x="-260" y="-230">
+		<attribute key="alias" value="package3" />
+	</symbol>
+	<link src="21" dst="7" label="at" />
+
+</AGMModel>

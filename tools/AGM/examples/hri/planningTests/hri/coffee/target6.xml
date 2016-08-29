@@ -1,0 +1,53 @@
+<AGMModel>
+
+	<symbol id="1" type="robot" />
+	<symbol id="20" type="person" />
+	<link src="1" dst="20" label="interacting" />
+	<symbol id="5" type="object" />
+	<symbol id="105" type="object" />
+	<link src="5" dst="105" label="eq" />
+
+<!--
+	<symbol id="obj2r" type="object" />
+	<symbol id="stt2r" type="objectSt" />
+	<link  src="obj2r"  dst="stt2r"     label="coffeepot" />
+	<link  src="obj2r"  dst="stt2r"     label="reach" />
+	<link  src="obj2r"  dst="5"         label="in" />
+	<link  src="1"      dst="obj2r"     label="know" />
+	<symbol id="obj2h" type="object" />
+	<symbol id="stt2h" type="objectSt" />
+	<link  src="obj2h" dst="stt2h"     label="coffeepot" />
+	<link  src="20"    dst="obj2h"     label="know" />
+	<link  src="obj2h" dst="105"       label="in" />
+	<link  src="obj2r" dst="obj2h"     label="eq" />
+-->
+
+	<symbol id="obj3r" type="object" />
+	<symbol id="stt3r" type="objectSt" />
+	<link  src="obj3r"  dst="stt3r"     label="mug" />
+	<link  src="obj3r"  dst="stt3r"     label="reach" />
+	<link  src="obj3r"  dst="5"         label="in" />
+	<link  src="1"      dst="obj3r"     label="know" />
+	<symbol id="obj3h" type="object" />
+	<symbol id="stt3h" type="objectSt" />
+	<link  src="obj3h" dst="stt3h"     label="mug" />
+	<link  src="20"    dst="obj3h"     label="know" />
+	<link  src="obj3h" dst="105"       label="in" />
+	<link  src="obj3r" dst="obj3h"     label="eq" />
+
+<!--
+	<symbol id="obj1r"  type="object" />
+	<symbol id="stt1r"  type="objectSt" />
+	<link  src="obj1r"   dst="stt1r"    label="milkpot" />
+	<link  src="obj1r"   dst="stt1r"    label="reach" />
+ 	<link  src="obj1r"   dst="5"        label="in" />
+	<link  src="1"       dst="obj1r"    label="know" />
+	<symbol id="obj1h"  type="object" />
+	<symbol id="stt1h"  type="objectSt" />
+	<link  src="obj1h"  dst="stt1h"    label="milkpot" />
+	<link  src="20"     dst="obj1h"    label="know" />
+	<link  src="obj1h"  dst="105"      label="in" />
+	<link  src="obj1r"  dst="obj1h"    label="eq" />
+-->
+
+</AGMModel>

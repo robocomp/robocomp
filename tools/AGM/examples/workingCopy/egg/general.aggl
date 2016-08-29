@@ -1,0 +1,276 @@
+spacePattern=3
+lineThickness=2
+fontName=Arial
+name=grammar
+vertexDiameter=40
+shortPattern=1
+nodeThickness=2
+fontSize=14
+longPattern=3
+===
+mover : active(1)
+{
+	{
+		c2s:objs(210,180)
+		objs:objs(-20,-155)
+		obj:obj(-25,-30)
+		c1s:objs(-285,185)
+		c2:obj(75,80)
+		c1:obj(-135,80)
+		obj->c1(en)
+		obj->objs(movible)
+		c1->c1s(contenedor)
+		c2->c2s(contenedor)
+	}
+	=>
+	{
+		c2s:objs(275,135)
+		objs:objs(5,-215)
+		obj:obj(10,-85)
+		c1s:objs(-270,140)
+		c2:obj(135,25)
+		c1:obj(-95,25)
+		obj->c2(en)
+		c1->c1s(contenedor)
+		obj->objs(movible)
+		c2->c2s(contenedor)
+	}
+}
+
+calentar : active(1)
+{
+	{
+		objs:objs(-320,170)
+		fuegos:objs(-15,170)
+		obj:obj(-270,-30)
+		fuego:obj(-70,-25)
+		obj->fuego(en)
+		fuego->fuegos(contenedor)
+		fuego->fuegos(fuego)
+		fuego->fuegos(encendido)
+		obj->objs(movible)
+	}
+	=>
+	{
+		objs:objs(-305,170)
+		fuegos:objs(35,155)
+		obj:obj(-235,-35)
+		fuego:obj(-20,-35)
+		obj->objs(caliente)
+		obj->objs(movible)
+		obj->fuego(en)
+		fuego->fuegos(contenedor)
+		fuego->fuegos(fuego)
+		fuego->fuegos(encendido)
+	}
+	effect
+	{
+		(when
+			(frio obj objs)
+			(not (frio obj objs)))
+		)
+	}
+}
+
+enfriar : active(1)
+{
+	{
+		obj:obj(-270,-30)
+		objs:objs(-320,170)
+		frigo:obj(-70,-25)
+		frigos:objs(-15,170)
+		obj->frigo(en)
+		frigo->frigos(contenedor)
+		frigo->frigos(frigo)
+		frigo->frigos(encendido)
+	}
+	=>
+	{
+		obj:obj(-270,-30)
+		objs:objs(-320,170)
+		frigo:obj(-70,-25)
+		frigos:objs(-15,170)
+		obj->objs(frio)
+		obj->frigo(en)
+		frigo->frigos(contenedor)
+		frigo->frigos(frigo)
+		frigo->frigos(encendido)
+	}
+	effect
+	{
+		(when
+			(caliente obj objs)
+			(not (caliente obj objs)))
+		)
+	}
+}
+
+freir : active(1)
+{
+	{
+		objs:objs(-320,170)
+		fuegos:objs(-15,170)
+		obj:obj(-270,-30)
+		fuego:obj(-70,-25)
+		obj->objs(caliente)
+		obj->objs(frito)*
+		obj->fuego(en)
+		fuego->fuegos(contenedor)
+		fuego->fuegos(fuego)
+		fuego->fuegos(encendido)
+	}
+	=>
+	{
+		objs:objs(-305,170)
+		fuegos:objs(35,155)
+		obj:obj(-235,-35)
+		fuego:obj(-20,-35)
+		obj->objs(caliente)
+		obj->objs(frito)
+		obj->fuego(en)
+		fuego->fuegos(contenedor)
+		fuego->fuegos(fuego)
+		fuego->fuegos(encendido)
+	}
+}
+
+encenderFuego : active(1)
+{
+	{
+		fuegos:objs(-15,170)
+		fuego:obj(-70,-25)
+		fuego->fuegos(contenedor)
+		fuego->fuegos(fuego)
+		fuego->fuegos(apagado)
+	}
+	=>
+	{
+		fuegos:objs(-15,170)
+		fuego:obj(-70,-25)
+		fuego->fuegos(contenedor)
+		fuego->fuegos(fuego)
+		fuego->fuegos(encendido)
+	}
+}
+
+encenderFrigo : active(1)
+{
+	{
+		frigos:objs(-15,170)
+		frigo:obj(-70,-25)
+		frigo->frigos(contenedor)
+		frigo->frigos(frigo)
+		frigo->frigos(apagado)
+	}
+	=>
+	{
+		frigos:objs(-15,170)
+		frigo:obj(-70,-25)
+		frigo->frigos(contenedor)
+		frigo->frigos(frigo)
+		frigo->frigos(encendido)
+	}
+}
+
+apagarFuego : active(1)
+{
+	{
+		fuegos:objs(-15,170)
+		fuego:obj(-70,-25)
+		fuego->fuegos(contenedor)
+		fuego->fuegos(fuego)
+		fuego->fuegos(encendido)
+	}
+	=>
+	{
+		fuegos:objs(-15,170)
+		fuego:obj(-70,-25)
+		fuego->fuegos(contenedor)
+		fuego->fuegos(fuego)
+		fuego->fuegos(apagado)
+		fuego->fuegos(encendido)
+	}
+}
+
+apagarFrigo : active(1)
+{
+	{
+		frigos:objs(-15,170)
+		frigo:obj(-70,-25)
+		frigo->frigos(contenedor)
+		frigo->frigos(frigo)
+		frigo->frigos(encendido)
+	}
+	=>
+	{
+		frigos:objs(-15,170)
+		frigo:obj(-70,-25)
+		frigo->frigos(contenedor)
+		frigo->frigos(frigo)
+		frigo->frigos(apagado)
+	}
+}
+
+encuentraHuevo : active(1)
+{
+	{
+		c1s:objs(-285,185)
+		c1:obj(-135,80)
+		c1->c1s(contenedor)
+	}
+	=>
+	{
+		obj:obj(10,-85)
+		objs:objs(10,-255)
+		c1:obj(-95,25)
+		c1s:objs(-270,140)
+		c1->c1s(contenedor)
+		obj->objs(movible)
+		obj->objs(huevo)
+		obj->objs(frio)
+		obj->c1(en)
+	}
+}
+
+estorbo : active(1)
+{
+	{
+		c1s:objs(-285,185)
+		c1:obj(-135,80)
+		c1->c1s(contenedor)
+	}
+	=>
+	{
+		obj:obj(10,-85)
+		objs:objs(5,-215)
+		c1:obj(-95,25)
+		c1s:objs(-270,140)
+		c1->c1s(contenedor)
+		obj->objs(movible)
+		obj->c1(en)
+	}
+}
+
+estorbo2 : active(1)
+{
+	{
+		c1s:objs(-140,190)
+		c1:obj(-135,80)
+		c1->c1s(contenedor)
+	}
+	=>
+	{
+		obj1:obj(-400,-25)
+		obj2s:objs(-135,-130)
+		obj2:obj(-130,-15)
+		c1s:objs(-270,195)
+		obj1s:objs(-405,-140)
+		c1:obj(-270,80)
+		c1->c1s(contenedor)
+		obj1->obj1s(movible)
+		obj1->c1(en)
+		obj2->obj2s(movible)
+		obj2->c1(en)
+	}
+}
+
