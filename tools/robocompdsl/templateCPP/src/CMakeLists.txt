@@ -146,11 +146,10 @@ else:
 [[[cog
 
 try:
-	options = [ x.lower() for x in component['options'] ]
-	if 'agmagent' in options:
+	if isAGM1Agent(component):
 		cog.outl("SET(LIBS ${LIBS} -lagm)")
 		cog.outl("ADD_DEFINITIONS( -I/usr/include/libxml2/ )")
-	elif 'agm2agent' in options or  'agm2agentICE' in options or  'agm2agentROS' in options:
+	if isAGM2Agent(component):
 		cog.outl("SET(LIBS ${LIBS} -lagm2)")
 		cog.outl("ADD_DEFINITIONS( -I/usr/include/libxml2/ )")
 

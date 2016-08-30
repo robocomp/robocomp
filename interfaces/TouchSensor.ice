@@ -13,6 +13,7 @@ module RoboCompTouchSensor
 {
 	struct SensorState
 	{
+		string name;
 		float value;
 	};
 	
@@ -24,5 +25,6 @@ module RoboCompTouchSensor
 		SensorMap getValues();
 	};
 };
+  
   
 #endif
