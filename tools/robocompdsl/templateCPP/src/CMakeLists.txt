@@ -94,8 +94,7 @@ for subscribe in component['subscribesTo']:
 if usingROS:
 	cog.outl('find_package(catkin REQUIRED)')
 	cog.outl('include_directories(  ${catkin_INCLUDE_DIRS} )')
-	cog.outl('include_directories(  "/opt/ros/kinetic/include" )')
-	cog.outl('SET ( LIBS ${LIBS} ${catkin_LIBRARIES} -L/opt/ros/kinetic/lib -lroscpp -lrosconsole -lroscpp_serialization -lrostime -lxmlrpcpp -lcpp_common -lrosconsole_log4cxx -lrosconsole_backend_interface)')
+	cog.outl('SET ( LIBS ${LIBS} ${catkin_LIBRARIES} -L/opt/ros/jade/lib -lroscpp -lrosconsole -lroscpp_serialization) # -lrosbag')
 ]]]
 [[[end]]]
 
@@ -105,20 +104,8 @@ ROBOCOMP_INITIALIZE( $ENV{ROBOCOMP}/ )
 ROBOCOMP_WRAP_ICE( CommonBehavior 
 [[[cog
 A()
-use_rcmaster=False
 for im in component['recursiveImports']:
-	if communicationIsIce(im):
-		use_rcmaster=True
-		cog.out(im.split('/')[-1].split('.')[0] + ' ')
-if use_rcmaster:
-	cog.out(' RCMaster ')
-try:
-	if 'agmagent' in [ x.lower() for x in component['options'] ]:
-		cog.out("AGMExecutive AGMWorldModel Planning AGMCommonBehavior ")
-
-
-except:
-	pass
+	cog.out(im.split('/')[-1].split('.')[0] + ' ')
 Z()
 ]]]
 [[[end]]]

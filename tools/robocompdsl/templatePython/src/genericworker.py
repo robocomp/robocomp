@@ -20,25 +20,6 @@ if component == None:
 from parseIDSL import *
 pool = IDSLPool(theIDSLs)
 
-ice_requires,ice_impliments = False,False
-for require in component['requires']:
-	req = require
-	while type(req) != type(''):
-		req = req[0]
-	if communicationIsIce(req):
-		ice_requires=True
-		break
-for impa in component['implements']:
-	if type(impa) == str:
-		imp = impa
-	else:
-		imp = impa[0]
-	if communicationIsIce(imp):
-		ice_impliments =True
-		break
-use_rcmaster = (ice_requires or ice_impliments)
-
-
 ]]]
 [[[end]]]
 #
@@ -70,76 +51,7 @@ Z()
 import sys
 from PySide import *
 
-ROBOCOMP = ''
-try:
-	ROBOCOMP = os.environ['ROBOCOMP']
-except:
-	print '$ROBOCOMP environment variable not set, using the default value /opt/robocomp'
-	ROBOCOMP = '/opt/robocomp'
-if len(ROBOCOMP)<1:
-	print 'genericworker.py: ROBOCOMP environment variable not set! Exiting.'
-	sys.exit()
-
-preStr = "-I"+ROBOCOMP+"/interfaces/ -I/opt/robocomp/interfaces/ --all "+ROBOCOMP+"/interfaces/"
-Ice.loadSlice(preStr+"CommonBehavior.ice")
-import RoboCompCommonBehavior
-
 [[[cog
-for imp in component['recursiveImports']:
-	module = IDSLParsing.gimmeIDSL(imp.split('/')[-1])
-	incl = imp.split('/')[-1].split('.')[0]
-	cog.outl('Ice.loadSlice(preStr+"'+incl+'.ice")')
-	cog.outl('from '+module['name']+' import *')
-if use_rcmaster:
-	cog.outl('Ice.loadSlice(preStr+"RCMaster.ice")')
-	cog.outl('from RoboCompRCMaster import *')
-
-]]]
-[[[end]]]
-
-
-[[[cog
-	for imp in component['implements']+component['subscribesTo']:
-		if type(imp) == str:
-			im = imp
-		else:
-			im = imp[0]
-		if communicationIsIce(imp):
-			cog.outl('from ' + im.lower() + 'I import *')
-]]]
-[[[end]]]
-
-[[[cog
-if component['usingROS'] == True:
-	cog.outl('import rospy')
-	cog.outl('from std_msgs.msg import *')
-	for include in modulesList:
-		cog.outl("from "+include['name']+" import "+include['strName'])
-	srvIncludes = {}
-	for imp in component['requires']:
-		if type(imp) == str:
-			im = imp
-		else:
-			im = imp[0]
-		if not communicationIsIce(imp):
-			module = pool.moduleProviding(im)
-			for interface in module['interfaces']:
-				if interface['name'] == im:
-					for mname in interface['methods']:
-						srvIncludes[module['name']] = 'from '+module['name']+' import *'
-	for imp in component['implements']:
-		if type(imp) == str:
-			im = imp
-		else:
-			im = imp[0]
-		if not communicationIsIce(imp):
-			module = pool.moduleProviding(im)
-			for interface in module['interfaces']:
-				if interface['name'] == im:
-					for mname in interface['methods']:
-						srvIncludes[module['name']] = 'from '+module['name']+' import *'
-	for srv in srvIncludes.values():
-		cog.outl(srv)
 A()
 if component['gui'] != 'none':
 	cog.outl('try:')
@@ -169,31 +81,24 @@ Z()
 	def __init__(self, mprx):
 		super(GenericWorker, self).__init__()
 
-		self.name = mprx["name"]
 
 [[[cog
-if ice_requires:
-	cog.outl('<TABHERE><TABHERE>self.proxyData = mprx["proxyData"]')
+for namea in component['requires']:
+	if type(namea) == str:
+		name = namea
+	else:
+		name = namea[0]
+		cog.outl("<TABHERE><TABHERE>self."+name.lower()+"_proxy = mprx[\""+name+"Proxy\"]")
+]]]
+[[[end]]]
 
-for req, num in getNameNumber(component['requires']):
-	if type(req) == str:
-		rq = req
+[[[cog
+for pba in component['publishes']:
+	if type(pba) == type(''):
+		pb = pba
 	else:
-		rq = req[0]
-	if not communicationIsIce(req):
-		cog.outl("<TABHERE><TABHERE>self."+rq.lower()+"_proxy = ServiceClient"+rq+"()")
-	else:
-		cog.outl("<TABHERE><TABHERE>self."+rq.lower()+"_proxy = self.proxyData['"+rq.lower()+num+"']['proxy']")
-
-for pb, num in getNameNumber(component['publishes']):
-	if type(pb) == str:
-		pub = pb
-	else:
-		pub = pb[0]
-	if communicationIsIce(pb):
-		cog.outl("<TABHERE><TABHERE>self."+pub.lower()+num+"_proxy = mprx[\""+pub+"Pub"+num+"\"]")
-	else:
-		cog.outl("<TABHERE><TABHERE>self."+pub.lower()+"_proxy = Publisher"+pub+"()")
+		pb = pba[0]
+	cog.outl("<TABHERE><TABHERE>self."+pb.lower()+" = mprx[\""+pb+"Pub\"]")
 ]]]
 [[[end]]]
 

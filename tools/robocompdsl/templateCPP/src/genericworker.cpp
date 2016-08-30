@@ -24,7 +24,7 @@ pool = IDSLPool(theIDSLs)
 
 ]]]
 [[[end]]]
- *    Copyright (C)
+ *    Copyright (C) 
 [[[cog
 A()
 import datetime
@@ -53,52 +53,21 @@ Z()
 /**
 * \brief Default constructor
 */
-
+GenericWorker::GenericWorker(MapPrx& mprx) :
 [[[cog
-use_rcmaster,ice_requires,ice_impliments = False,False,False
-for require in component['requires']:
-	req = require
-	while type(req) != type(''):
-		req = req[0]
-	if communicationIsIce(req):
-		ice_requires=True
-		break
-for impa in component['implements']:
-	if type(impa) == str:
-		imp = impa
-	else:
-		imp = impa[0]
-	if communicationIsIce(imp):
-		ice_impliments =True
-		break
-use_rcmaster = (ice_requires or ice_impliments)
-
-
-stw = ''
-if use_rcmaster and ice_requires:
-	cog.outl('GenericWorker::GenericWorker(MapPrx& mprx, Mapiface& miface) :')
-	stw = """, ifaces(miface)"""
-else:
-	cog.outl('GenericWorker::GenericWorker(MapPrx& mprx) :')
-
 if component['gui'] != 'none':
 	cog.outl("""#ifdef USE_QTGUI
-Ui_guiDlg()"+stw+"
+Ui_guiDlg()
 #else
-QObject()"+stw+"
+QObject()
 #endif
 """)
 else:
-	cog.outl("QObject()"+stw)
-
+	cog.outl("QObject()")
 ]]]
 [[[end]]]
 {
 [[[cog
-
-if use_rcmaster and ice_requires:
-	cog.outl('<TABHERE>rcmaster_proxy = (*(rcmasterPrx*)mprx["rcmasterProxy"]);')
-
 for namea, num in getNameNumber(component['requires']):
 	if type(namea) == str:
 		name = namea
@@ -121,51 +90,6 @@ for namea, num in getNameNumber(component['publishes']):
 	mutex = new QMutex(QMutex::Recursive);
 
 [[[cog
-if component['usingROS'] == True:
-	#INICIALIZANDO SUBSCRIBERS
-	for imp in component['subscribesTo']:
-		nname = imp
-		while type(nname) != type(''):
-			nname = nname[0]
-		module = pool.moduleProviding(nname)
-		if module == None:
-			print ('\nCan\'t find module providing', nname, '\n')
-			sys.exit(-1)
-		if not communicationIsIce(imp):
-			for interface in module['interfaces']:
-				if interface['name'] == nname:
-					for mname in interface['methods']:
-						s = "\""+mname+"\""
-						cog.outl("<TABHERE>"+nname+"_"+mname+" = node.subscribe("+s+", 1000, &GenericWorker::"+mname+", this);")
-	#INICIALIZANDO IMPLEMENTS
-	for imp in component['implements']:
-		nname = imp
-		while type(nname) != type(''):
-			nname = nname[0]
-		module = pool.moduleProviding(nname)
-		if module == None:
-			print ('\nCan\'t find module providing', nname, '\n')
-			sys.exit(-1)
-		if not communicationIsIce(imp):
-			for interface in module['interfaces']:
-				if interface['name'] == nname:
-					for mname in interface['methods']:
-						s = "\""+mname+"\""
-						cog.outl("<TABHERE>"+nname+"_"+mname+" = node.advertiseService("+s+", &GenericWorker::"+mname+", this);")
-if 'publishes' in component:
-	for publish in component['publishes']:
-		pubs = publish
-		while type(pubs) != type(''):
-			pubs = pubs[0]
-		if not communicationIsIce(publish):
-			cog.outl("<TABHERE>"+pubs.lower()+"_proxy = new Publisher"+pubs+"(&node);")
-if 'requires' in component:
-	for require in component['requires']:
-		req = require
-		while type(req) != type(''):
-			req = req[0]
-		if not communicationIsIce(require):
-			cog.outl("<TABHERE>"+req.lower()+"_proxy = new ServiceClient"+req+"(&node);")
 if component['gui'] != 'none':
 	cog.outl("""<TABHERE>#ifdef USE_QTGUI
 		setupUi(this);
@@ -236,7 +160,7 @@ try:
 	} while (iss);
 
 	return ret;
-}
+}	
 
 
 bool GenericWorker::activate(const BehaviorParameters &prs)
@@ -250,7 +174,7 @@ bool GenericWorker::activate(const BehaviorParameters &prs)
 	return active;
 }
 
-bool GenericWorker::deactivate()
+bool GenericWorker::deactivate() 
 {
 	printf("Worker::deactivate\\n");
 	mutex->lock();

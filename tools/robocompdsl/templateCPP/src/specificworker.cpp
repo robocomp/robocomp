@@ -56,31 +56,7 @@ Z()
 /**
 * \brief Default constructor
 */
-[[[cog
-use_rcmaster,ice_requires,ice_impliments = False,False,False
-for require in component['requires']:
-	req = require
-	while type(req) != type(''):
-		req = req[0]
-	if communicationIsIce(req):
-		ice_requires=True
-		break
-for impa in component['implements']:
-	if type(impa) == str:
-		imp = impa
-	else:
-		imp = impa[0]
-	if communicationIsIce(imp):
-		ice_impliments =True
-		break
-use_rcmaster = (ice_requires or ice_impliments)
-if use_rcmaster and ice_requires:
-	cog.outl('''SpecificWorker::SpecificWorker(MapPrx& mprx, Mapiface& miface) : GenericWorker(mprx, miface)''')
-else:
-	cog.outl('''SpecificWorker::SpecificWorker(MapPrx& mprx) : GenericWorker(mprx)''')
-]]]
-[[[end]]]
-
+SpecificWorker::SpecificWorker(MapPrx& mprx) : GenericWorker(mprx)
 {
 
 [[[cog
@@ -172,130 +148,18 @@ except:
 	return true;
 }
 
-
-[[[cog
-
-if use_rcmaster and ice_requires:
-	cog.outl('''
-	void SpecificWorker::waitforComp(::IceProxy::Ice::Object* proxy, string interfaceName)
-	{
-	<TABHERE>timer.stop();
-	<TABHERE>sleep(3);
-	<TABHERE>bool flag = false;
-	<TABHERE>for(auto const &iface : ifaces) 
-	<TABHERE>{
-	<TABHERE><TABHERE>if( iface.second.alias.compare(interfaceName)==0)
-	<TABHERE><TABHERE>{
-	<TABHERE><TABHERE><TABHERE>flag = true;
-	<TABHERE><TABHERE><TABHERE>break;
-	<TABHERE><TABHERE>}
-	<TABHERE>}
-	<TABHERE>if (flag==false)
-	<TABHERE>{
-	<TABHERE><TABHERE>timer.start(Period);
-	<TABHERE><TABHERE>throw("interface "+interfaceName+" dosent exist");
-	<TABHERE>}
-	<TABHERE>string host;
-	''')
-
-	for namea, num in getNameNumber(component['requires']):
-		if type(namea) == str:
-			name = namea
-		else:
-			name = namea[0]
-		if name == "rcmaster":
-			continue
-		if communicationIsIce(namea):
-			cog.outl('''<TABHERE>if (interfaceName.compare("'''+name+num+'''")==0){
-	<TABHERE><TABHERE>'''+name+'''Prx proxyf = (*('''+name+'''Prx*)proxy);
-	<TABHERE><TABHERE>host = proxyf->ice_toString();
-	<TABHERE>}''')
-
-	cog.outl('''
-	<TABHERE>host = host.substr(host.find("-h")+3,(host.find("-p")-host.find("-h")-3));
-	<TABHERE>Ice::CommunicatorPtr ic;
-	<TABHERE>ic = Ice::initialize();
-	<TABHERE>string compName = ifaces[interfaceName].comp;//neep compMap
-
-	<TABHERE>while (true)
-	<TABHERE>{
-	<TABHERE>try{
-	<TABHERE><TABHERE><TABHERE>interfaceList interfaces = rcmaster_proxy->getComp(compName,host);
-	<TABHERE><TABHERE><TABHERE>string port = "0";
-	<TABHERE><TABHERE><TABHERE>for (auto const &iface :interfaces)
-	<TABHERE><TABHERE><TABHERE>{''')
-
-	for namea, num in getNameNumber(component['requires']):
-		if type(namea) == str:
-			name = namea
-		else:
-			name = namea[0]
-		if name == "rcmaster":
-			continue
-		if communicationIsIce(namea):
-			cog.outl('''<TABHERE><TABHERE><TABHERE><TABHERE>if (iface.name.compare("'''+name+num+'''")==0)				{
-	<TABHERE><TABHERE><TABHERE><TABHERE><TABHERE>port = std::to_string(iface.port);
-	<TABHERE><TABHERE><TABHERE><TABHERE><TABHERE>string proxyStr = "'''+name+''':"+iface.protocol+" -h "+host+" -p "+port;
-	<TABHERE><TABHERE><TABHERE><TABHERE><TABHERE>'''+name.lower()+num+'''_proxy = '''+name+'''Prx::uncheckedCast( ic->stringToProxy( proxyStr ) );
-	<TABHERE><TABHERE><TABHERE><TABHERE>}''')
-
-	cog.outl('''
-	<TABHERE><TABHERE><TABHERE>}
-	<TABHERE><TABHERE>}
-	<TABHERE><TABHERE>catch (const ComponentNotFound& ex)
-	<TABHERE><TABHERE>{
-	<TABHERE><TABHERE><TABHERE>cout<< "waiting for "<< compName<<endl;
-	<TABHERE><TABHERE><TABHERE>sleep(3);
-	<TABHERE><TABHERE><TABHERE>continue;
-	<TABHERE><TABHERE>}
-	<TABHERE><TABHERE>catch  (const Ice::SocketException& ex)
-	<TABHERE><TABHERE>{
-	<TABHERE><TABHERE><TABHERE>cout<< "waiting for "<< compName<<endl;
-	<TABHERE><TABHERE><TABHERE>sleep(3);
-	<TABHERE><TABHERE><TABHERE>continue;
-	<TABHERE><TABHERE>}
-	<TABHERE><TABHERE>catch (const Ice::Exception& ex)
-	<TABHERE><TABHERE>{
-	<TABHERE><TABHERE><TABHERE>cout<<"Cannot connect to the remote object "<<compName;
-	<TABHERE><TABHERE><TABHERE>sleep(3);
-	<TABHERE><TABHERE><TABHERE>continue;
-	<TABHERE><TABHERE>}		
-	<TABHERE><TABHERE>timer.start(Period);
-	<TABHERE><TABHERE>break;
-	<TABHERE>}
-	}''')
-
-]]]
-[[[end]]]
-
 void SpecificWorker::compute()
 {
-//computeCODE
 // 	try
 // 	{
 // 		camera_proxy->getYImage(0,img, cState, bState);
 // 		memcpy(image_gray.data, &img[0], m_width*m_height*sizeof(uchar));
 // 		searchTags(image_gray);
 // 	}
-// 	catch ( const Ice::SocketException& ex)
-//	{
-//		waitforComp((::IceProxy::Ice::Object*)(&camera_proxy),"camera");
-//	}
 // 	catch(const Ice::Exception &e)
 // 	{
 // 		std::cout << "Error reading from Camera" << e << std::endl;
 // 	}
-
-[[[cog
-if component['usingROS'] == True:
-	cog.outl("<TABHERE>ros::spinOnce();")
-if component['useViewer'] == "true":
-	cog.outl("#ifdef USE_QTGUI")
-	cog.outl("<TABHERE>if (imv) imv->update();")
-	cog.outl("<TABHERE>osgView->frame();")
-	cog.outl("#endif")
-]]]
-[[[end]]]
 }
 
 
@@ -325,25 +189,9 @@ if 'implements' in component:
 								ampersand = ''
 						paramStrA += delim + const + p['type'] + ' ' + ampersand + p['name']
 					bodyCode = bodyCodeFromName(method['name'])
-					if communicationIsIce(impa):
-						for p in method['params']:
-							# delim
-							if paramStrA == '': delim = ''
-							else: delim = ', '
-							# decorator
-							ampersand = '&'
-							if p['decorator'] == 'out':
-								const = ''
-							else:
-								const = 'const '
-								if p['type'].lower() in ['int', '::ice::int', 'float', '::ice::float']:
-									ampersand = ''
-							# STR
-							paramStrA += delim + const + p['type'] + ' ' + ampersand + p['name']
-						cog.outl(method['return'] + ' SpecificWorker::' + method['name'] + '(' + paramStrA + ")\n{\n//implementCODE\n"+bodyCode+"\n}\n")
-					else:
-						paramStrA = module['name'] +"::"+method['name']+"::Request &req, "+module['name']+"::"+method['name']+"::Response &res"
-						cog.outl('bool SpecificWorker::' + method['name'] + '(' + paramStrA + ")\n{\n//implementCODE\n"+bodyCode+"\n}\n")
+					cog.outl(method['return'] + ' SpecificWorker::' + method['name'] + '(' + paramStrA + ")\n{\n"+bodyCode+"\n}\n")
+
+	
 
 if 'subscribesTo' in component:
 	for imp in component['subscribesTo']:
@@ -369,28 +217,13 @@ if 'subscribesTo' in component:
 								if p['type'].lower() in ['int', '::ice::int', 'float', '::ice::float']:
 									ampersand = ''
 							paramStrA += delim + const + p['type'] + ' ' + ampersand + p['name']
-						cog.outl(method['return'] + ' SpecificWorker::' + method['name'] + '(' + paramStrA + ")\n{\n//subscribesToCODE\n"+bodyCode+"\n}\n")
-					else:
-						for p in method['params']:
-							# delim
-							if paramStrA == '': delim = ''
-							else: delim = ', '
-							# decorator
-							ampersand = '&'
-							if p['decorator'] == 'out':
-								const = ''
-							else:
-								const = 'const '
-								ampersand = ''
-							if p['type'] in ('float','int','uint'):
-								p['type'] = "std_msgs::"+p['type'].capitalize()+"32"
-							elif p['type'] == 'string':
-								p['type'] = "std_msgs::String"
-							elif not '::' in p['type']:
-								p['type'] = module['name']+"::"+p['type']
-							# STR
-							paramStrA += delim + p['type'] + ' ' + p['name']
-						cog.outl('void SpecificWorker::' + method['name'] + '(' + paramStrA + ")\n{\n//subscribesToCODE\n"+bodyCode+"\n}\n")
+						bodyCode = bodyCodeFromName(method['name'])
+						cog.outl(method['return'] + ' SpecificWorker::' + method['name'] + '(' + paramStrA + ")\n{\n"+bodyCode+"\n}\n")
+		else:
+			cog.outl("// ROS CODE FOR FUNCTION X")
+
+
+
 
 ]]]
 [[[end]]]
