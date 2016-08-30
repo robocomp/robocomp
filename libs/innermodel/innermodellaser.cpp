@@ -16,8 +16,9 @@
  */
 
 #include "innermodellaser.h"
+#include <innermodel/innermodel.h>
 
-InnerModelLaser::InnerModelLaser(QString id_, uint32_t _port, uint32_t _min, uint32_t _max, float _angle, uint32_t _measures, QString _ifconfig, InnerModelNode *parent_) : InnerModelNode(id_, parent_)
+InnerModelLaser::InnerModelLaser(QString id_, uint32_t _port, uint32_t _min, uint32_t _max, float _angle, uint32_t _measures, QString _ifconfig, InnerModel *innermodel_, InnerModelNode *parent_) :  InnerModelNode(id_, parent_) , innermodel(innermodel_)
 {
 #if FCL_SUPPORT==1
 	collisionObject = NULL;
@@ -28,6 +29,8 @@ InnerModelLaser::InnerModelLaser(QString id_, uint32_t _port, uint32_t _min, uin
 	measures = _measures;
 	angle = _angle;
 	ifconfig = _ifconfig;
+	
+	qDebug() << __FUNCTION__ << id << parent_ << port << min << max << angle << measures;
 }
 
 void InnerModelLaser::save(QTextStream &out, int tabs)
@@ -54,7 +57,7 @@ void InnerModelLaser::update()
 
 InnerModelNode * InnerModelLaser::copyNode(QHash<QString, InnerModelNode *> &hash, InnerModelNode *parent)
 {
-	InnerModelLaser *ret = new InnerModelLaser(id, port, min, max, angle, measures, ifconfig, parent);
+	InnerModelLaser *ret = new InnerModelLaser(id, port, min, max, angle, measures, ifconfig, innermodel, parent);
 	ret->level = level;
 	ret->fixed = fixed;
 	ret->children.clear();
@@ -67,5 +70,15 @@ InnerModelNode * InnerModelLaser::copyNode(QHash<QString, InnerModelNode *> &has
 	}
 
 	return ret;
+}
+
+QVec InnerModelLaser::laserTo(const QString &dest, const QString & laserId , float r, float alpha)
+{
+	QMutexLocker l(&mutex);
+	QVec p(3);
+	p(0) = r * sin(alpha);
+	p(1) = 0;
+	p(2) = r * cos(alpha);
+	return innermodel->transform(dest, p, laserId);
 }
 

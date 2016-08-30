@@ -20,20 +20,35 @@
 
 #include <innermodel/innermodelnode.h>
 
+class InnerModel;
+
 class InnerModelLaser : public InnerModelNode
 {
 	public:
-		InnerModelLaser(QString id_, uint32_t _port, uint32_t _min, uint32_t _max, float _angle, uint32_t _measures, QString _ifconfig, InnerModelNode *parent_=NULL);
+		InnerModelLaser(QString id_, uint32_t _port, uint32_t _min, uint32_t _max, float _angle, uint32_t _measures, QString _ifconfig, InnerModel *innermodel_, InnerModelNode *parent_=NULL);
 		void save(QTextStream &out, int tabs);
 		void print(bool verbose);
 		void update();
 		virtual InnerModelNode *copyNode(QHash<QString, InnerModelNode *> &hash, InnerModelNode *parent);
+		
+		/**
+		* \brief Local laser measure of range r and angle alfa is converted to Any RS
+		* @param r range measure
+		* @param alfa angle measure
+		* @return 3-vector of x,y,z coordinates un WRS
+		*/
+		QVec laserTo(const QString &dest, const QString & laserId , float r, float alfa);
 
 		uint32_t port;
 		uint32_t min, max;
 		float angle;
 		uint32_t measures;
 		QString ifconfig;
+		
+		mutable QMutex mutex;
+	
+private:
+		InnerModel *innermodel;
 };
 
 

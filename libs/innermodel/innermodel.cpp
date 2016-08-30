@@ -36,7 +36,9 @@ bool InnerModel::support_fcl()
 #endif
 }
 
+///////////////////////
 /// (Con/De)structors
+///////////////////////
 InnerModel::InnerModel(std::string xmlFilePath)
 {
 	mutex = new QMutex(QMutex::Recursive);
@@ -58,10 +60,6 @@ InnerModel::InnerModel()
 	root->parent = NULL;
 	setRoot(root);
 	hash["root"] = root;
-
-	// How to use:
-	//   InnerModelTransform *tr = innerModel->newTransform("name", parent, rx, ry, rz, px, py, pz);
-	//   parent->addChild(tr);
 }
 
 InnerModel::InnerModel(const InnerModel &original)
@@ -85,7 +83,6 @@ InnerModel::~InnerModel()
 		InnerModelNode *dd = hash[id];
 		delete dd;		
 	}
-	
 	hash.clear();
 	localHashRot.clear();
 	localHashTr.clear();
@@ -97,22 +94,12 @@ InnerModel* InnerModel::copy()
 {
 	QMutexLocker l(mutex);
 	InnerModel *inner = new InnerModel();
-	
 	QList<InnerModelNode *>::iterator i;
 	for (i=root->children.begin(); i!=root->children.end(); i++)
-	{
 		inner->root->addChild((*i)->copyNode(inner->hash, inner->root));
-	}
 	return inner;
 }
 
-// template <typename TNode> void InnerModel::get(TNode *node, QString id)
-// { 
-// 	InnerModelNode *n = getNode(id);	
-// 	if ( auto res = dynamic_cast<TNode*>(n) != nullptr) node = res;
-// 	else {	std::exception e("Nope"); 	throw e; 		}
-// } 
-	
 void InnerModel::removeNode(const QString & id)
 {
 	QMutexLocker l(mutex);
@@ -127,9 +114,9 @@ bool InnerModel::open(std::string xmlFilePath)
 	return InnerModelReader::load(QString::fromStdString(xmlFilePath), this);
 }
 
-///Remove sub tree and return sa list with his id
 void InnerModel::removeSubTree(InnerModelNode *node, QStringList *l)
 {
+	QMutexLocker ml(mutex);
 	QList<InnerModelNode*>::iterator i;
 	for (i=node->children.begin(); i!=node->children.end(); i++)
 	{
@@ -149,6 +136,7 @@ void InnerModel::removeSubTree(InnerModelNode *node, QStringList *l)
  */
 void InnerModel::getSubTree(InnerModelNode *node, QStringList *l)
 {
+	QMutexLocker ml(mutex);
 	QList<InnerModelNode*>::iterator i;
 	for (i=node->children.begin(); i!=node->children.end(); i++)
 	{
@@ -159,6 +147,7 @@ void InnerModel::getSubTree(InnerModelNode *node, QStringList *l)
 
 void InnerModel::getSubTree(InnerModelNode *node, QList<InnerModelNode *> *l)
 {
+	QMutexLocker ml(mutex);
 	QList<InnerModelNode*>::iterator i;
 	for (i=node->children.begin(); i!=node->children.end(); i++)
 	{
@@ -185,7 +174,7 @@ void InnerModel::moveSubTree(InnerModelNode *nodeSrc, InnerModelNode *nodeDst)
 
 void InnerModel::computeLevels(InnerModelNode *node)
 {
-
+	QMutexLocker l(mutex);
 	if (node->parent != NULL )
 	{
 		node->level=node->parent->level+1;
@@ -196,17 +185,6 @@ void InnerModel::computeLevels(InnerModelNode *node)
 		computeLevels(*i);
 	}
 }
-
-// void InnerModel::getSubTreeN(InnerModelNode *orig, InnerModelNode *ret)
-// {
-// 	//ASSERTS
-//
-// 	QList<InnerModelNode *>::iterator i;
-// 	for (i=orig->children.begin(); i!=orig->children.end(); i++)
-// 	{
-// 		ret->addChild((*i)->copyNode(hash, root));
-// 	}
-// }
 
 bool InnerModel::save(QString path)
 {
@@ -232,6 +210,7 @@ void InnerModel::update()
 
 void InnerModel::cleanupTables()
 {
+	QMutexLocker l(mutex);
 	localHashTr.clear();
 	localHashRot.clear();
 }
@@ -431,23 +410,6 @@ void InnerModel::setRoot(InnerModelNode *node)
 	root->parent=NULL;
 }
 
-// InnerModelTransform *InnerModel::newTransform(QString id, QString engine, InnerModelNode *parent, float tx, float ty, float tz, float rx, float ry, float rz, float mass)
-// {
-// 	QMutexLocker l(mutex);
-// 	if (hash.contains(id))
-// 	{
-// 		QString error;
-// 		error.sprintf("InnerModel::newTransform: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
-// 		throw error;
-// 	}
-// 	InnerModelTransform *newnode = new InnerModelTransform(id, engine, tx, ty, tz, rx, ry, rz, mass, parent);
-// 	hash[id] = newnode;
-// // 	std::cout << (void *)newnode << "  " << (uint64_t)newnode << std::endl;
-// // 	parent->addChild(newnode);
-// 	return newnode;
-// }
-
-
 InnerModelJoint *InnerModel::newJoint(QString id, InnerModelTransform *parent,float lx, float ly, float lz,float hx, float hy, float hz, float tx, float ty, float tz, float rx, float ry, float rz, float min, float max, uint32_t port,std::string axis, float home)
 {
 	QMutexLocker l(mutex);
@@ -584,8 +546,7 @@ InnerModelLaser *InnerModel::newLaser(QString id, InnerModelNode *parent, uint32
 		error.sprintf("InnerModel::newLaser: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
 		throw error;
 	}
-	// 	printf("newLaser id=%s  parentId=%s port=%d min=%d max=%d angle=%f measures=%d\n", id.toStdString().c_str(), parent->id.toStdString().c_str(), port, min, max, angle, measures);
-	InnerModelLaser *newnode = new InnerModelLaser(id, port, min, max, angle, measures, ifconfig, parent);
+	InnerModelLaser *newnode = new InnerModelLaser(id, port, min, max, angle, measures, ifconfig, this, parent);
 	hash[id] = newnode;
 // 	parent->addChild(newnode);
 	return newnode;
@@ -643,292 +604,20 @@ InnerModelPointCloud *InnerModel::newPointCloud(QString id, InnerModelNode *pare
 	return newnode;
 }
 
-InnerModelTransform *InnerModel::getTransform(const QString &id)
+InnerModelTransform *InnerModel::newTransform(QString id, QString engine, InnerModelNode *parent, float tx, float ty, float tz, float rx, float ry, float rz, float mass)
 {
 	QMutexLocker l(mutex);
-	InnerModelTransform *tr = dynamic_cast<InnerModelTransform *>(hash[id]);
-	if (not tr)
+	if (hash.contains(id))
 	{
 		QString error;
-		if (not hash[id])
-			error.sprintf("No such transform %s", id.toStdString().c_str());
-		else
-			error.sprintf("%s doesn't seem to be a transform", id.toStdString().c_str());
+		error.sprintf("InnerModel::newTransform: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
 		throw error;
 	}
-	return tr;
-}
-
-InnerModelJoint *InnerModel::getJoint(const QString &id)
-{
-	QMutexLocker l(mutex);
-	InnerModelJoint *tr = dynamic_cast<InnerModelJoint *>(hash[id]);
-	if (not tr)
-	{
-		QString error;
-		if (not hash[id])
-			error.sprintf("No such joint %s", id.toStdString().c_str());
-		else
-			error.sprintf("%s doesn't seem to be a joint", id.toStdString().c_str());
-		throw error;
-	}
-	return tr;
-}
-
-InnerModelTouchSensor *InnerModel::getTouchSensor(const QString &id)
-{
-	QMutexLocker l(mutex);
-	InnerModelTouchSensor *tr = dynamic_cast<InnerModelTouchSensor *>(hash[id]);
-	if (not tr)
-	{
-		QString error;
-		if (not hash[id])
-			error.sprintf("No such touch sensor %s", id.toStdString().c_str());
-		else
-			error.sprintf("%s doesn't seem to be a touch sensor", id.toStdString().c_str());
-		throw error;
-	}
-	return tr;
-}
-
-InnerModelPrismaticJoint *InnerModel::getPrismaticJoint(const QString &id)
-{
-	QMutexLocker l(mutex);
-	InnerModelPrismaticJoint *tr = dynamic_cast<InnerModelPrismaticJoint *>(hash[id]);
-	if (not tr)
-	{
-		QString error;
-		if (not hash[id])
-			error.sprintf("No such joint %s", id.toStdString().c_str());
-		else
-			error.sprintf("%s doesn't seem to be a prismatic joint", id.toStdString().c_str());
-		throw error;
-	}
-	return tr;
-}
-
-InnerModelCamera *InnerModel::getCamera(const QString id)
-{
-	QMutexLocker l(mutex);
-	InnerModelCamera *camera = dynamic_cast<InnerModelCamera *>(hash[id]);
-	if (not camera)
-	{
-		QString error;
-		if (not hash[id])
-			error.sprintf("No such camera %s", id.toStdString().c_str());
-		else
-			error.sprintf("%s doesn't seem to be a camera", id.toStdString().c_str());
-		throw error;
-	}
-	return camera;
-}
-
-InnerModelRGBD *InnerModel::getRGBD(const QString id)
-{
-	QMutexLocker l(mutex);
-	InnerModelRGBD *camera = dynamic_cast<InnerModelRGBD *>(hash[id]);
-	if (not camera)
-	{
-		QString error;
-		if (not hash[id])
-			error.sprintf("No such camera %s", id.toStdString().c_str());
-		else
-			error.sprintf("%s doesn't seem to be a camera", id.toStdString().c_str());
-		throw error;
-	}
-	return camera;
-}
-
-InnerModelIMU *InnerModel::getIMU(const QString id)
-{
-	QMutexLocker l(mutex);
-	InnerModelIMU *imu = dynamic_cast<InnerModelIMU *>(hash[id]);
-	if (not imu)
-	{
-		QString error;
-		if (not hash[id])
-			error.sprintf("No such innertial unit %s", id.toStdString().c_str());
-		else
-			error.sprintf("%s doesn't seem to be an innertial unit", id.toStdString().c_str());
-		throw error;
-	}
-	return imu;
-}
-
-InnerModelLaser *InnerModel::getLaser(const QString id)
-{
-	QMutexLocker l(mutex);
-	InnerModelLaser *laser = dynamic_cast<InnerModelLaser *>(hash[id]);
-	if (not laser)
-	{
-		QString error;
-		if (not hash[id])
-			error.sprintf("No such laser %s", id.toStdString().c_str());
-		else
-			error.sprintf("%s doesn't seem to be an laser", id.toStdString().c_str());
-		throw error;
-	}
-	return laser;
-}
-
-InnerModelPlane *InnerModel::getPlane(const QString &id)
-{
-	QMutexLocker l(mutex);
-	InnerModelPlane *plane = dynamic_cast<InnerModelPlane *>(hash[id]);
-	if (not plane)
-	{
-		QString error;
-		if (not hash[id])
-			error.sprintf("No such plane %s", id.toStdString().c_str());
-		else
-			error.sprintf("%s doesn't seem to be a plane", id.toStdString().c_str());
-		throw error;
-	}
-	return plane;
-}
-
-InnerModelMesh *InnerModel::getMesh(const QString &id)
-{
-	QMutexLocker l(mutex);
-	InnerModelMesh *mesh = dynamic_cast<InnerModelMesh *>(hash[id]);
-	if (not mesh)
-	{
-		QString error;
-		if (not hash[id])
-			error.sprintf("No such mesh %s", id.toStdString().c_str());
-		else
-			error.sprintf("%s doesn't seem to be a mesh", id.toStdString().c_str());
-		throw error;
-	}
-	return mesh;
-}
-
-InnerModelPointCloud *InnerModel::getPointCloud(const QString &id)
-{
-	QMutexLocker l(mutex);
-	InnerModelPointCloud *pointcloud = dynamic_cast<InnerModelPointCloud *>(hash[id]);
-	if (not pointcloud)
-	{
-		QString error;
-		if (not hash[id])
-			error.sprintf("No such pointcloud %s", id.toStdString().c_str());
-		else
-			error.sprintf("%s doesn't seem to be a pointcloud", id.toStdString().c_str());
-		throw error;
-	}
-	return pointcloud;
-}
-
-InnerModelDifferentialRobot *InnerModel::getDifferentialRobot(const QString &id)
-{
-	QMutexLocker l(mutex);
-	InnerModelDifferentialRobot *diff = dynamic_cast<InnerModelDifferentialRobot *>(hash[id]);
-	if (not diff)
-	{
-		QString error;
-		if (not hash[id])
-			error.sprintf("No such differential robot %s", id.toStdString().c_str());
-		else
-			error.sprintf("%s doesn't seem to be a differential robot", id.toStdString().c_str());
-		throw error;
-	}
-	return diff;
-}
-
-InnerModelOmniRobot *InnerModel::getOmniRobot(const QString &id)
-{
-	QMutexLocker l(mutex);
-	InnerModelOmniRobot *diff = dynamic_cast<InnerModelOmniRobot *>(hash[id]);
-	if (not diff)
-	{
-		QString error;
-		if (not hash[id])
-			error.sprintf("No such omni robot %s", id.toStdString().c_str());
-		else
-			error.sprintf("%s doesn't seem to be a omni robot", id.toStdString().c_str());
-		throw error;
-	}
-	return diff;
-}
-
-QVec InnerModel::compute3DPointFromImageCoords(const QString &firstCamera, const QVec &left, const QString &secondCamera, const QVec &right, const QString &refSystem)
-{
-	QMutexLocker l(mutex);
-	QVec pI(3), pD(3), n(3), ray(3), T(3), TI(3), TD(3), pR(0), abc(3);
-	QMat A(3,3);
-
-	ray = backProject(firstCamera, left);
-	pI = getRotationMatrixTo(refSystem, firstCamera)*ray;
-	pI(0)=pI(0)/pI(2);
-	pI(1)=pI(1)/pI(2);
-	pI(2)=1.;
-
-	ray = backProject(secondCamera, right);
-	pD = getRotationMatrixTo(refSystem, secondCamera)*ray;
-	pD(0)=pD(0)/pD(2);
-	pD(1)=pD(1)/pD(2);
-	pD(2)=1.;
-
-	n = pI ^ pD;
-
-	A(0,0)=pI(0);  A(0,1)=-pD(0);  A(0,2)=n(0);
-	A(1,0)=pI(1);  A(1,1)=-pD(1);  A(1,2)=n(1);
-	A(2,0)=pI(2);  A(2,1)=-pD(2);  A(2,2)=n(2);
-
-	TI = getTranslationVectorTo(refSystem, firstCamera).fromHomogeneousCoordinates();
-	TD = getTranslationVectorTo(refSystem, secondCamera).fromHomogeneousCoordinates();
-	T = TD - TI ;
-
-	abc = (A.invert())*T;
-
-	pR = (pI*abc(0));
-	pR = pR + TI;
-	pR = (n*(abc(2)/2)) + pR;
-
-	return pR;
-}
-
-QVec InnerModel::compute3DPointFromImageAngles(const QString &firstCamera , const QVec & left, const QString & secondCamera , const QVec & right, const QString & refSystem)
-{
-	QMutexLocker l(mutex);
-	QVec pI(3), pD(3), n(3), ray(3), T(3), TI(3), TD(3), pR(0), abc(3);
-	QMat A(3,3);
-
-	ray(0) = tan(left(0));
-	ray(1) = tan(left(1));
-	ray(2) = 1.;
-	pI = ray;//getRotationMatrixTo(refSystem, firstCamera)*ray;
-
-	pI(0)=pI(0)/pI(2);
-	pI(1)=pI(1)/pI(2);
-	pI(2)=1.;
-
-	ray(0) = tan(right(0));
-	ray(1) = tan(right(1));
-	ray(2) = 1.;
-	pD = ray;//getRotationMatrixTo(refSystem, secondCamera)*ray;
-
-	pD(0)=pD(0)/pD(2);
-	pD(1)=pD(1)/pD(2);
-	pD(2)=1.;
-
-	n = pI ^ pD;
-
-	A(0,0)=pI(0);  A(0,1)=-pD(0);  A(0,2)=n(0);
-	A(1,0)=pI(1);  A(1,1)=-pD(1);  A(1,2)=n(1);
-	A(2,0)=pI(2);  A(2,1)=-pD(2);  A(2,2)=n(2);
-
-	TI = getTranslationVectorTo(refSystem, firstCamera).fromHomogeneousCoordinates();
-	TD = getTranslationVectorTo(refSystem, secondCamera).fromHomogeneousCoordinates();
-	T = TD - TI;
-
-	abc = (A.invert())*T;
-
-	pR = (pI*abc(0));
-	pR = pR + TI;
-	pR = (n*(abc(2)/2)) + pR;
-
-	return pR;
+	InnerModelTransform *newnode = new InnerModelTransform(id, engine, tx, ty, tz, rx, ry, rz, mass, parent);
+	hash[id] = newnode;
+// 	std::cout << (void *)newnode << "  " << (uint64_t)newnode << std::endl;
+// 	parent->addChild(newnode);
+	return newnode;
 }
 
 
@@ -974,215 +663,6 @@ QVec InnerModel::rotationAngles(const QString & destId, const QString & origId)
 {
 	return getTransformationMatrix(destId, origId).extractAnglesR();
 }
-
-QVec InnerModel::project(QString reference, QVec origVec, QString cameraId)
-{
-	origVec = transform(cameraId, origVec, reference);
-
-	QVec pc;
-	InnerModelCamera *camera=NULL;
-
-	camera = dynamic_cast<InnerModelCamera *>(hash[cameraId]);
-	if (not camera)
-	{
-		QString error;
-		error.sprintf("No such %s camera", qPrintable(cameraId));
-		throw error;
-	}
-
-	pc = camera->camera.project(origVec);
-
-	return QVec::vec3(pc(0), pc(1), origVec.norm2());
-}
-
-
-QVec InnerModel::project(const QString &cameraId, const QVec &origVec)
-{
-	QVec pc;
-	InnerModelCamera *camera=NULL;
-
-	camera = dynamic_cast<InnerModelCamera *>(hash[cameraId]);
-	if (not camera)
-	{
-		QString error;
-		error.sprintf("No such %s camera", qPrintable(cameraId));
-		throw error;
-	}
-
-	pc = camera->camera.project(origVec);
-
-	return QVec::vec3(pc(0), pc(1), origVec.norm2());
-}
-
-
-
-/**
- * \brief Retro-projection function, defines a line in the camera reference system which can be parametrized by the depth s with the expression:
- * p = s*[ (u-u0) / alfaU ; (v-v0) / alfaV ; 1] being alfaU and alfaV the horizontal and vertical focals of the camera (in pixels)
- * p has value 1 in the z axis, the one going out the camera.
- * @param cameraId name of camara to be used as known in innermodel tree
- * @param coord  point in image coordinates
- * @return a line en camera reference system that can be parametrized by the depth s
- */
-QVec InnerModel::backProject( const QString &cameraId, const QVec &	coord) //const
-{
-	if(hash.contains(cameraId))
-	{
-		QVec p = static_cast<InnerModelCamera *>(hash[cameraId])->camera.getRayHomogeneous(coord);
-		return p;
-	}
-	return QVec();
-}
-
-
-
-void InnerModel::imageCoordToAngles(const QString &cameraId, QVec coord, float &pan, float &tilt, const QString & anglesRefS)
-{
-	QVec ray = backProject(cameraId, coord);
-
-	QVec finalRay = getRotationMatrixTo(anglesRefS, cameraId)*ray;
-
-	pan = atan2(finalRay(0), finalRay(2));
-	tilt = atan2(finalRay(1), finalRay(2));
-
-}
-
-
-
-QVec InnerModel::anglesToImageCoord(const QString &cameraId, float pan, float tilt, const QString & anglesRefS)
-{
-	QVec p(3), ray(3);
-
-	p(0) = tan(pan);
-	p(1) = tan(tilt);
-	p(2) = 1;
-
-	ray = getRotationMatrixTo(cameraId, anglesRefS) * p;
-	ray(0)=ray(0)/ray(2);
-	ray(1)=ray(1)/ray(2);
-	ray(2)=1;
-
-	return project(cameraId, ray, cameraId);
-
-}
-
-
-
-QVec InnerModel::imageCoordPlusDepthTo(QString cameraId, QVec coord, float depth, QString reference)
-{
-	//We obtain a 3D line (a,b,1) in camera reference system that can be parametrized in depth to obtain a point at "depth" from the camera.
-	QVec p = backProject( cameraId, coord ) * depth;
-	//Now we transform it to requested node of the robot.
-	if(p.size()>0)
-		return transform(reference, p, cameraId);
-	return p;
-}
-
-
-
-QVec InnerModel::projectFromCameraToPlane(const QString &to, const QVec &coord, const QString &cameraId, const QVec &vPlane, const float &dist)
-{
-	QMat mSystem(3,3);
-	QVec tIndep(3);
-	QVec pCam(3);
-	QVec res(3);
-	float dxz, dyz;
-
-	pCam(0) = -coord(0)+getCameraWidth(cameraId)/2;
-	pCam(1) = -(coord(1)-getCameraHeight(cameraId)/2);
-	pCam(2) = getCameraFocal(cameraId);
-	QVec pDest = transform(to, pCam, cameraId);
-	QVec pCent = transform(to, QVec::vec3(0,0,0), cameraId);
-	QVec direc = pDest-pCent;
-	dxz = direc(0)/direc(2);
-	dyz = direc(1)/direc(2);
-
-	res(2) = dist + vPlane(0)*(dxz*pCent(2)-pCent(0)) + vPlane(1)*(dyz*pCent(2)-pCent(1));
-	res(2) = res(2)/(vPlane(0)*dxz+vPlane(1)*dyz+vPlane(2));
-	res(0)=dxz*(res(2)-pCent(2))+pCent(0);
-	res(1)=dyz*(res(2)-pCent(2))+pCent(1);
-
-	/*	res.print("res");
-	 *
-	 *	mSystem(0,0) = vPlane(0);         mSystem(0,1) = vPlane(1);         mSystem(0,2) = vPlane(2);
-	 *	mSystem(1,0) = 0;                 mSystem(1,1) = pCent(2)-pDest(2); mSystem(1,2) = pDest(1)-pCent(1);
-	 *	mSystem(2,0) = pDest(2)-pCent(2); mSystem(2,1) = 0;                 mSystem(2,2) = pCent(0)-pDest(0);
-	 *	tIndep(0) = dist;
-	 *	tIndep(1) = pCent(2)*(pDest(1)-pCent(1))+pCent(1)*(pCent(2)-pDest(2));
-	 *	tIndep(2) = pCent(0)*(pDest(2)-pCent(2))+pCent(2)*(pCent(0)-pDest(0));
-	 *
-	 * 	return (mSystem.invert())*tIndep;*/
-	return res;
-}
-
-
-
-//
-// bool InnerModel::check3DPointInsideFrustrum(QString cameraId, QVec coor)
-// {
-// }
-
-/**
- * \brief Returns a 3D vector (A,B,C) containing the horizon line for the specified camera+plane in the form 'Ax + By + C = 0'.
- *
- * <p>
- * Returns a 3D vector (A,B,C) containing the horizon line in the form Ax + By + C = 0. For general lines, it will also work as 'y = Ax + C' (not for vertical lines, which are a very rare case).
- * You can check B to know if the returned vector is a regular line:
- * </p>
- * <p>
- * QVec horizon = innerModel->horizonLine("floor", "mycamera", );
- * <br>
- * if (horizon(1) == 0) printf("Vertical horizon.\n");
- * <br>
- * else printf("Regular horizon.\n");
- * </p>
- */
-QVec InnerModel::horizonLine(QString planeId, QString cameraId, float heightOffset)
-{
-	QMutexLocker l(mutex);
-	// 	printf("-------------------------------------- cam:%s plane:%s\n", qPrintable(cameraId), qPrintable(planeId));
-	// Get camera and plane pointers
-	InnerModelPlane *plane = getPlane(planeId);
-	InnerModelCamera *camera = getCamera(cameraId);
-	// Transform rotate plane normal vector to camera reference system
-	QMat rtm = getRotationMatrixTo(cameraId, planeId);
-	QVec vec = QVec::vec3(plane->normal(0), plane->normal(1), plane->normal(2));
-	QVec normal = rtm*vec;
-	if (normal(1) <= 0.0000002) throw false;
-
-	// Create two points
-	QVec p1=QVec::vec3(0., 0., 0.), p2=QVec::vec3(0., 0., 0.);
-	// Move both points forward
-	p1(2) = p2(2) =  1000.;
-	if (normal(1) > 0.0000001) p1(1) = p2(1) = p1(2)*normal(2)/normal(1);
-	// Move points left/right-wards
-	if (normal(1) > 0.0000001) p1(1) -=  200.*normal(0)/normal(1);
-	p1(0) =  200.;
-	if (normal(1) > 0.0000001) p2(1) -= -200.*normal(0)/normal(1);
-	p2(0) = -200.;
-	// Project points
-	p1 = project(cameraId, p1, cameraId);
-	p2 = project(cameraId, p2, cameraId);
-	// Compute image line
-	double dx=p2(0)-p1(0);
-	double dy=p2(1)-p1(1);
-
-	if (abs(dx) <= 1)
-	{
-		if (abs(dy) <= 1)
-		{
-			QString error;
-			error.sprintf("Degenerated camera");
-			throw error;
-		}
-		return QVec::vec3(-1, 0, p1(0));
-	}
-	else
-	{
-		return QVec::vec3(dy/dx, -1, camera->camera.getHeight()-(p1(1)-(dy*p1(0)/dx))+heightOffset);
-	}
-}
-
 
 
 /// Matrix transformation retrieval methods
@@ -1248,87 +728,14 @@ QMat InnerModel::getRotationMatrixTo(const QString &to, const QString &from)
 		}
 		localHashRot[QPair<QString, QString>(to, from)] = rret;
 	}
-
 	return rret;
 }
-
-
 
 QVec InnerModel::getTranslationVectorTo(const QString &to, const QString &from)
 {
 	QMat m = this->getTransformationMatrix(to, from);
 	return m.getCol(3);
 }
-
-
-
-QMat InnerModel::getHomographyMatrix(QString virtualCamera, QString plane, QString sourceCamera)
-{
-	QMutexLocker l(mutex);
-
-	QVec planeN = getPlane(plane)->normal;
-	planeN = getRotationMatrixTo(sourceCamera, plane)*planeN;
-	QVec planePoint = transform(sourceCamera, getPlane(plane)->point, plane);
-
-	QMat R  = getRotationMatrixTo(virtualCamera, sourceCamera);
-	QMat t  = transform(virtualCamera, QVec::vec3(0,0,0), sourceCamera);
-	QMat n  = QMat(planeN);
-	QMat K1 = getCamera(sourceCamera)->camera;
-	QMat K2 = getCamera(virtualCamera)->camera;
-
-	double d = -(planePoint*planeN);
-	QMat H = K2 * ( R - ((t*n.transpose()) / d) ) * K1.invert();
-	return H;
-}
-
-
-
-QMat InnerModel::getAffineHomographyMatrix(QString virtualCamera, QString plane, QString sourceCamera)
-{
-	QMutexLocker l(mutex);
-
-	QVec planeN = getPlane(plane)->normal;
-	planeN = getRotationMatrixTo(sourceCamera, plane)*planeN;
-	QVec planePoint = transform(sourceCamera, getPlane(plane)->point, plane);
-
-	QMat R  = getRotationMatrixTo(virtualCamera, sourceCamera);
-	QMat t  = transform(virtualCamera, QVec::vec3(0,0,0), sourceCamera);
-	QMat n  = QMat(planeN);
-	QMat K1 = getCamera(sourceCamera)->camera;
-
-	double d = -(planePoint*planeN);
-	QMat H = ( R - ((t*n.transpose()) / d) ) * K1.invert();
-	for (int r=0;r<2;r++)
-		for (int c=0;c<3;c++)
-			H(r,c) = H(r,c) * 1000.;
-		return H;
-}
-
-
-
-QMat InnerModel::getPlaneProjectionMatrix(QString virtualCamera, QString plane, QString sourceCamera)
-{
-	QMutexLocker l(mutex);
-	QVec planeN = getPlane(plane)->normal;
-	planeN = getRotationMatrixTo(sourceCamera, plane)*planeN;
-	QVec planePoint = transform(sourceCamera, getPlane(plane)->point, plane);
-
-	QMat R  = getRotationMatrixTo(virtualCamera, sourceCamera);
-	QMat t  = transform(virtualCamera, QVec::vec3(0,0,0), sourceCamera);
-	QMat n  = QMat(planeN);
-	QMat K1 = getCamera(sourceCamera)->camera;
-
-	double d = -(planePoint*planeN);
-	QMat H = ( R - ((t*n.transpose()) / d) ) * K1.invert();
-	QMat HFinal(4,3);
-	HFinal.inject(H, 0, 0);
-	HFinal = HFinal*(1000*1000);
-	HFinal(3,0)=1000*H(2,0);
-	HFinal(3,1)=1000*H(2,1);
-	HFinal(3,2)=1000*H(2,2);
-	return HFinal;
-}
-
 
 
 void InnerModel::setLists(const QString & origId, const QString & destId)
@@ -1373,80 +780,6 @@ void InnerModel::setLists(const QString & origId, const QString & destId)
 	}
 }
 
-
-
-/// Robex Base specific getters
-float InnerModel::getCameraFocal(const QString & cameraId) const
-{
-	QMutexLocker l(mutex);
-	InnerModelCamera *cam = dynamic_cast<InnerModelCamera *>(getNode(cameraId));
-	if (not cam)
-	{
-		QString error;
-		       printf("InnerModel::getCameraFocal, no such camera %s\n", cameraId.toStdString().c_str());
-		error.sprintf("InnerModel::getCameraFocal, no such camera %s\n", cameraId.toStdString().c_str());
-		throw error;
-	}
-	return cam->getFocal();
-}
-
-
-
-int InnerModel::getCameraWidth(QString cameraId)
-{
-	QMutexLocker l(mutex);
-	return getCamera(cameraId)->getWidth();
-}
-
-
-
-int InnerModel::getCameraHeight(const QString & cameraId) const
-{
-	QMutexLocker l(mutex);
-	return static_cast<InnerModelCamera *>(getNode(cameraId))->getHeight();
-}
-
-
-
-int InnerModel::getCameraSize(const QString & cameraId) const
-{
-	QMutexLocker l(mutex);
-	return static_cast<InnerModelCamera *>(getNode(cameraId))->getSize();
-}
-
-
-/**
- * \brief Local laser measure of range r and angle alfa is converted to Any RS
- * @param r range measure
- * @param alfa angle measure
- * @return 3-vector of x,y,z coordinates un WRS
- */
-QVec InnerModel::laserTo(const QString &dest, const QString & laserId , float r, float alpha)
-{
-	QMutexLocker l(mutex);
-	QVec p(3);
-	p(0) = r * sin(alpha);
-	p(1) = 0;
-	p(2) = r * cos(alpha);
-	return transform(dest, p, laserId);
-}
-
-InnerModelTransform *InnerModel::newTransform(QString id, QString engine, InnerModelNode *parent, float tx, float ty, float tz, float rx, float ry, float rz, float mass)
-{
-	QMutexLocker l(mutex);
-	if (hash.contains(id))
-	{
-		QString error;
-		error.sprintf("InnerModel::newTransform: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
-		throw error;
-	}
-	InnerModelTransform *newnode = new InnerModelTransform(id, engine, tx, ty, tz, rx, ry, rz, mass, parent);
-	hash[id] = newnode;
-// 	std::cout << (void *)newnode << "  " << (uint64_t)newnode << std::endl;
-// 	parent->addChild(newnode);
-	return newnode;
-}
-
 // ----------------------------------------------------------------------------------------
 // ----------------------------------------------------------------------------------------
 // ----------------------------------------------------------------------------------------
@@ -1454,17 +787,16 @@ InnerModelTransform *InnerModel::newTransform(QString id, QString engine, InnerM
 
 bool InnerModel::collidable(const QString &a)
 {
+	QMutexLocker l(mutex);
 	InnerModelNode *node;
-	
 	try
 	{
 		node = hash[a];
 	}
 	catch(...)
 	{
-		printf("No node %s\n", a.toStdString().c_str());
+		qDebug() <<__FUNCTION__ << "No node" << a;
 	}
-
 	if (node)
 	{
 		if (node->collidable)
@@ -1474,9 +806,9 @@ bool InnerModel::collidable(const QString &a)
 	return false;
 }
 
-	
 bool InnerModel::collide(const QString &a, const QString &b)
 {
+	QMutexLocker ml(mutex);
 #if FCL_SUPPORT==1
 	InnerModelNode *n1 = getNode(a);
 	if (not n1) throw 1;
@@ -1524,7 +856,6 @@ bool InnerModel::collide(const QString &a, const QString &b)
 #endif
 }
 
-
 /**
  * @brief ...
  *
@@ -1535,6 +866,7 @@ bool InnerModel::collide(const QString &a, const QString &b)
 #if FCL_SUPPORT==1
 bool InnerModel::collide(const QString &a, const fcl::CollisionObject *obj)
 {
+	QMutexLocker ml(mutex);
 	InnerModelNode *n1 = getNode(a);
 	if (not n1) throw 1;
 	QMat r1q = getRotationMatrixTo("root", a);
@@ -1558,6 +890,7 @@ QMat InnerModel::jacobian(QStringList &listaJoints, const QVec &motores, const Q
 	// Inicializamos las filas del Jacobiano al tamaño del punto objetivo que tiene 6 ELEMENTOS [tx, ty, tz, rx, ry, rz]
 	// y las columnas al número de motores (Joints): 6 filas por n columnas. También inicializamos un vector de ceros
 		
+	QMutexLocker ml(mutex);
 	QMat jacob(6, listaJoints.size(), 0.f);  //6 output variables
 	QVec zero = QVec::zeros(3);
 	int j=0; //índice de columnas de la matriz: MOTORES
@@ -1595,10 +928,9 @@ QMat InnerModel::jacobian(QStringList &listaJoints, const QVec &motores, const Q
 	return jacob;
 }
 
-
-
 QString InnerModel::getParentIdentifier(QString id)
 {
+	QMutexLocker ml(mutex);
 	InnerModelNode *n = getNode(id);
 	if (n)
 	{
@@ -1614,3 +946,423 @@ std::string InnerModel::getParentIdentifierS(std::string id)
 {
 	return getParentIdentifier(QString::fromStdString(id)).toStdString();
 }
+
+
+// QVec InnerModel::project(QString reference, QVec origVec, QString cameraId)
+// {
+// 	origVec = transform(cameraId, origVec, reference);
+// 
+// 	QVec pc;
+// 	InnerModelCamera *camera=NULL;
+// 
+// 	camera = dynamic_cast<InnerModelCamera *>(hash[cameraId]);
+// 	if (not camera)
+// 	{
+// 		QString error;
+// 		error.sprintf("No such %s camera", qPrintable(cameraId));
+// 		throw error;
+// 	}
+// 
+// 	pc = camera->camera.project(origVec);
+// 
+// 	return QVec::vec3(pc(0), pc(1), origVec.norm2());
+// }
+
+
+// QVec InnerModel::project(const QString &cameraId, const QVec &origVec)
+// {
+// 	QVec pc;
+// 	InnerModelCamera *camera=NULL;
+// 
+// 	camera = dynamic_cast<InnerModelCamera *>(hash[cameraId]);
+// 	if (not camera)
+// 	{
+// 		QString error;
+// 		error.sprintf("No such %s camera", qPrintable(cameraId));
+// 		throw error;
+// 	}
+// 
+// 	pc = camera->camera.project(origVec);
+// 
+// 	return QVec::vec3(pc(0), pc(1), origVec.norm2());
+// }
+// 
+// 
+// 
+// /**
+//  * \brief Retro-projection function, defines a line in the camera reference system which can be parametrized by the depth s with the expression:
+//  * p = s*[ (u-u0) / alfaU ; (v-v0) / alfaV ; 1] being alfaU and alfaV the horizontal and vertical focals of the camera (in pixels)
+//  * p has value 1 in the z axis, the one going out the camera.
+//  * @param cameraId name of camara to be used as known in innermodel tree
+//  * @param coord  point in image coordinates
+//  * @return a line en camera reference system that can be parametrized by the depth s
+//  */
+// QVec InnerModel::backProject( const QString &cameraId, const QVec &	coord) //const
+// {
+// 	if(hash.contains(cameraId))
+// 	{
+// 		QVec p = static_cast<InnerModelCamera *>(hash[cameraId])->camera.getRayHomogeneous(coord);
+// 		return p;
+// 	}
+// 	return QVec();
+// }
+// 
+// 
+// 
+// void InnerModel::imageCoordToAngles(const QString &cameraId, QVec coord, float &pan, float &tilt, const QString & anglesRefS)
+// {
+// 	QVec ray = backProject(cameraId, coord);
+// 
+// 	QVec finalRay = getRotationMatrixTo(anglesRefS, cameraId)*ray;
+// 
+// 	pan = atan2(finalRay(0), finalRay(2));
+// 	tilt = atan2(finalRay(1), finalRay(2));
+// 
+// }
+// 
+// 
+// 
+// QVec InnerModel::anglesToImageCoord(const QString &cameraId, float pan, float tilt, const QString & anglesRefS)
+// {
+// 	QVec p(3), ray(3);
+// 
+// 	p(0) = tan(pan);
+// 	p(1) = tan(tilt);
+// 	p(2) = 1;
+// 
+// 	ray = getRotationMatrixTo(cameraId, anglesRefS) * p;
+// 	ray(0)=ray(0)/ray(2);
+// 	ray(1)=ray(1)/ray(2);
+// 	ray(2)=1;
+// 
+// 	return project(cameraId, ray, cameraId);
+// 
+// }
+// 
+// 
+// 
+// QVec InnerModel::imageCoordPlusDepthTo(QString cameraId, QVec coord, float depth, QString reference)
+// {
+// 	//We obtain a 3D line (a,b,1) in camera reference system that can be parametrized in depth to obtain a point at "depth" from the camera.
+// 	QVec p = backProject( cameraId, coord ) * depth;
+// 	//Now we transform it to requested node of the robot.
+// 	if(p.size()>0)
+// 		return transform(reference, p, cameraId);
+// 	return p;
+// }
+// 
+// 
+// 
+// QVec InnerModel::projectFromCameraToPlane(const QString &to, const QVec &coord, const QString &cameraId, const QVec &vPlane, const float &dist)
+// {
+// 	QMat mSystem(3,3);
+// 	QVec tIndep(3);
+// 	QVec pCam(3);
+// 	QVec res(3);
+// 	float dxz, dyz;
+// 
+// 	pCam(0) = -coord(0)+getCameraWidth(cameraId)/2;
+// 	pCam(1) = -(coord(1)-getCameraHeight(cameraId)/2);
+// 	pCam(2) = getCameraFocal(cameraId);
+// 	QVec pDest = transform(to, pCam, cameraId);
+// 	QVec pCent = transform(to, QVec::vec3(0,0,0), cameraId);
+// 	QVec direc = pDest-pCent;
+// 	dxz = direc(0)/direc(2);
+// 	dyz = direc(1)/direc(2);
+// 
+// 	res(2) = dist + vPlane(0)*(dxz*pCent(2)-pCent(0)) + vPlane(1)*(dyz*pCent(2)-pCent(1));
+// 	res(2) = res(2)/(vPlane(0)*dxz+vPlane(1)*dyz+vPlane(2));
+// 	res(0)=dxz*(res(2)-pCent(2))+pCent(0);
+// 	res(1)=dyz*(res(2)-pCent(2))+pCent(1);
+// 
+// 	/*	res.print("res");
+// 	 *
+// 	 *	mSystem(0,0) = vPlane(0);         mSystem(0,1) = vPlane(1);         mSystem(0,2) = vPlane(2);
+// 	 *	mSystem(1,0) = 0;                 mSystem(1,1) = pCent(2)-pDest(2); mSystem(1,2) = pDest(1)-pCent(1);
+// 	 *	mSystem(2,0) = pDest(2)-pCent(2); mSystem(2,1) = 0;                 mSystem(2,2) = pCent(0)-pDest(0);
+// 	 *	tIndep(0) = dist;
+// 	 *	tIndep(1) = pCent(2)*(pDest(1)-pCent(1))+pCent(1)*(pCent(2)-pDest(2));
+// 	 *	tIndep(2) = pCent(0)*(pDest(2)-pCent(2))+pCent(2)*(pCent(0)-pDest(0));
+// 	 *
+// 	 * 	return (mSystem.invert())*tIndep;*/
+// 	return res;
+// }
+// 
+// 
+// 
+// //
+// // bool InnerModel::check3DPointInsideFrustrum(QString cameraId, QVec coor)
+// // {
+// // }
+// 
+// /**
+//  * \brief Returns a 3D vector (A,B,C) containing the horizon line for the specified camera+plane in the form 'Ax + By + C = 0'.
+//  *
+//  * <p>
+//  * Returns a 3D vector (A,B,C) containing the horizon line in the form Ax + By + C = 0. For general lines, it will also work as 'y = Ax + C' (not for vertical lines, which are a very rare case).
+//  * You can check B to know if the returned vector is a regular line:
+//  * </p>
+//  * <p>
+//  * QVec horizon = innerModel->horizonLine("floor", "mycamera", );
+//  * <br>
+//  * if (horizon(1) == 0) printf("Vertical horizon.\n");
+//  * <br>
+//  * else printf("Regular horizon.\n");
+//  * </p>
+//  */
+// QVec InnerModel::horizonLine(QString planeId, QString cameraId, float heightOffset)
+// {
+// 	QMutexLocker l(mutex);
+// 	// 	printf("-------------------------------------- cam:%s plane:%s\n", qPrintable(cameraId), qPrintable(planeId));
+// 	// Get camera and plane pointers
+// 	InnerModelPlane *plane = getPlane(planeId);
+// 	InnerModelCamera *camera = getCamera(cameraId);
+// 	// Transform rotate plane normal vector to camera reference system
+// 	QMat rtm = getRotationMatrixTo(cameraId, planeId);
+// 	QVec vec = QVec::vec3(plane->normal(0), plane->normal(1), plane->normal(2));
+// 	QVec normal = rtm*vec;
+// 	if (normal(1) <= 0.0000002) throw false;
+// 
+// 	// Create two points
+// 	QVec p1=QVec::vec3(0., 0., 0.), p2=QVec::vec3(0., 0., 0.);
+// 	// Move both points forward
+// 	p1(2) = p2(2) =  1000.;
+// 	if (normal(1) > 0.0000001) p1(1) = p2(1) = p1(2)*normal(2)/normal(1);
+// 	// Move points left/right-wards
+// 	if (normal(1) > 0.0000001) p1(1) -=  200.*normal(0)/normal(1);
+// 	p1(0) =  200.;
+// 	if (normal(1) > 0.0000001) p2(1) -= -200.*normal(0)/normal(1);
+// 	p2(0) = -200.;
+// 	// Project points
+// 	p1 = project(cameraId, p1, cameraId);
+// 	p2 = project(cameraId, p2, cameraId);
+// 	// Compute image line
+// 	double dx=p2(0)-p1(0);
+// 	double dy=p2(1)-p1(1);
+// 
+// 	if (abs(dx) <= 1)
+// 	{
+// 		if (abs(dy) <= 1)
+// 		{
+// 			QString error;
+// 			error.sprintf("Degenerated camera");
+// 			throw error;
+// 		}
+// 		return QVec::vec3(-1, 0, p1(0));
+// 	}
+// 	else
+// 	{
+// 		return QVec::vec3(dy/dx, -1, camera->camera.getHeight()-(p1(1)-(dy*p1(0)/dx))+heightOffset);
+// 	}
+// }
+// 
+// 
+// 
+
+// 
+// QMat InnerModel::getHomographyMatrix(QString virtualCamera, QString plane, QString sourceCamera)
+// {
+// 	QMutexLocker l(mutex);
+// 
+// 	QVec planeN = getPlane(plane)->normal;
+// 	planeN = getRotationMatrixTo(sourceCamera, plane)*planeN;
+// 	QVec planePoint = transform(sourceCamera, getPlane(plane)->point, plane);
+// 
+// 	QMat R  = getRotationMatrixTo(virtualCamera, sourceCamera);
+// 	QMat t  = transform(virtualCamera, QVec::vec3(0,0,0), sourceCamera);
+// 	QMat n  = QMat(planeN);
+// 	QMat K1 = getCamera(sourceCamera)->camera;
+// 	QMat K2 = getCamera(virtualCamera)->camera;
+// 
+// 	double d = -(planePoint*planeN);
+// 	QMat H = K2 * ( R - ((t*n.transpose()) / d) ) * K1.invert();
+// 	return H;
+// }
+// 
+// 
+// 
+// QMat InnerModel::getAffineHomographyMatrix(QString virtualCamera, QString plane, QString sourceCamera)
+// {
+// 	QMutexLocker l(mutex);
+// 
+// 	QVec planeN = getPlane(plane)->normal;
+// 	planeN = getRotationMatrixTo(sourceCamera, plane)*planeN;
+// 	QVec planePoint = transform(sourceCamera, getPlane(plane)->point, plane);
+// 
+// 	QMat R  = getRotationMatrixTo(virtualCamera, sourceCamera);
+// 	QMat t  = transform(virtualCamera, QVec::vec3(0,0,0), sourceCamera);
+// 	QMat n  = QMat(planeN);
+// 	QMat K1 = getCamera(sourceCamera)->camera;
+// 
+// 	double d = -(planePoint*planeN);
+// 	QMat H = ( R - ((t*n.transpose()) / d) ) * K1.invert();
+// 	for (int r=0;r<2;r++)
+// 		for (int c=0;c<3;c++)
+// 			H(r,c) = H(r,c) * 1000.;
+// 		return H;
+// }
+// 
+// 
+// 
+// QMat InnerModel::getPlaneProjectionMatrix(QString virtualCamera, QString plane, QString sourceCamera)
+// {
+// 	QMutexLocker l(mutex);
+// 	QVec planeN = getPlane(plane)->normal;
+// 	planeN = getRotationMatrixTo(sourceCamera, plane)*planeN;
+// 	QVec planePoint = transform(sourceCamera, getPlane(plane)->point, plane);
+// 
+// 	QMat R  = getRotationMatrixTo(virtualCamera, sourceCamera);
+// 	QMat t  = transform(virtualCamera, QVec::vec3(0,0,0), sourceCamera);
+// 	QMat n  = QMat(planeN);
+// 	QMat K1 = getCamera(sourceCamera)->camera;
+// 
+// 	double d = -(planePoint*planeN);
+// 	QMat H = ( R - ((t*n.transpose()) / d) ) * K1.invert();
+// 	QMat HFinal(4,3);
+// 	HFinal.inject(H, 0, 0);
+// 	HFinal = HFinal*(1000*1000);
+// 	HFinal(3,0)=1000*H(2,0);
+// 	HFinal(3,1)=1000*H(2,1);
+// 	HFinal(3,2)=1000*H(2,2);
+// 	return HFinal;
+// }
+// 
+// 
+
+
+
+
+// float InnerModel::getCameraFocal(const QString & cameraId) const
+// {
+// 	QMutexLocker l(mutex);
+// 	InnerModelCamera *cam = dynamic_cast<InnerModelCamera *>(getNode(cameraId));
+// 	if (not cam)
+// 	{
+// 		QString error;
+// 		       printf("InnerModel::getCameraFocal, no such camera %s\n", cameraId.toStdString().c_str());
+// 		error.sprintf("InnerModel::getCameraFocal, no such camera %s\n", cameraId.toStdString().c_str());
+// 		throw error;
+// 	}
+// 	return cam->getFocal();
+// }
+// 
+// 
+// 
+// int InnerModel::getCameraWidth(QString cameraId)
+// {
+// 	QMutexLocker l(mutex);
+// 	return getCamera(cameraId)->getWidth();
+// }
+// 
+// 
+// 
+// int InnerModel::getCameraHeight(const QString & cameraId) const
+// {
+// 	QMutexLocker l(mutex);
+// 	return static_cast<InnerModelCamera *>(getNode(cameraId))->getHeight();
+// }
+// 
+// 
+// 
+// int InnerModel::getCameraSize(const QString & cameraId) const
+// {
+// 	QMutexLocker l(mutex);
+// 	return static_cast<InnerModelCamera *>(getNode(cameraId))->getSize();
+// }
+// 
+
+// /**
+//  * \brief Local laser measure of range r and angle alfa is converted to Any RS
+//  * @param r range measure
+//  * @param alfa angle measure
+//  * @return 3-vector of x,y,z coordinates un WRS
+//  */
+// QVec InnerModel::laserTo(const QString &dest, const QString & laserId , float r, float alpha)
+// {
+// 	QMutexLocker l(mutex);
+// 	QVec p(3);
+// 	p(0) = r * sin(alpha);
+// 	p(1) = 0;
+// 	p(2) = r * cos(alpha);
+// 	return transform(dest, p, laserId);
+// }
+
+// QVec InnerModel::compute3DPointFromImageCoords(const QString &firstCamera, const QVec &left, const QString &secondCamera, const QVec &right, const QString &refSystem)
+// {
+// 	QMutexLocker l(mutex);
+// 	QVec pI(3), pD(3), n(3), ray(3), T(3), TI(3), TD(3), pR(0), abc(3);
+// 	QMat A(3,3);
+// 
+// 	ray = backProject(firstCamera, left);
+// 	pI = getRotationMatrixTo(refSystem, firstCamera)*ray;
+// 	pI(0)=pI(0)/pI(2);
+// 	pI(1)=pI(1)/pI(2);
+// 	pI(2)=1.;
+// 
+// 	ray = backProject(secondCamera, right);
+// 	pD = getRotationMatrixTo(refSystem, secondCamera)*ray;
+// 	pD(0)=pD(0)/pD(2);
+// 	pD(1)=pD(1)/pD(2);
+// 	pD(2)=1.;
+// 
+// 	n = pI ^ pD;
+// 
+// 	A(0,0)=pI(0);  A(0,1)=-pD(0);  A(0,2)=n(0);
+// 	A(1,0)=pI(1);  A(1,1)=-pD(1);  A(1,2)=n(1);
+// 	A(2,0)=pI(2);  A(2,1)=-pD(2);  A(2,2)=n(2);
+// 
+// 	TI = getTranslationVectorTo(refSystem, firstCamera).fromHomogeneousCoordinates();
+// 	TD = getTranslationVectorTo(refSystem, secondCamera).fromHomogeneousCoordinates();
+// 	T = TD - TI ;
+// 
+// 	abc = (A.invert())*T;
+// 
+// 	pR = (pI*abc(0));
+// 	pR = pR + TI;
+// 	pR = (n*(abc(2)/2)) + pR;
+// 
+// 	return pR;
+// }
+// 
+// QVec InnerModel::compute3DPointFromImageAngles(const QString &firstCamera , const QVec & left, const QString & secondCamera , const QVec & right, const QString & refSystem)
+// {
+// 	QMutexLocker l(mutex);
+// 	QVec pI(3), pD(3), n(3), ray(3), T(3), TI(3), TD(3), pR(0), abc(3);
+// 	QMat A(3,3);
+// 
+// 	ray(0) = tan(left(0));
+// 	ray(1) = tan(left(1));
+// 	ray(2) = 1.;
+// 	pI = ray;//getRotationMatrixTo(refSystem, firstCamera)*ray;
+// 
+// 	pI(0)=pI(0)/pI(2);
+// 	pI(1)=pI(1)/pI(2);
+// 	pI(2)=1.;
+// 
+// 	ray(0) = tan(right(0));
+// 	ray(1) = tan(right(1));
+// 	ray(2) = 1.;
+// 	pD = ray;//getRotationMatrixTo(refSystem, secondCamera)*ray;
+// 
+// 	pD(0)=pD(0)/pD(2);
+// 	pD(1)=pD(1)/pD(2);
+// 	pD(2)=1.;
+// 
+// 	n = pI ^ pD;
+// 
+// 	A(0,0)=pI(0);  A(0,1)=-pD(0);  A(0,2)=n(0);
+// 	A(1,0)=pI(1);  A(1,1)=-pD(1);  A(1,2)=n(1);
+// 	A(2,0)=pI(2);  A(2,1)=-pD(2);  A(2,2)=n(2);
+// 
+// 	TI = getTranslationVectorTo(refSystem, firstCamera).fromHomogeneousCoordinates();
+// 	TD = getTranslationVectorTo(refSystem, secondCamera).fromHomogeneousCoordinates();
+// 	T = TD - TI;
+// 
+// 	abc = (A.invert())*T;
+// 
+// 	pR = (pI*abc(0));
+// 	pR = pR + TI;
+// 	pR = (n*(abc(2)/2)) + pR;
+// 
+// 	return pR;
+// }

@@ -39,7 +39,29 @@ class InnerModelCamera : public InnerModelNode
 		float getSize()   const { return getWidth()*getHeight(); }
 		
 		QVec project(QString reference, QVec origVec, QString cameraId);
-	
+		QVec project(const QString &cameraId, const QVec &origVec);
+		QVec backProject(const QString &cameraId, const QVec &coord) ;//const;
+		void imageCoordToAngles(const QString &cameraId, QVec coord, float &pan, float &tilt, const QString & anglesRefS);
+		QVec anglesToImageCoord(const QString &cameraId, float pan, float tilt, const QString & anglesRefS);
+		QVec imageCoordPlusDepthTo(QString cameraId, QVec coord, float depth, QString to);
+		QVec projectFromCameraToPlane(const QString &to, const QVec &coord, const QString &cameraId, const QVec &vPlane, const float &dist);
+		QVec horizonLine(QString planeId, QString cameraId, float heightOffset=0.);
+		QMat getHomographyMatrix(QString destCamera, QString plane, QString sourceCamera);
+		QMat getAffineHomographyMatrix(QString destCamera, QString plane, QString sourceCamera);
+		QMat getPlaneProjectionMatrix(QString virtualCamera, QString plane, QString sourceCamera);
+		/// Stereo computations
+		void updateStereoGeometry( const QString &firstCam, const QString & secondCam );
+		QVec compute3DPointInCentral(const QString &firstCamera , const QVec & left, const QString & secondCamera , const QVec & right);
+		QVec compute3DPointInRobot(const QString &firstCamera , const QVec & left, const QString & secondCamera , const QVec & right);
+		QVec compute3DPointFromImageCoords(const QString &firstCamera , const QVec & left, const QString & secondCamera , const QVec & right, const QString & refSystem);
+		QVec compute3DPointFromImageAngles(const QString &firstCamera , const QVec & left, const QString & secondCamera , const QVec & right, const QString & refSystem);
+		/// Frustrum
+		struct TPlane { QVec n; float d; };
+		struct TFrustrum { TPlane left; TPlane top; TPlane right; TPlane down; TPlane near; TPlane far;};
+		TFrustrum frustrumLeft, frustrumThird, frustrumRight;
+		
+		mutable QMutex mutex;
+		
 		InnerModel *innermodel;
 };
 

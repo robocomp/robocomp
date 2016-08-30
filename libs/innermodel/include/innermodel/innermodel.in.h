@@ -102,7 +102,7 @@ class InnerModel
 
 		////////////////////////////////
 		/// Factory constructors
-		///////////////////////////////	
+		///////////////////////////////	 
 		InnerModelTransform* newTransform(QString id, QString engine, InnerModelNode *parent, float tx=0, float ty=0, float tz=0, float rx=0, float ry=0, float rz=0, float mass=0);
 		InnerModelJoint* newJoint(QString id, InnerModelTransform* parent, float lx = 0, float ly = 0, float lz = 0, float hx = 0, float hy = 0, float hz = 0,  float tx = 0, float ty = 0, float tz = 0, float rx = 0, float ry = 0, float rz = 0, float min=-INFINITY, float max=INFINITY, uint32_t port = 0, std::string axis = "z", float home=0);
 		InnerModelTouchSensor* newTouchSensor(QString id, InnerModelTransform* parent, QString type, float nx = 0, float ny = 0, float nz = 0, float min=0, float max=INFINITY, uint32_t port=0);
@@ -117,24 +117,24 @@ class InnerModel
 		InnerModelMesh* newMesh(QString id, InnerModelNode *parent, QString path, float scale, int render, float tx, float ty, float tz, float rx, float ry, float rz, bool collidable=0);
 		InnerModelMesh* newMesh(QString id, InnerModelNode *parent, QString path, float scalex, float scaley, float scalez, int render, float tx, float ty, float tz, float rx, float ry, float rz, bool collidable=0);
 		InnerModelPointCloud* newPointCloud(QString id, InnerModelNode *parent);
-
+		
 		////////////////////////////////
-		/// Derived nodes retrival methods
+		/// Derived nodes retrival methods  DEPRECATED Use getNode<> instead
 		///////////////////////////////
-		InnerModelTransform *getTransform(const QString &id);
-		InnerModelJoint *getJoint(const QString &id);
-		InnerModelJoint *getJoint(const std::string &id) { return getJoint(QString::fromStdString(id)); }
-		InnerModelTouchSensor *getTouchSensor(const QString &id);
-		InnerModelPrismaticJoint *getPrismaticJoint(const QString &id);
-		InnerModelDifferentialRobot *getDifferentialRobot(const QString &id);
-		InnerModelOmniRobot *getOmniRobot(const QString &id);
-		InnerModelCamera *getCamera(QString id);
-		InnerModelRGBD *getRGBD(QString id);
-		InnerModelIMU *getIMU(QString id);
-		InnerModelLaser *getLaser(QString id);
-		InnerModelPlane *getPlane(const QString &id);
-		InnerModelMesh *getMesh(const QString &id);
-		InnerModelPointCloud *getPointCloud(const QString &id);
+		InnerModelTransform *getTransform(const QString &id) 									{return getNode<InnerModelTransform>(id);};
+ 		InnerModelJoint *getJoint(const QString &id)													{return getNode<InnerModelJoint>(id);};
+ 		InnerModelJoint *getJoint(const std::string &id) 											{return getNode<InnerModelJoint>(QString::fromStdString(id));}
+ 		InnerModelTouchSensor *getTouchSensor(const QString &id)							{return getNode<InnerModelTouchSensor>(id);}
+ 		InnerModelPrismaticJoint *getPrismaticJoint(const QString &id)				{return getNode<InnerModelPrismaticJoint>(id);}
+ 		InnerModelDifferentialRobot *getDifferentialRobot(const QString &id)  {return getNode<InnerModelDifferentialRobot>(id);}
+ 		InnerModelOmniRobot *getOmniRobot(const QString &id)									{return getNode<InnerModelOmniRobot>(id);}
+ 		InnerModelCamera *getCamera(QString id)																{return getNode<InnerModelCamera>(id);}	
+ 		InnerModelRGBD *getRGBD(QString id)																		{return getNode<InnerModelRGBD>(id);}
+ 		InnerModelIMU *getIMU(QString id)																			{return getNode<InnerModelIMU>(id);}
+ 		InnerModelLaser *getLaser(QString id)																	{return getNode<InnerModelLaser>(id);}
+ 		InnerModelPlane *getPlane(const QString &id)													{return getNode<InnerModelPlane>(id);}
+ 		InnerModelMesh *getMesh(const QString &id)														{return getNode<InnerModelMesh>(id);}
+ 		InnerModelPointCloud *getPointCloud(const QString &id)								{return getNode<InnerModelPointCloud>(id);}
 
 		///////////////////////////////////
 		/// Kinematic transformation methods
@@ -160,23 +160,38 @@ class InnerModel
 		/////////////////////////////////////////////
 		QList<QString> getIDKeys() {return hash.keys(); }
 		InnerModelNode *getNode(const QString & id) const { if (hash.contains(id)) return hash[id]; else return NULL;}
-		template <typename TNode> void get(TNode* node, QString id)
-		{ 
-			InnerModelNode *n = getNode(id);	
-			TNode *res;
-			if ( res = dynamic_cast<TNode*>(n)) 
-				node = res;
-			else {	std::exception e;	throw e; 		}
-		} 
-		void removeSubTree(InnerModelNode *item, QStringList *l);
-		void removeNode(const QString & id);
-		void moveSubTree(InnerModelNode *nodeSrc, InnerModelNode *nodeDst);
-		void getSubTree(InnerModelNode *node, QStringList *l);
-		void getSubTree(InnerModelNode *node, QList<InnerModelNode *> *l);
-		void computeLevels(InnerModelNode *node);
-		InnerModelNode *getRoot() { return root; }
-		QString getParentIdentifier(QString id);
-		std::string getParentIdentifierS(std::string id);
+		template <class N> N* getNode(const QString &id)
+		{
+			QMutexLocker ml(mutex);
+			N* r = dynamic_cast<N *>(getNode(id));
+			if (not r)
+			{
+				QString error;
+				if (not hash[id])
+					error.sprintf("No such joint %s", id.toStdString().c_str());
+				else
+					error.sprintf("%s doesn't seem to be a joint", id.toStdString().c_str());
+				throw error;
+			}
+			return r;
+ 		}	
+	
+	/**
+	 * @brief Removes sub tree and returns a list with his id
+	 * 
+	 * @param item ...
+	 * @param l ...
+	 * @return void
+	 */
+	void removeSubTree(InnerModelNode *item, QStringList *l);
+	void removeNode(const QString & id);
+	void moveSubTree(InnerModelNode *nodeSrc, InnerModelNode *nodeDst);
+	void getSubTree(InnerModelNode *node, QStringList *l);
+	void getSubTree(InnerModelNode *node, QList<InnerModelNode *> *l);
+	void computeLevels(InnerModelNode *node);
+	InnerModelNode *getRoot() { return root; }
+	QString getParentIdentifier(QString id);
+	std::string getParentIdentifierS(std::string id);
 
 		/////////////////////
 		/// Set debug level
@@ -208,41 +223,11 @@ class InnerModel
 		void print(QString s="") { treePrint(s, true); }
 		void treePrint(QString s="", bool verbose=false) { root->treePrint(QString(s), verbose); }
 
-	
-		///////////////////////////////////////
-		/// Camera methods
-		//////////////////////////////////////
-		QVec project(QString reference, QVec origVec, QString cameraId);
-		QVec project(const QString &cameraId, const QVec &origVec);
-		QVec backProject(const QString &cameraId, const QVec &coord) ;//const;
-		void imageCoordToAngles(const QString &cameraId, QVec coord, float &pan, float &tilt, const QString & anglesRefS);
-		QVec anglesToImageCoord(const QString &cameraId, float pan, float tilt, const QString & anglesRefS);
-		QVec imageCoordPlusDepthTo(QString cameraId, QVec coord, float depth, QString to);
-		QVec projectFromCameraToPlane(const QString &to, const QVec &coord, const QString &cameraId, const QVec &vPlane, const float &dist);
-		QVec horizonLine(QString planeId, QString cameraId, float heightOffset=0.);
-		QMat getHomographyMatrix(QString destCamera, QString plane, QString sourceCamera);
-		QMat getAffineHomographyMatrix(QString destCamera, QString plane, QString sourceCamera);
-		QMat getPlaneProjectionMatrix(QString virtualCamera, QString plane, QString sourceCamera);
-		float getCameraFocal(const QString &cameraId ) const;
-		int getCameraWidth( QString cameraId );
-		int getCameraHeight(const QString &cameraId ) const;
-		int getCameraSize(const QString &cameraId ) const;
-		/// Stereo computations
-		void updateStereoGeometry( const QString &firstCam, const QString & secondCam );
-		QVec compute3DPointInCentral(const QString &firstCamera , const QVec & left, const QString & secondCamera , const QVec & right);
-		QVec compute3DPointInRobot(const QString &firstCamera , const QVec & left, const QString & secondCamera , const QVec & right);
-		QVec compute3DPointFromImageCoords(const QString &firstCamera , const QVec & left, const QString & secondCamera , const QVec & right, const QString & refSystem);
-		QVec compute3DPointFromImageAngles(const QString &firstCamera , const QVec & left, const QString & secondCamera , const QVec & right, const QString & refSystem);
-		/// Frustrum
-		struct TPlane { QVec n; float d; };
-		struct TFrustrum { TPlane left; TPlane top; TPlane right; TPlane down; TPlane near; TPlane far;};
-		TFrustrum frustrumLeft, frustrumThird, frustrumRight;
-
 		////////////////
-		/// Laser stuff
+		/// Laser stuff DEPRECATED
 		////////////////
-		QVec laserTo(const QString &dest, const QString & laserId , float r, float alfa);
-
+		QVec laserTo(const QString &dest, const QString & laserId , float r, float alfa)
+		{ return getNode<InnerModelLaser>(laserId)->laserTo(dest,laserId, r, alfa); };
 			
 	protected:
 		QMutex *mutex;
@@ -255,3 +240,32 @@ class InnerModel
 		QList<InnerModelNode *> listA, listB;
 };
 #endif
+
+	///////////////////////////////////////
+		/// Camera methods
+		//////////////////////////////////////
+		//		QVec project(QString reference, QVec origVec, QString cameraId);
+		// 		QVec project(const QString &cameraId, const QVec &origVec);
+		// 		QVec backProject(const QString &cameraId, const QVec &coord) ;//const;
+		// 		void imageCoordToAngles(const QString &cameraId, QVec coord, float &pan, float &tilt, const QString & anglesRefS);
+		// 		QVec anglesToImageCoord(const QString &cameraId, float pan, float tilt, const QString & anglesRefS);
+		// 		QVec imageCoordPlusDepthTo(QString cameraId, QVec coord, float depth, QString to);
+		// 		QVec projectFromCameraToPlane(const QString &to, const QVec &coord, const QString &cameraId, const QVec &vPlane, const float &dist);
+		// 		QVec horizonLine(QString planeId, QString cameraId, float heightOffset=0.);
+		// 		QMat getHomographyMatrix(QString destCamera, QString plane, QString sourceCamera);
+		// 		QMat getAffineHomographyMatrix(QString destCamera, QString plane, QString sourceCamera);
+		// 		QMat getPlaneProjectionMatrix(QString virtualCamera, QString plane, QString sourceCamera);
+		// 		float getCameraFocal(const QString &cameraId ) const;
+		// 		int getCameraWidth( QString cameraId );
+		// 		int getCameraHeight(const QString &cameraId ) const;
+		// 		int getCameraSize(const QString &cameraId ) const;
+		// 		/// Stereo computations
+		// 		void updateStereoGeometry( const QString &firstCam, const QString & secondCam );
+		// 		QVec compute3DPointInCentral(const QString &firstCamera , const QVec & left, const QString & secondCamera , const QVec & right);
+		// 		QVec compute3DPointInRobot(const QString &firstCamera , const QVec & left, const QString & secondCamera , const QVec & right);
+		// 		QVec compute3DPointFromImageCoords(const QString &firstCamera , const QVec & left, const QString & secondCamera , const QVec & right, const QString & refSystem);
+		// 		QVec compute3DPointFromImageAngles(const QString &firstCamera , const QVec & left, const QString & secondCamera , const QVec & right, const QString & refSystem);
+		// 		/// Frustrum
+		// 		struct TPlane { QVec n; float d; };
+		// 		struct TFrustrum { TPlane left; TPlane top; TPlane right; TPlane down; TPlane near; TPlane far;};
+		// 		TFrustrum frustrumLeft, frustrumThird, frustrumRight;
