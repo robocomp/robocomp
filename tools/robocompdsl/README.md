@@ -6,6 +6,7 @@ RoboCompDSL's User Guide
 2. [Generating a CDSL template file](#cdsl)
 3. [Generating an IDSL file](#idsl)
     1. [Restrictions](#restrictions)
+    2. [Basic types for ICE & ROS](#btypes)
 4. [Generating an ICE file from an IDSL](#iceFile)
 5. [ICE Middleware Components](#ice)
     1. [1.- Require / Implement](#Ireq-imp)
@@ -105,6 +106,22 @@ If we want create an IDSL compatible with ROS and ICE Middlewares, we must pay a
     or arrays are allowed.
 
 Any IDSL which follow the restrictions, can be used for both ROS as ICE.
+
+<div id='btypes'/>
+### Basic types for ICE & ROS
+
+We know that ROS uses types like int8, int16, float16, etc. The following table shows a comparison of DSL types for ICE and ROS:
+
+| IDSL Types    | ICE Types     |  ROS Types    |
+| :-----------: | :-----------: | :-----------: |
+| bool          | bool          | std_msgs/Bool |
+| byte          | byte (8bits)  | std_msgs/Int8 |
+| short         | short (16bits)| std_msgs/Int16|
+| int           | int  (32bits) | std_msgs/Int32|
+| long          | long (64bits) | std_msgs/Int64|
+| float         | float (32bits)| std_msgs/Float32|
+| double        | double (64bits)| std_msgs/Float64|
+| string        | string        | std_msgs/String|
 
 <div id='iceFile'/>
 ## Generating an ICE file from an IDSL
