@@ -169,8 +169,8 @@ if 'subscribesTo' in component:
 								ampersand = ''
 							if p['type'] in ('float','int','uint'):
 								p['type'] = "std_msgs::"+p['type'].capitalize()+"32"
-							elif p['type'] == 'string':
-								p['type'] = "std_msgs::String"
+							elif p['type'] in ('string', 'bool'):
+								p['type'] = "std_msgs::"+p['type'].capitalize()
 							elif not '::' in p['type']:
 								p['type'] = module['name']+"ROS::"+p['type']
 							# STR

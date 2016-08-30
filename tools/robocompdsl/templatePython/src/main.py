@@ -300,8 +300,8 @@ for sub in component['subscribesTo']:
 						s = "\""+mname+"\""
 						if p['type'] in ('float','int','uint'):
 							cog.outl("<TABHERE><TABHERE>rospy.Subscriber("+s+", "+p['type'].capitalize()+"32, worker.ROS"+method['name']+")")
-						elif p['type'] == 'string':
-							cog.outl("<TABHERE><TABHERE>rospy.Subscriber("+s+", String, worker.ROS"+method['name']+")")
+						elif p['type'] in ('string', 'bool'):
+							cog.outl("<TABHERE><TABHERE>rospy.Subscriber("+s+", "+p['type'].capitalize()+", worker.ROS"+method['name']+")")
 						elif '::' in p['type']:
 							cog.outl("<TABHERE><TABHERE>rospy.Subscriber("+s+", "+p['type'].split('::')[1]+", worker.ROS"+method['name']+")")
 						else:

@@ -174,8 +174,8 @@ if component['usingROS'] == True:
 							s = "\""+mname+"\""
 							if p['type'] in ('float','int','uint'):
 								cog.outl("<TABHERE><TABHERE>self.pub_"+mname+" = rospy.Publisher("+s+", "+p['type'].capitalize()+"32, queue_size=1000)")
-							elif p['type'] == 'string':
-								cog.outl("<TABHERE><TABHERE>self.pub_"+mname+" = rospy.Publisher("+s+", String, queue_size=1000)")
+							elif p['type'] in ('string', 'bool'):
+								cog.outl("<TABHERE><TABHERE>self.pub_"+mname+" = rospy.Publisher("+s+", "+p['type'].capitalize()+", queue_size=1000)")
 							elif '::' in p['type']:
 								cog.outl("<TABHERE><TABHERE>self.pub_"+mname+" = rospy.Publisher("+s+", "+p['type'].split('::')[1]+", queue_size=1000)")
 							else:

@@ -185,7 +185,7 @@ if component['usingROS'] == True:
 							s = "\""+mname+"\""
 							if p['type'] in ('float','int','uint'):
 								cog.outl("<TABHERE><TABHERE>pub_"+mname+" = node->advertise<std_msgs::"+p['type'].capitalize()+"32>(node->resolveName("+s+"), 1000);")
-							elif p['type'] == ('string'):
+							elif p['type'] in ('string', 'bool'):
 								cog.outl("<TABHERE><TABHERE>pub_"+mname+" = node->advertise<std_msgs::"+p['type'].capitalize()+">(node->resolveName("+s+"), 1000);")
 							elif '::' in p['type']:
 								cog.outl("<TABHERE><TABHERE>pub_"+mname+" = node->advertise<"+p['type']+">(node->resolveName("+s+"), 1000);")
@@ -202,7 +202,7 @@ if component['usingROS'] == True:
 								cog.outl("<TABHERE>void "+mname+"(std_msgs::"+p['type'].capitalize()+"32 "+p['name']+")")
 								cog.outl("<TABHERE>{\n<TABHERE><TABHERE>pub_"+mname+".publish("+p['name']+");")
 								cog.outl("<TABHERE>}")
-							elif p['type'] == ('string'):
+							elif p['type'] in ('string', 'bool'):
 								cog.outl("<TABHERE>void "+mname+"(std_msgs::"+p['type'].capitalize()+" "+p['name']+")")
 								cog.outl("<TABHERE>{\n<TABHERE><TABHERE>pub_"+mname+".publish("+p['name']+");")
 								cog.outl("<TABHERE>}")
@@ -266,8 +266,8 @@ if component['usingROS'] == True:
 								if p['type'] in ('float','int','uint'):
 									methodDef     += "std_msgs::"+p['type'].capitalize()+"32 "+p['name']+", "
 									methodContent +="<TABHERE><TABHERE>srv.request."+p['name']+" = "+p['name']+".data;\n"
-								elif p['type'] == ('string'):
-									methodDef     += "std_msgs::String "+p['name']+", "
+								elif p['type'] in ('string', 'bool'):
+									methodDef     += "std_msgs::"+p['type'].capitalize()+" "+p['name']+", "
 									methodContent +="<TABHERE><TABHERE>srv.request."+p['name']+" = "+p['name']+".data;\n"
 								elif '::' in p['type']:
 									methodDef     += p['type'].replace("::","ROS::")+" "+p['name']+", "
@@ -281,8 +281,8 @@ if component['usingROS'] == True:
 								if p['type'] in ('float','int','uint'):
 									methodDef     += "std_msgs::"+p['type'].capitalize()+"32 &"+p['name']+") "
 									methodContent += "<TABHERE><TABHERE><TABHERE>"+p['name']+".data = srv.response."+p['name']+";\n"
-								elif p['type'] == ('string'):
-									methodDef     += "std_msgs::String &"+p['name']+") "
+								elif p['type'] in ('string', 'bool'):
+									methodDef     += "std_msgs::"+p['type'].capitalize()+" &"+p['name']+") "
 									methodContent += "<TABHERE><TABHERE><TABHERE>"+p['name']+".data = srv.response."+p['name']+";\n"
 								elif '::' in p['type']:
 									methodDef     += p['type'].replace("::","ROS::")+" "&+p['name']+") "
@@ -425,8 +425,8 @@ if 'subscribesTo' in component:
 								ampersand = ''
 							if p['type'] in ('float','int','uint'):
 								p['type'] = "std_msgs::"+p['type'].capitalize()+"32"
-							elif p['type'] == 'string':
-								p['type'] = "std_msgs::String"
+							elif p['type'] in ('string', 'bool'):
+								p['type'] = "std_msgs::"+p['type'].capitalize()
 							elif not '::' in p['type']:
 								p['type'] = module['name']+"ROS::"+p['type']
 							# STR
