@@ -328,12 +328,20 @@ class CDSLParsing:
 			if not 'AGMExecutiveTopic' in component['subscribesTo']:
 				component['subscribesTo'] = ['AGMExecutiveTopic'] + component['subscribesTo']
 		if isAGM2Agent(component):
-			agm2agent_requires = [['AGMDSRService','ice']]
-			agm2agent_subscribesTo = [['AGMExecutiveTopic','ice'], ['AGMDSRTopic','ice']]
 			if isAGM2AgentROS(component):
-				print("AGMATENTROS")
+				component['usingROS'] = True
 				agm2agent_requires = [['AGMDSRService','ros']]
 				agm2agent_subscribesTo = [['AGMExecutiveTopic','ros'], ['AGMDSRTopic','ros']]
+				if not 'AGMDSRService'     in component['rosInterfaces']: component['rosInterfaces'].append('AGMDSRService')
+				if not 'AGMDSRTopic'       in component['rosInterfaces']: component['rosInterfaces'].append('AGMDSRTopic')
+				if not 'AGMExecutiveTopic' in component['rosInterfaces']: component['rosInterfaces'].append('AGMExecutiveTopic')
+			else:
+				agm2agent_requires = [['AGMDSRService','ice']]
+				agm2agent_subscribesTo = [['AGMExecutiveTopic','ice'], ['AGMDSRTopic','ice']]
+				if not 'AGMDSRService'     in component['iceInterfaces']: component['iceInterfaces'].append('AGMDSRService')
+				if not 'AGMDSRTopic'       in component['iceInterfaces']: component['iceInterfaces'].append('AGMDSRTopic')
+				if not 'AGMExecutiveTopic' in component['iceInterfaces']: component['iceInterfaces'].append('AGMExecutiveTopic')
+
 			# AGM2 agents REQUIRES
 			for agm2agent_req in agm2agent_requires:
 				if not agm2agent_req in component['requires']:
