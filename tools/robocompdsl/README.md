@@ -115,12 +115,12 @@ We know that ROS uses types like int8, int16, float16, etc. The following table 
 | IDSL Types    | ICE Types     |  ROS Types    |
 | :-----------: | :-----------: | :-----------: |
 | bool          | bool          | std_msgs/Bool |
-| byte          | byte (8bits)  | std_msgs/Int8 |
-| short         | short (16bits)| std_msgs/Int16|
-| int           | int  (32bits) | std_msgs/Int32|
-| long          | long (64bits) | std_msgs/Int64|
-| float         | float (32bits)| std_msgs/Float32|
-| double        | double (64bits)| std_msgs/Float64|
+| byte          | byte          | std_msgs/Byte |
+| short         | short         | std_msgs/Int16|
+| int           | int           | std_msgs/Int32|
+| long          | long          | std_msgs/Int64|
+| float         | float         | std_msgs/Float32|
+| double        | double        | std_msgs/Float64|
 | string        | string        | std_msgs/String|
 
 <div id='iceFile'/>
