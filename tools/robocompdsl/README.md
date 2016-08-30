@@ -13,7 +13,7 @@ RoboCompDSL's User Guide
 6. [ROS Middleware Components](#ros)
     1. [1.- Require / Implement](#Rreq-imp)
     2. [2.- Publish / Subscribe](#Rpub-sub)
-6. [Future improvements](#future)
+7. [ICE/ROS Middleware Interfaces](#ice/ros)
 
 <div id='introduction'/>
 ## Introduction
@@ -300,7 +300,7 @@ An example of *SpecificWorker::compute()* for your Require Component:
 
     void SpecificWorker::compute()
     {
-    	RoboCompPlane::Dimensions dims;
+    	RoboCompPlaneROS::Dimensions dims;
     	std_msgs::Int32 width;
     	std_msgs::String name, lastName;
     	width.data = 300;
@@ -319,17 +319,16 @@ An example of *SpecificWorker::compute()* for your Require Component:
     }
     
 Notice that ROS uses its own data types and how they are used. It is simple, right?
-Hint: *Remember use .data in your variables*.
 
 Rewrite all methods in your Implement Component. An example:
 
-    bool SpecificWorker::setWidth(RoboCompPlane::setWidth::Request &req, RoboCompPlane::setWidth::Response &res)
+    bool SpecificWorker::setWidthROS(RoboCompPlaneROS::setWidth::Request &req, RoboCompPlaneROS::setWidth::Response &res)
     {
     	printf("Changing width value %d\n", req.width);
     	res.dims.width = req.width; //return value (not necessary)
     	return true;
     }
-    bool SpecificWorker::setName(RoboCompPlane::setName::Request &req, RoboCompPlane::setName::Response &res)
+    bool SpecificWorker::setNameROS(RoboCompPlaneROS::setName::Request &req, RoboCompPlaneROS::setName::Response &res)
     {
     	printf("Changing name value %s\n", req.name.c_str());
     	res.lastName = req.name; //return value (not necessary)
@@ -374,7 +373,7 @@ An example of *SpecificWorker::compute()* for your Publisher Component:
 
     void SpecificWorker::compute()
     {
-    	RoboCompPlane::Dimensions dims;
+    	RoboCompPlaneROS::Dimensions dims;
     	dims.width = 200;
     	dims.height = 300;
     	std_msgs::String name;
@@ -396,26 +395,39 @@ An example of *SpecificWorker::compute()* for your Publisher Component:
 Same code that your Require Component.
 Example with methods *specificworker.cpp* of Subscriber Component:
 
-    void SpecificWorker::newDimensions(RoboCompPlane::Dimensions dims)
+    void SpecificWorker::newDimensionsROS(RoboCompPlaneROS::Dimensions dims)
     {
     	printf("new Dimension. Width: %d - Height: %d\n",dims.width, dims.height);
     }
-    void SpecificWorker::newPlaneName(std_msgs::String planeName)
+    void SpecificWorker::newPlaneNameROS(std_msgs::String planeName)
     {
     	printf("new Name. Name: %s\n", planeName.data.c_str());
     }
 
 With Subscriber we has no problems with parameters. The use of data types of your parameters is the same as we do in the compute(). So we have minor differences between ICE and ROS Middleware. If you pay attention to the differences shown in this guide, you will not have problems.
 
+
 Send us any questions or problems you may have.
 
 Check out this tutorial [RoboComp Component & Ros Node chatter](https://github.com/robocomp/robocomp/blob/highlyunstable/doc/RobocompRosChatter.md).
 
-<div id='future'/>
-## Future improvements
+<div id='ice/ros'/>
+## ICE/ROS Middleware Interfaces
 
-  1.- Generate .ice files.
-  
-  2.- generate components which can use ICE/ROS Middleware with same interface.
-  
-  3.- We will be happy to consider all your suggestions.
+If we want to use an interface through Ros and Ice Middlewares (for example: *requires Plane(ice), Plane(ros);* ), we need to pay attention to a couple of changes.
+
+Our proxys will be called (only if we have an interface through ROS and ICE Middleware):
+interface_proxy      (ICE like we used to)
+interface_**ros**proxy   (ROS)
+
+Because of this improvement, the ROS data types and methods **always** be called ended with ROS:
+
+RoboCompPlane**ROS**::Dimensions dims;
+void SpecificWorker::newDimensions**ROS**(RoboCompPlane**ROS**::Dimensions dims)
+    
+The call to this methods with our proxys are like this:
+
+    interface_proxy->newDimensions(dims)            (ICE)
+    interface_rosproxy->->newDimensions(dims)   (ROS)
+    
+**ROS word doesn't appear in the call.**
