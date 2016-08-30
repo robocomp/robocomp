@@ -20,7 +20,6 @@ if component == None:
 
 from parseIDSL import *
 pool = IDSLPool(theIDSLs)
-includeList = pool.rosImports()
 
 
 ]]]
@@ -96,40 +95,15 @@ if component['gui'] != 'none':
 [[[end]]]
 
 #include <CommonBehavior.h>
+[[[cog
+
+for m in pool.modulePool:
+	cog.outl("#include <"+m+".h>")
+
+]]]
+[[[end]]]
 
 [[[cog
-for imp in component['recursiveImports']:
-	incl = imp.split('/')[-1].split('.')[0]
-	cog.outl('#include <'+incl+'.h>')
-if component['usingROS'] == True:
-	cog.outl('#include <ros/ros.h>')
-	for include in includeList:
-		cog.outl('#include <'+include+'.h>')
-	srvIncludes = {}
-	for imp in component['requires']:
-		if type(imp) == str:
-			im = imp
-		else:
-			im = imp[0]
-		if not communicationIsIce(imp):
-			module = pool.moduleProviding(im)
-			for interface in module['interfaces']:
-				if interface['name'] == im:
-					for mname in interface['methods']:
-						srvIncludes[mname] = '#include <'+module['name']+'/'+mname+'.h>'
-	for imp in component['implements']:
-		if type(imp) == str:
-			im = imp
-		else:
-			im = imp[0]
-		if not communicationIsIce(imp):
-			module = pool.moduleProviding(im)
-			for interface in module['interfaces']:
-				if interface['name'] == im:
-					for mname in interface['methods']:
-						srvIncludes[mname] = '#include <'+module['name']+'/'+mname+'.h>'
-	for srv in srvIncludes.values():
-		cog.outl(srv)
 
 try:
 	if 'agmagent' in [ x.lower() for x in component['options'] ]:
@@ -138,8 +112,10 @@ try:
 
 except:
 	pass
+
 ]]]
 [[[end]]]
+
 
 #define CHECK_PERIOD 5000
 #define BASIC_PERIOD 100
@@ -424,129 +400,65 @@ if 'implements' in component:
 				for mname in interface['methods']:
 					method = interface['methods'][mname]
 					paramStrA = ''
-					if communicationIsIce(impa):
-						for p in method['params']:
-							# delim
-							if paramStrA == '': delim = ''
-							else: delim = ', '
-							# decorator
-							ampersand = '&'
-							if p['decorator'] == 'out':
-								const = ''
-							else:
-								const = 'const '
-								if p['type'].lower() in ['int', '::ice::int', 'float', '::ice::float']:
-									ampersand = ''
-							# STR
-							paramStrA += delim + const + p['type'] + ' ' + ampersand + p['name']
-						cog.outl("<TABHERE>virtual " + method['return'] + ' ' + method['name'] + '(' + paramStrA + ") = 0;")
-					else:
-						paramStrA = module['name'] +"::"+method['name']+"::Request &req, "+module['name']+"::"+method['name']+"::Response &res"
-						cog.outl("<TABHERE>virtual bool " + method['name'] + '(' + paramStrA + ") = 0;")
-if 'subscribesTo' in component:
-	for impa in component['subscribesTo']:
-		if type(impa) == str:
-			imp = impa
-		else:
-			imp = impa[0]
-		module = pool.moduleProviding(imp)
-		if module == None:
-			print ('\nCan\'t find module providing', imp, '\n')
-			sys.exit(-1)
-		for interface in module['interfaces']:
-			if interface['name'] == imp:
-				for mname in interface['methods']:
-					method = interface['methods'][mname]
-					paramStrA = ''
-					if communicationIsIce(impa):
-						for p in method['params']:
-							# delim
-							if paramStrA == '': delim = ''
-							else: delim = ', '
-							# decorator
-							ampersand = '&'
-							if p['decorator'] == 'out':
-								const = ''
-							else:
-								const = 'const '
-								if p['type'].lower() in ['int', '::ice::int', 'float', '::ice::float']:
-									ampersand = ''
-							# STR
-							paramStrA += delim + const + p['type'] + ' ' + ampersand + p['name']
-						cog.outl("<TABHERE>virtual " + method['return'] + ' ' + method['name'] + '(' + paramStrA + ") = 0;")
-					else:
-						for p in method['params']:
-							# delim
-							if paramStrA == '': delim = ''
-							else: delim = ', '
-							# decorator
-							ampersand = '&'
-							if p['decorator'] == 'out':
-								const = ''
-							else:
-								const = 'const '
+					for p in method['params']:
+						# delim
+						if paramStrA == '': delim = ''
+						else: delim = ', '
+						# decorator
+						ampersand = '&'
+						if p['decorator'] == 'out':
+							const = ''
+						else:
+							const = 'const '
+							if p['type'].lower() in ['int', '::ice::int', 'float', '::ice::float']:
 								ampersand = ''
-							if p['type'] in ('float','int','uint'):
-								p['type'] = "std_msgs::"+p['type'].capitalize()+"32"
-							elif p['type'] == 'string':
-								p['type'] = "std_msgs::String"
-							elif not '::' in p['type']:
-								p['type'] = module['name']+"::"+p['type']
-							# STR
-							paramStrA += delim + p['type'] + ' ' + p['name']
-						cog.outl("<TABHERE>virtual void " + method['name'] + '(' + paramStrA + ") = 0;")
+						# STR
+						paramStrA += delim + const + p['type'] + ' ' + ampersand + p['name']
+					cog.outl("<TABHERE>virtual " + method['return'] + ' ' + method['name'] + '(' + paramStrA + ") = 0;")
 
+if 'subscribesTo' in component:
+	for imp in component['subscribesTo']:
+		nname = imp
+		while type(nname) != type(''):
+			nname = nname[0]
+		module = pool.moduleProviding(nname)
+		if module == None:
+			print ('\nCan\'t find module providing', nname, '\n')
+			sys.exit(-1)
+		if communicationIsIce(nname):
+			for interface in module['interfaces']:
+				if interface['name'] == nname:
+					for mname in interface['methods']:
+						method = interface['methods'][mname]
+						paramStrA = ''
+						for p in method['params']:
+							# delim
+							if paramStrA == '': delim = ''
+							else: delim = ', '
+							# decorator
+							ampersand = '&'
+							if p['decorator'] == 'out':
+								const = ''
+							else:
+								const = 'const '
+								if p['type'].lower() in ['int', '::ice::int', 'float', '::ice::float']:
+									ampersand = ''
+							# STR
+							paramStrA += delim + const + p['type'] + ' ' + ampersand + p['name']
+						cog.outl("<TABHERE>virtual " + method['return'] + ' ' + method['name'] + '(' + paramStrA + ") = 0;")
+		else:
+			cog.outl("<TABHERE>virtual ROS" + method['return'] + ' ' + method['name'] + "() = 0;")
+	
+
+				
 ]]]
 [[[end]]]
+
 
 protected:
 	QTimer timer;
 	int Period;
 [[[cog
-if component['usingROS'] == True:
-	cog.outl("<TABHERE>ros::NodeHandle node;")
-for imp in component['subscribesTo']:
-	nname = imp
-	while type(nname) != type(''):
-		nname = nname[0]
-	module = pool.moduleProviding(nname)
-	if module == None:
-		print ('\nCan\'t find module providing', nname, '\n')
-		sys.exit(-1)
-	if not communicationIsIce(imp):
-		for interface in module['interfaces']:
-			if interface['name'] == nname:
-				for mname in interface['methods']:
-					method = interface['methods'][mname]
-					cog.outl("<TABHERE>ros::Subscriber "+nname+"_"+mname+";")
-for imp in component['implements']:
-	nname = imp
-	while type(nname) != type(''):
-		nname = nname[0]
-	module = pool.moduleProviding(nname)
-	if module == None:
-		print ('\nCan\'t find module providing', nname, '\n')
-		sys.exit(-1)
-	if not communicationIsIce(imp):
-		for interface in module['interfaces']:
-			if interface['name'] == nname:
-				for mname in interface['methods']:
-					method = interface['methods'][mname]
-					cog.outl("<TABHERE>ros::ServiceServer "+nname+"_"+mname+";")
-if 'publishes' in component:
-	for publish in component['publishes']:
-		pubs = publish
-		while type(pubs) != type(''):
-			pubs = pubs[0]
-		if not communicationIsIce(publish):
-			cog.outl("<TABHERE>Publisher"+pubs+" *"+pubs.lower()+"_proxy;")
-if 'requires' in component:
-	for require in component['requires']:
-		req = require
-		while type(req) != type(''):
-			req = req[0]
-		if not communicationIsIce(require):
-			cog.outl("<TABHERE>ServiceClient"+req+" *"+req.lower()+"_proxy;")
 try:
 	if 'agmagent' in [ x.lower() for x in component['options'] ]:
 		cog.outl("<TABHERE>bool active;")
@@ -561,9 +473,6 @@ except:
 
 ]]]
 [[[end]]]
-
-private:
-
 
 public slots:
 	virtual void compute() = 0;

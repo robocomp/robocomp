@@ -44,6 +44,7 @@ class SpecificWorker(GenericWorker):
 		interfaceName - name of the interface failed
 		updateAll - update all proxies hosted by this failed component
 		'''
+		interfaceName = interfaceName.lower()
 		if interfaceName not in self.proxyData:
 			raise Exception("interface :"+interfaceName+"dosent exist")
 		self.timer.stop()
@@ -64,6 +65,7 @@ class SpecificWorker(GenericWorker):
 						basePrx = ic.stringToProxy(iface.name+":"+iface.protocol+" -h "+host+" -p "+str(iface.port))                        
 						try:
 							self.proxyData[nameMap[iface.name]]["proxy"] = self.proxyData[nameMap[iface.name]]["caster"](basePrx)
+							exec('self.'+interfaceName+'_proxy = self.proxyData[nameMap[iface.name]]["proxy"]') in locals()
 						except KeyError:
 							# we dont use this interface
 							continue
@@ -94,17 +96,11 @@ class SpecificWorker(GenericWorker):
 
 	@QtCore.Slot()
 	def compute(self):
-		print 'SpecificWorker.compute...'
-		#computeCODE
-		# try:
-		# 	self.proxyData["differentialrobot"]["proxy"].setSpeedBase(100, 0)
-		# except Ice.SocketException:
-		# 	self.waitForComp("differentialrobot",True)
-		# except Ice.Exception, e:
-		# 	traceback.print_exc()
-		# 	print e			
-		return True
-
+		try:
+			self.test_proxy.printmsg("hello from " + self.name)
+		except Ice.SocketException:
+			print "exception test"
+			self.waitForComp("test",True)
 
 	#
 	# printmsg

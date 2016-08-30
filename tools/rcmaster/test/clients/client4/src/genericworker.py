@@ -57,7 +57,7 @@ class GenericWorker(QtCore.QObject):
 
 		self.name = mprx["name"]
 		self.proxyData = mprx["proxyData"]
-
+		self.test_proxy = self.proxyData["test"]["proxy"]
 		
 		
 		self.mutex = QtCore.QMutex(QtCore.QMutex.Recursive)

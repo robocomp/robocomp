@@ -39,23 +39,25 @@ if text:
 	cog.out('\n\n')
 
 text = False
-for sub in component['subscribesTo']:
-	if type(sub) == str:
-		sb = sub
-	else:
-		sb = sub[0]
+for sb in component['subscribesTo']:
 	if text == False:
 		cog.outl('# Endpoints for subscriptions')
 		text = True
-	cog.outl(sb+"Topic.Endpoints=tcp -p 0")
+	storm = True
+
+	xx = sb
+	while type(xx) != type(''):
+		xx = xx[0]
+	if communicationIsIce(sb):
+		cog.outl(str(xx)+"Topic.Endpoints=tcp -p 0")
+	else:
+		cog.outl(str(xx)+"Topic.Endpoints=whatever " + str(xx) + " for ROS")
+
 if text:
 	cog.out('\n\n')
 
 ]]]
 [[[end]]]
-
-# This property is used by the clients to connect to IceStorm.
-TopicManager.Proxy=IceStorm/TopicManager:default -p 9999
 
 
 Ice.Warn.Connections=0

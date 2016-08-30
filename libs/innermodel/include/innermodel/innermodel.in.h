@@ -23,7 +23,6 @@
 #if FCL_SUPPORT==1
 #include <boost/shared_ptr.hpp>
 #include <fcl/collision.h>
-#include <fcl/distance.h>
 #include <fcl/narrowphase/narrowphase.h>
 #include <fcl/ccd/motion.h>
 #include <fcl/BV/BV.h>
@@ -136,6 +135,7 @@ public:
 	friend class InnerModelReader;
 	bool open(std::string xmlFilePath);
 	bool save(QString path);	
+	InnerModel* copy();
 
 	/// Auto update method
 	void update();
@@ -274,7 +274,6 @@ public:
 	// FCL related
 	bool collidable(const QString &a);
 	bool collide(const QString &a, const QString &b);
-	float distance(const QString &a, const QString &b);
 #if FCL_SUPPORT==1
 	bool collide(const QString &a, const fcl::CollisionObject *obj);
 #endif

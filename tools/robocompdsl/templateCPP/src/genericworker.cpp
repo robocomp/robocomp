@@ -104,16 +104,17 @@ for namea, num in getNameNumber(component['requires']):
 		name = namea
 	else:
 		name = namea[0]
-	if communicationIsIce(namea):
-		cog.outl("<TABHERE>"+name.lower()+num+"_proxy = (*("+name+"Prx*)mprx[\""+name+"Proxy"+num+"\"]);")
+	cog.outl("<TABHERE>"+name.lower()+num+"_proxy = (*("+name+"Prx*)mprx[\""+name+"Proxy"+num+"\"]);")	
+]]]
+[[[end]]]
 
+[[[cog
 for namea, num in getNameNumber(component['publishes']):
 	if type(namea) == str:
 		name = namea
 	else:
 		name = namea[0]
-	if communicationIsIce(namea):
-		cog.outl("<TABHERE>"+name.lower()+num+"_proxy = (*("+name+"Prx*)mprx[\""+name+"Pub"+num+"\"]);")
+	cog.outl("<TABHERE>"+name.lower()+num+"_proxy = (*("+name+"Prx*)mprx[\""+name+"Pub"+num+"\"]);")
 ]]]
 [[[end]]]
 

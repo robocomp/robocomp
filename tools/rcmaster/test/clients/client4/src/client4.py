@@ -133,7 +133,8 @@ if __name__ == '__main__':
 
 
 	# Remote object connection for test
-	proxyData["test"] = {"comp":"client3","caster":testPrx.checkedCast,"name":"test"}
+	component = str(ic.getProperties().getProperty("Interfaces.test.component"))
+	proxyData["test"] = {"comp":component,"caster":testPrx.checkedCast,"name":"test"}
 	try:
 		while True:
 			try:

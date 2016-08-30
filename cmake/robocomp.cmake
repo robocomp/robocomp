@@ -1,3 +1,15 @@
+# Qt4
+ADD_DEFINITIONS( -Wall  -DQT_XML_LIB -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB )
+FIND_PACKAGE( Qt4 )
+SET( QT_USE_QTGUI TRUE )
+SET( QT_USE_QTOPENGL TRUE )
+SET( QT_USE_QTXML TRUE )
+SET( QT_USE_QTSTATE TRUE )
+SET( QT_USE_QTSTATEMACHINE TRUE )
+INCLUDE( ${QT_USE_FILE} )
+
+
+
 MACRO( ROBOCOMP_INITIALIZE )
   set(RoboComp_VERSION 1.0 CACHE STRING "RoboComp version")
   #set install dirs
@@ -27,7 +39,7 @@ MACRO( ROBOCOMP_INITIALIZE )
 
 #   INCLUDE ( $ENV{ROBOCOMP}/cmake/modules/ipp.cmake )
 
-  SET( LIBS ${LIBS} -L/opt/robocomp/lib ${OSG_LIBRARY} -losg -losgUtil -losgGA ${OSGDB_LIBRARY} ${OSGVIEWER_LIBRARY} ${OPENTHREADS_LIBRARY}  -L${ICEROOT}/lib/ -L${ROBOCOMP_ROOT}/classes -lIce -lIceUtil -lpthread -lIceStorm -lboost_system  robocomp_qmat ${IPP_LIBS} robocomp_innermodel robocomp_osgviewer)
+  SET( LIBS ${LIBS} -L/opt/robocomp/lib ${OSG_LIBRARY} -losg -losgUtil -losgGA ${OSGDB_LIBRARY} ${OSGVIEWER_LIBRARY} ${OPENTHREADS_LIBRARY}  -L${ICEROOT}/lib/ -L${ROBOCOMP_ROOT}/classes -lIce -lIceUtil -lpthread -lIceStorm -lboost_system ${QT_LIBRARIES} robocomp_qmat ${IPP_LIBS} robocomp_innermodel robocomp_osgviewer)
  
 ENDMACRO( ROBOCOMP_INITIALIZE )
 

@@ -1064,9 +1064,8 @@ class ShowItemDetails(QtGui.QWidget):##This contains the GUI and internal proces
 	#	self.CompoPopUpMenu.popup(GloPos)
 		
 
+filePath = 'rcmanager.xml'
 
-#	
-# Component information container class.This is the class which represents a component..the graphics object,directory object,monitoring thread everything is contained in the class
 #
 
 class CompInfo(QtCore.QObject):##This contain the general Information about the Components which is read from the files and created
@@ -1088,16 +1087,9 @@ class CompInfo(QtCore.QObject):##This contain the general Information about the 
 		self.alias =name
 		self.dependences = []
 		self.configFile = ''
-		self.x = 0##This is not reliable >>Have to fix the bug
-		self.y = 0##This is not reliable >>Have to fix the bug
-		self.Ip=""
-		self.IconFilePath=getDefaultIconPath()
-		self.status=False
-		self.nodeColor=[0,0,0]
-		self.tempx=0 #This will be used sometime for temporary changes
-		self.tempy=0 #This will be used sometime for temporary changes
-
-		self.CommonProxy=commonBehaviorComponent(self)
+		self.x = 0
+		self.y = 0
+		self.r = 10
 		
 		self.CheckItem=ComponentChecker(self)##Checking the status of component
 		self.graphicsItem=VisualNode(parent=self)
@@ -1439,92 +1431,121 @@ class NetworkValues():##This will contain Values about the network
 		self.roza=.8
 		self.Groups=[]
 
+	for comp in components:
+		print comp
+		writeToFile(file, ' <node alias="' + comp.alias + '" endpoint="' + comp.endpoint + '">')
+		for dep in comp.dependences:
+			writeToFile(file, '  <dependence alias="' + dep + '" />')
+		writeToFile(file, '  <workingDir path="' + comp.workingdir + '" />')
+		writeToFile(file, '  <upCommand command="' + comp.compup + '" />')
+		writeToFile(file, '  <downCommand command="' + comp.compdown + '" />')
+		writeToFile(file, '  <configFile path="' + comp.configFile + '" />')
+		writeToFile(file, '  <xpos value="' + str(comp.x) + '" />')
+		writeToFile(file, '  <ypos value="' + str(comp.y) + '" />')
+		writeToFile(file, '  <radius value="' + str(comp.r)     + '" />')
+		writeToFile(file, '  <color value="'  + str(comp.htmlcolor) + '" />')
+		writeToFile(file, ' </node>\n')
+
+	writeToFile(file, '</rcmanager>')
 
 ##
-#Below are the functions regarding reading from file writing to file and stuffs like that.
+#This contain the class which contain general information.Data is written into xml file under the element name generalinformation
 ##
+def getDefaultValues():
+	dict = {}
+	dict['path'] =                   'kedit'
+	dict['dock'] =                   'false'
+	dict['fixed'] =                  1000               # Period of time in milliseconds between checks.
+	dict['blink'] =                  300                # UI stuff. It the blinkin period (quite useless constant).
+	dict['switch'] =                 2                  # Number of successive clicks to change a component state
+	dict['interval'] =               400                # Maximum period of time in order to consider two clicks successive.
+	dict['alpha'] =                  80
+	dict['idletime'] =               1000               # 1000
+	dict['focustime'] =              500                # 50
+	dict['fasttime'] =               10                 # 10
+	dict['fastperiod'] =             2000               # 2000
+	dict['scale'] =                  200.               # 20.
+	# Spring-ForceField model
+	dict['hookes'] =                 0.07               # 0.02
+	dict['springlength'] =           0.5               # 1.
+	dict['friction'] =               0.4               # 0.2
+	dict['step'] =                   0.5                # 1.
+	dict['fieldforce'] =             20000.              # 0.4
+	dict['active'] =                 'false'
+	return dict
 
-def getStringFromFile(path):##This is the first function to be called for reading configurations for a xml file
+def getConfigFromFile(path):
+	components = []
+	dict = getDefaultValues()
+
+	# Abrimos el fichero de entrada
 	try:
 		file = open(path, 'r')
 	except:
 		print 'Can\'t open ' + path + '.'
+		return [], getDefaultValues()
 
 	data = file.read()
-	return data
-def getDataFromString(data,logger):#Data is a string in xml format containing information	
-	components = []	
-	try:
-		xmldoc = libxml2.parseDoc(data)
-		root = xmldoc.children
-	except Exception,e:
-		logger.logData(str(e),"R")
-	
-	if root is not None:
-		components, NetworkSettings = parsercmanager(root,logger)
-	xmldoc.freeDoc()
-	return components, NetworkSettings
+	xmldoc = libxml2.parseDoc(data)
 
-def parsercmanager(node,logger): #Call seperate functions for general settings and nodes
+
+	root = xmldoc.children
+	if root is not None:
+		components, newDict = parsercmanager(root)
+
+	for k, v in newDict.iteritems():
+		dict[k] = v
+
+	xmldoc.freeDoc()
+
+	return components, dict
+
+def parsercmanager(node): ##Its not the same node in graph tree.This node indicate a class containing all types and attributes from the .xml file.
 	components = []
-	generalSettings=NetworkValues()
-	#print "Inside parsercmanager"
+	dict = {}
+
 	if node.type == "element" and node.name == "rcmanager":
 		child = node.children
 		while child is not None:
 			if child.type == "element":
 				if child.name == "generalInformation":
-					parseGeneralInformation(child, generalSettings,logger)
+					parseGeneralInformation(child, dict)
 				elif child.name == "node":
-					#print "parseing node"
-					parseNode(child,components,generalSettings, logger)
+					parseNode(child, components)
 				elif stringIsUseful(str(node.properties)):
 					print 'ERROR when parsing rcmanager: '+str(child.name)+': '+str(child.properties)
 			child = child.next
-	return components, generalSettings
 
-def parseGeneralInformation(node, generalSettings,logger): ##Takes care of reading the general information about the network tree
-	
-	#print "Entered the parseGeneralInformation"
+	return components, dict
+
+def parseGeneralInformation(node, dict): ##This node indicates class containing the element tree of the container class with node name generalInformation
 	if node.type == "element" and node.name == "generalInformation":
-		child =node.children
+		child = node.children
 		while child is not None:
-			if child.type=="element":
-				if child.name=="group":
-			#		print "Started reading a group"
-					try:
-						group=ComponentGroup()
-						group.setName(parseSingleValue(child,"name"))
-						group.setIconFilePath(parseSingleValue(child,"iconfile"))
-						group.readFromIconFile()
-						generalSettings.Groups.append(group)
-					except Exception,e:
-						logger.logData("Couldn Read group "+str(e),"R")
-					else:
-						logger.logData("Read the group ::"+ group.groupName +" Information")
-				elif child.name=="simulation":
-					generalSettings.spring_length=float(parseSingleValue(child,"springlength"))
-					generalSettings.field_force_multiplier=float(parseSingleValue(child,"fieldforce"))
-					generalSettings.hookes_constant=float(parseSingleValue(child,"hookes"))
-					generalSettings.roza=1- float(parseSingleValue(child,"friction"))
-				
-			child=child.next
+			if child.type == "element":
+				if child.name == "editor":
+					parseEditor(child, dict)
+				elif child.name == "timeouts":
+					parseTimeouts(child, dict)
+				elif child.name == "clicks":
+					parseClicks(child, dict)
+				elif child.name == "graph":
+					parseGraph(child, dict)
+				elif child.name == "graphTiming":
+					parseGraphTiming(child, dict)
+				elif child.name == "simulation":
+					parseSimulation(child, dict)
+				elif stringIsUseful(str(child.properties)):
+					print 'ERROR when parsing generalInformation: '+str(child.name)+': '+str(child.properties)
+			child = child.next
+	elif node.type == "text":
+		if stringIsUseful(str(node.properties)):
+			print ''+str(node.properties)
+	else:
+		print "error: " + str(node.name)
 
-		logger.logData("General Information Successfully read")
 
-def checkForMoreProperties(node):
-	if node.properties != None: print 'WARNING: Attributes unexpected: ' + str(node.properties)
-
-def searchForGroupName(settings,name):
-	flag=0
-	for x in  settings.Groups:
-		if x.groupName==name:
-			flag=1
-			return x
-	if flag==0:
-		raise Exception("Couldn't find a group with name"+name)
-
-def parseNode(node, components,generalSettings,logger):#To get the properties of a component
+def parseNode(node, components):
 	if node.type == "element" and node.name == "node":
 		child = node.children
 		comp = CompInfo()
@@ -1535,64 +1556,55 @@ def parseNode(node, components,generalSettings,logger):#To get the properties of
 		comp.endpoint = parseSingleValue(node, 'endpoint', False)
 		while child is not None:
 			if child.type == "element":
-				if child.name=="group":
-					comp.groupName=parseSingleValue(child,"name")
-					try:
-						group=searchForGroupName(generalSettings,comp.groupName)
-						group.addComponent(comp)
-					except Exception,e:
-						logger.logData("Couldnt add Component to the group::"+comp.groupName+" "+str(e),"R")	
-				
-				elif child.name == "workingDir":
-					comp.workingdir = parseSingleValue(child, 'path')
+				if child.name == "workingDir":
+					parseWorkingDir(child, component)
+					mandatory = mandatory + 1
 				elif child.name == "upCommand":
-					comp.compup = parseSingleValue(child, 'command')
+					parseUpCommand(child, component)
+					mandatory = mandatory + 2
 				elif child.name == "downCommand":
-					comp.compdown = parseSingleValue(child, 'command')
+					parseDownCommand(child, component)
+					mandatory = mandatory + 4
 				elif child.name == "configFile":
-					comp.configFile = parseSingleValue(child, 'path')
-				elif child.name=="radius":##To be backward compatible with older tool
-					pass
+					parseConfigFile(child, component)
+					mandatory = mandatory + 8
 				elif child.name == "xpos":
-					x=parseSingleValue(child, 'value')
-					try :
-						comp.x=float(x)
-					except :
-						logger.logData("Error in Reading Position Value of "+comp.alias,"R")
+					parseXPos(child, component)
+					block_optional = block_optional + 1
 				elif child.name == "ypos":
-					y = float(parseSingleValue(child, 'value'))					
-					try :
-						comp.y=float(y)
-					except :
-						logger.logData("Error in Reading Position Value of "+comp.alias,"R")
-				elif child.name=="color":
-					comp.nodeColor=getColorFromString(parseSingleValue(child,"value"))
+					parseYPos(child, component)
+					block_optional = block_optional + 2
+				elif child.name == "radius":
+					parseRadius(child, component)
+					block_optional = block_optional + 4
 				elif child.name == "dependence":
-					comp.dependences.append(parseSingleValue(child, 'alias'))
-				elif child.name == "ip":
-					comp.Ip=parseSingleValue(child, "value")
+					parseDependence(child, component)
+				elif child.name == "color":
+					parseColor(child, component)
 				elif stringIsUseful(str(child.properties)):
 					print 'ERROR when parsing rcmanager: '+str(child.name)+': '+str(child.properties)
 			child = child.next
-		
-		checkForCompChildren(comp,node)##This function si there to verify All neccessary details are added 
-		components.append(comp)
-
+		if mandatory<15:
+			if   mandatory^15 == 1: print 'ERROR Not all mandatory labels were specified (workingDir)'
+			elif mandatory^15 == 2: print 'ERROR Not all mandatory labels were specified (upCommand)'
+			elif mandatory^15 == 4: print 'ERROR Not all mandatory labels were specified (downCommand)'
+			elif mandatory^15 == 8: print 'ERROR Not all mandatory labels were specified (configFile)'
+			raise str(mandatory)
+		if block_optional<7 and block_optional != 0:
+			if   block_optional^7 == 1: print 'ERROR Not all pos-radius labels were specified (xpos)'
+			elif block_optional^7 == 2: print 'ERROR Not all pos-radius labels were specified (ypos)'
+			elif block_optional^7 == 4: print 'ERROR Not all pos-radius labels were specified (radius)'
+			raise str(block_optional)
+		components.append(component)
 	elif node.type == "text":
 		if stringIsUseful(str(node.properties)):
 			print '    tssssssss'+str(node.properties)
 	else:
 		print "error: "+str(node.name)
-	
-	comp.CheckItem.start()
-def getColorFromString(string):
-	#print string
-	color=[]
-	color.append(int(string.__getslice__(1,3),16))
-	color.append(int(string.__getslice__(3,5),16))
-	color.append(int(string.__getslice__(5,7),16))
-	#print color
-	return color
+
+##
+#For checking whether the read line is a comment or null line or some syntax error in html
+
 def stringIsUseful(string):
 	if len(string) == 0: return False
 	if string[0] == '#': return False
@@ -1605,10 +1617,59 @@ def stringIsUseful(string):
 	if len(s1) == 0: return False
 	return True
 
+def parseGeneralValues(node, dict, arg):
+	if node.children != None: print 'WARNING: No children expected'
+	for attr in arg:
+		if node.hasProp(attr):
+			dict[attr] = node.prop(attr)
+			node.unsetProp(attr)
+
+def checkForMoreProperties(node):
+	if node.properties != None: print 'WARNING: Attributes unexpected: ' + str(node.properties)
+
+#
+# General information subfunctions
+#
+def parseEditor(node, dict):
+	parseGeneralValues(node, dict, ['path', 'dock'])
+	checkForMoreProperties(node)
+def parseTimeouts(node, dict):
+	parseGeneralValues(node, dict, ['fixed', 'blink'])
+	checkForMoreProperties(node)
+	if dict.has_key('fixed'): dict['fixed'] = float(dict['fixed'])
+	if dict.has_key('blink'): dict['blink'] = float(dict['blink'])
+def parseClicks(node, dict):
+	parseGeneralValues(node, dict, ['switch', 'interval'])
+	checkForMoreProperties(node)
+	if dict.has_key('switch'): dict['switch'] = float(dict['switch'])
+	if dict.has_key('interval'): dict['interval'] = float(dict['interval'])
+def parseGraph(node, dict):
+	parseGeneralValues(node, dict, ['alpha', 'active', 'scale'])
+	checkForMoreProperties(node)
+	if dict.has_key('alpha'): dict['alpha'] = float(dict['alpha'])
+	if dict.has_key('scale'): dict['scale'] = float(dict['scale'])
+def parseGraphTiming(node, dict):
+	parseGeneralValues(node, dict, ['idletime', 'focustime', 'fasttime', 'fastperiod'])
+	checkForMoreProperties(node)
+	if dict.has_key('idletime'): dict['idletime'] = float(dict['idletime'])
+	if dict.has_key('focustime'): dict['focustime'] = float(dict['focustime'])
+	if dict.has_key('fasttime'): dict['fasttime'] = float(dict['fasttime'])
+	if dict.has_key('fastperiod'): dict['fastperiod'] = float(dict['fastperiod'])
+def parseSimulation(node, dict):
+	parseGeneralValues(node, dict, ['hookes', 'springlength', 'friction', 'step', 'fieldforce'])
+	checkForMoreProperties(node)
+	if dict.has_key('hookes'): dict['hookes'] = float(dict['hookes'])
+	if dict.has_key('springlength'): dict['springlength'] = float(dict['springlength'])
+	if dict.has_key('friction'): dict['friction'] = float(dict['friction'])
+	if dict.has_key('step'): dict['step'] = float(dict['step'])
+	if dict.has_key('fieldforce'): dict['fieldforce'] = float(dict['fieldforce'])
+
+
+#
+# Node subfunctions.Check for the attribute value of the node element with attribute name 'arg' 
+#
 def parseSingleValue(node, arg, doCheck=True, optional=False):
-	
-	if node.children != None and doCheck == True: print 'WARNING: No children expected'+str(node)
-	
+	if node.children != None and doCheck == True: print 'WARNING: No children expected'
 	if not node.hasProp(arg) and not optional:
 		print 'WARNING: ' + arg + ' attribute expected'
 	else:
@@ -1616,96 +1677,55 @@ def parseSingleValue(node, arg, doCheck=True, optional=False):
 		node.unsetProp(arg)
 		return ret
 
-def getXmlFromNetwork(NetworkSettings, components,logger):
-	string=''
-	string=string+'<?xml version="1.0" encoding="UTF-8"?>\n'
-	string=string+'<rcmanager>\n\n'
-	string=string+'\t<generalInformation>\n'
 
-	for x in NetworkSettings.Groups:
-		string=string+'\t\t<group name="'+x.groupName+'" iconfile="'+x.groupIconFilePath+'" />\n'
-
-		
-	string=string+'\t\t<simulation hookes="'+str(NetworkSettings.hookes_constant)+'" friction="'+str(1-NetworkSettings.roza)+'" springlength="'+str(NetworkSettings.spring_length)+'" fieldforce="'+str(NetworkSettings.field_force_multiplier)+'"/>\n'
-	string=string+'\n\t</generalInformation>\n'
-	
-	for comp in components:
-		comp.x=comp.graphicsItem.x()
-		comp.y=comp.graphicsItem.y()
-		string=string+'\n\t<node alias="' + comp.alias + '" endpoint="' + comp.endpoint + '">\n'
-		for dep in comp.asEnd:
-			string=string+'\t\t<dependence alias="' + dep.fromComponent.alias + '" />\n'
-		if comp.groupName!="":
-			string=string+'\t\t<group name="' + comp.groupName+ '" />\n'	
-		string=string+'\t\t<workingDir path="' + comp.workingdir + '" />\n'
-		string=string+'\t\t<upCommand command="' + comp.compup + '" />\n'
-		string=string+'\t\t<downCommand command="' + comp.compdown + '" />\n'
-		string=string+'\t\t<configFile path="' + comp.configFile + '" />\n'
-		string=string+'\t\t<xpos value="' + str(comp.x) + '" />\n'
-		string=string+'\t\t<ypos value="' + str(comp.y) + '" />\n'
-		#string=string+'\t\t<icon value="'+str(comp.IconFilePath)+'"/>\n'
-		string=string+'\t\t<ip value="'+str(comp.Ip)+'"/>\n'
-		string=string+'\t</node>\n'
-
-	string=string+'\n</rcmanager>'
-	return string
-
-def writeToFile(file, string):#Write a line to the file
-	file.write((string).encode( "utf-8" ))
-
-def getDefaultNode():
-	string="\n"
-	string=string+ '\t<node alias=" " endpoint=" ">\n'
-	string=string+ '\t\t<dependence alias=" " />\n'
-	string=string+ '\t\t<workingDir path=" " />\n'
-	string=string+ '\t\t<upCommand command=" " />\n'
-	string=string+ '\t\t<downCommand command=" " />\n'
-	string=string+ '\t\t<configFile path=" " />\n'
-	string=string+ '\t\t<xpos value=" " />\n'
-	string=string+ '\t\t<ypos value=" " />\n'
-	string=string+ '\t\t<icon value=" "/>\n'
-	string=string+ '\t\t<ip value=" "/>\n'
-	string=string+ '\t</node>\n'
-	return string
-
-def getDefaultSettings():
-	string="\n"
-	string=string+'\t<generalInformation>\n'
-	string=string+'\t</generalInformation>\n'
-	return string
-
-def checkForCompChildren(comp,Xmlnode):#This will check whether the opened Doc have enough children to draw the things
-	return
-
-def searchForChild(Xmlnode,Name):##Will search in tree for node with name Name
-	child=Xmlnode.children
-	while child is not None:
-		if child.type=="element" and child.name==Name:
-			return True
-		child=child.next
-
-	return False
-
-def getDefaultIconPath():
-	return "/opt/robocomp/share/rcmanager/1465594390_sign-add.png" #This is the default icon can be changed by users choice
-
-
-def upComponent(component,Logger):#Just Up the component
-		try:
-			if component.CheckItem.haveStarted()==False:
-				component.CheckItem.initializeComponent()
-			if component.CheckItem.haveStarted()==False:
-				Logger.logData("Component "+component.alias+" Cannot be Monitored because of bad Proxy setting(Error ignored)","R")	
-			proc=QtCore.QProcess()
-			proc.startDetached(component.compup)
-			
-		except Exception, e:
-			Logger.logData("Cannot write"+str(e),"R")
-			raise e
+def parseDependence(node, comp):
+	comp.dependences.append(parseSingleValue(node, 'alias'))
+def parseColor(node, comp):
+	comp.color = None
+	x = parseSingleValue(node, 'value', optional=True)
+	if x == None:
+		return
+	valid = True
+	if len(x) != 7:
+		valid = False
+	else:
+		if x[0] != "#": valid = False
 		else:
-			pass
-		finally:
-			pass	
+			r = int(x[1:3], 16)
+			g = int(x[3:5], 16)
+			b = int(x[5:7], 16)
+	if not valid:
+		r = int(155)
+		g = int(155)
+		b = int(155)
+	comp.color = QtGui.QColor(r,g,b)
+	comp.htmlcolor = x
+def parseWorkingDir(node, comp):
+	comp.workingdir = parseSingleValue(node, 'path')
+def parseUpCommand(node, comp):
+	comp.compup = parseSingleValue(node, 'command')
+def parseDownCommand(node, comp):
+	comp.compdown = parseSingleValue(node, 'command')
+def parseConfigFile(node, comp):
+	comp.configFile = parseSingleValue(node, 'path')
+def parseXPos(node, comp):
+	comp.x = float(parseSingleValue(node, 'value'))
+def parseYPos(node, comp):
+	comp.y = float(parseSingleValue(node, 'value'))
+def parseRadius(node, comp):
+	comp.r = float(parseSingleValue(node, 'value'))
+
+
+
+#if __name__ == "__main__":
+	#c = []
+	#d = {}
+	#c, d = getConfigFromFile(filePath)
+	#print '\nDict:\n'
+	#print d
+	#print '\nComponents\n'
+	#print c
+	#writeConfigToFile(d, c, '2.xml')
 
 
 def downComponent(component,Logger):#To down a particular component

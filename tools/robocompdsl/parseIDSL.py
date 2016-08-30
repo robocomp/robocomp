@@ -6,11 +6,16 @@ from pyparsing import nestedExpr, ParseException
 
 import sys, traceback, os
 
+debug = False
+#debug = True
+
 
 
 class IDSLParsing:
 	@staticmethod
-	def fromFileIDSL(filename):
+	def fromFile(filename, verbose=False, includeIncludes=True):
+		# Open input file
+		#inputText = "\n".join([line for line in open(filename, 'r').read().split("\n") if not line.lstrip(" \t").startswith('//')])
 		inputText = open(filename, 'r').read()
 		try:
 			ret = IDSLParsing.fromString(inputText)
@@ -22,23 +27,9 @@ class IDSLParsing:
 			os._exit(1)
 		ret['filename'] = filename
 		return ret
-	
 	@staticmethod
-	def fromFile(filename):
-		inputText = open(filename, 'r').read()
-		try:
-			ret = IDSLParsing.fromString(inputText)
-			ret = IDSLParsing.module(ret)
-		except ParseException, p:
-			print 'Error reading IDSL', filename
-			traceback.print_exc()
-			print 'Error reading IDSL', filename
-			print p.markInputline()
-			os._exit(1)
-		ret['filename'] = filename
-		return ret
-	@staticmethod
-	def fromString(inputText):
+	def fromString(inputText, verbose=False):
+		if verbose: print 'Verbose:', verbose
 		text = nestedExpr("/*", "*/").suppress().transformString(inputText)
 
 		semicolon = Suppress(Word(";"))
@@ -83,7 +74,7 @@ class IDSLParsing:
 		IDSL = idslImports.setResultsName("imports") + module.setResultsName("module")
 		IDSL.ignore( cppStyleComment )
 		tree = IDSL.parseString(text)
-		return tree
+		return IDSLParsing.module(tree)
 
 	@staticmethod
 	def gimmeIDSL(name, files=''):
@@ -170,27 +161,6 @@ class IDSLParsing:
 				pass
 			else:
 				print 'Unknown module content', contentDef
-		# SEQUENCES DEFINED IN THE MODULE
-		module['sequences'] = []
-		module['simpleSequences'] = []
-		for contentDef in tree['module']['contents']:
-			if contentDef['type'] == 'sequence':
-				seqdef       = { 'name':tree['module']['name']+"/"+contentDef['name'], 'type':contentDef['type']}
-				simpleSeqdef = { 'name':tree['module']['name'], 'strName':contentDef['name']}
-				#print structdef
-				module['sequences'].append(seqdef)
-				module['simpleSequences'].append(simpleSeqdef)
-		# STRUCTS DEFINED IN THE MODULE
-		module['structs'] = []
-		module['simpleStructs'] = []
-		for contentDef in tree['module']['contents']:
-			if contentDef['type'] == 'struct':
-				structdef       = { 'name':tree['module']['name']+"/"+contentDef['name'], 'type':contentDef['type']}
-				simpleStructdef = { 'name':tree['module']['name'], 'strName':contentDef['name']}
-				#print structdef
-				module['structs'].append(structdef)
-				module['simpleStructs'].append(simpleStructdef)
-
 		return module
 
 	@staticmethod
@@ -245,51 +215,17 @@ class IDSLPool:
 				if not filename in self.modulePool:
 					print 'Couldn\'t locate ', f
 					sys.exit(-1)
-	def IDSLsModule(self, module):
-		for filename in self.modulePool.keys():
-			if self.modulePool[filename] == module:
-				return '/opt/robocomp/interfaces/IDSLs/'+filename+'.idsl'
-		
+
 	def moduleProviding(self, interface):
 		for module in self.modulePool:
 			for m in self.modulePool[module]['interfaces']:
 				if m['name'] == interface:
 					return self.modulePool[module]
 		return None
-	
-	def rosImports(self):
-		includesList = []
-		for module in self.modulePool:
-			for m in self.modulePool[module]['structs']:
-				includesList.append(m['name'])
-			for m in self.modulePool[module]['sequences']:
-				includesList.append(m['name'])
-			stdIncludes = {}
-			for interface in self.modulePool[module]['interfaces']:
-				for mname in interface['methods']:
-					method = interface['methods'][mname]
-					for p in method['params']:
-						if p['type'] in ('int','float','uint'):
-							m = "std_msgs/"+p['type'].capitalize()+"32"
-							stdIncludes[p['type']] = m
-						elif p['type'] == 'string':
-							m = "std_msgs/String"
-							stdIncludes[p['type']] = m
-			for std in stdIncludes.values():
-				includesList.append(std)
-		return includesList
-	
-	def rosModulesImports(self):
-		modulesList = []
-		for module in self.modulePool:
-			for m in self.modulePool[module]['simpleStructs']:
-				modulesList.append(m)
-			for m in self.modulePool[module]['simpleSequences']:
-				modulesList.append(m)
-		return modulesList
-	
+
+
+
 
 if __name__ == '__main__':
 	idsl = IDSLParsing.fromFile(sys.argv[1])
-	for imp in idsl['imports']:
-		print imp
+	IDSLParsing.printModule(idsl)

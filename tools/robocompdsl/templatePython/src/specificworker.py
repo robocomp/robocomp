@@ -54,10 +54,42 @@ Z()
 #    along with RoboComp.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-import sys, os, traceback, time
+import sys, os, Ice, traceback, time
 
 from PySide import *
 from genericworker import *
+
+ROBOCOMP = ''
+try:
+	ROBOCOMP = os.environ['ROBOCOMP']
+except:
+	print '$ROBOCOMP environment variable not set, using the default value /opt/robocomp'
+	ROBOCOMP = '/opt/robocomp'
+if len(ROBOCOMP)<1:
+	print 'genericworker.py: ROBOCOMP environment variable not set! Exiting.'
+	sys.exit()
+
+
+preStr = "-I"+ROBOCOMP+"/interfaces/ --all "+ROBOCOMP+"/interfaces/"
+[[[cog
+for imp in component['imports']:
+	module = IDSLParsing.gimmeIDSL(imp.split('/')[-1])
+	incl = imp.split('/')[-1].split('.')[0]
+	cog.outl('Ice.loadSlice(preStr+"'+incl+'.ice")')
+	cog.outl('from '+module['name']+' import *')
+]]]
+[[[end]]]
+
+
+[[[cog
+	for ima in component['implements']+component['subscribesTo']:
+		if type(ima) == type(''):
+			im = ima
+		else:
+			im = ima[0]
+		cog.outl('from ' + im.lower() + 'I import *')
+]]]
+[[[end]]]
 
 class SpecificWorker(GenericWorker):
 	def __init__(self, proxy_map):
@@ -157,17 +189,18 @@ if ice_requires:
 [[[cog
 lst = []
 try:
+	lst += component['implements']
+except:
+	pass
+try:
 	lst += component['subscribesTo']
 except:
 	pass
+
 for imp in lst:
-	if type(imp) == str:
-		im = imp
-	else:
-		im = imp[0]
-	module = pool.moduleProviding(im)
+	module = pool.moduleProviding(imp[0])
 	for interface in module['interfaces']:
-		if interface['name'] == im:
+		if interface['name'] == imp:
 			for mname in interface['methods']:
 				method = interface['methods'][mname]
 				outValues = []

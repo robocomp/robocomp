@@ -84,18 +84,7 @@ else:
 {
 
 [[[cog
-if component['useViewer'] == "true":
-	cog.outl("#ifdef USE_QTGUI")
-	cog.outl("<TABHERE>imv = NULL;")
-	cog.outl("<TABHERE>osgView = new OsgView(this);")
-	cog.outl("<TABHERE>osgGA::TrackballManipulator *tb = new osgGA::TrackballManipulator;")
-	cog.outl("<TABHERE>osg::Vec3d eye(osg::Vec3(4000.,4000.,-1000.));")
-	cog.outl("<TABHERE>osg::Vec3d center(osg::Vec3(0.,0.,-0.));")
-	cog.outl("<TABHERE>osg::Vec3d up(osg::Vec3(0.,1.,0.));")
-	cog.outl("<TABHERE>tb->setHomePosition(eye, center, up, true);")
-	cog.outl("<TABHERE>tb->setByMatrix(osg::Matrixf::lookAt(eye,center,up));")
- 	cog.outl("<TABHERE>osgView->setCameraManipulator(tb);")
-	cog.outl("#endif")
+
 try:
 	if 'agmagent' in [ x.lower() for x in component['options'] ]:
 		cog.outl("<TABHERE>active = false;")
@@ -155,10 +144,7 @@ except:
 //		innermodel = new InnerModel(innermodel_path);
 //	}
 //	catch(std::exception e) { qFatal("Error reading config params"); }""")
-if component['useViewer'] == "true":
-	cog.outl("#ifdef USE_QTGUI")
-	cog.outl("<TABHERE>imv = new InnerModelViewer (innerModel, \"root\", osgView->getRootGroup(), true);")
-	cog.outl("#endif")
+
 ]]]
 [[[end]]]	
 
@@ -299,7 +285,6 @@ void SpecificWorker::compute()
 // 	{
 // 		std::cout << "Error reading from Camera" << e << std::endl;
 // 	}
-// 		try
 
 [[[cog
 if component['usingROS'] == True:
@@ -315,18 +300,30 @@ if component['useViewer'] == "true":
 
 
 [[[cog
+
 if 'implements' in component:
-	for impa in component['implements']:
-		if type(impa) == str:
-			imp = impa
-		else:
-			imp = impa[0]
-		module = pool.moduleProviding(imp)
+	for imp in component['implements']:
+		nname = imp
+		while type(nname) != type(''):			
+			nname = nname[0]
+		module = pool.moduleProviding(nname)
 		for interface in module['interfaces']:
-			if interface['name'] == imp:
+			if interface['name'] == nname:
 				for mname in interface['methods']:
 					method = interface['methods'][mname]
 					paramStrA = ''
+					for p in method['params']:
+						if paramStrA == '': delim = ''
+						else: delim = ', '
+						# decorator
+						ampersand = '&'
+						if p['decorator'] == 'out':
+							const = ''
+						else:
+							const = 'const '
+							if p['type'].lower() in ['int', '::ice::int', 'float', '::ice::float']:
+								ampersand = ''
+						paramStrA += delim + const + p['type'] + ' ' + ampersand + p['name']
 					bodyCode = bodyCodeFromName(method['name'])
 					if communicationIsIce(impa):
 						for p in method['params']:
@@ -349,24 +346,18 @@ if 'implements' in component:
 						cog.outl('bool SpecificWorker::' + method['name'] + '(' + paramStrA + ")\n{\n//implementCODE\n"+bodyCode+"\n}\n")
 
 if 'subscribesTo' in component:
-	for impa in component['subscribesTo']:
-		if type(impa) == str:
-			imp = impa
-		else:
-			imp = impa[0]
-		module = pool.moduleProviding(imp)
-		if module == None:
-			print ('\nCan\'t find module providing', imp, '\n')
-			sys.exit(-1)
-		for interface in module['interfaces']:
-			if interface['name'] == imp:
-				for mname in interface['methods']:
-					method = interface['methods'][mname]
-					paramStrA = ''
-					bodyCode = bodyCodeFromName(method['name'])
-					if communicationIsIce(impa):
+	for imp in component['subscribesTo']:
+		nname = imp
+		while type(nname) != type(''):
+			nname = nname[0]
+		if communicationIsIce(nname):
+			module = pool.moduleProviding(nname)
+			for interface in module['interfaces']:
+				if interface['name'] == nname:
+					for mname in interface['methods']:
+						method = interface['methods'][mname]
+						paramStrA = ''
 						for p in method['params']:
-							# delim
 							if paramStrA == '': delim = ''
 							else: delim = ', '
 							# decorator
@@ -377,7 +368,6 @@ if 'subscribesTo' in component:
 								const = 'const '
 								if p['type'].lower() in ['int', '::ice::int', 'float', '::ice::float']:
 									ampersand = ''
-							# STR
 							paramStrA += delim + const + p['type'] + ' ' + ampersand + p['name']
 						cog.outl(method['return'] + ' SpecificWorker::' + method['name'] + '(' + paramStrA + ")\n{\n//subscribesToCODE\n"+bodyCode+"\n}\n")
 					else:
@@ -401,6 +391,7 @@ if 'subscribesTo' in component:
 							# STR
 							paramStrA += delim + p['type'] + ' ' + p['name']
 						cog.outl('void SpecificWorker::' + method['name'] + '(' + paramStrA + ")\n{\n//subscribesToCODE\n"+bodyCode+"\n}\n")
+
 ]]]
 [[[end]]]
 

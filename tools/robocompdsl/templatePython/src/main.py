@@ -16,8 +16,6 @@ def TAB():
 from parseCDSL import *
 component = CDSLParsing.fromFile(theCDSL)
 
-from parseIDSL import *
-pool = IDSLPool(theIDSLs)
 
 ice_requires,ice_impliments = False,False
 for require in component['requires']:
@@ -202,7 +200,7 @@ Z()
 #
 #
 
-import sys, traceback, IceStorm, subprocess, threading, time, Queue, os, copy
+import sys, traceback, Ice, IceStorm, subprocess, threading, time, Queue, os, copy
 
 # Ctrl+c handling
 import signal
@@ -211,6 +209,29 @@ signal.signal(signal.SIGINT, signal.SIG_DFL)
 from PySide import *
 
 from specificworker import *
+
+ROBOCOMP = ''
+try:
+	ROBOCOMP = os.environ['ROBOCOMP']
+except:
+	print '$ROBOCOMP environment variable not set, using the default value /opt/robocomp'
+	ROBOCOMP = '/opt/robocomp'
+if len(ROBOCOMP)<1:
+	print 'ROBOCOMP environment variable not set! Exiting.'
+	sys.exit()
+
+
+preStr = "-I"+ROBOCOMP+"/interfaces/ -I/opt/robocomp/interfaces/ --all "+ROBOCOMP+"/interfaces/"
+Ice.loadSlice(preStr+"CommonBehavior.ice")
+import RoboCompCommonBehavior
+[[[cog
+for imp in component['imports']:
+	module = IDSLParsing.gimmeIDSL(imp.split('/')[-1])
+	incl = imp.split('/')[-1].split('.')[0]
+	cog.outl('Ice.loadSlice(preStr+"'+incl+'.ice")')
+	cog.outl('import '+module['name']+'')
+]]]
+[[[end]]]
 
 
 class CommonBehaviorI(RoboCompCommonBehavior.CommonBehavior):
@@ -262,22 +283,18 @@ if __name__ == '__main__':
 	for i in ic.getProperties():
 		parameters[str(i)] = str(ic.getProperties().getProperty(i))
 [[[cog
+if len(component['requires']) > 0 or len(component['publishes']) > 0 or len(component['subscribesTo']) > 0:
+	cog.outl('<TABHERE>try:')
+for rqa in component['requires']:
+	if type(rqa) == type(''):
+		rq = rqa
+	else:
+		rq = rqa[0]
+	w = REQUIRE_STR.replace("<NORMAL>", rq).replace("<LOWER>", rq.lower())
+	cog.outl(w)
 
 try:
-	needIce = False
-	for req in component['requires']:
-		if communicationIsIce(req):
-			needIce = True
-	for imp in component['implements']:
-		if communicationIsIce(imp):
-			needIce = True
-	for pub in component['publishes']:
-		if communicationIsIce(pub):
-			needIce = True
-	for sub in component['subscribesTo']:
-		if communicationIsIce(sub):
-			needIce = True
-	if needIce:
+	if len(component['publishes']) > 0 or len(component['subscribesTo']) > 0:
 		cog.outl("""
 <TABHERE># Topic Manager
 <TABHERE>proxy = ic.getProperties().getProperty("TopicManager.Proxy")
@@ -348,54 +365,18 @@ for sut in component['subscribesTo']:
 	if type(sut) == str:
 		st = sut
 	else:
-		st = sut[0]
-	if communicationIsIce(sut):
-		w = SUBSCRIBESTO_STR.replace("<NORMAL>", st).replace("<LOWER>", st.lower())
-		cog.outl(w)
-if component['usingROS'] == True:
-	cog.outl("<TABHERE><TABHERE>rospy.init_node(\""+component['name']+"\", anonymous=True)")
-for sub in component['subscribesTo']:
-	nname = sub
-	while type(nname) != type(''):
-		nname = nname[0]
-	module = pool.moduleProviding(nname)
-	if module == None:
-		print ('\nCan\'t find module providing', nname, '\n')
-		sys.exit(-1)
-	if not communicationIsIce(sub):
-		for interface in module['interfaces']:
-			if interface['name'] == nname:
-				for mname in interface['methods']:
-					method = interface['methods'][mname]
-					for p in method['params']:
-						s = "\""+nname+"_"+mname+"\""
-						if p['type'] in ('float','int','uint'):
-							cog.outl("<TABHERE><TABHERE>rospy.Subscriber("+s+", "+p['type'].capitalize()+"32, worker."+method['name']+")")
-						elif p['type'] == 'string':
-							cog.outl("<TABHERE><TABHERE>rospy.Subscriber("+s+", String, worker."+method['name']+")")
-						elif '::' in p['type']:
-							cog.outl("<TABHERE><TABHERE>rospy.Subscriber("+s+", "+p['type'].split('::')[1]+", worker."+method['name']+")")
-						else:
-							cog.outl("<TABHERE><TABHERE>rospy.Subscriber("+s+", "+p['type']+", worker."+method['name']+")")
+		im = ima[0]
+	w = IMPLEMENTS_STR.replace("<NORMAL>", im).replace("<LOWER>", im.lower())
+	cog.outl(w)
 
-for imp in component['implements']:
-	nname = imp
-	while type(nname) != type(''):
-		nname = nname[0]
-	module = pool.moduleProviding(nname)
-	if module == None:
-		print ('\nCan\'t find module providing', nname, '\n')
-		sys.exit(-1)
-	if not communicationIsIce(imp):
-		for interface in module['interfaces']:
-			if interface['name'] == nname:
-				for mname in interface['methods']:
-					method = interface['methods'][mname]
-					s = "\""+nname+"_"+mname+"\""
-					cog.outl("<TABHERE><TABHERE>rospy.Service("+s+", "+mname+", worker."+method['name']+")")
 
+for st in component['subscribesTo']:
+	w = SUBSCRIBESTO_STR.replace("<NORMAL>", st).replace("<LOWER>", st.lower())
+	cog.outl(w)
 ]]]
 [[[end]]]
+
+#<TABHERE><TABHERE>adapter.add(CommonBehaviorI(<LOWER>I, ic), ic.stringToIdentity('commonbehavior'))
 
 		app.exec_()
 
