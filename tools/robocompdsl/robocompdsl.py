@@ -108,8 +108,8 @@ def generateHeaders(idslFile, outputPath, comp): #idslFile es el fichero idsl im
 		pass
 
 	generarH(idslFile, imported)
-#	os.system("rm "+outputPath+"/*.msg")
-#	os.system("rm "+outputPath+"/*.srv")
+	os.system("rm "+outputPath+"/*.msg")
+	os.system("rm "+outputPath+"/*.srv")
 #
 # Misc functions
 #
@@ -351,3 +351,4 @@ elif sys.argv[1].endswith(".idsl"):
 			print 'ERROR'
 			sys.exit(-1)
 		replaceTagsInFile(ofile)
+
