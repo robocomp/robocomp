@@ -274,6 +274,8 @@ class IDSLPool:
 							stdIncludes[p['type']] = m
 						elif p['type'] == 'string':
 							m = "std_msgs/String"
+						elif p['type'] == 'bool':
+							m = "std_msgs/Bool"
 							stdIncludes[p['type']] = m
 			for std in stdIncludes.values():
 				includesList.append(std)
