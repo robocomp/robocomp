@@ -49,5 +49,7 @@ for imp in idsl['module']['contents']:
 			cog.outl(imp['typeSequence'] +"32[] " + structName)
 		elif imp['typeSequence'] == 'byte':
 			cog.outl('int8[] ' + structName)
+		else:
+			cog.outl(imp['typeSequence'] +"[] "+ structName)
 ]]]
 [[[end]]]
