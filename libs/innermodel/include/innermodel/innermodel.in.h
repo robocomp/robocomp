@@ -227,7 +227,10 @@ class InnerModel
 		/// Laser stuff DEPRECATED
 		////////////////
 		QVec laserTo(const QString &dest, const QString & laserId , float r, float alfa)
-		{ return getNode<InnerModelLaser>(laserId)->laserTo(dest,laserId, r, alfa); };
+		{ 
+			qDebug() << __FUNCTION__ << "DEPRECATED. Use getNode<InnerModelLaser>(laserId)->laserTo(dest,laserId, r, alfa) "; 
+			return getNode<InnerModelLaser>(laserId)->laserTo(dest,laserId, r, alfa); 
+		};
 			
 	protected:
 		QMutex *mutex;

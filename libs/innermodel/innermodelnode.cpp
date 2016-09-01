@@ -21,7 +21,7 @@ InnerModelNode::InnerModelNode(QString id_, InnerModelNode *parent_) : RTMat()
 {
 	collidable = false;
 	#if FCL_SUPPORT==1
-		collisionObject = NULL;
+		collisionObject = NULL; 
 	#endif
 
 	fixed = true;

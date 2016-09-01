@@ -29,6 +29,20 @@ set(incs
     include/${LIB_NAME}/innermodelreader.h
     include/${LIB_NAME}/innermodelviewer.h
     include/${LIB_NAME}/innermodeldraw.h
+    include/${LIB_NAME}/innermodelcamera.h
+    include/${LIB_NAME}/innermodeldifferentialrobot.h
+    include/${LIB_NAME}/innermodelexception.h
+    include/${LIB_NAME}/innermodelimu.h 
+    include/${LIB_NAME}/innermodeljoint.h 
+    include/${LIB_NAME}/innermodelnode.h 
+    include/${LIB_NAME}/innermodelomnirobot.h 
+    include/${LIB_NAME}/innermodelplane.h 
+    include/${LIB_NAME}/innermodelpointcloud.h 
+    include/${LIB_NAME}/innermodelprismaticjoint.h 
+    include/${LIB_NAME}/innermodellaser.h 
+    include/${LIB_NAME}/innermodelrgbd.h 
+    include/${LIB_NAME}/innermodeltouchsensor.h 
+    include/${LIB_NAME}/innermodeltransform.h 
 )
     
 # FCL

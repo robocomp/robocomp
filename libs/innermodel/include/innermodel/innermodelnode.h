@@ -74,8 +74,8 @@ class InnerModelNode : public RTMat
 		// FCLModel
 		bool collidable;
 		#if FCL_SUPPORT==1
-		FCLModelPtr fclMesh;
-		fcl::CollisionObject *collisionObject;
+			FCLModelPtr fclMesh;
+			fcl::CollisionObject *collisionObject;
 		#endif
 };
 

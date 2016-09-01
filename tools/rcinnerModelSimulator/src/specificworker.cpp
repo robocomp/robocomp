@@ -714,7 +714,11 @@ SpecificWorker::SpecificWorker(MapPrx& _mprx, Ice::CommunicatorPtr _communicator
 
 	// Initialize Inner model
 	d->innerModel = new InnerModel(_innerModelXML);
-
+	
+	qDebug() << "HOEL" << d->innerModel->getNode<InnerModelOmniRobot>("robot")->port << d->innerModel->getNode<InnerModelOmniRobot>("robot")->id;
+	InnerModelNode *caca = d->innerModel->getNode("robot");
+	qDebug() << "CLASSIC" << dynamic_cast<InnerModelOmniRobot*>(caca)->port;
+	
 	//add name of .xml
 	setWindowTitle(windowTitle() + "\t" + _innerModelXML);
 
@@ -734,7 +738,6 @@ SpecificWorker::SpecificWorker(MapPrx& _mprx, Ice::CommunicatorPtr _communicator
 		d->viewer->addEventHandler(new PickHandler(rcis_mousepicker_proxy));
 	}
 
-	
 	settings = new QSettings("RoboComp", "RCIS");
 	QString path(_innerModelXML);
 	if (path == settings->value("path").toString() )
@@ -762,9 +765,6 @@ SpecificWorker::SpecificWorker(MapPrx& _mprx, Ice::CommunicatorPtr _communicator
 	{
 		settings->setValue("path",path);
  	}
-
- 		
-	
 
 	// Connect all the signals
 	connect(topView,   SIGNAL(clicked()), this, SLOT(setTopPOV()));
@@ -848,16 +848,15 @@ void SpecificWorker::compute()
 
 	QMutexLocker locker(mutex);
 
-
-// 	// Remove previous laser shapes
-// 	for (QHash<QString, IMVLaser>::iterator laser = d->imv->lasers.begin(); laser != d->imv->lasers.end(); laser++)
-// 	{
-// 		QMutexLocker locker(viewerMutex);
-// 		if (laser->osgNode->getNumChildren() > 0)
-// 		{
-// 			laser->osgNode->removeChild(0, laser->osgNode->getNumChildren());
-// 		}
-// 	}
+	// Remove previous laser shapes
+	for (QHash<QString, IMVLaser>::iterator laser = d->imv->lasers.begin(); laser != d->imv->lasers.end(); laser++)
+	{
+		QMutexLocker locker(viewerMutex);
+		if (laser->osgNode->getNumChildren() > 0)
+		{
+			laser->osgNode->removeChild(0, laser->osgNode->getNumChildren());
+		}
+	}
 
 	// Camera render
 	QHash<QString, IMVCamera>::const_iterator i = d->imv->cameras.constBegin();
@@ -898,21 +897,20 @@ void SpecificWorker::compute()
 			d->laserDataArray.insert(laser->laserNode->id, d->LASER_createLaserData(laser.value()));
 
 			// create and insert laser shape
-// 			osg::ref_ptr<osg::Node> p=NULL;
-// 			if (id=="laserSecurity")
-// 			{
-// 				p = d->viewer->addPolygon(*(d->laserDataCartArray[id]), osg::Vec4(0.,0.,1.,0.4));
-// 			}
-// 			else
-// 			{
-// 				p = d->viewer->addPolygon(*(d->laserDataCartArray[id]));
-// 			}
-// 			if (p!=NULL)
-// 			{
-// 				laser->osgNode->addChild(p);
-// 			}
-// 			printf("%d (%d)\n", i, __LINE__);
-
+			osg::ref_ptr<osg::Node> p=NULL;
+			if (id=="laserSecurity")
+			{
+				p = d->viewer->addPolygon(*(d->laserDataCartArray[id]), osg::Vec4(0.,0.,1.,0.4));
+			}
+			else
+			{
+				p = d->viewer->addPolygon(*(d->laserDataCartArray[id]));
+			}
+			if (p!=NULL)
+			{
+				laser->osgNode->addChild(p);
+			}
+			//printf("%d (%d)\n", i, __LINE__);
 		}
 	}
 

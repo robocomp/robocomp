@@ -36,7 +36,7 @@
 #include <innermodel/innermodeltouchsensor.h>
 
 // FCL
-#define FCL_SUPPORT 0
+#define FCL_SUPPORT 1
 
 #if FCL_SUPPORT==1
 #include <boost/shared_ptr.hpp>
@@ -227,7 +227,10 @@ class InnerModel
 		/// Laser stuff DEPRECATED
 		////////////////
 		QVec laserTo(const QString &dest, const QString & laserId , float r, float alfa)
-		{ return getNode<InnerModelLaser>(laserId)->laserTo(dest,laserId, r, alfa); };
+		{ 
+			qDebug() << __FUNCTION__ << "DEPRECATED. Use getNode<InnerModelLaser>(laserId)->laserTo(dest,laserId, r, alfa) "; 
+			return getNode<InnerModelLaser>(laserId)->laserTo(dest,laserId, r, alfa); 
+		};
 			
 	protected:
 		QMutex *mutex;

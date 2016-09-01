@@ -20,7 +20,7 @@
 InnerModelOmniRobot::InnerModelOmniRobot(QString id_, float tx_, float ty_, float tz_, float rx_, float ry_, float rz_, uint32_t port_, float noise_, bool collide_, InnerModelTransform *parent_) : InnerModelTransform(id_,QString("static"),tx_,ty_,tz_,rx_,ry_,rz_, 0, parent_)
 {
 	#if FCL_SUPPORT==1
-		collisionObject = NULL;
+		collisionObject = NULL;   //inherited from InnerModelNode
 	#endif
 	port = port_;
 	noise = noise_;

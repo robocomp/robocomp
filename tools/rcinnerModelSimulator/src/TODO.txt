@@ -1,0 +1,1 @@
+- Guarda el binario en src

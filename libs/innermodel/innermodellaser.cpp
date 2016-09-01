@@ -20,9 +20,10 @@
 
 InnerModelLaser::InnerModelLaser(QString id_, uint32_t _port, uint32_t _min, uint32_t _max, float _angle, uint32_t _measures, QString _ifconfig, InnerModel *innermodel_, InnerModelNode *parent_) :  InnerModelNode(id_, parent_) , innermodel(innermodel_)
 {
-#if FCL_SUPPORT==1
-	collisionObject = NULL;
-#endif
+	
+ #if FCL_SUPPORT==1
+ 	collisionObject = NULL;    //inherited from InnerModelNode
+ #endif
 	port = _port;
 	min = _min;
 	max = _max;
@@ -30,7 +31,7 @@ InnerModelLaser::InnerModelLaser(QString id_, uint32_t _port, uint32_t _min, uin
 	angle = _angle;
 	ifconfig = _ifconfig;
 	
-	qDebug() << __FUNCTION__ << id << parent_ << port << min << max << angle << measures;
+	qDebug() << __FUNCTION__ << id << port << min << max << angle << measures;
 }
 
 void InnerModelLaser::save(QTextStream &out, int tabs)
