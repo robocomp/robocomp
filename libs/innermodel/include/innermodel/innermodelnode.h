@@ -20,6 +20,7 @@
 
 // RoboComp includes
 #include <qmat/QMatAll>
+#include <innermodel/innermodelconfig.h>
 
 #if FCL_SUPPORT==1
 #include <boost/shared_ptr.hpp>

@@ -18,6 +18,7 @@
 #include <qmat/qfundamental.h>
 
 //Derived and auxiliary classes
+#include <innermodel/innermodelconfig.h>
 #include <innermodel/innermodelexception.h>
 #include <innermodel/innermodeltransform.h>
 #include <innermodel/innermodelnode.h>
@@ -34,9 +35,6 @@
 #include <innermodel/innermodelimu.h>
 #include <innermodel/innermodelpointcloud.h>
 #include <innermodel/innermodeltouchsensor.h>
-
-// FCL
-#define FCL_SUPPORT 1
 
 #if FCL_SUPPORT==1
 #include <boost/shared_ptr.hpp>

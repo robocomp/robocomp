@@ -25,7 +25,8 @@ set(srcs
 )
 
 set(incs
-    ${CMAKE_CURRENT_BINARY_DIR}/include/${LIB_NAME}/innermodel.h
+    ${CMAKE_CURRENT_BINARY_DIR}/include/${LIB_NAME}/innermodelconfig.h
+    include/${LIB_NAME}/innermodel.h
     include/${LIB_NAME}/innermodelreader.h
     include/${LIB_NAME}/innermodelviewer.h
     include/${LIB_NAME}/innermodeldraw.h
@@ -34,6 +35,7 @@ set(incs
     include/${LIB_NAME}/innermodelexception.h
     include/${LIB_NAME}/innermodelimu.h 
     include/${LIB_NAME}/innermodeljoint.h 
+    include/${LIB_NAME}/innermodelmesh.h 
     include/${LIB_NAME}/innermodelnode.h 
     include/${LIB_NAME}/innermodelomnirobot.h 
     include/${LIB_NAME}/innermodelplane.h 
@@ -59,9 +61,7 @@ else (FCL_SUPPORT)
 endif (FCL_SUPPORT)
 
 include_directories( ${CMAKE_CURRENT_BINARY_DIR}/include include/innermodel )
-configure_file ("include/${LIB_NAME}/innermodel.in.h" 
-								"include/${LIB_NAME}/innermodel.h"
-						)
+configure_file ("include/${LIB_NAME}/innermodelconfig.in.h"  "include/${LIB_NAME}/innermodelconfig.h" )
 
 # Python bindings
 set(Boost_USE_STATIC_LIBS OFF)
