@@ -353,3 +353,4 @@ elif sys.argv[1].endswith(".idsl"):
 			print 'ERROR'
 			sys.exit(-1)
 		replaceTagsInFile(ofile)
+
