@@ -75,7 +75,9 @@ except:
 #include <genericworker.h>
 #include <innermodel/innermodel.h>
 [[[cog
-if component['useViewer'] == "true":
+print (component['innermodelviewer'])
+if component['innermodelviewer']:
+	print (component['innermodelviewer'])
 	cog.outl("#ifdef USE_QTGUI")
 	cog.outl("<TABHERE>#include <osgviewer/osgview.h>")
 	cog.outl("<TABHERE>#include <innermodel/innermodelviewer.h>")
@@ -189,7 +191,7 @@ public slots:
 private:
 	InnerModel *innerModel;
 [[[cog
-if component['useViewer'] == "true":
+if component['innermodelviewer']:
 	cog.outl("#ifdef USE_QTGUI")
 	cog.outl("<TABHERE>OsgView *osgView;")
 	cog.outl("<TABHERE>InnerModelViewer *imv;")

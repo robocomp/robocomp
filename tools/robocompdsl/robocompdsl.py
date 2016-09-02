@@ -17,8 +17,8 @@ def generateHeaders(idslFile, outputPath, comp): #idslFile es el fichero idsl im
 
 	def generarH(idslFile, imported):
 		idsl = IDSLParsing.fromFileIDSL(idslFile)
-		os.system("rm "+outputPath + "/" + idsl['module']['name'] + "ROS/msg/__init__.py")
-		os.system("rm "+outputPath + "/" + idsl['module']['name'] + "ROS/srv/__init__.py")
+		os.system("rm -f "+outputPath + "/" + idsl['module']['name'] + "ROS/msg/__init__.py")
+		os.system("rm -f "+outputPath + "/" + idsl['module']['name'] + "ROS/srv/__init__.py")
 		for imp in idsl['module']['contents']:
 			if imp['type'] in ['struct','sequence']:
 				for f in [ "SERVANT.MSG"]:
@@ -94,7 +94,9 @@ def generateHeaders(idslFile, outputPath, comp): #idslFile es el fichero idsl im
 										except:
 											pass
 								else:
-									print "error: service with too many params. Form is: void method(type inVar, out type outVar);"
+									print "error: ROS service with incorrect number of parameters. ROS only supports remote procedure calls of the form: void method(type inVar, out type outVar);"
+									for param in enumerate(method['params']):
+										print param[0], '-->', param[1]
 									sys.exit(-1)
 							else:
 								print "error: service without params. Form is: void method(type inVar, out type outVar);"
@@ -108,8 +110,8 @@ def generateHeaders(idslFile, outputPath, comp): #idslFile es el fichero idsl im
 		pass
 
 	generarH(idslFile, imported)
-#	os.system("rm "+outputPath+"/*.msg")
-#	os.system("rm "+outputPath+"/*.srv")
+	os.system("rm "+outputPath+"/*.msg")
+	os.system("rm "+outputPath+"/*.srv")
 #
 # Misc functions
 #

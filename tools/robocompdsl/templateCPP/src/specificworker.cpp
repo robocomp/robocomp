@@ -60,7 +60,7 @@ SpecificWorker::SpecificWorker(MapPrx& mprx) : GenericWorker(mprx)
 {
 
 [[[cog
-if component['useViewer'] == "true":
+if component['innermodelviewer']:
 	cog.outl("#ifdef USE_QTGUI")
 	cog.outl("<TABHERE>imv = NULL;")
 	cog.outl("<TABHERE>osgView = new OsgView(this);")
@@ -136,7 +136,7 @@ except:
 //		innermodel = new InnerModel(innermodel_path);
 //	}
 //	catch(std::exception e) { qFatal("Error reading config params"); }""")
-if component['useViewer'] == "true":
+if component['innermodelviewer']:
 	cog.outl("#ifdef USE_QTGUI")
 	cog.outl("<TABHERE>imv = new InnerModelViewer (innerModel, \"root\", osgView->getRootGroup(), true);")
 	cog.outl("#endif")
@@ -183,7 +183,7 @@ void SpecificWorker::compute()
 [[[cog
 if component['usingROS'] == True:
 	cog.outl("<TABHERE>ros::spinOnce();")
-if component['useViewer'] == "true":
+if component['innermodelviewer']:
 	cog.outl("#ifdef USE_QTGUI")
 	cog.outl("<TABHERE>if (imv) imv->update();")
 	cog.outl("<TABHERE>osgView->frame();")

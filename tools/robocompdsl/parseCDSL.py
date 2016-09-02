@@ -157,14 +157,14 @@ class CDSLParsing:
 		language = Suppress(CaselessLiteral("language")) + (CaselessLiteral("cpp")|CaselessLiteral("python")) + semicolon
 		# Qtversion
 		qtVersion = Group(Optional(Suppress(CaselessLiteral("useQt")) + (CaselessLiteral("qt4")|CaselessLiteral("qt5")) + semicolon))
-		# useViewer
-		useViewer = Group(Optional(Suppress(CaselessLiteral("useViewer")) + (CaselessLiteral("true")|CaselessLiteral("false")) + semicolon))
+		# InnerModelViewer
+		innermodelviewer = Group(Optional(Suppress(CaselessLiteral("InnerModelViewer")) + (CaselessLiteral("true")|CaselessLiteral("false")) + semicolon))
 		# GUI
 		gui = Group(Optional(Suppress(CaselessLiteral("gui")) + CaselessLiteral("Qt") + opp + identifier + clp + semicolon ))
 		# additional options
 		options = Group(Optional(Suppress(CaselessLiteral("options")) + identifier + ZeroOrMore(Suppress(Word(',')) + identifier) + semicolon))
 		
-		componentContents = communications.setResultsName('communications') & language.setResultsName('language') & gui.setResultsName('gui') & options.setResultsName('options') & qtVersion.setResultsName('useQt') & useViewer.setResultsName('useViewer')
+		componentContents = communications.setResultsName('communications') & language.setResultsName('language') & gui.setResultsName('gui') & options.setResultsName('options') & qtVersion.setResultsName('useQt') & innermodelviewer.setResultsName('innermodelviewer')
 		component = Suppress(CaselessLiteral("component")) + identifier.setResultsName("name") + op + componentContents.setResultsName("properties") + cl + semicolon
 
 		CDSL = idslImports.setResultsName("imports") + component.setResultsName("component")
@@ -256,10 +256,10 @@ class CDSLParsing:
 			pass
 		except:
 			pass
-		# useViewer
-		component['useViewer'] = 'false'
+		# innermodelviewer
+		component['innermodelviewer'] = 'false'
 		try:
-			component['useViewer'] = tree['properties']['useViewer'][0]
+			component['innermodelviewer'] = 'innermodelviewer' in [ x.lower() for x in component['options'] ]
 			pass
 		except:
 			pass
