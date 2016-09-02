@@ -58,11 +58,10 @@ else (FCL_SUPPORT)
 	SET (FCL_SUPPORT_VALUE "0")
 endif (FCL_SUPPORT)
 
-
 include_directories( ${CMAKE_CURRENT_BINARY_DIR}/include include/innermodel )
-
-configure_file ("include/${LIB_NAME}/innermodel.in.h" "include/${LIB_NAME}/innermodel.h")
-
+configure_file ("include/${LIB_NAME}/innermodel.in.h" 
+								"include/${LIB_NAME}/innermodel.h"
+						)
 
 # Python bindings
 set(Boost_USE_STATIC_LIBS OFF)
@@ -76,9 +75,6 @@ if (PYTHON_BINDINGS_SUPPORT)
 	MESSAGE(STATUS "im PYTHON BINDINGS: LIBS ${PYTHON_LIBRARIES} ${Boost_LIBRARY_DIRS_DIRS}")
 	link_directories(${PYTHON_LIBRARIES} ${Boost_LIBRARY_DIRS_DIRS})
 endif (PYTHON_BINDINGS_SUPPORT)
-
-
-
 
 RoboComp_LIB_DEPEND(build ${LIB_NAME} DEPS ${LIB_DEPS} OPT_DEPS)
 set(OUT_FILE_NAME ${PROJECT_NAME_LOWER}_${LIB_NAME})
