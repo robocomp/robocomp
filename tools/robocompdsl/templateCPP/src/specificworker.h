@@ -75,9 +75,7 @@ except:
 #include <genericworker.h>
 #include <innermodel/innermodel.h>
 [[[cog
-print (component['innermodelviewer'])
 if component['innermodelviewer']:
-	print (component['innermodelviewer'])
 	cog.outl("#ifdef USE_QTGUI")
 	cog.outl("<TABHERE>#include <osgviewer/osgview.h>")
 	cog.outl("<TABHERE>#include <innermodel/innermodelviewer.h>")
@@ -89,7 +87,7 @@ class SpecificWorker : public GenericWorker
 {
 Q_OBJECT
 public:
-	SpecificWorker(MapPrx& mprx);	
+	SpecificWorker(MapPrx& mprx);
 	~SpecificWorker();
 	bool setParams(RoboCompCommonBehavior::ParameterList params);
 
@@ -186,7 +184,7 @@ if 'subscribesTo' in component:
 [[[end]]]
 
 public slots:
-	void compute(); 	
+	void compute();
 
 private:
 	InnerModel *innerModel;

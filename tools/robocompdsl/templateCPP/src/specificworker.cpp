@@ -127,7 +127,7 @@ try:
 //		qFatal("Error reading config params");
 //	}""")
 except:
-	cog.outl("""//       THE FOLLOWING IS JUST AN EXAMPLE for components
+	cog.outl("""//       THE FOLLOWING IS JUST AN EXAMPLE
 //
 //	try
 //	{
