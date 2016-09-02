@@ -43,6 +43,7 @@ set(incs
     include/${LIB_NAME}/innermodelrgbd.h 
     include/${LIB_NAME}/innermodeltouchsensor.h 
     include/${LIB_NAME}/innermodeltransform.h 
+    include/${LIB_NAME}/innermodelmesh.h 
 )
     
 # FCL
