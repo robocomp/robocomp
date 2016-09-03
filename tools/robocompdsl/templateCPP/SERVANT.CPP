@@ -79,7 +79,6 @@ Z()
 I(GenericWorker *_worker)
 {
 	worker = _worker;
-	mutex = worker->mutex;       // Shared worker mutex
 }
 
 

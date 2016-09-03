@@ -162,12 +162,9 @@ I();
 ]]]
 [[[end]]]
 
-	QMutex *mutex;
 private:
 
 	GenericWorker *worker;
-public slots:
-
 
 };
 
