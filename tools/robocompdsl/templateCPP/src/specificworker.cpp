@@ -29,13 +29,10 @@ def bodyCodeFromName(name, component):
 		#######################################################
 		# code to implement subscription to AGMExecutiveTopic #
 		#######################################################
-		mdlw = 'Ice'
-		if isAGM2AgentROS(component):
-			mdlw = 'ROS'
-		elif name == 'symbolsUpdated' or name == 'symbolsUpdated':
-			bodyCode = "\tQMutexLocker locker(mutex);\n\tfor (auto n : modification)\n\t\tAGMModelConverter::include" + mdlw + "ModificationInInternalModel(n, worldModel);\n"
+		if name == 'symbolsUpdated' or name == 'symbolsUpdated':
+			bodyCode = "\tQMutexLocker locker(mutex);\n\tfor (auto n : modification)\n\t\tAGMModelConverter::includeIceModificationInInternalModel(n, worldModel);\n"
 		elif name == 'edgesUpdated' or name == 'edgeUpdated':
-			bodyCode = "\tQMutexLocker locker(mutex);\n\tfor (auto e : modification)\n\t{\n\t\tAGMModelConverter::include" + mdlw + "ModificationInInternalModel(e, worldModel);\n\t\tAGMInner::updateImNodeFromEdge(worldModel, e, innerModelViewer->innerModel);\n\t}\n"
+			bodyCode = "\tQMutexLocker locker(mutex);\n\tfor (auto e : modification)\n\t{\n\t\tAGMModelConverter::includeIceModificationInInternalModel(e, worldModel);\n\t\tAGMInner::updateImNodeFromEdge(worldModel, e, innerModelViewer->innerModel);\n\t}\n"
 		if name == 'symbolUpdated' or name == 'edgeUpdated' or name == 'symbolsUpdated' or name == 'edgesUpdated':
 			bodyCode = "<TABHERE>QMutexLocker locker(mutex);\n<TABHERE>AGMModelConverter::includeIceModificationInInternalModel(modification, worldModel);\n \n<TABHERE>delete innerModel;\n<TABHERE>innerModel = AGMInner::extractInnerModel(worldModel);"
 		elif name == 'structuralChange':
@@ -207,6 +204,8 @@ except:
 
 void SpecificWorker::compute()
 {
+	QMutexLocker locker(mutex);
+	
 // 	try
 // 	{
 // 		camera_proxy->getYImage(0,img, cState, bState);
