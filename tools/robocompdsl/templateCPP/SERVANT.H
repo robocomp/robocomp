@@ -73,9 +73,6 @@ Z()
 [[[end]]]
 _H
 
-// QT includes
-#include <QtCore/QObject>
-
 // Ice includes
 #include <Ice/Ice.h>
 #include <
@@ -106,7 +103,7 @@ cog.out(theInterface)
 Z()
 ]]]
 [[[end]]]
-I : public QObject , public virtual 
+I : public virtual 
 [[[cog
 A()
 cog.out(module['name'])
@@ -122,7 +119,6 @@ Z()
 [[[end]]]
 
 {
-Q_OBJECT
 public:
 	
 [[[cog
@@ -131,7 +127,7 @@ cog.out(theInterface)
 Z()
 ]]]
 [[[end]]]
-I( GenericWorker *_worker, QObject *parent = 0 );
+I(GenericWorker *_worker);
 	~
 	[[[cog
 A()

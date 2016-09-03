@@ -19,9 +19,6 @@
 #ifndef COMMONBEHAVIORI_H
 #define COMMONBEHAVIORI_H
 
-// QT includes
-#include <QtCore/QObject>
-
 // Ice includes
 #include <Ice/Ice.h>
 #include <CommonBehavior.h>
@@ -35,12 +32,10 @@ using namespace RoboCompCommonBehavior;
 /**
 	\class CommonBehaviorI <p>Servant for components common behaviors. This class implements the methods of the public interface of CommonBehavior.
 */
-class CommonBehaviorI : public QObject , public virtual RoboCompCommonBehavior::CommonBehavior
+class CommonBehaviorI : public virtual RoboCompCommonBehavior::CommonBehavior
 {
-Q_OBJECT
 public:
-	CommonBehaviorI( GenericMonitor *_monitor, QObject *parent = 0 );
-	~CommonBehaviorI();
+	CommonBehaviorI( GenericMonitor *_monitor );
 
 	int getPeriod( const Ice::Current & = Ice::Current());
 	void setPeriod(int period, const Ice::Current & = Ice::Current());
@@ -50,12 +45,9 @@ public:
 	void setParameterList(const RoboCompCommonBehavior::ParameterList &l, const Ice::Current & = Ice::Current());
 	void reloadConfig( const Ice::Current& = Ice::Current());
 	RoboCompCommonBehavior::State getState(const Ice::Current& = Ice::Current());
-// 	QMutex *mutex;
+
 private:
-
 	GenericMonitor *monitor;	///*<monitor Pointer to access monitor methods. It's used to set or read component configuration.
-public slots:
-
 
 };
 
