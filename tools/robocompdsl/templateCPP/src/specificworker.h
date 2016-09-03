@@ -56,15 +56,11 @@ Z()
 */
 
 [[[cog
-
 try:
 	if 'agmagent' in [ x.lower() for x in component['options'] ]:
 		cog.outl("// THIS IS AN AGENT")
-
-
 except:
 	pass
-
 ]]]
 [[[end]]]
 
@@ -192,7 +188,7 @@ private:
 if component['innermodelviewer']:
 	cog.outl("#ifdef USE_QTGUI")
 	cog.outl("<TABHERE>OsgView *osgView;")
-	cog.outl("<TABHERE>InnerModelViewer *imv;")
+	cog.outl("<TABHERE>InnerModelViewer *innerModelViewer;")
 	cog.outl("#endif")
 try:
 	if isAGM1Agent(component):

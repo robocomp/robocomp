@@ -23,6 +23,65 @@ if component == None:
 from parseIDSL import *
 pool = IDSLPool(theIDSLs)
 
+def bodyCodeFromName(name, component):
+	bodyCode=""
+	if isAGM1Agent(component):
+		#######################################################
+		# code to implement subscription to AGMExecutiveTopic #
+		#######################################################
+		mdlw = 'Ice'
+		if isAGM2AgentROS(component):
+			mdlw = 'ROS'
+		elif name == 'symbolsUpdated' or name == 'symbolsUpdated':
+			bodyCode = "\tQMutexLocker locker(mutex);\n\tfor (auto n : modification)\n\t\tAGMModelConverter::include" + mdlw + "ModificationInInternalModel(n, worldModel);\n"
+		elif name == 'edgesUpdated' or name == 'edgeUpdated':
+			bodyCode = "\tQMutexLocker locker(mutex);\n\tfor (auto e : modification)\n\t{\n\t\tAGMModelConverter::include" + mdlw + "ModificationInInternalModel(e, worldModel);\n\t\tAGMInner::updateImNodeFromEdge(worldModel, e, innerModelViewer->innerModel);\n\t}\n"
+		if name == 'symbolUpdated' or name == 'edgeUpdated' or name == 'symbolsUpdated' or name == 'edgesUpdated':
+			bodyCode = "<TABHERE>QMutexLocker locker(mutex);\n<TABHERE>AGMModelConverter::includeIceModificationInInternalModel(modification, worldModel);\n \n<TABHERE>delete innerModel;\n<TABHERE>innerModel = AGMInner::extractInnerModel(worldModel);"
+		elif name == 'structuralChange':
+			bodyCode = "<TABHERE>mutex->lock();\n <TABHERE>AGMModelConverter::fromIceToInternal(w, worldModel);\n \n<TABHERE>delete innerModel;\n<TABHERE>innerModel = AGMInner::extractInnerModel(worldModel);\n<TABHERE>mutex->unlock();"
+		#######################################
+		# code to implement AGMCommonBehavior #
+		#######################################
+		elif name == 'activateAgent':
+			bodyCode = "<TABHERE>bool activated = false;\n<TABHERE>if (setParametersAndPossibleActivation(prs, activated))\n<TABHERE>{\n<TABHERE><TABHERE>if (not activated)\n<TABHERE><TABHERE>{\n<TABHERE><TABHERE><TABHERE>return activate(p);\n<TABHERE><TABHERE>}\n<TABHERE>}\n<TABHERE>else\n<TABHERE>{\n<TABHERE><TABHERE>return false;\n<TABHERE>}\n<TABHERE>return true;"
+		elif name == 'deactivateAgent':
+			bodyCode = "<TABHERE>return deactivate();"
+		elif name == 'getAgentState':
+			bodyCode = "<TABHERE>StateStruct s;\n<TABHERE>if (isActive())\n<TABHERE>{\n<TABHERE><TABHERE>s.state = Running;\n<TABHERE>}\n<TABHERE>else\n<TABHERE>{\n<TABHERE><TABHERE>s.state = Stopped;\n<TABHERE>}\n<TABHERE>s.info = p.action.name;\n<TABHERE>return s;"
+		elif name == 'getAgentParameters':
+			bodyCode = "<TABHERE>return params;"
+		elif name == 'setAgentParameters':
+			bodyCode = "<TABHERE>bool activated = false;\n<TABHERE>return setParametersAndPossibleActivation(prs, activated);"
+		elif name == 'uptimeAgent':
+			bodyCode = "<TABHERE>return 0;"
+		elif name == 'reloadConfigAgent':
+			bodyCode = "<TABHERE>return true;"
+
+	elif isAGM2Agent(component):
+		mdlw = 'Ice'
+		if isAGM2AgentROS(component):
+			mdlw = 'ROS'
+		elif name == 'symbolsUpdated':
+			bodyCode = "\tQMutexLocker locker(mutex);\n\tfor (auto n : modification"
+			if mdlw == 'ROS':
+				bodyCode += ".NodeSequence"
+			bodyCode += ")\n\t\tAGMModelConverter::include" + mdlw + "ModificationInInternalModel(n, worldModel);\n"
+		elif name == 'edgesUpdated':
+			bodyCode = "\tQMutexLocker locker(mutex);\n\tfor (auto e : modification"
+			if mdlw == 'ROS':
+				bodyCode += ".EdgeSequence"
+			bodyCode += ")\n\t{\n\t\tAGMModelConverter::include" + mdlw + "ModificationInInternalModel(e, worldModel);\n\t\tAGMInner::updateImNodeFromEdge(worldModel, e, innerModelViewer->innerModel);\n\t}\n"
+		elif name == 'structuralChange':
+			bodyCode = "\tQMutexLocker locker(mutex);\n\tAGMModelConverter::from" + mdlw + "ToInternal(w, worldModel);\n\t\n\tInnerModel *newIM = AGMInner::extractInnerModel(worldModel);\n"
+			if 'innermodelviewer' in component['options']:
+				bodyCode += "\tif (innerModelViewer)\n\t{\n\t\tosgView->getRootGroup()->removeChild(innerModelViewer);\n\t\tdelete innerModel;\n\t}\n"
+			bodyCode += "\tinnerModel = newIM;\n"
+			if 'innermodelviewer' in component['options']:
+				bodyCode += "\tinnerModelViewer = new InnerModelViewer(innerModel, \"root\", osgView->getRootGroup(), true);\n"
+
+		return bodyCode
+
 
 ]]]
 [[[end]]]
@@ -62,7 +121,7 @@ SpecificWorker::SpecificWorker(MapPrx& mprx) : GenericWorker(mprx)
 [[[cog
 if component['innermodelviewer']:
 	cog.outl("#ifdef USE_QTGUI")
-	cog.outl("<TABHERE>imv = NULL;")
+	cog.outl("<TABHERE>innerModelViewer = NULL;")
 	cog.outl("<TABHERE>osgView = new OsgView(this);")
 	cog.outl("<TABHERE>osgGA::TrackballManipulator *tb = new osgGA::TrackballManipulator;")
 	cog.outl("<TABHERE>osg::Vec3d eye(osg::Vec3(4000.,4000.,-1000.));")
@@ -101,44 +160,21 @@ SpecificWorker::~SpecificWorker()
 
 bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
 {
-
-
 [[[cog
-try:
-	if 'agmagent' in [ x.lower() for x in component['options'] ]:
-		cog.outl("""//	THE FOLLOWING IS JUST AN EXAMPLE for AGENTS
-//	try
-//	{
-//		RoboCompCommonBehavior::Parameter par = params.at("NameAgent.InnerModel") ;
-//		if( QFile(QString::fromStdString(par.value)).exists() == true)
-//		{
-//			qDebug() << __FILE__ << __FUNCTION__ << __LINE__ << "Reading Innermodel file " << QString::fromStdString(par.value);
-//			innerModel = new InnerModel(par.value);
-//			qDebug() << __FILE__ << __FUNCTION__ << __LINE__ << "Innermodel file read OK!" ;
-//		}
-//		else
-//		{
-//			qDebug() << __FILE__ << __FUNCTION__ << __LINE__ << "Innermodel file " << QString::fromStdString(par.value) << " does not exists";
-//			qFatal("Exiting now.");
-//		}
-//	}
-//	catch(std::exception e)
-//	{
-//		qFatal("Error reading config params");
-//	}""")
-except:
-	cog.outl("""//       THE FOLLOWING IS JUST AN EXAMPLE
+cog.outl("""//       THE FOLLOWING IS JUST AN EXAMPLE
 //
 //	try
 //	{
 //		RoboCompCommonBehavior::Parameter par = params.at("InnerModelPath");
-//		innermodel_path=par.value;
+//		innermodel_path = par.value;
 //		innermodel = new InnerModel(innermodel_path);
 //	}
-//	catch(std::exception e) { qFatal("Error reading config params"); }""")
+//	catch(std::exception e) { qFatal("Error reading config params"); }
+
+""")
 if component['innermodelviewer']:
 	cog.outl("#ifdef USE_QTGUI")
-	cog.outl("<TABHERE>imv = new InnerModelViewer (innerModel, \"root\", osgView->getRootGroup(), true);")
+	cog.outl("<TABHERE>innerModelViewer = new InnerModelViewer (innerModel, \"root\", osgView->getRootGroup(), true);")
 	cog.outl("#endif")
 ]]]
 [[[end]]]	
@@ -148,7 +184,7 @@ if component['innermodelviewer']:
 	
 [[[cog
 try:
-	if 'agmagent' in [ x.lower() for x in component['options'] ]:
+	if isAGM1Agent(component):
 		cog.outl("<TABHERE>try")
 		cog.outl("<TABHERE>{")
 		cog.outl("<TABHERE><TABHERE>RoboCompAGMWorldModel::World w = agmexecutive_proxy->getModel();")
@@ -158,6 +194,8 @@ try:
 		cog.outl("<TABHERE>{")
 		cog.outl("<TABHERE><TABHERE>printf(\"The executive is probably not running, waiting for first AGM model publication...\");")
 		cog.outl("<TABHERE>}")
+	elif isAGM2Agent(component):
+		cog.outl("// TODO: Here we should ask the DSR for the current model for initialization purposes.")
 
 except:
 	pass
@@ -169,7 +207,6 @@ except:
 
 void SpecificWorker::compute()
 {
-//computeCODE
 // 	try
 // 	{
 // 		camera_proxy->getYImage(0,img, cState, bState);
@@ -185,7 +222,7 @@ if component['usingROS'] == True:
 	cog.outl("<TABHERE>ros::spinOnce();")
 if component['innermodelviewer']:
 	cog.outl("#ifdef USE_QTGUI")
-	cog.outl("<TABHERE>if (imv) imv->update();")
+	cog.outl("<TABHERE>if (innerModelViewer) innerModelViewer->update();")
 	cog.outl("<TABHERE>osgView->frame();")
 	cog.outl("#endif")
 ]]]
@@ -206,7 +243,7 @@ if 'implements' in component:
 				for mname in interface['methods']:
 					method = interface['methods'][mname]
 					paramStrA = ''
-					bodyCode = bodyCodeFromName(method['name'])
+					bodyCode = bodyCodeFromName(method['name'], component)
 					if communicationIsIce(impa):
 						for p in method['params']:
 							# delim
@@ -222,13 +259,13 @@ if 'implements' in component:
 									ampersand = ''
 							# STR
 							paramStrA += delim + const + p['type'] + ' ' + ampersand + p['name']
-						cog.outl(method['return'] + ' SpecificWorker::' + method['name'] + '(' + paramStrA + ")\n{\n//implementCODE\n"+bodyCode+"\n}\n")
+						cog.outl(method['return'] + ' SpecificWorker::' + method['name'] + '(' + paramStrA + ")\n{\n"+bodyCode+"\n}\n")
 					else:
 						paramStrA = module['name'] +"ROS::"+method['name']+"::Request &req, "+module['name']+"ROS::"+method['name']+"::Response &res"
 						if imp in component['iceInterfaces']:
-							cog.outl('bool SpecificWorker::ROS' + method['name'] + '(' + paramStrA + ")\n{\n//implementCODE\n"+bodyCode+"\n}\n")
+							cog.outl('bool SpecificWorker::ROS' + method['name'] + '(' + paramStrA + ")\n{\n"+bodyCode+"\n}\n")
 						else:
-							cog.outl('bool SpecificWorker::' + method['name'] + '(' + paramStrA + ")\n{\n//implementCODE\n"+bodyCode+"\n}\n")
+							cog.outl('bool SpecificWorker::' + method['name'] + '(' + paramStrA + ")\n{\n"+bodyCode+"\n}\n")
 
 if 'subscribesTo' in component:
 	for impa in component['subscribesTo']:
@@ -245,7 +282,7 @@ if 'subscribesTo' in component:
 				for mname in interface['methods']:
 					method = interface['methods'][mname]
 					paramStrA = ''
-					bodyCode = bodyCodeFromName(method['name'])
+					bodyCode = bodyCodeFromName(method['name'], component)
 					if communicationIsIce(impa):
 						for p in method['params']:
 							# delim
@@ -261,7 +298,7 @@ if 'subscribesTo' in component:
 									ampersand = ''
 							# STR
 							paramStrA += delim + const + p['type'] + ' ' + ampersand + p['name']
-						cog.outl(method['return'] + ' SpecificWorker::' + method['name'] + '(' + paramStrA + ")\n{\n//subscribesToCODE\n"+bodyCode+"\n}\n")
+						cog.outl(method['return'] + ' SpecificWorker::' + method['name'] + '(' + paramStrA + ")\n{\n"+bodyCode+"\n}\n")
 					else:
 						for p in method['params']:
 							# delim
@@ -283,9 +320,9 @@ if 'subscribesTo' in component:
 							# STR
 							paramStrA += delim + p['type'] + ' ' + p['name']
 						if imp in component['iceInterfaces']:
-							cog.outl('void SpecificWorker::ROS' + method['name'] + '(' + paramStrA + ")\n{\n//subscribesToCODE\n"+bodyCode+"\n}\n")
+							cog.outl('void SpecificWorker::ROS' + method['name'] + '(' + paramStrA + ")\n{\n"+bodyCode+"\n}\n")
 						else:
-							cog.outl('void SpecificWorker::' + method['name'] + '(' + paramStrA + ")\n{\n//subscribesToCODE\n"+bodyCode+"\n}\n")
+							cog.outl('void SpecificWorker::' + method['name'] + '(' + paramStrA + ")\n{\n"+bodyCode+"\n}\n")
 ]]]
 [[[end]]]
 
