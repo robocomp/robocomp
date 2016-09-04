@@ -31,8 +31,6 @@ osg::Vec3 QVecToOSGVec(const QVec &vec)
 	return osg::Vec3(vec(0), vec(1), -vec(2));
 }
 
-
-
 osg::Vec4 htmlStringToOsgVec4(QString color)
 {
 	QString red   = QString("00");
@@ -45,8 +43,6 @@ osg::Vec4 htmlStringToOsgVec4(QString color)
 	return osg::Vec4(float(red.toInt(&ok, 16))/255., float(green.toInt(&ok, 16))/255., float(blue.toInt(&ok, 16))/255., 0.f);
 }
 
-
-
 QString osgVec4ToHtmlString(osg::Vec4 color)
 {
 	QString ret("#");
@@ -55,8 +51,6 @@ QString osgVec4ToHtmlString(osg::Vec4 color)
 	QString blue  = QString::number(((int)color[2]*255), 16);
 	return ret + red + green + blue;
 }
-
-
 
 osg::Matrix QMatToOSGMat4(const RTMat &nodeB)
 {
@@ -69,8 +63,6 @@ osg::Matrix QMatToOSGMat4(const RTMat &nodeB)
 	                     node(0,2), node(1,2), node(2,2), node(3,2),
 	                     node(0,3), node(1,3), node(2,3), node(3,3) );
 }
-
-
 
 // ------------------------------------------------------------------------------------------------
 // IMVPlane
@@ -162,7 +154,6 @@ IMVPlane::~IMVPlane ( )
 
 }
 
-
 void IMVPlane::updateBuffer(uint8_t *data_, int32_t width_, int32_t height_)
 {
 	data = data_;
@@ -170,8 +161,6 @@ void IMVPlane::updateBuffer(uint8_t *data_, int32_t width_, int32_t height_)
 	height = height_;
 	dirty = true;
 }
-
-
 
 void IMVPlane::performUpdate()
 {
@@ -196,8 +185,6 @@ void IMVPlane::performUpdate()
 		backData = data;
 	}
 }
-
-
 
 // ------------------------------------------------------------------------------------------------
 // IMVPointCloud
@@ -233,8 +220,6 @@ IMVPointCloud::IMVPointCloud(std::string id_) : osg::Geode()
 	addDrawable(cloudGeometry);
 }
 
-
-
 void IMVPointCloud::update()
 {
 	if (points->size() != colors->size()) throw "points->size() != colors->size()";
@@ -260,29 +245,25 @@ void IMVPointCloud::update()
 	addDrawable(cloudGeometry);
 }
 
-
-
 float IMVPointCloud::getPointSize()
 {
 	return pointSize;
 }
-
-
 
 void IMVPointCloud::setPointSize(float p)
 {
 	pointSize = p;
 }
 
-
-
 // ------------------------------------------------------------------------------------------------
 // InnerModelViewer
 // ------------------------------------------------------------------------------------------------
 InnerModelViewer::InnerModelViewer(InnerModel *im, QString root,  osg::Group *parent, bool ignoreCameras) : osg::Switch()
-{
+{	
 	// Initialize InnerModel pointer
 	innerModel = im;
+	mutex = innerModel->mutex;
+	
 	// Get main node
 	InnerModelNode *imnode = innerModel->getNode(root);
 	if (not imnode)
@@ -291,13 +272,12 @@ InnerModelViewer::InnerModelViewer(InnerModel *im, QString root,  osg::Group *pa
 		throw "InnerModelViewer::InnerModelViewer(): Error: Specified root node not found.";
 	}
 	recursiveConstructor(imnode, this, mts, meshHash, ignoreCameras); //mts, osgmeshes, osgmeshPats);
+	
 	// Update
 	update();
 	if (parent)
 		parent->addChild(this);
 }
-
-
 
 InnerModelViewer::~InnerModelViewer()
 {
@@ -322,8 +302,6 @@ void InnerModelViewer::recursiveConstructor(InnerModelNode *node, osg::Group* pa
 	if ((transformation = dynamic_cast<InnerModelTransform *>(node)))
 	{
 		// Create and include MT
-		//CAUTION
-// 		osg::MatrixTransform *mt = new osg::MatrixTransform;
 		osg::ref_ptr<osg::MatrixTransform> mt = new osg::MatrixTransform;
 
 		if (parent) parent->addChild(mt);
@@ -353,6 +331,7 @@ void InnerModelViewer::recursiveConstructor(InnerModelNode *node, osg::Group* pa
 			double fov = 2. * atan2(0.5*cam.RGBDNode->height, cam.RGBDNode->focal);
 			double aspectRatio = cam.RGBDNode->width / cam.RGBDNode->height;
 			double zNear = 0.01, zFar = 10000.0;
+			
 			// Images
 			cam.rgb = new osg::Image;
 			cam.rgb->allocateImage(rgbd->width, rgbd->height, 1, GL_RGB, GL_UNSIGNED_BYTE);
@@ -400,8 +379,6 @@ void InnerModelViewer::recursiveConstructor(InnerModelNode *node, osg::Group* pa
 	else if ((plane = dynamic_cast<InnerModelPlane *>(node)))
 	{
 		// Create plane's specific mt
-// 		osg::MatrixTransform *mt = new osg::MatrixTransform;
-		//CAUTION
 		osg::ref_ptr<osg::MatrixTransform> mt = new osg::MatrixTransform;
 		planeMts[plane->id] = mt;
 		IMVPlane *imvplane = new IMVPlane(plane, plane->texture.toStdString(), osg::Vec4(0.8,0.5,0.5,0.5), 0); 
@@ -419,36 +396,27 @@ void InnerModelViewer::recursiveConstructor(InnerModelNode *node, osg::Group* pa
 	else if ((mesh = dynamic_cast<InnerModelMesh *>(node)))
 	{
 		// Create mesh's specific mt		
-// 		osg::MatrixTransform *mt = new osg::MatrixTransform;
 		osg::ref_ptr<osg::MatrixTransform> mt = new osg::MatrixTransform;
 		
-// 			qDebug()<<"Mesh ID:"<<mesh->id<<"num children"<<parent->getNumChildren();
-		
 		if (parent) parent->addChild(mt);
-// 			qDebug()<<"parent children"<<parent->getNumChildren();
 		
 		RTMat rtmat = RTMat();
 		rtmat.setR (mesh->rx, mesh->ry, mesh->rz);
 		rtmat.setTr(mesh->tx, mesh->ty, mesh->tz);
 		mt->setMatrix(QMatToOSGMat4(rtmat));
 		
-// 		osg::MatrixTransform *smt = new osg::MatrixTransform;
 		osg::ref_ptr<osg::MatrixTransform> smt = new osg::MatrixTransform; 		
 		
 		smt->setMatrix(osg::Matrix::scale(mesh->scalex,mesh->scaley,mesh->scalez));
 		mt->addChild(smt);
-		/// osgmeshPatsHash[mesh->id] = mt;
 		meshHash[mesh->id].osgmeshPaths = mt;
+
 		// Create mesh
-		//CAUTION
-		//osg::Node *osgMesh = osgDB::readNodeFile(mesh->meshPath.toStdString());
 		osg::ref_ptr<osg::Node> osgMesh = osgDB::readNodeFile(mesh->meshPath.toStdString());
 		if (!osgMesh)
 			printf("Could not find %s osg.\n", mesh->meshPath.toStdString().c_str());
-// 		osg::Group *oM = dynamic_cast<osg::Group *>(osgMesh);
 		
 		osg::ref_ptr<osg::PolygonMode> polygonMode = new osg::PolygonMode();
-		//osg::PolygonMode* polygonMode = new osg::PolygonMode();
 		if (mesh->render == InnerModelMesh::WireframeRendering) // wireframe
 			polygonMode->setMode(osg::PolygonMode::FRONT_AND_BACK, osg::PolygonMode::LINE);
 		else
@@ -456,9 +424,7 @@ void InnerModelViewer::recursiveConstructor(InnerModelNode *node, osg::Group* pa
 
 		osgMesh->getOrCreateStateSet()->setAttributeAndModes(polygonMode, osg::StateAttribute::OVERRIDE | osg::StateAttribute::ON);
 		osgMesh->getOrCreateStateSet()->setMode( GL_RESCALE_NORMAL, osg::StateAttribute::ON );
-		/// 		osgmeshesHash[mesh->id] = osgMesh;
 		meshHash[mesh->id].osgmeshes = osgMesh;
-		///meshMts[mesh->id] = mt;
 		meshHash[mesh->id].meshMts= mt;
 		osgmeshmodes[mesh->id] = polygonMode;
 		smt->addChild(osgMesh);
@@ -474,26 +440,21 @@ void InnerModelViewer::recursiveConstructor(InnerModelNode *node, osg::Group* pa
 // 	qDebug()<<"size mts mtsHash "<<mts.size()<<mtsHash.size();
 // 	qDebug()<<"end of recursiveConstructor mtsHash.keys()"<<mtsHash.keys();
 // 	qDebug()<<"end of recursiveConstructor mts.keys()"<<mts.keys();
-	
-	
 }
-
-
 
 void InnerModelViewer::setOSGMatrixTransformForPlane(osg::MatrixTransform *mt, InnerModelPlane *plane)
 {
+	QMutexLocker ml(mutex);
 	osg::Matrix r;
 	r.makeRotate(osg::Vec3(0, 0, 1), osg::Vec3(plane->normal(0), plane->normal(1), -plane->normal(2)));
-	//	r.makeIdentity();
 	osg::Matrix t;
 	t.makeTranslate(osg::Vec3(plane->point(0), plane->point(1), -plane->point(2)));
 	mt->setMatrix(r*t);
 }
 
-
-
 void InnerModelViewer::reloadMesh(QString id)
 {
+	QMutexLocker ml(mutex);
 	// Create mesh
 	InnerModelMesh *mesh = (InnerModelMesh *)innerModel->getNode(id);
 	if (not mesh)
@@ -501,34 +462,21 @@ void InnerModelViewer::reloadMesh(QString id)
 		printf("Internal error\n");
 		return;
 	}
-	//CAUTION
-	//osg::Node *osgMesh = osgDB::readNodeFile(mesh->meshPath.toStdString());
 	osg::ref_ptr<osg::Node> osgMesh = osgDB::readNodeFile(mesh->meshPath.toStdString());
 	if (not osgMesh)
 	{
 		printf("Could not find %s osg.\n", mesh->meshPath.toStdString().c_str());
 		return;
-	}
-/// 	osgmeshPats[id]->removeChild(0, 1);
-/// 	osgmeshPats[id]->addChild(osgMesh);
-/// 	((osg::MatrixTransform *)osgmeshPats[id]->getChild(0))->setMatrix(osg::Matrix::scale(mesh->scalex,mesh->scaley,mesh->scalez));
-// // 		delete ((Group *)osgmeshes[id]);
-/// 	osgmeshes[id] = osgMesh;
-	
+	}	
 	meshHash[id].osgmeshPaths->removeChild(0, 1);
 	meshHash[id].osgmeshPaths->addChild(osgMesh);
 	((osg::MatrixTransform *)meshHash[id].osgmeshPaths->getChild(0))->setMatrix(osg::Matrix::scale(mesh->scalex,mesh->scaley,mesh->scalez));
-	
 	meshHash[id].osgmeshes=osgMesh;
 }
 
-
-
 osg::Geode* InnerModelViewer::getGeode(QString id)
 {
-	//CAUTION	
-	//original
-	//osg::Group *osgMesh = dynamic_cast<osg::Group *>(meshHash[id].osgmeshes);
+	QMutexLocker ml(mutex);
 	osg::Group *osgMesh = dynamic_cast<osg::Group *>(meshHash[id].osgmeshes.get());
 	osg::Geode *geode=NULL;
 	while (geode==NULL)
@@ -538,8 +486,6 @@ osg::Geode* InnerModelViewer::getGeode(QString id)
 	}
 	return geode;
 }
-
-
 
 void InnerModelViewer::update()
 {
@@ -551,7 +497,6 @@ void InnerModelViewer::update()
 			mts[key]->setMatrix(QMatToOSGMat4(*node));
 		}
 	}
-
 	foreach(QString key, planeMts.keys())
 	{
 		osg::MatrixTransform *mt = planeMts[key];
@@ -566,24 +511,19 @@ void InnerModelViewer::update()
 			}
 		}
 	}
-	///foreach(QString key, meshMts.keys())
 	foreach(QString key, meshHash.keys()) 
 	{
-		///osg::MatrixTransform *mt = meshMts[key];
 		osg::MatrixTransform *mt = meshHash[key].meshMts;// meshMts[key];
 		InnerModelMesh *mesh = (InnerModelMesh *)innerModel->getNode(key);
 		RTMat rtmat = RTMat();
 		rtmat.setR (mesh->rx, mesh->ry, mesh->rz);
 		rtmat.setTr(mesh->tx, mesh->ty, mesh->tz);
-		///((osg::MatrixTransform *)osgmeshPats[key]->getChild(0))->setMatrix(osg::Matrix::scale(mesh->scalex,mesh->scaley,mesh->scalez));
 		((osg::MatrixTransform *)meshHash[key].osgmeshPaths->getChild(0))->setMatrix(osg::Matrix::scale(mesh->scalex,mesh->scaley,mesh->scalez));
 		mt->setMatrix(QMatToOSGMat4(rtmat));
 		
-		///osg::Node *osgMesh = osgmeshes[mesh->id];
 		osg::Node *osgMesh = meshHash[mesh->id].osgmeshes;
 		if (!osgMesh)
 			printf("Could not find %s osg.\n", mesh->meshPath.toStdString().c_str());
-// 		osg::Group *oM = dynamic_cast<osg::Group *>(osgMesh);
 		osg::PolygonMode* polygonMode = osgmeshmodes[mesh->id];
 		if (mesh->render == InnerModelMesh::WireframeRendering) // wireframe
 			polygonMode->setMode(osg::PolygonMode::FRONT_AND_BACK, osg::PolygonMode::LINE);
@@ -593,8 +533,6 @@ void InnerModelViewer::update()
 		osgMesh->getOrCreateStateSet()->setAttributeAndModes(polygonMode, osg::StateAttribute::OVERRIDE | osg::StateAttribute::ON);
 	}
 }
-
-
 
 void InnerModelViewer::setMainCamera(osgGA::TrackballManipulator *manipulator, CameraView pov) const
 {

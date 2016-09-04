@@ -157,10 +157,9 @@ class InnerModel
 		/// Graoh editing methods
 		/////////////////////////////////////////////
 		QList<QString> getIDKeys() {return hash.keys(); }
-		InnerModelNode *getNode(const QString & id) const { if (hash.contains(id)) return hash[id]; else return NULL;}
-		template <class N> N* getNode(const QString &id)
+		InnerModelNode *getNode(const QString & id) const { QMutexLocker ml(mutex); if (hash.contains(id)) return hash[id]; else return NULL;}
+		template <class N> N* getNode(const QString &id) const
 		{
-			QMutexLocker ml(mutex);
 			N* r = dynamic_cast<N *>(getNode(id));
 			if (not r)
 			{
@@ -226,12 +225,13 @@ class InnerModel
 		////////////////
 		QVec laserTo(const QString &dest, const QString & laserId , float r, float alfa)
 		{ 
-			qDebug() << __FUNCTION__ << "DEPRECATED. Use getNode<InnerModelLaser>(laserId)->laserTo(dest,laserId, r, alfa) "; 
+			//qDebug() << __FUNCTION__ << "DEPRECATED. Use getNode<InnerModelLaser>(laserId)->laserTo(dest,laserId, r, alfa) "; 
 			return getNode<InnerModelLaser>(laserId)->laserTo(dest,laserId, r, alfa); 
 		};
-			
-	protected:
+		
 		QMutex *mutex;
+		
+	protected:
 		InnerModelNode *root;
 		QHash<QString, InnerModelNode *> hash;
 		QHash<QPair<QString, QString>, RTMat> localHashTr;

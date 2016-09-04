@@ -38,6 +38,7 @@ module RoboCompTrajectoryRobot2D{
 		long estimatedTime;
 		long planningTime;
 		string state;
+		string description;
 	};
 	
 	dictionary<string, string> NavigationParameterMap;
