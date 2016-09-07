@@ -86,7 +86,7 @@ public:
 		if (collisionObject!=NULL)
 		{
 			
-			delete collisionObject;						
+			delete collisionObject;
 		}
 		fclMesh.reset();
 #endif
@@ -467,7 +467,14 @@ public:
 	void save(QTextStream &out, int tabs);
 	void update();
 	virtual InnerModelNode *copyNode(QHash<QString, InnerModelNode *> &hash, InnerModelNode *parent);
-
+	void updateValues(float width_, float height_, float focal_)
+	{
+		width = width_;
+		height = height_;
+		focal = focal_;
+		camera = Cam(focal_, focal_, width_/2., height_/2.);
+		camera.setSize(width, height);
+	}
 public:
 	Cam camera;
 	float width, height, focal;

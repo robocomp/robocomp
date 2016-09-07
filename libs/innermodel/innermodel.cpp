@@ -387,17 +387,16 @@ void InnerModel::updateTransformValues(QString transformId, float tx, float ty, 
 				RTMat Tbi;
 				Tbi.setTr( tx,ty,tz);
 				Tbi.setR ( rx,ry,rz);
-
 				///Tbp Inverse = Tpb. This gets Tpb directly. It's the same
-				RTMat Tpb= getTransformationMatrix ( getNode ( transformId)->parent->id,parentId );
+				RTMat Tpb = getTransformationMatrix ( getNode ( transformId)->parent->id,parentId );
 				///New Tpi
-				RTMat Tpi=Tpb*Tbi;
-
-				QVec angles =Tpi.extractAnglesR();
-				QVec tr=Tpi.getTr();
-
-				rx=angles.x();ry=angles.y();rz=angles.z();
-				tx=tr.x();ty=tr.y();tz=tr.z();
+				RTMat Tpi = Tpb*Tbi;
+				QVec angles = Tpi.extractAnglesR();
+				QVec tr = Tpi.getTr();
+				rx = angles.x();ry=angles.y();rz=angles.z();
+				tx = tr.x();
+				ty = tr.y();
+				tz = tr.z();
 			}
 			else if (hash[parentId] == NULL)
 				qDebug() << "There is no such" << parentId << "node";
