@@ -378,3 +378,11 @@ QVec InnerModelCamera::compute3DPointFromImageAngles(const QString &firstCamera 
 	return pR;
 }
 
+void InnerModelCamera::updateValues(float width_, float height_, float focal_)
+{
+	width = width_;
+	height = height_;
+	focal = focal_;
+	camera = Cam(focal_, focal_, width_/2., height_/2.);
+	camera.setSize(width, height);
+}

@@ -40,6 +40,7 @@ class InnerModelCamera : public InnerModelNode
 		
 		QVec project(QString reference, QVec origVec, QString cameraId);
 		QVec project(const QString &cameraId, const QVec &origVec);
+		void updateValues(float width_, float height_, float focal_);
 		QVec backProject(const QString &cameraId, const QVec &coord) ;//const;
 		void imageCoordToAngles(const QString &cameraId, QVec coord, float &pan, float &tilt, const QString & anglesRefS);
 		QVec anglesToImageCoord(const QString &cameraId, float pan, float tilt, const QString & anglesRefS);

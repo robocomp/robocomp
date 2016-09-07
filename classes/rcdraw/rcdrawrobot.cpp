@@ -128,8 +128,8 @@ void RCDrawRobot::clearRobotTrail()
 void RCDrawRobot::drawLeftFieldOfView(InnerModel *innerModel)
 {
 	QVec origen = innerModel->transform("world", QVec::vec3(-80,0,0), "base");
-	QVec finalI = innerModel->imageCoordPlusDepthTo("leftCamera", QVec(QPoint(0,0)), 4000.f, "world");
-	QVec finalD = innerModel->imageCoordPlusDepthTo("leftCamera", QVec(QPoint(320,0)), 4000.f, "world");
+	QVec finalI = innerModel->getNode<InnerModelCamera>("rgbd")->imageCoordPlusDepthTo("leftCamera", QVec(QPoint(0,0)), 4000.f, "world");
+	QVec finalD = innerModel->getNode<InnerModelCamera>("rgbd")->imageCoordPlusDepthTo("leftCamera", QVec(QPoint(320,0)), 4000.f, "world");
 
 	drawLine( QLineF( QPointF(origen.x(),origen.z()), QPointF(finalI.x(),finalI.z()) ), Qt::green, 15);
 	drawLine( QLineF( QPointF(origen.x(),origen.z()), QPointF(finalD.x(),finalD.z()) ), Qt::green, 15);
@@ -138,8 +138,8 @@ void RCDrawRobot::drawLeftFieldOfView(InnerModel *innerModel)
 void RCDrawRobot::drawRightFieldOfView(InnerModel *innerModel)
 {
 	QVec origen = innerModel->transform("world", QVec::vec3(80,0,0), "base");
-	QVec finalI = innerModel->imageCoordPlusDepthTo("rightCamera", QVec(QPoint(0,0)), 4000.f, "world");
-	QVec finalD = innerModel->imageCoordPlusDepthTo("rightCamera", QVec(QPoint(320,0)), 4000.f, "world");
+	QVec finalI = innerModel->getNode<InnerModelCamera>("rgbd")->imageCoordPlusDepthTo("rightCamera", QVec(QPoint(0,0)), 4000.f, "world");
+	QVec finalD = innerModel->getNode<InnerModelCamera>("rgbd")->imageCoordPlusDepthTo("rightCamera", QVec(QPoint(320,0)), 4000.f, "world");
 
 	drawLine( QLineF( QPointF(origen.x(),origen.z()), QPointF(finalI.x(),finalI.z()) ), Qt::magenta, 15);
 	drawLine( QLineF( QPointF(origen.x(),origen.z()), QPointF(finalD.x(),finalD.z()) ), Qt::magenta, 15);
