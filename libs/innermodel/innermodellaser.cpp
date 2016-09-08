@@ -31,7 +31,7 @@ InnerModelLaser::InnerModelLaser(QString id_, uint32_t _port, uint32_t _min, uin
 	angle = _angle;
 	ifconfig = _ifconfig;
 	
-	qDebug() << __FUNCTION__ << id << port << min << max << angle << measures;
+	//qDebug() << __FUNCTION__ << id << port << min << max << angle << measures;
 }
 
 void InnerModelLaser::save(QTextStream &out, int tabs)
