@@ -8,11 +8,12 @@ tabname=$3
 params="${4} ${5} ${6} ${7} ${8} ${9} ${11} ${12} ${13} ${14} ${15} ${16} ${17} ${18} ${19} ${20}"
 flag="0"
 
-echo "yo" $0
-echo "bin" $binary
-echo "cwd" $cwdv
-echo "tabname" $tabname
-echo "params" $params
+echo "-------------------------"
+echo "rcremote:" $0
+echo "bin:" $binary
+echo "cwd:" $cwdv
+echo "tabname:" $tabname
+echo "params:" $params
 
 #This is for split the sessionIDList string of the tabs in a list (yeah!) 
 sessionList=$(echo `qdbus org.kde.yakuake /yakuake/sessions org.kde.yakuake.sessionIdList` | tr "," "\n")
