@@ -49,8 +49,6 @@ InnerModel::InnerModel(std::string xmlFilePath)
 		error.sprintf("InnerModelReader::load error using file %s\n", xmlFilePath.c_str());
 		throw error;
 	}
-	InnerModelLaser *laser = getNode<InnerModelLaser>("laser");
-	qDebug() << __FUNCTION__ << "LASER:"  << laser->id << laser->port << laser->measures << laser->min;
 }
 
 InnerModel::InnerModel()
