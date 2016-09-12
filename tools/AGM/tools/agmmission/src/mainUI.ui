@@ -37,6 +37,26 @@
       </widget>
      </item>
      <item>
+      <widget class="QPushButton" name="stopMissionButton">
+       <property name="text">
+        <string>stop mission</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="verticalSpacer_3">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>40</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
       <widget class="QLabel" name="label_2">
        <property name="font">
         <font>
@@ -163,6 +183,13 @@ plan</string>
       <widget class="QPushButton" name="quitButton">
        <property name="text">
         <string>quit</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="saveButton">
+       <property name="text">
+        <string>save model</string>
        </property>
       </widget>
      </item>

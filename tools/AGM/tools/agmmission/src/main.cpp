@@ -190,6 +190,17 @@ int ::agmmission::run(int argc, char* argv[])
 		exit(42);
 	}
 
+	std::string stopMission;
+	try
+	{
+		stopMission = getProxyString("GoalStop");
+	}
+	catch(...)
+	{
+		fprintf(stderr, "Can't read 'GoalStop' configuration variable (needed to set the goals of the mission controller.\n");
+		exit(42);
+	}
+
 
 	try
 	{
@@ -217,6 +228,9 @@ int ::agmmission::run(int argc, char* argv[])
 	{
 		((SpecificWorker*)worker)->addMission(missions[i].first, missions[i].second);
 	}
+	printf("Stop mission: %s\n", stopMission.c_str());
+	((SpecificWorker*)worker)->setStopMission(stopMission);
+	
 	
 	//Monitor thread
 	SpecificMonitor *monitor = new SpecificMonitor(worker,communicator());
