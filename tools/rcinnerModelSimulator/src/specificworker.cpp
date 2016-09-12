@@ -715,10 +715,6 @@ SpecificWorker::SpecificWorker(MapPrx& _mprx, Ice::CommunicatorPtr _communicator
 	// Initialize Inner model
 	d->innerModel = new InnerModel(_innerModelXML);
 	
-	qDebug() << "HOEL" << d->innerModel->getNode<InnerModelOmniRobot>("robot")->port << d->innerModel->getNode<InnerModelOmniRobot>("robot")->id;
-	InnerModelNode *caca = d->innerModel->getNode("robot");
-	qDebug() << "CLASSIC" << dynamic_cast<InnerModelOmniRobot*>(caca)->port;
-	
 	//add name of .xml
 	setWindowTitle(windowTitle() + "\t" + _innerModelXML);
 
