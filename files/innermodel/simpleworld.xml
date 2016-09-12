@@ -54,7 +54,7 @@
 			<plane id="cajaMesh6" nx="1" size="400,400,400"  texture="/home/robocomp/robocomp/files/osgModels/textures/Metal.jpg" />
 		</transform>
 			
-		<differentialrobot id="base" port="10004">
+		<differentialrobot id="robot" port="10004">
 			<mesh id="base_robex" file="/home/robocomp/robocomp/files/osgModels/robex/robex.ive"  tx="0" ty="0" tz="-180" scale="1000" />
 				<translation id="laserPose" tx="0" ty="40" tz="0">
 					<laser id="laser" port="10003" measures="100" min="100" max="30000" angle="3" ifconfig="10000" />

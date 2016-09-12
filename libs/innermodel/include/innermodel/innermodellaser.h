@@ -37,7 +37,7 @@ class InnerModelLaser : public InnerModelNode
 		* @param alfa angle measure
 		* @return 3-vector of x,y,z coordinates un WRS
 		*/
-		QVec laserTo(const QString &dest, const QString & laserId , float r, float alfa);
+		QVec laserTo(const QString& dest, float r, float alpha);
 
 		uint32_t port;
 		uint32_t min, max;
