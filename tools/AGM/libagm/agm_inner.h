@@ -55,7 +55,7 @@ class AGMInner
 {
 private:
 	//funcion recursiva auxiliar para la extracción de innermodel
-	static void recorrer( AGMModel::SPtr &worldModel, InnerModel* imNew, int& symbolID, bool ignoreMeshes);
+	static void recorrer( AGMModel::SPtr &worldModel, InnerModel* imNew, const int &symbolID, bool ignoreMeshes);
 
 	//Función auxiliar para extractInnerModel. Extrae la información del arco y sigue con el proceso de creacción del árbol de innermodel
 	static void edgeToInnerModel( AGMModel::SPtr &worldModel, AGMModelEdge edge, InnerModel* imNew, bool ignoreMeshes);

@@ -158,15 +158,15 @@ void AGMModelSymbol::setAttribute(std::string a, std::string v)
 	attributes[a] = v;
 }
 
-std::string AGMModelSymbol::getAttribute(std::string a, bool debug)
+std::string AGMModelSymbol::getAttribute(const std::string &a, bool debug) const
 {
 	if (attributes.find(a) != attributes.end())
 	{
 		if (debug)
 		{
-			printf("%s -> %s\n", a.c_str(), attributes[a].c_str());
+			printf("%s -> %s\n", a.c_str(), attributes.at(a).c_str());
 		}
-		return attributes[a];
+		return attributes.at(a);
 	}
 	else
 	{
