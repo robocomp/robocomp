@@ -91,6 +91,8 @@ void SpecificMonitor::readConfig(RoboCompCommonBehavior::ParameterList &params )
  	string name = PROGRAM_NAME;
 
 	configGetString("AGMInner","InitialModel", aux.value, "");
+	printf("vvv: %s\n", aux.value.c_str());
+	exit();
 	params["AGMInner.InitialModel"] = aux;
 
 	configGetString("AGMInner","InnerModels", aux.value, "");
