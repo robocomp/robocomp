@@ -61,7 +61,7 @@ bool InnerModelReader::load(const QString &file, InnerModel *model)
 	}
 	recursive(root, model, model->root);
 
-	fich.close();
+	fich.close();	
 	return true;
 }
 
@@ -94,7 +94,7 @@ bool InnerModelReader::include(const QString &file, InnerModel *model, InnerMode
 	}
 
 	recursive(root, model, node);
-
+	
 	fich.close();
 	return true;
 }
@@ -155,10 +155,11 @@ void InnerModelReader::recursive(QDomNode parentDomNode, InnerModel *model, Inne
 			}
 			catch (...)
 			{
-				qFatal("Error in line %d", domNode.lineNumber());
+				qFatal("InnerModelReader::load(): Error in line %d", domNode.lineNumber());
 			}
 
 			// Once we know there are no unknown attributes, try to create the 
+			
 			if (e.tagName().toLower() == "rotation")
 			{
 				QString ngn = e.attribute("engine", "static");
@@ -244,7 +245,7 @@ void InnerModelReader::recursive(QDomNode parentDomNode, InnerModel *model, Inne
 			else if (e.tagName().toLower() == "laser")
 			{
 				InnerModelLaser *laser = model->newLaser(e.attribute("id"), imNode, e.attribute("port", "0").toInt(), e.attribute("min").toInt(), e.attribute("max").toInt(), e.attribute("angle").toFloat(), e.attribute("measures").toInt(), e.attribute("ifconfig"));
-// 				printf("laser: %s, port %d\n", laser->id.toStdString().c_str(), laser->port);
+ 				printf("laser: %s, port %d\n", laser->id.toStdString().c_str(), laser->port);
 				imNode->addChild(laser);
 				node = laser;
 			}
@@ -337,10 +338,8 @@ void InnerModelReader::recursive(QDomNode parentDomNode, InnerModel *model, Inne
 				if (zLength>0) lengths[2]=zLength;
 				float zWidth = e.attribute("zwidth", "-1").toFloat();
 				if (zWidth>0) widths[2]=zWidth;
-
-				
+	
 				InnerModelPlane *plane;
-
 				
 				plane = model->newPlane(e.attribute("id")+"x", imNode, "#ff0000", widths[0], widths[0], lengths[0], 1,   1,0,0,   lengths[0]/2,0,0,  false);
 				imNode->addChild(plane);
@@ -351,10 +350,7 @@ void InnerModelReader::recursive(QDomNode parentDomNode, InnerModel *model, Inne
 				plane = model->newPlane(e.attribute("id")+"c", imNode, "#ffffff", widths[0]*1.3, widths[1]*1.3, widths[2]*1.3,                       1,   1,0,0,   0,0,0,  false);
 				imNode->addChild(plane);
 
-
-
 				node = plane;
-				
 			}
 			else
 			{
@@ -365,8 +361,6 @@ void InnerModelReader::recursive(QDomNode parentDomNode, InnerModel *model, Inne
 		}
 	}
 }
-
-
 
 QMap<QString, QStringList> InnerModelReader::getValidNodeAttributes()
 {

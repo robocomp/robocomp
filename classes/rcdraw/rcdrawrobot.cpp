@@ -124,7 +124,7 @@ void RCDrawRobot::clearRobotTrail()
 	trajec.clear();
 }
 
-
+/*
 void RCDrawRobot::drawLeftFieldOfView(InnerModel *innerModel)
 {
 	QVec origen = innerModel->transform("world", QVec::vec3(-80,0,0), "base");
@@ -144,3 +144,4 @@ void RCDrawRobot::drawRightFieldOfView(InnerModel *innerModel)
 	drawLine( QLineF( QPointF(origen.x(),origen.z()), QPointF(finalI.x(),finalI.z()) ), Qt::magenta, 15);
 	drawLine( QLineF( QPointF(origen.x(),origen.z()), QPointF(finalD.x(),finalD.z()) ), Qt::magenta, 15);
 }
+*/

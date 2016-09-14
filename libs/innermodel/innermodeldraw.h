@@ -21,12 +21,7 @@
 
 #include <innermodel/innermodel.h>
 #include <innermodel/innermodelviewer.h>
-#include <innermodel/innermodeltransform.h>
-#include <innermodel/innermodeljoint.h>
-#include <innermodel/innermodelplane.h>
-#include <innermodel/innermodelmesh.h>
-#include <innermodel/innermodelcamera.h>
-#include <innermodel/innermodelpointcloud.h>
+
 
 using namespace RMat;
 
@@ -65,7 +60,6 @@ public:
  * @param texture ...
  * @return void
  */
-	
 	static void drawLine2Points(InnerModelViewer *innerViewer, QString name, QString parent, const QVec& p1, const QVec& p2, float width, QString texture);
 	static void removeObject(InnerModelViewer *innerViewer, QString name);
 	static bool removeNode(InnerModelViewer *innerViewer, const QString &item);

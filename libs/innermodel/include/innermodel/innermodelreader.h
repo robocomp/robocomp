@@ -23,6 +23,9 @@
 #include <QtXml/QtXml>
 
 #include <innermodel/innermodel.h>
+#include <innermodel/innermodelnode.h>
+#include <innermodel/innermodelcamera.h>
+
 
 class InnerModelReader
 {
@@ -30,6 +33,7 @@ public:
 	InnerModelReader();
 	~InnerModelReader();
 	static bool load(const QString &file, InnerModel *model);
+	
 private:
 	static bool include(const QString &file, InnerModel *model, InnerModelNode *node);
 	static void recursive(QDomNode parentDomNode, InnerModel *model, InnerModelNode *imNode);

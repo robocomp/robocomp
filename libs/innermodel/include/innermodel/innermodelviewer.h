@@ -54,15 +54,18 @@
 #include <qmat/QMatAll>
 
 #include <innermodel/innermodel.h>
-
-
+#include <innermodel/innermodelnode.h>
+// #include <innermodel/innermodeljoint.h>
+// #include <innermodel/innermodeltouchsensor.h>
+// #include <innermodel/innermodeldifferentialrobot.h>
+// #include <innermodel/innermodelomnirobot.h>
+// #include <innermodel/innermodelprismaticjoint.h>
+// #include <innermodel/innermodelcamera.h>
 
 osg::Vec3 QVecToOSGVec(const QVec &vec);
 osg::Vec4 htmlStringToOsgVec4(QString color);
 QString osgVec4ToHtmlString(osg::Vec4 color);
 osg::Matrix QMatToOSGMat4(const RTMat &nodeB);
-
-
 
 struct IMVCamera
 {
@@ -74,8 +77,6 @@ struct IMVCamera
 	QString id;
 };
 
-
-
 struct IMVLaser
 {
 	InnerModelLaser *laserNode;
@@ -84,111 +85,90 @@ struct IMVLaser
 	QString id;
 };
 
-
-
 struct IMVMesh
 {
 	osg::ref_ptr<osg::Node> osgmeshes;
 	osg::ref_ptr<osg::MatrixTransform> osgmeshPaths;
 	osg::ref_ptr<osg::MatrixTransform> meshMts;
-// 	osg::Node * osgmeshes;
-// 	osg::MatrixTransform * osgmeshPaths;
-// 	osg::MatrixTransform * meshMts;
 };
-
-
 
 class IMVPlane : public osg::Geode
 {
 	friend class InnerModelViewer;
-public:
-	IMVPlane(InnerModelPlane *plane, std::string imagenEntrada, osg::Vec4 valoresMaterial, float transparencia);
-	~IMVPlane();
-	void updateBuffer(uint8_t *data_, int32_t width_, int32_t height_);
-	void performUpdate();
+	public:
+		IMVPlane(InnerModelPlane *plane, std::string imagenEntrada, osg::Vec4 valoresMaterial, float transparencia);
+		~IMVPlane();
+		void updateBuffer(uint8_t *data_, int32_t width_, int32_t height_);
+		void performUpdate();
 
-	// protected:
-	uint8_t *data;
-	bool dirty;
-	int32_t width, height;
-	osg::ref_ptr<osg::Texture2D> texture;
-	osg::ref_ptr<osg::ShapeDrawable> planeDrawable;
-	osg::ref_ptr<osg::Image> image;
-	
-// 	osg::Texture2D* texture;
-// 	osg::ShapeDrawable *planeDrawable;
-// 	osg::Image *image;
+		uint8_t *data;
+		bool dirty;
+		int32_t width, height;
+		osg::ref_ptr<osg::Texture2D> texture;
+		osg::ref_ptr<osg::ShapeDrawable> planeDrawable;
+		osg::ref_ptr<osg::Image> image;
 };
-
-
 
 class IMVPointCloud : public osg::Geode
 {
-public:
-	IMVPointCloud(std::string id_);
-	void update();
-	float getPointSize();
-	void setPointSize(float p);
+	public:
+		IMVPointCloud(std::string id_);
+		void update();
+		float getPointSize();
+		void setPointSize(float p);
 
-	std::string id;
-	osg::Vec3Array *points;
-	osg::Vec4Array *colors;
+		std::string id;
+		osg::Vec3Array *points;
+		osg::Vec4Array *colors;
 
-protected:
-	osg::Vec3Array *cloudVertices;
-	osg::Vec4Array *colorsArray;
-	osg::Geometry *cloudGeometry;
-// 	osg::TemplateIndexArray <unsigned int, osg::Array::UIntArrayType,4,4> *colorIndexArray;
-	osg::DrawArrays *arrays;
-	float pointSize;
+	protected:
+		osg::Vec3Array *cloudVertices;
+		osg::Vec4Array *colorsArray;
+		osg::Geometry *cloudGeometry;
+		// osg::TemplateIndexArray <unsigned int, osg::Array::UIntArrayType,4,4> *colorIndexArray;
+		osg::DrawArrays *arrays;
+		float pointSize;
 };
-
-
 
 class InnerModelViewer : public osg::Switch
 {
-public:
-	enum CameraView { BACK_POV, FRONT_POV, LEFT_POV, RIGHT_POV, TOP_POV };
+	public:
+		enum CameraView { BACK_POV, FRONT_POV, LEFT_POV, RIGHT_POV, TOP_POV };
 
-	InnerModelViewer(InnerModel *im, QString root="root", osg::Group *parent=NULL, bool ignoreCameras=false);	
-	~InnerModelViewer();
-
-	// Returns geode if 'id' corresponds to a geode, null otherwise.
-	osg::Geode* getGeode(QString id);
-	void update();
-	void reloadMesh(QString id);	
-	void recursiveConstructor(InnerModelNode* node, osg::Group* parent, QHash< QString, osg::MatrixTransform* >& mtsHash, QHash< QString, IMVMesh >& meshHash, bool ignoreCameras=false);
-	void setMainCamera(osgGA::TrackballManipulator *manipulator, CameraView pov) const;
-
-protected:
-	void setOSGMatrixTransformForPlane(osg::MatrixTransform *mt, InnerModelPlane *plane);
-
-public:
-	InnerModel *innerModel;	
+		InnerModelViewer(InnerModel *im, QString root="root", osg::Group *parent=NULL, bool ignoreCameras=false);	
+		~InnerModelViewer();
+		void update();
+		void recursiveConstructor(InnerModelNode* node, osg::Group* parent, QHash< QString, osg::MatrixTransform* >& mtsHash, QHash< QString, IMVMesh >& meshHash, bool ignoreCameras=false);
+		void setMainCamera(osgGA::TrackballManipulator *manipulator, CameraView pov) const;
+		InnerModel *innerModel;	
 	
-	//CAUTION
-	//QHash<QString, osg::PolygonMode *> osgmeshmodes;
-	QHash<QString, osg::ref_ptr<osg::PolygonMode > > osgmeshmodes;
-	
-	//CAUTION
-	QHash<QString, osg::MatrixTransform *> mts;
-// 	QHash<QString, osg::ref_ptr<osg::MatrixTransform > > mts;
-	//CAUTION
-// 	QHash<QString, osg::MatrixTransform *> planeMts;
-	QHash<QString, osg::ref_ptr<osg::MatrixTransform > > planeMts;
-	
-	QHash<QString, IMVMesh> meshHash;
-	QHash<QString, IMVPointCloud *> pointCloudsHash;
-	QHash<QString, IMVPlane *> planesHash;
-	QHash<QString, IMVCamera> cameras;
-	QHash<QString, IMVLaser> lasers;
+		//CAUTION
+		QHash<QString, osg::ref_ptr<osg::PolygonMode > > osgmeshmodes;
+		//CAUTION
+		QHash<QString, osg::MatrixTransform *> mts;
+		//CAUTION
+		QHash<QString, osg::ref_ptr<osg::MatrixTransform > > planeMts;
+		QHash<QString, IMVMesh> meshHash;
+		QHash<QString, IMVPointCloud *> pointCloudsHash;
+		QHash<QString, IMVPlane *> planesHash;
+		QHash<QString, IMVCamera> cameras;
+		QHash<QString, IMVLaser> lasers;
         
-public:
-        void setCameraCenter(OsgView *view, const QVec center_);
-        void setLookTowards(OsgView *view, const QVec to_, const QVec up_);
-        void lookAt(OsgView *view, const QVec center_, const QVec to_, const QVec up_);
-private:
-        QVec eye, up, to;
+		QMutex *mutex;
+		void setCameraCenter(OsgView *view, const QVec center_);
+		void setLookTowards(OsgView *view, const QVec to_, const QVec up_);
+		void lookAt(OsgView *view, const QVec center_, const QVec to_, const QVec up_);
+
+	protected:
+		void setOSGMatrixTransformForPlane(osg::MatrixTransform *mt, InnerModelPlane *plane);
+		
+	private:
+    QVec eye, up, to;
+		void reloadMesh(QString id);	
+	
+		// Returns geode if 'id' corresponds to a geode, null otherwise.
+		osg::Geode* getGeode(QString id);
+
 };
 
 #endif
