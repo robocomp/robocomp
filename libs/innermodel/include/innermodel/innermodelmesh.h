@@ -27,7 +27,7 @@
 #include <osg/MatrixTransform>
 
 
-//#if FCL_SUPPORT==1
+#if FCL_SUPPORT==1
 	#include <boost/shared_ptr.hpp>
 	#include <fcl/collision.h>
 	#include <fcl/narrowphase/narrowphase.h>
@@ -40,11 +40,11 @@
 	#include <fcl/traversal/traversal_node_bvhs.h>
 	typedef fcl::BVHModel<fcl::OBBRSS> FCLModel;
 	typedef boost::shared_ptr<FCLModel> FCLModelPtr;
-//#endif
+#endif
 
 
 
-//#if FCL_SUPPORT==1
+#if FCL_SUPPORT==1
 struct IncludeTrianglesInFCL_functor
 {
 	IncludeTrianglesInFCL_functor()
@@ -89,7 +89,7 @@ struct IncludeTrianglesInFCL_functor
 		triangles->push_back(fcl::Triangle(vertices->size()-3, vertices->size()-2, vertices->size()-1));
 	}
 };
-//#endif
+#endif
 
 
 class CalculateTriangles : public osg::NodeVisitor
@@ -163,3 +163,6 @@ class InnerModelMesh : public InnerModelNode
 			float rx, ry, rz;
 };
 #endif // INNERMODELMESH_H
+
+
+
