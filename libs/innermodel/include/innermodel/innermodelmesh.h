@@ -89,8 +89,6 @@ struct IncludeTrianglesInFCL_functor
 		triangles->push_back(fcl::Triangle(vertices->size()-3, vertices->size()-2, vertices->size()-1));
 	}
 };
-#endif
-
 
 class CalculateTriangles : public osg::NodeVisitor
 {
@@ -140,7 +138,7 @@ class CalculateTriangles : public osg::NodeVisitor
 		// Transformation matrix
 		osg::Matrix transformMatrix;
 };
-
+#endif
 
 class InnerModelMesh : public InnerModelNode
 {
