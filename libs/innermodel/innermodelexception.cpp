@@ -17,7 +17,7 @@
 
 #include "innermodelexception.h"
 
-InnerModelException::InnerModelException(const std::__cxx11::string& __arg) : runtime_error(std::string("InnerModelException: ") + __arg)
+InnerModelException::InnerModelException(const string &arg) : runtime_error(std::string("InnerModelException: ") + arg)
 {
-	std::cout << __arg << std::endl;
+	std::cout << arg << std::endl;
 }

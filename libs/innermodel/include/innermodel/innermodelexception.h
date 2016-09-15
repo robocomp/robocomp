@@ -24,7 +24,7 @@
 class InnerModelException : public std::runtime_error
 {
 	public:
-		InnerModelException(const std::__cxx11::string& __arg);
+		InnerModelException(const string &arg);
 };
 
 #endif // INNERMODELEXCEPTION_H
