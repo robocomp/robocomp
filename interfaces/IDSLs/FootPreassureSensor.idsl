@@ -1,0 +1,10 @@
+module RoboCompFootPreassureSensor
+{
+    dictionary<string,int> Buffer;
+
+    interface FootPreassureSensor
+    {
+        Buffer readSensors();
+	int readSensor(string name);
+    };
+};

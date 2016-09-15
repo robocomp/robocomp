@@ -1,0 +1,16 @@
+<AGMModel>
+
+	<symbol id="1" type="robot" />
+	<symbol id="30" type="object" />
+	
+	<link src="30" dst="1" label="in" />
+
+</AGMModel>
+<!--<AGMModel>
+
+	<symbol id="22" type="person" />
+	<symbol id="30" type="object" />
+	
+	<link src="30" dst="22" label="in" />
+
+</AGMModel>-->

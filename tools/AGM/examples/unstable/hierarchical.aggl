@@ -1,0 +1,1211 @@
+spacePattern=3
+lineThickness=2
+fontName=Arial
+name=domain
+vertexDiameter=40
+shortPattern=1
+nodeThickness=2
+fontSize=12
+longPattern=3
+===
+changeRoom : active(1)
+{
+	{
+		s2:roomSt(25,75)
+		s1:roomSt(-200,75)
+		r1:object(-200,-35)
+		r2:object(25,-35)
+		robot:robot(-95,-145)
+		robot->r1(in)
+		r1->r2(transitable)
+		r1->s1(room)
+		r2->s2(room)
+	}
+	=>
+	{
+		s2:roomSt(25,75)
+		s1:roomSt(-200,75)
+		r1:object(-200,-35)
+		r2:object(25,-35)
+		robot:robot(-95,-145)
+		robot->r2(in)
+		r1->r2(transitable)
+		r1->s1(room)
+		r2->s2(room)
+	}
+	effect
+	{
+		(forall
+			something:object
+			(when
+				(in something robot)
+				(and
+					(not (in something s1))
+					(in something s2)
+				)
+			)
+		)
+	}
+}
+
+findObjectVisuallyInTable : active(1)
+{
+	{
+		contst:objectSt(95,110)
+		container:object(-130,110)
+		robot:robot(-325,0)
+		room:object(-325,110)
+		container->contst(explored)*
+		container->contst(table)
+		robot->container(know)
+		robot->room(in)
+		container->room(in)
+	}
+	=>
+	{
+		status:objectSt(95,0)
+		object:object(-130,0)
+		container:object(-130,110)
+		room:object(-325,110)
+		contst:objectSt(95,110)
+		robot:robot(-325,0)
+		container->contst(explored)*
+		container->contst(table)
+		robot->object(know)
+		object->status(see)
+		object->status(unclassified)
+		object->status(noReach)
+		object->status(position)
+		object->status(reachable)
+		object->status(hasStatus)
+		object->container(in)
+		robot->container(know)
+		robot->room(in)
+		container->room(in)
+	}
+	effect
+	{
+		(forall
+			something:object
+			(when
+				(in container something)
+				(in object something)
+			)
+		)
+	}
+}
+
+findObjectTold : active(4)
+{
+	{
+		robot:robot(-325,0)
+	}
+	=>
+	{
+		status:objectSt(95,0)
+		object:object(-130,0)
+		container:object(-130,110)
+		robot:robot(-325,0)
+		robot->object(know)
+		object->status(noSee)
+		object->status(unclassified)
+		object->status(noReach)
+		object->status(noPosition)
+		object->status(reachable)
+		object->status(hasStatus)
+		object->container(in)
+	}
+	effect
+	{
+		(forall
+			something:object
+			(when
+				(in container something)
+				(in object something)
+			)
+		)
+	}
+}
+
+findGranny : active(2)
+{
+	{
+		person:person(-15,-75)
+		roomSt:roomSt(200,50)
+		robot:robot(-190,-75)
+		personSt:personSt(200,-75)
+		room:object(-15,50)
+		robot->person(know)
+		person->personSt(granny)
+		person->personSt(noLocalized)
+		robot->room(in)
+		room->roomSt(room)
+		room->roomSt(noExplored)
+	}
+	=>
+	{
+		person:person(-15,-75)
+		roomSt:roomSt(200,55)
+		robot:robot(-190,-75)
+		personSt:personSt(200,-75)
+		room:object(-15,55)
+		robot->person(know)
+		person->personSt(granny)
+		person->room(in)
+		person->personSt(localized)
+		robot->room(in)
+		room->roomSt(room)
+		room->roomSt(noExplored)
+	}
+	effect
+	{
+		(forall
+			aRoom:object
+			aRoomSt:roomSt
+			(and
+				(not (explored aRoom aRoomSt))
+				(noExplored aRoom aRoomSt)
+			)
+		)
+	}
+}
+
+recognizeObjMug : active(1)
+{
+	{
+		status:objectSt(65,-75)
+		object:object(-130,-75)
+		robot:robot(-290,-75)
+		robot->object(know)
+		object->status(hasStatus)
+		object->status(see)
+		object->status(position)
+		object->status(unclassified)
+	}
+	=>
+	{
+		status:objectSt(60,-75)
+		object:object(-130,-75)
+		robot:robot(-290,-75)
+		robot->object(know)
+		object->status(hasStatus)
+		object->status(see)
+		object->status(position)
+		object->status(classified)
+		object->status(mug)
+	}
+}
+
+recognizeObjGlasses : active(1)
+{
+	{
+		status:objectSt(65,-75)
+		object:object(-130,-75)
+		robot:robot(-290,-75)
+		robot->object(know)
+		object->status(hasStatus)
+		object->status(see)
+		object->status(position)
+		object->status(unclassified)
+	}
+	=>
+	{
+		status:objectSt(60,-75)
+		object:object(-130,-75)
+		robot:robot(-290,-75)
+		robot->object(know)
+		object->status(hasStatus)
+		object->status(see)
+		object->status(position)
+		object->status(classified)
+		object->status(glasses)
+	}
+}
+
+recognizeObjCoffeePot : active(1)
+{
+	{
+		status:objectSt(65,-75)
+		object:object(-130,-75)
+		robot:robot(-290,-75)
+		robot->object(know)
+		object->status(hasStatus)
+		object->status(see)
+		object->status(position)
+		object->status(unclassified)
+	}
+	=>
+	{
+		status:objectSt(60,-75)
+		object:object(-130,-75)
+		robot:robot(-290,-75)
+		robot->object(know)
+		object->status(hasStatus)
+		object->status(see)
+		object->status(position)
+		object->status(classified)
+		object->status(coffeepot)
+	}
+}
+
+recognizeObjFails : active(1)
+{
+	{
+		status:objectSt(105,-80)
+		object:object(-135,-80)
+		robot:robot(-290,-80)
+		robot->object(know)
+		object->status(hasStatus)
+		object->status(see)
+		object->status(position)
+		object->status(unclassified)
+	}
+	=>
+	{
+		status:objectSt(95,-75)
+		object:object(-130,-75)
+		robot:robot(-295,-75)
+		robot->object(know)
+		object->status(hasStatus)
+		object->status(see)
+		object->status(position)
+		object->status(classifailed)
+	}
+}
+
+setRoomExplored : passive(1)
+{
+	{
+		status:roomSt(250,0)
+		object:object(0,0)
+		object->status(noExplored)
+	}
+	=>
+	{
+		status:roomSt(250,0)
+		object:object(0,0)
+		object->status(explored)
+	}
+}
+
+setRoomNotExplored : passive(1)
+{
+	{
+		status:roomSt(250,0)
+		object:object(0,0)
+		object->status(explored)
+	}
+	=>
+	{
+		status:roomSt(250,0)
+		object:object(0,0)
+		object->status(noExplored)
+	}
+}
+
+setObjectReach : active(1)
+{
+	{
+		status:objectSt(250,0)
+		object:object(65,0)
+		robot:robot(-205,0)
+		room:object(-70,0)
+		object->status(hasStatus)
+		object->status(noReach)
+		object->status(reachable)
+		object->room(in)
+		robot->room(in)
+	}
+	=>
+	{
+		status:objectSt(250,0)
+		object:object(65,0)
+		robot:robot(-205,0)
+		room:object(-70,0)
+		object->status(hasStatus)
+		object->status(reach)
+		object->status(reachable)
+		object->room(in)
+		robot->room(in)
+	}
+}
+
+setObjectNotReach : passive(1)
+{
+	{
+		status:objectSt(250,-40)
+		object:object(50,-40)
+		object->status(hasStatus)
+		object->status(reach)
+	}
+	=>
+	{
+		status:objectSt(250,-40)
+		object:object(50,-40)
+		object->status(hasStatus)
+		object->status(noReach)
+	}
+}
+
+setObjectReachable : passive(1)
+{
+	{
+		status:objectSt(250,-40)
+		object:object(35,-40)
+		object->status(hasStatus)
+		object->status(noReachable)
+	}
+	=>
+	{
+		status:objectSt(250,-40)
+		object:object(55,-40)
+		object->status(hasStatus)
+		object->status(reachable)
+	}
+}
+
+setObjectNotReachable : passive(1)
+{
+	{
+		status:objectSt(285,-40)
+		object:object(80,-40)
+		object->status(hasStatus)
+		object->status(reachable)
+	}
+	=>
+	{
+		status:objectSt(250,-40)
+		object:object(35,-45)
+		object->status(hasStatus)
+		object->status(noReachable)
+	}
+}
+
+graspObject : active(1)
+{
+	{
+		table:object(0,110)
+		object:object(130,0)
+		robot:robot(0,-110)
+		room:object(-130,0)
+		robot->object(know)
+		object->table(in)
+		robot->room(in)
+		table->room(in)
+	}
+	=>
+	{
+		table:object(0,110)
+		object:object(130,0)
+		robot:robot(0,-110)
+		room:object(-130,0)
+		robot->object(know)
+		object->robot(in)
+		robot->room(in)
+		table->room(in)
+	}
+}
+
+deliverObject : active(1)
+{
+	{
+		person:person(0,115)
+		object:object(160,0)
+		room:object(-160,0)
+		robot:robot(0,-115)
+		robot->object(know)
+		object->robot(in)
+		robot->room(in)
+		person->room(in)
+	}
+	=>
+	{
+		person:person(0,115)
+		object:object(160,0)
+		room:object(-160,0)
+		robot:robot(0,-115)
+		robot->object(know)
+		object->person(in)
+		robot->room(in)
+		person->room(in)
+	}
+}
+
+handObject : active(1)
+{
+	{
+		status:objectSt(250,0)
+		object:object(0,0)
+		object->status(reach)
+	}
+	=>
+	{
+		status:objectSt(250,0)
+		object:object(0,0)
+		object->status(noReach)
+	}
+}
+
+setObjectSee : active(1)
+{
+	{
+		status:objectSt(250,-40)
+		object:object(80,-40)
+		object->status(hasStatus)
+		object->status(noSee)
+	}
+	=>
+	{
+		status:objectSt(250,-40)
+		object:object(80,-40)
+		object->status(hasStatus)
+		object->status(see)
+	}
+}
+
+setObjectNotSee : passive(1)
+{
+	{
+		status:objectSt(250,-40)
+		object:object(80,-40)
+		object->status(hasStatus)
+		object->status(see)
+	}
+	=>
+	{
+		status:objectSt(250,-40)
+		object:object(80,-40)
+		object->status(hasStatus)
+		object->status(noSee)
+	}
+}
+
+setObjectPosition : active(1)
+{
+	{
+		status:objectSt(250,-40)
+		object:object(80,-40)
+		object->status(hasStatus)
+		object->status(noPosition)
+	}
+	=>
+	{
+		status:objectSt(250,-40)
+		object:object(80,-40)
+		object->status(hasStatus)
+		object->status(position)
+	}
+}
+
+setObjectNotPosition : passive(1)
+{
+	{
+		status:objectSt(250,-40)
+		object:object(80,-40)
+		object->status(hasStatus)
+		object->status(position)
+	}
+	=>
+	{
+		status:objectSt(250,-40)
+		object:object(80,-40)
+		object->status(hasStatus)
+		object->status(noPosition)
+	}
+}
+
+robotMovesObjectFromContainer : active(1)
+{
+	{
+		roomst:roomSt(-950,0)
+		room:object(-755,0)
+		object:object(-390,0)
+		robot:robot(-575,0)
+		c2:object(-650,100)
+		c1:object(-665,-100)
+		os:objectSt(-215,0)
+		robot->object(know)
+		robot->c2(know)
+		robot->c1(know)
+		object->c1(in)
+		object->os(reach)
+		room->roomst(room)
+		c1->room(in)
+		c2->room(in)
+		robot->room(in)
+	}
+	=>
+	{
+		roomst:roomSt(-950,0)
+		room:object(-755,0)
+		object:object(-390,0)
+		robot:robot(-575,0)
+		c2:object(-650,100)
+		c1:object(-665,-100)
+		os:objectSt(-215,0)
+		robot->object(know)
+		robot->c2(know)
+		robot->c1(know)
+		object->c2(in)
+		object->os(reach)
+		room->roomst(room)
+		c1->room(in)
+		c2->room(in)
+		robot->room(in)
+	}
+}
+
+tellHumanAboutMug : active(1)
+{
+	{
+		statusr:objectSt(-425,55)
+		robot:robot(-295,-135)
+		person:person(45,-135)
+		objectr:object(-235,-30)
+		contr:object(-180,125)
+		conth:object(-45,120)
+		robot->objectr(know)
+		robot->person(interacting)
+		objectr->statusr(hasStatus)
+		objectr->contr(in)
+		contr->conth(eq)
+		objectr->statusr(position)
+		objectr->statusr(classified)
+		objectr->statusr(mug)
+	}
+	=>
+	{
+		statusr:objectSt(-445,70)
+		objecth:object(0,-10)
+		robot:robot(-295,-135)
+		person:person(45,-135)
+		objectr:object(-235,-10)
+		contr:object(-185,175)
+		conth:object(-45,175)
+		statush:objectSt(205,85)
+		robot->objectr(know)
+		robot->person(interacting)
+		objectr->statusr(hasStatus)
+		person->objecth(know)
+		objecth->statush(hasStatus)
+		objectr->objecth(eq)
+		objecth->conth(in)
+		objectr->statusr(position)
+		objectr->statusr(classified)
+		objectr->statusr(mug)
+		objecth->statush(position)
+		objecth->statush(classified)
+		objecth->statush(mug)
+		objecth->statush(see)
+		objecth->statush(reach)
+		objecth->statush(reachable)
+		objectr->contr(in)
+		contr->conth(eq)
+	}
+}
+
+tellHumanAboutMilk : active(1)
+{
+	{
+		statusr:objectSt(-425,55)
+		robot:robot(-295,-135)
+		person:person(45,-135)
+		objectr:object(-235,-30)
+		contr:object(-180,125)
+		conth:object(-45,120)
+		robot->objectr(know)
+		robot->person(interacting)
+		objectr->statusr(hasStatus)
+		objectr->contr(in)
+		contr->conth(eq)
+		objectr->statusr(position)
+		objectr->statusr(classified)
+		objectr->statusr(milk)
+	}
+	=>
+	{
+		statusr:objectSt(-445,70)
+		objecth:object(0,-10)
+		robot:robot(-295,-135)
+		person:person(45,-135)
+		objectr:object(-235,-10)
+		contr:object(-185,175)
+		conth:object(-45,175)
+		statush:objectSt(205,85)
+		robot->objectr(know)
+		robot->person(interacting)
+		objectr->statusr(hasStatus)
+		person->objecth(know)
+		objecth->statush(hasStatus)
+		objectr->objecth(eq)
+		objecth->conth(in)
+		objectr->statusr(position)
+		objectr->statusr(classified)
+		objectr->statusr(milk)
+		objecth->statush(position)
+		objecth->statush(classified)
+		objecth->statush(milk)
+		objecth->statush(see)
+		objecth->statush(reach)
+		objecth->statush(reachable)
+		objectr->contr(in)
+		contr->conth(eq)
+	}
+}
+
+tellHumanAboutCoffeePot : active(1)
+{
+	{
+		statusr:objectSt(-425,55)
+		robot:robot(-295,-135)
+		person:person(45,-135)
+		objectr:object(-235,-30)
+		contr:object(-180,125)
+		conth:object(-45,120)
+		robot->objectr(know)
+		robot->person(interacting)
+		objectr->statusr(hasStatus)
+		objectr->contr(in)
+		contr->conth(eq)
+		objectr->statusr(position)
+		objectr->statusr(classified)
+		objectr->statusr(coffeepot)
+	}
+	=>
+	{
+		statusr:objectSt(-445,70)
+		objecth:object(0,-10)
+		robot:robot(-295,-135)
+		person:person(45,-135)
+		objectr:object(-235,-10)
+		contr:object(-185,175)
+		conth:object(-45,175)
+		statush:objectSt(205,85)
+		robot->objectr(know)
+		robot->person(interacting)
+		objectr->statusr(hasStatus)
+		person->objecth(know)
+		objecth->statush(hasStatus)
+		objectr->objecth(eq)
+		objecth->conth(in)
+		objectr->statusr(position)
+		objectr->statusr(classified)
+		objectr->statusr(coffeepot)
+		objecth->statush(position)
+		objecth->statush(classified)
+		objecth->statush(coffeepot)
+		objecth->statush(see)
+		objecth->statush(reach)
+		objecth->statush(reachable)
+		objectr->contr(in)
+		contr->conth(eq)
+	}
+}
+
+tellHumanAboutTable : active(1)
+{
+	{
+		statusr:objectSt(-425,55)
+		robot:robot(-295,-135)
+		person:person(45,-135)
+		objectr:object(-235,-30)
+		contr:object(-180,125)
+		conth:object(-45,120)
+		robot->objectr(know)
+		robot->person(interacting)
+		objectr->statusr(hasStatus)
+		objectr->contr(in)
+		contr->conth(eq)
+		objectr->statusr(position)
+		objectr->statusr(classified)
+		objectr->statusr(table)
+	}
+	=>
+	{
+		statusr:objectSt(-445,70)
+		objecth:object(0,-10)
+		robot:robot(-295,-135)
+		person:person(45,-135)
+		objectr:object(-235,-10)
+		contr:object(-185,175)
+		conth:object(-45,175)
+		statush:objectSt(205,85)
+		robot->objectr(know)
+		robot->person(interacting)
+		objectr->statusr(hasStatus)
+		person->objecth(know)
+		objecth->statush(hasStatus)
+		objectr->objecth(eq)
+		objecth->conth(in)
+		objectr->statusr(position)
+		objectr->statusr(classified)
+		objectr->statusr(table)
+		objecth->statush(position)
+		objecth->statush(classified)
+		objecth->statush(table)
+		objecth->statush(see)
+		objecth->statush(reach)
+		objecth->statush(reachable)
+		objectr->contr(in)
+		contr->conth(eq)
+	}
+}
+
+tellHumanAboutUnknownObject : active(1)
+{
+	{
+		statusr:objectSt(-490,-25)
+		conth:object(-90,100)
+		robot:robot(-295,-135)
+		person:person(-90,-135)
+		objectr:object(-295,-25)
+		contr:object(-295,100)
+		robot->objectr(know)
+		robot->person(interacting)
+		objectr->statusr(hasStatus)
+		objectr->statusr(classifailed)
+		objectr->statusr(position)
+		objectr->contr(in)
+		contr->conth(eq)
+	}
+	=>
+	{
+		statusr:objectSt(-490,-25)
+		objecth:object(-100,-25)
+		conth:object(-100,100)
+		robot:robot(-295,-135)
+		person:person(-100,-135)
+		objectr:object(-295,-25)
+		contr:object(-300,100)
+		statush:objectSt(100,-25)
+		robot->objectr(know)
+		robot->person(interacting)
+		objectr->statusr(hasStatus)
+		person->objecth(know)
+		objecth->statush(hasStatus)
+		objectr->objecth(eq)
+		objectr->statusr(classifailed)
+		objectr->statusr(position)
+		objecth->statush(unclassified)
+		objecth->statush(position)
+		objecth->statush(reachable)
+		objectr->contr(in)
+		contr->conth(eq)
+		objecth->conth(in)
+	}
+}
+
+makeHumanLook : active(2)
+{
+	{
+		statusr:objectSt(-90,180)
+		objecth:object(150,40)
+		robot:robot(-90,-75)
+		person:person(155,-75)
+		objectr:object(-90,40)
+		statush:objectSt(145,180)
+		objectr->objecth(eq)
+		robot->person(interacting)
+		robot->objectr(know)
+		person->objecth(know)
+		objectr->statusr(position)
+		objectr->statusr(see)
+		objecth->statush(noSee)
+		objecth->statush(position)
+	}
+	=>
+	{
+		statusr:objectSt(-90,180)
+		objecth:object(150,40)
+		robot:robot(-90,-75)
+		person:person(155,-75)
+		objectr:object(-90,40)
+		statush:objectSt(145,180)
+		objectr->objecth(eq)
+		robot->person(interacting)
+		robot->objectr(know)
+		person->objecth(know)
+		objectr->statusr(position)
+		objectr->statusr(see)
+		objecth->statush(see)
+		objecth->statush(position)
+	}
+}
+
+makeHumanLook : active(2)
+{
+	{
+		statusr:objectSt(-90,180)
+		objecth:object(150,40)
+		robot:robot(-90,-75)
+		person:person(155,-75)
+		objectr:object(-90,40)
+		statush:objectSt(145,180)
+		objectr->objecth(eq)
+		robot->person(interacting)
+		robot->objectr(know)
+		person->objecth(know)
+		objectr->statusr(position)
+		objectr->statusr(see)
+		objecth->statush(noSee)
+		objecth->statush(position)
+	}
+	=>
+	{
+		statusr:objectSt(-90,180)
+		objecth:object(150,40)
+		robot:robot(-90,-75)
+		person:person(155,-75)
+		objectr:object(-90,40)
+		statush:objectSt(145,180)
+		objectr->objecth(eq)
+		robot->person(interacting)
+		robot->objectr(know)
+		person->objecth(know)
+		objectr->statusr(position)
+		objectr->statusr(see)
+		objecth->statush(see)
+		objecth->statush(position)
+	}
+}
+
+personClassifiesMug : active(2)
+{
+	{
+		objecth:object(100,35)
+		robot:robot(-100,-75)
+		person:person(100,-75)
+		objectr:object(-100,35)
+		cont2:object(100,140)
+		statush:objectSt(300,35)
+		objectr->objecth(eq)
+		robot->person(interacting)
+		robot->objectr(know)
+		person->objecth(know)
+		objecth->statush(hasStatus)
+		objecth->statush(unclassified)
+		objecth->statush(see)
+		objecth->statush(position)
+	}
+	=>
+	{
+		objecth:object(100,35)
+		robot:robot(-100,-75)
+		person:person(100,-75)
+		objectr:object(-100,35)
+		cont2:object(100,140)
+		statush:objectSt(300,35)
+		objectr->objecth(eq)
+		robot->person(interacting)
+		robot->objectr(know)
+		person->objecth(know)
+		objecth->statush(hasStatus)
+		objecth->statush(mug)
+		objecth->statush(see)
+		objecth->statush(position)
+		objecth->cont2(in)
+	}
+}
+
+personClassifiesTable : active(2)
+{
+	{
+		objecth:object(100,35)
+		robot:robot(-100,-75)
+		person:person(100,-75)
+		objectr:object(-100,35)
+		cont2:object(100,140)
+		statush:objectSt(300,35)
+		objectr->objecth(eq)
+		robot->person(interacting)
+		robot->objectr(know)
+		person->objecth(know)
+		objecth->statush(hasStatus)
+		objecth->statush(unclassified)
+		objecth->statush(see)
+		objecth->statush(position)
+	}
+	=>
+	{
+		objecth:object(100,35)
+		robot:robot(-100,-75)
+		person:person(100,-75)
+		objectr:object(-100,35)
+		cont2:object(100,140)
+		statush:objectSt(300,35)
+		objectr->objecth(eq)
+		robot->person(interacting)
+		robot->objectr(know)
+		person->objecth(know)
+		objecth->statush(hasStatus)
+		objecth->statush(table)
+		objecth->statush(see)
+		objecth->statush(position)
+		objecth->cont2(in)
+	}
+}
+
+personClassifiesMilkPot : active(1)
+{
+	{
+		statusr:objectSt(-300,35)
+		objecth:object(100,35)
+		robot:robot(-100,-75)
+		person:person(100,-75)
+		objectr:object(-100,35)
+		statush:objectSt(300,35)
+		objectr->objecth(eq)
+		robot->person(interacting)
+		robot->objectr(know)
+		person->objecth(know)
+		objecth->statush(hasStatus)
+		objecth->statush(unclassified)
+		objectr->statusr(classifailed)
+		objectr->statusr(hasStatus)
+	}
+	=>
+	{
+		statusr:objectSt(-330,35)
+		objecth:object(100,35)
+		robot:robot(-100,-75)
+		person:person(100,-75)
+		objectr:object(-100,35)
+		statush:objectSt(300,35)
+		objectr->objecth(eq)
+		robot->person(interacting)
+		robot->objectr(know)
+		person->objecth(know)
+		objecth->statush(hasStatus)
+		objecth->statush(milkpot)
+		objectr->statusr(milkpot)
+		objectr->statusr(hasStatus)
+	}
+}
+
+personTellsUsAboutMug : active(1)
+{
+	{
+		statusr:objectSt(-285,135)
+		objecth:object(100,35)
+		robot:robot(-100,-75)
+		person:person(100,-75)
+		objectr:object(-100,35)
+		statush:objectSt(285,135)
+		objectr->objecth(eq)
+		robot->person(interacting)
+		robot->objectr(know)
+		person->objecth(know)
+		objectr->statusr(hasStatus)
+		objecth->statush(hasStatus)
+		objectr->statusr(classifailed)
+		objecth->statush(classified)
+		objecth->statush(mug)
+	}
+	=>
+	{
+		statusr:objectSt(-285,135)
+		objecth:object(100,35)
+		robot:robot(-100,-75)
+		person:person(100,-75)
+		objectr:object(-100,35)
+		statush:objectSt(285,135)
+		objectr->objecth(eq)
+		robot->person(interacting)
+		robot->objectr(know)
+		person->objecth(know)
+		objectr->statusr(hasStatus)
+		objecth->statush(hasStatus)
+		objectr->statusr(classified)
+		objecth->statush(classified)
+		objecth->statush(mug)
+		objectr->statusr(mug)
+	}
+}
+
+personTellsUsAboutMilkPot : active(1)
+{
+	{
+		statusr:objectSt(-285,135)
+		objecth:object(100,35)
+		robot:robot(-100,-75)
+		person:person(100,-75)
+		objectr:object(-100,35)
+		statush:objectSt(285,135)
+		objectr->objecth(eq)
+		robot->person(interacting)
+		robot->objectr(know)
+		person->objecth(know)
+		objectr->statusr(hasStatus)
+		objecth->statush(hasStatus)
+		objectr->statusr(classifailed)
+		objecth->statush(classified)
+		objecth->statush(milkpot)
+	}
+	=>
+	{
+		statusr:objectSt(-285,135)
+		objecth:object(100,35)
+		robot:robot(-100,-75)
+		person:person(100,-75)
+		objectr:object(-100,35)
+		statush:objectSt(285,135)
+		objectr->objecth(eq)
+		robot->person(interacting)
+		robot->objectr(know)
+		person->objecth(know)
+		objectr->statusr(hasStatus)
+		objecth->statush(hasStatus)
+		objectr->statusr(classified)
+		objecth->statush(classified)
+		objecth->statush(milkpot)
+		objectr->statusr(milkpot)
+	}
+}
+
+personTellsUsAboutTable : active(3)
+{
+	{
+		statusr:objectSt(-285,135)
+		objecth:object(100,35)
+		robot:robot(-100,-75)
+		person:person(100,-75)
+		objectr:object(-100,35)
+		statush:objectSt(285,135)
+		objectr->objecth(eq)
+		robot->person(interacting)
+		robot->objectr(know)
+		person->objecth(know)
+		objectr->statusr(hasStatus)
+		objecth->statush(hasStatus)
+		objectr->statusr(classifailed)
+		objecth->statush(classified)
+		objecth->statush(table)
+	}
+	=>
+	{
+		statusr:objectSt(-285,135)
+		objecth:object(100,35)
+		robot:robot(-100,-75)
+		person:person(100,-75)
+		objectr:object(-100,35)
+		statush:objectSt(285,135)
+		objectr->objecth(eq)
+		robot->person(interacting)
+		robot->objectr(know)
+		person->objecth(know)
+		objectr->statusr(hasStatus)
+		objecth->statush(hasStatus)
+		objectr->statusr(classified)
+		objecth->statush(classified)
+		objecth->statush(table)
+		objectr->statusr(table)
+	}
+}
+
+informHumanAboutMovedObject : active(2)
+{
+	{
+		cont2r:object(-90,200)
+		cont1r:object(-210,150)
+		objecth:object(200,0)
+		robot:robot(-90,-75)
+		person:person(330,-75)
+		objectr:object(-210,0)
+		cont2h:object(330,200)
+		cont1h:object(200,150)
+		cont2r->cont2h(eq)
+		robot->person(interacting)
+		robot->cont2r(know)
+		person->cont2h(know)
+		robot->cont1r(know)
+		robot->objectr(know)
+		person->cont1h(know)
+		person->objecth(know)
+		objectr->objecth(eq)
+		cont1r->cont1h(eq)
+		objectr->cont1r(in)
+		objecth->cont2h(in)
+	}
+	=>
+	{
+		cont2r:object(-90,200)
+		cont1r:object(-210,150)
+		objecth:object(200,0)
+		robot:robot(-90,-75)
+		person:person(330,-75)
+		objectr:object(-210,0)
+		cont2h:object(330,200)
+		cont1h:object(200,150)
+		cont2r->cont2h(eq)
+		robot->person(interacting)
+		robot->cont2r(know)
+		person->cont2h(know)
+		robot->cont1r(know)
+		robot->objectr(know)
+		person->cont1h(know)
+		person->objecth(know)
+		objectr->objecth(eq)
+		cont1r->cont1h(eq)
+		objectr->cont1r(in)
+		objecth->cont1h(in)
+	}
+}
+
+findGrannyAndDeliver : active(1)
+{
+	findGranny as find
+	deliverObject as deliver
+	where:
+	deliver.robot = find.robot
+	deliver.room = find.room
+	deliver.person = find.person
+}
+
+
+reachAndGrasp : active(1)
+{
+	setObjectReach as reach
+	graspObject as grasp
+	where:
+	reach.object = grasp.object
+	reach.status = grasp.status
+}
+
+
+recognizeObjMilk : active(1)
+{
+	{
+		status:objectSt(65,-75)
+		object:object(-130,-75)
+		robot:robot(-290,-75)
+		robot->object(know)
+		object->status(hasStatus)
+		object->status(see)
+		object->status(position)
+		object->status(unclassified)
+	}
+	=>
+	{
+		status:objectSt(60,-75)
+		object:object(-130,-75)
+		robot:robot(-290,-75)
+		robot->object(know)
+		object->status(hasStatus)
+		object->status(see)
+		object->status(position)
+		object->status(classified)
+		object->status(milk)
+	}
+	recognizeObjFails as fail
+	tellHumanAboutUnknownObject as tell
+	personClassifiesMilkPot as milk
+	where:
+	fail.status = tell.statusr = milk.statusr
+	fail.object = tell.objectr = milk.objectr
+	fail.robot = tell.robot = milk.robot
+	tell.person = milk.person
+	tell.objecth = milk.objecth
+	tell.statush = milk.statush
+}
+
+

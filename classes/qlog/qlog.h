@@ -30,6 +30,8 @@ using namespace std;
 	#include <Logger.h>
 #endif
 
+#include <boost/format.hpp>
+
 #define SetLoggerInstance(x) loggerInstance = x
 #define rDebug2(strng) qLog::getInstance()->send(std::string(__FILE__),__LINE__,std::string(__func__),boost::str(boost::format strng ),std::string("Debug"))
 #define rDebug(strng) qLog::getInstance()->send(std::string(__FILE__),__LINE__,std::string(__func__),strng,std::string("Debug"))

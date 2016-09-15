@@ -1,0 +1,12 @@
+<AGMModel>
+	<symbol id="1" type="OBJ" x="0" y="-150">
+		<attribute key="alias" value="package1" />
+	</symbol>
+
+	<symbol id="7" type="LCTN" x="-80" y="0">
+		<attribute key="alias" value="BOS-AIRPORT" />
+	</symbol>
+
+	<link src="1" dst="7" label="at" />
+
+</AGMModel>

@@ -106,6 +106,7 @@ class SpecificWorker(GenericWorker):
 		self.Period = 2000
 		self.timer.start(self.Period)
 		self.passwd = passwd
+		self.onTheirWay = []
 
 	def setParams(self, params):
 		#try:
@@ -136,16 +137,18 @@ class SpecificWorker(GenericWorker):
 		print 'PATH', path
 		print 'TABNAME', yakuakeTabName
 		print 'ARGS', arguments
-		
-		locker = QtCore.QMutexLocker(self.mutex)
+	
 		time.sleep(0.5)
-		if hashedPassword != hashlib.sha224(stuff+self.passwd).hexdigest():
-			print 'WRONG PASSWORD', hashedPassword
-			return False
-		else:
-			p = subprocess.Popen(['/opt/robocomp/bin/rcremoteshell', binary, path, yakuakeTabName]+arguments)
-
-		time.sleep(0.5)
+		with QtCore.QMutexLocker(self.mutex) as locker:
+			if hashedPassword != hashlib.sha224(stuff+self.passwd).hexdigest():
+				print 'WRONG PASSWORD', hashedPassword
+				return False
+			else:
+				if not yakuakeTabName in self.onTheirWay:
+					self.onTheirWay.append(yakuakeTabName)
+					p = subprocess.Popen(['/opt/robocomp/bin/rcremoteshell', binary, path, yakuakeTabName]+arguments)
+					self.onTheirWay.remove(yakuakeTabName)
+			time.sleep(0.5)
 		return True
 
 

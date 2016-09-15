@@ -29,7 +29,7 @@ module RoboCompTrajectoryRobot2D
 		float advV;              // current forward speed
 		float rotV;
 		float distanceToTarget;  // total distance to target
-		
+		string description;
 	};
 
 	dictionary<string, string> NavigationParameterMap;

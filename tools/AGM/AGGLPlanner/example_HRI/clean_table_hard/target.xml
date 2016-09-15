@@ -1,0 +1,7 @@
+<AGMModel>
+	<symbol id="5"  type="object" x="-235" y="+150" />
+	<symbol id="9"  type="status" x="-235" y="+270" /> <link src="5" dst="9"   label="has" />
+	<symbol id="15" type="table"  x="-280" y="+420" /> <link src="9" dst="15"  label="link" />
+
+	<link src="9" dst="15" label="clean" />
+</AGMModel>

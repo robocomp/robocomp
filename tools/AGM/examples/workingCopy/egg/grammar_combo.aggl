@@ -1,0 +1,58 @@
+spacePattern=3
+lineThickness=2
+fontName=Arial
+name=grammar
+vertexDiameter=40
+shortPattern=1
+nodeThickness=2
+fontSize=14
+longPattern=3
+===
+include(general.aggl)
+
+calentarCombo : active(1)
+{
+	encenderFuego as enciende optional
+	mover as mover1 optional
+	calentar as calentar
+	mover as mover2 optional
+	where:
+	enciende.fuego = mover1.c2 = calentar.fuego = mover2.c1
+	enciende.fuegos = mover1.c2s = calentar.fuegos = mover2.c1s
+	mover1.objs = calentar.objs = mover2.objs
+	mover1.obj = calentar.obj = mover2.obj
+	mover1.c1 = mover2.c2
+	mover1.c1s = mover2.c2s
+}
+
+enfriarCombo : active(1)
+{
+	encenderFrigo as enciende optional
+	mover as mover1 optional
+	enfriar as enfriar
+	mover as mover2 optional
+	where:
+	enciende.frigo = mover1.c2 = enfriar.frigo = mover2.c1
+	enciende.frigos = mover1.c2s = enfriar.frigos = mover2.c1s
+	mover1.objs = enfriar.objs = mover2.objs
+	mover1.obj = enfriar.obj = mover2.obj
+	mover1.c1 = mover2.c2
+	mover1.c1s = mover2.c2s
+}
+
+freirCombo : active(1)
+{
+	encenderFuego as enciende optional
+	mover as mover1 optional
+	calentar as calentar optional
+	freir as freir
+	mover as mover2 optional
+	where:
+	enciende.fuego = mover1.c2 = calentar.fuego = freir.fuego = mover2.c1
+	enciende.fuegos = mover1.c2s = calentar.fuegos = freir.fuegos = mover2.c1s
+	mover1.objs = calentar.objs = freir.objs = mover2.objs
+	mover1.obj = calentar.objs = freir.obj = mover2.obj
+	mover1.c1 = mover2.c2
+	mover1.c1s = mover2.c2s
+}
+

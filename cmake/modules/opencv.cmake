@@ -5,4 +5,13 @@
 # 
 # 
 INCLUDE_DIRECTORIES( /usr/lib/x86_64-linux-gnu )
-SET( LIBS ${LIBS} -L/usr/lib/x86_64-linux-gnu-L/usr/lib -lopencv_core -lopencv_highgui -lopencv_ml -lopencv_imgproc -lopencv_calib3d -lopencv_contrib )
+
+execute_process(COMMAND pkg-config --libs opencv OUTPUT_VARIABLE rv OUTPUT_STRIP_TRAILING_WHITESPACE)
+message("rv = '@@@${rv}'@@@")
+
+STRING(REGEX REPLACE "-lippicv" "" rv ${rv})
+
+message("rv = '@@@${rv}'@@@")
+
+
+SET(LIBS ${LIBS} "-L/usr/lib/x86_64-linux-gnu-L/usr/lib ${rv}")

@@ -98,10 +98,10 @@ def getNameNumber(aalist):
 	for rqi, rq in enumerate(somelist):
 		dup = False
 		if rqi < len(somelist)-1:
-			if rq == somelist[rqi+1]:
+			if str(rq) == str(somelist[rqi+1]):
 				dup = True
 		if rqi > 0:
-			if rq == somelist[rqi-1]:
+			if str(rq) == str(somelist[rqi-1]):
 				dup = True
 		name = rq
 		num = ''
@@ -155,12 +155,16 @@ class CDSLParsing:
 		
 		# Language
 		language = Suppress(CaselessLiteral("language")) + (CaselessLiteral("cpp")|CaselessLiteral("python")) + semicolon
+		# Qtversion
+		qtVersion = Group(Optional(Suppress(CaselessLiteral("useQt")) + (CaselessLiteral("qt4")|CaselessLiteral("qt5")) + semicolon))
+		# InnerModelViewer
+		innermodelviewer = Group(Optional(Suppress(CaselessLiteral("InnerModelViewer")) + (CaselessLiteral("true")|CaselessLiteral("false")) + semicolon))
 		# GUI
 		gui = Group(Optional(Suppress(CaselessLiteral("gui")) + CaselessLiteral("Qt") + opp + identifier + clp + semicolon ))
 		# additional options
 		options = Group(Optional(Suppress(CaselessLiteral("options")) + identifier + ZeroOrMore(Suppress(Word(',')) + identifier) + semicolon))
 		
-		componentContents = communications.setResultsName('communications') & language.setResultsName('language') & gui.setResultsName('gui') & options.setResultsName('options')
+		componentContents = communications.setResultsName('communications') & language.setResultsName('language') & gui.setResultsName('gui') & options.setResultsName('options') & qtVersion.setResultsName('useQt') & innermodelviewer.setResultsName('innermodelviewer')
 		component = Suppress(CaselessLiteral("component")) + identifier.setResultsName("name") + op + componentContents.setResultsName("properties") + cl + semicolon
 
 		CDSL = idslImports.setResultsName("imports") + component.setResultsName("component")
@@ -210,18 +214,20 @@ class CDSLParsing:
 			imprts = tree['imports']
 		except:
 			imprts = []
-		if 'agmagent' in component['options']:
+		if isAGM1Agent(component):
 			imprts = ['/robocomp/interfaces/IDSLs/AGMExecutive.idsl', '/robocomp/interfaces/IDSLs/AGMCommonBehavior.idsl', '/robocomp/interfaces/IDSLs/AGMWorldModel.idsl']
+			for i in tree['imports']:
+				if not i in imprts:
+					imprts.append(i)
+		if isAGM2Agent(component):
+			imprts = ['/robocomp/interfaces/IDSLs/AGM2.idsl']
 			for i in tree['imports']:
 				if not i in imprts:
 					imprts.append(i)
 
 		for imp in imprts:
 			component['imports'].append(imp)
-			
-			#print 'moduleee', imp
 			imp2 = imp.split('/')[-1]
-			component['recursiveImports'] += [imp2]
 			try:
 				importedModule = IDSLParsing.gimmeIDSL(imp2)
 			except:
@@ -229,13 +235,34 @@ class CDSLParsing:
 				traceback.print_exc()
 				print 'Error reading IMPORT', imp2
 				os._exit(1)
-
-			component['recursiveImports'] += [x for x in importedModule['imports'].split('#') if len(x)>0]
-			#print 'moduleee', imp, 'done'
+			# recursiveImports holds the necessary imports
+			importable = False
+			for interf in importedModule['interfaces']:
+				for comm in tree['properties']['communications']:
+					for interface in comm[1:]:
+						if communicationIsIce(interface):
+							if interf['name'] == interface[0]:
+								importable = True
+			if importable:
+				component['recursiveImports'] += [imp2]
+				component['recursiveImports'] += [x for x in importedModule['imports'].split('#') if len(x)>0]
 			
-		#print component['recursiveImports']
 		# Language
 		component['language'] = tree['properties']['language'][0]
+		# qtVersion
+		component['useQt'] = 'none'
+		try:
+			component['useQt'] = tree['properties']['useQt'][0]
+			pass
+		except:
+			pass
+		# innermodelviewer
+		component['innermodelviewer'] = 'false'
+		try:
+			component['innermodelviewer'] = 'innermodelviewer' in [ x.lower() for x in component['options'] ]
+			pass
+		except:
+			pass
 		# GUI
 		component['gui'] = 'none'
 		try:
@@ -252,34 +279,82 @@ class CDSLParsing:
 		
 
 		# Communications
+		component['rosInterfaces']= []
+		component['iceInterfaces']= []
 		component['implements']   = []
 		component['requires']     = []
 		component['publishes']    = []
 		component['subscribesTo'] = []
+		component['usingROS'] = "None"
 		for comm in tree['properties']['communications']:
 			if comm[0] == 'implements':
-				for interface in comm[1:]: component['implements'].append(interface)
+				for interface in comm[1:]: 
+					component['implements'].append(interface)
+					if communicationIsIce(interface):
+						component['iceInterfaces'].append(interface[0])
+					else:
+						component['rosInterfaces'].append(interface[0])
+						component['usingROS'] = True
 			if comm[0] == 'requires':
-				for interface in comm[1:]: component['requires'].append(interface)
+				for interface in comm[1:]: 
+					component['requires'].append(interface)
+					if communicationIsIce(interface):
+						component['iceInterfaces'].append(interface[0])
+					else:
+						component['rosInterfaces'].append(interface[0])
+						component['usingROS'] = True
 			if comm[0] == 'publishes':
-				for interface in comm[1:]: component['publishes'].append(interface)
+				for interface in comm[1:]:
+					component['publishes'].append(interface)
+					if communicationIsIce(interface):
+						component['iceInterfaces'].append(interface[0])
+					else:
+						component['rosInterfaces'].append(interface[0])
+						component['usingROS'] = True
 			if comm[0] == 'subscribesTo':
-				for interface in comm[1:]: component['subscribesTo'].append(interface)
+				for interface in comm[1:]: 
+					component['subscribesTo'].append(interface)
+					if communicationIsIce(interface):
+						component['iceInterfaces'].append(interface[0])
+					else:
+						component['rosInterfaces'].append(interface[0])
+						component['usingROS'] = True
 		# Handle options for communications
-		if 'agmagent' in component['options']:
+		if isAGM1Agent(component):
 			if not 'AGMCommonBehavior' in component['implements']:
 				component['implements'] =   ['AGMCommonBehavior'] + component['implements']
 			if not 'AGMExecutive' in component['requires']:
 				component['requires'] =   ['AGMExecutive'] + component['requires']
 			if not 'AGMExecutiveTopic' in component['subscribesTo']:
 				component['subscribesTo'] = ['AGMExecutiveTopic'] + component['subscribesTo']
+		if isAGM2Agent(component):
+			if isAGM2AgentROS(component):
+				component['usingROS'] = True
+				agm2agent_requires = [['AGMDSRService','ros']]
+				agm2agent_subscribesTo = [['AGMExecutiveTopic','ros'], ['AGMDSRTopic','ros']]
+				if not 'AGMDSRService'     in component['rosInterfaces']: component['rosInterfaces'].append('AGMDSRService')
+				if not 'AGMDSRTopic'       in component['rosInterfaces']: component['rosInterfaces'].append('AGMDSRTopic')
+				if not 'AGMExecutiveTopic' in component['rosInterfaces']: component['rosInterfaces'].append('AGMExecutiveTopic')
+			else:
+				agm2agent_requires = [['AGMDSRService','ice']]
+				agm2agent_subscribesTo = [['AGMExecutiveTopic','ice'], ['AGMDSRTopic','ice']]
+				if not 'AGMDSRService'     in component['iceInterfaces']: component['iceInterfaces'].append('AGMDSRService')
+				if not 'AGMDSRTopic'       in component['iceInterfaces']: component['iceInterfaces'].append('AGMDSRTopic')
+				if not 'AGMExecutiveTopic' in component['iceInterfaces']: component['iceInterfaces'].append('AGMExecutiveTopic')
 
+			# AGM2 agents REQUIRES
+			for agm2agent_req in agm2agent_requires:
+				if not agm2agent_req in component['requires']:
+					component['requires'] =   [agm2agent_req] + component['requires']
+			# AGM2 agents SUBSCRIBES
+			for agm2agent_sub in agm2agent_subscribesTo:
+				if not agm2agent_sub in component['subscribesTo']:
+					component['subscribesTo'] = [agm2agent_sub] + component['subscribesTo']
 		return component
 
 def communicationIsIce(sb):
 	isIce = True
-	
-	if len(sb) > 1 and type(sb)==type([]):
+	if len(sb) == 2:
 		if sb[1] == 'ros'.lower():
 			isIce = False
 		elif sb[1] != 'ice'.lower() :
@@ -287,40 +362,26 @@ def communicationIsIce(sb):
 			sys.exit(-1)
 	return isIce
 
-def bodyCodeFromName(name):
-	bodyCode=""
-	###################################### 
-	# code to implement subscription to AGMExecutiveTopic
-	###################################### 
-	if name == 'structuralChange':
-		bodyCode = "<TABHERE>mutex->lock();\n <TABHERE>AGMModelConverter::fromIceToInternal(w, worldModel);\n \n<TABHERE>delete innerModel;\n<TABHERE>innerModel = AGMInner::extractInnerModel(worldModel);\n<TABHERE>mutex->unlock();"
-	if name == 'symbolUpdated' or name == 'edgeUpdated' or name == 'symbolsUpdated' or name == 'edgesUpdated':
-		bodyCode = "<TABHERE>QMutexLocker locker(mutex);\n<TABHERE>AGMModelConverter::includeIceModificationInInternalModel(modification, worldModel);\n \n<TABHERE>delete innerModel;\n<TABHERE>innerModel = AGMInner::extractInnerModel(worldModel);"
-		
-	###################################### 
-	# code to implement AGMCommonBehavior.
-	###################################### 
-	if name == 'activateAgent':
-		bodyCode = "<TABHERE>bool activated = false;\n<TABHERE>if (setParametersAndPossibleActivation(prs, activated))\n<TABHERE>{\n<TABHERE><TABHERE>if (not activated)\n<TABHERE><TABHERE>{\n<TABHERE><TABHERE><TABHERE>return activate(p);\n<TABHERE><TABHERE>}\n<TABHERE>}\n<TABHERE>else\n<TABHERE>{\n<TABHERE><TABHERE>return false;\n<TABHERE>}\n<TABHERE>return true;"
-		
-	if name == 'deactivateAgent':
-		bodyCode = "<TABHERE>return deactivate();"
-		
-	if name == 'getAgentState':
-		bodyCode = "<TABHERE>StateStruct s;\n<TABHERE>if (isActive())\n<TABHERE>{\n<TABHERE><TABHERE>s.state = Running;\n<TABHERE>}\n<TABHERE>else\n<TABHERE>{\n<TABHERE><TABHERE>s.state = Stopped;\n<TABHERE>}\n<TABHERE>s.info = p.action.name;\n<TABHERE>return s;"
-		
-	if name == 'getAgentParameters':
-		bodyCode = "<TABHERE>return params;"
-		
-	if name == 'setAgentParameters':
-		bodyCode = "<TABHERE>bool activated = false;\n<TABHERE>return setParametersAndPossibleActivation(prs, activated);"
-		
-	if name == 'uptimeAgent':
-		bodyCode = "<TABHERE>return 0;"
-	if name == 'reloadConfigAgent':
-		bodyCode = "<TABHERE>return true;"
 
-	return bodyCode
+def isAGM1Agent(component):
+	options = component['options']
+	return 'agmagent' in [ x.lower() for x in options]
+
+def isAGM2Agent(component):
+	valid = ['agm2agent', 'agm2agentros', 'agm2agentice']
+	options = component['options']
+	for v in valid:
+		if v.lower() in options:
+			return True
+	return False
+
+def isAGM2AgentROS(component):
+	valid = ['agm2agentROS']
+	options = component['options']
+	for v in valid:
+		if v.lower() in options:
+			return True
+	return False
 
 if __name__ == '__main__':
 	CDSLParsing.fromFile(sys.argv[1])

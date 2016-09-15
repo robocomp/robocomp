@@ -1,0 +1,117 @@
+<AGMModel>
+
+	<!-- R O O M -->
+	<symbol id="3" type="object" />
+	<symbol id="4" type="roomSt" />
+	<link src="3" dst="4" label="isKitchen" />
+	<link src="3" dst="4" label="room" />
+	<link src="3" dst="4" label="explored" />
+
+
+	<!-- R O B O T -->
+	<symbol id="1" type="robot" />
+	<symbol id="2" type="robotSt">
+	</symbol>
+	<link src="1" dst="2" label="free" />
+	<link src="1" dst="3" label="in" />
+
+	<!-- Explored table -->
+	<symbol id="5" type="object">
+	</symbol>
+	<link src="1" dst="5" label="know" />
+	<link src="5" dst="3" label="in" />
+	<symbol id="6" type="objectSt">
+	</symbol>
+	<link src="5" dst="6" label="table" />
+	<link src="5" dst="6" label="hasStatus" />
+	<link src="5" dst="6" label="noSee" />
+	<link src="5" dst="6" label="classified" />
+	<link src="5" dst="6" label="noReach" />
+	<link src="5" dst="6" label="position" />
+	<link src="5" dst="6" label="reachable" />
+	<link src="5" dst="6" label="explored" />
+
+	<!-- coffeepot -->
+	<symbol id="9" type="object">
+	</symbol>
+	<link src="1" dst="9" label="know" />
+	<link src="9" dst="3" label="in" />
+	<link src="9" dst="5" label="in" />
+	<symbol id="10" type="objectSt">
+	</symbol>
+	<link src="9" dst="10" label="noSee" />
+	<link src="9" dst="10" label="hasStatus" />
+	<link src="9" dst="10" label="noReach" />
+	<link src="9" dst="10" label="reachable" />
+	<link src="9" dst="10" label="position" />
+	<link src="9" dst="10" label="classified" />
+	<link src="9" dst="10" label="coffeepot" />
+
+
+	<!-- Non-explored table -->
+	<symbol id="7" type="object">
+	</symbol>
+	<link src="1" dst="7" label="know" />
+	<link src="7" dst="3" label="in" />
+	<symbol id="8" type="objectSt">
+	</symbol>
+	<link src="7" dst="8" label="table" />
+	<link src="7" dst="8" label="hasStatus" />
+	<link src="7" dst="8" label="see" />
+	<link src="7" dst="8" label="classified" />
+	<link src="7" dst="8" label="noReach" />
+	<link src="7" dst="8" label="position" />
+	<link src="7" dst="8" label="reachable" />
+	<link src="7" dst="8" label="explored" />
+
+
+	<!-- Person -->
+	<symbol id="20" type="person">
+	</symbol>
+	<symbol id="21" type="personSt" />
+	<link src="20" dst="21" label="granny" />
+	<link src="20" dst="21" label="noLocalized" />
+	<link src="20" dst="3" label="in" />
+	<link src="1" dst="20" label="know" />
+	<link src="1" dst="20" label="interacting" />
+
+	<!-- R O O M -->
+	<symbol id="103" type="object" />
+	<symbol id="104" type="roomSt" />
+	<link src="103" dst="104" label="isKitchen" />
+	<link src="103" dst="104" label="room" />
+	<link src="103" dst="104" label="explored" />
+	<link src="20" dst="103" label="in" />
+	<link src="3" dst="103" label="eq" />
+
+	<symbol id="105" type="object">
+	</symbol>
+	<link src="20" dst="105" label="know" />
+	<link src="105" dst="103" label="in" />
+	<link src="5" dst="105" label="eq" />
+	<symbol id="106" type="objectSt" />
+	<link src="105" dst="106" label="table" />
+	<link src="105" dst="106" label="hasStatus" />
+	<link src="105" dst="106" label="noSee" />
+	<link src="105" dst="106" label="classified" />
+	<link src="105" dst="106" label="noReach" />
+	<link src="105" dst="106" label="position" />
+	<link src="105" dst="106" label="reachable" />
+
+	<symbol id="107" type="object">
+	</symbol>
+	<link src="20" dst="107" label="know" />
+	<link src="107" dst="103" label="in" />
+	<link src="7" dst="107" label="eq" />
+	<symbol id="108" type="objectSt" />
+	<link src="107" dst="108" label="table" />
+	<link src="107" dst="108" label="hasStatus" />
+	<link src="107" dst="108" label="noSee" />
+	<link src="107" dst="108" label="classified" />
+	<link src="107" dst="108" label="noReach" />
+	<link src="107" dst="108" label="position" />
+	<link src="107" dst="108" label="reachable" />
+
+
+
+</AGMModel>

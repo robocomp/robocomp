@@ -1,0 +1,15 @@
+module RoboCompTests{
+
+	interface test{
+		void  printmsg(string message);
+	};
+
+	interface serviceTest{
+		idempotent void srvTest(int id, out int idTest);
+	};
+
+	interface publishTest{
+		void msgTest(int id);
+	};
+
+};

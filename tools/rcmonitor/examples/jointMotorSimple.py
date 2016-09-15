@@ -66,6 +66,11 @@ class C(QWidget):
 		self.readLabel.show()
 		self.readLabel.move(0,self.combo.y()+self.combo.height())
 		self.readLabel.resize(200, 50)
+		self.readLabel2 = QLabel(self)
+		self.readLabel2.show()
+		self.readLabel2.setText("max speed")
+		self.readLabel2.move(400,self.combo.y()+self.combo.height())
+		self.readLabel2.resize(200, 50)
 
 		self.spinBox = QDoubleSpinBox(self)
 		self.spinBox.show()
@@ -74,6 +79,14 @@ class C(QWidget):
 		self.spinBox.setMaximum(1024.)
 		self.spinBox.setMinimum(-200.)
 		self.spinBox.setSingleStep(0.1)
+
+		self.spinBoxSpeed = QDoubleSpinBox(self)
+		self.spinBoxSpeed.show()
+		self.spinBoxSpeed.move(400,self.readLabel.y()+self.readLabel.height())
+		self.spinBoxSpeed.resize(200, 50)
+		self.spinBoxSpeed.setMaximum(1024.)
+		self.spinBoxSpeed.setMinimum(-200.)
+		self.spinBoxSpeed.setSingleStep(0.1)
 
 		self.commandButton = QPushButton("Set position", self)
 		self.commandButton.show()
@@ -133,7 +146,7 @@ class C(QWidget):
 		goal = self.mods['RoboCompJointMotor'].MotorGoalPosition()
 		goal.position = self.spinBox.value()
 		goal.name = str(self.combo.currentText())
-		goal.maxSpeed = 0.5
+		goal.maxSpeed = self.spinBoxSpeed.value()
 		print "target pos" , goal.position, "name", goal.name, "maxSpeed" , goal.maxSpeed
 		self.proxy.setPosition(goal)
 	def clicked2(self):

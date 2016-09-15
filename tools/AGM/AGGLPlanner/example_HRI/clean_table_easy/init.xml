@@ -1,0 +1,5 @@
+<AGMModel>
+	<symbol id="1"  type="robot"  x="-300" y="0" />
+	<symbol id="2"  type="human"  x="300"  y="0" />
+	<link src="1" dst="2" label="interacting" />
+</AGMModel>

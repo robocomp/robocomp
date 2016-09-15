@@ -70,7 +70,7 @@ namespace RMat
 	public:
 		DataBuffer(const int size): QSharedData(), dataSize(size), data(new T[dataSize]) { }
 		DataBuffer(const DataBuffer &tensorData): QSharedData(), dataSize(tensorData.dataSize), data(new T[dataSize]) { memcpy(getWriteData() , tensorData.getReadData(), dataSize*sizeof(T)); }
-		~DataBuffer()                       { delete data; }
+		~DataBuffer()                       { delete[] data; }
 		inline const T *getReadData() const { return data; }
 		inline T *getWriteData()            { return data; }
 		int size()                          { return dataSize;}

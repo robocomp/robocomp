@@ -76,10 +76,9 @@ cog.out(theInterface[0])
 Z()
 ]]]
 [[[end]]]
-I(GenericWorker *_worker, QObject *parent) : QObject(parent)
+I(GenericWorker *_worker)
 {
 	worker = _worker;
-	mutex = worker->mutex;       // Shared worker mutex
 }
 
 

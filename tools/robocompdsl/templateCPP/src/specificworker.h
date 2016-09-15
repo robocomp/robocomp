@@ -55,22 +55,14 @@ Z()
        @author authorname
 */
 
-
-
 [[[cog
-
 try:
 	if 'agmagent' in [ x.lower() for x in component['options'] ]:
 		cog.outl("// THIS IS AN AGENT")
-
-
 except:
 	pass
-
 ]]]
 [[[end]]]
-
-
 
 
 #ifndef SPECIFICWORKER_H
@@ -78,12 +70,20 @@ except:
 
 #include <genericworker.h>
 #include <innermodel/innermodel.h>
+[[[cog
+if component['innermodelviewer']:
+	cog.outl("#ifdef USE_QTGUI")
+	cog.outl("<TABHERE>#include <osgviewer/osgview.h>")
+	cog.outl("<TABHERE>#include <innermodel/innermodelviewer.h>")
+	cog.outl("#endif")
+]]]
+[[[end]]]
 
 class SpecificWorker : public GenericWorker
 {
 Q_OBJECT
 public:
-	SpecificWorker(MapPrx& mprx);	
+	SpecificWorker(MapPrx& mprx);
 	~SpecificWorker();
 	bool setParams(RoboCompCommonBehavior::ParameterList params);
 
@@ -100,34 +100,7 @@ if 'implements' in component:
 				for mname in interface['methods']:
 					method = interface['methods'][mname]
 					paramStrA = ''
-					for p in method['params']:
-						# delim
-						if paramStrA == '': delim = ''
-						else: delim = ', '
-						# decorator
-						ampersand = '&'
-						if p['decorator'] == 'out':
-							const = ''
-						else:
-							const = 'const '
-							if p['type'].lower() in ['int', '::ice::int', 'float', '::ice::float']:
-								ampersand = ''
-						# STR
-						paramStrA += delim + const + p['type'] + ' ' + ampersand + p['name']
-					cog.outl("<TABHERE>" + method['return'] + ' ' + method['name'] + '(' + paramStrA + ");")
-
-if 'subscribesTo' in component:
-	for imp in component['subscribesTo']:
-		nname = imp
-		while type(nname) != type(''):			
-			nname = nname[0]
-		if communicationIsIce(nname):
-			module = pool.moduleProviding(nname)
-			for interface in module['interfaces']:
-				if interface['name'] == nname:
-					for mname in interface['methods']:
-						method = interface['methods'][mname]
-						paramStrA = ''
+					if communicationIsIce(impa):
 						for p in method['params']:
 							# delim
 							if paramStrA == '': delim = ''
@@ -143,27 +116,92 @@ if 'subscribesTo' in component:
 							# STR
 							paramStrA += delim + const + p['type'] + ' ' + ampersand + p['name']
 						cog.outl("<TABHERE>" + method['return'] + ' ' + method['name'] + '(' + paramStrA + ");")
+					else:
+						paramStrA = module['name'] +"ROS::"+method['name']+"::Request &req, "+module['name']+"ROS::"+method['name']+"::Response &res"
+						if imp in component['iceInterfaces']:
+							cog.outl("<TABHERE>bool ROS" + method['name'] + '(' + paramStrA + ");")
+						else:
+							cog.outl("<TABHERE>bool " + method['name'] + '(' + paramStrA + ");")
+
+if 'subscribesTo' in component:
+	for impa in component['subscribesTo']:
+		if type(impa) == str:
+			imp = impa
 		else:
-			cog.outl("<TABHERE>" + method['return'] + ' ' + method['name'] + "();")
+			imp = impa[0]
+		module = pool.moduleProviding(imp)
+		for interface in module['interfaces']:
+			if interface['name'] == imp:
+				for mname in interface['methods']:
+					method = interface['methods'][mname]
+					paramStrA = ''
+					if communicationIsIce(impa):
+						for p in method['params']:
+							# delim
+							if paramStrA == '': delim = ''
+							else: delim = ', '
+							# decorator
+							ampersand = '&'
+							if p['decorator'] == 'out':
+								const = ''
+							else:
+								const = 'const '
+								if p['type'].lower() in ['int', '::ice::int', 'float', '::ice::float']:
+									ampersand = ''
+							# STR
+							paramStrA += delim + const + p['type'] + ' ' + ampersand + p['name']
+						cog.outl("<TABHERE>" + method['return'] + ' ' + method['name'] + '(' + paramStrA + ");")
+					else:
+						for p in method['params']:
+							# delim
+							if paramStrA == '': delim = ''
+							else: delim = ', '
+							# decorator
+							ampersand = '&'
+							if p['decorator'] == 'out':
+								const = ''
+							else:
+								const = 'const '
+								ampersand = ''
+							if p['type'] in ('float','int','uint'):
+								p['type'] = "std_msgs::"+p['type'].capitalize()+"32"
+							elif p['type'] in ('string', 'bool'):
+								p['type'] = "std_msgs::"+p['type'].capitalize()
+							elif not '::' in p['type']:
+								p['type'] = module['name']+"ROS::"+p['type']
+							# STR
+							paramStrA += delim + p['type'] + ' ' + p['name']
+						if imp in component['iceInterfaces']:
+							cog.outl("<TABHERE>void ROS" + method['name'] + '(' + paramStrA + ");")
+						else:
+							cog.outl("<TABHERE>void " + method['name'] + '(' + paramStrA + ");")
 
 ]]]
 [[[end]]]
 
 public slots:
-	void compute(); 	
+	void compute();
 
 private:
+	InnerModel *innerModel;
 [[[cog
-
+if component['innermodelviewer']:
+	cog.outl("#ifdef USE_QTGUI")
+	cog.outl("<TABHERE>OsgView *osgView;")
+	cog.outl("<TABHERE>InnerModelViewer *innerModelViewer;")
+	cog.outl("#endif")
 try:
-	if 'agmagent' in [ x.lower() for x in component['options'] ]:
+	if isAGM1Agent(component):
 		cog.outl("<TABHERE>std::string action;")
 		cog.outl("<TABHERE>ParameterMap params;")
 		cog.outl("<TABHERE>AGMModel::SPtr worldModel;")
-		cog.outl("<TABHERE>InnerModel *innerModel;")
 		cog.outl("<TABHERE>bool active;")
 		cog.outl("<TABHERE>bool setParametersAndPossibleActivation(const ParameterMap &prs, bool &reactivated);")
 		cog.outl("<TABHERE>void sendModificationProposal(AGMModel::SPtr &worldModel, AGMModel::SPtr &newModel);")
+	elif isAGM2Agent(component):
+		cog.outl("<TABHERE>std::string action;")
+		cog.outl("<TABHERE>AGMModel::SPtr worldModel;")
+		cog.outl("<TABHERE>bool active;")
 except:
 	pass
 

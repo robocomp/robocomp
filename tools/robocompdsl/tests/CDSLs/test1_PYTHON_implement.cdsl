@@ -1,0 +1,11 @@
+import "/robocomp/interfaces/IDSLs/Test.idsl";
+
+Component implement
+{
+	Communications
+	{
+		implements serviceTest;
+	};
+	language python;
+	gui Qt(QWidget);
+};

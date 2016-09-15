@@ -1,0 +1,19 @@
+<AGMModel>
+
+
+	<symbol id="1" type="robot" />
+	<symbol id="20" type="person" />
+	<link src="1" dst="20" label="interacting" />
+
+
+	<symbol id="obj1" type="object" />
+	<symbol id="stt1" type="objectSt" />
+	<link  src="obj1" dst="stt1" label="classifailed" />
+	<link  src="1" dst="obj1" label="know" />
+
+ 	<symbol id="obj2" type="object" />
+	<symbol id="stt2" type="objectSt" />
+	<link  src="obj2" dst="stt2" label="milkpot" />
+	<link  src="20" dst="obj2" label="know" />
+
+</AGMModel>

@@ -1,0 +1,20 @@
+<AGMModel>
+
+	<symbol id="1" type="robot">
+	</symbol>
+
+	<symbol id="2" type="inicio">
+	</symbol>
+
+	<symbol id="3" type="puerta">
+	</symbol>
+
+	<symbol id="4" type="llave">
+	</symbol>
+
+	<link src="1" dst="2" label="en" />
+	<link src="2" dst="3" label="cerca" />
+	<link src="3" dst="2" label="cerca" />
+	<link src="4" dst="3" label="en" />
+
+</AGMModel>

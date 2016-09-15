@@ -1,0 +1,12 @@
+<AGMModel>
+
+	<symbol id="o" type="obj"  x="0" y="-250" />
+	<symbol id="os" type="objs" x="0" y="-150" />
+	<symbol id="5" type="obj"  x="0" y="-250" />
+
+	<link src="o" dst="5" label="en" />
+	<link src="o" dst="os" label="frito" />
+<!-- 	<link src="1" dst="2" label="caliente" /> -->
+	<link src="o" dst="os" label="frio" />
+
+</AGMModel>

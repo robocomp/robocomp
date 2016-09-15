@@ -1,0 +1,58 @@
+<AGMModel>
+	<symbol id="1" type="OBJ" x="0" y="-150">
+		<attribute key="alias" value="package1" />
+	</symbol>
+
+	<symbol id="2" type="TRCK" x="200" y="-150">
+		<attribute key="alias" value="PGH-TRUCK" />
+	</symbol>
+
+	<symbol id="3" type="TRCK" x="-200" y="-150">
+		<attribute key="alias" value="BOS-TRUCK" />
+	</symbol>
+
+	<symbol id="4" type="ARPL" x="100" y="-150">>
+		<attribute key="alias" value="AIRPLANE1" />
+	</symbol>
+
+	<symbol id="5" type="LCTN" x="-200" y="0">
+		<attribute key="alias" value="BOS-PO" />
+	</symbol>
+
+	<symbol id="6" type="LCTN" x="200" y="0">
+		<attribute key="alias" value="PGH-PO" />
+	</symbol>
+
+	<symbol id="7" type="LCTN" x="-80" y="0">
+		<attribute key="alias" value="BOS-AIRPORT" />
+	</symbol>
+
+	<symbol id="8" type="LCTN" x="80" y="0">
+		<attribute key="alias" value="PGH-AIRPORT" />
+	</symbol>
+
+	<symbol id="9" type="ARPT" x="0" y="300">
+		<attribute key="alias" value="AIRPORT" />
+	</symbol>
+	<link src="7" dst="9" label="has" />
+	<link src="8" dst="9" label="has" />
+
+	
+	<symbol id="10" type="CITY" x="170" y="150">
+		<attribute key="alias" value="PGH" />
+	</symbol>
+
+	<symbol id="11" type="CITY" x="-170" y="150">
+		<attribute key="alias" value="BOS" />
+	</symbol>
+
+	<link src="1" dst="8" label="at" />
+	<link src="6" dst="10" label="inCity" />
+	<link src="8" dst="10" label="inCity" />
+	<link src="5" dst="11" label="inCity" />
+	<link src="7" dst="11" label="inCity" />
+	<link src="4" dst="8" label="at" />
+	<link src="2" dst="6" label="at" />
+	<link src="3" dst="5" label="at" />
+
+</AGMModel>

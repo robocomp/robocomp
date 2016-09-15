@@ -1,0 +1,7 @@
+<AGMModel>
+	<symbol id="objectR" type="object" x="0" y="0" />
+	<symbol id="objectH" type="object" x="0" y="0" />
+	<link src="objectR" dst="objectH" label="eq" />
+	<symbol id="statusR" type="status" x="0" y="0" /> <link src="objectR" dst="statusR" label="has" />
+	<symbol id="statusH" type="status" x="0" y="0" /> <link src="objectH" dst="statusH" label="has" />
+</AGMModel>

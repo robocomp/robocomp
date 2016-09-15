@@ -1,0 +1,69 @@
+spacePattern=3
+lineThickness=2
+fontName=Arial
+name=domain
+vertexDiameter=40
+shortPattern=1
+nodeThickness=2
+fontSize=12
+longPattern=3
+===
+changeRoom : active(1)
+{
+	{
+		s2:roomSt(25,75)
+		s1:roomSt(-200,75)
+		r1:object(-200,-35)
+		r2:object(25,-35)
+		robot:robot(-95,-145)
+		robot->r1(in)
+		r1->r2(transitable)
+		r1->s1(room)
+		r2->s2(room)
+	}
+	=>
+	{
+		s2:roomSt(25,75)
+		s1:roomSt(-200,75)
+		r1:object(-200,-35)
+		r2:object(25,-35)
+		robot:robot(-95,-145)
+		robot->r2(in)
+		r1->r2(transitable)
+		r1->s1(room)
+		r2->s2(room)
+	}
+	effect
+	{
+		(forall
+			something:object
+			(when
+				(in something robot)
+				(and
+					(not (in something s1))
+					(in something s2)
+				)
+			)
+		)
+	}
+}
+
+findObjectVisually : active(1)
+{
+	{
+		robot:robot(-300,0)
+	}
+	=>
+	{
+		status:objectSt(95,0)
+		object:object(-130,0)
+		robot:robot(-305,0)
+		robot->object(know)
+		object->status(see)
+		object->status(unclassified)
+		object->status(notReach)
+		object->status(position)
+		object->status(reachable)
+		object->status(hasStatus)
+	}
+}

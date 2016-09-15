@@ -1,0 +1,11 @@
+import "/robocomp/interfaces/IDSLs/Test.idsl";
+
+Component require
+{
+	Communications
+	{
+		requires serviceTest(ros);
+	};
+	language cpp;
+	gui Qt(QWidget);
+};

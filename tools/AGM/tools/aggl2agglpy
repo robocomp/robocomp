@@ -1,0 +1,76 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import sys, traceback
+sys.path.append('/usr/local/share/agm')
+
+from AGGL import *
+from parseAGGL import *
+from generateAGGLPlannerCode import *
+
+ret = 0
+try:
+	ok = True
+	if len(sys.argv)==7:
+		if sys.argv[1] != '-i':
+			print 'bad arguments 0'
+			ok = False
+		if sys.argv[3] != '-a':
+			print 'bad arguments 1'
+			ok = False
+		if sys.argv[5] != '-f':
+			print 'bad arguments 2'
+			ok = False
+		if ok:
+			inputFile         = sys.argv[2]
+			outputFileFull    = sys.argv[4]
+			outputFilePartial = sys.argv[6]
+			agmData = AGMFileDataParsing.fromFile(inputFile)
+			agmData.generateAGGLPlannerCode(outputFileFull, skipPassiveRules=False)
+			agmData.generateAGGLPlannerCode(outputFilePartial, skipPassiveRules=True)
+	elif len(sys.argv)==5:
+		if sys.argv[1] == '-x':
+			if sys.argv[3] == '-o':
+				inputXML = sys.argv[2]
+				outputPY = sys.argv[4]
+				graph = graphFromXML(inputXML)
+				outputText = generateTarget(graph)
+				ofile = open(outputPY, 'w')
+				ofile.write(outputText)
+				ofile.close()
+			else:
+				print '<'+sys.argv[3]+'>'
+				print 'bad arguments 3', sys.argv
+				ok = False
+		elif sys.argv[1] == '-i':
+			inputFile         = sys.argv[2]
+			agmData = AGMFileDataParsing.fromFile(inputFile)
+			if sys.argv[3] != '-a':
+				outputFileFull    = sys.argv[4]
+				agmData.generateAGGLPlannerCode(outputFileFull, skipPassiveRules=False)
+			if sys.argv[3] != '-f':
+				outputFilePartial = sys.argv[4]
+				agmData.generateAGGLPlannerCode(outputFilePartial, skipPassiveRules=True)
+			else:
+				ok = False
+				print 'bad arguments 4'
+		else:
+			ok = False
+			print 'bad arguments 5'
+	else:
+		ok = False
+		print 'bad arguments 6'
+
+	if not ok:
+		print '\n\naggl2agglpy usage:'
+		print '\n - To generate domain code:'
+		print sys.argv[0], ' -i <inputFile.aggl> -a <activeRules.aggl.py> -f <activeAndPassiveRules.aggl.py>'
+		print '\n - To generate goal-checking code:'
+		print sys.argv[0], ' -x <targetPattern.xml> -o <targetCode.py>\n'
+		ret = 1
+except:
+	print 'Error'
+	traceback.print_exc(file=sys.stdout)
+	ret = -1
+	
+sys.exit(ret)

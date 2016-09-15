@@ -1,0 +1,30 @@
+CommonBehavior.Endpoints=tcp -p 1
+
+
+# Endpoints for implemented interfaces
+AGMCommonBehavior.Endpoints=tcp -p 0
+
+
+# Endpoints for subscriptions
+AGMExecutiveTopic.Endpoints=tcp -p 0
+
+
+# Proxies for required interfaces
+InnerModelManagerProxy = innermodelmanager:tcp -h localhost -p 0
+
+
+# Proxies for published topics
+AGMAgentTopicProxy = agmagenttopic:tcp -h localhost -p 0
+
+
+# This property is used by the clients to connect to IceStorm.
+TopicManager.Proxy=IceStorm/TopicManager:default -p 9999
+
+
+Ice.Warn.Connections=0
+Ice.Trace.Network=0
+Ice.Trace.Protocol=0
+Ice.ACM.Client=10
+Ice.ACM.Server=10
+
+

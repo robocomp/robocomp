@@ -1,0 +1,15 @@
+<AGMModel>
+
+	<symbol id="7" type="object" />
+
+	<symbol id="1" type="robot" />
+
+	<link src="1" dst="7" label="in" />
+
+	<symbol id="22" type="person" />
+
+	<symbol id="23" type="personSt" />
+
+	<link src="22" dst="23" label="localized" />
+
+</AGMModel>

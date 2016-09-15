@@ -44,8 +44,8 @@ public:
 	void drawRobot(InnerModel *innerModel, const QColor &color = Qt::green) ;
 	void drawRobotTrail(InnerModel *innerModel, int QUEUE_SIZE = 100);
 	void clearRobotTrail();
-	void drawRightFieldOfView (InnerModel *innerModel);
-	void drawLeftFieldOfView (InnerModel *innerModel);
+// 	void drawRightFieldOfView (InnerModel *innerModel);
+// 	void drawLeftFieldOfView (InnerModel *innerModel);
 	
 private:
 	QRectF robotLimits;

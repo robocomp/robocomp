@@ -96,6 +96,7 @@ SUBDIRS(
 	tools/robocompdsl
 	tools/rcinnerModelSimulator
 	tools/rcmanager
+	tools/rcmanagerSimple
 	tools/rclogger
 	tools/rcmonitor
 	tools/rcremote

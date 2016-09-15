@@ -1,0 +1,15 @@
+<AGMModel>
+
+	<symbol id="1" type="robot" />    <!-- robot -->
+	<symbol id="7" type="object" />   <!-- bedroom -->
+	<symbol id="22" type="person" />  <!-- granny -->
+	<symbol id="30" type="object" />  <!-- glasses -->
+
+	<link src="1" dst="7" label="in" />     <!-- robot en el bedroom (inicialmente en livingroom) -->
+	<link src="22" dst="7" label="in" />    <!-- granny en bedroom (inicialmente no sabemos) -->
+	<link src="1" dst="30" label="know" />  <!-- robot conoce las gafas -->
+
+	<link src="30" dst="22" label="in" />   <!-- objeto en la abuela (inicialmente en una mesa) -->
+
+</AGMModel>
+
