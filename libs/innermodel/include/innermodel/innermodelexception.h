@@ -20,11 +20,12 @@
 
 #include <stdexcept>
 #include <iostream>
+#include <string>
 
 class InnerModelException : public std::runtime_error
 {
 	public:
-		InnerModelException(const string &arg);
+		InnerModelException(const std::string &arg);
 };
 
 #endif // INNERMODELEXCEPTION_H
