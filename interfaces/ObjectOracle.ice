@@ -16,7 +16,7 @@ module RoboCompObjectOracle
 	struct Label
 	{
 		string name;
-		float belive;
+		float believe;
 	};
 
 	sequence<Label> ResultList;
