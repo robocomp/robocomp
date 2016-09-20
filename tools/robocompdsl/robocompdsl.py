@@ -344,7 +344,7 @@ elif sys.argv[1].endswith(".idsl"):
 	#idsl = IDSLParsing.fromFileIDSL(inputFile)
 	print 'Generating ICE file ', outputFile
 	# Call cog
-	run = "cog.py -z -d" + " -D theIDSL="+inputFile+ " -o " + outputFile + " " + inputFile
+	run = "cog.py -z -d" + " -D theIDSL="+inputFile+ " -o " + outputFile + " /opt/robocomp/share/robocompdsl/TEMPLATE.ICE"
 	run = run.split(' ')
 	ret = Cog().main(run)
 	if ret != 0:
