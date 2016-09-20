@@ -175,27 +175,27 @@ sys.path.append('/opt/robocomp/python')
 
 from cogapp import Cog
 
+#########################################
+# Directory structure and other checks  #
+#########################################
+# Function to create directories
+def creaDirectorio(directory):
+	try:
+		print 'Creating', directory,
+		os.mkdir(directory)
+		print ''
+	except:
+		if os.path.isdir(directory):
+			print '(already existed)'
+			pass
+		else:
+			print '\nCOULDN\'T CREATE', directory
+			sys.exit(-1)
+
 if sys.argv[1].endswith(".cdsl"):
 	from parseCDSL import *
 	from parseIDSL import *
 	component = CDSLParsing.fromFile(inputFile)
-
-	#########################################
-	# Directory structure and other checks  #
-	#########################################
-	# Function to create directories
-	def creaDirectorio(directory):
-		try:
-			print 'Creating', directory,
-			os.mkdir(directory)
-			print ''
-		except:
-			if os.path.isdir(directory):
-				print '(already existed)'
-				pass
-			else:
-				print '\nCOULDN\'T CREATE', directory
-				sys.exit(-1)
 
 	imports = ''.join( [ imp.split('/')[-1]+'#' for imp in component['imports'] ] )
 
