@@ -77,7 +77,7 @@ def bodyCodeFromName(name, component):
 			if 'innermodelviewer' in component['options']:
 				bodyCode += "\tinnerModelViewer = new InnerModelViewer(innerModel, \"root\", osgView->getRootGroup(), true);\n"
 
-		return bodyCode
+	return bodyCode
 
 
 ]]]
