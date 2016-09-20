@@ -169,7 +169,7 @@ And implement:
 You can simply write *requires Plane;* ICE is the default middleware.
 Now, let's use RoboCompDSL to generate our components.
 
-    $ robocompdsl robocompdsl path/to/mycomponent/mycomponent.cdsl output/path
+    $ robocompdsl path/to/mycomponent/mycomponent.cdsl output/path
     
 In your Require component, use this example of *SpecificWorker::compute()*
 
