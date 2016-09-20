@@ -9,6 +9,8 @@
 #ifndef ROBOCOMPOBJECTDETECTION_ICE
 #define ROBOCOMPOBJECTDETECTION_ICE
 
+#include <RGBD.ice>
+
 module RoboCompObjectOracle
 {
 	struct Label
