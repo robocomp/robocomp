@@ -1,25 +1,18 @@
+import "RGBD.idsl";
+
 module RoboCompObjectOracle
 {
-    struct ColorRGB
-    {
-        byte red;
-        byte green;
-        byte blue;
-    };
-
-    struct Label
-    {
-        string name;
-        float belive;
-    };
-
-    sequence<ColorRGB> ColorSeq;
+	struct Label
+	{
+		string name;
+		float belive;
+	};
 
 	sequence<Label> ResultList;
 	
 	interface ObjectOracle
 	{
-		void getLabelsFromImage(ColorSeq image, out ResultList result);
+		void getLabelsFromImage(RoboCompRGBD::ColorSeq image, out ResultList result);
 		void semanticDistance(string word1, string word2, out float result);
 	};
 };

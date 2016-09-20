@@ -11,26 +11,18 @@
 
 module RoboCompObjectOracle
 {
-    struct ColorRGB
-    {
-        byte red;
-        byte green;
-        byte blue;
-    };   
-    
-    struct Label
-    {
-        string name;
-        float believe;
-    };
+	struct Label
+	{
+		string name;
+		float belive;
+	};
 
-	sequence <ColorRGB> ColorSeq;
-    
-        sequence<Label> ResultList;
+	sequence<Label> ResultList;
 
 	interface ObjectOracle
-        {
-		void getLabelsFromImage(ColorSeq image, out ResultList result);
+	{
+		void getLabelsFromImage(RoboCompRGBD::ColorSeq image, out ResultList result);
+		void semanticDistance(string word1, string word2, out float result);
 	};
 };
   
