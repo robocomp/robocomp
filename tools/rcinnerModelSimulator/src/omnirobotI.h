@@ -40,10 +40,9 @@ class SpecificWorker;
 
 class OmniRobotI : public QThread, public virtual RoboCompOmniRobot::OmniRobot
 {
-	Q_OBJECT
+Q_OBJECT
 public:
 	OmniRobotI ( SpecificWorker *_worker, QObject *parent = 0 );
-	~OmniRobotI();
 	
 	void add(QString id);
 	void run();
@@ -57,33 +56,41 @@ public:
 	void setOdometer(const RoboCompOmniRobot::TBaseState& state, const Ice::Current& = Ice::Current());
 	void setOdometerPose(Ice::Int x, Ice::Int z, Ice::Float alpha, const Ice::Current& = Ice::Current());
 	void correctOdometer(Ice::Int x, Ice::Int z, Ice::Float alpha, const Ice::Current& = Ice::Current());
-	
+/*	
+	template<typename T> void stateFromVector(T &state, QVec vec)
+	{
+		state.x = vec(0);
+		state.z = vec(2);
+		state.alpha = vec(4);
+	}
+*/
 private:
 	SpecificWorker *worker;
 	InnerModel *innerModel;
 	QStringList omniIDs;
-	QMutex *mutex;
 	
-	RMat::RTMat zeroTR;
-	float zeroANG;
+// 	RMat::RTMat zeroTR;
+// 	float zeroANG;
 	
-	// Real Noisy Pose
-	RoboCompOmniRobot::TBaseState pose;
-	// Odometry pose
-	RoboCompOmniRobot::TBaseState noisyPose;
+// 	// Real Noisy Pose
+// 	RoboCompOmniRobot::TBaseState pose;
+// 	// Odometry pose
+// 	RoboCompOmniRobot::TBaseState noisyPose;
 	// Real Angle
-	double newAngle;
+// 	double newAngle;
 	//Noisy Angle
-	double noisyNewAngle;
+// 	double noisyNewAngle;
 
 	timeval lastCommand_timeval;
 	float advVelx, advVelz, rotVel;
 
 	InnerModelTransform *parent;
 	InnerModelOmniRobot *node;
-	InnerModelTransform *realNode;
+	InnerModelTransform *rawOdometryNode, *rawOdometryParentNode;
+	InnerModelTransform *correctedOdometryNode, *correctedOdometryParentNode;
+	InnerModelTransform *movementFutureNode;
 	
-	bool canMoveBaseTo(const QString nodeId, const QVec position, const double alpha);
+	bool canMoveBaseTo(const QString nodeId);
 	void recursiveIncludeMeshes(InnerModelNode *node, QString robotId, bool inside, std::vector<QString> &in, std::vector<QString> &out);
 
 };
