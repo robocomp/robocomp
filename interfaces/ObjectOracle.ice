@@ -1,4 +1,4 @@
-import "RGBD.idsl";
+#include <RGBD.ice>
 
 module RoboCompObjectOracle
 {
