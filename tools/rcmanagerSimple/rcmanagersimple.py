@@ -50,7 +50,7 @@ initDir = os.getcwd()
 sys.path.append('.')
 sys.path.append('/opt/robocomp/bin')
 
-import rcmanagerEditor
+import rcmanagerEditorSimple
 
 
 # CommandDialog class: It's the dialog sending "up()/down() component X signal to the main
