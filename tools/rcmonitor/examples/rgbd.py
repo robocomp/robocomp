@@ -28,9 +28,7 @@ from ui_kinectDlg import Ui_KinectDlg
 
 class C(QWidget):
 	def __init__(self, endpoint, modules):
-		print modules.keys()
 		QWidget.__init__(self)
-		print "init"
 		self.ui = Ui_KinectDlg()
 		self.ui.setupUi(self)
 		#hide kinect interface options
@@ -45,23 +43,17 @@ class C(QWidget):
 		self.ic = Ice.initialize(arg)
 		self.mods = modules
 		self.prx = self.ic.stringToProxy(endpoint)
-		print "endpoint", endpoint
-		print "prx", self.prx
-		print self.mods.keys()
-		print "ya"
 		self.proxy = self.mods['RoboCompRGBD'].RGBDPrx.checkedCast(self.prx)
-		print "yaya"
 		self.show()
 		
-		self.lalala = 0
-		self.maxDepth = 9.0
+		self.maxDepth = 90000
 		self.job()
 
 	def job(self):
-		print "hola"
 		try:
 			self.color, self.depth, self.headState, self.baseState = self.proxy.getData()
-			#print len(self.color)
+			#print 'c', len(self.color)
+			#print 'd', len(self.depth)
 			if (len(self.color) == 0) or (len(self.depth) == 0):
 				print 'Error retrieving images!'
 		except Ice.Exception:
@@ -83,20 +75,26 @@ class C(QWidget):
 		painter.setRenderHint(QPainter.Antialiasing, True)
 		
 		v = ''
+		m = 0
+		t = 0
 		for i in range(len(self.depth)):
 			ascii = 0
 			try:
-				ascii = int(255.-255.*(self.depth[i] / self.maxDepth / 1000. ) )
+				ascii = int(128. - (255./self.maxDepth)*self.depth[i])
 				if ascii > 255: ascii = 255
 				if ascii < 0: ascii = 0
+				#print type(self.depth[i])
+				if fabs(self.depth[i])>0.00001: print self.depth[i]
 			except:
 				pass
 			if ascii > 255: ascii = 255
+			if ascii < 0: ascii = 0
 			v += chr(ascii)
+			t = t+1
+			m = m+float(self.depth[i])
+		#print 'mean', float(m)/t
 		image = QImage(self.color, width, height, QImage.Format_RGB888)
-		self.lalala+=1
-		image.save("images/image"+str(self.lalala)+'.png')
-		print "lalala: ", str(self.lalala)
+		#image.save("images/image"+str(self.lalala)+'.png')
 		imageGrey = QImage(v, width, height, QImage.Format_Indexed8)
 		for i in range(256):
 			imageGrey.setColor(i, QColor(i,i,i).rgb())
