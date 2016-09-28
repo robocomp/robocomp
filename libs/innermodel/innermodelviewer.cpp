@@ -395,7 +395,7 @@ void InnerModelViewer::recursiveConstructor(InnerModelNode *node, osg::Group* pa
 	}
 	else if ((mesh = dynamic_cast<InnerModelMesh *>(node)))
 	{
-		// Create mesh's specific mt		
+		// Create mesh's specific mt
 		osg::ref_ptr<osg::MatrixTransform> mt = new osg::MatrixTransform;
 		
 		if (parent) parent->addChild(mt);

@@ -18,6 +18,7 @@ sudo make install
 cd ~/software
 git clone https://github.com/flexible-collision-library/fcl.git
 cd fcl
+git checkout 1473632 
 mkdir build
 cd build
 cmake ..
