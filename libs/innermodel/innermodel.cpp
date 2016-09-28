@@ -313,6 +313,17 @@ void InnerModel::updateTransformValuesS(std::string transformId, float tx, float
 		updateTransformValues(QString::fromStdString(transformId), tx, ty, tz, rx, ry, rz, QString::fromStdString(parentId));
 }
 
+void InnerModel::updateTransformValuesS(std::string transformId, QVec v, std::string parentId)
+{
+		updateTransformValues(QString::fromStdString(transformId), v(0), v(1), v(2), v(3), v(4), v(5), QString::fromStdString(parentId));
+}
+
+
+void InnerModel::updateTransformValues(QString transformId, QVec v, QString parentId)
+{
+		updateTransformValues(transformId, v(0), v(1), v(2), v(3), v(4), v(5), parentId);
+}
+
 void InnerModel::updatePlaneValues(QString planeId, float nx, float ny, float nz, float px, float py, float pz)
 {
 	QMutexLocker l(mutex);

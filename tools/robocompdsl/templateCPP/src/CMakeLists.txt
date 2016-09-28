@@ -152,8 +152,7 @@ try:
 	if isAGM2Agent(component):
 		cog.outl("SET(LIBS ${LIBS} -lagm2)")
 		cog.outl("ADD_DEFINITIONS( -I/usr/include/libxml2/ )")
-	cog.outl("include(/usr/local/share/cmake/FindAGM2.cmake)")
-
+		cog.outl("include(/usr/local/share/cmake/FindAGM2.cmake)")
 except:
 	pass
 

@@ -91,8 +91,10 @@ public:
 	void setUpdatePlanePointers(QString planeId, float *nx, float *ny, float *nz, float *px, float *py, float *pz);
 	void setUpdateTransformPointers(QString transformId, float *tx, float *ty, float *tz, float *rx, float *ry, float *rz);
 	void cleanupTables();
-	void updateTransformValuesS(std::string transformId, float tx, float ty, float tz, float rx, float ry, float rz, std::string parentId="");
 	void updateTransformValues(QString transformId, float tx, float ty, float tz, float rx, float ry, float rz, QString parentId="");
+	void updateTransformValues(QString transformId, QVec v, QString parentId="");
+	void updateTransformValuesS(std::string transformId, float tx, float ty, float tz, float rx, float ry, float rz, std::string parentId="");
+	void updateTransformValuesS(std::string transformId, QVec v, std::string parentId="");
 	void updateTranslationValues(QString transformId, float tx, float ty, float tz, QString parentId="");
 	void updateRotationValues(QString transformId, float rx, float ry, float rz,QString parentId="");
 	void updateJointValue(QString jointId, float angle, bool force=false);

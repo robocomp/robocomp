@@ -17,7 +17,6 @@ module RoboCompAGMWorldModel
 		int b;
 		string edgeType;
 		StringDictionary attributes;
-
 	};
 	sequence<Edge> EdgeSequence;
 

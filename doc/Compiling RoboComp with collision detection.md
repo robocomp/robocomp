@@ -1,6 +1,6 @@
 ##Robocomp with FCL (The Flexible Collision Library) support
 ```
-sudo aptitude install libeigen3-dev libboost-filesystem1.55-dev libboost-test-dev libboost-program-options-dev
+sudo apt-get install libeigen3-dev libboost-all-dev
 ```
 - Install LIBCCD:
 ```
@@ -18,6 +18,7 @@ sudo make install
 cd ~/software
 git clone https://github.com/flexible-collision-library/fcl.git
 cd fcl
+git checkout 1473632 
 mkdir build
 cd build
 cmake ..

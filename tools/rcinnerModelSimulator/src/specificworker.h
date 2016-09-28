@@ -35,25 +35,6 @@
 #include "servers.h"
 #include "pickhandler.h"
 
-//////////////////////
-// RENDERER THREAD
-///////////////////////
-
-// class RenderThread : public QThread
-// {
-// 	public:
-// 		RenderThread() : QThread(), viewerPtr(0) {}
-// 		virtual ~RenderThread()
-// 		{ 
-// 			if (viewerPtr) viewerPtr->setDone(true); wait(); 
-// 		}			
-// 		osgViewer::Viewer* viewerPtr;
-// 	protected:
-// 		virtual void run()
-// 		{ 
-// 			if (viewerPtr) viewerPtr->run(); 		
-// 		}
-// };
 
 class SpecificWorker : public GenericWorker
 {

@@ -175,27 +175,27 @@ sys.path.append('/opt/robocomp/python')
 
 from cogapp import Cog
 
+#########################################
+# Directory structure and other checks  #
+#########################################
+# Function to create directories
+def creaDirectorio(directory):
+	try:
+		print 'Creating', directory,
+		os.mkdir(directory)
+		print ''
+	except:
+		if os.path.isdir(directory):
+			print '(already existed)'
+			pass
+		else:
+			print '\nCOULDN\'T CREATE', directory
+			sys.exit(-1)
+
 if sys.argv[1].endswith(".cdsl"):
 	from parseCDSL import *
 	from parseIDSL import *
 	component = CDSLParsing.fromFile(inputFile)
-
-	#########################################
-	# Directory structure and other checks  #
-	#########################################
-	# Function to create directories
-	def creaDirectorio(directory):
-		try:
-			print 'Creating', directory,
-			os.mkdir(directory)
-			print ''
-		except:
-			if os.path.isdir(directory):
-				print '(already existed)'
-				pass
-			else:
-				print '\nCOULDN\'T CREATE', directory
-				sys.exit(-1)
 
 	imports = ''.join( [ imp.split('/')[-1]+'#' for imp in component['imports'] ] )
 
@@ -336,21 +336,19 @@ if sys.argv[1].endswith(".cdsl"):
 	if component['usingROS'] == True:
 		for imp in component['imports']:
 			generateHeaders("/opt/"+imp, outputPath+"/src", component)
+
 elif sys.argv[1].endswith(".idsl"):
 	from parseIDSL import *
-	idsl = IDSLParsing.fromFileIDSL(inputFile)
-	if not os.path.exists(outputPath):
-		creaDirectorio(outputPath)
-
-	for f in [ "TEMPLATE.ICE"]:
-		ofile =inputFile.split('.')[0]+'.ice'
-		print 'Generating ICE file ', ofile
-		# Call cog
-		run = "cog.py -z -d" + " -D theIDSL="+inputFile+ " -o " + ofile + " " + "/opt/robocomp/share/robocompdsl/" + f
-		run = run.split(' ')
-		ret = Cog().main(run)
-		if ret != 0:
-			print 'ERROR'
-			sys.exit(-1)
-		replaceTagsInFile(ofile)
+	inputFile  = sys.argv[1]
+	outputFile = sys.argv[2]
+	#idsl = IDSLParsing.fromFileIDSL(inputFile)
+	print 'Generating ICE file ', outputFile
+	# Call cog
+	run = "cog.py -z -d" + " -D theIDSL="+inputFile+ " -o " + outputFile + " /opt/robocomp/share/robocompdsl/TEMPLATE.ICE"
+	run = run.split(' ')
+	ret = Cog().main(run)
+	if ret != 0:
+		print 'ERROR'
+		sys.exit(-1)
+	replaceTagsInFile(outputFile)
 
