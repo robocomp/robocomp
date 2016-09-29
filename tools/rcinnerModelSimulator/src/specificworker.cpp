@@ -850,14 +850,14 @@ void SpecificWorker::compute()
 
 
 // 	// Remove previous laser shapes
-// 	for (QHash<QString, IMVLaser>::iterator laser = d->imv->lasers.begin(); laser != d->imv->lasers.end(); laser++)
-// 	{
-// 		QMutexLocker locker(viewerMutex);
-// 		if (laser->osgNode->getNumChildren() > 0)
-// 		{
-// 			laser->osgNode->removeChild(0, laser->osgNode->getNumChildren());
-// 		}
-// 	}
+	for (QHash<QString, IMVLaser>::iterator laser = d->imv->lasers.begin(); laser != d->imv->lasers.end(); laser++)
+	{
+		QMutexLocker locker(viewerMutex);
+		if (laser->osgNode->getNumChildren() > 0)
+		{
+			laser->osgNode->removeChild(0, laser->osgNode->getNumChildren());
+		}
+	}
 
 	// Camera render
 	QHash<QString, IMVCamera>::const_iterator i = d->imv->cameras.constBegin();
@@ -898,21 +898,20 @@ void SpecificWorker::compute()
 			d->laserDataArray.insert(laser->laserNode->id, d->LASER_createLaserData(laser.value()));
 
 			// create and insert laser shape
-// 			osg::ref_ptr<osg::Node> p=NULL;
-// 			if (id=="laserSecurity")
-// 			{
-// 				p = d->viewer->addPolygon(*(d->laserDataCartArray[id]), osg::Vec4(0.,0.,1.,0.4));
-// 			}
-// 			else
-// 			{
-// 				p = d->viewer->addPolygon(*(d->laserDataCartArray[id]));
-// 			}
-// 			if (p!=NULL)
-// 			{
-// 				laser->osgNode->addChild(p);
-// 			}
-// 			printf("%d (%d)\n", i, __LINE__);
-
+			osg::ref_ptr<osg::Node> p=NULL;
+			if (id=="laserSecurity")
+			{
+				p = d->viewer->addPolygon(*(d->laserDataCartArray[id]), osg::Vec4(0.,0.,1.,0.4));
+			}
+			else
+			{
+				p = d->viewer->addPolygon(*(d->laserDataCartArray[id]));
+			}
+			if (p!=NULL)
+			{
+				laser->osgNode->addChild(p);
+			}
+			printf("%d (%d)\n", i, __LINE__);
 		}
 	}
 
