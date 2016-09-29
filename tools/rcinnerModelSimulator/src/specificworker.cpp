@@ -911,7 +911,7 @@ void SpecificWorker::compute()
 			{
 				laser->osgNode->addChild(p);
 			}
-			printf("%d (%d)\n", i, __LINE__);
+			//printf("%d (%d)\n", i, __LINE__);
 		}
 	}
 
