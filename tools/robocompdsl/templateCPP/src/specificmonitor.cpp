@@ -22,7 +22,7 @@
 */
 SpecificMonitor::SpecificMonitor(GenericWorker *_worker,Ice::CommunicatorPtr _communicator):GenericMonitor(_worker, _communicator)
 {
-		ready = false;
+	ready = false;
 }
 /**
 * \brief Default destructor
