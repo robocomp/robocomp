@@ -376,12 +376,21 @@ bool SpecificWorker::setParametersAndPossibleActivation(const ParameterMap &prs,
 		cog.outl ("""void SpecificWorker::sendModificationProposal(AGMModel::SPtr &worldModel, AGMModel::SPtr &newModel)
 {
 	try
-	{
-		AGMModelPrinter::printWorld(newModel);""")
+	{""")
 		agentName=component['name']
 		cog.outl("<TABHERE><TABHERE>AGMMisc::publishModification(newModel, agmexecutive_proxy, \""+ agentName+"Agent\");")
 		cog.outl ("""<TABHERE>}
-	catch(...)
+/*	catch(const RoboCompAGMExecutive::Locked &e)
+	{
+	}
+	catch(const RoboCompAGMExecutive::OldModel &e)
+	{
+	}
+	catch(const RoboCompAGMExecutive::InvalidChange &e)
+	{
+	}
+*/
+	catch(const Ice::Exception& e)
 	{
 		exit(1);
 	}
