@@ -29,13 +29,15 @@ def bodyCodeFromName(name, component):
 		#######################################################
 		# code to implement subscription to AGMExecutiveTopic #
 		#######################################################
-		if name == 'symbolsUpdated' or name == 'symbolsUpdated':
-			bodyCode = "\tQMutexLocker locker(mutex);\n\tfor (auto n : modification)\n\t\tAGMModelConverter::includeIceModificationInInternalModel(n, worldModel);\n"
-		elif name == 'edgesUpdated' or name == 'edgeUpdated':
-			bodyCode = "\tQMutexLocker locker(mutex);\n\tfor (auto e : modification)\n\t{\n\t\tAGMModelConverter::includeIceModificationInInternalModel(e, worldModel);\n\t\tAGMInner::updateImNodeFromEdge(worldModel, e, innerModelViewer->innerModel);\n\t}\n"
-		if name == 'symbolUpdated' or name == 'edgeUpdated' or name == 'symbolsUpdated' or name == 'edgesUpdated':
-			bodyCode = "<TABHERE>QMutexLocker locker(mutex);\n<TABHERE>AGMModelConverter::includeIceModificationInInternalModel(modification, worldModel);\n \n<TABHERE>delete innerModel;\n<TABHERE>innerModel = AGMInner::extractInnerModel(worldModel);"
-		elif name == 'structuralChange':
+		if name == 'symbolUpdated':
+			bodyCode = "\tQMutexLocker locker(mutex);\n\tAGMModelConverter::includeIceModificationInInternalModel(modification, worldModel);\n"
+		if name == 'symbolsUpdated':
+			bodyCode = "\tQMutexLocker l(mutex);\n\tfor (auto modification : modifications)\n\t\tAGMModelConverter::includeIceModificationInInternalModel(modification, worldModel);\n"
+		if name == 'edgeUpdated'
+			bodyCode = "\tQMutexLocker locker(mutex);\n\tAGMModelConverter::includeIceModificationInInternalModel(modification, worldModel);\n\tAGMInner::updateImNodeFromEdge(worldModel, modification, innerModel);\n"
+		if name == 'edgesUpdated':
+			bodyCode = "\tQMutexLocker lockIM(mutex);\n\tfor (auto modification : modifications)\n\t{\n\t\tAGMModelConverter::includeIceModificationInInternalModel(modification, worldModel);\n\t\tAGMInner::updateImNodeFromEdge(worldModel, modification, innerModel);\n\t}\n"
+		if name == 'structuralChange':
 			bodyCode = "<TABHERE>mutex->lock();\n <TABHERE>AGMModelConverter::fromIceToInternal(w, worldModel);\n \n<TABHERE>delete innerModel;\n<TABHERE>innerModel = AGMInner::extractInnerModel(worldModel);\n<TABHERE>mutex->unlock();"
 		#######################################
 		# code to implement AGMCommonBehavior #

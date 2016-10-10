@@ -23,7 +23,7 @@
 #include <QtCore>
 
 /**
-  * @author Ricardo Royo Anton, SyNKRo
+  * @author Ricardo Royo Anton
   */
 
 // Joystick definitions
@@ -36,43 +36,38 @@ class QJoyStick : public QThread
 {
 Q_OBJECT
 public:
-    // Joystick data structure
-//     struct  qjs_data_t {
-//         int32_t time;   /* event timestamp in milliseconds */
-//         int16_t value;   /* value */
-//         int8_t type;     /* event type */
-//         int8_t number;   /* axis/button number */
-//     };
+	// Joystick data structure
 
-    // Joystick info structure
-    struct qjs_info_t {
-        uint8_t axes;
-        uint8_t buttons;
-        int32_t version;
-        char name[128];
-    };
-    
-    QJoyStick(QString Device=DEFAULT_DEVICE, int32_t axes=2, QObject *parent = 0);
-    ~QJoyStick();
+	// Joystick info structure
+	struct qjs_info_t {
+	uint8_t axes;
+	uint8_t buttons;
+	int32_t version;
+	char name[128];
+	};
 
-    bool openQJoy();
-    static bool cmpJoyEv( js_event src, js_event dst );
-    
+	QJoyStick(QString Device=DEFAULT_DEVICE, int32_t axes=2, QObject *parent = 0);
+	~QJoyStick();
+
+	bool openQJoy();
+	static bool cmpJoyEv( js_event src, js_event dst );
+
+	std::string getDeviceName() { return deviceName.toStdString(); }
 private:
-    QString deviceName;
-    int fd;
-    qjs_info_t info;
-    js_event data;
-    int data_sz;
-    
-    int srate;
+	QString deviceName;
+	int fd;
+	qjs_info_t info;
+	js_event data;
+	int data_sz;
+
+	int srate;
 
 public slots:
-    void run();
-    void stop();
+	void run();
+	void stop();
 
 signals:
-    void inputEvent( int value, int type, int number );
+	void inputEvent( int value, int type, int number );
 };
 
 #endif

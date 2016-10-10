@@ -20,66 +20,66 @@ from parseIDSL import *
 pool = IDSLPool(theIDSLs)
 
 REQUIRE_STR = """
-<TABHERE><TABHERE># Remote object connection for <NORMAL>
+<TABHERE># Remote object connection for <NORMAL>
+<TABHERE>try:
+<TABHERE><TABHERE>proxyString = ic.getProperties().getProperty('<NORMAL><NUM>Proxy')
 <TABHERE><TABHERE>try:
-<TABHERE><TABHERE><TABHERE>proxyString = ic.getProperties().getProperty('<NORMAL><NUM>Proxy')
-<TABHERE><TABHERE><TABHERE>try:
-<TABHERE><TABHERE><TABHERE><TABHERE>basePrx = ic.stringToProxy(proxyString)
-<TABHERE><TABHERE><TABHERE><TABHERE><LOWER><NUM>_proxy = <NORMAL>Prx.checkedCast(basePrx)
-<TABHERE><TABHERE><TABHERE><TABHERE>mprx["<NORMAL>Proxy<NUM>"] = <LOWER><NUM>_proxy
-<TABHERE><TABHERE><TABHERE>except Ice.Exception:
-<TABHERE><TABHERE><TABHERE><TABHERE>print 'Cannot connect to the remote object (<NORMAL>)', proxyString
-<TABHERE><TABHERE><TABHERE><TABHERE>#traceback.print_exc()
-<TABHERE><TABHERE><TABHERE><TABHERE>status = 1
-<TABHERE><TABHERE>except Ice.Exception, e:
-<TABHERE><TABHERE><TABHERE>print e
-<TABHERE><TABHERE><TABHERE>print 'Cannot get <NORMAL>Proxy property.'
+<TABHERE><TABHERE><TABHERE>basePrx = ic.stringToProxy(proxyString)
+<TABHERE><TABHERE><TABHERE><LOWER><NUM>_proxy = <NORMAL>Prx.checkedCast(basePrx)
+<TABHERE><TABHERE><TABHERE>mprx["<NORMAL>Proxy<NUM>"] = <LOWER><NUM>_proxy
+<TABHERE><TABHERE>except Ice.Exception:
+<TABHERE><TABHERE><TABHERE>print 'Cannot connect to the remote object (<NORMAL>)', proxyString
+<TABHERE><TABHERE><TABHERE>#traceback.print_exc()
 <TABHERE><TABHERE><TABHERE>status = 1
+<TABHERE>except Ice.Exception, e:
+<TABHERE><TABHERE>print e
+<TABHERE><TABHERE>print 'Cannot get <NORMAL>Proxy property.'
+<TABHERE><TABHERE>status = 1
 """
 
 SUBSCRIBESTO_STR = """
-<TABHERE><TABHERE><NORMAL>_adapter = ic.createObjectAdapter("<NORMAL>Topic")
-<TABHERE><TABHERE><LOWER>I_ = <NORMAL>I(worker)
-<TABHERE><TABHERE><LOWER>_proxy = <NORMAL>_adapter.addWithUUID(<LOWER>I_).ice_oneway()
+<TABHERE><NORMAL>_adapter = ic.createObjectAdapter("<NORMAL>Topic")
+<TABHERE><LOWER>I_ = <NORMAL>I(worker)
+<TABHERE><LOWER>_proxy = <NORMAL>_adapter.addWithUUID(<LOWER>I_).ice_oneway()
 
-<TABHERE><TABHERE>subscribeDone = False
-<TABHERE><TABHERE>while not subscribeDone:
-<TABHERE><TABHERE><TABHERE>try:
-<TABHERE><TABHERE><TABHERE><TABHERE><LOWER>_topic = topicManager.retrieve("<NORMAL>")
-<TABHERE><TABHERE><TABHERE><TABHERE>subscribeDone = True
-<TABHERE><TABHERE><TABHERE>except Ice.Exception, e:
-<TABHERE><TABHERE><TABHERE><TABHERE>print "Error. Topic does not exist (yet)"
-<TABHERE><TABHERE><TABHERE><TABHERE>status = 0
-<TABHERE><TABHERE><TABHERE><TABHERE>time.sleep(1)
-<TABHERE><TABHERE>qos = {}
-<TABHERE><TABHERE><LOWER>_topic.subscribeAndGetPublisher(qos, <LOWER>_proxy)
-<TABHERE><TABHERE><NORMAL>_adapter.activate()
+<TABHERE>subscribeDone = False
+<TABHERE>while not subscribeDone:
+<TABHERE><TABHERE>try:
+<TABHERE><TABHERE><TABHERE><LOWER>_topic = topicManager.retrieve("<NORMAL>")
+<TABHERE><TABHERE><TABHERE>subscribeDone = True
+<TABHERE><TABHERE>except Ice.Exception, e:
+<TABHERE><TABHERE><TABHERE>print "Error. Topic does not exist (yet)"
+<TABHERE><TABHERE><TABHERE>status = 0
+<TABHERE><TABHERE><TABHERE>time.sleep(1)
+<TABHERE>qos = {}
+<TABHERE><LOWER>_topic.subscribeAndGetPublisher(qos, <LOWER>_proxy)
+<TABHERE><NORMAL>_adapter.activate()
 """
 
 PUBLISHES_STR = """
-<TABHERE><TABHERE># Create a proxy to publish a <NORMAL> topic
-<TABHERE><TABHERE>topic = False
+<TABHERE># Create a proxy to publish a <NORMAL> topic
+<TABHERE>topic = False
+<TABHERE>try:
+<TABHERE><TABHERE>topic = topicManager.retrieve("<NORMAL>")
+<TABHERE>except:
+<TABHERE><TABHERE>pass
+<TABHERE>while not topic:
 <TABHERE><TABHERE>try:
 <TABHERE><TABHERE><TABHERE>topic = topicManager.retrieve("<NORMAL>")
-<TABHERE><TABHERE>except:
-<TABHERE><TABHERE><TABHERE>pass
-<TABHERE><TABHERE>while not topic:
+<TABHERE><TABHERE>except IceStorm.NoSuchTopic:
 <TABHERE><TABHERE><TABHERE>try:
-<TABHERE><TABHERE><TABHERE><TABHERE>topic = topicManager.retrieve("<NORMAL>")
-<TABHERE><TABHERE><TABHERE>except IceStorm.NoSuchTopic:
-<TABHERE><TABHERE><TABHERE><TABHERE>try:
-<TABHERE><TABHERE><TABHERE><TABHERE><TABHERE>topic = topicManager.create("<NORMAL>")
-<TABHERE><TABHERE><TABHERE><TABHERE>except:
-<TABHERE><TABHERE><TABHERE><TABHERE><TABHERE>print 'Another client created the <NORMAL> topic? ...'
-<TABHERE><TABHERE>pub = topic.getPublisher().ice_oneway()
-<TABHERE><TABHERE><LOWER>Topic = <NORMAL>Prx.uncheckedCast(pub)
-<TABHERE><TABHERE>mprx["<NORMAL>Pub"] = <LOWER>Topic
+<TABHERE><TABHERE><TABHERE><TABHERE>topic = topicManager.create("<NORMAL>")
+<TABHERE><TABHERE><TABHERE>except:
+<TABHERE><TABHERE><TABHERE><TABHERE>print 'Another client created the <NORMAL> topic? ...'
+<TABHERE>pub = topic.getPublisher().ice_oneway()
+<TABHERE><LOWER>Topic = <NORMAL>Prx.uncheckedCast(pub)
+<TABHERE>mprx["<NORMAL>Pub"] = <LOWER>Topic
 """
 
 IMPLEMENTS_STR = """
-<TABHERE><TABHERE>adapter = ic.createObjectAdapter('<NORMAL>')
-<TABHERE><TABHERE>adapter.add(<NORMAL>I(worker), ic.stringToIdentity('<LOWER>'))
-<TABHERE><TABHERE>adapter.activate()
+<TABHERE>adapter = ic.createObjectAdapter('<NORMAL>')
+<TABHERE>adapter.add(<NORMAL>I(worker), ic.stringToIdentity('<LOWER>'))
+<TABHERE>adapter.activate()
 """
 ]]]
 [[[end]]]
@@ -232,14 +232,14 @@ try:
 			needIce = True
 	if needIce:
 		cog.outl("""
-<TABHERE><TABHERE># Topic Manager
-<TABHERE><TABHERE>proxy = ic.getProperties().getProperty("TopicManager.Proxy")
-<TABHERE><TABHERE>obj = ic.stringToProxy(proxy)
-<TABHERE><TABHERE>try:
-<TABHERE><TABHERE><TABHERE>topicManager = IceStorm.TopicManagerPrx.checkedCast(obj)
-<TABHERE><TABHERE>except Ice.ConnectionRefusedException, e:
-<TABHERE><TABHERE><TABHERE>print 'Cannot connect to IceStorm! ('+proxy+')'
-<TABHERE><TABHERE><TABHERE>sys.exit(-1)""")
+<TABHERE># Topic Manager
+<TABHERE>proxy = ic.getProperties().getProperty("TopicManager.Proxy")
+<TABHERE>obj = ic.stringToProxy(proxy)
+<TABHERE>try:
+<TABHERE><TABHERE>topicManager = IceStorm.TopicManagerPrx.checkedCast(obj)
+<TABHERE>except Ice.ConnectionRefusedException, e:
+<TABHERE><TABHERE>print 'Cannot connect to IceStorm! ('+proxy+')'
+<TABHERE><TABHERE>sys.exit(-1)""")
 except:
 	pass
 
@@ -326,8 +326,8 @@ for imp in component['implements']:
 ]]]
 [[[end]]]
 
-		signal.signal(signal.SIGINT, signal.SIG_DFL)
-		app.exec_()
+	signal.signal(signal.SIGINT, signal.SIG_DFL)
+	app.exec_()
 
 	if ic:
 		try:
