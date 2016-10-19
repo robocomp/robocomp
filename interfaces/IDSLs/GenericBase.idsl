@@ -1,0 +1,17 @@
+module RoboCompGenericBase
+{
+  struct TBaseState
+  {
+    float x;
+    float correctedX;
+    float z;
+    float correctedZ;
+    float alpha;
+    float correctedAlpha;
+
+    float advVx;
+    float advVz;
+    float rotV;
+    bool isMoving;
+  };
+};
