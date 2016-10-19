@@ -69,17 +69,13 @@ InnerModelNode * InnerModelCamera::copyNode(QHash<QString, InnerModelNode *> &ha
 	return ret;
 }
 
-QVec InnerModelCamera::project(QString reference, QVec origVec, QString cameraId)
+QVec InnerModelCamera::project(QString reference, QVec origVec)
 {
-	origVec = innermodel->transform(cameraId, origVec, reference);
-	QVec pc;
-
-	pc = camera.project(origVec);
-
-	return QVec::vec3(pc(0), pc(1), origVec.norm2());
+	origVec = innermodel->transform(id, origVec, reference);
+	return project(origVec);
 }
 
-QVec InnerModelCamera::project(const QString &cameraId, const QVec &origVec)
+QVec InnerModelCamera::project(const QVec &origVec)
 {
 	QVec pc = camera.project(origVec);
 	return QVec::vec3(pc(0), pc(1), origVec.norm2());
@@ -122,7 +118,7 @@ QVec InnerModelCamera::anglesToImageCoord(const QString &cameraId, float pan, fl
 	ray(1)=ray(1)/ray(2);
 	ray(2)=1;
 
-	return project(cameraId, ray, cameraId);
+	return project(cameraId, ray);
 }
 
 QVec InnerModelCamera::imageCoordPlusDepthTo(QString cameraId, QVec coord, float depth, QString reference)
@@ -214,8 +210,8 @@ QVec InnerModelCamera::horizonLine(QString planeId, QString cameraId, float heig
 	if (normal(1) > 0.0000001) p2(1) -= -200.*normal(0)/normal(1);
 	p2(0) = -200.;
 	// Project points
-	p1 = project(cameraId, p1, cameraId);
-	p2 = project(cameraId, p2, cameraId);
+	p1 = project(cameraId, p1);
+	p2 = project(cameraId, p2);
 	// Compute image line
 	double dx=p2(0)-p1(0);
 	double dy=p2(1)-p1(1);
