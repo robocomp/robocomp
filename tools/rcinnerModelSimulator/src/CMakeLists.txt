@@ -12,6 +12,7 @@ SET ( SOURCES
 	genericmonitor.cpp
 	cameraI.cpp
 	differentialrobotI.cpp
+	genericbaseI.cpp
 	omnirobotI.cpp
 	imuI.cpp
 	innermodelmanagerI.cpp
@@ -27,6 +28,7 @@ SET ( SOURCES
 SET ( HEADERS
 	${HEADERS}
 	genericworker.h
+	genericbaseI.h
 	genericmonitor.h
 	cameraI.h
 	differentialrobotI.h
