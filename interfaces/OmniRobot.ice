@@ -4,7 +4,7 @@
 #include <GenericBase.ice>
 
 module RoboCompOmniRobot{
-	exception HardwareFailedException{string what;};
+
 	["cpp:comparable"]
 	struct TMechParams{
 		float temp;
@@ -15,14 +15,14 @@ module RoboCompOmniRobot{
 	};
 
 	interface OmniRobot{
-		void  getBaseState(out RoboCompGenericBase::TBaseState state)throws HardwareFailedException;
-		void  getBasePose(out int x, out int z, out float alpha)throws HardwareFailedException;
-		void  setSpeedBase(float advx, float advz, float rot)throws HardwareFailedException;
-		void  stopBase()throws HardwareFailedException;
-		void  resetOdometer()throws HardwareFailedException;
-		void  setOdometer(RoboCompGenericBase::TBaseState state)throws HardwareFailedException;
-		void  setOdometerPose(int x, int z, float alpha)throws HardwareFailedException;
-		void  correctOdometer(int x, int z, float alpha)throws HardwareFailedException;
+		void  getBaseState(out RoboCompGenericBase::TBaseState state)throws RoboCompGenericBase::HardwareFailedException;
+		void  getBasePose(out int x, out int z, out float alpha)throws RoboCompGenericBase::HardwareFailedException;
+		void  setSpeedBase(float advx, float advz, float rot)throws RoboCompGenericBase::HardwareFailedException;
+		void  stopBase()throws RoboCompGenericBase::HardwareFailedException;
+		void  resetOdometer()throws RoboCompGenericBase::HardwareFailedException;
+		void  setOdometer(RoboCompGenericBase::TBaseState state)throws RoboCompGenericBase::HardwareFailedException;
+		void  setOdometerPose(int x, int z, float alpha)throws RoboCompGenericBase::HardwareFailedException;
+		void  correctOdometer(int x, int z, float alpha)throws RoboCompGenericBase::HardwareFailedException;
 	};
 };
   
