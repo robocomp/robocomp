@@ -62,12 +62,12 @@ LaserConfData LaserI::getLaserConfData ( const Ice::Current& )
 
 TLaserData LaserI::getLaserData ( const Ice::Current& ) //SHOULD CONVERT Laser.Ice to LaserArray.ice
 {
-	RoboCompDifferentialRobot::TBaseState state;
+	RoboCompGenericBase::TBaseState state;
 	return worker->laser_getLaserAndBStateData ( id, state );
 }
 
 
-TLaserData LaserI::getLaserAndBStateData ( RoboCompDifferentialRobot::TBaseState& state, const Ice::Current& )
+TLaserData LaserI::getLaserAndBStateData ( RoboCompGenericBase::TBaseState& state, const Ice::Current& )
 {
 	return worker->laser_getLaserAndBStateData ( id, state );
 }

@@ -9,7 +9,7 @@
 // 	IMVLaser &las = d->imv->lasers[server];
 // 	QString laserConfig = las.laserNode->ifconfig;
 // 	uint32_t basePort  = laserConfig.toUInt();
-// 	RoboCompDifferentialRobot::TBaseState bState;
+// 	RoboCompGenericBase::TBaseState bState;
 // // 	for ( uint32_t s=0; s<d->handlerDifferentialRobots->servers.size(); ++s ) {
 // // 		if ( d->handlerDifferentialRobots->servers[s].port == basePort ) {
 // // 			( ( d->handlerDifferentialRobots->servers[s].interface ) )->getBaseState ( bState );
@@ -32,7 +32,7 @@
 // }
 
 
-TLaserData SpecificWorker::laser_getLaserAndBStateData ( const QString& server, RoboCompDifferentialRobot::TBaseState& state )
+TLaserData SpecificWorker::laser_getLaserAndBStateData ( const QString& server, RoboCompGenericBase::TBaseState& state )
 {
 	QMutexLocker l ( mutex );
 	

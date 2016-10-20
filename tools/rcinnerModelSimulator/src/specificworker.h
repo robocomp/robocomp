@@ -76,12 +76,12 @@ public:
 	// ----------------------------------------------------------------------------------------
 	// Camera.ice
 	// ----------------------------------------------------------------------------------------
-	void cam_camera_getYUVImage(const QString& server, int cam, RoboCompCamera::imgType& roi, RoboCompCommonHead::THeadState& hState, RoboCompDifferentialRobot::TBaseState& bState);
-	void cam_getYImage(const QString& server, int cam, RoboCompCamera::imgType& roi, RoboCompCommonHead::THeadState& hState, RoboCompDifferentialRobot::TBaseState& bState);
-	void cam_getYLogPolarImage(const QString& server, int cam, RoboCompCamera::imgType& roi, RoboCompCommonHead::THeadState& hState, RoboCompDifferentialRobot::TBaseState& bState);
-	void cam_getYImageCR(const QString& server, int cam, int div, RoboCompCamera::imgType& roi, RoboCompCommonHead::THeadState& hState, RoboCompDifferentialRobot::TBaseState& bState);
-	void cam_getRGBPackedImage(const QString& server, int cam, RoboCompCamera::imgType& roi, RoboCompCommonHead::THeadState& hState, RoboCompDifferentialRobot::TBaseState& bState);
-	void cam_getYRGBImage(const QString& server, int cam, RoboCompCamera::imgType& roi, RoboCompCommonHead::THeadState& hState, RoboCompDifferentialRobot::TBaseState& bState);
+	void cam_camera_getYUVImage(const QString& server, int cam, RoboCompCamera::imgType& roi, RoboCompCommonHead::THeadState& hState, RoboCompGenericBase::TBaseState& bState);
+	void cam_getYImage(const QString& server, int cam, RoboCompCamera::imgType& roi, RoboCompCommonHead::THeadState& hState, RoboCompGenericBase::TBaseState& bState);
+	void cam_getYLogPolarImage(const QString& server, int cam, RoboCompCamera::imgType& roi, RoboCompCommonHead::THeadState& hState, RoboCompGenericBase::TBaseState& bState);
+	void cam_getYImageCR(const QString& server, int cam, int div, RoboCompCamera::imgType& roi, RoboCompCommonHead::THeadState& hState, RoboCompGenericBase::TBaseState& bState);
+	void cam_getRGBPackedImage(const QString& server, int cam, RoboCompCamera::imgType& roi, RoboCompCommonHead::THeadState& hState, RoboCompGenericBase::TBaseState& bState);
+	void cam_getYRGBImage(const QString& server, int cam, RoboCompCamera::imgType& roi, RoboCompCommonHead::THeadState& hState, RoboCompGenericBase::TBaseState& bState);
 	TCamParams cam_getCamParams(const QString& server);
 	void cam_setInnerImage(const QString& server, const RoboCompCamera::imgType& roi);
 	
@@ -92,12 +92,12 @@ public:
 	// ----------------------------------------------------------------------------------------
 	// DifferentialRobot.ice
 	// ----------------------------------------------------------------------------------------
-	void dfr_getBaseState(const QString& server, RoboCompDifferentialRobot::TBaseState& state);
+	void dfr_getBaseState(const QString& server, RoboCompGenericBase::TBaseState& state);
 	void dfr_getBasePose(const QString& server, int& x, int& z, float& alpha);
 	void dfr_setSpeedBase(const QString& server, float adv, float rot);
 	void dfr_stopBase(const QString& server);
 	void dfr_resetOdometer(const QString& server);
-	void dfr_setOdometer(const QString& server, const RoboCompDifferentialRobot::TBaseState& state);
+	void dfr_setOdometer(const QString& server, const RoboCompGenericBase::TBaseState& state);
 	void dfr_setOdometerPose(const QString& server, int x, int z, float alpha);
 	void dfr_correctOdometer(const QString& server, int x, int z, float alpha);
 	
@@ -159,7 +159,7 @@ public:
 	// ----------------------------------------------------------------------------------------
 	// Laser.ice
 	// ----------------------------------------------------------------------------------------
-	TLaserData laser_getLaserAndBStateData(const QString& server, RoboCompDifferentialRobot::TBaseState& state);
+	TLaserData laser_getLaserAndBStateData(const QString& server, RoboCompGenericBase::TBaseState& state);
 	LaserConfData laser_getLaserConfData(const QString& server);
 	
 	// ----------------------------------------------------------------------------------------
@@ -168,8 +168,8 @@ public:
 	TRGBDParams rgbd_getRGBDParams(const QString& server);
 	void rgbd_setRegistration(const QString& server, Registration value);
 	Registration rgbd_getRegistration(const QString& server);
-	void rgbd_getData(const QString& server, RoboCompRGBD::imgType& rgbMatrix, depthType& distanceMatrix, RoboCompJointMotor::MotorStateMap& hState, RoboCompDifferentialRobot::TBaseState& bState);
-	void rgbd_getImage(const QString& server, ColorSeq& color, DepthSeq& depth, PointSeq& points, RoboCompJointMotor::MotorStateMap& hState, RoboCompDifferentialRobot::TBaseState& bState);
+	void rgbd_getData(const QString& server, RoboCompRGBD::imgType& rgbMatrix, depthType& distanceMatrix, RoboCompJointMotor::MotorStateMap& hState, RoboCompGenericBase::TBaseState& bState);
+	void rgbd_getImage(const QString& server, ColorSeq& color, DepthSeq& depth, PointSeq& points, RoboCompJointMotor::MotorStateMap& hState, RoboCompGenericBase::TBaseState& bState);
 };
 
 

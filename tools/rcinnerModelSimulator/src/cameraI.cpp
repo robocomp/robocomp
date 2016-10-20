@@ -33,32 +33,32 @@ CameraI::~CameraI()
 
 
 // Component functions, implementation
-void CameraI::getYUVImage(Ice::Int cam, RoboCompCamera::imgType& roi, RoboCompCommonHead::THeadState& hState, RoboCompDifferentialRobot::TBaseState& bState, const Ice::Current& )
+void CameraI::getYUVImage(Ice::Int cam, RoboCompCamera::imgType& roi, RoboCompCommonHead::THeadState& hState, RoboCompGenericBase::TBaseState& bState, const Ice::Current& )
 {
 }
 
 
-void CameraI::getYImage(Ice::Int cam, RoboCompCamera::imgType& roi, RoboCompCommonHead::THeadState& hState, RoboCompDifferentialRobot::TBaseState& bState, const Ice::Current& )
+void CameraI::getYImage(Ice::Int cam, RoboCompCamera::imgType& roi, RoboCompCommonHead::THeadState& hState, RoboCompGenericBase::TBaseState& bState, const Ice::Current& )
 {
 }
 
 
-void CameraI::getYLogPolarImage(Ice::Int cam, RoboCompCamera::imgType& roi, RoboCompCommonHead::THeadState& hState, RoboCompDifferentialRobot::TBaseState& bState, const Ice::Current& )
+void CameraI::getYLogPolarImage(Ice::Int cam, RoboCompCamera::imgType& roi, RoboCompCommonHead::THeadState& hState, RoboCompGenericBase::TBaseState& bState, const Ice::Current& )
 {
 }
 
 
-void CameraI::getYImageCR(Ice::Int cam, Ice::Int div, RoboCompCamera::imgType& roi, RoboCompCommonHead::THeadState& hState, RoboCompDifferentialRobot::TBaseState& bState, const Ice::Current& )
+void CameraI::getYImageCR(Ice::Int cam, Ice::Int div, RoboCompCamera::imgType& roi, RoboCompCommonHead::THeadState& hState, RoboCompGenericBase::TBaseState& bState, const Ice::Current& )
 {
 }
 
 
-void CameraI::getRGBPackedImage(Ice::Int cam, RoboCompCamera::imgType& roi, RoboCompCommonHead::THeadState& hState, RoboCompDifferentialRobot::TBaseState& bState, const Ice::Current& )
+void CameraI::getRGBPackedImage(Ice::Int cam, RoboCompCamera::imgType& roi, RoboCompCommonHead::THeadState& hState, RoboCompGenericBase::TBaseState& bState, const Ice::Current& )
 {
 }
 
 
-void CameraI::getYRGBImage(Ice::Int cam, RoboCompCamera::imgType& roi, RoboCompCommonHead::THeadState& hState, RoboCompDifferentialRobot::TBaseState& bState, const Ice::Current& )
+void CameraI::getYRGBImage(Ice::Int cam, RoboCompCamera::imgType& roi, RoboCompCommonHead::THeadState& hState, RoboCompGenericBase::TBaseState& bState, const Ice::Current& )
 {
 }
 

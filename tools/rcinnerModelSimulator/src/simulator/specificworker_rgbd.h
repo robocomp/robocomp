@@ -52,7 +52,7 @@ Registration SpecificWorker::rgbd_getRegistration ( const QString& server )
 }
 
 
-void SpecificWorker::rgbd_getData ( const QString& server, RoboCompRGBD::imgType& rgbMatrix, depthType& distanceMatrix, RoboCompJointMotor::MotorStateMap& hState, RoboCompDifferentialRobot::TBaseState& bState )
+void SpecificWorker::rgbd_getData ( const QString& server, RoboCompRGBD::imgType& rgbMatrix, depthType& distanceMatrix, RoboCompJointMotor::MotorStateMap& hState, RoboCompGenericBase::TBaseState& bState )
 {
 	QMutexLocker locker ( mutex );
 	
@@ -72,7 +72,7 @@ void SpecificWorker::rgbd_getData ( const QString& server, RoboCompRGBD::imgType
 }
 
 
-void SpecificWorker::rgbd_getImage ( const QString& server, ColorSeq& color, DepthSeq& depth, PointSeq& points, RoboCompJointMotor::MotorStateMap& hState, RoboCompDifferentialRobot::TBaseState& bState )
+void SpecificWorker::rgbd_getImage ( const QString& server, ColorSeq& color, DepthSeq& depth, PointSeq& points, RoboCompJointMotor::MotorStateMap& hState, RoboCompGenericBase::TBaseState& bState )
 {
 	QMutexLocker locker ( mutex );
 	IMVCamera &cam = d->imv->cameras[server];

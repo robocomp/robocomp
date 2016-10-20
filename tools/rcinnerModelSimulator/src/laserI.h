@@ -47,7 +47,7 @@ public:
 	void add ( QString id );
 	
 	TLaserData getLaserData ( const Ice::Current& = Ice::Current() );
-	TLaserData getLaserAndBStateData ( RoboCompDifferentialRobot::TBaseState& state, const Ice::Current& = Ice::Current() );
+	TLaserData getLaserAndBStateData ( RoboCompGenericBase::TBaseState& state, const Ice::Current& = Ice::Current() );
 	LaserConfData getLaserConfData ( const Ice::Current& = Ice::Current() );
 
 private:

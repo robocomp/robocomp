@@ -48,12 +48,12 @@ public:
 	void run();
 	void updateInnerModelPose(bool force=false);
 	
-	void getBaseState(RoboCompOmniRobot::TBaseState& state, const Ice::Current& = Ice::Current());
+	void getBaseState(RoboCompGenericBase::TBaseState& state, const Ice::Current& = Ice::Current());
 	void getBasePose(Ice::Int& x, Ice::Int& z, Ice::Float& alpha, const Ice::Current& = Ice::Current());
 	void setSpeedBase(Ice::Float advx, Ice::Float advz, Ice::Float rot, const Ice::Current& = Ice::Current());
 	void stopBase(const Ice::Current& = Ice::Current());
 	void resetOdometer(const Ice::Current& = Ice::Current());
-	void setOdometer(const RoboCompOmniRobot::TBaseState& state, const Ice::Current& = Ice::Current());
+	void setOdometer(const RoboCompGenericBase::TBaseState& state, const Ice::Current& = Ice::Current());
 	void setOdometerPose(Ice::Int x, Ice::Int z, Ice::Float alpha, const Ice::Current& = Ice::Current());
 	void correctOdometer(Ice::Int x, Ice::Int z, Ice::Float alpha, const Ice::Current& = Ice::Current());
 /*	
@@ -73,9 +73,9 @@ private:
 // 	float zeroANG;
 	
 // 	// Real Noisy Pose
-// 	RoboCompOmniRobot::TBaseState pose;
+// 	RoboCompGenericBase::TBaseState pose;
 // 	// Odometry pose
-// 	RoboCompOmniRobot::TBaseState noisyPose;
+// 	RoboCompGenericBase::TBaseState noisyPose;
 	// Real Angle
 // 	double newAngle;
 	//Noisy Angle
