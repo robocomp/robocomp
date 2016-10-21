@@ -244,7 +244,7 @@ void OmniRobotI::resetOdometer(const Ice::Current&)
 }
 
 
-void OmniRobotI::setOdometer(const RoboCompGenericBase::TBaseState& st, const Ice::Current&)
+void OmniRobotI::setOdometer(const RoboCompGenericBase::TBaseState &st, const Ice::Current&)
 {
 	setOdometerPose(st.x, st.z, st.alpha);
 }

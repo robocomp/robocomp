@@ -212,15 +212,16 @@ OmniRobotServer::OmniRobotServer(Ice::CommunicatorPtr communicator, SpecificWork
 	printf("Creating OmniRobot adapter <<%s>> with endpoint <<%s>>\n", name.c_str(), endp.c_str());
 	interface = new OmniRobotI(worker);
 	adapter->add(interface, communicator->stringToIdentity("omnirobot"));
+	adapter->activate();
 
 	printf("Creating DifferentialRobot [[emulated from an OmniRobot interface]] adapter <<%s>> with endpoint <<%s>>\n", name.c_str(), endp.c_str());
 	interfaceDFR = new DifferentialRobotI(worker, interface);
 	adapter->add(interfaceDFR, communicator->stringToIdentity("differentialrobot"));
+	adapter->activate();
 
 	printf("Creating GenericBase adapter <<%s>> with endpoint <<%s>>\n", name.c_str(), endp.c_str());
 	interfaceGB = new GenericBaseI(worker, interface);
 	adapter->add(interfaceGB, communicator->stringToIdentity("genericbase"));
-
 	adapter->activate();
 }
 
@@ -229,6 +230,8 @@ void OmniRobotServer::add(InnerModelOmniRobot *omnirobot)
 	omnirobots.push_back(omnirobot);
 	interface->add(omnirobot->id);
 	interface->start();
+	interfaceGB->add(omnirobot->id);
+	interfaceGB->start();
 // 	interfaceDFR->add(omnirobot->id);
 // 	interfaceDFR->start();
 }

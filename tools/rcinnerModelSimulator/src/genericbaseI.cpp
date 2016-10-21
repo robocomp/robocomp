@@ -46,20 +46,28 @@ void GenericBaseI::run()
 
 void GenericBaseI::getBaseState(RoboCompGenericBase::TBaseState& state, const Ice::Current&)
 {
+	printf("%d\n", __LINE__);
 	QMutexLocker locker(worker->mutex);
 
+	printf("%d\n", __LINE__);
 	{
+	printf("%d %p %p %p\n", __LINE__, innerModel, parent, node);
 		QVec retPOSR = innerModel->transform6D(parent->id, node->id+"_raw_odometry\"");
+	printf("%d\n", __LINE__);
 		state.x = retPOSR(0);
 		state.z = retPOSR(2);
 		state.alpha = retPOSR(4);
+	printf("%d\n", __LINE__);
 	}
 	
 	{
+	printf("%d\n", __LINE__);
 		QVec retPOSC = innerModel->transform6D(parent->id, node->id+"_corrected_odometry\"");
+	printf("%d\n", __LINE__);
 		state.correctedX = retPOSC(0);
 		state.correctedZ = retPOSC(2);
 		state.correctedAlpha = retPOSC(4);
+	printf("%d\n", __LINE__);
 	}
 
 //	state.isMoving = ( (fabs(advVelx)<0.0001 and fabs(advVelz)<0.0001 and fabs(rotVel)<0.0001));
@@ -72,10 +80,10 @@ void GenericBaseI::getBaseState(RoboCompGenericBase::TBaseState& state, const Ic
 void GenericBaseI::getBasePose(Ice::Int &x, Ice::Int &z, Ice::Float &alpha, const Ice::Current &)
 {
 	QMutexLocker locker(worker->mutex);
-	QVec retPOSC = innerModel->transform6D(parent->id, node->id+"_corrected_odometry\"");
-	x = retPOSC(0);
-	z = retPOSC(2);
-	alpha = retPOSC(4);
+	QVec retPOS = innerModel->transform6D(parent->id, node->id+"_raw_odometry\"");
+	x = retPOS(0);
+	z = retPOS(2);
+	alpha = retPOS(4);
 }
 
 
