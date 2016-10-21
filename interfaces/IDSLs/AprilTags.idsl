@@ -1,3 +1,6 @@
+import "GenericBase.idsl";
+import "JointMotor.idsl";
+
 module RoboCompAprilTags
 {
 	struct tag
@@ -16,5 +19,6 @@ module RoboCompAprilTags
 	interface AprilTags
 	{
 		void newAprilTag(tagsList tags);
+		void newAprilTagAndPose(tagsList tags,out RoboCompGenericBase::TBaseState bState, out RoboCompJointMotor::MotorStateMap hState );
 	};
 };
