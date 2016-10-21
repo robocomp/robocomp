@@ -47,7 +47,8 @@ public:
 	void add(QString id);
 	void run();
 	
-	void getBaseState(RoboCompGenericBase::TBaseState& state, const Ice::Current& = Ice::Current());
+	void getBaseState(RoboCompGenericBase::TBaseState& state, const Ice::Current & =Ice::Current());
+	void getBasePose(int &x, int &z, float &alpha, const Ice::Current & =Ice::Current());
 
 private:
 	SpecificWorker *worker;

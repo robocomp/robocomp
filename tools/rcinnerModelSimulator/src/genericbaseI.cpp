@@ -62,11 +62,21 @@ void GenericBaseI::getBaseState(RoboCompGenericBase::TBaseState& state, const Ic
 		state.correctedAlpha = retPOSC(4);
 	}
 
-// 	state.isMoving = ( (fabs(advVelx)<0.0001 and fabs(advVelz)<0.0001 and fabs(rotVel)<0.0001));
-	
-// 	state.advVx = advVelx;
-// 	state.advVz = advVelz;
-// 	state.rotV  = rotVel;
+//	state.isMoving = ( (fabs(advVelx)<0.0001 and fabs(advVelz)<0.0001 and fabs(rotVel)<0.0001));
+//	state.advVx = advVelx;
+//	state.advVz = advVelz;
+//	state.rotV  = rotVel;
 
 }
+
+void GenericBaseI::getBasePose(Ice::Int &x, Ice::Int &z, Ice::Float &alpha, const Ice::Current &)
+{
+	QMutexLocker locker(worker->mutex);
+	QVec retPOSC = innerModel->transform6D(parent->id, node->id+"_corrected_odometry\"");
+	x = retPOSC(0);
+	z = retPOSC(2);
+	alpha = retPOSC(4);
+}
+
+
 
