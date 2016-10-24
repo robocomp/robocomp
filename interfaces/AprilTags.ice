@@ -29,7 +29,7 @@ module RoboCompAprilTags{
 	interface AprilTags
 	{
 		void newAprilTag(tagsList tags);
-		void newAprilTagAndPose(tagsList tags,out RoboCompGenericBase::TBaseState bState, out RoboCompJointMotor::MotorStateMap hState );
+		void newAprilTagAndPose(tagsList tags, RoboCompGenericBase::TBaseState bState, RoboCompJointMotor::MotorStateMap hState );
 	};
 };
   
