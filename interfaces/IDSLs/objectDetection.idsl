@@ -2,6 +2,16 @@ module RoboCompobjectDetection
 {
 	sequence <string> listType;
 	
+	struct pose6D
+	{
+		float tx;
+		float ty;
+		float tz;
+		float rx;
+		float ry;
+		float rz;
+	};
+	
 	interface objectDetection
 	{
 		void statisticalOutliersRemoval();
@@ -31,6 +41,9 @@ module RoboCompobjectDetection
 		bool findTheObject(string objectTofind);
 		void getPose(out float x,out float y,out float z);
 		void getRotation(out float rx,out float ry,out float rz);
+		void saveCanonPose(string label, int numPoseToSave, pose6D tag1, pose6D tag2, pose6D tag3, pose6D tag4, pose6D tag5, pose6D tag6, pose6D tag7, pose6D tag8, pose6D tag9);
+		void saveRegPose(string label, int numPoseToSave, pose6D tag1, pose6D tag2, pose6D tag3, pose6D tag4, pose6D tag5, pose6D tag6, pose6D tag7, pose6D tag8, pose6D tag9);
+		void guessPose(string label, out pose6D guess);
 	};
 };
 
