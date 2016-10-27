@@ -28,7 +28,7 @@ for imp in idsl['module']['contents']:
 			for customType in customTypesList:
 				if structVar[0] == customType['name']:
 					if customType['type'] == 'sequence':
-						if customType['typeSequence'] in ('float','int','uint'):
+						if customType['typeSequence'] in ('float','int'):
 							cog.outl(customType['typeSequence'].replace('/','ROS/') +"32[] " + structVar[1])
 						else:
 							cog.outl(customType['typeSequence'].replace('/','ROS/') +"[] " + structVar[1])
@@ -39,17 +39,15 @@ for imp in idsl['module']['contents']:
 						wascustomType = True
 						break
 			if not wascustomType:
-				if structVar[0] in ('float','int','uint'):
+				if structVar[0] in ('float','int'):
 					cog.outl(structVar[0]+"32 "+structVar[1])
 				else:
 					str = structVar[0]+" "+structVar[1]
 					cog.outl(str.replace("::", "ROS/"))
 	elif imp['type'] == 'sequence' and imp['name'] == structName:
 		msg = ''
-		if imp['typeSequence'] in ('float','int','uint'):
+		if imp['typeSequence'] in ('float','int'):
 			msg = imp['typeSequence'] +"32[] " + structName
-		elif imp['typeSequence'] == 'byte':
-			msg = 'int8[] ' + structName
 		else:
 			msg = imp['typeSequence'] +"[] "+ structName
 		cog.outl(msg.replace("::", "ROS/"))
