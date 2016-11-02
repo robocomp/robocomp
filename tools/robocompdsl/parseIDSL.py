@@ -218,6 +218,9 @@ class IDSLPool:
 	def __init__(self, files):
 		self.modulePool = {}
 		self.includeInPool(files, self.modulePool)
+		self.rosTypes = ('int8','int16','int32','int64','float8','float16','float32','float64','byte','bool','string','time','empty')
+	def getRosTypes(self):
+		return self.rosTypes
 	def includeInPool(self, files, modulePool):
 		pathList = []
 		fileList = []
@@ -258,7 +261,6 @@ class IDSLPool:
 		return None
 	
 	def rosImports(self):
-		rosTypes = ('int8','int16','int32','int64','float8','float16','float32','float64','byte','bool','string','time','empty')
 		includesList = []
 		for module in self.modulePool:
 			for m in self.modulePool[module]['structs']:
@@ -275,7 +277,7 @@ class IDSLPool:
 							stdIncludes[p['type']] = m
 						elif p['type'] in ('uint8','uint16','uint32','uint64'):
 							m = "std_msgs/UInt"+p['type'].split('t')[1]
-						elif p['type'] in rosTypes:
+						elif p['type'] in self.rosTypes:
 							m = "std_msgs/"+p['type'].capitalize()
 							stdIncludes[p['type']] = m
 			for std in stdIncludes.values():

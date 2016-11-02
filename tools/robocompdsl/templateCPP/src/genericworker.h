@@ -21,6 +21,7 @@ if component == None:
 from parseIDSL import *
 pool = IDSLPool(theIDSLs)
 includeList = pool.rosImports()
+rosTypes = pool.getRosTypes()
 
 
 ]]]
@@ -183,9 +184,11 @@ if component['usingROS'] == True:
 						method = interface['methods'][mname]
 						for p in method['params']:
 							s = "\""+mname+"\""
-							if p['type'] in ('float','int','uint'):
+							if p['type'] in ('float','int'):
 								cog.outl("<TABHERE><TABHERE>pub_"+mname+" = node->advertise<std_msgs::"+p['type'].capitalize()+"32>(node->resolveName("+s+"), 1000);")
-							elif p['type'] in ('string', 'bool'):
+							elif p['type'] in ('uint8','uint16','uint32','uint64'):
+								cog.outl("<TABHERE><TABHERE>pub_"+mname+" = node->advertise<std_msgs::UInt"+p['type'].split('t')[1]+"32>(node->resolveName("+s+"), 1000);")
+							elif p['type'] in rosTypes:
 								cog.outl("<TABHERE><TABHERE>pub_"+mname+" = node->advertise<std_msgs::"+p['type'].capitalize()+">(node->resolveName("+s+"), 1000);")
 							elif '::' in p['type']:
 								cog.outl("<TABHERE><TABHERE>pub_"+mname+" = node->advertise<"+p['type']+">(node->resolveName("+s+"), 1000);")
@@ -198,11 +201,15 @@ if component['usingROS'] == True:
 					for mname in interface['methods']:
 						method = interface['methods'][mname]
 						for p in method['params']:
-							if p['type'] in ('float','int','uint'):
+							if p['type'] in ('float','int'):
 								cog.outl("<TABHERE>void "+mname+"(std_msgs::"+p['type'].capitalize()+"32 "+p['name']+")")
 								cog.outl("<TABHERE>{\n<TABHERE><TABHERE>pub_"+mname+".publish("+p['name']+");")
 								cog.outl("<TABHERE>}")
-							elif p['type'] in ('string', 'bool'):
+							elif p['type'] in ('uint8','uint16','uint32','uint64'):
+								cog.outl("<TABHERE>void "+mname+"(std_msgs::UInt"+p['type'].split('t')[1]+" "+p['name']+")")
+								cog.outl("<TABHERE>{\n<TABHERE><TABHERE>pub_"+mname+".publish("+p['name']+");")
+								cog.outl("<TABHERE>}")
+							elif p['type'] in rosTypes:
 								cog.outl("<TABHERE>void "+mname+"(std_msgs::"+p['type'].capitalize()+" "+p['name']+")")
 								cog.outl("<TABHERE>{\n<TABHERE><TABHERE>pub_"+mname+".publish("+p['name']+");")
 								cog.outl("<TABHERE>}")
@@ -263,10 +270,13 @@ if component['usingROS'] == True:
 										for campos in im['structIdentifiers']:
 											methodContent +="<TABHERE><TABHERE><TABHERE>"+p['name']+"."+campos['identifier']+" = srv.response."+p['name']+"."+campos['identifier']+";\n"
 							if firstParam:
-								if p['type'] in ('float','int','uint'):
+								if p['type'] in ('float','int'):
 									methodDef     += "std_msgs::"+p['type'].capitalize()+"32 "+p['name']+", "
 									methodContent +="<TABHERE><TABHERE>srv.request."+p['name']+" = "+p['name']+".data;\n"
-								elif p['type'] in ('string', 'bool'):
+								elif p['type'] in ('uint8','uint16','uint32','uint64'):
+									methodDef     += "std_msgs::UInt"+p['type'].split('t')[1]+" "+p['name']+", "
+									methodContent +="<TABHERE><TABHERE>srv.request."+p['name']+" = "+p['name']+".data;\n"
+								elif p['type'] in rosTypes:
 									methodDef     += "std_msgs::"+p['type'].capitalize()+" "+p['name']+", "
 									methodContent +="<TABHERE><TABHERE>srv.request."+p['name']+" = "+p['name']+".data;\n"
 								elif '::' in p['type']:
@@ -278,10 +288,13 @@ if component['usingROS'] == True:
 								firstParam = False
 							else:
 								firstParam = True
-								if p['type'] in ('float','int','uint'):
+								if p['type'] in ('float','int'):
 									methodDef     += "std_msgs::"+p['type'].capitalize()+"32 &"+p['name']+") "
 									methodContent += "<TABHERE><TABHERE><TABHERE>"+p['name']+".data = srv.response."+p['name']+";\n"
-								elif p['type'] in ('string', 'bool'):
+								elif p['type'] in ('uint8','uint16','uint32','uint64'):
+									methodDef     += "std_msgs::UInt"+p['type'].split('t')[1]+" &"+p['name']+") "
+									methodContent += "<TABHERE><TABHERE><TABHERE>"+p['name']+".data = srv.response."+p['name']+";\n"
+								elif p['type'] in rosTypes:
 									methodDef     += "std_msgs::"+p['type'].capitalize()+" &"+p['name']+") "
 									methodContent += "<TABHERE><TABHERE><TABHERE>"+p['name']+".data = srv.response."+p['name']+";\n"
 								elif '::' in p['type']:
@@ -423,9 +436,11 @@ if 'subscribesTo' in component:
 							else:
 								const = 'const '
 								ampersand = ''
-							if p['type'] in ('float','int','uint'):
+							if p['type'] in ('float','int'):
 								p['type'] = "std_msgs::"+p['type'].capitalize()+"32"
-							elif p['type'] in ('string', 'bool'):
+							elif p['type'] in ('uint8','uint16','uint32','uint64'):
+								p['type'] = "std_msgs::UInt"+p['type'].split('t')[1]
+							elif p['type'] in rosTypes:
 								p['type'] = "std_msgs::"+p['type'].capitalize()
 							elif not '::' in p['type']:
 								p['type'] = module['name']+"ROS::"+p['type']

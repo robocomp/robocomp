@@ -22,6 +22,7 @@ if component == None:
 
 from parseIDSL import *
 pool = IDSLPool(theIDSLs)
+rosTypes = pool.getRosTypes()
 
 def bodyCodeFromName(name, component):
 	bodyCode=""
@@ -207,7 +208,7 @@ except:
 void SpecificWorker::compute()
 {
 	QMutexLocker locker(mutex);
-	
+	//computeCODE
 // 	try
 // 	{
 // 		camera_proxy->getYImage(0,img, cState, bState);
@@ -260,13 +261,13 @@ if 'implements' in component:
 									ampersand = ''
 							# STR
 							paramStrA += delim + const + p['type'] + ' ' + ampersand + p['name']
-						cog.outl(method['return'] + ' SpecificWorker::' + method['name'] + '(' + paramStrA + ")\n{\n"+bodyCode+"\n}\n")
+						cog.outl(method['return'] + ' SpecificWorker::' + method['name'] + '(' + paramStrA + ")\n{\n//implementCODE\n"+bodyCode+"\n}\n")
 					else:
 						paramStrA = module['name'] +"ROS::"+method['name']+"::Request &req, "+module['name']+"ROS::"+method['name']+"::Response &res"
 						if imp in component['iceInterfaces']:
-							cog.outl('bool SpecificWorker::ROS' + method['name'] + '(' + paramStrA + ")\n{\n"+bodyCode+"\n}\n")
+							cog.outl('bool SpecificWorker::ROS' + method['name'] + '(' + paramStrA + ")\n{\n//implementCODE\n"+bodyCode+"\n}\n")
 						else:
-							cog.outl('bool SpecificWorker::' + method['name'] + '(' + paramStrA + ")\n{\n"+bodyCode+"\n}\n")
+							cog.outl('bool SpecificWorker::' + method['name'] + '(' + paramStrA + ")\n{\n//implementCODE\n"+bodyCode+"\n}\n")
 
 if 'subscribesTo' in component:
 	for impa in component['subscribesTo']:
@@ -299,7 +300,7 @@ if 'subscribesTo' in component:
 									ampersand = ''
 							# STR
 							paramStrA += delim + const + p['type'] + ' ' + ampersand + p['name']
-						cog.outl(method['return'] + ' SpecificWorker::' + method['name'] + '(' + paramStrA + ")\n{\n"+bodyCode+"\n}\n")
+						cog.outl(method['return'] + ' SpecificWorker::' + method['name'] + '(' + paramStrA + ")\n{\n//subscribesToCODE\n"+bodyCode+"\n}\n")
 					else:
 						for p in method['params']:
 							# delim
@@ -312,18 +313,20 @@ if 'subscribesTo' in component:
 							else:
 								const = 'const '
 								ampersand = ''
-							if p['type'] in ('float','int','uint'):
+							if p['type'] in ('float','int'):
 								p['type'] = "std_msgs::"+p['type'].capitalize()+"32"
-							elif p['type'] in ('string', 'bool'):
+							elif p['type'] in ('uint8','uint16','uint32','uint64'):
+								p['type'] = "std_msgs::UInt"+p['type'].split('t')[1]
+							elif p['type'] in rosTypes:
 								p['type'] = "std_msgs::"+p['type'].capitalize()
 							elif not '::' in p['type']:
 								p['type'] = module['name']+"ROS::"+p['type']
 							# STR
 							paramStrA += delim + p['type'] + ' ' + p['name']
 						if imp in component['iceInterfaces']:
-							cog.outl('void SpecificWorker::ROS' + method['name'] + '(' + paramStrA + ")\n{\n"+bodyCode+"\n}\n")
+							cog.outl('void SpecificWorker::ROS' + method['name'] + '(' + paramStrA + ")\n{\n//subscribesToCODE\n"+bodyCode+"\n}\n")
 						else:
-							cog.outl('void SpecificWorker::' + method['name'] + '(' + paramStrA + ")\n{\n"+bodyCode+"\n}\n")
+							cog.outl('void SpecificWorker::' + method['name'] + '(' + paramStrA + ")\n{\n//subscribesToCODE\n"+bodyCode+"\n}\n")
 ]]]
 [[[end]]]
 
