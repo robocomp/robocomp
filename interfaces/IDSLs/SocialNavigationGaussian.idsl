@@ -1,0 +1,23 @@
+
+module RoboCompSocialNavigationGaussian
+{
+	struct Pose2D
+	{
+		float x;
+		float z;
+		float angle;
+	};
+	
+	struct SNGPoint2D
+	{
+		float x;
+		float z;
+	};
+	
+	sequence<SNGPoint2D> SNGPolyline;
+
+	interface SocialNavigationGaussian
+	{
+		SNGPolyline getPolyline(float x, float z, float angle, float v);
+	};
+};
