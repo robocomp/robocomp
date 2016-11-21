@@ -12,8 +12,9 @@
 module RoboCompGotoPoint{
 
 	interface GotoPoint{
-		void  go(string nodo, float x, float y, float alpha);
-		void  turn(float speed);
+		void go(string nodo, float x, float y, float alpha);
+		void turn(float speed);
+		void stop();
 		bool atTarget();
 	};
 };
