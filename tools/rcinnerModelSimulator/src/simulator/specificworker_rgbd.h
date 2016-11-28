@@ -52,7 +52,7 @@ Registration SpecificWorker::rgbd_getRegistration ( const QString& server )
 }
 
 
-void SpecificWorker::rgbd_getData ( const QString& server, RoboCompRGBD::imgType& rgbMatrix, depthType& distanceMatrix, RoboCompJointMotor::MotorStateMap& hState, RoboCompDifferentialRobot::TBaseState& bState )
+void SpecificWorker::rgbd_getData ( const QString& server, RoboCompRGBD::imgType& rgbMatrix, depthType& distanceMatrix, RoboCompJointMotor::MotorStateMap& hState, RoboCompGenericBase::TBaseState& bState )
 {
 	QMutexLocker locker ( mutex );
 	
@@ -72,7 +72,7 @@ void SpecificWorker::rgbd_getData ( const QString& server, RoboCompRGBD::imgType
 }
 
 
-void SpecificWorker::rgbd_getImage ( const QString& server, ColorSeq& color, DepthSeq& depth, PointSeq& points, RoboCompJointMotor::MotorStateMap& hState, RoboCompDifferentialRobot::TBaseState& bState )
+void SpecificWorker::rgbd_getImage ( const QString& server, ColorSeq& color, DepthSeq& depth, PointSeq& points, RoboCompJointMotor::MotorStateMap& hState, RoboCompGenericBase::TBaseState& bState )
 {
 	QMutexLocker locker ( mutex );
 	IMVCamera &cam = d->imv->cameras[server];
@@ -83,13 +83,15 @@ void SpecificWorker::rgbd_getImage ( const QString& server, ColorSeq& color, Dep
 	if (cameraConfig.size() > 1)
 	{
 		uint32_t basePort  = QString ( cam.RGBDNode->ifconfig.split ( "," ) [1] ).toUInt();
-		std::map<uint32_t, DifferentialRobotServer>::iterator base;
-		base = d->dfr_servers.find( basePort );
-		if (base != d->dfr_servers.end())
+		std::map<uint32_t, OmniRobotServer>::iterator base;
+		base = d->omn_servers.find( basePort );
+		if (base != d->omn_servers.end())
 		{
 			base->second.interface->getBaseState( bState );
 		}
-
+		else{
+			std::cout<<"Error: no base state updated, basePort "<<basePort<<std::endl;
+		}
 		uint32_t jointPort = QString ( cam.RGBDNode->ifconfig.split ( "," ) [0] ).toUInt();
 		std::map<uint32_t, JointMotorServer>::iterator joint;
 		joint = d->jm_servers.find( jointPort );
@@ -109,7 +111,7 @@ void SpecificWorker::rgbd_getImage ( const QString& server, ColorSeq& color, Dep
 	const float focal = ( float ) cam.RGBDNode->focal;
 	double fovy, aspectRatio, Zn, Zf;
 	cam.viewerCamera->getCamera()->getProjectionMatrixAsPerspective ( fovy, aspectRatio, Zn, Zf );
-	printf("fov: %g, aspect: %g\n", fovy, aspectRatio);
+//	printf("fov: %g, aspect: %g\n", fovy, aspectRatio);
 
 	static QVec rndm = QVec::gaussianSamples(1000001, 1, noise);
 	static bool rndmInit = false;

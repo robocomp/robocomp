@@ -8,6 +8,7 @@
 #include "laserI.h"
 #include "rgbdI.h"
 #include "touchsensorI.h"
+#include "genericbaseI.h"
 
 #include <CommonHead.h>
 
@@ -120,6 +121,7 @@ public:
 	Ice::ObjectAdapterPtr adapter;
 	OmniRobotI *interface;
 	DifferentialRobotI *interfaceDFR;
+	GenericBaseI *interfaceGB;
 	std::vector<InnerModelOmniRobot *> omnirobots;
 };
 

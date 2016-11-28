@@ -218,6 +218,9 @@ class IDSLPool:
 	def __init__(self, files):
 		self.modulePool = {}
 		self.includeInPool(files, self.modulePool)
+		self.rosTypes = ('int8','int16','int32','int64','float8','float16','float32','float64','byte','bool','string','time','empty')
+	def getRosTypes(self):
+		return self.rosTypes
 	def includeInPool(self, files, modulePool):
 		pathList = []
 		fileList = []
@@ -269,13 +272,13 @@ class IDSLPool:
 				for mname in interface['methods']:
 					method = interface['methods'][mname]
 					for p in method['params']:
-						if p['type'] in ('int','float','uint'):
+						if p['type'] in ('int','float'):
 							m = "std_msgs/"+p['type'].capitalize()+"32"
 							stdIncludes[p['type']] = m
-						elif p['type'] == 'string':
-							m = "std_msgs/String"
-						elif p['type'] == 'bool':
-							m = "std_msgs/Bool"
+						elif p['type'] in ('uint8','uint16','uint32','uint64'):
+							m = "std_msgs/UInt"+p['type'].split('t')[1]
+						elif p['type'] in self.rosTypes:
+							m = "std_msgs/"+p['type'].capitalize()
 							stdIncludes[p['type']] = m
 			for std in stdIncludes.values():
 				includesList.append(std)

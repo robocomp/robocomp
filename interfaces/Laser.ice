@@ -9,7 +9,7 @@
 #ifndef ROBOCOMPLASER_ICE
 #define ROBOCOMPLASER_ICE
 
-#include <DifferentialRobot.ice>
+#include <GenericBase.ice>
 
 module RoboCompLaser{
 	sequence <int> shortVector;
@@ -25,8 +25,8 @@ module RoboCompLaser{
 		int cluster;
 		int sampleRate;
 		float angleRes;
-					float angleIni;
-					string driver;
+		float angleIni;
+		string driver;
 		string device;
 	};
 	["cpp:comparable"]
@@ -38,7 +38,7 @@ module RoboCompLaser{
 
 	interface Laser{
 		TLaserData getLaserData();
-		TLaserData getLaserAndBStateData(out RoboCompDifferentialRobot::TBaseState bState);
+		TLaserData getLaserAndBStateData(out RoboCompGenericBase::TBaseState bState);
 		LaserConfData getLaserConfData();
 	};
 };

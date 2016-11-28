@@ -1,5 +1,5 @@
 import "CommonHead.idsl";
-import "DifferentialRobot.idsl";
+import "GenericBase.idsl";
 
 module RoboCompCamera
 {
@@ -50,37 +50,37 @@ module RoboCompCamera
     /**@brief YUV420 format - 2 planes unpacked */
     idempotent void getYUVImage(int cam, out imgType roi,
      out RoboCompCommonHead::THeadState hState,
-     out RoboCompDifferentialRobot::TBaseState bState
+     out RoboCompGenericBase::TBaseState bState
      ) throws HardwareFailedException;
 
     /**@brief Luminance - 1 Plane */
     idempotent void getYImage(int cam, out imgType roi,
      out RoboCompCommonHead::THeadState hState,
-     out RoboCompDifferentialRobot::TBaseState bState
+     out RoboCompGenericBase::TBaseState bState
      ) throws MovingImageException;
 
     /**@brief Luminance in LogPolar */
     idempotent void getYLogPolarImage(int cam, out imgType roi,
      out RoboCompCommonHead::THeadState hState,
-     out RoboCompDifferentialRobot::TBaseState bState
+     out RoboCompGenericBase::TBaseState bState
      ) throws MovingImageException;
 
     /**@brief Luminance - 1 Plane. Compressed and resized. */
     idempotent void getYImageCR(int cam, int div, out imgType roi,
      out RoboCompCommonHead::THeadState hState,
-     out RoboCompDifferentialRobot::TBaseState bState
+     out RoboCompGenericBase::TBaseState bState
      ) throws MovingImageException;
 
     /**@brief RGB packed for visualization - 3 planes */
     idempotent void getRGBPackedImage(int cam, out imgType roi,
      out RoboCompCommonHead::THeadState hState,
-     out RoboCompDifferentialRobot::TBaseState bState
+     out RoboCompGenericBase::TBaseState bState
      ) throws MovingImageException;
 
     /**@brief Lum + RGB - 4 planes unpacked */
     idempotent void getYRGBImage(int cam, out imgType roi,
      out RoboCompCommonHead::THeadState hState,
-     out RoboCompDifferentialRobot::TBaseState bState
+     out RoboCompGenericBase::TBaseState bState
      ) throws MovingImageException;
 
     /**@brief Return relevan comp params

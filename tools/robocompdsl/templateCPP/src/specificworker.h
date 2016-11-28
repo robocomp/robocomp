@@ -20,6 +20,7 @@ if component == None:
 
 from parseIDSL import *
 pool = IDSLPool(theIDSLs)
+rosTypes = pool.getRosTypes()
 
 
 ]]]
@@ -163,9 +164,11 @@ if 'subscribesTo' in component:
 							else:
 								const = 'const '
 								ampersand = ''
-							if p['type'] in ('float','int','uint'):
+							if p['type'] in ('float','int'):
 								p['type'] = "std_msgs::"+p['type'].capitalize()+"32"
-							elif p['type'] in ('string', 'bool'):
+							elif p['type'] in ('uint8','uint16','uint32','uint64'):
+								p['type'] = "std_msgs::UInt"+p['type'].split('t')[1]
+							elif p['type'] in rosTypes:
 								p['type'] = "std_msgs::"+p['type'].capitalize()
 							elif not '::' in p['type']:
 								p['type'] = module['name']+"ROS::"+p['type']

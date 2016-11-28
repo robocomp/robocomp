@@ -58,7 +58,7 @@ Registration RGBDI::getRegistration ( const Ice::Current& )
 }
 
 
-void RGBDI::getData ( RoboCompRGBD::imgType& rgbMatrix, depthType& distanceMatrix, RoboCompJointMotor ::MotorStateMap& hState, RoboCompDifferentialRobot::TBaseState& bState, const Ice::Current& )
+void RGBDI::getData ( RoboCompRGBD::imgType& rgbMatrix, depthType& distanceMatrix, RoboCompJointMotor ::MotorStateMap& hState, RoboCompGenericBase::TBaseState& bState, const Ice::Current& )
 {
 	ColorSeq color;
 	DepthSeq depth;
@@ -76,7 +76,7 @@ void RGBDI::getData ( RoboCompRGBD::imgType& rgbMatrix, depthType& distanceMatri
 }
 
 
-void RGBDI::getDepthInIR ( depthType& distanceMatrix, RoboCompJointMotor ::MotorStateMap& hState, RoboCompDifferentialRobot::TBaseState& bState, const Ice::Current& )
+void RGBDI::getDepthInIR ( depthType& distanceMatrix, RoboCompJointMotor ::MotorStateMap& hState, RoboCompGenericBase::TBaseState& bState, const Ice::Current& )
 {
 	ColorSeq color;
 	DepthSeq depth;
@@ -90,13 +90,13 @@ void RGBDI::getDepthInIR ( depthType& distanceMatrix, RoboCompJointMotor ::Motor
 }
 
 
-void RGBDI::getImage ( ColorSeq& color, DepthSeq& depth, PointSeq& points, RoboCompJointMotor ::MotorStateMap& hState, RoboCompDifferentialRobot::TBaseState& bState, const Ice::Current& )
+void RGBDI::getImage ( ColorSeq& color, DepthSeq& depth, PointSeq& points, RoboCompJointMotor ::MotorStateMap& hState, RoboCompGenericBase::TBaseState& bState, const Ice::Current& )
 {
 	worker->rgbd_getImage ( id, color, depth, points, hState, bState );
 }
 
 
-void RGBDI::getDepth ( DepthSeq& depth, RoboCompJointMotor ::MotorStateMap& hState, RoboCompDifferentialRobot::TBaseState& bState, const Ice::Current& )
+void RGBDI::getDepth ( DepthSeq& depth, RoboCompJointMotor ::MotorStateMap& hState, RoboCompGenericBase::TBaseState& bState, const Ice::Current& )
 {
 	ColorSeq color;
 	PointSeq points;
@@ -104,7 +104,7 @@ void RGBDI::getDepth ( DepthSeq& depth, RoboCompJointMotor ::MotorStateMap& hSta
 }
 
 
-void RGBDI::getRGB ( ColorSeq& color, RoboCompJointMotor ::MotorStateMap& hState, RoboCompDifferentialRobot::TBaseState& bState, const Ice::Current& )
+void RGBDI::getRGB ( ColorSeq& color, RoboCompJointMotor ::MotorStateMap& hState, RoboCompGenericBase::TBaseState& bState, const Ice::Current& )
 {
 	DepthSeq depth;
 	PointSeq points;
@@ -112,7 +112,7 @@ void RGBDI::getRGB ( ColorSeq& color, RoboCompJointMotor ::MotorStateMap& hState
 }
 
 
-void RGBDI::getXYZ ( PointSeq& points, RoboCompJointMotor ::MotorStateMap& hState, RoboCompDifferentialRobot::TBaseState& bState, const Ice::Current& )
+void RGBDI::getXYZ ( PointSeq& points, RoboCompJointMotor ::MotorStateMap& hState, RoboCompGenericBase::TBaseState& bState, const Ice::Current& )
 {
 	ColorSeq color;
 	DepthSeq depth;

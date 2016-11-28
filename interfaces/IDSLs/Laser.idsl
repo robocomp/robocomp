@@ -1,4 +1,4 @@
-import "DifferentialRobot.idsl";
+import "GenericBase.idsl";
 
 module RoboCompLaser
 {
@@ -44,7 +44,7 @@ module RoboCompLaser
 	TLaserData getLaserData();
 	
 	/**@brief Get laser data and base local state */
-	TLaserData getLaserAndBStateData(out RoboCompDifferentialRobot::TBaseState bState);
+	TLaserData getLaserAndBStateData(out RoboCompGenericBase::TBaseState bState);
 	
 	/**@brief Return relevan comp params
     * @return struct LaserConfData

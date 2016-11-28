@@ -30,8 +30,9 @@ from parseIDSL import *
 idsl = IDSLParsing.fromFileIDSL(theIDSL)
 cog.outl("#ifndef "+idsl['module']['name'].upper()+"_ICE")
 cog.outl("#define "+idsl['module']['name'].upper()+"_ICE")
-for imp in idsl['imports']:
-	cog.outl("#include <"+imp.split('.')[0]+".ice>")
+if 'imports' in idsl.keys():
+	for imp in idsl['imports']:
+		cog.outl("#include <"+imp.split('.')[0]+".ice>")
 cog.outl("module "+idsl['module']['name']+"\n{")
 for content in idsl['module']['contents']:
 	if content['type'] == 'exception':

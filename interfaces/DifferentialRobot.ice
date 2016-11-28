@@ -9,8 +9,9 @@
 #ifndef ROBOCOMPDIFFERENTIALROBOT_ICE
 #define ROBOCOMPDIFFERENTIALROBOT_ICE
 
+#include <GenericBase.ice>
+
 module RoboCompDifferentialRobot{
-	exception HardwareFailedException{string what;};
 	struct TMechParams{
 		int wheelRadius;
 		int axisLength;
@@ -22,31 +23,17 @@ module RoboCompDifferentialRobot{
 		string device;
 		string handler;
 	};
-	struct TBaseState{
-		bool isMoving;
-		float x;
-		float correctedX;
-		float z;
-		float correctedZ;
-		float alpha;
-		float correctedAlpha;
-		float advV;
-		float rotV;
-		float adv;
-		float rot;
-		float voltage;
-	};
 
 	interface DifferentialRobot
 	{
-		void  getBaseState(out TBaseState state)throws HardwareFailedException;
-		void  getBasePose(out int x, out int z, out float alpha)throws HardwareFailedException;
-		void  setSpeedBase(float adv, float rot)throws HardwareFailedException;
-		void  stopBase()throws HardwareFailedException;
-		void  resetOdometer()throws HardwareFailedException;
-		void  setOdometer(TBaseState state)throws HardwareFailedException;
-		void  setOdometerPose(int x, int z, float alpha)throws HardwareFailedException;
-		void  correctOdometer(int x, int z, float alpha)throws HardwareFailedException;
+		void  getBaseState(out RoboCompGenericBase::TBaseState state)throws RoboCompGenericBase::HardwareFailedException;
+		void  getBasePose(out int x, out int z, out float alpha)throws RoboCompGenericBase::HardwareFailedException;
+		void  setSpeedBase(float adv, float rot)throws RoboCompGenericBase::HardwareFailedException;
+		void  stopBase()throws RoboCompGenericBase::HardwareFailedException;
+		void  resetOdometer()throws RoboCompGenericBase::HardwareFailedException;
+		void  setOdometer(RoboCompGenericBase::TBaseState state)throws RoboCompGenericBase::HardwareFailedException;
+		void  setOdometerPose(int x, int z, float alpha)throws RoboCompGenericBase::HardwareFailedException;
+		void  correctOdometer(int x, int z, float alpha)throws RoboCompGenericBase::HardwareFailedException;
 	};
 };
 

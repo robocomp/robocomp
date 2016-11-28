@@ -9,6 +9,9 @@
 #ifndef ROBOCOMPAPRILTAGS_ICE
 #define ROBOCOMPAPRILTAGS_ICE
 
+#include <JointMotor.ice>
+#include <GenericBase.ice>
+
 module RoboCompAprilTags{
 	["cpp:comparable"]
 	struct tag
@@ -26,6 +29,7 @@ module RoboCompAprilTags{
 	interface AprilTags
 	{
 		void newAprilTag(tagsList tags);
+		void newAprilTagAndPose(tagsList tags, RoboCompGenericBase::TBaseState bState, RoboCompJointMotor::MotorStateMap hState );
 	};
 };
   

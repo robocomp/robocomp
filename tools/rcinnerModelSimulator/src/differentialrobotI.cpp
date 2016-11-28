@@ -79,11 +79,11 @@ DifferentialRobotI::~DifferentialRobotI()
 
 
 // Component functions, implementation
-void DifferentialRobotI::getBaseState(RoboCompDifferentialRobot::TBaseState& state, const Ice::Current&)
+void DifferentialRobotI::getBaseState(RoboCompGenericBase::TBaseState& state, const Ice::Current&)
 {
 	if (omniI != NULL)
 	{
-		RoboCompOmniRobot::TBaseState ostate;
+		RoboCompGenericBase::TBaseState ostate;
 		omniI->getBaseState(ostate);
 		state.x = ostate.x;
 		state.z = ostate.z;
@@ -289,7 +289,7 @@ void DifferentialRobotI::setSpeedBase(Ice::Float adv, Ice::Float rot, const Ice:
 	gettimeofday(&lastCommand_timeval, NULL);
 	advVel = adv;
 	rotVel = rot;
-	pose.advV = adv;
+	pose.advVz = adv;
 	pose.rotV = rot;
 }
 
@@ -319,11 +319,11 @@ void DifferentialRobotI::resetOdometer(const Ice::Current&)
 }
 
 
-void DifferentialRobotI::setOdometer(const RoboCompDifferentialRobot::TBaseState& st, const Ice::Current&)
+void DifferentialRobotI::setOdometer(const RoboCompGenericBase::TBaseState& st, const Ice::Current&)
 {
 	if (omniI != NULL)
 	{
-		RoboCompOmniRobot::TBaseState ostate;
+		RoboCompGenericBase::TBaseState ostate;
 		ostate.x     = st.x;
 		ostate.z     = st.z;
 		ostate.alpha = st.alpha;

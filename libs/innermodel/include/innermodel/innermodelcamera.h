@@ -39,8 +39,8 @@ class InnerModelCamera : public InnerModelNode
 		float getSize()   const { return getWidth()*getHeight(); }
 		void updateValues(float width_, float height_, float focal_);
 		
-		QVec project(QString reference, QVec origVec, QString cameraId);
-		QVec project(const QString &cameraId, const QVec &origVec);
+		QVec project(QString reference, QVec origVec);
+		QVec project(const QVec &origVec);
 		QVec backProject(const QString &cameraId, const QVec &coord) ;//const;
 		void imageCoordToAngles(const QString &cameraId, QVec coord, float &pan, float &tilt, const QString & anglesRefS);
 		QVec anglesToImageCoord(const QString &cameraId, float pan, float tilt, const QString & anglesRefS);

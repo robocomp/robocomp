@@ -27,11 +27,11 @@ for imp in idsl['module']['contents']:
 						if len(param) == 2:
 							for im in idsl['module']['contents']:
 								if im['type'] in ('sequence') and im['name'] == param[0]:
-									if im['typeSequence'] in ('float','int','uint'):
+									if im['typeSequence'] in ('float','int'):
 										param[0] = im['typeSequence'] +"32[]"
 									else:
 										param[0] = im['typeSequence'] +"[]"
-							if param[0] in ('float','int','uint'):
+							if param[0] in ('float','int',):
 								param[0] = param[0] + "32"
 							str = param[0] + " " + param[1]
 							cog.outl(str.replace("::", "ROS/"))
@@ -39,13 +39,12 @@ for imp in idsl['module']['contents']:
 							cog.outl("---")
 							for im in idsl['module']['contents']:
 								if im['type'] in ('sequence') and im['name'] == param[1]:
-									if im['typeSequence'] in ('float','int','uint'):
+									if im['typeSequence'] in ('float','int'):
 										param[1] = im['typeSequence'] +"32[]"
 									else:
 										param[1] = im['typeSequence'] +"[]"
-							if param[1] in ('float','int','uint'):
+							if param[1] in ('float','int'):
 								param[1] = param[1] + "32"
-							param[1] = param[1].replace("byte","int8")
 							str = param[1] + " " + param[2]
 							cog.outl(str.replace("::", "ROS/"))
 ]]]

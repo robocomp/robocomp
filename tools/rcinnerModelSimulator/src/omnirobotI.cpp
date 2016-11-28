@@ -57,7 +57,7 @@ void OmniRobotI::run()
 }
 
 
-void OmniRobotI::getBaseState(RoboCompOmniRobot::TBaseState& state, const Ice::Current&)
+void OmniRobotI::getBaseState(RoboCompGenericBase::TBaseState& state, const Ice::Current&)
 {
 	QMutexLocker locker(worker->mutex);
 
@@ -244,7 +244,7 @@ void OmniRobotI::resetOdometer(const Ice::Current&)
 }
 
 
-void OmniRobotI::setOdometer(const RoboCompOmniRobot::TBaseState& st, const Ice::Current&)
+void OmniRobotI::setOdometer(const RoboCompGenericBase::TBaseState &st, const Ice::Current&)
 {
 	setOdometerPose(st.x, st.z, st.alpha);
 }

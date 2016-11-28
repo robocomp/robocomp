@@ -43,12 +43,12 @@ public:
 	CameraI ( GenericWorker *_worker, QObject *parent = 0 );
 	~CameraI();
 	
-	void getYUVImage ( Ice::Int cam, RoboCompCamera::imgType& roi, RoboCompCommonHead::THeadState& hState, RoboCompDifferentialRobot::TBaseState& bState, const Ice::Current& = Ice::Current() );
-	void getYImage ( Ice::Int cam, RoboCompCamera::imgType& roi, RoboCompCommonHead::THeadState& hState, RoboCompDifferentialRobot::TBaseState& bState, const Ice::Current& = Ice::Current() );
-	void getYLogPolarImage ( Ice::Int cam, RoboCompCamera::imgType& roi, RoboCompCommonHead::THeadState& hState, RoboCompDifferentialRobot::TBaseState& bState, const Ice::Current& = Ice::Current() );
-	void getYImageCR ( Ice::Int cam, Ice::Int div, RoboCompCamera::imgType& roi, RoboCompCommonHead::THeadState& hState, RoboCompDifferentialRobot::TBaseState& bState, const Ice::Current& = Ice::Current() );
-	void getRGBPackedImage ( Ice::Int cam, RoboCompCamera::imgType& roi, RoboCompCommonHead::THeadState& hState, RoboCompDifferentialRobot::TBaseState& bState, const Ice::Current& = Ice::Current() );
-	void getYRGBImage ( Ice::Int cam, RoboCompCamera::imgType& roi, RoboCompCommonHead::THeadState& hState, RoboCompDifferentialRobot::TBaseState& bState, const Ice::Current& = Ice::Current() );
+	void getYUVImage ( Ice::Int cam, RoboCompCamera::imgType& roi, RoboCompCommonHead::THeadState& hState, RoboCompGenericBase::TBaseState& bState, const Ice::Current& = Ice::Current() );
+	void getYImage ( Ice::Int cam, RoboCompCamera::imgType& roi, RoboCompCommonHead::THeadState& hState, RoboCompGenericBase::TBaseState& bState, const Ice::Current& = Ice::Current() );
+	void getYLogPolarImage ( Ice::Int cam, RoboCompCamera::imgType& roi, RoboCompCommonHead::THeadState& hState, RoboCompGenericBase::TBaseState& bState, const Ice::Current& = Ice::Current() );
+	void getYImageCR ( Ice::Int cam, Ice::Int div, RoboCompCamera::imgType& roi, RoboCompCommonHead::THeadState& hState, RoboCompGenericBase::TBaseState& bState, const Ice::Current& = Ice::Current() );
+	void getRGBPackedImage ( Ice::Int cam, RoboCompCamera::imgType& roi, RoboCompCommonHead::THeadState& hState, RoboCompGenericBase::TBaseState& bState, const Ice::Current& = Ice::Current() );
+	void getYRGBImage ( Ice::Int cam, RoboCompCamera::imgType& roi, RoboCompCommonHead::THeadState& hState, RoboCompGenericBase::TBaseState& bState, const Ice::Current& = Ice::Current() );
 	TCamParams getCamParams ( const Ice::Current& = Ice::Current() );
 	void setInnerImage ( const RoboCompCamera::imgType& roi, const Ice::Current& = Ice::Current() );
 

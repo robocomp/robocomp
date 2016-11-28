@@ -1,5 +1,5 @@
 import "JointMotor.idsl";
-import "DifferentialRobot.idsl";
+import "GenericBase.idsl";
 
 module RoboCompRGBD
 {
@@ -73,9 +73,9 @@ module RoboCompRGBD
     idempotent Registration getRegistration () throws HardwareFailedException;
 
     /**@brief RGB Packed - Distance 1 plane */
-    idempotent void getData(out imgType rgbMatrix, out depthType distanceMatrix, out RoboCompJointMotor::MotorStateMap hState, out RoboCompDifferentialRobot::TBaseState bState) throws HardwareFailedException;
+    idempotent void getData(out imgType rgbMatrix, out depthType distanceMatrix, out RoboCompJointMotor::MotorStateMap hState, out RoboCompGenericBase::TBaseState bState) throws HardwareFailedException;
 
-    idempotent void getDepthInIR(out depthType distanceMatrix, out RoboCompJointMotor::MotorStateMap hState, out RoboCompDifferentialRobot::TBaseState bState) throws HardwareFailedException;
+    idempotent void getDepthInIR(out depthType distanceMatrix, out RoboCompJointMotor::MotorStateMap hState, out RoboCompGenericBase::TBaseState bState) throws HardwareFailedException;
 
     /** @brief Return the RGB and the depth images */
     idempotent void getImage(
@@ -83,19 +83,19 @@ module RoboCompRGBD
         out DepthSeq depth,
         out PointSeq points,
         out RoboCompJointMotor::MotorStateMap hState,
-        out RoboCompDifferentialRobot::TBaseState bState) throws HardwareFailedException;
+        out RoboCompGenericBase::TBaseState bState) throws HardwareFailedException;
 
     void getDepth(
     	out DepthSeq depth,
         out RoboCompJointMotor::MotorStateMap hState,
-        out RoboCompDifferentialRobot::TBaseState bState) throws HardwareFailedException;
+        out RoboCompGenericBase::TBaseState bState) throws HardwareFailedException;
 
     void getRGB(out ColorSeq color,
         out RoboCompJointMotor::MotorStateMap hState,
-        out RoboCompDifferentialRobot::TBaseState bState) throws HardwareFailedException;
+        out RoboCompGenericBase::TBaseState bState) throws HardwareFailedException;
 
     void getXYZ(out PointSeq points,
         out RoboCompJointMotor::MotorStateMap hState,
-        out RoboCompDifferentialRobot::TBaseState bState) throws HardwareFailedException;
+        out RoboCompGenericBase::TBaseState bState) throws HardwareFailedException;
   };
 };

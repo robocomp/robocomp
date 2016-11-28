@@ -46,8 +46,8 @@ void PickHandler::pick(osgViewer::View* view, const osgGA::GUIEventAdapter& ea)
 		 osg::Vec3d p = hitr->getWorldIntersectPoint();
          pick.x = p.x();
 		 pick.y = p.y();
-		 pick.z = p.z();
-		 qDebug() << __FUNCTION__ << "Picking " << QString::fromStdString(name) << p.x() << p.y() << p.z();
+		 pick.z = -p.z();
+		 qDebug() << __FUNCTION__ << "Picking " << QString::fromStdString(name) << pick.x << pick.y << pick.z;
 		try
 		{   if( rcis_mousepicker_proxy )
 				rcis_mousepicker_proxy->setPick( pick );

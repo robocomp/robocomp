@@ -22,6 +22,7 @@ if component == None:
 
 from parseIDSL import *
 pool = IDSLPool(theIDSLs)
+rosTypes = pool.getRosTypes()
 
 def bodyCodeFromName(name, component):
 	bodyCode=""
@@ -29,13 +30,15 @@ def bodyCodeFromName(name, component):
 		#######################################################
 		# code to implement subscription to AGMExecutiveTopic #
 		#######################################################
-		if name == 'symbolsUpdated' or name == 'symbolsUpdated':
-			bodyCode = "\tQMutexLocker locker(mutex);\n\tfor (auto n : modification)\n\t\tAGMModelConverter::includeIceModificationInInternalModel(n, worldModel);\n"
-		elif name == 'edgesUpdated' or name == 'edgeUpdated':
-			bodyCode = "\tQMutexLocker locker(mutex);\n\tfor (auto e : modification)\n\t{\n\t\tAGMModelConverter::includeIceModificationInInternalModel(e, worldModel);\n\t\tAGMInner::updateImNodeFromEdge(worldModel, e, innerModelViewer->innerModel);\n\t}\n"
-		if name == 'symbolUpdated' or name == 'edgeUpdated' or name == 'symbolsUpdated' or name == 'edgesUpdated':
-			bodyCode = "<TABHERE>QMutexLocker locker(mutex);\n<TABHERE>AGMModelConverter::includeIceModificationInInternalModel(modification, worldModel);\n \n<TABHERE>delete innerModel;\n<TABHERE>innerModel = AGMInner::extractInnerModel(worldModel);"
-		elif name == 'structuralChange':
+		if name == 'symbolUpdated':
+			bodyCode = "\tQMutexLocker locker(mutex);\n\tAGMModelConverter::includeIceModificationInInternalModel(modification, worldModel);\n"
+		if name == 'symbolsUpdated':
+			bodyCode = "\tQMutexLocker l(mutex);\n\tfor (auto modification : modifications)\n\t\tAGMModelConverter::includeIceModificationInInternalModel(modification, worldModel);\n"
+		if name == 'edgeUpdated':
+			bodyCode = "\tQMutexLocker locker(mutex);\n\tAGMModelConverter::includeIceModificationInInternalModel(modification, worldModel);\n\tAGMInner::updateImNodeFromEdge(worldModel, modification, innerModel);\n"
+		if name == 'edgesUpdated':
+			bodyCode = "\tQMutexLocker lockIM(mutex);\n\tfor (auto modification : modifications)\n\t{\n\t\tAGMModelConverter::includeIceModificationInInternalModel(modification, worldModel);\n\t\tAGMInner::updateImNodeFromEdge(worldModel, modification, innerModel);\n\t}\n"
+		if name == 'structuralChange':
 			bodyCode = "<TABHERE>mutex->lock();\n <TABHERE>AGMModelConverter::fromIceToInternal(w, worldModel);\n \n<TABHERE>delete innerModel;\n<TABHERE>innerModel = AGMInner::extractInnerModel(worldModel);\n<TABHERE>mutex->unlock();"
 		#######################################
 		# code to implement AGMCommonBehavior #
@@ -205,7 +208,7 @@ except:
 void SpecificWorker::compute()
 {
 	QMutexLocker locker(mutex);
-	
+	//computeCODE
 // 	try
 // 	{
 // 		camera_proxy->getYImage(0,img, cState, bState);
@@ -258,13 +261,13 @@ if 'implements' in component:
 									ampersand = ''
 							# STR
 							paramStrA += delim + const + p['type'] + ' ' + ampersand + p['name']
-						cog.outl(method['return'] + ' SpecificWorker::' + method['name'] + '(' + paramStrA + ")\n{\n"+bodyCode+"\n}\n")
+						cog.outl(method['return'] + ' SpecificWorker::' + method['name'] + '(' + paramStrA + ")\n{\n//implementCODE\n"+bodyCode+"\n}\n")
 					else:
 						paramStrA = module['name'] +"ROS::"+method['name']+"::Request &req, "+module['name']+"ROS::"+method['name']+"::Response &res"
 						if imp in component['iceInterfaces']:
-							cog.outl('bool SpecificWorker::ROS' + method['name'] + '(' + paramStrA + ")\n{\n"+bodyCode+"\n}\n")
+							cog.outl('bool SpecificWorker::ROS' + method['name'] + '(' + paramStrA + ")\n{\n//implementCODE\n"+bodyCode+"\n}\n")
 						else:
-							cog.outl('bool SpecificWorker::' + method['name'] + '(' + paramStrA + ")\n{\n"+bodyCode+"\n}\n")
+							cog.outl('bool SpecificWorker::' + method['name'] + '(' + paramStrA + ")\n{\n//implementCODE\n"+bodyCode+"\n}\n")
 
 if 'subscribesTo' in component:
 	for impa in component['subscribesTo']:
@@ -297,7 +300,7 @@ if 'subscribesTo' in component:
 									ampersand = ''
 							# STR
 							paramStrA += delim + const + p['type'] + ' ' + ampersand + p['name']
-						cog.outl(method['return'] + ' SpecificWorker::' + method['name'] + '(' + paramStrA + ")\n{\n"+bodyCode+"\n}\n")
+						cog.outl(method['return'] + ' SpecificWorker::' + method['name'] + '(' + paramStrA + ")\n{\n//subscribesToCODE\n"+bodyCode+"\n}\n")
 					else:
 						for p in method['params']:
 							# delim
@@ -310,18 +313,20 @@ if 'subscribesTo' in component:
 							else:
 								const = 'const '
 								ampersand = ''
-							if p['type'] in ('float','int','uint'):
+							if p['type'] in ('float','int'):
 								p['type'] = "std_msgs::"+p['type'].capitalize()+"32"
-							elif p['type'] in ('string', 'bool'):
+							elif p['type'] in ('uint8','uint16','uint32','uint64'):
+								p['type'] = "std_msgs::UInt"+p['type'].split('t')[1]
+							elif p['type'] in rosTypes:
 								p['type'] = "std_msgs::"+p['type'].capitalize()
 							elif not '::' in p['type']:
 								p['type'] = module['name']+"ROS::"+p['type']
 							# STR
 							paramStrA += delim + p['type'] + ' ' + p['name']
 						if imp in component['iceInterfaces']:
-							cog.outl('void SpecificWorker::ROS' + method['name'] + '(' + paramStrA + ")\n{\n"+bodyCode+"\n}\n")
+							cog.outl('void SpecificWorker::ROS' + method['name'] + '(' + paramStrA + ")\n{\n//subscribesToCODE\n"+bodyCode+"\n}\n")
 						else:
-							cog.outl('void SpecificWorker::' + method['name'] + '(' + paramStrA + ")\n{\n"+bodyCode+"\n}\n")
+							cog.outl('void SpecificWorker::' + method['name'] + '(' + paramStrA + ")\n{\n//subscribesToCODE\n"+bodyCode+"\n}\n")
 ]]]
 [[[end]]]
 

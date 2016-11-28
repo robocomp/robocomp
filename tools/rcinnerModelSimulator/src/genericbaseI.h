@@ -16,48 +16,52 @@
  *    You should have received a copy of the GNU General Public License
  *    along with RoboComp.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef LASERI_H
-#define LASERI_H
+#ifndef GENERICBASEI_H
+#define GENERICBASEI_H
 
 // Qt includes
 #include <QMutex>
 #include <QObject>
+#include <QThread>
 
 // RoboComp includes
 #include <Ice/Ice.h>
-#include <Laser.h>
+#include <GenericBase.h>
 #include <innermodel/innermodel.h>
 
 // Simulator includes
 #include "config.h"
 
-#include <osg/Group>
 
-using namespace RoboCompLaser;
+
+using namespace RoboCompGenericBase;
 
 class SpecificWorker;
 
-class LaserI : public QObject , public virtual RoboCompLaser::Laser
+class GenericBaseI : public QThread, public virtual RoboCompGenericBase::GenericBase
 {
-	Q_OBJECT
+Q_OBJECT
 public:
-	LaserI ( SpecificWorker *_worker, QObject *parent = 0 );
-	~LaserI();
+	GenericBaseI ( SpecificWorker *_worker, QObject *parent = 0 );
 	
-	void add ( QString id );
+	void add(QString id);
+	void run();
 	
-	TLaserData getLaserData ( const Ice::Current& = Ice::Current() );
-	TLaserData getLaserAndBStateData ( RoboCompGenericBase::TBaseState& state, const Ice::Current& = Ice::Current() );
-	LaserConfData getLaserConfData ( const Ice::Current& = Ice::Current() );
+	void getBaseState(RoboCompGenericBase::TBaseState& state, const Ice::Current & =Ice::Current());
+	void getBasePose(int &x, int &z, float &alpha, const Ice::Current & =Ice::Current());
 
 private:
-	QString id;
-	InnerModel *innerModel;
-	InnerModelLaser *laserNode;
-	osg::Group *group;
 	SpecificWorker *worker;
-	LaserConfData laserConf;
-	QMutex *mutex;
+	InnerModel *innerModel;
+	InnerModelTransform *parent;
+	InnerModelOmniRobot *node;
 };
 
 #endif
+
+
+
+
+
+
+
