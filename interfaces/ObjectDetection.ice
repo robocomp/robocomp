@@ -9,7 +9,7 @@
 #ifndef ROBOCOMPOBJECTDETECTION_ICE
 #define ROBOCOMPOBJECTDETECTION_ICE
 
-module RoboCompobjectDetection
+module RoboCompObjectDetection
 {
 	sequence <string> listType;
 	
@@ -23,7 +23,7 @@ module RoboCompobjectDetection
 		float rz;
 	};
 	
-	interface objectDetection
+	interface ObjectDetection
 	{
 		void statisticalOutliersRemoval();
 		void passThrough();

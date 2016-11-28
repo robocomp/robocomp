@@ -1,4 +1,4 @@
-module RoboCompobjectDetection
+  module RoboCompObjectDetection
 {
 	sequence <string> listType;
 	
@@ -12,7 +12,7 @@ module RoboCompobjectDetection
 		float rz;
 	};
 	
-	interface objectDetection
+	interface ObjectDetection
 	{
 		void statisticalOutliersRemoval();
 		void passThrough();
