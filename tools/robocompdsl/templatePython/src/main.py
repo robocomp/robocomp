@@ -283,7 +283,11 @@ for ima in component['implements']:
 	cog.outl(w)
 
 
-for st in component['subscribesTo']:
+for sto in component['subscribesTo']:
+	if type(sto) == type(''):
+		st = sto
+	else:
+		st = sto[0]
 	w = SUBSCRIBESTO_STR.replace("<NORMAL>", st).replace("<LOWER>", st.lower())
 	cog.outl(w)
 ]]]

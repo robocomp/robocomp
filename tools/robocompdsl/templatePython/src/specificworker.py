@@ -129,8 +129,12 @@ try:
 except:
 	pass
 
-for imp in lst:
-	module = pool.moduleProviding(imp[0])
+for impa in lst:
+	if type(impa) == type(''):
+		imp = impa
+	else:
+		imp = impa[0]
+	module = pool.moduleProviding(imp)
 	for interface in module['interfaces']:
 		if interface['name'] == imp:
 			for mname in interface['methods']:
