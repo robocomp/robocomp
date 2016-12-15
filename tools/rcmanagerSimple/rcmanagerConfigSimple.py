@@ -153,7 +153,7 @@ def writeConfigToFile(dict, components, path):
 	writeToFile(file, ' </generalInformation>')
  	writeToFile(file, '')
 
-	for comp in components:
+	for comp in reversed(components):
 		print comp
 		writeToFile(file, ' <node alias="' + comp.alias + '" endpoint="' + comp.endpoint + '">')
 		for dep in comp.dependences:
