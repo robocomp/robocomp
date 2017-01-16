@@ -4,6 +4,7 @@
 	
 	struct pose6D
 	{
+		string label;
 		float tx;
 		float ty;
 		float tz;
@@ -11,6 +12,7 @@
 		float ry;
 		float rz;
 	};
+	sequence <pose6D> listObject;
 	
 	interface ObjectDetection
 	{
@@ -39,10 +41,11 @@
 		void segmentImage();
 		void grabTheAR();
 		bool findTheObject(string objectTofind);
+		bool findObjects(out listObject lObjects);
 		void getPose(out float x,out float y,out float z);
 		void getRotation(out float rx,out float ry,out float rz);
-		void saveCanonPose(string label, int numPoseToSave, pose6D tag1, pose6D tag2, pose6D tag3, pose6D tag4, pose6D tag5, pose6D tag6, pose6D tag7, pose6D tag8, pose6D tag9);
-		void saveRegPose(string label, int numPoseToSave, pose6D tag1, pose6D tag2, pose6D tag3, pose6D tag4, pose6D tag5, pose6D tag6, pose6D tag7, pose6D tag8, pose6D tag9);
+		void saveCanonPose(string label, int numPoseToSave, out pose6D tag1, out pose6D tag2, out pose6D tag3, out pose6D tag4, out pose6D tag5, out pose6D tag6, out pose6D tag7, out pose6D tag8, out pose6D tag9);
+		void saveRegPose(string label, int numPoseToSave, out pose6D tag1, out pose6D tag2, out pose6D tag3, out pose6D tag4, out pose6D tag5, out pose6D tag6, out pose6D tag7, out pose6D tag8, out pose6D tag9);
 		void guessPose(string label, out pose6D guess);
 	};
 };
