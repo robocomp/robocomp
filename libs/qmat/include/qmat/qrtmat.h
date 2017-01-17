@@ -40,8 +40,8 @@ namespace RMat
 	public:
 		RTMat(bool XCW=true, bool YCW=true,bool ZCW=true);
 		RTMat( const RTMat & ex, bool XCW, bool YCW, bool ZCW);
-		RTMat( T ox, T oy, T oz, const QVec &t, bool XCW=true, bool YCW=true,bool ZCW=true);
-		RTMat( T ox, T oy, T oz, T x, T y, T z, bool XCW=true, bool YCW=true,bool ZCW=true);
+		RTMat( T rx, T ry, T rz, const QVec &t, bool XCW=true, bool YCW=true,bool ZCW=true);
+		RTMat( T rx, T ry, T rz, T tx, T ty, T tz, bool XCW=true, bool YCW=true,bool ZCW=true);
 		~RTMat();
 		RTMat(const QMat &ex);
 		RTMat(const RTMat &ex);

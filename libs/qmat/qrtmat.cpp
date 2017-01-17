@@ -147,49 +147,49 @@ RTMat::RTMat(const QMat &ex) : QMat( ex )
 }
 
 
-RTMat::RTMat ( T ox, T oy, T oz, const QVec & t, bool XCW, bool YCW, bool ZCW ) : QMat ( 4,4 )
+RTMat::RTMat ( T rx, T ry, T rz, const QVec & t, bool XCW, bool YCW, bool ZCW ) : QMat ( 4,4 )
 {
 	XC = XCW;
 	YC = YCW;
 	ZC = ZCW;
 	if(XCW)
-		Rx = new Rot3DOX(ox);
+		Rx = new Rot3DOX(rx);
 	else
-		Rx = new Rot3DCOX(ox);
+		Rx = new Rot3DCOX(rx);
 	if(YCW)
-		Ry = new Rot3DOY(oy);
+		Ry = new Rot3DOY(ry);
 	else
-		Ry = new Rot3DCOY(oy);
+		Ry = new Rot3DCOY(ry);
 	if(ZCW)
-		Rz = new Rot3DOZ(oz);
+		Rz = new Rot3DOZ(rz);
 	else
-		Rz = new Rot3DCOZ(oz);
+		Rz = new Rot3DCOZ(rz);
 
 	R = (*Rx)*(*Ry)*(*Rz);
 	Tr = t;
 	do_inject();
 }
 
-RMat::RTMat::RTMat(T ox, T oy, T oz, T x, T y, T z, bool XCW, bool YCW, bool ZCW): QMat ( 4,4 )
+RMat::RTMat::RTMat(T rx, T ry, T rz, T tx, T ty, T tz, bool XCW, bool YCW, bool ZCW): QMat ( 4,4 )
 {
 	XC = XCW;
 	YC = YCW;
 	ZC = ZCW;
 	if(XCW)
-		Rx = new Rot3DOX(ox);
+		Rx = new Rot3DOX(rx);
 	else
-		Rx = new Rot3DCOX(ox);
+		Rx = new Rot3DCOX(rx);
 	if(YCW)
-		Ry = new Rot3DOY(oy);
+		Ry = new Rot3DOY(ry);
 	else
-		Ry = new Rot3DCOY(oy);
+		Ry = new Rot3DCOY(ry);
 	if(ZCW)
-		Rz = new Rot3DOZ(oz);
+		Rz = new Rot3DOZ(rz);
 	else
-		Rz = new Rot3DCOZ(oz);
+		Rz = new Rot3DCOZ(rz);
 
 	R = (*Rx)*(*Ry)*(*Rz);
-	Tr = QVec::vec3(x, y, z);
+	Tr = QVec::vec3(tx, ty, tz);
 	do_inject();
 }
 
