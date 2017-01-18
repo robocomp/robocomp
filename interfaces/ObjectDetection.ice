@@ -50,12 +50,12 @@ module RoboCompObjectDetection
 		void centroidBasedPose(out float x, out float y, out float theta);
 		void segmentImage();
 		void grabTheAR();
-		bool findTheObject(string objectTofind);
+		bool findTheObject(string objectTofind, out pose6D pose);
 		bool findObjects(out listObject lObjects);
-		void getPose(out float x,out float y,out float z);
+		pose6D getPose();
 		void getRotation(out float rx,out float ry,out float rz);
-		void saveCanonPose(string label, int numPoseToSave, out pose6D tag1, out pose6D tag2, out pose6D tag3, out pose6D tag4, out pose6D tag5, out pose6D tag6, out pose6D tag7, out pose6D tag8, out pose6D tag9);
-		void saveRegPose(string label, int numPoseToSave, out pose6D tag1, out pose6D tag2, out pose6D tag3, out pose6D tag4, out pose6D tag5, out pose6D tag6, out pose6D tag7, out pose6D tag8, out pose6D tag9);
+		void saveCanonPose(string label, int numPoseToSave);
+		void saveRegPose(string label, int numPoseToSave);
 		void guessPose(string label, out pose6D guess);
 		
 	};
