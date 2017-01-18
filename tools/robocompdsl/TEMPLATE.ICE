@@ -76,13 +76,11 @@ for content in idsl['module']['contents']:
 			except:
 				cog.out(")")
 			try:
-				cog.out(" throws ")
-				try:
+				if len(method['raise']) > 0:
+					cog.out(" throws ")
 					for p in method['raise']:
 						# STR
 						cog.out(p)
-				except:
-					pass
 			except:
 				pass
 			cog.outl(";")

@@ -82,7 +82,7 @@ def generateHeaders(idslFile, outputPath, comp): #idslFile es el fichero idsl im
 										if not os.path.exists(outputPath):
 											creaDirectorio(outputPath)
 										commandCPP = commandCPP + " -p "+ idsl['module']['name'] + "ROS -o "+ outputPath+"/"+idsl['module']['name'] + "ROS -e /opt/ros/kinetic/share/gencpp/cmake/.."
-										commandPY = commandPY + " -p "+ idsl['module']['name'] + "ROS -o "+ outputPath+"/"+idsl['module']['name'] +"ROS/srv" 
+										commandPY = commandPY + " -p "+ idsl['module']['name'] + "ROS -o "+ outputPath+"/"+idsl['module']['name'] +"ROS/srv"
 										if comp['language'].lower() == 'cpp':
 											os.system(commandCPP)
 										else:
@@ -195,8 +195,9 @@ def creaDirectorio(directory):
 if sys.argv[1].endswith(".cdsl"):
 	from parseCDSL import *
 	from parseIDSL import *
-	component = CDSLParsing.fromFile(inputFile)
+	import sys
 
+	component = CDSLParsing.fromFile(inputFile)
 	imports = ''.join( [ imp.split('/')[-1]+'#' for imp in component['imports'] ] )
 
 	if component['language'].lower() == 'cpp':
@@ -254,7 +255,7 @@ if sys.argv[1].endswith(".cdsl"):
 						print 'ERROR'
 						sys.exit(-1)
 					replaceTagsInFile(ofile)
-					
+
 		for imp in component['subscribesTo']:
 			im = imp
 			if type(im) != type(''):
@@ -318,6 +319,8 @@ if sys.argv[1].endswith(".cdsl"):
 		for imp in component['implements']+component['subscribesTo']:
 			if type(imp) != type(''):
 				im = imp[0]
+			else:
+				im = imp
 			if communicationIsIce(imp):
 				for f in [ "SERVANT.PY"]:
 					ofile = outputPath + '/src/' + im.lower() + 'I.' + f.split('.')[-1].lower()
@@ -332,7 +335,7 @@ if sys.argv[1].endswith(".cdsl"):
 					replaceTagsInFile(ofile)
 	else:
 		print 'Unsupported language', component['language']
-		
+
 	if component['usingROS'] == True:
 		for imp in component['imports']:
 			generateHeaders("/opt/"+imp, outputPath+"/src", component)

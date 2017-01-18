@@ -1,4 +1,4 @@
-import "GenericBase.idsl"
+import "GenericBase.idsl";
 
 module RoboCompDifferentialRobot
 {

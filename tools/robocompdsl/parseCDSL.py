@@ -54,39 +54,39 @@ def decoratorAndType_to_const_ampersand(decorator, vtype, modulePool):
 		else:                      #read-only
 			ampersand = ' '
 			const = 'const '
-	elif vtype in [ 'bool' ]:                                  # BOOL SEEM TO BE SPECIAL
+	elif vtype in [ 'bool' ]:        # BOOL SEEM TO BE SPECIAL
 		const = ' '
 		if decorator in [ 'out' ]: # out
 			ampersand = ' &'
 		else:                      #read-only
 			ampersand = ' '
-	elif vtype in [ 'string' ]:                          # STRINGS
+	elif vtype in [ 'string' ]:      # STRINGS
 		if decorator in [ 'out' ]: # out
 			const = ' '
 			ampersand = ' &'
 		else:                      #read-only
 			const = 'const '
 			ampersand = ' &'
-	else:                                              # GENERIC, USED FOR USER-DEFINED DATA TYPES
+	else:                            # GENERIC, USED FOR USER-DEFINED DATA TYPES
 		kind = getKindFromPool(vtype, modulePool)
 		if kind == None:
 			kind = getKindFromPool(vtype, modulePool, debug=True)
 			raise Exception('error, unknown data structure, map or sequence '+vtype)
 		else:
-			if kind == 'enum':                                         # ENUM
+			if kind == 'enum':               # ENUM
 				const = ' '
 				if decorator in [ 'out' ]: # out
 					ampersand = ' &'
 				else:                      #read-only
 					ampersand = ' '
-			else:                                                      # THE REST
-				if decorator in [ 'out' ]: #out 
+			else:                            # THE REST
+				if decorator in [ 'out' ]: # out
 					ampersand = ' &'
 					const = ' '
-				else:                       # read-only
+				else:                      # read-only
 					ampersand = ' &'
 					const = 'const '
-	
+
 	return const, ampersand
 
 
@@ -130,7 +130,7 @@ class CDSLParsing:
 	@staticmethod
 	def fromString(inputText, verbose=False):
 		if verbose: print 'Verbose:', verbose
-		text = nestedExpr("/*", "*/").suppress().transformString(inputText) 
+		text = nestedExpr("/*", "*/").suppress().transformString(inputText)
 
 		semicolon = Suppress(Word(";"))
 		quote     = Suppress(Word("\""))
@@ -138,7 +138,7 @@ class CDSLParsing:
 		cl        = Suppress(Word("}"))
 		opp       = Suppress(Word("("))
 		clp       = Suppress(Word(")"))
-		
+
 		identifier = Word( alphas+"_", alphanums+"_" )
 		commIdentifier = Group(identifier.setResultsName('identifier') + Optional(opp + (CaselessLiteral("ice")|CaselessLiteral("ros")).setResultsName("type") + clp))
 
@@ -152,7 +152,7 @@ class CDSLParsing:
 		publishesList  = Group(CaselessLiteral('publishes')     + commIdentifier + ZeroOrMore(Suppress(Word(',')) + commIdentifier) + semicolon)
 		communicationList = implementsList | requiresList | subscribesList | publishesList
 		communications = Group( Suppress(CaselessLiteral("communications")) + op + ZeroOrMore(communicationList) + cl + semicolon)
-		
+
 		# Language
 		language = Suppress(CaselessLiteral("language")) + (CaselessLiteral("cpp")|CaselessLiteral("python")) + semicolon
 		# Qtversion
@@ -163,7 +163,7 @@ class CDSLParsing:
 		gui = Group(Optional(Suppress(CaselessLiteral("gui")) + CaselessLiteral("Qt") + opp + identifier + clp + semicolon ))
 		# additional options
 		options = Group(Optional(Suppress(CaselessLiteral("options")) + identifier + ZeroOrMore(Suppress(Word(',')) + identifier) + semicolon))
-		
+
 		componentContents = communications.setResultsName('communications') & language.setResultsName('language') & gui.setResultsName('gui') & options.setResultsName('options') & qtVersion.setResultsName('useQt') & innermodelviewer.setResultsName('innermodelviewer')
 		component = Suppress(CaselessLiteral("component")) + identifier.setResultsName("name") + op + componentContents.setResultsName("properties") + cl + semicolon
 
@@ -196,7 +196,7 @@ class CDSLParsing:
 	@staticmethod
 	def component(tree, start=''):
 		component = {}
-		
+
 		# Set options
 		component['options'] = []
 		try:
@@ -204,7 +204,7 @@ class CDSLParsing:
 				component['options'].append(op.lower())
 		except:
 			traceback.print_exc()
-		
+
 		# Component name
 		component['name'] = tree['component']['name']
 		# Imports
@@ -213,6 +213,7 @@ class CDSLParsing:
 		try:
 			imprts = tree['imports']
 		except:
+			tree['imports'] = []
 			imprts = []
 		if isAGM1Agent(component):
 			imprts = ['/robocomp/interfaces/IDSLs/AGMExecutive.idsl', '/robocomp/interfaces/IDSLs/AGMCommonBehavior.idsl', '/robocomp/interfaces/IDSLs/AGMWorldModel.idsl']
@@ -246,7 +247,7 @@ class CDSLParsing:
 			if importable:
 				component['recursiveImports'] += [imp2]
 				component['recursiveImports'] += [x for x in importedModule['imports'].split('#') if len(x)>0]
-			
+
 		# Language
 		component['language'] = tree['properties']['language'][0]
 		# qtVersion
@@ -276,7 +277,7 @@ class CDSLParsing:
 				sys.exit(1)
 		except:
 			pass
-		
+
 
 		# Communications
 		component['rosInterfaces']= []
@@ -288,7 +289,7 @@ class CDSLParsing:
 		component['usingROS'] = "None"
 		for comm in tree['properties']['communications']:
 			if comm[0] == 'implements':
-				for interface in comm[1:]: 
+				for interface in comm[1:]:
 					component['implements'].append(interface)
 					if communicationIsIce(interface):
 						component['iceInterfaces'].append(interface[0])
@@ -296,7 +297,7 @@ class CDSLParsing:
 						component['rosInterfaces'].append(interface[0])
 						component['usingROS'] = True
 			if comm[0] == 'requires':
-				for interface in comm[1:]: 
+				for interface in comm[1:]:
 					component['requires'].append(interface)
 					if communicationIsIce(interface):
 						component['iceInterfaces'].append(interface[0])
@@ -312,7 +313,7 @@ class CDSLParsing:
 						component['rosInterfaces'].append(interface[0])
 						component['usingROS'] = True
 			if comm[0] == 'subscribesTo':
-				for interface in comm[1:]: 
+				for interface in comm[1:]:
 					component['subscribesTo'].append(interface)
 					if communicationIsIce(interface):
 						component['iceInterfaces'].append(interface[0])
@@ -358,7 +359,7 @@ def communicationIsIce(sb):
 		if sb[1] == 'ros'.lower():
 			isIce = False
 		elif sb[1] != 'ice'.lower() :
-			print('Only ICE and ROS are supported') 
+			print('Only ICE and ROS are supported')
 			sys.exit(-1)
 	return isIce
 

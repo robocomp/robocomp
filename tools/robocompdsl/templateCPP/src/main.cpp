@@ -209,6 +209,7 @@ Z()
 #include <Ice/Application.h>
 
 #include <rapplication/rapplication.h>
+#include <sigwatch/sigwatch.h>
 #include <qlog/qlog.h>
 
 #include "config.h"
@@ -316,7 +317,10 @@ Z()
 	sigaddset(&sigs, SIGTERM);
 	sigprocmask(SIG_UNBLOCK, &sigs, 0);
 
-
+	UnixSignalWatcher sigwatch;
+	sigwatch.watchForSignal(SIGINT);
+	sigwatch.watchForSignal(SIGTERM);
+	QObject::connect(&sigwatch, SIGNAL(unixSignal(int)), &a, SLOT(quit()));
 
 	int status=EXIT_SUCCESS;
 
@@ -443,6 +447,19 @@ for name, num in getNameNumber(component['subscribesTo']):
 #endif
 		// Run QT Application Event Loop
 		a.exec();
+		
+[[[cog
+for sub in component['subscribesTo']:
+	nname = sub
+	while type(nname) != type(''):
+		nname = sub[0]
+	if communicationIsIce(sub):
+		cog.outl("<TABHERE><TABHERE>std::cout << \"Unsubscribing topic: "+nname.lower()+" \" <<std::endl;")
+		cog.outl("<TABHERE><TABHERE>"+ nname.lower() + "_topic->unsubscribe( "+ nname.lower() +" );" )
+		
+]]]
+[[[end]]]
+		
 		status = EXIT_SUCCESS;
 	}
 	catch(const Ice::Exception& ex)
