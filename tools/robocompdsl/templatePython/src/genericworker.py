@@ -172,9 +172,11 @@ if component['usingROS'] == True:
 						method = interface['methods'][mname]
 						for p in method['params']:
 							s = "\""+mname+"\""
-							if p['type'] in ('float','int','uint'):
+							if p['type'] in ('float','int'):
 								cog.outl("<TABHERE><TABHERE>self.pub_"+mname+" = rospy.Publisher("+s+", "+p['type'].capitalize()+"32, queue_size=1000)")
-							elif p['type'] in ('string', 'bool'):
+							elif p['type'] in ('uint8','uint16','uint32','uint64'):
+								cog.outl("<TABHERE><TABHERE>self.pub_"+mname+" = rospy.Publisher("+s+", UInt"+p['type'].split('t')[1]+", queue_size=1000)")
+							elif p['type'] in rosTypes:
 								cog.outl("<TABHERE><TABHERE>self.pub_"+mname+" = rospy.Publisher("+s+", "+p['type'].capitalize()+", queue_size=1000)")
 							elif '::' in p['type']:
 								cog.outl("<TABHERE><TABHERE>self.pub_"+mname+" = rospy.Publisher("+s+", "+p['type'].split('::')[1]+", queue_size=1000)")
