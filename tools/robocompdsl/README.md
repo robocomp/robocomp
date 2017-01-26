@@ -117,11 +117,19 @@ We know that ROS uses types like int8, int16, float16, etc. The following table 
 | bool          | bool          | std_msgs/Bool |
 | byte          | byte          | std_msgs/Byte |
 | short         | short         |      ---      |
+| int8          |      ---      | std_msgs/Int8 |
+| int16         |      ---      | std_msgs/Int16|
 | int / int32   | int           | std_msgs/Int32|
+| int64         |      ---      | std_msgs/Int64|
 | long          | long          |      ---      |
+| float8        |      ---      |std_msgs/Float8|
+| float16       |      ---      |std_msgs/Float16|
 | float / float32| float         |std_msgs/Float32|
+| float64       |      ---      |std_msgs/Float64|
 | double        | double        |      ---      |
 | string        | string        |std_msgs/String|
+| time          |      ---      |std_msgs/Time  |
+| empty         |      ---      |std_msgs/Empty |
 
 <div id='iceFile'/>
 ## Generating an ICE file from an IDSL

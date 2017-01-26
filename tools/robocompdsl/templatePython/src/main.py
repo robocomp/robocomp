@@ -298,9 +298,11 @@ for sub in component['subscribesTo']:
 					method = interface['methods'][mname]
 					for p in method['params']:
 						s = "\""+mname+"\""
-						if p['type'] in ('float','int','uint'):
+						if p['type'] in ('float','int'):
 							cog.outl("<TABHERE><TABHERE>rospy.Subscriber("+s+", "+p['type'].capitalize()+"32, worker.ROS"+method['name']+")")
-						elif p['type'] in ('string', 'bool'):
+						elif p['type'] in ('uint8','uint16','uint32','uint64'):
+							cog.outl("<TABHERE><TABHERE>rospy.Subscriber("+s+", UInt"+p['type'].split('t')[1]+", worker.ROS"+method['name']+")")
+						elif p['type'] in rosTypes:
 							cog.outl("<TABHERE><TABHERE>rospy.Subscriber("+s+", "+p['type'].capitalize()+", worker.ROS"+method['name']+")")
 						elif '::' in p['type']:
 							cog.outl("<TABHERE><TABHERE>rospy.Subscriber("+s+", "+p['type'].split('::')[1]+", worker.ROS"+method['name']+")")
