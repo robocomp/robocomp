@@ -14,16 +14,16 @@ from robocomp_general import config_robocomp
 config_information = config_robocomp("/opt/robocomp/share/robocompdsl/robocompdsl_config.json").config
 
 
-def generateDummyCDSL(path, path2iface=config_information["pathfiles"]["path2interfaces"]):
+def generateDummyCDSL(path):
 	'''
-	
+	function to generate CDSL file
 	'''
 	if os.path.exists(path):
 		print "File", path, "already exists.\nExiting..."
 	else:
 		print "Generating dummy CDSL file:", path
-		string = '''import "'''+path2iface+'''/IDSLs/import1.idsl";
-import "'''+path2iface+'''/IDSLs/import2.idsl";
+		string = '''import "'''+config_information["pathfiles"]["path2interfaces"]+'''/IDSLs/import1.idsl";
+import "'''+config_information["pathfiles"]["path2interfaces"]+'''/IDSLs/import2.idsl";
 
 Component <CHANGETHECOMPONENTNAME>
 {
@@ -63,7 +63,7 @@ from cogapp import Cog
 
 
 from parseCDSL import *
-component = CDSLParsing().fromFile(inputFile)
+component = CDSLParsing.fromFile(inputFile)
 
 #########################################
 # Directory structure and other checks  #
