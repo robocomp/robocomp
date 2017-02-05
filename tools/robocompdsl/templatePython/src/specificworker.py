@@ -1,7 +1,9 @@
 [[[cog
 
 import sys
-sys.path.append('/opt/robocomp/python')
+from robocomp_general import config_robocomp
+config_information = config_robocomp("/opt/robocomp/share/robocompdsl/robocompdsl_config.json").config
+sys.path.append(config_information["pathfiles"]["path2cogapp"])
 
 import cog
 def A():
@@ -59,18 +61,20 @@ import sys, os, Ice, traceback, time
 from PySide import *
 from genericworker import *
 
-ROBOCOMP = ''
-try:
-	ROBOCOMP = os.environ['ROBOCOMP']
-except:
-	print '$ROBOCOMP environment variable not set, using the default value /opt/robocomp'
-	ROBOCOMP = '/opt/robocomp'
-if len(ROBOCOMP)<1:
-	print 'genericworker.py: ROBOCOMP environment variable not set! Exiting.'
+[[[cog
+cog.outl('config_information = config_robocomp("/opt/robocomp/share/robocompdsl/robocompdsl_config.json").config')
+]]]
+[[[end]]]
+
+if config_information["pathfiles"]["path2localrobocomp"] == "":
+	print 'path2localrobocomp in config file not set, using the default value /opt/robocomp'
+	config_information["pathfiles"]["path2localrobocomp"] = '/opt/robocomp'
+if len(config_information["pathfiles"]["path2localrobocomp"]) == "":
+	print 'ROBOCOMP environment variable not set! Exiting.'
 	sys.exit()
 
+preStr = "-I"+config_information["pathfiles"]["path2localrobocomp"]+"/interfaces/ --all "+config_information["pathfiles"]["path2localrobocomp"]+"/interfaces/"
 
-preStr = "-I"+ROBOCOMP+"/interfaces/ --all "+ROBOCOMP+"/interfaces/"
 [[[cog
 for imp in component['imports']:
 	module = IDSLParsing.gimmeIDSL(imp.split('/')[-1])
@@ -95,7 +99,7 @@ class SpecificWorker(GenericWorker):
 	def __init__(self, proxy_map):
 		super(SpecificWorker, self).__init__(proxy_map)
 		self.timer.timeout.connect(self.compute)
-		self.Period = 2000
+		self.Period = self.config_information["periods"]["specificworker"] # or change directly your period (number)
 		self.timer.start(self.Period)
 
 	def setParams(self, params):

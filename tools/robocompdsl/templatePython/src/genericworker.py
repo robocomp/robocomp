@@ -1,7 +1,9 @@
 [[[cog
 
 import sys
-sys.path.append('/opt/robocomp/python')
+from robocomp_general import config_robocomp
+config_information = config_robocomp("/opt/robocomp/share/robocompdsl/robocompdsl_config.json").config
+sys.path.append(config_information["pathfiles"]["path2cogapp"])
 
 import cog
 def A():
@@ -50,6 +52,7 @@ Z()
 
 import sys
 from PySide import *
+from robocomp_general import config_robocomp
 
 [[[cog
 A()
@@ -80,6 +83,7 @@ Z()
 
 	def __init__(self, mprx):
 		super(GenericWorker, self).__init__()
+		self.config_information = config_robocomp("/opt/robocomp/share/robocompdsl/robocompdsl_config.json").config
 
 
 [[[cog
@@ -114,7 +118,7 @@ Z()
 		
 		
 		self.mutex = QtCore.QMutex(QtCore.QMutex.Recursive)
-		self.Period = 30
+		self.Period = self.config_information["periods"]["genericworker"] # or change directly your period (number)
 		self.timer = QtCore.QTimer(self)
 
 

@@ -9,13 +9,21 @@
 
 import sys, os, subprocess
 
-def generateDummyCDSL(path):
+
+from robocomp_general import config_robocomp
+config_information = config_robocomp("/opt/robocomp/share/robocompdsl/robocompdsl_config.json").config
+
+
+def generateDummyCDSL(path, path2iface=config_information["pathfiles"]["path2interfaces"]):
+	'''
+	
+	'''
 	if os.path.exists(path):
 		print "File", path, "already exists.\nExiting..."
 	else:
 		print "Generating dummy CDSL file:", path
-		string = """import "/robocomp/interfaces/IDSLs/import1.idsl";
-import "/robocomp/interfaces/IDSLs/import2.idsl";
+		string = '''import "'''+path2iface+'''/IDSLs/import1.idsl";
+import "'''+path2iface+'''/IDSLs/import2.idsl";
 
 Component <CHANGETHECOMPONENTNAME>
 {
@@ -28,9 +36,9 @@ Component <CHANGETHECOMPONENTNAME>
 	};
 	language Cpp;
 	gui Qt(QWidget);
-};\n\n"""
-		name = path.split('/')[-1].split('.')[0]
-		string = string.replace('<CHANGETHECOMPONENTNAME>', name)
+};\n\n'''
+		file_name, file_extension = os.path.splitext(path)
+		string = string.replace('<CHANGETHECOMPONENTNAME>', file_name)
 		open(path, "w").write(string)
 
 correct = True
@@ -48,20 +56,27 @@ if not correct:
 inputFile  = sys.argv[1]
 outputPath = sys.argv[2]
 
-sys.path.append('/opt/robocomp/python')
 
+sys.path.append(config_information["pathfiles"]["path2cogapp"])
 from cogapp import Cog
 
 
 
 from parseCDSL import *
-component = CDSLParsing.fromFile(inputFile)
+component = CDSLParsing().fromFile(inputFile)
 
 #########################################
 # Directory structure and other checks  #
 #########################################
-# Function to create directories
-def creaDirectorio(directory):
+def creaDirectorio(directory, force=False):
+	''' 
+	Function to create directories
+	''' 
+	if force:
+		try:
+			shutil.rmtree(directory)  # remove folder and all contains
+		except:
+			pass
 	try:
 		print 'Creating', directory,
 		os.mkdir(directory)
@@ -74,11 +89,10 @@ def creaDirectorio(directory):
 			print '\nCOULDN\'T CREATE', directory
 			sys.exit(-1)
 
-
-#
-# Misc functions
-#
 def replaceTagsInFile(path):
+	'''
+	Misc functions
+	'''
 	i = open(path, 'r')
 	text = i.read()
 	reps = []
@@ -125,7 +139,7 @@ if component['language'].lower() == 'cpp':
 		if f in specificFiles and os.path.exists(ofile):
 			print 'Not overwriting specific file "'+ ofile +'", saving it to '+ofile+'.new'
 			ofile += '.new'
-		ifile = "/opt/robocomp/share/robocompdsl/templateCPP/" + f
+		ifile = config_information["pathfiles"]["path2templates"]+"/templateCPP/" + f
 		if f != 'src/mainUI.ui' or component['gui'] != 'none':
 			print 'Generating', ofile, 'from', ifile
 			run = "cog.py -z -d -D theCDSL="+inputFile + " -D theIDSLs="+imports + " -o " + ofile + " " + ifile
@@ -149,7 +163,7 @@ if component['language'].lower() == 'cpp':
 			ofile = outputPath + '/src/' + im.lower() + 'I.' + f.split('.')[-1].lower()
 			print 'Generating', ofile, ' (servant for', im + ')'
 			# Call cog
-			run = "cog.py -z -d -D theCDSL="+inputFile  + " -D theIDSLs="+imports + " -D theInterface="+im + " -o " + ofile + " " + "/opt/robocomp/share/robocompdsl/templateCPP/" + f
+			run = "cog.py -z -d -D theCDSL="+inputFile  + " -D theIDSLs="+imports + " -D theInterface="+im + " -o " + ofile + " " + config_information["pathfiles"]["path2templates"]+"/templateCPP/" + f
 			run = run.split(' ')
 			ret = Cog().main(run)
 			if ret != 0:
@@ -166,7 +180,7 @@ if component['language'].lower() == 'cpp':
 			theInterfaceStr = im
 			if type(theInterfaceStr) == type([]):
 				theInterfaceStr = str(';'.join(im))
-			run = "cog.py -z -d -D theCDSL="+inputFile  + " -D theIDSLs="+imports + " -D theInterface="+theInterfaceStr + " -o " + ofile + " " + "/opt/robocomp/share/robocompdsl/templateCPP/" + f
+			run = "cog.py -z -d -D theCDSL="+inputFile  + " -D theIDSLs="+imports + " -D theInterface="+theInterfaceStr + " -o " + ofile + " " + config_information["pathfiles"]["path2templates"]+"/templateCPP/" + f
 			#print run
 			run = run.split(' ')
 			ret = Cog().main(run)
@@ -201,7 +215,7 @@ elif component['language'].lower() == 'python':
 		if f in specificFiles and os.path.exists(ofile):
 			print 'Not overwriting specific file "'+ ofile +'", saving it to '+ofile+'.new'
 			ofile += '.new'
-		ifile = "/opt/robocomp/share/robocompdsl/templatePython/" + f
+		ifile = config_information["pathfiles"]["path2templates"]+"/templatePython/" + f
 		print 'Generating', ofile, 'from', ifile
 		run = "cog.py -z -d -D theCDSL="+inputFile + " -D theIDSLs="+imports + " -o " + ofile + " " + ifile
 		run = run.split(' ')
@@ -224,7 +238,7 @@ elif component['language'].lower() == 'python':
 			ofile = outputPath + '/src/' + im.lower() + 'I.' + f.split('.')[-1].lower()
 			print 'Generating', ofile, ' (servant for', im + ')'
 			# Call cog
-			run = "cog.py -z -d -D theCDSL="+inputFile  + " -D theIDSLs="+imports + " -D theInterface="+im + " -o " + ofile + " " + "/opt/robocomp/share/robocompdsl/templatePython/" + f
+			run = "cog.py -z -d -D theCDSL="+inputFile  + " -D theIDSLs="+imports + " -D theInterface="+im + " -o " + ofile + " " + config_information["pathfiles"]["path2templates"]+"/templatePython/" + f
 			run = run.split(' ')
 			ret = Cog().main(run)
 			if ret != 0:

@@ -9,6 +9,8 @@ import sys, traceback, os
 debug = False
 #debug = True
 
+from robocomp_general import config_robocomp
+config_information = config_robocomp("/opt/robocomp/share/robocompdsl/robocompdsl_config.json").config
 
 
 class IDSLParsing:
@@ -84,8 +86,9 @@ class IDSLParsing:
 				pathList.append(p[2:])
 			else:
 				fileList.append(p)
-		pathList.append('/home/robocomp/robocomp/interfaces/IDSLs/')
-		pathList.append('/opt/robocomp/interfaces/IDSLs/')
+		pathList.append(config_information["pathfiles"]["path2localinterfaces"] + '/IDSLs/')
+		pathList.append(config_information["pathfiles"]["path2interfaces"] + '/IDSLs/')
+
 		filename = name.split('.')[0]
 		for p in pathList:
 			try:
@@ -195,8 +198,8 @@ class IDSLPool:
 				pathList.append(p[2:])
 			else:
 				fileList.append(p)
-		pathList.append('/home/robocomp/robocomp/interfaces/IDSLs/')
-		pathList.append('/opt/robocomp/interfaces/IDSLs/')
+		pathList.append(config_information["pathfiles"]["path2localinterfaces"] + '/IDSLs/')
+		pathList.append(config_information["pathfiles"]["path2interfaces"] + '/IDSLs/')
 		for f in fileList:
 			filename = f.split('.')[0]
 			if not filename in modulePool:
