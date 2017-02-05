@@ -1,0 +1,23 @@
+{
+	"pathfiles":
+	{
+		"path2interfaces": "/opt/robocomp/interfaces",
+		"path2localinterfaces": "/home/robocomp/robocomp/interfaces",
+		"path2cogapp": "/opt/robocomp/python",
+		"path2templates": "/opt/robocomp/share/robocompdsl",
+		"path2localrobocomp": "/home/robocomp/robocomp"
+	},
+	"periods":
+	{
+		"specificworker": 2000,
+		"genericworker": 30
+	},
+	"comments":
+	{
+		"path2interfaces": "path to interfaces IDSLs of Robocomp framework",
+		"path2localinterfaces": "path to yours interfaces of IDSLs",
+		"path2cogapp": "path to cogapp library",
+		"path2templates": "path to templates files",
+		"path2localrobocomp": "path to robocomp sources"
+	}
+}
