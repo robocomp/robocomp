@@ -11,8 +11,7 @@
 
 module RoboCompAprilTags{
 	["cpp:comparable"]
-	struct tag
-	{
+	struct tag{
 		int id;
 		float tx;
 		float ty;
@@ -23,9 +22,8 @@ module RoboCompAprilTags{
 	};
 	sequence <tag> tagsList;
 
-	interface AprilTags
-	{
-		void newAprilTag(tagsList tags);
+	interface AprilTags{
+		void  newAprilTag(tagsList tags);
 	};
 };
   

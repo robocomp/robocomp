@@ -1,0 +1,31 @@
+<innerModel>
+	<transform id="world">
+		
+		<transform id="target2" tx="0" ty="0" tz="0"> 
+			<plane id="target2x" px="0.25" nx="1" size="10,10,500" repeat="1" texture="#ff0000" />
+			<plane id="target2y" py="0.25" nx="1" size="10,500,10" repeat="1" texture="#00ff00" />
+			<plane id="target2z" pz="0.25" nx="1" size="500,10,10" repeat="1" texture="#0000ff" />
+		</transform>	
+		
+		<transform id="floor">
+			
+			<mesh  id="pabellonInformatica" file="/home/robocomp/robocomp/files/osgModels/edificios/pabellon_informatica_nodoors.osgb"  tx="0" ty="0" tz="0" rx="1.57079632679" scale="500" />
+		
+			<differentialrobot id="base" port="10004">
+				<transform id="rgbdpose" ty="1600" tz="200" >
+					<rgbd id="rgbd" focal="400" width="640" height="480" port="40000" ifconfig="20000,40000" />
+				</transform>
+			
+				<translation id="laserPose" tx="0" ty="200" tz="290">
+					<laser id="laser" port="20000" measures="100" min="100" max="30000" angle="3.141593" ifconfig="10000" />
+				</translation> <!-- laser -->
+
+				<translation id="robotGeometricCenter" tx="0" ty="0" tz="0">
+					<mesh id="base_mesh" file="/home/robocomp/robocomp/files/osgModels/Gualzru/Gualzru.osg"   scale="25" rx="1.57079632679" rz="-1.57079632679" ty="0" tz="0"/>
+				</translation>
+		</differentialrobot>
+		
+		</transform>
+	</transform>
+</innerModel>
+

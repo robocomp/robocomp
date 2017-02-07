@@ -224,19 +224,22 @@ for ima in component['implements']:
 		im = ima
 	else:
 		im = ima[0]
-	if communicationIsIce(ima):
-		cog.outl('#include <'+im.lower()+'I.h>')
+	cog.outl('#include <'+im.lower()+'I.h>')
 
+usingROS = False
 for subscribe in component['subscribesTo']:
 	subs = subscribe
 	while type(subs) != type(''):
 		subs = subs[0]
 	if communicationIsIce(subscribe):
 		cog.outl('#include <'+subs.lower()+'I.h>')
+	else:
+		usingROS = True
+		cog.outl('//#include <ROS '+subs.lower()+'I.h>')
 
 cog.outl('')
 
-for imp in component['recursiveImports']:
+for imp in component['imports']:
 	incl = imp.split('/')[-1].split('.')[0]
 	cog.outl('#include <'+incl+'.h>')
 
@@ -251,7 +254,7 @@ using namespace std;
 using namespace RoboCompCommonBehavior;
 
 [[[cog
-for imp in component['recursiveImports']:
+for imp in component['imports']:
 	incl = imp.split('/')[-1].split('.')[0]
 	cog.outl('using namespace RoboComp'+incl+';')
 
@@ -336,8 +339,7 @@ for namea, num in getNameNumber(component['requires'] + component['publishes']):
 		name = namea
 	else:
 		name = namea[0]
-		if communicationIsIce(namea):
-			cog.outl('<TABHERE>'+name+'Prx '+name.lower()+num +'_proxy;')
+	cog.outl('<TABHERE>'+name+'Prx '+name.lower()+num +'_proxy;')
 ]]]
 [[[end]]]
 
@@ -350,18 +352,10 @@ for namea, num in getNameNumber(component['requires']):
 		name = namea
 	else:
 		name = namea[0]
-	if communicationIsIce(namea):
-		w = REQUIRE_STR.replace("<NORMAL>", name).replace("<LOWER>", name.lower()).replace("<PROXYNAME>", name.lower()+num).replace("<PROXYNUMBER>", num)
-		cog.outl(w)
-	
-need_topic=False
-for pub in component['publishes']:
-	if communicationIsIce(pub):
-		need_topic = True
-for pub in component['subscribesTo']:
-	if communicationIsIce(pub):
-		need_topic = True
-if need_topic:
+	w = REQUIRE_STR.replace("<NORMAL>", name).replace("<LOWER>", name.lower()).replace("<PROXYNAME>", name.lower()+num).replace("<PROXYNUMBER>", num)
+	cog.outl(w)
+
+if len(component['publishes'])>0 or len(component['subscribesTo'])>0:
 	cog.outl('<TABHERE>IceStorm::TopicManagerPrx topicManager = IceStorm::TopicManagerPrx::checkedCast(communicator()->propertyToProxy("TopicManager.Proxy"));')
 
 
@@ -370,12 +364,11 @@ for pba in component['publishes']:
 		pb = pba
 	else:
 		pb = pba[0]
-	if communicationIsIce(pba):
-		w = PUBLISHES_STR.replace("<NORMAL>", pb).replace("<LOWER>", pb.lower())
-		cog.outl(w)
+	w = PUBLISHES_STR.replace("<NORMAL>", pb).replace("<LOWER>", pb.lower())
+	cog.outl(w)
 
 
-if component['usingROS'] == True:
+if usingROS:
 	cog.outl("<TABHERE>ros::init(argc, argv, \""+component['name']+"\");")
 
 
@@ -418,9 +411,8 @@ for ima in component['implements']:
 		im = ima
 	else:
 		im = ima[0]
-	if communicationIsIce(ima):
-		w = IMPLEMENTS_STR.replace("<NORMAL>", im).replace("<LOWER>", im.lower())
-		cog.outl(w)
+	w = IMPLEMENTS_STR.replace("<NORMAL>", im).replace("<LOWER>", im.lower())
+	cog.outl(w)
 ]]]
 [[[end]]]
 
@@ -428,12 +420,14 @@ for ima in component['implements']:
 
 [[[cog
 for name, num in getNameNumber(component['subscribesTo']):
-	nname = name
-	while type(nname) != type(''):
-		nname = name[0]
 	if communicationIsIce(name):
+		nname = name
+		while type(nname) != type(''):
+			nname = name[0]
 		w = SUBSCRIBESTO_STR.replace("<NORMAL>", nname).replace("<LOWER>", nname.lower()).replace("<PROXYNAME>", nname.lower()+num).replace("<PROXYNUMBER>", num)
-		cog.out(w)
+	else:
+		w = '  //codigo para ROS de ' + name[0]
+	cog.out(w)
 ]]]
 [[[end]]]
 

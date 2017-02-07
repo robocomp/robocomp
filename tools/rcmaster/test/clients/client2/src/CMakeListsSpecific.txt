@@ -1,0 +1,17 @@
+
+# Sources set
+SET ( SOURCES
+  specificworker.cpp
+  specificmonitor.cpp
+)
+
+# Headers set
+SET ( HEADERS
+  specificworker.h
+  specificmonitor.h
+)
+
+INCLUDE($ENV{ROBOCOMP}/cmake/modules/ipp.cmake)
+
+ADD_DEFINITIONS( -std=c++11 )
+
