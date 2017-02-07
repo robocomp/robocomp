@@ -42,10 +42,22 @@ module RoboCompTrajectoryRobot2D{
 	};
 	
 	dictionary<string, string> NavigationParameterMap;
-
+	
+	
+	// PolyLines for Social Navigation
+	struct PointL
+	{
+	  float x;
+	  float z;
+	};
+	sequence<PointL> PolyLine;
+	sequence<PolyLine> PolyLineList;  
+	
+	
 	interface TrajectoryRobot2D
 	{
 		float go(TargetPose target) throws RoboCompException;
+		void setHumanSpace( PolyLineList polyList);
 		float goReferenced(TargetPose target, float xRef, float zRef, float threshold) throws RoboCompException;
 		float goBackwards(TargetPose target) throws RoboCompException;
 		float changeTarget(TargetPose target) throws RoboCompException;

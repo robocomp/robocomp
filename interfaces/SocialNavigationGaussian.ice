@@ -32,7 +32,7 @@ module RoboCompSocialNavigationGaussian
 	sequence <SNGPolyline> SNGPolylineSeq;
 	interface SocialNavigationGaussian
 	{
-		SNGPolylineSeq getPolylines (SNGPersonSeq persons, float v, bool d) throws ;
+		SNGPolylineSeq getPolylines (SNGPersonSeq persons, float v, bool d);
 	};
 };
 
