@@ -37,7 +37,7 @@ Make sure you have installed the following packages from the Ubuntu repository:
     
 ##Installation itself
 
-*cd* to your user (/home/<your-linux-user> ) directory (you are probably in it already) and type:
+*cd* to your user (/home/your-linux-user) directory (you are probably in it already) and type:
 
     git clone https://github.com/robocomp/robocomp.git
 
