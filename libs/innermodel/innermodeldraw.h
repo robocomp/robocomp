@@ -61,7 +61,7 @@ public:
  * @return void
  */
 	static void drawLine2Points(InnerModelViewer *innerViewer, QString name, QString parent, const QVec& p1, const QVec& p2, float width, QString texture);
-	static void removeObject(InnerModelViewer *innerViewer, QString name);
+	static bool removeObject(InnerModelViewer *innerViewer, QString name);
 	static bool removeNode(InnerModelViewer *innerViewer, const QString &item);
 	static bool addPlane_ignoreExisting(InnerModelViewer *innerViewer, const QString &a, const QString &b, const QVec &p, const QVec &n, const QString &texture, const QVec &size);
 	static bool addPlane_notExisting(   InnerModelViewer *innerViewer, const QString &a, const QString &b, const QVec &p, const QVec &n, const QString &texture, const QVec &size);

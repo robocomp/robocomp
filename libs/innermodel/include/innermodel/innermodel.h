@@ -225,7 +225,7 @@ public:
 
 	////////////////
 	/// Laser stuff DEPRECATED
-	////////////////
+	////////////////    
 	QVec laserTo(const QString &dest, const QString & laserId , float r, float alfa)
 	{ 
 		//qDebug() << __FUNCTION__ << "DEPRECATED. Use getNode<InnerModelLaser>(laserId)->laserTo(dest,laserId, r, alfa) "; 

@@ -211,13 +211,19 @@ void InnerModelDraw::drawLine2Points(InnerModelViewer *innerViewer, QString name
  * @param name ...
  * @return void
  */
-void InnerModelDraw::removeObject(InnerModelViewer *innerViewer, QString name)
+bool InnerModelDraw::removeObject(InnerModelViewer *innerViewer, QString name)
 {
 	QMutexLocker ml(innerViewer->mutex);
 	if (innerViewer->innerModel->getNode(name))
+	{
 		removeNode(innerViewer, name);
+		return true;
+	}
 	else
+	{
 		qDebug() << __FUNCTION__ << "Object " << name << "does not exist. Could not be removed";
+		return false;
+	}
 }
 
 bool InnerModelDraw::removeNode(InnerModelViewer *innerViewer, const QString &item)
