@@ -28,7 +28,7 @@ In order to prevet this and facilitate the use of these two programs we can use 
     
 This way you only need to run "rcremote" on the client and "rcremoteserver" on the server.
 
-#Example: Running rcremote and rcremoteserver to communicate between two terminals on the same PC
+###Example: Running rcremote and rcremoteserver to communicate between two terminals on the same PC
 
 1) Run the command $ rcremoteserver abcd123 in one terminal.
 
