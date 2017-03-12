@@ -5,7 +5,6 @@ module RoboCompTrajectoryRobot2D
 		string text;
 	};
 	
-
 	struct TargetPose
 	{
 		float x;                 // millimeters
@@ -33,21 +32,27 @@ module RoboCompTrajectoryRobot2D
 	};
 
 	dictionary<string, string> NavigationParameterMap;
-	sequence<TargetPose> TargetSeq;
-
+	
+	// PolyLines for Social Navigation
+	struct PointL
+	{
+	  float x;
+	  float z;
+	};
+	sequence<PointL> PolyLine;
+	sequence<PolyLine> PolyLineList;  
+	
 	interface TrajectoryRobot2D
 	{
 		float go(TargetPose target) throws RoboCompException; // Takes the robot to target. ry is orientation if doRotation is True
-		float goMulti(TargetSeq targetSeq, float xRef, float zRef, float threshold) throws RoboCompException;	
+		void setHumanSpace( PolyLineList polyList);
+		
 		float goReferenced(TargetPose target, float xRef, float zRef, float threshold) throws RoboCompException; // ry is orientation if doRotation is True
 		float goBackwards(TargetPose target) throws RoboCompException;    // Moves the robot directly backwards
 		float changeTarget(TargetPose target)throws RoboCompException;    // Change last point of curent trajectory
 		NavState getState();                                              // Get current state
 		void stop();                                                      // Stop the robot
-		
 		void mapBasedTarget(NavigationParameterMap parameters);
 	};
-	
-	
 };
   
