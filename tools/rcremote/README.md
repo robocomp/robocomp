@@ -31,12 +31,15 @@ This way you only need to run "rcremote" on the client and "rcremoteserver" on t
 #Example: Running rcremote and rcremoteserver to communicate between two terminals on the same PC
 
 1) Run the command $ rcremoteserver abcd123 in one terminal.
-3) Create a file named .rcremote in the HOME folder, as indicated above. Add the following line to it:
+
+2) Create a file named .rcremote in the HOME folder, as indicated above. Add the following line to it:
 localhost#abcd123
 
-4) Open the yakuake drop down terminal (Press F12). Install it if you dont have yakuake.
-5) In the yakuake terminal, type $ rcremote localhost any_name_here /home/robocomp any_name_here space_separated_arguments
-6) On pressing enter, you will see the values entered in the yakuake tab transfered to the terminal window.  
+3) Open the yakuake drop down terminal (Press F12). Install it if you dont have yakuake.
+
+4) In the yakuake terminal, type $ rcremote localhost any_name_here /home/robocomp any_name_here space_separated_arguments
+
+5) On pressing enter, you will see the values entered in the yakuake tab transfered to the terminal window.  
 
 
     
