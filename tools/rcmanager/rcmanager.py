@@ -896,7 +896,6 @@ if __name__ == '__main__':
 	window = TheThing()
 	
 	if len(sys.argv) > 1:
-		
 		if os.path.isfile(sys.argv[1]):
 			window.show()
 			window.openFile(sys.argv[1])
