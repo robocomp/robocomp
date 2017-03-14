@@ -41,7 +41,7 @@ module RoboCompObjectDetection
 //		void reset();
 //		void mirrorPC();
 //		void mindTheGapPC();
-		void reloadVFH();								//---------
+// 		void reloadVFH();												//---------
 //		void loadTrainedVFH();
 //		void fitTheViewVFH();
 //		void vfh(out listType guesses);
@@ -51,10 +51,10 @@ module RoboCompObjectDetection
 //		void grabTheAR();
 		bool findTheObject(string objectTofind, out pose6D pose);		//---------
 		bool findObjects(out listObject lObjects);						//---------
-		pose6D getPose();												//---------
+// 		pose6D getPose();												//---------
 //		void getRotation(out float rx,out float ry,out float rz);
-		void initSaveObject(string label, int numPoseToSave);			//---------
-		void saveRegPose(string label, int numPoseToSave);				//---------
+// 		void initSaveObject(string label, int numPoseToSave);			//---------
+// 		void saveRegPose(string label, int numPoseToSave);				//---------
 //		void guessPose(string label, out pose6D guess);
 		
 	};
