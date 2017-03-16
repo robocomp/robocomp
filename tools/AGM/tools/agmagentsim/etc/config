@@ -1,0 +1,18 @@
+# Endpoints for implemented interfaces
+AGMCommonBehavior.Endpoints=tcp -p 12321
+# Endpoints for subscriptions
+AGMExecutiveTopicTopic.Endpoints=tcp -p 32123
+# Proxies for required interfaces
+AGMExecutiveProxy = agmexecutive:tcp -h localhost -p 10198
+# This property is used by the clients to connect to IceStorm.
+TopicManager.Proxy=IceStorm/TopicManager:default -p 9999
+
+DomainPath=/home/robocomp/robocomp/components/robocomp-shelly/files/planningDomain/domain.aggl
+
+Ice.Warn.Connections=0
+Ice.Trace.Network=0
+Ice.Trace.Protocol=0
+Ice.ACM.Client=10
+Ice.ACM.Server=10
+
+

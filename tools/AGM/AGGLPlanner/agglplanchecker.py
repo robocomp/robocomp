@@ -34,8 +34,8 @@
 
 
 # Python distribution imports
-import signal
-signal.signal(signal.SIGINT, signal.SIG_DFL)
+#import signal
+#signal.signal(signal.SIGINT, signal.SIG_DFL)
 import sys, traceback, os, re, threading, time, string, math, copy
 import collections, imp, heapq
 
@@ -47,7 +47,7 @@ import inspect
 from agglplanner import *
 from parseAGGL import *
 from generateAGGLPlannerCode import *
-
+from agglplannerplan import *
 
 ##@brief This class is responsible for checking the plan that is generated in python.
 class PyPlanChecker(object):
@@ -63,7 +63,7 @@ class PyPlanChecker(object):
 	def __init__(self, agmData, domainPath, init, planPath, targetPath, symbolMapping=dict(), resultPath='', verbose=False):
 		object.__init__(self)
 		## We get the initial world model graph
-		self.initWorld  = WorldStateHistory([xmlModelParser.graphFromXML(init), agmData.getInitiallyAwakeRules()])
+		self.initWorld  = WorldStateHistory([xmlModelParser.graphFromXMLFile(init), agmData.getInitiallyAwakeRules()])
 
 		# Get graph rewriting rules
 		if verbose: print 'domainPath:', domainPath
@@ -105,7 +105,7 @@ class PyPlanChecker(object):
 							# If the parameter doesnt exit in the world nor the RHS of the rule, we raise an exception.
 							# Just to warn we're receiving useless parameters
 							raise WrongRuleExecution("Parameter '"+action.parameters[p]+"' (variable '"+p+"') doesn't exist in the current world model.")
-				world = self.domain.getTriggers()[action.name](world, action.parameters, checked=False)
+				world = self.domain.getTriggers()[action.name](world, action.parameters, checked=False, verbose=verbose)
 				if verbose:
 					print 'result:'
 					print world
@@ -145,6 +145,91 @@ class PyPlanChecker(object):
 		# If there is a XML file where we must save the result, we store the result...
 		if resultPath!='':
 			world.graph.toXML(resultPath)
+
+
+##@brief This class is responsible for checking the plan that is generated in python.
+class AGGLPlanChecker(object):
+	##@brief Constructor method: It initializes all class attributes and checks the plan
+	# @param agmData AGMFileDataParsing instance
+	# @param domainPath Python version of the grammar
+	# @param init XML-version of the initial world state
+	# @param planPath Path of the plan
+	# @param targetPath Python-version of the target state OR an instance of a function
+	# @param symbolMapping mapping that should be used while planning (mainly used internally in recursive rules)
+	# @param resultPath is the path of the result is stored. By default it's empty
+	# @param verbose is a parameter that shows additional information
+	def __init__(self, parsedDomain, domainModule, init, plan, target, symbolMapping=dict(), verbose=False):
+		object.__init__(self)
+		## We get the initial world model graph
+		self.initWorld  = init
+		## We save the grammar rules
+		self.domain = domainModule
+		# Get goal-checking code
+		self.target = target
+		## We get the plan code
+		self.plan = AGGLPlannerPlan(plan)
+		self.verbose = verbose
+	def run(self):
+		# Apply plan
+		if self.verbose: print "PyPlanChecker applying plan"
+		try:
+			world = copy.deepcopy(self.initWorld) # we copy the initial world status.
+			#if self.verbose: print world
+			line = 0 # This is the actions line counter. It keeps track of the lines of actions contained in a plan
+			if self.verbose: print '<<plan\n', self.plan, '\nplan>>'
+			# We check all the actions in a plan.
+			for action in self.plan:
+				if self.verbose: print 'Executing action', line,' ',action
+				line += 1
+				# We check that the actions parameters are into the world.
+				for p in action.parameters.keys():
+					if not action.parameters[p] in world.graph.nodes.keys():
+						for r in agmData.agm.rules:
+							if r.name == action.name:
+								rhs = r.rhs
+						if not (p in rhs.nodes.keys()):
+							# If the parameter doesnt exit in the world nor the RHS of the rule, we raise an exception.
+							# Just to warn we're receiving useless parameters
+							raise WrongRuleExecution("Parameter '"+action.parameters[p]+"' (variable '"+p+"') doesn't exist in the current world model.")
+				world = self.domain.getTriggers()[action.name](world, action.parameters, checked=False, verbose=verbose)
+				if self.verbose:
+					print 'result:'
+					print world
+				#world.graph.toXML('after_plan_step'+str(line)+".xml")
+
+			if self.verbose: print 'Done executing actions. Let\'s see what we\'ve got (computing score and checking if the goal was achieved).'
+			if self.verbose: print targetPath
+			# Get result
+			score, achieved = self.targetCode(world.graph) # , symbolMapping
+			## We store the result to check the plan
+			self.valid = achieved
+			if achieved:               # On the one hand, if we achieve the target world status, we will print all the  correct actions of the plan.
+				if self.verbose: print 'GOAL ACHIEVED'
+				self.achieved = True
+				if self.verbose:
+					for action in self.plan:
+						print action
+			else:                      # Otherwise, if we dont achieve the goal, we will print an error message.
+				self.achieved = False
+				if self.verbose: print 'Not achieved (didn\'t get to the goal)'
+
+		# If we have thrown an exception (because a parameter of an action does not exist),
+		# we handle part of the exception in this code.
+		except WrongRuleExecution, e:
+			if self.verbose: print 'Invalid rule execution', action
+			if self.verbose: print 'Rule: ', e
+			if self.verbose: print 'Line: ', line
+			if self.verbose: print 'Not achieved'
+			self.valid = False
+			self.achieved = False
+			if self.verbose: traceback.print_exc()
+		except:
+			self.valid = False
+			self.achieved = False
+			if self.verbose: print 'Not achieved (error)'
+			if self.verbose: traceback.print_exc()
+		return world.graph
+
 
 "----------------------------------------------------------------------"
 "----------------------------------------------------------------------"
@@ -191,7 +276,7 @@ if __name__ == '__main__': # program domain problem result
 
 	if target.endswith('.xml'):
 		## graph contains the state of the target world become a graph
-		graph = graphFromXML(target)
+		graph = graphFromXMLFile(target)
 		## outputText get the python code of the target world graph.
 		outputText = generateTarget(graph)
 		## ofile is the file where we will store the python code of the target world graph.

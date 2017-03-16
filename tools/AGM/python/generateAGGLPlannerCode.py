@@ -927,8 +927,9 @@ def CheckTarget(graph):\n
 	available = copy.deepcopy(graph.nodes)    # lista de nodos del grafo inicial.
 """
 	else:
-		ret += indent+'def ' + forHierarchicalRule + '_target(self, graph, smapping=dict()):'
+		ret += indent+'def ' + forHierarchicalRule + '_target(self, graph, smapping=dict()): # vm'
 		indent += "\t"
+		#ret += indent + 'print "' + forHierarchicalRule + '_target"\n'
 		ret += indent+"n2id = copy.deepcopy(smapping)\n"
 		ret += indent+"available = copy.deepcopy(graph.nodes)"
 
@@ -1047,152 +1048,6 @@ def CheckTarget(graph):\n
 	ret += "\n"
 
 	return ret
-
-
-##@brief This method generates the code of the target.xml file. Is the first version (Luis Version)
-#
-# @ingroup AGGLGeneration
-#
-# @param The graph used to generate the target
-#
-# @retval The python code used to check the target world state
-def generateTarget_VersionLUIS(graph, forHierarchicalRule='', lgraph=None):
-	#print 'non-branched targets'
-	ret = ''
-	indent = "\n\t"
-
-	if len(forHierarchicalRule)==0:
-		ret += """import copy, sys
-sys.path.append('/usr/local/share/agm/')\nfrom AGGL import *\nfrom agglplanner import *
-
-def computeMaxScore(a, b, maxScore):
-	s = 0
-	for i in a: s+=i
-	for i in b: s+=i
-	if s > maxScore: return s
-	return maxScore
-
-def CheckTarget(graph):
-	n2id = dict()
-	available = copy.deepcopy(graph.nodes)
-"""
-
-	else:
-		ret += indent+'def ' + forHierarchicalRule + '_target(self, graph, smapping=dict()):'
-		indent += "\t"
-		ret += indent+"n2id = copy.deepcopy(smapping)\n"
-		ret += indent+"available = copy.deepcopy(graph.nodes)"
-
-	## Generate Link list
-	linkList = []
-	for link_i in range(len(graph.links)):
-		link = graph.links[link_i]
-		linkList.append([link.a, link.b, link.linkType])
-	linkList = sorted(linkList, key=itemgetter(0, 1, 2))
-
-	ret += indent+"maxScore = 0"
-	ret += '\n'
-
-	conditionsListList = []
-	# Generate the loop that checks the model
-	symbols_in_stack = []
-	score = 0
-
-	pops = []
-
-	ret += indent+"# Hard score"
-	ret += indent+"scoreNodes = []"
-	ret += indent+"scoreLinks = []"
-
-	for n_n in getOptimalTargetNodeCheckOrder(graph, lgraph):
-		n = str(n_n)
-		constant = False
-		if (n[0] in "0123456789") and n in graph.nodes: # This checks the node is already in the model
-			constant = True
-		elif lgraph:
-			if n in lgraph.nodes:
-				constant = True
-		if constant:
-			if len(forHierarchicalRule)>0:
- 				#ret += indent+'print '+"n2id['"+n+"']"
-				#ret += indent+'print '+"graph.nodes[n2id['"+n+"']]"
-				ret += indent+"del available[n2id['"+n+"']]"
-			else:
-				ret += indent+"del available['"+n+"']"
-
-
-	for n_n in getOptimalTargetNodeCheckOrder(graph, lgraph):
-		n = str(n_n)
-		ret += indent+"# "+n
-		constant = False
-		if (n[0] in "0123456789") and n in graph.nodes: # This checks the node is already in the model
-			constant = True
-		elif lgraph:
-			if n in lgraph.nodes:
-				constant = True
-		if constant:
-			if (n[0] in "0123456789") and n in graph.nodes:
-				ret += indent+"symbol_"+n+" = graph.nodes['"+n+"']"
-			else:
-				ret += indent+"symbol_"+n+" = graph.nodes[n2id['"+n+"']]"
-		else: # otherwise, we're talking about a variable!
-			ret += indent+"symbol_"+n+"_name = '" + n + "'"
-			ret += indent+"for symbol_"+n+"_name in available:"
-			indent += "\t"
-			ret += indent+"symbol_"+n+" = graph.nodes[symbol_"+n+"_name]"
-
-		if len(forHierarchicalRule)>0:
-			if not constant:
-				ret += indent+"n2id['"+n+"'] = symbol_"+n+"_name"
-		else:
-			if constant:
-				ret += indent+"n2id['"+n+"'] = '"+n+"'"
-			else:
-				ret += indent+"n2id['"+n+"'] = symbol_"+n+"_name"
-		ret += indent+"linksVal = 0"
-		#ret += indent+"print n2id"
-		for cond in newLinkScore(graph.links, n_n, symbols_in_stack):
-			ret += indent+cond
-		ret += indent+"scoreLinks.append(linksVal)"
-		pops.append(indent+'scoreLinks.pop()')
-		ret += indent+"maxScore = computeMaxScore(scoreNodes, scoreLinks, maxScore)"
-		ret += indent+"if symbol_"+n+".sType == '"+graph.nodes[n_n].sType+"'"
-		for other in symbols_in_stack:
-			ret += " and symbol_"+n+".name!=symbol_" + str(other) + ".name"
-		conditions, number, ll = extractNewLinkConditionsFromList(graph.links, n_n, symbols_in_stack)
-		conditions = conditions.replace("snode.graph", "graph")
-		conditionsListList.append( [conditions, number] )
-		ret += conditions
-		ret += ":"
-		symbols_in_stack.append(n_n)
-		indent += "\t"
-		score += scorePerContition
-		ret += indent + "scoreNodes.append(100)"
-		pops.append(indent+'scoreNodes.pop()')
-		ret += indent + "maxScore = computeMaxScore(scoreNodes, scoreLinks, maxScore)"
-
-	allConditionsStr = ''
-	for c in conditionsListList:
-		allConditionsStr += c[0]
-	conditionsSeparated = allConditionsStr.split("and ")
-	realCond = 0
-	for cond in conditionsSeparated:
-		if len(cond) > 1:
-			realCond += 1
-			#ret += indent+"if " + cond + ": scoreNodes += "+str(scorePerContition)+""
-	ret += indent+"if maxScore == " + str(score + realCond*scorePerContition) + ":"
-	ret += indent+"\treturn maxScore, True"
-
-	# Rule ending
-	while len(pops)>0:
-		ret += pops.pop()
-	indent = "\n\t"
-	if len(forHierarchicalRule)>0: indent+='\t'
-	ret += indent+"return maxScore, False"
-	ret += "\n"
-
-	return ret
-
 
 
 #---------------------------------------------------------------------------------------------------
@@ -1391,7 +1246,7 @@ def CheckTarget(graph):\n
 	available = copy.deepcopy(graph.nodes)    # lista de nodos del grafo inicial.
 """
 	else:
-		ret += indent+'def ' + forHierarchicalRule + '_target(self, graph, smapping=dict()):'
+		ret += indent+'def ' + forHierarchicalRule + '_target(self, graph, smapping=dict()): # este'
 		indent += "\t"
 		ret += indent+"n2id = copy.deepcopy(smapping)\n"
 		ret += indent+"available = copy.deepcopy(graph.nodes)"
@@ -1500,12 +1355,12 @@ def CheckTarget(graph):\n
 			realCond += 1
 			#ret += indent+"if " + cond + ": scoreNodes += "+str(scorePerContition)+""
 
-	print realCond
+	#print realCond
 	totalCond = realCond
 	if target['precondition'] != None:
 		ret += indent+"if maxScore == " + str(score + realCond*scorePerContition) + ":"
 		preconditionCode, totalCond = generateTargetPreconditionCode(target['precondition'], realCond, indent+'\t')
-		print totalCond
+		#print totalCond
 		ret += preconditionCode
 		ret += indent+"\t\t\treturn maxScore, True # there were preconditions and were met"
 	else:
@@ -1571,15 +1426,17 @@ def targetPreconditionImplementation(precondition, indent, modifier='', stuff=No
 	elif preconditionType == "and":
 		ret += indent+'precondition'+str(formulaId)+' = True # AND initialization as true'
 		first = True
+		indentC = copy.deepcopy(indent)
 		for part in preconditionBody[0]:
-			if first: first = False
+			if first:
+				first = False
 			else:
-				ret += indent+'if precondition'+str(formulaId)+': # if still true'
-				indent += '\t'
-			text, indent, formulaIdRet, stuff = targetPreconditionImplementation(part, indent, 'and', stuff)
+				ret += indentC+'if precondition'+str(formulaId)+': # if still true'
+				indentC += '\t'
+			text, indentC, formulaIdRet, stuff = targetPreconditionImplementation(part, indentC, 'and', stuff)
 			ret += text
-			ret += indent+'if precondition'+str(formulaIdRet)+' == False: # if what\'s inside the AND is false'
-			ret += indent+'\tprecondition'+str(formulaId)+' = False # make the AND false'
+			ret += indentC+'if precondition'+str(formulaIdRet)+' == False: # if what\'s inside the AND is false'
+			ret += indentC+'\tprecondition'+str(formulaId)+' = False # make the AND false'
 	elif preconditionType == "forall":
 		ret += indent+'precondition'+str(formulaId)+' = True # FORALL initialization as true'
 		indentA = indent

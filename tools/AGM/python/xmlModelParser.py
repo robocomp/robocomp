@@ -4,7 +4,7 @@ sys.path.append('/usr/local/share/agm/')
 from AGGL import *
 
 class AGMWorldModelParser(xmllib.XMLParser):
-	def __init__(self, path):
+	def __init__(self, data):
 		xmllib.XMLParser.__init__(self)
 		self.world = False
 		self.currentSymbol = None
@@ -12,9 +12,6 @@ class AGMWorldModelParser(xmllib.XMLParser):
 		self.nodes = dict()
 		self.links = list()
 
-		filehandle = open(path, 'r')
-		data = filehandle.read()
-		filehandle.close()
 		self.feed(data)
 
 	def handle_data(self, data):
@@ -82,9 +79,17 @@ class AGMWorldModelParser(xmllib.XMLParser):
 		pass
 
 ## Makes a graph with the information contained in a XML file
-def graphFromXML(path):
-	parser = AGMWorldModelParser(path)
+def graphFromXMLFile(path):
+	with open(path, 'r') as filehandle:
+		data = filehandle.read()
+		return graphFromXMLText(data)
+
+def graphFromXMLText(text):
+	#print 'graphFromXMLText'
+	#print text
+	parser = AGMWorldModelParser(str(text))
 	parser.close()
 	return AGMGraph(parser.nodes, parser.links)
+
 
 

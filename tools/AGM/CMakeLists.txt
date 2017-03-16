@@ -100,7 +100,7 @@ if (ROBOCOMP_SUPPORT)
 	SET(ICE_LIBS -lIce)
 	ROBOCOMP_WRAP_ICE( AGMWorldModel AGMExecutive Planning AGMCommonBehavior )
 	ADD_DEFINITIONS(-DROBOCOMP_SUPPORT=1)
-	SUBDIRS (${CMAKE_SOURCE_DIR}/tools/agmmission tools/agminner)
+	SUBDIRS (${CMAKE_SOURCE_DIR}/tools/agmmission tools/agminner tools/agmagentsim) 
 endif (ROBOCOMP_SUPPORT)
 
 # LibXML
@@ -223,10 +223,15 @@ INSTALL(PROGRAMS "${CMAKE_SOURCE_DIR}/AGGLPlanner/agglplanner.py" DESTINATION ${
 INSTALL(PROGRAMS "${CMAKE_SOURCE_DIR}/AGGLPlanner/agglplanner.py" DESTINATION ${INST_SHARE_PATH}/ RENAME agglplanner.py )
 INSTALL(PROGRAMS "${CMAKE_SOURCE_DIR}/AGGLPlanner/agglplanchecker.py" DESTINATION ${INST_BIN_PATH}/ RENAME agglplanchecker )
 INSTALL(PROGRAMS "${CMAKE_SOURCE_DIR}/AGGLPlanner/agglplanchecker.py" DESTINATION ${INST_SHARE_PATH}/ RENAME agglplanchecker.py )
+INSTALL(PROGRAMS "${CMAKE_SOURCE_DIR}/AGGLPlanner/agglplannerplan.py" DESTINATION ${INST_BIN_PATH}/ RENAME agglplannerplan )
+INSTALL(PROGRAMS "${CMAKE_SOURCE_DIR}/AGGLPlanner/agglplannerplan.py" DESTINATION ${INST_SHARE_PATH}/ RENAME agglplannerplan.py )
 INSTALL(PROGRAMS "${CMAKE_SOURCE_DIR}/AGGLPlanner/agglplan.py" DESTINATION ${INST_BIN_PATH}/ RENAME agglplan )
 INSTALL(PROGRAMS "${CMAKE_SOURCE_DIR}/AGGLPlanner/agglplan.py" DESTINATION ${INST_SHARE_PATH}/ RENAME agglplan.py )
 INSTALL(PROGRAMS "${CMAKE_SOURCE_DIR}/AGGLPlanner/agglcheckhierarchical.py" DESTINATION ${INST_BIN_PATH}/ RENAME agglcheckhierarchical )
 INSTALL(PROGRAMS "${CMAKE_SOURCE_DIR}/python/pyparsinglocal.py" DESTINATION ${INST_SHARE_PATH}/ RENAME pyparsinglocal.py )
+
+INSTALL(PROGRAMS "${CMAKE_SOURCE_DIR}/AGGLPlanner/agglplannerserver.py" DESTINATION ${INST_BIN_PATH}/ RENAME agglplannerserver )
+INSTALL(FILES "${CMAKE_SOURCE_DIR}/AGGLPlanner/agglplanner.thrift" DESTINATION ${INST_SHARE_PATH}/ )
 
 if (ROBOCOMP_SUPPORT)
 	INSTALL(FILES ${CMAKE_BINARY_DIR}/AGMCommonBehavior.h DESTINATION ${INST_INCL_PATH}/ )

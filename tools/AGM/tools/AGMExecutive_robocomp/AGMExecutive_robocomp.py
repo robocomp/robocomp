@@ -48,11 +48,9 @@ preStr = "-I"+ROBOCOMP+"/interfaces/ --all "+ROBOCOMP+"/interfaces/"
 Ice.loadSlice(preStr+"AGMCommonBehavior.ice")
 Ice.loadSlice(preStr+"AGMExecutive.ice")
 Ice.loadSlice(preStr+"AGMWorldModel.ice")
-Ice.loadSlice(preStr+"Speech.ice")
 import RoboCompAGMCommonBehavior
 import RoboCompAGMExecutive
 import RoboCompAGMWorldModel
-import RoboCompSpeech
 
 from AGGL import *
 from agglplanningcache import *
@@ -123,14 +121,6 @@ class Server (Ice.Application):
 			initialMissionPath = self.communicator().getProperties().getProperty( "InitialMissionPath" )
 			doNotPlan          = self.communicator().getProperties().getProperty( "DoNotPlan" )
 
-			# Get a proxy for the Speech
-			proxy = self.communicator().getProperties().getProperty( "SpeechProxy" )
-			if len(proxy)<1:
-				print 'SpeechProxy variable is empty, check the configuration file if speech output is desired.'
-				speech = None
-			else:
-				speech = RoboCompSpeech.SpeechPrx.checkedCast(self.communicator().stringToProxy(proxy))
-
 			# Proxy to publish AGMExecutiveTopic
 			proxy = self.communicator().getProperties().getProperty("IceStormProxy")
 			obj = self.communicator().stringToProxy(proxy)
@@ -173,7 +163,7 @@ class Server (Ice.Application):
 			executiveVisualizationTopic = RoboCompAGMExecutive.AGMExecutiveVisualizationTopicPrx.uncheckedCast(pub)
 
 			# Create the executive
-			executive = Executive(agglPath, initialModelPath, initialMissionPath, doNotPlan, executiveTopic, executiveVisualizationTopic, speech)
+			executive = Executive(agglPath, initialModelPath, initialMissionPath, doNotPlan, executiveTopic, executiveVisualizationTopic)
 			# AGMExecutive server
 			executiveI = ExecutiveI(executive)
 			adapterExecutive = self.communicator().createObjectAdapter('AGMExecutive')
@@ -205,7 +195,9 @@ class Server (Ice.Application):
 			print '-------------------------------------------------------------'
 			print '----     R u n     A G M E x e c u t i v e,     r u n   -----'
 			print '-------------------------------------------------------------'
+			print '---- updatePlan ------------------------------------------------'
 			executive.updatePlan()
+			print '---- updatePlan ------------------------------------------------'
 			self.shutdownOnInterrupt()
 			self.communicator().waitForShutdown()
 		except:
