@@ -902,21 +902,28 @@ class GraphView(QtGui.QWidget):
 		self.ui.close()
 
 
+
 #
 # Create the Qt application, the class, and runs the program
 #
 if __name__ == '__main__':
 	app = QtGui.QApplication(sys.argv)
 	window = TheThing()
-	window.show()
-
+	
 	if len(sys.argv) > 1:
-		window.openFile(sys.argv[1])
-	ret = -1
+		if os.path.isfile(sys.argv[1]):
+			window.show()
+			window.openFile(sys.argv[1])
 
-	try:
-		ret = app.exec_()
-	except:
-		print 'Some error happened.'
+			ret = -1
+
+			try:
+				ret = app.exec_()
+			except:
+				print 'Some error happened.'
+		else:
+			print sys.argv[1] + " does not exist"	
+	else: 
+		print "Please enter an argument. Ex - rcmanager sample.xml"
 
 	sys.exit()
