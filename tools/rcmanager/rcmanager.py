@@ -655,6 +655,7 @@ class GraphView(QtGui.QWidget):
 		self.time_elapsed2 = dict['step']**2
 		self.field_force_multiplier = dict['fieldforce']
 		self.hookes_constant = dict['hookes']
+		
 	def nodes(self):
 		if self.VisualNodeCogia:
 			return self.compList + list(self.VisualNodeCogia)
@@ -780,7 +781,7 @@ class GraphView(QtGui.QWidget):
 			self.painter.drawEllipse(node.x-node.r/4+w2, node.y-node.r/4+h2, node.r/2, node.r/2)
 
 
-	def paintEvent(self, event):
+	def paintEvent(self, event):	
 		w2 = self.tab.width()/2
 		h2 = self.tab.height()/2+30
 		nodosAPintar = [] + self.compList
@@ -874,6 +875,19 @@ class GraphView(QtGui.QWidget):
 			self.VisualNodeCogia.x = e.x()-self.ox-w2
 			self.VisualNodeCogia.y = e.y()-self.oy-h2
 			self.repaint()
+	def wheelEvent(self, e):
+   		if e.delta() > 0:
+   			for i in self.compList:
+   				i.x = i.x * 1.1
+   				i.y = i.y * 1.1
+   				i.r = i.r * 1.1
+   			self.repaint
+   		else:
+   			for i in self.compList:
+   				i.x = i.x * 0.9
+   				i.y = i.y * 0.9
+   				i.r = i.r * 0.9
+   			self.repaint
 	def up(self):
 		self.request = self.compList[self.ui.idx].name
 		self.ui.close()
@@ -906,4 +920,3 @@ if __name__ == '__main__':
 		print 'Some error happened.'
 
 	sys.exit()
-
