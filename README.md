@@ -43,7 +43,9 @@ Make sure you have installed the following packages from the Ubuntu repository:
 
 Now we will create a symbolic link so RobComp can find everything. You will have to enter your passwd:
 
-    sudo ln -s /home/<your-linux-user> /home/robocomp 
+    sudo ln -s ~ home/robocomp
+    
+(the ~ is in Alt-4)
     
 Edit your ~/.bashrc file 
 
@@ -51,7 +53,7 @@ Edit your ~/.bashrc file
 
 Add these lines at the end:
 
-    export ROBOCOMP=/home/<your-linux-user>/robocomp
+    export ROBOCOMP=~/robocomp
     export PATH=$PATH:/opt/robocomp/bin
    
 make bash process the modified file by typing: 
@@ -60,7 +62,7 @@ make bash process the modified file by typing:
 
 Done! Now let's compile and install the whole thing:
 
-    sudo rm -r /opt/robocomp
+    sudo [ -d /opt/robocomp ] && rm -r /opt/robocomp
     cd robocomp
     mkdir build
     cd build
