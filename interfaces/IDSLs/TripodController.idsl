@@ -1,4 +1,4 @@
-module RoboCompTripController
+module RoboCompTripodController
 {
 
 	exception HardwareFailedException{string  what;};
