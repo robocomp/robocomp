@@ -352,7 +352,7 @@ for namea, num in getNameNumber(component['requires']):
 	if communicationIsIce(namea):
 		w = REQUIRE_STR.replace("<NORMAL>", name).replace("<LOWER>", name.lower()).replace("<PROXYNAME>", name.lower()+num).replace("<PROXYNUMBER>", num)
 		cog.outl(w)
-	
+
 need_topic=False
 for pub in component['publishes']:
 	if communicationIsIce(pub):
@@ -361,7 +361,16 @@ for pub in component['subscribesTo']:
 	if communicationIsIce(pub):
 		need_topic = True
 if need_topic:
-	cog.outl('<TABHERE>IceStorm::TopicManagerPrx topicManager = IceStorm::TopicManagerPrx::checkedCast(communicator()->propertyToProxy("TopicManager.Proxy"));')
+	cog.outl('<TABHERE>IceStorm::TopicManagerPrx topicManager;')
+	cog.outl('<TABHERE>try')
+	cog.outl('<TABHERE>{')
+	cog.outl('<TABHERE><TABHERE>topicManager = IceStorm::TopicManagerPrx::checkedCast(communicator()->propertyToProxy("TopicManager.Proxy"));')
+	cog.outl('<TABHERE>}')
+	cog.outl('<TABHERE>catch (const Ice::Exception &ex)')
+	cog.outl('<TABHERE>{')
+	cog.outl('<TABHERE><TABHERE>cout << "[" << PROGRAM_NAME << "]: Exception: STORM not running: " << ex << endl;')
+	cog.outl('<TABHERE><TABHERE>return EXIT_FAILURE;')
+	cog.outl('<TABHERE>}')
 
 
 for pba in component['publishes']:
@@ -391,12 +400,12 @@ if component['usingROS'] == True:
 
 	if ( !monitor->isRunning() )
 		return status;
-	
+
 	while (!monitor->ready)
 	{
 		usleep(10000);
 	}
-	
+
 	try
 	{
 		// Server adapter creation and publication
@@ -447,7 +456,7 @@ for name, num in getNameNumber(component['subscribesTo']):
 #endif
 		// Run QT Application Event Loop
 		a.exec();
-		
+
 [[[cog
 for sub in component['subscribesTo']:
 	nname = sub
@@ -456,10 +465,10 @@ for sub in component['subscribesTo']:
 	if communicationIsIce(sub):
 		cog.outl("<TABHERE><TABHERE>std::cout << \"Unsubscribing topic: "+nname.lower()+" \" <<std::endl;")
 		cog.outl("<TABHERE><TABHERE>"+ nname.lower() + "_topic->unsubscribe( "+ nname.lower() +" );" )
-		
+
 ]]]
 [[[end]]]
-		
+
 		status = EXIT_SUCCESS;
 	}
 	catch(const Ice::Exception& ex)
@@ -523,4 +532,3 @@ app(prefix);
 
 	return app.main(argc, argv, configFile.c_str());
 }
-
