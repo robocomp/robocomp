@@ -347,24 +347,6 @@ bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
 		qFatal("Error reading config params: %s\n", e.what());
 	}
 
-	for (auto s : QString::fromStdString(par.value).split(";"))
-	{
-		auto v = s.split(",");
-		if( QFile(v[0]).exists() == true)
-		{
-			std::string sstr = v[0].toStdString();
-			printf("reading innermodel file %s\n", sstr.c_str());
-			InnerModel *innerModel = new InnerModel(sstr);
-			printf("%s ---> %s\n", v[0].toStdString().c_str(), v[1].toStdString().c_str());
-			innerModelInfoVector.push_back(std::pair<InnerModel *, QString>(innerModel, v[1]));
-		}
-		else
-		{
-			qFatal("File %s specifed in config file not found: Exiting now.", v[0].toStdString().c_str());
-		}
-	}
-
-
 	//
 	// Read initial AGM model
 	printf("\n***************************************************\n");
@@ -387,13 +369,25 @@ bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
 	printf("***************************************************\n");
 	printf("***************************************************\n");
 	AGMModel::SPtr newModel;
+	std::string msgs;
 	try
 	{
 		newModel = AGMModel::SPtr(new AGMModel(worldModel));
-		for (auto p : innerModelInfoVector)
+		for (auto s : QString::fromStdString(par.value).split(";"))
 		{
-			printf("Include in %d\n", p.second.toInt());
-			AGMInner::includeInnerModel(newModel, p.second.toInt(), p.first);
+			auto v = s.split(",");
+			if( QFile(v[0]).exists() == true)
+			{
+				std::string sstr = v[0].toStdString();
+				printf("reading innermodel file %s\n", sstr.c_str());
+				InnerModel *innerModel = new InnerModel(sstr);
+				printf("Include %s in %d\n", sstr.c_str(), v[1].toInt());
+				AGMInner::includeInnerModel(newModel, v[1].toInt(), innerModel, msgs, sstr);
+			}
+			else
+			{
+				qFatal("File %s specifed in config file not found: Exiting now.", v[0].toStdString().c_str());
+			}
 		}
 	}
 	catch(...)
@@ -452,6 +446,9 @@ bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
 	printf("The job was done. Exiting...\n");
 	printf("***************************************************\n");
 	printf("***************************************************\n");
+	
+	
+	printf("\n%s\n", msgs.c_str());
 		
 	exit(0);
 

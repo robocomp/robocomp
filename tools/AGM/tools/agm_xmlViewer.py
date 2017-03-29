@@ -110,7 +110,7 @@ class GraphViewer(QMainWindow):
 		for fil in range(len(fileList)):
 			self.drawers.append(GraphDraw(self.widgets[fil], self, "xxxx"))
 			print 'xmlModelParser()', fileList[fil]
-			self.drawers[fil].graph = xmlModelParser.graphFromXML(fileList[fil])
+			self.drawers[fil].graph = xmlModelParser.graphFromXMLFile(fileList[fil])
 			
 			print 'nodes',self.drawers[fil].graph.nodes
 			for key in self.drawers[fil].graph.nodes.keys():

@@ -253,7 +253,7 @@ public:
 
 
 	/// Returns the identifier of the symbol with <strong><em>"symbolType"</em></strong> type. If not found returns <em>-1</em>.
-	int32_t getIdentifierByType(std::string symbolType, int32_t i=0) const;
+	int32_t getIdentifierByType(std::string symbolType, uint32_t i=0) const;
 
 
 	/*! \brief <strong>DEPRECATED</STRONG>: DON'T USE THIS METHOD
@@ -314,7 +314,7 @@ public:
 	void removeEdgeByIdentifiers(int32_t a, int32_t b, const std::string &edgeName);
 
 
-	/*! \brief Includes a new edge from the symbol 'a' to the symbol 'b' with label edgeName, with an optional attribute map.  Returns True on success.
+	/*! \brief Removes an edge given its ending symbols and the label.
 	 *
 	 * \throws AGMException Nodes a and b must exist
 	 *
@@ -323,6 +323,13 @@ public:
 	{
 		removeEdgeByIdentifiers(a->identifier, b->identifier, edgeName);
 	}
+
+	/*! \brief Removes an edge given an AGMModelEdge containing the ending symbol and label
+	 * 
+	 * \throws AGMException Nodes a and b must exist
+	 *
+	 */
+	void removeEdge(AGMModelEdge &edge);
 
 
 	/*! \brief Renames an edge in the model given the identifiers of two symbols, the previous and new label. Returns True on success.

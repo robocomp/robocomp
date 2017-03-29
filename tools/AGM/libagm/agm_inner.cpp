@@ -66,14 +66,12 @@ InnerModel* AGMInner::extractInnerModel(AGMModel::SPtr &worldModel, QString imNo
 	int symbolID = findSymbolIDWithInnerModelName(worldModel,imNodeName);
 	if (symbolID < 0)
 	{
-		qFatal("ERROR: Couldn't find symbol %s in initial model!", imNodeName.toStdString().c_str());
+		std::string s = "ERROR: Couldn't find symbol" + imNodeName.toStdString() + "in initial model!";
+		throw s;
 	}
 
 	// Check RT loops
-	bool ret;
-	QList<int> ll;
-	AGMInner::checkLoop(worldModel, symbolID, ll, "RT", ret);
-	if (not ret)
+	if (AGMInner::loop(worldModel, symbolID, "RT"))
 	{
 		qFatal("ERROR: detected RT loop!");
 	}
@@ -100,7 +98,7 @@ void AGMInner::recorrer(AGMModel::SPtr &worldModel, InnerModel* imNew, const int
 	const AGMModelSymbol::SPtr &symbol = worldModel->getSymbol(symbolID);
 	for (AGMModelSymbol::iterator edge_itr=symbol->edgesBegin(worldModel); edge_itr!=symbol->edgesEnd(worldModel); edge_itr++)
 	{
-		std::cout<<(*edge_itr).toString(worldModel)<<"\n";
+		//std::cout<<(*edge_itr).toString(worldModel)<<"\n";
 		//comprobamos el id del simbolo para evitar los arcos que le llegan y seguir solo los que salen del nodo
 		if ((*edge_itr)->getLabel() == "RT" && (*edge_itr)->getSymbolPair().first==symbolID )
 		{
@@ -155,12 +153,12 @@ void AGMInner::edgeToInnerModel(AGMModel::SPtr &worldModel, AGMModelEdge edge, I
 		string defaultName = symbolA->symbolType +"_"+int2str(symbolA->identifier);
 		printf("Couldn't find attribute imName for %s . Creating a default name: %s \n", nameA.toStdString().c_str(), defaultName.c_str());
 		symbolA->setAttribute("imName", defaultName);
-		symbolA->setAttribute("imType", "transform");		
+		symbolA->setAttribute("imType", "transform");
 	}
 	try
 	{
 // 	printf("      %s: %d\n", __FUNCTION__, __LINE__);
-		nameB = QString::fromStdString(symbolB->getAttribute("imName"));		
+		nameB = QString::fromStdString(symbolB->getAttribute("imName"));
 // 	printf("      %s: %d\n", __FUNCTION__, __LINE__);
 	}
 	catch(...)
@@ -187,7 +185,7 @@ void AGMInner::edgeToInnerModel(AGMModel::SPtr &worldModel, AGMModelEdge edge, I
 	nodeA=imNew->getNode(nameA);
 	if (nodeA==NULL)
 	{
-		qDebug()<<"node A null"<<nameA;
+// 		qDebug()<<"node A null"<<nameA;
 		
 // printf("      %s: %d\n", __FUNCTION__, __LINE__);
 		insertSymbolToInnerModelNode(worldModel,imNew,imNew->getRoot(), symbolA,tx,ty,tz,rx,ry,rz, ignoreMeshes);
@@ -242,7 +240,7 @@ void AGMInner::insertSymbolToInnerModelNode(AGMModel::SPtr &worldModel, InnerMod
 
 	if (imType=="transform")
 	{
-		std::cout<<"\t type: "<<imType <<"\n";
+		//std::cout<<"\t type: "<<imType <<"\n";
 		QString engine = "static";
 		float mass =0.;
 		try
@@ -792,7 +790,6 @@ void AGMInner::insertSymbolToInnerModelNode(AGMModel::SPtr &worldModel, InnerMod
 			InnerModelTransform* tf = imNew->newTransform (QString::fromStdString(s->toString()), "static",parentNode);
 			parentNode->addChild(tf);
 		}
-
 		else
 		{
 			string err;
@@ -805,31 +802,38 @@ void AGMInner::insertSymbolToInnerModelNode(AGMModel::SPtr &worldModel, InnerMod
 
 }
 
-void AGMInner::checkLoop(AGMModel::SPtr &worldModel, int& symbolID, QList<int> &visited, string linkType, bool &loop)
+
+
+bool AGMInner::loop(AGMModel::SPtr &worldModel, int &symbolID, string linkType)
 {
-	if (visited.contains(symbolID) )
+	QList<int> visited;
+	if (AGMInner::loopRecursive(worldModel, symbolID, visited, linkType))
 	{
-		loop=true;
-		visited.append(symbolID);
-		return;
+		return true;
 	}
-	else
-		visited.append(symbolID);
+	return false;
+}
+
+
+bool AGMInner::loopRecursive(AGMModel::SPtr &worldModel, int &symbolID, QList<int> &visited, string linkType)
+{
+	if (visited.contains(symbolID))
+		return true;
+
+	visited.append(symbolID);
 
 	const AGMModelSymbol::SPtr &symbol = worldModel->getSymbol(symbolID);
-	for (AGMModelSymbol::iterator edge_itr=symbol->edgesBegin(worldModel); edge_itr!=symbol->edgesEnd(worldModel); edge_itr++)
+	for (auto edge_itr=symbol->edgesBegin(worldModel); edge_itr!=symbol->edgesEnd(worldModel); edge_itr++)
 	{
-		//std::cout<<(*edge_itr).toString(worldModel)<<"\n";
-		//comprobamos el id del simbolo para evitar los arcos que le llegan y seguir solo los que salen del nodo
-		if ((*edge_itr)->getLabel() == linkType && (*edge_itr)->getSymbolPair().first==symbolID )
+		if ((*edge_itr)->getLabel()==linkType and (*edge_itr)->getSymbolPair().first==symbolID )
 		{
 			int second = (*edge_itr)->getSymbolPair().second;
-// 			qDebug()<<symbolID<<"--"<<QString::fromStdString(linkType)<<"-->"<<second;
-// 			qDebug()<<"\tvisited"<<visited;
-			checkLoop(worldModel, second,visited, linkType,loop);
+			if (loopRecursive(worldModel, second, visited, linkType))
+				return true;
 		}
 	}
 
+	return false;
 }
 
 // QList<int> AGMInner::getLinkedID (int symbolID, string linkType)
@@ -883,7 +887,8 @@ void AGMInner::updateAgmWithInnerModel(AGMModel::SPtr &worldModel, InnerModel* i
 			}
 			catch (...)
 			{
-				qDebug()<<"EXCEPTION,RT label connect to a symbol without imName";
+				qDebug()<<"EXCEPTION,RT label connect to a symbol without imName\n";
+				printf("\n");
 				std::cout<<(worldModel->getSymbol( (*it)->getSymbolPair().second))->toString(true);
 			}
 		}
@@ -932,7 +937,8 @@ void AGMInner::updateAgmWithInnerModelAndPublish(AGMModel::SPtr &worldModel, Inn
 			}
 			catch (...)
 			{
-				qDebug()<<"EXCEPTION,RT label connect to a symbol without imName";
+				qDebug()<<"EXCEPTION,RT label connect to a symbol without imName\n";
+				printf("\n");
 				std::cout<<(worldModel->getSymbol( (*it)->getSymbolPair().second))->toString(true);
 			}
 		}
@@ -1167,9 +1173,20 @@ void AGMInner::include_im(AGMModel::SPtr &worldModel, QHash<QString, int32_t> ma
 
 
 
-void AGMInner::includeInnerModel(AGMModel::SPtr &worldModel, int symbolID, InnerModel *im)
+void AGMInner::includeInnerModel(AGMModel::SPtr &worldModel, int symbolID, InnerModel *im, std::string &msgs, std::string path)
 {
-	AGMModelSymbol::SPtr symbol = worldModel->getSymbol(symbolID);
+	// Get target symbol
+	AGMModelSymbol::SPtr symbol;
+	try
+	{
+		symbol = worldModel->getSymbol(symbolID);
+	}
+	catch (...)
+	{
+		std::cout << "Can\'t get symbol " << symbolID << "\n";
+	}
+
+	// Make sure that the target symbol has an 'imType' attribute
 	try
 	{
 		symbol->getAttribute("imType");
@@ -1180,6 +1197,7 @@ void AGMInner::includeInnerModel(AGMModel::SPtr &worldModel, int symbolID, Inner
 		symbol->setAttribute("imType", "transform");
 	}
 
+	// Make sure that the target symbol has an 'imName' attribute
 	try
 	{
 		symbol->getAttribute("imName");
@@ -1190,6 +1208,34 @@ void AGMInner::includeInnerModel(AGMModel::SPtr &worldModel, int symbolID, Inner
 		std::cout<<"AGMSymbol: "<< symbol->toString()<<" does not has imName attribute. Adding imName: "<<imName<<"\n";		
 		symbol->setAttribute("imName",imName);
 	}
+
+	// Warn if the target symbol doesn't have a RT-parent symbol
+	bool found = false;
+	for (AGMModelSymbol::iterator edge_itr=symbol->edgesBegin(worldModel); edge_itr!=symbol->edgesEnd(worldModel); edge_itr++)
+	{
+		if ((*edge_itr)->getLabel() == "RT" && (*edge_itr)->getSymbolPair().second==symbolID )
+		{
+			found = true;
+			break;
+		}
+	}
+	if (not found)
+	{
+		if (path == "")
+		{
+			path = "<no xml path given>";
+		}
+
+		std::ostringstream ostr;
+		ostr.imbue(std::locale("C"));
+		ostr << symbolID;
+
+		std::string m = "Warning: including an innermodel tree (" + im->getRoot()->id.toStdString() + ") in a node " +  ostr.str() + " without a RT-parent: " + path + "\n";
+		printf("%s\n", m.c_str());
+		msgs += m;
+	}
+
+	// Call the actual insertion procedure
 	recursiveInsertion(worldModel, im->getRoot(), symbolID);
 }
 
@@ -1600,7 +1646,8 @@ void AGMInner::updateImNodeFromEdge(AGMModel::SPtr &worldModel,AGMModelEdge edge
 			}
 			catch (...)
 			{
-				qDebug()<<"EXCEPTION,RT label connect to a symbol without imName";
+				qDebug()<<"EXCEPTION,RT label connect to a symbol without imName\n";
+				printf("\n");
 				std::cout<<(worldModel->getSymbol( edge->getSymbolPair().second))->toString(true);
 			}
 		}

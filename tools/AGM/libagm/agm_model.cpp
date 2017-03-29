@@ -653,30 +653,21 @@ AGMModelEdge & AGMModel::edge(uint32_t i)
 	return edges[i];
 }
 
-int32_t AGMModel::getIdentifierByType(std::string type, int32_t times) const
+int32_t AGMModel::getIdentifierByType(std::string type, uint32_t times) const
 {
-	int32_t ret = -1;
-	uint32_t idx = 0;
-	for (int32_t time=0; time<=times; ++time)
+	for (uint32_t idx=0; idx<symbols.size(); ++idx)
 	{
-		for ( ; idx<symbols.size(); ++idx)
+		if (symbols[idx]->symbolType == type)
 		{
-			if (symbols[idx]->symbolType == type)
+			if (times==0)
 			{
-				if (time==times) { /*printf("indice será %d\n", (int32_t)idx);*/ ret = idx;  }
-				break;
+				return symbols[idx]->identifier;
+			}
+			else
+			{
+				times--;
 			}
 		}
-		if (idx>=symbols.size())
-		{
-			return -1;
-		}
-	}
-	if (ret != -1)
-	{
-// 		printf("devolvemos [%d].id ---> _%d_\n", ret, symbols[ret]->identifier);
-// 		printf("%s %d\n", __FILE__, __LINE__);
-		return symbols[ret]->identifier;
 	}
 	return -1;
 }
@@ -928,6 +919,13 @@ bool AGMModel::removeEdgesRelatedToSymbol(int32_t id)
 }
 
 
+void AGMModel::removeEdge(AGMModelEdge &edge)
+{
+	const auto pair = edge.getSymbolPair();
+	removeEdgeByIdentifiers(pair.first, pair.second, edge.getLabel());
+}
+
+	
 void AGMModel::setSymbols(std::vector<AGMModelSymbol::SPtr> s)
 {
 	symbols = s;
@@ -1207,6 +1205,8 @@ std::map<std::string, AGMModelSymbol::SPtr> AGMModel::getSymbolsMap(::RoboCompAG
 	std::map<std::string, AGMModelSymbol::SPtr> ret;
 	for (auto v : params)
 	{
+		if(v.first == "modelversion")
+			continue;
 		int r = str2int(params[v.first].value);
 		if (r>0)
 		{

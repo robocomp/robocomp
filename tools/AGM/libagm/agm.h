@@ -49,6 +49,79 @@ The following code snippet removes two symbols in two different ways: a) using i
 \endcode
 
 
+\subsection update Updating the attributes of a symbol
+Updating the attributes of a symbol is straightforward:
+\code{.cpp}
+// Modify the attributes in the current model
+worldModel->symbols[ballIndex]->attributes["x"] = xPos;
+worldModel->symbols[ballIndex]->attributes["y"] = yPos;
+worldModel->symbols[ballIndex]->attributes["z"] = zPos;
+\endcode
+
+
+
+
+
+\subsection addLink Adding an edge to a model
+Links can be added using pointers to the symbols involved or their identifiers. Using symbol pointers:
+\code{.cpp}
+	newModel->addEdge(newMilk, newMilkStatus, "reachable");
+\endcode
+Using their identifiers:
+\code{.cpp}
+	newModel->addEdge(newMilk->identifier, newMilkStatus->identifier, "see");
+\endcode
+
+
+
+\subsection rmLink Removing edges
+Edges are removed depending on the scenario and the information you have at hand.
+
+First, you can call <em>removeEdgesRelatedToSymbol</em> to remove all the edges related to a symbol. This is specially useful when you are going to remove a symbol using the variable <em>symbols</em> directly, which is disencouraged. Generally it's a better idea to remove symbols using the method <em>removeSymbol</em>. The method takes the identifier of the symbol as the only parameter:
+\code{.cpp}
+	model->removeEdgesRelatedToSymbol(symbol->identifier);
+\endcode
+If there are edges related to unexisting symbols, you can remove all of them with a single call using <em>removeDanglingEdges</em>. As explained previously, you should not need to call this method if you remove symbols properly. The method takes no arguments:
+\code{.cpp}
+	model->removeDanglingEdges();
+\endcode
+
+
+Edges can also be removed using the symbols involved and the label of the edge to remove. throws an exception if the identifiers do not exist:
+\code{.cpp}
+	model->removeEdgeByIdentifiers(idA, idB, "someLabel");
+\endcode
+
+Edges can also be removed given the symbols involved and the label of the edge to remove. Throws an exception if the symbols do not exist in the model:
+\code{.cpp}
+	model->removeEdge(object, robot, "in");
+\endcode
+
+Edges can also be removed given the an edge object. This edge can be the edge to delete or an equivalent edge (one containing the identifiers and label of the edge to delete) of other model:
+\code{.cpp}
+	model->removeEdge(edge);
+\endcode
+
+
+\subsection renameEdge Changing the label of an edge
+Edges can be relabeled using the <em>renameEdge</em> and <em>renameEdgeByIdentifiers</em> methods:
+\code{.cpp}
+	model->renameEdgeByIdentifiers(idA, idB, previousLabel, newLabel);
+	model->renameEdge(a, b, previousLabel, newLabel);
+\endcode
+
+
+\subsection iterEdge Iterating over the edges related to a symbol
+Given a symbol <em>thisSymbol</em>, you can use a for loop like the following:
+\code{.cpp}
+	for (auto edge = thisSymbol->edgesBegin(worldModel); edge != thisSymbol->edgesEnd(worldModel); edge++)
+	{
+		const std::pair<int32_t, int32_t> symbolPair = edge->getSymbolPair();
+	}
+\endcode
+
+
+
 \subsection accessFromParameters Accessing the symbols of a rule execution given by the AGM executive
 The following greates a map providing pointers to the symbols in the rule (a <em>std::map&lt;string, AGMModelSymbol::Ptr&gt;</em> map).
 We can ask the library to generate pointers for some of the parameters:
@@ -60,24 +133,6 @@ or all of them (if no particular parameter is specified):
 			auto symbols = newModel->getSymbolsMap(params);
 \endcode
 
-
-
-\subsection addLink Adding an edge to a model
-Links can be added using pointers to the symbols involved or their identifiers
-\code{.cpp}
-	newModel->addEdge(newMilk, newMilkStatus, "reachable");
-	newModel->addEdge(newMilk->identifier, newMilkStatus->identifier, "see");
-\endcode
-
-
-\subsection update Updating the attributes of a symbol
-Updating the attributes of a symbol is straightforward:
-\code{.cpp}
-// Modify the attributes in the current model
-worldModel->symbols[ballIndex]->attributes["x"] = xPos;
-worldModel->symbols[ballIndex]->attributes["y"] = yPos;
-worldModel->symbols[ballIndex]->attributes["z"] = zPos;
-\endcode
 
 
 \subsection print Printing a model
@@ -117,7 +172,6 @@ AGMModelConverter::fromInternalToIce(worldModel->symbols[ballIndex], node);
 try { agmagenttopic->update(node); }
 catch(const Ice::Exception &e) { cout << e << endl; }
 \endcode
-
 
 
 

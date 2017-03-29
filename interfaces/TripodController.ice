@@ -13,7 +13,7 @@ module RoboCompTripodController
 	interface TripodController
 	{
 		State getState() throws HardwareFailedException;
-		void action(string act) throw HardwareFailedException;
+		void action(string act) throws HardwareFailedException;
 	};
 };
 #endif

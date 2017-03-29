@@ -1,0 +1,10 @@
+Component agmagentsim
+{
+	Communications
+	{
+	};
+	language python;
+	gui Qt(QWidget);
+	options agmagent;
+};
+

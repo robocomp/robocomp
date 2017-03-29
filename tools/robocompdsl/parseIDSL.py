@@ -22,7 +22,7 @@ class IDSLParsing:
 			os._exit(1)
 		ret['filename'] = filename
 		return ret
-	
+
 	@staticmethod
 	def fromFile(filename):
 		inputText = open(filename, 'r').read()
@@ -53,12 +53,12 @@ class IDSLParsing:
 		identifier        = Word(alphas+"_",alphanums+"_")
 		typeIdentifier    = Word(alphas+"_",alphanums+"_:")
 		structIdentifer   = Group(typeIdentifier.setResultsName('type') + identifier.setResultsName('identifier') + Optional(eq) + Optional(CharsNotIn(";").setResultsName('defaultValue')) + semicolon)
-		structIdentifers  = Group(structIdentifer + OneOrMore(structIdentifer))
+		structIdentifers  = Group(OneOrMore(structIdentifer))
 
 		## Imports
 		idslImport  = Suppress(Word("import")) + quote +  CharsNotIn("\";").setResultsName('path') + quote + semicolon
 		idslImports = ZeroOrMore(idslImport)
-		
+
 		structDef     = Word("struct").setResultsName('type') + identifier.setResultsName('name') + op + structIdentifers.setResultsName("structIdentifiers") + cl + semicolon
 		dictionaryDef = Word("dictionary").setResultsName('type') + lt + CharsNotIn("<>").setResultsName('content') + gt + identifier.setResultsName('name') + semicolon
 		sequenceDef   = Word("sequence").setResultsName('type')   + lt + typeIdentifier.setResultsName('typeSequence') + gt + identifier.setResultsName('name') + semicolon
@@ -105,7 +105,7 @@ class IDSLParsing:
 				pass
 		print 'Couldn\'t locate ', name
 		sys.exit(-1)
-		
+
 	@staticmethod
 	def module(tree, start=''):
 		module = {}
@@ -252,14 +252,14 @@ class IDSLPool:
 		for filename in self.modulePool.keys():
 			if self.modulePool[filename] == module:
 				return '/opt/robocomp/interfaces/IDSLs/'+filename+'.idsl'
-		
+
 	def moduleProviding(self, interface):
 		for module in self.modulePool:
 			for m in self.modulePool[module]['interfaces']:
 				if m['name'] == interface:
 					return self.modulePool[module]
 		return None
-	
+
 	def rosImports(self):
 		includesList = []
 		for module in self.modulePool:
@@ -283,7 +283,7 @@ class IDSLPool:
 			for std in stdIncludes.values():
 				includesList.append(std)
 		return includesList
-	
+
 	def rosModulesImports(self):
 		modulesList = []
 		for module in self.modulePool:
@@ -292,7 +292,7 @@ class IDSLPool:
 			for m in self.modulePool[module]['simpleSequences']:
 				modulesList.append(m)
 		return modulesList
-	
+
 
 if __name__ == '__main__':
 	idsl = IDSLParsing.fromFile(sys.argv[1])
