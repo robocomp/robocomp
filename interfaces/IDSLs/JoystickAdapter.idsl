@@ -9,7 +9,6 @@ module RoboCompJoystickAdapter
   struct ButtonParams
   {
 	bool clicked;
-	bool fusca;
   };
   
   
