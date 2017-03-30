@@ -5,7 +5,7 @@ Created on Sat Feb 14 19:36:39 2015
 @author: pbustos
 """
 
-import os, sys
+import os, sys, pprint, subprocess
 from subprocess import call
 
 modules = ["git","git-annex","cmake","g++","libgsl0-dev","libopenscenegraph-dev","cmake-qt-gui",
@@ -20,22 +20,34 @@ command = ["sudo", "apt-get", "install"]
 command.extend(modules)
 call(command)
 
-call(["cd"])
+home = os.getenv("HOME")
+
+os.chdir(home)
+
 call(["git","clone","https://github.com/robocomp/robocomp.git"])
 
 call(["sudo","ln","-s","/opt/robocomp/-1.0","/opt/robocomp"])
-call(["sudo","ln","-s","/home/username","/home/robocomp"])
+call(["sudo","ln","-s",home,"/home/robocomp"])
 
-call(["echo","export ROBOCOMP=/home/username/robocomp",">>","/home/usermane/.bashrc"])
-call(["echo","export PATH=$PATH:/opt/robocomp/bin",">>","/home/usermane/.bashrc"])
-call(["source",".bashrc"])
+call(["echo","export", os.path.join('ROBOCOMP=',home,'robocomp'),">>",os.path.join(home,'.bashrc')])
+call(["echo","export PATH=$PATH:/opt/robocomp/bin",">>",os.path.join(home,'.bashrc')])
 
-call(["cd","robocomp"])
+cmd = ['bash','-c','source .bashrc']
+
+proc = subprocess.Popen(cmd, stdout = subprocess.PIPE)
+
+for line in proc.stdout:
+  (key, _, value) = line.partition("=")
+  os.environ[key] = value
+
+proc.communicate()
+
+
+os.chdir(os.path.join(home,'robocomp'))
+
 call(["cmake","."])
 call(["make"])
 call(["sudo","make","install"])
 
 call(["sudo","echo","/opt/robocomp/lib",">>","/etc/ld.so.conf"])
 call(["sudo","ldconfig"])
-
-#
