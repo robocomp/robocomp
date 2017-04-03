@@ -23,7 +23,7 @@ import Ice, sys, math, traceback
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from PyQt4.Qt import *
-from ui_kinectDlg import Ui_KinectDlg
+from ui_rgbdbusDlg import Ui_RGBDBusDlg
 
 
 class C(QWidget):
@@ -31,15 +31,9 @@ class C(QWidget):
 		print modules.keys()
 		QWidget.__init__(self)
 		print "init"
-		self.ui = Ui_KinectDlg()
+		self.ui = Ui_RGBDBusDlg()
 		self.ui.setupUi(self)
-		
-		#hide kinect interface options
-		self.ui.sbTilt.hide()
-		self.ui.pbSetLed.hide()
-		self.ui.label_4.hide()
-		self.ui.cbLedOpt.hide()
-		
+
 		self.t = 0.
 		arg = sys.argv
 		arg.append("--Ice.MessageSizeMax=2000000")
@@ -55,44 +49,53 @@ class C(QWidget):
 		for n in self.paramsMap:
 			print 'name Camera: '+ n
 			self.listCamera.append(n)
-		
+
 		self.nameActive=self.listCamera.pop()
 		self.show()
-		
+
 		#To draw depth image. Maximum device depth. Now in milimeters
 		self.maxDepth = 10000.0
 		self.mySlot()
 		self.myTimer = QTimer()
 		self.myTimer.start(10000)
 		self.connect(self.myTimer, SIGNAL('timeout()'), self.mySlot)
-		
+
 		self.job()
-		
+
 	def mySlot (self):
 		if (len(self.listCamera) ==0):
-			print "refill" 
+			print "refill"
 			for n in self.paramsMap:
 				self.listCamera.append(n)
 		self.nameActive=self.listCamera.pop()
 
 	def job(self):
+		print '--------------------'
 		try:
-			print 'name Camera Active: '+ self.nameActive
+			print 'Active camera:', self.nameActive
 			self.cameralist = [self.nameActive]
 			self.imagemap = self.proxy.getImages(self.cameralist)
+			print self.imagemap
 			self.ui.nameRGBD.setText('RGBD name: ' + self.nameActive)
-			
-			self.depth =self.imagemap[self.nameActive].depthImage
-			self.color =self.imagemap[self.nameActive].colorImage
-			if (len(self.color) == 0) or (len(self.depth) == 0):
-				print 'Error retrieving images!'
+			return
+			print self.imagemap.keys()
+			self.depth = self.imagemap[self.nameActive].depthImage
+			self.color = self.imagemap[self.nameActive].colorImage
+			if len(self.color) == 0:
+				print 'Error retrieving rgb image (zero length)'
+			if len(self.depth) == 0:
+				print 'Error retrieving depth image (zero length)'
 		except Ice.Exception:
 			traceback.print_exc()
 
 	def paintEvent(self, event=None):
-		print "paint Event"	
-		print len(self.color)
-		print len(self.depth)
+		return
+		print "paint Event"
+		try:
+			print len(self.color)
+			print len(self.depth)
+		except:
+			print "not yet"
 		print 3*( (640*480)/2)
 		if (len(self.color) == 3*640*480 or len(self.depth) == 640*480):
 			w=640
@@ -102,10 +105,10 @@ class C(QWidget):
 			h=240
 		else:
 			print 'we shall not paint!'
-			return	
+			return
 		painter = QPainter(self)
 		painter.setRenderHint(QPainter.Antialiasing, True)
-		
+
 		v = ''
 		for i in range(len(self.depth)):
 			ascii = 0
@@ -123,4 +126,3 @@ class C(QWidget):
 		painter.drawImage(QPointF(self.ui.frame.x(), self.ui.frame.y()), imageGrey)
 		painter.end()
 		painter = None
-
