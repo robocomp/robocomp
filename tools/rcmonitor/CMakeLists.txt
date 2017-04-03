@@ -16,7 +16,7 @@ ENDMACRO( ROBOCOMP_WRAP_PYTHON_UI )
 # Program destination directory
 SET( DEST_DIR "/opt/robocomp/bin/")
 
-ROBOCOMP_WRAP_PYTHON_UI( formMonitor openA period jointmotorDlg headntpDlg headt2pDlg forkDlg floorDlg kinectDlg depthBusDlg)
+ROBOCOMP_WRAP_PYTHON_UI( formMonitor openA period jointmotorDlg headntpDlg headt2pDlg forkDlg floorDlg kinectDlg rgbdbusDlg depthBusDlg)
 INSTALL(FILES rcmonitor.py       DESTINATION ${DEST_DIR} PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE RENAME rcmonitor)
 INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/ui_formMonitor.py DESTINATION ${DEST_DIR} PERMISSIONS OWNER_READ OWNER_WRITE               GROUP_READ               WORLD_READ               )
 INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/ui_openA.py       DESTINATION ${DEST_DIR} PERMISSIONS OWNER_READ OWNER_WRITE               GROUP_READ               WORLD_READ               )
