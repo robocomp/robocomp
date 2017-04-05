@@ -2,7 +2,7 @@
  *
  * \section intro_sec Introduction
 * Interface for rgbdCaptureComp.
-*                                                                   
+*
 * Basic interface for accessing a set of cameras RGBD cameras.
 */
 
@@ -12,7 +12,7 @@ module RoboCompRGBDBus
 	exception HardwareFailedException{
 		string what;
 	};
-	
+
 	/// @brief
 	struct CameraParams {
 		string name;
@@ -25,21 +25,21 @@ module RoboCompRGBDBus
 		int depthFPS;
 		float depthFocal;
 	};
-	
+
 	/// @brief
 	dictionary<string,CameraParams> CameraParamsMap;
-	
+
 	/// @brief
 	sequence<string> CameraList;
-	
+
 	/// @brief Packed RGB image
 	sequence<byte> ColorBuffer;
-	
+
 	/// @brief Depth image in millimeters
 	sequence<float> DepthBuffer;
 
 	/// @brief
-	struct Image {
+  struct Image {
 		CameraParams camera;
 		long colorTimestamp;
 		long depthTimestamp;
@@ -48,10 +48,18 @@ module RoboCompRGBDBus
 		int width;
 		int height;
 	};
-	
+
+  struct ColorImage {
+		CameraParams camera;
+		long colorTimestamp;
+		ColorBuffer colorImage;
+		int width;
+		int height;
+	};
+
 	/// @brief
 	dictionary<string, Image> ImageMap;
-	
+
 	/// @brief
 	struct Point3D
 	{
@@ -62,14 +70,14 @@ module RoboCompRGBDBus
 		byte g;
 		byte b;
 	};
-	
+
 	sequence<Point3D> PointCloud;
-	
+
 	dictionary<string, PointCloud> PointCloudMap;
-	
+
 	interface RGBDBus
 	{
-		/// @brief Returns a sequence of CameraParams containing one entry for each camera in the bus 
+		/// @brief Returns a sequence of CameraParams containing one entry for each camera in the bus
 		idempotent CameraParamsMap getAllCameraParams() throws HardwareFailedException;
 
 		/// @brief Returns a sequence of Images in the out parameter "imageList", from cameras in "cameraList"
@@ -77,10 +85,10 @@ module RoboCompRGBDBus
 
 		/// @brief Returns a sequence of PointClouds in the out parameter "clouds", from cameras in "cameraList"
 		idempotent void getPointClouds( CameraList cameras, out PointCloudMap clouds ) throws HardwareFailedException;
-		
+
 		/// @brief Returns a sequence of projection matrices, from cameras in "cameraList"
-        idempotent void getProtoClouds(CameraList cameras, out PointCloudMap protoClouds) throws HardwareFailedException;
-        
+    idempotent void getProtoClouds(CameraList cameras, out PointCloudMap protoClouds) throws HardwareFailedException;
+
 		/// @brief Returns a sequence of decimated Images in the out parameter "imageList", from cameras in "cameraList", keeping only 1/2^(decimation-1) pixels
 		idempotent void getDecimatedImages( CameraList cameras, int decimation, out ImageMap images ) throws HardwareFailedException;
 	};

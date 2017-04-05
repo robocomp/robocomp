@@ -52,10 +52,11 @@ typedef fcl::BVHModel<fcl::OBBRSS> FCLModel;
 typedef boost::shared_ptr<FCLModel> FCLModelPtr;
 #endif
 
-#include <osg/TriangleFunctor>
-#include <osg/io_utils>
-#include <osg/Geode>
-#include <osg/MatrixTransform>
+// #include <osg/MatrixTransform>
+// osg::Vec3 qmatToVec3(const RMat::QMat & m) {return osg::Vec3(m(0),m(1),m(2));}
+// #include <osg/TriangleFunctor>
+// #include <osg/io_utils>
+// #include <osg/Geode>
 
 using namespace RMat;
 
@@ -75,7 +76,7 @@ public:
 	InnerModel(std::string xmlFilePath);
 	InnerModel(const InnerModel &original);
 	~InnerModel();
-	
+
 	/////////////////////////
 	bool open(std::string xmlFilePath);
 	bool save(QString path);
@@ -103,7 +104,7 @@ public:
 
 	////////////////////////////////
 	/// Factory constructors
-	///////////////////////////////	 
+	///////////////////////////////
 	InnerModelTransform* newTransform(QString id, QString engine, InnerModelNode *parent, float tx=0, float ty=0, float tz=0, float rx=0, float ry=0, float rz=0, float mass=0);
 	InnerModelJoint* newJoint(QString id, InnerModelTransform* parent, float lx = 0, float ly = 0, float lz = 0, float hx = 0, float hy = 0, float hz = 0,  float tx = 0, float ty = 0, float tz = 0, float rx = 0, float ry = 0, float rz = 0, float min=-INFINITY, float max=INFINITY, uint32_t port = 0, std::string axis = "z", float home=0);
 	InnerModelTouchSensor* newTouchSensor(QString id, InnerModelTransform* parent, QString type, float nx = 0, float ny = 0, float nz = 0, float min=0, float max=INFINITY, uint32_t port=0);
@@ -118,7 +119,7 @@ public:
 	InnerModelMesh* newMesh(QString id, InnerModelNode *parent, QString path, float scale, int render, float tx, float ty, float tz, float rx, float ry, float rz, bool collidable=0);
 	InnerModelMesh* newMesh(QString id, InnerModelNode *parent, QString path, float scalex, float scaley, float scalez, int render, float tx, float ty, float tz, float rx, float ry, float rz, bool collidable=0);
 	InnerModelPointCloud* newPointCloud(QString id, InnerModelNode *parent);
-	
+
 	InnerModelTransform *getTransform(const QString &id)                 { return getNode<InnerModelTransform>(id); }
 	InnerModelJoint *getJoint(const QString &id)                         { return getNode<InnerModelJoint>(id); }
 	InnerModelJoint *getJoint(const std::string &id)                     { return getNode<InnerModelJoint>(QString::fromStdString(id)); }
@@ -153,7 +154,7 @@ public:
 	QMat getRotationMatrixTo(const QString &to, const QString &from);
 	QVec getTranslationVectorTo(const QString &to, const QString &from);
 	QVec rotationAngles(const QString & destId, const QString & origId);
-		
+
 	/////////////////////////////////////////////
 	/// Graoh editing methods
 	/////////////////////////////////////////////
@@ -172,11 +173,11 @@ public:
 			throw error;
 		}
 		return r;
-	}	
-	
+	}
+
 	/**
 	 * @brief Removes sub tree and returns a list with his id
-	 * 
+	 *
 	 * @param item ...
 	 * @param l ...
 	 * @return void
@@ -209,14 +210,14 @@ public:
 
 	/**
 		* @brief Computes the jacobian of a list of joints at a given configuration point given by motores
-		* 
+		*
 		* @param listaJoints list of names of joints in InnerModel that conform the open kinematic chain
 		* @param motores value of motro joints where the jacobian will be evaluated
 		* @param endEffector name of end effector of the kin. chain. It can be an element further away than the last in listaJoint.
 		* @return RMat::QMat Jacobian as MxN matrix of evaluated partial derivatives. M=joints, N=6 (pose cartesian coordinates of the endEffector) (CHECK ORDER)
 		*/
 	QMat jacobian(QStringList &listaJoints, const QVec &motores, const QString &endEffector);
-	
+
 	///////////////////////////////////////
 	/// Auxiliary methods
 	//////////////////////////////////////
@@ -225,21 +226,21 @@ public:
 
 	////////////////
 	/// Laser stuff DEPRECATED
-	////////////////    
+	////////////////
 	QVec laserTo(const QString &dest, const QString & laserId , float r, float alfa)
-	{ 
-		//qDebug() << __FUNCTION__ << "DEPRECATED. Use getNode<InnerModelLaser>(laserId)->laserTo(dest,laserId, r, alfa) "; 
-		return getNode<InnerModelLaser>(laserId)->laserTo(dest, r, alfa); 
+	{
+		//qDebug() << __FUNCTION__ << "DEPRECATED. Use getNode<InnerModelLaser>(laserId)->laserTo(dest,laserId, r, alfa) ";
+		return getNode<InnerModelLaser>(laserId)->laserTo(dest, r, alfa);
 	};
-	
+
 	QMutex *mutex;
-	
+
 protected:
 	InnerModelNode *root;
 	QHash<QString, InnerModelNode *> hash;
 	QHash<QPair<QString, QString>, RTMat> localHashTr;
 	QHash<QPair<QString, QString>, QMat> localHashRot;
-	
+
 	void setLists(const QString &origId, const QString &destId);
 	QList<InnerModelNode *> listA, listB;
 };
@@ -273,4 +274,3 @@ protected:
 	// struct TPlane { QVec n; float d; };
 	// struct TFrustrum { TPlane left; TPlane top; TPlane right; TPlane down; TPlane near; TPlane far;};
 	// TFrustrum frustrumLeft, frustrumThird, frustrumRight;
-

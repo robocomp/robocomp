@@ -27,22 +27,10 @@ SET(CMAKE_BUILD_TYPE "${CMAKE_BUILD_TYPE}" CACHE STRING
 
 include(${RoboComp_SOURCE_DIR}/cmake/robocomp_targets.cmake)
 
-# ---[ Unix/Darwin/Windows specific flags
-#SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wno-unknown-pragmas -Wconversion -fno-strict-aliasing -Wno-format-extra-args -Wno-sign-compare -Wno-invalid-offsetof")
-#SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O4")
-
 include(${RoboComp_SOURCE_DIR}/cmake/robocomp_utils.cmake)
 set(RoboComp_VERSION 1.01 CACHE STRING "RoboComp version")
 SET_INSTALL_DIRS()
 
-# set(RoboComp_OUTPUT_LIB_DIR ${RoboComp_BINARY_DIR}/libs)
-# set(RoboComp_OUTPUT_BIN_DIR ${RoboComp_BINARY_DIR}/bin)
-# make_directory(${RoboComp_OUTPUT_LIB_DIR})
-# make_directory(${RoboComp_OUTPUT_BIN_DIR})
-#
-# set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${RoboComp_OUTPUT_LIB_DIR}")
-# set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${RoboComp_OUTPUT_BIN_DIR}")
-# set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${RoboComp_OUTPUT_LIB_DIR}")
 
 # Add an "uninstall" target
 configure_file("${RoboComp_SOURCE_DIR}/cmake/uninstall_target.cmake.in"
@@ -123,18 +111,18 @@ add_custom_target(mrproper
 )
 
 #For packaging
-include(${RoboComp_SOURCE_DIR}/cmake/package_details.cmake)
-CONFIGURE_FILE("${RoboComp_SOURCE_DIR}/debian/fixup_deb.sh.in" "${CMAKE_CURRENT_BINARY_DIR}/fixup_deb.sh" @ONLY IMMEDIATE)
+#include(${RoboComp_SOURCE_DIR}/cmake/package_details.cmake)
+#CONFIGURE_FILE("${RoboComp_SOURCE_DIR}/debian/fixup_deb.sh.in" "${CMAKE_CURRENT_BINARY_DIR}/fixup_deb.sh" @ONLY IMMEDIATE)
 
 # "make spackage for ppa"
-add_custom_target(spackage 
-              ${CMAKE_COMMAND} 
-              -D SRC_DIR:STRING=${RoboComp_SOURCE_DIR}
-              -D MY_VERSION:STRING=${RoboComp_VERSION} 
-              -C ${CMAKE_SOURCE_DIR}/cmake/package_details.cmake
-              -P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/source_package.cmake 
-            )
+#add_custom_target(spackage
+#              ${CMAKE_COMMAND}
+#              -D SRC_DIR:STRING=${RoboComp_SOURCE_DIR}
+#              -D MY_VERSION:STRING=${RoboComp_VERSION}
+#              -C ${CMAKE_SOURCE_DIR}/cmake/package_details.cmake
+#              -P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/source_package.cmake
+#            )
 
 #packaging
-include(CPack)
-add_custom_command(TARGET package POST_BUILD COMMAND bash fixup_deb.sh; WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} )
+#include(CPack)
+#add_custom_command(TARGET package POST_BUILD COMMAND bash fixup_deb.sh; WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} )
