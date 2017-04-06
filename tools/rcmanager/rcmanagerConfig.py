@@ -1633,8 +1633,8 @@ def getXmlFromNetwork(NetworkSettings, components,logger):
 		comp.x=comp.graphicsItem.x()
 		comp.y=comp.graphicsItem.y()
 		string=string+'\n\t<node alias="' + comp.alias + '" endpoint="' + comp.endpoint + '">\n'
-		for dep in comp.asEnd:
-			string=string+'\t\t<dependence alias="' + dep.fromComponent.alias + '" />\n'
+		for dep in comp.asBeg:
+			string=string+'\t\t<dependence alias="' + dep.toComponent.alias + '" />\n'
 		if comp.groupName!="":
 			string=string+'\t\t<group name="' + comp.groupName+ '" />\n'	
 		string=string+'\t\t<workingDir path="' + comp.workingdir + '" />\n'
