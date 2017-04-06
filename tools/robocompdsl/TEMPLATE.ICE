@@ -36,7 +36,7 @@ if 'imports' in idsl.keys():
 cog.outl("module "+idsl['module']['name']+"\n{")
 for content in idsl['module']['contents']:
 	if content['type'] == 'exception':
-		cog.outl("<TABHERE>exception"+content['name']+"{"+content['content']+"};")
+		cog.outl("<TABHERE>exception "+content['name']+"{"+content['content']+"};")
 	if content['type'] == 'sequence':
 		cog.outl("<TABHERE>sequence <"+content['typeSequence']+"> "+content['name']+";")
 	if content['type'] == 'dictionary':
