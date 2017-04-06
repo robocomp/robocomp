@@ -1,0 +1,16 @@
+module RoboCompTripodController
+{
+
+	exception HardwareFailedException{string  what;};
+
+	struct State
+	{
+		int a;
+		string name;
+	};
+	interface TripodController
+	{
+		State getState() throws HardwareFailedException;
+		void action(string act)  throws HardwareFailedException;
+	};
+};

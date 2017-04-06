@@ -18,7 +18,7 @@ class PlanningCache:
 		self.availableId = 0
 		try:
 			while True:
-				print 'Try including', self.availableId
+				#print 'Try including', self.availableId
 				D    = open('cache_D'+str(self.availableId)+'.py', 'r').read()
 				I    = open('cache_I'+str(self.availableId)+'.xml', 'r').read()
 				G    = open('cache_G'+str(self.availableId)+'.py', 'r').read()
@@ -63,12 +63,13 @@ class PlanningCache:
 		md = md5.new()
 		md.update(domain+initialstate+goalstate)
 		checksum = md.hexdigest()
-		print 'Including planning context with checksum', checksum
+		#print 'Including planning context with checksum', checksum
 		try:
 			self.data[checksum].append((domain, initialstate, goalstate, plan, success))
 		except:
 			self.data[checksum] = []
 			self.data[checksum].append((domain, initialstate, goalstate, plan, success))
+		return True
 
 	def getPlan(self, domain, initialstate, goalstate):
 		domain = string.rstrip(domain, '\n')
@@ -91,7 +92,7 @@ class PlanningCache:
 			print 'No exact cache match'
 			return None
 		else:
-			print self.data.keys()
+			#print self.data.keys()
 			print 'No cache for the checksum'
 			return None
 
@@ -102,9 +103,12 @@ class PlanningCache:
 		return self.getPlan(domain, initialstate, goalstate)
 
 	def includeFromFiles(self, domainF, initialstateF, goalstateF, planF, success, shouldIWrite=True):
-		domain       = open(domainF,       'r').read()
-		initialstate = re.sub('<attribute [^>]*>', '', open(initialstateF, 'r').read())
-		goalstate    = re.sub('<attribute [^>]*>', '', open(goalstateF,    'r').read())
-		plan         = open(planF,         'r').read()
+		try:
+			domain       = open(domainF,       'r').read()
+			initialstate = re.sub('<attribute [^>]*>', '', open(initialstateF, 'r').read())
+			goalstate    = re.sub('<attribute [^>]*>', '', open(goalstateF,    'r').read())
+			plan         = open(planF,         'r').read()
+		except:
+			return False
 		return self.include(domain, initialstate, goalstate, plan, success, shouldIWrite)
 

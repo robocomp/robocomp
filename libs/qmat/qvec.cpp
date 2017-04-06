@@ -30,10 +30,10 @@ using namespace RMat;
  * \brief constructor from (m,n) matrix into a m+n vector
  * @param matrix
  */
-RMat::QVec::QVec(const RMat::QMat & matrix) : QVector< T >(matrix.nCols() * matrix.nRows())
+RMat::QVec::QVec(const RMat::QMat & matrix) : QVector<float>(matrix.nCols() * matrix.nRows())
 {
 	const int n = size();
-	const T *matrixData = matrix.getReadData();
+	const float *matrixData = matrix.getReadData();
 
 	for(int i = 0; i < n; i++)
 		operator[](i) = matrixData[i];
@@ -112,7 +112,7 @@ QVec RMat::QVec::crossProduct(const QVec & vector) const
  * @param vector
  * @return dot product vector
  */
-T QVec::dotProduct(const QVec &vector) const
+float QVec::dotProduct(const QVec &vector) const
 {
 	Q_ASSERT(size() == vector.size());
 
@@ -146,19 +146,19 @@ QMat RMat::QVec::crossProductMatrix() const
 	Q_ASSERT( size() == 3);
 
 	QMat R (3,3);
-	
+
 	R(0,0) = 0.;
 	R(0,1) = -operator[](2);
 	R(0,2) = operator[](1);
-	
+
 	R(1,0) = operator[](2);
 	R(1,1) = 0.;
 	R(1,2) = -operator[](0);
-	
+
 	R(2,0) = -operator[](1);
 	R(2,1) = operator[](0);
 	R(2,2) = 0.;
-	
+
 	return R;
 }
 
@@ -204,7 +204,7 @@ QVec QVec::subVector(const int firstIndex, const int lastIndex) const
  * @param value dividing value
  * @return a copy of current vector divided by value
  */
-QVec QVec::scalarDivision(const T value) const
+QVec QVec::scalarDivision(const float value) const
 {
 	Q_ASSERT(value != 0);
 	QVec result = *this;
@@ -218,7 +218,7 @@ QVec QVec::scalarDivision(const T value) const
  * @param value multiplying value
  * @return a copy of current vector multiplied by value
  */
-QVec QVec::scalarMultiplication(const T value) const
+QVec QVec::scalarMultiplication(const float value) const
 {
 	QVec result = *this;
 	for (int i = 0; i < size(); i++)
@@ -231,7 +231,7 @@ QVec QVec::scalarMultiplication(const T value) const
  * @param value
  * @return
  */
-QVec RMat::QVec::operator +(const T value) const
+QVec RMat::QVec::operator +(const float value) const
 {
 	QVec result = *this;
 	for (int i = 0; i < size(); i++)
@@ -243,9 +243,9 @@ QVec RMat::QVec::operator +(const T value) const
  * \brief Returns the minimun value and position of a vector
  * @return min value
  */
-T RMat::QVec::min( int & pos) const
+float RMat::QVec::min( int & pos) const
 {
-	T min = std::numeric_limits<T>::max();
+	float min = std::numeric_limits<float>::max();
 	for (int i = 0; i < size(); i++)
 		if ( operator[](i) < min)
 		{
@@ -259,9 +259,9 @@ T RMat::QVec::min( int & pos) const
  * \brief Returns the minimun value and position of a vector
  * @return min value
  */
-T RMat::QVec::min( ) const
+float RMat::QVec::min( ) const
 {
-	T min = std::numeric_limits<T>::max();
+	float min = std::numeric_limits<float>::max();
 	for (int i = 0; i < size(); i++)
 		if ( operator[](i) < min)
 		{
@@ -275,12 +275,12 @@ T RMat::QVec::min( ) const
  * \brief Returns the minimun absolute value and position of a vector
  * @return min value
  */
-T RMat::QVec::minAbs( int & pos) const
+float RMat::QVec::minAbs( int & pos) const
 {
-	T min = std::numeric_limits<T>::max();
+	float min = std::numeric_limits<float>::max();
 	for (int i = 0; i < size(); i++)
 	{
-		T val = fabs(operator[](i));
+		float val = fabs(operator[](i));
 		if ( val < min)
 		{
 			min = val;
@@ -294,9 +294,9 @@ T RMat::QVec::minAbs( int & pos) const
  * \brief Returns the maximun value and position of a vector
  * @return max value
  */
-T RMat::QVec::max( int & pos) const
+float RMat::QVec::max( int & pos) const
 {
-	T max = std::numeric_limits<T>::min();
+	float max = std::numeric_limits<float>::min();
 	for (int i = 0; i < size(); i++)
 	{
 		if ( operator[](i) > max)
@@ -312,9 +312,9 @@ T RMat::QVec::max( int & pos) const
  * \brief Returns the maximun value and position of a vector
  * @return max value
  */
-T RMat::QVec::max( ) const
+float RMat::QVec::max( ) const
 {
-	T max = std::numeric_limits<T>::min();
+	float max = std::numeric_limits<float>::min();
 	for (int i = 0; i < size(); i++)
 	{
 		if ( operator[](i) > max)
@@ -329,9 +329,9 @@ T RMat::QVec::max( ) const
  * \brief Returns the maximun value and position of a vector
  * @return max value
  */
-T RMat::QVec::maxAbs( int & pos) const
+float RMat::QVec::maxAbs( int & pos) const
 {
-	T max = std::numeric_limits<T>::min();
+	float max = std::numeric_limits<float>::min();
 	for (int i = 0; i < size(); i++)
 	{
 		if ( fabs(operator[](i)) > max)
@@ -380,7 +380,7 @@ QMat QVec::externProduct(const QVec & vector) const
 	const int s = size();
 	QMat C ( size(), vector.size() );
 #ifdef COMPILE_IPP
-	ippmMul_mm_32f ( getReadData(), s * sizeof ( T ), sizeof ( T ), s , s , vector.getReadData(), vector.size() * sizeof ( T ), sizeof ( T ), vector.size() , vector.size() , C.getWriteData(), vector.size() * sizeof ( T ), sizeof ( T ) );
+	ippmMul_mm_32f ( getReadData(), s * sizeof ( float ), sizeof ( float ), s , s , vector.getReadData(), vector.size() * sizeof ( float ), sizeof ( float ), vector.size() , vector.size() , C.getWriteData(), vector.size() * sizeof ( float ), sizeof ( float ) );
 #else
 	for(int r=0;r<s;r++)
 		for(int c=0;c<vector.size();c++)
@@ -424,7 +424,7 @@ QPointF RMat::QVec::toQPointF() const
 	return result;
 }
 
-RMat::T RMat::QVec::distanceTo2DLine( const QVec & line ) const
+float RMat::QVec::distanceTo2DLine( const QVec & line ) const
 {
   Q_ASSERT_X( size() == 2 and line.size() == 3, "QVec::distanceTo2DLine", "incorrect size of parameters");
 
@@ -433,15 +433,15 @@ RMat::T RMat::QVec::distanceTo2DLine( const QVec & line ) const
 }
 
 /**
- * @brief Computes de angle (-PI, PI) between this and endpoint p wrt the Y axis. If both points are the same, the method returns 0. 
+ * @brief Computes de angle (-PI, PI) between this and endpoint p wrt the Y axis. If both points are the same, the method returns 0.
  *
  * @param p end point of segment
  * @return angle
  **/
-RMat::T RMat::QVec::angleOf2DSegment( const QVec & p) const
+float RMat::QVec::angleOf2DSegment( const QVec & p) const
 {
 	Q_ASSERT_X( size() == 2 and p.size()==2 , "QVec::angleOf2DSegment", "incorrect size of parameters");
-	
+
 	return atan2( p.x()-operator[](0), p.y()-operator[](1) );
 }
 
@@ -457,7 +457,7 @@ bool RMat::QVec::isZero()
 /// Static methods
 
 
-QVec RMat::QVec::vec6(T x, T y, T z, T rx, T ry, T rz)
+QVec RMat::QVec::vec6(float x, float y, float z, float rx, float ry, float rz)
 {
 	QVec R(6);
 	R(0)=x;
@@ -492,7 +492,7 @@ QVec RMat::QVec::vec6(QVec tv, QVec rv)
  * @param w
  * @return 4D-vector with x,y,z,w values initialized
  */
-QVec RMat::QVec::vec4(T x, T y, T z, T w)
+QVec RMat::QVec::vec4(float x, float y, float z, float w)
 {
 	QVec R(4);
 	R(0)=x;
@@ -502,7 +502,7 @@ QVec RMat::QVec::vec4(T x, T y, T z, T w)
 	return R;
 }
 
-QVec RMat::QVec::vec4(RMat::QVec v3, T n)
+QVec RMat::QVec::vec4(RMat::QVec v3, float n)
 {
 	QVec R(4);
 	R(0)=v3(0);
@@ -519,7 +519,7 @@ QVec RMat::QVec::vec4(RMat::QVec v3, T n)
  * @param z
  * @return 3D-vector with x,y,z values initialized
  */
-QVec RMat::QVec::vec3(T x, T y, T z)
+QVec RMat::QVec::vec3(float x, float y, float z)
 {
 	QVec R(3);
 	R(0)=x;
@@ -534,7 +534,7 @@ QVec RMat::QVec::vec3(T x, T y, T z)
  * @param y
  * @return 2D-vector with x,y values initialized
  */
-QVec RMat::QVec::vec2(T x, T y)
+QVec RMat::QVec::vec2(float x, float y)
 {
 	QVec R(2);
 	R(0)=x;
@@ -548,7 +548,7 @@ QVec RMat::QVec::vec2(T x, T y)
  * @param y
  * @return 1D-vector with x,y values initialized
  */
-QVec RMat::QVec::vec1(T x)
+QVec RMat::QVec::vec1(float x)
 {
 	QVec R(1);
 	R(0) = x;
@@ -577,7 +577,7 @@ QVec RMat::QVec::zeros(const int s )
 // const QVec RMat::QVec::uniformVector(const int dim, const int min, const int max)
 // {
 // 	QVec res ( dim );
-// 	T range = ( T )(abs(max)+abs(min)) / ( T ) std::numeric_limits<int>::max();
+// 	T range = ( float )(abs(max)+abs(min)) / ( float ) std::numeric_limits<int>::max();
 // 	for ( int i = 0; i < dim; i++ )
 // 		res ( i ) =  range * rand() + min;
 // 	return res;
@@ -593,7 +593,7 @@ QVec RMat::QVec::zeros(const int s )
 const QVec RMat::QVec::uniformVector(const int dim, const float min, const float max)
 {
 	QVec res ( dim );
-	T range = ( T )(max-min) / ( T ) RAND_MAX;
+	float range = ( float )(max-min) / ( float ) RAND_MAX;
 	for ( int i = 0; i < dim; i++ )
 		res ( i ) =  range * rand() + min;
 	return res;
@@ -608,20 +608,22 @@ const QVec RMat::QVec::uniformVector(const int dim, const float min, const float
  * @param stdev standard deviation of gaussian distribution
  * @return dim-vec of gaussian values
  */
-const QVec RMat::QVec::gaussianSamples(const int dim, const T mean, const T stdev)
+const QVec RMat::QVec::gaussianSamples(const int dim, const float mean, const float stdev)
 {
 	QVec R(dim);
 	static unsigned int Seed = QTime::currentTime().msec();
 #ifdef COMPILE_IPP
 	ippsRandGauss_Direct_32f(R.getWriteData(), dim, mean, stdev, &Seed);
 #else
-	const gsl_rng_type * T;
+	const gsl_rng_type * t;
 	gsl_rng_env_setup();
-	T = gsl_rng_default;
-	gsl_rng *r = gsl_rng_alloc (T);
+	t = gsl_rng_default;
+	gsl_rng *r = gsl_rng_alloc(t);
 	gsl_rng_set(r,Seed);
-	for(int i=0;i<dim;i++)
-		R(i) = gsl_ran_gaussian ( r,stdev)+mean;
+	for (int i=0; i<dim; i++)
+	{
+		R(i) = gsl_ran_gaussian(r, stdev) + mean;
+	}
 
 #endif
   	return R;
@@ -638,7 +640,7 @@ const QVec RMat::QVec::gaussianSamples(const int dim, const T mean, const T stde
  * @param sigma standard deviation
  * @return vector with discrete values of specified gaussian
  */
-const QVec RMat::QVec::gaussianVector(const int radius, const T sigma)
+const QVec RMat::QVec::gaussianVector(const int radius, const float sigma)
 {
 	float kernelSum=0.0;
 	QVec result(2*radius+1);
@@ -688,7 +690,7 @@ QVec RMat::QVec::toHomogeneousCoordinates() const
 QVec RMat::QVec::fromHomogeneousCoordinates() const
 {
 	Q_ASSERT( size() > 1);
-	T final_l = this->operator[](size()-1);
+	float final_l = this->operator[](size()-1);
 // 	Q_ASSERT( fabs(final)>0);
 	QVec res(size()-1);
 	for(int i=0;i< res.size();i++)
@@ -704,7 +706,7 @@ QVec RMat::QVec::fromHomogeneousCoordinates() const
  * @param p2 containing x2,y2
  * @return a QVec vector of 2 dimensions with m and n
  */
-QVec RMat::QVec::line2DImplicitCoefsFrom2Points(const QVec & p1, const QVec & p2) 
+QVec RMat::QVec::line2DImplicitCoefsFrom2Points(const QVec & p1, const QVec & p2)
 {
 	Q_ASSERT( p1.size() == 2 and p2.size() == 2 and p2(0)-p1(0) != 0 );
 	QVec res(2);
@@ -737,7 +739,7 @@ QVec RMat::QVec::line2DExplicitCoefsFrom2Points(const QVec & p1, const QVec & p2
 std::ostream& 	operator << ( std::ostream &os, const RMat::QVec &vector )
 {
 	//os << "QVector(";
-	for(int i=0; i<vector.size();i++) 
+	for(int i=0; i<vector.size();i++)
 	{
 		os << vector[i];
 		if(i<vector.size()-1)  //To avoid space ater the alst number
@@ -749,9 +751,9 @@ std::ostream& 	operator << ( std::ostream &os, const RMat::QVec &vector )
 std::istream& operator >> ( std::istream &is, RMat::QVec &vector )
 	{
 		vector.resize(3);  //ÑAPA
-		
+
 		 is >> vector[0];
-		if((is.flags() & std::ios_base::skipws) == 0) 
+		if((is.flags() & std::ios_base::skipws) == 0)
 		{
 			char whitespace;
 			is >> whitespace;
@@ -762,6 +764,6 @@ std::istream& operator >> ( std::istream &is, RMat::QVec &vector )
 			char whitespace;
 			is >> whitespace;
 		}
-		is >> vector[2]; 	
+		is >> vector[2];
 		return is;
 	}

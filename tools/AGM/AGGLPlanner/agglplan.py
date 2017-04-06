@@ -44,6 +44,7 @@ from AGGL import *
 from parseAGGL import *
 from generateAGGLPlannerCode import *
 from agglplanner import *
+from agglplanchecker import *
 
 if __name__ == '__main__': # program domain problem result
 	# We check if the program was run with all necessary arguments.
@@ -77,7 +78,7 @@ if __name__ == '__main__': # program domain problem result
 			outputText = generateTarget_AGGT(AGMFileDataParsing.targetFromFile(targetFile))
 		else:
 			# This sentence creates a graph based on the target world status
-			graph = graphFromXML(targetFile)
+			graph = graphFromXMLFile(targetFile)
 			## Generate the python code correspondig to the graph and
 			outputText = generateTarget(graph)
 		## Save the python code of the target world status in the file target.py.

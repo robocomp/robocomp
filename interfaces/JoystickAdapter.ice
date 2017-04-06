@@ -17,7 +17,7 @@ module RoboCompJoystickAdapter{
 	};
 	["cpp:comparable"]
 	struct ButtonParams{
-		bool clicked;
+		bool clicked;		
 	};
 	sequence <AxisParams> AxisList;
 	sequence <ButtonParams> ButtonsList;

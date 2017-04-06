@@ -114,7 +114,16 @@ osg::ref_ptr<osg::Image> OsgView::getImageHUD ( )
 	return HUDTexture->getImage();
 }
 
+OsgView::OsgView(QWidget* parent)
+{
+     init(parent, false, NULL, 0);
+}
 OsgView::OsgView(QWidget* parent, bool hud, const QGLWidget* shareWidget, WindowFlags f): QGLWidget(parent, shareWidget, f) , osgViewer::Viewer()
+{
+     init(parent, hud, shareWidget, f);
+}
+
+void OsgView::init(QWidget* parent, bool hud, const QGLWidget* shareWidget, WindowFlags f)
 {
 	setFocusPolicy(Qt::StrongFocus);
 	if (parent)
@@ -577,10 +586,6 @@ osg::Vec3 OsgView::qmatToVec3(const RMat::QMat & m)
 {
 	return osg::Vec3(m(0),m(1),m(2));
 }
-osg::Vec3 OsgView::qvecToVec3(const RMat::QVec & m)
-{
-	return osg::Vec3(m(0),m(1),m(2));
-}
 osg::Vec4 OsgView::qvecToVec4(const RMat::QVec & m)
 {
 	return osg::Vec4(m(0),m(1),m(2),m(3));
@@ -717,4 +722,3 @@ osg::Quat OsgView::quaternionFromInitFinalVector(const QVec &initV, const QVec &
 		return osg::Quat(-aQuat+M_PIl/2., osg::Vec3(0, 1, 0));
 	}
 }
-

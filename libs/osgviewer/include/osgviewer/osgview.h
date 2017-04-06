@@ -74,7 +74,10 @@ public:
 	void setClearColor(QVec color) { getCamera()->setClearColor(osg::Vec4(color(0), color(1), color(2), (color.size()>3?color(3):1))); }
 // 	QVector<laserMeasure> laserData;
 
-	OsgView(QWidget *parent=NULL,  bool hud= false,  const QGLWidget * shareWidget = 0, WindowFlags f = 0);
+	OsgView(QWidget *parent=NULL);
+	OsgView(const OsgView&) {}
+	OsgView(QWidget *parent, bool hud, const QGLWidget * shareWidget = 0, WindowFlags f = 0);
+	void init(QWidget *parent, bool hud, const QGLWidget* shareWidget, WindowFlags f);
 	~OsgView();
 	virtual void paintGL();
 	osgViewer::GraphicsWindow* getGraphicsWindow() { return _gw.get(); }
@@ -93,7 +96,7 @@ public:
 	void initHUD ();
 	void addXYZAxisOnNode( osg::Group *node, float length, float radius , const osg::Vec4 &color = osg::Vec4(1.,0.,0.,0.));
 	void addCosa(osg::Node *node);
-	
+
 	osg::ShapeDrawable *addRectangle(float px, float py, float pz, float w, float h, osg::PositionAttitudeTransform **pat);
 
 	osg::ShapeDrawable *addBox(float px, float py, float pz, float sx, float sy, float sz, osg::PositionAttitudeTransform **pat, osg::Group *parentNode=NULL);
@@ -115,29 +118,29 @@ public:
 	void removePolyLine( osg::Node * pl );
 	osg::Shape *addBasicLineShape(const QVec &p1, const QVec &p2, float radius);
 
-	
+
 	osg::Group * getRootGroup()	{ return root; }
 
 	void autoResize() {
 		if (parentWidget()) {
-			setFixedSize(parentWidget()->width(), parentWidget()->height()); 
+			setFixedSize(parentWidget()->width(), parentWidget()->height());
 		}
 		getCamera()->setProjectionMatrixAsPerspective(70.0f, static_cast<double>(width())/static_cast<double>(height()), 0.00000001, 1000000.0);
 	}
-	
+
   void autoResize(float HFOV) {
     if (parentWidget()) {
-      setFixedSize(parentWidget()->width(), parentWidget()->height()); 
+      setFixedSize(parentWidget()->width(), parentWidget()->height());
     }
     getCamera()->setProjectionMatrixAsPerspective(HFOV, static_cast<double>(width())/static_cast<double>(height()), 0.00000001, 1000000.0);
   }
-	  
+
 	//Picking objects
 	void pickObject( const QPoint & p);
 	void setImageHUD(osg::ref_ptr<osg::Image> i);
 	osg::ref_ptr<osg::Image> getImageHUD ();
 	osg::Camera* createHUD();
-	
+
 
 protected:
 	QTimer timer;
@@ -154,13 +157,13 @@ private:
 	osg::ref_ptr<osg::Group> root;
 	osg::ref_ptr<osg::Image> osgImage;
 	osg::ref_ptr<osg::Texture2D> HUDTexture;
-	
+
 public:
 	QMutex mutex;
 
 	inline void printFPS();
 	static osg::Vec3 qmatToVec3(const RMat::QMat & m);
-	static osg::Vec3 qvecToVec3(const RMat::QVec & m);
+	static osg::Vec3 qvecToVec3(const RMat::QVec & m) { return osg::Vec3(m(0),m(1),m(2)); }
 	static osg::Vec4 qvecToVec4(const RMat::QVec & m);
 	static RMat::QMat vec3ToQMat(const osg::Vec3f & m);
 	static RMat::QVec vec3ToQVec(const osg::Vec3f & m);

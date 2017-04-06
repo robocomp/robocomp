@@ -12,7 +12,6 @@ using namespace RMat;
 
 BOOST_PYTHON_MODULE(librobocomp_qmat)
 {
-
 	class_<QVec>("QVec", init<>())
 	 .def(init<int32_t>())
 	 .def(init<int32_t, float>())
@@ -26,6 +25,10 @@ BOOST_PYTHON_MODULE(librobocomp_qmat)
 	 .def(self * int())
 // 	 .def(self * class_<QMat>)
 	 .def("printvector", &QVec::prints)
+	 .def("set", &QMat::setItem)
+	 .def("get", &QMat::getItem)
+	 .def("vec1", &QVec::vec1)
+	 .def("vec2", &QVec::vec2)
 	 .def("vec3", &QVec::vec3)
 	 .def("scalarDivision", &QVec::scalarDivision)
 	 .def("scalarMultiplication", &QVec::scalarMultiplication)
@@ -121,5 +124,3 @@ BOOST_PYTHON_MODULE(librobocomp_qmat)
     ;
 
 }
-
-

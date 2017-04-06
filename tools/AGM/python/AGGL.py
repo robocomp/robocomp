@@ -426,6 +426,22 @@ class AGMGraph(object):
 		f.write('</AGMModel>\n\n')
 		f.close()
 
+	def toXMLString(self):
+		f = ''
+		f += '<AGMModel>\n'
+		for n in self.nodes:
+			f += '\t<symbol id="'+str(self.nodes[n].name)+'" type="'+str(self.nodes[n].sType)+'">\n'
+			for attr in self.nodes[n].attributes.keys():
+				f += '\t\t<attribute key="'+attr+'" value="'+self.nodes[n].attributes[attr]+'" />\n'
+			f += '\t</symbol>\n'
+		for l in self.links:
+			f += '\t<link src="'+str(l.a)+'" dst="'+str(l.b)+'" label="'+str(l.linkType)+'" >\n'
+			for attr in l.attributes.keys():
+				f += '\t\t<linkAttribute key="'+attr+'" value="'+l.attributes[attr]+'" />\n'
+			f += '\t</link>\n'
+		f += '</AGMModel>\n\n'
+		return f
+
 
 ## AGM Rule
 # @ingroup PyAPI
@@ -655,7 +671,7 @@ class AGMFileData(object):
 	# @param filename The path of the file where the python version of the grammar is written
 	# @param skipPassiveRules Flag used to generate only active rules (false by default)
 	def generateAGGLPlannerCode(self, filename, skipPassiveRules=False):
-		print 'generateAGGLPlannerCode'
+		#print 'generateAGGLPlannerCode'
 		w = open(filename, 'w')
 		a = copy.deepcopy(self.agm)
 		import generateAGGLPlannerCode
@@ -663,3 +679,7 @@ class AGMFileData(object):
 		w.write(text)
 		w.close()
 
+	def getAGGLPlannerCode(self, skipPassiveRules=False):
+		a = copy.deepcopy(self.agm)
+		import generateAGGLPlannerCode
+		return generateAGGLPlannerCode.generate(a, skipPassiveRules)

@@ -20,9 +20,9 @@
 #include <innermodel/innermodel.h>
 #include <innermodel/innermodelreader.h>
 
-#include <osg/io_utils>
-#include <osgDB/ReadFile>
-#include <osg/Geode>
+// #include <osg/io_utils>
+// #include <osgDB/ReadFile>
+// #include <osg/Geode>
 
 #include <iostream>
 #include <fstream>
@@ -81,7 +81,7 @@ InnerModel::~InnerModel()
 	foreach (QString id, getIDKeys())
 	{
 		InnerModelNode *dd = hash[id];
-		delete dd;		
+		delete dd;
 	}
 	hash.clear();
 	localHashRot.clear();
@@ -261,7 +261,7 @@ void InnerModel::setUpdatePlanePointers(QString planeId, float *nx, float *ny, f
 	else
 		qDebug() << "Dynamic cast error from" << planeId << "to InnerModelPlane";
 }
-				
+
 void InnerModel::updateTransformValues(QString transformId, float tx, float ty, float tz, float rx, float ry, float rz, QString parentId)
 {
 	QMutexLocker l(mutex);
@@ -648,7 +648,7 @@ QVec InnerModel::transform(const QString &destId, const QVec &initVec, const QSt
 		const QMat M = getTransformationMatrix(destId, origId);
 		const QVec a = (M * initVec.subVector(0,2).toHomogeneousCoordinates()).fromHomogeneousCoordinates();
 		const Rot3D R(initVec(3), initVec(4), initVec(5));
-		
+
 		const QVec b = (M.getSubmatrix(0,2,0,2)*R).extractAnglesR_min();
 		QVec ret(6);
 		ret(0) = a(0);
@@ -669,7 +669,7 @@ QVec InnerModel::transformS(const std::string & destId, const QVec &origVec, con
 {
 		return transform(QString::fromStdString(destId), origVec, QString::fromStdString(origId));
 }
-	
+
 QVec InnerModel::rotationAngles(const QString & destId, const QString & origId)
 {
 	return getTransformationMatrix(destId, origId).extractAnglesR();
@@ -900,37 +900,37 @@ QMat InnerModel::jacobian(QStringList &listaJoints, const QVec &motores, const Q
 	// La lista de motores define una secuencia contigua de joints, desde la base hasta el extremo.
 	// Inicializamos las filas del Jacobiano al tamaño del punto objetivo que tiene 6 ELEMENTOS [tx, ty, tz, rx, ry, rz]
 	// y las columnas al número de motores (Joints): 6 filas por n columnas. También inicializamos un vector de ceros
-		
+
 	QMutexLocker ml(mutex);
 	QMat jacob(6, listaJoints.size(), 0.f);  //6 output variables
 	QVec zero = QVec::zeros(3);
 	int j=0; //índice de columnas de la matriz: MOTORES
-			
+
 	foreach(QString linkName, listaJoints)
 	{
 		if(motores[j] == 0)
 		{
 			QString frameBase = listaJoints.last();
-							
+
 			// TRASLACIONES: con respecto al último NO traslada
 			QVec axisTip = getJoint(linkName)->unitaryAxis(); 		//vector de ejes unitarios
 			axisTip = transform(frameBase, axisTip, linkName);
 			QVec axisBase = transform(frameBase, zero, linkName);
 			QVec axis = axisBase - axisTip;
-			QVec toEffector = (axisBase - transform(frameBase, zero, endEffector) );		
+			QVec toEffector = (axisBase - transform(frameBase, zero, endEffector) );
 			QVec res = toEffector.crossProduct(axis);
 
 			jacob(0,j) = res.x();
 			jacob(1,j) = res.y();
 			jacob(2,j) = res.z();
-					
+
 			// ROTACIONES
 			QVec axisTip2 = getJoint(linkName)->unitaryAxis(); 		//vector de ejes unitarios en el que gira
 			axisTip2 = transform(frameBase, axisTip2, linkName); 		//vector de giro pasado al hombro.
 			QVec axisBase2 = transform(frameBase, zero, linkName); 	//motor al hombro
-			QVec axis2 = axisBase2 - axisTip2; 				//vector desde el eje de giro en el sist. hombro, hasta la punta del eje de giro en el sist. hombro. 
-					
-			jacob(3,j) = axis2.x(); 
+			QVec axis2 = axisBase2 - axisTip2; 				//vector desde el eje de giro en el sist. hombro, hasta la punta del eje de giro en el sist. hombro.
+
+			jacob(3,j) = axis2.x();
 			jacob(4,j) = axis2.y();
 			jacob(5,j) = axis2.z();
 		}
@@ -998,10 +998,10 @@ float InnerModel::distance(const QString &a, const QString &b)
 // QVec InnerModel::project(QString reference, QVec origVec, QString cameraId)
 // {
 // 	origVec = transform(cameraId, origVec, reference);
-// 
+//
 // 	QVec pc;
 // 	InnerModelCamera *camera=NULL;
-// 
+//
 // 	camera = dynamic_cast<InnerModelCamera *>(hash[cameraId]);
 // 	if (not camera)
 // 	{
@@ -1009,9 +1009,9 @@ float InnerModel::distance(const QString &a, const QString &b)
 // 		error.sprintf("No such %s camera", qPrintable(cameraId));
 // 		throw error;
 // 	}
-// 
+//
 // 	pc = camera->camera.project(origVec);
-// 
+//
 // 	return QVec::vec3(pc(0), pc(1), origVec.norm2());
 // }
 
@@ -1020,7 +1020,7 @@ float InnerModel::distance(const QString &a, const QString &b)
 // {
 // 	QVec pc;
 // 	InnerModelCamera *camera=NULL;
-// 
+//
 // 	camera = dynamic_cast<InnerModelCamera *>(hash[cameraId]);
 // 	if (not camera)
 // 	{
@@ -1028,14 +1028,14 @@ float InnerModel::distance(const QString &a, const QString &b)
 // 		error.sprintf("No such %s camera", qPrintable(cameraId));
 // 		throw error;
 // 	}
-// 
+//
 // 	pc = camera->camera.project(origVec);
-// 
+//
 // 	return QVec::vec3(pc(0), pc(1), origVec.norm2());
 // }
-// 
-// 
-// 
+//
+//
+//
 // /**
 //  * \brief Retro-projection function, defines a line in the camera reference system which can be parametrized by the depth s with the expression:
 //  * p = s*[ (u-u0) / alfaU ; (v-v0) / alfaV ; 1] being alfaU and alfaV the horizontal and vertical focals of the camera (in pixels)
@@ -1053,41 +1053,41 @@ float InnerModel::distance(const QString &a, const QString &b)
 // 	}
 // 	return QVec();
 // }
-// 
-// 
-// 
+//
+//
+//
 // void InnerModel::imageCoordToAngles(const QString &cameraId, QVec coord, float &pan, float &tilt, const QString & anglesRefS)
 // {
 // 	QVec ray = backProject(cameraId, coord);
-// 
+//
 // 	QVec finalRay = getRotationMatrixTo(anglesRefS, cameraId)*ray;
-// 
+//
 // 	pan = atan2(finalRay(0), finalRay(2));
 // 	tilt = atan2(finalRay(1), finalRay(2));
-// 
+//
 // }
-// 
-// 
-// 
+//
+//
+//
 // QVec InnerModel::anglesToImageCoord(const QString &cameraId, float pan, float tilt, const QString & anglesRefS)
 // {
 // 	QVec p(3), ray(3);
-// 
+//
 // 	p(0) = tan(pan);
 // 	p(1) = tan(tilt);
 // 	p(2) = 1;
-// 
+//
 // 	ray = getRotationMatrixTo(cameraId, anglesRefS) * p;
 // 	ray(0)=ray(0)/ray(2);
 // 	ray(1)=ray(1)/ray(2);
 // 	ray(2)=1;
-// 
+//
 // 	return project(cameraId, ray, cameraId);
-// 
+//
 // }
-// 
-// 
-// 
+//
+//
+//
 // QVec InnerModel::imageCoordPlusDepthTo(QString cameraId, QVec coord, float depth, QString reference)
 // {
 // 	//We obtain a 3D line (a,b,1) in camera reference system that can be parametrized in depth to obtain a point at "depth" from the camera.
@@ -1097,9 +1097,9 @@ float InnerModel::distance(const QString &a, const QString &b)
 // 		return transform(reference, p, cameraId);
 // 	return p;
 // }
-// 
-// 
-// 
+//
+//
+//
 // QVec InnerModel::projectFromCameraToPlane(const QString &to, const QVec &coord, const QString &cameraId, const QVec &vPlane, const float &dist)
 // {
 // 	QMat mSystem(3,3);
@@ -1107,7 +1107,7 @@ float InnerModel::distance(const QString &a, const QString &b)
 // 	QVec pCam(3);
 // 	QVec res(3);
 // 	float dxz, dyz;
-// 
+//
 // 	pCam(0) = -coord(0)+getCameraWidth(cameraId)/2;
 // 	pCam(1) = -(coord(1)-getCameraHeight(cameraId)/2);
 // 	pCam(2) = getCameraFocal(cameraId);
@@ -1116,12 +1116,12 @@ float InnerModel::distance(const QString &a, const QString &b)
 // 	QVec direc = pDest-pCent;
 // 	dxz = direc(0)/direc(2);
 // 	dyz = direc(1)/direc(2);
-// 
+//
 // 	res(2) = dist + vPlane(0)*(dxz*pCent(2)-pCent(0)) + vPlane(1)*(dyz*pCent(2)-pCent(1));
 // 	res(2) = res(2)/(vPlane(0)*dxz+vPlane(1)*dyz+vPlane(2));
 // 	res(0)=dxz*(res(2)-pCent(2))+pCent(0);
 // 	res(1)=dyz*(res(2)-pCent(2))+pCent(1);
-// 
+//
 // 	/*	res.print("res");
 // 	 *
 // 	 *	mSystem(0,0) = vPlane(0);         mSystem(0,1) = vPlane(1);         mSystem(0,2) = vPlane(2);
@@ -1134,14 +1134,14 @@ float InnerModel::distance(const QString &a, const QString &b)
 // 	 * 	return (mSystem.invert())*tIndep;*/
 // 	return res;
 // }
-// 
-// 
-// 
+//
+//
+//
 // //
 // // bool InnerModel::check3DPointInsideFrustrum(QString cameraId, QVec coor)
 // // {
 // // }
-// 
+//
 // /**
 //  * \brief Returns a 3D vector (A,B,C) containing the horizon line for the specified camera+plane in the form 'Ax + By + C = 0'.
 //  *
@@ -1169,7 +1169,7 @@ float InnerModel::distance(const QString &a, const QString &b)
 // 	QVec vec = QVec::vec3(plane->normal(0), plane->normal(1), plane->normal(2));
 // 	QVec normal = rtm*vec;
 // 	if (normal(1) <= 0.0000002) throw false;
-// 
+//
 // 	// Create two points
 // 	QVec p1=QVec::vec3(0., 0., 0.), p2=QVec::vec3(0., 0., 0.);
 // 	// Move both points forward
@@ -1186,7 +1186,7 @@ float InnerModel::distance(const QString &a, const QString &b)
 // 	// Compute image line
 // 	double dx=p2(0)-p1(0);
 // 	double dy=p2(1)-p1(1);
-// 
+//
 // 	if (abs(dx) <= 1)
 // 	{
 // 		if (abs(dy) <= 1)
@@ -1202,45 +1202,45 @@ float InnerModel::distance(const QString &a, const QString &b)
 // 		return QVec::vec3(dy/dx, -1, camera->camera.getHeight()-(p1(1)-(dy*p1(0)/dx))+heightOffset);
 // 	}
 // }
-// 
-// 
-// 
+//
+//
+//
 
-// 
+//
 // QMat InnerModel::getHomographyMatrix(QString virtualCamera, QString plane, QString sourceCamera)
 // {
 // 	QMutexLocker l(mutex);
-// 
+//
 // 	QVec planeN = getPlane(plane)->normal;
 // 	planeN = getRotationMatrixTo(sourceCamera, plane)*planeN;
 // 	QVec planePoint = transform(sourceCamera, getPlane(plane)->point, plane);
-// 
+//
 // 	QMat R  = getRotationMatrixTo(virtualCamera, sourceCamera);
 // 	QMat t  = transform(virtualCamera, QVec::vec3(0,0,0), sourceCamera);
 // 	QMat n  = QMat(planeN);
 // 	QMat K1 = getCamera(sourceCamera)->camera;
 // 	QMat K2 = getCamera(virtualCamera)->camera;
-// 
+//
 // 	double d = -(planePoint*planeN);
 // 	QMat H = K2 * ( R - ((t*n.transpose()) / d) ) * K1.invert();
 // 	return H;
 // }
-// 
-// 
-// 
+//
+//
+//
 // QMat InnerModel::getAffineHomographyMatrix(QString virtualCamera, QString plane, QString sourceCamera)
 // {
 // 	QMutexLocker l(mutex);
-// 
+//
 // 	QVec planeN = getPlane(plane)->normal;
 // 	planeN = getRotationMatrixTo(sourceCamera, plane)*planeN;
 // 	QVec planePoint = transform(sourceCamera, getPlane(plane)->point, plane);
-// 
+//
 // 	QMat R  = getRotationMatrixTo(virtualCamera, sourceCamera);
 // 	QMat t  = transform(virtualCamera, QVec::vec3(0,0,0), sourceCamera);
 // 	QMat n  = QMat(planeN);
 // 	QMat K1 = getCamera(sourceCamera)->camera;
-// 
+//
 // 	double d = -(planePoint*planeN);
 // 	QMat H = ( R - ((t*n.transpose()) / d) ) * K1.invert();
 // 	for (int r=0;r<2;r++)
@@ -1248,21 +1248,21 @@ float InnerModel::distance(const QString &a, const QString &b)
 // 			H(r,c) = H(r,c) * 1000.;
 // 		return H;
 // }
-// 
-// 
-// 
+//
+//
+//
 // QMat InnerModel::getPlaneProjectionMatrix(QString virtualCamera, QString plane, QString sourceCamera)
 // {
 // 	QMutexLocker l(mutex);
 // 	QVec planeN = getPlane(plane)->normal;
 // 	planeN = getRotationMatrixTo(sourceCamera, plane)*planeN;
 // 	QVec planePoint = transform(sourceCamera, getPlane(plane)->point, plane);
-// 
+//
 // 	QMat R  = getRotationMatrixTo(virtualCamera, sourceCamera);
 // 	QMat t  = transform(virtualCamera, QVec::vec3(0,0,0), sourceCamera);
 // 	QMat n  = QMat(planeN);
 // 	QMat K1 = getCamera(sourceCamera)->camera;
-// 
+//
 // 	double d = -(planePoint*planeN);
 // 	QMat H = ( R - ((t*n.transpose()) / d) ) * K1.invert();
 // 	QMat HFinal(4,3);
@@ -1273,8 +1273,8 @@ float InnerModel::distance(const QString &a, const QString &b)
 // 	HFinal(3,2)=1000*H(2,2);
 // 	return HFinal;
 // }
-// 
-// 
+//
+//
 
 
 
@@ -1292,31 +1292,31 @@ float InnerModel::distance(const QString &a, const QString &b)
 // 	}
 // 	return cam->getFocal();
 // }
-// 
-// 
-// 
+//
+//
+//
 // int InnerModel::getCameraWidth(QString cameraId)
 // {
 // 	QMutexLocker l(mutex);
 // 	return getCamera(cameraId)->getWidth();
 // }
-// 
-// 
-// 
+//
+//
+//
 // int InnerModel::getCameraHeight(const QString & cameraId) const
 // {
 // 	QMutexLocker l(mutex);
 // 	return static_cast<InnerModelCamera *>(getNode(cameraId))->getHeight();
 // }
-// 
-// 
-// 
+//
+//
+//
 // int InnerModel::getCameraSize(const QString & cameraId) const
 // {
 // 	QMutexLocker l(mutex);
 // 	return static_cast<InnerModelCamera *>(getNode(cameraId))->getSize();
 // }
-// 
+//
 
 // /**
 //  * \brief Local laser measure of range r and angle alfa is converted to Any RS
@@ -1339,77 +1339,77 @@ float InnerModel::distance(const QString &a, const QString &b)
 // 	QMutexLocker l(mutex);
 // 	QVec pI(3), pD(3), n(3), ray(3), T(3), TI(3), TD(3), pR(0), abc(3);
 // 	QMat A(3,3);
-// 
+//
 // 	ray = backProject(firstCamera, left);
 // 	pI = getRotationMatrixTo(refSystem, firstCamera)*ray;
 // 	pI(0)=pI(0)/pI(2);
 // 	pI(1)=pI(1)/pI(2);
 // 	pI(2)=1.;
-// 
+//
 // 	ray = backProject(secondCamera, right);
 // 	pD = getRotationMatrixTo(refSystem, secondCamera)*ray;
 // 	pD(0)=pD(0)/pD(2);
 // 	pD(1)=pD(1)/pD(2);
 // 	pD(2)=1.;
-// 
+//
 // 	n = pI ^ pD;
-// 
+//
 // 	A(0,0)=pI(0);  A(0,1)=-pD(0);  A(0,2)=n(0);
 // 	A(1,0)=pI(1);  A(1,1)=-pD(1);  A(1,2)=n(1);
 // 	A(2,0)=pI(2);  A(2,1)=-pD(2);  A(2,2)=n(2);
-// 
+//
 // 	TI = getTranslationVectorTo(refSystem, firstCamera).fromHomogeneousCoordinates();
 // 	TD = getTranslationVectorTo(refSystem, secondCamera).fromHomogeneousCoordinates();
 // 	T = TD - TI ;
-// 
+//
 // 	abc = (A.invert())*T;
-// 
+//
 // 	pR = (pI*abc(0));
 // 	pR = pR + TI;
 // 	pR = (n*(abc(2)/2)) + pR;
-// 
+//
 // 	return pR;
 // }
-// 
+//
 // QVec InnerModel::compute3DPointFromImageAngles(const QString &firstCamera , const QVec & left, const QString & secondCamera , const QVec & right, const QString & refSystem)
 // {
 // 	QMutexLocker l(mutex);
 // 	QVec pI(3), pD(3), n(3), ray(3), T(3), TI(3), TD(3), pR(0), abc(3);
 // 	QMat A(3,3);
-// 
+//
 // 	ray(0) = tan(left(0));
 // 	ray(1) = tan(left(1));
 // 	ray(2) = 1.;
 // 	pI = ray;//getRotationMatrixTo(refSystem, firstCamera)*ray;
-// 
+//
 // 	pI(0)=pI(0)/pI(2);
 // 	pI(1)=pI(1)/pI(2);
 // 	pI(2)=1.;
-// 
+//
 // 	ray(0) = tan(right(0));
 // 	ray(1) = tan(right(1));
 // 	ray(2) = 1.;
 // 	pD = ray;//getRotationMatrixTo(refSystem, secondCamera)*ray;
-// 
+//
 // 	pD(0)=pD(0)/pD(2);
 // 	pD(1)=pD(1)/pD(2);
 // 	pD(2)=1.;
-// 
+//
 // 	n = pI ^ pD;
-// 
+//
 // 	A(0,0)=pI(0);  A(0,1)=-pD(0);  A(0,2)=n(0);
 // 	A(1,0)=pI(1);  A(1,1)=-pD(1);  A(1,2)=n(1);
 // 	A(2,0)=pI(2);  A(2,1)=-pD(2);  A(2,2)=n(2);
-// 
+//
 // 	TI = getTranslationVectorTo(refSystem, firstCamera).fromHomogeneousCoordinates();
 // 	TD = getTranslationVectorTo(refSystem, secondCamera).fromHomogeneousCoordinates();
 // 	T = TD - TI;
-// 
+//
 // 	abc = (A.invert())*T;
-// 
+//
 // 	pR = (pI*abc(0));
 // 	pR = pR + TI;
 // 	pR = (n*(abc(2)/2)) + pR;
-// 
+//
 // 	return pR;
 // }

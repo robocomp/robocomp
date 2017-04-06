@@ -63,9 +63,6 @@ def fromInternalToIce(src):
 
 def fromIceToInternal_model(src, ignoreInvalidEdges=False):
 	dst = AGMGraph()
-
-	print 'from Ice To internal'
-
 	knownNodes = dict()
 	for srcNode in src.nodes:
 		dst.addNode(0,0, str(srcNode.nodeIdentifier), srcNode.nodeType, srcNode.attributes)
