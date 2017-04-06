@@ -548,7 +548,7 @@ class MainClass(QtGui.QMainWindow):
 			raise Exception("No such component with alias "+alias)
 
 	
-	def setAconnection(self,fromComponent,toComponent):#To set these two components
+	def setAconnection(self,toComponent,fromComponent):#To set these two components
 		
 		connection=rcmanagerConfig.NodeConnection()
 		
