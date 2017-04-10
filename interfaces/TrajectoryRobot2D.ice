@@ -13,6 +13,8 @@ module RoboCompTrajectoryRobot2D
 	exception RoboCompException{
                 string text;
         };
+
+	["cpp:comparable"]
 	struct TargetPose
 	{
 		 float x;
@@ -23,6 +25,8 @@ module RoboCompTrajectoryRobot2D
 		 float rz;
 		 bool doRotation;
 	};
+
+	["cpp:comparable"]
 	struct NavState
 	{
 		 long elapsedTime;
@@ -38,6 +42,8 @@ module RoboCompTrajectoryRobot2D
 		 string description;
 	};
 	dictionary <string, string> NavigationParameterMap;
+
+	["cpp:comparable"]
 	struct PointL
 	{
 		 float x;
