@@ -71,7 +71,7 @@ if (PYTHON_BINDINGS_SUPPORT)
 	# Add bindings source code file
 	SET(srcs ${srcs} innermodel_python.cpp)
 	find_package(Boost COMPONENTS system thread python REQUIRED)
-	find_package(PythonLibs REQUIRED)
+	find_package(PythonLibs 2.7 REQUIRED)
 	MESSAGE(STATUS "im PYTHON BINDINGS: DIRS ${PYTHON_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS}")
 	MESSAGE(STATUS "im PYTHON BINDINGS: LIBS ${PYTHON_LIBRARIES} ${Boost_LIBRARY_DIRS_DIRS}")
 	link_directories(${PYTHON_LIBRARIES} ${Boost_LIBRARY_DIRS_DIRS})
