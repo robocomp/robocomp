@@ -123,6 +123,7 @@ public:
 	InnerModelTransform *getTransform(const QString &id)                 { return getNode<InnerModelTransform>(id); }
 	InnerModelJoint *getJoint(const QString &id)                         { return getNode<InnerModelJoint>(id); }
 	InnerModelJoint *getJoint(const std::string &id)                     { return getNode<InnerModelJoint>(QString::fromStdString(id)); }
+	InnerModelJoint *getJointS(const std::string &id)                    { return getNode<InnerModelJoint>(QString::fromStdString(id)); }
 	InnerModelTouchSensor *getTouchSensor(const QString &id)             { return getNode<InnerModelTouchSensor>(id); }
 	InnerModelPrismaticJoint *getPrismaticJoint(const QString &id)       { return getNode<InnerModelPrismaticJoint>(id); }
 	InnerModelDifferentialRobot *getDifferentialRobot(const QString &id) { return getNode<InnerModelDifferentialRobot>(id); }
