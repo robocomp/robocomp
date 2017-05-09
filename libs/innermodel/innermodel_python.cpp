@@ -37,7 +37,7 @@ BOOST_PYTHON_MODULE(librobocomp_innermodel)
     	 .def("getTransformationMatrix", &InnerModel::getTransformationMatrixS)
 	 .def("getParentIdentifier", &InnerModel::getParentIdentifierS)
 
-	 .def("getJoint", &InnerModel::getJointS, boost::python::return_value_policy<boost::python::manage_new_object>())
+	 .def("getJoint", &InnerModel::getJointRef, boost::python::return_value_policy<boost::python::reference_existing_object>())
 	;
 
 
