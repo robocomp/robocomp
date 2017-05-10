@@ -174,6 +174,7 @@ public:
 				error.sprintf("%s doesn't seem to be a joint", id.toStdString().c_str());
 			throw error;
 		}
+		printf("returning %p\n", r);
 		return r;
 	}
 

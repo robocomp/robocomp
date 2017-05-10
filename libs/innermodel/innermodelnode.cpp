@@ -71,6 +71,8 @@ void InnerModelNode::addChild(InnerModelNode *child)
 		//printf("InnerModelNode::addChild this is weird\n");
 	}
 
+	child->innerModel = innerModel;
+	
 	if (not children.contains(child))
 	{
 		children.append(child);

@@ -16,6 +16,9 @@
  */
 
 #include "innermodeljoint.h"
+
+class InnerModel;
+
 InnerModelJoint::InnerModelJoint() : InnerModelTransform("invalid",QString("static"), 0,0,0, 0,0,0, 0, NULL)
 {
 		throw std::string("Can't actually build InnerModelJoint using the default constructor");
@@ -127,12 +130,14 @@ void InnerModelJoint::update(float lx_, float ly_, float lz_, float hx_, float h
 
 float InnerModelJoint::getAngle()
 {
+	printf("getAngle from %p\n", this);
 	QMutexLocker l(mutex);
 	return backrZ;
 }
 
 float InnerModelJoint::setAngle(float angle, bool force)
 {
+	printf("setAngle from %p\n", this);
 	QMutexLocker l(mutex);
 	float ret;
 	if ((angle <= max and angle >= min) or force)
@@ -152,14 +157,18 @@ float InnerModelJoint::setAngle(float angle, bool force)
 
 	if (axis == "x")
 	{
+		printf("x\n");
+		print("m");
 		set(ret,0,0, 0,0,0);
 	}
 	else if (axis == "y")
 	{
+		printf("y\n");
 		set(0,ret,0, 0,0,0);
 	}
 	else if (axis == "z")
 	{
+		printf("z\n");
 		set(0,0,ret, 0,0,0);
 	}
 	else
@@ -168,6 +177,8 @@ float InnerModelJoint::setAngle(float angle, bool force)
 		error.sprintf("internal error, no such axis %s\n", axis.c_str());
 		throw error;
 	}
+	
+	innerModel->cleanupTables();
 	return ret;
 }
 

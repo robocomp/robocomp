@@ -59,6 +59,7 @@ InnerModel::InnerModel()
 	InnerModelTransform *root = new InnerModelTransform("root", "static", 0, 0, 0, 0, 0, 0, 0);
 	root->parent = NULL;
 	setRoot(root);
+	root->innerModel = this;
 	hash["root"] = root;
 }
 
@@ -67,6 +68,7 @@ InnerModel::InnerModel(const InnerModel &original)
 	mutex = new QMutex(QMutex::Recursive);
 	root = new InnerModelTransform("root", "static", 0, 0, 0, 0, 0, 0, 0);
 	setRoot(root);
+	root->innerModel = this;
 	hash["root"] = root;
 
 	QList<InnerModelNode *>::iterator i;
