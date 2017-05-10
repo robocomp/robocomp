@@ -220,6 +220,15 @@ public:
 		* @return RMat::QMat Jacobian as MxN matrix of evaluated partial derivatives. M=joints, N=6 (pose cartesian coordinates of the endEffector) (CHECK ORDER)
 		*/
 	QMat jacobian(QStringList &listaJoints, const QVec &motores, const QString &endEffector);
+	QMat jacobianS(std::vector<std::string> &listaJoints, const QVec &motores, const std::string &endEffector)
+	{
+		QStringList listaJointQ/* = QStringList::fromStdList(listaJoints)*/;
+		for (auto e : listaJoints)
+		{
+			listaJointQ.push_back(QString::fromStdString(e));
+		}
+		jacobian(listaJointQ, motores, QString::fromStdString(endEffector));
+	}
 
 	///////////////////////////////////////
 	/// Auxiliary methods
