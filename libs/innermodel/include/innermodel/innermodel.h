@@ -124,6 +124,7 @@ public:
 	InnerModelJoint *getJoint(const QString &id)                         { return getNode<InnerModelJoint>(id); }
 	InnerModelJoint *getJoint(const std::string &id)                     { return getNode<InnerModelJoint>(QString::fromStdString(id)); }
 	InnerModelJoint *getJointS(const std::string &id)                    { return getNode<InnerModelJoint>(QString::fromStdString(id)); }
+	InnerModelJoint &getJointRef(const std::string &id)                  { return *getNode<InnerModelJoint>(QString::fromStdString(id)); }
 	InnerModelTouchSensor *getTouchSensor(const QString &id)             { return getNode<InnerModelTouchSensor>(id); }
 	InnerModelPrismaticJoint *getPrismaticJoint(const QString &id)       { return getNode<InnerModelPrismaticJoint>(id); }
 	InnerModelDifferentialRobot *getDifferentialRobot(const QString &id) { return getNode<InnerModelDifferentialRobot>(id); }
@@ -173,6 +174,7 @@ public:
 				error.sprintf("%s doesn't seem to be a joint", id.toStdString().c_str());
 			throw error;
 		}
+		printf("returning %p\n", r);
 		return r;
 	}
 
@@ -218,6 +220,15 @@ public:
 		* @return RMat::QMat Jacobian as MxN matrix of evaluated partial derivatives. M=joints, N=6 (pose cartesian coordinates of the endEffector) (CHECK ORDER)
 		*/
 	QMat jacobian(QStringList &listaJoints, const QVec &motores, const QString &endEffector);
+	QMat jacobianS(std::vector<std::string> &listaJoints, const QVec &motores, const std::string &endEffector)
+	{
+		QStringList listaJointQ/* = QStringList::fromStdList(listaJoints)*/;
+		for (auto e : listaJoints)
+		{
+			listaJointQ.push_back(QString::fromStdString(e));
+		}
+		jacobian(listaJointQ, motores, QString::fromStdString(endEffector));
+	}
 
 	///////////////////////////////////////
 	/// Auxiliary methods
