@@ -33,7 +33,7 @@ BOOST_PYTHON_MODULE(librobocomp_innermodel)
 	      arg("parentId")=""
 	    )
 	  )
-	  .def("cleanupTables", cleanupTables)
+	  .def("cleanupTables", &InnerModel::cleanupTables)
 	  .def("transform", transform)
 	  .def("getTransformationMatrix", &InnerModel::getTransformationMatrixS)
 	  .def("getParentIdentifier", &InnerModel::getParentIdentifierS)

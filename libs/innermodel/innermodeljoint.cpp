@@ -15,6 +15,7 @@
  *
  */
 
+#include "innermodel.h"
 #include "innermodeljoint.h"
 
 class InnerModel;
