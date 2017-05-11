@@ -13,10 +13,10 @@ module RoboCompYoloServer
 	struct Box
 	{
 		 string label;
-		 float x;
-		 float y;
-		 float w;
-		 float h;
+		 int x;
+		 int y;
+		 int w;
+		 int h;
 		 float prob;
 	};
 	sequence <Box> ListBox;
@@ -26,11 +26,11 @@ module RoboCompYoloServer
 		 byte g;
 		 byte b;
 	};
-	sequence <Pixel> ListPixel;
+	sequence <byte> ListPixel;
 	struct Image
 	{
-		 float w;
-		 float h;
+		 int w;
+		 int h;
 		 ListPixel lpixel;
 	};
 	struct Labels
