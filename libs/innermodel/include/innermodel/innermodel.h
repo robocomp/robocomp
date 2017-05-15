@@ -226,7 +226,7 @@ public:
 		{
 			listaJointQ.push_back(QString::fromStdString(e));
 		}
-		jacobian(listaJointQ, motores, QString::fromStdString(endEffector));
+		return jacobian(listaJointQ, motores, QString::fromStdString(endEffector));
 	}
 
 	///////////////////////////////////////
