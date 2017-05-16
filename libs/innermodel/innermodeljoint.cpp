@@ -178,8 +178,10 @@ float InnerModelJoint::setAngle(float angle, bool force)
 		error.sprintf("internal error, no such axis %s\n", axis.c_str());
 		throw error;
 	}
-	
-	innerModel->cleanupTables();
+
+	printf("%p %ld\n", innerModel, (long int)innerModel);
+	if (innerModel)
+		innerModel->cleanupTables();
 	return ret;
 }
 
