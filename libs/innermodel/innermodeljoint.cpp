@@ -22,7 +22,7 @@ class InnerModel;
 
 InnerModelJoint::InnerModelJoint() : InnerModelTransform("invalid",QString("static"), 0,0,0, 0,0,0, 0, NULL)
 {
-		throw std::string("Can't actually build InnerModelJoint using the default constructor");
+	throw std::string("Can't actually build InnerModelJoint using the default constructor");
 }
 
 InnerModelJoint::InnerModelJoint(QString id_, float lx_, float ly_, float lz_, float hx_, float hy_, float hz_, float tx_, float ty_, float tz_, float rx_, float ry_, float rz_, float min_, float max_, uint32_t port_, std::string axis_, float home_, InnerModelTransform *parent_) : InnerModelTransform(id_,QString("static"),tx_,ty_,tz_,rx_,ry_,rz_, 0, parent_)
