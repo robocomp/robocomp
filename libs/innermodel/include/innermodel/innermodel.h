@@ -59,8 +59,9 @@ typedef boost::shared_ptr<FCLModel> FCLModelPtr;
 // #include <osg/Geode>
 
 
+#ifdef PYTHON_BINDINGS_SUPPORT
 #include <boost/python/stl_iterator.hpp>
-
+#endif
 
 using namespace RMat;
 
@@ -233,15 +234,6 @@ public:
 		return jacobian(listaJointQ, motores, QString::fromStdString(endEffector));
 	}
 
-	// template <class T>
-	// boost::python::list toPythonList(std::vector<T> vector) {
-	// 	typename std::vector<T>::iterator iter;
-	// 	boost::python::list list;
-	// 	for (iter = vector.begin(); iter != vector.end(); ++iter) {
-	// 		list.append(*iter);
-	// 	}
-	// 	return list;
-	// }
 #ifdef PYTHON_BINDINGS_SUPPORT
 	QMat jacobianSPython(const  boost::python::list &listaJointsP, const QVec &motores, const std::string &endEffector)
 	{
