@@ -242,13 +242,13 @@ public:
 	// 	}
 	// 	return list;
 	// }
-
-	QMat jacobianSPython(const boost::python::list &listaJointsP, const QVec &motores, const std::string &endEffector)
+#ifdef PYTHON_BINDINGS_SUPPORT
+	QMat jacobianSPython(const  boost::python::list &listaJointsP, const QVec &motores, const std::string &endEffector)
 	{
 		std::vector<std::string> listaJoint = std::vector<std::string>(boost::python::stl_input_iterator<std::string>(listaJointsP), boost::python::stl_input_iterator<std::string>( ) );
 		return jacobianS(listaJoint, motores, endEffector);
 	}
-
+#endif
 
 
 	///////////////////////////////////////
