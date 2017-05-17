@@ -1,0 +1,35 @@
+module RoboCompYoloServer
+{
+	struct Box
+	{
+		string label;
+		float x;
+		float y;
+		float w;
+		float h;
+    		float prob;
+	};
+
+	sequence <Box> ListBox;
+
+
+	sequence <byte> Pixels;
+  	struct Image
+  	{
+    		float w;
+    		float h;
+		Pixels data;
+  	};
+
+  	struct Labels
+  	{
+    		bool isReady;
+    		ListBox lBox;
+  	};
+
+	interface YoloServer
+	{
+    		int addImage(Image img);
+    		Labels getData(int id);
+	};
+};

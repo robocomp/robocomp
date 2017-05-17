@@ -13,20 +13,21 @@ def TAB():
 	cog.out('<TABHERE>')
 
 from parseCDSL import *
-component = CDSLParsing.fromFile(theCDSL)
+includeDirectories = theIDSLPaths.split('#')
+component = CDSLParsing.fromFile(theCDSL, includeDirectories=includeDirectories)
 if component == None:
 	print('Can\'t locate', theCDSLs)
 	sys.exit(1)
 
 from parseIDSL import *
-pool = IDSLPool(theIDSLs)
+pool = IDSLPool(theIDSLs, includeDirectories)
 includeList = pool.rosImports()
 rosTypes = pool.getRosTypes()
 
 
 ]]]
 [[[end]]]
- *    Copyright (C) 
+ *    Copyright (C)
 [[[cog
 A()
 import datetime
@@ -123,7 +124,7 @@ using namespace std;
 
 [[[cog
 
-pool = IDSLPool(theIDSLs)
+pool = IDSLPool(theIDSLs, includeDirectories)
 for m in pool.modulePool:
 	rosModule = False
 	for imp in component['subscribesTo']+component['publishes']+component['implements']+component['requires']:
@@ -145,7 +146,7 @@ for m in pool.modulePool:
 try:
 	if 'agmagent' in [ x.lower() for x in component['options'] ]:
 		cog.outl("""
-		struct BehaviorParameters 
+		struct BehaviorParameters
 		{
 			RoboCompPlanning::Action action;
 			std::vector< std::vector <std::string> > plan;
@@ -311,7 +312,7 @@ if component['usingROS'] == True:
 [[[end]]]
 
 
-class GenericWorker : 
+class GenericWorker :
 [[[cog
 if component['gui'] != 'none':
 	cog.outl("""#ifdef USE_QTGUI
@@ -330,7 +331,7 @@ public:
 	virtual ~GenericWorker();
 	virtual void killYourSelf();
 	virtual void setPeriod(int p);
-	
+
 	virtual bool setParams(RoboCompCommonBehavior::ParameterList params) = 0;
 	QMutex *mutex;
 [[[cog
@@ -345,7 +346,7 @@ except:
 
 ]]]
 [[[end]]]
-	
+
 
 [[[cog
 for namea, num in getNameNumber(component['requires']+component['publishes']):

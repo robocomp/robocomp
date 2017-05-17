@@ -17,7 +17,8 @@ def SPACE(i=0):
 	cog.out('<S'+s+'>')
 
 from parseCDSL import *
-component = CDSLParsing.fromFile(theCDSL)
+includeDirectories = theIDSLPaths.split('#')
+component = CDSLParsing.fromFile(theCDSL, includeDirectories=includeDirectories)
 
 ]]]
 [[[end]]]
@@ -41,7 +42,7 @@ component = CDSLParsing.fromFile(theCDSL)
 DOXYFILE_ENCODING      = UTF-8
 
 # ROBOCOMP
-PROJECT_NAME           = 
+PROJECT_NAME           =
 [[[cog
 A()
 cog.out( component['name'] + ' ')
@@ -229,7 +230,7 @@ DISTRIBUTE_GROUP_DOC   = NO
 # the same type (for instance a group of public functions) to be put as a
 # subgroup of that type (e.g. under the Public Functions section). Set it to
 # NO to prevent subgrouping. Alternatively, this can be done per class using
-# the 
+# the
 osubgrouping command.
 
 SUBGROUPING            = YES
@@ -537,7 +538,7 @@ RECURSIVE              = YES
 # subdirectory from a directory tree whose root is specified with the INPUT tag.
 
 # ROBOCOMP
-EXCLUDE                = 
+EXCLUDE                =
 #Base.h Base.cpp Camara.h Camara.cpp CamMotion.h CamMotion.cpp Laser.h Laser.cpp Micro.h Micro.cpp
 
 # The EXCLUDE_SYMLINKS tag can be used select whether or not files or
@@ -553,7 +554,7 @@ EXCLUDE_SYMLINKS       = NO
 # for example use the pattern */test/*
 
 # ROBOCOMP
-EXCLUDE_PATTERNS       = A* B* C* D* E* F* G* H* I* J* K* L* M* N* O* P* Q* R* S* T* U* V* W* X* Y* Z* 
+EXCLUDE_PATTERNS       = A* B* C* D* E* F* G* H* I* J* K* L* M* N* O* P* Q* R* S* T* U* V* W* X* Y* Z*
 
 # The EXCLUDE_SYMBOLS tag can be used to specify one or more symbol names
 # (namespaces, classes, functions, etc.) that should be excluded from the
@@ -842,7 +843,7 @@ QHP_NAMESPACE          =
 # Qt Help Project output. For more information please see
 # http://doc.trolltech.com/qthelpproject.html#virtual-folders
 
-QHP_VIRTUAL_FOLDER     = 
+QHP_VIRTUAL_FOLDER     =
 
 # If QHP_CUST_FILTER_NAME is set, it specifies the name of a custom filter to add.
 # For more information please see

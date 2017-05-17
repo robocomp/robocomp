@@ -17,7 +17,8 @@ def SPACE(i=0):
 	cog.out('<S'+s+'>')
 
 from parseCDSL import *
-component = CDSLParsing.fromFile(theCDSL)
+includeDirectories = theIDSLPaths.split('#')
+component = CDSLParsing.fromFile(theCDSL, includeDirectories=includeDirectories)
 
 ]]]
 [[[end]]]

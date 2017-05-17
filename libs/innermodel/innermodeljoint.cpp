@@ -15,10 +15,14 @@
  *
  */
 
+#include "innermodel.h"
 #include "innermodeljoint.h"
+
+class InnerModel;
+
 InnerModelJoint::InnerModelJoint() : InnerModelTransform("invalid",QString("static"), 0,0,0, 0,0,0, 0, NULL)
 {
-		throw std::string("Can't actually build InnerModelJoint using the default constructor");
+	throw std::string("Can't actually build InnerModelJoint using the default constructor");
 }
 
 InnerModelJoint::InnerModelJoint(QString id_, float lx_, float ly_, float lz_, float hx_, float hy_, float hz_, float tx_, float ty_, float tz_, float rx_, float ry_, float rz_, float min_, float max_, uint32_t port_, std::string axis_, float home_, InnerModelTransform *parent_) : InnerModelTransform(id_,QString("static"),tx_,ty_,tz_,rx_,ry_,rz_, 0, parent_)
@@ -127,12 +131,14 @@ void InnerModelJoint::update(float lx_, float ly_, float lz_, float hx_, float h
 
 float InnerModelJoint::getAngle()
 {
+	printf("getAngle from %p\n", this);
 	QMutexLocker l(mutex);
 	return backrZ;
 }
 
 float InnerModelJoint::setAngle(float angle, bool force)
 {
+	printf("setAngle from %p\n", this);
 	QMutexLocker l(mutex);
 	float ret;
 	if ((angle <= max and angle >= min) or force)
@@ -152,14 +158,18 @@ float InnerModelJoint::setAngle(float angle, bool force)
 
 	if (axis == "x")
 	{
+		printf("x\n");
+		print("m");
 		set(ret,0,0, 0,0,0);
 	}
 	else if (axis == "y")
 	{
+		printf("y\n");
 		set(0,ret,0, 0,0,0);
 	}
 	else if (axis == "z")
 	{
+		printf("z\n");
 		set(0,0,ret, 0,0,0);
 	}
 	else
@@ -168,6 +178,10 @@ float InnerModelJoint::setAngle(float angle, bool force)
 		error.sprintf("internal error, no such axis %s\n", axis.c_str());
 		throw error;
 	}
+
+	printf("%p %ld\n", innerModel, (long int)innerModel);
+	if (innerModel)
+		innerModel->cleanupTables();
 	return ret;
 }
 

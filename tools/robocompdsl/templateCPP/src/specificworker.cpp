@@ -13,15 +13,16 @@ def TAB():
 	cog.out('<TABHERE>')
 
 from parseCDSL import *
-component = CDSLParsing.fromFile(theCDSL)
+includeDirectories = theIDSLPaths.split('#')
+component = CDSLParsing.fromFile(theCDSL, includeDirectories=includeDirectories)
 if component == None:
 	print('Can\'t locate', theCDSLs)
 	sys.exit(1)
 
-	
+
 
 from parseIDSL import *
-pool = IDSLPool(theIDSLs)
+pool = IDSLPool(theIDSLs, includeDirectories)
 rosTypes = pool.getRosTypes()
 
 def bodyCodeFromName(name, component):
@@ -85,7 +86,7 @@ def bodyCodeFromName(name, component):
 
 ]]]
 [[[end]]]
- *    Copyright (C) 
+ *    Copyright (C)
 [[[cog
 A()
 import datetime
@@ -142,7 +143,7 @@ try:
 		cog.outl("<TABHERE>worldModel = AGMModel::SPtr(new AGMModel());")
 		cog.outl("<TABHERE>worldModel->name = "+"\"worldModel\";")
 		cog.outl("<TABHERE>innerModel = new InnerModel();")
-		
+
 except:
 	pass
 
@@ -155,7 +156,7 @@ except:
 */
 SpecificWorker::~SpecificWorker()
 {
-	
+
 }
 
 bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
@@ -177,11 +178,11 @@ if component['innermodelviewer']:
 	cog.outl("<TABHERE>innerModelViewer = new InnerModelViewer (innerModel, \"root\", osgView->getRootGroup(), true);")
 	cog.outl("#endif")
 ]]]
-[[[end]]]	
+[[[end]]]
 
-	
+
 	timer.start(Period);
-	
+
 [[[cog
 try:
 	if isAGM1Agent(component):
@@ -400,13 +401,9 @@ bool SpecificWorker::setParametersAndPossibleActivation(const ParameterMap &prs,
 		exit(1);
 	}
 }""")
-		
-		
+
+
 except:
 	pass
 ]]]
 [[[end]]]
-
-
-
-
