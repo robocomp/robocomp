@@ -197,8 +197,11 @@ if sys.argv[1].endswith(".cdsl"):
 	from parseIDSL import *
 	import sys
 
-	component = CDSLParsing.fromFile(inputFile)
-	imports = ''.join( [ imp.split('/')[-1]+'#' for imp in component['imports'] ] )
+	# Get -I parameters, replacing ~ by $HOME
+	includeDirectories = [ os.path.expanduser(x[2:]) for x in sys.argv if x.startswith('-I') ]
+
+	component = CDSLParsing.fromFile(inputFile, includeDirectories=includeDirectories)
+	imports = ''.join( [ imp+'#' for imp in component['imports'] ] )
 
 	if component['language'].lower() == 'cpp':
 		#
@@ -219,7 +222,6 @@ if sys.argv[1].endswith(".cdsl"):
 		# Generate regular files
 		#
 		files = [ 'CMakeLists.txt', 'DoxyFile', 'README-STORM.txt', 'README.md', 'etc/config', 'src/main.cpp', 'src/CMakeLists.txt', 'src/CMakeListsSpecific.txt', 'src/commonbehaviorI.h', 'src/commonbehaviorI.cpp', 'src/genericmonitor.h', 'src/genericmonitor.cpp', 'src/config.h', 'src/specificmonitor.h', 'src/specificmonitor.cpp', 'src/genericworker.h', 'src/genericworker.cpp', 'src/specificworker.h', 'src/specificworker.cpp', 'src/mainUI.ui' ]
-
 		specificFiles = [ 'src/specificworker.h', 'src/specificworker.cpp', 'src/CMakeListsSpecific.txt', 'src/mainUI.ui', 'src/specificmonitor.h', 'src/specificmonitor.cpp', 'README.md', 'etc/config' ]
 		for f in files:
 			ofile = outputPath + '/' + f
@@ -229,7 +231,7 @@ if sys.argv[1].endswith(".cdsl"):
 			ifile = "/opt/robocomp/share/robocompdsl/templateCPP/" + f
 			if f != 'src/mainUI.ui' or component['gui'] != 'none':
 				print 'Generating', ofile, 'from', ifile
-				run = "cog.py -z -d -D theCDSL="+inputFile + " -D theIDSLs="+imports + " -o " + ofile + " " + ifile
+				run = "cog.py -z -d -D theCDSL="+inputFile + " -D theIDSLs="+imports + ' -D theIDSLPaths='+ '#'.join(includeDirectories) + " -o " + ofile + " " + ifile
 				run = run.split(' ')
 				ret = Cog().main(run)
 				if ret != 0:
@@ -246,9 +248,9 @@ if sys.argv[1].endswith(".cdsl"):
 			if communicationIsIce(ima):
 				for f in [ "SERVANT.H", "SERVANT.CPP"]:
 					ofile = outputPath + '/src/' + im.lower() + 'I.' + f.split('.')[-1].lower()
-					print 'Generating', ofile, ' (servant for', im + ')'
+					print 'Generating D', ofile, ' (servant for', im + ')'
 					# Call cog
-					run = "cog.py -z -d -D theCDSL="+inputFile  + " -D theIDSLs="+imports + " -D theInterface="+im + " -o " + ofile + " " + "/opt/robocomp/share/robocompdsl/templateCPP/" + f
+					run = "cog.py -z -d -D theCDSL="+inputFile  + " -D theIDSLs="+imports + ' -D theIDSLPaths='+ '#'.join(includeDirectories) + " -D theInterface="+im + " -o " + ofile + " " + "/opt/robocomp/share/robocompdsl/templateCPP/" + f
 					run = run.split(' ')
 					ret = Cog().main(run)
 					if ret != 0:
@@ -263,12 +265,12 @@ if sys.argv[1].endswith(".cdsl"):
 			if communicationIsIce(imp):
 				for f in [ "SERVANT.H", "SERVANT.CPP"]:
 					ofile = outputPath + '/src/' + im.lower() + 'I.' + f.split('.')[-1].lower()
-					print 'Generating', ofile, ' (servant for', im + ')'
+					print 'Generating ', ofile, ' (servant for', im + ')'
 					# Call cog
 					theInterfaceStr = im
 					if type(theInterfaceStr) == type([]):
 						theInterfaceStr = str(';'.join(im))
-					run = "cog.py -z -d -D theCDSL="+inputFile  + " -D theIDSLs="+imports + " -D theInterface="+theInterfaceStr + " -o " + ofile + " " + "/opt/robocomp/share/robocompdsl/templateCPP/" + f
+					run = "cog.py -z -d -D theCDSL="+inputFile  + " -D theIDSLs="+imports  + ' -D theIDSLPaths='+ '#'.join(includeDirectories) + " -D theInterface="+theInterfaceStr + " -o " + ofile + " " + "/opt/robocomp/share/robocompdsl/templateCPP/" + f
 					#print run
 					run = run.split(' ')
 					ret = Cog().main(run)
@@ -305,8 +307,10 @@ if sys.argv[1].endswith(".cdsl"):
 				ofile += '.new'
 			ifile = "/opt/robocomp/share/robocompdsl/templatePython/" + f
 			print 'Generating', ofile, 'from', ifile
-			run = "cog.py -z -d -D theCDSL="+inputFile + " -D theIDSLs="+imports + " -o " + ofile + " " + ifile
+			run = "cog.py -z -d -D theCDSL="+inputFile + " -D theIDSLs="+imports + ' -D theIDSLPaths='+ '#'.join(includeDirectories) + " -o " + ofile + " " + ifile
+			print run
 			run = run.split(' ')
+			print run
 			ret = Cog().main(run)
 			if ret != 0:
 				print 'ERROR'
@@ -326,7 +330,7 @@ if sys.argv[1].endswith(".cdsl"):
 					ofile = outputPath + '/src/' + im.lower() + 'I.' + f.split('.')[-1].lower()
 					print 'Generating', ofile, ' (servant for', im + ')'
 					# Call cog
-					run = "cog.py -z -d -D theCDSL="+inputFile  + " -D theIDSLs="+imports + " -D theInterface="+im + " -o " + ofile + " " + "/opt/robocomp/share/robocompdsl/templatePython/" + f
+					run = "cog.py -z -d -D theCDSL="+inputFile  + " -D theIDSLs="+imports  + ' -D theIDSLPaths='+ '#'.join(includeDirectories) + " -D theInterface="+im + " -o " + ofile + " " + "/opt/robocomp/share/robocompdsl/templatePython/" + f
 					run = run.split(' ')
 					ret = Cog().main(run)
 					if ret != 0:
@@ -347,11 +351,10 @@ elif sys.argv[1].endswith(".idsl"):
 	#idsl = IDSLParsing.fromFileIDSL(inputFile)
 	print 'Generating ICE file ', outputFile
 	# Call cog
-	run = "cog.py -z -d" + " -D theIDSL="+inputFile+ " -o " + outputFile + " /opt/robocomp/share/robocompdsl/TEMPLATE.ICE"
+	run = "cog.py -z -d" + " -D theIDSL="+inputFile + ' -D theIDSLPaths='+ '#'.join(includeDirectories) +" -o " + outputFile + " /opt/robocomp/share/robocompdsl/TEMPLATE.ICE"
 	run = run.split(' ')
 	ret = Cog().main(run)
 	if ret != 0:
 		print 'ERROR'
 		sys.exit(-1)
 	replaceTagsInFile(outputFile)
-

@@ -1,9 +1,17 @@
 [[[cog
-
 import sys
 sys.path.append('/opt/robocomp/python')
 
 import cog
+
+includeDirectories = theIDSLPaths.split('#')
+
+
+
+
+
+
+
 def A():
 	cog.out('<@@<')
 def Z():
@@ -16,13 +24,17 @@ def SPACE(i=0):
 		s = str(i)
 	cog.out('<S'+s+'>')
 
+
 from parseCDSL import *
-component = CDSLParsing.fromFile(theCDSL)
+
+
+includeDirectories = theIDSLPaths.split('#')
+component = CDSLParsing.fromFile(theCDSL, includeDirectories=includeDirectories)
 
 ]]]
 [[[end]]]
 cmake_minimum_required(VERSION 2.8.11)
-PROJECT( 
+PROJECT(
 [[[cog
 A()
 cog.out(' ' + component['name'])
@@ -31,7 +43,7 @@ Z()
 [[[end]]]
  )
 
- 
+
 IF ( "$ENV{ROBOCOMP}" STREQUAL "")
   MESSAGE(WARNING "ROBOCOMP variable not set. Using the default value: /opt/robocomp")
   SET (ENV{ROBOCOMP} "/opt/robocomp/")
@@ -71,7 +83,7 @@ for subscribe in component['subscribesTo']:
 		subs = subs[0]
 	if communicationIsIce(subscribe):
 		cog.outl('<S2>' + subs.lower() + 'I.cpp')
-		
+
 
 ]]]
 [[[end]]]
@@ -90,18 +102,18 @@ if component['usingROS'] == True:
 
 #ROBOCOMP
 ROBOCOMP_INITIALIZE( $ENV{ROBOCOMP}/ )
-ROBOCOMP_WRAP_ICE( CommonBehavior 
+ROBOCOMP_WRAP_ICE( CommonBehavior
 [[[cog
 A()
 for im in component['recursiveImports']:
 	if communicationIsIce(im):
-		cog.out(im.split('/')[-1].split('.')[0] + ' ')
+		cog.out(' ' + im.split('/')[-1].split('.')[0] + ' ')
 try:
 	options = [ x.lower() for x in component['options'] ]
 	if 'agmagent' in options:
-		cog.out("AGMExecutive AGMWorldModel Planning AGMCommonBehavior ")
+		cog.out(" AGMExecutive AGMWorldModel Planning AGMCommonBehavior ")
 	elif 'agm2agent' in options or 'agm2agentICE' in options or 'agm2agentROS' in options:
-		cog.out("AGM2 ")
+		cog.out(" AGM2 ")
 except:
 	pass
 Z()

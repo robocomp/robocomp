@@ -1,9 +1,13 @@
 [[[cog
-
 import sys
 sys.path.append('/opt/robocomp/python')
 
 import cog
+
+
+includeDirectories = theIDSLPaths.split('#')
+
+
 def A():
 	cog.out('<@@<')
 def Z():
@@ -17,7 +21,7 @@ def SPACE(i=0):
 	cog.out('<S'+s+'>')
 
 from parseCDSL import *
-component = CDSLParsing.fromFile(theCDSL)
+component = CDSLParsing.fromFile(theCDSL, includeDirectories=includeDirectories)
 
 ]]]
 [[[end]]]

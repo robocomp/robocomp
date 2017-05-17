@@ -114,12 +114,14 @@ def getNameNumber(aalist):
 
 class CDSLParsing:
 	@staticmethod
-	def fromFile(filename, verbose=False, includeIncludes=True):
-		# Open input file
-		#inputText = "\n".join([line for line in open(filename, 'r').read().split("\n") if not line.lstrip(" \t").startswith('//')])
+	def fromFile(filename, verbose=False, includeIncludes=True, includeDirectories=None):
+		# print 'fromFile', includeDirectories
+		if includeDirectories == None:
+			includeDirectories = []
 		inputText = open(filename, 'r').read()
 		try:
-			ret = CDSLParsing.fromString(inputText)
+			# print 'fromFile2', includeDirectories
+			ret = CDSLParsing.fromString(inputText, includeDirectories=includeDirectories)
 		except:
 			print 'Error reading', filename
 			traceback.print_exc()
@@ -128,7 +130,11 @@ class CDSLParsing:
 		ret['filename'] = filename
 		return ret
 	@staticmethod
-	def fromString(inputText, verbose=False):
+	def fromString(inputText, verbose=False, includeDirectories=None):
+		# print 'fromString', includeDirectories
+		if includeDirectories == None:
+			includeDirectories = []
+		# print 'fromString2', includeDirectories
 		if verbose: print 'Verbose:', verbose
 		text = nestedExpr("/*", "*/").suppress().transformString(inputText)
 
@@ -170,7 +176,8 @@ class CDSLParsing:
 		CDSL = idslImports.setResultsName("imports") + component.setResultsName("component")
 		CDSL.ignore( cppStyleComment )
 		tree = CDSL.parseString(text)
-		return CDSLParsing.component(tree)
+		# print 'parseCDSL.fromString', includeDirectories
+		return CDSLParsing.component(tree, includeDirectories=includeDirectories)
 
 	@staticmethod
 	def printComponent(component, start=''):
@@ -194,8 +201,11 @@ class CDSLParsing:
 		print '\t\tSubscribes', component['subscribesTo']
 
 	@staticmethod
-	def component(tree, start=''):
+	def component(tree, includeDirectories=None, start=''):
 		component = {}
+		# print 'parseCDSL.component', includeDirectories
+		if includeDirectories == None:
+			includeDirectories = []
 
 		# Set options
 		component['options'] = []
@@ -228,13 +238,23 @@ class CDSLParsing:
 
 		for imp in imprts:
 			component['imports'].append(imp)
-			imp2 = imp.split('/')[-1]
+			importedModule = None
 			try:
-				importedModule = IDSLParsing.gimmeIDSL(imp2)
+				iD = ['/opt/robocomp/interfaces/IDSLs/', os.path.expanduser('~/robocomp/interfaces/IDSLs/')] + includeDirectories
+				# print 'iD', iD
+				for directory in iD:
+					attempt = directory+'/'+imp
+					# print 'Check', attempt
+					if os.path.isfile(attempt):
+						importedModule = IDSLParsing.fromFile(attempt) # IDSLParsing.gimmeIDSL(attempt)
+
 			except:
-				print 'Error reading IMPORT', imp2
+				print 'Error reading IMPORT', imp
 				traceback.print_exc()
-				print 'Error reading IMPORT', imp2
+				print 'Error reading IMPORT', imp
+				os._exit(1)
+			if importedModule == None:
+				print 'Counldn\'t locate', imp
 				os._exit(1)
 			# recursiveImports holds the necessary imports
 			importable = False
@@ -245,7 +265,7 @@ class CDSLParsing:
 							if interf['name'] == interface[0]:
 								importable = True
 			if importable:
-				component['recursiveImports'] += [imp2]
+				component['recursiveImports'] += [attempt]
 				component['recursiveImports'] += [x for x in importedModule['imports'].split('#') if len(x)>0]
 
 		# Language

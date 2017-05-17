@@ -215,33 +215,30 @@ class IDSLParsing:
 
 
 class IDSLPool:
-	def __init__(self, files):
+	def __init__(self, files, includeDirectories):
 		self.modulePool = {}
-		self.includeInPool(files, self.modulePool)
+		self.includeInPool(files, self.modulePool, includeDirectories)
 		self.rosTypes = ('int8','int16','int32','int64','float8','float16','float32','float64','byte','bool','string','time','empty')
 	def getRosTypes(self):
 		return self.rosTypes
-	def includeInPool(self, files, modulePool):
-		pathList = []
+	def includeInPool(self, files, modulePool, includeDirectories):
 		fileList = []
 		for p in [f for f in files.split('#') if len(f)>0]:
 			if p.startswith("-I"):
-				pathList.append(p[2:])
+				pass
 			else:
 				fileList.append(p)
-		pathList.append('/home/robocomp/robocomp/interfaces/IDSLs/')
-		pathList.append('/opt/robocomp/interfaces/IDSLs/')
 		for f in fileList:
 			filename = f.split('.')[0]
 			if not filename in modulePool:
-				for p in pathList:
+				for p in includeDirectories:
 					try:
 						path = p+'/'+f
 						module = IDSLParsing.fromFile(path)
 						modulePool[filename] = module
 						#for importf in module['imports'].split('#'):
 							#print 'aqui', importf
-						self.includeInPool(module['imports'], modulePool)
+						self.includeInPool(module['imports'], modulePool, includeDirectories)
 						break
 					except IOError, e:
 						pass
