@@ -248,7 +248,7 @@ if sys.argv[1].endswith(".cdsl"):
 			if communicationIsIce(ima):
 				for f in [ "SERVANT.H", "SERVANT.CPP"]:
 					ofile = outputPath + '/src/' + im.lower() + 'I.' + f.split('.')[-1].lower()
-					print 'Generating D', ofile, ' (servant for', im + ')'
+					print 'Generating ', ofile, ' (servant for', im + ')'
 					# Call cog
 					run = "cog.py -z -d -D theCDSL="+inputFile  + " -D theIDSLs="+imports + ' -D theIDSLPaths='+ '#'.join(includeDirectories) + " -D theInterface="+im + " -o " + ofile + " " + "/opt/robocomp/share/robocompdsl/templateCPP/" + f
 					run = run.split(' ')

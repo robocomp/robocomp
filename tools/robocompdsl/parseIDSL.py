@@ -215,8 +215,9 @@ class IDSLParsing:
 
 
 class IDSLPool:
-	def __init__(self, files, includeDirectories):
+	def __init__(self, files, iD):
 		self.modulePool = {}
+		includeDirectories = iD + ['/opt/robocomp/interfaces/IDSLs/', os.path.expanduser('~/robocomp/interfaces/IDSLs/')]
 		self.includeInPool(files, self.modulePool, includeDirectories)
 		self.rosTypes = ('int8','int16','int32','int64','float8','float16','float32','float64','byte','bool','string','time','empty')
 	def getRosTypes(self):

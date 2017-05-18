@@ -240,7 +240,7 @@ class CDSLParsing:
 			component['imports'].append(imp)
 			importedModule = None
 			try:
-				iD = ['/opt/robocomp/interfaces/IDSLs/', os.path.expanduser('~/robocomp/interfaces/IDSLs/')] + includeDirectories
+				iD = includeDirectories + ['/opt/robocomp/interfaces/IDSLs/', os.path.expanduser('~/robocomp/interfaces/IDSLs/')]
 				# print 'iD', iD
 				for directory in iD:
 					attempt = directory+'/'+imp
