@@ -12,13 +12,14 @@ def TAB():
 	cog.out('<TABHERE>')
 
 from parseCDSL import *
-component = CDSLParsing.fromFile(theCDSL)
+includeDirectories = theIDSLPaths.split('#')
+component = CDSLParsing.fromFile(theCDSL, includeDirectories=includeDirectories)
 if component == None:
 	print('Can\'t locate', theCDSLs)
 	sys.exit(1)
 
 from parseIDSL import *
-modulePool = IDSLPool(theIDSLs)
+modulePool = IDSLPool(theIDSLs, includeDirectories)
 module = modulePool.moduleProviding(theInterface)
 if module == None:
 	print('Can\'t locate', theIDSLs)
@@ -65,7 +66,7 @@ except:
 if len(ROBOCOMP)<1:
 	print 'ROBOCOMP environment variable not set! Exiting.'
 	sys.exit()
-	
+
 
 [[[cog
 cog.outl('preStr = "-I/opt/robocomp/interfaces/ -I"+ROBOCOMP+"/interfaces/ --all /opt/robocomp/interfaces/"')
@@ -83,9 +84,9 @@ cog.outl('\nclass ' + theInterface+ 'I('+theInterface+'):')
 		if interface['name'] == theInterface:
 			for mname in interface['methods']:
 				method = interface['methods'][mname]
-				
+
 				name = method['name']
-				
+
 				paramStrA = ''
 				for p in method['params']:
 					if p['decorator'] != 'out':
@@ -105,8 +106,3 @@ cog.outl('\nclass ' + theInterface+ 'I('+theInterface+'):')
 
 ]]]
 [[[end]]]
-
-
-
-
-
