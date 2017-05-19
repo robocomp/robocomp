@@ -60,7 +60,7 @@ Z()
 #ifndef
 [[[cog
 A()
-cog.out(theInterface.upper())
+cog.out(' ' + theInterface.upper())
 Z()
 ]]]
 [[[end]]]
@@ -91,7 +91,7 @@ Z()
 using namespace
 [[[cog
 A()
-cog.out(module['name'])
+cog.out(' ' + module['name'])
 Z()
 ]]]
 [[[end]]]
