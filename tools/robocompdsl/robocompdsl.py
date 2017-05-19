@@ -308,9 +308,7 @@ if sys.argv[1].endswith(".cdsl"):
 			ifile = "/opt/robocomp/share/robocompdsl/templatePython/" + f
 			print 'Generating', ofile, 'from', ifile
 			run = "cog.py -z -d -D theCDSL="+inputFile + " -D theIDSLs="+imports + ' -D theIDSLPaths='+ '#'.join(includeDirectories) + " -o " + ofile + " " + ifile
-			print run
 			run = run.split(' ')
-			print run
 			ret = Cog().main(run)
 			if ret != 0:
 				print 'ERROR'
