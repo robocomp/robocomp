@@ -68,7 +68,7 @@ _H
 #define
 [[[cog
 A()
-cog.out(theInterface.upper())
+cog.out(' ' + theInterface.upper())
 Z()
 ]]]
 [[[end]]]
@@ -100,14 +100,14 @@ Z()
 class
 [[[cog
 A()
-cog.out(theInterface)
+cog.out(' ' + theInterface)
 Z()
 ]]]
 [[[end]]]
 I : public virtual
 [[[cog
 A()
-cog.out(module['name'])
+cog.out(' ' + module['name'])
 Z()
 ]]]
 [[[end]]]

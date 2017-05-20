@@ -226,12 +226,12 @@ class CDSLParsing:
 			tree['imports'] = []
 			imprts = []
 		if isAGM1Agent(component):
-			imprts = ['/robocomp/interfaces/IDSLs/AGMExecutive.idsl', '/robocomp/interfaces/IDSLs/AGMCommonBehavior.idsl', '/robocomp/interfaces/IDSLs/AGMWorldModel.idsl']
+			imprts = ['AGMExecutive.idsl', 'AGMCommonBehavior.idsl', 'AGMWorldModel.idsl']
 			for i in tree['imports']:
 				if not i in imprts:
 					imprts.append(i)
 		if isAGM2Agent(component):
-			imprts = ['/robocomp/interfaces/IDSLs/AGM2.idsl']
+			imprts = ['AGM2.idsl']
 			for i in tree['imports']:
 				if not i in imprts:
 					imprts.append(i)
