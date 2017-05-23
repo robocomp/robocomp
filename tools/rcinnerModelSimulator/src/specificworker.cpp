@@ -887,7 +887,6 @@ void SpecificWorker::compute()
 
 			if (d->laserDataCartArray.contains(id) == false)
 			{
-				//laserDataCartArray.insert(id);
 				osg::Vec3Array *v= new osg::Vec3Array();
 				v->resize(laser->laserNode->measures+1);
 				d->laserDataCartArray.insert(id,v);
