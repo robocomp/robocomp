@@ -356,7 +356,14 @@ for namea, num in getNameNumber(component['requires']):
 	cog.outl(w)
 
 if len(component['publishes'])>0 or len(component['subscribesTo'])>0:
-	cog.outl('<TABHERE>IceStorm::TopicManagerPrx topicManager = IceStorm::TopicManagerPrx::checkedCast(communicator()->propertyToProxy("TopicManager.Proxy"));')
+	cog.outl('<TABHERE>IceStorm::TopicManagerPrx topicManager;')
+	cog.outl('<TABHERE>try{')
+	cog.outl('<TABHERE>topicManager = IceStorm::TopicManagerPrx::checkedCast(communicator()->propertyToProxy("TopicManager.Proxy"));')
+	cog.outl('<TABHERE>} catch(const Ice::Exception& ex){')
+	cog.outl('<TABHERE><TABHERE>cout << "[" << PROGRAM_NAME << "]: Exception: STORM not running: " << ex << endl;')
+	cog.outl('<TABHERE><TABHERE>return EXIT_FAILURE')
+	cog.outl('<TABHERE>};')
+
 
 
 for pba in component['publishes']:
