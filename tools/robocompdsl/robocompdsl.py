@@ -137,8 +137,8 @@ def generateDummyCDSL(path):
 		print "File", path, "already exists.\nExiting..."
 	else:
 		print "Generating dummy CDSL file:", path
-		string = """import "/robocomp/interfaces/IDSLs/import1.idsl";
-import "/robocomp/interfaces/IDSLs/import2.idsl";
+		string = """import "import1.idsl";
+import "import2.idsl";
 
 Component <CHANGETHECOMPONENTNAME>
 {
