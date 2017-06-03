@@ -253,14 +253,15 @@ for imp in component['imports']:
 using namespace std;
 using namespace RoboCompCommonBehavior;
 
+
 [[[cog
-for imp in component['imports']:
-	incl = imp.split('/')[-1].split('.')[0]
-	cog.outl('using namespace RoboComp'+incl+';')
+
+pool = IDSLPool(theIDSLs)
+for m in pool.modulePool:
+	cog.outl("using namespace "+pool.modulePool[m]['name']+";")
 
 ]]]
 [[[end]]]
-
 
 
 class
