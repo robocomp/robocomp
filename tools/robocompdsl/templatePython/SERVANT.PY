@@ -1,7 +1,8 @@
 [[[cog
 
 import sys
-sys.path.append('/opt/robocomp/python')
+from robocomp_general import config_robocomp
+config_information = config_robocomp("/opt/robocomp/share/robocompdsl/robocompdsl_config.json").config
 
 import cog
 def A():
@@ -56,19 +57,21 @@ Z()
 
 import sys, os, Ice
 
-ROBOCOMP = ''
-try:
-	ROBOCOMP = os.environ['ROBOCOMP']
-except:
-	print '$ROBOCOMP environment variable not set, using the default value /opt/robocomp'
-	ROBOCOMP = '/opt/robocomp'
-if len(ROBOCOMP)<1:
+[[[cog
+cog.outl('from robocomp_general import config_robocomp')
+cog.outl('config_information = config_robocomp("/opt/robocomp/share/robocompdsl/robocompdsl_config.json").config')
+]]]
+[[[end]]]
+
+if config_information["pathfiles"]["path2localrobocomp"] == "":
+	print 'path2localrobocomp in config file not set, using the default value /opt/robocomp'
+	config_information["pathfiles"]["path2localrobocomp"] = '/opt/robocomp'
+if len(config_information["pathfiles"]["path2localrobocomp"]) == "":
 	print 'ROBOCOMP environment variable not set! Exiting.'
 	sys.exit()
-	
 
 [[[cog
-cog.outl('preStr = "-I"+ROBOCOMP+"/interfaces/ --all "+ROBOCOMP+"/interfaces/"')
+cog.outl('preStr = "-I"+config_information["pathfiles"]["path2localrobocomp"]+"/interfaces/ --all "+config_information["pathfiles"]["path2localrobocomp"]+"/interfaces/"')
 cog.outl('\nIce.loadSlice(preStr+"'+theInterface+'.ice")')
 cog.outl('from ' + module['name'] + ' import *')
 cog.outl('\nclass ' + theInterface+ 'I('+theInterface+'):')

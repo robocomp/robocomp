@@ -3,7 +3,10 @@
 [[[cog
 
 import sys
-sys.path.append('/opt/robocomp/python')
+
+from robocomp_general import config_robocomp
+config_information = config_robocomp("/opt/robocomp/share/robocompdsl/robocompdsl_config.json").config
+sys.path.append(config_information["pathfiles"]["path2cogapp"])
 
 import cog
 def A():
@@ -166,18 +169,17 @@ from PySide import *
 
 from specificworker import *
 
-ROBOCOMP = ''
-try:
-	ROBOCOMP = os.environ['ROBOCOMP']
-except:
-	print '$ROBOCOMP environment variable not set, using the default value /opt/robocomp'
-	ROBOCOMP = '/opt/robocomp'
-if len(ROBOCOMP)<1:
+config_information = config_robocomp("/opt/robocomp/share/robocompdsl/robocompdsl_config.json").config
+
+if config_information["pathfiles"]["path2localrobocomp"] == "":
+	print 'path2localrobocomp in config file not set, using the default value /opt/robocomp'
+	config_information["pathfiles"]["path2localrobocomp"] = '/opt/robocomp'
+if len(config_information["pathfiles"]["path2localrobocomp"]) == "":
 	print 'ROBOCOMP environment variable not set! Exiting.'
 	sys.exit()
 
 
-preStr = "-I"+ROBOCOMP+"/interfaces/ -I/opt/robocomp/interfaces/ --all "+ROBOCOMP+"/interfaces/"
+preStr = "-I"+config_information["pathfiles"]["path2localrobocomp"]+"/interfaces/ -I/opt/robocomp/interfaces/ --all "+config_information["pathfiles"]["path2localrobocomp"]+"/interfaces/"
 Ice.loadSlice(preStr+"CommonBehavior.ice")
 import RoboCompCommonBehavior
 [[[cog

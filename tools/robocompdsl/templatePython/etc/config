@@ -1,7 +1,10 @@
 [[[cog
 
 import sys
-sys.path.append('/opt/robocomp/python')
+from robocomp_general import config_robocomp
+config_information = config_robocomp("/opt/robocomp/share/robocompdsl/robocompdsl_config.json").config
+sys.path.append(config_information["pathfiles"]["path2cogapp"])
+
 
 import cog
 def A():

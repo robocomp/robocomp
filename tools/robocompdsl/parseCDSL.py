@@ -12,6 +12,11 @@ debug = False
 from parseIDSL import *
 
 
+from robocomp_general import config_robocomp
+config_information = config_robocomp("/opt/robocomp/share/robocompdsl/robocompdsl_config.json").config
+
+
+
 def getTypeFromModule(vtype, module):
 	for t in module['types']:
 		if t['name'] == vtype:
@@ -211,7 +216,8 @@ class CDSLParsing:
 		except:
 			imprts = []
 		if 'agmagent' in component['options']:
-			imprts = ['/robocomp/interfaces/IDSLs/AGMExecutive.idsl', '/robocomp/interfaces/IDSLs/AGMCommonBehavior.idsl', '/robocomp/interfaces/IDSLs/AGMWorldModel.idsl']
+			
+			imprts = [config_information["pathfiles"]["path2interfaces"]+'/AGMExecutive.idsl', config_information["pathfiles"]["path2interfaces"]+'/AGMCommonBehavior.idsl', config_information["pathfiles"]["path2interfaces"]+'/AGMWorldModel.idsl']
 			for i in tree['imports']:
 				if not i in imprts:
 					imprts.append(i)
