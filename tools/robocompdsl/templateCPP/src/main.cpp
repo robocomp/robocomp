@@ -361,8 +361,8 @@ if len(component['publishes'])>0 or len(component['subscribesTo'])>0:
 	cog.outl('<TABHERE>topicManager = IceStorm::TopicManagerPrx::checkedCast(communicator()->propertyToProxy("TopicManager.Proxy"));')
 	cog.outl('<TABHERE>} catch(const Ice::Exception& ex){')
 	cog.outl('<TABHERE><TABHERE>cout << "[" << PROGRAM_NAME << "]: Exception: STORM not running: " << ex << endl;')
-	cog.outl('<TABHERE><TABHERE>return EXIT_FAILURE')
-	cog.outl('<TABHERE>};')
+	cog.outl('<TABHERE><TABHERE>return EXIT_FAILURE;')
+	cog.outl('<TABHERE>}')
 
 
 

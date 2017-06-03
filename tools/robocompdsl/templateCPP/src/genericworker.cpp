@@ -86,6 +86,12 @@ for namea, num in getNameNumber(component['publishes']):
 	cog.outl("<TABHERE>"+name.lower()+num+"_proxy = (*("+name+"Prx*)mprx[\""+name+"Pub"+num+"\"]);")
 ]]]
 [[[end]]]
+[[[cog
+if len(component['publishes'])>0 or len(component['subscribesTo'])>0:
+	cog.outl('<TABHERE>topicmanager_proxy = (*(IceStorm::TopicManagerPrx*)mprx["topicManager"]);');
+]]]
+[[[end]]]
+
 
 	mutex = new QMutex(QMutex::Recursive);
 
@@ -99,6 +105,14 @@ if component['gui'] != 'none':
 [[[end]]]
 	Period = BASIC_PERIOD;
 	connect(&timer, SIGNAL(timeout()), this, SLOT(compute()));
+[[[cog
+if len(component['publishes'])>0 or len(component['subscribesTo'])>0:
+	cog.outl("<TABHERE>connect(&storm_timer, SIGNAL(timeout()), this, SLOT(check_storm()));");
+	cog.outl("<TABHERE>storm_timer.start(storm_period);");
+]]]
+[[[end]]]
+
+
 // 	timer.start(Period);
 }
 
@@ -124,6 +138,20 @@ void GenericWorker::setPeriod(int p)
 	Period = p;
 	timer.start(Period);
 }
+
+[[[cog
+if len(component['publishes'])>0 or len(component['subscribesTo'])>0:
+	cog.outl('''
+	void GenericWorker::check_storm()
+	{
+	<TABHERE>try {
+	<TABHERE><TABHERE>topicmanager_proxy->ice_ping();
+	<TABHERE>} catch(const Ice::Exception& ex) {
+	<TABHERE><TABHERE>cout <<"Exception: STORM not running: " << ex << endl;
+	<TABHERE>}
+	}''')
+]]]
+[[[end]]]
 
 [[[cog
 try:

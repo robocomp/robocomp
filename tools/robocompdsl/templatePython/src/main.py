@@ -247,13 +247,13 @@ for rqa in component['requires']:
 try:
 	if len(component['publishes']) > 0 or len(component['subscribesTo']) > 0:
 		cog.outl("""
-<TABHERE><TABHERE># Topic Manager
-<TABHERE><TABHERE>proxy = ic.getProperties().getProperty("TopicManager.Proxy")
-<TABHERE><TABHERE>obj = ic.stringToProxy(proxy)
-<TABHERE><TABHERE>try:
-<TABHERE><TABHERE><TABHERE>topicManager = IceStorm.TopicManagerPrx.checkedCast(obj)
-<TABHERE><TABHERE>except ConnectionRefusedException:
-<TABHERE><TABHERE><TABHERE>raise Exception("STORM not running") """)
+		<TABHERE><TABHERE># Topic Manager
+		<TABHERE><TABHERE>proxy = ic.getProperties().getProperty("TopicManager.Proxy")
+		<TABHERE><TABHERE>obj = ic.stringToProxy(proxy)
+		<TABHERE><TABHERE>try:
+		<TABHERE><TABHERE><TABHERE>topicManager = IceStorm.TopicManagerPrx.checkedCast(obj)
+		<TABHERE><TABHERE>except ConnectionRefusedException:
+		<TABHERE><TABHERE><TABHERE>raise Exception("STORM not running") """)
 
 except:
 	pass
