@@ -167,7 +167,7 @@ For c++,
 
 For Python,
 
-    python bin/mycomponent --Ice.Config=etc/config
+    python src/MyFirstComp.py --Ice.Config=etc/config
 
 and watch the robot avoiding obstacles! 
 Change the code to improve this simple behavior of the robot. Stop the component by closing its ui window, modify, recompile and execute again.
