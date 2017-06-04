@@ -1,6 +1,6 @@
+cmake_minimum_required( VERSION 2.6 )
 
-
-include( RCInnerModelSimulator/tool_config.cmake )
+include( rcinnerModelSimulator/tool_config.cmake )
 
 include_directories ( ${CMAKE_CURRENT_BINARY_DIR} )
 include_directories ( ${CMAKE_CURRENT_SOURCE_DIR}/include )
