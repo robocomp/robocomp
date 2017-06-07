@@ -200,6 +200,8 @@ try:
 		cog.outl("<TABHERE>ParameterMap params;")
 		cog.outl("<TABHERE>AGMModel::SPtr worldModel;")
 		cog.outl("<TABHERE>bool active;")
+		if 'innermodelviewer' in [ x.lower() for x in component['options'] ]:
+			cog.outl("<TABHERE>void regenerateInnerModelViewer();")
 		cog.outl("<TABHERE>bool setParametersAndPossibleActivation(const ParameterMap &prs, bool &reactivated);")
 		cog.outl("<TABHERE>void sendModificationProposal(AGMModel::SPtr &worldModel, AGMModel::SPtr &newModel);")
 	elif isAGM2Agent(component):

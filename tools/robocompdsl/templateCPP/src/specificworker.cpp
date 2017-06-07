@@ -40,7 +40,9 @@ def bodyCodeFromName(name, component):
 		if name == 'edgesUpdated':
 			bodyCode = "\tQMutexLocker lockIM(mutex);\n\tfor (auto modification : modifications)\n\t{\n\t\tAGMModelConverter::includeIceModificationInInternalModel(modification, worldModel);\n\t\tAGMInner::updateImNodeFromEdge(worldModel, modification, innerModel);\n\t}\n"
 		if name == 'structuralChange':
-			bodyCode = "<TABHERE>mutex->lock();\n <TABHERE>AGMModelConverter::fromIceToInternal(w, worldModel);\n \n<TABHERE>delete innerModel;\n<TABHERE>innerModel = AGMInner::extractInnerModel(worldModel);\n<TABHERE>mutex->unlock();"
+			bodyCode = "<TABHERE>QMutexLocker lockIM(mutex);\n <TABHERE>AGMModelConverter::fromIceToInternal(w, worldModel);\n \n<TABHERE>delete innerModel;\n<TABHERE>innerModel = AGMInner::extractInnerModel(worldModel);"
+			if 'innermodelviewer' in [ x.lower() for x in component['options'] ]:
+				bodyCode += "\n<TABHERE>regenerateInnerModelViewer();"
 		#######################################
 		# code to implement AGMCommonBehavior #
 		#######################################
@@ -333,6 +335,18 @@ if 'subscribesTo' in component:
 
 [[[cog
 try:
+	if ('agmagent' in [ x.lower() for x in component['options'] ]) and ('innermodelviewer' in [ x.lower() for x in component['options'] ]):
+		cog.outl("""
+void SpecificWorker::regenerateInnerModelViewer()
+{
+	if (innerModelViewer)
+	{
+		osgView->getRootGroup()->removeChild(innerModelViewer);
+	}
+
+	innerModelViewer = new InnerModelViewer(innerModel, "root", osgView->getRootGroup(), true);
+}\n""")
+
 	if 'agmagent' in [ x.lower() for x in component['options'] ]:
 		cog.outl("""
 bool SpecificWorker::setParametersAndPossibleActivation(const ParameterMap &prs, bool &reactivated)
