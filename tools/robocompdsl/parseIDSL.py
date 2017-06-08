@@ -12,6 +12,7 @@ debug = False
 
 
 class IDSLParsing:
+	"""generic class for parsing idsl"""
 	@staticmethod
 	def fromFile(filename, verbose=False, includeIncludes=True):
 		# Open input file
@@ -184,6 +185,7 @@ class IDSLParsing:
 
 
 class IDSLPool:
+	"""Creates a pool of parsed idsl objects from list of files"""
 	def __init__(self, files):
 		self.modulePool = {}
 		self.includeInPool(files, self.modulePool)
