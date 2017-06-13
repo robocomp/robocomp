@@ -1,0 +1,43 @@
+<innerModel>
+	<transform id="world">
+		
+		<transform id="target2" tx="0" ty="0" tz="0"> 
+			<plane id="target2x" px="0.25" nx="1" size="10,10,5000" repeat="1" texture="#ff0000" />
+			<plane id="target2y" py="0.25" nx="1" size="10,5000,10" repeat="1" texture="#00ff00" />
+			<plane id="target2z" pz="0.25" nx="1" size="5000,10,10" repeat="1" texture="#0000ff" />
+		</transform>	
+		
+		<transform id="floor">
+			
+			<mesh  id="pabellonInformatica" file="/home/robocomp/robocomp/files/osgModels/edificios/pabellon-informatica.osgb"  tx="0" ty="0" tz="0" rx="1.57079632679" scale="100" />
+		
+			<omnirobot id="base" port="10004">
+			<!-- cabeza -->
+				<transform id="cabeza" ty="1600" tz="-100" >
+					<rotation id="prejoint_jointcabeza" ry="1.57079632679">
+						<joint id="jointcabeza" port="30000">
+							<rotation id="postjoint_jointcabeza" ry="-1.57079632679">
+								<transform id="cabeza_sensores">
+									<plane id="sensor" nz="1" pz="-50" size="100" repeat="1" texture="#0000ff" />
+									<imu id="imu" port="50500"/>
+									<rgbd id="rgbd" focal="400" width="640" height="480" port="40000" ifconfig="20000,40000" />
+								</transform>
+							</rotation>
+						</joint>
+					</rotation>
+				</transform><!-- cabeza -->
+
+				<!-- laser -->
+				<translation id="laserPose" tx="0" ty="200" tz="252">
+					<laser id="laser" port="20000" measures="100" min="100" max="30000" angle="3.141593" ifconfig="10000" />
+	<!-- 					<plane id="sensorL" nz="1" pz="-50" size="100" repeat="1" texture="#ff0000" /> -->
+				</translation> <!-- laser -->
+
+				<translation id="robotGeometricCenter" tx="0" ty="0" tz="50">
+					<mesh id="base_mesh" file="/home/robocomp/robocomp/files/osgModels/Gualzru/Gualzru.osg"   scale="25" rx="1.57079632679" rz="-1.57079632679" ty="100" tz="-150"/>
+				</translation>
+		</omnirobot>
+		</transform>
+	</transform>
+</innerModel>
+
