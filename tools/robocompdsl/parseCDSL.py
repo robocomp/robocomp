@@ -2,7 +2,7 @@
 
 from pyparsing import Word, alphas, alphanums, nums, OneOrMore, CharsNotIn, Literal, Combine
 from pyparsing import cppStyleComment, Optional, Suppress, ZeroOrMore, Group, StringEnd, srange
-from pyparsing import nestedExpr, CaselessLiteral
+from pyparsing import nestedExpr, CaselessLiteral, CaselessKeyword, ParseBaseException 
 
 import sys, traceback, os
 
@@ -10,7 +10,7 @@ debug = False
 #debug = True
 
 from parseIDSL import *
-
+import rcExceptions
 
 def getTypeFromModule(vtype, module):
 	for t in module['types']:
@@ -129,55 +129,56 @@ class CDSLParsing:
 			sys.exit(1)
 		ret['filename'] = filename
 		return ret
-	@staticmethod
-	def fromString(inputText, verbose=False, includeDirectories=None):
-		# print 'fromString', includeDirectories
-		if includeDirectories == None:
-			includeDirectories = []
-		# print 'fromString2', includeDirectories
-		if verbose: print 'Verbose:', verbose
-		text = nestedExpr("/*", "*/").suppress().transformString(inputText)
 
-		semicolon = Suppress(Word(";"))
-		quote     = Suppress(Word("\""))
-		op        = Suppress(Word("{"))
-		cl        = Suppress(Word("}"))
-		opp       = Suppress(Word("("))
-		clp       = Suppress(Word(")"))
+	@staticmethod
+	def fromString(inputText, verbose=False):
+		if verbose: print 'Verbose:', verbose
+		text = nestedExpr("/*", "*/").suppress().transformString(inputText) 
+
+		OBRACE,CBRACE,SEMI,OPAR,CPAR = map(Suppress, "{};()")
+		QUOTE     					 = Suppress(Word("\""))
+
+		# keywords - extend as needed
+		(IMPORT, COMMUNICATIONS, LANGUAGE, COMPONENT, CPP, GUI, QT,
+		 PYTHON, REQUIRES, IMPLEMENTS, SUBSCRIBESTO, PUBLISHES, OPTIONS) = map(CaselessKeyword, """
+			IMPORT COMMUNICATIONS LANGUAGE COMPONENT CPP GUI QT
+			PYTHON REQUIRES IMPLEMENTS SUBSCRIBESTO PUBLISHES OPTIONS""".split())
 
 		identifier = Word( alphas+"_", alphanums+"_" )
-		commIdentifier = Group(identifier.setResultsName('identifier') + Optional(opp + (CaselessLiteral("ice")|CaselessLiteral("ros")).setResultsName("type") + clp))
+
+		commIdentifier = Group(identifier('identifier') + Optional(OPAR + (CaselessKeyword("ice")|CaselessKeyword("ros")).setResultsName("type") + CPAR))
 
 		# Imports
-		idslImport  = Suppress(CaselessLiteral("import")) + quote +  CharsNotIn("\";").setResultsName('path') + quote + semicolon
+		idslImport  = Suppress(IMPORT) - QUOTE +  CharsNotIn("\";").setResultsName('path') - QUOTE + SEMI
 		idslImports = ZeroOrMore(idslImport)
+		
 		# Communications
-		implementsList = Group(CaselessLiteral('implements')    + commIdentifier + ZeroOrMore(Suppress(Word(',')) + commIdentifier) + semicolon)
-		requiresList   = Group(CaselessLiteral('requires')      + commIdentifier + ZeroOrMore(Suppress(Word(',')) + commIdentifier) + semicolon)
-		subscribesList = Group(CaselessLiteral('subscribesTo')  + commIdentifier + ZeroOrMore(Suppress(Word(',')) + commIdentifier) + semicolon)
-		publishesList  = Group(CaselessLiteral('publishes')     + commIdentifier + ZeroOrMore(Suppress(Word(',')) + commIdentifier) + semicolon)
+		implementsList = Group(IMPLEMENTS + commIdentifier + ZeroOrMore(Suppress(Word(',')) + commIdentifier) + SEMI)
+		requiresList   = Group(REQUIRES + commIdentifier + ZeroOrMore(Suppress(Word(',')) + commIdentifier) + SEMI)
+		subscribesList = Group(SUBSCRIBESTO + commIdentifier + ZeroOrMore(Suppress(Word(',')) + commIdentifier) + SEMI)
+		publishesList  = Group(PUBLISHES + commIdentifier + ZeroOrMore(Suppress(Word(',')) + commIdentifier) + SEMI)
 		communicationList = implementsList | requiresList | subscribesList | publishesList
-		communications = Group( Suppress(CaselessLiteral("communications")) + op + ZeroOrMore(communicationList) + cl + semicolon)
-
+		communications = Group( COMMUNICATIONS.suppress() + OBRACE + ZeroOrMore(communicationList) + CBRACE + SEMI)
+		
 		# Language
-		language = Suppress(CaselessLiteral("language")) + (CaselessLiteral("cpp")|CaselessLiteral("python")) + semicolon
-		# Qtversion
-		qtVersion = Group(Optional(Suppress(CaselessLiteral("useQt")) + (CaselessLiteral("qt4")|CaselessLiteral("qt5")) + semicolon))
-		# InnerModelViewer
-		innermodelviewer = Group(Optional(Suppress(CaselessLiteral("InnerModelViewer")) + (CaselessLiteral("true")|CaselessLiteral("false")) + semicolon))
+		language = Group(LANGUAGE.suppress() - (CPP | PYTHON) - SEMI)
 		# GUI
-		gui = Group(Optional(Suppress(CaselessLiteral("gui")) + CaselessLiteral("Qt") + opp + identifier + clp + semicolon ))
+		gui = Group(Optional(GUI.suppress() - QT + OPAR - identifier - CPAR + SEMI ))
 		# additional options
-		options = Group(Optional(Suppress(CaselessLiteral("options")) + identifier + ZeroOrMore(Suppress(Word(',')) + identifier) + semicolon))
+		options = Group(Optional(OPTIONS.suppress() + identifier + ZeroOrMore(Suppress(Word(',')) + identifier) + SEMI))
 
-		componentContents = communications.setResultsName('communications') & language.setResultsName('language') & gui.setResultsName('gui') & options.setResultsName('options') & qtVersion.setResultsName('useQt') & innermodelviewer.setResultsName('innermodelviewer')
-		component = Suppress(CaselessLiteral("component")) + identifier.setResultsName("name") + op + componentContents.setResultsName("properties") + cl + semicolon
-
-		CDSL = idslImports.setResultsName("imports") + component.setResultsName("component")
+		# Component definition
+		componentContents = communications('communications') + language('language') + Optional(gui('gui')) + Optional(options('options'))
+		component = COMPONENT.suppress() + identifier("name") + OBRACE + componentContents("properties") + CBRACE + SEMI
+		
+		CDSL = idslImports("imports") - component("component")
 		CDSL.ignore( cppStyleComment )
-		tree = CDSL.parseString(text)
-		# print 'parseCDSL.fromString', includeDirectories
-		return CDSLParsing.component(tree, includeDirectories=includeDirectories)
+		try:
+			tree = CDSL.parseString(text)
+		except ParseBaseException as e:
+			raise rcExceptions.ParseException(str(e), e.line, e.column)
+
+		return CDSLParsing.component(tree)
 
 	@staticmethod
 	def printComponent(component, start=''):
