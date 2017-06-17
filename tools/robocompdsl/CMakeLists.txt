@@ -12,4 +12,4 @@ INSTALL(DIRECTORY "templateCPP" DESTINATION /opt/robocomp/share/robocompdsl )
 INSTALL(DIRECTORY "templatePython" DESTINATION /opt/robocomp/share/robocompdsl )
 INSTALL(FILES "TEMPLATE.ICE" DESTINATION /opt/robocomp/share/robocompdsl )
 INSTALL(DIRECTORY "cogapp" DESTINATION /opt/robocomp/python )
-
+INSTALL(FILES "rcExceptions.py" DESTINATION /opt/robocomp/python )
