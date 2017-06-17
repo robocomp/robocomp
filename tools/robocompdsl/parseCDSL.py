@@ -131,18 +131,22 @@ class CDSLParsing:
 		return ret
 
 	@staticmethod
-	def fromString(inputText, verbose=False):
+	def fromString(inputText, verbose=False, includeDirectories=None):
+		if includeDirectories == None:
+			includeDirectories = []
 		if verbose: print 'Verbose:', verbose
 		text = nestedExpr("/*", "*/").suppress().transformString(inputText) 
 
 		OBRACE,CBRACE,SEMI,OPAR,CPAR = map(Suppress, "{};()")
 		QUOTE     					 = Suppress(Word("\""))
 
-		# keywords - extend as needed
-		(IMPORT, COMMUNICATIONS, LANGUAGE, COMPONENT, CPP, GUI, QT,
-		 PYTHON, REQUIRES, IMPLEMENTS, SUBSCRIBESTO, PUBLISHES, OPTIONS) = map(CaselessKeyword, """
-			IMPORT COMMUNICATIONS LANGUAGE COMPONENT CPP GUI QT
-			PYTHON REQUIRES IMPLEMENTS SUBSCRIBESTO PUBLISHES OPTIONS""".split())
+		# keywords
+		(IMPORT, COMMUNICATIONS, LANGUAGE, COMPONENT, CPP, GUI, USEQt, QT, QT4, QT5, 
+		 PYTHON, REQUIRES, IMPLEMENTS, SUBSCRIBESTO, PUBLISHES, OPTIONS, TRUE, FALSE,
+		 InnerModelViewer) = map(CaselessKeyword, """
+		IMPORT COMMUNICATIONS LANGUAGE COMPONENT CPP GUI useQt QT qt4 qt5
+		 PYTHON REQUIRES IMPLEMENTS SUBSCRIBESTO PUBLISHES OPTIONS TRUE FALSE
+		 InnerModelViewer""".split())
 
 		identifier = Word( alphas+"_", alphanums+"_" )
 
@@ -162,13 +166,17 @@ class CDSLParsing:
 		
 		# Language
 		language = Group(LANGUAGE.suppress() - (CPP | PYTHON) - SEMI)
+		# Qtversion
+		qtVersion = Group(Optional(USEQt.suppress() + (QT4|QT5) + SEMI))
+		# InnerModelViewer
+		innermodelviewer = Group(Optional(InnerModelViewer.suppress() + (TRUE|FALSE) + SEMI))
 		# GUI
 		gui = Group(Optional(GUI.suppress() - QT + OPAR - identifier - CPAR + SEMI ))
 		# additional options
 		options = Group(Optional(OPTIONS.suppress() + identifier + ZeroOrMore(Suppress(Word(',')) + identifier) + SEMI))
 
 		# Component definition
-		componentContents = communications('communications') + language('language') + Optional(gui('gui')) + Optional(options('options'))
+		componentContents = communications('communications') + language('language') + Optional(gui('gui')) + Optional(options('options')) + Optional(qtVersion('useQt')) + Optional(innermodelviewer('innermodelviewer'))
 		component = COMPONENT.suppress() + identifier("name") + OBRACE + componentContents("properties") + CBRACE + SEMI
 		
 		CDSL = idslImports("imports") - component("component")
