@@ -144,9 +144,9 @@ class CDSLParsing:
 		(IMPORT, COMMUNICATIONS, LANGUAGE, COMPONENT, CPP, GUI, USEQt, QT, QT4, QT5, 
 		 PYTHON, REQUIRES, IMPLEMENTS, SUBSCRIBESTO, PUBLISHES, OPTIONS, TRUE, FALSE,
 		 InnerModelViewer) = map(CaselessKeyword, """
-		IMPORT COMMUNICATIONS LANGUAGE COMPONENT CPP GUI useQt QT qt4 qt5
-		 PYTHON REQUIRES IMPLEMENTS SUBSCRIBESTO PUBLISHES OPTIONS TRUE FALSE
-		 InnerModelViewer""".split())
+		import communications language component cpp gui useQt Qt qt4 qt5
+		python requires implements subscribesTo publishes options true false
+		InnerModelViewer""".split())
 
 		identifier = Word( alphas+"_", alphanums+"_" )
 
@@ -188,8 +188,8 @@ class CDSLParsing:
 		# print tree
 		# print "\n"
 		# print CDSLParsing.component(tree)
-		sys.exit()
-		return CDSLParsing.component(tree)
+		# sys.exit()
+		return CDSLParsing.component(tree, includeDirectories=includeDirectories)
 
 	@staticmethod
 	def printComponent(component, start=''):
