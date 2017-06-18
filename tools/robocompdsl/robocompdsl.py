@@ -208,14 +208,10 @@ if sys.argv[1].endswith(".cdsl"):
 	pool = IDSLPool(imports, includeDirectories)
 	interface_list = component['requires'] + component['implements'] + component['subscribesTo'] + component['publishes']
 
-	interface_names = []
 	for interface_required in interface_list:
 		interface_required = interface_required if type(interface_required) == str else interface_required[0]
-		interface_names.append(interface_required)
-
-	for interface_required in interface_names:
 		if not pool.moduleProviding(interface_required):
-			raise rcExceptions.InterfaceNotFound(interface_required, interface_names)
+			raise rcExceptions.InterfaceNotFound(interface_required, pool.interfaces())
 
 	if component['language'].lower() == 'cpp':
 		#
