@@ -185,10 +185,6 @@ class CDSLParsing:
 			tree = CDSL.parseString(text)
 		except ParseBaseException as e:
 			raise rcExceptions.ParseException(str(e), e.line, e.column)
-		# print tree
-		# print "\n"
-		# print CDSLParsing.component(tree)
-		# sys.exit()
 		return CDSLParsing.component(tree, includeDirectories=includeDirectories)
 
 	@staticmethod

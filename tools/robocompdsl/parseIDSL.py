@@ -258,6 +258,13 @@ class IDSLPool:
 					return self.modulePool[module]
 		return None
 
+	def interfaces(self):
+		interfaces = []
+		for module in self.modulePool:
+			for m in self.modulePool[module]['interfaces']:
+				interfaces.append(m['name']) 
+		return interfaces
+
 	def rosImports(self):
 		includesList = []
 		for module in self.modulePool:

@@ -12,7 +12,6 @@ class InterfaceNotFound(RobocompDslException):
 	def __init__(self, interfaceName, validNames=None):
 		self.interfaceName = interfaceName
 		self.validNames = validNames
-		self.validNames.remove(interfaceName)
 		self.message = interfaceName
 		if validNames:
 			similar_list = difflib.get_close_matches(self.interfaceName, self.validNames, cutoff=0.4)
