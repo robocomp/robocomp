@@ -69,3 +69,4 @@ RGBD.h
 Speech*
 ui_*.h
 ui_**.pyc
+.idea/
