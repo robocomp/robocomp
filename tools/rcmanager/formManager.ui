@@ -303,7 +303,7 @@
       </widget>
       <widget class="QWidget" name="tab_2">
        <attribute name="title">
-        <string>NetWork Editor</string>
+        <string>Network Editor</string>
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_2" stretch="0">
         <property name="spacing">
@@ -456,6 +456,9 @@
     </property>
     <addaction name="actionEditor_2"/>
     <addaction name="actionControlPanel"/>
+    <addaction name="actionLogger"/>
+    <addaction name="actionComponent_List"/>
+    <addaction name="actionFull_Screen"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -715,12 +718,42 @@
   </action>
   <action name="actionControlPanel">
    <property name="text">
-    <string>ControlPanel</string>
+    <string>Control Panel</string>
    </property>
   </action>
   <action name="actionSet_Log_File">
    <property name="text">
     <string>Set Log File</string>
+   </property>
+  </action>
+  <action name="actionLogger">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Logger</string>
+   </property>
+  </action>
+  <action name="actionComponent_List">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Component List</string>
+   </property>
+  </action>
+  <action name="actionFull_Screen">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Full Screen</string>
    </property>
   </action>
  </widget>

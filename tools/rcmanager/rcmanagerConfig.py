@@ -38,8 +38,8 @@ from PyQt4 import QtCore, QtGui, Qt
 filePath = 'rcmanager.xml'
 from time import localtime, strftime##To log data
 
-
 ROBOCOMP = ''
+
 try:
 	ROBOCOMP = os.environ['ROBOCOMP']
 except:
@@ -48,8 +48,6 @@ except:
 if len(ROBOCOMP)<1:
 	print 'ROBOCOMP environment variable not set! Exiting.'
 	sys.exit()
-
-
 
 preStr = "-I"+ROBOCOMP+"/interfaces/ --all "+ROBOCOMP+"/interfaces/"
 Ice.loadSlice(preStr+"CommonBehavior.ice")
@@ -71,8 +69,6 @@ try:
 except AttributeError:
     def _translate(context, text, disambig):
         return QtGui.QApplication.translate(context, text, disambig)
-
-
 			
 class ComponentGroup():##On working condition
 	def __init__(self):
@@ -80,15 +76,19 @@ class ComponentGroup():##On working condition
 		self.groupIconFilePath=""
 		self.groupIconPixmap=None
 		self.Components=[]
+		
 	def __repr__(self):
 		string=""
 		string=string+self.groupName
 		string=string+self.groupIconFilePath
 		return stringIsUseful
+		
 	def setName(self,name):
 		self.groupName=name
+		
 	def setIconFilePath(self,string):
 		self.groupIconFilePath=string
+		
 	def readFromIconFile(self):##This will read from the iconFilePath and set the pixMap "Dont Forget to call the Function after name of file is assigned"
 		try:
 			if self.groupIconFilePath=="":
@@ -96,8 +96,8 @@ class ComponentGroup():##On working condition
 			self.groupIconPixmap=QtGui.QPixmap(self.groupIconFilePath)
 		except Exception,e:
 			raise e
+			
 	def addComponent(self,component):##Add Component to the group
-		
 		if self.Components.__contains__(component):
 			raise NameError("Already in the group")
 			return
@@ -125,7 +125,6 @@ class ComponentGroup():##On working condition
 	def downGroupComponents(self,Logger):
 		for x in self.Components:
 			downComponent(x,Logger)
-
 
 ##
 #This is used to set The log file
@@ -175,26 +174,29 @@ class LogFileSetter(QtGui.QDialog):
 		self.UI.setupUi(self)
 		self.connect(self.UI.pushButton,QtCore.SIGNAL("clicked()"),self.browse)
 		self.connect(self.UI.pushButton_2,QtCore.SIGNAL("clicked()"),self.ok)
+		
 	def setFile(self):
 		self.show()
 		self.UI.lineEdit.setText(self.logger.filename)
+		
 	def browse(self):
 		filename=QtGui.QFileDialog.getSaveFileName(self,'Save File',os.getcwd(),'*.log')
 		filename=str(filename)
 		if filename.endswith(".log")==False:
 			filename=filename+".log"
 		self.UI.lineEdit.setText(filename)
+		
 	def ok(self):
 		self.logger.setFile(str(self.UI.lineEdit.text()))
 		self.close()
 		
-
 class Logger():##This will be used to log data
 	def __init__(self,logArea,file=None):
 		self.logArea=logArea
 		self.file=file
 		self.fileWrite=False
 		self.filename=""
+		
 	def logData(self,text=" ",arg="G"):#To log into the textEdit widget
 		if arg=="G":
 			color=QtGui.QColor.fromRgb(0,255,0)
@@ -209,11 +211,10 @@ class Logger():##This will be used to log data
 			self.file.flush()
 
 	def setFile(self,filename):
-		
-			self.filename=filename
-			self.file = open(filename, 'a')
-			self.fileWrite=True
-			self.logData("\nStarted Logging into "+self.filename)
+		self.filename=filename
+		self.file = open(filename, 'a')
+		self.fileWrite=True
+		self.logData("\nStarted Logging into "+self.filename)
 
 ##
 #This Class will take care of the Building process of a new group..THe first class is its GUI. second class is its backbone
@@ -291,6 +292,7 @@ class GroupBuilder(QtGui.QDialog):
 		self.connect(self.UI.pushButton,QtCore.SIGNAL("clicked()"),self.browseIcon)
 		self.group=None
 		self.build=False
+		
 	def startBuildGroup(self,networkSettings):
 		self.build=False
 		self.networkSettings=networkSettings
@@ -308,8 +310,8 @@ class GroupBuilder(QtGui.QDialog):
 		self.UI.lineEdit_2.setText("")
 		self.build=True
 		self.close()
-	def cancel(self):
 		
+	def cancel(self):
 		self.build=False
 		self.close()
 		
@@ -324,13 +326,9 @@ class GroupBuilder(QtGui.QDialog):
 			self.UI.lineEdit_2.setText("")
 		self.build=False
 
-
-
-
 ##
 #This Will take care of adding a component into a particular group..The first class is its GUI and the second one is its main thing
 ##
-
 
 class AddToGroup_Ui_Dialog(object):
     def setupUi(self, Dialog):
@@ -365,7 +363,6 @@ class AddToGroup_Ui_Dialog(object):
         self.pushButton_2.setText(_translate("Dialog", "Cancel", None))
         self.pushButton.setText(_translate("Dialog", "Ok", None))
 
-
 class GroupSelector(QtGui.QDialog):
 	def __init__(self,parent,logger):
 		self.logger=logger
@@ -378,6 +375,7 @@ class GroupSelector(QtGui.QDialog):
 		self.groupList=None
 		self.component=None
 		self.groupAdded=False
+		
 	def openSelector(self,component,groupList):
 		self.groupAdded=False
 		self.groupList=groupList
@@ -389,6 +387,7 @@ class GroupSelector(QtGui.QDialog):
 		self.show()
 		self.compoent=component
 		self.groupList=groupList
+		
 	def cancel(self):
 		self.groupAdded=False
 		self.close()	
@@ -403,14 +402,13 @@ class GroupSelector(QtGui.QDialog):
 		self.logger.logData("Component ::"+self.component.alias+" Added to group "+self.component.groupName )
 		self.parent.refreshCodeFromTree()
 		self.close()
+		
 	def closeEvent(self,event):
 		if self.groupAdded==False:
 			QtGui.QDialog.closeEvent(self,event)
 			self.logger.logData("Adding to group Cancelled by User","R")
 			self.UI.listWidget.clear()
 				
-
-
 ##
 #This is inherited tool Button ..Main reason was to show its purpose while hovering the button(Not using anymore)
 ##
@@ -423,12 +421,9 @@ class toolButton(QtGui.QToolButton):
 		self.emit(QtCore.SIGNAL("hovered()"))
 		QtGui.QToolButton.enterEvent(self,event)
 
-
-
 ##
 #This will take care of the Building the connection between nodes..The first class is its GUI.the second one is the main thing.
 ##
-
 
 class ConnectionBuilder_Ui_Dialog(object):
     def setupUi(self, Dialog):
@@ -479,10 +474,8 @@ class ConnectionBuilder_Ui_Dialog(object):
         self.pushButton_2.setText(_translate("Dialog", "Cancel", None))
         self.pushButton.setText(_translate("Dialog", "Ok", None))
 
-
 class connectionBuilder(QtGui.QDialog):## This is used to set connection between two different dialogs
 	def __init__(self,parent,logger):
-
 		QtGui.QDialog.__init__(self)
 		
 		self.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)		
@@ -496,17 +489,21 @@ class connectionBuilder(QtGui.QDialog):## This is used to set connection between
 		self.BuildingStatus=False
 		self.connect(self.UI.pushButton,QtCore.SIGNAL("clicked()"),self.SaveConnection)
 		self.connect(self.UI.pushButton_2,QtCore.SIGNAL("clicked()"),self.closeWithoutSaving)
+		
 	def buildNewConnection(self):
 		self.connection=NodeConnection()
 		self.BuildingStatus=True
+		
 	def setBeg(self,component):
 		self.UI.lineEdit_2.setText(component.alias)
 		self.connection.fromComponent=component
 		self.fromComponent=component
+		
 	def setEnd(self,component):
 		self.UI.lineEdit.setText(component.alias)
 		self.connection.toComponent=component
 		self.toComponent=component
+		
 	def SaveConnection(self):
 		self.toComponent.dependences.append(self.fromComponent.alias)
 		self.toComponent.asEnd.append(self.connection)
@@ -519,11 +516,11 @@ class connectionBuilder(QtGui.QDialog):## This is used to set connection between
 		self.BuildingStatus=False
 		self.UI.lineEdit.setText("")
 		self.UI.lineEdit_2.setText("")
+		
 	def closeWithoutSaving(self):
 		self.close()
 		self.UI.lineEdit.setText("")
 		self.UI.lineEdit_2.setText("")
-
 
 ##
 #This will takes care of selecting the rcmanger tool settings..The first class is about UI.second is main thing..
@@ -603,6 +600,7 @@ class NetworkSettings(QtGui.QDialog):#This will show a dialog window for selecti
 		self.UI=NetworkSettings_Ui_Dialog()			
 		self.UI.setupUi(self)
 		self.setting=None
+		
 	def setData(self,setting):
 		self.setting=setting
 
@@ -651,15 +649,19 @@ class SaveWarningDialog(QtGui.QDialog):#To be used as a warning window while del
 		self.connect(self.UI.pushButton_3,QtCore.SIGNAL("clicked()"),self.cancel)
 		self.setModal(True)
 		self.Status="C"
+		
 	def decide(self):
 		self.exec_()
 		return self.Status
+		
 	def save(self):
 		self.close()
 		self.Status="S"
+		
 	def dontSave(self):
 		self.close()
 		self.Status="D"
+		
 	def cancel(self):
 		self.close()
 		self.Status="C"
@@ -740,7 +742,6 @@ class CodeEditor(object):
 #This is the graphics Item which represent a component
 ##
 
-
 class VisualNode(QtGui.QGraphicsItem):##Visual Node GraphicsItem
 	"""docstring for ClassName"""
 	def __init__(self, view=None,Alias="Component",parent=None):
@@ -757,8 +758,9 @@ class VisualNode(QtGui.QGraphicsItem):##Visual Node GraphicsItem
 		self.Icon=QtGui.QPixmap(getDefaultIconPath())
 		#self.setFlag(QtGui.QGraphicsItem.ItemIsSelectable)
 		self.setZValue(1)#To make sure the Nodes are always on top of connections
+		
 	def mouseMoveEvent(self,event):
-		self.parent.mainWindow.nodeDetailDisplayer.hide()
+		#self.parent.mainWindow.nodeDetailDisplayer.hide()
 		QtGui.QGraphicsItem.mouseMoveEvent(self,event)
 		self.updateforDrag()
 		self.parent.emit(QtCore.SIGNAL("networkChanged()"))
@@ -778,33 +780,41 @@ class VisualNode(QtGui.QGraphicsItem):##Visual Node GraphicsItem
 			x.toX,x.toY=findPortPosition(self.parent,b)
 			x.prepareGeometryChange()
 		self.scene().update()
+		
 	def mouseReleaseEvent(self,event):
 		QtGui.QGraphicsItem.mouseReleaseEvent(self,event)
 		self.updateforDrag(	)
 		self.parent.x=self.x()
 		self.parent.y=self.y()
+		
+	"""
 	def hoverEnterEvent(self,event):
-		#print self.parent.mainWindow.graphTree
 		pos=self.parent.mainWindow.graphTree.mapFromScene(self.mapToScene(QtCore.QPointF()))
 		self.parent.mainWindow.nodeDetailDisplayer.showdetails(pos.x(),pos.y(),self.parent)
 	def hoverLeaveEvent(self,event):
 		self.parent.mainWindow.nodeDetailDisplayer.isShowing=False
 		self.parent.mainWindow.nodeDetailDisplayer.hide()
-
+	""" 
+	
 	def setIpColor(self,color=QtGui.QColor.fromRgb(0,255,0)):#To set the Ipcolor
 		self.IpColor=color
+		
 	def setview(view):
 		self.view=view
+		
 	def boundingRect(self):
 		self.penWidth =2
 		return QtCore.QRectF(-69,-69,138,138)
+		
 	def paint(self,painter,option=None,widget=None):
 		self.paintMainShape(painter)
 		self.drawStatus(painter)
 		self.drawIcon(painter)
 		self.writeAlias(painter)
+		
 	def setIcon(self,icon=None):
 		self.Icon=icon
+		
 	def paintMainShape(self,painter): ##This will draw the basic shape of a node.The big square and its containing elements
 		pen=QtGui.QPen(QtGui.QColor.fromRgb(self.parent.nodeColor[0],self.parent.nodeColor[1],self.parent.nodeColor[2]))
 		pen.setWidth(3)
@@ -816,7 +826,6 @@ class VisualNode(QtGui.QGraphicsItem):##Visual Node GraphicsItem
 		self.TextRect=QtCore.QRect(-45,-45,90,20)##The rectangle shape on which the alias name will be dispalyed
 		self.statusRect=QtCore.QRect(22,10,20,20)##The rectange shape on which the status of the node will be displayed
 		self.IconRect=QtCore.QRect(-45,-20,60,64)## The rectange shape on which the Icon will be displayed
-		
 		
 		brush.setColor(QtGui.QColor.fromRgb(94,94,94))
 		self.drawUpPort(painter,brush)##Temp
@@ -852,8 +861,10 @@ class VisualNode(QtGui.QGraphicsItem):##Visual Node GraphicsItem
 		painter.setBrush(self.IpColor)  ## Drawing the Icon display rectangle
 		painter.drawRect(self.IconRect)
 		painter.drawPixmap(-45,-20,60,60,self.Icon,0,0,0,0)
+		
 	def writeAlias(self,painter):##Draw the alias
 		painter.drawText(self.TextRect,1," "+self.Alias) 	##Drawing the Alias name
+		
 	def drawStatus(self,painter):
 		if self.parent.status:
 			brush=QtGui.QBrush(QtGui.QColor.fromRgb(0,255,0)) ##Drawing the Status display rectangle
@@ -891,7 +902,6 @@ def findPortPosition(Component,Port):#PORT can be "U"or "D" or "R" or "L"
 			Y=QtGui.QGraphicsItem.mapToScene(Component.graphicsItem,ItemPoint).y()
 			return X,Y
 
-
 def findWhichPorts(fromComponent,toComponent):#This will select out of the 4 ports which have to be connected to connection		
 		
 		a=fromComponent.graphicsItem.mapToScene(QtCore.QPointF())
@@ -909,8 +919,6 @@ def findWhichPorts(fromComponent,toComponent):#This will select out of the 4 por
 			return "R","L"
 		elif angle>225 and angle <=315:
 			return "U","D"
-
-
 
 ##
 #This is another graphics Item which represents the connection between The componentts
@@ -934,6 +942,7 @@ class NodeConnection(QtGui.QGraphicsItem):
 		self.fromPoint=QtCore.QPointF()
 		self.toPoint=QtCore.QPointF()	
 		self.arrowLine=QtCore.QLineF()
+		
 	def boundingRect(self):##TO Be modified..Because error prone when vertical and horizontal
 		if abs(self.toX-self.fromX)<5:
 			width=5
@@ -945,6 +954,7 @@ class NodeConnection(QtGui.QGraphicsItem):
 			height=self.toY-self.fromY
 		self.rect=QtCore.QRectF(self.fromX,self.fromY,width,height)
 		return self.rect
+		
 	def paint(self,painter,option=None,widget=None):
 		painter.setPen(self.pen)
 		self.fromPoint.setX(self.fromX)
@@ -955,6 +965,7 @@ class NodeConnection(QtGui.QGraphicsItem):
 		painter.drawLine(self.Line)
 		self.drawArrows(painter)
 		#painter.drawRect(self.rect)
+		
 	def drawArrows(self,painter):#To 	draw the arrows in the connections::Unfinished
 		V1=self.Line.unitVector()
 		V1.setAngle(V1.angle()+20)
@@ -968,7 +979,6 @@ class NodeConnection(QtGui.QGraphicsItem):
 		
 	def hoverEnterEvent(self,Event):#Unfinished
 		print "Mouse Hovering in connection from :" +self.fromComponent+" to :" +self.toPoint
-
 
 ##
 #This class will monitor the components whether they are up or down..
@@ -986,16 +996,20 @@ class ComponentChecker(threading.Thread):#This will check the status of componen
 		self.alive = False
 		self.aPrx = None
 		self.started=False
+		
 	def getFreq(self):
 		self.mutex.lock()
 
 		self.object=RoboCompCommonBehavior.CommonBehaviorPrx.checkedCast(self.aPrx)
 		print self.object.getFreq()
 		self.mutex.unlock()
+		
 	def setLogger(self,logger):
 		self.logger=logger
+		
 	def haveStarted(self):
 		return self.started
+		
 	def initializeComponent(self):#Called to set the component and to initialize the Ice proxy
 		self.mutex.lock()
 		try:
@@ -1012,7 +1026,6 @@ class ComponentChecker(threading.Thread):#This will check the status of componen
 		self.mutex.unlock()
 
 	def run(self):
-
 		if self.aPrx==None:
 
 			self.initializeComponent()
@@ -1037,38 +1050,38 @@ class ComponentChecker(threading.Thread):#This will check the status of componen
 			#print self.component.alias +" ::Status:: "+ str(self.alive)
 			#self.mutex.unlock()
 			time.sleep(0.5)
+			
 	def reset(self):
 		self.mutex.lock()
 		self.alive = False
 		self.mutex.unlock()
+		
 	def isalive(self):
 		self.mutex.lock()
 		r = self.alive
 		self.mutex.unlock()
 		return r
+		
 	def stop(self):
 		self.mutex.lock()
 		self.exit = True
 		self.mutex.unlock()
+		
 	def runrun(self):
 		if not self.isAlive(): self.start()#Note this is different isalive
-	def changed(self):
 		
+	def changed(self):
 		self.component.status=not self.alive
 		self.component.graphicsItem.update()
 
-		
 		if self.alive==False:
 			print "Component "+self.component.alias+ " UP"  ##Couldn't log into the main page..Because the logger QOWidge cannot be used in another thread..
 		if self.alive==True:
 			print "Component "+self.component.alias+ " Down"
 		
-		
-
 ##
 #This widget is used to display the details of a component when hovering over the nodes
 ##
-
 
 class ShowItemDetails(QtGui.QWidget):##This contains the GUI and internal process regarding the controlling of the a particular component.
 	def __init__(self,parent=None):
@@ -1081,6 +1094,7 @@ class ShowItemDetails(QtGui.QWidget):##This contains the GUI and internal proces
 		self.isShowing=False
 		self.setAutoFillBackground(True)
 		self.hide()
+		
 	def showdetails(self,x,y,item=None):
 		self.item=item
 		string=""
@@ -1099,15 +1113,12 @@ class ShowItemDetails(QtGui.QWidget):##This contains the GUI and internal proces
 	#	self.parent.graphTree.CompoPopUpMenu.setComponent(self.item.graphicsItem)
 	#	self.CompoPopUpMenu.popup(GloPos)
 		
-
-
 #	
 # Component information container class.This is the class which represents a component..the graphics object,directory object,monitoring thread everything is contained in the class
 #
 
 class CompInfo(QtCore.QObject):##This contain the general Information about the Components which is read from the files and created
 	def __init__(self,view=None,mainWindow=None,name="Component"):
-
 		QtCore.QObject.__init__(self)
 		self.vel_x=0
 		self.vel_y=0
@@ -1139,6 +1150,7 @@ class CompInfo(QtCore.QObject):##This contain the general Information about the 
 		self.graphicsItem=VisualNode(parent=self)
 		self.DirectoryItem=DirectoryItem(parent=self,name=self.alias)
 		#self.Controller=ComponentController(parent=self)
+		
 	def setGroup(self,group):
 		self.group=group
 
@@ -1153,11 +1165,11 @@ class CompInfo(QtCore.QObject):##This contain the general Information about the 
 		string = string + 'y:         \t' + str(self.y) + '\n'
 		string = string + 'Icon path: \t' + self.IconFilePath+"\n"
 		return string	
+		
 	def setGraphicsData(self):#To set the graphicsItem datas
 		self.graphicsItem.setIpColor()
 		self.graphicsItem.setPos(self.x,self.y)
 		self.graphicsItem.Alias=self.alias
-
 
 ##
 #This is the inherited GraphicsView Class on which the graphicsScene is displayed
@@ -1171,19 +1183,29 @@ class  ComponentTree(QtGui.QGraphicsView):	##The widget on which we are going to
 		self.mainclass=mainclass#This object is the mainClass from rcmanager Module
 		self.CompoPopUpMenu=ComponentMenu(self.mainclass)
 		self.BackPopUpMenu=BackgroundMenu(self.mainclass)
+		
+		self.lastPosition=None
+		self.leftMouseButtonClicked=False
+		#self.ctrlButtonClicked=False
+	
 	def wheelEvent(self,wheel):
-		pos=self.mapToScene(wheel.pos())
-		self.centerOn(pos)
 		QtGui.QGraphicsView.wheelEvent(self,wheel)
 		temp=self.mainclass.currentZoom
 		temp+=(wheel.delta()/120)
 		self.mainclass.UI.verticalSlider.setValue(temp)
-		self.mainclass.graphZoom()
-	def contextMenuEvent(self,event):##It will select what kind of context menu should be displayed
+		self.mainclass.graphZoom() 
+	
+	def contextMenuEvent(self,event):##It will select what kind of context menu should be displayed 
+		#if self.ctrlButtonClicked:
+		#	return
+			
+		if self.leftMouseButtonClicked:
+			return
+		
 		GloPos=event.globalPos()
 		pos=event.pos()
 		item=self.itemAt(pos)
-		#print pos#TEMP
+
 		if isinstance(item,VisualNode):
 			self.CompoPopUpMenu.setComponent(item)
 			self.CompoPopUpMenu.popup(GloPos)
@@ -1191,16 +1213,90 @@ class  ComponentTree(QtGui.QGraphicsView):	##The widget on which we are going to
 			self.BackPopUpMenu.setPos(pos)
 			self.BackPopUpMenu.popup(GloPos)
 
-	def mousePressEvent(self,event):
+	"""
+	def keyPressEvent(self, event):
+		if event.key()==Qt.Qt.Key_Control:
+			self.ctrlButtonClicked=True
+	""" 
+
+	def mousePressEvent(self,event):	
+		if event.button()==Qt.Qt.LeftButton:
+			self.leftMouseButtonClicked=True
+			
+			print "Left mouse button pressed"
+			
+		if event.button()==Qt.Qt.RightButton and self.leftMouseButtonClicked:
+			self.setDragMode(QtGui.QGraphicsView.ScrollHandDrag)
+			self.lastPosition=event.pos()
+			
+			print "Right mouse button pressed, entering pan mode"
+			
+			return 
+			
+		if event.button()==Qt.Qt.MidButton:
+			self.setDragMode(QtGui.QGraphicsView.ScrollHandDrag)
+			self.lastPosition=event.pos()
+			
+			print "Middle mouse button pressed, entering pan mode"
+			
+			return
+		
+		"""	
+		if event.button()==Qt.Qt.RightButton and self.ctrlButtonClicked:
+			self.setDragMode(QtGui.QGraphicsView.ScrollHandDrag)
+			self.lastPosition=event.pos()
+			return
+		""" 
+		
 		if self.connectionBuidingStatus==True:
 			pos=event.pos()
 			item=self.itemAt(pos)		
 			if isinstance(item,VisualNode):
 				self.mainclass.connectionBuilder.setEnd(item.parent)
 			self.connectionBuidingStatus=False
+			
 		if self.connectionBuidingStatus==False:
 			QtGui.QGraphicsView.mousePressEvent(self,event)
-
+		
+	def mouseMoveEvent(self, event):
+		if self.dragMode()==QtGui.QGraphicsView.ScrollHandDrag:
+			self.currentPosition=event.pos()
+			
+			print "panning, init pos:", self.lastPosition.x(), self.lastPosition.y(), "final pos:", self.currentPosition.x(), self.currentPosition.y()
+			
+			dx=self.currentPosition.x()-self.lastPosition.x()
+			dy=self.currentPosition.y()-self.lastPosition.y()
+			self.verticalScrollBar().setValue(self.verticalScrollBar().value()-dy)
+			self.horizontalScrollBar().setValue(self.horizontalScrollBar().value()-dx)
+			self.lastPosition=self.currentPosition
+		
+		QtGui.QGraphicsView.mouseMoveEvent(self,event)
+			
+	"""
+	def keyReleaseEvent(self, event):
+		if event.key()==Qt.Qt.Key_Control:
+			self.ctrlButtonClicked=False
+			self.setDragMode(QtGui.QGraphicsView.NoDrag)
+	"""  
+			
+	def mouseReleaseEvent(self, event):
+		if event.button()==Qt.Qt.LeftButton:
+			self.leftMouseButtonClicked=False
+			self.setDragMode(QtGui.QGraphicsView.NoDrag)
+			
+			print "Left mouse button released, leaving pan mode"
+	
+		if event.button()==Qt.Qt.RightButton:
+			self.setDragMode(QtGui.QGraphicsView.NoDrag)
+			
+			print "Right mouse button released, leaving pan mode"
+			
+		if event.button()==Qt.Qt.MidButton:
+			self.setDragMode(QtGui.QGraphicsView.NoDrag)
+			
+			print "Middle mouse button released, leaving pan mode"
+			
+		QtGui.QGraphicsView.mouseReleaseEvent(self,event)  
 
 ##
 #This is the inherited GraphicsScene on which The items are drawn
@@ -1211,13 +1307,11 @@ class ComponentScene(QtGui.QGraphicsScene):#The scene onwhich we are drawing the
 		QtGui.QGraphicsScene.__init__(self)
 		self.parent=parent
 
-
 ##
 #This is the Buttons shown on the right side of the tool..
 ##
 			
 class DirectoryItem(QtGui.QPushButton):#This will be listed on the right most side of the software
-
 	def __init__(self,parent=None,args=None,name="Component"):
 		QtGui.QPushButton.__init__(self,args)
 		self.parent=parent
@@ -1245,7 +1339,6 @@ class DirectoryItem(QtGui.QPushButton):#This will be listed on the right most si
 			#print "Set visiblitiy true"
 		if index==1:
 			self.parent.mainWindow.CodeEditor.findFirst(self.parent.alias,False,True,True,True)
-
 
 ##
 #This classes will take care of multiplying the position.That is if the nodes are too close to each other they will strech them
@@ -1316,6 +1409,7 @@ class PositionMultiplier(QtGui.QDialog):
 		self.ChangePermanently=False
 		self.connect(self.UI.pushButton,QtCore.SIGNAL("clicked()"),self.setPermanent)
 		self.connect(self.UI.pushButton_2,QtCore.SIGNAL("clicked()"),self.setTemporary)
+		
 	def updateStretch(self,compList,settings):
 		self.show()
 		self.compList=compList
@@ -1326,6 +1420,7 @@ class PositionMultiplier(QtGui.QDialog):
 		for x in self.compList:
 			x.tempx=x.x
 			x.temy=x.y
+			
 	def setTemporary(self):
 		for x in self.compList:
 			x.tempx=x.x*self.UI.doubleSpinBox_2.value()
@@ -1333,6 +1428,7 @@ class PositionMultiplier(QtGui.QDialog):
 		for x in self.compList:
 			x.graphicsItem.setPos(QtCore.QPointF(x.tempx,x.tempy))
 			x.graphicsItem.updateforDrag()
+			
 	def setPermanent(self):
 		self.ChangePermanently=True
 		self.close()
@@ -1342,6 +1438,7 @@ class PositionMultiplier(QtGui.QDialog):
 		for x in self.compList:
 			x.graphicsItem.setPos(QtCore.QPointF(x.x,x.y))
 			x.graphicsItem.updateforDrag()
+			
 	def closeEvent(self,event):		
 		if self.ChangePermanently==True:
 			self.logger.logData("Graph Stretched")
@@ -1349,9 +1446,11 @@ class PositionMultiplier(QtGui.QDialog):
 			for x in self.compList:
 				x.graphicsItem.setPos(QtCore.QPointF(x.x,x.y))
 				x.graphicsItem.updateforDrag()
+				
 ##
 #This class will communicate with the common behavior component..On construction
 ##
+
 class commonBehaviorComponent(threading.Thread):
 	def __init__(self,parent):
 		threading.Thread.__init__(self)
@@ -1369,6 +1468,7 @@ class commonBehaviorComponent(threading.Thread):
 		
 	def initialize(self):
 		pass
+		
 	def run(self):
 		#global global_ic
 		#print "started running"
@@ -1395,7 +1495,6 @@ class commonBehaviorComponent(threading.Thread):
 	
 class ComponentMenu(QtGui.QMenu):
 	def  __init__(self,parent):
-
 		QtGui.QMenu.__init__(self,parent)
 		
 		self.ActionUp=QtGui.QAction("Up",parent)
@@ -1428,7 +1527,6 @@ class ComponentMenu(QtGui.QMenu):
 	def setComponent(self,component):
 		self.currentComponent=component
 
-
 ##
 #This is the menu which appears when right click on the background of the graphics Scene
 ##
@@ -1455,9 +1553,9 @@ class BackgroundMenu(QtGui.QMenu):
 		self.addAction(self.ActionSettings)
 		self.addAction(self.ActionSearch)
 		self.pos=None
+		
 	def setPos(self,pos):
 		self.pos=pos
-
 
 ##
 #This is the container class to contain values about the network..It also contains the network groups 
@@ -1475,7 +1573,6 @@ class NetworkValues():##This will contain Values about the network
 		self.roza=.8
 		self.Groups=[]
 
-
 ##
 #Below are the functions regarding reading from file writing to file and stuffs like that.
 ##
@@ -1488,6 +1585,7 @@ def getStringFromFile(path):##This is the first function to be called for readin
 
 	data = file.read()
 	return data
+	
 def getDataFromString(data,logger):#Data is a string in xml format containing information	
 	components = []	
 	try:
@@ -1520,7 +1618,6 @@ def parsercmanager(node,logger): #Call seperate functions for general settings a
 	return components, generalSettings
 
 def parseGeneralInformation(node, generalSettings,logger): ##Takes care of reading the general information about the network tree
-	
 	#print "Entered the parseGeneralInformation"
 	if node.type == "element" and node.name == "generalInformation":
 		child =node.children
@@ -1621,6 +1718,7 @@ def parseNode(node, components,generalSettings,logger):#To get the properties of
 		print "error: "+str(node.name)
 	
 	comp.CheckItem.start()
+	
 def getColorFromString(string):
 	#print string
 	color=[]
@@ -1629,6 +1727,7 @@ def getColorFromString(string):
 	color.append(int(string.__getslice__(5,7),16))
 	#print color
 	return color
+	
 def stringIsUseful(string):
 	if len(string) == 0: return False
 	if string[0] == '#': return False
@@ -1642,7 +1741,6 @@ def stringIsUseful(string):
 	return True
 
 def parseSingleValue(node, arg, doCheck=True, optional=False):
-	
 	if node.children != None and doCheck == True: print 'WARNING: No children expected'+str(node)
 	
 	if not node.hasProp(arg) and not optional:
@@ -1661,7 +1759,6 @@ def getXmlFromNetwork(NetworkSettings, components,logger):
 	for x in NetworkSettings.Groups:
 		string=string+'\t\t<group name="'+x.groupName+'" iconfile="'+x.groupIconFilePath+'" />\n'
 
-		
 	string=string+'\t\t<simulation hookes="'+str(NetworkSettings.hookes_constant)+'" friction="'+str(1-NetworkSettings.roza)+'" springlength="'+str(NetworkSettings.spring_length)+'" fieldforce="'+str(NetworkSettings.field_force_multiplier)+'"/>\n'
 	string=string+'\n\t</generalInformation>\n'
 	
@@ -1725,7 +1822,6 @@ def searchForChild(Xmlnode,Name):##Will search in tree for node with name Name
 def getDefaultIconPath():
 	return "/opt/robocomp/share/rcmanager/1465594390_sign-add.png" #This is the default icon can be changed by users choice
 
-
 def upComponent(component,Logger):#Just Up the component
 		try:
 			if component.CheckItem.haveStarted()==False:
@@ -1743,7 +1839,6 @@ def upComponent(component,Logger):#Just Up the component
 		finally:
 			pass	
 
-
 def downComponent(component,Logger):#To down a particular component
 		try:
 			proc=QtCore.QProcess()
@@ -1755,7 +1850,6 @@ def downComponent(component,Logger):#To down a particular component
 			pass
 		finally:
 			pass
-
 
 def getXmlNode(editor,name):
 	flag=False
