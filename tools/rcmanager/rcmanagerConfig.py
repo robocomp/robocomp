@@ -24,9 +24,17 @@
 #    along with RoboComp.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-import libxml2, sys,threading,Ice ,time,os 
-from PyQt4 import QtCore, QtGui, Qt, Qsci 
 
+
+import libxml2, sys, threading, Ice ,time,os, logging
+from PyQt4.QtGui import QWidget, QLabel, QHBoxLayout, QTextEdit
+
+try:
+    from PyQt4 import Qsci
+except:
+    print("Qsci doesn't exist on this system. Code editor will not be available")
+
+from PyQt4 import QtCore, QtGui, Qt
 filePath = 'rcmanager.xml'
 from time import localtime, strftime##To log data
 
@@ -45,7 +53,8 @@ preStr = "-I"+ROBOCOMP+"/interfaces/ --all "+ROBOCOMP+"/interfaces/"
 Ice.loadSlice(preStr+"CommonBehavior.ice")
 import RoboCompCommonBehavior
 Ice.loadSlice(preStr+"DifferentialRobot.ice")
-import RoboCompDifferentialRobot
+# import RoboCompDifferentialRobot
+
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -660,45 +669,74 @@ class SaveWarningDialog(QtGui.QDialog):#To be used as a warning window while del
 ##
 #This will takes care about the code editing part of the software
 ##
+class CodeEditor(object):
 
-class CodeEditor(Qsci.QsciScintilla):#For the dynamic code editing (Widget )
-	def __init__(self,parent=None):
-		Qsci.QsciScintilla.__init__(self,parent)
+    @staticmethod
+    def get_code_editor(parent):
+        try:
+            from PyQt4 import Qsci
+            class ScintillaCodeEditor(Qsci.QsciScintilla):  # For the dynamic code editing (Widget )
+                def __init__(self, parent=None):
+                    super(ScintillaCodeEditor, self).__init__(parent)
 
-		#Setting default font
-		self.font=QtGui.QFont()
-		self.font.setFamily('Courier')
-		self.font.setFixedPitch(True)
-		self.font.setPointSize(10)
-		self.setFont(self.font)
-		self.setMarginsFont(self.font)
+                    # Setting default font
+                    self.font = QtGui.QFont()
+                    self.font.setFamily('Courier')
+                    self.font.setFixedPitch(True)
+                    self.font.setPointSize(10)
+                    self.setFont(self.font)
+                    self.setMarginsFont(self.font)
 
-		# Margin 0 is used for line numbers
-		fontmetrics =QtGui.QFontMetrics(self.font)
-		self.setMarginsFont(self.font)
-		self.setMarginWidth(0,fontmetrics.width("0000") + 6)
-		self.setMarginLineNumbers(0, True)
-		self.setMarginsBackgroundColor(QtGui.QColor("#cccccc"))		
+                    # Margin 0 is used for line numbers
+                    fontmetrics = QtGui.QFontMetrics(self.font)
+                    self.setMarginsFont(self.font)
+                    self.setMarginWidth(0, fontmetrics.width("0000") + 6)
+                    self.setMarginLineNumbers(0, True)
+                    self.setMarginsBackgroundColor(QtGui.QColor("#cccccc"))
 
-		#BraceMatching
-		self.setBraceMatching(Qsci.QsciScintilla.SloppyBraceMatch)
+                    # BraceMatching
+                    self.setBraceMatching(Qsci.QsciScintilla.SloppyBraceMatch)
 
-		# Current line visible with special background color
-		self.setCaretLineVisible(True)
-		self.setCaretLineBackgroundColor(QtGui.QColor("#ffe4e4"))
+                    # Current line visible with special background color
+                    self.setCaretLineVisible(True)
+                    self.setCaretLineBackgroundColor(QtGui.QColor("#ffe4e4"))
 
-		#Setting xml lexer
-		lexer = Qsci.QsciLexerXML()
-		lexer.setDefaultFont(self.font)
-		self.setLexer(lexer)
-		self.SendScintilla(Qsci.QsciScintilla.SCI_STYLESETFONT, 1, 'Courier')
-	
-	def on_margin_clicked(self, nmargin, nline, modifiers):
-		# Toggle marker for the line the margin was clicked on
-		if self.markersAtLine(nline) != 0:
-			self.markerDelete(nline, self.ARROW_MARKER_NUM)
-		else:
-			self.markerAdd(nline, self.ARROW_MARKER_NUM)
+                    # Setting xml lexer
+                    lexer = Qsci.QsciLexerXML()
+                    lexer.setDefaultFont(self.font)
+                    self.setLexer(lexer)
+                    self.SendScintilla(Qsci.QsciScintilla.SCI_STYLESETFONT, 1, 'Courier')
+
+                def on_margin_clicked(self, nmargin, nline, modifiers):
+                    # Toggle marker for the line the margin was clicked on
+                    if self.markersAtLine(nline) != 0:
+                        self.markerDelete(nline, self.ARROW_MARKER_NUM)
+                    else:
+                        self.markerAdd(nline, self.ARROW_MARKER_NUM)
+            return ScintillaCodeEditor(parent)
+        except:
+            class TextEditCodeEditor(QTextEdit):
+
+                def __init__(self, parent=None):
+                    super(TextEditCodeEditor, self).__init__(parent)
+                    # Setting default font
+                    self.font = QtGui.QFont()
+                    self.font.setFamily('Courier')
+                    self.font.setFixedPitch(True)
+                    self.font.setPointSize(10)
+                    self.setFont(self.font)
+
+                def text(self):
+                    return self.toPlainText()
+
+                def getCursorPosition(self):
+                    cursor = self.textCursor()
+                    line = cursor.blockNumber()
+                    column = cursor.columnNumber()
+                    return (line, column)
+
+            return TextEditCodeEditor(parent)
+
 
 ##
 #This is the graphics Item which represent a component
@@ -961,6 +999,7 @@ class ComponentChecker(threading.Thread):#This will check the status of componen
 		
 	def getFreq(self):
 		self.mutex.lock()
+
 		self.object=RoboCompCommonBehavior.CommonBehaviorPrx.checkedCast(self.aPrx)
 		print self.object.getFreq()
 		self.mutex.unlock()
@@ -1292,7 +1331,7 @@ class DirectoryItem(QtGui.QPushButton):#This will be listed on the right most si
 
 	def clickEvent(self):#What happens when clicked
 		#print "Clicked"+ self.parent.alias
-		index=self.parent.mainWindow.UI.tabWidget.currentIndex()
+		index=self.parent.mainWindow.tabWidget.currentIndex()
 		#print index
 		self.parent.mainWindow.currentComponent=self.parent
 		if index==0:
