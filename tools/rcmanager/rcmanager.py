@@ -134,7 +134,7 @@ class MainClass(QtGui.QMainWindow, CustomMainWindow):
 
         # File menu buttons
         self.connect(self.actionSave, QtCore.SIGNAL("triggered(bool)"), self.save_xml_file)
-        self.connect(self.actionOpen, QtCore.SIGNAL("triggered(bool)"), self.openXmlFile)
+        self.connect(self.actionOpen, QtCore.SIGNAL("triggered(bool)"), self.open_xml_file)
         self.connect(self.actionExit, QtCore.SIGNAL("triggered(bool)"), self.exit_rcmanager)
 
         # Edit menu buttons
@@ -173,21 +173,21 @@ class MainClass(QtGui.QMainWindow, CustomMainWindow):
         self.connect(self.graphTree.CompoPopUpMenu.ActionNewConnection, QtCore.SIGNAL("triggered(bool)"),
                      self.build_new_connection)
         self.connect(self.graphTree.CompoPopUpMenu.ActionControl, QtCore.SIGNAL("triggered(bool)"),
-                     self.controlComponent)
+                     self.control_component)
         self.connect(self.graphTree.CompoPopUpMenu.ActionRemoveFromGroup, QtCore.SIGNAL("triggered(bool)"),
                      self.component_remove_from_group)
         self.connect(self.graphTree.CompoPopUpMenu.ActionUpGroup, QtCore.SIGNAL("triggered(bool)"), self.up_group)
         self.connect(self.graphTree.CompoPopUpMenu.ActionDownGroup, QtCore.SIGNAL("triggered(bool)"), self.down_group)
         # self.connect(self.graphTree.CompoPopUpMenu.ActionFreq,QtCore.SIGNAL("triggered(bool)"),self.getFreq)
 
-        self.connect(self.toolButton_2, QtCore.SIGNAL("clicked()"), self.searchEnteredAlias)
+        self.connect(self.toolButton_2, QtCore.SIGNAL("clicked()"), self.search_entered_alias)
         self.connect(self.toolButton_7, QtCore.SIGNAL("clicked()"), self.simulator_on)
         self.connect(self.toolButton_8, QtCore.SIGNAL("clicked()"), self.simulator_off)
 
         self.connect(self.SaveWarning, QtCore.SIGNAL("save()"), self.save_xml_file)
         self.connect(self.toolButton_3, QtCore.SIGNAL("clicked()"), self.refresh_tree_from_code)
         self.connect(self.toolButton_4, QtCore.SIGNAL("clicked()"), self.add_network_templ)
-        self.connect(self.toolButton_5, QtCore.SIGNAL("clicked()"), self.addComponentTempl)
+        self.connect(self.toolButton_5, QtCore.SIGNAL("clicked()"), self.add_component_templ)
         self.connect(self.toolButton_6, QtCore.SIGNAL("clicked()"), self.refresh_code_from_tree)
         self.connect(self.toolButton_9, QtCore.SIGNAL("clicked()"), self.editor_font_settings)
         # self.connect(self.toolButton_10,QtCore.SIGNAL("clicked()"),self.getNetworkSetting)(Once finished Uncomment this)
@@ -331,14 +331,14 @@ class MainClass(QtGui.QMainWindow, CustomMainWindow):
                     # if self.areTheyTooClose()==True:
                     # self.theyAreTooClose()
                     self.currentComponent = self.componentList[0]
-                    self.ipCount()
-                    self.setAllIpColor()
+                    self.ip_count()
+                    self.set_all_ip_color()
                     self.set_all_graphics_data()
                     self.draw_all_components()
                     self.set_connection_items()
                     self.draw_all_connection()
-                    self.setComponentVariables()
-                    self.setDirectoryItems()
+                    self.set_component_variables()
+                    self.set_directory_items()
                     self.FileOpenStatus = True
                     self.UserBuiltNetworkStatus = True
                     # self.HadChanged=False
@@ -417,7 +417,7 @@ class MainClass(QtGui.QMainWindow, CustomMainWindow):
 
         if original.Ip != temp.Ip:
             original.Ip = temp.Ip
-            self.ipCount()
+            self.ip_count()
             self.setAllIpColor()
 
         if original.endpoint != temp.endpoint:
@@ -499,7 +499,7 @@ class MainClass(QtGui.QMainWindow, CustomMainWindow):
         for x in self.componentList.__iter__():
             x.View = self.graphTree
             x.mainWindow = self
-            self.connect(x, QtCore.SIGNAL("networkChanged()"), self.haveChanged)
+            self.connect(x, QtCore.SIGNAL("networkChanged()"), self.have_changed)
 
     def set_directory_items(
             self):  # This will set and draw all the directory components+I have added the job of defining a connection in here
