@@ -31,25 +31,26 @@ import sys, time, traceback, os, math, random, threading, time, signal
 import Ice
 
 from PyQt4 import QtCore, QtGui, Qt
-import ui_formManager, rcmanagerConfig
+import rcmanagerConfig
 
-signal.signal(signal.SIGINT, signal.SIG_DFL)
+CustomMainWindow = uic.loadUiType("formManager.ui")[0]  # Load the UI
 
 try:
-    _fromUtf8 = QtCore.QString.fromUtf8
+	_fromUtf8 = QtCore.QString.fromUtf8
 except AttributeError:
-    def _fromUtf8(s):
-        return s
+	def _fromUtf8(s):
+		return s
 
-initDir=os.getcwd()
+initDir = os.getcwd()
 
 sys.path.append('.')
 sys.path.append('/opt/robocomp/bin')
 
-class MainClass(QtGui.QMainWindow):
+
+class MainClass(QtGui.QMainWindow, CustomMainWindow):
 	"""docstring for MainClass"""
 	def __init__(self, arg=None):
-		QtGui.QDialog.__init__(self,arg)
+		super(MainClass, self).__init__(arg)
 		self.currentComponent=None
 		self.setWindowIcon(QtGui.QIcon(QtGui.QPixmap("/opt/robocomp/share/rcmanager/drawing_green.png")))
 		self.showMaximized()
@@ -57,21 +58,21 @@ class MainClass(QtGui.QMainWindow):
 		self.networkSettings=rcmanagerConfig.NetworkValues()
 		
 
-		self.UI=ui_formManager.Ui_MainWindow()
-		self.UI.setupUi(self)
-		self.UI.tabWidget.removeTab(0)
-		self.Logger=rcmanagerConfig.Logger(self.UI.textBrowser)
+
+		self.setupUi(self)
+		self.tabWidget.removeTab(0)
+		self.Logger=rcmanagerConfig.Logger(self.textBrowser)
 
 		self.SaveWarning=rcmanagerConfig.SaveWarningDialog(self)
 		
 		self.NetworkScene=rcmanagerConfig.ComponentScene(self)##The graphicsScene
-		self.graphTree = rcmanagerConfig.ComponentTree(self.UI.frame,mainclass=self)##The graphicsNode
+		self.graphTree = rcmanagerConfig.ComponentTree(self.frame,mainclass=self)##The graphicsNode
 		self.NetworkScene.setSceneRect(-15000, -15000, 30000, 30000)
 		self.graphTree.setScene(self.NetworkScene)
 		
 		
 		self.graphTree.setObjectName(_fromUtf8("graphicsView"))
-		self.UI.gridLayout_8.addWidget(self.graphTree,0,0,1,1)
+		self.gridLayout_8.addWidget(self.graphTree,0,0,1,1)
 		self.setZoom()
 		
 		#This will read the the network setting from xml files and will set the values
@@ -97,7 +98,7 @@ class MainClass(QtGui.QMainWindow):
 		self.groupSelector=rcmanagerConfig.GroupSelector(self,self.Logger)
 
 		self.CodeEditor = rcmanagerConfig.CodeEditor.get_code_editor(self.tab_2)
-		self.UI.verticalLayout_2.addWidget(self.CodeEditor)
+		self.verticalLayout_2.addWidget(self.CodeEditor)
 
 		#The small widget which appears when we right click on a node in tree
 		
@@ -107,41 +108,41 @@ class MainClass(QtGui.QMainWindow):
 		self.setupActions()
 
 		#self.textEdit=QtGui.QTextEdit()#Temp
-		#self.UI.tabWidget_2.addTab(self.textEdit,"Helllo")#Temp
-		#print "Count is "+ str(self.UI.verticalLayout.count())
-		#self.UI.toolButton_6.setMouseTracking(True)
+		#self.tabWidget_2.addTab(self.textEdit,"Helllo")#Temp
+		#print "Count is "+ str(self.verticalLayout.count())
+		#self.toolButton_6.setMouseTracking(True)
 		
 	def setupActions(self):##To setUp connection like saving,opening,etc
 		self.connect(self.simulatorTimer,QtCore.SIGNAL("timeout()"),self.simulate)
-		#self.connect(self.UI.toolButton,QtCore.SIGNAL("hovered()"),self.hoverAddComponent)
-		#self.connect(self.UI.toolButton_9,QtCore.SIGNAL("hovered()"),self.hoverXmlSettings)
-		#self.connect(self.UI.toolButton_5,QtCore.SIGNAL("hovered()"),self.hoverPrintDefaultNode)
-		#self.connect(self.UI.toolButton_4,QtCore.SIGNAL("hovered()"),self.hoverPrintDefaultSettings)
-		#self.connect(self.UI.toolButton_3,QtCore.SIGNAL("hovered()"),self.hoverRefreshFromXml)
-		#self.connect(self.UI.toolButton_10,QtCore.SIGNAL("hovered()"),self.hoverNetworkTreeSettings)
-		#self.connect(self.UI.toolButton_6,QtCore.SIGNAL("hovered()"),self.hoverRefreshFromTree)
-		self.connect(self.UI.actionSet_Log_File,QtCore.SIGNAL("triggered(bool)"),self.setLogFile)
+		#self.connect(self.toolButton,QtCore.SIGNAL("hovered()"),self.hoverAddComponent)
+		#self.connect(self.toolButton_9,QtCore.SIGNAL("hovered()"),self.hoverXmlSettings)
+		#self.connect(self.toolButton_5,QtCore.SIGNAL("hovered()"),self.hoverPrintDefaultNode)
+		#self.connect(self.toolButton_4,QtCore.SIGNAL("hovered()"),self.hoverPrintDefaultSettings)
+		#self.connect(self.toolButton_3,QtCore.SIGNAL("hovered()"),self.hoverRefreshFromXml)
+		#self.connect(self.toolButton_10,QtCore.SIGNAL("hovered()"),self.hoverNetworkTreeSettings)
+		#self.connect(self.toolButton_6,QtCore.SIGNAL("hovered()"),self.hoverRefreshFromTree)
+		self.connect(self.actionSet_Log_File,QtCore.SIGNAL("triggered(bool)"),self.setLogFile)
 
-		self.connect(self.UI.tabWidget,QtCore.SIGNAL("currentChanged(int)"),self.tabIndexChanged)
+		self.connect(self.tabWidget,QtCore.SIGNAL("currentChanged(int)"),self.tabIndexChanged)
 		
 		# File menu buttons
-		self.connect(self.UI.actionSave,QtCore.SIGNAL("triggered(bool)"),self.saveXmlFile)
-		self.connect(self.UI.actionOpen,QtCore.SIGNAL("triggered(bool)"),self.openXmlFile)
-		self.connect(self.UI.actionExit,QtCore.SIGNAL("triggered(bool)"),self.exitRcmanager)
+		self.connect(self.actionSave,QtCore.SIGNAL("triggered(bool)"),self.saveXmlFile)
+		self.connect(self.actionOpen,QtCore.SIGNAL("triggered(bool)"),self.openXmlFile)
+		self.connect(self.actionExit,QtCore.SIGNAL("triggered(bool)"),self.exitRcmanager)
 		
 		# Edit menu buttons 
-		self.connect(self.UI.actionSetting,QtCore.SIGNAL("triggered(bool)"),self.rcmanagerSetting)
+		self.connect(self.actionSetting,QtCore.SIGNAL("triggered(bool)"),self.rcmanagerSetting)
 		
 		# View menu buttons 
-		self.connect(self.UI.actionLogger,QtCore.SIGNAL("triggered(bool)"),self.toggleLoggerView)
-		self.connect(self.UI.actionComponent_List,QtCore.SIGNAL("triggered(bool)"),self.toggleComponentListView)
-		self.connect(self.UI.actionFull_Screen,QtCore.SIGNAL("triggered(bool)"),self.toggleFullScreenView)
+		self.connect(self.actionLogger,QtCore.SIGNAL("triggered(bool)"),self.toggleLoggerView)
+		self.connect(self.actionComponent_List,QtCore.SIGNAL("triggered(bool)"),self.toggleComponentListView)
+		self.connect(self.actionFull_Screen,QtCore.SIGNAL("triggered(bool)"),self.toggleFullScreenView)
 			
-		self.connect(self.UI.actionON,QtCore.SIGNAL("triggered(bool)"),self.simulatorOn)
-		self.connect(self.UI.actionOFF,QtCore.SIGNAL("triggered(bool)"),self.simulatorOff)
-		self.connect(self.UI.actionSetting_2,QtCore.SIGNAL("triggered(bool)"),self.simulatorSettings)
-		self.connect(self.UI.actionSetting_3,QtCore.SIGNAL("triggered(bool)"),self.controlPanelSettings)
-		self.connect(self.UI.actionSetting_4,QtCore.SIGNAL("triggered(bool)"),self.editorSettings)
+		self.connect(self.actionON,QtCore.SIGNAL("triggered(bool)"),self.simulatorOn)
+		self.connect(self.actionOFF,QtCore.SIGNAL("triggered(bool)"),self.simulatorOff)
+		self.connect(self.actionSetting_2,QtCore.SIGNAL("triggered(bool)"),self.simulatorSettings)
+		self.connect(self.actionSetting_3,QtCore.SIGNAL("triggered(bool)"),self.controlPanelSettings)
+		self.connect(self.actionSetting_4,QtCore.SIGNAL("triggered(bool)"),self.editorSettings)
 		self.connect(self.graphTree.BackPopUpMenu.ActionUp,QtCore.SIGNAL("triggered(bool)"),self.upAllComponents)
 		self.connect(self.graphTree.BackPopUpMenu.ActionDown,QtCore.SIGNAL("triggered(bool)"),self.downAllComponents)
 		self.connect(self.graphTree.BackPopUpMenu.ActionSearch,QtCore.SIGNAL("triggered(bool)"),self.searchInsideTree)
@@ -162,49 +163,49 @@ class MainClass(QtGui.QMainWindow):
 		self.connect(self.graphTree.CompoPopUpMenu.ActionDownGroup,QtCore.SIGNAL("triggered(bool)"),self.downGroup)
 		#self.connect(self.graphTree.CompoPopUpMenu.ActionFreq,QtCore.SIGNAL("triggered(bool)"),self.getFreq)
 
-		self.connect(self.UI.toolButton_2,QtCore.SIGNAL("clicked()"),self.searchEnteredAlias)
-		self.connect(self.UI.toolButton_7,QtCore.SIGNAL("clicked()"),self.simulatorOn)
-		self.connect(self.UI.toolButton_8,QtCore.SIGNAL("clicked()"),self.simulatorOff)
+		self.connect(self.toolButton_2,QtCore.SIGNAL("clicked()"),self.searchEnteredAlias)
+		self.connect(self.toolButton_7,QtCore.SIGNAL("clicked()"),self.simulatorOn)
+		self.connect(self.toolButton_8,QtCore.SIGNAL("clicked()"),self.simulatorOff)
 
 		self.connect(self.SaveWarning,QtCore.SIGNAL("save()"),self.saveXmlFile)
-		self.connect(self.UI.toolButton_3,QtCore.SIGNAL("clicked()"),self.refreshTreeFromCode)
-		self.connect(self.UI.toolButton_4,QtCore.SIGNAL("clicked()"),self.addNetworkTempl)
-		self.connect(self.UI.toolButton_5,QtCore.SIGNAL("clicked()"),self.addComponentTempl)
-		self.connect(self.UI.toolButton_6,QtCore.SIGNAL("clicked()"),self.refreshCodeFromTree)
-		self.connect(self.UI.toolButton_9,QtCore.SIGNAL("clicked()"),self.editorFontSettings)
-		#self.connect(self.UI.toolButton_10,QtCore.SIGNAL("clicked()"),self.getNetworkSetting)(Once finished Uncomment this)
-		self.connect(self.UI.toolButton,QtCore.SIGNAL("clicked()"),self.addNewComponent)
+		self.connect(self.toolButton_3,QtCore.SIGNAL("clicked()"),self.refreshTreeFromCode)
+		self.connect(self.toolButton_4,QtCore.SIGNAL("clicked()"),self.addNetworkTempl)
+		self.connect(self.toolButton_5,QtCore.SIGNAL("clicked()"),self.addComponentTempl)
+		self.connect(self.toolButton_6,QtCore.SIGNAL("clicked()"),self.refreshCodeFromTree)
+		self.connect(self.toolButton_9,QtCore.SIGNAL("clicked()"),self.editorFontSettings)
+		#self.connect(self.toolButton_10,QtCore.SIGNAL("clicked()"),self.getNetworkSetting)(Once finished Uncomment this)
+		self.connect(self.toolButton,QtCore.SIGNAL("clicked()"),self.addNewComponent)
 		
 		self.Logger.logData("Tool started")
 		
 	# View menu functions begin 
 	
 	def toggleLoggerView(self):
-		if self.UI.actionLogger.isChecked():
-			self.UI.dockWidget.show() 
-			self.UI.actionFull_Screen.setChecked(False)
+		if self.actionLogger.isChecked():
+			self.dockWidget.show()
+			self.actionFull_Screen.setChecked(False)
 		else:
-			self.UI.dockWidget.hide()
-			self.UI.actionFull_Screen.setChecked(not self.UI.actionComponent_List.isChecked())			
+			self.dockWidget.hide()
+			self.actionFull_Screen.setChecked(not self.actionComponent_List.isChecked())
 		
 	def toggleComponentListView(self):
-		if self.UI.actionComponent_List.isChecked():
-			self.UI.dockWidget_2.show() 
-			self.UI.actionFull_Screen.setChecked(False)
+		if self.actionComponent_List.isChecked():
+			self.dockWidget_2.show()
+			self.actionFull_Screen.setChecked(False)
 		else:
-			self.UI.dockWidget_2.hide() 
-			self.UI.actionFull_Screen.setChecked(not self.UI.actionLogger.isChecked())
+			self.dockWidget_2.hide()
+			self.actionFull_Screen.setChecked(not self.actionLogger.isChecked())
 			
 	def toggleFullScreenView(self):
-		if self.UI.actionFull_Screen.isChecked():
-			self.UI.actionLogger.setChecked(False) 
-			self.UI.actionComponent_List.setChecked(False) 
+		if self.actionFull_Screen.isChecked():
+			self.actionLogger.setChecked(False)
+			self.actionComponent_List.setChecked(False)
 			
 			self.toggleLoggerView()
 			self.toggleComponentListView()
 		else:
-			self.UI.actionLogger.setChecked(True)
-			self.UI.actionComponent_List.setChecked(True)
+			self.actionLogger.setChecked(True)
+			self.actionComponent_List.setChecked(True)
 			
 			self.toggleLoggerView()
 			self.toggleComponentListView()
@@ -216,7 +217,7 @@ class MainClass(QtGui.QMainWindow):
 		comp.CheckItem.getFreq()
 		
 	def EditSelectedComponent(self):	
-		self.UI.tabWidget.setCurrentIndex(1)
+		self.tabWidget.setCurrentIndex(1)
 		self.CodeEditor.findFirst(self.graphTree.CompoPopUpMenu.currentComponent.parent.alias,False,True,True,True)
 
 	def setLogFile(self):
@@ -267,7 +268,7 @@ class MainClass(QtGui.QMainWindow):
 		self.deleteComponent(self.graphTree.CompoPopUpMenu.currentComponent.parent)
 
 	def tabIndexChanged(self):##This will make sure the common behavior is not working unneccessarily 
-		index=self.UI.tabWidget.currentIndex()
+		index=self.tabWidget.currentIndex()
 		if index==1 or index==2:##CommonProxy should only work if the first tab is visible
 			if self.currentComponent != None:
 				self.currentComponent.CommonProxy.setVisibility(False)
@@ -358,7 +359,7 @@ class MainClass(QtGui.QMainWindow):
 		self.graphTree.horizontalScrollBar().setValue(self.midValueHorizontal)
 		self.graphTree.verticalScrollBar().setValue(self.midValueVertical)
 		
-		self.UI.verticalSlider.setValue(0)
+		self.verticalSlider.setValue(0)
 		self.graphZoom()
 			
 	def copyAndUpdate(self,original,temp):
@@ -423,7 +424,7 @@ class MainClass(QtGui.QMainWindow):
 		
 	def searchEnteredAlias(self):#Called when we type an alias and search it
 		try:
-			alias=self.UI.lineEdit.text()
+			alias=self.lineEdit.text()
 			if alias== '':
 				raise Exception("No Name Entered")
 				
@@ -435,7 +436,7 @@ class MainClass(QtGui.QMainWindow):
 		except Exception, e:
 			self.Logger.logData("Search error::  "+ str(e),"R")
 		else:
-			self.UI.lineEdit.clear()
+			self.lineEdit.clear()
 		finally:
 			pass
 			
@@ -485,9 +486,9 @@ class MainClass(QtGui.QMainWindow):
 
 	def setDirectoryItems(self):#This will set and draw all the directory components+I have added the job of defining a connection in here
 		for x in self.componentList.__iter__():
-			x.DirectoryItem.setParent(self.UI.scrollAreaWidgetContents)
-			self.UI.verticalLayout.insertWidget(self.UI.verticalLayout.count()-1,x.DirectoryItem)
-		#print "Count is "+ str(self.UI.verticalLayout.count())
+			x.DirectoryItem.setParent(self.scrollAreaWidgetContents)
+			self.verticalLayout.insertWidget(self.verticalLayout.count()-1,x.DirectoryItem)
+		#print "Count is "+ str(self.verticalLayout.count())
 	
 	def componentSettings(self,component):#To edit the settings of currentComponent
 		print "Settings of current component"
@@ -725,7 +726,7 @@ class MainClass(QtGui.QMainWindow):
 			
 	def StatusBarFileNameWrite(self,string):
 		Label=QtGui.QLabel(string)
-		self.UI.statusbar.addWidget(Label)
+		self.statusbar.addWidget(Label)
 		
 	def saveXmlFile(self):##To save the entire treesetting into a xml file
 		try:
@@ -749,11 +750,11 @@ class MainClass(QtGui.QMainWindow):
 	#	rcmanagerConfig.writeConfigToFile(self.networkSettings,self.componentList,fileName)
 			
 	def setZoom(self): ##To connect the slider motion to zooming
-		self.UI.verticalSlider.setRange(-20,20)
-		self.UI.verticalSlider.setTickInterval(0.5)
-		self.UI.verticalSlider.setValue(0)
+		self.verticalSlider.setRange(-20,20)
+		self.verticalSlider.setTickInterval(0.5)
+		self.verticalSlider.setValue(0)
 		self.currentZoom=0
-		self.UI.verticalSlider.valueChanged.connect(self.graphZoom)
+		self.verticalSlider.valueChanged.connect(self.graphZoom)
 		
 	def graphZoom(self):##To be called when ever we wants to zoomingfactor
 		#NoAnchor
@@ -762,7 +763,7 @@ class MainClass(QtGui.QMainWindow):
 	
 		self.graphTree.setTransformationAnchor(self.graphTree.AnchorUnderMouse)
 		
-		new=self.UI.verticalSlider.value()
+		new=self.verticalSlider.value()
 		diff=new-self.currentZoom
 		self.currentZoom=new
 		zoomingfactor=math.pow(1.2,diff)
@@ -782,9 +783,9 @@ class MainClass(QtGui.QMainWindow):
 		component.graphicsItem.setPos(pos)
 		self.NetworkScene.addItem(component.graphicsItem)
 		self.refreshCodeFromTree()
-		component.DirectoryItem.setParent(self.UI.scrollAreaWidgetContents)
-		self.UI.verticalLayout.insertWidget(self.UI.verticalLayout.count()-1,component.DirectoryItem)
-		self.UI.tabWidget.setCurrentIndex(1)
+		component.DirectoryItem.setParent(self.scrollAreaWidgetContents)
+		self.verticalLayout.insertWidget(self.verticalLayout.count()-1,component.DirectoryItem)
+		self.tabWidget.setCurrentIndex(1)
 		self.CodeEditor.findFirst("Component"+str(self.componentList.__len__()-1),False,True,True,True)
 		
 	def deleteComponent(self,component):##This will delete the component Not completed 
@@ -817,7 +818,7 @@ class MainClass(QtGui.QMainWindow):
 		if event.key()==Qt.Qt.Key_F5:
 			self.refreshTreeFromCode()
 		elif event.key()==Qt.Qt.Key_F11:
-			self.UI.actionFull_Screen.toggle()
+			self.actionFull_Screen.toggle()
 			self.toggleFullScreenView()
 
 if __name__ == '__main__':
