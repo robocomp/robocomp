@@ -236,7 +236,7 @@ class  ComponentTree(QtGui.QGraphicsView):	##The widget on which we are going to
 		temp=self.mainclass.currentZoom
 		temp+=(wheel.delta()/120)
 		self.mainclass.UI.verticalSlider.setValue(temp)
-		self.mainclass.graphZoom()
+		self.mainclass.graph_zoom()
 	def contextMenuEvent(self,event):##It will select what kind of context menu should be displayed
 		pos=event.pos()
 		item=self.itemAt(pos)
