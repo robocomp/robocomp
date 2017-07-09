@@ -1,8 +1,9 @@
 import sys, signal, argparse
+from xmlreader import xml_reader
 from PyQt4 import QtCore, QtGui
 
 def main():
-	#read fle to dict
+	xmldata = xml_reader("manager.xml")
 	#create model as a NetworkX graph using dict
 	#create Qt Ui in a separate class
 	#create controller
