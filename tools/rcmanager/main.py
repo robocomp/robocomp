@@ -1,8 +1,9 @@
 import sys, signal, argparse
+
+from PyQt4.QtGui import QApplication
 from xmlreader import xml_reader
 from viewer import Viewer
 from PyQt4 import QtCore, QtGui
-
 
 class Main():
 	def __init__(self):
@@ -16,7 +17,7 @@ class Main():
 
 if __name__ == '__main__':
 	# process params with a argparse
-	app = QtGui.QApplication(sys.argv)
+	app = QApplication(sys.argv)
 	signal.signal(signal.SIGINT, signal.SIG_DFL)
 	main = Main()
 	ret = app.exec_()
