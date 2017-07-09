@@ -32,10 +32,13 @@ import os
 import random
 import sys
 import time
+import signal
 
 from PyQt4 import QtCore, QtGui, Qt, uic
 
 import rcmanagerConfig
+
+signal.signal(signal.SIGINT, signal.SIG_DFL)
 
 CustomMainWindow = uic.loadUiType("formManager.ui")[0]  # Load the UI
 
@@ -357,14 +360,14 @@ class MainClass(QtGui.QMainWindow, CustomMainWindow):
                         self.componentList.append(x)  # This will add a new component
 
                 for x in self.componentList:
-                    if not self.searchInsideList(comp_list, x.alias):
+                    if not self.search_inside_list(comp_list, x.alias):
                         self.Logger.logData("Deleted the older component ::" + x.alias)  # If new tree does have this
                         self.delete_component(x)
 
                 for x in self.componentList:
                     for y in comp_list:
                         if x.alias == y.alias:
-                            self.copyAndUpdate(x, y)
+                            self.copy_and_update(x, y)
                 self.Logger.logData("Tree updated successfully from file")
 
         self.center_align_graph()
