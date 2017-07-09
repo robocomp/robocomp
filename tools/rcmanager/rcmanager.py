@@ -70,7 +70,7 @@ class MainClass(QtGui.QMainWindow, CustomMainWindow):
         self.tabWidget.removeTab(0)
         self.Logger = rcmanagerConfig.Logger(self.textBrowser)
 
-        self.SaveWarning = rcmanagerConfig.SaveWarningDialog(self)
+        self.save_warning = rcmanagerConfig.SaveWarningDialog(self)
 
         self.NetworkScene = rcmanagerConfig.ComponentScene(self)  # The graphicsScene
         self.graphTree = rcmanagerConfig.ComponentTree(self.frame, mainclass=self)  # The graphicsNode
@@ -94,7 +94,7 @@ class MainClass(QtGui.QMainWindow, CustomMainWindow):
         self.LogFileSetter = rcmanagerConfig.LogFileSetter(self, self.Logger)
         self.simulatorTimer = QtCore.QTimer()
 
-        self.connectionBuilder = rcmanagerConfig.connectionBuilder(self,
+        self.connectionBuilder = rcmanagerConfig.ConnectionBuilder(self,
                                                                    self.Logger)  # This will take care of connection building between components
 
         self.PositionMultiplier = rcmanagerConfig.PositionMultiplier(self.Logger)
@@ -187,7 +187,7 @@ class MainClass(QtGui.QMainWindow, CustomMainWindow):
         self.connect(self.toolButton_7, QtCore.SIGNAL("clicked()"), self.simulator_on)
         self.connect(self.toolButton_8, QtCore.SIGNAL("clicked()"), self.simulator_off)
 
-        self.connect(self.SaveWarning, QtCore.SIGNAL("save()"), self.save_xml_file)
+        self.connect(self.save_warning, QtCore.SIGNAL("save()"), self.save_xml_file)
         self.connect(self.toolButton_3, QtCore.SIGNAL("clicked()"), self.refresh_tree_from_code)
         self.connect(self.toolButton_4, QtCore.SIGNAL("clicked()"), self.add_network_templ)
         self.connect(self.toolButton_5, QtCore.SIGNAL("clicked()"), self.add_component_templ)
@@ -729,7 +729,7 @@ class MainClass(QtGui.QMainWindow, CustomMainWindow):
         rcmanagerConfig.NetworkValues()
         try:
             if self.HadChanged:  # To make sure the data we have been working on have been saved
-                decision = self.SaveWarning.decide()
+                decision = self.save_warning.decide()
                 if decision == "C":
                     raise Exception(" Reason:Canceled by User")
                 elif decision == "S":
