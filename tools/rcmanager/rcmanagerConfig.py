@@ -62,7 +62,6 @@ import RoboCompCommonBehavior
 Ice.loadSlice(preStr + "DifferentialRobot.ice")
 # import RoboCompDifferentialRobot
 
-
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
 except AttributeError:
@@ -72,13 +71,11 @@ except AttributeError:
 try:
     _encoding = QtGui.QApplication.UnicodeUTF8
 
-
     def _translate(context, text, disambig):
         return QtGui.QApplication.translate(context, text, disambig, _encoding)
 except AttributeError:
     def _translate(context, text, disambig):
         return QtGui.QApplication.translate(context, text, disambig)
-
 
 class ComponentGroup:  ##On working condition
     def __init__(self):
@@ -135,7 +132,6 @@ class ComponentGroup:  ##On working condition
     def down_group_components(self, Logger):
         for x in self.Components:
             down_component(x, Logger)
-
 
 ##
 # This is used to set The log file
