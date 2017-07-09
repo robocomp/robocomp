@@ -156,7 +156,7 @@ class MainClass(QtGui.QMainWindow, CustomMainWindow):
         self.connect(self.graphTree.BackPopUpMenu.ActionUp, QtCore.SIGNAL("triggered(bool)"), self.up_all_components)
         self.connect(self.graphTree.BackPopUpMenu.ActionDown, QtCore.SIGNAL("triggered(bool)"),
                      self.down_all_components)
-        self.connect(self.graphTree.BackPopUpMenu.ActionSearch, QtCore.SIGNAL("triggered(bool)"), self.searchInsideTree)
+        self.connect(self.graphTree.BackPopUpMenu.ActionSearch, QtCore.SIGNAL("triggered(bool)"), self.search_inside_tree)
         self.connect(self.graphTree.BackPopUpMenu.ActionAdd, QtCore.SIGNAL("triggered(bool)"), self.add_new_node)
         self.connect(self.graphTree.BackPopUpMenu.ActionSettings, QtCore.SIGNAL("triggered(bool)"),
                      self.set_network_settings)
@@ -530,7 +530,7 @@ class MainClass(QtGui.QMainWindow, CustomMainWindow):
     def set_network_settings(self):  # To edit the network tree general settings
         print "network setting editing"
 
-    def searchInsideTree(self):  # To search a particular component from tree
+    def search_inside_tree(self):  # To search a particular component from tree
         print "Searching inside the tree"
 
     def up_all_components(self):  # To set all components in up position
