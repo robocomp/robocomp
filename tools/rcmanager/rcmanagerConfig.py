@@ -1896,7 +1896,7 @@ def search_for_child(xmlnode, name):  ##Will search in tree for node with name N
 
 
 def get_default_icon_path():
-    return "/opt/robocomp/share/rcmanager/1465594390_sign-add.png"  # This is the default icon can be changed by users choice
+    return "icons/1465594390_sign-add.png"  # This is the default icon can be changed by users choice
 
 
 def up_component(component, logger):  # Just Up the component
