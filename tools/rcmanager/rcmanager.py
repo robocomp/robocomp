@@ -864,7 +864,7 @@ if __name__ == '__main__':
 
             if sys.argv[1].endswith(".xml"):
                 window.filePath = sys.argv[1]
-                window.openXmlFile(terminalArg=True)
+                window.open_xml_file(terminalArg=True)
 
             elif sys.argv[1].endswith(".log"):
                 window.Logger.setFile(sys.argv[1])
