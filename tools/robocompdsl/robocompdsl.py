@@ -192,14 +192,15 @@ def creaDirectorio(directory):
 			print '\nCOULDN\'T CREATE', directory
 			sys.exit(-1)
 
+# Get -I parameters, replacing ~ by $HOME
+includeDirectories = [ os.path.expanduser(x[2:]) for x in sys.argv if x.startswith('-I') ]
+
 if sys.argv[1].endswith(".cdsl"):
 	from parseCDSL import *
 	from parseIDSL import *
 	import rcExceptions
 	import sys
 
-	# Get -I parameters, replacing ~ by $HOME
-	includeDirectories = [ os.path.expanduser(x[2:]) for x in sys.argv if x.startswith('-I') ]
 
 	component = CDSLParsing.fromFile(inputFile, includeDirectories=includeDirectories)
 	imports = ''.join( [ imp+'#' for imp in component['imports'] ] )

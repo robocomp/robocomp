@@ -10,13 +10,21 @@ def Z():
 	cog.out('>@@>')
 def TAB():
 	cog.out('<TABHERE>')
-
-from parseCDSL import *
+def SPACE(i=0):
+	s = ''
+	if i>0:
+		s = str(i)
+	cog.out('<S'+s+'>')
+	
 includeDirectories = theIDSLPaths.split('#')
+from parseCDSL import *
 component = CDSLParsing.fromFile(theCDSL, includeDirectories=includeDirectories)
+print ('Component', component)
+print ('IncludeDirectories', includeDirectories)
+
 if component == None:
 	print('Can\'t locate', theCDSLs)
-	sys.exit(1)
+	os.__exit(1)
 
 from parseIDSL import *
 pool = IDSLPool(theIDSLs, includeDirectories)
@@ -67,8 +75,13 @@ import RoboCompCommonBehavior
 [[[cog
 for imp in component['recursiveImports']:
 	cog.outl('preStr = "-I/opt/robocomp/interfaces/ -I"+ROBOCOMP+"/interfaces/ --all /opt/robocomp/interfaces/"')
-	module = IDSLParsing.gimmeIDSL(imp.split('/')[-1])
-	incl = imp.split('/')[-1].split('.')[0]
+	eso = imp.split('/')[-1]
+	print(eso)
+	print(eso)
+	print(eso)
+	print ('IncludeDirectories', includeDirectories)
+	module = IDSLParsing.gimmeIDSL(eso, files='', includeDirectories=includeDirectories)
+	incl = eso.split('.')[0]
 	cog.outl('Ice.loadSlice(preStr+"'+incl+'.ice")')
 	cog.outl('from '+ module['name'] +' import *')
 ]]]
@@ -177,8 +190,9 @@ if component['usingROS'] == True:
 								cog.outl("<TABHERE><TABHERE>self.pub_"+mname+" = rospy.Publisher("+s+", "+p['type'].capitalize()+"32, queue_size=1000)")
 							elif p['type'] in ('uint8','uint16','uint32','uint64'):
 								cog.outl("<TABHERE><TABHERE>self.pub_"+mname+" = rospy.Publisher("+s+", UInt"+p['type'].split('t')[1]+", queue_size=1000)")
-							elif p['type'] in rosTypes:
-								cog.outl("<TABHERE><TABHERE>self.pub_"+mname+" = rospy.Publisher("+s+", "+p['type'].capitalize()+", queue_size=1000)")
+# WARNING ERROR FIXME TODO The following two lines fail because 'rosTypes' does not exist. We should probably fix this.
+#							elif p['type'] in rosTypes:
+#								cog.outl("<TABHERE><TABHERE>self.pub_"+mname+" = rospy.Publisher("+s+", "+p['type'].capitalize()+", queue_size=1000)")
 							elif '::' in p['type']:
 								cog.outl("<TABHERE><TABHERE>self.pub_"+mname+" = rospy.Publisher("+s+", "+p['type'].split('::')[1]+", queue_size=1000)")
 							else:

@@ -86,8 +86,12 @@ class IDSLParsing:
 		return tree
 
 	@staticmethod
-	def gimmeIDSL(name, files=''):
+	def gimmeIDSL(name, files='', includeDirectories=None):
 		pathList = []
+		print 'includeDirectories', includeDirectories
+		if includeDirectories!= None:
+			pathList += [x for x in includeDirectories]
+		print 'PATHLIST:', pathList
 		fileList = []
 		for p in [f for f in files.split('#') if len(f)>0]:
 			if p.startswith("-I"):
