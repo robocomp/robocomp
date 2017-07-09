@@ -32,10 +32,13 @@ import os
 import random
 import sys
 import time
+import signal
 
 from PyQt4 import QtCore, QtGui, Qt, uic
 
 import rcmanagerConfig
+
+signal.signal(signal.SIGINT, signal.SIG_DFL)
 
 CustomMainWindow = uic.loadUiType("formManager.ui")[0]  # Load the UI
 
@@ -153,7 +156,7 @@ class MainClass(QtGui.QMainWindow, CustomMainWindow):
         self.connect(self.graphTree.BackPopUpMenu.ActionUp, QtCore.SIGNAL("triggered(bool)"), self.up_all_components)
         self.connect(self.graphTree.BackPopUpMenu.ActionDown, QtCore.SIGNAL("triggered(bool)"),
                      self.down_all_components)
-        self.connect(self.graphTree.BackPopUpMenu.ActionSearch, QtCore.SIGNAL("triggered(bool)"), self.searchInsideTree)
+        self.connect(self.graphTree.BackPopUpMenu.ActionSearch, QtCore.SIGNAL("triggered(bool)"), self.search_inside_tree)
         self.connect(self.graphTree.BackPopUpMenu.ActionAdd, QtCore.SIGNAL("triggered(bool)"), self.add_new_node)
         self.connect(self.graphTree.BackPopUpMenu.ActionSettings, QtCore.SIGNAL("triggered(bool)"),
                      self.set_network_settings)
@@ -357,14 +360,14 @@ class MainClass(QtGui.QMainWindow, CustomMainWindow):
                         self.componentList.append(x)  # This will add a new component
 
                 for x in self.componentList:
-                    if not self.searchInsideList(comp_list, x.alias):
+                    if not self.search_inside_list(comp_list, x.alias):
                         self.Logger.logData("Deleted the older component ::" + x.alias)  # If new tree does have this
                         self.delete_component(x)
 
                 for x in self.componentList:
                     for y in comp_list:
                         if x.alias == y.alias:
-                            self.copyAndUpdate(x, y)
+                            self.copy_and_update(x, y)
                 self.Logger.logData("Tree updated successfully from file")
 
         self.center_align_graph()
@@ -527,7 +530,7 @@ class MainClass(QtGui.QMainWindow, CustomMainWindow):
     def set_network_settings(self):  # To edit the network tree general settings
         print "network setting editing"
 
-    def searchInsideTree(self):  # To search a particular component from tree
+    def search_inside_tree(self):  # To search a particular component from tree
         print "Searching inside the tree"
 
     def up_all_components(self):  # To set all components in up position
