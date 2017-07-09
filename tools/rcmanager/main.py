@@ -3,16 +3,22 @@ import sys, signal, argparse
 from PyQt4.QtGui import QApplication
 from xmlreader import xml_reader
 from viewer import Viewer
+from model import Model
+from controller import Controller
 from PyQt4 import QtCore, QtGui
 
 class Main():
+	"""docstring for MainClass"""
+
 	def __init__(self):
-		xmldata = xml_reader("manager.xml")
+		xmldata = xml_reader("manager.xml", False)
 		# create model as a NetworkX graph using dict
+		model = Model(xmldata)
 		# create Qt Ui in a separate class
 		self.viewer = Viewer()
 		self.viewer.show()
 		# create controller
+		controller = Controller(xmldata, self.viewer)
 
 
 if __name__ == '__main__':
