@@ -61,7 +61,7 @@ class MainClass(QtGui.QMainWindow, CustomMainWindow):
         super(MainClass, self).__init__(arg)
         self.ipList = []  # Ip listed from the xml file
         self.currentComponent = None
-        self.setWindowIcon(QtGui.QIcon(QtGui.QPixmap("icons/drawing_green.png")))
+        self.setWindowIcon(QtGui.QIcon(QtGui.QPixmap("resources/icons/drawing_green.png")))
         self.showMaximized()
         self.componentList = []
         self.networkSettings = rcmanagerConfig.NetworkValues()
@@ -409,7 +409,7 @@ class MainClass(QtGui.QMainWindow, CustomMainWindow):
             if original.dependences.__contains__(x) is False:
                 original.dependences.append(x)
                 comp = searchforComponent(x)
-                self.set_aconnection(comp, original)
+                self.set_connection(comp, original)
         for x in original.dependences:  # For deleting unwanted connection if needed
             name = x
             if temp.dependences.__contains__(x) is False:
@@ -692,7 +692,7 @@ class MainClass(QtGui.QMainWindow, CustomMainWindow):
             for y in x.dependences.__iter__():
                 try:
                     comp = self.search_for_component(y)
-                    self.set_aconnection(comp, x)
+                    self.set_connection(comp, x)
                     self.Logger.logData("Connection from " + comp.alias + " to " + x.alias + " set")
                 except Exception, e:
                     print "Error while setting connection ::" + str(e)
@@ -706,7 +706,7 @@ class MainClass(QtGui.QMainWindow, CustomMainWindow):
         if not flag:
             raise Exception("No such component with alias " + alias)
 
-    def set_aconnection(self, toComponent, fromComponent):  # To set these two components
+    def set_connection(self, toComponent, fromComponent):  # To set these two components
         connection = rcmanagerConfig.NodeConnection()
 
         connection.toComponent = toComponent
