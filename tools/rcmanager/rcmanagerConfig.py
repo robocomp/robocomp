@@ -1229,10 +1229,9 @@ class ComponentChecker(threading.Thread):  # This will check the status of compo
             print "Component " + self.component.alias + " Down"
 
 
-##
-# This widget is used to display the details of a component when hovering over the nodes
-##
-
+"""
+This widget is used to display the details of a component when hovering over the nodes
+"""
 class ShowItemDetails(
     QtGui.QWidget):  ##This contains the GUI and internal process regarding the controlling of the a particular component.
     def __init__(self, parent=None):
