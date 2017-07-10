@@ -2,6 +2,7 @@
 from PyQt4 import QtCore
 import networkx as nx
 import pdb
+import traceback
 
 class Node():
 	def __init__(self, args=None):
@@ -25,16 +26,17 @@ class Node():
 		self.status = False
 		self.nodeColor = [0, 0, 0]
 
-class Model():
+class Graph(nx.DiGraph):
 	"""docstring for Model"""
 	def __init__(self, jsonobject):
+		super(Graph, self).__init__()
 		print "------------------------------------"
 		print "Hello, this is Model coming up"
 		
-		self.graph = nx.DiGraph()
-		
 		# we go through the dictionary to create the graph
 		# we have "rcmanager" and "nodes" keys
+		
+		self.nodeCollection = dict()
 		
 		# creating nodes
 		# the try catch block is added to handle cases
@@ -42,9 +44,10 @@ class Model():
 		try:
 			for i in jsonobject["rcmanager"]["node"]:
 				node = self.get_node_from_json(i)
-				self.add_node(i['@alias'], node)
-				#pdb.set_trace()
+				self.add_node(i['@alias'])
+				self.nodeCollection[i['@alias']] = node
 		except:
+			#traceback.print_exc()
 			pass
 				
 		# creating edges
@@ -58,9 +61,10 @@ class Model():
 				for j in i["dependence"]:
 					self.add_edge(i['@alias'], j['@alias'])
 		except:
+			#traceback.print_exc()
 			pass
-			
-		print "My new model graph:", list(self.graph.nodes(data=True))
+		
+		print "My new model graph:", self.adj
 		
 	def get_node_from_json(self, jsonobject):
 		node = Node()
@@ -75,12 +79,4 @@ class Model():
 		
 		print "Added node:", node.alias
 		return node
-
-	def add_node(self, alias=None, node=None):
-		self.graph.add_node(alias)
-		self.graph.node[alias] = node
-		
-	def add_edge(self, fromNode=None, toNode=None):
-		self.graph.add_edge(fromNode, toNode)
 	
-		print "Added edge from:", fromNode, "to:", toNode
