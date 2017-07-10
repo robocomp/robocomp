@@ -28,30 +28,19 @@
 #
 import math
 
-import logging
+
 import random
 
 from PyQt4 import QtCore, QtGui, uic
 from PyQt4.QtGui import QGraphicsScene
 
 from widgets import dialogs, code_editor, network_graph, menus
-
+from logger import RCManagerLogger
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
 except AttributeError:
     def _fromUtf8(s):
         return s
-
-class QTextEditLogger(logging.Handler):
-    def __init__(self, text_widget):
-        super(QTextEditLogger, self).__init__()
-        self.text_widget = text_widget
-
-    def emit(self, record):
-        self.append_line(self.format(record))  # implementation of append_line omitted
-
-    def append_line(self, msg):
-        self.text_widget.append(msg)
 
 
 MainWindow = uic.loadUiType("formManager.ui")[0]  # Load the UI
@@ -61,17 +50,12 @@ class Viewer(QtGui.QMainWindow, MainWindow):
     """docstring for Viewer"""
 
     def __init__(self, arg=None):
-        self._logger = logging.getLogger('RCManager.Viewer')
-        self._logger.setLevel(logging.DEBUG)
-        print "------------------------------------"
-        print "Hello this is Viewer coming up"
+        self._logger = RCManagerLogger().get_logger("RCManager.Viewer")
+        self._logger.info("------------------------------------")
+        self._logger.info("Hello this is Viewer coming up")
         super(Viewer, self).__init__(arg)
         self.setupUi(self)
-        h = QTextEditLogger(self.textBrowser)
-        format = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-        h.setFormatter(format)
-        self._logger.addHandler(h)
-
+        RCManagerLogger().set_text_edit_handler(self.textBrowser)
         self.setWindowIcon(QtGui.QIcon(QtGui.QPixmap("share/rcmanager/drawing_green.png")))
         self.showMaximized()
         self.tabWidget.removeTab(0)
@@ -100,7 +84,7 @@ class Viewer(QtGui.QMainWindow, MainWindow):
         # To track the changes in the network both functionaly and visually
         self.HadChanged = False
 
-        self.LogFileSetter = dialogs.LogFileSetterDialog(self)
+        self.log_file_setter = dialogs.LogFileSetterDialog(self)
         self.simulatorTimer = QtCore.QTimer()
 
         self.connectionBuilder = dialogs.ConnectionBuilderDialog(self)  # This will take care of connection building between components
@@ -155,7 +139,7 @@ class Viewer(QtGui.QMainWindow, MainWindow):
         # # self.connect(self.toolButton_3,QtCore.SIGNAL("hovered()"),self.hoverRefreshFromXml)
         # # self.connect(self.toolButton_10,QtCore.SIGNAL("hovered()"),self.hoverNetworkTreeSettings)
         # # self.connect(self.toolButton_6,QtCore.SIGNAL("hovered()"),self.hoverRefreshFromTree)
-        # self.connect(self.actionSet_Log_File, QtCore.SIGNAL("triggered(bool)"), self.set_log_file)
+        self.connect(self.actionSet_Log_File, QtCore.SIGNAL("triggered(bool)"), self.set_log_file)
         #
         # self.connect(self.tabWidget, QtCore.SIGNAL("currentChanged(int)"), self.tab_index_changed)
         #
@@ -227,6 +211,8 @@ class Viewer(QtGui.QMainWindow, MainWindow):
 
         self._logger.info("Tool started")
 
+    def set_log_file(self):
+        self.log_file_setter.setFile()
 
     """ Method to animate the nodes to be distributed on the scene """
     def simulate1(self):  # To switch ON simulator::Unfinished
@@ -276,7 +262,7 @@ class Viewer(QtGui.QMainWindow, MainWindow):
             iterr.y += iterr.vel_y
 
         for iterr in self.componentList:
-            # print "updating "+iterr.alias
+            # self._logger.info( "updating "+iterr.alias)
             iterr.graphicsItem.setPos(QtCore.QPointF(iterr.x, iterr.y))
             iterr.graphicsItem.updateforDrag()
 
