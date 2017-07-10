@@ -19,8 +19,6 @@ def SPACE(i=0):
 includeDirectories = theIDSLPaths.split('#')
 from parseCDSL import *
 component = CDSLParsing.fromFile(theCDSL, includeDirectories=includeDirectories)
-print ('Component', component)
-print ('IncludeDirectories', includeDirectories)
 
 if component == None:
 	print('Can\'t locate', theCDSLs)
@@ -76,10 +74,6 @@ import RoboCompCommonBehavior
 for imp in component['recursiveImports']:
 	cog.outl('preStr = "-I/opt/robocomp/interfaces/ -I"+ROBOCOMP+"/interfaces/ --all /opt/robocomp/interfaces/"')
 	eso = imp.split('/')[-1]
-	print(eso)
-	print(eso)
-	print(eso)
-	print ('IncludeDirectories', includeDirectories)
 	module = IDSLParsing.gimmeIDSL(eso, files='', includeDirectories=includeDirectories)
 	incl = eso.split('.')[0]
 	cog.outl('Ice.loadSlice(preStr+"'+incl+'.ice")')

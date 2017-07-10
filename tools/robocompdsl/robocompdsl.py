@@ -9,14 +9,14 @@
 
 import sys, os, subprocess
 
-def generateHeaders(idslFile, outputPath, comp): #idslFile es el fichero idsl importando en el cdsl outputPath es outputPath+/src/
+def generateROSHeaders(idslFile, outputPath, comp, includeDirectories): #idslFileis the IDSL file imported in the CDSL, outputPath is the path where the ROS headers are to be generated
 	imported = []
-	idsl = IDSLParsing.fromFileIDSL(idslFile)
+	idsl = IDSLParsing.gimmeIDSL(idslFile, files='', includeDirectories=includeDirectories)
 	if not os.path.exists(outputPath):
 		creaDirectorio(outputPath)
 
 	def generarH(idslFile, imported):
-		idsl = IDSLParsing.fromFileIDSL(idslFile)
+		idsl = IDSLParsing.gimmeIDSLStruct(idslFile, files='', includeDirectories=includeDirectories)
 		os.system("rm -f "+outputPath + "/" + idsl['module']['name'] + "ROS/msg/__init__.py")
 		os.system("rm -f "+outputPath + "/" + idsl['module']['name'] + "ROS/srv/__init__.py")
 		for imp in idsl['module']['contents']:
@@ -25,15 +25,15 @@ def generateHeaders(idslFile, outputPath, comp): #idslFile es el fichero idsl im
 					ofile = outputPath+"/"+imp['name'] + "." + f.split('.')[-1].lower()
 					print 'Generating', ofile, ' (servant for', idslFile.split('.')[0].lower() + ')'
 					# Call cog
-					run = "cog.py -z -d" + " -D structName=" + imp['name'] +" -D theIDSL="+idslFile+ " -o " + ofile + " " + "/opt/robocomp/share/robocompdsl/templateCPP/" + f
+					run = "cog.py -z -d" + ' -D theIDSLPaths='+ '#'.join(includeDirectories) + " -D structName=" + imp['name'] +" -D theIDSL="+idslFile+ " -o " + ofile + " " + "/opt/robocomp/share/robocompdsl/templateCPP/" + f
 					run = run.split(' ')
 					ret = Cog().main(run)
 					if ret != 0:
 						print 'ERROR'
 						sys.exit(-1)
 					replaceTagsInFile(ofile)
-					commandCPP = "/opt/ros/kinetic/share/gencpp/cmake/../../../lib/gencpp/gen_cpp.py " +ofile+ " -Istd_msgs:/opt/ros/kinetic/share/std_msgs/cmake/../msg -I" + idsl['module']['name'] + "ROS:" + outputPath
-					commandPY  = "/opt/ros/kinetic/share/gencpp/cmake/../../../lib/genpy/genmsg_py.py " +ofile+ " -Istd_msgs:/opt/ros/kinetic/share/std_msgs/cmake/../msg -I" + idsl['module']['name'] + "ROS:" + outputPath
+					commandCPP = "/opt/ros/kinetic/share/gencpp/cmake/../../../lib/gencpp/gen_cpp.py " + ofile + " -Istd_msgs:/opt/ros/kinetic/share/std_msgs/cmake/../msg -I" + idsl['module']['name'] + "ROS:" + outputPath
+					commandPY  = "/opt/ros/kinetic/share/gencpp/cmake/../../../lib/genpy/genmsg_py.py " + ofile + " -Istd_msgs:/opt/ros/kinetic/share/std_msgs/cmake/../msg -I" + idsl['module']['name'] + "ROS:" + outputPath
 					for impo in imported:
 						if not impo == idsl['module']['name']+"ROS":
 							commandCPP = commandCPP + " -I" + impo + ":" + outputPath
@@ -66,7 +66,7 @@ def generateHeaders(idslFile, outputPath, comp): #idslFile es el fichero idsl im
 										ofile = outputPath+"/"+method['name'] + "." + f.split('.')[-1].lower()
 										print 'Generating', ofile, ' (servant for', idslFile.split('.')[0].lower() + ')'
 										# Call cog
-										run = "cog.py -z -d" + " -D methodName=" + method['name'] +" -D theIDSL="+idslFile+ " -o " + ofile + " " + "/opt/robocomp/share/robocompdsl/templateCPP/" + f
+										run = "cog.py -z -d" + ' -D theIDSLPaths='+ '#'.join(includeDirectories) + " -D methodName=" + method['name'] +" -D theIDSL="+idslFile+ " -o " + ofile + " " + "/opt/robocomp/share/robocompdsl/templateCPP/" + f
 										run = run.split(' ')
 										ret = Cog().main(run)
 										if ret != 0:
@@ -351,7 +351,7 @@ if sys.argv[1].endswith(".cdsl"):
 
 	if component['usingROS'] == True:
 		for imp in component['imports']:
-			generateHeaders("/opt/"+imp, outputPath+"/src", component)
+			generateROSHeaders(imp, outputPath+"/src", component, includeDirectories)
 
 elif sys.argv[1].endswith(".idsl"):
 	from parseIDSL import *

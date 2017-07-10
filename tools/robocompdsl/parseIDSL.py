@@ -88,10 +88,8 @@ class IDSLParsing:
 	@staticmethod
 	def gimmeIDSL(name, files='', includeDirectories=None):
 		pathList = []
-		print 'includeDirectories', includeDirectories
 		if includeDirectories!= None:
 			pathList += [x for x in includeDirectories]
-		print 'PATHLIST:', pathList
 		fileList = []
 		for p in [f for f in files.split('#') if len(f)>0]:
 			if p.startswith("-I"):
@@ -105,6 +103,28 @@ class IDSLParsing:
 			try:
 				path = p+'/'+name
 				return IDSLParsing.fromFile(path)
+			except IOError, e:
+				pass
+		print 'Couldn\'t locate ', name
+		sys.exit(-1)
+	@staticmethod
+	def gimmeIDSLStruct(name, files='', includeDirectories=None):
+		pathList = []
+		if includeDirectories!= None:
+			pathList += [x for x in includeDirectories]
+		fileList = []
+		for p in [f for f in files.split('#') if len(f)>0]:
+			if p.startswith("-I"):
+				pathList.append(p[2:])
+			else:
+				fileList.append(p)
+		pathList.append('/home/robocomp/robocomp/interfaces/IDSLs/')
+		pathList.append('/opt/robocomp/interfaces/IDSLs/')
+		filename = name.split('.')[0]
+		for p in pathList:
+			try:
+				path = p+'/'+name
+				return IDSLParsing.fromFileIDSL(path)
 			except IOError, e:
 				pass
 		print 'Couldn\'t locate ', name
@@ -241,8 +261,6 @@ class IDSLPool:
 						path = p+'/'+f
 						module = IDSLParsing.fromFile(path)
 						modulePool[filename] = module
-						#for importf in module['imports'].split('#'):
-							#print 'aqui', importf
 						self.includeInPool(module['imports'], modulePool, includeDirectories)
 						break
 					except IOError, e:
