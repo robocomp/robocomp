@@ -72,7 +72,7 @@ class Viewer(QtGui.QMainWindow, MainWindow):
         h.setFormatter(format)
         self._logger.addHandler(h)
 
-        self.setWindowIcon(QtGui.QIcon(QtGui.QPixmap("resources/icons/drawing_green.png")))
+        self.setWindowIcon(QtGui.QIcon(QtGui.QPixmap("share/rcmanager/drawing_green.png")))
         self.showMaximized()
         self.tabWidget.removeTab(0)
 

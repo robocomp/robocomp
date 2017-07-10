@@ -61,7 +61,7 @@ class MainClass(QtGui.QMainWindow, CustomMainWindow):
         super(MainClass, self).__init__(arg)
         self.ipList = []  # Ip listed from the xml file
         self.currentComponent = None
-        self.setWindowIcon(QtGui.QIcon(QtGui.QPixmap("resources/icons/drawing_green.png")))
+        self.setWindowIcon(QtGui.QIcon(QtGui.QPixmap("share/rcmanager/drawing_green.png")))
         self.showMaximized()
         self.componentList = []
         self.networkSettings = rcmanagerConfig.NetworkValues()

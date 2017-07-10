@@ -641,7 +641,7 @@ class SaveWarningDialog(QtGui.QDialog):  # To be used as a warning window while 
         self.horizontalLayout.addWidget(self.pushButton)
         self.pushButton_2 = QtGui.QPushButton(self)
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(_fromUtf8("resources/icons/1465394415_floppy.png")), QtGui.QIcon.Normal,
+        icon.addPixmap(QtGui.QPixmap(_fromUtf8("share/rcmanager/1465394415_floppy.png")), QtGui.QIcon.Normal,
                        QtGui.QIcon.Off)
         self.pushButton_2.setIcon(icon)
         self.pushButton_2.setObjectName(_fromUtf8("pushButton_2"))
@@ -1900,7 +1900,7 @@ def search_for_child(xmlnode, name):  ##Will search in tree for node with name N
 
 
 def get_default_icon_path():
-    return "resources/icons/1465594390_sign-add.png"  # This is the default icon can be changed by users choice
+    return "share/rcmanager/1465594390_sign-add.png"  # This is the default icon can be changed by users choice
 
 
 def up_component(component, logger):  # Just Up the component

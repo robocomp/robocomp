@@ -494,7 +494,7 @@ class SaveWarningDialog(QtGui.QDialog):  # To be used as a warning window while 
         self.horizontalLayout.addWidget(self.pushButton)
         self.pushButton_2 = QtGui.QPushButton(self)
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(_fromUtf8("resources/icons/1465394415_floppy.png")), QtGui.QIcon.Normal,
+        icon.addPixmap(QtGui.QPixmap(_fromUtf8("share/rcmanager/1465394415_floppy.png")), QtGui.QIcon.Normal,
                        QtGui.QIcon.Off)
         self.pushButton_2.setIcon(icon)
         self.pushButton_2.setObjectName(_fromUtf8("pushButton_2"))
