@@ -70,13 +70,38 @@ preStr = "-I/opt/robocomp/interfaces/ -I"+ROBOCOMP+"/interfaces/ --all /opt/robo
 Ice.loadSlice(preStr+"CommonBehavior.ice")
 import RoboCompCommonBehavior
 
+additionalPathStr = ''
+icePaths = []
+try:
+	SLICE_PATH = os.environ['SLICE_PATH'].split(':')
+	for p in SLICE_PATH:
+		icePaths.append(p)
+		additionalPathStr += ' -I' + p + ' '
+	icePaths.append('/opt/robocomp/interfaces')
+except:
+	print 'SLICE_PATH environment variable was not exported. Using only the default paths'
+	pass
+
 [[[cog
 for imp in component['recursiveImports']:
-	cog.outl('preStr = "-I/opt/robocomp/interfaces/ -I"+ROBOCOMP+"/interfaces/ --all /opt/robocomp/interfaces/"')
 	eso = imp.split('/')[-1]
-	module = IDSLParsing.gimmeIDSL(eso, files='', includeDirectories=includeDirectories)
 	incl = eso.split('.')[0]
-	cog.outl('Ice.loadSlice(preStr+"'+incl+'.ice")')
+
+	cog.outl('ice_'+incl+' = False')
+	cog.outl('for p in icePaths:')
+	cog.outl('<TABHERE>print \'Trying\', p, \'to load ' + incl + '.ice\'')
+	cog.outl('<TABHERE>if os.path.isfile(p+\'/'+incl+'.ice\'):')
+	cog.outl('<TABHERE><TABHERE>print \'Using\', p, \'to load '+incl+'.ice\'')
+	cog.outl('<TABHERE><TABHERE>preStr = "-I/opt/robocomp/interfaces/ -I"+ROBOCOMP+"/interfaces/ " + additionalPathStr + " --all "+p+\'/\'')
+	cog.outl('<TABHERE><TABHERE>wholeStr = preStr+"'+incl+'.ice"')
+	cog.outl('<TABHERE><TABHERE>Ice.loadSlice(wholeStr)')
+	cog.outl('<TABHERE><TABHERE>ice_'+incl+' = True')
+	cog.outl('<TABHERE><TABHERE>break')
+	cog.outl('if not ice_'+incl+':')
+	cog.outl("<TABHERE>print 'Couln\\\'t load "+incl+"'")
+	cog.outl('<TABHERE>sys.exit(-1)')
+
+	module = IDSLParsing.gimmeIDSL(eso, files='', includeDirectories=includeDirectories)
 	cog.outl('from '+ module['name'] +' import *')
 ]]]
 [[[end]]]
