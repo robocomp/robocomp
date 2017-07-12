@@ -9,7 +9,7 @@ from controller import Controller
 from logger import RCManagerLogger
 
 from PyQt4 import QtCore, QtGui
-from rcmanager_signals import rcmanager_signals
+from rcmanagerSignals import rcmanager_signals
 
 class Main():
     """This is the Main class which spawns the objects for the Model,
