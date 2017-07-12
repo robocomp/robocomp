@@ -9,17 +9,18 @@ class Controller():
     and the Viewer, by reacting to the signals emitted by the Viewer and
     making the necessary changes to the Model"""
     
-    def __init__(self, model, rcmanager_signals=None):
+    def __init__(self, model, viewer, rcmanager_signals):
         self._logger = RCManagerLogger().get_logger("RCManager.Controller")
         # self._logger.info("Hello, this is Controller coming up")
         # we set here the signal/slots connections to let data flow
-        
-        # reacting to a specific signal 
-        rcmanager_signals.sample.connect(self.sample_action)
 
         self.need_to_save = False
-        # self.view = viewer
+        self.view = viewer
         self.model = model
+        self.rcmanager_signals = rcmanager_signals
+        
+        # reacting to a specific signal 
+        self.rcmanager_signals.sample.connect(self.sample_action)
         pass
 
     def signal_connections(self):
