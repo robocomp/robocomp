@@ -3,7 +3,6 @@ from logger import RCManagerLogger
 from PyQt4 import QtCore
 from PyQt4.QtCore import QObject, pyqtSignal, pyqtSlot
 
-
 class Controller():
     """This is the Controller object for our MVC model. It connects the Model
     and the Viewer, by reacting to the signals emitted by the Viewer and
