@@ -1,21 +1,32 @@
+
 from logger import RCManagerLogger
 from PyQt4 import QtCore
+from PyQt4.QtCore import QObject, pyqtSignal, pyqtSlot
+
 
 class Controller():
-    """docstring for Controller"""
-
-    def __init__(self, model, viewer):
+    """This is the Controller object for our MVC model. It connects the Model
+    and the Viewer, by reacting to the signals emitted by the Viewer and
+    making the necessary changes to the Model"""
+    
+    def __init__(self, model, rcmanager_signals=None):
         self._logger = RCManagerLogger().get_logger("RCManager.Controller")
-        self._logger.info("Hello, this is Controller coming up")
-        #we set here the signal/slots connections to let data flow
+        # self._logger.info("Hello, this is Controller coming up")
+        # we set here the signal/slots connections to let data flow
+        
+        # reacting to a specific signal 
+        rcmanager_signals.sample.connect(self.sample_action)
 
         self.need_to_save = False
-        self.view = viewer
+        # self.view = viewer
         self.model = model
         pass
 
     def signal_connections(self):
         pass
+        
+    def sample_action(self):
+		print "hello, this is printed because a sample signal was emitted"
 
     def load_manager_file(self, terminalArg=False, UserHaveChoice=True):  # To open the xml files ::Unfinished
         try:
