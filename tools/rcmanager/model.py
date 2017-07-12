@@ -2,81 +2,75 @@
 from PyQt4 import QtCore
 import networkx as nx
 import pdb
-import traceback
 
-class Node():
-	def __init__(self, args=None):
-		self.alias = None
-		self.endpoint = None
-		self.group = None
-		self.groupName = None
-		self.xpos = 0
-		self.ypos = 0
-		self.upCommand = None
-		self.downCommand = None
-		self.workingdir = None
-		self.configFile = None
+class Model():
+	"""This is the Model object for our MVC model. It stores the component 
+	graph and contains the functions needed to manipulate it."""
+	
+	def __init__(self, xmldata=None, rcmanager_signals=None):
+		# print "------------------------------------"
+		# print "Hello, this is Model coming up"
 		
-		self.asEnd = []  # This is the list of connection where the node act as the ending point
-		self.asBeg = []  # This is the list of connection where the node act as the beginning point
-		self.dependences = []
+		self.rcmanager_signals = rcmanager_signals
+		self.graph = nx.DiGraph()
 		
-		self.ip = None
-		self.iconFilePath = None
-		self.status = False
-		self.nodeColor = [0, 0, 0]
-
-class Graph(nx.DiGraph):
-	"""docstring for Model"""
-	def __init__(self, jsonobject):
-		super(Graph, self).__init__()
-		print "------------------------------------"
-		print "Hello, this is Model coming up"
+		if xmldata == None:
+			return
 		
 		# we go through the dictionary to create the graph
 		# we have "rcmanager" and "nodes" keys
-		
-		self.nodeCollection = dict()
 		
 		# creating nodes
 		# the try catch block is added to handle cases
 		# when the xml document contains no nodes
 		try:
-			for i in jsonobject["rcmanager"]["node"]:
-				node = self.get_node_from_json(i)
-				self.add_node(i['@alias'])
-				self.nodeCollection[i['@alias']] = node
+			for k in xmldata["rcmanager"]["node"]:
+				self.add_node(k)
 		except:
-			#traceback.print_exc()
 			pass
-				
+			
 		# creating edges
 		# the try catch block is added to handle cases
 		# when the xml document contains no dependencies / edges
 		try:
-			for i in jsonobject["rcmanager"]["node"]:
+			for i in xmldata["rcmanager"]["node"]:
 				if len(i['dependence']) <= 1:
 					i['dependence'] = [i['dependence']]
 				
 				for j in i["dependence"]:
 					self.add_edge(i['@alias'], j['@alias'])
 		except:
-			#traceback.print_exc()
 			pass
 		
-		print "My new model graph:", self.adj
+	def add_node(self, nodedata):
+		self.graph.add_node(nodedata['@alias'])
+		for kk, vv in nodedata.items():
+			self.graph.node[nodedata['@alias']][kk] = vv
+
+	def add_edge(self, fromNode, toNode):
+		self.graph.add_edge(fromNode, toNode)
 		
-	def get_node_from_json(self, jsonobject):
-		node = Node()
-		node.alias = jsonobject['@alias']
-		node.endpoint = jsonobject['@endpoint']
-		node.xpos = jsonobject['xpos']['@value']
-		node.ypos = jsonobject['ypos']['@value']
-		node.upCommand = jsonobject['upCommand']['@command']
-		node.downCommand = jsonobject['downCommand']['@command']
-		node.workingDir = jsonobject['workingDir']['@path']
-		node.configFile = jsonobject['configFile']['@path']
+	# this functions emits a sample signal
+	def sample_emit(self):
+		print "sample signal was emitted"
+		self.rcmanager_signals.sample.emit()
 		
-		print "Added node:", node.alias
-		return node
+if __name__ == '__main__':
+    # sample test case to see the working of the Model class  
+    model = Model()
+    
+    model.add_node({'@alias': 'A'})
+    model.add_node({'@alias': 'B'})
+    model.add_node({'@alias': 'C'})
+    model.add_node({'@alias': 'D'})
+    
+    model.add_edge('A', 'B')
+    model.add_edge('B', 'C')
+    model.add_edge('B', 'D')
+    model.add_edge('C', 'D')
+    model.add_edge('D', 'B')
+    
+    print "Number of nodes:", model.graph.number_of_nodes()
+    print "Number of edges:", model.graph.number_of_edges()
+    print "Adjacencies: ", model.graph.adj
 	
