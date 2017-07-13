@@ -8,7 +8,8 @@ from model import Model
 from controller import Controller
 from logger import RCManagerLogger
 from PyQt4 import QtCore, QtGui
-from rcmanagerSignals import rcmanager_signals
+from rcmanagerSignals import rcmanagerSignals
+import pdb
 
 class Main():
     """This is the Main class which spawns the objects for the Model,
@@ -17,20 +18,23 @@ class Main():
     def __init__(self):
         xmldata = xml_reader(sys.argv[1])
         
-        self.signalObject = rcmanager_signals()
+        self.signalObject = rcmanagerSignals()
+        # pdb.set_trace()
+		
+        controller = Controller(self.signalObject)
         
         # create model as a NetworkX graph using dict
         self.model = Model(xmldata, self.signalObject)
         
         # create Qt Ui in a separate class
-        self.viewer = Viewer()
+        self.viewer = Viewer(self.signalObject)
         self.viewer.show()
         
-        # create controller
-        controller = Controller(self.model, self.viewer, self.signalObject)
+        # pass the viewer and model objects into the controller
+        controller.viewer = self.viewer
+        controller.model = self.model
         
-        # calling the function to emit a signal
-        self.model.sample_emit()
+        self.signalObject.init.emit('Controller')
 
 if __name__ == '__main__':
     # process params with a argparse
