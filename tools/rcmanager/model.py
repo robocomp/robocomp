@@ -7,11 +7,11 @@ class Model():
 	"""This is the Model object for our MVC model. It stores the component 
 	graph and contains the functions needed to manipulate it."""
 	
-	def __init__(self, xmldata=None, rcmanager_signals=None):
+	def __init__(self, xmldata=None, rcmanagerSignals=None):
 		# print "------------------------------------"
 		# print "Hello, this is Model coming up"
 		
-		self.rcmanager_signals = rcmanager_signals
+		self.rcmanagerSignals = rcmanagerSignals
 		self.graph = nx.DiGraph()
 		
 		if xmldata == None:
@@ -41,6 +41,8 @@ class Model():
 					self.add_edge(i['@alias'], j['@alias'])
 		except:
 			pass
+			
+		self.rcmanagerSignals.init.emit("Model")
 		
 	def add_node(self, nodedata):
 		self.graph.add_node(nodedata['@alias'])
@@ -53,7 +55,7 @@ class Model():
 	# this functions emits a sample signal
 	def sample_emit(self):
 		print "sample signal was emitted"
-		self.rcmanager_signals.sample.emit()
+		self.rcmanagerSignals.sample.emit('Model')
 		
 if __name__ == '__main__':
     # sample test case to see the working of the Model class  
