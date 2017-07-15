@@ -32,9 +32,10 @@ import math
 import random
 
 from PyQt4 import QtCore, QtGui, uic
-from PyQt4.QtGui import QGraphicsScene
+from PyQt4.QtGui import QGraphicsScene, QPushButton
 
 from widgets import dialogs, code_editor, network_graph, menus
+from widgets.QNetworkxGraph.QNetworkxGraph import QNetworkxWidget
 from logger import RCManagerLogger
 
 try:
@@ -65,13 +66,7 @@ class Viewer(QtGui.QMainWindow, MainWindow):
 
         self.save_warning = dialogs.SaveWarningDialog(self)
 
-        self.NetworkScene = QGraphicsScene()  # The graphicsScene
-        self.graphTree = network_graph.ComponentTree(self.frame, mainclass=self)  # The graphicsNode
-        self.NetworkScene.setSceneRect(-15000, -15000, 30000, 30000)
-        self.graphTree.setScene(self.NetworkScene)
-
-        self.graphTree.setObjectName(_fromUtf8("graphicsView"))
-        self.gridLayout_8.addWidget(self.graphTree, 0, 0, 1, 1)
+        self.add_graph_visualization()
         self.initialize_zoom()
 
         # This will read the the network setting from xml files and will set the values
@@ -111,6 +106,10 @@ class Viewer(QtGui.QMainWindow, MainWindow):
         self.currentZoom = 0
         
         self.rcmanagerSignals.init.emit('Viewer')
+
+        # self.actionOpen.triggered.connect(self.fuuu)
+
+
 
     def initialize_zoom(self):  # To connect the slider motion to zooming
         self.verticalSlider.setRange(-20, 20)
@@ -249,9 +248,10 @@ class Viewer(QtGui.QMainWindow, MainWindow):
             self.toggle_component_list_view()
 
     # View menu functions end
-    
+
     def add_node(self, nodedata):
     	print "The viewer received signal to draw component:", nodedata['@alias']
+        self.graphTree.add_node(nodedata['@alias'])
 
     def set_log_file(self):
         self.log_file_setter.setFile()
@@ -369,3 +369,13 @@ class Viewer(QtGui.QMainWindow, MainWindow):
             i.graphicsItem.setPos(QtCore.QPointF(i.x, i.y))
             i.graphicsItem.updateforDrag()
 
+    def add_graph_visualization(self):
+        # self.NetworkScene = QGraphicsScene()  # The graphicsScene
+        # self.graphTree = network_graph.ComponentTree(self.frame, mainclass=self)  # The graphicsNode
+        # self.NetworkScene.setSceneRect(-15000, -15000, 30000, 30000)
+        # self.graphTree.setScene(self.NetworkScene)
+        #
+        # self.graphTree.setObjectName(_fromUtf8("graphicsView"))
+
+        self.graphTree = QNetworkxWidget()
+        self.gridLayout_8.addWidget(self.graphTree, 0, 0, 1, 1)
