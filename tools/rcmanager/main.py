@@ -9,7 +9,7 @@ from controller import Controller
 from logger import RCManagerLogger
 from PyQt4 import QtCore, QtGui
 from rcmanagerSignals import rcmanagerSignals
-import pdb
+# import pdb
 
 class Main():
     """This is the Main class which spawns the objects for the Model,
