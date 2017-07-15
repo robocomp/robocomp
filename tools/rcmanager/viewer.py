@@ -26,8 +26,8 @@
 #
 # CODE BEGINS
 #
-import math
 
+import math
 
 import random
 
@@ -36,30 +36,30 @@ from PyQt4.QtGui import QGraphicsScene
 
 from widgets import dialogs, code_editor, network_graph, menus
 from logger import RCManagerLogger
+
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
 except AttributeError:
     def _fromUtf8(s):
         return s
 
-
 MainWindow = uic.loadUiType("formManager.ui")[0]  # Load the UI
-
 
 class Viewer(QtGui.QMainWindow, MainWindow):
     """docstring for Viewer"""
-
-    def __init__(self, arg=None):
-        self._logger = RCManagerLogger().get_logger("RCManager.Viewer")
-        self._logger.info("------------------------------------")
-        self._logger.info("Hello this is Viewer coming up")
-        super(Viewer, self).__init__(arg)
+    def __init__(self, rcmanagerSignals=None):
+        # self._logger = RCManagerLogger().get_logger("RCManager.Viewer")
+        # self._logger.info("------------------------------------")
+        # self._logger.info("Hello this is Viewer coming up")
+        self.rcmanagerSignals = rcmanagerSignals
+  
+        super(Viewer, self).__init__()
         self.setupUi(self)
-        RCManagerLogger().set_text_edit_handler(self.textBrowser)
+        # RCManagerLogger().set_text_edit_handler(self.textBrowser)
         self.setWindowIcon(QtGui.QIcon(QtGui.QPixmap("share/rcmanager/drawing_green.png")))
         self.showMaximized()
         self.tabWidget.removeTab(0)
-
+        
         self.componentList = []
         self.networkSettings = network_graph.NetworkGraphicValues()
 
@@ -109,6 +109,8 @@ class Viewer(QtGui.QMainWindow, MainWindow):
         self.mid_value_horizontal = 0
         self.mid_value_vertical = 0
         self.currentZoom = 0
+        
+        self.rcmanagerSignals.init.emit('Viewer')
 
     def initialize_zoom(self):  # To connect the slider motion to zooming
         self.verticalSlider.setRange(-20, 20)
@@ -131,6 +133,9 @@ class Viewer(QtGui.QMainWindow, MainWindow):
         self.graphTree.scale(zooming_factor, zooming_factor)
 
     def setup_actions(self):  # To setUp connection like saving,opening,etc
+    	# setup rcmanager signals
+    	self.rcmanagerSignals.addNode.connect(self.add_node)
+    
         self.connect(self.simulatorTimer, QtCore.SIGNAL("timeout()"), self.simulate)
         # # self.connect(self.toolButton,QtCore.SIGNAL("hovered()"),self.hoverAddComponent)
         # # self.connect(self.toolButton_9,QtCore.SIGNAL("hovered()"),self.hoverXmlSettings)
@@ -141,7 +146,7 @@ class Viewer(QtGui.QMainWindow, MainWindow):
         # # self.connect(self.toolButton_6,QtCore.SIGNAL("hovered()"),self.hoverRefreshFromTree)
         self.connect(self.actionSet_Log_File, QtCore.SIGNAL("triggered(bool)"), self.set_log_file)
         #
-        # self.connect(self.tabWidget, QtCore.SIGNAL("currentChanged(int)"), self.tab_index_changed)
+        self.connect(self.tabWidget, QtCore.SIGNAL("currentChanged(int)"), self.tab_index_changed)
         #
         # # File menu buttons
         # self.connect(self.actionSave, QtCore.SIGNAL("triggered(bool)"), self.save_xml_file)
@@ -152,9 +157,9 @@ class Viewer(QtGui.QMainWindow, MainWindow):
         # self.connect(self.actionSetting, QtCore.SIGNAL("triggered(bool)"), self.rcmanager_setting)
         #
         # # View menu buttons
-        # self.connect(self.actionLogger, QtCore.SIGNAL("triggered(bool)"), self.toggle_logger_view)
-        # self.connect(self.actionComponent_List, QtCore.SIGNAL("triggered(bool)"), self.toggle_component_list_view)
-        # self.connect(self.actionFull_Screen, QtCore.SIGNAL("triggered(bool)"), self.toggle_full_screen_view)
+        self.connect(self.actionLogger, QtCore.SIGNAL("triggered(bool)"), self.toggle_logger_view)
+        self.connect(self.actionComponent_List, QtCore.SIGNAL("triggered(bool)"), self.toggle_component_list_view)
+        self.connect(self.actionFull_Screen, QtCore.SIGNAL("triggered(bool)"), self.toggle_full_screen_view)
         #
         # self.connect(self.actionON, QtCore.SIGNAL("triggered(bool)"), self.simulator_on)
         # self.connect(self.actionOFF, QtCore.SIGNAL("triggered(bool)"), self.simulator_off)
@@ -209,13 +214,56 @@ class Viewer(QtGui.QMainWindow, MainWindow):
         # # self.connect(self.toolButton_10,QtCore.SIGNAL("clicked()"),self.getNetworkSetting)(Once finished Uncomment this)
         # self.connect(self.toolButton, QtCore.SIGNAL("clicked()"), self.add_new_component)
 
-        self._logger.info("Tool started")
+        # self._logger.info("Tool started")
+        
+    # View menu functions begin
+
+    def toggle_logger_view(self):
+        if self.actionLogger.isChecked():
+            self.dockWidget.show()
+            self.actionFull_Screen.setChecked(False)
+        else:
+            self.dockWidget.hide()
+            self.actionFull_Screen.setChecked(not self.actionComponent_List.isChecked())
+
+    def toggle_component_list_view(self):
+        if self.actionComponent_List.isChecked():
+            self.dockWidget_2.show()
+            self.actionFull_Screen.setChecked(False)
+        else:
+            self.dockWidget_2.hide()
+            self.actionFull_Screen.setChecked(not self.actionLogger.isChecked())
+
+    def toggle_full_screen_view(self):
+        if self.actionFull_Screen.isChecked():
+            self.actionLogger.setChecked(False)
+            self.actionComponent_List.setChecked(False)
+
+            self.toggle_logger_view()
+            self.toggle_component_list_view()
+        else:
+            self.actionLogger.setChecked(True)
+            self.actionComponent_List.setChecked(True)
+
+            self.toggle_logger_view()
+            self.toggle_component_list_view()
+
+    # View menu functions end
+    
+    def add_node(self, nodedata):
+    	print "The viewer received signal to draw component:", nodedata['@alias']
 
     def set_log_file(self):
         self.log_file_setter.setFile()
-
+        
+    def tab_index_changed(self):  # This will make sure the common behavior is not working unneccessarily
+        index = self.tabWidget.currentIndex()
+        if index == 1 or index == 2:  # CommonProxy should only work if the first tab is visible
+            if self.currentComponent is not None:
+                self.currentComponent.CommonProxy.set_visibility(False)
+                
     """ Method to animate the nodes to be distributed on the scene """
-    def simulate1(self):  # To switch ON simulator::Unfinished
+    def simulate1(self):
         for iterr in self.componentList:
             force_x = force_y = 0.
             for iterr2 in self.componentList:
@@ -320,5 +368,4 @@ class Viewer(QtGui.QMainWindow, MainWindow):
         for i in self.componentList:
             i.graphicsItem.setPos(QtCore.QPointF(i.x, i.y))
             i.graphicsItem.updateforDrag()
-
 
