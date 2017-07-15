@@ -2,7 +2,7 @@
 from logger import RCManagerLogger
 from PyQt4 import QtCore
 from PyQt4.QtCore import QObject, pyqtSignal, pyqtSlot
-import pdb
+# import pdb
 
 class Controller():
     """This is the Controller object for our MVC model. It connects the Model
