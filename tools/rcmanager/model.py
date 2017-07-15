@@ -1,7 +1,7 @@
 
 from PyQt4 import QtCore
 import networkx as nx
-import pdb
+# import pdb
 
 class Model():
 	"""This is the Model object for our MVC model. It stores the component 
