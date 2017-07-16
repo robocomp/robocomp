@@ -123,7 +123,7 @@ class Viewer(QtGui.QMainWindow, MainWindow):
         # AnchorViewCenter
         # AnchorUnderMouse
 
-        self.graphTree.setTransformationAnchor(self.graphTree.AnchorUnderMouse)
+        self.graphTree.setTransformationAnchor(self.graphTree.AnchorViewCenter)
 
         new = self.verticalSlider.value()
         diff = new - self.currentZoom
