@@ -20,19 +20,18 @@ class Main():
         
         self.signalObject = rcmanagerSignals()
         # pdb.set_trace()
-		
-        controller = Controller(self.signalObject)
-        
+
         # create model as a NetworkX graph using dict
         self.model = Model(xmldata, self.signalObject)
-        
+
         # create Qt Ui in a separate class
         self.viewer = Viewer(self.signalObject)
-        self.viewer.show()
         
         # pass the viewer and model objects into the controller
-        controller.viewer = self.viewer
-        controller.model = self.model
+        self.controller = Controller(model=self.model, view=self.viewer, rcmanagerSignals=self.signalObject)
+
+        self.viewer.show()
+        # self.model.load_from_xml()
         
         self.signalObject.init.emit('Controller')
 
