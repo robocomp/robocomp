@@ -2,20 +2,19 @@
 from logger import RCManagerLogger
 from PyQt4 import QtCore
 from PyQt4.QtCore import QObject, pyqtSignal, pyqtSlot
-# import pdb
 
 class Controller():
     """This is the Controller object for our MVC model. It connects the Model
     and the Viewer, by reacting to the signals emitted by the Viewer and
     making the necessary changes to the Model"""
     
-    def __init__(self, rcmanagerSignals):
+    def __init__(self, model, viewer, rcmanagerSignals):
         # self._logger = RCManagerLogger().get_logger("RCManager.Controller")
         # self._logger.info("Hello, this is Controller coming up")
 
         self.need_to_save = False
-        self.view = None
-        self.model = None
+        self.viewer = viewer
+        self.model = model
         self.rcmanagerSignals = rcmanagerSignals
         
         self.isModelReady = False
@@ -23,29 +22,30 @@ class Controller():
         self.isControllerReady = False
         
        	self.signal_connections()
-       	
         pass
 
     def signal_connections(self):
-    	self.rcmanagerSignals.init.connect(self.init_action)
+    	pass
     	
-    def init_action(self, string):
-    	print string, "object initialized"
+    def model_init_action(self):
+    	self.isModelReady = True
+    	print "Model object initialized"
     	
-    	if string == 'Model':
-    		self.isModelReady = True
-    	elif string == 'Viewer':
-     		self.isViewerReady = True
-     	elif string == 'Controller':
-     		self.isControllerReady = True
-     		self.refresh_graph_from_model()
+    def viewer_init_action(self):
+		self.isViewerReady = True
+		print "Viewer object initialized"
+    
+    def controller_init_action(self):
+    	self.isControllerReady = True
+    	print "Controller object initialized"
+    	self.refresh_graph_from_model()
      	
     def refresh_graph_from_model(self):
 		# adding nodes
 		for node, data in self.model.graph.nodes_iter(data=True):
 			print "The controller sent signal to draw component:", data['@alias']
 			self.rcmanagerSignals.addNode.emit(data)
-	
+			
     def load_manager_file(self, terminalArg=False, UserHaveChoice=True):  # To open the xml files ::Unfinished
         try:
             if self.need_to_save:  # To make sure the data we have been working on have been saved
