@@ -118,7 +118,7 @@ class Viewer(QtGui.QMainWindow, MainWindow):
         self.currentZoom = 0
         self.verticalSlider.valueChanged.connect(self.graph_zoom)
 
-    def graph_zoom(self):  # To be called when ever we wants to zoomingfactor
+    def graph_zoom(self):  # To be called whenever we wants to zoom
         # NoAnchor
         # AnchorViewCenter
         # AnchorUnderMouse
@@ -129,7 +129,7 @@ class Viewer(QtGui.QMainWindow, MainWindow):
         diff = new - self.currentZoom
         self.currentZoom = new
         zooming_factor = math.pow(1.2, diff)
-        self.graphTree.scale(zooming_factor, zooming_factor)
+        self.graphTree.scale_view(scale_factor=zooming_factor)
 
     def setup_actions(self):  # To setUp connection like saving,opening,etc
     	# setup rcmanager signals
@@ -160,8 +160,8 @@ class Viewer(QtGui.QMainWindow, MainWindow):
         self.connect(self.actionComponent_List, QtCore.SIGNAL("triggered(bool)"), self.toggle_component_list_view)
         self.connect(self.actionFull_Screen, QtCore.SIGNAL("triggered(bool)"), self.toggle_full_screen_view)
         #
-        # self.connect(self.actionON, QtCore.SIGNAL("triggered(bool)"), self.simulator_on)
-        # self.connect(self.actionOFF, QtCore.SIGNAL("triggered(bool)"), self.simulator_off)
+        self.connect(self.actionON, QtCore.SIGNAL("triggered(bool)"), self.graphTree.start_animation)
+        self.connect(self.actionOFF, QtCore.SIGNAL("triggered(bool)"), self.graphTree.stop_animation)
         # self.connect(self.actionSetting_2, QtCore.SIGNAL("triggered(bool)"), self.simulator_settings)
         # self.connect(self.actionSetting_3, QtCore.SIGNAL("triggered(bool)"), self.control_panel_settings)
         # self.connect(self.actionSetting_4, QtCore.SIGNAL("triggered(bool)"), self.editor_settings)
