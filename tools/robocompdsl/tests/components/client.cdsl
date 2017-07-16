@@ -1,0 +1,10 @@
+import "Test.idsl";
+
+Component publish
+{
+	Communications
+	{
+		requires test;
+	};
+	language python;
+};
