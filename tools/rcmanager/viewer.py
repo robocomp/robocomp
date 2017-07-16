@@ -105,7 +105,7 @@ class Viewer(QtGui.QMainWindow, MainWindow):
         self.mid_value_vertical = 0
         self.currentZoom = 0
         
-        self.rcmanagerSignals.init.emit('Viewer')
+        self.rcmanagerSignals.viewerIsReady.emit()
 
         # self.actionOpen.triggered.connect(self.fuuu)
 
