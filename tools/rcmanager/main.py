@@ -17,8 +17,9 @@ class Main():
     Viewer and the Controller, for our MVC model."""
 
     def __init__(self):
-        xmldata = xml_reader(sys.argv[1])
-        
+    	parser = argparse.ArgumentParser()
+    	parser.add_argument("filename", help="the xml file containing the component graph data")
+    	args = parser.parse_args()
         self.signalObject = rcmanagerSignals()
         
         # create model as a NetworkX graph using dict
