@@ -160,8 +160,8 @@ class Viewer(QtGui.QMainWindow, MainWindow):
         self.connect(self.actionComponent_List, QtCore.SIGNAL("triggered(bool)"), self.toggle_component_list_view)
         self.connect(self.actionFull_Screen, QtCore.SIGNAL("triggered(bool)"), self.toggle_full_screen_view)
         #
-        self.connect(self.actionON, QtCore.SIGNAL("triggered(bool)"), self.graphTree.start_animation)
-        self.connect(self.actionOFF, QtCore.SIGNAL("triggered(bool)"), self.graphTree.stop_animation)
+        # self.connect(self.actionON, QtCore.SIGNAL("triggered(bool)"), self.graphTree.start_animation)
+        # self.connect(self.actionOFF, QtCore.SIGNAL("triggered(bool)"), self.graphTree.stop_animation)
         # self.connect(self.actionSetting_2, QtCore.SIGNAL("triggered(bool)"), self.simulator_settings)
         # self.connect(self.actionSetting_3, QtCore.SIGNAL("triggered(bool)"), self.control_panel_settings)
         # self.connect(self.actionSetting_4, QtCore.SIGNAL("triggered(bool)"), self.editor_settings)
@@ -251,10 +251,11 @@ class Viewer(QtGui.QMainWindow, MainWindow):
 
     def add_node(self, node, nodedata=None):
     	print "The viewer received signal to draw component:", node
-        self.graphTree.add_node(node)
+        # self.graphTree.add_node(node)
 
     def add_edge(self, orig_node, dest_node, edge_data=None):
-        self.graphTree.add_edge(first_node=orig_node, second_node=dest_node)
+    	print "The viewer received signal to draw edge from:", orig_node, "to:", dest_node
+        # self.graphTree.add_edge(first_node=orig_node, second_node=dest_node)
 
     def set_log_file(self):
         self.log_file_setter.setFile()
