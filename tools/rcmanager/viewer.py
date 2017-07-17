@@ -118,24 +118,24 @@ class Viewer(QtGui.QMainWindow, MainWindow):
         self.currentZoom = 0
         self.verticalSlider.valueChanged.connect(self.graph_zoom)
 
-    def graph_zoom(self):  # To be called when ever we wants to zoomingfactor
+    def graph_zoom(self):  # To be called whenever we wants to zoom
         # NoAnchor
         # AnchorViewCenter
         # AnchorUnderMouse
 
-        self.graphTree.setTransformationAnchor(self.graphTree.AnchorUnderMouse)
+        self.graphTree.setTransformationAnchor(self.graphTree.AnchorViewCenter)
 
         new = self.verticalSlider.value()
         diff = new - self.currentZoom
         self.currentZoom = new
         zooming_factor = math.pow(1.2, diff)
-        self.graphTree.scale(zooming_factor, zooming_factor)
+        self.graphTree.scale_view(scale_factor=zooming_factor)
 
     def setup_actions(self):  # To setUp connection like saving,opening,etc
     	# setup rcmanager signals
     	self.rcmanagerSignals.addNode.connect(self.add_node)
     
-        self.connect(self.simulatorTimer, QtCore.SIGNAL("timeout()"), self.simulate)
+        # self.connect(self.simulatorTimer, QtCore.SIGNAL("timeout()"), self.simulate)
         # # self.connect(self.toolButton,QtCore.SIGNAL("hovered()"),self.hoverAddComponent)
         # # self.connect(self.toolButton_9,QtCore.SIGNAL("hovered()"),self.hoverXmlSettings)
         # # self.connect(self.toolButton_5,QtCore.SIGNAL("hovered()"),self.hoverPrintDefaultNode)
@@ -160,8 +160,8 @@ class Viewer(QtGui.QMainWindow, MainWindow):
         self.connect(self.actionComponent_List, QtCore.SIGNAL("triggered(bool)"), self.toggle_component_list_view)
         self.connect(self.actionFull_Screen, QtCore.SIGNAL("triggered(bool)"), self.toggle_full_screen_view)
         #
-        # self.connect(self.actionON, QtCore.SIGNAL("triggered(bool)"), self.simulator_on)
-        # self.connect(self.actionOFF, QtCore.SIGNAL("triggered(bool)"), self.simulator_off)
+        self.connect(self.actionON, QtCore.SIGNAL("triggered(bool)"), self.graphTree.start_animation)
+        self.connect(self.actionOFF, QtCore.SIGNAL("triggered(bool)"), self.graphTree.stop_animation)
         # self.connect(self.actionSetting_2, QtCore.SIGNAL("triggered(bool)"), self.simulator_settings)
         # self.connect(self.actionSetting_3, QtCore.SIGNAL("triggered(bool)"), self.control_panel_settings)
         # self.connect(self.actionSetting_4, QtCore.SIGNAL("triggered(bool)"), self.editor_settings)
@@ -249,9 +249,12 @@ class Viewer(QtGui.QMainWindow, MainWindow):
 
     # View menu functions end
 
-    def add_node(self, nodedata):
-    	print "The viewer received signal to draw component:", nodedata['@alias']
-        self.graphTree.add_node(nodedata['@alias'])
+    def add_node(self, node, nodedata=None):
+    	print "The viewer received signal to draw component:", node
+        self.graphTree.add_node(node)
+
+    def add_edge(self, orig_node, dest_node, edge_data=None):
+        self.graphTree.add_edge(first_node=orig_node, second_node=dest_node)
 
     def set_log_file(self):
         self.log_file_setter.setFile()
@@ -261,113 +264,7 @@ class Viewer(QtGui.QMainWindow, MainWindow):
         if index == 1 or index == 2:  # CommonProxy should only work if the first tab is visible
             if self.currentComponent is not None:
                 self.currentComponent.CommonProxy.set_visibility(False)
-                
-    """ Method to animate the nodes to be distributed on the scene """
-    def simulate1(self):
-        for iterr in self.componentList:
-            force_x = force_y = 0.
-            for iterr2 in self.componentList:
-                if iterr.alias == iterr2.alias:
-                    continue
-                ix = iterr.x - iterr2.x
-                iy = iterr.y - iterr2.y
 
-                while ix == 0 and iy == 0:
-                    iterr.x = iterr.x + random.uniform(-10, 10)
-                    iterr2.x = iterr2.x + random.uniform(-10, 10)
-                    iterr.y = iterr.y + random.uniform(-10, 10)
-                    iterr2.y = iterr2.y + random.uniform(-10, 10)
-                    ix = iterr.x - iterr2.x
-                    iy = iterr.y - iterr2.y
-
-                angle = math.atan2(iy, ix)
-                dist2 = ((abs((iy * iy) + (ix * ix))) ** 0.5) ** 2.
-                if dist2 < self.networkSettings.spring_length:
-                    dist2 = self.networkSettings.spring_length
-                force = self.networkSettings.field_force_multiplier / dist2
-                force_x += force * math.cos(angle)
-                force_y += force * math.sin(angle)
-
-            for iterr2 in self.componentList:
-
-                if iterr2.alias in iterr.dependences or iterr.alias in iterr2.dependences:
-                    ix = iterr.x - iterr2.x
-                    iy = iterr.y - iterr2.y
-                    angle = math.atan2(iy, ix)
-                    force = math.sqrt(abs((iy * iy) + (ix * ix)))  # force means distance actually
-                    # if force <= self.spring_length: continue       # "
-                    force -= self.networkSettings.spring_length  # force means spring strain now
-                    force = force * self.networkSettings.hookes_constant  # now force means force :-)
-                    force_x -= force * math.cos(angle)
-                    force_y -= force * math.sin(angle)
-
-            iterr.vel_x = (iterr.vel_x + (force_x * self.networkSettings.time_elapsed2)) * self.networkSettings.roza
-            iterr.vel_y = (iterr.vel_y + (force_y * self.networkSettings.time_elapsed2)) * self.networkSettings.roza
-
-        # Update positions
-        for iterr in self.componentList:
-            iterr.x += iterr.vel_x
-            iterr.y += iterr.vel_y
-
-        for iterr in self.componentList:
-            # self._logger.info( "updating "+iterr.alias)
-            iterr.graphicsItem.setPos(QtCore.QPointF(iterr.x, iterr.y))
-            iterr.graphicsItem.updateforDrag()
-
-    """ Method to animate the nodes to be distributed on the scene """
-    def simulate(self):
-        optimal_gap = 500
-        tolerance = 200
-
-        repulsion_factor = (optimal_gap - tolerance) ** 2.1
-        attraction_factor = 0
-        damping_factor = 1
-
-        for i in self.componentList:
-
-            attractive_force_x = 0
-            attractive_force_y = 0
-            repulsive_force_x = 0
-            repulsive_force_y = 0
-            # net_force_x = 0
-            # net_force_y = 0
-            # dx = 0
-            # dy = 0
-
-            for j in self.componentList:
-                if i.alias == j.alias:
-                    continue
-
-                distance = ((i.x - j.x) ** 2 + (i.y - j.y) ** 2) ** 0.5
-
-                if distance == 0:
-                    distance = 0.1
-
-                attractive_force_x += attraction_factor * (j.x - i.x)
-                attractive_force_y += attraction_factor * (j.y - i.y)
-
-                repulsive_force_x += repulsion_factor * (i.x - j.x) / (distance ** 3)
-                repulsive_force_y += repulsion_factor * (i.y - j.y) / (distance ** 3)
-
-            net_force_x = attractive_force_x + repulsive_force_x
-            net_force_y = repulsive_force_x + repulsive_force_y
-
-            dx = net_force_x * damping_factor
-            dy = net_force_y * damping_factor
-
-            dx = int(dx)
-            dy = int(dy)
-
-            i.vel_x = i.x + dx
-            i.vel_y = i.y + dy
-
-        for i in self.componentList:
-            i.x = i.vel_x
-            i.y = i.vel_y
-
-        for i in self.componentList:
-            i.graphicsItem.setPos(QtCore.QPointF(i.x, i.y))
-            i.graphicsItem.updateforDrag()
 
     def add_graph_visualization(self):
         # self.NetworkScene = QGraphicsScene()  # The graphicsScene
