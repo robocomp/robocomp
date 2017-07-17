@@ -9,7 +9,8 @@ from controller import Controller
 from logger import RCManagerLogger
 from PyQt4 import QtCore, QtGui
 from rcmanagerSignals import rcmanagerSignals
-# import pdb
+import argparse
+#import pdb
 
 class Main():
     """This is the Main class which spawns the objects for the Model,
@@ -19,21 +20,27 @@ class Main():
         xmldata = xml_reader(sys.argv[1])
         
         self.signalObject = rcmanagerSignals()
-        # pdb.set_trace()
-
+        
         # create model as a NetworkX graph using dict
-        self.model = Model(xmldata, self.signalObject)
-
+        self.model = Model(self.signalObject)
+        
         # create Qt Ui in a separate class
         self.viewer = Viewer(self.signalObject)
+       	self.viewer.show()
         
-        # pass the viewer and model objects into the controller
-        self.controller = Controller(model=self.model, view=self.viewer, rcmanagerSignals=self.signalObject)
-
-        self.viewer.show()
-        # self.model.load_from_xml()
+        # create a controller to connect the viewer and the model
+        self.controller = Controller(self.model, self.viewer, self.signalObject)
+        self.setup_signal_connection()
         
-        self.signalObject.init.emit('Controller')
+        # load the xml file
+        self.model.load_from_xml(sys.argv[1])
+        
+        self.signalObject.controllerIsReady.emit()
+        
+    def setup_signal_connection(self):
+    	self.signalObject.modelIsReady.connect(self.controller.model_init_action)
+    	self.signalObject.viewerIsReady.connect(self.controller.viewer_init_action)
+        self.signalObject.controllerIsReady.connect(self.controller.controller_init_action)
 
 if __name__ == '__main__':
     # process params with a argparse
@@ -42,7 +49,6 @@ if __name__ == '__main__':
     main = Main()
     ret = app.exec_()
     sys.exit(ret)
-
-
+    
 # window = MainClass()
 # window.show()
