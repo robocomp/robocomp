@@ -68,7 +68,6 @@ class Model():
 		    proc = subprocess.Popen(shlex.split(self.graph.node[component]['upCommand']['@command']), shell=False)
 		    self.processId[component] = proc.pid
 		    print "Component:", component, "started with PID:", proc.pid
-		    
 		except Exception, e:
 		    raise e
     
