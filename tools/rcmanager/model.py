@@ -13,7 +13,7 @@ class Model():
 		# print "------------------------------------"
 		# print "Hello, this is Model coming up"
 		
-		# this is the class containing all of the customs signals used by rcmanager
+		# this is the class containing all of the custom signals used by rcmanager
 		self.rcmanagerSignals = rcmanagerSignals
 		
 		# this is the networkx digraph object
@@ -67,7 +67,8 @@ class Model():
 		try:
 		    proc = subprocess.Popen(shlex.split(self.graph.node[component]['upCommand']['@command']), shell=False)
 		    self.processId[component] = proc.pid
-		    print "Component:", component, "started with PID:", proc.pid 
+		    print "Component:", component, "started with PID:", proc.pid
+		    
 		except Exception, e:
 		    raise e
     
