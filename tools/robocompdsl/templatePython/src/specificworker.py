@@ -140,13 +140,13 @@ def implCodeCompute(method, outValues, params):
 	cog.outl('<TABHERE><TABHERE># ' + method['name'])
 	cog.outl('<TABHERE><TABHERE>if not self.'+method['name']+'Buffer.empty():')
 	cog.outl('<TABHERE><TABHERE><TABHERE>params, cid = self.'+method['name']+'Buffer.pop()')
-	for p in method['params']:
-		if p['decorator'] != 'out':
-			cog.outl('<TABHERE><TABHERE><TABHERE>'+p['name']+' = params["'+p['name']+'"]')
+	for param in params:
+		cog.outl('<TABHERE><TABHERE><TABHERE>'+param+' = params["'+param+'"]')
 
-	cog.outl("""<TABHERE><TABHERE><TABHERE>#
-				<TABHERE><TABHERE><TABHERE>#Logic for msgTest
-				<TABHERE><TABHERE><TABHERE>#""")
+	cog.outl("<TABHERE><TABHERE><TABHERE>#")
+	cog.outl("<TABHERE><TABHERE><TABHERE>#Logic for msgTest")
+	cog.outl("<TABHERE><TABHERE><TABHERE>#")
+	
 	if len(outValues) == 0:
 		cog.outl("<TABHERE><TABHERE><TABHERE>self."+method['name']+"Buffer.set_finished(cid)\n")
 	elif len(outValues) == 1:
@@ -161,7 +161,7 @@ def implCodeCompute(method, outValues, params):
 			if v[1] != 'ret':
 				cog.outl("<TABHERE><TABHERE><TABHERE>"+v[1]+" = "+replaceTypeCPP2Python(v[0])+"()")
 		first = True
-		cog.outl("<TABHERE><TABHERE><TABHERE>self."+method['name']+"Buffer.set_finished(cid, [")
+		cog.out("<TABHERE><TABHERE><TABHERE>self."+method['name']+"Buffer.set_finished(cid, [")
 		for v in outValues:
 			if not first: cog.out(', ')
 			cog.out(v[1])
@@ -185,43 +185,16 @@ for imp in lst:
 			for mname in interface['methods']:
 				method = interface['methods'][mname]				
 				outValues = []
+				params = []
 				if method['return'] != 'void':
 					outValues.append([method['return'], 'ret'])
 				for p in method['params']:
 					if p['decorator'] == 'out':
 						outValues.append([p['type'], p['name']])
-
-				cog.outl('')
-				cog.outl('<TABHERE><TABHERE># ' + method['name'])
-				if communicationIsIce(imp):
-					cog.outl('<TABHERE><TABHERE>if not self.'+method['name']+'Buffer.empty():')
-					cog.outl('<TABHERE><TABHERE><TABHERE>params, cid = self.'+method['name']+'Buffer.pop()')
-					for p in method['params']:
-						if p['decorator'] != 'out':
-							cog.outl('<TABHERE><TABHERE><TABHERE>'+p['name']+' = params["'+p['name']+'"]')
-					cog.outl("""<TABHERE><TABHERE><TABHERE>#
-									<TABHERE><TABHERE><TABHERE>#Logic
-									<TABHERE><TABHERE><TABHERE>#""")
-					if len(outValues) == 0:
-						cog.outl("<TABHERE><TABHERE><TABHERE>self."+method['name']+"Buffer.set_finished(cid)\n")
-					elif len(outValues) == 1:
-						if method['return'] != 'void':
-							cog.outl("<TABHERE><TABHERE><TABHERE>self."+method['name']+"Buffer.set_finished(cid, ret)\n")
-						else:
-							cog.outl("<TABHERE><TABHERE><TABHERE>"+outValues[0][1]+" = "+replaceTypeCPP2Python(outValues[0][0])+"()")
-							cog.outl("<TABHERE><TABHERE><TABHERE>self."+method['name']+"Buffer.set_finished(cid, "+outValues[0][1]+" )\n")
 					else:
-						for v in outValues:
-							if v[1] != 'ret':
-								cog.outl("<TABHERE><TABHERE>"+v[1]+" = "+replaceTypeCPP2Python(v[0])+"()")
-						first = True
-						cog.outl("<TABHERE><TABHERE>self."+method['name']+"Buffer.set_finished(cid, [")
-						for v in outValues:
-							if not first: cog.out(', ')
-							cog.out(v[1])
-							if first:
-								first = False
-						cog.out("])\n")
+						params.append(p['name'])
+				if communicationIsIce(imp):
+					implCodeCompute(method, outValues, params)
 
 for imp in component['implements']:
 	if type(imp) == str:
@@ -235,12 +208,15 @@ for imp in component['implements']:
 				for mname in interface['methods']:
 					method = interface['methods'][mname]
 					outValues = []
+					params = []
 					if method['return'] != 'void':
 						outValues.append([method['return'], 'ret'])
 					for p in method['params']:
 						if p['decorator'] == 'out':
 							outValues.append([p['type'], p['name']])
-					implCodeCompute(method, outValues, None)
+						else:
+							params.append(p['name'])
+					implCodeCompute(method, outValues, params)
 ]]]
 [[[end]]]
 
@@ -253,7 +229,7 @@ def implCode(method, outValues, params):
 	cog.outl('<TABHERE>#')
 	cog.outl('<TABHERE># ' + method['name'])
 	cog.outl('<TABHERE>#')
-	cog.outl('<TABHERE>def ' + method['name'] + '(self' + ','.join(params) + "):")
+	cog.outl('<TABHERE>def ' + method['name'] + '(self, ' + ','.join(params) + "):")
 	cog.out('<TABHERE><TABHERE>kwargs = {')
 	for param in params:
 		cog.out('"'+param+'":'+param+',')
@@ -280,7 +256,7 @@ for imp in lst:
 				outValues = []
 				if method['return'] != 'void':
 					outValues.append([method['return'], 'ret'])
-				params = ''
+				params = []
 				for p in method['params']:
 					if p['decorator'] == 'out':
 						outValues.append([p['type'], p['name']])
@@ -315,7 +291,6 @@ for imp in component['implements']:
 						outValues.append([p['type'], p['name']])
 					else:
 						params.append(p['name'])
-				
 				if not communicationIsIce(imp):
 					cog.outl('<TABHERE>def ROS' + method['name'] + "(self, req):")
 					cog.outl("<TABHERE><TABHERE>#")
