@@ -5,20 +5,20 @@ from PyQt4.QtCore import QObject, pyqtSignal, pyqtSlot
 
 class Controller():
     """This is the Controller object for our MVC model. It connects the Model
-    and the Viewer, by reacting to the signals emitted by the Viewer and
+    and the view, by reacting to the signals emitted by the view and
     making the necessary changes to the Model"""
 
-    def __init__(self, model, viewer, rcmanagerSignals):
+    def __init__(self, model, view, rcmanagerSignals):
         # self._logger = RCManagerLogger().get_logger("RCManager.Controller")
         # self._logger.info("Hello, this is Controller coming up")
 
         self.need_to_save = False
-        self.viewer = viewer
+        self.view = view
         self.model = model
         self.rcmanagerSignals = rcmanagerSignals
         
         self.isModelReady = False
-        self.isViewerReady = False
+        self.isviewReady = False
         self.isControllerReady = False
         
        	self.signal_connections()
@@ -31,9 +31,9 @@ class Controller():
     	self.isModelReady = True
     	print "Model object initialized"
     	
-    def viewer_init_action(self):
-		self.isViewerReady = True
-		print "Viewer object initialized"
+    def view_init_action(self):
+		self.isviewReady = True
+		print "view object initialized"
     
     def controller_init_action(self):
     	self.isControllerReady = True

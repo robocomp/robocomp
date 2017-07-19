@@ -54,8 +54,6 @@ class Model():
         self.rcmanagerSignals.modelIsReady.emit()
 
 
-        self.rcmanagerSignals.init.emit("Model")
-
     def add_node(self, nodedata):
         self.graph.add_node(nodedata['@alias'])
         self.processId[nodedata['@alias']] = -1

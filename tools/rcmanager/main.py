@@ -39,7 +39,7 @@ class Main():
         
     def setup_signal_connection(self):
     	self.signalObject.modelIsReady.connect(self.controller.model_init_action)
-    	self.signalObject.viewerIsReady.connect(self.controller.viewer_init_action)
+    	self.signalObject.viewerIsReady.connect(self.controller.view_init_action)
         self.signalObject.controllerIsReady.connect(self.controller.controller_init_action)
 
 if __name__ == '__main__':
