@@ -90,7 +90,7 @@ for imp in lst:
 			for mname in interface['methods']:
 				method = interface['methods'][mname]
 				if communicationIsIce(imp):
-					cog.outl('<TABHERE>self.' + method['name'] + 'Buffer = CallQueue()')
+					cog.outl('<TABHERE><TABHERE>self.' + method['name'] + 'Buffer = CallQueue()')
 
 for imp in component['implements']:
 	if type(imp) == str:
@@ -103,7 +103,7 @@ for imp in component['implements']:
 			if interface['name'] == im:
 				for mname in interface['methods']:
 					method = interface['methods'][mname]
-					cog.outl('<TABHERE>self.' + method['name'] + 'Buffer = CallQueue()')
+					cog.outl('<TABHERE><TABHERE>self.' + method['name'] + 'Buffer = CallQueue()')
 ]]]
 [[[end]]]
 
