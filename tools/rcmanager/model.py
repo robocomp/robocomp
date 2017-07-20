@@ -65,9 +65,12 @@ class Model():
 	# this functions executes the command for starting a component
 	def up_component(self, component):
 		try:
-		    proc = subprocess.Popen(shlex.split(self.graph.node[component]['upCommand']['@command']), shell=False)
-		    self.processId[component] = proc.pid
-		    print "Component:", component, "started with PID:", proc.pid
+			if self.processId[component] == -1:
+				proc = subprocess.Popen(shlex.split(self.graph.node[component]['upCommand']['@command']), shell=False)
+				self.processId[component] = proc.pid
+				print "Component:", component, "started with PID:", proc.pid
+			else:
+				print "Component:", component, "is already running"
 		except Exception, e:
 		    raise e
     
