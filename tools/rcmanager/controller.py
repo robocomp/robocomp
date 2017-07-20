@@ -42,13 +42,13 @@ class Controller():
      	
     def refresh_graph_from_model(self):
         # adding nodes
-        if self.view:
+        if self.viewer:
             for node, data in self.model.graph.nodes_iter(data=True):
                 # print "The controller sent signal to draw component:", data['@alias']
                 # self.rcmanagerSignals.addNode.emit(data)
-                self.view.add_node(node, data)
+                self.viewer.add_node(node, data)
             for orig, dest, data in self.model.graph.edges_iter(data=True):
-                self.view.add_edge(orig, dest, data)
+                self.viewer.add_edge(orig, dest, data)
         else:
             raise Exception("A view must exist to update from model")
 	
