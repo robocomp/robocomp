@@ -5,53 +5,53 @@ from PyQt4.QtCore import QObject, pyqtSignal, pyqtSlot
 
 class Controller():
     """This is the Controller object for our MVC model. It connects the Model
-    and the Viewer, by reacting to the signals emitted by the Viewer and
+    and the view, by reacting to the signals emitted by the view and
     making the necessary changes to the Model"""
 
-    def __init__(self, model, viewer, rcmanagerSignals):
+    def __init__(self, model, view, rcmanagerSignals):
         # self._logger = RCManagerLogger().get_logger("RCManager.Controller")
         # self._logger.info("Hello, this is Controller coming up")
 
         self.need_to_save = False
-        self.viewer = viewer
+        self.view = view
         self.model = model
         self.rcmanagerSignals = rcmanagerSignals
         
         self.isModelReady = False
-        self.isViewerReady = False
+        self.isviewReady = False
         self.isControllerReady = False
         
-       	self.signal_connections()
+        self.signal_connections()
         pass
 
     def signal_connections(self):
-    	pass
-    	
+        pass
+
     def model_init_action(self):
-    	self.isModelReady = True
-    	print "Model object initialized"
-    	
-    def viewer_init_action(self):
-		self.isViewerReady = True
-		print "Viewer object initialized"
+        self.isModelReady = True
+        print "Model object initialized"
+
+    def view_init_action(self):
+        self.isviewReady = True
+        print "view object initialized"
     
     def controller_init_action(self):
-    	self.isControllerReady = True
-    	print "Controller object initialized"
-    	self.refresh_graph_from_model()
-     	
+        self.isControllerReady = True
+        print "Controller object initialized"
+        self.refresh_graph_from_model()
+
     def refresh_graph_from_model(self):
         # adding nodes
-        if self.viewer:
+        if self.view:
             for node, data in self.model.graph.nodes_iter(data=True):
                 # print "The controller sent signal to draw component:", data['@alias']
                 # self.rcmanagerSignals.addNode.emit(data)
-                self.viewer.add_node(node, data)
+                self.view.add_node(node, data)
             for orig, dest, data in self.model.graph.edges_iter(data=True):
-                self.viewer.add_edge(orig, dest, data)
+                self.view.add_edge(orig, dest, data)
         else:
             raise Exception("A view must exist to update from model")
-	
+
     def load_manager_file(self, terminalArg=False, UserHaveChoice=True):  # To open the xml files ::Unfinished
         try:
             if self.need_to_save:  # To make sure the data we have been working on have been saved
