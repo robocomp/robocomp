@@ -132,8 +132,8 @@ class Viewer(QtGui.QMainWindow, MainWindow):
         self.graphTree.scale_view(scale_factor=zooming_factor)
 
     def setup_actions(self):  # To setUp connection like saving,opening,etc
-    	# setup rcmanager signals
-    	self.rcmanagerSignals.addNode.connect(self.add_node)
+        # setup rcmanager signals
+        self.rcmanagerSignals.addNode.connect(self.add_node)
     
         # self.connect(self.simulatorTimer, QtCore.SIGNAL("timeout()"), self.simulate)
         # # self.connect(self.toolButton,QtCore.SIGNAL("hovered()"),self.hoverAddComponent)
@@ -250,11 +250,11 @@ class Viewer(QtGui.QMainWindow, MainWindow):
     # View menu functions end
 
     def add_node(self, node, nodedata=None):
-    	print "The viewer received signal to draw component:", node
+        print "The viewer received signal to draw component:", node
         self.graphTree.add_node(node)
 
     def add_edge(self, orig_node, dest_node, edge_data=None):
-    	print "The viewer received signal to draw edge from:", orig_node, "to:", dest_node
+        print "The viewer received signal to draw edge from:", orig_node, "to:", dest_node
         self.graphTree.add_edge(first_node=orig_node, second_node=dest_node)
 
     def set_log_file(self):
