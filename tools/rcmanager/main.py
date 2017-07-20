@@ -17,9 +17,9 @@ class Main():
     Viewer and the Controller, for our MVC model."""
 
     def __init__(self):
-    	parser = argparse.ArgumentParser()
-    	parser.add_argument("filename", help="the xml file containing the component graph data")
-    	args = parser.parse_args()
+        parser = argparse.ArgumentParser()
+        parser.add_argument("filename", help="the xml file containing the component graph data")
+        args = parser.parse_args()
         self.signalObject = rcmanagerSignals()
         
         # create model as a NetworkX graph using dict
@@ -27,7 +27,7 @@ class Main():
         
         # create Qt Ui in a separate class
         self.viewer = Viewer(self.signalObject)
-       	self.viewer.show()
+        self.viewer.show()
         
         # create a controller to connect the viewer and the model
         self.controller = Controller(self.model, self.viewer, self.signalObject)
@@ -39,8 +39,8 @@ class Main():
         self.signalObject.controllerIsReady.emit()
         
     def setup_signal_connection(self):
-    	self.signalObject.modelIsReady.connect(self.controller.model_init_action)
-    	self.signalObject.viewerIsReady.connect(self.controller.view_init_action)
+        self.signalObject.modelIsReady.connect(self.controller.model_init_action)
+        self.signalObject.viewerIsReady.connect(self.controller.view_init_action)
         self.signalObject.controllerIsReady.connect(self.controller.controller_init_action)
 
 if __name__ == '__main__':
