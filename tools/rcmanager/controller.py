@@ -21,37 +21,37 @@ class Controller():
         self.isviewReady = False
         self.isControllerReady = False
         
-       	self.signal_connections()
+        self.signal_connections()
         pass
 
     def signal_connections(self):
-    	pass
-    	
+        pass
+
     def model_init_action(self):
-    	self.isModelReady = True
-    	print "Model object initialized"
-    	
+        self.isModelReady = True
+        print "Model object initialized"
+
     def view_init_action(self):
-		self.isviewReady = True
-		print "view object initialized"
+        self.isviewReady = True
+        print "view object initialized"
     
     def controller_init_action(self):
-    	self.isControllerReady = True
-    	print "Controller object initialized"
-    	self.refresh_graph_from_model()
-     	
+        self.isControllerReady = True
+        print "Controller object initialized"
+        self.refresh_graph_from_model()
+
     def refresh_graph_from_model(self):
         # adding nodes
-        if self.viewer:
+        if self.view:
             for node, data in self.model.graph.nodes_iter(data=True):
                 # print "The controller sent signal to draw component:", data['@alias']
                 # self.rcmanagerSignals.addNode.emit(data)
-                self.viewer.add_node(node, data)
+                self.view.add_node(node, data)
             for orig, dest, data in self.model.graph.edges_iter(data=True):
-                self.viewer.add_edge(orig, dest, data)
+                self.view.add_edge(orig, dest, data)
         else:
             raise Exception("A view must exist to update from model")
-	
+
     def load_manager_file(self, terminalArg=False, UserHaveChoice=True):  # To open the xml files ::Unfinished
         try:
             if self.need_to_save:  # To make sure the data we have been working on have been saved
