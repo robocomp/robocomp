@@ -77,27 +77,12 @@ void SpecificWorker::compute()
 		ttuple = printmsgBuffer.pop();
 		std::tie(id, message) = ttuple;
 		// 
-		// process1
+		// process
 		// 
-		cout<<"processing "<<message<<endl;
 		printmsgBuffer.setFinished(id);
 	}
 
 }
 
-
-void SpecificWorker::printmsg(const string &message)
-{
-	cout<<"printmsg received\n";
-	uint id = printmsgBuffer.push(std::make_tuple(message));
-	while(!printmsgBuffer.isFinished(id));
-	return;
-}
-
-void SpecificWorker::msgTest(const int id)
-{
-//subscribesToCODE
-
-}
 
 

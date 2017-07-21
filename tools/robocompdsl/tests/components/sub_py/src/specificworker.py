@@ -34,7 +34,6 @@ class SpecificWorker(GenericWorker):
 		self.timer.timeout.connect(self.compute)
 		self.Period = 4000
 		self.timer.start(self.Period)
-		self.msgTestBuffer = CallQueue()
 
 	def setParams(self, params):
 		#try:
@@ -61,32 +60,22 @@ class SpecificWorker(GenericWorker):
 		# r.printvector("d")
 		# print r[0], r[1], r[2]
 
+		# printmsg
+		if not self.printmsgBuffer.empty():
+			params, cid = self.printmsgBuffer.pop()
+			message = params["message"]
+			#
+			#Logic for printmsg
+			#
+			self.printmsgBuffer.set_finished(cid)
+
 		# msgTest
 		if not self.msgTestBuffer.empty():
 			params, cid = self.msgTestBuffer.pop()
-			message = params["message"]
+			id = params["id"]
 			#
 			#Logic for msgTest
 			#
-			# print message, " processed"
 			self.msgTestBuffer.set_finished(cid)
 
 		return True
-
-
-	#
-	# msgTest
-	#
-	def msgTest(self, id):
-		pass
-
-
-	#
-	# printmsg
-	#
-	def printmsg(self, message):
-		kwargs = {'message': message}
-		cid = self.msgTestBuffer.push(kwargs)
-		while(self.msgTestBuffer.is_finished(cid)==False):
-			pass
-		return self.msgTestBuffer.result(cid)

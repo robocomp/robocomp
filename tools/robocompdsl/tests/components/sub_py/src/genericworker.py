@@ -55,6 +55,10 @@ class GenericWorker(QtCore.QObject):
 		self.Period = 30
 		self.timer = QtCore.QTimer(self)
 
+		self.msgTestBuffer = CallQueue()
+		self.printmsgBuffer = CallQueue()
+
+
 
 	@QtCore.Slot()
 	def killYourSelf(self):
@@ -68,6 +72,28 @@ class GenericWorker(QtCore.QObject):
 		print "Period changed", p
 		Period = p
 		timer.start(Period)
+
+	#
+	# msgTest
+	#
+	def msgTest(self, id):
+		kwargs = {'id': id}
+		cid = self.msgTestBuffer.push(kwargs)
+		while(self.msgTestBuffer.is_finished(cid)==False):
+			pass
+		return self.msgTestBuffer.result(cid)
+
+
+	#
+	# printmsg
+	#
+	def printmsg(self, message):
+		kwargs = {'message': message}
+		cid = self.printmsgBuffer.push(kwargs)
+		while(self.printmsgBuffer.is_finished(cid)==False):
+			pass
+		return self.printmsgBuffer.result(cid)
+
 
 class CallQueue(object):
 	def __init__(self, maxsize=-1):

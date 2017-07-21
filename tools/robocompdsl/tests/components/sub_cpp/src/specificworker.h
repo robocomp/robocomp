@@ -38,15 +38,13 @@ public:
 	~SpecificWorker();
 	bool setParams(RoboCompCommonBehavior::ParameterList params);
 
-	void printmsg(const string &message);
-	void msgTest(const int id);
 
 public slots:
 	void compute();
 
 private:
 	InnerModel *innerModel;
-	printmsgBoundBuffer printmsgBuffer;
+	
 
 };
 

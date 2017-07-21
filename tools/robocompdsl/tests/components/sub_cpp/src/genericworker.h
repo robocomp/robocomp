@@ -41,6 +41,41 @@ using namespace std;
 using namespace RoboCompTests;
 
 
+class printmsgBoundBuffer
+{
+	private:
+		std::queue<std::tuple<string>> buffer;
+		QMutex mutex; 
+		uint current_id=0;
+		std::map<uint, bool> results;
+
+	public:
+		printmsgBoundBuffer(){};
+		uint push(std::tuple<string> params);
+		std::tuple<uint, string> pop();
+		// void result(uint cid); // only use when the function has a non-void return type
+		bool isEmpty();
+		void setFinished(uint id);
+		bool isFinished(uint id);
+};
+
+class msgTestBoundBuffer
+{
+	private:
+		std::queue<std::tuple<int>> buffer;
+		QMutex mutex; 
+		uint current_id=0;
+		std::map<uint, bool> results;
+
+	public:
+		msgTestBoundBuffer(){};
+		uint push(std::tuple<int> params);
+		std::tuple<uint, int> pop();
+		// void result(uint cid); // only use when the function has a non-void return type
+		bool isEmpty();
+		void setFinished(uint id);
+		bool isFinished(uint id);
+};
 
 
 class GenericWorker :
@@ -58,13 +93,15 @@ public:
 
 
 
-	virtual void printmsg(const string &message) = 0;
-	virtual void msgTest(const int id) = 0;
+	void printmsg(const string &message);
+	void msgTest(const int id);
 
 
 protected:
 	QTimer timer;
 	int Period;
+	printmsgBoundBuffer printmsgBuffer;
+	msgTestBoundBuffer msgTestBuffer;
 
 private:
 
@@ -73,24 +110,6 @@ public slots:
 	virtual void compute() = 0;
 signals:
 	void kill();
-};
-
-class printmsgBoundBuffer
-{
-private:
-	std::queue<std::tuple<string>> buffer;
-	QMutex mutex; 
-	uint current_id=0;
-	std::map<uint, bool> results;
-
-public:
-	printmsgBoundBuffer(){};
-	uint push(std::tuple<string> params);
-	std::tuple<uint, string> pop();
-	// void result(uint cid); // only use when the function has a non-void return type
-	bool isEmpty();
-	void setFinished(uint id);
-	bool isFinished(uint id);
 };
 
 #endif
