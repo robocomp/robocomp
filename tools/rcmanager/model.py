@@ -1,5 +1,6 @@
 
 from PyQt4 import QtCore
+from yakuake_support import ProcessHandler
 from xmlreader import xml_reader
 import networkx as nx
 import subprocess
@@ -22,6 +23,9 @@ class Model():
         # this dictionary stores the process ids of all the started components
         # we store -1 for the components which are not running
         self.processId = dict()
+
+        # this is the process handler for the model
+        self.processHandler = ProcessHandler()
 
     def load_from_xml(self, filename):
         # we go through the dictionary to create the graph
@@ -66,9 +70,10 @@ class Model():
     def up_component(self, component):
         try:
             if self.processId[component] == -1:
-                proc = subprocess.Popen(shlex.split(self.graph.node[component]['upCommand']['@command']), shell=False)
-                self.processId[component] = proc.pid
-                print "Component:", component, "started with PID:", proc.pid
+                tabTitle, processId = self.processHandler.start_process_in_new_session(component, \
+                                                                    self.graph.node[component]['upCommand']['@command'])
+                self.processId[component] = processId
+                print "Component:", component, "started in tab:", tabTitle, "with PID:", processId
             else:
                 print "Component:", component, "is already running"
         except Exception, e:
@@ -79,7 +84,7 @@ class Model():
         if self.processId[component] == -1:
             print "Component:", component, "is not running"
         else:
-            proc = subprocess.Popen(shlex.split("kill -9 "+str(self.processId[component])), shell=False)
+            self.processHandler.stop_process_in_session(component)
             self.processId[component] = -1
             print "Component:", component, "stopped"
 
