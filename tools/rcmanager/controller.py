@@ -16,11 +16,11 @@ class Controller():
         self.view = view
         self.model = model
         self.rcmanagerSignals = rcmanagerSignals
-        
+
         self.isModelReady = False
-        self.isviewReady = False
+        self.isViewReady = False
         self.isControllerReady = False
-        
+
         self.signal_connections()
         pass
 
@@ -32,9 +32,9 @@ class Controller():
         print "Model object initialized"
 
     def view_init_action(self):
-        self.isviewReady = True
+        self.isViewReady = True
         print "view object initialized"
-    
+
     def controller_init_action(self):
         self.isControllerReady = True
         print "Controller object initialized"
