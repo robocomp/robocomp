@@ -26,13 +26,15 @@ module RoboCompSocialNavigationGaussian
 		 float x;
 		 float z;
 		 float angle;
+		 float vel;
 	};
 	sequence <SNGPerson> SNGPersonSeq;
 	sequence <SNGPoint2D> SNGPolyline;
 	sequence <SNGPolyline> SNGPolylineSeq;
 	interface SocialNavigationGaussian
 	{
-		SNGPolylineSeq getPolylines (SNGPersonSeq persons, float v, bool d);
+		SNGPolylineSeq getPersonalSpace (SNGPersonSeq persons, float v, bool d);
+		SNGPolylineSeq getPassOnRight (SNGPersonSeq persons, float v, bool d);
 	};
 };
 
