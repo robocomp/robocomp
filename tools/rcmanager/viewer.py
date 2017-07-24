@@ -96,7 +96,7 @@ class Viewer(QtGui.QMainWindow, MainWindow):
 
         # The small widget which appears when we right click on a node in tree
 
-        self.node_detail_displayer = menus.ItemDetailWidget(self.graphTree)
+        self.node_detail_displayer = menus.ItemDetailWidget(self.graph_visualization)
 
         # Setting up the connection
         self.setup_actions()
@@ -123,13 +123,13 @@ class Viewer(QtGui.QMainWindow, MainWindow):
         # AnchorViewCenter
         # AnchorUnderMouse
 
-        self.graphTree.setTransformationAnchor(self.graphTree.AnchorViewCenter)
+        self.graph_visualization.setTransformationAnchor(self.graph_visualization.AnchorViewCenter)
 
         new = self.verticalSlider.value()
         diff = new - self.currentZoom
         self.currentZoom = new
         zooming_factor = math.pow(1.2, diff)
-        self.graphTree.scale_view(scale_factor=zooming_factor)
+        self.graph_visualization.scale_view(scale_factor=zooming_factor)
 
     def setup_actions(self):  # To setUp connection like saving,opening,etc
         # setup rcmanager signals
@@ -160,8 +160,8 @@ class Viewer(QtGui.QMainWindow, MainWindow):
         self.connect(self.actionComponent_List, QtCore.SIGNAL("triggered(bool)"), self.toggle_component_list_view)
         self.connect(self.actionFull_Screen, QtCore.SIGNAL("triggered(bool)"), self.toggle_full_screen_view)
         #
-        self.connect(self.actionON, QtCore.SIGNAL("triggered(bool)"), self.graphTree.start_animation)
-        self.connect(self.actionOFF, QtCore.SIGNAL("triggered(bool)"), self.graphTree.stop_animation)
+        self.connect(self.actionON, QtCore.SIGNAL("triggered(bool)"), self.graph_visualization.start_animation)
+        self.connect(self.actionOFF, QtCore.SIGNAL("triggered(bool)"), self.graph_visualization.stop_animation)
         # self.connect(self.actionSetting_2, QtCore.SIGNAL("triggered(bool)"), self.simulator_settings)
         # self.connect(self.actionSetting_3, QtCore.SIGNAL("triggered(bool)"), self.control_panel_settings)
         # self.connect(self.actionSetting_4, QtCore.SIGNAL("triggered(bool)"), self.editor_settings)
@@ -251,11 +251,11 @@ class Viewer(QtGui.QMainWindow, MainWindow):
 
     def add_node(self, node, nodedata=None):
         print "The viewer received signal to draw component:", node
-        self.graphTree.add_node(node)
+        self.graph_visualization.add_node(node)
 
     def add_edge(self, orig_node, dest_node, edge_data=None):
         print "The viewer received signal to draw edge from:", orig_node, "to:", dest_node
-        self.graphTree.add_edge(first_node=orig_node, second_node=dest_node)
+        self.graph_visualization.add_edge(first_node=orig_node, second_node=dest_node)
 
     def set_log_file(self):
         self.log_file_setter.setFile()
@@ -275,5 +275,8 @@ class Viewer(QtGui.QMainWindow, MainWindow):
         #
         # self.graphTree.setObjectName(_fromUtf8("graphicsView"))
 
-        self.graphTree = QNetworkxWidget()
-        self.gridLayout_8.addWidget(self.graphTree, 0, 0, 1, 1)
+        self.graph_visualization = QNetworkxWidget()
+        self.gridLayout_8.addWidget(self.graph_visualization, 0, 0, 1, 1)
+
+    def get_graph_nodes_positions(self):
+        return self.graph_visualization.get_current_nodes_positions()
