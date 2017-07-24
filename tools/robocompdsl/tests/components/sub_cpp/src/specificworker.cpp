@@ -73,13 +73,14 @@ void SpecificWorker::compute()
 	if(!printmsgBuffer.isEmpty()){
 		uint id;
 		string message;
-		std::tuple<uint, string> ttuple;
-		ttuple = printmsgBuffer.pop();
-		std::tie(id, message) = ttuple;
+		std::tuple<string> ptuple;
+		std::tuple<uint, std::tuple<string> > rtuple = printmsgBuffer.pop();
+		std::tie(id, ptuple) = rtuple;
+		std::tie(message) = ptuple;
 		// 
 		// process
 		// 
-		printmsgBuffer.setFinished(id);
+		// printmsgBuffer.setFinished(id);
 	}
 
 }

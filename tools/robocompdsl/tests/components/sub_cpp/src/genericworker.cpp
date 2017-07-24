@@ -58,7 +58,7 @@ void GenericWorker::printmsg(const string &message)
 {
 	cout<<"printmsg received\n";
 	uint cid = printmsgBuffer.push(std::make_tuple(message));
-	while(!printmsgBuffer.isFinished(cid));
+	// while(!printmsgBuffer.isFinished(cid));
 	return;
 }
 
@@ -66,112 +66,112 @@ void GenericWorker::msgTest(const int id)
 {
 	cout<<"msgTest received\n";
 	uint cid = msgTestBuffer.push(std::make_tuple(id));
-	while(!msgTestBuffer.isFinished(cid));
+	// while(!msgTestBuffer.isFinished(cid));
 	return;
 }
 
 
 
-uint printmsgBoundBuffer::push(std::tuple<string> params)
-{
-	cout<<"pushed "<<endl;
-	mutex.lock();
-	buffer.push(params);
-	current_id++;
-	mutex.unlock();
-	return current_id;
-}
-
-std::tuple<uint, string> printmsgBoundBuffer::pop()
-{
-	cout<<"poped"<<endl;
-	uint cid = current_id;
-	string message;
-	mutex.lock();
-	std::tie(message) = buffer.front();
-	buffer.pop();
-	current_id--;
-	mutex.unlock();
-	return std::make_tuple(cid, message);
-}
-
-// void printmsgBoundBuffer::result(uint cid)
+// uint printmsgBoundBuffer::push(std::tuple<string> params)
 // {
-// 	if(isFinished(cid)){
-
-// 	    results.erase(cid);
-// 	}
+// 	cout<<"pushed "<<endl;
+// 	mutex.lock();
+// 	buffer.push(params);
+// 	current_id++;
+// 	mutex.unlock();
+// 	return current_id;
 // }
 
-bool printmsgBoundBuffer::isEmpty()
-{
-	return buffer.empty();
-}
-
-void printmsgBoundBuffer::setFinished(uint cid)
-{
-	results[cid] = true;
-}
-
-bool printmsgBoundBuffer::isFinished(uint cid)
-{
-	bool is_finished = results.find(cid) != results.end();
-	// as printmsg dosent have a return value
-	if(is_finished){
-	    results.erase(cid);
-	}
-	return is_finished;
-}
-
-
-
-uint msgTestBoundBuffer::push(std::tuple<int> params)
-{
-	cout<<"pushed "<<endl;
-	mutex.lock();
-	buffer.push(params);
-	current_id++;
-	mutex.unlock();
-	return current_id;
-}
-
-std::tuple<uint, int> msgTestBoundBuffer::pop()
-{
-	cout<<"poped"<<endl;
-	uint cid = current_id;
-	int id;
-	mutex.lock();
-	std::tie(id) = buffer.front();
-	buffer.pop();
-	current_id--;
-	mutex.unlock();
-	return std::make_tuple(cid, id);
-}
-
-// void msgTestBoundBuffer::result(uint cid)
+// std::tuple<uint, string> printmsgBoundBuffer::pop()
 // {
-// 	if(isFinished(cid)){
-
-// 	    results.erase(cid);
-// 	}
+// 	cout<<"poped"<<endl;
+// 	uint cid = current_id;
+// 	string message;
+// 	mutex.lock();
+// 	std::tie(message) = buffer.front();
+// 	buffer.pop();
+// 	current_id--;
+// 	mutex.unlock();
+// 	return std::make_tuple(cid, message);
 // }
 
-bool msgTestBoundBuffer::isEmpty()
-{
-	return buffer.empty();
-}
+// // void printmsgBoundBuffer::result(uint cid)
+// // {
+// // 	if(isFinished(cid)){
 
-void msgTestBoundBuffer::setFinished(uint cid)
-{
-	results[cid] = true;
-}
+// // 	    results.erase(cid);
+// // 	}
+// // }
 
-bool msgTestBoundBuffer::isFinished(uint cid)
-{
-	bool is_finished = results.find(cid) != results.end();
-	// as printmsg dosent have a return value
-	if(is_finished){
-	    results.erase(cid);
-	}
-	return is_finished;
-}
+// bool printmsgBoundBuffer::isEmpty()
+// {
+// 	return buffer.empty();
+// }
+
+// void printmsgBoundBuffer::setFinished(uint cid)
+// {
+// 	results[cid] = true;
+// }
+
+// bool printmsgBoundBuffer::isFinished(uint cid)
+// {
+// 	bool is_finished = results.find(cid) != results.end();
+// 	// as printmsg dosent have a return value
+// 	if(is_finished){
+// 	    results.erase(cid);
+// 	}
+// 	return is_finished;
+// }
+
+
+
+// uint msgTestBoundBuffer::push(std::tuple<int> params)
+// {
+// 	cout<<"pushed "<<endl;
+// 	mutex.lock();
+// 	buffer.push(params);
+// 	current_id++;
+// 	mutex.unlock();
+// 	return current_id;
+// }
+
+// std::tuple<uint, int> msgTestBoundBuffer::pop()
+// {
+// 	cout<<"poped"<<endl;
+// 	uint cid = current_id;
+// 	int id;
+// 	mutex.lock();
+// 	std::tie(id) = buffer.front();
+// 	buffer.pop();
+// 	current_id--;
+// 	mutex.unlock();
+// 	return std::make_tuple(cid, id);
+// }
+
+// // void msgTestBoundBuffer::result(uint cid)
+// // {
+// // 	if(isFinished(cid)){
+
+// // 	    results.erase(cid);
+// // 	}
+// // }
+
+// bool msgTestBoundBuffer::isEmpty()
+// {
+// 	return buffer.empty();
+// }
+
+// void msgTestBoundBuffer::setFinished(uint cid)
+// {
+// 	results[cid] = true;
+// }
+
+// bool msgTestBoundBuffer::isFinished(uint cid)
+// {
+// 	bool is_finished = results.find(cid) != results.end();
+// 	// as printmsg dosent have a return value
+// 	if(is_finished){
+// 	    results.erase(cid);
+// 	}
+// 	return is_finished;
+// }

@@ -28,6 +28,7 @@
 
 
 #include <CommonBehavior.h>
+#include <boundbuffer.h>
 
 #include <Test.h>
 
@@ -41,41 +42,41 @@ using namespace std;
 using namespace RoboCompTests;
 
 
-class printmsgBoundBuffer
-{
-	private:
-		std::queue<std::tuple<string>> buffer;
-		QMutex mutex; 
-		uint current_id=0;
-		std::map<uint, bool> results;
+// class printmsgBoundBuffer
+// {
+// 	private:
+// 		std::queue<std::tuple<string>> buffer;
+// 		QMutex mutex; 
+// 		uint current_id=0;
+// 		std::map<uint, bool> results;
 
-	public:
-		printmsgBoundBuffer(){};
-		uint push(std::tuple<string> params);
-		std::tuple<uint, string> pop();
-		// void result(uint cid); // only use when the function has a non-void return type
-		bool isEmpty();
-		void setFinished(uint id);
-		bool isFinished(uint id);
-};
+// 	public:
+// 		printmsgBoundBuffer(){};
+// 		uint push(std::tuple<string> params);
+// 		std::tuple<uint, string> pop();
+// 		// void result(uint cid); // only use when the function has a non-void return type
+// 		bool isEmpty();
+// 		void setFinished(uint id);
+// 		bool isFinished(uint id);
+// };
 
-class msgTestBoundBuffer
-{
-	private:
-		std::queue<std::tuple<int>> buffer;
-		QMutex mutex; 
-		uint current_id=0;
-		std::map<uint, bool> results;
+// class msgTestBoundBuffer
+// {
+// 	private:
+// 		std::queue<std::tuple<int>> buffer;
+// 		QMutex mutex; 
+// 		uint current_id=0;
+// 		std::map<uint, bool> results;
 
-	public:
-		msgTestBoundBuffer(){};
-		uint push(std::tuple<int> params);
-		std::tuple<uint, int> pop();
-		// void result(uint cid); // only use when the function has a non-void return type
-		bool isEmpty();
-		void setFinished(uint id);
-		bool isFinished(uint id);
-};
+// 	public:
+// 		msgTestBoundBuffer(){};
+// 		uint push(std::tuple<int> params);
+// 		std::tuple<uint, int> pop();
+// 		// void result(uint cid); // only use when the function has a non-void return type
+// 		bool isEmpty();
+// 		void setFinished(uint id);
+// 		bool isFinished(uint id);
+// };
 
 
 class GenericWorker :
@@ -100,8 +101,8 @@ public:
 protected:
 	QTimer timer;
 	int Period;
-	printmsgBoundBuffer printmsgBuffer;
-	msgTestBoundBuffer msgTestBuffer;
+	BoundBuffer< std::tuple<string> > printmsgBuffer;
+	BoundBuffer<std::tuple<int> > msgTestBuffer;
 
 private:
 
