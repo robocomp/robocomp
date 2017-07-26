@@ -1,19 +1,16 @@
 
-from PyQt4 import QtCore
+from logger import RCManagerLogger
 from yakuake_support import ProcessHandler
 from xmlreader import xml_reader
 import networkx as nx
 import os
-import subprocess
-import shlex
 
 class Model():
     """This is the Model object for our MVC model. It stores the component
     graph and contains the functions needed to manipulate it."""
 
     def __init__(self, rcmanagerSignals=None):
-        # print "------------------------------------"
-        # print "Hello, this is Model coming up"
+        self._logger = RCManagerLogger().get_logger("RCManager.Model")
 
         # this is the class containing all of the custom signals used by rcmanager
         self.rcmanagerSignals = rcmanagerSignals
@@ -77,9 +74,9 @@ class Model():
                 tabTitle, processId = self.processHandler.start_process_in_existing_session(component, \
                                                                     self.graph.node[component]['upCommand']['@command'])
                 self.processId[component] = int(processId)
-                print "Component:", component, "started in tab:", tabTitle, "with PID:", processId
+                self._logger.info("Component: " + component + " started in tab: " + tabTitle + " with PID: " + processId)
             else:
-                print "Component:", component, "is already running"
+                self._logger.debug("Component: " + component + " is already running")
         except Exception, e:
             raise e
     
@@ -89,11 +86,11 @@ class Model():
             self.processId[component] = -1
 
         if self.processId[component] == -1:
-            print "Component:", component, "is not running"
+            self._logger.debug("Component: " + component + " is not running")
         else:
             self.processHandler.stop_process_in_session(component)
             self.processId[component] = -1
-            print "Component:", component, "stopped"
+            self._logger.info("Component: " + component + " stopped")
 
     # this functions emits a sample signal
     def sample_emit(self):
@@ -118,4 +115,3 @@ if __name__ == '__main__':
     print "Number of nodes:", model.graph.number_of_nodes()
     print "Number of edges:", model.graph.number_of_edges()
     print "Adjacencies: ", model.graph.adj
-
