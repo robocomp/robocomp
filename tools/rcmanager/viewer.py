@@ -32,7 +32,7 @@ import math
 import random
 
 from PyQt4 import QtCore, QtGui, uic
-from PyQt4.QtGui import QGraphicsScene, QPushButton
+from PyQt4.QtGui import QGraphicsScene, QPushButton, QBrush, QColor
 
 from widgets import dialogs, code_editor, network_graph, menus
 from widgets.QNetworkxGraph.QNetworkxGraph import QNetworkxWidget
@@ -159,6 +159,9 @@ class Viewer(QtGui.QMainWindow, MainWindow):
         self.connect(self.actionLogger, QtCore.SIGNAL("triggered(bool)"), self.toggle_logger_view)
         self.connect(self.actionComponent_List, QtCore.SIGNAL("triggered(bool)"), self.toggle_component_list_view)
         self.connect(self.actionFull_Screen, QtCore.SIGNAL("triggered(bool)"), self.toggle_full_screen_view)
+       	self.actionFull_Screen.setShortcut("F11")
+
+        self.connect(self.actionSet_Color, QtCore.SIGNAL("triggered(bool)"), self.color_picker)
         #
         self.connect(self.actionON, QtCore.SIGNAL("triggered(bool)"), self.graphTree.start_animation)
         self.connect(self.actionOFF, QtCore.SIGNAL("triggered(bool)"), self.graphTree.stop_animation)
@@ -214,7 +217,12 @@ class Viewer(QtGui.QMainWindow, MainWindow):
         # self.connect(self.toolButton, QtCore.SIGNAL("clicked()"), self.add_new_component)
 
         # self._logger.info("Tool started")
-        
+
+    def color_picker(self):
+        color = QtGui.QColorDialog.getColor()
+        self.graphTree.backgroundColor = color
+        self.graphTree.setBackgroundBrush(color)
+
     # View menu functions begin
 
     def toggle_logger_view(self):
