@@ -49,9 +49,7 @@ MainWindow = uic.loadUiType("formManager.ui")[0]  # Load the UI
 class Viewer(QtGui.QMainWindow, MainWindow):
     """docstring for Viewer"""
     def __init__(self, rcmanagerSignals=None):
-        # self._logger = RCManagerLogger().get_logger("RCManager.Viewer")
-        # self._logger.info("------------------------------------")
-        # self._logger.info("Hello this is Viewer coming up")
+        self._logger = RCManagerLogger().get_logger("RCManager.Viewer")
         self.rcmanagerSignals = rcmanagerSignals
   
         super(Viewer, self).__init__()
@@ -258,11 +256,11 @@ class Viewer(QtGui.QMainWindow, MainWindow):
     # View menu functions end
 
     def add_node(self, node, nodedata=None):
-        print "The viewer received signal to draw component:", node
+        self._logger.info("The viewer received signal to draw component: " + node)
         self.graphTree.add_node(node)
 
     def add_edge(self, orig_node, dest_node, edge_data=None):
-        print "The viewer received signal to draw edge from:", orig_node, "to:", dest_node
+        self._logger.info("The viewer received signal to draw edge from: " + orig_node, " to: " + dest_node)
         self.graphTree.add_edge(first_node=orig_node, second_node=dest_node)
 
     def set_log_file(self):
