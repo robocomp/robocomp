@@ -5,7 +5,8 @@ import shlex
 class ProcessHandler():
     def __init__(self):
         proc = subprocess.Popen(shlex.split("yakuake"), shell=False)
-        self.tableTitleToId = dict()
+        self.tabTitleToSessionId = dict()
+        self.sessionIdToTabTitle = dict()
 
     def start_process_in_new_session(self, tabTitle=None, command=None):
         try:
@@ -13,10 +14,41 @@ class ProcessHandler():
             proc = subprocess.Popen(
                 shlex.split("qdbus org.kde.yakuake /yakuake/sessions org.kde.yakuake.runCommandInTerminal " \
                             + str(sessionId) + " \"" + command + "\""), shell=False)
-            processId = self.get_foreground_process_id(tabTitle)
+            sessionProcessId = self.get_session_process_id(tabTitle)
+            foregroundProcessId = sessionProcessId
+
+            while foregroundProcessId == sessionProcessId:
+                foregroundProcessId = self.get_foreground_process_id(tabTitle)
+            print tabTitle, sessionId, sessionProcessId, foregroundProcessId
         except Exception, e:
             raise e
-        return (tabTitle, processId)
+        return (tabTitle, foregroundProcessId)
+
+    def start_process_in_existing_session(self, tabTitle=None, command=None):
+        print tabTitle
+        if tabTitle in self.tabTitleToSessionId:
+            sessionId = int(self.tabTitleToSessionId[tabTitle])
+            proc = subprocess.Popen(
+                shlex.split("qdbus org.kde.yakuake /yakuake/sessions org.kde.yakuake.isSessionClosable " \
+                            + str(sessionId)), stderr=subprocess.PIPE, stdout=subprocess.PIPE, shell=False)
+            (isSessionExisting, error) = proc.communicate()
+
+            if isSessionExisting == "true\n":
+                try:
+                    proc = subprocess.Popen(
+                        shlex.split("qdbus org.kde.yakuake /yakuake/sessions org.kde.yakuake.runCommandInTerminal " \
+                                    + str(sessionId) + " \"" + command + "\""), shell=False)
+                    sessionProcessId = self.get_session_process_id(tabTitle)
+                    foregroundProcessId = sessionProcessId
+                    while foregroundProcessId == sessionProcessId:
+                        foregroundProcessId = self.get_foreground_process_id(tabTitle)
+                except Exception, e:
+                    raise e
+                return (tabTitle, foregroundProcessId)
+
+        print "Couldn't open in existing session, creating new session"
+        ret = self.start_process_in_new_session(tabTitle, command)
+        return ret
 
     def stop_process_in_session(self, tabTitle=None):
         try:
@@ -32,7 +64,8 @@ class ProcessHandler():
             (sessionId, error) = proc.communicate()
             proc = subprocess.Popen(shlex.split("qdbus org.kde.yakuake /yakuake/tabs org.kde.yakuake.setTabTitle " + \
                                                 str(sessionId) + " \"" + tabTitle + "\""), shell=False)
-            self.tableTitleToId[tabTitle] = sessionId
+            self.tabTitleToSessionId[tabTitle] = sessionId
+            self.sessionIdToTabTitle[sessionId] = tabTitle
         except Exception, e:
             raise e
         return (tabTitle, sessionId)
@@ -40,14 +73,22 @@ class ProcessHandler():
     def close_session(self, tabTitle):
         try:
             proc = subprocess.Popen(shlex.split("qdbus org.kde.yakuake /yakuake/sessions org.kde.yakuake.removeSession " \
-                                                + str(self.tableTitleToId[tabTitle])), shell=False)
+                                                + str(self.tabTitleToSessionId[tabTitle])), shell=False)
         except Exception, e:
             raise e
 
     def get_foreground_process_id(self, tabTitle):
-        sessionIdPlusOne = int(self.tableTitleToId[tabTitle]) + 1
+        sessionIdPlusOne = int(self.tabTitleToSessionId[tabTitle]) + 1
         proc = subprocess.Popen(shlex.split("qdbus org.kde.yakuake /Sessions/" + str(
             sessionIdPlusOne) + " org.kde.konsole.Session.foregroundProcessId"), stderr=subprocess.PIPE,
+                                stdout=subprocess.PIPE, shell=False)
+        (processId, error) = proc.communicate()
+        return processId
+
+    def get_session_process_id(self, tabTitle):
+        sessionIdPlusOne = int(self.tabTitleToSessionId[tabTitle]) + 1
+        proc = subprocess.Popen(shlex.split("qdbus org.kde.yakuake /Sessions/" + str(
+            sessionIdPlusOne) + " org.kde.konsole.Session.processId"), stderr=subprocess.PIPE,
                                 stdout=subprocess.PIPE, shell=False)
         (processId, error) = proc.communicate()
         return processId
