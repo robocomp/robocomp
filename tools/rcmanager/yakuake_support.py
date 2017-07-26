@@ -19,13 +19,11 @@ class ProcessHandler():
 
             while foregroundProcessId == sessionProcessId:
                 foregroundProcessId = self.get_foreground_process_id(tabTitle)
-            print tabTitle, sessionId, sessionProcessId, foregroundProcessId
         except Exception, e:
             raise e
         return (tabTitle, foregroundProcessId)
 
     def start_process_in_existing_session(self, tabTitle=None, command=None):
-        print tabTitle
         if tabTitle in self.tabTitleToSessionId:
             sessionId = int(self.tabTitleToSessionId[tabTitle])
             proc = subprocess.Popen(
@@ -45,8 +43,6 @@ class ProcessHandler():
                 except Exception, e:
                     raise e
                 return (tabTitle, foregroundProcessId)
-
-        print "Couldn't open in existing session, creating new session"
         ret = self.start_process_in_new_session(tabTitle, command)
         return ret
 
