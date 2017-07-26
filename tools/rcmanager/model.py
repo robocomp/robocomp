@@ -3,6 +3,7 @@ from PyQt4 import QtCore
 from yakuake_support import ProcessHandler
 from xmlreader import xml_reader
 import networkx as nx
+import os
 import subprocess
 import shlex
 
@@ -68,11 +69,14 @@ class Model():
 
     # this functions executes the command for starting a component
     def up_component(self, component):
+        if not os.path.isdir("/proc/"+str(self.processId[component])):
+            self.processId[component] = -1
+
         try:
             if self.processId[component] == -1:
-                tabTitle, processId = self.processHandler.start_process_in_new_session(component, \
+                tabTitle, processId = self.processHandler.start_process_in_existing_session(component, \
                                                                     self.graph.node[component]['upCommand']['@command'])
-                self.processId[component] = processId
+                self.processId[component] = int(processId)
                 print "Component:", component, "started in tab:", tabTitle, "with PID:", processId
             else:
                 print "Component:", component, "is already running"
@@ -81,6 +85,9 @@ class Model():
     
     # this functions executes the command for killing a component
     def down_component(self, component):
+        if not os.path.isdir("/proc/"+str(self.processId[component])):
+            self.processId[component] = -1
+
         if self.processId[component] == -1:
             print "Component:", component, "is not running"
         else:
