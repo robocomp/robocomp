@@ -32,7 +32,7 @@ import math
 import random
 
 from PyQt4 import QtCore, QtGui, uic
-from PyQt4.QtGui import QGraphicsScene, QPushButton
+from PyQt4.QtGui import QGraphicsScene, QPushButton, QBrush, QColor
 
 from widgets import dialogs, code_editor, network_graph, menus
 from widgets.QNetworkxGraph.QNetworkxGraph import QNetworkxWidget
@@ -49,9 +49,7 @@ MainWindow = uic.loadUiType("formManager.ui")[0]  # Load the UI
 class Viewer(QtGui.QMainWindow, MainWindow):
     """docstring for Viewer"""
     def __init__(self, rcmanagerSignals=None):
-        # self._logger = RCManagerLogger().get_logger("RCManager.Viewer")
-        # self._logger.info("------------------------------------")
-        # self._logger.info("Hello this is Viewer coming up")
+        self._logger = RCManagerLogger().get_logger("RCManager.Viewer")
         self.rcmanagerSignals = rcmanagerSignals
   
         super(Viewer, self).__init__()
@@ -159,6 +157,9 @@ class Viewer(QtGui.QMainWindow, MainWindow):
         self.connect(self.actionLogger, QtCore.SIGNAL("triggered(bool)"), self.toggle_logger_view)
         self.connect(self.actionComponent_List, QtCore.SIGNAL("triggered(bool)"), self.toggle_component_list_view)
         self.connect(self.actionFull_Screen, QtCore.SIGNAL("triggered(bool)"), self.toggle_full_screen_view)
+       	self.actionFull_Screen.setShortcut("F11")
+
+        self.connect(self.actionSet_Color, QtCore.SIGNAL("triggered(bool)"), self.color_picker)
         #
         self.connect(self.actionON, QtCore.SIGNAL("triggered(bool)"), self.graph_visualization.start_animation)
         self.connect(self.actionOFF, QtCore.SIGNAL("triggered(bool)"), self.graph_visualization.stop_animation)
@@ -214,7 +215,12 @@ class Viewer(QtGui.QMainWindow, MainWindow):
         # self.connect(self.toolButton, QtCore.SIGNAL("clicked()"), self.add_new_component)
 
         # self._logger.info("Tool started")
-        
+
+    def color_picker(self):
+        color = QtGui.QColorDialog.getColor()
+        self.graphTree.backgroundColor = color
+        self.graphTree.setBackgroundBrush(color)
+
     # View menu functions begin
 
     def toggle_logger_view(self):
@@ -250,11 +256,11 @@ class Viewer(QtGui.QMainWindow, MainWindow):
     # View menu functions end
 
     def add_node(self, node, nodedata=None):
-        print "The viewer received signal to draw component:", node
+        self._logger.info("The viewer received signal to draw component: " + node)
         self.graph_visualization.add_node(node)
 
     def add_edge(self, orig_node, dest_node, edge_data=None):
-        print "The viewer received signal to draw edge from:", orig_node, "to:", dest_node
+        self._logger.info("The viewer received signal to draw edge from: " + orig_node, " to: " + dest_node)
         self.graph_visualization.add_edge(first_node=orig_node, second_node=dest_node)
 
     def set_log_file(self):

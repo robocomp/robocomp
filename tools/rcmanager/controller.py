@@ -9,18 +9,17 @@ class Controller():
     making the necessary changes to the Model"""
 
     def __init__(self, model, view, rcmanagerSignals):
-        # self._logger = RCManagerLogger().get_logger("RCManager.Controller")
-        # self._logger.info("Hello, this is Controller coming up")
+        self._logger = RCManagerLogger().get_logger("RCManager.Controller")
 
         self.need_to_save = False
         self.view = view
         self.model = model
         self.rcmanagerSignals = rcmanagerSignals
-        
+
         self.isModelReady = False
-        self.isviewReady = False
+        self.isViewReady = False
         self.isControllerReady = False
-        
+
         self.signal_connections()
         pass
 
@@ -29,15 +28,15 @@ class Controller():
 
     def model_init_action(self):
         self.isModelReady = True
-        print "Model object initialized"
+        self._logger.info("Model object initialized")
 
     def view_init_action(self):
-        self.isviewReady = True
-        print "view object initialized"
-    
+        self.isViewReady = True
+        self._logger.info("view object initialized")
+
     def controller_init_action(self):
         self.isControllerReady = True
-        print "Controller object initialized"
+        self._logger.info("Controller object initialized")
         self.refresh_graph_from_model()
 
     def refresh_graph_from_model(self):
