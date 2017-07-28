@@ -8,9 +8,8 @@ from model import Model
 from controller import Controller
 from logger import RCManagerLogger
 from PyQt4 import QtCore, QtGui
-from rcmanagerSignals import rcmanagerSignals
+from RCManagerSignals import RCManagerSignals
 import argparse
-#import pdb
 
 class Main():
     """This is the Main class which spawns the objects for the Model,
@@ -20,7 +19,7 @@ class Main():
         parser = argparse.ArgumentParser()
         parser.add_argument("filename", help="the xml file containing the component graph data")
         args = parser.parse_args()
-        self.signalObject = rcmanagerSignals()
+        self.signalObject = RCManagerSignals()
         
         # create model as a NetworkX graph using dict
         self.model = Model(self.signalObject)
@@ -42,6 +41,8 @@ class Main():
         self.signalObject.modelIsReady.connect(self.controller.model_init_action)
         self.signalObject.viewerIsReady.connect(self.controller.view_init_action)
         self.signalObject.controllerIsReady.connect(self.controller.controller_init_action)
+        self.signalObject.startComponent.connect(self.controller.start_component)
+        self.signalObject.stopComponent.connect(self.controller.stop_component)
 
 if __name__ == '__main__':
     # process params with a argparse

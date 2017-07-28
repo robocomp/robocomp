@@ -51,14 +51,14 @@ class Viewer(QtGui.QMainWindow, MainWindow):
     def __init__(self, rcmanagerSignals=None):
         self._logger = RCManagerLogger().get_logger("RCManager.Viewer")
         self.rcmanagerSignals = rcmanagerSignals
-  
+
         super(Viewer, self).__init__()
         self.setupUi(self)
         # RCManagerLogger().set_text_edit_handler(self.textBrowser)
         self.setWindowIcon(QtGui.QIcon(QtGui.QPixmap("share/rcmanager/drawing_green.png")))
         self.showMaximized()
         self.tabWidget.removeTab(0)
-        
+
         self.componentList = []
         self.networkSettings = network_graph.NetworkGraphicValues()
 
@@ -102,12 +102,10 @@ class Viewer(QtGui.QMainWindow, MainWindow):
         self.mid_value_horizontal = 0
         self.mid_value_vertical = 0
         self.currentZoom = 0
-        
+
         self.rcmanagerSignals.viewerIsReady.emit()
 
         # self.actionOpen.triggered.connect(self.fuuu)
-
-
 
     def initialize_zoom(self):  # To connect the slider motion to zooming
         self.verticalSlider.setRange(-20, 20)
@@ -132,7 +130,7 @@ class Viewer(QtGui.QMainWindow, MainWindow):
     def setup_actions(self):  # To setUp connection like saving,opening,etc
         # setup rcmanager signals
         self.rcmanagerSignals.addNode.connect(self.add_node)
-    
+
         # self.connect(self.simulatorTimer, QtCore.SIGNAL("timeout()"), self.simulate)
         # # self.connect(self.toolButton,QtCore.SIGNAL("hovered()"),self.hoverAddComponent)
         # # self.connect(self.toolButton_9,QtCore.SIGNAL("hovered()"),self.hoverXmlSettings)
@@ -157,7 +155,7 @@ class Viewer(QtGui.QMainWindow, MainWindow):
         self.connect(self.actionLogger, QtCore.SIGNAL("triggered(bool)"), self.toggle_logger_view)
         self.connect(self.actionComponent_List, QtCore.SIGNAL("triggered(bool)"), self.toggle_component_list_view)
         self.connect(self.actionFull_Screen, QtCore.SIGNAL("triggered(bool)"), self.toggle_full_screen_view)
-       	self.actionFull_Screen.setShortcut("F11")
+        self.actionFull_Screen.setShortcut("F11")
 
         self.connect(self.actionSet_Color, QtCore.SIGNAL("triggered(bool)"), self.color_picker)
         #
@@ -216,13 +214,13 @@ class Viewer(QtGui.QMainWindow, MainWindow):
 
         # self._logger.info("Tool started")
 
+    # Background color picker widget
     def color_picker(self):
         color = QtGui.QColorDialog.getColor()
         self.graphTree.backgroundColor = color
         self.graphTree.setBackgroundBrush(color)
 
     # View menu functions begin
-
     def toggle_logger_view(self):
         if self.actionLogger.isChecked():
             self.dockWidget.show()
@@ -253,11 +251,28 @@ class Viewer(QtGui.QMainWindow, MainWindow):
             self.toggle_logger_view()
             self.toggle_component_list_view()
 
-    # View menu functions end
+    # Generate start / stop signals for components
+    def send_start_signal(self):
+        selectedNodes = self.graph_visualization.selected_nodes()
+
+        for i in selectedNodes:
+            self.rcmanagerSignals.startComponent.emit(i)
+
+    def send_stop_signal(self):
+        selectedNodes = self.graph_visualization.selected_nodes()
+
+        for i in selectedNodes:
+            self.rcmanagerSignals.stopComponent.emit(i)
 
     def add_node(self, node, nodedata=None):
         self._logger.info("The viewer received signal to draw component: " + node)
-        self.graph_visualization.add_node(node)
+        createdNode = self.graph_visualization.add_node(node)
+
+        # Start / stop context menu options
+        menu = dict()
+        menu['Start'] = (self, "send_start_signal")
+        menu['Stop'] = (self, "send_stop_signal")
+        createdNode.add_context_menu(menu)
 
     def add_edge(self, orig_node, dest_node, edge_data=None):
         self._logger.info("The viewer received signal to draw edge from: " + orig_node, " to: " + dest_node)
@@ -265,13 +280,12 @@ class Viewer(QtGui.QMainWindow, MainWindow):
 
     def set_log_file(self):
         self.log_file_setter.setFile()
-        
+
     def tab_index_changed(self):  # This will make sure the common behavior is not working unneccessarily
         index = self.tabWidget.currentIndex()
         if index == 1 or index == 2:  # CommonProxy should only work if the first tab is visible
             if self.currentComponent is not None:
                 self.currentComponent.CommonProxy.set_visibility(False)
-
 
     def add_graph_visualization(self):
         # self.NetworkScene = QGraphicsScene()  # The graphicsScene

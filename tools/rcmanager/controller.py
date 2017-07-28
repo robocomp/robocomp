@@ -39,6 +39,12 @@ class Controller():
         self._logger.info("Controller object initialized")
         self.refresh_graph_from_model()
 
+    def start_component(self, componentAlias):
+        self.model.execute_start_command(str(componentAlias))
+
+    def stop_component(self, componentAlias):
+        self.model.execute_stop_command(str(componentAlias))
+
     def refresh_graph_from_model(self):
         # adding nodes
         if self.view:
