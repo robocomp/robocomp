@@ -8,7 +8,7 @@ from model import Model
 from controller import Controller
 from logger import RCManagerLogger
 from PyQt4 import QtCore, QtGui
-from RCManagerSignals import RCManagerSignals
+from rcmanagerSignals import RCManagerSignals
 import argparse
 
 class Main():
