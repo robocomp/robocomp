@@ -64,33 +64,36 @@ class Model():
     def add_edge(self, fromNode, toNode):
         self.graph.add_edge(fromNode, toNode)
 
-    # this functions executes the command for starting a component
-    def up_component(self, component):
-        if not os.path.isdir("/proc/"+str(self.processId[component])):
-            self.processId[component] = -1
+    def get_component_running_status(self, componentAlias):
+        if self.processId[componentAlias] == -1:
+            return False
+        elif not os.path.isdir("/proc/"+str(self.processId[componentAlias])):
+            self.processId[componentAlias] = -1
+            return False
+        else:
+            return True
 
+    # this functions executes the command for starting a component
+    def execute_start_command(self, componentAlias):
         try:
-            if self.processId[component] == -1:
-                tabTitle, processId = self.processHandler.start_process_in_existing_session(component, \
-                                                                    self.graph.node[component]['upCommand']['@command'])
-                self.processId[component] = int(processId)
-                self._logger.info("Component: " + component + " started in tab: " + tabTitle + " with PID: " + processId)
+            if not self.get_component_running_status(componentAlias):
+                tabTitle, processId = self.processHandler.start_process_in_existing_session(componentAlias, \
+                                                                                            self.graph.node[componentAlias]['upCommand']['@command'])
+                self.processId[componentAlias] = int(processId)
+                self._logger.info("Component: " + componentAlias + " started in tab: " + tabTitle + " with PID: " + processId)
             else:
-                self._logger.debug("Component: " + component + " is already running")
+                self._logger.debug("Component: " + componentAlias + " is already running")
         except Exception, e:
             raise e
     
     # this functions executes the command for killing a component
-    def down_component(self, component):
-        if not os.path.isdir("/proc/"+str(self.processId[component])):
-            self.processId[component] = -1
-
-        if self.processId[component] == -1:
-            self._logger.debug("Component: " + component + " is not running")
+    def execute_stop_command(self, componentAlias):
+        if not self.get_component_running_status(componentAlias):
+            self._logger.debug("Component: " + componentAlias + " is not running")
         else:
-            self.processHandler.stop_process_in_session(component)
-            self.processId[component] = -1
-            self._logger.info("Component: " + component + " stopped")
+            self.processHandler.stop_process_in_session(componentAlias)
+            self.processId[componentAlias] = -1
+            self._logger.info("Component: " + componentAlias + " stopped")
 
     # this functions emits a sample signal
     def sample_emit(self):
