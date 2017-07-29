@@ -217,8 +217,8 @@ class Viewer(QtGui.QMainWindow, MainWindow):
     # Background color picker widget
     def color_picker(self):
         color = QtGui.QColorDialog.getColor()
-        self.graphTree.backgroundColor = color
-        self.graphTree.setBackgroundBrush(color)
+        self.graph_visualization.background_color = color
+        self.graph_visualization.setBackgroundBrush(color)
 
     # View menu functions begin
     def toggle_logger_view(self):
