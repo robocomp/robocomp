@@ -28,12 +28,10 @@
 #
 
 import math
-
 import random
 
 from PyQt4 import QtCore, QtGui, uic
 from PyQt4.QtGui import QGraphicsScene, QPushButton, QBrush, QColor
-
 from widgets import dialogs, code_editor, network_graph, menus
 from widgets.QNetworkxGraph.QNetworkxGraph import QNetworkxWidget
 from logger import RCManagerLogger
@@ -275,7 +273,7 @@ class Viewer(QtGui.QMainWindow, MainWindow):
         createdNode.add_context_menu(menu)
 
     def add_edge(self, orig_node, dest_node, edge_data=None):
-        self._logger.info("The viewer received signal to draw edge from: " + orig_node, " to: " + dest_node)
+        self._logger.info("The viewer received signal to draw edge from: " + orig_node + " to: " + dest_node)
         self.graph_visualization.add_edge(first_node=orig_node, second_node=dest_node)
 
     def set_log_file(self):
