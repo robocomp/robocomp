@@ -32,15 +32,14 @@ class Main():
         self.controller = Controller(self.model, self.viewer, self.signalObject)
         self.setup_signal_connection()
         
-        # load the xml file
-        self.model.load_from_xml(sys.argv[1])
-        
-        self.signalObject.controllerIsReady.emit()
+        self.signalObject.controllerIsReady.emit(sys.argv[1])
         
     def setup_signal_connection(self):
         self.signalObject.modelIsReady.connect(self.controller.model_init_action)
         self.signalObject.viewerIsReady.connect(self.controller.view_init_action)
         self.signalObject.controllerIsReady.connect(self.controller.controller_init_action)
+        self.signalObject.saveModel.connect(self.controller.save_manager_file)
+        self.signalObject.openModel.connect(self.controller.load_manager_file)
         self.signalObject.startComponent.connect(self.controller.start_component)
         self.signalObject.stopComponent.connect(self.controller.stop_component)
 
