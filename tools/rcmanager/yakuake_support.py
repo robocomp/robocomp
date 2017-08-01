@@ -12,8 +12,8 @@ class ProcessHandler():
         try:
             ret, sessionId = self.add_session(tabTitle)
             proc = subprocess.Popen(
-                shlex.split("qdbus org.kde.yakuake /yakuake/sessions org.kde.yakuake.runCommandInTerminal " \
-                            + str(sessionId) + " \"" + command + "\""), shell=False)
+                shlex.split('qdbus org.kde.yakuake /yakuake/sessions org.kde.yakuake.runCommandInTerminal ' \
+                            + str(sessionId) + ' "' + command + '"'), shell=False)
             sessionProcessId = self.get_session_process_id(tabTitle)
             foregroundProcessId = sessionProcessId
 
@@ -27,15 +27,15 @@ class ProcessHandler():
         if tabTitle in self.tabTitleToSessionId:
             sessionId = int(self.tabTitleToSessionId[tabTitle])
             proc = subprocess.Popen(
-                shlex.split("qdbus org.kde.yakuake /yakuake/sessions org.kde.yakuake.isSessionClosable " \
+                shlex.split('qdbus org.kde.yakuake /yakuake/sessions org.kde.yakuake.isSessionClosable ' \
                             + str(sessionId)), stderr=subprocess.PIPE, stdout=subprocess.PIPE, shell=False)
             (isSessionExisting, error) = proc.communicate()
 
             if isSessionExisting == "true\n":
                 try:
                     proc = subprocess.Popen(
-                        shlex.split("qdbus org.kde.yakuake /yakuake/sessions org.kde.yakuake.runCommandInTerminal " \
-                                    + str(sessionId) + " \"" + command + "\""), shell=False)
+                        shlex.split('qdbus org.kde.yakuake /yakuake/sessions org.kde.yakuake.runCommandInTerminal ' \
+                                    + str(sessionId) + ' "' + command + '"'), shell=False)
                     sessionProcessId = self.get_session_process_id(tabTitle)
                     foregroundProcessId = sessionProcessId
                     while foregroundProcessId == sessionProcessId:
@@ -49,17 +49,17 @@ class ProcessHandler():
     def stop_process_in_session(self, tabTitle=None):
         try:
             processId = self.get_foreground_process_id(tabTitle)
-            proc = subprocess.Popen(shlex.split("kill -9 "+str(processId)), shell=False)
+            proc = subprocess.Popen(shlex.split('kill -9 ' + str(processId)), shell=False)
         except Exception, e:
             raise e
 
     def add_session(self, tabTitle):
         try:
-            proc = subprocess.Popen(shlex.split("qdbus org.kde.yakuake /yakuake/sessions org.kde.yakuake.addSession"), \
+            proc = subprocess.Popen(shlex.split('qdbus org.kde.yakuake /yakuake/sessions org.kde.yakuake.addSession'), \
                                     stderr=subprocess.PIPE, stdout=subprocess.PIPE, shell=False)
             (sessionId, error) = proc.communicate()
-            proc = subprocess.Popen(shlex.split("qdbus org.kde.yakuake /yakuake/tabs org.kde.yakuake.setTabTitle " + \
-                                                str(sessionId) + " \"" + tabTitle + "\""), shell=False)
+            proc = subprocess.Popen(shlex.split('qdbus org.kde.yakuake /yakuake/tabs org.kde.yakuake.setTabTitle ' + \
+                                                str(sessionId) + ' "' + tabTitle + '"'), shell=False)
             self.tabTitleToSessionId[tabTitle] = sessionId
             self.sessionIdToTabTitle[sessionId] = tabTitle
         except Exception, e:
@@ -68,23 +68,23 @@ class ProcessHandler():
 
     def close_session(self, tabTitle):
         try:
-            proc = subprocess.Popen(shlex.split("qdbus org.kde.yakuake /yakuake/sessions org.kde.yakuake.removeSession " \
+            proc = subprocess.Popen(shlex.split('qdbus org.kde.yakuake /yakuake/sessions org.kde.yakuake.removeSession ' \
                                                 + str(self.tabTitleToSessionId[tabTitle])), shell=False)
         except Exception, e:
             raise e
 
     def get_foreground_process_id(self, tabTitle):
         sessionIdPlusOne = int(self.tabTitleToSessionId[tabTitle]) + 1
-        proc = subprocess.Popen(shlex.split("qdbus org.kde.yakuake /Sessions/" + str(
-            sessionIdPlusOne) + " org.kde.konsole.Session.foregroundProcessId"), stderr=subprocess.PIPE,
+        proc = subprocess.Popen(shlex.split('qdbus org.kde.yakuake /Sessions/' + str(
+            sessionIdPlusOne) + ' org.kde.konsole.Session.foregroundProcessId'), stderr=subprocess.PIPE,
                                 stdout=subprocess.PIPE, shell=False)
         (processId, error) = proc.communicate()
         return processId
 
     def get_session_process_id(self, tabTitle):
         sessionIdPlusOne = int(self.tabTitleToSessionId[tabTitle]) + 1
-        proc = subprocess.Popen(shlex.split("qdbus org.kde.yakuake /Sessions/" + str(
-            sessionIdPlusOne) + " org.kde.konsole.Session.processId"), stderr=subprocess.PIPE,
+        proc = subprocess.Popen(shlex.split('qdbus org.kde.yakuake /Sessions/' + str(
+            sessionIdPlusOne) + ' org.kde.konsole.Session.processId'), stderr=subprocess.PIPE,
                                 stdout=subprocess.PIPE, shell=False)
         (processId, error) = proc.communicate()
         return processId
