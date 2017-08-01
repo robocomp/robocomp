@@ -29,6 +29,15 @@ class Model():
         # we go through the dictionary to create the graph
         # we have "rcmanager" and "nodes" keys
 
+        # Clear previous data
+        self.graph.clear()
+        self.graph.node.clear()
+        self.processId.clear()
+
+        # Store the original filename for overwrite operations
+        self.filename = filename
+
+        # Convert the xml data into python dict format
         xmldata = xml_reader(filename)
 
         # creating nodes
@@ -94,6 +103,54 @@ class Model():
             self.processHandler.stop_process_in_session(componentAlias)
             self.processId[componentAlias] = -1
             self._logger.info("Component: " + componentAlias + " stopped")
+
+    # this function writes the xml data to the given filename
+    def export_xml_to_file(self, filename):
+        open(filename, 'w').close()
+        fileDescriptor = open(filename, 'a')
+
+        line = '<?xml version="1.0" encoding="UTF-8"?>\n\n'
+        line += '<rcmanager>\n'
+        fileDescriptor.write(line + '\n')
+
+        for i in self.graph.node.keys():
+            line = self.dict_to_xml(self.graph.node[i], 'node', 1)
+            fileDescriptor.write(line + '\n\n')
+
+        line = '</rcmanager>'
+        fileDescriptor.write(line + '\n')
+
+        fileDescriptor.close()
+
+    # this function converts the graph dict to the standard xml format used by rcmanager
+    def dict_to_xml(self, dictionary, tagname, indentSpaceCount):
+        line = (' ' * indentSpaceCount) + '<' + tagname
+
+        subtags = list()
+
+        for i in dictionary.keys():
+            if not isinstance(dictionary[i], list):
+                items = [dictionary[i]]
+            else:
+                items = dictionary[i]
+
+            for j in items:
+                if isinstance(j, dict):
+                    subtags.append(self.dict_to_xml(j, i, (indentSpaceCount + 1)))
+                else:
+                    # eliminate the '@' symbol in the front
+                    attr = i[:0] + i[(1):]
+                    line = line + ' ' + attr + '="' + j + '"'
+
+        if len(subtags) == 0:
+            line = line + '/>'
+        else:
+            line = line + '>\n'
+            for i in subtags:
+                line = line + i + '\n'
+            line = line + (' ' * indentSpaceCount) + '</' + tagname + '>'
+
+        return line
 
     # this functions emits a sample signal
     def sample_emit(self):
