@@ -28,12 +28,10 @@
 #
 
 import math
-
 import random
 
 from PyQt4 import QtCore, QtGui, uic
 from PyQt4.QtGui import QGraphicsScene, QPushButton, QBrush, QColor
-
 from widgets import dialogs, code_editor, network_graph, menus
 from widgets.QNetworkxGraph.QNetworkxGraph import QNetworkxWidget
 from logger import RCManagerLogger
@@ -144,7 +142,8 @@ class Viewer(QtGui.QMainWindow, MainWindow):
         self.connect(self.tabWidget, QtCore.SIGNAL("currentChanged(int)"), self.tab_index_changed)
         #
         # # File menu buttons
-        # self.connect(self.actionSave, QtCore.SIGNAL("triggered(bool)"), self.save_xml_file)
+        self.connect(self.actionSave, QtCore.SIGNAL("triggered(bool)"), self.save_model)
+        self.connect(self.actionOpen, QtCore.SIGNAL("triggered(bool)"), self.open_model)
         # self.connect(self.actionOpen, QtCore.SIGNAL("triggered(bool)"), self.open_xml_file)
         # self.connect(self.actionExit, QtCore.SIGNAL("triggered(bool)"), self.exit_rcmanager)
         #
@@ -251,6 +250,16 @@ class Viewer(QtGui.QMainWindow, MainWindow):
             self.toggle_logger_view()
             self.toggle_component_list_view()
 
+    # Save model function
+    def save_model(self):
+        filename = QtGui.QFileDialog.getSaveFileName(self, 'Save File')
+        self.rcmanagerSignals.saveModel.emit(filename)
+
+    # Open model function
+    def open_model(self):
+        filename = QtGui.QFileDialog.getOpenFileName(self, 'Open File')
+        self.rcmanagerSignals.openModel.emit(filename)
+
     # Generate start / stop signals for components
     def send_start_signal(self):
         selectedNodes = self.graph_visualization.selected_nodes()
@@ -266,7 +275,8 @@ class Viewer(QtGui.QMainWindow, MainWindow):
 
     def add_node(self, node, nodedata=None):
         self._logger.info("The viewer received signal to draw component: " + node)
-        createdNode = self.graph_visualization.add_node(node)
+        self.graph_visualization.add_node(node)
+        createdNode = self.graph_visualization.get_node(node)
 
         # Start / stop context menu options
         menu = dict()
@@ -275,7 +285,7 @@ class Viewer(QtGui.QMainWindow, MainWindow):
         createdNode.add_context_menu(menu)
 
     def add_edge(self, orig_node, dest_node, edge_data=None):
-        self._logger.info("The viewer received signal to draw edge from: " + orig_node, " to: " + dest_node)
+        self._logger.info("The viewer received signal to draw edge from: " + orig_node + " to: " + dest_node)
         self.graph_visualization.add_edge(first_node=orig_node, second_node=dest_node)
 
     def set_log_file(self):
@@ -297,6 +307,9 @@ class Viewer(QtGui.QMainWindow, MainWindow):
 
         self.graph_visualization = QNetworkxWidget()
         self.gridLayout_8.addWidget(self.graph_visualization, 0, 0, 1, 1)
+
+    def clear_graph_visualization(self):
+        self.graph_visualization.clear()
 
     def get_graph_nodes_positions(self):
         return self.graph_visualization.get_current_nodes_positions()
