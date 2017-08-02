@@ -273,9 +273,9 @@ class Viewer(QtGui.QMainWindow, MainWindow):
         for i in selectedNodes:
             self.rcmanagerSignals.stopComponent.emit(i)
 
-    def add_node(self, node, nodedata=None):
+    def add_node(self, node, nodedata=None, position=None):
         self._logger.info("The viewer received signal to draw component: " + node)
-        self.graph_visualization.add_node(node)
+        self.graph_visualization.add_node(node, position)
         createdNode = self.graph_visualization.get_node(node)
 
         # Start / stop context menu options
