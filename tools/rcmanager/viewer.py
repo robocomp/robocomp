@@ -144,7 +144,7 @@ class Viewer(QtGui.QMainWindow, MainWindow):
         # File menu buttons
         self.connect(self.actionSave, QtCore.SIGNAL("triggered(bool)"), self.save_model)
         self.connect(self.actionOpen, QtCore.SIGNAL("triggered(bool)"), self.open_model)
-        self.connect(self.actionExit, QtCore.SIGNAL("triggered(bool)"), self.close)
+        self.connect(self.actionExit, QtCore.SIGNAL("triggered(bool)"), self.exit_rcmanager)
 
         # Edit menu buttons
         # self.connect(self.actionSetting, QtCore.SIGNAL("triggered(bool)"), self.rcmanager_setting)
@@ -218,7 +218,7 @@ class Viewer(QtGui.QMainWindow, MainWindow):
         self.graph_visualization.background_color = color
         self.graph_visualization.setBackgroundBrush(color)
 
-    # View menu functions begin
+    # View menu functions
     def toggle_logger_view(self):
         if self.actionLogger.isChecked():
             self.dockWidget.show()
@@ -249,15 +249,17 @@ class Viewer(QtGui.QMainWindow, MainWindow):
             self.toggle_logger_view()
             self.toggle_component_list_view()
 
-    # Save model function
+    # File menu functions
     def save_model(self):
         filename = QtGui.QFileDialog.getSaveFileName(self, 'Save File')
         self.rcmanagerSignals.saveModel.emit(filename)
 
-    # Open model function
     def open_model(self):
         filename = QtGui.QFileDialog.getOpenFileName(self, 'Open File')
         self.rcmanagerSignals.openModel.emit(filename)
+
+    def exit_rcmanager(self):
+        self.close()
 
     # Generate start / stop signals for components
     def send_start_signal(self):
