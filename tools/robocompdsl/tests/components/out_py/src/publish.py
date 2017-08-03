@@ -114,26 +114,14 @@ if __name__ == '__main__':
 	except Ice.ConnectionRefusedException, e:
 		print 'Cannot connect to IceStorm! ('+proxy+')'
 		sys.exit(-1)
-
-	# Remote object connection for outTest
-	try:
-		proxyString = ic.getProperties().getProperty('outTestProxy')
-		try:
-			basePrx = ic.stringToProxy(proxyString)
-			outtest_proxy = outTestPrx.checkedCast(basePrx)
-			mprx["outTestProxy"] = outtest_proxy
-		except Ice.Exception:
-			print 'Cannot connect to the remote object (outTest)', proxyString
-			#traceback.print_exc()
-			status = 1
-	except Ice.Exception, e:
-		print e
-		print 'Cannot get outTestProxy property.'
-		status = 1
-
 	if status == 0:
 		worker = SpecificWorker(mprx)
 		worker.setParams(parameters)
+
+	adapter = ic.createObjectAdapter('outTest')
+	adapter.add(outTestI(worker), ic.stringToIdentity('outtest'))
+	adapter.activate()
+
 
 	signal.signal(signal.SIGINT, signal.SIG_DFL)
 	app.exec_()

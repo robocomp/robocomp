@@ -32,10 +32,10 @@ class SpecificWorker(GenericWorker):
 	def __init__(self, proxy_map):
 		super(SpecificWorker, self).__init__(proxy_map)
 		self.timer.timeout.connect(self.compute)
-		self.Period = 2000
+		self.Period = 200
 		self.timer.start(self.Period)
 
-		self.count = 1
+		self.divideBuffer = CallQueue()
 
 
 	def setParams(self, params):
@@ -63,19 +63,28 @@ class SpecificWorker(GenericWorker):
 		# r.printvector("d")
 		# print r[0], r[1], r[2]
 
-		# print self.outtest_proxy.divide(10,5)
 
-		r1 = self.outtest_proxy.begin_divide(self.count, 2)
-		self.count += 1
+		# divide
+		if not self.divideBuffer.empty():
+			params, cid = self.divideBuffer.pop()
+			print "params retrived, id: ", cid
+			divident = params["divident"]
+			divisor = params["divisor"]
 
-		q, r = self.outtest_proxy.divide(self.count, 2)
-		print "sync call, ", q, r
-		self.count += 1
-
-		# For demo, check call completion using isCompleted()
-		while(not r1.isCompleted()): pass
-		q, r = self.outtest_proxy.end_divide(r1)
-		print "async call, ", q, r
+			ret = divident/divisor
+			reminder = divident%divisor
+			
+			self.divideBuffer.set_finished(cid, [ret, reminder])
+			print "result pushed, id: ", cid
 
 		return True
 
+
+	#
+	# divide
+	#
+	def divide(self, divident,divisor):
+		kwargs = {"divident":divident,"divisor":divisor,}
+		cid = self.divideBuffer.push(kwargs)
+		while(self.divideBuffer.is_finished(cid)==False): pass
+		return tuple(self.divideBuffer.result(cid))

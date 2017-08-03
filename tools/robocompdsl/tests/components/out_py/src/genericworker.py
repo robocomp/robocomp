@@ -59,6 +59,7 @@ if not ice_Test:
 from RoboCompTests import *
 
 
+from outtestI import *
 
 
 class GenericWorker(QtCore.QObject):
@@ -69,7 +70,6 @@ class GenericWorker(QtCore.QObject):
 		super(GenericWorker, self).__init__()
 
 
-		self.outtest_proxy = mprx["outTestProxy"]
 
 
 		self.mutex = QtCore.QMutex(QtCore.QMutex.Recursive)
@@ -105,25 +105,25 @@ class CallQueue(object):
 		:param params: params to call as a dictionary
 		"""
 		self.mutex.lock()
-		self.call_buffer.put_nowait(params)
+		self.call_buffer.put_nowait((self.current_id, params))
+		cid = self.current_id
 		self.current_id += 1
 		self.mutex.unlock()
-		print "new call added ", self.current_id
-		return self.current_id
+		print "new params added, id: ", cid
+		return cid
 
 	def pop(self):
-		cid = self.current_id
 		self.mutex.lock()
-		params = self.call_buffer.get_nowait()
-		self.current_id -= 1
+		cid, params = self.call_buffer.get_nowait()
 		self.mutex.unlock()
-		print "call removed ", self.current_id
+		# print "params popped, id: ", cid
 		return params, cid
 
 	def result(self, cid):
 		""" return result of an call """
 		if self.is_finished(cid):
 			result = self.result_buffer[cid]
+			# print "result popped, id: ", cid
 			del self.result_buffer[cid]
 			return result
 		else:
@@ -135,6 +135,7 @@ class CallQueue(object):
 
 	def set_finished(self, cid, result=None):
 		""" set a call as finished"""
+		# print "result added, id: ", cid
 		self.result_buffer[cid] = result
 
 	def empty(self):

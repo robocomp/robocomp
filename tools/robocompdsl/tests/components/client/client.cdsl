@@ -4,7 +4,7 @@ Component publish
 {
 	Communications
 	{
-		requires test;
+		requires outTest;
 	};
 	language python;
 };

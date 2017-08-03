@@ -1,5 +1,5 @@
-# Proxies for required interfaces
-outTestProxy = outtest:tcp -h localhost -p 4678
+# Endpoints for implemented interfaces
+outTest.Endpoints=tcp -p 4678
 
 
 
@@ -14,3 +14,5 @@ Ice.ACM.Client=10
 Ice.ACM.Server=10
 
 
+Ice.ThreadPool.Client.Size=10
+Ice.ThreadPool.Server.Size=10

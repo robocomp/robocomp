@@ -15,6 +15,10 @@ module RoboCompTests{
 		void  printmsg(string message);
 	};
 
+	interface outTest{
+		int divide(int divident, int divisor, out int reminder);
+	};
+
 	["cpp:comparable"]
 	interface serviceTest{
 		idempotent void srvTest(int id, out int idTest);
