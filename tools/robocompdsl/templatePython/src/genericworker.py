@@ -74,11 +74,11 @@ import RoboCompCommonBehavior
 additionalPathStr = ''
 icePaths = []
 try:
+	icePaths.append('/opt/robocomp/interfaces')
 	SLICE_PATH = os.environ['SLICE_PATH'].split(':')
 	for p in SLICE_PATH:
 		icePaths.append(p)
 		additionalPathStr += ' -I' + p + ' '
-	icePaths.append('/opt/robocomp/interfaces')
 except:
 	print 'SLICE_PATH environment variable was not exported. Using only the default paths'
 	pass
