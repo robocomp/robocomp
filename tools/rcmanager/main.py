@@ -31,7 +31,7 @@ class Main():
         # create a controller to connect the viewer and the model
         self.controller = Controller(self.model, self.viewer, self.signalObject)
         self.setup_signal_connection()
-        
+
         self.signalObject.controllerIsReady.emit(sys.argv[1])
         
     def setup_signal_connection(self):

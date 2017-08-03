@@ -53,7 +53,15 @@ class Controller():
             for node, data in self.model.graph.nodes_iter(data=True):
                 # print "The controller sent signal to draw component:", data['@alias']
                 # self.rcmanagerSignals.addNode.emit(data)
-                self.view.add_node(node, data)
+
+                try:
+                    xpos = float(data['xpos']['@value'])
+                    ypos = float(data['ypos']['@value'])
+                    position = (xpos, ypos)
+                    self.view.add_node(node, data, position)
+                except Exception, e:
+                    self._logger.error("Node postion value for " + node + " are incorrect")
+                    self.view.add_node(node, data)
             for orig, dest, data in self.model.graph.edges_iter(data=True):
                 self.view.add_edge(orig, dest, data)
         else:
@@ -93,4 +101,3 @@ class Controller():
             self.model.export_xml_to_file(str(filename))
         except Exception, e:
             self._logger.error("Couldn't save to file " + filename)
-            raise e
