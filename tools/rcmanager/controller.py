@@ -101,3 +101,4 @@ class Controller():
             self.model.export_xml_to_file(str(filename))
         except Exception, e:
             self._logger.error("Couldn't save to file " + filename)
+            
