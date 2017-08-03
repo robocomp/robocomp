@@ -140,26 +140,25 @@ class Viewer(QtGui.QMainWindow, MainWindow):
         self.connect(self.actionSet_Log_File, QtCore.SIGNAL("triggered(bool)"), self.set_log_file)
         #
         self.connect(self.tabWidget, QtCore.SIGNAL("currentChanged(int)"), self.tab_index_changed)
-        #
-        # # File menu buttons
+
+        # File menu buttons
         self.connect(self.actionSave, QtCore.SIGNAL("triggered(bool)"), self.save_model)
         self.connect(self.actionOpen, QtCore.SIGNAL("triggered(bool)"), self.open_model)
-        # self.connect(self.actionOpen, QtCore.SIGNAL("triggered(bool)"), self.open_xml_file)
-        # self.connect(self.actionExit, QtCore.SIGNAL("triggered(bool)"), self.exit_rcmanager)
-        #
-        # # Edit menu buttons
+        self.connect(self.actionExit, QtCore.SIGNAL("triggered(bool)"), self.close)
+
+        # Edit menu buttons
         # self.connect(self.actionSetting, QtCore.SIGNAL("triggered(bool)"), self.rcmanager_setting)
-        #
-        # # View menu buttons
+
+        # View menu buttons
         self.connect(self.actionLogger, QtCore.SIGNAL("triggered(bool)"), self.toggle_logger_view)
         self.connect(self.actionComponent_List, QtCore.SIGNAL("triggered(bool)"), self.toggle_component_list_view)
         self.connect(self.actionFull_Screen, QtCore.SIGNAL("triggered(bool)"), self.toggle_full_screen_view)
-        self.actionFull_Screen.setShortcut("F11")
 
+        # Tools menu buttons
         self.connect(self.actionSet_Color, QtCore.SIGNAL("triggered(bool)"), self.color_picker)
-        #
         self.connect(self.actionON, QtCore.SIGNAL("triggered(bool)"), self.graph_visualization.start_animation)
         self.connect(self.actionOFF, QtCore.SIGNAL("triggered(bool)"), self.graph_visualization.stop_animation)
+
         # self.connect(self.actionSetting_2, QtCore.SIGNAL("triggered(bool)"), self.simulator_settings)
         # self.connect(self.actionSetting_3, QtCore.SIGNAL("triggered(bool)"), self.control_panel_settings)
         # self.connect(self.actionSetting_4, QtCore.SIGNAL("triggered(bool)"), self.editor_settings)
