@@ -33,7 +33,7 @@ import random
 from PyQt4 import QtCore, QtGui, uic
 from PyQt4.QtGui import QGraphicsScene, QPushButton, QBrush, QColor
 from widgets import dialogs, code_editor, network_graph, menus
-from widgets.QNetworkxGraph.QNetworkxGraph import QNetworkxWidget
+from widgets.QNetworkxGraph.QNetworkxGraph import QNetworkxWidget, NodeShapes
 from logger import RCManagerLogger
 
 try:
@@ -274,16 +274,26 @@ class Viewer(QtGui.QMainWindow, MainWindow):
         for i in selectedNodes:
             self.rcmanagerSignals.stopComponent.emit(i)
 
+    def add_component(self):
+        pass
+
     def add_node(self, node, nodedata=None, position=None):
         self._logger.info("The viewer received signal to draw component: " + node)
         self.graph_visualization.add_node(node, position)
-        createdNode = self.graph_visualization.get_node(node)
+        createdNode = self.graph_visualization.get_node(node)['item']
 
         # Start / stop context menu options
         menu = dict()
         menu['Start'] = (self, "send_start_signal")
         menu['Stop'] = (self, "send_stop_signal")
         createdNode.add_context_menu(menu)
+
+        if 'componentType' in nodedata.keys():
+            if str(nodedata['componentType']['@value']) == 'agent':
+                createdNode.set_node_shape(NodeShapes.SQUARE)
+                return
+
+        createdNode.set_node_shape(NodeShapes.CIRCLE)
 
     def add_edge(self, orig_node, dest_node, edge_data=None):
         self._logger.info("The viewer received signal to draw edge from: " + orig_node + " to: " + dest_node)
@@ -307,6 +317,13 @@ class Viewer(QtGui.QMainWindow, MainWindow):
         # self.graphTree.setObjectName(_fromUtf8("graphicsView"))
 
         self.graph_visualization = QNetworkxWidget()
+
+        # Context menu options
+        menu = dict()
+        menu['New Component'] = (self, "add_component")
+        menu['Change Background Color'] = (self, "color_picker")
+        self.graph_visualization.add_context_menu(menu)
+
         self.gridLayout_8.addWidget(self.graph_visualization, 0, 0, 1, 1)
 
     def clear_graph_visualization(self):
