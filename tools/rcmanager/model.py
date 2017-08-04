@@ -1,7 +1,7 @@
 
 from logger import RCManagerLogger
 from yakuake_support import ProcessHandler
-from xmlreader import xml_reader
+import xmlreader
 import networkx as nx
 import os
 
@@ -25,7 +25,7 @@ class Model():
         # this is the process handler for the model
         self.processHandler = ProcessHandler()
 
-    def load_from_xml(self, filename):
+    def load_from_xml(self, xml):
         # we go through the dictionary to create the graph
         # we have "rcmanager" and "nodes" keys
 
@@ -34,33 +34,32 @@ class Model():
         self.graph.node.clear()
         self.processId.clear()
 
-        # Store the original filename for overwrite operations
-        self.filename = filename
-
         # Convert the xml data into python dict format
-        xmldata = xml_reader(filename)
+        xmldata = xmlreader.read_from_text(xml, 'xml')
 
         # creating nodes
         # the try catch block is added to handle cases
         # when the xml document contains no nodes
         try:
-            for k in xmldata["rcmanager"]["node"]:
+            for k in xmldata['rcmanager']['node']:
                 self.add_node(k)
-        except:
-            pass
+        except Exception, e:
+            raise e
 
         # creating edges
         # the try catch block is added to handle cases
         # when the xml document contains no dependencies / edges
         try:
-            for i in xmldata["rcmanager"]["node"]:
+            for i in xmldata['rcmanager']['node']:
+                if 'dependence' not in i.keys():
+                    continue
                 if len(i['dependence']) <= 1:
                     i['dependence'] = [i['dependence']]
 
-                for j in i["dependence"]:
+                for j in i['dependence']:
                     self.add_edge(i['@alias'], j['@alias'])
-        except:
-            pass
+        except Exception, e:
+            raise e
 
         self.rcmanagerSignals.modelIsReady.emit()
 
