@@ -1,7 +1,7 @@
 
 from logger import RCManagerLogger
 from yakuake_support import ProcessHandler
-from xmlreader import xml_reader
+import xmlreader
 import networkx as nx
 import os
 
@@ -25,7 +25,7 @@ class Model():
         # this is the process handler for the model
         self.processHandler = ProcessHandler()
 
-    def load_from_xml(self, filename):
+    def load_from_xml(self, xml):
         # we go through the dictionary to create the graph
         # we have "rcmanager" and "nodes" keys
 
@@ -35,7 +35,7 @@ class Model():
         self.processId.clear()
 
         # Convert the xml data into python dict format
-        xmldata = xml_reader(filename)
+        xmldata = xmlreader.read_from_text(xml, 'xml')
 
         # creating nodes
         # the try catch block is added to handle cases
