@@ -33,7 +33,7 @@ import random
 from PyQt4 import QtCore, QtGui, uic
 from PyQt4.QtGui import QGraphicsScene, QPushButton, QBrush, QColor
 from widgets import dialogs, code_editor, network_graph, menus
-from widgets.QNetworkxGraph.QNetworkxGraph import QNetworkxWidget
+from widgets.QNetworkxGraph.QNetworkxGraph import QNetworkxWidget, NodeShapes
 from logger import RCManagerLogger
 
 try:
@@ -140,26 +140,25 @@ class Viewer(QtGui.QMainWindow, MainWindow):
         self.connect(self.actionSet_Log_File, QtCore.SIGNAL("triggered(bool)"), self.set_log_file)
         #
         self.connect(self.tabWidget, QtCore.SIGNAL("currentChanged(int)"), self.tab_index_changed)
-        #
-        # # File menu buttons
+
+        # File menu buttons
         self.connect(self.actionSave, QtCore.SIGNAL("triggered(bool)"), self.save_model)
         self.connect(self.actionOpen, QtCore.SIGNAL("triggered(bool)"), self.open_model)
-        # self.connect(self.actionOpen, QtCore.SIGNAL("triggered(bool)"), self.open_xml_file)
-        # self.connect(self.actionExit, QtCore.SIGNAL("triggered(bool)"), self.exit_rcmanager)
-        #
-        # # Edit menu buttons
+        self.connect(self.actionExit, QtCore.SIGNAL("triggered(bool)"), self.exit_rcmanager)
+
+        # Edit menu buttons
         # self.connect(self.actionSetting, QtCore.SIGNAL("triggered(bool)"), self.rcmanager_setting)
-        #
-        # # View menu buttons
+
+        # View menu buttons
         self.connect(self.actionLogger, QtCore.SIGNAL("triggered(bool)"), self.toggle_logger_view)
         self.connect(self.actionComponent_List, QtCore.SIGNAL("triggered(bool)"), self.toggle_component_list_view)
         self.connect(self.actionFull_Screen, QtCore.SIGNAL("triggered(bool)"), self.toggle_full_screen_view)
-        self.actionFull_Screen.setShortcut("F11")
 
+        # Tools menu buttons
         self.connect(self.actionSet_Color, QtCore.SIGNAL("triggered(bool)"), self.color_picker)
-        #
         self.connect(self.actionON, QtCore.SIGNAL("triggered(bool)"), self.graph_visualization.start_animation)
         self.connect(self.actionOFF, QtCore.SIGNAL("triggered(bool)"), self.graph_visualization.stop_animation)
+
         # self.connect(self.actionSetting_2, QtCore.SIGNAL("triggered(bool)"), self.simulator_settings)
         # self.connect(self.actionSetting_3, QtCore.SIGNAL("triggered(bool)"), self.control_panel_settings)
         # self.connect(self.actionSetting_4, QtCore.SIGNAL("triggered(bool)"), self.editor_settings)
@@ -219,7 +218,7 @@ class Viewer(QtGui.QMainWindow, MainWindow):
         self.graph_visualization.background_color = color
         self.graph_visualization.setBackgroundBrush(color)
 
-    # View menu functions begin
+    # View menu functions
     def toggle_logger_view(self):
         if self.actionLogger.isChecked():
             self.dockWidget.show()
@@ -250,15 +249,17 @@ class Viewer(QtGui.QMainWindow, MainWindow):
             self.toggle_logger_view()
             self.toggle_component_list_view()
 
-    # Save model function
+    # File menu functions
     def save_model(self):
         filename = QtGui.QFileDialog.getSaveFileName(self, 'Save File')
         self.rcmanagerSignals.saveModel.emit(filename)
 
-    # Open model function
     def open_model(self):
         filename = QtGui.QFileDialog.getOpenFileName(self, 'Open File')
         self.rcmanagerSignals.openModel.emit(filename)
+
+    def exit_rcmanager(self):
+        self.close()
 
     # Generate start / stop signals for components
     def send_start_signal(self):
@@ -273,16 +274,26 @@ class Viewer(QtGui.QMainWindow, MainWindow):
         for i in selectedNodes:
             self.rcmanagerSignals.stopComponent.emit(i)
 
+    def add_component(self):
+        pass
+
     def add_node(self, node, nodedata=None, position=None):
         self._logger.info("The viewer received signal to draw component: " + node)
         self.graph_visualization.add_node(node, position)
-        createdNode = self.graph_visualization.get_node(node)
+        createdNode = self.graph_visualization.get_node(node)['item']
 
         # Start / stop context menu options
         menu = dict()
         menu['Start'] = (self, "send_start_signal")
         menu['Stop'] = (self, "send_stop_signal")
         createdNode.add_context_menu(menu)
+
+        if 'componentType' in nodedata.keys():
+            if str(nodedata['componentType']['@value']) == 'agent':
+                createdNode.set_node_shape(NodeShapes.SQUARE)
+                return
+
+        createdNode.set_node_shape(NodeShapes.CIRCLE)
 
     def add_edge(self, orig_node, dest_node, edge_data=None):
         self._logger.info("The viewer received signal to draw edge from: " + orig_node + " to: " + dest_node)
@@ -306,6 +317,13 @@ class Viewer(QtGui.QMainWindow, MainWindow):
         # self.graphTree.setObjectName(_fromUtf8("graphicsView"))
 
         self.graph_visualization = QNetworkxWidget()
+
+        # Context menu options
+        menu = dict()
+        menu['New Component'] = (self, "add_component")
+        menu['Change Background Color'] = (self, "color_picker")
+        self.graph_visualization.add_context_menu(menu)
+
         self.gridLayout_8.addWidget(self.graph_visualization, 0, 0, 1, 1)
 
     def clear_graph_visualization(self):

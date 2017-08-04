@@ -669,6 +669,9 @@
    <property name="text">
     <string>Exit</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+Q</string>
+   </property>
   </action>
   <action name="actionSetting">
    <property name="icon">
@@ -755,6 +758,9 @@
    </property>
    <property name="text">
     <string>Full Screen</string>
+   </property>
+   <property name="shortcut">
+    <string>F11</string>
    </property>
   </action>
   <action name="actionSet_Color">
