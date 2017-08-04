@@ -4,7 +4,10 @@ import shlex
 
 class ProcessHandler():
     def __init__(self):
-        proc = subprocess.Popen(shlex.split("yakuake"), shell=False)
+        try:
+            proc = subprocess.Popen(shlex.split("yakuake"), shell=False)
+        except WindowsError:
+            print "Yakuake is not supported on windows systems"
         self.tabTitleToSessionId = dict()
         self.sessionIdToTabTitle = dict()
 
