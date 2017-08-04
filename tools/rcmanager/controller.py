@@ -50,7 +50,8 @@ class Controller():
         try:
             ElementTree.fromstring(xml)
         except Exception, e:
-            raise e
+            self._logger.error("XML validation failed. Please use a correctly formatted XML file")
+            return
 
         # Model uses filename as the input
         self.model.load_from_xml(filename)
