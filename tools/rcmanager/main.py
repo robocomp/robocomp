@@ -2,7 +2,6 @@
 import sys, signal, argparse
 
 from PyQt4.QtGui import QApplication
-from xmlreader import xml_reader
 from viewer import Viewer
 from model import Model
 from controller import Controller
