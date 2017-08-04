@@ -2,6 +2,7 @@
 from logger import RCManagerLogger
 from PyQt4 import QtCore
 from PyQt4.QtCore import QObject, pyqtSignal, pyqtSlot
+from xml.etree import ElementTree
 
 class Controller():
     """This is the Controller object for our MVC model. It connects the Model
@@ -37,8 +38,25 @@ class Controller():
     def controller_init_action(self, filename):
         self.isControllerReady = True
         self._logger.info("Controller object initialized")
+
+        # Save the filename for future use
+        self.view.filename = filename
+
+        # Read the xml data from the file
+        file = open(filename, 'r')
+        xml = file.read()
+
+        # Check the xml data for formatting issues
+        try:
+            ElementTree.fromstring(xml)
+        except Exception, e:
+            raise e
+
+        # Model uses filename as the input
         self.model.load_from_xml(filename)
-        self.refresh_graph_from_model()
+
+        # The following function requires the xml string as the input
+        self.refresh_graph_from_model(xml)
 
     def start_component(self, componentAlias):
         self.model.execute_start_command(str(componentAlias))
@@ -46,8 +64,9 @@ class Controller():
     def stop_component(self, componentAlias):
         self.model.execute_stop_command(str(componentAlias))
 
-    def refresh_graph_from_model(self):
+    def refresh_graph_from_model(self, xml):
         self.view.clear_graph_visualization()
+        self.view.set_editor_text(xml)
         # adding nodes
         if self.view:
             for node, data in self.model.graph.nodes_iter(data=True):
