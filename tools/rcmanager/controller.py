@@ -53,10 +53,7 @@ class Controller():
             self._logger.error("XML validation failed. Please use a correctly formatted XML file")
             return
 
-        # Model uses filename as the input
-        self.model.load_from_xml(filename)
-
-        # The following function requires the xml string as the input
+        self.model.load_from_xml(xml)
         self.refresh_graph_from_model(xml)
 
     def start_component(self, componentAlias):
