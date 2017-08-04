@@ -55,7 +55,11 @@ class Viewer(QtGui.QMainWindow, MainWindow):
         # RCManagerLogger().set_text_edit_handler(self.textBrowser)
         self.setWindowIcon(QtGui.QIcon(QtGui.QPixmap("share/rcmanager/drawing_green.png")))
         self.showMaximized()
+
         self.tabWidget.removeTab(0)
+
+        self.codeEditor = code_editor.CodeEditor.get_code_editor(self.tab_2)
+        self.verticalLayout_2.addWidget(self.codeEditor)
 
         self.componentList = []
         self.networkSettings = network_graph.NetworkGraphicValues()
@@ -87,18 +91,13 @@ class Viewer(QtGui.QMainWindow, MainWindow):
 
         self.group_selector_dialog = dialogs.GroupSelectorDialog(self)
 
-        self.CodeEditor = code_editor.CodeEditor.get_code_editor(self.tab_2)
-        self.verticalLayout_2.addWidget(self.CodeEditor)
 
         # The small widget which appears when we right click on a node in tree
-
         self.node_detail_displayer = menus.ItemDetailWidget(self.graph_visualization)
 
         # Setting up the connection
         self.setup_actions()
 
-        self.mid_value_horizontal = 0
-        self.mid_value_vertical = 0
         self.currentZoom = 0
 
         self.rcmanagerSignals.viewerIsReady.emit()
@@ -251,7 +250,7 @@ class Viewer(QtGui.QMainWindow, MainWindow):
 
     # File menu functions
     def save_model(self):
-        filename = QtGui.QFileDialog.getSaveFileName(self, 'Save File')
+        filename = QtGui.QFileDialog.getSaveFileName(self, 'Save File', self.filename)
         self.rcmanagerSignals.saveModel.emit(filename)
 
     def open_model(self):
@@ -304,9 +303,12 @@ class Viewer(QtGui.QMainWindow, MainWindow):
 
     def tab_index_changed(self):  # This will make sure the common behavior is not working unneccessarily
         index = self.tabWidget.currentIndex()
+
+        """
         if index == 1 or index == 2:  # CommonProxy should only work if the first tab is visible
             if self.currentComponent is not None:
                 self.currentComponent.CommonProxy.set_visibility(False)
+        """
 
     def add_graph_visualization(self):
         # self.NetworkScene = QGraphicsScene()  # The graphicsScene
@@ -328,6 +330,12 @@ class Viewer(QtGui.QMainWindow, MainWindow):
 
     def clear_graph_visualization(self):
         self.graph_visualization.clear()
+
+    def set_editor_text(self, text):
+        if text is not None:
+            self.codeEditor.setText(text)
+        else:
+            self._logger.error("Text object received is NoneType")
 
     def get_graph_nodes_positions(self):
         return self.graph_visualization.get_current_nodes_positions()
