@@ -47,12 +47,11 @@ MainWindow = uic.loadUiType("formManager.ui")[0]  # Load the UI
 class Viewer(QtGui.QMainWindow, MainWindow):
     """docstring for Viewer"""
     def __init__(self, rcmanagerSignals=None):
+        super(Viewer, self).__init__()
         self._logger = RCManagerLogger().get_logger("RCManager.Viewer")
         self.rcmanagerSignals = rcmanagerSignals
-
-        super(Viewer, self).__init__()
         self.setupUi(self)
-        # RCManagerLogger().set_text_edit_handler(self.textBrowser)
+        RCManagerLogger().set_text_edit_handler(self.textBrowser)
         self.setWindowIcon(QtGui.QIcon(QtGui.QPixmap("share/rcmanager/drawing_green.png")))
         self.showMaximized()
 
@@ -100,9 +99,14 @@ class Viewer(QtGui.QMainWindow, MainWindow):
 
         self.currentZoom = 0
 
-        self.rcmanagerSignals.viewerIsReady.emit()
+        # Temporary code
 
-        # self.actionOpen.triggered.connect(self.fuuu)
+        self.actionComponent_List.toggle()
+        self.toggle_component_list_view()
+
+        # Temporary code
+
+        self.rcmanagerSignals.viewerIsReady.emit()
 
     def initialize_zoom(self):  # To connect the slider motion to zooming
         self.verticalSlider.setRange(-20, 20)
@@ -321,10 +325,10 @@ class Viewer(QtGui.QMainWindow, MainWindow):
         self.graph_visualization = QNetworkxWidget()
 
         # Context menu options
-        menu = dict()
-        menu['New Component'] = (self, "add_component")
-        menu['Change Background Color'] = (self, "color_picker")
-        self.graph_visualization.add_context_menu(menu)
+        # menu = dict()
+        # menu['New Component'] = (self, "add_component")
+        # menu['Change Background Color'] = (self, "color_picker")
+        # self.graph_visualization.add_context_menu(menu)
 
         self.gridLayout_8.addWidget(self.graph_visualization, 0, 0, 1, 1)
 
