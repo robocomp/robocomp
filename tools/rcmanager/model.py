@@ -22,6 +22,9 @@ class Model():
         # we store -1 for the components which are not running
         self.processId = dict()
 
+        # this dictionary stores the general configuration informtation about the viewer
+        self.generalInformation = dict()
+
         # this is the process handler for the model
         self.processHandler = ProcessHandler()
 
@@ -61,13 +64,16 @@ class Model():
         except Exception, e:
             raise e
 
+        for key, value in xmldata['rcmanager']['generalInformation'].items():
+            self.generalInformation[key] = value
+
         self.rcmanagerSignals.modelIsReady.emit()
 
     def add_node(self, nodedata):
         self.graph.add_node(nodedata['@alias'])
         self.processId[nodedata['@alias']] = -1
-        for kk, vv in nodedata.items():
-            self.graph.node[nodedata['@alias']][kk] = vv
+        for key, value in nodedata.items():
+            self.graph.node[nodedata['@alias']][key] = value
 
     def add_edge(self, fromNode, toNode):
         self.graph.add_edge(fromNode, toNode)
@@ -111,6 +117,9 @@ class Model():
         line = '<?xml version="1.0" encoding="UTF-8"?>\n\n'
         line += '<rcmanager>\n'
         fileDescriptor.write(line + '\n')
+
+        line = self.dict_to_xml(self.generalInformation, 'generalInformation', 1)
+        fileDescriptor.write(line + '\n\n')
 
         for i in self.graph.node.keys():
             line = self.dict_to_xml(self.graph.node[i], 'node', 1)
