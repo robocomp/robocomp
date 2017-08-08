@@ -38,8 +38,6 @@ public:
 	~SpecificWorker();
 	bool setParams(RoboCompCommonBehavior::ParameterList params);
 
-	int divide(const int divident, const int divisor, int &reminder);
-
 public slots:
 	void compute();
 

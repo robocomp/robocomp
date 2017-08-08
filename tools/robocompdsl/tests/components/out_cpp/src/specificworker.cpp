@@ -58,6 +58,7 @@ bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
 void SpecificWorker::compute()
 {
 	QMutexLocker locker(mutex);
+	cout<<"Compute ..."<<"\n";
 	//computeCODE
 // 	try
 // 	{
@@ -69,13 +70,21 @@ void SpecificWorker::compute()
 // 	{
 // 		std::cout << "Error reading from Camera" << e << std::endl;
 // 	}
+
+	if(!divideBuffer.isEmpty()){
+		uint id;
+		int divident, divisor;
+		std::forward_as_tuple(id, std::tie(divident, divisor)) = divideBuffer.pop();
+		cout<<"poped "<<divident<<" "<<divisor<<"\n";
+
+		int ret = divident/divisor;
+		int reminder = divident%divisor;
+
+		cout<<"calculated "<<ret<<" "<<reminder<<"\n";
+		divideBuffer.setFinished(id, std::make_tuple(ret, reminder));
+	}
+
 }
 
-
-int SpecificWorker::divide(const int divident, const int divisor, int &reminder)
-{
-//implementCODE
-
-}
 
 

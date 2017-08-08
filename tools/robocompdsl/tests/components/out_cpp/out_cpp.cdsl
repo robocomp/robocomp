@@ -1,0 +1,10 @@
+import "Test.idsl";
+
+Component publish
+{
+	Communications
+	{
+	    implements outTest;
+	};
+	language cpp;
+};

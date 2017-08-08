@@ -57,11 +57,12 @@ public:
 
 
 
-	virtual int divide(const int divident, const int divisor, int &reminder) = 0;
+	int divide(const int divident, const int divisor, int &reminder);
 
 protected:
 	QTimer timer;
 	int Period;
+	BoundBuffer< std::tuple<int, int>, std::tuple<int, int> > divideBuffer;
 
 private:
 

@@ -54,3 +54,13 @@ void GenericWorker::setPeriod(int p)
 	timer.start(Period);
 }
 
+
+
+int GenericWorker::divide(const int divident, const int divisor, int &reminder)
+{
+	uint cid = divideBuffer.push(std::make_tuple(divident, divisor));
+	while(!divideBuffer.isFinished(cid));
+	int ret;
+	std::tie(ret, reminder) = divideBuffer.result(cid);
+	return ret;
+}

@@ -3,6 +3,7 @@
 #define BOUNDBUFFER_H
 
 #include <tuple>
+#include <queue>
 
 
 //
@@ -23,7 +24,7 @@ class BoundBuffer
 		std::tuple<uint, P> pop();
 		R result(uint cid); // only use when the function has a non-void return type
 		bool isEmpty();
-		void setFinished(uint id);
+		void setFinished(uint id, R result);
 		bool isFinished(uint id);
 };
 
@@ -55,9 +56,12 @@ std::tuple<uint, P> BoundBuffer<P, R>::pop()
 template<class P, class R>
 R BoundBuffer<P, R>::result(uint cid)
 {
-	R result;
+	R result ;
 	if(isFinished(cid)){
+		result = results[cid];
 	    results.erase(cid);
+	} else {
+		throw "Aecssing call result before it's ready";
 	}
 	return result;
 }
@@ -69,9 +73,9 @@ bool BoundBuffer<P, R>::isEmpty()
 }
 
 template<class P, class R>
-void BoundBuffer<P, R>::setFinished(uint cid)
+void BoundBuffer<P, R>::setFinished(uint cid, R result)
 {
-	results[cid] = true;
+	results[cid] = result;
 }
 
 template<class P, class R>
@@ -98,8 +102,6 @@ class BoundBuffer<P, void>
 		uint push(P params);
 		std::tuple<uint, P> pop();
 		bool isEmpty();
-		void setFinished(uint id);
-		bool isFinished(uint id);
 };
 
 template<class P>

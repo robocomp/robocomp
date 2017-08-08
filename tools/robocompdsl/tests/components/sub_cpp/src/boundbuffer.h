@@ -12,7 +12,7 @@ template<class P, class R=void>
 class BoundBuffer
 {
 	private:
-		std::queue<P> buffer;
+		std::queue<std::tuple<uint, P> > buffer;
 		QMutex mutex;
 		uint current_id=0;
 		std::map<uint, R> results;
@@ -31,25 +31,25 @@ template<class P, class R>
 uint BoundBuffer<P, R>::push(P params)
 {
 	cout<<"pushed "<<endl;
+	int cid=0;
 	mutex.lock();
-	buffer.push(params);
+	cid = current_id;
+	buffer.push(std::make_tuple(cid, params));
 	current_id++;
 	mutex.unlock();
-	return current_id;
+	return cid;
 }
 
 template<class P, class R>
 std::tuple<uint, P> BoundBuffer<P, R>::pop()
 {
 	cout<<"poped"<<endl;
-	uint cid = current_id;
-	P params;
+	std::tuple<uint, P> call_info;	
 	mutex.lock();
-	params = buffer.front();
+	call_info = buffer.front();
 	buffer.pop();
-	current_id--;
 	mutex.unlock();
-	return std::make_tuple(cid, params);
+	return call_info;
 }
 
 template<class P, class R>
@@ -89,7 +89,7 @@ template<class P>
 class BoundBuffer<P, void>
 {
 	private:
-		std::queue<P> buffer;
+		std::queue<std::tuple<uint, P> > buffer;
 		QMutex mutex; 
 		uint current_id=0;
 
@@ -105,26 +105,24 @@ class BoundBuffer<P, void>
 template<class P>
 uint BoundBuffer<P, void>::push(P params)
 {
-	cout<<"pushed "<<endl;
+	int cid=0;
 	mutex.lock();
-	buffer.push(params);
+	cid = current_id;
+	buffer.push(std::make_tuple(cid, params));
 	current_id++;
 	mutex.unlock();
-	return current_id;
+	return cid;
 }
 
 template<class P>
 std::tuple<uint, P> BoundBuffer<P, void>::pop()
 {
-	cout<<"poped"<<endl;
-	uint cid = current_id;
-	P params;
+	std::tuple<uint, P> call_info;	
 	mutex.lock();
-	params = buffer.front();
+	call_info = buffer.front();
 	buffer.pop();
-	current_id--;
 	mutex.unlock();
-	return std::make_tuple(cid, params);
+	return call_info;
 }
 
 template<class P>

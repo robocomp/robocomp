@@ -1,8 +1,8 @@
-CommonBehavior.Endpoints=tcp -p 1
+CommonBehavior.Endpoints=tcp -p 0
 
 
 # Endpoints for implemented interfaces
-outTest.Endpoints=tcp -p 0
+outTest.Endpoints=tcp -p 4678
 
 
 

@@ -88,6 +88,7 @@ class GenericWorker(QtCore.QObject):
 	# printmsg
 	#
 	def printmsg(self, message):
+		# print 'function called', message
 		kwargs = {'message': message}
 		cid = self.printmsgBuffer.push(kwargs)
 		while(self.printmsgBuffer.is_finished(cid)==False):
