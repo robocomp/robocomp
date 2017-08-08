@@ -2,6 +2,7 @@
 from logger import RCManagerLogger
 from PyQt4 import QtCore
 from PyQt4.QtCore import QObject, pyqtSignal, pyqtSlot
+from PyQt4.QtGui import QColor
 from xml.etree import ElementTree
 
 class Controller():
@@ -22,7 +23,6 @@ class Controller():
         self.isControllerReady = False
 
         self.signal_connections()
-        pass
 
     def signal_connections(self):
         pass
@@ -33,7 +33,7 @@ class Controller():
 
     def view_init_action(self):
         self.isViewReady = True
-        self._logger.info("view object initialized")
+        self._logger.info("View object initialized")
 
     def controller_init_action(self, filename):
         self.isControllerReady = True
@@ -55,6 +55,7 @@ class Controller():
 
         self.model.load_from_xml(xml)
         self.refresh_graph_from_model(xml)
+        self.configure_viewer()
 
     def start_component(self, componentAlias):
         self.model.execute_start_command(str(componentAlias))
@@ -91,6 +92,15 @@ class Controller():
             self.model.graph.node[str(i)]['xpos']['@value'] = str(xpos)
             self.model.graph.node[str(i)]['ypos']['@value'] = str(ypos)
 
+        if 'backgroundColor' in self.model.generalInformation.keys():
+            color = self.view.graph_visualization.background_color
+            self.model.generalInformation['backgroundColor'] = {'@value': color.name()}
+
+    def configure_viewer(self):
+        if 'backgroundColor' in self.model.generalInformation.keys():
+            color = QColor(self.model.generalInformation['backgroundColor']['@value'])
+            self.view.set_background_color(color)
+
     def load_manager_file(self, filename):
         """
         try:
@@ -118,4 +128,4 @@ class Controller():
             self.model.export_xml_to_file(str(filename))
         except Exception, e:
             self._logger.error("Couldn't save to file " + filename)
-            
+            raise e
