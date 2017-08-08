@@ -158,7 +158,7 @@ class Viewer(QtGui.QMainWindow, MainWindow):
         self.connect(self.actionFull_Screen, QtCore.SIGNAL("triggered(bool)"), self.toggle_full_screen_view)
 
         # Tools menu buttons
-        self.connect(self.actionSet_Color, QtCore.SIGNAL("triggered(bool)"), self.color_picker)
+        self.connect(self.actionSet_Color, QtCore.SIGNAL("triggered(bool)"), self.set_background_color)
         self.connect(self.actionON, QtCore.SIGNAL("triggered(bool)"), self.graph_visualization.start_animation)
         self.connect(self.actionOFF, QtCore.SIGNAL("triggered(bool)"), self.graph_visualization.stop_animation)
 
@@ -216,8 +216,9 @@ class Viewer(QtGui.QMainWindow, MainWindow):
         # self._logger.info("Tool started")
 
     # Background color picker widget
-    def color_picker(self):
-        color = QtGui.QColorDialog.getColor()
+    def set_background_color(self, color=None):
+        if not color:
+            color = QtGui.QColorDialog.getColor()
         self.graph_visualization.background_color = color
         self.graph_visualization.setBackgroundBrush(color)
 
