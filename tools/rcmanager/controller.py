@@ -1,4 +1,4 @@
-
+import xmlreader
 from logger import RCManagerLogger
 from PyQt4 import QtCore
 from PyQt4.QtCore import QObject, pyqtSignal, pyqtSlot
@@ -35,21 +35,20 @@ class Controller():
         self.isViewReady = True
         self._logger.info("View object initialized")
 
-    def controller_init_action(self, filename):
+    def controller_init_action(self, filename, isNewFile=True):
         self.isControllerReady = True
         self._logger.info("Controller object initialized")
 
         # Save the filename for future use
-        self.view.filename = filename
+        if isNewFile:
+            self.view.filename = filename
 
         # Read the xml data from the file
         file = open(filename, 'r')
         xml = file.read()
 
         # Check the xml data for formatting issues
-        try:
-            ElementTree.fromstring(xml)
-        except Exception, e:
+        if not xmlreader.validate_xml(xml):
             self._logger.error("XML validation failed. Please use a correctly formatted XML file")
             return
 
@@ -89,8 +88,8 @@ class Controller():
         currentNodePosition = self.view.get_graph_nodes_positions()
         for i in currentNodePosition:
             xpos, ypos = currentNodePosition[i]
-            self.model.graph.node[str(i)]['xpos']['@value'] = str(xpos)
-            self.model.graph.node[str(i)]['ypos']['@value'] = str(ypos)
+            self.model.graph.node[str(i)]['xpos'] = {'@value': str(xpos)}
+            self.model.graph.node[str(i)]['ypos'] = {'@value': str(ypos)}
 
         if 'backgroundColor' in self.model.generalInformation.keys():
             color = self.view.graph_visualization.background_color
@@ -101,7 +100,7 @@ class Controller():
             color = QColor(self.model.generalInformation['backgroundColor']['@value'])
             self.view.set_background_color(color)
 
-    def load_manager_file(self, filename):
+    def load_manager_file(self, filename, isNewFile=True):
         """
         try:
             if self.need_to_save:  # To make sure the data we have been working on have been saved
@@ -120,7 +119,7 @@ class Controller():
         self.view.refresh_tree_from_code(first_time=True)
         self.need_to_save = False
         """
-        self.controller_init_action(filename)
+        self.controller_init_action(filename, isNewFile)
 
     def save_manager_file(self, filename):
         try:
