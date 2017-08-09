@@ -329,7 +329,7 @@ class Viewer(QtGui.QMainWindow, MainWindow):
         if not xmlreader.validate_xml(xml):
             return
 
-        filename = 'temp.xml'
+        filename = '.temp.xml'
         open(filename, 'w').close()
         fileDescriptor = open(filename, 'a')
         fileDescriptor.write(xml)
@@ -338,7 +338,7 @@ class Viewer(QtGui.QMainWindow, MainWindow):
         self.rcmanagerSignals.openModel.emit(filename, False)
 
     def refresh_editor_from_graph(self):
-        filename = 'temp.xml'
+        filename = '.temp.xml'
         self.rcmanagerSignals.saveModel.emit(filename)
         file = open(filename, 'r')
         xml = file.read()
