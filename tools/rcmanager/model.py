@@ -40,6 +40,11 @@ class Model():
         # Convert the xml data into python dict format
         xmldata = xmlreader.read_from_text(xml, 'xml')
 
+        # xmldata['rcmanager']['node'] should be a list of items,
+        # even if there is only one node in the xml
+        if not isinstance(xmldata['rcmanager']['node'], list):
+            xmldata['rcmanager']['node'] = [xmldata['rcmanager']['node']]
+
         # creating nodes
         # the try catch block is added to handle cases
         # when the xml document contains no nodes
@@ -56,11 +61,13 @@ class Model():
             for i in xmldata['rcmanager']['node']:
                 if 'dependence' not in i.keys():
                     continue
-                if len(i['dependence']) <= 1:
+
+                if not isinstance(i['dependence'], list):
                     i['dependence'] = [i['dependence']]
 
                 for j in i['dependence']:
-                    self.add_edge(i['@alias'], j['@alias'])
+                    if (i['@alias'] in self.graph.node.keys()) and (j['@alias'] in self.graph.node.keys()):
+                        self.add_edge(i['@alias'], j['@alias'])
         except Exception, e:
             raise e
 

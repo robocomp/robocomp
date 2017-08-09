@@ -8,7 +8,7 @@ class RCManagerSignals(QtCore.QObject):
     viewerIsReady = QtCore.pyqtSignal()
     controllerIsReady = QtCore.pyqtSignal(str)
     saveModel = QtCore.pyqtSignal(str)
-    openModel = QtCore.pyqtSignal(str)
+    openModel = QtCore.pyqtSignal(str, bool)
     addNode = QtCore.pyqtSignal(dict)
     startComponent = QtCore.pyqtSignal(str)
     stopComponent = QtCore.pyqtSignal(str)
