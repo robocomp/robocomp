@@ -29,6 +29,7 @@
 
 import math
 import random
+import xmlreader
 
 from PyQt4 import QtCore, QtGui, uic
 from PyQt4.QtGui import QGraphicsScene, QPushButton, QBrush, QColor
@@ -255,12 +256,13 @@ class Viewer(QtGui.QMainWindow, MainWindow):
 
     # File menu functions
     def save_model(self):
+        self.refresh_graph_from_editor()
         filename = QtGui.QFileDialog.getSaveFileName(self, 'Save File', self.filename)
         self.rcmanagerSignals.saveModel.emit(filename)
 
     def open_model(self):
         filename = QtGui.QFileDialog.getOpenFileName(self, 'Open File')
-        self.rcmanagerSignals.openModel.emit(filename)
+        self.rcmanagerSignals.openModel.emit(filename, True)
 
     def exit_rcmanager(self):
         self.close()
@@ -315,6 +317,33 @@ class Viewer(QtGui.QMainWindow, MainWindow):
                 self.currentComponent.CommonProxy.set_visibility(False)
         """
 
+        if index == 0:
+            self.refresh_graph_from_editor()
+
+        elif index == 1:
+            self.refresh_editor_from_graph()
+
+    def refresh_graph_from_editor(self):
+        xml = str(self.codeEditor.text())
+
+        if not xmlreader.validate_xml(xml):
+            return
+
+        filename = 'temp.xml'
+        open(filename, 'w').close()
+        fileDescriptor = open(filename, 'a')
+        fileDescriptor.write(xml)
+        fileDescriptor.close()
+
+        self.rcmanagerSignals.openModel.emit(filename, False)
+
+    def refresh_editor_from_graph(self):
+        filename = 'temp.xml'
+        self.rcmanagerSignals.saveModel.emit(filename)
+        file = open(filename, 'r')
+        xml = file.read()
+        self.set_editor_text(xml)
+
     def add_graph_visualization(self):
         # self.NetworkScene = QGraphicsScene()  # The graphicsScene
         # self.graphTree = network_graph.ComponentTree(self.frame, mainclass=self)  # The graphicsNode
@@ -326,10 +355,9 @@ class Viewer(QtGui.QMainWindow, MainWindow):
         self.graph_visualization = QNetworkxWidget()
 
         # Context menu options
-        # menu = dict()
-        # menu['New Component'] = (self, "add_component")
-        # menu['Change Background Color'] = (self, "color_picker")
-        # self.graph_visualization.add_context_menu(menu)
+        menu = dict()
+        menu['Change Background Color'] = (self, "set_background_color")
+        self.graph_visualization.add_context_menu(menu)
 
         self.gridLayout_8.addWidget(self.graph_visualization, 0, 0, 1, 1)
 
