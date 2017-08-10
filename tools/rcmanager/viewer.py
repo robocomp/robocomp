@@ -256,7 +256,6 @@ class Viewer(QtGui.QMainWindow, MainWindow):
 
     # File menu functions
     def save_model(self):
-        self.refresh_graph_from_editor()
         filename = QtGui.QFileDialog.getSaveFileName(self, 'Save File', self.filename)
         self.rcmanagerSignals.saveModel.emit(filename)
 
