@@ -146,7 +146,8 @@ class Viewer(QtGui.QMainWindow, MainWindow):
         self.connect(self.tabWidget, QtCore.SIGNAL("currentChanged(int)"), self.tab_index_changed)
 
         # File menu buttons
-        self.connect(self.actionSave, QtCore.SIGNAL("triggered(bool)"), self.save_model)
+        self.connect(self.actionSave, QtCore.SIGNAL("triggered(bool)"), lambda: self.save_model(False))
+        self.connect(self.actionSave_As, QtCore.SIGNAL("triggered(bool)"), lambda: self.save_model(True))
         self.connect(self.actionOpen, QtCore.SIGNAL("triggered(bool)"), self.open_model)
         self.connect(self.actionExit, QtCore.SIGNAL("triggered(bool)"), self.exit_rcmanager)
 
@@ -255,8 +256,11 @@ class Viewer(QtGui.QMainWindow, MainWindow):
             self.toggle_component_list_view()
 
     # File menu functions
-    def save_model(self):
-        filename = QtGui.QFileDialog.getSaveFileName(self, 'Save File', self.filename)
+    def save_model(self, saveAs=True):
+        if saveAs:
+            filename = QtGui.QFileDialog.getSaveFileName(self, 'Save File', self.filename)
+        else:
+            filename = self.filename
         self.rcmanagerSignals.saveModel.emit(filename)
 
     def open_model(self):
@@ -281,6 +285,17 @@ class Viewer(QtGui.QMainWindow, MainWindow):
 
     def add_component(self):
         pass
+
+    def closeEvent(self, event):
+        quit_msg = "There are unsaved changes. Do you want to save before exiting?"
+        reply = QtGui.QMessageBox.question(self, 'Save Model?',
+                                           quit_msg, QtGui.QMessageBox.No, QtGui.QMessageBox.Cancel, QtGui.QMessageBox.Yes)
+
+        if reply == QtGui.QMessageBox.Yes:
+            self.save_model()
+            event.accept()
+        elif reply == QtGui.QMessageBox.Cancel:
+            event.ignore()
 
     def add_node(self, node, nodedata=None, position=None):
         self._logger.info("The viewer received signal to draw component: " + node)
