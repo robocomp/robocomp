@@ -55,6 +55,7 @@
 
 #include <innermodel/innermodel.h>
 #include <innermodel/innermodelnode.h>
+#include <innermodel/innermodelmgr.h>
 // #include <innermodel/innermodeljoint.h>
 // #include <innermodel/innermodeltouchsensor.h>
 // #include <innermodel/innermodeldifferentialrobot.h>
@@ -136,7 +137,7 @@ class InnerModelViewer : public osg::Switch
 		enum CameraView { BACK_POV, FRONT_POV, LEFT_POV, RIGHT_POV, TOP_POV };
 
 		InnerModelViewer(InnerModel *im, QString root="root", osg::Group *parent=NULL, bool ignoreCameras=false);	
-		~InnerModelViewer();
+		~InnerModelViewer(){};
 		void update();
 		void recursiveConstructor(InnerModelNode* node, osg::Group* parent, QHash< QString, osg::MatrixTransform* >& mtsHash, QHash< QString, IMVMesh >& meshHash, bool ignoreCameras=false);
 		void setMainCamera(osgGA::TrackballManipulator *manipulator, CameraView pov) const;
@@ -154,7 +155,7 @@ class InnerModelViewer : public osg::Switch
 		QHash<QString, IMVCamera> cameras;
 		QHash<QString, IMVLaser> lasers;
         
-		QMutex *mutex;
+		//QMutex *mutex;
 		void setCameraCenter(OsgView *view, const QVec center_);
 		void setLookTowards(OsgView *view, const QVec to_, const QVec up_);
 		void lookAt(OsgView *view, const QVec center_, const QVec to_, const QVec up_);
@@ -163,7 +164,7 @@ class InnerModelViewer : public osg::Switch
 		void setOSGMatrixTransformForPlane(osg::MatrixTransform *mt, InnerModelPlane *plane);
 		
 	private:
-    QVec eye, up, to;
+		QVec eye, up, to;
 		void reloadMesh(QString id);	
 	
 		// Returns geode if 'id' corresponds to a geode, null otherwise.

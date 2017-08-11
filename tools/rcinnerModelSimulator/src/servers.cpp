@@ -149,13 +149,11 @@ RGBDServer::RGBDServer(Ice::CommunicatorPtr communicator, SpecificWorker *worker
 	adapter->activate();
 }
 
-
 void RGBDServer::add(InnerModelRGBD *rgbd)
 {
 	rgbds.push_back(rgbd);
 	interface->add(rgbd->id);
 }
-
 
 IMUServer::IMUServer(Ice::CommunicatorPtr communicator, SpecificWorker *worker, uint32_t _port)
 {
@@ -231,7 +229,7 @@ void OmniRobotServer::add(InnerModelOmniRobot *omnirobot)
 	interface->add(omnirobot->id);
 	interface->start();
 	interfaceGB->add(omnirobot->id);
-	interfaceGB->start();
+//	interfaceGB->start();
 // 	interfaceDFR->add(omnirobot->id);
 // 	interfaceDFR->start();
 }

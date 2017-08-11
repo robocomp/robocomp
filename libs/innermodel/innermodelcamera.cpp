@@ -188,7 +188,7 @@ QVec InnerModelCamera::projectFromCameraToPlane(const QString &to, const QVec &c
  */
 QVec InnerModelCamera::horizonLine(QString planeId, QString cameraId, float heightOffset)
 {
-	QMutexLocker l(&mutex);
+	
 	// 	printf("-------------------------------------- cam:%s plane:%s\n", qPrintable(cameraId), qPrintable(planeId));
 	// Get camera and plane pointers
 	InnerModelPlane *plane = innermodel->getNode<InnerModelPlane>(planeId);
@@ -234,7 +234,7 @@ QVec InnerModelCamera::horizonLine(QString planeId, QString cameraId, float heig
 
 QMat InnerModelCamera::getHomographyMatrix(QString virtualCamera, QString plane, QString sourceCamera)
 {
-	QMutexLocker l(&mutex);
+	
 
 	QVec planeN = innermodel->getNode<InnerModelPlane>(plane)->normal;
 	planeN = innermodel->getRotationMatrixTo(sourceCamera, plane)*planeN;
@@ -252,7 +252,7 @@ QMat InnerModelCamera::getHomographyMatrix(QString virtualCamera, QString plane,
 
 QMat InnerModelCamera::getAffineHomographyMatrix(QString virtualCamera, QString plane, QString sourceCamera)
 {
-	QMutexLocker l(&mutex);
+	
 
 	QVec planeN = innermodel->getNode<InnerModelPlane>(plane)->normal;
 	planeN = innermodel->getRotationMatrixTo(sourceCamera, plane)*planeN;
@@ -273,7 +273,7 @@ QMat InnerModelCamera::getAffineHomographyMatrix(QString virtualCamera, QString 
 
 QMat InnerModelCamera::getPlaneProjectionMatrix(QString virtualCamera, QString plane, QString sourceCamera)
 {
-	QMutexLocker l(&mutex);
+	
 	QVec planeN = innermodel->getNode<InnerModelPlane>(plane)->normal;
 	planeN = innermodel->getRotationMatrixTo(sourceCamera, plane)*planeN;
 	QVec planePoint = innermodel->transform(sourceCamera, innermodel->getNode<InnerModelPlane>(plane)->point, plane);
@@ -296,7 +296,7 @@ QMat InnerModelCamera::getPlaneProjectionMatrix(QString virtualCamera, QString p
 
 QVec InnerModelCamera::compute3DPointFromImageCoords(const QString &firstCamera, const QVec &left, const QString &secondCamera, const QVec &right, const QString &refSystem)
 {
-	QMutexLocker l(&mutex);
+	
 	QVec pI(3), pD(3), n(3), ray(3), T(3), TI(3), TD(3), pR(0), abc(3);
 	QMat A(3,3);
 
@@ -333,7 +333,7 @@ QVec InnerModelCamera::compute3DPointFromImageCoords(const QString &firstCamera,
 
 QVec InnerModelCamera::compute3DPointFromImageAngles(const QString &firstCamera , const QVec & left, const QString & secondCamera , const QVec & right, const QString & refSystem)
 {
-	QMutexLocker l(&mutex);
+	
 	QVec pI(3), pD(3), n(3), ray(3), T(3), TI(3), TD(3), pR(0), abc(3);
 	QMat A(3,3);
 

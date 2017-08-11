@@ -4,6 +4,7 @@ LIST ( APPEND SOURCES
 	specificmonitor.cpp
 	servers.cpp
 	pickhandler.cpp
+	innermodelmgr.cpp
 )
 
 # Headers set

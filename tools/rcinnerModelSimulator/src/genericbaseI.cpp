@@ -19,12 +19,12 @@
 #include "genericbaseI.h"
 #include "specificworker.h"
 
-GenericBaseI::GenericBaseI(SpecificWorker *_worker, QObject *parent): QThread(parent)
+GenericBaseI::GenericBaseI(SpecificWorker *_worker, QObject *parent) // : QThread()
 {
 	// Pointer to the worker (needed to access the mutex)
 	worker = _worker;
 	// InnerModel
-	innerModel = worker->getInnerModel();
+	innerModel = worker->getInnerModelMgr();
 }
 
 
@@ -35,13 +35,13 @@ void GenericBaseI::add(QString id)
 }
 
 
-void GenericBaseI::run()
-{
-	while (true)
-	{
-		usleep(10000);
-	}
-}
+// void GenericBaseI::run()
+// {
+// 	while (true)
+// 	{
+// 		usleep(10000);
+// 	}
+// }
 
 
 void GenericBaseI::getBaseState(RoboCompGenericBase::TBaseState& state, const Ice::Current&)

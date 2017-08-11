@@ -28,11 +28,10 @@
 #include <Ice/Ice.h>
 #include <OmniRobot.h>
 #include <innermodel/innermodel.h>
+#include "innermodelmgr.h"   /// Cambiar cuando este en la lib!!!
 
 // Simulator includes
 #include "config.h"
-
-
 
 using namespace RoboCompOmniRobot;
 
@@ -66,7 +65,7 @@ public:
 */
 private:
 	SpecificWorker *worker;
-	InnerModel *innerModel;
+	InnerModelMgr innerModel;
 	QStringList omniIDs;
 	
 // 	RMat::RTMat zeroTR;

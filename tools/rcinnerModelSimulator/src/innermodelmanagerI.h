@@ -29,6 +29,7 @@
 #include <InnerModelManager.h>
 #include <innermodel/innermodel.h>
 #include <string>
+#include <QObject>
 
 // Simulator includes
 #include "config.h"
@@ -39,7 +40,7 @@ using namespace RoboCompInnerModelManager;
 
 class SpecificWorker;
 
-class InnerModelManagerI : public QThread, public virtual RoboCompInnerModelManager::InnerModelManager
+class InnerModelManagerI : public QObject, public virtual RoboCompInnerModelManager::InnerModelManager
 {
 	Q_OBJECT
 public:

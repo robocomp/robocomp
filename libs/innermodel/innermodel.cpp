@@ -41,7 +41,7 @@ bool InnerModel::support_fcl()
 ///////////////////////
 InnerModel::InnerModel(std::string xmlFilePath)
 {
-	mutex = new QMutex(QMutex::Recursive);
+	//QMutexLocker ml(mutex);
 	root = NULL;
 	if (not InnerModelReader::load(QString::fromStdString(xmlFilePath), this))
 	{
@@ -54,7 +54,7 @@ InnerModel::InnerModel(std::string xmlFilePath)
 InnerModel::InnerModel()
 {
 	// Set Mutex
-	mutex = new QMutex(QMutex::Recursive);
+	
 	// Set Root node
 	InnerModelTransform *root = new InnerModelTransform("root", "static", 0, 0, 0, 0, 0, 0, 0);
 	root->parent = NULL;
@@ -65,7 +65,7 @@ InnerModel::InnerModel()
 
 InnerModel::InnerModel(const InnerModel &original)
 {
-	mutex = new QMutex(QMutex::Recursive);
+	
 	root = new InnerModelTransform("root", "static", 0, 0, 0, 0, 0, 0, 0);
 	setRoot(root);
 	root->innerModel = this;
@@ -77,6 +77,22 @@ InnerModel::InnerModel(const InnerModel &original)
 		root->addChild((*i)->copyNode(hash, root));
 	}
 }
+
+InnerModel::InnerModel(InnerModel &original)
+{
+	
+	root = new InnerModelTransform("root", "static", 0, 0, 0, 0, 0, 0, 0);
+	setRoot(root);
+	root->innerModel = this;
+	hash["root"] = root;
+
+	QList<InnerModelNode *>::iterator i;
+	for (i=original.root->children.begin(); i!=original.root->children.end(); i++)
+	{
+		root->addChild((*i)->copyNode(hash, root));
+	}
+}
+
 
 InnerModel::~InnerModel()
 {
@@ -94,17 +110,27 @@ InnerModel::~InnerModel()
 
 InnerModel* InnerModel::copy()
 {
-	QMutexLocker l(mutex);
+<<<<<<< HEAD
+	
 	InnerModel *inner = new InnerModel();
 	QList<InnerModelNode *>::iterator i;
 	for (i=root->children.begin(); i!=root->children.end(); i++)
 		inner->root->addChild((*i)->copyNode(inner->hash, inner->root));
+=======
+	InnerModel *inner = new InnerModel();
+	
+	QList<InnerModelNode *>::iterator i;
+	for (i=root->children.begin(); i!=root->children.end(); i++)
+	{
+		inner->root->addChild((*i)->copyNode(inner->hash, inner->root));
+	}
+>>>>>>> b14f72af7e52f54404974b041de51849cb551ae8
 	return inner;
 }
 
 void InnerModel::removeNode(const QString & id)
 {
-	QMutexLocker l(mutex);
+	
 	InnerModelNode *dd = hash[id];
 	delete dd;
 	hash.remove(id);
@@ -112,13 +138,13 @@ void InnerModel::removeNode(const QString & id)
 
 bool InnerModel::open(std::string xmlFilePath)
 {
-	QMutexLocker l(mutex);
+	
 	return InnerModelReader::load(QString::fromStdString(xmlFilePath), this);
 }
 
 void InnerModel::removeSubTree(InnerModelNode *node, QStringList *l)
 {
-	QMutexLocker ml(mutex);
+	
 	QList<InnerModelNode*>::iterator i;
 	for (i=node->children.begin(); i!=node->children.end(); i++)
 	{
@@ -138,7 +164,7 @@ void InnerModel::removeSubTree(InnerModelNode *node, QStringList *l)
  */
 void InnerModel::getSubTree(InnerModelNode *node, QStringList *l)
 {
-	QMutexLocker ml(mutex);
+	
 	QList<InnerModelNode*>::iterator i;
 	for (i=node->children.begin(); i!=node->children.end(); i++)
 	{
@@ -149,7 +175,7 @@ void InnerModel::getSubTree(InnerModelNode *node, QStringList *l)
 
 void InnerModel::getSubTree(InnerModelNode *node, QList<InnerModelNode *> *l)
 {
-	QMutexLocker ml(mutex);
+	
 	QList<InnerModelNode*>::iterator i;
 	for (i=node->children.begin(); i!=node->children.end(); i++)
 	{
@@ -167,7 +193,7 @@ void InnerModel::getSubTree(InnerModelNode *node, QList<InnerModelNode *> *l)
  */
 void InnerModel::moveSubTree(InnerModelNode *nodeSrc, InnerModelNode *nodeDst)
 {
-	QMutexLocker l(mutex);
+	
 	nodeSrc->parent->children.removeOne(nodeSrc);
 	nodeDst->addChild(nodeSrc);
 	nodeSrc->setParent(nodeDst);
@@ -176,7 +202,7 @@ void InnerModel::moveSubTree(InnerModelNode *nodeSrc, InnerModelNode *nodeDst)
 
 void InnerModel::computeLevels(InnerModelNode *node)
 {
-	QMutexLocker l(mutex);
+	
 	if (node->parent != NULL )
 	{
 		node->level=node->parent->level+1;
@@ -190,7 +216,7 @@ void InnerModel::computeLevels(InnerModelNode *node)
 
 bool InnerModel::save(QString path)
 {
-	QMutexLocker l(mutex);
+	
 	QFile file(path);
 	if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
 		return false;
@@ -205,21 +231,21 @@ bool InnerModel::save(QString path)
 /// Auto update method
 void InnerModel::update()
 {
-	QMutexLocker l(mutex);
+	
 	root->update();
 	cleanupTables();
 }
 
 void InnerModel::cleanupTables()
 {
-	QMutexLocker l(mutex);
+	
 	localHashTr.clear();
 	localHashRot.clear();
 }
 
 void InnerModel::setUpdateRotationPointers(QString rotationId, float *x, float *y, float *z)
 {
-	QMutexLocker l(mutex);
+	
 	InnerModelTransform *aux;
 	if ((aux=dynamic_cast<InnerModelTransform *>(hash[rotationId])) != NULL)
 		aux->setUpdateRotationPointers(x, y, z);
@@ -232,7 +258,7 @@ void InnerModel::setUpdateRotationPointers(QString rotationId, float *x, float *
 
 void InnerModel::setUpdateTranslationPointers(QString translationId, float *x, float *y, float *z)
 {
-	QMutexLocker l(mutex);
+	
 	InnerModelTransform *aux;
 	if ((aux=dynamic_cast<InnerModelTransform *>(hash[translationId])) != NULL)
 		aux->setUpdateTranslationPointers(x, y, z);
@@ -244,7 +270,7 @@ void InnerModel::setUpdateTranslationPointers(QString translationId, float *x, f
 
 void InnerModel::setUpdateTransformPointers(QString transformId, float *tx, float *ty, float *tz, float *rx, float *ry, float *rz)
 {
-	QMutexLocker l(mutex);
+	
 	InnerModelTransform *aux;
 	if ((aux=dynamic_cast<InnerModelTransform *>(hash[transformId])) != NULL)
 		aux->setUpdatePointers(tx, ty, tz,rx,ry,rz);
@@ -254,7 +280,7 @@ void InnerModel::setUpdateTransformPointers(QString transformId, float *tx, floa
 
 void InnerModel::setUpdatePlanePointers(QString planeId, float *nx, float *ny, float *nz, float *px, float *py, float *pz)
 {
-	QMutexLocker l(mutex);
+	
 	InnerModelPlane *aux;
 	if ((aux=dynamic_cast<InnerModelPlane *>(hash[planeId])) != NULL)
 		aux->setUpdatePointers(nx, ny, nz, px, py, pz);
@@ -266,7 +292,7 @@ void InnerModel::setUpdatePlanePointers(QString planeId, float *nx, float *ny, f
 
 void InnerModel::updateTransformValues(QString transformId, float tx, float ty, float tz, float rx, float ry, float rz, QString parentId)
 {
-	QMutexLocker l(mutex);
+	
 	cleanupTables();
 
 	InnerModelTransform *aux = dynamic_cast<InnerModelTransform *>(hash[transformId]);
@@ -328,7 +354,7 @@ void InnerModel::updateTransformValues(QString transformId, QVec v, QString pare
 
 void InnerModel::updatePlaneValues(QString planeId, float nx, float ny, float nz, float px, float py, float pz)
 {
-	QMutexLocker l(mutex);
+	
 	cleanupTables();
 
 	InnerModelPlane *plane = dynamic_cast<InnerModelPlane *>(hash[planeId]);
@@ -344,7 +370,7 @@ void InnerModel::updatePlaneValues(QString planeId, float nx, float ny, float nz
 
 void InnerModel::updateTranslationValues(QString transformId, float tx, float ty, float tz, QString parentId)
 {
-	QMutexLocker l(mutex);
+	
 	cleanupTables();
 
 	InnerModelTransform *aux = dynamic_cast<InnerModelTransform *>(hash[transformId]);
@@ -363,7 +389,7 @@ void InnerModel::updateTranslationValues(QString transformId, float tx, float ty
 
 void InnerModel::updateRotationValues(QString transformId, float rx, float ry, float rz, QString parentId)
 {
-	QMutexLocker l(mutex);
+	
 	cleanupTables();
 
 	InnerModelTransform *aux = dynamic_cast<InnerModelTransform *>(hash[transformId]);
@@ -384,7 +410,7 @@ void InnerModel::updateRotationValues(QString transformId, float rx, float ry, f
 
 void InnerModel::updateJointValue(QString jointId, float angle, bool force)
 {
-	QMutexLocker l(mutex);
+	
 	cleanupTables();
 
 	InnerModelJoint *j = dynamic_cast<InnerModelJoint *>(hash[jointId]);
@@ -400,7 +426,7 @@ void InnerModel::updateJointValue(QString jointId, float angle, bool force)
 
 void InnerModel::updatePrismaticJointPosition(QString jointId, float pos)
 {
-	QMutexLocker l(mutex);
+	
 	cleanupTables();
 
 	InnerModelPrismaticJoint *j = dynamic_cast<InnerModelPrismaticJoint *>(hash[jointId]);
@@ -417,7 +443,7 @@ void InnerModel::updatePrismaticJointPosition(QString jointId, float pos)
 /// Model construction methods
 void InnerModel::setRoot(InnerModelNode *node)
 {
-	QMutexLocker l(mutex);
+	
 	root = node;
 	hash["root"] = root;
 	root->parent=NULL;
@@ -425,7 +451,7 @@ void InnerModel::setRoot(InnerModelNode *node)
 
 InnerModelJoint *InnerModel::newJoint(QString id, InnerModelTransform *parent,float lx, float ly, float lz,float hx, float hy, float hz, float tx, float ty, float tz, float rx, float ry, float rz, float min, float max, uint32_t port,std::string axis, float home)
 {
-	QMutexLocker l(mutex);
+	
 	if (hash.contains(id))
 	{
 		QString error;
@@ -440,7 +466,7 @@ InnerModelJoint *InnerModel::newJoint(QString id, InnerModelTransform *parent,fl
 
 InnerModelTouchSensor *InnerModel::newTouchSensor(QString id, InnerModelTransform *parent, QString stype, float nx, float ny, float nz, float min, float max, uint32_t port)
 {
-	QMutexLocker l(mutex);
+	
 	if (hash.contains(id))
 	{
 		QString error;
@@ -455,7 +481,7 @@ InnerModelTouchSensor *InnerModel::newTouchSensor(QString id, InnerModelTransfor
 
 InnerModelPrismaticJoint *InnerModel::newPrismaticJoint(QString id, InnerModelTransform *parent, float min, float max, float value, float offset, uint32_t port,std::string axis, float home)
 {
-	QMutexLocker l(mutex);
+	
 	if (hash.contains(id))
 	{
 		QString error;
@@ -470,7 +496,7 @@ InnerModelPrismaticJoint *InnerModel::newPrismaticJoint(QString id, InnerModelTr
 
 InnerModelDifferentialRobot *InnerModel::newDifferentialRobot(QString id, InnerModelTransform *parent, float tx, float ty, float tz, float rx, float ry, float rz, uint32_t port, float noise, bool collide)
 {
-	QMutexLocker l(mutex);
+	
 	if (hash.contains(id))
 	{
 		QString error;
@@ -485,7 +511,7 @@ InnerModelDifferentialRobot *InnerModel::newDifferentialRobot(QString id, InnerM
 
 InnerModelOmniRobot *InnerModel::newOmniRobot(QString id, InnerModelTransform *parent, float tx, float ty, float tz, float rx, float ry, float rz, uint32_t port, float noise, bool collide)
 {
-	QMutexLocker l(mutex);
+	
 	if (hash.contains(id))
 	{
 		QString error;
@@ -500,7 +526,7 @@ InnerModelOmniRobot *InnerModel::newOmniRobot(QString id, InnerModelTransform *p
 
 InnerModelCamera *InnerModel::newCamera(QString id, InnerModelNode *parent, float width, float height, float focal)
 {
-	QMutexLocker l(mutex);
+	
 	if (hash.contains(id))
 	{
 		QString error;
@@ -515,7 +541,7 @@ InnerModelCamera *InnerModel::newCamera(QString id, InnerModelNode *parent, floa
 
 InnerModelRGBD *InnerModel::newRGBD(QString id, InnerModelNode *parent, float width, float height, float focal, float noise, uint32_t port, QString ifconfig)
 {
-	QMutexLocker l(mutex);
+	
 	if (noise < 0)
 	{
 		QString error;
@@ -536,7 +562,7 @@ InnerModelRGBD *InnerModel::newRGBD(QString id, InnerModelNode *parent, float wi
 
 InnerModelIMU *InnerModel::newIMU(QString id, InnerModelNode *parent, uint32_t port)
 {
-	QMutexLocker l(mutex);
+	
 	if (hash.contains(id))
 	{
 		QString error;
@@ -552,7 +578,7 @@ InnerModelIMU *InnerModel::newIMU(QString id, InnerModelNode *parent, uint32_t p
 
 InnerModelLaser *InnerModel::newLaser(QString id, InnerModelNode *parent, uint32_t port, uint32_t min, uint32_t max, float angle, uint32_t measures, QString ifconfig)
 {
-	QMutexLocker l(mutex);
+	
 	if (hash.contains(id))
 	{
 		QString error;
@@ -567,7 +593,7 @@ InnerModelLaser *InnerModel::newLaser(QString id, InnerModelNode *parent, uint32
 
 InnerModelPlane *InnerModel::newPlane(QString id, InnerModelNode *parent, QString texture, float width, float height, float depth, int repeat, float nx, float ny, float nz, float px, float py, float pz, bool collidable)
 {
-	QMutexLocker l(mutex);
+	
 	if (hash.contains(id))
 	{
 		QString error;
@@ -582,7 +608,7 @@ InnerModelPlane *InnerModel::newPlane(QString id, InnerModelNode *parent, QStrin
 
 InnerModelMesh *InnerModel::newMesh(QString id, InnerModelNode *parent, QString path, float scalex, float scaley, float scalez, int render, float tx, float ty, float tz, float rx, float ry, float rz, bool collidable)
 {
-	QMutexLocker l(mutex);
+	
 	if (hash.contains(id))
 	{
 		QString error;
@@ -597,13 +623,13 @@ InnerModelMesh *InnerModel::newMesh(QString id, InnerModelNode *parent, QString 
 
 InnerModelMesh *InnerModel::newMesh(QString id, InnerModelNode *parent, QString path, float scale, int render, float tx, float ty, float tz, float rx, float ry, float rz, bool collidable)
 {
-	QMutexLocker l(mutex);
+	
 	return newMesh(id,parent,path,scale,scale,scale,render,tx,ty,tz,rx,ry,rz, collidable);
 }
 
 InnerModelPointCloud *InnerModel::newPointCloud(QString id, InnerModelNode *parent)
 {
-	QMutexLocker l(mutex);
+	
 	if (hash.contains(id))
 	{
 		QString error;
@@ -619,7 +645,7 @@ InnerModelPointCloud *InnerModel::newPointCloud(QString id, InnerModelNode *pare
 
 InnerModelTransform *InnerModel::newTransform(QString id, QString engine, InnerModelNode *parent, float tx, float ty, float tz, float rx, float ry, float rz, float mass)
 {
-	QMutexLocker l(mutex);
+	
 	if (hash.contains(id))
 	{
 		QString error;
@@ -640,7 +666,7 @@ InnerModelTransform *InnerModel::newTransform(QString id, QString engine, InnerM
 
 QVec InnerModel::transform(const QString &destId, const QVec &initVec, const QString &origId)
 {
-	QMutexLocker l(mutex);
+	
 	if (initVec.size()==3)
 	{
 		return (getTransformationMatrix(destId, origId) * initVec.toHomogeneousCoordinates()).fromHomogeneousCoordinates();
@@ -683,7 +709,7 @@ RTMat InnerModel::getTransformationMatrix(const QString &to, const QString &from
 {
 	RTMat ret;
 
-	QMutexLocker l(mutex);
+	
 	if (localHashTr.contains(QPair<QString, QString>(to, from)))
 	{
 		ret = localHashTr[QPair<QString, QString>(to, from)];
@@ -714,7 +740,7 @@ QMat InnerModel::getRotationMatrixTo(const QString &to, const QString &from)
 {
 	QMat rret = QMat::identity(3);
 
-	QMutexLocker l(mutex);
+	
 
 	if (localHashRot.contains(QPair<QString, QString>(to, from)))
 	{
@@ -753,7 +779,7 @@ QVec InnerModel::getTranslationVectorTo(const QString &to, const QString &from)
 
 void InnerModel::setLists(const QString & origId, const QString & destId)
 {
-	QMutexLocker l(mutex);
+	
 	InnerModelNode *a=hash[origId], *b=hash[destId];
 	if (!a)
 		throw InnerModelException("Cannot find node: \""+ origId.toStdString()+"\"");
@@ -800,7 +826,7 @@ void InnerModel::setLists(const QString & origId, const QString & destId)
 
 bool InnerModel::collidable(const QString &a)
 {
-	QMutexLocker l(mutex);
+	
 	InnerModelNode *node;
 	try
 	{
@@ -821,7 +847,7 @@ bool InnerModel::collidable(const QString &a)
 
 bool InnerModel::collide(const QString &a, const QString &b)
 {
-	QMutexLocker ml(mutex);
+	
 #if FCL_SUPPORT==1
 	InnerModelNode *n1 = getNode(a);
 	if (not n1) throw 1;
@@ -869,6 +895,10 @@ bool InnerModel::collide(const QString &a, const QString &b)
 #endif
 }
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> b14f72af7e52f54404974b041de51849cb551ae8
 /**
  * @brief ...
  *
@@ -879,7 +909,7 @@ bool InnerModel::collide(const QString &a, const QString &b)
 #if FCL_SUPPORT==1
 bool InnerModel::collide(const QString &a, const fcl::CollisionObject *obj)
 {
-	QMutexLocker ml(mutex);
+	
 	InnerModelNode *n1 = getNode(a);
 	if (not n1) throw 1;
 	QMat r1q = getRotationMatrixTo("root", a);
@@ -903,7 +933,7 @@ QMat InnerModel::jacobian(QStringList &listaJoints, const QVec &motores, const Q
 	// Inicializamos las filas del Jacobiano al tamaño del punto objetivo que tiene 6 ELEMENTOS [tx, ty, tz, rx, ry, rz]
 	// y las columnas al número de motores (Joints): 6 filas por n columnas. También inicializamos un vector de ceros
 
-	QMutexLocker ml(mutex);
+	
 	QMat jacob(6, listaJoints.size(), 0.f);  //6 output variables
 	QVec zero = QVec::zeros(3);
 	int j=0; //índice de columnas de la matriz: MOTORES
@@ -943,7 +973,7 @@ QMat InnerModel::jacobian(QStringList &listaJoints, const QVec &motores, const Q
 
 QString InnerModel::getParentIdentifier(QString id)
 {
-	QMutexLocker ml(mutex);
+	
 	InnerModelNode *n = getNode(id);
 	if (n)
 	{
@@ -1161,7 +1191,7 @@ float InnerModel::distance(const QString &a, const QString &b)
 //  */
 // QVec InnerModel::horizonLine(QString planeId, QString cameraId, float heightOffset)
 // {
-// 	QMutexLocker l(mutex);
+// 	
 // 	// 	printf("-------------------------------------- cam:%s plane:%s\n", qPrintable(cameraId), qPrintable(planeId));
 // 	// Get camera and plane pointers
 // 	InnerModelPlane *plane = getPlane(planeId);
@@ -1211,7 +1241,7 @@ float InnerModel::distance(const QString &a, const QString &b)
 //
 // QMat InnerModel::getHomographyMatrix(QString virtualCamera, QString plane, QString sourceCamera)
 // {
-// 	QMutexLocker l(mutex);
+// 	
 //
 // 	QVec planeN = getPlane(plane)->normal;
 // 	planeN = getRotationMatrixTo(sourceCamera, plane)*planeN;
@@ -1232,7 +1262,7 @@ float InnerModel::distance(const QString &a, const QString &b)
 //
 // QMat InnerModel::getAffineHomographyMatrix(QString virtualCamera, QString plane, QString sourceCamera)
 // {
-// 	QMutexLocker l(mutex);
+// 	
 //
 // 	QVec planeN = getPlane(plane)->normal;
 // 	planeN = getRotationMatrixTo(sourceCamera, plane)*planeN;
@@ -1255,7 +1285,7 @@ float InnerModel::distance(const QString &a, const QString &b)
 //
 // QMat InnerModel::getPlaneProjectionMatrix(QString virtualCamera, QString plane, QString sourceCamera)
 // {
-// 	QMutexLocker l(mutex);
+// 	
 // 	QVec planeN = getPlane(plane)->normal;
 // 	planeN = getRotationMatrixTo(sourceCamera, plane)*planeN;
 // 	QVec planePoint = transform(sourceCamera, getPlane(plane)->point, plane);
@@ -1283,7 +1313,7 @@ float InnerModel::distance(const QString &a, const QString &b)
 
 // float InnerModel::getCameraFocal(const QString & cameraId) const
 // {
-// 	QMutexLocker l(mutex);
+// 	
 // 	InnerModelCamera *cam = dynamic_cast<InnerModelCamera *>(getNode(cameraId));
 // 	if (not cam)
 // 	{
@@ -1299,7 +1329,7 @@ float InnerModel::distance(const QString &a, const QString &b)
 //
 // int InnerModel::getCameraWidth(QString cameraId)
 // {
-// 	QMutexLocker l(mutex);
+// 	
 // 	return getCamera(cameraId)->getWidth();
 // }
 //
@@ -1307,7 +1337,7 @@ float InnerModel::distance(const QString &a, const QString &b)
 //
 // int InnerModel::getCameraHeight(const QString & cameraId) const
 // {
-// 	QMutexLocker l(mutex);
+// 	
 // 	return static_cast<InnerModelCamera *>(getNode(cameraId))->getHeight();
 // }
 //
@@ -1315,7 +1345,7 @@ float InnerModel::distance(const QString &a, const QString &b)
 //
 // int InnerModel::getCameraSize(const QString & cameraId) const
 // {
-// 	QMutexLocker l(mutex);
+// 	
 // 	return static_cast<InnerModelCamera *>(getNode(cameraId))->getSize();
 // }
 //
@@ -1328,7 +1358,7 @@ float InnerModel::distance(const QString &a, const QString &b)
 //  */
 // QVec InnerModel::laserTo(const QString &dest, const QString & laserId , float r, float alpha)
 // {
-// 	QMutexLocker l(mutex);
+// 	
 // 	QVec p(3);
 // 	p(0) = r * sin(alpha);
 // 	p(1) = 0;
@@ -1338,7 +1368,7 @@ float InnerModel::distance(const QString &a, const QString &b)
 
 // QVec InnerModel::compute3DPointFromImageCoords(const QString &firstCamera, const QVec &left, const QString &secondCamera, const QVec &right, const QString &refSystem)
 // {
-// 	QMutexLocker l(mutex);
+// 	
 // 	QVec pI(3), pD(3), n(3), ray(3), T(3), TI(3), TD(3), pR(0), abc(3);
 // 	QMat A(3,3);
 //
@@ -1375,7 +1405,7 @@ float InnerModel::distance(const QString &a, const QString &b)
 //
 // QVec InnerModel::compute3DPointFromImageAngles(const QString &firstCamera , const QVec & left, const QString & secondCamera , const QVec & right, const QString & refSystem)
 // {
-// 	QMutexLocker l(mutex);
+// 	
 // 	QVec pI(3), pD(3), n(3), ray(3), T(3), TI(3), TD(3), pR(0), abc(3);
 // 	QMat A(3,3);
 //

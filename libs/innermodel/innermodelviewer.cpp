@@ -21,6 +21,341 @@
 #include <innermodel/innermodelviewer.h>
 
 
+// ------------------------------------------------------------------------------------------------
+// InnerModelViewer
+// ------------------------------------------------------------------------------------------------
+InnerModelViewer::InnerModelViewer(InnerModelMgr im, QString root,  osg::Group *parent, bool ignoreCameras) : osg::Switch()
+{	
+	// Initialize InnerModel pointer
+	innerModel = im;
+	//mutex = innerModel->mutex;
+	
+	// Get main node
+	InnerModelNode *imnode = innerModel->getNode(root);
+	if (not imnode)
+	{
+		qDebug() << "InnerModelViewer::InnerModelViewer(): Error: Specified root node" << root << "not found.";
+		throw "InnerModelViewer::InnerModelViewer(): Error: Specified root node not found.";
+	}
+	recursiveConstructor(imnode, this, mts, meshHash, ignoreCameras); //mts, osgmeshes, osgmeshPats);
+	
+	// Update
+	update();
+	if (parent)
+		parent->addChild(this);
+}
+
+
+//CAUTION
+void InnerModelViewer::recursiveConstructor(InnerModelNode *node, osg::Group* parent,QHash<QString, osg::MatrixTransform *> &mtsHash, QHash<QString, IMVMesh> &meshHash, bool ignoreCameras)
+{
+	InnerModelTouchSensor *touch;
+	InnerModelMesh *mesh;
+	InnerModelPointCloud *pointcloud;
+	InnerModelPlane *plane;
+	InnerModelCamera *camera;
+	InnerModelRGBD *rgbd;
+	InnerModelIMU *imu;
+	InnerModelLaser *laser;
+	InnerModelTransform *transformation;
+
+	// Find out which kind of node are we dealing with
+	if ((transformation = dynamic_cast<InnerModelTransform *>(node)))
+	{
+		// Create and include MT
+		osg::ref_ptr<osg::MatrixTransform> mt = new osg::MatrixTransform;
+
+		if (parent) parent->addChild(mt);
+		
+ 		mtsHash[transformation->id] = mt;
+		
+		mt->setMatrix(QMatToOSGMat4(*transformation));
+		
+		for(int i=0; i<node->children.size(); i++)
+		{
+			recursiveConstructor(node->children[i], mt, mtsHash, meshHash, ignoreCameras);
+		}
+	}
+	else if ((rgbd = dynamic_cast<InnerModelRGBD *>(node)))
+	{
+		if ((not ignoreCameras) and rgbd->port)
+		{
+			IMVCamera cam;
+			// Camera ID
+			cam.id = node->id;
+			// XML node for the camera
+			cam.RGBDNode = rgbd;
+			
+			// Viewer
+			cam.viewerCamera = new osgViewer::Viewer();
+		
+			double fov = 2. * atan2(0.5*cam.RGBDNode->height, cam.RGBDNode->focal);
+			double aspectRatio = cam.RGBDNode->width / cam.RGBDNode->height;
+			double zNear = 0.01, zFar = 10000.0;
+			
+			// Images
+			cam.rgb = new osg::Image;
+			cam.rgb->allocateImage(rgbd->width, rgbd->height, 1, GL_RGB, GL_UNSIGNED_BYTE);
+			cam.d = new osg::Image;
+			cam.d->allocateImage(rgbd->width, rgbd->height, 1, GL_DEPTH_COMPONENT,GL_FLOAT);
+			cam.manipulator = new osgGA::TrackballManipulator();
+			// CAUTION check y cambiar tb camera
+			cam.viewerCamera->setSceneData(this);
+			cam.viewerCamera->setUpViewInWindow( 0, 0, rgbd->width, rgbd->height);
+			cam.viewerCamera->getCamera()->setClearMask(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			cam.viewerCamera->getCamera()->attach(osg::Camera::COLOR_BUFFER, cam.rgb);
+			cam.viewerCamera->getCamera()->attach(osg::Camera::DEPTH_BUFFER, cam.d);
+			cam.viewerCamera->getCamera()->setProjectionMatrix(::osg::Matrix::perspective(fov*180./M_PIl, aspectRatio, zNear, zFar));
+			
+			// set windowName to innerModel id. Using Traits!
+			osg::ref_ptr< osg::GraphicsContext::Traits > traits =  new osg::GraphicsContext::Traits (*cam.viewerCamera->getCamera()->getGraphicsContext()->getTraits());
+			traits->windowName = cam.id.toStdString();
+			traits->supportsResize = false;
+			cam.viewerCamera->getCamera()->setGraphicsContext(osg::GraphicsContext::createGraphicsContext( traits.get() ));
+			
+			RTMat rt = innerModel->getTransformationMatrix("root", cam.id);
+			cam.viewerCamera->setCameraManipulator(cam.manipulator);
+			cam.viewerCamera->getCameraManipulator()->setByMatrix(QMatToOSGMat4(rt));
+			cameras[cam.id] = cam;
+		}
+	}
+	else if ((camera = dynamic_cast<InnerModelCamera *>(node)))
+	{
+		if (not ignoreCameras)
+		{
+		}
+	}
+	else if ((imu = dynamic_cast<InnerModelIMU *>(node)))
+	{
+	}
+	else if ((laser = dynamic_cast<InnerModelLaser *>(node)))
+	{
+		IMVLaser iml;
+		iml.id = node->id;
+		iml.osgNode = new osg::Switch();
+		iml.laserNode = laser;
+		parent->addChild(iml.osgNode);
+		lasers[iml.id] = iml;
+	}
+	else if ((plane = dynamic_cast<InnerModelPlane *>(node)))
+	{
+		// Create plane's specific mt
+		osg::ref_ptr<osg::MatrixTransform> mt = new osg::MatrixTransform;
+		planeMts[plane->id] = mt;
+		IMVPlane *imvplane = new IMVPlane(plane, plane->texture.toStdString(), osg::Vec4(0.8,0.5,0.5,0.5), 0); 
+		planesHash[node->id] = imvplane;
+		setOSGMatrixTransformForPlane(mt, plane);
+		if (parent) parent->addChild(mt);
+		mt->addChild(imvplane);
+	}
+	else if ((pointcloud = dynamic_cast<InnerModelPointCloud *>(node)))
+	{
+		IMVPointCloud *imvpc = new IMVPointCloud(node->id.toStdString());
+		pointCloudsHash[node->id] = imvpc;
+		parent->addChild(imvpc);
+	}
+	else if ((mesh = dynamic_cast<InnerModelMesh *>(node)))
+	{
+		// Create mesh's specific mt
+		osg::ref_ptr<osg::MatrixTransform> mt = new osg::MatrixTransform;
+		
+		if (parent) parent->addChild(mt);
+		
+		RTMat rtmat = RTMat();
+		rtmat.setR (mesh->rx, mesh->ry, mesh->rz);
+		rtmat.setTr(mesh->tx, mesh->ty, mesh->tz);
+		mt->setMatrix(QMatToOSGMat4(rtmat));
+		
+		osg::ref_ptr<osg::MatrixTransform> smt = new osg::MatrixTransform; 		
+		
+		smt->setMatrix(osg::Matrix::scale(mesh->scalex,mesh->scaley,mesh->scalez));
+		mt->addChild(smt);
+		meshHash[mesh->id].osgmeshPaths = mt;
+
+		// Create mesh
+		osg::ref_ptr<osg::Node> osgMesh = osgDB::readNodeFile(mesh->meshPath.toStdString());
+		if (!osgMesh)
+			printf("Could not find %s osg.\n", mesh->meshPath.toStdString().c_str());
+		
+		osg::ref_ptr<osg::PolygonMode> polygonMode = new osg::PolygonMode();
+		if (mesh->render == InnerModelMesh::WireframeRendering) // wireframe
+			polygonMode->setMode(osg::PolygonMode::FRONT_AND_BACK, osg::PolygonMode::LINE);
+		else
+			polygonMode->setMode(osg::PolygonMode::FRONT_AND_BACK, osg::PolygonMode::FILL);
+
+		osgMesh->getOrCreateStateSet()->setAttributeAndModes(polygonMode, osg::StateAttribute::OVERRIDE | osg::StateAttribute::ON);
+		osgMesh->getOrCreateStateSet()->setMode( GL_RESCALE_NORMAL, osg::StateAttribute::ON );
+		meshHash[mesh->id].osgmeshes = osgMesh;
+		meshHash[mesh->id].meshMts= mt;
+		osgmeshmodes[mesh->id] = polygonMode;
+		smt->addChild(osgMesh);
+	}
+	else if ((touch = dynamic_cast<InnerModelTouchSensor *>(node)))
+	{
+	}
+	else
+	{
+		qDebug() << "InnerModelReader::InnerModelReader(): Error: Unknown type of node";
+		throw "InnerModelReader::InnerModelReader(): Error: Unknown type of node";
+	}
+// 	qDebug()<<"size mts mtsHash "<<mts.size()<<mtsHash.size();
+// 	qDebug()<<"end of recursiveConstructor mtsHash.keys()"<<mtsHash.keys();
+// 	qDebug()<<"end of recursiveConstructor mts.keys()"<<mts.keys();
+}
+
+
+void InnerModelViewer::update()
+{
+	innerModel.lock();
+	
+		foreach(QString key, mts.keys())
+		{
+			InnerModelNode *node = innerModel->getNode(key);
+			if (node->parent)
+			{
+				mts[key]->setMatrix(QMatToOSGMat4(*node));
+			}
+		}
+		foreach(QString key, planeMts.keys())
+		{
+			osg::MatrixTransform *mt = planeMts[key];
+			InnerModelPlane *plane = (InnerModelPlane *)innerModel->getNode(key);
+			setOSGMatrixTransformForPlane(mt, plane);
+			IMVPlane *imvplane = planesHash[key];
+			if (imvplane)
+			{
+				if (imvplane->texture and imvplane->image and imvplane->data and imvplane->dirty)
+				{
+					imvplane->performUpdate();
+				}
+			}
+		}
+		foreach(QString key, meshHash.keys()) 
+		{
+			osg::MatrixTransform *mt = meshHash[key].meshMts;// meshMts[key];
+			InnerModelMesh *mesh = (InnerModelMesh *)innerModel->getNode(key);
+			RTMat rtmat = RTMat();
+			rtmat.setR (mesh->rx, mesh->ry, mesh->rz);
+			rtmat.setTr(mesh->tx, mesh->ty, mesh->tz);
+			((osg::MatrixTransform *)meshHash[key].osgmeshPaths->getChild(0))->setMatrix(osg::Matrix::scale(mesh->scalex,mesh->scaley,mesh->scalez));
+			mt->setMatrix(QMatToOSGMat4(rtmat));
+			
+			osg::Node *osgMesh = meshHash[mesh->id].osgmeshes;
+			if (!osgMesh)
+				printf("Could not find %s osg.\n", mesh->meshPath.toStdString().c_str());
+			osg::PolygonMode* polygonMode = osgmeshmodes[mesh->id];
+			if (mesh->render == InnerModelMesh::WireframeRendering) // wireframe
+				polygonMode->setMode(osg::PolygonMode::FRONT_AND_BACK, osg::PolygonMode::LINE);
+			else
+				polygonMode->setMode(osg::PolygonMode::FRONT_AND_BACK, osg::PolygonMode::FILL);
+
+			osgMesh->getOrCreateStateSet()->setAttributeAndModes(polygonMode, osg::StateAttribute::OVERRIDE | osg::StateAttribute::ON);
+		}
+		
+	innerModel.unlock();
+}
+
+
+void InnerModelViewer::setOSGMatrixTransformForPlane(osg::MatrixTransform *mt, InnerModelPlane *plane)
+{
+	//QMutexLocker ml(mutex);
+	osg::Matrix r;
+	r.makeRotate(osg::Vec3(0, 0, 1), osg::Vec3(plane->normal(0), plane->normal(1), -plane->normal(2)));
+	osg::Matrix t;
+	t.makeTranslate(osg::Vec3(plane->point(0), plane->point(1), -plane->point(2)));
+	mt->setMatrix(r*t);
+}
+
+void InnerModelViewer::reloadMesh(QString id)
+{
+	//QMutexLocker ml(mutex);
+	// Create mesh
+	InnerModelMesh *mesh = (InnerModelMesh *)innerModel->getNode(id);
+	if (not mesh)
+	{
+		printf("Internal error\n");
+		return;
+	}
+	osg::ref_ptr<osg::Node> osgMesh = osgDB::readNodeFile(mesh->meshPath.toStdString());
+	if (not osgMesh)
+	{
+		printf("Could not find %s osg.\n", mesh->meshPath.toStdString().c_str());
+		return;
+	}	
+	meshHash[id].osgmeshPaths->removeChild(0, 1);
+	meshHash[id].osgmeshPaths->addChild(osgMesh);
+	((osg::MatrixTransform *)meshHash[id].osgmeshPaths->getChild(0))->setMatrix(osg::Matrix::scale(mesh->scalex,mesh->scaley,mesh->scalez));
+	meshHash[id].osgmeshes=osgMesh;
+}
+
+osg::Geode* InnerModelViewer::getGeode(QString id)
+{
+	//QMutexLocker ml(mutex);
+	osg::Group *osgMesh = dynamic_cast<osg::Group *>(meshHash[id].osgmeshes.get());
+	osg::Geode *geode=NULL;
+	while (geode==NULL)
+	{
+		osgMesh = dynamic_cast<osg::Group *>(osgMesh->getChild(0));
+		geode = dynamic_cast<osg::Geode *>(osgMesh->getChild(0));
+	}
+	return geode;
+}
+
+
+void InnerModelViewer::setMainCamera(osgGA::TrackballManipulator *manipulator, CameraView pov) const
+{
+	osg::Quat mRot;
+
+	switch(pov)
+	{
+	case TOP_POV:
+		mRot.makeRotate(-M_PI_2, QVecToOSGVec(QVec::vec3(1,0,0)));
+		break;
+	case BACK_POV:
+		mRot.makeRotate(M_PI_2,  QVecToOSGVec(QVec::vec3(0,0,0)));
+		break;
+	case FRONT_POV:
+		mRot.makeRotate(M_PI,    QVecToOSGVec(QVec::vec3(0,1,0)));
+		break;
+	case LEFT_POV:
+		mRot.makeRotate(M_PI_2,  QVecToOSGVec(QVec::vec3(0,-1,0)));
+		break;
+	case RIGHT_POV:
+		mRot.makeRotate(M_PI_2,  QVecToOSGVec(QVec::vec3(0,1,0)));
+		break;
+	default:
+		qFatal("InnerModelViewer: invalid POV.");
+	}
+
+	manipulator->setRotation(mRot);
+}
+
+void InnerModelViewer::setCameraCenter(OsgView *view, const QVec eye_)
+{
+        eye = eye_;
+        lookAt(view, eye, to, up);
+}
+
+void InnerModelViewer::setLookTowards(OsgView *view, const QVec to_, const QVec up_)
+{
+        to = to_;
+        up = up_;
+        lookAt(view, eye, to, up);
+}
+
+void InnerModelViewer::lookAt(OsgView *view, const QVec eye_, const QVec to_, const QVec up_)
+{
+        eye = eye_;
+        to = to_;
+        up = up_;
+        osgGA::CameraManipulator *tb = view->getCameraManipulator();
+        osg::Vec3d oeye = OsgView::qvecToVec3(eye);
+        osg::Vec3d oto  = OsgView::qvecToVec3(to);
+        osg::Vec3d oup  = OsgView::qvecToVec3(up);
+        tb->setHomePosition(oeye, oto, oup, true);
+        tb->setByMatrix(osg::Matrixf::lookAt(oeye, oto, oup));
+        view->setCameraManipulator(tb);
+}
 
 // ------------------------------------------------------------------------------------------------
 // Stand-alone functions
@@ -253,339 +588,5 @@ float IMVPointCloud::getPointSize()
 void IMVPointCloud::setPointSize(float p)
 {
 	pointSize = p;
-}
-
-// ------------------------------------------------------------------------------------------------
-// InnerModelViewer
-// ------------------------------------------------------------------------------------------------
-InnerModelViewer::InnerModelViewer(InnerModel *im, QString root,  osg::Group *parent, bool ignoreCameras) : osg::Switch()
-{	
-	// Initialize InnerModel pointer
-	innerModel = im;
-	mutex = innerModel->mutex;
-	
-	// Get main node
-	InnerModelNode *imnode = innerModel->getNode(root);
-	if (not imnode)
-	{
-		qDebug() << "InnerModelViewer::InnerModelViewer(): Error: Specified root node" << root << "not found.";
-		throw "InnerModelViewer::InnerModelViewer(): Error: Specified root node not found.";
-	}
-	recursiveConstructor(imnode, this, mts, meshHash, ignoreCameras); //mts, osgmeshes, osgmeshPats);
-	
-	// Update
-	update();
-	if (parent)
-		parent->addChild(this);
-}
-
-InnerModelViewer::~InnerModelViewer()
-{
-// 	delete innerModel;
-}
-
-
-//CAUTION
-void InnerModelViewer::recursiveConstructor(InnerModelNode *node, osg::Group* parent,QHash<QString, osg::MatrixTransform *> &mtsHash, QHash<QString, IMVMesh> &meshHash, bool ignoreCameras)
-{
-	InnerModelTouchSensor *touch;
-	InnerModelMesh *mesh;
-	InnerModelPointCloud *pointcloud;
-	InnerModelPlane *plane;
-	InnerModelCamera *camera;
-	InnerModelRGBD *rgbd;
-	InnerModelIMU *imu;
-	InnerModelLaser *laser;
-	InnerModelTransform *transformation;
-
-	// Find out which kind of node are we dealing with
-	if ((transformation = dynamic_cast<InnerModelTransform *>(node)))
-	{
-		// Create and include MT
-		osg::ref_ptr<osg::MatrixTransform> mt = new osg::MatrixTransform;
-
-		if (parent) parent->addChild(mt);
-		
- 		mtsHash[transformation->id] = mt;
-		
-		mt->setMatrix(QMatToOSGMat4(*transformation));
-		
-		for(int i=0; i<node->children.size(); i++)
-		{
-			recursiveConstructor(node->children[i], mt, mtsHash, meshHash, ignoreCameras);
-		}
-	}
-	else if ((rgbd = dynamic_cast<InnerModelRGBD *>(node)))
-	{
-		if ((not ignoreCameras) and rgbd->port)
-		{
-			IMVCamera cam;
-			// Camera ID
-			cam.id = node->id;
-			// XML node for the camera
-			cam.RGBDNode = rgbd;
-			
-			// Viewer
-			cam.viewerCamera = new osgViewer::Viewer();
-		
-			double fov = 2. * atan2(0.5*cam.RGBDNode->height, cam.RGBDNode->focal);
-			double aspectRatio = cam.RGBDNode->width / cam.RGBDNode->height;
-			double zNear = 0.01, zFar = 10000.0;
-			
-			// Images
-			cam.rgb = new osg::Image;
-			cam.rgb->allocateImage(rgbd->width, rgbd->height, 1, GL_RGB, GL_UNSIGNED_BYTE);
-			cam.d = new osg::Image;
-			cam.d->allocateImage(rgbd->width, rgbd->height, 1, GL_DEPTH_COMPONENT,GL_FLOAT);
-			cam.manipulator = new osgGA::TrackballManipulator();
-			// CAUTION check y cambiar tb camera
-			cam.viewerCamera->setSceneData(this);
-			cam.viewerCamera->setUpViewInWindow( 0, 0, rgbd->width, rgbd->height);
-			cam.viewerCamera->getCamera()->setClearMask(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			cam.viewerCamera->getCamera()->attach(osg::Camera::COLOR_BUFFER, cam.rgb);
-			cam.viewerCamera->getCamera()->attach(osg::Camera::DEPTH_BUFFER, cam.d);
-			cam.viewerCamera->getCamera()->setProjectionMatrix(::osg::Matrix::perspective(fov*180./M_PIl, aspectRatio, zNear, zFar));
-			
-			// set windowName to innerModel id. Using Traits!
-			osg::ref_ptr< osg::GraphicsContext::Traits > traits =  new osg::GraphicsContext::Traits (*cam.viewerCamera->getCamera()->getGraphicsContext()->getTraits());
-			traits->windowName = cam.id.toStdString();
-			traits->supportsResize = false;
-			cam.viewerCamera->getCamera()->setGraphicsContext(osg::GraphicsContext::createGraphicsContext( traits.get() ));
-			
-			RTMat rt = innerModel->getTransformationMatrix("root", cam.id);
-			cam.viewerCamera->setCameraManipulator(cam.manipulator);
-			cam.viewerCamera->getCameraManipulator()->setByMatrix(QMatToOSGMat4(rt));
-			cameras[cam.id] = cam;
-		}
-	}
-	else if ((camera = dynamic_cast<InnerModelCamera *>(node)))
-	{
-		if (not ignoreCameras)
-		{
-		}
-	}
-	else if ((imu = dynamic_cast<InnerModelIMU *>(node)))
-	{
-	}
-	else if ((laser = dynamic_cast<InnerModelLaser *>(node)))
-	{
-		IMVLaser iml;
-		iml.id = node->id;
-		iml.osgNode = new osg::Switch();
-		iml.laserNode = laser;
-		parent->addChild(iml.osgNode);
-		lasers[iml.id] = iml;
-	}
-	else if ((plane = dynamic_cast<InnerModelPlane *>(node)))
-	{
-		// Create plane's specific mt
-		osg::ref_ptr<osg::MatrixTransform> mt = new osg::MatrixTransform;
-		planeMts[plane->id] = mt;
-		IMVPlane *imvplane = new IMVPlane(plane, plane->texture.toStdString(), osg::Vec4(0.8,0.5,0.5,0.5), 0); 
-		planesHash[node->id] = imvplane;
-		setOSGMatrixTransformForPlane(mt, plane);
-		if (parent) parent->addChild(mt);
-		mt->addChild(imvplane);
-	}
-	else if ((pointcloud = dynamic_cast<InnerModelPointCloud *>(node)))
-	{
-		IMVPointCloud *imvpc = new IMVPointCloud(node->id.toStdString());
-		pointCloudsHash[node->id] = imvpc;
-		parent->addChild(imvpc);
-	}
-	else if ((mesh = dynamic_cast<InnerModelMesh *>(node)))
-	{
-		// Create mesh's specific mt
-		osg::ref_ptr<osg::MatrixTransform> mt = new osg::MatrixTransform;
-		
-		if (parent) parent->addChild(mt);
-		
-		RTMat rtmat = RTMat();
-		rtmat.setR (mesh->rx, mesh->ry, mesh->rz);
-		rtmat.setTr(mesh->tx, mesh->ty, mesh->tz);
-		mt->setMatrix(QMatToOSGMat4(rtmat));
-		
-		osg::ref_ptr<osg::MatrixTransform> smt = new osg::MatrixTransform; 		
-		
-		smt->setMatrix(osg::Matrix::scale(mesh->scalex,mesh->scaley,mesh->scalez));
-		mt->addChild(smt);
-		meshHash[mesh->id].osgmeshPaths = mt;
-
-		// Create mesh
-		osg::ref_ptr<osg::Node> osgMesh = osgDB::readNodeFile(mesh->meshPath.toStdString());
-		if (!osgMesh)
-			printf("Could not find %s osg.\n", mesh->meshPath.toStdString().c_str());
-		
-		osg::ref_ptr<osg::PolygonMode> polygonMode = new osg::PolygonMode();
-		if (mesh->render == InnerModelMesh::WireframeRendering) // wireframe
-			polygonMode->setMode(osg::PolygonMode::FRONT_AND_BACK, osg::PolygonMode::LINE);
-		else
-			polygonMode->setMode(osg::PolygonMode::FRONT_AND_BACK, osg::PolygonMode::FILL);
-
-		osgMesh->getOrCreateStateSet()->setAttributeAndModes(polygonMode, osg::StateAttribute::OVERRIDE | osg::StateAttribute::ON);
-		osgMesh->getOrCreateStateSet()->setMode( GL_RESCALE_NORMAL, osg::StateAttribute::ON );
-		meshHash[mesh->id].osgmeshes = osgMesh;
-		meshHash[mesh->id].meshMts= mt;
-		osgmeshmodes[mesh->id] = polygonMode;
-		smt->addChild(osgMesh);
-	}
-	else if ((touch = dynamic_cast<InnerModelTouchSensor *>(node)))
-	{
-	}
-	else
-	{
-		qDebug() << "InnerModelReader::InnerModelReader(): Error: Unknown type of node";
-		throw "InnerModelReader::InnerModelReader(): Error: Unknown type of node";
-	}
-// 	qDebug()<<"size mts mtsHash "<<mts.size()<<mtsHash.size();
-// 	qDebug()<<"end of recursiveConstructor mtsHash.keys()"<<mtsHash.keys();
-// 	qDebug()<<"end of recursiveConstructor mts.keys()"<<mts.keys();
-}
-
-void InnerModelViewer::setOSGMatrixTransformForPlane(osg::MatrixTransform *mt, InnerModelPlane *plane)
-{
-	QMutexLocker ml(mutex);
-	osg::Matrix r;
-	r.makeRotate(osg::Vec3(0, 0, 1), osg::Vec3(plane->normal(0), plane->normal(1), -plane->normal(2)));
-	osg::Matrix t;
-	t.makeTranslate(osg::Vec3(plane->point(0), plane->point(1), -plane->point(2)));
-	mt->setMatrix(r*t);
-}
-
-void InnerModelViewer::reloadMesh(QString id)
-{
-	QMutexLocker ml(mutex);
-	// Create mesh
-	InnerModelMesh *mesh = (InnerModelMesh *)innerModel->getNode(id);
-	if (not mesh)
-	{
-		printf("Internal error\n");
-		return;
-	}
-	osg::ref_ptr<osg::Node> osgMesh = osgDB::readNodeFile(mesh->meshPath.toStdString());
-	if (not osgMesh)
-	{
-		printf("Could not find %s osg.\n", mesh->meshPath.toStdString().c_str());
-		return;
-	}	
-	meshHash[id].osgmeshPaths->removeChild(0, 1);
-	meshHash[id].osgmeshPaths->addChild(osgMesh);
-	((osg::MatrixTransform *)meshHash[id].osgmeshPaths->getChild(0))->setMatrix(osg::Matrix::scale(mesh->scalex,mesh->scaley,mesh->scalez));
-	meshHash[id].osgmeshes=osgMesh;
-}
-
-osg::Geode* InnerModelViewer::getGeode(QString id)
-{
-	QMutexLocker ml(mutex);
-	osg::Group *osgMesh = dynamic_cast<osg::Group *>(meshHash[id].osgmeshes.get());
-	osg::Geode *geode=NULL;
-	while (geode==NULL)
-	{
-		osgMesh = dynamic_cast<osg::Group *>(osgMesh->getChild(0));
-		geode = dynamic_cast<osg::Geode *>(osgMesh->getChild(0));
-	}
-	return geode;
-}
-
-void InnerModelViewer::update()
-{
-	foreach(QString key, mts.keys())
-	{
-		InnerModelNode *node = innerModel->getNode(key);
-		if (node->parent)
-		{
-			mts[key]->setMatrix(QMatToOSGMat4(*node));
-		}
-	}
-	foreach(QString key, planeMts.keys())
-	{
-		osg::MatrixTransform *mt = planeMts[key];
-		InnerModelPlane *plane = (InnerModelPlane *)innerModel->getNode(key);
-		setOSGMatrixTransformForPlane(mt, plane);
-		IMVPlane *imvplane = planesHash[key];
-		if (imvplane)
-		{
-			if (imvplane->texture and imvplane->image and imvplane->data and imvplane->dirty)
-			{
-				imvplane->performUpdate();
-			}
-		}
-	}
-	foreach(QString key, meshHash.keys()) 
-	{
-		osg::MatrixTransform *mt = meshHash[key].meshMts;// meshMts[key];
-		InnerModelMesh *mesh = (InnerModelMesh *)innerModel->getNode(key);
-		RTMat rtmat = RTMat();
-		rtmat.setR (mesh->rx, mesh->ry, mesh->rz);
-		rtmat.setTr(mesh->tx, mesh->ty, mesh->tz);
-		((osg::MatrixTransform *)meshHash[key].osgmeshPaths->getChild(0))->setMatrix(osg::Matrix::scale(mesh->scalex,mesh->scaley,mesh->scalez));
-		mt->setMatrix(QMatToOSGMat4(rtmat));
-		
-		osg::Node *osgMesh = meshHash[mesh->id].osgmeshes;
-		if (!osgMesh)
-			printf("Could not find %s osg.\n", mesh->meshPath.toStdString().c_str());
-		osg::PolygonMode* polygonMode = osgmeshmodes[mesh->id];
-		if (mesh->render == InnerModelMesh::WireframeRendering) // wireframe
-			polygonMode->setMode(osg::PolygonMode::FRONT_AND_BACK, osg::PolygonMode::LINE);
-		else
-			polygonMode->setMode(osg::PolygonMode::FRONT_AND_BACK, osg::PolygonMode::FILL);
-
-		osgMesh->getOrCreateStateSet()->setAttributeAndModes(polygonMode, osg::StateAttribute::OVERRIDE | osg::StateAttribute::ON);
-	}
-}
-
-void InnerModelViewer::setMainCamera(osgGA::TrackballManipulator *manipulator, CameraView pov) const
-{
-	osg::Quat mRot;
-
-	switch(pov)
-	{
-	case TOP_POV:
-		mRot.makeRotate(-M_PI_2, QVecToOSGVec(QVec::vec3(1,0,0)));
-		break;
-	case BACK_POV:
-		mRot.makeRotate(M_PI_2,  QVecToOSGVec(QVec::vec3(0,0,0)));
-		break;
-	case FRONT_POV:
-		mRot.makeRotate(M_PI,    QVecToOSGVec(QVec::vec3(0,1,0)));
-		break;
-	case LEFT_POV:
-		mRot.makeRotate(M_PI_2,  QVecToOSGVec(QVec::vec3(0,-1,0)));
-		break;
-	case RIGHT_POV:
-		mRot.makeRotate(M_PI_2,  QVecToOSGVec(QVec::vec3(0,1,0)));
-		break;
-	default:
-		qFatal("InnerModelViewer: invalid POV.");
-	}
-
-	manipulator->setRotation(mRot);
-}
-
-void InnerModelViewer::setCameraCenter(OsgView *view, const QVec eye_)
-{
-        eye = eye_;
-        lookAt(view, eye, to, up);
-}
-
-void InnerModelViewer::setLookTowards(OsgView *view, const QVec to_, const QVec up_)
-{
-        to = to_;
-        up = up_;
-        lookAt(view, eye, to, up);
-}
-
-void InnerModelViewer::lookAt(OsgView *view, const QVec eye_, const QVec to_, const QVec up_)
-{
-        eye = eye_;
-        to = to_;
-        up = up_;
-        osgGA::CameraManipulator *tb = view->getCameraManipulator();
-        osg::Vec3d oeye = OsgView::qvecToVec3(eye);
-        osg::Vec3d oto  = OsgView::qvecToVec3(to);
-        osg::Vec3d oup  = OsgView::qvecToVec3(up);
-        tb->setHomePosition(oeye, oto, oup, true);
-        tb->setByMatrix(osg::Matrixf::lookAt(oeye, oto, oup));
-        view->setCameraManipulator(tb);
 }
 

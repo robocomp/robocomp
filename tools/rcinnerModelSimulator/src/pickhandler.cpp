@@ -47,7 +47,11 @@ void PickHandler::pick(osgViewer::View* view, const osgGA::GUIEventAdapter& ea)
          pick.x = p.x();
 		 pick.y = p.y();
 		 pick.z = -p.z();
+<<<<<<< HEAD
 		 qDebug() << __FUNCTION__ << "Picking " << QString::fromStdString(name) << pick.x << pick.y << pick.z;
+=======
+		 qDebug() << __FUNCTION__ << "Picking " << QString::fromStdString(name) << p.x() << p.y() << -p.z();
+>>>>>>> b14f72af7e52f54404974b041de51849cb551ae8
 		try
 		{   if( rcis_mousepicker_proxy )
 				rcis_mousepicker_proxy->setPick( pick );

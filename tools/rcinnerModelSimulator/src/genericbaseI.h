@@ -28,6 +28,7 @@
 #include <Ice/Ice.h>
 #include <GenericBase.h>
 #include <innermodel/innermodel.h>
+#include "innermodelmgr.h"   /// Cambiar cuando este en la lib!!!
 
 // Simulator includes
 #include "config.h"
@@ -38,21 +39,21 @@ using namespace RoboCompGenericBase;
 
 class SpecificWorker;
 
-class GenericBaseI : public QThread, public virtual RoboCompGenericBase::GenericBase
+class GenericBaseI : public QObject, public virtual RoboCompGenericBase::GenericBase
 {
 Q_OBJECT
 public:
 	GenericBaseI ( SpecificWorker *_worker, QObject *parent = 0 );
 	
 	void add(QString id);
-	void run();
+	//void run();
 	
 	void getBaseState(RoboCompGenericBase::TBaseState& state, const Ice::Current & =Ice::Current());
 	void getBasePose(int &x, int &z, float &alpha, const Ice::Current & =Ice::Current());
 
 private:
 	SpecificWorker *worker;
-	InnerModel *innerModel;
+	InnerModelMgr innerModel;
 	InnerModelTransform *parent;
 	InnerModelOmniRobot *node;
 };

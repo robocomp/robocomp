@@ -25,7 +25,7 @@ DifferentialRobotI::DifferentialRobotI(SpecificWorker *_worker, OmniRobotI *_omn
 	omniI = _omniI;
 	worker = _worker;
 	mutex = worker->mutex;
-	innerModel = worker->getInnerModel();
+	innerModel = worker->getInnerModelMgr();
 	advVel = rotVel = 0;
 	gettimeofday(&lastCommand_timeval, NULL);
 	updateInnerModelPose();
@@ -65,7 +65,7 @@ void DifferentialRobotI::run()
 	while (true)
 	{
 		mutex->lock();
-		updateInnerModelPose();
+			updateInnerModelPose();
 		mutex->unlock();
 		usleep(10000);
 	}
@@ -190,27 +190,31 @@ void DifferentialRobotI::updateInnerModelPose(bool force)
 		newAngle += Angle;
 	}
 
-	QVec backNoisyNewPos = innerModel->transform(parent->id, QVec::vec3(0,0,0), id);
-	float backNoisyAngle = noisyNewAngle;
-	noisyNewAngle += Angle+((rndmYaw[0]));
-	noisyNewPos = innerModel->transform(parent->id, QVec::vec3(Ax1, 0, Az1), id);
-	innerModel->updateTransformValues(id, noisyNewPos(0), noisyNewPos(1), noisyNewPos(2), 0, noisyNewAngle, 0);
-	if (canMoveBaseTo(id, noisyNewPos, noisyNewAngle+Angle+(rndmYaw[0]*noise) ))
-	{
-		// Noisy pose(real)
-		pose.x     = noisyPose.x     = noisyNewPos(0)*MILIMETERS_PER_UNIT;
-		pose.z     = noisyPose.z     = noisyNewPos(2)*MILIMETERS_PER_UNIT;
-		pose.alpha = noisyPose.alpha = noisyNewAngle;
-	}
-	else
-	{
-		noisyNewAngle = backNoisyAngle;
-		noisyNewPos = backNoisyNewPos;
+	innerModel.lock();
+	
+		QVec backNoisyNewPos = innerModel->transform(parent->id, QVec::vec3(0,0,0), id);
+		float backNoisyAngle = noisyNewAngle;
+		noisyNewAngle += Angle+((rndmYaw[0]));
+		noisyNewPos = innerModel->transform(parent->id, QVec::vec3(Ax1, 0, Az1), id);
 		innerModel->updateTransformValues(id, noisyNewPos(0), noisyNewPos(1), noisyNewPos(2), 0, noisyNewAngle, 0);
- 	}
-	newPos = innerModel->transform(parent->id, QVec::vec3(Ax2, 0, Az2), id+"_odometry\"");
-	innerModel->updateTransformValues(id+"_odometry\"", newPos(0), newPos(1), newPos(2), 0, newAngle, 0);
-
+		if (canMoveBaseTo(id, noisyNewPos, noisyNewAngle+Angle+(rndmYaw[0]*noise) ))
+		{
+			// Noisy pose(real)
+			pose.x     = noisyPose.x     = noisyNewPos(0)*MILIMETERS_PER_UNIT;
+			pose.z     = noisyPose.z     = noisyNewPos(2)*MILIMETERS_PER_UNIT;
+			pose.alpha = noisyPose.alpha = noisyNewAngle;
+		}
+		else
+		{
+			noisyNewAngle = backNoisyAngle;
+			noisyNewPos = backNoisyNewPos;
+			innerModel->updateTransformValues(id, noisyNewPos(0), noisyNewPos(1), noisyNewPos(2), 0, noisyNewAngle, 0);
+		}
+		newPos = innerModel->transform(parent->id, QVec::vec3(Ax2, 0, Az2), id+"_odometry\"");
+		innerModel->updateTransformValues(id+"_odometry\"", newPos(0), newPos(1), newPos(2), 0, newAngle, 0);
+			
+	innerModel.unlock();
+		
 	// Pose without noise (as if I moved perfectly)
 	pose.correctedX = newPos(0)*MILIMETERS_PER_UNIT;
 	pose.correctedZ = newPos(2)*MILIMETERS_PER_UNIT;

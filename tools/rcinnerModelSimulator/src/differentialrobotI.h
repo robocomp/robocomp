@@ -30,6 +30,7 @@
 #include <OmniRobot.h>
 #include <omnirobotI.h>
 #include <innermodel/innermodel.h>
+#include "innermodelmgr.h"   /// Cambiar cuando este en la lib!!!
 
 // Simulator includes
 #include "config.h"
@@ -63,7 +64,7 @@ public:
 
 private:
 	SpecificWorker *worker;
-	InnerModel *innerModel;
+	InnerModelMgr innerModel;
 	QStringList differentialIDs;
 	QMutex *mutex;
 
