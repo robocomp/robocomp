@@ -67,7 +67,6 @@ class Viewer(QtGui.QMainWindow, MainWindow):
         self.save_warning = dialogs.SaveWarningDialog(self)
 
         self.add_graph_visualization()
-        self.initialize_zoom()
 
         # This will read the the network setting from xml files and will set the values
         self.networkSettingDialog = dialogs.NetworkSettingsDialog()
@@ -108,13 +107,6 @@ class Viewer(QtGui.QMainWindow, MainWindow):
         # Temporary code
 
         self.rcmanagerSignals.viewerIsReady.emit()
-
-    def initialize_zoom(self):  # To connect the slider motion to zooming
-        self.verticalSlider.setRange(-20, 20)
-        self.verticalSlider.setTickInterval(0.5)
-        self.verticalSlider.setValue(0)
-        self.currentZoom = 0
-        self.verticalSlider.valueChanged.connect(self.graph_zoom)
 
     def graph_zoom(self):  # To be called whenever we wants to zoom
         # NoAnchor
@@ -268,6 +260,7 @@ class Viewer(QtGui.QMainWindow, MainWindow):
         self.rcmanagerSignals.openModel.emit(filename, True)
 
     def exit_rcmanager(self):
+        self.check_component_status_thread.run = False
         self.close()
 
     # Generate start / stop signals for components
@@ -293,9 +286,12 @@ class Viewer(QtGui.QMainWindow, MainWindow):
 
         if reply == QtGui.QMessageBox.Yes:
             self.save_model()
+            self.exit_rcmanager()
             event.accept()
         elif reply == QtGui.QMessageBox.Cancel:
             event.ignore()
+        else:
+            self.exit_rcmanager()
 
     def add_node(self, node, nodedata=None, position=None):
         self._logger.info("The viewer received signal to draw component: " + node)
@@ -304,8 +300,8 @@ class Viewer(QtGui.QMainWindow, MainWindow):
 
         # Start / stop context menu options
         menu = dict()
-        menu['Start'] = (self, "send_start_signal")
-        menu['Stop'] = (self, "send_stop_signal")
+        menu['Start'] = (self, 'send_start_signal')
+        menu['Stop'] = (self, 'send_stop_signal')
         createdNode.add_context_menu(menu)
 
         if 'componentType' in nodedata.keys():
@@ -319,17 +315,21 @@ class Viewer(QtGui.QMainWindow, MainWindow):
         self._logger.info("The viewer received signal to draw edge from: " + orig_node + " to: " + dest_node)
         self.graph_visualization.add_edge(first_node=orig_node, second_node=dest_node)
 
+    def update_component_running_status(self, componentAlias, state):
+        if state == 'running':
+            node = self.graph_visualization.get_node(componentAlias)['item']
+            node.set_component_running_status(True)
+            node.update()
+        elif state == 'stopped':
+            node = self.graph_visualization.get_node(componentAlias)['item']
+            node.set_component_running_status(False)
+            node.update()
+
     def set_log_file(self):
         self.log_file_setter.setFile()
 
     def tab_index_changed(self):  # This will make sure the common behavior is not working unneccessarily
         index = self.tabWidget.currentIndex()
-
-        """
-        if index == 1 or index == 2:  # CommonProxy should only work if the first tab is visible
-            if self.currentComponent is not None:
-                self.currentComponent.CommonProxy.set_visibility(False)
-        """
 
         if index == 0:
             self.refresh_graph_from_editor()
