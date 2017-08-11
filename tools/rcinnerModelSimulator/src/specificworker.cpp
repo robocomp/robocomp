@@ -729,77 +729,14 @@ void SpecificWorker::NonExistingAttribute(InnerModelNode *node, QString attribut
 
 void SpecificWorker::getRecursiveNodeInformation(RoboCompInnerModelManager::NodeInformationSequence& nodesInfo, InnerModelNode *node)
 {
-<<<<<<< HEAD
 	/// Add current node information
 	RoboCompInnerModelManager::NodeInformation ni;
 	ni.id = node->id.toStdString();
-=======
-	// Compute the elapsed time interval since the last update
-	static QTime lastTime = QTime::currentTime();
-	QTime currentTime = QTime::currentTime();
-	const int elapsed = lastTime.msecsTo (currentTime);
-// 	printf("elapsed %d\n", elapsed);
-	lastTime = currentTime;
-
-	QMutexLocker locker(mutex);
-
-
-// 	// Remove previous laser shapes
-	for (QHash<QString, IMVLaser>::iterator laser = d->imv->lasers.begin(); laser != d->imv->lasers.end(); laser++)
-	{
-		QMutexLocker locker(viewerMutex);
-		if (laser->osgNode->getNumChildren() > 0)
-		{
-			laser->osgNode->removeChild(0, laser->osgNode->getNumChildren());
-		}
-	}
->>>>>>> b14f72af7e52f54404974b041de51849cb551ae8
 
 	if (node->parent)
-	{
 		ni.parentId = node->parent->id.toStdString();
-	}
 	else
-	{
-<<<<<<< HEAD
 		ni.parentId = "";
-=======
-		QMutexLocker vm(viewerMutex);
-		QMutexLocker lcds(d->laserDataCartArray_mutex);
-		for (QHash<QString, IMVLaser>::iterator laser = d->imv->lasers.begin(); laser != d->imv->lasers.end(); laser++)
-		{
-			QString id=laser->laserNode->id;
-
-			if (d->laserDataCartArray.contains(id) == false)
-			{
-				//laserDataCartArray.insert(id);
-				osg::Vec3Array *v= new osg::Vec3Array();
-				v->resize(laser->laserNode->measures+1);
-				d->laserDataCartArray.insert(id,v);
-			}
-
-			// create and insert laser data
-			d->worker = this;
-			d->laserDataArray.insert(laser->laserNode->id, d->LASER_createLaserData(laser.value()));
-
-			// create and insert laser shape
-			osg::ref_ptr<osg::Node> p=NULL;
-			if (id=="laserSecurity")
-			{
-				p = d->viewer->addPolygon(*(d->laserDataCartArray[id]), osg::Vec4(0.,0.,1.,0.4));
-			}
-			else
-			{
-				p = d->viewer->addPolygon(*(d->laserDataCartArray[id]));
-			}
-			if (p!=NULL)
-			{
-				laser->osgNode->addChild(p);
-			}
-			//printf("%d (%d)\n", i, __LINE__);
-		}
->>>>>>> b14f72af7e52f54404974b041de51849cb551ae8
-	}
 	ni.nType = getNodeType(node);
 
 	RoboCompInnerModelManager::AttributeType a;

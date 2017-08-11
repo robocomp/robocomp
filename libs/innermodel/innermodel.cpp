@@ -110,21 +110,11 @@ InnerModel::~InnerModel()
 
 InnerModel* InnerModel::copy()
 {
-<<<<<<< HEAD
-	
 	InnerModel *inner = new InnerModel();
 	QList<InnerModelNode *>::iterator i;
 	for (i=root->children.begin(); i!=root->children.end(); i++)
 		inner->root->addChild((*i)->copyNode(inner->hash, inner->root));
-=======
-	InnerModel *inner = new InnerModel();
-	
-	QList<InnerModelNode *>::iterator i;
-	for (i=root->children.begin(); i!=root->children.end(); i++)
-	{
-		inner->root->addChild((*i)->copyNode(inner->hash, inner->root));
-	}
->>>>>>> b14f72af7e52f54404974b041de51849cb551ae8
+
 	return inner;
 }
 
@@ -895,10 +885,6 @@ bool InnerModel::collide(const QString &a, const QString &b)
 #endif
 }
 
-<<<<<<< HEAD
-=======
-
->>>>>>> b14f72af7e52f54404974b041de51849cb551ae8
 /**
  * @brief ...
  *

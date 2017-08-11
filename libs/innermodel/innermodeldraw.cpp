@@ -23,7 +23,9 @@
 void InnerModelDraw::addMesh_ignoreExisting(InnerModelViewer *innerViewer, QString item, QString base, QVec t, QVec r, QString path, QVec scale)
 {
 	InnerModelTransform *parent = dynamic_cast<InnerModelTransform*>(innerViewer->innerModel->getNode(base));
-	InnerModel *im = innerViewer->innerModel;
+	//InnerModel *im = innerViewer->innerModel;
+	InnerModel *im = innerViewer->innerModel.get();
+	
 
 	if (im->getNode(item) != NULL)
 	{
@@ -46,7 +48,8 @@ void InnerModelDraw::addMesh_ignoreExisting(InnerModelViewer *innerViewer, QStri
 
 bool InnerModelDraw::setScale(InnerModelViewer *innerViewer, const QString item, float scaleX, float scaleY, float scaleZ)
 {
-	InnerModel *im = innerViewer->innerModel;
+	//InnerModel *im = innerViewer->innerModel;
+	InnerModel *im = innerViewer->innerModel.get();
 	InnerModelMesh *aux = dynamic_cast<InnerModelMesh*>(im->getNode(item));
 	aux->setScale(scaleX, scaleY, scaleZ);
 	return true;
@@ -58,7 +61,8 @@ bool InnerModelDraw::addJoint(InnerModelViewer* innerViewer, const QString item,
 	{
 		axis = "z";
 	}
-	InnerModel *im = innerViewer->innerModel;
+	//InnerModel *im = innerViewer->innerModel;
+	InnerModel *im = innerViewer->innerModel.get();
 	InnerModelTransform *parent=dynamic_cast<InnerModelTransform *>(im->getNode(base));
 	InnerModelJoint *jN = im->newJoint(item,
 					   parent,
@@ -76,7 +80,8 @@ bool InnerModelDraw::addJoint(InnerModelViewer* innerViewer, const QString item,
 
 bool InnerModelDraw::setPlaneTexture(InnerModelViewer *innerViewer, const QString item, QString texture)
 {
-	InnerModel *im = innerViewer->innerModel;
+	//InnerModel *im = innerViewer->innerModel;
+	InnerModel *im = innerViewer->innerModel.get();
 	InnerModelPlane *aux = dynamic_cast<InnerModelPlane*>(im->getNode(item));
 
 	aux->texture=texture;
