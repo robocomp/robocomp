@@ -1,4 +1,7 @@
 
+# Please refer to the following link for a nice documentation of the qdbus functions
+# http://urfoex.blogspot.com/2016/08/qdbus-create-tabs-in-yakuake-and-pidgin.html
+
 import subprocess
 import shlex
 
