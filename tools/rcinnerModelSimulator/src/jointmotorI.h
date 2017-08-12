@@ -27,6 +27,7 @@
 #include <Ice/Ice.h>
 #include <JointMotor.h>
 #include <innermodel/innermodel.h>
+#include <innermodel/innermodelmgr.h>
 
 // Simulator includes
 #include "config.h"

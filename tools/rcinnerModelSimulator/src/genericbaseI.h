@@ -28,7 +28,7 @@
 #include <Ice/Ice.h>
 #include <GenericBase.h>
 #include <innermodel/innermodel.h>
-#include "innermodelmgr.h"   /// Cambiar cuando este en la lib!!!
+#include <innermodel/innermodelmgr.h>
 
 // Simulator includes
 #include "config.h"

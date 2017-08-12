@@ -97,8 +97,6 @@ void robotSimulatorComp::initialize()
 {
 }
 
-
-
 int robotSimulatorComp::run( int argc, char* argv[] )
 {
 	// GUI application

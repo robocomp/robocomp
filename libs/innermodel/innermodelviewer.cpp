@@ -23,11 +23,16 @@
 // ------------------------------------------------------------------------------------------------
 // InnerModelViewer
 // ------------------------------------------------------------------------------------------------
-InnerModelViewer::InnerModelViewer(InnerModelMgr im, QString root,  osg::Group *parent, bool ignoreCameras) : osg::Switch()
+InnerModelViewer::InnerModelViewer(const InnerModelMgr &im, QString root,  osg::Group *parent, bool ignoreCameras) : osg::Switch()
 {	
 	// Initialize InnerModel pointer
 	innerModel = im;
 	//mutex = innerModel->mutex;
+	
+	innerModel->print();
+	
+	if( innerModel.get() == nullptr )
+		throw "InnerModelViewer::InnerModelViewer(): Error, InnerModel is nullptr";
 	
 	// Get main node
 	InnerModelNode *imnode = innerModel->getNode(root);

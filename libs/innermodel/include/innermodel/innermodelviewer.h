@@ -53,6 +53,7 @@
 #include <osgviewer/viewerqt.h>
 #include <qmat/QMatAll>
 
+#include <mutex>
 #include <innermodel/innermodel.h>
 #include <innermodel/innermodelnode.h>
 #include <innermodel/innermodelmgr.h>
@@ -136,7 +137,7 @@ class InnerModelViewer : public osg::Switch
 	public:
 		enum CameraView { BACK_POV, FRONT_POV, LEFT_POV, RIGHT_POV, TOP_POV };
 
-		InnerModelViewer(InnerModelMgr im, QString root="root", osg::Group *parent=NULL, bool ignoreCameras=false);	
+		explicit InnerModelViewer(const InnerModelMgr &im, QString root="root", osg::Group *parent=NULL, bool ignoreCameras=false);	
 		~InnerModelViewer(){};
 		void update();
 		void recursiveConstructor(InnerModelNode* node, osg::Group* parent, QHash< QString, osg::MatrixTransform* >& mtsHash, QHash< QString, IMVMesh >& meshHash, bool ignoreCameras=false);
@@ -156,6 +157,7 @@ class InnerModelViewer : public osg::Switch
 		QHash<QString, IMVLaser> lasers;
         
 		//QMutex *mutex;
+		std::mutex mutex;
 		void setCameraCenter(OsgView *view, const QVec center_);
 		void setLookTowards(OsgView *view, const QVec to_, const QVec up_);
 		void lookAt(OsgView *view, const QVec center_, const QVec to_, const QVec up_);

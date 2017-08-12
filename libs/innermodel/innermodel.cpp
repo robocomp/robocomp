@@ -93,6 +93,20 @@ InnerModel::InnerModel(InnerModel &original)
 	}
 }
 
+InnerModel::InnerModel(InnerModel *original)
+{
+	
+	root = new InnerModelTransform("root", "static", 0, 0, 0, 0, 0, 0, 0);
+	setRoot(root);
+	root->innerModel = this;
+	hash["root"] = root;
+
+	QList<InnerModelNode *>::iterator i;
+	for (i=original->root->children.begin(); i!=original->root->children.end(); i++)
+	{
+		root->addChild((*i)->copyNode(hash, root));
+	}
+}
 
 InnerModel::~InnerModel()
 {

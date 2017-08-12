@@ -47,7 +47,7 @@ void GenericBaseI::add(QString id)
 void GenericBaseI::getBaseState(RoboCompGenericBase::TBaseState& state, const Ice::Current&)
 {
 	printf("%d\n", __LINE__);
-	QMutexLocker locker(worker->mutex);
+	InnerModelMgr::guard gl(innerModel.mutex());
 
 	printf("%d\n", __LINE__);
 	{
@@ -79,7 +79,7 @@ void GenericBaseI::getBaseState(RoboCompGenericBase::TBaseState& state, const Ic
 
 void GenericBaseI::getBasePose(Ice::Int &x, Ice::Int &z, Ice::Float &alpha, const Ice::Current &)
 {
-	QMutexLocker locker(worker->mutex);
+	InnerModelMgr::guard gl(innerModel.mutex());
 	QVec retPOS = innerModel->transform6D(parent->id, node->id+"_raw_odometry\"");
 	x = retPOS(0);
 	z = retPOS(2);

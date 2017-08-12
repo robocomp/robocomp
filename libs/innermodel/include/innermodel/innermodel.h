@@ -8,7 +8,8 @@
 
 // Qt includes
 #include <QHash>
-#include <QMutexLocker>
+//#include <QMutexLocker>
+#include <mutex>
 
 // RoboComp includes
 #include <qmat/qmat.h>
@@ -81,6 +82,7 @@ public:
 	InnerModel(std::string xmlFilePath);
 	InnerModel(const InnerModel &original);
 	InnerModel(InnerModel &original);
+	InnerModel(InnerModel *original);
 	~InnerModel();
 
 	/////////////////////////
@@ -172,6 +174,7 @@ public:
 	/////////////////////////////////////////////
 	QList<QString> getIDKeys() {return hash.keys(); }
 	InnerModelNode *getNode(const QString & id) const { /*QMutexLocker ml(mutex); */if (hash.contains(id)) return hash[id]; else return NULL;}
+	
 	template <class N> N* getNode(const QString &id) const
 	{
 		N* r = dynamic_cast<N *>(getNode(id));
@@ -263,7 +266,8 @@ public:
 		return getNode<InnerModelLaser>(laserId)->laserTo(dest, r, alfa);
 	};
 
-	QMutex *mutex;
+	//QMutex *mutex;
+	mutable std::recursive_mutex mutex;
 
 protected:
 	InnerModelNode *root;

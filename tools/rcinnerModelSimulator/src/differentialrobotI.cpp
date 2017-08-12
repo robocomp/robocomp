@@ -90,8 +90,9 @@ void DifferentialRobotI::getBaseState(RoboCompGenericBase::TBaseState& state, co
 		state.alpha = ostate.alpha;
 		return;
 	}
-	QMutexLocker locker(mutex);
-
+	//QMutexLocker locker(mutex);
+	InnerModelMgr::guard gl(innerModel.mutex());
+	
 	state = pose;
 	QVec retPOS = (zeroTR * QVec::vec3(pose.x, 0, pose.z).toHomogeneousCoordinates()).fromHomogeneousCoordinates();
 	state.x = retPOS(0);
@@ -112,7 +113,8 @@ void DifferentialRobotI::getBasePose(Ice::Int& x, Ice::Int& z, Ice::Float& alpha
 		omniI->getBasePose(x, z, alpha);
 		return;
 	}
-	QMutexLocker locker(mutex);
+	//QMutexLocker locker(mutex);
+	InnerModelMgr::guard gl(innerModel.mutex());
 	QVec retPOS = (zeroTR * QVec::vec3(pose.x, 0, pose.z).toHomogeneousCoordinates()).fromHomogeneousCoordinates();
 	x = retPOS(0);
 	z = retPOS(2);
@@ -288,7 +290,8 @@ void DifferentialRobotI::setSpeedBase(Ice::Float adv, Ice::Float rot, const Ice:
 		return;
 	}
 
-	QMutexLocker locker(mutex);
+	//QMutexLocker locker(mutex);
+	InnerModelMgr::guard gl(innerModel.mutex());
 	updateInnerModelPose();
 	gettimeofday(&lastCommand_timeval, NULL);
 	advVel = adv;
@@ -317,7 +320,8 @@ void DifferentialRobotI::resetOdometer(const Ice::Current&)
 		return;
 	}
 
-	QMutexLocker locker(mutex);
+	//QMutexLocker locker(mutex);
+	InnerModelMgr::guard gl(innerModel.mutex());
 	zeroANG = pose.alpha;
 	zeroTR = RTMat(0, -pose.alpha, 0, 0, 0, 0)* RTMat(0, 0, 0, -pose.x, 0, -pose.z);
 }
@@ -346,7 +350,8 @@ void DifferentialRobotI::setOdometerPose(Ice::Int x, Ice::Int z, Ice::Float alph
 		omniI->setOdometerPose(x, z, alpha);
 		return;
 	}
-	QMutexLocker locker(mutex);
+	//QMutexLocker locker(mutex);
+	InnerModelMgr::guard gl(innerModel.mutex());
 	zeroANG = pose.alpha-alpha;
 	zeroTR = RTMat(0,0,0,  x,0,z)*RTMat(0,alpha-pose.alpha,0, 0,0,0)* RTMat(0,0,0, -pose.x,0,-pose.z);
 }
@@ -359,7 +364,8 @@ void DifferentialRobotI::correctOdometer(Ice::Int x, Ice::Int z, Ice::Float alph
 		omniI->correctOdometer(x, z, alpha);
 		return;
 	}
-	QMutexLocker locker(mutex);
+	//QMutexLocker locker(mutex);
+	InnerModelMgr::guard gl(innerModel.mutex());
 	pose.correctedX = x;
 	pose.correctedZ = z;
 	pose.correctedAlpha = alpha;
