@@ -1,4 +1,7 @@
+
+import threading
 import xmlreader
+
 from logger import RCManagerLogger
 from PyQt4 import QtCore
 from PyQt4.QtCore import QObject, pyqtSignal, pyqtSlot
@@ -55,6 +58,9 @@ class Controller():
         self.model.load_from_xml(xml)
         self.refresh_graph_from_model(xml)
         self.configure_viewer()
+
+        self.view.check_component_status_thread = threading.Thread(target=self.model.check_component_status)
+        self.view.check_component_status_thread.start()
 
     def start_component(self, componentAlias):
         self.model.execute_start_command(str(componentAlias))

@@ -42,6 +42,11 @@ class Main():
         self.signalObject.startComponent.connect(self.controller.start_component)
         self.signalObject.stopComponent.connect(self.controller.stop_component)
 
+        self.signalObject.componentRunning.connect(
+            lambda componentAlias: self.viewer.update_component_running_status(componentAlias, 'running'))
+        self.signalObject.componentStopped.connect(
+            lambda componentAlias: self.viewer.update_component_running_status(componentAlias, 'stopped'))
+
 if __name__ == '__main__':
     # process params with a argparse
     app = QApplication(sys.argv)

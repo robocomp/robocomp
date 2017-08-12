@@ -1,6 +1,9 @@
 
 from logger import RCManagerLogger
 from yakuake_support import ProcessHandler
+
+import threading
+import time
 import xmlreader
 import networkx as nx
 import os
@@ -96,17 +99,14 @@ class Model():
 
     # this functions executes the command for starting a component
     def execute_start_command(self, componentAlias):
-        try:
-            if not self.get_component_running_status(componentAlias):
-                tabTitle, processId = self.processHandler.start_process_in_existing_session(componentAlias, \
-                                                                                            self.graph.node[componentAlias]['upCommand']['@command'])
-                self.processId[componentAlias] = int(processId)
-                self._logger.info("Component: " + componentAlias + " started in tab: " + tabTitle + " with PID: " + processId)
-            else:
-                self._logger.debug("Component: " + componentAlias + " is already running")
-        except Exception, e:
-            raise e
-    
+        if not self.get_component_running_status(componentAlias):
+            tabTitle, processId = self.processHandler.start_process_in_existing_session(componentAlias, \
+                                                                                        self.graph.node[componentAlias]['upCommand']['@command'])
+            self.processId[componentAlias] = int(processId)
+            self._logger.info("Component: " + componentAlias + " started in tab: " + tabTitle + " with PID: " + processId)
+        else:
+            self._logger.debug("Component: " + componentAlias + " is already running")
+
     # this functions executes the command for killing a component
     def execute_stop_command(self, componentAlias):
         if not self.get_component_running_status(componentAlias):
@@ -166,6 +166,16 @@ class Model():
             line = line + (' ' * indentSpaceCount) + '</' + tagname + '>'
 
         return line
+
+    def check_component_status(self):
+        thread = threading.current_thread()
+        while getattr(thread, "run", True):
+            for componentAlias in self.graph:
+                if self.get_component_running_status(componentAlias):
+                    self.rcmanagerSignals.componentRunning.emit(componentAlias)
+                else:
+                    self.rcmanagerSignals.componentStopped.emit(componentAlias)
+            time.sleep(1)
 
     # this functions emits a sample signal
     def sample_emit(self):

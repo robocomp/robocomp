@@ -217,36 +217,6 @@
        </attribute>
        <layout class="QGridLayout" name="gridLayout_5">
         <item row="1" column="0">
-         <layout class="QGridLayout" name="gridLayout_7" columnstretch="0">
-          <property name="horizontalSpacing">
-           <number>0</number>
-          </property>
-          <item row="1" column="0">
-           <spacer name="verticalSpacer_2">
-            <property name="orientation">
-             <enum>Qt::Vertical</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>20</width>
-              <height>40</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item row="0" column="0">
-           <widget class="QSlider" name="verticalSlider">
-            <property name="toolTip">
-             <string>zoom in or out</string>
-            </property>
-            <property name="orientation">
-             <enum>Qt::Vertical</enum>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-        <item row="1" column="1">
          <widget class="QFrame" name="frame">
           <property name="frameShape">
            <enum>QFrame::StyledPanel</enum>
@@ -366,6 +336,7 @@
     </property>
     <addaction name="actionOpen"/>
     <addaction name="actionSave"/>
+    <addaction name="actionSave_As"/>
     <addaction name="actionExit"/>
    </widget>
    <widget class="QMenu" name="menuSimulations">
@@ -465,9 +436,12 @@
    </property>
    <property name="minimumSize">
     <size>
-     <width>96</width>
+     <width>121</width>
      <height>144</height>
     </size>
+   </property>
+   <property name="features">
+    <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable|QDockWidget::DockWidgetVerticalTitleBar</set>
    </property>
    <attribute name="dockWidgetArea">
     <number>8</number>
@@ -565,7 +539,7 @@
           <x>0</x>
           <y>0</y>
           <width>236</width>
-          <height>260</height>
+          <height>173</height>
          </rect>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout">
@@ -592,7 +566,7 @@
   <action name="actionOpen">
    <property name="icon">
     <iconset>
-     <normaloff>../../../../../opt/robocomp/share/rcmanager/1465393728_open-file.png</normaloff>../../../../../opt/robocomp/share/rcmanager/1465393728_open-file.png</iconset>
+     <normaloff>share/rcmanager/1465393728_open-file.png</normaloff>share/rcmanager/1465393728_open-file.png</iconset>
    </property>
    <property name="text">
     <string>Open</string>
@@ -604,7 +578,7 @@
   <action name="actionSave">
    <property name="icon">
     <iconset>
-     <normaloff>../../../../../opt/robocomp/share/rcmanager/1465394415_floppy.png</normaloff>../../../../../opt/robocomp/share/rcmanager/1465394415_floppy.png</iconset>
+     <normaloff>share/rcmanager/1465394415_floppy.png</normaloff>share/rcmanager/1465394415_floppy.png</iconset>
    </property>
    <property name="text">
     <string>Save</string>
@@ -624,6 +598,10 @@
    </property>
   </action>
   <action name="actionExit">
+   <property name="icon">
+    <iconset>
+     <normaloff>share/rcmanager/quit_icon.png</normaloff>share/rcmanager/quit_icon.png</iconset>
+   </property>
    <property name="text">
     <string>Exit</string>
    </property>
@@ -634,7 +612,7 @@
   <action name="actionSetting">
    <property name="icon">
     <iconset>
-     <normaloff>../../../../../opt/robocomp/share/rcmanager/1465394550_Settings.png</normaloff>../../../../../opt/robocomp/share/rcmanager/1465394550_Settings.png</iconset>
+     <normaloff>share/rcmanager/1465394550_Settings.png</normaloff>share/rcmanager/1465394550_Settings.png</iconset>
    </property>
    <property name="text">
     <string>Setting</string>
@@ -648,7 +626,7 @@
   <action name="actionON">
    <property name="icon">
     <iconset>
-     <normaloff>../../../../../opt/robocomp/share/rcmanager/simulionOn.png</normaloff>../../../../../opt/robocomp/share/rcmanager/simulionOn.png</iconset>
+     <normaloff>share/rcmanager/simulionOn.png</normaloff>share/rcmanager/simulionOn.png</iconset>
    </property>
    <property name="text">
     <string>ON</string>
@@ -657,7 +635,7 @@
   <action name="actionOFF">
    <property name="icon">
     <iconset>
-     <normaloff>../../../../../opt/robocomp/share/rcmanager/simulatorOFF.png</normaloff>../../../../../opt/robocomp/share/rcmanager/simulatorOFF.png</iconset>
+     <normaloff>share/rcmanager/simulatorOFF.png</normaloff>share/rcmanager/simulatorOFF.png</iconset>
    </property>
    <property name="text">
     <string>OFF</string>
@@ -724,6 +702,18 @@
   <action name="actionSet_Color">
    <property name="text">
     <string>Set Color</string>
+   </property>
+  </action>
+  <action name="actionSave_As">
+   <property name="icon">
+    <iconset>
+     <normaloff>share/rcmanager/1465394415_floppy.png</normaloff>share/rcmanager/1465394415_floppy.png</iconset>
+   </property>
+   <property name="text">
+    <string>Save As...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+S</string>
    </property>
   </action>
  </widget>
