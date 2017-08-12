@@ -35,7 +35,7 @@
 #include "servers.h"
 #include "pickhandler.h"
 
-#include "innermodelmgr.h"
+#include <innermodel/innermodelmgr.h>
 
 class SpecificWorker : public GenericWorker
 {

@@ -20,7 +20,6 @@
 #include <innermodel/innermodel.h>
 #include <innermodel/innermodelviewer.h>
 
-
 // ------------------------------------------------------------------------------------------------
 // InnerModelViewer
 // ------------------------------------------------------------------------------------------------
@@ -205,9 +204,7 @@ void InnerModelViewer::recursiveConstructor(InnerModelNode *node, osg::Group* pa
 
 
 void InnerModelViewer::update()
-{
-	innerModel.lock();
-	
+{	
 		foreach(QString key, mts.keys())
 		{
 			InnerModelNode *node = innerModel->getNode(key);
@@ -251,8 +248,6 @@ void InnerModelViewer::update()
 
 			osgMesh->getOrCreateStateSet()->setAttributeAndModes(polygonMode, osg::StateAttribute::OVERRIDE | osg::StateAttribute::ON);
 		}
-		
-	innerModel.unlock();
 }
 
 
