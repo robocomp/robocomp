@@ -249,6 +249,11 @@ class Viewer(QtGui.QMainWindow, MainWindow):
 
     # File menu functions
     def save_model(self, saveAs=True):
+        index = self.tabWidget.currentIndex()
+
+        if index == 1:
+            self.refresh_graph_from_editor()
+
         if saveAs:
             filename = QtGui.QFileDialog.getSaveFileName(self, 'Save File', self.filename)
         else:
