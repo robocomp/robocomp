@@ -47,8 +47,7 @@ class Controller():
             self.view.filename = filename
 
         # Read the xml data from the file
-        file = open(filename, 'r')
-        xml = file.read()
+        xml = xmlreader.get_text_from_file(str(filename))
 
         # Check the xml data for formatting issues
         if not xmlreader.validate_xml(xml):
