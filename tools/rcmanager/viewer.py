@@ -264,6 +264,9 @@ class Viewer(QtGui.QMainWindow, MainWindow):
         filename = QtGui.QFileDialog.getOpenFileName(self, 'Open File')
         self.rcmanagerSignals.openModel.emit(filename, True)
 
+    def closeEvent(self, event):
+        self.rcmanagerSignals.closeModel.emit()
+
     def exit_rcmanager(self):
         self.check_component_status_thread.run = False
         self.close()
@@ -284,7 +287,7 @@ class Viewer(QtGui.QMainWindow, MainWindow):
     def add_component(self):
         pass
 
-    def closeEvent(self, event):
+    def save_before_quit_prompt(self):
         quit_msg = "There are unsaved changes. Do you want to save before exiting?"
         reply = QtGui.QMessageBox.question(self, 'Save Model?',
                                            quit_msg, QtGui.QMessageBox.No, QtGui.QMessageBox.Cancel, QtGui.QMessageBox.Yes)
@@ -292,10 +295,7 @@ class Viewer(QtGui.QMainWindow, MainWindow):
         if reply == QtGui.QMessageBox.Yes:
             self.save_model()
             self.exit_rcmanager()
-            event.accept()
-        elif reply == QtGui.QMessageBox.Cancel:
-            event.ignore()
-        else:
+        elif reply == QtGui.QMessageBox.No:
             self.exit_rcmanager()
 
     def add_node(self, node, nodedata=None, position=None):
