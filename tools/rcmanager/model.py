@@ -1,4 +1,5 @@
 
+from PyQt4 import QtCore
 from logger import RCManagerLogger
 from yakuake_support import ProcessHandler
 
@@ -7,6 +8,59 @@ import time
 import xmlreader
 import networkx as nx
 import os
+import Ice
+import sys
+
+global_ic = Ice.initialize(sys.argv)
+
+class ComponentChecker(threading.Thread):
+    def __init__(self, endpoint):
+        threading.Thread.__init__(self)
+        self.mutex = QtCore.QMutex(QtCore.QMutex.Recursive)
+        self.daemon = True
+        self.reset()
+        self.exit = False
+        self.alive = False
+        self.aPrx = None
+        try:
+            self.aPrx = global_ic.stringToProxy(endpoint)
+            self.aPrx.ice_timeout(1)
+        except:
+            print "Error creating proxy to " + endpoint
+            if len(endpoint) == 0:
+                print 'Error - No endpoint specified'
+            raise
+
+    def run(self):
+        global global_ic
+        while self.exit == False:
+            try:
+                self.aPrx.ice_ping()
+                self.mutex.lock()
+                self.alive = True
+                self.mutex.unlock()
+            except:
+                self.mutex.lock()
+                self.alive = False
+                self.mutex.unlock()
+            time.sleep(0.5)
+
+    def reset(self):
+        self.mutex.lock()
+        self.alive = False
+        self.mutex.unlock()
+
+    def isalive(self):
+        self.mutex.lock()
+        r = self.alive
+        self.mutex.unlock()
+        return r
+
+    def stop(self):
+        self.exit = True
+
+    def runrun(self):
+        if not self.isAlive(): self.start()
 
 class Model():
     """This is the Model object for our MVC model. It stores the component
@@ -25,11 +79,17 @@ class Model():
         # we store -1 for the components which are not running
         self.processId = dict()
 
+        # this dictionary stores the component checker threads for each component
+        self.componentChecker = dict()
+
         # this dictionary stores the general configuration informtation about the viewer
         self.generalInformation = dict()
 
         # this is the process handler for the model
         self.processHandler = ProcessHandler()
+
+        # this bit implies whether the model has been altered and needs to be saved before quitting rcmanager
+        self.dirtyBit = False
 
     def load_from_xml(self, xml):
         # we go through the dictionary to create the graph
@@ -82,6 +142,8 @@ class Model():
     def add_node(self, nodedata):
         self.graph.add_node(nodedata['@alias'])
         self.processId[nodedata['@alias']] = -1
+        self.componentChecker[nodedata['@alias']] = ComponentChecker(str(nodedata['@endpoint']))
+        # self.componentChecker[nodedata['@alias']].runrun()
         for key, value in nodedata.items():
             self.graph.node[nodedata['@alias']][key] = value
 

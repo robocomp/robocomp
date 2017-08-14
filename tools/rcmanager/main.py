@@ -39,6 +39,7 @@ class Main():
         self.signalObject.controllerIsReady.connect(self.controller.controller_init_action)
         self.signalObject.saveModel.connect(self.controller.save_manager_file)
         self.signalObject.openModel.connect(self.controller.load_manager_file)
+        self.signalObject.closeModel.connect(self.controller.check_dirty_bit)
         self.signalObject.startComponent.connect(self.controller.start_component)
         self.signalObject.stopComponent.connect(self.controller.stop_component)
 
