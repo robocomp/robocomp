@@ -143,7 +143,7 @@ class Model():
         self.graph.add_node(nodedata['@alias'])
         self.processId[nodedata['@alias']] = -1
         self.componentChecker[nodedata['@alias']] = ComponentChecker(str(nodedata['@endpoint']))
-        self.componentChecker[nodedata['@alias']].runrun()
+        # self.componentChecker[nodedata['@alias']].runrun()
         for key, value in nodedata.items():
             self.graph.node[nodedata['@alias']][key] = value
 
