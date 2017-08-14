@@ -320,15 +320,9 @@ class Viewer(QtGui.QMainWindow, MainWindow):
         self._logger.info("The viewer received signal to draw edge from: " + orig_node + " to: " + dest_node)
         self.graph_visualization.add_edge(first_node=orig_node, second_node=dest_node)
 
-    def update_component_running_status(self, componentAlias, state):
-        if state == 'running':
-            node = self.graph_visualization.get_node(componentAlias)['item']
-            node.set_component_running_status(True)
-            node.update()
-        elif state == 'stopped':
-            node = self.graph_visualization.get_node(componentAlias)['item']
-            node.set_component_running_status(False)
-            node.update()
+    def update_node_profile(self, componentAlias, node_profile):
+        node = self.graph_visualization.get_node(componentAlias)['item']
+        node.set_node_profile(node_profile)
 
     def set_log_file(self):
         self.log_file_setter.setFile()
