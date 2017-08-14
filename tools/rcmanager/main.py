@@ -43,9 +43,9 @@ class Main():
         self.signalObject.stopComponent.connect(self.controller.stop_component)
 
         self.signalObject.componentRunning.connect(
-            lambda componentAlias: self.viewer.update_component_running_status(componentAlias, 'running'))
+            lambda componentAlias: self.viewer.update_node_profile(componentAlias, 'Profile_2'))
         self.signalObject.componentStopped.connect(
-            lambda componentAlias: self.viewer.update_component_running_status(componentAlias, 'stopped'))
+            lambda componentAlias: self.viewer.update_node_profile(componentAlias, 'Profile_1'))
 
 if __name__ == '__main__':
     # process params with a argparse
