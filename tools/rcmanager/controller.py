@@ -3,10 +3,7 @@ import threading
 import xmlreader
 
 from logger import RCManagerLogger
-from PyQt4 import QtCore
-from PyQt4.QtCore import QObject, pyqtSignal, pyqtSlot
 from PyQt4.QtGui import QColor
-from xml.etree import ElementTree
 
 class Controller():
     """This is the Controller object for our MVC model. It connects the Model
@@ -47,15 +44,15 @@ class Controller():
             self.view.filename = filename
 
         # Read the xml data from the file
-        xml = xmlreader.get_text_from_file(str(filename))
+        self.xml = xmlreader.get_text_from_file(str(filename))
 
         # Check the xml data for formatting issues
-        if not xmlreader.validate_xml(xml):
+        if not xmlreader.validate_xml(self.xml):
             self._logger.error("XML validation failed. Please use a correctly formatted XML file")
             return
 
-        self.model.load_from_xml(xml)
-        self.load_model_into_viewer(xml)
+        self.model.load_from_xml(self.xml)
+        self.load_model_into_viewer(self.xml)
         self.configure_viewer()
 
         self.view.check_component_status_thread = threading.Thread(target=self.model.check_component_status)
@@ -117,9 +114,45 @@ class Controller():
             self.view.set_background_color(color)
 
     def check_dirty_bit(self):
-        self.update_model()
-        if self.model.dirtyBit:
-            self.view.save_before_quit_prompt()
+        index = self.view.tabWidget.currentIndex()
+        if index == 0:
+            self.update_model()
+
+            if self.model.dirtyBit:
+                self.view.save_before_quit_prompt()
+            else:
+                self.view.exit_rcmanager()
+        elif index == 1:
+            try:
+                first = self.normalise_dict(xmlreader.read_from_text(str(self.xml), 'xml'))
+                second = self.normalise_dict(xmlreader.read_from_text(str(self.view.codeEditor.text()), 'xml'))
+
+                if not first == second:
+                    self.view.save_before_quit_prompt()
+                else:
+                    self.view.exit_rcmanager()
+            except Exception, e:
+                self.view.exit_rcmanager()
+
+    def normalise_dict(self, d):
+        """
+        Recursively convert dict-like object (eg OrderedDict) into plain dict.
+        Sorts list values.
+        """
+        out = {}
+        for k, v in dict(d).iteritems():
+            if hasattr(v, 'iteritems'):
+                out[k] = self.normalise_dict(v)
+            elif isinstance(v, list):
+                out[k] = []
+                for item in sorted(v):
+                    if hasattr(item, 'iteritems'):
+                        out[k].append(self.normalise_dict(item))
+                    else:
+                        out[k].append(item)
+            else:
+                out[k] = v
+        return out
 
     def load_manager_file(self, filename, isNewFile=True):
         self.controller_init_action(filename, isNewFile)
@@ -128,7 +161,7 @@ class Controller():
         try:
             self.update_model()
             self.model.export_xml_to_file(str(filename))
-            self.model.dirtybit = False
+            self.model.dirtyBit = False
         except Exception, e:
             self._logger.error("Couldn't save to file " + filename)
             raise e
