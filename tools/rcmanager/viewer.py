@@ -141,7 +141,7 @@ class Viewer(QtGui.QMainWindow, MainWindow):
         self.connect(self.actionSave, QtCore.SIGNAL("triggered(bool)"), lambda: self.save_model(False))
         self.connect(self.actionSave_As, QtCore.SIGNAL("triggered(bool)"), lambda: self.save_model(True))
         self.connect(self.actionOpen, QtCore.SIGNAL("triggered(bool)"), self.open_model)
-        self.connect(self.actionExit, QtCore.SIGNAL("triggered(bool)"), self.exit_rcmanager)
+        self.connect(self.actionExit, QtCore.SIGNAL("triggered(bool)"), self.close_model)
 
         # Edit menu buttons
         # self.connect(self.actionSetting, QtCore.SIGNAL("triggered(bool)"), self.rcmanager_setting)
@@ -264,7 +264,7 @@ class Viewer(QtGui.QMainWindow, MainWindow):
         filename = QtGui.QFileDialog.getOpenFileName(self, 'Open File')
         self.rcmanagerSignals.openModel.emit(filename, True)
 
-    def closeEvent(self, event):
+    def close_model(self, event):
         self.rcmanagerSignals.closeModel.emit()
 
     def exit_rcmanager(self):
