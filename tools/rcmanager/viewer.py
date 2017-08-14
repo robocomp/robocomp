@@ -264,12 +264,15 @@ class Viewer(QtGui.QMainWindow, MainWindow):
         filename = QtGui.QFileDialog.getOpenFileName(self, 'Open File')
         self.rcmanagerSignals.openModel.emit(filename, True)
 
-    def close_model(self, event):
+    def close_model(self):
         self.rcmanagerSignals.closeModel.emit()
 
     def exit_rcmanager(self):
         self.check_component_status_thread.run = False
         self.close()
+
+    def closeEvent(self, QCloseEvent):
+        self.close_model()
 
     # Generate start / stop signals for components
     def send_start_signal(self):
