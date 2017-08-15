@@ -88,9 +88,6 @@ class Model():
         # this is the process handler for the model
         self.processHandler = ProcessHandler()
 
-        # this bit implies whether the model has been altered and needs to be saved before quitting rcmanager
-        self.dirtyBit = False
-
     def load_from_xml(self, xml):
         # we go through the dictionary to create the graph
         # we have "rcmanager" and "nodes" keys
