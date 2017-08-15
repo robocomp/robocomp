@@ -265,14 +265,15 @@ class Viewer(QtGui.QMainWindow, MainWindow):
         self.rcmanagerSignals.openModel.emit(filename, True)
 
     def close_model(self):
-        self.rcmanagerSignals.closeModel.emit()
-
-    def exit_rcmanager(self):
-        self.check_component_status_thread.run = False
         self.close()
 
     def closeEvent(self, QCloseEvent):
-        self.close_model()
+        self.rcmanagerSignals.closeModel.emit()
+        if self.dirtyBit:
+            self.save_before_quit_prompt(QCloseEvent)
+        else:
+            self.check_component_status_thread.run = False
+            QCloseEvent.accept()
 
     # Generate start / stop signals for components
     def send_start_signal(self):
@@ -290,16 +291,20 @@ class Viewer(QtGui.QMainWindow, MainWindow):
     def add_component(self):
         pass
 
-    def save_before_quit_prompt(self):
+    def save_before_quit_prompt(self, QCloseEvent):
         quit_msg = "There are unsaved changes. Do you want to save before exiting?"
         reply = QtGui.QMessageBox.question(self, 'Save Model?',
                                            quit_msg, QtGui.QMessageBox.No, QtGui.QMessageBox.Cancel, QtGui.QMessageBox.Yes)
 
         if reply == QtGui.QMessageBox.Yes:
             self.save_model()
-            self.exit_rcmanager()
+            self.check_component_status_thread.run = False
+            QCloseEvent.accept()
         elif reply == QtGui.QMessageBox.No:
-            self.exit_rcmanager()
+            self.check_component_status_thread.run = False
+            QCloseEvent.accept()
+        elif reply == QtGui.QMessageBox.Cancel:
+            QCloseEvent.ignore()
 
     def add_node(self, node, nodedata=None, position=None):
         self._logger.info("The viewer received signal to draw component: " + node)

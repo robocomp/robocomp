@@ -42,6 +42,7 @@ class Controller():
         # Save the filename for future use
         if isNewFile:
             self.view.filename = filename
+            self.view.dirtyBit = False
 
         # Read the xml data from the file
         self.xml = xmlreader.get_text_from_file(str(filename))
@@ -92,20 +93,20 @@ class Controller():
             new = {'@value': str(xpos)}
             old = self.model.graph.node[str(i)].get('xpos')
             if not old == new:
-                self.model.dirtyBit = True
+                self.view.dirtyBit = True
             self.model.graph.node[str(i)]['xpos'] = new
 
             new = {'@value': str(ypos)}
             old = self.model.graph.node[str(i)].get('ypos')
             if not old == new:
-                self.model.dirtyBit = True
+                self.view.dirtyBit = True
             self.model.graph.node[str(i)]['ypos'] = new
 
         color = self.view.graph_visualization.background_color
         new = {'@value': color.name()}
         old = self.model.generalInformation.get('backgroundColor')
         if not old == new:
-            self.model.dirtyBit = True
+            self.view.dirtyBit = True
         self.model.generalInformation['backgroundColor'] = {'@value': color.name()}
 
     def configure_viewer(self):
@@ -117,22 +118,15 @@ class Controller():
         index = self.view.tabWidget.currentIndex()
         if index == 0:
             self.update_model()
-
-            if self.model.dirtyBit:
-                self.view.save_before_quit_prompt()
-            else:
-                self.view.exit_rcmanager()
         elif index == 1:
             try:
                 first = self.normalise_dict(xmlreader.read_from_text(str(self.xml), 'xml'))
                 second = self.normalise_dict(xmlreader.read_from_text(str(self.view.codeEditor.text()), 'xml'))
 
                 if not first == second:
-                    self.view.save_before_quit_prompt()
-                else:
-                    self.view.exit_rcmanager()
+                    self.view.dirtyBit = True
             except Exception, e:
-                self.view.exit_rcmanager()
+                self._logger.error("XML file in code editor is incorrectly formatted")
 
     def normalise_dict(self, d):
         """
@@ -161,7 +155,7 @@ class Controller():
         try:
             self.update_model()
             self.model.export_xml_to_file(str(filename))
-            self.model.dirtyBit = False
+            self.view.dirtyBit = False
         except Exception, e:
             self._logger.error("Couldn't save to file " + filename)
             raise e
