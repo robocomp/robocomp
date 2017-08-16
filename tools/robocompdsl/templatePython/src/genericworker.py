@@ -57,7 +57,7 @@ Z()
 #    along with RoboComp.  If not, see <http://www.gnu.org/licenses/>.
 
 import sys, Ice, os
-from Queue import Queue
+from Queue import Queue, Empty
 from PySide import *
 
 ROBOCOMP = ''
@@ -331,6 +331,88 @@ Z()
 		Period = p
 		timer.start(Period)
 
+[[[cog
+
+def implCode(method, outValues, params):
+	cog.outl('')
+	cog.outl('<TABHERE>#')
+	cog.outl('<TABHERE># ' + method['name'])
+	cog.outl('<TABHERE>#')
+	cog.outl('<TABHERE>def ' + method['name'] + '(self, ' + ','.join(params) + "):")
+	cog.out('<TABHERE><TABHERE>kwargs = {')
+	for param in params:
+		cog.out('"'+param+'":'+param+',')
+	cog.outl('}')
+	cog.outl('<TABHERE><TABHERE>cid = self.'+method['name']+'Buffer.push(kwargs)')
+	cog.outl('<TABHERE><TABHERE>while(self.'+method['name']+'Buffer.is_finished(cid)==False): pass')
+	cog.outl('<TABHERE><TABHERE>return self.'+method['name']+'Buffer.result(cid)')
+
+lst = []
+try:
+	lst += component['subscribesTo']
+except:
+	pass
+for imp in lst:
+	if type(imp) == str:
+		im = imp
+	else:
+		im = imp[0]
+	module = pool.moduleProviding(im)
+	for interface in module['interfaces']:
+		if interface['name'] == im:
+			for mname in interface['methods']:
+				method = interface['methods'][mname]
+				outValues = []
+				if method['return'] != 'void':
+					outValues.append([method['return'], 'ret'])
+				params = []
+				for p in method['params']:
+					if p['decorator'] == 'out':
+						outValues.append([p['type'], p['name']])
+					else:
+						params.append(p['name'])
+				if not communicationIsIce(imp):
+					cog.outl('<TABHERE>def ROS' + method['name'] + "(self, req):")
+					cog.outl("<TABHERE><TABHERE>#")
+					cog.outl("<TABHERE><TABHERE>#implementCODE")
+					cog.outl("<TABHERE><TABHERE>#Example ret = req.a + req.b")
+					cog.outl("<TABHERE><TABHERE>#")
+					cog.outl("<TABHERE><TABHERE>return "+method['name']+"Response(ret)")
+				else:
+					implCode(method, outValues, params)
+
+for imp in component['implements']:
+	if type(imp) == str:
+		im = imp
+	else:
+		im = imp[0]
+	module = pool.moduleProviding(im)
+	for interface in module['interfaces']:
+		if interface['name'] == im:
+			for mname in interface['methods']:
+				method = interface['methods'][mname]
+				outValues = []
+				if method['return'] != 'void':
+					outValues.append([method['return'], 'ret'])
+				params = []
+				for p in method['params']:
+					if p['decorator'] == 'out':
+						outValues.append([p['type'], p['name']])
+					else:
+						params.append(p['name'])
+				if not communicationIsIce(imp):
+					cog.outl('<TABHERE>def ROS' + method['name'] + "(self, req):")
+					cog.outl("<TABHERE><TABHERE>#")
+					cog.outl("<TABHERE><TABHERE>#implementCODE")
+					cog.outl("<TABHERE><TABHERE>#Example ret = req.a + req.b")
+					cog.outl("<TABHERE><TABHERE>#")
+					cog.outl("<TABHERE><TABHERE>return "+method['name']+"Response(ret)")
+				else:
+					implCode(method, outValues, params)
+]]]
+[[[end]]]
+
+
 
 class CallQueue(object):
 	def __init__(self, maxsize=-1):
@@ -340,26 +422,24 @@ class CallQueue(object):
 		self.result_buffer = dict()
 
 	def push(self, params):
-		"""
-		psuh a call to queue
-
-		:param params: params to call as a dictionary
-		"""
+		"""push a call to queue"""
 		self.mutex.lock()
-		self.call_buffer.put_nowait(params)
+		self.call_buffer.put_nowait((self.current_id, params))
+		cid = self.current_id
 		self.current_id += 1
 		self.mutex.unlock()
-		print "new call added ", self.current_id
-		return self.current_id
+		return cid
 
 	def pop(self):
-		cid = self.current_id
-		self.mutex.lock()
-		params = self.call_buffer.get_nowait()
-		self.current_id -= 1
-		self.mutex.unlock()
-		print "call removed ", self.current_id
-		return params, cid
+		"""pop a call from the queue"""
+		try:
+			self.mutex.lock()
+			cid, params = self.call_buffer.get_nowait()
+			self.mutex.unlock()
+			return params, cid
+		except Empty:
+			self.mutex.unlock()
+			return None, None
 
 	def result(self, cid):
 		""" return result of an call """
