@@ -182,6 +182,38 @@ void GenericWorker::setPeriod(int p)
 	timer.start(Period);
 }
 
+
+[[[cog
+
+all_interfaces = component.get('subscribesTo', []) + component.get('implements',[])
+for interface in all_interfaces:
+	for method in pool.get_methods(interface):
+		if communicationIsIce(interface):
+
+			paramStrA = []
+			for p in method['params']:
+				ampersand = ''
+				if p[0].lower() not in ['int', '::ice::int', 'float', '::ice::float']:
+					ampersand = '&'
+				paramStrA.append('const ' + p[0] + ' ' + ampersand + p[1])
+			for p in method['outValues']:
+				if p[1] == 'ret': continue
+				paramStrA.append(p[0] + ' '+ '&' + p[1])
+
+			cog.outl(method['return'] + ' GenericWorker::' + method['name'] + '(' + ','.join(paramStrA)  + ")\n{")
+			cog.outl('<TABHERE>uint cid = '+method['name']+'Buffer.push(std::make_tuple('+','.join([x[1] for x in method['params']])+'));')
+			cog.outl('<TABHERE>while(!'+method['name']+'Buffer.isFinished(cid));')
+			if method['return'] != 'void':
+				cog.outl('<TABHERE>'+method['return']+' ret;');
+				cog.outl('<TABHERE>std::tie('+','.join([x[1] for x in method['outValues']])+') = '+method['name']+'Buffer.result(cid);')
+				cog.outl('<TABHERE>return ret;\n}\n')
+			else:
+				cog.outl('<TABHERE>return void;\n}\n')
+]]]
+[[[end]]]
+
+
+
 [[[cog
 try:
 	if 'agmagent' in [ x.lower() for x in component['options'] ]:

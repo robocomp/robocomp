@@ -102,23 +102,7 @@ if 'implements' in component:
 				for mname in interface['methods']:
 					method = interface['methods'][mname]
 					paramStrA = ''
-					if communicationIsIce(impa):
-						for p in method['params']:
-							# delim
-							if paramStrA == '': delim = ''
-							else: delim = ', '
-							# decorator
-							ampersand = '&'
-							if p['decorator'] == 'out':
-								const = ''
-							else:
-								const = 'const '
-								if p['type'].lower() in ['int', '::ice::int', 'float', '::ice::float']:
-									ampersand = ''
-							# STR
-							paramStrA += delim + const + p['type'] + ' ' + ampersand + p['name']
-						cog.outl("<TABHERE>" + method['return'] + ' ' + method['name'] + '(' + paramStrA + ");")
-					else:
+					if not communicationIsIce(impa):
 						paramStrA = module['name'] +"ROS::"+method['name']+"::Request &req, "+module['name']+"ROS::"+method['name']+"::Response &res"
 						if imp in component['iceInterfaces']:
 							cog.outl("<TABHERE>bool ROS" + method['name'] + '(' + paramStrA + ");")
@@ -137,23 +121,7 @@ if 'subscribesTo' in component:
 				for mname in interface['methods']:
 					method = interface['methods'][mname]
 					paramStrA = ''
-					if communicationIsIce(impa):
-						for p in method['params']:
-							# delim
-							if paramStrA == '': delim = ''
-							else: delim = ', '
-							# decorator
-							ampersand = '&'
-							if p['decorator'] == 'out':
-								const = ''
-							else:
-								const = 'const '
-								if p['type'].lower() in ['int', '::ice::int', 'float', '::ice::float']:
-									ampersand = ''
-							# STR
-							paramStrA += delim + const + p['type'] + ' ' + ampersand + p['name']
-						cog.outl("<TABHERE>" + method['return'] + ' ' + method['name'] + '(' + paramStrA + ");")
-					else:
+					if not communicationIsIce(impa):
 						for p in method['params']:
 							# delim
 							if paramStrA == '': delim = ''

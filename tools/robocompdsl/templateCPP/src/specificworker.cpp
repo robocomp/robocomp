@@ -222,6 +222,25 @@ void SpecificWorker::compute()
 // 	{
 // 		std::cout << "Error reading from Camera" << e << std::endl;
 // 	}
+
+[[[cog
+	
+all_interfaces = component.get('subscribesTo', []) + component.get('implements',[])
+for interface in all_interfaces:
+	for method in pool.get_methods(interface):
+		if communicationIsIce(interface):
+			paramStrB = ','.join([x[1] for x in method['params']])
+			cog.outl('<TABHERE>if(!'+method['name']+'Buffer.isEmpty()){\n<TABHERE>uint id;')
+			cog.outl('<TABHERE>'+method['return']+' '+ paramStrB +';')
+			cog.outl('<TABHERE>std::forward_as_tuple(id, std::tie('+paramStrB+')) = '+method['name']+'Buffer.pop();')
+			if method['return'] != 'void':
+				cog.outl('<TABHERE>'+method['return'] + ' ret = '+ method['return']+'() ;')
+				cog.outl('<TABHERE>'+method['name']+'Buffer.setFinished(id, std::make_tuple('+','.join([x[1] for x in method['outValues']])+'));')
+			cog.outl('<TABHERE>}')
+
+]]]
+[[[end]]]
+
 [[[cog
 if component['usingROS'] == True:
 	cog.outl("<TABHERE>ros::spinOnce();")
@@ -249,23 +268,7 @@ if 'implements' in component:
 					method = interface['methods'][mname]
 					paramStrA = ''
 					bodyCode = bodyCodeFromName(method['name'], component)
-					if communicationIsIce(impa):
-						for p in method['params']:
-							# delim
-							if paramStrA == '': delim = ''
-							else: delim = ', '
-							# decorator
-							ampersand = '&'
-							if p['decorator'] == 'out':
-								const = ''
-							else:
-								const = 'const '
-								if p['type'].lower() in ['int', '::ice::int', 'float', '::ice::float']:
-									ampersand = ''
-							# STR
-							paramStrA += delim + const + p['type'] + ' ' + ampersand + p['name']
-						cog.outl(method['return'] + ' SpecificWorker::' + method['name'] + '(' + paramStrA + ")\n{\n//implementCODE\n"+bodyCode+"\n}\n")
-					else:
+					if not communicationIsIce(impa):
 						paramStrA = module['name'] +"ROS::"+method['name']+"::Request &req, "+module['name']+"ROS::"+method['name']+"::Response &res"
 						if imp in component['iceInterfaces']:
 							cog.outl('bool SpecificWorker::ROS' + method['name'] + '(' + paramStrA + ")\n{\n//implementCODE\n"+bodyCode+"\n}\n")
@@ -288,23 +291,7 @@ if 'subscribesTo' in component:
 					method = interface['methods'][mname]
 					paramStrA = ''
 					bodyCode = bodyCodeFromName(method['name'], component)
-					if communicationIsIce(impa):
-						for p in method['params']:
-							# delim
-							if paramStrA == '': delim = ''
-							else: delim = ', '
-							# decorator
-							ampersand = '&'
-							if p['decorator'] == 'out':
-								const = ''
-							else:
-								const = 'const '
-								if p['type'].lower() in ['int', '::ice::int', 'float', '::ice::float']:
-									ampersand = ''
-							# STR
-							paramStrA += delim + const + p['type'] + ' ' + ampersand + p['name']
-						cog.outl(method['return'] + ' SpecificWorker::' + method['name'] + '(' + paramStrA + ")\n{\n//subscribesToCODE\n"+bodyCode+"\n}\n")
-					else:
+					if not communicationIsIce(impa):
 						for p in method['params']:
 							# delim
 							if paramStrA == '': delim = ''

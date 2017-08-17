@@ -67,6 +67,7 @@ if component['gui'] != 'none':
 [[[end]]]
 
 #include <CommonBehavior.h>
+#include <boundbuffer.h>
 
 [[[cog
 for imp in component['recursiveImports']:
@@ -387,7 +388,7 @@ if 'implements' in component:
 									ampersand = ''
 							# STR
 							paramStrA += delim + const + p['type'] + ' ' + ampersand + p['name']
-						cog.outl("<TABHERE>virtual " + method['return'] + ' ' + method['name'] + '(' + paramStrA + ") = 0;")
+						cog.outl("<TABHERE>" + method['return'] + ' ' + method['name'] + '(' + paramStrA + ");")
 					else:
 						paramStrA = module['name'] +"ROS::"+method['name']+"::Request &req, "+module['name']+"ROS::"+method['name']+"::Response &res"
 						if imp in component['iceInterfaces']:
@@ -459,6 +460,15 @@ protected:
 	QTimer timer;
 	int Period;
 [[[cog
+
+all_interfaces = component.get('subscribesTo', []) + component.get('implements',[])
+for interface in all_interfaces:
+	for method in pool.get_methods(interface):
+		if communicationIsIce(interface):
+			param_str = ' ,'.join([x[0] for x in method['params']])
+			out_str = ' ,'.join([x[0] for x in method['outValues']])
+			cog.outl('<TABHERE>BoundBuffer< std::tuple<'+param_str+'>, std::tuple<'+out_str+'> > '+method['name']+'Buffer;')
+
 if component['usingROS'] == True:
 	cog.outl("<TABHERE>ros::NodeHandle node;")
 for imp in component['subscribesTo']:
@@ -489,6 +499,7 @@ for imp in component['implements']:
 				for mname in interface['methods']:
 					method = interface['methods'][mname]
 					cog.outl("<TABHERE>ros::ServiceServer "+nname+"_"+mname+";")
+
 if 'publishes' in component:
 	for publish in component['publishes']:
 		pubs = publish
