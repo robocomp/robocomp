@@ -65,8 +65,8 @@ class SpecificWorker(GenericWorker):
 
 
 		# divide
-		if not self.divideBuffer.empty():
-			params, cid = self.divideBuffer.pop()
+		params, cid = self.divideBuffer.pop()
+		if cid is not None:
 			print "params retrived, id: ", cid
 			divident = params["divident"]
 			divisor = params["divisor"]
@@ -78,13 +78,3 @@ class SpecificWorker(GenericWorker):
 			print "result pushed, id: ", cid
 
 		return True
-
-
-	#
-	# divide
-	#
-	def divide(self, divident,divisor):
-		kwargs = {"divident":divident,"divisor":divisor,}
-		cid = self.divideBuffer.push(kwargs)
-		while(self.divideBuffer.is_finished(cid)==False): pass
-		return tuple(self.divideBuffer.result(cid))

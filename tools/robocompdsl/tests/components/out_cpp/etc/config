@@ -13,3 +13,7 @@ Ice.Trace.Protocol=0
 Ice.ACM.Client=0
 # Ice.ACM.Server=10
 Ice.ACM.Server=0
+
+
+Ice.ThreadPool.Client.Size=10
+Ice.ThreadPool.Server.Size=10

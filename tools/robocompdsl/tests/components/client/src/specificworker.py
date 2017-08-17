@@ -63,8 +63,6 @@ class SpecificWorker(GenericWorker):
 		# r.printvector("d")
 		# print r[0], r[1], r[2]
 
-		# print self.outtest_proxy.divide(10,5)
-
 		print self.count
 		r1 = self.outtest_proxy.begin_divide(self.count, 2)
 		self.count += 1

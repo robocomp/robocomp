@@ -17,7 +17,7 @@
 #    along with RoboComp.  If not, see <http://www.gnu.org/licenses/>.
 
 import sys, Ice, os
-from Queue import Queue
+from Queue import Queue, Empty
 from PySide import *
 
 ROBOCOMP = ''
@@ -90,6 +90,13 @@ class GenericWorker(QtCore.QObject):
 		Period = p
 		timer.start(Period)
 
+	# divide
+	def divide(self, divident,divisor):
+		kwargs = {"divident":divident,"divisor":divisor,}
+		cid = self.divideBuffer.push(kwargs)
+		while(self.divideBuffer.is_finished(cid)==False): pass
+		return tuple(self.divideBuffer.result(cid))
+
 
 class CallQueue(object):
 	def __init__(self, maxsize=-1):
@@ -113,11 +120,15 @@ class CallQueue(object):
 		return cid
 
 	def pop(self):
-		self.mutex.lock()
-		cid, params = self.call_buffer.get_nowait()
-		self.mutex.unlock()
-		# print "params popped, id: ", cid
-		return params, cid
+		try:
+			self.mutex.lock()
+			cid, params = self.call_buffer.get_nowait()
+			self.mutex.unlock()
+			print "params popped, id: ", cid
+			return params, cid
+		except Empty:
+			self.mutex.unlock()
+			return None, None
 
 	def result(self, cid):
 		""" return result of an call """
@@ -141,3 +152,4 @@ class CallQueue(object):
 	def empty(self):
 		""" """
 		return self.call_buffer.empty()
+
