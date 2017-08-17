@@ -106,21 +106,6 @@ void InnerModelJoint::setUpdatePointers(float *lx_, float *ly_, float *lz_, floa
 	fixed = false;
 }
 
-void InnerModelJoint::update()
-{
-	QMutexLocker l(mutex);
-	if (!fixed)
-	{
-		if (lx) backtX = *tx;
-		if (ly) backtY = *ty;
-		if (lz) backtZ = *tz;
-		if (rx) backhX = *hx;
-		if (ry) backhY = *hy;
-		if (rz) backhZ = *hz;
-	}
-	updateChildren();
-}
-
 void InnerModelJoint::update(float lx_, float ly_, float lz_, float hx_, float hy_, float hz_)
 {
 	QMutexLocker l(mutex);
@@ -215,15 +200,20 @@ InnerModelNode * InnerModelJoint::copyNode(QHash<QString, InnerModelNode *> &has
 		fprintf(stderr, "InnerModel internal error: invalid axis %s.\n", axis.c_str());
 		exit(-1);
 	}
+
 	ret->level = level;
 	ret->fixed = fixed;
 	ret->children.clear();
 	ret->attributes.clear();
 	hash[id] = ret;
 
+	ret->innerModel = parent->innerModel;
 	for (QList<InnerModelNode*>::iterator i=children.begin(); i!=children.end(); i++)
 	{
 		ret->addChild((*i)->copyNode(hash, ret));
 	}
+
+ 	ret->setAngle(getAngle());
+
 	return ret;
-}
+  }

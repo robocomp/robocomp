@@ -42,14 +42,6 @@ void InnerModelCamera::save(QTextStream &out, int tabs)
 	out << "<camera id=\"" << id << "\" width=\"" << QString::number(width, 'g', 10) << "\" height=\"" << QString::number(height, 'g', 10) << "\" focal=\"" << QString::number(camera.getFocal(), 'g', 10) << "\" />\n";
 }
 
-void InnerModelCamera::update()
-{
-	if (fixed)
-	{
-	}
-	updateChildren();
-}
-
 InnerModelNode * InnerModelCamera::copyNode(QHash<QString, InnerModelNode *> &hash, InnerModelNode *parent)
 {
 	InnerModelCamera *ret = new InnerModelCamera(id, width, height, focal, innermodel, parent);

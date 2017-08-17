@@ -51,11 +51,6 @@ void InnerModelPrismaticJoint::save(QTextStream &out, int tabs)
 	out << "### joints cannot be saved yet ###\n";
 }
 
-void InnerModelPrismaticJoint::update()
-{
-	QMutexLocker l(mutex);
-	updateChildren();
-}
 
 float InnerModelPrismaticJoint::getPosition()
 {

@@ -144,14 +144,6 @@ void InnerModelPlane::setUpdatePointers(float *nx_, float *ny_, float *nz_, floa
 
 
 
-void InnerModelPlane::update()
-{
-	if (!fixed)
-	{
-		update(nx!=NULL?*nx:normal(0), ny!=NULL?*ny:normal(1), nz!=NULL?*nz:normal(2), px!=NULL?*px:point(0), py!=NULL?*py:point(1), pz!=NULL?*pz:point(2));
-	}
-	updateChildren();
-}
 
 
 

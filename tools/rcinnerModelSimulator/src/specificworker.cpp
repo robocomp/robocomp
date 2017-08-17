@@ -940,7 +940,6 @@ void SpecificWorker::compute()
 		{
 			d->viewer->setFixedSize(frameOSG->width(), frameOSG->height());
 		}
-		d->innerModel->update();
 		d->imv->update();
 		//osg render
 		d->viewer->frame();

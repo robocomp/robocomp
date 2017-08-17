@@ -98,7 +98,10 @@ InnerModel* InnerModel::copy()
 	InnerModel *inner = new InnerModel();
 	QList<InnerModelNode *>::iterator i;
 	for (i=root->children.begin(); i!=root->children.end(); i++)
+	{
+		inner->root->innerModel = this;
 		inner->root->addChild((*i)->copyNode(inner->hash, inner->root));
+	}
 	return inner;
 }
 
@@ -202,14 +205,6 @@ bool InnerModel::save(QString path)
 }
 
 
-/// Auto update method
-void InnerModel::update()
-{
-	QMutexLocker l(mutex);
-	root->update();
-	cleanupTables();
-}
-
 void InnerModel::cleanupTables()
 {
 	QMutexLocker l(mutex);
@@ -217,52 +212,6 @@ void InnerModel::cleanupTables()
 	localHashRot.clear();
 }
 
-void InnerModel::setUpdateRotationPointers(QString rotationId, float *x, float *y, float *z)
-{
-	QMutexLocker l(mutex);
-	InnerModelTransform *aux;
-	if ((aux=dynamic_cast<InnerModelTransform *>(hash[rotationId])) != NULL)
-		aux->setUpdateRotationPointers(x, y, z);
-	else if (hash[rotationId] == NULL)
-		qDebug() << "There is no such" << rotationId << "node";
-	else
-		qDebug() << "Dynamic cast error from" << rotationId << "to InnerModelTransform. " << typeid(hash[rotationId]).name();
-}
-
-
-void InnerModel::setUpdateTranslationPointers(QString translationId, float *x, float *y, float *z)
-{
-	QMutexLocker l(mutex);
-	InnerModelTransform *aux;
-	if ((aux=dynamic_cast<InnerModelTransform *>(hash[translationId])) != NULL)
-		aux->setUpdateTranslationPointers(x, y, z);
-	else if (hash[translationId] == NULL)
-		qDebug() << "There is no such" << translationId << "node";
-	else
-		qDebug() << "Dynamic cast error from" << translationId << "to InnerModelTransform. " << typeid(hash[translationId]).name();
-}
-
-void InnerModel::setUpdateTransformPointers(QString transformId, float *tx, float *ty, float *tz, float *rx, float *ry, float *rz)
-{
-	QMutexLocker l(mutex);
-	InnerModelTransform *aux;
-	if ((aux=dynamic_cast<InnerModelTransform *>(hash[transformId])) != NULL)
-		aux->setUpdatePointers(tx, ty, tz,rx,ry,rz);
-	else if (hash[transformId] == NULL)
-		qDebug() << "There is no such" << transformId << "node";
-}
-
-void InnerModel::setUpdatePlanePointers(QString planeId, float *nx, float *ny, float *nz, float *px, float *py, float *pz)
-{
-	QMutexLocker l(mutex);
-	InnerModelPlane *aux;
-	if ((aux=dynamic_cast<InnerModelPlane *>(hash[planeId])) != NULL)
-		aux->setUpdatePointers(nx, ny, nz, px, py, pz);
-	else if (hash[planeId] == NULL)
-		qDebug() << "There is no such" << planeId << "node";
-	else
-		qDebug() << "Dynamic cast error from" << planeId << "to InnerModelPlane";
-}
 
 void InnerModel::updateTransformValues(QString transformId, float tx, float ty, float tz, float rx, float ry, float rz, QString parentId)
 {

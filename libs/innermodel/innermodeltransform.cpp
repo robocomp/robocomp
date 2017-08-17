@@ -31,7 +31,6 @@ InnerModelTransform::InnerModelTransform(QString id_, QString engine_, float tx_
 	backrX = rx_;
 	backrY = ry_;
 	backrZ = rz_;
-	rx = ry = rz = tx = ty = tz = NULL;
 	gui_translation = gui_rotation = true;
 	mutex = new QMutex(QMutex::Recursive);
 }
@@ -89,54 +88,7 @@ void InnerModelTransform::save(QTextStream &out, int tabs)
 	}
 }
 
-void InnerModelTransform::setUpdatePointers(float *tx_, float *ty_, float *tz_, float *rx_, float *ry_, float *rz_)
-{
-	QMutexLocker l(mutex);
-	tx = tx_;
-	ty = ty_;
-	tz = tz_;
-	rx = rx_;
-	ry = ry_;
-	rz = rz_;
-	fixed = false;
-}
 
-void InnerModelTransform::setUpdateTranslationPointers(float *tx_, float *ty_, float *tz_)
-{
-	QMutexLocker l(mutex);
-	tx = tx_;
-	ty = ty_;
-	tz = tz_;
-	fixed = false;
-}
-
-
-
-void InnerModelTransform::setUpdateRotationPointers(float *rx_, float *ry_, float *rz_)
-{
-	QMutexLocker l(mutex);
-	rx = rx_;
-	ry = ry_;
-	rz = rz_;
-	fixed = false;
-}
-
-
-void InnerModelTransform::update()
-{
-	QMutexLocker l(mutex);
-	if (!fixed)
-	{
-		if (tx) backtX = *tx;
-		if (ty) backtY = *ty;
-		if (tz) backtZ = *tz;
-		if (rx) backrX = *rx;
-		if (ry) backrY = *ry;
-		if (rz) backrZ = *rz;
-		set(backrX, backrY, backrZ, backtX, backtY, backtZ);
-	}
-	updateChildren();
-}
 
 /**
  * @brief Updates the internal values of the node from the values passed in the parameters
