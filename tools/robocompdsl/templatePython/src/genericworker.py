@@ -336,79 +336,31 @@ Z()
 def implCode(method, outValues, params):
 	cog.outl('')
 	cog.outl('<TABHERE>#')
-	cog.outl('<TABHERE># ' + method['name'])
+	cog.outl('<TABHERE># ' + method)
 	cog.outl('<TABHERE>#')
-	cog.outl('<TABHERE>def ' + method['name'] + '(self, ' + ','.join(params) + "):")
+	cog.outl('<TABHERE>def ' + method + '(self, ' + ','.join([x[1] for x in params]) + "):")
 	cog.out('<TABHERE><TABHERE>kwargs = {')
 	for param in params:
-		cog.out('"'+param+'":'+param+',')
+		cog.out('"'+param[1]+'":'+param[1]+',')
 	cog.outl('}')
-	cog.outl('<TABHERE><TABHERE>cid = self.'+method['name']+'Buffer.push(kwargs)')
-	cog.outl('<TABHERE><TABHERE>while(self.'+method['name']+'Buffer.is_finished(cid)==False): pass')
-	cog.outl('<TABHERE><TABHERE>return self.'+method['name']+'Buffer.result(cid)')
+	cog.outl('<TABHERE><TABHERE>cid = self.'+method+'Buffer.push(kwargs)')
+	cog.outl('<TABHERE><TABHERE>while(self.'+method+'Buffer.is_finished(cid)==False): pass')
+	cog.outl('<TABHERE><TABHERE>return tuple(self.'+method+'Buffer.result(cid))')
 
-lst = []
-try:
-	lst += component['subscribesTo']
-except:
-	pass
-for imp in lst:
-	if type(imp) == str:
-		im = imp
-	else:
-		im = imp[0]
-	module = pool.moduleProviding(im)
-	for interface in module['interfaces']:
-		if interface['name'] == im:
-			for mname in interface['methods']:
-				method = interface['methods'][mname]
-				outValues = []
-				if method['return'] != 'void':
-					outValues.append([method['return'], 'ret'])
-				params = []
-				for p in method['params']:
-					if p['decorator'] == 'out':
-						outValues.append([p['type'], p['name']])
-					else:
-						params.append(p['name'])
-				if not communicationIsIce(imp):
-					cog.outl('<TABHERE>def ROS' + method['name'] + "(self, req):")
-					cog.outl("<TABHERE><TABHERE>#")
-					cog.outl("<TABHERE><TABHERE>#implementCODE")
-					cog.outl("<TABHERE><TABHERE>#Example ret = req.a + req.b")
-					cog.outl("<TABHERE><TABHERE>#")
-					cog.outl("<TABHERE><TABHERE>return "+method['name']+"Response(ret)")
-				else:
-					implCode(method, outValues, params)
+all_interfaces = component.get('subscribesTo', []) + component['implements']
+for interface in all_interfaces:
+	for method in pool.get_methods(interface):
+		print(method)
+		if not communicationIsIce(interface):
+			cog.outl('<TABHERE>def ROS' + method['name'] + "(self, req):")
+			cog.outl("<TABHERE><TABHERE>#")
+			cog.outl("<TABHERE><TABHERE>#implementCODE")
+			cog.outl("<TABHERE><TABHERE>#Example ret = req.a + req.b")
+			cog.outl("<TABHERE><TABHERE>#")
+			cog.outl("<TABHERE><TABHERE>return "+method['name']+"Response(ret)")
+		else:
+			implCode(method['name'], method['outValues'], method['params'])
 
-for imp in component['implements']:
-	if type(imp) == str:
-		im = imp
-	else:
-		im = imp[0]
-	module = pool.moduleProviding(im)
-	for interface in module['interfaces']:
-		if interface['name'] == im:
-			for mname in interface['methods']:
-				method = interface['methods'][mname]
-				outValues = []
-				if method['return'] != 'void':
-					outValues.append([method['return'], 'ret'])
-				params = []
-				for p in method['params']:
-					if p['decorator'] == 'out':
-						outValues.append([p['type'], p['name']])
-					else:
-						params.append(p['name'])
-				if not communicationIsIce(imp):
-					cog.outl('<TABHERE>def ROS' + method['name'] + "(self, req):")
-					cog.outl("<TABHERE><TABHERE>#")
-					cog.outl("<TABHERE><TABHERE>#implementCODE")
-					cog.outl("<TABHERE><TABHERE>#Example ret = req.a + req.b")
-					cog.outl("<TABHERE><TABHERE>#")
-					cog.outl("<TABHERE><TABHERE>return "+method['name']+"Response(ret)")
-				else:
-					implCode(method, outValues, params)
 ]]]
 [[[end]]]
 

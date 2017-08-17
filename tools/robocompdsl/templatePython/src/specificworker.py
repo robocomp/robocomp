@@ -74,36 +74,13 @@ class SpecificWorker(GenericWorker):
 		self.timer.start(self.Period)
 
 [[[cog
-lst = []
-try:
-	lst += component['subscribesTo']
-except:
-	pass
-for imp in lst:
-	if type(imp) == str:
-		im = imp
-	else:
-		im = imp[0]
-	module = pool.moduleProviding(im)
-	for interface in module['interfaces']:
-		if interface['name'] == im:
-			for mname in interface['methods']:
-				method = interface['methods'][mname]
-				if communicationIsIce(imp):
-					cog.outl('<TABHERE><TABHERE>self.' + method['name'] + 'Buffer = CallQueue()')
 
-for imp in component['implements']:
-	if type(imp) == str:
-		im = imp
-	else:
-		im = imp[0]
-	if communicationIsIce(imp):
-		module = pool.moduleProviding(im)
-		for interface in module['interfaces']:
-			if interface['name'] == im:
-				for mname in interface['methods']:
-					method = interface['methods'][mname]
-					cog.outl('<TABHERE><TABHERE>self.' + method['name'] + 'Buffer = CallQueue()')
+all_interfaces = component.get('subscribesTo', []) + component['implements']
+for interface in all_interfaces:
+	for method in pool.get_methods(interface):
+		if communicationIsIce(interface):
+			cog.outl('<TABHERE><TABHERE>self.' + method["name"] + 'Buffer = CallQueue()')
+
 ]]]
 [[[end]]]
 
@@ -137,31 +114,31 @@ for imp in component['implements']:
 
 def implCodeCompute(method, outValues, params):
 	cog.outl('')
-	cog.outl('<TABHERE><TABHERE># ' + method['name'])
-	cog.outl('<TABHERE><TABHERE>if not self.'+method['name']+'Buffer.empty():')
-	cog.outl('<TABHERE><TABHERE><TABHERE>params, cid = self.'+method['name']+'Buffer.pop()')
+	cog.outl('<TABHERE><TABHERE># ' + method)
+	cog.outl('<TABHERE><TABHERE>params, cid = self.'+method+'Buffer.pop()')
+	cog.outl('<TABHERE><TABHERE>if cid is not None:')
 	for param in params:
-		cog.outl('<TABHERE><TABHERE><TABHERE>'+param+' = params["'+param+'"]')
+		cog.outl('<TABHERE><TABHERE><TABHERE>'+param[1]+' = params["'+param[1]+'"]')
 
 	cog.outl("<TABHERE><TABHERE><TABHERE>#")
-	cog.outl("<TABHERE><TABHERE><TABHERE>#Logic for " + method['name'])
+	cog.outl("<TABHERE><TABHERE><TABHERE>#Logic for " + method)
 	cog.outl("<TABHERE><TABHERE><TABHERE>#")
 	
 	if len(outValues) == 0:
-		cog.outl("<TABHERE><TABHERE><TABHERE>self."+method['name']+"Buffer.set_finished(cid)\n")
+		cog.outl("<TABHERE><TABHERE><TABHERE>self."+method+"Buffer.set_finished(cid)\n")
 	elif len(outValues) == 1:
 		if method['return'] != 'void':
-			cog.outl("<TABHERE><TABHERE><TABHERE>self."+method['name']+"Buffer.set_finished(cid, ret)\n")
+			cog.outl("<TABHERE><TABHERE><TABHERE>self."+method+"Buffer.set_finished(cid, ret)\n")
 		else:
 			cog.outl("<TABHERE><TABHERE><TABHERE>"+outValues[0][1]+" = "+replaceTypeCPP2Python(outValues[0][0])+"()")
 			cog.outl("<TABHERE><TABHERE><TABHERE>return "+outValues[0][1]+"\n")
-			cog.outl("<TABHERE><TABHERE><TABHERE>self."+method['name']+"Buffer.set_finished(cid, "+outValues[0][1]+" )\n")
+			cog.outl("<TABHERE><TABHERE><TABHERE>self."+method+"Buffer.set_finished(cid, "+outValues[0][1]+" )\n")
 	else:
 		for v in outValues:
 			if v[1] != 'ret':
 				cog.outl("<TABHERE><TABHERE><TABHERE>"+v[1]+" = "+replaceTypeCPP2Python(v[0])+"()")
 		first = True
-		cog.out("<TABHERE><TABHERE><TABHERE>self."+method['name']+"Buffer.set_finished(cid, [")
+		cog.out("<TABHERE><TABHERE><TABHERE>self."+method+"Buffer.set_finished(cid, [")
 		for v in outValues:
 			if not first: cog.out(', ')
 			cog.out(v[1])
@@ -169,54 +146,12 @@ def implCodeCompute(method, outValues, params):
 				first = False
 		cog.out("])\n")
 
-lst = []
-try:
-	lst += component['subscribesTo']
-except:
-	pass
-for imp in lst:
-	if type(imp) == str:
-		im = imp
-	else:
-		im = imp[0]
-	module = pool.moduleProviding(im)
-	for interface in module['interfaces']:
-		if interface['name'] == im:
-			for mname in interface['methods']:
-				method = interface['methods'][mname]				
-				outValues = []
-				params = []
-				if method['return'] != 'void':
-					outValues.append([method['return'], 'ret'])
-				for p in method['params']:
-					if p['decorator'] == 'out':
-						outValues.append([p['type'], p['name']])
-					else:
-						params.append(p['name'])
-				if communicationIsIce(imp):
-					implCodeCompute(method, outValues, params)
+all_interfaces = component.get('subscribesTo', []) + component['implements']
+for interface in all_interfaces:
+	for method in pool.get_methods(interface):
+		if communicationIsIce(interface):
+			implCodeCompute(method['name'], method['outValues'], method['params'])
 
-for imp in component['implements']:
-	if type(imp) == str:
-		im = imp
-	else:
-		im = imp[0]
-	if communicationIsIce(imp):
-		module = pool.moduleProviding(im)
-		for interface in module['interfaces']:
-			if interface['name'] == im:
-				for mname in interface['methods']:
-					method = interface['methods'][mname]
-					outValues = []
-					params = []
-					if method['return'] != 'void':
-						outValues.append([method['return'], 'ret'])
-					for p in method['params']:
-						if p['decorator'] == 'out':
-							outValues.append([p['type'], p['name']])
-						else:
-							params.append(p['name'])
-					implCodeCompute(method, outValues, params)
 ]]]
 [[[end]]]
 
