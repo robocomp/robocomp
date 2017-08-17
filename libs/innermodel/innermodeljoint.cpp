@@ -127,14 +127,14 @@ void InnerModelJoint::update(float lx_, float ly_, float lz_, float hx_, float h
 
 float InnerModelJoint::getAngle()
 {
-	printf("getAngle from %p\n", this);
+	//printf("getAngle from %p\n", this);
 	
 	return backrZ;
 }
 
 float InnerModelJoint::setAngle(float angle, bool force)
 {
-	printf("setAngle from %p\n", this);
+	//printf("setAngle from %p\n", this);
 	
 	float ret;
 	if ((angle <= max and angle >= min) or force)
@@ -154,18 +154,14 @@ float InnerModelJoint::setAngle(float angle, bool force)
 
 	if (axis == "x")
 	{
-		printf("x\n");
-		print("m");
 		set(ret,0,0, 0,0,0);
 	}
 	else if (axis == "y")
 	{
-		printf("y\n");
 		set(0,ret,0, 0,0,0);
 	}
 	else if (axis == "z")
 	{
-		printf("z\n");
 		set(0,0,ret, 0,0,0);
 	}
 	else
@@ -175,7 +171,7 @@ float InnerModelJoint::setAngle(float angle, bool force)
 		throw error;
 	}
 
-	printf("%p %ld\n", innerModel, (long int)innerModel);
+	//printf("%p %ld\n", innerModel, (long int)innerModel);
 	if (innerModel)
 		innerModel->cleanupTables();
 	return ret;
@@ -192,7 +188,7 @@ QVec InnerModelJoint::unitaryAxis()
 
 InnerModelNode * InnerModelJoint::copyNode(QHash<QString, InnerModelNode *> &hash, InnerModelNode *parent)
 {
-	
+	std::cout << id.toStdString() << "--------------------------------: " << getAngle() << std::endl;
 	InnerModelJoint *ret;
 	if (axis == "x")
 	{
@@ -217,9 +213,13 @@ InnerModelNode * InnerModelJoint::copyNode(QHash<QString, InnerModelNode *> &has
 	ret->attributes.clear();
 	hash[id] = ret;
 
+	std::cout << "just before 1 " << id.toStdString() << "--------------------------------: " << ret->getAngle() << ret->backrZ << std::endl;
+
 	for (QList<InnerModelNode*>::iterator i=children.begin(); i!=children.end(); i++)
 	{
 		ret->addChild((*i)->copyNode(hash, ret));
 	}
+	std::cout << "just before " << id.toStdString() << "--------------------------------: " << ret->getAngle() << ret->backrZ << std::endl;
+
 	return ret;
 }

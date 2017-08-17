@@ -142,7 +142,11 @@ class InnerModelViewer : public osg::Switch
 		void update();
 		void recursiveConstructor(InnerModelNode* node, osg::Group* parent, QHash< QString, osg::MatrixTransform* >& mtsHash, QHash< QString, IMVMesh >& meshHash, bool ignoreCameras=false);
 		void setMainCamera(osgGA::TrackballManipulator *manipulator, CameraView pov) const;
-		InnerModelMgr innerModel;	
+		void setCameraCenter(OsgView *view, const QVec center_);
+		void setLookTowards(OsgView *view, const QVec to_, const QVec up_);
+		void lookAt(OsgView *view, const QVec center_, const QVec to_, const QVec up_);
+		inline void lock() { mutex.lock(); innerModel.lock(); };
+		inline void unlock() { innerModel.unlock(); mutex.unlock();};
 	
 		//CAUTION
 		QHash<QString, osg::ref_ptr<osg::PolygonMode > > osgmeshmodes;
@@ -155,13 +159,10 @@ class InnerModelViewer : public osg::Switch
 		QHash<QString, IMVPlane *> planesHash;
 		QHash<QString, IMVCamera> cameras;
 		QHash<QString, IMVLaser> lasers;
-        
-		//QMutex *mutex;
-		std::mutex mutex;
-		void setCameraCenter(OsgView *view, const QVec center_);
-		void setLookTowards(OsgView *view, const QVec to_, const QVec up_);
-		void lookAt(OsgView *view, const QVec center_, const QVec to_, const QVec up_);
 
+		InnerModelMgr innerModel;
+		std::mutex mutex;
+		
 	protected:
 		void setOSGMatrixTransformForPlane(osg::MatrixTransform *mt, InnerModelPlane *plane);
 		

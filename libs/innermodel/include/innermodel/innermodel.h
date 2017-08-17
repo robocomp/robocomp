@@ -174,7 +174,6 @@ public:
 	/////////////////////////////////////////////
 	QList<QString> getIDKeys() {return hash.keys(); }
 	InnerModelNode *getNode(const QString & id) const { /*QMutexLocker ml(mutex); */if (hash.contains(id)) return hash[id]; else return NULL;}
-	
 	template <class N> N* getNode(const QString &id) const
 	{
 		N* r = dynamic_cast<N *>(getNode(id));
@@ -190,13 +189,6 @@ public:
 		return r;
 	}
 
-	/**
-	 * @brief Removes sub tree and returns a list with his id
-	 *
-	 * @param item ...
-	 * @param l ...
-	 * @return void
-	 */
 	void removeSubTree(InnerModelNode *item, QStringList *l);
 	void removeNode(const QString & id);
 	void moveSubTree(InnerModelNode *nodeSrc, InnerModelNode *nodeDst);

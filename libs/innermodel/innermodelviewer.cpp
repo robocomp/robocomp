@@ -27,9 +27,6 @@ InnerModelViewer::InnerModelViewer(const InnerModelMgr &im, QString root,  osg::
 {	
 	// Initialize InnerModel pointer
 	innerModel = im;
-	//mutex = innerModel->mutex;
-	
-	innerModel->print();
 	
 	if( innerModel.get() == nullptr )
 		throw "InnerModelViewer::InnerModelViewer(): Error, InnerModel is nullptr";
@@ -258,7 +255,6 @@ void InnerModelViewer::update()
 
 void InnerModelViewer::setOSGMatrixTransformForPlane(osg::MatrixTransform *mt, InnerModelPlane *plane)
 {
-	//QMutexLocker ml(mutex);
 	osg::Matrix r;
 	r.makeRotate(osg::Vec3(0, 0, 1), osg::Vec3(plane->normal(0), plane->normal(1), -plane->normal(2)));
 	osg::Matrix t;
@@ -268,7 +264,6 @@ void InnerModelViewer::setOSGMatrixTransformForPlane(osg::MatrixTransform *mt, I
 
 void InnerModelViewer::reloadMesh(QString id)
 {
-	//QMutexLocker ml(mutex);
 	// Create mesh
 	InnerModelMesh *mesh = (InnerModelMesh *)innerModel->getNode(id);
 	if (not mesh)
@@ -290,7 +285,6 @@ void InnerModelViewer::reloadMesh(QString id)
 
 osg::Geode* InnerModelViewer::getGeode(QString id)
 {
-	//QMutexLocker ml(mutex);
 	osg::Group *osgMesh = dynamic_cast<osg::Group *>(meshHash[id].osgmeshes.get());
 	osg::Geode *geode=NULL;
 	while (geode==NULL)
