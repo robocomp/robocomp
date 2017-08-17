@@ -321,6 +321,28 @@ class IDSLPool:
 				modulesList.append(m)
 		return modulesList
 
+	def get_methods(self, in_interface):
+		methods = []
+		if type(in_interface) == str:
+			in_interface = in_interface
+		else:
+			in_interface = in_interface[0]
+		module = self.moduleProviding(in_interface)
+		for interface in module['interfaces']:
+			if interface['name'] == in_interface:
+				for mname in interface['methods']:
+					method = interface['methods'][mname]
+					outValues = []
+					if method['return'] != 'void':
+						outValues.append([method['return'], 'ret'])
+					params = []
+					for p in method['params']:
+						if p['decorator'] == 'out':
+							outValues.append([p['type'], p['name']])
+						else:
+							params.append([p['type'], p['name']])
+					methods.append({'name':method['name'], 'params':params, 'outValues':outValues, 'return':method['return']})
+		return methods
 
 if __name__ == '__main__':
 	idsl = IDSLParsing.fromFile(sys.argv[1])
