@@ -899,6 +899,7 @@ bool InnerModel::collide(const QString &a, const QString &b)
 #endif
 }
 
+
 /**
  * @brief ...
  *

@@ -19,23 +19,33 @@ includeDirectories = theIDSLPaths.split('#')
 from parseCDSL import *
 component = CDSLParsing.fromFile(theCDSL, includeDirectories=includeDirectories)
 
+storm = False
 
 text = False
-for imp in component['implements']:
-	if type(imp) == str:
-		im = imp
+for ima in component['implements']:
+	if type(ima) == str:
+		im = ima
 	else:
+<<<<<<< HEAD
 		im = imp[0]
 	if communicationIsIce(imp):
 		if text == False:
 			cog.outl('# Endpoints for implemented interfaces')
 			text = True
 		cog.outl(im+".Endpoints=tcp -p 0")
+=======
+		im = ima[0]
+	if text == False:
+		cog.outl('# Endpoints for implemented interfaces')
+		text = True
+	cog.outl(im+".Endpoints=tcp -p 0")
+>>>>>>> master
 if text:
 	cog.out('\n\n')
 
 
 text = False
+<<<<<<< HEAD
 for sub in component['subscribesTo']:
 	if type(sub) == str:
 		sb = sub
@@ -46,30 +56,57 @@ for sub in component['subscribesTo']:
 			cog.outl('# Endpoints for subscriptions')
 			text = True
 		cog.outl(sb+"Topic.Endpoints=tcp -p 0")
+=======
+for sb in component['subscribesTo']:
+	if text == False:
+		cog.outl('# Endpoints for subscriptions')
+		text = True
+	storm = True
+
+	xx = sb
+	while type(xx) != type(''):
+		xx = xx[0]
+	if communicationIsIce(sb):
+		cog.outl(str(xx)+"Topic.Endpoints=tcp -p 0")
+	else:
+		cog.outl(str(xx)+"Topic.Endpoints=whatever " + str(xx) + " for ROS")
+
+>>>>>>> master
 if text:
 	cog.out('\n\n')
 
 
 text = False
-for req, num in getNameNumber(component['requires']):
-	if type(req) == str:
-		rq = req
+for namea, number in getNameNumber(component['requires']):
+	if type(namea) == str:
+		name = namea
 	else:
+<<<<<<< HEAD
 		rq = req[0]
 	if communicationIsIce(req):
 		if text == False:
 			cog.outl('# Proxies for required interfaces')
 			text = True
 		cog.outl(rq + num + "Proxy = " + rq.lower() + ":tcp -h localhost -p 0")
+=======
+		name = namea[0]
+	if text == False:
+		cog.outl('# Proxies for required interfaces')
+		text = True
+	cog.outl(name + number + "Proxy = " + name.lower() + ":tcp -h localhost -p 0")
+>>>>>>> master
 if text:
 	cog.out('\n\n')
 
 
+for pb in component['publishes']:
+	storm = True
+if storm:
+	cog.outl('# This property is used by the clients to connect to IceStorm.')
+	cog.outl('TopicManager.Proxy=IceStorm/TopicManager:default -p 9999')
+
 ]]]
 [[[end]]]
-
-# This property is used by the clients to connect to IceStorm.
-TopicManager.Proxy=IceStorm/TopicManager:default -p 9999
 
 
 Ice.Warn.Connections=0

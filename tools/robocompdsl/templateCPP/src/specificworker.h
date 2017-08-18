@@ -57,6 +57,8 @@ Z()
        @author authorname
 */
 
+
+
 [[[cog
 try:
 	if 'agmagent' in [ x.lower() for x in component['options'] ]:
@@ -67,11 +69,14 @@ except:
 [[[end]]]
 
 
+
+
 #ifndef SPECIFICWORKER_H
 #define SPECIFICWORKER_H
 
 #include <genericworker.h>
 #include <innermodel/innermodel.h>
+<<<<<<< HEAD
 [[[cog
 if component['innermodelviewer']:
 	cog.outl("#ifdef USE_QTGUI")
@@ -80,6 +85,8 @@ if component['innermodelviewer']:
 	cog.outl("#endif")
 ]]]
 [[[end]]]
+=======
+>>>>>>> master
 
 class SpecificWorker : public GenericWorker
 {
@@ -102,6 +109,7 @@ if 'implements' in component:
 				for mname in interface['methods']:
 					method = interface['methods'][mname]
 					paramStrA = ''
+<<<<<<< HEAD
 					if communicationIsIce(impa):
 						for p in method['params']:
 							# delim
@@ -124,20 +132,36 @@ if 'implements' in component:
 							cog.outl("<TABHERE>bool ROS" + method['name'] + '(' + paramStrA + ");")
 						else:
 							cog.outl("<TABHERE>bool " + method['name'] + '(' + paramStrA + ");")
+=======
+					for p in method['params']:
+						# delim
+						if paramStrA == '': delim = ''
+						else: delim = ', '
+						# decorator
+						ampersand = '&'
+						if p['decorator'] == 'out':
+							const = ''
+						else:
+							const = 'const '
+							if p['type'].lower() in ['int', '::ice::int', 'float', '::ice::float']:
+								ampersand = ''
+						# STR
+						paramStrA += delim + const + p['type'] + ' ' + ampersand + p['name']
+					cog.outl("<TABHERE>" + method['return'] + ' ' + method['name'] + '(' + paramStrA + ");")
+>>>>>>> master
 
 if 'subscribesTo' in component:
-	for impa in component['subscribesTo']:
-		if type(impa) == str:
-			imp = impa
-		else:
-			imp = impa[0]
-		module = pool.moduleProviding(imp)
-		for interface in module['interfaces']:
-			if interface['name'] == imp:
-				for mname in interface['methods']:
-					method = interface['methods'][mname]
-					paramStrA = ''
-					if communicationIsIce(impa):
+	for imp in component['subscribesTo']:
+		nname = imp
+		while type(nname) != type(''):			
+			nname = nname[0]
+		if communicationIsIce(nname):
+			module = pool.moduleProviding(nname)
+			for interface in module['interfaces']:
+				if interface['name'] == nname:
+					for mname in interface['methods']:
+						method = interface['methods'][mname]
+						paramStrA = ''
 						for p in method['params']:
 							# delim
 							if paramStrA == '': delim = ''
@@ -153,6 +177,7 @@ if 'subscribesTo' in component:
 							# STR
 							paramStrA += delim + const + p['type'] + ' ' + ampersand + p['name']
 						cog.outl("<TABHERE>" + method['return'] + ' ' + method['name'] + '(' + paramStrA + ");")
+<<<<<<< HEAD
 					else:
 						for p in method['params']:
 							# delim
@@ -179,6 +204,10 @@ if 'subscribesTo' in component:
 							cog.outl("<TABHERE>void ROS" + method['name'] + '(' + paramStrA + ");")
 						else:
 							cog.outl("<TABHERE>void " + method['name'] + '(' + paramStrA + ");")
+=======
+		else:
+			cog.outl("<TABHERE>" + method['return'] + ' ' + method['name'] + "();")
+>>>>>>> master
 
 ]]]
 [[[end]]]
@@ -187,13 +216,16 @@ public slots:
 	void compute();
 
 private:
-	InnerModel *innerModel;
 [[[cog
+<<<<<<< HEAD
 if component['innermodelviewer']:
 	cog.outl("#ifdef USE_QTGUI")
 	cog.outl("<TABHERE>OsgView *osgView;")
 	cog.outl("<TABHERE>InnerModelViewer *innerModelViewer;")
 	cog.outl("#endif")
+=======
+
+>>>>>>> master
 try:
 	if isAGM1Agent(component):
 		cog.outl("<TABHERE>std::string action;")

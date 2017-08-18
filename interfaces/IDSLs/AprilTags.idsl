@@ -15,9 +15,8 @@ module RoboCompAprilTags
 	};
 
 	sequence<tag> tagsList;
-
-	interface AprilTags
-	{
+	
+	interface AprilTags{
 		void newAprilTag(tagsList tags);
 		void newAprilTagAndPose(tagsList tags, RoboCompGenericBase::TBaseState bState,  RoboCompJointMotor::MotorStateMap hState );
 	};

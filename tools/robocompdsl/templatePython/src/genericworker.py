@@ -25,8 +25,12 @@ if component == None:
 	os.__exit(1)
 
 from parseIDSL import *
+<<<<<<< HEAD
 pool = IDSLPool(theIDSLs, includeDirectories)
 modulesList = pool.rosModulesImports()
+=======
+pool = IDSLPool(theIDSLs)
+>>>>>>> master
 
 ]]]
 [[[end]]]
@@ -56,6 +60,7 @@ Z()
 #    You should have received a copy of the GNU General Public License
 #    along with RoboComp.  If not, see <http://www.gnu.org/licenses/>.
 
+<<<<<<< HEAD
 import sys, Ice, os
 from PySide import *
 
@@ -172,9 +177,14 @@ if component['usingROS'] == True:
 						srvIncludes[module['name']] = 'from '+module['name']+'ROS.srv import *'
 	for srv in srvIncludes.values():
 		cog.outl(srv)
+=======
+import sys
+from PySide import *
+
+[[[cog
+>>>>>>> master
 A()
 if component['gui'] != 'none':
-	cog.outl('')
 	cog.outl('try:')
 	cog.outl('<TABHERE>from ui_mainUI import *')
 	cog.outl('except:')
@@ -184,6 +194,7 @@ Z()
 ]]]
 [[[end]]]
 
+<<<<<<< HEAD
 [[[cog
 if component['usingROS'] == True:
 	#CREANDO CLASES PARA LOS PUBLISHERS
@@ -253,6 +264,8 @@ if component['usingROS'] == True:
 						cog.outl("<TABHERE><TABHERE>return self.srv_"+mname+"("+paramStrA+")")
 ]]]
 [[[end]]]
+=======
+>>>>>>> master
 
 class GenericWorker(
 [[[cog
@@ -273,14 +286,11 @@ Z()
 
 
 [[[cog
-for req, num in getNameNumber(component['requires']):
-	if type(req) == str:
-		rq = req
+for namea in component['requires']:
+	if type(namea) == str:
+		name = namea
 	else:
-		rq = req[0]
-	if communicationIsIce(req):
-		cog.outl("<TABHERE><TABHERE>self."+rq.lower()+num+"_proxy = mprx[\""+rq+"Proxy"+num+"\"]")
-	else:
+<<<<<<< HEAD
 		if rq in component['iceInterfaces']:
 			cog.outl("<TABHERE><TABHERE>self."+rq.lower()+"_rosproxy = ServiceClient"+rq+"()")
 		else:
@@ -298,6 +308,20 @@ for pb, num in getNameNumber(component['publishes']):
 			cog.outl("<TABHERE><TABHERE>self."+pub.lower()+"_rosproxy = Publisher"+pub+"()")
 		else:
 			cog.outl("<TABHERE><TABHERE>self."+pub.lower()+"_proxy = Publisher"+pub+"()")
+=======
+		name = namea[0]
+		cog.outl("<TABHERE><TABHERE>self."+name.lower()+"_proxy = mprx[\""+name+"Proxy\"]")
+]]]
+[[[end]]]
+
+[[[cog
+for pba in component['publishes']:
+	if type(pba) == type(''):
+		pb = pba
+	else:
+		pb = pba[0]
+	cog.outl("<TABHERE><TABHERE>self."+pb.lower()+" = mprx[\""+pb+"Pub\"]")
+>>>>>>> master
 ]]]
 [[[end]]]
 
@@ -316,6 +340,17 @@ Z()
 		self.Period = 30
 		self.timer = QtCore.QTimer(self)
 
+[[[cog
+	if len(component['publishes']) > 0 or len(component['subscribesTo']) > 0:
+		cog.outl("""			
+		<TABHERE><TABHERE>self._storm_timer = QtCore.QTimer(self)
+		<TABHERE><TABHERE>self._storm_timer.timeout.connect(self.stormCheck)
+		<TABHERE><TABHERE>self._storm_period = 100
+		<TABHERE><TABHERE>self._storm_timer.start(self._storm_period)
+		""")
+]]]
+[[[end]]]
+
 
 	@QtCore.Slot()
 	def killYourSelf(self):
@@ -329,3 +364,17 @@ Z()
 		print "Period changed", p
 		Period = p
 		timer.start(Period)
+
+[[[cog
+	cog.outl("""
+	<TABHERE>@QtCore.Slot()
+	<TABHERE>def stormCheck(self):
+	<TABHERE><TABHERE>try:
+	<TABHERE><TABHERE><TABHERE>IceStorm.TopicManagerPrx.checkedCast(self.mprx["topicManager"])
+	<TABHERE><TABHERE>except KeyError:
+	<TABHERE><TABHERE><TABHERE>print "please set Storm Endpoints "
+	<TABHERE><TABHERE>except:
+	<TABHERE><TABHERE><TABHERE>print "STORM not running"
+	""")
+]]]
+[[[end]]]

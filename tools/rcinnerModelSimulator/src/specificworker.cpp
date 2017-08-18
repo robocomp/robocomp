@@ -734,6 +734,7 @@ void SpecificWorker::getRecursiveNodeInformation(RoboCompInnerModelManager::Node
 	RoboCompInnerModelManager::NodeInformation ni;
 	ni.id = node->id.toStdString();
 
+
 	if (node->parent)
 		ni.parentId = node->parent->id.toStdString();
 	else
