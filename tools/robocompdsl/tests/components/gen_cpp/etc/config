@@ -1,0 +1,19 @@
+CommonBehavior.Endpoints=tcp -p 0
+
+
+# Endpoints for implemented interfaces
+outTest.Endpoints=tcp -p 4678
+
+
+
+Ice.Warn.Connections=0
+Ice.Trace.Network=0
+Ice.Trace.Protocol=0
+# Ice.ACM.Client=10
+Ice.ACM.Client=0
+# Ice.ACM.Server=10
+Ice.ACM.Server=0
+
+
+Ice.ThreadPool.Client.Size=10
+Ice.ThreadPool.Server.Size=10
