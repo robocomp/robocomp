@@ -118,27 +118,9 @@ if __name__ == '__main__':
 		worker = SpecificWorker(mprx)
 		worker.setParams(parameters)
 
-	adapter = ic.createObjectAdapter('test')
-	adapter.add(testI(worker), ic.stringToIdentity('test'))
+	adapter = ic.createObjectAdapter('outTest')
+	adapter.add(outTestI(worker), ic.stringToIdentity('outtest'))
 	adapter.activate()
-
-
-	publishTest_adapter = ic.createObjectAdapter("publishTestTopic")
-	publishtestI_ = publishTestI(worker)
-	publishtest_proxy = publishTest_adapter.addWithUUID(publishtestI_).ice_oneway()
-
-	subscribeDone = False
-	while not subscribeDone:
-		try:
-			publishtest_topic = topicManager.retrieve("publishTest")
-			subscribeDone = True
-		except Ice.Exception, e:
-			print "Error. Topic does not exist (yet)"
-			status = 0
-			time.sleep(1)
-	qos = {}
-	publishtest_topic.subscribeAndGetPublisher(qos, publishtest_proxy)
-	publishTest_adapter.activate()
 
 
 	signal.signal(signal.SIGINT, signal.SIG_DFL)

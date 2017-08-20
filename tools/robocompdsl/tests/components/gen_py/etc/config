@@ -1,9 +1,5 @@
 # Endpoints for implemented interfaces
-test.Endpoints=tcp -p 2990
-
-
-# Endpoints for subscriptions
-publishTestTopic.Endpoints=tcp -p 0
+outTest.Endpoints=tcp -p 4678
 
 
 

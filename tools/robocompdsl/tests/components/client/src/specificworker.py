@@ -17,6 +17,7 @@
 #    along with RoboComp.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+from __future__ import print_function
 import sys, os, traceback, time
 
 from PySide import *
@@ -48,7 +49,7 @@ class SpecificWorker(GenericWorker):
 
 	@QtCore.Slot()
 	def compute(self):
-		print 'SpecificWorker.compute...'
+		print ('SpecificWorker.compute...')
 		#computeCODE
 		#try:
 		#	self.differentialrobot_proxy.setSpeedBase(100, 0)
@@ -63,18 +64,22 @@ class SpecificWorker(GenericWorker):
 		# r.printvector("d")
 		# print r[0], r[1], r[2]
 
-		print self.count
+		self.outtest_proxy.begin_divide(self.count, 2, lambda q,r: print(str(q)+str(r)), lambda ex:print(ex))
+		self.count += 1
+		
 		r1 = self.outtest_proxy.begin_divide(self.count, 2)
 		self.count += 1
 
 		q, r = self.outtest_proxy.divide(self.count, 2)
-		print "sync call, ", q, r
+		print (("sync call, ", q, r))
 		self.count += 1
 
 		# For demo, check call completion using isCompleted()
 		while(not r1.isCompleted()): pass
 		q, r = self.outtest_proxy.end_divide(r1)
-		print "async call, ", q, r
+		print (("async call, ", q, r))
+
+		self.outtest_proxy.printmsg("test print")
 
 		return True
 

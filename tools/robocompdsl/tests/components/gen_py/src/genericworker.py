@@ -17,9 +17,8 @@
 #    along with RoboComp.  If not, see <http://www.gnu.org/licenses/>.
 
 import sys, Ice, os
-from Queue import Queue
+from Queue import Queue, Empty
 from PySide import *
-
 
 ROBOCOMP = ''
 try:
@@ -32,13 +31,35 @@ preStr = "-I/opt/robocomp/interfaces/ -I"+ROBOCOMP+"/interfaces/ --all /opt/robo
 Ice.loadSlice(preStr+"CommonBehavior.ice")
 import RoboCompCommonBehavior
 
-preStr = "-I/opt/robocomp/interfaces/ -I"+ROBOCOMP+"/interfaces/ --all /opt/robocomp/interfaces/"
-Ice.loadSlice(preStr+"Test.ice")
+additionalPathStr = ''
+icePaths = []
+try:
+	icePaths.append('/opt/robocomp/interfaces')
+	SLICE_PATH = os.environ['SLICE_PATH'].split(':')
+	for p in SLICE_PATH:
+		icePaths.append(p)
+		additionalPathStr += ' -I' + p + ' '
+except:
+	print 'SLICE_PATH environment variable was not exported. Using only the default paths'
+	pass
+
+ice_Test = False
+for p in icePaths:
+	print 'Trying', p, 'to load Test.ice'
+	if os.path.isfile(p+'/Test.ice'):
+		print 'Using', p, 'to load Test.ice'
+		preStr = "-I/opt/robocomp/interfaces/ -I"+ROBOCOMP+"/interfaces/ " + additionalPathStr + " --all "+p+'/'
+		wholeStr = preStr+"Test.ice"
+		Ice.loadSlice(wholeStr)
+		ice_Test = True
+		break
+if not ice_Test:
+	print 'Couln\'t load Test'
+	sys.exit(-1)
 from RoboCompTests import *
 
 
-from testI import *
-from publishtestI import *
+from outtestI import *
 
 
 class GenericWorker(QtCore.QObject):
@@ -55,10 +76,6 @@ class GenericWorker(QtCore.QObject):
 		self.Period = 30
 		self.timer = QtCore.QTimer(self)
 
-		self.msgTestBuffer = CallQueue()
-		self.printmsgBuffer = CallQueue()
-
-
 
 	@QtCore.Slot()
 	def killYourSelf(self):
@@ -73,27 +90,41 @@ class GenericWorker(QtCore.QObject):
 		Period = p
 		timer.start(Period)
 
-	#
-	# msgTest
-	#
-	def msgTest(self, id):
-		kwargs = {'id': id}
-		cid = self.msgTestBuffer.push(kwargs)
-		while(self.msgTestBuffer.is_finished(cid)==False):
-			pass
-		return self.msgTestBuffer.result(cid)
 
+	#
+	# substract
+	#
+	def substract(self, num1,num2):
+		kwargs = {"num1":num1,"num2":num2,}
+		cid = self.substractBuffer.push(kwargs)
+		while(self.substractBuffer.is_finished(cid)==False): pass
+		return tuple(self.substractBuffer.result(cid))
 
 	#
 	# printmsg
 	#
 	def printmsg(self, message):
-		# print 'function called', message
-		kwargs = {'message': message}
+		kwargs = {"message":message,}
 		cid = self.printmsgBuffer.push(kwargs)
-		while(self.printmsgBuffer.is_finished(cid)==False):
-			pass
-		return self.printmsgBuffer.result(cid)
+
+	#
+	# sum
+	#
+	def sum(self, num1,num2):
+		kwargs = {"num1":num1,"num2":num2,}
+		cid = self.sumBuffer.push(kwargs)
+		while(self.sumBuffer.is_finished(cid)==False): pass
+		return tuple(self.sumBuffer.result(cid))
+
+	#
+	# divide
+	#
+	def divide(self, divident,divisor):
+		kwargs = {"divident":divident,"divisor":divisor,}
+		cid = self.divideBuffer.push(kwargs)
+		while(self.divideBuffer.is_finished(cid)==False): pass
+		return tuple(self.divideBuffer.result(cid))
+
 
 
 class CallQueue(object):
@@ -104,26 +135,24 @@ class CallQueue(object):
 		self.result_buffer = dict()
 
 	def push(self, params):
-		"""
-		psuh a call to queue
-
-		:param params: params to call as a dictionary
-		"""
+		"""push a call to queue"""
 		self.mutex.lock()
-		self.call_buffer.put_nowait(params)
+		self.call_buffer.put_nowait((self.current_id, params))
+		cid = self.current_id
 		self.current_id += 1
 		self.mutex.unlock()
-		print "new call added ", self.current_id
-		return self.current_id
+		return cid
 
 	def pop(self):
-		cid = self.current_id
-		self.mutex.lock()
-		params = self.call_buffer.get_nowait()
-		self.current_id -= 1
-		self.mutex.unlock()
-		print "call removed ", self.current_id
-		return params, cid
+		"""pop a call from the queue"""
+		try:
+			self.mutex.lock()
+			cid, params = self.call_buffer.get_nowait()
+			self.mutex.unlock()
+			return params, cid
+		except Empty:
+			self.mutex.unlock()
+			return None, None
 
 	def result(self, cid):
 		""" return result of an call """
@@ -140,6 +169,8 @@ class CallQueue(object):
 
 	def set_finished(self, cid, result=None):
 		""" set a call as finished"""
+		if not result:
+			pass
 		self.result_buffer[cid] = result
 
 	def empty(self):

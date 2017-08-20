@@ -32,8 +32,14 @@ class SpecificWorker(GenericWorker):
 	def __init__(self, proxy_map):
 		super(SpecificWorker, self).__init__(proxy_map)
 		self.timer.timeout.connect(self.compute)
-		self.Period = 4000
+		self.Period = 2000
 		self.timer.start(self.Period)
+
+		self.substractBuffer = CallQueue()
+		self.printmsgBuffer = CallQueue()
+		self.sumBuffer = CallQueue()
+		self.divideBuffer = CallQueue()
+
 
 	def setParams(self, params):
 		#try:
@@ -60,22 +66,58 @@ class SpecificWorker(GenericWorker):
 		# r.printvector("d")
 		# print r[0], r[1], r[2]
 
-		# printmsg
-		if not self.printmsgBuffer.empty():
-			params, cid = self.printmsgBuffer.pop()
-			message = params["message"]
-			#
-			#Logic for printmsg
-			#
-			self.printmsgBuffer.set_finished(cid)
+		# You can call the methods on proxy in blocking or non blocking way (async)
+		# 
+		# for calling in blocking way 
+		# a, b = self.test_proxy.sum(100, 2)
+		# 
+		# async call using polling
+		# 	call1 = test_proxy.begin_sum(100, 2)
+		# poll using
+		# 	call1.isCompleted()
+		# get the return value
+		# 	a,b = test_proxy.end_sum(call1)
+		# 
+		# async call uing callback
+		# 	test_proxy.begin_sum(100, 2, lambda x:print(x), lambda ex:print(ex)
+		# 
 
-		# msgTest
-		if not self.msgTestBuffer.empty():
-			params, cid = self.msgTestBuffer.pop()
-			id = params["id"]
+
+		# substract
+		params, cid = self.substractBuffer.pop()
+		if cid is not None:
+			num1 = params["num1"]
+			num2 = params["num2"]
 			#
-			#Logic for msgTest
+			#Logic for substract
 			#
-			self.msgTestBuffer.set_finished(cid)
+			result = num1 - num2
+			self.substractBuffer.set_finished(cid, [result] )
+
+
+		# printmsg
+		params, cid = self.printmsgBuffer.pop()
+		if cid is not None:
+			message = params["message"]
+			print(message)
+
+		# sum
+		params, cid = self.sumBuffer.pop()
+		if cid is not None:
+			num1 = params["num1"]
+			num2 = params["num2"]
+			ret = num2+num1
+			self.sumBuffer.set_finished(cid, [ret])
+
+
+		# divide
+		params, cid = self.divideBuffer.pop()
+		if cid is not None:
+			divident = params["divident"]
+			divisor = params["divisor"]
+			ret = divident/divisor
+			reminder = divident%divisor
+			self.divideBuffer.set_finished(cid, [ret, reminder])
 
 		return True
+

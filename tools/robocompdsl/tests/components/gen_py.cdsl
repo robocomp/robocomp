@@ -4,8 +4,7 @@ Component publish
 {
 	Communications
 	{
-	    implements  test;
-		subscribesTo publishTest;
+	    implements outTest;
 	};
 	language python;
 };
