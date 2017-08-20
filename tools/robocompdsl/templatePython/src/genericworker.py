@@ -344,13 +344,13 @@ def implCode(method, outValues, params):
 		cog.out('"'+param[1]+'":'+param[1]+',')
 	cog.outl('}')
 	cog.outl('<TABHERE><TABHERE>cid = self.'+method+'Buffer.push(kwargs)')
-	cog.outl('<TABHERE><TABHERE>while(self.'+method+'Buffer.is_finished(cid)==False): pass')
-	cog.outl('<TABHERE><TABHERE>return tuple(self.'+method+'Buffer.result(cid))')
+	if len(outValues)!=0:
+		cog.outl('<TABHERE><TABHERE>while(self.'+method+'Buffer.is_finished(cid)==False): pass')
+		cog.outl('<TABHERE><TABHERE>return tuple(self.'+method+'Buffer.result(cid))')
 
 all_interfaces = component.get('subscribesTo', []) + component['implements']
 for interface in all_interfaces:
 	for method in pool.get_methods(interface):
-		print(method)
 		if not communicationIsIce(interface):
 			cog.outl('<TABHERE>def ROS' + method['name'] + "(self, req):")
 			cog.outl("<TABHERE><TABHERE>#")
@@ -408,6 +408,8 @@ class CallQueue(object):
 
 	def set_finished(self, cid, result=None):
 		""" set a call as finished"""
+		if not result:
+			pass
 		self.result_buffer[cid] = result
 
 	def empty(self):

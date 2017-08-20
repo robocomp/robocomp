@@ -17,6 +17,9 @@ module RoboCompTests{
 
 	interface outTest{
 		int divide(int divident, int divisor, out int reminder);
+		int sum(int num1, int num2);
+		void substract(int num1, int num2, out int result);
+		void printmsg(string message);
 	};
 
 	["cpp:comparable"]

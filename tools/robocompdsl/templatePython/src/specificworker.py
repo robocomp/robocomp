@@ -110,9 +110,25 @@ for interface in all_interfaces:
 		# r.printvector("d")
 		# print r[0], r[1], r[2]
 
+		# You can call the methods on proxy in blocking or non blocking way (async)
+		# 
+		# for calling in blocking way 
+		# a, b = self.test_proxy.sum(100, 2)
+		# 
+		# async call using polling
+		# 	call1 = test_proxy.begin_sum(100, 2)
+		# poll using
+		# 	call1.isCompleted()
+		# get the return value
+		# 	a,b = test_proxy.end_sum(call1)
+		# 
+		# async call uing callback
+		# 	test_proxy.begin_sum(100, 2, lambda x:print(x), lambda ex:print(ex)
+		# 
+
 		[[[cog
 
-def implCodeCompute(method, outValues, params):
+def implCodeCompute(method, outValues, params, returnType):
 	cog.outl('')
 	cog.outl('<TABHERE><TABHERE># ' + method)
 	cog.outl('<TABHERE><TABHERE>params, cid = self.'+method+'Buffer.pop()')
@@ -125,14 +141,15 @@ def implCodeCompute(method, outValues, params):
 	cog.outl("<TABHERE><TABHERE><TABHERE>#")
 	
 	if len(outValues) == 0:
-		cog.outl("<TABHERE><TABHERE><TABHERE>self."+method+"Buffer.set_finished(cid)\n")
+		pass
+		# cog.outl("<TABHERE><TABHERE><TABHERE>self."+method+"Buffer.set_finished(cid)\n")
 	elif len(outValues) == 1:
-		if method['return'] != 'void':
-			cog.outl("<TABHERE><TABHERE><TABHERE>self."+method+"Buffer.set_finished(cid, ret)\n")
+		if returnType != 'void':
+			cog.outl("<TABHERE><TABHERE><TABHERE>ret = "+returnType+"()")
+			cog.outl("<TABHERE><TABHERE><TABHERE>self."+method+"Buffer.set_finished(cid, [ret])\n")
 		else:
 			cog.outl("<TABHERE><TABHERE><TABHERE>"+outValues[0][1]+" = "+replaceTypeCPP2Python(outValues[0][0])+"()")
-			cog.outl("<TABHERE><TABHERE><TABHERE>return "+outValues[0][1]+"\n")
-			cog.outl("<TABHERE><TABHERE><TABHERE>self."+method+"Buffer.set_finished(cid, "+outValues[0][1]+" )\n")
+			cog.outl("<TABHERE><TABHERE><TABHERE>self."+method+"Buffer.set_finished(cid, ["+outValues[0][1]+"] )\n")
 	else:
 		for v in outValues:
 			if v[1] != 'ret':
@@ -146,11 +163,12 @@ def implCodeCompute(method, outValues, params):
 				first = False
 		cog.out("])\n")
 
+
 all_interfaces = component.get('subscribesTo', []) + component['implements']
 for interface in all_interfaces:
 	for method in pool.get_methods(interface):
 		if communicationIsIce(interface):
-			implCodeCompute(method['name'], method['outValues'], method['params'])
+			implCodeCompute(method['name'], method['outValues'], method['params'], method['return'])
 
 ]]]
 [[[end]]]
