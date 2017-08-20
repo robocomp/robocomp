@@ -222,6 +222,18 @@ void SpecificWorker::compute()
 // 	{
 // 		std::cout << "Error reading from Camera" << e << std::endl;
 // 	}
+// 	
+//	You can call the methods on proxy in blocking or non blocking way (async)
+//  for calling in non blocking way
+//  test_proxy->sum(1, 3);
+//  
+//  async call using polling
+//  	Ice::AsyncResultPtr call1 = test_proxy->sum(1, 3);
+//  poll using
+// 		call1.isCompleted()
+//  get the return value
+// 		int result = test_proxy->end_sum(call1)
+
 
 [[[cog
 	
@@ -230,13 +242,19 @@ for interface in all_interfaces:
 	for method in pool.get_methods(interface):
 		if communicationIsIce(interface):
 			paramStrB = ','.join([x[1] for x in method['params']])
-			cog.outl('<TABHERE>if(!'+method['name']+'Buffer.isEmpty()){\n<TABHERE>uint id;')
-			cog.outl('<TABHERE>'+method['return']+' '+ paramStrB +';')
-			cog.outl('<TABHERE>std::forward_as_tuple(id, std::tie('+paramStrB+')) = '+method['name']+'Buffer.pop();')
-			if method['return'] != 'void':
-				cog.outl('<TABHERE>'+method['return'] + ' ret = '+ method['return']+'() ;')
-				cog.outl('<TABHERE>'+method['name']+'Buffer.setFinished(id, std::make_tuple('+','.join([x[1] for x in method['outValues']])+'));')
-			cog.outl('<TABHERE>}')
+			cog.outl('<TABHERE>if(!'+method['name']+'Buffer.isEmpty()){\n<TABHERE><TABHERE>uint id;')
+
+			for x in method['params']:
+				cog.outl('<TABHERE><TABHERE>'+x[0]+' '+x[1]+';');
+
+			cog.outl('<TABHERE><TABHERE>std::forward_as_tuple(id, std::tie('+paramStrB+')) = '+method['name']+'Buffer.pop();')
+			cog.outl("<TABHERE><TABHERE>//\n<TABHERE><TABHERE>//Logic for "+method['name']+"\n<TABHERE><TABHERE>//");
+
+			for x in method['outValues']:
+				cog.outl('<TABHERE><TABHERE>'+x[0]+' '+x[1]+' = '+ x[0]+'() ;')
+			if len(method['outValues'])>0:
+				cog.outl('<TABHERE><TABHERE>'+method['name']+'Buffer.setFinished(id, std::make_tuple('+', '.join([x[1] for x in method['outValues']])+'));')
+			cog.outl('<TABHERE>}\n')
 
 ]]]
 [[[end]]]

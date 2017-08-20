@@ -202,13 +202,16 @@ for interface in all_interfaces:
 
 			cog.outl(method['return'] + ' GenericWorker::' + method['name'] + '(' + ','.join(paramStrA)  + ")\n{")
 			cog.outl('<TABHERE>uint cid = '+method['name']+'Buffer.push(std::make_tuple('+','.join([x[1] for x in method['params']])+'));')
-			cog.outl('<TABHERE>while(!'+method['name']+'Buffer.isFinished(cid));')
-			if method['return'] != 'void':
+
+			if method['return'] == 'void':
+				if len(method['outValues']) != 0:
+					cog.outl('<TABHERE>while(!'+method['name']+'Buffer.isFinished(cid));')
+					cog.outl('<TABHERE>std::tie('+','.join([x[1] for x in method['outValues']])+') = '+method['name']+'Buffer.result(cid);')
+			else:
+				cog.outl('<TABHERE>while(!'+method['name']+'Buffer.isFinished(cid));')
 				cog.outl('<TABHERE>'+method['return']+' ret;');
 				cog.outl('<TABHERE>std::tie('+','.join([x[1] for x in method['outValues']])+') = '+method['name']+'Buffer.result(cid);')
 				cog.outl('<TABHERE>return ret;\n}\n')
-			else:
-				cog.outl('<TABHERE>return void;\n}\n')
 ]]]
 [[[end]]]
 

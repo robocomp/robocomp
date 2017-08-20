@@ -467,7 +467,10 @@ for interface in all_interfaces:
 		if communicationIsIce(interface):
 			param_str = ' ,'.join([x[0] for x in method['params']])
 			out_str = ' ,'.join([x[0] for x in method['outValues']])
-			cog.outl('<TABHERE>BoundBuffer< std::tuple<'+param_str+'>, std::tuple<'+out_str+'> > '+method['name']+'Buffer;')
+			if out_str != '':
+				cog.outl('<TABHERE>BoundBuffer< std::tuple<'+param_str+'>, std::tuple<'+out_str+'> > '+method['name']+'Buffer;')
+			else:
+				cog.outl('<TABHERE>BoundBuffer< std::tuple<'+param_str+'> > '+method['name']+'Buffer;')
 
 if component['usingROS'] == True:
 	cog.outl("<TABHERE>ros::NodeHandle node;")
