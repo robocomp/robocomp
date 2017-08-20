@@ -46,55 +46,39 @@ except AttributeError:
 MainWindow = uic.loadUiType("formManager.ui")[0]  # Load the UI
 
 class Viewer(QtGui.QMainWindow, MainWindow):
-    """docstring for Viewer"""
+    """This is the Viewer object for our MVC model. It is responsible for
+    creating the UI and displaying the graph and the corresponding xml
+    file. It uses a signal slot mechanism to communicate to the controller."""
+
     def __init__(self, rcmanagerSignals=None):
         super(Viewer, self).__init__()
+
+        # logger object for viewer
         self._logger = RCManagerLogger().get_logger("RCManager.Viewer")
         self.rcmanagerSignals = rcmanagerSignals
+
         self.setupUi(self)
+
+        # set the text window to display the log data
         RCManagerLogger().set_text_edit_handler(self.textBrowser)
+
+        # set rcmanager window icon
         self.setWindowIcon(QtGui.QIcon(QtGui.QPixmap("share/rcmanager/drawing_green.png")))
         self.showMaximized()
 
+        # removing the tab named 'Control panel' in formManager.ui
+        # this tab has no implementation as of now
         self.tabWidget.removeTab(0)
 
+        # set the code editor object to display the xml file in the tab named 'Text'
         self.codeEditor = code_editor.CodeEditor.get_code_editor(self.tab_2)
         self.verticalLayout_2.addWidget(self.codeEditor)
 
-        self.componentList = []
-        self.networkSettings = network_graph.NetworkGraphicValues()
-
-        self.save_warning = dialogs.SaveWarningDialog(self)
-
+        # initialise graph object
         self.add_graph_visualization()
 
-        # This will read the the network setting from xml files and will set the values
-        self.networkSettingDialog = dialogs.NetworkSettingsDialog()
-        # tool always works either on opened xml file or user dynamically build xml file.
-        # So the two variable given below will always be the negation of each other
-        self.FileOpenStatus = False
-        self.UserBuiltNetworkStatus = True
-
-        # To track the changes in the network both functionaly and visually
-        self.HadChanged = False
-
         self.log_file_setter = dialogs.LogFileSetterDialog(self)
-        self.simulatorTimer = QtCore.QTimer()
 
-        self.connectionBuilder = dialogs.ConnectionBuilderDialog(self)  # This will take care of connection building between components
-
-        self.position_multiplier_dialog = dialogs.PositionMultiplierDialog()
-
-        self.group_builder_dialog = dialogs.GroupBuilderDialog(self)  # It will help to create a new group
-        # setting the code Editor
-
-        self.group_selector_dialog = dialogs.GroupSelectorDialog(self)
-
-
-        # The small widget which appears when we right click on a node in tree
-        self.node_detail_displayer = menus.ItemDetailWidget(self.graph_visualization)
-
-        # Setting up the connection
         self.setup_actions()
 
         self.currentZoom = 0
@@ -121,20 +105,8 @@ class Viewer(QtGui.QMainWindow, MainWindow):
         zooming_factor = math.pow(1.2, diff)
         self.graph_visualization.scale_view(scale_factor=zooming_factor)
 
-    def setup_actions(self):  # To setUp connection like saving,opening,etc
-        # setup rcmanager signals
+    def setup_actions(self):
         self.rcmanagerSignals.addNode.connect(self.add_node)
-
-        # self.connect(self.simulatorTimer, QtCore.SIGNAL("timeout()"), self.simulate)
-        # # self.connect(self.toolButton,QtCore.SIGNAL("hovered()"),self.hoverAddComponent)
-        # # self.connect(self.toolButton_9,QtCore.SIGNAL("hovered()"),self.hoverXmlSettings)
-        # # self.connect(self.toolButton_5,QtCore.SIGNAL("hovered()"),self.hoverPrintDefaultNode)
-        # # self.connect(self.toolButton_4,QtCore.SIGNAL("hovered()"),self.hoverPrintDefaultSettings)
-        # # self.connect(self.toolButton_3,QtCore.SIGNAL("hovered()"),self.hoverRefreshFromXml)
-        # # self.connect(self.toolButton_10,QtCore.SIGNAL("hovered()"),self.hoverNetworkTreeSettings)
-        # # self.connect(self.toolButton_6,QtCore.SIGNAL("hovered()"),self.hoverRefreshFromTree)
-        self.connect(self.actionSet_Log_File, QtCore.SIGNAL("triggered(bool)"), self.set_log_file)
-        #
         self.connect(self.tabWidget, QtCore.SIGNAL("currentChanged(int)"), self.tab_index_changed)
 
         # File menu buttons
@@ -144,7 +116,6 @@ class Viewer(QtGui.QMainWindow, MainWindow):
         self.connect(self.actionExit, QtCore.SIGNAL("triggered(bool)"), self.close_model)
 
         # Edit menu buttons
-        # self.connect(self.actionSetting, QtCore.SIGNAL("triggered(bool)"), self.rcmanager_setting)
 
         # View menu buttons
         self.connect(self.actionLogger, QtCore.SIGNAL("triggered(bool)"), self.toggle_logger_view)
@@ -155,59 +126,6 @@ class Viewer(QtGui.QMainWindow, MainWindow):
         self.connect(self.actionSet_Color, QtCore.SIGNAL("triggered(bool)"), self.set_background_color)
         self.connect(self.actionON, QtCore.SIGNAL("triggered(bool)"), self.graph_visualization.start_animation)
         self.connect(self.actionOFF, QtCore.SIGNAL("triggered(bool)"), self.graph_visualization.stop_animation)
-
-        # self.connect(self.actionSetting_2, QtCore.SIGNAL("triggered(bool)"), self.simulator_settings)
-        # self.connect(self.actionSetting_3, QtCore.SIGNAL("triggered(bool)"), self.control_panel_settings)
-        # self.connect(self.actionSetting_4, QtCore.SIGNAL("triggered(bool)"), self.editor_settings)
-        # self.connect(self.graphTree.BackPopUpMenu.ActionUp, QtCore.SIGNAL("triggered(bool)"),
-        #              self.up_all_components)
-        # self.connect(self.graphTree.BackPopUpMenu.ActionDown, QtCore.SIGNAL("triggered(bool)"),
-        #              self.down_all_components)
-        # self.connect(self.graphTree.BackPopUpMenu.ActionSearch, QtCore.SIGNAL("triggered(bool)"),
-        #              self.search_inside_tree)
-        # self.connect(self.graphTree.BackPopUpMenu.ActionAdd, QtCore.SIGNAL("triggered(bool)"), self.add_new_node)
-        # self.connect(self.graphTree.BackPopUpMenu.ActionSettings, QtCore.SIGNAL("triggered(bool)"),
-        #              self.set_network_settings)
-        # self.connect(self.graphTree.BackPopUpMenu.ActionNewGroup, QtCore.SIGNAL("triggered(bool)"),
-        #              self.add_new_group)
-        # self.connect(self.graphTree.BackPopUpMenu.ActionStretch, QtCore.SIGNAL("triggered(bool)"),
-        #              self.stretch_graph)
-        #
-        # self.connect(self.graphTree.CompoPopUpMenu.ActionEdit, QtCore.SIGNAL("triggered(bool)"),
-        #              self.edit_selected_component)
-        # self.connect(self.graphTree.CompoPopUpMenu.ActionDelete, QtCore.SIGNAL("triggered(bool)"),
-        #              self.delete_selected_component)
-        # self.connect(self.graphTree.CompoPopUpMenu.ActionUp, QtCore.SIGNAL("triggered(bool)"),
-        #              self.up_selected_component)
-        # self.connect(self.graphTree.CompoPopUpMenu.ActionAddToGroup, QtCore.SIGNAL("triggered(bool)"),
-        #              self.add_component_to_group)
-        # self.connect(self.graphTree.CompoPopUpMenu.ActionDown, QtCore.SIGNAL("triggered(bool)"),
-        #              self.down_selected_component)
-        # self.connect(self.graphTree.CompoPopUpMenu.ActionNewConnection, QtCore.SIGNAL("triggered(bool)"),
-        #              self.build_new_connection)
-        # self.connect(self.graphTree.CompoPopUpMenu.ActionControl, QtCore.SIGNAL("triggered(bool)"),
-        #              self.control_component)
-        # self.connect(self.graphTree.CompoPopUpMenu.ActionRemoveFromGroup, QtCore.SIGNAL("triggered(bool)"),
-        #              self.component_remove_from_group)
-        # self.connect(self.graphTree.CompoPopUpMenu.ActionUpGroup, QtCore.SIGNAL("triggered(bool)"), self.up_group)
-        # self.connect(self.graphTree.CompoPopUpMenu.ActionDownGroup, QtCore.SIGNAL("triggered(bool)"),
-        #              self.down_group)
-        # # self.connect(self.graphTree.CompoPopUpMenu.ActionFreq,QtCore.SIGNAL("triggered(bool)"),self.getFreq)
-        #
-        # self.connect(self.toolButton_2, QtCore.SIGNAL("clicked()"), self.search_entered_alias)
-        # self.connect(self.toolButton_7, QtCore.SIGNAL("clicked()"), self.simulator_on)
-        # self.connect(self.toolButton_8, QtCore.SIGNAL("clicked()"), self.simulator_off)
-        #
-        # self.connect(self.save_warning, QtCore.SIGNAL("save()"), self.save_xml_file)
-        # self.connect(self.toolButton_3, QtCore.SIGNAL("clicked()"), self.refresh_tree_from_code)
-        # self.connect(self.toolButton_4, QtCore.SIGNAL("clicked()"), self.add_network_templ)
-        # self.connect(self.toolButton_5, QtCore.SIGNAL("clicked()"), self.add_component_templ)
-        # self.connect(self.toolButton_6, QtCore.SIGNAL("clicked()"), self.refresh_code_from_tree)
-        # self.connect(self.toolButton_9, QtCore.SIGNAL("clicked()"), self.editor_font_settings)
-        # # self.connect(self.toolButton_10,QtCore.SIGNAL("clicked()"),self.getNetworkSetting)(Once finished Uncomment this)
-        # self.connect(self.toolButton, QtCore.SIGNAL("clicked()"), self.add_new_component)
-
-        # self._logger.info("Tool started")
 
     # Background color picker widget
     def set_background_color(self, color=None):
@@ -335,7 +253,7 @@ class Viewer(QtGui.QMainWindow, MainWindow):
     def set_log_file(self):
         self.log_file_setter.setFile()
 
-    def tab_index_changed(self):  # This will make sure the common behavior is not working unneccessarily
+    def tab_index_changed(self):
         index = self.tabWidget.currentIndex()
 
         if index == 0:
@@ -366,13 +284,6 @@ class Viewer(QtGui.QMainWindow, MainWindow):
         self.set_editor_text(xml)
 
     def add_graph_visualization(self):
-        # self.NetworkScene = QGraphicsScene()  # The graphicsScene
-        # self.graphTree = network_graph.ComponentTree(self.frame, mainclass=self)  # The graphicsNode
-        # self.NetworkScene.setSceneRect(-15000, -15000, 30000, 30000)
-        # self.graphTree.setScene(self.NetworkScene)
-        #
-        # self.graphTree.setObjectName(_fromUtf8("graphicsView"))
-
         self.graph_visualization = QNetworkxWidget()
 
         # Context menu options
