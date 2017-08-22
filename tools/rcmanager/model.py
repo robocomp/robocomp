@@ -1,20 +1,49 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+#
+#  -----------------------
+#  -----  rcmanager  -----
+#  -----------------------
+#  An ICE component manager.
+#
+#    Copyright (C) 2009-2015 by RoboLab - University of Extremadura
+#
+#    This file is part of RoboComp
+#
+#    RoboComp is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    RoboComp is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#
+
+#
+# CODE BEGINS
+#
+
+import os
+import Ice
+import sys
+import time
+import threading
+import xmlreader
+import networkx as nx
 
 from PyQt4 import QtCore
 from logger import RCManagerLogger
 from yakuake_support import ProcessHandler
+from rcmanagerSignals import CustomSignalCollection
 
-import threading
-import time
-import xmlreader
-import networkx as nx
-import os
-import Ice
-import sys
-
-global_ic = Ice.initialize(sys.argv)
+global_ic = Ice.initialize()
 
 class ComponentChecker(threading.Thread):
-    def __init__(self, endpoint):
+    def __init__(self, componentAlias, endpoint):
         threading.Thread.__init__(self)
         self.mutex = QtCore.QMutex(QtCore.QMutex.Recursive)
         self.daemon = True
@@ -22,6 +51,7 @@ class ComponentChecker(threading.Thread):
         self.exit = False
         self.alive = False
         self.aPrx = None
+        self.componentAlias = componentAlias
         try:
             self.aPrx = global_ic.stringToProxy(endpoint)
             self.aPrx.ice_timeout(1)
@@ -34,15 +64,26 @@ class ComponentChecker(threading.Thread):
     def run(self):
         global global_ic
         while self.exit == False:
+            previousAliveValue = self.alive
             try:
                 self.aPrx.ice_ping()
                 self.mutex.lock()
                 self.alive = True
                 self.mutex.unlock()
-            except:
+            except Ice.ConnectionRefusedException:
                 self.mutex.lock()
                 self.alive = False
                 self.mutex.unlock()
+            except:
+                self.mutex.lock()
+                self.alive = True
+                self.mutex.unlock()
+            if previousAliveValue != self.alive:
+                if self.alive:
+                    CustomSignalCollection.componentRunning.emit(self.componentAlias)
+                else:
+                    CustomSignalCollection.componentStopped.emit(self.componentAlias)
+
             time.sleep(0.5)
 
     def reset(self):
@@ -50,7 +91,7 @@ class ComponentChecker(threading.Thread):
         self.alive = False
         self.mutex.unlock()
 
-    def isalive(self):
+    def is_alive(self):
         self.mutex.lock()
         r = self.alive
         self.mutex.unlock()
@@ -59,25 +100,18 @@ class ComponentChecker(threading.Thread):
     def stop(self):
         self.exit = True
 
-    def runrun(self):
+    def begin(self):
         if not self.isAlive(): self.start()
 
 class Model():
     """This is the Model object for our MVC model. It stores the component
     graph and contains the functions needed to manipulate it."""
 
-    def __init__(self, rcmanagerSignals=None):
+    def __init__(self):
         self._logger = RCManagerLogger().get_logger("RCManager.Model")
-
-        # this is the class containing all of the custom signals used by rcmanager
-        self.rcmanagerSignals = rcmanagerSignals
 
         # this is the networkx digraph object
         self.graph = nx.DiGraph()
-
-        # this dictionary stores the process ids of all the started components
-        # we store -1 for the components which are not running
-        self.processId = dict()
 
         # this dictionary stores the component checker threads for each component
         self.componentChecker = dict()
@@ -95,7 +129,6 @@ class Model():
         # Clear previous data
         self.graph.clear()
         self.graph.node.clear()
-        self.processId.clear()
 
         # Convert the xml data into python dict format
         xmldata = xmlreader.read_from_text(xml, 'xml')
@@ -131,16 +164,21 @@ class Model():
         except Exception, e:
             raise e
 
-        for key, value in xmldata['rcmanager']['generalInformation'].items():
-            self.generalInformation[key] = value
+        try:
+            for key, value in xmldata['rcmanager']['generalInformation'].items():
+                self.generalInformation[key] = value
+        except KeyError:
+            pass
+        except Exception, e:
+            raise e
 
-        self.rcmanagerSignals.modelIsReady.emit()
+        CustomSignalCollection.modelIsReady.emit()
 
     def add_node(self, nodedata):
         self.graph.add_node(nodedata['@alias'])
-        self.processId[nodedata['@alias']] = -1
-        self.componentChecker[nodedata['@alias']] = ComponentChecker(str(nodedata['@endpoint']))
-        # self.componentChecker[nodedata['@alias']].runrun()
+        self.componentChecker[nodedata['@alias']] = ComponentChecker(str(nodedata['@alias']),
+                                                                     str(nodedata['@endpoint']))
+        self.componentChecker[nodedata['@alias']].begin()
         for key, value in nodedata.items():
             self.graph.node[nodedata['@alias']][key] = value
 
@@ -148,20 +186,13 @@ class Model():
         self.graph.add_edge(fromNode, toNode)
 
     def get_component_running_status(self, componentAlias):
-        if self.processId[componentAlias] == -1:
-            return False
-        elif not os.path.isdir("/proc/"+str(self.processId[componentAlias])):
-            self.processId[componentAlias] = -1
-            return False
-        else:
-            return True
+        return self.componentChecker[componentAlias].is_alive()
 
     # this functions executes the command for starting a component
     def execute_start_command(self, componentAlias):
         if not self.get_component_running_status(componentAlias):
             tabTitle, processId = self.processHandler.start_process_in_existing_session(componentAlias, \
                                                                                         self.graph.node[componentAlias]['upCommand']['@command'])
-            self.processId[componentAlias] = int(processId)
             self._logger.info("Component: " + componentAlias + " started in tab: " + tabTitle + " with PID: " + processId)
         else:
             self._logger.debug("Component: " + componentAlias + " is already running")
@@ -172,7 +203,6 @@ class Model():
             self._logger.debug("Component: " + componentAlias + " is not running")
         else:
             self.processHandler.stop_process_in_session(componentAlias)
-            self.processId[componentAlias] = -1
             self._logger.info("Component: " + componentAlias + " stopped")
 
     # this function writes the xml data to the given filename
@@ -226,20 +256,10 @@ class Model():
 
         return line
 
-    def check_component_status(self):
-        thread = threading.current_thread()
-        while getattr(thread, "run", True):
-            for componentAlias in self.graph:
-                if self.get_component_running_status(componentAlias):
-                    self.rcmanagerSignals.componentRunning.emit(componentAlias)
-                else:
-                    self.rcmanagerSignals.componentStopped.emit(componentAlias)
-            time.sleep(1)
-
     # this functions emits a sample signal
     def sample_emit(self):
         print "sample signal was emitted"
-        self.rcmanagerSignals.sample.emit('Model')
+        CustomSignalCollection.sample.emit('Model')
 
 if __name__ == '__main__':
     # sample test case to see the working of the Model class  
