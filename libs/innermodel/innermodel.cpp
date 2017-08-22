@@ -99,7 +99,7 @@ InnerModel* InnerModel::copy()
 	QList<InnerModelNode *>::iterator i;
 	for (i=root->children.begin(); i!=root->children.end(); i++)
 	{
-		inner->root->innerModel = this;
+		inner->root->innerModel = inner;
 		inner->root->addChild((*i)->copyNode(inner->hash, inner->root));
 	}
 	return inner;

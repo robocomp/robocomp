@@ -25,7 +25,7 @@ import sys, traceback, Ice, os, copy
 import signal, hashlib
 signal.signal(signal.SIGINT, signal.SIG_DFL) # Ctrl+c handling
 
-from PySide import *
+from PySide import QtCore, QtGui
 
 import string
 import random

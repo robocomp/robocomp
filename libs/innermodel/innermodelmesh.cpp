@@ -154,6 +154,8 @@ InnerModelNode * InnerModelMesh::copyNode(QHash<QString, InnerModelNode *> &hash
 	ret->attributes.clear();
 	hash[id] = ret;
 
+	ret->innerModel = parent->innerModel;
+
 #if FCL_SUPPORT==1
 	// Associate the read vertices and triangles vectors to the FCL collision model object
 	ret->fclMesh = FCLModelPtr(new FCLModel(*fclMesh.get()));

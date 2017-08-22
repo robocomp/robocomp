@@ -51,6 +51,8 @@ InnerModelNode * InnerModelCamera::copyNode(QHash<QString, InnerModelNode *> &ha
 	ret->attributes.clear();
 	hash[id] = ret;
 
+	ret->innerModel = parent->innerModel;
+
 	ret->camera = camera;
 
 	for (QList<InnerModelNode*>::iterator i=children.begin(); i!=children.end(); i++)
