@@ -36,6 +36,7 @@ from PyQt4.QtGui import QGraphicsScene, QPushButton, QBrush, QColor
 from widgets import dialogs, code_editor, network_graph, menus
 from widgets.QNetworkxGraph.QNetworkxGraph import QNetworkxWidget, NodeShapes
 from logger import RCManagerLogger
+from rcmanagerSignals import CustomSignalCollection
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -50,13 +51,13 @@ class Viewer(QtGui.QMainWindow, MainWindow):
     creating the UI and displaying the graph and the corresponding xml
     file. It uses a signal slot mechanism to communicate to the controller."""
 
-    def __init__(self, rcmanagerSignals=None):
+    def __init__(self):
         super(Viewer, self).__init__()
 
         # logger object for viewer
         self._logger = RCManagerLogger().get_logger("RCManager.Viewer")
-        self.rcmanagerSignals = rcmanagerSignals
 
+        # setup rcmanager UI
         self.setupUi(self)
 
         # set the text window to display the log data
@@ -77,11 +78,8 @@ class Viewer(QtGui.QMainWindow, MainWindow):
         # initialise graph object
         self.add_graph_visualization()
 
-        self.log_file_setter = dialogs.LogFileSetterDialog(self)
-
+        # connect the various UI components (buttons etc.) to the relevant functions (slots)
         self.setup_actions()
-
-        self.currentZoom = 0
 
         # Temporary code
 
@@ -90,23 +88,10 @@ class Viewer(QtGui.QMainWindow, MainWindow):
 
         # Temporary code
 
-        self.rcmanagerSignals.viewerIsReady.emit()
-
-    def graph_zoom(self):  # To be called whenever we wants to zoom
-        # NoAnchor
-        # AnchorViewCenter
-        # AnchorUnderMouse
-
-        self.graph_visualization.setTransformationAnchor(self.graph_visualization.AnchorViewCenter)
-
-        new = self.verticalSlider.value()
-        diff = new - self.currentZoom
-        self.currentZoom = new
-        zooming_factor = math.pow(1.2, diff)
-        self.graph_visualization.scale_view(scale_factor=zooming_factor)
+        CustomSignalCollection.viewerIsReady.emit()
 
     def setup_actions(self):
-        self.rcmanagerSignals.addNode.connect(self.add_node)
+        CustomSignalCollection.addNode.connect(self.add_node)
         self.connect(self.tabWidget, QtCore.SIGNAL("currentChanged(int)"), self.tab_index_changed)
 
         # File menu buttons
@@ -176,21 +161,21 @@ class Viewer(QtGui.QMainWindow, MainWindow):
             filename = QtGui.QFileDialog.getSaveFileName(self, 'Save File', self.filename)
         else:
             filename = self.filename
-        self.rcmanagerSignals.saveModel.emit(filename)
+        CustomSignalCollection.saveModel.emit(filename)
+        self.dirtyBit = False
 
     def open_model(self):
         filename = QtGui.QFileDialog.getOpenFileName(self, 'Open File')
-        self.rcmanagerSignals.openModel.emit(filename, True)
+        CustomSignalCollection.openModel.emit(filename, True)
 
     def close_model(self):
         self.close()
 
     def closeEvent(self, QCloseEvent):
-        self.rcmanagerSignals.closeModel.emit()
+        CustomSignalCollection.closeModel.emit()
         if self.dirtyBit:
             self.save_before_quit_prompt(QCloseEvent)
         else:
-            self.check_component_status_thread.run = False
             QCloseEvent.accept()
 
     # Generate start / stop signals for components
@@ -198,13 +183,13 @@ class Viewer(QtGui.QMainWindow, MainWindow):
         selectedNodes = self.graph_visualization.selected_nodes()
 
         for i in selectedNodes:
-            self.rcmanagerSignals.startComponent.emit(i)
+            CustomSignalCollection.startComponent.emit(i)
 
     def send_stop_signal(self):
         selectedNodes = self.graph_visualization.selected_nodes()
 
         for i in selectedNodes:
-            self.rcmanagerSignals.stopComponent.emit(i)
+            CustomSignalCollection.stopComponent.emit(i)
 
     def add_component(self):
         pass
@@ -216,10 +201,8 @@ class Viewer(QtGui.QMainWindow, MainWindow):
 
         if reply == QtGui.QMessageBox.Yes:
             self.save_model()
-            self.check_component_status_thread.run = False
             QCloseEvent.accept()
         elif reply == QtGui.QMessageBox.No:
-            self.check_component_status_thread.run = False
             QCloseEvent.accept()
         elif reply == QtGui.QMessageBox.Cancel:
             QCloseEvent.ignore()
@@ -250,9 +233,6 @@ class Viewer(QtGui.QMainWindow, MainWindow):
         node = self.graph_visualization.get_node(componentAlias)['item']
         node.set_node_profile(node_profile)
 
-    def set_log_file(self):
-        self.log_file_setter.setFile()
-
     def tab_index_changed(self):
         index = self.tabWidget.currentIndex()
 
@@ -274,11 +254,11 @@ class Viewer(QtGui.QMainWindow, MainWindow):
         fileDescriptor.write(xml)
         fileDescriptor.close()
 
-        self.rcmanagerSignals.openModel.emit(filename, False)
+        CustomSignalCollection.openModel.emit(filename, False)
 
     def refresh_editor_from_graph(self):
         filename = '.temp.xml'
-        self.rcmanagerSignals.saveModel.emit(filename)
+        CustomSignalCollection.saveModel.emit(filename)
         file = open(filename, 'r')
         xml = file.read()
         self.set_editor_text(xml)
