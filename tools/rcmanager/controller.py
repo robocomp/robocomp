@@ -4,28 +4,23 @@ import xmlreader
 
 from logger import RCManagerLogger
 from PyQt4.QtGui import QColor
+from rcmanagerSignals import CustomSignalCollection
 
 class Controller():
     """This is the Controller object for our MVC model. It connects the Model
     and the view, by reacting to the signals emitted by the view and
     making the necessary changes to the Model"""
 
-    def __init__(self, model, view, rcmanagerSignals):
+    def __init__(self, model, view):
         self._logger = RCManagerLogger().get_logger("RCManager.Controller")
 
         self.need_to_save = False
         self.view = view
         self.model = model
-        self.rcmanagerSignals = rcmanagerSignals
 
         self.isModelReady = False
         self.isViewReady = False
         self.isControllerReady = False
-
-        self.signal_connections()
-
-    def signal_connections(self):
-        pass
 
     def model_init_action(self):
         self.isModelReady = True
@@ -56,9 +51,6 @@ class Controller():
         self.load_model_into_viewer(self.xml)
         self.configure_viewer()
 
-        self.view.check_component_status_thread = threading.Thread(target=self.model.check_component_status)
-        self.view.check_component_status_thread.start()
-
     def start_component(self, componentAlias):
         self.model.execute_start_command(str(componentAlias))
 
@@ -68,6 +60,7 @@ class Controller():
     def load_model_into_viewer(self, xml):
         self.view.clear_graph_visualization()
         self.view.set_editor_text(xml)
+        self.view.dirtyBit = False
 
         # adding nodes
         if self.view:
@@ -105,6 +98,10 @@ class Controller():
         color = self.view.graph_visualization.background_color
         new = {'@value': color.name()}
         old = self.model.generalInformation.get('backgroundColor')
+
+        # this statement makes sure that #FF0000 is perceived to be the same as #ff0000
+        if old is not None:
+            old['@value'] = str(old['@value']).lower()
         if not old == new:
             self.view.dirtyBit = True
         self.model.generalInformation['backgroundColor'] = {'@value': color.name()}
@@ -155,7 +152,6 @@ class Controller():
         try:
             self.update_model()
             self.model.export_xml_to_file(str(filename))
-            self.view.dirtyBit = False
         except Exception, e:
             self._logger.error("Couldn't save to file " + filename)
             raise e
