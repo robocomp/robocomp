@@ -150,7 +150,7 @@ In this section we will create components which communicate via ICE Middleware u
 
 We will use these CDSL:
 
-    import "/robocomp/interfaces/IDSLs/Plane.idsl";
+    import "Plane.idsl";
     Component planeClient
     {
     	Communications
@@ -163,7 +163,7 @@ We will use these CDSL:
     
 And implement:
 
-    import "/robocomp/interfaces/IDSLs/Plane.idsl";
+    import "Plane.idsl";
     Component planeServer
     {
     	Communications
@@ -186,33 +186,51 @@ In your Require component, use this example of *SpecificWorker::compute()*
     	Dimensions dims;
     	int width;
     	string name, lastName;
-    	width = 300;
+    	
+        width = 300;
     	name = "name1";
     	planesetup_proxy->setWidth(width, dims);
     	planesetup_proxy->setName(name, lastName);
-    	width = 100;
+    	
+        width = 100;
     	name = "name2";
     	planesetup_proxy->setWidth(width, dims);
     	planesetup_proxy->setName(name, lastName);
-    	width = 200;
+    	
+        width = 200;
     	name = "name3";
     	planesetup_proxy->setWidth(width, dims);
     	planesetup_proxy->setName(name, lastName);
     }
 
-Rewrite all necessary methods in your *specificworker.cpp* of Implement Component. Here is an example:
+Write method's logic in *Specificworker::Compute()* of Implement Component. Here is an example:
 
-    void SpecificWorker::setWidth(const int width, Dimensions &dims)
-    {
-    	printf("changing width value %d\n", width);
-    	dims.width = width; //return value (not necessary)
-    }
-    void SpecificWorker::setName(const string name, string &lastName)
-    {
-    	printf("changing name value %s\n", name.c_str());
-    	lastName = name; //return value (not necessary)
-    }
-    
+
+    if(!setWidthBuffer.isEmpty()){
+		uint id;
+		int width;
+		Dimensions dims;
+		std::forward_as_tuple(id, std::tie(width, dims)) = setWidthBuffer.pop();
+		
+        printf("changing width value %d\n", width); \\ Add these two lines
+        dims.width = width;                         \\ rest will be generated
+
+        setWidthBuffer.setFinished(id, std::make_tuple(dims));
+	}
+
+    if(!setNameBuffer.isEmpty()){
+		uint id;
+		string name;
+		string lastName;
+		std::forward_as_tuple(id, std::tie(name, lastName)) = setNameBuffer.pop();
+
+    	printf("changing name value %s\n", name.c_str()); \\ Add these two lines
+    	lastName = name;                                  \\ rest will be generated
+
+        setNameBuffer.setFinished(id, std::make_tuple(lastName));
+	}
+
+
 Finally, you have 2 components communicating by ICE Middleware. Enjoy!
 
 <div id='Ipub-sub'/>
@@ -249,7 +267,7 @@ The process for generating components is similar.
 
     $ robocompdsl robocompdsl path/to/mycomponent/mycomponent.cdsl output/path
     
-You can use this example of *SpecificWorker::compute()* in your Publish Component:
+Write method's logic in *specificworker::Compute()* of  Publish Component. Here is an example:
 
     void SpecificWorker::compute()
     {
@@ -272,14 +290,27 @@ You can use this example of *SpecificWorker::compute()* in your Publish Componen
 
 Rewrite all necessary methods in your *specificworker.cpp* of Subscriber Component. Here is an example:
 
-    void SpecificWorker::newDimensions(const Dimensions &dims)
-    {
-    	printf("New Dimension. Width: %d - Height: %d\n",dims.width, dims.height);
-    }
-    void SpecificWorker::newPlaneName(const string &planeName)
-    {
-    	printf("New name. Name: %s\n", planeName.c_str());
-    }
+    
+    if(!newDimensionsBuffer.isEmpty()){
+		uint id;
+		Dimensions dims;
+		std::forward_as_tuple(id, std::tie(dims)) = newDimensionsBuffer.pop();
+		
+        printf("New Dimension. Width: %d - Height: %d\n",dims.width, dims.height); \\ Add this line
+
+        newDimensionsBuffer.setFinished(id, std::make_tuple(dims));
+	}
+
+    if(!newPlaneNameBuffer.isEmpty()){
+		uint id;
+		string planeName;
+		std::forward_as_tuple(id, std::tie(planeName)) = newPlaneNameBuffer.pop();
+		
+        printf("New name. Name: %s\n", planeName.c_str()); \\ Add this line
+
+        newPlaneNameBuffer.setFinished(id, std::make_tuple(planeName));
+	}
+
 
 As you can see, this section is as above but with minor differences.
 
@@ -294,7 +325,7 @@ The use of the types is a little different to what we saw with ICE Middleware.
 
 Our CDSLs:
 
-    import "/robocomp/interfaces/IDSLs/Plane.idsl";
+    import "Plane.idsl";
     Component planeClient
     {
     	Communications
@@ -307,7 +338,7 @@ Our CDSLs:
 
 And Implement:
 
-    import "/robocomp/interfaces/IDSLs/Plane.idsl";
+    import "Plane.idsl";
     Component planeServer
     {
     	Communications
