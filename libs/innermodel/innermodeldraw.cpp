@@ -144,7 +144,7 @@ bool InnerModelDraw::addTransform(InnerModelViewer *innerViewer, QString item, Q
 	InnerModelNode *node = innerViewer->innerModel->getNode(item);
 	if (node != NULL)
 	{
-		printf("%s ya existe!\n", item.toStdString().c_str());
+		printf("%s already exists!\n", item.toStdString().c_str());
 		return false;
 	}
 

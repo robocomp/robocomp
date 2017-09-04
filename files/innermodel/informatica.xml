@@ -11,7 +11,7 @@
 			
 			<mesh  id="pabellonInformatica" file="/home/robocomp/robocomp/files/osgModels/edificios/informatica.ive"  tx="0" ty="0" tz="0" rx="1.57079632679" scale="1000" />
 		
-			<differentialrobot id="base" port="10004">
+			<omnirobot id="base" port="10004">
 			<!-- cabeza -->
 				<transform id="cabeza" ty="1600" tz="-100" >
 					<rotation id="prejoint_jointcabeza" ry="1.57079632679">
@@ -36,9 +36,7 @@
 				<translation id="robotGeometricCenter" tx="0" ty="0" tz="50">
 					<mesh id="base_mesh" file="/home/robocomp/robocomp/files/osgModels/Gualzru/Gualzru.osg"   scale="25" rx="1.57079632679" rz="-1.57079632679" ty="100" tz="-150"/>
 				</translation>
-		</differentialrobot>
-		
-			
+		</omnirobot>
 		</transform>
 	</transform>
 </innerModel>

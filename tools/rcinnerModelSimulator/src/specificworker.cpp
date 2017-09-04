@@ -887,7 +887,6 @@ void SpecificWorker::compute()
 
 			if (d->laserDataCartArray.contains(id) == false)
 			{
-				//laserDataCartArray.insert(id);
 				osg::Vec3Array *v= new osg::Vec3Array();
 				v->resize(laser->laserNode->measures+1);
 				d->laserDataCartArray.insert(id,v);
@@ -898,21 +897,22 @@ void SpecificWorker::compute()
 			d->laserDataArray.insert(laser->laserNode->id, d->LASER_createLaserData(laser.value()));
 
 			// create and insert laser shape
-			osg::ref_ptr<osg::Node> p=NULL;
-			if (id=="laserSecurity")
+			if (false) // DRAW LASER
 			{
-				p = d->viewer->addPolygon(*(d->laserDataCartArray[id]), osg::Vec4(0.,0.,1.,0.4));
+				osg::ref_ptr<osg::Node> p=NULL;
+				if (id=="laserSecurity")
+				{
+					p = d->viewer->addPolygon(*(d->laserDataCartArray[id]), osg::Vec4(0.,0.,1.,0.4));
+				}
+				else
+				{
+					p = d->viewer->addPolygon(*(d->laserDataCartArray[id]));
+				}
+				if (p!=NULL)
+				{
+					laser->osgNode->addChild(p);
+				}
 			}
-			else
-			{
-				p = d->viewer->addPolygon(*(d->laserDataCartArray[id]));
-			}
-			if (p!=NULL)
-			{
-				laser->osgNode->addChild(p);
-			}
-// 			printf("%d (%d)\n", i, __LINE__);
-
 		}
 	}
 
@@ -940,7 +940,6 @@ void SpecificWorker::compute()
 		{
 			d->viewer->setFixedSize(frameOSG->width(), frameOSG->height());
 		}
-		d->innerModel->update();
 		d->imv->update();
 		//osg render
 		d->viewer->frame();

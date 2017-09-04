@@ -13,13 +13,14 @@ def TAB():
 	cog.out('<TABHERE>')
 
 from parseCDSL import *
-component = CDSLParsing.fromFile(theCDSL)
+includeDirectories = theIDSLPaths.split('#')
+component = CDSLParsing.fromFile(theCDSL, includeDirectories=includeDirectories)
 if component == None:
 	print('Can\'t locate', theCDSLs)
 	sys.exit(1)
 
 from parseIDSL import *
-modulePool = IDSLPool(theIDSLs)
+modulePool = IDSLPool(theIDSLs, includeDirectories)
 
 theInterface = theInterface.split(';')
 while type(theInterface) != type(''):
@@ -31,7 +32,7 @@ if module == None:
 	sys.exit(1)
 ]]]
 [[[end]]]
- *    Copyright (C) 
+ *    Copyright (C)
 [[[cog
 A()
 import datetime
@@ -56,18 +57,18 @@ Z()
  *    You should have received a copy of the GNU General Public License
  *    along with RoboComp.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef 
+#ifndef
 [[[cog
 A()
-cog.out(theInterface.upper())
+cog.out(' ' + theInterface.upper())
 Z()
 ]]]
 [[[end]]]
 _H
-#define 
+#define
 [[[cog
 A()
-cog.out(theInterface.upper())
+cog.out(' ' + theInterface.upper())
 Z()
 ]]]
 [[[end]]]
@@ -87,26 +88,26 @@ Z()
 #include <config.h>
 #include "genericworker.h"
 
-using namespace 
+using namespace
 [[[cog
 A()
-cog.out(module['name'])
+cog.out(' ' + module['name'])
 Z()
 ]]]
 [[[end]]]
 ;
 
-class 
+class
 [[[cog
 A()
-cog.out(theInterface)
+cog.out(' ' + theInterface)
 Z()
 ]]]
 [[[end]]]
-I : public virtual 
+I : public virtual
 [[[cog
 A()
-cog.out(module['name'])
+cog.out(' ' + module['name'])
 Z()
 ]]]
 [[[end]]]
@@ -120,7 +121,7 @@ Z()
 
 {
 public:
-	
+
 [[[cog
 A()
 cog.out(theInterface)
@@ -136,21 +137,21 @@ Z()
 ]]]
 [[[end]]]
 I();
-	
+
 [[[cog
 
 	for interface in module['interfaces']:
 		if interface['name'] == theInterface:
 			for mname in interface['methods']:
 				method = interface['methods'][mname]
-				
+
 				ret = method['return']
 				name = method['name']
-				
-				
+
+
 				paramStr = ''
 				for p in method['params']:
-					
+
 					const, ampersand = decoratorAndType_to_const_ampersand(p['decorator'], p['type'], modulePool)
 					if p['type'] == 'long':
 						paramStr += const + 'Ice::Long' + ' ' + ampersand + p['name'] + ', '

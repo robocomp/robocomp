@@ -12,13 +12,14 @@ def TAB():
 	cog.out('<TABHERE>')
 
 from parseCDSL import *
-component = CDSLParsing.fromFile(theCDSL)
+includeDirectories = theIDSLPaths.split('#')
+component = CDSLParsing.fromFile(theCDSL, includeDirectories=includeDirectories)
 if component == None:
 	print('Can\'t locate', theCDSLs)
 	sys.exit(1)
 
 from parseIDSL import *
-modulePool = IDSLPool(theIDSLs)
+modulePool = IDSLPool(theIDSLs, includeDirectories)
 module = modulePool.moduleProviding(theInterface)
 if module == None:
 	print('Can\'t locate', theIDSLs)
@@ -65,12 +66,38 @@ except:
 if len(ROBOCOMP)<1:
 	print 'ROBOCOMP environment variable not set! Exiting.'
 	sys.exit()
-	
+
+additionalPathStr = ''
+icePaths = []
+try:
+	SLICE_PATH = os.environ['SLICE_PATH'].split(':')
+	for p in SLICE_PATH:
+		icePaths.append(p)
+		additionalPathStr += ' -I' + p + ' '
+	icePaths.append('/opt/robocomp/interfaces')
+except:
+	print 'SLICE_PATH environment variable was not exported. Using only the default paths'
+	pass
 
 [[[cog
-cog.outl('preStr = "-I/opt/robocomp/interfaces/ -I"+ROBOCOMP+"/interfaces/ --all /opt/robocomp/interfaces/"')
-cog.outl('\nIce.loadSlice(preStr+"'+theIDSLs.split('.')[0]+'.ice")')
-cog.outl('from ' + module['name'] + ' import *')
+incl = theIDSLs.split('.')[0]
+cog.outl('ice_'+incl+' = False')
+cog.outl('for p in icePaths:')
+cog.outl('<TABHERE>print \'Trying\', p, \'to load ' + incl + '.ice\'')
+cog.outl('<TABHERE>if os.path.isfile(p+\'/'+incl+'.ice\'):')
+cog.outl('<TABHERE><TABHERE>print \'Using\', p, \'to load '+incl+'.ice\'')
+cog.outl('<TABHERE><TABHERE>preStr = "-I/opt/robocomp/interfaces/ -I"+ROBOCOMP+"/interfaces/ " + additionalPathStr + " --all "+p+\'/\'')
+cog.outl('<TABHERE><TABHERE>wholeStr = preStr+"'+incl+'.ice"')
+cog.outl('<TABHERE><TABHERE>Ice.loadSlice(wholeStr)')
+cog.outl('<TABHERE><TABHERE>ice_'+incl+' = True')
+cog.outl('<TABHERE><TABHERE>break')
+cog.outl('if not ice_'+incl+':')
+cog.outl("<TABHERE>print 'Couln\\\'t load "+incl+"'")
+cog.outl('<TABHERE>sys.exit(-1)')
+
+module = IDSLParsing.gimmeIDSL(incl+'.idsl', files='', includeDirectories=includeDirectories)
+cog.outl('from '+ module['name'] +' import *')
+
 cog.outl('\nclass ' + theInterface+ 'I('+theInterface+'):')
 ]]]
 [[[end]]]
@@ -83,9 +110,9 @@ cog.outl('\nclass ' + theInterface+ 'I('+theInterface+'):')
 		if interface['name'] == theInterface:
 			for mname in interface['methods']:
 				method = interface['methods'][mname]
-				
+
 				name = method['name']
-				
+
 				paramStrA = ''
 				for p in method['params']:
 					if p['decorator'] != 'out':
@@ -105,8 +132,3 @@ cog.outl('\nclass ' + theInterface+ 'I('+theInterface+'):')
 
 ]]]
 [[[end]]]
-
-
-
-
-

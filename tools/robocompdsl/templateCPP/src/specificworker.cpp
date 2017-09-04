@@ -13,15 +13,16 @@ def TAB():
 	cog.out('<TABHERE>')
 
 from parseCDSL import *
-component = CDSLParsing.fromFile(theCDSL)
+includeDirectories = theIDSLPaths.split('#')
+component = CDSLParsing.fromFile(theCDSL, includeDirectories=includeDirectories)
 if component == None:
 	print('Can\'t locate', theCDSLs)
 	sys.exit(1)
 
-	
+
 
 from parseIDSL import *
-pool = IDSLPool(theIDSLs)
+pool = IDSLPool(theIDSLs, includeDirectories)
 rosTypes = pool.getRosTypes()
 
 def bodyCodeFromName(name, component):
@@ -39,7 +40,9 @@ def bodyCodeFromName(name, component):
 		if name == 'edgesUpdated':
 			bodyCode = "\tQMutexLocker lockIM(mutex);\n\tfor (auto modification : modifications)\n\t{\n\t\tAGMModelConverter::includeIceModificationInInternalModel(modification, worldModel);\n\t\tAGMInner::updateImNodeFromEdge(worldModel, modification, innerModel);\n\t}\n"
 		if name == 'structuralChange':
-			bodyCode = "<TABHERE>mutex->lock();\n <TABHERE>AGMModelConverter::fromIceToInternal(w, worldModel);\n \n<TABHERE>delete innerModel;\n<TABHERE>innerModel = AGMInner::extractInnerModel(worldModel);\n<TABHERE>mutex->unlock();"
+			bodyCode = "<TABHERE>QMutexLocker lockIM(mutex);\n <TABHERE>AGMModelConverter::fromIceToInternal(w, worldModel);\n \n<TABHERE>delete innerModel;\n<TABHERE>innerModel = AGMInner::extractInnerModel(worldModel);"
+			if 'innermodelviewer' in [ x.lower() for x in component['options'] ]:
+				bodyCode += "\n<TABHERE>regenerateInnerModelViewer();"
 		#######################################
 		# code to implement AGMCommonBehavior #
 		#######################################
@@ -85,7 +88,7 @@ def bodyCodeFromName(name, component):
 
 ]]]
 [[[end]]]
- *    Copyright (C) 
+ *    Copyright (C)
 [[[cog
 A()
 import datetime
@@ -142,7 +145,7 @@ try:
 		cog.outl("<TABHERE>worldModel = AGMModel::SPtr(new AGMModel());")
 		cog.outl("<TABHERE>worldModel->name = "+"\"worldModel\";")
 		cog.outl("<TABHERE>innerModel = new InnerModel();")
-		
+
 except:
 	pass
 
@@ -155,7 +158,7 @@ except:
 */
 SpecificWorker::~SpecificWorker()
 {
-	
+
 }
 
 bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
@@ -177,11 +180,11 @@ if component['innermodelviewer']:
 	cog.outl("<TABHERE>innerModelViewer = new InnerModelViewer (innerModel, \"root\", osgView->getRootGroup(), true);")
 	cog.outl("#endif")
 ]]]
-[[[end]]]	
+[[[end]]]
 
-	
+
 	timer.start(Period);
-	
+
 [[[cog
 try:
 	if isAGM1Agent(component):
@@ -332,6 +335,18 @@ if 'subscribesTo' in component:
 
 [[[cog
 try:
+	if ('agmagent' in [ x.lower() for x in component['options'] ]) and ('innermodelviewer' in [ x.lower() for x in component['options'] ]):
+		cog.outl("""
+void SpecificWorker::regenerateInnerModelViewer()
+{
+	if (innerModelViewer)
+	{
+		osgView->getRootGroup()->removeChild(innerModelViewer);
+	}
+
+	innerModelViewer = new InnerModelViewer(innerModel, "root", osgView->getRootGroup(), true);
+}\n""")
+
 	if 'agmagent' in [ x.lower() for x in component['options'] ]:
 		cog.outl("""
 bool SpecificWorker::setParametersAndPossibleActivation(const ParameterMap &prs, bool &reactivated)
@@ -400,13 +415,9 @@ bool SpecificWorker::setParametersAndPossibleActivation(const ParameterMap &prs,
 		exit(1);
 	}
 }""")
-		
-		
+
+
 except:
 	pass
 ]]]
 [[[end]]]
-
-
-
-

@@ -85,13 +85,23 @@ void SpecificWorker::rgbd_getImage ( const QString& server, ColorSeq& color, Dep
 		uint32_t basePort  = QString ( cam.RGBDNode->ifconfig.split ( "," ) [1] ).toUInt();
 		std::map<uint32_t, OmniRobotServer>::iterator base;
 		base = d->omn_servers.find( basePort );
+                bool bstateUpd = false;
 		if (base != d->omn_servers.end())
 		{
 			base->second.interface->getBaseState( bState );
+			bstateUpd = true;
 		}
-		else{
-			std::cout<<"Error: no base state updated, basePort "<<basePort<<std::endl;
+		std::map<uint32_t, DifferentialRobotServer>::iterator baseD;
+		baseD = d->dfr_servers.find( basePort );
+		if (baseD != d->dfr_servers.end())
+		{
+			baseD->second.interface->getBaseState( bState );
+                        bstateUpd = true;
 		}
+		if (not bstateUpd)
+                {
+                    std::cout<<"Error: no base state updated, basePort "<<basePort<<std::endl;
+                }
 		uint32_t jointPort = QString ( cam.RGBDNode->ifconfig.split ( "," ) [0] ).toUInt();
 		std::map<uint32_t, JointMotorServer>::iterator joint;
 		joint = d->jm_servers.find( jointPort );

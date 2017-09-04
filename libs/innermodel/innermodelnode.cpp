@@ -71,6 +71,8 @@ void InnerModelNode::addChild(InnerModelNode *child)
 		//printf("InnerModelNode::addChild this is weird\n");
 	}
 
+	child->innerModel = innerModel;
+	
 	if (not children.contains(child))
 	{
 		children.append(child);
@@ -86,11 +88,5 @@ void InnerModelNode::setFixed(bool f)
 bool InnerModelNode::isFixed()
 {
 	return fixed;
-}
-
-void InnerModelNode::updateChildren()
-{
-	foreach(InnerModelNode *i, children)
-		i->update();
 }
 

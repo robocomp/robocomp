@@ -36,13 +36,7 @@ void InnerModelIMU::print(bool verbose)
 	if (verbose) printf("IMU.");
 }
 
-void InnerModelIMU::update()
-{
-	if (fixed)
-	{
-	}
-	updateChildren();
-}
+
 
 InnerModelNode * InnerModelIMU::copyNode(QHash<QString, InnerModelNode *> &hash, InnerModelNode *parent)
 {
@@ -52,6 +46,7 @@ InnerModelNode * InnerModelIMU::copyNode(QHash<QString, InnerModelNode *> &hash,
 	ret->children.clear();
 	ret->attributes.clear();
 	hash[id] = ret;
+	ret->innerModel = parent->innerModel;
 
 	for (QList<InnerModelNode*>::iterator i=children.begin(); i!=children.end(); i++)
 	{

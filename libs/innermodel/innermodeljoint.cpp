@@ -15,10 +15,14 @@
  *
  */
 
+#include "innermodel.h"
 #include "innermodeljoint.h"
+
+class InnerModel;
+
 InnerModelJoint::InnerModelJoint() : InnerModelTransform("invalid",QString("static"), 0,0,0, 0,0,0, 0, NULL)
 {
-		throw std::string("Can't actually build InnerModelJoint using the default constructor");
+	throw std::string("Can't actually build InnerModelJoint using the default constructor");
 }
 
 InnerModelJoint::InnerModelJoint(QString id_, float lx_, float ly_, float lz_, float hx_, float hy_, float hz_, float tx_, float ty_, float tz_, float rx_, float ry_, float rz_, float min_, float max_, uint32_t port_, std::string axis_, float home_, InnerModelTransform *parent_) : InnerModelTransform(id_,QString("static"),tx_,ty_,tz_,rx_,ry_,rz_, 0, parent_)
@@ -102,21 +106,6 @@ void InnerModelJoint::setUpdatePointers(float *lx_, float *ly_, float *lz_, floa
 	fixed = false;
 }
 
-void InnerModelJoint::update()
-{
-	QMutexLocker l(mutex);
-	if (!fixed)
-	{
-		if (lx) backtX = *tx;
-		if (ly) backtY = *ty;
-		if (lz) backtZ = *tz;
-		if (rx) backhX = *hx;
-		if (ry) backhY = *hy;
-		if (rz) backhZ = *hz;
-	}
-	updateChildren();
-}
-
 void InnerModelJoint::update(float lx_, float ly_, float lz_, float hx_, float hy_, float hz_)
 {
 	QMutexLocker l(mutex);
@@ -168,6 +157,9 @@ float InnerModelJoint::setAngle(float angle, bool force)
 		error.sprintf("internal error, no such axis %s\n", axis.c_str());
 		throw error;
 	}
+
+	if (innerModel)
+		innerModel->cleanupTables();
 	return ret;
 }
 
@@ -201,15 +193,21 @@ InnerModelNode * InnerModelJoint::copyNode(QHash<QString, InnerModelNode *> &has
 		fprintf(stderr, "InnerModel internal error: invalid axis %s.\n", axis.c_str());
 		exit(-1);
 	}
+
 	ret->level = level;
 	ret->fixed = fixed;
 	ret->children.clear();
 	ret->attributes.clear();
 	hash[id] = ret;
 
+	ret->innerModel = parent->innerModel;
+
 	for (QList<InnerModelNode*>::iterator i=children.begin(); i!=children.end(); i++)
 	{
 		ret->addChild((*i)->copyNode(hash, ret));
 	}
+
+ 	ret->setAngle(getAngle());
+
 	return ret;
-}
+  }

@@ -36,14 +36,6 @@ void InnerModelPointCloud::print(bool verbose)
 	if (verbose) printf("Point Cloud: %s\n", qPrintable(id));
 }
 
-void InnerModelPointCloud::update()
-{
-	if (fixed)
-	{
-	}
-	updateChildren();
-}
-
 InnerModelNode * InnerModelPointCloud::copyNode(QHash<QString, InnerModelNode *> &hash, InnerModelNode *parent)
 {
 	InnerModelPointCloud *ret = new InnerModelPointCloud(id, parent);
@@ -53,6 +45,7 @@ InnerModelNode * InnerModelPointCloud::copyNode(QHash<QString, InnerModelNode *>
 	ret->attributes.clear();
 	hash[id] = ret;
 
+	ret->innerModel = parent->innerModel;
 	for (QList<InnerModelNode*>::iterator i=children.begin(); i!=children.end(); i++)
 	{
 		ret->addChild((*i)->copyNode(hash, ret));

@@ -39,7 +39,7 @@ bool InnerModelReader::load(const QString &file, InnerModel *model)
 
 	QString errorMsg;
 	int errorLine, errorColumn;
-	if (!doc.setContent(&fich, &errorMsg, &errorLine, &errorColumn)) 
+	if (!doc.setContent(&fich, &errorMsg, &errorLine, &errorColumn))
 	{
 		qDebug() << "Can't set document content from" << qPrintable(file);
 		qDebug() << "line:" << errorLine << "  column:" << errorColumn;
@@ -61,7 +61,7 @@ bool InnerModelReader::load(const QString &file, InnerModel *model)
 	}
 	recursive(root, model, model->root);
 
-	fich.close();	
+	fich.close();
 	return true;
 }
 
@@ -78,7 +78,7 @@ bool InnerModelReader::include(const QString &file, InnerModel *model, InnerMode
 
 	QString errorMsg;
 	int errorLine, errorColumn;
-	if (!doc.setContent(&fich, &errorMsg, &errorLine, &errorColumn)) 
+	if (!doc.setContent(&fich, &errorMsg, &errorLine, &errorColumn))
 	{
 		qDebug() << "Can't set document content from" << qPrintable(file);
 		qDebug() << "line:" << errorLine << "  column:" << errorColumn;
@@ -94,7 +94,7 @@ bool InnerModelReader::include(const QString &file, InnerModel *model, InnerMode
 	}
 
 	recursive(root, model, node);
-	
+
 	fich.close();
 	return true;
 }
@@ -158,8 +158,8 @@ void InnerModelReader::recursive(QDomNode parentDomNode, InnerModel *model, Inne
 				qFatal("InnerModelReader::load(): Error in line %d", domNode.lineNumber());
 			}
 
-			// Once we know there are no unknown attributes, try to create the 
-			
+			// Once we know there are no unknown attributes, try to create the
+
 			if (e.tagName().toLower() == "rotation")
 			{
 				QString ngn = e.attribute("engine", "static");
@@ -167,6 +167,7 @@ void InnerModelReader::recursive(QDomNode parentDomNode, InnerModel *model, Inne
 				InnerModelTransform *tr = model->newTransform(e.attribute("id"), e.attribute("engine", "static"), imNode, 0., 0., 0., e.attribute("rx", "0").toFloat(), e.attribute("ry", "0").toFloat(), e.attribute("rz", "0").toFloat(), e.attribute("mass", "0").toFloat());
 				tr->gui_translation = false;
 				imNode->addChild(tr);
+                    imNode->innerModel = tr->innerModel = model;
 				node = tr;
 			}
 			else if (e.tagName().toLower() == "translation")
@@ -176,6 +177,7 @@ void InnerModelReader::recursive(QDomNode parentDomNode, InnerModel *model, Inne
 				InnerModelTransform *tr = model->newTransform(e.attribute("id"), e.attribute("engine", "static"), imNode, e.attribute("tx", "0").toFloat(), e.attribute("ty", "0").toFloat(), e.attribute("tz", "0").toFloat(), 0., 0., 0., e.attribute("mass", "0").toFloat());
 				tr->gui_rotation = false;
 				imNode->addChild(tr);
+                    imNode->innerModel = tr->innerModel = model;
 				node = tr;
 			}
 			else if (e.tagName().toLower() == "transform")
@@ -184,6 +186,7 @@ void InnerModelReader::recursive(QDomNode parentDomNode, InnerModel *model, Inne
 				if (ngn != "static" and ngn != "bullet") qFatal("Error in line %d: %s is not a valid physics engine.", domNode.lineNumber(), ngn.toStdString().c_str());
 				InnerModelTransform *tr = model->newTransform(e.attribute("id"), e.attribute("engine", "static"),  imNode, e.attribute("tx", "0").toFloat(), e.attribute("ty", "0").toFloat(), e.attribute("tz", "0").toFloat(), e.attribute("rx", "0").toFloat(), e.attribute("ry", "0").toFloat(), e.attribute("rz", "0").toFloat(), e.attribute("mass", "0").toFloat());
 				imNode->addChild(tr);
+                    imNode->innerModel = tr->innerModel = model;
 				node = tr;
 			}
 			else if (e.tagName().toLower() == "touchsensor")
@@ -191,6 +194,7 @@ void InnerModelReader::recursive(QDomNode parentDomNode, InnerModel *model, Inne
 				InnerModelTransform * im = dynamic_cast<InnerModelTransform *>(imNode);
 				InnerModelTouchSensor *ts = model->newTouchSensor(e.attribute("id"), im, e.attribute("type", "0"), e.attribute("nx", "0").toFloat(), e.attribute("ny", "0").toFloat(), e.attribute("nz", "0").toFloat(), e.attribute("min", "-inf").toFloat(), e.attribute("max", "inf").toFloat(), e.attribute("port", "0").toInt());
 				imNode->addChild(ts);
+                    imNode->innerModel = ts->innerModel = model;
 				node = ts;
 			}
 			else if (e.tagName().toLower() == "joint")
@@ -200,6 +204,7 @@ void InnerModelReader::recursive(QDomNode parentDomNode, InnerModel *model, Inne
 				  e.attribute("hx", "0").toFloat(), e.attribute("hy", "0").toFloat(), e.attribute("hz", "0").toFloat(),
 				  e.attribute("tx", "0").toFloat(), e.attribute("ty", "0").toFloat(), e.attribute("tz", "0").toFloat(), e.attribute("rx", "0").toFloat(), e.attribute("ry", "0").toFloat(), e.attribute("rz", "0").toFloat(), e.attribute("min", "-inf").toDouble(), e.attribute("max", "inf").toDouble(), e.attribute("port", "0").toInt(),e.attribute("axis","z").toStdString(), e.attribute("home", "0").toDouble());
 				imNode->addChild(jr);
+                    imNode->innerModel = jr->innerModel = model;
 				node = jr;
 			}
 			else if (e.tagName().toLower() == "prismaticjoint")
@@ -207,6 +212,7 @@ void InnerModelReader::recursive(QDomNode parentDomNode, InnerModel *model, Inne
 				InnerModelTransform * im = dynamic_cast<InnerModelTransform *>(imNode );
 				InnerModelPrismaticJoint *jr = model->newPrismaticJoint(e.attribute("id"),im, e.attribute("min", "-inf").toDouble(), e.attribute("max", "inf").toDouble(), e.attribute("position", "0").toDouble(), e.attribute("offset", "0").toDouble(), e.attribute("port", "0").toInt(),e.attribute("axis","z").toStdString(), e.attribute("home", "0").toDouble());
 				imNode->addChild(jr);
+                    imNode->innerModel = jr->innerModel = model;
 				node = jr;
 			}
 			else if (e.tagName().toLower() == "differentialrobot")
@@ -214,6 +220,7 @@ void InnerModelReader::recursive(QDomNode parentDomNode, InnerModel *model, Inne
 				InnerModelTransform * im = dynamic_cast<InnerModelTransform *>(imNode );
 				InnerModelDifferentialRobot *dr = model->newDifferentialRobot(e.attribute("id"), im, e.attribute("tx", "0").toFloat(), e.attribute("ty", "0").toFloat(), e.attribute("tz", "0").toFloat(), e.attribute("rx", "0").toFloat(), e.attribute("ry", "0").toFloat(), e.attribute("rz", "0").toFloat(), e.attribute("port", "0").toInt(), e.attribute("noise", "0").toFloat(), e.attribute("collide", "0").toInt()>0);
 				imNode->addChild(dr);
+                    imNode->innerModel = dr->innerModel = model;
 				node = dr;
 			}
 			else if (e.tagName().toLower() == "omnirobot")
@@ -221,18 +228,21 @@ void InnerModelReader::recursive(QDomNode parentDomNode, InnerModel *model, Inne
 				InnerModelTransform * im = dynamic_cast<InnerModelTransform *>(imNode );
 				InnerModelOmniRobot *dr = model->newOmniRobot(e.attribute("id"), im, e.attribute("tx", "0").toFloat(), e.attribute("ty", "0").toFloat(), e.attribute("tz", "0").toFloat(), e.attribute("rx", "0").toFloat(), e.attribute("ry", "0").toFloat(), e.attribute("rz", "0").toFloat(), e.attribute("port", "0").toInt(), e.attribute("noise", "0").toFloat(), e.attribute("collide", "0").toInt()>0);
 				imNode->addChild(dr);
+                    imNode->innerModel = dr->innerModel = model;
 				node = dr;
 			}
 			else if (e.tagName().toLower() == "camera")
 			{
 				InnerModelCamera *cam = model->newCamera(e.attribute("id"), imNode, e.attribute("width", "0").toFloat(), e.attribute("height", "0").toFloat(), e.attribute("focal", "0").toFloat());
 				imNode->addChild(cam);
+                    imNode->innerModel = cam->innerModel = model;
 				node = cam;
 			}
 			else if (e.tagName().toLower() == "rgbd")
 			{
 				InnerModelRGBD *cam = model->newRGBD(e.attribute("id"), imNode, e.attribute("width", "0").toFloat(), e.attribute("height", "0").toFloat(), e.attribute("focal", "0").toFloat(), e.attribute("noise", "0").toFloat(), e.attribute("port", "0").toInt(), e.attribute("ifconfig", ""));
 				imNode->addChild(cam);
+                    imNode->innerModel = cam->innerModel = model;
 				node = cam;
 			}
 			else if (e.tagName().toLower() == "imu")
@@ -240,6 +250,7 @@ void InnerModelReader::recursive(QDomNode parentDomNode, InnerModel *model, Inne
 				InnerModelIMU *imu = model->newIMU(e.attribute("id"), imNode, e.attribute("port", "0").toInt());
 // 				printf("IMU: %s, port %d\n", imu->id.toStdString().c_str(), imu->port);
 				imNode->addChild(imu);
+                    imNode->innerModel = imu->innerModel = model;
 				node = imu;
 			}
 			else if (e.tagName().toLower() == "laser")
@@ -247,6 +258,7 @@ void InnerModelReader::recursive(QDomNode parentDomNode, InnerModel *model, Inne
 				InnerModelLaser *laser = model->newLaser(e.attribute("id"), imNode, e.attribute("port", "0").toInt(), e.attribute("min").toInt(), e.attribute("max").toInt(), e.attribute("angle").toFloat(), e.attribute("measures").toInt(), e.attribute("ifconfig"));
  				printf("laser: %s, port %d\n", laser->id.toStdString().c_str(), laser->port);
 				imNode->addChild(laser);
+                    imNode->innerModel = laser->innerModel = model;
 				node = laser;
 			}
 			else if (e.tagName().toLower() == "mesh")
@@ -276,12 +288,14 @@ void InnerModelReader::recursive(QDomNode parentDomNode, InnerModel *model, Inne
 				}
 				InnerModelMesh *mesh = model->newMesh(e.attribute("id"), imNode, e.attribute("file"), scalex, scaley, scalez, render, e.attribute("tx").toFloat(), e.attribute("ty").toFloat(), e.attribute("tz").toFloat(), e.attribute("rx").toFloat(), e.attribute("ry").toFloat(), e.attribute("rz").toFloat(), e.attribute("collide", "0").toInt()>0);
 				imNode->addChild(mesh);
+                    imNode->innerModel = mesh->innerModel = model;
 				node = mesh;
 			}
 			else if (e.tagName().toLower() == "pointcloud")
 			{
 				InnerModelPointCloud *pointcloud = model->newPointCloud(e.attribute("id"), imNode);
 				imNode->addChild(pointcloud);
+                    imNode->innerModel = pointcloud->innerModel = model;
 				node = pointcloud;
 			}
 			else if (e.tagName().toLower() == "plane")
@@ -301,6 +315,7 @@ void InnerModelReader::recursive(QDomNode parentDomNode, InnerModel *model, Inne
 				}
 				InnerModelPlane *plane = model->newPlane(e.attribute("id"), imNode, e.attribute("texture", ""), width, height, depth, e.attribute("repeat", "1000").toInt(), e.attribute("nx", "0").toFloat(), e.attribute("ny", "0").toFloat(), e.attribute("nz", "0").toFloat(), e.attribute("px", "0").toFloat(), e.attribute("py", "0").toFloat(), e.attribute("pz", "0").toFloat(), e.attribute("collide", "0").toInt()>0);
 				imNode->addChild(plane);
+                    imNode->innerModel = plane->innerModel = model;
 				node = plane;
 			}
 			else if (e.tagName().toLower() == "innermodel")
@@ -315,7 +330,7 @@ void InnerModelReader::recursive(QDomNode parentDomNode, InnerModel *model, Inne
 			else if (e.tagName().toLower() == "axes")
 			{
 				float lengths[3], widths[3];
-				
+
 				float defaultLength = e.attribute("length", "-1").toFloat();
 				float defaultWidth = e.attribute("width", "-1").toFloat();
 				for (int i=0;i<3;i++)
@@ -328,27 +343,31 @@ void InnerModelReader::recursive(QDomNode parentDomNode, InnerModel *model, Inne
 				if (xLength>0) lengths[0]=xLength;
 				float xWidth = e.attribute("xwidth", "-1").toFloat();
 				if (xWidth>0) widths[0]=xWidth;
-				
+
 				float yLength = e.attribute("ylength", "-1").toFloat();
 				if (yLength>0) lengths[1]=yLength;
 				float yWidth = e.attribute("ywidth", "-1").toFloat();
 				if (yWidth>0) widths[1]=yWidth;
-				
+
 				float zLength = e.attribute("zlength", "-1").toFloat();
 				if (zLength>0) lengths[2]=zLength;
 				float zWidth = e.attribute("zwidth", "-1").toFloat();
 				if (zWidth>0) widths[2]=zWidth;
-	
+
 				InnerModelPlane *plane;
-				
+
 				plane = model->newPlane(e.attribute("id")+"x", imNode, "#ff0000", widths[0], widths[0], lengths[0], 1,   1,0,0,   lengths[0]/2,0,0,  false);
 				imNode->addChild(plane);
+                    imNode->innerModel = plane->innerModel = model;
 				plane = model->newPlane(e.attribute("id")+"y", imNode, "#00ff00", widths[1], lengths[1], widths[1], 1,   1,0,0,   0,lengths[1]/2,0,  false);
 				imNode->addChild(plane);
+                    imNode->innerModel = plane->innerModel = model;
 				plane = model->newPlane(e.attribute("id")+"z", imNode, "#0000ff", lengths[2], widths[2], widths[2], 1,   1,0,0,   0,0,lengths[2]/2,  false);
 				imNode->addChild(plane);
+                    imNode->innerModel = plane->innerModel = model;
 				plane = model->newPlane(e.attribute("id")+"c", imNode, "#ffffff", widths[0]*1.3, widths[1]*1.3, widths[2]*1.3,                       1,   1,0,0,   0,0,0,  false);
 				imNode->addChild(plane);
+                    imNode->innerModel = plane->innerModel = model;
 
 				node = plane;
 			}
@@ -369,19 +388,19 @@ QMap<QString, QStringList> InnerModelReader::getValidNodeAttributes()
 
 	temporalList.clear();
 	nodeAttributes["innermodel"] = temporalList;
-	
+
 	temporalList.clear();
 	temporalList << "id" << "rx" << "ry" << "rz" << "engine" << "mass";
 	nodeAttributes["rotation"] = temporalList;
-	
+
 	temporalList.clear();
 	temporalList << "id" << "tx" << "ty" << "tz" << "engine" << "mass";
 	nodeAttributes["translation"] = temporalList;
-	
+
 	temporalList.clear();
 	temporalList << "id" << "tx" << "ty" << "tz" << "rx" << "ry" << "rz" << "engine" << "mass";
 	nodeAttributes["transform"] = temporalList;
-	
+
 	temporalList.clear();
 	temporalList << "id" << "lx" << "ly" << "lz" << "hx" << "hy" << "hz" <<  "tx" << "ty" << "tz" << "rx" << "ry" << "rz" << "min" << "max" << "port" << "axis" << "home";
 	nodeAttributes["joint"] = temporalList;
@@ -393,15 +412,15 @@ QMap<QString, QStringList> InnerModelReader::getValidNodeAttributes()
 	temporalList.clear();
 	temporalList << "id" << "min" << "max" << "position" << "offset" << "port" << "axis" << "home";
 	nodeAttributes["prismaticjoint"] = temporalList;
-	
+
 	temporalList.clear();
 	temporalList << "id" << "tx" << "ty" << "tz" << "rx" << "ry" << "rz" << "port" << "noise" << "collide";
 	nodeAttributes["differentialrobot"] = temporalList;
-	
+
 	temporalList.clear();
 	temporalList << "id" << "tx" << "ty" << "tz" << "rx" << "ry" << "rz" << "port" << "noise" << "collide";
 	nodeAttributes["omnirobot"] = temporalList;
-	
+
 	temporalList.clear();
 	temporalList << "id" << "width" << "height" << "focal" << "noise" << "port" << "ifconfig";
 	nodeAttributes["rgbd"] = temporalList;
@@ -417,7 +436,7 @@ QMap<QString, QStringList> InnerModelReader::getValidNodeAttributes()
 	temporalList.clear();
 	temporalList << "id" << "width" << "height" << "focal";
 	nodeAttributes["camera"] = temporalList;
-	
+
 	temporalList.clear();
 	temporalList << "id" << "file" << "scale" << "render" << "tx" << "ty" << "tz" << "rx" << "ry" << "rz" << "collide";
 	nodeAttributes["mesh"] = temporalList;
@@ -425,7 +444,7 @@ QMap<QString, QStringList> InnerModelReader::getValidNodeAttributes()
 	temporalList.clear();
 	temporalList << "id";
 	nodeAttributes["pointcloud"] = temporalList;
-	
+
 	temporalList.clear();
 	temporalList << "id" << "texture" << "repeat" << "size" << "nx" << "ny" << "nz" << "px" << "py" << "pz" << "collide";
 	nodeAttributes["plane"] = temporalList;
@@ -437,6 +456,6 @@ QMap<QString, QStringList> InnerModelReader::getValidNodeAttributes()
 	temporalList.clear();
 	temporalList << "id" << "length" << "width" << "lengthx" << "widthx" << "lengthy" << "widthy" << "lengthz" << "widthz";
 	nodeAttributes["axes"] = temporalList;
-	
+
 	return nodeAttributes;
 }

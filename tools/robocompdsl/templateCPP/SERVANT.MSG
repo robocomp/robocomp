@@ -18,7 +18,9 @@ def SPACE(i=0):
 
 from parseIDSL import *
 customTypesList = []
-idsl = IDSLParsing.fromFileIDSL(theIDSL)
+
+includeDirectories = theIDSLPaths.split('#')
+idsl = IDSLParsing.gimmeIDSLStruct(theIDSL, files='', includeDirectories=includeDirectories)
 for imp in idsl['module']['contents']:
 	if imp['type'] in ('sequence', 'struct'):
 		customTypesList.append(imp)

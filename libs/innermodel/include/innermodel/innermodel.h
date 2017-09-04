@@ -58,6 +58,11 @@ typedef boost::shared_ptr<FCLModel> FCLModelPtr;
 // #include <osg/io_utils>
 // #include <osg/Geode>
 
+
+#ifdef PYTHON_BINDINGS_SUPPORT
+#include <boost/python/stl_iterator.hpp>
+#endif
+
 using namespace RMat;
 
 class InnerModelReader;
@@ -86,11 +91,6 @@ public:
 	/// Tree update methods
 	///////////////////////
 	void setRoot(InnerModelNode *node);
-	void update();
-	void setUpdateRotationPointers(QString rotationId, float *x, float *y, float *z);
-	void setUpdateTranslationPointers(QString translationId, float *x, float *y, float *z);
-	void setUpdatePlanePointers(QString planeId, float *nx, float *ny, float *nz, float *px, float *py, float *pz);
-	void setUpdateTransformPointers(QString transformId, float *tx, float *ty, float *tz, float *rx, float *ry, float *rz);
 	void cleanupTables();
 	void updateTransformValues(QString transformId, float tx, float ty, float tz, float rx, float ry, float rz, QString parentId="");
 	void updateTransformValues(QString transformId, QVec v, QString parentId="");
@@ -124,6 +124,7 @@ public:
 	InnerModelJoint *getJoint(const QString &id)                         { return getNode<InnerModelJoint>(id); }
 	InnerModelJoint *getJoint(const std::string &id)                     { return getNode<InnerModelJoint>(QString::fromStdString(id)); }
 	InnerModelJoint *getJointS(const std::string &id)                    { return getNode<InnerModelJoint>(QString::fromStdString(id)); }
+	InnerModelJoint &getJointRef(const std::string &id)                  { return *getNode<InnerModelJoint>(QString::fromStdString(id)); }
 	InnerModelTouchSensor *getTouchSensor(const QString &id)             { return getNode<InnerModelTouchSensor>(id); }
 	InnerModelPrismaticJoint *getPrismaticJoint(const QString &id)       { return getNode<InnerModelPrismaticJoint>(id); }
 	InnerModelDifferentialRobot *getDifferentialRobot(const QString &id) { return getNode<InnerModelDifferentialRobot>(id); }
@@ -218,6 +219,24 @@ public:
 		* @return RMat::QMat Jacobian as MxN matrix of evaluated partial derivatives. M=joints, N=6 (pose cartesian coordinates of the endEffector) (CHECK ORDER)
 		*/
 	QMat jacobian(QStringList &listaJoints, const QVec &motores, const QString &endEffector);
+	QMat jacobianS(std::vector<std::string> &listaJoints, const QVec &motores, const std::string &endEffector)
+	{
+		QStringList listaJointQ/* = QStringList::fromStdList(listaJoints)*/;
+		for (auto e : listaJoints)
+		{
+			listaJointQ.push_back(QString::fromStdString(e));
+		}
+		return jacobian(listaJointQ, motores, QString::fromStdString(endEffector));
+	}
+
+#ifdef PYTHON_BINDINGS_SUPPORT
+	QMat jacobianSPython(const  boost::python::list &listaJointsP, const QVec &motores, const std::string &endEffector)
+	{
+		std::vector<std::string> listaJoint = std::vector<std::string>(boost::python::stl_input_iterator<std::string>(listaJointsP), boost::python::stl_input_iterator<std::string>( ) );
+		return jacobianS(listaJoint, motores, endEffector);
+	}
+#endif
+
 
 	///////////////////////////////////////
 	/// Auxiliary methods

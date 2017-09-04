@@ -37,6 +37,8 @@ typedef fcl::BVHModel<fcl::OBBRSS> FCLModel;
 typedef boost::shared_ptr<FCLModel> FCLModelPtr;
 #endif
 
+class InnerModel;
+
 class InnerModelNode : public RTMat
 {
 		friend class InnerModelCamera;
@@ -55,19 +57,18 @@ class InnerModelNode : public RTMat
 		
 		void treePrint(QString s, bool verbose=false);
 		virtual void print(bool verbose) = 0;
-		virtual void update() = 0;
 		virtual InnerModelNode *copyNode(QHash<QString, InnerModelNode *> &hash, InnerModelNode *parent) = 0;
 		virtual void save(QTextStream &out, int tabs) = 0;
 		void setParent(InnerModelNode *parent_);
 		void addChild(InnerModelNode *child);
 		void setFixed(bool f=true);
 		bool isFixed();
-		void updateChildren();
 
 		//protected:
 		QString id;
 		int level;
 		bool fixed;
+		InnerModel *innerModel;
 		InnerModelNode *parent;
 		QList<InnerModelNode *> children;
 		QHash<QString,AttributeType> attributes;

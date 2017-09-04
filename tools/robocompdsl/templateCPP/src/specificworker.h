@@ -13,19 +13,20 @@ def TAB():
 	cog.out('<TABHERE>')
 
 from parseCDSL import *
-component = CDSLParsing.fromFile(theCDSL)
+includeDirectories = theIDSLPaths.split('#')
+component = CDSLParsing.fromFile(theCDSL, includeDirectories=includeDirectories)
 if component == None:
 	print('Can\'t locate', theCDSLs)
 	sys.exit(1)
 
 from parseIDSL import *
-pool = IDSLPool(theIDSLs)
+pool = IDSLPool(theIDSLs, includeDirectories)
 rosTypes = pool.getRosTypes()
 
 
 ]]]
 [[[end]]]
- *    Copyright (C) 
+ *    Copyright (C)
 [[[cog
 A()
 import datetime
@@ -199,6 +200,8 @@ try:
 		cog.outl("<TABHERE>ParameterMap params;")
 		cog.outl("<TABHERE>AGMModel::SPtr worldModel;")
 		cog.outl("<TABHERE>bool active;")
+		if 'innermodelviewer' in [ x.lower() for x in component['options'] ]:
+			cog.outl("<TABHERE>void regenerateInnerModelViewer();")
 		cog.outl("<TABHERE>bool setParametersAndPossibleActivation(const ParameterMap &prs, bool &reactivated);")
 		cog.outl("<TABHERE>void sendModificationProposal(AGMModel::SPtr &worldModel, AGMModel::SPtr &newModel);")
 	elif isAGM2Agent(component):
@@ -210,8 +213,7 @@ except:
 
 ]]]
 [[[end]]]
-	
+
 };
 
 #endif
-
