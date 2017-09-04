@@ -20,12 +20,12 @@ module RoboCompObjectDetection
 		 float rx;
 		 float ry;
 		 float rz;
-		 float min_x;
-		 float min_y;
-		 float min_z;
-		 float max_x;
-		 float max_y;
-		 float max_z;
+		 float minx;
+		 float miny;
+		 float minz;
+		 float maxx;
+		 float maxy;
+		 float maxz;
 	};
 	sequence <ObjectType> ObjectVector;
 	interface ObjectDetection
