@@ -1,10 +1,11 @@
+import sys, os
+sys.path.append('/usr/local/share/agm/')
 from pyparsinglocal import Word, alphas, alphanums, nums, OneOrMore, CharsNotIn
 from pyparsinglocal import Literal, CaselessLiteral, Combine, Optional, Suppress
 from pyparsinglocal import ZeroOrMore, Group, StringEnd, srange, Each
 from AGGL import *
 #from PySide.QtCore import *
 #from PySide.QtGui import *
-import sys, os
 from parseQuantifiers import *
 
 debug = False
@@ -35,9 +36,9 @@ def getAGGLMetaModels():
 	pt = Suppress(".")
 	pc = Suppress(")")
 	no = Suppress("!")
-	
+
 	dormant =        (Optional(CaselessLiteral("dormant"))).setResultsName("dormant")
-	activatesRules = (Optional(Suppress(CaselessLiteral("activates")) + po + ids + ZeroOrMore(co + ids) + pc)).setResultsName("activates") 
+	activatesRules = (Optional(Suppress(CaselessLiteral("activates")) + po + ids + ZeroOrMore(co + ids) + pc)).setResultsName("activates")
 
 
 	# LINK
@@ -68,9 +69,13 @@ def getAGGLMetaModels():
 	# PROPERTY
 	prop  = Group(an.setResultsName("prop") + eq + an.setResultsName("value"))
 
+	# TYPES
+	typeDefinition  = Group(Suppress(po) + Group(OneOrMore(ids).setResultsName("lhs")) + Optional( Suppress(cn) + Group(OneOrMore(ids).setResultsName("rhs"))) + Suppress(pc))
+	typesDefinition = Suppress("types") + Suppress(op) + OneOrMore(typeDefinition).setResultsName("types") + Suppress(cl)
+
 	# WHOLE AGGL FILE
-	aggl  = OneOrMore(prop).setResultsName("props") + sep + OneOrMore(rule).setResultsName("rules") + StringEnd()
-	
+	aggl  = OneOrMore(prop).setResultsName("props") + sep + typesDefinition.setResultsName("types") + sep + OneOrMore(rule).setResultsName("rules") + StringEnd()
+
 	# WHOLE AGGT FILE
 	aggt  = Optional(graph.setResultsName("graph")) + Optional(Cnd)
 
@@ -182,7 +187,6 @@ class AGMFileDataParsing:
 	# It returns agmFD, a variable with the grammar file, the properties, symbols and rules of the grammar.
 	@staticmethod
 	def fromFile(filename, verbose=False, includeIncludes=True):
-		print filename
 		with open(filename, 'r') as thefile:
 			text = thefile.read()
 			return AGMFileDataParsing.fromText(text, verbose, includeIncludes)
@@ -307,6 +311,24 @@ class AGMFileDataParsing:
 				#print i.precondition[0]
 				#print i.effect[0]
 				number = number + 1
+
+		# print 'type AST', result.types
+		for i in result.types:
+			# print '<-------------'
+			rhs = []
+			if len(i)>1:
+				for inherits in i[1]:
+					rhs.append(inherits)
+			# print 'rhs', rhs
+			for aType in i[0]:
+				lhs = aType
+				# print 'Llamada', lhs, rhs
+				agmFD.addType(lhs, copy.deepcopy(rhs))
+			# print '>-------------'
+		agmFD.computeInverseTypes()
+		# print 'inverseTypes', agmFD.getInverseTypes()
+		# sys.exit(-1)
+
 		return agmFD
 
 	@staticmethod
@@ -427,11 +449,11 @@ class AGMFileDataParsing:
 					preconditionTree = AGGLCodeParsing.parseFormula(preconditionStr)
 					if len(preconditionTree)>0: preconditionTree = preconditionTree[0]
 					preconditionAST = AGMFileDataParsing.interpretPrecondition(preconditionTree)
-			
+
 		graph = AGMGraphParsing.parseGraphFromAST(result.graph)
 		precondition = preconditionAST
-		
+
 		#print 'graph:\n', graph
 		#print 'precondition:\n', precondition
-		
+
 		return { 'graph':graph, 'precondition':precondition}

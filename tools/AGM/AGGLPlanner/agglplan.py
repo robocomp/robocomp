@@ -31,9 +31,9 @@
     @ingroup PyAPI
     This file loads the grammar, the initial state of the world and the GOAL status without changing the files extensions of the grammar and the goal.
 
-    MODE USE:	agglplan gramatica.aggl init.xml target.xml
+    MODE USE:	agglplan grammar.aggl init.xml target.aggt
 
-    Also, we can keep the results in a file with: agglplan gramatica.aggl init.xml target.xml result.plan
+    Also, we can keep the results in a file with: agglplan grammar.aggl init.xml target.xml result.plan
 """
 
 # Python distribution imports
@@ -51,7 +51,7 @@ if __name__ == '__main__': # program domain problem result
 	# If there aren't all the arguments, we show an error mesage with how to use the program.
 	# If there are all the arguments, we keep them in local variables.
 	if len(sys.argv)<4:
-		print 'Usage\n\t', sys.argv[0], ' domain.aggl init.xml target.xml [result.plan]'
+		print 'Usage\n\t', sys.argv[0], ' domain.aggl init.xml target.aggt [result.plan]'
 	else:
 		## the file that contains the grammar rules
 		domainFile = sys.argv[1]
@@ -75,12 +75,12 @@ if __name__ == '__main__': # program domain problem result
 
 		## Generate target Python file.
 		if targetFile.lower().endswith('.aggt'):
-			outputText = generateTarget_AGGT(AGMFileDataParsing.targetFromFile(targetFile))
+			outputText = generateTarget_AGGT(agmData, AGMFileDataParsing.targetFromFile(targetFile))
 		else:
 			# This sentence creates a graph based on the target world status
 			graph = graphFromXMLFile(targetFile)
 			## Generate the python code correspondig to the graph and
-			outputText = generateTarget(graph)
+			outputText = generateTarget(agmData, graph)
 		## Save the python code of the target world status in the file target.py.
 		ofile = open("/tmp/target.py", 'w')
 		ofile.write(outputText)
@@ -98,5 +98,3 @@ if __name__ == '__main__': # program domain problem result
 		## We store the final time of the planner to calculate the total duration of the program
 		end = time.time()
 		print 'It took', end - start, 'seconds'
-
-

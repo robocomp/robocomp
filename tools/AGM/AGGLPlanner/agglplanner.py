@@ -41,7 +41,7 @@ import time
 import thread
 
 #signal.signal(signal.SIGINT, signal.SIG_DFL)
-	
+
 import sys, traceback, os, re, threading, time, string, math, copy
 import collections, imp, heapq
 import datetime
@@ -54,17 +54,18 @@ import inspect
 from generateAGGLPlannerCode import *
 from parseAGGL import AGMFileDataParsing
 import xmlModelParser
+import agglplanchecker
 from agglplanchecker import *
 from agglplannerplan import *
 
 # C O N F I G U R A T I O N
 number_of_threads = 0 #4
-maxWorldIncrement = 6
+maxWorldIncrement = 5
 maxCost = 2000000000000
 stopWithFirstPlan = False
 verbose = 1
 maxTimeWaitAchieved = 5.
-maxTimeWaitLimit = 5000.#1000.
+maxTimeWaitLimit = 2500.
 
 
 
@@ -89,7 +90,7 @@ def setNewConstantsAsVariables(originalGraph, secondGraph):
 	outputGraph = copy.deepcopy(secondGraph)
 	# Generate a list of node names
 	existingNodes = [nodename for nodename in originalGraph.nodes]
-	# 
+	#
 	outputGraph.nodes.clear()
 	for nodename in secondGraph.nodes:
 		if not nodename in existingNodes:
@@ -208,7 +209,7 @@ class LockableList():
 			self.mutex.release()
 		return ret
 
-	##@brief This method insert a value at the top of the list. It needs to acquire the mutex in order to lock all the process. 
+	##@brief This method insert a value at the top of the list. It needs to acquire the mutex in order to lock all the process.
 	# @param value the element to insert.
 	def heapqPush(self, value):
 		self.mutex.acquire()
@@ -245,7 +246,7 @@ class LockableList():
 	##@brief This method unlock the mutex (it releases him)
 	def unlock(self):
 		self.mutex.release()
-		
+
 	##@brief This returns a copy
 	def getList(self):
 		self.mutex.acquire()
@@ -303,170 +304,9 @@ class LockableInteger(object):
 
 
 
-		
-		
-		
-				
-	##@brief This method starts the execution of program threads
-	# @param ruleMap all the actives rules of the grammar
-	# @param lock this is the clench of the each thread.
-	# @param i is the index of the thread
-	# @param threadPoolStatus this is the status of the thread. The threads have three possible status:
-	#	1) On hold because they are waiting for another thread finishes his execution.
-	#	2) Active. They are expanding a node.
-	#	3) All the threads are idle because all of them have finished his executions.
-	def startThreadedWork(self, ruleMap, triggerMap, lock=None, i=0, threadPoolStatus=None):
-		if lock == None:
-			# If there isnt any lock, we create one and we give it to the thread.
-			lock = thread.allocate_lock()
-			lock.acquire()
 
-		if threadPoolStatus != None:
-			# If the thread status is different of none, we lock the
-			# code and put the status of the i thread.
-			threadPoolStatus.lock()
-			threadPoolStatus[i] = True # el hilo esta en marcha.
-			threadPoolStatus.unlock()
-		# We take the initial time.
-		timeA = datetime.datetime.now()
-		
-		while True:
-			# Again, we take the time and we calculated the elapsed time
-			timeB = datetime.datetime.now()
-			timeElapsed = float((timeB-timeA).seconds) + float((timeB-timeA).microseconds)/1e6
-			# We take the length of the result list.
-			nResults = self.results.size()
-			# Check if we should give up because it already took too much time
-			if timeElapsed > maxTimeWaitLimit or (timeElapsed > maxTimeWaitAchieved and nResults > 0):
-				if nResults>0:
-					self.end_condition.set("GoalAchieved")
-				else:
-					self.end_condition.set("TimeLimit")
-				lock.release()
-				return
-			# Else, proceed...
-			# Try to pop a node from the queue
-			try:
-				# We take the head of the openNodes list: the first open node.
-				head = self.openNodes.heapqPop()[1] # P O P   POP   p o p   pop		
-				if threadPoolStatus:
-					threadPoolStatus.lock()
-					threadPoolStatus[i] = True # We say that the thread i is active.
-					threadPoolStatus.unlock()
-				self.knownNodes.append(head)
-			except:
-				#traceback.print_exc()
-				if not threadPoolStatus:
-					self.end_condition.set("IndexError")
-					lock.release()
-					return
-				time.sleep(0.001)
-				threadPoolStatus.lock()
-				threadPoolStatus[i] = False
-				if not True in threadPoolStatus:
-					self.end_condition.set("IndexError")
-					lock.release()
-					return
-				threadPoolStatus.unlock()
-				continue
 
-			# Update 'minCostOnOpenNodes', so we can stop when the minimum cost in the queue is bigger than one in the results
-			self.updateMinCostOnOpenNodes(head.cost)			
-			# Check if we got to the maximum cost or the minimum solution
-			if head.cost > maxCost:
-				self.end_condition.set("MaxCostReached")
-				lock.release()
-				return
-			elif self.results.size()>0 and head.cost>self.cheapestSolutionCost.value and stopWithFirstPlan:
-				self.end_condition.set("GoalAchieved")
-				lock.release()
-				return
-			if verbose>5: print 'Expanding'.ljust(5), head
-			for k in ruleMap:
-				# Iterate over rules and generate derivates
-				if True:# k in head.awakenRules:
-					for deriv in ruleMap[k](head):
-						self.explored.increase()
-						if self.symbol_mapping:
-							deriv.score, achieved = self.targetCode(deriv.graph, self.symbol_mapping)
-						else:
-							deriv.score, achieved = self.targetCode(deriv.graph)
-						if achieved:
-							self.results.append(deriv)
-							if stopWithFirstPlan:
-								self.end_condition.set("GoalAchieved")
-								lock.release()
-								return
-							# Compute cheapest solution
-							self.updateCheapestSolutionCostAndCutOpenNodes(self.results[0].cost)
-						self.knownNodes.lock()
-						notDerivInKnownNodes = not self.computeDerivInKnownNodes(deriv)
-						self.knownNodes.unlock()
-						if notDerivInKnownNodes:
-							if deriv.stop == False:
-								if len(deriv.graph.nodes.keys()) <= self.maxWorldSize:
-									self.openNodes.heapqPush( (float(deriv.cost)-10.*float(deriv.score), deriv) ) # The more the better TAKES INTO ACCOUNT COST AND SCORE
-			if verbose > 0:
-				doIt=False
-				nowNow = datetime.datetime.now()
-				try:
-					elap = (nowNow-self.lastTime).seconds + (nowNow-self.lastTime).microseconds/1e6
-					doIt = elap > 3
-				except:
-					self.lastTime = datetime.datetime.now()
-					doIt = True
-				if doIt:
-					self.lastTime = nowNow
-					#try:
-						#if self.indent == '':
-					print str(int(timeElapsed)).zfill(10)+','+str(len(self.openNodes))+','+str(len(self.knownNodes))+','+str(head.score)
-						#rrrr = heapsort(self.openNodes)
-						#print 'OpenNodes', len(rrrr), "(HEAD cost:"+str(head.cost)+"  depth:"+str(head.depth)+"  score:"+str(head.score)+")"
-						#if len(self.openNodes) > 0:
-							#print 'First['+str(rrrr[ 0][0])+'](cost:'+str(rrrr[ 0][1].cost)+', score:'+str(rrrr[ 0][1].score)+', depth:'+str(rrrr[ 0][1].depth)+')'
-							#print  'Last['+str(rrrr[-1][0])+'](cost:'+str(rrrr[-1][1].cost)+', score:'+str(rrrr[-1][1].score)+', depth:'+str(rrrr[-1][1].depth)+')'
-						#else:
-							#print 'no open nodes'
-					#except:
-						#traceback.print_exc()
 
-	def updateCheapestSolutionCostAndCutOpenNodes(self, cost):
-		self.cheapestSolutionCost.lock()
-		if cost >= self.cheapestSolutionCost.get():
-			self.cheapestSolutionCost.unlock()
-		else:
-			self.openNodes.lock()
-			self.cheapestSolutionCost.set(cost)
-
-			newOpenNodes = LockableList()
-			for node in self.openNodes:
-				if node[1].cost < cost:
-					newOpenNodes.heapqPush(node)
-			self.openNodes.thelist = newOpenNodes.thelist
-
-			self.openNodes.unlock()
-			self.cheapestSolutionCost.unlock()
-
-	def updateMinCostOnOpenNodes(self, cost):
-		self.minCostOnOpenNodes.lock()
-		self.openNodes.lock()
-		if cost < self.minCostOnOpenNodes.value:
-			if self.getNumberOfOpenNodes()==0:
-				self.minCostOnOpenNodes.value = 0
-			else:
-				self.minCostOnOpenNodes.value = self.firstOpenNode()[1].cost
-				for n in self.openNodes:
-					if n[1].cost < self.minCostOnOpenNodes.value:
-						self.minCostOnOpenNodes.value = n[1].cost
-		self.openNodes.unlock()
-		self.minCostOnOpenNodes.unlock()
-
-	def  computeDerivInKnownNodes(self, deriv):
-		for other in self.knownNodes:
-			if deriv == other:
-				if other.cost <= deriv.cost:
-					return True
-		return False
 
 if __name__ == '__main__': # program domain problem result
 	#from pycallgraph import *
@@ -524,10 +364,10 @@ class DomainInformation(object):
 
 
 class TargetInformation(object):
-	def __init__(self, identifier, text):
+	def __init__(self, identifier, text, agm):
 		self.identifier = identifier
 		self.text = text
-		self.code = generateTarget_AGGT(AGMFileDataParsing.targetFromText(text))
+		self.code = generateTarget_AGGT(agm, AGMFileDataParsing.targetFromText(text))
 		self.module = self.getModuleFromText(self.code).CheckTarget
 	def getModuleFromText(self, moduleText):
 		if len(moduleText) < 10:
@@ -557,15 +397,19 @@ class AGGLPlanner(object):
 	# @param awakenRules: the set of rules that are currently available for the planner to find a solution
 	def __init__(self, domainParsed, domainModule, initWorld, target, indent=None, symbol_mapping=None, excludeList=None, resultFile=None, decomposing=False, awakenRules=set()):
 		object.__init__(self)
+		self.timeElapsed = 0.
 		self.symbol_mapping = copy.deepcopy(symbol_mapping)
 		if excludeList == None: excludeList = []
 		self.excludeList = copy.deepcopy(excludeList)
 		self.indent = copy.deepcopy(indent)
+		self.resultFile = resultFile
 		if self.indent == None: self.indent = ''
 		# Get initial world mdoel
-		
 		if isinstance(initWorld,unicode) or isinstance(initWorld,str):
-			self.initWorld = WorldStateHistory([xmlModelParser.graphFromXMLFile(initWorld), domainParsed.getInitiallyAwakeRules()|awakenRules])
+			if '<AGMModel>' in initWorld:
+				self.initWorld = WorldStateHistory([xmlModelParser.graphFromXMLText(initWorld), domainParsed.getInitiallyAwakeRules()|awakenRules])
+			else:
+				self.initWorld = WorldStateHistory([xmlModelParser.graphFromXMLFile(initWorld), domainParsed.getInitiallyAwakeRules()|awakenRules])
 		elif isinstance(initWorld,AGMGraph):
 			self.initWorld = WorldStateHistory([                                initWorld,  domainParsed.getInitiallyAwakeRules()|awakenRules])
 		elif isinstance(initWorld,WorldStateHistory):
@@ -573,7 +417,7 @@ class AGGLPlanner(object):
 		else:
 			print type(initWorld)
 			os._exit(1)
-		self.initWorld.nodeId = 0 
+		self.initWorld.nodeId = 0
 		# Set rule and trigger maps
 		self.domainParsed = domainParsed
 		self.domainModule = domainModule
@@ -591,9 +435,9 @@ class AGGLPlanner(object):
 				pass
 		# Set target
 		self.targetCode = target
-		# Descomp
+		# Decomposing
 		self.decomposing = decomposing
-		
+
 		# set stop flat
 		self.externalStopFlag = LockableInteger(0)
 
@@ -607,16 +451,16 @@ class AGGLPlanner(object):
 		self.maxWorldSize = maxWorldIncrement+len(self.initWorld.graph.nodes.keys())
 		## This attribute indicates the minimun cost of the open nodes of the graph
 		self.minCostOnOpenNodes = LockableInteger(0)
-		## This is the lockable list of all the open nodes.
+		## self.openNodes is a lockable list that contains all the open nodes of the state space that have not been completely explored.
 		self.openNodes = LockableList()
-		## This is the lockable list of all the know nodes of the graph.
+		## self.knownNodes is a lockable list that contains of all the know nodes of the graph, that is, those that have been completely explored.
 		self.knownNodes = LockableList()
 		## This is the lockable list of all the calculated results.
 		self.results = LockableList()
 		## This is the lockable integer of all the explored nodes
 		self.explored = LockableInteger(0)
 		## This is the LockableInteger that stores the better cost of the solution
-		self.cheapestSolutionCost = LockableInteger(-1) 
+		self.cheapestSolutionCost = LockableInteger(-1)
 		## This is the condition to stop.
 		self.end_condition = EndCondition()
 		# We save in the list of the open nodes, the initial status of the world
@@ -625,27 +469,20 @@ class AGGLPlanner(object):
 
 		# Create initial state
 		if self.symbol_mapping:
-			#print 'eo 1'
-			self.initWorld.score, achieved = self.targetCode(self.initWorld.graph, self.symbol_mapping)
-			#print 'eo 11'
+			self.initWorld.score, achieved, unused = self.targetCode(self.initWorld.graph, self.symbol_mapping)
 		else:
-			#print 'eo 21'
-			self.initWorld.score, achieved = self.targetCode(self.initWorld.graph)
-			#print 'eo 2'
+			self.initWorld.score, achieved, unused = self.targetCode(self.initWorld.graph)
 
 		if achieved:
-			#print 'AQUI 2'
 			# If the goal is achieved, we save the solution in the result list, the
 			# solution cost in the cheapest solution cost and we put the end_condition
 			# as goal achieved in order to stop the execution.
 			self.results.append(self.initWorld)
-			#print 'AQUI 2.1'
 			self.cheapestSolutionCost.set(self.results.getFirstElement().cost)
-			#print 'AQUI 2.2'
 			if self.indent == '':
-				self.end_condition.set("GoalAchieved")
+ 				self.end_condition.set("GoalAchieved")
 		elif number_of_threads>0:
-			#print 'AQUI 3'
+			print "Using multiple threads is not currently supported"
 			# But, if the goal is not achieved and there are more than 0 thread running (1, 2...)
 			# we creates a list where we will save the status of all the threads, take all
 			# the threads (with their locks) and save it in the thread_locks list.
@@ -653,24 +490,19 @@ class AGGLPlanner(object):
 			## This attributes is a list where we save all the thread that are running.
 			self.thread_locks = []
 			threadStatus = LockableList()
-			#print 'AQUI 3.1'
 			for i in xrange(number_of_threads):
-				#print 'AQUI 3.2'
 				lock = thread.allocate_lock()
 				lock.acquire()
 				threadStatus.append(True)
 				self.thread_locks.append(lock)
 				thread.start_new_thread(self.startThreadedWork, (copy.deepcopy(ruleMap), copy.deepcopy(self.triggerMap), lock, i, threadStatus))
-				#print 'AQUI 3.3'
 			# Wait for the threads to stop
 			for lock in self.thread_locks:
 				lock.acquire()
 		else:
 			# If the solution is not achieved and there arent any thread to execute the programm
 			# we stop it and show an error message.
-			#print 'AQUI 4.2'
 			self.startThreadedWork(self.ruleMap, self.triggerMap)
-			#print 'AQUI 4.3'
 
 		# We make others checks over the end_condition:
 		#	-- If the end condition is wrong.
@@ -681,7 +513,7 @@ class AGGLPlanner(object):
 		#	-- or the end condition doesnt have any message
 		# we print the correspond message
 		if self.end_condition.get() == "IndexError":
-			if verbose > 0: print 'End: state space exhausted'
+			if verbose > 0: print 'End: state space exhausted (known', len(self.knownNodes), ' (open', len(self.openNodes)
 		elif self.end_condition.get() == "MaxCostReached":
 			if verbose > 0: print 'End: max cost reached'
 		elif self.end_condition.get() == "BestSolutionFound":
@@ -708,9 +540,9 @@ class AGGLPlanner(object):
 				if self.results[i].cost < self.results[min_idx].cost:
 					min_idx = i
 			i = min_idx
-			
+
 			if self.indent=='' and verbose > 0: print 'Got', len(self.results), 'plans!'
-				
+
 			try:
 				plann = AGGLPlannerPlan([xx.split('@') for xx in self.results[i].history])
 				n = copy.deepcopy(plann)
@@ -718,19 +550,8 @@ class AGGLPlanner(object):
 					n = n.removeFirstAction(self.initWorld.graph)
 					#n = n.removeFirstActionDirect()
 					try:
-						#print 'QUITADA REGLA: ', self.results[i].history[0], '\nRESTO DEL PLAN: ', n
-						"""ANIADIDO DE MERCEDES, YEAH!
-						Si estamos decomposing una regla jerarquica (estamos buscando un plan para
-						llegar al estado que nos indica la regla jerarquica) debemos crear el estado intermedio
-						generado por la regla jerarquica y llamar con el al PyPlanChecker"""
-						if self.decomposing==True:
-							#print 'Hay que crear estado intermedio'
-							check = AGGLPlanChecker(self.domainParsed, self.domainModule, self.initWorld, n, estadoIntermedio, self.symbol_mapping, verbose=False)
-							check.run()
-						else:
-							#print 'No hay que crear estado intermedio'
-							check = AGGLPlanChecker(self.domainParsed, self.domainModule, self.initWorld, n, self.targetCode, self.symbol_mapping, verbose=False)
-							check.run()
+						check = agglplanchecker.AGGLPlanChecker(self.domainParsed, self.domainModule, self.initWorld, n, self.targetCode, self.symbol_mapping, verbose=False)
+						check.run()
 					except:
 						print 'Excepction!!'
 						traceback.print_exc()
@@ -749,7 +570,7 @@ class AGGLPlanner(object):
 			except:
 				traceback.print_exc()
 				pass
-			planConDescomposicion = False
+			firstActionIsHierarchical = False
 			if len(self.results[i].history) > 0:
 				action = self.results[i].history[0]
 				ac = AGGLPlannerAction(action)
@@ -770,15 +591,15 @@ class AGGLPlanner(object):
 							#paramsWithoutNew[param] = str('v')+str(paramsWithoutNew[param])
 					#print paramsWithoutNew
 					print '\nDecomposing hierarchical rule ', ac.name, paramsWithoutNew
-					""" Creamos estado intermedio, primero lo creamos en fichero .xml para poder quitarle los nuevos nodos creados al aplicar la regla jerarquica"""
+					""" We create an temporary state, without all the nodes created by the hierarchical rule"""
 					estadoIntermedio = self.triggerMap[ac.name](self.initWorld, ac.parameters)
-					"""Quitamos los nodos constantes creados por la regla jerarquica: los volvemos variables para evitar errores cuando se genere el codigo target en python."""
+					""" We remove the constants created by the hierarchical rule, making them variables."""
 					graph = setNewConstantsAsVariables(self.initWorld.graph, estadoIntermedio.graph)
-					outputText = generateTarget(graph)
-					"""Ponemos una bandera para pintar despues el plan completa una vez descompuesta la primera regla jerarquica"""
-					planConDescomposicion = True
+					outputText = generateTarget(self.domainParsed, graph)
+					""" The following flag is set so the planning of the hierarchical rule is shown on screen"""
+					firstActionIsHierarchical = True
 					hierarchicalTarget = self.domainModule.getHierarchicalTargets()[ac.name]
-					aaa = AGGLPlanner(
+					aaa = AGGLPlanner( # domainParsed, domainModule, initWorld, target, indent=None, symbol_mapping=None, excludeList=None, resultFile=None, decomposing=False, awakenRules=set()):
 					   self.domainParsed,
 					   self.domainModule,
 					   self.initWorld,
@@ -786,15 +607,15 @@ class AGGLPlanner(object):
 					   self.indent+'\t',
 					   paramsWithoutNew,
 					   self.excludeList,
+					   self.resultFile,
 					   True,
-					   "/tmp/estadoIntermedio.py",
 					   copy.deepcopy(self.results[i].awakenRules|self.awakenRules)
 					)
 					aaa.run()
 
 					self.results[i].history = self.results[i].history[1:] # The following two lines append a '#!' string to the first action (which is the hierarchical action thas has been decomposed)
 					self.results[i].history.insert(0, '#!'+str(ac))
-
+					print self.results[i].history
 					if len(aaa.results.getList()) == 0:
 						del self.results[:]
 					else:
@@ -805,12 +626,13 @@ class AGGLPlanner(object):
 								h_min_idx = h_i
 						for action in aaa.results[h_min_idx].history:
 							h_retText += str(action)+'\n'
+
 				else:
-					planConDescomposicion = False
-			
-			print 'len results:', len(self.results)
+					firstActionIsHierarchical = False
+
+			# if self.decomposing == False and firstActionIsHierarchical == True: print 'len results:', len(self.results)
 			if len(self.results)>0: # If there are plans, proceed
-				printResult(self.results[i]) #the best solution
+				#printResult(self.results[i]) #the best solution
 				retText = ''
 				for action in self.results[i].history:
 					retText += str(action)+'\n'
@@ -818,10 +640,15 @@ class AGGLPlanner(object):
 					finalPlan = AGGLPlannerPlan(h_retText + retText, planFromText=True)
 				except:
 					finalPlan = AGGLPlannerPlan(retText, planFromText=True)
-				if self.decomposing == False and planConDescomposicion == True:
+				if self.decomposing == False:
 					print 'FINAL PLAN WITH: ', len(finalPlan), ' ACTIONS:'
-				for action in finalPlan:
-					print '    ', action
+					for action in finalPlan:
+						print '    ', action
+						if self.resultFile != None:
+							self.resultFile.write(str(action)+'\n')
+					if self.resultFile != None:
+						self.resultFile.write("# time: " + str(self.timeElapsed) + "\n")
+
 				return finalPlan
 			if self.indent=='' and verbose > 0: print "----------------\nExplored", self.explored.get(), "nodes"
 
@@ -835,36 +662,41 @@ class AGGLPlanner(object):
 
 
 	##@brief This method starts the execution of program threads
-	# @param ruleMap all the actives rules of the grammar
-	# @param lock this is the clench of the each thread.
-	# @param i is the index of the thread
+	# @param ruleMap all the active rules of the grammar
+	# @param lock this is the mutex of each thread.
+	# @param i is the index (id) of the thread
 	# @param threadPoolStatus this is the status of the thread. The threads have three possible status:
 	#	1) On hold because they are waiting for another thread finishes his execution.
 	#	2) Active. They are expanding a node.
 	#	3) All the threads are idle because all of them have finished his executions.
 	def startThreadedWork(self, ruleMap, triggerMap, lock=None, i=0, threadPoolStatus=None):
-		if lock == None:
-			# If there isnt any lock, we create one and we give it to the thread.
+		if lock == None: # If there isnt any lock, we create one and we give it to the thread.
 			lock = thread.allocate_lock()
 			lock.acquire()
 
-		if threadPoolStatus != None:
-			# If the thread status is different of none, we lock the
-			# code and put the status of the i thread.
+		if threadPoolStatus != None: # If the thread status is different of none, we lock the code and put the status of the i thread.
 			threadPoolStatus.lock()
-			threadPoolStatus[i] = True # el hilo esta en marcha.
+			threadPoolStatus[i] = True # the thread is working
 			threadPoolStatus.unlock()
 		# We take the initial time.
 		timeA = datetime.datetime.now()
-		
+		self.timeElapsed = -1.
+
+
+		#
+		# MAIN SEARCH LOOP
+		#
 		while True:
+			#
+			# Check stop conditions and compute the time spent
+			#
 			if self.externalStopFlag.get() != 0:
-				print 'WE STOP BECAUSE WE GOT A ZERO'
 				self.end_condition.set('ExternalFlag')
 				break
 			# Again, we take the time and we calculated the elapsed time
 			timeB = datetime.datetime.now()
 			timeElapsed = float((timeB-timeA).seconds) + float((timeB-timeA).microseconds)/1e6
+			self.timeElapsed = timeElapsed
 			# We take the length of the result list.
 			nResults = self.results.size()
 			# Check if we should give up because it already took too much time
@@ -875,11 +707,12 @@ class AGGLPlanner(object):
 					self.end_condition.set("TimeLimit")
 				lock.release()
 				return
-			# Else, proceed...
-			# Try to pop a node from the queue
+			#
+			# Pop an unexplored node from the queue, according to the heuristic. The popped node is stored in a variable named "head"
+			#
 			try:
 				# We take the head of the openNodes list: the first open node.
-				head = self.openNodes.heapqPop()[1] # P O P   POP   p o p   pop		
+				head = self.openNodes.heapqPop()[1] # P O P   POP   p o p   pop
 				if threadPoolStatus:
 					threadPoolStatus.lock()
 					threadPoolStatus[i] = True # We say that the thread i is active.
@@ -900,9 +733,11 @@ class AGGLPlanner(object):
 					return
 				threadPoolStatus.unlock()
 				continue
-
+			#
+			# We now check other end conditions
+			#
 			# Update 'minCostOnOpenNodes', so we can stop when the minimum cost in the queue is bigger than one in the results
-			self.updateMinCostOnOpenNodes(head.cost)			
+			self.updateMinCostOnOpenNodes(head.cost)
 			# Check if we got to the maximum cost or the minimum solution
 			if head.cost > maxCost:
 				self.end_condition.set("MaxCostReached")
@@ -912,31 +747,43 @@ class AGGLPlanner(object):
 				self.end_condition.set("GoalAchieved")
 				lock.release()
 				return
+			#
+			# For each action in the domain (for k in ruleMap) we generate the possible nodes of the state space that can
+			# be reached from the state described in 'head'.
+			#
 			if verbose>5: print 'Expanding'.ljust(5), head
+			# The dictionary 'ruleMap' contains the python implementation of the actions in the domain.
+  			# For each action 'k', in the domain:
 			for k in ruleMap:
-				# Iterate over rules and generate derivates
-				if True:# k in head.awakenRules:
-					for deriv in ruleMap[k](head):
-						self.explored.increase()
-						if self.symbol_mapping:
-							deriv.score, achieved = self.targetCode(deriv.graph, self.symbol_mapping)
-						else:
-							deriv.score, achieved = self.targetCode(deriv.graph)
-						if achieved:
-							self.results.append(deriv)
-							if stopWithFirstPlan:
-								self.end_condition.set("GoalAchieved")
-								lock.release()
-								return
-							# Compute cheapest solution
-							self.updateCheapestSolutionCostAndCutOpenNodes(self.results[0].cost)
-						self.knownNodes.lock()
-						notDerivInKnownNodes = not self.computeDerivInKnownNodes(deriv)
-						self.knownNodes.unlock()
-						if notDerivInKnownNodes:
-							if deriv.stop == False:
-								if len(deriv.graph.nodes.keys()) <= self.maxWorldSize:
-									self.openNodes.heapqPush( (float(deriv.cost)-10.*float(deriv.score), deriv) ) # The more the better TAKES INTO ACCOUNT COST AND SCORE
+				# Calling ruleMap[k] with the most promising node of the list of nodes to explore (head)
+ 				# returns all the nodes that can be reached from the previously mentioned node. We iterate over
+				# those nodes.
+				for deriv in ruleMap[k](head):
+					# At this point 'deriv' is one of the nodes that can be reached by applying the action 'k' to the node 'head'
+					self.explored.increase() # Add 1 to the number of explored nodes (used just for providing the information to the user)
+					# Compute the heuristic (score) and whether or not the goal is met
+					if self.symbol_mapping:
+						deriv.score, achieved, unused = self.targetCode(deriv.graph, self.symbol_mapping)
+					else:
+						deriv.score, achieved, unused = self.targetCode(deriv.graph)
+					# If the goal is achieved after executing the action we append the new node in the list of nodes that achieve the mission
+					if achieved:
+						self.results.append(deriv)
+						if stopWithFirstPlan:
+							self.end_condition.set("GoalAchieved")
+							lock.release()
+							return
+						# Compute cheapest solution
+						self.updateCheapestSolutionCostAndCutOpenNodes(self.results[0].cost)
+					# Check if the node was already in the list of known nodes
+					self.knownNodes.lock()
+					notDerivInKnownNodes = not self.computeDerivInKnownNodes(deriv)
+					self.knownNodes.unlock()
+					# If the node is not in the list of known nodes, append it to the list of openNodes
+					if notDerivInKnownNodes:
+						if deriv.stop == False:
+							if len(deriv.graph.nodes.keys()) <= self.maxWorldSize:
+								self.openNodes.heapqPush( (float(deriv.cost)-10.*float(deriv.score), deriv) )
 			if verbose > 0:
 				doIt=False
 				nowNow = datetime.datetime.now()
@@ -948,18 +795,8 @@ class AGGLPlanner(object):
 					doIt = True
 				if doIt:
 					self.lastTime = nowNow
-					#try:
-						#if self.indent == '':
-					print str(int(timeElapsed)).zfill(10)+','+str(len(self.openNodes))+','+str(len(self.knownNodes))+','+str(head.score)
-						#rrrr = heapsort(self.openNodes)
-						#print 'OpenNodes', len(rrrr), "(HEAD cost:"+str(head.cost)+"  depth:"+str(head.depth)+"  score:"+str(head.score)+")"
-						#if len(self.openNodes) > 0:
-							#print 'First['+str(rrrr[ 0][0])+'](cost:'+str(rrrr[ 0][1].cost)+', score:'+str(rrrr[ 0][1].score)+', depth:'+str(rrrr[ 0][1].depth)+')'
-							#print  'Last['+str(rrrr[-1][0])+'](cost:'+str(rrrr[-1][1].cost)+', score:'+str(rrrr[-1][1].score)+', depth:'+str(rrrr[-1][1].depth)+')'
-						#else:
-							#print 'no open nodes'
-					#except:
-						#traceback.print_exc()
+					print str(int(self.timeElapsed)).zfill(10)+','+str(len(self.openNodes))+','+str(len(self.knownNodes))+','+str(head.score)
+
 
 	def updateCheapestSolutionCostAndCutOpenNodes(self, cost):
 		self.cheapestSolutionCost.lock()
@@ -992,7 +829,7 @@ class AGGLPlanner(object):
 		self.openNodes.unlock()
 		self.minCostOnOpenNodes.unlock()
 
-	def  computeDerivInKnownNodes(self, deriv):
+	def computeDerivInKnownNodes(self, deriv):
 		for other in self.knownNodes:
 			if deriv == other:
 				if other.cost <= deriv.cost:

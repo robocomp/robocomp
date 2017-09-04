@@ -100,7 +100,7 @@ if (ROBOCOMP_SUPPORT)
 	SET(ICE_LIBS -lIce)
 	ROBOCOMP_WRAP_ICE( AGMWorldModel AGMExecutive Planning AGMCommonBehavior )
 	ADD_DEFINITIONS(-DROBOCOMP_SUPPORT=1)
-	SUBDIRS (${CMAKE_SOURCE_DIR}/tools/agmmission tools/agminner tools/agmagentsim) 
+	SUBDIRS (${CMAKE_SOURCE_DIR}/tools/agmmission tools/agminner tools/agmagentsim)
 endif (ROBOCOMP_SUPPORT)
 
 # LibXML
@@ -153,20 +153,21 @@ MACRO( WRAP_PYTHON_QRC )
     ADD_CUSTOM_TARGET(${input_file}_rc ALL DEPENDS ${CMAKE_BINARY_DIR}/${input_file}_rc.py )
   ENDFOREACH( input_file )
 ENDMACRO( WRAP_PYTHON_QRC )
-WRAP_PYTHON_UI( guiAGGLEditor guiGraphViewer appearance )
+WRAP_PYTHON_UI( guiAGGLEditor guiGraphViewer appearance agglTypeEditor )
 WRAP_PYTHON_QRC( resource )
 
 
 #  Library building  #
 ######################
+add_library(agm SHARED ${AGM_CODE} ${XMLVIEWER3D_MOCS} )
+target_link_libraries(agm ${Boost_LIBRARIES} ${LIBS} ${PYTHON_LIBRARIES} ${OSG_LIBS} ${QT_LIBRARIES} )
+
 if (ROBOCOMP_SUPPORT)
    add_library(agmdummy SHARED AGMWorldModel.cpp AGMExecutive.cpp AGMCommonBehavior.cpp Planning.cpp )
    set(ROBOCOMP_ADDITIONAL_SRC AGMExecutive.cpp Planning.cpp )
+   add_dependencies(agm agmdummy)
 endif (ROBOCOMP_SUPPORT)
 
-add_library(agm SHARED ${AGM_CODE} ${XMLVIEWER3D_MOCS} )
-target_link_libraries(agm ${Boost_LIBRARIES} ${LIBS} ${PYTHON_LIBRARIES} ${OSG_LIBS} ${QT_LIBRARIES} )
-add_dependencies(agm agmdummy)
 
 add_executable ( testagm tools/testagm.cpp ${ROBOCOMP_ADDITIONAL_SRC} )
 target_link_libraries ( testagm agm -L. -L.. -lagm ${LIBS} ${ICE_LIBS} ${Boost_LIBRARIES} ${PYTHON_LIBRARIES} )
@@ -219,14 +220,32 @@ INSTALL(PROGRAMS ${CMAKE_SOURCE_DIR}/tools/AGGLEditor.py DESTINATION ${INST_BIN_
 INSTALL(PROGRAMS ${CMAKE_SOURCE_DIR}/tools/aggltypes.py DESTINATION ${INST_BIN_PATH}/ RENAME aggltypes)
 INSTALL(PROGRAMS ${CMAKE_SOURCE_DIR}/tools/aggl2pddl DESTINATION ${INST_BIN_PATH}/ )
 INSTALL(PROGRAMS ${CMAKE_SOURCE_DIR}/tools/aggl2agglpy DESTINATION ${INST_BIN_PATH}/ )
+
 INSTALL(PROGRAMS "${CMAKE_SOURCE_DIR}/AGGLPlanner/agglplanner.py" DESTINATION ${INST_BIN_PATH}/ RENAME agglplanner )
 INSTALL(PROGRAMS "${CMAKE_SOURCE_DIR}/AGGLPlanner/agglplanner.py" DESTINATION ${INST_SHARE_PATH}/ RENAME agglplanner.py )
+INSTALL(PROGRAMS "${CMAKE_SOURCE_DIR}/AGGLPlanner/agglplanner2.py" DESTINATION ${INST_BIN_PATH}/ RENAME agglplanner2 )
+INSTALL(PROGRAMS "${CMAKE_SOURCE_DIR}/AGGLPlanner/agglplanner2.py" DESTINATION ${INST_SHARE_PATH}/ RENAME agglplanner2.py )
+
+
+INSTALL(PROGRAMS "${CMAKE_SOURCE_DIR}/AGGLPlanner/agglplanningcache.py" DESTINATION ${INST_SHARE_PATH}/ RENAME agglplanningcache.py )
+
 INSTALL(PROGRAMS "${CMAKE_SOURCE_DIR}/AGGLPlanner/agglplanchecker.py" DESTINATION ${INST_BIN_PATH}/ RENAME agglplanchecker )
 INSTALL(PROGRAMS "${CMAKE_SOURCE_DIR}/AGGLPlanner/agglplanchecker.py" DESTINATION ${INST_SHARE_PATH}/ RENAME agglplanchecker.py )
+
 INSTALL(PROGRAMS "${CMAKE_SOURCE_DIR}/AGGLPlanner/agglplannerplan.py" DESTINATION ${INST_BIN_PATH}/ RENAME agglplannerplan )
 INSTALL(PROGRAMS "${CMAKE_SOURCE_DIR}/AGGLPlanner/agglplannerplan.py" DESTINATION ${INST_SHARE_PATH}/ RENAME agglplannerplan.py )
+
 INSTALL(PROGRAMS "${CMAKE_SOURCE_DIR}/AGGLPlanner/agglplan.py" DESTINATION ${INST_BIN_PATH}/ RENAME agglplan )
 INSTALL(PROGRAMS "${CMAKE_SOURCE_DIR}/AGGLPlanner/agglplan.py" DESTINATION ${INST_SHARE_PATH}/ RENAME agglplan.py )
+INSTALL(PROGRAMS "${CMAKE_SOURCE_DIR}/AGGLPlanner/agglplan2.py" DESTINATION ${INST_BIN_PATH}/ RENAME agglplan2 )
+INSTALL(PROGRAMS "${CMAKE_SOURCE_DIR}/AGGLPlanner/agglplan2.py" DESTINATION ${INST_SHARE_PATH}/ RENAME agglplan2.py )
+
+INSTALL(PROGRAMS "${CMAKE_SOURCE_DIR}/AGGLPlanner/dummysemanticspredictor.py" DESTINATION ${INST_SHARE_PATH}/ )
+INSTALL(PROGRAMS "${CMAKE_SOURCE_DIR}/AGGLPlanner/genericprediction.py" DESTINATION ${INST_SHARE_PATH}/ )
+INSTALL(PROGRAMS "${CMAKE_SOURCE_DIR}/AGGLPlanner/linearregressionpredictor.py" DESTINATION ${INST_SHARE_PATH}/ )
+INSTALL(PROGRAMS "${CMAKE_SOURCE_DIR}/AGGLPlanner/nopredictor.py" DESTINATION ${INST_SHARE_PATH}/ )
+
+
 INSTALL(PROGRAMS "${CMAKE_SOURCE_DIR}/AGGLPlanner/agglcheckhierarchical.py" DESTINATION ${INST_BIN_PATH}/ RENAME agglcheckhierarchical )
 INSTALL(PROGRAMS "${CMAKE_SOURCE_DIR}/python/pyparsinglocal.py" DESTINATION ${INST_SHARE_PATH}/ RENAME pyparsinglocal.py )
 
@@ -249,13 +268,35 @@ INSTALL(PROGRAMS python/AGMModule.py DESTINATION ${INST_SHARE_PATH})
 INSTALL(PROGRAMS python/AGMModelConversion.py DESTINATION ${INST_SHARE_PATH})
 INSTALL(PROGRAMS python/AGGL.py DESTINATION ${INST_SHARE_PATH})
 
+
+INSTALL(PROGRAMS Learner/classifier.py DESTINATION ${INST_SHARE_PATH})
+INSTALL(PROGRAMS Learner/const.py DESTINATION ${INST_SHARE_PATH})
+INSTALL(PROGRAMS Learner/generate.py DESTINATION ${INST_SHARE_PATH})
+
+INSTALL(PROGRAMS Learner/AGMParser.py DESTINATION ${INST_SHARE_PATH})
+
+INSTALL(PROGRAMS Learner/test.py DESTINATION ${INST_SHARE_PATH})
+INSTALL(PROGRAMS Learner/train.py DESTINATION ${INST_SHARE_PATH})
+
+
+
+
 INSTALL(PROGRAMS ${CMAKE_BINARY_DIR}/ui_guiAGGLEditor.py DESTINATION ${INST_SHARE_PATH})
 INSTALL(PROGRAMS ${CMAKE_BINARY_DIR}/ui_guiGraphViewer.py DESTINATION ${INST_SHARE_PATH})
+INSTALL(PROGRAMS ${CMAKE_BINARY_DIR}/ui_agglTypeEditor.py DESTINATION ${INST_SHARE_PATH})
 INSTALL(PROGRAMS ${CMAKE_BINARY_DIR}/ui_appearance.py DESTINATION ${INST_SHARE_PATH})
 INSTALL(PROGRAMS ${CMAKE_BINARY_DIR}/resource_rc.py DESTINATION ${INST_SHARE_PATH})
 
 INSTALL(PROGRAMS tools/aggl_completion.bash DESTINATION /etc/bash_completion.d/ RENAME AGGLEditor)
 
+INSTALL(FILES "${CMAKE_SOURCE_DIR}/share/icons/linkadd.png" DESTINATION ${INST_SHARE_PATH}/icons/ )
+INSTALL(FILES "${CMAKE_SOURCE_DIR}/share/icons/linknegate.png" DESTINATION ${INST_SHARE_PATH}/icons/ )
+INSTALL(FILES "${CMAKE_SOURCE_DIR}/share/icons/linkremove.png" DESTINATION ${INST_SHARE_PATH}/icons/ )
+INSTALL(FILES "${CMAKE_SOURCE_DIR}/share/icons/linktype.png" DESTINATION ${INST_SHARE_PATH}/icons/ )
+INSTALL(FILES "${CMAKE_SOURCE_DIR}/share/icons/nodeadd.png" DESTINATION ${INST_SHARE_PATH}/icons/ )
+INSTALL(FILES "${CMAKE_SOURCE_DIR}/share/icons/nodemove.png" DESTINATION ${INST_SHARE_PATH}/icons/ )
+INSTALL(FILES "${CMAKE_SOURCE_DIR}/share/icons/noderemove.png" DESTINATION ${INST_SHARE_PATH}/icons/ )
+INSTALL(FILES "${CMAKE_SOURCE_DIR}/share/icons/noderename.png" DESTINATION ${INST_SHARE_PATH}/icons/ )
+INSTALL(FILES "${CMAKE_SOURCE_DIR}/share/icons/noderetype.png" DESTINATION ${INST_SHARE_PATH}/icons/ )
 
 ADD_DEFINITIONS( -std=c++11 )
-

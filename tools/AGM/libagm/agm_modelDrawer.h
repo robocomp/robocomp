@@ -20,7 +20,7 @@
 
 
 
-#define SPRING_LENGTH 17.
+#define SPRING_LENGTH 30.
 #define HOOKES_CONSTANT 1.5
 #define FRICTION 0.85
 #define FIELD_FORCE_MULTIPLIER 700000.
@@ -273,9 +273,17 @@ public:
 				}
 				float angle = atan2(i[1], i[0]);
 				float dist1 = pow((abs((i[1]*i[1]) + (i[0]*i[0]))), 0.5);
+// 				bool lt = false;
+// 				float diff;
 				if (dist1 < SPRING_LENGTH)
+				{
+// 					lt = true;
+// 					diff = abs(dist1 - SPRING_LENGTH);
 					dist1 = SPRING_LENGTH;
+				}
 				float dist2 = pow(dist1, 2.);
+// 				if (lt)
+// 					dist2 = -diff;
 				float force = FIELD_FORCE_MULTIPLIER / dist2;
 				forceX += force * cos(angle);
 				forceY += force * sin(angle);

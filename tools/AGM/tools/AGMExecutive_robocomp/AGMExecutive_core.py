@@ -38,10 +38,14 @@ import RoboCompPlanning
 
 import AGMModelConversion
 
+import logging
+logging.basicConfig(level=logging.DEBUG)
 
 import thriftpy
 agglplanner_thrift = thriftpy.load("/usr/local/share/agm/agglplanner.thrift", module_name="agglplanner_thrift")
 from thriftpy.rpc import make_client
+
+
 
 
 #
@@ -65,24 +69,44 @@ class PlannerCaller(threading.Thread):
 	pendingJobs = LockableList()
 
 
-	def __init__(self, executive, agglPath):
+	def __init__(self, executive, agglPath, startPlanServer):
 		threading.Thread.__init__(self)
+		self.startPlanServer = startPlanServer
 		self.executive = executive
 		self.agglPath = agglPath
-		self.agglplannerclient = executive.agglplannerclient
+		try:
+			self.agglplannerclient = make_client(agglplanner_thrift.AGGLPlanner, '127.0.0.1', 6000, timeout=1000000)
+		except Exception, e:
+			if self.startPlanServer.startswith('rcremote'):
+				parts = self.startPlanServer.split(',')
+				subprocess.Popen(parts+['agglplannerserver'])
+			elif self.startPlanServer == 'local':
+				subprocess.Popen(['agglplannerserver'])
+			elif self.startPlanServer == 'off':
+				print 'Cannot connect to agglplanner service'
+				print e.message
+				sys.exit(-1)
+			else:
+				print 'Cannot connect to agglplanner service. Unknown configuration parameter for variable "AutostarAGGLPlannerServer"'
+				print e.message
+				sys.exit(-1)
+			time.sleep(1)
+
 		self.domainText = open(self.agglPath, 'r').read()
 		tempStr = self.domainText
 		try: tempStr = unicodedata.normalize('NFKD', tempStr)
 		except: pass
-		print 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX getDomainIdentifier'
 		self.domainId = self.agglplannerclient.getDomainIdentifier(tempStr)
 
 	def setMission(self, targetStr):
 		tempStr = targetStr
 		try: tempStr = unicodedata.normalize('NFKD', tempStr)
 		except: pass
-		print 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX getTargetIdentifier'
-		self.targetId = self.agglplannerclient.getTargetIdentifier(open(tempStr, 'r').read())
+		missionStr = open(tempStr, 'r').read()
+		print type(missionStr), missionStr
+		self.targetId = self.agglplannerclient.getTargetIdentifier(missionStr, self.domainId)
+		self.setWork(self.executive.currentModel)
+
 
 	def setWork(self, currentModel):
 		#print 'PlannerCaller::setWork 0'
@@ -97,7 +121,9 @@ class PlannerCaller(threading.Thread):
 					while True:
 						pend = self.pendingJobs.pop()
 						print 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX forceStopPlanning'
+						print 'forzando parada'
 						self.agglplannerclient.forceStopPlanning(pend)
+						print 'forzando parada F'
 					self.pendingJobs.release()
 				except:
 					pass
@@ -128,12 +154,12 @@ class PlannerCaller(threading.Thread):
 				time.sleep(0.05)
 				continue
 			try:
-				self.executiveLoopFunction()
+				self.callerLoopFunction()
 			finally:
 				self.plannerCallerMutex.release()
 
-	def executiveLoopFunction(self):
-		print 'executiveLoopFunction'
+	def callerLoopFunction(self):
+		print 'callerLoopFunction'
 		###
 		### Set variables and write files that are of use later
 		###
@@ -164,67 +190,31 @@ class PlannerCaller(threading.Thread):
 			return
 
 		###
-		### Try the cache
-		###
-		if False:
-			print 'PlannerCaller::run Ask cache'
-			try:
-				cacheResult = self.cache.getPlanFromFiles(domainPY, worldXML, targetPY)
-			except:
-				cacheResult = False
-			#print 'PlannerCaller::run IGNORING CACHE!!!!'
-			#print 'PlannerCaller::run IGNORING CACHE!!!!'
-			#cacheResult = False
-			#print 'PlannerCaller::run IGNORING CACHE!!!!'
-			#print 'PlannerCaller::run IGNORING CACHE!!!!'
-			if cacheResult:
-				if len(cacheResult[1].strip()) == 0:
-					cacheResult = None
-			if cacheResult:
-				print 'PlannerCaller::run Got plan from cache'
-				print '<<<'
-				print cacheResult[1]
-				print '>>>'
-				cacheSuccess = cacheResult[0]
-				cachePlan = cacheResult[1]
-				lines = cacheResult[1].split('\n')
-				if len(''.join(lines).strip()) > 0:
-					self.cache.includeFromFiles(domainPY, worldXML, targetPY, "/tmp/result"+peid+".txt", True)
-				ofile.close()
-				# Get the output
-				try:
-					self.plan = AGGLPlannerPlan('\n'.join(lines), planFromText=True)
-					monitoringResult = self.callMonitoring(peid)
-				except:
-					traceback.print_exc()
-					sys.exit(-1)
-				self.working = False
-				self.executive.gotPlan(self.plan)
-				return
-
-		###
-		### Run the planner
+		### Call the planner
 		###
 		# CALL
 		try:
 			start = time.time()
-			
 			print 'PlannerCaller::run calling planner start'
 			tempStr = self.currentModel.filterGeometricSymbols().toXMLString()
 			try:
-				print 'X1', type(tempStr)
+				# print 'X1', type(tempStr)
 				tempStr = str(unicodedata.normalize('NFKD', tempStr))
-				print 'X2', type(tempStr)
+				# print 'X2', type(tempStr)
 			except:
-				print 'X3', type(tempStr)
+				# print 'X3', type(tempStr)
 				pass
-			print 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX startPlanning'
+			# print 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX startPlanning'
+			# print 'startPlanning: domain', self.domainId, 'target', self.targetId
 			jobId = self.agglplannerclient.startPlanning(self.domainId, tempStr, self.targetId, [], [])
+			# print 'startPlanning F', jobId
 			print 'PlannerCaller::run got job identifier', jobId
 			self.pendingJobs.append(jobId)
 			print 'PlannerCaller::run waiting for results...'
-			print 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX getPlanningResults'
+			# print 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX getPlanningResults'
+			# print 'get planning'
 			result = self.agglplannerclient.getPlanningResults(jobId)
+			# print 'get planning F'
 			print 'PlannerCaller::run done calling got', result.plan
 			#if len(''.join(lines).strip()) > 0:  # WARNING TODO BUG ERROR FIXME                                 THIS SHOULD BE FIXED TO ENABLE PLAN CACHING
 				#self.cache.includeFromFiles(domainPY, worldXML, targetPY, "/tmp/result"+peid+".txt", True)
@@ -239,10 +229,8 @@ class PlannerCaller(threading.Thread):
 
 		# Get the output
 		try:
-			print 'A'
 			self.plan = AGGLPlannerPlan(str(result.plan), planFromText=True)
-			print 'B'
-			print 'DIRECT FROM AGGLPlanner\nself.plan:\n', self.plan
+			# print 'DIRECT FROM AGGLPlanner\nself.plan:\n', self.plan
 			self.callMonitoring(peid)
 		except: # The planner was probably killed
 			traceback.print_exc()
@@ -254,7 +242,7 @@ class PlannerCaller(threading.Thread):
 
 	def callMonitoring(self, peid):
 		return False
-		
+
 		domainPath = '/tmp/domainActive.py'
 		init   = '/tmp/lastWorld'+peid+'.xml'
 		target = '/tmp/target.py'
@@ -296,18 +284,14 @@ class PlannerCaller(threading.Thread):
 
 
 class Executive(object):
-	def __init__(self, agglPath, initialModelPath, initialMissionPath, doNotPlan, executiveTopic, executiveVisualizationTopic):
+	def __init__(self, agglPath, initialModelPath, initialMissionPath, doNotPlan, executiveTopic, executiveVisualizationTopic, startPlanServer):
 		self.doNotPlan = doNotPlan
+		self.startPlanServer = startPlanServer
 		self.mutex = threading.RLock()
 		self.agents = dict()
 		self.plan = AGGLPlannerPlan('', planFromText=True)
 		self.modifications = 0
-		self.agglplannerclient = make_client(agglplanner_thrift.AGGLPlanner, '127.0.0.1', 6000)
-		self.plannerCaller = PlannerCaller(self, agglPath)
-		self.plannerCaller.start()
-		print '--- setMission ---------------------------------------------'
-		self.setMission(initialMissionPath, avoidUpdate=True)
-		print '--- setMission ---------------------------------------------'
+
 
 		# Set proxies
 		self.executiveTopic = executiveTopic
@@ -321,13 +305,19 @@ class Executive(object):
 			print 'Can\'t open ' + initialModelPath + '.'
 			os._exit(-1)
 
-
 		print 'INITIAL MODEL: ', self.initialModel
 		self.lastModification = self.initialModel
 		print 'initial model version', self.lastModification.version
 		self.backModelICE  = None
 		self.setAndBroadcastModel(xmlModelParser.graphFromXMLFile(initialModelPath))
 		self.worldModelICE = AGMModelConversion.fromInternalToIce(self.currentModel)
+
+		if not self.doNotPlan:
+			self.plannerCaller = PlannerCaller(self, agglPath, self.startPlanServer)
+			self.plannerCaller.start()
+		print '--- setMission ---------------------------------------------'
+		self.setMission(initialMissionPath, avoidUpdate=True)
+		print '--- setMission ---------------------------------------------'
 
 	#######################################################################
 	#                                                                     #
@@ -370,7 +360,7 @@ class Executive(object):
 			worldModelICE.version += 1
 			internalModel = AGMModelConversion.fromIceToInternal_model(worldModelICE, ignoreInvalidEdges=True) # set internal model
 			avoidReplanning = False
-			# UNCOMMENT THIS!!! WARNING TODO ERROR CUIDADO 
+			# UNCOMMENT THIS!!! WARNING TODO ERROR CUIDADO
 			#try:                                                                                               # is replanning necessary?
 				#if internalModel.equivalent(self.lastModification):
 					#avoidReplanning = True
@@ -442,15 +432,27 @@ class Executive(object):
 				if not found:
 					print 'Executive::edgesUpdate: couldn\'t update edge because no match was found'
 					print 'Executive::edgesUpdate: edge', edge.a, edge.b, edge.edgeType
+				found = False
+				for i in xrange(len(self.worldModelICE.edges)):
+					if str(self.worldModelICE.edges[i].a) == str(edge.a):
+						if str(self.worldModelICE.edges[i].b) == str(edge.b):
+							if str(self.worldModelICE.edges[i].edgeType) == str(edge.edgeType):
+								self.worldModelICE.edges[i].attributes = copy.deepcopy(edge.attributes)
+								print 'hecho'
+								found = True
+				if not found:
+					print 'Executive::edgesUpdate: couldn\'t update edge because no match was found'
+					print 'Executive::edgesUpdate: edge', edge.a, edge.b, edge.edgeType
 		finally:
 			self.mutex.release()
 
 	def setMission(self, target, avoidUpdate=False):
+		if self.doNotPlan:
+			return
 		self.mutex.acquire()
 		self.targetStr = target
 		self.plannerCaller.setMission(self.targetStr)
 		self.mutex.release()
-
 
 
 	def getModel(self):
@@ -514,6 +516,8 @@ class Executive(object):
 
 
 	def updatePlan(self):
+		if self.doNotPlan:
+			return
 		self.plannerCaller.setWork(self.currentModel)
 
 	def gotPlan(self, plan):
@@ -586,5 +590,3 @@ class Executive(object):
 			except:
 				print '     (can\'t connect to', agent, '!!!)',
 			print ''
-
-

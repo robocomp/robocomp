@@ -1,3 +1,6 @@
+#ifndef XGRAPHMODELVIEWER_H
+#define XGRAPHMODELVIEWER_H
+
 #include <QtGui>
 #include <QtOpenGL/QGLWidget>
 
@@ -147,4 +150,6 @@ protected:
 	QTimer timer;
 };
 
+
+#endif
 

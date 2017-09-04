@@ -1,73 +1,14 @@
 <AGMModel>
-	<symbol id="1" type="robot" >
-		<attribute key="x"     value="1293" />
-		<attribute key="z"     value="2267" />
-		<attribute key="alpha" value="8.92" />
-	</symbol>
-	
-	<symbol id="2" type="place" />
-	<symbol id="3" type="place" />
-	<symbol id="4" type="place" />
-	<!--<symbol id="5" type="place" />
-	<symbol id="6" type="off" />-->
+	<symbol id="1" type="robot" > </symbol>
+	<symbol id="2" type="place" > </symbol>
+	<symbol id="3" type="place" > </symbol>
+	<symbol id="4" type="place" > </symbol>
 
-	<link src="1" dst="2" label="link"/>
-	<link src="1" dst="2" label="RT">
-		<linkAttribute key="rx" value="1.0" />
-		<linkAttribute key="ry" value="1.57" />
-		<linkAttribute key="rz" value="1.0" />
-		<linkAttribute key="tx" value="400" />
-		<linkAttribute key="ty" value="500" />
-		<linkAttribute key="tz" value="600" />
-	</link>
-	<!--<link src="1" dst="6" label="link" />-->
-	<link src="1" dst="3" label="link" />
-	<link src="1" dst="4" label="linkLink" >
-		<linkAttribute key="rx" value="1.0" />
-		<linkAttribute key="ry" value="1.57" />
-		<linkAttribute key="rz" value="1.0" />
-		<linkAttribute key="tx" value="100" />
-		<linkAttribute key="ty" value="200" />
-		<linkAttribute key="tz" value="300" />
-	</link>
-	<!--<link src="4" dst="5" label="link" />-->
+	<link src="1" dst="1" label="off" > </link>
+
+	<link src="1" dst="2" label="in" > </link>
+
+	<link src="2" dst="3" label="way" > </link>
+	<link src="3" dst="4" label="way" > </link>
 </AGMModel>
 
-<!-- back -->
-
-
-<!--<AGMModel>
-	<symbol id="1" type="robot" >
-		<attribute key="x"     value="1293" />
-		<attribute key="z"     value="2267" />
-		<attribute key="alpha" value="8.92" />
-	</symbol>
-	
-	<symbol id="2" type="place" />
-	<symbol id="3" type="place" />
-	<symbol id="4" type="place" />-->
-	<!--<symbol id="5" type="place" />
-	<symbol id="6" type="off" />-->
-	
-	<!--¿como se meten más etiquetas para el mismo arco en el .xml?-->
-<!--	<link src="1" dst="2" label="link"/>
-	<link src="1" dst="2" label="RT">
-		<linkAttribute key="rx" value="1.0" />
-		<linkAttribute key="ry" value="1.57" />
-		<linkAttribute key="rz" value="1.0" />
-		<linkAttribute key="tx" value="400" />
-		<linkAttribute key="ty" value="500" />
-		<linkAttribute key="tz" value="600" />
-	</link>-->
-	<!--<link src="1" dst="6" label="link" />-->
-<!--	<link src="2" dst="3" label="link" />
-	<link src="3" dst="4" label="link2" >
-		<linkAttribute key="rx" value="1.0" />
-		<linkAttribute key="ry" value="1.57" />
-		<linkAttribute key="rz" value="1.0" />
-		<linkAttribute key="tx" value="100" />
-		<linkAttribute key="ty" value="200" />
-		<linkAttribute key="tz" value="300" />
-	</link>-->
-	<!--<link src="4" dst="5" label="link" />-->
-<!--</AGMModel>-->
