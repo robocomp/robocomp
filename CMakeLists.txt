@@ -83,7 +83,7 @@ SUBDIRS(
 	libs
 	tools/robocompdsl
 	tools/rcinnerModelSimulator
-	tools/rcmanager
+	#tools/rcmanager
 	tools/rcmanagerSimple
 	tools/rclogger
 	tools/rcmonitor
