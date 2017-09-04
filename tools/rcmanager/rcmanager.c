@@ -4,7 +4,7 @@
 #include <string.h>
 #include <malloc.h>
 
-#define BASE "/opt/robocomp/bin/rcmanager.py"
+#define BASE "/opt/robocomp/bin/main.py"
 
 int main(int argc, char **argv) {
 	int i;
