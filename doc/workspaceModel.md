@@ -10,7 +10,7 @@ The Robocomp workspace is for those who are developing components rather than th
 
 
 ### Workspace
-The workspace is the folder inside which you are going to be actively developing components. Keeping things in a folder with connected development helps keep separation of development models. In simple words, a workspace can be thought of as a group different components, for example Robocomp has some default components, you may as well create some components so in this case you Robocomp's components can be in a workspace while your components in another. The config file in ~/.config/RoboComp/rc_worksapce.config maintains a list of all the registered workspaces.
+The workspace is the folder inside which you are going to be actively developing components. Keeping things in a folder with connected development helps keep separation of development models. In simple words, a workspace can be thought of as a group different components, for example Robocomp has some default components, you may as well create some components so in this case you Robocomp's components can be in a workspace while your components in another. The config file in ~/.config/RoboComp/rc_workspace.config maintains a list of all the registered workspaces.
 
 ### Source space
 The source space (a folder inside workspace) contains the source code of all the components in the workspace or this is where you will be developing. The source space is the folder where build tools will look for components. This folder is easily identified as it is where the toplevel.cmake is linked Robocomp installed folder and the name `src`. Each component should be in a direct subdirectory. If the directory contains a file named *IGNORE_COMP* the component will be ignored while building the workspace.
