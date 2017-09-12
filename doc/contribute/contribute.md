@@ -1,4 +1,4 @@
-#How to contribute to robocomp github repository
+# How to contribute to robocomp github repository
 
 In brief the steps involved will be:
 * Fork the robocomp repository
@@ -14,7 +14,7 @@ In brief the steps involved will be:
 * Pull a request for the commit made
 * Start a discussion over the commits made
 
-In detail explanation: 
+## In detail explanation: 
 
 1) Forking the repository:
 
@@ -50,7 +50,7 @@ Open a terminal and move the “pwd” to the place where the forked repository 
 ![](https://github.com/abhi-kumar/robocomp/blob/how-to-contribute/branch.jpg)
 
 
-* Create a new branch to work on. There is no restriction wrt the naming of the branch:
+* Create a new branch to work on. There is no restriction with the naming of the branch:
 
 	`git branch <branch_name>`
 
