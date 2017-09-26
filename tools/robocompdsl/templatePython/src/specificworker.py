@@ -55,50 +55,16 @@ Z()
 #    along with RoboComp.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-import sys, os, Ice, traceback, time
+import sys, os, traceback, time
 
 from PySide import *
 from genericworker import *
 
-<<<<<<< HEAD
 # If RoboComp was compiled with Python bindings you can use InnerModel in Python
 # sys.path.append('/opt/robocomp/lib')
 # import librobocomp_qmat
 # import librobocomp_osgviewer
 # import librobocomp_innermodel
-=======
-ROBOCOMP = ''
-try:
-	ROBOCOMP = os.environ['ROBOCOMP']
-except:
-	print '$ROBOCOMP environment variable not set, using the default value /opt/robocomp'
-	ROBOCOMP = '/opt/robocomp'
-if len(ROBOCOMP)<1:
-	print 'genericworker.py: ROBOCOMP environment variable not set! Exiting.'
-	sys.exit()
-
-
-preStr = "-I"+ROBOCOMP+"/interfaces/ --all "+ROBOCOMP+"/interfaces/"
-[[[cog
-for imp in component['imports']:
-	module = IDSLParsing.gimmeIDSL(imp.split('/')[-1])
-	incl = imp.split('/')[-1].split('.')[0]
-	cog.outl('Ice.loadSlice(preStr+"'+incl+'.ice")')
-	cog.outl('from '+module['name']+' import *')
-]]]
-[[[end]]]
-
-
-[[[cog
-	for ima in component['implements']+component['subscribesTo']:
-		if type(ima) == type(''):
-			im = ima
-		else:
-			im = ima[0]
-		cog.outl('from ' + im.lower() + 'I import *')
-]]]
-[[[end]]]
->>>>>>> master
 
 class SpecificWorker(GenericWorker):
 	def __init__(self, proxy_map):
@@ -137,22 +103,17 @@ class SpecificWorker(GenericWorker):
 [[[cog
 lst = []
 try:
-	lst += component['implements']
-except:
-	pass
-try:
 	lst += component['subscribesTo']
 except:
 	pass
-
-for impa in lst:
-	if type(impa) == type(''):
-		imp = impa
+for imp in lst:
+	if type(imp) == str:
+		im = imp
 	else:
-		imp = impa[0]
-	module = pool.moduleProviding(imp)
+		im = imp[0]
+	module = pool.moduleProviding(im)
 	for interface in module['interfaces']:
-		if interface['name'] == imp:
+		if interface['name'] == im:
 			for mname in interface['methods']:
 				method = interface['methods'][mname]
 				outValues = []
@@ -196,7 +157,6 @@ for impa in lst:
 						if first:
 							first = False
 					cog.out("]\n")
-<<<<<<< HEAD
 for imp in component['implements']:
 	if type(imp) == str:
 		im = imp
@@ -258,7 +218,5 @@ for imp in component['implements']:
 							if first:
 								first = False
 						cog.out("]\n")
-=======
->>>>>>> master
 ]]]
 [[[end]]]

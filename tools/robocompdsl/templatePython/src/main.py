@@ -17,38 +17,20 @@ from parseCDSL import *
 includeDirectories = theIDSLPaths.split('#')
 component = CDSLParsing.fromFile(theCDSL, includeDirectories=includeDirectories)
 
-<<<<<<< HEAD
 from parseIDSL import *
 pool = IDSLPool(theIDSLs, includeDirectories)
-=======
->>>>>>> master
 
 REQUIRE_STR = """
 <TABHERE># Remote object connection for <NORMAL>
 <TABHERE>try:
 <TABHERE><TABHERE>proxyString = ic.getProperties().getProperty('<NORMAL><NUM>Proxy')
 <TABHERE><TABHERE>try:
-<<<<<<< HEAD
 <TABHERE><TABHERE><TABHERE>basePrx = ic.stringToProxy(proxyString)
 <TABHERE><TABHERE><TABHERE><LOWER><NUM>_proxy = <NORMAL>Prx.checkedCast(basePrx)
 <TABHERE><TABHERE><TABHERE>mprx["<NORMAL>Proxy<NUM>"] = <LOWER><NUM>_proxy
 <TABHERE><TABHERE>except Ice.Exception:
 <TABHERE><TABHERE><TABHERE>print 'Cannot connect to the remote object (<NORMAL>)', proxyString
 <TABHERE><TABHERE><TABHERE>#traceback.print_exc()
-=======
-<TABHERE><TABHERE><TABHERE>proxyString = ic.getProperties().getProperty('<NORMAL>Proxy')
-<TABHERE><TABHERE><TABHERE>try:
-<TABHERE><TABHERE><TABHERE><TABHERE>basePrx = ic.stringToProxy(proxyString)
-<TABHERE><TABHERE><TABHERE><TABHERE><LOWER>_proxy = RoboComp<NORMAL>.<NORMAL>Prx.checkedCast(basePrx)
-<TABHERE><TABHERE><TABHERE><TABHERE>mprx["<NORMAL>Proxy"] = <LOWER>_proxy
-<TABHERE><TABHERE><TABHERE>except Ice.Exception:
-<TABHERE><TABHERE><TABHERE><TABHERE>print 'Cannot connect to the remote object (<NORMAL>)', proxyString
-<TABHERE><TABHERE><TABHERE><TABHERE>#traceback.print_exc()
-<TABHERE><TABHERE><TABHERE><TABHERE>status = 1
-<TABHERE><TABHERE>except Ice.Exception, e:
-<TABHERE><TABHERE><TABHERE>print e
-<TABHERE><TABHERE><TABHERE>print 'Cannot get <NORMAL>Proxy property.'
->>>>>>> master
 <TABHERE><TABHERE><TABHERE>status = 1
 <TABHERE>except Ice.Exception, e:
 <TABHERE><TABHERE>print e
@@ -87,24 +69,12 @@ PUBLISHES_STR = """
 <TABHERE><TABHERE><TABHERE>topic = topicManager.retrieve("<NORMAL>")
 <TABHERE><TABHERE>except IceStorm.NoSuchTopic:
 <TABHERE><TABHERE><TABHERE>try:
-<<<<<<< HEAD
 <TABHERE><TABHERE><TABHERE><TABHERE>topic = topicManager.create("<NORMAL>")
 <TABHERE><TABHERE><TABHERE>except:
 <TABHERE><TABHERE><TABHERE><TABHERE>print 'Another client created the <NORMAL> topic? ...'
 <TABHERE>pub = topic.getPublisher().ice_oneway()
 <TABHERE><LOWER>Topic = <NORMAL>Prx.uncheckedCast(pub)
 <TABHERE>mprx["<NORMAL>Pub"] = <LOWER>Topic
-=======
-<TABHERE><TABHERE><TABHERE><TABHERE>topic = topicManager.retrieve("<NORMAL>")
-<TABHERE><TABHERE><TABHERE>except IceStorm.NoSuchTopic:
-<TABHERE><TABHERE><TABHERE><TABHERE>try:
-<TABHERE><TABHERE><TABHERE><TABHERE><TABHERE>topic = topicManager.create("<NORMAL>")
-<TABHERE><TABHERE><TABHERE><TABHERE>except:
-<TABHERE><TABHERE><TABHERE><TABHERE><TABHERE>print 'Another client created the <NORMAL> topic? ...'
-<TABHERE><TABHERE>pub = topic.getPublisher().ice_oneway()
-<TABHERE><TABHERE><LOWER>Topic = <NORMAL>Prx.uncheckedCast(pub)
-<TABHERE><TABHERE>mprx["<NORMAL>Pub"] = <LOWER>Topic
->>>>>>> master
 """
 
 IMPLEMENTS_STR = """
@@ -189,7 +159,7 @@ Z()
 #
 #
 
-import sys, traceback, Ice, IceStorm, subprocess, threading, time, Queue, os, copy
+import sys, traceback, IceStorm, subprocess, threading, time, Queue, os, copy
 
 # Ctrl+c handling
 import signal
@@ -197,29 +167,6 @@ import signal
 from PySide import *
 
 from specificworker import *
-
-ROBOCOMP = ''
-try:
-	ROBOCOMP = os.environ['ROBOCOMP']
-except:
-	print '$ROBOCOMP environment variable not set, using the default value /opt/robocomp'
-	ROBOCOMP = '/opt/robocomp'
-if len(ROBOCOMP)<1:
-	print 'ROBOCOMP environment variable not set! Exiting.'
-	sys.exit()
-
-
-preStr = "-I"+ROBOCOMP+"/interfaces/ -I/opt/robocomp/interfaces/ --all "+ROBOCOMP+"/interfaces/"
-Ice.loadSlice(preStr+"CommonBehavior.ice")
-import RoboCompCommonBehavior
-[[[cog
-for imp in component['imports']:
-	module = IDSLParsing.gimmeIDSL(imp.split('/')[-1])
-	incl = imp.split('/')[-1].split('.')[0]
-	cog.outl('Ice.loadSlice(preStr+"'+incl+'.ice")')
-	cog.outl('import '+module['name']+'')
-]]]
-[[[end]]]
 
 
 class CommonBehaviorI(RoboCompCommonBehavior.CommonBehavior):
@@ -265,21 +212,27 @@ if __name__ == '__main__':
 	ic = Ice.initialize(params)
 	status = 0
 	mprx = {}
+	parameters = {}
+	for i in ic.getProperties():
+		parameters[str(i)] = str(ic.getProperties().getProperty(i))
 [[[cog
-if len(component['requires']) > 0 or len(component['publishes']) > 0 or len(component['subscribesTo']) > 0:
-	cog.outl('<TABHERE>try:')
-for rqa in component['requires']:
-	if type(rqa) == type(''):
-		rq = rqa
-	else:
-		rq = rqa[0]
-	w = REQUIRE_STR.replace("<NORMAL>", rq).replace("<LOWER>", rq.lower())
-	cog.outl(w)
 
 try:
-	if len(component['publishes']) > 0 or len(component['subscribesTo']) > 0:
+	needIce = False
+	for req in component['requires']:
+		if communicationIsIce(req):
+			needIce = True
+	for imp in component['implements']:
+		if communicationIsIce(imp):
+			needIce = True
+	for pub in component['publishes']:
+		if communicationIsIce(pub):
+			needIce = True
+	for sub in component['subscribesTo']:
+		if communicationIsIce(sub):
+			needIce = True
+	if needIce:
 		cog.outl("""
-<<<<<<< HEAD
 <TABHERE># Topic Manager
 <TABHERE>proxy = ic.getProperties().getProperty("TopicManager.Proxy")
 <TABHERE>obj = ic.stringToProxy(proxy)
@@ -288,44 +241,43 @@ try:
 <TABHERE>except Ice.ConnectionRefusedException, e:
 <TABHERE><TABHERE>print 'Cannot connect to IceStorm! ('+proxy+')'
 <TABHERE><TABHERE>sys.exit(-1)""")
-=======
-		<TABHERE><TABHERE># Topic Manager
-		<TABHERE><TABHERE>proxy = ic.getProperties().getProperty("TopicManager.Proxy")
-		<TABHERE><TABHERE>obj = ic.stringToProxy(proxy)
-		<TABHERE><TABHERE>try:
-		<TABHERE><TABHERE><TABHERE>topicManager = IceStorm.TopicManagerPrx.checkedCast(obj)
-		<TABHERE><TABHERE>except ConnectionRefusedException:
-		<TABHERE><TABHERE><TABHERE>raise Exception("STORM not running") """)
-
->>>>>>> master
 except:
 	pass
 
-for pba in component['publishes']:
-	if type(pba) == type(''):
-		pb = pba
+for req, num in getNameNumber(component['requires']):
+	if type(req) == str:
+		rq = req
 	else:
-		pb = pba[0]
-	w = PUBLISHES_STR.replace("<NORMAL>", pb).replace("<LOWER>", pb.lower())
-	cog.outl(w)
+		rq = req[0]
+	if communicationIsIce(req):
+		w = REQUIRE_STR.replace("<NORMAL>", rq).replace("<LOWER>", rq.lower()).replace("<NUM>",num)
+		cog.outl(w)
 
-if len(component['requires']) > 0 or len(component['publishes']) > 0 or len(component['subscribesTo']) > 0:
-	cog.outl("""<TABHERE>except:
-		<TABHERE>traceback.print_exc()
-		<TABHERE>status = 1""")
-]]]
-[[[end]]]
-
-
-	if status == 0:
-		worker = SpecificWorker(mprx)
-
-[[[cog
-for ima in component['implements']:
-	if type(ima) == type(''):
-		im = ima
+for pb, num in getNameNumber(component['publishes']):
+	if type(pb) == str:
+		pub = pb
 	else:
-<<<<<<< HEAD
+		pub = pb[0]
+	if communicationIsIce(pb):
+		w = PUBLISHES_STR.replace("<NORMAL>", pub).replace("<LOWER>", pub.lower())
+		cog.outl(w)
+
+cog.outl("<TABHERE>if status == 0:")
+cog.outl("<TABHERE><TABHERE>worker = SpecificWorker(mprx)")
+cog.outl("<TABHERE><TABHERE>worker.setParams(parameters)")
+for im in component['implements']:
+	if type(im) == str:
+		imp = im
+	else:
+		imp = im[0]
+	if communicationIsIce(im):
+		w = IMPLEMENTS_STR.replace("<NORMAL>", imp).replace("<LOWER>", imp.lower())
+		cog.outl(w)
+
+for sut in component['subscribesTo']:
+	if type(sut) == str:
+		st = sut
+	else:
 		st = sut[0]
 	if communicationIsIce(sut):
 		w = SUBSCRIBESTO_STR.replace("<NORMAL>", st).replace("<LOWER>", st.lower())
@@ -373,31 +325,12 @@ for imp in component['implements']:
 					method = interface['methods'][mname]
 					s = "\""+mname+"\""
 					cog.outl("<TABHERE>rospy.Service("+s+", "+mname+", worker.ROS"+method['name']+")")
-=======
-		im = ima[0]
-	w = IMPLEMENTS_STR.replace("<NORMAL>", im).replace("<LOWER>", im.lower())
-	cog.outl(w)
 
->>>>>>> master
-
-for sto in component['subscribesTo']:
-	if type(sto) == type(''):
-		st = sto
-	else:
-		st = sto[0]
-	w = SUBSCRIBESTO_STR.replace("<NORMAL>", st).replace("<LOWER>", st.lower())
-	cog.outl(w)
 ]]]
 [[[end]]]
 
-<<<<<<< HEAD
 	signal.signal(signal.SIGINT, signal.SIG_DFL)
 	app.exec_()
-=======
-#<TABHERE><TABHERE>adapter.add(CommonBehaviorI(<LOWER>I, ic), ic.stringToIdentity('commonbehavior'))
-
-		app.exec_()
->>>>>>> master
 
 	if ic:
 		try:

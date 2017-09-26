@@ -122,7 +122,6 @@ SpecificWorker::SpecificWorker(MapPrx& mprx) : GenericWorker(mprx)
 {
 
 [[[cog
-<<<<<<< HEAD
 if component['innermodelviewer']:
 	cog.outl("#ifdef USE_QTGUI")
 	cog.outl("<TABHERE>innerModelViewer = NULL;")
@@ -135,9 +134,6 @@ if component['innermodelviewer']:
 	cog.outl("<TABHERE>tb->setByMatrix(osg::Matrixf::lookAt(eye,center,up));")
  	cog.outl("<TABHERE>osgView->setCameraManipulator(tb);")
 	cog.outl("#endif")
-=======
-
->>>>>>> master
 try:
 	if isAGM1Agent(component):
 		cog.outl("<TABHERE>active = false;")
@@ -176,7 +172,6 @@ cog.outl("""//       THE FOLLOWING IS JUST AN EXAMPLE
 //		innermodel_path = par.value;
 //		innermodel = new InnerModel(innermodel_path);
 //	}
-<<<<<<< HEAD
 //	catch(std::exception e) { qFatal("Error reading config params"); }
 
 """)
@@ -184,10 +179,6 @@ if component['innermodelviewer']:
 	cog.outl("#ifdef USE_QTGUI")
 	cog.outl("<TABHERE>innerModelViewer = new InnerModelViewer (innerModel, \"root\", osgView->getRootGroup(), true);")
 	cog.outl("#endif")
-=======
-//	catch(std::exception e) { qFatal("Error reading config params"); }""")
-
->>>>>>> master
 ]]]
 [[[end]]]
 
@@ -231,7 +222,6 @@ void SpecificWorker::compute()
 // 	{
 // 		std::cout << "Error reading from Camera" << e << std::endl;
 // 	}
-<<<<<<< HEAD
 [[[cog
 if component['usingROS'] == True:
 	cog.outl("<TABHERE>ros::spinOnce();")
@@ -242,25 +232,22 @@ if component['innermodelviewer']:
 	cog.outl("#endif")
 ]]]
 [[[end]]]
-=======
->>>>>>> master
 }
 
 
 [[[cog
-
 if 'implements' in component:
-	for imp in component['implements']:
-		nname = imp
-		while type(nname) != type(''):			
-			nname = nname[0]
-		module = pool.moduleProviding(nname)
+	for impa in component['implements']:
+		if type(impa) == str:
+			imp = impa
+		else:
+			imp = impa[0]
+		module = pool.moduleProviding(imp)
 		for interface in module['interfaces']:
-			if interface['name'] == nname:
+			if interface['name'] == imp:
 				for mname in interface['methods']:
 					method = interface['methods'][mname]
 					paramStrA = ''
-<<<<<<< HEAD
 					bodyCode = bodyCodeFromName(method['name'], component)
 					if communicationIsIce(impa):
 						for p in method['params']:
@@ -302,38 +289,8 @@ if 'subscribesTo' in component:
 					paramStrA = ''
 					bodyCode = bodyCodeFromName(method['name'], component)
 					if communicationIsIce(impa):
-=======
-					for p in method['params']:
-						if paramStrA == '': delim = ''
-						else: delim = ', '
-						# decorator
-						ampersand = '&'
-						if p['decorator'] == 'out':
-							const = ''
-						else:
-							const = 'const '
-							if p['type'].lower() in ['int', '::ice::int', 'float', '::ice::float']:
-								ampersand = ''
-						paramStrA += delim + const + p['type'] + ' ' + ampersand + p['name']
-					bodyCode = bodyCodeFromName(method['name'])
-					cog.outl(method['return'] + ' SpecificWorker::' + method['name'] + '(' + paramStrA + ")\n{\n"+bodyCode+"\n}\n")
-
-	
-
-if 'subscribesTo' in component:
-	for imp in component['subscribesTo']:
-		nname = imp
-		while type(nname) != type(''):
-			nname = nname[0]
-		if communicationIsIce(nname):
-			module = pool.moduleProviding(nname)
-			for interface in module['interfaces']:
-				if interface['name'] == nname:
-					for mname in interface['methods']:
-						method = interface['methods'][mname]
-						paramStrA = ''
->>>>>>> master
 						for p in method['params']:
+							# delim
 							if paramStrA == '': delim = ''
 							else: delim = ', '
 							# decorator
@@ -344,8 +301,8 @@ if 'subscribesTo' in component:
 								const = 'const '
 								if p['type'].lower() in ['int', '::ice::int', 'float', '::ice::float']:
 									ampersand = ''
+							# STR
 							paramStrA += delim + const + p['type'] + ' ' + ampersand + p['name']
-<<<<<<< HEAD
 						cog.outl(method['return'] + ' SpecificWorker::' + method['name'] + '(' + paramStrA + ")\n{\n//subscribesToCODE\n"+bodyCode+"\n}\n")
 					else:
 						for p in method['params']:
@@ -373,16 +330,6 @@ if 'subscribesTo' in component:
 							cog.outl('void SpecificWorker::ROS' + method['name'] + '(' + paramStrA + ")\n{\n//subscribesToCODE\n"+bodyCode+"\n}\n")
 						else:
 							cog.outl('void SpecificWorker::' + method['name'] + '(' + paramStrA + ")\n{\n//subscribesToCODE\n"+bodyCode+"\n}\n")
-=======
-						bodyCode = bodyCodeFromName(method['name'])
-						cog.outl(method['return'] + ' SpecificWorker::' + method['name'] + '(' + paramStrA + ")\n{\n"+bodyCode+"\n}\n")
-		else:
-			cog.outl("// ROS CODE FOR FUNCTION X")
-
-
-
-
->>>>>>> master
 ]]]
 [[[end]]]
 

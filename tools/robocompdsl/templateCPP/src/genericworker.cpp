@@ -74,30 +74,22 @@ for namea, num in getNameNumber(component['requires']):
 		name = namea
 	else:
 		name = namea[0]
-	cog.outl("<TABHERE>"+name.lower()+num+"_proxy = (*("+name+"Prx*)mprx[\""+name+"Proxy"+num+"\"]);")	
-]]]
-[[[end]]]
+	if communicationIsIce(namea):
+		cog.outl("<TABHERE>"+name.lower()+num+"_proxy = (*("+name+"Prx*)mprx[\""+name+"Proxy"+num+"\"]);")
 
-[[[cog
 for namea, num in getNameNumber(component['publishes']):
 	if type(namea) == str:
 		name = namea
 	else:
 		name = namea[0]
-	cog.outl("<TABHERE>"+name.lower()+num+"_proxy = (*("+name+"Prx*)mprx[\""+name+"Pub"+num+"\"]);")
+	if communicationIsIce(namea):
+		cog.outl("<TABHERE>"+name.lower()+num+"_proxy = (*("+name+"Prx*)mprx[\""+name+"Pub"+num+"\"]);")
 ]]]
 [[[end]]]
-[[[cog
-if len(component['publishes'])>0 or len(component['subscribesTo'])>0:
-	cog.outl('<TABHERE>topicmanager_proxy = (*(IceStorm::TopicManagerPrx*)mprx["topicManager"]);');
-]]]
-[[[end]]]
-
 
 	mutex = new QMutex(QMutex::Recursive);
 
 [[[cog
-<<<<<<< HEAD
 if component['usingROS'] == True:
 	#INICIALIZANDO SUBSCRIBERS
 	for imp in component['subscribesTo']:
@@ -155,8 +147,6 @@ if 'requires' in component:
 				cog.outl("<TABHERE>"+req.lower()+"_rosproxy = new ServiceClient"+req+"(&node);")
 			else:
 				cog.outl("<TABHERE>"+req.lower()+"_proxy = new ServiceClient"+req+"(&node);")
-=======
->>>>>>> master
 if component['gui'] != 'none':
 	cog.outl("""<TABHERE>#ifdef USE_QTGUI
 		setupUi(this);
@@ -166,14 +156,6 @@ if component['gui'] != 'none':
 [[[end]]]
 	Period = BASIC_PERIOD;
 	connect(&timer, SIGNAL(timeout()), this, SLOT(compute()));
-[[[cog
-if len(component['publishes'])>0 or len(component['subscribesTo'])>0:
-	cog.outl("<TABHERE>connect(&storm_timer, SIGNAL(timeout()), this, SLOT(check_storm()));");
-	cog.outl("<TABHERE>storm_timer.start(storm_period);");
-]]]
-[[[end]]]
-
-
 // 	timer.start(Period);
 }
 
@@ -199,20 +181,6 @@ void GenericWorker::setPeriod(int p)
 	Period = p;
 	timer.start(Period);
 }
-
-[[[cog
-if len(component['publishes'])>0 or len(component['subscribesTo'])>0:
-	cog.outl('''
-	void GenericWorker::check_storm()
-	{
-	<TABHERE>try {
-	<TABHERE><TABHERE>topicmanager_proxy->ice_ping();
-	<TABHERE>} catch(const Ice::Exception& ex) {
-	<TABHERE><TABHERE>cout <<"Exception: STORM not running: " << ex << endl;
-	<TABHERE>}
-	}''')
-]]]
-[[[end]]]
 
 [[[cog
 try:

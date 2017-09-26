@@ -20,13 +20,9 @@ if component == None:
 	sys.exit(1)
 
 from parseIDSL import *
-<<<<<<< HEAD
 pool = IDSLPool(theIDSLs, includeDirectories)
 includeList = pool.rosImports()
 rosTypes = pool.getRosTypes()
-=======
-pool = IDSLPool(theIDSLs)
->>>>>>> master
 
 
 ]]]
@@ -71,16 +67,8 @@ if component['gui'] != 'none':
 [[[end]]]
 
 #include <CommonBehavior.h>
-[[[cog
-
-for m in pool.modulePool:
-	cog.outl("#include <"+m+".h>")
-
-]]]
-[[[end]]]
 
 [[[cog
-<<<<<<< HEAD
 for imp in component['recursiveImports']:
 	incl = imp.split('/')[-1].split('.')[0]
 	cog.outl('#include <'+incl+'.h>')
@@ -115,8 +103,6 @@ if component['usingROS'] == True:
 						srvIncludes[mname] = '#include <'+module['name']+'ROS/'+mname+'.h>'
 	for srv in srvIncludes.values():
 		cog.outl(srv)
-=======
->>>>>>> master
 
 try:
 	if isAGM1Agent(component):
@@ -126,13 +112,8 @@ try:
 		cog.outl("#include <agm2.h>")
 except:
 	pass
-
-if len(component['publishes'])>0 or len(component['subscribesTo'])>0:
-	cog.outl("#include <IceStorm/IceStorm.h>")
-
 ]]]
 [[[end]]]
-
 
 #define CHECK_PERIOD 5000
 #define BASIC_PERIOD 100
@@ -176,7 +157,6 @@ except:
 ]]]
 [[[end]]]
 
-<<<<<<< HEAD
 [[[cog
 if component['usingROS'] == True:
 	#CREANDO CLASES PARA LOS PUBLISHERS
@@ -330,8 +310,6 @@ if component['usingROS'] == True:
 			cog.outl("};")
 ]]]
 [[[end]]]
-=======
->>>>>>> master
 
 
 class GenericWorker :
@@ -376,10 +354,8 @@ for namea, num in getNameNumber(component['requires']+component['publishes']):
 		name = namea
 	else:
 		name = namea[0]
-	cog.outl('<TABHERE>'+name+'Prx '+name.lower()+num +'_proxy;')
-
-if len(component['publishes'])>0 or len(component['subscribesTo'])>0:
-	cog.outl("<TABHERE>IceStorm::TopicManagerPrx topicmanager_proxy;")
+	if communicationIsIce(namea):
+		cog.outl('<TABHERE>'+name+'Prx '+name.lower()+num +'_proxy;')
 ]]]
 [[[end]]]
 
@@ -396,7 +372,6 @@ if 'implements' in component:
 				for mname in interface['methods']:
 					method = interface['methods'][mname]
 					paramStrA = ''
-<<<<<<< HEAD
 					if communicationIsIce(impa):
 						for p in method['params']:
 							# delim
@@ -419,39 +394,22 @@ if 'implements' in component:
 							cog.outl("<TABHERE>virtual bool ROS" + method['name'] + '(' + paramStrA + ") = 0;")
 						else:
 							cog.outl("<TABHERE>virtual bool " + method['name'] + '(' + paramStrA + ") = 0;")
-=======
-					for p in method['params']:
-						# delim
-						if paramStrA == '': delim = ''
-						else: delim = ', '
-						# decorator
-						ampersand = '&'
-						if p['decorator'] == 'out':
-							const = ''
-						else:
-							const = 'const '
-							if p['type'].lower() in ['int', '::ice::int', 'float', '::ice::float']:
-								ampersand = ''
-						# STR
-						paramStrA += delim + const + p['type'] + ' ' + ampersand + p['name']
-					cog.outl("<TABHERE>virtual " + method['return'] + ' ' + method['name'] + '(' + paramStrA + ") = 0;")
-
->>>>>>> master
 if 'subscribesTo' in component:
-	for imp in component['subscribesTo']:
-		nname = imp
-		while type(nname) != type(''):
-			nname = nname[0]
-		module = pool.moduleProviding(nname)
+	for impa in component['subscribesTo']:
+		if type(impa) == str:
+			imp = impa
+		else:
+			imp = impa[0]
+		module = pool.moduleProviding(imp)
 		if module == None:
-			print ('\nCan\'t find module providing', nname, '\n')
+			print ('\nCan\'t find module providing', imp, '\n')
 			sys.exit(-1)
-		if communicationIsIce(nname):
-			for interface in module['interfaces']:
-				if interface['name'] == nname:
-					for mname in interface['methods']:
-						method = interface['methods'][mname]
-						paramStrA = ''
+		for interface in module['interfaces']:
+			if interface['name'] == imp:
+				for mname in interface['methods']:
+					method = interface['methods'][mname]
+					paramStrA = ''
+					if communicationIsIce(impa):
 						for p in method['params']:
 							# delim
 							if paramStrA == '': delim = ''
@@ -467,7 +425,6 @@ if 'subscribesTo' in component:
 							# STR
 							paramStrA += delim + const + p['type'] + ' ' + ampersand + p['name']
 						cog.outl("<TABHERE>virtual " + method['return'] + ' ' + method['name'] + '(' + paramStrA + ") = 0;")
-<<<<<<< HEAD
 					else:
 						for p in method['params']:
 							# delim
@@ -494,22 +451,14 @@ if 'subscribesTo' in component:
 							cog.outl("<TABHERE>virtual void ROS" + method['name'] + '(' + paramStrA + ") = 0;")
 						else:
 							cog.outl("<TABHERE>virtual void " + method['name'] + '(' + paramStrA + ") = 0;")
-=======
-		else:
-			cog.outl("<TABHERE>virtual ROS" + method['return'] + ' ' + method['name'] + "() = 0;")
-	
->>>>>>> master
 
-				
 ]]]
 [[[end]]]
-
 
 protected:
 	QTimer timer;
 	int Period;
 [[[cog
-<<<<<<< HEAD
 if component['usingROS'] == True:
 	cog.outl("<TABHERE>ros::NodeHandle node;")
 for imp in component['subscribesTo']:
@@ -560,8 +509,6 @@ if 'requires' in component:
 				cog.outl("<TABHERE>ServiceClient"+req+" *"+req.lower()+"_rosproxy;")
 			else:
 				cog.outl("<TABHERE>ServiceClient"+req+" *"+req.lower()+"_proxy;")
-=======
->>>>>>> master
 try:
 	if 'agmagent' in [ x.lower() for x in component['options'] ]:
 		cog.outl("<TABHERE>bool active;")
@@ -577,21 +524,11 @@ except:
 ]]]
 [[[end]]]
 
-[[[cog
-if len(component['publishes'])>0 or len(component['subscribesTo'])>0:
-	cog.outl("<TABHERE>QTimer storm_timer;");
-	cog.outl("<TABHERE>int storm_period;");
-]]]
-[[[end]]]
+private:
+
 
 public slots:
 	virtual void compute() = 0;
-[[[cog
-if len(component['publishes'])>0 or len(component['subscribesTo'])>0:
-	cog.outl("<TABHERE>void check_storm();");
-]]]
-[[[end]]]
-
 signals:
 	void kill();
 };
