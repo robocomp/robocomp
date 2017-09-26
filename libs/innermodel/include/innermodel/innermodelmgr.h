@@ -70,7 +70,7 @@ class InnerModelMgr
 		};
 		std::recursive_mutex& mutex() 							{ return innerptr->mutex;};
 		void reset(InnerModelMgr &innerModel_)					{ lock(); innerptr.reset(innerModel_.get()); unlock();};
-		
+		void reset(InnerModel *inner)							{ lock(); innerptr.reset(inner); unlock();};
 		void print(){ std::cout << "Estoy OK" << std::endl;};
 		
  	private:

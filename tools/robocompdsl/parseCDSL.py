@@ -98,10 +98,10 @@ def getNameNumber(aalist):
 	for rqi, rq in enumerate(somelist):
 		dup = False
 		if rqi < len(somelist)-1:
-			if rq == somelist[rqi+1]:
+			if str(rq) == str(somelist[rqi+1]):
 				dup = True
 		if rqi > 0:
-			if rq == somelist[rqi-1]:
+			if str(rq) == str(somelist[rqi-1]):
 				dup = True
 		name = rq
 		num = ''
@@ -165,26 +165,15 @@ class CDSLParsing:
 		communications = Group( COMMUNICATIONS.suppress() + OBRACE + ZeroOrMore(communicationList) + CBRACE + SEMI)
 		
 		# Language
-<<<<<<< HEAD
 		language = Group(LANGUAGE.suppress() - (CPP | PYTHON) - SEMI)
 		# Qtversion
 		qtVersion = Group(Optional(USEQt.suppress() + (QT4|QT5) + SEMI))
 		# InnerModelViewer
 		innermodelviewer = Group(Optional(InnerModelViewer.suppress() + (TRUE|FALSE) + SEMI))
-=======
-		language = Suppress(CaselessLiteral("language")) + (CaselessLiteral("cpp")|CaselessLiteral("python")) + semicolon
->>>>>>> master
 		# GUI
 		gui = Group(Optional(GUI.suppress() - QT + OPAR - identifier - CPAR + SEMI ))
 		# additional options
-<<<<<<< HEAD
 		options = Group(Optional(OPTIONS.suppress() + identifier + ZeroOrMore(Suppress(Word(',')) + identifier) + SEMI))
-=======
-		options = Group(Optional(Suppress(CaselessLiteral("options")) + identifier + ZeroOrMore(Suppress(Word(',')) + identifier) + semicolon))
-		
-		componentContents = communications.setResultsName('communications') & language.setResultsName('language') & gui.setResultsName('gui') & options.setResultsName('options')
-		component = Suppress(CaselessLiteral("component")) + identifier.setResultsName("name") + op + componentContents.setResultsName("properties") + cl + semicolon
->>>>>>> master
 
 		# Component definition
 		componentContents = communications('communications') + language('language') + Optional(gui('gui')) + Optional(options('options')) + Optional(qtVersion('useQt')) + Optional(innermodelviewer('innermodelviewer'))
@@ -257,14 +246,7 @@ class CDSLParsing:
 
 		for imp in imprts:
 			component['imports'].append(imp)
-<<<<<<< HEAD
 			importedModule = None
-=======
-			
-			#print 'moduleee', imp
-			imp2 = imp.split('/')[-1]
-			component['recursiveImports'] += [imp2]
->>>>>>> master
 			try:
 				iD = includeDirectories + ['/opt/robocomp/interfaces/IDSLs/', os.path.expanduser('~/robocomp/interfaces/IDSLs/')]
 				# print 'iD', iD
@@ -282,7 +264,6 @@ class CDSLParsing:
 			if importedModule == None:
 				print 'Counldn\'t locate', imp
 				os._exit(1)
-<<<<<<< HEAD
 			# recursiveImports holds the necessary imports
 			importable = False
 			for interf in importedModule['interfaces']:
@@ -311,15 +292,6 @@ class CDSLParsing:
 			pass
 		except:
 			pass
-=======
-
-			component['recursiveImports'] += [x for x in importedModule['imports'].split('#') if len(x)>0]
-			#print 'moduleee', imp, 'done'
-			
-		#print component['recursiveImports']
-		# Language
-		component['language'] = tree['properties']['language'][0]
->>>>>>> master
 		# GUI
 		component['gui'] = 'none'
 		try:
@@ -342,9 +314,9 @@ class CDSLParsing:
 		component['requires']     = []
 		component['publishes']    = []
 		component['subscribesTo'] = []
+		component['usingROS'] = "None"
 		for comm in tree['properties']['communications']:
 			if comm[0] == 'implements':
-<<<<<<< HEAD
 				for interface in comm[1:]:
 					component['implements'].append(interface)
 					if communicationIsIce(interface):
@@ -376,15 +348,6 @@ class CDSLParsing:
 					else:
 						component['rosInterfaces'].append(interface[0])
 						component['usingROS'] = True
-=======
-				for interface in comm[1:]: component['implements'].append(interface)
-			if comm[0] == 'requires':
-				for interface in comm[1:]: component['requires'].append(interface)
-			if comm[0] == 'publishes':
-				for interface in comm[1:]: component['publishes'].append(interface)
-			if comm[0] == 'subscribesTo':
-				for interface in comm[1:]: component['subscribesTo'].append(interface)
->>>>>>> master
 		# Handle options for communications
 		if isAGM1Agent(component):
 			if not 'AGMCommonBehavior' in component['implements']:
@@ -420,8 +383,7 @@ class CDSLParsing:
 
 def communicationIsIce(sb):
 	isIce = True
-	
-	if len(sb) > 1 and type(sb)==type([]):
+	if len(sb) == 2:
 		if sb[1] == 'ros'.lower():
 			isIce = False
 		elif sb[1] != 'ice'.lower() :
