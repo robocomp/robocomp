@@ -93,4 +93,3 @@ class RCManagerLogger(object):
         self.text_edit_handler = QTextEditLogger(qtextedit)
         self.text_edit_handler.setFormatter(self.current_format)
         self._logger.addHandler(self.text_edit_handler)
-

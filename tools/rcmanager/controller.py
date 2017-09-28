@@ -183,4 +183,3 @@ class Controller():
         except Exception, e:
             self._logger.error("Couldn't save to file " + filename)
             raise e
-
