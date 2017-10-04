@@ -30,6 +30,7 @@ class InnerModelMgr
 		
 		InnerModelMgr() = default;
 		InnerModelMgr(std::shared_ptr<InnerModel> inner_) : innerptr(inner_){};
+		InnerModelMgr(InnerModel *inner_) : innerptr(std::shared_ptr<InnerModel>(inner_)){};
 		InnerModelMgr(const InnerModelMgr &other) : innerptr(other.innerptr) {	/*std::cout << "COPY CONSTRUCTOR";*/};
 		InnerModelMgr(InnerModelMgr &other): innerptr((other.innerptr)){ /*std::cout << "MOVE CONSTRUCTOR" << std::endl;*/ };
 		InnerModelMgr& operator=(const InnerModelMgr &other)

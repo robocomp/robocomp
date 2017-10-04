@@ -225,7 +225,7 @@ void SpecificWorker::updateLasers()
 			laserDataArray.insert(laser->laserNode->id, LASER_createLaserData(laser.value()));
 
 			// create and insert laser shape
-			if (true) // DRAW LASER
+			if (false) // DRAW LASER
 			{
 				osg::ref_ptr<osg::Node> p=NULL;
 				if (id=="laserSecurity")
