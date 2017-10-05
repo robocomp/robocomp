@@ -25,7 +25,7 @@
 // ------------------------------------------------------------------------------------------------
 InnerModelViewer::InnerModelViewer(const InnerModelMgr &im, QString root,  osg::Group *parent, bool ignoreCameras) : osg::Switch()
 {	
-	// Initialize InnerModel pointer
+	//Copy innermodelmgr from param
 	innerModel = im;
 	
 	if( innerModel.get() == nullptr )
@@ -45,6 +45,33 @@ InnerModelViewer::InnerModelViewer(const InnerModelMgr &im, QString root,  osg::
 	if (parent)
 		parent->addChild(this);
 }
+
+// ------------------------------------------------------------------------------------------------
+// InnerModelViewer
+// ------------------------------------------------------------------------------------------------
+InnerModelViewer::InnerModelViewer(InnerModel *im, QString root,  osg::Group *parent, bool ignoreCameras) : osg::Switch()
+{	
+	// Initialize InnerModelMgr from innermodel pointer
+	innerModel = InnerModelMgr(im);
+	
+	if( innerModel.get() == nullptr )
+		throw "InnerModelViewer::InnerModelViewer(): Error, InnerModel is nullptr";
+	
+	// Get main node
+	InnerModelNode *imnode = innerModel->getNode(root);
+	if (not imnode)
+	{
+		qDebug() << "InnerModelViewer::InnerModelViewer(): Error: Specified root node" << root << "not found.";
+		throw "InnerModelViewer::InnerModelViewer(): Error: Specified root node not found.";
+	}
+	recursiveConstructor(imnode, this, mts, meshHash, ignoreCameras); //mts, osgmeshes, osgmeshPats);
+	
+	// Update
+	update();
+	if (parent)
+		parent->addChild(this);
+}
+
 
 
 //CAUTION
