@@ -15,7 +15,7 @@ def SPACE(i=0):
 	if i>0:
 		s = str(i)
 	cog.out('<S'+s+'>')
-	
+
 includeDirectories = theIDSLPaths.split('#')
 from parseCDSL import *
 component = CDSLParsing.fromFile(theCDSL, includeDirectories=includeDirectories)
@@ -57,7 +57,7 @@ Z()
 #    along with RoboComp.  If not, see <http://www.gnu.org/licenses/>.
 
 import sys, Ice, os
-from PySide import *
+from PySide import QtGui, QtCore
 
 ROBOCOMP = ''
 try:
