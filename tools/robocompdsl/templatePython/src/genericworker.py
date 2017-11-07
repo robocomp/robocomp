@@ -89,9 +89,7 @@ for imp in component['recursiveImports']:
 
 	cog.outl('ice_'+incl+' = False')
 	cog.outl('for p in icePaths:')
-	cog.outl('<TABHERE>print \'Trying\', p, \'to load ' + incl + '.ice\'')
 	cog.outl('<TABHERE>if os.path.isfile(p+\'/'+incl+'.ice\'):')
-	cog.outl('<TABHERE><TABHERE>print \'Using\', p, \'to load '+incl+'.ice\'')
 	cog.outl('<TABHERE><TABHERE>preStr = "-I/opt/robocomp/interfaces/ -I"+ROBOCOMP+"/interfaces/ " + additionalPathStr + " --all "+p+\'/\'')
 	cog.outl('<TABHERE><TABHERE>wholeStr = preStr+"'+incl+'.ice"')
 	cog.outl('<TABHERE><TABHERE>Ice.loadSlice(wholeStr)')

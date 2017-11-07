@@ -36,7 +36,6 @@ bool InnerModelReader::load(const QString &file, InnerModel *model)
 		printf("Can't open %s\n", file.toStdString().c_str());
 		return false;
 	}
-
 	QString errorMsg;
 	int errorLine, errorColumn;
 	if (!doc.setContent(&fich, &errorMsg, &errorLine, &errorColumn))
@@ -59,7 +58,10 @@ bool InnerModelReader::load(const QString &file, InnerModel *model)
 		model->setRoot(r);
 		r->parent = NULL;
 	}
+
+	printf("lala1\n");
 	recursive(root, model, model->root);
+	printf("lala2\n");
 
 	fich.close();
 	return true;
