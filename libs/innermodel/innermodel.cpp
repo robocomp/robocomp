@@ -580,7 +580,6 @@ InnerModelPointCloud *InnerModel::newPointCloud(QString id, InnerModelNode *pare
 
 InnerModelTransform *InnerModel::newTransform(QString id, QString engine, InnerModelNode *parent, float tx, float ty, float tz, float rx, float ry, float rz, float mass)
 {
-	printf("Adding 1 %s\n", id.toStdString().c_str());
 	QMutexLocker l(mutex);
 	if (hash.contains(id))
 	{
@@ -589,9 +588,7 @@ InnerModelTransform *InnerModel::newTransform(QString id, QString engine, InnerM
 		printf("ERROR: %s\n", error.toStdString().c_str());
 		throw error;
 	}
-	printf("Adding 2 %s\n", id.toStdString().c_str());
 	InnerModelTransform *newnode = new InnerModelTransform(id, engine, tx, ty, tz, rx, ry, rz, mass, parent);
-	printf("Adding 3 %s\n", id.toStdString().c_str());
 	hash[id] = newnode;
 // 	std::cout << (void *)newnode << "  " << (uint64_t)newnode << std::endl;
 // 	parent->addChild(newnode);
