@@ -59,9 +59,7 @@ bool InnerModelReader::load(const QString &file, InnerModel *model)
 		r->parent = NULL;
 	}
 
-	printf("lala1\n");
 	recursive(root, model, model->root);
-	printf("lala2\n");
 
 	fich.close();
 	return true;
