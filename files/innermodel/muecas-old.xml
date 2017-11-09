@@ -1,5 +1,19 @@
-<innerModel>	
-	<transform id="head" ty="700" tz="800">
+<!--<innerModel>-->
+<!--	<transform id="world">
+		<transform id="floor">
+		<!--	<plane id="floor_plane" ny="1"  px="-0" py="0" pz="0" size="2000,2000,10" texture="/home/robocomp/robocomp/files/osgModels/textures/wood.jpg" /> 	
+		-->	<plane id="floor_plane" ny="1"  px="-0" py="0" pz="0" size="2000,2000,10" texture="#aaaaaa" /> 	
+			
+			<transform id="tableplace" tx="0" ty="0" tz="3">
+				<!--<plane id="table"  nx="0" ny="1" nz="0" px="0"  py="0"  pz="0"  size="1" repeat="1" texture="#666666" />-->
+				<mesh id="mesa" file="/home/robocomp/robocomp/files/osgModels/mobiliario/mesa_centro.osg"  tx="0" ty="0" tz="0" rx="1.57079632679" rz="-1.57079632679" scale="120"/>
+				
+				<transform id="tazaplace" tx="0" ty="500" tz="3">
+					<mesh id="taza" file="/home/robocomp/robocomp/files/osgModels/mobiliario/taza.osg"  tx="0" ty="0" tz="0" rx="1.57079632679" rz="-1.57079632679" scale="65"/>
+				</transform>
+			</transform> -->
+	
+			<transform id="head" ty="700" tz="800">
 				<mesh id="head_mesh" file="/home/robocomp/robocomp/files/osgModels/muecas/zeropivot.osg" scale="30"/>
 				<transform id="mouth" ty="42" tz="-42">
 					<mesh id="mouth_mesh" file="/home/robocomp/robocomp/files/osgModels/muecas/jaw.osg" scale="30" />
@@ -95,5 +109,7 @@
 					</transform>
 				</transform>
 		
-	</transform>   <!-- head -->
-</innerModel>
+			</transform>   <!-- head -->
+<!--		</transform>
+	</transform>  <!-- world -->-->
+<!--</innerModel>-->

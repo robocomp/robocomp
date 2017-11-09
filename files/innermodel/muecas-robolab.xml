@@ -12,9 +12,10 @@
 				</transform>
 			</transform> 
 		
-			<include path="/home/robocomp/robocomp/files/innermodel/muecas.xml"/>
+		
 			
 		</transform>
 	</transform>  <!-- world -->
+		<include path="/home/robocomp/robocomp/files/innermodel/muecas.xml"/>
 </innermodel>
 
