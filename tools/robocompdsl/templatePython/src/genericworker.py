@@ -117,6 +117,17 @@ Z()
 		self.Period = 30
 		self.timer = QtCore.QTimer(self)
 
+[[[cog
+	if len(component['publishes']) > 0 or len(component['subscribesTo']) > 0:
+		cog.outl("""			
+		<TABHERE><TABHERE>self._storm_timer = QtCore.QTimer(self)
+		<TABHERE><TABHERE>self._storm_timer.timeout.connect(self.stormCheck)
+		<TABHERE><TABHERE>self._storm_period = 100
+		<TABHERE><TABHERE>self._storm_timer.start(self._storm_period)
+		""")
+]]]
+[[[end]]]
+
 
 	@QtCore.Slot()
 	def killYourSelf(self):
@@ -130,3 +141,17 @@ Z()
 		print "Period changed", p
 		Period = p
 		timer.start(Period)
+
+[[[cog
+	cog.outl("""
+	<TABHERE>@QtCore.Slot()
+	<TABHERE>def stormCheck(self):
+	<TABHERE><TABHERE>try:
+	<TABHERE><TABHERE><TABHERE>IceStorm.TopicManagerPrx.checkedCast(self.mprx["topicManager"])
+	<TABHERE><TABHERE>except KeyError:
+	<TABHERE><TABHERE><TABHERE>print "please set Storm Endpoints "
+	<TABHERE><TABHERE>except:
+	<TABHERE><TABHERE><TABHERE>print "STORM not running"
+	""")
+]]]
+[[[end]]]

@@ -10,6 +10,7 @@
 import sys, os, subprocess
 
 def generateDummyCDSL(path):
+	"""generate a dummy cdsl as a template at given path"""
 	if os.path.exists(path):
 		print "File", path, "already exists.\nExiting..."
 	else:
@@ -98,6 +99,15 @@ def replaceTagsInFile(path):
 
 
 imports = ''.join( [ imp.split('/')[-1]+'#' for imp in component['imports'] ] )
+
+# verification
+import rcExceptions
+from parseIDSL import *
+pool = IDSLPool(imports)
+for interface_required in component['requires'] + component['implements'] + component['subscribesTo'] + component['publishes']:
+	interface_required = interface_required if type(interface_required) == str else interface_required[0]
+	if not pool.moduleProviding(interface_required):
+		raise rcExceptions.InterfaceNotFound(interface_required)
 
 if component['language'].lower() == 'cpp':
 	#
@@ -233,7 +243,4 @@ elif component['language'].lower() == 'python':
 			replaceTagsInFile(ofile)
 else:
 	print 'Unsupported language', component['language']
-
-
-
 
