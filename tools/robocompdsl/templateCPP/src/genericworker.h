@@ -82,6 +82,9 @@ try:
 except:
 	pass
 
+if len(component['publishes'])>0 or len(component['subscribesTo'])>0:
+	cog.outl("#include <IceStorm/IceStorm.h>")
+
 ]]]
 [[[end]]]
 
@@ -163,6 +166,9 @@ for namea, num in getNameNumber(component['requires']+component['publishes']):
 	else:
 		name = namea[0]
 	cog.outl('<TABHERE>'+name+'Prx '+name.lower()+num +'_proxy;')
+
+if len(component['publishes'])>0 or len(component['subscribesTo'])>0:
+	cog.outl("<TABHERE>IceStorm::TopicManagerPrx topicmanager_proxy;")
 ]]]
 [[[end]]]
 
@@ -253,8 +259,21 @@ except:
 ]]]
 [[[end]]]
 
+[[[cog
+if len(component['publishes'])>0 or len(component['subscribesTo'])>0:
+	cog.outl("<TABHERE>QTimer storm_timer;");
+	cog.outl("<TABHERE>int storm_period;");
+]]]
+[[[end]]]
+
 public slots:
 	virtual void compute() = 0;
+[[[cog
+if len(component['publishes'])>0 or len(component['subscribesTo'])>0:
+	cog.outl("<TABHERE>void check_storm();");
+]]]
+[[[end]]]
+
 signals:
 	void kill();
 };

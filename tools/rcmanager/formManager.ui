@@ -104,7 +104,7 @@
                  </property>
                  <property name="icon">
                   <iconset>
-                   <normaloff>../../../../../../../../../../../../opt/managerComp/share/down.png</normaloff>../../../../../../../../../../../../opt/managerComp/share/down.png</iconset>
+                   <normaloff>../../../../../../../../../../../../opt/robocomp/share/rcmanager/down.png</normaloff>../../../../../../../../../../../../opt/managerComp/share/down.png</iconset>
                  </property>
                 </widget>
                </item>
@@ -227,7 +227,7 @@
                  </property>
                  <property name="icon">
                   <iconset>
-                   <normaloff>../../../../../../../../../../../../opt/rcmanager/share/up.png</normaloff>../../../../../../../../../../../../opt/rcmanager/share/up.png</iconset>
+                   <normaloff>../../../../../../../../../../../../opt/robocomp/share/rcmanager/up.png</normaloff>../../../../../../../../../../../../opt/rcmanager/share/up.png</iconset>
                  </property>
                 </widget>
                </item>

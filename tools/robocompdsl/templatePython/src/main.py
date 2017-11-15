@@ -247,10 +247,14 @@ for rqa in component['requires']:
 try:
 	if len(component['publishes']) > 0 or len(component['subscribesTo']) > 0:
 		cog.outl("""
-<TABHERE><TABHERE># Topic Manager
-<TABHERE><TABHERE>proxy = ic.getProperties().getProperty("TopicManager.Proxy")
-<TABHERE><TABHERE>obj = ic.stringToProxy(proxy)
-<TABHERE><TABHERE>topicManager = IceStorm.TopicManagerPrx.checkedCast(obj)""")
+		<TABHERE><TABHERE># Topic Manager
+		<TABHERE><TABHERE>proxy = ic.getProperties().getProperty("TopicManager.Proxy")
+		<TABHERE><TABHERE>obj = ic.stringToProxy(proxy)
+		<TABHERE><TABHERE>try:
+		<TABHERE><TABHERE><TABHERE>topicManager = IceStorm.TopicManagerPrx.checkedCast(obj)
+		<TABHERE><TABHERE>except ConnectionRefusedException:
+		<TABHERE><TABHERE><TABHERE>raise Exception("STORM not running") """)
+
 except:
 	pass
 
@@ -283,7 +287,11 @@ for ima in component['implements']:
 	cog.outl(w)
 
 
-for st in component['subscribesTo']:
+for sto in component['subscribesTo']:
+	if type(sto) == type(''):
+		st = sto
+	else:
+		st = sto[0]
 	w = SUBSCRIBESTO_STR.replace("<NORMAL>", st).replace("<LOWER>", st.lower())
 	cog.outl(w)
 ]]]
