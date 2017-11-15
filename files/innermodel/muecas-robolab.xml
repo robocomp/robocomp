@@ -7,15 +7,16 @@
 				<!--<plane id="table"  nx="0" ny="1" nz="0" px="0"  py="0"  pz="0"  size="1" repeat="1" texture="#666666" />-->
 				<mesh id="mesa" file="/home/robocomp/robocomp/files/osgModels/mobiliario/mesa_centro.osg"  tx="0" ty="0" tz="0" rx="1.57079632679" rz="-1.57079632679" scale="120"/>
 				
-				<transform id="tazaplace" tx="0" ty="500" tz="3">
+				<transform id="tazaplace" tx="0" ty="450" tz="3">
 					<mesh id="taza" file="/home/robocomp/robocomp/files/osgModels/mobiliario/taza.osg"  tx="0" ty="0" tz="0" rx="1.57079632679" rz="-1.57079632679" scale="65"/>
 				</transform>
 			</transform> 
-		
-		
 			
-		</transform>
+			<include path="/home/robocomp/robocomp/files/innermodel/muecas.xml"/>
+			
+		</transform>  <!--floor -->
 	</transform>  <!-- world -->
-		<include path="/home/robocomp/robocomp/files/innermodel/muecas.xml"/>
+	
+
 </innermodel>
 
