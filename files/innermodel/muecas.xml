@@ -1,5 +1,5 @@
 <innerModel>	
-	<transform id="head" ty="700" tz="800">
+	<transform id="head" ty="900" tz="7000" tx="3000">
 				<mesh id="head_mesh" file="/home/robocomp/robocomp/files/osgModels/muecas/zeropivot.osg" scale="30"/>
 				<transform id="mouth" ty="42" tz="-42">
 					<mesh id="mouth_mesh" file="/home/robocomp/robocomp/files/osgModels/muecas/jaw.osg" scale="30" />
