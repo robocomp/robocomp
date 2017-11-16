@@ -15,8 +15,5 @@
 			<include path="/home/robocomp/robocomp/files/innermodel/robolab-espacio.xml"/>	
 		</transform>
 	</transform>  <!-- world -->
-		
-		
->>>>>>> e85ff2c499837c16edcbdbc6ccf1fccbd71df51e
 </innermodel>
 

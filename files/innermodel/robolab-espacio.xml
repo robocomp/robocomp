@@ -77,7 +77,7 @@
 			<mesh  id="mesa10mesh" file="/home/robocomp/robocomp/files/osgModels/mobiliario/mesa_centro.osg"  tx="400" ty="-770" tz="900" rx="1.57079632679" scale="100,225,200"/>
 			<mesh  id="mesa10meshSilla" file="/home/robocomp/robocomp/files/osgModels/mobiliario/silla.osg"  tx="870" ty="-770" tz="760" rx="1.57079632679" rz="-1.57079632679" scale="100"/>
 			<!--<mesh  id="mesa10meshSilla2" file="/home/robocomp/robocomp/files/osgModels/mobiliario/silla.osg"  tx="70" ty="-770" tz="760" rx="1.57079632679" rz="1.57079632679" scale="100"/>-->
-			<transform id="tazaplace" tx="300" tz="600">
+			<transform id="tazaplace" tx="500" ty="-25" tz="1000" ry="1.5707963267948966">
 					<mesh id="taza" file="/home/robocomp/robocomp/files/osgModels/mobiliario/taza.osg"  tx="0" ty="0" tz="0" rx="1.57079632679" rz="-1.57079632679" scale="65"/>
 			</transform>
 
