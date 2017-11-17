@@ -35,6 +35,7 @@
 #include <innermodel/innermodelimu.h>
 #include <innermodel/innermodelpointcloud.h>
 #include <innermodel/innermodeltouchsensor.h>
+#include <innermodel/innermodeldisplay.h>
 
 #if FCL_SUPPORT==1
 #include <boost/shared_ptr.hpp>
@@ -101,7 +102,7 @@ public:
 	void updateJointValue(QString jointId, float angle, bool force=false);
 	void updatePrismaticJointPosition(QString jointId, float position);
 	void updatePlaneValues(QString planeId, float nx, float ny, float nz, float px, float py, float pz);
-
+	void updateDisplay(QString displayId, QString texture);
 	////////////////////////////////
 	/// Factory constructors
 	///////////////////////////////
@@ -116,6 +117,7 @@ public:
 	InnerModelIMU* newIMU(QString id, InnerModelNode *parent, uint32_t port = 0);
 	InnerModelLaser* newLaser(QString id, InnerModelNode *parent, uint32_t port = 0, uint32_t min=0, uint32_t max=30000, float angle = M_PIl, uint32_t measures = 360, QString ifconfig="");
 	InnerModelPlane* newPlane(QString id, InnerModelNode *parent, QString texture, float width, float height, float depth, int repeat, float nx=0, float ny=0, float nz=0, float px=0, float py=0, float pz=0, bool collidable=0);
+	InnerModelDisplay* newDisplay(QString id, InnerModelNode *parent, QString texture, float width, float height, float depth, int repeat, float nx=0, float ny=0, float nz=0, float px=0, float py=0, float pz=0, bool collidable=0);
 	InnerModelMesh* newMesh(QString id, InnerModelNode *parent, QString path, float scale, int render, float tx, float ty, float tz, float rx, float ry, float rz, bool collidable=0);
 	InnerModelMesh* newMesh(QString id, InnerModelNode *parent, QString path, float scalex, float scaley, float scalez, int render, float tx, float ty, float tz, float rx, float ry, float rz, bool collidable=0);
 	InnerModelPointCloud* newPointCloud(QString id, InnerModelNode *parent);

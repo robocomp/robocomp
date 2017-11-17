@@ -291,6 +291,22 @@ void InnerModel::updatePlaneValues(QString planeId, float nx, float ny, float nz
 		qDebug() << "?????";
 }
 
+void InnerModel::updateDisplay(QString displayId, QString texture)
+{
+	QMutexLocker l(mutex);
+	cleanupTables();
+
+	InnerModelDisplay *display = dynamic_cast<InnerModelDisplay *>(hash[displayId]);
+	if (display != NULL)
+	{
+		display->updateTexture(texture);
+	}
+	else if (hash[displayId] == NULL)
+		qDebug() << "There is no such" << displayId << "node";
+	else
+		qDebug() << "?????";
+}
+
 void InnerModel::updateTranslationValues(QString transformId, float tx, float ty, float tz, QString parentId)
 {
 	QMutexLocker l(mutex);
@@ -534,6 +550,22 @@ InnerModelPlane *InnerModel::newPlane(QString id, InnerModelNode *parent, QStrin
 		throw error;
 	}
 	InnerModelPlane *newnode = new InnerModelPlane(id, texture, width, height, depth, repeat, nx, ny, nz, px, py, pz, collidable, parent);
+	hash[id] = newnode;
+// 	parent->addChild(newnode);
+	return newnode;
+}
+
+InnerModelDisplay *InnerModel::newDisplay(QString id, InnerModelNode *parent, QString texture, float width, float height, float depth, int repeat, float nx, float ny, float nz, float px, float py, float pz, bool collidable)
+{
+	QMutexLocker l(mutex);
+	if (hash.contains(id))
+	{
+		QString error;
+		error.sprintf("InnerModel::newDisplay: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
+		printf("ERROR: %s\n", error.toStdString().c_str());
+		throw error;
+	}
+	InnerModelDisplay *newnode = new InnerModelDisplay(id, texture, width, height, depth, repeat, nx, ny, nz, px, py, pz, collidable, parent);
 	hash[id] = newnode;
 // 	parent->addChild(newnode);
 	return newnode;
@@ -978,8 +1010,8 @@ float InnerModel::distance(const QString &a, const QString &b)
 //
 // 	return QVec::vec3(pc(0), pc(1), origVec.norm2());
 // }
-
-
+//
+//
 // QVec InnerModel::project(const QString &cameraId, const QVec &origVec)
 // {
 // 	QVec pc;
@@ -1169,7 +1201,7 @@ float InnerModel::distance(const QString &a, const QString &b)
 //
 //
 //
-
+//
 //
 // QMat InnerModel::getHomographyMatrix(QString virtualCamera, QString plane, QString sourceCamera)
 // {
@@ -1239,10 +1271,10 @@ float InnerModel::distance(const QString &a, const QString &b)
 // }
 //
 //
-
-
-
-
+//
+//
+//
+//
 // float InnerModel::getCameraFocal(const QString & cameraId) const
 // {
 // 	QMutexLocker l(mutex);
@@ -1281,7 +1313,7 @@ float InnerModel::distance(const QString &a, const QString &b)
 // 	return static_cast<InnerModelCamera *>(getNode(cameraId))->getSize();
 // }
 //
-
+//
 // /**
 //  * \brief Local laser measure of range r and angle alfa is converted to Any RS
 //  * @param r range measure
@@ -1297,7 +1329,7 @@ float InnerModel::distance(const QString &a, const QString &b)
 // 	p(2) = r * cos(alpha);
 // 	return transform(dest, p, laserId);
 // }
-
+//
 // QVec InnerModel::compute3DPointFromImageCoords(const QString &firstCamera, const QVec &left, const QString &secondCamera, const QVec &right, const QString &refSystem)
 // {
 // 	QMutexLocker l(mutex);
