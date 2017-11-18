@@ -60,7 +60,10 @@ for req, num in getNameNumber(component['requires']):
 		if text == False:
 			cog.outl('# Proxies for required interfaces')
 			text = True
-		cog.outl(rq + num + "Proxy = " + rq.lower() + ":tcp -h localhost -p 0")
+		port = 0
+		if rq == 'DifferentialRobot': port = 10004
+		if rq == 'Laser': port = 10003
+		cog.outl(rq + num + "Proxy = " + rq.lower() + ":tcp -h localhost -p " + str(port))
 if text:
 	cog.out('\n\n')
 
