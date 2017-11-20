@@ -22,6 +22,7 @@ set(srcs
 	innermodelpointcloud.cpp
 	innermodelmesh.cpp
 	innermodeltouchsensor.cpp
+	innermodeldisplay.cpp
 )
 
 set(incs
@@ -46,6 +47,7 @@ set(incs
     include/${LIB_NAME}/innermodeltouchsensor.h
     include/${LIB_NAME}/innermodeltransform.h
     include/${LIB_NAME}/innermodelmesh.h
+		include/${LIB_NAME}/innermodeldisplay.h
 )
 
 # FCL

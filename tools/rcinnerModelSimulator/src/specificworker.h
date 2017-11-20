@@ -36,6 +36,7 @@
 #include "pickhandler.h"
 
 
+
 class SpecificWorker : public GenericWorker
 {
 Q_OBJECT
@@ -43,6 +44,7 @@ private:
 	struct Data;
 	Data* d;
 	QSettings *settings;
+	JointMotorServer *j;
 
 public:
 	SpecificWorker(MapPrx &_mprx, Ice::CommunicatorPtr _communicator, const char *_innerModelXML, int ms);
@@ -175,7 +177,7 @@ public:
 	// Display.ice
 	// ---------------------------------------------------------------------------------------
 
-	void di_setImage(const QString& server, const std::string& item, const std::string& texture);
+	void di_setImage(const std::string& item, const std::string& texture);
 
 };
 

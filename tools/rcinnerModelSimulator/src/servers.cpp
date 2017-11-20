@@ -5,6 +5,10 @@
 /** XXXServer **/
 /** XXXServer **/
 
+// -----------------------------------------------------------
+// DisplayServer
+// -----------------------------------------------------------
+
 DisplayServer::DisplayServer(Ice::CommunicatorPtr communicator, SpecificWorker *worker_, uint32_t _port)
 {
 	port = _port;
@@ -29,14 +33,14 @@ void DisplayServer::add(InnerModelDisplay *display)
 
 bool DisplayServer::empty()
 {
-	// TODO
+	return false;
 }
 
 void DisplayServer::shutdown()
 {
 	try
 	{
-		adapter->remove(comm->stringToIdentity("jointmotor"));
+		adapter->remove(comm->stringToIdentity("display"));
 	}
 	catch(Ice::ObjectAdapterDeactivatedException e)
 	{
@@ -44,7 +48,9 @@ void DisplayServer::shutdown()
 
 	adapter->destroy();
 }
-
+// -----------------------------------------------------------
+// JointMotorServer
+// -----------------------------------------------------------
 
 JointMotorServer::JointMotorServer(Ice::CommunicatorPtr communicator, SpecificWorker *worker_, uint32_t _port)
 {
@@ -109,6 +115,10 @@ void JointMotorServer::shutdown()
 	adapter->destroy();
 }
 
+// -----------------------------------------------------------
+// TouchSensorServer
+// -----------------------------------------------------------
+
 TouchSensorServer::TouchSensorServer(Ice::CommunicatorPtr communicator, SpecificWorker *worker_, uint32_t _port)
 {
 	port = _port;
@@ -154,6 +164,9 @@ void TouchSensorServer::shutdown()
 }
 
 
+// -----------------------------------------------------------
+// LaserServer
+// -----------------------------------------------------------
 
 LaserServer::LaserServer(Ice::CommunicatorPtr communicator, SpecificWorker *worker, uint32_t _port)
 {
@@ -177,6 +190,10 @@ void LaserServer::add(InnerModelLaser *laser)
 }
 
 
+// -----------------------------------------------------------
+// RGBDServer
+// -----------------------------------------------------------
+
 RGBDServer::RGBDServer(Ice::CommunicatorPtr communicator, SpecificWorker *worker, uint32_t _port)
 {
 	port = _port;
@@ -198,6 +215,10 @@ void RGBDServer::add(InnerModelRGBD *rgbd)
 	interface->add(rgbd->id);
 }
 
+
+// -----------------------------------------------------------
+// IMUServer
+// -----------------------------------------------------------
 
 IMUServer::IMUServer(Ice::CommunicatorPtr communicator, SpecificWorker *worker, uint32_t _port)
 {
@@ -221,6 +242,10 @@ void IMUServer::add(InnerModelIMU *imu)
 }
 
 
+// -----------------------------------------------------------
+// DifferentialRobotServer
+// -----------------------------------------------------------
+
 DifferentialRobotServer::DifferentialRobotServer(Ice::CommunicatorPtr communicator, SpecificWorker *worker, uint32_t _port)
 {
 	port = _port;
@@ -241,6 +266,11 @@ void DifferentialRobotServer::add(InnerModelDifferentialRobot *differentialrobot
 	interface->add(differentialrobot->id);
 	interface->start();
 }
+
+
+// -----------------------------------------------------------
+// OmniRobotServer
+// -----------------------------------------------------------
 
 OmniRobotServer::OmniRobotServer(Ice::CommunicatorPtr communicator, SpecificWorker *worker, uint32_t _port)
 {

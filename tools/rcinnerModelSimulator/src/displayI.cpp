@@ -17,8 +17,10 @@
  *    along with RoboComp.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "displayI.h"
+#include "specificworker.h"
 
-DisplayI::DisplayI(SpecificWorker *_worker, QObject *parent)
+
+DisplayI::DisplayI(SpecificWorker *_worker)
 {
 	worker = _worker;
 }
@@ -38,9 +40,9 @@ void DisplayI::remove(QString id)
 
 }
 
-void DisplayI::setImage(const Image  &img, const Ice::Current&)
+void DisplayI::setImage(const RoboCompDisplay::Image  &img, const Ice::Current&)
 {
-	QImage img =QImage(img.Img,img.width,img.height,QImage::Format_RGB888);
-	img.save("/var/tmp/tmp.jpg")
-	worker->di_setImage(id, "/var/tmp/tmp.jpg");
+	QImage im =QImage(&img.Img[0],img.width,img.height, QImage::Format_RGB888);
+	im.save("/var/tmp/tmp.jpg");
+	worker->di_setImage(id.toStdString(), "/var/tmp/tmp.jpg");
 }

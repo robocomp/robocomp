@@ -1,5 +1,5 @@
 
-void SpecificWorker::di_setImage(const std::string& item, const std::string& texture);
+void SpecificWorker::di_setImage(const std::string& item, const std::string& texture)
 {
 	QMutexLocker locker(mutex);
 	QString m="RoboCompDisplay::setImage()";
@@ -22,5 +22,4 @@ void SpecificWorker::di_setImage(const std::string& item, const std::string& tex
 	d->imv->planesHash[aux->id]->texture->setImage(image);
 
 	qDebug()<<"change aux->texture"<<aux->texture;
-	return true;
 }

@@ -25,28 +25,29 @@
 #include <Ice/Ice.h>
 #include <Display.h>
 #include <innermodel/innermodel.h>
-#include "specificworker.h"
 
 // Simulator includes
 #include <config.h>
 
+class SpecificWorker;
 
-using namespace RoboCompDisplay;
+using namespace std;
+// using namespace RoboCompsDisplay;
 
 class DisplayI : public virtual RoboCompDisplay::Display
 {
 public:
-DisplayI(GenericWorker *_worker);
+	DisplayI(SpecificWorker *_worker);
 	~DisplayI();
 
 	void add(QString id);
 	void remove(QString id);
 
-	void setImage(const Image  &img, const Ice::Current&);
+	void setImage(const RoboCompDisplay::Image  &img, const Ice::Current&);
 
 private:
 
-	GenericWorker *worker;
+	SpecificWorker *worker;
 	QString id;
 
 };
