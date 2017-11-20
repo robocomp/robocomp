@@ -28,6 +28,7 @@ DisplayServer::DisplayServer(Ice::CommunicatorPtr communicator, SpecificWorker *
 
 void DisplayServer::add(InnerModelDisplay *display)
 {
+	qDebug()<<__FILE__<<"------------------------------"<<display->id;
 	interface->add(display->id);
 }
 

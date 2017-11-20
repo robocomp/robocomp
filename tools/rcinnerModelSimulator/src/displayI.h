@@ -40,7 +40,7 @@ public:
 	DisplayI(SpecificWorker *_worker);
 	~DisplayI();
 
-	void add(QString id);
+	void add(QString id_);
 	void remove(QString id);
 
 	void setImage(const RoboCompDisplay::Image  &img, const Ice::Current&);

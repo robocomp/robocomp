@@ -30,9 +30,9 @@ DisplayI::~DisplayI()
 {
 }
 
-void DisplayI::add(QString id)
+void DisplayI::add(QString id_)
 {
-	id=id;
+	id=id_;
 }
 
 void DisplayI::remove(QString id)

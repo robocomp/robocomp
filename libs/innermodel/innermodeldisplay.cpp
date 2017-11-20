@@ -34,6 +34,8 @@ InnerModelDisplay::InnerModelDisplay(QString id_, uint32_t port_, QString textur
 	collidable = collidable_;
 	port = port_;
 
+	id = id_;
+
 #if FCL_SUPPORT==1
 	std::vector<fcl::Vec3f> vertices;
 	vertices.push_back(fcl::Vec3f(-width/2., +height/2., -depth/2.)); // Front NW

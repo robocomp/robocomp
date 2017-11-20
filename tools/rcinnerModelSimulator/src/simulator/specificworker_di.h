@@ -6,7 +6,7 @@ void SpecificWorker::di_setImage(const std::string& item, const std::string& tex
 	printf("SETIMAGE %s: %s\n", item.c_str(), texture.c_str());
 	InnerModelDisplay *aux = dynamic_cast<InnerModelDisplay*>(d->getNode(QString::fromStdString(item), m));
 
-	qDebug()<<"aux->texture"<<aux->texture<<"qstring"<<QString::fromStdString(texture);
+	// qDebug()<<"aux->texture"<<aux->texture<<"qstring"<<QString::fromStdString(texture);
 
 	aux->texture=QString::fromStdString(texture);
 
@@ -17,9 +17,10 @@ void SpecificWorker::di_setImage(const std::string& item, const std::string& tex
 		qDebug() << "Couldn't load texture:" << texture.c_str();
 		throw "Couldn't load texture.";
 	}
-
-	d->imv->planesHash[aux->id]->image =image;
-	d->imv->planesHash[aux->id]->texture->setImage(image);
-
-	qDebug()<<"change aux->texture"<<aux->texture;
+	// qDebug()<<__FILE__<<" "<<__LINE__;
+	// d->imv->planesHash[aux->id]->image=image;
+	// qDebug()<<__FILE__<<" "<<__LINE__;
+	d->imv->planesHash[aux->id]->setImage(image);
+	// qDebug()<<__FILE__<<" "<<__LINE__;
+	// qDebug()<<"change aux->texture"<<aux->texture;
 }
