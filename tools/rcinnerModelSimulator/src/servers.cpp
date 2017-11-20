@@ -4,6 +4,48 @@
 /** XXXServer **/
 /** XXXServer **/
 /** XXXServer **/
+
+DisplayServer::DisplayServer(Ice::CommunicatorPtr communicator, SpecificWorker *worker_, uint32_t _port)
+{
+	port = _port;
+	worker = worker_;
+	std::stringstream out1;
+	out1 << port;
+	comm = communicator;
+	std::string name = std::string("Display") + out1.str();
+	std::string endp = std::string("tcp -p ")    + out1.str();
+
+	adapter = communicator->createObjectAdapterWithEndpoints(name, endp);
+	printf("Creating Display adapter <<%s>> with endpoint <<%s>>\n", name.c_str(), endp.c_str());
+	interface = new DisplayI(worker);
+	adapter->add(interface, communicator->stringToIdentity("display"));
+	adapter->activate();
+}
+
+void DisplayServer::add(InnerModelDisplay *display)
+{
+	interface->add(display->id);
+}
+
+bool DisplayServer::empty()
+{
+	// TODO
+}
+
+void DisplayServer::shutdown()
+{
+	try
+	{
+		adapter->remove(comm->stringToIdentity("jointmotor"));
+	}
+	catch(Ice::ObjectAdapterDeactivatedException e)
+	{
+	}
+
+	adapter->destroy();
+}
+
+
 JointMotorServer::JointMotorServer(Ice::CommunicatorPtr communicator, SpecificWorker *worker_, uint32_t _port)
 {
 	port = _port;

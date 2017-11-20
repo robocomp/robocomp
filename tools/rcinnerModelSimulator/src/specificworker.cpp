@@ -131,7 +131,7 @@ struct SpecificWorker::Data
 			laserData[i].angle = angle;
 			laserData[i].dist = maxRange;
 
-	
+
 			laserDataCartArray[id]->operator[](i) = QVecToOSGVec(QVec::vec3(maxRange*sin(angle), 0, maxRange*cos(angle)));
 
 			//Calculamos el punto destino
@@ -727,14 +727,14 @@ SpecificWorker::SpecificWorker(MapPrx& _mprx, Ice::CommunicatorPtr _communicator
 	d->manipulator = new osgGA::TrackballManipulator;
 // 	d->manipulator->setHomePosition(osg::Vec3d(0, 10000, 0), osg::Vec3d(0, 0, 0), osg::Vec3d(0, 0, -10000), true);
 	d->viewer->setCameraManipulator(d->manipulator, true);
-	
+
 	// Add mouse pick handler
 	if (rcis_mousepicker_proxy)
 	{
 		d->viewer->addEventHandler(new PickHandler(rcis_mousepicker_proxy));
 	}
 
-	
+
 	settings = new QSettings("RoboComp", "RCIS");
 	QString path(_innerModelXML);
 	if (path == settings->value("path").toString() )
@@ -763,8 +763,8 @@ SpecificWorker::SpecificWorker(MapPrx& _mprx, Ice::CommunicatorPtr _communicator
 		settings->setValue("path",path);
  	}
 
- 		
-	
+
+
 
 	// Connect all the signals
 	connect(topView,   SIGNAL(clicked()), this, SLOT(setTopPOV()));
@@ -781,9 +781,9 @@ SpecificWorker::SpecificWorker(MapPrx& _mprx, Ice::CommunicatorPtr _communicator
 
 	objectTriggered();
 	visualTriggered();
-	
+
 	d->viewer->realize();
-	
+
 	//d->viewer->setThreadingModel( osgViewer::ViewerBase::ThreadPerCamera);
 	// Initialize the timer
 	setPeriod(ms);
@@ -944,7 +944,7 @@ void SpecificWorker::compute()
 		//osg render
 		d->viewer->frame();
 	}
-	
+
 }
 
 
@@ -1105,3 +1105,4 @@ void SpecificWorker::setLigthz(double v)
 #include "simulator/specificworker_jm.h"
 #include "simulator/specificworker_laser.h"
 #include "simulator/specificworker_rgbd.h"
+#include "simulator/specificworker_di.h"

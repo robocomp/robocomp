@@ -42,6 +42,22 @@ public:
 	SpecificWorker *worker;
 };
 
+class DisplayServer
+{
+public:
+	DisplayServer(Ice::CommunicatorPtr communicator, SpecificWorker *worker_, uint32_t _port);
+	void add(InnerModelDisplay *display);
+	void remove(InnerModelDisplay *display);
+	bool empty();
+	void shutdown();
+
+	uint32_t port;
+	Ice::CommunicatorPtr comm;
+	Ice::ObjectAdapterPtr adapter;
+	DisplayI *interface;
+	SpecificWorker *worker;
+};
+
 class TouchSensorServer
 {
 public:
@@ -124,4 +140,3 @@ public:
 	GenericBaseI *interfaceGB;
 	std::vector<InnerModelOmniRobot *> omnirobots;
 };
-

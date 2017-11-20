@@ -28,18 +28,19 @@ DisplayI::~DisplayI()
 {
 }
 
-void JointMotorI::add(QString id)
+void DisplayI::add(QString id)
 {
 	id=id;
 }
 
-void JointMotorI::remove(QString id)
+void DisplayI::remove(QString id)
 {
+
 }
 
 void DisplayI::setImage(const Image  &img, const Ice::Current&)
 {
 	QImage img =QImage(img.Img,img.width,img.height,QImage::Format_RGB888);
-	img.save("tmp.jpg")
-	worker->imm_setPlaneTexture(id, item, "tmp.jpg");
+	img.save("/var/tmp/tmp.jpg")
+	worker->di_setImage(id, "/var/tmp/tmp.jpg");
 }

@@ -54,7 +54,7 @@ public:
 	QMutex *viewerMutex;
 	void startServers();
 	void scheduleShutdown(JointMotorServer *j);
-	
+
 public slots:
 	// ----------------------------------------------------------------------------------------
 	// GUI event handlers
@@ -84,11 +84,11 @@ public:
 	void cam_getYRGBImage(const QString& server, int cam, RoboCompCamera::imgType& roi, RoboCompCommonHead::THeadState& hState, RoboCompGenericBase::TBaseState& bState);
 	TCamParams cam_getCamParams(const QString& server);
 	void cam_setInnerImage(const QString& server, const RoboCompCamera::imgType& roi);
-	
+
 	// ----------------------------------------------------------------------------------------
 	// CommonBehavior.ice
 	// ----------------------------------------------------------------------------------------
-	
+
 	// ----------------------------------------------------------------------------------------
 	// DifferentialRobot.ice
 	// ----------------------------------------------------------------------------------------
@@ -100,14 +100,14 @@ public:
 	void dfr_setOdometer(const QString& server, const RoboCompGenericBase::TBaseState& state);
 	void dfr_setOdometerPose(const QString& server, int x, int z, float alpha);
 	void dfr_correctOdometer(const QString& server, int x, int z, float alpha);
-	
+
 	// ----------------------------------------------------------------------------------------
 	// IMU.ice
 	// ----------------------------------------------------------------------------------------
 	void imu_updateIMUData(const QString& server, QString id);
 	DataImu imu_getDataImu(const QString& server);
 	void imu_resetImu(const QString& server);
-	
+
 	// ----------------------------------------------------------------------------------------
 	// InnerModelManager.ice
 	// ----------------------------------------------------------------------------------------
@@ -133,7 +133,7 @@ public:
 	void imm_getAllNodeInformation(const QString& server, RoboCompInnerModelManager::NodeInformationSequence &nodesInfo);
 	void imm_setPointCloudData(const QString& server, const std::string &id, const RoboCompInnerModelManager::PointCloudVector &cloud);
 	bool imm_collide(const string &a, const string &b);
-	
+
 	// ----------------------------------------------------------------------------------------
 	// JointMotor.ice
 	// ----------------------------------------------------------------------------------------
@@ -155,13 +155,13 @@ public:
 	void jm_releaseBrakeMotor(const QString& server, const std::string& motor);
 	void jm_enableBrakeAllMotors(const QString& server);
 	void jm_enableBrakeMotor(const QString& server, const std::string& motor);
-	
+
 	// ----------------------------------------------------------------------------------------
 	// Laser.ice
 	// ----------------------------------------------------------------------------------------
 	TLaserData laser_getLaserAndBStateData(const QString& server, RoboCompGenericBase::TBaseState& state);
 	LaserConfData laser_getLaserConfData(const QString& server);
-	
+
 	// ----------------------------------------------------------------------------------------
 	// RGBD.ice
 	// ----------------------------------------------------------------------------------------
@@ -170,6 +170,13 @@ public:
 	Registration rgbd_getRegistration(const QString& server);
 	void rgbd_getData(const QString& server, RoboCompRGBD::imgType& rgbMatrix, depthType& distanceMatrix, RoboCompJointMotor::MotorStateMap& hState, RoboCompGenericBase::TBaseState& bState);
 	void rgbd_getImage(const QString& server, ColorSeq& color, DepthSeq& depth, PointSeq& points, RoboCompJointMotor::MotorStateMap& hState, RoboCompGenericBase::TBaseState& bState);
+
+	// ---------------------------------------------------------------------------------------
+	// Display.ice
+	// ---------------------------------------------------------------------------------------
+
+	void di_setImage(const QString& server, const std::string& item, const std::string& texture);
+
 };
 
 
