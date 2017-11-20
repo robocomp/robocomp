@@ -555,7 +555,7 @@ InnerModelPlane *InnerModel::newPlane(QString id, InnerModelNode *parent, QStrin
 	return newnode;
 }
 
-InnerModelDisplay *InnerModel::newDisplay(QString id, InnerModelNode *parent, QString texture, float width, float height, float depth, int repeat, float nx, float ny, float nz, float px, float py, float pz, bool collidable)
+InnerModelDisplay *InnerModel::newDisplay(QString id,uint32_t port, InnerModelNode *parent, QString texture, float width, float height, float depth, int repeat, float nx, float ny, float nz, float px, float py, float pz, bool collidable)
 {
 	QMutexLocker l(mutex);
 	if (hash.contains(id))
@@ -565,7 +565,7 @@ InnerModelDisplay *InnerModel::newDisplay(QString id, InnerModelNode *parent, QS
 		printf("ERROR: %s\n", error.toStdString().c_str());
 		throw error;
 	}
-	InnerModelDisplay *newnode = new InnerModelDisplay(id, texture, width, height, depth, repeat, nx, ny, nz, px, py, pz, collidable, parent);
+	InnerModelDisplay *newnode = new InnerModelDisplay(id, port, texture, width, height, depth, repeat, nx, ny, nz, px, py, pz, collidable, parent);
 	hash[id] = newnode;
 // 	parent->addChild(newnode);
 	return newnode;

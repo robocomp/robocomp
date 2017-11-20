@@ -78,6 +78,7 @@ struct SpecificWorker::Data
 	std::map<uint32_t, IMUServer> imu_servers;
 	std::map<uint32_t, DifferentialRobotServer> dfr_servers;
 	std::map<uint32_t, OmniRobotServer> omn_servers;
+	std::map<uint32_t, DisplayServer> display_servers;
 
 	QList <JointMotorServer *> jointServersToShutDown;
 
@@ -357,6 +358,10 @@ struct SpecificWorker::Data
 		{
 			return RoboCompInnerModelManager::Plane;
 		}
+		else if (dynamic_cast<InnerModelDisplay*>(node) != NULL)
+		{
+			return RoboCompInnerModelManager::DisplayII;
+		}
 		else if (dynamic_cast<InnerModelRGBD*>(node) != NULL)
 		{
 			return RoboCompInnerModelManager::RGBD;
@@ -527,6 +532,16 @@ struct SpecificWorker::Data
 		omn_servers.at(port).add(node);
 	}
 
+	void addDisplay(InnerModelDisplay *node)
+	{
+		const uint32_t port = node->port;
+		if (display_servers.count(port) == 0)
+		{
+			display_servers.insert(std::pair<uint32_t, DisplayServer>(port, DisplayServer(communicator, worker, port)));
+		}
+		display_servers.at(port).add(node);
+	}
+
 
 	void addIMU(InnerModelIMU *node)
 	{
@@ -657,6 +672,14 @@ struct SpecificWorker::Data
 			{
 				//qDebug() << "OmniRobot " << omniNode->id << omniNode->port;
 				addOMN(omniNode);
+			}
+			InnerModelDisplay *displayNode = dynamic_cast<InnerModelDisplay *>(*it);
+
+			if (displayNode != NULL)
+			{
+
+				//qDebug() << "OmniRobot " << omniNode->id << omniNode->port;
+				addDisplay(displayNode);
 			}
 
 			InnerModelIMU *imuNode = dynamic_cast<InnerModelIMU *>(*it);

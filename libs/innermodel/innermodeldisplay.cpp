@@ -17,7 +17,7 @@
 
 #include "innermodel/innermodeldisplay.h"
 
-InnerModelDisplay::InnerModelDisplay(QString id_, QString texture_, float width_, float height_,float depth_, int repeat_, float nx_, float ny_, float nz_, float px_, float py_, float pz_, bool collidable_, InnerModelNode *parent_) : InnerModelNode(id_, parent_)
+InnerModelDisplay::InnerModelDisplay(QString id_, uint32_t port_, QString texture_, float width_, float height_,float depth_, int repeat_, float nx_, float ny_, float nz_, float px_, float py_, float pz_, bool collidable_, InnerModelNode *parent_) : InnerModelNode(id_, parent_)
 {
 #if FCL_SUPPORT==1
 	collisionObject = NULL;
@@ -32,6 +32,7 @@ InnerModelDisplay::InnerModelDisplay(QString id_, QString texture_, float width_
 	depth = depth_;
 	repeat = repeat_;
 	collidable = collidable_;
+	port = port_;
 
 #if FCL_SUPPORT==1
 	std::vector<fcl::Vec3f> vertices;
@@ -102,7 +103,7 @@ void InnerModelDisplay::save(QTextStream &out, int tabs)
 	<<QString::number( depth,'g', 10) << "\" repeat=\"" << QString::number(repeat, 'g', 10) << "\" nx=\"" << QString::number(normal(0), 'g', 10)
 	<< "\" ny=\"" << QString::number(normal(1), 'g', 10) << "\" nz=\""
 	<< QString::number(normal(2), 'g', 10) << "\" px=\"" << QString::number(point(0), 'g', 10) << "\" py=\"" << QString::number(point(1), 'g', 10)
-	<< "\" pz=\"" << QString::number(point(2), 'g', 10) <<"\" collide=\""<< QString::number(collidable,'g',10)<< "\" />\n";
+	<< "\" pz=\"" << QString::number(point(2), 'g', 10) <<"\" collide=\""<< QString::number(collidable,'g',10)<< "\""<< "\" port=\"" << port <<" />\n";
 }
 
 void InnerModelDisplay::setUpdatePointers(float *nx_, float *ny_, float *nz_, float *px_, float *py_, float *pz_)
@@ -130,7 +131,7 @@ void InnerModelDisplay::update(float nx_, float ny_, float nz_, float px_, float
 
 InnerModelNode * InnerModelDisplay::copyNode(QHash<QString, InnerModelNode *> &hash, InnerModelNode *parent)
 {
-	InnerModelDisplay *ret = new InnerModelDisplay(id, texture, width, height, depth, repeat, normal(0), normal(1), normal(2), point(0), point(1), point(2), parent);
+	InnerModelDisplay *ret = new InnerModelDisplay(id, port, texture, width, height, depth, repeat, normal(0), normal(1), normal(2), point(0), point(1), point(2), parent);
 	ret->level = level;
 	ret->fixed = fixed;
 	ret->children.clear();
