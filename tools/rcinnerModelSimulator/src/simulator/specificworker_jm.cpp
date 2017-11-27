@@ -12,7 +12,7 @@ void SpecificWorker::jm_setPosition(const QString &name, const MotorGoalPosition
 		m.endSpeed = goal.maxSpeed;
 		m.maxAcc = INFINITY;
 		m.mode = JointMovement::FixedPosition;
-		d->jointMovements[name] = m;
+		jointMovements[name] = m;
 	}
 	else
 	{
@@ -22,7 +22,7 @@ void SpecificWorker::jm_setPosition(const QString &name, const MotorGoalPosition
 		m.endSpeed = goal.maxSpeed;
 		m.maxAcc = INFINITY;
 		m.mode = JointMovement::TargetPosition;
-		d->jointMovements[name] = m;
+		jointMovements[name] = m;
 	}
 }
 // 		joint->setAngle(goal.position);
@@ -35,7 +35,7 @@ void SpecificWorker::jm_setVelocity(const QString &name, const MotorGoalVelocity
 	m.endSpeed = goal.velocity;
 	m.maxAcc = goal.maxAcc;
 	m.mode = JointMovement::TargetSpeed;
-	d->jointMovements[name] = m;
+	jointMovements[name] = m;
 }
 
 

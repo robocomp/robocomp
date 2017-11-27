@@ -7,8 +7,8 @@
 TRGBDParams SpecificWorker::rgbd_getRGBDParams ( const QString& server )
 {
 	QMutexLocker locker ( mutex );
-	
-	IMVCamera &cam = d->imv->cameras[server];
+
+	IMVCamera &cam = imv->cameras[server];
 
 	RoboCompRGBD::TRGBDParams rgbdParams;
 	rgbdParams.driver = "RCIS";
@@ -18,11 +18,11 @@ TRGBDParams SpecificWorker::rgbd_getRGBDParams ( const QString& server )
 	QStringList cameraConfig = cam.RGBDNode->ifconfig.split ( "," );
 	if ( cameraConfig.size() > 1 ) {
 		uint32_t basePort  = QString ( cameraConfig[1] ).toUInt();
-		if( d->dfr_servers.count( basePort ) > 0 )
+		if( dfr_servers.count( basePort ) > 0 )
 			rgbdParams.talkToBase = true;
-		
+
 		uint32_t jointPort = QString ( cameraConfig[0] ).toUInt();
-		if( d->jm_servers.count( jointPort ) > 0 )
+		if( jm_servers.count( jointPort ) > 0 )
 			rgbdParams.talkToJointMotor = true;
 	}
 
@@ -55,12 +55,12 @@ Registration SpecificWorker::rgbd_getRegistration ( const QString& server )
 void SpecificWorker::rgbd_getData ( const QString& server, RoboCompRGBD::imgType& rgbMatrix, depthType& distanceMatrix, RoboCompJointMotor::MotorStateMap& hState, RoboCompGenericBase::TBaseState& bState )
 {
 	QMutexLocker locker ( mutex );
-	
+
 	ColorSeq color;
 	DepthSeq depth;
 	PointSeq points;
 	this->rgbd_getImage ( server, color, depth, points, hState, bState );
-	
+
 	rgbMatrix.resize ( 640*480*3 );
 	distanceMatrix.resize ( 640*480 );
 	for ( int i=0; i<640*480; i++ ) {
@@ -75,27 +75,27 @@ void SpecificWorker::rgbd_getData ( const QString& server, RoboCompRGBD::imgType
 void SpecificWorker::rgbd_getImage ( const QString& server, ColorSeq& color, DepthSeq& depth, PointSeq& points, RoboCompJointMotor::MotorStateMap& hState, RoboCompGenericBase::TBaseState& bState )
 {
 	QMutexLocker locker ( mutex );
-	IMVCamera &cam = d->imv->cameras[server];
+	IMVCamera &cam = imv->cameras[server];
 
 
-	
+
 	QStringList cameraConfig = cam.RGBDNode->ifconfig.split ( "," );
 	if (cameraConfig.size() > 1)
 	{
 		uint32_t basePort  = QString ( cam.RGBDNode->ifconfig.split ( "," ) [1] ).toUInt();
 		std::map<uint32_t, OmniRobotServer>::iterator base;
-		base = d->omn_servers.find( basePort );
+		base = omn_servers.find( basePort );
                 bool bstateUpd = false;
-		if (base != d->omn_servers.end())
+		if (base != omn_servers.end())
 		{
 			base->second.interface->getBaseState( bState );
 			bstateUpd = true;
 		}
 		std::map<uint32_t, DifferentialRobotServer>::iterator baseD;
-		baseD = d->dfr_servers.find( basePort );
-		if (baseD != d->dfr_servers.end())
+		baseD = dfr_servers.find( basePort );
+		if (baseD != dfr_servers.end())
 		{
-			baseD->second.interface->getBaseState( bState );
+			base->second.interface->getBaseState( bState );
                         bstateUpd = true;
 		}
 		if (not bstateUpd)
@@ -104,8 +104,8 @@ void SpecificWorker::rgbd_getImage ( const QString& server, ColorSeq& color, Dep
                 }
 		uint32_t jointPort = QString ( cam.RGBDNode->ifconfig.split ( "," ) [0] ).toUInt();
 		std::map<uint32_t, JointMotorServer>::iterator joint;
-		joint = d->jm_servers.find( jointPort );
-		if ( joint != d->jm_servers.end() )
+		joint = jm_servers.find( jointPort );
+		if ( joint != jm_servers.end() )
 		{
 			RoboCompJointMotor::MotorStateMap newMap;
 			joint->second.interface->getAllMotorState ( newMap );

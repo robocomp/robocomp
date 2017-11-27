@@ -4,7 +4,7 @@ void SpecificWorker::di_setImage(const std::string& item, const std::string& tex
 	QMutexLocker locker(mutex);
 	QString m="RoboCompDisplay::setImage()";
 	printf("SETIMAGE %s: %s\n", item.c_str(), texture.c_str());
-	InnerModelDisplay *aux = dynamic_cast<InnerModelDisplay*>(d->getNode(QString::fromStdString(item), m));
+	InnerModelDisplay *aux = dynamic_cast<InnerModelDisplay*>(getNode(QString::fromStdString(item), m));
 
 	// qDebug()<<"aux->texture"<<aux->texture<<"qstring"<<QString::fromStdString(texture);
 
@@ -18,9 +18,9 @@ void SpecificWorker::di_setImage(const std::string& item, const std::string& tex
 		throw "Couldn't load texture.";
 	}
 	// qDebug()<<__FILE__<<" "<<__LINE__;
-	// d->imv->planesHash[aux->id]->image=image;
+	// imv->planesHash[aux->id]->image=image;
 	// qDebug()<<__FILE__<<" "<<__LINE__;
-	d->imv->planesHash[aux->id]->setImage(image);
+	imv->planesHash[aux->id]->setImage(image);
 	// qDebug()<<__FILE__<<" "<<__LINE__;
 	// qDebug()<<"change aux->texture"<<aux->texture;
 }

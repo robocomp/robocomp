@@ -41,10 +41,51 @@ class SpecificWorker : public GenericWorker
 {
 Q_OBJECT
 private:
-	struct Data;
-	Data* d;
+	// World
+	InnerModel *innerModel;
+	InnerModelViewer *imv;
+	OsgView *viewer;
+	osgGA::TrackballManipulator *manipulator;
+
+	// Handlers
+	Ice::CommunicatorPtr communicator;
+	std::map<uint32_t, JointMotorServer> jm_servers;
+	std::map<uint32_t, TouchSensorServer> touch_servers;
+	std::map<uint32_t, LaserServer> laser_servers;
+	std::map<uint32_t, RGBDServer> rgbd_servers;
+	std::map<uint32_t, IMUServer> imu_servers;
+	std::map<uint32_t, DifferentialRobotServer> dfr_servers;
+	std::map<uint32_t, OmniRobotServer> omn_servers;
+	std::map<uint32_t, DisplayServer> display_servers;
+
+	QList <JointMotorServer *> jointServersToShutDown;
+
+	// Camera
+
+	// DifferentialRobot
+
+	// InnerModelManager
+
+	// IMU
+	DataImu data_imu;
+	struct JointMovement
+	{
+		float endPos;
+		float endSpeed;
+		float maxAcc;
+		enum { FixedPosition, TargetPosition, TargetSpeed } mode;
+	};
+	// JointMotor
+	QHash<QString, JointMovement> jointMovements;
+
+	// Laser
+	QMap<QString, RoboCompLaser::TLaserData> laserDataArray;
+	QMap<QString, osg::Vec3Array*> laserDataCartArray;
+	QMutex *laserDataCartArray_mutex;
+
 	QSettings *settings;
 	JointMotorServer *j;
+
 
 public:
 	SpecificWorker(MapPrx &_mprx, Ice::CommunicatorPtr _communicator, const char *_innerModelXML, int ms);
@@ -56,6 +97,42 @@ public:
 	QMutex *viewerMutex;
 	void startServers();
 	void scheduleShutdown(JointMotorServer *j);
+
+// -----------------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------------
+private:
+	 RoboCompLaser::TLaserData LASER_createLaserData(const IMVLaser &laser);
+	 InnerModelNode *getNode(const QString &id, const QString &msg);
+	 void checkOperationInvalidNode(InnerModelNode *node,QString msg);
+	 void checkNodeAlreadyExists(const QString &id, const QString &msg);
+	 void checkInvalidMeshValues(RoboCompInnerModelManager::meshType m, QString msg);
+	 void AttributeAlreadyExists(InnerModelNode *node, QString attributeName, QString msg);
+	 void NonExistingAttribute(InnerModelNode *node, QString attributeName, QString msg);
+	 void getRecursiveNodeInformation(RoboCompInnerModelManager::NodeInformationSequence& nodesInfo, InnerModelNode *node);
+	 RoboCompInnerModelManager::NodeType getNodeType(InnerModelNode *node);
+	 void cambiaColor(QString id, osg::Vec4 color);
+	 void devuelveColor(QString id);
+	 void changeLigthState(bool apagar);
+	 void updateJoints(const float delta);
+	 void updateTouchSensors();
+	 void addDFR(InnerModelDifferentialRobot *node);
+	 void addOMN(InnerModelOmniRobot *node);
+	 void addDisplay(InnerModelDisplay *node);
+	 void addIMU(InnerModelIMU *node);
+	 void addJM(InnerModelJoint *node);
+	 void addJM(InnerModelPrismaticJoint *node);
+	 void addTouch(InnerModelTouchSensor *node);
+	 void addLaser(InnerModelLaser *node);
+	 void addRGBD(InnerModelRGBD *node);
+	 void removeJM(InnerModelJoint *node);
+	 void includeLasers();
+	 void includeRGBDs();
+	 void walkTree(InnerModelNode *node = NULL);
+
+
+
+
 
 public slots:
 	// ----------------------------------------------------------------------------------------
