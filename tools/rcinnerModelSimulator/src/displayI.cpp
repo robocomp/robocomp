@@ -42,7 +42,7 @@ void DisplayI::remove(QString id)
 
 void DisplayI::setImage(const RoboCompDisplay::Image  &img, const Ice::Current&)
 {
-	QImage im =QImage(&img.Img[0],img.width,img.height, QImage::Format_RGB888);
+	QImage im =QImage(&img.Img[0],img.width,img.height, QImage::Format_ARGB32);
 	im.save("/var/tmp/tmp.jpg");
 	worker->di_setImage(id.toStdString(), "/var/tmp/tmp.jpg");
 }
