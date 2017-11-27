@@ -1,4 +1,4 @@
-
+#include "specificworker.h"
 void SpecificWorker::di_setImage(const std::string& item, const std::string& texture)
 {
 	QMutexLocker locker(mutex);

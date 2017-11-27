@@ -1060,14 +1060,3 @@ void SpecificWorker::setLigthz(double v)
 // // 		}
 // 	}
 // }
-
-
-#include "simulator/specificworker_cam.cpp"
-#include "simulator/specificworker_cm.cpp"
-#include "simulator/specificworker_dfr.cpp"
-#include "simulator/specificworker_imm.cpp"
-#include "simulator/specificworker_imu.cpp"
-#include "simulator/specificworker_jm.cpp"
-#include "simulator/specificworker_laser.cpp"
-#include "simulator/specificworker_rgbd.cpp"
-#include "simulator/specificworker_di.cpp"

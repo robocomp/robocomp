@@ -1,5 +1,14 @@
 # Sources set
 LIST ( APPEND SOURCES
+	simulator/specificworker_cam.cpp
+	simulator/specificworker_cm.cpp
+	simulator/specificworker_dfr.cpp
+	simulator/specificworker_di.cpp
+	simulator/specificworker_imm.cpp
+	simulator/specificworker_imu.cpp
+	simulator/specificworker_jm.cpp
+	simulator/specificworker_laser.cpp
+	simulator/specificworker_rgbd.cpp
 	specificworker.cpp
 	specificmonitor.cpp
 	servers.cpp
@@ -13,4 +22,3 @@ LIST ( APPEND HEADERS
 )
 
 SET(LIBS ${LIBS} -lboost_system)
-

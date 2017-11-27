@@ -1,6 +1,7 @@
 // ------------------------------------------------------------------------------------------------
 // DifferentialRobot.ice
 // ------------------------------------------------------------------------------------------------
+#include "specificworker.h"
 
 void SpecificWorker::dfr_getBaseState ( const QString& server, RoboCompGenericBase::TBaseState& state )
 {}
