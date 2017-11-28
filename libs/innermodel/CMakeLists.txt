@@ -53,7 +53,7 @@ set(incs
 # FCL
 option (FCL_SUPPORT "Build with FCL support" OFF)
 if (FCL_SUPPORT)
-	INCLUDE_DIRECTORIES(/usr/local/include)
+	INCLUDE_DIRECTORIES( /usr/local/include ${CMAKE_SOURCE_DIR}/thirdparty/fcl/include )
 	SET (FCL_LIBS -lfcl -lccd )
 	ADD_DEFINITIONS(-DFCL_SUPPORT=1)
 	MESSAGE( STATUS "COMPILING WITH FCL SUPPORT  =  1" )
