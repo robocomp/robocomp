@@ -32,7 +32,6 @@ matrix:
 
 before_install:
   - sudo apt-get update -qq
-  - sudo apt-get install -y zeroc-ice35 libzeroc-ice35-dev slice2cpp ice35-translators
 
 script:
   - export ROBOCOMP="/home/travis/build/robocomp/robocomp"
