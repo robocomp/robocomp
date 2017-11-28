@@ -24,10 +24,12 @@ matrix:
             - pyside-tools
             - libxt-dev
             - pyqt4-dev-tools
-            - libboost-test-dev
-            - libboost-filesystem-dev
+            - libboost-all-dev
             - ice35-translators
+            - libccd
             - libccd-dev
+            - libflann-dev
+
       env: COMPILER=g++-5
 
 before_install:
@@ -35,4 +37,4 @@ before_install:
 
 script:
   - export ROBOCOMP="/home/travis/build/robocomp/robocomp"
-  - cmake -DCMAKE_CXX_COMPILER=$COMPILER . && make
+  - cmake -DCMAKE_CXX_COMPILER=$COMPILER -DFCL_SUPPORT=1 . && make
