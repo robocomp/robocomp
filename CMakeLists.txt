@@ -80,9 +80,8 @@ if(DOXYGEN_FOUND)
 endif(DOXYGEN_FOUND)
 
 SUBDIRS(
-	libs
+	thirdparty/fcl
 	tools/robocompdsl
-	tools/rcinnerModelSimulator
 	#tools/rcmanager
 	tools/rcmanagerSimple
 	tools/rclogger
@@ -90,7 +89,8 @@ SUBDIRS(
 	tools/rcremote
 	tools/rcnode
 	tools/buildTools
-	thirdparty/fcl
+	libs
+	tools/rcinnerModelSimulator
 )
 
 # Install rules necessary to allow compiling components without the robocomp's source code
