@@ -27,6 +27,7 @@ matrix:
             - libboost-test-dev
             - libboost-filesystem-dev
             - ice35-translators
+            - libccd-dev
       env: COMPILER=g++-5
 
 before_install:

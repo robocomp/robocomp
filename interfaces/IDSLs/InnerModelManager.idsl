@@ -1,13 +1,13 @@
 module RoboCompInnerModelManager
 {
-	enum NodeType { Transform, Joint, DifferentialRobot, OmniRobot, Plane, Camera, RGBD, IMU, Laser, Mesh, PointCloud, TouchSensor };
-	
+	enum NodeType { Transform, Joint, DifferentialRobot, OmniRobot, Plane, Camera, RGBD, IMU, Laser, Mesh, PointCloud, TouchSensor, DisplayII };
+
 	struct AttributeType {
 		string type;
 		string value;
 	};
 	dictionary<string, AttributeType> AttributeMap;
-	
+
 	struct NodeInformation
 	{
 		string id;
@@ -24,7 +24,7 @@ module RoboCompInnerModelManager
 	  ErrorType err;
 	  string text;
 	};
-  
+
   struct Colored3DPoint
   {
     float x;
@@ -55,7 +55,7 @@ module RoboCompInnerModelManager
 		float y;
 		float z;
 	};
-	
+
 	struct Pose3D
 	{
 		float x;
@@ -65,7 +65,7 @@ module RoboCompInnerModelManager
 		float ry;
 		float rz;
 	};
-	
+
 	struct jointType
 	{
 		Pose3D pose;
@@ -110,7 +110,7 @@ module RoboCompInnerModelManager
 
 		/// Node information access
 		void getAllNodeInformation(out NodeInformationSequence nodesInfo) throws InnerModelManagerError;
-		
+
 		/// Generic node pose modification and access
 		// All get/sets and adds return false if an item or base doesn't exist.
 		/// This methods transforms FROM item TO base
@@ -136,14 +136,14 @@ module RoboCompInnerModelManager
 
 		// Collision detection
 		bool collide(string a, string b);
-    
-    
+
+
     /// PointCloud
 //    void addPointCloud(string id);
     void setPointCloudData(string id, PointCloudVector cloud);
 
 
-		
+
 
 	};
 };

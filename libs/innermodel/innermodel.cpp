@@ -291,6 +291,22 @@ void InnerModel::updatePlaneValues(QString planeId, float nx, float ny, float nz
 		qDebug() << "?????";
 }
 
+void InnerModel::updateDisplay(QString displayId, QString texture)
+{
+	QMutexLocker l(mutex);
+	cleanupTables();
+
+	InnerModelDisplay *display = dynamic_cast<InnerModelDisplay *>(hash[displayId]);
+	if (display != NULL)
+	{
+		display->updateTexture(texture);
+	}
+	else if (hash[displayId] == NULL)
+		qDebug() << "There is no such" << displayId << "node";
+	else
+		qDebug() << "?????";
+}
+
 void InnerModel::updateTranslationValues(QString transformId, float tx, float ty, float tz, QString parentId)
 {
 	QMutexLocker l(mutex);
@@ -379,6 +395,7 @@ InnerModelJoint *InnerModel::newJoint(QString id, InnerModelTransform *parent,fl
 	{
 		QString error;
 		error.sprintf("InnerModel::newJoint: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
+		printf("ERROR: %s\n", error.toStdString().c_str());
 		throw error;
 	}
 	InnerModelJoint *newnode = new InnerModelJoint(id,lx,ly,lz,hx,hy,hz, tx, ty, tz, rx, ry, rz, min, max, port, axis, home, parent);
@@ -394,6 +411,7 @@ InnerModelTouchSensor *InnerModel::newTouchSensor(QString id, InnerModelTransfor
 	{
 		QString error;
 		error.sprintf("InnerModel::newTouchSensor: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
+		printf("ERROR: %s\n", error.toStdString().c_str());
 		throw error;
 	}
 	InnerModelTouchSensor *newnode = new InnerModelTouchSensor(id, stype, nx, ny, nz, min, max, port, parent);
@@ -409,6 +427,7 @@ InnerModelPrismaticJoint *InnerModel::newPrismaticJoint(QString id, InnerModelTr
 	{
 		QString error;
 		error.sprintf("InnerModel::newPrismaticJoint: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
+		printf("ERROR: %s\n", error.toStdString().c_str());
 		throw error;
 	}
 	InnerModelPrismaticJoint *newnode = new InnerModelPrismaticJoint(id, min, max, value, offset, port, axis, home, parent);
@@ -424,6 +443,7 @@ InnerModelDifferentialRobot *InnerModel::newDifferentialRobot(QString id, InnerM
 	{
 		QString error;
 		error.sprintf("InnerModel::newDifferentialRobot: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
+		printf("ERROR: %s\n", error.toStdString().c_str());
 		throw error;
 	}
 	InnerModelDifferentialRobot *newnode = new InnerModelDifferentialRobot(id, tx, ty, tz, rx, ry, rz, port, noise, collide, parent);
@@ -439,6 +459,7 @@ InnerModelOmniRobot *InnerModel::newOmniRobot(QString id, InnerModelTransform *p
 	{
 		QString error;
 		error.sprintf("InnerModel::newOmniRobot: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
+		printf("ERROR: %s\n", error.toStdString().c_str());
 		throw error;
 	}
 	InnerModelOmniRobot *newnode = new InnerModelOmniRobot(id, tx, ty, tz, rx, ry, rz, port, noise, collide, parent);
@@ -454,6 +475,7 @@ InnerModelCamera *InnerModel::newCamera(QString id, InnerModelNode *parent, floa
 	{
 		QString error;
 		error.sprintf("InnerModel::newCamera: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
+		printf("ERROR: %s\n", error.toStdString().c_str());
 		throw error;
 	}
 	InnerModelCamera *newnode = new InnerModelCamera(id, width, height, focal, this, parent);
@@ -475,6 +497,7 @@ InnerModelRGBD *InnerModel::newRGBD(QString id, InnerModelNode *parent, float wi
 	{
 		QString error;
 		error.sprintf("InnerModel::newRGBD: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
+		printf("ERROR: %s\n", error.toStdString().c_str());
 		throw error;
 	}
 	InnerModelRGBD *newnode = new InnerModelRGBD(id, width, height, focal, noise, port, ifconfig, this, parent);
@@ -490,6 +513,7 @@ InnerModelIMU *InnerModel::newIMU(QString id, InnerModelNode *parent, uint32_t p
 	{
 		QString error;
 		error.sprintf("InnerModel::newIMU: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
+		printf("ERROR: %s\n", error.toStdString().c_str());
 		throw error;
 	}
 	// 	printf("newIMU id=%s  parentId=%s port=%d\n", id.toStdString().c_str(), parent->id.toStdString().c_str(), port);
@@ -506,6 +530,7 @@ InnerModelLaser *InnerModel::newLaser(QString id, InnerModelNode *parent, uint32
 	{
 		QString error;
 		error.sprintf("InnerModel::newLaser: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
+		printf("ERROR: %s\n", error.toStdString().c_str());
 		throw error;
 	}
 	InnerModelLaser *newnode = new InnerModelLaser(id, port, min, max, angle, measures, ifconfig, this, parent);
@@ -521,9 +546,26 @@ InnerModelPlane *InnerModel::newPlane(QString id, InnerModelNode *parent, QStrin
 	{
 		QString error;
 		error.sprintf("InnerModel::newPlane: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
+		printf("ERROR: %s\n", error.toStdString().c_str());
 		throw error;
 	}
 	InnerModelPlane *newnode = new InnerModelPlane(id, texture, width, height, depth, repeat, nx, ny, nz, px, py, pz, collidable, parent);
+	hash[id] = newnode;
+// 	parent->addChild(newnode);
+	return newnode;
+}
+
+InnerModelDisplay *InnerModel::newDisplay(QString id,uint32_t port, InnerModelNode *parent, QString texture, float width, float height, float depth, int repeat, float nx, float ny, float nz, float px, float py, float pz, bool collidable)
+{
+	QMutexLocker l(mutex);
+	if (hash.contains(id))
+	{
+		QString error;
+		error.sprintf("InnerModel::newDisplay: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
+		printf("ERROR: %s\n", error.toStdString().c_str());
+		throw error;
+	}
+	InnerModelDisplay *newnode = new InnerModelDisplay(id, port, texture, width, height, depth, repeat, nx, ny, nz, px, py, pz, collidable, parent);
 	hash[id] = newnode;
 // 	parent->addChild(newnode);
 	return newnode;
@@ -536,6 +578,7 @@ InnerModelMesh *InnerModel::newMesh(QString id, InnerModelNode *parent, QString 
 	{
 		QString error;
 		error.sprintf("InnerModel::newMesh: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
+		printf("ERROR: %s\n", error.toStdString().c_str());
 		throw error;
 	}
 	InnerModelMesh *newnode = new InnerModelMesh(id, path, scalex, scaley, scalez, (InnerModelMesh::RenderingModes)render, tx, ty, tz, rx, ry, rz, collidable, parent);
@@ -557,6 +600,7 @@ InnerModelPointCloud *InnerModel::newPointCloud(QString id, InnerModelNode *pare
 	{
 		QString error;
 		error.sprintf("InnerModel::newPointCloud: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
+		printf("ERROR: %s\n", error.toStdString().c_str());
 		throw error;
 	}
 	InnerModelPointCloud *newnode = new InnerModelPointCloud(id, parent);
@@ -573,6 +617,7 @@ InnerModelTransform *InnerModel::newTransform(QString id, QString engine, InnerM
 	{
 		QString error;
 		error.sprintf("InnerModel::newTransform: Error: Trying to insert a node with an already-existing key: %s\n", id.toStdString().c_str());
+		printf("ERROR: %s\n", error.toStdString().c_str());
 		throw error;
 	}
 	InnerModelTransform *newnode = new InnerModelTransform(id, engine, tx, ty, tz, rx, ry, rz, mass, parent);
@@ -965,8 +1010,8 @@ float InnerModel::distance(const QString &a, const QString &b)
 //
 // 	return QVec::vec3(pc(0), pc(1), origVec.norm2());
 // }
-
-
+//
+//
 // QVec InnerModel::project(const QString &cameraId, const QVec &origVec)
 // {
 // 	QVec pc;
@@ -1156,7 +1201,7 @@ float InnerModel::distance(const QString &a, const QString &b)
 //
 //
 //
-
+//
 //
 // QMat InnerModel::getHomographyMatrix(QString virtualCamera, QString plane, QString sourceCamera)
 // {
@@ -1226,10 +1271,10 @@ float InnerModel::distance(const QString &a, const QString &b)
 // }
 //
 //
-
-
-
-
+//
+//
+//
+//
 // float InnerModel::getCameraFocal(const QString & cameraId) const
 // {
 // 	QMutexLocker l(mutex);
@@ -1268,7 +1313,7 @@ float InnerModel::distance(const QString &a, const QString &b)
 // 	return static_cast<InnerModelCamera *>(getNode(cameraId))->getSize();
 // }
 //
-
+//
 // /**
 //  * \brief Local laser measure of range r and angle alfa is converted to Any RS
 //  * @param r range measure
@@ -1284,7 +1329,7 @@ float InnerModel::distance(const QString &a, const QString &b)
 // 	p(2) = r * cos(alpha);
 // 	return transform(dest, p, laserId);
 // }
-
+//
 // QVec InnerModel::compute3DPointFromImageCoords(const QString &firstCamera, const QVec &left, const QString &secondCamera, const QVec &right, const QString &refSystem)
 // {
 // 	QMutexLocker l(mutex);

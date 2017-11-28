@@ -36,7 +36,6 @@ bool InnerModelReader::load(const QString &file, InnerModel *model)
 		printf("Can't open %s\n", file.toStdString().c_str());
 		return false;
 	}
-
 	QString errorMsg;
 	int errorLine, errorColumn;
 	if (!doc.setContent(&fich, &errorMsg, &errorLine, &errorColumn))
@@ -59,6 +58,7 @@ bool InnerModelReader::load(const QString &file, InnerModel *model)
 		model->setRoot(r);
 		r->parent = NULL;
 	}
+
 	recursive(root, model, model->root);
 
 	fich.close();
@@ -371,6 +371,26 @@ void InnerModelReader::recursive(QDomNode parentDomNode, InnerModel *model, Inne
 
 				node = plane;
 			}
+      else if (e.tagName().toLower() == "display")
+			{
+				QString size = e.attribute("size", "2500");
+				QStringList li = size.split(",");
+				float width = li[0].toFloat();
+				float height;
+				float depth;
+				if      (li.size() == 1) { height = width;           depth = height/100.;}
+				else if (li.size() == 2) { height = li[1].toFloat(); depth = qMin(width,height)/100.; }
+				else if (li.size() == 3) { height = li[1].toFloat(); depth = li[2].toFloat(); }
+				else
+				{
+					qFatal("too many numbers in display definition");
+					return;
+				}
+				InnerModelDisplay *dpy = model->newDisplay(e.attribute("id"), e.attribute("port", "0").toInt(), imNode, e.attribute("texture", ""), width, height, depth, e.attribute("repeat", "1000").toInt(), e.attribute("nx", "0").toFloat(), e.attribute("ny", "0").toFloat(), e.attribute("nz", "0").toFloat(), e.attribute("px", "0").toFloat(), e.attribute("py", "0").toFloat(), e.attribute("pz", "0").toFloat(), e.attribute("collide", "0").toInt()>0);
+				imNode->addChild(dpy);
+        imNode->innerModel = dpy->innerModel = model;
+				node = dpy;
+			}
 			else
 			{
 				qFatal("%s is not a valid tag name.\n", qPrintable(e.tagName()));
@@ -448,6 +468,10 @@ QMap<QString, QStringList> InnerModelReader::getValidNodeAttributes()
 	temporalList.clear();
 	temporalList << "id" << "texture" << "repeat" << "size" << "nx" << "ny" << "nz" << "px" << "py" << "pz" << "collide";
 	nodeAttributes["plane"] = temporalList;
+
+  temporalList.clear();
+	temporalList << "id" << "texture" << "repeat" << "size" << "nx" << "ny" << "nz" << "px" << "py" << "pz" << "port"<< "collide";
+	nodeAttributes["display"] = temporalList;
 
 	temporalList.clear();
 	temporalList << "path";

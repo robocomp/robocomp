@@ -241,7 +241,7 @@ if sys.argv[1].endswith(".cdsl"):
 				ofile += '.new'
 			ifile = "/opt/robocomp/share/robocompdsl/templateCPP/" + f
 			if f != 'src/mainUI.ui' or component['gui'] != 'none':
-				print 'Generating', ofile, 'from', ifile
+				print 'Generating', ofile
 				run = "cog.py -z -d -D theCDSL="+inputFile + " -D theIDSLs="+imports + ' -D theIDSLPaths='+ '#'.join(includeDirectories) + " -o " + ofile + " " + ifile
 				run = run.split(' ')
 				ret = Cog().main(run)
@@ -303,6 +303,14 @@ if sys.argv[1].endswith(".cdsl"):
 			print 'There was a problem creating a directory'
 			sys.exit(1)
 			pass
+		
+		needStorm = False
+		for pub in component['publishes']:
+			if communicationIsIce(pub):
+				needStorm = True
+		for sub in component['subscribesTo']:
+			if communicationIsIce(sub):
+				needStorm = True
 		#
 		# Generate regular files
 		#
@@ -317,15 +325,20 @@ if sys.argv[1].endswith(".cdsl"):
 				print 'Not overwriting specific file "'+ ofile +'", saving it to '+ofile+'.new'
 				ofile += '.new'
 			ifile = "/opt/robocomp/share/robocompdsl/templatePython/" + f
-			print 'Generating', ofile, 'from', ifile
-			run = "cog.py -z -d -D theCDSL="+inputFile + " -D theIDSLs="+imports + ' -D theIDSLPaths='+ '#'.join(includeDirectories) + " -o " + ofile + " " + ifile
-			run = run.split(' ')
-			ret = Cog().main(run)
-			if ret != 0:
-				print 'ERROR'
-				sys.exit(-1)
-			replaceTagsInFile(ofile)
-			if f == 'src/main.py': os.chmod(ofile, os.stat(ofile).st_mode | 0111 )
+			ignoreFile = False
+			if f == 'src/mainUI.ui' and component['gui'] == 'none': ignoreFile = True
+			if f == 'CMakeLists.txt' and component['gui'] == 'none': ignoreFile = True
+			if f == 'README-STORM.txt' and needStorm == False: ignoreFile = True
+			if not ignoreFile:
+				print 'Generating', ofile
+				run = "cog.py -z -d -D theCDSL="+inputFile + " -D theIDSLs="+imports + ' -D theIDSLPaths='+ '#'.join(includeDirectories) + " -o " + ofile + " " + ifile
+				run = run.split(' ')
+				ret = Cog().main(run)
+				if ret != 0:
+					print 'ERROR'
+					sys.exit(-1)
+				replaceTagsInFile(ofile)
+				if f == 'src/main.py': os.chmod(ofile, os.stat(ofile).st_mode | 0111 )
 		#
 		# Generate interface-dependent files
 		#

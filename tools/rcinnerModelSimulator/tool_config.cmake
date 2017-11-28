@@ -1,15 +1,16 @@
 QT4_WRAP_UI( RCIS_UI_HEADERS RCInnerModelSimulator/src/guiDlg.ui )
 
 set( rcis_interfaces
-	Camera 
-	CommonBehavior 
-	CommonHead 
-	DifferentialRobot 
-	IMU 
-	InnerModelManager 
-	JointMotor 
-	Laser 
+	Camera
+	CommonBehavior
+	CommonHead
+	DifferentialRobot
+	IMU
+	InnerModelManager
+	JointMotor
+	Laser
 	RGBD
+	Display
   )
 
 set ( rcis_src
@@ -23,6 +24,7 @@ set ( rcis_src
 	RCInnerModelSimulator/src/jointmotorI.cpp
 	RCInnerModelSimulator/src/laserI.cpp
 	RCInnerModelSimulator/src/rgbdI.cpp
+	RCInnerModelSimulator/src/displayI.cpp
 	$ENV{ROBOCOMP}/classes/rapplication/rapplication.cpp
 	$ENV{ROBOCOMP}/classes/qlog/qlog.cpp
 )
@@ -38,5 +40,6 @@ set ( rcis_headers
 	RCInnerModelSimulator/src/jointmotorI.h
 	RCInnerModelSimulator/src/laserI.h
 	RCInnerModelSimulator/src/rgbdI.h
+	RCInnerModelSimulator/src/displayI.h
 	${RCIS_UI_HEADERS}
 )

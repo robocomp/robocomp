@@ -219,6 +219,7 @@ if __name__ == '__main__':
 
 try:
 	needIce = False
+	needStorm = False
 	for req in component['requires']:
 		if communicationIsIce(req):
 			needIce = True
@@ -228,10 +229,12 @@ try:
 	for pub in component['publishes']:
 		if communicationIsIce(pub):
 			needIce = True
+			needStorm = True
 	for sub in component['subscribesTo']:
 		if communicationIsIce(sub):
 			needIce = True
-	if needIce:
+			needStorm = True
+	if needStorm:
 		cog.outl("""
 <TABHERE># Topic Manager
 <TABHERE>proxy = ic.getProperties().getProperty("TopicManager.Proxy")
