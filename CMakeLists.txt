@@ -91,6 +91,7 @@ SUBDIRS(
 	tools/buildTools
 	libs
 	tools/rcinnerModelSimulator
+	components
 )
 
 # Install rules necessary to allow compiling components without the robocomp's source code
