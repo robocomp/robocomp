@@ -1,3 +1,4 @@
-gnore everything except .gitignore and folders that I care about:
 *
+CMakeListst.txt
+/CMakeLists.txt
 !.gitignore
