@@ -22,3 +22,9 @@ LIST ( APPEND HEADERS
 )
 
 SET(LIBS ${LIBS} -lboost_system)
+
+# FCL
+if (FCL_SUPPORT)
+	INCLUDE_DIRECTORIES( /usr/local/include ${CMAKE_SOURCE_DIR}/thirdparty/fcl/include ${CMAKE_SOURCE_DIR}/libs/innermodel/include ${CMAKE_SOURCE_DIR}/libs/qmat/include ${CMAKE_SOURCE_DIR}/libs/osgviewer/include ${CMAKE_CURRENT_BINARY_DIR}/../../../thirdparty/fcl/include )
+	link_directories( ${CMAKE_CURRENT_BINARY_DIR}/../../../thirdparty/fcl/lib/ )
+endif (FCL_SUPPORT)
