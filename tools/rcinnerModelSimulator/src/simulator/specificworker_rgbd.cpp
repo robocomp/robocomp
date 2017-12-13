@@ -96,7 +96,7 @@ void SpecificWorker::rgbd_getImage ( const QString& server, ColorSeq& color, Dep
 		baseD = dfr_servers.find( basePort );
 		if (baseD != dfr_servers.end())
 		{
-			base->second.interface->getBaseState( bState );
+			baseD->second.interface->getBaseState( bState );
                         bstateUpd = true;
 		}
 		if (not bstateUpd)
