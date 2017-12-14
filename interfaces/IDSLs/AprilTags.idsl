@@ -12,6 +12,7 @@ module RoboCompAprilTags
 		float rx;
 		float ry;
 		float rz;
+		string cameraId;
 	};
 
 	sequence<tag> tagsList;

@@ -4,6 +4,55 @@
 /** XXXServer **/
 /** XXXServer **/
 /** XXXServer **/
+
+// -----------------------------------------------------------
+// DisplayServer
+// -----------------------------------------------------------
+
+DisplayServer::DisplayServer(Ice::CommunicatorPtr communicator, SpecificWorker *worker_, uint32_t _port)
+{
+	port = _port;
+	worker = worker_;
+	std::stringstream out1;
+	out1 << port;
+	comm = communicator;
+	std::string name = std::string("Display") + out1.str();
+	std::string endp = std::string("tcp -p ")    + out1.str();
+
+	adapter = communicator->createObjectAdapterWithEndpoints(name, endp);
+	printf("Creating Display adapter <<%s>> with endpoint <<%s>>\n", name.c_str(), endp.c_str());
+	interface = new DisplayI(worker);
+	adapter->add(interface, communicator->stringToIdentity("display"));
+	adapter->activate();
+}
+
+void DisplayServer::add(InnerModelDisplay *display)
+{
+	qDebug()<<__FILE__<<"------------------------------"<<display->id;
+	interface->add(display->id);
+}
+
+bool DisplayServer::empty()
+{
+	return false;
+}
+
+void DisplayServer::shutdown()
+{
+	try
+	{
+		adapter->remove(comm->stringToIdentity("display"));
+	}
+	catch(Ice::ObjectAdapterDeactivatedException e)
+	{
+	}
+
+	adapter->destroy();
+}
+// -----------------------------------------------------------
+// JointMotorServer
+// -----------------------------------------------------------
+
 JointMotorServer::JointMotorServer(Ice::CommunicatorPtr communicator, SpecificWorker *worker_, uint32_t _port)
 {
 	port = _port;
@@ -67,6 +116,10 @@ void JointMotorServer::shutdown()
 	adapter->destroy();
 }
 
+// -----------------------------------------------------------
+// TouchSensorServer
+// -----------------------------------------------------------
+
 TouchSensorServer::TouchSensorServer(Ice::CommunicatorPtr communicator, SpecificWorker *worker_, uint32_t _port)
 {
 	port = _port;
@@ -112,6 +165,9 @@ void TouchSensorServer::shutdown()
 }
 
 
+// -----------------------------------------------------------
+// LaserServer
+// -----------------------------------------------------------
 
 LaserServer::LaserServer(Ice::CommunicatorPtr communicator, SpecificWorker *worker, uint32_t _port)
 {
@@ -135,6 +191,10 @@ void LaserServer::add(InnerModelLaser *laser)
 }
 
 
+// -----------------------------------------------------------
+// RGBDServer
+// -----------------------------------------------------------
+
 RGBDServer::RGBDServer(Ice::CommunicatorPtr communicator, SpecificWorker *worker, uint32_t _port)
 {
 	port = _port;
@@ -156,6 +216,10 @@ void RGBDServer::add(InnerModelRGBD *rgbd)
 	interface->add(rgbd->id);
 }
 
+
+// -----------------------------------------------------------
+// IMUServer
+// -----------------------------------------------------------
 
 IMUServer::IMUServer(Ice::CommunicatorPtr communicator, SpecificWorker *worker, uint32_t _port)
 {
@@ -179,6 +243,10 @@ void IMUServer::add(InnerModelIMU *imu)
 }
 
 
+// -----------------------------------------------------------
+// DifferentialRobotServer
+// -----------------------------------------------------------
+
 DifferentialRobotServer::DifferentialRobotServer(Ice::CommunicatorPtr communicator, SpecificWorker *worker, uint32_t _port)
 {
 	port = _port;
@@ -199,6 +267,11 @@ void DifferentialRobotServer::add(InnerModelDifferentialRobot *differentialrobot
 	interface->add(differentialrobot->id);
 	interface->start();
 }
+
+
+// -----------------------------------------------------------
+// OmniRobotServer
+// -----------------------------------------------------------
 
 OmniRobotServer::OmniRobotServer(Ice::CommunicatorPtr communicator, SpecificWorker *worker, uint32_t _port)
 {

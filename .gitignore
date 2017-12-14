@@ -70,3 +70,6 @@ Speech*
 ui_*.h
 ui_**.pyc
 .idea/
+/components/CMakeLists.txt
+
+

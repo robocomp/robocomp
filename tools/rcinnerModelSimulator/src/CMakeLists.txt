@@ -19,6 +19,7 @@ SET ( SOURCES
 	jointmotorI.cpp
 	laserI.cpp
 	rgbdI.cpp
+	displayI.cpp
 	touchsensorI.cpp
 	$ENV{ROBOCOMP}/classes/rapplication/rapplication.cpp
 	$ENV{ROBOCOMP}/classes/qlog/qlog.cpp
@@ -38,6 +39,7 @@ SET ( HEADERS
 	jointmotorI.h
 	laserI.h
 	rgbdI.h
+	displayI.h
 	touchsensorI.h
 )
 
@@ -47,7 +49,7 @@ SET(LIBS -L${CMAKE_BUILD_DIR} ${LIBS} )
 # RoboComp
 INCLUDE( $ENV{ROBOCOMP}/cmake/robocompLocal.cmake )
 ROBOCOMP_INITIALIZE( $ENV{ROBOCOMP}/ )
-ROBOCOMP_WRAP_ICE( Camera CommonBehavior CommonHead DifferentialRobot OmniRobot IMU InnerModelManager JointMotor Laser RGBD TouchSensor RCISMousePicker GenericBase )
+ROBOCOMP_WRAP_ICE( Camera CommonBehavior CommonHead DifferentialRobot OmniRobot IMU InnerModelManager JointMotor Laser RGBD TouchSensor RCISMousePicker GenericBase Display)
 SET(ROBOCOMP_LIBS ${ROBOCOMP_LIBS} -lrobocomp_qmat )
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR}/../../../libs/innermodel/include )
@@ -97,12 +99,3 @@ include_directories( ${PYTHON_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS} )
 ADD_EXECUTABLE( rcis ${SOURCES} ${MOC_SOURCES} ${RC_SOURCES} ${UI_HEADERS} )
 TARGET_LINK_LIBRARIES( rcis glut OpenThreads osgGA osgDB osgUtil osgText ${LIBS} ${STATIC_LIBS} ${QT_LIBRARIES} -lboost_system -lboost_thread )
 INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/rcis DESTINATION /opt/robocomp/bin/ PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE )
-
-
-
-
-
-
-
-
-

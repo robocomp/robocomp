@@ -80,9 +80,8 @@ if(DOXYGEN_FOUND)
 endif(DOXYGEN_FOUND)
 
 SUBDIRS(
-	libs
+	thirdparty/fcl
 	tools/robocompdsl
-	tools/rcinnerModelSimulator
 	#tools/rcmanager
 	tools/rcmanagerSimple
 	tools/rclogger
@@ -90,12 +89,15 @@ SUBDIRS(
 	tools/rcremote
 	tools/rcnode
 	tools/buildTools
+	libs
+	tools/rcinnerModelSimulator
+	components
 )
 
 # Install rules necessary to allow compiling components without the robocomp's source code
 INSTALL(DIRECTORY "interfaces" DESTINATION /opt/robocomp/ )
 INSTALL(DIRECTORY "cmake" DESTINATION /opt/robocomp/ )
-#INSTALL(DIRECTORY "files" DESTINATION /opt/robocomp/ )
+INSTALL(DIRECTORY "files" DESTINATION /opt/robocomp/ )
 INSTALL(DIRECTORY "classes" DESTINATION /opt/robocomp/ )
 
 
