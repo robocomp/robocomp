@@ -135,7 +135,7 @@ class InnerModelViewer : public osg::Switch
 	public:
 		enum CameraView { BACK_POV, FRONT_POV, LEFT_POV, RIGHT_POV, TOP_POV };
 
-		InnerModelViewer(InnerModel *im, QString root="root", osg::Group *parent=NULL, bool ignoreCameras=false);	
+		InnerModelViewer(InnerModel *im, QString root="root", osg::Group *parent=NULL, bool ignoreCameras=false);
 		~InnerModelViewer();
 		void update();
 		void recursiveConstructor(InnerModelNode* node, osg::Group* parent, QHash< QString, osg::MatrixTransform* >& mtsHash, QHash< QString, IMVMesh >& meshHash, bool ignoreCameras=false);
