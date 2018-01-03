@@ -1,0 +1,12 @@
+module RoboCompEmotionalMotor{
+
+  interface EmotionalMotor
+	{
+		void expressJoy();            //Alegría
+    void expressSadness();        //Tristeza
+    void expressSurprise();       //Sorpresa
+    void expressFear();           //Miedo
+    void expressAnger();          //Ira
+    void expressDisgust();        //Asco
+	};
+};
