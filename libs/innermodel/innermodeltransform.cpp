@@ -110,6 +110,21 @@ void InnerModelTransform::update(float tx_, float ty_, float tz_, float rx_, flo
 	fixed = true;
 }
 
+void InnerModelTransform::updateT(float tx_, float ty_, float tz_)
+{
+	QMutexLocker l(mutex);
+	backtX = tx_; backtY = ty_; backtZ = tz_;
+	set(backrX, backrY, backrZ, backtX, backtY, backtZ);
+	fixed = true;
+}
+
+void InnerModelTransform::updateR(float rx_, float ry_, float rz_)
+{
+	QMutexLocker l(mutex);
+	backrX = rx_; backrY = ry_; backrZ = rz_;
+	set(backrX, backrY, backrZ, backtX, backtY, backtZ);
+	fixed = true;
+}
 
 InnerModelNode * InnerModelTransform::copyNode(QHash<QString, InnerModelNode *> &hash, InnerModelNode *parent)
 {

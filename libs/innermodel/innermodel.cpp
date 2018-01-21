@@ -316,14 +316,36 @@ void InnerModel::updateTranslationValues(QString transformId, float tx, float ty
 	if (aux != NULL)
 	{
 		if (parentId!="")
-			updateTransformValues(transformId, tx,ty,tz,0.,0.,0.,parentId);
-		else
-			aux->update(tx,ty,tz,aux->backrX,aux->backrY,aux->backrZ);
+		{
+			InnerModelTransform *auxParent = dynamic_cast<InnerModelTransform *>(hash[parentId]);
+			if (auxParent!=NULL)
+			{
+				RTMat Tbi;
+				Tbi.setTr(tx,ty,tz);
+
+				///Tbp Inverse = Tpb. This gets Tpb directly. It's the same
+				RTMat Tpb = getTransformationMatrix ( getNode ( transformId)->parent->id,parentId );
+				///New Tpi
+				RTMat Tpi = Tpb*Tbi;
+
+				QVec tr = Tpi.getTr();
+
+				tx = tr.x();
+				ty = tr.y();
+				tz = tr.z();
+			}
+			else if (hash[parentId] == NULL)
+			{
+				qDebug() << "There is no such" << parentId << "node";
+			}
+		}
+		//always update
+		aux->updateT(tx,ty,tz);
 	}
 	else if (hash[transformId] == NULL)
+	{
 		qDebug() << "There is no such" << transformId << "node";
-	else
-		qDebug() << "?????";
+	}
 }
 
 void InnerModel::updateRotationValues(QString transformId, float rx, float ry, float rz, QString parentId)
@@ -336,15 +358,36 @@ void InnerModel::updateRotationValues(QString transformId, float rx, float ry, f
 	{
 		if (parentId!="")
 		{
-			updateTransformValues(transformId,0.,0.,0.,rx,ry,rz,parentId);
+			InnerModelTransform *auxParent = dynamic_cast<InnerModelTransform *>(hash[parentId]);
+			if (auxParent!=NULL)
+			{
+				RTMat Tbi;
+				Tbi.setR (rx,ry,rz);
+
+				///Tbp Inverse = Tpb. This gets Tpb directly. It's the same
+				RTMat Tpb = getTransformationMatrix ( getNode ( transformId)->parent->id,parentId );
+				///New Tpi
+				RTMat Tpi = Tpb*Tbi;
+
+				QVec angles = Tpi.extractAnglesR();
+				QVec tr = Tpi.getTr();
+
+				rx = angles.x();
+				ry = angles.y();
+				rz = angles.z();
+			}
+			else if (hash[parentId] == NULL)
+			{
+				qDebug() << "There is no such" << parentId << "node";
+			}
 		}
-		else
-			aux->update(aux->backtX,aux->backtY,aux->backtZ,rx,ry,rz);
+		//always update
+		aux->updateR(rx,ry,rz);
 	}
 	else if (hash[transformId] == NULL)
+	{
 		qDebug() << "There is no such" << transformId << "node";
-	else
-		qDebug() << "?????";
+	}
 }
 
 void InnerModel::updateJointValue(QString jointId, float angle, bool force)
