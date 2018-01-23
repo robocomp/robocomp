@@ -10,18 +10,6 @@ interfaces in a seamless way. Building new components is done using two domain s
 
 If you already have RoboComp installed, jump to [tutorials!](doc/README.md) to start coding! 
 
--
-#Installation in Ubuntu from PPA
-
-Coming soon...
-<!--If you are not planning on modifying RoboComp itself (its libraries or tools), there's no need to go through all the compilation process. In this case, Ubuntu users of versions from 14.10 to 15.04 can install a packaged version of RoboComp. Just run the following commands:
-
-    sudo add-apt-repository  ppa:imnmfotmal/robocomp
-    sudo apt-get update
-    sudo apt-get install robocomp
-
-Remember to start a new bash session before continue using RoboComp: new variables included must be included in your shell environment.
--->
 
 #Installation from source
 
@@ -33,9 +21,9 @@ Tested in Ubuntu 14.04, 14.10, 15.04 and 15.10
 Make sure you have installed the following packages from the Ubuntu repository:
 
     sudo apt-get update
-    sudo apt-get install git git-annex cmake g++ libgsl0-dev libopenscenegraph-dev cmake-qt-gui zeroc-ice35 freeglut3-dev libboost-system-dev libboost-thread-dev qt4-dev-tools yakuake python-pip  python-pyparsing python-numpy python-pyside pyside-tools libxt-dev pyqt4-dev-tools qt4-designer libboost-test-dev libboost-filesystem-dev python-libxml2 python-xmltodict
+    sudo apt-get install git git-annex cmake g++ libgsl0-dev libopenscenegraph-dev cmake-qt-gui zeroc-ice35 freeglut3-dev libboost-system-dev libboost-thread-dev qt4-dev-tools yakuake python-pip  python-pyparsing python-numpy python-pyside pyside-tools libxt-dev pyqt4-dev-tools qt4-designer libboost-test-dev libboost-filesystem-dev python-libxml2 python-xmltodict libccd-dev
     sudo pip install networkx
-    
+
 ##Installation itself
 
 *cd* to your home directory (you are probably in it already) and type:
