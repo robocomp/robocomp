@@ -40,6 +40,11 @@ void DisplayI::remove(QString id)
 
 }
 
+void DisplayI::setImageFromFile(const string  &pathImg, const Ice::Current&)
+{
+	worker->di_setImage(id.toStdString(), pathImg);
+}
+
 void DisplayI::setImage(const RoboCompDisplay::Image  &img, const Ice::Current&)
 {
 	QImage im =QImage(&img.Img[0],img.width,img.height, QImage::Format_ARGB32);

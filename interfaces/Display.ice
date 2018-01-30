@@ -22,6 +22,7 @@ module RoboCompDisplay
 	interface Display
 	{
 		void setImage (Image img) throws HardwareFailedException;
+		void setImageFromFile (string pathImg) throws HardwareFailedException;
 	};
 };
 

@@ -44,7 +44,7 @@ public:
 	void remove(QString id);
 
 	void setImage(const RoboCompDisplay::Image  &img, const Ice::Current&);
-
+	void setImageFromFile(const string  &pathImg, const Ice::Current&);
 private:
 
 	SpecificWorker *worker;
