@@ -1,6 +1,6 @@
-#Getting the distance measurement and displaying it in command window
+# Getting the distance measurement and displaying it in command window
 
-###Component Generation
+### Component Generation
 I will just run through the steps without much explanation as in detail explanation can be found in the previous tutorials.
 
 	mkdir dist
