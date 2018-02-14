@@ -1,8 +1,8 @@
-#To simulate a bot to move in square
+# To simulate a bot to move in square
 
 I would assume you have already learnt how to create a new component using robocompdsl if not you can learn about it [here](). Also, This tutorial requires an understanding of DifferentialRobot.idsl read about it [here]()
 
-##Getting started
+## Getting started
 Create a new folder, say squarecomp
 
 	mkdir squarecomp
