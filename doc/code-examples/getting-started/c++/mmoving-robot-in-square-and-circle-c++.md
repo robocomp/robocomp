@@ -1,6 +1,6 @@
 # To simulate a bot to move in square
 
-I would assume you have already learnt how to create a new component using robocompdsl if not you can learn about it [here](). Also, This tutorial requires an understanding of DifferentialRobot.idsl read about it [here]()
+I would assume you have already learnt how to create a new component using robocompdsl if not you can learn about it [here](). Also, this tutorial requires an understanding of DifferentialRobot.idsl read about it [here]()
 
 ## Getting started
 Create a new folder, say squarecomp
@@ -49,14 +49,14 @@ If you have already gone through the DIfferentialRobot documentation then you wi
 
 This sets the speed of the bot `x` in millimeters/sec and also to specify the rotating angle `y` in rad/sec for the bot to rotate.
 
-NOw in specificworker.cpp, The `void SpecificWorker::compute( )` is where all the code needs to be written and where robocomp will know to 'compute' the code. Using delay function and `differentialrobot_proxy->setSpeedBase(x , y);` we can write
+Now in specificworker.cpp, the `void SpecificWorker::compute( )` is where all the code needs to be written and where robocomp will know to 'compute' the code. Using delay function and `differentialrobot_proxy->setSpeedBase(x , y);` we can write
 
 	differentialrobot_proxy->setSpeedBase(200, 0); // move 200 mm/sec frwd
   	usleep(1000000); //delay 1 second
   	differentialrobot_proxy->setSpeedBase(10, 1.5707);  //rotate 90 degrees at a speed of 10 mm/sec
   	usleep(1000000);  // delay 1 second
 
-If you have understood the above code and written the same in teh specificworker.cpp then your code should look like this
+If you have understood the above code and written the same in specificworker.cpp then your code should look like this
 
 	void SpecificWorker::compute( )
 	{
@@ -88,7 +88,7 @@ To simulate how this code behaves we utilize the robocomp's already available in
 	cd robocomp/files/innermodel
 	rcis simpleworld.xml
 
-This would start the simulator with the innermodel simpleworld. You will see two windows one the entire view of the map or model and the other is the camera view of the bot which is in the center. NOw go back to the firstcomp tab in the terminal and let us run the component.
+This would start the simulator with the innermodel simpleworld. You will see two windows one the entire view of the map or model and the other is the camera view of the bot which is in the center. Now go back to the firstcomp tab in the terminal and let us run the component.
 
 	bin/square --Ice.Config=etc/config
 
@@ -96,7 +96,7 @@ The bot now moves in a square inside the innermodel simpleworld.
 
 Now that you have understood and executed the bot to move in square. We can modify the same code and make the bot to move in circle.
 
-For this, Change the parameters of the setSpeedBase to
+For this, change the parameters of the setSpeedBase to
 
 	differentialrobot_proxy->setSpeedBase(10, 0.4); 
   	usleep(1000000); 
