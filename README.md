@@ -131,7 +131,8 @@ and check where the joystick device file has been created (e.g., `/dev/input/js0
 ## Using the keyboard as a JoyStick
 
 If you don't have a JoyStick follow these steps:
-Open rcis simulator
+
+Open simulator
    
     cd ~/robocomp/files/innermodel
     rcis simpleworld.xml
