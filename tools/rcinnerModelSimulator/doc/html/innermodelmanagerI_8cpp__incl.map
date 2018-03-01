@@ -1,0 +1,16 @@
+<map id="src/innermodelmanagerI.cpp" name="src/innermodelmanagerI.cpp">
+<area shape="rect" id="node2" href="$innermodelmanagerI_8h.html" title="innermodelmanagerI.h" alt="" coords="1088,304,1237,331"/>
+<area shape="rect" id="node11" href="$specificworker_8h.html" title="specificworker.h" alt="" coords="817,80,930,107"/>
+<area shape="rect" id="node10" href="$config_8h.html" title="config.h" alt="" coords="1655,379,1721,405"/>
+<area shape="rect" id="node16" href="$genericworker_8h.html" title="genericworker.h" alt="" coords="536,304,648,331"/>
+<area shape="rect" id="node26" href="$servers_8h.html" title="servers.h" alt="" coords="1640,155,1712,181"/>
+<area shape="rect" id="node41" href="$pickhandler_8h.html" title="pickhandler.h" alt="" coords="212,155,311,181"/>
+<area shape="rect" id="node27" href="$cameraI_8h.html" title="cameraI.h" alt="" coords="1249,229,1327,256"/>
+<area shape="rect" id="node28" href="$differentialrobotI_8h.html" title="differentialrobotI.h" alt="" coords="1352,229,1475,256"/>
+<area shape="rect" id="node30" href="$omnirobotI_8h.html" title="omnirobotI.h" alt="" coords="1464,304,1557,331"/>
+<area shape="rect" id="node31" href="$imuI_8h.html" title="imuI.h" alt="" coords="1857,304,1914,331"/>
+<area shape="rect" id="node33" href="$jointmotorI_8h.html" title="jointmotorI.h" alt="" coords="1939,304,2032,331"/>
+<area shape="rect" id="node35" href="$laserI_8h.html" title="laserI.h" alt="" coords="1582,304,1645,331"/>
+<area shape="rect" id="node37" href="$rgbdI_8h.html" title="rgbdI.h" alt="" coords="1669,304,1731,331"/>
+<area shape="rect" id="node38" href="$touchsensorI_8h.html" title="touchsensorI.h" alt="" coords="2057,304,2162,331"/>
+</map>

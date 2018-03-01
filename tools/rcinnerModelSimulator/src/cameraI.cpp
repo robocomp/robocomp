@@ -73,5 +73,3 @@ TCamParams CameraI::getCamParams(const Ice::Current& )
 void CameraI::setInnerImage(const RoboCompCamera::imgType& roi, const Ice::Current& )
 {
 }
-
-

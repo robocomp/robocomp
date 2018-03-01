@@ -1,0 +1,5 @@
+<map id="TouchSensorServer" name="TouchSensorServer">
+<area shape="rect" id="node2" href="$classTouchSensorI.html" title="TouchSensorI" alt="" coords="148,261,251,288"/>
+<area shape="rect" id="node5" href="$classSpecificWorker.html" title="SpecificWorker" alt="" coords="287,165,397,191"/>
+<area shape="rect" id="node6" href="$classGenericWorker.html" title="GenericWorker" alt="" coords="288,81,396,108"/>
+</map>

@@ -1,0 +1,14 @@
+<map id="src/specificworker.h" name="src/specificworker.h">
+<area shape="rect" id="node10" href="$genericworker_8h.html" title="genericworker.h" alt="" coords="1534,229,1646,256"/>
+<area shape="rect" id="node20" href="$servers_8h.html" title="servers.h" alt="" coords="801,80,873,107"/>
+<area shape="rect" id="node38" href="$pickhandler_8h.html" title="pickhandler.h" alt="" coords="1613,80,1711,107"/>
+<area shape="rect" id="node21" href="$cameraI_8h.html" title="cameraI.h" alt="" coords="1232,155,1311,181"/>
+<area shape="rect" id="node24" href="$differentialrobotI_8h.html" title="differentialrobotI.h" alt="" coords="429,155,551,181"/>
+<area shape="rect" id="node27" href="$omnirobotI_8h.html" title="omnirobotI.h" alt="" coords="333,229,426,256"/>
+<area shape="rect" id="node28" href="$imuI_8h.html" title="imuI.h" alt="" coords="733,229,791,256"/>
+<area shape="rect" id="node30" href="$jointmotorI_8h.html" title="jointmotorI.h" alt="" coords="815,229,909,256"/>
+<area shape="rect" id="node32" href="$laserI_8h.html" title="laserI.h" alt="" coords="1120,229,1183,256"/>
+<area shape="rect" id="node34" href="$rgbdI_8h.html" title="rgbdI.h" alt="" coords="933,229,994,256"/>
+<area shape="rect" id="node35" href="$touchsensorI_8h.html" title="touchsensorI.h" alt="" coords="501,229,607,256"/>
+<area shape="rect" id="node23" href="$config_8h.html" title="config.h" alt="" coords="933,304,999,331"/>
+</map>

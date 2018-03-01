@@ -1,0 +1,14 @@
+<map id="src/specificworker.cpp" name="src/specificworker.cpp">
+<area shape="rect" id="node2" href="$specificworker_8h.html" title="specificworker.h" alt="" coords="848,87,961,114"/>
+<area shape="rect" id="node43" href="$specificworker__cam_8h.html" title="simulator/specificworker\l_cam.h" alt="" coords="4516,80,4675,121"/>
+<area shape="rect" id="node44" href="$specificworker__cm_8h.html" title="simulator/specificworker_cm.h" alt="" coords="4699,87,4894,114"/>
+<area shape="rect" id="node45" href="$specificworker__dfr_8h.html" title="simulator/specificworker\l_dfr.h" alt="" coords="4919,80,5077,121"/>
+<area shape="rect" id="node46" href="$specificworker__imm_8h.html" title="simulator/specificworker\l_imm.h" alt="" coords="5101,80,5260,121"/>
+<area shape="rect" id="node47" href="$specificworker__imu_8h.html" title="simulator/specificworker\l_imu.h" alt="" coords="5284,80,5443,121"/>
+<area shape="rect" id="node48" href="$specificworker__jm_8h.html" title="simulator/specificworker_jm.h" alt="" coords="5467,87,5657,114"/>
+<area shape="rect" id="node49" href="$specificworker__laser_8h.html" title="simulator/specificworker\l_laser.h" alt="" coords="5681,80,5840,121"/>
+<area shape="rect" id="node50" href="$specificworker__rgbd_8h.html" title="simulator/specificworker\l_rgbd.h" alt="" coords="5864,80,6023,121"/>
+<area shape="rect" id="node11" href="$genericworker_8h.html" title="genericworker.h" alt="" coords="415,169,527,196"/>
+<area shape="rect" id="node19" href="$servers_8h.html" title="servers.h" alt="" coords="602,169,674,196"/>
+<area shape="rect" id="node20" href="$pickhandler_8h.html" title="pickhandler.h" alt="" coords="698,169,797,196"/>
+</map>

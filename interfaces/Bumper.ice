@@ -7,14 +7,14 @@ module RoboCompBumper {
     int idNumber;
     int state;
   };
-  dictionary<string,SensorState> SensorStateMap;
+  dictionary<string, SensorState> SensorStateMap;
 
   struct SensorParams{
     string name;
     int idNumber;
     float x;
     float y;
-    
+
   };
   sequence<SensorParams> SensorParamsList;
 
