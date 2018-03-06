@@ -1,6 +1,12 @@
-module RoboCompSpeech{
-	interface Speech{
-	 bool say(string text,bool owerwrite);
-    bool isBusy();
+module RoboCompPataLanguage{
+    struct Position
+    {
+        float x;
+        float y;
+        float z;
+    };
+
+	interface PataLanguage{
+	 void command(Position pos);
   };
 };
