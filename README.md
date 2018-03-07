@@ -70,7 +70,7 @@ Done! Now let's compile and install the whole thing:
     make
     sudo make install
 
-If you want to compile Robocomp with support for FCL, follow the instructions in the [Robocomp with FCL](doc/Compiling RoboComp with collision detection.md) tutorial"
+If you want to compile Robocomp with support for FCL, follow the instructions in the [Robocomp with FCL](doc/Compiling-RoboComp-with-collision-detection.md) tutorial"
 
 The RoboComp's core libraries and simulator should now be compiled and installed in `/opt/robocomp`.
 
@@ -130,7 +130,14 @@ and check where the joystick device file has been created (e.g., `/dev/input/js0
 
 ## Using the keyboard as a JoyStick
 
-If you don't have a JoyStick install this component,
+If you don't have a JoyStick follow these steps:
+
+Open simulator
+   
+    cd ~/robocomp/files/innermodel
+    rcis simpleworld.xml
+
+Now open a new terminal and install this component,
 
     cd ~/robocomp/components/robocomp-robolab/components/keyboardrobotcontroller
     cmake .

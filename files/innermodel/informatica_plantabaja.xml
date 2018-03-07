@@ -17,11 +17,10 @@
 				</transform>
 			
 				<translation id="laserPose" tx="0" ty="200" tz="290">
-					<laser id="laser" port="20000" measures="100" min="100" max="30000" angle="3.141593" ifconfig="10000" />
+					<laser id="laser" port="10003" measures="100" min="100" max="10000" angle="3.141593" ifconfig="10000" />
 				</translation> <!-- laser -->
-
 				<translation id="robotGeometricCenter" tx="0" ty="0" tz="0">
-					<mesh id="base_mesh" file="/home/robocomp/robocomp/files/osgModels/Gualzru/Gualzru.osg"   scale="25" rx="1.57079632679" rz="-1.57079632679" ty="0" tz="0"/>
+					<mesh id="base_mesh" file="/home/robocomp/robocomp/files/osgModels/Gualzru/Gualzru.osg"   scale="13" rx="1.57079632679" rz="-1.57079632679" ty="0" tz="0"/>
 				</translation>
 		</differentialrobot>
 		

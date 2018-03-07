@@ -22,6 +22,7 @@
 #include "config.h"
 #include <QtCore>
 #include <iostream>
+
 using namespace std;
 
 #if COMPILE_LOGGERCOMP==1
