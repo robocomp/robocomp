@@ -30,12 +30,12 @@
 import sys
 import signal
 import argparse
+import logging
 
 from PyQt4.QtGui import QApplication
 from viewer import Viewer
 from model import Model
 from controller import Controller
-from logger import RCManagerLogger
 from PyQt4 import QtCore, QtGui
 from rcmanagerSignals import CustomSignalCollection
 
@@ -45,12 +45,13 @@ class Main():
 
     def __init__(self):
         parser = argparse.ArgumentParser()
-        parser.add_argument("filename", help="the xml file containing the component graph data")
+        parser.add_argument('filename', help='the xml file containing the component graph data')
+        parser.add_argument('-v', '--verbose', help='show debug messages', dest='verbosity', action='store_true')
         args = parser.parse_args()
 
         # create model as a NetworkX graph using dict
         self.model = Model()
-        
+
         # create Qt Ui in a separate class
         self.viewer = Viewer()
         self.viewer.show()
@@ -59,7 +60,20 @@ class Main():
         self.controller = Controller(self.model, self.viewer)
         self.setup_signal_connection()
 
-        CustomSignalCollection.controllerIsReady.emit(sys.argv[1])
+        # set verbosity levels for the loggers of Model, Viewer and Controller
+        self.set_verbosity(args.verbosity)
+
+        CustomSignalCollection.controllerIsReady.emit(args.filename)
+
+    def set_verbosity(self, verbosity):
+        if verbosity:
+            verbosity_level = logging.DEBUG
+        else:
+            verbosity_level = logging.CRITICAL
+
+        self.model._logger.setLevel(verbosity_level)
+        self.viewer._logger.setLevel(verbosity_level)
+        self.controller._logger.setLevel(verbosity_level)
         
     def setup_signal_connection(self):
         CustomSignalCollection.modelIsReady.connect(self.controller.model_init_action)
