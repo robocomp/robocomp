@@ -48,9 +48,11 @@ preStr = "-I"+ROBOCOMP+"/interfaces/ --all "+ROBOCOMP+"/interfaces/"
 Ice.loadSlice(preStr+"AGMCommonBehavior.ice")
 Ice.loadSlice(preStr+"AGMExecutive.ice")
 Ice.loadSlice(preStr+"AGMWorldModel.ice")
+Ice.loadSlice(preStr+"RCRemote.ice")
 import RoboCompAGMCommonBehavior
 import RoboCompAGMExecutive
 import RoboCompAGMWorldModel
+import RoboCompRemote
 
 from AGGL import *
 from agglplanningcache import *
@@ -84,13 +86,13 @@ class ExecutiveI (RoboCompAGMExecutive.AGMExecutive):
 
 	def setMission(self, target, current=None):
 		self.handler.setMission(target, avoidUpdate=False)
- 
+
 	def getModel(self, current=None):
 		return self.handler.getModel()
- 
+
 	def getNode(self, current=None):
 		return self.handler.getNode()
- 
+
 	def getEdge(self, current=None):
 		return self.handler.getEdge()
 
@@ -120,6 +122,7 @@ class Server (Ice.Application):
 			agglPath           = self.communicator().getProperties().getProperty( "AGGLPath" )
 			initialMissionPath = self.communicator().getProperties().getProperty( "InitialMissionPath" )
 			doNotPlan          = self.communicator().getProperties().getProperty( "DoNotPlan" )
+			startPlanServer    = self.communicator().getProperties().getProperty( "AutostartAGGLPlannerServer" )
 
 			# Proxy to publish AGMExecutiveTopic
 			proxy = self.communicator().getProperties().getProperty("IceStormProxy")
@@ -163,7 +166,7 @@ class Server (Ice.Application):
 			executiveVisualizationTopic = RoboCompAGMExecutive.AGMExecutiveVisualizationTopicPrx.uncheckedCast(pub)
 
 			# Create the executive
-			executive = Executive(agglPath, initialModelPath, initialMissionPath, doNotPlan, executiveTopic, executiveVisualizationTopic)
+			executive = Executive(agglPath, initialModelPath, initialMissionPath, doNotPlan, executiveTopic, executiveVisualizationTopic, startPlanServer)
 			# AGMExecutive server
 			executiveI = ExecutiveI(executive)
 			adapterExecutive = self.communicator().createObjectAdapter('AGMExecutive')

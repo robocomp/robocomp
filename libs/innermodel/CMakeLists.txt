@@ -22,6 +22,7 @@ set(srcs
 	innermodelpointcloud.cpp
 	innermodelmesh.cpp
 	innermodeltouchsensor.cpp
+	innermodeldisplay.cpp
 )
 
 set(incs
@@ -46,15 +47,17 @@ set(incs
     include/${LIB_NAME}/innermodeltouchsensor.h
     include/${LIB_NAME}/innermodeltransform.h
     include/${LIB_NAME}/innermodelmesh.h
+		include/${LIB_NAME}/innermodeldisplay.h
 )
 
 # FCL
 option (FCL_SUPPORT "Build with FCL support" OFF)
 if (FCL_SUPPORT)
-	INCLUDE_DIRECTORIES(/usr/local/include)
+	INCLUDE_DIRECTORIES( /usr/local/include ${CMAKE_SOURCE_DIR}/thirdparty/fcl/include ${CMAKE_CURRENT_BINARY_DIR}/../../thirdparty/fcl/include )
 	SET (FCL_LIBS -lfcl -lccd )
 	ADD_DEFINITIONS(-DFCL_SUPPORT=1)
 	MESSAGE( STATUS "COMPILING WITH FCL SUPPORT  =  1" )
+	link_directories( ${CMAKE_CURRENT_BINARY_DIR}/../../thirdparty/fcl/lib/ )
 	SET (FCL_SUPPORT_VALUE "1")
 else (FCL_SUPPORT)
 	MESSAGE( STATUS "COMPILING WITHOUT FCL SUPPORT  = 0" )

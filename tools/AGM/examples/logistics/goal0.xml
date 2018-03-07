@@ -1,9 +1,9 @@
 <AGMModel>
-	<symbol id="1" type="OBJ" x="0" y="-150">
+	<symbol id="1" type="obj" x="0" y="-150">
 		<attribute key="alias" value="package1" />
 	</symbol>
 
-	<symbol id="6" type="LCTN" x="-80" y="0">
+	<symbol id="6" type="lctn" x="-80" y="0">
 		<attribute key="alias" value="PGH-PO" />
 	</symbol>
 

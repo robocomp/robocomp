@@ -106,21 +106,6 @@ void InnerModelJoint::setUpdatePointers(float *lx_, float *ly_, float *lz_, floa
 	fixed = false;
 }
 
-void InnerModelJoint::update()
-{
-	QMutexLocker l(mutex);
-	if (!fixed)
-	{
-		if (lx) backtX = *tx;
-		if (ly) backtY = *ty;
-		if (lz) backtZ = *tz;
-		if (rx) backhX = *hx;
-		if (ry) backhY = *hy;
-		if (rz) backhZ = *hz;
-	}
-	updateChildren();
-}
-
 void InnerModelJoint::update(float lx_, float ly_, float lz_, float hx_, float hy_, float hz_)
 {
 	QMutexLocker l(mutex);
@@ -131,14 +116,12 @@ void InnerModelJoint::update(float lx_, float ly_, float lz_, float hx_, float h
 
 float InnerModelJoint::getAngle()
 {
-	printf("getAngle from %p\n", this);
 	QMutexLocker l(mutex);
 	return backrZ;
 }
 
 float InnerModelJoint::setAngle(float angle, bool force)
 {
-	printf("setAngle from %p\n", this);
 	QMutexLocker l(mutex);
 	float ret;
 	if ((angle <= max and angle >= min) or force)
@@ -158,18 +141,14 @@ float InnerModelJoint::setAngle(float angle, bool force)
 
 	if (axis == "x")
 	{
-		printf("x\n");
-		print("m");
 		set(ret,0,0, 0,0,0);
 	}
 	else if (axis == "y")
 	{
-		printf("y\n");
 		set(0,ret,0, 0,0,0);
 	}
 	else if (axis == "z")
 	{
-		printf("z\n");
 		set(0,0,ret, 0,0,0);
 	}
 	else
@@ -179,7 +158,6 @@ float InnerModelJoint::setAngle(float angle, bool force)
 		throw error;
 	}
 
-	printf("%p %ld\n", innerModel, (long int)innerModel);
 	if (innerModel)
 		innerModel->cleanupTables();
 	return ret;
@@ -215,15 +193,21 @@ InnerModelNode * InnerModelJoint::copyNode(QHash<QString, InnerModelNode *> &has
 		fprintf(stderr, "InnerModel internal error: invalid axis %s.\n", axis.c_str());
 		exit(-1);
 	}
+
 	ret->level = level;
 	ret->fixed = fixed;
 	ret->children.clear();
 	ret->attributes.clear();
 	hash[id] = ret;
 
+	ret->innerModel = parent->innerModel;
+
 	for (QList<InnerModelNode*>::iterator i=children.begin(); i!=children.end(); i++)
 	{
 		ret->addChild((*i)->copyNode(hash, ret));
 	}
+
+ 	ret->setAngle(getAngle());
+
 	return ret;
-}
+  }

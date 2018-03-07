@@ -164,7 +164,7 @@ import sys, traceback, IceStorm, subprocess, threading, time, Queue, os, copy
 # Ctrl+c handling
 import signal
 
-from PySide import *
+from PySide import QtGui, QtCore
 
 from specificworker import *
 
@@ -219,6 +219,7 @@ if __name__ == '__main__':
 
 try:
 	needIce = False
+	needStorm = False
 	for req in component['requires']:
 		if communicationIsIce(req):
 			needIce = True
@@ -228,10 +229,12 @@ try:
 	for pub in component['publishes']:
 		if communicationIsIce(pub):
 			needIce = True
+			needStorm = True
 	for sub in component['subscribesTo']:
 		if communicationIsIce(sub):
 			needIce = True
-	if needIce:
+			needStorm = True
+	if needStorm:
 		cog.outl("""
 <TABHERE># Topic Manager
 <TABHERE>proxy = ic.getProperties().getProperty("TopicManager.Proxy")
@@ -283,7 +286,7 @@ for sut in component['subscribesTo']:
 		w = SUBSCRIBESTO_STR.replace("<NORMAL>", st).replace("<LOWER>", st.lower())
 		cog.outl(w)
 if component['usingROS'] == True:
-	cog.outl("<TABHERE><TABHERE>rospy.init_node(\""+component['name']+"\", anonymous=True)")
+	cog.outl("<TABHERE>rospy.init_node(\""+component['name']+"\", anonymous=True)")
 for sub in component['subscribesTo']:
 	nname = sub
 	while type(nname) != type(''):
@@ -300,15 +303,15 @@ for sub in component['subscribesTo']:
 					for p in method['params']:
 						s = "\""+mname+"\""
 						if p['type'] in ('float','int'):
-							cog.outl("<TABHERE><TABHERE>rospy.Subscriber("+s+", "+p['type'].capitalize()+"32, worker.ROS"+method['name']+")")
+							cog.outl("<TABHERE>rospy.Subscriber("+s+", "+p['type'].capitalize()+"32, worker.ROS"+method['name']+")")
 						elif p['type'] in ('uint8','uint16','uint32','uint64'):
-							cog.outl("<TABHERE><TABHERE>rospy.Subscriber("+s+", UInt"+p['type'].split('t')[1]+", worker.ROS"+method['name']+")")
+							cog.outl("<TABHERE>rospy.Subscriber("+s+", UInt"+p['type'].split('t')[1]+", worker.ROS"+method['name']+")")
 						elif p['type'] in rosTypes:
-							cog.outl("<TABHERE><TABHERE>rospy.Subscriber("+s+", "+p['type'].capitalize()+", worker.ROS"+method['name']+")")
+							cog.outl("<TABHERE>rospy.Subscriber("+s+", "+p['type'].capitalize()+", worker.ROS"+method['name']+")")
 						elif '::' in p['type']:
-							cog.outl("<TABHERE><TABHERE>rospy.Subscriber("+s+", "+p['type'].split('::')[1]+", worker.ROS"+method['name']+")")
+							cog.outl("<TABHERE>rospy.Subscriber("+s+", "+p['type'].split('::')[1]+", worker.ROS"+method['name']+")")
 						else:
-							cog.outl("<TABHERE><TABHERE>rospy.Subscriber("+s+", "+p['type']+", worker.ROS"+method['name']+")")
+							cog.outl("<TABHERE>rospy.Subscriber("+s+", "+p['type']+", worker.ROS"+method['name']+")")
 
 for imp in component['implements']:
 	nname = imp
@@ -324,7 +327,7 @@ for imp in component['implements']:
 				for mname in interface['methods']:
 					method = interface['methods'][mname]
 					s = "\""+mname+"\""
-					cog.outl("<TABHERE><TABHERE>rospy.Service("+s+", "+mname+", worker.ROS"+method['name']+")")
+					cog.outl("<TABHERE>rospy.Service("+s+", "+mname+", worker.ROS"+method['name']+")")
 
 ]]]
 [[[end]]]

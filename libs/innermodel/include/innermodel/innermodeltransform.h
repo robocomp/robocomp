@@ -46,12 +46,11 @@ class InnerModelTransform : public InnerModelNode
 		void setUpdatePointers(float *tx_, float *ty_, float *tz_, float *rx_, float *ry_, float *rz_);
 		void setUpdateTranslationPointers(float *tx_, float *ty_, float *tz_);
 		void setUpdateRotationPointers(float *rx_, float *ry_, float *rz_);
-		void update();
 		void update(float tx_, float ty_, float tz_, float rx_, float ry_, float rz_);
+		void updateT(float tx_, float ty_, float tz_);
+		void updateR(float rx_, float ry_, float rz_);
 		virtual InnerModelNode *copyNode(QHash<QString, InnerModelNode *> &hash, InnerModelNode *parent);
 
-		float *tx, *ty, *tz;
-		float *rx, *ry, *rz;
 		float mass;
 		float backtX, backtY, backtZ;
 		float backrX, backrY, backrZ;

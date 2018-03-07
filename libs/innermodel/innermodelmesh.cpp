@@ -128,13 +128,6 @@ void InnerModelMesh::print(bool verbose)
 	if (verbose) printf("Mesh: %s\n", qPrintable(id));
 }
 
-void InnerModelMesh::update()
-{
-	if (fixed)
-	{
-	}
-	updateChildren();
-}
 
 void InnerModelMesh::setScale(float x, float y, float z)
 {
@@ -160,6 +153,8 @@ InnerModelNode * InnerModelMesh::copyNode(QHash<QString, InnerModelNode *> &hash
 	ret->children.clear();
 	ret->attributes.clear();
 	hash[id] = ret;
+
+	ret->innerModel = parent->innerModel;
 
 #if FCL_SUPPORT==1
 	// Associate the read vertices and triangles vectors to the FCL collision model object

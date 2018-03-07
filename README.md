@@ -10,33 +10,21 @@ interfaces in a seamless way. Building new components is done using two domain s
 
 If you already have RoboComp installed, jump to [tutorials!](doc/README.md) to start coding! 
 
--
-#Installation in Ubuntu from PPA
 
-Coming soon...
-<!--If you are not planning on modifying RoboComp itself (its libraries or tools), there's no need to go through all the compilation process. In this case, Ubuntu users of versions from 14.10 to 15.04 can install a packaged version of RoboComp. Just run the following commands:
-
-    sudo add-apt-repository  ppa:imnmfotmal/robocomp
-    sudo apt-get update
-    sudo apt-get install robocomp
-
-Remember to start a new bash session before continue using RoboComp: new variables included must be included in your shell environment.
--->
-
-#Installation from source
+# Installation from source
 
 Tested in Ubuntu 14.04, 14.10, 15.04 and 15.10
 <!--If you are not an Ubuntu user, need to modify the core of RoboComp, or just feel like installing from sources, you can follow these instructions (they have been tested in Ubuntu 14.04, 14.10 and 15.04). If you're not in any of these scenarios, please use the packaged version.
 -->
 
-##Requirements
+## Requirements
 Make sure you have installed the following packages from the Ubuntu repository:
 
     sudo apt-get update
-    sudo apt-get install git git-annex cmake g++ libgsl0-dev libopenscenegraph-dev cmake-qt-gui zeroc-ice35 freeglut3-dev libboost-system-dev libboost-thread-dev qt4-dev-tools yakuake python-pip  python-pyparsing python-numpy python-pyside pyside-tools libxt-dev pyqt4-dev-tools qt4-designer libboost-test-dev libboost-filesystem-dev python-libxml2 python-xmltodict
+    sudo apt-get install git git-annex cmake g++ libgsl0-dev libopenscenegraph-dev cmake-qt-gui zeroc-ice35 freeglut3-dev libboost-system-dev libboost-thread-dev qt4-dev-tools yakuake python-pip  python-pyparsing python-numpy python-pyside pyside-tools libxt-dev pyqt4-dev-tools qt4-designer libboost-test-dev libboost-filesystem-dev python-libxml2 python-xmltodict libccd-dev
     sudo pip install networkx
-    
-##Installation itself
+
+## Installation itself
 
 *cd* to your home directory (you are probably in it already) and type:
 
@@ -87,7 +75,7 @@ save the file and type:
 
 Done! Now let's have some fun.
 
-#Testing the installation using the RCIS robotics simulator
+# Testing the installation using the RCIS robotics simulator
 We will first fetch some meshes and textures used by the simulator (it will take a while):
 
     cd ~/robocomp
@@ -100,7 +88,7 @@ Now let's run the simulator.
     
 Congratulations! RCIS should be up and running with a simple robot endowed with a laser and an RGBD camera, moving on a wooden floor. Don't forget to turn around the floor to see the robot from above.
  
-####Installing some RoboLab's components from GitHub
+#### Installing some RoboLab's components from GitHub
 
 The software of the robots using RoboComp is composed of different software components working together, communicating among them. What we just installed is just the core of RoboComp (the simulator, a component generator and some libraries). To have other features like joystick control we have to run additional software components available from other repositories, for example robocomp-robolab:
 
@@ -109,7 +97,7 @@ The software of the robots using RoboComp is composed of different software comp
     
 The RoboLab's set of basic robotics components are now dowloaded. You can see them in `~/robocomp/components/robocomp-robolab/components`
 
-##Connecting a JoyStick (if no JoyStick available skip to the next section)
+## Connecting a JoyStick (if no JoyStick available skip to the next section)
 
 If you have a joystick around, connect it to the USB port and:
 
@@ -127,7 +115,7 @@ Your joystick should be now running. It will make the robot advance and turn at 
 and check where the joystick device file has been created (e.g., `/dev/input/js0`). If it is not `/dev/input/js0`, edit `~/robocomp/components/robocomp-robolab/components/joystickComp/etc/config` change it accordingly and restart. Note that you might want to save the *config* file to the component's home directory so it does not interfere with future github updates.
 
 
-##Using the keyboard as a JoyStick
+## Using the keyboard as a JoyStick
 
 If you don't have a JoyStick install this componentent,
 

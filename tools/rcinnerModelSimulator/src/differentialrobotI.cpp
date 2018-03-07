@@ -360,4 +360,3 @@ void DifferentialRobotI::correctOdometer(Ice::Int x, Ice::Int z, Ice::Float alph
 	pose.correctedZ = z;
 	pose.correctedAlpha = alpha;
 }
-

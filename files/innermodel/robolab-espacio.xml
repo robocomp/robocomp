@@ -1,0 +1,112 @@
+<innerModel>
+	<transform id="robolab2">
+	<!--	<transform id="suelo_t" ry="3.141592">
+			<plane id="robolab2Suelo" nx="1" size="9650,5950,10" repeat="1" texture="#ff0000" />
+		</transform>
+		-->
+		<transform id="mesa0" tx="3800" ty="770" tz="830">
+			<plane id="mesa0plano" px="375" py="-760" pz="230" nx="1" size="460,10,750" repeat="1" texture="#fff0f0" />
+			<mesh  id="mesa0mesh" file="/home/robocomp/robocomp/files/osgModels/mobiliario/mesa_centro.osg"  tx="370" ty="-770" tz="250" rx="1.57079632679" scale="97,60,200"/>
+		</transform>
+		<transform id="mesa1" tx="3800" ty="770" tz="1300">
+			<plane id="mesa1plano" px="375" py="-760" pz="750" nx="1" size="1500,10,750" repeat="1" texture="#fff0f0" />
+			<mesh  id="mesa1mesh" file="/home/robocomp/robocomp/files/osgModels/mobiliario/mesa_centro.osg"  tx="370" ty="-770" tz="770" rx="1.57079632679" scale="97,190,200"/>
+			<mesh  id="mesa1meshSilla" file="/home/robocomp/robocomp/files/osgModels/mobiliario/silla.osg"  tx="870" ty="-770" tz="770" rx="1.57079632679" rz="-1.57079632679" scale="100"/>
+			<plane id="mesa1monitor" px="375" py="250" pz="750" nx="1" size="600,400,10" repeat="1" texture="#5f5fff" />
+			<plane id="mesa1monitor2" px="365" py="250" pz="750" nx="1" size="650,450,10" repeat="1" texture="#555555" />
+			<plane id="mesa1ordenador" px="600" py="-500" pz="200" nx="1" size="200,400,500" repeat="1" texture="#555555" />
+		</transform>
+		<transform id="mesa2" tx="3800" ty="770" tz="2800">
+			<plane id="mesa2plano" px="375" py="-760" pz="750" nx="1" size="1500,10,750" repeat="1" texture="#fff0f0" />
+			<mesh  id="mesa2mesh" file="/home/robocomp/robocomp/files/osgModels/mobiliario/mesa_centro.osg"  tx="370" ty="-770" tz="770" rx="1.57079632679" scale="97,190,200"/>
+			<mesh  id="mesa2meshSilla" file="/home/robocomp/robocomp/files/osgModels/mobiliario/silla.osg"  tx="870" ty="-770" tz="770" rx="1.57079632679" rz="-1.57079632679" scale="100"/>
+			<plane id="mesa2monitor" px="375" py="250" pz="750" nx="1" size="600,400,10" repeat="1" texture="#5f5fff" />
+			<plane id="mesa2monitor2" px="365" py="250" pz="750" nx="1" size="650,450,10" repeat="1" texture="#555555" />
+			<plane id="mesa2ordenador" px="600" py="-500" pz="200" nx="1" size="200,400,500" repeat="1" texture="#555555" />
+		</transform>                            
+		<transform id="mesa3" tx="3800" ty="770" tz="4300">
+			<plane id="mesa3plano" px="375" py="-760" pz="750" nx="1" size="1500,10,750" repeat="1" texture="#fff0f0" />
+			<mesh  id="mesa3mesh" file="/home/robocomp/robocomp/files/osgModels/mobiliario/mesa_centro.osg"  tx="370" ty="-770" tz="770" rx="1.57079632679" scale="97,190,200"/>
+			<mesh  id="mesa3meshSilla" file="/home/robocomp/robocomp/files/osgModels/mobiliario/silla.osg"  tx="870" ty="-770" tz="770" rx="1.57079632679" rz="-1.57079632679" scale="100"/>
+			<plane id="mesa3monitor" px="375" py="250" pz="750" nx="1" size="600,400,10" repeat="1" texture="#5f5fff" />
+			<plane id="mesa3monitor2" px="365" py="250" pz="750" nx="1" size="650,450,10" repeat="1" texture="#555555" />
+			<plane id="mesa3ordenador" px="600" py="-500" pz="200" nx="1" size="200,400,500" repeat="1" texture="#555555" />
+		</transform>  
+		<transform id="mesa4" tx="3800" ty="770" tz="5800">
+			<plane id="mesa4plano" px="375" py="-760" pz="750" nx="1" size="1500,10,750" repeat="1" texture="#fff0f0" />
+			<mesh  id="mesa4mesh" file="/home/robocomp/robocomp/files/osgModels/mobiliario/mesa_centro.osg"  tx="370" ty="-770" tz="770" rx="1.57079632679" scale="97,190,200"/>
+			<mesh  id="mesa4meshSilla" file="/home/robocomp/robocomp/files/osgModels/mobiliario/silla.osg"  tx="870" ty="-770" tz="770" rx="1.57079632679" rz="-1.57079632679" scale="100"/>
+			<plane id="mesa4monitor" px="375" py="250" pz="750" nx="1" size="600,400,10" repeat="1" texture="#5f5fff" />
+			<plane id="mesa4monitor2" px="365" py="250" pz="750" nx="1" size="650,450,10" repeat="1" texture="#555555" />
+			<plane id="mesa4ordenador" px="600" py="-500" pz="200" nx="1" size="200,400,500" repeat="1" texture="#555555" />
+		</transform>  
+		<transform id="mesa5" tx="3800" ty="770" tz="7300">
+			<plane id="mesa5plano" px="375" py="-760" pz="750" nx="1" size="1500,10,750" repeat="1" texture="#fff0f0" />
+			<mesh  id="mesa5mesh" file="/home/robocomp/robocomp/files/osgModels/mobiliario/mesa_centro.osg"  tx="370" ty="-770" tz="770" rx="1.57079632679" scale="97,190,200"/>
+			<mesh  id="mesa5meshSilla" file="/home/robocomp/robocomp/files/osgModels/mobiliario/silla.osg"  tx="870" ty="-770" tz="770" rx="1.57079632679" rz="-1.57079632679" scale="100"/>
+			<plane id="mesa5monitor" px="375" py="250" pz="750" nx="1" size="600,400,10" repeat="1" texture="#5f5fff" />
+			<plane id="mesa5monitor2" px="365" py="250" pz="750" nx="1" size="650,450,10" repeat="1" texture="#555555" />
+			<plane id="mesa5ordenador" px="600" py="-500" pz="200" nx="1" size="200,400,500" repeat="1" texture="#555555" />
+		</transform>  
+		<transform id="mesa6" tx="1200" ty="770" tz="2350" ry="1.57079632679">
+			<plane id="mesa6plano" px="375" py="-760" pz="650" nx="1" size="1300,10,750" repeat="1" texture="#fff0f0" />
+			<mesh  id="mesa6mesh" file="/home/robocomp/robocomp/files/osgModels/mobiliario/mesa_centro.osg"  tx="370" ty="-770" tz="660" rx="1.57079632679" scale="97,165,200"/>
+			<mesh  id="mesa6meshSilla" file="/home/robocomp/robocomp/files/osgModels/mobiliario/silla.osg"  tx="870" ty="-770" tz="760" rx="1.57079632679" rz="-1.57079632679" scale="100"/>
+			<plane id="mesa6monitor" px="375" py="250" pz="650" nx="1" size="600,400,10" repeat="1" texture="#5f5fff" />
+			<plane id="mesa6monitor2" px="365" py="250" pz="650" nx="1" size="650,450,10" repeat="1" texture="#555555" />
+			<plane id="mesa6ordenador" px="600" py="-500" pz="200" nx="1" size="200,400,500" repeat="1" texture="#555555" />
+		</transform>
+		<transform id="mesa7" tx="2500" ty="770" tz="2350" ry="1.57079632679">
+			<plane id="mesa7plano" px="375" py="-760" pz="650" nx="1" size="1300,10,750" repeat="1" texture="#fff0f0" />
+			<mesh  id="mesa7mesh" file="/home/robocomp/robocomp/files/osgModels/mobiliario/mesa_centro.osg"  tx="370" ty="-770" tz="660" rx="1.57079632679" scale="97,165,200"/>
+			<mesh  id="mesa7meshSilla" file="/home/robocomp/robocomp/files/osgModels/mobiliario/silla.osg"  tx="870" ty="-770" tz="760" rx="1.57079632679" rz="-1.57079632679" scale="100"/>
+			<plane id="mesa7monitor" px="375" py="250" pz="650" nx="1" size="600,400,10" repeat="1" texture="#5f5fff" />
+			<plane id="mesa7monitor2" px="365" py="250" pz="650" nx="1" size="650,450,10" repeat="1" texture="#555555" />
+			<plane id="mesa7ordenador" px="600" py="-500" pz="200" nx="1" size="200,400,500" repeat="1" texture="#555555" />
+		</transform>
+		<transform id="mesa8" tx="5150" ty="770" tz="40">
+			<plane id="mesa8plano" px="300" py="-760" pz="300" nx="1" size="600,10,600" repeat="1" texture="#fff0f0" />
+			<mesh  id="mesa8mesh" file="/home/robocomp/robocomp/files/osgModels/mobiliario/mesa_centro.osg"  tx="300" ty="-770" tz="300" rx="1.57079632679" scale="70,70,100"/>
+		</transform>
+		<transform id="mesa9" tx="2200" ty="770" tz="4600" ry="1.57079632679">
+			<plane id="mesa9plano" px="400" py="-760" pz="800" nx="1" size="1600,10,800" repeat="1" texture="#fff0f0" />
+			<mesh  id="mesa9mesh" file="/home/robocomp/robocomp/files/osgModels/mobiliario/mesa_centro.osg"  tx="400" ty="-770" tz="800" rx="1.57079632679" scale="100,200,200"/>
+		</transform>
+		<transform id="mesa10" tx="2000" ty="770" tz="6900" ry="1.57079632679">
+			<plane id="mesa10plano" px="400" py="-760" pz="900" nx="1" size="1800,10,800" repeat="1" texture="#fff0f0" />
+			<mesh  id="mesa10mesh" file="/home/robocomp/robocomp/files/osgModels/mobiliario/mesa_centro.osg"  tx="400" ty="-770" tz="900" rx="1.57079632679" scale="100,225,200"/>
+			<mesh  id="mesa10meshSilla" file="/home/robocomp/robocomp/files/osgModels/mobiliario/silla.osg"  tx="870" ty="-770" tz="760" rx="1.57079632679" rz="-1.57079632679" scale="100"/>
+			<!--<mesh  id="mesa10meshSilla2" file="/home/robocomp/robocomp/files/osgModels/mobiliario/silla.osg"  tx="70" ty="-770" tz="760" rx="1.57079632679" rz="1.57079632679" scale="100"/>-->
+			<transform id="tazaplace" tx="500" ty="-25" tz="1000" ry="1.5707963267948966">
+					<mesh id="taza" file="/home/robocomp/robocomp/files/osgModels/mobiliario/taza.osg"  tx="0" ty="0" tz="0" rx="1.57079632679" rz="-1.57079632679" scale="65"/>
+			</transform>
+
+		</transform>
+		<transform id="basura" tx="100" ty="150" tz="9000" ry="1.57079632679">
+			<mesh  id="mesa10mesh3" file="/home/robocomp/robocomp/files/osgModels/mobiliario/sillon1_low.osg"  tx="300" ty="-70" tz="800" rx="3" ry="2" scale="70,50,90"/>
+			<mesh  id="mesa10mesh4" file="/home/robocomp/robocomp/files/osgModels/mobiliario/sillon2_low.osg"  tx="900" ty="-70" tz="500" rx="4" ry="1" scale="50,75,75"/>
+		</transform>
+		<transform id="sensor1" tx="3500" ty="2500" tz="50">
+			<plane id="sensor1plane" px="100" py="50" pz="100" nx="1" size="200,100,200" repeat="1" texture="#5555ff" />
+		</transform>
+		<transform id="sensor2" tx="1500" ty="2500" tz="50">
+			<plane id="sensor2plane" px="100" py="50" pz="100" nx="1" size="200,100,200" repeat="1" texture="#5555ff" />
+		</transform>
+		<transform id="estanteria" tx="5650" ty="400" tz="1600">
+			<plane id="estanteriaplane1" px="170" py="0" pz="4000" nx="1" size="8000,10,340" repeat="1" texture="#804040" />
+			<plane id="estanteriaplane2" px="170" py="400" pz="4000" nx="1" size="8000,10,340" repeat="1" texture="#804040" />
+			<plane id="estanteriaplane3" px="170" py="800" pz="4000" nx="1" size="8000,10,340" repeat="1" texture="#804040" />
+			<plane id="estanteriaplane4" px="170" py="1200" pz="4000" nx="1" size="8000,10,340" repeat="1" texture="#804040" />
+			<plane id="estanteriaplane5" px="170" py="1600" pz="4000" nx="1" size="8000,10,340" repeat="1" texture="#804040" />
+			<plane id="estanteriaplane6" px="170" py="2000" pz="4000" nx="1" size="8000,10,340" repeat="1" texture="#804040" />
+			<plane id="estanteriaplane7" px="170" py="2400" pz="4000" nx="1" size="8000,10,340" repeat="1" texture="#804040" />
+			<plane id="estanteriaplane8" px="170" py="2800" pz="4000" nx="1" size="8000,10,340" repeat="1" texture="#804040" />
+		</transform>
+		<transform id="pizarra1" tx="1150" ty="1500" tz="10">
+			<plane id="pizarra1plane" px="1500" py="10" pz="0" nx="1" size="1,1500,2000" repeat="1" texture="#ffffff" />
+		</transform>
+		<transform id="pizarra2" tx="10" ty="750" tz="3500">
+			<plane id="pizarra2plane" px="50" py="1200" pz="0" nx="1" size="2000,1500,1" repeat="1" texture="#ffffff" />
+		</transform>
+	</transform> <!-- robolab2!-->
+</innerModel>

@@ -90,9 +90,3 @@ bool InnerModelNode::isFixed()
 	return fixed;
 }
 
-void InnerModelNode::updateChildren()
-{
-	foreach(InnerModelNode *i, children)
-		i->update();
-}
-

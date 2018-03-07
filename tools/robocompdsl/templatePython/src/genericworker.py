@@ -10,13 +10,19 @@ def Z():
 	cog.out('>@@>')
 def TAB():
 	cog.out('<TABHERE>')
+def SPACE(i=0):
+	s = ''
+	if i>0:
+		s = str(i)
+	cog.out('<S'+s+'>')
 
-from parseCDSL import *
 includeDirectories = theIDSLPaths.split('#')
+from parseCDSL import *
 component = CDSLParsing.fromFile(theCDSL, includeDirectories=includeDirectories)
+
 if component == None:
 	print('Can\'t locate', theCDSLs)
-	sys.exit(1)
+	os.__exit(1)
 
 from parseIDSL import *
 pool = IDSLPool(theIDSLs, includeDirectories)
@@ -51,7 +57,7 @@ Z()
 #    along with RoboComp.  If not, see <http://www.gnu.org/licenses/>.
 
 import sys, Ice, os
-from PySide import *
+from PySide import QtGui, QtCore
 
 ROBOCOMP = ''
 try:
@@ -64,12 +70,36 @@ preStr = "-I/opt/robocomp/interfaces/ -I"+ROBOCOMP+"/interfaces/ --all /opt/robo
 Ice.loadSlice(preStr+"CommonBehavior.ice")
 import RoboCompCommonBehavior
 
+additionalPathStr = ''
+icePaths = [ '/opt/robocomp/interfaces' ]
+try:
+	SLICE_PATH = os.environ['SLICE_PATH'].split(':')
+	for p in SLICE_PATH:
+		icePaths.append(p)
+		additionalPathStr += ' -I' + p + ' '
+	icePaths.append('/opt/robocomp/interfaces')
+except:
+	print 'SLICE_PATH environment variable was not exported. Using only the default paths'
+	pass
+
 [[[cog
 for imp in component['recursiveImports']:
-	cog.outl('preStr = "-I/opt/robocomp/interfaces/ -I"+ROBOCOMP+"/interfaces/ --all /opt/robocomp/interfaces/"')
-	module = IDSLParsing.gimmeIDSL(imp.split('/')[-1])
-	incl = imp.split('/')[-1].split('.')[0]
-	cog.outl('Ice.loadSlice(preStr+"'+incl+'.ice")')
+	eso = imp.split('/')[-1]
+	incl = eso.split('.')[0]
+
+	cog.outl('ice_'+incl+' = False')
+	cog.outl('for p in icePaths:')
+	cog.outl('<TABHERE>if os.path.isfile(p+\'/'+incl+'.ice\'):')
+	cog.outl('<TABHERE><TABHERE>preStr = "-I/opt/robocomp/interfaces/ -I"+ROBOCOMP+"/interfaces/ " + additionalPathStr + " --all "+p+\'/\'')
+	cog.outl('<TABHERE><TABHERE>wholeStr = preStr+"'+incl+'.ice"')
+	cog.outl('<TABHERE><TABHERE>Ice.loadSlice(wholeStr)')
+	cog.outl('<TABHERE><TABHERE>ice_'+incl+' = True')
+	cog.outl('<TABHERE><TABHERE>break')
+	cog.outl('if not ice_'+incl+':')
+	cog.outl("<TABHERE>print 'Couln\\\'t load "+incl+"'")
+	cog.outl('<TABHERE>sys.exit(-1)')
+
+	module = IDSLParsing.gimmeIDSL(eso, files='', includeDirectories=includeDirectories)
 	cog.outl('from '+ module['name'] +' import *')
 ]]]
 [[[end]]]

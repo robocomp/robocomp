@@ -1,5 +1,14 @@
 # Sources set
 LIST ( APPEND SOURCES
+	simulator/specificworker_cam.cpp
+	simulator/specificworker_cm.cpp
+	simulator/specificworker_dfr.cpp
+	simulator/specificworker_di.cpp
+	simulator/specificworker_imm.cpp
+	simulator/specificworker_imu.cpp
+	simulator/specificworker_jm.cpp
+	simulator/specificworker_laser.cpp
+	simulator/specificworker_rgbd.cpp
 	specificworker.cpp
 	specificmonitor.cpp
 	servers.cpp
@@ -14,3 +23,8 @@ LIST ( APPEND HEADERS
 
 SET(LIBS ${LIBS} -lboost_system)
 
+# FCL
+if (FCL_SUPPORT)
+	INCLUDE_DIRECTORIES( /usr/local/include ${CMAKE_SOURCE_DIR}/thirdparty/fcl/include ${CMAKE_SOURCE_DIR}/libs/innermodel/include ${CMAKE_SOURCE_DIR}/libs/qmat/include ${CMAKE_SOURCE_DIR}/libs/osgviewer/include ${CMAKE_CURRENT_BINARY_DIR}/../../../thirdparty/fcl/include )
+	link_directories( ${CMAKE_CURRENT_BINARY_DIR}/../../../thirdparty/fcl/lib/ )
+endif (FCL_SUPPORT)

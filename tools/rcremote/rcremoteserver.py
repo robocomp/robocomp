@@ -27,7 +27,7 @@ import hashlib
 import signal
 signal.signal(signal.SIGINT, signal.SIG_DFL)
 
-from PySide import *
+from PySide import QtGui, QtCore
 
 import subprocess
 
