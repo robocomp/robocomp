@@ -28,18 +28,15 @@ class InnerModelJoint : public InnerModelTransform
 
 		void print(bool verbose);
 		void save(QTextStream &out, int tabs);
-		void setUpdatePointers(float *lx_, float *ly_, float *lz_, float *hx_, float *hy_, float *hz_);
-		void update();
 		void update(float lx_, float ly_, float lz_, float hx_, float hy_, float hz_);
 		float getAngle();
 		float setAngle(float angle, bool force=false);
 		QVec unitaryAxis();
 		virtual InnerModelNode *copyNode(QHash<QString, InnerModelNode *> &hash, InnerModelNode *parent);
 
-		float *lx, *ly, *lz;
-		float *hx, *hy, *hz;
-		float backlX, backlY, backlZ;
-		float backhX, backhY, backhZ;
+		float backl;
+		float backh;
+
 		float min, max;
 		float home;
 		uint32_t port;
