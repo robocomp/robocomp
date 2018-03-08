@@ -31,7 +31,7 @@ InnerModelJoint::InnerModelJoint(QString id_, float lx_, float ly_, float lz_, f
 	collisionObject = NULL;
 	#endif
 
-	// 		set(rx_, ry_, rz_, tx_, ty_, tz_);
+	//set(rx_, ry_, rz_, tx_, ty_, tz_);
 	backlX = lx_;
 	backlY = ly_;
 	backlZ = lz_;
@@ -44,6 +44,7 @@ InnerModelJoint::InnerModelJoint(QString id_, float lx_, float ly_, float lz_, f
 	hx = hy = hz =lx = ly = lz = NULL;
 	port = port_;
 	axis = axis_;
+	std::cout << "In NewInnerJoint " << id.toStdString() << " "<< getAngle() << " " << axis << " " << backrZ <<  " " << rx_ << std::endl;
 	if (axis == "x")
 	{
 		update(min, 0, 0, max, 0, 0);
@@ -188,11 +189,12 @@ QVec InnerModelJoint::unitaryAxis()
 
 InnerModelNode * InnerModelJoint::copyNode(QHash<QString, InnerModelNode *> &hash, InnerModelNode *parent)
 {
-	std::cout << id.toStdString() << "--------------------------------: " << getAngle() << std::endl;
+	std::cout << id.toStdString() << "--------------------------------: " << getAngle() << " " << axis << " " << backrZ <<  std::endl;
 	InnerModelJoint *ret;
 	if (axis == "x")
 	{
 		ret = new InnerModelJoint(id, backlX, backlY, backlZ, backhX, backhY, backhZ, backtX, backtY, backtZ, backrZ, 0, 0, min, max, port, axis, home, (InnerModelTransform *)parent);
+		std::cout << "depsues del new" << id.toStdString() << "--------------------------------: " << ret->getAngle() << " " << ret->axis << " " << ret->backrZ <<  std::endl;
 	}
 	else if (axis == "y")
 	{
