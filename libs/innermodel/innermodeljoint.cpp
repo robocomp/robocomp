@@ -27,7 +27,7 @@ InnerModelJoint::InnerModelJoint() : InnerModelTransform("invalid",QString("stat
 
 InnerModelJoint::InnerModelJoint(QString id_, float lx_, float ly_, float lz_, float hx_, float hy_, float hz_, float tx_, float ty_, float tz_, float rx_, float ry_, float rz_, float min_, float max_, uint32_t port_, std::string axis_, float home_, InnerModelTransform *parent_) : InnerModelTransform(id_,QString("static"),tx_,ty_,tz_,rx_,ry_,rz_, 0, parent_)
 {
-	QMutexLocker l(mutex);
+	
 	#if FCL_SUPPORT==1
 	collisionObject = NULL;
 	#endif
@@ -37,7 +37,6 @@ InnerModelJoint::InnerModelJoint(QString id_, float lx_, float ly_, float lz_, f
 	home = home_;
 	port = port_;
 	axis = axis_;
-	if (id=="armX1") std::cout << "In NewInnerJoint " << id.toStdString() << " "<< getAngle() << " " << axis << " " << backrZ <<  " " << rx_ << std::endl;
 	if (axis == "x")
 	{
 		backl = lx_;
@@ -66,7 +65,6 @@ InnerModelJoint::InnerModelJoint(QString id_, float lx_, float ly_, float lz_, f
 
 void InnerModelJoint::print(bool verbose)
 {
-	QMutexLocker l(mutex);
 	printf("Joint: %s\n", qPrintable(id));
 	if (verbose)
 	{
@@ -78,7 +76,6 @@ void InnerModelJoint::print(bool verbose)
 
 void InnerModelJoint::save(QTextStream &out, int tabs)
 {
-	QMutexLocker l(mutex);
 	QList<InnerModelNode*>::iterator c;
 	for (int i=0; i<tabs; i++)
 		out << "\t";
@@ -102,7 +99,6 @@ void InnerModelJoint::save(QTextStream &out, int tabs)
 
 void InnerModelJoint::update(float lx_, float ly_, float lz_, float hx_, float hy_, float hz_)
 {
-	QMutexLocker l(mutex);
 	if (axis == "x")
 	{
 		backh = hx_;
@@ -124,7 +120,6 @@ void InnerModelJoint::update(float lx_, float ly_, float lz_, float hx_, float h
 
 float InnerModelJoint::getAngle()
 {
-	QMutexLocker l(mutex);
 	if (axis == "x")
 	{
 		return backrX;
@@ -141,7 +136,6 @@ float InnerModelJoint::getAngle()
 
 float InnerModelJoint::setAngle(float angle, bool force)
 {
-	QMutexLocker l(mutex);
 	float ret = angle;
 	if (angle > max)
 	{
@@ -174,14 +168,13 @@ float InnerModelJoint::setAngle(float angle, bool force)
 		throw error;
 	}
 
-	if (innerModel)
+	if (innerModel != nullptr)
 		innerModel->cleanupTables();
 	return ret;
 }
 
 QVec InnerModelJoint::unitaryAxis()
 {
-	QMutexLocker l(mutex);
 	if( axis == "x") return QVec::vec3(1,0,0);
 	if( axis == "y") return QVec::vec3(0,1,0);
 	if( axis == "z") return QVec::vec3(0,0,1);
@@ -190,13 +183,10 @@ QVec InnerModelJoint::unitaryAxis()
 
 InnerModelNode * InnerModelJoint::copyNode(QHash<QString, InnerModelNode *> &hash, InnerModelNode *parent)
 {
-	QMutexLocker l(mutex);
-	if (id=="armX1") std::cout << id.toStdString() << "--------------------------------: " << getAngle() << " " << axis << " " << backrZ <<  std::endl;
 	InnerModelJoint *ret;
 	if (axis == "x")
 	{
 		ret = new InnerModelJoint(id, backl,0,0, backh,0,0, backtX, backtY, backtZ, backrX, 0, 0, min, max, port, axis, home, (InnerModelTransform *)parent);
-		if (id=="armX1") std::cout << "depsues del new" << id.toStdString() << "--------------------------------: " << ret->getAngle() << " " << ret->axis << " " << ret->backrZ <<  std::endl;
 	}
 	else if (axis == "y")
 	{
@@ -217,16 +207,12 @@ InnerModelNode * InnerModelJoint::copyNode(QHash<QString, InnerModelNode *> &has
 	ret->children.clear();
 	ret->attributes.clear();
 	hash[id] = ret;
-
 	ret->innerModel = parent->innerModel;
-	if (id=="armX1") std::cout << "just before 1 " << id.toStdString() << "--------------------------------: " << ret->getAngle() << std::endl;
-
 	for (QList<InnerModelNode*>::iterator i=children.begin(); i!=children.end(); i++)
 	{
 		ret->addChild((*i)->copyNode(hash, ret));
 	}
-	if (id=="armX1") std::cout << "just before " << id.toStdString() << "--------------------------------: " << ret->getAngle() << std::endl;
- 	ret->setAngle(getAngle());
+	ret->setAngle(getAngle());
 
 	return ret;
 }

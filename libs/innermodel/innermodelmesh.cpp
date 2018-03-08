@@ -160,12 +160,15 @@ InnerModelNode * InnerModelMesh::copyNode(QHash<QString, InnerModelNode *> &hash
 	ret->children.clear();
 	ret->attributes.clear();
 	hash[id] = ret;
+	ret->innerModel = parent->innerModel;
 
+	
 #if FCL_SUPPORT==1
 	// Associate the read vertices and triangles vectors to the FCL collision model object
 	ret->fclMesh = FCLModelPtr(new FCLModel(*fclMesh.get()));
 	ret->collisionObject = new fcl::CollisionObject(ret->fclMesh);
 #endif
+
 
 	for (QList<InnerModelNode*>::iterator i=children.begin(); i!=children.end(); i++)
 	{

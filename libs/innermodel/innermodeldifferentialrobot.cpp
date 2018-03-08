@@ -35,6 +35,7 @@ InnerModelNode * InnerModelDifferentialRobot::copyNode(QHash<QString, InnerModel
 	ret->children.clear();
 	ret->attributes.clear();
 	hash[id] = ret;
+	ret->innerModel = parent->innerModel;
 
 	for (QList<InnerModelNode*>::iterator i=children.begin(); i!=children.end(); i++)
 	{

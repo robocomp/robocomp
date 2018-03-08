@@ -41,6 +41,7 @@ InnerModelNode * InnerModelTouchSensor::copyNode(QHash<QString, InnerModelNode *
 	ret->children.clear();
 	ret->attributes.clear();
 	hash[id] = ret;
+	ret->innerModel = parent->innerModel;
 
 	for (QList<InnerModelNode*>::iterator i=children.begin(); i!=children.end(); i++)
 	{

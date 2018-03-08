@@ -1,6 +1,7 @@
 set(LIB_NAME innermodel)
 set(LIB_DESC "RoboComp InnerModel library")
 set(LIB_DEPS qmat osgviewer)
+ADD_DEFINITIONS(-g)
 
 set(srcs
 	innermodel.cpp

@@ -235,16 +235,14 @@ bool InnerModel::save(QString path)
 /// Auto update method
 void InnerModel::update()
 {
-	
 	root->update();
 	cleanupTables();
 }
 
 void InnerModel::cleanupTables()
 {
-	
-	localHashTr.clear();
-	localHashRot.clear();
+		localHashTr.clear();
+		localHashRot.clear();
 }
 
 void InnerModel::setUpdateRotationPointers(QString rotationId, float *x, float *y, float *z)
