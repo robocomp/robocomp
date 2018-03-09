@@ -75,7 +75,7 @@ public:
 // 	QVector<laserMeasure> laserData;
 
 	OsgView(QWidget *parent=NULL);
-	OsgView(const OsgView&) {}
+	//OsgView(const OsgView&) {}
 	OsgView(QWidget *parent, bool hud, const QGLWidget * shareWidget = 0, WindowFlags f = 0);
 	void init(QWidget *parent, bool hud, const QGLWidget* shareWidget, WindowFlags f);
 	~OsgView();
