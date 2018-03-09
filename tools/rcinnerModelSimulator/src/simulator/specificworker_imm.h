@@ -6,7 +6,7 @@
 // Moves item to the position defined by pose respect to the base
 bool SpecificWorker::imm_setPose(const QString &server, const std::string &base, const std::string &item, const RoboCompInnerModelManager::Pose3D &pose)
 {
-	InnerModelMgr::guard gl(innerModel.mutex());
+	guard gl(innerModel->mutex);
 	
 	QString qBase = QString::fromStdString(base);
 	QString qItem = QString::fromStdString(item);
@@ -27,7 +27,7 @@ bool SpecificWorker::imm_setPose(const QString &server, const std::string &base,
 
 bool SpecificWorker::imm_setPoseFromParent(const QString &server, const std::string &item, const RoboCompInnerModelManager::Pose3D &pose)
 {
-	InnerModelMgr::guard gl(innerModel.mutex());
+	guard gl(innerModel->mutex);
 
 	QString qItem = QString::fromStdString(item);
 	QString m="RoboCompInnerModelManager::setPose()";
@@ -48,7 +48,7 @@ bool SpecificWorker::imm_setPoseFromParent(const QString &server, const std::str
 /// ---------------------------------------------------------------------------------------
 bool SpecificWorker::imm_getPose(const QString &server, const std::string &base, const std::string &item, RoboCompInnerModelManager::Pose3D &pose)
 {
-	InnerModelMgr::guard gl(innerModel.mutex());
+	guard gl(innerModel->mutex);
 
 	QVec p;
 	QString qBase = QString::fromStdString(base);
@@ -80,7 +80,7 @@ bool SpecificWorker::imm_getPose(const QString &server, const std::string &base,
 // Provides the pose of a certain item respect to the parent
 bool SpecificWorker::imm_getPoseFromParent(const QString &server, const std::string &item, RoboCompInnerModelManager::Pose3D &pose)
 {
-	InnerModelMgr::guard gl(innerModel.mutex());
+	guard gl(innerModel->mutex);
 
 	QString m="RoboCompInnerModelManager::getPoseFromParent()";
 
@@ -101,7 +101,7 @@ bool SpecificWorker::imm_getPoseFromParent(const QString &server, const std::str
 // Provides the transform of a certain point expressed in Base to Item.
 bool SpecificWorker::imm_transform(const QString &server, const std::string &base, const std::string &item, const RoboCompInnerModelManager::coord3D &coordInItem, RoboCompInnerModelManager::coord3D &coordInBase)
 {
-	InnerModelMgr::guard gl(innerModel.mutex());
+	guard gl(innerModel->mutex);
 
 	QVec p;
 	const QString qBase = QString::fromStdString(base);
@@ -143,7 +143,7 @@ RoboCompInnerModelManager::Matrix SpecificWorker::imm_getTransformationMatrix(co
 	const QString qBase = QString::fromStdString(base);
 	const QString qItem = QString::fromStdString(item);
 	const QString m="RoboCompInnerModelManager::transform()";
-	InnerModelMgr::guard gl(innerModel.mutex());
+	guard gl(innerModel->mutex);
 
 
 	//check type transform
@@ -181,7 +181,7 @@ RoboCompInnerModelManager::Matrix SpecificWorker::imm_getTransformationMatrix(co
 // Scales a mesh to a new size.
 bool SpecificWorker::imm_setScale(const QString &server, const std::string &item, float scaleX, float scaleY, float scaleZ)
 {
-// 	InnerModelMgr::guard gl(innerModel.mutex());
+// 	guard gl(innerModel->mutex);
 
 // 	QString qItem = QString::fromStdString(item);
 // 	QString m="RoboCompInnerModelManager::setScale()";
@@ -207,7 +207,7 @@ bool SpecificWorker::imm_setScale(const QString &server, const std::string &item
 // 	}
 // #endif
 
-	InnerModelMgr::guard gl(innerModel.mutex());
+	guard gl(innerModel->mutex);
 
 	QString qItem = QString::fromStdString(item);
 	QString m="RoboCompInnerModelManager::setScale()";
@@ -240,7 +240,7 @@ bool SpecificWorker::imm_setScale(const QString &server, const std::string &item
 
 bool SpecificWorker::imm_setPlane(const QString &server, const std::string &item, const RoboCompInnerModelManager::Plane3D &plane)
 {
-// 	InnerModelMgr::guard gl(innerModel.mutex());
+// 	guard gl(innerModel->mutex);
 
 // 	QString m="RoboCompInnerModelManager::setPlane()";
 // 	printf("SETPLANE %s: %f_%f_%f\n", item.c_str(), plane.px, plane.py, plane.pz);
@@ -253,7 +253,7 @@ bool SpecificWorker::imm_setPlane(const QString &server, const std::string &item
 // 
 // 	return true;
 	
-	InnerModelMgr::guard gl(innerModel.mutex());
+	guard gl(innerModel->mutex);
 
 	QString m="RoboCompInnerModelManager::setPlane()";
 // 	printf("SETPLANE %s: %f_%f_%f\n", item.c_str(), plane.px, plane.py, plane.pz);
@@ -266,7 +266,7 @@ bool SpecificWorker::imm_setPlane(const QString &server, const std::string &item
 bool SpecificWorker::imm_setPlaneTexture(const QString &server, const std::string &item, const std::string &texture)
 {
 	
-	InnerModelMgr::guard gl(innerModel.mutex());
+	guard gl(innerModel->mutex);
 
 	QString m="RoboCompInnerModelManager::setPlaneTextureº()";
 	printf("SETPLANETEXTURE %s: %s\n", item.c_str(), texture.c_str());
@@ -342,7 +342,7 @@ void SpecificWorker::imm_setPointCloudData(const QString &server, const std::str
 
 bool SpecificWorker::imm_addTransform(const QString &server, const std::string &item, const std::string &engine, const std::string &base, const RoboCompInnerModelManager::Pose3D &pose)
 {
-	InnerModelMgr::guard gl(innerModel.mutex());
+	guard gl(innerModel->mutex);
 
 	InnerModelNode *parent = getNode(QString::fromStdString(base), "RoboCompInnerModelManager::addTransform()");
 	checkNodeAlreadyExists(QString::fromStdString(item), "RoboCompInnerModelManager::addTransform()");
@@ -373,7 +373,7 @@ bool SpecificWorker::imm_addJoint(const QString &server, const std::string &item
 		j.axis = "z";
 	}
 
-	InnerModelMgr::guard gl(innerModel.mutex());
+	guard gl(innerModel->mutex);
 
 	RoboCompInnerModelManager::Pose3D pose = j.pose;
 
@@ -396,7 +396,7 @@ bool SpecificWorker::imm_addJoint(const QString &server, const std::string &item
 
 bool SpecificWorker::imm_addMesh(const QString &server, const std::string &item, const std::string &base, const RoboCompInnerModelManager::meshType &m)
 {
-	InnerModelMgr::guard gl(innerModel.mutex());
+	guard gl(innerModel->mutex);
 
 	QString msg="RoboCompInnerModelManager::addMesh()";
 #ifdef INNERMODELMANAGERDEBUG
@@ -445,7 +445,7 @@ bool SpecificWorker::imm_addMesh(const QString &server, const std::string &item,
 
 bool SpecificWorker::imm_addPlane(const QString &server, const std::string &item, const std::string &base, const RoboCompInnerModelManager::Plane3D &p)
 {
-// 	InnerModelMgr::guard gl(innerModel.mutex());
+// 	guard gl(innerModel->mutex);
 
 // 
 // 	InnerModelNode *parent = getNode(QString::fromStdString(base), "RoboCompInnerModelManager::addPlane()");
@@ -467,7 +467,7 @@ bool SpecificWorker::imm_addPlane(const QString &server, const std::string &item
 // 	imv->recursiveConstructor(plane, imv->mts[parent->id], imv->mts, imv->meshHash);
 // 	imv->update();
 	
-	InnerModelMgr::guard gl(innerModel.mutex());
+	guard gl(innerModel->mutex);
 
 
 	InnerModelNode *parent = getNode(QString::fromStdString(base), "RoboCompInnerModelManager::addPlane()");
@@ -489,7 +489,7 @@ bool SpecificWorker::imm_addPlane(const QString &server, const std::string &item
 
 bool SpecificWorker::imm_addAttribute(const QString &server, const std::string &idNode, const std::string &name, const std::string &type, const std::string &value)
 {
-	InnerModelMgr::guard gl(innerModel.mutex());
+	guard gl(innerModel->mutex);
 
 	QString qIdNode=QString::fromStdString(idNode);
 	QString qName=QString::fromStdString(name);
@@ -513,7 +513,7 @@ bool SpecificWorker::imm_addAttribute(const QString &server, const std::string &
 
 bool SpecificWorker::imm_setAttribute(const QString &server, const std::string &idNode, const std::string &name, const std::string &type, const std::string &value)
 {
-	InnerModelMgr::guard gl(innerModel.mutex());
+	guard gl(innerModel->mutex);
 
 	QString qIdNode=QString::fromStdString(idNode);
 	QString qName=QString::fromStdString(name);
@@ -534,7 +534,7 @@ bool SpecificWorker::imm_setAttribute(const QString &server, const std::string &
 
 bool SpecificWorker::imm_getAttribute(const QString &server, const std::string &idNode, const std::string &name, std::string &type, std::string &value)
 {
-	InnerModelMgr::guard gl(innerModel.mutex());
+	guard gl(innerModel->mutex);
 
 	QString qIdNode=QString::fromStdString(idNode);
 	QString qName=QString::fromStdString(name);
@@ -552,7 +552,7 @@ bool SpecificWorker::imm_getAttribute(const QString &server, const std::string &
 
 bool SpecificWorker::imm_removeAttribute(const QString &server, const std::string &idNode, const std::string &name)
 {
-	InnerModelMgr::guard gl(innerModel.mutex());
+	guard gl(innerModel->mutex);
 
 	QString qIdNode=QString::fromStdString(idNode);
 	QString qName=QString::fromStdString(name);
@@ -569,7 +569,7 @@ bool SpecificWorker::imm_removeAttribute(const QString &server, const std::strin
 
 bool SpecificWorker::imm_removeNode(const QString &server, const std::string &item)
 {
-		InnerModelMgr::guard gl(innerModel.mutex());
+		guard gl(innerModel->mutex);
 
 	QString msg="RoboCompInnerModelManager::removeNode()";
 #ifdef INNERMODELMANAGERDEBUG
@@ -670,7 +670,7 @@ bool SpecificWorker::imm_removeNode(const QString &server, const std::string &it
 #define INNERMODELMANAGERDEBUG
 bool SpecificWorker::imm_moveNode(const QString &server, const std::string &src, const std::string &dst)
 {
-	InnerModelMgr::guard gl(innerModel.mutex());
+	guard gl(innerModel->mutex);
 
 	QString msg="RoboCompInnerModelManager::moveNode()";
 #ifdef INNERMODELMANAGERDEBUG

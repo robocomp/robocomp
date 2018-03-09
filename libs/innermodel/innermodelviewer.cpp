@@ -23,7 +23,7 @@
 // ------------------------------------------------------------------------------------------------
 // InnerModelViewer
 // ------------------------------------------------------------------------------------------------
-InnerModelViewer::InnerModelViewer(const InnerModelMgr &im, QString root,  osg::Group *parent, bool ignoreCameras) : osg::Switch()
+InnerModelViewer::InnerModelViewer(const std::shared_ptr<InnerModel> &im, QString root,  osg::Group *parent, bool ignoreCameras) : osg::Switch()
 {	
 	//Copy innermodelmgr from param
 	innerModel = im;
@@ -52,7 +52,7 @@ InnerModelViewer::InnerModelViewer(const InnerModelMgr &im, QString root,  osg::
 InnerModelViewer::InnerModelViewer(InnerModel *im, QString root,  osg::Group *parent, bool ignoreCameras) : osg::Switch()
 {	
 	// Initialize InnerModelMgr from innermodel pointer
-	innerModel = InnerModelMgr(im);
+	innerModel = std::make_shared<InnerModel>(im);
 	
 	if( innerModel.get() == nullptr )
 		throw "InnerModelViewer::InnerModelViewer(): Error, InnerModel is nullptr";

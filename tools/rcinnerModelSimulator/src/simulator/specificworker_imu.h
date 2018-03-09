@@ -4,7 +4,7 @@
 
 void SpecificWorker::imu_updateIMUData(const QString& server, QString id)
 {
-	InnerModelMgr::guard gl(innerModel.mutex());
+	guard gl(innerModel->mutex);
 
 
 	QMat R = innerModel->getRotationMatrixTo(id, "root");

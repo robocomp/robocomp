@@ -24,7 +24,7 @@
 #include <QVariant>
 #include <QMutex>
 #include <QMutexLocker>
-
+#include <memory>
 #include <innermodel/innermodel.h>
 #include <innermodel/innermodelviewer.h>
 
@@ -35,10 +35,12 @@
 #include "servers.h"
 #include "pickhandler.h"
 
-#include <innermodel/innermodelmgr.h>
+//#include <innermodel/innermodelmgr.h>
 
 class SpecificWorker : public GenericWorker
 {
+typedef std::lock_guard<std::recursive_mutex> guard;	
+	
 Q_OBJECT
 	public:
 		SpecificWorker(MapPrx &_mprx, Ice::CommunicatorPtr _communicator, const char *_innerModelXML, int ms);
@@ -51,11 +53,14 @@ Q_OBJECT
 		void startServers();
 		void scheduleShutdown(JointMotorServer *j);
 		
+		mutable std::recursive_mutex rcmutex;
+		
 private:
 		QSettings *settings;
 		
 		//InnerModel
-		InnerModelMgr innerModel;
+		std::shared_ptr<InnerModel> innerModel;
+		
 		
 		// World
 		SpecificWorker *worker;

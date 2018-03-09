@@ -54,9 +54,10 @@
 #include <qmat/QMatAll>
 
 #include <mutex>
+#include <memory>
 #include <innermodel/innermodel.h>
 #include <innermodel/innermodelnode.h>
-#include <innermodel/innermodelmgr.h>
+//#include <innermodel/innermodelmgr.h>
 // #include <innermodel/innermodeljoint.h>
 // #include <innermodel/innermodeltouchsensor.h>
 // #include <innermodel/innermodeldifferentialrobot.h>
@@ -137,7 +138,8 @@ class InnerModelViewer : public osg::Switch
 	public:
 		enum CameraView { BACK_POV, FRONT_POV, LEFT_POV, RIGHT_POV, TOP_POV };
 
-		explicit InnerModelViewer(const InnerModelMgr &im, QString root="root", osg::Group *parent=NULL, bool ignoreCameras=false);	
+		//explicit InnerModelViewer(const InnerModelMgr &im, QString root="root", osg::Group *parent=NULL, bool ignoreCameras=false);	
+		explicit InnerModelViewer(const std::shared_ptr<InnerModel> &im, QString root="root", osg::Group *parent=NULL, bool ignoreCameras=false);	
 		explicit InnerModelViewer(InnerModel *im, QString root="root", osg::Group *parent=NULL, bool ignoreCameras=false);	
 		~InnerModelViewer(){};
 		void update();
@@ -146,8 +148,8 @@ class InnerModelViewer : public osg::Switch
 		void setCameraCenter(OsgView *view, const QVec center_);
 		void setLookTowards(OsgView *view, const QVec to_, const QVec up_);
 		void lookAt(OsgView *view, const QVec center_, const QVec to_, const QVec up_);
-		inline void lock() { mutex.lock(); innerModel.lock(); };
-		inline void unlock() { innerModel.unlock(); mutex.unlock();};
+// 		inline void lock() { mutex.lock(); innerModel.lock(); };
+// 		inline void unlock() { innerModel.unlock(); mutex.unlock();};
 	
 		//CAUTION
 		QHash<QString, osg::ref_ptr<osg::PolygonMode > > osgmeshmodes;
@@ -161,7 +163,7 @@ class InnerModelViewer : public osg::Switch
 		QHash<QString, IMVCamera> cameras;
 		QHash<QString, IMVLaser> lasers;
 
-		InnerModelMgr innerModel;
+		std::shared_ptr<InnerModel> innerModel;
 		std::mutex mutex;
 		
 	protected:

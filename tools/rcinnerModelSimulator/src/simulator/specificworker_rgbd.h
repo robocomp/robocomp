@@ -7,7 +7,7 @@
 TRGBDParams SpecificWorker::rgbd_getRGBDParams ( const QString& server )
 {
 	//QMutexLocker locker ( mutex );
-	InnerModelMgr::guard gl(innerModel.mutex());
+	guard gl(innerModel->mutex);
 	
 	IMVCamera &cam = imv->cameras[server];
 
@@ -43,14 +43,14 @@ TRGBDParams SpecificWorker::rgbd_getRGBDParams ( const QString& server )
 void SpecificWorker::rgbd_setRegistration ( const QString& server, Registration value )
 {
 	//QMutexLocker locker ( mutex );
-	InnerModelMgr::guard gl(innerModel.mutex());
+	guard gl(innerModel->mutex);
 }
 
 
 Registration SpecificWorker::rgbd_getRegistration ( const QString& server )
 {
 	//QMutexLocker locker ( mutex );
-	InnerModelMgr::guard gl(innerModel.mutex());
+	guard gl(innerModel->mutex);
 
 	return RoboCompRGBD::DepthInColor;
 }
@@ -59,7 +59,7 @@ Registration SpecificWorker::rgbd_getRegistration ( const QString& server )
 void SpecificWorker::rgbd_getData ( const QString& server, RoboCompRGBD::imgType& rgbMatrix, depthType& distanceMatrix, RoboCompJointMotor::MotorStateMap& hState, RoboCompGenericBase::TBaseState& bState )
 {
 	//QMutexLocker locker ( mutex );
-	InnerModelMgr::guard gl(innerModel.mutex());
+	guard gl(innerModel->mutex);
 	
 	ColorSeq color;
 	DepthSeq depth;
@@ -80,7 +80,7 @@ void SpecificWorker::rgbd_getData ( const QString& server, RoboCompRGBD::imgType
 void SpecificWorker::rgbd_getImage ( const QString& server, ColorSeq& color, DepthSeq& depth, PointSeq& points, RoboCompJointMotor::MotorStateMap& hState, RoboCompGenericBase::TBaseState& bState )
 {
 	//QMutexLocker locker ( mutex );
-	InnerModelMgr::guard gl(innerModel.mutex());
+	guard gl(innerModel->mutex);
 
 	IMVCamera &cam = imv->cameras[server];
 
