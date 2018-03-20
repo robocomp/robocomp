@@ -18,8 +18,8 @@ Start by creating a new directory for your component named, for instance, *mycom
 
 This will generate a CDSL file with the following content:
 
-    import "/robocomp/interfaces/IDSLs/import1.idsl";
-    import "/robocomp/interfaces/IDSLs/import2.idsl";
+    import "import1.idsl";
+    import "import2.idsl";
     Component CHANGETHECOMPONENTNAME
     {
     	Communications
@@ -40,8 +40,8 @@ The CDSL language is described in the tutorial ["A brief introduction to Compone
  
 Let's change the template file above by something like this, 
 
-    import "/robocomp/interfaces/IDSLs/DifferentialRobot.idsl";
-    import "/robocomp/interfaces/IDSLs/Laser.idsl";
+    import "DifferentialRobot.idsl";
+    import "Laser.idsl";
     Component MyFirstComp{
         Communications{
             requires DifferentialRobot, Laser;
