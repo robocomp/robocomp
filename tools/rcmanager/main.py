@@ -84,6 +84,7 @@ class Main():
         CustomSignalCollection.closeModel.connect(self.controller.check_dirty_bit)
         CustomSignalCollection.startComponent.connect(self.controller.start_component)
         CustomSignalCollection.stopComponent.connect(self.controller.stop_component)
+        CustomSignalCollection.removeComponent.connect(self.controller.remove_component)
 
         CustomSignalCollection.componentRunning.connect(
             lambda componentAlias: self.viewer.update_node_profile(componentAlias, 'Profile_1'))
