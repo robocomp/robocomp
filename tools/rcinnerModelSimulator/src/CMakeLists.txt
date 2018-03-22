@@ -39,7 +39,6 @@ SET ( HEADERS
 	jointmotorI.h
 	laserI.h
 	rgbdI.h
-	displayI.h
 	touchsensorI.h
 )
 
