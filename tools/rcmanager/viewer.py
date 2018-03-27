@@ -82,16 +82,15 @@ class Viewer(QtGui.QMainWindow, MainWindow):
         self.setup_actions()
 
         # Temporary code
-
         self.actionComponent_List.toggle()
         self.toggle_component_list_view()
 
         # Temporary code
-
         CustomSignalCollection.viewerIsReady.emit()
 
     def setup_actions(self):
-        CustomSignalCollection.addNode.connect(self.add_node)
+        # Tab widget signals 
+        # CustomSignalCollection.addNode.connect(self.add_node)
         self.connect(self.tabWidget, QtCore.SIGNAL("currentChanged(int)"), self.tab_index_changed)
 
         # File menu buttons
@@ -182,30 +181,18 @@ class Viewer(QtGui.QMainWindow, MainWindow):
     def send_start_signal(self):
         selectedNodes = self.graph_visualization.selected_nodes()
 
-        for i in selectedNodes:
-            CustomSignalCollection.startComponent.emit(i)
+        for node in selectedNodes:
+            CustomSignalCollection.startComponent.emit(node)
 
     def send_stop_signal(self):
         selectedNodes = self.graph_visualization.selected_nodes()
 
-        for i in selectedNodes:
-            CustomSignalCollection.stopComponent.emit(i)
+        for node in selectedNodes:
+            CustomSignalCollection.stopComponent.emit(node)
 
+    # Node/Edge add/remove
     def add_component(self):
         pass
-
-    def save_before_quit_prompt(self, QCloseEvent):
-        quit_msg = "There are unsaved changes. Do you want to save before exiting?"
-        reply = QtGui.QMessageBox.question(self, 'Save Model?',
-                                           quit_msg, QtGui.QMessageBox.No, QtGui.QMessageBox.Cancel, QtGui.QMessageBox.Yes)
-
-        if reply == QtGui.QMessageBox.Yes:
-            self.save_model()
-            QCloseEvent.accept()
-        elif reply == QtGui.QMessageBox.No:
-            QCloseEvent.accept()
-        elif reply == QtGui.QMessageBox.Cancel:
-            QCloseEvent.ignore()
 
     def add_node(self, node, nodedata=None, position=None):
         self._logger.info("The viewer received signal to draw component: " + node)
@@ -216,6 +203,7 @@ class Viewer(QtGui.QMainWindow, MainWindow):
         menu = dict()
         menu['Start'] = (self, 'send_start_signal')
         menu['Stop'] = (self, 'send_stop_signal')
+        menu['Remove component'] = (self, 'remove_node')
         createdNode.add_context_menu(menu)
 
         if 'componentType' in nodedata.keys():
@@ -224,6 +212,13 @@ class Viewer(QtGui.QMainWindow, MainWindow):
                 return
 
         createdNode.set_node_shape(NodeShapes.CIRCLE)
+
+    def remove_node(self):
+        selectedNodes = self.graph_visualization.selected_nodes()
+
+        for node in selectedNodes:
+            self.graph_visualization.remove_node(node)
+            CustomSignalCollection.removeComponent.emit(node)
 
     def add_edge(self, orig_node, dest_node, edge_data=None):
         self._logger.info("The viewer received signal to draw edge from: " + orig_node + " to: " + dest_node)
@@ -238,7 +233,6 @@ class Viewer(QtGui.QMainWindow, MainWindow):
 
         if index == 0:
             self.refresh_graph_from_editor()
-
         elif index == 1:
             self.refresh_editor_from_graph()
 
@@ -269,6 +263,7 @@ class Viewer(QtGui.QMainWindow, MainWindow):
         # Context menu options
         menu = dict()
         menu['Change Background Color'] = (self, "set_background_color")
+        menu['Remove components'] = (self, "remove_node")
         self.graph_visualization.add_context_menu(menu)
 
         self.gridLayout_8.addWidget(self.graph_visualization, 0, 0, 1, 1)
@@ -284,3 +279,17 @@ class Viewer(QtGui.QMainWindow, MainWindow):
 
     def get_graph_nodes_positions(self):
         return self.graph_visualization.get_current_nodes_positions()
+
+    # User prompts 
+    def save_before_quit_prompt(self, QCloseEvent):
+        quit_msg = "There are unsaved changes. Do you want to save before exiting?"
+        reply = QtGui.QMessageBox.question(self, 'Save Model?',
+                                           quit_msg, QtGui.QMessageBox.No, QtGui.QMessageBox.Cancel, QtGui.QMessageBox.Yes)
+
+        if reply == QtGui.QMessageBox.Yes:
+            self.save_model()
+            QCloseEvent.accept()
+        elif reply == QtGui.QMessageBox.No:
+            QCloseEvent.accept()
+        elif reply == QtGui.QMessageBox.Cancel:
+            QCloseEvent.ignore()

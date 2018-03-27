@@ -182,6 +182,11 @@ class Model():
         for key, value in nodedata.items():
             self.graph.node[nodedata['@alias']][key] = value
 
+    def remove_node(self, node):
+        node = str(node)
+        if node in self.graph.nodes():
+            self.graph.remove_node(node)
+
     def add_edge(self, fromNode, toNode):
         self.graph.add_edge(fromNode, toNode)
 
