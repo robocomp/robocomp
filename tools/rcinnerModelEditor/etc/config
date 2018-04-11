@@ -1,0 +1,11 @@
+CommonBehavior.Endpoints=tcp -p 54521
+
+
+
+Ice.Warn.Connections=0
+Ice.Trace.Network=0
+Ice.Trace.Protocol=0
+# Ice.ACM.Client=10
+Ice.ACM.Client=0
+# Ice.ACM.Server=10
+Ice.ACM.Server=0
