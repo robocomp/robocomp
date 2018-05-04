@@ -62,15 +62,15 @@ class Controller():
         self.isControllerReady = True
         self._logger.info("Controller object initialized")
 
-        # Save the filename for future use
+        # save the filename for future use
         if isNewFile:
             self.view.filename = filename
             self.view.dirtyBit = False
 
-        # Read the xml data from the file
+        # read the xml data from the file
         self.xml = xmlreader.get_text_from_file(str(filename))
 
-        # Check the xml data for formatting issues
+        # check the xml data for formatting issues
         if not xmlreader.validate_xml(self.xml):
             self._logger.error("XML validation failed. Please use a correctly formatted XML file")
             return
@@ -79,24 +79,31 @@ class Controller():
         self.load_model_into_viewer(self.xml)
         self.configure_viewer()
 
-    # Configure the user interface
+    # configure the user interface
     def configure_viewer(self):
         if 'backgroundColor' in self.model.generalInformation.keys():
             color = QColor(self.model.generalInformation['backgroundColor']['@value'])
             self.view.set_background_color(color)
 
-    # Component related tasks
-    def start_component(self, componentAlias):
-        self.model.execute_start_command(str(componentAlias))
+    # component related tasks
+    def start_component(self):
+        selectedNodes = self.view.graph_visualization.selected_nodes()
+        for node in selectedNodes:
+            self.model.execute_start_command(str(node))
 
     def stop_component(self, componentAlias):
-        self.model.execute_stop_command(str(componentAlias))
+        selectedNodes = self.view.graph_visualization.selected_nodes()
+        for node in selectedNodes:
+            self.model.execute_stop_command(str(node))
 
     def add_component(self, nodedata):
         self.model.add_node(nodedata)
 
-    def remove_component(self, componentAlias):
-        self.model.remove_node(componentAlias)
+    def remove_component(self):
+        selectedNodes = self.view.graph_visualization.selected_nodes()
+        for node in selectedNodes:
+            self.view.remove_node(str(node))
+            self.model.remove_node(str(node))        
 
     # XML related tasks 
     def load_model_into_viewer(self, xml):
@@ -168,7 +175,7 @@ class Controller():
                 out[k] = v
         return out
 
-    # Load/save operations 
+    # load/save operations 
     def load_manager_file(self, filename, isNewFile=True):
         self.controller_init_action(filename, isNewFile)
 
