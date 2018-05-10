@@ -29,6 +29,10 @@ We have another feature to dynamically edit the component tree(Xml file).After e
 
 *   We can edit the settings regarding the xml editor by clicking on the settings button after those two buttons.
 
+## Software model
+
+![Alt text](https://github.com/Kmayankkr/robocomp/blob/highlyunstable/tools/rcmanager/mvc.jpg "")
+
 ## How can we execute the rcmanager tool?
 
 Normally we need to be running the [`rcremoteserver`](https://github.com/robocomp/robocomp/tree/master/tools/rcremote)  tool first. Its mainly because the components are usually run through the rcremote tool which acts like a proxy for server tool.
