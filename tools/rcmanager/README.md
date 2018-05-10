@@ -33,6 +33,8 @@ We have another feature to dynamically edit the component tree(Xml file).After e
 
 ![Alt text](https://github.com/Kmayankkr/robocomp/blob/highlyunstable/tools/rcmanager/mvc.jpg "")
 
+Reference - [Sencha Touch - MVC](https://www.tutorialspoint.com/sencha_touch/sencha_touch_mvc_explanation.htm)
+
 ## How can we execute the rcmanager tool?
 
 Normally we need to be running the [`rcremoteserver`](https://github.com/robocomp/robocomp/tree/master/tools/rcremote)  tool first. Its mainly because the components are usually run through the rcremote tool which acts like a proxy for server tool.
