@@ -1,4 +1,4 @@
-##rcinnerModelEditor
+## rcinnerModelEditor
 
 This component is used as a tool for changing our innermodel files in graphical way, providing ease to user.
 
@@ -27,6 +27,8 @@ First switch to our new rcinnerModelEditor in component directory.
 
 Then build and run-
 
-```cmake .
+```
+cmake .
 sudo make
-bin/rcinnerModelEditor --Ice.Config=etc/config```
+bin/rcinnerModelEditor --Ice.Config=etc/config
+```
