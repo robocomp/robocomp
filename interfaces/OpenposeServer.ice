@@ -41,6 +41,10 @@ module RoboCompOpenposeServer
 	{
 		People processImage (TImage img) throws HardwareFailedException;
 	};
+	interface OpenposePublishPeople
+	{
+		void newPeople (int id, People mypeople);
+	};
 };
 
 #endif
