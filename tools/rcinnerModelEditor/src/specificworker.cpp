@@ -572,7 +572,7 @@ void SpecificWorker::openFile()
 	if (fileName.isEmpty())
         return;
   else {
-      innerModel = new InnerModel("/home/robocomp/robocomp/components/learnbot/learnbot_simulator/version_2.1/learnBotWorldDSL_lines.xml");
+      innerModel = new InnerModel(fileName.toStdString());
 			fillNodeMap(innerModel->getNode("root"), NULL);
 			imv = new InnerModelViewer(innerModel, "root", world3D->getRootGroup(),false);
 			timer.start(Period);
