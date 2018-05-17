@@ -32,8 +32,8 @@ SpecificWorker::SpecificWorker(MapPrx& mprx) : GenericWorker(mprx)
 	world3D = new OsgView(frame);
 	connect(openpushButton,SIGNAL(clicked()),this, SLOT(openFile()));
 	connect(&timer, SIGNAL(timeout()), this, SLOT(compute()));
-	connect(create_new_nodepushButton, SIGNAL(triggered(bool)), this, SLOT(create_new_node(bool)));
-	connect(remove_current_nodepushButton, SIGNAL(triggered(bool)), this, SLOT(remove_current_node(bool)));
+	connect(create_new_nodepushButton, SIGNAL(clicked(bool)), this, SLOT(create_new_node(bool)));
+	connect(remove_current_nodepushButton, SIGNAL(clicked(bool)), this, SLOT(remove_current_node(bool)));
 	connect(treeWidget, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
 	showMaximized();
 }
