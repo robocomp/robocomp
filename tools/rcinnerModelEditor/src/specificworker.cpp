@@ -494,7 +494,7 @@ void SpecificWorker::interfaceConnections(bool enable)
 		connect(scaley, SIGNAL(valueChanged(double)), this, SLOT(meshChanged()));
 		connect(scalez, SIGNAL(valueChanged(double)), this, SLOT(meshChanged()));
 		// Plane-related
-		connect(texture, SIGNAL(editingFinished()), this, SLOT(meshChanged()));
+		connect(texture, SIGNAL(editingFinished()), this, SLOT(planeChanged()));
 		connect(px, SIGNAL(valueChanged(double)), this, SLOT(planeChanged()));
 		connect(py, SIGNAL(valueChanged(double)), this, SLOT(planeChanged()));
 		connect(pz, SIGNAL(valueChanged(double)), this, SLOT(planeChanged()));
