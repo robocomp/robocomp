@@ -29,7 +29,7 @@ SpecificWorker::SpecificWorker(MapPrx& mprx) : GenericWorker(mprx)
 	QGLFormat fmt;
 	fmt.setDoubleBuffer(true);
 	QGLFormat::setDefaultFormat(fmt);
-	world3D = new OsgView(frame);
+	//world3D = new OsgView(frame);
 	connect(openpushButton,SIGNAL(clicked()),this, SLOT(openFile()));
 	connect(&timer, SIGNAL(timeout()), this, SLOT(compute()));
 	connect(create_new_nodepushButton, SIGNAL(clicked(bool)), this, SLOT(create_new_node(bool)));
@@ -572,6 +572,8 @@ void SpecificWorker::openFile()
 	if (fileName.isEmpty())
         return;
   else {
+	world3D = new OsgView(frame);
+	treeWidget->clear();
       innerModel = new InnerModel(fileName.toStdString());
 			fillNodeMap(innerModel->getNode("root"), NULL);
 			imv = new InnerModelViewer(innerModel, "root", world3D->getRootGroup(),false);
