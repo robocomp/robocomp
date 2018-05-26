@@ -30,6 +30,7 @@ SpecificWorker::SpecificWorker(MapPrx& mprx) : GenericWorker(mprx)
 	fmt.setDoubleBuffer(true);
 	QGLFormat::setDefaultFormat(fmt);
 	//world3D = new OsgView(frame);
+    groupBox_2->hide();
 	connect(openpushButton,SIGNAL(clicked()),this, SLOT(openFile()));
 	connect(&timer, SIGNAL(timeout()), this, SLOT(compute()));
 	connect(create_new_nodepushButton, SIGNAL(clicked(bool)), this, SLOT(create_new_node(bool)));
@@ -475,6 +476,185 @@ void SpecificWorker::jointChanged()
 		qFatal("Internal error worker.cpp:%d\n", __LINE__);
 }
 
+void SpecificWorker::shownode()
+{
+    if(Typea->text()=="transform")
+    {
+        translationGroup_2->show();
+        rotationGroup_2->show();
+        meshGroup_2->hide();
+        planeGroup_2->hide();
+        cameraGroup_2->hide();
+        jointGroup_2->hide();
+        massBox->show();
+        portBox->hide();
+        noiseBox->hide();
+    }
+    else if(Typea->text()== "mesh")
+    {
+        translationGroup_2->show();
+        rotationGroup_2->show();
+        meshGroup_2->show();
+        planeGroup_2->hide();
+        cameraGroup_2->hide();
+        jointGroup_2->hide();
+        massBox->hide();
+        portBox->hide();
+        noiseBox->hide();
+    }
+    else if(Typea->text()== "plane")
+    {
+        planeGroup_2->show();
+        translationGroup_2->hide();
+        rotationGroup_2->hide();
+        meshGroup_2->hide();
+        cameraGroup_2->hide();
+        jointGroup_2->hide();
+        massBox->hide();
+        portBox->hide();
+        noiseBox->hide();
+    }
+    else if(Typea->text()== "camera")
+    {
+        cameraGroup_2->show();
+        translationGroup_2->hide();
+        rotationGroup_2->hide();
+        meshGroup_2->hide();
+        planeGroup_2->hide();
+        jointGroup_2->hide();
+        massBox->hide();
+        portBox->hide();
+        noiseBox->hide();
+    }
+    else if(Typea->text()== "imu")
+    {
+        cameraGroup_2->hide();
+        translationGroup_2->hide();
+        rotationGroup_2->hide();
+        meshGroup_2->hide();
+        planeGroup_2->hide();
+        jointGroup_2->hide();
+        massBox->hide();
+        portBox->show();
+        noiseBox->hide();
+    }
+    else if(Typea->text()== "laser")
+    {
+        cameraGroup_2->hide();
+        translationGroup_2->hide();
+        rotationGroup_2->hide();
+        meshGroup_2->hide();
+        planeGroup_2->hide();
+        jointGroup_2->hide();
+        massBox->hide();
+        portBox->hide();
+        noiseBox->hide();
+    }
+    else if(Typea->text()== "rgbd")
+    {
+        cameraGroup_2->show();
+        translationGroup_2->hide();
+        rotationGroup_2->hide();
+        meshGroup_2->hide();
+        planeGroup_2->hide();
+        jointGroup_2->hide();
+        massBox->hide();
+        portBox->hide();
+        noiseBox->hide();
+    }
+    else if(Typea->text()== "joint")
+    {
+        jointGroup_2->show();
+        translationGroup_2->hide();
+        rotationGroup_2->hide();
+        meshGroup_2->hide();
+        planeGroup_2->hide();
+        cameraGroup_2->hide();
+        massBox->hide();
+        portBox->hide();
+        noiseBox->hide();
+    }
+    else
+    {
+        qDebug()<< "type valid node";
+    }
+}
+
+void SpecificWorker::makenode()
+{
+    InnerModelNode *par= (InnerModelNode *)innerModel->getNode(parenta->text());
+    if(Typea->text()=="transform")
+    {
+        InnerModelTransform *newnode = (InnerModelTransform *)innerModel->newTransform(newid->text(), "static", par, tx_2->value(), ty_2->value(), tz_2->value(), rx_2->value(), ry_2->value(), rz_2->value(), massa->value());
+        par->addChild(newnode);
+        flag=0;
+    }
+    else if(Typea->text()== "mesh")
+    {
+        if (renderMode_2->currentIndex() == 0)
+            render1 = 0;
+        else if (renderMode_2->currentIndex() == 1)
+            render1 = 1;
+        InnerModelMesh *newnode = (InnerModelMesh *)innerModel->newMesh(newid->text(), par, osgFile_2->text(), scalex_2->value(), scaley_2->value(), scalez_2->value(), render1, tx->value(), ty->value(), tz->value(), rx->value(), ry->value(), rz->value(), 0);
+        par->addChild(newnode);
+        flag=0;
+    }
+    else if(Typea->text()== "plane")
+    {
+        InnerModelPlane *newnode = (InnerModelPlane *)innerModel->newPlane(newid->text(), par, texture_2->text(), rectangleWidth_2->value(), rectangleHeight_2->value()
+                                                       , dep->value(), textureSize_2->value(), pnx_2->value(), pny_2->value(), pnz_2->value()
+                                                       , px_2->value(), py_2->value(), pz_2->value(), 0);
+        par->addChild(newnode);
+        flag=0;
+    }
+    else if(Typea->text()== "camera")
+    {
+        InnerModelCamera *newnode = (InnerModelCamera *)innerModel->newCamera(newid->text(), par, cwidth_2->value(), cheight_2->value(), focal_2->value());
+        par->addChild(newnode);
+        flag=0;
+    }
+    else if(Typea->text()== "imu")
+    {
+        InnerModelIMU *newnode = (InnerModelIMU *)innerModel->newIMU(newid->text(), par,porta->value());
+        par->addChild(newnode);
+        flag=0;
+    }
+    else if(Typea->text()== "laser")
+    {
+         qDebug()<< "later";
+         flag=0;
+    }
+    else if(Typea->text()== "rgbd")
+    {
+        //InnerModelRGBD *newnode = (InnerModelRGBD *)innerModel->newRGBD(newid->text(), cwidth_2->value(), cheight_2->value(), focal_2->value(), noisea->value(), porta->value(), ifconfig);
+        //par->addChild(newnode);
+        flag=0;
+    }
+    else if(Typea->text()== "joint")
+    {
+        qDebug()<< "later";
+    }
+    else
+    {
+        msgBox.setText("Enter valid type");
+        msgBox.exec();
+        flag=1;
+    }
+    if(flag==0)
+    {
+        QString fileName = QFileDialog::getSaveFileName(this,
+                tr("Save XML"), "",
+                tr("XML file (*.xml)"));
+            if (fileName.isEmpty())
+                return;
+          else {
+              innerModel->save(fileName);
+            }
+        qDebug()<< "create new node " << newid->text();
+    }
+
+
+}
 
 
 void SpecificWorker::interfaceConnections(bool enable)
@@ -556,7 +736,39 @@ void SpecificWorker::interfaceConnections(bool enable)
 
 void SpecificWorker::create_new_node(bool bul)
 {
-	printf("create new node %d\n", bul);
+    newnodeConnections(false);
+    groupBox_2->show();
+    newid->show();
+    Typea->show();
+    parenta->show();
+    cameraGroup_2->hide();
+    translationGroup_2->hide();
+    rotationGroup_2->hide();
+    meshGroup_2->hide();
+    planeGroup_2->hide();
+    jointGroup_2->hide();
+    massBox->hide();
+    portBox->hide();
+    noiseBox->hide();
+    newnodeConnections(true);
+    //connect(savepushButton,SIGNAL(clicked()),this,SLOT(makenode()));
+    //printf("create new node %d\n", bul);
+}
+
+void SpecificWorker::newnodeConnections(bool enable)
+{
+    if(enable)
+    {
+        connect(Typea,SIGNAL(editingFinished()),this,SLOT(shownode()));
+        connect(savepushButton,SIGNAL(clicked()),this,SLOT(makenode()));
+    }
+
+    else
+    {
+        disconnect(Typea,SIGNAL(editingFinished()),this,SLOT(shownode()));
+        disconnect(savepushButton,SIGNAL(clicked()),this,SLOT(makenode()));
+    }
+    //qDebug()<< "hello";
 }
 
 void SpecificWorker::remove_current_node(bool bul)

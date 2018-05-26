@@ -61,13 +61,16 @@ private:
 	// InnerModel *innerModel;
 	InnerModelViewer *imv;
 	WorkerNode currentNode;
+    QMessageBox msgBox;
+    int flag;
+    int render1;
 
 	QMap<QString, WorkerNode> nodeMap;
 	QMap<QTreeWidgetItem *, WorkerNode> nodeMapByItem;
 
 	void showAvailableGroups();
 	void interfaceConnections(bool enable);
-
+    void newnodeConnections(bool enable);
 	void showTransform(QString id);
 	void showRotation(QString id);
 	void showJoint(QString id);
@@ -89,6 +92,8 @@ public slots:
 	void translationChanged();
 	void rotationChanged();
 	void jointChanged();
+    void shownode();
+    void makenode();
 	void create_new_node(bool);
 	void remove_current_node(bool);
 
