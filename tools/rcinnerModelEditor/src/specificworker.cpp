@@ -583,6 +583,18 @@ void SpecificWorker::shownode()
 void SpecificWorker::makenode()
 {
     InnerModelNode *par= (InnerModelNode *)innerModel->getNode(parenta->text());
+    if (par==NULL)
+    {
+        msgBox.setText("Enter valid Parent Id");
+        msgBox.exec();
+    }
+
+    else
+    {
+    InnerModelNode *check= (InnerModelNode *)innerModel->getNode(newid->text());
+
+    if(check==NULL)
+    {
     if(Typea->text()=="transform")
     {
         InnerModelTransform *newnode = (InnerModelTransform *)innerModel->newTransform(newid->text(), "static", par, tx_2->value(), ty_2->value(), tz_2->value(), rx_2->value(), ry_2->value(), rz_2->value(), massa->value());
@@ -651,8 +663,17 @@ void SpecificWorker::makenode()
               innerModel->save(fileName);
             }
         qDebug()<< "create new node " << newid->text();
-    }
 
+    }
+    }
+    else
+    {
+        msgBox.setText("Node you entered already exist");
+        msgBox.exec();
+    }
+    treeWidget->clear();
+    fillNodeMap(innerModel->getNode("root"), NULL);
+}
 
 }
 
@@ -759,12 +780,14 @@ void SpecificWorker::newnodeConnections(bool enable)
 {
     if(enable)
     {
+        //connect(parenta,SIGNAL(editingFinished()),this,SLOT(makenode()));
         connect(Typea,SIGNAL(editingFinished()),this,SLOT(shownode()));
         connect(savepushButton,SIGNAL(clicked()),this,SLOT(makenode()));
     }
 
     else
     {
+        //disconnect(parenta,SIGNAL(editingFinished()),this,SLOT(makenode()));
         disconnect(Typea,SIGNAL(editingFinished()),this,SLOT(shownode()));
         disconnect(savepushButton,SIGNAL(clicked()),this,SLOT(makenode()));
     }
