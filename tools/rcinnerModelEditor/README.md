@@ -32,4 +32,4 @@ cmake .
 sudo make
 bin/rcinnerModelEditor --Ice.Config=etc/config
 ```
-For more guide see [Tutorial](tut.md)
+For how to use after opening see [Tutorial](tut.md)
