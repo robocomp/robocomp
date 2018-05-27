@@ -51,6 +51,6 @@ Please ensure you test new features locally at first.
 
 ### Code of Conduct
 
-All contributors tacitly agree to abide by both the letter and spirit of the [Code of Conduct](CodeofConduct.md). 
+All contributors tacitly agree to abide by both the letter and spirit of the [Code of Conduct](CODE_OF_CONDUCT.md). 
 Failure, or unwillingness, to do so will result in contributions being respectfully declined.
 
