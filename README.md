@@ -141,7 +141,7 @@ Drop comments and ask questions in:
 
 Please, report any bugs to pbustos@unex.es
 
-If you have any suggestions to improve the repository (for example, tutorials you would like to see), please contact: gabriellabohorquez@gmail.com 
+If you have any suggestions to improve the repository, like features or tutorials, please contact: robocomp.team@gmail.com 
 
 
 
