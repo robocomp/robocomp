@@ -922,7 +922,43 @@
            </widget>
           </item>
           <item>
-           <widget class="QLineEdit" name="Typea"/>
+           <widget class="QComboBox" name="Typea">
+            <item>
+             <property name="text">
+              <string>transform</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>mesh</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>plane</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>camera</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>imu</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>rgbd</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>laser</string>
+             </property>
+            </item>
+           </widget>
           </item>
           <item>
            <widget class="QGroupBox" name="jointGroup_2">

@@ -478,7 +478,7 @@ void SpecificWorker::jointChanged()
 
 void SpecificWorker::shownode()
 {
-    if(Typea->text()=="transform")
+    if(Typea->currentText()=="transform")
     {
         translationGroup_2->show();
         rotationGroup_2->show();
@@ -490,7 +490,7 @@ void SpecificWorker::shownode()
         portBox->hide();
         noiseBox->hide();
     }
-    else if(Typea->text()== "mesh")
+    else if(Typea->currentText()== "mesh")
     {
         translationGroup_2->show();
         rotationGroup_2->show();
@@ -502,7 +502,7 @@ void SpecificWorker::shownode()
         portBox->hide();
         noiseBox->hide();
     }
-    else if(Typea->text()== "plane")
+    else if(Typea->currentText()== "plane")
     {
         planeGroup_2->show();
         translationGroup_2->hide();
@@ -514,7 +514,7 @@ void SpecificWorker::shownode()
         portBox->hide();
         noiseBox->hide();
     }
-    else if(Typea->text()== "camera")
+    else if(Typea->currentText()== "camera")
     {
         cameraGroup_2->show();
         translationGroup_2->hide();
@@ -526,7 +526,7 @@ void SpecificWorker::shownode()
         portBox->hide();
         noiseBox->hide();
     }
-    else if(Typea->text()== "imu")
+    else if(Typea->currentText()== "imu")
     {
         cameraGroup_2->hide();
         translationGroup_2->hide();
@@ -538,7 +538,7 @@ void SpecificWorker::shownode()
         portBox->show();
         noiseBox->hide();
     }
-    else if(Typea->text()== "laser")
+    else if(Typea->currentText()== "laser")
     {
         cameraGroup_2->hide();
         translationGroup_2->hide();
@@ -550,7 +550,7 @@ void SpecificWorker::shownode()
         portBox->hide();
         noiseBox->hide();
     }
-    else if(Typea->text()== "rgbd")
+    else if(Typea->currentText()== "rgbd")
     {
         cameraGroup_2->show();
         translationGroup_2->hide();
@@ -562,7 +562,7 @@ void SpecificWorker::shownode()
         portBox->hide();
         noiseBox->hide();
     }
-    else if(Typea->text()== "joint")
+    else if(Typea->currentText()== "joint")
     {
         jointGroup_2->show();
         translationGroup_2->hide();
@@ -595,13 +595,13 @@ void SpecificWorker::makenode()
 
     if(check==NULL)
     {
-    if(Typea->text()=="transform")
+    if(Typea->currentText()=="transform")
     {
         InnerModelTransform *newnode = (InnerModelTransform *)innerModel->newTransform(newid->text(), "static", par, tx_2->value(), ty_2->value(), tz_2->value(), rx_2->value(), ry_2->value(), rz_2->value(), massa->value());
         par->addChild(newnode);
         flag=0;
     }
-    else if(Typea->text()== "mesh")
+    else if(Typea->currentText()== "mesh")
     {
         if (renderMode_2->currentIndex() == 0)
             render1 = 0;
@@ -611,7 +611,7 @@ void SpecificWorker::makenode()
         par->addChild(newnode);
         flag=0;
     }
-    else if(Typea->text()== "plane")
+    else if(Typea->currentText()== "plane")
     {
         InnerModelPlane *newnode = (InnerModelPlane *)innerModel->newPlane(newid->text(), par, texture_2->text(), rectangleWidth_2->value(), rectangleHeight_2->value()
                                                        , dep->value(), textureSize_2->value(), pnx_2->value(), pny_2->value(), pnz_2->value()
@@ -619,30 +619,30 @@ void SpecificWorker::makenode()
         par->addChild(newnode);
         flag=0;
     }
-    else if(Typea->text()== "camera")
+    else if(Typea->currentText()== "camera")
     {
         InnerModelCamera *newnode = (InnerModelCamera *)innerModel->newCamera(newid->text(), par, cwidth_2->value(), cheight_2->value(), focal_2->value());
         par->addChild(newnode);
         flag=0;
     }
-    else if(Typea->text()== "imu")
+    else if(Typea->currentText()== "imu")
     {
         InnerModelIMU *newnode = (InnerModelIMU *)innerModel->newIMU(newid->text(), par,porta->value());
         par->addChild(newnode);
         flag=0;
     }
-    else if(Typea->text()== "laser")
+    else if(Typea->currentText()== "laser")
     {
          qDebug()<< "later";
          flag=0;
     }
-    else if(Typea->text()== "rgbd")
+    else if(Typea->currentText()== "rgbd")
     {
         //InnerModelRGBD *newnode = (InnerModelRGBD *)innerModel->newRGBD(newid->text(), cwidth_2->value(), cheight_2->value(), focal_2->value(), noisea->value(), porta->value(), ifconfig);
         //par->addChild(newnode);
         flag=0;
     }
-    else if(Typea->text()== "joint")
+    else if(Typea->currentText()== "joint")
     {
         qDebug()<< "later";
     }
@@ -781,14 +781,14 @@ void SpecificWorker::newnodeConnections(bool enable)
     if(enable)
     {
         //connect(parenta,SIGNAL(editingFinished()),this,SLOT(makenode()));
-        connect(Typea,SIGNAL(editingFinished()),this,SLOT(shownode()));
+        connect(Typea,SIGNAL(currentIndexChanged(int)),this,SLOT(shownode()));
         connect(savepushButton,SIGNAL(clicked()),this,SLOT(makenode()));
     }
 
     else
     {
         //disconnect(parenta,SIGNAL(editingFinished()),this,SLOT(makenode()));
-        disconnect(Typea,SIGNAL(editingFinished()),this,SLOT(shownode()));
+        disconnect(Typea,SIGNAL(currentIndexChanged(int)),this,SLOT(shownode()));
         disconnect(savepushButton,SIGNAL(clicked()),this,SLOT(makenode()));
     }
     //qDebug()<< "hello";
