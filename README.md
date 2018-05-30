@@ -123,7 +123,7 @@ and check where the joystick device file has been created (e.g., `/dev/input/js0
 
 If you don't have a JoyStick install this componentent,
 
-    cd ~robocomp/components/robocomp-robolab/components/keyboardrobotcontroller
+    cd ~/robocomp/components/robocomp-robolab/components/keyboardrobotcontroller
     cmake .
     make
     src/keyboardrobotcontroller.py --Ice.Config=etc/config
