@@ -1,4 +1,4 @@
-[RoboComp](http://robocomp.net)
+[RoboComp](http://robocomp.org)
 ===============================
 
 [![Join the chat at https://gitter.im/robocomp/robocomp](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/robocomp/robocomp?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
@@ -8,7 +8,7 @@ by [RoboLab](http://robolab.unex.es), [ISIS](http://www.grupoisis.uma.es/index.p
 RoboComp is an open-source Robotics framework providing the tools to create and modify software components that communicate through public interfaces. Components may *require*, *subscribe*, *implement* or *publish*
 interfaces in a seamless way. Building new components is done using two domain specific languages, IDSL and CDSL. With IDSL you define an interface and with CDSL you specify how the component will communicate with the world. With this information, a code generator creates C++ and/or Python sources, based on CMake, that compile and execute flawlessly. When some of these features have to be changed, the component can be easily regenerated and all the user specific code is preserved thanks to a simple inheritance mechanism.
 
-If you already have RoboComp installed, jump to [tutorials!](doc/README.md) to start coding! 
+If you already have RoboComp installed, jump to [tutorials](doc/README.md) to start coding! 
 
 
 # Installation from source
@@ -34,7 +34,7 @@ It is recommendable to install the following packages::
 
     git clone https://github.com/robocomp/robocomp.git
 
-Now we will create a symbolic link so RobComp can find everything. You will have to enter your passwd:
+Now we will create a symbolic link so RoboComp can find everything. You will have to enter your password:
 
     sudo ln -s /home/<your-linux-user> /home/robocomp 
     
@@ -61,7 +61,7 @@ Done! Now let's compile and install the whole thing:
     make
     sudo make install
 
-If you want to compile Robocomp with support for FCL, follow the instructions in the [Robocomp with FCL](doc/Compiling RoboComp with collision detection.md) tutorial"
+If you want to compile Robocomp with support for FCL, follow the instructions in the [Robocomp with FCL](doc/Compiling-RoboComp-with-collision-detection.md) tutorial.
 
 The RoboComp's core libraries and simulator should now be compiled and installed in `/opt/robocomp`.
 
@@ -132,7 +132,7 @@ and use the arrow keys to navigate the robot, the space bar to stop it an 'q' to
 
 
 ---------------------------------------------------------------------
-You can find more tutorials on RoboComp in [tutorials!](doc/README.md) 
+You can find more tutorials on RoboComp in [tutorials](doc/README.md)! 
 
 Drop comments and ask questions in:
 
@@ -140,6 +140,8 @@ Drop comments and ask questions in:
 - https://gitter.im/robocomp
 
 Please, report any bugs to pbustos@unex.es
+
+If you have any suggestions to improve the repository, like features or tutorials, please contact: robocomp.team@gmail.com 
 
 
 
