@@ -29,7 +29,7 @@ SpecificWorker::SpecificWorker(MapPrx& mprx) : GenericWorker(mprx)
 	QGLFormat fmt;
 	fmt.setDoubleBuffer(true);
 	QGLFormat::setDefaultFormat(fmt);
-	//world3D = new OsgView(frame);
+    //world3D = new OsgView(frame);
     groupBox_2->hide();
 	connect(openpushButton,SIGNAL(clicked()),this, SLOT(openFile()));
 	connect(&timer, SIGNAL(timeout()), this, SLOT(compute()));
@@ -489,6 +489,8 @@ void SpecificWorker::shownode()
         massBox->show();
         portBox->hide();
         noiseBox->hide();
+        laserBox->hide();
+        Ifconfiga->hide();
     }
     else if(Typea->currentText()== "mesh")
     {
@@ -501,6 +503,8 @@ void SpecificWorker::shownode()
         massBox->hide();
         portBox->hide();
         noiseBox->hide();
+        laserBox->hide();
+        Ifconfiga->hide();
     }
     else if(Typea->currentText()== "plane")
     {
@@ -513,6 +517,8 @@ void SpecificWorker::shownode()
         massBox->hide();
         portBox->hide();
         noiseBox->hide();
+        laserBox->hide();
+        Ifconfiga->hide();
     }
     else if(Typea->currentText()== "camera")
     {
@@ -525,6 +531,8 @@ void SpecificWorker::shownode()
         massBox->hide();
         portBox->hide();
         noiseBox->hide();
+        laserBox->hide();
+        Ifconfiga->hide();
     }
     else if(Typea->currentText()== "imu")
     {
@@ -537,6 +545,8 @@ void SpecificWorker::shownode()
         massBox->hide();
         portBox->show();
         noiseBox->hide();
+        laserBox->hide();
+        Ifconfiga->hide();
     }
     else if(Typea->currentText()== "laser")
     {
@@ -547,8 +557,10 @@ void SpecificWorker::shownode()
         planeGroup_2->hide();
         jointGroup_2->hide();
         massBox->hide();
-        portBox->hide();
+        portBox->show();
         noiseBox->hide();
+        laserBox->show();
+        Ifconfiga->show();
     }
     else if(Typea->currentText()== "rgbd")
     {
@@ -559,8 +571,10 @@ void SpecificWorker::shownode()
         planeGroup_2->hide();
         jointGroup_2->hide();
         massBox->hide();
-        portBox->hide();
+        portBox->show();
         noiseBox->hide();
+        laserBox->hide();
+        Ifconfiga->show();
     }
     else if(Typea->currentText()== "joint")
     {
@@ -573,6 +587,8 @@ void SpecificWorker::shownode()
         massBox->hide();
         portBox->hide();
         noiseBox->hide();
+        laserBox->hide();
+        Ifconfiga->hide();
     }
     else
     {
@@ -633,13 +649,14 @@ void SpecificWorker::makenode()
     }
     else if(Typea->currentText()== "laser")
     {
-         qDebug()<< "later";
-         flag=0;
+        InnerModelLaser *newnode = (InnerModelLaser *)innerModel->newLaser(newid->text(), par, porta->value(), Mina->value(), Maxa->value(), anglea->value(), measurea->value(), Ifconfiga->text());
+        par->addChild(newnode);
+        flag=0;
     }
     else if(Typea->currentText()== "rgbd")
     {
-        //InnerModelRGBD *newnode = (InnerModelRGBD *)innerModel->newRGBD(newid->text(), cwidth_2->value(), cheight_2->value(), focal_2->value(), noisea->value(), porta->value(), ifconfig);
-        //par->addChild(newnode);
+        InnerModelRGBD *newnode = (InnerModelRGBD *)innerModel->newRGBD(newid->text(), par, cwidth_2->value(), cheight_2->value(), focal_2->value(), noisea->value(), porta->value(), Ifconfiga->text());
+        par->addChild(newnode);
         flag=0;
     }
     else if(Typea->currentText()== "joint")
@@ -771,6 +788,8 @@ void SpecificWorker::create_new_node(bool bul)
     massBox->hide();
     portBox->hide();
     noiseBox->hide();
+    laserBox->hide();
+    Ifconfiga->hide();
     newnodeConnections(true);
     //connect(savepushButton,SIGNAL(clicked()),this,SLOT(makenode()));
     //printf("create new node %d\n", bul);
@@ -807,7 +826,7 @@ void SpecificWorker::openFile()
 	if (fileName.isEmpty())
         return;
   else {
-	world3D = new OsgView(frame);
+    world3D = new OsgView(frame);
 	treeWidget->clear();
       innerModel = new InnerModel(fileName.toStdString());
 			fillNodeMap(innerModel->getNode("root"), NULL);

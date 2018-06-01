@@ -961,6 +961,13 @@
            </widget>
           </item>
           <item>
+           <widget class="QLineEdit" name="Ifconfiga">
+            <property name="text">
+             <string>Enter Ifconfig</string>
+            </property>
+           </widget>
+          </item>
+          <item>
            <widget class="QGroupBox" name="jointGroup_2">
             <property name="minimumSize">
              <size>
@@ -1669,6 +1676,9 @@
                <height>21</height>
               </rect>
              </property>
+             <property name="maximum">
+              <number>100000</number>
+             </property>
             </widget>
            </widget>
           </item>
@@ -1686,6 +1696,9 @@
                <height>21</height>
               </rect>
              </property>
+             <property name="maximum">
+              <double>10000.989999999999782</double>
+             </property>
             </widget>
            </widget>
           </item>
@@ -1702,6 +1715,126 @@
                <width>141</width>
                <height>21</height>
               </rect>
+             </property>
+             <property name="maximum">
+              <double>10000.989999999999782</double>
+             </property>
+            </widget>
+           </widget>
+          </item>
+          <item>
+           <widget class="QGroupBox" name="laserBox">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>55</height>
+             </size>
+            </property>
+            <property name="title">
+             <string/>
+            </property>
+            <widget class="QLabel" name="label_4">
+             <property name="geometry">
+              <rect>
+               <x>10</x>
+               <y>0</y>
+               <width>67</width>
+               <height>17</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>Minimum</string>
+             </property>
+            </widget>
+            <widget class="QSpinBox" name="Mina">
+             <property name="geometry">
+              <rect>
+               <x>80</x>
+               <y>0</y>
+               <width>91</width>
+               <height>21</height>
+              </rect>
+             </property>
+             <property name="maximum">
+              <number>100000</number>
+             </property>
+            </widget>
+            <widget class="QLabel" name="label_6">
+             <property name="geometry">
+              <rect>
+               <x>190</x>
+               <y>0</y>
+               <width>67</width>
+               <height>17</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>Maximum</string>
+             </property>
+            </widget>
+            <widget class="QSpinBox" name="Maxa">
+             <property name="geometry">
+              <rect>
+               <x>270</x>
+               <y>0</y>
+               <width>81</width>
+               <height>21</height>
+              </rect>
+             </property>
+             <property name="maximum">
+              <number>100000</number>
+             </property>
+            </widget>
+            <widget class="QLabel" name="label_7">
+             <property name="geometry">
+              <rect>
+               <x>10</x>
+               <y>30</y>
+               <width>67</width>
+               <height>17</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>Measures</string>
+             </property>
+            </widget>
+            <widget class="QSpinBox" name="measurea">
+             <property name="geometry">
+              <rect>
+               <x>80</x>
+               <y>30</y>
+               <width>91</width>
+               <height>20</height>
+              </rect>
+             </property>
+             <property name="maximum">
+              <number>100000</number>
+             </property>
+            </widget>
+            <widget class="QLabel" name="label_8">
+             <property name="geometry">
+              <rect>
+               <x>190</x>
+               <y>30</y>
+               <width>67</width>
+               <height>17</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>Angle</string>
+             </property>
+            </widget>
+            <widget class="QDoubleSpinBox" name="anglea">
+             <property name="geometry">
+              <rect>
+               <x>270</x>
+               <y>30</y>
+               <width>81</width>
+               <height>21</height>
+              </rect>
+             </property>
+             <property name="maximum">
+              <double>10000.989999999999782</double>
              </property>
             </widget>
            </widget>
