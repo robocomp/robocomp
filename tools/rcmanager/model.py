@@ -66,10 +66,10 @@ class ComponentChecker(threading.Thread):
         while self.exit == False:
             previousAliveValue = self.alive
             try:
+                self.aPrx.ice_ping()
                 self.mutex.lock()
                 self.alive = True
                 self.mutex.unlock()
-                self.aPrx.ice_ping()
             except (Ice.ConnectionRefusedException, Ice.ConnectFailedException) as e:
                 self.mutex.lock()
                 self.alive = False
