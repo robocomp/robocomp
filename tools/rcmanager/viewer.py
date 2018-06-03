@@ -189,8 +189,8 @@ class Viewer(QtGui.QMainWindow, MainWindow):
         nodeGraphicItem.setSelected(True)
 
         # center the scene over the selected node
-        nodePosition = [nodeGraphicItem.pos().x(), nodeGraphicItem.pos().y()]
-        self.graph_visualization.center_on(nodePosition)
+        nodePosition = QtCore.QPointF(nodeGraphicItem.pos().x(), nodeGraphicItem.pos().y())
+        self.graph_visualization.center_on(nodePosition, node)
 
     # this does not look like production-level code
     # please try to use in-built functions of Qt and make this segment a bit more cleaner
