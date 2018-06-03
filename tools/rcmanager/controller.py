@@ -91,7 +91,7 @@ class Controller():
         for node in selectedNodes:
             self.model.execute_start_command(str(node))
 
-    def stop_component(self, componentAlias):
+    def stop_component(self):
         selectedNodes = self.view.graph_visualization.selected_nodes()
         for node in selectedNodes:
             self.model.execute_stop_command(str(node))
