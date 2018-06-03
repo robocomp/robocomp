@@ -688,7 +688,9 @@ void SpecificWorker::makenode()
         msgBox.setText("Node you entered already exist");
         msgBox.exec();
     }
+    disconnect(treeWidget, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
     treeWidget->clear();
+    connect(treeWidget, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
     fillNodeMap(innerModel->getNode("root"), NULL);
 }
 
@@ -827,7 +829,9 @@ void SpecificWorker::openFile()
         return;
   else {
     world3D = new OsgView(frame);
+    disconnect(treeWidget, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
 	treeWidget->clear();
+	connect(treeWidget, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
       innerModel = new InnerModel(fileName.toStdString());
 			fillNodeMap(innerModel->getNode("root"), NULL);
 			imv = new InnerModelViewer(innerModel, "root", world3D->getRootGroup(),false);
