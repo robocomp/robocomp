@@ -81,44 +81,42 @@ class Viewer(QtGui.QMainWindow, MainWindow):
         # connect the various UI components (buttons etc.) to the relevant functions (slots)
         self.setup_actions()
 
-        # Temporary code
-        self.actionComponent_List.toggle()
-        self.toggle_component_list_view()
+        # temporary code
+        # self.actionComponent_List.toggle()
+        # self.toggle_component_list_view()
 
-        # Temporary code
         CustomSignalCollection.viewerIsReady.emit()
 
     def setup_actions(self):
-        # Tab widget signals 
-        # CustomSignalCollection.addNode.connect(self.add_node)
+        # tab widget signals 
         self.connect(self.tabWidget, QtCore.SIGNAL("currentChanged(int)"), self.tab_index_changed)
 
-        # File menu buttons
+        # file menu buttons
         self.connect(self.actionSave, QtCore.SIGNAL("triggered(bool)"), lambda: self.save_model(False))
         self.connect(self.actionSave_As, QtCore.SIGNAL("triggered(bool)"), lambda: self.save_model(True))
         self.connect(self.actionOpen, QtCore.SIGNAL("triggered(bool)"), self.open_model)
         self.connect(self.actionExit, QtCore.SIGNAL("triggered(bool)"), self.close_model)
 
-        # Edit menu buttons
+        # edit menu buttons
 
-        # View menu buttons
+        # view menu buttons
         self.connect(self.actionLogger, QtCore.SIGNAL("triggered(bool)"), self.toggle_logger_view)
         self.connect(self.actionComponent_List, QtCore.SIGNAL("triggered(bool)"), self.toggle_component_list_view)
         self.connect(self.actionFull_Screen, QtCore.SIGNAL("triggered(bool)"), self.toggle_full_screen_view)
 
-        # Tools menu buttons
+        # tools menu buttons
         self.connect(self.actionSet_Color, QtCore.SIGNAL("triggered(bool)"), self.set_background_color)
         self.connect(self.actionON, QtCore.SIGNAL("triggered(bool)"), self.graph_visualization.start_animation)
         self.connect(self.actionOFF, QtCore.SIGNAL("triggered(bool)"), self.graph_visualization.stop_animation)
 
-    # Background color picker widget
+    # background color picker widget
     def set_background_color(self, color=None):
         if not color:
             color = QtGui.QColorDialog.getColor()
         self.graph_visualization.background_color = color
         self.graph_visualization.setBackgroundBrush(color)
 
-    # View menu functions
+    # view menu functions
     def toggle_logger_view(self):
         if self.actionLogger.isChecked():
             self.dockWidget.show()
@@ -149,10 +147,12 @@ class Viewer(QtGui.QMainWindow, MainWindow):
             self.toggle_logger_view()
             self.toggle_component_list_view()
 
-    # File menu functions
+    # file menu functions
     def save_model(self, saveAs=True):
+        # if we are currently on the editor tab, remember to update the graph before saving
+        # the save file is always generated from the actual graph rather than the editor text
+        # this is to avoid any possible syntax errors that might be present in the editor text 
         index = self.tabWidget.currentIndex()
-
         if index == 1:
             self.refresh_graph_from_editor()
 
@@ -162,7 +162,7 @@ class Viewer(QtGui.QMainWindow, MainWindow):
             filename = self.filename
         CustomSignalCollection.saveModel.emit(filename)
         self.dirtyBit = False
-
+        
     def open_model(self):
         filename = QtGui.QFileDialog.getOpenFileName(self, 'Open File')
         CustomSignalCollection.openModel.emit(filename, True)
@@ -172,38 +172,59 @@ class Viewer(QtGui.QMainWindow, MainWindow):
 
     def closeEvent(self, QCloseEvent):
         CustomSignalCollection.closeModel.emit()
-        if self.dirtyBit:
-            self.save_before_quit_prompt(QCloseEvent)
-        else:
-            QCloseEvent.accept()
+        self.save_before_quit_prompt(QCloseEvent)
 
-    # Generate start / stop signals for components
-    def send_start_signal(self):
-        selectedNodes = self.graph_visualization.selected_nodes()
+    # component list functions
 
-        for node in selectedNodes:
-            CustomSignalCollection.startComponent.emit(node)
+    # add buttons to the component list
+    def add_to_component_list(self, node): 
+        button = QPushButton(node, parent=None)
+        button.clicked.connect(lambda: self.on_button_click(node))
+        self.verticalLayout.insertWidget(self.verticalLayout.count()-1, button)
 
-    def send_stop_signal(self):
-        selectedNodes = self.graph_visualization.selected_nodes()
+    def on_button_click(self, node):
+        # select the node corresponding to the clicked button
+        self.graph_visualization.clear_selection()
+        nodeGraphicItem = self.graph_visualization.get_node(node)['item']
+        nodeGraphicItem.setSelected(True)
 
-        for node in selectedNodes:
-            CustomSignalCollection.stopComponent.emit(node)
+        # center the scene over the selected node
+        nodePosition = QtCore.QPointF(nodeGraphicItem.pos().x(), nodeGraphicItem.pos().y())
+        self.graph_visualization.center_on(nodePosition, node)
 
-    # Node/Edge add/remove
-    def add_component(self):
-        pass
+    # this does not look like production-level code
+    # please try to use in-built functions of Qt and make this segment a bit more cleaner
+    def remove_from_component_list(self, node): 
+        numItems = self.verticalLayout.count()
+        for index in range(numItems):
+            button = self.verticalLayout.itemAt(index).widget()
+            if button.text()==str(node): 
+               button.setParent(None)
+               button.deleteLater()
+               break
+
+    # clears the entire component list
+    def clear_component_list(self):
+        while self.verticalLayout.count()>1:
+            button = self.verticalLayout.itemAt(0).widget()
+            button.setParent(None)
+            button.deleteLater()
+
+    # node/edge add/remove
+    def remove_node(self, node):
+        self.graph_visualization.remove_node(str(node))
+        self.remove_from_component_list(str(node))
 
     def add_node(self, node, nodedata=None, position=None):
         self._logger.info("The viewer received signal to draw component: " + node)
         self.graph_visualization.add_node(node, position)
         createdNode = self.graph_visualization.get_node(node)['item']
 
-        # Start / stop context menu options
+        # start / stop context menu options
         menu = dict()
-        menu['Start'] = (self, 'send_start_signal')
-        menu['Stop'] = (self, 'send_stop_signal')
-        menu['Remove component'] = (self, 'remove_node')
+        menu['Start'] = (CustomSignalCollection.startComponent, 'emit')
+        menu['Stop'] = (CustomSignalCollection.stopComponent, 'emit')
+        menu['Remove component'] = (CustomSignalCollection.removeComponent, 'emit')
         createdNode.add_context_menu(menu)
 
         if 'componentType' in nodedata.keys():
@@ -212,13 +233,7 @@ class Viewer(QtGui.QMainWindow, MainWindow):
                 return
 
         createdNode.set_node_shape(NodeShapes.CIRCLE)
-
-    def remove_node(self):
-        selectedNodes = self.graph_visualization.selected_nodes()
-
-        for node in selectedNodes:
-            self.graph_visualization.remove_node(node)
-            CustomSignalCollection.removeComponent.emit(node)
+        self.add_to_component_list(node)
 
     def add_edge(self, orig_node, dest_node, edge_data=None):
         self._logger.info("The viewer received signal to draw edge from: " + orig_node + " to: " + dest_node)
@@ -242,6 +257,8 @@ class Viewer(QtGui.QMainWindow, MainWindow):
         if not xmlreader.validate_xml(xml):
             return
 
+        self.clear_component_list()
+
         filename = '.temp.xml'
         open(filename, 'w').close()
         fileDescriptor = open(filename, 'a')
@@ -260,10 +277,10 @@ class Viewer(QtGui.QMainWindow, MainWindow):
     def add_graph_visualization(self):
         self.graph_visualization = QNetworkxWidget()
 
-        # Context menu options
+        # context menu options
         menu = dict()
         menu['Change Background Color'] = (self, "set_background_color")
-        menu['Remove components'] = (self, "remove_node")
+        menu['Remove components'] = (CustomSignalCollection.removeComponent, "emit")
         self.graph_visualization.add_context_menu(menu)
 
         self.gridLayout_8.addWidget(self.graph_visualization, 0, 0, 1, 1)
@@ -280,16 +297,19 @@ class Viewer(QtGui.QMainWindow, MainWindow):
     def get_graph_nodes_positions(self):
         return self.graph_visualization.get_current_nodes_positions()
 
-    # User prompts 
+    # user prompts 
     def save_before_quit_prompt(self, QCloseEvent):
-        quit_msg = "There are unsaved changes. Do you want to save before exiting?"
-        reply = QtGui.QMessageBox.question(self, 'Save Model?',
-                                           quit_msg, QtGui.QMessageBox.No, QtGui.QMessageBox.Cancel, QtGui.QMessageBox.Yes)
+        if self.dirtyBit:
+            quit_msg = "There are unsaved changes. Do you want to save before exiting?"
+            reply = QtGui.QMessageBox.question(self, 'Save Model?',
+                                               quit_msg, QtGui.QMessageBox.No, QtGui.QMessageBox.Cancel, QtGui.QMessageBox.Yes)
 
-        if reply == QtGui.QMessageBox.Yes:
-            self.save_model()
+            if reply == QtGui.QMessageBox.Yes:
+                self.save_model()
+                QCloseEvent.accept()
+            elif reply == QtGui.QMessageBox.No:
+                QCloseEvent.accept()
+            elif reply == QtGui.QMessageBox.Cancel:
+                QCloseEvent.ignore()
+        else:
             QCloseEvent.accept()
-        elif reply == QtGui.QMessageBox.No:
-            QCloseEvent.accept()
-        elif reply == QtGui.QMessageBox.Cancel:
-            QCloseEvent.ignore()

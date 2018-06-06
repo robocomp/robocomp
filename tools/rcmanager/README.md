@@ -1,11 +1,11 @@
-rcmanager
+RCManager
 ===============================
 
 [![Join the chat at https://gitter.im/robocomp/robocomp](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/robocomp/robocomp?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-##What the rcmanager does?
+## What does the RCManager do?
 
-The `rcmanager` is a very useful tool for controlling the components that we have running within ROBOCOMP. `rcmanager`is basically an user interface that shows you a graph that relates Robocomp components with which you are working (nodes of the graph) and relationships or dependencies between them (arrows of the graph).
+The `rcmanager` is a very useful tool for controlling the components that we have running within RoboComp. `rcmanager`is basically an user interface that shows you a graph that relates RoboComp components with which you are working (nodes of the graph) and relationships or dependencies between them (arrows of the graph).
 
 Let's see the following image:
 
@@ -29,7 +29,13 @@ We have another feature to dynamically edit the component tree(Xml file).After e
 
 *   We can edit the settings regarding the xml editor by clicking on the settings button after those two buttons.
 
-##How can we execute the rcmanager tool?
+## Software model
+
+![Alt text](https://github.com/Kmayankkr/robocomp/blob/highlyunstable/tools/rcmanager/mvc.jpg "")
+
+Reference - [Sencha Touch - MVC](https://www.tutorialspoint.com/sencha_touch/sencha_touch_mvc_explanation.htm)
+
+## How can we execute the rcmanager tool?
 
 Normally we need to be running the [`rcremoteserver`](https://github.com/robocomp/robocomp/tree/master/tools/rcremote)  tool first. Its mainly because the components are usually run through the rcremote tool which acts like a proxy for server tool.
 

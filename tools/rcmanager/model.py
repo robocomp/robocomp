@@ -70,13 +70,9 @@ class ComponentChecker(threading.Thread):
                 self.mutex.lock()
                 self.alive = True
                 self.mutex.unlock()
-            except Ice.ConnectionRefusedException:
+            except (Ice.ConnectionRefusedException, Ice.ConnectFailedException) as e:
                 self.mutex.lock()
                 self.alive = False
-                self.mutex.unlock()
-            except:
-                self.mutex.lock()
-                self.alive = True
                 self.mutex.unlock()
             if previousAliveValue != self.alive:
                 if self.alive:
