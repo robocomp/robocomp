@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<sdf version="1.6">
+  <world name="default">
+    <include>
+      <uri>file://../gazebo_robocomp_models/ground_plane</uri>
+    </include>
+
+     <include>
+      <uri>file://../gazebo_robocomp_models/sun</uri>
+    </include>
+
+    <model name="box">
+      <link name="link">
+        <pose>0 0 0.5 0 0 0</pose>
+
+        <collision name="box_collision">
+          <geometry>
+            <box>
+              <size>1 1 1</size>
+            </box>
+          </geometry>
+        </collision>
+
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>1 1 1</size>
+            </box>
+          </geometry>
+        </visual>
+
+        <sensor name='my_contact' type='contact'>
+          <plugin name="gazebo_robocomp_bumper" filename="libgazebo_robocomp_bumper.so"/>
+          <contact>
+            <collision>box_collision</collision>
+          </contact>
+        </sensor>
+      </link>
+    </model>
+  </world>
+</sdf>

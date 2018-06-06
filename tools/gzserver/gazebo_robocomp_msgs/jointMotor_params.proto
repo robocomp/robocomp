@@ -1,0 +1,13 @@
+package joint_motor_params.msgs;
+
+message JointMotorParams
+{
+    required double maxVel = 1;
+    required double maxAngle = 2;
+    required double zeroPos = 3;
+    required double minPos = 4;
+    required double maxPos = 5;
+    required double stepsRange = 6;
+    required double maxDegrees = 7;
+    required string name = 8;
+}

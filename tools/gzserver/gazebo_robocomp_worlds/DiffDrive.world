@@ -1,0 +1,28 @@
+<?xml version="1.0" ?>
+<sdf version="1.5">
+  <world name="default">
+    <!-- A global light source -->
+    <include>
+      <uri>file://../gazebo_robocomp_models/sun</uri>
+    </include>
+    <!-- A ground plane -->
+    <include>
+      <uri>file://../gazebo_robocomp_models/ground_plane</uri>
+    </include>
+
+    <!-- A testing model that includes the Velodyne sensor model -->
+    <model name="my_robot">
+      <!-- Attach the plugin to this model -->
+   
+      <include>
+        <uri>file://../gazebo_robocomp_models/my_robot</uri>
+      </include>
+
+      <plugin name="DiffDrive" filename="libgazebo_robocomp_DiffDrive.so">
+        <topicName>/DiffDrive/cmd</topicName>
+      </plugin>
+
+    </model>
+
+  </world>
+</sdf>

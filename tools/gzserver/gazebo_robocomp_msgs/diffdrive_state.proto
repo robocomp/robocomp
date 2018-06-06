@@ -1,0 +1,13 @@
+package diffdrive_state_msgs.msgs;
+
+import "pose.proto";
+import "vector3d.proto";
+
+message DiffDriveState
+{
+    required gazebo.msgs.Pose pose = 1;
+    required gazebo.msgs.Vector3d angVel = 2;
+    required gazebo.msgs.Vector3d linVel = 3;
+    required gazebo.msgs.Vector3d linAccln = 4;
+    required gazebo.msgs.Vector3d angAccln = 5;    
+}

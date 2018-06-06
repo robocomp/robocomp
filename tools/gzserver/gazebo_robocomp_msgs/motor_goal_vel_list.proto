@@ -1,0 +1,7 @@
+package motor_goal_vel_list.msgs;
+
+import "motor_goal_velocity.proto";
+
+message MotorGoalVelocityList {
+    repeated motor_goal_vel_msgs.msgs.MotorGoalVelocity motor_goal_vel_list = 1;
+}

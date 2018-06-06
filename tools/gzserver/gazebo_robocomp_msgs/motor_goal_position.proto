@@ -1,0 +1,8 @@
+package motor_goal_position_msgs.msgs;
+
+message MotorGoalPosition
+{
+    required double position = 1;
+    required double maxVel = 2;
+    required string name = 3;
+}

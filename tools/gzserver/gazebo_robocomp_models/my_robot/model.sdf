@@ -1,0 +1,165 @@
+<?xml version='1.0'?>
+    <sdf version='1.5'>
+	    <model name="my_robot">
+            <static>false</static>
+
+            <link name='chassis'>
+                <pose>0 0 .1 0 0 0</pose>
+
+                <collision name='collision'>
+                    <geometry>
+                        <box>
+                            <size>.4 .2 .1</size>
+                        </box>
+                    </geometry>
+                </collision>
+
+                <visual name='visual'>
+                    <geometry>
+                        <box>
+                            <size>.4 .2 .1</size>
+                        </box>
+                    </geometry>
+                </visual>
+
+                <collision name='caster_collision'>
+                    <pose>-0.15 0 -0.05 0 0 0</pose>
+                    <geometry>
+                        <sphere>
+                            <radius>.05</radius>
+                        </sphere>
+                    </geometry>
+
+                    <surface>
+                        <friction>
+                            <ode>
+                                <mu>0</mu>
+                                <mu2>0</mu2>
+                                <slip1>1.0</slip1>
+                                <slip2>1.0</slip2>
+                            </ode>
+                        </friction>
+                    </surface>
+                </collision>
+
+                <visual name='caster_visual'>
+                    <pose>-0.15 0 -0.05 0 0 0</pose>
+                    <geometry>
+                        <sphere>
+                            <radius>.05</radius>
+                        </sphere>
+                    </geometry>
+                </visual>
+
+
+                <sensor name="laser" type="ray">
+                    <pose>0.01 0 0.03 0 -0 0</pose>
+                    <ray>
+                    <scan>
+                        <horizontal>
+                        <samples>640</samples>
+                        <resolution>1</resolution>
+                        <min_angle>-2.26889</min_angle>
+                        <max_angle>2.268899</max_angle>
+                        </horizontal>
+                    </scan>
+                    <range>
+                        <min>0.4</min>
+                        <max>10</max>
+                        <resolution>0.01</resolution>
+                    </range>
+                    <noise>
+                        <type>gaussian</type>
+                        <mean>0.0</mean>
+                        <stddev>0.01</stddev>
+                    </noise>
+                    </ray>
+                    <plugin name="gazebo_robocomp_laser" filename="libgazebo_robocomp_laser.so" />
+                    <always_on>1</always_on>
+                    <update_rate>30</update_rate>
+                    <visualize>true</visualize>
+                    <topic>/laser_scan_update</topic>
+                </sensor>
+            </link>
+
+            <link name="left_wheel">
+                <pose>0.1 0.13 0.1 0 1.5707 1.5707</pose>
+                <collision name="collision">
+                    <geometry>
+                        <cylinder>
+                            <radius>.1</radius>
+                            <length>.05</length>
+                        </cylinder>
+                    </geometry>
+                </collision>
+
+                <visual name="visual">
+                    <geometry>
+                        <cylinder>
+                            <radius>.1</radius>
+                            <length>.05</length>
+                        </cylinder>
+                    </geometry>
+                </visual>
+
+                <!-- <collision name="collision">
+                    <geometry>
+                        <box>
+                            <size>
+                                0.05 0.05 0.05
+                            </size>
+                        </box>
+                    </geometry>
+                </collision>
+
+                <visual name="visual">
+                    <geometry>
+                        <box>
+                            <size>
+                                0.05 0.05 0.05
+                            </size>
+                        </box>
+                    </geometry>
+                </visual> -->
+            
+            </link>
+
+            <link name="right_wheel">
+                <pose>0.1 -0.13 0.1 0 1.5707 1.5707</pose>
+                <collision name="collision">
+                    <geometry>
+                    <cylinder>
+                        <radius>.1</radius>
+                        <length>.05</length>
+                    </cylinder>
+                    </geometry>
+                </collision>
+                <visual name="visual">
+                    <geometry>
+                    <cylinder>
+                        <radius>.1</radius>
+                        <length>.05</length>
+                    </cylinder>
+                    </geometry>
+                </visual>
+            </link>
+
+            <joint type="revolute" name="left_wheel_hinge">
+                <pose>0 0 -0.03 0 0 0</pose>
+                <child>left_wheel</child>
+                <parent>chassis</parent>
+                <axis>
+                    <xyz>0 0 1</xyz>
+                </axis>
+            </joint>
+
+            <joint type="revolute" name="right_wheel_hinge">
+                <pose>0 0 0.03 0 0 0</pose>
+                <child>right_wheel</child>
+                <parent>chassis</parent>
+                <axis>
+                  <xyz>0 0 1</xyz>
+                </axis>
+            </joint>
+    </model>
+</sdf>

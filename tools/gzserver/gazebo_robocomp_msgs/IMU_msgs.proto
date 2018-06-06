@@ -1,0 +1,10 @@
+package IMU_msgs.msg
+import "imu.proto"
+
+message gazebo_robocomp_IMU
+{
+  required IMU imu_                             = 1;
+  required float[9] orientation_covariance      = 2;
+  required float[9] angular_velocity_covariance = 3;
+  required float[9] linear_velocity_covariance  = 4;
+}

@@ -1,0 +1,8 @@
+package motor_goal_vel_msgs.msgs;
+
+message MotorGoalVelocity
+{
+    required double velocity = 1;
+    required double maxAccel = 2;
+    required string name = 3;
+}

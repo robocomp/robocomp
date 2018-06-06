@@ -1,0 +1,7 @@
+package diffdrive_cmd_msgs.msgs;
+
+message DiffDriveCmd
+{
+    required double linear_vel = 1;
+    required double angular_vel = 2;
+}

@@ -1,0 +1,25 @@
+<?xml version="1.0" ?>
+<sdf version="1.5">
+    <world name="default">
+        
+        <!-- A global light source -->
+        <include>
+            <uri>file://../gazebo_robocomp_models/sun</uri>
+        </include>
+        
+        <!-- A ground plane -->
+        <include>
+            <uri>file://../gazebo_robocomp_models/ground_plane</uri>
+        </include>
+                    
+        <!-- A testing model that includes the Velodyne sensor model -->
+        <model name="my_joint">
+            <include>
+                <uri>file://../gazebo_robocomp_models/velodyne_hdl32</uri>
+            </include>
+                          
+            <!-- Attach the plugin to this model -->
+        </model>
+                                
+    </world>
+</sdf>

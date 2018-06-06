@@ -71,5 +71,7 @@ ui_*.h
 ui_**.pyc
 .idea/
 /components/CMakeLists.txt
-
+tools/gzserver/build/
+tools/gzserver/slice_cpp/src/
+tools/gzserver/slice_cpp/include/
 

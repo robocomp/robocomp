@@ -1,0 +1,10 @@
+package jointMotorState_msgs.msgs;
+
+message JointMotorState
+{
+    required double speed = 1;
+    required string name = 2;
+    required double position = 3;
+    required double torque = 4;
+    required string timestamp = 5;
+}
