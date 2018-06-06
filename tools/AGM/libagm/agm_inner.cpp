@@ -60,7 +60,7 @@ int AGMInner::findSymbolIDWithInnerModelName(AGMModel::SPtr &m, QString n)
  * @param ignoreMeshes whether or not to ignore mesh loading (which makes the process faster)
  * @return InnerModel* tree from InnerModelNode name
  */
-InnerModel* AGMInner::extractInnerModel(AGMModel::SPtr &worldModel, QString imNodeName, bool ignoreMeshes)
+std::shared_ptr<InnerModel> AGMInner::extractInnerModel(AGMModel::SPtr &worldModel, QString imNodeName, bool ignoreMeshes)
 {
 	// Check that the root symbol used for the extraction actually exists
 	int symbolID = findSymbolIDWithInnerModelName(worldModel,imNodeName);
@@ -77,7 +77,7 @@ InnerModel* AGMInner::extractInnerModel(AGMModel::SPtr &worldModel, QString imNo
 	}
 
 	// Perform the extraction assuming the model is RT-loop-less
-	InnerModel *imNew = new InnerModel();
+	std::shared_ptr<InnerModel> imNew(new InnerModel);
 // 	qDebug() << "Calling recorrer";
 	recorrer(worldModel, imNew, symbolID, ignoreMeshes);
 
@@ -92,7 +92,7 @@ InnerModel* AGMInner::extractInnerModel(AGMModel::SPtr &worldModel, QString imNo
  * @param symbolID ID del symbolo punto de partida
  * @return void
  */
-void AGMInner::recorrer(AGMModel::SPtr &worldModel, InnerModel* imNew, const int &symbolID, bool ignoreMeshes)
+void AGMInner::recorrer(AGMModel::SPtr &worldModel,const std::shared_ptr<InnerModel> &imNew, const int &symbolID, bool ignoreMeshes)
 {
 // 	printf("    %s: %d   symbol:%d\n", __FUNCTION__, __LINE__, symbolID);
 	const AGMModelSymbol::SPtr &symbol = worldModel->getSymbol(symbolID);
@@ -121,7 +121,7 @@ void AGMInner::recorrer(AGMModel::SPtr &worldModel, InnerModel* imNew, const int
  * @param imNew ...
  * @return void
  */
-void AGMInner::edgeToInnerModel(AGMModel::SPtr &worldModel, AGMModelEdge edge, InnerModel* imNew, bool ignoreMeshes)
+void AGMInner::edgeToInnerModel(AGMModel::SPtr &worldModel, AGMModelEdge edge,const std::shared_ptr<InnerModel> &imNew, bool ignoreMeshes)
 {
 // 	printf("      %s: %d\n", __FUNCTION__, __LINE__);
 	InnerModelNode* nodeA = NULL;
@@ -210,7 +210,7 @@ void AGMInner::edgeToInnerModel(AGMModel::SPtr &worldModel, AGMModelEdge edge, I
  *
  */
 
-void AGMInner::insertSymbolToInnerModelNode(AGMModel::SPtr &worldModel, InnerModel* imNew,InnerModelNode *parentNode, AGMModelSymbol::SPtr s, float tx, float ty, float tz, float rx, float ry, float rz, bool ignoreMeshes)
+void AGMInner::insertSymbolToInnerModelNode(AGMModel::SPtr &worldModel, const std::shared_ptr<InnerModel> &imNew,InnerModelNode *parentNode, AGMModelSymbol::SPtr s, float tx, float ty, float tz, float rx, float ry, float rz, bool ignoreMeshes)
 {
 // 	printf("        %s: %d\n", __FUNCTION__, __LINE__);
 	QString nodeName;
@@ -853,7 +853,7 @@ bool AGMInner::loopRecursive(AGMModel::SPtr &worldModel, int &symbolID, QList<in
 // 	return l;
 // }
 
-void AGMInner::updateAgmWithInnerModel(AGMModel::SPtr &worldModel, InnerModel* im)
+void AGMInner::updateAgmWithInnerModel(AGMModel::SPtr &worldModel, const std::shared_ptr<InnerModel> &im)
 {
 	/// Vector of the edges that the model holds.
 // 	std::cout << "worldModel->edges.size(): "<<worldModel->edges.size();
@@ -898,7 +898,7 @@ void AGMInner::updateAgmWithInnerModel(AGMModel::SPtr &worldModel, InnerModel* i
 }
 
 //AGMMisc::publishEdgeUpdate(edge,agmexecutive_proxy);
-void AGMInner::updateAgmWithInnerModelAndPublish(AGMModel::SPtr &worldModel, InnerModel* im, AGMExecutivePrx &agmexecutive_proxy)
+void AGMInner::updateAgmWithInnerModelAndPublish(AGMModel::SPtr &worldModel, const std::shared_ptr<InnerModel> &im, AGMExecutivePrx &agmexecutive_proxy)
 {
 	/// Vector of the edges that the model holds.
 // 	std::cout << "worldModel->edges.size(): "<<worldModel->edges.size();
@@ -989,7 +989,7 @@ AGMModel::SPtr AGMInner::extractSymbolicGraph(AGMModel::SPtr &worldModel)
  * @param imTmp InnerModel containing the nodes to be removed
  * @return AGMModel::SPtr limpio de innerModel (normalmente el propio del robot) pero con la info geometrica (RT) actualizadas para los symbolos del mundo "exterior"
  */
-void AGMInner::removeInnerModel(AGMModel::SPtr &worldModel, InnerModel *imTmp)
+void AGMInner::removeInnerModel(AGMModel::SPtr &worldModel, const std::shared_ptr<InnerModel> &imTmp)
 {
 	//if imNode not in agmOriginal, remove the symbol associated to the node in the agmCaliente if exist
 	//imTmp->save("imTmp.xml");
@@ -1022,7 +1022,7 @@ void AGMInner::removeInnerModel(AGMModel::SPtr &worldModel, InnerModel *imTmp)
  * @param match Map matching innermodel to AGM model identifiers
  * @return void
  */
-void AGMInner::include_im(AGMModel::SPtr &worldModel, QHash<QString, int32_t> match, InnerModel *im)
+void AGMInner::include_im(AGMModel::SPtr &worldModel, QHash<QString, int32_t> match, const std::shared_ptr<InnerModel> &im)
 {
 // 	qDebug()<<match;
 	QHash<QString, int32_t>::const_iterator i = match.constBegin();
@@ -1173,7 +1173,7 @@ void AGMInner::include_im(AGMModel::SPtr &worldModel, QHash<QString, int32_t> ma
 
 
 
-void AGMInner::includeInnerModel(AGMModel::SPtr &worldModel, int symbolID, InnerModel *im, std::string &msgs, std::string path)
+void AGMInner::includeInnerModel(AGMModel::SPtr &worldModel, int symbolID, const std::shared_ptr<InnerModel> &im, std::string &msgs, std::string path)
 {
 	// Get target symbol
 	AGMModelSymbol::SPtr symbol;
@@ -1612,7 +1612,7 @@ std::map<std::string, std::string> AGMInner::ImNodeToSymbol(InnerModelNode* node
 	}
 	return attrs;
 }
-void AGMInner::updateImNodeFromEdge(AGMModel::SPtr &worldModel,AGMModelEdge edge, InnerModel* inner)
+void AGMInner::updateImNodeFromEdge(AGMModel::SPtr &worldModel,AGMModelEdge edge, const std::shared_ptr<InnerModel> & inner)
 {
 
 		if (edge->getLabel()=="RT" )
@@ -1653,7 +1653,7 @@ void AGMInner::updateImNodeFromEdge(AGMModel::SPtr &worldModel,AGMModelEdge edge
 		}
 }
 
-void AGMInner::updateImNodeFromEdge(AGMModel::SPtr &worldModel, const RoboCompAGMWorldModel::Edge& edge, InnerModel* innerModel)
+void AGMInner::updateImNodeFromEdge(AGMModel::SPtr &worldModel, const RoboCompAGMWorldModel::Edge& edge, const std::shared_ptr<InnerModel> & innerModel)
 {
 	AGMModelEdge dst;
 	AGMModelConverter::fromIceToInternal(edge,dst);
