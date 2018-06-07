@@ -11,8 +11,12 @@ module OpenpooseBodyData {
 	};
 
 	struct KeyPoint {
+		int i;
+		int j;
 		int x;
-		int y;
+i		int y;
+		int z;
+		float ang;
 		float score;
 	};
 
