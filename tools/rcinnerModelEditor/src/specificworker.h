@@ -64,6 +64,7 @@ private:
     QMessageBox msgBox;
     int flag;
     int render1;
+    QString File_reload;
 
 	QMap<QString, WorkerNode> nodeMap;
 	QMap<QTreeWidgetItem *, WorkerNode> nodeMapByItem;
@@ -96,6 +97,7 @@ public slots:
     void makenode();
 	void create_new_node(bool);
 	void remove_current_node(bool);
+    void reload_same();
 
 private:
 	InnerModel *innerModel;
