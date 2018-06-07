@@ -1,8 +1,8 @@
-#Obstacle Avoiding Bot
+# Obstacle Avoiding Bot
 
 In this tutorial you will learn how to build a bot which avoids the obstacle moving in random.
 
-###Component Generation
+### Component Generation
 I will just run through the steps without much explanation as in detail explanation can be found in the previous tutorials.
 
 	mkdir obstacle
@@ -92,7 +92,7 @@ void SpecificWorker::compute( )
 }
 ```
 
-To compile the std::sort you will have to first add this line at the end of the file CMakeListsSpecific.txt located in the same src directory:
+To compile the `std::sort` you will have to first add this line at the end of the file CMakeListsSpecific.txt located in the same src directory:
 
     ADD_DEFINITIONS( -std=c++11 )
 

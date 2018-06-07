@@ -1,4 +1,4 @@
-#RGBD.idsl
+# RGBD.idsl
 
 ```
 import "JointMotor.idsl";
@@ -45,7 +45,7 @@ module RoboCompRGBD
   */
   struct TRGBDParams
   {
-  	CameraParameters color;
+    CameraParameters color;
     CameraParameters depth;
     int timerPeriod;
     bool talkToBase;
@@ -107,7 +107,7 @@ module RoboCompRGBD
 
 Here in this interface one can calculate the depth, Get an image and display it and also can get various parameters pertaining to an image. 
 
-##getData, getDepthinIR
+## getData, getDepthinIR
 
 This is used to get the RGB image matrix and it's depth. In RGBD.idsl this can be done by the following code,
 
@@ -120,7 +120,7 @@ This is used to get the RGB image matrix and it's depth. In RGBD.idsl this can b
 
 What the above code does the first two lines defines the bot and gets the state of the simulated bot. The next two lines defines a matrix, rgbMatrix and another matrix, distanceMatrix which would contain the depth. The final line calls the function getData which takes all the above as parameters. If you are interested in only getting the distance then getDepthinIR can be used.
 
-##getImage, getDepth, getXYZ, getRGB
+## getImage, getDepth, getXYZ, getRGB
 
 This is used to get the depth, color of each points(co-ordinates) of an image. This can be achieved with the following
 
