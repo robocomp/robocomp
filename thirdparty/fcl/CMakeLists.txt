@@ -57,30 +57,65 @@ if(FCL_USE_SSE)
 endif()
 
 # Find Octomap (optional)
-find_package(PkgConfig QUIET)
+option(FCL_WITH_OCTOMAP "OctoMap library support" ON)
 set(FCL_HAVE_OCTOMAP 0)
-if(PKG_CONFIG_FOUND)
-    pkg_check_modules(OCTOMAP QUIET octomap)
-endif()
-if(NOT OCTOMAP_FOUND)
-    # if pkfconfig is not installed, then fall back on more fragile detection
-    # of octomap
-    find_path(OCTOMAP_INCLUDE_DIRS octomap.h
-        PATH_SUFFIXES octomap)
-    find_library(OCTOMAP_LIBRARY_DIRS
-        ${CMAKE_SHARED_LIBRARY_PREFIX}octomap${CMAKE_SHARED_LIBRARY_SUFFIX})
-    if(OCTOMAP_INCLUDE_DIRS AND OCTOMAP_LIBRARY_DIRS)
-        set(OCTOMAP_LIBRARIES "octomap;octomath")
+
+if(FCL_WITH_OCTOMAP)
+  find_package(octomap QUIET)
+
+  # Older versions of octomap-config.cmake may not define OCTOMAP_VERSION so
+  # fall back to pkg-config
+  if(NOT octomap_FOUND OR NOT OCTOMAP_VERSION)
+    if(PKG_CONFIG_FOUND)
+      pkg_check_modules(PC_OCTOMAP octomap)
     endif()
-endif()
-if (OCTOMAP_FOUND OR (OCTOMAP_INCLUDE_DIRS AND OCTOMAP_LIBRARY_DIRS))
-  include_directories(${OCTOMAP_INCLUDE_DIRS})
-  link_directories(${OCTOMAP_LIBRARY_DIRS})
-  set(FCL_HAVE_OCTOMAP 1)
-  message(STATUS "FCL uses Octomap")
+
+    find_path(OCTOMAP_INCLUDE_DIR octomap/octomap.h
+      HINTS "${PC_OCTOMAP_INCLUDE_DIRS}")
+
+    # Using find_library() even if pkg-config is available ensures that the full
+    # paths to the octomap and octomath libraries are set in OCTOMAP_LIBRARIES
+    find_library(OCTOMAP_LIBRARY octomap
+      HINTS "${PC_OCTOMAP_LIBRARY_DIRS}")
+
+    find_library(OCTOMATH_LIBRARY octomath
+      HINTS "${PC_OCTOMAP_LIBRARY_DIRS}")
+
+    # Use a cache variable so that the version can be manually set if pkg-config
+    # is not available
+    set(OCTOMAP_VERSION "${PC_OCTOMAP_VERSION}"
+      CACHE STRING "octomap version (major.minor.patch)")
+
+    if(OCTOMAP_INCLUDE_DIR AND OCTOMAP_LIBRARY AND OCTOMATH_LIBRARY AND OCTOMAP_VERSION)
+      set(OCTOMAP_INCLUDE_DIRS "${OCTOMAP_INCLUDE_DIR}")
+      set(OCTOMAP_LIBRARIES "${OCTOMAP_LIBRARY}" "${OCTOMATH_LIBRARY}")
+      set(octomap_FOUND ON)
+
+      mark_as_advanced(OCTOMAP_INCLUDE_DIR OCTOMAP_LIBRARY OCTOMATH_LIBRARY OCTOMAP_VERSION)
+    else()
+      set(octomap_FOUND OFF)
+    endif()
+  endif()
+
+  if(octomap_FOUND)
+    if(NOT OCTOMAP_MAJOR_VERSION AND NOT OCTOMAP_MINOR_VERSION AND NOT OCTOMAP_PATCH_VERSION)
+      string(REPLACE "." ";" VERSION_LIST "${OCTOMAP_VERSION}")
+      list(GET VERSION_LIST 0 OCTOMAP_MAJOR_VERSION)
+      list(GET VERSION_LIST 1 OCTOMAP_MINOR_VERSION)
+      list(GET VERSION_LIST 2 OCTOMAP_PATCH_VERSION)
+    endif()
+
+    set(FCL_HAVE_OCTOMAP 1)
+    message(STATUS "FCL uses OctoMap")
+    set(PKG_EXTERNAL_DEPS "${PKG_EXTERNAL_DEPS} octomap")
+  else()
+    message(STATUS "FCL does not use OctoMap")
+  endif()
 else()
-  message(STATUS "FCL does not use Octomap")
+  message(STATUS "FCL does not use OctoMap (as requested)")
 endif()
+
+link_directories(${OCTOMAP_LIBRARY_DIRS})
 
 # Find FLANN (optional)
 find_package(flann QUIET)
