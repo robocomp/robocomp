@@ -1,4 +1,4 @@
-#Tutorials
+# Tutorials
 
 
 [A Brief introduction to Components](components.md)
@@ -21,7 +21,7 @@
 
 [List of **robocomp-robolab** components](robocomp-robolab-components.md)
 
-[Compiling RoboComp with collision detection](Compiling RoboComp with collision detection.md)
+[Compiling RoboComp with collision detection](Compiling-RoboComp-with-collision-detection.md)
 
 [RoboComp Component & Ros Node chatter](RobocompRosChatter.md)
 

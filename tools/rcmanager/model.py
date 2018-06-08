@@ -70,13 +70,9 @@ class ComponentChecker(threading.Thread):
                 self.mutex.lock()
                 self.alive = True
                 self.mutex.unlock()
-            except Ice.ConnectionRefusedException:
+            except (Ice.ConnectionRefusedException, Ice.ConnectFailedException) as e:
                 self.mutex.lock()
                 self.alive = False
-                self.mutex.unlock()
-            except:
-                self.mutex.lock()
-                self.alive = True
                 self.mutex.unlock()
             if previousAliveValue != self.alive:
                 if self.alive:
@@ -181,6 +177,11 @@ class Model():
         self.componentChecker[nodedata['@alias']].begin()
         for key, value in nodedata.items():
             self.graph.node[nodedata['@alias']][key] = value
+
+    def remove_node(self, node):
+        node = str(node)
+        if node in self.graph.nodes():
+            self.graph.remove_node(node)
 
     def add_edge(self, fromNode, toNode):
         self.graph.add_edge(fromNode, toNode)

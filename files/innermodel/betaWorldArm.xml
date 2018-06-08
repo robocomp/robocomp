@@ -162,7 +162,7 @@
 						<transform id="arm_right_2" tz="30" rx="1.5707963267948966" >
 <!-- 							Gira en X -->
 							<mesh id="shoulder_right_2_mesh" file="/home/robocomp/robocomp/files/osgModels/basics/cube.3ds" ty="0" tz="-22" scale="20"    />
-							<joint id="shoulder_right_2" port="20000" min="-1.5707963267948966" max="0" axis="x" home="-0.785398" >
+							<joint id="shoulder_right_2" port="20000" min="-1.5707963267948966" max="0" axis="x" home="-1.285398" >
 								<mesh id="shoulder_right_2_mesh2" file="/home/robocomp/robocomp/files/osgModels/basics/cylinder.3ds" tz="18" scale="10,10,20"    />
 								<transform id="axisArm2" tx="0" ty="0" tz="0"> 
 									<plane id="axisArm2x" px="50" nx="1" size="2,2,100" repeat="1" texture="#ff0000" />
@@ -184,7 +184,7 @@
 										<transform id="arm_right_4" ty="-18"  tz="185"     > <!--Codo-->
 <!-- 											Gira en X -->
 											<mesh id="elbow_right_mesh" file="/home/robocomp/robocomp/files/osgModels/basics/cube.3ds" ty="-22" tz="-22" scale="20"    />
-											<joint id="elbow_right" port="20000" min="0" max="3" axis="x" home="1" >
+											<joint id="elbow_right" port="20000" min="0" max="3" axis="x" home="1.5" >
 												<mesh id="elbow_right_1_mesh2" file="/home/robocomp/robocomp/files/osgModels/basics/cylinder.3ds" tz="18" scale="10,10,20"    />
 												<transform id="axisArm4" tx="0" ty="0" tz="0"> 
 													<plane id="axisArm4x" px="50" nx="1" size="2,2,100" repeat="1" texture="#ff0000" />
@@ -206,7 +206,7 @@
 														<transform id="arm_right_6" tz="200" >
 <!-- 															Gira en X -->
 															<mesh id="wrist_right_2_mesh" file="/home/robocomp/robocomp/files/osgModels/basics/cube.3ds" ty="0" tz="-22" scale="20"    />
-															<joint id="wrist_right_2" port="20000" min="-1.5707963267948966" max="1.5707963267948966" axis="x" home="0" >
+															<joint id="wrist_right_2" port="20000" min="-1.5707963267948966" max="1.5707963267948966" axis="x" home="1.2" >
 																<mesh id="wrist_right_2_mesh2" file="/home/robocomp/robocomp/files/osgModels/basics/cylinder.3ds" tz="18" scale="10,10,20"    />
 																<transform id="axisArm6" tx="0" ty="0" tz="0"> 
 																	<plane id="axisArm6x" px="50" nx="1" size="2,2,100" repeat="1" texture="#ff0000" />

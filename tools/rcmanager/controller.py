@@ -62,15 +62,15 @@ class Controller():
         self.isControllerReady = True
         self._logger.info("Controller object initialized")
 
-        # Save the filename for future use
+        # save the filename for future use
         if isNewFile:
             self.view.filename = filename
             self.view.dirtyBit = False
 
-        # Read the xml data from the file
+        # read the xml data from the file
         self.xml = xmlreader.get_text_from_file(str(filename))
 
-        # Check the xml data for formatting issues
+        # check the xml data for formatting issues
         if not xmlreader.validate_xml(self.xml):
             self._logger.error("XML validation failed. Please use a correctly formatted XML file")
             return
@@ -79,12 +79,33 @@ class Controller():
         self.load_model_into_viewer(self.xml)
         self.configure_viewer()
 
-    def start_component(self, componentAlias):
-        self.model.execute_start_command(str(componentAlias))
+    # configure the user interface
+    def configure_viewer(self):
+        if 'backgroundColor' in self.model.generalInformation.keys():
+            color = QColor(self.model.generalInformation['backgroundColor']['@value'])
+            self.view.set_background_color(color)
 
-    def stop_component(self, componentAlias):
-        self.model.execute_stop_command(str(componentAlias))
+    # component related tasks
+    def start_component(self):
+        selectedNodes = self.view.graph_visualization.selected_nodes()
+        for node in selectedNodes:
+            self.model.execute_start_command(str(node))
 
+    def stop_component(self):
+        selectedNodes = self.view.graph_visualization.selected_nodes()
+        for node in selectedNodes:
+            self.model.execute_stop_command(str(node))
+
+    def add_component(self, nodedata):
+        self.model.add_node(nodedata)
+
+    def remove_component(self):
+        selectedNodes = self.view.graph_visualization.selected_nodes()
+        for node in selectedNodes:
+            self.view.remove_node(str(node))
+            self.model.remove_node(str(node))        
+
+    # XML related tasks 
     def load_model_into_viewer(self, xml):
         self.view.clear_graph_visualization()
         self.view.set_editor_text(xml)
@@ -134,25 +155,6 @@ class Controller():
             self.view.dirtyBit = True
         self.model.generalInformation['backgroundColor'] = {'@value': color.name()}
 
-    def configure_viewer(self):
-        if 'backgroundColor' in self.model.generalInformation.keys():
-            color = QColor(self.model.generalInformation['backgroundColor']['@value'])
-            self.view.set_background_color(color)
-
-    def check_dirty_bit(self):
-        index = self.view.tabWidget.currentIndex()
-        if index == 0:
-            self.update_model()
-        elif index == 1:
-            try:
-                first = self.normalise_dict(xmlreader.read_from_text(str(self.xml), 'xml'))
-                second = self.normalise_dict(xmlreader.read_from_text(str(self.view.codeEditor.text()), 'xml'))
-
-                if not first == second:
-                    self.view.dirtyBit = True
-            except Exception, e:
-                self._logger.error("XML file in code editor is incorrectly formatted")
-
     def normalise_dict(self, d):
         """
         Recursively convert dict-like object (eg OrderedDict) into plain dict.
@@ -173,6 +175,7 @@ class Controller():
                 out[k] = v
         return out
 
+    # load/save operations 
     def load_manager_file(self, filename, isNewFile=True):
         self.controller_init_action(filename, isNewFile)
 
@@ -183,3 +186,17 @@ class Controller():
         except Exception, e:
             self._logger.error("Couldn't save to file " + filename)
             raise e
+
+    def check_dirty_bit(self):
+        index = self.view.tabWidget.currentIndex()
+        if index == 0:
+            self.update_model()
+        elif index == 1:
+            try:
+                first = self.normalise_dict(xmlreader.read_from_text(str(self.xml), 'xml'))
+                second = self.normalise_dict(xmlreader.read_from_text(str(self.view.codeEditor.text()), 'xml'))
+
+                if not first == second:
+                    self.view.dirtyBit = True
+            except Exception, e:
+                self._logger.error("XML file in code editor is incorrectly formatted")
