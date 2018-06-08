@@ -38,7 +38,7 @@ include_directories(
     ${OGRE-Paging_INCLUDE_DIRS}
     ${OGRE-Terrain_INCLUDE_DIRS}
     ${PCL_INCLUDE_DIRS}
-    build/gazebo_robocomp_msgs
+    ${CMAKE_CURRENT_LIST_DIR}/../../build/tools/gzserver/gazebo_robocomp_msgs
     ${easyiceconfig_INCLUDE_DIRS}
     ice-interface/include
     slice_cpp/include
