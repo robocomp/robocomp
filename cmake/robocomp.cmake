@@ -27,7 +27,7 @@ MACRO( ROBOCOMP_INITIALIZE )
 
 #   INCLUDE ( $ENV{ROBOCOMP}/cmake/modules/ipp.cmake )
 
-  SET( LIBS ${LIBS} -L/opt/robocomp/lib ${OSG_LIBRARY} -losgViewer -losg -losgUtil  -losgGA ${OSGDB_LIBRARY} ${OSGVIEWER_LIBRARY} ${OPENTHREADS_LIBRARY}  -L${ICEROOT}/lib/ -L${ROBOCOMP_ROOT}/classes -lIce -lIceUtil -lpthread -lIceStorm -lboost_system  robocomp_qmat ${IPP_LIBS} robocomp_innermodel robocomp_osgviewer)
+  SET( LIBS ${LIBS} -L/opt/robocomp/lib ${OSG_LIBRARY} -losgViewer -losg -losgUtil  -losgGA ${OSGDB_LIBRARY} ${OSGVIEWER_LIBRARY} ${OPENTHREADS_LIBRARY}  -L${ICEROOT}/lib/ -L${ROBOCOMP_ROOT}/classes -lIce -lIceUtil -lpthread -lIceStorm -lboost_system  robocomp_qmat ${IPP_LIBS} robocomp_innermodel robocomp_osgviewer -L/usr/lib/x86_64-linux-gnu/c++11 ${PCL_LIBRARY_DIRS})
  
 ENDMACRO( ROBOCOMP_INITIALIZE )
 
