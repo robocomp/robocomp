@@ -99,9 +99,6 @@ SUBDIRS(
 link_directories(
     /usr/lib/x86_64-linux-gnu/c++11
 )
-include_directories(
-  build/gzserver/gazebo_robocomp_msgs
-)
 
 # Install rules necessary to allow compiling components without the robocomp's source code
 INSTALL(DIRECTORY "interfaces" DESTINATION /opt/robocomp/ )
