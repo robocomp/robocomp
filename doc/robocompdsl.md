@@ -213,18 +213,13 @@ As you might have learned from the tutorial "[A brief introduction to Components
 
 ## Video Tutorials
 
-Component Creation using Python.
+### Component Creation using Python
 
+[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/9-fEKLgsgPc/0.jpg)](https://www.youtube.com/watch?v=9-fEKLgsgPc)
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/9-fEKLgsgPc" frameborder="0" allowfullscreen></iframe>
+### Component Creation using C++
 
-
-Component Creation using C++
-
-
-<iframe width="560" height="315" src="https://www.youtube.com/embed/LjHv_Nh16PU" frameborder="0" allowfullscreen></iframe>
-
-
+[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/LjHv_Nh16PU/0.jpg)](https://www.youtube.com/watch?v=LjHv_Nh16PU)
 
 
 
