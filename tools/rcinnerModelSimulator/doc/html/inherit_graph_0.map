@@ -1,7 +1,0 @@
-<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node2" href="$classDifferentialRobotI.html" title="DifferentialRobotI" alt="" coords="199,5,319,32"/>
-<area shape="rect" id="node4" href="$classInnerModelManagerI.html" title="InnerModelManagerI" alt="" coords="189,56,329,83"/>
-<area shape="rect" id="node6" href="$classOmniRobotI.html" title="OmniRobotI" alt="" coords="214,157,305,184"/>
-<area shape="rect" id="node8" href="$classGenericMonitor.html" title="GenericMonitor" alt="" coords="204,107,315,133"/>
-<area shape="rect" id="node9" href="$classSpecificMonitor.html" title="SpecificMonitor" alt="" coords="377,107,488,133"/>
-</map>
