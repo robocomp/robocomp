@@ -10,6 +10,8 @@ There are three tasks we can acomplish using **robocompdsl**. We can generate:
 - The code for a previously existing CDSL file.
 - The code for an already generated component.
 
+&rightarrow; There are video tutorials at the end, if you prefer seeing someone else doing it first  :video_camera:
+
 ## Generating a CDSL template file
 Even though writing CDSL files is easy -their structure is simple and the number of reserved words is very limited- robocompdsl can generate template CDSL files to be used as a guide when writing CDSL files.
 Start by creating a new directory for your component named, for instance, *myComponent*, inside the robocomp directory. Then run the code generator:
