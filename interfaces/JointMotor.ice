@@ -75,7 +75,6 @@ module RoboCompJointMotor{
 		MotorParams getMotorParams(string motor)throws UnknownMotorException;
 		MotorState getMotorState(string motor)throws UnknownMotorException;
 		MotorStateMap getMotorStateMap(MotorList mList)throws UnknownMotorException;
-		void  getAllMotorState(out MotorStateMap mstateMap)throws UnknownMotorException;
 		MotorParamsList getAllMotorParams();
 		BusParams getBusParams();
 	};

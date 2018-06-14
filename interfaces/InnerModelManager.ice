@@ -61,6 +61,7 @@ module RoboCompInnerModelManager
 		float thickness;
 		string texture;
 	};
+	
 	struct coord3D
 	{
 		float x;

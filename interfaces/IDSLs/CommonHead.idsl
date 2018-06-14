@@ -5,14 +5,14 @@ import "JointMotor.idsl";
 */
 module RoboCompCommonHead
 {
-	dictionary<string,RoboCompJointMotor::MotorParams> dmotorParams;
+	dictionary<string, RoboCompJointMotor::MotorParams> dmotorParams;
 	struct THeadParams
 	{
 		dmotorParams motorsParams;
 		string model;
 	};
 
-    dictionary < string,RoboCompJointMotor::MotorState > dmotorsState;
+  dictionary <string, RoboCompJointMotor::MotorState> dmotorsState;
 	struct THeadState   // In Radians
 	{
 		dmotorsState motorsState;
@@ -22,26 +22,26 @@ module RoboCompCommonHead
 
   /** \interface HeadParams
   * @brief interface HeadParams
-  */  
+  */
   interface CommonHead
   {
 	/// Send cameras to ZEROPOS and set zero speed.
-	void resetHead();                   
+	void resetHead();
 	/// Stop head where it is now
-	void stopHead();             
+	void stopHead();
 	/// Set PanI servo to pan rads
-	void setPanLeft(float pan) throws RoboCompJointMotor::OutOfRangeException;         
+	void setPanLeft(float pan) throws RoboCompJointMotor::OutOfRangeException;
 	/// Set PanD servo to pan rads
-	void setPanRight(float pan) throws RoboCompJointMotor::OutOfRangeException;  
+	void setPanRight(float pan) throws RoboCompJointMotor::OutOfRangeException;
 	/// Set Tilt servo to tilt rads
-	void setTilt(float tilt) throws RoboCompJointMotor::OutOfRangeException; 
+	void setTilt(float tilt) throws RoboCompJointMotor::OutOfRangeException;
 	/// Set neck servo to neck radians
 	void setNeck(float neck) throws RoboCompJointMotor::OutOfRangeException;
-	void saccadic2DLeft(float leftPan, float tilt) throws RoboCompJointMotor::OutOfRangeException; 
-	void saccadic2DRight(float rightPan, float tilt) throws RoboCompJointMotor::OutOfRangeException; 
-	void saccadic3D(float leftPan, float rightPan, float tilt) throws RoboCompJointMotor::OutOfRangeException; 
-	void saccadic4D(float leftPan, float rightPan, float tilt, float neck) throws RoboCompJointMotor::OutOfRangeException; 
-	void setNMotorsPosition(RoboCompJointMotor::MotorGoalPositionList listGoals) throws RoboCompJointMotor::OutOfRangeException; 
+	void saccadic2DLeft(float leftPan, float tilt) throws RoboCompJointMotor::OutOfRangeException;
+	void saccadic2DRight(float rightPan, float tilt) throws RoboCompJointMotor::OutOfRangeException;
+	void saccadic3D(float leftPan, float rightPan, float tilt) throws RoboCompJointMotor::OutOfRangeException;
+	void saccadic4D(float leftPan, float rightPan, float tilt, float neck) throws RoboCompJointMotor::OutOfRangeException;
+	void setNMotorsPosition(RoboCompJointMotor::MotorGoalPositionList listGoals) throws RoboCompJointMotor::OutOfRangeException;
 
 	RoboCompCommonHead::THeadParams getHeadParams();
 	void getHeadState(out RoboCompCommonHead::THeadState hState);
