@@ -71,5 +71,5 @@ rccd component
 
 ## Notes
 
-* The build tools doesn't support python components as of now.
+* The build tools don't support python components yet.
 * Auto completion is enabled all the components except `rccd` so that you don't need to remember the exact component name. It works by pressing tab when you have written enough letters, so the auto completion knows what words you are about to write.
