@@ -60,18 +60,20 @@ private:
  	OsgView *world3D;
 	// InnerModel *innerModel;
 	InnerModelViewer *imv;
-	WorkerNode currentNode;
-    QMessageBox msgBox;
-    int flag;
-    int render1;
-    QString File_reload;
+    	InnerModelNode *prevNode = NULL;
+    	WorkerNode currentNode,current_node;
+    	QMessageBox msgBox;
+    	int flag;
+    	int render1;
+    	QString File_reload, prevTexture;
 
 	QMap<QString, WorkerNode> nodeMap;
 	QMap<QTreeWidgetItem *, WorkerNode> nodeMapByItem;
 
 	void showAvailableGroups();
+   	void highlightNode();
 	void interfaceConnections(bool enable);
-    void newnodeConnections(bool enable);
+   	void newnodeConnections(bool enable);
 	void showTransform(QString id);
 	void showRotation(QString id);
 	void showJoint(QString id);
@@ -93,11 +95,11 @@ public slots:
 	void translationChanged();
 	void rotationChanged();
 	void jointChanged();
-    void shownode();
-    void makenode();
+    	void shownode();
+    	void makenode();
 	void create_new_node(bool);
-	void remove_current_node(bool);
-    void reload_same();
+    	//void remove_current_node();
+    	void reload_same();
 
 private:
 	InnerModel *innerModel;

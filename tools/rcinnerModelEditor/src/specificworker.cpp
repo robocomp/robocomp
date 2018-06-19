@@ -19,8 +19,8 @@
 #include "specificworker.h"
 
 /**
-* \brief Default constructor
-*/
+ * \brief Default constructor
+ */
 SpecificWorker::SpecificWorker(MapPrx& mprx) : GenericWorker(mprx)
 {
 	mutex = new QMutex();
@@ -29,20 +29,20 @@ SpecificWorker::SpecificWorker(MapPrx& mprx) : GenericWorker(mprx)
 	QGLFormat fmt;
 	fmt.setDoubleBuffer(true);
 	QGLFormat::setDefaultFormat(fmt);
-    //world3D = new OsgView(frame);
-    groupBox_2->hide();
+	//world3D = new OsgView(frame);
+	groupBox_2->hide();
 	connect(openpushButton,SIGNAL(clicked()),this, SLOT(openFile()));
 	connect(&timer, SIGNAL(timeout()), this, SLOT(compute()));
 	connect(create_new_nodepushButton, SIGNAL(clicked(bool)), this, SLOT(create_new_node(bool)));
-    connect(remove_current_nodepushButton, SIGNAL(clicked(bool)), this, SLOT(remove_current_node(bool)));
+	connect(remove_current_nodepushButton, SIGNAL(clicked()), this, SLOT(remove_current_node()));
 	connect(treeWidget, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
-    connect(reloadpushButton,SIGNAL(clicked()),this,SLOT(reload_same()));
+	connect(reloadpushButton,SIGNAL(clicked()),this,SLOT(reload_same()));
 	showMaximized();
 }
 
 /**
-* \brief Default destructor
-*/
+ * \brief Default destructor
+ */
 SpecificWorker::~SpecificWorker()
 {
 
@@ -160,9 +160,33 @@ void SpecificWorker::currentItemChanged(QTreeWidgetItem *current, QTreeWidgetIte
 	interfaceConnections(false);
 	currentNode = nodeMapByItem[current];
 	showAvailableGroups();
+	highlightNode();
 	interfaceConnections(true);
 }
 
+void SpecificWorker::highlightNode()
+{
+	InnerModelPlane *plane;
+	if(prevNode!=NULL)
+	{
+		if ((plane = dynamic_cast<InnerModelPlane *>(prevNode)))
+		{
+			plane->texture = prevTexture;
+			imv->update();
+		}
+	}
+
+	prevNode = (InnerModelNode *)innerModel->getNode(currentNode.id);
+	InnerModelNode *HighNode = (InnerModelNode *)innerModel->getNode(currentNode.id);
+
+	if ((plane = dynamic_cast<InnerModelPlane *>(HighNode)))
+	{
+		prevTexture = plane->texture;
+		plane->texture = "/home/robocomp/robocomp/files/osgModels/textures/blue.jpg";
+		imv->update();
+	}
+
+}
 
 void SpecificWorker::showAvailableGroups()
 {
@@ -372,12 +396,12 @@ void SpecificWorker::showCamera(QString id)
 void SpecificWorker::saveButtonClicked()
 {
 	QString fileName = QFileDialog::getSaveFileName(this,
-        tr("Save XML"), "",
-        tr("XML file (*.xml)"));
+			tr("Save XML"), "",
+			tr("XML file (*.xml)"));
 	if (fileName.isEmpty())
-        return;
-  else {
-      innerModel->save(fileName);
+		return;
+	else {
+		innerModel->save(fileName);
 	}
 
 }
@@ -422,6 +446,7 @@ void SpecificWorker::planeChanged()
 	m->height = rectangleHeight->value();
 	m->texture = texture->text();
 	m->repeat = textureSize->value();
+	imv->update();
 }
 
 void SpecificWorker::translationChanged()
@@ -479,222 +504,223 @@ void SpecificWorker::jointChanged()
 
 void SpecificWorker::shownode()
 {
-    if(Typea->currentText()=="transform")
-    {
-        translationGroup_2->show();
-        rotationGroup_2->show();
-        meshGroup_2->hide();
-        planeGroup_2->hide();
-        cameraGroup_2->hide();
-        jointGroup_2->hide();
-        massBox->show();
-        portBox->hide();
-        noiseBox->hide();
-        laserBox->hide();
-        Ifconfiga->hide();
-    }
-    else if(Typea->currentText()== "mesh")
-    {
-        translationGroup_2->show();
-        rotationGroup_2->show();
-        meshGroup_2->show();
-        planeGroup_2->hide();
-        cameraGroup_2->hide();
-        jointGroup_2->hide();
-        massBox->hide();
-        portBox->hide();
-        noiseBox->hide();
-        laserBox->hide();
-        Ifconfiga->hide();
-    }
-    else if(Typea->currentText()== "plane")
-    {
-        planeGroup_2->show();
-        translationGroup_2->hide();
-        rotationGroup_2->hide();
-        meshGroup_2->hide();
-        cameraGroup_2->hide();
-        jointGroup_2->hide();
-        massBox->hide();
-        portBox->hide();
-        noiseBox->hide();
-        laserBox->hide();
-        Ifconfiga->hide();
-    }
-    else if(Typea->currentText()== "camera")
-    {
-        cameraGroup_2->show();
-        translationGroup_2->hide();
-        rotationGroup_2->hide();
-        meshGroup_2->hide();
-        planeGroup_2->hide();
-        jointGroup_2->hide();
-        massBox->hide();
-        portBox->hide();
-        noiseBox->hide();
-        laserBox->hide();
-        Ifconfiga->hide();
-    }
-    else if(Typea->currentText()== "imu")
-    {
-        cameraGroup_2->hide();
-        translationGroup_2->hide();
-        rotationGroup_2->hide();
-        meshGroup_2->hide();
-        planeGroup_2->hide();
-        jointGroup_2->hide();
-        massBox->hide();
-        portBox->show();
-        noiseBox->hide();
-        laserBox->hide();
-        Ifconfiga->hide();
-    }
-    else if(Typea->currentText()== "laser")
-    {
-        cameraGroup_2->hide();
-        translationGroup_2->hide();
-        rotationGroup_2->hide();
-        meshGroup_2->hide();
-        planeGroup_2->hide();
-        jointGroup_2->hide();
-        massBox->hide();
-        portBox->show();
-        noiseBox->hide();
-        laserBox->show();
-        Ifconfiga->show();
-    }
-    else if(Typea->currentText()== "rgbd")
-    {
-        cameraGroup_2->show();
-        translationGroup_2->hide();
-        rotationGroup_2->hide();
-        meshGroup_2->hide();
-        planeGroup_2->hide();
-        jointGroup_2->hide();
-        massBox->hide();
-        portBox->show();
-        noiseBox->hide();
-        laserBox->hide();
-        Ifconfiga->show();
-    }
-    else if(Typea->currentText()== "joint")
-    {
-        jointGroup_2->show();
-        translationGroup_2->hide();
-        rotationGroup_2->hide();
-        meshGroup_2->hide();
-        planeGroup_2->hide();
-        cameraGroup_2->hide();
-        massBox->hide();
-        portBox->hide();
-        noiseBox->hide();
-        laserBox->hide();
-        Ifconfiga->hide();
-    }
-    else
-    {
-        qDebug()<< "type valid node";
-    }
+	if(Typea->currentText()=="transform")
+	{
+		translationGroup_2->show();
+		rotationGroup_2->show();
+		meshGroup_2->hide();
+		planeGroup_2->hide();
+		cameraGroup_2->hide();
+		jointGroup_2->hide();
+		massBox->show();
+		portBox->hide();
+		noiseBox->hide();
+		laserBox->hide();
+		Ifconfiga->hide();
+	}
+	else if(Typea->currentText()== "mesh")
+	{
+		translationGroup_2->show();
+		rotationGroup_2->show();
+		meshGroup_2->show();
+		planeGroup_2->hide();
+		cameraGroup_2->hide();
+		jointGroup_2->hide();
+		massBox->hide();
+		portBox->hide();
+		noiseBox->hide();
+		laserBox->hide();
+		Ifconfiga->hide();
+	}
+	else if(Typea->currentText()== "plane")
+	{
+		planeGroup_2->show();
+		translationGroup_2->hide();
+		rotationGroup_2->hide();
+		meshGroup_2->hide();
+		cameraGroup_2->hide();
+		jointGroup_2->hide();
+		massBox->hide();
+		portBox->hide();
+		noiseBox->hide();
+		laserBox->hide();
+		Ifconfiga->hide();
+	}
+	else if(Typea->currentText()== "camera")
+	{
+		cameraGroup_2->show();
+		translationGroup_2->hide();
+		rotationGroup_2->hide();
+		meshGroup_2->hide();
+		planeGroup_2->hide();
+		jointGroup_2->hide();
+		massBox->hide();
+		portBox->hide();
+		noiseBox->hide();
+		laserBox->hide();
+		Ifconfiga->hide();
+	}
+	else if(Typea->currentText()== "imu")
+	{
+		cameraGroup_2->hide();
+		translationGroup_2->hide();
+		rotationGroup_2->hide();
+		meshGroup_2->hide();
+		planeGroup_2->hide();
+		jointGroup_2->hide();
+		massBox->hide();
+		portBox->show();
+		noiseBox->hide();
+		laserBox->hide();
+		Ifconfiga->hide();
+	}
+	else if(Typea->currentText()== "laser")
+	{
+		cameraGroup_2->hide();
+		translationGroup_2->hide();
+		rotationGroup_2->hide();
+		meshGroup_2->hide();
+		planeGroup_2->hide();
+		jointGroup_2->hide();
+		massBox->hide();
+		portBox->show();
+		noiseBox->hide();
+		laserBox->show();
+		Ifconfiga->show();
+	}
+	else if(Typea->currentText()== "rgbd")
+	{
+		cameraGroup_2->show();
+		translationGroup_2->hide();
+		rotationGroup_2->hide();
+		meshGroup_2->hide();
+		planeGroup_2->hide();
+		jointGroup_2->hide();
+		massBox->hide();
+		portBox->show();
+		noiseBox->hide();
+		laserBox->hide();
+		Ifconfiga->show();
+	}
+	else if(Typea->currentText()== "joint")
+	{
+		jointGroup_2->show();
+		translationGroup_2->hide();
+		rotationGroup_2->hide();
+		meshGroup_2->hide();
+		planeGroup_2->hide();
+		cameraGroup_2->hide();
+		massBox->hide();
+		portBox->hide();
+		noiseBox->hide();
+		laserBox->hide();
+		Ifconfiga->hide();
+	}
+	else
+	{
+		qDebug()<< "type valid node";
+	}
 }
 
 void SpecificWorker::makenode()
 {
-    InnerModelNode *par= (InnerModelNode *)innerModel->getNode(parenta->text());
-    if (par==NULL)
-    {
-        msgBox.setText("Enter valid Parent Id");
-        msgBox.exec();
-    }
+	InnerModelNode *par= (InnerModelNode *)innerModel->getNode(parenta->text());
+	if (par==NULL)
+	{
+		msgBox.setText("Enter valid Parent Id");
+		msgBox.exec();
+	}
 
-    else
-    {
-    InnerModelNode *check= (InnerModelNode *)innerModel->getNode(newid->text());
+	else
+	{
+		InnerModelNode *check= (InnerModelNode *)innerModel->getNode(newid->text());
 
-    if(check==NULL)
-    {
-    if(Typea->currentText()=="transform")
-    {
-        InnerModelTransform *newnode = (InnerModelTransform *)innerModel->newTransform(newid->text(), "static", par, tx_2->value(), ty_2->value(), tz_2->value(), rx_2->value(), ry_2->value(), rz_2->value(), massa->value());
-        par->addChild(newnode);
-        flag=0;
-    }
-    else if(Typea->currentText()== "mesh")
-    {
-        if (renderMode_2->currentIndex() == 0)
-            render1 = 0;
-        else if (renderMode_2->currentIndex() == 1)
-            render1 = 1;
-        InnerModelMesh *newnode = (InnerModelMesh *)innerModel->newMesh(newid->text(), par, osgFile_2->text(), scalex_2->value(), scaley_2->value(), scalez_2->value(), render1, tx->value(), ty->value(), tz->value(), rx->value(), ry->value(), rz->value(), 0);
-        par->addChild(newnode);
-        flag=0;
-    }
-    else if(Typea->currentText()== "plane")
-    {
-        InnerModelPlane *newnode = (InnerModelPlane *)innerModel->newPlane(newid->text(), par, texture_2->text(), rectangleWidth_2->value(), rectangleHeight_2->value()
-                                                       , dep->value(), textureSize_2->value(), pnx_2->value(), pny_2->value(), pnz_2->value()
-                                                       , px_2->value(), py_2->value(), pz_2->value(), 0);
-        par->addChild(newnode);
-        flag=0;
-    }
-    else if(Typea->currentText()== "camera")
-    {
-        InnerModelCamera *newnode = (InnerModelCamera *)innerModel->newCamera(newid->text(), par, cwidth_2->value(), cheight_2->value(), focal_2->value());
-        par->addChild(newnode);
-        flag=0;
-    }
-    else if(Typea->currentText()== "imu")
-    {
-        InnerModelIMU *newnode = (InnerModelIMU *)innerModel->newIMU(newid->text(), par,porta->value());
-        par->addChild(newnode);
-        flag=0;
-    }
-    else if(Typea->currentText()== "laser")
-    {
-        InnerModelLaser *newnode = (InnerModelLaser *)innerModel->newLaser(newid->text(), par, porta->value(), Mina->value(), Maxa->value(), anglea->value(), measurea->value(), Ifconfiga->text());
-        par->addChild(newnode);
-        flag=0;
-    }
-    else if(Typea->currentText()== "rgbd")
-    {
-        InnerModelRGBD *newnode = (InnerModelRGBD *)innerModel->newRGBD(newid->text(), par, cwidth_2->value(), cheight_2->value(), focal_2->value(), noisea->value(), porta->value(), Ifconfiga->text());
-        par->addChild(newnode);
-        flag=0;
-    }
-    else if(Typea->currentText()== "joint")
-    {
-        qDebug()<< "later";
-    }
-    else
-    {
-        msgBox.setText("Enter valid type");
-        msgBox.exec();
-        flag=1;
-    }
-    if(flag==0)
-    {
-        QString fileName = QFileDialog::getSaveFileName(this,
-                tr("Save XML"), "",
-                tr("XML file (*.xml)"));
-            if (fileName.isEmpty())
-                return;
-          else {
-              innerModel->save(fileName);
-            }
-        qDebug()<< "create new node " << newid->text();
+		if(check==NULL)
+		{
+			if(Typea->currentText()=="transform")
+			{
+				InnerModelTransform *newnode = (InnerModelTransform *)innerModel->newTransform(newid->text(), "static", par, tx_2->value(), ty_2->value(), tz_2->value(), rx_2->value(), ry_2->value(), rz_2->value(), massa->value());
+				par->addChild(newnode);
+				flag=0;
+			}
+			else if(Typea->currentText()== "mesh")
+			{
+				if (renderMode_2->currentIndex() == 0)
+					render1 = 0;
+				else if (renderMode_2->currentIndex() == 1)
+					render1 = 1;
+				InnerModelMesh *newnode = (InnerModelMesh *)innerModel->newMesh(newid->text(), par, osgFile_2->text(), scalex_2->value(), scaley_2->value(), scalez_2->value(), render1, tx->value(), ty->value(), tz->value(), rx->value(), ry->value(), rz->value(), 0);
+				par->addChild(newnode);
+				flag=0;
+			}
+			else if(Typea->currentText()== "plane")
+			{
+				InnerModelPlane *newnode = (InnerModelPlane *)innerModel->newPlane(newid->text(), par, texture_2->text(), rectangleWidth_2->value(), rectangleHeight_2->value()
+						, dep->value(), textureSize_2->value(), pnx_2->value(), pny_2->value(), pnz_2->value()
+						, px_2->value(), py_2->value(), pz_2->value(), 0);
+				par->addChild(newnode);
+				flag=0;
+			}
+			else if(Typea->currentText()== "camera")
+			{
+				InnerModelCamera *newnode = (InnerModelCamera *)innerModel->newCamera(newid->text(), par, cwidth_2->value(), cheight_2->value(), focal_2->value());
+				par->addChild(newnode);
+				flag=0;
+			}
+			else if(Typea->currentText()== "imu")
+			{
+				InnerModelIMU *newnode = (InnerModelIMU *)innerModel->newIMU(newid->text(), par,porta->value());
+				par->addChild(newnode);
+				flag=0;
+			}
+			else if(Typea->currentText()== "laser")
+			{
+				InnerModelLaser *newnode = (InnerModelLaser *)innerModel->newLaser(newid->text(), par, porta->value(), Mina->value(), Maxa->value(), anglea->value(), measurea->value(), Ifconfiga->text());
+				par->addChild(newnode);
+				flag=0;
+			}
+			else if(Typea->currentText()== "rgbd")
+			{
+				InnerModelRGBD *newnode = (InnerModelRGBD *)innerModel->newRGBD(newid->text(), par, cwidth_2->value(), cheight_2->value(), focal_2->value(), noisea->value(), porta->value(), Ifconfiga->text());
+				par->addChild(newnode);
+				flag=0;
+			}
+			else if(Typea->currentText()== "joint")
+			{
+				qDebug()<< "later";
+			}
+			else
+			{
+				msgBox.setText("Enter valid type");
+				msgBox.exec();
+				flag=1;
+			}
+			if(flag==0)
+			{
+				QString fileName = QFileDialog::getSaveFileName(this,
+						tr("Save XML"), "",
+						tr("XML file (*.xml)"));
+				if (fileName.isEmpty())
+					return;
+				else {
+					innerModel->save(fileName);
+				}
+				qDebug()<< "create new node " << newid->text();
 
-    }
-    }
-    else
-    {
-        msgBox.setText("Node you entered already exist");
-        msgBox.exec();
-    }
-    
-    disconnect(treeWidget, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
-    treeWidget->clear();
-    connect(treeWidget, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
-    fillNodeMap(innerModel->getNode("root"), NULL);
-}
+			}
+		}
+		else
+		{
+			msgBox.setText("Node you entered already exist");
+			msgBox.exec();
+		}
+
+		disconnect(treeWidget, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
+		treeWidget->clear();
+		connect(treeWidget, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
+		fillNodeMap(innerModel->getNode("root"), NULL);
+		imv->update();
+	}
 
 }
 
@@ -778,88 +804,99 @@ void SpecificWorker::interfaceConnections(bool enable)
 
 void SpecificWorker::create_new_node(bool bul)
 {
-    newnodeConnections(false);
-    groupBox_2->show();
-    newid->show();
-    Typea->show();
-    parenta->show();
-    cameraGroup_2->hide();
-    translationGroup_2->hide();
-    rotationGroup_2->hide();
-    meshGroup_2->hide();
-    planeGroup_2->hide();
-    jointGroup_2->hide();
-    massBox->hide();
-    portBox->hide();
-    noiseBox->hide();
-    laserBox->hide();
-    Ifconfiga->hide();
-    newnodeConnections(true);
-    //connect(savepushButton,SIGNAL(clicked()),this,SLOT(makenode()));
-    //printf("create new node %d\n", bul);
+	newnodeConnections(false);
+	groupBox_2->show();
+	newid->show();
+	Typea->show();
+	parenta->show();
+	cameraGroup_2->hide();
+	translationGroup_2->hide();
+	rotationGroup_2->hide();
+	meshGroup_2->hide();
+	planeGroup_2->hide();
+	jointGroup_2->hide();
+	massBox->hide();
+	portBox->hide();
+	noiseBox->hide();
+	laserBox->hide();
+	Ifconfiga->hide();
+	newnodeConnections(true);
+	//connect(savepushButton,SIGNAL(clicked()),this,SLOT(makenode()));
+	//printf("create new node %d\n", bul);
 }
 
 void SpecificWorker::newnodeConnections(bool enable)
 {
-    if(enable)
-    {
-        //connect(parenta,SIGNAL(editingFinished()),this,SLOT(makenode()));
-        connect(Typea,SIGNAL(currentIndexChanged(int)),this,SLOT(shownode()));
-        connect(savepushButton,SIGNAL(clicked()),this,SLOT(makenode()));
-    }
+	if(enable)
+	{
+		//connect(parenta,SIGNAL(editingFinished()),this,SLOT(makenode()));
+		connect(Typea,SIGNAL(currentIndexChanged(int)),this,SLOT(shownode()));
+		connect(savepushButton,SIGNAL(clicked()),this,SLOT(makenode()));
+	}
 
-    else
-    {
-        //disconnect(parenta,SIGNAL(editingFinished()),this,SLOT(makenode()));
-        disconnect(Typea,SIGNAL(currentIndexChanged(int)),this,SLOT(shownode()));
-        disconnect(savepushButton,SIGNAL(clicked()),this,SLOT(makenode()));
-    }
-    //qDebug()<< "hello";
+	else
+	{
+		//disconnect(parenta,SIGNAL(editingFinished()),this,SLOT(makenode()));
+		disconnect(Typea,SIGNAL(currentIndexChanged(int)),this,SLOT(shownode()));
+		disconnect(savepushButton,SIGNAL(clicked()),this,SLOT(makenode()));
+	}
 }
 
 void SpecificWorker::reload_same()
 {
-    if(File_reload.isNull())
-    {
-        msgBox.setText("Nothing to Reload");
-        msgBox.exec();
-    }
-    else
-    {
+	if(File_reload.isNull())
+	{
+		msgBox.setText("Nothing to Reload");
+		msgBox.exec();
+	}
+	else
+	{
 
-        world3D = new OsgView(frame);
-        disconnect(treeWidget, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
-        treeWidget->clear();
-        connect(treeWidget, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
-        innerModel = new InnerModel(File_reload.toStdString());
-        fillNodeMap(innerModel->getNode("root"), NULL);
-        imv = new InnerModelViewer(innerModel, "root", world3D->getRootGroup(),false);
-        timer.start(Period);
-    }
+		world3D = new OsgView(frame);
+		disconnect(treeWidget, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
+		treeWidget->clear();
+		connect(treeWidget, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
+		innerModel = new InnerModel(File_reload.toStdString());
+		fillNodeMap(innerModel->getNode("root"), NULL);
+		imv = new InnerModelViewer(innerModel, "root", world3D->getRootGroup(),false);
+		timer.start(Period);
+	}
 }
 
-void SpecificWorker::remove_current_node(bool bul)
-{
-	printf("remove current node %d (%s)\n", bul, treeWidget->currentItem()->text(0).toStdString().c_str());
+/*
+   void SpecificWorker::remove_current_node()
+   {
+   current_node= nodeMapByItem[treeWidget->currentItem()];
+   disconnect(&timer, SIGNAL(timeout()), this, SLOT(compute()));
+   innerModel->removeNode(current_node.id);
+   disconnect(treeWidget, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
+   treeWidget->clear();
+   connect(treeWidget, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
+//connect(&timer, SIGNAL(timeout()), this, SLOT(compute()));
+fillNodeMap(innerModel->getNode("root"), NULL);
+connect(&timer, SIGNAL(timeout()), this, SLOT(compute()));
+//printf("remove current node %d (%s)\n", bul, current_node->text(0).toStdString().c_str());
+//qDebug()<< current_node.id;
 }
+ */
 
 void SpecificWorker::openFile()
 {
 	QString fileName = QFileDialog::getOpenFileName(this,
-        tr("Open XML"), "",
-        tr("XML file (*.xml);;All Files (*)"));
+			tr("Open XML"), "",
+			tr("XML file (*.xml);;All Files (*)"));
 	if (fileName.isEmpty())
-        return;
-  else {
-        File_reload=fileName;
+		return;
+	else {
+		File_reload=fileName;
 
-        world3D = new OsgView(frame);
-        disconnect(treeWidget, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
-        treeWidget->clear();
-        connect(treeWidget, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
-        innerModel = new InnerModel(fileName.toStdString());
-        fillNodeMap(innerModel->getNode("root"), NULL);
-        imv = new InnerModelViewer(innerModel, "root", world3D->getRootGroup(),false);
-        timer.start(Period);
+		world3D = new OsgView(frame);
+		disconnect(treeWidget, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
+		treeWidget->clear();
+		connect(treeWidget, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
+		innerModel = new InnerModel(fileName.toStdString());
+		fillNodeMap(innerModel->getNode("root"), NULL);
+		imv = new InnerModelViewer(innerModel, "root", world3D->getRootGroup(),false);
+		timer.start(Period);
 	}
 }

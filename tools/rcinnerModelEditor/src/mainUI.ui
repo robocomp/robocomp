@@ -94,6 +94,13 @@
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_6">
             <item>
+             <widget class="QPushButton" name="remove_current_nodepushButton">
+              <property name="text">
+               <string>Remove Current Node</string>
+              </property>
+             </widget>
+            </item>
+            <item>
              <layout class="QHBoxLayout" name="nodeGroup">
               <item>
                <widget class="QLabel" name="label6">
@@ -1840,13 +1847,6 @@
            </widget>
           </item>
          </layout>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="remove_current_nodepushButton">
-         <property name="text">
-          <string>Remove Current Node</string>
-         </property>
         </widget>
        </item>
        <item>
