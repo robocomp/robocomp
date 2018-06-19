@@ -275,6 +275,22 @@ void InnerModel::updateTransformValues(QString transformId, QVec v, QString pare
 		updateTransformValues(transformId, v(0), v(1), v(2), v(3), v(4), v(5), parentId);
 }
 
+void InnerModel::updatePlaneValues(QString planeId, float nx, float ny, float nz, float px, float py, float pz, QString texture_)
+{
+	QMutexLocker l(mutex);
+	cleanupTables();
+
+	InnerModelPlane *plane = dynamic_cast<InnerModelPlane *>(hash[planeId]);
+	if (plane != NULL)
+	{
+		plane->update(nx, ny, nz, px, py, pz, texture_);
+	}
+	else if (hash[planeId] == NULL)
+		qDebug() << "There is no such" << planeId << "node";
+	else
+		qDebug() << "?????";
+}
+
 void InnerModel::updatePlaneValues(QString planeId, float nx, float ny, float nz, float px, float py, float pz)
 {
 	QMutexLocker l(mutex);

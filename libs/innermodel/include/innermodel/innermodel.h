@@ -102,6 +102,7 @@ public:
 	void updateJointValue(QString jointId, float angle, bool force=false);
 	void updatePrismaticJointPosition(QString jointId, float position);
 	void updatePlaneValues(QString planeId, float nx, float ny, float nz, float px, float py, float pz);
+	void updatePlaneValues(QString planeId, float nx, float ny, float nz, float px, float py, float pz, QString texture_);
 	void updateDisplay(QString displayId, QString texture);
 	////////////////////////////////
 	/// Factory constructors

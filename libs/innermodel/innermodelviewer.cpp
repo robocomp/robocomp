@@ -645,6 +645,9 @@ void InnerModelViewer::update()
 		InnerModelPlane *plane = (InnerModelPlane *)innerModel->getNode(key);
 		setOSGMatrixTransformForPlane(mt, plane);
 		IMVPlane *imvplane = planesHash[key];
+		osg::Image *image_ = new osg::Image();
+		image_ = osgDB::readImageFile(plane->texture.toStdString());
+		imvplane->setImage(image_);
 		if (imvplane)
 		{
 			if (imvplane->texture and imvplane->image and imvplane->data and imvplane->dirty)

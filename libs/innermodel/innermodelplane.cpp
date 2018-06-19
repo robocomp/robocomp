@@ -142,7 +142,17 @@ void InnerModelPlane::setUpdatePointers(float *nx_, float *ny_, float *nz_, floa
 	fixed = false;
 }
 
-
+void InnerModelPlane::update(float nx_, float ny_, float nz_, float px_, float py_, float pz_, QString texture_)
+{
+	normal(0) = nx_;
+	normal(1) = ny_;
+	normal(2) = nz_;
+	point(0) = px_;
+	point(1) = py_;
+	point(2) = pz_;
+	texture = texture_;
+	fixed = true;
+}
 
 
 
