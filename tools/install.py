@@ -9,7 +9,7 @@ import os, sys
 from subprocess import call
 
 modules = ["git","git-annex","cmake","g++","libgsl0-dev","libopenscenegraph-dev","cmake-qt-gui",
-	       "zeroc-ice35","freeglut3-dev","libboost-dev","libboost-thread-dev","qt4-dev-tools",
+	       "zeroc-ice36","freeglut3-dev","libboost-dev","libboost-thread-dev","qt4-dev-tools",
 		   "yakuake","openjdk-7-jre","kdevelop","vim", "aptitude"]
 
 print "updating repository..."

@@ -11,8 +11,8 @@ matrix:
             - ubuntu-toolchain-r-test
           packages:
             - g++-5
-            - zeroc-ice35
-            - libzeroc-ice35-dev
+            - zeroc-ice36
+            - libzeroc-ice36-dev
             - slice2cpp
             - libopencv-dev
             - libgsl0-dev
@@ -25,7 +25,7 @@ matrix:
             - libxt-dev
             - pyqt4-dev-tools
             - libboost-all-dev
-            - ice35-translators
+            - ice36-translators
             - libccd
             - libccd-dev
             - libflann-dev

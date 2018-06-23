@@ -2,13 +2,13 @@ Source: robocomp
 Section: devel
 Priority: optional
 Maintainer: nithin <imnmfotmal@gmail.com>
-Build-Depends: debhelper (>= 8.0.0), cmake, g++ (>= 4.8.0), libgsl0-dev, libopenscenegraph-dev, cmake-qt-gui, freeglut3-dev, libboost-system-dev, libboost-thread-dev, openjdk-7-jre, libxt-dev, pyqt4-dev-tools, qt4-designer, qt4-dev-tools, zeroc-ice35, yakuake, python-pip, python-pyparsing, python-numpy, python-pyside, pyside-tools, libqt4-dev, qt4-qmake, libqt4-opengl-dev
+Build-Depends: debhelper (>= 8.0.0), cmake, g++ (>= 4.8.0), libgsl0-dev, libopenscenegraph-dev, cmake-qt-gui, freeglut3-dev, libboost-system-dev, libboost-thread-dev, openjdk-7-jre, libxt-dev, pyqt4-dev-tools, qt4-designer, qt4-dev-tools, zeroc-ice36, yakuake, python-pip, python-pyparsing, python-numpy, python-pyside, pyside-tools, libqt4-dev, qt4-qmake, libqt4-opengl-dev
 Standards-Version: 3.9.6
 Homepage:https://robocomp.github.io/robocomp
 Vcs-Git: https://github.com/robocomp/robocomp.git
 
 Package: robocomp
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, git-annex, zeroc-ice35, python-pip, python-pyparsing, python-numpy, python-pyside, pyside-tools, qt4-designer, yakuake
+Depends: ${shlibs:Depends}, ${misc:Depends}, git-annex, zeroc-ice36, python-pip, python-pyparsing, python-numpy, python-pyside, pyside-tools, qt4-designer, yakuake
 Description: Robotics Framework
  RoboComp is an open-source Robotics framework providing the tools to create and modify software components that communicate through public interfaces. Components may require, subscribe, implement or publish interfaces in a seamless way. Building new components is done using two domain specific languages, IDSL and CDSL. With IDSL you define an interface and with CDSL you specify how the component will communicate with the world. With this information, a code generator creates C++ and/or Python sources, based on CMake, that compile and execute flawlessly. When some of these features have to be changed, the component can be easily regenerated and all the user specific code is preserved thanks to a simple inheritance mechanism.
