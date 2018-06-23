@@ -1,3 +1,6 @@
+#include <iostream>
+#include <string>
+
 #include "gazebo_robocomp_camera.hh"
 #include <gazebo/rendering/Camera.hh>
 
@@ -69,9 +72,10 @@ namespace gazebo
     {
       image_.create(_height, _width, CV_8UC3);
       std::cerr << "Image created!!!" << std::endl;
+      seed_++;
     }
-    memcpy((unsigned char *) image_.data, &(_image[0]), _width*_height * 3);
 
+    memcpy((unsigned char *) image_.data, &(_image[0]), _width*_height * 3);
   }
 
   void GazeboRoboCompCamera::OnMsg(ConstImageStampedPtr &_msg) {
@@ -81,6 +85,5 @@ namespace gazebo
     }
     new_image = _msg->image().data();
     myMemCpy((unsigned char *)image.data, new_image, _msg->image().width()*_msg->image().height()*3);
-    cv::imshow("window", image);
   }
 }

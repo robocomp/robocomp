@@ -7,8 +7,9 @@ namespace gazebo
   GazeboRoboCompRGBD::GazeboRoboCompRGBD() 
   {
     this->seed = 0;
+    this->seed_ = 0;
     this->leafSize = 1./100;
-    cloud = NULL;
+    // cloud = NULL;
   }
   GazeboRoboCompRGBD::~GazeboRoboCompRGBD() {} 
 
@@ -56,100 +57,100 @@ namespace gazebo
   void GazeboRoboCompRGBD::OnNewDepthFrame(const float *_image, unsigned int _width, unsigned int _height,
                                unsigned int _depth, const std::string &_format)
   {
-    if (seed == 0)
-    {
-      pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud_(new pcl::PointCloud<pcl::PointXYZRGBA>);
-      cloud = cloud_;
-      cloud->width = _width;
-      cloud->height = _height;
-      cloud->points.resize(cloud->width*cloud->height);
-      imageDepth.create(_height, _width, CV_8UC3);
-    }
+    // if (seed == 0)
+    // {
+    //   pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud_(new pcl::PointCloud<pcl::PointXYZRGBA>);
+    //   cloud = cloud_;
+    //   cloud->width = _width;
+    //   cloud->height = _height;
+    //   cloud->points.resize(cloud->width*cloud->height);
+    //   imageDepth.create(_height, _width, CV_8UC3);
+    //   seed++;
+    // }
     
-    double hfov = 1.04719755;
-	  double fl = ((double)_width) / (2.0 *tan(hfov/2.0));
-	  double pointCloudCutoff = 0.001;
+    // double hfov = 1.04719755;
+	  // double fl = ((double)_width) / (2.0 *tan(hfov/2.0));
+	  // double pointCloudCutoff = 0.001;
 
-    cv::Mat image;
-    image.create(_height, _width, CV_32FC1);
+    // cv::Mat image;
+    // image.create(_height, _width, CV_32FC1);
   
-    memcpy( (float *)image.data,(float *) _image, _width*_height*4 );
+    // memcpy( (float *)image.data,(float *) _image, _width*_height*4 );
 
-    double pAngle; 
-    double yAngle;
+    // double pAngle; 
+    // double yAngle;
 
-    int indicePunto = 0;
-	  pcl::PointXYZRGBA point;
-	  point.r      = 255;
-	  point.g      = 0;
-	  point.b      = 0;
+    // int indicePunto = 0;
+	  // pcl::PointXYZRGBA point;
+	  // point.r      = 255;
+	  // point.g      = 0;
+	  // point.b      = 0;
   
-    for(unsigned int x = 0 ; x < _width ; x++){
-      for(unsigned int y = 0; y < _height; y++){
-        unsigned int indice = y*_width + x;
+    // for(unsigned int x = 0 ; x < _width ; x++){
+    //   for(unsigned int y = 0; y < _height; y++){
+    //     unsigned int indice = y*_width + x;
 
-        if (_height>1)
-          yAngle = atan2( (double)x - 0.5*(double)(width-1), fl);
-        else            
-          yAngle = 0.0;
+    //     if (_height>1)
+    //       yAngle = atan2( (double)x - 0.5*(double)(width-1), fl);
+    //     else            
+    //       yAngle = 0.0;
 
-        if (_width>1)
-          pAngle = atan2( (double)y - 0.5*(double)(height-1), fl);
-        else
-          pAngle = 0.0;
+    //     if (_width>1)
+    //       pAngle = atan2( (double)y - 0.5*(double)(height-1), fl);
+    //     else
+    //       pAngle = 0.0;
 
-        float d = _image[indice];
+    //     float d = _image[indice];
 
 
-        point.x      = d * tan(yAngle);
-        point.y      = d * tan(pAngle);
-        if(!imageRGB.data){
-          point.r      = 255;
-          point.g      = 0;
-          point.b      = 0;
-        }else{
-          unsigned int indice = y*imageRGB.step + x*imageRGB.channels();
-          point.r      = imageRGB.data[indice];
-          point.g      = imageRGB.data[indice+1];
-          point.b      = imageRGB.data[indice+2];
-        }
-        if(d > pointCloudCutoff){
-          point.z    = _image[indice];
-        }else{ //point in the unseeable range
+    //     point.x      = d * tan(yAngle);
+    //     point.y      = d * tan(pAngle);
+    //     if(!imageRGB.data){
+    //       point.r      = 255;
+    //       point.g      = 0;
+    //       point.b      = 0;
+    //     }else{
+    //       unsigned int indice = y*imageRGB.step + x*imageRGB.channels();
+    //       point.r      = imageRGB.data[indice];
+    //       point.g      = imageRGB.data[indice+1];
+    //       point.b      = imageRGB.data[indice+2];
+    //     }
+    //     if(d > pointCloudCutoff){
+    //       point.z    = _image[indice];
+    //     }else{ //point in the unseeable range
 
-          point.x = point.y = point.z = std::numeric_limits<float>::quiet_NaN ();
-          cloud->is_dense = false;
-        }
+    //       point.x = point.y = point.z = std::numeric_limits<float>::quiet_NaN ();
+    //       cloud->is_dense = false;
+    //     }
 
-        cloud->points[indicePunto++] = point;
+    //     cloud->points[indicePunto++] = point;
 
-      }
-    }
+    //   }
+    // }
 
-	pcl::VoxelGrid<pcl::PointXYZRGBA> sor;
-	sor.setInputCloud (cloud);
-	sor.setLeafSize (this->leafSize, this->leafSize, this->leafSize);
+    // pcl::VoxelGrid<pcl::PointXYZRGBA> sor;
+    // sor.setInputCloud (cloud);
+    // sor.setLeafSize (this->leafSize, this->leafSize, this->leafSize);
 
-	pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud2(new pcl::PointCloud<pcl::PointXYZRGBA>);
+    // pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud2(new pcl::PointCloud<pcl::PointXYZRGBA>);
 
-	sor.filter (*cloud2);
+    // sor.filter (*cloud2);
 
-	*cloud = *cloud2;
+    // *cloud = *cloud2;
 
-  float * data= (float*)image.data;
-  for (int i=0; i<image.rows* image.cols; i++) {
-    //std::cout << i << std::endl;
-    int val = (int)(data[i]*1000);
-    imageDepth.data[3*i+0] = (float)val/10000*255;;
-    imageDepth.data[3*i+1] = val>>8;
-    imageDepth.data[3*i+2] = val&0xff;
+    // float * data= (float*)image.data;
+    // for (int i=0; i<image.rows* image.cols; i++) {
+    //   //std::cout << i << std::endl;
+    //   int val = (int)(data[i]*1000);
+    //   imageDepth.data[3*i+0] = (float)val/10000*255;;
+    //   imageDepth.data[3*i+1] = val>>8;
+    //   imageDepth.data[3*i+2] = val&0xff;
 
-    if(imageDepth.data[i*3]!=0)
-      imageDepth.data[i*3]=255-imageDepth.data[i*3];
-    imageDepth.data[i*3+1]=imageDepth.data[i*3];
-    imageDepth.data[i*3+2]=imageDepth.data[i*3];
-
-	}
+    //   if(imageDepth.data[i*3]!=0)
+    //     imageDepth.data[i*3]=255-imageDepth.data[i*3];
+    //   imageDepth.data[i*3+1]=imageDepth.data[i*3];
+    //   imageDepth.data[i*3+2]=imageDepth.data[i*3];
+    // }
   }
 
   // Update the controller
@@ -164,13 +165,11 @@ namespace gazebo
                                unsigned int _depth, const std::string &_format)
   {
     // this->imageRGB.create(_height, _width, CV_8UC3);
-    if (seed == 0)
+    if (seed_ == 0)
     {
       imageRGB.create(_height, _width, CV_8UC3);
+      seed_++;
     }
-    seed++;
-
     memcpy((unsigned char *) imageRGB.data, &(_image[0]), _width*_height * 3);
-    cv::imshow("Display Window - Depth Image", imageRGB);
   }
 }

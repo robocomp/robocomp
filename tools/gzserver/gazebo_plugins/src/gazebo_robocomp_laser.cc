@@ -11,7 +11,7 @@
 
 #include "gazebo_robocomp_laser.hh"
 
-#include <raysensor.pb.h>
+#include "raysensor.pb.h"
 #include "Laser_msgs.pb.h"
 
 

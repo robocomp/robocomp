@@ -12,14 +12,13 @@
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
-#include <pcl/visualization/cloud_viewer.h>
-#include <pcl/point_types.h>
-#include <pcl/filters/voxel_grid.h>
-#include <pcl/io/pcd_io.h>
-#include <pcl/point_types.h>
-#include <pcl/ModelCoefficients.h>
-#include <pcl/filters/project_inliers.h>
-
+// #include <pcl/visualization/cloud_viewer.h>
+// #include <pcl/point_types.h>
+// #include <pcl/filters/voxel_grid.h>
+// #include <pcl/io/pcd_io.h>
+// #include <pcl/point_types.h>
+// #include <pcl/ModelCoefficients.h>
+// #include <pcl/filters/project_inliers.h>
 
 // gazebo stuff
 #include <sdf/Param.hh>
@@ -76,10 +75,11 @@ namespace gazebo
 
     protected: float leafSize;
 
-    public: cv::Mat imageRGB;
-    public: cv::Mat imageDepth;
-    public: pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud;
-    public: int seed;
+    private: cv::Mat imageRGB;
+    private: cv::Mat imageDepth;
+    // private: pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud;
+    private: int seed;
+    private: int seed_;
 
   };
 }

@@ -18,7 +18,7 @@
 #  PCL_COMPONENT_LIBRARY
 #  PCL_COMPONENT_DEFINITIONS if available
 # 
-# To use PCL from within you code
+# To use PCL from within your code
 # find_package(PCL [VERSION] [REQUIRED] [COMPONENTS module1 module2 ...])
 # if(PCL_FOUND)
 #   include_directories(${PCL_INCLUDE_DIRS})
@@ -36,7 +36,7 @@
 
 include(FindPackageHandleStandardArgs)
 #set a suffix based on project name and version
-set(PCL_SUFFIX pcl-1.7)
+set(PCL_SUFFIX pcl-1.0)
 
 #set all pcl component and their account into variables
 set(pcl_all_components io common kdtree keypoints filters range_image registration sample_consensus segmentation features surface octree visualization )

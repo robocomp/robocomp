@@ -18,10 +18,6 @@
         <uri>file://../gazebo_robocomp_models/my_robot</uri>
       </include>
 
-      <plugin name="DiffDrive" filename="libgazebo_robocomp_DiffDrive.so">
-        <topicName>/DiffDrive/cmd</topicName>
-      </plugin>
-
     </model>
 
   </world>

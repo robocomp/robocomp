@@ -30,7 +30,7 @@ namespace gazebo
 
 // Constructor
 GazeboRoboCompJointMotor::GazeboRoboCompJointMotor() {
-    std::cerr << "gazebo_robocomp_joint created" << std::endl;
+    std::cerr << "gazebo_robocomp_jointmotor created" << std::endl;
 }
 
 GazeboRoboCompJointMotor::~GazeboRoboCompJointMotor() {}
@@ -41,8 +41,9 @@ void GazeboRoboCompJointMotor::Load(physics::ModelPtr _model, sdf::ElementPtr _s
     // Just output a message for now
     std::cerr << "\nThe velodyne plugin is attach to model[" << _model->GetName() << "]\n";
 
+    this->joint_count_ = _model->GetJointCount();
     // Safety check
-    if (_model->GetJointCount() == 0)
+    if (joint_count_ == 0)
     {
         std::cerr << "Invalid joint count, Velodyne plugin not loaded\n";
         return;
@@ -53,21 +54,21 @@ void GazeboRoboCompJointMotor::Load(physics::ModelPtr _model, sdf::ElementPtr _s
 
     this->world_name_ = _model->GetWorld()->GetName();
 
-    this->joint_controller_ = this->model_->GetJointController();
-
-    joint_map_ = joint_controller_->GetJoints();
+    for (int i = 0; i < joint_count_; i++) {
+        joint_array_[i] = _model->GetJoints()[0];
+    }
 
     // Setup a P-controller, with a gain of 0.1.
     this->pid_ = common::PID(0.1, 0, 0);
 
-    for (int i = 0; i < model_->GetJointCount(); i++)
+    for (int i = 0; i < joint_count_; i++)
     {
-        this->joint_controller_->SetVelocityPID(_model->GetJoints()[i]->GetScopedName(), this->pid_);
+        this->joint_controller_->SetVelocityPID(joint_array_[i]->GetScopedName(), this->pid_);
     }
 
-    for (int i = 0; i < model_->GetJointCount(); i++)
+    for (int i = 0; i < joint_count_; i++)
     {
-        this->joint_controller_->SetPositionPID(_model->GetJoints()[i]->GetScopedName(), this->pid_);
+        this->joint_controller_->SetPositionPID(joint_array_[i]->GetScopedName(), this->pid_);
     }
 
     // Create the node
@@ -117,7 +118,20 @@ void GazeboRoboCompJointMotor::OnUpdate()
     motor_params_list::msgs::MotorParamsList params_msg;
 
     for (int i = 0; i < model_->GetJointCount(); i++) {
-
+        params_msg.mutable_joint_motor_params(i)->set_name(joint_array_[i]->GetScopedName());
+        params_msg.mutable_joint_motor_params(i)->set_maxvel(0);
+        params_msg.mutable_joint_motor_params(i)->set_maxangle(0);
+        params_msg.mutable_joint_motor_params(i)->set_zeropos(0);
+        params_msg.mutable_joint_motor_params(i)->set_minpos(0);
+        params_msg.mutable_joint_motor_params(i)->set_maxpos(0);
+        params_msg.mutable_joint_motor_params(i)->set_stepsrange(0);
+        params_msg.mutable_joint_motor_params(i)->set_maxdegrees(0);
+        
+        state_msg.mutable_joint_motor_state(i)->set_name(joint_array_[i]->GetScopedName());
+        state_msg.mutable_joint_motor_state(i)->set_speed(joint_array_[i]->GetVelocity(0));
+        state_msg.mutable_joint_motor_state(i)->set_position(0);
+        state_msg.mutable_joint_motor_state(i)->set_torque(joint_array_[i]->GetForce(0));
+        state_msg.mutable_joint_motor_state(i)->set_timestamp(0);
     }
 }
 

@@ -3,7 +3,7 @@
   <world name="default">
     <scene>
       <ambient rgba="0.1 0.1 0.1 1"/>
-      <background rgba="0 0 0 1"/>
+      <background rgba="0.5 0.5 0.5 1"/>
       <shadows enabled="false"/>
     </scene>
 
@@ -65,18 +65,20 @@
         </visual>
 
         <sensor name='cam_sensor' type='depth' always_on='1' update_rate='10'>
-          <plugin name="gazebo_robocomp_RGBD" filename="libgazebo_robocomp_RGBD.so"/>
+          <plugin name="gazebo_robocomp_RGBD" filename="libgazebo_robocomp_RGBD.so">
+            <size>1 1 1</size>
+            <focalLength>1</focalLength>
+            <FPS>30</FPS>
+          </plugin>
           <origin pose='0 0 0 0 0 1.57'/>
           <camera>
             <horizontal_fov angle='1.57'/>
             <image width='640' height='480' format='R8G8B8'/>
             <clip near='0.5' far='5'/>
           </camera>
-          <!-- <plugin name='camera_dump' filename='libcamera_dump.so'/> -->
         </sensor>
       </link>
 
-      <!-- <plugin name="camera_move" filename="libcamera_move.so"/> -->
     </model>
 
     <model name="box2">
@@ -102,13 +104,19 @@
       </link>
     </model>
 
-    <light type="directional" name="sun" cast_shadows="true">
+    <!-- A global light source -->
+    <include>
+        <uri>file://../gazebo_robocomp_models/sun</uri>
+    </include>
+
+
+    <!-- <light type="directional" name="sun" cast_shadows="true">
       <origin pose="0 0 10 0 0 0"/>
       <diffuse rgba=".8 .8 .8 1"/>
       <specular rgba=".1 .1 .1 1"/>
       <attenuation range="10" constant="0.8" linear="0.01" quadratic="0.0"/>
       <direction xyz="0 .5 -.5"/>
-    </light>
+    </light> -->
 
   </world>
 </gazebo>

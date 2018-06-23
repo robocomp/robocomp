@@ -59,6 +59,15 @@ target_link_libraries(Motors
    #/usr/lib/x86_64-linux-gnu/c++11
 )
 
+add_library(JointMotor SHARED src/JointMotor.cpp include/JointMotor.h)
+target_link_libraries(JointMotor
+   ${Boost_LIBRARIES} 
+   Ice
+   IceUtil 
+   pthread
+   #/usr/lib/x86_64-linux-gnu/c++11
+)
+
 add_library(containers SHARED src/containers.cpp include/containers.h)
 target_link_libraries(containers
    ${Boost_LIBRARIES} 

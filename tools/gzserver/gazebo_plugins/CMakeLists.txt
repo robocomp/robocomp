@@ -10,10 +10,26 @@ add_library(gazebo_robocomp_IMU SHARED src/gazebo_robocomp_IMU.cc include/gazebo
 target_link_libraries(gazebo_robocomp_IMU ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES} ${SDF_LIBRARIES})
 
 add_library(gazebo_robocomp_joint SHARED src/gazebo_robocomp_joint.cc include/gazebo_robocomp_joint.hh)
-target_link_libraries(gazebo_robocomp_joint ${GAZEBO_LIBRARIES} ${Boost_LIBRARIS} ${SDF_LIBRARIES} )
+target_link_libraries(gazebo_robocomp_joint 
+    ${GAZEBO_LIBRARIES} 
+    ${Boost_LIBRARIS} 
+    ${SDF_LIBRARIES} 
+    motor_goal_velocity 
+    motor_goal_position 
+    jointMotorState 
+    jointMotor_params
+)
 
 add_library(gazebo_robocomp_jointmotor SHARED src/gazebo_robocomp_jointmotor.cc include/gazebo_robocomp_jointmotor.hh)
-target_link_libraries(gazebo_robocomp_jointmotor motor_goal_pos_list motor_goal_vel_list motor_params_list motor_state_list ${GAZEBO_LIBRARIES} ${Boost_LIBRARIS} ${SDF_LIBRARIES} )
+target_link_libraries(gazebo_robocomp_jointmotor 
+    motor_goal_pos_list 
+    motor_goal_vel_list 
+    motor_params_list 
+    motor_state_list 
+    ${GAZEBO_LIBRARIES} 
+    ${Boost_LIBRARIS} 
+    ${SDF_LIBRARIES} 
+)
 
 add_library(gazebo_robocomp_DiffDrive SHARED src/gazebo_robocomp_DiffDrive.cc include/gazebo_robocomp_DiffDrive.hh)
 target_link_libraries(gazebo_robocomp_DiffDrive diffdrive_msgs diffdrive_state ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES} ${SDF_LIBRARIES})
@@ -40,8 +56,6 @@ target_link_libraries(gazebo_robocomp_RGBD
     ${Boost_LIBRARIES} 
     ${SDF_LIBRARIES} 
     ${OpenCV_LIBRARIES} 
-    # ${PCL_COMMON_LIBRARIES} 
-    ${PCL_LIBRARIES}
     ${OGRE_LIBRARIES} 
     ${OGRE-Paging_LIBRARIES} 
     ${OGRE-Terrain_LIBRARIES}

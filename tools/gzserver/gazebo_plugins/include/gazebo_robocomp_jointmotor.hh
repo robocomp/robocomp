@@ -62,7 +62,7 @@ namespace gazebo
         physics::ModelPtr model_;
 
         // Pointer to the joint
-        physics::JointPtr joint_;
+        std::vector<physics::JointPtr> joint_array_;
 
         // Pointer to the joint controller
         physics::JointControllerPtr joint_controller_;
@@ -87,6 +87,7 @@ namespace gazebo
         gazebo::event::ConnectionPtr update_connection_;
 
         int seed;
+        int joint_count_;
     };
 }
 

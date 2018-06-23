@@ -23,3 +23,6 @@ target_link_libraries(IMUI IMU Ice IceUtil ${ZeroCIce_LIBRARIES} ${easyiceconfig
 add_library(DifferentialRobotI SHARED src/DifferentialRobotI.cpp include/DifferentialRobotI.h)
 target_link_libraries(DifferentialRobotI DifferentialRobot diffdrive_msgs diffdrive_state Ice IceUtil ${ZeroCIce_LIBRARIES} ${easyiceconfig_LIBRARIES} ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
 add_dependencies(DifferentialRobotI diffdrive_msgs diffdrive_state)
+
+add_library(JointMotorI SHARED src/JointMotorI.cpp include/JointMotorI.h)
+target_link_libraries(JointMotorI JointMotor motor_goal_pos_list motor_goal_vel_list motor_params_list motor_state_list Ice IceUtil ${ZeroCIce_LIBRARIES} ${easyiceconfig_LIBRARIES} ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
