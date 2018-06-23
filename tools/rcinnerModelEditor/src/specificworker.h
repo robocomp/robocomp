@@ -18,9 +18,9 @@
  */
 
 /**
-       \brief
-       @author authorname
-*/
+  \brief
+  @author authorname
+ */
 
 
 
@@ -44,65 +44,65 @@ struct WorkerNode
 
 class SpecificWorker : public GenericWorker
 {
-Q_OBJECT
-public:
-	SpecificWorker(MapPrx& mprx);
-	~SpecificWorker();
-	bool setParams(RoboCompCommonBehavior::ParameterList params);
+	Q_OBJECT
+	public:
+		SpecificWorker(MapPrx& mprx);
+		~SpecificWorker();
+		bool setParams(RoboCompCommonBehavior::ParameterList params);
 
 
-public slots:
-	void compute();
-	void currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
-private:
-	int Period;
-	QTimer timer;
- 	OsgView *world3D;
-	// InnerModel *innerModel;
-	InnerModelViewer *imv;
-    	InnerModelNode *prevNode = NULL;
-    	WorkerNode currentNode,current_node;
-    	QMessageBox msgBox;
-    	int flag;
-    	int render1;
-    	QString File_reload, prevTexture;
+		public slots:
+			void compute();
+		void currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
+	private:
+		int Period;
+		QTimer timer;
+		OsgView *world3D;
+		// InnerModel *innerModel;
+		InnerModelViewer *imv;
+		InnerModelNode *prevNode = NULL;
+		WorkerNode currentNode, current_node;
+		QMessageBox msgBox;
+		int flag;
+		int render1;
+		QString File_reload, prevTexture;
 
-	QMap<QString, WorkerNode> nodeMap;
-	QMap<QTreeWidgetItem *, WorkerNode> nodeMapByItem;
+		QMap<QString, WorkerNode> nodeMap;
+		QMap<QTreeWidgetItem *, WorkerNode> nodeMapByItem;
 
-	void showAvailableGroups();
-   	void highlightNode();
-	void interfaceConnections(bool enable);
-   	void newnodeConnections(bool enable);
-	void showTransform(QString id);
-	void showRotation(QString id);
-	void showJoint(QString id);
-	void showTranslation(QString id);
-	void showMesh(QString id);
-	void showPlane(QString id);
-	void showCamera(QString id);
+		void showAvailableGroups();
+		void highlightNode();
+		void interfaceConnections(bool enable);
+		void newnodeConnections(bool enable);
+		void showTransform(QString id);
+		void showRotation(QString id);
+		void showJoint(QString id);
+		void showTranslation(QString id);
+		void showMesh(QString id);
+		void showPlane(QString id);
+		void showCamera(QString id);
 
-private:
-	void fillNodeMap(InnerModelNode *node, QTreeWidgetItem *parent);
+	private:
+		void fillNodeMap(InnerModelNode *node, QTreeWidgetItem *parent);
 
-public slots:
-	void saveButtonClicked();
-	void resetButtonClicked();
-	void openFile();
-	void cameraChanged();
-	void meshChanged();
-	void planeChanged();
-	void translationChanged();
-	void rotationChanged();
-	void jointChanged();
-    	void shownode();
-    	void makenode();
-	void create_new_node(bool);
-    	//void remove_current_node();
-    	void reload_same();
+		public slots:
+		void saveButtonClicked();
+		void resetButtonClicked();
+		void openFile();
+		void cameraChanged();
+		void meshChanged();
+		void planeChanged();
+		void translationChanged();
+		void rotationChanged();
+		void jointChanged();
+		void shownode();
+		void makenode();
+		void create_new_node(bool);
+		void remove_current_node();
+		void reload_same();
 
-private:
-	InnerModel *innerModel;
+	private:
+		InnerModel *innerModel;
 
 };
 

@@ -29,12 +29,11 @@ SpecificWorker::SpecificWorker(MapPrx& mprx) : GenericWorker(mprx)
 	QGLFormat fmt;
 	fmt.setDoubleBuffer(true);
 	QGLFormat::setDefaultFormat(fmt);
-	//world3D = new OsgView(frame);
 	groupBox_2->hide();
 	connect(openpushButton,SIGNAL(clicked()),this, SLOT(openFile()));
 	connect(&timer, SIGNAL(timeout()), this, SLOT(compute()));
 	connect(create_new_nodepushButton, SIGNAL(clicked(bool)), this, SLOT(create_new_node(bool)));
-	connect(remove_current_nodepushButton, SIGNAL(clicked()), this, SLOT(remove_current_node()));
+    connect(remove_current_nodepushButton, SIGNAL(clicked()), this, SLOT(remove_current_node()));
 	connect(treeWidget, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
 	connect(reloadpushButton,SIGNAL(clicked()),this,SLOT(reload_same()));
 	showMaximized();
@@ -149,7 +148,7 @@ void SpecificWorker::fillNodeMap(InnerModelNode *node, QTreeWidgetItem *parent)
 
 void SpecificWorker::compute()
 {
-	imv->update();
+    imv->update();
 	world3D->autoResize();
 	world3D->frame();
 }
@@ -160,7 +159,7 @@ void SpecificWorker::currentItemChanged(QTreeWidgetItem *current, QTreeWidgetIte
 	interfaceConnections(false);
 	currentNode = nodeMapByItem[current];
 	showAvailableGroups();
-	highlightNode();
+    highlightNode();
 	interfaceConnections(true);
 }
 
@@ -172,7 +171,7 @@ void SpecificWorker::highlightNode()
 		if ((plane = dynamic_cast<InnerModelPlane *>(prevNode)))
 		{
 			plane->texture = prevTexture;
-			imv->update();
+            imv->update();
 		}
 	}
 
@@ -183,7 +182,7 @@ void SpecificWorker::highlightNode()
 	{
 		prevTexture = plane->texture;
 		plane->texture = "/home/robocomp/robocomp/files/osgModels/textures/blue.jpg";
-		imv->update();
+        imv->update();
 	}
 
 }
@@ -433,20 +432,20 @@ void SpecificWorker::meshChanged()
 	m->scalez = scalez->value();
 	qDebug() << "File " << m->meshPath;
 	// 	qDebug() << "Scale " << m->scale;
-	imv->update();
+    imv->update();
 	// imv->reloadMesh(m->id);
 }
 
 void SpecificWorker::planeChanged()
 {
-	InnerModelPlane *m = (InnerModelPlane *)innerModel->getNode(currentNode.id);
+    InnerModelPlane *m = (InnerModelPlane *)innerModel->getNode(currentNode.id);
 	m->normal = QVec::vec3(pnx->value(), pny->value(), pnz->value());
 	m->point = QVec::vec3(px->value(), py->value(), pz->value());
 	m->width = rectangleWidth->value();
 	m->height = rectangleHeight->value();
 	m->texture = texture->text();
-	m->repeat = textureSize->value();
-	imv->update();
+    m->repeat = textureSize->value();
+    imv->update();
 }
 
 void SpecificWorker::translationChanged()
@@ -719,7 +718,7 @@ void SpecificWorker::makenode()
 		treeWidget->clear();
 		connect(treeWidget, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
 		fillNodeMap(innerModel->getNode("root"), NULL);
-		imv->update();
+        imv->update();
 	}
 
 }
@@ -821,22 +820,18 @@ void SpecificWorker::create_new_node(bool bul)
 	laserBox->hide();
 	Ifconfiga->hide();
 	newnodeConnections(true);
-	//connect(savepushButton,SIGNAL(clicked()),this,SLOT(makenode()));
-	//printf("create new node %d\n", bul);
 }
 
 void SpecificWorker::newnodeConnections(bool enable)
 {
 	if(enable)
 	{
-		//connect(parenta,SIGNAL(editingFinished()),this,SLOT(makenode()));
 		connect(Typea,SIGNAL(currentIndexChanged(int)),this,SLOT(shownode()));
 		connect(savepushButton,SIGNAL(clicked()),this,SLOT(makenode()));
 	}
 
 	else
 	{
-		//disconnect(parenta,SIGNAL(editingFinished()),this,SLOT(makenode()));
 		disconnect(Typea,SIGNAL(currentIndexChanged(int)),this,SLOT(shownode()));
 		disconnect(savepushButton,SIGNAL(clicked()),this,SLOT(makenode()));
 	}
@@ -858,27 +853,34 @@ void SpecificWorker::reload_same()
 		connect(treeWidget, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
 		innerModel = new InnerModel(File_reload.toStdString());
 		fillNodeMap(innerModel->getNode("root"), NULL);
-		imv = new InnerModelViewer(innerModel, "root", world3D->getRootGroup(),false);
+        imv = new InnerModelViewer(innerModel, "root", world3D->getRootGroup(),false);
 		timer.start(Period);
 	}
 }
 
-/*
+
    void SpecificWorker::remove_current_node()
    {
-   current_node= nodeMapByItem[treeWidget->currentItem()];
-   disconnect(&timer, SIGNAL(timeout()), this, SLOT(compute()));
-   innerModel->removeNode(current_node.id);
-   disconnect(treeWidget, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
-   treeWidget->clear();
-   connect(treeWidget, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
-//connect(&timer, SIGNAL(timeout()), this, SLOT(compute()));
-fillNodeMap(innerModel->getNode("root"), NULL);
-connect(&timer, SIGNAL(timeout()), this, SLOT(compute()));
-//printf("remove current node %d (%s)\n", bul, current_node->text(0).toStdString().c_str());
-//qDebug()<< current_node.id;
-}
- */
+    interfaceConnections(false);
+    current_node= nodeMapByItem[treeWidget->currentItem()];
+    disconnect(&timer, SIGNAL(timeout()), this, SLOT(compute()));
+
+    innerModel->removeNode(current_node.id);
+    qDebug() << "Removed" << current_node.id;
+
+    world3D = new OsgView(frame);
+    imv = new InnerModelViewer(innerModel, "root", world3D->getRootGroup(),false);
+    connect(&timer, SIGNAL(timeout()), this, SLOT(compute()));
+
+    disconnect(treeWidget, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
+    treeWidget->clear();
+    connect(treeWidget, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
+    fillNodeMap(innerModel->getNode("root"), NULL);
+    prevNode = NULL;
+
+    interfaceConnections(true);
+   }
+
 
 void SpecificWorker::openFile()
 {
@@ -889,14 +891,13 @@ void SpecificWorker::openFile()
 		return;
 	else {
 		File_reload=fileName;
-
-		world3D = new OsgView(frame);
+        world3D = new OsgView(frame);
 		disconnect(treeWidget, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
 		treeWidget->clear();
 		connect(treeWidget, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
 		innerModel = new InnerModel(fileName.toStdString());
 		fillNodeMap(innerModel->getNode("root"), NULL);
-		imv = new InnerModelViewer(innerModel, "root", world3D->getRootGroup(),false);
+        imv = new InnerModelViewer(innerModel, "root", world3D->getRootGroup(),false);
 		timer.start(Period);
 	}
 }
