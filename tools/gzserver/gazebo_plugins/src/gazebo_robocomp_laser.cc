@@ -42,27 +42,7 @@ void GazeboRoboCompLaser::Load(sensors::SensorPtr _parent, sdf::ElementPtr _sdf)
 
     if (!this->parent_ray_sensor_)
         gzthrow("GazeboRoboCompLaser controller requires a Ray Sensor as its parent");
-
-    this->gazebo_node_ = gazebo::transport::NodePtr(new gazebo::transport::Node());
-    this->gazebo_node_->Init(this->world_name_);
-    
-    this->topic_name_ = this->parent_ray_sensor_->Topic();
-
-    std::cerr << "Topic Name: " << this->topic_name_ << std::endl;
-
-    this->laser_scan_sub_ =
-          this->gazebo_node_->Subscribe(this->parent_ray_sensor_->Topic(),
-          &GazeboRoboCompLaser::OnScan, this);
-
-    std::cerr << "Data is getting published on the topic: " << topic_name_ << std::endl;
-    std::cerr << "Do 'gz topic -e " << topic_name_ << "'" << "to see the data published" << std::endl;
 }
-
-///////////////////////////////////////////////////
-
-void GazeboRoboCompLaser::OnNewLaserScans() {}
-
-void GazeboRoboCompLaser::OnScan(ConstLaserScanStampedPtr &_msg) {}
 
 // Register this plugin with the simulator
 GZ_REGISTER_SENSOR_PLUGIN(GazeboRoboCompLaser)
