@@ -24,14 +24,14 @@ class JointMotorI : public JointMotor
 public: 
     JointMotorI(int argc, char **argv);
     ~JointMotorI();
-	virtual void  setPosition(const MotorGoalPosition& goal, const Ice::Current&) override;
-    virtual void  setVelocity(const MotorGoalVelocity& goal, const Ice::Current&) override;
+	virtual void  setPosition(const RoboCompJointMotor::MotorGoalPosition& goal, const Ice::Current&) override;
+    virtual void  setVelocity(const RoboCompJointMotor::MotorGoalVelocity& goal, const Ice::Current&) override;
     virtual void  setZeroPos(const string& name, const Ice::Current&) override;
-    virtual void  setSyncPosition(const MotorGoalPositionList& listGoals, const Ice::Current&) override;
-    virtual void  setSyncVelocity(const MotorGoalVelocityList& listGoals, const Ice::Current&) override;
+    virtual void  setSyncPosition(const RoboCompJointMotor::MotorGoalPositionList& listGoals, const Ice::Current&) override;
+    virtual void  setSyncVelocity(const RoboCompJointMotor::MotorGoalVelocityList& listGoals, const Ice::Current&) override;
     virtual void  setSyncZeroPos(const Ice::Current&) override;
-    virtual MotorParams getMotorParams(const string& motor, const Ice::Current&) override;
-    virtual MotorState getMotorState(const string& motor, const Ice::Current&) override;
+    virtual RoboCompJointMotor::MotorParams getMotorParams(const string& motor, const Ice::Current&) override;
+    virtual RoboCompJointMotor::MotorState getMotorState(const string& motor, const Ice::Current&) override;
     virtual MotorStateMap getMotorStateMap(const MotorList& mList, const Ice::Current&) override;
     virtual MotorParamsList getAllMotorParams(const Ice::Current&) override;
     virtual BusParams getBusParams(const Ice::Current&) override;
@@ -52,7 +52,7 @@ private:
     private: std::string vel_goal_topic_;
     private: std::string pos_goal_topic_;
 
-    private: MotorList motor_list_;
-    private: MotorParamsList motor_params_list_;
-    private: MotorStateMap motor_state_map_;
+    private: RoboCompJointMotor::MotorList motor_list_;
+    private: RoboCompJointMotor::MotorParamsList motor_params_list_;
+    private: RoboCompJointMotor::MotorStateMap motor_state_map_;
 }; 
