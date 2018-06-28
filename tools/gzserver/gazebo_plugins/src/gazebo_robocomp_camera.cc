@@ -45,9 +45,12 @@ namespace gazebo
     this->format_ = this->format;
     this->camera_ = this->camera;
 
+    this->topic_name_ = "/gazebo_robocomp_camera/data";
+
     this->gazebo_node_ = transport::NodePtr(new transport::Node());
     this->gazebo_node_->Init(this->parent_sensor_->WorldName());
     this->sub_ = this->gazebo_node_->Subscribe("/gazebo/default/box/link/cam_sensor/image", &GazeboRoboCompCamera::OnMsg, this);
+    this->pub_ = this->gazebo_node_->Advertise<gazebo::msgs::ImageStamped>(topic_name_);
   }
 
   void GazeboRoboCompCamera::myMemCpy(void *dest, std::string &new_image, size_t n)
@@ -74,6 +77,16 @@ namespace gazebo
     }
 
     memcpy((unsigned char *) image_.data, &(_image[0]), _width*_height * 3);
+
+    msgs::ImageStamped msg;
+    msgs::Set(msg.mutable_time(), 0);
+    msg.mutable_image()->set_width(_width);
+    msg.mutable_image()->set_height(_height);
+    msg.mutable_image()->set_pixel_format(common::Image::ConvertPixelFormat(_format));
+    msg.mutable_image()->set_step(_width*_depth);
+    msg.mutable_image()->set_data(_image, msg.image().width() * _depth * msg.image().height());
+
+    pub_->Publish(msg);                                                         
   }
 
   void GazeboRoboCompCamera::OnMsg(ConstImageStampedPtr &_msg) {

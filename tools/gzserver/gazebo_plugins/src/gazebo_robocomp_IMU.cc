@@ -51,7 +51,7 @@ namespace gazebo
     }
     else
     {
-      this->topic_name_ = "/imu_data";
+      this->topic_name_ = "/gazebo_robocomp_IMU/data";
       std::cerr << "missing <topic>, set to /namespace/default: " << topic_name_ << std::endl;
     }
 
@@ -105,6 +105,27 @@ namespace gazebo
     std::cerr << "Gyroscope_X: " << gyroscope_data.X() << std::endl;
     std::cerr << "Gyroscope_Y: " << gyroscope_data.Y() << std::endl;
     std::cerr << "Gyroscope_Z: " << gyroscope_data.Z() << std::endl;
+
+    gazebo::msgs::IMU msg;
+
+    msg.mutable_stamp()->set_sec(this->sensor_->LastMeasurementTime().sec);
+    msg.mutable_stamp()->set_nsec(this->sensor_->LastMeasurementTime().nsec);
+    msg.set_entity_name("gazebo_robocomp_IMU");
+    
+    msg.mutable_orientation()->set_x(orientation.X());
+    msg.mutable_orientation()->set_y(orientation.Y());
+    msg.mutable_orientation()->set_z(orientation.Z());
+    msg.mutable_orientation()->set_w(orientation.W());
+
+    msg.mutable_angular_velocity()->set_x(gyroscope_data.X());
+    msg.mutable_angular_velocity()->set_y(gyroscope_data.Y());
+    msg.mutable_angular_velocity()->set_z(gyroscope_data.Z());
+
+    msg.mutable_linear_acceleration()->set_x(accelerometer_data.X());
+    msg.mutable_linear_acceleration()->set_y(accelerometer_data.Y());
+    msg.mutable_linear_acceleration()->set_z(accelerometer_data.Z());
+
+    imu_data_publisher_->Publish(msg);
   
   }
 
