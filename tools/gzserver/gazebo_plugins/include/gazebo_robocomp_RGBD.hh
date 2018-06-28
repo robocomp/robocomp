@@ -29,14 +29,22 @@ namespace gazebo
     public: GazeboRoboCompRGBD();
     public: ~GazeboRoboCompRGBD();
     public: void Load(sensors::SensorPtr _parent, sdf::ElementPtr _sdf);
+    public: void OnNewDepthFrame(const float *_image, unsigned int _width, unsigned int _height, unsigned int _depth, const std::string &_format); 
 
     // copied into DepthCameraPlugin
     protected: unsigned int width_, height_, depth_;
     protected: std::string camera_name_;
     protected: std::string format_;
+    protected: std::string topic_name_;
 
     protected: sensors::SensorPtr parent_sensor_;
     protected: rendering::DepthCameraPtr camera_;
+
+    // Gazebo transport system
+    private: transport::NodePtr gazebo_node_;
+    private: transport::SubscriberPtr sub_;
+    private: transport::PublisherPtr pub_;
+
   };
 }
 

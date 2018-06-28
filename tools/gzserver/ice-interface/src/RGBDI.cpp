@@ -9,7 +9,7 @@ using namespace gazebo;
 RGBDI::RGBDI(int argc, char **argv) {
     gazebo::client::setup(argc, argv);
     this->device_name_ = "gazebo_robocomp_RGBD";
-    this->sub_topic_name_ = "/gazebo/default/box/link/cam_sensor/image";
+    this->sub_topic_name_ = "/gazebo_robocomp_RGBD/data";
     this->pub_topic_name_ = "/my_robot";
     this->gazebo_node_ = gazebo::transport::NodePtr(new gazebo::transport::Node());
     this->gazebo_node_->Init();
