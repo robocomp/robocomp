@@ -18,3 +18,11 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
+
+.. _docs:
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Install Documentation
+
+   /doc
