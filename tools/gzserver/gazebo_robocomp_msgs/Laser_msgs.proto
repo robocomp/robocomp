@@ -5,6 +5,4 @@ message gazebo_robocomp_laser
 {
   required gazebo.msgs.RaySensor Laser = 1;
   repeated double Range = 2;
-  repeated double Retro = 3;
-  repeated int32 Fiducial = 4;
 }

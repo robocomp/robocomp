@@ -6,10 +6,15 @@ using namespace RoboCompLaser;
 using namespace std;
 using namespace gazebo; 
 
+#include "raysensor.pb.h"
+#include "Laser_msgs.pb.h"
+
+typedef const boost::shared_ptr<const Laser_msgs::msgs::gazebo_robocomp_laser> ConstGazeboRoboCompLaserPtr;
+
 LaserI::LaserI(int argc, char **argv) {
     gazebo::client::setup(argc, argv);
     this->device_name_ = "gazebo_robocomp_laser";
-    this->topic_name_ = "/gazebo/gazebo_robocomp_laser/hokuyo/hokuyo/link/laser/scan";
+    this->topic_name_ = "/gazebo_robocomp_laser/data";
     this->gazebo_node_ = gazebo::transport::NodePtr(new gazebo::transport::Node());
     this->gazebo_node_->Init();
     this->laser_scan_sub_ = this->gazebo_node_->Subscribe(topic_name_, &LaserI::callback, this);
@@ -53,27 +58,27 @@ LaserConfData LaserI::getLaserConfData(const Ice::Current&) {
     return LaserConfigData;
 }
 
-void LaserI::callback(ConstLaserScanStampedPtr &_msg) {
+void LaserI::callback(ConstGazeboRoboCompLaserPtr &_msg) {
 
     int i = 0;
     std::cerr << "Getting Callbacks" << std::endl;
-    LaserScanValues.resize(_msg->scan().count());
+    LaserScanValues.resize(_msg->range_size());
 
-    for(i = 0; i < _msg->scan().count(); i++)
+    for(i = 0; i < _msg->range_size(); i++)
     {
-        this->LaserScanValues[i].angle = _msg->scan().angle_step()*i + _msg->scan().angle_min();
-        this->LaserScanValues[i].dist = _msg->scan().ranges(i);
+        this->LaserScanValues[i].angle = _msg->laser().horizontal_resolution()*i + _msg->laser().horizontal_min_angle();
+        this->LaserScanValues[i].dist = _msg->range(i);
     }
     
     if (this->seed_ < 2) {
-        this->LaserConfigData.maxMeasures = _msg->scan().count();
-        this->LaserConfigData.maxDegrees = _msg->scan().angle_max();
-        this->LaserConfigData.maxRange = _msg->scan().range_min();
-        this->LaserConfigData.minRange = _msg->scan().range_max();
-        this->LaserConfigData.iniRange = _msg->scan().ranges(0);
-        this->LaserConfigData.endRange = _msg->scan().ranges(i-1);
-        this->LaserConfigData.angleRes = _msg->scan().angle_step();
-        this->LaserConfigData.angleIni = _msg->scan().angle_min();
+        this->LaserConfigData.maxMeasures = _msg->laser().horizontal_samples();
+        this->LaserConfigData.maxDegrees = _msg->laser().horizontal_max_angle();
+        this->LaserConfigData.maxRange = _msg->laser().range_max();
+        this->LaserConfigData.minRange = _msg->laser().range_min();
+        this->LaserConfigData.iniRange = _msg->range(0);
+        this->LaserConfigData.endRange = _msg->range(_msg->range_size()-1);
+        this->LaserConfigData.angleRes = _msg->laser().horizontal_resolution();
+        this->LaserConfigData.angleIni = _msg->laser().horizontal_min_angle();
         this->LaserConfigData.device = this->device_name_;
         this->LaserConfigData.driver = "gazebo_driver";
         this->LaserConfigData.sampleRate = 0;

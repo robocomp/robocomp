@@ -31,8 +31,12 @@ namespace gazebo
         // Load the plugin
         public: void Load(sensors::SensorPtr _parent, sdf::ElementPtr _sdf);
 
+        public: void OnNewLaserScans();
+
         // World name
         private: std::string world_name_;
+
+        private: std::string topic_name_;
 
         // Pointer to the World
         private: physics::WorldPtr world_;
@@ -41,6 +45,9 @@ namespace gazebo
 
         // SDF root element
         private: sdf::ElementPtr sdf_;
+
+        private: gazebo::transport::NodePtr gazebo_node_;
+        private: gazebo::transport::PublisherPtr pub_;
     };
 }
 #endif

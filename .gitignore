@@ -74,4 +74,4 @@ ui_**.pyc
 tools/gzserver/build/
 tools/gzserver/slice_cpp/src/
 tools/gzserver/slice_cpp/include/
-
+.vscode

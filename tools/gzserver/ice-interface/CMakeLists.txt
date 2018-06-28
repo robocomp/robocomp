@@ -12,7 +12,8 @@ add_library(RGBDI SHARED src/RGBDI.cpp include/RGBDI.h)
 target_link_libraries(RGBDI RGBD Ice IceUtil ${ZeroCIce_LIBRARIES} ${easyiceconfig_LIBRARIES} ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES} ${OpenCV_LIBRARIES})
 
 add_library(LaserI SHARED src/LaserI.cpp include/LaserI.h)
-target_link_libraries(LaserI Laser Ice IceUtil ${ZeroCIce_LIBRARIES} ${easyiceconfig_LIBRARIES} ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
+target_link_libraries(LaserI Laser Ice IceUtil Laser_msgs ${ZeroCIce_LIBRARIES} ${easyiceconfig_LIBRARIES} ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
+add_dependencies(LaserI Laser_msgs)
 
 add_library(MotorI SHARED src/MotorI.cpp include/MotorI.h)
 target_link_libraries(MotorI Motors Ice IceUtil ${ZeroCIce_LIBRARIES} ${easyiceconfig_LIBRARIES} ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
