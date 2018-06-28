@@ -15,6 +15,7 @@ int main(int argc, char* argv[])
 { 
     Ice::CommunicatorPtr ic;
     int status = 0;
+    std::cerr << "Running. Much Wow!!!" << std::endl;
     try
     {
         ic = Ice::initialize(argc, argv);

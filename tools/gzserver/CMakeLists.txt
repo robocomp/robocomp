@@ -65,8 +65,8 @@ add_executable(My_Robot_Vel src/diff_drive_cmd.cc)
 target_link_libraries(My_Robot_Vel diffdrive_msgs ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES} ${SDF_LIBRARIES})
 add_dependencies(My_Robot_Vel diffdrive_msgs)
 
-add_executable(server src/server.cpp)
-target_link_libraries(server 
+add_executable(gazeboserver src/server.cpp)
+target_link_libraries(gazeboserver 
     Laser 
     LaserI 
     Ice 
@@ -89,6 +89,7 @@ target_link_libraries(server
     ${easyiceconfig_LIBRARIES} 
     ${GAZEBO_LIBRARIES} 
     ${Boost_LIBRARIES})
+INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/gazeboserver DESTINATION /opt/robocomp/bin/ PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE )
 
 add_executable(client src/client.cpp)
 target_link_libraries(client ${GAZEBO_LIBRARIES} Laser ${Boost_LIBRARIES} Ice IceUtil ${ZeroCIce_LIBRARIES} ${easyiceconfig_LIBRARIES})
