@@ -32,6 +32,7 @@ SpecificWorker::SpecificWorker(MapPrx& mprx) : GenericWorker(mprx)
 	groupBox_2->hide();
 	connect(openpushButton,SIGNAL(clicked()),this, SLOT(openFile()));
 	connect(&timer, SIGNAL(timeout()), this, SLOT(compute()));
+    connect(&timer, SIGNAL(timeout()), this, SLOT(click_get()));
 	connect(create_new_nodepushButton, SIGNAL(clicked(bool)), this, SLOT(create_new_node(bool)));
     connect(remove_current_nodepushButton, SIGNAL(clicked()), this, SLOT(remove_current_node()));
 	connect(treeWidget, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
@@ -158,7 +159,7 @@ void SpecificWorker::currentItemChanged(QTreeWidgetItem *current, QTreeWidgetIte
 {
 	interfaceConnections(false);
 	currentNode = nodeMapByItem[current];
-	showAvailableGroups();
+    showAvailableGroups();
     highlightNode();
 	interfaceConnections(true);
 }
@@ -265,6 +266,7 @@ void SpecificWorker::showAvailableGroups()
 			jointGroup->hide();
 			nodeType->setText("<b>plane</b>");
 			showPlane(currentNode.id);
+            //qDebug() << imv->planesHash.key(dynamic_cast<IMVPlane *>(world3D->hexno));
 			break;
 		case IMCamera:
 			cameraGroup->show();
@@ -407,6 +409,25 @@ void SpecificWorker::saveButtonClicked()
 
 void SpecificWorker::resetButtonClicked()
 {
+}
+
+void SpecificWorker::click_get()
+{
+   IMVPlane* plane;
+
+   if((plane = dynamic_cast<IMVPlane *>(world3D->hexno)))
+   {
+       plane1 = imv->planesHash.key(plane);
+
+   if(plane1!=plane2)
+   {
+       //  qDebug()<< plane1;
+       treeWidget->setCurrentItem(nodeMap[plane1].item);
+   }
+
+   plane2 = plane1;
+
+   }
 }
 
 void SpecificWorker::cameraChanged()
@@ -846,12 +867,10 @@ void SpecificWorker::reload_same()
 	}
 	else
 	{
-
 		world3D = new OsgView(frame);
 		disconnect(treeWidget, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
 		treeWidget->clear();
 		connect(treeWidget, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
-		innerModel = new InnerModel(File_reload.toStdString());
 		fillNodeMap(innerModel->getNode("root"), NULL);
         imv = new InnerModelViewer(innerModel, "root", world3D->getRootGroup(),false);
 		timer.start(Period);
@@ -864,7 +883,7 @@ void SpecificWorker::reload_same()
     interfaceConnections(false);
     current_node= nodeMapByItem[treeWidget->currentItem()];
     disconnect(&timer, SIGNAL(timeout()), this, SLOT(compute()));
-
+    disconnect(&timer, SIGNAL(timeout()), this, SLOT(click_get()));
     innerModel->removeNode(current_node.id);
     qDebug() << "Removed" << current_node.id;
 
@@ -877,10 +896,11 @@ void SpecificWorker::reload_same()
     connect(treeWidget, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
     fillNodeMap(innerModel->getNode("root"), NULL);
     prevNode = NULL;
-
+    plane1="";
+    plane2="";
+    connect(&timer, SIGNAL(timeout()), this, SLOT(click_get()));
     interfaceConnections(true);
    }
-
 
 void SpecificWorker::openFile()
 {
@@ -892,6 +912,7 @@ void SpecificWorker::openFile()
 	else {
 		File_reload=fileName;
         world3D = new OsgView(frame);
+        manipulator = new osgGA::TrackballManipulator;
 		disconnect(treeWidget, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
 		treeWidget->clear();
 		connect(treeWidget, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));

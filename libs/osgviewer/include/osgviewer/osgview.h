@@ -117,6 +117,7 @@ public:
 	osg::ref_ptr<osg::Node> addPolygon(const osg::Vec3Array &v,const osg::Vec4 &color = osg::Vec4(1.0f, 0.0, 1.0f, 0.20f));
 	void removePolyLine( osg::Node * pl );
 	osg::Shape *addBasicLineShape(const QVec &p1, const QVec &p2, float radius);
+	osg::Node * hexno = NULL;
 
 
 	osg::Group * getRootGroup()	{ return root; }
@@ -135,6 +136,7 @@ public:
     getCamera()->setProjectionMatrixAsPerspective(HFOV, static_cast<double>(width())/static_cast<double>(height()), 0.00000001, 1000000.0);
   }
 
+	void handle( const QPoint & p);
 	//Picking objects
 	void pickObject( const QPoint & p);
 	void setImageHUD(osg::ref_ptr<osg::Image> i);

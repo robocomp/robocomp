@@ -575,6 +575,28 @@ void OsgView::pickObject( const QPoint & p)
 	  }
 }
 
+void OsgView::handle( const QPoint & p)
+{
+	osgViewer::Viewer* viewer = dynamic_cast<osgViewer::Viewer*>(this);
+ if ( viewer )
+ {
+ osg::ref_ptr<osgUtil::LineSegmentIntersector> intersector =
+ new osgUtil::LineSegmentIntersector(
+ osgUtil::Intersector::WINDOW, p.x(),-p.y() + height());
+
+ osgUtil::IntersectionVisitor iv( intersector.get() );
+ iv.setTraversalMask( ~0x1 );
+ viewer->getCamera()->accept( iv );
+
+ if ( intersector->containsIntersections() )
+ {
+ osgUtil::LineSegmentIntersector::Intersection result = *(intersector->getIntersections().begin());
+ hexno = result.nodePath.back();
+ }
+
+}
+}
+
 /// UTILITIES
 
 /**
@@ -656,7 +678,7 @@ void OsgView::mousePressEvent( QMouseEvent* event )
     {
         case(Qt::LeftButton): button = 1; this->pickObject( QPoint(event->x(), event->y()) ); break;
         case(Qt::MidButton): button = 2; break;
-        case(Qt::RightButton): button = 3; break;
+        case(Qt::RightButton): button = 3;this->handle( QPoint(event->x(), event->y()) ); break;
         case(Qt::NoButton): button = 0; break;
         default: button = 0; break;
     }
