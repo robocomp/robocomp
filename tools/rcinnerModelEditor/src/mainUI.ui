@@ -880,7 +880,7 @@
        <item>
         <widget class="QPushButton" name="startnewpushButton">
          <property name="text">
-          <string>Start new InnerModel File</string>
+          <string>Start new Model</string>
          </property>
         </widget>
        </item>
