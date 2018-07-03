@@ -34,6 +34,7 @@ SpecificWorker::SpecificWorker(MapPrx& mprx) : GenericWorker(mprx)
 	connect(&timer, SIGNAL(timeout()), this, SLOT(compute()));
     connect(&timer, SIGNAL(timeout()), this, SLOT(click_get()));
 	connect(create_new_nodepushButton, SIGNAL(clicked(bool)), this, SLOT(create_new_node(bool)));
+    connect(startnewpushButton, SIGNAL(clicked()), this, SLOT(start_new_model()));
     connect(remove_current_nodepushButton, SIGNAL(clicked()), this, SLOT(remove_current_node()));
 	connect(treeWidget, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
 	connect(reloadpushButton,SIGNAL(clicked()),this,SLOT(reload_same()));
@@ -902,6 +903,18 @@ void SpecificWorker::reload_same()
     interfaceConnections(true);
    }
 
+   void SpecificWorker::start_new_model()
+   {
+       world3D = new OsgView(frame);
+       disconnect(treeWidget, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
+       treeWidget->clear();
+       connect(treeWidget, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
+       innerModel = new InnerModel();
+       fillNodeMap(innerModel->getNode("root"), NULL);
+       imv = new InnerModelViewer(innerModel, "root", world3D->getRootGroup(),false);
+       timer.start(Period);
+   }
+
 void SpecificWorker::openFile()
 {
 	QString fileName = QFileDialog::getOpenFileName(this,
@@ -912,7 +925,6 @@ void SpecificWorker::openFile()
 	else {
 		File_reload=fileName;
         world3D = new OsgView(frame);
-        manipulator = new osgGA::TrackballManipulator;
 		disconnect(treeWidget, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
 		treeWidget->clear();
 		connect(treeWidget, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));

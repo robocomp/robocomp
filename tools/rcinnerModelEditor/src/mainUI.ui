@@ -878,6 +878,13 @@
         </widget>
        </item>
        <item>
+        <widget class="QPushButton" name="startnewpushButton">
+         <property name="text">
+          <string>Start new InnerModel File</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QGroupBox" name="groupBox_2">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Expanding" vsizetype="MinimumExpanding">

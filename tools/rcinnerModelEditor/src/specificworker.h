@@ -66,7 +66,6 @@ class SpecificWorker : public GenericWorker
 		int flag;
 		int render1;
         QString File_reload, prevTexture, plane1, plane2="";
-        osgGA::TrackballManipulator *manipulator;
 
 		QMap<QString, WorkerNode> nodeMap;
 		QMap<QTreeWidgetItem *, WorkerNode> nodeMapByItem;
@@ -102,6 +101,7 @@ class SpecificWorker : public GenericWorker
 		void remove_current_node();
 		void reload_same();
         void click_get();
+        void start_new_model();
 
 	private:
 		InnerModel *innerModel;
