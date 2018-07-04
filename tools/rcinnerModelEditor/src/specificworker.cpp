@@ -398,6 +398,13 @@ void SpecificWorker::showCamera(QString id)
 
 void SpecificWorker::saveButtonClicked()
 {
+	if(prevNode!=NULL)
+    {
+        InnerModelPlane *plane;
+        if ((plane = dynamic_cast<InnerModelPlane *>(prevNode)))
+            plane->texture = prevTexture;
+    }
+    
 	QString fileName = QFileDialog::getSaveFileName(this,
 			tr("Save XML"), "",
 			tr("XML file (*.xml)"));
@@ -646,7 +653,14 @@ void SpecificWorker::shownode()
 
 void SpecificWorker::add_new_node()
 {
-	InnerModelNode *par= (InnerModelNode *)innerModel->getNode(parenta->text());
+    if(prevNode!=NULL)
+    {
+        InnerModelPlane *plane;
+        if ((plane = dynamic_cast<InnerModelPlane *>(prevNode)))
+            plane->texture = prevTexture;
+    }
+
+    InnerModelNode *par= (InnerModelNode *)innerModel->getNode(parenta->text());
 	if (par==NULL)
 	{
 		msgBox.setText("Enter valid Parent Id");
@@ -719,6 +733,7 @@ void SpecificWorker::add_new_node()
 			}
 			if(flag==0)
 			{
+                world3D = new OsgView(frame);
                 imv = new InnerModelViewer(innerModel, "root", world3D->getRootGroup(),false);
 				qDebug()<< "create new node " << newid->text();
 
@@ -863,6 +878,12 @@ void SpecificWorker::reload_same()
 	}
 	else
 	{
+        if(prevNode!=NULL)
+        {
+            InnerModelPlane *plane;
+            if ((plane = dynamic_cast<InnerModelPlane *>(prevNode)))
+                plane->texture = prevTexture;
+        }
 		world3D = new OsgView(frame);
 		disconnect(treeWidget, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
 		treeWidget->clear();
@@ -880,6 +901,12 @@ void SpecificWorker::reload_same()
     current_node= nodeMapByItem[treeWidget->currentItem()];
     disconnect(&timer, SIGNAL(timeout()), this, SLOT(compute()));
     disconnect(&timer, SIGNAL(timeout()), this, SLOT(click_get()));
+    if(prevNode!=NULL)
+    {
+        InnerModelPlane *plane;
+        if ((plane = dynamic_cast<InnerModelPlane *>(prevNode)))
+            plane->texture = prevTexture;
+    }
     innerModel->removeNode(current_node.id);
     qDebug() << "Removed" << current_node.id;
 

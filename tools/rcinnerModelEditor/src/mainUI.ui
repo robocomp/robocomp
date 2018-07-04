@@ -1469,7 +1469,14 @@
                 </widget>
                </item>
                <item row="5" column="2">
-                <widget class="QDoubleSpinBox" name="dep"/>
+                <widget class="QDoubleSpinBox" name="dep">
+                 <property name="minimum">
+                  <double>0.000000000000000</double>
+                 </property>
+                 <property name="maximum">
+                  <double>100000.000000000000000</double>
+                 </property>
+                </widget>
                </item>
               </layout>
              </item>
