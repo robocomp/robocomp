@@ -96,12 +96,12 @@ class SpecificWorker : public GenericWorker
 		void rotationChanged();
 		void jointChanged();
 		void shownode();
-		void makenode();
 		void create_new_node(bool);
 		void remove_current_node();
 		void reload_same();
         void click_get();
         void start_new_model();
+        void add_new_node();
 
 	private:
 		InnerModel *innerModel;

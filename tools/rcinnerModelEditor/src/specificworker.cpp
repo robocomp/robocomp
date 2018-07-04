@@ -36,6 +36,7 @@ SpecificWorker::SpecificWorker(MapPrx& mprx) : GenericWorker(mprx)
 	connect(create_new_nodepushButton, SIGNAL(clicked(bool)), this, SLOT(create_new_node(bool)));
     connect(startnewpushButton, SIGNAL(clicked()), this, SLOT(start_new_model()));
     connect(remove_current_nodepushButton, SIGNAL(clicked()), this, SLOT(remove_current_node()));
+    connect(savepushButton, SIGNAL(clicked()), this, SLOT(saveButtonClicked()));
 	connect(treeWidget, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
 	connect(reloadpushButton,SIGNAL(clicked()),this,SLOT(reload_same()));
 	showMaximized();
@@ -643,7 +644,7 @@ void SpecificWorker::shownode()
 	}
 }
 
-void SpecificWorker::makenode()
+void SpecificWorker::add_new_node()
 {
 	InnerModelNode *par= (InnerModelNode *)innerModel->getNode(parenta->text());
 	if (par==NULL)
@@ -718,14 +719,7 @@ void SpecificWorker::makenode()
 			}
 			if(flag==0)
 			{
-				QString fileName = QFileDialog::getSaveFileName(this,
-						tr("Save XML"), "",
-						tr("XML file (*.xml)"));
-				if (fileName.isEmpty())
-					return;
-				else {
-					innerModel->save(fileName);
-				}
+                imv = new InnerModelViewer(innerModel, "root", world3D->getRootGroup(),false);
 				qDebug()<< "create new node " << newid->text();
 
 			}
@@ -830,6 +824,7 @@ void SpecificWorker::create_new_node(bool bul)
 	newid->show();
 	Typea->show();
 	parenta->show();
+    addNodeButton->show();
 	cameraGroup_2->hide();
 	translationGroup_2->hide();
 	rotationGroup_2->hide();
@@ -849,13 +844,13 @@ void SpecificWorker::newnodeConnections(bool enable)
 	if(enable)
 	{
 		connect(Typea,SIGNAL(currentIndexChanged(int)),this,SLOT(shownode()));
-		connect(savepushButton,SIGNAL(clicked()),this,SLOT(makenode()));
+        connect(addNodeButton,SIGNAL(clicked()),this,SLOT(add_new_node()));
 	}
 
 	else
 	{
 		disconnect(Typea,SIGNAL(currentIndexChanged(int)),this,SLOT(shownode()));
-		disconnect(savepushButton,SIGNAL(clicked()),this,SLOT(makenode()));
+        disconnect(addNodeButton,SIGNAL(clicked()),this,SLOT(add_new_node()));
 	}
 }
 
