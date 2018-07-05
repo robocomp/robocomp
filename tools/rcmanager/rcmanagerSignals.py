@@ -39,11 +39,11 @@ class RCManagerSignals(QtCore.QObject):
     openModel = QtCore.pyqtSignal(str, bool)
     closeModel = QtCore.pyqtSignal()
     addNode = QtCore.pyqtSignal(dict)
-    startComponent = QtCore.pyqtSignal(str)
-    stopComponent = QtCore.pyqtSignal(str)
+    startComponent = QtCore.pyqtSignal()
+    stopComponent = QtCore.pyqtSignal()
     componentRunning = QtCore.pyqtSignal(str)
     componentStopped = QtCore.pyqtSignal(str)
-    removeComponent = QtCore.pyqtSignal(str)
+    removeComponent = QtCore.pyqtSignal()
 
     def __init__(self, parent=None):
         QtCore.QObject.__init__(self)

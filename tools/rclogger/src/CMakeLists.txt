@@ -2,6 +2,14 @@
 cmake_minimum_required(VERSION 2.6)
 PROJECT(  rclogger )
 
+foreach(p
+    CMP0071 # 3.10: Let AUTOMOC and AUTOUIC process GENERATED files
+    )
+  if(POLICY ${p})
+    cmake_policy(SET ${p} NEW)
+  endif()
+endforeach()
+
  
 IF ( "$ENV{ROBOCOMP}" STREQUAL "")
   MESSAGE(WARNING "ROBOCOMP variable not set. Using the default value: /opt/robocomp")
