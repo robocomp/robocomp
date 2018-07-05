@@ -42,7 +42,7 @@ module HandDetection
 		 bool tracked;
 	};
 	sequence <Hand> THands;
-	interface OpenpooseBodyData
+	interface HandDetection
 	{
 		THands processImage (TImage img) throws HardwareFailedException;
 	};
