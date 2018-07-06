@@ -6,9 +6,9 @@
 //  Source: IDSLs/HandDetection.idsl
 //  
 //****************************************************************** 
-#ifndef HANDDETECTION_ICE
-#define HANDDETECTION_ICE
-module HandDetection
+#ifndef ROBOCOMPHANDDETECTION_ICE
+#define ROBOCOMPHANDDETECTION_ICE
+module RoboCompHandDetection
 {
 	exception HardwareFailedException{ string what; };
 	sequence <byte> ImgType;
@@ -33,11 +33,11 @@ module HandDetection
 		 int id;
 		 float score;
 		 TFingertips fingertips;
-		 TIntertips hands;
+		 TIntertips intertips;
 		 TPositions positions;
 		 TContour contour;
-		 KeyPoint center_of_mass;
-		 int truth_value;
+		 KeyPoint centerMass;
+		 int truthValue;
 		 bool detected;
 		 bool tracked;
 	};
