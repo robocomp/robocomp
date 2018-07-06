@@ -34,6 +34,16 @@ SpecificWorker::SpecificWorker(MapPrx& mprx) : GenericWorker(mprx)
 	connect(&timer, SIGNAL(timeout()), this, SLOT(compute()));
     connect(&timer, SIGNAL(timeout()), this, SLOT(click_get()));
 	connect(create_new_nodepushButton, SIGNAL(clicked(bool)), this, SLOT(create_new_node(bool)));
+    shortcut1 = new QShortcut(QKeySequence("Ctrl+O"), tabWidget);
+    connect(shortcut1, SIGNAL(activated()), this, SLOT(openFile()));
+    shortcut2 = new QShortcut(QKeySequence("Ctrl+R"), tabWidget);
+    connect(shortcut2, SIGNAL(activated()), this, SLOT(reload_same()));
+    shortcut3 = new QShortcut(QKeySequence("Ctrl+S"), tabWidget);
+    connect(shortcut3, SIGNAL(activated()), this, SLOT(saveButtonClicked()));
+    shortcut4 = new QShortcut(QKeySequence("Ctrl+N"), tabWidget);
+    connect(shortcut4, SIGNAL(activated()), this, SLOT(start_new_model()));
+    shortcut5 = new QShortcut(QKeySequence("Ctrl+Shift+N"), tabWidget);
+    connect(shortcut5, SIGNAL(activated()), this, SLOT(create_new_node()));
     connect(startnewpushButton, SIGNAL(clicked()), this, SLOT(start_new_model()));
     connect(remove_current_nodepushButton, SIGNAL(clicked()), this, SLOT(remove_current_node()));
     connect(savepushButton, SIGNAL(clicked()), this, SLOT(saveButtonClicked()));
@@ -832,7 +842,7 @@ void SpecificWorker::interfaceConnections(bool enable)
 	}
 }
 
-void SpecificWorker::create_new_node(bool bul)
+void SpecificWorker::create_new_node()
 {
 	newnodeConnections(false);
 	groupBox_2->show();

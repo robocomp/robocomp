@@ -65,8 +65,8 @@ class SpecificWorker : public GenericWorker
 		QMessageBox msgBox;
 		int flag;
 		int render1;
-        QString File_reload, prevTexture, plane1, plane2="";
-
+        QString File_reload, prevTexture, plane1, plane2 = "";
+        QShortcut *shortcut1, *shortcut2, *shortcut3, *shortcut4, *shortcut5;
 		QMap<QString, WorkerNode> nodeMap;
 		QMap<QTreeWidgetItem *, WorkerNode> nodeMapByItem;
 
@@ -96,7 +96,7 @@ class SpecificWorker : public GenericWorker
 		void rotationChanged();
 		void jointChanged();
 		void shownode();
-		void create_new_node(bool);
+        void create_new_node();
 		void remove_current_node();
 		void reload_same();
         void click_get();
