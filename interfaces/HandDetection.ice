@@ -14,37 +14,40 @@ module RoboCompHandDetection
 	sequence <byte> ImgType;
 	struct TImage
 	{
-		 int witdh;
+		 int width;
 		 int height;
 		 int depth;
 		 ImgType image;
 	};
-	struct KeyPoint
+	sequence <int> KeyPoint;
+	sequence <KeyPoint> TCoordSequence;
+	sequence <TCoordSequence> TContour;
+	struct TRoi
 	{
 		 int x;
 		 int y;
+		 int w;
+		 int h;
 	};
-	sequence <KeyPoint> TFingertips;
-	sequence <KeyPoint> TIntertips;
-	sequence <KeyPoint> TPositions;
-	sequence <KeyPoint> TContour;
 	struct Hand
 	{
 		 int id;
 		 float score;
-		 TFingertips fingertips;
-		 TIntertips intertips;
-		 TPositions positions;
+		 TCoordSequence fingertips;
+		 TCoordSequence intertips;
+		 TCoordSequence positions;
 		 TContour contour;
 		 KeyPoint centerMass;
 		 int truthValue;
 		 bool detected;
 		 bool tracked;
 	};
-	sequence <Hand> THands;
+	sequence <Hand> Hands;
 	interface HandDetection
 	{
-		THands processImage (TImage img) throws HardwareFailedException;
+		Hands getHands ();
+		int getHandsCount ();
+		int addNewHand (int expectedHands, TRoi roi) throws HardwareFailedException;
 	};
 };
 
