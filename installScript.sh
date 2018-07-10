@@ -140,9 +140,9 @@ while true; do
 done
 
 if [ "$option" -eq "1" ]; then
-	cd ~/robocomp/components
-	git clone https://github.com/robocomp/robocomp-robolab.git
-	echo "Components installed in ~/robocomp/components/robocomp-robolab/components"
+    cd ~/robocomp/components
+    git clone https://github.com/robocomp/robocomp-robolab.git
+    echo "Components installed in ~/robocomp/components/robocomp-robolab/components"
 fi
 
 # ============================================================ #
@@ -154,7 +154,7 @@ echo "Fetching meshes and textures. This could take a while."
 cd ~/robocomp
 git annex get .
 
-echo "The simulator is going to be launched to test it works."
+echo "The simulator is going to be launched to test it works.\n"
 echo "For more information visit the repository."
 
 cd ~/robocomp/files/innermodel
