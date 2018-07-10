@@ -16,6 +16,18 @@ Fiuscha="\033[0;35m"
 blue="\033[1;34m"
 transparent="\e[0m"
 
+echo -e $white"
+▄▄▄▄▄▄              ▄▄                                                        
+██▀▀▀▀██            ██                                                        
+██    ██   ▄████▄   ██▄███▄    ▄████▄    ▄█████▄   ▄████▄   ████▄██▄  ██▄███▄ 
+███████   ██▀  ▀██  ██▀  ▀██  ██▀  ▀██  ██▀    ▀  ██▀  ▀██  ██ ██ ██  ██▀  ▀██
+██  ▀██▄  ██    ██  ██    ██  ██    ██  ██        ██    ██  ██ ██ ██  ██    ██
+██    ██  ▀██▄▄██▀  ███▄▄██▀  ▀██▄▄██▀  ▀██▄▄▄▄█  ▀██▄▄██▀  ██ ██ ██  ███▄▄██▀
+▀▀    ▀▀▀   ▀▀▀▀    ▀▀ ▀▀▀      ▀▀▀▀      ▀▀▀▀▀     ▀▀▀▀    ▀▀ ▀▀ ▀▀  ██ ▀▀▀  
+                                                                      ██      
+
+                                                                " 
+
 echo -e $blue"Welcome to the Installation Script for Robocomp!"                     
 
 echo -e $white"If you have any problems with the process, please contact us at robocomp.team@gmail.com"
