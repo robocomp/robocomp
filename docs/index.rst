@@ -6,24 +6,32 @@
 Welcome to RoboComp's documentation!
 ====================================
 
-.. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+The main documentation for the site is organized into a couple sections:
 
+* :ref:`user-docs`
+* :ref:`contributing`
 
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
-* :ref:`docs`
-
-.. _docs:
+.. _user-docs:
 
 .. toctree::
    :maxdepth: 2
-   :caption: Install Documentation
+   :caption: User Documentation
+   
+   IDSL
+   RobocomoRosChatter
+   buildTools
+   components
+   robocomp-robolab-components
+   robocompdsl
+   workspaceModel  
 
-   /doc
+.. _contributing:
+
+.. toctree::
+   :maxdepth: 2
+   :caption: About Read the Docs
+
+   using_github
+   contribute/contribute
+   packaging/*
+
