@@ -45,20 +45,20 @@ fi;
 # =============     < Installing Robocomp >      ============= #
 # ============================================================ #
 
-echo "Updating system and Installing Dependencies"
+echo "Updating system and Installing Dependencies\n"
 
 sudo apt-get update
 sudo apt-get install git git-annex cmake g++ libgsl0-dev libopenscenegraph-dev cmake-qt-gui zeroc-ice35 freeglut3-dev libboost-system-dev libboost-thread-dev qt4-dev-tools python-pip  python-pyparsing python-numpy python-pyside pyside-tools libxt-dev pyqt4-dev-tools libboost-test-dev libboost-filesystem-dev python-libxml2 python-xmltodict libccd-dev
 sudo pip install networkx
 sudo apt-get install yakuake qt4-designer
 
-echo "Installing Source from Github"
+echo "Installing Source from Github\n"
 
 git clone https://github.com/robocomp/robocomp.git
 cd ~/robocomp
 git annex get .
 
-echo "Adding Robocomo to $PATH"
+echo "Adding Robocomo to $PATH\n"
 
 sudo ln -s /home/$USER /home/robocomp
 echo "export ROBOCOMP=/home/$USER/robocomp" >> ~/.bashrc
@@ -72,7 +72,7 @@ sudo ldconfig
 # ============================================================ #
 
 while true; do
-    read -p "Compile with Flexible Collision Library FCL? [Yy/Nn]" yn
+    read -p "Compile with Flexible Collision Library FCL? [Yy/Nn]\n" yn
     case $yn in
         [Yy]* ) option=1; break;;
         [Nn]* ) option=0; echo "Not FCL_SUPPORT in Robocomp"; break;;
@@ -144,6 +144,38 @@ if [ "$option" -eq "1" ]; then
     git clone https://github.com/robocomp/robocomp-robolab.git
     echo "Components installed in ~/robocomp/components/robocomp-robolab/components"
 fi
+
+# ============================================================ #
+# =============   <  Jockstick or Keyboard  >    ============= #
+# ============================================================ #
+
+while true; do
+    read -p "Are you using a Joystick? [Yy/Nn]" yn
+    case $yn in
+        [Yy]* ) option=1; break;;
+        [Nn]* ) option=0; break;;
+        * ) echo "Please answer yes or no.";;
+    esac
+done
+
+if [ "$option" -eq "1" ]; then
+    echo "We are installing the Joystick component."
+    cd ~/robocomp/components/robocomp-robolab/components/joystickComp
+    cmake .
+    make
+    cd bin
+    sudo addgroup your-user dialout   # To solve some permissions issues in Ubuntu
+    ./startJoyStick.sh
+
+if [ "$option" -eq "0" ]; then    
+    echo "We are installing the Keyboard component.
+    Tou will be able to move the robot around."
+    cd ~/robocomp/components/robocomp-robolab/components/keyboardrobotcontroller
+    cmake .
+    make
+    src/keyboardrobotcontroller.py --Ice.Config=etc/config
+fi
+
 
 # ============================================================ #
 # =============    < Testing the Simulator >     ============= #
