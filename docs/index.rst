@@ -17,13 +17,13 @@ The main documentation for the site is organized into a couple sections:
    :maxdepth: 2
    :caption: User Documentation
    
-   IDSL
-   RobocomoRosChatter
-   buildTools
-   components
-   robocomp-robolab-components
-   robocompdsl
-   workspaceModel  
+   doc/IDSL
+   doc/RobocomoRosChatter
+   doc/buildTools
+   doc/components
+   doc/robocomp-robolab-components
+   doc/robocompdsl
+   doc/workspaceModel  
 
 .. _contributing:
 
@@ -31,7 +31,7 @@ The main documentation for the site is organized into a couple sections:
    :maxdepth: 2
    :caption: About Read the Docs
 
-   using_github
-   contribute/contribute
-   packaging/*
+   doc/using_github
+   doc/contribute/contribute
+   doc/packaging/*
 
