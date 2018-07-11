@@ -45,20 +45,20 @@ fi;
 # =============     < Installing Robocomp >      ============= #
 # ============================================================ #
 
-echo "Updating system and Installing Dependencies\n"
+echo "Updating system and Installing Dependencies"
 
 sudo apt-get update
 sudo apt-get install git git-annex cmake g++ libgsl0-dev libopenscenegraph-dev cmake-qt-gui zeroc-ice35 freeglut3-dev libboost-system-dev libboost-thread-dev qt4-dev-tools python-pip  python-pyparsing python-numpy python-pyside pyside-tools libxt-dev pyqt4-dev-tools libboost-test-dev libboost-filesystem-dev python-libxml2 python-xmltodict libccd-dev
 sudo pip install networkx
 sudo apt-get install yakuake qt4-designer
 
-echo "Installing Source from Github\n"
+echo "Installing Source from Github"
 
 git clone https://github.com/robocomp/robocomp.git
 cd ~/robocomp
 git annex get .
 
-echo "Adding Robocomo to $PATH\n"
+echo "Adding Robocomo to $PATH"
 
 sudo ln -s /home/$USER /home/robocomp
 echo "export ROBOCOMP=/home/$USER/robocomp" >> ~/.bashrc
@@ -72,7 +72,8 @@ sudo ldconfig
 # ============================================================ #
 
 while true; do
-    read -p "Compile with Flexible Collision Library FCL? [Yy/Nn]\n" yn
+    read -p "Compile with Flexible Collision Library FCL? [Yy/Nn]
+    " yn
     case $yn in
         [Yy]* ) option=1; break;;
         [Nn]* ) option=0; echo "Not FCL_SUPPORT in Robocomp"; break;;
@@ -186,7 +187,8 @@ echo "Fetching meshes and textures. This could take a while."
 cd ~/robocomp
 git annex get .
 
-echo "The simulator is going to be launched to test it works.\n"
+echo "The simulator is going to be launched to test if it works.
+"
 echo "For more information visit the repository."
 
 cd ~/robocomp/files/innermodel
