@@ -33,7 +33,7 @@ SpecificWorker::SpecificWorker(MapPrx& mprx) : GenericWorker(mprx)
 	connect(openpushButton,SIGNAL(clicked()),this, SLOT(openFile()));
 	connect(&timer, SIGNAL(timeout()), this, SLOT(compute()));
     connect(&timer, SIGNAL(timeout()), this, SLOT(click_get()));
-	connect(create_new_nodepushButton, SIGNAL(clicked(bool)), this, SLOT(create_new_node(bool)));
+    connect(create_new_nodepushButton, SIGNAL(clicked()), this, SLOT(create_new_node()));
     shortcut1 = new QShortcut(QKeySequence("Ctrl+O"), tabWidget);
     connect(shortcut1, SIGNAL(activated()), this, SLOT(openFile()));
     shortcut2 = new QShortcut(QKeySequence("Ctrl+R"), tabWidget);
