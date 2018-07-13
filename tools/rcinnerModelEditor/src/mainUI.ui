@@ -939,6 +939,11 @@
            <widget class="QComboBox" name="Typea">
             <item>
              <property name="text">
+              <string>---------Select type------------</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
               <string>transform</string>
              </property>
             </item>
@@ -1583,10 +1588,24 @@
                 </widget>
                </item>
                <item row="1" column="2">
-                <widget class="QDoubleSpinBox" name="scaley_2"/>
+                <widget class="QDoubleSpinBox" name="scaley_2">
+                 <property name="minimum">
+                  <double>-10000.000000000000000</double>
+                 </property>
+                 <property name="maximum">
+                  <double>10000.000000000000000</double>
+                 </property>
+                </widget>
                </item>
                <item row="1" column="3">
-                <widget class="QDoubleSpinBox" name="scalez_2"/>
+                <widget class="QDoubleSpinBox" name="scalez_2">
+                 <property name="minimum">
+                  <double>-10000.000000000000000</double>
+                 </property>
+                 <property name="maximum">
+                  <double>10000.000000000000000</double>
+                 </property>
+                </widget>
                </item>
               </layout>
              </item>

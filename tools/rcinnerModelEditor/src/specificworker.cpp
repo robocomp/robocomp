@@ -485,6 +485,7 @@ void SpecificWorker::planeChanged()
 	m->height = rectangleHeight->value();
 	m->texture = texture->text();
     m->repeat = textureSize->value();
+    prevNode = NULL;
     imv->update();
 }
 
@@ -543,7 +544,21 @@ void SpecificWorker::jointChanged()
 
 void SpecificWorker::shownode()
 {
-	if(Typea->currentText()=="transform")
+    if(Typea->currentText()=="---------Select type------------")
+    {
+        cameraGroup_2->hide();
+        translationGroup_2->hide();
+        rotationGroup_2->hide();
+        meshGroup_2->hide();
+        planeGroup_2->hide();
+        jointGroup_2->hide();
+        massBox->hide();
+        portBox->hide();
+        noiseBox->hide();
+        laserBox->hide();
+        Ifconfiga->hide();
+    }
+    if(Typea->currentText()=="transform")
 	{
 		translationGroup_2->show();
 		rotationGroup_2->show();
