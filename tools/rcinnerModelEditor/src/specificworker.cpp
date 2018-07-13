@@ -758,10 +758,14 @@ void SpecificWorker::add_new_node()
 			}
 			if(flag==0)
 			{
+                world3D->~OsgView();
                 world3D = new OsgView(frame);
                 imv = new InnerModelViewer(innerModel, "root", world3D->getRootGroup(),false);
 				qDebug()<< "create new node " << newid->text();
-
+                newid->clear();
+                Typea->setCurrentIndex(0);
+                parenta->clear();
+                groupBox_2->hide();
 			}
 		}
 		else
@@ -909,7 +913,8 @@ void SpecificWorker::reload_same()
             if ((plane = dynamic_cast<InnerModelPlane *>(prevNode)))
                 plane->texture = prevTexture;
         }
-		world3D = new OsgView(frame);
+        world3D->~OsgView();
+        world3D = new OsgView(frame);
 		disconnect(treeWidget, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
 		treeWidget->clear();
 		connect(treeWidget, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
@@ -935,6 +940,7 @@ void SpecificWorker::reload_same()
     innerModel->removeNode(current_node.id);
     qDebug() << "Removed" << current_node.id;
 
+    world3D->~OsgView();
     world3D = new OsgView(frame);
     imv = new InnerModelViewer(innerModel, "root", world3D->getRootGroup(),false);
     connect(&timer, SIGNAL(timeout()), this, SLOT(compute()));
