@@ -121,7 +121,10 @@ void SpecificWorker::fillNodeMap(InnerModelNode *node, QTreeWidgetItem *parent)
 	else if ((camera = dynamic_cast<InnerModelCamera *>(node)))
 	{
 		if ((rgbd = dynamic_cast<InnerModelRGBD *>(node)))
-			wnode.type = IMRGBD;
+        {
+            wnode.type = IMRGBD;
+            rgbd_id = node->id;
+        }
 		else
 			wnode.type = IMCamera;
 		nodeMap[wnode.id] = wnode;
@@ -194,7 +197,7 @@ void SpecificWorker::highlightNode()
 	if ((plane = dynamic_cast<InnerModelPlane *>(HighNode)))
 	{
 		prevTexture = plane->texture;
-		plane->texture = "/home/robocomp/robocomp/files/osgModels/textures/blue.jpg";
+        plane->texture = "#ADFF2F";
         imv->update();
 	}
 
@@ -440,13 +443,50 @@ void SpecificWorker::click_get()
 
    if(plane1!=plane2)
    {
-       //  qDebug()<< plane1;
        treeWidget->setCurrentItem(nodeMap[plane1].item);
    }
 
    plane2 = plane1;
 
    }
+}
+
+void SpecificWorker::idChanged()
+{
+    if(currentNode.id != lineEdit_nodeId->text())
+    {
+    disconnect(&timer, SIGNAL(timeout()), this, SLOT(compute()));
+    InnerModelNode *n = (InnerModelNode *)innerModel->getNode(currentNode.id);
+
+    n->id = lineEdit_nodeId->text();
+    innerModel->ChangeHash(lineEdit_nodeId->text(), n);
+    if(prevNode!=NULL)
+    {
+        InnerModelPlane *plane;
+        if ((plane = dynamic_cast<InnerModelPlane *>(prevNode)))
+            plane->texture = prevTexture;
+    }
+
+    (imv->cameras[rgbd_id]).viewerCamera->~Viewer();
+    world3D->~OsgView();
+    rgbd_id.clear();
+    world3D = new OsgView(frame);
+    imv = new InnerModelViewer(innerModel, "root", world3D->getRootGroup(),false);
+    disconnect(treeWidget, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
+    treeWidget->clear();
+    connect(treeWidget, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
+    fillNodeMap(innerModel->getNode("root"), NULL);
+    translationGroup->hide();
+    rotationGroup->hide();
+    meshGroup->hide();
+    planeGroup->hide();
+    cameraGroup->hide();
+    jointGroup->hide();
+    lineEdit_nodeId->setText("root");
+    lineEdit_nodeId->setEnabled(false);
+    nodeType->setText("<b>root</b>");
+    connect(&timer, SIGNAL(timeout()), this, SLOT(compute()));
+    }
 }
 
 void SpecificWorker::cameraChanged()
@@ -758,7 +798,9 @@ void SpecificWorker::add_new_node()
 			}
 			if(flag==0)
 			{
+                (imv->cameras[rgbd_id]).viewerCamera->~Viewer();
                 world3D->~OsgView();
+                rgbd_id.clear();
                 world3D = new OsgView(frame);
                 imv = new InnerModelViewer(innerModel, "root", world3D->getRootGroup(),false);
 				qDebug()<< "create new node " << newid->text();
@@ -788,7 +830,9 @@ void SpecificWorker::interfaceConnections(bool enable)
 {
 	if (enable)
 	{
-		// Save / Reset
+        //id-related
+        connect(lineEdit_nodeId, SIGNAL(editingFinished()), this, SLOT(idChanged()));
+        // Save / Reset
 		connect(resetButton, SIGNAL(clicked()), this, SLOT(resetButtonClicked()));
 		connect(saveButton, SIGNAL(clicked()), this, SLOT(saveButtonClicked()));
 		// Camera-related
@@ -824,7 +868,9 @@ void SpecificWorker::interfaceConnections(bool enable)
 	}
 	else
 	{
-		// Save / Reset
+        //id-related
+        disconnect(lineEdit_nodeId, SIGNAL(editingFinished()), this, SLOT(idChanged()));
+        // Save / Reset
 		disconnect(resetButton, SIGNAL(clicked()), this, SLOT(resetButtonClicked()));
 		disconnect(saveButton, SIGNAL(clicked()), this, SLOT(saveButtonClicked()));
 		// Camera-related
@@ -907,18 +953,24 @@ void SpecificWorker::reload_same()
 	}
 	else
 	{
-        if(prevNode!=NULL)
-        {
-            InnerModelPlane *plane;
-            if ((plane = dynamic_cast<InnerModelPlane *>(prevNode)))
-                plane->texture = prevTexture;
-        }
+        (imv->cameras[rgbd_id]).viewerCamera->~Viewer();
         world3D->~OsgView();
         world3D = new OsgView(frame);
+        rgbd_id.clear();
 		disconnect(treeWidget, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
 		treeWidget->clear();
 		connect(treeWidget, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
-		fillNodeMap(innerModel->getNode("root"), NULL);
+        innerModel = new InnerModel(File_reload.toStdString());
+        fillNodeMap(innerModel->getNode("root"), NULL);
+        translationGroup->hide();
+        rotationGroup->hide();
+        meshGroup->hide();
+        planeGroup->hide();
+        cameraGroup->hide();
+        jointGroup->hide();
+        lineEdit_nodeId->setText("root");
+        lineEdit_nodeId->setEnabled(false);
+        nodeType->setText("<b>root</b>");
         imv = new InnerModelViewer(innerModel, "root", world3D->getRootGroup(),false);
 		timer.start(Period);
 	}
@@ -940,15 +992,25 @@ void SpecificWorker::reload_same()
     innerModel->removeNode(current_node.id);
     qDebug() << "Removed" << current_node.id;
 
+    (imv->cameras[rgbd_id]).viewerCamera->~Viewer();
     world3D->~OsgView();
     world3D = new OsgView(frame);
     imv = new InnerModelViewer(innerModel, "root", world3D->getRootGroup(),false);
     connect(&timer, SIGNAL(timeout()), this, SLOT(compute()));
-
+    rgbd_id.clear();
     disconnect(treeWidget, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
     treeWidget->clear();
     connect(treeWidget, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
     fillNodeMap(innerModel->getNode("root"), NULL);
+    translationGroup->hide();
+    rotationGroup->hide();
+    meshGroup->hide();
+    planeGroup->hide();
+    cameraGroup->hide();
+    jointGroup->hide();
+    lineEdit_nodeId->setText("root");
+    lineEdit_nodeId->setEnabled(false);
+    nodeType->setText("<b>root</b>");
     prevNode = NULL;
     plane1="";
     plane2="";

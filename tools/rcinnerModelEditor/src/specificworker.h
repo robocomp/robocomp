@@ -65,7 +65,7 @@ class SpecificWorker : public GenericWorker
 		QMessageBox msgBox;
 		int flag;
 		int render1;
-        QString File_reload, prevTexture, plane1, plane2 = "";
+        QString File_reload, prevTexture, plane1, plane2 = "", rgbd_id;
         QShortcut *shortcut1, *shortcut2, *shortcut3, *shortcut4, *shortcut5;
 		QMap<QString, WorkerNode> nodeMap;
 		QMap<QTreeWidgetItem *, WorkerNode> nodeMapByItem;
@@ -89,6 +89,7 @@ class SpecificWorker : public GenericWorker
 		void saveButtonClicked();
 		void resetButtonClicked();
 		void openFile();
+        void idChanged();
 		void cameraChanged();
 		void meshChanged();
 		void planeChanged();

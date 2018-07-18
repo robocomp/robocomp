@@ -646,9 +646,20 @@ void InnerModelViewer::update()
 		setOSGMatrixTransformForPlane(mt, plane);
 		IMVPlane *imvplane = planesHash[key];
 		imvplane->planeDrawable->dirtyDisplayList();
-		osg::Image *image_ = new osg::Image();
-		image_ = osgDB::readImageFile(plane->texture.toStdString());
-		imvplane->setImage(image_);
+		std::string imagenEntrada = plane->texture.toStdString();
+		if(imagenEntrada[0] != '#')
+		{
+			osg::Image *image_ = new osg::Image();
+			image_ = osgDB::readImageFile(plane->texture.toStdString());
+			imvplane->setImage(image_);
+		}
+		else
+			{
+				auto state = imvplane->getOrCreateStateSet();
+				state->removeAttribute(osg::StateAttribute::MATERIAL);
+				imvplane->planeDrawable->setColor(htmlStringToOsgVec4(QString::fromStdString(imagenEntrada)));
+
+			}
 		imvplane->planeDrawable->setShape(new osg::Box(QVecToOSGVec(QVec::vec3(0,0,0)), plane->width, -plane->height, plane->depth));
 		if (imvplane)
 		{

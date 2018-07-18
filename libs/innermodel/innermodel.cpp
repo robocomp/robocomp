@@ -218,6 +218,10 @@ void InnerModel::cleanupTables()
 	localHashRot.clear();
 }
 
+void InnerModel::ChangeHash(QString new_id, InnerModelNode *node)
+{
+	hash[new_id] = node;
+}
 
 void InnerModel::updateTransformValues(QString transformId, float tx, float ty, float tz, float rx, float ry, float rz, QString parentId)
 {
