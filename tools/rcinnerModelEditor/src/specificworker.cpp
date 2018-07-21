@@ -29,6 +29,7 @@ SpecificWorker::SpecificWorker(MapPrx& mprx) : GenericWorker(mprx)
 	QGLFormat fmt;
 	fmt.setDoubleBuffer(true);
 	QGLFormat::setDefaultFormat(fmt);
+    groupBox->hide();
 	groupBox_2->hide();
 	connect(openpushButton,SIGNAL(clicked()),this, SLOT(openFile()));
 	connect(&timer, SIGNAL(timeout()), this, SLOT(compute()));
@@ -218,6 +219,7 @@ void SpecificWorker::showAvailableGroups()
 		planeGroup->hide();
 		cameraGroup->hide();
 		jointGroup->hide();
+        remove_current_nodepushButton->hide();
 		lineEdit_nodeId->setEnabled(false);
 		nodeType->setText("<b>root</b>");
 		return;
@@ -226,6 +228,7 @@ void SpecificWorker::showAvailableGroups()
 	{
 		lineEdit_nodeId->setEnabled(true);
 		nodeType->setText("<b>unknown</b>");
+        remove_current_nodepushButton->show();
 	}
 
 	// Enable or disable GUI parts depending on the node type
@@ -444,6 +447,7 @@ void SpecificWorker::click_get()
    if(plane1!=plane2)
    {
        treeWidget->setCurrentItem(nodeMap[plane1].item);
+       highlightNode();
    }
 
    plane2 = plane1;
@@ -953,7 +957,6 @@ void SpecificWorker::reload_same()
 	}
 	else
 	{
-        (imv->cameras[rgbd_id]).viewerCamera->~Viewer();
         world3D->~OsgView();
         world3D = new OsgView(frame);
         rgbd_id.clear();
@@ -1046,6 +1049,11 @@ void SpecificWorker::openFile()
 		innerModel = new InnerModel(fileName.toStdString());
 		fillNodeMap(innerModel->getNode("root"), NULL);
         imv = new InnerModelViewer(innerModel, "root", world3D->getRootGroup(),false);
-		timer.start(Period);
+        if(groupBox->isHidden())
+        {
+            groupBox->show();
+            treeWidget->setCurrentItem(nodeMap["root"].item);
+        }
+        timer.start(Period);
 	}
 }
