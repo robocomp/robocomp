@@ -661,12 +661,20 @@ void OsgView::resizeGL( int width, int height )
 void OsgView::keyPressEvent( QKeyEvent* event )
 {
 //	qDebug()<<"key pressed"<<event->text();
+	if(event->key() == Qt::Key_Control)
+	{
+		flag1 = 1;
+	}
 	emit keyPress(event->text());
     _gw->getEventQueue()->keyPress( (osgGA::GUIEventAdapter::KeySymbol) *(event->text().toAscii().data() ) );
 }
 
 void OsgView::keyReleaseEvent( QKeyEvent* event )
 {
+	if(event->key() == Qt::Key_Control)
+	{
+		flag1 = 0;
+	}
 	emit keyRelease(event->text());
     _gw->getEventQueue()->keyRelease( (osgGA::GUIEventAdapter::KeySymbol) *(event->text().toAscii().data() ) );
 }

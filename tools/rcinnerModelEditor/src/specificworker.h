@@ -63,7 +63,8 @@ class SpecificWorker : public GenericWorker
 		InnerModelNode *prevNode = NULL;
 		WorkerNode currentNode, current_node;
 		QMessageBox msgBox;
-		int flag;
+        osg::Vec3 move, rove;
+        int flag;
 		int render1;
         QString File_reload, prevTexture, plane1, plane2 = "", rgbd_id;
         QShortcut *shortcut1, *shortcut2, *shortcut3, *shortcut4, *shortcut5;
@@ -101,6 +102,7 @@ class SpecificWorker : public GenericWorker
 		void remove_current_node();
 		void reload_same();
         void click_get();
+        //void drag_drop();
         void start_new_model();
         void add_new_node();
 

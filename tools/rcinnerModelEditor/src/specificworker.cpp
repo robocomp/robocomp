@@ -34,6 +34,7 @@ SpecificWorker::SpecificWorker(MapPrx& mprx) : GenericWorker(mprx)
 	connect(openpushButton,SIGNAL(clicked()),this, SLOT(openFile()));
 	connect(&timer, SIGNAL(timeout()), this, SLOT(compute()));
     connect(&timer, SIGNAL(timeout()), this, SLOT(click_get()));
+    connect(&timer, SIGNAL(timeout()), this, SLOT(drag_drop()));
     connect(create_new_nodepushButton, SIGNAL(clicked()), this, SLOT(create_new_node()));
     shortcut1 = new QShortcut(QKeySequence("Ctrl+O"), tabWidget);
     connect(shortcut1, SIGNAL(activated()), this, SLOT(openFile()));
@@ -63,10 +64,6 @@ SpecificWorker::~SpecificWorker()
 
 bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
 {
-
-
-
-
 	return true;
 }
 
@@ -441,7 +438,8 @@ void SpecificWorker::resetButtonClicked()
 
 void SpecificWorker::click_get()
 {
-   IMVPlane* plane;
+   if(world3D->flag1==1)
+   {IMVPlane* plane;
 
    if((plane = dynamic_cast<IMVPlane *>(world3D->hexno)))
    {
@@ -454,9 +452,22 @@ void SpecificWorker::click_get()
    }
 
    plane2 = plane1;
-
+   }
    }
 }
+
+/*void SpecificWorker::drag_drop()
+{
+   move = world3D->kk;
+   if(move!=rove)
+   {
+      osgGA::TrackballManipulator *tt = world3D->dropEvent();
+      world3D->setCameraManipulator(0);
+      innerModel->updateTranslationValues(innerModel->getParentIdentifier(plane1), move.x(), 0, -move.z());
+      world3D->setCameraManipulator(tt);
+      move = rove;
+   }
+}*/
 
 void SpecificWorker::idChanged()
 {
@@ -827,6 +838,7 @@ void SpecificWorker::add_new_node()
 		{
 			msgBox.setText("Node you entered already exist");
 			msgBox.exec();
+            flag = 1;
 		}
 
 		disconnect(treeWidget, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
@@ -939,6 +951,7 @@ void SpecificWorker::create_new_node()
 	noiseBox->hide();
 	laserBox->hide();
 	Ifconfiga->hide();
+    world3D->setCameraManipulator(0);
 	newnodeConnections(true);
 }
 
