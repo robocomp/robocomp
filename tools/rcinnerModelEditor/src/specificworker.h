@@ -56,7 +56,7 @@ class SpecificWorker : public GenericWorker
 		void currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
 	private:
 		int Period;
-		QTimer timer;
+        QTimer timer,timer1;
 		OsgView *world3D;
 		// InnerModel *innerModel;
 		InnerModelViewer *imv;
@@ -102,7 +102,7 @@ class SpecificWorker : public GenericWorker
 		void remove_current_node();
 		void reload_same();
         void click_get();
-        //void drag_drop();
+        void drag_drop();
         void start_new_model();
         void add_new_node();
 

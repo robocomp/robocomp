@@ -118,8 +118,8 @@ public:
 	void removePolyLine( osg::Node * pl );
 	osg::Shape *addBasicLineShape(const QVec &p1, const QVec &p2, float radius);
 	osg::Node * hexno = NULL;
-	int flag1 = 0;
-
+	osg::Vec3 kk;
+	int flag1 = 0, flag2=0;
 
 	osg::Group * getRootGroup()	{ return root; }
 

@@ -592,6 +592,7 @@ void OsgView::handle( const QPoint & p)
  {
  osgUtil::LineSegmentIntersector::Intersection result = *(intersector->getIntersections().begin());
  hexno = result.nodePath.back();
+ kk = result.getWorldIntersectPoint();
  }
 
 }
@@ -665,6 +666,11 @@ void OsgView::keyPressEvent( QKeyEvent* event )
 	{
 		flag1 = 1;
 	}
+	if(event->key() == Qt::Key_Q)
+	{
+		flag1 = 2;
+		setCameraManipulator(0);
+	}
 	emit keyPress(event->text());
     _gw->getEventQueue()->keyPress( (osgGA::GUIEventAdapter::KeySymbol) *(event->text().toAscii().data() ) );
 }
@@ -675,6 +681,13 @@ void OsgView::keyReleaseEvent( QKeyEvent* event )
 	{
 		flag1 = 0;
 	}
+	if(event->key() == Qt::Key_Q)
+	{
+		flag1 = 0;
+		osg::Vec3 eye = this->getCamera()->getInverseViewMatrix().getTrans();
+		setHomePosition(eye,osg::Vec3(0.f,0.,-40.),osg::Vec3(0.0f,1.f,0.0f),false);
+
+	}
 	emit keyRelease(event->text());
     _gw->getEventQueue()->keyRelease( (osgGA::GUIEventAdapter::KeySymbol) *(event->text().toAscii().data() ) );
 }
@@ -684,9 +697,9 @@ void OsgView::mousePressEvent( QMouseEvent* event )
     int button = 0;
     switch(event->button())
     {
-        case(Qt::LeftButton): button = 1; this->pickObject( QPoint(event->x(), event->y()) ); break;
+        case(Qt::LeftButton): button = 1; {this->pickObject( QPoint(event->x(), event->y()) );flag2=1;} break;
         case(Qt::MidButton): button = 2; break;
-        case(Qt::RightButton): button = 3;this->handle( QPoint(event->x(), event->y()) ); break;
+        case(Qt::RightButton): button = 3;{this->handle( QPoint(event->x(), event->y()) ); flag2=2;}break;
         case(Qt::NoButton): button = 0; break;
         default: button = 0; break;
     }
@@ -702,9 +715,9 @@ void OsgView::mouseReleaseEvent( QMouseEvent* event )
     int button = 0;
     switch(event->button())
     {
-        case(Qt::LeftButton): button = 1; break;
+        case(Qt::LeftButton): button = 1;{flag2=0; hexno=NULL;}break;
         case(Qt::MidButton): button = 2; break;
-        case(Qt::RightButton): button = 3; break;
+        case(Qt::RightButton): button = 3;{flag2=0; hexno = NULL;}break;
         case(Qt::NoButton): button = 0; break;
         default: button = 0; break;
     }
@@ -715,6 +728,26 @@ void OsgView::mouseReleaseEvent( QMouseEvent* event )
 void OsgView::mouseMoveEvent( QMouseEvent* event )
 {
     _gw->getEventQueue()->mouseMotion(event->x(), event->y());
+    osgViewer::Viewer* viewer = dynamic_cast<osgViewer::Viewer*>(this);
+ if ( viewer )
+ {
+ osg::ref_ptr<osgUtil::LineSegmentIntersector> intersector =
+ new osgUtil::LineSegmentIntersector(
+ osgUtil::Intersector::WINDOW, event->x(),-event->y() + height());
+
+ osgUtil::IntersectionVisitor iv( intersector.get() );
+ iv.setTraversalMask( ~0x1 );
+ viewer->getCamera()->accept( iv );
+
+ if ( intersector->containsIntersections() )
+ {
+ osgUtil::LineSegmentIntersector::Intersection result = *(intersector->getIntersections().begin());
+ kk = result.getWorldIntersectPoint();
+ hexno = result.nodePath.back();
+
+ }
+
+}
 }
 
 osg::Quat OsgView::quaternionFromRotationMatrix(const QMat &rotM) const
