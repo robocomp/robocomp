@@ -958,7 +958,6 @@ void SpecificWorker::create_new_node()
 	noiseBox->hide();
 	laserBox->hide();
 	Ifconfiga->hide();
-	world3D->setCameraManipulator(0);
 	newnodeConnections(true);
 }
 

@@ -684,8 +684,9 @@ void OsgView::keyReleaseEvent( QKeyEvent* event )
 	if(event->key() == Qt::Key_Q)
 	{
 		flag1 = 0;
-		osg::Vec3 eye = this->getCamera()->getInverseViewMatrix().getTrans();
-		setHomePosition(eye,osg::Vec3(0.f,0.,-40.),osg::Vec3(0.0f,1.f,0.0f),false);
+		osg::Vec3 eye, center, up; 
+		this->getCamera()->getViewMatrixAsLookAt( eye, center, up ); 
+		setHomePosition(eye,osg::Vec3(0.f,0.,-40.),up, false);
 
 	}
 	emit keyRelease(event->text());
