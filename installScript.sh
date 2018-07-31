@@ -10,7 +10,7 @@ red="\033[1;31m"
 green="\033[1;32m"
 yellow="\033[1;33m"
 Purple="\033[0;35m"
-Cyan="\033[0;36m"
+cyan="\033[0;36m"
 Cafe="\033[0;33m"
 Fiuscha="\033[0;35m"
 blue="\033[1;34m"
@@ -47,25 +47,37 @@ fi;
 # =============     < Installing Robocomp >      ============= #
 # ============================================================ #
 
-printf "Updating system and Installing Dependencies\nDepending on your internet connection, this might take a while."
+echo -e $cyan"Updating system and Installing Dependencies\nDepending on your internet connection, this might take a while.
+"
+echo -e $white
 
 sudo apt-get update
 sudo apt-get install git git-annex cmake g++ libgsl0-dev libopenscenegraph-dev cmake-qt-gui zeroc-ice35 freeglut3-dev libboost-system-dev libboost-thread-dev qt4-dev-tools python-pip  python-pyparsing python-numpy python-pyside pyside-tools libxt-dev pyqt4-dev-tools libboost-test-dev libboost-filesystem-dev python-libxml2 python-xmltodict libccd-dev
 sudo pip install networkx
 sudo apt-get install yakuake qt4-designer
 
-printf "Installing Source from Github\n"
+echo -e $cyan"Installing Source from Github.
+"
+echo -e $white
 
 git clone https://github.com/robocomp/robocomp.git
 cd ~/robocomp
+
+echo -e $cyan"Preparing folder and synchronizing files."
+
+ecgo -e $white
+
 git annex get .
 
-echo "Adding Robocomo to $PATH"
+echo -e $cyan"Adding Robocomp to $PATH."
 
 sudo ln -s /home/$USER /home/robocomp
 echo "export ROBOCOMP=/home/$USER/robocomp" >> ~/.bashrc
 echo "export PATH=$PATH:/opt/robocomp/bin" >> ~/.bashrc
 sudo echo "/opt/robocomp/lib" >> nano /etc/ld.so.conf
+
+echo -e $cyan"Caching new libraries."
+
 source ~/.bashrc
 sudo ldconfig
 
@@ -73,8 +85,10 @@ sudo ldconfig
 # =============         < FCL Support >          ============= #
 # ============================================================ #
 
+echo -e $white
+
 while true; do
-    read -p "Compile with Flexible Collision Library FCL? [Yy/Nn]
+    read -p "Compile with Flexible Collision Library (FCL)? [Yy/Nn]
     " yn
     case $yn in
         [Yy]* ) option=1; break;;
@@ -85,56 +99,62 @@ done
 
 if [ "$option" -eq "1" ]; then
         
-        printf "Installing dependencies\n" 
+        echo -e $cyan"Installing dependencies." 
+        sudo apt-get install aptitude
         sudo aptitude install libeigen3-dev libboost-filesystem1.58-dev libboost-test-dev libboost-program-options-dev &&
 
-        printf "Creating new directory for the components.\n"
+        echo -e $cyan"Creating new directory for the components."
         mkdir software
         cd ~/software
-        printf "Downloading libccd.\n"
+        echo -e $cyan"Downloading libccd."
         git clone https://github.com/danfis/libccd.git
         cd libccd
         mkdir build
         cd build
+        echo -e $cyan"Building libccd."
         cmake ..
         make -j $numberCores
         sudo make install
 
         cd ~/software
-        printf "Downloading FCL.\n"
+        echo -e $cyan"Downloading FCL."
         git clone https://github.com/flexible-collision-library/fcl.git
         cd fcl
         mkdir build
         cd build
+        echo -e $cyan"Building FCL." 
         cmake ..
         make -j $numberCores
         sudo make install
 
         cd ~/software
-        printf "Downloading libnano.\n" 
+        echo -e $cyan"Downloading libnano." 
         git clone https://github.com/ethz-asl/libnabo.git
         cd libnabo
         mkdir build
         cd build
+        echo -e $cyan"Building libnano." 
         cmake ..
         make -j $numberCores
         sudo make install
 
         cd ~/software
-        printf "Downloading libpointmatcher.\n"
+        echo -e $cyan"Downloading libpointmatcher."
         git clone https://github.com/ethz-asl/libpointmatcher.git
         cd libpointmatcher
         mkdir build
         cd build
+        echo -e $cyan"Building libpointmatcher.\n"
         cmake ..
         make -j $numberCores
         sudo make install
         
-        printf "Installing FCL support.\n\n"
+        echo -e $cyan"Finishing Installation of FCL support.\n\n"
         cd ~/robocomp/build
         cmake-gui ..
         make -j $numberCores
         sudo make install
+        echo -e $yellow"Installation finished."
 fi
 
 # ============================================================ #
@@ -152,6 +172,7 @@ done
 
 if [ "$option" -eq "1" ]; then
     cd ~/robocomp/components
+    echo "Installing components. This might take a while."
     git clone https://github.com/robocomp/robocomp-robolab.git
     echo "Components installed in ~/robocomp/components/robocomp-robolab/components"
 fi
@@ -173,18 +194,22 @@ if [ "$option" -eq "1" ]; then
     echo "We are installing the Joystick component."
     cd ~/robocomp/components/robocomp-robolab/components/joystickComp
     cmake .
+    echo -e $cyan"Building..."
     make
     cd bin
     sudo addgroup your-user dialout   # To solve some permissions issues in Ubuntu
-    printf "Installation complete. Launching component in the background.\n"
+    echo -e $white"Installation complete. Launching component in the background."
     ./startJoyStick.sh
 
-if [ "$option" -eq "0" ]; then    
+else [ "$option" -eq "0" ]; then    
     echo "We are installing the Keyboard component.
     You will be able to move the robot around with the arrow buttons."
     cd ~/robocomp/components/robocomp-robolab/components/keyboardrobotcontroller
+    echo -e $white"Building..."
     cmake .
     make
+    echo "Making sure you will be able to control the robot..."
+    echo -e $red"If keyboard doesn't move the robot, please visit repository for more info."
     src/keyboardrobotcontroller.py --Ice.Config=etc/config
 fi
 
@@ -193,20 +218,21 @@ fi
 # =============    < Testing the Simulator >     ============= #
 # ============================================================ #
 
-echo "Fetching meshes and textures. This could take a while."
+echo "Fetching meshes and textures. This might take a while."
 
 cd ~/robocomp
 git annex get .
+echo -e $yellow"Installation of textures finished."
 
-echo "The simulator is going to be launched to test if it works.
-"
-echo "For more information visit the repository and help."
+echo "The simulator is going to be launched to test if it works."
+echo "For more information visit the repository."
 
-printf "Installation complete. Have a great time using Robocomp!\n"
+echo -e $cyan"Installation complete. Have a great time using Robocomp!"
 cd ~/robocomp/files/innermodel
+echo -e $white"Lauching Robocomp..."
 rcis simpleworld.xml
 
-
+exit
 
 
 
