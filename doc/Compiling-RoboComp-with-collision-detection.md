@@ -1,10 +1,21 @@
 ## Robocomp with FCL (The Flexible Collision Library) support
-```
+
+- Packages needed:
+
+```bash
 sudo apt-get install libeigen3-dev libboost-all-dev
 ```
-- Install LIBCCD:
+
+- Create a software directory inside Robocomp:
+
+```bash
+cd ~/robocomp
+mkdir software
 ```
-cd ~/software
+- Install LIBCCD:
+
+```bash
+cd ~/robocomp/software
 git clone https://github.com/danfis/libccd.git
 cd libccd
 mkdir build
@@ -13,9 +24,11 @@ cmake ..
 make
 sudo make install
 ```
-- FCL:
-```
-cd ~/software
+
+- Install FCL:
+
+```bash
+cd ~/robocomp/software
 git clone https://github.com/flexible-collision-library/fcl.git
 cd fcl
 git checkout 1473632 
@@ -25,9 +38,11 @@ cmake ..
 make
 sudo make install
 ```
-- LIBNABO:
-```
-cd ~/software
+
+- Install LIBNABO:
+
+```bash
+cd ~/robocomp/software
 git clone https://github.com/ethz-asl/libnabo.git
 cd libnabo
 mkdir build
@@ -36,9 +51,11 @@ cmake ..
 make
 sudo make install
 ```
-- LIBPOINTMATCHER:
-```
-cd ~/software
+
+- Install LIBPOINTMATCHER:
+
+```bash
+cd ~/robocomp/software
 git clone https://github.com/ethz-asl/libpointmatcher.git
 cd libpointmatcher
 mkdir build
@@ -47,13 +64,17 @@ cmake ..
 make
 sudo make install
 ```
-- Compiling Robocomp
-```
+
+- Compile Robocomp
+
+```bash
 cd ~/robocomp/build
 cmake-gui ..
 ```
-select checkbox FCL_SUPPORT
-```
+
+- Select checkbox FCL_SUPPORT
+
+```bash
 push configure button
 push generate button
 exit
