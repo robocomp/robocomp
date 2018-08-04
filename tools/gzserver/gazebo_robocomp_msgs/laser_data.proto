@@ -1,4 +1,4 @@
-package Laser_msgs.msgs;
+package laser_data.msgs;
 import "raysensor.proto";
 
 message gazebo_robocomp_laser

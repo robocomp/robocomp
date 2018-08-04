@@ -8,8 +8,8 @@
 #include <gazebo/gazebo_client.hh>
 #endif
 
-#include <jointMotor_params.pb.h>
-#include <jointMotorState.pb.h>
+#include <jointmotor_params.pb.h>
+#include <jointmotor_state.pb.h>
 #include <motor_goal_position.pb.h>
 #include <motor_goal_velocity.pb.h>
 
@@ -29,13 +29,13 @@ int main(int _argc, char **_argv)
 
   // Publish to the  velodyne topic
   gazebo::transport::PublisherPtr pub =
-    node->Advertise<motor_goal_vel_msgs::msgs::MotorGoalVelocity>("/speed/cmd");
+    node->Advertise<motor_goal_vel::msgs::MotorGoalVelocity>("/speed/cmd");
 
   // Wait for a subscriber to connect to this publisher
   pub->WaitForConnection();
 
   // Create a a vector3 message
-  motor_goal_vel_msgs::msgs::MotorGoalVelocity msg;
+  motor_goal_vel::msgs::MotorGoalVelocity msg;
 
   msg.set_velocity(std::atof(_argv[1]));
   msg.set_maxaccel(10);

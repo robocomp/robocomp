@@ -2,16 +2,6 @@
 #include <gazebo/gazebo_client.hh>
 #include <gazebo/gazebo_config.h>
 
-#include <jointMotor_params.pb.h>
-#include <jointMotorState.pb.h>
-#include <motor_goal_position.pb.h>
-#include <motor_goal_velocity.pb.h>
-
-#include <motor_goal_pos_list.pb.h>
-#include <motor_goal_vel_list.pb.h>
-#include <motor_params_list.pb.h>
-#include <motor_state_list.pb.h>
-
 typedef const boost::shared_ptr<const motor_state_list::msgs::MotorStateMap> ConstMotorStateMapPtr;
 typedef const boost::shared_ptr<const motor_params_list::msgs::MotorParamsList> ConstMotorParamsListPtr;
 
@@ -20,8 +10,11 @@ using namespace std;
 using namespace gazebo;
 
 JointMotorI::JointMotorI(int argc, char **argv) {
+#if GAZEBO_MAJOR_VERSION < 6
+    gazebo::setupClient(argc, argv);
+#else
     gazebo::client::setup(argc, argv);
-
+#endif
     this->state_topic_name_ = "/gazebo/joint/state";
     this->params_topic_name_ = "/gazebo/joint/config";
     this->pos_goal_topic_ = "/speed/cmd";
@@ -32,12 +25,16 @@ JointMotorI::JointMotorI(int argc, char **argv) {
     
     this->state_sub_ = this->gazebo_node_->Subscribe(state_topic_name_, &JointMotorI::stateCallback, this);
     this->params_sub_ = this->gazebo_node_->Subscribe(params_topic_name_, &JointMotorI::paramsCallback, this);
-    this->pos_goal_pub_ = this->gazebo_node_->Advertise<motor_goal_position_msgs::msgs::MotorGoalPosition>(pos_goal_topic_);
-    this->vel_goal_pub_ = this->gazebo_node_->Advertise<motor_goal_vel_msgs::msgs::MotorGoalVelocity>(vel_goal_topic_);
+    this->pos_goal_pub_ = this->gazebo_node_->Advertise<motor_goal_position::msgs::MotorGoalPosition>(pos_goal_topic_);
+    this->vel_goal_pub_ = this->gazebo_node_->Advertise<motor_goal_vel::msgs::MotorGoalVelocity>(vel_goal_topic_);
 } 
 
 JointMotorI::~JointMotorI() {
+#if GAZEBO_MAJOR_VERSION < 6
+    gazebo::shutdown();
+#else
     gazebo::client::shutdown();
+#endif
 }
 
 void  JointMotorI::setPosition(const MotorGoalPosition& goal, const Ice::Current&) {

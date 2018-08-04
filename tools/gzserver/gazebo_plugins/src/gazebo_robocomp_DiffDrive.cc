@@ -1,25 +1,9 @@
-#include <algorithm>
-#include <string>
-#include <assert.h> 
-
-#include <gazebo/physics/World.hh>
-#include <gazebo/physics/HingeJoint.hh>
-#include <sdf/sdf.hh>
-#include <sdf/Param.hh>
-#include <gazebo/common/Exception.hh>
-#include <gazebo/transport/transport.hh>
-
 #include "gazebo_robocomp_DiffDrive.hh"
-#include "diffdrive_state.pb.h"
-#include "diffdrive.pb.h"
 
 using namespace std;
 
-using namespace diffdrive_cmd_msgs::msgs;
-using namespace diffdrive_state_msgs::msgs;
-
-typedef const boost::shared_ptr<const diffdrive_state_msgs::msgs::DiffDriveState> ConstDiffDriveStatePtr;
-typedef const boost::shared_ptr<const diffdrive_cmd_msgs::msgs::DiffDriveCmd> ConstDiffDriveCmdPtr;
+typedef const boost::shared_ptr<const diffdrive_state::msgs::DiffDriveState> ConstDiffDriveStatePtr;
+typedef const boost::shared_ptr<const diffdrive_cmd::msgs::DiffDriveCmd> ConstDiffDriveCmdPtr;
 
 namespace gazebo
 {
@@ -112,11 +96,11 @@ void GazeboRoboCompDiffDrive::Load(physics::ModelPtr _model, sdf::ElementPtr _sd
 
   // Subscribe to the topic, and register a callback
   this->sub_ = this->gazebo_node_->Subscribe(sub_topic_name_, &GazeboRoboCompDiffDrive::OnMsg, this);
-  this->pub_ = this->gazebo_node_->Advertise<diffdrive_state_msgs::msgs::DiffDriveState>(pub_topic_name_);
+  this->pub_ = this->gazebo_node_->Advertise<diffdrive_state::msgs::DiffDriveState>(pub_topic_name_);
   // this->diffdrive_pub_ = this->gazebo_mode_->Advertise<gazebo::msgs::>(diffdrive_state_topic_name_);
 
   // listen to the update event (broadcast every simulation iteration)
-  this->update_connection_ = event::Events::ConnectWorldUpdateBegin ( boost::bind ( &GazeboRoboCompDiffDrive::OnUpdate, this ) );
+  this->update_connection_ = event::Events::ConnectWorldUpdateBegin(boost::bind(&GazeboRoboCompDiffDrive::OnUpdate, this));
 
   std::cerr << "left joint: " << this->left_joint_->GetScopedName() << std::endl;
   std::cerr << "right joint: " << this->right_joint_->GetScopedName() << std::endl;
@@ -139,7 +123,9 @@ void GazeboRoboCompDiffDrive::SetVelocity(const double &_vel, const double &_ang
 void GazeboRoboCompDiffDrive::OnMsg(ConstDiffDriveCmdPtr &_msg)
 {
   this->SetVelocity(_msg->linear_vel(), _msg->angular_vel());
-  std::cerr << "Got a command for linear velocity of " << _msg->linear_vel() << " and angular velocity of " << _msg->angular_vel() << std::endl;
+  std::cerr << "Got a command for linear velocity of " 
+            << _msg->linear_vel() << " and angular velocity of " 
+            << _msg->angular_vel() << std::endl;
 }
 
 void GazeboRoboCompDiffDrive::OnUpdate() 
@@ -156,9 +142,9 @@ void GazeboRoboCompDiffDrive::OnUpdate()
   ignition::math::Vector3d base_ang_vel_ = base_ang_vel.Ign();
   ignition::math::Vector3d base_ang_accln_ = base_ang_accln.Ign();
 
-  diffdrive_state_msgs::msgs::DiffDriveState msg;
+  diffdrive_state::msgs::DiffDriveState msg;
 
-  deque<gazebo::msgs::Vector3d*> states;
+  std::deque<gazebo::msgs::Vector3d*> states;
   gazebo::msgs::Pose* pose_;
 
   pose_ = msg.mutable_pose();

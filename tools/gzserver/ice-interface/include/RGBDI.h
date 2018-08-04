@@ -1,19 +1,24 @@
 #include <Ice/Ice.h>
 #include "RGBD.h"
+
+#if GAZEBO_MAJOR_VERSION < 6
 #include <gazebo/gazebo.hh>
-#include <gazebo/transport/transport.hh>
+#else
+#include <gazebo/gazebo_client.hh>
+#endif
+
 #include <gazebo/common/Time.hh>
 #include <gazebo/common/Plugin.hh>
 #include <gazebo/common/Events.hh>
-#include <gazebo/transport/TransportTypes.hh>
+
 #include <gazebo/msgs/msgs.hh>
+#include <gazebo/transport/transport.hh>
 
 // OpenCV
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
-using namespace std;
 using namespace RoboCompRGBD;
 
 class RGBDI : public RGBD 
@@ -24,12 +29,18 @@ public:
     virtual TRGBDParams getRGBDParams(const Ice::Current&) override;
     virtual void  setRegistration(Registration value, const Ice::Current&) override;
     virtual Registration getRegistration(const Ice::Current&) override;
-    virtual void  getData(imgType& rgbMatrix, depthType& distanceMatrix, RoboCompJointMotor::MotorStateMap& hState, RoboCompGenericBase::TBaseState& bState, const Ice::Current&) override;
-    virtual void  getDepthInIR(depthType& distanceMatrix, RoboCompJointMotor::MotorStateMap& hState, RoboCompGenericBase::TBaseState& bState, const Ice::Current&) override;
-    virtual void  getImage(ColorSeq& color, DepthSeq& depth, PointSeq& points, RoboCompJointMotor::MotorStateMap& hState, RoboCompGenericBase::TBaseState& bState, const Ice::Current&) override;
-	virtual	void  getDepth(DepthSeq& depth, RoboCompJointMotor::MotorStateMap& hState, RoboCompGenericBase::TBaseState& bState, const Ice::Current&) override;
-	virtual	void  getRGB(ColorSeq& color, RoboCompJointMotor::MotorStateMap& hState, RoboCompGenericBase::TBaseState& bState, const Ice::Current&) override;
-	virtual	void  getXYZ(PointSeq& points, RoboCompJointMotor::MotorStateMap& hState, RoboCompGenericBase::TBaseState& bState, const Ice::Current&) override;
+    virtual void  getData(imgType&, depthType&, RoboCompJointMotor::MotorStateMap&, 
+                        RoboCompGenericBase::TBaseState&, const Ice::Current&) override;
+    virtual void  getDepthInIR(depthType&, RoboCompJointMotor::MotorStateMap&, 
+                                RoboCompGenericBase::TBaseState&, const Ice::Current&) override;
+    virtual void  getImage(ColorSeq&, DepthSeq&, PointSeq&, RoboCompJointMotor::MotorStateMap&, 
+                        RoboCompGenericBase::TBaseState&, const Ice::Current&) override;
+	virtual	void  getDepth(DepthSeq&, RoboCompJointMotor::MotorStateMap&, 
+                        RoboCompGenericBase::TBaseState&, const Ice::Current&) override;
+	virtual	void  getRGB(ColorSeq&, RoboCompJointMotor::MotorStateMap&, 
+                        RoboCompGenericBase::TBaseState&, const Ice::Current&) override;
+	virtual	void  getXYZ(PointSeq&, RoboCompJointMotor::MotorStateMap&, 
+                        RoboCompGenericBase::TBaseState&, const Ice::Current&) override;
 
 private:
     void callback(ConstImageStampedPtr &_msg);
@@ -44,7 +55,7 @@ private:
 
     private: std::string sub_topic_name_;
     private: std::string pub_topic_name_; 
-    private: string device_name_;
+    private: std::string device_name_;
     private: std::string new_image;
 
     private: imgType image_data_;

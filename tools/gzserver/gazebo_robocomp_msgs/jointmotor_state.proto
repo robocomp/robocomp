@@ -1,4 +1,4 @@
-package jointMotorState_msgs.msgs;
+package joint_motor_state.msgs;
 
 message JointMotorState
 {

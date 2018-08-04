@@ -1,6 +1,6 @@
 package motor_params_list.msgs;
 
-import "jointMotor_params.proto";
+import "jointmotor_params.proto";
 
 message MotorParamsList {
     repeated joint_motor_params.msgs.JointMotorParams joint_motor_params = 1;

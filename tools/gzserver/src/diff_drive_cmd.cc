@@ -1,7 +1,7 @@
 #include <gazebo/gazebo_config.h>
 #include <gazebo/transport/transport.hh>
 #include <gazebo/msgs/msgs.hh>
-#include "diffdrive.pb.h"
+#include "diffdrive_cmd.pb.h"
 
 // Gazebo's API has changed between major releases. These changes are
 // accounted for with #if..#endif blocks in this file.
@@ -48,13 +48,13 @@ int main(int _argc, char **_argv)
   
   // Publish to the  velodyne topic
   gazebo::transport::PublisherPtr pub =
-    node->Advertise<diffdrive_cmd_msgs::msgs::DiffDriveCmd>("/my_robot");
+    node->Advertise<diffdrive_cmd::msgs::DiffDriveCmd>("/my_robot");
 
   // Wait for a subscriber to connect to this publisher
   pub->WaitForConnection();
 
   // Create a a vector3 message
-  diffdrive_cmd_msgs::msgs::DiffDriveCmd msg;
+  diffdrive_cmd::msgs::DiffDriveCmd msg;
 
   msg.set_linear_vel(linear_vel);
   msg.set_angular_vel(angular_vel);

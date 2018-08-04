@@ -1,12 +1,5 @@
 #include <Ice/Ice.h>
 #include <LaserI.h>
-#include <MotorI.h>
-#include <RGBDI.h>
-#include <JointMotorI.h>
-#include <IMUI.h>
-#include <DifferentialRobotI.h>
-#include <CameraI.h>
-#include <bumperI.h>
  
 using namespace std;
 using namespace RoboCompLaser;
@@ -15,30 +8,12 @@ int main(int argc, char* argv[])
 { 
     Ice::CommunicatorPtr ic;
     int status = 0;
-    std::cerr << "Running. Much Wow!!!" << std::endl;
     try
     {
         ic = Ice::initialize(argc, argv);
-        auto adapter = ic->createObjectAdapterWithEndpoints("GazeboServerAdapter", "default -p 10000");
-        
-        Ice::ObjectPtr laser = new LaserI(argc, argv);
-        Ice::ObjectPtr RGBD = new RGBDI(argc, argv);
-        Ice::ObjectPtr camera = new CameraI(argc, argv);
-        Ice::ObjectPtr bumper = new bumperI(argc, argv);
-        Ice::ObjectPtr differentialrobot = new DifferentialRobotI(argc, argv);
-        Ice::ObjectPtr jointmotor = new JointMotorI(argc, argv);
-        Ice::ObjectPtr imu = new IMUI(argc, argv);
-        Ice::ObjectPtr motor = new MotorI(argc, argv);
-
-        adapter->add(laser, Ice::stringToIdentity("RoboCompLaser"));
-        adapter->add(RGBD, Ice::stringToIdentity("RoboCompRGBD"));
-        adapter->add(camera, Ice::stringToIdentity("RoboCompCamera"));
-        adapter->add(bumper, Ice::stringToIdentity("RoboCompBumper"));
-        adapter->add(differentialrobot, Ice::stringToIdentity("RoboCompDifferentialRobot"));
-        adapter->add(imu, Ice::stringToIdentity("RoboCompIMU"));
-        adapter->add(bumper, Ice::stringToIdentity("RoboCompBumper"));
-        adapter->add(motor, Ice::stringToIdentity("RoboCompMotor"));
-
+        auto adapter = ic->createObjectAdapterWithEndpoints("RoboCompLaserAdapter", "default -p 10000");
+        Ice::ObjectPtr object = new LaserI(argc, argv);
+        adapter->add(object, Ice::stringToIdentity("RoboCompLaser"));
         adapter->activate();
         ic->waitForShutdown();
     }

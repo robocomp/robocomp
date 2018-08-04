@@ -12,7 +12,7 @@
 #endif
 
 #include "diffdrive_state.pb.h"
-#include "diffdrive.pb.h"
+#include "diffdrive_cmd.pb.h"
 
 char getch()
 {
@@ -68,13 +68,13 @@ int main(int argc, char** argv) {
 
     // Publish to the  velodyne topic
     gazebo::transport::PublisherPtr pub =
-        node->Advertise<diffdrive_cmd_msgs::msgs::DiffDriveCmd>("/my_robot");
+        node->Advertise<diffdrive_cmd::msgs::DiffDriveCmd>("/my_robot");
 
     // Wait for a subscriber to connect to this publisher
     pub->WaitForConnection();
 
     // Create a a vector3 message
-    diffdrive_cmd_msgs::msgs::DiffDriveCmd msg;
+    diffdrive_cmd::msgs::DiffDriveCmd msg;
 
     while (true) {
 

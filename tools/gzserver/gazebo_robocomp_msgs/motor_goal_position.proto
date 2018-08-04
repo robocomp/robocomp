@@ -1,4 +1,4 @@
-package motor_goal_position_msgs.msgs;
+package motor_goal_position.msgs;
 
 message MotorGoalPosition
 {

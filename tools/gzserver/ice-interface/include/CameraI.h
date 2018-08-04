@@ -1,12 +1,18 @@
 #include <Ice/Ice.h>
 #include "Camera.h"
+
+#if GAZEBO_MAJOR_VERSION < 6
 #include <gazebo/gazebo.hh>
-#include <gazebo/transport/transport.hh>
+#else
+#include <gazebo/gazebo_client.hh>
+#endif
+
 #include <gazebo/common/Time.hh>
 #include <gazebo/common/Plugin.hh>
 #include <gazebo/common/Events.hh>
-#include <gazebo/transport/TransportTypes.hh>
+
 #include <gazebo/msgs/msgs.hh>
+#include <gazebo/transport/transport.hh>
 
 // OpenCV
 #include <opencv2/core/core.hpp>
@@ -21,12 +27,18 @@ class CameraI : public Camera
 public:  
     CameraI(int argc, char **argv);
     ~CameraI();
-    virtual void getYUVImage(int cam, imgType& roi, RoboCompCommonHead::THeadState& hState, RoboCompGenericBase::TBaseState& bState, const Ice::Current&) override;
-    virtual void getYImage(int cam, imgType& roi, RoboCompCommonHead::THeadState& hState, RoboCompGenericBase::TBaseState& bState, const Ice::Current&) override;
-    virtual void getYLogPolarImage(int cam, imgType& roi, RoboCompCommonHead::THeadState& hState, RoboCompGenericBase::TBaseState& bState, const Ice::Current&) override;
-    virtual void getYImageCR(int cam, int div, imgType& roi, RoboCompCommonHead::THeadState& hState, RoboCompGenericBase::TBaseState& bState, const Ice::Current&) override;
-    virtual void getRGBPackedImage(int cam, imgType& roi, RoboCompCommonHead::THeadState& hState, RoboCompGenericBase::TBaseState& bState, const Ice::Current&) override;
-    virtual void getYRGBImage(int cam, imgType& roi, RoboCompCommonHead::THeadState& hState, RoboCompGenericBase::TBaseState& bState, const Ice::Current&) override;
+    virtual void getYUVImage(int cam, imgType& roi, RoboCompCommonHead::THeadState& hState, 
+                            RoboCompGenericBase::TBaseState& bState, const Ice::Current&) override;
+    virtual void getYImage(int cam, imgType& roi, RoboCompCommonHead::THeadState& hState, 
+                        RoboCompGenericBase::TBaseState& bState, const Ice::Current&) override;
+    virtual void getYLogPolarImage(int cam, imgType& roi, RoboCompCommonHead::THeadState& hState, 
+                                RoboCompGenericBase::TBaseState& bState, const Ice::Current&) override;
+    virtual void getYImageCR(int cam, int div, imgType& roi, RoboCompCommonHead::THeadState& hState, 
+                            RoboCompGenericBase::TBaseState& bState, const Ice::Current&) override;
+    virtual void getRGBPackedImage(int cam, imgType& roi, RoboCompCommonHead::THeadState& hState, 
+                                    RoboCompGenericBase::TBaseState& bState, const Ice::Current&) override;
+    virtual void getYRGBImage(int cam, imgType& roi, RoboCompCommonHead::THeadState& hState, 
+                            RoboCompGenericBase::TBaseState& bState, const Ice::Current&) override;
     virtual TCamParams getCamParams(const Ice::Current&) override;
     virtual void setInnerImage(const imgType& roi, const Ice::Current&) override;
 private:

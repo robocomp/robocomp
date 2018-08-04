@@ -1,4 +1,4 @@
-package diffdrive_state_msgs.msgs;
+package diffdrive_state.msgs;
 
 import "pose.proto";
 import "vector3d.proto";

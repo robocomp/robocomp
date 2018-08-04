@@ -1,16 +1,3 @@
-#include <algorithm>
-#include <string>
-#include <assert.h>
-
-#include <sdf/sdf.hh>
-#include <sdf/Param.hh>
-#include <gazebo/physics/World.hh>
-#include <gazebo/sensors/Sensor.hh>
-#include <gazebo/common/Exception.hh>
-#include <gazebo/sensors/SensorTypes.hh>
-#include <gazebo/transport/transport.hh>
-#include <gazebo/sensors/ImuSensor.hh>
-
 #include "gazebo_robocomp_IMU.hh"
 
 namespace gazebo

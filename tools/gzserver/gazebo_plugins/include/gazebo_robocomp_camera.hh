@@ -2,6 +2,7 @@
 #define GAZEBO_ROBOCOMP_CAMERA_HH
 
 #include <string>
+#include <iostream>
 
 // boost stuff
 #include <boost/thread.hpp>
@@ -10,11 +11,6 @@
 // sdf stuff
 #include <sdf/Param.hh>
 #include <sdf/sdf.hh>
-
-// OpenCV
-#include <opencv2/core/core.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
-#include <opencv2/highgui/highgui.hpp>
 
 // Gazebo
 #include <gazebo/physics/World.hh>
@@ -31,6 +27,7 @@
 #include <gazebo/sensors/sensors.hh>
 #include <gazebo/sensors/SensorTypes.hh>
 #include <gazebo/plugins/CameraPlugin.hh>
+#include <gazebo/rendering/Camera.hh>
 
 #include <gazebo/msgs/msgs.hh>
 #include <gazebo/transport/TransportTypes.hh>
@@ -50,8 +47,9 @@ namespace gazebo
       public: void Load(sensors::SensorPtr _parent, sdf::ElementPtr _sdf);
 
       // Update the controller
-      public: void OnNewFrame(const unsigned char *_image, unsigned int _width, unsigned int _height, unsigned int _depth, const std::string &_format);
-      public: void OnMsg(ConstImageStampedPtr &_msg);
+      public: void OnNewFrame(const unsigned char *_image, unsigned int _width, 
+                              unsigned int _height, unsigned int _depth, const std::string &_format);
+      
       public: void myMemCpy(void *dest, std::string &new_image, size_t n);
 
       // copied from CameraPlugin
@@ -71,23 +69,15 @@ namespace gazebo
 
       private: sdf::ElementPtr sdf_;
 
-      // private: cv::Mat image_;
-
       // Gazebo transport details
       private: gazebo::transport::NodePtr gazebo_node_;
       private: gazebo::transport::SubscriberPtr sub_;
       private: gazebo::transport::PublisherPtr pub_;
 
-      private: cv::Mat image_;
-      private: cv::Mat image;
       private: std::string new_image;
 
       // Topic used for communication
       private: std::string topic_name_;
-      private: int seed;
-      private: int seed_;
-      private: int saveCount;
-
   };
 }
 #endif

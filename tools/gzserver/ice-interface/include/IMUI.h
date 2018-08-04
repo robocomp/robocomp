@@ -1,14 +1,19 @@
 #include <Ice/Ice.h>
 #include "IMU.h"
+
+#if GAZEBO_MAJOR_VERSION < 6
 #include <gazebo/gazebo.hh>
-#include <gazebo/transport/transport.hh>
+#else
+#include <gazebo/gazebo_client.hh>
+#endif
+
 #include <gazebo/common/Time.hh>
 #include <gazebo/common/Plugin.hh>
 #include <gazebo/common/Events.hh>
-#include <gazebo/transport/TransportTypes.hh>
-#include <gazebo/msgs/msgs.hh>
 
-using namespace std;
+#include <gazebo/msgs/msgs.hh>
+#include <gazebo/transport/transport.hh>
+
 using namespace RoboCompIMU;
 
 class IMUI : public IMU 
@@ -27,6 +32,6 @@ private:
     private: gazebo::transport::NodePtr gazebo_node_;
     private: gazebo::transport::SubscriberPtr laser_scan_sub_;
     private: std::string topic_name_;
-    private: string device_name_;
+    private: std::string device_name_;
     private: DataImu imu_data_;
 }; 

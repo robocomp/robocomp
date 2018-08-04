@@ -7,7 +7,12 @@ using namespace std;
 using namespace gazebo; 
 
 CameraI::CameraI(int argc, char **argv) {
+#if GAZEBO_MAJOR_VERSION < 6
+    gazebo::setupClient(argc, argv);
+#else
     gazebo::client::setup(argc, argv);
+#endif
+
     this->device_name_ = "gazebo_robocomp_camera";
     this->sub_topic_name_ = "/gazebo/default/box/link/cam_sensor/image";
     this->pub_topic_name_ = "/my_robot";
@@ -19,17 +24,23 @@ CameraI::CameraI(int argc, char **argv) {
 } 
 
 CameraI::~CameraI() {
+#if GAZEBO_MAJOR_VERSION < 6
+    gazebo::shutdown();
+#else
     gazebo::client::shutdown();
+#endif
 }
 
-void CameraI::getYUVImage(int cam, imgType& roi, RoboCompCommonHead::THeadState& hState, RoboCompGenericBase::TBaseState& bState, const Ice::Current&) {
+void CameraI::getYUVImage(int cam, imgType& roi, RoboCompCommonHead::THeadState& hState, 
+                        RoboCompGenericBase::TBaseState& bState, const Ice::Current&) {
     cv::Mat YUVImage;
     cv::cvtColor(image, YUVImage, CV_BGR2YUV);
     roi.resize(YUVImage.cols*YUVImage.rows*3);
     cvtImageType((unsigned char *)YUVImage.data, roi, YUVImage.cols*YUVImage.rows*3);
 } 
 
-void CameraI::getYImage(int cam, imgType& roi, RoboCompCommonHead::THeadState& hState, RoboCompGenericBase::TBaseState& bState, const Ice::Current&) {
+void CameraI::getYImage(int cam, imgType& roi, RoboCompCommonHead::THeadState& hState, 
+                        RoboCompGenericBase::TBaseState& bState, const Ice::Current&) {
 
     cv::Mat YImage;
     cv::Mat YUVImage;
@@ -41,21 +52,24 @@ void CameraI::getYImage(int cam, imgType& roi, RoboCompCommonHead::THeadState& h
     this->cvtImageType((unsigned char *)YUVImageArray[0].data, roi, YUVImageArray[0].cols*YUVImageArray[0].rows);
 }
 
-void CameraI::getYLogPolarImage(int cam, imgType& roi, RoboCompCommonHead::THeadState& hState, RoboCompGenericBase::TBaseState& bState, const Ice::Current&) {
+void CameraI::getYLogPolarImage(int cam, imgType& roi, RoboCompCommonHead::THeadState& hState, 
+                                RoboCompGenericBase::TBaseState& bState, const Ice::Current&) {
 }
 
-void CameraI::getYImageCR(int cam, int div, imgType& roi, RoboCompCommonHead::THeadState& hState, RoboCompGenericBase::TBaseState& bState, const Ice::Current&) {
+void CameraI::getYImageCR(int cam, int div, imgType& roi, RoboCompCommonHead::THeadState& hState, 
+                        RoboCompGenericBase::TBaseState& bState, const Ice::Current&) {
 }
 
-void CameraI::getRGBPackedImage(int cam, imgType& roi, RoboCompCommonHead::THeadState& hState, RoboCompGenericBase::TBaseState& bState, const Ice::Current&) {
+void CameraI::getRGBPackedImage(int cam, imgType& roi, RoboCompCommonHead::THeadState& hState, 
+                                RoboCompGenericBase::TBaseState& bState, const Ice::Current&) {
 
     for (int i = 0; i < image_.size(); i++) {
         roi[i] = image_[i];
     }
 }
 
-void CameraI::getYRGBImage(int cam, imgType& roi, RoboCompCommonHead::THeadState& hState, RoboCompGenericBase::TBaseState& bState, const Ice::Current&) {
-
+void CameraI::getYRGBImage(int cam, imgType& roi, RoboCompCommonHead::THeadState& hState, 
+                        RoboCompGenericBase::TBaseState& bState, const Ice::Current&) {
 }
 
 TCamParams CameraI::getCamParams(const Ice::Current&) {

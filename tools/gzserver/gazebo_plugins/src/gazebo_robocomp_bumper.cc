@@ -35,7 +35,8 @@ void GazeboRoboCompBumper::Load(sensors::SensorPtr _parent, sdf::ElementPtr _sdf
     if (_sdf->HasElement("bumperTopicName"))
         this->bumper_topic_name_ = _sdf->GetElement("bumperTopicName")->Get<std::string>();
     else 
-        std::cerr << "No element with <bumperTopicName> tag, setting it to default: " << bumper_topic_name_ << std::endl;
+        std::cerr << "No element with <bumperTopicName> tag, setting it to default: " 
+                    << bumper_topic_name_ << std::endl;
 
     this->gazebo_node_ = transport::NodePtr(new transport::Node());
     this->gazebo_node_->Init(parent_sensor_->WorldName());

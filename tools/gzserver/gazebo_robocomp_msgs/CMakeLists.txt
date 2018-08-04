@@ -8,12 +8,12 @@ foreach(ITR ${GAZEBO_INCLUDE_DIRS})
 endforeach()
 
 set (gazebo_robocomp_msgs
-    Laser_msgs.proto
+    laser_data.proto
     diffdrive_state.proto
-    diffdrive.proto
+    diffdrive_cmd.proto
     motor_goal_velocity.proto
-    jointMotor_params.proto
-    jointMotorState.proto
+    jointmotor_params.proto
+    jointmotor_state.proto
     motor_goal_position.proto
     motor_goal_pos_list.proto
     motor_goal_vel_list.proto
@@ -23,11 +23,11 @@ set (gazebo_robocomp_msgs
 
 PROTOBUF_GENERATE_CPP(PROTO_SRCS PROTO_HDRS ${gazebo_robocomp_msgs})
 
-add_library(Laser_msgs SHARED ${PROTO_SRCS})
-target_link_libraries(Laser_msgs ${PROTOBUF_LIBRARY})
+add_library(laser_data SHARED ${PROTO_SRCS})
+target_link_libraries(laser_data ${PROTOBUF_LIBRARY})
 
-add_library(diffdrive_msgs SHARED ${PROTO_SRCS})
-target_link_libraries(diffdrive_msgs ${PROTOBUF_LIBRARY})
+add_library(diffdrive_cmd SHARED ${PROTO_SRCS})
+target_link_libraries(diffdrive_cmd ${PROTOBUF_LIBRARY})
 
 add_library(diffdrive_state SHARED ${PROTO_SRCS})
 target_link_libraries(diffdrive_state ${PROTOBUF_LIBRARY})
@@ -38,11 +38,11 @@ target_link_libraries(motor_goal_velocity ${PROTOBUF_LIBRARY})
 add_library(motor_goal_position SHARED ${PROTO_SRCS})
 target_link_libraries(motor_goal_position ${PROTOBUF_LIBRARY})
 
-add_library(jointMotorState SHARED ${PROTO_SRCS})
-target_link_libraries(jointMotorState ${PROTOBUF_LIBRARY})
+add_library(jointmotor_state SHARED ${PROTO_SRCS})
+target_link_libraries(jointmotor_state ${PROTOBUF_LIBRARY})
 
-add_library(jointMotor_params SHARED ${PROTO_SRCS})
-target_link_libraries(jointMotor_params ${PROTOBUF_LIBRARY})
+add_library(jointmotor_params SHARED ${PROTO_SRCS})
+target_link_libraries(jointmotor_params ${PROTOBUF_LIBRARY})
 
 add_library(motor_goal_pos_list SHARED ${PROTO_SRCS})
 target_link_libraries(motor_goal_pos_list ${PROTOBUF_LIBRARY})

@@ -7,13 +7,9 @@
 #include <sdf/sdf.hh>
 #include <sdf/Param.hh>
  
-#include <gazebo/physics/World.hh>
-#include <gazebo/physics/HingeJoint.hh>
-#include <gazebo/physics/Contact.hh>
 #include <gazebo/physics/physics.hh>
 
 #include <gazebo/sensors/Sensor.hh>
-#include <gazebo/sensors/sensors.hh>
 #include <gazebo/sensors/ContactSensor.hh>
 
 #include <gazebo/common/Exception.hh>
@@ -21,14 +17,10 @@
 #include <gazebo/common/Plugin.hh>
 #include <gazebo/common/Events.hh>
 
-#include <gazebo/sensors/SensorTypes.hh>
-
 #include <ignition/math/Pose3.hh>
 #include <ignition/math/Quaternion.hh>
 #include <ignition/math/Vector3.hh>
 
-#include <gazebo/transport/TransportTypes.hh>
-#include <gazebo/msgs/MessageTypes.hh>
 #include <gazebo/transport/transport.hh>
 #include <gazebo/msgs/msgs.hh>
 

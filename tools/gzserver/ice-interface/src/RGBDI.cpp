@@ -7,7 +7,11 @@ using namespace std;
 using namespace gazebo; 
 
 RGBDI::RGBDI(int argc, char **argv) {
+#if GAZEBO_MAJOR_VERSION < 6
+    gazebo::setupClient(argc, argv);
+#else
     gazebo::client::setup(argc, argv);
+#endif
     this->device_name_ = "gazebo_robocomp_RGBD";
     this->sub_topic_name_ = "/gazebo_robocomp_RGBD/data";
     this->pub_topic_name_ = "/my_robot";
@@ -19,7 +23,11 @@ RGBDI::RGBDI(int argc, char **argv) {
 } 
 
 RGBDI::~RGBDI() {
+#if GAZEBO_MAJOR_VERSION < 6
+    gazebo::shutdown();
+#else
     gazebo::client::shutdown();
+#endif
 }
 
 TRGBDParams RGBDI::getRGBDParams(const Ice::Current&) {
@@ -31,25 +39,34 @@ void  RGBDI::setRegistration(Registration value, const Ice::Current&) {
 Registration RGBDI::getRegistration(const Ice::Current&) {
 
 }
-void  RGBDI::getData(imgType& rgbMatrix, depthType& distanceMatrix, RoboCompJointMotor::MotorStateMap& hState, RoboCompGenericBase::TBaseState& bState, const Ice::Current&) {
+void  RGBDI::getData(imgType& rgbMatrix, depthType& distanceMatrix, 
+                    RoboCompJointMotor::MotorStateMap& hState, 
+                    RoboCompGenericBase::TBaseState& bState, const Ice::Current&) {
     storeImage(rgbMatrix);
     storeDepthImage(distanceMatrix);
 }
-void  RGBDI::getDepthInIR(depthType& distanceMatrix, RoboCompJointMotor::MotorStateMap& hState, RoboCompGenericBase::TBaseState& bState, const Ice::Current&) {
+void  RGBDI::getDepthInIR(depthType& distanceMatrix, 
+                        RoboCompJointMotor::MotorStateMap& hState, 
+                        RoboCompGenericBase::TBaseState& bState, const Ice::Current&) {
     storeDepthImage(distanceMatrix);
 }
-void  RGBDI::getImage(ColorSeq& color, DepthSeq& depth, PointSeq& points, RoboCompJointMotor::MotorStateMap& hState, RoboCompGenericBase::TBaseState& bState, const Ice::Current&) {
+void  RGBDI::getImage(ColorSeq& color, DepthSeq& depth, PointSeq& points, 
+                    RoboCompJointMotor::MotorStateMap& hState, 
+                    RoboCompGenericBase::TBaseState& bState, const Ice::Current&) {
     storeData(color, points);
     storeDepthImage(depth);
 }
-void  RGBDI::getDepth(DepthSeq& depth, RoboCompJointMotor::MotorStateMap& hState, RoboCompGenericBase::TBaseState& bState, const Ice::Current&) {
+void  RGBDI::getDepth(DepthSeq& depth, RoboCompJointMotor::MotorStateMap& hState, 
+                    RoboCompGenericBase::TBaseState& bState, const Ice::Current&) {
     storeDepthImage(depth);
 }
-void  RGBDI::getRGB(ColorSeq& color, RoboCompJointMotor::MotorStateMap& hState, RoboCompGenericBase::TBaseState& bState, const Ice::Current&) {
+void  RGBDI::getRGB(ColorSeq& color, RoboCompJointMotor::MotorStateMap& hState, 
+                    RoboCompGenericBase::TBaseState& bState, const Ice::Current&) {
     PointSeq points;
     storeData(color, points);
 }
-void  RGBDI::getXYZ(PointSeq& points, RoboCompJointMotor::MotorStateMap& hState, RoboCompGenericBase::TBaseState& bState, const Ice::Current&) {
+void  RGBDI::getXYZ(PointSeq& points, RoboCompJointMotor::MotorStateMap& hState, 
+                    RoboCompGenericBase::TBaseState& bState, const Ice::Current&) {
     ColorSeq color;
     storeData(color, points);
 }

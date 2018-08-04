@@ -1,19 +1,4 @@
-#include <algorithm>
-#include <string>
-#include <assert.h>
-
-#include <gazebo/physics/World.hh>
-#include <gazebo/physics/HingeJoint.hh>
-#include <gazebo/sensors/Sensor.hh>
-#include <gazebo/sensors/RaySensor.hh>
-#include <gazebo/sensors/SensorTypes.hh>
-#include <gazebo/transport/transport.hh>
-
 #include "gazebo_robocomp_laser.hh"
-
-#include "raysensor.pb.h"
-#include "Laser_msgs.pb.h"
-
 
 namespace gazebo
 {

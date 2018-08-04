@@ -2,26 +2,38 @@
 #define GAZEBO_ROBOCOMP_DIFFDRIVE_HH
  
 #include <string>
+#include <algorithm>
+#include <assert.h> 
 
 #include <boost/bind.hpp>
 #include <boost/thread.hpp>
 
 #include <sdf/sdf.hh>
 #include <sdf/Param.hh>
-#include <gazebo/gazebo.hh> 
+
+#if GAZEBO_MAJOR_VERSION < 6
+#include <gazebo/gazebo.hh>
+#else
+#include <gazebo/gazebo_client.hh>
+#endif
+
 #include <gazebo/physics/physics.hh>
-#include <gazebo/transport/TransportTypes.hh>
-#include <gazebo/msgs/MessageTypes.hh>
+
 #include <gazebo/common/Time.hh>
 #include <gazebo/common/Plugin.hh>
 #include <gazebo/common/Events.hh>
+#include <gazebo/common/Exception.hh>
+
+#include <gazebo/transport/transport.hh>
+#include <gazebo/msgs/msgs.hh>
+
 #include <gazebo/math/Angle.hh>
 
 #include "diffdrive_state.pb.h"
-#include "diffdrive.pb.h"
+#include "diffdrive_cmd.pb.h"
 
-typedef const boost::shared_ptr<const diffdrive_state_msgs::msgs::DiffDriveState> ConstDiffDriveStatePtr;
-typedef const boost::shared_ptr<const diffdrive_cmd_msgs::msgs::DiffDriveCmd> ConstDiffDriveCmdPtr;
+typedef const boost::shared_ptr<const diffdrive_state::msgs::DiffDriveState> ConstDiffDriveStatePtr;
+typedef const boost::shared_ptr<const diffdrive_cmd::msgs::DiffDriveCmd> ConstDiffDriveCmdPtr;
 
 
 namespace gazebo
@@ -49,7 +61,7 @@ namespace gazebo
     // Topic used for communication
     private: std::string sub_topic_name_;
     private: std::string pub_topic_name_;
-    // private: std::string diffdrive_state_topic_name_;
+
     // Pointer to the model
     private: physics::ModelPtr model_;
 
@@ -77,7 +89,7 @@ namespace gazebo
 
     private: std::string world_name_;
 
-    private: diffdrive_state_msgs::msgs::DiffDriveState diffdrive_state_;
+    private: diffdrive_state::msgs::DiffDriveState diffdrive_state_;
 
     // Gazebo transport details
     private: transport::NodePtr gazebo_node_;

@@ -1,4 +1,4 @@
-package diffdrive_cmd_msgs.msgs;
+package diffdrive_cmd.msgs;
 
 message DiffDriveCmd
 {

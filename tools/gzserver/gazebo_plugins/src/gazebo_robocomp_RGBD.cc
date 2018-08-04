@@ -37,8 +37,9 @@ namespace gazebo
 
   }
 
-  void GazeboRoboCompRGBD::OnNewDepthFrame(const float *_image, unsigned int _width, unsigned int _height,
-                                          unsigned int _depth, const std::string &_format) 
+  void GazeboRoboCompRGBD::OnNewDepthFrame(const float *_image, unsigned int _width, 
+                                          unsigned int _height, unsigned int _depth, 
+                                          const std::string &_format) 
   {
     msgs::ImageStamped msg;
     msgs::Set(msg.mutable_time(), 0);

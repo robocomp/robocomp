@@ -1,20 +1,22 @@
 #include "DifferentialRobotI.h"
 #include <gazebo/gazebo_client.hh>
 #include <gazebo/gazebo_config.h>
-#include "diffdrive.pb.h"
-#include "diffdrive_state.pb.h"
  
 using namespace RoboCompDifferentialRobot;
 using namespace std;
 using namespace gazebo; 
-using namespace diffdrive_cmd_msgs::msgs; 
-using namespace diffdrive_state_msgs::msgs;
+using namespace diffdrive_cmd::msgs; 
+using namespace diffdrive_state::msgs;
 
-typedef const boost::shared_ptr<const diffdrive_cmd_msgs::msgs::DiffDriveCmd> DiffDriveCmdPtr;
-typedef const boost::shared_ptr<const diffdrive_state_msgs::msgs::DiffDriveState> DiffDriveStatePtr;
+typedef const boost::shared_ptr<const diffdrive_cmd::msgs::DiffDriveCmd> DiffDriveCmdPtr;
+typedef const boost::shared_ptr<const diffdrive_state::msgs::DiffDriveState> DiffDriveStatePtr;
 
 DifferentialRobotI::DifferentialRobotI(int argc, char **argv) {
+#if GAZEBO_MAJOR_VERSION < 6
+    gazebo::setupClient(argc, argv);
+#else
     gazebo::client::setup(argc, argv);
+#endif
     this->device_name_ = "gazebo_robocomp_diffdrive";
     this->sub_topic_name_ = "/diffdrive/data";
     this->pub_topic_name_ = "/my_robot";
@@ -25,7 +27,11 @@ DifferentialRobotI::DifferentialRobotI(int argc, char **argv) {
 } 
 
 DifferentialRobotI::~DifferentialRobotI() {
+#if GAZEBO_MAJOR_VERSION < 6
+    gazebo::shutdown();
+#else
     gazebo::client::shutdown();
+#endif
 }
 
 void DifferentialRobotI::getBaseState(RoboCompGenericBase::TBaseState& _base_state, const Ice::Current&) {

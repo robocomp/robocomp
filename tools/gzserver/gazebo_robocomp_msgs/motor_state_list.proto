@@ -1,7 +1,7 @@
 package motor_state_list.msgs;
 
-import "jointMotorState.proto";
+import "jointmotor_state.proto";
 
 message MotorStateMap {
-    repeated jointMotorState_msgs.msgs.JointMotorState joint_motor_state = 1;
+    repeated joint_motor_state.msgs.JointMotorState joint_motor_state = 1;
 }

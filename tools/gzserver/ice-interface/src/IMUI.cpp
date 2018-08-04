@@ -7,7 +7,11 @@ using namespace std;
 using namespace gazebo; 
 
 IMUI::IMUI(int argc, char **argv) {
+#if GAZEBO_MAJOR_VERSION < 6
+    gazebo::setupClient(argc, argv);
+#else
     gazebo::client::setup(argc, argv);
+#endif
     this->device_name_ = "gazebo_robocomp_IMU";
     this->topic_name_ = "/gazebo/IMU/data";
     this->gazebo_node_ = gazebo::transport::NodePtr(new gazebo::transport::Node());
@@ -34,7 +38,11 @@ IMUI::IMUI(int argc, char **argv) {
 } 
 
 IMUI::~IMUI() {
+#if GAZEBO_MAJOR_VERSION < 6
+    gazebo::shutdown();
+#else
     gazebo::client::shutdown();
+#endif
 }
 
 DataImu IMUI::getDataImu(const Ice::Current&) {

@@ -3,5 +3,5 @@ package motor_goal_pos_list.msgs;
 import "motor_goal_position.proto";
 
 message MotorGoalPositionList {
-    repeated motor_goal_position_msgs.msgs.MotorGoalPosition motor_goal_pos_list = 1;
+    repeated motor_goal_position.msgs.MotorGoalPosition motor_goal_pos_list = 1;
 }

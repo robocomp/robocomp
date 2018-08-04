@@ -1,28 +1,7 @@
 #include "gazebo_robocomp_joint.hh"
 
-#include <sdf/sdf.hh>
-#include <sdf/Param.hh>
-#include <gazebo/common/Exception.hh>
-#include <gazebo/physics/physics.hh>
-#include <gazebo/transport/TransportTypes.hh>
-#include <gazebo/msgs/MessageTypes.hh>
-#include <gazebo/common/Time.hh>
-#include <gazebo/common/Plugin.hh>
-#include <gazebo/common/Events.hh>
-#include <gazebo/transport/transport.hh>
-#include <gazebo/msgs/msgs.hh>
-
-#include <algorithm>
-#include <string>
-#include <assert.h>
-
-#include <jointMotor_params.pb.h>
-#include <jointMotorState.pb.h>
-#include <motor_goal_position.pb.h>
-#include <motor_goal_velocity.pb.h>
-
-typedef const boost::shared_ptr<const motor_goal_vel_msgs::msgs::MotorGoalVelocity> ConstMotorGoalVelocityPtr;
-typedef const boost::shared_ptr<const motor_goal_position_msgs::msgs::MotorGoalPosition> ConstMotorGoalPositionPtr;
+typedef const boost::shared_ptr<const motor_goal_vel::msgs::MotorGoalVelocity> ConstMotorGoalVelocityPtr;
+typedef const boost::shared_ptr<const motor_goal_position::msgs::MotorGoalPosition> ConstMotorGoalPositionPtr;
 
 namespace gazebo
 {
@@ -96,7 +75,7 @@ void GazeboRoboCompJoint::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
     this->pos_sub_ = this->gazebo_node_->Subscribe(pos_topic_name_, &GazeboRoboCompJoint::OnPosMsg, this);
     this->vel_sub_ = this->gazebo_node_->Subscribe(vel_topic_name_, &GazeboRoboCompJoint::OnVelMsg, this);
 
-    this->pub_ = this->gazebo_node_->Advertise<jointMotorState_msgs::msgs::JointMotorState>(pub_topic_name_);
+    this->pub_ = this->gazebo_node_->Advertise<joint_motor_state::msgs::JointMotorState>(pub_topic_name_);
 
     this->update_connection_ = joint_->ConnectJointUpdate(boost::bind(&GazeboRoboCompJoint::OnUpdate, this));
 
@@ -135,7 +114,7 @@ void GazeboRoboCompJoint::OnVelMsg(ConstMotorGoalVelocityPtr &_msg)
 
 void GazeboRoboCompJoint::OnUpdate()
 {
-    jointMotorState_msgs::msgs::JointMotorState msg;
+    joint_motor_state::msgs::JointMotorState msg;
     msg.set_speed(this->joint_->GetVelocity(0));
     msg.set_name(this->joint_->GetName());
     msg.set_position(0);
