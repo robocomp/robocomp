@@ -56,6 +56,7 @@ sudo apt-get install git git-annex cmake g++ libgsl0-dev libopenscenegraph-dev c
 sudo pip install networkx
 sudo apt-get install yakuake qt4-designer
 
+echo ""
 echo -e $cyan"Installing Source from Github.
 "
 echo -e $white
@@ -65,7 +66,7 @@ cd ~/robocomp
 
 echo -e $cyan"Preparing folder and synchronizing files."
 
-ecgo -e $white
+echo -e $white
 
 git annex get .
 
@@ -201,7 +202,7 @@ if [ "$option" -eq "1" ]; then
     echo -e $white"Installation complete. Launching component in the background."
     ./startJoyStick.sh
 
-else [ "$option" -eq "0" ]; then    
+else [ "$option" -eq "0" ];   
     echo "We are installing the Keyboard component.
     You will be able to move the robot around with the arrow buttons."
     cd ~/robocomp/components/robocomp-robolab/components/keyboardrobotcontroller
@@ -218,7 +219,7 @@ fi
 # =============    < Testing the Simulator >     ============= #
 # ============================================================ #
 
-echo "Fetching meshes and textures. This might take a while."
+echo -e $white"Fetching meshes and textures. This might take a while."
 
 cd ~/robocomp
 git annex get .
@@ -229,7 +230,7 @@ echo "For more information visit the repository."
 
 echo -e $cyan"Installation complete. Have a great time using Robocomp!"
 cd ~/robocomp/files/innermodel
-echo -e $white"Lauching Robocomp..."
+echo -e $white"Lauching Robocomp."
 rcis simpleworld.xml
 
 exit
