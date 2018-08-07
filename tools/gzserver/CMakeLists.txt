@@ -62,8 +62,8 @@ target_link_libraries(joint_vel
 )
 
 add_executable(My_Robot_Vel src/diff_drive_cmd.cc)
-target_link_libraries(My_Robot_Vel diffdrive_msgs ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES} ${SDF_LIBRARIES})
-add_dependencies(My_Robot_Vel diffdrive_msgs)
+target_link_libraries(My_Robot_Vel diffdrive_cmd ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES} ${SDF_LIBRARIES})
+add_dependencies(My_Robot_Vel diffdrive_cmd)
 
 add_executable(gazeboserver src/server.cpp)
 target_link_libraries(gazeboserver 
@@ -89,11 +89,12 @@ target_link_libraries(gazeboserver
     ${easyiceconfig_LIBRARIES} 
     ${GAZEBO_LIBRARIES} 
     ${Boost_LIBRARIES})
-INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/gazeboserver DESTINATION /opt/robocomp/bin/ PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE )
+INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/gazeboserver DESTINATION /opt/robocomp/bin/ 
+    PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE )
 
 add_executable(client src/client.cpp)
 target_link_libraries(client ${GAZEBO_LIBRARIES} Laser ${Boost_LIBRARIES} Ice IceUtil ${ZeroCIce_LIBRARIES} ${easyiceconfig_LIBRARIES})
 
 add_executable(keyboardController src/keyboardController.cpp)
-target_link_libraries(keyboardController ${GAZEBO_LIBRARIES} diffdrive_msgs ${Boost_LIBRARIES})
-add_dependencies(keyboardController diffdrive_msgs)
+target_link_libraries(keyboardController ${GAZEBO_LIBRARIES} diffdrive_cmd ${Boost_LIBRARIES})
+add_dependencies(keyboardController diffdrive_cmd)
