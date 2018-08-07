@@ -31,4 +31,4 @@ At the end of installation one can check the installed robocomp's tools and look
 gazeboserver
 ``` 
 
-If it outputs "Gazebo Server Initialised" on the console, then the tool is installed successfully. One can checkout the video for installation [here](https://youtu.be/sWx-RrONdQM). To use `gazeboserver` you need to just first gazebo and then start `gazeboserver`. Then change the endpoints of the interfaces in your component with the corresponding interfaces' endpoints in `gazeboserver`. Then you are good to go.
+If it outputs "Gazebo Server Initialised" on the console, then the tool is installed successfully. One can checkout the video for installation [here](https://youtu.be/sWx-RrONdQM). To use `gazeboserver` you need to just first gazebo and then start `gazeboserver`. Then change the endpoints of the interfaces in your component with the corresponding interfaces' endpoints in `gazeboserver`. Then you are good to go. It is even possible to use `gazeboserver` separately without even integrating it with the main code base which has been decribed [here](https://github.com/ksakash/gazebo-robocomp/blob/master/README.md).
