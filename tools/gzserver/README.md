@@ -13,32 +13,22 @@ plugins and ice interfaces.<br/>
 **src:** Contains utilities to test the gazebo plugins.<br/>
 
 ## Installation
-To install the repo from source:
+To install the tool `gazeboserver`, you need to just follow the installation guidelines of the framework and it will be installed automatically. To install the framework, from the project's root directory after installing all the dependencies:
 
 ```
-cd
-git clone https://github.com/ksakash/gazebo-robocomp
-cd gazebo-robocomp
 mkdir build
 cd build
-cmake .. && make
+cmake ..
+make
+sudo make install
 ```
 
-This will the build all the plugins and ice-interfaces. For your system to know where are the plugins and gazebo models, you need to add the location of the built binaries to two gazebo environment variables: `GAZEBO_PLUGIN_PATH` & `GAZEBO_MODEL_PATH`. Add these two lines to your `.bashrc` or `.zshrc`
+## Checking the installation
+
+At the end of installation one can check the installed robocomp's tools and look from `gazeboserver`. To test the tool, you need to just do:
 
 ```
-export GAZEBO_PLUGIN_PATH=$HOME/gazebo-robocomp/build/gazebo_plugins
-export GAZEBO_MODEL_PATH=$HOME/gazebo-robocomp/gazebo_robocomp_models
-```
+gazeboserver
+``` 
 
-This will complete the installation.
-
-## Running the integration
-
-In order to use the integration with robocomp framework, for now, you just need to the endpoints at which the `ice-interfaces`, corresponding to all the sensors, are listening. So you can create a component using robocomp framework with the instructions given [here](https://github.com/robocomp/robocomp/blob/master/doc/robocompdsl.md). And, then change the endpoint given in `etc/config` file. So, you can run the gazebo world in which you want to simulate your bot and test your component accordingly.
-
-```
-gazebo --verbose ~/gazebo-robocomp/gazebo_robocomp_worlds/<Name-of-the-World>
-```
-
-And then you are ready to go!!!
+If it outputs "Gazebo Server Initialised" on the console, then the tool is installed successfully. One can checkout the video for installation [here](https://youtu.be/sWx-RrONdQM). To use `gazeboserver` you need to just first gazebo and then start `gazeboserver`. Then change the endpoints of the interfaces in your component with the corresponding interfaces' endpoints in `gazeboserver`. Then you are good to go.
