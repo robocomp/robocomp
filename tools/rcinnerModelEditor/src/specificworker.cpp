@@ -17,7 +17,6 @@
  *    along with RoboComp.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "specificworker.h"
-
 /**
  * \brief Default constructor
  */
@@ -31,6 +30,7 @@ SpecificWorker::SpecificWorker(MapPrx& mprx) : GenericWorker(mprx)
 	QGLFormat::setDefaultFormat(fmt);
 	groupBox->hide();
 	groupBox_2->hide();
+	groupBox_3->hide();
 	connect(openpushButton,SIGNAL(clicked()),this, SLOT(openFile()));
 	connect(&timer, SIGNAL(timeout()), this, SLOT(compute()));
 	connect(&timer, SIGNAL(timeout()), this, SLOT(click_get()));
@@ -49,8 +49,12 @@ SpecificWorker::SpecificWorker(MapPrx& mprx) : GenericWorker(mprx)
 	connect(startnewpushButton, SIGNAL(clicked()), this, SLOT(start_new_model()));
 	connect(remove_current_nodepushButton, SIGNAL(clicked()), this, SLOT(remove_current_node()));
 	connect(savepushButton, SIGNAL(clicked()), this, SLOT(saveButtonClicked()));
+	connect(contentPushButton, SIGNAL(clicked()), this, SLOT(openhelp()));
 	connect(treeWidget, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
-	connect(reloadpushButton,SIGNAL(clicked()),this,SLOT(reload_same()));
+	connect(treeWidget_2, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(currentItemChanged_2(QTreeWidgetItem *, QTreeWidgetItem *)));
+	connect(reloadpushButton, SIGNAL(clicked()), this, SLOT(reload_same()));
+	connect(reportButton, SIGNAL(clicked()), this, SLOT(showmsgBox()));
+	connect(SendButton, SIGNAL(clicked()), this, SLOT(sendmsg()));
 	showMaximized();
 }
 
@@ -175,6 +179,30 @@ void SpecificWorker::currentItemChanged(QTreeWidgetItem *current, QTreeWidgetIte
 	showAvailableGroups();
 	highlightNode();
 	interfaceConnections(true);
+}
+
+void SpecificWorker::currentItemChanged_2(QTreeWidgetItem *current, QTreeWidgetItem *previous)
+{
+	if(current->text(0) == "About")
+	{
+        QDesktopServices::openUrl(QUrl::fromLocalFile("/home/robocomp/robocomp/tools/rcinnerModelEditor/About.pdf"));
+	}
+	else if(current->text(0) == "Create Node")
+	{
+        QDesktopServices::openUrl(QUrl::fromLocalFile("/home/robocomp/robocomp/tools/rcinnerModelEditor/Create_Node.pdf"));
+	}
+	else if(current->text(0) == "Remove Node")
+	{
+        QDesktopServices::openUrl(QUrl::fromLocalFile("/home/robocomp/robocomp/tools/rcinnerModelEditor/Remove_Node.pdf"));
+	}
+	else if(current->text(0) == "Edit Node")
+	{
+        QDesktopServices::openUrl(QUrl::fromLocalFile("/home/robocomp/robocomp/tools/rcinnerModelEditor/Edit_node.pdf"));
+	}
+	else if(current->text(0) == "Basic Commands")
+	{
+        QDesktopServices::openUrl(QUrl::fromLocalFile("/home/robocomp/robocomp/tools/rcinnerModelEditor/Basic.pdf"));
+	}
 }
 
 void SpecificWorker::highlightNode()
@@ -438,9 +466,10 @@ void SpecificWorker::resetButtonClicked()
 
 void SpecificWorker::click_get()
 {
-	if(world3D->flag1 == 1)
+	if(world3D->flag1 == 1 && world3D->flag2 == 2)
 	{
 		IMVPlane* plane;
+		//qDebug() << "asasas";
 
 		if((plane = dynamic_cast<IMVPlane *>(world3D->hexno)))
 		{
@@ -458,21 +487,21 @@ void SpecificWorker::click_get()
 
 void SpecificWorker::drag_drop()
 {
-    if(world3D->flag1 == 2 && world3D->flag2==2)
+	if(world3D->flag1 == 2 && world3D->flag2==2)
 	{
 		IMVPlane* plane;
 
-        move = world3D->kk;
+		move = world3D->kk;
 		if((plane = dynamic_cast<IMVPlane *>(world3D->hexno)))
 		{
 			plane1 = imv->planesHash.key(plane);
 			move = world3D->kk;
 			if(move!=rove)
 			{
-                innerModel->updateTranslationValues(innerModel->getParentIdentifier(plane1), move.x(), 0, -move.z());
+				innerModel->updateTranslationValues(innerModel->getParentIdentifier(plane1), move.x(), 0, -move.z());
 				move = rove; 
 			}
-        }
+		}
 	}
 }
 
@@ -1070,6 +1099,66 @@ void SpecificWorker::start_new_model()
 	timer.start(Period);
 }
 
+void SpecificWorker::openhelp()
+{
+	if(treeWidget_2->isVisible())
+	{
+		treeWidget_2->hide();
+	}
+	else
+	{
+		groupBox_3->show();
+		treeWidget_2->show();
+		groupBox_4->hide();
+	}
+}
+
+void SpecificWorker::showmsgBox()
+{
+	if(groupBox_4->isVisible())
+		groupBox_4->hide();
+	else
+	{
+		groupBox_3->show();
+		groupBox_4->show();
+		treeWidget_2->hide();
+	}
+}
+void SpecificWorker::sendmsg()
+{
+	QRegExp mailREX("\\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,4}\\b");
+	mailREX.setCaseSensitivity(Qt::CaseInsensitive);
+	mailREX.setPatternSyntax(QRegExp::RegExp);
+	bool regMat = mailREX.exactMatch(EmailText->text());
+	if(regMat == false)
+	{
+		QMessageBox *message = new QMessageBox(this);
+		message->setWindowModality(Qt::NonModal);
+		message->setText("Insert valid Email-ID");
+		message->setStandardButtons(QMessageBox::Ok);
+		message->setWindowTitle("RcinnerModelEditor");
+		message->setIcon(QMessageBox::Information);
+		message->exec();
+	}
+	else
+	{
+		Smtp *newMail  = new Smtp(465);
+		connect(newMail, SIGNAL(status(QString)), this, SLOT(mailSent(QString)));
+
+		newMail->sendMail(EmailText->text(), "robocomp.bugreport@mail.com" , SubjectBox->text(),BugBox->toPlainText()+ "\n From: "+ Nametext->text());
+		EmailText->clear();
+		Nametext->clear();
+		SubjectBox->clear();
+		BugBox->clear();
+	}
+}
+
+void SpecificWorker::mailSent(QString status)
+{
+	if(status == "Message sent")
+		QMessageBox::about( 0, tr( "RcinnerModelEditor" ), tr( "Your Bug has been reported.\n You'll be contacted soon.\n" ) );
+}
+
 void SpecificWorker::openFile()
 {
 	QString fileName = QFileDialog::getOpenFileName(this,
@@ -1100,6 +1189,6 @@ void SpecificWorker::openFile()
 		plane1 = "";
 		plane2 = "";
 		timer.start(Period);
-        timer1.start(Period/100);
+		timer1.start(Period/100);
 	}
 }

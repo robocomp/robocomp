@@ -31,6 +31,7 @@
 #include <innermodel/innermodel.h>
 #include <innermodel/innermodelviewer.h>
 #include <qmat/QMatAll>
+#include <smtp.h>
 
 enum NodeType { IMTransform, IMRotation, IMTranslation, IMMesh, IMPlane, IMCamera, IMIMU, IMLaser, IMRGBD, IMJoint };
 
@@ -54,6 +55,7 @@ class SpecificWorker : public GenericWorker
 		public slots:
 			void compute();
 		void currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
+        void currentItemChanged_2(QTreeWidgetItem *current, QTreeWidgetItem *previous);
 	private:
 		int Period;
         QTimer timer,timer1;
@@ -70,6 +72,7 @@ class SpecificWorker : public GenericWorker
         QShortcut *shortcut1, *shortcut2, *shortcut3, *shortcut4, *shortcut5;
 		QMap<QString, WorkerNode> nodeMap;
 		QMap<QTreeWidgetItem *, WorkerNode> nodeMapByItem;
+
 
 		void showAvailableGroups();
 		void highlightNode();
@@ -88,6 +91,9 @@ class SpecificWorker : public GenericWorker
 
 		public slots:
 		void saveButtonClicked();
+        void openhelp();
+        void showmsgBox();
+        void sendmsg();
 		void resetButtonClicked();
 		void openFile();
         void idChanged();
@@ -105,6 +111,7 @@ class SpecificWorker : public GenericWorker
         void drag_drop();
         void start_new_model();
         void add_new_node();
+        void mailSent(QString);
 
 	private:
 		InnerModel *innerModel;
