@@ -33,7 +33,7 @@ For more details refer to [this](Remove_Node.pdf).
 3. You can drag and drop object also for changing their position.
 4. If you are satisfied with the changes then you can save.
 
-For more details refer to [this][Edit_node.pdf].
+For more details refer to [this](Edit_node.pdf).
 
 ## Start new model
 
