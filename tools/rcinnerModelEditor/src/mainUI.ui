@@ -35,7 +35,7 @@
       <enum>QTabWidget::Triangular</enum>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>2</number>
      </property>
      <property name="elideMode">
       <enum>Qt::ElideNone</enum>
@@ -1937,7 +1937,7 @@
         </rect>
        </property>
        <property name="text">
-        <string>Report Bug</string>
+        <string>Support</string>
        </property>
       </widget>
       <widget class="QGroupBox" name="groupBox_3">
@@ -2012,13 +2012,13 @@
            <bool>false</bool>
           </property>
           <property name="title">
-           <string>Report Bug</string>
+           <string>Support</string>
           </property>
           <layout class="QFormLayout" name="formLayout">
            <item row="12" column="0">
             <widget class="QLabel" name="label_12">
              <property name="text">
-              <string>Bug</string>
+              <string>Message</string>
              </property>
             </widget>
            </item>

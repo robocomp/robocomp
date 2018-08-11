@@ -1156,7 +1156,7 @@ void SpecificWorker::sendmsg()
 void SpecificWorker::mailSent(QString status)
 {
 	if(status == "Message sent")
-		QMessageBox::about( 0, tr( "RcinnerModelEditor" ), tr( "Your Bug has been reported.\n You'll be contacted soon.\n" ) );
+        QMessageBox::about( 0, tr( "RcinnerModelEditor" ), tr( "Your request has been sent.\n You'll be contacted soon.\n" ) );
 }
 
 void SpecificWorker::openFile()
