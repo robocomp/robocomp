@@ -83,7 +83,7 @@ An example of placing a table inside a room would be:
 </innermodel>  
 ```
 
-With a few basic geometric shapes it's possible to create lot of more complicated models. 
+With a few basic geometric shapes it's possible to create a lot of more complicated models. 
 
 ## How should you file an Issue?
 
