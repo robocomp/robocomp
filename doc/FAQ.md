@@ -2,9 +2,9 @@
 
 ## What is Robocomp?
 
-Robocomp is an Open-Source Robotics Framework, where you can simulate, model and program your own robots, in a C.O.P (Component Oriented Programming) enviroment. You can create components and share them with the community. Components communicate with each other via [Ice](https://doc.zeroc.com/ice/3.7/introduction), a framework for building distributed applications.
+Robocomp is an Open-Source Robotics Framework, where you can simulate, model and program your own robots, in a C.O.P (Component Oriented Programming) enviroment. You can create components and share them with the community. Components communicate with each other via Ice [[1](https://doc.zeroc.com/ice/3.7/introduction)], a framework for building distributed applications. Simulation is done with RCIS, the built-in simulator.
 
-Robocomp was presented with the publication of [this paper](https://www.researchgate.net/publication/262179907_RoboComp_A_Tool-Based_Robotics_Framework_Lecture_Notes_in_Computer_Science). You can see more projects from Robolab, the investigation team from Universidad de Extremadura that created and currently maintains Robocomp [here](robolab.unex.es) (some of the information is in Spanish).
+Robocomp was presented with the publication of the paper: "Robocomp: A Tool-Based Robotics Framework" [[2](https://www.researchgate.net/publication/262179907_RoboComp_A_ToolBased_Robotics_Framework_Lecture_Notes_in_Computer_Science)]. You can see more projects from Robolab, the investigation team from Universidad de Extremadura that created and currently maintains Robocomp [here](robolab.unex.es) (some of the information is in Spanish).
 
 ## What to do if you are new to the project and want to help?
 
@@ -16,7 +16,7 @@ If you make your own project with Robocomp, we would love to hear about it. Tell
 
 ## What kind of work can you do to improve Robocomp?
 
-You can contribute with all types of skills. Web design for our webpage, technical documentation for the docs, UX and UI design for the simulator, image processing to make the Learnbot more interactive for kids, programming to make Robocomp work with other languages like JavaScript, and many more. You can help in any way you want and are able to.
+You can contribute with all types of skills. Web design for the webpage, technical documentation for the docs, UX and UI design for the simulator, image processing to make the Learnbot more interactive for kids, programming to make Robocomp work with other languages like JavaScript, and many more. You can help in any way you want and are able to.
 
 See the projects done in [Google Summer of Code](https://robocomp.github.io/web/blog/) for some ideas.
 
@@ -26,11 +26,9 @@ Our up-to-date branch is currently `highlyunstable`. If you are going to file an
 
 ## What is the Learnbot?
 
-...
+[`Taken from the wiki:`](https://github.com/robocomp/learnbot/wiki) LearnBot is a social low cost robot that has been designed in to the area of educational robotics for promoting the development of computational thinking in diferent educational stages, specically through the learning of the Python language. It has being entirely built using a robotics framework developed by our Robotic Laboratory.
 
-## Where can you find more components?
-
-...
+But Learnbot is part of a more ambitious ecosystem, Learnblock, which is being created as a facilitator environment to encourage current teacher swith out programming knowledge to learn the basics of programming, it is a IDE similar to Scrach, at least into a level where they can introduce their students into the digital world.
 
 ## How should I download Robocomp?
 
@@ -43,7 +41,7 @@ To use the installation script you need to download the Raw of the file, then fr
 ls
 # Make it executable
 chmod +x installScript.sh
-# Then you can run it
+# Then you can run it with
 ./installScript.sh
 ```
 
@@ -63,7 +61,27 @@ You need to download an Ubuntu image from [OS boxes](https://www.osboxes.org/ubu
 
 These are written in *Extensible Markup Language* [XML](https://www.ibm.com/developerworks/library/x-newxml/index.html), a standard markup language which help you create your own elements.
 
-...
+First you need to load your 3D models. There are a few pages where you can download them, like 3DSkys or Google's 3D Warehouse. 
+
+With XML you set the name, size and place of the 3D objects inside the simulation, with IDs for them. Then you can place items with the `mesh id`, the .3ds file you uploaded previously.
+
+An example of placing a table inside a room would be:
+
+```XML
+<innermodel>
+<transform id='room'>
+  <include path="/home/robocomp/models/RoboKid"/>
+<transform id="table" tx="3800" tz="3200" ty="800">
+		<mesh id="mesaR" file="/home/robocomp/robocomp/files/osgModels/basics/cylinder.3ds" scale="600,600,12" rx="1.5707" collide="1" />
+		<mesh id="mesaRb" file="/home/robocomp/robocomp/files/osgModels/basics/cylinder.3ds" scale="30,30,400" rx="1.5707" ty="-400" collide="1" />
+		<mesh id="mesaRbb" file="/home/robocomp/robocomp/files/osgModels/basics/cylinder.3ds" scale="325,325,9" rx="1.5707" ty="-800" collide="1" />
+		<plane id="mesaTag" ny="1" py="11" size="70,-70,5.0" texture="/home/robocomp/robocomp/components/robocomp-ursus-rockin/files/autonomyLab/30.png" />
+		<plane id="mesaTagb" ny="1" py="11" size="80,-80,3.5" texture="#ffffff" />
+	</transform>
+</innermodel>  
+```
+
+With a few basic geometric shapes it's possible to create lot of more complicated models. 
 
 ## How should you file an Issue?
 
