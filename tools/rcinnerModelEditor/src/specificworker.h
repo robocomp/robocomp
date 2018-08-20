@@ -65,7 +65,7 @@ class SpecificWorker : public GenericWorker
 		InnerModelNode *prevNode = NULL;
 		WorkerNode currentNode, current_node;
 		QMessageBox msgBox;
-        osg::Vec3 move, rove;
+        osg::Vec3 move, rove, eye, center, up;
         int flag;
 		int render1;
         QString File_reload, prevTexture, plane1, plane2 = "", rgbd_id;

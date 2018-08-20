@@ -1058,6 +1058,7 @@ void SpecificWorker::remove_current_node()
 		}
 		innerModel->removeNode(current_node.id);
 		qDebug() << "Removed" << current_node.id;
+		this->world3D->getCamera()->getViewMatrixAsLookAt( eye, center, up );
 
 		if(!rgbd_id.isEmpty())
 			imv->cameras[rgbd_id].viewerCamera->~Viewer();
@@ -1070,6 +1071,7 @@ void SpecificWorker::remove_current_node()
 		treeWidget->clear();
 		connect(treeWidget, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
 		fillNodeMap(innerModel->getNode("root"), NULL);
+		this->world3D->setHomePosition(eye,osg::Vec3(0.f,0.,-40.),up, false);
 		translationGroup->hide();
 		rotationGroup->hide();
 		meshGroup->hide();
