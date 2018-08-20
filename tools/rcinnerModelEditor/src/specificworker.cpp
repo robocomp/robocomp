@@ -185,23 +185,23 @@ void SpecificWorker::currentItemChanged_2(QTreeWidgetItem *current, QTreeWidgetI
 {
 	if(current->text(0) == "About")
 	{
-        QDesktopServices::openUrl(QUrl::fromLocalFile("/home/robocomp/robocomp/tools/rcinnerModelEditor/About.pdf"));
+		QDesktopServices::openUrl(QUrl::fromLocalFile("/home/robocomp/robocomp/tools/rcinnerModelEditor/About.pdf"));
 	}
 	else if(current->text(0) == "Create Node")
 	{
-        QDesktopServices::openUrl(QUrl::fromLocalFile("/home/robocomp/robocomp/tools/rcinnerModelEditor/Create_Node.pdf"));
+		QDesktopServices::openUrl(QUrl::fromLocalFile("/home/robocomp/robocomp/tools/rcinnerModelEditor/Create_Node.pdf"));
 	}
 	else if(current->text(0) == "Remove Node")
 	{
-        QDesktopServices::openUrl(QUrl::fromLocalFile("/home/robocomp/robocomp/tools/rcinnerModelEditor/Remove_Node.pdf"));
+		QDesktopServices::openUrl(QUrl::fromLocalFile("/home/robocomp/robocomp/tools/rcinnerModelEditor/Remove_Node.pdf"));
 	}
 	else if(current->text(0) == "Edit Node")
 	{
-        QDesktopServices::openUrl(QUrl::fromLocalFile("/home/robocomp/robocomp/tools/rcinnerModelEditor/Edit_node.pdf"));
+		QDesktopServices::openUrl(QUrl::fromLocalFile("/home/robocomp/robocomp/tools/rcinnerModelEditor/Edit_node.pdf"));
 	}
 	else if(current->text(0) == "Basic Commands")
 	{
-        QDesktopServices::openUrl(QUrl::fromLocalFile("/home/robocomp/robocomp/tools/rcinnerModelEditor/Basic.pdf"));
+		QDesktopServices::openUrl(QUrl::fromLocalFile("/home/robocomp/robocomp/tools/rcinnerModelEditor/Basic.pdf"));
 	}
 }
 
@@ -970,24 +970,32 @@ void SpecificWorker::interfaceConnections(bool enable)
 
 void SpecificWorker::create_new_node()
 {
-	newnodeConnections(false);
-	groupBox_2->show();
-	newid->show();
-	Typea->show();
-	parenta->show();
-	addNodeButton->show();
-	cameraGroup_2->hide();
-	translationGroup_2->hide();
-	rotationGroup_2->hide();
-	meshGroup_2->hide();
-	planeGroup_2->hide();
-	jointGroup_2->hide();
-	massBox->hide();
-	portBox->hide();
-	noiseBox->hide();
-	laserBox->hide();
-	Ifconfiga->hide();
-	newnodeConnections(true);
+	if(flag1 == 0)
+	{
+		msgBox.setText("No model to add node in");
+		msgBox.exec();
+	}
+	else
+	{
+		newnodeConnections(false);
+		groupBox_2->show();
+		newid->show();
+		Typea->show();
+		parenta->show();
+		addNodeButton->show();
+		cameraGroup_2->hide();
+		translationGroup_2->hide();
+		rotationGroup_2->hide();
+		meshGroup_2->hide();
+		planeGroup_2->hide();
+		jointGroup_2->hide();
+		massBox->hide();
+		portBox->hide();
+		noiseBox->hide();
+		laserBox->hide();
+		Ifconfiga->hide();
+		newnodeConnections(true);
+	}
 }
 
 void SpecificWorker::newnodeConnections(bool enable)
@@ -1099,6 +1107,7 @@ void SpecificWorker::start_new_model()
 	fillNodeMap(innerModel->getNode("root"), NULL);
 	imv = new InnerModelViewer(innerModel, "root", world3D->getRootGroup(),false);
 	timer.start(Period);
+	flag1 = 1;
 }
 
 void SpecificWorker::openhelp()
@@ -1158,7 +1167,7 @@ void SpecificWorker::sendmsg()
 void SpecificWorker::mailSent(QString status)
 {
 	if(status == "Message sent")
-        QMessageBox::about( 0, tr( "RcinnerModelEditor" ), tr( "Your request has been sent.\n You'll be contacted soon.\n" ) );
+		QMessageBox::about( 0, tr( "RcinnerModelEditor" ), tr( "Your request has been sent.\n You'll be contacted soon.\n" ) );
 }
 
 void SpecificWorker::openFile()
@@ -1192,5 +1201,6 @@ void SpecificWorker::openFile()
 		plane2 = "";
 		timer.start(Period);
 		timer1.start(Period/100);
+		flag1 = 1;
 	}
 }

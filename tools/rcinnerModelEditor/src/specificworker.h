@@ -66,7 +66,7 @@ class SpecificWorker : public GenericWorker
 		WorkerNode currentNode, current_node;
 		QMessageBox msgBox;
         osg::Vec3 move, rove, eye, center, up;
-        int flag;
+        int flag, flag1 = 0;
 		int render1;
         QString File_reload, prevTexture, plane1, plane2 = "", rgbd_id;
         QShortcut *shortcut1, *shortcut2, *shortcut3, *shortcut4, *shortcut5;
