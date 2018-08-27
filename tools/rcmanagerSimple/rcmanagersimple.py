@@ -32,8 +32,9 @@
 import sys, time, traceback, os, math, random, threading, time
 import Ice
 
-from PyQt4 import QtCore, QtGui, Qt
-from ui_formManagerSimple import Ui_Form
+from PyQt4 import QtCore, QtGui, Qt, uic
+# from ui_formManagerSimple import Ui_Form
+
 
 import rcmanagerConfigSimple
 
@@ -65,16 +66,22 @@ class CommandDialog(QtGui.QWidget):
 		self.button2 = QtGui.QPushButton(self)
 		self.button2.setGeometry(0, 25, 100, 25)
 		self.button2.setText('down')
+		self.button4 = QtGui.QPushButton(self)
+		self.button4.setGeometry(0, 50, 100, 25)
+		self.button4.setText("restart")
 		self.button3 = QtGui.QPushButton(self)
-		self.button3.setGeometry(0, 50, 100, 25)
+		self.button3.setGeometry(0, 75, 100, 25)
 		self.button3.setText('edit config')
+
 		self.show()
 		self.connect(self.button1, QtCore.SIGNAL('clicked()'), self.but1)
 		self.connect(self.button2, QtCore.SIGNAL('clicked()'), self.but2)
 		self.connect(self.button3, QtCore.SIGNAL('clicked()'), self.but3)
+		self.connect(self.button4, QtCore.SIGNAL('clicked()'), self.but4)
 	def but1(self): self.emit(QtCore.SIGNAL("up()"))
 	def but2(self): self.emit(QtCore.SIGNAL("down()"))
 	def but3(self): self.emit(QtCore.SIGNAL("config()"))
+	def but4(self): self.emit(QtCore.SIGNAL("restart()"))
 
 
 # ComponentChecker class: Threaded endpoint-pinging class.
@@ -126,6 +133,8 @@ class ComponentChecker(threading.Thread):
 #
 # Application main class.
 #
+Ui_Form, base_class = uic.loadUiType('demo.ui')
+
 class TheThing(QtGui.QDialog):
 	def __init__(self):
 		# Create a component checker
@@ -214,10 +223,12 @@ class TheThing(QtGui.QDialog):
 		self.connect(self.ui.checkList, QtCore.SIGNAL("itemClicked(QListWidgetItem *)"), self.selectCheck)
 		self.connect(self.ui.upButton, QtCore.SIGNAL("clicked()"), self.up)
 		self.connect(self.ui.downButton, QtCore.SIGNAL("clicked()"), self.down)
+		self.connect(self.ui.restartButton, QtCore.SIGNAL("clicked()"), self.restart)
 		self.connect(self.ui.tabWidget, QtCore.SIGNAL("currentChanged(int)"), self.tabChanged)
 		self.connect(self.timer, QtCore.SIGNAL("timeout()"), self.checkAll)
 		self.connect(self.canvas, QtCore.SIGNAL('upRequest()'), self.manageGraphUp)
 		self.connect(self.canvas, QtCore.SIGNAL('downRequest()'), self.manageGraphDown)
+		self.connect(self.canvas, QtCore.SIGNAL('restartRequest()'), self.manageGraphRestart)
 		self.connect(self.canvas, QtCore.SIGNAL('configRequest()'), self.manageGraphConfig)
 		self.connect(self.actionSS, QtCore.SIGNAL("triggered(bool)"), self.sSimulation)
 
@@ -349,6 +360,15 @@ class TheThing(QtGui.QDialog):
 				self.down()
 				break
 
+	def manageGraphRestart(self):
+		for idx in range(self.ui.checkList.count()):
+			if self.ui.checkList.item(idx).text() == self.canvas.request:
+				self.ui.checkList.setCurrentRow(idx)
+				self.selectCheck()
+				self.down()
+				self.up()
+				break
+
 	# Edit a component's configuration
 	def manageGraphConfig(self):
 		for idx in range(self.ui.checkList.count()):
@@ -396,6 +416,8 @@ class TheThing(QtGui.QDialog):
 	def down(self):
 		self.bg_exec(str(self.ui.downEdit.text()), self.ui.wdEdit.text())
 		self.clearFocus()
+
+
 
 	def killall(self):
 		for info in self.compConfig:
@@ -856,6 +878,7 @@ class GraphView(QtGui.QWidget):
 				self.ui.idx = minIndex
 				self.connect(self.ui, QtCore.SIGNAL('up()'), self.up)
 				self.connect(self.ui, QtCore.SIGNAL('down()'), self.down)
+				self.connect(self.ui, QtCore.SIGNAL('restart()'), self.restart)
 				self.connect(self.ui, QtCore.SIGNAL('config()'), self.config)
 				self.ui.show()
 			elif e.button() == 1:
@@ -882,6 +905,10 @@ class GraphView(QtGui.QWidget):
 		self.request = self.compList[self.ui.idx].name
 		self.ui.close()
 		self.emit(QtCore.SIGNAL("downRequest()"))
+	def restart(self):
+		self.request = self.compList[self.ui.idx].name
+		self.ui.close()
+		self.emit(QtCore.SIGNAL("restartRequest()"))
 	def config(self):
 		self.request = self.compList[self.ui.idx].name
 		self.emit(QtCore.SIGNAL("configRequest()"))
