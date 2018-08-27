@@ -25,6 +25,7 @@ SET ( SOURCES
   specificmonitor.cpp
   commonbehaviorI.cpp
   genericworker.cpp
+  smtp.cpp
   specificworker.cpp
 )
 
@@ -42,6 +43,7 @@ SET( QT_USE_QTGUI TRUE )
 SET( QT_USE_QTOPENGL TRUE )
 SET( QT_USE_QTXML TRUE )
 SET( QT_USE_QTSTATE TRUE )
+SET( QT_USE_QTNETWORK TRUE )
 SET( QT_USE_QTSTATEMACHINE TRUE )
 SET( CMAKE_AUTOMOC TRUE )
 INCLUDE( ${QT_USE_FILE} )

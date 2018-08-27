@@ -87,6 +87,7 @@ public:
 	bool open(std::string xmlFilePath);
 	bool save(QString path);
 	InnerModel* copy();
+	void ChangeHash(QString new_id, InnerModelNode *node);
 
 	///////////////////////
 	/// Tree update methods
