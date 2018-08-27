@@ -145,8 +145,6 @@ void InnerModelPlane::setUpdatePointers(float *nx_, float *ny_, float *nz_, floa
 
 
 
-
-
 void InnerModelPlane::update(float nx_, float ny_, float nz_, float px_, float py_, float pz_)
 {
 	normal(0) = nx_;

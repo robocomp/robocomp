@@ -109,8 +109,14 @@ void InnerModel::removeNode(const QString & id)
 {
 	QMutexLocker l(mutex);
 	InnerModelNode *dd = hash[id];
+	QList<InnerModelNode*>::iterator i;
+	for (i=dd->children.begin(); i!=dd->children.end(); i++)
+	{
+		removeNode((*i)->id);
+	}
 	delete dd;
 	hash.remove(id);
+	dd->parent->children.removeOne(dd);
 }
 
 bool InnerModel::open(std::string xmlFilePath)
@@ -212,6 +218,10 @@ void InnerModel::cleanupTables()
 	localHashRot.clear();
 }
 
+void InnerModel::ChangeHash(QString new_id, InnerModelNode *node)
+{
+	hash[new_id] = node;
+}
 
 void InnerModel::updateTransformValues(QString transformId, float tx, float ty, float tz, float rx, float ry, float rz, QString parentId)
 {
