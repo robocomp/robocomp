@@ -40,7 +40,7 @@ Make sure you have installed the following packages from the Ubuntu repository:
 
     git clone https://github.com/robocomp/robocomp.git
 
-Now we will create a symbolic link so RobComp can find everything. You will have to enter your passwd:
+Now we will create a symbolic link so RoboComp can find everything. You will have to enter your passwd:
 
     sudo ln -s ~ /home/robocomp
     
