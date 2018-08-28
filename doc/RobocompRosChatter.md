@@ -1,85 +1,108 @@
-RoboComp Component & Ros Node chatter
-============
+# RoboComp Component & Ros Node chatter
 
-Here we will create a RoboComp Component which can communicate with a Ros Node using Ros Middleware.
-The Ros Node which we will use can be found [here](https://github.com/robocomp/robocomp/tree/highlyunstable/doc/src/beginner_tutorials).
+We will create a RoboComp Component which can communicate with a Ros Node using Ros Middleware.
 
-Steps:
+The Ros Node which we will use can be found [here](https://github.com/robocomp/robocomp/tree/highlyunstable/doc/src/beginner_tutorials). 
+
+**Steps for Creating a Component:**
 
 1. Analyze the Ros Node.
 2. Generate an IDSL.
 3. Generate our RoboComp Component.
 4. Run it.
 
-### Analyze the Ros Node
+## 1. Analyze the Ros Node
 
-We need to know what messages or services they are using. To find out, we can take a look at the package documentation and the msg and srv directory.
-Here is an *image.msg* example which is used in our Ros Node:
+We need to know what messages or services the Ros Node is using. To find out, we are taking a look at the package documentation and the msg and srv directory.
 
-    string name
-    uint32 size
-    int32[] image
+**For more info** about what are msg and srv directories, visit this [tutorial](http://wiki.ros.org/ROS/Tutorials/CreatingMsgAndSrv) from ROS.
 
-In the Talker.cpp code, we can see:
+Here is an *image.msg* example, taken from our Ros Node:
 
-    // %Tag(PUBLISHER)%
-      ros::Publisher chatter_pub = n.advertise<beginner_tutorials::image>("chatter", 1000);
-    // %EndTag(PUBLISHER)%
+```
+string name
+uint32 size
+int32[] image
+```
 
-Talker (Ros Node) publishes this MSG through the topic called **chatter**.
-So We need an IDSL with a structure containing the types of image.msg and an interface with a topic called chatter.
+In Talker.cpp:
 
-### Generate an IDSL
+```cpp
+// %Tag(PUBLISHER)%
+ros::Publisher chatter_pub = n.advertise<beginner_tutorials::image>("chatter", 1000);
+// %EndTag(PUBLISHER)%
+```
+
+Talker (the Ros Node) publishes this msg through the topic  called `chatter`.
+
+**For more info** about topics visit this [tutorial](http://wiki.ros.org/ROS/Tutorials/UnderstandingTopics) from ROS.
+
+Now we know we need an IDSL with a structure containing the types of image.msg, and an interface with a topic called chatter.
+
+## 2. Generate an IDSL
 
 Let's generate our IDSL:
 
-    module RoboCompListener{
-    	sequence<int> imageVector;
-    	struct Image {
-    	 	string name;
-    	 	uint size;
-    	 	imageVector image;
-    	 };
-    	
-    	interface chat{
-    		void chatter(Image img);
-    	};
+```cpp
+module RoboCompListener{
+    sequence<int> imageVector;
+    struct Image {
+        string name;
+        uint size;
+    	 imageVector image;
+};
+
+interface chat{
+    void chatter(Image img);
     };
+};
+```
 
-**The names of the variables must be identical to those used in the message!**
+:heavy_exclamation_mark: **The names of the variables must be identical to those used in the message!**
 
-We have created a structure Image and a topic called chatter.
+We have created a structure image and a topic called chatter.
 
-### Generate our RoboComp Component
+**For more info** about IDSL visit this [tutorial](https://github.com/robocomp/robocomp/blob/highlyunstable/doc/IDSL.md) created by Robocomp.
+
+## 3. Generate the RoboComp Component
 
 Create your .cdsl like this:
 
-    import "/robocomp/interfaces/IDSLs/Listener.idsl";
-    Component listener
+```python
+import "/robocomp/interfaces/IDSLs/Listener.idsl";
+Component listener
+{
+    Communications
     {
-    	Communications
-    	{
-    		subscribesTo chat(ros);
-    	};
-    	language Cpp;
-    	gui Qt(QWidget);
+        subscribesTo chat(ros);
     };
+    language Cpp;
+    gui Qt(QWidget);
+};
+```    
 
 And use RoboCompDSL to generate your component.
 
-### Run it
+**For more info** about about creating components, look at this [tutorial](https://github.com/robocomp/robocomp/blob/highlyunstable/doc/robocompdsl.md) created by Robocomp.
+
+## 4. Run it
 
 To see if everything worked, try to insert this code in your subscribe method:
 
-    printf("Name: %s, size: %d\n", img.name.c_str(), img.size);
-    for(int i=0;i<img.image.size();i++)
-        printf("value of img.image[%d] = %d\n", i, img.image[i]);
+```cpp
+printf("Name: %s, size: %d\n", img.name.c_str(), img.size);
+for(int i=0;i<img.image.size();i++)
+    printf("value of img.image[%d] = %d\n", i, img.image[i]);
+```
 
 Launch your component and enjoy!
-> We assume that Talker and **roscore** are running.
 
-> If you get an error like this:
+### Error warning:
 
-> [ERROR] [1471018647.418758838]: Client [/listener] wants topic /chatter to have datatype/md5sum [RoboCompListener/Image/**5d96ac93c863cbaa85815010f7256b9a**], but our version has [beginner_tutorials/image/**163b37c985fb24d5121dd98a6a240a84**]. Dropping connection.
+We assume that **Talker** and **roscore** are running.
 
-> Then you have not generated an identical message structure.
+If you get an error like this:
+
+`[ERROR] [1471018647.418758838]: Client [/listener] wants topic /chatter to have datatype/md5sum [RoboCompListener/Image/**5d96ac93c863cbaa85815010f7256b9a**], but our version has [beginner_tutorials/image/**163b37c985fb24d5121dd98a6a240a84**]. Dropping connection.`
+
+Then you have not generated an identical message structure.

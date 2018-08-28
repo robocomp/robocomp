@@ -10,12 +10,11 @@ interfaces in a seamless way. Building new components is done using two domain s
 
 If you already have RoboComp installed, jump to [tutorials](doc/README.md) to start coding! 
 
+:question: If you have a question please look for it in the [FAQ](doc/FAQ.md). 
 
 # Installation from source
 
 Tested in Ubuntu 14.04, 14.10, 15.04 and 15.10
-<!--If you are not an Ubuntu user, need to modify the core of RoboComp, or just feel like installing from sources, you can follow these instructions (they have been tested in Ubuntu 14.04, 14.10 and 15.04). If you're not in any of these scenarios, please use the packaged version.
--->
 
 ## Requirements
 Make sure you have installed the following packages from the Ubuntu repository:
@@ -132,7 +131,7 @@ and use the arrow keys to navigate the robot, the space bar to stop it an 'q' to
 
 
 ---------------------------------------------------------------------
-You can find more tutorials on RoboComp in [tutorials](doc/README.md)! 
+You can find more tutorials in [tutorials](doc/README.md)! 
 
 Drop comments and ask questions in:
 

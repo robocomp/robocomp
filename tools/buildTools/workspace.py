@@ -62,7 +62,7 @@ class Workspace:
             
             #test if path exists
             if not os.path.exists(src):
-                raise RuntimeError("couldnt find toplevel cmake, make sure ROBOCOMP is properly installed\n")
+                raise RuntimeError("Couldn't find toplevel cmake, make sure ROBOCOMP is properly installed\n")
             
             #try to create simlink
             try:
@@ -75,7 +75,7 @@ class Workspace:
 
         #if already in a workspace, throw error
         if self.find_workspace(ws_path):
-            raise RuntimeError("Sorry, you cant create workspace inside an existing one \n")
+            raise RuntimeError("Sorry, you can't create workspace inside an existing one \n")
 
         try:
             os.system('touch {0}/{1}'.format(ws_path,str(".rc_workspace")))
@@ -86,23 +86,23 @@ class Workspace:
                     os.makedirs(dir_path)
             os.system('touch {0}/install/{1}'.format(ws_path,str(".rc_install")))
         except Exception as createEx:
-            raise RuntimeError("couldnt create files/folders in current directory: \n %s " % (str(createEx)))
+            raise RuntimeError("Couldn't create files/folders in current directory: \n %s " % (str(createEx)))
 
         pathstr = str(os.path.abspath(ws_path))
         
         #copy all files in the current dir into src dir
-        print("copying all files in workspce directory into src/ directory\n")
+        print("Copying all files in workspace directory into src/ directory\n")
         for file in os.listdir(pathstr):
             if file in dirs or file in [".rc_workspace"] : continue
             try:
                 os.system("mv ./" + file + " ./src")
             except Exception as copyEx:
-                print("couldnt copy all files\n")
+                print("Couldn't copy all files\n")
 
         create_toplevel(ws_path+'/src')
         self.register_workspace(pathstr)
 
-    ''' find the directory containing component exexutable'''
+    ''' find the directory containing component executable'''
     def find_component_exec(self, component):
         componentPath = ''
         for path in self.workspace_paths:
@@ -117,7 +117,7 @@ class Workspace:
         else:
             return False
 
-    ''' find component soruce directory
+    ''' find component source directory
         component - component name
         return    - the component directory in src
     '''
@@ -133,8 +133,8 @@ class Workspace:
         else:
             return componentPath
 
-    ''' search and return a dictionry of file paths given component name and file name
-        if duplicate components are found first to found is chosen
+    ''' search and return a dictionary of file paths given component name and file name
+        if duplicate components are found, first to found is chosen
         component - name of component as string
         files     - list of files to search for; if files[0]=* all files are returned
         return    - list of tuple of filnames and path
