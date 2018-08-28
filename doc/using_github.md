@@ -26,6 +26,7 @@ now we are ready:
     git init
     git remote add origin "https://github.com/myaccount/mycomponents.git"
     git add mycomponents
+    git commit -m "this is my first component"
     git push -u origin master
     
 You can go now to GitHub and chek that your sources are there!
