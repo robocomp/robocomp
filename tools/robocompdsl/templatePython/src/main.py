@@ -225,11 +225,19 @@ if __name__ == '__main__':
 ]]]
 [[[end]]]
 	params = copy.deepcopy(sys.argv)
+	#######config file path resolution#######
+	my_dir=params[0].split('/')[:-1]
+	cwd='/'.join(my_dir)
+	if cwd[-3:]=='src':
+		cwd=cwd[:-3]+'etc/'
+	else:
+		cwd+='../etc/'
+	##################################
 	if len(params) > 1:
 		if not params[1].startswith('--Ice.Config='):
 			params[1] = '--Ice.Config=' + params[1]
 	elif len(params) == 1:
-		params.append('--Ice.Config=config')
+		params.append('--Ice.Config='+cwd+'config')
 	ic = Ice.initialize(params)
 	status = 0
 	mprx = {}
