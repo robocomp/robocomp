@@ -19,7 +19,6 @@
 
 InnerModelPrismaticJoint::InnerModelPrismaticJoint(QString id_, float min_, float max_, float val_, float offset_, uint32_t port_, std::string axis_, float home_, InnerModelTransform *parent_) : InnerModelTransform(id_,QString("static"),0,0,0,0,0,0, 0, parent_)
 {
-	QMutexLocker l(mutex);
 	#if FCL_SUPPORT==1
 		collisionObject = NULL;
 	#endif
@@ -35,7 +34,6 @@ InnerModelPrismaticJoint::InnerModelPrismaticJoint(QString id_, float min_, floa
 
 void InnerModelPrismaticJoint::print(bool verbose)
 {
-	QMutexLocker l(mutex);
 	printf("Prismatic Joint: %s\n", qPrintable(id));
 	if (verbose)
 	{
@@ -46,15 +44,17 @@ void InnerModelPrismaticJoint::print(bool verbose)
 
 void InnerModelPrismaticJoint::save(QTextStream &out, int tabs)
 {
-	QMutexLocker l(mutex);
 	for (int i=0; i<tabs; i++) out << "\t";
 	out << "### joints cannot be saved yet ###\n";
 }
 
+void InnerModelPrismaticJoint::update()
+{
+	updateChildren();
+}
 
 float InnerModelPrismaticJoint::getPosition()
 {
-	QMutexLocker l(mutex);
 	return value;
 }
 
@@ -102,8 +102,8 @@ InnerModelNode * InnerModelPrismaticJoint::copyNode(QHash<QString, InnerModelNod
 	ret->children.clear();
 	ret->attributes.clear();
 	hash[id] = ret;
-
 	ret->innerModel = parent->innerModel;
+
 	for (QList<InnerModelNode*>::iterator i=children.begin(); i!=children.end(); i++)
 	{
 		ret->addChild((*i)->copyNode(hash, ret));

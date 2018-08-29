@@ -30,11 +30,10 @@
 #include <OmniRobot.h>
 #include <omnirobotI.h>
 #include <innermodel/innermodel.h>
+#include <innermodel/innermodelmgr.h>
 
 // Simulator includes
 #include "config.h"
-
-
 
 using namespace RoboCompDifferentialRobot;
 using namespace RoboCompOmniRobot;
@@ -63,7 +62,7 @@ public:
 
 private:
 	SpecificWorker *worker;
-	InnerModel *innerModel;
+	InnerModelMgr innerModel;
 	QStringList differentialIDs;
 	QMutex *mutex;
 

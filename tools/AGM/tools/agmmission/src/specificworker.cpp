@@ -156,14 +156,14 @@ void SpecificWorker::compute( )
 }
 
 
-void SpecificWorker::changeInner (InnerModel *inner)
+void SpecificWorker::changeInner (const std::shared_ptr<InnerModel> &inner)
 {
 	static InnerModel *b = innerModelVacio;
 	if (innerViewer)
 	{
 		osgView->getRootGroup()->removeChild(innerViewer);
 		delete b;
-		b = inner;
+		b = inner.get();
 	}
 
 	innerViewer = new InnerModelViewer(inner, "root", osgView->getRootGroup(), true);

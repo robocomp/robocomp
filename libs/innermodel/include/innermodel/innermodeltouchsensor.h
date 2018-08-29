@@ -24,8 +24,8 @@ class InnerModelTouchSensor :public InnerModelNode
 {
 	public:
 		InnerModelTouchSensor(QString id_, QString stype, float nx_, float ny_, float nz_, float min_=-INFINITY, float max_=INFINITY, uint32_t port_=0, InnerModelNode *parent_=NULL);
-		void print(bool verbose) {}
-		void save(QTextStream &out, int tabs) {}
+		void print(bool verbose) {verbose = true;}
+		void save(QTextStream &out, int tabs){}
 		QVec getMeasure() { return value; }
 		void update() {}
 		virtual InnerModelNode *copyNode(QHash<QString, InnerModelNode *> &hash, InnerModelNode *parent);

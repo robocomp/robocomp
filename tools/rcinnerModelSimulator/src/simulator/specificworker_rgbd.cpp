@@ -1,4 +1,3 @@
-#include "specificworker.h"
 // ------------------------------------------------------------------------------------------------
 // RGBD.ice
 // ------------------------------------------------------------------------------------------------
@@ -7,8 +6,9 @@
 
 TRGBDParams SpecificWorker::rgbd_getRGBDParams ( const QString& server )
 {
-	QMutexLocker locker ( mutex );
-
+	//QMutexLocker locker ( mutex );
+	guard gl(innerModel->mutex);
+	
 	IMVCamera &cam = imv->cameras[server];
 
 	RoboCompRGBD::TRGBDParams rgbdParams;
@@ -21,7 +21,7 @@ TRGBDParams SpecificWorker::rgbd_getRGBDParams ( const QString& server )
 		uint32_t basePort  = QString ( cameraConfig[1] ).toUInt();
 		if( dfr_servers.count( basePort ) > 0 )
 			rgbdParams.talkToBase = true;
-
+		
 		uint32_t jointPort = QString ( cameraConfig[0] ).toUInt();
 		if( jm_servers.count( jointPort ) > 0 )
 			rgbdParams.talkToJointMotor = true;
@@ -42,26 +42,30 @@ TRGBDParams SpecificWorker::rgbd_getRGBDParams ( const QString& server )
 
 void SpecificWorker::rgbd_setRegistration ( const QString& server, Registration value )
 {
-	QMutexLocker locker ( mutex );
+	//QMutexLocker locker ( mutex );
+	guard gl(innerModel->mutex);
 }
 
 
 Registration SpecificWorker::rgbd_getRegistration ( const QString& server )
 {
-	QMutexLocker locker ( mutex );
+	//QMutexLocker locker ( mutex );
+	guard gl(innerModel->mutex);
+
 	return RoboCompRGBD::DepthInColor;
 }
 
 
 void SpecificWorker::rgbd_getData ( const QString& server, RoboCompRGBD::imgType& rgbMatrix, depthType& distanceMatrix, RoboCompJointMotor::MotorStateMap& hState, RoboCompGenericBase::TBaseState& bState )
 {
-	QMutexLocker locker ( mutex );
-
+	//QMutexLocker locker ( mutex );
+	guard gl(innerModel->mutex);
+	
 	ColorSeq color;
 	DepthSeq depth;
 	PointSeq points;
 	this->rgbd_getImage ( server, color, depth, points, hState, bState );
-
+	
 	rgbMatrix.resize ( 640*480*3 );
 	distanceMatrix.resize ( 640*480 );
 	for ( int i=0; i<640*480; i++ ) {
@@ -75,11 +79,12 @@ void SpecificWorker::rgbd_getData ( const QString& server, RoboCompRGBD::imgType
 
 void SpecificWorker::rgbd_getImage ( const QString& server, ColorSeq& color, DepthSeq& depth, PointSeq& points, RoboCompJointMotor::MotorStateMap& hState, RoboCompGenericBase::TBaseState& bState )
 {
-	QMutexLocker locker ( mutex );
+	//QMutexLocker locker ( mutex );
+	guard gl(innerModel->mutex);
+
 	IMVCamera &cam = imv->cameras[server];
 
-
-
+	
 	QStringList cameraConfig = cam.RGBDNode->ifconfig.split ( "," );
 	if (cameraConfig.size() > 1)
 	{

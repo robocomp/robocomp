@@ -56,6 +56,7 @@ InnerModelNode * InnerModelLaser::copyNode(QHash<QString, InnerModelNode *> &has
 	ret->children.clear();
 	ret->attributes.clear();
 	hash[id] = ret;
+	ret->innerModel = parent->innerModel;
 
 	ret->innerModel = parent->innerModel;
 
@@ -69,7 +70,6 @@ InnerModelNode * InnerModelLaser::copyNode(QHash<QString, InnerModelNode *> &has
 
 QVec InnerModelLaser::laserTo(const QString &dest, float r, float alpha)
 {
-	QMutexLocker l(&mutex);
 	QVec p(3);
 	p(0) = r * sin(alpha);
 	p(1) = 0;

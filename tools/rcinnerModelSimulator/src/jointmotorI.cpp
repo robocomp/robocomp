@@ -28,8 +28,8 @@
 JointMotorI::JointMotorI(SpecificWorker *_worker, QObject *parent) : QObject(parent)
 {
 	worker = _worker;
-	mutex = worker->mutex;       // Shared worker mutex
-	// Component initialization...
+	//mutex = worker->mutex;       // Shared worker mutex
+	
 	innerModel = worker->getInnerModel();
 
 	busparams.numMotors = 0;

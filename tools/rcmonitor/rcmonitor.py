@@ -228,6 +228,8 @@ class OpenConnection(QDialog):
 			self.ui.endpointProtocol.setCurrentIndex(0)
 		elif (config[3].split()[0] == 'udp'):
 			self.ui.endpointProtocol.setCurrentIndex(1)
+		elif (config[3].split()[0] == 'ws'):
+			self.ui.endpointProtocol.setCurrentIndex(2)
 		else:
 			print 'Wrong protocol:',config[3].split()[0]
 			sys.exit()

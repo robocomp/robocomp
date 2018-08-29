@@ -27,6 +27,7 @@
 #include <Ice/Ice.h>
 #include <RGBD.h>
 #include <innermodel/innermodel.h>
+#include <innermodel/innermodelmgr.h>
 
 // Simulator includes
 #include "config.h"

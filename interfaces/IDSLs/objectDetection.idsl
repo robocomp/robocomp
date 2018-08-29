@@ -48,5 +48,3 @@ module RoboCompobjectDetection
 //		void guessPose(string label, out pose6D guess);
 	};
 };
-
-

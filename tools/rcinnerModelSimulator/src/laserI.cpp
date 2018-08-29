@@ -23,7 +23,7 @@
 LaserI::LaserI ( SpecificWorker *_worker, QObject *parent ) : QObject ( parent )
 {
 	worker = _worker;
-	mutex = worker->mutex;
+	//mutex = worker->mutex;
 	innerModel = worker->getInnerModel();
 	group = worker->getRootGroup();
 }

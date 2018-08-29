@@ -382,7 +382,7 @@ bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
 				printf("reading innermodel file %s\n", sstr.c_str());
 				InnerModel *innerModel = new InnerModel(sstr);
 				printf("Include %s in %d\n", sstr.c_str(), v[1].toInt());
-				AGMInner::includeInnerModel(newModel, v[1].toInt(), innerModel, msgs, sstr);
+				AGMInner::includeInnerModel(newModel, v[1].toInt(), std::make_shared<InnerModel>(innerModel), msgs, sstr);
 			}
 			else
 			{
@@ -417,7 +417,7 @@ bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
 	printf("extracting innermodel from the generated model\n");
 	printf("***************************************************\n");
 	printf("***************************************************\n");
-	InnerModel *eim;
+	std::shared_ptr<InnerModel> eim;
 	try
 	{
 		eim = AGMInner::extractInnerModel(newModel, "world");

@@ -33,9 +33,7 @@ using namespace RMat;
 class InnerModelDraw
 {
 public:
-	InnerModelDraw();
-	~InnerModelDraw();
-
+	InnerModelDraw(){};
 	static void addMesh_ignoreExisting(InnerModelViewer *innerViewer, QString a, QString parent, QVec t, QVec r, QString path, QVec scale);
 	static bool addTransform(InnerModelViewer *innerViewer, QString a, QString b/*, const RoboCompInnerModelManager::Pose3D & m*/);
 	static bool addTransform_ignoreExisting(InnerModelViewer *innerViewer, QString a, QString b/*, const RoboCompInnerModelManager::Pose3D & m*/);

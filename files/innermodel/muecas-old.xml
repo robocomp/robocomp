@@ -1,0 +1,115 @@
+<!--<innerModel>-->
+<!--	<transform id="world">
+		<transform id="floor">
+		<!--	<plane id="floor_plane" ny="1"  px="-0" py="0" pz="0" size="2000,2000,10" texture="/home/robocomp/robocomp/files/osgModels/textures/wood.jpg" /> 	
+		-->	<plane id="floor_plane" ny="1"  px="-0" py="0" pz="0" size="2000,2000,10" texture="#aaaaaa" /> 	
+			
+			<transform id="tableplace" tx="0" ty="0" tz="3">
+				<!--<plane id="table"  nx="0" ny="1" nz="0" px="0"  py="0"  pz="0"  size="1" repeat="1" texture="#666666" />-->
+				<mesh id="mesa" file="/home/robocomp/robocomp/files/osgModels/mobiliario/mesa_centro.osg"  tx="0" ty="0" tz="0" rx="1.57079632679" rz="-1.57079632679" scale="120"/>
+				
+				<transform id="tazaplace" tx="0" ty="500" tz="3">
+					<mesh id="taza" file="/home/robocomp/robocomp/files/osgModels/mobiliario/taza.osg"  tx="0" ty="0" tz="0" rx="1.57079632679" rz="-1.57079632679" scale="65"/>
+				</transform>
+			</transform> -->
+	
+			<transform id="head" ty="700" tz="800">
+				<mesh id="head_mesh" file="/home/robocomp/robocomp/files/osgModels/muecas/zeropivot.osg" scale="30"/>
+				<transform id="mouth" ty="42" tz="-42">
+					<mesh id="mouth_mesh" file="/home/robocomp/robocomp/files/osgModels/muecas/jaw.osg" scale="30" />
+				</transform>
+
+				<transform id="eye_central" ty="136.5" tz="-150.00001" >				
+					
+					<transform id="left_eye"  tx="-81">
+						<transform id="left_eyeballXY">
+							<transform id="left_eyeball">
+								<mesh id="lefteye_mesh" file="/home/robocomp/robocomp/files/osgModels/muecas/eye.osg" scale="30"/>
+							</transform>
+						</transform>
+						<transform id="left_eye_superior_eyelid">
+							<transform id="left_eye_superior_eyelidXY">
+								<transform id="left_eye_superior_eyelids">
+									<mesh id="eyeliduAL_mesh" file="/home/robocomp/robocomp/files/osgModels/muecas/uppereyelid.osg" scale="30" />
+								</transform>
+							</transform>
+						</transform>
+						<transform id="left_eye_inferior_eyelid">
+							<transform id="left_eye_inferior_eyelidXY">
+								<transform id="left_eye_inferior_eyelids">
+									<mesh id="eyeliduBL_mesh" file="/home/robocomp/robocomp/files/osgModels/muecas/lowereyelid.osg" scale="30" />
+								</transform>
+							</transform>
+						</transform>
+						<transform id="left_eyebrow" ty="59.4" tz="-24">
+							<transform id="left_eyebrow_doubleXZ">
+								<mesh id="left_eyebrow_mesh" file="/home/robocomp/robocomp/files/osgModels/muecas/browleft222.osg" scale="30"  />
+							</transform>
+						</transform>				
+					</transform>
+					
+					<transform id="right_eye" tx="81" >
+						<transform id="right_eyeballXY">
+							<transform id="right_eyeball">
+								<mesh id="righteye_mesh" file="/home/robocomp/robocomp/files/osgModels/muecas/eye.osg" scale="30"/>
+							</transform>
+						</transform>
+						
+						<transform id="right_eye_superior_eyelid">
+							<transform id="right_eye_superior_eyelidXY">
+								<mesh id="eyeliduAR_mesh" file="/home/robocomp/robocomp/files/osgModels/muecas/uppereyelid.osg" scale="30"/>
+							</transform>
+						</transform>
+						
+						<transform id="right_eye_inferior_eyelid">
+							<transform id="right_eye_inferior_eyelidXY">
+								<mesh id="eyeliduBR_mesh" file="/home/robocomp/robocomp/files/osgModels/muecas/lowereyelid.osg" scale="30"/>
+							</transform>
+						</transform>
+					
+						<transform id="right_eyebrow" ty="59.4" tz="-24">
+							<transform id="right_eyebrow_doubleXZ">
+								<mesh id="right_eyebrow_mesh" file="/home/robocomp/robocomp/files/osgModels/muecas/browright222.osg" scale="30"/>
+							</transform>
+						</transform>
+					</transform>							
+				</transform>
+
+				<transform id="base_neck" ty="-111" >
+					<mesh id="baseneck_mesh" file="/home/robocomp/robocomp/files/osgModels/muecas/baseneck.osg" scale="30"/>
+				</transform>
+						
+				<transform id="base1_neck" ty="-201" >
+					<mesh id="baseneck1_mesh" file="/home/robocomp/robocomp/files/osgModels/muecas/baseneck.osg" scale="30"/>
+				</transform>
+						
+				<transform id="base2_neck" ty="-291" >
+					<mesh id="baseneck2_mesh" file="/home/robocomp/robocomp/files/osgModels/muecas/baseneck.osg" scale="30"/>
+				</transform>
+						
+				<transform id="support_neck" ty="-60" >
+					<mesh id="supportneck_mesh" file="/home/robocomp/robocomp/files/osgModels/muecas/support.osg" scale="30"/>
+				</transform>
+						
+				<transform id="supportA_neck" tx="19.5" ty="-6" tz="-15" >
+					<transform id="supportA_neckY">
+						<mesh id="supportAneck_mesh" file="/home/robocomp/robocomp/files/osgModels/muecas/testssss.osg" scale="30"/>
+					</transform>
+				</transform>
+						
+				<transform id="supportB_neck" tx="-19.5" ty="-6" tz="-15" >
+					<transform id="supportB_neckY">
+						<mesh id="supportBneck_mesh" file="/home/robocomp/robocomp/files/osgModels/muecas/testssss.osg" scale="30"/>
+					</transform>
+				</transform>
+							
+				<transform id="supportC_neck" ty="-6" tz="24" ry="45"  >
+					<transform id="supportC_neckY">
+						<mesh id="supportCneck_mesh" file="/home/robocomp/robocomp/files/osgModels/muecas/testssss.osg" scale="30"/>
+					</transform>
+				</transform>
+		
+			</transform>   <!-- head -->
+<!--		</transform>
+	</transform>  <!-- world -->-->
+<!--</innerModel>-->

@@ -21,7 +21,7 @@ MESSAGE(STATUS "Adding rule to generate the rcmanagerimple executable" )
 SET( DEST_DIR "/opt/robocomp/bin/")
 
 ROBOCOMP_WRAP_PYTHON_UI( formManagerSimple editorFormSimple )
-ADD_EXECUTABLE( rcmanagersimple rcmanagersimple.c )
+ADD_EXECUTABLE( rcmanagersimple rcmanagersimple.cpp )
 ADD_CUSTOM_TARGET(exec_rcmanagersimple ALL DEPENDS rcmanagersimple  )
 
 INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/rcmanagersimple DESTINATION ${DEST_DIR} PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE )

@@ -53,8 +53,11 @@
 #include <osgviewer/viewerqt.h>
 #include <qmat/QMatAll>
 
+#include <mutex>
+#include <memory>
 #include <innermodel/innermodel.h>
 #include <innermodel/innermodelnode.h>
+//#include <innermodel/innermodelmgr.h>
 // #include <innermodel/innermodeljoint.h>
 // #include <innermodel/innermodeltouchsensor.h>
 // #include <innermodel/innermodeldifferentialrobot.h>
@@ -96,9 +99,7 @@ class IMVPlane : public osg::Geode
 {
 	friend class InnerModelViewer;
 	public:
-		IMVPlane(InnerModelDisplay *plane, std::string imagenEntrada, osg::Vec4 valoresMaterial, float transparencia);
 		IMVPlane(InnerModelPlane *plane, std::string imagenEntrada, osg::Vec4 valoresMaterial, float transparencia);
-		void setImage(osg::Image *image_);
 		~IMVPlane();
 		void updateBuffer(uint8_t *data_, int32_t width_, int32_t height_);
 		void performUpdate();
@@ -137,13 +138,19 @@ class InnerModelViewer : public osg::Switch
 	public:
 		enum CameraView { BACK_POV, FRONT_POV, LEFT_POV, RIGHT_POV, TOP_POV };
 
-		InnerModelViewer(InnerModel *im, QString root="root", osg::Group *parent=NULL, bool ignoreCameras=false);
-		~InnerModelViewer();
+		//explicit InnerModelViewer(const InnerModelMgr &im, QString root="root", osg::Group *parent=NULL, bool ignoreCameras=false);	
+		explicit InnerModelViewer(const std::shared_ptr<InnerModel> &im, QString root="root", osg::Group *parent=NULL, bool ignoreCameras=false);	
+		explicit InnerModelViewer(InnerModel *im, QString root="root", osg::Group *parent=NULL, bool ignoreCameras=false);	
+		~InnerModelViewer(){};
 		void update();
 		void recursiveConstructor(InnerModelNode* node, osg::Group* parent, QHash< QString, osg::MatrixTransform* >& mtsHash, QHash< QString, IMVMesh >& meshHash, bool ignoreCameras=false);
 		void setMainCamera(osgGA::TrackballManipulator *manipulator, CameraView pov) const;
-		InnerModel *innerModel;
-
+		void setCameraCenter(OsgView *view, const QVec center_);
+		void setLookTowards(OsgView *view, const QVec to_, const QVec up_);
+		void lookAt(OsgView *view, const QVec center_, const QVec to_, const QVec up_);
+// 		inline void lock() { mutex.lock(); innerModel.lock(); };
+// 		inline void unlock() { innerModel.unlock(); mutex.unlock();};
+	
 		//CAUTION
 		QHash<QString, osg::ref_ptr<osg::PolygonMode > > osgmeshmodes;
 		//CAUTION
@@ -155,20 +162,18 @@ class InnerModelViewer : public osg::Switch
 		QHash<QString, IMVPlane *> planesHash;
 		QHash<QString, IMVCamera> cameras;
 		QHash<QString, IMVLaser> lasers;
+        
 
-		QMutex *mutex;
-		void setCameraCenter(OsgView *view, const QVec center_);
-		void setLookTowards(OsgView *view, const QVec to_, const QVec up_);
-		void lookAt(OsgView *view, const QVec center_, const QVec to_, const QVec up_);
-
+		std::shared_ptr<InnerModel> innerModel;
+		std::mutex mutex;
+		
 	protected:
 		void setOSGMatrixTransformForPlane(osg::MatrixTransform *mt, InnerModelPlane *plane);
-		void setOSGMatrixTransformForDisplay(osg::MatrixTransform *mt, InnerModelDisplay *display);
-
+		
 	private:
     QVec eye, up, to;
-		void reloadMesh(QString id);
-
+		void reloadMesh(QString id);	
+	
 		// Returns geode if 'id' corresponds to a geode, null otherwise.
 		osg::Geode* getGeode(QString id);
 

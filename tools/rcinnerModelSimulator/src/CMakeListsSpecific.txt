@@ -13,6 +13,7 @@ LIST ( APPEND SOURCES
 	specificmonitor.cpp
 	servers.cpp
 	pickhandler.cpp
+
 )
 
 # Headers set

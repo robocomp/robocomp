@@ -55,13 +55,13 @@ class AGMInner
 {
 private:
 	//funcion recursiva auxiliar para la extracción de innermodel
-	static void recorrer( AGMModel::SPtr &worldModel, InnerModel* imNew, const int &symbolID, bool ignoreMeshes);
+	static void recorrer( AGMModel::SPtr &worldModel, const std::shared_ptr<InnerModel> &imNew, const int &symbolID, bool ignoreMeshes);
 
 	//Función auxiliar para extractInnerModel. Extrae la información del arco y sigue con el proceso de creacción del árbol de innermodel
-	static void edgeToInnerModel( AGMModel::SPtr &worldModel, AGMModelEdge edge, InnerModel* imNew, bool ignoreMeshes);
+	static void edgeToInnerModel( AGMModel::SPtr &worldModel, AGMModelEdge edge, const std::shared_ptr<InnerModel> &imNew, bool ignoreMeshes);
 
 	//Convierte el símbolo s en un nodo de innerModel, y lo inserta como hijo de parentNode en imNew.
-	static void insertSymbolToInnerModelNode(AGMModel::SPtr &worldModel, InnerModel* imNew, InnerModelNode *parentNode, AGMModelSymbol::SPtr s, float tx = 0, float ty = 0, float tz = 0, float rx = 0, float ry = 0, float rz = 0, bool ignoreMeshes=false);
+	static void insertSymbolToInnerModelNode(AGMModel::SPtr &worldModel, const std::shared_ptr<InnerModel> &imNew, InnerModelNode *parentNode, AGMModelSymbol::SPtr s, float tx = 0, float ty = 0, float tz = 0, float rx = 0, float ry = 0, float rz = 0, bool ignoreMeshes=false);
 
 	//Funcion auxiliar para insertar el arbol de innermodel en el grafo AGM
 	static void recursiveInsertion(AGMModel::SPtr &worldModel, InnerModelNode* node, int &symbolID);
@@ -82,37 +82,37 @@ public:
 	static AGMModel::SPtr extractSymbolicGraph( AGMModel::SPtr &worldModel);
 
 	//this three functions work together.
-	static InnerModel* extractInnerModel( AGMModel::SPtr &worldModel, QString imNodeName="world", bool ignoreMeshes=false);
+	static std::shared_ptr<InnerModel> extractInnerModel( AGMModel::SPtr &worldModel, QString imNodeName="world", bool ignoreMeshes=false);
 
 	//udpate AGM with the info contains in *im
-	static void updateAgmWithInnerModel( AGMModel::SPtr &worldModel, InnerModel* im);
+	static void updateAgmWithInnerModel( AGMModel::SPtr &worldModel,const std::shared_ptr<InnerModel> &im);
 
 	//Actualiza cada simbolo de agm que es de innermodel con la información de innermodel
 	//todos los nodos de innermodel tiene que tene su correspondiente en AGM
-	static void updateAgmWithInnerModelAndPublish( AGMModel::SPtr &worldModel, InnerModel* im, AGMExecutivePrx &agmexecitive_proxy);
+	static void updateAgmWithInnerModelAndPublish( AGMModel::SPtr &worldModel, const std::shared_ptr<InnerModel> &im, AGMExecutivePrx &agmexecitive_proxy);
 
 	//update innermodel node from edges
-	static void updateImNodeFromEdge( AGMModel::SPtr &worldModel, AGMModelEdge edge, InnerModel *innerModel);
-	static void updateImNodeFromEdge( AGMModel::SPtr &worldModel, const RoboCompAGMWorldModel::Edge& edge, InnerModel *innerModel);
+	static void updateImNodeFromEdge( AGMModel::SPtr &worldModel, AGMModelEdge edge,const std::shared_ptr<InnerModel> &innerModel);
+	static void updateImNodeFromEdge( AGMModel::SPtr &worldModel, const RoboCompAGMWorldModel::Edge& edge,const std::shared_ptr<InnerModel> &innerModel);
 
 	//DEPRECATED
 	//Insert innermodel in AGM graph matching nodes from innerModel to their correspondent symbols.
 	//este método empareja diferentes nodos a diferentes símbolos
 	//excesivo
-	static  void include_im(AGMModel::SPtr &worldModel, QHash<QString, int32_t>  match, InnerModel *im);
+	static  void include_im(AGMModel::SPtr &worldModel, QHash<QString, int32_t>  match,const std::shared_ptr<InnerModel> &im);
 
 	//incluye innermodel desde el símbolo symbolID
 	//si el símbolo no tiene el atributo imType se crea. Con la unión del type + _ + symbolID
-	static void includeInnerModel(AGMModel::SPtr &worldModel, int symbolID, InnerModel *im, std::string path = "")
+	static void includeInnerModel(AGMModel::SPtr &worldModel, int symbolID,const std::shared_ptr<InnerModel> &im, std::string path = "")
 	{
 		std::string msgs;
 		includeInnerModel(worldModel, symbolID, im, msgs, path);
 	}
-	static void includeInnerModel(AGMModel::SPtr &worldModel, int symbolID, InnerModel *im, std::string &msgs, std::string path = "");
+	static void includeInnerModel(AGMModel::SPtr &worldModel, int symbolID,const std::shared_ptr<InnerModel> &im, std::string &msgs, std::string path = "");
 
 	//Dado un innerModel (impTmp) elimina de AGM todos los symbolos que lo forman.
 	//Para borrar subgrafos, como la persona por ejemplo.
-	static void  removeInnerModel(AGMModel::SPtr &worldModel, InnerModel*imTmp);
+	static void  removeInnerModel(AGMModel::SPtr &worldModel,const std::shared_ptr<InnerModel> &imTmp);
 
 	//find a loop from a symbolID throught a fixed linkType
 	static bool loop         ( AGMModel::SPtr &worldModel, int& symbolID,                        string linkType);

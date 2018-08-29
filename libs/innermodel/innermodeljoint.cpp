@@ -27,34 +27,32 @@ InnerModelJoint::InnerModelJoint() : InnerModelTransform("invalid",QString("stat
 
 InnerModelJoint::InnerModelJoint(QString id_, float lx_, float ly_, float lz_, float hx_, float hy_, float hz_, float tx_, float ty_, float tz_, float rx_, float ry_, float rz_, float min_, float max_, uint32_t port_, std::string axis_, float home_, InnerModelTransform *parent_) : InnerModelTransform(id_,QString("static"),tx_,ty_,tz_,rx_,ry_,rz_, 0, parent_)
 {
-	QMutexLocker l(mutex);
+	
 	#if FCL_SUPPORT==1
 	collisionObject = NULL;
 	#endif
 
-	// 		set(rx_, ry_, rz_, tx_, ty_, tz_);
-	backlX = lx_;
-	backlY = ly_;
-	backlZ = lz_;
-	backhX = hx_;
-	backhY = hy_;
-	backhZ = hz_;
-	min = min_;
+		min = min_;
 	max = max_;
 	home = home_;
-	hx = hy = hz =lx = ly = lz = NULL;
 	port = port_;
 	axis = axis_;
 	if (axis == "x")
 	{
+		backl = lx_;
+		backh = hx_;
 		update(min, 0, 0, max, 0, 0);
 	}
 	else if (axis == "y")
 	{
+		backl = ly_;
+		backh = hy_;
 		update(0, min, 0, 0, max, 0);
 	}
 	else if (axis == "z")
 	{
+		backl = lz_;
+		backh = hz_;
 		update(0, 0, min, 0, 0, max);
 	}
 	else
@@ -67,7 +65,6 @@ InnerModelJoint::InnerModelJoint(QString id_, float lx_, float ly_, float lz_, f
 
 void InnerModelJoint::print(bool verbose)
 {
-	QMutexLocker l(mutex);
 	printf("Joint: %s\n", qPrintable(id));
 	if (verbose)
 	{
@@ -79,14 +76,19 @@ void InnerModelJoint::print(bool verbose)
 
 void InnerModelJoint::save(QTextStream &out, int tabs)
 {
-	QMutexLocker l(mutex);
 	QList<InnerModelNode*>::iterator c;
-	//<joint id="head_yaw_joint" port="10067" axis="z" home="0" min="-1" max="1">
-	for (int i=0; i<tabs; i++) out << "\t";
-	out << "<joint id=\"" << id << "\" port=\"" << port << "\" axis=\"" <<QString::fromStdString( axis)<<"\" home=\""<< QString::number(home, 'g', 10)
-	<<"\" min=\""<< QString::number(min, 'g', 10)<<"\" max=\""<< QString::number(max, 'g', 10)
-	<< "\" tx=\""<< QString::number(backtX, 'g', 10) <<"\" ty=\""<< QString::number(backtY, 'g', 10) <<"\" tz=\""<< QString::number(backtZ, 'g', 10)
-	<<"\"  rx=\""<< QString::number(backrX, 'g', 10) <<"\" ry=\""<< QString::number(backrY, 'g', 10) <<"\" rz=\""<< QString::number(backrZ, 'g', 10) <<"\">\n";
+	for (int i=0; i<tabs; i++)
+		out << "\t";
+
+	out << "<joint id=\"" << id << "\" port=\"" << port << "\" axis=\"" <<QString::fromStdString(axis);
+
+	out << "\" home=\"" << QString::number(home, 'g', 10);
+	out << "\" min=\"" << QString::number(min, 'g', 10) << "\" max=\"" << QString::number(max, 'g', 10);
+	out << "\" tx=\"" << QString::number(backtX, 'g', 10) << "\" ty=\"" << QString::number(backtY, 'g', 10) <<"\" tz=\""<< QString::number(backtZ, 'g', 10);
+	out << "\" rx=\"" << QString::number(backrX, 'g', 10) << "\" ry=\"" << QString::number(backrY, 'g', 10) << "\" rz=\"" << QString::number(backrZ, 'g', 10);
+
+	out << "\">\n";
+
 	for (c=children.begin(); c!=children.end(); c++)
 			(*c)->save(out, tabs+1);
 
@@ -94,61 +96,67 @@ void InnerModelJoint::save(QTextStream &out, int tabs)
 	out << "</joint>\n";
 }
 
-void InnerModelJoint::setUpdatePointers(float *lx_, float *ly_, float *lz_, float *hx_, float *hy_, float *hz_)
-{
-	QMutexLocker l(mutex);
-	lx = lx_;
-	ly = ly_;
-	lz = lz_;
-	hx = hx_;
-	hy = hy_;
-	hz = hz_;
-	fixed = false;
-}
 
 void InnerModelJoint::update(float lx_, float ly_, float lz_, float hx_, float hy_, float hz_)
 {
-	QMutexLocker l(mutex);
-	backhX = hx_; backhY = hy_; backhZ = hz_;
-	backlX = lx_; backlY = ly_; backlZ = lz_;
-	fixed = true;
-}
+	if (axis == "x")
+	{
+		backh = hx_;
+		backl = lx_;
+	}
+	else if (axis == "y")
+	{
+		backh = hy_;
+		backl = ly_;
+	}
+	else if (axis == "z")
+	{
+		backh = hz_;
+		backl = lz_;
+	}
+
 
 float InnerModelJoint::getAngle()
 {
-	QMutexLocker l(mutex);
-	return backrZ;
+	if (axis == "x")
+	{
+		return backrX;
+	}
+	else if (axis == "y")
+	{
+		return backrY;
+	}
+	else
+	{
+		return backrZ;
+	}
 }
 
 float InnerModelJoint::setAngle(float angle, bool force)
 {
-	QMutexLocker l(mutex);
-	float ret;
-	if ((angle <= max and angle >= min) or force)
-	{
-		ret = angle;
-	}
-	else if (angle > max)
+	float ret = angle;
+	if (angle > max)
 	{
 		ret = max;
 	}
-	else
+	else if (angle < min)
 	{
 		ret = min;
 	}
 
-	backrZ = ret;
-
 	if (axis == "x")
 	{
+		backrX = ret;
 		set(ret,0,0, 0,0,0);
 	}
 	else if (axis == "y")
 	{
+		backrY = ret;
 		set(0,ret,0, 0,0,0);
 	}
 	else if (axis == "z")
 	{
+		backrZ = ret;
 		set(0,0,ret, 0,0,0);
 	}
 	else
@@ -158,14 +166,14 @@ float InnerModelJoint::setAngle(float angle, bool force)
 		throw error;
 	}
 
-	if (innerModel)
+	printf("%p %ld\n", innerModel, (long int)innerModel);
+	if (innerModel != nullptr)
 		innerModel->cleanupTables();
 	return ret;
 }
 
 QVec InnerModelJoint::unitaryAxis()
 {
-	QMutexLocker l(mutex);
 	if( axis == "x") return QVec::vec3(1,0,0);
 	if( axis == "y") return QVec::vec3(0,1,0);
 	if( axis == "z") return QVec::vec3(0,0,1);
@@ -174,19 +182,18 @@ QVec InnerModelJoint::unitaryAxis()
 
 InnerModelNode * InnerModelJoint::copyNode(QHash<QString, InnerModelNode *> &hash, InnerModelNode *parent)
 {
-	QMutexLocker l(mutex);
 	InnerModelJoint *ret;
 	if (axis == "x")
 	{
-		ret = new InnerModelJoint(id, backlX, backlY, backlZ, backhX, backhY, backhZ, backtX, backtY, backtZ, backrZ, 0, 0, min, max, port, axis, home, (InnerModelTransform *)parent);
+		ret = new InnerModelJoint(id, backl,0,0, backh,0,0, backtX, backtY, backtZ, backrX, 0, 0, min, max, port, axis, home, (InnerModelTransform *)parent);
 	}
 	else if (axis == "y")
 	{
-		ret = new InnerModelJoint(id, backlX, backlY, backlZ, backhX, backhY, backhZ, backtX, backtY, backtZ, 0, backrZ, 0, min, max, port, axis, home, (InnerModelTransform *)parent);
+		ret = new InnerModelJoint(id, 0,backl,0, 0,backh,0, backtX, backtY, backtZ, 0, backrY, 0, min, max, port, axis, home, (InnerModelTransform *)parent);
 	}
 	else if (axis == "z")
 	{
-		ret = new InnerModelJoint(id, backlX, backlY, backlZ, backhX, backhY, backhZ, backtX, backtY, backtZ, 0, 0, backrZ, min, max, port, axis, home, (InnerModelTransform *)parent);
+		ret = new InnerModelJoint(id, 0,0,backl, 0,0,backh, backtX, backtY, backtZ, 0, 0, backrZ, min, max, port, axis, home, (InnerModelTransform *)parent);
 	}
 	else
 	{
@@ -199,15 +206,12 @@ InnerModelNode * InnerModelJoint::copyNode(QHash<QString, InnerModelNode *> &has
 	ret->children.clear();
 	ret->attributes.clear();
 	hash[id] = ret;
-
 	ret->innerModel = parent->innerModel;
-
 	for (QList<InnerModelNode*>::iterator i=children.begin(); i!=children.end(); i++)
 	{
 		ret->addChild((*i)->copyNode(hash, ret));
 	}
-
- 	ret->setAngle(getAngle());
+	ret->setAngle(getAngle());
 
 	return ret;
-  }
+}

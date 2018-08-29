@@ -55,12 +55,12 @@
 		</transform>
 			
 		<differentialrobot id="base" port="10004">
-			<mesh id="base_robex" file="/home/robocomp/robocomp/files/osgModels/robex/robex.ive"  tx="0" ty="0" tz="-180" scale="1000" />
-				<translation id="laserPose" tx="0" ty="40" tz="0">
-					<laser id="laser" port="10003" measures="100" min="100" max="30000" angle="3" ifconfig="10000" />
+			<mesh id="base_robex" file="/home/robocomp/robocomp/files/osgModels/robex/robex.ive"  tx="0" ty="0" tz="0" scale="1000" />
+				<translation id="laserPose" tx="0" ty="140" tz="200">
+					<laser id="laser" port="10003" measures="100" min="100" max="30000" angle="4" ifconfig="10000" />
 						<plane id="sensorL" nz="1" pz="-200" size="100" repeat="1" texture="#ff0000" /> 
 				</translation>	
-				<transform id="camera" ty="210" tz="180">
+				<transform id="camera" ty="210" tz="200">
 						<imu id="imu" port="10010"/>
 						<rgbd id="rgbd" focal="490" width="640" height="480" port="10096" noise="0.00" ifconfig="40000,50000" />
 						<plane id="rgbd_mesh1" nz="1" pz="-200" size="200,50,10" repeat="1" texture="#550000" />
