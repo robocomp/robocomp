@@ -115,7 +115,13 @@ void InnerModelPlane::print(bool verbose)
 	if (verbose) normal.print(QString("Plane: ")+id);
 }
 
-
+void InnerModelPlane::update()
+{
+	if (fixed)
+	{
+	}
+	updateChildren();
+}
 
 void InnerModelPlane::save(QTextStream &out, int tabs)
 {

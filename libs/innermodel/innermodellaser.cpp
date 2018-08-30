@@ -48,6 +48,14 @@ void InnerModelLaser::print(bool verbose)
 	if (verbose) printf("LASER.");
 }
 
+void InnerModelLaser::update()
+{
+	if (fixed)
+	{
+	}
+	updateChildren();
+}
+
 InnerModelNode * InnerModelLaser::copyNode(QHash<QString, InnerModelNode *> &hash, InnerModelNode *parent)
 {
 	InnerModelLaser *ret = new InnerModelLaser(id, port, min, max, angle, measures, ifconfig, innermodel, parent);

@@ -249,6 +249,12 @@ private:
 		Registration rgbd_getRegistration(const QString& server);
 		void rgbd_getData(const QString& server, RoboCompRGBD::imgType& rgbMatrix, depthType& distanceMatrix, RoboCompJointMotor::MotorStateMap& hState, RoboCompGenericBase::TBaseState& bState);
 		void rgbd_getImage(const QString& server, ColorSeq& color, DepthSeq& depth, PointSeq& points, RoboCompJointMotor::MotorStateMap& hState, RoboCompGenericBase::TBaseState& bState);
+		
+		// ---------------------------------------------------------------------------------------
+		// Display.ice
+		// ---------------------------------------------------------------------------------------
+		void di_setImage(const std::string& item, const std::string& texture);
+
 };
 
 

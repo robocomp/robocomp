@@ -1,7 +1,7 @@
 // ------------------------------------------------------------------------------------------------
 // Laser.ice
 // ------------------------------------------------------------------------------------------------
-
+#include "specificworker.h"
 // TLaserData SpecificWorker::laser_getLaserData ( const QString& server )
 // {
 // 	QMutexLocker l ( mutex );

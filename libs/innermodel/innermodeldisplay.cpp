@@ -98,6 +98,14 @@ void InnerModelDisplay::print(bool verbose)
 	if (verbose) normal.print(QString("Display: ")+id);
 }
 
+void InnerModelDisplay::update()
+{
+	if (fixed)
+	{
+	}
+	updateChildren();
+}
+
 void InnerModelDisplay::save(QTextStream &out, int tabs)
 {
 	for (int i=0; i<tabs; i++) out << "\t";

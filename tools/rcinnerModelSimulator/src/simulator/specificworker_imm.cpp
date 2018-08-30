@@ -1,6 +1,8 @@
 // ------------------------------------------------------------------------------------------------
 // InnerModelManager.ice
 // ------------------------------------------------------------------------------------------------
+#include "specificworker.h"
+
 //#define INNERMODELMANAGERDEBUG
 
 // Moves item to the position defined by pose respect to the base

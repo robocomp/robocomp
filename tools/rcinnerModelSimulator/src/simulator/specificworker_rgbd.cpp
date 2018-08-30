@@ -1,7 +1,7 @@
 // ------------------------------------------------------------------------------------------------
 // RGBD.ice
 // ------------------------------------------------------------------------------------------------
-
+#include "specificworker.h"
 // 	throw std::string( __PRETTY_FUNCTION__ ) + std::string( " not implemented yet!" );
 
 TRGBDParams SpecificWorker::rgbd_getRGBDParams ( const QString& server )

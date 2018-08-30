@@ -36,6 +36,14 @@ void InnerModelCamera::print(bool verbose)
 	if (verbose) camera.print(QString("Camera: ")+id);
 }
 
+void InnerModelCamera::update()
+{
+	if (fixed)
+	{
+	}
+	updateChildren();
+}
+
 void InnerModelCamera::save(QTextStream &out, int tabs)
 {
 	for (int i=0; i<tabs; i++) out << "\t";

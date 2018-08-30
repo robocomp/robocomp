@@ -99,7 +99,9 @@ class IMVPlane : public osg::Geode
 {
 	friend class InnerModelViewer;
 	public:
+		IMVPlane(InnerModelDisplay *plane, std::string imagenEntrada, osg::Vec4 valoresMaterial, float transparencia);
 		IMVPlane(InnerModelPlane *plane, std::string imagenEntrada, osg::Vec4 valoresMaterial, float transparencia);
+		void setImage(osg::Image *image_);
 		~IMVPlane();
 		void updateBuffer(uint8_t *data_, int32_t width_, int32_t height_);
 		void performUpdate();

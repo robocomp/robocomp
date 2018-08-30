@@ -136,6 +136,14 @@ void InnerModelMesh::setScale(float x, float y, float z)
 	scalez=z;
 }
 
+void InnerModelMesh::update()
+{
+	if (fixed)
+	{
+	}
+	updateChildren();
+}
+
 bool InnerModelMesh::normalRendering() const
 {
 	return render == NormalRendering;

@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 2.6)
 PROJECT( rcis )
-
+add_definitions(
+    -Wfatal-errors
+    )
 
 INCLUDE( CMakeListsSpecific.txt )
 
