@@ -40,7 +40,17 @@ MACRO( ROBOCOMP_INITIALIZE )
 #   INCLUDE ( $ENV{ROBOCOMP}/cmake/modules/ipp.cmake )
 
 
-  SET( LIBS ${LIBS} -L/opt/robocomp/lib ${OSG_LIBRARY} -losg -losgUtil -losgGA ${OSGDB_LIBRARY} ${OSGVIEWER_LIBRARY} ${OPENTHREADS_LIBRARY}  -L${ICEROOT}/lib/ -L${ROBOCOMP_ROOT}/classes -lIce -lIceUtil -lpthread -lIceStorm -lboost_system ${QT_LIBRARIES} robocomp_qmat ${IPP_LIBS} robocomp_innermodel robocomp_osgviewer)
+# Ice Libraries 
+  INCLUDE (FindIce)
+  IF ( ${Ice_VERSION} VERSION_GREATER "3.6")
+    SET( LIBS ${LIBS} -L${ICEROOT}/lib/ -lIce++11 -lIceUtil++11 -lIceStorm++11)
+  ELSE ( ${Ice_VERSION} VERSION_GREATER "3.6")
+    SET( LIBS ${LIBS} -L${ICEROOT}/lib/ -lIce -lIceUtil -lIceStorm)
+  ENDIF ( ${Ice_VERSION} VERSION_GREATER "3.6")
+
+  # Other libraries
+  SET( LIBS ${LIBS} -L/opt/robocomp/lib ${OSG_LIBRARY} -losg -losgUtil -losgGA ${OSGDB_LIBRARY} ${OSGVIEWER_LIBRARY} ${OPENTHREADS_LIBRARY} -L${ROBOCOMP_ROOT}/classes  -lpthread -lboost_system ${QT_LIBRARIES} robocomp_qmat ${IPP_LIBS} robocomp_innermodel robocomp_osgviewer)
+ 
  
 ENDMACRO( ROBOCOMP_INITIALIZE )
 

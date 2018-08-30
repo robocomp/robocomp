@@ -114,7 +114,8 @@ void InnerModelJoint::update(float lx_, float ly_, float lz_, float hx_, float h
 		backh = hz_;
 		backl = lz_;
 	}
-
+	fixed = true;
+}
 
 float InnerModelJoint::getAngle()
 {

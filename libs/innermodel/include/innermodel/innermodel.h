@@ -96,6 +96,11 @@ public:
 	/// Tree update methods
 	///////////////////////
 	void setRoot(InnerModelNode *node);
+	void update();
+	void setUpdateRotationPointers(QString rotationId, float *x, float *y, float *z);
+	void setUpdateTranslationPointers(QString translationId, float *x, float *y, float *z);
+	void setUpdatePlanePointers(QString planeId, float *nx, float *ny, float *nz, float *px, float *py, float *pz);
+	void setUpdateTransformPointers(QString transformId, float *tx, float *ty, float *tz, float *rx, float *ry, float *rz);
 	void cleanupTables();
 	void updateTransformValues(QString transformId, float tx, float ty, float tz, float rx, float ry, float rz, QString parentId="");
 	void updateTransformValues(QString transformId, QVec v, QString parentId="");
