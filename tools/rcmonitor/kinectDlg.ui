@@ -35,8 +35,8 @@
        </property>
        <property name="sizeHint" stdset="0">
         <size>
-         <width>1</width>
-         <height>20</height>
+         <width>13</width>
+         <height>17</height>
         </size>
        </property>
       </spacer>
@@ -182,6 +182,47 @@
            </item>
           </layout>
          </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_8">
+           <item>
+            <widget class="QComboBox" name="method_combobox">
+             <item>
+              <property name="text">
+               <string>getData</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>getRGB</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>getImage</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>getDepth</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+           <item>
+            <spacer name="horizontalSpacer">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </item>
         </layout>
        </item>
        <item>
@@ -206,8 +247,8 @@
        </property>
        <property name="sizeHint" stdset="0">
         <size>
-         <width>1</width>
-         <height>20</height>
+         <width>13</width>
+         <height>17</height>
         </size>
        </property>
       </spacer>
