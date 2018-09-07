@@ -24,7 +24,7 @@ OmniRobotI::OmniRobotI(SpecificWorker *_worker, QObject *parent): QThread(parent
 	// Pointer to the worker (needed to access the mutex)
 	worker = _worker;
 	// InnerModel
-	innerModel = worker->getInnerModelMgr();
+	innerModel = worker->getInnerModel();
 	// Initialize the velocity to 0
 	advVelx = advVelz = rotVel = 0;
 	// Initialize timing
@@ -34,7 +34,7 @@ OmniRobotI::OmniRobotI(SpecificWorker *_worker, QObject *parent): QThread(parent
 
 void OmniRobotI::add(QString id)
 {
-	InnerModelMgr::guard gl(innerModel.mutex());
+	std::lock_guard<std::recursive_mutex> guard(innerModel->mutex);
 
 	omniIDs << id;
 	node                        = innerModel->getOmniRobot(id);
@@ -61,7 +61,7 @@ void OmniRobotI::run()
 
 void OmniRobotI::getBaseState(RoboCompGenericBase::TBaseState& state, const Ice::Current&)
 {
-	InnerModelMgr::guard gl(innerModel.mutex());
+	std::lock_guard<std::recursive_mutex> guard(innerModel->mutex);
 
 	{
 		QVec retPOSR = innerModel->transform6D(parent->id, node->id+"_raw_odometry\"");
@@ -87,7 +87,7 @@ void OmniRobotI::getBaseState(RoboCompGenericBase::TBaseState& state, const Ice:
 
 void OmniRobotI::getBasePose(Ice::Int& x, Ice::Int& z, Ice::Float& alpha, const Ice::Current&)
 {
-	InnerModelMgr::guard gl(innerModel.mutex());
+	std::lock_guard<std::recursive_mutex> guard (innerModel->mutex);
 
 	QVec retPOS = innerModel->transform6D(parent->id, node->id+"_raw_odometry\"");
 	x = retPOS(0);
@@ -98,7 +98,7 @@ void OmniRobotI::getBasePose(Ice::Int& x, Ice::Int& z, Ice::Float& alpha, const 
 
 void OmniRobotI::updateInnerModelPose(bool force)
 {
-	InnerModelMgr::guard gl(innerModel.mutex());
+	std::lock_guard<std::recursive_mutex> guard (innerModel->mutex);
 
 	// Do nothing if the robot isn't moving
 	if ( (fabs(advVelx)<0.0001 and fabs(advVelz)<0.0001 and fabs(rotVel)<0.0001) and not force)
@@ -166,7 +166,7 @@ void OmniRobotI::updateInnerModelPose(bool force)
 
 bool OmniRobotI::canMoveBaseTo(const QString nodeId)
 {
-	InnerModelMgr::guard gl(innerModel.mutex());
+	std::lock_guard<std::recursive_mutex> guard (innerModel->mutex);
 
 	if (not node->collide) return true;
 
@@ -191,7 +191,7 @@ bool OmniRobotI::canMoveBaseTo(const QString nodeId)
 
 void OmniRobotI::recursiveIncludeMeshes(InnerModelNode *node, QString robotId, bool inside, std::vector<QString> &in, std::vector<QString> &out)
 {
-	InnerModelMgr::guard gl(innerModel.mutex());
+	std::lock_guard<std::recursive_mutex> guard (innerModel->mutex);
 
 	if (node->id == robotId)
 	{
@@ -227,7 +227,7 @@ void OmniRobotI::setSpeedBase(Ice::Float advx, Ice::Float advz, Ice::Float rot, 
 {
 	updateInnerModelPose();
 	
-	InnerModelMgr::guard gl(innerModel.mutex());
+	std::lock_guard<std::recursive_mutex> guard (innerModel->mutex);
 
 	gettimeofday(&lastCommand_timeval, NULL);
 	advVelx = advx;
@@ -244,7 +244,7 @@ void OmniRobotI::stopBase(const Ice::Current&)
 
 void OmniRobotI::resetOdometer(const Ice::Current&)
 {
-	InnerModelMgr::guard gl(innerModel.mutex());
+	std::lock_guard<std::recursive_mutex> guard (innerModel->mutex);
 	setOdometerPose(0, 0, 0);
 }
 
@@ -257,7 +257,7 @@ void OmniRobotI::setOdometer(const RoboCompGenericBase::TBaseState &st, const Ic
 
 void OmniRobotI::setOdometerPose(Ice::Int x, Ice::Int z, Ice::Float alpha, const Ice::Current&)
 {
-	InnerModelMgr::guard gl(innerModel.mutex());
+	std::lock_guard<std::recursive_mutex> guard (innerModel->mutex);
 	innerModel->updateTransformValues(node->id+"_raw_odometry_parent\"", x, 0, z, 0, alpha, 0);
 	innerModel->updateTransformValues(node->id+"_raw_odometry\"", 0, 0, 0,  0, 0, 0);
 }
@@ -265,7 +265,7 @@ void OmniRobotI::setOdometerPose(Ice::Int x, Ice::Int z, Ice::Float alpha, const
 
 void OmniRobotI::correctOdometer(Ice::Int x, Ice::Int z, Ice::Float alpha, const Ice::Current&)
 {
-	InnerModelMgr::guard gl(innerModel.mutex());
+	std::lock_guard<std::recursive_mutex> guard (innerModel->mutex);
 	innerModel->updateTransformValues(node->id+"_corrected_odometry_parent\"", x, 0, z, 0, alpha, 0);
 	innerModel->updateTransformValues(node->id+"_corrected_odometry\"", 0, 0, 0,  0, 0, 0);
 	innerModel->transform6D("root", node->id+"_corrected_odometry_parent\"").print(":correctOd  correctedP");

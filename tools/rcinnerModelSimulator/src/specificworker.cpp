@@ -531,13 +531,6 @@ InnerModel *SpecificWorker::getInnerModel()
 	return innerModel.get();
 }
 
-
-InnerModelMgr SpecificWorker::getInnerModelMgr()
-{
-	return innerModel;
-}
-
-
 InnerModelViewer *SpecificWorker::getInnerModelViewer()
 {
 	guard gl(innerModel->mutex);
@@ -555,7 +548,7 @@ RoboCompLaser::TLaserData SpecificWorker::LASER_createLaserData(const IMVLaser &
 	//QMutexLocker vm(worker->viewerMutex);
 	//QMutexLocker locker(worker->mutex);
 	QMutexLocker ldc(laserDataCartArray_mutex);
-	InnerModelMgr::guard gl(innerModel->mutex);
+	guard gl(innerModel->mutex);
 // 		printf("osg threads running... %d\n", viewer->areThreadsRunning());
 	static RoboCompLaser::TLaserData laserData;
 	int measures = laser.laserNode->measures;
@@ -628,7 +621,7 @@ RoboCompTouchSensor::SensorMap TOUCH_createTouchData(const IMVLaser &laser)
 ///--- useful functions.
 InnerModelNode* SpecificWorker::getNode(const QString &id, const QString &msg)
 {
-	InnerModelMgr::guard gl(innerModel->mutex);
+	guard gl(innerModel->mutex);
 	InnerModelNode *node = innerModel->getNode(id);
 	if (node==NULL)
 	{
@@ -869,7 +862,7 @@ void SpecificWorker::devuelveColor(QString id)
 void SpecificWorker::changeLigthState(bool apagar)
 {
 	//QMutexLocker vm(worker->viewerMutex);
-	InnerModelMgr::guard gl(innerModel->mutex);
+	guard gl(innerModel->mutex);
 	osg::StateSet *state = viewer->getRootGroup()->getOrCreateStateSet();
 
 	if(apagar)
@@ -915,40 +908,35 @@ void SpecificWorker::visualTriggered()
 
 void SpecificWorker::setTopPOV()
 {
-	//QMutexLocker vm(viewerMutex);
-	InnerModelMgr::guard gl(innerModel->mutex);
+	guard gl(innerModel->mutex);
 	imv->setMainCamera(manipulator, InnerModelViewer::TOP_POV);
 }
 
 
 void SpecificWorker::setFrontPOV()
 {
-	//QMutexLocker vm(viewerMutex);
-	InnerModelMgr::guard gl(innerModel->mutex);
+	guard gl(innerModel->mutex);
 	imv->setMainCamera(manipulator, InnerModelViewer::FRONT_POV);
 }
 
 
 void SpecificWorker::setBackPOV()
 {
-	//QMutexLocker vm(viewerMutex);
-	InnerModelMgr::guard gl(innerModel->mutex);
+	guard gl(innerModel->mutex);
 	imv->setMainCamera(manipulator, InnerModelViewer::BACK_POV);
 }
 
 
 void SpecificWorker::setLeftPOV()
 {
-	//QMutexLocker vm(viewerMutex);
-	InnerModelMgr::guard gl(innerModel->mutex);
+	guard gl(innerModel->mutex);
 	imv->setMainCamera(manipulator, InnerModelViewer::LEFT_POV);
 }
 
 
 void SpecificWorker::setRightPOV()
 {
-	//QMutexLocker vm(viewerMutex);
-	InnerModelMgr::guard gl(innerModel->mutex);
+	guard gl(innerModel->mutex);
 	imv->setMainCamera(manipulator, InnerModelViewer::RIGHT_POV);
 }
 
@@ -974,8 +962,7 @@ void SpecificWorker::closeEvent(QCloseEvent *event)
 
 void SpecificWorker::setLigthx(double v)
 {
-	//QMutexLocker vm(viewerMutex);
-	InnerModelMgr::guard gl(innerModel->mutex);
+	guard gl(innerModel->mutex);
 	osg::Vec4 p= viewer->getLight()->getPosition();
 	p.set(v,p.y(),p.z(),p.w());
 	viewer->getLight()->setPosition(p);
@@ -983,8 +970,7 @@ void SpecificWorker::setLigthx(double v)
 
 void SpecificWorker::setLigthy(double v)
 {
-	//QMutexLocker vm(viewerMutex);
-	InnerModelMgr::guard gl(innerModel->mutex);
+	guard gl(innerModel->mutex);
 	osg::Vec4 p= viewer->getLight()->getPosition();
 	p.set(p.x(),v,p.z(),p.w());
 	viewer->getLight()->setPosition(p);
@@ -992,8 +978,7 @@ void SpecificWorker::setLigthy(double v)
 
 void SpecificWorker::setLigthz(double v)
 {
-	//QMutexLocker vm(viewerMutex);
-	InnerModelMgr::guard gl(innerModel->mutex);
+	guard gl(innerModel->mutex);
 	osg::Vec4 p= viewer->getLight()->getPosition();
 	p.set(p.x(),p.y(),v,p.w());
 	viewer->getLight()->setPosition(p);

@@ -35,7 +35,7 @@
 TLaserData SpecificWorker::laser_getLaserAndBStateData ( const QString& server, RoboCompGenericBase::TBaseState& state )
 {
 	//QMutexLocker l ( mutex );
-	InnerModelMgr::guard gl(innerModel->mutex);
+	guard gl(innerModel->mutex);
 
 		IMVLaser &las = imv->lasers[server];
 		QString laserConfig = las.laserNode->ifconfig;

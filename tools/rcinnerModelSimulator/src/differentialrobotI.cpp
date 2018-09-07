@@ -25,7 +25,7 @@ DifferentialRobotI::DifferentialRobotI(SpecificWorker *_worker, OmniRobotI *_omn
 	omniI = _omniI;
 	worker = _worker;
 	mutex = worker->mutex;
-	innerModel = worker->getInnerModelMgr();
+	innerModel = worker->getInnerModel();
 	advVel = rotVel = 0;
 	gettimeofday(&lastCommand_timeval, NULL);
 	updateInnerModelPose();
@@ -90,8 +90,7 @@ void DifferentialRobotI::getBaseState(RoboCompGenericBase::TBaseState& state, co
 		state.alpha = ostate.alpha;
 		return;
 	}
-	//QMutexLocker locker(mutex);
-	InnerModelMgr::guard gl(innerModel.mutex());
+	std::lock_guard<std::recursive_mutex> guard(innerModel->mutex);
 	
 	state = pose;
 	QVec retPOS = (zeroTR * QVec::vec3(pose.x, 0, pose.z).toHomogeneousCoordinates()).fromHomogeneousCoordinates();
@@ -114,7 +113,7 @@ void DifferentialRobotI::getBasePose(Ice::Int& x, Ice::Int& z, Ice::Float& alpha
 		return;
 	}
 	//QMutexLocker locker(mutex);
-	InnerModelMgr::guard gl(innerModel.mutex());
+	std::lock_guard<std::recursive_mutex> guard(innerModel->mutex);
 	QVec retPOS = (zeroTR * QVec::vec3(pose.x, 0, pose.z).toHomogeneousCoordinates()).fromHomogeneousCoordinates();
 	x = retPOS(0);
 	z = retPOS(2);
@@ -192,7 +191,7 @@ void DifferentialRobotI::updateInnerModelPose(bool force)
 		newAngle += Angle;
 	}
 
-	innerModel.lock();
+	std::lock_guard<std::recursive_mutex> guard(innerModel->mutex);
 	
 		QVec backNoisyNewPos = innerModel->transform(parent->id, QVec::vec3(0,0,0), id);
 		float backNoisyAngle = noisyNewAngle;
@@ -215,7 +214,7 @@ void DifferentialRobotI::updateInnerModelPose(bool force)
 		newPos = innerModel->transform(parent->id, QVec::vec3(Ax2, 0, Az2), id+"_odometry\"");
 		innerModel->updateTransformValues(id+"_odometry\"", newPos(0), newPos(1), newPos(2), 0, newAngle, 0);
 			
-	innerModel.unlock();
+	
 		
 	// Pose without noise (as if I moved perfectly)
 	pose.correctedX = newPos(0)*MILIMETERS_PER_UNIT;
@@ -290,8 +289,7 @@ void DifferentialRobotI::setSpeedBase(Ice::Float adv, Ice::Float rot, const Ice:
 		return;
 	}
 
-	//QMutexLocker locker(mutex);
-	InnerModelMgr::guard gl(innerModel.mutex());
+	std::lock_guard<std::recursive_mutex> guard(innerModel->mutex);
 	updateInnerModelPose();
 	gettimeofday(&lastCommand_timeval, NULL);
 	advVel = adv;
@@ -320,8 +318,7 @@ void DifferentialRobotI::resetOdometer(const Ice::Current&)
 		return;
 	}
 
-	//QMutexLocker locker(mutex);
-	InnerModelMgr::guard gl(innerModel.mutex());
+	std::lock_guard<std::recursive_mutex> guard(innerModel->mutex);
 	zeroANG = pose.alpha;
 	zeroTR = RTMat(0, -pose.alpha, 0, 0, 0, 0)* RTMat(0, 0, 0, -pose.x, 0, -pose.z);
 }
@@ -350,8 +347,7 @@ void DifferentialRobotI::setOdometerPose(Ice::Int x, Ice::Int z, Ice::Float alph
 		omniI->setOdometerPose(x, z, alpha);
 		return;
 	}
-	//QMutexLocker locker(mutex);
-	InnerModelMgr::guard gl(innerModel.mutex());
+	std::lock_guard<std::recursive_mutex> guard(innerModel->mutex);
 	zeroANG = pose.alpha-alpha;
 	zeroTR = RTMat(0,0,0,  x,0,z)*RTMat(0,alpha-pose.alpha,0, 0,0,0)* RTMat(0,0,0, -pose.x,0,-pose.z);
 }
@@ -364,8 +360,7 @@ void DifferentialRobotI::correctOdometer(Ice::Int x, Ice::Int z, Ice::Float alph
 		omniI->correctOdometer(x, z, alpha);
 		return;
 	}
-	//QMutexLocker locker(mutex);
-	InnerModelMgr::guard gl(innerModel.mutex());
+	std::lock_guard<std::recursive_mutex> guard(innerModel->mutex);
 	pose.correctedX = x;
 	pose.correctedZ = z;
 	pose.correctedAlpha = alpha;

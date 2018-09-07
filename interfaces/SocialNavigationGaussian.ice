@@ -23,6 +23,7 @@ module RoboCompSocialNavigationGaussian
 	};
 	struct SNGPerson
 	{
+		 int id;
 		 float x;
 		 float z;
 		 float angle;

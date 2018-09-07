@@ -35,7 +35,6 @@
 #include "servers.h"
 #include "pickhandler.h"
 
-//#include <innermodel/innermodelmgr.h>
 
 class SpecificWorker : public GenericWorker
 {
@@ -47,7 +46,6 @@ Q_OBJECT
 		~SpecificWorker(){};
 		osg::Group *getRootGroup();
 		InnerModel *getInnerModel();
-		InnerModelMgr getInnerModelMgr();
 		InnerModelViewer* getInnerModelViewer();
 		QMutex *viewerMutex;
 		void startServers();

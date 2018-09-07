@@ -1,7 +1,6 @@
 set(LIB_NAME innermodel)
 set(LIB_DESC "RoboComp InnerModel library")
 set(LIB_DEPS qmat osgviewer)
-ADD_DEFINITIONS(-g)
 
 set(srcs
 	innermodel.cpp
@@ -24,7 +23,6 @@ set(srcs
 	innermodelmesh.cpp
 	innermodeltouchsensor.cpp
 	innermodeldisplay.cpp
-	innermodelmgr.cpp
 )
 
 set(incs
@@ -50,7 +48,6 @@ set(incs
     include/${LIB_NAME}/innermodeltransform.h
     include/${LIB_NAME}/innermodelmesh.h
     include/${LIB_NAME}/innermodeldisplay.h
-    include/${LIB_NAME}/innermodelmgr.h
 )
 
 # FCL
