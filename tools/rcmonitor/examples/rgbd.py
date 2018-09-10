@@ -24,6 +24,8 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from PyQt4.Qt import *
 from ui_kinectDlg import Ui_KinectDlg
+import numpy as np
+import cv2
 
 
 class C(QWidget):
@@ -94,7 +96,7 @@ class C(QWidget):
 		color_image_width = 0
 		depth_image_height = 0
 		depth_image_width = 0
-		if "getImage" in self.method_combo or "getData" in self.method_combo or "getDepth" in self.method_combo:
+		if "getData" in self.method_combo or "getImage" in self.method_combo or "getDepth" in self.method_combo:
 			if (len(self.depth) == 640 * 480):
 				depth_image_width = 640
 				depth_image_height = 480
@@ -105,7 +107,8 @@ class C(QWidget):
 			else:
 				print 'Undetermined Depth image size: we shall not paint! %d'%(len(self.depth))
 				return
-		if "getRGB" in self.method_combo or "getImage" in self.method_combo or "getData" in self.method_combo:
+		if "getData" in self.method_combo:
+			# print type(self.color)
 			if (len(self.color) == 3*640*480) :
 				color_image_width = 640
 				color_image_height = 480
@@ -116,35 +119,53 @@ class C(QWidget):
 			else:
 				print 'Undetermined Color image size: we shall not paint! %d'%(len(self.color))
 				return
+		elif "getRGB" in self.method_combo or "getImage" in self.method_combo:
+			new_color = ''
+			if (len(self.color) == 640 * 480):
+				color_image_width = 640
+				color_image_height = 480
+			elif (len(self.color) == 320 * 240):
+				color_image_width = 320
+				color_image_height = 240
+			else:
+				print 'Undetermined Color image size in getRGB: we shall not paint! %d'%(len(self.color))
+				return
+			for color_struct in self.color:
+				new_color+=str(color_struct.red)
+				new_color+=str(color_struct.green)
+				new_color+=str(color_struct.blue)
+			self.color= new_color
+
 
 		if depth_image_height != color_image_height or depth_image_width != color_image_width:
-			print "Warning: Depth and color mismatch"
+			print "Warning: Depth (%d,%d) and Color(%d,%d) sizes mismatch"%(depth_image_width, depth_image_height, color_image_width, color_image_height)
 		
 		painter = QPainter(self)
 		painter.setRenderHint(QPainter.Antialiasing, True)
 
 		if depth_image_width!= 0 and depth_image_height!=0:
-			v = ''
-			m = 0
-			t = 0
-			for i in range(len(self.depth)):
-				ascii = 0
-				try:
-					ascii = int(128. - (255./self.maxDepth)*self.depth[i])
-					if ascii > 255: ascii = 255
-					if ascii < 0: ascii = 0
-					#print type(self.depth[i])
-					if fabs(self.depth[i])>0.00001: print self.depth[i]
-				except:
-					pass
-				if ascii > 255: ascii = 255
-				if ascii < 0: ascii = 0
-				v += chr(ascii)
-				t = t+1
-				m = m+float(self.depth[i])
-			imageGrey = QImage(v, depth_image_width, depth_image_height, QImage.Format_Indexed8)
-			for i in range(256):
-				imageGrey.setColor(i, QColor(i, i, i).rgb())
+			# Interpolate values from depth float arrray to 0-255 integers
+			depth = np.array(self.depth, dtype=np.float32)
+			depth_min = np.min(depth)
+			depth_max = np.max(depth)
+			if depth_max != depth_min and depth_max > 0:
+				depth = np.interp(depth, [depth_min, depth_max], [255.0, 0.0], right=0.0, left=0.0)
+			depth = depth.astype(np.uint8)
+
+			# Reshape to grayscale matrix
+			depth = depth.reshape(depth_image_height, depth_image_width)
+
+			# Convert to
+			if depth.dtype == np.uint8:
+				if len(depth.shape) == 2:
+					gray_color_table = [qRgb(i, i, i) for i in range(256)]
+					imageGrey = QImage(depth.data, depth.shape[1], depth.shape[0], depth.strides[0], QImage.Format_Indexed8)
+					imageGrey.setColorTable(gray_color_table)
+				else:
+					print("Wrong depth matrix format: Shape %s"%(depth.shape))
+			# imageGrey = QImage(depth, depth_image_width, depth_image_height, QImage.Format_Mono)
+			# for i in range(256):
+			# 	imageGrey.setColor(i, QColor(i, i, i).rgb())
 			painter.drawImage(QPointF(self.ui.frame.x(), self.ui.frame.y()), imageGrey)
 		#print 'mean', float(m)/t
 		if color_image_width!= 0 and color_image_height!= 0:
