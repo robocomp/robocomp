@@ -28,7 +28,6 @@
 #include <Ice/Ice.h>
 #include <InnerModelManager.h>
 #include <innermodel/innermodel.h>
-#include <innermodel/innermodelmgr.h>
 #include <string>
 #include <QObject>
 
