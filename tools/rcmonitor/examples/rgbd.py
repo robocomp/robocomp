@@ -131,9 +131,9 @@ class C(QWidget):
 				print 'Undetermined Color image size in getRGB: we shall not paint! %d'%(len(self.color))
 				return
 			for color_struct in self.color:
-				new_color+=str(color_struct.red)
-				new_color+=str(color_struct.green)
-				new_color+=str(color_struct.blue)
+				new_color+=chr(color_struct.red)
+				new_color+=chr(color_struct.green)
+				new_color+=chr(color_struct.blue)
 			self.color= new_color
 
 
