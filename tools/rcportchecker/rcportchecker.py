@@ -7,18 +7,12 @@ import re
 import sys
 
 
-# default_robocomp_path = '~/robocomp/'
-# print('Trying default directory (%s)'%(default_robocomp_path))
-# if os.path.exists(default_robocomp_path):
-#     print '%s path exists'%(default_robocomp_path)
-#     if os.path.isdir(default_robocomp_path):
-#         print '%s is a directory'%(default_robocomp_path)
-#         if not os.listdir(default_robocomp_path):
-#             print("Default Robocomp directory (%s) exists but it's empty. Exiting!"%(default_robocomp_path))
-#             sys.exit()
-# else:
-#     print("Default Robocomp directory (%s) doesn't exists. Exiting!"%(default_robocomp_path))
-#     sys.exit()
+
+class MyParser(argparse.ArgumentParser):
+    def error(self, message):
+        sys.stderr.write('error: %s\n' % message)
+        self.print_help()
+        sys.exit(2)
 
 def default_dir():
     default_robocomp_path = os.path.join(os.path.expanduser("~"), "robocomp")
@@ -48,7 +42,8 @@ def main(name, argv):
     #     print help_string
     #     sys.exit(2)
 
-    parser = argparse.ArgumentParser(description='Application to look for existing configured ports on components')
+
+    parser = MyParser(description='Application to look for existing configured ports on components')
     parser.add_argument("-v", "--verbose", help="increase output verbosity",
                         action="store_true")
     parser.add_argument("-p", "--port", help="List only the selected port information",
@@ -63,12 +58,7 @@ def main(name, argv):
                         action="store_true")
     parser.add_argument('action', choices=('ports', 'comps'), help="Show the components by name or by port")
     parser.add_argument('path', nargs='?', help="path to look for components config files recursively (default=\"~/robocomp/\")")
-    try:
-        args = parser.parse_args()
-    except:
-        parser.print_help()
-        sys.exit(0)
-
+    args = parser.parse_args()
     if args.path:
         robocomp_path = args.path
     else:
