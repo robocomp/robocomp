@@ -3,13 +3,13 @@ rcportchecker
 
 [![Join the chat at https://gitter.im/robocomp/robocomp](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/robocomp/robocomp?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-##What the rcportchecker does?
+## What the `rcportchecker` does?
 
 The `rcportchecker` is a tool for checking the used and availables ports for Robocomp components. This tool looks for the config files of the components in the local machine and show a list of configured components and it ports or a list of ports and the associated components.
 This tool can also be used to check if a particular port is available or used in any config file.
 It's not uncommon to have different instances of the same components running in different port, but one port can only be used by a component at the same execution time. This tool help the Robocomp developer to find available ports and also to find some posible conflicts when executing several components.
 
-##How can we execute the rcmonitor tool?
+## How can we execute the rcmonitor tool?
 
 Executing the `rcportchecker` without parameters or the `-h` option the full command help is shown:
 ```shell
@@ -34,7 +34,7 @@ optional arguments:
                         port
   -l, --lower           show all ports with numbers lower than 10000
 ```
-##Command examples
+## Command examples
 - List the ports used in more than one component
 ```
         rcportchecker.py ports
@@ -55,7 +55,7 @@ optional arguments:
 ```
          ./rcportchecker.py comps
 ```
-##TODO
+## TODO
 This tools is currently under development and can contain bugs and some information may be missing from the output.
 - The content of files/components-port.txt could be used to check if the ports used ar the default or not.
 - Implement a new mode to give the next available port (maybe it could find gaps)
