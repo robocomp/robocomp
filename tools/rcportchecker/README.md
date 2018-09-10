@@ -9,7 +9,7 @@ The `rcportchecker` is a tool for checking the used and availables ports for Rob
 This tool can also be used to check if a particular port is available or used in any config file.
 It's not uncommon to have different instances of the same components running in different port, but one port can only be used by a component at the same execution time. This tool help the Robocomp developer to find available ports and also to find some posible conflicts when executing several components.
 
-## How can we execute the rcmonitor tool?
+## How can we execute the `rcportchecker` tool?
 
 Executing the `rcportchecker` without parameters or the `-h` option the full command help is shown:
 ```shell
