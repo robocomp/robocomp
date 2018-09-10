@@ -25,10 +25,10 @@ MACRO( ROBOCOMP_INITIALIZE )
 
   message(STATUS ${OSGUTIL_LIBRARY})
 
-#   INCLUDE ( $ENV{ROBOCOMP}/cmake/modules/ipp.cmake )
+  FIND_PACKAGE( Ice REQUIRED COMPONENTS Ice IceStorm OPTIONAL_COMPONENTS IceUtil )
 
-  SET( LIBS ${LIBS} -L/opt/robocomp/lib ${OSG_LIBRARY} -losgViewer -losg -losgUtil  -losgGA ${OSGDB_LIBRARY} ${OSGVIEWER_LIBRARY} ${OPENTHREADS_LIBRARY}  -L${ICEROOT}/lib/ -L${ROBOCOMP_ROOT}/classes -lIce -lIceUtil -lpthread -lIceStorm -lboost_system  robocomp_qmat ${IPP_LIBS} robocomp_innermodel robocomp_osgviewer)
- 
+  SET( LIBS ${LIBS} -L/opt/robocomp/lib ${OSG_LIBRARY} -losgViewer -losg -losgUtil  -losgGA ${OSGDB_LIBRARY} ${OSGVIEWER_LIBRARY} ${OPENTHREADS_LIBRARY}  -L${ICEROOT}/lib/ -L${ROBOCOMP_ROOT}/classes ${Ice_LIBRARIES} -lboost_system  robocomp_qmat ${IPP_LIBS} robocomp_innermodel robocomp_osgviewer)
+
 ENDMACRO( ROBOCOMP_INITIALIZE )
 
 
