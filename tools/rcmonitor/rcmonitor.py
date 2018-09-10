@@ -93,8 +93,18 @@ ROBOCOMP = ''
 try:
 	ROBOCOMP = os.environ['ROBOCOMP']
 except:
-	print 'ROBOCOMP environment variable not set! Exiting.'
-	sys.exit()
+	default_robocomp_path = '/opt/robocomp'
+	print('ROBOCOMP environment variable not set! Trying default directory (%s)'%(default_robocomp_path))
+	if os.path.exists(default_robocomp_path) and os.path.isdir(default_robocomp_path):
+		if not os.listdir(default_robocomp_path):
+			print("Default Robocomp directory (%s) exists but it's empty. Exiting!"%(default_robocomp_path))
+			sys.exit()
+		else:
+			ROBOCOMP = default_robocomp_path
+	else:
+		print("Default Robocomp directory (%s) doesn't exists. Exiting!"%(default_robocomp_path))
+		sys.exit()
+
 
 
 def exists(parent, name):
