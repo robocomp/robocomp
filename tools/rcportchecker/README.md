@@ -37,23 +37,23 @@ optional arguments:
 ## Command examples
 - List the ports used in more than one component
 ```
-        rcportchecker.py ports
+        ./rcportchecker.py ports
 ```
 - List all the ports with one or more components configured on this:
 ```
-        rcportchecker.py -a ports
+        ./rcportchecker.py -a ports
 ```
 - List all the ports with one or more components configured on this and with a number under 10000 (de facto standard is using ports above 10000):
 ```
-        rcportchecker.py -a -l ports
+        ./rcportchecker.py -a -l ports
 ```
 - List components configured at the 11003 port if any:
 ```
-        rcportchecker.py -p 11003 ports
+        ./rcportchecker.py -p 11003 ports
 ```
 - List components by name showing the ports used and the path to the config files where it can be found:
 ```
-         ./rcportchecker.py comps
+        ./rcportchecker.py comps
 ```
 ## TODO
 This tools is currently under development and can contain bugs and some information may be missing from the output.
