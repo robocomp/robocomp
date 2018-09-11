@@ -14,13 +14,16 @@ class MyParser(argparse.ArgumentParser):
         self.print_help()
         sys.exit(2)
 
-def default_dir():
+def default_dir(debug=False):
     default_robocomp_path = os.path.join(os.path.expanduser("~"), "robocomp")
-    print('Trying default directory (%s)' % (default_robocomp_path))
+    if debug:
+        print('Trying default directory (%s)' % (default_robocomp_path))
     if os.path.exists(default_robocomp_path):
-        print("Default Robocomp (%s) exists " % (default_robocomp_path))
+        if debug:
+            print("Default Robocomp (%s) exists " % (default_robocomp_path))
         if os.path.isdir(default_robocomp_path):
-            print("Default Robocomp directory (%s) is a directory " % (default_robocomp_path))
+            if debug:
+                print("Default Robocomp directory (%s) is a directory " % (default_robocomp_path))
             if not os.listdir(default_robocomp_path):
                 print("Default Robocomp directory (%s) exists but it's empty. Exiting!" % (default_robocomp_path))
                 sys.exit()
@@ -43,7 +46,7 @@ def main(name, argv):
     #     sys.exit(2)
 
 
-    parser = MyParser(description='Application to look for existing configured ports on components')
+    parser = MyParser(description='Application to look for existing configured interfaces ports on components')
     parser.add_argument("-v", "--verbose", help="increase output verbosity",
                         action="store_true")
     parser.add_argument("-p", "--port", help="List only the selected port information",
@@ -51,20 +54,20 @@ def main(name, argv):
     # parser.add_argument("-c", "--components", help="list the diffents ports associated to component",
     #                     action="store_true")
     parser.add_argument("-a", "--all",
-                        help="show all ports configured in a component instead of showing only those with more than one component per port",
+                        help="show all ports configured for an interface instead of showing only those with more than one interface per port",
                         action="store_true")
     parser.add_argument("-l", "--lower",
                         help="show all ports with numbers lower than 10000",
                         action="store_true")
-    parser.add_argument('action', choices=('ports', 'comps'), help="Show the components by name or by port")
+    parser.add_argument('action', choices=('ports', 'interfaces'), help="Show the interfaces by name or by port")
     parser.add_argument('path', nargs='?', help="path to look for components config files recursively (default=\"~/robocomp/\")")
     args = parser.parse_args()
     if args.path:
         robocomp_path = args.path
     else:
-        robocomp_path = default_dir()
-    components_ports = {}
-    ports_for_components = {}
+        robocomp_path = default_dir(args.verbose)
+    interfaces_ports = {}
+    ports_for_interfaces = {}
     for root, dirs, files in os.walk(robocomp_path, topdown=False):
         for name in files:
             file_name, file_extension = os.path.splitext(name)
@@ -79,69 +82,69 @@ def main(name, argv):
                             if extracted:
                                 if args.verbose:
                                     print "\tfound endpoint %s" % (line)
-                                (comp_name, port) = extracted[0]
+                                (interface_name, port) = extracted[0]
                                 port = int(port)
-                                if comp_name in components_ports:
-                                    if port not in components_ports[comp_name].keys():
-                                        components_ports[comp_name][port] = [fullpath]
+                                if interface_name in interfaces_ports:
+                                    if port not in interfaces_ports[interface_name].keys():
+                                        interfaces_ports[interface_name][port] = [fullpath]
                                     else:
-                                        components_ports[comp_name][port].append(fullpath)
+                                        interfaces_ports[interface_name][port].append(fullpath)
                                 else:
-                                    components_ports[comp_name] = {}
-                                    components_ports[comp_name][port] = [fullpath]
+                                    interfaces_ports[interface_name] = {}
+                                    interfaces_ports[interface_name][port] = [fullpath]
 
-                                if port in ports_for_components:
-                                    if comp_name not in ports_for_components[port]:
-                                        ports_for_components[port][comp_name]=[fullpath]
+                                if port in ports_for_interfaces:
+                                    if interface_name not in ports_for_interfaces[port]:
+                                        ports_for_interfaces[port][interface_name]=[fullpath]
                                     else:
-                                        ports_for_components[port][comp_name].append(fullpath)
+                                        ports_for_interfaces[port][interface_name].append(fullpath)
                                 else:
-                                    ports_for_components[port] ={}
-                                    ports_for_components[port][comp_name]=[fullpath]
+                                    ports_for_interfaces[port] ={}
+                                    ports_for_interfaces[port][interface_name]=[fullpath]
                             else:
-                                print("Component without port? %s" % (line))
+                                print("Interface without port? %s" % (line))
 
-    # pprint.pprint(components_ports)
-    # pprint.pprint(ports_for_components)
+    # pprint.pprint(interfaces_ports)
+    # pprint.pprint(ports_for_interfaces)
     if args.verbose:
         print "\n---\n"
     if args.action == "ports":
         if args.port is not None:
-            if args.port in ports_for_components:
-                components = ports_for_components[args.port]
+            if args.port in ports_for_interfaces:
+                interfaces = ports_for_interfaces[args.port]
                 to_show = True
-                if not args.all and len(components) < 2:
+                if not args.all and len(interfaces) < 2:
                     to_show = False
                 if args.lower and port > 10000:
                     to_show = False
                 if to_show:
                     print "In port %d\t" % (args.port)
-                    for component, paths in components.items():
-                        print "\t%s" % (component)
+                    for interface, paths in interfaces.items():
+                        print "\t%s" % (interface)
                         for path in paths:
                             print "\t\t%s" % (path)
             else:
                 print "Port %d not found"%(args.port)
         else:
-            for port, components in sorted(ports_for_components.items()):
+            for port, interfaces in sorted(ports_for_interfaces.items()):
                 to_show = True
-                if not args.all and len(components) < 2:
+                if not args.all and len(interfaces) < 2:
                     to_show = False
                 if args.lower and port > 10000:
                     to_show = False
                 if to_show:
                     print "In port %d\t" % (port)
-                    for component, paths  in components.items():
-                        print "\t%s"%(component)
+                    for interface, paths  in interfaces.items():
+                        print "\t%s"%(interface)
                         for path in paths:
                             print "\t\t%s" % (path)
-    elif args.action == "comps":
-        for component, ports in sorted(components_ports.items()):
+    elif args.action == "interfaces":
+        for interface, ports in sorted(interfaces_ports.items()):
             to_show = True
             if not args.all and len(ports) < 2:
                 to_show = False
             if to_show:
-                print "%s" % (component)
+                print "%s" % (interface)
                 for port, paths in ports.items():
                     if args.lower and port > 10000:
                         to_show = False
