@@ -36,6 +36,16 @@ def default_dir(debug=False):
         print("Default Robocomp directory (%s) doesn't exists. Exiting!" % (default_robocomp_path))
         sys.exit()
 
+def print_interfaces_and_paths(interfaces, arg_interface):
+    for interface, paths in interfaces.items():
+        if arg_interface is not None and arg_interface not in interface.lower():
+            continue
+        print
+        "\t%s" % (interface)
+        for path in paths:
+            print
+            "\t\t%s" % (path)
+
 
 def main(name, argv):
     # help_string = "%s [-h] [-p] [-a]"%(os.path.basename(name))
@@ -59,6 +69,9 @@ def main(name, argv):
     parser.add_argument("-l", "--lower",
                         help="show all ports with numbers lower than 10000",
                         action="store_true")
+    parser.add_argument("-i", "--interface",
+                        help="List only interfaces that contains this string",
+                        type=str)
     parser.add_argument('action', choices=('ports', 'interfaces'), help="Show the interfaces by name or by port")
     parser.add_argument('path', nargs='?', help="path to look for components config files recursively (default=\"~/robocomp/\")")
     args = parser.parse_args()
@@ -118,13 +131,10 @@ def main(name, argv):
                 if args.lower and port > 10000:
                     to_show = False
                 if to_show:
-                    print "In port %d\t" % (args.port)
-                    for interface, paths in interfaces.items():
-                        print "\t%s" % (interface)
-                        for path in paths:
-                            print "\t\t%s" % (path)
+                    print("In port %d\t" % (port))
+                    print_interfaces_and_paths(interfaces, args.interface)
             else:
-                print "Port %d not found"%(args.port)
+                print("Port %d not found"%(args.port))
         else:
             for port, interfaces in sorted(ports_for_interfaces.items()):
                 to_show = True
@@ -133,18 +143,17 @@ def main(name, argv):
                 if args.lower and port > 10000:
                     to_show = False
                 if to_show:
-                    print "In port %d\t" % (port)
-                    for interface, paths  in interfaces.items():
-                        print "\t%s"%(interface)
-                        for path in paths:
-                            print "\t\t%s" % (path)
+                    print("In port %d\t" % (port))
+                    print_interfaces_and_paths(interfaces, args.interface)
     elif args.action == "interfaces":
         for interface, ports in sorted(interfaces_ports.items()):
+            if args.interface is not None and args.interface.lower() not in interface.lower():
+                continue
             to_show = True
             if not args.all and len(ports) < 2:
                 to_show = False
             if to_show:
-                print "%s" % (interface)
+                print("%s" % (interface))
                 for port, paths in ports.items():
                     if args.lower and port > 10000:
                         to_show = False
