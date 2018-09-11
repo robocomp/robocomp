@@ -5,35 +5,35 @@ import os
 import re
 import sys
 
+
 class bcolors:
-    HEADER = '\033[95m'
-    OKBLUE = '\033[94m'
-    OKGREEN = '\033[92m'
-    WARNING = '\033[93m'
-    FAIL = '\033[91m'
-    ENDC = '\033[0m'
-    BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
+	HEADER = '\033[95m'
+	OKBLUE = '\033[94m'
+	OKGREEN = '\033[92m'
+	WARNING = '\033[93m'
+	FAIL = '\033[91m'
+	ENDC = '\033[0m'
+	BOLD = '\033[1m'
+	UNDERLINE = '\033[4m'
+
 
 class MyParser(argparse.ArgumentParser):
 	def error(self, message):
-		sys.stderr.write((bcolors.FAIL+'error: %s\n'+bcolors.ENDC) % message)
+		sys.stderr.write((bcolors.FAIL + 'error: %s\n' + bcolors.ENDC) % message)
 		self.print_help()
 		sys.exit(2)
 
 
 class RCPortChecker:
-	def __init__(self, verbose=False, path= None):
+	def __init__(self, verbose=False, path=None):
 		self.interfaces_ports = {}
 		self.ports_for_interfaces = {}
-		self.debug= verbose
+		self.debug = verbose
 		if path is not None:
 			self.robocomp_path = path
 		else:
 			self.robocomp_path = self.default_dir()
 		self.find_and_parse_config_files()
-
-
 
 	def default_dir(self):
 		default_robocomp_path = os.path.join(os.path.expanduser("~"), "robocomp")
@@ -46,15 +46,20 @@ class RCPortChecker:
 				if self.debug:
 					print("Default Robocomp directory (%s) is a directory " % (default_robocomp_path))
 				if not os.listdir(default_robocomp_path):
-					print((bcolors.FAIL+"Default Robocomp directory (%s) exists but it's empty. Exiting!"+bcolors.ENDC ) % (default_robocomp_path))
+					print((
+									  bcolors.FAIL + "Default Robocomp directory (%s) exists but it's empty. Exiting!" + bcolors.ENDC) % (
+							  default_robocomp_path))
 					sys.exit()
 				else:
 					return default_robocomp_path
 			else:
-				print((bcolors.FAIL+"Default Robocomp directory (%s) exists but it's not a directory. Exiting!"+bcolors.ENDC ) % (default_robocomp_path))
+				print((
+								  bcolors.FAIL + "Default Robocomp directory (%s) exists but it's not a directory. Exiting!" + bcolors.ENDC) % (
+						  default_robocomp_path))
 				sys.exit()
 		else:
-			print((bcolors.FAIL+"Default Robocomp directory (%s) doesn't exists. Exiting!"+bcolors.ENDC )% (default_robocomp_path))
+			print((bcolors.FAIL + "Default Robocomp directory (%s) doesn't exists. Exiting!" + bcolors.ENDC) % (
+				default_robocomp_path))
 			sys.exit()
 
 	def print_interfaces_and_paths(self, interfaces, interface_filter):
@@ -65,19 +70,18 @@ class RCPortChecker:
 			for path in paths:
 				print("\t\t%s" % (path))
 
-	def print_port_listing(self, all=False, lower=False, interface_filter = None):
-			for port, interfaces in sorted(self.ports_for_interfaces.items()):
-				to_show = True
-				if not all and len(interfaces) < 2:
-					to_show = False
-				if lower and port > 10000:
-					to_show = False
-				if to_show:
-					print("In port %d\t" % (port))
-					self.print_interfaces_and_paths(interfaces, interface_filter)
+	def print_port_listing(self, all=False, lower=False, interface_filter=None):
+		for port, interfaces in sorted(self.ports_for_interfaces.items()):
+			to_show = True
+			if not all and len(interfaces) < 2:
+				to_show = False
+			if lower and port > 10000:
+				to_show = False
+			if to_show:
+				print("In port %d\t" % (port))
+				self.print_interfaces_and_paths(interfaces, interface_filter)
 
-
-	def print_interface_listing(self, all=False, lower=False, interface_filter = None):
+	def print_interface_listing(self, all=False, lower=False, interface_filter=None):
 		for interface, ports in sorted(self.interfaces_ports.items()):
 			if interface_filter is not None and interface_filter.lower() not in interface.lower():
 				continue
@@ -131,23 +135,23 @@ class RCPortChecker:
 										self.ports_for_interfaces[port] = {}
 										self.ports_for_interfaces[port][interface_name] = [fullpath]
 								else:
-									print((bcolors.WARNING+"Interface without port? %s"+bcolors.ENDC) % (line))
+									print((bcolors.WARNING + "Interface without port? %s" + bcolors.ENDC) % (line))
 		if self.debug:
-				print("\n---\n")
+			print("\n---\n")
 
-	def print_port_info(self, port,  all=False, lower=False, interface_filter=None):
-			if port in self.ports_for_interfaces:
-				interfaces = self.ports_for_interfaces[port]
-				to_show = True
-				if not all and len(interfaces) < 2:
-					to_show = False
-				if lower and port > 10000:
-					to_show = False
-				if to_show:
-					print("In port %d\t" % (port))
-					self.print_interfaces_and_paths(interfaces, interface_filter)
-			else:
-				print((bcolors.OKBLUE+"Port \'%d\' not found"+bcolors.ENDC)%(port))
+	def print_port_info(self, port, all=False, lower=False, interface_filter=None):
+		if port in self.ports_for_interfaces:
+			interfaces = self.ports_for_interfaces[port]
+			to_show = True
+			if not all and len(interfaces) < 2:
+				to_show = False
+			if lower and port > 10000:
+				to_show = False
+			if to_show:
+				print("In port %d\t" % (port))
+				self.print_interfaces_and_paths(interfaces, interface_filter)
+		else:
+			print((bcolors.OKBLUE + "Port \'%d\' not found" + bcolors.ENDC) % (port))
 
 
 def main(name, argv):
@@ -157,7 +161,6 @@ def main(name, argv):
 	# except getopt.GetoptError:
 	#     print help_string
 	#     sys.exit(2)
-
 
 	parser = MyParser(description='Application to look for existing configured interfaces ports on components')
 	parser.add_argument("-v", "--verbose", help="increase output verbosity",
@@ -176,11 +179,13 @@ def main(name, argv):
 						help="List only interfaces that contains this string",
 						type=str)
 	parser.add_argument('action', choices=('ports', 'interfaces'), help="Show the interfaces by name or by port")
-	parser.add_argument('path', nargs='?', help="path to look for components config files recursively (default=\"~/robocomp/\")")
+	parser.add_argument('path', nargs='?',
+						help="path to look for components config files recursively (default=\"~/robocomp/\")")
 	args = parser.parse_args()
 
 	if args.interface is not None and args.action == "ports":
-		print(bcolors.WARNING+"[!] Wrong parameters combination: Filtering an interface by name (-i) while listing ports is not available."+bcolors.ENDC)
+		print(
+			bcolors.WARNING + "[!] Wrong parameters combination: Filtering an interface by name (-i) while listing ports is not available." + bcolors.ENDC)
 		parser.print_help()
 		sys.exit()
 
@@ -188,7 +193,7 @@ def main(name, argv):
 
 	if args.action == "ports":
 		if args.port is not None:
-			rcportchecker.print_port_info(args.port,args.all, args.lower, args.interface)
+			rcportchecker.print_port_info(args.port, args.all, args.lower, args.interface)
 		else:
 			rcportchecker.print_port_listing(args.all, args.lower, args.interface)
 	elif args.action == "interfaces":
