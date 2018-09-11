@@ -1,4 +1,30 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+#
+#  ------------------------
+#  ----- rcportchecker -----
+#  ------------------------
+#
+#    Copyright (C) 2010 by RoboLab - University of Extremadura
+#
+#    This file is part of RoboComp
+#
+#    RoboComp is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    RoboComp is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with RoboComp.  If not, see <http://www.gnu.org/licenses/>.
+#
+#
+#
 
 import argparse
 import os
@@ -6,7 +32,7 @@ import re
 import sys
 
 
-class bcolors:
+class BColors:
 	HEADER = '\033[95m'
 	OKBLUE = '\033[94m'
 	OKGREEN = '\033[92m'
@@ -19,7 +45,7 @@ class bcolors:
 
 class MyParser(argparse.ArgumentParser):
 	def error(self, message):
-		sys.stderr.write((bcolors.FAIL + 'error: %s\n' + bcolors.ENDC) % message)
+		sys.stderr.write((BColors.FAIL + 'error: %s\n' + BColors.ENDC) % message)
 		self.print_help()
 		sys.exit(2)
 
@@ -35,6 +61,10 @@ class RCPortChecker:
 			self.robocomp_path = self.default_dir()
 		self.find_and_parse_config_files()
 
+	def clear(self):
+		self.interfaces_ports = {}
+		self.ports_for_interfaces = {}
+
 	def default_dir(self):
 		default_robocomp_path = os.path.join(os.path.expanduser("~"), "robocomp")
 		if self.debug:
@@ -47,18 +77,18 @@ class RCPortChecker:
 					print("Default Robocomp directory (%s) is a directory " % (default_robocomp_path))
 				if not os.listdir(default_robocomp_path):
 					print((
-									  bcolors.FAIL + "Default Robocomp directory (%s) exists but it's empty. Exiting!" + bcolors.ENDC) % (
+								  BColors.FAIL + "Default Robocomp directory (%s) exists but it's empty. Exiting!" + BColors.ENDC) % (
 							  default_robocomp_path))
 					sys.exit()
 				else:
 					return default_robocomp_path
 			else:
 				print((
-								  bcolors.FAIL + "Default Robocomp directory (%s) exists but it's not a directory. Exiting!" + bcolors.ENDC) % (
+							  BColors.FAIL + "Default Robocomp directory (%s) exists but it's not a directory. Exiting!" + BColors.ENDC) % (
 						  default_robocomp_path))
 				sys.exit()
 		else:
-			print((bcolors.FAIL + "Default Robocomp directory (%s) doesn't exists. Exiting!" + bcolors.ENDC) % (
+			print((BColors.FAIL + "Default Robocomp directory (%s) doesn't exists. Exiting!" + BColors.ENDC) % (
 				default_robocomp_path))
 			sys.exit()
 
@@ -100,44 +130,55 @@ class RCPortChecker:
 						for path in paths:
 							print("\t\t%s" % (path))
 
-	def find_and_parse_config_files(self):
+	def search_interface_port(self, interface_name):
+		for interface, ports in sorted(self.interfaces_ports.items()):
+			if interface_name is not None and interface_name.lower() != interface.lower():
+				continue
+			return (ports.keys()[0],ports.values())
+		return None, None
+
+
+	def find_and_parse_config_files(self, paths = None):
 		for root, dirs, files in os.walk(self.robocomp_path, topdown=False):
 			for name in files:
 				file_name, file_extension = os.path.splitext(name)
 				if ("config" in name and file_extension == '') or (".conf" in file_extension) and "etc" in root:
 					fullpath = os.path.join(root, name)
-					with open(fullpath, 'r') as fin:
-						for line in fin:
-							if ".Endpoints" in line and "cog.outl" not in line:
-								if self.debug:
-									print("Looking into file %s" % (fullpath))
-								extracted = re.findall(r'(.*)\.Endpoints\s*=.*-p\s?(\d+)', line)
-								if extracted:
-									if self.debug:
-										print("\tfound endpoint %s" % (line))
-									(interface_name, port) = extracted[0]
-									port = int(port)
-									if interface_name in self.interfaces_ports:
-										if port not in self.interfaces_ports[interface_name].keys():
-											self.interfaces_ports[interface_name][port] = [fullpath]
-										else:
-											self.interfaces_ports[interface_name][port].append(fullpath)
-									else:
-										self.interfaces_ports[interface_name] = {}
-										self.interfaces_ports[interface_name][port] = [fullpath]
-
-									if port in self.ports_for_interfaces:
-										if interface_name not in self.ports_for_interfaces[port]:
-											self.ports_for_interfaces[port][interface_name] = [fullpath]
-										else:
-											self.ports_for_interfaces[port][interface_name].append(fullpath)
-									else:
-										self.ports_for_interfaces[port] = {}
-										self.ports_for_interfaces[port][interface_name] = [fullpath]
-								else:
-									print((bcolors.WARNING + "Interface without port? %s" + bcolors.ENDC) % (line))
+					self.parse_config_file(fullpath)
 		if self.debug:
 			print("\n---\n")
+
+	def parse_config_file(self, fullpath):
+		with open(fullpath, 'r') as fin:
+			for line in fin:
+				if ".Endpoints" in line and "cog.outl" not in line:
+					if self.debug:
+						print("Looking into file %s" % (fullpath))
+					extracted = re.findall(r'(.*)\.Endpoints\s*=.*-p\s?(\d+)', line)
+					if extracted:
+						if self.debug:
+							print("\tfound endpoint %s" % (line))
+						(interface_name, port) = extracted[0]
+						port = int(port)
+						if interface_name in self.interfaces_ports:
+							if port not in self.interfaces_ports[interface_name].keys():
+								self.interfaces_ports[interface_name][port] = [fullpath]
+							else:
+								self.interfaces_ports[interface_name][port].append(fullpath)
+						else:
+							self.interfaces_ports[interface_name] = {}
+							self.interfaces_ports[interface_name][port] = [fullpath]
+
+						if port in self.ports_for_interfaces:
+							if interface_name not in self.ports_for_interfaces[port]:
+								self.ports_for_interfaces[port][interface_name] = [fullpath]
+							else:
+								self.ports_for_interfaces[port][interface_name].append(fullpath)
+						else:
+							self.ports_for_interfaces[port] = {}
+							self.ports_for_interfaces[port][interface_name] = [fullpath]
+					else:
+						print((BColors.WARNING + "Interface without port? %s" + BColors.ENDC) % (line))
 
 	def print_port_info(self, port, all=False, lower=False, interface_filter=None):
 		if port in self.ports_for_interfaces:
@@ -151,16 +192,10 @@ class RCPortChecker:
 				print("In port %d\t" % (port))
 				self.print_interfaces_and_paths(interfaces, interface_filter)
 		else:
-			print((bcolors.OKBLUE + "Port \'%d\' not found" + bcolors.ENDC) % (port))
+			print((BColors.OKBLUE + "Port \'%d\' not found" + BColors.ENDC) % (port))
 
 
-def main(name, argv):
-	# help_string = "%s [-h] [-p] [-a]"%(os.path.basename(name))
-	# try:
-	#     opts, args = getopt.getopt(argv,"hpav",["help","ports","all", "verbose"])
-	# except getopt.GetoptError:
-	#     print help_string
-	#     sys.exit(2)
+def main():
 
 	parser = MyParser(description='Application to look for existing configured interfaces ports on components')
 	parser.add_argument("-v", "--verbose", help="increase output verbosity",
@@ -185,7 +220,7 @@ def main(name, argv):
 
 	if args.interface is not None and args.action == "ports":
 		print(
-			bcolors.WARNING + "[!] Wrong parameters combination: Filtering an interface by name (-i) while listing ports is not available." + bcolors.ENDC)
+			BColors.WARNING + "[!] Wrong parameters combination: Filtering an interface by name (-i) while listing ports is not available." + BColors.ENDC)
 		parser.print_help()
 		sys.exit()
 
@@ -201,4 +236,4 @@ def main(name, argv):
 
 
 if __name__ == '__main__':
-	main(sys.argv[0], sys.argv[1:])
+	main()
