@@ -215,7 +215,7 @@ class RCDeploymentChecker:
 						   BColors.OKBLUE + "%s" + BColors.ENDC + " (%s - %s)") %
 						  (endpoint_port,
 						   matched_port_interface,
-						   endpoint_name,
+						   endpoint,
 						   matched_port_interface,
 						   endpoint_name))
 				elif result == 0:
