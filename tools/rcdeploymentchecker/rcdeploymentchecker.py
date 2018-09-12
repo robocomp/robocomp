@@ -226,7 +226,7 @@ class RCDeploymentChecker:
 					if self.debug:
 						print("[+] Matching ports for endpoint %s"%endpoint)
 				elif result == -1:
-					print("[!] Not found: Expected path %s for endpoint %s" % (path, endpoint))
+					print((BColors.FAIL+"[!]"+BColors.ENDC+" Not found: Expected path %s for endpoint %s") % (path, endpoint))
 
 	def check_endpoint_in_config_file(self, endpoint, path):
 		endpoint_name = endpoint.split(":")[0]
