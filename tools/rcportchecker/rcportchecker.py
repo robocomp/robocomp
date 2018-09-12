@@ -130,12 +130,19 @@ class RCPortChecker:
 						for path in paths:
 							print("\t\t%s" % (path))
 
-	def search_interface_port(self, interface_name):
+	def search_interface_port_by_name(self, interface_name):
 		for interface, ports in sorted(self.interfaces_ports.items()):
 			if interface_name is not None and interface_name.lower() != interface.lower():
 				continue
-			return (ports.keys()[0],ports.values())
+			return (ports.keys()[0],ports[ports.keys()[0]])
 		return None, None
+
+	def search_interface_by_port(self, port):
+		if port in self.ports_for_interfaces.keys():
+			interfaces = self.ports_for_interfaces[port]
+			return interfaces.keys()[0], interfaces[interfaces.keys()[0]]
+		else:
+			return None, None
 
 
 	def find_and_parse_config_files(self, paths = None):
