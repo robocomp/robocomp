@@ -22,15 +22,21 @@
 #include "config.h"
 #include <QtCore>
 #include <iostream>
-#include <boost/format.hpp> 
-
-using namespace std;
 
 #if COMPILE_LOGGERCOMP==1
 	#include <Logger.h>
 #endif
 
+#ifndef Q_MOC_RUN
+	#include <boost/format.hpp> 
+
+using namespace std;
+
+
+
 #include <boost/format.hpp>
+#endif
+
 
 #define SetLoggerInstance(x) loggerInstance = x
 #define rDebug2(strng) qLog::getInstance()->send(std::string(__FILE__),__LINE__,std::string(__func__),boost::str(boost::format strng ),std::string("Debug"))
