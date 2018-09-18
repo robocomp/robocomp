@@ -26,7 +26,7 @@ Remember to start a new bash session before continue using RoboComp: new variabl
 
 # Installation from source
 
-Tested in Ubuntu 14.04, 14.10, 15.04, 15.10 and 16.04
+Tested in Ubuntu 14.04, 14.10, 15.04, 15.10, 16.04  and 18.04
 <!--If you are not an Ubuntu user, need to modify the core of RoboComp, or just feel like installing from sources, you can follow these instructions (they have been tested in Ubuntu 14.04, 14.10, 15.04, 16.04). If you're not in any of these scenarios, please use the packaged version.
 -->
 
@@ -34,7 +34,7 @@ Tested in Ubuntu 14.04, 14.10, 15.04, 15.10 and 16.04
 Make sure you have installed the following packages from the Ubuntu repository:
 
     sudo apt-get update
-    sudo apt-get install git git-annex cmake g++ libgsl0-dev libopenscenegraph-dev cmake-qt-gui zeroc-ice35 freeglut3-dev libboost-system-dev libboost-thread-dev qt4-dev-tools python-pip  python-pyparsing python-numpy python-pyside pyside-tools libxt-dev pyqt4-dev-tools libboost-test-dev libboost-filesystem-dev python-libxml2 python-xmltodict libccd-dev
+    sudo apt-get install git git-annex cmake g++ libgsl-dev libopenscenegraph-dev cmake-qt-gui zeroc-ice-all-dev freeglut3-dev libboost-system-dev libboost-thread-dev qt4-dev-tools python-pip  python-pyparsing python-numpy python-pyside pyside-tools libxt-dev pyqt4-dev-tools libboost-test-dev libboost-filesystem-dev python-libxml2 python-xmltodict libccd-dev
     sudo pip install networkx
 
 It is recommendable to install the following packages::
