@@ -21,9 +21,8 @@
 import Ice, sys, math, traceback
 import random
 
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
-from PyQt4.Qt import *
+from PySide.QtCore import *
+from PySide.QtGui import *
 
 domain=open('domain.pddl', 'r').read()
 problem=open('problem.pddl', 'r').read()

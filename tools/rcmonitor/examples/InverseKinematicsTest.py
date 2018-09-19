@@ -21,9 +21,8 @@
 import Ice, sys, math, traceback
 import time
 from random import randint
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
-from PyQt4.Qt import *
+from PySide.QtCore import *
+from PySide.QtGui import *
 
 #Position dictionary: could contain:  
 # 6D postion ==> 'name':(,x,y,z,rx,ry,rz)

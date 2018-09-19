@@ -20,9 +20,8 @@
 
 import Ice, sys, math, traceback
 
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
-from PyQt4.Qt import *
+from PySide.QtCore import *
+from PySide.QtGui import *
 from ui_headt2pDlg import Ui_HeadT2PDlg
 
 
