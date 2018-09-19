@@ -22,7 +22,7 @@ DisplayServer::DisplayServer(Ice::CommunicatorPtr communicator, SpecificWorker *
 	adapter = communicator->createObjectAdapterWithEndpoints(name, endp);
 	printf("Creating Display adapter <<%s>> with endpoint <<%s>>\n", name.c_str(), endp.c_str());
 	interface = new DisplayI(worker);
-	adapter->add(interface, communicator->stringToIdentity("display"));
+	adapter->add(interface, Ice::stringToIdentity("display"));
 	adapter->activate();
 }
 
@@ -40,7 +40,7 @@ void DisplayServer::shutdown()
 {
 	try
 	{
-		adapter->remove(comm->stringToIdentity("display"));
+		adapter->remove(Ice::stringToIdentity("display"));
 	}
 	catch(Ice::ObjectAdapterDeactivatedException e)
 	{
@@ -65,7 +65,7 @@ JointMotorServer::JointMotorServer(Ice::CommunicatorPtr communicator, SpecificWo
 	adapter = communicator->createObjectAdapterWithEndpoints(name, endp);
 	printf("Creating JointMotor adapter <<%s>> with endpoint <<%s>>\n", name.c_str(), endp.c_str());
 	interface = new JointMotorI(worker);
-	adapter->add(interface, communicator->stringToIdentity("jointmotor"));
+	adapter->add(interface, Ice::stringToIdentity("jointmotor"));
 	adapter->activate();
 }
 
@@ -106,7 +106,7 @@ void JointMotorServer::shutdown()
 {
 	try
 	{
-		adapter->remove(comm->stringToIdentity("jointmotor"));
+		adapter->remove(Ice::stringToIdentity("jointmotor"));
 	}
 	catch(Ice::ObjectAdapterDeactivatedException e)
 	{
@@ -132,7 +132,7 @@ TouchSensorServer::TouchSensorServer(Ice::CommunicatorPtr communicator, Specific
 	adapter = communicator->createObjectAdapterWithEndpoints(name, endp);
 	printf("Creating TouchSensor adapter <<%s>> with endpoint <<%s>>\n", name.c_str(), endp.c_str());
 	interface = new TouchSensorI(worker);
-	adapter->add(interface, communicator->stringToIdentity("touchsensor"));
+	adapter->add(interface, Ice::stringToIdentity("touchsensor"));
 	adapter->activate();
 }
 void TouchSensorServer::add(InnerModelTouchSensor *sensor)
@@ -155,7 +155,7 @@ void TouchSensorServer::shutdown()
 {
 	try
 	{
-		adapter->remove(comm->stringToIdentity("touchsensor"));
+		adapter->remove(Ice::stringToIdentity("touchsensor"));
 	}
 	catch(Ice::ObjectAdapterDeactivatedException e)
 	{
@@ -178,7 +178,7 @@ LaserServer::LaserServer(Ice::CommunicatorPtr communicator, SpecificWorker *work
 	adapter = communicator->createObjectAdapterWithEndpoints(name, endp);
 	printf("Creating Laser adapter <<%s>> with endpoint <<%s>>\n", name.c_str(), endp.c_str());
 	interface = new LaserI(worker);
-	adapter->add(interface, communicator->stringToIdentity("laser"));
+	adapter->add(interface, Ice::stringToIdentity("laser"));
 	adapter->activate();
 }
 
@@ -204,7 +204,7 @@ RGBDServer::RGBDServer(Ice::CommunicatorPtr communicator, SpecificWorker *worker
 	adapter = communicator->createObjectAdapterWithEndpoints(name, endp);
 	printf("Creating RGBD adapter <<%s>> with endpoint <<%s>>\n", name.c_str(), endp.c_str());
 	interface = new RGBDI(worker);
-	adapter->add(interface, communicator->stringToIdentity("rgbd"));
+	adapter->add(interface, Ice::stringToIdentity("rgbd"));
 	adapter->activate();
 }
 
@@ -230,7 +230,7 @@ IMUServer::IMUServer(Ice::CommunicatorPtr communicator, SpecificWorker *worker, 
 	adapter = communicator->createObjectAdapterWithEndpoints(name, endp);
 	printf("Creating IMU adapter <<%s>> with endpoint <<%s>>\n", name.c_str(), endp.c_str());
 	interface = new IMUI(worker);
-	adapter->add(interface, communicator->stringToIdentity("imu"));
+	adapter->add(interface, Ice::stringToIdentity("imu"));
 	adapter->activate();
 }
 
@@ -256,7 +256,7 @@ DifferentialRobotServer::DifferentialRobotServer(Ice::CommunicatorPtr communicat
 	adapter = communicator->createObjectAdapterWithEndpoints(name, endp);
 	printf("Creating DifferentialRobot adapter <<%s>> with endpoint <<%s>>\n", name.c_str(), endp.c_str());
 	interface = new DifferentialRobotI(worker);
-	adapter->add(interface, communicator->stringToIdentity("differentialrobot"));
+	adapter->add(interface, Ice::stringToIdentity("differentialrobot"));
 	adapter->activate();
 }
 
@@ -283,17 +283,17 @@ OmniRobotServer::OmniRobotServer(Ice::CommunicatorPtr communicator, SpecificWork
 
 	printf("Creating OmniRobot adapter <<%s>> with endpoint <<%s>>\n", name.c_str(), endp.c_str());
 	interface = new OmniRobotI(worker);
-	adapter->add(interface, communicator->stringToIdentity("omnirobot"));
+	adapter->add(interface, Ice::stringToIdentity("omnirobot"));
 	adapter->activate();
 
 	printf("Creating DifferentialRobot [[emulated from an OmniRobot interface]] adapter <<%s>> with endpoint <<%s>>\n", name.c_str(), endp.c_str());
 	interfaceDFR = new DifferentialRobotI(worker, interface);
-	adapter->add(interfaceDFR, communicator->stringToIdentity("differentialrobot"));
+	adapter->add(interfaceDFR, Ice::stringToIdentity("differentialrobot"));
 	adapter->activate();
 
 	printf("Creating GenericBase adapter <<%s>> with endpoint <<%s>>\n", name.c_str(), endp.c_str());
 	interfaceGB = new GenericBaseI(worker, interface);
-	adapter->add(interfaceGB, communicator->stringToIdentity("genericbase"));
+	adapter->add(interfaceGB, Ice::stringToIdentity("genericbase"));
 	adapter->activate();
 }
 
