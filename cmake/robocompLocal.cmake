@@ -19,11 +19,6 @@ MACRO( ROBOCOMP_INITIALIZE )
   SET( ROBOCOMP_ROOT ${ARGN} )
   MESSAGE(STATUS "RoboComp root is now set to ${ROBOCOMP_ROOT}")
   # Include path directories
-  SET(ICEROOT $ENV{ICEROOT} )
-  MESSAGE(STATUS "$ICEROOT=\"${ICEROOT}\"")
-  IF (NOT ${ICEROOT} EQUAL "")
-    SET(SLICECPP_PATH ${ICEROOT}/bin/)
-	ENDIF (NOT ${ICEROOT} EQUAL "")
   INCLUDE_DIRECTORIES (
     .
     ${ARGN}/classes/
@@ -35,20 +30,13 @@ MACRO( ROBOCOMP_INITIALIZE )
   # Set interfaces directory
   SET(RoboComp_INTERFACES_DIR "${ARGN}/interfaces/")
 
-  message(STATUS ${OSGUTIL_LIBRARY})
+  MESSAGE(STATUS ${OSGUTIL_LIBRARY})
 
-#   INCLUDE ( $ENV{ROBOCOMP}/cmake/modules/ipp.cmake )
+  FIND_PACKAGE( Threads)
+  FIND_PACKAGE( Ice REQUIRED COMPONENTS Ice IceStorm OPTIONAL_COMPONENTS IceUtil )
+ 
+  SET( LIBS ${LIBS} -L/opt/robocomp/lib ${OSG_LIBRARY} -losgViewer -losg -losgUtil  -losgGA ${OSGDB_LIBRARY} ${OSGVIEWER_LIBRARY} ${OPENTHREADS_LIBRARY}  -L${ROBOCOMP_ROOT}/classes ${CMAKE_THREAD_LIBS_INIT} ${Ice_LIBRARIES} -lboost_system  robocomp_qmat ${IPP_LIBS} robocomp_innermodel robocomp_osgviewer)
 
-# Ice Libraries 
-  INCLUDE (FindIce)
-  IF ( ${Ice_VERSION} VERSION_GREATER "3.6")
-    SET( LIBS ${LIBS} -L${ICEROOT}/lib/ -lIce++11 -lIceUtil++11 -lIceStorm++11)
-  ELSE ( ${Ice_VERSION} VERSION_GREATER "3.6")
-    SET( LIBS ${LIBS} -L${ICEROOT}/lib/ -lIce -lIceUtil -lIceStorm)
-  ENDIF ( ${Ice_VERSION} VERSION_GREATER "3.6")
-
-  # Other libraries
-  SET( LIBS ${LIBS} -L/opt/robocomp/lib ${OSG_LIBRARY} -losg -losgUtil -losgGA ${OSGDB_LIBRARY} ${OSGVIEWER_LIBRARY} ${OPENTHREADS_LIBRARY} -L${ROBOCOMP_ROOT}/classes  -lpthread -lboost_system ${QT_LIBRARIES} robocomp_qmat ${IPP_LIBS} robocomp_innermodel robocomp_osgviewer)
  
  
 ENDMACRO( ROBOCOMP_INITIALIZE )
@@ -133,7 +121,7 @@ MACRO( ROBOCOMP_WRAP_PYTHON_UI )
     MESSAGE(STATUS "Adding rule to generate ui_${input_file}.py from ${input_file}.ui" )
     ADD_CUSTOM_COMMAND (
       OUTPUT ui_${input_file}.py
-      COMMAND pyuic4 ${input_file}.ui -o ui_${input_file}.py
+      COMMAND pysice-uic ${input_file}.ui -o ui_${input_file}.py
       DEPENDS ${input_file}.ui
       COMMENT "Generating ui_${input_file}.py from ${input_file}.ui"
     )
