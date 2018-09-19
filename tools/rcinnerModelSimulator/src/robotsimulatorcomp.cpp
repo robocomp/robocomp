@@ -97,8 +97,6 @@ void robotSimulatorComp::initialize()
 {
 }
 
-
-
 int robotSimulatorComp::run( int argc, char* argv[] )
 {
 	// GUI application
@@ -127,7 +125,7 @@ int robotSimulatorComp::run( int argc, char* argv[] )
 	if (port > 65535 or port < 0)
 		qFatal("Port number must be in the range 0-1023 (requires root privileges) or 1024-65535 (no privileges needed). Default port number: 11175");
 	if (ms > 1000 or ms < 5)
-		qFatal("Simulation period must be in the range 5-1000. Default period length 120ms");
+		qFatal("Simulation period must be in the range 5-1000. Default period length 30ms");
 
 	//Talk to STORM and setup mouse publishing stuff
 	IceStorm::TopicManagerPrx topicManager;

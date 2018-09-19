@@ -32,8 +32,6 @@
 // Simulator includes
 #include "config.h"
 
-
-
 using namespace RoboCompOmniRobot;
 
 class SpecificWorker;
@@ -66,7 +64,7 @@ public:
 */
 private:
 	SpecificWorker *worker;
-	InnerModel *innerModel;
+	InnerModel* innerModel;
 	QStringList omniIDs;
 	
 // 	RMat::RTMat zeroTR;

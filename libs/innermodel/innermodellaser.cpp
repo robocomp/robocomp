@@ -48,6 +48,14 @@ void InnerModelLaser::print(bool verbose)
 	if (verbose) printf("LASER.");
 }
 
+void InnerModelLaser::update()
+{
+	if (fixed)
+	{
+	}
+	updateChildren();
+}
+
 InnerModelNode * InnerModelLaser::copyNode(QHash<QString, InnerModelNode *> &hash, InnerModelNode *parent)
 {
 	InnerModelLaser *ret = new InnerModelLaser(id, port, min, max, angle, measures, ifconfig, innermodel, parent);
@@ -56,6 +64,7 @@ InnerModelNode * InnerModelLaser::copyNode(QHash<QString, InnerModelNode *> &has
 	ret->children.clear();
 	ret->attributes.clear();
 	hash[id] = ret;
+	ret->innerModel = parent->innerModel;
 
 	ret->innerModel = parent->innerModel;
 
@@ -69,7 +78,6 @@ InnerModelNode * InnerModelLaser::copyNode(QHash<QString, InnerModelNode *> &has
 
 QVec InnerModelLaser::laserTo(const QString &dest, float r, float alpha)
 {
-	QMutexLocker l(&mutex);
 	QVec p(3);
 	p(0) = r * sin(alpha);
 	p(1) = 0;

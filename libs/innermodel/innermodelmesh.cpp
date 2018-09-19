@@ -136,6 +136,14 @@ void InnerModelMesh::setScale(float x, float y, float z)
 	scalez=z;
 }
 
+void InnerModelMesh::update()
+{
+	if (fixed)
+	{
+	}
+	updateChildren();
+}
+
 bool InnerModelMesh::normalRendering() const
 {
 	return render == NormalRendering;
@@ -153,7 +161,6 @@ InnerModelNode * InnerModelMesh::copyNode(QHash<QString, InnerModelNode *> &hash
 	ret->children.clear();
 	ret->attributes.clear();
 	hash[id] = ret;
-
 	ret->innerModel = parent->innerModel;
 
 #if FCL_SUPPORT==1
@@ -161,6 +168,7 @@ InnerModelNode * InnerModelMesh::copyNode(QHash<QString, InnerModelNode *> &hash
 	ret->fclMesh = FCLModelPtr(new FCLModel(*fclMesh.get()));
 	ret->collisionObject = new fcl::CollisionObject(ret->fclMesh);
 #endif
+
 
 	for (QList<InnerModelNode*>::iterator i=children.begin(); i!=children.end(); i++)
 	{

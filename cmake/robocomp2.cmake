@@ -22,10 +22,11 @@ MACRO( ROBOCOMP_INITIALIZE )
 
   MESSAGE(STATUS ${OSGUTIL_LIBRARY})
 
-  FIND_PACKAGE( Ice REQUIRED COMPONENTS Ice IceStorm OPTIONAL_COMPONENTS IceUtil )
   FIND_PACKAGE( Threads)
-
-  SET( LIBS ${LIBS} -L/opt/robocomp/lib ${OSG_LIBRARY} -losg -losgUtil -losgGA ${OSGDB_LIBRARY} ${OSGVIEWER_LIBRARY} ${OPENTHREADS_LIBRARY}  -L${ROBOCOMP_ROOT}/classes -lpthread ${Ice_LIBRARIES} -lboost_system  robocomp_qmat ${IPP_LIBS} robocomp_innermodel robocomp_osgviewer)
+  FIND_PACKAGE( Ice REQUIRED COMPONENTS Ice IceStorm OPTIONAL_COMPONENTS IceUtil )
+ 
+  SET( LIBS ${LIBS} -L/opt/robocomp/lib ${OSG_LIBRARY} -losgViewer -losg -losgUtil  -losgGA ${OSGDB_LIBRARY} ${OSGVIEWER_LIBRARY} ${OPENTHREADS_LIBRARY}  -L${ROBOCOMP_ROOT}/classes ${CMAKE_THREAD_LIBS_INIT} ${Ice_LIBRARIES} -lboost_system  robocomp_qmat ${IPP_LIBS} robocomp_innermodel robocomp_osgviewer)
+ 
  
 ENDMACRO( ROBOCOMP_INITIALIZE )
 
@@ -109,7 +110,7 @@ MACRO( ROBOCOMP_WRAP_PYTHON_UI )
     MESSAGE(STATUS "Adding rule to generate ui_${input_file}.py from ${input_file}.ui" )
     ADD_CUSTOM_COMMAND (
       OUTPUT ui_${input_file}.py
-      COMMAND pyuic4 ${input_file}.ui -o ui_${input_file}.py
+      COMMAND pysice-uic ${input_file}.ui -o ui_${input_file}.py
       DEPENDS ${input_file}.ui
       COMMENT "Generating ui_${input_file}.py from ${input_file}.ui"
     )

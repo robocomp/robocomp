@@ -8,7 +8,8 @@
 
 // Qt includes
 #include <QHash>
-#include <QMutexLocker>
+//#include <QMutexLocker>
+#include <mutex>
 
 // RoboComp includes
 #include <qmat/qmat.h>
@@ -81,6 +82,8 @@ public:
 	InnerModel();
 	InnerModel(std::string xmlFilePath);
 	InnerModel(const InnerModel &original);
+	InnerModel(InnerModel &original);
+	InnerModel(InnerModel *original);
 	~InnerModel();
 
 	/////////////////////////
@@ -93,6 +96,11 @@ public:
 	/// Tree update methods
 	///////////////////////
 	void setRoot(InnerModelNode *node);
+	void update();
+	void setUpdateRotationPointers(QString rotationId, float *x, float *y, float *z);
+	void setUpdateTranslationPointers(QString translationId, float *x, float *y, float *z);
+	void setUpdatePlanePointers(QString planeId, float *nx, float *ny, float *nz, float *px, float *py, float *pz);
+	void setUpdateTransformPointers(QString transformId, float *tx, float *ty, float *tz, float *rx, float *ry, float *rz);
 	void cleanupTables();
 	void updateTransformValues(QString transformId, float tx, float ty, float tz, float rx, float ry, float rz, QString parentId="");
 	void updateTransformValues(QString transformId, QVec v, QString parentId="");
@@ -144,13 +152,17 @@ public:
 	/// Kinematic transformation methods
 	////////////////////////////////////
 	QVec transform(  const QString & destId, const QVec &origVec, const QString & origId);
+	QVec transform(  const QString &destId, const QString & origId) { return transform(destId, QVec::vec3(0,0,0), origId); };
 	QVec transformS( const std::string &destId, const QVec &origVec, const std::string & origId);
 	QVec transformS( const std::string &destId, const std::string &origId) { return transform(QString::fromStdString(destId), QVec::vec3(0,0,0), QString::fromStdString(origId)); }
 
 	QVec transform6D(const QString &destId, const QVec &origVec, const QString & origId) { Q_ASSERT(origVec.size() == 6); return transform(destId, origVec, origId); }
 	QVec transform6D(const QString &destId, const QString & origId) { return transform(destId, QVec::vec6(0,0,0,0,0,0), origId); }
-	QVec transform(  const QString &destId, const QString & origId) { return transform(destId, QVec::vec3(0,0,0), origId); }
-
+	QVec transformS6D(const std::string &destId, const std::string & origId) 
+		{ return transform(QString::fromStdString(destId), QVec::vec6(0,0,0,0,0,0), QString::fromStdString(origId)); }
+	QVec transformS6D(const std::string &destId, const QVec &origVec, const std::string & origId) 
+		{ return transform(QString::fromStdString(destId), origVec, QString::fromStdString(origId)); }
+	
 	////////////////////////////////////////////
 	/// Transformation matrix retrieval methods
 	///////////////////////////////////////////
@@ -164,7 +176,7 @@ public:
 	/// Graoh editing methods
 	/////////////////////////////////////////////
 	QList<QString> getIDKeys() {return hash.keys(); }
-	InnerModelNode *getNode(const QString & id) const { QMutexLocker ml(mutex); if (hash.contains(id)) return hash[id]; else return NULL;}
+	InnerModelNode *getNode(const QString & id) const { /*QMutexLocker ml(mutex); */if (hash.contains(id)) return hash[id]; else return NULL;}
 	template <class N> N* getNode(const QString &id) const
 	{
 		N* r = dynamic_cast<N *>(getNode(id));
@@ -180,13 +192,6 @@ public:
 		return r;
 	}
 
-	/**
-	 * @brief Removes sub tree and returns a list with his id
-	 *
-	 * @param item ...
-	 * @param l ...
-	 * @return void
-	 */
 	void removeSubTree(InnerModelNode *item, QStringList *l);
 	void removeNode(const QString & id);
 	void moveSubTree(InnerModelNode *nodeSrc, InnerModelNode *nodeDst);
@@ -256,7 +261,8 @@ public:
 		return getNode<InnerModelLaser>(laserId)->laserTo(dest, r, alfa);
 	};
 
-	QMutex *mutex;
+	//QMutex *mutex;
+	mutable std::recursive_mutex mutex;
 
 protected:
 	InnerModelNode *root;

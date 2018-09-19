@@ -20,19 +20,12 @@
 
 #include <innermodeldraw.h>
 
-InnerModelDraw::InnerModelDraw()
-{
-}
-
-InnerModelDraw::~InnerModelDraw()
-{
-}
-
 void InnerModelDraw::addMesh_ignoreExisting(InnerModelViewer *innerViewer, QString item, QString base, QVec t, QVec r, QString path, QVec scale)
 {
-	QMutexLocker ml(innerViewer->mutex);
 	InnerModelTransform *parent = dynamic_cast<InnerModelTransform*>(innerViewer->innerModel->getNode(base));
-	InnerModel *im = innerViewer->innerModel;
+	//InnerModel *im = innerViewer->innerModel;
+	InnerModel *im = innerViewer->innerModel.get();
+	
 
 	if (im->getNode(item) != NULL)
 	{
@@ -55,8 +48,8 @@ void InnerModelDraw::addMesh_ignoreExisting(InnerModelViewer *innerViewer, QStri
 
 bool InnerModelDraw::setScale(InnerModelViewer *innerViewer, const QString item, float scaleX, float scaleY, float scaleZ)
 {
-	QMutexLocker ml(innerViewer->mutex);
-	InnerModel *im = innerViewer->innerModel;
+	//InnerModel *im = innerViewer->innerModel;
+	InnerModel *im = innerViewer->innerModel.get();
 	InnerModelMesh *aux = dynamic_cast<InnerModelMesh*>(im->getNode(item));
 	aux->setScale(scaleX, scaleY, scaleZ);
 	return true;
@@ -64,12 +57,12 @@ bool InnerModelDraw::setScale(InnerModelViewer *innerViewer, const QString item,
 
 bool InnerModelDraw::addJoint(InnerModelViewer* innerViewer, const QString item, const QString base, QVec t, QVec r, QString axis)
 {
-	QMutexLocker ml(innerViewer->mutex);
 	if (axis == "")
 	{
 		axis = "z";
 	}
-	InnerModel *im = innerViewer->innerModel;
+	//InnerModel *im = innerViewer->innerModel;
+	InnerModel *im = innerViewer->innerModel.get();
 	InnerModelTransform *parent=dynamic_cast<InnerModelTransform *>(im->getNode(base));
 	InnerModelJoint *jN = im->newJoint(item,
 					   parent,
@@ -87,8 +80,8 @@ bool InnerModelDraw::addJoint(InnerModelViewer* innerViewer, const QString item,
 
 bool InnerModelDraw::setPlaneTexture(InnerModelViewer *innerViewer, const QString item, QString texture)
 {
-	QMutexLocker ml(innerViewer->mutex);
-	InnerModel *im = innerViewer->innerModel;
+	//InnerModel *im = innerViewer->innerModel;
+	InnerModel *im = innerViewer->innerModel.get();
 	InnerModelPlane *aux = dynamic_cast<InnerModelPlane*>(im->getNode(item));
 
 	aux->texture=texture;
@@ -120,7 +113,6 @@ bool InnerModelDraw::setPlaneTexture(InnerModelViewer *innerViewer, const QStrin
 
 bool InnerModelDraw::addTransform_ignoreExisting(InnerModelViewer *innerViewer, QString item, QString base /*, parametros aqui*/)
 {
-	QMutexLocker ml(innerViewer->mutex);
 	if (innerViewer->innerModel->getNode(base) == NULL)
 	{
 		throw QString("parent doesn't exist");
@@ -136,7 +128,6 @@ bool InnerModelDraw::addTransform_ignoreExisting(InnerModelViewer *innerViewer, 
 
 bool InnerModelDraw::addTransform(InnerModelViewer *innerViewer, QString item, QString base)
 {
-	QMutexLocker ml(innerViewer->mutex);
 	InnerModelNode *parent = innerViewer->innerModel->getNode(base);
 	if (parent == NULL)
 		return false;
@@ -166,7 +157,6 @@ bool InnerModelDraw::addTransform(InnerModelViewer *innerViewer, QString item, Q
 
 bool InnerModelDraw::addPlane_ignoreExisting(InnerModelViewer *innerViewer, const QString &item, const QString &base, const QVec &p, const QVec &n, const QString &texture, const QVec &size)
 {
-	QMutexLocker ml(innerViewer->mutex);
 	if (innerViewer->innerModel->getNode(item))
 	{
 		removeNode(innerViewer, item);
@@ -178,7 +168,6 @@ bool InnerModelDraw::addPlane_ignoreExisting(InnerModelViewer *innerViewer, cons
 
 bool InnerModelDraw::addPlane_notExisting(InnerModelViewer *innerViewer, const QString &item, const QString &base, const QVec &p, const QVec &n, const QString &texture, const QVec &size)
 {
-	QMutexLocker ml(innerViewer->mutex);
 	InnerModelNode *parent = innerViewer->innerModel->getNode(base);
 	if (parent == NULL)
 	{
@@ -213,7 +202,6 @@ void InnerModelDraw::drawLine2Points(InnerModelViewer *innerViewer, QString name
  */
 bool InnerModelDraw::removeObject(InnerModelViewer *innerViewer, QString name)
 {
-	QMutexLocker ml(innerViewer->mutex);
 	if (innerViewer->innerModel->getNode(name))
 	{
 		removeNode(innerViewer, name);
@@ -228,7 +216,6 @@ bool InnerModelDraw::removeObject(InnerModelViewer *innerViewer, QString name)
 
 bool InnerModelDraw::removeNode(InnerModelViewer *innerViewer, const QString &item)
 {
-	QMutexLocker ml(innerViewer->mutex);
 	if (item=="root")
 	{
 		qDebug() << "Can't remove root elements" << item;

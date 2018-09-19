@@ -11,16 +11,30 @@ interfaces in a seamless way. Building new components is done using two domain s
 If you already have RoboComp installed, jump to [tutorials](doc/README.md) to start coding! 
 
 :question: If you have a question please look for it in the [FAQ](doc/FAQ.md). 
+-
+# Installation in Ubuntu from PPA
+
+Coming soon...
+<!--If you are not planning on modifying RoboComp itself (its libraries or tools), there's no need to go through all the compilation process. In this case, Ubuntu users of versions from 14.10 to 15.04 can install a packaged version of RoboComp. Just run the following commands:
+
+    sudo add-apt-repository  ppa:imnmfotmal/robocomp
+    sudo apt-get update
+    sudo apt-get install robocomp
+
+Remember to start a new bash session before continue using RoboComp: new variables included must be included in your shell environment.
+-->
 
 # Installation from source
 
-Tested in Ubuntu 14.04, 14.10, 15.04 and 15.10
+Tested in Ubuntu 14.04, 14.10, 15.04, 15.10, 16.04  and 18.04
+<!--If you are not an Ubuntu user, need to modify the core of RoboComp, or just feel like installing from sources, you can follow these instructions (they have been tested in Ubuntu 14.04, 14.10, 15.04, 16.04). If you're not in any of these scenarios, please use the packaged version.
+-->
 
 ## Requirements
 Make sure you have installed the following packages from the Ubuntu repository:
 
     sudo apt-get update
-    sudo apt-get install git git-annex cmake g++ libgsl0-dev libopenscenegraph-dev cmake-qt-gui zeroc-ice35 freeglut3-dev libboost-system-dev libboost-thread-dev qt4-dev-tools python-pip  python-pyparsing python-numpy python-pyside pyside-tools libxt-dev libboost-test-dev libboost-filesystem-dev python-libxml2 python-xmltodict libccd-dev
+    sudo apt-get install git git-annex cmake g++ libgsl-dev libopenscenegraph-dev cmake-qt-gui zeroc-ice-all-dev freeglut3-dev libboost-system-dev libboost-thread-dev qt4-dev-tools python-pip  python-pyparsing python-numpy python-pyside pyside-tools libxt-dev libboost-test-dev libboost-filesystem-dev python-libxml2 python-xmltodict libccd-dev
     sudo pip install networkx
 
 It is recommendable to install the following packages::
@@ -35,7 +49,9 @@ It is recommendable to install the following packages::
 
 Now we will create a symbolic link so RoboComp can find everything. You will have to enter your password:
 
-    sudo ln -s /home/<your-linux-user> /home/robocomp 
+    sudo ln -s ~ /home/robocomp
+    
+(the ~ is in Alt-4)
     
 Edit your ~/.bashrc file 
 
@@ -43,7 +59,7 @@ Edit your ~/.bashrc file
 
 Add these lines at the end:
 
-    export ROBOCOMP=/home/<your-linux-user>/robocomp
+    export ROBOCOMP=~/robocomp
     export PATH=$PATH:/opt/robocomp/bin
    
 make bash process the modified file by typing: 
@@ -52,7 +68,7 @@ make bash process the modified file by typing:
 
 Done! Now let's compile and install the whole thing:
 
-    sudo rm -r /opt/robocomp
+    sudo [ -d /opt/robocomp ] && rm -r /opt/robocomp
     cd robocomp
     mkdir build
     cd build
@@ -120,7 +136,7 @@ and check where the joystick device file has been created (e.g., `/dev/input/js0
 
 ## Using the keyboard as a JoyStick
 
-If you don't have a JoyStick install this componentent,
+If you don't have a JoyStick install this component,
 
     cd ~/robocomp/components/robocomp-robolab/components/keyboardrobotcontroller
     cmake .
@@ -131,7 +147,7 @@ and use the arrow keys to navigate the robot, the space bar to stop it an 'q' to
 
 
 ---------------------------------------------------------------------
-You can find more tutorials in [tutorials](doc/README.md)! 
+You can find more tutorials on RoboComp in [tutorials](doc/README.md) 
 
 Drop comments and ask questions in:
 

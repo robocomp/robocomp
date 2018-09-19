@@ -75,16 +75,15 @@ force_port = ''
 BasePoseCodeTemplate = '''# Base Pose Template\nimport Ice\nimport sys\nclass C():\n  def __init__(self, endpoint, modules):\n    self.ic = Ice.initialize(sys.argv)\n    self.mods = modules\n    self.prx = self.ic.stringToProxy(endpoint)\n    self.proxy = self.mods['RoboCompDifferentialRobot'].DifferentialRobotPrx.checkedCast(self.prx)\n    self.x = 0\n    self.z = 0\n    self.a = 0\n  def job(self):\n    pose = self.proxy.getBasePose()\n    print pose\n    print len(pose)\n    return ['pose', [ pose[0]/10, pose[1]/10, pose[2] ] ]\n'''
 CameraRGBCodeTemplate = '''# Camera RGB Image Template\nimport Ice\nimport sys\nclass C():\n  def __init__(self, endpoint, modules):\n    self.ic = Ice.initialize(sys.argv)\n    self.mods = modules\n    self.prx = self.ic.stringToProxy(endpoint)\n    self.proxy = self.mods['RoboCompCamera'].CameraPrx.checkedCast(self.prx)\n    self.params = self.proxy.getCamParams()\n  def job(self):\n    vector, hState, bState = self.proxy.getRGBPackedImage(5)\n    if len(vector) == 0:\n     print 'Error retrieving images!'\n    return ['rgbImage', [ vector, self.params.width, self.params.height*self.params.numCams ] ]\n'''
 CameraGreyCodeTemplate = '''# Camera grey Image Template\nimport Ice\nimport sys\nclass C():\n  def __init__(self, endpoint, modules):\n    self.ic = Ice.initialize(sys.argv)\n    self.mods = modules\n    self.prx = self.ic.stringToProxy(endpoint)\n    self.proxy = self.mods['RoboCompCamera'].CameraPrx.checkedCast(self.prx)\n    self.params = self.proxy.getCamParams()\n  def job(self):\n    vector, hState, bState = self.proxy.getYImage(5)\n    if len(vector) == 0:\n     print 'Error retrieving images!'\n    return ['greyImage', [ vector, self.params.width, self.params.height*self.params.numCams ] ]\n'''
-CustomCodeTemplate = '''# Custom Template\nimport Ice\nimport sys\n\nfrom PyQt4.QtCore import *\nfrom PyQt4.QtGui import *\nfrom PyQt4.Qt import *\n\nclass C(QWidget):\n  def __init__(self, endpoint, modules):\n    QWidget.__init__(self)\n    self.ic = Ice.initialize(sys.argv)\n    self.mods = modules\n    self.prx = self.ic.stringToProxy(endpoint)\n    self.proxy = self.mods['RoboCompCamera'].CameraPrx.checkedCast(self.prx)\n    self.measures = range(33)\n    self.params = self.proxy.getCamParams();\n    self.job()\n\n  def job(self):\n    # Remote procedure call\n    self.image, head, bstate = self.proxy.getRGBPackedImage(0) # vector, head, bState\n\n    # Store pos measure\n    self.measures.pop(0)\n    self.measures.append(head.tilt.pos)\n\n  def paintEvent(self, event=None):\n    painter = QPainter(self)\n    painter.setRenderHint(QPainter.Antialiasing, True)\n    # Draw image\n    qimage = QImage(self.image, self.params.width, self.params.height, QImage.Format_RGB888)\n    painter.drawImage(QPointF(0, 0), qimage)\n    # Draw signal\n    for idx in range(len(self.measures)-1):\n      painter.drawLine(idx*10, (self.height()/2)-(self.measures[idx]*100), (idx+1)*10, (self.height()/2)-(self.measures[idx+1]*100))\n\n    painter.end()\n\n'''
+CustomCodeTemplate = '''# Custom Template\nimport Ice\nimport sys\n\nfrom PySide.QtCore import *\nfrom PySide.QtGui import *\n \nclass C(QWidget):\n  def __init__(self, endpoint, modules):\n    QWidget.__init__(self)\n    self.ic = Ice.initialize(sys.argv)\n    self.mods = modules\n    self.prx = self.ic.stringToProxy(endpoint)\n    self.proxy = self.mods['RoboCompCamera'].CameraPrx.checkedCast(self.prx)\n    self.measures = range(33)\n    self.params = self.proxy.getCamParams();\n    self.job()\n\n  def job(self):\n    # Remote procedure call\n    self.image, head, bstate = self.proxy.getRGBPackedImage(0) # vector, head, bState\n\n    # Store pos measure\n    self.measures.pop(0)\n    self.measures.append(head.tilt.pos)\n\n  def paintEvent(self, event=None):\n    painter = QPainter(self)\n    painter.setRenderHint(QPainter.Antialiasing, True)\n    # Draw image\n    qimage = QImage(self.image, self.params.width, self.params.height, QImage.Format_RGB888)\n    painter.drawImage(QPointF(0, 0), qimage)\n    # Draw signal\n    for idx in range(len(self.measures)-1):\n      painter.drawLine(idx*10, (self.height()/2)-(self.measures[idx]*100), (idx+1)*10, (self.height()/2)-(self.measures[idx+1]*100))\n\n    painter.end()\n\n'''
 SignalCodeTemplate = '''# Signal Template\nimport Ice\nimport sys\nclass C():\n  def __init__(self, endpoint, modules):\n    self.ic = Ice.initialize(sys.argv)\n    self.mods = modules\n    self.prx = self.ic.stringToProxy(endpoint)\n    self.proxy = self.mods['RoboCompCamMotion'].CamMotionPrx.checkedCast(self.prx)\n  def job(self):\n    hState = self.proxy.getHeadState()\n    print hState.tilt.pos\n    return ['signal', [ hState.tilt.pos, 200 ] ]\n'''
 #
 # CODE BEGINS
 #
 import sys, time, traceback, os, math, random, threading, time, new, Ice
 
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
-from PyQt4.Qt import *
+from PySide.QtCore import *
+from PySide.QtGui import *
 from ui_formMonitor import Ui_Form
 from ui_openA import Ui_OpenA
 from ui_period import Ui_Period
@@ -216,7 +215,7 @@ class OpenConnection(QDialog):
 		self.ui.tabWidget.setTabEnabled(1, False)
 		self.slicePath = str(self.ui.slicePathWidget.text())
 		self.endpoint = ''
-		self.connect(self.ui.slicePathWidget, SIGNAL('textChanged(QString)'), self.sliceChanged)
+		self.connect(self.ui.slicePathWidget, SIGNAL('textChanged(str)'), self.sliceChanged)
 		self.connect(self.ui.button, SIGNAL('clicked()'), self.slotSelect)
 		self.connect(self.ui.buttonBox1, SIGNAL('accepted()'), self.slotAccepted1)
 		self.connect(self.ui.buttonBox1, SIGNAL('rejected()'), self.slotRejected)
@@ -238,6 +237,8 @@ class OpenConnection(QDialog):
 			self.ui.endpointProtocol.setCurrentIndex(0)
 		elif (config[3].split()[0] == 'udp'):
 			self.ui.endpointProtocol.setCurrentIndex(1)
+		elif (config[3].split()[0] == 'ws'):
+			self.ui.endpointProtocol.setCurrentIndex(2)
 		else:
 			print 'Wrong protocol:',config[3].split()[0]
 			sys.exit()
@@ -501,7 +502,7 @@ class RCOMPMonitor(QMainWindow):
 			else:
 				self.doer.job()
 				self.doer.update()
-			self.statusBar().showMessage(QString('Ticks: ')+QString.number(self.ticks))
+			self.statusBar().showMessage(str('Ticks: ')+str(self.ticks))
 			self.ticks = self.ticks + 1
 	def periodChange(self):
 		self.period = self.periodConfig.value

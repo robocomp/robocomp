@@ -115,7 +115,13 @@ void InnerModelPlane::print(bool verbose)
 	if (verbose) normal.print(QString("Plane: ")+id);
 }
 
-
+void InnerModelPlane::update()
+{
+	if (fixed)
+	{
+	}
+	updateChildren();
+}
 
 void InnerModelPlane::save(QTextStream &out, int tabs)
 {
@@ -164,6 +170,7 @@ InnerModelNode * InnerModelPlane::copyNode(QHash<QString, InnerModelNode *> &has
 	ret->children.clear();
 	ret->attributes.clear();
 	hash[id] = ret;
+	ret->innerModel = parent->innerModel;
 
 	ret->innerModel = parent->innerModel;
 	for (QList<InnerModelNode*>::iterator i=children.begin(); i!=children.end(); i++)

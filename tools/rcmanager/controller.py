@@ -62,15 +62,15 @@ class Controller():
         self.isControllerReady = True
         self._logger.info("Controller object initialized")
 
-        # save the filename for future use
+        # Save the filename for future use
         if isNewFile:
             self.view.filename = filename
             self.view.dirtyBit = False
 
-        # read the xml data from the file
+        # Read the xml data from the file
         self.xml = xmlreader.get_text_from_file(str(filename))
 
-        # check the xml data for formatting issues
+        # Check the xml data for formatting issues
         if not xmlreader.validate_xml(self.xml):
             self._logger.error("XML validation failed. Please use a correctly formatted XML file")
             return
@@ -154,6 +154,25 @@ class Controller():
         if not old == new:
             self.view.dirtyBit = True
         self.model.generalInformation['backgroundColor'] = {'@value': color.name()}
+
+    def configure_viewer(self):
+        if 'backgroundColor' in self.model.generalInformation.keys():
+            color = QColor(self.model.generalInformation['backgroundColor']['@value'])
+            self.view.set_background_color(color)
+
+    def check_dirty_bit(self):
+        index = self.view.tabWidget.currentIndex()
+        if index == 0:
+            self.update_model()
+        elif index == 1:
+            try:
+                first = self.normalise_dict(xmlreader.read_from_text(str(self.xml), 'xml'))
+                second = self.normalise_dict(xmlreader.read_from_text(str(self.view.codeEditor.text()), 'xml'))
+
+                if not first == second:
+                    self.view.dirtyBit = True
+            except Exception, e:
+                self._logger.error("XML file in code editor is incorrectly formatted")
 
     def normalise_dict(self, d):
         """

@@ -1,11 +1,12 @@
-#include "specificworker.h"
 // ------------------------------------------------------------------------------------------------
 // IMU.ice
 // ------------------------------------------------------------------------------------------------
+#include "specificworker.h"
 
 void SpecificWorker::imu_updateIMUData(const QString& server, QString id)
 {
-	QMutexLocker locker(mutex);
+	guard gl(innerModel->mutex);
+
 
 	QMat R = innerModel->getRotationMatrixTo(id, "root");
 	QVec acc   = R * QVec::vec3(0.0, -9.80665,  0.0);
@@ -20,6 +21,7 @@ void SpecificWorker::imu_updateIMUData(const QString& server, QString id)
 	data_imu.rot.Yaw   = atan2(north(0), north(2));
 
 	data_imu.temperature = 25.;
+		
 }
 
 

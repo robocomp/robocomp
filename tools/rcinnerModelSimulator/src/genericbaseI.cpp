@@ -19,7 +19,7 @@
 #include "genericbaseI.h"
 #include "specificworker.h"
 
-GenericBaseI::GenericBaseI(SpecificWorker *_worker, QObject *parent): QThread(parent)
+GenericBaseI::GenericBaseI(SpecificWorker *_worker, QObject *parent) // : QThread()
 {
 	// Pointer to the worker (needed to access the mutex)
 	worker = _worker;
@@ -35,19 +35,19 @@ void GenericBaseI::add(QString id)
 }
 
 
-void GenericBaseI::run()
-{
-	while (true)
-	{
-		usleep(10000);
-	}
-}
+// void GenericBaseI::run()
+// {
+// 	while (true)
+// 	{
+// 		usleep(10000);
+// 	}
+// }
 
 
 void GenericBaseI::getBaseState(RoboCompGenericBase::TBaseState& state, const Ice::Current&)
 {
 	printf("%d\n", __LINE__);
-	QMutexLocker locker(worker->mutex);
+	std::lock_guard<std::recursive_mutex> guard(innerModel->mutex);
 
 	printf("%d\n", __LINE__);
 	{
@@ -79,7 +79,7 @@ void GenericBaseI::getBaseState(RoboCompGenericBase::TBaseState& state, const Ic
 
 void GenericBaseI::getBasePose(Ice::Int &x, Ice::Int &z, Ice::Float &alpha, const Ice::Current &)
 {
-	QMutexLocker locker(worker->mutex);
+	std::lock_guard<std::recursive_mutex> guard(innerModel->mutex);
 	QVec retPOS = innerModel->transform6D(parent->id, node->id+"_raw_odometry\"");
 	x = retPOS(0);
 	z = retPOS(2);

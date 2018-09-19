@@ -303,7 +303,7 @@ void OmniRobotServer::add(InnerModelOmniRobot *omnirobot)
 	interface->add(omnirobot->id);
 	interface->start();
 	interfaceGB->add(omnirobot->id);
-	interfaceGB->start();
+//	interfaceGB->start();
 // 	interfaceDFR->add(omnirobot->id);
 // 	interfaceDFR->start();
 }

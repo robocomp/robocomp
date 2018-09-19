@@ -34,8 +34,6 @@
 // Simulator includes
 #include "config.h"
 
-
-
 using namespace RoboCompDifferentialRobot;
 using namespace RoboCompOmniRobot;
 

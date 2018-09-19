@@ -1,15 +1,15 @@
-#include "specificworker.h"
-
 // ------------------------------------------------------------------------------------------------
 // InnerModelManager.ice
 // ------------------------------------------------------------------------------------------------
+#include "specificworker.h"
+
 //#define INNERMODELMANAGERDEBUG
 
 // Moves item to the position defined by pose respect to the base
 bool SpecificWorker::imm_setPose(const QString &server, const std::string &base, const std::string &item, const RoboCompInnerModelManager::Pose3D &pose)
 {
-	QMutexLocker locker(mutex);
-
+	guard gl(innerModel->mutex);
+	
 	QString qBase = QString::fromStdString(base);
 	QString qItem = QString::fromStdString(item);
 	QString m="RoboCompInnerModelManager::setPose()";
@@ -29,7 +29,7 @@ bool SpecificWorker::imm_setPose(const QString &server, const std::string &base,
 
 bool SpecificWorker::imm_setPoseFromParent(const QString &server, const std::string &item, const RoboCompInnerModelManager::Pose3D &pose)
 {
-	QMutexLocker locker(mutex);
+	guard gl(innerModel->mutex);
 
 	QString qItem = QString::fromStdString(item);
 	QString m="RoboCompInnerModelManager::setPose()";
@@ -50,7 +50,8 @@ bool SpecificWorker::imm_setPoseFromParent(const QString &server, const std::str
 /// ---------------------------------------------------------------------------------------
 bool SpecificWorker::imm_getPose(const QString &server, const std::string &base, const std::string &item, RoboCompInnerModelManager::Pose3D &pose)
 {
-	QMutexLocker locker(mutex);
+	guard gl(innerModel->mutex);
+
 	QVec p;
 	QString qBase = QString::fromStdString(base);
 	QString qItem = QString::fromStdString(item);
@@ -81,7 +82,8 @@ bool SpecificWorker::imm_getPose(const QString &server, const std::string &base,
 // Provides the pose of a certain item respect to the parent
 bool SpecificWorker::imm_getPoseFromParent(const QString &server, const std::string &item, RoboCompInnerModelManager::Pose3D &pose)
 {
-	QMutexLocker locker(mutex);
+	guard gl(innerModel->mutex);
+
 	QString m="RoboCompInnerModelManager::getPoseFromParent()";
 
 	InnerModelTransform *aux = dynamic_cast<InnerModelTransform*>(getNode(QString::fromStdString(item), m));
@@ -101,7 +103,8 @@ bool SpecificWorker::imm_getPoseFromParent(const QString &server, const std::str
 // Provides the transform of a certain point expressed in Base to Item.
 bool SpecificWorker::imm_transform(const QString &server, const std::string &base, const std::string &item, const RoboCompInnerModelManager::coord3D &coordInItem, RoboCompInnerModelManager::coord3D &coordInBase)
 {
-	QMutexLocker locker(mutex);
+	guard gl(innerModel->mutex);
+
 	QVec p;
 	const QString qBase = QString::fromStdString(base);
 	const QString qItem = QString::fromStdString(item);
@@ -118,11 +121,11 @@ bool SpecificWorker::imm_transform(const QString &server, const std::string &bas
 	// 	QString qBase = QString::fromStdString(base);
 // 	QString qItem = QString::fromStdString(item);
 // 	QString m="RoboCompInnerModelManager::transform()";
-//
+// 
 // 	//check type transform
 // 	InnerModelTransform *aux = dynamic_cast<InnerModelTransform*>(getNode(qBase, m));
 // 	checkOperationInvalidNode(aux, m + qBase +"can't be use as base because it's not a InnerModelTransform node.");
-//
+// 
 // 	aux = NULL;
 // 	aux = dynamic_cast<InnerModelTransform*>(getNode(qItem, m));
 // 	checkOperationInvalidNode(aux, m + qItem +"can't be use as item because it's not a InnerModelTransform node.");
@@ -142,7 +145,8 @@ RoboCompInnerModelManager::Matrix SpecificWorker::imm_getTransformationMatrix(co
 	const QString qBase = QString::fromStdString(base);
 	const QString qItem = QString::fromStdString(item);
 	const QString m="RoboCompInnerModelManager::transform()";
-	QMutexLocker locker(mutex);
+	guard gl(innerModel->mutex);
+
 
 	//check type transform
 	InnerModelTransform *aux = dynamic_cast<InnerModelTransform*>(getNode(qBase, m));
@@ -179,16 +183,17 @@ RoboCompInnerModelManager::Matrix SpecificWorker::imm_getTransformationMatrix(co
 // Scales a mesh to a new size.
 bool SpecificWorker::imm_setScale(const QString &server, const std::string &item, float scaleX, float scaleY, float scaleZ)
 {
-// 	QMutexLocker locker(mutex);
+// 	guard gl(innerModel->mutex);
+
 // 	QString qItem = QString::fromStdString(item);
 // 	QString m="RoboCompInnerModelManager::setScale()";
-//
+// 
 // 	InnerModelMesh *aux = dynamic_cast<InnerModelMesh*>(getNode(QString::fromStdString(item),m));
 // 	checkOperationInvalidNode(aux, m + qItem +"can't be used because it's not a InnerModelMesh node.");
-//
+// 
 // 	aux->setScale(scaleX, scaleY, scaleZ);
 // 	innerModel->update();
-//
+// 
 // #ifdef INNERMODELMANAGERDEBUG
 // 	try {
 // 		checkPoseCollision(qItem,m);
@@ -196,7 +201,7 @@ bool SpecificWorker::imm_setScale(const QString &server, const std::string &item
 // 		std::cout<<err.what() <<" "<<err.text<< "\n";
 // 		std::cout<< "\n";
 // 		///come back to t= (t+1) -t
-//
+// 
 // 		//to check => maybe using a tag in the xml (collide="true") to decide if allow collitions or not
 // 		//  innerModel->updateTransformValues(qItem,p.x, p.y, p.z, p.rx , p.ry, p.rz);
 // 		//  innerModel->update();
@@ -204,7 +209,8 @@ bool SpecificWorker::imm_setScale(const QString &server, const std::string &item
 // 	}
 // #endif
 
-	QMutexLocker locker(mutex);
+	guard gl(innerModel->mutex);
+
 	QString qItem = QString::fromStdString(item);
 	QString m="RoboCompInnerModelManager::setScale()";
 
@@ -212,7 +218,7 @@ bool SpecificWorker::imm_setScale(const QString &server, const std::string &item
 	checkOperationInvalidNode(aux,m + qItem +"can't be used because it's not a InnerModelMesh node.");
 
 	aux->setScale(scaleX, scaleY, scaleZ);
-	//I think not necessary
+	//I think not necessary	
 	// 	innerModel->update();
 
 #ifdef INNERMODELMANAGERDEBUG
@@ -222,7 +228,7 @@ bool SpecificWorker::imm_setScale(const QString &server, const std::string &item
 // 		std::cout<<err.what() <<" "<<err.text<< "\n";
 // 		std::cout<< "\n";
 // 		///come back to t= (t+1) -t
-//
+// 
 // 		//to check => maybe using a tag in the xml (collide="true") to decide if allow collitions or not
 // 		//  innerModel->updateTransformValues(qItem,p.x, p.y, p.z, p.rx , p.ry, p.rz);
 // 		//  innerModel->update();
@@ -236,7 +242,8 @@ bool SpecificWorker::imm_setScale(const QString &server, const std::string &item
 
 bool SpecificWorker::imm_setPlane(const QString &server, const std::string &item, const RoboCompInnerModelManager::Plane3D &plane)
 {
-// 	QMutexLocker locker(mutex);
+// 	guard gl(innerModel->mutex);
+
 // 	QString m="RoboCompInnerModelManager::setPlane()";
 // 	printf("SETPLANE %s: %f_%f_%f\n", item.c_str(), plane.px, plane.py, plane.pz);
 // 	printf("SETPLANE %s: %f_%f_%f\n", item.c_str(), plane.px, plane.py, plane.pz);
@@ -245,10 +252,11 @@ bool SpecificWorker::imm_setPlane(const QString &server, const std::string &item
 // 	InnerModelPlane *aux = dynamic_cast<InnerModelPlane*>(getNode(QString::fromStdString(item), m));
 // 	checkOperationInvalidNode(aux, m + aux->id +"can't be use as base because it's not of the type InnerModelPlane.");
 // 	innerModel->updatePlaneValues(QString::fromStdString(item), plane.nx, plane.ny, plane.nz, plane.px, plane.py, plane.pz);
-//
+// 
 // 	return true;
+	
+	guard gl(innerModel->mutex);
 
-	QMutexLocker locker(mutex);
 	QString m="RoboCompInnerModelManager::setPlane()";
 // 	printf("SETPLANE %s: %f_%f_%f\n", item.c_str(), plane.px, plane.py, plane.pz);
 	InnerModelPlane *aux = dynamic_cast<InnerModelPlane*>(getNode(QString::fromStdString(item), m));
@@ -259,15 +267,16 @@ bool SpecificWorker::imm_setPlane(const QString &server, const std::string &item
 
 bool SpecificWorker::imm_setPlaneTexture(const QString &server, const std::string &item, const std::string &texture)
 {
+	
+	guard gl(innerModel->mutex);
 
-	QMutexLocker locker(mutex);
-	QString m="RoboCompInnerModelManager::setPlaneTexture()";
+	QString m="RoboCompInnerModelManager::setPlaneTextureº()";
 	printf("SETPLANETEXTURE %s: %s\n", item.c_str(), texture.c_str());
 	InnerModelPlane *aux = dynamic_cast<InnerModelPlane*>(getNode(QString::fromStdString(item), m));
 	qDebug()<<"aux->texture"<<aux->texture<<"qstring"<<QString::fromStdString(texture);
-
+	
 	aux->texture=QString::fromStdString(texture);
-
+	
 	osg::Image *image=NULL;
 	image = osgDB::readImageFile(texture);
 	if (not image)
@@ -275,7 +284,7 @@ bool SpecificWorker::imm_setPlaneTexture(const QString &server, const std::strin
 		qDebug() << "Couldn't load texture:" << texture.c_str();
 		throw "Couldn't load texture.";
 	}
-
+	
 	imv->planesHash[aux->id]->image =image;
 	imv->planesHash[aux->id]->texture->setImage(image);
 
@@ -295,12 +304,12 @@ bool SpecificWorker::imm_setPlaneTexture(const QString &server, const std::strin
 void SpecificWorker::imm_setPointCloudData(const QString &server, const std::string &id, const RoboCompInnerModelManager::PointCloudVector &cloud)
 {
 // 	QString m = QString("SpecificWorker::setPointCloudData");
-//
+// 
 // 	std::cout<<"setPointCloudData: "<<id<<" "<<cloud.size() <<std::endl;
-//
+// 
 // 	/// Aqui Marco va a mejorar el código :-) felicidad (comprobar que la nube existe)
 // 	IMVPointCloud *pcNode = imv->pointCloudsHash[QString::fromStdString(id)];
-//
+// 
 // 	int points = cloud.size();
 // 	pcNode->points->resize(points);
 // 	pcNode->colors->resize(points);
@@ -311,7 +320,7 @@ void SpecificWorker::imm_setPointCloudData(const QString &server, const std::str
 // 	}
 // 	pcNode->update();
 // 	imv->update();
-
+	
 	QString m = QString("SpecificWorker::setPointCloudData");
 
 	std::cout<<"setPointCloudData: "<<id<<" "<<cloud.size() <<std::endl;
@@ -328,17 +337,18 @@ void SpecificWorker::imm_setPointCloudData(const QString &server, const std::str
 		pcNode->colors->operator[](i) = osg::Vec4f(float(cloud[i].r) /255, float(cloud[i].g) /255, float(cloud[i].b) /255, 1.f);
 	}
 	pcNode->update();
-//I think not necessary
+//I think not necessary	
 // 	imv->update();
 }
 
 
 bool SpecificWorker::imm_addTransform(const QString &server, const std::string &item, const std::string &engine, const std::string &base, const RoboCompInnerModelManager::Pose3D &pose)
 {
-	QMutexLocker locker(mutex);
+	guard gl(innerModel->mutex);
+
 	InnerModelNode *parent = getNode(QString::fromStdString(base), "RoboCompInnerModelManager::addTransform()");
 	checkNodeAlreadyExists(QString::fromStdString(item), "RoboCompInnerModelManager::addTransform()");
-
+	
 	QString qEngine = QString::fromStdString( engine);
 	if (qEngine !="static" and qEngine !="bullet")
 	{
@@ -348,7 +358,7 @@ bool SpecificWorker::imm_addTransform(const QString &server, const std::string &
 	InnerModelTransform *tr = innerModel->newTransform(QString::fromStdString(item), QString::fromStdString("static") ,parent, pose.x, pose.y, pose.z, pose.rx, pose.ry, pose.rz);
 	parent->addChild(tr);
 	imv->recursiveConstructor(tr, imv->mts[parent->id], imv->mts, imv->meshHash); // imv->osgmeshes,imv->osgmeshPats);
-
+	
 #ifdef INNERMODELMANAGERDEBUG
 	qDebug()<<"engine"<<qEngine;
 	qDebug() <<"transform: pose.x<<pose.y<<pose.z"<<pose.x<<pose.y<<pose.z<<QString::fromStdString(item);
@@ -365,13 +375,14 @@ bool SpecificWorker::imm_addJoint(const QString &server, const std::string &item
 		j.axis = "z";
 	}
 
-	QMutexLocker locker(mutex);
+	guard gl(innerModel->mutex);
+
 	RoboCompInnerModelManager::Pose3D pose = j.pose;
 
 	InnerModelTransform *parent=dynamic_cast<InnerModelTransform *>(getNode(QString::fromStdString(base), "RoboCompInnerModelManager::addJoint()"));
 	checkNodeAlreadyExists(QString::fromStdString(item), "RoboCompInnerModelManager::addJoint()");
 
-
+	
 	InnerModelJoint *jN = innerModel->newJoint(QString::fromStdString(item), parent, j.lx, j.ly, j.lz, j.hx, j.hy, j.hz, pose.x, pose.y, pose.z, pose.rx, pose.ry, pose.rz, j.min, j.max, j.port, j.axis);
 	parent->addChild (jN);
 
@@ -387,7 +398,8 @@ bool SpecificWorker::imm_addJoint(const QString &server, const std::string &item
 
 bool SpecificWorker::imm_addMesh(const QString &server, const std::string &item, const std::string &base, const RoboCompInnerModelManager::meshType &m)
 {
-	QMutexLocker locker(mutex);
+	guard gl(innerModel->mutex);
+
 	QString msg="RoboCompInnerModelManager::addMesh()";
 #ifdef INNERMODELMANAGERDEBUG
 	qDebug() <<msg<<QString::fromStdString(base) <<QString::fromStdString(item);
@@ -405,7 +417,7 @@ bool SpecificWorker::imm_addMesh(const QString &server, const std::string &item,
 	{
 		render=0;
 	}
-
+	
 	InnerModelMesh *mesh = innerModel->newMesh (
 		QString::fromStdString(item),
 		parent,
@@ -419,7 +431,7 @@ bool SpecificWorker::imm_addMesh(const QString &server, const std::string &item,
 	parent->addChild(mesh);
 
 	imv->recursiveConstructor(mesh, imv->mts[parent->id], imv->mts, imv->meshHash); // osgmeshes,imv->osgmeshPats);
-	//I think not necessary
+	//I think not necessary	
 	//imv->update();
 
 	///create boundingBox as innerModelNodeMesh when it has been added to innermodel and imnnermodelViewer
@@ -435,11 +447,12 @@ bool SpecificWorker::imm_addMesh(const QString &server, const std::string &item,
 
 bool SpecificWorker::imm_addPlane(const QString &server, const std::string &item, const std::string &base, const RoboCompInnerModelManager::Plane3D &p)
 {
-// 	QMutexLocker locker(mutex);
-//
+// 	guard gl(innerModel->mutex);
+
+// 
 // 	InnerModelNode *parent = getNode(QString::fromStdString(base), "RoboCompInnerModelManager::addPlane()");
 // 	checkNodeAlreadyExists(QString::fromStdString(item), "RoboCompInnerModelManager::addPlane()");
-//
+// 
 // 	printf("ADDPLANE %s: %f_%f_%f\n", item.c_str(), p.px, p.py, p.pz);
 // 	printf("ADDPLANE %s: %f_%f_%f\n", item.c_str(), p.px, p.py, p.pz);
 // 	printf("ADDPLANE %s: %f_%f_%f\n", item.c_str(), p.px, p.py, p.pz);
@@ -447,16 +460,17 @@ bool SpecificWorker::imm_addPlane(const QString &server, const std::string &item
 // 	printf("ADDPLANE %s: %f_%f_%f\n", item.c_str(), p.px, p.py, p.pz);
 // 	printf("ADDPLANE %s: %f_%f_%f\n", item.c_str(), p.px, p.py, p.pz);
 // 	printf("ADDPLANE %s: %f_%f_%f\n", item.c_str(), p.px, p.py, p.pz);
-//
+// 
 // 	InnerModelPlane *plane = innerModel->newPlane(QString::fromStdString(item), parent, QString::fromStdString(p.texture),
 // 	                         p.width, p.height, p.thickness, 1,
 // 	                         p.nx, p.ny, p.nz, p.px, p.py, p.pz);
 // 	parent->addChild(plane);
-//
+// 
 // 	imv->recursiveConstructor(plane, imv->mts[parent->id], imv->mts, imv->meshHash);
 // 	imv->update();
+	
+	guard gl(innerModel->mutex);
 
-	QMutexLocker locker(mutex);
 
 	InnerModelNode *parent = getNode(QString::fromStdString(base), "RoboCompInnerModelManager::addPlane()");
 	checkNodeAlreadyExists(QString::fromStdString(item), "RoboCompInnerModelManager::addPlane()");
@@ -468,7 +482,7 @@ bool SpecificWorker::imm_addPlane(const QString &server, const std::string &item
 	parent->addChild(plane);
 
 	imv->recursiveConstructor(plane, imv->mts[parent->id], imv->mts, imv->meshHash);
-	//I think not necessary
+	//I think not necessary	
 	// 	imv->update();
 
 	return true;
@@ -477,7 +491,8 @@ bool SpecificWorker::imm_addPlane(const QString &server, const std::string &item
 
 bool SpecificWorker::imm_addAttribute(const QString &server, const std::string &idNode, const std::string &name, const std::string &type, const std::string &value)
 {
-	QMutexLocker locker(mutex);
+	guard gl(innerModel->mutex);
+
 	QString qIdNode=QString::fromStdString(idNode);
 	QString qName=QString::fromStdString(name);
 	QString qType=QString::fromStdString(type);
@@ -500,7 +515,8 @@ bool SpecificWorker::imm_addAttribute(const QString &server, const std::string &
 
 bool SpecificWorker::imm_setAttribute(const QString &server, const std::string &idNode, const std::string &name, const std::string &type, const std::string &value)
 {
-	QMutexLocker locker(mutex);
+	guard gl(innerModel->mutex);
+
 	QString qIdNode=QString::fromStdString(idNode);
 	QString qName=QString::fromStdString(name);
 	QString qType=QString::fromStdString(type);
@@ -520,7 +536,8 @@ bool SpecificWorker::imm_setAttribute(const QString &server, const std::string &
 
 bool SpecificWorker::imm_getAttribute(const QString &server, const std::string &idNode, const std::string &name, std::string &type, std::string &value)
 {
-	QMutexLocker locker(mutex);
+	guard gl(innerModel->mutex);
+
 	QString qIdNode=QString::fromStdString(idNode);
 	QString qName=QString::fromStdString(name);
 	QString m="RoboCompInnerModelManager::getAttribute()";
@@ -537,7 +554,8 @@ bool SpecificWorker::imm_getAttribute(const QString &server, const std::string &
 
 bool SpecificWorker::imm_removeAttribute(const QString &server, const std::string &idNode, const std::string &name)
 {
-	QMutexLocker locker(mutex);
+	guard gl(innerModel->mutex);
+
 	QString qIdNode=QString::fromStdString(idNode);
 	QString qName=QString::fromStdString(name);
 	QString m="RoboCompInnerModelManager::removeAttribute()";
@@ -553,7 +571,8 @@ bool SpecificWorker::imm_removeAttribute(const QString &server, const std::strin
 
 bool SpecificWorker::imm_removeNode(const QString &server, const std::string &item)
 {
-		QMutexLocker locker(mutex);
+		guard gl(innerModel->mutex);
+
 	QString msg="RoboCompInnerModelManager::removeNode()";
 #ifdef INNERMODELMANAGERDEBUG
 	qDebug() <<msg<<QString::fromStdString(item);
@@ -577,7 +596,7 @@ bool SpecificWorker::imm_removeNode(const QString &server, const std::string &it
 
 	QStringList l;
 	l.clear();
-
+	
 	innerModel->getSubTree(node,&l);
 // 	qDebug()<<"----------- l.size()"<<l.size();
 	///remove handlers and node
@@ -590,31 +609,31 @@ bool SpecificWorker::imm_removeNode(const QString &server, const std::string &it
 		InnerModelJoint *jN = dynamic_cast<InnerModelJoint *> (innerModel->getNode(n));
 		if (jN!=NULL && jN->port!=0)
 		{
-#ifdef INNERMODELMANAGERDEBUG
+#ifdef INNERMODELMANAGERDEBUG		
  			qDebug()<<"remove Joint"<<n<<jN->port;
 #endif
 			removeJM(jN);
-
+			
 		}
-
+		
 		///remove nodes in InnerModel tree
 // 		innerModel->removeNode(n);
 	}
 	innerModel->removeSubTree(node,&l);
-
+	
 
 	/// Replicate InnerModel node removals in the InnerModelViewer tree. And in handlers Lists
 	foreach(QString n, l) {
 		/// Replicate plane removals
 		if(imv->meshHash.contains(n)) {
-// 			qDebug()<<"/// Replicate meshHash removals"<<n;
+// 			qDebug()<<"/// Replicate meshHash removals"<<n;			
 			while(imv->meshHash[n].osgmeshPaths->getNumParents() > 0)
-				( imv->meshHash[n].osgmeshPaths->getParent(0))->removeChild(imv->meshHash[n].osgmeshPaths);
+				( imv->meshHash[n].osgmeshPaths->getParent(0))->removeChild(imv->meshHash[n].osgmeshPaths);			
 			while(imv->meshHash[n].osgmeshes->getNumParents() > 0)
 				( imv->meshHash[n].osgmeshes->getParent(0))->removeChild(imv->meshHash[n].osgmeshes);
-			while(imv->meshHash[n].meshMts->getNumParents() > 0)
-				( imv->meshHash[n].meshMts->getParent(0))->removeChild(imv->meshHash[n].meshMts);
-
+			while(imv->meshHash[n].meshMts->getNumParents() > 0)	
+				( imv->meshHash[n].meshMts->getParent(0))->removeChild(imv->meshHash[n].meshMts);			
+				
 			imv->meshHash.remove(n);
 // 			meshColision.remove(n);
 		}
@@ -623,7 +642,7 @@ bool SpecificWorker::imm_removeNode(const QString &server, const std::string &it
 //			qDebug()<<"/// Replicate transform removals";//<<n<<imv->mts[n]->getNumParents();
  			while(imv->mts[n]->getNumParents() > 0) {
 				(imv->mts[n]->getParent(0))->removeChild(imv->mts[n]);
- 			}
+ 			}			
  			imv->mts.remove(n);
 		}
 		/// Replicate plane removals
@@ -635,7 +654,7 @@ bool SpecificWorker::imm_removeNode(const QString &server, const std::string &it
 			imv->planeMts.remove(n);
 			imv->planesHash.remove(n);
 		}
-
+		
 	}
 // 	qDebug()<<imv->meshHash.size();
 // 	qDebug()<<imv->mts.size();
@@ -644,16 +663,17 @@ bool SpecificWorker::imm_removeNode(const QString &server, const std::string &it
 // 	qDebug()<<innerModel->getIDKeys().size();
 // 	innerModel->print();
 // 	qDebug()<<"----";
-//I think not necessary
+//I think not necessary	
 // 	innerModel->update();
 // 	imv->update();
-
+	
 	return true;
 }
 #define INNERMODELMANAGERDEBUG
 bool SpecificWorker::imm_moveNode(const QString &server, const std::string &src, const std::string &dst)
 {
-	QMutexLocker locker(mutex);
+	guard gl(innerModel->mutex);
+
 	QString msg="RoboCompInnerModelManager::moveNode()";
 #ifdef INNERMODELMANAGERDEBUG
 	qDebug() <<msg<<QString::fromStdString(src)<<QString::fromStdString(dst);
@@ -672,7 +692,7 @@ bool SpecificWorker::imm_moveNode(const QString &server, const std::string &src,
 		err.text = oss.str();
 		throw err;
 	}
-
+	
 	if(idDst =="root" ) {
 #ifdef INNERMODELMANAGERDEBUG
 		qDebug() <<msg<<idDst<<"Can't move to root elements";
@@ -684,37 +704,37 @@ bool SpecificWorker::imm_moveNode(const QString &server, const std::string &src,
 		err.text = oss.str();
 		throw err;
 	}
-
+	
 
 	InnerModelNode *nodeSrc = getNode(idSrc, msg);
 	checkOperationInvalidNode(nodeSrc,msg);
-
+	
 	InnerModelNode *nodeDst = getNode(idDst, msg);
 	checkOperationInvalidNode(nodeDst,msg);
 
 	QStringList l;
 	l.clear();
-
+	
 	//consigo ids para viewer
 	innerModel->getSubTree (nodeSrc,&l);
-	//muevo
+	//muevo 
 	innerModel->moveSubTree(nodeSrc,nodeDst);
-
-
-
+	
+	
+	
 
 	/// Replicate InnerModel node removals in the InnerModelViewer tree. And in handlers Lists
 	foreach(QString n, l) {
 		/// Replicate plane removals
 		if(imv->meshHash.contains(n)) {
-// 			qDebug()<<"/// Replicate meshHash removals"<<n;
+// 			qDebug()<<"/// Replicate meshHash removals"<<n;			
 			while(imv->meshHash[n].osgmeshPaths->getNumParents() > 0)
-				( imv->meshHash[n].osgmeshPaths->getParent(0))->removeChild(imv->meshHash[n].osgmeshPaths);
+				( imv->meshHash[n].osgmeshPaths->getParent(0))->removeChild(imv->meshHash[n].osgmeshPaths);			
 			while(imv->meshHash[n].osgmeshes->getNumParents() > 0)
 				( imv->meshHash[n].osgmeshes->getParent(0))->removeChild(imv->meshHash[n].osgmeshes);
-			while(imv->meshHash[n].meshMts->getNumParents() > 0)
-				( imv->meshHash[n].meshMts->getParent(0))->removeChild(imv->meshHash[n].meshMts);
-
+			while(imv->meshHash[n].meshMts->getNumParents() > 0)	
+				( imv->meshHash[n].meshMts->getParent(0))->removeChild(imv->meshHash[n].meshMts);			
+				
 			imv->meshHash.remove(n);
 // 			meshColision.remove(n);
 		}
@@ -723,7 +743,7 @@ bool SpecificWorker::imm_moveNode(const QString &server, const std::string &src,
 //			qDebug()<<"/// Replicate transform removals";//<<n<<imv->mts[n]->getNumParents();
  			while(imv->mts[n]->getNumParents() > 0) {
 				(imv->mts[n]->getParent(0))->removeChild(imv->mts[n]);
- 			}
+ 			}			
  			imv->mts.remove(n);
 		}
 		/// Replicate plane removals
@@ -735,15 +755,15 @@ bool SpecificWorker::imm_moveNode(const QString &server, const std::string &src,
 			imv->planeMts.remove(n);
 			imv->planesHash.remove(n);
 		}
-
+		
 	}
-	foreach(QString n, l)
+	foreach(QString n, l) 
 	{
-
+		
 		imv->recursiveConstructor(innerModel->getNode(n), imv->mts[innerModel->getNode(n)->parent->id], imv->mts, imv->meshHash); // imv->osgmeshes,imv->osgmeshPats);
 	}
-
-
+	
+	
 // 	qDebug()<<imv->meshHash.size();
 // 	qDebug()<<imv->mts.size();
 // 	qDebug()<<imv->planeMts.size();
@@ -787,3 +807,4 @@ bool SpecificWorker::imm_collide(const string &a, const string &b)
 		throw ex;
 	}
 }
+

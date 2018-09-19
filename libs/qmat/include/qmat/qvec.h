@@ -50,6 +50,7 @@ namespace RMat
 		QVec(const int size, const float defaultValue) : QVector(size, defaultValue)      {}
 		QVec(const RMat::QMat & matrix);
 		QVec(const QVec & v) : QVector(v)                                                 {}
+		QVec(QVec&& v) noexcept : QVector(std::move(v)) 								  {}
 		QVec(const QVector &vector): QVector(vector)                                      {}
 		QVec(const std::vector<float> &vector): QVector(QVector::fromStdVector( vector ))        {}
 #ifdef PYTHON_BINDINGS_SUPPORT
@@ -58,6 +59,11 @@ namespace RMat
 		QVec(const QPoint &point): QVector(2)                   { operator[](0) = point.x(); operator[](1) = point.y(); }
 		QVec(const QPointF &point): QVector(2)                  { operator[](0) = point.x(); operator[](1) = point.y(); }
 
+		QVec& operator=(QVec& other) = default;
+		QVec& operator=(const QVec& other) = default;
+		QVec& operator=(QVec&& other){ this->swap(other); return *this;};
+		QVec& operator=(const QVec&& other){ auto tmp = other; this->swap(tmp); return *this;};
+		
 		const float *getReadData() const                        { return constData(); }
 		float *getWriteData()                                   { return data(); }
 

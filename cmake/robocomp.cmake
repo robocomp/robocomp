@@ -1,3 +1,15 @@
+# Qt4
+ADD_DEFINITIONS( -Wall  -DQT_XML_LIB -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB )
+FIND_PACKAGE( Qt4 )
+SET( QT_USE_QTGUI TRUE )
+SET( QT_USE_QTOPENGL TRUE )
+SET( QT_USE_QTXML TRUE )
+SET( QT_USE_QTSTATE TRUE )
+SET( QT_USE_QTSTATEMACHINE TRUE )
+INCLUDE( ${QT_USE_FILE} )
+
+
+
 MACRO( ROBOCOMP_INITIALIZE )
   set(RoboComp_VERSION 1.0 CACHE STRING "RoboComp version")
   #set install dirs
@@ -108,7 +120,7 @@ MACRO( ROBOCOMP_WRAP_PYTHON_UI )
     MESSAGE(STATUS "Adding rule to generate ui_${input_file}.py from ${input_file}.ui" )
     ADD_CUSTOM_COMMAND (
       OUTPUT ui_${input_file}.py
-      COMMAND pyuic4 ${input_file}.ui -o ui_${input_file}.py
+      COMMAND pysice-uic ${input_file}.ui -o ui_${input_file}.py
       DEPENDS ${input_file}.ui
       COMMENT "Generating ui_${input_file}.py from ${input_file}.ui"
     )

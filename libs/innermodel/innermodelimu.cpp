@@ -36,7 +36,13 @@ void InnerModelIMU::print(bool verbose)
 	if (verbose) printf("IMU.");
 }
 
-
+void InnerModelIMU::update()
+{
+	if (fixed)
+	{
+	}
+	updateChildren();
+}
 
 InnerModelNode * InnerModelIMU::copyNode(QHash<QString, InnerModelNode *> &hash, InnerModelNode *parent)
 {

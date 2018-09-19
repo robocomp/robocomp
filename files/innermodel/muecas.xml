@@ -3,7 +3,6 @@
 		<joint id="tilt_neck" port="20000" axis="x" home="0" min="-1" max="1">
 			<joint id="pan_neck" port="20000" axis="y" home="0" min="-1" max="1">
 				<joint id="rot_neck" port="20000" axis="z" home="0" min="-1" max="1">
-					
 					<mesh id="head_mesh" file="/home/robocomp/robocomp/files/osgModels/muecas/zeropivot.osg" scale="30"/>
 					<transform id="mouth" ty="42" tz="-42">
 						<mesh id="mouth_mesh" file="/home/robocomp/robocomp/files/osgModels/muecas/jaw.osg" scale="30" />
@@ -45,7 +44,7 @@
 										<transform id="right_eyeball">
 											<mesh id="righteye_mesh" file="/home/robocomp/robocomp/files/osgModels/muecas/eye.osg" scale="30"/>
 											<transform id="jkhguy" tz="-35" ry="3.141592">
-												<rgbd id="right_camera" focal="480" width="640" height="480" port="10097" noise="0.00" ifconfig="40000,50000" />
+												<rgbd id="right_camera" focal="480" width="640" height="480" port="10096" noise="0.00" ifconfig="40000,50000" />
 											</transform>
 										</transform>
 									</joint>
@@ -64,6 +63,25 @@
 								</transform>
 							</transform>
 						</joint>
+					</transform>
+					<transform id="left_eye_superior_eyelid">
+						<transform id="left_eye_superior_eyelidXY">
+							<transform id="left_eye_superior_eyelids">
+								<mesh id="eyeliduA_mesh" file="/home/robocomp/robocomp/files/osgModels/muecas/uppereyelid.osg" />
+							</transform>
+						</transform>
+					</transform>
+					<transform id="left_eye_inferior_eyelid">
+						<transform id="left_eye_inferior_eyelidXY">
+							<transform id="left_eye_inferior_eyelids">
+								<mesh id="eyeliduB_mesh" file="/home/robocomp/robocomp/files/osgModels/muecas/lowereyelid.osg" />
+							</transform>
+						</transform>
+					</transform>
+					<transform id="left_eyebrow" ty="1.98" tz="-0.8">
+						<transform id="left_eyebrow_doubleXZ">
+							<mesh id="left_eyebrow_mesh" file="/home/robocomp/robocomp/files/osgModels/muecas/browleft222.osg"  />
+						</transform>
 					</transform>
 
 					<transform id="left_eyebrow" tx="-81" ty="195.9" tz="-145.00001">
@@ -85,7 +103,21 @@
 							</joint>
 						</joint>
 					</transform>
-					
+					<transform id="right_eye_superior_eyelid">
+						<transform id="right_eye_superior_eyelidXY">
+							<mesh id="eyeliduA_mesh" file="/home/robocomp/robocomp/files/osgModels/muecas/uppereyelid.osg" />
+						</transform>
+					</transform>
+					<transform id="right_eye_inferior_eyelid">
+						<transform id="right_eye_inferior_eyelidXY">
+							<mesh id="eyeliduB_mesh" file="/home/robocomp/robocomp/files/osgModels/muecas/lowereyelid.osg" />
+						</transform>
+					</transform>
+					<transform id="right_eyebrow" ty="1.98" tz="-0.8">
+						<transform id="right_eyebrow_doubleXZ">
+							<mesh id="right_eyebrow_mesh" file="/home/robocomp/robocomp/files/osgModels/muecas/browright222.osg" />
+						</transform>
+					</transform>
 				</joint>
 			</joint>
 		</joint>

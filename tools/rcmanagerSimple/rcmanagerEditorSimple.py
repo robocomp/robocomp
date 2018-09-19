@@ -33,7 +33,7 @@ import sys, time, traceback, os
 
 import Ice
 
-from PyQt4 import QtCore, QtGui, Qt
+from PySide import QtCore, QtGui
 from ui_editorFormSimple import Ui_Form
 
 import rcmanagerConfigSimple
@@ -179,7 +179,7 @@ class rcmanagerEditorWidget(QtGui.QDialog):
 			i+=1
 		self.ui.table.setSortingEnabled(True)
 
-	@QtCore.pyqtSignature("int, int")
+	@QtCore.Slot("int, int")
 	def selectComponent(self, x, y):
 		self.ui.aliasLine.setText(QtCore.QString(self.ui.table.item(x, 0).text()))
 		self.ui.endpointLine.setText(QtCore.QString(self.ui.table.item(x, 2).text()))

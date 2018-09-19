@@ -28,6 +28,7 @@ class InnerModelPrismaticJoint : public InnerModelTransform
 		InnerModelPrismaticJoint(QString id_, float min_, float max_, float val_, float offset_, uint32_t port_=0, std::string axis_="z", float home_=0, InnerModelTransform *parent_=NULL);
 		void print(bool verbose);
 		void save(QTextStream &out, int tabs);
+		void update();
 		float getPosition();
 		float setPosition(float v);
 		virtual InnerModelNode *copyNode(QHash<QString, InnerModelNode *> &hash, InnerModelNode *parent);

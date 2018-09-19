@@ -38,14 +38,14 @@ using namespace RoboCompGenericBase;
 
 class SpecificWorker;
 
-class GenericBaseI : public QThread, public virtual RoboCompGenericBase::GenericBase
+class GenericBaseI : public QObject, public virtual RoboCompGenericBase::GenericBase
 {
 Q_OBJECT
 public:
 	GenericBaseI ( SpecificWorker *_worker, QObject *parent = 0 );
 	
 	void add(QString id);
-	void run();
+	//void run();
 	
 	void getBaseState(RoboCompGenericBase::TBaseState& state, const Ice::Current & =Ice::Current());
 	void getBasePose(int &x, int &z, float &alpha, const Ice::Current & =Ice::Current());

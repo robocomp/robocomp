@@ -14,8 +14,7 @@
 
 module RoboCompAprilTags{
 	["cpp:comparable"]
-	struct tag
-	{
+	struct tag{
 		int id;
 		float tx;
 		float ty;

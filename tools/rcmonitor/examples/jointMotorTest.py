@@ -20,9 +20,8 @@
 
 import Ice, sys, math, traceback, random, copy,time
 
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
-from PyQt4.Qt import *
+from PySide.QtCore import *
+from PySide.QtGui import *
 
 class C(QWidget):
 	def __init__(self, endpoint, modules):

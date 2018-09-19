@@ -121,7 +121,7 @@ private:
 
 
 	void insertNodeInnerModel(InnerModelNode* node);
-	void changeInner (InnerModel *inner);
+	void changeInner (const std::shared_ptr<InnerModel> &inner);
 	void fillItemList();
 
 	QTime lastChange;
