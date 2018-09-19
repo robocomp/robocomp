@@ -26,7 +26,7 @@ Remember to start a new bash session before continue using RoboComp: new variabl
 
 # Installation from source
 
-Tested in Ubuntu 14.04, 14.10, 15.04, 15.10, 16.04  and 18.04
+Tested in Ubuntu 18.04 (for 16.04 some packages have a different name. Ask in gitter/robocomp)
 <!--If you are not an Ubuntu user, need to modify the core of RoboComp, or just feel like installing from sources, you can follow these instructions (they have been tested in Ubuntu 14.04, 14.10, 15.04, 16.04). If you're not in any of these scenarios, please use the packaged version.
 -->
 
