@@ -27,7 +27,7 @@
 
 # Importamos el modulo libxml2
 import libxml2, sys
-from PyQt4 import QtCore, QtGui, Qt
+from PySide import QtCore, QtGui
 
 filePath = 'rcmanager.xml'
 

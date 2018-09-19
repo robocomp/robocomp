@@ -32,7 +32,7 @@
 import sys, time, traceback, os, math, random, threading, time
 import Ice
 
-from PyQt4 import QtCore, QtGui, Qt
+from PySide import QtCore, QtGui
 from ui_formManagerSimple import Ui_Form
 
 import rcmanagerConfigSimple
@@ -226,14 +226,13 @@ class TheThing(QtGui.QDialog):
 
 		# Get settings
 		settings = QtCore.QSettings("RoboComp", "rcmanager")
-		value = settings.value("geometry").toByteArray()
+		value = QtCore.QByteArray(settings.value("geometry"))
 		if value != None:
 			self.restoreGeometry(value)
-		value = settings.value("page").toInt()
+		value = int(settings.value("page"))
 		if value != None:
-			if value[1] == True:
-				self.ui.tabWidget.setCurrentIndex(value[0])
-		value = settings.value("docking").toBool()
+			self.ui.tabWidget.setCurrentIndex(value)
+		value = bool(settings.value("docking"))
 		if value != None:
 			if value == True:
 				self.changeDock()
@@ -369,7 +368,7 @@ class TheThing(QtGui.QDialog):
 		self.canvas.update()
 
 	# Current tab changed
-	@QtCore.pyqtSignature("int")
+	@QtCore.Slot("int")
 	def tabChanged(self, num):
 		if self.fastState == False:
 			if num == 0: self.canvasTimer.start(dict['idletime'])
@@ -475,10 +474,10 @@ class TheThing(QtGui.QDialog):
 			itemConfig = self.compConfig[numItem]
 			item = self.ui.checkList.item(numItem)
 			if (itemConfig.alias in self.componentChecker) and (self.componentChecker[itemConfig.alias].isalive()):
-				item.setTextColor(QtGui.QColor(0, 255, 0))
+				item.setForeground(QtGui.QColor(0, 255, 0))
 				workingComponents.add(itemConfig.alias)
 			else:
-				item.setTextColor(QtGui.QColor(255, 0, 0))
+				item.setForeground(QtGui.QColor(255, 0, 0))
 				allOk = False
 
 		if workingComponents != self.back_comps:
@@ -565,9 +564,9 @@ class TheThing(QtGui.QDialog):
 	def closeEvent(self, closeevent):
 		settings = QtCore.QSettings("RoboComp", "rcmanager");
 		g = self.saveGeometry()
-		settings.setValue("geometry", QtCore.QVariant(g))
-		settings.setValue("page", QtCore.QVariant(self.ui.tabWidget.currentIndex()))
-		settings.setValue("docking", QtCore.QVariant(self.wantsDocking()))
+		settings.setValue("geometry", g)
+		settings.setValue("page", self.ui.tabWidget.currentIndex())
+		settings.setValue("docking", self.wantsDocking())
 		if self.doExit != 1 and self.doDock == True:
 			closeevent.ignore()
 			self.hide()

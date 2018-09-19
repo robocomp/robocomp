@@ -19,12 +19,9 @@ The command to remotely run components, which can be executed manually, in a scr
 
  rcremote host tabname pwd binary [ parameter1 [parameter2 [...] ] ]
 
-Example:
-
-<<<<<<< HEAD
- rcremote robotHost1.local rgbd /home/robocomp rgbdComp etc/rgbd.conf
-=======
 ###Example: Running rcremote and rcremoteserver to communicate between two terminals on the same PC
+
+ rcremote robotHost1.local rgbd /home/robocomp rgbdComp etc/rgbd.conf
 
 1) Run the command $ rcremoteserver abcd123 in one terminal.
 
@@ -36,7 +33,7 @@ localhost#abcd123
 4) In the yakuake terminal, type $ rcremote localhost any_name_here /home/robocomp any_name_here space_separated_arguments
 
 5) On pressing enter, you will see the values entered in the yakuake tab transfered to the terminal window.  
->>>>>>> master
+
 
 
     

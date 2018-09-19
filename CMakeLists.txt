@@ -85,7 +85,7 @@ SUBDIRS(
 	tools/rcinnerModelSimulator
 	tools/rcmanager
 	tools/rcmanagerSimple
-	tools/rclogger
+	#tools/rclogger
 	tools/rcmonitor
 	tools/rcremote
 	tools/rcnode
