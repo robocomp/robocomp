@@ -170,6 +170,7 @@ class InnerModelViewer : public osg::Switch
 		
 	protected:
 		void setOSGMatrixTransformForPlane(osg::MatrixTransform *mt, InnerModelPlane *plane);
+		void setOSGMatrixTransformForDisplay(osg::MatrixTransform *mt, InnerModelDisplay *display);
 		
 	private:
     QVec eye, up, to;

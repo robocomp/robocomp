@@ -211,6 +211,7 @@ void InnerModelViewer::recursiveConstructor(InnerModelNode *node, osg::Group* pa
 	InnerModelIMU *imu;
 	InnerModelLaser *laser;
 	InnerModelTransform *transformation;
+	InnerModelDisplay *display;
 
 	// Find out which kind of node are we dealing with
 	if ((transformation = dynamic_cast<InnerModelTransform *>(node)))
@@ -298,6 +299,17 @@ void InnerModelViewer::recursiveConstructor(InnerModelNode *node, osg::Group* pa
 		IMVPlane *imvplane = new IMVPlane(plane, plane->texture.toStdString(), osg::Vec4(0.8,0.5,0.5,0.5), 0); 
 		planesHash[node->id] = imvplane;
 		setOSGMatrixTransformForPlane(mt, plane);
+		if (parent) parent->addChild(mt);
+		mt->addChild(imvplane);
+	}
+	else if ((display = dynamic_cast<InnerModelDisplay *>(node)))
+	{
+		// Create plane's specific mt
+		osg::ref_ptr<osg::MatrixTransform> mt = new osg::MatrixTransform;
+		planeMts[display->id] = mt;
+		IMVPlane *imvplane = new IMVPlane(display, display->texture.toStdString(), osg::Vec4(0.8,0.5,0.5,0.5), 0);
+		planesHash[node->id] = imvplane;
+		setOSGMatrixTransformForDisplay(mt, display);
 		if (parent) parent->addChild(mt);
 		mt->addChild(imvplane);
 	}
@@ -411,6 +423,15 @@ void InnerModelViewer::setOSGMatrixTransformForPlane(osg::MatrixTransform *mt, I
 	r.makeRotate(osg::Vec3(0, 0, 1), osg::Vec3(plane->normal(0), plane->normal(1), -plane->normal(2)));
 	osg::Matrix t;
 	t.makeTranslate(osg::Vec3(plane->point(0), plane->point(1), -plane->point(2)));
+	mt->setMatrix(r*t);
+}
+
+void InnerModelViewer::setOSGMatrixTransformForDisplay(osg::MatrixTransform *mt, InnerModelDisplay *display)
+{
+	osg::Matrix r;
+	r.makeRotate(osg::Vec3(0, 0, 1), osg::Vec3(display->normal(0), display->normal(1), -display->normal(2)));
+	osg::Matrix t;
+	t.makeTranslate(osg::Vec3(display->point(0), display->point(1), -display->point(2)));
 	mt->setMatrix(r*t);
 }
 
