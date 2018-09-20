@@ -170,7 +170,7 @@ int robotSimulatorComp::run( int argc, char* argv[] )
 		sprintf(endpoint, "tcp -p %d", port);
 		Ice::ObjectAdapterPtr adapter = communicator()->createObjectAdapterWithEndpoints("InnerModelSimulator", endpoint);
 		InnerModelManagerI *innermodelmanagerI = new InnerModelManagerI((SpecificWorker *)worker );
-		adapter->add(innermodelmanagerI, communicator()->stringToIdentity("innermodelmanager"));
+		adapter->add(innermodelmanagerI, Ice::stringToIdentity("innermodelmanager"));
 		adapter->activate();
 		cout << SERVER_FULL_NAME " started in port " << port << endl;
 

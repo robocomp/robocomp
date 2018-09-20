@@ -153,7 +153,7 @@ int ::rclogger::run(int argc, char* argv[])
 		}
 		Ice::ObjectAdapterPtr adapterCommonBehavior = communicator()->createObjectAdapterWithEndpoints("commonbehavior", tmp);
 		CommonBehaviorI *commonbehaviorI = new CommonBehaviorI(monitor );
-		adapterCommonBehavior->add(commonbehaviorI, communicator()->stringToIdentity("commonbehavior"));
+		adapterCommonBehavior->add(commonbehaviorI, Ice::stringToIdentity("commonbehavior"));
 		adapterCommonBehavior->activate();
 
 
