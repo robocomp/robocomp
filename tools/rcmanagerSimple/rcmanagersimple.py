@@ -132,8 +132,6 @@ class ComponentChecker(threading.Thread):
 #
 # Application main class.
 #
-Ui_Form, base_class = uic.loadUiType('demo.ui')
-
 class TheThing(QtGui.QDialog):
 	def __init__(self):
 		# Create a component checker
@@ -222,7 +220,7 @@ class TheThing(QtGui.QDialog):
 		self.connect(self.ui.checkList, QtCore.SIGNAL("itemClicked(QListWidgetItem *)"), self.selectCheck)
 		self.connect(self.ui.upButton, QtCore.SIGNAL("clicked()"), self.up)
 		self.connect(self.ui.downButton, QtCore.SIGNAL("clicked()"), self.down)
-		self.connect(self.ui.restartButton, QtCore.SIGNAL("clicked()"), self.restart)
+#		self.connect(self.ui.restartButton, QtCore.SIGNAL("clicked()"), self.restart)
 		self.connect(self.ui.tabWidget, QtCore.SIGNAL("currentChanged(int)"), self.tabChanged)
 		self.connect(self.timer, QtCore.SIGNAL("timeout()"), self.checkAll)
 		self.connect(self.canvas, QtCore.SIGNAL('upRequest()'), self.manageGraphUp)
@@ -415,11 +413,14 @@ class TheThing(QtGui.QDialog):
 		self.bg_exec(str(self.ui.downEdit.text()), self.ui.wdEdit.text())
 		self.clearFocus()
 
-
-
 	def killall(self):
 		for info in self.compConfig:
 			self.bg_exec(str(info.compdown), str(info.workingdir))
+
+	def restart(self):
+		self.request = self.compList[self.ui.idx].name
+		self.ui.close()
+		self.emit(QtCore.SIGNAL("restartRequest()"))
 
 	# Run the configured file editor
 	def config(self):
