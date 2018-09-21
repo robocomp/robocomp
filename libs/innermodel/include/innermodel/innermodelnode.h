@@ -23,8 +23,8 @@
 #include <innermodel/innermodelconfig.h>
 
 #if FCL_SUPPORT==1
-#include <boost/shared_ptr.hpp>
 #include <fcl/collision.h>
+#include <fcl/distance.h>
 #include <fcl/narrowphase/narrowphase.h>
 #include <fcl/ccd/motion.h>
 #include <fcl/BV/BV.h>
@@ -34,7 +34,7 @@
 #include <fcl/traversal/traversal_node_bvh_shape.h>
 #include <fcl/traversal/traversal_node_bvhs.h>
 typedef fcl::BVHModel<fcl::OBBRSS> FCLModel;
-typedef boost::shared_ptr<FCLModel> FCLModelPtr;
+typedef std::shared_ptr<FCLModel> FCLModelPtr;
 #endif
 
 class InnerModel;

@@ -38,22 +38,6 @@
 #include <innermodel/innermodeltouchsensor.h>
 #include <innermodel/innermodeldisplay.h>
 
-#if FCL_SUPPORT==1
-#include <boost/shared_ptr.hpp>
-#include <fcl/collision.h>
-#include <fcl/distance.h>
-#include <fcl/narrowphase/narrowphase.h>
-#include <fcl/ccd/motion.h>
-#include <fcl/BV/BV.h>
-#include <fcl/BVH/BVH_model.h>
-#include <fcl/shape/geometric_shapes.h>
-#include <fcl/traversal/traversal_node_setup.h>
-#include <fcl/traversal/traversal_node_bvh_shape.h>
-#include <fcl/traversal/traversal_node_bvhs.h>
-typedef fcl::BVHModel<fcl::OBBRSS> FCLModel;
-typedef boost::shared_ptr<FCLModel> FCLModelPtr;
-#endif
-
 // #include <osg/MatrixTransform>
 // osg::Vec3 qmatToVec3(const RMat::QMat & m) {return osg::Vec3(m(0),m(1),m(2));}
 // #include <osg/TriangleFunctor>

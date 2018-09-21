@@ -21,9 +21,3 @@ QT4_WRAP_UI( UI_HEADERS exportCSV.ui )
 ADD_DEFINITIONS( -std=c++11 )
 
 INSTALL(DIRECTORY "../icons" DESTINATION /opt/robocomp/share/rclogger )
-
-# FCL
-if (FCL_SUPPORT)
-	INCLUDE_DIRECTORIES( /usr/local/include ${CMAKE_SOURCE_DIR}/thirdparty/fcl/include ${CMAKE_CURRENT_BINARY_DIR}/../../../thirdparty/fcl/include )
-	link_directories( ${CMAKE_CURRENT_BINARY_DIR}/../../../thirdparty/fcl/lib/ )
-endif (FCL_SUPPORT)

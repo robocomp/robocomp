@@ -103,7 +103,11 @@ InnerModelPlane::InnerModelPlane(QString id_, QString texture_, float width_, fl
 	fclMesh->beginModel();
 	fclMesh->addSubModel(vertices, triangles);
 	fclMesh->endModel();
-	collisionObject = new fcl::CollisionObject(fclMesh);
+	
+	fcl::Matrix3f R;
+	fcl::Vec3f T;
+		
+	collisionObject = new fcl::CollisionObject(fclMesh, R, T);
 	
 #endif
 }
