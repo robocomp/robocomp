@@ -1,5 +1,5 @@
 /*
- *    Copyright (C) 2006-2014 by RoboLab - University of Extremadura
+ *    Caopyright (C) 2006-2014 by RoboLab - University of Extremadura
  *
  *    This file is part of RoboComp
  *
@@ -235,7 +235,7 @@ void SpecificWorker::updateLasers()
 			laserDataArray.insert(laser->laserNode->id, LASER_createLaserData(laser.value()));
 
 			// create and insert laser shape
-			if (false) // DRAW LASER
+			if (true) // DRAW LASER
 			{
 				osg::ref_ptr<osg::Node> p=NULL;
 				if (id=="laserSecurity")
