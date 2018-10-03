@@ -20,14 +20,9 @@ RoboComp_LIB_DEPEND(build ${LIB_NAME} DEPS ${LIB_DEPS} OPT_DEPS)
 set(OUT_FILE_NAME ${PROJECT_NAME_LOWER}_${LIB_NAME})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-SET( QT_USE_QTXML TRUE )
-SET( QT_USE_QTOPENGL TRUE )
 
-QT4_WRAP_CPP( MOC_SOURCES ${incs} )
-
-INCLUDE( ${QT_USE_FILE} )
-ADD_DEFINITIONS(${QT_DEFINITIONS})
-
+include(${RoboComp_SOURCE_DIR}/cmake/modules/qt.cmake)
+QT_WRAP_CPP( MOC_SOURCES ${incs} )
 
 
 # Python bindings
@@ -45,7 +40,6 @@ endif (PYTHON_BINDINGS_SUPPORT)
 
 RoboComp_ADD_LIBRARY(${OUT_FILE_NAME} SHARED ${LIB_NAME} ${srcs} ${MOC_SOURCES})
 RoboComp_ADD_INCLUDES(${LIB_NAME} ${LIB_NAME} ${incs})
-
 
 
 target_link_libraries(${OUT_FILE_NAME} ${QT_LIBRARIES} -losg -losgViewer  ${PYTHON_LIBRARIES} ${Boost_LIBRARIES} robocomp_qmat)

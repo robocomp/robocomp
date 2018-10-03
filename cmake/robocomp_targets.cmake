@@ -95,7 +95,6 @@ macro(RoboComp_ADD_COMPONENT component_name interfaces headers)
 		add_custom_command (
 			OUTPUT ${interface_name}.cpp ${interface_name}.h
 			COMMAND slice2cpp -I${RoboComp_INTERFACES_DIR} -I. ${RoboComp_INTERFACES_DIR}/${interface_name}.ice --output-dir .
-			#COMMAND /usr/bin/slice2cpp -I /home/spyke/robocomp/interfaces -I. /home/spyke/robocomp/interfaces/Laser.ice --output-dir .
 			DEPENDS ${RoboComp_INTERFACES_DIR}/${interface_name}.ice
 			COMMENT "Generating ${interface_name}.cpp and ${interface_name}.h from ${interface_name}.ice"
 		)
@@ -107,7 +106,7 @@ macro(RoboComp_ADD_COMPONENT component_name interfaces headers)
     
 	include_directories( ${RoboComp_CLASSES_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/${component_name}/src/ ${CMAKE_CURRENT_BINARY_DIR} )
     
-	QT4_WRAP_CPP( MOC_SOURCES ${headers} )
+	QT_WRAP_CPP( MOC_SOURCES ${headers} )
     
     add_executable( ${component_name} ${interface_files} ${ARGN} ${MOC_SOURCES})
     
