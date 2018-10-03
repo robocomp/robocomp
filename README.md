@@ -34,7 +34,7 @@ Tested in Ubuntu 18.04 (for 16.04 some packages have a different name. Ask in gi
 Make sure you have installed the following packages from the Ubuntu repository:
 
     sudo apt-get update
-    sudo apt-get install git git-annex cmake g++ libgsl-dev libopenscenegraph-dev cmake-qt-gui zeroc-ice-all-dev freeglut3-dev libboost-system-dev libboost-thread-dev qt4-dev-tools python-pip  python-pyparsing python-numpy python-pyside pyside-tools libxt-dev libboost-test-dev libboost-filesystem-dev python-libxml2 python-xmltodict libccd-dev python-zeroc-ice
+    sudo apt-get install git git-annex cmake g++ libgsl-dev libopenscenegraph-dev cmake-qt-gui zeroc-ice-all-dev freeglut3-dev libboost-system-dev libboost-thread-dev qt4-dev-tools python-pip  python-pyparsing python-numpy python-pyside pyside-tools libxt-dev libboost-test-dev libboost-filesystem-dev python-libxml2 python-xmltodict libccd-dev python-zeroc-ice zeroc-ice-all-runtime
     sudo pip install networkx
 
 It is recommendable to install the following packages::
