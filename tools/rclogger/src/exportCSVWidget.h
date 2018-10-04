@@ -27,6 +27,7 @@
 
 #include <QtGui>
 #include <QSqlTableModel>
+#include <QtWidgets/QMessageBox>
 #include <stdint.h>
 #include <fstream>
 #include <qlog/qlog.h>

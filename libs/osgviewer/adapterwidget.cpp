@@ -15,12 +15,12 @@ void AdapterWidget::resizeGL( int width, int height )
 
 void AdapterWidget::keyPressEvent( QKeyEvent* event )
 {
-    _gw->getEventQueue()->keyPress( (osgGA::GUIEventAdapter::KeySymbol) *(event->text().toAscii().data() ) );
+    _gw->getEventQueue()->keyPress( (osgGA::GUIEventAdapter::KeySymbol) *(event->text().toLatin1().data() ) );
 }
 
 void AdapterWidget::keyReleaseEvent( QKeyEvent* event )
 {
-    _gw->getEventQueue()->keyRelease( (osgGA::GUIEventAdapter::KeySymbol) *(event->text().toAscii().data() ) );
+    _gw->getEventQueue()->keyRelease( (osgGA::GUIEventAdapter::KeySymbol) *(event->text().toLatin1().data() ) );
 }
 
 void AdapterWidget::mousePressEvent( QMouseEvent* event )
