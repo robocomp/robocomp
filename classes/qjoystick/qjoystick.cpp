@@ -37,12 +37,12 @@ QJoyStick::~QJoyStick()
 
 bool QJoyStick::openQJoy()
 {
-	qWarning( "[qjoystick]: Connecting to device: %s", deviceName.toAscii().data() );
+	qWarning( "[qjoystick]: Connecting to device: %s", deviceName.toLatin1().data() );
 
-	if ((fd = open(deviceName.toAscii().data() , O_RDONLY))<0)
+	if ((fd = open(deviceName.toLatin1().data() , O_RDONLY))<0)
 	{
 		qWarning( "[qjoystick]: Failed opening device." );
-		return FALSE;
+		return false;
 	}
 
 
@@ -53,7 +53,7 @@ bool QJoyStick::openQJoy()
 
 
 	qWarning("[qjoystick]: Device opened: name [%s], version [%8X], axes [%2d], buttons [%2d]", info.name, info.version, info.axes, info.buttons );
-	return TRUE;
+	return true;
 }
 
 bool QJoyStick::cmpJoyEv( js_event src, js_event dst )
