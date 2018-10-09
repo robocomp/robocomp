@@ -166,9 +166,6 @@ namespace RMat
 		QMat & operator-= ( const T &f );
 		QMat & operator/= ( const T &f );
 
-
-
-
 		//Matrix - scalar operations
 
 		void set ( T v );
