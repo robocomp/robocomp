@@ -5,9 +5,15 @@
 
 [Understanding RoboComp's Workspaces](workspaceModel.md)
 
-[Understanding RoboComp's Interfaces](interfaces/README.md)
-
 [Creating my first component using **robocompdsl**](robocompdsl.md)
+
+[IDSL: RoboComp's domain specific language for *interfaces* definition](IDSL.md)
+
+[CDSL: RoboComp's domain specific language for *components* definition](CDSL.md)
+
+[List of RoboComp Interfaces](interfaces/README.md)
+
+[Introduction to InnerModel: RoboComp's internal representation of the world and itself](innermodel.md)
 
 [Maintaining your own repository of components](using_github.md)
 
