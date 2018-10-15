@@ -9,6 +9,8 @@
 
 [Creating my first component using **robocompdsl**](robocompdsl.md)
 
+[Introduction to InnerModel: RoboComp's internal representation of the world and itself](innermodel.md)
+
 [Maintaining your own repository of components](using_github.md)
 
 [RoboComp's  build tools ](buildTools.md)
