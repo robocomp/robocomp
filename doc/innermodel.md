@@ -68,7 +68,7 @@ Let's start with a simple XML file describing a 5000mm x 5000mm square, a few bo
 	</transform>
 </innerModel>
 ~~~~
-The whole world is embraced inside the <innermodel> </innermodel> tag. Inside it we can see the following tags:
+The whole world is embraced inside the _innermodel_ tag. Inside it we find the following tags:
 - 1 transform with id "world"
   - 1 transform with id "floor"
     - 1 plane for the floor object with nice wood texture
@@ -82,4 +82,11 @@ The whole world is embraced inside the <innermodel> </innermodel> tag. Inside it
 	    1 1 plane for the laser's body representation
       and so on for the rgbd camera ...
       
+Each of these elements are read into memory and corresponding classes are instantiated. Geometric transforms are encoded as RT matrices using a left-hand reference system with Y axis pointing up, Z axis pointing front and X axis pointing right.
+
+InnerModel's API provides methods to:
+- access the nodes and their specific APIs
+- add and remove new nodes
+- compute a kinematic transformation between any two nodes in the tree. This transformation is read as " given a 3D point in some A node reference system, compute how it is seen from the reference system of node B". This is, by large, the most used method of the InnerModel API.
+
  
