@@ -7,9 +7,11 @@
 
 [Creating my first component using **robocompdsl**](robocompdsl.md)
 
-[IDSLs and CDSLs: RoboComp's domain specific languages for components definition](IDSL.md)
+[IDSL: RoboComp's domain specific language for *interfaces* definition](IDSL.md)
 
-[RoboComp Interfaces](interfaces/README.md)
+[CDSL: RoboComp's domain specific language for *components* definition](IDSL.md)
+
+[List of RoboComp Interfaces](interfaces/README.md)
 
 [Introduction to InnerModel: RoboComp's internal representation of the world and itself](innermodel.md)
 
