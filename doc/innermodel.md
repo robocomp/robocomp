@@ -33,7 +33,7 @@ A tree made up of elements (robots, bodies, sensors and actuators) connected thr
 
 The InnerMdel tree can be expressed as an XML file. This file can be written to disk at any time or read from a file when the components start. Once in memory, the InnerModel class holds a tree data structure and offers an API to access and modifiy its nodes and edges.
 
-Let's start with a simple XML file describing a 5000mm x 5000mm square, a few boxes on it and a differential drive robot endowed with a laser and an RGBD camera:
+Let's start with a simple XML file describing a 5000mm x 5000mm square, a few boxes on it and a differential drive robot endowed with a laser and an RGBD camera: (the file can be found in ~/robocomp/files/innermodel/simplesimple.xml)
 
 ~~~~
 <innerModel>
