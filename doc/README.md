@@ -9,7 +9,7 @@
 
 [IDSL: RoboComp's domain specific language for *interfaces* definition](IDSL.md)
 
-[CDSL: RoboComp's domain specific language for *components* definition](IDSL.md)
+[CDSL: RoboComp's domain specific language for *components* definition](CDSL.md)
 
 [List of RoboComp Interfaces](interfaces/README.md)
 
