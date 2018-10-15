@@ -39,13 +39,12 @@ Let's start with a simple XML file describing a 5000mm x 5000mm square, a few bo
 <innerModel>
 	<transform id="world">
 		<transform id="floor" rx="3,14>
-		    <plane id="ddG" ny="1"  px="-0" py="0" pz="0" size="5000,5000,10" texture="/home/robocomp/robocomp/files/osgModels/textures/wood.jpg" /> 
-	
+			<plane id="ddG" ny="1"  px="-0" py="0" pz="0" size="5000,5000,10" texture="/home/robocomp/robocomp/files/osgModels/textures/wood.jpg" /> 
+		    
 			<plane id="ddR" nx="1"  px="2500" py="200" pz="0" size="5000,500,10" texture="#eeeeee" />
-			<plane id="ddL" nx="1" px="-2500" py="200" pz="0" size="5000,500,10" texture="#eeeeee" />		
+			<plane id="ddL" nx="1" px="-2500" py="200" pz="0" size="5000,500,10" texture="#eeeeee" />	
 			<plane id="ddF" nz="1"  pz="2500" py="200" px="0" size="5000,500,10" texture="#555555" />
 			<plane id="ddB" nz="1" pz="-2500" py="200" px="0" size="5000,500,10" texture="#555555" />
-	
 		</transform>
 
 		<!--OBSTACLES-->
@@ -69,3 +68,18 @@ Let's start with a simple XML file describing a 5000mm x 5000mm square, a few bo
 	</transform>
 </innerModel>
 ~~~~
+The whole world is embraced inside the <innermodel> </innermodel> tag. Inside it we can see the following tags:
+- 1 transform with id "world"
+  - 1 transform with id "floor"
+    - 1 plane for the floor object with nice wood texture
+    - 4 planes for the walls
+    - 1 transform for the object
+      - 1 plane(box) for the object
+    - 1 differentialrobot object
+        - 1 mesh for the robot's body representation
+	- 1 translation to position the laser
+	  - 1 laser
+	    1 1 plane for the laser's body representation
+      and so on for the rgbd camera ...
+      
+ 
