@@ -89,4 +89,6 @@ InnerModel's API provides methods to:
 - add and remove new nodes
 - compute a kinematic transformation between any two nodes in the tree. This transformation is read as " given a 3D point in some A node reference system, compute how it is seen from the reference system of node B". This is, by large, the most used method of the InnerModel API.
 
- 
+Perceptive components typically extend or update InnerModel after processing data coming from sensors.
+
+A simple example of the use of InnerModel in a generated component is when we want to create a controller tha drives the robot to reach some 2D point on the floor. The easiest way is to transform the world coordiantes of the target into the robot's reference system. This transformed point is actually a vector coming out from the robot and reaching the target. We only need to compute the angle between this vector and the robot heading direction and use it to set a correcting rotation speed that will eventually align the robot with the target. At the same time, the module of that vector can be a good magnitude to control the advence speed of the robot. 
