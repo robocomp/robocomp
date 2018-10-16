@@ -351,6 +351,15 @@ void SpecificWorker::addOMN(InnerModelOmniRobot *node)
 	omn_servers.at(port).add(node);
 }
 
+void SpecificWorker::addDisplay(InnerModelDisplay *node)
+{
+	const uint32_t port = node->port;
+	if (display_servers.count(port) == 0)
+	{
+		display_servers.insert(std::pair<uint32_t, DisplayServer>(port, DisplayServer(communicator, this, port)));
+	}
+	display_servers.at(port).add(node);
+}
 
 void SpecificWorker::addIMU(InnerModelIMU *node)
 {
@@ -478,6 +487,15 @@ void SpecificWorker::walkTree(InnerModelNode *node)
 		{
 			//qDebug() << "OmniRobot " << omniNode->id << omniNode->port;
 			addOMN(omniNode);
+		}
+
+   		InnerModelDisplay *displayNode = dynamic_cast<InnerModelDisplay *>(*it);
+
+		if (displayNode != NULL)
+		{
+
+			//qDebug() << "OmniRobot " << omniNode->id << omniNode->port;
+			addDisplay(displayNode);
 		}
 
 		InnerModelIMU *imuNode = dynamic_cast<InnerModelIMU *>(*it);
