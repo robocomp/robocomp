@@ -81,7 +81,7 @@ void SpecificWorker::fillNodeMap(InnerModelNode *node, QTreeWidgetItem *parent)
 	InnerModelLaser *laser;
 	InnerModelRGBD *rgbd;
 	InnerModelJoint *joint;
-	// InnerModelDisplay *display;
+	InnerModelDisplay *display;
 
 	QTreeWidgetItem *item = new QTreeWidgetItem(QTreeWidgetItem::Type);
 
@@ -153,6 +153,12 @@ void SpecificWorker::fillNodeMap(InnerModelNode *node, QTreeWidgetItem *parent)
 	else if ((laser = dynamic_cast<InnerModelLaser *>(node)))
 	{
 		wnode.type = IMLaser;
+		nodeMap[wnode.id] = wnode;
+		nodeMapByItem[item] = wnode;
+	}
+	else if ((display = dynamic_cast<InnerModelDisplay *>(node)))
+	{
+		wnode.type = IMDisplay;
 		nodeMap[wnode.id] = wnode;
 		nodeMapByItem[item] = wnode;
 	}
@@ -358,6 +364,16 @@ void SpecificWorker::showAvailableGroups()
 			cameraGroup->hide();
 			nodeType->setText("<b>joint</b>");
 			showJoint(currentNode.id);
+		case IMDisplay:
+			planeGroup->show();
+			translationGroup->hide();
+			rotationGroup->hide();
+			meshGroup->hide();
+			cameraGroup->hide();
+			jointGroup->hide();
+			nodeType->setText("<b>Display</b>");
+			showPlane(currentNode.id);
+			//qDebug() << imv->planesHash.key(dynamic_cast<IMVPlane *>(world3D->hexno));
 	}
 }
 
@@ -414,7 +430,41 @@ void SpecificWorker::showMesh(QString id)
 
 void SpecificWorker::showPlane(QString id)
 {
-	InnerModelPlane *p = (InnerModelPlane *)innerModel->getNode(id);
+    NodeType type = currentNode.type;
+    if (type == IMPlane)
+	{
+        InnerModelPlane *p = (InnerModelPlane *)innerModel->getNode(id);
+        px->setValue(p->point(0));
+        py->setValue(p->point(1));
+        pz->setValue(p->point(2));
+        pnx->setValue(p->normal(0));
+        pny->setValue(p->normal(1));
+        pnz->setValue(p->normal(2));
+        texture->setText(p->texture);
+        rectangleWidth->setValue(p->width);
+        rectangleHeight->setValue(p->height);
+        textureSize->setValue(p->repeat);
+    }
+    else if (type == IMDisplay)
+    {
+        InnerModelDisplay *p = (InnerModelDisplay *)innerModel->getNode(id);
+        px->setValue(p->point(0));
+        py->setValue(p->point(1));
+        pz->setValue(p->point(2));
+        pnx->setValue(p->normal(0));
+        pny->setValue(p->normal(1));
+        pnz->setValue(p->normal(2));
+        texture->setText(p->texture);
+        rectangleWidth->setValue(p->width);
+        rectangleHeight->setValue(p->height);
+        textureSize->setValue(p->repeat);
+    }
+
+}
+
+void SpecificWorker::showDisplay(QString id)
+{
+	InnerModelDisplay *p = (InnerModelDisplay *)innerModel->getNode(id);
 	px->setValue(p->point(0));
 	py->setValue(p->point(1));
 	pz->setValue(p->point(2));
@@ -575,16 +625,33 @@ void SpecificWorker::meshChanged()
 
 void SpecificWorker::planeChanged()
 {
-	InnerModelPlane *m = (InnerModelPlane *)innerModel->getNode(currentNode.id);
-	m->normal = QVec::vec3(pnx->value(), pny->value(), pnz->value());
-	m->point = QVec::vec3(px->value(), py->value(), pz->value());
-	m->width = rectangleWidth->value();
-	m->height = rectangleHeight->value();
-	m->texture = texture->text();
-	m->repeat = textureSize->value();
-	prevNode = NULL;
-	imv->update();
+    NodeType type = currentNode.type;
+    if (type == IMPlane)
+    {
+        InnerModelPlane *m = (InnerModelPlane *)innerModel->getNode(currentNode.id);
+        m->normal = QVec::vec3(pnx->value(), pny->value(), pnz->value());
+        m->point = QVec::vec3(px->value(), py->value(), pz->value());
+        m->width = rectangleWidth->value();
+        m->height = rectangleHeight->value();
+        m->texture = texture->text();
+        m->repeat = textureSize->value();
+        prevNode = NULL;
+        imv->update();
+    }
+    else if (type == IMDisplay)
+    {
+        InnerModelDisplay *m = (InnerModelDisplay *)innerModel->getNode(currentNode.id);
+        m->normal = QVec::vec3(pnx->value(), pny->value(), pnz->value());
+        m->point = QVec::vec3(px->value(), py->value(), pz->value());
+        m->width = rectangleWidth->value();
+        m->height = rectangleHeight->value();
+        m->texture = texture->text();
+        m->repeat = textureSize->value();
+        prevNode = NULL;
+        imv->update();
+    }
 }
+
 
 void SpecificWorker::translationChanged()
 {
@@ -625,7 +692,6 @@ void SpecificWorker::rotationChanged()
 	else
 		qFatal("Internal error worker.cpp:%d\n", __LINE__);
 }
-
 
 void SpecificWorker::jointChanged()
 {
@@ -767,6 +833,20 @@ void SpecificWorker::shownode()
 		laserBox->hide();
 		Ifconfiga->hide();
 	}
+	else if(Typea->currentText()== "display")
+	{
+		planeGroup_2->show();
+		translationGroup_2->hide();
+		rotationGroup_2->hide();
+		meshGroup_2->hide();
+		cameraGroup_2->hide();
+		jointGroup_2->hide();
+		massBox->hide();
+		portBox->hide();
+		noiseBox->hide();
+		laserBox->hide();
+		Ifconfiga->hide();
+	}
 	else
 	{
 		qDebug()<< "type valid node";
@@ -885,7 +965,6 @@ void SpecificWorker::add_new_node()
 	}
 
 }
-
 
 void SpecificWorker::interfaceConnections(bool enable)
 {
@@ -1048,7 +1127,6 @@ void SpecificWorker::reload_same()
 	}
 }
 
-
 void SpecificWorker::remove_current_node()
 {
 	QMessageBox::StandardButton resBtn = QMessageBox::question( this, "RcinnerModelEditor",tr("Are you sure?\n"),QMessageBox::Cancel | QMessageBox::No | QMessageBox::Yes,QMessageBox::Yes);
@@ -1135,6 +1213,7 @@ void SpecificWorker::showmsgBox()
 		treeWidget_2->hide();
 	}
 }
+
 void SpecificWorker::sendmsg()
 {
 	QRegExp mailREX("\\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,4}\\b");

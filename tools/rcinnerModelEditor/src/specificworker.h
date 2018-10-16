@@ -33,7 +33,7 @@
 #include <qmat/QMatAll>
 #include <smtp.h>
 
-enum NodeType { IMTransform, IMRotation, IMTranslation, IMMesh, IMPlane, IMCamera, IMIMU, IMLaser, IMRGBD, IMJoint };
+enum NodeType { IMTransform, IMRotation, IMTranslation, IMMesh, IMPlane, IMCamera, IMIMU, IMLaser, IMRGBD, IMJoint, IMDisplay };
 
 struct WorkerNode
 {
@@ -84,6 +84,7 @@ class SpecificWorker : public GenericWorker
 		void showTranslation(QString id);
 		void showMesh(QString id);
 		void showPlane(QString id);
+		void showDisplay(QString id);
 		void showCamera(QString id);
 
 	private:
