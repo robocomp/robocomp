@@ -149,6 +149,7 @@ else:
 	cog.outl("SET( QT_USE_QTSTATE TRUE )")
 	cog.outl("SET( QT_USE_QTSTATEMACHINE TRUE )")
 	cog.outl("SET( CMAKE_AUTOMOC TRUE )")
+	cog.outl("SET( CMAKE_AUTOUIC TRUE )")
 	cog.outl("INCLUDE( ${QT_USE_FILE} )")
 	if component['gui'] != 'none':
 		cog.outl("QT4_WRAP_UI( UI_HEADERS mainUI.ui )")

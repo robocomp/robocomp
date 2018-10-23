@@ -1,4 +1,4 @@
-CommonBehavior.Endpoints=tcp -p 1
+CommonBehavior.Endpoints=tcp -p 10000
 
 
 [[[cog
@@ -91,10 +91,8 @@ if storm:
 ]]]
 [[[end]]]
 
+InnerModel = innermodel.xml
+
 Ice.Warn.Connections=0
 Ice.Trace.Network=0
 Ice.Trace.Protocol=0
-# Ice.ACM.Client=10
-Ice.ACM.Client=0
-# Ice.ACM.Server=10
-Ice.ACM.Server=0
