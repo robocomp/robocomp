@@ -91,7 +91,7 @@ if storm:
 ]]]
 [[[end]]]
 
-InnerModel = innermodel.xml
+InnerModelPath = innermodel.xml
 
 Ice.Warn.Connections=0
 Ice.Trace.Network=0
