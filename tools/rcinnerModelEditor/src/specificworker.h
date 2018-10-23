@@ -115,7 +115,7 @@ class SpecificWorker : public GenericWorker
         void mailSent(QString);
 
 	private:
-		InnerModel *innerModel;
+		std::shared_ptr<InnerModel> innerModel;
 
 };
 

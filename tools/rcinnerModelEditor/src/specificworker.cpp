@@ -223,8 +223,8 @@ void SpecificWorker::highlightNode()
 		}
 	}
 
-	prevNode = (InnerModelNode *)innerModel->getNode(currentNode.id);
-	InnerModelNode *HighNode = (InnerModelNode *)innerModel->getNode(currentNode.id);
+	prevNode = innerModel->getNode<InnerModelNode>(currentNode.id);
+	InnerModelNode *HighNode = innerModel->getNode<InnerModelNode>(currentNode.id);
 
 	if ((plane = dynamic_cast<InnerModelPlane *>(HighNode)))
 	{
@@ -386,7 +386,7 @@ void SpecificWorker::showTransform(QString id)
 
 void SpecificWorker::showRotation(QString id)
 {
-	InnerModelTransform *t = (InnerModelTransform *)innerModel->getNode(id);
+	InnerModelTransform *t = innerModel->getNode<InnerModelTransform>(id);
 	rx->setValue(t->backrX);
 	ry->setValue(t->backrY);
 	rz->setValue(t->backrZ);
@@ -394,13 +394,13 @@ void SpecificWorker::showRotation(QString id)
 
 void SpecificWorker::showJoint(QString id)
 {
-	InnerModelJoint *j = (InnerModelJoint *)innerModel->getNode(id);
+	InnerModelJoint *j = innerModel->getNode<InnerModelJoint>(id);
 	jointAngle->setValue(j->getAngle());
 }
 
 void SpecificWorker::showTranslation(QString id)
 {
-	InnerModelTransform *t = (InnerModelTransform *)innerModel->getNode(id);
+	InnerModelTransform *t = innerModel->getNode<InnerModelTransform>(id);
 	tx->setValue(t->backtX);
 	ty->setValue(t->backtY);
 	tz->setValue(t->backtZ);
@@ -408,7 +408,7 @@ void SpecificWorker::showTranslation(QString id)
 
 void SpecificWorker::showMesh(QString id)
 {
-	InnerModelMesh *m = (InnerModelMesh *)innerModel->getNode(id);
+	InnerModelMesh *m = innerModel->getNode<InnerModelMesh>(id);
 	if (m->render == InnerModelMesh::NormalRendering)
 		renderMode->setCurrentIndex(0);
 	else if (m->render == InnerModelMesh::WireframeRendering)
@@ -433,7 +433,7 @@ void SpecificWorker::showPlane(QString id)
     NodeType type = currentNode.type;
     if (type == IMPlane)
 	{
-        InnerModelPlane *p = (InnerModelPlane *)innerModel->getNode(id);
+        InnerModelPlane *p = innerModel->getNode<InnerModelPlane>(id);
         px->setValue(p->point(0));
         py->setValue(p->point(1));
         pz->setValue(p->point(2));
@@ -447,7 +447,7 @@ void SpecificWorker::showPlane(QString id)
     }
     else if (type == IMDisplay)
     {
-        InnerModelDisplay *p = (InnerModelDisplay *)innerModel->getNode(id);
+        InnerModelDisplay *p = innerModel->getNode<InnerModelDisplay>(id);
         px->setValue(p->point(0));
         py->setValue(p->point(1));
         pz->setValue(p->point(2));
@@ -464,7 +464,7 @@ void SpecificWorker::showPlane(QString id)
 
 void SpecificWorker::showDisplay(QString id)
 {
-	InnerModelDisplay *p = (InnerModelDisplay *)innerModel->getNode(id);
+	InnerModelDisplay *p = innerModel->getNode<InnerModelDisplay>(id);
 	px->setValue(p->point(0));
 	py->setValue(p->point(1));
 	pz->setValue(p->point(2));
@@ -480,7 +480,7 @@ void SpecificWorker::showDisplay(QString id)
 
 void SpecificWorker::showCamera(QString id)
 {
-	InnerModelCamera *c = (InnerModelCamera *)innerModel->getNode(id);
+	InnerModelCamera *c = innerModel->getNode<InnerModelCamera>(id);
 	focal->setValue(c->camera.getFocal());
 	cwidth->setValue(c->camera.getWidth());
 	cheight->setValue(c->camera.getHeight());
@@ -560,7 +560,7 @@ void SpecificWorker::idChanged()
 	if(currentNode.id != lineEdit_nodeId->text())
 	{
 		disconnect(&timer, SIGNAL(timeout()), this, SLOT(compute()));
-		InnerModelNode *n = (InnerModelNode *)innerModel->getNode(currentNode.id);
+		InnerModelNode *n = innerModel->getNode<InnerModelNode>(currentNode.id);
 
 		n->id = lineEdit_nodeId->text();
 		innerModel->ChangeHash(lineEdit_nodeId->text(), n);
@@ -598,14 +598,14 @@ void SpecificWorker::idChanged()
 
 void SpecificWorker::cameraChanged()
 {
-	InnerModelCamera *c = (InnerModelCamera *)innerModel->getNode(currentNode.id);
+	InnerModelCamera *c = innerModel->getNode<InnerModelCamera>(currentNode.id);
 	c->camera.setSize(cwidth->value(), cheight->value());
 	c->camera.setFocal(focal->value());
 }
 
 void SpecificWorker::meshChanged()
 {
-	InnerModelMesh *m = (InnerModelMesh *)innerModel->getNode(currentNode.id);
+	InnerModelMesh *m = innerModel->getNode<InnerModelMesh>(currentNode.id);
 	printf("d %p dd %s\n", m, m->id.toStdString().c_str());
 	if (renderMode->currentIndex() == 0)
 		m->render = InnerModelMesh::NormalRendering;
@@ -628,7 +628,7 @@ void SpecificWorker::planeChanged()
     NodeType type = currentNode.type;
     if (type == IMPlane)
     {
-        InnerModelPlane *m = (InnerModelPlane *)innerModel->getNode(currentNode.id);
+        InnerModelPlane *m = innerModel->getNode<InnerModelPlane>(currentNode.id);
         m->normal = QVec::vec3(pnx->value(), pny->value(), pnz->value());
         m->point = QVec::vec3(px->value(), py->value(), pz->value());
         m->width = rectangleWidth->value();
@@ -640,7 +640,7 @@ void SpecificWorker::planeChanged()
     }
     else if (type == IMDisplay)
     {
-        InnerModelDisplay *m = (InnerModelDisplay *)innerModel->getNode(currentNode.id);
+        InnerModelDisplay *m = innerModel->getNode<InnerModelDisplay>(currentNode.id);
         m->normal = QVec::vec3(pnx->value(), pny->value(), pnz->value());
         m->point = QVec::vec3(px->value(), py->value(), pz->value());
         m->width = rectangleWidth->value();
@@ -664,7 +664,7 @@ void SpecificWorker::translationChanged()
 	}
 	else if (type == IMMesh)
 	{
-		InnerModelMesh *m = (InnerModelMesh *)innerModel->getNode(currentNode.id);
+		InnerModelMesh *m = innerModel->getNode<InnerModelMesh>(currentNode.id);
 		m->tx = tx->value();
 		m->ty = ty->value();
 		m->tz = tz->value();
@@ -684,7 +684,7 @@ void SpecificWorker::rotationChanged()
 	}
 	else if (type == IMMesh)
 	{
-		InnerModelMesh *m = (InnerModelMesh *)innerModel->getNode(currentNode.id);
+		InnerModelMesh *m = innerModel->getNode<InnerModelMesh>(currentNode.id);
 		m->rx = rx->value();
 		m->ry = ry->value();
 		m->rz = rz->value();
@@ -698,7 +698,7 @@ void SpecificWorker::jointChanged()
 	printf("joint changed\n");
 	if (currentNode.type == IMJoint)
 	{
-		// 		InnerModelJoint *j = (InnerModelJoint *)innerModel->getNode(currentNode.id);
+		// 		InnerModelJoint *j = innerModel->getNode<InnerModelJoint>(currentNode.id);
 		innerModel->updateRotationValues(currentNode.id, 0, 0, jointAngle->value());
 	}
 	else
@@ -862,7 +862,7 @@ void SpecificWorker::add_new_node()
 			plane->texture = prevTexture;
 	}
 
-	InnerModelNode *par= (InnerModelNode *)innerModel->getNode(parenta->text());
+	InnerModelNode *par= innerModel->getNode<InnerModelNode>(parenta->text());
 	if (par==NULL)
 	{
 		msgBox.setText("Enter valid Parent Id");
@@ -871,7 +871,7 @@ void SpecificWorker::add_new_node()
 
 	else
 	{
-		InnerModelNode *check= (InnerModelNode *)innerModel->getNode(newid->text());
+		InnerModelNode *check= innerModel->getNode<InnerModelNode>(newid->text());
 
 		if(check==NULL)
 		{
@@ -1109,7 +1109,7 @@ void SpecificWorker::reload_same()
 		disconnect(treeWidget, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
 		treeWidget->clear();
 		connect(treeWidget, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
-		innerModel = new InnerModel(File_reload.toStdString());
+		innerModel = std::make_shared<InnerModel>(File_reload.toStdString());
 		fillNodeMap(innerModel->getNode("root"), NULL);
 		translationGroup->hide();
 		rotationGroup->hide();
@@ -1181,7 +1181,7 @@ void SpecificWorker::start_new_model()
 	disconnect(treeWidget, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
 	treeWidget->clear();
 	connect(treeWidget, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
-	innerModel = new InnerModel();
+	innerModel = std::make_shared<InnerModel>();
 	fillNodeMap(innerModel->getNode("root"), NULL);
 	imv = new InnerModelViewer(innerModel, "root", world3D->getRootGroup(),false);
 	timer.start(Period);
@@ -1266,7 +1266,7 @@ void SpecificWorker::openFile()
 		disconnect(treeWidget, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
 		treeWidget->clear();
 		connect(treeWidget, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
-		innerModel = new InnerModel(fileName.toStdString());
+		innerModel = std::make_shared<InnerModel>(fileName.toStdString());
 		fillNodeMap(innerModel->getNode("root"), NULL);
 		imv = new InnerModelViewer(innerModel, "root", world3D->getRootGroup(),false);
 		if(groupBox->isHidden())
