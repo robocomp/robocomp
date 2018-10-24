@@ -56,12 +56,16 @@ Z()
 #define GENERICWORKER_H
 
 #include "config.h"
-#include <QtGui>
 #include <stdint.h>
 #include <qlog/qlog.h>
 
 [[[cog
 if component['gui'] != 'none':
+	cog.outl("#if Qt5_FOUND") 
+	cog.outl("\t#include <QtWidgets>")
+	cog.outl("#else")
+	cog.outl("#include <QtGui>")
+	cog.outl("#endif") 
 	cog.outl("#include <ui_mainUI.h>")
 ]]]
 [[[end]]]

@@ -25,22 +25,24 @@
 #ifndef SPECIFICWORKER_H
 #define SPECIFICWORKER_H
 
-#include <QSqlDatabase>
-#include <QSqlQuery>
 //#include "loggerdlgcontrol.h"
+#if Qt5_FOUND 
+	#include <QtWidgets>
+#endif
 #include <genericworker.h>
 #include <QtGui>
 #include <QtCore>
+#include <QTimer>
 #include <QAction>
 #include <QMenuBar>
-#include <QWidget>
-#include <QTimer>
+#include <QFormLayout>
+#include <QTableView>
+#include <QHeaderView>
 #include <QSqlTableModel>
 #include <QSqlQuery>
 #include <QSqlIndex>
-#include <QTableView>
-#include <qsqlrecord.h>
 #include <QSqlDatabase>
+#include <qsqlrecord.h>
 #include "ui_mainUI.h"
 #include "exportCSVWidget.h"
 

@@ -1,14 +1,3 @@
-# Qt4
-ADD_DEFINITIONS( -Wall  -DQT_XML_LIB -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB )
-FIND_PACKAGE( Qt4 )
-SET( QT_USE_QTGUI TRUE )
-SET( QT_USE_QTOPENGL TRUE )
-SET( QT_USE_QTXML TRUE )
-SET( QT_USE_QTSTATE TRUE )
-SET( QT_USE_QTSTATEMACHINE TRUE )
-INCLUDE( ${QT_USE_FILE} )
-
-
 
 MACRO( ROBOCOMP_INITIALIZE )
   set(RoboComp_VERSION 1.0 CACHE STRING "RoboComp version")
@@ -36,8 +25,6 @@ MACRO( ROBOCOMP_INITIALIZE )
   FIND_PACKAGE( Ice REQUIRED COMPONENTS Ice IceStorm OPTIONAL_COMPONENTS IceUtil )
  
   SET( LIBS ${LIBS} -L/opt/robocomp/lib ${OSG_LIBRARY} -losgViewer -losg -losgUtil  -losgGA ${OSGDB_LIBRARY} ${OSGVIEWER_LIBRARY} ${OPENTHREADS_LIBRARY}  -L${ROBOCOMP_ROOT}/classes ${CMAKE_THREAD_LIBS_INIT} ${Ice_LIBRARIES} -lboost_system  robocomp_qmat ${IPP_LIBS} robocomp_innermodel robocomp_osgviewer)
-
- 
  
 ENDMACRO( ROBOCOMP_INITIALIZE )
 
@@ -96,14 +83,13 @@ MACRO( ROBOCOMP_WRAP_ICE )
           COMMENT "Generating ${input_file}.cpp and ${input_file}.h from ${input_file}.ice"
         )
         SET ( SOURCES ${SOURCES} ./${input_file}.cpp)
+	    SET_PROPERTY(SOURCE ${input_file}.cpp PROPERTY SKIP_AUTOGEN ON)
         SET ( SLICE_FILE_FOUND "true")
 	break ()
       ENDIF (EXISTS "${SPATH}/${input_file}.ice")
     ENDFOREACH (SPATH)
     IF (${SLICE_FILE_FOUND} STREQUAL "false")
       MESSAGE(FATAL_ERROR "${input_file}.ice not found in any of the Slice directories (${SLICE_PATH}).")
-#     ELSE (${SLICE_FILE_FOUND} STREQUAL "false")
-#       MESSAGE( "${input_file}.ice was found!")
     ENDIF (${SLICE_FILE_FOUND} STREQUAL "false")
   ENDFOREACH( input_file )
 ENDMACRO( ROBOCOMP_WRAP_ICE )

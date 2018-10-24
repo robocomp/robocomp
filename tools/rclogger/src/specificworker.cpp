@@ -51,7 +51,6 @@ SpecificWorker::SpecificWorker(MapPrx& mprx) : GenericWorker(mprx)
 	tView->setSelectionBehavior(QAbstractItemView::SelectRows);
 	tView->setEditTriggers(QAbstractItemView::NoEditTriggers);//non editable
 	tView->setSortingEnabled(true);
-	tView->horizontalHeader()->setMovable(true);
 	tView->setModel(tModel);
 	QFont f=QApplication::font();
 	f.setPointSize(0.8*f.pointSizeF());
