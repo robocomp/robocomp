@@ -50,7 +50,7 @@ This will generate a CDSL file with the following content:
 
 > Just copy **cdsl.xml** to /home/**your-linux-user**/.local/share/katepart5/syntax/cdsl.xml (Kate)
 
-> Just copy **cdsl.xml** to /home/**your-linux-user**/share/apps/katepart/syntax/cdsl.xml (KDevelop)
+> Just copy **cdsl.xml** to /home/**your-linux-user**/.kde/share/katepart/syntax/cdsl.xml (KDevelop)
 
 > and restart your application.
 
