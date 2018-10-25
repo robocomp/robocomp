@@ -31,11 +31,7 @@ module RoboCompYoloServer
 	sequence <Box> Objects;
 	interface YoloServer
 	{
-		int processImage (TImage img) throws HardwareFailedException;
-	};
-	interface YoloPublishObjects
-	{
-		void newObjects (int id, Objects objs);
+		Objects processImage (TImage img) throws HardwareFailedException;
 	};
 };
 
