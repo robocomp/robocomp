@@ -1,5 +1,6 @@
 module RoboCompYoloServer
 {
+ // 
   exception HardwareFailedException { string what; };
 
   sequence<byte> ImgType;
