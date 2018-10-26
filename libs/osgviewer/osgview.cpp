@@ -672,7 +672,7 @@ void OsgView::keyPressEvent( QKeyEvent* event )
 		setCameraManipulator(0);
 	}
 	emit keyPress(event->text());
-    _gw->getEventQueue()->keyPress( (osgGA::GUIEventAdapter::KeySymbol) *(event->text().toAscii().data() ) );
+    _gw->getEventQueue()->keyPress( (osgGA::GUIEventAdapter::KeySymbol) *(event->text().toLatin1().data() ) );
 }
 
 void OsgView::keyReleaseEvent( QKeyEvent* event )
@@ -690,7 +690,7 @@ void OsgView::keyReleaseEvent( QKeyEvent* event )
 
 	}
 	emit keyRelease(event->text());
-    _gw->getEventQueue()->keyRelease( (osgGA::GUIEventAdapter::KeySymbol) *(event->text().toAscii().data() ) );
+    _gw->getEventQueue()->keyRelease( (osgGA::GUIEventAdapter::KeySymbol) *(event->text().toLatin1().data() ) );
 }
 
 void OsgView::mousePressEvent( QMouseEvent* event )
@@ -705,9 +705,9 @@ void OsgView::mousePressEvent( QMouseEvent* event )
         default: button = 0; break;
     }
     if (event->button() == Qt::LeftButton)
-		emit newLeftCoor( event->posF() );
+		emit newLeftCoor( event->pos() );
 	else
-		emit newRightCoor( event->posF() );
+		emit newRightCoor( event->pos() );
     _gw->getEventQueue()->mouseButtonPress(event->x(), event->y(), button);
 }
 
@@ -722,7 +722,7 @@ void OsgView::mouseReleaseEvent( QMouseEvent* event )
         case(Qt::NoButton): button = 0; break;
         default: button = 0; break;
     }
-    emit endCoor(event->posF());
+    emit endCoor(event->pos());
     _gw->getEventQueue()->mouseButtonRelease(event->x(), event->y(), button);
 }
 

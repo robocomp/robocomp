@@ -1,7 +1,0 @@
-<AGMModel>
-	<symbol id="objectR" type="object" x="-100" y="0" />
-	<symbol id="statusR" type="status" x="-100" y="150" />
-	<link src="objectR" dst="statusR" label="has" />
-	<symbol id="mugR" type="mug" x="-100" y="300" />
-	<link src="statusR" dst="mugR" label="link" />
-</AGMModel>

@@ -111,7 +111,7 @@ QLine2D QLine2D::getPerpendicularLineThroughPoint(const QVec& point)
 
 QVec QLine2D::intersectionPoint(const QLine2D& l)
 {
-	Q_ASSERT_X(fabs(other.A()) > 0 or fabs(other.B())>0, "QLine2D::intersectionPoint", "|A| or |B| must be > 0");
+	Q_ASSERT_X(fabs(l.A()) > 0 or fabs(l.B())>0, "QLine2D::intersectionPoint", "|A| or |B| must be > 0");
 	QMat d(2,2);
 	d(0,0) = A(); d(0,1) = B();
 	d(1,0) = l.A(); d(1,1) = l.B();

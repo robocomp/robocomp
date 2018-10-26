@@ -1,8 +1,5 @@
 cmake_minimum_required(VERSION 2.6)
 PROJECT( rcis )
-add_definitions(
-    -Wfatal-errors
-    )
 
 INCLUDE( CMakeListsSpecific.txt )
 
@@ -66,19 +63,8 @@ INCLUDE( $ENV{ROBOCOMP}/cmake/modules/ipp.cmake )
 # OPENSG
 INCLUDE ($ENV{ROBOCOMP}/cmake/modules/opensg.cmake )
 
-# Qt4
-ADD_DEFINITIONS( -g -Wall -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB --std=c++11)
-FIND_PACKAGE( Qt4 REQUIRED )
-SET( QT_USE_QTGUI TRUE )
-SET( QT_USE_QTOPENGL TRUE )
-SET( QT_USE_QTXML TRUE )
-SET( QT_USE_QTSTATE TRUE )
-SET( QT_USE_QTSTATEMACHINE TRUE )
-INCLUDE( ${QT_USE_FILE} )
-QT4_WRAP_CPP( MOC_SOURCES ${HEADERS} )
-QT4_WRAP_UI( UI_HEADERS guiDlg.ui )
-
-
+# Qt
+INCLUDE ($ENV{ROBOCOMP}/cmake/modules/qt.cmake )
 
 # Python bindings
 set(Boost_USE_STATIC_LIBS   OFF)

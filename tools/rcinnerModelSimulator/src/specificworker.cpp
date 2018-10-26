@@ -21,9 +21,12 @@
 #include "specificworker.h"
 
 // Qt includes
+#if Qt5_FOUND 
+	#include <QtOpenGL>
+	#include <QGLWidget>
+#endif
 #include <QDropEvent>
 #include <QEvent>
-#include <QGLWidget>
 #include <QLabel>
 #include <QMouseEvent>
 #include <QMutexLocker>

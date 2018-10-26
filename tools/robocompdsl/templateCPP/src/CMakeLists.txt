@@ -54,6 +54,7 @@ IF(NOT EXISTS $ENV{ROBOCOMP}/cmake)
 ENDIF(NOT EXISTS $ENV{ROBOCOMP}/cmake)
 
 INCLUDE( $ENV{ROBOCOMP}/cmake/robocomp.cmake )
+INCLUDE( $ENV{ROBOCOMP}/cmake/modules/qt.cmake )
 INCLUDE ( CMakeListsSpecific.txt)
 
 # Sources set
@@ -123,36 +124,8 @@ Z()
 SET (EXECUTABLE_OUTPUT_PATH ${RC_COMPONENT_DEVEL_PATH}/bin)
 
 [[[cog
-if component['useQt'] == 'qt5':
-	cog.outl("# Qt5")
-	cog.outl("ADD_DEFINITIONS( -Wall -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB -fPIC)")
-	cog.outl("FIND_PACKAGE(Qt5Core REQUIRED)")
-	cog.outl("FIND_PACKAGE(Qt5Gui REQUIRED)")
-	cog.outl("FIND_PACKAGE(Qt5Xml REQUIRED)")
-	cog.outl("FIND_PACKAGE(Qt5Widgets REQUIRED)")
-	cog.outl("find_package(Qt5OpenGL REQUIRED)")
-	cog.outl("message(STATUS, ${Qt5Widgets_INCLUDE_DIRS})")
-	cog.outl("include_directories(${Qt5Widgets_INCLUDE_DIRS})")
-	cog.outl("include_directories(${Qt5Core_INCLUDE_DIRS})")
-	cog.outl("include_directories(${Qt5_INCLUDE_DIRS})")
-	cog.outl("SET (LIBS ${LIBS} ${Qt5Widgets_LIBRARIES} ${Qt5Core_LIBRARIES} ${Qt5_LIBRARIES})" )
 	if component['gui'] != 'none':
-		cog.outl("QT5_WRAP_UI( UI_HEADERS mainUI.ui )")
-	cog.outl("SET( CMAKE_AUTOMOC TRUE )")
-else:
-	cog.outl("# Qt4")
-	cog.outl("ADD_DEFINITIONS( -Wall -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB )")
-	cog.outl("FIND_PACKAGE( Qt4 REQUIRED )")
-	cog.outl("SET( QT_USE_QTGUI TRUE )")
-	cog.outl("SET( QT_USE_QTOPENGL TRUE )")
-	cog.outl("SET( QT_USE_QTXML TRUE )")
-	cog.outl("SET( QT_USE_QTSTATE TRUE )")
-	cog.outl("SET( QT_USE_QTSTATEMACHINE TRUE )")
-	cog.outl("SET( CMAKE_AUTOMOC TRUE )")
-	cog.outl("SET( CMAKE_AUTOUIC TRUE )")
-	cog.outl("INCLUDE( ${QT_USE_FILE} )")
-	if component['gui'] != 'none':
-		cog.outl("QT4_WRAP_UI( UI_HEADERS mainUI.ui )")
+		cog.outl("QT_WRAP_UI( UI_HEADERS mainUI.ui )")
 ]]]
 [[[end]]]
 
@@ -184,12 +157,10 @@ TARGET_LINK_LIBRARIES(
 [[[cog
 A()
 cog.out(' ' + component['name'] + ' ')
-if not component['useQt'] == 'qt5':
-	cog.out('${QT_LIBRARIES} ')
 Z()
 ]]]
 [[[end]]]
-${LIBS} ${STATIC_LIBS} ${SPECIFIC_LIBS})
+${LIBS} ${STATIC_LIBS} ${SPECIFIC_LIBS} ${QT_LIBRARIES})
 INSTALL(FILES ${EXECUTABLE_OUTPUT_PATH}/
 [[[cog
 A()

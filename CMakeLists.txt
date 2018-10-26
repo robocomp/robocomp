@@ -2,9 +2,9 @@
 cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 
 
-ADD_DEFINITIONS( -std=c++11 )
+ADD_DEFINITIONS( -std=c++17 )
 
-
+cmake_policy(SET CMP0048 OLD)
 project(RoboComp)
 string(TOLOWER ${PROJECT_NAME} PROJECT_NAME_LOWER)
 
@@ -30,6 +30,8 @@ include(${RoboComp_SOURCE_DIR}/cmake/robocomp_targets.cmake)
 include(${RoboComp_SOURCE_DIR}/cmake/robocomp_utils.cmake)
 set(RoboComp_VERSION 1.01 CACHE STRING "RoboComp version")
 SET_INSTALL_DIRS()
+
+include(${RoboComp_SOURCE_DIR}/cmake/modules/qt.cmake)
 
 
 # Add an "uninstall" target
@@ -58,19 +60,6 @@ else (PYTHON_BINDINGS_SUPPORT)
 	MESSAGE(STATUS "PYTHON BINDINGS:        NO")
 endif (PYTHON_BINDINGS_SUPPORT)
 
-
-# Find QT4
-ADD_DEFINITIONS( -Wall -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB )
-SET( QT_USE_QTGUI TRUE )
-SET( QT_USE_QTOPENGL TRUE )
-SET( QT_USE_QTXML TRUE )
-SET( QT_USE_QTSTATE TRUE )
-SET( QT_USE_QTSTATEMACHINE TRUE )
-find_package(Qt4 REQUIRED)
-if (QT4_FOUND)
-  include(${QT_USE_FILE})
-  add_definitions( "-DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED -Wall -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB" )
-endif (QT4_FOUND)
 
 
 #Find Doxygen and html help compiler if any

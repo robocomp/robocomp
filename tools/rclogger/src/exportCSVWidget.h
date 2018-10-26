@@ -24,9 +24,12 @@
 
 #ifndef EXPORTCSVWIDGET_H
 #define EXPORTCSVWIDGET_H
-
+#ifdef Qt5_FOUND
+	#include <QtWidgets>
+#endif
 #include <QtGui>
 #include <QSqlTableModel>
+#include <QMessageBox>
 #include <stdint.h>
 #include <fstream>
 #include <qlog/qlog.h>
