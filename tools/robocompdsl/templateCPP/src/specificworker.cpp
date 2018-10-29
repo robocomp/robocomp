@@ -118,7 +118,13 @@ Z()
 /**
 * \brief Default constructor
 */
-SpecificWorker::SpecificWorker(MapPrx& mprx) : GenericWorker(mprx)
+[[[cog
+	if component['language'].lower() == 'cpp':
+		cog.outl("SpecificWorker::SpecificWorker(MapPrx& mprx) : GenericWorker(mprx)")
+	else:
+		cog.outl("SpecificWorker::SpecificWorker(TuplePrx tprx) : GenericWorker(tprx)")
+]]]
+[[[end]]]
 {
 
 [[[cog

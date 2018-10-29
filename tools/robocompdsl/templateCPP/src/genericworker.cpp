@@ -54,8 +54,11 @@ Z()
 /**
 * \brief Default constructor
 */
-GenericWorker::GenericWorker(MapPrx& mprx) :
 [[[cog
+if component['language'].lower() == 'cpp':
+	cog.outl("GenericWorker::GenericWorker(MapPrx& mprx) :")
+else:
+	cog.outl("GenericWorker::GenericWorker(TuplePrx tprx) :")
 if component['gui'] != 'none':
 	cog.outl("""#ifdef USE_QTGUI
 Ui_guiDlg()
@@ -69,13 +72,18 @@ else:
 [[[end]]]
 {
 [[[cog
+cont = 0
 for namea, num in getNameNumber(component['requires']):
 	if type(namea) == str:
 		name = namea
 	else:
 		name = namea[0]
 	if communicationIsIce(namea):
-		cog.outl("<TABHERE>"+name.lower()+num+"_proxy = (*("+name+"Prx*)mprx[\""+name+"Proxy"+num+"\"]);")
+		if component['language'].lower() == 'cpp':
+			cog.outl("<TABHERE>"+name.lower()+num+"_proxy = (*("+name+"Prx*)mprx[\""+name+"Proxy"+num+"\"]);")
+		else:
+			cog.outl("<TABHERE>"+name.lower()+num+"_proxy = std::get<" + str(cont) + ">(tprx);")
+	cont = cont + 1
 
 for namea, num in getNameNumber(component['publishes']):
 	if type(namea) == str:

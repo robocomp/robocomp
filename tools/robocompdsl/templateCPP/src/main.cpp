@@ -24,7 +24,7 @@ REQUIRE_STR = """
 <TABHERE><TABHERE>{
 <TABHERE><TABHERE><TABHERE>cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy <NORMAL>Proxy\\n";
 <TABHERE><TABHERE>}
-<TABHERE><TABHERE><PROXYNAME>_proxy = <NORMAL>Prx::uncheckedCast( communicator()->stringToProxy( proxy ) );
+<TABHERE><TABHERE><C++_VERSION>
 <TABHERE>}
 <TABHERE>catch(const Ice::Exception& ex)
 <TABHERE>{
@@ -32,7 +32,6 @@ REQUIRE_STR = """
 <TABHERE><TABHERE>return EXIT_FAILURE;
 <TABHERE>}
 <TABHERE>rInfo("<NORMAL>Proxy<PROXYNUMBER> initialized Ok!");
-<TABHERE>mprx["<NORMAL>Proxy<PROXYNUMBER>"] = (::IceProxy::Ice::Object*)(&<PROXYNAME>_proxy);//Remote server proxy creation example
 """
 
 SUBSCRIBESTO_STR = """
@@ -96,8 +95,8 @@ IMPLEMENTS_STR = """
 <TABHERE><TABHERE><TABHERE>cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy <NORMAL>";
 <TABHERE><TABHERE>}
 <TABHERE><TABHERE>Ice::ObjectAdapterPtr adapter<NORMAL> = communicator()->createObjectAdapterWithEndpoints("<NORMAL>", tmp);
-<TABHERE><TABHERE><NORMAL>I *<LOWER> = new <NORMAL>I(worker);
-<TABHERE><TABHERE>adapter<NORMAL>->add(<LOWER>, communicator()->stringToIdentity("<LOWER>"));
+<TABHERE><TABHERE><C++_VERSION>
+<TABHERE><TABHERE>adapter<NORMAL>->add(<LOWER>, Ice::stringToIdentity("<LOWER>"));
 <TABHERE><TABHERE>adapter<NORMAL>->activate();
 <TABHERE><TABHERE>cout << "[" << PROGRAM_NAME << "]: <NORMAL> adapter created in port " << tmp << endl;
 """
@@ -269,7 +268,13 @@ cog.out('<TABHERE>' + component['name'] + ' (QString prfx) { prefix = prfx.toStd
 private:
 	void initialize();
 	std::string prefix;
-	MapPrx mprx;
+[[[cog
+	if component['language'].lower() == "cpp":
+		cog.outl('<TABHERE>MapPrx mprx;')
+	else:
+		cog.outl('<TABHERE>TuplePrx tprx;')
+]]]
+[[[end]]]
 
 public:
 	virtual int run(int, char*[]);
@@ -332,7 +337,10 @@ for namea, num in getNameNumber(component['requires'] + component['publishes']):
 	else:
 		name = namea[0]
 		if communicationIsIce(namea):
-			cog.outl('<TABHERE>'+name+'Prx '+name.lower()+num +'_proxy;')
+			if component['language'].lower() == "cpp":
+				cog.outl('<TABHERE>'+name+'Prx '+name.lower()+num +'_proxy;')
+			else:
+				cog.outl('<TABHERE>'+name+'PrxPtr '+name.lower()+num +'_proxy;')
 try:
 	if isAGM1Agent(component):
 		cog.outl("<TABHERE>AGMExecutivePrx agmexecutive_proxy;")
@@ -345,15 +353,27 @@ except:
 	initialize();
 
 [[[cog
+proxy_list = []
 for namea, num in getNameNumber(component['requires']):
 	if type(namea) == str:
 		name = namea
 	else:
 		name = namea[0]
 	if communicationIsIce(namea):
-		w = REQUIRE_STR.replace("<NORMAL>", name).replace("<LOWER>", name.lower()).replace("<PROXYNAME>", name.lower()+num).replace("<PROXYNUMBER>", num)
+		if component['language'].lower() == "cpp":
+			cpp = "<PROXYNAME>_proxy = <NORMAL>Prx::uncheckedCast( communicator()->stringToProxy( proxy ) );"
+		else:
+			cpp = "<PROXYNAME>_proxy = Ice::uncheckedCast<<NORMAL>Prx>( communicator()->stringToProxy( proxy ) );"
+	
+		w = REQUIRE_STR.replace("<C++_VERSION>", cpp).replace("<NORMAL>", name).replace("<LOWER>", name.lower()).replace("<PROXYNAME>", name.lower()+num).replace("<PROXYNUMBER>", num)
 		cog.outl(w)
-
+	if component['language'].lower() == "cpp":
+		cog.outl("<TABHERE>mprx[\""+name+"Proxy"+num+"\"] = (::IceProxy::Ice::Object*)(&"+name.lower()+"_proxy);//Remote server proxy creation example");
+	else:
+		proxy_list.append(name.lower()+"_proxy")
+if component['language'].lower() == "cpp11" and proxy_list:
+	cog.outl("<TABHERE>tprx = std::make_tuple("+",".join(proxy_list)+");")
+	
 need_topic=False
 for pub in component['publishes']:
 	if communicationIsIce(pub):
@@ -391,8 +411,13 @@ if component['usingROS'] == True:
 ]]]
 [[[end]]]
 
-
-	SpecificWorker *worker = new SpecificWorker(mprx);
+[[[cog
+	if component['language'].lower() == "cpp":
+		cog.outl("<TABHERE>SpecificWorker *worker = new SpecificWorker(mprx);");
+	else:
+		cog.outl("<TABHERE>SpecificWorker *worker = new SpecificWorker(tprx);");
+]]]
+[[[end]]]
 	//Monitor thread
 	SpecificMonitor *monitor = new SpecificMonitor(worker,communicator());
 	QObject::connect(monitor, SIGNAL(kill()), &a, SLOT(quit()));
@@ -415,11 +440,15 @@ if component['usingROS'] == True:
 			cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy CommonBehavior\n";
 		}
 		Ice::ObjectAdapterPtr adapterCommonBehavior = communicator()->createObjectAdapterWithEndpoints("commonbehavior", tmp);
-		CommonBehaviorI *commonbehaviorI = new CommonBehaviorI(monitor );
-		adapterCommonBehavior->add(commonbehaviorI, communicator()->stringToIdentity("commonbehavior"));
+		[[[cog
+			if component['language'].lower() == "cpp":
+				cog.outl("CommonBehaviorI *commonbehaviorI = new CommonBehaviorI(monitor);")
+			else:
+				cog.outl("auto commonbehaviorI = std::make_shared<CommonBehaviorI>(monitor);")
+		]]]
+		[[[end]]]
+		adapterCommonBehavior->add(commonbehaviorI, Ice::stringToIdentity("commonbehavior"));
 		adapterCommonBehavior->activate();
-
-
 
 [[[cog
 for ima in component['implements']:
@@ -428,12 +457,14 @@ for ima in component['implements']:
 	else:
 		im = ima[0]
 	if communicationIsIce(ima):
-		w = IMPLEMENTS_STR.replace("<NORMAL>", im).replace("<LOWER>", im.lower())
+		if component['language'].lower() == "cpp":
+			cpp = "<NORMAL>I *<LOWER> = new <NORMAL>I(worker);"
+		else:
+			cpp = "auto <LOWER> = std::make_shared<NORMAL>(worker);"
+		w = IMPLEMENTS_STR.replace("<C++_VERSION>", cpp).replace("<NORMAL>", im).replace("<LOWER>", im.lower())
 		cog.outl(w)
 ]]]
 [[[end]]]
-
-
 
 [[[cog
 for name, num in getNameNumber(component['subscribesTo']):

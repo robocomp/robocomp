@@ -62,9 +62,9 @@ Z()
 [[[cog
 if component['gui'] != 'none':
 	cog.outl("#if Qt5_FOUND") 
-	cog.outl("\t#include <QtWidgets>")
+	cog.outl("<TABHERE>#include <QtWidgets>")
 	cog.outl("#else")
-	cog.outl("#include <QtGui>")
+	cog.outl("<TABHERE>#include <QtGui>")
 	cog.outl("#endif") 
 	cog.outl("#include <ui_mainUI.h>")
 ]]]
@@ -122,12 +122,8 @@ except:
 #define CHECK_PERIOD 5000
 #define BASIC_PERIOD 100
 
-typedef map <string,::IceProxy::Ice::Object*> MapPrx;
-
 using namespace std;
-
 [[[cog
-
 pool = IDSLPool(theIDSLs, includeDirectories)
 for m in pool.modulePool:
 	rosModule = False
@@ -146,7 +142,22 @@ for m in pool.modulePool:
 [[[end]]]
 
 [[[cog
+if component['language'].lower() == 'cpp':
+	cog.outl("typedef map <string,::IceProxy::Ice::Object*> MapPrx;")
+else:
+	proxy_list = []
+	for imp in component['subscribesTo'] + component['requires']:
+		if type(imp) == str:
+			name = imp
+		else:
+			name = imp[0]
+		proxy_list.append("RoboComp" + name + "::" + name + "PrxPtr")
+	proxy_list.reverse()
+	cog.outl("using TuplePrx = std::tuple<" + ",".join(proxy_list) + ">;")
+]]]
+[[[end]]]
 
+[[[cog
 try:
 	if 'agmagent' in [ x.lower() for x in component['options'] ]:
 		cog.outl("""
@@ -331,7 +342,13 @@ else:
 {
 Q_OBJECT
 public:
-	GenericWorker(MapPrx& mprx);
+[[[cog
+if component['language'].lower() == 'cpp':
+	cog.outl("<TABHERE>GenericWorker(MapPrx& mprx);")
+else:
+	cog.outl("<TABHERE>GenericWorker(TuplePrx tprx);")
+]]]
+[[[end]]]
 	virtual ~GenericWorker();
 	virtual void killYourSelf();
 	virtual void setPeriod(int p);
@@ -359,7 +376,10 @@ for namea, num in getNameNumber(component['requires']+component['publishes']):
 	else:
 		name = namea[0]
 	if communicationIsIce(namea):
-		cog.outl('<TABHERE>'+name+'Prx '+name.lower()+num +'_proxy;')
+		if component['language'].lower() == "cpp":
+			cog.outl('<TABHERE>'+name+'Prx '+name.lower()+num +'_proxy;')
+		else:
+			cog.outl('<TABHERE>'+name+'PrxPtr '+name.lower()+num +'_proxy;')
 ]]]
 [[[end]]]
 
@@ -386,7 +406,11 @@ if 'implements' in component:
 							if p['decorator'] == 'out':
 								const = ''
 							else:
-								const = 'const '
+								if component['language'].lower() == "cpp":
+									const = 'const '
+								else:
+									const = ''
+									ampersand = ''
 								if p['type'].lower() in ['int', '::ice::int', 'float', '::ice::float']:
 									ampersand = ''
 							# STR
@@ -423,7 +447,11 @@ if 'subscribesTo' in component:
 							if p['decorator'] == 'out':
 								const = ''
 							else:
-								const = 'const '
+								if component['language'].lower() == "cpp":
+									const = 'const '
+								else:
+									const = ''
+									ampersand = ''
 								if p['type'].lower() in ['int', '::ice::int', 'float', '::ice::float']:
 									ampersand = ''
 							# STR

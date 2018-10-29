@@ -1,3 +1,38 @@
+[[[cog
+import sys
+sys.path.append('/opt/robocomp/python')
+
+import cog
+
+includeDirectories = theIDSLPaths.split('#')
+
+
+
+
+
+
+
+def A():
+	cog.out('<@@<')
+def Z():
+	cog.out('>@@>')
+def TAB():
+	cog.out('<TABHERE>')
+def SPACE(i=0):
+	s = ''
+	if i>0:
+		s = str(i)
+	cog.out('<S'+s+'>')
+
+
+from parseCDSL import *
+
+
+includeDirectories = theIDSLPaths.split('#')
+component = CDSLParsing.fromFile(theCDSL, includeDirectories=includeDirectories)
+
+]]]
+[[[end]]]
 /*
  *    Copyright (C) 2006-2010 by RoboLab - University of Extremadura
  *
@@ -69,7 +104,13 @@ ParameterList CommonBehaviorI::getParameterList( const Ice::Current&)
 * \brief Change configurations parameters to worker
 * @param l Configuration parameters list
 */
-void CommonBehaviorI::setParameterList(const RoboCompCommonBehavior::ParameterList &l, const Ice::Current&) 
+[[[cog
+	if component['language'].lower() == 'cpp':
+		cog.outl("void CommonBehaviorI::setParameterList(const RoboCompCommonBehavior::ParameterList &l, const Ice::Current&) ")
+	else:
+		cog.outl("void CommonBehaviorI::setParameterList(RoboCompCommonBehavior::ParameterList l, const Ice::Current&) ")
+]]]
+[[[end]]]
 { 
 	monitor->setParameterList(l);
 }

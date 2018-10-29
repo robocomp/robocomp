@@ -100,6 +100,13 @@ if component['usingROS'] == True:
 ]]]
 [[[end]]]
 
+[[[cog
+if component['language'].lower() == "cpp11":
+	cog.outl('ADD_DEFINITIONS ("-DICE_CPP11_MAPPING")')
+	cog.outl('SET (ICE_LIBRARIES "-lIce++11 -lIceStorm++11")')
+]]]
+[[[end]]]
+
 
 #ROBOCOMP
 ROBOCOMP_INITIALIZE( $ENV{ROBOCOMP}/ )

@@ -141,10 +141,9 @@ class CDSLParsing:
 		QUOTE     					 = Suppress(Word("\""))
 
 		# keywords
-		(IMPORT, COMMUNICATIONS, LANGUAGE, COMPONENT, CPP, GUI, USEQt, QT, QT4, QT5, 
-		 PYTHON, REQUIRES, IMPLEMENTS, SUBSCRIBESTO, PUBLISHES, OPTIONS, TRUE, FALSE,
+		(IMPORT, COMMUNICATIONS, LANGUAGE, COMPONENT, CPP, CPP11, GUI, USEQt, QT, QT4, QT5, PYTHON, REQUIRES, IMPLEMENTS, SUBSCRIBESTO, PUBLISHES, OPTIONS, TRUE, FALSE,
 		 InnerModelViewer) = map(CaselessKeyword, """
-		import communications language component cpp gui useQt Qt qt4 qt5
+		import communications language component cpp cpp11 gui useQt Qt qt4 qt5
 		python requires implements subscribesTo publishes options true false
 		InnerModelViewer""".split())
 
@@ -165,7 +164,7 @@ class CDSLParsing:
 		communications = Group( COMMUNICATIONS.suppress() + OBRACE + ZeroOrMore(communicationList) + CBRACE + SEMI)
 		
 		# Language
-		language = Group(LANGUAGE.suppress() - (CPP | PYTHON) - SEMI)
+		language = Group(LANGUAGE.suppress() - (CPP | CPP11 | PYTHON) - SEMI)
 		# Qtversion
 		qtVersion = Group(Optional(USEQt.suppress() + (QT4|QT5) + SEMI))
 		# InnerModelViewer
