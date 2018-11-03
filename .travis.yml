@@ -1,5 +1,5 @@
 sudo: required
-dist: xenial
+dist: bionic
 language: cpp
 
 matrix:
@@ -11,8 +11,8 @@ matrix:
             - ubuntu-toolchain-r-test
           packages:
             - g++-7
-            - zeroc-ice37
-            - libzeroc-ice37-dev
+            - zeroc-ice
+            - libzeroc-ice-dev
             - slice2cpp
             - libopencv-dev
             - libgsl0-dev
@@ -25,7 +25,6 @@ matrix:
             - libxt-dev
             - pyqt4-dev-tools
             - libboost-all-dev
-            - ice37-translators
             - libccd
             - libccd-dev
             - libflann-dev
