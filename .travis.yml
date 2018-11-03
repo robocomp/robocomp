@@ -10,9 +10,9 @@ matrix:
           sources:
             - ubuntu-toolchain-r-test
           packages:
-            - g++-5
-            - zeroc-ice35
-            - libzeroc-ice35-dev
+            - g++-7
+            - zeroc-ice37
+            - libzeroc-ice37-dev
             - slice2cpp
             - libopencv-dev
             - libgsl0-dev
@@ -25,12 +25,12 @@ matrix:
             - libxt-dev
             - pyqt4-dev-tools
             - libboost-all-dev
-            - ice35-translators
+            - ice37-translators
             - libccd
             - libccd-dev
             - libflann-dev
 
-      env: COMPILER=g++-5
+      env: COMPILER=g++-7
 
 before_install:
   - sudo apt-get update -qq
