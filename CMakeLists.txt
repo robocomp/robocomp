@@ -90,6 +90,7 @@ SUBDIRS(
 	tools/rcremote
 	tools/rcnode
 	tools/buildTools
+	tools/rcportchecker
 )
 
 # Install rules necessary to allow compiling components without the robocomp's source code
