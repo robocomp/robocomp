@@ -24,4 +24,5 @@ This is a simple script to automatically start RoboComp's favourite terminal too
         qdbus org.kde.yakuake /yakuake/tabs org.kde.yakuake.setTabTitle $sess2 'comp1'
 
 Additional blocks can be added to create and initialize new tabs in Yakuake.
-Copy this code to a .sh file and execute it whenever you need to start your multi-component development environment.
+
+Please, copy this code to a .sh file and execute it whenever you need to start your multi-component development environment.
