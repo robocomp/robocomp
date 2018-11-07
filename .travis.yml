@@ -10,7 +10,7 @@ matrix:
           sources:
             - ubuntu-toolchain-r-test
           packages:
-            - g++-7
+            - g++-5
             - zeroc-ice
             - libzeroc-ice-dev
             - slice2cpp
@@ -29,7 +29,7 @@ matrix:
             - libccd-dev
             - libflann-dev
 
-      env: COMPILER=g++-7
+      env: COMPILER=g++-5
 
 before_install:
   - sudo apt-get update -qq
