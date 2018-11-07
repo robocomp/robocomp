@@ -3,10 +3,10 @@
 This folder contains a set of tools created to facilitate the process of software development with RoboComp. Detailed information on each tool can be found in the corresponding README.md files.
 
 
-### [Yakuake script](https://yakuake.kde.org)
+### Yakuake script
 
 
-This is a simple script to automatically start Yakuake with two named tabs and running programs.
+This is a simple script to automatically start RoboComp's favourite terminal tool, [Yakuake](https://yakuake.kde.org/), with two named tabs and running programs.
 
 
         #!/bin/bash
