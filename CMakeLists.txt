@@ -94,6 +94,8 @@ SUBDIRS(
 )
 
 # Install rules necessary to allow compiling components without the robocomp's source code
+SET (LD_COMMAND "\"grep -q -F '/opt/robocomp/lib' /etc/ld.so.conf || echo '/opt/robocomp/lib' >> /etc/ld.so.conf && ldconfig\"")
+INSTALL (CODE "execute_process(COMMAND bash -c ${LD_COMMAND})")
 INSTALL(DIRECTORY "interfaces" DESTINATION /opt/robocomp/ )
 INSTALL(DIRECTORY "cmake" DESTINATION /opt/robocomp/ )
 #INSTALL(DIRECTORY "files" DESTINATION /opt/robocomp/ )
