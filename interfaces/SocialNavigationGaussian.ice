@@ -23,11 +23,11 @@ module RoboCompSocialNavigationGaussian
 	};
 	struct SNGPerson
 	{
-		 int id;
 		 float x;
 		 float z;
 		 float angle;
 		 float vel;
+		 int id;
 	};
 	struct SNGObject
 	{
@@ -44,7 +44,7 @@ module RoboCompSocialNavigationGaussian
 	{
 		SNGPolylineSeq getPersonalSpace (SNGPersonSeq persons, float v, bool d);
 		SNGPolylineSeq getPassOnRight (SNGPersonSeq persons, float v, bool d);
-		SNGPolylineSeq getObjectInteraction (SNGPersonSeq persons, SNGObjectSeq objects, bool d);
+		SNGPolylineSeq getObjectInteraction (SNGPersonSeq persons, SNGObjectSeq objects, bool interact, bool d);
 		SNGPolylineSeq removePoints (SNGPolylineSeq l);
 	};
 };
