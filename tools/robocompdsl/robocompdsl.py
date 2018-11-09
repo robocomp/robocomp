@@ -214,7 +214,7 @@ if sys.argv[1].endswith(".cdsl"):
 		if not pool.moduleProviding(interface_required):
 			raise rcExceptions.InterfaceNotFound(interface_required, pool.interfaces())
 
-	if component['language'].lower() == 'cpp':
+	if component['language'].lower() == 'cpp' or component['language'].lower() == 'cpp11':
 		#
 		# Check output directory
 		#

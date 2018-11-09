@@ -1,3 +1,38 @@
+[[[cog
+import sys
+sys.path.append('/opt/robocomp/python')
+
+import cog
+
+includeDirectories = theIDSLPaths.split('#')
+
+
+
+
+
+
+
+def A():
+	cog.out('<@@<')
+def Z():
+	cog.out('>@@>')
+def TAB():
+	cog.out('<TABHERE>')
+def SPACE(i=0):
+	s = ''
+	if i>0:
+		s = str(i)
+	cog.out('<S'+s+'>')
+
+
+from parseCDSL import *
+
+
+includeDirectories = theIDSLPaths.split('#')
+component = CDSLParsing.fromFile(theCDSL, includeDirectories=includeDirectories)
+
+]]]
+[[[end]]]
 /*
  *    Copyright (C) 2006-2010 by RoboLab - University of Extremadura
  *
@@ -42,7 +77,13 @@ public:
 	int timeAwake( const Ice::Current & = Ice::Current());
 	void killYourSelf( const Ice::Current & = Ice::Current());
 	ParameterList getParameterList( const Ice::Current & = Ice::Current());
-	void setParameterList(const RoboCompCommonBehavior::ParameterList &l, const Ice::Current & = Ice::Current());
+[[[cog
+	if component['language'].lower() == 'cpp':
+		cog.outl("<TABHERE>void setParameterList(const RoboCompCommonBehavior::ParameterList &l, const Ice::Current & = Ice::Current());")
+	else:
+		cog.outl("<TABHERE>void setParameterList(RoboCompCommonBehavior::ParameterList l, const Ice::Current & = Ice::Current());")
+]]]
+[[[end]]]
 	void reloadConfig( const Ice::Current& = Ice::Current());
 	RoboCompCommonBehavior::State getState(const Ice::Current& = Ice::Current());
 

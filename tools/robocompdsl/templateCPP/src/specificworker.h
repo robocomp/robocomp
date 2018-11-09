@@ -85,7 +85,13 @@ class SpecificWorker : public GenericWorker
 {
 Q_OBJECT
 public:
-	SpecificWorker(MapPrx& mprx);
+[[[cog
+	if component['language'].lower() == 'cpp':
+		cog.outl("<TABHERE>SpecificWorker(MapPrx& mprx);")
+	else:
+		cog.outl("<TABHERE>SpecificWorker(TuplePrx tprx);")
+]]]
+[[[end]]]
 	~SpecificWorker();
 	bool setParams(RoboCompCommonBehavior::ParameterList params);
 
