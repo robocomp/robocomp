@@ -1,6 +1,6 @@
 module RoboCompHumanTracker
 {
-	enum TrackingState { None, Calibrating, Tracked, ErrorNotInPose, ErrorHands, ErrorHead, ErrorLegs, ErrorTorso };
+	enum TrackingState { NotTracking, TrackingLost, TrackingStarted, Tracking};
 	sequence <float> RTMatrix;
 	dictionary<string, RTMatrix>RTMatrixList;
 
