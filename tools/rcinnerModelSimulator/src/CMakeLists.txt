@@ -24,21 +24,12 @@ SET ( SOURCES
 	$ENV{ROBOCOMP}/classes/qlog/qlog.cpp
 )
 
-# Header files
+# # # Header files
 SET ( HEADERS
 	${HEADERS}
 	genericworker.h
 	genericbaseI.h
 	genericmonitor.h
-	cameraI.h
-	differentialrobotI.h
-	omnirobotI.h
-	imuI.h
-	innermodelmanagerI.h
-	jointmotorI.h
-	laserI.h
-	rgbdI.h
-	touchsensorI.h
 )
 
 SET(LIBS -L${CMAKE_BUILD_DIR} ${LIBS} )

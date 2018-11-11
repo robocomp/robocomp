@@ -42,7 +42,7 @@ class GenericBaseI : public QObject, public virtual RoboCompGenericBase::Generic
 {
 Q_OBJECT
 public:
-	GenericBaseI ( SpecificWorker *_worker, QObject *parent = 0 );
+	GenericBaseI ( std::shared_ptr<SpecificWorker> _worker, QObject *parent = 0 );
 	
 	void add(QString id);
 	//void run();
@@ -51,8 +51,8 @@ public:
 	void getBasePose(int &x, int &z, float &alpha, const Ice::Current & =Ice::Current());
 
 private:
-	SpecificWorker *worker;
-	InnerModel *innerModel;
+	std::shared_ptr<SpecificWorker> worker;
+	std::shared_ptr<InnerModel> innerModel;
 	InnerModelTransform *parent;
 	InnerModelOmniRobot *node;
 };

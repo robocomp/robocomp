@@ -56,9 +56,9 @@ public:
 	virtual void setPeriod ( int p );
 	RCISMousePickerPrx rcis_mousepicker_proxy;
 	QMutex *mutex;                //Shared mutex with servant
-
-protected:
 	QTimer timer;
+	
+protected:
 	int Period;
 	//MapPrx proxies;
 

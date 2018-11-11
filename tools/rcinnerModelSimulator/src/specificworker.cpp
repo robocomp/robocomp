@@ -20,35 +20,6 @@
 // Simulator includes
 #include "specificworker.h"
 
-// Qt includes
-#if Qt5_FOUND 
-	#include <QtOpenGL>
-	#include <QGLWidget>
-#endif
-#include <QDropEvent>
-#include <QEvent>
-#include <QLabel>
-#include <QMouseEvent>
-#include <QMutexLocker>
-#include <QTime>
-#include <QWidget>
-
-// OSG includes
-#include <osg/io_utils>
-#include <osg/BoundingBox>
-#include <osg/LineWidth>
-#include <osg/Matrixd>
-#include <osg/PolygonMode>
-#include <osg/TriangleFunctor>
-#include <osgDB/WriteFile>
-#include <osgDB/ReadFile>
-#include <osgText/Font>
-#include <osgText/Text>
-#include <osgUtil/IntersectVisitor>
-#include <osgUtil/LineSegmentIntersector>
-#include <osgUtil/IntersectionVisitor>
-#include <osgViewer/Viewer>
-#include <osgViewer/ViewerEventHandlers>
 
 // #define INNERMODELMANAGERDEBUG
 
@@ -57,20 +28,15 @@
 */
 SpecificWorker::SpecificWorker(MapPrx& _mprx, Ice::CommunicatorPtr _communicator, const char *_innerModelXML, int ms) : GenericWorker(_mprx)
 {
-	//viewerMutex = new QMutex(QMutex::Recursive);
-	
-	worker = this;
 	communicator = _communicator;
-
-	laserDataCartArray_mutex = new QMutex(QMutex::Recursive);
 	laserDataCartArray.clear();
 
-	// Initialize InnerModel stuff
+	// Initialize InnerModel from file
 	innerModel = std::make_shared<InnerModel>(_innerModelXML);
 	
 	qDebug() << __FILE__ << __FUNCTION__ << "InnerModel read";
 	
-	//add name of .xml
+	//add name of .xml to window
 	setWindowTitle(windowTitle() + "\t" + _innerModelXML);
 
 	// Initialize the Inner Model Viewer
@@ -78,20 +44,18 @@ SpecificWorker::SpecificWorker(MapPrx& _mprx, Ice::CommunicatorPtr _communicator
 	fmt.setDoubleBuffer(true);
 	QGLFormat::setDefaultFormat(fmt);
 	viewer = new OsgView(frameOSG);
-	imv = new InnerModelViewer(innerModel, "root", viewer->getRootGroup());
-	qDebug() << __FILE__ << __FUNCTION__ << "HOLa";
+	
+	// create InnerModelViewer
+	imv = std::make_shared<InnerModelViewer>(innerModel, "root", viewer->getRootGroup());
 
+	// view manipulator
 	manipulator = new osgGA::TrackballManipulator;
-	qDebug() << __FILE__ << __FUNCTION__ << "HOLa";
-
 	// 	manipulator->setHomePosition(osg::Vec3d(0, 10000, 0), osg::Vec3d(0, 0, 0), osg::Vec3d(0, 0, -10000), true);
 	viewer->setCameraManipulator(manipulator, true);
 	
 	// Add mouse pick handler to publish 3D coordinates
 	if (rcis_mousepicker_proxy)
-	{
 		viewer->addEventHandler(new PickHandler(rcis_mousepicker_proxy));
-	}
 
 	// Restore previous camera position
 	settings = new QSettings("RoboComp", "RCIS");
@@ -104,26 +68,18 @@ SpecificWorker::SpecificWorker(MapPrx& _mprx, Ice::CommunicatorPtr _communicator
 		{
 			osg::Matrixd m;
 			for (int i=0; i<4; i++ )
-			{
 				for (int j=0; j<4; j++ )
-				{
 					m(i,j)=l.takeFirst().toDouble();
-				}
-			}
 			manipulator->setByMatrix(m);
 		}
 		else
-		{
 			setTopPOV();
-		}
 	}
 	else
-	{
 		settings->setValue("path",path);
- 	}
 	qDebug() << __FILE__ << __FUNCTION__ << "InnerModelViewer created";
 
-	// Connect all the signals
+	// Connect all the SIGNALS to SLOTS
 	connect(topView,   SIGNAL(clicked()), this, SLOT(setTopPOV()));
 	connect(leftView,  SIGNAL(clicked()), this, SLOT(setLeftPOV()));
 	connect(rightView, SIGNAL(clicked()), this, SLOT(setRightPOV()));
@@ -139,29 +95,35 @@ SpecificWorker::SpecificWorker(MapPrx& _mprx, Ice::CommunicatorPtr _communicator
 	objectTriggered();
 	visualTriggered();
 	
+	//Init viewer
 	viewer->realize();
 	//viewer->setThreadingModel( osgViewer::ViewerBase::ThreadPerCamera);
 	
+	//Initialize Ice interfaces
+	servers.init(innerModel, imv, worker, communicator); 
+
 	// Initialize the timer
 	setPeriod(ms);	
-	qDebug() << __FILE__ << __FUNCTION__ << "Timer period:" << ms;
+	
+	qDebug() << __FILE__ << __FUNCTION__ << "CPP " << __cplusplus;
 }
 
 void SpecificWorker::compute()
 {
 	// Compute the elapsed time interval since the last update
-	static QTime lastTime = QTime::currentTime();
-	
+	/*static QTime lastTime = QTime::currentTime();
 	QTime currentTime = QTime::currentTime();
 	const int elapsed = lastTime.msecsTo (currentTime);
-	// 	printf("elapsed %d\n", elapsed);
+	//printf("elapsed %d\n", elapsed);
 	lastTime = currentTime;
+	*/
+	auto elapsed = fps.print();
 
 	guard gl(innerModel->mutex);
 	
 		updateCameras();
 		updateLasers();
-		updateJoints(float(elapsed)/1000.0f);
+		updateJoints(elapsed/1000.0f);
 		updateTouchSensors();
 
 		#ifdef INNERMODELMANAGERDEBUG
@@ -169,29 +131,26 @@ void SpecificWorker::compute()
 		#endif
 		
 		// Shutdown empty servers
-		for (int i=0; i<jointServersToShutDown.size(); i++)
-			jointServersToShutDown[i]->shutdown();
-		jointServersToShutDown.clear();
-	
+		servers.shutdownEmptyServers();
+		
 		// Resize world widget if necessary, and render the world
 		if (viewer->size() != frameOSG->size())
 			viewer->setFixedSize(frameOSG->width(), frameOSG->height());
 		imv->update();
+		
 		//osg render
 		viewer->frame();
-			
 }
 
+		
 //////////////////////////////////////////////////////////////////////
 /// Updates
 ////////////////////////////////////////////////////////////////////////
 
 void SpecificWorker::updateCameras()
 {
-	QHash<QString, IMVCamera>::const_iterator i = imv->cameras.constBegin();
+	auto i = imv->cameras.constBegin();
 	{
-		//QMutexLocker vm(viewerMutex);
-
 		while (i != imv->cameras.constEnd())
 		{
 			RTMat rt= innerModel->getTransformationMatrix("root",i.key());
@@ -199,9 +158,7 @@ void SpecificWorker::updateCameras()
 			imv->cameras[i.key()].viewerCamera->getCameraManipulator()->setByMatrix(QMatToOSGMat4(rt));
 
 			for (int n=0; n<imv->cameras.size() ; ++n)
-			{
 				imv->cameras[i.key()].viewerCamera->frame();
-			}
 			i++;
 		}
 	}	
@@ -209,50 +166,45 @@ void SpecificWorker::updateCameras()
 
 void SpecificWorker::updateLasers()
 {
-	/// Remove previous laser shapes 
-	for (QHash<QString, IMVLaser>::iterator laser = imv->lasers.begin(); laser != imv->lasers.end(); laser++)
+	guard gl(innerModel->mutex);
+	
+	// Delete existing lasers
+	for (auto laser = imv->lasers.begin(); laser != imv->lasers.end(); laser++)
 	{
-		//QMutexLocker locker(viewerMutex);
 		if (laser->osgNode->getNumChildren() > 0)
-		{
 			laser->osgNode->removeChild(0, laser->osgNode->getNumChildren());
-		}
 	}
+	
 	// Laser
+	for (auto laser = imv->lasers.begin(); laser != imv->lasers.end(); laser++)
 	{
-		//QMutexLocker vm(viewerMutex);
-		QMutexLocker lcds(laserDataCartArray_mutex);
-		for (QHash<QString, IMVLaser>::iterator laser = imv->lasers.begin(); laser != imv->lasers.end(); laser++)
+		std::string id = laser->laserNode->id.toStdString();
+		
+		if( laserDataCartArray.count(id) == 0)
 		{
-			QString id=laser->laserNode->id;
+			osg::Vec3Array *v = new osg::Vec3Array();
+			v->resize(laser->laserNode->measures+1);
+			laserDataCartArray.insert(std::make_pair(id,v));
+		}
 
-			if (laserDataCartArray.contains(id) == false)
+		// create and insert laser data
+		laserDataArray.insert(std::make_pair(laser->laserNode->id.toStdString(), LASER_createLaserData(laser.value())));
+
+		// create and insert laser shape
+		if (false) // DRAW LASER
+		{
+			osg::ref_ptr<osg::Node> p = nullptr;
+			if(id == "laserSecurity")
 			{
-				osg::Vec3Array *v= new osg::Vec3Array();
-				v->resize(laser->laserNode->measures+1);
-				laserDataCartArray.insert(id,v);
+				p = viewer->addPolygon(*(laserDataCartArray[id]), osg::Vec4(0.,0.,1.,0.4));
 			}
-
-			// create and insert laser data
-			worker = this;
-			laserDataArray.insert(laser->laserNode->id, LASER_createLaserData(laser.value()));
-
-			// create and insert laser shape
-			if (true) // DRAW LASER
+			else
 			{
-				osg::ref_ptr<osg::Node> p=NULL;
-				if (id=="laserSecurity")
-				{
-					p = viewer->addPolygon(*(laserDataCartArray[id]), osg::Vec4(0.,0.,1.,0.4));
-				}
-				else
-				{
-					p = viewer->addPolygon(*(laserDataCartArray[id]));
-				}
-				if (p!=NULL)
-				{
-					laser->osgNode->addChild(p);
-				}
+				p = viewer->addPolygon(*(laserDataCartArray[id]));
+			}
+			if (p != nullptr)
+			{
+				laser->osgNode->addChild(p);
 			}
 		}
 	}
@@ -295,307 +247,83 @@ void SpecificWorker::updateJoints(const float delta)
 			pjoint->setPosition(iter->endPos);
 		}
 	}
-	// 	printf("%s: %d\n", __FILE__, __LINE__);
 }
 
 void SpecificWorker::updateTouchSensors()
 {
-	std::map<uint32_t, TouchSensorServer>::iterator touchIt;
-	for (touchIt=touch_servers.begin(); touchIt!= touch_servers.end(); touchIt++)
-	{
-		for (uint32_t sss=0; sss<touchIt->second.sensors.size(); sss++)
+	//std::map<uint32_t, TouchSensorServer>::iterator touchIt;
+	//for (touchIt = servers.touch_servers.begin(); touchIt != servers.touch_servers.end(); touchIt++)
+	for(auto &[k, v] : servers.hMaps.getMap<TouchSensorServer>())	
+		for(auto s : v.sensors)
+		//for (uint32_t sss=0; sss<touchIt->second.sensors.size(); sss++)
 		{
 			// 	TouchSensorI *interface;
 			// touchIt->interface->sensorMap[touchIt->sensors[sss].id].value = XXX
-			InnerModelTouchSensor *sensorr = touchIt->second.sensors[sss];
-			std::string idd = sensorr->id.toStdString();
-// 				printf("%d: %s (%f)\n",
-//
-// 					touchIt->second.port,
-//
-// 					idd.c_str(),
-//
-// 					touchIt->second.interface->sensorMap[idd].value
-//
-// 				);
+			//InnerModelTouchSensor *sensorr = touchIt->second.sensors[sss];
+			auto idd = s->id.toStdString();
+			//std::string idd = sensorr->id.toStdString();
 		}
-	}
 }
 
-///////////////////////////////////////////////////////////////////////
-/// start sensors and motors
-///////////////////////////////////////////////////////////////////////
+// ------------------------------------------------------------------------------------------------
+// NO DEBERIAN USARSE PORQUE VIOLAN LA LOGICA DEL MUTEX
+// ------------------------------------------------------------------------------------------------
 
-void SpecificWorker::startServers()
-{
-	walkTree();
-	includeLasers();
-	includeRGBDs();
-}
-
-void SpecificWorker::addDFR(InnerModelDifferentialRobot *node)
-{
-	const uint32_t port = node->port;
-	if (dfr_servers.count(port) == 0)
-	{
-		dfr_servers.insert(std::pair<uint32_t, DifferentialRobotServer>(port, DifferentialRobotServer(communicator, worker, port)));
-	}
-	dfr_servers.at(port).add(node);
-}
-
-
-void SpecificWorker::addOMN(InnerModelOmniRobot *node)
-{
-	const uint32_t port = node->port;
-	if (omn_servers.count(port) == 0)
-	{
-		omn_servers.insert(std::pair<uint32_t, OmniRobotServer>(port, OmniRobotServer(communicator, worker, port)));
-	}
-	omn_servers.at(port).add(node);
-}
-
-void SpecificWorker::addDisplay(InnerModelDisplay *node)
-{
-	const uint32_t port = node->port;
-	if (display_servers.count(port) == 0)
-	{
-		display_servers.insert(std::pair<uint32_t, DisplayServer>(port, DisplayServer(communicator, this, port)));
-	}
-	display_servers.at(port).add(node);
-}
-
-void SpecificWorker::addIMU(InnerModelIMU *node)
-{
-	const uint32_t port = node->port;
-	if (imu_servers.count(port) == 0)
-	{
-		imu_servers.insert(std::pair<uint32_t, IMUServer>(port, IMUServer(communicator, worker, port)));
-	}
-	imu_servers.at(port).add(node);
-}
-
-
-void SpecificWorker::addJM(InnerModelJoint *node)
-{
-	const uint32_t port = node->port;
-	if (jm_servers.count(port) == 0)
-	{
-		jm_servers.insert(std::pair<uint32_t, JointMotorServer>(port, JointMotorServer(communicator, worker, port)));
-	}
-	jm_servers.at(port).add(node);
-}
-
-void SpecificWorker::addJM(InnerModelPrismaticJoint *node)
-{
-	const uint32_t port = node->port;
-	if (jm_servers.count(port) == 0)
-	{
-		jm_servers.insert(std::pair<uint32_t, JointMotorServer>(port, JointMotorServer(communicator, worker, port)));
-	}
-	jm_servers.at(port).add(node);
-}
-
-void SpecificWorker::addTouch(InnerModelTouchSensor *node)
-{
-	const uint32_t port = node->port;
-	if (touch_servers.count(port) == 0)
-	{
-		touch_servers.insert(std::pair<uint32_t, TouchSensorServer>(port, TouchSensorServer(communicator, worker, port)));
-	}
-	touch_servers.at(port).add(node);
-}
-
-
-void SpecificWorker::addLaser(InnerModelLaser *node)
-{
-	const uint32_t port = node->port;
-	if (laser_servers.count(port) == 0)
-	{
-		laser_servers.insert(std::pair<uint32_t, LaserServer>(port, LaserServer(communicator, worker, port)));
-	}
-	laser_servers.at(port).add(node);
-}
-
-
-void SpecificWorker::addRGBD(InnerModelRGBD *node)
-{
-	const uint32_t port = node->port;
-	if (rgbd_servers.count(port) == 0)
-	{
-		rgbd_servers.insert(std::pair<uint32_t, RGBDServer>(port, RGBDServer(communicator, worker, port)));
-	}
-	rgbd_servers.at(port).add(node);
-}
-
-void SpecificWorker::removeJM(InnerModelJoint *node)
-{
-	std::map<uint32_t, JointMotorServer>::iterator it;
-	for (it = jm_servers.begin(); it != jm_servers.end(); ++it)
-	{
-		it->second.remove(node);
-		// TODO: arreglar
-// 		if (it->second.empty())
-// 		{
-// 			worker->scheduleShutdown(&(it->second));
-// 			servers.erase(it);
-// 		}
-	}
-}
-
-void SpecificWorker::includeLasers()
-{
-	QHash<QString, IMVLaser>::const_iterator it;
-	for (it = imv->lasers.constBegin() ; it != imv->lasers.constEnd() ; ++it)
-	{
-		qDebug() << it.key() << ": ";
-		printf(" %p\n", it.value().laserNode);
-		addLaser(it.value().laserNode);
-	}
-}
-
-void SpecificWorker::includeRGBDs()
-{
-	QHash<QString, IMVCamera>::const_iterator it;
-	for (it = imv->cameras.constBegin() ; it != imv->cameras.constEnd() ; ++it)
-	{
-		addRGBD(it.value().RGBDNode);
-	}
-}
-
-void SpecificWorker::walkTree(InnerModelNode *node)
-{
-	if (node == NULL)
-	{
-		node = innerModel->getRoot();
-		//std::cout << "ROOT: " << (void *)node << "  " << (uint64_t)node << std::endl;
-	}
-	else
-	{
-		//std::cout << "nrml: " << (void *)node << "  " << (uint64_t)node << std::endl;
-	}
-
-	QList<InnerModelNode*>::iterator it;
-	for (it=node->children.begin(); it!=node->children.end(); ++it)
-	{
-		//std::cout << "  --> " << (void *)*it << "  " << (uint64_t)*it << std::endl;
-		InnerModelDifferentialRobot *differentialNode = dynamic_cast<InnerModelDifferentialRobot *>(*it);
-		if (differentialNode != NULL)
-		{
-			//qDebug() << "DifferentialRobot " << differentialNode->id << differentialNode->port;
-			addDFR(differentialNode);
-		}
-
-		InnerModelOmniRobot *omniNode = dynamic_cast<InnerModelOmniRobot *>(*it);
-		if (omniNode != NULL)
-		{
-			//qDebug() << "OmniRobot " << omniNode->id << omniNode->port;
-			addOMN(omniNode);
-		}
-
-   		InnerModelDisplay *displayNode = dynamic_cast<InnerModelDisplay *>(*it);
-
-		if (displayNode != NULL)
-		{
-
-			//qDebug() << "OmniRobot " << omniNode->id << omniNode->port;
-			addDisplay(displayNode);
-		}
-
-		InnerModelIMU *imuNode = dynamic_cast<InnerModelIMU *>(*it);
-		if (imuNode != NULL)
-		{
-			//qDebug() << "IMU " << imuNode->id << imuNode->port;
-			addIMU(imuNode);
-		}
-
-		InnerModelJoint *jointNode = dynamic_cast<InnerModelJoint *>(*it);
-		if (jointNode != NULL)
-		{
-			//qDebug() << "Joint " << (*it)->id;
-			addJM(jointNode);
-		}
-		InnerModelPrismaticJoint *pjointNode = dynamic_cast<InnerModelPrismaticJoint *>(*it);
-		if (pjointNode != NULL)
-		{
-			//qDebug() << "Joint " << (*it)->id;
-			addJM(pjointNode);
-		}
-
-		InnerModelTouchSensor *touchNode = dynamic_cast<InnerModelTouchSensor *>(*it);
-		if (touchNode != NULL)
-		{
-			qDebug() << "Touch " << (*it)->id << "CALLING addTouch";
-			addTouch(touchNode);
-		}
-
-		walkTree(*it);
-	}
-}
 
 //////////////////////////////////////////////////////////////////////////////////////////
 ///// Aux
 ////////////////////////////////////////////////////////////////////////////////////////
 osg::Group *SpecificWorker::getRootGroup()
 {
-	//QMutexLocker vm(viewerMutex);
 	guard gl(innerModel->mutex);
 	return viewer->getRootGroup();
 }
-
-// ------------------------------------------------------------------------------------------------
-// Private
-// ------------------------------------------------------------------------------------------------
-
-InnerModel *SpecificWorker::getInnerModel()
+std::shared_ptr<InnerModel> SpecificWorker::getInnerModel()
 {
 	guard gl(innerModel->mutex);
-	return innerModel.get();
+	return innerModel;
 }
 
-InnerModelViewer *SpecificWorker::getInnerModelViewer()
+std::shared_ptr<InnerModelViewer> SpecificWorker::getInnerModelViewer()
 {
 	guard gl(innerModel->mutex);
 	return imv;
 }
 
-void SpecificWorker::scheduleShutdown(JointMotorServer *j)
-{
-	jointServersToShutDown.push_back(j);
-}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Refills laserData with new values
 RoboCompLaser::TLaserData SpecificWorker::LASER_createLaserData(const IMVLaser &laser)
 {
-	//QMutexLocker vm(worker->viewerMutex);
-	//QMutexLocker locker(worker->mutex);
-	QMutexLocker ldc(laserDataCartArray_mutex);
 	guard gl(innerModel->mutex);
-// 		printf("osg threads running... %d\n", viewer->areThreadsRunning());
+  // 		printf("osg threads running... %d\n", viewer->areThreadsRunning());
 	static RoboCompLaser::TLaserData laserData;
 	int measures = laser.laserNode->measures;
-	QString id = laser.laserNode->id;
+	std::string id = laser.laserNode->id.toStdString();
 	float iniAngle = -laser.laserNode->angle/2;
 	float finAngle = laser.laserNode->angle/2;
 	float_t maxRange = laser.laserNode->max;
 	laserData.resize(measures);
 
 	double angle = finAngle;  //variable to iterate angle increments
+	
 	//El punto inicial es el origen del láser
-	const osg::Vec3 P = QVecToOSGVec(innerModel->laserTo("root", id, 0, 0));
+	auto laserNode = innerModel->getNode<InnerModelLaser>(id);
+	const osg::Vec3 P = QVecToOSGVec(laserNode->laserTo(std::string("root"), 0, 0));
+	
 	const float incAngle = (fabs(iniAngle)+fabs(finAngle)) / (float)measures;
 	osg::Vec3 Q,R;
-
 
 	for (int i=0 ; i<measures; i++)
 	{
 		laserData[i].angle = angle;
 		laserData[i].dist = maxRange;
-
-
-		laserDataCartArray[id]->operator[](i) = QVecToOSGVec(QVec::vec3(maxRange*sin(angle), 0, maxRange*cos(angle)));
-
+		
+		//laserDataCartArray[id]->operator[](i) = QVecToOSGVec(QVec::vec3(maxRange*sin(angle), 0, maxRange*cos(angle)));
+		
 		//Calculamos el punto destino
-		Q = QVecToOSGVec(innerModel->laserTo("root", id, maxRange, angle));
+		Q = QVecToOSGVec(laserNode->laserTo(std::string("root"), maxRange, angle));
 		//Creamos el segmento de interseccion
 		osg::ref_ptr<osgUtil::LineSegmentIntersector> intersector = new osgUtil::LineSegmentIntersector(osgUtil::Intersector::MODEL, P, Q);
 		osgUtil::IntersectionVisitor visitor(intersector.get());
@@ -616,18 +344,15 @@ RoboCompLaser::TLaserData SpecificWorker::LASER_createLaserData(const IMVLaser &
 			if (dist <= maxRange)
 			{
 				laserData[i].dist = dist;//*1000.;
-				laserDataCartArray[id]->operator[](i) = QVecToOSGVec(innerModel->laserTo(id, id, dist, laserData[i].angle));
+				laserDataCartArray[id]->operator[](i) = QVecToOSGVec(laserNode->laserTo(id, dist, laserData[i].angle));
 			}
 		}
 		else
 		{
-			laserDataCartArray[id]->operator[](i) = QVecToOSGVec(innerModel->laserTo(id, id, maxRange, laserData[i].angle));
+			laserDataCartArray[id]->operator[](i) = QVecToOSGVec(laserNode->laserTo(id, maxRange, laserData[i].angle));
 		}
 		angle -= incAngle;
 	}
-	// the point of the laser robot
-// 		laserDataCartArray[id]->operator[](measures) = QVecToOSGVec(innerModel->laserTo(id, id, 0.0001, 0.001));
-// 		viewer->startThreading();
 	return laserData;
 }
 
@@ -639,7 +364,10 @@ RoboCompTouchSensor::SensorMap TOUCH_createTouchData(const IMVLaser &laser)
 }
 
 */
-///--- useful functions.
+////////////////////////////////////////////////////////////////////////////////////////////////
+///// UTILITIES
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
 InnerModelNode* SpecificWorker::getNode(const QString &id, const QString &msg)
 {
 	guard gl(innerModel->mutex);

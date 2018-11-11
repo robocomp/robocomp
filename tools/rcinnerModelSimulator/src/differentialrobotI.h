@@ -30,6 +30,7 @@
 #include <OmniRobot.h>
 #include <omnirobotI.h>
 #include <innermodel/innermodel.h>
+#include <memory>
 
 // Simulator includes
 #include "config.h"
@@ -43,7 +44,7 @@ class DifferentialRobotI : public QThread, public virtual RoboCompDifferentialRo
 {
 	Q_OBJECT
 public:
-	DifferentialRobotI(SpecificWorker *_worker, OmniRobotI *_omniI=NULL, QObject *parent = 0);
+	DifferentialRobotI(std::shared_ptr<SpecificWorker>  _worker, OmniRobotI *_omniI=NULL, QObject *parent = 0);
 	~DifferentialRobotI();
 
 	void add(QString id);
@@ -60,8 +61,8 @@ public:
 	void correctOdometer(Ice::Int x, Ice::Int z, Ice::Float alpha, const Ice::Current& = Ice::Current());
 
 private:
-	SpecificWorker *worker;
-	InnerModel *innerModel;
+	std::shared_ptr<SpecificWorker> worker;
+	std::shared_ptr<InnerModel> innerModel;
 	QStringList differentialIDs;
 	QMutex *mutex;
 

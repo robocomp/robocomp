@@ -19,10 +19,6 @@
 #ifndef RGBDI_H
 #define RGBDI_H
 
-// Qt includes
-#include <QMutex>
-#include <QObject>
-
 // RoboComp includes
 #include <Ice/Ice.h>
 #include <RGBD.h>
@@ -31,34 +27,29 @@
 // Simulator includes
 #include "config.h"
 
-
-
 using namespace RoboCompRGBD;
 
 class SpecificWorker;
 
 class RGBDI : public QObject , public virtual RoboCompRGBD::RGBD
 {
-	Q_OBJECT
-public:
-	RGBDI ( SpecificWorker* _worker, QObject* parent = 0 );
-	~RGBDI();
-
-	void add ( QString id );
-	
-	TRGBDParams getRGBDParams ( const Ice::Current & = Ice::Current() );
-	void setRegistration ( Registration value, const Ice::Current & = Ice::Current() );
-	Registration getRegistration ( const Ice::Current & = Ice::Current() );
-	void getData ( RoboCompRGBD::imgType& rgbMatrix, depthType& distanceMatrix, RoboCompJointMotor::MotorStateMap& hState, RoboCompGenericBase::TBaseState& bState, const Ice::Current & = Ice::Current() );
-	void getDepthInIR ( depthType& distanceMatrix, RoboCompJointMotor::MotorStateMap& hState, RoboCompGenericBase::TBaseState& bState, const Ice::Current & = Ice::Current() );
-	void getImage ( ColorSeq& color, DepthSeq& depth, PointSeq& points, RoboCompJointMotor::MotorStateMap& hState, RoboCompGenericBase::TBaseState& bState, const Ice::Current & = Ice::Current() );
-	void getDepth ( DepthSeq& depth, RoboCompJointMotor::MotorStateMap& hState, RoboCompGenericBase::TBaseState& bState, const Ice::Current & = Ice::Current() );
-	void getRGB ( ColorSeq& color, RoboCompJointMotor::MotorStateMap& hState, RoboCompGenericBase::TBaseState& bState, const Ice::Current & = Ice::Current() );
-	void getXYZ ( PointSeq& points, RoboCompJointMotor::MotorStateMap& hState, RoboCompGenericBase::TBaseState& bState, const Ice::Current & = Ice::Current() );
-	
-private:
-	SpecificWorker* worker;
-	QString id;
+	public:
+		RGBDI ( std::shared_ptr<SpecificWorker> _worker, QObject* parent = 0 );
+		~RGBDI();
+		void add ( QString id );
+		TRGBDParams getRGBDParams ( const Ice::Current & = Ice::Current() );
+		void setRegistration ( Registration value, const Ice::Current & = Ice::Current() );
+		Registration getRegistration ( const Ice::Current & = Ice::Current() );
+		void getData ( RoboCompRGBD::imgType& rgbMatrix, depthType& distanceMatrix, RoboCompJointMotor::MotorStateMap& hState, RoboCompGenericBase::TBaseState& bState, const Ice::Current & = Ice::Current() );
+		void getDepthInIR ( depthType& distanceMatrix, RoboCompJointMotor::MotorStateMap& hState, RoboCompGenericBase::TBaseState& bState, const Ice::Current & = Ice::Current() );
+		void getImage ( ColorSeq& color, DepthSeq& depth, PointSeq& points, RoboCompJointMotor::MotorStateMap& hState, RoboCompGenericBase::TBaseState& bState, const Ice::Current & = Ice::Current() );
+		void getDepth ( DepthSeq& depth, RoboCompJointMotor::MotorStateMap& hState, RoboCompGenericBase::TBaseState& bState, const Ice::Current & = Ice::Current() );
+		void getRGB ( ColorSeq& color, RoboCompJointMotor::MotorStateMap& hState, RoboCompGenericBase::TBaseState& bState, const Ice::Current & = Ice::Current() );
+		void getXYZ ( PointSeq& points, RoboCompJointMotor::MotorStateMap& hState, RoboCompGenericBase::TBaseState& bState, const Ice::Current & = Ice::Current() );
+		
+	private:
+		std::shared_ptr<SpecificWorker> worker;
+		QString id;
 };
 
 #endif

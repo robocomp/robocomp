@@ -79,8 +79,6 @@
 #include <RCISMousePicker.h> 
 #include "ui_guiDlg.h"
 
-
-
 class robotSimulatorComp : public RoboComp::Application
 {
 private:
@@ -90,8 +88,6 @@ private:
 public:
 	virtual int run( int argc, char* argv[] );
 };
-
-
 
 void robotSimulatorComp::initialize()
 {
@@ -162,23 +158,24 @@ int robotSimulatorComp::run( int argc, char* argv[] )
 	}
 
 	// Create the worker
-	SpecificWorker* worker = new SpecificWorker(mprx, communicator(), argv[1], ms);
+	//SpecificWorker* worker = new SpecificWorker(mprx, communicator(), argv[1], ms);
+	std::shared_ptr<SpecificWorker> worker = std::make_shared<SpecificWorker>(mprx, communicator(), argv[1], ms);
+	
 	try
 	{
 		// Server adapter creation and publication
 		char endpoint[1024];
 		sprintf(endpoint, "tcp -p %d", port);
 		Ice::ObjectAdapterPtr adapter = communicator()->createObjectAdapterWithEndpoints("InnerModelSimulator", endpoint);
-		InnerModelManagerI *innermodelmanagerI = new InnerModelManagerI((SpecificWorker *)worker );
+		InnerModelManagerI *innermodelmanagerI = new InnerModelManagerI(worker);
 		adapter->add(innermodelmanagerI, Ice::stringToIdentity("innermodelmanager"));
 		adapter->activate();
 		cout << SERVER_FULL_NAME " started in port " << port << endl;
 
 		// Start the interfaces
-		worker->startServers();
+		//worker->startServers();
 
 		// Run the Qt event loop
-		//ignoreInterrupt(); // Uncomment if you want the component to ignore console SIGINT signal (ctrl+c).
 		a.setQuitOnLastWindowClosed( true );
 		a.exec();
 		return EXIT_SUCCESS;
@@ -191,8 +188,6 @@ int robotSimulatorComp::run( int argc, char* argv[] )
 		return EXIT_FAILURE;
 	}
 }
-
-
 
 int main(int argc, char* argv[])
 {

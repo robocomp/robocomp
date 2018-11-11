@@ -15,13 +15,13 @@ bool SpecificWorker::imm_setPose(const QString &server, const std::string &base,
 	QString m="RoboCompInnerModelManager::setPose()";
 
 	//check type transform
-	InnerModelTransform *aux = dynamic_cast<InnerModelTransform*>(getNode(qBase, m));
-	checkOperationInvalidNode(aux, m + qBase +"can't be use as base because it's not a InnerModelTransform node.");
+	InnerModelTransform *aux = dynamic_cast<InnerModelTransform*>(worker->getNode(qBase, m));
+	worker->checkOperationInvalidNode(aux, m + qBase +"can't be use as base because it's not a InnerModelTransform node.");
 	aux = NULL;
-	aux = dynamic_cast<InnerModelTransform*>(getNode(qItem, m));
-	checkOperationInvalidNode(aux, m + qItem +"can't be use as item because it's not a InnerModelTransform node.");
+	aux = dynamic_cast<InnerModelTransform*>(worker->getNode(qItem, m));
+	worker->checkOperationInvalidNode(aux, m + qItem +"can't be use as item because it's not a InnerModelTransform node.");
 
-	innerModel->updateTransformValues(qItem, pose.x, pose.y, pose.z, pose.rx, pose.ry, pose.rz, qBase);
+	worker->innerModel->updateTransformValues(qItem, pose.x, pose.y, pose.z, pose.rx, pose.ry, pose.rz, qBase);
 
 	return true;
 }

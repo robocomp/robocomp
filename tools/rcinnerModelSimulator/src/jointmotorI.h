@@ -31,34 +31,28 @@
 // Simulator includes
 #include "config.h"
 
-
-
 class SpecificWorker;
-
-using namespace std;
 using namespace RoboCompJointMotor;
-
-
 
 class JointMotorI : public QObject , public virtual RoboCompJointMotor::JointMotor
 {
 	Q_OBJECT
 public:
-	JointMotorI(SpecificWorker *_worker, QObject *parent = 0);
+	JointMotorI(std::shared_ptr<SpecificWorker> _worker, QObject *parent = 0);
 	~JointMotorI();
 	
 	void add(QString id);
 	void remove(QString id);
 	
-	void setPosition(const MotorGoalPosition& goal, const Ice::Current & = Ice::Current());
-	void setVelocity(const MotorGoalVelocity& goal, const Ice::Current & = Ice::Current());
-	void setSyncPosition(const MotorGoalPositionList& listGoals, const Ice::Current & = Ice::Current());
-	void setSyncVelocity(const MotorGoalVelocityList& listGoals, const Ice::Current & = Ice::Current());
-	MotorParams getMotorParams(const string& motor, const Ice::Current & = Ice::Current());
-	MotorState getMotorState(const string& motor, const Ice::Current & = Ice::Current());
-	MotorStateMap getMotorStateMap(const MotorList& mList, const Ice::Current & = Ice::Current());
+	void setPosition(const RoboCompJointMotor::MotorGoalPosition& goal, const Ice::Current & = Ice::Current());
+	void setVelocity(const RoboCompJointMotor::MotorGoalVelocity& goal, const Ice::Current & = Ice::Current());
+	void setSyncPosition(const RoboCompJointMotor::MotorGoalPositionList& listGoals, const Ice::Current & = Ice::Current());
+	void setSyncVelocity(const RoboCompJointMotor::MotorGoalVelocityList& listGoals, const Ice::Current & = Ice::Current());
+	RoboCompJointMotor::MotorParams getMotorParams(const std::string& motor, const Ice::Current & = Ice::Current());
+	RoboCompJointMotor::MotorState getMotorState(const std::string& motor, const Ice::Current & = Ice::Current());
+	RoboCompJointMotor::MotorStateMap getMotorStateMap(const RoboCompJointMotor::MotorList& mList, const Ice::Current & = Ice::Current());
 	void getAllMotorState(MotorStateMap& mstateMap, const Ice::Current & = Ice::Current());
-	MotorParamsList getAllMotorParams(const Ice::Current & = Ice::Current());
+	RoboCompJointMotor::MotorParamsList getAllMotorParams(const Ice::Current & = Ice::Current());
 	RoboCompJointMotor::BusParams getBusParams(const Ice::Current & = Ice::Current());
 	
 	void setZeroPos(const std::string&, const Ice::Current&) {}
@@ -72,14 +66,12 @@ public:
 	void enableBrakeMotor(const std::string&, const Ice::Current&) {}
 	
 private:
-	SpecificWorker *worker;
-	InnerModel *innerModel;
+	std::shared_ptr<SpecificWorker> worker;
 	QStringList jointIDs;
 	
 	MotorParamsList params;
 	MotorStateMap states;
 	BusParams busparams;
-	QMutex *mutex;
 };
 
 #endif

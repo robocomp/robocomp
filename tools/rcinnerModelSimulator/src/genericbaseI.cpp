@@ -19,7 +19,7 @@
 #include "genericbaseI.h"
 #include "specificworker.h"
 
-GenericBaseI::GenericBaseI(SpecificWorker *_worker, QObject *parent) // : QThread()
+GenericBaseI::GenericBaseI(std::shared_ptr<SpecificWorker> _worker, QObject *parent) // : QThread()
 {
 	// Pointer to the worker (needed to access the mutex)
 	worker = _worker;
@@ -46,34 +46,16 @@ void GenericBaseI::add(QString id)
 
 void GenericBaseI::getBaseState(RoboCompGenericBase::TBaseState& state, const Ice::Current&)
 {
-	printf("%d\n", __LINE__);
 	std::lock_guard<std::recursive_mutex> guard(innerModel->mutex);
 
-	printf("%d\n", __LINE__);
-	{
-	printf("%d %p %p %p\n", __LINE__, innerModel, parent, node);
-		QVec retPOSR = innerModel->transform6D(parent->id, node->id+"_raw_odometry\"");
-	printf("%d\n", __LINE__);
-		state.x = retPOSR(0);
-		state.z = retPOSR(2);
-		state.alpha = retPOSR(4);
-	printf("%d\n", __LINE__);
-	}
-	
-	{
-	printf("%d\n", __LINE__);
-		QVec retPOSC = innerModel->transform6D(parent->id, node->id+"_corrected_odometry\"");
-	printf("%d\n", __LINE__);
-		state.correctedX = retPOSC(0);
-		state.correctedZ = retPOSC(2);
-		state.correctedAlpha = retPOSC(4);
-	printf("%d\n", __LINE__);
-	}
-
-//	state.isMoving = ( (fabs(advVelx)<0.0001 and fabs(advVelz)<0.0001 and fabs(rotVel)<0.0001));
-//	state.advVx = advVelx;
-//	state.advVz = advVelz;
-//	state.rotV  = rotVel;
+	QVec retPOSR = innerModel->transform6D(parent->id, node->id+"_raw_odometry\"");
+	state.x = retPOSR(0);
+	state.z = retPOSR(2);
+	state.alpha = retPOSR(4);
+	QVec retPOSC = innerModel->transform6D(parent->id, node->id+"_corrected_odometry\"");
+	state.correctedX = retPOSC(0);
+	state.correctedZ = retPOSC(2);
+	state.correctedAlpha = retPOSC(4);
 
 }
 

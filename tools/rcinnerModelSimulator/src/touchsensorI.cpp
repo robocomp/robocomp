@@ -18,22 +18,13 @@
  */
 #include "touchsensorI.h"
 #include "specificworker.h"
-
 #include <math.h>
-
 
 /**
 * \brief Default constructor
 */
-TouchSensorI::TouchSensorI ( SpecificWorker *_worker, QObject *parent ) : QObject ( parent )
-{
-	worker = _worker;
-	mutex = worker->mutex;       // Shared worker mutex
-	// Component initialization...
-	innerModel = worker->getInnerModel();
-
-}
-
+TouchSensorI::TouchSensorI ( std::shared_ptr<SpecificWorker> _worker, QObject *parent ) : QObject ( parent )
+{}
 
 /**
 * \brief Default destructor
@@ -43,21 +34,19 @@ TouchSensorI::~TouchSensorI()
 	// Free component resources here
 }
 
-
-void TouchSensorI::add(QString id)
+void TouchSensorI::add(std::string id)
 {
-	sensorIDs << id;
+	sensorIDs.push_back(id);
 	SensorState state;
 	state.value = 0;
-	sensorMap[id.toStdString()] = state;
+	sensorMap[id] = state;
 }
 
-void TouchSensorI::remove(QString id)
+void TouchSensorI::remove(std::string id)
 {
-	sensorIDs.removeAll(id);
-	sensorMap.erase(id.toStdString());
+	sensorIDs.erase(std::remove(sensorIDs.begin(), sensorIDs.end(), id), sensorIDs.end());
+	sensorMap.erase(id);
 }
-
 
 RoboCompTouchSensor::SensorMap TouchSensorI::getValues(const Ice::Current&)
 {

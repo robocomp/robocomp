@@ -37,7 +37,7 @@ using namespace std;
 class DisplayI : public virtual RoboCompDisplay::Display
 {
 public:
-	DisplayI(SpecificWorker *_worker);
+	DisplayI(std::shared_ptr<SpecificWorker> _worker);
 	~DisplayI();
 
 	void add(QString id_);
@@ -47,7 +47,7 @@ public:
 	void setImageFromFile(const string  &pathImg, const Ice::Current&);
 private:
 
-	SpecificWorker *worker;
+	std::shared_ptr<SpecificWorker> worker;
 	QString id;
 
 };

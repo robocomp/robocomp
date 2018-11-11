@@ -21,10 +21,6 @@
 #ifndef IMUI_H
 #define IMUI_H
 
-// Qt includes
-#include <QMutex>
-#include <QObject>
-
 // RoboComp includes
 #include <Ice/Ice.h>
 #include <IMU.h>
@@ -32,9 +28,9 @@
 
 // Simulator includes
 #include "config.h"
-//#include "specificworker.h"
 
-
+////////////////////
+//  NEEDS TO BE VECTORIZED
 
 using namespace RoboCompIMU;
 
@@ -42,13 +38,11 @@ class SpecificWorker;
 
 class IMUI : public QObject , public virtual RoboCompIMU::IMU
 {
-	Q_OBJECT
 public:
-	IMUI ( SpecificWorker *_worker, QObject *parent = 0 );
+	IMUI ( std::shared_ptr<SpecificWorker> _worker, QObject *parent = 0 );
 	~IMUI();
 	
 	void add ( QString id );
-	
 	void updateIMUData ( QString id );
 	DataImu getDataImu ( const Ice::Current& = ::Ice::Current() );
 	Acceleration getAcceleration ( const Ice::Current& = ::Ice::Current() );
@@ -58,8 +52,9 @@ public:
 	void resetImu ( const Ice::Current& = ::Ice::Current() );
 	
 private:
-	SpecificWorker *worker;
+	std::shared_ptr<SpecificWorker> worker;
 	QStringList imuIDs;
+	DataImu data_imu;
 };
 
 #endif

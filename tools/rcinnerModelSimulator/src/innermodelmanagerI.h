@@ -42,7 +42,8 @@ class InnerModelManagerI : public QObject, public virtual RoboCompInnerModelMana
 {
 	Q_OBJECT
 public:
-	InnerModelManagerI ( SpecificWorker *w );
+	InnerModelManagerI ( std::shared_ptr<SpecificWorker> w );
+	
 	~InnerModelManagerI() {};
 	
 	bool setPose ( const std::string& item, const std::string& base, const Pose3D& pose, const Ice::Current& );
@@ -75,7 +76,7 @@ public:
 
 	bool collide(const std::string &a, const std::string &b, const Ice::Current&);
 private:
-	SpecificWorker *worker;
+	std::shared_ptr<SpecificWorker> worker;
 	QString id;
 };
 

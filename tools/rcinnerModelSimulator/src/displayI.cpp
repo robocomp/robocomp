@@ -20,7 +20,7 @@
 #include "specificworker.h"
 
 
-DisplayI::DisplayI(SpecificWorker *_worker)
+DisplayI::DisplayI(std::shared_ptr<SpecificWorker> _worker)
 {
 	worker = _worker;
 }
@@ -37,17 +37,36 @@ void DisplayI::add(QString id_)
 
 void DisplayI::remove(QString id)
 {
-
 }
 
 void DisplayI::setImageFromFile(const string  &pathImg, const Ice::Current&)
 {
-	worker->di_setImage(id.toStdString(), pathImg);
+	guard gl(worker->innerModel->mutex);
+	QString m = "RoboCompDisplay::setImage()";
+	InnerModelDisplay *aux = dynamic_cast<InnerModelDisplay*>(worker->getNode(id, m));
+	osg::Image *image = osgDB::readImageFile(pathImg);
+	aux->texture = QString::fromStdString(pathImg);
+	if (image == nullptr)
+	{
+		//qDebug() << __LINE__ << "Couldn't load texture:" << texture.c_str();
+		throw "SetImage::Couldn't load image" + pathImg;
+	}
+	worker->imv->planesHash[aux->id]->setImage(image);
 }
 
 void DisplayI::setImage(const RoboCompDisplay::Image  &img, const Ice::Current&)
 {
-	QImage im =QImage(&img.Img[0],img.width,img.height, QImage::Format_ARGB32);
-	im.save("/var/tmp/tmp.jpg");
-	worker->di_setImage(id.toStdString(), "/var/tmp/tmp.jpg");
+	guard gl(worker->innerModel->mutex);
+	QImage im = QImage(&img.Img[0],img.width,img.height, QImage::Format_ARGB32);
+	im.save("/var/tmp/tmp.jpg");	
+	QString m = "RoboCompDisplay::setImage()";
+	InnerModelDisplay *aux = dynamic_cast<InnerModelDisplay*>(worker->getNode(id, m));
+	aux->texture = QString("/var/tmp/tmp.jpg");
+	osg::Image *image = osgDB::readImageFile("/var/tmp/tmp.jpg");
+	if (image == nullptr)
+	{
+		//qDebug() << __LINE__ << "Couldn't load texture:" << texture.c_str();
+		throw "SetImage::Couldn't load image";
+	}
+	worker->imv->planesHash[aux->id]->setImage(image);
 }

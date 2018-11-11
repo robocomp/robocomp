@@ -85,3 +85,11 @@ QVec InnerModelLaser::laserTo(const QString &dest, float r, float alpha)
 	return innermodel->transform(dest, p, this->id);
 }
 
+QVec InnerModelLaser::laserTo(const std::string &dest, float r, float alpha)
+{
+	QVec p(3);
+	p(0) = r * sin(alpha);
+	p(1) = 0;
+	p(2) = r * cos(alpha);
+	return innermodel->transformS(dest, p, this->id.toStdString());
+}

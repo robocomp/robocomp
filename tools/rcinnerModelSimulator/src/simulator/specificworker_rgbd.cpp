@@ -6,7 +6,6 @@
 
 TRGBDParams SpecificWorker::rgbd_getRGBDParams ( const QString& server )
 {
-	//QMutexLocker locker ( mutex );
 	guard gl(innerModel->mutex);
 	
 	IMVCamera &cam = imv->cameras[server];
@@ -42,14 +41,12 @@ TRGBDParams SpecificWorker::rgbd_getRGBDParams ( const QString& server )
 
 void SpecificWorker::rgbd_setRegistration ( const QString& server, Registration value )
 {
-	//QMutexLocker locker ( mutex );
 	guard gl(innerModel->mutex);
 }
 
 
 Registration SpecificWorker::rgbd_getRegistration ( const QString& server )
 {
-	//QMutexLocker locker ( mutex );
 	guard gl(innerModel->mutex);
 
 	return RoboCompRGBD::DepthInColor;
@@ -58,7 +55,6 @@ Registration SpecificWorker::rgbd_getRegistration ( const QString& server )
 
 void SpecificWorker::rgbd_getData ( const QString& server, RoboCompRGBD::imgType& rgbMatrix, depthType& distanceMatrix, RoboCompJointMotor::MotorStateMap& hState, RoboCompGenericBase::TBaseState& bState )
 {
-	//QMutexLocker locker ( mutex );
 	guard gl(innerModel->mutex);
 	
 	ColorSeq color;
@@ -79,19 +75,16 @@ void SpecificWorker::rgbd_getData ( const QString& server, RoboCompRGBD::imgType
 
 void SpecificWorker::rgbd_getImage ( const QString& server, ColorSeq& color, DepthSeq& depth, PointSeq& points, RoboCompJointMotor::MotorStateMap& hState, RoboCompGenericBase::TBaseState& bState )
 {
-	//QMutexLocker locker ( mutex );
 	guard gl(innerModel->mutex);
 
 	IMVCamera &cam = imv->cameras[server];
-
-	
 	QStringList cameraConfig = cam.RGBDNode->ifconfig.split ( "," );
 	if (cameraConfig.size() > 1)
 	{
 		uint32_t basePort  = QString ( cam.RGBDNode->ifconfig.split ( "," ) [1] ).toUInt();
 		std::map<uint32_t, OmniRobotServer>::iterator base;
 		base = omn_servers.find( basePort );
-                bool bstateUpd = false;
+		bool bstateUpd = false;
 		if (base != omn_servers.end())
 		{
 			base->second.interface->getBaseState( bState );
@@ -102,12 +95,12 @@ void SpecificWorker::rgbd_getImage ( const QString& server, ColorSeq& color, Dep
 		if (baseD != dfr_servers.end())
 		{
 			baseD->second.interface->getBaseState( bState );
-                        bstateUpd = true;
+			bstateUpd = true;
 		}
 		if (not bstateUpd)
-                {
-                    std::cout<<"Error: no base state updated, basePort "<<basePort<<std::endl;
-                }
+		{
+			std::cout<<"Error: no base state updated, basePort "<<basePort<<std::endl;
+		}
 		uint32_t jointPort = QString ( cam.RGBDNode->ifconfig.split ( "," ) [0] ).toUInt();
 		std::map<uint32_t, JointMotorServer>::iterator joint;
 		joint = jm_servers.find( jointPort );

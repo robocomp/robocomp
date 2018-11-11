@@ -5,7 +5,7 @@ class FPSCounter
 		{
 			begin = std::chrono::high_resolution_clock::now();
 		}
-    void print( int &cont, const unsigned int msPeriod = 1000)
+    float print( const unsigned int msPeriod = 1000)
 		{
 			auto end = std::chrono::high_resolution_clock::now();
 			auto elapsed = std::chrono::duration<double>(end - begin).count() * 1000;
@@ -15,7 +15,10 @@ class FPSCounter
 				begin = std::chrono::high_resolution_clock::now();
 				cont = 0;
 			}
+			cont++;
+			return elapsed;
 		}
 		std::chrono::time_point<std::chrono::high_resolution_clock> begin;
+		std::uint32_t cont = 0;
 };
 

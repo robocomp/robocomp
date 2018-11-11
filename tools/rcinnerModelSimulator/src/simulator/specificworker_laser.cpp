@@ -48,8 +48,8 @@ TLaserData SpecificWorker::laser_getLaserAndBStateData ( const QString& server, 
 	// 		}
 	// 	}
 		
-		std::map<uint32_t, DifferentialRobotServer>::iterator it = dfr_servers.find( basePort );
-		if( it != dfr_servers.end() ) 
+		std::map<uint32_t, DifferentialRobotServer>::iterator it = servers.dfr_servers.find( basePort );
+		if( it != worker->servers.dfr_servers.end()) 
 		{
 			it->second.interface->getBaseState ( state );
 		}

@@ -38,7 +38,8 @@ class InnerModelLaser : public InnerModelNode
 		* @return 3-vector of x,y,z coordinates un WRS
 		*/
 		QVec laserTo(const QString& dest, float r, float alpha);
-
+		QVec laserTo(const std::string& dest, float r, float alpha);
+		
 		uint32_t port;
 		uint32_t min, max;
 		float angle;

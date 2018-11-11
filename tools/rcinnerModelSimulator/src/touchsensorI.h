@@ -19,46 +19,31 @@
 #ifndef TOUCHSENSORI_H
 #define TOUCHSENSORI_H
 
-// Qt includes
-#include <QMutex>
-#include <QObject>
-
 // RoboComp includes
 #include <Ice/Ice.h>
 #include <TouchSensor.h>
 #include <innermodel/innermodel.h>
+#include <string>
+#include <vector>
 
 // Simulator includes
 #include "config.h"
 
-
-
 class SpecificWorker;
 
-using namespace std;
 using namespace RoboCompTouchSensor;
-
-
 
 class TouchSensorI : public QObject , public virtual RoboCompTouchSensor::TouchSensor
 {
-Q_OBJECT
-public:
-	TouchSensorI(SpecificWorker *_worker, QObject *parent = 0);
-	~TouchSensorI();
-
-	void add (QString id );
-	void remove(QString id);
-
-	RoboCompTouchSensor::SensorMap getValues(const Ice::Current&);
-
-// private:
-	SpecificWorker *worker;
-	InnerModel *innerModel;
-	QStringList sensorIDs;
-	
-	SensorMap sensorMap;
-	QMutex *mutex;
+	public:
+		TouchSensorI(std::shared_ptr<SpecificWorker> _worker, QObject *parent = 0);
+		~TouchSensorI();
+		void add (std::string id );
+		void remove(std::string id);
+		RoboCompTouchSensor::SensorMap getValues(const Ice::Current&);
+	private:
+		std::vector<std::string> sensorIDs;
+		SensorMap sensorMap;
 };
 
 #endif

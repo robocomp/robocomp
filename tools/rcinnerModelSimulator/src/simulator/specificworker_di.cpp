@@ -8,7 +8,7 @@ void SpecificWorker::di_setImage(const std::string& item, const std::string& tex
 
 	// qDebug()<<"aux->texture"<<aux->texture<<"qstring"<<QString::fromStdString(texture);
 
-	aux->texture=QString::fromStdString(texture);
+	aux->texture = QString::fromStdString(texture);
 
 	osg::Image *image=NULL;
 	image = osgDB::readImageFile(texture);

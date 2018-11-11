@@ -25,13 +25,9 @@
 /**
 * \brief Default constructor
 */
-JointMotorI::JointMotorI(SpecificWorker *_worker, QObject *parent) : QObject(parent)
+JointMotorI::JointMotorI(std::shared_ptr<SpecificWorker> _worker, QObject *parent) : QObject(parent)
 {
-	worker = _worker;
-	//mutex = worker->mutex;       // Shared worker mutex
-	
-	innerModel = worker->getInnerModel();
-
+	worker = _worker;	
 	busparams.numMotors = 0;
 	busparams.baudRate = 10000;
 	busparams.basicPeriod = 10;
@@ -57,7 +53,7 @@ void JointMotorI::add(QString id)
 	param.invertedSign = false;
 	param.busId = jointIDs.size();
 	
-	InnerModelNode *node = innerModel->getNode(id);
+	InnerModelNode *node = worker->innerModel->getNode(id);
 	if (dynamic_cast<InnerModelJoint*>(node) != NULL)
 	{
 		param.minPos = dynamic_cast<InnerModelJoint*>(node)->min;
@@ -106,16 +102,32 @@ void JointMotorI::remove(QString id)
 	busparams.numMotors--;
 }
 
-
-// Component functions, implementation
-
-
 void JointMotorI::setPosition(const MotorGoalPosition &goal, const Ice::Current&)
 {
 	const QString name = QString::fromStdString(goal.name);
 	if (jointIDs.contains(name))
 	{
-		worker->jm_setPosition(name, goal);
+		//worker->jm_setPosition(name, goal);
+		if (goal.maxSpeed == 0.0f)
+		{
+			printf("Instantaneous movement!\n");
+			SpecificWorker::JointMovement m;
+			m.endPos = goal.position;
+			m.endSpeed = goal.maxSpeed;
+			m.maxAcc = INFINITY;
+			m.mode = SpecificWorker::JointMovement::FixedPosition;
+			worker->jointMovements[name] = m;
+		}
+		else
+		{
+			printf("Target position\n");
+			SpecificWorker::JointMovement m;
+			m.endPos = goal.position;
+			m.endSpeed = goal.maxSpeed;
+			m.maxAcc = INFINITY;
+			m.mode = SpecificWorker::JointMovement::TargetPosition;
+			worker->jointMovements[name] = m;
+		}
 	}
 }
 
@@ -125,7 +137,14 @@ void JointMotorI::setVelocity(const MotorGoalVelocity &goal, const Ice::Current&
 	const QString name = QString::fromStdString(goal.name);
 	if (jointIDs.contains(name))
 	{
-		worker->jm_setVelocity(name, goal);
+		//worker->jm_setVelocity(name, goal);
+		printf("Target speed\n");
+		SpecificWorker::JointMovement m;
+		m.endPos = INFINITY;
+		m.endSpeed = goal.velocity;
+		m.maxAcc = goal.maxAcc;
+		m.mode = SpecificWorker::JointMovement::TargetSpeed;
+		worker->jointMovements[name] = m;
 	}
 }
 
@@ -133,93 +152,69 @@ void JointMotorI::setVelocity(const MotorGoalVelocity &goal, const Ice::Current&
 void JointMotorI::setSyncPosition(const MotorGoalPositionList &listGoals, const Ice::Current &ice)
 {
 	for (uint i=0; i<listGoals.size(); i++)
-	{
 		setPosition(listGoals[i], ice);
-	}
 }
 
 
 void JointMotorI::setSyncVelocity(const MotorGoalVelocityList &listGoals, const Ice::Current &ice)
 {
 	for (uint i=0; i<listGoals.size(); i++)
-	{
 		setVelocity(listGoals[i], ice);
-	}
 }
 
 
-MotorParams JointMotorI::getMotorParams(const string &motor, const Ice::Current&)
+MotorParams JointMotorI::getMotorParams(const std::string &motor, const Ice::Current&)
 {
 	for (uint i=0; i<params.size(); ++i)
-	{
 		if (params[i].name == motor)
-		{
 			return params[i];
-		}
-	}
 	throw runtime_error(std::string("RCRobotSimulator: JointMotorI::getMotorParams(): No motor named: ") + motor);
 }
 
 
-MotorState JointMotorI::getMotorState(const string &motor, const Ice::Current&)
+MotorState JointMotorI::getMotorState(const std::string &motor, const Ice::Current&)
 {
 	for (QStringList::const_iterator name = jointIDs.constBegin() ; name != jointIDs.constEnd() ; ++name)
 	{
-		InnerModelNode *node = innerModel->getNode(*name);
-		if (dynamic_cast<InnerModelJoint*>(node) != NULL)
-		{
+		InnerModelNode *node = worker->innerModel->getNode(*name);
+		if (dynamic_cast<InnerModelJoint*>(node) != nullptr)
 			states[name->toStdString()].pos = dynamic_cast<InnerModelJoint*>(node)->getAngle();
-		}
-		else if (dynamic_cast<InnerModelPrismaticJoint*>(node) != NULL)
-		{
+		else if (dynamic_cast<InnerModelPrismaticJoint*>(node) != nullptr)
 			states[name->toStdString()].pos = dynamic_cast<InnerModelPrismaticJoint*>(node)->getPosition();
-		}
 	}
 	return states[motor];
 }
-
 
 MotorStateMap JointMotorI::getMotorStateMap(const MotorList &mList, const Ice::Current&)
 {
 	for (QStringList::const_iterator name = jointIDs.constBegin() ; name != jointIDs.constEnd() ; ++name)
 	{
-		InnerModelNode *node = innerModel->getNode(*name);
+		InnerModelNode *node = worker->innerModel->getNode(*name);
 		if (dynamic_cast<InnerModelJoint*>(node) != NULL)
-		{
 			states[name->toStdString()].pos = dynamic_cast<InnerModelJoint*>(node)->getAngle();
-		}
 		else if (dynamic_cast<InnerModelPrismaticJoint*>(node) != NULL)
-		{
 			states[name->toStdString()].pos = dynamic_cast<InnerModelPrismaticJoint*>(node)->getPosition();
-		}
 	}
 	return states;
 }
-
 
 void JointMotorI::getAllMotorState(MotorStateMap &mstateMap, const Ice::Current&)
 {
 	for (QStringList::const_iterator name = jointIDs.constBegin() ; name != jointIDs.constEnd() ; ++name)
 	{
-		InnerModelNode *node = innerModel->getNode(*name);
-		if (dynamic_cast<InnerModelJoint*>(node) != NULL)
-		{
+		InnerModelNode *node = worker->innerModel->getNode(*name);
+		if (dynamic_cast<InnerModelJoint*>(node) !=  nullptr)
 			states[name->toStdString()].pos = dynamic_cast<InnerModelJoint*>(node)->getAngle();
-		}
-		else if (dynamic_cast<InnerModelPrismaticJoint*>(node) != NULL)
-		{
+		else if (dynamic_cast<InnerModelPrismaticJoint*>(node) != nullptr)
 			states[name->toStdString()].pos = dynamic_cast<InnerModelPrismaticJoint*>(node)->getPosition();
-		}
 	}
 	mstateMap = states;
 }
-
 
 MotorParamsList JointMotorI::getAllMotorParams(const Ice::Current&)
 {
 	return params;
 }
-
 
 RoboCompJointMotor::BusParams JointMotorI::getBusParams(const Ice::Current&)
 {

@@ -1,19 +1,18 @@
 # Sources set
 LIST ( APPEND SOURCES
-	simulator/specificworker_cam.cpp
-	simulator/specificworker_cm.cpp
-	simulator/specificworker_dfr.cpp
-	simulator/specificworker_di.cpp
-	simulator/specificworker_imm.cpp
-	simulator/specificworker_imu.cpp
-	simulator/specificworker_jm.cpp
-	simulator/specificworker_laser.cpp
-	simulator/specificworker_rgbd.cpp
 	specificworker.cpp
 	specificmonitor.cpp
 	servers.cpp
 	pickhandler.cpp
-
+	serversinitiator.cpp
+	omnirobotserver.cpp
+	differentialrobotserver.cpp
+	displayserver.cpp
+	rgbdserver.cpp
+	laserserver.cpp
+	touchsensorserver.cpp
+	imuserver.cpp
+	jointmotorserver.cpp
 )
 
 # Headers set
@@ -22,7 +21,9 @@ LIST ( APPEND HEADERS
 	specificmonitor.h
 )
 
-SET(LIBS ${LIBS} -lboost_system)
+#add_definitions(-g  -std=gnu++17 -pedantic-errors)
+SET(CMAKE_CXX_FLAGS " -std=c++17 -O3 -pthread ")
+SET(LIBS ${LIBS} -lpthread -lboost_system )
 
 # FCL
 if (FCL_SUPPORT)

@@ -19,7 +19,7 @@
 #include "omnirobotI.h"
 #include "specificworker.h"
 
-OmniRobotI::OmniRobotI(SpecificWorker *_worker, QObject *parent): QThread(parent)
+OmniRobotI::OmniRobotI(std::shared_ptr<SpecificWorker> _worker, QObject *parent): QThread(parent)
 {
 	// Pointer to the worker (needed to access the mutex)
 	worker = _worker;
@@ -225,14 +225,15 @@ void OmniRobotI::recursiveIncludeMeshes(InnerModelNode *node, QString robotId, b
 
 void OmniRobotI::setSpeedBase(Ice::Float advx, Ice::Float advz, Ice::Float rot, const Ice::Current&)
 {
-	updateInnerModelPose();
 	
 	std::lock_guard<std::recursive_mutex> guard (innerModel->mutex);
-
+	
 	gettimeofday(&lastCommand_timeval, NULL);
 	advVelx = advx;
 	advVelz = advz;
 	rotVel = rot;
+	
+	updateInnerModelPose();
 }
 
 

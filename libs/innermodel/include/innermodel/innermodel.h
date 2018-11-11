@@ -10,6 +10,7 @@
 #include <QHash>
 //#include <QMutexLocker>
 #include <mutex>
+#include <memory>
 
 // RoboComp includes
 #include <qmat/qmat.h>
@@ -161,6 +162,22 @@ public:
 	/////////////////////////////////////////////
 	QList<QString> getIDKeys() {return hash.keys(); }
 	InnerModelNode *getNode(const QString & id) const { /*QMutexLocker ml(mutex); */if (hash.contains(id)) return hash[id]; else return NULL;}
+	
+	template <class N> N* getNode(const std::string &id) const
+	{
+		N* r = dynamic_cast<N *>(getNode(QString::fromStdString(id)));
+		if (not r)
+		{
+			QString error;
+			if (not hash[QString::fromStdString(id)])
+				error.sprintf("No such joint %s", id.c_str());
+			else
+				error.sprintf("%s doesn't seem to be a joint", id.c_str());
+			throw error;
+		}
+		return r;
+	}
+
 	template <class N> N* getNode(const QString &id) const
 	{
 		N* r = dynamic_cast<N *>(getNode(id));
@@ -175,7 +192,7 @@ public:
 		}
 		return r;
 	}
-
+	
 	void removeSubTree(InnerModelNode *item, QStringList *l);
 	void removeNode(const QString & id);
 	void moveSubTree(InnerModelNode *nodeSrc, InnerModelNode *nodeDst);
@@ -247,6 +264,7 @@ public:
 
 	//QMutex *mutex;
 	mutable std::recursive_mutex mutex;
+	
 
 protected:
 	InnerModelNode *root;

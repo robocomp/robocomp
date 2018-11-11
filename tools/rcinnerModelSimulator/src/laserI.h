@@ -19,10 +19,6 @@
 #ifndef LASERI_H
 #define LASERI_H
 
-// Qt includes
-#include <QMutex>
-#include <QObject>
-
 // RoboComp includes
 #include <Ice/Ice.h>
 #include <Laser.h>
@@ -30,34 +26,28 @@
 
 // Simulator includes
 #include "config.h"
-
 #include <osg/Group>
 
 using namespace RoboCompLaser;
-
 class SpecificWorker;
 
 class LaserI : public QObject , public virtual RoboCompLaser::Laser
 {
-	Q_OBJECT
-public:
-	LaserI ( SpecificWorker *_worker, QObject *parent = 0 );
-	~LaserI();
-	
-	void add ( QString id );
-	
-	TLaserData getLaserData ( const Ice::Current& = Ice::Current() );
-	TLaserData getLaserAndBStateData ( RoboCompGenericBase::TBaseState& state, const Ice::Current& = Ice::Current() );
-	LaserConfData getLaserConfData ( const Ice::Current& = Ice::Current() );
+	public:
+		LaserI (std::shared_ptr<SpecificWorker> _worker, QObject *parent = 0 );
+		~LaserI();
+		
+		void add ( std::string id );
+		TLaserData getLaserData ( const Ice::Current& = Ice::Current() );
+		TLaserData getLaserAndBStateData ( RoboCompGenericBase::TBaseState& state, const Ice::Current& = Ice::Current() );
+		LaserConfData getLaserConfData ( const Ice::Current& = Ice::Current() );
 
-private:
-	QString id;
-	InnerModel *innerModel;
-	InnerModelLaser *laserNode;
-	osg::Group *group;
-	SpecificWorker *worker;
-	LaserConfData laserConf;
-	QMutex *mutex;
+	private:
+		std::string id;
+		InnerModelLaser *laserNode;
+		osg::Group *group;
+		std::shared_ptr<SpecificWorker> worker;
+		LaserConfData laserConf;
 };
 
 #endif

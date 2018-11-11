@@ -19,11 +19,6 @@
 #ifndef OMNIROBOTI_H
 #define OMNIROBOTI_H
 
-// Qt includes
-#include <QMutex>
-#include <QObject>
-#include <QThread>
-
 // RoboComp includes
 #include <Ice/Ice.h>
 #include <OmniRobot.h>
@@ -38,59 +33,37 @@ class SpecificWorker;
 
 class OmniRobotI : public QThread, public virtual RoboCompOmniRobot::OmniRobot
 {
-Q_OBJECT
-public:
-	OmniRobotI ( SpecificWorker *_worker, QObject *parent = 0 );
-	
-	void add(QString id);
-	void run();
-	void updateInnerModelPose(bool force=false);
-	
-	void getBaseState(RoboCompGenericBase::TBaseState& state, const Ice::Current& = Ice::Current());
-	void getBasePose(Ice::Int& x, Ice::Int& z, Ice::Float& alpha, const Ice::Current& = Ice::Current());
-	void setSpeedBase(Ice::Float advx, Ice::Float advz, Ice::Float rot, const Ice::Current& = Ice::Current());
-	void stopBase(const Ice::Current& = Ice::Current());
-	void resetOdometer(const Ice::Current& = Ice::Current());
-	void setOdometer(const RoboCompGenericBase::TBaseState& state, const Ice::Current& = Ice::Current());
-	void setOdometerPose(Ice::Int x, Ice::Int z, Ice::Float alpha, const Ice::Current& = Ice::Current());
-	void correctOdometer(Ice::Int x, Ice::Int z, Ice::Float alpha, const Ice::Current& = Ice::Current());
-/*	
-	template<typename T> void stateFromVector(T &state, QVec vec)
-	{
-		state.x = vec(0);
-		state.z = vec(2);
-		state.alpha = vec(4);
-	}
-*/
-private:
-	SpecificWorker *worker;
-	InnerModel* innerModel;
-	QStringList omniIDs;
-	
-// 	RMat::RTMat zeroTR;
-// 	float zeroANG;
-	
-// 	// Real Noisy Pose
-// 	RoboCompGenericBase::TBaseState pose;
-// 	// Odometry pose
-// 	RoboCompGenericBase::TBaseState noisyPose;
-	// Real Angle
-// 	double newAngle;
-	//Noisy Angle
-// 	double noisyNewAngle;
+	public:
+		OmniRobotI ( std::shared_ptr<SpecificWorker> _worker, QObject *parent = 0 );
+		
+		void add(QString id);
+		void run();
+		void updateInnerModelPose(bool force=false);
+		
+		void getBaseState(RoboCompGenericBase::TBaseState& state, const Ice::Current& = Ice::Current());
+		void getBasePose(Ice::Int& x, Ice::Int& z, Ice::Float& alpha, const Ice::Current& = Ice::Current());
+		void setSpeedBase(Ice::Float advx, Ice::Float advz, Ice::Float rot, const Ice::Current& = Ice::Current());
+		void stopBase(const Ice::Current& = Ice::Current());
+		void resetOdometer(const Ice::Current& = Ice::Current());
+		void setOdometer(const RoboCompGenericBase::TBaseState& state, const Ice::Current& = Ice::Current());
+		void setOdometerPose(Ice::Int x, Ice::Int z, Ice::Float alpha, const Ice::Current& = Ice::Current());
+		void correctOdometer(Ice::Int x, Ice::Int z, Ice::Float alpha, const Ice::Current& = Ice::Current());
 
-	timeval lastCommand_timeval;
-	float advVelx, advVelz, rotVel;
+	private:
+		std::shared_ptr<SpecificWorker> worker;
+		std::shared_ptr<InnerModel> innerModel;
+		QStringList omniIDs;
+		timeval lastCommand_timeval;
+		float advVelx, advVelz, rotVel;
 
-	InnerModelTransform *parent;
-	InnerModelOmniRobot *node;
-	InnerModelTransform *rawOdometryNode, *rawOdometryParentNode;
-	InnerModelTransform *correctedOdometryNode, *correctedOdometryParentNode;
-	InnerModelTransform *movementFutureNode;
-	
-	bool canMoveBaseTo(const QString nodeId);
-	void recursiveIncludeMeshes(InnerModelNode *node, QString robotId, bool inside, std::vector<QString> &in, std::vector<QString> &out);
-
+		InnerModelTransform *parent;
+		InnerModelOmniRobot *node;
+		InnerModelTransform *rawOdometryNode, *rawOdometryParentNode;
+		InnerModelTransform *correctedOdometryNode, *correctedOdometryParentNode;
+		InnerModelTransform *movementFutureNode;
+		
+		bool canMoveBaseTo(const QString nodeId);
+		void recursiveIncludeMeshes(InnerModelNode *node, QString robotId, bool inside, std::vector<QString> &in, std::vector<QString> &out);
 };
 
 #endif
