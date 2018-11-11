@@ -105,26 +105,19 @@ SpecificWorker::SpecificWorker(MapPrx& _mprx, Ice::CommunicatorPtr _communicator
 	// Initialize the timer
 	setPeriod(ms);	
 	
-	qDebug() << __FILE__ << __FUNCTION__ << "CPP " << __cplusplus;
+	//qDebug() << __FILE__ << __FUNCTION__ << "CPP " << __cplusplus;
 }
 
 void SpecificWorker::compute()
 {
-	// Compute the elapsed time interval since the last update
-	/*static QTime lastTime = QTime::currentTime();
-	QTime currentTime = QTime::currentTime();
-	const int elapsed = lastTime.msecsTo (currentTime);
-	//printf("elapsed %d\n", elapsed);
-	lastTime = currentTime;
-	*/
 	auto elapsed = fps.print();
-
+	
 	guard gl(innerModel->mutex);
 	
 		updateCameras();
 		updateLasers();
-		updateJoints(elapsed/1000.0f);
-		updateTouchSensors();
+ 		updateJoints(elapsed/1000.0f);
+ 		//updateTouchSensors();  //BUGGYYYYYYYYYYYY
 
 		#ifdef INNERMODELMANAGERDEBUG
 			printf("Elapsed time: %d\n", elapsed);
