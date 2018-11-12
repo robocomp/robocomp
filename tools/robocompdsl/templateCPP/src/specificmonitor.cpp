@@ -29,7 +29,7 @@ SpecificMonitor::SpecificMonitor(GenericWorker *_worker,Ice::CommunicatorPtr _co
 */
 SpecificMonitor::~SpecificMonitor()
 {
-
+	std::cout << "Destroying SpecificMonitor" << std::endl;
 }
 
 void SpecificMonitor::run()
