@@ -513,9 +513,13 @@ for sub in component['subscribesTo']:
 #ifdef USE_QTGUI
 		a.quit();
 #endif
-		monitor->exit(0);
-}
 
+}
+	status = EXIT_SUCCESS;
+	monitor->terminate();
+	monitor->wait();
+	delete worker;
+	delete monitor;
 	return status;
 }
 
