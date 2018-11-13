@@ -30,8 +30,6 @@ void ServersInitiator::init(std::shared_ptr<InnerModel> innerModel_, std::shared
 	for (auto &it : imv->cameras)
 		addServer<InnerModelNode, InnerModelRGBD, RGBDServer>(it.RGBDNode);
 	
-	//includeLasers();
-	//includeRGBDs();	
  	//auto print_container = [](andyg::HeteroContainer& _in){_in.visit(printVisitor{}); std::cout << std::endl;};
 	//print_container(hMaps);
 }

@@ -95,7 +95,7 @@ Q_OBJECT
 		OsgView *viewer;
 		osgGA::TrackballManipulator *manipulator;
 		
-		RoboCompLaser::TLaserData LASER_createLaserData(const IMVLaser &laser);
+		//RoboCompLaser::TLaserData LASER_createLaserData(const IMVLaser &laser);
 		//RoboCompTouchSensor::SensorMap TOUCH_createTouchData(const IMVLaser &laser);
 		
 		FPSCounter fps;

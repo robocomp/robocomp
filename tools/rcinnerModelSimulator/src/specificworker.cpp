@@ -137,68 +137,112 @@ void SpecificWorker::compute()
 
 		
 //////////////////////////////////////////////////////////////////////
-/// Updates
+/// Updates of IMV sensors and actuators changed by inner state or external requests
 ////////////////////////////////////////////////////////////////////////
 
 void SpecificWorker::updateCameras()
 {
-	auto i = imv->cameras.constBegin();
-	{
-		while (i != imv->cameras.constEnd())
+		for(const auto &i: imv->cameras.keys())
 		{
-			RTMat rt= innerModel->getTransformationMatrix("root",i.key());
+			RTMat rt= innerModel->getTransformationMatrix("root",i);
 			// Put camera in its position
-			imv->cameras[i.key()].viewerCamera->getCameraManipulator()->setByMatrix(QMatToOSGMat4(rt));
+			imv->cameras[i].viewerCamera->getCameraManipulator()->setByMatrix(QMatToOSGMat4(rt));
 
 			for (int n=0; n<imv->cameras.size() ; ++n)
-				imv->cameras[i.key()].viewerCamera->frame();
-			i++;
+				imv->cameras[i].viewerCamera->frame();
 		}
-	}	
 }
 
 void SpecificWorker::updateLasers()
 {
-	guard gl(innerModel->mutex);
-	
 	// Delete existing lasers
-	for (auto laser = imv->lasers.begin(); laser != imv->lasers.end(); laser++)
+	for (const auto &laserKey : imv->lasers.keys())
 	{
-		if (laser->osgNode->getNumChildren() > 0)
-			laser->osgNode->removeChild(0, laser->osgNode->getNumChildren());
+		const auto &laserValue = imv->lasers.value(laserKey);
+		if (laserValue.osgNode->getNumChildren() > 0)
+			laserValue.osgNode->removeChild(0, laserValue.osgNode->getNumChildren());
 	}
 	
 	// Laser
-	for (auto laser = imv->lasers.begin(); laser != imv->lasers.end(); laser++)
+	for (const auto &laserKey : imv->lasers.keys())			 // NO DEBERIAMOS ITERAR SOBRE LOS LASERS DE INNERMODEL?
 	{
-		std::string id = laser->laserNode->id.toStdString();
+		const auto &laserValue = imv->lasers.value(laserKey);
+		const std::string &id = laserValue.laserNode->id.toStdString();
 		
 		if( laserDataCartArray.count(id) == 0)
 		{
 			osg::Vec3Array *v = new osg::Vec3Array();
-			v->resize(laser->laserNode->measures+1);
+			v->resize(laserValue.laserNode->measures+1);
 			laserDataCartArray.insert(std::make_pair(id,v));
 		}
 
-		// create and insert laser data
-		laserDataArray.insert(std::make_pair(laser->laserNode->id.toStdString(), LASER_createLaserData(laser.value())));
+		// create and insert synthetic laser data
+		RoboCompLaser::TLaserData laserData;
+		const int measures = laserValue.laserNode->measures;
+		const float iniAngle = -laserValue.laserNode->angle/2;
+		const float finAngle = laserValue.laserNode->angle/2;
+		const float_t maxRange = laserValue.laserNode->max;
+		laserData.resize(measures);
+		double angle = finAngle;  //variable to iterate angle increments
+		
+		//El punto inicial es el origen del láser
+		auto laserNode = innerModel->getNode<InnerModelLaser>(id);
+		const osg::Vec3 P = QVecToOSGVec(laserNode->laserTo(std::string("root"), 0, 0));
+		const float incAngle = (fabs(iniAngle)+fabs(finAngle)) / (float)measures;
+		osg::Vec3 Q,R;
+
+		for (int i=0 ; i<measures; i++)
+		{
+			laserData[i].angle = angle;
+			laserData[i].dist = maxRange;
+			
+			//laserDataCartArray[id]->operator[](i) = QVecToOSGVec(QVec::vec3(maxRange*sin(angle), 0, maxRange*cos(angle)));
+			
+			//Calculamos el punto destino
+			Q = QVecToOSGVec(laserNode->laserTo(std::string("root"), maxRange, angle));
+			
+			//Creamos el segmento de interseccion
+			osg::ref_ptr<osgUtil::LineSegmentIntersector> intersector = new osgUtil::LineSegmentIntersector(osgUtil::Intersector::MODEL, P, Q);
+			osgUtil::IntersectionVisitor visitor(intersector.get());
+
+			/// Pasando el visitor al root
+			viewer->getRootGroup()->accept(visitor);
+
+			if (intersector->containsIntersections() and id!="laserSecurity")
+			{
+				osgUtil::LineSegmentIntersector::Intersection result = *(intersector->getIntersections().begin());
+				R = result.getWorldIntersectPoint(); // in world space
+
+				R.x() = R.x() - P.x();
+				R.y() = R.y() - P.y();
+				R.z() = R.z() - P.z();
+				const float dist = sqrt(R.x() *R.x() + R.y() *R.y() + R.z() *R.z());
+
+				if (dist <= maxRange)
+				{
+					laserData[i].dist = dist;//*1000.;
+					laserDataCartArray[id]->operator[](i) = QVecToOSGVec(laserNode->laserTo(id, dist, laserData[i].angle));
+				}
+			}
+			else
+			{
+				laserDataCartArray[id]->operator[](i) = QVecToOSGVec(laserNode->laserTo(id, maxRange, laserData[i].angle));
+			}
+			angle -= incAngle;
+		}
+	
+		laserDataArray.insert(std::make_pair(id, laserData));
 
 		// create and insert laser shape
 		if (false) // DRAW LASER
 		{
 			osg::ref_ptr<osg::Node> p = nullptr;
 			if(id == "laserSecurity")
-			{
 				p = viewer->addPolygon(*(laserDataCartArray[id]), osg::Vec4(0.,0.,1.,0.4));
-			}
 			else
-			{
 				p = viewer->addPolygon(*(laserDataCartArray[id]));
-			}
 			if (p != nullptr)
-			{
-				laser->osgNode->addChild(p);
-			}
+				laserValue.osgNode->addChild(p);
 		}
 	}
 }
@@ -219,23 +263,23 @@ void SpecificWorker::updateJoints(const float delta)
 			const float amount = fminf(fabsf(iter->endPos - angle), iter->endSpeed  *delta);
 			switch (iter->mode)
 			{
-			case JointMovement::FixedPosition:
-				ajoint->setAngle(iter->endPos);
-				break;
-			case JointMovement::TargetPosition:
-				if (iter->endPos > angle)
-					ajoint->setAngle(angle + amount);
-				else if (iter->endPos < angle)
-					ajoint->setAngle(angle - amount);
-				break;
-			case JointMovement::TargetSpeed:
-				ajoint->setAngle(angle + iter->endSpeed  *delta);
-				break;
-			default:
-				break;
+				case JointMovement::FixedPosition:
+					ajoint->setAngle(iter->endPos);
+					break;
+				case JointMovement::TargetPosition:
+					if (iter->endPos > angle)
+						ajoint->setAngle(angle + amount);
+					else if (iter->endPos < angle)
+						ajoint->setAngle(angle - amount);
+					break;
+				case JointMovement::TargetSpeed:
+					ajoint->setAngle(angle + iter->endSpeed  *delta);
+					break;
+				default:
+					break;
 			}
 		}
-		else if ((pjoint = dynamic_cast<InnerModelPrismaticJoint*>(node)) != NULL)
+		else if ((pjoint = dynamic_cast<InnerModelPrismaticJoint*>(node)) != nullptr)
 		{
 			pjoint->setPosition(iter->endPos);
 		}
@@ -259,7 +303,7 @@ void SpecificWorker::updateTouchSensors()
 }
 
 // ------------------------------------------------------------------------------------------------
-// NO DEBERIAN USARSE PORQUE VIOLAN LA LOGICA DEL MUTEX
+// NO DEBERIAN USARSE PORQUE VIOLAN LA LOGICA DEL MUTEX YA QUE NO GRANTIZAN QUE SE DEVUELVA EL NODO DESPUES DE CERRAR EL MUTEX
 // ------------------------------------------------------------------------------------------------
 
 
@@ -283,71 +327,69 @@ std::shared_ptr<InnerModelViewer> SpecificWorker::getInnerModelViewer()
 	return imv;
 }
 
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Refills laserData with new values
-RoboCompLaser::TLaserData SpecificWorker::LASER_createLaserData(const IMVLaser &laser)
-{
-	guard gl(innerModel->mutex);
-  // 		printf("osg threads running... %d\n", viewer->areThreadsRunning());
-	static RoboCompLaser::TLaserData laserData;
-	int measures = laser.laserNode->measures;
-	std::string id = laser.laserNode->id.toStdString();
-	float iniAngle = -laser.laserNode->angle/2;
-	float finAngle = laser.laserNode->angle/2;
-	float_t maxRange = laser.laserNode->max;
-	laserData.resize(measures);
-
-	double angle = finAngle;  //variable to iterate angle increments
-	
-	//El punto inicial es el origen del láser
-	auto laserNode = innerModel->getNode<InnerModelLaser>(id);
-	const osg::Vec3 P = QVecToOSGVec(laserNode->laserTo(std::string("root"), 0, 0));
-	
-	const float incAngle = (fabs(iniAngle)+fabs(finAngle)) / (float)measures;
-	osg::Vec3 Q,R;
-
-	for (int i=0 ; i<measures; i++)
-	{
-		laserData[i].angle = angle;
-		laserData[i].dist = maxRange;
-		
-		//laserDataCartArray[id]->operator[](i) = QVecToOSGVec(QVec::vec3(maxRange*sin(angle), 0, maxRange*cos(angle)));
-		
-		//Calculamos el punto destino
-		Q = QVecToOSGVec(laserNode->laserTo(std::string("root"), maxRange, angle));
-		//Creamos el segmento de interseccion
-		osg::ref_ptr<osgUtil::LineSegmentIntersector> intersector = new osgUtil::LineSegmentIntersector(osgUtil::Intersector::MODEL, P, Q);
-		osgUtil::IntersectionVisitor visitor(intersector.get());
-
-		/// Pasando el visitor al root
-		viewer->getRootGroup()->accept(visitor);
-
-		if (intersector->containsIntersections() and id!="laserSecurity")
-		{
-			osgUtil::LineSegmentIntersector::Intersection result = *(intersector->getIntersections().begin());
-			R = result.getWorldIntersectPoint(); // in world space
-
-			R.x() = R.x() - P.x();
-			R.y() = R.y() - P.y();
-			R.z() = R.z() - P.z();
-			const float dist = sqrt(R.x() *R.x() + R.y() *R.y() + R.z() *R.z());
-
-			if (dist <= maxRange)
-			{
-				laserData[i].dist = dist;//*1000.;
-				laserDataCartArray[id]->operator[](i) = QVecToOSGVec(laserNode->laserTo(id, dist, laserData[i].angle));
-			}
-		}
-		else
-		{
-			laserDataCartArray[id]->operator[](i) = QVecToOSGVec(laserNode->laserTo(id, maxRange, laserData[i].angle));
-		}
-		angle -= incAngle;
-	}
-	return laserData;
-}
+// RoboCompLaser::TLaserData SpecificWorker::LASER_createLaserData(const IMVLaser &laser)
+// {
+//   // 		printf("osg threads running... %d\n", viewer->areThreadsRunning());
+// 	static RoboCompLaser::TLaserData laserData;
+// 	int measures = laser.laserNode->measures;
+// 	std::string id = laser.laserNode->id.toStdString();
+// 	float iniAngle = -laser.laserNode->angle/2;
+// 	float finAngle = laser.laserNode->angle/2;
+// 	float_t maxRange = laser.laserNode->max;
+// 	laserData.resize(measures);
+// 
+// 	double angle = finAngle;  //variable to iterate angle increments
+// 	
+// 	//El punto inicial es el origen del láser
+// 	auto laserNode = innerModel->getNode<InnerModelLaser>(id);
+// 	const osg::Vec3 P = QVecToOSGVec(laserNode->laserTo(std::string("root"), 0, 0));
+// 	
+// 	const float incAngle = (fabs(iniAngle)+fabs(finAngle)) / (float)measures;
+// 	osg::Vec3 Q,R;
+// 
+// 	for (int i=0 ; i<measures; i++)
+// 	{
+// 		laserData[i].angle = angle;
+// 		laserData[i].dist = maxRange;
+// 		
+// 		//laserDataCartArray[id]->operator[](i) = QVecToOSGVec(QVec::vec3(maxRange*sin(angle), 0, maxRange*cos(angle)));
+// 		
+// 		//Calculamos el punto destino
+// 		Q = QVecToOSGVec(laserNode->laserTo(std::string("root"), maxRange, angle));
+// 		//Creamos el segmento de interseccion
+// 		osg::ref_ptr<osgUtil::LineSegmentIntersector> intersector = new osgUtil::LineSegmentIntersector(osgUtil::Intersector::MODEL, P, Q);
+// 		osgUtil::IntersectionVisitor visitor(intersector.get());
+// 
+// 		/// Pasando el visitor al root
+// 		viewer->getRootGroup()->accept(visitor);
+// 
+// 		if (intersector->containsIntersections() and id!="laserSecurity")
+// 		{
+// 			osgUtil::LineSegmentIntersector::Intersection result = *(intersector->getIntersections().begin());
+// 			R = result.getWorldIntersectPoint(); // in world space
+// 
+// 			R.x() = R.x() - P.x();
+// 			R.y() = R.y() - P.y();
+// 			R.z() = R.z() - P.z();
+// 			const float dist = sqrt(R.x() *R.x() + R.y() *R.y() + R.z() *R.z());
+// 
+// 			if (dist <= maxRange)
+// 			{
+// 				laserData[i].dist = dist;//*1000.;
+// 				laserDataCartArray[id]->operator[](i) = QVecToOSGVec(laserNode->laserTo(id, dist, laserData[i].angle));
+// 			}
+// 		}
+// 		else
+// 		{
+// 			laserDataCartArray[id]->operator[](i) = QVecToOSGVec(laserNode->laserTo(id, maxRange, laserData[i].angle));
+// 		}
+// 		angle -= incAngle;
+// 	}
+// 	return laserData;
+// }
 
 /*
 
