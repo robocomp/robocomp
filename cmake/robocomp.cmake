@@ -78,7 +78,7 @@ MACRO( ROBOCOMP_WRAP_ICE )
         MESSAGE(STATUS "Adding rule to generate ${input_file}.cpp and ${input_file}.h from ${SPATH}/${input_file}.ice  (${SLICECPP_PATH}slice2cpp)" )
         ADD_CUSTOM_COMMAND (
           OUTPUT ${input_file}.cpp ${input_file}.h
-          COMMAND ${SLICECPP_PATH}slice2cpp -I${RoboComp_INTERFACES_DIR} ${ADDITIONAL_SLICE_INCLUDE_PATH} -I. ${SPATH}/${input_file}.ice --output-dir .
+          COMMAND ${SLICECPP_PATH}slice2cpp --underscore -I${RoboComp_INTERFACES_DIR} ${ADDITIONAL_SLICE_INCLUDE_PATH} -I. ${SPATH}/${input_file}.ice --output-dir .
           DEPENDS ${SPATH}/${input_file}.ice
           COMMENT "Generating ${input_file}.cpp and ${input_file}.h from ${input_file}.ice"
         )
