@@ -65,10 +65,8 @@ SET ( SOURCES
   $ENV{ROBOCOMP}/classes/qlog/qlog.cpp
   main.cpp
   genericmonitor.cpp
-  specificmonitor.cpp
   commonbehaviorI.cpp
   genericworker.cpp
-  specificworker.cpp
 [[[cog
 for ima in component['implements']:
 	if type(ima) == str:
