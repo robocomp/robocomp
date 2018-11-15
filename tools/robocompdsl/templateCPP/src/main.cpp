@@ -36,32 +36,44 @@ REQUIRE_STR = """
 
 SUBSCRIBESTO_STR = """
 <TABHERE><TABHERE>// Server adapter creation and publication
-<TABHERE><TABHERE>if (not GenericMonitor::configGetString(communicator(), prefix, "<NORMAL>Topic.Endpoints", tmp, ""))
-<TABHERE><TABHERE>{
-<TABHERE><TABHERE><TABHERE>cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy <NORMAL>Proxy";
-<TABHERE><TABHERE>}
-<TABHERE><TABHERE>Ice::ObjectAdapterPtr <NORMAL>_adapter = communicator()->createObjectAdapterWithEndpoints("<LOWER>", tmp);
-<TABHERE><TABHERE><NORMAL>Ptr <LOWER>I_ = new <NORMAL>I(worker);
-<TABHERE><TABHERE>Ice::ObjectPrx <PROXYNAME> = <NORMAL>_adapter->addWithUUID(<LOWER>I_)->ice_oneway();
 <TABHERE><TABHERE>IceStorm::TopicPrx <LOWER>_topic;
-<TABHERE><TABHERE>if(!<LOWER>_topic){
-<TABHERE><TABHERE>try {
-<TABHERE><TABHERE><TABHERE><LOWER>_topic = topicManager->create("<NORMAL>");
-<TABHERE><TABHERE>}
-<TABHERE><TABHERE>catch (const IceStorm::TopicExists&) {
-<TABHERE><TABHERE>//Another client created the topic
-<TABHERE><TABHERE>try{
-<TABHERE><TABHERE><TABHERE><LOWER>_topic = topicManager->retrieve("<NORMAL>");
+<TABHERE><TABHERE>Ice::ObjectPrx <PROXYNAME>;
+<TABHERE><TABHERE>try
+<TABHERE><TABHERE>{
+<TABHERE><TABHERE><TABHERE>if (not GenericMonitor::configGetString(communicator(), prefix, "<NORMAL>Topic.Endpoints", tmp, ""))
+<TABHERE><TABHERE><TABHERE>{
+<TABHERE><TABHERE><TABHERE><TABHERE>cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy <NORMAL>Proxy";
+<TABHERE><TABHERE><TABHERE>}
+<TABHERE><TABHERE><TABHERE>Ice::ObjectAdapterPtr <NORMAL>_adapter = communicator()->createObjectAdapterWithEndpoints("<LOWER>", tmp);
+<TABHERE><TABHERE><TABHERE><NORMAL>Ptr <LOWER>I_ = new <NORMAL>I(worker);
+<TABHERE><TABHERE><TABHERE>Ice::ObjectPrx <PROXYNAME> = <NORMAL>_adapter->addWithUUID(<LOWER>I_)->ice_oneway();
+<TABHERE><TABHERE><TABHERE>if(!<LOWER>_topic)
+<TABHERE><TABHERE><TABHERE>{
+<TABHERE><TABHERE><TABHERE><TABHERE>try {
+<TABHERE><TABHERE><TABHERE><TABHERE><TABHERE><LOWER>_topic = topicManager->create("<NORMAL>");
+<TABHERE><TABHERE><TABHERE><TABHERE>}
+<TABHERE><TABHERE><TABHERE><TABHERE>catch (const IceStorm::TopicExists&) {
+<TABHERE><TABHERE><TABHERE><TABHERE><TABHERE>//Another client created the topic
+<TABHERE><TABHERE><TABHERE><TABHERE><TABHERE>try{
+<TABHERE><TABHERE><TABHERE><TABHERE><TABHERE><TABHERE>cout << "[" << PROGRAM_NAME << "]: Probably other client already opened the topic. Trying to connect.\\n";
+<TABHERE><TABHERE><TABHERE><TABHERE><TABHERE><TABHERE><LOWER>_topic = topicManager->retrieve("<NORMAL>");
+<TABHERE><TABHERE><TABHERE><TABHERE><TABHERE>}
+<TABHERE><TABHERE><TABHERE><TABHERE><TABHERE>catch(const IceStorm::NoSuchTopic&)
+<TABHERE><TABHERE><TABHERE><TABHERE><TABHERE>{
+<TABHERE><TABHERE><TABHERE><TABHERE><TABHERE><TABHERE>cout << "[" << PROGRAM_NAME << "]: Topic doesn't exists and couldn't be created.\\n";
+<TABHERE><TABHERE><TABHERE><TABHERE><TABHERE><TABHERE>//Error. Topic does not exist
+<TABHERE><TABHERE><TABHERE><TABHERE><TABHERE>}
+<TABHERE><TABHERE><TABHERE><TABHERE>}
+<TABHERE><TABHERE><TABHERE><TABHERE>IceStorm::QoS qos;
+<TABHERE><TABHERE><TABHERE><TABHERE><LOWER>_topic->subscribeAndGetPublisher(qos, <PROXYNAME>);
+<TABHERE><TABHERE><TABHERE>}
+<TABHERE><TABHERE><TABHERE><NORMAL>_adapter->activate();
 <TABHERE><TABHERE>}
 <TABHERE><TABHERE>catch(const IceStorm::NoSuchTopic&)
 <TABHERE><TABHERE>{
+<TABHERE><TABHERE><TABHERE>cout << "[" << PROGRAM_NAME << "]: Error creating <NORMAL> topic.\\n";
 <TABHERE><TABHERE><TABHERE>//Error. Topic does not exist
-<TABHERE><TABHERE><TABHERE>}
 <TABHERE><TABHERE>}
-<TABHERE><TABHERE>IceStorm::QoS qos;
-<TABHERE><TABHERE><LOWER>_topic->subscribeAndGetPublisher(qos, <PROXYNAME>);
-<TABHERE><TABHERE>}
-<TABHERE><TABHERE><NORMAL>_adapter->activate();
 """
 
 PUBLISHES_STR = """
@@ -442,21 +454,31 @@ if component['usingROS'] == True:
 
 	try
 	{
-		// Server adapter creation and publication
-		if (not GenericMonitor::configGetString(communicator(), prefix, "CommonBehavior.Endpoints", tmp, ""))
-		{
-			cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy CommonBehavior\n";
+		try {
+			// Server adapter creation and publication
+			if (not GenericMonitor::configGetString(communicator(), prefix, "CommonBehavior.Endpoints", tmp, "")) {
+				cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy CommonBehavior\n";
+			}
+			Ice::ObjectAdapterPtr adapterCommonBehavior = communicator()->createObjectAdapterWithEndpoints("commonbehavior", tmp);
+			[[[cog
+				if component['language'].lower() == "cpp":
+					cog.outl("CommonBehaviorI *commonbehaviorI = new CommonBehaviorI(monitor);")
+				else:
+					cog.outl("auto commonbehaviorI = std::make_shared<CommonBehaviorI>(monitor);")
+			]]]
+			[[[end]]]
+			adapterCommonBehavior->add(commonbehaviorI, Ice::stringToIdentity("commonbehavior"));
+			adapterCommonBehavior->activate();
 		}
-		Ice::ObjectAdapterPtr adapterCommonBehavior = communicator()->createObjectAdapterWithEndpoints("commonbehavior", tmp);
-		[[[cog
-			if component['language'].lower() == "cpp":
-				cog.outl("CommonBehaviorI *commonbehaviorI = new CommonBehaviorI(monitor);")
-			else:
-				cog.outl("auto commonbehaviorI = std::make_shared<CommonBehaviorI>(monitor);")
-		]]]
-		[[[end]]]
-		adapterCommonBehavior->add(commonbehaviorI, Ice::stringToIdentity("commonbehavior"));
-		adapterCommonBehavior->activate();
+		catch(const Ice::Exception& ex)
+		{
+			status = EXIT_FAILURE;
+
+			cout << "[" << PROGRAM_NAME << "]: Exception raised while creating CommonBehavior adapter: " << endl;
+			cout << ex;
+
+		}
+
 
 [[[cog
 for ima in component['implements']:
@@ -490,10 +512,10 @@ for name, num in getNameNumber(component['subscribesTo']):
 
 		// User defined QtGui elements ( main window, dialogs, etc )
 
-#ifdef USE_QTGUI
-		//ignoreInterrupt(); // Uncomment if you want the component to ignore console SIGINT signal (ctrl+c).
-		a.setQuitOnLastWindowClosed( true );
-#endif
+		#ifdef USE_QTGUI
+			//ignoreInterrupt(); // Uncomment if you want the component to ignore console SIGINT signal (ctrl+c).
+			a.setQuitOnLastWindowClosed( true );
+		#endif
 		// Run QT Application Event Loop
 		a.exec();
 
@@ -503,8 +525,15 @@ for sub in component['subscribesTo']:
 	while type(nname) != type(''):
 		nname = sub[0]
 	if communicationIsIce(sub):
-		cog.outl("<TABHERE><TABHERE>std::cout << \"Unsubscribing topic: "+nname.lower()+" \" <<std::endl;")
-		cog.outl("<TABHERE><TABHERE>"+ nname.lower() + "_topic->unsubscribe( "+ nname.lower() +" );" )
+		cog.outl("<TABHERE><TABHERE>try")
+		cog.outl("<TABHERE><TABHERE>{")
+		cog.outl("<TABHERE><TABHERE><TABHERE>std::cout << \"Unsubscribing topic: "+nname.lower()+" \" <<std::endl;")
+		cog.outl("<TABHERE><TABHERE><TABHERE>"+ nname.lower() + "_topic->unsubscribe( "+ nname.lower() +" );" )
+		cog.outl("<TABHERE><TABHERE>}")
+		cog.outl("<TABHERE><TABHERE>catch(const Ice::Exception& ex)")
+		cog.outl("<TABHERE><TABHERE>{")
+		cog.outl("<TABHERE><TABHERE><TABHERE>std::cout << \"ERROR Unsubscribing topic: "+nname.lower()+" \" <<std::endl;")
+		cog.outl("<TABHERE><TABHERE>}")
 
 ]]]
 [[[end]]]
@@ -518,11 +547,11 @@ for sub in component['subscribesTo']:
 		cout << "[" << PROGRAM_NAME << "]: Exception raised on main thread: " << endl;
 		cout << ex;
 
-#ifdef USE_QTGUI
+	}
+	#ifdef USE_QTGUI
 		a.quit();
-#endif
+	#endif
 
-}
 	status = EXIT_SUCCESS;
 	monitor->terminate();
 	monitor->wait();
