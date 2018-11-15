@@ -74,7 +74,6 @@
 #include "innermodelmanagerI.h"
 #include "config.h"
 #include "genericworker.h"
-#include "servers.h"
 #include "specificworker.h"
 #include <RCISMousePicker.h> 
 #include "ui_guiDlg.h"
