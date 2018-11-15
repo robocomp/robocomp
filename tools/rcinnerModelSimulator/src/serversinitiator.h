@@ -20,7 +20,6 @@
 
 #include <innermodel/innermodel.h>
 #include <innermodel/innermodelviewer.h>
-#include "servers.h"
 #include "omnirobotserver.h"
 #include "differentialrobotserver.h"
 #include "heterocontainer.h"

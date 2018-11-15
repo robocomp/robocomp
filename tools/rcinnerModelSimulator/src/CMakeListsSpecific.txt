@@ -2,7 +2,6 @@
 LIST ( APPEND SOURCES
 	specificworker.cpp
 	specificmonitor.cpp
-	servers.cpp
 	pickhandler.cpp
 	serversinitiator.cpp
 	omnirobotserver.cpp

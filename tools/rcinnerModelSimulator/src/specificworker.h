@@ -49,7 +49,6 @@
 #include <osgviewer/osgview.h>
 
 #include "genericworker.h"
-#include "servers.h"
 #include "pickhandler.h"
 #include "serversinitiator.h"
 #include <fps/fps.h>
