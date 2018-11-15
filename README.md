@@ -41,10 +41,9 @@ It is recommendable to install the following packages::
 
     sudo apt-get install yakuake qt4-designer
 
-Note: This project uses python2, so make sure that you set python2 as deafult if you also have python3 installed on your system. You can do so by adding this line into your ~/.bashrc file and then save it:
+Note: RoboComp uses python2 for now, so make sure that you set python2 as your deafult choide if you also have python3 installed on your system. You can do so by adding this line into your ~/.bashrc file and then save it:
 
     alias python = python2
-
 
 ## Installation itself
 
@@ -150,7 +149,7 @@ If you don't have a JoyStick install this component,
     
 and use the arrow keys to navigate the robot, the space bar to stop it an 'q' to exit.
 
-Note: You must have your simulator running in a terminal then only you can run a component in another terminal. You will get an error message if you run the above component without having your simulator already running.
+Note: You must have your simulator running in a terminal and only then you can run a component in another terminal. You will get an error message if you run the above component without having RCIS already running.
 
 
 ---------------------------------------------------------------------
