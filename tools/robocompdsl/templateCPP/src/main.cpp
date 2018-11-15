@@ -28,7 +28,7 @@ REQUIRE_STR = """
 <TABHERE>}
 <TABHERE>catch(const Ice::Exception& ex)
 <TABHERE>{
-<TABHERE><TABHERE>cout << "[" << PROGRAM_NAME << "]: Exception: " << ex;
+<TABHERE><TABHERE>cout << "[" << PROGRAM_NAME << "]: Exception creating proxy <NORMAL><PROXYNUMBER>: " << ex;
 <TABHERE><TABHERE>return EXIT_FAILURE;
 <TABHERE>}
 <TABHERE>rInfo("<NORMAL>Proxy<PROXYNUMBER> initialized Ok!");
@@ -61,8 +61,8 @@ SUBSCRIBESTO_STR = """
 <TABHERE><TABHERE><TABHERE><TABHERE><TABHERE>}
 <TABHERE><TABHERE><TABHERE><TABHERE><TABHERE>catch(const IceStorm::NoSuchTopic&)
 <TABHERE><TABHERE><TABHERE><TABHERE><TABHERE>{
-<TABHERE><TABHERE><TABHERE><TABHERE><TABHERE><TABHERE>cout << "[" << PROGRAM_NAME << "]: Topic doesn't exists and couldn't be created.\\n";
 <TABHERE><TABHERE><TABHERE><TABHERE><TABHERE><TABHERE>//Error. Topic does not exist
+<TABHERE><TABHERE><TABHERE><TABHERE><TABHERE><TABHERE>cout << "[" << PROGRAM_NAME << "]: Topic doesn't exists and couldn't be created.\\n";
 <TABHERE><TABHERE><TABHERE><TABHERE><TABHERE>}
 <TABHERE><TABHERE><TABHERE><TABHERE>}
 <TABHERE><TABHERE><TABHERE><TABHERE>IceStorm::QoS qos;
@@ -87,12 +87,14 @@ PUBLISHES_STR = """
 <TABHERE><TABHERE>}
 <TABHERE><TABHERE>catch (const IceStorm::NoSuchTopic&)
 <TABHERE><TABHERE>{
+<TABHERE><TABHERE><TABHERE>cout << "[" << PROGRAM_NAME << "]: ERROR retrieving <NORMAL> topic. \\n";
 <TABHERE><TABHERE><TABHERE>try
 <TABHERE><TABHERE><TABHERE>{
 <TABHERE><TABHERE><TABHERE><TABHERE><LOWER>_topic = topicManager->create("<NORMAL>");
 <TABHERE><TABHERE><TABHERE>}
 <TABHERE><TABHERE><TABHERE>catch (const IceStorm::TopicExists&){
 <TABHERE><TABHERE><TABHERE><TABHERE>// Another client created the topic.
+<TABHERE><TABHERE><TABHERE><TABHERE>cout << "[" << PROGRAM_NAME << "]: ERROR publishing the <NORMAL> topic. It's possible that other component have created\\n";
 <TABHERE><TABHERE><TABHERE>}
 <TABHERE><TABHERE>}
 <TABHERE>}
@@ -102,16 +104,22 @@ PUBLISHES_STR = """
 """
 
 IMPLEMENTS_STR = """
-<TABHERE><TABHERE>// Server adapter creation and publication
-<TABHERE><TABHERE>if (not GenericMonitor::configGetString(communicator(), prefix, "<NORMAL>.Endpoints", tmp, ""))
+<TABHERE><TABHERE>try
 <TABHERE><TABHERE>{
-<TABHERE><TABHERE><TABHERE>cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy <NORMAL>";
-<TABHERE><TABHERE>}
-<TABHERE><TABHERE>Ice::ObjectAdapterPtr adapter<NORMAL> = communicator()->createObjectAdapterWithEndpoints("<NORMAL>", tmp);
-<TABHERE><TABHERE><NORMAL>I *<LOWER> = new <NORMAL>I(worker);
-<TABHERE><TABHERE>adapter<NORMAL>->add(<LOWER>, communicator()->stringToIdentity("<LOWER>"));
-<TABHERE><TABHERE>adapter<NORMAL>->activate();
-<TABHERE><TABHERE>cout << "[" << PROGRAM_NAME << "]: <NORMAL> adapter created in port " << tmp << endl;
+<TABHERE><TABHERE><TABHERE>// Server adapter creation and publication
+<TABHERE><TABHERE><TABHERE>if (not GenericMonitor::configGetString(communicator(), prefix, "<NORMAL>.Endpoints", tmp, ""))
+<TABHERE><TABHERE><TABHERE>{
+<TABHERE><TABHERE><TABHERE><TABHERE>cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy <NORMAL>";
+<TABHERE><TABHERE><TABHERE>}
+<TABHERE><TABHERE><TABHERE>Ice::ObjectAdapterPtr adapter<NORMAL> = communicator()->createObjectAdapterWithEndpoints("<NORMAL>", tmp);
+<TABHERE><TABHERE><TABHERE><NORMAL>I *<LOWER> = new <NORMAL>I(worker);
+<TABHERE><TABHERE><TABHERE>adapter<NORMAL>->add(<LOWER>, communicator()->stringToIdentity("<LOWER>"));
+<TABHERE><TABHERE><TABHERE>adapter<NORMAL>->activate();
+<TABHERE><TABHERE><TABHERE>cout << "[" << PROGRAM_NAME << "]: <NORMAL> adapter created in port " << tmp << endl;
+<TABHERE><TABHERE><TABHERE>}
+<TABHERE><TABHERE><TABHERE>catch (const IceStorm::TopicExists&){
+<TABHERE><TABHERE><TABHERE><TABHERE>cout << "[" << PROGRAM_NAME << "]: ERROR creating or activating adapter for <NORMAL>\\n";
+<TABHERE><TABHERE><TABHERE>}
 """
 
 ]]]
