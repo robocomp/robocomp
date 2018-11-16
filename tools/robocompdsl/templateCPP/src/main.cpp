@@ -111,8 +111,8 @@ IMPLEMENTS_STR = """
 <TABHERE><TABHERE><TABHERE><TABHERE>cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy <NORMAL>";
 <TABHERE><TABHERE><TABHERE>}
 <TABHERE><TABHERE><TABHERE>Ice::ObjectAdapterPtr adapter<NORMAL> = communicator()->createObjectAdapterWithEndpoints("<NORMAL>", tmp);
-<TABHERE><TABHERE><C++_VERSION>
-<TABHERE><TABHERE>adapter<NORMAL>->add(<LOWER>, Ice::stringToIdentity("<LOWER>"));
+<TABHERE><TABHERE><TABHERE><C++_VERSION>
+<TABHERE><TABHERE><TABHERE>adapter<NORMAL>->add(<LOWER>, Ice::stringToIdentity("<LOWER>"));
 <TABHERE><TABHERE><TABHERE>adapter<NORMAL>->activate();
 <TABHERE><TABHERE><TABHERE>cout << "[" << PROGRAM_NAME << "]: <NORMAL> adapter created in port " << tmp << endl;
 <TABHERE><TABHERE><TABHERE>}
@@ -490,7 +490,7 @@ for ima in component['implements']:
 		if component['language'].lower() == "cpp":
 			cpp = "<NORMAL>I *<LOWER> = new <NORMAL>I(worker);"
 		else:
-			cpp = "auto <LOWER> = std::make_shared<NORMAL>(worker);"
+			cpp = "auto <LOWER> = std::make_shared<<NORMAL>I>(worker);"
 		w = IMPLEMENTS_STR.replace("<C++_VERSION>", cpp).replace("<NORMAL>", im).replace("<LOWER>", im.lower())
 		cog.outl(w)
 ]]]
