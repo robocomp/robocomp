@@ -177,13 +177,13 @@ void SpecificWorker::updateLasers()
 		}
 
 		// create and insert synthetic laser data
-		RoboCompLaser::TLaserData laserData;
+		static RoboCompLaser::TLaserData laserData;
 		const int measures = laserValue.laserNode->measures;
 		const float iniAngle = -laserValue.laserNode->angle/2;
 		const float finAngle = laserValue.laserNode->angle/2;
 		const float_t maxRange = laserValue.laserNode->max;
-		laserData.resize(measures);
 		double angle = finAngle;  //variable to iterate angle increments
+		laserData.resize(measures);
 		
 		//El punto inicial es el origen del láser
 		auto laserNode = innerModel->getNode<InnerModelLaser>(id);
@@ -196,7 +196,7 @@ void SpecificWorker::updateLasers()
 			laserData[i].angle = angle;
 			laserData[i].dist = maxRange;
 			
-			//laserDataCartArray[id]->operator[](i) = QVecToOSGVec(QVec::vec3(maxRange*sin(angle), 0, maxRange*cos(angle)));
+			laserDataCartArray[id]->operator[](i) = QVecToOSGVec(QVec::vec3(maxRange*sin(angle), 0, maxRange*cos(angle)));
 			
 			//Calculamos el punto destino
 			Q = QVecToOSGVec(laserNode->laserTo(std::string("root"), maxRange, angle));
@@ -230,11 +230,10 @@ void SpecificWorker::updateLasers()
 			}
 			angle -= incAngle;
 		}
-	
-		laserDataArray.insert(std::make_pair(id, laserData));
+		laserDataArray.insert_or_assign(id, laserData);
 
 		// create and insert laser shape
-		if (false) // DRAW LASER
+		if (true) // DRAW LASER
 		{
 			osg::ref_ptr<osg::Node> p = nullptr;
 			if(id == "laserSecurity")
@@ -291,13 +290,13 @@ void SpecificWorker::updateTouchSensors()
 	//std::map<uint32_t, TouchSensorServer>::iterator touchIt;
 	//for (touchIt = servers.touch_servers.begin(); touchIt != servers.touch_servers.end(); touchIt++)
 	for(auto &[k, v] : servers.hMaps.getMap<TouchSensorServer>())	
-		for(auto s : v.sensors)
+		for(auto &s : v.sensors)
 		//for (uint32_t sss=0; sss<touchIt->second.sensors.size(); sss++)
 		{
 			// 	TouchSensorI *interface;
 			// touchIt->interface->sensorMap[touchIt->sensors[sss].id].value = XXX
 			//InnerModelTouchSensor *sensorr = touchIt->second.sensors[sss];
-			auto idd = s->id.toStdString();
+			//auto idd = s->id.toStdString();
 			//std::string idd = sensorr->id.toStdString();
 		}
 }
@@ -327,78 +326,7 @@ std::shared_ptr<InnerModelViewer> SpecificWorker::getInnerModelViewer()
 	return imv;
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// Refills laserData with new values
-// RoboCompLaser::TLaserData SpecificWorker::LASER_createLaserData(const IMVLaser &laser)
-// {
-//   // 		printf("osg threads running... %d\n", viewer->areThreadsRunning());
-// 	static RoboCompLaser::TLaserData laserData;
-// 	int measures = laser.laserNode->measures;
-// 	std::string id = laser.laserNode->id.toStdString();
-// 	float iniAngle = -laser.laserNode->angle/2;
-// 	float finAngle = laser.laserNode->angle/2;
-// 	float_t maxRange = laser.laserNode->max;
-// 	laserData.resize(measures);
-// 
-// 	double angle = finAngle;  //variable to iterate angle increments
-// 	
-// 	//El punto inicial es el origen del láser
-// 	auto laserNode = innerModel->getNode<InnerModelLaser>(id);
-// 	const osg::Vec3 P = QVecToOSGVec(laserNode->laserTo(std::string("root"), 0, 0));
-// 	
-// 	const float incAngle = (fabs(iniAngle)+fabs(finAngle)) / (float)measures;
-// 	osg::Vec3 Q,R;
-// 
-// 	for (int i=0 ; i<measures; i++)
-// 	{
-// 		laserData[i].angle = angle;
-// 		laserData[i].dist = maxRange;
-// 		
-// 		//laserDataCartArray[id]->operator[](i) = QVecToOSGVec(QVec::vec3(maxRange*sin(angle), 0, maxRange*cos(angle)));
-// 		
-// 		//Calculamos el punto destino
-// 		Q = QVecToOSGVec(laserNode->laserTo(std::string("root"), maxRange, angle));
-// 		//Creamos el segmento de interseccion
-// 		osg::ref_ptr<osgUtil::LineSegmentIntersector> intersector = new osgUtil::LineSegmentIntersector(osgUtil::Intersector::MODEL, P, Q);
-// 		osgUtil::IntersectionVisitor visitor(intersector.get());
-// 
-// 		/// Pasando el visitor al root
-// 		viewer->getRootGroup()->accept(visitor);
-// 
-// 		if (intersector->containsIntersections() and id!="laserSecurity")
-// 		{
-// 			osgUtil::LineSegmentIntersector::Intersection result = *(intersector->getIntersections().begin());
-// 			R = result.getWorldIntersectPoint(); // in world space
-// 
-// 			R.x() = R.x() - P.x();
-// 			R.y() = R.y() - P.y();
-// 			R.z() = R.z() - P.z();
-// 			const float dist = sqrt(R.x() *R.x() + R.y() *R.y() + R.z() *R.z());
-// 
-// 			if (dist <= maxRange)
-// 			{
-// 				laserData[i].dist = dist;//*1000.;
-// 				laserDataCartArray[id]->operator[](i) = QVecToOSGVec(laserNode->laserTo(id, dist, laserData[i].angle));
-// 			}
-// 		}
-// 		else
-// 		{
-// 			laserDataCartArray[id]->operator[](i) = QVecToOSGVec(laserNode->laserTo(id, maxRange, laserData[i].angle));
-// 		}
-// 		angle -= incAngle;
-// 	}
-// 	return laserData;
-// }
-
-/*
-
-// Refills touch sensor with new values
-RoboCompTouchSensor::SensorMap TOUCH_createTouchData(const IMVLaser &laser)
-{
-}
-
-*/
 ////////////////////////////////////////////////////////////////////////////////////////////////
 ///// UTILITIES
 //////////////////////////////////////////////////////////////////////////////////////////////////
