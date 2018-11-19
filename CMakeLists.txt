@@ -59,27 +59,35 @@ else (PYTHON_BINDINGS_SUPPORT)
 	MESSAGE(STATUS "PYTHON BINDINGS:        NO")
 endif (PYTHON_BINDINGS_SUPPORT)
 
-
-
 #Find Doxygen and html help compiler if any
 find_package(Doxygen)
 if(DOXYGEN_FOUND)
   find_package(HTMLHelp)
 endif(DOXYGEN_FOUND)
 
-SUBDIRS(
-	libs
-	tools/robocompdsl
-	tools/rcinnerModelSimulator
-	tools/rcmanager
-	tools/rcmanagerSimple
-	tools/rclogger
-	tools/rcmonitor
-	tools/rcremote
-	tools/rcnode
-	tools/buildTools
-	tools/rcportchecker
-)
+# Compiling options
+SET(compile_dirs "")
+OPTION(CORE "Compile RoboComp Core" ON)
+OPTION(TOOLS "Compile RoboComp Tools" ON)
+if (CORE)
+	SET(compile_dirs ${compile_dirs} "libs")
+endif(CORE)
+
+if (TOOLS)
+	SET(compile_dirs ${compile_dirs}
+		"tools/robocompdsl"
+#		"tools/rcinnerModelSimulator"
+		"tools/rcmanager"
+		"tools/rcmanagerSimple"
+		"tools/rclogger"
+		"tools/rcmonitor"
+		"tools/rcremote"
+		"tools/rcnode"
+		"tools/buildTools"
+		"tools/rcportchecker")
+endif(TOOLS)
+message("compile " ${compile_dirs})
+SUBDIRS(${compile_dirs})
 
 # Install rules necessary to allow compiling components without the robocomp's source code
 SET (LD_COMMAND "\"grep -q -F '/opt/robocomp/lib' /etc/ld.so.conf || echo '/opt/robocomp/lib' >> /etc/ld.so.conf && ldconfig\"")
