@@ -191,6 +191,7 @@ if 'subscribesTo' in component:
 
 public slots:
 	void compute();
+	void initialize(int period);
 
 private:
 	InnerModel *innerModel;

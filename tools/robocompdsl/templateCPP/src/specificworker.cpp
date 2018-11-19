@@ -189,7 +189,7 @@ if component['innermodelviewer']:
 [[[end]]]
 
 
-	timer.start(Period);
+	
 
 [[[cog
 try:
@@ -212,6 +212,13 @@ except:
 [[[end]]]
 
 	return true;
+}
+
+void SpecificWorker::initialize(int period)
+{
+	std::cout << "Initialize worker" << std::endl;
+	this->Period = period;
+	timer.start(Period);
 }
 
 void SpecificWorker::compute()

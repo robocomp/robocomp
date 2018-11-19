@@ -77,7 +77,7 @@ endif(CORE)
 if (TOOLS)
 	SET(compile_dirs ${compile_dirs}
 		"tools/robocompdsl"
-#		"tools/rcinnerModelSimulator"
+		"tools/rcinnerModelSimulator"
 		"tools/rcmanager"
 		"tools/rcmanagerSimple"
 		"tools/rclogger"
