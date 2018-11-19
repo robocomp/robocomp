@@ -33,7 +33,6 @@ LaserI::~LaserI()
 void LaserI::add (std::string _id)
 {
 	id = _id;
-	//laserNode = worker->innerModel->getLaser(id);
 	laserNode = worker->innerModel->getNode<InnerModelLaser>(QString::fromStdString(id));
 	laserConf.staticConf   =  1;
 	laserConf.maxMeasures  =  laserNode->measures;
@@ -79,7 +78,12 @@ TLaserData LaserI::getLaserAndBStateData ( RoboCompGenericBase::TBaseState& stat
 		
 		//if(worker->laserDataArray.contains(QString::fromStdString(id))) 
 		if(worker->laserDataArray.count(id)>0) 
+		{
+//  			for(auto &l : worker->laserDataArray[id])
+//  				qDebug() << l.dist << l.angle;
+//  			qDebug() << __FILE__ << __FUNCTION__ << ".........................................................................";
 			return worker->laserDataArray[id];
+		}
 		else 
 		{
 			RoboCompLaser::TLaserData l;
