@@ -77,6 +77,32 @@ If you have understood the above code and written the same in teh specificworker
   
 	}
 
+Now we need to tell the component where to find the DifferentialRobot and the Laser interfaces.
+
+```bash
+cd etc/config .
+gedit config
+```
+ 
+Change in the editor the port numbers located after *-p* 
+
+```bash
+CommonBehavior.Endpoints=tcp -p 11000
+# Proxies for required interfaces
+LaserProxy = laser:tcp -h localhost -p 10003
+DifferentialRobotProxy = differentialrobot:tcp -h localhost -p 10004
+Ice.Warn.Connections=0
+Ice.Trace.Network=0
+Ice.Trace.Protocol=0
+Ice.ACM.Client=10
+Ice.ACM.Server=10
+```
+
+Save and
+
+```bash
+cd ..
+```
 
 Now save the file and build the component again
 
