@@ -11,8 +11,8 @@ I will just run through the steps without much explanation as in detail explanat
 
 Editing your cdsl file, Importing DifferentialRobot and Laser.idsl
 
-	import "/robocomp/interfaces/IDSLs/Laser.idsl";
-	import "/robocomp/interfaces/IDSLs/DifferentialRobot.idsl";
+	import "Laser.idsl";
+	import "DifferentialRobot.idsl";
 	Component obstacle{
 		Communications{
 			requires DifferentialRobot, Laser;
