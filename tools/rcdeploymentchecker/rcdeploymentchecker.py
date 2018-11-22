@@ -30,7 +30,22 @@ import re
 import sys
 
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(os.path.join(CURRENT_DIR, "../rcportchecker"))
+ROBOCOMP = ''
+try:
+	ROBOCOMP = os.environ['ROBOCOMP']
+except:
+	default_robocomp_path = '/opt/robocomp'
+	print('ROBOCOMP environment variable not set! Trying default directory (%s)'%(default_robocomp_path))
+	if os.path.exists(default_robocomp_path) and os.path.isdir(default_robocomp_path):
+		if not os.listdir(default_robocomp_path):
+			print("Default Robocomp directory (%s) exists but it's empty. Exiting!"%(default_robocomp_path))
+			sys.exit()
+		else:
+			ROBOCOMP = default_robocomp_path
+	else:
+		print("Default Robocomp directory (%s) doesn't exists. Exiting!"%(default_robocomp_path))
+		sys.exit()
+sys.path.append(os.path.join(ROBOCOMP, "tools/rcportchecker"))
 from rcportchecker import RCPortChecker, BColors
 
 try:
@@ -283,7 +298,7 @@ def main():
 	# 					type=str)
 	# parser.add_argument('action', choices=('ports', 'interfaces'), help="Show the interfaces by name or by port")
 	parser.add_argument('path',
-						help="path to look for components config files recursively (default=\"~/robocomp/\")")
+						help="path to look for deployment file (xml of rcmanager tool)")
 	args = parser.parse_args()
 
 	rcdeplymentchecker = RCDeploymentChecker(args.verbose)
