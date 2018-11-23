@@ -29,6 +29,7 @@ import os
 import re
 import sys
 
+#DETECT THE ROBOCOMP INSTALLATION TO IMPORT RCPORTCHECKER CLASS
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 ROBOCOMP = ''
 try:
@@ -54,6 +55,7 @@ except ImportError:
 	import xml.etree.ElementTree as ET
 
 
+#PRINTING WITH COLORS
 class BColors:
 	HEADER = '\033[95m'
 	OKBLUE = '\033[94m'
@@ -88,14 +90,20 @@ class RCDeploymentChecker:
 	def parse_deployment_file(self, path):
 		if self.debug:
 			print("[+] Parsing %s" % path)
+		# Read the xml file
 		tree = ET.ElementTree(file=path)
 		root = tree.getroot()
+
+		# Check it's a rcmanager file
 		if root.tag != "rcmanager":
 			print("[!] It's not valid deployment file")
 			sys.exit()
+
+		# Look for nodes of xml file containing endpoints
 		for node in tree.iterfind('node'):
 			endpoint_string = node.attrib["endpoint"]
 			# print endpoint_string
+			#look for ip on the endpoint string
 			ip = re.findall(r'(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})', endpoint_string)
 			if "localhost" in endpoint_string.lower() or len(ip) == 0 or "127.0.0.1" in ip[0]:
 				if self.debug:
@@ -105,6 +113,8 @@ class RCDeploymentChecker:
 				if self.debug:
 					print("[+] Found REMOTE node: %s"%endpoint_string)
 				local = False
+
+			# Look for the upcommand strings
 			for upcommand in node.iterfind('upCommand'):
 				suspicious = False
 				upcommand_string = upcommand.attrib["command"]
@@ -112,41 +122,49 @@ class RCDeploymentChecker:
 					print("\t[+] Upcommand: %s"%upcommand_string)
 				upcommand_struct = self.parse_upcommand_line(upcommand_string)
 				if upcommand_struct is not None:
-					config_file_path = upcommand_struct["component_config"]
-					if config_file_path is not None and len(config_file_path) > 0:
-						if config_file_path[0] != "/":
-							if self.debug:
-								print("\t[?] Possible relative config file path? %s for endpoint %s" % (
-									upcommand_string, endpoint_string))
-							suspicious = True
-						if local:
-							if "/" in config_file_path:
-								filename = config_file_path.split("/")[-1]
-								name, file_extension = os.path.splitext(filename)
-								if name is not None and file_extension is not None:
-									if (("config" in name and file_extension == '') or (
-											".conf" in file_extension)) and "etc" in config_file_path:
-										self.add_to_checkeables(endpoint_string, config_file_path)
-									else:
-										pass
-							else:
+					if "component_config" in upcommand_struct:
+						config_file_path = upcommand_struct["component_config"]
+						if config_file_path is not None and len(config_file_path) > 0:
+							if config_file_path[0] != "/":
 								if self.debug:
-									print("\t[?] Config file path without \"/\"? upcommand=\"%s\" for endpoint %s" % (
+									print("\t"+BColors.WARNING + "[?]" + BColors.ENDC +" Possible relative config file path? %s for endpoint %s" % (
 										upcommand_string, endpoint_string))
 								suspicious = True
-						else:
-							self.add_to_remotes(endpoint_string, config_file_path)
+							if local:
+								if "/" in config_file_path:
+									filename = config_file_path.split("/")[-1]
+									name, file_extension = os.path.splitext(filename)
+									if name is not None and file_extension is not None:
+										if (("config" in name and file_extension == '') or (
+												".conf" in file_extension)) and "etc" in config_file_path:
+											self.add_to_checkeables(endpoint_string, config_file_path)
+										else:
+											pass
+								else:
+									if self.debug:
+										print("\t"+BColors.WARNING + "[?]" + BColors.ENDC +" Config file path without \"/\"? upcommand=\"%s\" for endpoint %s" % (
+											upcommand_string, endpoint_string))
+									suspicious = True
+							else:
+								self.add_to_remotes(endpoint_string, config_file_path)
 
-						if suspicious is True:
-							self.add_to_suspicious(endpoint_string, config_file_path)
+							if suspicious is True:
+								if self.debug:
+									print("\t"+BColors.WARNING + "[?]" + BColors.ENDC +" Weird config file name or not found at all %s for endpoint %s" % (
+										upcommand_string, endpoint_string))
+						else:
 							if self.debug:
-								print("\t[?] Weird config file name or not found at all %s for endpoint %s" % (
+								print("\t"+BColors.WARNING + "[?]" + BColors.ENDC +" No config file path? upcommand=\"%s\" for endpoint %s" % (
 									upcommand_string, endpoint_string))
+							suspicious = True
 					else:
 						if self.debug:
-							print("\t[?] No config file path? upcommand=\"%s\" for endpoint %s" % (
+							print("\t" + BColors.WARNING + "[?]" + BColors.ENDC + " No config file? \"%s\" upcommand for endpoint %s" % (
 								upcommand_string, endpoint_string))
 						suspicious = True
+
+					if suspicious:
+						self.add_to_suspicious(endpoint_string, config_file_path)
 
 					name = None
 					file_extension = None
@@ -163,6 +181,7 @@ class RCDeploymentChecker:
 			self.remote_interfaces[endpoint_string] = [config_file_path]
 
 
+	# Parse the upcommand line and return it as structured
 	def parse_upcommand_line(self, upcommand_string):
 		is_full_path = False
 		config_path = None
@@ -178,14 +197,9 @@ class RCDeploymentChecker:
 				upcommand["component_path"] = result.group(3)
 				upcommand["component_command"] = result.group(4)
 				upcommand["component_config"] = result.group(5)
-				if upcommand["component_config"] != None:
-					config_path_string = upcommand["component_config"]
-					if "--Ice.Config".lower() in config_path_string.lower():
-						if "=" in config_path_string:
-							upcommand["component_config"] = config_path_string.split("=")[-1]
-						else:
-							print("[!] Bad formatted string in upcommand. No '=' after --Ice.Config: %s"%(config_path_string))
-					upcommand["component_config"] = self.extract_upcommand_config_file_full_path(upcommand)
+				upcommand["component_config"] = self.extract_upcommand_config_file_full_path(upcommand)
+				upcommand["component_path"] = self.extract_upcommand_component_full_path(upcommand)
+				result.group(3)
 				return upcommand
 			else:
 				if self.debug:
@@ -193,6 +207,19 @@ class RCDeploymentChecker:
 				return None
 		elif upcommand_string.strip() == "":
 			return None
+		elif re.match(RExp.PATH, upcommand_string):
+			command_parts = upcommand_string.split(" ")
+			upcommand["rcremote"] = False
+			upcommand["machine"] = "localhost"
+			upcommand["component_name"] = command_parts[0].split("/")[-1]
+			upcommand["component_path"] = command_parts[0]
+			upcommand["component_command"] = command_parts[0]
+			if len(command_parts)>1:
+				upcommand["component_config"] = command_parts[1]
+				upcommand["component_config"] = self.extract_upcommand_config_file_full_path(upcommand)
+			upcommand["component_path"] = self.extract_upcommand_component_full_path(upcommand)
+			# print upcommand
+			return upcommand
 		else:
 			print "WTF!"
 			sys.exit()
@@ -203,16 +230,45 @@ class RCDeploymentChecker:
 			# 	print("\t[?] Config file path without \"/\"? upcommand=\"%s\" for endpoint %s" % (
 			# 		upcommand_string, endpoint_string))
 
-	def extract_upcommand_config_file_full_path(self, upcommand):
-		config_path = upcommand["component_config"]
-		full_path = ""
-		if len(config_path) > 0 and config_path[0] == '/':
-			return config_path
-		else:
-			if "etc" in config_path:
-				if len(upcommand["component_path"]) > 0:
-					full_path = os.path.join(upcommand["component_path"], config_path)
+	# def process_config_string(self, config_string):
+	# 	result = ""
+	# 	if config_string != None:
+	# 		config_path_string = config_string
+	# 		if "--Ice.Config".lower() in config_path_string.lower():
+	# 			if "=" in config_path_string:
+	# 				result = config_path_string.split("=")[-1]
+	# 			else:
+	# 				print("[!] Bad formatted string in upcommand. No '=' after --Ice.Config: %s" % (config_path_string))
+	# 		result = self.extract_upcommand_config_file_full_path(upcommand)
+	# 	return result
 
+	def extract_upcommand_config_file_full_path(self, upcommand):
+		full_path = upcommand["component_config"]
+		if full_path is None:
+			full_path = ''
+		if len(full_path) > 0:
+			if "--Ice.Config".lower() in full_path.lower():
+				if "=" in full_path:
+					full_path = full_path.split("=")[-1]
+			if "etc" in full_path:
+				if len(upcommand["component_path"]) > 0 and upcommand["component_path"][0] == '/':
+					full_path = os.path.join(upcommand["component_path"], full_path)
+		if len(upcommand["component_path"]) > 0 and upcommand["component_path"][0] == '/':
+			full_path = os.path.join(upcommand["component_path"], full_path)
+		return full_path
+
+	def extract_upcommand_component_full_path(self, upcommand):
+		full_path = upcommand["component_path"]
+		if len(full_path) == 0 or full_path[0] != "/":
+			if "component_config" in upcommand:
+				config_path = upcommand["component_config"]
+				if len(config_path) > 0 and config_path[0] == '/' and '/etc/' in config_path:
+					print re.sub(r'.*/etc/.*', '', config_path)
+					full_path = re.sub(r'/etc/.*', '', config_path)
+				else:
+					full_path = ''
+			else:
+				full_path = ''
 		return full_path
 
 	def print_local_interfaces_check(self):
@@ -235,7 +291,7 @@ class RCDeploymentChecker:
 						   endpoint_name))
 				elif result == 0:
 					config_port, _ = data
-					print("[!] WRONG PORT %s vs %s for endpoint %s in config file %s" % (
+					print(BColors.FAIL+"[!]"+BColors.ENDC+" WRONG PORT %s vs %s for endpoint %s in config file %s" % (
 						str(endpoint_port), str(config_port), endpoint, path))
 				elif result == 1:
 					if self.debug:
