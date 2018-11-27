@@ -388,7 +388,7 @@ for namea, num in getNameNumber(component['requires']):
 		w = REQUIRE_STR.replace("<C++_VERSION>", cpp).replace("<NORMAL>", name).replace("<LOWER>", name.lower()).replace("<PROXYNAME>", name.lower()+num).replace("<PROXYNUMBER>", num)
 		cog.outl(w)
 	if component['language'].lower() == "cpp":
-		cog.outl("<TABHERE>mprx[\""+name+"Proxy"+num+"\"] = (::IceProxy::Ice::Object*)(&"+name.lower()+"_proxy);//Remote server proxy creation example");
+		cog.outl("<TABHERE>mprx[\""+name+"Proxy"+num+"\"] = (::IceProxy::Ice::Object*)(&"+name.lower()+num+"_proxy);//Remote server proxy creation example");
 	else:
 		proxy_list.append(name.lower()+"_proxy")
 if component['language'].lower() == "cpp11" and proxy_list:
