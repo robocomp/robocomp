@@ -48,6 +48,19 @@ QLine2D::QLine2D(const QVec &p1, const QVec &p2): QVec(3)
 	setC(  C()/m );
 }
 
+QLine2D::QLine2D(T x1, T y1, T x2, T y2): QVec(3)
+{
+	setA( -(y2 - y1) );
+	setB( x2 - x1 );
+	setC( -(A()*x1 + B()*y1) );
+	
+	Q_ASSERT_X(fabs(A())>0 or fabs(B())>0, "QLine2D 2 points constructor", "|A| or |B| must be > 0" );
+	float m = sqrt(A()*A()+B()*B());
+	setA(  A()/m );
+	setB(  B()/m );
+	setC(  C()/m );
+}
+
 /**
  * @brief Equality operator
  * 
