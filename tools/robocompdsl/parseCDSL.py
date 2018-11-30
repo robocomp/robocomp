@@ -43,7 +43,7 @@ def getKindFromPool(vtype, modulePool, debug=False):
 			if r != None: return r
 
 
-def decoratorAndType_to_const_ampersand(decorator, vtype, modulePool):
+def decoratorAndType_to_const_ampersand(decorator, vtype, modulePool, cpp11=False):
 	ampersand = ' & '
 	const = ' '
 
@@ -84,8 +84,12 @@ def decoratorAndType_to_const_ampersand(decorator, vtype, modulePool):
 					ampersand = ' &'
 					const = ' '
 				else:                      # read-only
-					ampersand = ' &'
-					const = 'const '
+					if not cpp11:
+						ampersand = ' &'
+						const = 'const '
+					else:
+						ampersand = ''
+						const = ''
 
 	return const, ampersand
 

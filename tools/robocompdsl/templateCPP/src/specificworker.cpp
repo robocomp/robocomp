@@ -272,7 +272,11 @@ if 'implements' in component:
 							if p['decorator'] == 'out':
 								const = ''
 							else:
-								const = 'const '
+								if component['language'].lower() == "cpp":
+									const = 'const '
+								else:
+									const = ''
+									ampersand = ''
 								if p['type'].lower() in ['int', '::ice::int', 'float', '::ice::float']:
 									ampersand = ''
 							# STR
@@ -311,7 +315,11 @@ if 'subscribesTo' in component:
 							if p['decorator'] == 'out':
 								const = ''
 							else:
-								const = 'const '
+								if component['language'].lower() == "cpp":
+									const = 'const '
+								else:
+									const = ''
+									ampersand = ''
 								if p['type'].lower() in ['int', '::ice::int', 'float', '::ice::float']:
 									ampersand = ''
 							# STR

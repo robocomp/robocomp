@@ -146,7 +146,7 @@ if component['language'].lower() == 'cpp':
 	cog.outl("typedef map <string,::IceProxy::Ice::Object*> MapPrx;")
 else:
 	proxy_list = []
-	for imp in component['subscribesTo'] + component['requires']:
+	for imp in component['publishes'] + component['requires']:
 		if type(imp) == str:
 			name = imp
 		else:

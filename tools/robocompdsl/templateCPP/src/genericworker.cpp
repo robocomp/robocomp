@@ -91,7 +91,11 @@ for namea, num in getNameNumber(component['publishes']):
 	else:
 		name = namea[0]
 	if communicationIsIce(namea):
-		cog.outl("<TABHERE>"+name.lower()+num+"_proxy = (*("+name+"Prx*)mprx[\""+name+"Pub"+num+"\"]);")
+		if component['language'].lower() == 'cpp':
+			cog.outl("<TABHERE>"+name.lower()+num+"_proxy = (*("+name+"Prx*)mprx[\""+name+"Pub"+num+"\"]);")
+		else:
+			cog.outl("<TABHERE>"+name.lower()+num+"_proxy = std::get<" + str(cont) + ">(tprx);")
+	cont = cont + 1
 ]]]
 [[[end]]]
 

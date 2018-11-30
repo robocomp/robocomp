@@ -101,7 +101,7 @@ if component['usingROS'] == True:
 [[[cog
 if component['language'].lower() == "cpp11":
 	cog.outl('ADD_DEFINITIONS ("-DICE_CPP11_MAPPING")')
-	cog.outl('SET (Ice_LIBRARIES "-lIce++11 -lIceStorm++11")')
+	cog.outl('FIND_PACKAGE( Ice REQUIRED COMPONENTS Ice++11 IceStorm++11)')
 ]]]
 [[[end]]]
 
@@ -165,7 +165,7 @@ cog.out(' ' + component['name'] + ' ')
 Z()
 ]]]
 [[[end]]]
-${LIBS} ${STATIC_LIBS} ${SPECIFIC_LIBS} ${QT_LIBRARIES})
+${LIBS} ${STATIC_LIBS} ${SPECIFIC_LIBS} ${QT_LIBRARIES} ${Ice_LIBRARIES})
 INSTALL(FILES ${EXECUTABLE_OUTPUT_PATH}/
 [[[cog
 A()
