@@ -128,7 +128,7 @@ I()
 				cog.out('<TABHERE>')
 				if ret != 'void':
 					cog.out('return ')
-				cog.out('worker->'+name+'(')
+				cog.out('worker->'+interface['name']+"_"+name+'(')
 				cog.out(paramStrB)
 				cog.out(');\n')
 				cog.outl('}\n')
