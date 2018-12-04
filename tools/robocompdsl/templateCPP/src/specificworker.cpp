@@ -197,7 +197,7 @@ try:
 		cog.outl("<TABHERE>try")
 		cog.outl("<TABHERE>{")
 		cog.outl("<TABHERE><TABHERE>RoboCompAGMWorldModel::World w = agmexecutive_proxy->getModel();")
-		cog.outl("<TABHERE><TABHERE>structuralChange(w);")
+		cog.outl("<TABHERE><TABHERE>AGMExecutiveTopic_structuralChange(w);")
 		cog.outl("<TABHERE>}")
 		cog.outl("<TABHERE>catch(...)")
 		cog.outl("<TABHERE>{")
