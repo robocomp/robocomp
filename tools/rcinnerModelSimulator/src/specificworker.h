@@ -76,7 +76,7 @@ private:
 		std::map<uint32_t, IMUServer> imu_servers;
 		std::map<uint32_t, DifferentialRobotServer> dfr_servers;
 		std::map<uint32_t, OmniRobotServer> omn_servers;
-
+        std::map<uint32_t, DisplayServer> display_servers;
 		QList <JointMotorServer *> jointServersToShutDown;
 		
 		// IMU
@@ -121,6 +121,7 @@ private:
 		
 		void addDFR(InnerModelDifferentialRobot *node);
 		void addOMN(InnerModelOmniRobot *node);
+		void addDisplay(InnerModelDisplay *node);
 		void addIMU(InnerModelIMU *node);
 		void addJM(InnerModelJoint *node);
 		void addJM(InnerModelPrismaticJoint *node);

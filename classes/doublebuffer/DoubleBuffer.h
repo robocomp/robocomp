@@ -36,7 +36,6 @@ public:
     std::size_t size=0;
     DoubleBuffer()
     {
-        resize(640*480);
     };
 
     void init(std::size_t v_size, C &converter)
@@ -47,7 +46,7 @@ public:
 
     void init(C& converter)
     {
-        converter = &converter;
+        this->converter = &converter;
     }
 
 

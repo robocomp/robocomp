@@ -1,5 +1,5 @@
 /*
- *    Copyright (C) 2006-2014 by RoboLab - University of Extremadura
+ *    Caopyright (C) 2006-2014 by RoboLab - University of Extremadura
  *
  *    This file is part of RoboComp
  *
@@ -235,7 +235,7 @@ void SpecificWorker::updateLasers()
 			laserDataArray.insert(laser->laserNode->id, LASER_createLaserData(laser.value()));
 
 			// create and insert laser shape
-			if (false) // DRAW LASER
+			if (true) // DRAW LASER
 			{
 				osg::ref_ptr<osg::Node> p=NULL;
 				if (id=="laserSecurity")
@@ -351,6 +351,15 @@ void SpecificWorker::addOMN(InnerModelOmniRobot *node)
 	omn_servers.at(port).add(node);
 }
 
+void SpecificWorker::addDisplay(InnerModelDisplay *node)
+{
+	const uint32_t port = node->port;
+	if (display_servers.count(port) == 0)
+	{
+		display_servers.insert(std::pair<uint32_t, DisplayServer>(port, DisplayServer(communicator, this, port)));
+	}
+	display_servers.at(port).add(node);
+}
 
 void SpecificWorker::addIMU(InnerModelIMU *node)
 {
@@ -478,6 +487,15 @@ void SpecificWorker::walkTree(InnerModelNode *node)
 		{
 			//qDebug() << "OmniRobot " << omniNode->id << omniNode->port;
 			addOMN(omniNode);
+		}
+
+   		InnerModelDisplay *displayNode = dynamic_cast<InnerModelDisplay *>(*it);
+
+		if (displayNode != NULL)
+		{
+
+			//qDebug() << "OmniRobot " << omniNode->id << omniNode->port;
+			addDisplay(displayNode);
 		}
 
 		InnerModelIMU *imuNode = dynamic_cast<InnerModelIMU *>(*it);

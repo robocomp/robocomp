@@ -45,7 +45,7 @@ Normally we need to be running the `rcremoteserver` and the `rcremote` tools fir
        
        [...]
        
-       <!-- THE COMMON JOINT COMPONENT -->
+       <!-- THE COMMON JOINT COMPONENT to be run in a remote machine -->
        <node alias="commonjoint" endpoint="jointmotor:tcp -h robonuc1.local -p 20000">           <!-- WHERE THE COMPONENT IS -->
           <dependence alias="faulhaber" />                                                       <!-- DEPENDENCE WITH THE FAULHABER COMPONENT -->
           <dependence alias="dynamixel" />                                                       <!-- DEPENDENCE WITH THE DYNAMIXEL COMPONENT -->
@@ -60,7 +60,22 @@ Normally we need to be running the `rcremoteserver` and the `rcremote` tools fir
           <radius value="10.0" />
        </node>
        
-       <!-- THE FAULHABER COMPONENT -->
+         <!-- THE COMMON JOINT COMPONENT to be run in a local machine (without rcremote) -->
+       <node alias="commonjoint" endpoint="jointmotor:tcp -h robonuc1.local -p 20000">           <!-- WHERE THE COMPONENT IS -->
+          <dependence alias="faulhaber" />                                                       <!-- DEPENDENCE WITH THE FAULHABER COMPONENT -->
+          <dependence alias="dynamixel" />                                                       <!-- DEPENDENCE WITH THE DYNAMIXEL COMPONENT -->
+          <workingDir path="/home/robocomp/" />                                                  <!-- THE WORKING DIRECTORY -->
+          <upCommand command="/home/robocomp/robocomp/components/robocomp-ursus/components/ursusCommonJoint/bin/ursuscommonjointcomp 
+          --Ice.Config=/home/robocomp/robocomp/components/robocomp-ursus/etc/ursusCommon.conf"/> <!-- HOW WE START THE COMPONENT -->
+          <downCommand command="killall -9 ursuscommonjointcomp" />   <!-- HOW WE STOP THE COMPONENT -->
+          <configFile path="/home/robocomp/robocomp/components/robocomp-ursus/etc/ursus.conf" /> <!-- WHERE THE CONFIG FILE IS -->
+          <!-- TO DRAW THE NODE INTO THE RCMANAGER UI -->
+          <xpos value="116.463101156" />
+          <ypos value="20.0105420209" />
+          <radius value="10.0" />
+       </node>
+       
+       <!-- THE FAULHABER COMPONENT to be run in a remote machine -->
        <node alias="faulhaber" endpoint="jointmotor:tcp -h robonuc1.local -p 10067">              <!-- WHERE THE COMPONENT IS -->
           <workingDir path="/home/robocomp/" />                                                   <!-- THE WORKING DIRECTORY -->
           <upCommand command="rcremote robonuc1.local faulhaber /home/robocomp/robocomp/components/robocomp-ursus/components/faulhaberComp/bin/ ./faulhaberComp 
