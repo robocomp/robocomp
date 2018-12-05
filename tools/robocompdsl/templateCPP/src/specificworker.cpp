@@ -51,7 +51,7 @@ def bodyCodeFromName(name, component):
 		elif name == 'deactivateAgent':
 			bodyCode = "<TABHERE>return deactivate();"
 		elif name == 'getAgentState':
-			bodyCode = "<TABHERE>StateStruct s;\n<TABHERE>if (isActive())\n<TABHERE>{\n<TABHERE><TABHERE>s.state = Running;\n<TABHERE>}\n<TABHERE>else\n<TABHERE>{\n<TABHERE><TABHERE>s.state = Stopped;\n<TABHERE>}\n<TABHERE>s.info = p.action.name;\n<TABHERE>return s;"
+			bodyCode = "<TABHERE>StateStruct s;\n<TABHERE>if (isActive())\n<TABHERE>{\n<TABHERE><TABHERE>s.state = RoboCompAGMCommonBehavior::StateEnum::Running;\n<TABHERE>}\n<TABHERE>else\n<TABHERE>{\n<TABHERE><TABHERE>s.state = RoboCompAGMCommonBehavior::StateEnum::Stopped;\n<TABHERE>}\n<TABHERE>s.info = p.action.name;\n<TABHERE>return s;"
 		elif name == 'getAgentParameters':
 			bodyCode = "<TABHERE>return params;"
 		elif name == 'setAgentParameters':
@@ -419,7 +419,10 @@ bool SpecificWorker::setParametersAndPossibleActivation(const ParameterMap &prs,
 	try
 	{""")
 		agentName=component['name']
-		cog.outl("<TABHERE><TABHERE>AGMMisc::publishModification(newModel, agmexecutive_proxy, \""+ agentName+"Agent\");")
+		if component['language'].lower() == "cpp":
+			cog.outl("<TABHERE><TABHERE>AGMMisc::publishModification(newModel, agmexecutive_proxy, \""+ agentName+"Agent\");")
+		else:
+			cog.outl("<TABHERE><TABHERE>AGMMisc::publishModification(newModel, *agmexecutive_proxy.get(), \""+ agentName+"Agent\");")
 		cog.outl ("""<TABHERE>}
 /*	catch(const RoboCompAGMExecutive::Locked &e)
 	{

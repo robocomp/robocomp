@@ -359,7 +359,10 @@ for namea, num in getNameNumber(component['requires'] + component['publishes']):
 				cog.outl('<TABHERE>'+name+'PrxPtr '+name.lower()+num +'_proxy;')
 try:
 	if isAGM1Agent(component):
-		cog.outl("<TABHERE>AGMExecutivePrx agmexecutive_proxy;")
+		if component['language'].lower() == "cpp":
+			cog.outl("<TABHERE>AGMExecutivePrx agmexecutive_proxy;")
+		else:
+			cog.outl("<TABHERE>AGMExecutivePrxPtr agmexecutive_proxy;")
 except:
 	pass
 ]]]
