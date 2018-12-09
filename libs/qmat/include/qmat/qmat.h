@@ -98,8 +98,6 @@ namespace RMat
 
 		~QMat() {};
 
-
-
 		QMat copy();
 		QMat & inject ( const QMat & matrix, const int foff, const int coff );
 		//Access functions
@@ -109,6 +107,7 @@ namespace RMat
 		inline T operator() (const int row) const                        { return getReadData()[row*cols]; }
 		inline void setItem(int i1, int i2, const T val)                 { operator()(i1, i2) = val; }
 		inline T getItem(int i1, int i2) const                           { return operator()(i1, i2); }
+
 #ifdef PYTHON_BINDINGS_SUPPORT
 		inline void setItemV(boost::python::tuple &v, T val)
 		{
@@ -200,6 +199,7 @@ namespace RMat
 		inline bool equalSize ( const QMat & A, const QMat & B ) const;
 		void print ( const QString & s ) const;
 		void prints ( const std::string & s ) const { print(QString::fromStdString(s)); }
+		QString asQString ( const QString & s );
 
 		QMat sqrt();                          // Element square root
 		QMat cholesky();
