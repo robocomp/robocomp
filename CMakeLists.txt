@@ -85,9 +85,9 @@ if (TOOLS)
 		"tools/rcremote"
 		"tools/rcnode"
 		"tools/buildTools"
-		"tools/rcportchecker")
+		"tools/rcportchecker"
+		"tools/rcdeploymentchecker")
 endif(TOOLS)
-message("compile " ${compile_dirs})
 SUBDIRS(${compile_dirs})
 
 # Install rules necessary to allow compiling components without the robocomp's source code

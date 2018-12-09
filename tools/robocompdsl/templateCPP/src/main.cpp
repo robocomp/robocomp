@@ -36,8 +36,8 @@ REQUIRE_STR = """
 
 SUBSCRIBESTO_STR = """
 <TABHERE><TABHERE>// Server adapter creation and publication
-<TABHERE><TABHERE>IceStorm::TopicPrx <LOWER>_topic;
-<TABHERE><TABHERE>Ice::ObjectPrx <PROXYNAME>;
+<TABHERE><TABHERE><CHANGE1> <LOWER>_topic;
+<TABHERE><TABHERE><CHANGE2> <PROXYNAME>;
 <TABHERE><TABHERE>try
 <TABHERE><TABHERE>{
 <TABHERE><TABHERE><TABHERE>if (not GenericMonitor::configGetString(communicator(), prefix, "<NORMAL>Topic.Endpoints", tmp, ""))
@@ -45,8 +45,8 @@ SUBSCRIBESTO_STR = """
 <TABHERE><TABHERE><TABHERE><TABHERE>cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy <NORMAL>Proxy";
 <TABHERE><TABHERE><TABHERE>}
 <TABHERE><TABHERE><TABHERE>Ice::ObjectAdapterPtr <NORMAL>_adapter = communicator()->createObjectAdapterWithEndpoints("<LOWER>", tmp);
-<TABHERE><TABHERE><TABHERE><NORMAL>Ptr <LOWER>I_ = new <NORMAL>I(worker);
-<TABHERE><TABHERE><TABHERE>Ice::ObjectPrx <PROXYNAME> = <NORMAL>_adapter->addWithUUID(<LOWER>I_)->ice_oneway();
+<TABHERE><TABHERE><TABHERE><NORMAL>Ptr <LOWER>I_ = <CHANGE3>(worker);
+<TABHERE><TABHERE><TABHERE><CHANGE4> <PROXYNAME> = <NORMAL>_adapter->addWithUUID(<LOWER>I_)->ice_oneway();
 <TABHERE><TABHERE><TABHERE>if(!<LOWER>_topic)
 <TABHERE><TABHERE><TABHERE>{
 <TABHERE><TABHERE><TABHERE><TABHERE>try {
@@ -77,7 +77,6 @@ SUBSCRIBESTO_STR = """
 """
 
 PUBLISHES_STR = """
-<TABHERE>IceStorm::TopicPrx <LOWER>_topic;
 <TABHERE>while (!<LOWER>_topic)
 <TABHERE>{
 <TABHERE><TABHERE>try
@@ -97,9 +96,6 @@ PUBLISHES_STR = """
 <TABHERE><TABHERE><TABHERE>}
 <TABHERE><TABHERE>}
 <TABHERE>}
-<TABHERE>Ice::ObjectPrx <LOWER>_pub = <LOWER>_topic->getPublisher()->ice_oneway();
-<TABHERE><NORMAL>Prx <LOWER> = <NORMAL>Prx::uncheckedCast(<LOWER>_pub);
-<TABHERE>mprx["<NORMAL>Pub"] = (::IceProxy::Ice::Object*)(&<LOWER>);
 """
 
 IMPLEMENTS_STR = """
@@ -363,7 +359,10 @@ for namea, num in getNameNumber(component['requires'] + component['publishes']):
 				cog.outl('<TABHERE>'+name+'PrxPtr '+name.lower()+num +'_proxy;')
 try:
 	if isAGM1Agent(component):
-		cog.outl("<TABHERE>AGMExecutivePrx agmexecutive_proxy;")
+		if component['language'].lower() == "cpp":
+			cog.outl("<TABHERE>AGMExecutivePrx agmexecutive_proxy;")
+		else:
+			cog.outl("<TABHERE>AGMExecutivePrxPtr agmexecutive_proxy;")
 except:
 	pass
 ]]]
@@ -388,11 +387,9 @@ for namea, num in getNameNumber(component['requires']):
 		w = REQUIRE_STR.replace("<C++_VERSION>", cpp).replace("<NORMAL>", name).replace("<LOWER>", name.lower()).replace("<PROXYNAME>", name.lower()+num).replace("<PROXYNUMBER>", num)
 		cog.outl(w)
 	if component['language'].lower() == "cpp":
-		cog.outl("<TABHERE>mprx[\""+name+"Proxy"+num+"\"] = (::IceProxy::Ice::Object*)(&"+name.lower()+"_proxy);//Remote server proxy creation example");
+		cog.outl("<TABHERE>mprx[\""+name+"Proxy"+num+"\"] = (::IceProxy::Ice::Object*)(&"+name.lower()+num+"_proxy);//Remote server proxy creation example");
 	else:
 		proxy_list.append(name.lower()+"_proxy")
-if component['language'].lower() == "cpp11" and proxy_list:
-	cog.outl("<TABHERE>tprx = std::make_tuple("+",".join(proxy_list)+");")
 	
 need_topic=False
 for pub in component['publishes']:
@@ -402,10 +399,16 @@ for pub in component['subscribesTo']:
 	if communicationIsIce(pub):
 		need_topic = True
 if need_topic:
-	cog.outl('<TABHERE>IceStorm::TopicManagerPrx topicManager;')
+	if component['language'].lower() == "cpp":
+		cog.outl('<TABHERE>IceStorm::TopicManagerPrx topicManager;')
+	else:
+		cog.outl('<TABHERE>IceStorm::TopicManagerPrxPtr topicManager;')
 	cog.outl('<TABHERE>try')
 	cog.outl('<TABHERE>{')
-	cog.outl('<TABHERE><TABHERE>topicManager = IceStorm::TopicManagerPrx::checkedCast(communicator()->propertyToProxy("TopicManager.Proxy"));')
+	if component['language'].lower() == "cpp":
+		cog.outl('<TABHERE><TABHERE>topicManager = IceStorm::TopicManagerPrx::checkedCast(communicator()->propertyToProxy("TopicManager.Proxy"));')
+	else:
+		cog.outl('<TABHERE><TABHERE>topicManager = Ice::checkedCast<IceStorm::TopicManagerPrx>(communicator()->propertyToProxy("TopicManager.Proxy"));')
 	cog.outl('<TABHERE>}')
 	cog.outl('<TABHERE>catch (const Ice::Exception &ex)')
 	cog.outl('<TABHERE>{')
@@ -420,8 +423,20 @@ for pba in component['publishes']:
 	else:
 		pb = pba[0]
 	if communicationIsIce(pba):
+		if component['language'].lower() == "cpp":
+			cog.outl("<TABHERE>IceStorm::TopicPrx "+pb.lower() + "_topic;")
+		else:
+			cog.outl("<TABHERE>std::shared_ptr<IceStorm::TopicPrx> "+pb.lower() + "_topic;")
 		w = PUBLISHES_STR.replace("<NORMAL>", pb).replace("<LOWER>", pb.lower())
 		cog.outl(w)
+		if component['language'].lower() == "cpp":
+			cog.outl("<TABHERE>Ice::ObjectPrx " + pb.lower() + "_pub = " + pb.lower() + "_topic->getPublisher()->ice_oneway();")
+			cog.outl("<TABHERE>" + pb.lower() + "_proxy = " + pb + "Prx::uncheckedCast(" + pb.lower() + "_pub);")
+			cog.outl("<TABHERE>mprx[\"" + pb + "Pub\"] = (::IceProxy::Ice::Object*)(&" + pb.lower() + "_proxy);")
+		else:
+			cog.outl("<TABHERE>auto " + pb.lower() + "_pub = " + pb.lower() + "_topic->getPublisher()->ice_oneway();")
+			cog.outl("<TABHERE>" + pb.lower() + "_proxy = Ice::uncheckedCast<" + pb + "Prx>(" + pb.lower() + "_pub);")
+			proxy_list.append(pb.lower() + "_proxy")
 
 
 if component['usingROS'] == True:
@@ -433,9 +448,11 @@ if component['usingROS'] == True:
 
 [[[cog
 	if component['language'].lower() == "cpp":
-		cog.outl("<TABHERE>SpecificWorker *worker = new SpecificWorker(mprx);");
+		cog.outl("<TABHERE>SpecificWorker *worker = new SpecificWorker(mprx);")
 	else:
-		cog.outl("<TABHERE>SpecificWorker *worker = new SpecificWorker(tprx);");
+		if proxy_list:
+			cog.outl("<TABHERE>tprx = std::make_tuple(" + ",".join(proxy_list) + ");")
+			cog.outl("<TABHERE>SpecificWorker *worker = new SpecificWorker(tprx);")
 ]]]
 [[[end]]]
 	//Monitor thread
@@ -502,7 +519,18 @@ for name, num in getNameNumber(component['subscribesTo']):
 	while type(nname) != type(''):
 		nname = name[0]
 	if communicationIsIce(name):
-		w = SUBSCRIBESTO_STR.replace("<NORMAL>", nname).replace("<LOWER>", nname.lower()).replace("<PROXYNAME>", nname.lower()+num).replace("<PROXYNUMBER>", num)
+		if component['language'].lower() == "cpp":
+			change1 = "IceStorm::TopicPrx"
+			change2 = "Ice::ObjectPrx"
+			change3 = " new <NORMAL>I"
+			change4 = "Ice::ObjectPrx"
+		else:
+			change1 = "std::shared_ptr<IceStorm::TopicPrx>"
+			change2 = "Ice::ObjectPrxPtr"
+			change3 = " std::make_shared <<NORMAL>I>"
+			change4 = "auto"
+		
+		w = SUBSCRIBESTO_STR.replace("<CHANGE1>", change1).replace("<CHANGE2>", change2).replace("<CHANGE3>", change3).replace("<CHANGE4>", change4).replace("<NORMAL>", nname).replace("<LOWER>", nname.lower()).replace("<PROXYNAME>", nname.lower()+num).replace("<PROXYNUMBER>", num)
 		cog.out(w)
 ]]]
 [[[end]]]

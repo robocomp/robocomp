@@ -51,7 +51,7 @@ def bodyCodeFromName(name, component):
 		elif name == 'deactivateAgent':
 			bodyCode = "<TABHERE>return deactivate();"
 		elif name == 'getAgentState':
-			bodyCode = "<TABHERE>StateStruct s;\n<TABHERE>if (isActive())\n<TABHERE>{\n<TABHERE><TABHERE>s.state = Running;\n<TABHERE>}\n<TABHERE>else\n<TABHERE>{\n<TABHERE><TABHERE>s.state = Stopped;\n<TABHERE>}\n<TABHERE>s.info = p.action.name;\n<TABHERE>return s;"
+			bodyCode = "<TABHERE>StateStruct s;\n<TABHERE>if (isActive())\n<TABHERE>{\n<TABHERE><TABHERE>s.state = RoboCompAGMCommonBehavior::StateEnum::Running;\n<TABHERE>}\n<TABHERE>else\n<TABHERE>{\n<TABHERE><TABHERE>s.state = RoboCompAGMCommonBehavior::StateEnum::Stopped;\n<TABHERE>}\n<TABHERE>s.info = p.action.name;\n<TABHERE>return s;"
 		elif name == 'getAgentParameters':
 			bodyCode = "<TABHERE>return params;"
 		elif name == 'setAgentParameters':
@@ -197,7 +197,7 @@ try:
 		cog.outl("<TABHERE>try")
 		cog.outl("<TABHERE>{")
 		cog.outl("<TABHERE><TABHERE>RoboCompAGMWorldModel::World w = agmexecutive_proxy->getModel();")
-		cog.outl("<TABHERE><TABHERE>structuralChange(w);")
+		cog.outl("<TABHERE><TABHERE>AGMExecutiveTopic_structuralChange(w);")
 		cog.outl("<TABHERE>}")
 		cog.outl("<TABHERE>catch(...)")
 		cog.outl("<TABHERE>{")
@@ -272,12 +272,16 @@ if 'implements' in component:
 							if p['decorator'] == 'out':
 								const = ''
 							else:
-								const = 'const '
+								if component['language'].lower() == "cpp":
+									const = 'const '
+								else:
+									const = ''
+									ampersand = ''
 								if p['type'].lower() in ['int', '::ice::int', 'float', '::ice::float']:
 									ampersand = ''
 							# STR
 							paramStrA += delim + const + p['type'] + ' ' + ampersand + p['name']
-						cog.outl(method['return'] + ' SpecificWorker::' + method['name'] + '(' + paramStrA + ")\n{\n//implementCODE\n"+bodyCode+"\n}\n")
+						cog.outl(method['return'] + ' SpecificWorker::' +interface['name'] + "_" + method['name'] + '(' + paramStrA + ")\n{\n//implementCODE\n"+bodyCode+"\n}\n")
 					else:
 						paramStrA = module['name'] +"ROS::"+method['name']+"::Request &req, "+module['name']+"ROS::"+method['name']+"::Response &res"
 						if imp in component['iceInterfaces']:
@@ -311,12 +315,16 @@ if 'subscribesTo' in component:
 							if p['decorator'] == 'out':
 								const = ''
 							else:
-								const = 'const '
+								if component['language'].lower() == "cpp":
+									const = 'const '
+								else:
+									const = ''
+									ampersand = ''
 								if p['type'].lower() in ['int', '::ice::int', 'float', '::ice::float']:
 									ampersand = ''
 							# STR
 							paramStrA += delim + const + p['type'] + ' ' + ampersand + p['name']
-						cog.outl(method['return'] + ' SpecificWorker::' + method['name'] + '(' + paramStrA + ")\n{\n//subscribesToCODE\n"+bodyCode+"\n}\n")
+						cog.outl(method['return'] + ' SpecificWorker::' +interface['name'] + "_" + method['name'] + '(' + paramStrA + ")\n{\n//subscribesToCODE\n"+bodyCode+"\n}\n")
 					else:
 						for p in method['params']:
 							# delim
@@ -411,7 +419,10 @@ bool SpecificWorker::setParametersAndPossibleActivation(const ParameterMap &prs,
 	try
 	{""")
 		agentName=component['name']
-		cog.outl("<TABHERE><TABHERE>AGMMisc::publishModification(newModel, agmexecutive_proxy, \""+ agentName+"Agent\");")
+		if component['language'].lower() == "cpp":
+			cog.outl("<TABHERE><TABHERE>AGMMisc::publishModification(newModel, agmexecutive_proxy, \""+ agentName+"Agent\");")
+		else:
+			cog.outl("<TABHERE><TABHERE>AGMMisc::publishModification(newModel, *agmexecutive_proxy.get(), \""+ agentName+"Agent\");")
 		cog.outl ("""<TABHERE>}
 /*	catch(const RoboCompAGMExecutive::Locked &e)
 	{

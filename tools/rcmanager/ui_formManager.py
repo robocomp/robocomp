@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/pbustos/robocomp/tools/rcmanager/formManager.ui'
 #
-# Created: Mon Nov 19 18:26:10 2018
+# Created: Tue Nov 20 09:27:54 2018
 #      by: pyside-uic 0.2.15 running on PySide 1.2.2
 #
 # WARNING! All changes made in this file will be lost!

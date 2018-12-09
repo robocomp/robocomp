@@ -97,6 +97,7 @@ public:
 	void updatePrismaticJointPosition(QString jointId, float position);
 	void updatePlaneValues(QString planeId, float nx, float ny, float nz, float px, float py, float pz);
 	void updateDisplay(QString displayId, QString texture);
+	
 	////////////////////////////////
 	/// Factory constructors
 	///////////////////////////////
@@ -264,7 +265,6 @@ public:
 
 	//QMutex *mutex;
 	mutable std::recursive_mutex mutex;
-	
 
 protected:
 	InnerModelNode *root;

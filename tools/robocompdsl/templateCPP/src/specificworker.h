@@ -118,12 +118,16 @@ if 'implements' in component:
 							if p['decorator'] == 'out':
 								const = ''
 							else:
-								const = 'const '
+								if component['language'].lower() == "cpp":
+									const = 'const '
+								else:
+									const = ''
+									ampersand = ''
 								if p['type'].lower() in ['int', '::ice::int', 'float', '::ice::float']:
 									ampersand = ''
 							# STR
 							paramStrA += delim + const + p['type'] + ' ' + ampersand + p['name']
-						cog.outl("<TABHERE>" + method['return'] + ' ' + method['name'] + '(' + paramStrA + ");")
+						cog.outl("<TABHERE>" + method['return'] + ' ' +interface['name'] + "_" + method['name'] + '(' + paramStrA + ");")
 					else:
 						paramStrA = module['name'] +"ROS::"+method['name']+"::Request &req, "+module['name']+"ROS::"+method['name']+"::Response &res"
 						if imp in component['iceInterfaces']:
@@ -153,12 +157,16 @@ if 'subscribesTo' in component:
 							if p['decorator'] == 'out':
 								const = ''
 							else:
-								const = 'const '
+								if component['language'].lower() == "cpp":
+									const = 'const '
+								else:
+									const = ''
+									ampersand = ''
 								if p['type'].lower() in ['int', '::ice::int', 'float', '::ice::float']:
 									ampersand = ''
 							# STR
 							paramStrA += delim + const + p['type'] + ' ' + ampersand + p['name']
-						cog.outl("<TABHERE>" + method['return'] + ' ' + method['name'] + '(' + paramStrA + ");")
+						cog.outl("<TABHERE>" + method['return'] + ' ' +interface['name'] + "_" + method['name'] + '(' + paramStrA + ");")
 					else:
 						for p in method['params']:
 							# delim

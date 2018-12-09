@@ -146,7 +146,7 @@ if component['language'].lower() == 'cpp':
 	cog.outl("typedef map <string,::IceProxy::Ice::Object*> MapPrx;")
 else:
 	proxy_list = []
-	for imp in component['subscribesTo'] + component['requires']:
+	for imp in component['publishes'] + component['requires']:
 		if type(imp) == str:
 			name = imp
 		else:
@@ -415,7 +415,7 @@ if 'implements' in component:
 									ampersand = ''
 							# STR
 							paramStrA += delim + const + p['type'] + ' ' + ampersand + p['name']
-						cog.outl("<TABHERE>virtual " + method['return'] + ' ' + method['name'] + '(' + paramStrA + ") = 0;")
+						cog.outl("<TABHERE>virtual " + method['return'] + ' ' + interface['name'] + "_" + method['name'] + '(' + paramStrA + ") = 0;")
 					else:
 						paramStrA = module['name'] +"ROS::"+method['name']+"::Request &req, "+module['name']+"ROS::"+method['name']+"::Response &res"
 						if imp in component['iceInterfaces']:
@@ -456,7 +456,7 @@ if 'subscribesTo' in component:
 									ampersand = ''
 							# STR
 							paramStrA += delim + const + p['type'] + ' ' + ampersand + p['name']
-						cog.outl("<TABHERE>virtual " + method['return'] + ' ' + method['name'] + '(' + paramStrA + ") = 0;")
+						cog.outl("<TABHERE>virtual " + method['return'] + ' ' + interface['name'] + "_" + method['name'] + '(' + paramStrA + ") = 0;")
 					else:
 						for p in method['params']:
 							# delim
