@@ -535,6 +535,25 @@ void QMat::print ( const QString & s ) const
 	}
 	std::cout << "]" << std::endl;
 }
+
+// format QMat as std::string
+QString QMat::asQString ( const QString & s ) 
+{
+	QString str;
+	str = s + "(" + QString::number(rows) + ", " + QString::number(cols) + ")" + "\n";
+	str +=  "[\n";
+
+	for ( int i=0; i < rows ; i++ )
+	{
+		str += "     ";
+		for ( int j=0; j < cols; j++ )
+			str += QString ( "%1" ).arg ( this->operator()(i,j) , -8, 'f', 6 )  + " ";
+		str += ";\n";
+	}
+	str += "]\n";
+	return str;
+}
+
 /**
  * \brief Construct a diagonal matrix with specific value (inplace)
  * @param d Specific value for diagonal positions
