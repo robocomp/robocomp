@@ -34,12 +34,16 @@ Tested in Ubuntu 18.04 (for 16.04 some packages have a different name. Ask in gi
 Make sure you have installed the following packages from the Ubuntu repository:
 
     sudo apt-get update
-    sudo apt-get install git git-annex cmake g++ libgsl-dev libopenscenegraph-dev cmake-qt-gui zeroc-ice-all-dev freeglut3-dev libboost-system-dev libboost-thread-dev qt4-dev-tools python-pip  python-pyparsing python-numpy python-pyside pyside-tools libxt-dev libboost-test-dev libboost-filesystem-dev python-libxml2 python-xmltodict libccd-dev
+    sudo apt-get install git git-annex cmake g++ libgsl-dev libopenscenegraph-dev cmake-qt-gui zeroc-ice-all-dev freeglut3-dev libboost-system-dev libboost-thread-dev qt4-dev-tools python-pip  python-pyparsing python-numpy python-pyside pyside-tools libxt-dev libboost-test-dev libboost-filesystem-dev python-libxml2 python-xmltodict libccd-dev python-zeroc-ice zeroc-ice-all-runtime
     sudo pip install networkx
 
 It is recommendable to install the following packages::
 
     sudo apt-get install yakuake qt4-designer
+
+Note: RoboComp uses python2 for now, so make sure that you set python2 as your deafult choide if you also have python3 installed on your system. You can do so by adding this line into your ~/.bashrc file and then save it:
+
+    alias python = python2
 
 ## Installation itself
 
@@ -141,9 +145,11 @@ If you don't have a JoyStick install this component,
     cd ~/robocomp/components/robocomp-robolab/components/keyboardrobotcontroller
     cmake .
     make
-    src/keyboardrobotcontroller.py --Ice.Config=etc/config
+    src/keyboardrobotcontroller.py etc/config
     
 and use the arrow keys to navigate the robot, the space bar to stop it an 'q' to exit.
+
+Note: You must have your simulator running in a terminal and only then you can run a component in another terminal. You will get an error message if you run the above component without having RCIS already running.
 
 
 ---------------------------------------------------------------------

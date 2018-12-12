@@ -11,8 +11,8 @@ I will just run through the steps without much explanation as in detail explanat
 
 Editing your cdsl file, Importing DifferentialRobot and Laser.idsl
 
-	import "/robocomp/interfaces/IDSLs/Laser.idsl";
-	import "/robocomp/interfaces/IDSLs/DifferentialRobot.idsl";
+	import "Laser.idsl";
+	import "DifferentialRobot.idsl";
 	Component obstacle{
 		Communications{
 			requires DifferentialRobot, Laser;
@@ -96,6 +96,34 @@ To compile the std::sort you will have to first add this line at the end of the 
 
     ADD_DEFINITIONS( -std=c++11 )
 
+Now we need to tell the component where to find the DifferentialRobot and the Laser interfaces.
+
+```bash
+cd etc/config .
+gedit config
+```
+ 
+Change in the editor the port numbers located after *-p* 
+
+```bash
+CommonBehavior.Endpoints=tcp -p 11000
+# Proxies for required interfaces
+LaserProxy = laser:tcp -h localhost -p 10003
+DifferentialRobotProxy = differentialrobot:tcp -h localhost -p 10004
+Ice.Warn.Connections=0
+Ice.Trace.Network=0
+Ice.Trace.Protocol=0
+Ice.ACM.Client=10
+Ice.ACM.Server=10
+```
+
+Save and
+
+```bash
+cd ..
+```
+
+
 Now save the file and build it
 
 	cmake .
@@ -110,4 +138,4 @@ come back to the previous tab of the terminal and now run the above component by
 
 	bin/obstacle --Ice.Config=etc/config
 
-You will now see the bot moving around avoiding obstacle and outputting the distance measurements on the command window. The code for this component can be found [here](https://github.com/rajathkumarmp/RoboComp-Components/tree/master/lasercomp-2)
+You will now see the bot moving around avoiding obstacle and outputting the distance measurements on the command window. The code for this component can be found [here](https://github.com/parasKumarSahu/robocomp-coding-examples/tree/master/Cpp-examples/obstacle)

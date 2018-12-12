@@ -1,6 +1,6 @@
 # IDSL
 
-An Interface Definition Language is used to create and define interfaces in Robocomp. It is very close to the Zeroc Ice IDSL. Like Ice-IDSL, it has similar syntax to Java and C++.
+IDSL is  Interface Definition Language used to create and define interfaces in Robocomp. It is very close to Zeroc Ice's IDSL. 
 
 ## Syntax
 

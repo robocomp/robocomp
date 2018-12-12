@@ -61,4 +61,4 @@ Save the code and build the component and simulate the innermodel simpleworld.xm
 
 	bin/<componentname> --Ice.Config=etc/config
 
-The entire component can be found [here](https://github.com/rajathkumarmp/RoboComp-Components/tree/master/keyboardcomp)
+The entire component can be found [here](https://github.com/parasKumarSahu/robocomp-coding-examples/tree/master/Cpp-examples/keyboardRobotController)

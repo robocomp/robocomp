@@ -236,6 +236,11 @@ void InnerModel::cleanupTables()
 		localHashRot.clear();
 }
 
+void InnerModel::ChangeHash(QString new_id, InnerModelNode *node)
+{
+	hash[new_id] = node;
+}
+
 void InnerModel::setUpdateRotationPointers(QString rotationId, float *x, float *y, float *z)
 {
 	

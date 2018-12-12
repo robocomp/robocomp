@@ -64,10 +64,8 @@ SET ( SOURCES
   $ENV{ROBOCOMP}/classes/qlog/qlog.cpp
   main.cpp
   genericmonitor.cpp
-  specificmonitor.cpp
   commonbehaviorI.cpp
   genericworker.cpp
-  specificworker.cpp
 [[[cog
 for ima in component['implements']:
 	if type(ima) == str:
@@ -149,6 +147,7 @@ else:
 	cog.outl("SET( QT_USE_QTSTATE TRUE )")
 	cog.outl("SET( QT_USE_QTSTATEMACHINE TRUE )")
 	cog.outl("SET( CMAKE_AUTOMOC TRUE )")
+	cog.outl("SET( CMAKE_AUTOUIC TRUE )")
 	cog.outl("INCLUDE( ${QT_USE_FILE} )")
 	if component['gui'] != 'none':
 		cog.outl("QT4_WRAP_UI( UI_HEADERS mainUI.ui )")
