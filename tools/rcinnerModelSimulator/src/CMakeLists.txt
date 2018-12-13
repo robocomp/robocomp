@@ -20,8 +20,8 @@ SET ( SOURCES
 	rgbdI.cpp
 	displayI.cpp
 	touchsensorI.cpp
-	$ENV{ROBOCOMP}/classes/rapplication/rapplication.cpp
-	$ENV{ROBOCOMP}/classes/qlog/qlog.cpp
+	${CMAKE_SOURCE_DIR}/classes/rapplication/rapplication.cpp
+	${CMAKE_SOURCE_DIR}/classes/qlog/qlog.cpp
 )
 
 # # # Header files
@@ -36,26 +36,23 @@ SET(LIBS -L${CMAKE_BUILD_DIR} ${LIBS} )
 
 
 # RoboComp
-INCLUDE( $ENV{ROBOCOMP}/cmake/robocompLocal.cmake )
-ROBOCOMP_INITIALIZE( $ENV{ROBOCOMP}/ )
+INCLUDE( ${CMAKE_SOURCE_DIR}/cmake/robocompLocal.cmake )
+ROBOCOMP_INITIALIZE( ${CMAKE_SOURCE_DIR}/ )
 ROBOCOMP_WRAP_ICE( Camera CommonBehavior CommonHead DifferentialRobot OmniRobot IMU InnerModelManager JointMotor Laser RGBD TouchSensor RCISMousePicker GenericBase Display)
 SET(ROBOCOMP_LIBS ${ROBOCOMP_LIBS} -lrobocomp_qmat )
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR}/../../../libs/innermodel/include )
-include_directories($ENV{ROBOCOMP}/libs/innermodel/include)
-include_directories($ENV{ROBOCOMP}/libs/qmat/include)
-include_directories($ENV{ROBOCOMP}/libs/osgviewer/include)
+include_directories(${CMAKE_SOURCE_DIR}/libs/innermodel/include)
+include_directories(${CMAKE_SOURCE_DIR}/libs/qmat/include)
+include_directories(${CMAKE_SOURCE_DIR}/libs/osgviewer/include)
 
-
-# IPP
-INCLUDE( $ENV{ROBOCOMP}/cmake/modules/ipp.cmake )
 
 
 # OPENSG
-INCLUDE ($ENV{ROBOCOMP}/cmake/modules/opensg.cmake )
+INCLUDE (${CMAKE_SOURCE_DIR}/cmake/modules/opensg.cmake )
 
 # Qt
-INCLUDE ($ENV{ROBOCOMP}/cmake/modules/qt.cmake )
+INCLUDE (${CMAKE_SOURCE_DIR}/cmake/modules/qt.cmake )
 
 # Python bindings
 set(Boost_USE_STATIC_LIBS   OFF)
