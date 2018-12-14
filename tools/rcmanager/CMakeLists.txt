@@ -22,7 +22,7 @@ ROBOCOMP_WRAP_PYTHON_UI( formManager editorForm )
 ADD_EXECUTABLE( rcmanager rcmanager.c )
 ADD_CUSTOM_TARGET( exec_rcmanager ALL DEPENDS rcmanager )
 
-INSTALL( FILES controller.py logger.py main.py model.py rcmanagerSignals.py viewer.py xmlreader.py yakuake_support.py ui_formManager.py ui_editorForm.py DESTINATION ${DEST_DIR} PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE )
+INSTALL( FILES controller.py logger.py main.py model.py rcmanagerSignals.py viewer.py xmlreader.py yakuake_support.py ${CMAKE_CURRENT_BINARY_DIR}/ui_formManager.py ${CMAKE_CURRENT_BINARY_DIR}/ui_editorForm.py DESTINATION ${DEST_DIR} PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE )
 
 INSTALL( DIRECTORY "share/rcmanager" DESTINATION /opt/robocomp/share )
 
