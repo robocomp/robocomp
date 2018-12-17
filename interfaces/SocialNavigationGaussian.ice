@@ -27,6 +27,7 @@ module RoboCompSocialNavigationGaussian
 		 float z;
 		 float angle;
 		 float vel;
+		 int id;
 	};
 	struct SNGObject
 	{
