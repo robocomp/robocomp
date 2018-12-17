@@ -13,8 +13,6 @@ SET ( HEADERS
   exportCSVWidget.h
 )
 
-INCLUDE($ENV{ROBOCOMP}/cmake/modules/ipp.cmake)
-
 ADD_DEFINITIONS( -std=c++17 )
 
 INSTALL(DIRECTORY "../icons" DESTINATION /opt/robocomp/share/rclogger )
