@@ -29,6 +29,7 @@ module RoboCompHumanTracker
 		void getUserState (int id, out TrackingState state);
 		void getUser (int id, out TPerson user);
 		void getUsersList (out PersonList users);
+		bool getJointDepthPosition (int idperson, string idjoint, out joint depthjoint);
 	};
 };
 
