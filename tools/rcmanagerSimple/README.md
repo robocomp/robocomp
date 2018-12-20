@@ -9,7 +9,7 @@ The `rcmanager` is a very useful tool for controlling the components that we hav
 
 Let's see the following image:
 
-![Alt text](https://github.com/robocomp/robocomp/blob/master/tools/rcmanager/share/rcmanager/rcmanager1.png)
+![Alt text](https://github.com/robocomp/robocomp/blob/stable/tools/rcmanager/share/rcmanager/rcmanager1.png)
 
 As we can see in it, there are our components that are working (red and green nodes) and dependencies between them (blue arrows).
 
@@ -20,7 +20,7 @@ As we can see in it, there are our components that are working (red and green no
 
 Another view offered by this program is what we see in the picture below:
 
-![Alt text](https://github.com/robocomp/robocomp/blob/master/tools/rcmanager/share/rcmanager/rcmanager2.png)
+![Alt text](https://github.com/robocomp/robocomp/blob/stable/tools/rcmanager/share/rcmanager/rcmanager2.png)
 
 *   In the first box we have the components names in red (not running) and green (running)
 *   Next, if we select one component (like the commonjoint) we can down the execution of the component (and we can see where the component is being executed, in this case the commonjoint component is being executed inside the nuc1 of the robot Ursus). Also, we can see what is its configuration file and the port where it is being executed.
