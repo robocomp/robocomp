@@ -7,7 +7,7 @@ rcmonitor
 
 The `rcmonitor` is a very useful tool for controlling motors of the robot that we have running in the `rcinnermodel` tool (ideal and perfect model of the robot) or in the real world (the real robot). This tool load all the motors that are working in a determined port, and shows them inside its user interface with their current angular value. We can change the angular value of a motor by selecting it from the list of motors, entering the new value in the spin box below and clicking on the `Set position` button. Also, we can change the speed at which the motor moves and stop its movement with the `stop` button to prevent collisions.
 
-![Alt text](https://github.com/robocomp/robocomp/blob/master/tools/rcmonitor/examples/rcmonitor.png)
+![Alt text](https://github.com/robocomp/robocomp/blob/stable/tools/rcmonitor/examples/rcmonitor.png)
 
 The user interface also allows us to enable or disable the motor, so that when we run a particular simulation, the motors that are disabled can not move.
 
