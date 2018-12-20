@@ -1,6 +1,6 @@
 # Introduction to InnerModel: RoboComp's internal representation of the world and the robot itself.
 
-**InnerModel** is a C++ group of classes used by RoboComp to represent the world and and the robot in it. As a data structure, InnerModel is a tree whose nodes represent entities in the world and geometric transformations among those entities. The current list of entities include:
+**InnerModel** is a C++ group of classes used by RoboComp to represent the world and the robot in it. As a data structure, InnerModel is a tree whose nodes represent entities in the world and geometric transformations among those entities. The current list of entities include:
 
 *Geometry*
 - innermodel

@@ -30,8 +30,8 @@ RoboCompDSL can generate template CDSL files to be used as a guide when writing 
 
 This will generate a CDSL file with the following content:
 
-    import "/robocomp/interfaces/IDSLs/import1.idsl";
-    import "/robocomp/interfaces/IDSLs/import2.idsl";
+    import "import1.idsl";
+    import "import2.idsl";
 
     Component CHANGETHECOMPONENTNAME
     {

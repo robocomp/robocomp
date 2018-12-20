@@ -11,6 +11,24 @@
 			
 			<mesh  id="pabellonInformatica" file="/home/robocomp/robocomp/files/osgModels/edificios/pabellon_informatica_nodoors.osgb"  tx="0" ty="0" tz="0" rx="1.57079632679" scale="500" />
 		
+			<transform id="target00" tx="-3011.73" ty="475.017" tz="-3756.5" ry="-1.570796326794896">
+				<plane id="planeTag00" nz="-1" size="-532,558,20"   texture="/home/robocomp/robocomp/files/innermodel/tar36h11-0.png" />
+			</transform>
+
+			<transform id="target01" tx="-12920" ty="475.017" tz="849.032" ry="-1.570796326794896">
+				<plane id="planeTag01" nz="-1" size="-532,558,20"   texture="/home/robocomp/robocomp/files/innermodel/tar36h11-1.png" />
+			</transform>
+
+			<transform id="target02" tx="19789.9" ty="475.017" tz=" 7085.37" ry="1.570796326794896">
+				<plane id="planeTag02" nz="-1" size="-532,558,20"   texture="/home/robocomp/robocomp/files/innermodel/tar36h11-2.png" />
+			</transform>
+			
+			<transform id="target03" tx="24159" ty="475.017" tz=" 2181" ry="1.570796326794896">
+				<plane id="planeTag03" nz="-1" size="-532,558,20"   texture="/home/robocomp/robocomp/files/innermodel/tar36h11-2.png" />
+			</transform>
+			
+
+
 			<differentialrobot id="base" port="10004">
 				<transform id="rgbdpose" ty="1600" tz="200" >
 					<rgbd id="rgbd" focal="400" width="640" height="480" port="40000" ifconfig="20000,40000" />
