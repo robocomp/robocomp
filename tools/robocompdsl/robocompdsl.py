@@ -6,4 +6,4 @@ if sys.version_info >= (3, 0):
     sys.exit(1)
 
 sys.path.append('/opt/robocomp/python')
-import robocompdsl_core.py
+import robocompdsl_core
