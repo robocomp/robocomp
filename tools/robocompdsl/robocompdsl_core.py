@@ -13,7 +13,7 @@ def generateROSHeaders(idslFile, outputPath, comp, includeDirectories): #idslFil
 	imported = []
 	idsl = IDSLParsing.gimmeIDSL(idslFile, files='', includeDirectories=includeDirectories)
 	if not os.path.exists(outputPath):
-		creaDirectorio(outputPath)
+		create_directory(outputPath)
 
 	def generarH(idslFile, imported):
 		idsl = IDSLParsing.gimmeIDSLStruct(idslFile, files='', includeDirectories=includeDirectories)
@@ -39,7 +39,7 @@ def generateROSHeaders(idslFile, outputPath, comp, includeDirectories): #idslFil
 							commandCPP = commandCPP + " -I" + impo + ":" + outputPath
 							commandPY  = commandPY + " -I" + impo + ":" + outputPath
 					if not os.path.exists(outputPath):
-						creaDirectorio(outputPath)
+						create_directory(outputPath)
 					commandCPP = commandCPP + " -p "+ idsl['module']['name'] + "ROS -o " + outputPath + "/" + idsl['module']['name'] + "ROS -e /opt/ros/kinetic/share/gencpp/cmake/.."
 					commandPY = commandPY + " -p "+ idsl['module']['name'] + "ROS -o " + outputPath + "/" + idsl['module']['name'] +"ROS/msg"
 					if comp['language'].lower() == 'cpp':
@@ -80,7 +80,7 @@ def generateROSHeaders(idslFile, outputPath, comp, includeDirectories): #idslFil
 												commandCPP = commandCPP + " -I" + impo + ":" + outputPath
 												commandPY  = commandPY + " -I" + impo + ":" + outputPath
 										if not os.path.exists(outputPath):
-											creaDirectorio(outputPath)
+											create_directory(outputPath)
 										commandCPP = commandCPP + " -p "+ idsl['module']['name'] + "ROS -o "+ outputPath+"/"+idsl['module']['name'] + "ROS -e /opt/ros/kinetic/share/gencpp/cmake/.."
 										commandPY = commandPY + " -p "+ idsl['module']['name'] + "ROS -o "+ outputPath+"/"+idsl['module']['name'] +"ROS/srv"
 										if comp['language'].lower() == 'cpp':
@@ -179,7 +179,7 @@ from cogapp import Cog
 # Directory structure and other checks  #
 #########################################
 # Function to create directories
-def creaDirectorio(directory):
+def create_directory(directory):
 	try:
 		print 'Creating', directory,
 		os.mkdir(directory)
@@ -210,7 +210,7 @@ if sys.argv[1].endswith(".cdsl"):
 	interface_list = component['requires'] + component['implements'] + component['subscribesTo'] + component['publishes']
 
 	for interface_required in interface_list:
-		interface_required = interface_required if type(interface_required) == str else interface_required[0]
+		interface_required = interface_required if isinstance(interface_required, str) else interface_required[0]
 		if not pool.moduleProviding(interface_required):
 			raise rcExceptions.InterfaceNotFound(interface_required, pool.interfaces())
 
@@ -219,12 +219,12 @@ if sys.argv[1].endswith(".cdsl"):
 		# Check output directory
 		#
 		if not os.path.exists(outputPath):
-			creaDirectorio(outputPath)
+			create_directory(outputPath)
 		# Create directories within the output directory
 		try:
-			creaDirectorio(outputPath+"/bin")
-			creaDirectorio(outputPath+"/etc")
-			creaDirectorio(outputPath+"/src")
+			create_directory(outputPath + "/bin")
+			create_directory(outputPath + "/etc")
+			create_directory(outputPath + "/src")
 		except:
 			print 'There was a problem creating a directory'
 			sys.exit(1)
@@ -294,11 +294,11 @@ if sys.argv[1].endswith(".cdsl"):
 		# Check output directory
 		#
 		if not os.path.exists(outputPath):
-			creaDirectorio(outputPath)
+			create_directory(outputPath)
 		# Create directories within the output directory
 		try:
-			creaDirectorio(outputPath+"/etc")
-			creaDirectorio(outputPath+"/src")
+			create_directory(outputPath + "/etc")
+			create_directory(outputPath + "/src")
 		except:
 			print 'There was a problem creating a directory'
 			sys.exit(1)
