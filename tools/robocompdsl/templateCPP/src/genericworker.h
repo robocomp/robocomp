@@ -325,16 +325,10 @@ if component['usingROS'] == True:
 			cog.outl("};")
 ]]]
 [[[end]]]
-
-
 class GenericWorker :
 [[[cog
 if component['gui'] != 'none':
-	cog.outl("""#ifdef USE_QTGUI
-public QWidget, public Ui_guiDlg
-#else
-public QObject
-#endif""")
+	cog.outl("#ifdef USE_QTGUI\n<TABHERE>public " + component['gui'][1] + ", public Ui_guiDlg\n#else\n<TABHERE>public QObject\n #endif")
 else:
 	cog.outl("public QObject")
 ]]]
