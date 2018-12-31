@@ -149,8 +149,9 @@ If you don't have a JoyStick install this component,
     
 and use the arrow keys to navigate the robot, the space bar to stop it an 'q' to exit.
 
-Note: You must have your simulator running in a terminal and only then you can run a component in another terminal. You will get an error message if you run the above component without having RCIS already running.
+Note 1: You must have your simulator running in a terminal and only then you can run a component in another terminal. You will get an error message if you run the above component without having RCIS already running.
 
+Note 2: If you have anaconda installed (for python 3), It is recommended to uninstall anaconda first and then install robocomp. (It is only applicable if you have faced errors while running above commands.)
 
 ---------------------------------------------------------------------
 You can find more tutorials on RoboComp in [tutorials](doc/README.md) 
