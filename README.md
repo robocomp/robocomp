@@ -43,7 +43,7 @@ It is recommendable to install the following packages::
 
 Note: RoboComp uses python2 for now, so make sure that you set python2 as your deafult choide if you also have python3 installed on your system. You can do so by adding this line into your ~/.bashrc file and then save it:
 
-    alias python = python2
+    alias python=python2
 
 ## Installation itself
 
