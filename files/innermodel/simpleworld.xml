@@ -54,6 +54,8 @@
 			<plane id="cajaMesh6" nx="1" size="400,400,400"  texture="/home/robocomp/robocomp/files/osgModels/textures/Metal.jpg" />
 		</transform>
 			
+		<axes id="axis" length="1000"/>
+		
 		<differentialrobot id="base" port="10004">
 			<mesh id="base_robex" file="/home/robocomp/robocomp/files/osgModels/robex/robex.ive"  tx="0" ty="0" tz="0" scale="1000" />
 				<translation id="laserPose" tx="0" ty="140" tz="200">

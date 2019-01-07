@@ -45,8 +45,7 @@ RTMat::RTMat(bool XCW, bool YCW, bool ZCW) : QMat ( 4,4 )
 	else
 		Rz = new Rot3DCOZ(0);
 
-	Tr = QVec(3);
-	Tr.set(0.);
+	Tr = QVec(3, 0.f);
 	do_inject();
 }
 
@@ -79,7 +78,6 @@ RTMat::RTMat(const RTMat & ex, bool XCW, bool YCW, bool ZCW) : QMat( ex )
 
 RTMat& RMat::RTMat::operator= (const RTMat&  ex)
 {
-
 	XC = ex.XC;
 	YC = ex.YC;
 	ZC = ex.ZC;
@@ -102,7 +100,6 @@ RTMat& RMat::RTMat::operator= (const RTMat&  ex)
 		Rz = new Rot3DCOZ(ex.getRzValue());
 
 	R = ex.getR();
-
 	Tr = ex.getTr();
 
 	do_inject();
@@ -111,6 +108,7 @@ RTMat& RMat::RTMat::operator= (const RTMat&  ex)
 
 RTMat::RTMat(const RTMat &ex) : QMat( ex )
 {
+	//std::cout << "RTMat copy constructor" << std::endl;
 	XC = ex.XC;
 	YC = ex.YC;
 	ZC = ex.ZC;
@@ -131,7 +129,6 @@ RTMat::RTMat(const RTMat &ex) : QMat( ex )
 	*Ry = ex.getRy();
 	*Rz = ex.getRz();
 	R = ex.getR();
-
 	Tr = ex.getTr();
 	do_inject();
 }
@@ -139,13 +136,10 @@ RTMat::RTMat(const RTMat &ex) : QMat( ex )
 
 RTMat::RTMat(const QMat &ex) : QMat( ex )
 {
-
 	Rx = NULL;
 	Ry = NULL;
 	Rz = NULL;
-
 }
-
 
 RTMat::RTMat ( T rx, T ry, T rz, const QVec & t, bool XCW, bool YCW, bool ZCW ) : QMat ( 4,4 )
 {
@@ -192,7 +186,6 @@ RMat::RTMat::RTMat(T rx, T ry, T rz, T tx, T ty, T tz, bool XCW, bool YCW, bool 
 	Tr = QVec::vec3(tx, ty, tz);
 	do_inject();
 }
-
 
 RTMat::~RTMat() {
 	if(Rx!=NULL)
@@ -266,14 +259,11 @@ QVec RMat::RTMat::operator *(const QVec & vector) const
 		{
 			result(i) += operator()(i,k)*vector(k);
 		}
-// 		printf("%f ", result(i));
-// 		printf("\n");
 	}
 #endif
 
 	return result;
 }
-
 
 void RMat::RTMat::set(T ox, T oy, T oz, T x, T y, T z)
 {
@@ -288,7 +278,6 @@ void RMat::RTMat::set(T ox, T oy, T oz, T x, T y, T z)
 
 	do_inject();
 }
-
 
 void RMat::RTMat::init(T ox, T oy, T oz, const QVec & t)
 {
@@ -330,9 +319,7 @@ void RTMat::setRT ( T ox, T oy, T oz, const QVec & t )
 	R = (*Rx)*(*Ry)*(*Rz);
 	Tr=t;
 	do_inject();
-
 }
-
 
 void RTMat::setRX ( T ox )
 {
@@ -362,17 +349,17 @@ QVec RMat::RTMat::getTr() const
 
 Rot3DOX RMat::RTMat::getRx() const
 {
-	return (Rot3DOX)*Rx;
+	return *(Rot3DOX*)Rx;
 }
 
 Rot3DOY RMat::RTMat::getRy() const
 {
-	return *Ry;
+	return *(Rot3DOY*)Ry;
 }
 
 Rot3DOZ RMat::RTMat::getRz() const
 {
-	return *Rz;
+	return *(Rot3DOZ*)Rz;
 }
 
 QMat RMat::RTMat::getR() const
@@ -401,6 +388,21 @@ QMat RMat::RTMat::invertR()
 	r.inject( R.transpose() , 0 , 0 );
 	r(3,3) = 1.f;
 	return r;
+}
+
+// format RTMat as std::string as a sequence of tx, ty, tz, rx, ry, rz
+std::string RMat::RTMat::serializeAsString() const 
+{
+	//this->print("serialize");
+	QString str;
+	str += QString ( "%1" ).arg ( Tr.x() , -8, 'f', 6 )  + " ";
+	str += QString ( "%1" ).arg ( Tr.y() , -8, 'f', 6 )  + " ";
+	str += QString ( "%1" ).arg ( Tr.z() , -8, 'f', 6 )  + " ";
+	str += QString ( "%1" ).arg ( Rx->getAlfa(), -8, 'f', 6 )  + " ";
+	str += QString ( "%1" ).arg ( Ry->getAlfa(), -8, 'f', 6 )  + " ";
+	str += QString ( "%1" ).arg ( Rz->getAlfa(), -8, 'f', 6 )  + " ";
+	str += "\n";
+	return str.toStdString();
 }
 
 
@@ -623,7 +625,19 @@ QMat RMat::RTMatC::invertR()
 	return r;
 }
 
-
+// format RTMat as std::string as a sequence of tx, ty, tz, rx, ry, rz
+std::string RMat::RTMatC::serializeAsString() const 
+{
+	QString str;
+	str += QString ( "%1" ).arg ( Tr.x() , -8, 'f', 6 )  + " ";
+	str += QString ( "%1" ).arg ( Tr.y() , -8, 'f', 6 )  + " ";
+	str += QString ( "%1" ).arg ( Tr.z() , -8, 'f', 6 )  + " ";
+	str += QString ( "%1" ).arg ( Rx.getAlfa(), -8, 'f', 6 )  + " ";
+	str += QString ( "%1" ).arg ( Ry.getAlfa(), -8, 'f', 6 )  + " ";
+	str += QString ( "%1" ).arg ( Rz.getAlfa(), -8, 'f', 6 )  + " ";
+	str += "\n";
+	return str.toStdString();
+}
 
 ///////////////////////////////
 //// Transformations

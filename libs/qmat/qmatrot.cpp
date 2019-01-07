@@ -34,13 +34,14 @@ Rot3DOX::Rot3DOX(T alfa):Rot3DOnAxis(alfa)
 	update(alfa);
 }
 
-Rot3DOX::Rot3DOX(const Rot3DOX & m):Rot3DOnAxis(m)
+Rot3DOX::Rot3DOX(const Rot3DOX & m) : Rot3DOnAxis(m.getAlfa())
 {
-	ang = m.getAlfa();
+	//ang = m.getAlfa();
+	(*this) = m;
+	update(ang);
 }
 
 Rot3DOX::~Rot3DOX(){
-
 }
 
 void Rot3DOX::update(T alfa)
@@ -58,9 +59,11 @@ Rot3DCOX::Rot3DCOX(T alfa):Rot3DOnAxis(alfa)
 	update(alfa);
 }
 
-Rot3DCOX::Rot3DCOX(const Rot3DCOX & m):Rot3DOnAxis(m)
+Rot3DCOX::Rot3DCOX(const Rot3DCOX & m):Rot3DOnAxis(m.getAlfa())
 {
-	ang = m.getAlfa();
+	//qDebug() << "Rot3DCOX copy cons" << m.getAlfa();
+	(*this) = m;
+	update(ang);
 }
 
 Rot3DCOX::~Rot3DCOX(){
@@ -85,9 +88,11 @@ Rot3DOY::Rot3DOY(T alfa):Rot3DOnAxis(alfa)
 	update(alfa);
 }
 
-Rot3DOY::Rot3DOY(const Rot3DOY & m):Rot3DOnAxis(m)
+Rot3DOY::Rot3DOY(const Rot3DOY & m):Rot3DOnAxis(m.getAlfa())
 {	
-	ang = m.getAlfa();
+	//qDebug() << "Rot3COy copy cons" << m.getAlfa();
+	(*this) = m;
+	update(ang);
 }
 
 Rot3DOY::~Rot3DOY(){};
@@ -107,9 +112,11 @@ Rot3DCOY::Rot3DCOY(T alfa):Rot3DOnAxis(alfa)
 	update(alfa);
 }
 
-Rot3DCOY::Rot3DCOY(const Rot3DCOY & m):Rot3DOnAxis(m)
+Rot3DCOY::Rot3DCOY(const Rot3DCOY & m):Rot3DOnAxis(m.getAlfa())
 {	
-	ang = m.getAlfa();
+	//qDebug() << "Rot3DCOY copy cons" << m.getAlfa();
+	(*this) = m;
+	update(ang);
 }
 
 Rot3DCOY::~Rot3DCOY(){};
@@ -121,8 +128,6 @@ void Rot3DCOY::update(T alfa)
 	ang = alfa;
 }
 
-
-
 //Rot3DOZ Implementation
 Rot3DOZ::Rot3DOZ(T alfa):Rot3DOnAxis(alfa)
 {
@@ -132,9 +137,11 @@ Rot3DOZ::Rot3DOZ(T alfa):Rot3DOnAxis(alfa)
 	update(alfa);	
 }
 
-Rot3DOZ::Rot3DOZ(const Rot3DOZ & m):Rot3DOnAxis(m)
+Rot3DOZ::Rot3DOZ(const Rot3DOZ & m):Rot3DOnAxis(m.getAlfa())
 {	
-	ang = m.getAlfa();
+	//qDebug() << "Rot3DOZ copy cons" << m.getAlfa();
+	(*this) = m;
+	update(ang);
 }
 
 Rot3DOZ::~Rot3DOZ()
@@ -159,9 +166,11 @@ Rot3DCOZ::Rot3DCOZ(T alfa):Rot3DOnAxis(alfa)
 	update(alfa);	
 }
 
-Rot3DCOZ::Rot3DCOZ(const Rot3DCOZ & m):Rot3DOnAxis(m)
+Rot3DCOZ::Rot3DCOZ(const Rot3DCOZ & m):Rot3DOnAxis(m.getAlfa())
 {	
-	ang = m.getAlfa();
+	//qDebug() << "Rot3DCOZ copy cons" << m.getAlfa();
+	(*this) = m;
+	update(ang);
 }
 
 Rot3DCOZ::~Rot3DCOZ()
@@ -215,8 +224,8 @@ Rot3D::Rot3D(const Rot3D &ex) : QMat( ex )
 		RY = new Rot3DCOY(0);
 	if(ZC)
 		RZ = new Rot3DOZ(0);
-	else
-		RZ = new Rot3DCOZ(0);
+	// else
+	// 	RZ = new Rot3DCOZ(0);
 	
 	this->inject((*RX)*(*RY)*(*RZ),0,0);
 
@@ -262,8 +271,6 @@ void Rot3D::update(T ox, T oy, T oz)
 	RZ->update(oz);
 	this->inject((*RX)*(*RY)*(*RZ),0,0);
 }
-
-
 
 Rot3DC::Rot3DC(T ox, T oy, T oz, bool XCW, bool YCW, bool ZCW):QMat(3,3)
 {
