@@ -76,5 +76,5 @@ Normally we need to be running the `rcremoteserver` and the `rcremote` tools fir
        [...]
     </rcmanager>  
     
-Now, to execute the rcmanager, we only put in the command line `rcmanager manager.xml` and that's it!!
+Now, to execute the rcmanager, we only put in the command line `rcmanagersimple manager.xml` and that's it!!
 
