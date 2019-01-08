@@ -247,7 +247,7 @@ And subscriber:
 
 The process for generating components is similar.
 
-    $ robocompdsl robocompdsl path/to/mycomponent/mycomponent.cdsl output/path
+    $ robocompdsl path/to/mycomponent/mycomponent.cdsl output/path
     
 You can use this example of *SpecificWorker::compute()* in your Publish Component:
 

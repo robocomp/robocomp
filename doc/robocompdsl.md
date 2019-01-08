@@ -57,8 +57,8 @@ Let's change the template file above by something like this,
 	{
             requires DifferentialRobot, Laser;
         };
-    gui Qt(QWidget);
     language Cpp; // or language Python;
+    gui Qt(QWidget);
     };
 ```    
     
@@ -76,7 +76,20 @@ robocompdsl myComponent.cdsl .
 
 These commands will generate the C++ (or Python) code in the specified directory.
 
-## Modfiying the component to write a simple controller for the robot
+NOTE 1:The current version for python 2.7 of the pyparsing module when installed from pip is 2.3 and it makes robocompcdsl to fail when generating the component.
+
+NOTE 2: If you face errors in 'robocompdsl myComponent.cdsl .' command due to pyparsing version, Then follow 2 steps given below:
+1. Current workaround is to uninstall the 2.3 version with pip :
+```bash
+sudo pip2 uninstall pyparsing
+```
+
+2. Install the 2.2 version from Ubuntu package (18.04) with :
+```bash
+sudo apt-get install pypy-pyparsing
+```
+
+## Modifying the component to write a simple controller for the robot
 
 Check that the *rcis simulator* is up and running. You should have two open windows, one with a camara looking at the world and another with the subjective camera of the robot. In not, in a new terminal type,
 
