@@ -8,6 +8,12 @@
 #
 
 import sys, os, subprocess
+from cogapp import Cog
+from parseCDSL import *
+from parseIDSL import *
+import rcExceptions
+import sys
+from parseIDSL import *
 
 def generateROSHeaders(idslFile, outputPath, comp, includeDirectories): #idslFileis the IDSL file imported in the CDSL, outputPath is the path where the ROS headers are to be generated
 	imported = []
@@ -156,24 +162,6 @@ Component <CHANGETHECOMPONENTNAME>
 		string = string.replace('<CHANGETHECOMPONENTNAME>', name)
 		open(path, "w").write(string)
 
-correct = True
-if len(sys.argv) < 3:
-	if len(sys.argv) == 2 and sys.argv[1].endswith(".cdsl"):
-		generateDummyCDSL(sys.argv[1])
-		sys.exit(0)
-	else: correct = False
-if not correct:
-	print 'Usage:'
-	print '\ta) to generate code from a CDSL file:     '+sys.argv[0].split('/')[-1]+'   INPUT_FILE.CDSL   OUTPUT_DIRECTORY'
-	print '\tb) to generate a new CDSL file:           '+sys.argv[0].split('/')[-1]+'   NEW_COMPONENT_DESCRIPTOR.CDSL'
-	sys.exit(-1)
-
-inputFile  = sys.argv[1]
-outputPath = sys.argv[2]
-
-sys.path.append('/opt/robocomp/python')
-
-from cogapp import Cog
 
 #########################################
 # Directory structure and other checks  #
@@ -192,191 +180,206 @@ def create_directory(directory):
 			print '\nCOULDN\'T CREATE', directory
 			sys.exit(-1)
 
-# Get -I parameters, replacing ~ by $HOME
-includeDirectories = [ os.path.expanduser(x[2:]) for x in sys.argv if x.startswith('-I') ]
-
-if sys.argv[1].endswith(".cdsl"):
-	from parseCDSL import *
-	from parseIDSL import *
-	import rcExceptions
-	import sys
-
-
-	component = CDSLParsing.fromFile(inputFile, includeDirectories=includeDirectories)
-	imports = ''.join( [ imp+'#' for imp in component['imports'] ] )
-
-	# verification
-	pool = IDSLPool(imports, includeDirectories)
-	interface_list = component['requires'] + component['implements'] + component['subscribesTo'] + component['publishes']
-
-	for interface_required in interface_list:
-		interface_required = interface_required if isinstance(interface_required, str) else interface_required[0]
-		if not pool.moduleProviding(interface_required):
-			raise rcExceptions.InterfaceNotFound(interface_required, pool.interfaces())
-
-	if component['language'].lower() == 'cpp' or component['language'].lower() == 'cpp11':
-		#
-		# Check output directory
-		#
-		if not os.path.exists(outputPath):
-			create_directory(outputPath)
-		# Create directories within the output directory
-		try:
-			create_directory(outputPath + "/bin")
-			create_directory(outputPath + "/etc")
-			create_directory(outputPath + "/src")
-		except:
-			print 'There was a problem creating a directory'
-			sys.exit(1)
-			pass
-		#
-		# Generate regular files
-		#
-		files = [ 'CMakeLists.txt', 'DoxyFile', 'README-STORM.txt', 'README.md', 'etc/config', 'src/main.cpp', 'src/CMakeLists.txt', 'src/CMakeListsSpecific.txt', 'src/commonbehaviorI.h', 'src/commonbehaviorI.cpp', 'src/genericmonitor.h', 'src/genericmonitor.cpp', 'src/config.h', 'src/specificmonitor.h', 'src/specificmonitor.cpp', 'src/genericworker.h', 'src/genericworker.cpp', 'src/specificworker.h', 'src/specificworker.cpp', 'src/mainUI.ui' ]
-		specificFiles = [ 'src/specificworker.h', 'src/specificworker.cpp', 'src/CMakeListsSpecific.txt', 'src/mainUI.ui', 'src/specificmonitor.h', 'src/specificmonitor.cpp', 'README.md', 'etc/config' ]
-		for f in files:
-			ofile = outputPath + '/' + f
-			if f in specificFiles and os.path.exists(ofile):
-				print 'Not overwriting specific file "'+ ofile +'", saving it to '+ofile+'.new'
-				ofile += '.new'
-			ifile = "/opt/robocomp/share/robocompdsl/templateCPP/" + f
-			if f != 'src/mainUI.ui' or component['gui'] != 'none':
-				print 'Generating', ofile
-				run = "cog.py -z -d -D theCDSL="+inputFile + " -D theIDSLs="+imports + ' -D theIDSLPaths='+ '#'.join(includeDirectories) + " -o " + ofile + " " + ifile
-				run = run.split(' ')
-				ret = Cog().main(run)
-				if ret != 0:
-					print 'ERROR'
-					sys.exit(-1)
-				replaceTagsInFile(ofile)
-		#
-		# Generate interface-dependent files
-		#
-		for ima in component['implements']:
-			im = ima
-			if type(im) != type(''):
-				im = im[0]
-			if communicationIsIce(ima):
-				for f in [ "SERVANT.H", "SERVANT.CPP"]:
-					ofile = outputPath + '/src/' + im.lower() + 'I.' + f.split('.')[-1].lower()
-					print 'Generating ', ofile, ' (servant for', im + ')'
-					# Call cog
-					run = "cog.py -z -d -D theCDSL="+inputFile  + " -D theIDSLs="+imports + ' -D theIDSLPaths='+ '#'.join(includeDirectories) + " -D theInterface="+im + " -o " + ofile + " " + "/opt/robocomp/share/robocompdsl/templateCPP/" + f
-					run = run.split(' ')
-					ret = Cog().main(run)
-					if ret != 0:
-						print 'ERROR'
-						sys.exit(-1)
-					replaceTagsInFile(ofile)
-
-		for imp in component['subscribesTo']:
-			im = imp
-			if type(im) != type(''):
-				im = im[0]
-			if communicationIsIce(imp):
-				for f in [ "SERVANT.H", "SERVANT.CPP"]:
-					ofile = outputPath + '/src/' + im.lower() + 'I.' + f.split('.')[-1].lower()
-					print 'Generating ', ofile, ' (servant for', im + ')'
-					# Call cog
-					theInterfaceStr = im
-					if type(theInterfaceStr) == type([]):
-						theInterfaceStr = str(';'.join(im))
-					run = "cog.py -z -d -D theCDSL="+inputFile  + " -D theIDSLs="+imports  + ' -D theIDSLPaths='+ '#'.join(includeDirectories) + " -D theInterface="+theInterfaceStr + " -o " + ofile + " " + "/opt/robocomp/share/robocompdsl/templateCPP/" + f
-					#print run
-					run = run.split(' ')
-					ret = Cog().main(run)
-					if ret != 0:
-						print 'ERROR'
-						sys.exit(-1)
-					replaceTagsInFile(ofile)
-	elif component['language'].lower() == 'python':
-		#
-		# Check output directory
-		#
-		if not os.path.exists(outputPath):
-			create_directory(outputPath)
-		# Create directories within the output directory
-		try:
-			create_directory(outputPath + "/etc")
-			create_directory(outputPath + "/src")
-		except:
-			print 'There was a problem creating a directory'
-			sys.exit(1)
-			pass
-		
-		needStorm = False
-		for pub in component['publishes']:
-			if communicationIsIce(pub):
-				needStorm = True
-		for sub in component['subscribesTo']:
-			if communicationIsIce(sub):
-				needStorm = True
-		#
-		# Generate regular files
-		#
-		files = [ 'CMakeLists.txt', 'DoxyFile', 'README-STORM.txt', 'README.md', 'etc/config', 'src/main.py', 'src/genericworker.py', 'src/specificworker.py', 'src/mainUI.ui' ]
-		specificFiles = [ 'src/specificworker.py', 'src/mainUI.ui', 'README.md', 'etc/config' ]
-		for f in files:
-			if f == 'src/main.py':
-				ofile = outputPath + '/src/' + component['name'] + '.py'
-			else:
-				ofile = outputPath + '/' + f
-			if f in specificFiles and os.path.exists(ofile):
-				print 'Not overwriting specific file "'+ ofile +'", saving it to '+ofile+'.new'
-				ofile += '.new'
-			ifile = "/opt/robocomp/share/robocompdsl/templatePython/" + f
-			ignoreFile = False
-			if f == 'src/mainUI.ui' and component['gui'] == 'none': ignoreFile = True
-			if f == 'CMakeLists.txt' and component['gui'] == 'none': ignoreFile = True
-			if f == 'README-STORM.txt' and needStorm == False: ignoreFile = True
-			if not ignoreFile:
-				print 'Generating', ofile
-				run = "cog.py -z -d -D theCDSL="+inputFile + " -D theIDSLs="+imports + ' -D theIDSLPaths='+ '#'.join(includeDirectories) + " -o " + ofile + " " + ifile
-				run = run.split(' ')
-				ret = Cog().main(run)
-				if ret != 0:
-					print 'ERROR'
-					sys.exit(-1)
-				replaceTagsInFile(ofile)
-				if f == 'src/main.py': os.chmod(ofile, os.stat(ofile).st_mode | 0111 )
-		#
-		# Generate interface-dependent files
-		#
-		for imp in component['implements']+component['subscribesTo']:
-			if type(imp) != type(''):
-				im = imp[0]
-			else:
-				im = imp
-			if communicationIsIce(imp):
-				for f in [ "SERVANT.PY"]:
-					ofile = outputPath + '/src/' + im.lower() + 'I.' + f.split('.')[-1].lower()
-					print 'Generating', ofile, ' (servant for', im + ')'
-					# Call cog
-					run = "cog.py -z -d -D theCDSL="+inputFile  + " -D theIDSLs="+imports  + ' -D theIDSLPaths='+ '#'.join(includeDirectories) + " -D theInterface="+im + " -o " + ofile + " " + "/opt/robocomp/share/robocompdsl/templatePython/" + f
-					run = run.split(' ')
-					ret = Cog().main(run)
-					if ret != 0:
-						print 'ERROR'
-						sys.exit(-1)
-					replaceTagsInFile(ofile)
-	else:
-		print 'Unsupported language', component['language']
-
-	if component['usingROS'] == True:
-		for imp in component['imports']:
-			generateROSHeaders(imp, outputPath+"/src", component, includeDirectories)
-
-elif sys.argv[1].endswith(".idsl"):
-	from parseIDSL import *
-	inputFile  = sys.argv[1]
-	outputFile = sys.argv[2]
-	#idsl = IDSLParsing.fromFileIDSL(inputFile)
-	print 'Generating ICE file ', outputFile
-	# Call cog
-	run = "cog.py -z -d" + " -D theIDSL="+inputFile + ' -D theIDSLPaths='+ '#'.join(includeDirectories) +" -o " + outputFile + " /opt/robocomp/share/robocompdsl/TEMPLATE.ICE"
-	run = run.split(' ')
-	ret = Cog().main(run)
-	if ret != 0:
-		print 'ERROR'
+def main(argv):
+	correct = True
+	if len(argv) < 3:
+		if len(argv) == 2 and argv[1].endswith(".cdsl"):
+			generateDummyCDSL(argv[1])
+			sys.exit(0)
+		else:
+			correct = False
+	if not correct:
+		print 'Usage:'
+		print '\ta) to generate code from a CDSL file:     ' + argv[0].split('/')[
+			-1] + '   INPUT_FILE.CDSL   OUTPUT_DIRECTORY'
+		print '\tb) to generate a new CDSL file:           ' + argv[0].split('/')[
+			-1] + '   NEW_COMPONENT_DESCRIPTOR.CDSL'
 		sys.exit(-1)
-	replaceTagsInFile(outputFile)
+
+	inputFile = argv[1]
+	outputPath = argv[2]
+
+	sys.path.append('/opt/robocomp/python')
+
+	# Get -I parameters, replacing ~ by $HOME
+	includeDirectories = [ os.path.expanduser(x[2:]) for x in argv if x.startswith('-I') ]
+
+	if argv[1].endswith(".cdsl"):
+
+		component = CDSLParsing.fromFile(inputFile, includeDirectories=includeDirectories)
+		imports = ''.join( [ imp+'#' for imp in component['imports'] ] )
+
+		# verification
+		pool = IDSLPool(imports, includeDirectories)
+		interface_list = component['requires'] + component['implements'] + component['subscribesTo'] + component['publishes']
+
+		for interface_required in interface_list:
+			interface_required = interface_required if isinstance(interface_required, str) else interface_required[0]
+			if not pool.moduleProviding(interface_required):
+				raise rcExceptions.InterfaceNotFound(interface_required, pool.interfaces())
+
+		if component['language'].lower() == 'cpp' or component['language'].lower() == 'cpp11':
+			#
+			# Check output directory
+			#
+			if not os.path.exists(outputPath):
+				create_directory(outputPath)
+			# Create directories within the output directory
+			try:
+				create_directory(outputPath + "/bin")
+				create_directory(outputPath + "/etc")
+				create_directory(outputPath + "/src")
+			except:
+				print 'There was a problem creating a directory'
+				sys.exit(1)
+				pass
+			#
+			# Generate regular files
+			#
+			files = [ 'CMakeLists.txt', 'DoxyFile', 'README-STORM.txt', 'README.md', 'etc/config', 'src/main.cpp', 'src/CMakeLists.txt', 'src/CMakeListsSpecific.txt', 'src/commonbehaviorI.h', 'src/commonbehaviorI.cpp', 'src/genericmonitor.h', 'src/genericmonitor.cpp', 'src/config.h', 'src/specificmonitor.h', 'src/specificmonitor.cpp', 'src/genericworker.h', 'src/genericworker.cpp', 'src/specificworker.h', 'src/specificworker.cpp', 'src/mainUI.ui' ]
+			specificFiles = [ 'src/specificworker.h', 'src/specificworker.cpp', 'src/CMakeListsSpecific.txt', 'src/mainUI.ui', 'src/specificmonitor.h', 'src/specificmonitor.cpp', 'README.md', 'etc/config' ]
+			for f in files:
+				ofile = outputPath + '/' + f
+				if f in specificFiles and os.path.exists(ofile):
+					print 'Not overwriting specific file "'+ ofile +'", saving it to '+ofile+'.new'
+					ofile += '.new'
+				ifile = "/opt/robocomp/share/robocompdsl/templateCPP/" + f
+				if f != 'src/mainUI.ui' or component['gui'] != 'none':
+					print 'Generating', ofile
+					run = "cog.py -z -d -D theCDSL="+inputFile + " -D theIDSLs="+imports + ' -D theIDSLPaths='+ '#'.join(includeDirectories) + " -o " + ofile + " " + ifile
+					run = run.split(' ')
+					ret = Cog().main(run)
+					if ret != 0:
+						print 'ERROR'
+						sys.exit(-1)
+					replaceTagsInFile(ofile)
+			#
+			# Generate interface-dependent files
+			#
+			for ima in component['implements']:
+				im = ima
+				if type(im) != type(''):
+					im = im[0]
+				if communicationIsIce(ima):
+					for f in [ "SERVANT.H", "SERVANT.CPP"]:
+						ofile = outputPath + '/src/' + im.lower() + 'I.' + f.split('.')[-1].lower()
+						print 'Generating ', ofile, ' (servant for', im + ')'
+						# Call cog
+						run = "cog.py -z -d -D theCDSL="+inputFile  + " -D theIDSLs="+imports + ' -D theIDSLPaths='+ '#'.join(includeDirectories) + " -D theInterface="+im + " -o " + ofile + " " + "/opt/robocomp/share/robocompdsl/templateCPP/" + f
+						run = run.split(' ')
+						ret = Cog().main(run)
+						if ret != 0:
+							print 'ERROR'
+							sys.exit(-1)
+						replaceTagsInFile(ofile)
+
+			for imp in component['subscribesTo']:
+				im = imp
+				if type(im) != type(''):
+					im = im[0]
+				if communicationIsIce(imp):
+					for f in [ "SERVANT.H", "SERVANT.CPP"]:
+						ofile = outputPath + '/src/' + im.lower() + 'I.' + f.split('.')[-1].lower()
+						print 'Generating ', ofile, ' (servant for', im + ')'
+						# Call cog
+						theInterfaceStr = im
+						if type(theInterfaceStr) == type([]):
+							theInterfaceStr = str(';'.join(im))
+						run = "cog.py -z -d -D theCDSL="+inputFile  + " -D theIDSLs="+imports  + ' -D theIDSLPaths='+ '#'.join(includeDirectories) + " -D theInterface="+theInterfaceStr + " -o " + ofile + " " + "/opt/robocomp/share/robocompdsl/templateCPP/" + f
+						#print run
+						run = run.split(' ')
+						ret = Cog().main(run)
+						if ret != 0:
+							print 'ERROR'
+							sys.exit(-1)
+						replaceTagsInFile(ofile)
+		elif component['language'].lower() == 'python':
+			#
+			# Check output directory
+			#
+			if not os.path.exists(outputPath):
+				create_directory(outputPath)
+			# Create directories within the output directory
+			try:
+				create_directory(outputPath + "/etc")
+				create_directory(outputPath + "/src")
+			except:
+				print 'There was a problem creating a directory'
+				sys.exit(1)
+				pass
+
+			needStorm = False
+			for pub in component['publishes']:
+				if communicationIsIce(pub):
+					needStorm = True
+			for sub in component['subscribesTo']:
+				if communicationIsIce(sub):
+					needStorm = True
+			#
+			# Generate regular files
+			#
+			files = [ 'CMakeLists.txt', 'DoxyFile', 'README-STORM.txt', 'README.md', 'etc/config', 'src/main.py', 'src/genericworker.py', 'src/specificworker.py', 'src/mainUI.ui' ]
+			specificFiles = [ 'src/specificworker.py', 'src/mainUI.ui', 'README.md', 'etc/config' ]
+			for f in files:
+				if f == 'src/main.py':
+					ofile = outputPath + '/src/' + component['name'] + '.py'
+				else:
+					ofile = outputPath + '/' + f
+				if f in specificFiles and os.path.exists(ofile):
+					print 'Not overwriting specific file "'+ ofile +'", saving it to '+ofile+'.new'
+					ofile += '.new'
+				ifile = "/opt/robocomp/share/robocompdsl/templatePython/" + f
+				ignoreFile = False
+				if f == 'src/mainUI.ui' and component['gui'] == 'none': ignoreFile = True
+				if f == 'CMakeLists.txt' and component['gui'] == 'none': ignoreFile = True
+				if f == 'README-STORM.txt' and needStorm == False: ignoreFile = True
+				if not ignoreFile:
+					print 'Generating', ofile
+					run = "cog.py -z -d -D theCDSL="+inputFile + " -D theIDSLs="+imports + ' -D theIDSLPaths='+ '#'.join(includeDirectories) + " -o " + ofile + " " + ifile
+					run = run.split(' ')
+					ret = Cog().main(run)
+					if ret != 0:
+						print 'ERROR'
+						sys.exit(-1)
+					replaceTagsInFile(ofile)
+					if f == 'src/main.py': os.chmod(ofile, os.stat(ofile).st_mode | 0111 )
+			#
+			# Generate interface-dependent files
+			#
+			for imp in component['implements']+component['subscribesTo']:
+				if type(imp) != type(''):
+					im = imp[0]
+				else:
+					im = imp
+				if communicationIsIce(imp):
+					for f in [ "SERVANT.PY"]:
+						ofile = outputPath + '/src/' + im.lower() + 'I.' + f.split('.')[-1].lower()
+						print 'Generating', ofile, ' (servant for', im + ')'
+						# Call cog
+						run = "cog.py -z -d -D theCDSL="+inputFile  + " -D theIDSLs="+imports  + ' -D theIDSLPaths='+ '#'.join(includeDirectories) + " -D theInterface="+im + " -o " + ofile + " " + "/opt/robocomp/share/robocompdsl/templatePython/" + f
+						run = run.split(' ')
+						ret = Cog().main(run)
+						if ret != 0:
+							print 'ERROR'
+							sys.exit(-1)
+						replaceTagsInFile(ofile)
+		else:
+			print 'Unsupported language', component['language']
+
+		if component['usingROS'] == True:
+			for imp in component['imports']:
+				generateROSHeaders(imp, outputPath+"/src", component, includeDirectories)
+
+	elif argv[1].endswith(".idsl"):
+		inputFile  = argv[1]
+		outputFile = argv[2]
+		#idsl = IDSLParsing.fromFileIDSL(inputFile)
+		print 'Generating ICE file ', outputFile
+		# Call cog
+		run = "cog.py -z -d" + " -D theIDSL="+inputFile + ' -D theIDSLPaths='+ '#'.join(includeDirectories) +" -o " + outputFile + " /opt/robocomp/share/robocompdsl/TEMPLATE.ICE"
+		run = run.split(' ')
+		ret = Cog().main(run)
+		if ret != 0:
+			print 'ERROR'
+			sys.exit(-1)
+		replaceTagsInFile(outputFile)
