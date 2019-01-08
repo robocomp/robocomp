@@ -6,7 +6,7 @@
 # Read ports from component-ports.txt for the files in etc.
 #
 #
-
+import argparse
 import sys, os, subprocess
 from cogapp import Cog
 from parseCDSL import *
@@ -180,24 +180,43 @@ def create_directory(directory):
 			print '\nCOULDN\'T CREATE', directory
 			sys.exit(-1)
 
+class BColors:
+	HEADER = '\033[95m'
+	OKBLUE = '\033[94m'
+	OKGREEN = '\033[92m'
+	WARNING = '\033[93m'
+	FAIL = '\033[91m'
+	ENDC = '\033[0m'
+	BOLD = '\033[1m'
+	UNDERLINE = '\033[4m'
+
+class MyParser(argparse.ArgumentParser):
+	def error(self, message):
+		sys.stderr.write((BColors.FAIL + 'error: %s\n' + BColors.ENDC) % message)
+		self.print_help()
+		sys.exit(2)
+
+
 def main(argv):
-	correct = True
-	if len(argv) < 3:
-		if len(argv) == 2 and argv[1].endswith(".cdsl"):
-			generateDummyCDSL(argv[1])
+	parser = MyParser(description='This application create components files from cdsl files or .ice from idsl\n'
+	                              '\ta) to generate code from a CDSL file:     ' + sys.argv[0].split('/')[
+		                              -1] + '   INPUT_FILE.CDSL   OUTPUT_PATH\n'
+	                                        '\tb) to generate a new CDSL file:           ' + sys.argv[0].split('/')[
+		                              -1] + '   NEW_COMPONENT_DESCRIPTOR.CDSL',
+	                  formatter_class=argparse.RawTextHelpFormatter)
+	parser.add_argument("input_file", help="The input dsl file")
+	parser.add_argument("output_path", nargs='?', help="The path to put the files")
+	args = parser.parse_args()
+
+	if args.output_path is None:
+		if args.input_file.endswith(".cdsl"):
+			generateDummyCDSL(args.input_file)
 			sys.exit(0)
 		else:
-			correct = False
-	if not correct:
-		print 'Usage:'
-		print '\ta) to generate code from a CDSL file:     ' + argv[0].split('/')[
-			-1] + '   INPUT_FILE.CDSL   OUTPUT_DIRECTORY'
-		print '\tb) to generate a new CDSL file:           ' + argv[0].split('/')[
-			-1] + '   NEW_COMPONENT_DESCRIPTOR.CDSL'
-		sys.exit(-1)
+			sys.exit(-1)
 
-	inputFile = argv[1]
-	outputPath = argv[2]
+	inputFile = args.input_file
+	outputPath = args.output_path
 
 	sys.path.append('/opt/robocomp/python')
 
