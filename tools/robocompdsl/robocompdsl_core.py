@@ -215,12 +215,12 @@ class FullPaths(argparse.Action):
             setattr(namespace, self.dest, dirnames)
 
 
-def main(argv):
+def main():
     parser = MyParser(description='This application create components files from cdsl files or .ice from idsl\n'
-                                  '\ta) to generate code from a CDSL file:     ' + sys.argv[0].split('/')[
-                                      -1] + '   INPUT_FILE.CDSL   OUTPUT_PATH\n'
-                                            '\tb) to generate a new CDSL file:           ' + sys.argv[0].split('/')[
-                                      -1] + '   NEW_COMPONENT_DESCRIPTOR.CDSL',
+                                  '\ta) to generate code from a CDSL file:     ' + sys.argv[0].split('/')[-1]
+                                  + '   INPUT_FILE.CDSL   OUTPUT_PATH\n'
+                                  +'\tb) to generate a new CDSL file:           ' + sys.argv[0].split('/')[-1]
+                                  + '   NEW_COMPONENT_DESCRIPTOR.CDSL',
                       formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument("input_file", help="The input dsl file")
     parser.add_argument("output_path", nargs='?', help="The path to put the files")
@@ -407,16 +407,14 @@ def main(argv):
             for imp in component['imports']:
                 generateROSHeaders(imp, outputPath+"/src", component, args.include_dirs)
 
-    elif argv[1].endswith(".idsl"):
-        inputFile  = argv[1]
-        outputFile = argv[2]
+    elif inputFile.endswith(".idsl"):
         #idsl = IDSLParsing.fromFileIDSL(inputFile)
-        print 'Generating ICE file ', outputFile
+        print 'Generating ICE file ', outputPath
         # Call cog
-        run = "cog.py -z -d" + " -D theIDSL="+inputFile + ' -D theIDSLPaths='+ '#'.join(args.include_dirs) +" -o " + outputFile + " /opt/robocomp/share/robocompdsl/TEMPLATE.ICE"
+        run = "cog.py -z -d" + " -D theIDSL="+inputFile + ' -D theIDSLPaths='+ '#'.join(args.include_dirs) +" -o " + outputPath + " /opt/robocomp/share/robocompdsl/TEMPLATE.ICE"
         run = run.split(' ')
         ret = Cog().main(run)
         if ret != 0:
             print 'ERROR'
             sys.exit(-1)
-        replaceTagsInFile(outputFile)
+        replaceTagsInFile(outputPath)
