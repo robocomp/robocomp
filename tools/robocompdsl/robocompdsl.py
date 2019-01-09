@@ -7,5 +7,5 @@ if sys.version_info >= (3, 0):
 
 sys.path.append('/opt/robocomp/python')
 import robocompdsl_core
-robocompdsl_core.main(sys.argv)
+robocompdsl_core.main()
 
