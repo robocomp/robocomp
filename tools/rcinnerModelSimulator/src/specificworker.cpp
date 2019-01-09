@@ -289,8 +289,8 @@ void SpecificWorker::updateTouchSensors()
 {
 	//std::map<uint32_t, TouchSensorServer>::iterator touchIt;
 	//for (touchIt = servers.touch_servers.begin(); touchIt != servers.touch_servers.end(); touchIt++)
-	for(auto &[k, v] : servers.hMaps.getMap<TouchSensorServer>())	
-		for(auto &s : v.sensors)
+//	for(auto &[k, v] : servers.hMaps.getMap<TouchSensorServer>())	
+//		for(auto &s : v.sensors)
 		//for (uint32_t sss=0; sss<touchIt->second.sensors.size(); sss++)
 		{
 			// 	TouchSensorI *interface;
