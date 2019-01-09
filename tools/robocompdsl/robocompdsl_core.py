@@ -38,15 +38,15 @@ def generateROSHeaders(idslFile, outputPath, comp, includeDirectories): #idslFil
                         print 'ERROR'
                         sys.exit(-1)
                     replaceTagsInFile(ofile)
-                    commandCPP = "/opt/ros/kinetic/share/gencpp/cmake/../../../lib/gencpp/gen_cpp.py " + ofile + " -Istd_msgs:/opt/ros/kinetic/share/std_msgs/cmake/../msg -I" + idsl['module']['name'] + "ROS:" + outputPath
-                    commandPY  = "/opt/ros/kinetic/share/gencpp/cmake/../../../lib/genpy/genmsg_py.py " + ofile + " -Istd_msgs:/opt/ros/kinetic/share/std_msgs/cmake/../msg -I" + idsl['module']['name'] + "ROS:" + outputPath
+                    commandCPP = "/opt/ros/melodic/lib/gencpp/gen_cpp.py " + ofile + " -Istd_msgs:/opt/ros/melodic/share/std_msgs/msg -I" + idsl['module']['name'] + "ROS:" + outputPath
+                    commandPY  = "/opt/ros/melodic/lib/genpy/genmsg_py.py " + ofile + " -Istd_msgs:/opt/ros/melodic/share/std_msgs/msg -I" + idsl['module']['name'] + "ROS:" + outputPath
                     for impo in imported:
                         if not impo == idsl['module']['name']+"ROS":
                             commandCPP = commandCPP + " -I" + impo + ":" + outputPath
                             commandPY  = commandPY + " -I" + impo + ":" + outputPath
                     if not os.path.exists(outputPath):
                         create_directory(outputPath)
-                    commandCPP = commandCPP + " -p "+ idsl['module']['name'] + "ROS -o " + outputPath + "/" + idsl['module']['name'] + "ROS -e /opt/ros/kinetic/share/gencpp/cmake/.."
+                    commandCPP = commandCPP + " -p "+ idsl['module']['name'] + "ROS -o " + outputPath + "/" + idsl['module']['name'] + "ROS -e /opt/ros/melodic/share/gencpp"
                     commandPY = commandPY + " -p "+ idsl['module']['name'] + "ROS -o " + outputPath + "/" + idsl['module']['name'] +"ROS/msg"
                     if comp['language'].lower() == 'cpp':
                         os.system(commandCPP)
@@ -79,15 +79,15 @@ def generateROSHeaders(idslFile, outputPath, comp, includeDirectories): #idslFil
                                             print 'ERROR'
                                             sys.exit(-1)
                                         replaceTagsInFile(ofile)
-                                        commandCPP = "/opt/ros/kinetic/share/gencpp/cmake/../../../lib/gencpp/gen_cpp.py " +ofile+ " -Istd_msgs:/opt/ros/kinetic/share/std_msgs/cmake/../msg -Istd_srvs:/opt/ros/kinetic/share/std_srv/cmake/../srv -I" + idsl['module']['name'] + "ROS:" + outputPath
-                                        commandPY  = "/opt/ros/kinetic/share/gencpp/cmake/../../../lib/genpy/gensrv_py.py " +ofile+ " -Istd_msgs:/opt/ros/kinetic/share/std_msgs/cmake/../msg -Istd_srvs:/opt/ros/kinetic/share/std_srv/cmake/../srv -I" + idsl['module']['name'] + "ROS:" + outputPath
+                                        commandCPP = "/opt/ros/melodic/lib/gencpp/gen_cpp.py " +ofile+ " -Istd_msgs:/opt/ros/melodic/share/std_msgs/msg -Istd_srvs:/opt/ros/melodic/share/std_srv/cmake/../srv -I" + idsl['module']['name'] + "ROS:" + outputPath
+                                        commandPY  = "/opt/ros/melodic/lib/genpy/gensrv_py.py " +ofile+ " -Istd_msgs:/opt/ros/melodic/share/std_msgs/msg -Istd_srvs:/opt/ros/kinetic/share/std_srv/cmake/../srv -I" + idsl['module']['name'] + "ROS:" + outputPath
                                         for impo in imported:
                                             if not impo == idsl['module']['name']+"ROS":
                                                 commandCPP = commandCPP + " -I" + impo + ":" + outputPath
                                                 commandPY  = commandPY + " -I" + impo + ":" + outputPath
                                         if not os.path.exists(outputPath):
                                             create_directory(outputPath)
-                                        commandCPP = commandCPP + " -p "+ idsl['module']['name'] + "ROS -o "+ outputPath+"/"+idsl['module']['name'] + "ROS -e /opt/ros/kinetic/share/gencpp/cmake/.."
+                                        commandCPP = commandCPP + " -p "+ idsl['module']['name'] + "ROS -o "+ outputPath+"/"+idsl['module']['name'] + "ROS -e /opt/ros/melodic/share/gencpp/cmake/.."
                                         commandPY = commandPY + " -p "+ idsl['module']['name'] + "ROS -o "+ outputPath+"/"+idsl['module']['name'] +"ROS/srv"
                                         if comp['language'].lower() == 'cpp':
                                             os.system(commandCPP)
