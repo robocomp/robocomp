@@ -264,14 +264,14 @@ class TheThing(QtGui.QDialog):
 		global dict
 		if self.canvas.ui != None: self.canvas.ui.close()
 		s = QtGui.QFileDialog.getSaveFileName (self, "Select output file", os.environ['HOME'], "*.xml")
-		if len(s) > 0:
+		if len(s) > 0 and len(s[0])>0:
 			for c1 in self.compConfig:
 				for c2 in self.canvas.compList:
 					if c1.alias == c2.name:
 						c1.x = c2.x
 						c1.y = c2.y
 						c1.r = c2.r
-			rcmanagerConfigSimple.writeConfigToFile(dict, self.compConfig, s)
+			rcmanagerConfigSimple.writeConfigToFile(dict, self.compConfig, s[0])
 
 	# Dock icon blinking method.
 	def changeDock(self):
