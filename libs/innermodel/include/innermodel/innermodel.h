@@ -171,14 +171,29 @@ public:
 		{
 			QString error;
 			if (not hash[QString::fromStdString(id)])
-				error.sprintf("No such joint %s", id.c_str());
+				error.sprintf("No such node %s", id.c_str());
 			else
-				error.sprintf("%s doesn't seem to be a joint", id.c_str());
+				error.sprintf("%s doesn't seem to be a node", id.c_str());
 			throw error;
 		}
 		return r;
 	}
 
+	template <class N> N* getNode(char* id) const
+	{
+		N* r = dynamic_cast<N *>(getNode(QString::fromStdString(id)));
+		if (not r)
+		{
+			QString error;
+			if (not hash[QString::fromStdString(id)])
+				error.sprintf("No such node %s", id);
+			else
+				error.sprintf("%s doesn't seem to be a node", id);
+			throw error;
+		}
+		return r;
+	}
+	
 	template <class N> N* getNode(const QString &id) const
 	{
 		N* r = dynamic_cast<N *>(getNode(id));
@@ -186,9 +201,9 @@ public:
 		{
 			QString error;
 			if (not hash[id])
-				error.sprintf("No such joint %s", id.toStdString().c_str());
+				error.sprintf("No such node %s", id.toStdString().c_str());
 			else
-				error.sprintf("%s doesn't seem to be a joint", id.toStdString().c_str());
+				error.sprintf("%s doesn't seem to be a node", id.toStdString().c_str());
 			throw error;
 		}
 		return r;
