@@ -97,5 +97,9 @@ module RoboCompRGBD
     void getXYZ(out PointSeq points,
         out RoboCompJointMotor::MotorStateMap hState,
         out RoboCompGenericBase::TBaseState bState) throws HardwareFailedException;
+
+   void getXYZByteStream(out imgType pointStream,
+        out RoboCompJointMotor::MotorStateMap hState,
+        out RoboCompGenericBase::TBaseState bState) throws HardwareFailedException;
   };
 };
