@@ -447,13 +447,14 @@ if component['usingROS'] == True:
 [[[end]]]
 
 [[[cog
-	if communicationIsIce(namea):
-		if component['language'].lower() == "cpp":
-			cog.outl("<TABHERE>SpecificWorker *worker = new SpecificWorker(mprx);")
-		else:
-			if proxy_list:
-				cog.outl("<TABHERE>tprx = std::make_tuple(" + ",".join(proxy_list) + ");")
-				cog.outl("<TABHERE>SpecificWorker *worker = new SpecificWorker(tprx);")
+    if component['language'].lower() == "cpp":
+        cog.outl("<TABHERE>SpecificWorker *worker = new SpecificWorker(mprx);")
+    else:
+        if proxy_list:
+            cog.outl("<TABHERE>tprx = std::make_tuple(" + ",".join(proxy_list) + ");")
+        else:
+            cog.outl("<TABHERE>tprx = NULL;")
+        cog.outl("<TABHERE>SpecificWorker *worker = new SpecificWorker(tprx);")
 ]]]
 [[[end]]]
 	//Monitor thread
