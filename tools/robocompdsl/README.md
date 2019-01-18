@@ -98,7 +98,7 @@ That IDSL imports other IDSL named *Point.idsl* which only has a structure:
 <div id='restrictions'/>
 ### Restrictions
 
-If we want create an IDSL compatible with ROS and ICE Middlewares, we must pay attention to 3 restrictions.
+If we want to create an IDSL compatible with ROS and ICE Middlewares, we must pay attention to 3 restrictions.
 
     1.- Services have two parameters and return void/bool.
     2.- Topics have a single parameter and return void.
@@ -138,7 +138,7 @@ If we are going to use ICE Middleware, we need create our .ice files like we did
 
     $ robocompdsl path/to/myIDSL/myIDSL.idsl output/path/iceFile
     
-**Remember save your .ice file in (/robocomp/interfaces/).**
+**Remember save your .ice file in (~/robocomp/interfaces/).**
 
 <div id='ice'/>
 ## ICE Middleware Components
@@ -150,7 +150,7 @@ In this section we will create components which communicate via ICE Middleware u
 
 We will use these CDSL:
 
-    import "/robocomp/interfaces/IDSLs/Plane.idsl";
+    import "Plane.idsl";
     Component planeClient
     {
     	Communications
@@ -163,7 +163,7 @@ We will use these CDSL:
     
 And implement:
 
-    import "/robocomp/interfaces/IDSLs/Plane.idsl";
+    import "Plane.idsl";
     Component planeServer
     {
     	Communications
@@ -220,7 +220,7 @@ Finally, you have 2 components communicating by ICE Middleware. Enjoy!
 
 As we did above, we are going to create our CDSLs for this case:
 
-    import "/robocomp/interfaces/IDSLs/Plane.idsl";
+    import "Plane.idsl";
     Component planePublisher
     {
     	Communications
@@ -233,7 +233,7 @@ As we did above, we are going to create our CDSLs for this case:
     
 And subscriber:
 
-    import "/robocomp/interfaces/IDSLs/Plane.idsl";
+    import "Plane.idsl";
     Component planeSubscriber
     {
     	Communications
@@ -294,7 +294,7 @@ The use of the types is a little different to what we saw with ICE Middleware.
 
 Our CDSLs:
 
-    import "/robocomp/interfaces/IDSLs/Plane.idsl";
+    import "Plane.idsl";
     Component planeClient
     {
     	Communications
@@ -307,7 +307,7 @@ Our CDSLs:
 
 And Implement:
 
-    import "/robocomp/interfaces/IDSLs/Plane.idsl";
+    import "Plane.idsl";
     Component planeServer
     {
     	Communications
@@ -369,7 +369,7 @@ Rewrite all methods in your Implement Component. An example:
 
 Publshers/Subscribers have less difficulty. Let's create our CDSLs like ICE but with **(ros)**:
 
-    import "/robocomp/interfaces/IDSLs/Plane.idsl";
+    import "Plane.idsl";
     Component planePublisher
     {
     	Communications
@@ -382,7 +382,7 @@ Publshers/Subscribers have less difficulty. Let's create our CDSLs like ICE but 
     
 And Subscriber:
 
-    import "/robocomp/interfaces/IDSLs/Plane.idsl";
+    import "Plane.idsl";
     Component planeSubscriber
     {
     	Communications
