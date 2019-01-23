@@ -4,6 +4,7 @@ RoboCompDSL's User Guide
 # Table of Contents
 1. [Introduction](#introduction)
 2. [Generating a CDSL template file](#cdsl)
+	1. [Parameters description](#parameters)
 3. [Generating an IDSL file](#idsl)
     1. [Restrictions](#restrictions)
     2. [Basic types for ICE & ROS](#btypes)
@@ -53,6 +54,26 @@ This will generate a CDSL file with the following content:
 > Just copy **cdsl.xml** to /home/**your-linux-user**/.kde/share/katepart/syntax/cdsl.xml (KDevelop)
 
 > and restart your application.
+
+<div id='parameters'/>  
+### 1.- Parameters 
+* Communications InterfaceName : Create communications
+    * implements: Create RPC server 
+    * requires: Create proxy to RPC server
+    * publishes: Create publication proxy a specific topic
+    * subscribesTo: Subscribe a specific topic
+* Language
+    * CPP: Implement component using C++
+    * CPP11: Implement component using C++ 11 to allow use new Ice implementation  (https://doc.zeroc.com/ice/3.7/language-mappings/c++11-mapping)
+    * Python: Implement component using python 2.7 
+* Gui (WindowType): Include visual interface using different window types
+    * QWidget: https://doc.qt.io/qt-5/qwidget.html 
+    * QDialog: https://doc.qt.io/qt-5/qdialog.html
+    * QMainWindow: https://doc.qt.io/qt-5/qmainwindow.html
+* Optionals: 
+    * agmagent: Include Cortex-Agent communication patterns
+    * UseQt (Qt4, Qt5):  Use Qt4 (https://doc.qt.io/archives/qt-4.8/qt4-8-intro.html) or Qt5 (https://doc.qt.io/qt-5/qt5-intro.html) library version
+    * InnerModelViewer: Include innermodelViewer resources (https://github.com/robocomp/robocomp/tree/stable/libs/innermodel)
 
 <div id='idsl'/>
 ## Generating an IDSL file
