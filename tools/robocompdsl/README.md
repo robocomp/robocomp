@@ -5,7 +5,7 @@ RoboCompDSL's User Guide
 # Table of Contents
 1. [Introduction](#introduction)
 2. [Generating a CDSL template file](#generating-a-cdsl-template-file)
-	1. [Parameters description](#parameters )
+	1. [Parameters description](#1--parameters)
 3. [Generating an IDSL file](#generating-an-idsl-file)
     1. [Restrictions](#restrictions)
     2. [Basic types for ICE & ROS](#basic-types-for-ice--ros)
