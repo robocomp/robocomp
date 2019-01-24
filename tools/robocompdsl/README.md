@@ -19,9 +19,13 @@ RoboCompDSL's User Guide
 7. [ICE/ROS Middleware Interfaces](#iceros-middleware-interfaces)
 
 
-# Introduction
+## Introduction
 
-**RoboCompDSL** is a tool used in RoboComp to automatically generate components and modify their main properties once they have been generated (e.g., communication requirements, UI type). It is one of the core tools of the framework so, if you installed RoboComp, you can start using it right away. The languages used to define components and their interfaces remain mostly the same: **CDSL** to specify components and **IDSL** to specify interfaces
+**RoboCompDSL** is a tool used in RoboComp to automatically generate interfaces and components and modify their main properties once they have been generated (e.g., communication requirements, UI type).
+It is one of the core tools of the framework so, if you installed RoboComp, you can start using it right away.
+The languages used to define components and their interfaces remain mostly the same: **CDSL** to specify components and **IDSL** to specify interfaces.
+If you still don't know what a component or interface is in Robocomp you should probably review the [tutorials](https://github.com/robocomp/robocomp/blob/stable/doc/README.md).
+This one is specific for [robocompdsl](https://github.com/robocomp/robocomp/blob/stable/doc/robocompdsl.md).
 
 ## Generating a CDSL template file
 
