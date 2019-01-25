@@ -1,0 +1,26 @@
+module RoboCompHumanPose
+{
+	 struct Pose3D
+	{
+		float x;
+		float z;
+		float ry;
+		bool pos_good;
+		bool rot_good;
+		int confidence = 0;
+	};
+
+	struct PersonType
+	{
+		int id;
+		Pose3D pos;
+	};
+
+	sequence <PersonType> humansDetected;
+
+	interface HumanPose 
+	{
+		void obtainHumanPose(int idcamera, humansDetected list_of_humans);
+	};
+
+};
