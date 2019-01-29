@@ -160,8 +160,10 @@ Component <CHANGETHECOMPONENTNAME>
         subscribesTo topicToSubscribeTo;
         publishes topicToPublish;
     };
-    language Cpp;
-    gui Qt(QWidget);
+	language Cpp//Cpp11//python;
+	gui Qt(QWidget//QDialog//QMainWindow);
+	//options agmagent;
+	//options InnerModelViewer;
 };\n\n"""
         name = path.split('/')[-1].split('.')[0]
         string = string.replace('<CHANGETHECOMPONENTNAME>', name)
