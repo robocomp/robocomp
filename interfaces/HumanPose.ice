@@ -23,11 +23,12 @@ module RoboCompHumanPose
 	{
 		 int id;
 		 Pose3D pos;
+		 int IDcamera;
 	};
 	sequence <PersonType> humansDetected;
 	interface HumanPose
 	{
-		void obtainHumanPose (int idcamera, humansDetected list_of_humans);
+		void obtainHumanPose (humansDetected list_of_humans);
 	};
 };
 
