@@ -131,6 +131,7 @@ SpecificWorker::SpecificWorker(MapPrx& _mprx, Ice::CommunicatorPtr _communicator
 	connect(sp_lightz,  SIGNAL(valueChanged(double)), this, SLOT(setLigthz(double)));
 	connect(actionObject, SIGNAL(triggered()), this, SLOT(objectTriggered()));
 	connect(actionVisual, SIGNAL(triggered()), this, SLOT(visualTriggered()));
+	connect(actionQuit, SIGNAL(triggered()), this, SLOT(quitApp()));
 
 	// Additional widgets
 	objectTriggered();
@@ -177,6 +178,16 @@ void SpecificWorker::compute()
 		//osg render
 		viewer->frame();
 			
+}
+
+
+void SpecificWorker::quitApp()
+{
+    QMessageBox::StandardButton resBtn = QMessageBox::question( this, "RcinnerModelSimulator",tr("Are you sure?\n"),QMessageBox::Cancel | QMessageBox::No | QMessageBox::Yes,QMessageBox::Yes);
+    if (resBtn == QMessageBox::Yes)
+    {
+        qApp->closeAllWindows();
+    }
 }
 
 //////////////////////////////////////////////////////////////////////

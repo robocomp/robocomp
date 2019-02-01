@@ -149,6 +149,7 @@ private:
 		void setLigthy(double v);
 		void setLigthz(double v);
 		void closeEvent(QCloseEvent *event);
+		void quitApp();
 
 	public:
 		// ----------------------------------------------------------------------------------------
