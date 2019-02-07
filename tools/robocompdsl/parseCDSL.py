@@ -3,9 +3,8 @@
 from pyparsing import Word, alphas, alphanums, nums, OneOrMore, CharsNotIn, Literal, Combine
 from pyparsing import cppStyleComment, Optional, Suppress, ZeroOrMore, Group, StringEnd, srange
 from pyparsing import nestedExpr, CaselessLiteral, CaselessKeyword, ParseBaseException 
-
+from collections import Counter
 import sys, traceback, os
-
 debug = False
 #debug = True
 
@@ -96,24 +95,19 @@ def decoratorAndType_to_const_ampersand(decorator, vtype, modulePool, cpp11=Fals
 
 
 def getNameNumber(aalist):
-	somelist = sorted(aalist)
-	lastNum = 0
+	lista = []
+	for key in aalist:
+		lista.append(key[0])
 	ret = []
-	for rqi, rq in enumerate(somelist):
-		dup = False
-		if rqi < len(somelist)-1:
-			if str(rq) == str(somelist[rqi+1]):
-				dup = True
-		if rqi > 0:
-			if str(rq) == str(somelist[rqi-1]):
-				dup = True
-		name = rq
-		num = ''
-		if dup:
-			lastNum += 1
-			num = str(lastNum)
-			name = rq
-		ret.append([name, num])
+	c = Counter(lista)
+	keys = sorted(c)
+	
+	for k in keys:
+		for cont in range(c[k]):
+			if cont > 0:
+				ret.append([k, str(cont)])
+			else:
+				ret.append([k, ''])
 	return ret
 
 class CDSLParsing:

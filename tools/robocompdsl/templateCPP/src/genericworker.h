@@ -364,7 +364,7 @@ except:
 
 
 [[[cog
-for namea, num in getNameNumber(component['requires']+component['publishes']):
+for namea, num in getNameNumber(component['publishes']) + getNameNumber(component['requires']):
 	if type(namea) == str:
 		name = namea
 	else:
