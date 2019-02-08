@@ -453,7 +453,7 @@ if component['usingROS'] == True:
         if proxy_list:
             cog.outl("<TABHERE>tprx = std::make_tuple(" + ",".join(proxy_list) + ");")
         else:
-            cog.outl("<TABHERE>tprx = NULL;")
+            cog.outl("<TABHERE>tprx = std::tuple<>();")
         cog.outl("<TABHERE>SpecificWorker *worker = new SpecificWorker(tprx);")
 ]]]
 [[[end]]]
