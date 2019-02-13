@@ -352,11 +352,11 @@ for namea, num in getNameNumber(component['publishes']) + getNameNumber(componen
 		name = namea
 	else:
 		name = namea[0]
-		if communicationIsIce(namea):
-			if component['language'].lower() == "cpp":
-				cog.outl('<TABHERE>'+name+'Prx '+name.lower()+num +'_proxy;')
-			else:
-				cog.outl('<TABHERE>'+name+'PrxPtr '+name.lower()+num +'_proxy;')
+	if communicationIsIce(namea):
+		if component['language'].lower() == "cpp":
+			cog.outl('<TABHERE>'+name+'Prx '+name.lower()+num +'_proxy;')
+		else:
+			cog.outl('<TABHERE>'+name+'PrxPtr '+name.lower()+num +'_proxy;')
 try:
 	if isAGM1Agent(component):
 		if component['language'].lower() == "cpp":

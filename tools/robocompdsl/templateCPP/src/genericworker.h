@@ -152,7 +152,6 @@ else:
 		else:
 			name = imp[0]
 		proxy_list.append("RoboComp" + name + "::" + name + "PrxPtr")
-	proxy_list.reverse()
 	cog.outl("using TuplePrx = std::tuple<" + ",".join(proxy_list) + ">;")
 ]]]
 [[[end]]]
