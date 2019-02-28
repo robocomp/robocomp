@@ -71,10 +71,10 @@ TLaserData LaserI::getLaserAndBStateData ( RoboCompGenericBase::TBaseState& stat
 		uint32_t basePort  = laserConfig.toUInt();
 	
 		//std::map<uint32_t, DifferentialRobotServer>::iterator it = worker->servers.dfr_servers.find( basePort );
-		auto it = worker->servers.hMaps.find<DifferentialRobotServer>( basePort );
+		auto it = worker->servers.hMaps.find( basePort );
 		//if( it != worker->servers.dfr_servers.end() ) 
-		if( it != worker->servers.hMaps.getMap<DifferentialRobotServer>().end() ) 
-			it->second.interface->getBaseState ( state );
+		if( it != worker->servers.hMaps.end() ) 
+			std::get<DifferentialRobotServer>(it->second).interface->getBaseState ( state );
 		
 		//if(worker->laserDataArray.contains(QString::fromStdString(id))) 
 		if(worker->laserDataArray.count(id)>0) 

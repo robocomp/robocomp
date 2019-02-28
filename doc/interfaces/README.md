@@ -8,7 +8,7 @@ The interfaces are found in
 cd robocomp/interfaces/IDSLs
 ```
 
-[This](https://github.com/robocomp/robocomp/tree/master/interfaces) folder contains the list of interfaces robocomp currently offers.
+[This](https://github.com/robocomp/robocomp/tree/stable/interfaces) folder contains the list of interfaces robocomp currently offers.
 
 To use a particular interface in your project, you need to import them in the cdsl file and tell the component what to do with the interface.
 

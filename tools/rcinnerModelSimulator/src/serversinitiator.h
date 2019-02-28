@@ -17,12 +17,11 @@
 
 #ifndef SERVERSINITIATOR_H
 #define SERVERSINITIATOR_H
-
+#include <variant>
 #include <innermodel/innermodel.h>
 #include <innermodel/innermodelviewer.h>
 #include "omnirobotserver.h"
 #include "differentialrobotserver.h"
-#include "heterocontainer.h"
 #include "displayserver.h"
 #include "rgbdserver.h"
 #include "laserserver.h"
@@ -48,13 +47,26 @@ class ServersInitiator
 			if(node != nullptr)
 			{
 				std::uint32_t &port = node->port;
-				hMaps.insert(port, TS(communicator, worker, port));
-				hMaps.at<TS>(port).add(node);
+				if (hMaps.count(port) == 0)
+				{
+					hMaps.insert(std::make_pair(port, TS(communicator, worker, port)));
+				}
+				std::get<TS>(hMaps.at(port)).add(node);
+
+
 			}
 		}
 		
-		andyg::HeteroContainer hMaps;
-		
+		using TS = std::variant<JointMotorServer,
+								IMUServer, 
+								TouchSensorServer,
+								DisplayServer,
+								OmniRobotServer,
+								LaserServer,
+								RGBDServer,
+								DifferentialRobotServer>;
+
+		std::unordered_map<std::uint32_t,TS> hMaps;
 		Ice::CommunicatorPtr communicator;
 		std::shared_ptr<InnerModel> innerModel;
 		std::shared_ptr<SpecificWorker> worker;

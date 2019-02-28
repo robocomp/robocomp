@@ -152,7 +152,6 @@ else:
 		else:
 			name = imp[0]
 		proxy_list.append("RoboComp" + name + "::" + name + "PrxPtr")
-	proxy_list.reverse()
 	cog.outl("using TuplePrx = std::tuple<" + ",".join(proxy_list) + ">;")
 ]]]
 [[[end]]]
@@ -325,16 +324,10 @@ if component['usingROS'] == True:
 			cog.outl("};")
 ]]]
 [[[end]]]
-
-
 class GenericWorker :
 [[[cog
 if component['gui'] != 'none':
-	cog.outl("""#ifdef USE_QTGUI
-public QWidget, public Ui_guiDlg
-#else
-public QObject
-#endif""")
+	cog.outl("#ifdef USE_QTGUI\n<TABHERE>public " + component['gui'][1] + ", public Ui_guiDlg\n#else\n<TABHERE>public QObject\n #endif")
 else:
 	cog.outl("public QObject")
 ]]]
@@ -370,7 +363,7 @@ except:
 
 
 [[[cog
-for namea, num in getNameNumber(component['requires']+component['publishes']):
+for namea, num in getNameNumber(component['publishes']) + getNameNumber(component['requires']):
 	if type(namea) == str:
 		name = namea
 	else:

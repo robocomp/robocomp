@@ -55,12 +55,12 @@ TRGBDParams RGBDI::getRGBDParams ( const Ice::Current& )
 	if ( cameraConfig.size() > 1 ) {
 		uint32_t basePort  = QString ( cameraConfig[1] ).toUInt();
 		//if( worker->servers.dfr_servers.count( basePort ) > 0 )
-		if( worker->servers.hMaps.count<DifferentialRobotServer>( basePort ) > 0 )
+		if( worker->servers.hMaps.count( basePort ) > 0 )
 			rgbdParams.talkToBase = true;
 		
 		uint32_t jointPort = QString ( cameraConfig[0] ).toUInt();
 		//if( worker->servers.jm_servers.count( jointPort ) > 0 )
-		if( worker->servers.hMaps.count<JointMotorServer>(jointPort) > 0 )
+		if( worker->servers.hMaps.count(jointPort) > 0 )
 			rgbdParams.talkToJointMotor = true;
 	}
 
@@ -139,22 +139,22 @@ void RGBDI::getImage ( ColorSeq& color, DepthSeq& depth, PointSeq& points, RoboC
 		uint32_t basePort  = QString ( cam.RGBDNode->ifconfig.split ( "," ) [1] ).toUInt();
 		//std::map<uint32_t, OmniRobotServer>::iterator base;
 		//base = worker->servers.omn_servers.find( basePort );
-		auto base = worker->servers.hMaps.find<OmniRobotServer>( basePort );
+		auto base = worker->servers.hMaps.find( basePort );
 		
 		bool bstateUpd = false;
 		//if (base != worker->servers.omn_servers.end())
-		if (base != worker->servers.hMaps.getMap<OmniRobotServer>().cend())
+		if (base != worker->servers.hMaps.cend())
 		{
-			base->second.interface->getBaseState( bState );
+			std::get<OmniRobotServer>(base->second).interface->getBaseState( bState );
 			bstateUpd = true;
 		}
 		//std::map<uint32_t, DifferentialRobotServer>::iterator baseD;
 		//baseD = worker->servers.dfr_servers.find( basePort );
-		auto baseD = worker->servers.hMaps.find<DifferentialRobotServer>( basePort );
+		auto baseD = worker->servers.hMaps.find( basePort );
 		//if (baseD != worker->servers.dfr_servers.end())
-		if (baseD != worker->servers.hMaps.getMap<DifferentialRobotServer>().end())
+		if (baseD != worker->servers.hMaps.end())
 		{
-			baseD->second.interface->getBaseState( bState );
+			std::get<DifferentialRobotServer>(baseD->second).interface->getBaseState( bState );
 			bstateUpd = true;
 		}
 		if (not bstateUpd)
@@ -164,12 +164,12 @@ void RGBDI::getImage ( ColorSeq& color, DepthSeq& depth, PointSeq& points, RoboC
 		uint32_t jointPort = QString ( cam.RGBDNode->ifconfig.split ( "," ) [0] ).toUInt();
 		//std::map<uint32_t, JointMotorServer>::iterator joint;
 		//joint = worker->servers.jm_servers.find( jointPort );
-		auto joint = worker->servers.hMaps.find<JointMotorServer>( jointPort );
+		auto joint = worker->servers.hMaps.find( jointPort );
 		//if ( joint != worker->servers.jm_servers.end() )
-		if ( joint != worker->servers.hMaps.getMap<JointMotorServer>().cend() )
+		if ( joint != worker->servers.hMaps.cend() )
 		{
 			RoboCompJointMotor::MotorStateMap newMap;
-			joint->second.interface->getAllMotorState ( newMap );
+			std::get<JointMotorServer>(joint->second).interface->getAllMotorState ( newMap );
 			static RoboCompJointMotor::MotorStateMap backMap = newMap;
 			hState = newMap;
 			backMap = newMap;

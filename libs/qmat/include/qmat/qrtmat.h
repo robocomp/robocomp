@@ -76,6 +76,7 @@ namespace RMat
 		T getRzValue() const { return Rz->getAlfa(); }
 		RTMat invert() const;
 		QMat invertR();
+		std::string serializeAsString() const ;
 
 // 		QVec direct ( const QVec &p ) const;
 // 		QVec inverse ( const QVec & p ) const;
@@ -123,6 +124,7 @@ namespace RMat
 		T getRzValue() const { return Rz.getAlfa(); }
 		RTMatC invert() const;
 		QMat invertR();
+		std::string serializeAsString() const ;
 
 // 		QVec direct ( const QVec &p ) const;
 // 		QVec inverse ( const QVec & p ) const;

@@ -293,11 +293,11 @@ bool InnerModelManagerI::addJoint(const std::string &item, const std::string &ba
 	{ 
 		//worker->addJM(j_N);  //CHANGE
 		/*if (worker->servers.jm_servers.count(j_N->port) == 0)*/
-		if (worker->servers.hMaps.count<InnerModelJoint>(j_N->port) == 0)
-			worker->servers.hMaps.insert(j_N->port, JointMotorServer(worker->communicator, worker, j_N->port));
+		if (worker->servers.hMaps.count(j_N->port) == 0)
+			worker->servers.hMaps.insert(std::make_pair(j_N->port, JointMotorServer(worker->communicator, worker, j_N->port)));
 			//worker->servers.jm_servers.insert(std::pair<uint32_t, JointMotorServer>(j_N->port, JointMotorServer(worker->communicator, worker, j_N->port)));
 		
-		worker->servers.hMaps.at<JointMotorServer>(j_N->port).add(j_N);
+		std::get<JointMotorServer>(worker->servers.hMaps.at(j_N->port)).add(j_N);
 		//worker->servers.jm_servers.at(j_N->port).add(j_N);
 	}
 	worker->imv->recursiveConstructor(j_N, worker->imv->mts[parent->id], worker->imv->mts, worker->imv->meshHash); // imv->osgmeshes,imv->osgmeshPats);

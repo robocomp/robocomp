@@ -38,8 +38,8 @@ namespace RMat
 	{
 		public:
 			Rot3DOnAxis(T alfa=0);
-			Rot3DOnAxis( const Rot3DOnAxis &m):QMat(m) {}
-			virtual ~Rot3DOnAxis() {}
+			//Rot3DOnAxis( const Rot3DOnAxis &m):QMat(m) {};
+			virtual ~Rot3DOnAxis() {};
 			virtual void update(T alfa) = 0;
 			T getAlfa() const { return ang; }
 		protected:
@@ -51,7 +51,7 @@ namespace RMat
 		public:
 			Rot3DOX(T alfa=0);
 			Rot3DOX( const Rot3DOX &m);
-			Rot3DOX( const Rot3DOnAxis &m):Rot3DOnAxis(m) {}
+			//Rot3DOX( const Rot3DOnAxis &m):Rot3DOnAxis(m) {};
 			virtual ~Rot3DOX();
 			void update(T alfa);
 	};
@@ -62,7 +62,7 @@ namespace RMat
 		public:
 			Rot3DCOX(T alfa=0);
 			Rot3DCOX( const Rot3DCOX &m);
-			Rot3DCOX( const Rot3DOnAxis &m):Rot3DOnAxis(m) {}
+			//Rot3DCOX( const Rot3DOnAxis &m):Rot3DOnAxis(m) {}
 			virtual ~Rot3DCOX();
 			void update(T alfa);
 	};
@@ -72,7 +72,7 @@ namespace RMat
 		public:
 			Rot3DOY(T alfa=0);
 			Rot3DOY( const Rot3DOY &m);
-			Rot3DOY( const Rot3DOnAxis &m):Rot3DOnAxis(m) {}			
+			//Rot3DOY( const Rot3DOnAxis &m):Rot3DOnAxis(m) {}			
 			virtual ~Rot3DOY();
 			void update(T alfa);
 	};
@@ -82,7 +82,7 @@ namespace RMat
 		public:
 			Rot3DCOY(T alfa=0);
 			Rot3DCOY( const Rot3DCOY &m);
-			Rot3DCOY( const Rot3DOnAxis &m):Rot3DOnAxis(m) {}			
+			//Rot3DCOY( const Rot3DOnAxis &m):Rot3DOnAxis(m) {}			
 			virtual ~Rot3DCOY();
 			void update(T alfa);
 	};
@@ -92,7 +92,7 @@ namespace RMat
 		public:
 			Rot3DOZ(T alfa=0);
 			Rot3DOZ( const Rot3DOZ &m);
-			Rot3DOZ( const Rot3DOnAxis &m):Rot3DOnAxis(m) {}			
+			//Rot3DOZ( const Rot3DOnAxis &m):Rot3DOnAxis(m) {}			
 			virtual ~Rot3DOZ();
 			void update(T alfa);
 	};
@@ -102,7 +102,7 @@ namespace RMat
 		public:
 			Rot3DCOZ(T alfa=0);
 			Rot3DCOZ( const Rot3DCOZ &m);
-			Rot3DCOZ( const Rot3DOnAxis &m):Rot3DOnAxis(m) {}			
+			//Rot3DCOZ( const Rot3DOnAxis &m):Rot3DOnAxis(m) {}			
 			virtual ~Rot3DCOZ();
 			void update(T alfa);
 	};

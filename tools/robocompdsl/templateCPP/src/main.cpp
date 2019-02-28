@@ -347,16 +347,16 @@ Z()
 	int status=EXIT_SUCCESS;
 
 [[[cog
-for namea, num in getNameNumber(component['requires'] + component['publishes']):
+for namea, num in getNameNumber(component['publishes']) + getNameNumber(component['requires']):
 	if type(namea) == str:
 		name = namea
 	else:
 		name = namea[0]
-		if communicationIsIce(namea):
-			if component['language'].lower() == "cpp":
-				cog.outl('<TABHERE>'+name+'Prx '+name.lower()+num +'_proxy;')
-			else:
-				cog.outl('<TABHERE>'+name+'PrxPtr '+name.lower()+num +'_proxy;')
+	if communicationIsIce(namea):
+		if component['language'].lower() == "cpp":
+			cog.outl('<TABHERE>'+name+'Prx '+name.lower()+num +'_proxy;')
+		else:
+			cog.outl('<TABHERE>'+name+'PrxPtr '+name.lower()+num +'_proxy;')
 try:
 	if isAGM1Agent(component):
 		if component['language'].lower() == "cpp":
@@ -447,12 +447,14 @@ if component['usingROS'] == True:
 [[[end]]]
 
 [[[cog
-	if component['language'].lower() == "cpp":
-		cog.outl("<TABHERE>SpecificWorker *worker = new SpecificWorker(mprx);")
-	else:
-		if proxy_list:
-			cog.outl("<TABHERE>tprx = std::make_tuple(" + ",".join(proxy_list) + ");")
-			cog.outl("<TABHERE>SpecificWorker *worker = new SpecificWorker(tprx);")
+    if component['language'].lower() == "cpp":
+        cog.outl("<TABHERE>SpecificWorker *worker = new SpecificWorker(mprx);")
+    else:
+        if proxy_list:
+            cog.outl("<TABHERE>tprx = std::make_tuple(" + ",".join(proxy_list) + ");")
+        else:
+            cog.outl("<TABHERE>tprx = std::tuple<>();")
+        cog.outl("<TABHERE>SpecificWorker *worker = new SpecificWorker(tprx);")
 ]]]
 [[[end]]]
 	//Monitor thread
