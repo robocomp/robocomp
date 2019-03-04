@@ -25,6 +25,8 @@ module RoboCompFaceTracking
 	struct TFace
 	{
 		 int id;
+		 string name;
+		 float confidence;
 		 Point centroid;
 		 Box boundingbox;
 		 bool tracking;
