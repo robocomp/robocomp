@@ -30,7 +30,8 @@ module RoboCompHandDetection
 		TCoordSequence intertips;
 		TCoordSequence positions;
 		TContour contour;
-		KeyPoint centerMass;
+		KeyPoint centerMass2D;
+		KeyPoint centerMass3D;
 		int truthValue;
 		bool detected;
 		bool tracked;

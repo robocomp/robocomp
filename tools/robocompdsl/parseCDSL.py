@@ -3,9 +3,8 @@
 from pyparsing import Word, alphas, alphanums, nums, OneOrMore, CharsNotIn, Literal, Combine
 from pyparsing import cppStyleComment, Optional, Suppress, ZeroOrMore, Group, StringEnd, srange
 from pyparsing import nestedExpr, CaselessLiteral, CaselessKeyword, ParseBaseException 
-
+from collections import Counter
 import sys, traceback, os
-
 debug = False
 #debug = True
 
@@ -96,24 +95,19 @@ def decoratorAndType_to_const_ampersand(decorator, vtype, modulePool, cpp11=Fals
 
 
 def getNameNumber(aalist):
-	somelist = sorted(aalist)
-	lastNum = 0
+	lista = []
+	for key in aalist:
+		lista.append(key[0])
 	ret = []
-	for rqi, rq in enumerate(somelist):
-		dup = False
-		if rqi < len(somelist)-1:
-			if str(rq) == str(somelist[rqi+1]):
-				dup = True
-		if rqi > 0:
-			if str(rq) == str(somelist[rqi-1]):
-				dup = True
-		name = rq
-		num = ''
-		if dup:
-			lastNum += 1
-			num = str(lastNum)
-			name = rq
-		ret.append([name, num])
+	c = Counter(lista)
+	keys = sorted(c)
+	
+	for k in keys:
+		for cont in range(c[k]):
+			if cont > 0:
+				ret.append([k, str(cont)])
+			else:
+				ret.append([k, ''])
 	return ret
 
 class CDSLParsing:
@@ -247,7 +241,7 @@ class CDSLParsing:
 				if not i in imprts:
 					imprts.append(i)
 
-		for imp in imprts:
+		for imp in sorted(imprts):
 			component['imports'].append(imp)
 			importedModule = None
 			try:
@@ -318,39 +312,54 @@ class CDSLParsing:
 		component['publishes']    = []
 		component['subscribesTo'] = []
 		component['usingROS'] = "None"
-		for comm in tree['properties']['communications']:
-			if comm[0] == 'implements':
-				for interface in comm[1:]:
-					component['implements'].append(interface)
+		####################
+		com_types = ['implements', 'requires', 'publishes', 'subscribesTo']
+		communications = sorted(tree['properties']['communications'], key=lambda x: x[0])
+		for comm in communications:
+			if comm[0] in com_types:
+				comm_type = comm[0]
+				interfaces = sorted(comm[1:], key=lambda x: x[0])
+				for interface in interfaces:
+					component[comm_type].append(interface)
 					if communicationIsIce(interface):
 						component['iceInterfaces'].append(interface[0])
 					else:
 						component['rosInterfaces'].append(interface[0])
 						component['usingROS'] = True
-			if comm[0] == 'requires':
-				for interface in comm[1:]:
-					component['requires'].append(interface)
-					if communicationIsIce(interface):
-						component['iceInterfaces'].append(interface[0])
-					else:
-						component['rosInterfaces'].append(interface[0])
-						component['usingROS'] = True
-			if comm[0] == 'publishes':
-				for interface in comm[1:]:
-					component['publishes'].append(interface)
-					if communicationIsIce(interface):
-						component['iceInterfaces'].append(interface[0])
-					else:
-						component['rosInterfaces'].append(interface[0])
-						component['usingROS'] = True
-			if comm[0] == 'subscribesTo':
-				for interface in comm[1:]:
-					component['subscribesTo'].append(interface)
-					if communicationIsIce(interface):
-						component['iceInterfaces'].append(interface[0])
-					else:
-						component['rosInterfaces'].append(interface[0])
-						component['usingROS'] = True
+		#####################
+		# for comm in tree['properties']['communications']:
+		# 	if comm[0] == 'implements':
+		# 		for interface in comm[1:]:
+		# 			component['implements'].append(interface)
+		# 			if communicationIsIce(interface):
+		# 				component['iceInterfaces'].append(interface[0])
+		# 			else:
+		# 				component['rosInterfaces'].append(interface[0])
+		# 				component['usingROS'] = True
+		# 	if comm[0] == 'requires':
+		# 		for interface in comm[1:]:
+		# 			component['requires'].append(interface)
+		# 			if communicationIsIce(interface):
+		# 				component['iceInterfaces'].append(interface[0])
+		# 			else:
+		# 				component['rosInterfaces'].append(interface[0])
+		# 				component['usingROS'] = True
+		# 	if comm[0] == 'publishes':
+		# 		for interface in comm[1:]:
+		# 			component['publishes'].append(interface)
+		# 			if communicationIsIce(interface):
+		# 				component['iceInterfaces'].append(interface[0])
+		# 			else:
+		# 				component['rosInterfaces'].append(interface[0])
+		# 				component['usingROS'] = True
+		# 	if comm[0] == 'subscribesTo':
+		# 		for interface in comm[1:]:
+		# 			component['subscribesTo'].append(interface)
+		# 			if communicationIsIce(interface):
+		# 				component['iceInterfaces'].append(interface[0])
+		# 			else:
+		# 				component['rosInterfaces'].append(interface[0])
+		# 				component['usingROS'] = True
 		# Handle options for communications
 		if isAGM1Agent(component):
 			if not 'AGMCommonBehavior' in component['implements']:

@@ -7,13 +7,18 @@
 #
 #
 import argparse
+import filecmp
 import sys, os, subprocess
+from distutils import spawn
+
 from cogapp import Cog
 from parseCDSL import *
 from parseIDSL import *
 import rcExceptions
 import sys
 from parseIDSL import *
+
+DIFF_TOOLS = ["meld", "kdiff3", "diff"]
 
 def generateROSHeaders(idslFile, outputPath, comp, includeDirectories): #idslFileis the IDSL file imported in the CDSL, outputPath is the path where the ROS headers are to be generated
     imported = []
@@ -38,15 +43,15 @@ def generateROSHeaders(idslFile, outputPath, comp, includeDirectories): #idslFil
                         print 'ERROR'
                         sys.exit(-1)
                     replaceTagsInFile(ofile)
-                    commandCPP = "/opt/ros/kinetic/share/gencpp/cmake/../../../lib/gencpp/gen_cpp.py " + ofile + " -Istd_msgs:/opt/ros/kinetic/share/std_msgs/cmake/../msg -I" + idsl['module']['name'] + "ROS:" + outputPath
-                    commandPY  = "/opt/ros/kinetic/share/gencpp/cmake/../../../lib/genpy/genmsg_py.py " + ofile + " -Istd_msgs:/opt/ros/kinetic/share/std_msgs/cmake/../msg -I" + idsl['module']['name'] + "ROS:" + outputPath
+                    commandCPP = "/opt/ros/melodic/lib/gencpp/gen_cpp.py " + ofile + " -Istd_msgs:/opt/ros/melodic/share/std_msgs/msg -I" + idsl['module']['name'] + "ROS:" + outputPath
+                    commandPY  = "/opt/ros/melodic/lib/genpy/genmsg_py.py " + ofile + " -Istd_msgs:/opt/ros/melodic/share/std_msgs/msg -I" + idsl['module']['name'] + "ROS:" + outputPath
                     for impo in imported:
                         if not impo == idsl['module']['name']+"ROS":
                             commandCPP = commandCPP + " -I" + impo + ":" + outputPath
                             commandPY  = commandPY + " -I" + impo + ":" + outputPath
                     if not os.path.exists(outputPath):
                         create_directory(outputPath)
-                    commandCPP = commandCPP + " -p "+ idsl['module']['name'] + "ROS -o " + outputPath + "/" + idsl['module']['name'] + "ROS -e /opt/ros/kinetic/share/gencpp/cmake/.."
+                    commandCPP = commandCPP + " -p "+ idsl['module']['name'] + "ROS -o " + outputPath + "/" + idsl['module']['name'] + "ROS -e /opt/ros/melodic/share/gencpp"
                     commandPY = commandPY + " -p "+ idsl['module']['name'] + "ROS -o " + outputPath + "/" + idsl['module']['name'] +"ROS/msg"
                     if comp['language'].lower() == 'cpp':
                         os.system(commandCPP)
@@ -79,15 +84,15 @@ def generateROSHeaders(idslFile, outputPath, comp, includeDirectories): #idslFil
                                             print 'ERROR'
                                             sys.exit(-1)
                                         replaceTagsInFile(ofile)
-                                        commandCPP = "/opt/ros/kinetic/share/gencpp/cmake/../../../lib/gencpp/gen_cpp.py " +ofile+ " -Istd_msgs:/opt/ros/kinetic/share/std_msgs/cmake/../msg -Istd_srvs:/opt/ros/kinetic/share/std_srv/cmake/../srv -I" + idsl['module']['name'] + "ROS:" + outputPath
-                                        commandPY  = "/opt/ros/kinetic/share/gencpp/cmake/../../../lib/genpy/gensrv_py.py " +ofile+ " -Istd_msgs:/opt/ros/kinetic/share/std_msgs/cmake/../msg -Istd_srvs:/opt/ros/kinetic/share/std_srv/cmake/../srv -I" + idsl['module']['name'] + "ROS:" + outputPath
+                                        commandCPP = "/opt/ros/melodic/lib/gencpp/gen_cpp.py " +ofile+ " -Istd_msgs:/opt/ros/melodic/share/std_msgs/msg -Istd_srvs:/opt/ros/melodic/share/std_srv/cmake/../srv -I" + idsl['module']['name'] + "ROS:" + outputPath
+                                        commandPY  = "/opt/ros/melodic/lib/genpy/gensrv_py.py " +ofile+ " -Istd_msgs:/opt/ros/melodic/share/std_msgs/msg -Istd_srvs:/opt/ros/kinetic/share/std_srv/cmake/../srv -I" + idsl['module']['name'] + "ROS:" + outputPath
                                         for impo in imported:
                                             if not impo == idsl['module']['name']+"ROS":
                                                 commandCPP = commandCPP + " -I" + impo + ":" + outputPath
                                                 commandPY  = commandPY + " -I" + impo + ":" + outputPath
                                         if not os.path.exists(outputPath):
                                             create_directory(outputPath)
-                                        commandCPP = commandCPP + " -p "+ idsl['module']['name'] + "ROS -o "+ outputPath+"/"+idsl['module']['name'] + "ROS -e /opt/ros/kinetic/share/gencpp/cmake/.."
+                                        commandCPP = commandCPP + " -p "+ idsl['module']['name'] + "ROS -o "+ outputPath+"/"+idsl['module']['name'] + "ROS -e /opt/ros/melodic/share/gencpp/cmake/.."
                                         commandPY = commandPY + " -p "+ idsl['module']['name'] + "ROS -o "+ outputPath+"/"+idsl['module']['name'] +"ROS/srv"
                                         if comp['language'].lower() == 'cpp':
                                             os.system(commandCPP)
@@ -155,13 +160,25 @@ Component <CHANGETHECOMPONENTNAME>
         subscribesTo topicToSubscribeTo;
         publishes topicToPublish;
     };
-    language Cpp;
-    gui Qt(QWidget);
+	language Cpp//Cpp11//python;
+	gui Qt(QWidget//QDialog//QMainWindow);
+	//options agmagent;
+	//options InnerModelViewer;
 };\n\n"""
         name = path.split('/')[-1].split('.')[0]
         string = string.replace('<CHANGETHECOMPONENTNAME>', name)
         open(path, "w").write(string)
 
+def get_diff_tool(prefered=None):
+    if prefered in DIFF_TOOLS:
+        tool_path = spawn.find_executable(prefered)
+        if tool_path is not "":
+            return prefered, tool_path
+    for tool in DIFF_TOOLS:
+        tool_path = spawn.find_executable(tool)
+        if tool_path is not "":
+            return tool, tool_path
+    return None, None
 
 #########################################
 # Directory structure and other checks  #
@@ -222,10 +239,11 @@ def main():
                                   +'\tb) to generate a new CDSL file:           ' + sys.argv[0].split('/')[-1]
                                   + '   NEW_COMPONENT_DESCRIPTOR.CDSL',
                       formatter_class=argparse.RawTextHelpFormatter)
-    parser.add_argument("input_file", help="The input dsl file")
-    parser.add_argument("output_path", nargs='?', help="The path to put the files")
     parser.add_argument("-I", "--include_dirs", nargs='*', help="Include directories",
                         action=FullPaths, default=[])
+    parser.add_argument("-d", '--diff', dest='diff', choices=DIFF_TOOLS, action='store')
+    parser.add_argument("input_file", help="The input dsl file")
+    parser.add_argument("output_path", nargs='?', help="The path to put the files")
     args = parser.parse_args()
 
     if args.output_path is None:
@@ -233,6 +251,8 @@ def main():
             generateDummyCDSL(args.input_file)
             sys.exit(0)
         else:
+            print args.output_path, args.input_file
+            print parser.error("No output path with non .cdsl file")
             sys.exit(-1)
 
     inputFile = args.input_file
@@ -240,6 +260,7 @@ def main():
 
     sys.path.append('/opt/robocomp/python')
 
+    new_existing_files = {}
 
     if inputFile.endswith(".cdsl"):
 
@@ -279,6 +300,7 @@ def main():
                 ofile = outputPath + '/' + f
                 if f in specificFiles and os.path.exists(ofile):
                     print 'Not overwriting specific file "'+ ofile +'", saving it to '+ofile+'.new'
+                    new_existing_files[os.path.abspath(ofile)] = os.path.abspath(ofile)+'.new'
                     ofile += '.new'
                 ifile = "/opt/robocomp/share/robocompdsl/templateCPP/" + f
                 if f != 'src/mainUI.ui' or component['gui'] != 'none':
@@ -364,6 +386,7 @@ def main():
                     ofile = outputPath + '/' + f
                 if f in specificFiles and os.path.exists(ofile):
                     print 'Not overwriting specific file "'+ ofile +'", saving it to '+ofile+'.new'
+                    new_existing_files[os.path.abspath(ofile)] = os.path.abspath(ofile) + '.new'
                     ofile += '.new'
                 ifile = "/opt/robocomp/share/robocompdsl/templatePython/" + f
                 ignoreFile = False
@@ -403,9 +426,32 @@ def main():
         else:
             print 'Unsupported language', component['language']
 
+
         if component['usingROS'] == True:
             for imp in component['imports']:
                 generateROSHeaders(imp, outputPath+"/src", component, args.include_dirs)
+
+        # Code to launch diff tool on .new files to be compared with their old version
+        if args.diff is not None:
+            diff_tool,_ = get_diff_tool(prefered=args.diff)
+            print("Executing diff tool for existing files. Close if no change is needed.")
+            for o_file, n_file in new_existing_files.items():
+                if not filecmp.cmp(o_file,n_file):
+                    print [diff_tool, o_file, n_file]
+                    try:
+                        subprocess.call([diff_tool, o_file, n_file])
+                    except KeyboardInterrupt as e:
+                        print("Comparasion interrupted. All files have been generated. Check this .new files manually:")
+                        for o_file2, n_file2 in new_existing_files.items():
+                            if not filecmp.cmp(o_file2, n_file2):
+                                print("%s %s"%(o_file2,n_file2))
+                        break
+                    except Exception as e:
+                        print("Exception trying to execute %s"%(diff_tool))
+                        print(e.message)
+
+                else:
+                    print("Binary equal files %s and %s"%(o_file, n_file))
 
     elif inputFile.endswith(".idsl"):
         #idsl = IDSLParsing.fromFileIDSL(inputFile)

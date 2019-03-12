@@ -89,12 +89,21 @@ class C(QWidget):
 					print 'Error retrieving images!'
 			except Ice.Exception:
 				traceback.print_exc()
+		elif "getXYZ" in self.method_combo:
+			try:
+				self.depth, self.headState, self.baseState = self.proxy.getXYZByteStream()
+				# print len(self.depth)
+				if (len(self.depth) == 0):
+					print 'Error retrieving XYZ!'
+			except Ice.Exception:
+				traceback.print_exc()
 
 	def paintEvent(self, event=None):
 		color_image_height = 0
 		color_image_width = 0
 		depth_image_height = 0
 		depth_image_width = 0
+		# print "Paint event "+str(len(self.depth))+" "+str(type(self.depth))
 		if "getData" in self.method_combo or "getImage" in self.method_combo or "getDepth" in self.method_combo:
 			if (len(self.depth) == 640 * 480):
 				depth_image_width = 640
@@ -135,16 +144,34 @@ class C(QWidget):
 				new_color+=chr(color_struct.blue)
 			self.color= new_color
 
+		elif "getXYZ" in self.method_combo :
+
+			if (len(self.depth) == 640 * 480 * 3 * 4):
+				depth_image_width = 640
+				depth_image_height = 480
+			elif (len(self.depth) == 320 * 240 * 3 * 4):
+				depth_image_width = 320
+				depth_image_height = 240
+
+
+
 
 		if depth_image_height != color_image_height or depth_image_width != color_image_width:
-			print "Warning: Depth (%d,%d) and Color(%d,%d) sizes mismatch"%(depth_image_width, depth_image_height, color_image_width, color_image_height)
+			if "getData" in self.method_combo:
+				print "Warning: Depth (%d,%d) and Color(%d,%d) sizes mismatch"%(depth_image_width, depth_image_height, color_image_width, color_image_height)
 		
 		painter = QPainter(self)
 		painter.setRenderHint(QPainter.Antialiasing, True)
 
 		if depth_image_width!= 0 and depth_image_height!=0:
 			# Interpolate values from depth float arrray to 0-255 integers
-			depth = np.array(self.depth, dtype=np.float32)
+			if "getXYZ" in self.method_combo:
+				#take on
+				np_points = np.fromstring(self.depth, dtype=np.float32)
+				depth = np_points.reshape(480, 640, 3)
+				depth = depth[:, :, 2].reshape(480 * 640)
+			else:
+				depth = np.array(self.depth, dtype=np.float32)
 			depth_min = np.min(depth)
 			depth_max = np.max(depth)
 			if depth_max != depth_min and depth_max > 0:

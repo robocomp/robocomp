@@ -47,8 +47,8 @@ bool QSerialPort::open(const QString& name)
 
 bool QSerialPort::open(int block)
 {
-	if( block== 1) portDesc = ::open(portName.toAscii(),O_RDWR);
-	else portDesc = ::open(portName.toAscii(),O_RDWR | O_NONBLOCK );
+	if( block== 1) portDesc = ::open(portName.toLatin1(),O_RDWR);
+	else portDesc = ::open(portName.toLatin1(),O_RDWR | O_NONBLOCK );
 	if(portDesc == -1)
 	{
 		return false;

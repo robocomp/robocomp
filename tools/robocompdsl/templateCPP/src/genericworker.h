@@ -152,7 +152,6 @@ else:
 		else:
 			name = imp[0]
 		proxy_list.append("RoboComp" + name + "::" + name + "PrxPtr")
-	proxy_list.reverse()
 	cog.outl("using TuplePrx = std::tuple<" + ",".join(proxy_list) + ">;")
 ]]]
 [[[end]]]
@@ -364,7 +363,7 @@ except:
 
 
 [[[cog
-for namea, num in getNameNumber(component['requires']+component['publishes']):
+for namea, num in getNameNumber(component['publishes']) + getNameNumber(component['requires']):
 	if type(namea) == str:
 		name = namea
 	else:

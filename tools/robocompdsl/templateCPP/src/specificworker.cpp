@@ -223,8 +223,8 @@ void SpecificWorker::initialize(int period)
 
 void SpecificWorker::compute()
 {
-	QMutexLocker locker(mutex);
 	//computeCODE
+//	QMutexLocker locker(mutex); 
 // 	try
 // 	{
 // 		camera_proxy->getYImage(0,img, cState, bState);

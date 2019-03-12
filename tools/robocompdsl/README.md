@@ -1,27 +1,32 @@
+
 RoboCompDSL's User Guide
 ============
 
 # Table of Contents
 1. [Introduction](#introduction)
-2. [Generating a CDSL template file](#cdsl)
-3. [Generating an IDSL file](#idsl)
+2. [Generating a CDSL template file](#generating-a-cdsl-template-file)
+	1. [Parameters description](#1--parameters)
+3. [Generating an IDSL file](#generating-an-idsl-file)
     1. [Restrictions](#restrictions)
-    2. [Basic types for ICE & ROS](#btypes)
-4. [Generating an ICE file from an IDSL](#iceFile)
-5. [ICE Middleware Components](#ice)
-    1. [1.- Require / Implement](#Ireq-imp)
-    2. [2.- Publish / Subscribe](#Ipub-sub)
-6. [ROS Middleware Components](#ros)
-    1. [1.- Require / Implement](#Rreq-imp)
-    2. [2.- Publish / Subscribe](#Rpub-sub)
-7. [ICE/ROS Middleware Interfaces](#ice/ros)
+    2. [Basic types for ICE & ROS](#basic-types-for-ice--ros)
+4. [Generating an ICE file from an IDSL](#generating-an-ice-file-from-an-idsl)
+5. [ICE Middleware Components](#ice-middleware-components)
+    1. [1.- Require / Implement](#require--implement)
+    2. [2.- Publish / Subscribe](#publish--subscribe)
+6. [ROS Middleware Components](#ros-middleware-components)
+    1. [1.- Require / Implement](#require--implement-1)
+    2. [2.- Publish / Subscribe](#publish--subscribe-1)
+7. [ICE/ROS Middleware Interfaces](#iceros-middleware-interfaces)
 
-<div id='introduction'/>
 ## Introduction
 
-**RoboCompDSL** is a tool used in RoboComp to automatically generate components and modify their main properties once they have been generated (e.g., communication requirements, UI type). It is one of the core tools of the framework so, if you installed RoboComp, you can start using it right away. The languages used to define components and their interfaces remain mostly the same: **CDSL** to specify components and **IDSL** to specify interfaces
+**RoboCompDSL** is a tool used in RoboComp to automatically generate interfaces and components and modify their main properties once they have been generated (e.g., communication requirements, UI type).
+It is one of the core tools of the framework so, if you installed RoboComp, you can start using it right away.
+The languages used to define components and their interfaces remain mostly the same: **CDSL** to specify components and **IDSL** to specify interfaces.
+If you still don't know what a component or interface is in Robocomp you should probably review the [tutorials](https://github.com/robocomp/robocomp/blob/stable/doc/README.md).
+This one is specific for [robocompdsl](https://github.com/robocomp/robocomp/blob/stable/doc/robocompdsl.md).
 
-<div id='cdsl'/>
+
 ## Generating a CDSL template file
 
 RoboCompDSL can generate template CDSL files to be used as a guide when writing CDSL files.
@@ -54,7 +59,26 @@ This will generate a CDSL file with the following content:
 
 > and restart your application.
 
-<div id='idsl'/>
+### 1.- Parameters 
+* Communications InterfaceName : Create communications
+	* implements: Create RPC server 
+	* requires: Create proxy to RPC server
+	* publishes: Create publication proxy a specific topic
+	* subscribesTo: Subscribe a specific topic
+* Language
+	* CPP: Implement component using C++
+	* CPP11: Implement component using C++ 11 to allow use new Ice implementation  (https://doc.zeroc.com/ice/3.7/language-mappings/c++11-mapping)
+	* Python: Implement component using python 2.7 
+* Gui (WindowType): Include visual interface using different window types
+	* QWidget: https://doc.qt.io/qt-5/qwidget.html 
+	* QDialog: https://doc.qt.io/qt-5/qdialog.html
+	* QMainWindow: https://doc.qt.io/qt-5/qmainwindow.html
+* Optionals: 
+	* agmagent: Include Cortex-Agent communication patterns
+	* UseQt (Qt4, Qt5):  Use Qt4 (https://doc.qt.io/archives/qt-4.8/qt4-8-intro.html) or Qt5 (https://doc.qt.io/qt-5/qt5-intro.html) library version
+	* InnerModelViewer: Include innermodelViewer resources (https://github.com/robocomp/robocomp/tree/stable/libs/innermodel)
+
+
 ## Generating an IDSL file
 
 Components communicate through interfaces, so we have to generate an IDSL. Let's start with a simple but complete IDSL named *Plane.idsl*:
@@ -95,10 +119,10 @@ That IDSL imports other IDSL named *Point.idsl* which only has a structure:
         	};
         };
 
-<div id='restrictions'/>
+
 ### Restrictions
 
-If we want create an IDSL compatible with ROS and ICE Middlewares, we must pay attention to 3 restrictions.
+If we want to create an IDSL compatible with ROS and ICE Middlewares, we must pay attention to 3 restrictions.
 
     1.- Services have two parameters and return void/bool.
     2.- Topics have a single parameter and return void.
@@ -107,7 +131,6 @@ If we want create an IDSL compatible with ROS and ICE Middlewares, we must pay a
 
 Any IDSL which follow the restrictions, can be used for both ROS as ICE.
 
-<div id='btypes'/>
 ### Basic types for ICE & ROS
 
 We know that ROS uses types like int8, int16, float16, etc. The following table shows a comparison of DSL types for ICE and ROS:
@@ -131,26 +154,26 @@ We know that ROS uses types like int8, int16, float16, etc. The following table 
 | time          |      ---      |std_msgs/Time  |
 | empty         |      ---      |std_msgs/Empty |
 
-<div id='iceFile'/>
+
 ## Generating an ICE file from an IDSL
 
 If we are going to use ICE Middleware, we need create our .ice files like we did with .idsl files. Let's use RoboCompDSL for this:
 
     $ robocompdsl path/to/myIDSL/myIDSL.idsl output/path/iceFile
     
-**Remember save your .ice file in (/robocomp/interfaces/).**
+**Remember to save your .ice file in (~/robocomp/interfaces/).**
 
-<div id='ice'/>
+
 ## ICE Middleware Components
 
 In this section we will create components which communicate via ICE Middleware using *Plane.idsl*.
 
-<div id='Ireq-imp'/>  
+
 ### 1.- Require / Implement
 
 We will use these CDSL:
 
-    import "/robocomp/interfaces/IDSLs/Plane.idsl";
+    import "Plane.idsl";
     Component planeClient
     {
     	Communications
@@ -163,7 +186,7 @@ We will use these CDSL:
     
 And implement:
 
-    import "/robocomp/interfaces/IDSLs/Plane.idsl";
+    import "Plane.idsl";
     Component planeServer
     {
     	Communications
@@ -215,12 +238,12 @@ Rewrite all necessary methods in your *specificworker.cpp* of Implement Componen
     
 Finally, you have 2 components communicating by ICE Middleware. Enjoy!
 
-<div id='Ipub-sub'/>
+
 ### 2.- Publish / Subscribe
 
 As we did above, we are going to create our CDSLs for this case:
 
-    import "/robocomp/interfaces/IDSLs/Plane.idsl";
+    import "Plane.idsl";
     Component planePublisher
     {
     	Communications
@@ -233,7 +256,7 @@ As we did above, we are going to create our CDSLs for this case:
     
 And subscriber:
 
-    import "/robocomp/interfaces/IDSLs/Plane.idsl";
+    import "Plane.idsl";
     Component planeSubscriber
     {
     	Communications
@@ -283,18 +306,17 @@ Rewrite all necessary methods in your *specificworker.cpp* of Subscriber Compone
 
 As you can see, this section is as above but with minor differences.
 
-<div id='ros'/>
 ## ROS Middleware Components
 
 In this section we will create components which communicate via ROS Middleware using *Plane.idsl*.
 The use of the types is a little different to what we saw with ICE Middleware.
 
-<div id='Rreq-imp'/>  
+
 ### 1.- Require / Implement
 
 Our CDSLs:
 
-    import "/robocomp/interfaces/IDSLs/Plane.idsl";
+    import "Plane.idsl";
     Component planeClient
     {
     	Communications
@@ -307,7 +329,7 @@ Our CDSLs:
 
 And Implement:
 
-    import "/robocomp/interfaces/IDSLs/Plane.idsl";
+    import "Plane.idsl";
     Component planeServer
     {
     	Communications
@@ -364,12 +386,12 @@ Rewrite all methods in your Implement Component. An example:
     1.- ROS Services will always return a bool.
     2.- Your method has 2 parameters (Request and Response).
 
-<div id='Rpub-sub'/>
+
 ### 2.- Publish / Subscribe
 
 Publshers/Subscribers have less difficulty. Let's create our CDSLs like ICE but with **(ros)**:
 
-    import "/robocomp/interfaces/IDSLs/Plane.idsl";
+    import "Plane.idsl";
     Component planePublisher
     {
     	Communications
@@ -382,7 +404,7 @@ Publshers/Subscribers have less difficulty. Let's create our CDSLs like ICE but 
     
 And Subscriber:
 
-    import "/robocomp/interfaces/IDSLs/Plane.idsl";
+    import "Plane.idsl";
     Component planeSubscriber
     {
     	Communications
@@ -436,7 +458,6 @@ Send us any questions or problems you may have.
 
 Check out this tutorial [RoboComp Component & Ros Node chatter](https://github.com/robocomp/robocomp/blob/highlyunstable/doc/RobocompRosChatter.md).
 
-<div id='ice/ros'/>
 ## ICE/ROS Middleware Interfaces
 
 If we want to use an interface through Ros and Ice Middlewares (for example: *requires Plane(ice), Plane(ros);* ), we need to pay attention to a couple of changes.
@@ -452,7 +473,7 @@ void SpecificWorker::newDimensions**ROS**(RoboCompPlane**ROS**::Dimensions dims)
     
 The call to this methods with our proxys are like this:
 
-    interface_proxy->newDimensions(dims)            (ICE)
+    interface_proxy->newDimensions(dims)        (ICE)
     interface_rosproxy->->newDimensions(dims)   (ROS)
     
 **ROS word doesn't appear in the call.**

@@ -46,6 +46,7 @@ class RGBDI : public QObject , public virtual RoboCompRGBD::RGBD
 		void getDepth ( DepthSeq& depth, RoboCompJointMotor::MotorStateMap& hState, RoboCompGenericBase::TBaseState& bState, const Ice::Current & = Ice::Current() );
 		void getRGB ( ColorSeq& color, RoboCompJointMotor::MotorStateMap& hState, RoboCompGenericBase::TBaseState& bState, const Ice::Current & = Ice::Current() );
 		void getXYZ ( PointSeq& points, RoboCompJointMotor::MotorStateMap& hState, RoboCompGenericBase::TBaseState& bState, const Ice::Current & = Ice::Current() );
+		void getXYZByteStream ( imgType& pointStream, RoboCompJointMotor::MotorStateMap& hState, RoboCompGenericBase::TBaseState& bState, const Ice::Current & = Ice::Current() ) {};
 		
 	private:
 		std::shared_ptr<SpecificWorker> worker;
