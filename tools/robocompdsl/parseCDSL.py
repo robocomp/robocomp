@@ -95,11 +95,8 @@ def decoratorAndType_to_const_ampersand(decorator, vtype, modulePool, cpp11=Fals
 
 
 def getNameNumber(aalist):
-	lista = []
-	for key in aalist:
-		lista.append(key[0])
 	ret = []
-	c = Counter(lista)
+	c = Counter(aalist)
 	keys = sorted(c)
 	
 	for k in keys:
@@ -272,7 +269,6 @@ class CDSLParsing:
 			if importable:
 				component['recursiveImports'] += [attempt]
 				component['recursiveImports'] += [x for x in importedModule['imports'].split('#') if len(x)>0]
-
 		# Language
 		component['language'] = tree['properties']['language'][0]
 		# qtVersion
@@ -320,7 +316,7 @@ class CDSLParsing:
 				comm_type = comm[0]
 				interfaces = sorted(comm[1:], key=lambda x: x[0])
 				for interface in interfaces:
-					component[comm_type].append(interface)
+					component[comm_type].append(interface[0])
 					if communicationIsIce(interface):
 						component['iceInterfaces'].append(interface[0])
 					else:

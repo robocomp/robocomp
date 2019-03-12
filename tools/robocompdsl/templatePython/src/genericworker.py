@@ -57,7 +57,7 @@ Z()
 #    along with RoboComp.  If not, see <http://www.gnu.org/licenses/>.
 
 import sys, Ice, os
-from PySide import QtGui, QtCore
+from PySide2 import QtWidgets, QtCore
 
 ROBOCOMP = ''
 try:
@@ -256,7 +256,7 @@ class GenericWorker(
 [[[cog
 A()
 if component['gui'] != 'none':
-	cog.out('QtGui.'+component['gui'][1])
+	cog.out('QtWidgets.'+component['gui'][1])
 else:
 	cog.out('QtCore.QObject')
 Z()

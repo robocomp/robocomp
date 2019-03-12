@@ -7,11 +7,11 @@ sys.path.append('/opt/robocomp/python')
 
 import cog
 def A():
-	cog.out('<@@<')
+    cog.out('<@@<')
 def Z():
-	cog.out('>@@>')
+    cog.out('>@@>')
 def TAB():
-	cog.out('<TABHERE>')
+    cog.out('<TABHERE>')
 
 from parseCDSL import *
 includeDirectories = theIDSLPaths.split('#')
@@ -164,78 +164,83 @@ import sys, traceback, IceStorm, subprocess, threading, time, Queue, os, copy
 # Ctrl+c handling
 import signal
 
-from PySide import QtGui, QtCore
+from PySide2 import QtCore
+[[[cog
+    if component['gui'] != "none":
+        cog.outl('from PySide2 import QtWidgets')
+]]]
+[[[end]]]
 
 from specificworker import *
 
 
 class CommonBehaviorI(RoboCompCommonBehavior.CommonBehavior):
-	def __init__(self, _handler):
-		self.handler = _handler
-		self.communicator = _communicator
-	def getFreq(self, current = None):
-		self.handler.getFreq()
-	def setFreq(self, freq, current = None):
-		self.handler.setFreq()
-	def timeAwake(self, current = None):
-		try:
-			return self.handler.timeAwake()
-		except:
-			print 'Problem getting timeAwake'
-	def killYourSelf(self, current = None):
-		self.handler.killYourSelf()
-	def getAttrList(self, current = None):
-		try:
-			return self.handler.getAttrList()
-		except:
-			print 'Problem getting getAttrList'
-			traceback.print_exc()
-			status = 1
-			return
+    def __init__(self, _handler):
+        self.handler = _handler
+        self.communicator = _communicator
+    def getFreq(self, current = None):
+        self.handler.getFreq()
+    def setFreq(self, freq, current = None):
+        self.handler.setFreq()
+    def timeAwake(self, current = None):
+        try:
+            return self.handler.timeAwake()
+        except:
+            print 'Problem getting timeAwake'
+    def killYourSelf(self, current = None):
+        self.handler.killYourSelf()
+    def getAttrList(self, current = None):
+        try:
+            return self.handler.getAttrList()
+        except:
+            print 'Problem getting getAttrList'
+            traceback.print_exc()
+            status = 1
+            return
 
 
 
 if __name__ == '__main__':
 [[[cog
-	if component['gui'] != "none":
-		cog.outl('<TABHERE>app = QtGui.QApplication(sys.argv)')
-	else:
-		cog.outl('<TABHERE>app = QtCore.QCoreApplication(sys.argv)')
+    if component['gui'] != "none":
+        cog.outl('<TABHERE>app = QtWidgets.QApplication(sys.argv)')
+    else:
+        cog.outl('<TABHERE>app = QtCore.QCoreApplication(sys.argv)')
 ]]]
 [[[end]]]
-	params = copy.deepcopy(sys.argv)
-	if len(params) > 1:
-		if not params[1].startswith('--Ice.Config='):
-			params[1] = '--Ice.Config=' + params[1]
-	elif len(params) == 1:
-		params.append('--Ice.Config=config')
-	ic = Ice.initialize(params)
-	status = 0
-	mprx = {}
-	parameters = {}
-	for i in ic.getProperties():
-		parameters[str(i)] = str(ic.getProperties().getProperty(i))
+    params = copy.deepcopy(sys.argv)
+    if len(params) > 1:
+        if not params[1].startswith('--Ice.Config='):
+            params[1] = '--Ice.Config=' + params[1]
+    elif len(params) == 1:
+        params.append('--Ice.Config=config')
+    ic = Ice.initialize(params)
+    status = 0
+    mprx = {}
+    parameters = {}
+    for i in ic.getProperties():
+        parameters[str(i)] = str(ic.getProperties().getProperty(i))
 [[[cog
 
 try:
-	needIce = False
-	needStorm = False
-	for req in component['requires']:
-		if communicationIsIce(req):
-			needIce = True
-	for imp in component['implements']:
-		if communicationIsIce(imp):
-			needIce = True
-	for pub in component['publishes']:
-		if communicationIsIce(pub):
-			needIce = True
-			needStorm = True
-	for sub in component['subscribesTo']:
-		if communicationIsIce(sub):
-			needIce = True
-			needStorm = True
-	if needStorm:
-		cog.outl("""
+    needIce = False
+    needStorm = False
+    for req in component['requires']:
+        if communicationIsIce(req):
+            needIce = True
+    for imp in component['implements']:
+        if communicationIsIce(imp):
+            needIce = True
+    for pub in component['publishes']:
+        if communicationIsIce(pub):
+            needIce = True
+            needStorm = True
+    for sub in component['subscribesTo']:
+        if communicationIsIce(sub):
+            needIce = True
+            needStorm = True
+    if needStorm:
+        cog.outl("""
 <TABHERE># Topic Manager
 <TABHERE>proxy = ic.getProperties().getProperty("TopicManager.Proxy")
 <TABHERE>obj = ic.stringToProxy(proxy)
@@ -245,99 +250,99 @@ try:
 <TABHERE><TABHERE>print 'Cannot connect to IceStorm! ('+proxy+')'
 <TABHERE><TABHERE>sys.exit(-1)""")
 except:
-	pass
+    pass
 
 for req, num in getNameNumber(component['requires']):
-	if type(req) == str:
-		rq = req
-	else:
-		rq = req[0]
-	if communicationIsIce(req):
-		w = REQUIRE_STR.replace("<NORMAL>", rq).replace("<LOWER>", rq.lower()).replace("<NUM>",num)
-		cog.outl(w)
+    if type(req) == str:
+        rq = req
+    else:
+        rq = req[0]
+    if communicationIsIce(req):
+        w = REQUIRE_STR.replace("<NORMAL>", rq).replace("<LOWER>", rq.lower()).replace("<NUM>",num)
+        cog.outl(w)
 
 for pb, num in getNameNumber(component['publishes']):
-	if type(pb) == str:
-		pub = pb
-	else:
-		pub = pb[0]
-	if communicationIsIce(pb):
-		w = PUBLISHES_STR.replace("<NORMAL>", pub).replace("<LOWER>", pub.lower())
-		cog.outl(w)
+    if type(pb) == str:
+        pub = pb
+    else:
+        pub = pb[0]
+    if communicationIsIce(pb):
+        w = PUBLISHES_STR.replace("<NORMAL>", pub).replace("<LOWER>", pub.lower())
+        cog.outl(w)
 
 cog.outl("<TABHERE>if status == 0:")
 cog.outl("<TABHERE><TABHERE>worker = SpecificWorker(mprx)")
 cog.outl("<TABHERE><TABHERE>worker.setParams(parameters)")
 for im in component['implements']:
-	if type(im) == str:
-		imp = im
-	else:
-		imp = im[0]
-	if communicationIsIce(im):
-		w = IMPLEMENTS_STR.replace("<NORMAL>", imp).replace("<LOWER>", imp.lower())
-		cog.outl(w)
+    if type(im) == str:
+        imp = im
+    else:
+        imp = im[0]
+    if communicationIsIce(im):
+        w = IMPLEMENTS_STR.replace("<NORMAL>", imp).replace("<LOWER>", imp.lower())
+        cog.outl(w)
 
 for sut in component['subscribesTo']:
-	if type(sut) == str:
-		st = sut
-	else:
-		st = sut[0]
-	if communicationIsIce(sut):
-		w = SUBSCRIBESTO_STR.replace("<NORMAL>", st).replace("<LOWER>", st.lower())
-		cog.outl(w)
+    if type(sut) == str:
+        st = sut
+    else:
+        st = sut[0]
+    if communicationIsIce(sut):
+        w = SUBSCRIBESTO_STR.replace("<NORMAL>", st).replace("<LOWER>", st.lower())
+        cog.outl(w)
 if component['usingROS'] == True:
-	cog.outl("<TABHERE>rospy.init_node(\""+component['name']+"\", anonymous=True)")
+    cog.outl("<TABHERE>rospy.init_node(\""+component['name']+"\", anonymous=True)")
 for sub in component['subscribesTo']:
-	nname = sub
-	while type(nname) != type(''):
-		nname = nname[0]
-	module = pool.moduleProviding(nname)
-	if module == None:
-		print ('\nCan\'t find module providing', nname, '\n')
-		sys.exit(-1)
-	if not communicationIsIce(sub):
-		for interface in module['interfaces']:
-			if interface['name'] == nname:
-				for mname in interface['methods']:
-					method = interface['methods'][mname]
-					for p in method['params']:
-						s = "\""+mname+"\""
-						if p['type'] in ('float','int'):
-							cog.outl("<TABHERE>rospy.Subscriber("+s+", "+p['type'].capitalize()+"32, worker.ROS"+method['name']+")")
-						elif p['type'] in ('uint8','uint16','uint32','uint64'):
-							cog.outl("<TABHERE>rospy.Subscriber("+s+", UInt"+p['type'].split('t')[1]+", worker.ROS"+method['name']+")")
-						elif p['type'] in rosTypes:
-							cog.outl("<TABHERE>rospy.Subscriber("+s+", "+p['type'].capitalize()+", worker.ROS"+method['name']+")")
-						elif '::' in p['type']:
-							cog.outl("<TABHERE>rospy.Subscriber("+s+", "+p['type'].split('::')[1]+", worker.ROS"+method['name']+")")
-						else:
-							cog.outl("<TABHERE>rospy.Subscriber("+s+", "+p['type']+", worker.ROS"+method['name']+")")
+    nname = sub
+    while type(nname) != type(''):
+        nname = nname[0]
+    module = pool.moduleProviding(nname)
+    if module == None:
+        print ('\nCan\'t find module providing', nname, '\n')
+        sys.exit(-1)
+    if not communicationIsIce(sub):
+        for interface in module['interfaces']:
+            if interface['name'] == nname:
+                for mname in interface['methods']:
+                    method = interface['methods'][mname]
+                    for p in method['params']:
+                        s = "\""+mname+"\""
+                        if p['type'] in ('float','int'):
+                            cog.outl("<TABHERE>rospy.Subscriber("+s+", "+p['type'].capitalize()+"32, worker.ROS"+method['name']+")")
+                        elif p['type'] in ('uint8','uint16','uint32','uint64'):
+                            cog.outl("<TABHERE>rospy.Subscriber("+s+", UInt"+p['type'].split('t')[1]+", worker.ROS"+method['name']+")")
+                        elif p['type'] in rosTypes:
+                            cog.outl("<TABHERE>rospy.Subscriber("+s+", "+p['type'].capitalize()+", worker.ROS"+method['name']+")")
+                        elif '::' in p['type']:
+                            cog.outl("<TABHERE>rospy.Subscriber("+s+", "+p['type'].split('::')[1]+", worker.ROS"+method['name']+")")
+                        else:
+                            cog.outl("<TABHERE>rospy.Subscriber("+s+", "+p['type']+", worker.ROS"+method['name']+")")
 
 for imp in component['implements']:
-	nname = imp
-	while type(nname) != type(''):
-		nname = nname[0]
-	module = pool.moduleProviding(nname)
-	if module == None:
-		print ('\nCan\'t find module providing', nname, '\n')
-		sys.exit(-1)
-	if not communicationIsIce(imp):
-		for interface in module['interfaces']:
-			if interface['name'] == nname:
-				for mname in interface['methods']:
-					method = interface['methods'][mname]
-					s = "\""+mname+"\""
-					cog.outl("<TABHERE>rospy.Service("+s+", "+mname+", worker.ROS"+method['name']+")")
+    nname = imp
+    while type(nname) != type(''):
+        nname = nname[0]
+    module = pool.moduleProviding(nname)
+    if module == None:
+        print ('\nCan\'t find module providing', nname, '\n')
+        sys.exit(-1)
+    if not communicationIsIce(imp):
+        for interface in module['interfaces']:
+            if interface['name'] == nname:
+                for mname in interface['methods']:
+                    method = interface['methods'][mname]
+                    s = "\""+mname+"\""
+                    cog.outl("<TABHERE>rospy.Service("+s+", "+mname+", worker.ROS"+method['name']+")")
 
 ]]]
 [[[end]]]
 
-	signal.signal(signal.SIGINT, signal.SIG_DFL)
-	app.exec_()
+    signal.signal(signal.SIGINT, signal.SIG_DFL)
+    app.exec_()
 
-	if ic:
-		try:
-			ic.destroy()
-		except:
-			traceback.print_exc()
-			status = 1
+    if ic:
+        try:
+            ic.destroy()
+        except:
+            traceback.print_exc()
+            status = 1

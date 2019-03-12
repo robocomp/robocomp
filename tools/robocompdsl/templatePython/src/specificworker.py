@@ -55,9 +55,6 @@ Z()
 #    along with RoboComp.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-import sys, os, traceback, time
-
-from PySide import QtGui, QtCore
 from genericworker import *
 
 # If RoboComp was compiled with Python bindings you can use InnerModel in Python
