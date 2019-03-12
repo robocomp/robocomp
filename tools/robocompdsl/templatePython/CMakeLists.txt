@@ -40,7 +40,7 @@ MACRO( WRAP_PYTHON_UI )
   FOREACH( input_file ${ARGN} )
     ADD_CUSTOM_COMMAND (
       OUTPUT src/ui_${input_file}.py
-      COMMAND pyside-uic src/${input_file}.ui -o src/ui_${input_file}.py
+      COMMAND pyside2-uic src/${input_file}.ui -o src/ui_${input_file}.py
       DEPENDS src/${input_file}.ui
       COMMENT "Generating src/ui_${input_file}.py from src/${input_file}.ui"
     )

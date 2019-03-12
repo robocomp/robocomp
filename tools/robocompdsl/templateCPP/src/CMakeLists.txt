@@ -108,12 +108,16 @@ if component['language'].lower() == "cpp11":
 
 #ROBOCOMP
 ROBOCOMP_INITIALIZE( $ENV{ROBOCOMP}/ )
-ROBOCOMP_WRAP_ICE( CommonBehavior
+ROBOCOMP_WRAP_ICE( CommonBehavior 
 [[[cog
 A()
-for im in component['recursiveImports']:
+imp = []
+for im in component['recursiveImports'] + component["imports"]:
 	if communicationIsIce(im):
-		cog.out(' ' + im.split('/')[-1].split('.')[0] + ' ')
+		name = im.split('/')[-1].split('.')[0]
+		if not name in imp:
+			imp.append(name)
+cog.out(' '.join(imp))
 try:
 	options = [ x.lower() for x in component['options'] ]
 	if 'agmagent' in options:
