@@ -267,7 +267,6 @@ class CDSLParsing:
 							if interf['name'] == interface[0]:
 								importable = True
 			if importable:
-				component['recursiveImports'] += [attempt]
 				component['recursiveImports'] += [x for x in importedModule['imports'].split('#') if len(x)>0]
 		# Language
 		component['language'] = tree['properties']['language'][0]

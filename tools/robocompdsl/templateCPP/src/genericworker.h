@@ -73,9 +73,13 @@ if component['gui'] != 'none':
 #include <CommonBehavior.h>
 
 [[[cog
-for imp in component['recursiveImports']:
-	incl = imp.split('/')[-1].split('.')[0]
-	cog.outl('#include <'+incl+'.h>')
+usingList = []
+for imp in component['recursiveImports'] + component["iceInterfaces"]:
+	name = imp.split('/')[-1].split('.')[0]
+	if not name in usingList:
+		usingList.append(name)
+for name in usingList:
+	cog.outl('#include <'+name+'.h>')
 
 
 if component['usingROS'] == True:
@@ -124,20 +128,13 @@ except:
 
 using namespace std;
 [[[cog
-pool = IDSLPool(theIDSLs, includeDirectories)
-for m in pool.modulePool:
-	rosModule = False
-	for imp in component['subscribesTo']+component['publishes']+component['implements']+component['requires']:
-		if type(imp) == str:
-			im = imp
-		else:
-			im = imp[0]
-		if not communicationIsIce(imp):
-			if im not in component['iceInterfaces']:
-				rosModule = True
-	if rosModule == False:
-		cog.outl("using namespace "+pool.modulePool[m]['name']+";")
-
+usingList = []
+for imp in component['recursiveImports'] + component["iceInterfaces"]:
+	name = imp.split('/')[-1].split('.')[0]
+	if not name in usingList:
+		usingList.append(name)
+for name in usingList:
+	cog.outl("using namespace RoboComp"+name+";")
 ]]]
 [[[end]]]
 
