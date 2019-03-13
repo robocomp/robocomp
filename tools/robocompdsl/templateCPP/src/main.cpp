@@ -347,24 +347,19 @@ Z()
 	int status=EXIT_SUCCESS;
 
 [[[cog
-for namea, num in getNameNumber(component['publishes']) + getNameNumber(component['requires']):
-	if type(namea) == str:
-		name = namea
-	else:
-		name = namea[0]
-	if communicationIsIce(namea):
+for name, num in getNameNumber(component['publishes']):
+	if communicationIsIce(name):
+		if component['language'].lower() == "cpp":
+			cog.outl('<TABHERE>'+name+'Prx '+name.lower()+num +'_pubproxy;')
+		else:
+			cog.outl('<TABHERE>'+name+'PrxPtr '+name.lower()+num +'_pubproxy;')
+
+for name, num in  getNameNumber(component['requires']):
+	if communicationIsIce(name):
 		if component['language'].lower() == "cpp":
 			cog.outl('<TABHERE>'+name+'Prx '+name.lower()+num +'_proxy;')
 		else:
 			cog.outl('<TABHERE>'+name+'PrxPtr '+name.lower()+num +'_proxy;')
-try:
-	if isAGM1Agent(component):
-		if component['language'].lower() == "cpp":
-			cog.outl("<TABHERE>AGMExecutivePrx agmexecutive_proxy;")
-		else:
-			cog.outl("<TABHERE>AGMExecutivePrxPtr agmexecutive_proxy;")
-except:
-	pass
 ]]]
 [[[end]]]
 
@@ -373,12 +368,8 @@ except:
 
 [[[cog
 proxy_list = []
-for namea, num in getNameNumber(component['requires']):
-	if type(namea) == str:
-		name = namea
-	else:
-		name = namea[0]
-	if communicationIsIce(namea):
+for name, num in getNameNumber(component['requires']):
+	if communicationIsIce(name):
 		if component['language'].lower() == "cpp":
 			cpp = "<PROXYNAME>_proxy = <NORMAL>Prx::uncheckedCast( communicator()->stringToProxy( proxy ) );"
 		else:
@@ -432,11 +423,11 @@ for pba in component['publishes']:
 		if component['language'].lower() == "cpp":
 			cog.outl("<TABHERE>Ice::ObjectPrx " + pb.lower() + "_pub = " + pb.lower() + "_topic->getPublisher()->ice_oneway();")
 			cog.outl("<TABHERE>" + pb.lower() + "_proxy = " + pb + "Prx::uncheckedCast(" + pb.lower() + "_pub);")
-			cog.outl("<TABHERE>mprx[\"" + pb + "Pub\"] = (::IceProxy::Ice::Object*)(&" + pb.lower() + "_proxy);")
+			cog.outl("<TABHERE>mprx[\"" + pb + "Pub\"] = (::IceProxy::Ice::Object*)(&" + pb.lower() + "_pubproxy);")
 		else:
 			cog.outl("<TABHERE>auto " + pb.lower() + "_pub = " + pb.lower() + "_topic->getPublisher()->ice_oneway();")
 			cog.outl("<TABHERE>" + pb.lower() + "_proxy = Ice::uncheckedCast<" + pb + "Prx>(" + pb.lower() + "_pub);")
-			proxy_list.append(pb.lower() + "_proxy")
+			proxy_list.append(pb.lower() + "_pubproxy")
 
 
 if component['usingROS'] == True:

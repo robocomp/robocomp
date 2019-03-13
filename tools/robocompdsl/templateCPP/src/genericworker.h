@@ -360,16 +360,20 @@ except:
 
 
 [[[cog
-for namea, num in getNameNumber(component['publishes']) + getNameNumber(component['requires']):
-	if type(namea) == str:
-		name = namea
-	else:
-		name = namea[0]
-	if communicationIsIce(namea):
+for name, num in getNameNumber(component['requires']):
+	if communicationIsIce(name):
 		if component['language'].lower() == "cpp":
 			cog.outl('<TABHERE>'+name+'Prx '+name.lower()+num +'_proxy;')
 		else:
 			cog.outl('<TABHERE>'+name+'PrxPtr '+name.lower()+num +'_proxy;')
+
+for name, num in getNameNumber(component['publishes']):
+	if communicationIsIce(name):
+		if component['language'].lower() == "cpp":
+			cog.outl('<TABHERE>'+name+'Prx '+name.lower()+num +'_pubproxy;')
+		else:
+			cog.outl('<TABHERE>'+name+'PrxPtr '+name.lower()+num +'_pubproxy;')
+
 ]]]
 [[[end]]]
 
@@ -538,7 +542,7 @@ try:
 		cog.outl("<TABHERE>BehaviorParameters p;")
 		cog.outl("<TABHERE>ParameterMap params;")
 		cog.outl("<TABHERE>int iter;")
-		cog.outl("<TABHERE>bool setParametersAndPossibleActivation(const ParameterMap &prs, bool &reactivated);")
+		cog.outl("<TABHERE>bool setParametersAndPossibleActivation(const RoboCompAGMCommonBehavior::ParameterMap &prs, bool &reactivated);")
 		cog.outl("<TABHERE>RoboCompPlanning::Action createAction(std::string s);")
 except:
 	pass

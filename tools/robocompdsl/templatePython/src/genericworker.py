@@ -83,7 +83,7 @@ except:
 	pass
 
 [[[cog
-for imp in component['recursiveImports']:
+for imp in set(component['recursiveImports'] + component['requires']):
 	eso = imp.split('/')[-1]
 	incl = eso.split('.')[0]
 
@@ -106,12 +106,8 @@ for imp in component['recursiveImports']:
 
 
 [[[cog
-	for imp in component['implements']+component['subscribesTo']:
-		if type(imp) == str:
-			im = imp
-		else:
-			im = imp[0]
-		if communicationIsIce(imp):
+	for im in component['implements'] + component['subscribesTo']:
+		if communicationIsIce(im):
 			cog.outl('from ' + im.lower() + 'I import *')
 ]]]
 [[[end]]]

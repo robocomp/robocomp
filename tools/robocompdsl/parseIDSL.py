@@ -87,6 +87,8 @@ class IDSLParsing:
 
 	@staticmethod
 	def gimmeIDSL(name, files='', includeDirectories=None):
+		if not '.idsl' in name:
+			name += '.idsl'
 		pathList = []
 		if includeDirectories!= None:
 			pathList += [x for x in includeDirectories]

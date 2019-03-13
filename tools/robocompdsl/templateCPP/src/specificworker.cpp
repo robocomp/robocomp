@@ -183,6 +183,7 @@ cog.outl("""//       THE FOLLOWING IS JUST AN EXAMPLE
 """)
 if component['innermodelviewer']:
 	cog.outl("#ifdef USE_QTGUI")
+	cog.outl("<TABHERE>innerModel = new InnerModel(); //InnerModel creation example")
 	cog.outl("<TABHERE>innerModelViewer = new InnerModelViewer (innerModel, \"root\", osgView->getRootGroup(), true);")
 	cog.outl("#endif")
 ]]]

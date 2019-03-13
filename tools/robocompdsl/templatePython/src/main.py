@@ -248,47 +248,35 @@ try:
 <TABHERE><TABHERE>topicManager = IceStorm.TopicManagerPrx.checkedCast(obj)
 <TABHERE>except Ice.ConnectionRefusedException, e:
 <TABHERE><TABHERE>print 'Cannot connect to IceStorm! ('+proxy+')'
-<TABHERE><TABHERE>sys.exit(-1)""")
+<TABHERE><TABHERE>status = 1""")
 except:
 	pass
 
 for req, num in getNameNumber(component['requires']):
-	if type(req) == str:
-		rq = req
-	else:
-		rq = req[0]
 	if communicationIsIce(req):
-		w = REQUIRE_STR.replace("<NORMAL>", rq).replace("<LOWER>", rq.lower()).replace("<NUM>",num)
+		w = REQUIRE_STR.replace("<NORMAL>", req).replace("<LOWER>", req.lower()).replace("<NUM>",num)
 		cog.outl(w)
 
-for pb, num in getNameNumber(component['publishes']):
-	if type(pb) == str:
-		pub = pb
-	else:
-		pub = pb[0]
-	if communicationIsIce(pb):
+for pub, num in getNameNumber(component['publishes']):
+	if communicationIsIce(pub):
 		w = PUBLISHES_STR.replace("<NORMAL>", pub).replace("<LOWER>", pub.lower())
 		cog.outl(w)
 
 cog.outl("<TABHERE>if status == 0:")
 cog.outl("<TABHERE><TABHERE>worker = SpecificWorker(mprx)")
 cog.outl("<TABHERE><TABHERE>worker.setParams(parameters)")
-for im in component['implements']:
-	if type(im) == str:
-		imp = im
-	else:
-		imp = im[0]
-	if communicationIsIce(im):
+cog.outl("<TABHERE>else:")
+cog.outl("<TABHERE><TABHERE>print \"Error getting required connections, check config file\"")
+cog.outl("<TABHERE><TABHERE>sys.exit(-1)")
+
+for imp in component['implements']:
+	if communicationIsIce(imp):
 		w = IMPLEMENTS_STR.replace("<NORMAL>", imp).replace("<LOWER>", imp.lower())
 		cog.outl(w)
 
 for sut in component['subscribesTo']:
-	if type(sut) == str:
-		st = sut
-	else:
-		st = sut[0]
 	if communicationIsIce(sut):
-		w = SUBSCRIBESTO_STR.replace("<NORMAL>", st).replace("<LOWER>", st.lower())
+		w = SUBSCRIBESTO_STR.replace("<NORMAL>", sut).replace("<LOWER>", sut.lower())
 		cog.outl(w)
 if component['usingROS'] == True:
 	cog.outl("<TABHERE>rospy.init_node(\""+component['name']+"\", anonymous=True)")
