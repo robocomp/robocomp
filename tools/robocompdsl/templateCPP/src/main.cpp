@@ -380,7 +380,7 @@ for name, num in getNameNumber(component['requires']):
 	if component['language'].lower() == "cpp":
 		cog.outl("<TABHERE>mprx[\""+name+"Proxy"+num+"\"] = (::IceProxy::Ice::Object*)(&"+name.lower()+num+"_proxy);//Remote server proxy creation example");
 	else:
-		proxy_list.append(name.lower()+"_proxy")
+		proxy_list.append(name.lower()+num+"_proxy")
 	
 need_topic=False
 for pub in component['publishes']:
@@ -426,7 +426,7 @@ for pba in component['publishes']:
 			cog.outl("<TABHERE>mprx[\"" + pb + "Pub\"] = (::IceProxy::Ice::Object*)(&" + pb.lower() + "_pubproxy);")
 		else:
 			cog.outl("<TABHERE>auto " + pb.lower() + "_pub = " + pb.lower() + "_topic->getPublisher()->ice_oneway();")
-			cog.outl("<TABHERE>" + pb.lower() + "_proxy = Ice::uncheckedCast<" + pb + "Prx>(" + pb.lower() + "_pub);")
+			cog.outl("<TABHERE>" + pb.lower() + "_pubproxy = Ice::uncheckedCast<" + pb + "Prx>(" + pb.lower() + "_pub);")
 			proxy_list.append(pb.lower() + "_pubproxy")
 
 

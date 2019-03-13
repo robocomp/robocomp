@@ -143,11 +143,7 @@ if component['language'].lower() == 'cpp':
 	cog.outl("typedef map <string,::IceProxy::Ice::Object*> MapPrx;")
 else:
 	proxy_list = []
-	for imp in component['publishes'] + component['requires']:
-		if type(imp) == str:
-			name = imp
-		else:
-			name = imp[0]
+	for name in component['requires'] + component['publishes']:
 		proxy_list.append("RoboComp" + name + "::" + name + "PrxPtr")
 	cog.outl("using TuplePrx = std::tuple<" + ",".join(proxy_list) + ">;")
 ]]]

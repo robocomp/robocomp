@@ -78,7 +78,7 @@ for name, num in getNameNumber(component['requires']):
 		if component['language'].lower() == 'cpp':
 			cog.outl("<TABHERE>"+name.lower()+num+"_proxy = (*("+name+"Prx*)mprx[\""+name+"Proxy"+num+"\"]);")
 		else:
-			cog.outl("<TABHERE>"+name.lower()+num+"_proxy = std::get<" + name + "PrxPtr" + ">(tprx);")
+			cog.outl("<TABHERE>"+name.lower()+num+"_proxy = std::get<" + str(cont) + ">(tprx);")
 	cont = cont + 1
 
 for name, num in getNameNumber(component['publishes']):
@@ -86,7 +86,7 @@ for name, num in getNameNumber(component['publishes']):
 		if component['language'].lower() == 'cpp':
 			cog.outl("<TABHERE>"+name.lower()+num+"_pubproxy = (*("+name+"Prx*)mprx[\""+name+"Pub"+num+"\"]);")
 		else:
-			cog.outl("<TABHERE>"+name.lower()+num+"_pubproxy = std::get<" + name + "PrxPtr" + ">(tprx);")
+			cog.outl("<TABHERE>"+name.lower()+num+"_pubproxy = std::get<" + str(cont) + ">(tprx);")
 	cont = cont + 1
 ]]]
 [[[end]]]
