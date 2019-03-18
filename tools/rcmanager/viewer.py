@@ -182,6 +182,7 @@ class Viewer(QtGui.QMainWindow, MainWindow):
     # add buttons to the component list
     def add_to_component_list(self, node): 
         button = QPushButton(node, parent=None)
+        #TODO: Don't like lambdas on connects. Look for a better solution.
         button.clicked.connect(lambda: self.on_button_click(node))
         self.verticalLayout.insertWidget(self.verticalLayout.count()-1, button)
 

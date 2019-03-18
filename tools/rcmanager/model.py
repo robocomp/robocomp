@@ -124,7 +124,7 @@ class Model():
 
         # Clear previous data
         self.graph.clear()
-        self.graph.node.clear()
+        # self.graph.node.clear()
 
         # Convert the xml data into python dict format
         xmldata = xmlreader.read_from_text(xml, 'xml')
