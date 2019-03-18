@@ -199,6 +199,17 @@ InnerModelViewer::~InnerModelViewer()
 }
 
 
+void InnerModelViewer::recursiveConstructor(InnerModelNode *node)
+{
+	osg::Group* parent;
+	if (not node->parent)
+		parent = this; 
+	else
+		parent = mts[node->parent->id];
+	
+	recursiveConstructor(node, parent, mts, meshHash);
+	
+}
 //CAUTION
 void InnerModelViewer::recursiveConstructor(InnerModelNode *node, osg::Group* parent,QHash<QString, osg::MatrixTransform *> &mtsHash, QHash<QString, IMVMesh> &meshHash, bool ignoreCameras)
 {
