@@ -88,7 +88,11 @@ sudo pip2 uninstall pyparsing
 ```bash
 sudo apt-get install pypy-pyparsing
 ```
-
+NOTE 3: If installing pypy-parsing does not work and produces an error like :no module named pyparsing 
+Run the following command : 
+```bash
+sudo pip2 install pyparsing==2.2
+```
 ## Modifying the component to write a simple controller for the robot
 
 Check that the *rcis simulator* is up and running. You should have two open windows, one with a camara looking at the world and another with the subjective camera of the robot. In not, in a new terminal type,
