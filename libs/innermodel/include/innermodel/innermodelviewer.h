@@ -146,6 +146,7 @@ class InnerModelViewer : public osg::Switch
 		void update();
 		void recursiveConstructor(InnerModelNode* node, osg::Group* parent, QHash< QString, osg::MatrixTransform* >& mtsHash, QHash< QString, IMVMesh >& meshHash, bool ignoreCameras=false);
 		void recursiveConstructor(InnerModelNode* node); //use only after insert new nodes in innermodel after first creation
+		void recursiveRemove(InnerModelNode *node);
 		void setMainCamera(osgGA::TrackballManipulator *manipulator, CameraView pov) const;
 		void setCameraCenter(OsgView *view, const QVec center_);
 		void setLookTowards(OsgView *view, const QVec to_, const QVec up_);
