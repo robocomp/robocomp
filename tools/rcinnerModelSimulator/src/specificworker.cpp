@@ -577,7 +577,7 @@ RoboCompLaser::TLaserData SpecificWorker::LASER_createLaserData(const IMVLaser &
 	laserData.resize(measures);
 
 	double angle = finAngle;  //variable to iterate angle increments
-	//El punto inicial es el origen del láser
+	//Origin is the starting point of the laser
 	const osg::Vec3 P = QVecToOSGVec(innerModel->laserTo("root", id, 0, 0));
 	const float incAngle = (fabs(iniAngle)+fabs(finAngle)) / (float)measures;
 	osg::Vec3 Q,R;
@@ -591,13 +591,13 @@ RoboCompLaser::TLaserData SpecificWorker::LASER_createLaserData(const IMVLaser &
 
 		laserDataCartArray[id]->operator[](i) = QVecToOSGVec(QVec::vec3(maxRange*sin(angle), 0, maxRange*cos(angle)));
 
-		//Calculamos el punto destino
+		//Destination point calculation
 		Q = QVecToOSGVec(innerModel->laserTo("root", id, maxRange, angle));
-		//Creamos el segmento de interseccion
+		//Create the segment of intersection
 		osg::ref_ptr<osgUtil::LineSegmentIntersector> intersector = new osgUtil::LineSegmentIntersector(osgUtil::Intersector::MODEL, P, Q);
 		osgUtil::IntersectionVisitor visitor(intersector.get());
 
-		/// Pasando el visitor al root
+		/// Passing the visitor to root
 		viewer->getRootGroup()->accept(visitor);
 
 		if (intersector->containsIntersections() and id!="laserSecurity")
@@ -851,7 +851,7 @@ RoboCompInnerModelManager::NodeType SpecificWorker::getNodeType(InnerModelNode *
 	}
 }
 
-// Cambia el color de un mesh
+// Change the color of mesh
 void SpecificWorker::cambiaColor(QString id, osg::Vec4 color)
 {
 	osg::Node *node = imv->meshHash[id].osgmeshes;//imv->osgmeshes[id];
@@ -864,7 +864,7 @@ void SpecificWorker::cambiaColor(QString id, osg::Vec4 color)
 	}
 }
 
-// Devuelve el colorido inicial a un mesh
+// Returns the initial color to a mesh
 void SpecificWorker::devuelveColor(QString id)
 {
 	osg::Node *node = imv->meshHash[id].osgmeshes;
@@ -876,7 +876,7 @@ void SpecificWorker::devuelveColor(QString id)
 	}
 }
 
-// Activa / desactiva las luces
+// Turn lights on / off
 void SpecificWorker::changeLigthState(bool apagar)
 {
 	//QMutexLocker vm(worker->viewerMutex);
@@ -884,11 +884,11 @@ void SpecificWorker::changeLigthState(bool apagar)
 	osg::StateSet *state = viewer->getRootGroup()->getOrCreateStateSet();
 
 	if(apagar)
-	{/// apagar luces
+	{/// turn off lights
 		state->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
 	}
 	else
-	{/// encender luces
+	{/// turn on lights
 		state->setMode(GL_LIGHTING, osg::StateAttribute::ON);
 	}
 }
@@ -1012,7 +1012,7 @@ void SpecificWorker::setLigthz(double v)
 // void SpecificWorker::checkPoseCollision(QString node,QString msg)
 //
 //{
-// 	///por cada mesh descendiente chequear colisiones con todo el mundo menos con sus mesh hermanas
+// 	///for each descendant mesh check collisions with everyone except their mesh sisters
 // #ifdef INNERMODELMANAGERDEBUG
 // 	qDebug() <<"checkPoseCollision"<<msg<<node<<"A?";
 // #endif
