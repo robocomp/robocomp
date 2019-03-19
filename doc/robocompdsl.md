@@ -88,8 +88,7 @@ sudo pip2 uninstall pyparsing
 ```bash
 sudo apt-get install pypy-pyparsing
 ```
-NOTE 3: If installing pypy-parsing does not work and produces an error like :no module named pyparsing
-Run the following command : 
+NOTE 3: If installing pypy-parsing does not work and produces an error like :no module named pyparsing then run the following command : 
 ```bash
 sudo pip2 install pyparsing==2.2
 ```
