@@ -73,28 +73,20 @@ else:
 {
 [[[cog
 cont = 0
-for namea, num in getNameNumber(component['requires']):
-	if type(namea) == str:
-		name = namea
-	else:
-		name = namea[0]
-	if communicationIsIce(namea):
+for name, num in getNameNumber(component['requires']):
+	if communicationIsIce(name):
 		if component['language'].lower() == 'cpp':
 			cog.outl("<TABHERE>"+name.lower()+num+"_proxy = (*("+name+"Prx*)mprx[\""+name+"Proxy"+num+"\"]);")
 		else:
-			cog.outl("<TABHERE>"+name.lower()+num+"_proxy = std::get<" + name + "PrxPtr" + ">(tprx);")
+			cog.outl("<TABHERE>"+name.lower()+num+"_proxy = std::get<" + str(cont) + ">(tprx);")
 	cont = cont + 1
 
-for namea, num in getNameNumber(component['publishes']):
-	if type(namea) == str:
-		name = namea
-	else:
-		name = namea[0]
-	if communicationIsIce(namea):
+for name, num in getNameNumber(component['publishes']):
+	if communicationIsIce(name):
 		if component['language'].lower() == 'cpp':
-			cog.outl("<TABHERE>"+name.lower()+num+"_proxy = (*("+name+"Prx*)mprx[\""+name+"Pub"+num+"\"]);")
+			cog.outl("<TABHERE>"+name.lower()+num+"_pubproxy = (*("+name+"Prx*)mprx[\""+name+"Pub"+num+"\"]);")
 		else:
-			cog.outl("<TABHERE>"+name.lower()+num+"_proxy = std::get<" + name + "PrxPtr" + ">(tprx);")
+			cog.outl("<TABHERE>"+name.lower()+num+"_pubproxy = std::get<" + str(cont) + ">(tprx);")
 	cont = cont + 1
 ]]]
 [[[end]]]

@@ -199,6 +199,70 @@ InnerModelViewer::~InnerModelViewer()
 }
 
 
+void InnerModelViewer::recursiveConstructor(InnerModelNode *node)
+{
+	osg::Group* parent;
+	if (not node->parent)
+		parent = this; 
+	else
+		parent = mts[node->parent->id];
+	
+	recursiveConstructor(node, parent, mts, meshHash);
+	
+}
+
+void InnerModelViewer::recursiveRemove(InnerModelNode *node)
+{
+	InnerModelTransform *transformation;
+	InnerModelMesh *mesh;
+	InnerModelPlane *plane;
+	InnerModelLaser *laser;
+	InnerModelPointCloud *pointcloud;
+	InnerModelDisplay *display;
+	
+	// Find out which kind of node are we dealing with
+	if ((transformation = dynamic_cast<InnerModelTransform *>(node)))
+	{
+		mts.remove(transformation->id); 
+		for(int i=0; i<node->children.size(); i++)
+		{
+			recursiveRemove(node->children[i]);
+		}
+	}
+	else if ((laser = dynamic_cast<InnerModelLaser *>(node)))
+	{
+		lasers.remove(node->id);
+	}
+	else if ((plane = dynamic_cast<InnerModelPlane *>(node)))
+	{
+		while(planesHash[node->id]->getNumParents() > 0)
+			((osg::Group *)(planesHash[node->id]->getParent(0)))->removeChild(planesHash[node->id]);
+		planeMts.remove(plane->id);
+		planesHash.remove(node->id);
+	}
+	else if ((display = dynamic_cast<InnerModelDisplay *>(node)))
+	{
+		while(planesHash[node->id]->getNumParents() > 0)
+			((osg::Group *)(planesHash[node->id]->getParent(0)))->removeChild(planesHash[node->id]);
+		planeMts.remove(node->id);
+		planesHash.remove(node->id);
+	}
+	else if ((pointcloud = dynamic_cast<InnerModelPointCloud *>(node)))
+	{
+		pointCloudsHash.remove(node->id);
+	}
+	else if ((mesh = dynamic_cast<InnerModelMesh *>(node)))
+	{
+		while (meshHash[node->id].osgmeshPaths->getNumParents() > 0)
+			meshHash[node->id].osgmeshPaths->getParent(0)->removeChild(meshHash[node->id].osgmeshPaths);
+		while(meshHash[node->id].osgmeshes->getNumParents() > 0)
+			meshHash[node->id].osgmeshes->getParent(0)->removeChild(meshHash[node->id].osgmeshes);
+		while(meshHash[node->id].meshMts->getNumParents() > 0)
+			meshHash[node->id].meshMts->getParent(0)->removeChild(meshHash[node->id].meshMts);
+		meshHash.remove(mesh->id);
+	}
+}
+
 //CAUTION
 void InnerModelViewer::recursiveConstructor(InnerModelNode *node, osg::Group* parent,QHash<QString, osg::MatrixTransform *> &mtsHash, QHash<QString, IMVMesh> &meshHash, bool ignoreCameras)
 {

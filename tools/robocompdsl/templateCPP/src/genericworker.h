@@ -73,9 +73,13 @@ if component['gui'] != 'none':
 #include <CommonBehavior.h>
 
 [[[cog
-for imp in component['recursiveImports']:
-	incl = imp.split('/')[-1].split('.')[0]
-	cog.outl('#include <'+incl+'.h>')
+usingList = []
+for imp in component['recursiveImports'] + component["iceInterfaces"]:
+	name = imp.split('/')[-1].split('.')[0]
+	if not name in usingList:
+		usingList.append(name)
+for name in usingList:
+	cog.outl('#include <'+name+'.h>')
 
 
 if component['usingROS'] == True:
@@ -124,20 +128,13 @@ except:
 
 using namespace std;
 [[[cog
-pool = IDSLPool(theIDSLs, includeDirectories)
-for m in pool.modulePool:
-	rosModule = False
-	for imp in component['subscribesTo']+component['publishes']+component['implements']+component['requires']:
-		if type(imp) == str:
-			im = imp
-		else:
-			im = imp[0]
-		if not communicationIsIce(imp):
-			if im not in component['iceInterfaces']:
-				rosModule = True
-	if rosModule == False:
-		cog.outl("using namespace "+pool.modulePool[m]['name']+";")
-
+usingList = []
+for imp in component['recursiveImports'] + component["iceInterfaces"]:
+	name = imp.split('/')[-1].split('.')[0]
+	if not name in usingList:
+		usingList.append(name)
+for name in usingList:
+	cog.outl("using namespace RoboComp"+name+";")
 ]]]
 [[[end]]]
 
@@ -146,11 +143,7 @@ if component['language'].lower() == 'cpp':
 	cog.outl("typedef map <string,::IceProxy::Ice::Object*> MapPrx;")
 else:
 	proxy_list = []
-	for imp in component['publishes'] + component['requires']:
-		if type(imp) == str:
-			name = imp
-		else:
-			name = imp[0]
+	for name in component['requires'] + component['publishes']:
 		proxy_list.append("RoboComp" + name + "::" + name + "PrxPtr")
 	cog.outl("using TuplePrx = std::tuple<" + ",".join(proxy_list) + ">;")
 ]]]
@@ -363,16 +356,20 @@ except:
 
 
 [[[cog
-for namea, num in getNameNumber(component['publishes']) + getNameNumber(component['requires']):
-	if type(namea) == str:
-		name = namea
-	else:
-		name = namea[0]
-	if communicationIsIce(namea):
+for name, num in getNameNumber(component['requires']):
+	if communicationIsIce(name):
 		if component['language'].lower() == "cpp":
 			cog.outl('<TABHERE>'+name+'Prx '+name.lower()+num +'_proxy;')
 		else:
 			cog.outl('<TABHERE>'+name+'PrxPtr '+name.lower()+num +'_proxy;')
+
+for name, num in getNameNumber(component['publishes']):
+	if communicationIsIce(name):
+		if component['language'].lower() == "cpp":
+			cog.outl('<TABHERE>'+name+'Prx '+name.lower()+num +'_pubproxy;')
+		else:
+			cog.outl('<TABHERE>'+name+'PrxPtr '+name.lower()+num +'_pubproxy;')
+
 ]]]
 [[[end]]]
 
@@ -541,7 +538,7 @@ try:
 		cog.outl("<TABHERE>BehaviorParameters p;")
 		cog.outl("<TABHERE>ParameterMap params;")
 		cog.outl("<TABHERE>int iter;")
-		cog.outl("<TABHERE>bool setParametersAndPossibleActivation(const ParameterMap &prs, bool &reactivated);")
+		cog.outl("<TABHERE>bool setParametersAndPossibleActivation(const RoboCompAGMCommonBehavior::ParameterMap &prs, bool &reactivated);")
 		cog.outl("<TABHERE>RoboCompPlanning::Action createAction(std::string s);")
 except:
 	pass

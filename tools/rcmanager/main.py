@@ -76,6 +76,7 @@ class Main():
         self.controller._logger.setLevel(verbosity_level)
         
     def setup_signal_connection(self):
+        #TODO: it's a way to use a global variable. It should be avoided. Try to look for a better solution?
         CustomSignalCollection.modelIsReady.connect(self.controller.model_init_action)
         CustomSignalCollection.viewerIsReady.connect(self.controller.view_init_action)
         CustomSignalCollection.controllerIsReady.connect(self.controller.controller_init_action)
@@ -86,6 +87,7 @@ class Main():
         CustomSignalCollection.stopComponent.connect(self.controller.stop_component)
         CustomSignalCollection.removeComponent.connect(self.controller.remove_component)
 
+        #TODO: Is there any non lambda connect solution?
         CustomSignalCollection.componentRunning.connect(
             lambda componentAlias: self.viewer.update_node_profile(componentAlias, 'Profile_1'))
         CustomSignalCollection.componentStopped.connect(

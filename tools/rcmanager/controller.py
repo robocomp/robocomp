@@ -113,7 +113,7 @@ class Controller():
 
         # adding nodes
         if self.view:
-            for node, data in self.model.graph.nodes_iter(data=True):
+            for node, data in self.model.graph.nodes(data=True):
                 try:
                     xpos = float(data['xpos']['@value'])
                     ypos = float(data['ypos']['@value'])
@@ -122,7 +122,7 @@ class Controller():
                 except Exception, e:
                     self._logger.error("Node postion value for " + node + " are incorrect")
                     self.view.add_node(node, data)
-            for orig, dest, data in self.model.graph.edges_iter(data=True):
+            for orig, dest, data in self.model.graph.edges(data=True):
                 self.view.add_edge(orig, dest, data)
         else:
             raise Exception("A view must exist to update from model")

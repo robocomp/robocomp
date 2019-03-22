@@ -112,11 +112,9 @@ ROBOCOMP_WRAP_ICE( CommonBehavior
 [[[cog
 A()
 imp = []
-for im in component['recursiveImports'] + component["imports"]:
-	if communicationIsIce(im):
-		name = im.split('/')[-1].split('.')[0]
-		if not name in imp:
-			imp.append(name)
+for im in component['recursiveImports'] + component["iceInterfaces"]:
+    name = im.split('/')[-1].split('.')[0]
+    imp.append(name)
 cog.out(' '.join(imp))
 try:
 	options = [ x.lower() for x in component['options'] ]
