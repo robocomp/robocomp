@@ -4,6 +4,7 @@ from __future__ import print_function
 import argparse, argcomplete
 import os
 import sys
+sys.path.append('/opt/robocomp/python')
 from workspace import workspace as WS
 
 def complete_components(prefix, parsed_args, **kwargs):
@@ -121,3 +122,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+

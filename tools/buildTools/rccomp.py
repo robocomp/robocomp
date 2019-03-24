@@ -3,6 +3,8 @@
 from __future__ import print_function
 import os
 import argparse, argcomplete
+import sys
+sys.path.append('/opt/robocomp/python')
 from workspace import workspace as WS
 
 def main():
@@ -30,3 +32,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+

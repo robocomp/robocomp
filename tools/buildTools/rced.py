@@ -4,6 +4,8 @@ from __future__ import print_function
 import argparse, argcomplete
 import os
 import string
+import sys
+sys.path.append('/opt/robocomp/python')
 from workspace import workspace as WS
 
 ''' edit files of robocomp compoent '''
@@ -60,3 +62,5 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+
