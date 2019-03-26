@@ -218,13 +218,13 @@ class CDSLParsing:
 		# Set options
 		component['options'] = []
 		try:
-			for op in tree['properties']['options']:
+			for op in tree['options']:
 				component['options'].append(op.lower())
 		except:
 			traceback.print_exc()
 
 		# Component name
-		component['name'] = tree['component']['name']
+		component['name'] = tree['name']
 		# Imports
 		component['imports'] = []
 		component['recursiveImports'] = []
@@ -267,7 +267,7 @@ class CDSLParsing:
 			# recursiveImports holds the necessary imports
 			importable = False
 			for interf in importedModule['interfaces']:
-				for comm in tree['properties']['communications']:
+				for comm in tree['communications']:
 					for interface in comm[1:]:
 						if communicationIsIce(interface):
 							if interf['name'] == interface[0]:
@@ -277,11 +277,11 @@ class CDSLParsing:
 				component['recursiveImports'] += [x for x in importedModule['imports'].split('#') if len(x)>0]
 
 		# Language
-		component['language'] = tree['properties']['language'][0]
+		component['language'] = tree['language'][0]
 		# qtVersion
 		component['useQt'] = 'none'
 		try:
-			component['useQt'] = tree['properties']['useQt'][0]
+			component['useQt'] = tree['useQt'][0]
 			pass
 		except:
 			pass
@@ -295,13 +295,13 @@ class CDSLParsing:
 		# GUI
 		component['gui'] = 'none'
 		try:
-			uiT = tree['properties']['gui'][0]
-			uiI = tree['properties']['gui'][1]
+			uiT = tree['gui'][0]
+			uiI = tree['gui'][1]
 			if uiT.lower() == 'qt' and uiI in ['QWidget', 'QMainWindow', 'QDialog' ]:
 				component['gui'] = [ uiT, uiI ]
 				pass
 			else:
-				print 'Wrong UI specification', tree['properties']['gui']
+				print 'Wrong UI specification', tree['gui']
 				sys.exit(1)
 		except:
 			pass
@@ -315,7 +315,7 @@ class CDSLParsing:
 		component['publishes']    = []
 		component['subscribesTo'] = []
 		component['usingROS'] = "None"
-		for comm in tree['properties']['communications']:
+		for comm in tree['communications']:
 			if comm[0] == 'implements':
 				for interface in comm[1:]:
 					component['implements'].append(interface)
