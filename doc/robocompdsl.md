@@ -169,10 +169,10 @@ def compute(self):
 				self.differentialrobot_proxy.setSpeedBase(0, rot)
 			else:
 				self.differentialrobot_proxy.setSpeedBase(100, 0)
-		except Ice.Exception, e:
-			traceback.print_exc()
-			print e
-		return True
+	except Ice.Exception, e:
+		traceback.print_exc()
+		print e
+	return True
 ```
 
 Save the file.
