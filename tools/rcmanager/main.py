@@ -74,6 +74,12 @@ class Main():
         self.model._logger.setLevel(verbosity_level)
         self.viewer._logger.setLevel(verbosity_level)
         self.controller._logger.setLevel(verbosity_level)
+
+    def set_viewer_profile_1(self, componentAlias):
+        return self.viewer.update_node_profile(componentAlias, 'Profile_1')
+            
+    def set_viewer_profile_2(self, componentAlias):
+        return self.viewer.update_node_profile(componentAlias, 'Profile_2')
         
     def setup_signal_connection(self):
         #TODO: it's a way to use a global variable. It should be avoided. Try to look for a better solution?
@@ -86,12 +92,8 @@ class Main():
         CustomSignalCollection.startComponent.connect(self.controller.start_component)
         CustomSignalCollection.stopComponent.connect(self.controller.stop_component)
         CustomSignalCollection.removeComponent.connect(self.controller.remove_component)
-
-        #TODO: Is there any non lambda connect solution?
-        CustomSignalCollection.componentRunning.connect(
-            lambda componentAlias: self.viewer.update_node_profile(componentAlias, 'Profile_1'))
-        CustomSignalCollection.componentStopped.connect(
-            lambda componentAlias: self.viewer.update_node_profile(componentAlias, 'Profile_2'))
+        CustomSignalCollection.componentRunning.connect(self.set_viewer_profile_1)
+        CustomSignalCollection.componentStopped.connect(self.set_viewer_profile_2)
 
 if __name__ == '__main__':
     # process params with a argparse
