@@ -37,6 +37,7 @@ from widgets import dialogs, code_editor, network_graph, menus
 from widgets.QNetworkxGraph.QNetworkxGraph import QNetworkxWidget, NodeShapes
 from logger import RCManagerLogger
 from rcmanagerSignals import CustomSignalCollection
+from functools import partial
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -182,8 +183,7 @@ class Viewer(QtGui.QMainWindow, MainWindow):
     # add buttons to the component list
     def add_to_component_list(self, node): 
         button = QPushButton(node, parent=None)
-        #TODO: Don't like lambdas on connects. Look for a better solution.
-        button.clicked.connect(lambda: self.on_button_click(node))
+        button.clicked.connect(partial(self.on_button_click, node))
         self.verticalLayout.insertWidget(self.verticalLayout.count()-1, button)
 
     def on_button_click(self, node):
