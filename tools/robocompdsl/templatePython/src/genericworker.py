@@ -83,7 +83,7 @@ except:
 	pass
 
 [[[cog
-for imp in set(component['recursiveImports'] + component['requires']):
+for imp in set(component['recursiveImports'] + component['requires'] + component['publishes'] + component['subscribesTo']):
 	eso = imp.split('/')[-1]
 	incl = eso.split('.')[0]
 

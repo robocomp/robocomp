@@ -70,6 +70,9 @@ class SpecificWorker(GenericWorker):
 		self.Period = 2000
 		self.timer.start(self.Period)
 
+	def __del__(self):
+		print 'SpecificWorker destructor'
+
 	def setParams(self, params):
 		#try:
 		#	self.innermodel = InnerModel(params["InnerModelPath"])

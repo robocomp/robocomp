@@ -49,9 +49,14 @@ SUBSCRIBESTO_STR = """
 <TABHERE><TABHERE><TABHERE><LOWER>_topic = topicManager.retrieve("<NORMAL>")
 <TABHERE><TABHERE><TABHERE>subscribeDone = True
 <TABHERE><TABHERE>except Ice.Exception, e:
-<TABHERE><TABHERE><TABHERE>print "Error. Topic does not exist (yet)"
-<TABHERE><TABHERE><TABHERE>status = 0
+<TABHERE><TABHERE><TABHERE>print "Error. Topic does not exist (creating)"
 <TABHERE><TABHERE><TABHERE>time.sleep(1)
+<TABHERE><TABHERE><TABHERE>try:
+<TABHERE><TABHERE><TABHERE><TABHERE>differentialrobot_topic = topicManager.create("DifferentialRobot")
+<TABHERE><TABHERE><TABHERE><TABHERE>subscribeDone = True
+<TABHERE><TABHERE><TABHERE>except:
+<TABHERE><TABHERE><TABHERE><TABHERE>print "Error. Topic could not be created. Exiting"
+<TABHERE><TABHERE><TABHERE><TABHERE>status = 0
 <TABHERE>qos = {}
 <TABHERE><LOWER>_topic.subscribeAndGetPublisher(qos, <LOWER>_proxy)
 <TABHERE><NORMAL>_adapter.activate()
@@ -198,8 +203,10 @@ class CommonBehaviorI(RoboCompCommonBehavior.CommonBehavior):
 			status = 1
 			return
 
-
-
+#SIGNALS handler
+def sigint_handler(*args):
+	QtCore.QCoreApplication.quit()
+    
 if __name__ == '__main__':
 [[[cog
 	if component['gui'] != "none":
@@ -325,7 +332,7 @@ for imp in component['implements']:
 ]]]
 [[[end]]]
 
-	signal.signal(signal.SIGINT, signal.SIG_DFL)
+	signal.signal(signal.SIGINT, sigint_handler)
 	app.exec_()
 
 	if ic:
