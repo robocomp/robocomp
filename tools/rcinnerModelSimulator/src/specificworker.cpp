@@ -430,7 +430,7 @@ void SpecificWorker::removeJM(InnerModelJoint *node)
 	for (it = jm_servers.begin(); it != jm_servers.end(); ++it)
 	{
 		it->second.remove(node);
-		// TODO: arreglar
+		// TODO: fix
 // 		if (it->second.empty())
 // 		{
 // 			worker->scheduleShutdown(&(it->second));
