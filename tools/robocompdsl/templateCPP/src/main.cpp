@@ -422,7 +422,7 @@ for pba in component['publishes']:
 		cog.outl(w)
 		if component['language'].lower() == "cpp":
 			cog.outl("<TABHERE>Ice::ObjectPrx " + pb.lower() + "_pub = " + pb.lower() + "_topic->getPublisher()->ice_oneway();")
-			cog.outl("<TABHERE>" + pb.lower() + "_proxy = " + pb + "Prx::uncheckedCast(" + pb.lower() + "_pub);")
+			cog.outl("<TABHERE>" + pb.lower() + "_pubproxy = " + pb + "Prx::uncheckedCast(" + pb.lower() + "_pub);")
 			cog.outl("<TABHERE>mprx[\"" + pb + "Pub\"] = (::IceProxy::Ice::Object*)(&" + pb.lower() + "_pubproxy);")
 		else:
 			cog.outl("<TABHERE>auto " + pb.lower() + "_pub = " + pb.lower() + "_topic->getPublisher()->ice_oneway();")

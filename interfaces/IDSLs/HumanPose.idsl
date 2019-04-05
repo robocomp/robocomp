@@ -14,14 +14,19 @@ module RoboCompHumanPose
 	{
 		int id;
 		Pose3D pos;
-		int IDcamera;
 	};
 
-	sequence <PersonType> humansDetected;
+	sequence <PersonType> personList;
+	struct humansDetected
+	{
+		int idCamera;
+		personList humanList;
+	};
+
 
 	interface HumanPose 
 	{
-		void obtainHumanPose(humansDetected list_of_humans);
+		void obtainHumanPose(humansDetected humansFromCam);
 	};
 
 };
