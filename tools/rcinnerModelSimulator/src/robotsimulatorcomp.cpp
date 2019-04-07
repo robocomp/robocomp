@@ -78,9 +78,8 @@
 #include "specificworker.h"
 #include <RCISMousePicker.h> 
 #include "ui_guiDlg.h"
-
-
-
+#include <cstdlib>
+#include <stdio.h>
 class robotSimulatorComp : public RoboComp::Application
 {
 private:
@@ -106,6 +105,22 @@ int robotSimulatorComp::run( int argc, char* argv[] )
 	printf("---------------------------------------\n");
 	printf("--- FCL_SUPPORT: %d\n", InnerModel::support_fcl());
 	printf("---------------------------------------\n");
+
+	string basic_inner_model;
+	if(std::getenv("ROBOCOMP"))
+	{
+		basic_inner_model=std::getenv("ROBOCOMP");
+		basic_inner_model+="/files/innermodel/simpleworld.xml";	
+	}
+	else
+		qFatal("Usage: %s InnerModelFile.xml [-p INNERMODEL_MANAGER_PORT] [-f MSECS]", argv[0]);
+	
+	if (!argv[1])
+	{
+		printf("Usage: %s InnerModelFile.xml [-p INNERMODEL_MANAGER_PORT] [-f MSECS]", argv[0]);
+		argv[1]=&basic_inner_model[0];
+
+	}
 
 	// Get the port number
 	int port = 11175;
@@ -199,9 +214,6 @@ int main(int argc, char* argv[])
 // 	bool hasConfig = false;
 	string arg;
 	robotSimulatorComp app;
-
-	if (argc < 2)
-		qFatal("Usage: %s InnerModelFile.xml [-p INNERMODEL_MANAGER_PORT] [-f MSECS]", argv[0]);
 
 	//  0 program_name
 	//  1 innermodel
