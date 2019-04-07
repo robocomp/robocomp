@@ -118,6 +118,7 @@ int robotSimulatorComp::run( int argc, char* argv[] )
 	if (!argv[1])
 	{
 		printf("Usage: %s InnerModelFile.xml [-p INNERMODEL_MANAGER_PORT] [-f MSECS]", argv[0]);
+		printf("\nThe default simpleworld.xml was used, specify innermodel in the parameter parameter to use another.\n");
 		argv[1]=&basic_inner_model[0];
 
 	}
