@@ -108,6 +108,10 @@ Now let's run the simulator.
 
     cd ~/robocomp/files/innermodel
     rcis simpleworld.xml
+  
+You can also use the default innermodel simpleworld.xml anywhere if you have set the ROBOCOMP environment variable.
+
+    rcis
     
 Congratulations! RCIS should be up and running with a simple robot endowed with a laser and an RGBD camera, moving on a wooden floor. Don't forget to turn around the floor to see the robot from above.
  
