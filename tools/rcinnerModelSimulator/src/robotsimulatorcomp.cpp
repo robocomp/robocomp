@@ -78,8 +78,6 @@
 #include "specificworker.h"
 #include <RCISMousePicker.h> 
 #include "ui_guiDlg.h"
-#include <cstdlib>
-#include <stdio.h>
 class robotSimulatorComp : public RoboComp::Application
 {
 private:
