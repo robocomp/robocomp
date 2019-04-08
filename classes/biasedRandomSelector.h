@@ -89,12 +89,9 @@ public:
 				return candidates[i].id;
 		}
 		return candidates[0].id;
-		//printf("BiasedSelector::WTF!? 1\n");1
-// 		std::cout << "Total: " << totalWeight << "Seeking: " << result  << std::endl;
 	}
 	double getWeight(uint32_t id)
 	{
-// 		printf("BiasedSelector:getw %lu", candidates.size());
 		for (size_t i=0; i<candidates.size(); ++i)
 		{
 			if (candidates[i].id == id)
@@ -102,12 +99,10 @@ public:
 				return candidates[i].weight / BIASED_MULT;
 			}
 		}
-		//printf("BiasedSelector::WTF!? 2\n");
 		throw std::string("BiasedSelector::WTF!? 2");
 	}
 	bool setWeight(uint32_t id, double p, bool perform_sort=true)
 	{
-// 		printf("BiasedSelector:setw %lu", candidates.size());
 		if (p<0.)
 			throw std::string("Me does not allows negatif veilius");
 		for (size_t i=0; i<candidates.size(); ++i)
@@ -125,7 +120,6 @@ public:
 	}
 	void sort()
 	{
-// 		printf("BiasedSelector:sort %lu", candidates.size());
 		std::sort(candidates.begin(), candidates.end(), BiasedCandidate());
 		double accum = 0;
 		for (size_t i=0; i<candidates.size(); ++i)
@@ -137,18 +131,14 @@ public:
 	}
 	void print()
 	{
-// 		printf("BiasedSelector:print %lu", candidates.size());
 		printf("Biased selector weights (%g)\n", totalWeight);
 		for (size_t i=0; i<candidates.size(); i++)
 		{
-// 			printf("dd\n");
 			printf("ID: %d\tweight:%10.5g\taccum:%10.5g\n", candidates[i].id, candidates[i].weight, candidates[i].accum);
 		}
 	}
 
-// private:
 	std::vector<BiasedCandidate> candidates;
-// 	uint32_t size;
 	double totalWeight;
 };
 
