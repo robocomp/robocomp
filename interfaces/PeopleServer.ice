@@ -34,7 +34,7 @@ module RoboCompPeopleServer
 	sequence <Person> People;
 	interface PeopleServer
 	{
-		People processImage (TImage img, int scale) throws HardwareFailedException;
+		People processImage (TImage img, float scale) throws HardwareFailedException;
 	};
 };
 
