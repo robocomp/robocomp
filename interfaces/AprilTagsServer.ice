@@ -38,7 +38,7 @@ module RoboCompAprilTagsServer
 	};
 	interface AprilTagsServer
 	{
-		tagsList getAprilTags (Image frame);
+		tagsList getAprilTags (Image frame, double tagsize, double mfx, double mfy);
 	};
 };
 
