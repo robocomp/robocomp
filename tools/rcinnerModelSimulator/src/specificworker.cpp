@@ -81,7 +81,8 @@ SpecificWorker::SpecificWorker(MapPrx& _mprx, Ice::CommunicatorPtr _communicator
 	manipulator = new osgGA::TrackballManipulator;
 	qDebug() << __FILE__ << __FUNCTION__ << "HOLa";
 
-	// 	manipulator->setHomePosition(osg::Vec3d(0, 10000, 0), osg::Vec3d(0, 0, 0), osg::Vec3d(0, 0, -10000), true);
+	manipulator->setHomePosition(osg::Vec3d(2500, 12000, 0), osg::Vec3d(2500, 0, 0), osg::Vec3d(0, 0, -12000), false);
+//	manipulator->setHomePosition(osg::Vec3(0.,0.,0.),osg::Vec3(0.f,0.,-4.),osg::Vec3(0.0f,1.f,0.0f), false);
 	viewer->setCameraManipulator(manipulator, true);
 	
 	// Add mouse pick handler to publish 3D coordinates
