@@ -1,0 +1,37 @@
+module RoboCompAprilTagsServer
+{
+	struct tag
+	{
+		int id;
+		float tx;
+		float ty;
+		float tz;
+		float rx;
+		float ry;
+		float rz;
+	};
+
+	sequence<tag> tagsList;
+
+    enum Mode{YUV422, GRAY8, RGB888Packet, RGB888Planar};
+
+    struct Format{
+        Mode modeImage;
+        int width;
+        int height;
+        int size;
+    };
+
+    sequence <byte> Frame;
+
+	struct Image{
+		Frame data;
+		Format frmt;
+		int timeStamp;
+	};
+
+	interface AprilTagsServer{
+		tagsList getAprilTags(Image frame);
+	};
+};
+
