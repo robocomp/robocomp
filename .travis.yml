@@ -35,7 +35,7 @@ before_install:
   - sudo apt-key adv --keyserver keyserver.ubuntu.com --recv 5E6DA83306132997
   - sudo apt-add-repository "deb http://zeroc.com/download/Ice/3.6/ubuntu16.04 stable main"
   - sudo apt-get update -qq
-  - sudo apt-get install zeroc-ice-all-runtime zeroc-ice-all-dev
+  - sudo apt-get install -y zeroc-ice-all-runtime zeroc-ice-all-dev pyside-uic
 # Commands to try and fix check failures
 #  - sudo rm /var/lib/apt/lists/lock
 #  - sudo rm /var/cache/apt/archives/lock
