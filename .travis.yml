@@ -29,6 +29,7 @@ matrix:
             - libccd
             - libccd-dev
             - libflann-dev
+            - zeroc-ice-compilers
 
       env: COMPILER=g++-5
 
