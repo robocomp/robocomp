@@ -10,8 +10,6 @@ matrix:
 before_install:
   - sudo apt-key adv --keyserver keyserver.ubuntu.com --recv 5E6DA83306132997
   - sudo apt-add-repository "deb http://zeroc.com/download/Ice/3.6/ubuntu16.04 stable main"
-  - sudo apt-add-repository ppa:ubuntu-toolchain-r/test
-  - sudo apt-get install -y software-properties-common
   - sudo apt-get update -qq
   - sudo apt-get install -y git git-annex cmake g++-7 libgsl-dev libopenscenegraph-dev cmake-qt-gui zeroc-ice-all-dev freeglut3-dev libboost-system-dev libboost-thread-dev qt4-dev-tools  libqt4-opengl-dev python-pip  python-pyparsing python-numpy python-pyside pyside-tools libxt-dev libboost-test-dev libboost-filesystem-dev python-libxml2 python-xmltodict libccd-dev python-zeroc-ice zeroc-ice-all-runtime
   - sudo apt-get install -y libfcl-dev
