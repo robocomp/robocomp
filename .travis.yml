@@ -45,6 +45,7 @@ matrix:
 		- zeroc-ice-all-runtime
 		- zeroc-ice-utils
 		- zeroc-ice35-dev
+                - zeroc-ice-compilers
 
       env: COMPILER=g++
 
