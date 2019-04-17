@@ -50,6 +50,7 @@ matrix:
 
 before_install:
   - sudo apt-get update -qq
+  - sudo apt-get -y install zeroc-ice35-dev python-zeroc-ice python3-zeroc-ice ice35-slice
 # Commands to try and fix check failures
 #  - sudo rm /var/lib/apt/lists/lock
 #  - sudo rm /var/cache/apt/archives/lock
