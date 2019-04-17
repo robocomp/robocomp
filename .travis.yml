@@ -14,6 +14,7 @@ matrix:
             - zeroc-ice
             - libzeroc-ice-dev
             - slice2cpp
+            - zeroc-ice-utils
             - libopencv-dev
             - libgsl0-dev
             - libopenscenegraph-dev
