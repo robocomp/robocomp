@@ -20,4 +20,4 @@ before_install:
 
 script:
   - export ROBOCOMP="/home/travis/build/robocomp/robocomp"
-  - cmake -DCMAKE_CXX_COMPILER=$COMPILER -DCMAKE_CXX_FLAGS="-std=gnu++11" -DFCL_SUPPORT=1 . && make
+  - cmake -DCMAKE_CXX_COMPILER=$COMPILER -DCMAKE_CXX_FLAGS=-std=c++11 -DFCL_SUPPORT=1 . && make
