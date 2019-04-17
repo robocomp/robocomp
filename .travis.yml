@@ -12,6 +12,7 @@ matrix:
 before_install:
   - sudo apt-key adv --keyserver keyserver.ubuntu.com --recv 5E6DA83306132997
   - sudo apt-add-repository "deb http://zeroc.com/download/Ice/3.6/ubuntu16.04 stable main"
+  - sudo apt-add-repository -y ppa:ubuntu-toolchain-r/test
   - sudo apt-get update -qq
   - sudo apt-get install -y software-properties-common
   - sudo apt install -y g++-7
