@@ -11,9 +11,6 @@ matrix:
             - ubuntu-toolchain-r-test
           packages:
             - g++-5
-            - zeroc-ice35
-            - libzeroc-ice35-dev
-            - slice2cpp
             - libopencv-dev
             - libgsl0-dev
             - libopenscenegraph-dev
@@ -25,11 +22,9 @@ matrix:
             - libxt-dev
             - pyqt4-dev-tools
             - libboost-all-dev
-            - ice35-translators
             - libccd
             - libccd-dev
             - libflann-dev
-            - zeroc-ice-compilers
 
       env: COMPILER=g++-5
 
