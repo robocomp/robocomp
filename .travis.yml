@@ -34,7 +34,7 @@ before_install:
   - sudo apt-key adv --keyserver keyserver.ubuntu.com --recv B6391CB2CFBA643D
   - sudo apt-add-repository "deb http://zeroc.com/download/Ice/3.7/ubuntu18.04 stable main"
   - sudo apt-get update -qq
-  - sudo apt-get install zeroc-ice36-dev python-zeroc-ice python3-zeroc-ice ice36-slice
+  - sudo apt-get install zeroc-ice36-dev python-zeroc-ice python3-zeroc-ice libzeroc-ice-dev
 # Commands to try and fix check failures
 #  - sudo rm /var/lib/apt/lists/lock
 #  - sudo rm /var/cache/apt/archives/lock
