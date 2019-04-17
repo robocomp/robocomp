@@ -27,6 +27,7 @@ matrix:
             - libflann-dev
             - zeroc-ice-all-runtime
             - zeroc-ice-all-dev
+            - pyside-tools
 
       env: COMPILER=g++-5
 
