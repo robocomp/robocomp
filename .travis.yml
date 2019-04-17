@@ -5,7 +5,7 @@ language: cpp
 matrix:
   include:
     - compiler: gcc
-      env: COMPILER=g++-11
+      env: COMPILER=g++-5
 
 before_install:
   - sudo apt-key adv --keyserver keyserver.ubuntu.com --recv 5E6DA83306132997
@@ -20,4 +20,4 @@ before_install:
 
 script:
   - export ROBOCOMP="/home/travis/build/robocomp/robocomp"
-  - cmake -DCMAKE_CXX_COMPILER=$COMPILER -DFCL_SUPPORT=1 . && make
+  - cmake -DCMAKE_CXX_COMPILER=$COMPILER -DCMAKE_CXX_FLAGS="-std=gnu++11" -DFCL_SUPPORT=1 . && make
