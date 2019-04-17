@@ -10,12 +10,15 @@ matrix:
       env: COMPILER=g++-7
 
 before_install:
+# Added zeroc Ice 3.6 repository
   - sudo apt-key adv --keyserver keyserver.ubuntu.com --recv 5E6DA83306132997
   - sudo apt-add-repository "deb http://zeroc.com/download/Ice/3.6/ubuntu16.04 stable main"
+# Added to have g++-7 available. Needed because of the use of std::variant
   - sudo apt-add-repository -y ppa:ubuntu-toolchain-r/test
   - sudo apt-get update -qq
   - sudo apt-get install -y software-properties-common
   - sudo apt install -y g++-7
+# Moved packages installation from travis addons.apt.packages to here because other way we don't get failures on installation
   - sudo apt-get install -y git git-annex cmake g++ libgsl-dev libopenscenegraph-dev cmake-qt-gui zeroc-ice-all-dev freeglut3-dev libboost-system-dev libboost-thread-dev qt4-dev-tools  libqt4-opengl-dev python-pip  python-pyparsing python-numpy python-pyside pyside-tools libxt-dev libboost-test-dev libboost-filesystem-dev python-libxml2 python-xmltodict libccd-dev python-zeroc-ice zeroc-ice-all-runtime
   - sudo apt-get install -y libfcl-dev
 # Commands to try and fix check failures
@@ -25,5 +28,7 @@ before_install:
 
 script:
   - export ROBOCOMP="/home/travis/build/robocomp/robocomp"
-#  - cmake -DCMAKE_CXX_COMPILER=$COMPILER -DCMAKE_CXX_FLAGS=-std=gnu++11 -DCMAKE_CXX_FLAGS=-fext-numeric-literals -DFCL_SUPPORT=1 . && make
+# Added -DCMAKE_CXX_FLAGS=-fext-numeric-literals flag to avoid errors on boost numeric operator.
+# TO COMPILE WITH FCL uncomment this line and comment the next one
+#  - cmake -DCMAKE_CXX_COMPILER=$COMPILER -DCMAKE_CXX_FLAGS=-fext-numeric-literals -DFCL_SUPPORT=1 . && make
   - cmake -DCMAKE_CXX_COMPILER=$COMPILER -DCMAKE_CXX_FLAGS=-fext-numeric-literals . && make
