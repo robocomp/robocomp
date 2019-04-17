@@ -10,47 +10,48 @@ matrix:
           sources:
             - ubuntu-toolchain-r-test
           packages:
-	  	- ice35-slice
-		- python3-zeroc-ice
-		- cmake-qt-gui
-		- freeglut3-dev
-		- g++
-		- git
-		- git-annex
-		- libboost-all-dev
-		- libboost-filesystem-dev
-		- libboost-system-dev
-		- libboost-test-dev
-		- libboost-thread-dev
-		- libccd
-		- libccd-dev
-		- libflann-dev
-		- libgsl-dev
-		- libgsl0-dev
-		- libopencv-dev
-		- libopenscenegraph-dev
-		- libxt-dev
-		- libzeroc-ice-dev
-		- pyqt4-dev-tools
-		- pyside-tools
-		- python-libxml2
-		- python-numpy python-pyside
-		- python-pip
-		- python-pyparsing
-		- python-xmltodict
-		- python-zeroc-ice
-		- qt4-dev-tools
-		- slice2cpp
-		- zeroc-ice
-		- zeroc-ice-all-runtime
-		- zeroc-ice-utils
-		- zeroc-ice35-dev
+            - python3-zeroc-ice
+            - cmake-qt-gui
+            - freeglut3-dev
+            - g++
+            - git
+            - git-annex
+            - libboost-all-dev
+            - libboost-filesystem-dev
+            - libboost-system-dev
+            - libboost-test-dev
+            - libboost-thread-dev
+            - libccd
+            - libccd-dev
+            - libflann-dev
+            - libgsl-dev
+            - libgsl0-dev
+            - libopencv-dev
+            - libopenscenegraph-dev
+            - libxt-dev
+            - libzeroc-ice-dev
+            - pyqt4-dev-tools
+            - pyside-tools
+            - python-libxml2
+            - python-numpy python-pyside
+            - python-pip
+            - python-pyparsing
+            - python-xmltodict
+            - python-zeroc-ice
+            - qt4-dev-tools
+            - slice2cpp
+            - zeroc-ice
+            - zeroc-ice-all-runtime
+            - zeroc-ice-utils
+            - zeroc-ice-dev
 
       env: COMPILER=g++
 
 before_install:
+  - sudo apt-key adv --keyserver keyserver.ubuntu.com --recv B6391CB2CFBA643D
+  - sudo apt-add-repository "deb http://zeroc.com/download/Ice/3.7/ubuntu18.04 stable main"
 	- sudo apt-get update -qq
-	- sudo apt-get -y install zeroc-ice35-dev python-zeroc-ice python3-zeroc-ice ice35-slice
+	- sudo apt-get install zeroc-ice-all-runtime zeroc-ice-all-dev
 # Commands to try and fix check failures
 #  - sudo rm /var/lib/apt/lists/lock
 #  - sudo rm /var/cache/apt/archives/lock
