@@ -25,6 +25,8 @@ matrix:
             - libccd
             - libccd-dev
             - libflann-dev
+            - zeroc-ice-all-runtime
+            - zeroc-ice-all-dev
 
       env: COMPILER=g++-5
 
@@ -32,7 +34,6 @@ before_install:
   - sudo apt-key adv --keyserver keyserver.ubuntu.com --recv B6391CB2CFBA643D
   - sudo apt-add-repository "deb http://zeroc.com/download/Ice/3.7/ubuntu18.04 stable main"
   - sudo apt-get update -qq
-  - sudo apt-get install -y zeroc-ice-all-runtime zeroc-ice-all-dev
 # Commands to try and fix check failures
 #  - sudo rm /var/lib/apt/lists/lock
 #  - sudo rm /var/cache/apt/archives/lock
