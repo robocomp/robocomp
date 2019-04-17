@@ -5,58 +5,22 @@ language: cpp
 matrix:
   include:
     - compiler: gcc
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-          packages:
-	  	- ice35-slice
-		- python3-zeroc-ice
-		- cmake-qt-gui
-		- freeglut3-dev
-		- g++
-		- git
-		- git-annex
-		- libboost-all-dev
-		- libboost-filesystem-dev
-		- libboost-system-dev
-		- libboost-test-dev
-		- libboost-thread-dev
-		- libccd
-		- libccd-dev
-		- libflann-dev
-		- libgsl-dev
-		- libgsl0-dev
-		- libopencv-dev
-		- libopenscenegraph-dev
-		- libxt-dev
-		- libzeroc-ice-dev
-		- pyqt4-dev-tools
-		- pyside-tools
-		- python-libxml2
-		- python-numpy python-pyside
-		- python-pip
-		- python-pyparsing
-		- python-xmltodict
-		- python-zeroc-ice
-		- qt4-dev-tools
-		- slice2cpp
-		- zeroc-ice
-		- zeroc-ice-all-runtime
-		- zeroc-ice-utils
-		- zeroc-ice35-dev
-                - zeroc-ice-compilers
-
-      env: COMPILER=g++
+      env: COMPILER=g++-7
 
 before_install:
-	- sudo apt-get update -qq
-	- sudo apt-get -y install zeroc-ice35-dev python-zeroc-ice python3-zeroc-ice ice35-slice
+  - sudo apt-key adv --keyserver keyserver.ubuntu.com --recv 5E6DA83306132997
+  - sudo apt-add-repository "deb http://zeroc.com/download/Ice/3.6/ubuntu16.04 stable main"
+  - sudo apt-add-repository ppa:ubuntu-toolchain-r/test
+  - sudo apt-get install -y software-properties-common
+  - sudo apt-get update -qq
+  - sudo apt-get install -y git git-annex cmake g++-7 libgsl-dev libopenscenegraph-dev cmake-qt-gui zeroc-ice-all-dev freeglut3-dev libboost-system-dev libboost-thread-dev qt4-dev-tools  libqt4-opengl-dev python-pip  python-pyparsing python-numpy python-pyside pyside-tools libxt-dev libboost-test-dev libboost-filesystem-dev python-libxml2 python-xmltodict libccd-dev python-zeroc-ice zeroc-ice-all-runtime
+  - sudo apt-get install -y libfcl-dev
 # Commands to try and fix check failures
 #  - sudo rm /var/lib/apt/lists/lock
 #  - sudo rm /var/cache/apt/archives/lock
 #  - sudo rm /var/lib/dpkg/lock
 
 script:
-	- export ROBOCOMP="/home/travis/build/robocomp/robocomp"
-	- cmake -DCMAKE_CXX_COMPILER=$COMPILER -DFCL_SUPPORT=1 . && make
+  - export ROBOCOMP="/home/travis/build/robocomp/robocomp"
+#  - cmake -DCMAKE_CXX_COMPILER=$COMPILER -DCMAKE_CXX_FLAGS=-std=gnu++11 -DCMAKE_CXX_FLAGS=-fext-numeric-literals -DFCL_SUPPORT=1 . && make
+  - cmake -DCMAKE_CXX_COMPILER=$COMPILER -DCMAKE_CXX_FLAGS=-std=gnu++11 -DCMAKE_CXX_FLAGS=-fext-numeric-literals . && make
