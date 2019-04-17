@@ -1,7 +1,4 @@
 --- 
-before_install: 
-  - "sudo apt-get update -qq"
-  - "sudo apt-get -y install zeroc-ice35-dev python-zeroc-ice python3-zeroc-ice ice35-slice"
 dist: bionic
 language: cpp
 matrix: 
@@ -10,7 +7,7 @@ matrix:
       addons: 
         apt: 
           packages: 
-            - ice35-slice
+            - ice36-slice
             - python3-zeroc-ice
             - cmake-qt-gui
             - freeglut3-dev
@@ -42,13 +39,15 @@ matrix:
             - qt4-dev-tools
             - slice2cpp
             - zeroc-ice
-            - zeroc-ice-all-runtime
             - zeroc-ice-utils
-            - zeroc-ice35-dev
+            - zeroc-ice36-dev
           sources: 
             - ubuntu-toolchain-r-test
       compiler: gcc
       env: COMPILER=g++
+before_install: 
+  - "sudo apt-get update -qq"
+  - "sudo apt-get -y install zeroc-ice36-dev python-zeroc-ice python3-zeroc-ice ice36-slice"
 script: 
   - "export ROBOCOMP=\"/home/travis/build/robocomp/robocomp\""
   - "cmake -DCMAKE_CXX_COMPILER=$COMPILER -DFCL_SUPPORT=1 . && make"
