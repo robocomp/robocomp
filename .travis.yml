@@ -7,12 +7,13 @@ matrix:
     - compiler: gcc
       addons:
         apt:
+          update: true
           sources:
             - ubuntu-toolchain-r-test
           packages:
             - g++-5
             - libopencv-dev
-            - libgsl0-dev
+            - libgsl-dev
             - libopenscenegraph-dev
             - freeglut3-dev
             - libboost-system-dev
