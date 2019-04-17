@@ -34,6 +34,12 @@ before_install:
   - sudo apt-key adv --keyserver keyserver.ubuntu.com --recv B6391CB2CFBA643D
   - sudo apt-add-repository "deb [arch=amd64] http://zeroc.com/download/Ice/3.7/ubuntu18.04 stable main"
   - sudo apt-get update -qq
+  - wget 'https://zeroc.com/download/ice/3.7/ubuntu18.04/pool/main/z/zeroc-ice/libzeroc-ice3.7_3.7.2-1_amd64.deb'
+  - sudo dpkg -i libzeroc-ice3.7_3.7.2-1_amd64.deb
+  - wget 'https://zeroc.com/download/ice/3.7/ubuntu18.04/pool/main/z/zeroc-ice/zeroc-ice-slice_3.7.2-1_all.deb'
+  - sudo dpkg -i zeroc-ice-slice_3.7.2-1_all.deb
+  - wget 'https://zeroc.com/download/ice/3.7/ubuntu18.04/pool/main/z/zeroc-ice/zeroc-ice-compilers_3.7.2-1_amd64.deb'
+  - sudo dpkg -i zeroc-ice-compilers_3.7.2-1_amd64.deb  
   - wget 'https://zeroc.com/download/ice/3.7/ubuntu18.04/pool/main/z/zeroc-ice/libzeroc-ice-dev_3.7.2-1_amd64.deb'
   - sudo dpkg -i libzeroc-ice-dev_3.7.2-1_amd64.deb
   - sudo apt-get install zeroc-ice-all-runtime zeroc-ice-all-dev
