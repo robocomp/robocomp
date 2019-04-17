@@ -31,4 +31,4 @@ script:
 # Added -DCMAKE_CXX_FLAGS=-fext-numeric-literals flag to avoid errors on boost numeric operator.
 # TO COMPILE WITH FCL uncomment this line and comment the next one
 #  - cmake -DCMAKE_CXX_COMPILER=$COMPILER -DCMAKE_CXX_FLAGS=-fext-numeric-literals -DFCL_SUPPORT=1 . && make
-  - cmake -DCMAKE_CXX_COMPILER=$COMPILER -DCMAKE_CXX_FLAGS="-std=std++11 -fext-numeric-literals -DICE_CPP11_MAPPING" . && make
+  - cmake -DCMAKE_CXX_COMPILER=$COMPILER -DCMAKE_CXX_FLAGS="-std=c++11 -fext-numeric-literals -DICE_CPP11_MAPPING" . && make
