@@ -10,25 +10,39 @@ matrix:
           sources:
             - ubuntu-toolchain-r-test
           packages:
-            - g++
-            - zeroc-ice
-            - libzeroc-ice-dev
-            - slice2cpp
-            - zeroc-ice-utils
-            - libopencv-dev
-            - libgsl0-dev
-            - libopenscenegraph-dev
+            - cmake-qt-gui
             - freeglut3-dev
-            - libboost-system-dev
-            - libboost-thread-dev
-            - qt4-dev-tools
-            - pyside-tools
-            - libxt-dev
-            - pyqt4-dev-tools
+            - g++
+            - git
+            - git-annex
             - libboost-all-dev
+            - libboost-filesystem-dev
+            - libboost-system-dev
+            - libboost-test-dev
+            - libboost-thread-dev
             - libccd
             - libccd-dev
             - libflann-dev
+            - libgsl-dev
+            - libgsl0-dev
+            - libopencv-dev
+            - libopenscenegraph-dev
+            - libxt-dev
+            - libzeroc-ice-dev
+            - pyqt4-dev-tools
+            - pyside-tools
+            - python-libxml2
+            - python-numpy python-pyside
+            - python-pip
+            - python-pyparsing
+            - python-xmltodict
+            - python-zeroc-ice
+            - qt4-dev-tools
+            - slice2cpp
+            - zeroc-ice
+            - zeroc-ice-all-dev
+            - zeroc-ice-all-runtime
+            - zeroc-ice-utils
 
       env: COMPILER=g++
 
