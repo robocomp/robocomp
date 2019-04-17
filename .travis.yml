@@ -7,7 +7,6 @@ matrix:
       addons: 
         apt: 
           packages: 
-            - ice36-slice
             - python3-zeroc-ice
             - cmake-qt-gui
             - freeglut3-dev
@@ -31,7 +30,6 @@ matrix:
             - pyqt4-dev-tools
             - pyside-tools
             - python-libxml2
-            - "python-numpy python-pyside"
             - python-pip
             - python-pyparsing
             - python-xmltodict
@@ -39,15 +37,13 @@ matrix:
             - qt4-dev-tools
             - slice2cpp
             - zeroc-ice
-            - zeroc-ice-utils
-            - zeroc-ice36-dev
           sources: 
             - ubuntu-toolchain-r-test
       compiler: gcc
       env: COMPILER=g++
 before_install: 
   - "sudo apt-get update -qq"
-  - "sudo apt-get -y install zeroc-ice36-dev python-zeroc-ice python3-zeroc-ice ice36-slice"
+  - "sudo apt-get -y install zeroc-ice-all-runtime zeroc-ice-all-dev"
 script: 
   - "export ROBOCOMP=\"/home/travis/build/robocomp/robocomp\""
   - "cmake -DCMAKE_CXX_COMPILER=$COMPILER -DFCL_SUPPORT=1 . && make"
