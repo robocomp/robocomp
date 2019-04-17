@@ -10,6 +10,8 @@ matrix:
           sources:
             - ubuntu-toolchain-r-test
           packages:
+			- ice35-slice
+			- python3-zeroc-ice
             - cmake-qt-gui
             - freeglut3-dev
             - g++
@@ -40,9 +42,9 @@ matrix:
             - qt4-dev-tools
             - slice2cpp
             - zeroc-ice
-            - zeroc-ice-all-dev
             - zeroc-ice-all-runtime
             - zeroc-ice-utils
+            - zeroc-ice35-dev
 
       env: COMPILER=g++
 
