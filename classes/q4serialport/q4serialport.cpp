@@ -32,7 +32,7 @@ bool QSerialPort::open(const QString& name)
 		return true;
 
 	setName(name);
-	//bool ret = open( QIODevice::ReadWrite );
+
 	if ( open( QIODevice::ReadWrite ) )
 	{
 	  tv.tv_sec = 1;
@@ -83,7 +83,6 @@ void QSerialPort::close()
 {
 	if(!portOpen)
 		return;
-	//portFile.close();
 	::close(portDesc);
 	portOpen=false;
 	
@@ -148,7 +147,6 @@ qint64 QSerialPort::read(char* data, qint64 maxlen)
 		retval = select(portDesc+1, &rfds, NULL, NULL, &tv);
 		if (retval==0)
 		{
-			//qDebug()<<"Read SerialPort: value=0";
 			continue;
 		}
 		else if (retval==-1)
@@ -190,13 +188,13 @@ qint64 QSerialPort::read(char* data, qint64 maxlen)
 			{
 				switch(errno)
 				{
-					case EINTR: printf("La llamada ha sido interrumpida por una señal antes de que se haya leído ningún dato.\n"); break;
-					case EAGAIN: printf("Se ha seleccionado E/S no bloqueante empleando O_NONBLOCK y no había ningún dato i\n"); break;
-					case EIO: printf("Error de E/S. Esto puede ocurrir por ejemplo cuando el proceso está en un grupo de pr\n"); break;
-					case EISDIR: printf("fd se refiere a un directorio.\n"); break;
-					case EBADF: printf("fd no es un descriptor de fichero válido o no está abierto para lectura.\n"); break;
-					case EINVAL: printf("fd está asociado a un objeto que no es apropiado para su lectura.\n"); break;
-					case EFAULT: printf("buf está fuera del espacio de direcciones accesible del usuario.\n"); break;
+					case EINTR: printf("The call has been interrupted by a signal before any data has been read.\n"); break;
+					case EAGAIN: printf("Non-blocking I/O has been selected using O_NONBLOCK and there was no data\n"); break;
+					case EIO: printf("I/O error. This can happen for example when the process is in a group of pr\n"); break;
+					case EISDIR: printf("fd refers to a directory.\n"); break;
+					case EBADF: printf("fd is not a valid file descriptor or is not open for reading.\n"); break;
+					case EINVAL: printf("fd is associated with an object that is not appropriate for reading.\n"); break;
+					case EFAULT: printf("buff is outside the address space accessible to the user.\n"); break;
 					default: printf("??\n");
 				}
 			}
@@ -256,8 +254,9 @@ int QSerialPort::getch()
 
 	if(read(&c, 1)==-1) return -1;
 	else
-	{ //qDebug() << "leido " << c; 
-	  return (int)c;}
+	{
+	  return (int)c;
+	}
 }
 
 int QSerialPort::putch(QChar ch)
@@ -363,7 +362,7 @@ void QSerialPort::setBaudRate(QSerialPort::BaudRateType baud)
 		break;
 	case BAUD76800:
 #ifndef B76800
-		std::cerr<< "Error: Velocidad 76800 no soportada. Cambiando a 57600.";
+		std::cerr<< "Error: Speed 76800 not supported. Changing to 57600.";
 		cfsetispeed(&portConfig, B57600);
 		cfsetospeed(&portConfig, B57600);
 		res=BAUD57600;
