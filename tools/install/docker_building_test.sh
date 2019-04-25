@@ -9,6 +9,12 @@ then
   sudo apt-get update
   sudo apt-get --yes install docker-ce
 fi
-sudo docker run -ti -w /home/robolab/ --user robolab:robolab --rm -v $(pwd)/robocomp_install.sh:/home/robolab/robocomp_install.sh robocomp/clean-testing:robocomp-ubuntu18.04  bash -x robocomp_install.sh; echo $?
+sudo docker run --name robocomp_test -it -w /home/robolab/ --user robolab:robolab -v $(pwd)/robocomp_install.sh:/home/robolab/robocomp_install.sh robocomp/clean-testing:robocomp-ubuntu18.04 bash -l -x robocomp_install.sh
+if [ $? == 0 ]; then
+  echo "built done"
+else
+  #sudo docker logs robocomp_test | mail -s "docker" elqueseaelmail@gmail.com
+fi
+sudo docker container rm robocomp_test
 
 
