@@ -10,8 +10,12 @@ interfaces in a seamless way. Building new components is done using two domain s
 
 If you already have RoboComp installed, jump to [tutorials](doc/README.md) to start coding! 
 
+:warning: If you want to contribute with something new to Robocomp, please do it on the [development branch](https://github.com/robocomp/robocomp/tree/development). If you fix something on the stable branch, please check if it's also relevant for development branch and tells to cherrypick your commit.  
+
 :question: If you have a question please look for it in the [FAQ](doc/FAQ.md). 
 -
+
+
 # Installation in Ubuntu from PPA
 
 Coming soon...
