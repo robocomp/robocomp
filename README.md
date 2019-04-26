@@ -25,7 +25,8 @@ Remember to start a new bash session before continue using RoboComp: new variabl
 
 # Installation from source
 
-Tested in Ubuntu 18.04 (for 16.04 some packages have a different name. Ask in gitter/robocomp)
+Tested in Ubuntu 18.04.  
+**Note:** RoboComp is not compatible with Ubuntu 16.04. RoboComp needs to be compiled using C++11. Ice libraries with C++11 support are only available for zeroc-ice 3.7 and the packages for this version are only available since Ubuntu 18.04.  
 <!--If you are not an Ubuntu user, need to modify the core of RoboComp, or just feel like installing from sources, you can follow these instructions (they have been tested in Ubuntu 14.04, 14.10, 15.04, 16.04). If you're not in any of these scenarios, please use the packaged version.
 -->
 
