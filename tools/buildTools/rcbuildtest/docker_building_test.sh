@@ -9,7 +9,28 @@ then
   sudo apt-get update
   sudo apt-get --yes install docker-ce
 fi
-sudo docker run --name robocomp_test -it -w /home/robolab/ --user robolab:robolab -v $(pwd)/robocomp_install.sh:/home/robolab/robocomp_install.sh robocomp/clean-testing:robocomp-ubuntu18.04 bash -l -x robocomp_install.sh
+sudo docker stop robocomp_test
+sudo docker kill robocomp_test
+sudo docker container rm robocomp_test
+if [ -z "$1" ] && [ "$1" != '18.04' ] && [ "$1" != '19.04' ] && [ "$1" != '16.04' ]
+then
+    echo "Currently you only can use 16.04, 18.04 or 19.04 as Ubuntu versions"
+    UBUNTU_VERSION='18.04'
+else
+    UBUNTU_VERSION=$1
+fi
+
+if [ -z "$2" ] || [ "$2" != 'stable' ] && [ "$2" != 'development' ]
+then
+    echo "Currently you only can use stable or development as robocomp branches."
+    ROBOCOMP_BRANCH='stable'
+else
+    echo "WHY"
+    ROBOCOMP_BRANCH=$2
+fi
+
+
+sudo docker run --name robocomp_test -it -w /home/robolab/ --user robolab:robolab -v $(pwd)/../../install/robocomp_install.sh:/home/robolab/robocomp_install.sh robocomp/clean-testing:robocomp-ubuntu$UBUNTU_VERSION bash -l -x robocomp_install.sh $ROBOCOMP_BRANCH
 if [ $? == 0 ]; then
   echo "built done"
 else
