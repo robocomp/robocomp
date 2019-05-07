@@ -202,7 +202,7 @@ public slots:
 	void initialize(int period);
 
 private:
-	InnerModel *innerModel;
+	std::shared_ptr<InnerModel> innerModel;
 [[[cog
 if component['innermodelviewer']:
 	cog.outl("#ifdef USE_QTGUI")
