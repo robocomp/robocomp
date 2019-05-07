@@ -73,7 +73,7 @@ class C(QWidget):
 
 	def clicked(self):
 		try:
-			texto = str(self.ledit.text().toUtf8())
+			texto = self.ledit.text()
 			print texto
 			self.proxy.say(texto,True)
 		except Ice.Exception:
