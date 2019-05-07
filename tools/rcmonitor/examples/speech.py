@@ -74,7 +74,7 @@ class C(QWidget):
 	def clicked(self):
 		try:
 			texto = self.ledit.text()
-			print texto
+			print(texto)
 			self.proxy.say(texto,True)
 		except Ice.Exception:
 			treceback.print_exc()
