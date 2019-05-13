@@ -1,4 +1,4 @@
-
+cat /etc/issue
 if [ -z "$1" ] || [ "$1" != 'stable' ] && [ "$1" != 'development' ]
 then
     echo "Currently you only can use stable or development as robocomp branches."
@@ -25,6 +25,6 @@ cd build
 cmake ..
 make
 sudo make install
-echo "/opt/robocomp/lib/" >> /etc/ld.so.conf
+sudo sh -c "echo '/opt/robocomp/lib/' >> /etc/ld.so.conf"
 sudo ldconfig
 rcportchecker ports
