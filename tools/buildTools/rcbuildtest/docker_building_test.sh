@@ -41,13 +41,15 @@ echo "ROBOCOMP BRANCH = ${ROBOCOMP_BRANCH}"
 
 
 sudo docker run --name robocomp_test -it -w /home/robolab/ --user robolab:robolab -v $(pwd)/../../install/robocomp_install.sh:/home/robolab/robocomp_install.sh robocomp/clean-testing:robocomp-ubuntu$UBUNTU_VERSION bash -l -x robocomp_install.sh $ROBOCOMP_BRANCH
-if [ $? == 0 ]
+if [ $? = 0 ]
 then
   echo "built done"
+  sudo docker logs robocomp_test > last_log.log
 else
   echo "built failed. Sending email"
   #sudo docker logs robocomp_test | mail -s "docker" elqueseaelmail@gmail.com
 fi
+sudo docker logs robocomp_test > last_log.log
 sudo docker container rm robocomp_test
 
 
