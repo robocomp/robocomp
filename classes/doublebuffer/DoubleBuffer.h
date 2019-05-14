@@ -9,8 +9,8 @@
 template <class I, class O> class Converter
 {
     public:
-        virtual bool ItoO(const I & iTypeData, O &oTypeData)=0;
-        virtual bool OtoI(const O & oTypeData, I &iTypeData)=0;
+        virtual bool ItoO(const I & iTypeData, O &oTypeData, bool clear=false)=0;
+        virtual bool OtoI(const O & oTypeData, I &iTypeData, bool clear=false)=0;
 };
 
 template <class I, class O, class C> class DoubleBuffer
@@ -21,33 +21,37 @@ private:
     O &readBuffer = bufferA;
     O &writeBuffer = bufferB;
     C *converter;
+    bool to_clear=false;
     //, *readBuffer, bufferB;
-    void resize(std::size_t size_)
-    {
-        if (size_!= size)
-        {
-            bufferA.resize(size_);
-            bufferB.resize(size_);
-            size = size_;
-        }
-    }
+
+//    void resize(std::size_t size_)
+//    {
+//        if (size_!= size)
+//        {
+//            bufferA.resize(size_);
+//            bufferB.resize(size_);
+//            size = size_;
+//        }
+//    }
 
 public:
-    std::size_t size=0;
+//    std::size_t size=0;
     DoubleBuffer()
     {
-        resize(640*480);
+//        resize(640*480);
     };
 
-    void init(std::size_t v_size, C &converter)
-    {
-        resize(v_size);
-        this->converter = &converter;
-    }
+//    void init(/*std::size_t v_size, */C &converter)
+//    {
+//        resize(v_size);
+//        this->converter = &converter;
+//        to_clear=false;
+//    }
 
-    void init(C& converter)
+    void init(C& _converter)
     {
-        converter = &converter;
+        converter = &_converter;
+		to_clear=false;
     }
 
 
@@ -67,10 +71,11 @@ public:
 
     void put(const I &d, std::size_t data_size)
     {
-        if( converter->ItoO(d,writeBuffer))
+        if( converter->ItoO(d,writeBuffer, to_clear))
         {
             std::lock_guard<std::mutex> lock(bufferMutex);
             writeBuffer.swap(readBuffer);
+            to_clear=false;
         }
     }
 
