@@ -1,0 +1,31 @@
+module RoboCompHumanTrackerJointsAndRGB
+{
+	sequence<byte> imgType2;
+	enum TrackingState2 { NotTracking, TrackingLost, TrackingStarted, Tracking};
+	sequence <float> RTMatrix2;
+	dictionary<string, RTMatrix2>RTMatrixList2;
+
+	sequence <float> joint2;
+	dictionary<string, joint2>jointListType2;
+
+	struct TPerson2
+	{
+		TrackingState2 state;
+		jointListType2 joints;
+		RTMatrixList2 rotations;
+	};
+	dictionary<int, TPerson2>PersonList2;
+
+    struct MixedJointsRGB
+    {
+        long timeStamp;
+        PersonList2 persons;
+        imgType2 rgbImage;
+    };
+
+    interface HumanTrackerJointsAndRGB
+    {
+        void newPersonListAndRGB(out MixedJointsRGB mixedData);
+    };
+
+};
