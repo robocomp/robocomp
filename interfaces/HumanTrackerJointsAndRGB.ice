@@ -10,7 +10,14 @@
 #define ROBOCOMPHUMANTRACKERJOINTSANDRGB_ICE
 module RoboCompHumanTrackerJointsAndRGB
 {
-	sequence <byte> imgType2;
+	sequence <byte> ImgType;
+	struct TImage
+	{
+		 int width;
+		 int height;
+		 int depth;
+		 ImgType image;
+	};
 	enum TrackingState2 {  NotTracking, TrackingLost, TrackingStarted, Tracking };
 	sequence <float> RTMatrix2;
 	dictionary <string, RTMatrix2> RTMatrixList2;
@@ -27,7 +34,7 @@ module RoboCompHumanTrackerJointsAndRGB
 	{
 		 long timeStamp;
 		 PersonList2 persons;
-		 imgType2 rgbImage;
+		 TImage rgbImage;
 	};
 	interface HumanTrackerJointsAndRGB
 	{
