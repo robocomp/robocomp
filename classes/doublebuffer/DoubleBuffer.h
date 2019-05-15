@@ -61,7 +61,7 @@ public:
 		if( converter->clear(writeBuffer))
 		{
 			std::lock_guard<std::mutex> lock(bufferMutex);
-			writeBuffer.swap(readBuffer);
+			std::swap(writeBuffer,readBuffer);
 		}
 	}
 
@@ -83,7 +83,7 @@ public:
         if( converter->ItoO(d,writeBuffer))
         {
             std::lock_guard<std::mutex> lock(bufferMutex);
-            writeBuffer.swap(readBuffer);
+            std::swap(writeBuffer, readBuffer);
         }
     }
 
