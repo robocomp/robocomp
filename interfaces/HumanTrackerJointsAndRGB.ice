@@ -38,7 +38,7 @@ module RoboCompHumanTrackerJointsAndRGB
 	};
 	interface HumanTrackerJointsAndRGB
 	{
-		void newPersonListAndRGB (out MixedJointsRGB mixedData);
+		void newPersonListAndRGB (MixedJointsRGB mixedData);
 	};
 };
 
