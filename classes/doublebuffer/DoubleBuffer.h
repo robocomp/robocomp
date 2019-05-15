@@ -9,8 +9,9 @@
 template <class I, class O> class Converter
 {
     public:
-        virtual bool ItoO(const I & iTypeData, O &oTypeData, bool clear=false)=0;
-        virtual bool OtoI(const O & oTypeData, I &iTypeData, bool clear=false)=0;
+        virtual bool ItoO(const I & iTypeData, O &oTypeData)=0;
+        virtual bool OtoI(const O & oTypeData, I &iTypeData)=0;
+		virtual bool clear(O & oTypeData)=0;
 };
 
 template <class I, class O, class C> class DoubleBuffer
@@ -54,7 +55,15 @@ public:
 		to_clear=false;
     }
 
-
+	void clear()
+	{
+    	this->to_clear = true;
+		if( converter->clear(writeBuffer))
+		{
+			std::lock_guard<std::mutex> lock(bufferMutex);
+			writeBuffer.swap(readBuffer);
+		}
+	}
 
 //    inline typename O::value_type& operator[](int i) { return (writeBuffer)[i]; };
 
@@ -71,11 +80,10 @@ public:
 
     void put(const I &d, std::size_t data_size)
     {
-        if( converter->ItoO(d,writeBuffer, to_clear))
+        if( converter->ItoO(d,writeBuffer))
         {
             std::lock_guard<std::mutex> lock(bufferMutex);
             writeBuffer.swap(readBuffer);
-            to_clear=false;
         }
     }
 
