@@ -18,22 +18,22 @@ module RoboCompHumanTrackerJointsAndRGB
 		 int depth;
 		 ImgType image;
 	};
-	enum TrackingState2 {  NotTracking, TrackingLost, TrackingStarted, Tracking };
-	sequence <float> RTMatrix2;
-	dictionary <string, RTMatrix2> RTMatrixList2;
-	sequence <float> joint2;
-	dictionary <string, joint2> jointListType2;
-	struct TPerson2
+	enum TrackingState {  NotTracking, TrackingLost, TrackingStarted, Tracking };
+	sequence <float> RTMatrix;
+	dictionary <string, RTMatrix> RTMatrixList;
+	sequence <float> joint;
+	dictionary <string, joint> jointListType;
+	struct TPerson
 	{
-		 TrackingState2 state;
-		 jointListType2 joints;
-		 RTMatrixList2 rotations;
+		 TrackingState state;
+		 jointListType joints;
+		 RTMatrixList rotations;
 	};
-	dictionary <int, TPerson2> PersonList2;
+	dictionary <int, TPerson> PersonList;
 	struct MixedJointsRGB
 	{
 		 long timeStamp;
-		 PersonList2 persons;
+		 PersonList persons;
 		 TImage rgbImage;
 	};
 	interface HumanTrackerJointsAndRGB
