@@ -15,8 +15,8 @@ module RoboCompHumanPose
 		 float x;
 		 float z;
 		 float ry;
-		 bool pos_good;
-		 bool rot_good;
+		 bool posGood;
+		 bool rotGood;
 		 int confidence = 0;
 	};
 	struct PersonType
