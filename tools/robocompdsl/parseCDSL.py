@@ -126,12 +126,7 @@ class CDSLParsing:
 		return ret
 
 	@staticmethod
-	def fromString(inputText, verbose=False, includeDirectories=None):
-		if includeDirectories == None:
-			includeDirectories = []
-		if verbose: print 'Verbose:', verbose
-		text = nestedExpr("/*", "*/").suppress().transformString(inputText) 
-
+	def getCDSLParser():
 		OBRACE,CBRACE,SEMI,OPAR,CPAR = map(Suppress, "{};()")
 		QUOTE     					 = Suppress(Word("\""))
 
@@ -149,7 +144,7 @@ class CDSLParsing:
 		# Imports
 		idslImport  = Suppress(IMPORT) - QUOTE +  CharsNotIn("\";").setResultsName('path') - QUOTE + SEMI
 		idslImports = ZeroOrMore(idslImport)
-		
+
 		# Communications
 		implementsList = Group(IMPLEMENTS + commIdentifier + ZeroOrMore(Suppress(Word(',')) + commIdentifier) + SEMI)
 		requiresList   = Group(REQUIRES + commIdentifier + ZeroOrMore(Suppress(Word(',')) + commIdentifier) + SEMI)
@@ -157,7 +152,7 @@ class CDSLParsing:
 		publishesList  = Group(PUBLISHES + commIdentifier + ZeroOrMore(Suppress(Word(',')) + commIdentifier) + SEMI)
 		communicationList = implementsList | requiresList | subscribesList | publishesList
 		communications = Group( COMMUNICATIONS.suppress() + OBRACE + ZeroOrMore(communicationList) + CBRACE + SEMI)
-		
+
 		# Language
 		language = Group(LANGUAGE.suppress() - (CPP | CPP11 | PYTHON) - SEMI)
 		# Qtversion
@@ -172,8 +167,20 @@ class CDSLParsing:
 		# Component definition
 		componentContents = communications('communications') + language('language') + Optional(gui('gui')) + Optional(options('options')) + Optional(qtVersion('useQt')) + Optional(innermodelviewer('innermodelviewer'))
 		component = COMPONENT.suppress() + identifier("name") + OBRACE + componentContents("properties") + CBRACE + SEMI
-		
+
 		CDSL = idslImports("imports") - component("component")
+
+		return CDSL
+
+
+	@staticmethod
+	def fromString(inputText, verbose=False, includeDirectories=None):
+		if includeDirectories == None:
+			includeDirectories = []
+		if verbose: print 'Verbose:', verbose
+		text = nestedExpr("/*", "*/").suppress().transformString(inputText) 
+
+		CDSL = CDSLParsing.getCDSLParser()
 		CDSL.ignore( cppStyleComment )
 		try:
 			tree = CDSL.parseString(text)
