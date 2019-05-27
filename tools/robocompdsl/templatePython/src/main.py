@@ -52,7 +52,7 @@ SUBSCRIBESTO_STR = """
 <TABHERE><TABHERE><TABHERE>print "Error. Topic does not exist (creating)"
 <TABHERE><TABHERE><TABHERE>time.sleep(1)
 <TABHERE><TABHERE><TABHERE>try:
-<TABHERE><TABHERE><TABHERE><TABHERE>differentialrobot_topic = topicManager.create("DifferentialRobot")
+<TABHERE><TABHERE><TABHERE><TABHERE><LOWER>_topic = topicManager.create("<NORMAL>")
 <TABHERE><TABHERE><TABHERE><TABHERE>subscribeDone = True
 <TABHERE><TABHERE><TABHERE>except:
 <TABHERE><TABHERE><TABHERE><TABHERE>print "Error. Topic could not be created. Exiting"
