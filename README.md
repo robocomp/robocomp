@@ -35,7 +35,7 @@ Make sure you have installed the following packages from the Ubuntu repository:
 
     sudo apt-get update
     sudo apt-get install git git-annex cmake g++ libgsl-dev libopenscenegraph-dev cmake-qt-gui zeroc-ice-all-dev freeglut3-dev libboost-system-dev libboost-thread-dev qt5-default libqt5xmlpatterns5-dev python-pip  python-pyparsing python-numpy libxt-dev libboost-test-dev libboost-filesystem-dev python-libxml2 python-xmltodict libccd-dev python-pyside pyside-tools python-zeroc-ice zeroc-ice-all-runtime
-    sudo pip install networkx pyside2
+    sudo pip install networkx pyside2 argcomplete
 
 It is recommendable to install the following packages::
 
