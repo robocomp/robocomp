@@ -28,6 +28,7 @@ module RoboCompHumanPose
 	struct humansDetected
 	{
 		 int idCamera;
+         long timeStamp;
 		 personList humanList;
 	};
 	interface HumanPose
