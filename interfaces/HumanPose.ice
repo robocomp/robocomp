@@ -19,10 +19,13 @@ module RoboCompHumanPose
 		 bool rotGood;
 		 int confidence = 0;
 	};
+    sequence <int> Descriptor;
+    sequence <Descriptor> JointsDescriptor;
 	struct PersonType
 	{
 		 int id;
 		 Pose3D pos;
+         JointsDescriptor jointsDescriptor;
 	};
 	sequence <PersonType> personList;
 	struct humansDetected
