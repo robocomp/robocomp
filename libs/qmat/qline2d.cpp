@@ -174,7 +174,7 @@ QVec QLine2D::getNormalForOSGLineDraw()
 	QVec p = getIntersectionPointOfNormalThroughOrigin();  //2 vector
 	if( p.isZero() == true )  //both intersect at 0,0. Return a fake small vector normal to the line at origin
 	{
-		qDebug() << "QLine2D::getNormalForOSGLineDraw - shit Intersection point is zero";
+		//qDebug() << "QLine2D::getNormalForOSGLineDraw - shit Intersection point is zero";
 		return QVec::vec3((this->getPerpendicularVector() / 1000.f).x(), 0, (this->getPerpendicularVector() / 1000).y());
 	}
 	else 

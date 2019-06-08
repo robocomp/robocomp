@@ -29,7 +29,6 @@ using namespace RMat;
 
 class QLine2D : public QVec
 {
-
 	public:
 		QLine2D() : QVec(3,0.f) {};               
 		QLine2D(const QVec &p1, const QVec &p2);
@@ -58,7 +57,6 @@ class QLine2D : public QVec
 		QLine2D getPlus45DegreesLinePassingThroughPoint(const QVec &point);
 		T getAngleWithZAxis();
 		QVec pointAlongLineStartingAtP1AtLanda(const QVec &p1, float landa);
-
 };
 
 std::ostream& operator << ( std::ostream &os, const RMat::QVec &vector );

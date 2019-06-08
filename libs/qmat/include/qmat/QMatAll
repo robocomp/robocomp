@@ -27,6 +27,8 @@
 #include <qmat/qfundamental.h>
 #include <qmat/qessential.h>
 #include <qmat/qline2d.h>
+#include <qmat/quaternion.h>
+
 
 /** \mainpage RoboComp::Matrix class
  *

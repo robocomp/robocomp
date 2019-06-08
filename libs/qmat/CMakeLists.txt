@@ -14,6 +14,7 @@ set(srcs
     qrtmat.cpp
     qhomo.cpp
     qline2d.cpp
+    quaternion.cpp
    )
 
 set(incs

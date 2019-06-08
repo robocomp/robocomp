@@ -723,7 +723,6 @@ RTMat InnerModel::getTransformationMatrix(const QString &to, const QString &from
 {
 	RTMat ret;
 
-	
 	if (localHashTr.contains(QPair<QString, QString>(to, from)))
 	{
 		ret = localHashTr[QPair<QString, QString>(to, from)];
@@ -865,6 +864,7 @@ bool InnerModel::collide(const QString &a, const QString &b)
 #if FCL_SUPPORT==1
 	InnerModelNode *n1 = getNode(a);
 	if (not n1) throw 1;
+	//qDebug() << "collide " << a << b << n1->id;
 	QMat r1q = getRotationMatrixTo("root", a);
 	fcl::Matrix3f R1( r1q(0,0), r1q(0,1), r1q(0,2), r1q(1,0), r1q(1,1), r1q(1,2), r1q(2,0), r1q(2,1), r1q(2,2) );
 	QVec t1v = getTranslationVectorTo("root", a);
@@ -883,21 +883,23 @@ bool InnerModel::collide(const QString &a, const QString &b)
 	fcl::CollisionResult result;
 
 	n1->collisionObject->computeAABB();
-// 	fcl::AABB a1 = n1->collisionObject->getAABB();
-// 	fcl::Vec3f v1 = a1.center();
+ 	fcl::AABB a1 = n1->collisionObject->getAABB();
+ 	fcl::Vec3f v1 = a1.center();
 
 	n2->collisionObject->computeAABB();
-// 	fcl::AABB a2 = n2->collisionObject->getAABB();
-// 	fcl::Vec3f v2 = a2.center();
+ 	fcl::AABB a2 = n2->collisionObject->getAABB();
+ 	fcl::Vec3f v2 = a2.center();
 
-// 	qDebug()<< a;
-// 	printf("- (%f,  %f,  %f) --- (%f,  %f,  %f) [%f , %f , %f]  <<%f %d>>\n", v1[0], v1[1], v1[2], (v1-v2)[0], (v1-v2)[1], (v1-v2)[2], a1.width(), a1.height(), a1.depth(), a1.distance(a2), a1.overlap(a2));
-// 	qDebug()<< b;
-// 	printf("- (%f,  %f,  %f) --- (%f,  %f,  %f) [%f , %f , %f]  <<%f %d>>\n", v2[0], v2[1], v2[2], (v1-v2)[0], (v1-v2)[1], (v1-v2)[2], a2.width(), a2.height(), a2.depth(), a1.distance(a2), a1.overlap(a2));
+ 	//qDebug()<< a;
+ 	//printf("- (%f,  %f,  %f) --- (%f,  %f,  %f) [%f , %f , %f]  <<%f %d>>\n", v1[0], v1[1], v1[2], (v1-v2)[0], (v1-v2)[1], (v1-v2)[2], a1.width(), a1.height(), a1.depth(), a1.distance(a2), a1.overlap(a2));
+ 	//qDebug()<< b;
+ 	//printf("- (%f,  %f,  %f) --- (%f,  %f,  %f) [%f , %f , %f]  <<%f %d>>\n", v2[0], v2[1], v2[2], (v1-v2)[0], (v1-v2)[1], (v1-v2)[2], a2.width(), a2.height(), a2.depth(), a1.distance(a2), a1.overlap(a2));
 
 	// NOTE: Un poco de documentacion nunca esta mal, sabeis --> http://gamma.cs.unc.edu/FCL/fcl_docs/webpage/generated/namespacefcl.html
 	// std::size_t 	collide (const CollisionObject *o1, const CollisionObject *o2, const CollisionRequest &request, CollisionResult &result)
 	fcl::collide(                  n1->collisionObject,       n2->collisionObject,                         request,                  result);
+	//qDebug() << result.isCollision();
+	///qDebug() << "--------------";
 	// return binary collision result --> http://gamma.cs.unc.edu/FCL/fcl_docs/webpage/generated/structfcl_1_1CollisionResult.html#ed599cb31600ec6d0585d9adb4cde946
 	// True if There are collisions, and false if there arent collisions.
 	return result.isCollision();

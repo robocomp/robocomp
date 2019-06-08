@@ -40,16 +40,14 @@
 
 #include <qmat/quaternion.h>
 
-using namespace RMat;
-
 // Constructors
-QQuaternion::QQuaternion(): QVec(4)
+RMat::Quaternion::Quaternion(): QVec(4)
 {
 	set(0);
 	operator[](3) = 1;
 }
 
-QQuaternion::QQuaternion(QVec a, float phi): QVec(4)
+RMat::Quaternion::Quaternion(QVec a, float phi): QVec(4)
 {
 	QVec a_normal = a * (T)(sin(phi/2.0) / a.norm2());
 
@@ -59,10 +57,10 @@ QQuaternion::QQuaternion(QVec a, float phi): QVec(4)
 	operator[](3) = cos(phi/2.0);
 }
 
-QQuaternion::QQuaternion(const QMat matrix): QVec(4)
+RMat::Quaternion::Quaternion(const QMat matrix): QVec(4)
 {
 	Q_ASSERT(matrix.nCols() == 3);
-	Q_ASSERT(matrix.nFils() == 3);
+	Q_ASSERT(matrix.nRows() == 3);
 
 	operator[](3) = sqrt(1 + matrix(0,0) + matrix(1,1) + matrix(2,2)) / 2;
 	operator[](0) = (matrix(2,1) - matrix(1,2)) / (4*operator[](3));
@@ -70,7 +68,7 @@ QQuaternion::QQuaternion(const QMat matrix): QVec(4)
 	operator[](2) = (matrix(1,0) - matrix(0,1)) / (4*operator[](3));
 }
 
-QQuaternion::QQuaternion(const double q1, const double q2, const double q3, const double q4): QVec(4)
+RMat::Quaternion::Quaternion(const double q1, const double q2, const double q3, const double q4): QVec(4)
 {
 	operator[](0) = q1;
 	operator[](1) = q2;
@@ -78,9 +76,9 @@ QQuaternion::QQuaternion(const double q1, const double q2, const double q3, cons
 	operator[](3) = q4;
 }
 
-QQuaternion QQuaternion::normalizeQuaternion() const
+RMat::Quaternion RMat::Quaternion::normalizeQuaternion() const
 {
-	QQuaternion q = *this;
+	RMat::Quaternion q = *this;
 
 	double size = q[0]*q[0] + q[1]*q[1] + q[2]*q[2] + q[3]*q[3];
 	for (int i = 0; i < 4; i++)
@@ -89,19 +87,19 @@ QQuaternion QQuaternion::normalizeQuaternion() const
 	return q;
 }
 
-QQuaternion QQuaternion::quaternionProduct(const QQuaternion &quaternion) const
+RMat::Quaternion RMat::Quaternion::quaternionProduct(const Quaternion &quaternion) const
 {
 	Q_ASSERT(size() == 4);
 	Q_ASSERT(quaternion.size() == 4);
 
-	QQuaternion q1Vector = *this, q2Vector = quaternion;
+	RMat::Quaternion q1Vector = *this, q2Vector = quaternion;
 
 	QVec t1Vector = q1Vector.subVector(0,2);
 	QVec t2Vector = q2Vector.subVector(0,2);
 	QVec t3Vector = t2Vector ^ t1Vector;
 	QVec tfVector = t1Vector * q2Vector[3] + t2Vector * q1Vector[3] + t3Vector;
 
-	QQuaternion destQuat;
+	RMat::Quaternion destQuat;
 
 	destQuat[0] = tfVector[0];
 	destQuat[1] = tfVector[1];
@@ -111,12 +109,36 @@ QQuaternion QQuaternion::quaternionProduct(const QQuaternion &quaternion) const
 	return destQuat.normalizeQuaternion();
 }
 
+RMat::QVec RMat::Quaternion::toAngles() const
+{
+	QVec res(3);
+	const double &qx = operator[](0);
+	const double &qy = operator[](1);
+	const double &qz = operator[](2);
+	const double &qw = operator[](3);
+	
+	res[0] = atan2(2*qy*qw-2*qx*qz , 1 - 2*qy*qy - 2*qz*qz);
+	res[1] = asin(2*qx*qy + 2*qz*qw);
+	res[2] = atan2(2*qx*qw-2*qy*qz , 1 - 2*qx*qx - 2*qz*qz);
 
-std::ostream& operator << ( std::ostream &os, const QQuaternion &quaternion )
+	if(qFuzzyCompare((qx*qy + qz*qw), 0.5)) // north pole
+	{
+		res[0] = 2. * atan2(qx,qw);
+		res[2] = 0.;
+	}
+	if(qFuzzyCompare((qx*qy + qz*qw), -0.5)) //south pole
+	{
+		res[0] = -2. * atan2(qx,qw);
+		res[2] = 0.;
+	}
+	return res;
+}
+
+std::ostream& operator << ( std::ostream &os, const RMat::Quaternion &quaternion )
 {
 	const int size = quaternion.size();
 
-	os << "QQuaternion [";
+	os << "Quaternion [";
 
 	for (int i = 0; i < size; i++)
 	os << qPrintable(QString("%1").arg(quaternion[i], -8, 'f', 6)) << " ";

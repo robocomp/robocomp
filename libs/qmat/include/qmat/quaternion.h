@@ -37,40 +37,37 @@
 */
 
 
-#ifndef QQUATERNION_H
-#define QQUATERNION_H
+#ifndef QUATERNION_H
+#define QUATERNION_H
 
 #include <math.h>
 #include <iostream>
 #include <QString>
-
-
 #include <qmat/qvec.h>
 #include <qmat/qmat.h>
 
 
 namespace RMat
 {
-
-	class QQuaternion: public QVec
+	class Quaternion: public QVec
 	{
 		public:
 			// Constructors
-
-			QQuaternion();
-			QQuaternion(QVec direction, float phi);
-			QQuaternion(const double q1, const double q2, const double q3, const double q4);
-			QQuaternion(const QMat matrix);
-			QQuaternion(const QQuaternion &quaternion): QVec(quaternion){}
+			Quaternion();
+			Quaternion(QVec direction, float phi);
+			Quaternion(const double q1, const double q2, const double q3, const double q4);
+			Quaternion(const QMat matrix);
+			Quaternion(const Quaternion &quaternion): QVec(quaternion){}
 			
-			QQuaternion operator*(const QQuaternion &quaternion) const            { return quaternionProduct(quaternion);};
-			static QQuaternion trackball(float p1x, float p1y, float p2x, float p2y);
-			QQuaternion quaternionProduct(const QQuaternion &quaternion) const;
+			Quaternion operator*(const Quaternion &quaternion) const            { return quaternionProduct(quaternion);};
+			static Quaternion trackball(float p1x, float p1y, float p2x, float p2y);
+			Quaternion quaternionProduct(const Quaternion &quaternion) const;
+			QVec toAngles() const ;
 
 		private:
-			QQuaternion normalizeQuaternion() const;
+			Quaternion normalizeQuaternion() const;
 	};
 
-std::ostream& operator << ( std::ostream &os, const QQuaternion &quaternion );
+std::ostream& operator << ( std::ostream &os, const Quaternion &quaternion );
 }
 #endif

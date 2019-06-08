@@ -1,39 +1,22 @@
-<!--<innerModel>
-	<transform id="world">
-
-	<translation id="room" tx="0" ty="0" tz="0">
-		<<plane id="floor"    nx="0" ny="1" nz="0" px="0"  py="0"  pz="0"  size="40000" repeat="1" texture="#ea2800" /> 
-	</translation>
-    
-	<transform id="box_t" tx="1200" ty="-900" tz="3000">
-		<mesh id="box_mesh" file="/home/robocomp/robocomp/Files/osgModels/basics/cube.3ds" scale="500"/>
-	</transform>
-    
-	<transform id="cabeza_sensores">
-		<plane id="sensor" nz="1" pz="-0.05" size="10" repeat="1" texture="#0000ff" /> 
-		<rgbd id="rgbd" focal="400" width="640" height="480" port="30000" ifconfig="20000,40000" focal="400"/>
-	</transform>
-   
-
-	</transform>
-</innerModel>-->
 
 <innerModel>
   <transform id="world">
 
     <translation id="room" tx="0" ty="0" tz="0">
-      <plane id="floor"    nx="0" ny="1" nz="0" px="0"  py="0"  pz="0"  size="40000" repeat="1" texture="#ea2800" /> 
+      <plane id="floor"    nx="0" ny="1" nz="0" px="0"  py="0"  pz="0"  size="40000" repeat="1" texture="/home/robocomp/robocomp/files/osgModels/textures/wood.jpg" /> 
+      <axes id="axis_f" length="1000" width="100"/>
     </translation>
     
-    <transform id="box_t" tx="0" ty="1000" tz="0">
-      <mesh id="box_mesh" file="/home/robocomp/robocomp/files/osgModels/basics/cube.3ds" scale="500"/>
+    <transform id="box_t" tx="0" ty="500" tz="0">
+      <mesh id="box_mesh" file="/home/robocomp/robocomp/files/osgModels/basics/cube.3ds" scale="1000"/>
+      <axes id="axis_c" length="2000" width="100"/>
     </transform>
     
-    <transform id="cabeza_sensores" tx="-2500" ty="2500" tz="-2500" rx="0.7" ry="0.70" rz="-0.4">
+    <!-- <transform id="cabeza_sensores" tx="-2500" ty="2500" tz="-2500" rx="0.7" ry="0.70" rz="-0.4">
       <plane id="sensor" nz="1" pz="-0.05" size="10" repeat="1" texture="#0000ff" />
       <rgbd id="rgbd" focal="400" width="640" height="480" port="30000" ifconfig="20000,40000" focal="400"/>
     </transform>
-   
+    -->
 
   </transform>
 </innerModel>
