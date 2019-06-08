@@ -1,4 +1,4 @@
-module RoboCompFullPoseEstimation
+module RoboCompFullPoseEstimationPub
 {
     exception HardwareFailedException { string what; };
 
@@ -8,12 +8,12 @@ module RoboCompFullPoseEstimation
         float y;
 	    float z;
         float rx;
-	    float ry;
-	    float rz;
+    	float ry;
+    	float rz;
     };
 
-    interface FullPoseEstimation
+    interface FullPoseEstimationPub
     {
-        FullPose getFullPose();
+        void newFullPose(FullPose pose);
     };
 };
