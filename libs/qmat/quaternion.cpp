@@ -117,19 +117,19 @@ RMat::QVec RMat::Quaternion::toAngles() const
 	const double &qz = operator[](2);
 	const double &qw = operator[](3);
 	
-	res[0] = atan2(2*qy*qw-2*qx*qz , 1 - 2*qy*qy - 2*qz*qz);
-	res[1] = asin(2*qx*qy + 2*qz*qw);
-	res[2] = atan2(2*qx*qw-2*qy*qz , 1 - 2*qx*qx - 2*qz*qz);
+	res[1] = atan2(2*qy*qw-2*qx*qz , 1 - 2*qy*qy - 2*qz*qz);
+	res[2] = asin(2*qx*qy + 2*qz*qw);
+	res[0] = atan2(2*qx*qw-2*qy*qz , 1 - 2*qx*qx - 2*qz*qz);
 
 	if(qFuzzyCompare((qx*qy + qz*qw), 0.5)) // north pole
 	{
-		res[0] = 2. * atan2(qx,qw);
-		res[2] = 0.;
+		res[1] = 2. * atan2(qx,qw);
+		res[0] = 0.;
 	}
 	if(qFuzzyCompare((qx*qy + qz*qw), -0.5)) //south pole
 	{
-		res[0] = -2. * atan2(qx,qw);
-		res[2] = 0.;
+		res[1] = -2. * atan2(qx,qw);
+		res[0] = 0.;
 	}
 	return res;
 }
