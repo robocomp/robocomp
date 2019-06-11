@@ -9,8 +9,8 @@ fi
 
 sudo apt-get update -y
 sudo DEBIAN_FRONTEND=noninteractive apt-get install -y tzdata
-#sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends git git-annex cmake cmake-qt-gui make g++ libgsl-dev libopenscenegraph-dev freeglut3-dev libxt-dev libboost-system-dev libboost-thread-dev libboost-test-dev libboost-filesystem-dev libqt4-dev libqt4-opengl libqt4-opengl-dev python-pip  python-pyparsing python-numpy python-pyside pyside-tools python-libxml2 python-xmltodict libccd-dev libzeroc-ice3.7 libzeroc-icestorm3.7 zeroc-ice-slice zeroc-ice-utils zeroc-icebox zeroc-ice-all-dev python-zeroc-ice  python-setuptools
-sudo DEBIAN_FRONTEND=noninteractive apt-get install -y git git-annex cmake g++ libgsl-dev libopenscenegraph-dev cmake-qt-gui zeroc-ice-all-dev freeglut3-dev libboost-system-dev libboost-thread-dev qt4-dev-tools python-pip  python-pyparsing python-numpy python-pyside pyside-tools libxt-dev libboost-test-dev libboost-filesystem-dev python-libxml2 python-xmltodict libccd-dev python-zeroc-ice zeroc-ice-all-runtime
+sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends git git-annex cmake cmake-qt-gui make g++ libgsl-dev libopenscenegraph-dev freeglut3-dev libxt-dev libboost-system-dev libboost-thread-dev libboost-test-dev libboost-filesystem-dev libqt4-dev libqt4-opengl libqt4-opengl-dev python-pip  python-pyparsing python-numpy python-pyside pyside-tools python-libxml2 python-xmltodict libccd-dev libzeroc-ice3.7 libzeroc-icestorm3.7 zeroc-ice-slice zeroc-ice-utils zeroc-icebox zeroc-ice-all-dev python-zeroc-ice  python-setuptools
+#sudo DEBIAN_FRONTEND=noninteractive apt-get install -y git git-annex cmake g++ libgsl-dev libopenscenegraph-dev cmake-qt-gui zeroc-ice-all-dev freeglut3-dev libboost-system-dev libboost-thread-dev qt4-dev-tools python-pip  python-pyparsing python-numpy python-pyside pyside-tools libxt-dev libboost-test-dev libboost-filesystem-dev python-libxml2 python-xmltodict libccd-dev python-zeroc-ice zeroc-ice-all-runtime
 sudo pip install networkx
 alias python=python2
 git clone -b $ROBOCOMP_BRANCH https://github.com/robocomp/robocomp.git
