@@ -69,7 +69,7 @@ void QJoyStick::run( )
 		{
 			emit (inputEvent(data.value, data.type, data.number));
 		}
-		usleep(100000);
+		usleep(1);
 	}
 }
 
