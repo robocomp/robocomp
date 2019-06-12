@@ -80,7 +80,7 @@ public:
 
     void put(const I &d, std::size_t data_size)
     {
-        if( converter->ItoO(d,writeBuffer))
+        if( converter->ItoO(d, writeBuffer))
         {
             std::lock_guard<std::mutex> lock(bufferMutex);
             std::swap(writeBuffer, readBuffer);
