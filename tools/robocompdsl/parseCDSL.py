@@ -210,6 +210,39 @@ class CDSLParsing:
 		print '\t\tSubscribes', component['subscribesTo']
 
 	@staticmethod
+	def generateRecursiveImports(initial_idsls,  include_directories):
+
+		new_idsls = []
+		for idsl_path in initial_idsls:
+			importedModule = None
+			idsl_basename = os.path.basename(idsl_path)
+			iD = include_directories + ['/opt/robocomp/interfaces/IDSLs/', os.path.expanduser('~/robocomp/interfaces/IDSLs/')]
+			try:
+				for directory in iD:
+					attempt = directory + '/' + idsl_basename
+					# print 'Check', attempt
+					if os.path.isfile(attempt):
+						importedModule = IDSLParsing.fromFile(attempt)  # IDSLParsing.gimmeIDSL(attempt)
+						break
+			except:
+				print 'Error reading IMPORT', idsl_basename
+				traceback.print_exc()
+				print 'Error reading IMPORT', idsl_basename
+				os._exit(1)
+			if importedModule == None:
+				print 'Counldn\'t locate', idsl_basename
+				os._exit(1)
+
+
+			# if importedModule['imports'] have a # at the end an emtpy '' is generated
+			idsl_imports = importedModule['imports'].split('#')
+			# we remove all the '' ocurrences
+			idsl_imports = list(filter(('').__ne__, idsl_imports))
+			if len(idsl_imports) > 0 and idsl_imports[0] != '':
+				new_idsls += idsl_imports + CDSLParsing.generateRecursiveImports(idsl_imports,include_directories)
+		return list(set(new_idsls))
+
+	@staticmethod
 	def component(tree, includeDirectories=None, start=''):
 		component = {}
 		# print 'parseCDSL.component', includeDirectories
@@ -244,38 +277,40 @@ class CDSLParsing:
 			for i in tree['imports']:
 				if not i in imprts:
 					imprts.append(i)
-
+		iD = includeDirectories + ['/opt/robocomp/interfaces/IDSLs/',
+		                           os.path.expanduser('~/robocomp/interfaces/IDSLs/')]
 		for imp in sorted(imprts):
 			import_basename = os.path.basename(imp)
 			component['imports'].append(import_basename)
-			importedModule = None
-			try:
-				iD = includeDirectories + ['/opt/robocomp/interfaces/IDSLs/', os.path.expanduser('~/robocomp/interfaces/IDSLs/')]
-				# print 'iD', iD
-				for directory in iD:
-					attempt = directory+'/'+import_basename
-					# print 'Check', attempt
-					if os.path.isfile(attempt):
-						importedModule = IDSLParsing.fromFile(attempt) # IDSLParsing.gimmeIDSL(attempt)
-
-			except:
-				print 'Error reading IMPORT', import_basename
-				traceback.print_exc()
-				print 'Error reading IMPORT', import_basename
-				os._exit(1)
-			if importedModule == None:
-				print 'Counldn\'t locate', import_basename
-				os._exit(1)
-			# recursiveImports holds the necessary imports
-			importable = False
-			for interf in importedModule['interfaces']:
-				for comm in tree['properties']['communications']:
-					for interface in comm[1:]:
-						if communicationIsIce(interface):
-							if interf['name'] == interface[0]:
-								importable = True
-			if importable:
-				component['recursiveImports'] += [x for x in importedModule['imports'].split('#') if len(x)>0]
+			# importedModule = None
+			#
+			# try:
+			# 	# print 'iD', iD
+			# 	for directory in iD:
+			# 		attempt = directory+'/'+import_basename
+			# 		# print 'Check', attempt
+			# 		if os.path.isfile(attempt):
+			# 			importedModule = IDSLParsing.fromFile(attempt) # IDSLParsing.gimmeIDSL(attempt)
+			#
+			# except:
+			# 	print 'Error reading IMPORT', import_basename
+			# 	traceback.print_exc()
+			# 	print 'Error reading IMPORT', import_basename
+			# 	os._exit(1)
+			# if importedModule == None:
+			# 	print 'Counldn\'t locate', import_basename
+			# 	os._exit(1)
+			# # recursiveImports holds the necessary imports
+			# importable = False
+			# for interf in importedModule['interfaces']:
+			# 	for comm in tree['properties']['communications']:
+			# 		for interface in comm[1:]:
+			# 			if communicationIsIce(interface):
+			# 				if interf['name'] == interface[0]:
+			# 					importable = True
+			# if importable:
+			# 	component['recursiveImports'] += [x for x in importedModule['imports'].split('#') if len(x)>0]
+		component['recursiveImports'] = CDSLParsing.generateRecursiveImports(component['imports'], includeDirectories)
 		# Language
 		component['language'] = tree['properties']['language'][0]
 		# qtVersion
@@ -362,6 +397,9 @@ class CDSLParsing:
 				if not agm2agent_sub in component['subscribesTo']:
 					component['subscribesTo'] = [agm2agent_sub] + component['subscribesTo']
 		return component
+
+
+
 
 def communicationIsIce(sb):
 	isIce = True
