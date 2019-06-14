@@ -246,24 +246,25 @@ class CDSLParsing:
 					imprts.append(i)
 
 		for imp in sorted(imprts):
-			component['imports'].append(imp)
+			import_basename = os.path.basename(imp)
+			component['imports'].append(import_basename)
 			importedModule = None
 			try:
 				iD = includeDirectories + ['/opt/robocomp/interfaces/IDSLs/', os.path.expanduser('~/robocomp/interfaces/IDSLs/')]
 				# print 'iD', iD
 				for directory in iD:
-					attempt = directory+'/'+imp
+					attempt = directory+'/'+import_basename
 					# print 'Check', attempt
 					if os.path.isfile(attempt):
 						importedModule = IDSLParsing.fromFile(attempt) # IDSLParsing.gimmeIDSL(attempt)
 
 			except:
-				print 'Error reading IMPORT', imp
+				print 'Error reading IMPORT', import_basename
 				traceback.print_exc()
-				print 'Error reading IMPORT', imp
+				print 'Error reading IMPORT', import_basename
 				os._exit(1)
 			if importedModule == None:
-				print 'Counldn\'t locate', imp
+				print 'Counldn\'t locate', import_basename
 				os._exit(1)
 			# recursiveImports holds the necessary imports
 			importable = False
