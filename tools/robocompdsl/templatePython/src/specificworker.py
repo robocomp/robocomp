@@ -1,3 +1,5 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 [[[cog
 
 import sys
@@ -157,66 +159,72 @@ for imp in lst:
 						if first:
 							first = False
 					cog.out("]\n")
-for imp in component['implements']:
-	if type(imp) == str:
-		im = imp
-	else:
-		im = imp[0]
-	if not communicationIsIce(imp):
-		module = pool.moduleProviding(im)
-		for interface in module['interfaces']:
-			if interface['name'] == im:
-				for mname in interface['methods']:
-					method = interface['methods'][mname]
-					cog.outl('<TABHERE>def ROS' + method['name'] + "(self, req):")
-					cog.outl("<TABHERE><TABHERE>#")
-					cog.outl("<TABHERE><TABHERE>#implementCODE")
-					cog.outl("<TABHERE><TABHERE>#Example ret = req.a + req.b")
-					cog.outl("<TABHERE><TABHERE>#")
-					cog.outl("<TABHERE><TABHERE>return "+method['name']+"Response(ret)")
-	else:
-		module = pool.moduleProviding(im)
-		for interface in module['interfaces']:
-			if interface['name'] == im:
-				for mname in interface['methods']:
-					method = interface['methods'][mname]
-					outValues = []
-					if method['return'] != 'void':
-						outValues.append([method['return'], 'ret'])
-					paramStrA = ''
-					for p in method['params']:
-						if p['decorator'] == 'out':
-							outValues.append([p['type'], p['name']])
-						else:
-							paramStrA += ', ' +  p['name']
-					cog.outl('')
-					cog.outl('<TABHERE>#')
-					cog.outl('<TABHERE># ' + method['name'])
-					cog.outl('<TABHERE>#')
-					cog.outl('<TABHERE>def ' + method['name'] + '(self' + paramStrA + "):")
-					if method['return'] != 'void': cog.outl("<TABHERE><TABHERE>ret = "+method['return']+'()')
-					cog.outl("<TABHERE><TABHERE>#")
-					cog.outl("<TABHERE><TABHERE>#implementCODE")
-					cog.outl("<TABHERE><TABHERE>#")
-					if len(outValues) == 0:
-						cog.outl("<TABHERE><TABHERE>pass\n")
-					elif len(outValues) == 1:
+
+if component['implements']:
+	cog.out("# =============== Methods for Component Implements ==================")
+	cog.out("# ===================================================================")
+	for imp in component['implements']:
+		if type(imp) == str:
+			im = imp
+		else:
+			im = imp[0]
+		if not communicationIsIce(imp):
+			module = pool.moduleProviding(im)
+			for interface in module['interfaces']:
+				if interface['name'] == im:
+					for mname in interface['methods']:
+						method = interface['methods'][mname]
+						cog.outl('<TABHERE>def ROS' + method['name'] + "(self, req):")
+						cog.outl("<TABHERE><TABHERE>#")
+						cog.outl("<TABHERE><TABHERE># implementCODE")
+						cog.outl("<TABHERE><TABHERE># Example ret = req.a + req.b")
+						cog.outl("<TABHERE><TABHERE>#")
+						cog.outl("<TABHERE><TABHERE>return "+method['name']+"Response(ret)")
+		else:
+			module = pool.moduleProviding(im)
+			for interface in module['interfaces']:
+				if interface['name'] == im:
+					for mname in interface['methods']:
+						method = interface['methods'][mname]
+						outValues = []
 						if method['return'] != 'void':
-							cog.outl("<TABHERE><TABHERE>return ret\n")
+							outValues.append([method['return'], 'ret'])
+						paramStrA = ''
+						for p in method['params']:
+							if p['decorator'] == 'out':
+								outValues.append([p['type'], p['name']])
+							else:
+								paramStrA += ', ' +  p['name']
+						cog.outl('')
+						cog.outl('<TABHERE>#')
+						cog.outl('<TABHERE># ' + method['name'])
+						cog.outl('<TABHERE>#')
+						cog.outl('<TABHERE>def ' + method['name'] + '(self' + paramStrA + "):")
+						if method['return'] != 'void': cog.outl("<TABHERE><TABHERE>ret = "+method['return']+'()')
+						cog.outl("<TABHERE><TABHERE>#")
+						cog.outl("<TABHERE><TABHERE>#implementCODE")
+						cog.outl("<TABHERE><TABHERE>#")
+						if len(outValues) == 0:
+							cog.outl("<TABHERE><TABHERE>pass\n")
+						elif len(outValues) == 1:
+							if method['return'] != 'void':
+								cog.outl("<TABHERE><TABHERE>return ret\n")
+							else:
+								cog.outl("<TABHERE><TABHERE>"+outValues[0][1]+" = "+replaceTypeCPP2Python(outValues[0][0])+"()")
+								cog.outl("<TABHERE><TABHERE>return "+outValues[0][1]+"\n")
 						else:
-							cog.outl("<TABHERE><TABHERE>"+outValues[0][1]+" = "+replaceTypeCPP2Python(outValues[0][0])+"()")
-							cog.outl("<TABHERE><TABHERE>return "+outValues[0][1]+"\n")
-					else:
-						for v in outValues:
-							if v[1] != 'ret':
-								cog.outl("<TABHERE><TABHERE>"+v[1]+" = "+replaceTypeCPP2Python(v[0])+"()")
-						first = True
-						cog.out("<TABHERE><TABHERE>return [")
-						for v in outValues:
-							if not first: cog.out(', ')
-							cog.out(v[1])
-							if first:
-								first = False
-						cog.out("]\n")
+							for v in outValues:
+								if v[1] != 'ret':
+									cog.outl("<TABHERE><TABHERE>"+v[1]+" = "+replaceTypeCPP2Python(v[0])+"()")
+							first = True
+							cog.out("<TABHERE><TABHERE>return [")
+							for v in outValues:
+								if not first: cog.out(', ')
+								cog.out(v[1])
+								if first:
+									first = False
+							cog.out("]\n")
+	cog.out("# =============== Methods for Component Implements ==================")
+	cog.out("# ===================================================================")
 ]]]
 [[[end]]]

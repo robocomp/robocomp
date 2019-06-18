@@ -1,3 +1,5 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 [[[cog
 
 import sys
@@ -83,7 +85,12 @@ except:
 	pass
 
 [[[cog
-for imp in set(component['recursiveImports'] + component['requires'] + component['publishes'] + component['subscribesTo']):
+usingList = []
+for imp in set(component['recursiveImports'] + component["imports"]):
+	name = imp.split('/')[-1].split('.')[0]
+	if not name in usingList:
+		usingList.append(name)
+for name in usingList:
 	eso = imp.split('/')[-1]
 	incl = eso.split('.')[0]
 
