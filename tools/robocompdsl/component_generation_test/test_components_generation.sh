@@ -6,6 +6,9 @@ generated=0
 compiled=0
 comp_failed=0
 gen_failed=0
+
+previous_dir=$(pwd)
+cd ~/robocomp/tools/robocompdsl/component_generation_test
 for dir in $(ls -d */)
 do
 	echo "Entering dir $dir"
@@ -44,6 +47,8 @@ do
 	ls | grep -v ".smdsl" | grep -v ".cdsl" | grep -v ".log" | xargs rm -r > /dev/null 2>&1
 	cd ..
 done
+
+cd $previous_dir
 
 echo "$valid components found with cdsl"
 echo "$generated components generated OK ($gen_failed failed)"
