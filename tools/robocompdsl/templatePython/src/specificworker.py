@@ -14,8 +14,10 @@ def TAB():
 	cog.out('<TABHERE>')
 
 from parseCDSL import *
+from parseSMDSL import *
 includeDirectories = theIDSLPaths.split('#')
 component = CDSLParsing.fromFile(theCDSL, includeDirectories=includeDirectories)
+sm = SMDSLparsing.fromFile(component['statemachine'])
 if component == None:
 	print('Can\'t locate', theCDSLs)
 	sys.exit(1)
@@ -68,9 +70,21 @@ from genericworker import *
 class SpecificWorker(GenericWorker):
 	def __init__(self, proxy_map):
 		super(SpecificWorker, self).__init__(proxy_map)
-		self.timer.timeout.connect(self.compute)
+[[[cog
+if sm is None:
+	cog.outl("<TABHERE><TABHERE>self.timer.timeout.connect(self.compute)")
+]]]
+[[[end]]]
 		self.Period = 2000
 		self.timer.start(self.Period)
+
+[[[cog
+if sm is not None:
+	cog.outl("<TABHERE><TABHERE>self." + sm['machine']['name'] + ".start()")
+	if sm['machine']['default']:
+		cog.outl("<TABHERE><TABHERE>self.destroyed.connect(self.computetofinalize)")
+]]]
+[[[end]]]
 
 	def __del__(self):
 		print 'SpecificWorker destructor'
@@ -83,25 +97,69 @@ class SpecificWorker(GenericWorker):
 		#	print "Error reading config params"
 		return True
 
-	@QtCore.Slot()
-	def compute(self):
-		print 'SpecificWorker.compute...'
-		#computeCODE
-		#try:
-		#	self.differentialrobot_proxy.setSpeedBase(100, 0)
-		#except Ice.Exception, e:
-		#	traceback.print_exc()
-		#	print e
+[[[cog
+if (sm is not None and sm['machine']['default'] is True) or component['statemachine'] == 'none':
+	cog.outl("<TABHERE>@QtCore.Slot()")
+	cog.outl("<TABHERE>def compute(self):")
+	cog.outl("<TABHERE><TABHERE>print 'SpecificWorker.compute...'")
+	cog.outl("<TABHERE><TABHERE>#computeCODE")
+	cog.outl("<TABHERE><TABHERE>#try:")
+	cog.outl("<TABHERE><TABHERE>#<TABHERE>self.differentialrobot_proxy.setSpeedBase(100, 0)")
+	cog.outl("<TABHERE><TABHERE>#except Ice.Exception, e:")
+	cog.outl("<TABHERE><TABHERE>#<TABHERE>traceback.print_exc()")
+	cog.outl("<TABHERE><TABHERE>#<TABHERE>print e")
+	cog.outl("")
+	cog.outl("<TABHERE><TABHERE># The API of python-innermodel is not exactly the same as the C++ version")
+	cog.outl("<TABHERE><TABHERE># self.innermodel.updateTransformValues('head_rot_tilt_pose', 0, 0, 0, 1.3, 0, 0)")
+	cog.outl("<TABHERE><TABHERE># z = librobocomp_qmat.QVec(3,0)")
+	cog.outl("<TABHERE><TABHERE># r = self.innermodel.transform('rgbd', z, 'laser')")
+	cog.outl("<TABHERE><TABHERE># r.printvector('d')")
+	cog.outl("<TABHERE><TABHERE># print r[0], r[1], r[2]")
+	cog.outl("")
+	cog.outl("<TABHERE><TABHERE>return True")
+]]]
+[[[end]]]
 
-		# The API of python-innermodel is not exactly the same as the C++ version
-		# self.innermodel.updateTransformValues("head_rot_tilt_pose", 0, 0, 0, 1.3, 0, 0)
-		# z = librobocomp_qmat.QVec(3,0)
-		# r = self.innermodel.transform("rgbd", z, "laser")
-		# r.printvector("d")
-		# print r[0], r[1], r[2]
+[[[cog
+if sm is not None:
+	codVirtuals = ""
 
-		return True
+	# Generate code for the methods of the StateMachine.
+	if sm['machine']['contents']['initialstate'] != "none":
+		if sm['machine']['default']:
+			codVirtuals += "<TABHERE>#\n<TABHERE># sm_" + sm['machine']['contents']['initialstate'][0] + "\n<TABHERE>#\n<TABHERE>@QtCore.Slot()\n<TABHERE>def sm_" + sm['machine']['contents']['initialstate'][0] + "(self):\n<TABHERE><TABHERE>print(\"Entered state " + sm['machine']['contents']['initialstate'][0] + "\")\n<TABHERE><TABHERE>self.initializetocompute.emit()\n<TABHERE><TABHERE>pass\n\n"
+		else:
+			codVirtuals += "<TABHERE>#\n<TABHERE># sm_" + sm['machine']['contents']['initialstate'][0] + "\n<TABHERE>#\n<TABHERE>@QtCore.Slot()\n<TABHERE>def sm_" + sm['machine']['contents']['initialstate'][0] + "(self):\n<TABHERE><TABHERE>print(\"Entered state " + sm['machine']['contents']['initialstate'][0] + "\")\n<TABHERE><TABHERE>pass\n\n"
 
+	if sm['machine']['contents']['states'] is not "none":
+		for state in sorted(sm['machine']['contents']['states']):
+			if sm['machine']['default']:
+				if state == 'compute':
+					codVirtuals += "<TABHERE>#\n<TABHERE># sm_" + state + "\n<TABHERE>#\n<TABHERE>@QtCore.Slot()\n<TABHERE>def sm_" + state + "(self):\n<TABHERE><TABHERE>print(\"Entered state " + state + "\")\n<TABHERE><TABHERE>self.compute()\n<TABHERE><TABHERE>pass\n\n"
+			else:
+				codVirtuals += "<TABHERE>#\n<TABHERE># sm_" + state + "\n<TABHERE>#\n<TABHERE>@QtCore.Slot()\n<TABHERE>def sm_" + state + "(self):\n<TABHERE><TABHERE>print(\"Entered state " + state + "\")\n<TABHERE><TABHERE>pass\n\n"
+
+	if sm['machine']['contents']['finalstate'] != "none":
+		codVirtuals += "<TABHERE>#\n<TABHERE># sm_" + sm['machine']['contents']['finalstate'][0] + "\n<TABHERE>#\n<TABHERE>@QtCore.Slot()\n<TABHERE>def sm_" + sm['machine']['contents']['finalstate'][0] + "(self):\n<TABHERE><TABHERE>print(\"Entered state "+sm['machine']['contents']['finalstate'][0]+"\")\n<TABHERE><TABHERE>pass\n\n"
+
+	# Generate code for the methods of the StateMachine transitions for substates.
+	if sm['substates'] != "none":
+		for substates in sm['substates']:
+			if substates['contents']['initialstate'] != "none":
+				codVirtuals += "<TABHERE>#\n<TABHERE># sm_" + substates['contents']['initialstate'] + "\n<TABHERE>#\n<TABHERE>@QtCore.Slot()\n<TABHERE>def sm_" + substates['contents']['initialstate'] + "(self):\n<TABHERE><TABHERE>print(\"Entered state " + substates['contents']['initialstate'] + "\")\n<TABHERE><TABHERE>pass\n\n"
+			if substates['contents']['states'] is not "none":
+				for state in sorted(substates['contents']['states']):
+					codVirtuals += "<TABHERE>#\n<TABHERE># sm_" + state + "\n<TABHERE>#\n<TABHERE>@QtCore.Slot()\n<TABHERE>def sm_" + state + "(self):\n<TABHERE><TABHERE>print(\"Entered state "+state+"\")\n<TABHERE><TABHERE>pass\n\n"
+			if substates['contents']['finalstate'] != "none":
+				codVirtuals += "<TABHERE>#\n<TABHERE># sm_" + substates['contents']['finalstate'] + "\n<TABHERE>#\n<TABHERE>@QtCore.Slot()\n<TABHERE>def sm_" + substates['contents']['finalstate'] + "(self):\n<TABHERE><TABHERE>print(\"Entered state "+substates['contents']['finalstate']+"\")\n<TABHERE><TABHERE>pass\n\n"
+
+	cog.outl("# =============== Slots methods for State Machine ===================")
+	cog.outl("# ===================================================================")
+	cog.outl(codVirtuals)
+	cog.outl("# =================================================================")
+	cog.outl("# =================================================================\n")
+]]]
+[[[end]]]
 [[[cog
 lst = []
 try:
@@ -158,12 +216,12 @@ for imp in lst:
 						cog.out(v[1])
 						if first:
 							first = False
-					cog.out("]\n")
+					cog.out("]\n\n")
 
 if component['implements']:
-	cog.out("# =============== Methods for Component Implements ==================")
-	cog.out("# ===================================================================")
-	for imp in component['implements']:
+	cog.outl("# =============== Methods for Component Implements ==================")
+	cog.outl("# ===================================================================")
+	for imp in sorted(component['implements']):
 		if type(imp) == str:
 			im = imp
 		else:
@@ -202,7 +260,7 @@ if component['implements']:
 						cog.outl('<TABHERE>def ' + method['name'] + '(self' + paramStrA + "):")
 						if method['return'] != 'void': cog.outl("<TABHERE><TABHERE>ret = "+method['return']+'()')
 						cog.outl("<TABHERE><TABHERE>#")
-						cog.outl("<TABHERE><TABHERE>#implementCODE")
+						cog.outl("<TABHERE><TABHERE># implementCODE")
 						cog.outl("<TABHERE><TABHERE>#")
 						if len(outValues) == 0:
 							cog.outl("<TABHERE><TABHERE>pass\n")
@@ -223,8 +281,8 @@ if component['implements']:
 								cog.out(v[1])
 								if first:
 									first = False
-							cog.out("]\n")
-	cog.out("# =============== Methods for Component Implements ==================")
-	cog.out("# ===================================================================")
+							cog.out("]\n\n")
+	cog.outl("# ===================================================================")
+	cog.outl("# ===================================================================\n")
 ]]]
 [[[end]]]

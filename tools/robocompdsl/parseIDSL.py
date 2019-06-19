@@ -89,6 +89,7 @@ class IDSLParsing:
 	def gimmeIDSL(name, files='', includeDirectories=None):
 		if not '.idsl' in name:
 			name += '.idsl'
+		name = os.path.basename(name)
 		pathList = []
 		if includeDirectories!= None:
 			pathList += [x for x in includeDirectories]
@@ -326,5 +327,4 @@ class IDSLPool:
 
 if __name__ == '__main__':
 	idsl = IDSLParsing.fromFile(sys.argv[1])
-	for imp in idsl['imports']:
-		print imp
+	print idsl

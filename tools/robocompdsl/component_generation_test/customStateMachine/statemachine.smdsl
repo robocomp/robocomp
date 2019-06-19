@@ -1,0 +1,16 @@
+
+/* CHANGE THE NAME OF THE MACHINE IF YOU MAKE
+   ANY CHANGE TO THE DEFAULT STATES OR TRANSITIONS */
+
+myStateMachine{
+    states two, three, four;
+    initial_state one;
+    end_state five;
+    transitions{
+        one => two;
+        two => three;
+        three => four;
+        four => one;
+        four => five;
+    };
+};

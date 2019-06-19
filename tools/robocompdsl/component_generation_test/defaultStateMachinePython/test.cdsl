@@ -1,0 +1,10 @@
+Component test
+{
+    Communications
+    {
+    };
+	language python;
+	gui Qt(QWidget);
+	statemachine "statemachine.smdsl";
+};
+

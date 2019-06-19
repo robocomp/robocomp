@@ -13,8 +13,12 @@ def TAB():
 	cog.out('<TABHERE>')
 
 from parseCDSL import *
+from parseSMDSL import *
 includeDirectories = theIDSLPaths.split('#')
 component = CDSLParsing.fromFile(theCDSL, includeDirectories=includeDirectories)
+sm = SMDSLparsing.fromFile(component['statemachine'])
+if sm is None:
+    component['statemachine'] = 'none'
 if component == None:
 	print('Can\'t locate', theCDSLs)
 	sys.exit(1)
@@ -198,9 +202,36 @@ if 'subscribesTo' in component:
 [[[end]]]
 
 public slots:
-	void compute();
+[[[cog
+if (sm is not None and sm['machine']['default'] is True) or component['statemachine'] == 'none':
+	cog.outl("<TABHERE>void compute();")
+]]]
+[[[end]]]
 	void initialize(int period);
-
+[[[cog
+if component['statemachine'] != 'none':
+    sm_specification = ""
+    if sm['machine']['contents']['states'] is not "none":
+        for state in sm['machine']['contents']['states']:
+            sm_specification += "<TABHERE>void sm_" + state + "();\n"
+    if sm['machine']['contents']['initialstate'] != "none":
+        sm_specification += "<TABHERE>void sm_" + sm['machine']['contents']['initialstate'][0] + "();\n"
+    if sm['machine']['contents']['finalstate'] != "none":
+        sm_specification += "<TABHERE>void sm_" + sm['machine']['contents']['finalstate'][0] + "();\n"
+    if sm['substates'] != "none":
+        for substates in sm['substates']:
+            if substates['contents']['states'] is not "none":
+                for state in substates['contents']['states']:
+                    sm_specification += "<TABHERE>void sm_" + state + "();\n"
+            if substates['contents']['initialstate'] != "none":
+                sm_specification += "<TABHERE>void sm_" + substates['contents']['initialstate'] + "();\n"
+            if substates['contents']['finalstate'] != "none":
+                sm_specification += "<TABHERE>void sm_" + substates['contents']['finalstate'] + "();\n"
+    cog.outl("//Specification slot methods State Machine")
+    cog.outl(sm_specification)
+    cog.outl("//--------------------")
+]]]
+[[[end]]]
 private:
 	std::shared_ptr<InnerModel> innerModel;
 [[[cog

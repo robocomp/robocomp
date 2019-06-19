@@ -11,10 +11,13 @@ def Z():
 	cog.out('>@@>')
 def TAB():
 	cog.out('<TABHERE>')
-
+from parseSMDSL import *
 from parseCDSL import *
 includeDirectories = theIDSLPaths.split('#')
 component = CDSLParsing.fromFile(theCDSL, includeDirectories=includeDirectories)
+sm = SMDSLparsing.fromFile(component['statemachine'])
+if sm is None:
+    component['statemachine'] = 'none'
 if component == None:
 	print('Can\'t locate', theCDSLs)
 	sys.exit(1)
@@ -69,7 +72,12 @@ if component['gui'] != 'none':
 	cog.outl("#include <ui_mainUI.h>")
 ]]]
 [[[end]]]
-
+[[[cog
+if sm is not None:
+	cog.outl("#include <QStateMachine>")
+	cog.outl("#include <QState>")
+]]]
+[[[end]]]
 #include <CommonBehavior.h>
 
 [[[cog
@@ -478,6 +486,77 @@ if 'subscribesTo' in component:
 [[[end]]]
 
 protected:
+[[[cog
+if sm is not None:
+    codQState = ""
+    codQStateMachine = ""
+    lsstates = ""
+    codQStateMachine = "<TABHERE>QStateMachine " + sm['machine']['name'] + ";\n"
+    if sm['machine']['contents']['states'] is not "none":
+        for state in sm['machine']['contents']['states']:
+            aux = "<TABHERE>QState *" + state + "State = new QState();\n"
+            lsstates += state +","
+            if sm['substates'] is not "none":
+                for substates in sm['substates']:
+                    if state == substates['parent']:
+                        if substates['parallel'] is "parallel":
+                            aux = "<TABHERE>QState *" + state + "State = new QState(QState::ParallelStates);\n"
+                            break
+            codQState += aux
+    if sm['machine']['contents']['initialstate'] != "none":
+        state = sm['machine']['contents']['initialstate'][0]
+        aux = "<TABHERE>QState *" + state + "State = new QState();\n"
+        lsstates += state +","
+        if sm['substates'] is not "none":
+            for substates in sm['substates']:
+                if state == substates['parent']:
+                    if substates['parallel'] is "parallel":
+                        aux = "<TABHERE>QState *" + state + "State = new QState(QState::ParallelStates);\n"
+                        break
+        codQState += aux
+
+
+    if sm['machine']['contents']['finalstate'] != "none":
+        state = sm['machine']['contents']['finalstate'][0]
+        codQState +="<TABHERE>QFinalState *" + state + "State = new QFinalState();\n"
+        lsstates += state +","
+
+    if sm['substates'] != "none":
+        for substates in sm['substates']:
+            if substates['contents']['states'] is not "none":
+                for state in substates['contents']['states']:
+                    aux = "<TABHERE>QState *" + state + "State = new QState(" + substates['parent'] +"State);\n"
+                    lsstates += state +","
+                    for sub in sm['substates']:
+                        if state == sub['parent']:
+                            if sub['parallel'] is "parallel":
+                                aux = "<TABHERE>QState *" + state + "State = new QState(QState::ParallelStates, " + substates['parent'] +"State);\n"
+                                break
+                    codQState += aux
+            if substates['contents']['initialstate'] != "none":
+                aux = "<TABHERE>QState *" + substates['contents']['initialstate'] + "State = new QState(" + substates['parent'] + "State);\n"
+                lsstates += state +","
+                for sub in sm['substates']:
+                    if state == sub['parent']:
+                        if sub['parallel'] is "parallel":
+                            aux = "<TABHERE>QState *" + state + "State = new QState(QState::ParallelStates, " + substates['parent'] + "State);\n"
+                            break
+                codQState += aux
+            if substates['contents']['finalstate'] != "none":
+                codQState += "<TABHERE>QFinalState *" + substates['contents']['finalstate'] + "State = new QFinalState(" +substates['parent'] + "State);\n"
+                lsstates += state +","
+
+
+
+    cog.outl("//State Machine")
+    cog.outl(codQStateMachine)
+    cog.outl(codQState)
+    cog.outl("//-------------------------")
+
+
+]]]
+[[[end]]]
+
 	QTimer timer;
 	int Period;
 [[[cog
@@ -550,10 +629,55 @@ private:
 
 
 public slots:
-	virtual void compute() = 0;
-	virtual void initialize(int period) = 0;
+[[[cog
+if sm is not None:
+    sm_virtual_methods = ""
+    if sm['machine']['contents']['states'] is not "none":
+        for state in sm['machine']['contents']['states']:
+            sm_virtual_methods += "<TABHERE>virtual void sm_" + state + "() = 0;\n"
+    if sm['machine']['contents']['initialstate'] != "none":
+        sm_virtual_methods += "<TABHERE>virtual void sm_" + sm['machine']['contents']['initialstate'][0] + "() = 0;\n"
+    if sm['machine']['contents']['finalstate'] != "none":
+        sm_virtual_methods += "<TABHERE>virtual void sm_" + sm['machine']['contents']['finalstate'][0] + "() = 0;\n"
+    if sm['substates'] != "none":
+        for substates in sm['substates']:
+            if substates['contents']['states'] is not "none":
+                for state in substates['contents']['states']:
+                    sm_virtual_methods += "<TABHERE>virtual void sm_" + state + "() = 0;\n"
+            if substates['contents']['initialstate'] != "none":
+                sm_virtual_methods += "<TABHERE>virtual void sm_" + substates['contents']['initialstate'] + "() = 0;\n"
+            if substates['contents']['finalstate'] != "none":
+                sm_virtual_methods += "<TABHERE>virtual void sm_" + substates['contents']['finalstate'] + "() = 0;\n"
+    cog.outl("//Slots funtion State Machine")
+    cog.outl(sm_virtual_methods)
+    cog.outl("//-------------------------")
+
+if (sm is not None and sm['machine']['default'] is True) or component['statemachine'] == 'none':
+    cog.outl("<TABHERE>virtual void compute() = 0;")
+]]]
+[[[end]]]
+    virtual void initialize(int period) = 0;
+	
 signals:
 	void kill();
+[[[cog
+if sm is not None:
+    codsignals = ""
+    if sm['machine']['contents']['transitions'] != "none":
+        for transi in sm['machine']['contents']['transitions']:
+            for dest in transi['dest']:
+                codsignals += "<TABHERE>void " +  transi['src'] + "to" + dest + "();\n"
+    if sm['substates']!="none":
+        for substates in sm['substates']:
+            if substates['contents']['transitions'] != "none":
+                for transi in substates['contents']['transitions']:
+                    for dest in transi['dest']:
+                        codsignals += "<TABHERE>void " + transi['src'] + "to" + dest + "();\n"
+    cog.outl("//Signals for State Machine")
+    cog.outl(codsignals)
+    cog.outl("//-------------------------")
+]]]
+[[[end]]]
 };
 
 #endif

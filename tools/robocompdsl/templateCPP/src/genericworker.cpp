@@ -12,9 +12,13 @@ def Z():
 def TAB():
 	cog.out('<TABHERE>')
 
+from parseSMDSL import *
 from parseCDSL import *
 includeDirectories = theIDSLPaths.split('#')
 component = CDSLParsing.fromFile(theCDSL, includeDirectories=includeDirectories)
+sm = SMDSLparsing.fromFile(component['statemachine'])
+if sm is None:
+    component['statemachine'] = 'none'
 if component == None:
 	print('Can\'t locate', theCDSLs)
 	sys.exit(1)
@@ -71,6 +75,66 @@ else:
 ]]]
 [[[end]]]
 {
+
+[[[cog
+if sm is not None:
+    codaddTransition = ""
+    codaddState = ""
+    codConnect = ""
+    codsetInitialState = ""
+    states = ""
+    if sm['machine']['contents']['transitions'] != "none":
+        for transi in sm['machine']['contents']['transitions']:
+            for dest in transi['dest']:
+                codaddTransition += "<TABHERE>" + transi['src'] + "State->addTransition(" + "this, SIGNAL("+transi['src'] + "to" + dest+"()), " + dest + "State);\n"
+    if sm['substates'] != "none":
+        for substates in sm['substates']:
+            if substates['contents']['transitions'] != "none":
+                for transi in substates['contents']['transitions']:
+                    for dest in transi['dest']:
+                        codaddTransition += "<TABHERE>" + transi['src'] + "State->addTransition(" + "this, SIGNAL("+transi['src'] + "to" + dest+"()), " + dest + "State);\n"
+    if sm['machine']['contents']['states'] is not "none":
+        for state in sm['machine']['contents']['states']:
+            codaddState += "<TABHERE>" + sm['machine']['name'] +  ".addState(" + state + "State);\n"
+            codConnect += "<TABHERE>QObject::connect(" + state + "State, SIGNAL(entered()), this, SLOT(sm_" + state + "()));\n"
+            states += state + ","
+    if sm['machine']['contents']['initialstate'][0] is not "none":
+        state = sm['machine']['contents']['initialstate'][0]
+        codaddState += "<TABHERE>" + sm['machine']['name'] +  ".addState(" + state + "State);\n"
+        codsetInitialState += "<TABHERE>" + sm['machine']['name'] +  ".setInitialState(" + state +"State);\n"
+        codConnect += "<TABHERE>QObject::connect(" + state + "State, SIGNAL(entered()), this, SLOT(sm_" + state + "()));\n"
+        states += state + ","
+    if sm['machine']['contents']['finalstate'] is not "none":
+        state = sm['machine']['contents']['finalstate'][0]
+        codaddState += "<TABHERE>" + sm['machine']['name'] +  ".addState(" + state + "State);\n"
+        codConnect += "<TABHERE>QObject::connect(" + state + "State, SIGNAL(entered()), this, SLOT(sm_" + state + "()));\n"
+        states += state + ","
+
+    if sm['substates'] != "none":
+        for substates in sm['substates']:
+            if substates['contents']['initialstate'] is not "none":
+                state = substates['contents']['initialstate']
+                codsetInitialState += "<TABHERE>" + substates['parent'] +  "State->setInitialState(" + state +"State);\n"
+                codConnect += "<TABHERE>QObject::connect(" + state + "State, SIGNAL(entered()), this, SLOT(sm_" + state + "()));\n"
+                states += state + ","
+            if substates['contents']['finalstate'] is not "none":
+                state = substates['contents']['finalstate']
+                codConnect += "<TABHERE>QObject::connect(" + state + "State, SIGNAL(entered()), this, SLOT(sm_" + state + "()));\n"
+                states += state + ","
+            if substates['contents']['states'] is not "none":
+                for state in substates['contents']['states']:
+                    codConnect += "<TABHERE>QObject::connect(" + state + "State, SIGNAL(entered()), this, SLOT(sm_" + state + "()));\n"
+                    states += state + ","
+    if sm['machine']['default']:
+        codConnect += "<TABHERE>QObject::connect(&timer, SIGNAL(timeout()), this, SIGNAL(computetocompute()));\n"
+    cog.outl("//Initialization State machine")
+    cog.outl(codaddTransition)
+    cog.outl(codaddState)
+    cog.outl(codsetInitialState)
+    cog.outl(codConnect)
+    cog.outl("//------------------")	
+]]]
+[[[end]]]
 [[[cog
 cont = 0
 for name, num in getNameNumber(component['requires']):
@@ -159,7 +223,11 @@ if component['gui'] != 'none':
 ]]]
 [[[end]]]
 	Period = BASIC_PERIOD;
-	connect(&timer, SIGNAL(timeout()), this, SLOT(compute()));
+[[[cog
+if (sm is not None and sm['machine']['default'] is True) or component['statemachine'] == 'none':
+	cog.outl("<TABHERE>connect(&timer, SIGNAL(timeout()), this, SLOT(compute()));")
+]]]
+[[[end]]]
 
 }
 

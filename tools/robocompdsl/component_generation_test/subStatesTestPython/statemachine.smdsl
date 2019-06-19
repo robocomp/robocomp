@@ -1,0 +1,45 @@
+myStateMachine{
+    states two, three, four;
+    initial_state one;
+    end_state five;
+    transitions{
+        one => two;
+        two => three;
+        three => four;
+        four => one;
+        four => five;
+    };
+};
+
+:two parallel{
+    states test2sub1, test2sub2;
+    transitions{
+	test2sub1 => test2sub1;
+	test2sub2 => test2sub2;
+    };
+};
+
+:test2sub2{
+    initial_state test2sub21;
+    end_state test2sub22;
+    transitions{
+	test2sub21 => test2sub21,test2sub22;
+    };
+};
+
+:three parallel{
+    states test3sub1, test3sub2, test3sub3;
+    transitions{
+	test3sub1 => test3sub1;
+	test3sub2 => test3sub2;
+    };
+};
+
+:four{
+    states test4sub2;
+    initial_state test4sub1;
+    transitions{
+	test4sub1 => test4sub2;
+	test4sub2 => test4sub1;
+    };
+};

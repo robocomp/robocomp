@@ -131,10 +131,10 @@ class CDSLParsing:
 
 		# keywords
 		(IMPORT, COMMUNICATIONS, LANGUAGE, COMPONENT, CPP, CPP11, GUI, USEQt, QT, QT4, QT5, PYTHON, REQUIRES, IMPLEMENTS, SUBSCRIBESTO, PUBLISHES, OPTIONS, TRUE, FALSE,
-		 InnerModelViewer) = map(CaselessKeyword, """
+		 InnerModelViewer, STATEMACHINE) = map(CaselessKeyword, """
 		import communications language component cpp cpp11 gui useQt Qt qt4 qt5
 		python requires implements subscribesTo publishes options true false
-		InnerModelViewer""".split())
+		InnerModelViewer statemachine""".split())
 
 		identifier = Word( alphas+"_", alphanums+"_" )
 
@@ -162,9 +162,10 @@ class CDSLParsing:
 		gui = Group(Optional(GUI.suppress() - QT + OPAR - identifier - CPAR + SEMI ))
 		# additional options
 		options = Group(Optional(OPTIONS.suppress() + identifier + ZeroOrMore(Suppress(Word(',')) + identifier) + SEMI))
+		statemachine = Group(Optional(STATEMACHINE.suppress() + QUOTE + CharsNotIn("\";").setResultsName('path') + QUOTE + SEMI))
 
 		# Component definition
-		componentContents = communications('communications') + language('language') + Optional(gui('gui')) + Optional(options('options')) + Optional(qtVersion('useQt')) + Optional(innermodelviewer('innermodelviewer'))
+		componentContents = communications('communications') + language('language') + Optional(gui('gui')) + Optional(options('options')) + Optional(qtVersion('useQt')) + Optional(innermodelviewer('innermodelviewer')) + Optional(statemachine('statemachine'))
 		component = COMPONENT.suppress() + identifier("name") + OBRACE + componentContents("properties") + CBRACE + SEMI
 
 		CDSL = idslImports("imports") - component("component")
@@ -313,7 +314,15 @@ class CDSLParsing:
 		component['recursiveImports'] = CDSLParsing.generateRecursiveImports(component['imports'], includeDirectories)
 		# Language
 		component['language'] = tree['properties']['language'][0]
-		# qtVersion
+# Statemachine
+		component['statemachine'] = 'none'
+		try:
+			statemachine = tree['properties']['statemachine'][0]
+			component['statemachine'] = statemachine
+		except:
+			pass
+		
+# qtVersion
 		component['useQt'] = 'none'
 		try:
 			component['useQt'] = tree['properties']['useQt'][0]

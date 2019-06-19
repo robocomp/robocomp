@@ -13,8 +13,12 @@ def TAB():
 	cog.out('<TABHERE>')
 
 from parseCDSL import *
+from parseSMDSL import *
 includeDirectories = theIDSLPaths.split('#')
 component = CDSLParsing.fromFile(theCDSL, includeDirectories=includeDirectories)
+sm = SMDSLparsing.fromFile(component['statemachine'])
+if sm is None:
+    component['statemachine'] = 'none'  
 if component == None:
 	print('Can\'t locate', theCDSLs)
 	sys.exit(1)
@@ -165,6 +169,11 @@ except:
 SpecificWorker::~SpecificWorker()
 {
 	std::cout << "Destroying SpecificWorker" << std::endl;
+[[[cog
+if sm is not None and sm['machine']['default']:
+	cog.outl("<TABHERE>emit computetofinalize();")
+]]]
+[[[end]]]
 }
 
 bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
@@ -189,7 +198,11 @@ if component['innermodelviewer']:
 ]]]
 [[[end]]]
 
-
+[[[cog
+if sm is not None:
+    cog.outl("<TABHERE>" + sm['machine']['name'] + ".start();")
+]]]
+[[[end]]]
 	
 
 [[[cog
@@ -220,23 +233,58 @@ void SpecificWorker::initialize(int period)
 	std::cout << "Initialize worker" << std::endl;
 	this->Period = period;
 	timer.start(Period);
+[[[cog
+if sm is not None and sm['machine']['default']:
+    cog.outl("<TABHERE>emit this->initializetocompute();")
+    ]]]
+[[[end]]]
+
 }
 
-void SpecificWorker::compute()
-{
-	//computeCODE
-//	QMutexLocker locker(mutex); 
-// 	try
-// 	{
-// 		camera_proxy->getYImage(0,img, cState, bState);
-// 		memcpy(image_gray.data, &img[0], m_width*m_height*sizeof(uchar));
-// 		searchTags(image_gray);
-// 	}
-// 	catch(const Ice::Exception &e)
-// 	{
-// 		std::cout << "Error reading from Camera" << e << std::endl;
-// 	}
 [[[cog
+if (sm is not None and sm['machine']['default'] is True) or component['statemachine'] == 'none':
+    cog.outl("void SpecificWorker::compute()")
+    cog.outl("{")
+    cog.outl("//computeCODE")
+    cog.outl("//QMutexLocker locker(mutex);")
+    cog.outl("//<TABHERE>try")
+    cog.outl("//<TABHERE>{")
+    cog.outl("//<TABHERE><TABHERE>camera_proxy->getYImage(0,img, cState, bState);")
+    cog.outl("//<TABHERE><TABHERE>memcpy(image_gray.data, &img[0], m_width*m_height*sizeof(uchar));")
+    cog.outl("//<TABHERE><TABHERE>searchTags(image_gray);")
+    cog.outl("//<TABHERE>}")
+    cog.outl("//<TABHERE>catch(const Ice::Exception &e)")
+    cog.outl("//<TABHERE>{")
+    cog.outl("//<TABHERE><TABHERE>std::cout << \"Error reading from Camera\" << e << std::endl;")
+    cog.outl("//<TABHERE>}")
+    cog.outl("}")
+]]]
+[[[end]]]
+
+[[[cog
+if sm is not None:
+	sm_implementation = "\n"
+	if sm['machine']['contents']['states'] is not "none":
+		for state in sm['machine']['contents']['states']:
+		    if sm['machine']['default'] and state == 'compute':
+		        sm_implementation += "void SpecificWorker::sm_" + state + "()\n{\n<TABHERE>std::cout<<\"Entered state "+state+"\"<<std::endl;\n<TABHERE>compute();\n}\n\n"
+		    else:
+			    sm_implementation += "void SpecificWorker::sm_" + state + "()\n{\n<TABHERE>std::cout<<\"Entered state "+state+"\"<<std::endl;\n}\n\n"
+	if sm['machine']['contents']['initialstate'] != "none":
+		sm_implementation += "void SpecificWorker::sm_" + sm['machine']['contents']['initialstate'][0] + "()\n{\n<TABHERE>std::cout<<\"Entered initial state "+sm['machine']['contents']['initialstate'][0]+"\"<<std::endl;\n}\n\n"
+	if sm['machine']['contents']['finalstate'] != "none":
+		sm_implementation += "void SpecificWorker::sm_" + sm['machine']['contents']['finalstate'][0] + "()\n{\n<TABHERE>std::cout<<\"Entered final state "+sm['machine']['contents']['finalstate'][0] +"\"<<std::endl;\n}\n\n"
+	if sm['substates'] != "none":
+		for substates in sm['substates']:
+			if substates['contents']['states'] is not "none":
+				for state in substates['contents']['states']:
+					sm_implementation += "void SpecificWorker::sm_" + state + "()\n{\n<TABHERE>std::cout<<\"Entered state "+state+"\"<<std::endl;\n}\n\n"
+			if substates['contents']['initialstate'] != "none":
+				sm_implementation += "void SpecificWorker::sm_" + substates['contents']['initialstate'] + "()\n{\n<TABHERE>std::cout<<\"Entered state "+substates['contents']['initialstate']+"\"<<std::endl;\n}\n\n"
+			if substates['contents']['finalstate'] != "none":
+				sm_implementation += "void SpecificWorker::sm_" + substates['contents']['finalstate'] + "()\n{\n<TABHERE>std::cout<<\"Entered state "+substates['contents']['finalstate']+"\"<<std::endl;\n}\n\n"
+	cog.outl(sm_implementation)
+
 if component['usingROS'] == True:
 	cog.outl("<TABHERE>ros::spinOnce();")
 if component['innermodelviewer']:
@@ -246,7 +294,7 @@ if component['innermodelviewer']:
 	cog.outl("#endif")
 ]]]
 [[[end]]]
-}
+
 
 
 [[[cog

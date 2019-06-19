@@ -1,0 +1,11 @@
+/* Testing comments */
+coreMachine{
+    states compute;
+    initial_state initialize;
+    end_state finalize;
+    transitions{
+        initialize => compute;
+        compute => compute;
+        compute => finalize;
+    };
+};

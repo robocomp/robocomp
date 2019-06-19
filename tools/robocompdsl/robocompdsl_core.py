@@ -164,10 +164,60 @@ Component <CHANGETHECOMPONENTNAME>
 	gui Qt(QWidget//QDialog//QMainWindow);
 	//options agmagent;
 	//options InnerModelViewer;
+	statemachine "statemachine.smdsl";
 };\n\n"""
         name = path.split('/')[-1].split('.')[0]
         string = string.replace('<CHANGETHECOMPONENTNAME>', name)
         open(path, "w").write(string)
+
+
+def generateDummySMDSL(path):
+	if os.path.exists(path):
+		print "File", path, "already exists.\nExiting..."
+	else:
+		print "Generating dummy SMDSL file:", path
+		state_machine_string = """
+/* CHANGE THE NAME OF THE MACHINE IF YOU MAKE
+   ANY CHANGE TO THE DEFAULT STATES OR TRANSITIONS */
+
+defaultMachine{
+    states compute;
+    initial_state initialize;
+    end_state finalize;
+    transitions{
+        initialize => compute;
+        compute => compute;
+        compute => finalize;
+    };
+};
+
+
+/* --------------------------------------------------------------
+   This is the accepted syntax for the State Machine definition 
+
+name_machine{
+    [states name_state *[, name_state];]
+    [initial_state name_state;]
+    [end_state name_state;]
+    [transitions{
+        name_state => name_state *[, name_state];
+        *[name_state => name_state *[, name_state];]
+    };]
+};
+
+[:parent_state [parallel]{
+    states name_state *[, name_state];
+    [initial_state name_state;]
+    [end_state name_state;]
+    [transitions{
+        name_state => name_state *[, name_state];
+        *[name_state => name_state *[, name_state];]
+    };]
+};]
+
+------------------------------------------------------------------ */\n"""
+
+		open(path, "w").write(state_machine_string)
 
 def get_diff_tool(prefered=None):
     if prefered in DIFF_TOOLS:
@@ -249,6 +299,7 @@ def main():
     if args.output_path is None:
         if args.input_file.endswith(".cdsl"):
             generateDummyCDSL(args.input_file)
+            generateDummySMDSL("statemachine.smdsl")
             sys.exit(0)
         else:
             print args.output_path, args.input_file
