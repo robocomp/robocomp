@@ -433,4 +433,5 @@ def isAGM2AgentROS(component):
 	return False
 
 if __name__ == '__main__':
-	CDSLParsing.fromFile(sys.argv[1])
+	component = CDSLParsing.fromFile(sys.argv[1])
+	print component
