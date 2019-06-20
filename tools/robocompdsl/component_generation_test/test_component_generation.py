@@ -9,15 +9,21 @@ from shutil import rmtree
 from termcolor import cprint, colored
 
 
-#Class to print colored error message on argparse
 class MyParser(argparse.ArgumentParser):
-    def error(self, message):
-        cprint('error: %s' % message, 'red')
-        self.print_help()
-        sys.exit(2)
+	"""
+	Convenience class for the ArgParse parser.
+	"""
+
+	def error(self, message):
+		cprint('error: %s' % message, 'red')
+		self.print_help()
+		sys.exit(2)
 
 
 class ComponentGenerationChecker:
+	"""
+	Class containing methods used to generate code and compile a bunch of components to be tested.
+	"""
 
 	def __init__(self):
 		self.results = {}
@@ -28,12 +34,18 @@ class ComponentGenerationChecker:
 		self.gen_failed = 0
 		self.dry_run = False
 
-
 	def generate_code(self, cdsl_file, log_file, dry_run=True):
+		"""
+		Execution of the robocompdsl script to generate the component code for a gigen .cdsl file.
+		:param cdsl_file: filename of the .cdsl of the component to be generated
+		:param log_file: name of the log file to be written with the result of the command execution.
+		:param dry_run: Force to just show messages of what would be done but no command is executed.
+		:return: command execution return code
+		"""
 		if dry_run:
 			print('robocompdsl %file > /dev/null 2>&1' % cdsl_file)
 			print('robocompdsl %cdsl_file . > %log_file 2>&1' % (cdsl_file, log_file))
-			return True
+			return 0
 		else:
 			# completedProc = subprocess.Popen('robocompdsl %s > /dev/null 2>&1'%cdsl_file)
 			# completedProc = subprocess.Popen('robocompdsl %s . > %s 2>&1' % (cdsl_file, log_file))
@@ -57,36 +69,48 @@ class ComponentGenerationChecker:
 				return command_output.returncode
 			return -1
 
-
 	def cmake_component(self):
+		"""
+		Execute cmake on the curren directory . Output and error is saved to make_output.log.
+		:return: command return code
+		"""
 		with open("cmake_output.log", "wb") as log:
 			command_output = subprocess.Popen("cmake .",
-											  stdout=subprocess.PIPE,
-											  stderr=log,
-											  shell=True)
+			                                  stdout=subprocess.PIPE,
+			                                  stderr=log,
+			                                  shell=True)
 			stdout, stderr = command_output.communicate()
 			# print(stdout)
 			# print(stderr)
 			return command_output.returncode
 
-
 	def make_component(self, dry_run=True):
+		"""
+		Execute the make for the component. Output and error is saved to make_output.log.
+		:param dry_run: --dry-run is added as argument to the cmake command.
+		:return: command return code
+		"""
 		command = "make"
 		if dry_run:
 			command += " --dry-run"
 		with open("make_output.log", "wb") as log:
 			command_output = subprocess.Popen(command,
-											  stdout=subprocess.PIPE,
-											  stderr=log,
-											  shell=True)
+			                                  stdout=subprocess.PIPE,
+			                                  stderr=log,
+			                                  shell=True)
 			stdout, stderr = command_output.communicate()
 			if dry_run:
 				print(stdout)
 			# print(stderr)
 			return command_output.returncode
 
-
-	def remove_genetared_files(self,dir, dry_run=True):
+	def remove_genetared_files(self, dir, dry_run=True):
+		"""
+		Remove all files but .smdsl, .cdsl and .log from the given dir.
+		:param dir: Directory to look for files to remove.
+		:param dry_run: Just show the output. No rm is really executed.
+		:return: None
+		"""
 		component_files = os.listdir(dir)
 		# Remove not useful files
 		for file in component_files:
@@ -99,9 +123,18 @@ class ComponentGenerationChecker:
 					else:
 						rmtree(file)
 
-
-
-	def check_components_generation(self, robocompdsl_dir, dry_run, dirty, generate_only=False, filter="", clean_only=False):
+	def check_components_generation(self, robocompdsl_dir, dry_run, dirty, generate_only=False, filter="",
+	                                clean_only=False):
+		"""
+		Main method of the class. Generate needed code, compile and show the results
+		:param robocompdsl_dir: alternative dir for the robocompdsl installation
+		:param dry_run: just show what would be done. No file is removed.
+		:param dirty: Leave all the generated files. No clean is done at the end of the script.
+		:param generate_only: No compilation is executed for the components.
+		:param filter: A string can be given to filter the directory of the components to be generated/compiled.
+		:param clean_only: Just clean the generated files.
+		:return: None
+		"""
 		self.dry_run = dry_run
 		previous_dir = os.getcwd()
 		os.chdir(os.path.expanduser(robocompdsl_dir))
@@ -130,12 +163,12 @@ class ComponentGenerationChecker:
 							self.results[dir]['compilation'] = False
 							print("%s not compiled (-g option)" % dir)
 						else:
-							print("Executing cmake for %s ... WAIT!"%(dir))
+							print("Executing cmake for %s ... WAIT!" % (dir))
 							self.cmake_component()
-							print("Executing make for %s ... WAIT!"%(dir))
+							print("Executing make for %s ... WAIT!" % (dir))
 							make_result = self.make_component(self.dry_run)
 
-							if make_result == 0 or (make_result==2 and self.dry_run):
+							if make_result == 0 or (make_result == 2 and self.dry_run):
 								self.results[dir]['compilation'] = True
 								self.compiled += 1
 								cprint("%s compilation OK" % dir, 'green')
@@ -146,7 +179,7 @@ class ComponentGenerationChecker:
 					else:
 						cprint("$dir $cdsl_file generation FAILED", 'red')
 						self.gen_failed += 1
-						self.results[dir]['generation']=False
+						self.results[dir]['generation'] = False
 				if not dirty:
 					self.remove_genetared_files(".", self.dry_run)
 				print("")
@@ -181,15 +214,10 @@ class ComponentGenerationChecker:
 					print("\t%s have been generated? %s compile? %s" % (cname, gen_result, comp_result))
 
 
-
-
-
-
-
-
 if __name__ == '__main__':
-	parser = MyParser(description=colored('This application generate components from cdsl files to check component generation/compilation\n', 'magenta'),
-	                  formatter_class=argparse.RawTextHelpFormatter)
+	parser = MyParser(description=colored(
+		'This application generate components from cdsl files to check component generation/compilation\n', 'magenta'),
+		formatter_class=argparse.RawTextHelpFormatter)
 	parser.add_argument("-g", "--generate-only", action="store_true",
 	                    help="Only the generation with robocompdsl is checked. No cmake or make is tested")
 	parser.add_argument("-d", "--dirty",
@@ -198,30 +226,17 @@ if __name__ == '__main__':
 	parser.add_argument("-c", "--clean",
 	                    help="Just clean all source files and temp will be left on their dirs. .cdsl, .smdsl and .logs are kept on their dirs.",
 	                    action="store_true")
-	parser.add_argument("-n", "--dry-run", help="Executing dry run. No remove and make will be executed in dry run mode.", action="store_true")
-	parser.add_argument("-i", "--installation", type=str, help="Installation directory where robocompdsl.py can be found.", default="~/robocomp/tools/robocompdsl/component_generation_test")
+	parser.add_argument("-n", "--dry-run",
+	                    help="Executing dry run. No remove and make will be executed in dry run mode. CMake is executed and some files generated.",
+	                    action="store_true")
+	parser.add_argument("-i", "--installation", type=str,
+	                    help="Installation directory where robocompdsl.py can be found.",
+	                    default="~/robocomp/tools/robocompdsl/component_generation_test")
 
-	parser.add_argument("-f", "--filter", type=str, help="Execute the check only for directories containing this string.", default="")
+	parser.add_argument("-f", "--filter", type=str,
+	                    help="Execute the check only for directories containing this string.", default="")
 	args = parser.parse_args()
-	#
-	# if args.output_path is None:
-	# 	if args.input_file.endswith(".cdsl"):
-	# 		generateDummyCDSL(args.input_file)
-	# 		generateDummySMDSL("statemachine.smdsl")
-	# 		sys.exit(0)
-	# 	else:
-	# 		print args.output_path, args.input_file
-	# 		print parser.error("No output path with non .cdsl file")
-	# 		sys.exit(-1)
-	#
-	# inputFile = args.input_file
-	# outputPath = args.output_path
-	#
-	# sys.path.append('/opt/robocomp/python')
-	#
-	# new_existing_files = {}
-	#
-	# if inputFile.endswith(".cdsl"):
 
 	checker = ComponentGenerationChecker()
-	checker.check_components_generation(args.installation, args.dry_run, args.dirty, args.generate_only, args.filter, args.clean)
+	checker.check_components_generation(args.installation, args.dry_run, args.dirty, args.generate_only, args.filter,
+	                                    args.clean)
