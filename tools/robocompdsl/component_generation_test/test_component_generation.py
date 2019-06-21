@@ -144,16 +144,18 @@ class ComponentGenerationChecker:
 				dir = item
 				cprint("Entering dir %s" % dir, 'magenta')
 				os.chdir(dir)
-				self.remove_genetared_files(".", self.dry_run)
-				if clean_only:
-					cprint("\tCleaned", 'green')
-					os.chdir("..")
-					continue
 				cdsl_file = None
 				for file in os.listdir("."):
 					if file.endswith(".cdsl"):
 						cdsl_file = file
+						break;
 				if cdsl_file:
+					# With the remove inside the cdsl_check we avoid cleaning dirs that don't have .cdsl files. Potentialy wrong directories.
+					self.remove_genetared_files(".", self.dry_run)
+					if clean_only:
+						cprint("\tCleaned", 'green')
+						os.chdir("..")
+						continue
 					self.valid += 1
 					self.results[dir] = {}
 					if self.generate_code(cdsl_file, "generation_output.log", False) == 0:
@@ -180,8 +182,8 @@ class ComponentGenerationChecker:
 						cprint("$dir $cdsl_file generation FAILED", 'red')
 						self.gen_failed += 1
 						self.results[dir]['generation'] = False
-				if not dirty:
-					self.remove_genetared_files(".", self.dry_run)
+					if not dirty:
+						self.remove_genetared_files(".", self.dry_run)
 				print("")
 				os.chdir("..")
 		os.chdir(previous_dir)
@@ -237,6 +239,16 @@ if __name__ == '__main__':
 	                    help="Execute the check only for directories containing this string.", default="")
 	args = parser.parse_args()
 
-	checker = ComponentGenerationChecker()
-	checker.check_components_generation(args.installation, args.dry_run, args.dirty, args.generate_only, args.filter,
-	                                    args.clean)
+	try:
+		checker = ComponentGenerationChecker()
+		checker.check_components_generation(args.installation, args.dry_run, args.dirty, args.generate_only,
+		                                    args.filter,
+		                                    args.clean)
+	except (KeyboardInterrupt, SystemExit):
+		cprint("\nExiting in the middle of the execution.", 'red')
+		cprint("Some files will be left on the directories.", 'yellow')
+		cprint("Use -c option to clean all the generated files.", 'yellow')
+		sys.exit()
+	except Exception as e:
+		cprint("Unexpected exception: %s"%e.message, 'red')
+
