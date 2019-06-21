@@ -1,0 +1,17 @@
+import "DifferentialRobot.idsl";
+import "Laser.idsl";
+
+Component eleComp
+{
+	Communications
+	
+	{
+		requires DifferentialRobot, Laser;
+		implements Display;
+
+	};
+	language python;
+	gui Qt(QWidget);
+
+};
+
