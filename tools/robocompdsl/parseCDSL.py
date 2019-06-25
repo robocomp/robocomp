@@ -138,17 +138,23 @@ class CDSLParsing:
 
 		identifier = Word( alphas+"_", alphanums+"_" )
 
-		commIdentifier = Group(identifier('identifier') + Optional(OPAR + (CaselessKeyword("ice")|CaselessKeyword("ros")).setResultsName("type") + CPAR))
+		impIdentifier = Group(identifier('impIdentifier') + Optional(OPAR + (CaselessKeyword("ice")|CaselessKeyword("ros")).setResultsName("type") + CPAR))
+		reqIdentifier = Group(identifier('reqIdentifier') + Optional(
+			OPAR + (CaselessKeyword("ice") | CaselessKeyword("ros")).setResultsName("type") + CPAR))
+		subsIdentifier = Group(identifier('subsIdentifier') + Optional(
+			OPAR + (CaselessKeyword("ice") | CaselessKeyword("ros")).setResultsName("type") + CPAR))
+		pubIdentifier = Group(identifier('pubIdentifier') + Optional(
+			OPAR + (CaselessKeyword("ice") | CaselessKeyword("ros")).setResultsName("type") + CPAR))
 
 		# Imports
 		idslImport  = Suppress(IMPORT) - QUOTE +  CharsNotIn("\";").setResultsName('path') - QUOTE + SEMI
 		idslImports = ZeroOrMore(idslImport)
 
 		# Communications
-		implementsList = Group(IMPLEMENTS + commIdentifier + ZeroOrMore(Suppress(Word(',')) + commIdentifier) + SEMI)
-		requiresList   = Group(REQUIRES + commIdentifier + ZeroOrMore(Suppress(Word(',')) + commIdentifier) + SEMI)
-		subscribesList = Group(SUBSCRIBESTO + commIdentifier + ZeroOrMore(Suppress(Word(',')) + commIdentifier) + SEMI)
-		publishesList  = Group(PUBLISHES + commIdentifier + ZeroOrMore(Suppress(Word(',')) + commIdentifier) + SEMI)
+		implementsList = Group(IMPLEMENTS + impIdentifier + ZeroOrMore(Suppress(Word(',')) + impIdentifier) + SEMI)
+		requiresList   = Group(REQUIRES + reqIdentifier + ZeroOrMore(Suppress(Word(',')) + reqIdentifier) + SEMI)
+		subscribesList = Group(SUBSCRIBESTO + subsIdentifier + ZeroOrMore(Suppress(Word(',')) + subsIdentifier) + SEMI)
+		publishesList  = Group(PUBLISHES + pubIdentifier + ZeroOrMore(Suppress(Word(',')) + pubIdentifier) + SEMI)
 		communicationList = implementsList | requiresList | subscribesList | publishesList
 		communications = Group( COMMUNICATIONS.suppress() + OBRACE + ZeroOrMore(communicationList) + CBRACE + SEMI)
 
