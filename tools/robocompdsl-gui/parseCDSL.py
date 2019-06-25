@@ -93,8 +93,6 @@ def decoratorAndType_to_const_ampersand(decorator, vtype, modulePool, cpp11=Fals
 
 	return const, ampersand
 
-
-
 def getNameNumber(aalist):
 	ret = []
 	c = Counter(aalist)
@@ -108,26 +106,29 @@ def getNameNumber(aalist):
 				ret.append([k, ''])
 	return ret
 
-def get_interfaces_name(file):
-    names = []
-    idsl_content = IDSLParsing.fromFileIDSL(file)
-    for content in idsl_content['module']['contents']:
-        if content[0] == "interface":
-            names.append(content[1])
-    return names
+class LoadInterfaces:
+	@staticmethod
+	def get_interfaces_name(file):
+		names = []
+		idsl_content = IDSLParsing.fromFileIDSL(file)
+		for content in idsl_content['module']['contents']:
+			if content[0] == "interface":
+				names.append(content[1])
+		return names\
 
-def load_all_interfaces(path):
-    interfaces = {}
-    for r, d, f in os.walk(path):
-        for file in f:
-            if '.idsl' in file:
-                names = get_interfaces_name(os.path.join(r, file))
-                for name in names:
-                    if name in interfaces:
-                        interfaces[name].append(file)
-                    else:
-                        interfaces[name] = [file]
-    return interfaces
+	@staticmethod
+	def load_all_interfaces(self, path):
+		interfaces = {}
+		for r, d, f in os.walk(path):
+			for file in f:
+				if '.idsl' in file:
+					names = self.get_interfaces_name(os.path.join(r, file))
+					for name in names:
+						if name in interfaces:
+							interfaces[name].append(file)
+						else:
+							interfaces[name] = [file]
+		return interfaces
 
 class CDSLParsing:
 	@staticmethod
@@ -268,21 +269,15 @@ class CDSLParsing:
 					imprts.append(i)
 
 		for imp in sorted(imprts):
-			#Importamos el diccionario de todas las intrfaces con los archivos que hay que cargar
-			#all_interfaces = load_all_interfaces("/opt/robocomp/interfaces/IDSLs")
-			all_interfaces = load_all_interfaces("/home/elena/IDSLs")
-
-			#importamos el nombre de la archivo al que pertenece
-			#import_basename = os.path.basename(imp)
-			#component['imports'].append(import_basename)
-			component['imports'].append(imp)  # se anade a la lista de imports del archivo
+			#Load a dictionary with all interfaces and their files
+			all_interfaces = LoadInterfaces.load_all_interfaces(LoadInterfaces, "/opt/robocomp/interfaces/IDSLs")
+			import_basename = imp
+			component['imports'].append(import_basename)
 			importedModule = None
-			interface_name = imp[:-5]
-
+			interface_name = import_basename[:-5]
 			try:
-				for interfacx in all_interfaces[interface_name]:
-					attempt = '/opt/robocomp/interfaces/IDSLs/'+ interfacx
-					#aqui hay que buscar en la lista para sacar el o los archivos
+				for i in all_interfaces[interface_name]:
+					attempt = '/opt/robocomp/interfaces/IDSLs/'+ i
 					importedModule = IDSLParsing.fromFile(attempt) # IDSLParsing.gimmeIDSL(attempt)
 			except:
 				print ('Error reading IMPORT', import_basename)
