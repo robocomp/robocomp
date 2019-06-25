@@ -60,7 +60,7 @@ class ComponentGenerationChecker:
 			with open("generation_output.log", "wb") as log:
 				command_output = subprocess.Popen(
 					"python " + os.path.expanduser("~/robocomp/tools/robocompdsl/robocompdsl.py") + " %s ." % cdsl_file,
-					stdout=subprocess.PIPE,
+					stdout=log,
 					stderr=log,
 					shell=True)
 				stdout, stderr = command_output.communicate()
@@ -76,7 +76,7 @@ class ComponentGenerationChecker:
 		"""
 		with open("cmake_output.log", "wb") as log:
 			command_output = subprocess.Popen("cmake .",
-			                                  stdout=subprocess.PIPE,
+			                                  stdout=log,
 			                                  stderr=log,
 			                                  shell=True)
 			stdout, stderr = command_output.communicate()
@@ -95,7 +95,7 @@ class ComponentGenerationChecker:
 			command += " --dry-run"
 		with open("make_output.log", "wb") as log:
 			command_output = subprocess.Popen(command,
-			                                  stdout=subprocess.PIPE,
+			                                  stdout=log,
 			                                  stderr=log,
 			                                  shell=True)
 			stdout, stderr = command_output.communicate()
