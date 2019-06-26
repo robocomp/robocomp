@@ -34,9 +34,12 @@ def check_imported_interfaces(cdsl_dictionary):
     return None
 
 def check_file(cdslFile):
+    #comprobar fichero y como resultado devolver lista con < nº_linea, texto, error > mostrar por pantalla
+
     if cdslFile.endswith(".cdsl"):
+        file_errors = []
         inputText = open(cdslFile, 'r').read()
-        file_dict = CDSLParsing.fromString(inputText)  # solve, it already checks if interface exists
+        file_dict = CDSLParsing.fromString(inputText)
 
         interface_missing = check_imported_interfaces(file_dict)
         if interface_missing != None:
@@ -48,4 +51,10 @@ def check_file(cdslFile):
     else:
         print("Invalid file extension")
 
-check_file("eleComp.cdsl")
+check_file("cdslFiles/eleComp.cdsl")
+#check_file("cdslFiles/Comp1.cdsl")
+#check_file("cdslFiles/Comp2.cdsl")
+#check_file("cdslFiles/Comp3.cdsl")
+#check_file("cdslFiles/Comp4.cdsl")
+#check_file("cdslFiles/Comp5.cdsl")
+#check_file("cdslFiles/Comp6.cdsl")
