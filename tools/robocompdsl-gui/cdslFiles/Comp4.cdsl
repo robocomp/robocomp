@@ -1,0 +1,18 @@
+import "DifferentialRobot.idsl";
+import "Laser.idsl";
+import "MSKBody.idsl";
+
+Component Comp4
+{
+	Communications
+	
+	{
+		requires DifferentialRobot, MSKBodyEvent;
+		implements Laser;
+
+	};
+	language cpp;
+	gui Qt(QWidget);
+
+};
+
