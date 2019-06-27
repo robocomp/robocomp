@@ -117,7 +117,7 @@ class LoadInterfaces:
         for content in idsl_content['module']['contents']:
             if content[0] == "interface":
                 names.append(content[1])
-        return names \
+        return names
 
     @staticmethod
     def load_all_interfaces(self, path):
@@ -135,35 +135,17 @@ class LoadInterfaces:
 
 class CDSLParsing:
     @staticmethod
-    def fromFile(filename, verbose=False, includeIncludes=True, includeDirectories=None):
-        # print 'fromFile', includeDirectories
-        if includeDirectories == None:
-            includeDirectories = []
-        inputText = open(filename, 'r').read()
-        try:
-            # print 'fromFile2', includeDirectories
-            ret = CDSLParsing.fromString(inputText, includeDirectories=includeDirectories)
-        except:
-            print('Error reading', filename)
-            traceback.print_exc()
-            print('Error reading', filename)
-            sys.exit(1)
-        ret['filename'] = filename
-        return ret
-
-    @staticmethod
     def getCDSLParser():
         OBRACE, CBRACE, SEMI, OPAR, CPAR = map(Suppress, "{};()")
         QUOTE = Suppress(Word("\""))
 
         # keywords
         (
-        IMPORT, COMMUNICATIONS, LANGUAGE, COMPONENT, CPP, CPP11, GUI, USEQt, QT, QT4, QT5, PYTHON, REQUIRES, IMPLEMENTS,
-        SUBSCRIBESTO, PUBLISHES, OPTIONS, TRUE, FALSE,
-        InnerModelViewer) = map(CaselessKeyword, """
-		import communications language component cpp cpp11 gui useQt Qt qt4 qt5
-		python requires implements subscribesTo publishes options true false
-		InnerModelViewer""".split())
+        IMPORT, COMMUNICATIONS, LANGUAGE, COMPONENT, CPP, CPP11, GUI, QT, PYTHON, REQUIRES, IMPLEMENTS,
+        SUBSCRIBESTO, PUBLISHES, OPTIONS, TRUE, FALSE, InnerModelViewer, STATEMACHINE) = map(CaselessKeyword, """
+        import communications language component cpp cpp11 gui Qt 
+        python requires implements subscribesTo publishes options true false
+        InnerModelViewer statemachine""".split())
 
         identifier = Word(alphas + "_", alphanums + "_")
 
@@ -184,8 +166,7 @@ class CDSLParsing:
 
         # Language
         language = Group(LANGUAGE.suppress() - (CPP | CPP11 | PYTHON) - SEMI)
-        # Qtversion
-        qtVersion = Group(Optional(USEQt.suppress() + (QT4 | QT5) + SEMI))
+
         # InnerModelViewer
         innermodelviewer = Group(Optional(InnerModelViewer.suppress() + (TRUE | FALSE) + SEMI))
         # GUI
@@ -193,9 +174,11 @@ class CDSLParsing:
         # additional options
         options = Group(Optional(OPTIONS.suppress() + identifier + ZeroOrMore(Suppress(Word(',')) + identifier) + SEMI))
 
+        statemachine = Group(Optional(STATEMACHINE.suppress() + QUOTE + CharsNotIn("\";").setResultsName('path') + QUOTE + SEMI))
+
         # Component definition
         componentContents = communications('communications') + language('language') + Optional(gui('gui')) + Optional(
-            options('options')) + Optional(qtVersion('useQt')) + Optional(innermodelviewer('innermodelviewer'))
+            options('options')) + Optional(innermodelviewer('innermodelviewer'))
         component = COMPONENT.suppress() + identifier("name") + OBRACE + componentContents("properties") + CBRACE + SEMI
 
         CDSL = idslImports("imports") - component("component")
@@ -203,10 +186,47 @@ class CDSLParsing:
         return CDSL
 
     @staticmethod
-    def fromString(inputText, verbose=False, includeDirectories=None):
-        if includeDirectories == None:
+    def analizeCDSL(filename, verbose=False, includeDirectories=None):
+        cdsl_content = {}
+        errors = []
+        if verbose:
+            print('Verbose:', verbose)
+
+        if includeDirectories is None:
             includeDirectories = []
-        if verbose: print('Verbose:', verbose)
+
+        try:
+            cdsl_content = CDSLParsing.fromFile(filename, verbose=verbose, includeDirectories=includeDirectories)
+        except rcExceptions.ParseException as ex:
+            errors.append((ex.line, ex.message))
+        except rcExceptions.RobocompDslException as ex:
+            errors.append((0, ex.message))
+
+        print(errors)
+
+    @staticmethod
+    def fromFile(filename, verbose=False, includeDirectories=[]):
+        try:
+            inputText = open(filename, 'r').read()
+        except (FileNotFoundError, IOError) as ex:
+            if verbose:
+                traceback.print_exc()
+            raise rcExceptions.RobocompDslException("Error opening file: " + filename + str(ex))
+        except:
+            raise rcExceptions.RobocompDslException("Unexpected error: " + sys.exc_info()[0])
+
+        try:
+            ret = CDSLParsing.fromString(inputText, includeDirectories=includeDirectories)
+        except rcExceptions.ParseException as ex:
+            if verbose:
+                traceback.print_exc()
+            raise ex
+        ret['filename'] = filename
+        return ret
+
+
+    @staticmethod
+    def fromString(inputText, verbose=False, includeDirectories=[]):
         text = nestedExpr("/*", "*/").suppress().transformString(inputText)
 
         CDSL = CDSLParsing.getCDSLParser()
@@ -215,7 +235,46 @@ class CDSLParsing:
             tree = CDSL.parseString(text)
         except ParseBaseException as e:
             raise rcExceptions.ParseException(str(e), e.line, e.column)
-        return CDSLParsing.component(tree, includeDirectories=includeDirectories)
+
+        cdsl_content = {}
+        try:
+            cdsl_content = CDSLParsing.component(tree, includeDirectories=includeDirectories)
+        except rcExceptions.RobocompDslException as ex:
+            raise ex
+        return cdsl_content
+
+        # TODO: Check if we can use lru_cache decorator.
+
+    @staticmethod
+    def generateRecursiveImports(initial_idsls, include_directories):
+
+        new_idsls = []
+        for idsl_path in initial_idsls:
+            importedModule = None
+            idsl_basename = os.path.basename(idsl_path)
+            iD = include_directories + ['/opt/robocomp/interfaces/IDSLs/',
+                                        os.path.expanduser('~/robocomp/interfaces/IDSLs/')]
+            try:
+                for directory in iD:
+                    attempt = directory + '/' + idsl_basename
+                    # print 'Check', attempt
+                    if os.path.isfile(attempt):
+                        importedModule = IDSLParsing.fromFile(attempt)  # IDSLParsing.gimmeIDSL(attempt)
+                        break
+            except:
+                print('Error reading IMPORT', idsl_basename)
+                raise rcExceptions.RobocompDslException("Error reading import file: " + idsl_basename)
+            if importedModule == None:
+                print('Counldn\'t locate', idsl_basename)
+                raise rcExceptions.RobocompDslException('Counldn\'t locate: ' + idsl_basename)
+
+            # if importedModule['imports'] have a # at the end an emtpy '' is generated
+            idsl_imports = importedModule['imports'].split('#')
+            # we remove all the '' ocurrences
+            idsl_imports = list(filter(('').__ne__, idsl_imports))
+            if len(idsl_imports) > 0 and idsl_imports[0] != '':
+                new_idsls += idsl_imports + CDSLParsing.generateRecursiveImports(idsl_imports, include_directories)
+        return list(set(new_idsls))
 
     @staticmethod
     def printComponent(component, start=''):
@@ -239,19 +298,14 @@ class CDSLParsing:
         print('\t\tSubscribes', component['subscribesTo'])
 
     @staticmethod
-    def component(tree, includeDirectories=None, start=''):
+    def component(tree, includeDirectories=[], start=''):
         component = {}
         # print 'parseCDSL.component', includeDirectories
-        if includeDirectories == None:
-            includeDirectories = []
 
         # Set options
         component['options'] = []
-        try:
-            for op in tree['properties']['options']:
-                component['options'].append(op.lower())
-        except:
-            traceback.print_exc()
+        for op in tree['properties']['options']:
+            component['options'].append(op.lower())
 
         # Component name
         component['name'] = tree['component']['name']
@@ -274,45 +328,28 @@ class CDSLParsing:
                 if not i in imprts:
                     imprts.append(i)
 
+        iD = includeDirectories + ['/opt/robocomp/interfaces/IDSLs/',
+                                   os.path.expanduser('~/robocomp/interfaces/IDSLs/')]
         for imp in sorted(imprts):
-            all_interfaces = LoadInterfaces.load_all_interfaces(LoadInterfaces, "/opt/robocomp/interfaces/IDSLs")
-            import_basename = imp
-            importedModule = None
-            try:
-                for values_lists in all_interfaces.values():
-                    for lista in values_lists:
-                        if import_basename in lista:
-                            attempt = '/opt/robocomp/interfaces/IDSLs/' + import_basename
-                            importedModule = IDSLParsing.fromFile(attempt)  # IDSLParsing.gimmeIDSL(attempt)
-                            component['imports'].append(imp)
+            import_basename = os.path.basename(imp)
+            component['imports'].append(import_basename)
 
-            except:
-                print('Error reading IMPORT', import_basename)
-                traceback.print_exc()
-                print('Error reading IMPORT', import_basename)
-                os._exit(1)
-            if importedModule == None:
-                print('Couldn\'t locate', import_basename)
-                os._exit(1)
-            # recursiveImports holds the necessary imports
-            importable = False
-            for interf in importedModule['interfaces']:
-                for comm in tree['properties']['communications']:
-                    for interface in comm[1:]:
-                        if communicationIsIce(interface):
-                            if interf['name'] == interface[0]:
-                                importable = True
-            if importable:
-                component['recursiveImports'] += [x for x in importedModule['imports'].split('#') if len(x) > 0]
+        # Language
+        try:
+            component['recursiveImports'] = CDSLParsing.generateRecursiveImports(component['imports'], includeDirectories)
+        except rcExceptions.RobocompDslException as ex:
+            raise ex
         # Language
         component['language'] = tree['properties']['language'][0]
-        # qtVersion
-        component['useQt'] = 'none'
+
+        # Statemachine
+        component['statemachine'] = 'none'
         try:
-            component['useQt'] = tree['properties']['useQt'][0]
-            pass
+            statemachine = tree['properties']['statemachine'][0]
+            component['statemachine'] = statemachine
         except:
             pass
+
         # innermodelviewer
         component['innermodelviewer'] = 'false'
         try:
@@ -428,4 +465,8 @@ def isAGM2AgentROS(component):
 
 
 if __name__ == '__main__':
-    CDSLParsing.fromFile(sys.argv[1])
+    files = ["Comp1.cdsl", "error.cdsl", "Comp2.cdsl", "Comp3.cdsl", "Comp4.cdsl", "Comp5.cdsl", "Comp6.cdsl", "eleComp.cdsl"]
+    for file in files:
+        print(file)
+        CDSLParsing.analizeCDSL("cdslFiles/" + file)
+        print()
