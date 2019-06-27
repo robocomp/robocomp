@@ -440,8 +440,9 @@ if sm is not None:
 				for transi in substates['contents']['transitions']:
 					for dest in transi['dest']:
 						codaddTransition += "<TABHERE><TABHERE>self." + transi['src'] + "_state.addTransition(self." + transi['src'] + "to" + dest+", self." + dest + "_state)\n"
-	for state in sm['machine']['contents']['states']:
-		codConnect += "<TABHERE><TABHERE>self." + state + "_state.entered.connect(self.sm_" + state + ")\n"
+	if sm['machine']['contents']['states'] is not "none":
+		for state in sm['machine']['contents']['states']:
+			codConnect += "<TABHERE><TABHERE>self." + state + "_state.entered.connect(self.sm_" + state + ")\n"
 	if sm['machine']['contents']['initialstate'][0] is not "none":
 		state = sm['machine']['contents']['initialstate'][0]
 		codsetInitialState += "<TABHERE><TABHERE>self." + sm['machine']['name'] +  ".setInitialState(self." + state +"_state)\n"
