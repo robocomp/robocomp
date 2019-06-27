@@ -9,9 +9,14 @@ dictionary = LoadInterfaces.load_all_interfaces(LoadInterfaces, "/opt/robocomp/i
 #print( "Todas las posibilidades\n", dictionary)
 
 #obtener el fichero para un interfaz específico
-
 #print("Fichero para DifferentialRobot")
 #print(dictionary["DifferentialRobot"])
+
+def get_files_from_interface(inputInterface):
+    files = []
+    for i in dictionary[inputInterface]:
+        files.append(i)
+    return files
 
 def get_interfaces_from_file(inputFile):
     interfaces = []
@@ -20,12 +25,6 @@ def get_interfaces_from_file(inputFile):
             if file == inputFile:
                 interfaces.append(interf)
     return interfaces
-
-def get_files_from_interface(inputInterface):
-    files = []
-    for i in dictionary[inputInterface]:
-        files.append(i)
-    return files
 
 def check_imported_interfaces(cdsl_dictionary):
     imported_interfaces_list = cdsl_dictionary['imports']
@@ -74,6 +73,4 @@ def check_file(cdslFile):
 #check_file("cdslFiles/Comp4.cdsl")
 #check_file("cdslFiles/Comp5.cdsl")
 #check_file("cdslFiles/Comp6.cdsl")
-
-
-#corregir metodos duplicados en ambos archivos
+#check_file("cdslFiles/Comp7.cdsl")
