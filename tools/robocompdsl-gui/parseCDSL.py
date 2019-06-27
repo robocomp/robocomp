@@ -133,22 +133,6 @@ class LoadInterfaces:
                             interfaces[name] = [file]
         return interfaces
 
-def get_files_from_interface(inputInterface):
-    files = []
-    dictionary = LoadInterfaces.load_all_interfaces(LoadInterfaces, "/opt/robocomp/interfaces/IDSLs")
-    for i in dictionary[inputInterface]:
-        files.append(i)
-    return files
-
-def get_interfaces_from_file(inputFile):
-    interfaces = []
-    dictionary = LoadInterfaces.load_all_interfaces(LoadInterfaces, "/opt/robocomp/interfaces/IDSLs")
-    for interf, files_list in dictionary.items():
-        for file in files_list:
-            if file == inputFile:
-                interfaces.append(interf)
-    return interfaces
-
 class CDSLParsing:
     @staticmethod
     def fromFile(filename, verbose=False, includeIncludes=True, includeDirectories=None):
@@ -295,7 +279,6 @@ class CDSLParsing:
             import_basename = imp
             importedModule = None
             try:
-                #recorrer la lista de valores para que funcione
                 for values_lists in all_interfaces.values():
                     for lista in values_lists:
                         if import_basename in lista:
