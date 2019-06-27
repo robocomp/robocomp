@@ -40,7 +40,7 @@ Tested in Ubuntu 18.04.
 Make sure you have installed the following packages from the Ubuntu repository:
 
     sudo apt-get update
-    sudo apt-get install git git-annex cmake g++ libgsl-dev libopenscenegraph-dev cmake-qt-gui zeroc-ice-all-dev freeglut3-dev libboost-system-dev libboost-thread-dev qt4-dev-tools python-pip  python-pyparsing python-numpy python-pyside pyside-tools libxt-dev libboost-test-dev libboost-filesystem-dev python-libxml2 python-xmltodict libccd-dev python-zeroc-ice zeroc-ice-all-runtime
+    sudo apt-get install git git-annex cmake g++ libgsl-dev libopenscenegraph-dev cmake-qt-gui zeroc-ice-all-dev freeglut3-dev libboost-system-dev libboost-thread-dev qt4-dev-tools python-pip python-pyparsing=2.2.0+dfsg1-2 python-numpy python-pyside pyside-tools libxt-dev libboost-test-dev libboost-filesystem-dev python-libxml2 python-xmltodict libccd-dev python-zeroc-ice zeroc-ice-all-runtime
     sudo pip install networkx
 
 It is recommendable to install the following packages::
@@ -50,6 +50,11 @@ It is recommendable to install the following packages::
 Note: RoboComp uses python2 for now, so make sure that you set python2 as your deafult choide if you also have python3 installed on your system. You can do so by adding this line into your ~/.bashrc file and then save it:
 
     alias python=python2
+    
+Note: One of the main tools of Robocomp, robocompdsl is using pyparsing and the current code doesn't work with 2.4 version of this library. With the previous commands we are installing the 2.2 version (python-pyparsing=2.2.0+dfsg1-2). If you a have more recent version of pyparsing installed with apt or pip we recomend you to uninstall it and install the 2.2 version. You can check your curren version of pyparsing with this command:
+
+    python -c "import pyparsing; print(pyparsing.__version__)"
+    
 
 ## Installation itself
 
