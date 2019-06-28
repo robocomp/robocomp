@@ -14,14 +14,10 @@ module RoboCompFaceIdentification
 		ImgType image;
 	};
 
-	sequence<TImage> FaceImages;
-
-	sequence<string> FaceLabels;
-
 	interface FaceIdentification
 	{
-		idempotent void addNewFace(FaceImages faceImg);
-		idempotent void getFaceLabels(FaceImages faces, out FaceLabels faceNames);  
+		idempotent void addNewFace(TImage faceImg, string faceLabel);
+		idempotent void getFaceLabels(TImage faceImg, out string faceLabel);  
 		idempotent void deleteLabel(string faceLabel);
 	};
 };
