@@ -1,5 +1,6 @@
 import random
 from os.path import basename, splitext
+from os import environ, listdir 
 
 import pyparsing
 import sys
@@ -9,7 +10,7 @@ import parseCDSL
 
 from pprint import pprint
 
-
+ROBOCOMP = environ['ROBOCOMP']
 
 COMPONENT_NAMES = ["Camerasy", "VisionRobot", "DevTecnology", "IlluminateDeep", "CyperCamera", "FissionTecnology",
                   "DeskRobot", "MechaNeuronal", "PointCamera", "WireRandom", "Neuronry", "CatalystNeuronal",
@@ -29,35 +30,7 @@ COMPONENT_NAMES = ["Camerasy", "VisionRobot", "DevTecnology", "IlluminateDeep", 
                    "LinkRandom", "IntegrationRandom", "AtlasNeuronal", "PingTecnology", "NetworkNeuronal"]
 
 def get_available_idsls():
-	# TODO: Sould be implementd listing the currently installed IDSL files on the $ROBOCOMP path
-	return ["AGMCommonBehavior.idsl", "AGMExecutive.idsl", "AGMWorldModel.idsl", "AprilBasedLocalization.idsl",
-	        "AprilTags.idsl", "AprilTagsServer.idsl", "Ar.idsl", "ASRCommand.idsl", "ASRComprehension.idsl",
-	        "ASREchord.idsl", "asr.idsl", "ASR.idsl", "ASRPublish.idsl", "Beacons.idsl", "BodyEchord.idsl",
-	        "CAIPersonEchord.idsl", "CAIRecorderEchord.idsl", "CAISpeechEchord.idsl", "CAITouchScreenEchord.idsl",
-	        "CameraBus.idsl", "Camera.idsl", "CameraSimple.idsl", "CamerasMuecas.idsl", "CGR.idsl",
-	        "CloudPrimitives.idsl", "Cognitive.idsl", "CommonBehavior.idsl", "CommonHead.idsl", "CropFaceImage.idsl",
-	        "CyberGlove.idsl", "demostracion.idsl", "DifferentialRobot.idsl", "Display.idsl", "DSR.idsl",
-	        "EmotionalMotor.idsl", "EmotionRecognition.idsl", "Executive.idsl", "face3DTracker.idsl",
-	        "faceDetector.idsl", "FaceEchord.idsl", "faceModel.idsl", "FaceRecognition.idsl",
-	        "FaceRecognitionTrain.idsl", "FaceTablet.idsl", "FaceTopic.idsl", "FaceTracking.idsl",
-	        "FootPreassureSensor.idsl", "FSPF.idsl", "FullPoseEstimation.idsl", "FullPoseEstimationPub.idsl",
-	        "G2oSlamBackEnd.idsl", "GenericBase.idsl", "Gesture.idsl", "GetAprilTags.idsl", "GotoPoint.idsl",
-	        "GPS.idsl", "GsocTest01.idsl", "GsocTest02.idsl", "GsocTest03.idsl", "Habla.idsl", "HandDetection.idsl",
-	        "Hand.idsl", "HumanPose.idsl", "HumanTracker.idsl", "HumanTrackerJointsAndRGB.idsl", "IkPuma.idsl",
-	        "IMU2.idsl", "IMU.idsl", "IMUPub.idsl", "InfiniTAM.idsl", "InnerModelManager.idsl",
-	        "InverseKinematics.idsl", "ISAM.idsl", "JointMotor.idsl", "JoystickAdapter.idsl", "JoyStick.idsl",
-	        "Kinect.idsl", "Laser.idsl", "Laserscanmatching.idsl", "LegController.idsl", "LocalNavigator.idsl",
-	        "Logger.idsl", "Mouth.idsl", "MSKBody.idsl", "MSKCommon.idsl", "MSKFace.idsl", "MSKHand.idsl",
-	        "MSKHead.idsl", "MSKSilhouette.idsl", "MuecasHead.idsl", "multimodal.idsl", "Navigator.idsl",
-	        "NewIdslFile.idsl", "objectDetection.idsl", "ObjectDetection.idsl", "ObjectOracle.idsl",
-	        "OmniRobot.idsl", "OpenposeBodyData.idsl", "OpenposeServer.idsl", "Panel.idsl", "PataLanguage.idsl",
-	        "Pelea.idsl", "PeopleServer.idsl", "Planning.idsl", "rcdns.idsl", "RCISMousePicker.idsl",
-	        "RCMaster.idsl", "RCRemote.idsl", "RGBDBus.idsl", "RGBDEchord.idsl", "RGBD.idsl", "RobotTrajectory.idsl",
-	        "Rrtplanner2d.idsl", "SemanticSimilarity.idsl", "SendTopic.idsl", "SimDemoBalls.idsl",
-	        "SlamLaser.idsl", "Smar.idsl", "SocialNavigationGaussian.idsl", "soundCapture.idsl", "Speaker.idsl",
-	        "Speech.idsl", "StableOdometry.idsl", "stewart3L1R.idsl", "TestComp.idsl", "Test.idsl", "TouchPoints.idsl",
-	        "Trackeropenni.idsl", "TrajectoryRobot2D.idsl", "TripodController.idsl", "TTSGoogle.idsl",
-	        "Ultrasound.idsl", "UrsusArm.idsl", "UrsusNeck.idsl", "YoloServer.idsl"]
+        return listdir(ROBOCOMP + "/interfaces/IDSLs")
 
 MAX_IMPORTS = 4
 
