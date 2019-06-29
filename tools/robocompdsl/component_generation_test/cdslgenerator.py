@@ -7,10 +7,12 @@ import sys
 
 sys.path.append('/opt/robocomp/python')
 import parseCDSL
+import parseIDSL
 
 from pprint import pprint
 
 ROBOCOMP = environ['ROBOCOMP']
+IDSL_DIR = ROBOCOMP + '/interfaces/IDSLs'
 
 COMPONENT_NAMES = ["Camerasy", "VisionRobot", "DevTecnology", "IlluminateDeep", "CyperCamera", "FissionTecnology",
                   "DeskRobot", "MechaNeuronal", "PointCamera", "WireRandom", "Neuronry", "CatalystNeuronal",
@@ -30,7 +32,7 @@ COMPONENT_NAMES = ["Camerasy", "VisionRobot", "DevTecnology", "IlluminateDeep", 
                    "LinkRandom", "IntegrationRandom", "AtlasNeuronal", "PingTecnology", "NetworkNeuronal"]
 
 def get_available_idsls():
-        return listdir(ROBOCOMP + "/interfaces/IDSLs")
+        return listdir(IDSL_DIR)
 
 MAX_IMPORTS = 4
 
@@ -187,8 +189,7 @@ class CDSLSampler:
 		return next_idsl
 
 	def get_interface_name_for_idsl(self, idsl_filename):
-		# TODO: Get the real interface name from .idsl file with parseIDSL
-		return splitext(basename(idsl_filename))[0]
+                return parseIDSL.IDSLParsing.gimmeIDSL(idsl_filename)['interfaces'][0]['name']
 
 
 if __name__ == '__main__':
