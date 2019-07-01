@@ -108,31 +108,6 @@ def getNameNumber(aalist):
                 ret.append([k, ''])
     return ret
 
-
-class LoadInterfaces:
-    @staticmethod
-    def get_interfaces_name(file):
-        names = []
-        idsl_content = IDSLParsing.fromFileIDSL(file)
-        for content in idsl_content['module']['contents']:
-            if content[0] == "interface":
-                names.append(content[1])
-        return names
-
-    @staticmethod
-    def load_all_interfaces(self, path):
-        interfaces = {}
-        for r, d, f in os.walk(path):
-            for file in f:
-                if '.idsl' in file:
-                    names = self.get_interfaces_name(os.path.join(r, file))
-                    for name in names:
-                        if name in interfaces:
-                            interfaces[name].append(file)
-                        else:
-                            interfaces[name] = [file]
-        return interfaces
-
 class CDSLParsing:
     @staticmethod
     def getCDSLParser():
@@ -470,3 +445,4 @@ if __name__ == '__main__':
         print(file)
         CDSLParsing.analizeCDSL("cdslFiles/" + file)
         print()
+
