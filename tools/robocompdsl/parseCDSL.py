@@ -340,7 +340,7 @@ class CDSLParsing:
 		component['gui'] = 'none'
 		try:
 			uiT = tree['properties']['gui'][0]
-			uiI = tree['properties']['gui'][1]
+			uiI = tree['properties']['gui']['gui_options']
 			if uiT.lower() == 'qt' and uiI in ['QWidget', 'QMainWindow', 'QDialog' ]:
 				component['gui'] = [ uiT, uiI ]
 				pass
