@@ -3,7 +3,30 @@
 import os
 from parseIDSL import IDSLParsing
 from parseCDSL import CDSLParsing
-from parseCDSL import LoadInterfaces
+
+class LoadInterfaces:
+    @staticmethod
+    def get_interfaces_name(file):
+        names = []
+        idsl_content = IDSLParsing.fromFileIDSL(file)
+        for content in idsl_content['module']['contents']:
+            if content[0] == "interface":
+                names.append(content[1])
+        return names
+
+    @staticmethod
+    def load_all_interfaces(self, path):
+        interfaces = {}
+        for r, d, f in os.walk(path):
+            for file in f:
+                if '.idsl' in file:
+                    names = self.get_interfaces_name(os.path.join(r, file))
+                    for name in names:
+                        if name in interfaces:
+                            interfaces[name].append(file)
+                        else:
+                            interfaces[name] = [file]
+        return interfaces
 
 dictionary = LoadInterfaces.load_all_interfaces(LoadInterfaces, "/opt/robocomp/interfaces/IDSLs")
 #print( "Todas las posibilidades\n", dictionary)
