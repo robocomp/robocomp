@@ -130,9 +130,9 @@ class CDSLParsing:
 		QUOTE     					 = Suppress(Word("\""))
 
 		# keywords
-		(IMPORT, COMMUNICATIONS, LANGUAGE, COMPONENT, CPP, CPP11, GUI, USEQt, QT, QT4, QT5, PYTHON, REQUIRES, IMPLEMENTS, SUBSCRIBESTO, PUBLISHES, OPTIONS, TRUE, FALSE,
+		(IMPORT, COMMUNICATIONS, LANGUAGE, COMPONENT, CPP, CPP11, GUI, QWIDGET, QMAINWINDOW, QDIALOG, USEQt, QT, QT4, QT5, PYTHON, REQUIRES, IMPLEMENTS, SUBSCRIBESTO, PUBLISHES, OPTIONS, TRUE, FALSE,
 		 InnerModelViewer, STATEMACHINE) = map(CaselessKeyword, """
-		import communications language component cpp cpp11 gui useQt Qt qt4 qt5
+		import communications language component cpp cpp11 gui QWidget QMainWindow QDialog useQt Qt qt4 qt5
 		python requires implements subscribesTo publishes options true false
 		InnerModelViewer statemachine""".split())
 
