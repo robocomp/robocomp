@@ -159,7 +159,8 @@ class CDSLParsing:
 		# InnerModelViewer
 		innermodelviewer = Group(Optional(InnerModelViewer.suppress() + (TRUE|FALSE) + SEMI))
 		# GUI
-		gui = Group(Optional(GUI.suppress() - QT + OPAR - identifier - CPAR + SEMI ))
+		gui_options = Group(QWIDGET|QMAINWINDOW|QDIALOG)
+		gui = Group(Optional(GUI.suppress() - QT + OPAR - gui_options('gui_options') - CPAR + SEMI ))
 		# additional options
 		options = Group(Optional(OPTIONS.suppress() + identifier + ZeroOrMore(Suppress(Word(',')) + identifier) + SEMI))
 		statemachine = Group(Optional(STATEMACHINE.suppress() + QUOTE + CharsNotIn("\";").setResultsName('path') + QUOTE + SEMI))
@@ -340,7 +341,7 @@ class CDSLParsing:
 		component['gui'] = 'none'
 		try:
 			uiT = tree['properties']['gui'][0]
-			uiI = tree['properties']['gui']['gui_options']
+			uiI = tree['properties']['gui']['gui_options'][0]
 			if uiT.lower() == 'qt' and uiI in ['QWidget', 'QMainWindow', 'QDialog' ]:
 				component['gui'] = [ uiT, uiI ]
 				pass
@@ -348,6 +349,7 @@ class CDSLParsing:
 				print 'Wrong UI specification', tree['properties']['gui']
 				sys.exit(1)
 		except:
+			# TODO: check exceptions and do something when accessing gui options fails.
 			pass
 
 
@@ -443,4 +445,4 @@ def isAGM2AgentROS(component):
 
 if __name__ == '__main__':
 	component = CDSLParsing.fromFile(sys.argv[1])
-	print component
+	print component['gui']
