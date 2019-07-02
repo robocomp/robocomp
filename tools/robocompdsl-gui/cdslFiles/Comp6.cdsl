@@ -1,0 +1,19 @@
+import "DifferentialRobot.idsl";
+import "Laser.idsl";
+import "faceModel.idsl";
+
+Component Comp6
+{
+	Communications
+	
+	{
+		requires DifferentialRobot;
+		implements Laser;
+		requires faceModel;
+
+	};
+	language cpp;
+	gui Qt(QWidget);
+
+};
+

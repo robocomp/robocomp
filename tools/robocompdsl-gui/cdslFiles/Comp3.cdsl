@@ -1,0 +1,18 @@
+import "DifferentialRobot.idsl";
+import "Laser.idsl";
+import "MSKHeadP.idsl";
+
+Component Comp3
+{
+	Communications
+	
+	{
+		requires DifferentialRobot, MSKHeadP;
+		implements Laser;
+
+	};
+	language cpp;
+	gui Qt(QWidget);
+
+};
+
