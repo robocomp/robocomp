@@ -2,378 +2,94 @@
 <ui version="4.0">
  <class>MainWindow</class>
  <widget class="QMainWindow" name="MainWindow">
-  <property name="windowModality">
-   <enum>Qt::NonModal</enum>
-  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
     <width>800</width>
-    <height>600</height>
+    <height>580</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>800</width>
-    <height>600</height>
+    <height>580</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
     <width>800</width>
-    <height>600</height>
+    <height>580</height>
+   </size>
+  </property>
+  <property name="baseSize">
+   <size>
+    <width>0</width>
+    <height>0</height>
    </size>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>Create a component</string>
   </property>
-  <widget class="QWidget" name="centralwidget">
-   <widget class="QWidget" name="interfaces" native="true">
+  <widget class="QWidget" name="centralWidget">
+   <widget class="QWidget" name="gridLayoutWidget">
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>100</y>
-      <width>169</width>
-      <height>311</height>
+      <x>9</x>
+      <y>9</y>
+      <width>781</width>
+      <height>521</height>
      </rect>
     </property>
-    <layout class="QVBoxLayout" name="verticalLayout">
-     <item>
-      <widget class="QLabel" name="interfacesLabel">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">background-color: rgb(186, 189, 182);</string>
-       </property>
-       <property name="text">
-        <string>Interfaces</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignCenter</set>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QComboBox" name="communicationsCombo">
-       <item>
-        <property name="text">
-         <string>publishes</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>implements</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>subscribesTo</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>requires</string>
-        </property>
-       </item>
-      </widget>
-     </item>
-     <item>
-      <widget class="QListWidget" name="interfacesList"/>
-     </item>
-     <item>
-      <widget class="QPushButton" name="addButton">
-       <property name="text">
-        <string>Add Interface</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </widget>
-   <widget class="QWidget" name="options" native="true">
-    <property name="geometry">
-     <rect>
-      <x>620</x>
-      <y>100</y>
-      <width>160</width>
-      <height>311</height>
-     </rect>
-    </property>
-    <layout class="QVBoxLayout" name="verticalLayout_2">
-     <item>
-      <widget class="QLabel" name="LanguageLabel">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">background-color: rgb(186, 189, 182);</string>
-       </property>
-       <property name="text">
-        <string>Language</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignCenter</set>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QComboBox" name="languageCombo">
-       <item>
-        <property name="text">
-         <string>Python</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Cpp</string>
-        </property>
-       </item>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLabel" name="guiLabel">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">background-color: rgb(186, 189, 182);</string>
-       </property>
-       <property name="text">
-        <string>GUI</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignCenter</set>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QCheckBox" name="guiCheckBox">
-       <property name="text">
-        <string>Window</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QComboBox" name="guiCombo">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <item>
-        <property name="text">
-         <string>QWidget</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>QDialog</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>QMainWindow</string>
-        </property>
-       </item>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLabel" name="optionalLabel">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">background-color: rgb(186, 189, 182);</string>
-       </property>
-       <property name="text">
-        <string>Optional Parameters</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignCenter</set>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QCheckBox" name="agmagentCheckBox">
-       <property name="text">
-        <string>Agmagent</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QCheckBox" name="innermodelCheckBox">
-       <property name="text">
-        <string>InnermodelViewer</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QCheckBox" name="moduleCheckBox">
-       <property name="text">
-        <string>Module</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QComboBox" name="modulesCombo">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <item>
-        <property name="text">
-         <string>ROS</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Opencv2</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>PCL</string>
-        </property>
-       </item>
-      </widget>
-     </item>
-    </layout>
-   </widget>
-   <widget class="QPlainTextEdit" name="mainText">
-    <property name="geometry">
-     <rect>
-      <x>193</x>
-      <y>99</y>
-      <width>421</width>
-      <height>311</height>
-     </rect>
-    </property>
-    <property name="plainText">
-     <string>
-Component 
-{
-	Communications
-	{
-	};
-	language Python;
-};</string>
-    </property>
-   </widget>
-   <widget class="QWidget" name="actions" native="true">
-    <property name="geometry">
-     <rect>
-      <x>620</x>
-      <y>448</y>
-      <width>160</width>
-      <height>101</height>
-     </rect>
-    </property>
-    <layout class="QVBoxLayout" name="verticalLayout_3">
-     <item>
-      <widget class="QPushButton" name="resetButton">
-       <property name="text">
-        <string>Reset</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="createButton">
-       <property name="text">
-        <string>Create CDSL</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="generateButton">
-       <property name="text">
-        <string>Generate</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </widget>
-   <widget class="QWidget" name="componentDirectory" native="true">
-    <property name="geometry">
-     <rect>
-      <x>20</x>
-      <y>20</y>
-      <width>761</width>
-      <height>65</height>
-     </rect>
-    </property>
-    <layout class="QGridLayout" name="gridLayout_2">
-     <item row="1" column="0">
-      <widget class="QPushButton" name="directoryButton">
-       <property name="text">
-        <string>Select Directory</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="1">
-      <widget class="QPlainTextEdit" name="directoryText"/>
-     </item>
-     <item row="0" column="0">
-      <widget class="QLabel" name="componentLabel">
-       <property name="styleSheet">
-        <string notr="true"/>
-       </property>
-       <property name="text">
-        <string>Component name:</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="1">
-      <widget class="QPlainTextEdit" name="componentText"/>
-     </item>
-    </layout>
-   </widget>
-   <widget class="QWidget" name="terminal" native="true">
-    <property name="geometry">
-     <rect>
-      <x>20</x>
-      <y>419</y>
-      <width>591</width>
-      <height>131</height>
-     </rect>
-    </property>
-    <layout class="QVBoxLayout" name="verticalLayout_7">
-     <item>
-      <widget class="QLabel" name="terminalLabel">
+    <layout class="QGridLayout" name="gridLayout">
+     <item row="2" column="0" colspan="2">
+      <widget class="QWidget" name="terminal" native="true">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
-       <property name="styleSheet">
-        <string notr="true">background-color: rgb(186, 189, 182);</string>
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>135</height>
+        </size>
        </property>
-       <property name="text">
-        <string>Terminal</string>
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>135</height>
+        </size>
        </property>
-       <property name="alignment">
-        <set>Qt::AlignCenter</set>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QTextEdit" name="terminal_2">
-       <property name="styleSheet">
-        <string notr="true">background-color: rgb(36, 38, 78);
+       <layout class="QVBoxLayout" name="verticalLayout_7">
+        <item>
+         <widget class="QLabel" name="terminalLabel">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">background-color: rgb(186, 189, 182);</string>
+          </property>
+          <property name="text">
+           <string>Terminal</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QTextEdit" name="terminal_2">
+          <property name="styleSheet">
+           <string notr="true">background-color: rgb(36, 38, 78);
 font: 11pt &quot;Ubuntu Mono&quot;;</string>
-       </property>
-       <property name="html">
-        <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+          </property>
+          <property name="html">
+           <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Ubuntu Mono'; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
@@ -381,13 +97,337 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt; color:#edd400;&quot;&gt;&amp;gt;&amp;gt; With this tool you can create a cdsl file or generate a component.&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt; color:#edd400;&quot;&gt;&amp;gt;&amp;gt; If you want to undo your changes and start with a clean template again just push the button &amp;quot;Reset&amp;quot;.&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt; color:#edd400;&quot;&gt;&amp;gt;&amp;gt; If you make a mistake while writting your file it will be displayed on this terminal.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QWidget" name="interfaces" native="true">
+       <layout class="QVBoxLayout" name="verticalLayout">
+        <item>
+         <widget class="QLabel" name="interfacesLabel">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">background-color: rgb(186, 189, 182);</string>
+          </property>
+          <property name="text">
+           <string>Interfaces</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QComboBox" name="communicationsCombo">
+          <item>
+           <property name="text">
+            <string>publishes</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>implements</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>subscribesTo</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>requires</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item>
+         <widget class="QListWidget" name="interfacesList"/>
+        </item>
+        <item>
+         <widget class="QPushButton" name="addButton">
+          <property name="text">
+           <string>Add Interface</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item row="1" column="2">
+      <widget class="QWidget" name="options" native="true">
+       <layout class="QVBoxLayout" name="verticalLayout_2">
+        <item>
+         <widget class="QLabel" name="LanguageLabel">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">background-color: rgb(186, 189, 182);</string>
+          </property>
+          <property name="text">
+           <string>Language</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QComboBox" name="languageCombo">
+          <item>
+           <property name="text">
+            <string>Python</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Cpp</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="guiLabel">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">background-color: rgb(186, 189, 182);</string>
+          </property>
+          <property name="text">
+           <string>GUI</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="guiCheckBox">
+          <property name="text">
+           <string>Window</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QComboBox" name="guiCombo">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <item>
+           <property name="text">
+            <string>QWidget</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>QDialog</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>QMainWindow</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="optionalLabel">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">background-color: rgb(186, 189, 182);</string>
+          </property>
+          <property name="text">
+           <string>Optional Parameters</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="agmagentCheckBox">
+          <property name="text">
+           <string>Agmagent</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="innermodelCheckBox">
+          <property name="text">
+           <string>InnermodelViewer</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="moduleCheckBox">
+          <property name="text">
+           <string>Module</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QComboBox" name="modulesCombo">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <item>
+           <property name="text">
+            <string>ROS</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Opencv2</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>PCL</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QPlainTextEdit" name="mainText">
+       <property name="minimumSize">
+        <size>
+         <width>420</width>
+         <height>0</height>
+        </size>
        </property>
+       <property name="plainText">
+        <string>
+Component 
+{
+	Communications
+	{
+	};
+	language Python;
+};</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="2">
+      <widget class="QWidget" name="actions" native="true">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>135</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>135</height>
+        </size>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_3">
+        <item>
+         <widget class="QLabel" name="blankLabel">
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>20</height>
+           </size>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="resetButton">
+          <property name="text">
+           <string>Reset</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="createButton">
+          <property name="text">
+           <string>Create CDSL</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="generateButton">
+          <property name="text">
+           <string>Generate</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item row="0" column="0" colspan="2">
+      <widget class="QWidget" name="componentDirectory" native="true">
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>62</height>
+        </size>
+       </property>
+       <layout class="QGridLayout" name="gridLayout_2">
+        <item row="1" column="0">
+         <widget class="QPushButton" name="directoryButton">
+          <property name="text">
+           <string>Select Directory</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QPlainTextEdit" name="directoryText"/>
+        </item>
+        <item row="0" column="0">
+         <widget class="QLabel" name="componentLabel">
+          <property name="styleSheet">
+           <string notr="true"/>
+          </property>
+          <property name="text">
+           <string>Component name:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QPlainTextEdit" name="componentText"/>
+        </item>
+       </layout>
       </widget>
      </item>
     </layout>
    </widget>
   </widget>
-  <widget class="QMenuBar" name="menubar">
+  <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
     <rect>
      <x>0</x>
@@ -397,8 +437,9 @@ p, li { white-space: pre-wrap; }
     </rect>
    </property>
   </widget>
-  <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QStatusBar" name="statusBar"/>
  </widget>
+ <layoutdefault spacing="6" margin="11"/>
  <resources/>
  <connections/>
 </ui>
