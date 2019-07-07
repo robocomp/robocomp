@@ -1,9 +1,7 @@
 
-
-from PySide2 import QtCore, QtGui, QtWidgets
-from PyQt5.QtGui import *
-from PyQt5.QtCore import *
-
+from PyQt5 import QtCore, QtWidgets
+from PyQt5.QtCore import QFile, QRegExp, Qt
+from PyQt5.QtGui import QFont, QSyntaxHighlighter, QTextCharFormat
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -88,10 +86,7 @@ class Ui_MainWindow(object):
         self.gridLayout.addWidget(self.addButton, 9, 0, 1, 1)
 
         # MAIN TEXT
-        self.mainTextEdit = QtWidgets.QTextEdit(self.gridLayoutWidget)
-        self.mainTextEdit.setMaximumSize(QtCore.QSize(16777215, 16777215))
-        self.mainTextEdit.setObjectName("mainTextEdit")
-        self.gridLayout.addWidget(self.mainTextEdit, 0, 1, 10, 1)
+        self.setupEditor()
 
         # LANGUAGE
         self.languageLabel = QtWidgets.QLabel(self.gridLayoutWidget)
@@ -200,3 +195,88 @@ class Ui_MainWindow(object):
         MainWindow.setStatusBar(self.statusBar)
 
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
+
+    def setupEditor(self):
+        font = QFont()
+        font.setFamily('Courier')
+        font.setFixedPitch(True)
+        font.setPointSize(10)
+
+        self.mainTextEdit = QtWidgets.QTextEdit(self.gridLayoutWidget)
+        self.mainTextEdit.setMaximumSize(QtCore.QSize(16777215, 16777215))
+        self.mainTextEdit.setObjectName("mainTextEdit")
+        self.gridLayout.addWidget(self.mainTextEdit, 0, 1, 10, 1)
+
+        self.highlighter = Highlighter(self.mainTextEdit.document())
+
+class Highlighter(QSyntaxHighlighter):
+    def __init__(self, parent=None):
+        super(Highlighter, self).__init__(parent)
+
+        keywordFormat = QTextCharFormat()
+        keywordFormat.setForeground(Qt.darkBlue)
+        keywordFormat.setFontWeight(QFont.Bold)
+
+        keywordPatterns = ["\\bimport\\b", "\\bComponent\\b", "\\bCommunications\\b",
+                "\\bpublishes\\b", "\\implements\\b", "\\subscribesTo\\b", "\\brequires\\b",
+                "\\blanguage\\b"]
+
+        self.highlightingRules = [(QRegExp(pattern), keywordFormat)
+                for pattern in keywordPatterns]
+
+        classFormat = QTextCharFormat()
+        classFormat.setFontWeight(QFont.Bold)
+        classFormat.setForeground(Qt.darkMagenta)
+        self.highlightingRules.append((QRegExp("\\bQ[A-Za-z]+\\b"),
+                classFormat))
+
+        singleLineCommentFormat = QTextCharFormat()
+        singleLineCommentFormat.setForeground(Qt.red)
+        self.highlightingRules.append((QRegExp("//[^\n]*"),
+                singleLineCommentFormat))
+
+        self.multiLineCommentFormat = QTextCharFormat()
+        self.multiLineCommentFormat.setForeground(Qt.red)
+
+        quotationFormat = QTextCharFormat()
+        quotationFormat.setForeground(Qt.darkGreen)
+        self.highlightingRules.append((QRegExp("\".*\""), quotationFormat))
+
+        functionFormat = QTextCharFormat()
+        functionFormat.setFontItalic(True)
+        functionFormat.setForeground(Qt.blue)
+        self.highlightingRules.append((QRegExp("\\b[A-Za-z0-9_]+(?=\\()"),
+                functionFormat))
+
+        self.commentStartExpression = QRegExp("/\\*")
+        self.commentEndExpression = QRegExp("\\*/")
+
+    def highlightBlock(self, text):
+        for pattern, format in self.highlightingRules:
+            expression = QRegExp(pattern)
+            index = expression.indexIn(text)
+            while index >= 0:
+                length = expression.matchedLength()
+                self.setFormat(index, length, format)
+                index = expression.indexIn(text, index + length)
+
+        self.setCurrentBlockState(0)
+
+        startIndex = 0
+        if self.previousBlockState() != 1:
+            startIndex = self.commentStartExpression.indexIn(text)
+
+        while startIndex >= 0:
+            endIndex = self.commentEndExpression.indexIn(text, startIndex)
+
+            if endIndex == -1:
+                self.setCurrentBlockState(1)
+                commentLength = len(text) - startIndex
+            else:
+                commentLength = endIndex - startIndex + self.commentEndExpression.matchedLength()
+
+            self.setFormat(startIndex, commentLength,
+                    self.multiLineCommentFormat)
+            startIndex = self.commentStartExpression.indexIn(text,
+                    startIndex + commentLength);
+
