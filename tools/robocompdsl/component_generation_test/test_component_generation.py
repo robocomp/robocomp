@@ -179,7 +179,7 @@ class ComponentGenerationChecker:
 								self.comp_failed += 1
 								cprint("%s compilation FAILED" % dir, 'red')
 					else:
-						cprint("$dir $cdsl_file generation FAILED", 'red')
+						cprint("%s generation FAILED"%os.path.join(dir,cdsl_file), 'red')
 						self.gen_failed += 1
 						self.results[dir]['generation'] = False
 					if not dirty:
