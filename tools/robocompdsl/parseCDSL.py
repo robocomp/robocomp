@@ -162,7 +162,7 @@ class CDSLParsing:
 		language_options = (CPP | CPP11 | PYTHON).setResultsName('language')
 		language = LANGUAGE.suppress() - language_options - SEMI
 		# Qtversion
-		qtVersion = Group(Optional(USEQt.suppress() + (QT4|QT5) + SEMI))
+		qtVersion = Group(Optional(USEQt.suppress() + (QT4|QT5).setResultsName('useQt') + SEMI))
 		# InnerModelViewer
 		innermodelviewer = Group(Optional(InnerModelViewer.suppress() + (TRUE|FALSE) + SEMI))('innermodelviewer')
 		# GUI
@@ -173,7 +173,7 @@ class CDSLParsing:
 		statemachine = Group(Optional(STATEMACHINE.suppress() + QUOTE + CharsNotIn("\";").setResultsName('machine_path') + QUOTE + SEMI))
 
 		# Component definition
-		componentContents = Group(communications('communications') + language + Optional(gui('gui')) + Optional(options('options')) + Optional(qtVersion('useQt')) + Optional(innermodelviewer) + Optional(statemachine('statemachine'))).setResultsName("content")
+		componentContents = Group(communications + language + Optional(gui('gui')) + Optional(options('options')) + Optional(qtVersion) + Optional(innermodelviewer) + Optional(statemachine('statemachine'))).setResultsName("content")
 		component = Group(COMPONENT.suppress() + identifier("name") + OBRACE + componentContents + CBRACE + SEMI).setResultsName("component")
 
 		CDSL = idslImports - component
@@ -250,7 +250,8 @@ class CDSLParsing:
 			aux_imports = []
 			for i_import in idsl_imports:
 				if i_import != '' and i_import not in initial_idsls:
-					aux_imports.append(i_import)
+					if communicationIsIce(i_import):
+						aux_imports.append(i_import)
 			idsl_imports = aux_imports
 			if len(idsl_imports) > 0 and idsl_imports[0] != '':
 				new_idsls += idsl_imports + CDSLParsing.generateRecursiveImports(idsl_imports,include_directories)
@@ -295,48 +296,38 @@ class CDSLParsing:
 		iD = includeDirectories + ['/opt/robocomp/interfaces/IDSLs/',
 		                           os.path.expanduser('~/robocomp/interfaces/IDSLs/')]
 		for imp in sorted(imprts):
-			import_basename = os.path.basename(imp)
+			import_basename = os.path.basename(imp['idsl_path'])
 			component['imports'].append(import_basename)
-			# # recursiveImports holds the necessary imports
-			# importable = False
-			# for interf in importedModule['interfaces']:
-			# 	for comm in tree['properties']['communications']:
-			# 		for interface in comm[1:]:
-			# 			if communicationIsIce(interface):
-			# 				if interf['name'] == interface[0]:
-			# 					importable = True
-			# if importable:
-			# 	component['recursiveImports'] += [x for x in importedModule['imports'].split('#') if len(x)>0]
 		component['recursiveImports'] = CDSLParsing.generateRecursiveImports(component['imports'], includeDirectories)
 		# Language
-		component['language'] = tree['properties']['language'][0]
+		component['language'] = tree['component']['content']['language']
 # Statemachine
-		component['statemachine'] = 'none'
+		component['statemachine'] = None
 		try:
-			statemachine = tree['properties']['statemachine'][0]
+			statemachine = tree['component']['content']['statemachine']['machine_path']
 			component['statemachine'] = statemachine
 		except:
 			pass
 		
 # qtVersion
-		component['useQt'] = 'none'
+		component['useQt'] = False
 		try:
-			component['useQt'] = tree['properties']['useQt'][0]
+			component['useQt'] = tree['component']['content']['useQt']
 			pass
 		except:
 			pass
 		# innermodelviewer
-		component['innermodelviewer'] = 'false'
+		component['innermodelviewer'] = False
 		try:
 			component['innermodelviewer'] = 'innermodelviewer' in [ x.lower() for x in component['options'] ]
 			pass
 		except:
 			pass
 		# GUI
-		component['gui'] = 'none'
+		component['gui'] = None
 		try:
-			uiT = tree['properties']['gui'][0]
-			uiI = tree['properties']['gui']['gui_options'][0]
+			uiT = tree['component']['content']['gui'][0]
+			uiI = tree['component']['content']['gui']['gui_options']
 			if uiT.lower() == 'qt' and uiI in ['QWidget', 'QMainWindow', 'QDialog' ]:
 				component['gui'] = [ uiT, uiI ]
 				pass
@@ -358,7 +349,7 @@ class CDSLParsing:
 		component['usingROS'] = "None"
 		####################
 		com_types = ['implements', 'requires', 'publishes', 'subscribesTo']
-		communications = sorted(tree['properties']['communications'], key=lambda x: x[0])
+		communications = sorted(tree['component']['content']['communications'], key=lambda x: x[0])
 		for comm in communications:
 			if comm[0] in com_types:
 				comm_type = comm[0]
@@ -439,8 +430,6 @@ def isAGM2AgentROS(component):
 	return False
 
 if __name__ == '__main__':
-	# component = CDSLParsing.fromFile(sys.argv[1])
-	# pprint(component)
 	parser = CDSLParsing.getCDSLParser()
 	result = parser.parseString("""
 import "HandDetection.idsl";
@@ -463,12 +452,48 @@ Component tvgames
 	};
 	language Python;
 	gui Qt(QWidget);
+	useQt Qt5;
 	statemachine "gamestatemachine.smdsl";
 };
 
 
 	""")
 	pprint(result.asDict())
+
+	# component = CDSLParsing.fromFile(sys.argv[1])
+	# pprint(component)
+
+
+# 	component = CDSLParsing.getCDSLParser("""
+# import "HandDetection.idsl";
+# import "CameraSimple.idsl";
+# import "RGBD.idsl";
+# import "CommonBehavior.idsl";
+# import "TvGames.idsl";
+# import "GetAprilTags.idsl";
+# import "TouchPoints.idsl";
+# import "AdminGame.idsl";
+# import "GameMetrics.idsl";
+#
+# Component tvgames
+# {
+# 	Communications
+# 	{
+# 		requires HandDetection (ros), CameraSimple (ice), RGBD, GetAprilTags;
+#         implements CommonBehavior, TvGames, AdminGame;
+# 		publishes TouchPoints, GameMetrics;
+# 	};
+# 	language Python;
+# 	gui Qt(QWidget);
+# 	useQt Qt5;
+# 	statemachine "gamestatemachine.smdsl";
+# };
+#
+#
+# 	""")
+# 	pprint(component)
+
+
 	# with open(sys.argv[1]) as f:
 	# 	result = parser.parseString(f.read(), )
 	# 	pprint(result.asDict())
