@@ -7,7 +7,7 @@ from PySide2.QtCore import *
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 from ui_gui import Ui_MainWindow
-#from parseGUI import LoadInterfaces
+from parseGUI import LoadInterfaces
 
 
 # DETECT THE ROBOCOMP INSTALLATION TO IMPORT RCPORTCHECKER CLASS
@@ -276,10 +276,10 @@ class RoboCompDSLGui(QMainWindow):
 
         #List of Robocomp interfaces
         self.ui.interfacesListWidget.setSelectionMode(QAbstractItemView.ExtendedSelection)
-        #self.ui.interfacesListWidget.itemSelectionChanged.connect(self.set_comunication)
+        self.ui.interfacesListWidget.itemSelectionChanged.connect(self.set_comunication)
 
         #List of connection types
-        #self.ui.communicationsComboBox.currentIndexChanged.connect(self.reselect_existing)
+        self.ui.communicationsComboBox.currentIndexChanged.connect(self.reselect_existing)
 
         #Button to add a connection
 
@@ -311,9 +311,36 @@ class RoboCompDSLGui(QMainWindow):
         #self.ui.generateButton.clicked.conect(self.robocompdsl_generate_component)
 
         self.setupEditor()
+        self.load_idsl_files()
 
     def setupEditor(self):
         self.highlighter = Highlighter(self.ui.mainTextEdit.document())
+
+    def load_idsl_files(self):
+        idsls_dir = os.path.join(ROBOCOMP_INTERFACES, "IDSLs")
+        self._interfaces = LoadInterfaces.load_all_interfaces(LoadInterfaces, idsls_dir)
+        self.ui.interfacesListWidget.addItems(list(self._interfaces.keys()))
+
+    def set_comunication(self):
+        interface_names = self.ui.interfacesListWidget.selectedItems()
+        com_type = str(self.ui.communicationsComboBox.currentText())
+        self._communications[com_type] = []
+        self._cdsl_doc.clear_comunication(com_type)
+        for iface_name_item in interface_names:
+            iface_name = str(iface_name_item.text())
+            self._communications[com_type].append(iface_name)
+            self._cdsl_doc.add_comunication(com_type, iface_name)
+        self.update_imports()
+        self.update_editor()
+
+    def update_imports(self):
+        self._cdsl_doc.clear_imports()
+        for com_type in self._communications:
+            for iface_name in self._communications[com_type]:
+                imports_list = LoadInterfaces.get_files_from_interface(iface_name)
+                for imp in imports_list:
+                    idsl_full_filename = imp
+                    self._cdsl_doc.add_import(idsl_full_filename)
 
     def update_language(self):
         language = self.ui.languageComboBox.currentText()
@@ -404,6 +431,16 @@ class RoboCompDSLGui(QMainWindow):
         self._console.append_custom_text("%s\n" % command)
         self._command_process.start(command, QProcess.Unbuffered | QProcess.ReadWrite)
 
+    def reselect_existing(self):
+        com_type = self.ui.communicationsComboBox.currentText()
+        selected = self._communications[com_type]
+        self.ui.interfacesListWidget.clearSelection()
+        for iface in selected:
+            items = self.ui.interfacesListWidget.findItems(iface, Qt.MatchFlag.MatchExactly)
+            if len(items) > 0:
+                item = items[0]
+                item.setSelected(True)
+
     def check_dir_is_empty(self, dir_path):
         if len(os.listdir(dir_path)) > 0:
             msgBox = QMessageBox()
@@ -426,7 +463,6 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
 
     gui = RoboCompDSLGui()
-    #gui.load_idsl_files()
     gui.show()
 
     sys.exit(app.exec_())
