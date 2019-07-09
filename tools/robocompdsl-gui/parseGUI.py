@@ -28,26 +28,26 @@ class LoadInterfaces:
                             interfaces[name] = [file]
         return interfaces
 
+    def get_files_from_interface(inputInterface):
+        files = []
+        for i in dictionary[inputInterface]:
+            files.append(i)
+        return files
+
+    def get_interfaces_from_file(inputFile):
+        interfaces = []
+        for interf, files_list in dictionary.items():
+            for file in files_list:
+                if file == inputFile:
+                    interfaces.append(interf)
+        return interfaces
+
 dictionary = LoadInterfaces.load_all_interfaces(LoadInterfaces, "/opt/robocomp/interfaces/IDSLs")
 #print( "Todas las posibilidades\n", dictionary)
 
 #obtener el fichero para un interfaz específico
 #print("Fichero para DifferentialRobot")
 #print(dictionary["DifferentialRobot"])
-
-def get_files_from_interface(inputInterface):
-    files = []
-    for i in dictionary[inputInterface]:
-        files.append(i)
-    return files
-
-def get_interfaces_from_file(inputFile):
-    interfaces = []
-    for interf, files_list in dictionary.items():
-        for file in files_list:
-            if file == inputFile:
-                interfaces.append(interf)
-    return interfaces
 
 def check_imported_interfaces(cdsl_dictionary):
     imported_interfaces_list = cdsl_dictionary['imports']
@@ -56,7 +56,7 @@ def check_imported_interfaces(cdsl_dictionary):
     files_to_import = [] #required idsl files to be imported
 
     for com in communication_interfaces_list:
-        files = get_files_from_interface(com)
+        files = LoadInterfaces.get_files_from_interface(com)
         files_to_import.extend(files)
 
     for file_required in files_to_import:
