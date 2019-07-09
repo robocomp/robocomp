@@ -176,7 +176,7 @@ if component['usingROS'] == True:
 	for srv in srvIncludes.values():
 		cog.outl(srv)
 A()
-if component['gui'] != 'none':
+if component['gui'] is not None:
 	cog.outl('')
 	cog.outl('try:')
 	cog.outl('<TABHERE>from ui_mainUI import *')
@@ -260,7 +260,7 @@ if component['usingROS'] == True:
 class GenericWorker(
 [[[cog
 A()
-if component['gui'] != 'none':
+if component['gui'] is not None:
 	cog.out('QtWidgets.'+component['gui'][1])
 else:
 	cog.out('QtCore.QObject')
@@ -329,7 +329,7 @@ for pb, num in getNameNumber(component['publishes']):
 
 [[[cog
 A()
-if component['gui'] != 'none':
+if component['gui'] is not None:
 	cog.outl("<TABHERE><TABHERE>self.ui = Ui_guiDlg()")
 	cog.outl("<TABHERE><TABHERE>self.ui.setupUi(self)")
 	cog.outl("<TABHERE><TABHERE>self.show()")

@@ -346,7 +346,7 @@ class CDSLParsing:
 		component['requires']     = []
 		component['publishes']    = []
 		component['subscribesTo'] = []
-		component['usingROS'] = "None"
+		component['usingROS'] = False
 		####################
 		com_types = ['implements', 'requires', 'publishes', 'subscribesTo']
 		communications = sorted(tree['component']['content']['communications'], key=lambda x: x[0])

@@ -50,7 +50,7 @@ ENDMACRO( WRAP_PYTHON_UI )
 
 [[[cog
 A()
-if component['gui'] != 'none':
+if component['gui'] is not None:
 	cog.out('WRAP_PYTHON_UI( mainUI )')
 Z()
 ]]]

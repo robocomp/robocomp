@@ -18,8 +18,8 @@ includeDirectories = theIDSLPaths.split('#')
 component = CDSLParsing.fromFile(theCDSL, includeDirectories=includeDirectories)
 sm = SMDSLparsing.fromFile(component['statemachine'])
 if sm is None:
-    component['statemachine'] = 'none'
-if component == None:
+    component['statemachine'] = None
+if component is None:
 	print('Can\'t locate', theCDSLs)
 	sys.exit(1)
 
@@ -203,13 +203,13 @@ if 'subscribesTo' in component:
 
 public slots:
 [[[cog
-if (sm is not None and sm['machine']['default'] is True) or component['statemachine'] == 'none':
+if (sm is not None and sm['machine']['default'] is True) or component['statemachine'] is None:
 	cog.outl("<TABHERE>void compute();")
 ]]]
 [[[end]]]
 	void initialize(int period);
 [[[cog
-if component['statemachine'] != 'none':
+if component['statemachine'] is not None:
     sm_specification = ""
     if sm['machine']['contents']['states'] is not "none":
         for state in sm['machine']['contents']['states']:

@@ -171,7 +171,7 @@ import signal
 
 from PySide2 import QtCore
 [[[cog
-    if component['gui'] != "none":
+    if component['gui'] is not None:
         cog.outl('from PySide2 import QtWidgets')
 ]]]
 [[[end]]]
@@ -208,7 +208,7 @@ def sigint_handler(*args):
     
 if __name__ == '__main__':
 [[[cog
-	if component['gui'] != "none":
+	if component['gui'] is not None:
 		cog.outl('<TABHERE>app = QtWidgets.QApplication(sys.argv)')
 	else:
 		cog.outl('<TABHERE>app = QtCore.QCoreApplication(sys.argv)')
