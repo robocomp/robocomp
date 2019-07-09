@@ -141,17 +141,18 @@ class CDSLParsing:
 		identifier = Word( alphas+"_", alphanums+"_" )
 
 		# Imports
-		idslImport  = Group(Suppress(IMPORT) - QUOTE +  CharsNotIn("\";").setResultsName('path') - QUOTE + SEMI)
+		idslImport  = Group(Suppress(IMPORT) - QUOTE +  CharsNotIn("\";").setResultsName('idsl_path') - QUOTE + SEMI)
 		idslImports = ZeroOrMore(idslImport).setResultsName("imports")
 
+		commType = Optional(OPAR + (CaselessKeyword("ice") | CaselessKeyword("ros")).setResultsName("type") + CPAR)
 
-		implementsList = Optional(IMPLEMENTS + delimitedList(Group(identifier.setResultsName("impIdentifier"))).setResultsName("implements") + SEMI)
+		implementsList = Optional(IMPLEMENTS + delimitedList(Group(identifier.setResultsName("impIdentifier")+commType)).setResultsName("implements") + SEMI)
 
-		requiresList = Optional(REQUIRES + delimitedList(Group(identifier.setResultsName("reqIdentifier"))).setResultsName("requires") + SEMI)
+		requiresList = Optional(REQUIRES + delimitedList(Group(identifier.setResultsName("reqIdentifier")+commType)).setResultsName("requires") + SEMI)
 
-		subscribesList = Optional(SUBSCRIBESTO + delimitedList(Group(identifier.setResultsName("subIdentifier"))).setResultsName("subscribes") + SEMI)
+		subscribesList = Optional(SUBSCRIBESTO + delimitedList(Group(identifier.setResultsName("subIdentifier")+commType)).setResultsName("subscribes") + SEMI)
 
-		publishesList = Optional(PUBLISHES + delimitedList(Group(identifier.setResultsName("pubIdentifier"))).setResultsName("publishes") + SEMI)
+		publishesList = Optional(PUBLISHES + delimitedList(Group(identifier.setResultsName("pubIdentifier")+commType)).setResultsName("publishes") + SEMI)
 
 		communicationList = Group(implementsList & requiresList & subscribesList & publishesList).setResultsName("communications")
 		communications = COMMUNICATIONS.suppress() + OBRACE + communicationList + CBRACE + SEMI
@@ -169,11 +170,11 @@ class CDSLParsing:
 		gui = Group(Optional(GUI.suppress() - QT + OPAR - gui_options('gui_options') - CPAR + SEMI ))
 		# additional options
 		options = Group(Optional(OPTIONS.suppress() + identifier + ZeroOrMore(Suppress(Word(',')) + identifier) + SEMI))
-		statemachine = Group(Optional(STATEMACHINE.suppress() + QUOTE + CharsNotIn("\";").setResultsName('path') + QUOTE + SEMI))
+		statemachine = Group(Optional(STATEMACHINE.suppress() + QUOTE + CharsNotIn("\";").setResultsName('machine_path') + QUOTE + SEMI))
 
 		# Component definition
 		componentContents = Group(communications('communications') + language + Optional(gui('gui')) + Optional(options('options')) + Optional(qtVersion('useQt')) + Optional(innermodelviewer) + Optional(statemachine('statemachine'))).setResultsName("content")
-		component = Group(COMPONENT.suppress() + identifier("name") + OBRACE + componentContents + CBRACE + SEMI).setResultsName("Component")
+		component = Group(COMPONENT.suppress() + identifier("name") + OBRACE + componentContents + CBRACE + SEMI).setResultsName("component")
 
 		CDSL = idslImports - component
 
@@ -245,10 +246,15 @@ class CDSLParsing:
 
 			# if importedModule['imports'] have a # at the end an emtpy '' is generated
 			idsl_imports = importedModule['imports'].split('#')
-			# we remove all the '' ocurrences
-			idsl_imports = list(filter(('').__ne__, idsl_imports))
+			# we remove all the '' ocurrences and existing imports
+			aux_imports = []
+			for i_import in idsl_imports:
+				if i_import != '' and i_import not in initial_idsls:
+					aux_imports.append(i_import)
+			idsl_imports = aux_imports
 			if len(idsl_imports) > 0 and idsl_imports[0] != '':
 				new_idsls += idsl_imports + CDSLParsing.generateRecursiveImports(idsl_imports,include_directories)
+
 		return list(set(new_idsls))
 
 	@staticmethod
@@ -261,7 +267,7 @@ class CDSLParsing:
 		# Set options
 		component['options'] = []
 		try:
-			for op in tree['properties']['options']:
+			for op in tree['component']['content']['options']:
 				component['options'].append(op.lower())
 		except:
 			traceback.print_exc()
@@ -291,24 +297,6 @@ class CDSLParsing:
 		for imp in sorted(imprts):
 			import_basename = os.path.basename(imp)
 			component['imports'].append(import_basename)
-			# importedModule = None
-			#
-			# try:
-			# 	# print 'iD', iD
-			# 	for directory in iD:
-			# 		attempt = directory+'/'+import_basename
-			# 		# print 'Check', attempt
-			# 		if os.path.isfile(attempt):
-			# 			importedModule = IDSLParsing.fromFile(attempt) # IDSLParsing.gimmeIDSL(attempt)
-			#
-			# except:
-			# 	print 'Error reading IMPORT', import_basename
-			# 	traceback.print_exc()
-			# 	print 'Error reading IMPORT', import_basename
-			# 	os._exit(1)
-			# if importedModule == None:
-			# 	print 'Counldn\'t locate', import_basename
-			# 	os._exit(1)
 			# # recursiveImports holds the necessary imports
 			# importable = False
 			# for interf in importedModule['interfaces']:
@@ -469,7 +457,7 @@ Component tvgames
 {
 	Communications
 	{
-		requires HandDetection, CameraSimple, RGBD, GetAprilTags;
+		requires HandDetection (ros), CameraSimple (ice), RGBD, GetAprilTags;
         implements CommonBehavior, TvGames, AdminGame;
 		publishes TouchPoints, GameMetrics;
 	};
