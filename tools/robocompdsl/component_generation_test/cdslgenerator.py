@@ -1,20 +1,48 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+#
+# Copyright (C) 2019 by YOUR NAME HERE
+#
+#    This file is part of RoboComp
+#
+#    RoboComp is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    RoboComp is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with RoboComp.  If not, see <http://www.gnu.org/licenses/>.
+
+
+"""
+TODO: add generate_ methods for the specific resultNames of some nodes.
+TODO: functions could be "installed" for combination of node type and resultName, that way specific actions could be taken
+"""
+
 import os
 import random
-from os.path import basename
-
 import pyparsing
 import sys
 
 sys.path.append('/opt/robocomp/python')
 import parseCDSL
 import parseIDSL
+
 try:
 	from termcolor import cprint
+
+
 	def printerr(text):
-		cprint(text,color='red')
-except:
+		cprint(text, color='red')
+except ImportError as error:
 	def printerr(text):
 		print(text)
+
 from pprint import pprint
 
 ROBOCOMP = ''
@@ -23,7 +51,9 @@ try:
 except KeyError:
 	print '$ROBOCOMP environment variable not set, using the default value /opt/robocomp'
 	ROBOCOMP = '/opt/robocomp'
-IDSL_DIR = os.path.join(ROBOCOMP ,'interfaces','IDSLs')
+IDSL_DIR = os.path.join(ROBOCOMP, 'interfaces', 'IDSLs')
+
+MAX_IMPORTS = 4
 
 COMPONENT_NAMES = ["Camerasy", "VisionRobot", "DevTecnology", "IlluminateDeep", "CyperCamera", "FissionTecnology",
                    "DeskRobot", "MechaNeuronal", "PointCamera", "WireRandom", "Neuronry", "CatalystNeuronal",
@@ -52,9 +82,6 @@ def get_available_idsls():
 	return idsls_in_dir
 
 
-MAX_IMPORTS = 4
-
-
 class CDSLSampler:
 	def __init__(self, ros_enable=False):
 		self._available_idsls = []
@@ -64,71 +91,125 @@ class CDSLSampler:
 		self._tabs = 0
 		self._last_keywords = []
 		self._special_interfaces = set()
+		self._nodes_with_names = {}
 
-	def _tab(self, text, before = True):
+	def _tab(self, text, before=True):
 		tabs = ''
 		for i in range(self._tabs):
-			tabs+="\t"
+			tabs += "\t"
 		if before:
 			return tabs + text
 		else:
-			return text+tabs
+			return text + tabs
 
 	def generate_valid_component(self, grammar):
+		"""
+		Initialice the needed attributes and start the generation
+
+		:param grammar:
+		:return:
+		"""
 		self._available_idsls = get_available_idsls()
 		self._used_idsl = []
 		self._last_keywords = []
+		self._nodes_with_names = {}
 		return self.generic_sampler(grammar)
 
 	def generic_sampler(self, node):
+		"""
+		Process each node depending on the type of it.
+
+		:param node:
+		:return: string of the resultin call to the method for that type of node
+		"""
+
+		if node.resultsName is not None:
+			# setdefault(type(node), set()) is a quick way to check if key exist and if not create an empty set to add to
+			self._nodes_with_names.setdefault(type(node), set()).add(node.resultsName)
+
 		if type(node) == pyparsing.And:
 			# print(tab + 'And')
 			return self.generate_and(node)
+
 		elif type(node) == pyparsing.Or:
 			# print(tab + 'Or')
 			return self.generate_or(node)
+
 		elif type(node) == pyparsing.ZeroOrMore:
 			# print(tab + 'ZeroOrMore')
 			return self.generate_zero_or_more(node)
-		elif type(node) == pyparsing.Suppress:
-			# print(tab + 'Supress', node.expr)
-			return self.generic_sampler(node.expr)
-		elif type(node) == pyparsing.CaselessKeyword:
-			# print(tab + 'CaselessKeyword', node.match)
-			return self.generate_caseless_keyword(node)
-		elif 'ErrorStop' in str(type(node)):
-			# print(tab + '_ErrorStop')
-			return ''
-		elif type(node) == pyparsing.Word:
-			# print(tab + 'Word', node.re)
-			return self.generate_word(node)
-		elif type(node) == pyparsing.CharsNotIn:
-			# print(tab + 'CharsNotIn')
-			return self.generate_chars_not_in(node)
-		elif type(node) == pyparsing.Literal:
-			# print(tab + 'Literal', node.match)
-			return self.generate_literal(node)
-		elif type(node) == pyparsing.Group:
-			# print(tab + 'Group')
-			return self.generate_group(node)
-		elif type(node) == pyparsing.MatchFirst:
-			# print(tab + 'MatchFirst')
-			return self.generate_match_first(node)
+
+		elif type(node) == pyparsing.Each:
+			return self.generate_each(node)
+
 		elif type(node) == pyparsing.Optional:
 			# print(tab + 'Optional')
 			return self.generate_optional(node)
-		elif type(node) == pyparsing.Each:
-			return self.generate_each(node)
+
+		elif type(node) == pyparsing.Suppress:
+			# print(tab + 'Supress', node.expr)
+			return self.generic_sampler(node.expr)
+
+		elif type(node) == pyparsing.Literal:
+			# print(tab + 'Literal', node.match)
+			return self.generate_literal(node)
+
+		elif type(node) == pyparsing.Group:
+			# print(tab + 'Group')
+			return self.generate_group(node)
+
+		elif type(node) == pyparsing.MatchFirst:
+			# print(tab + 'MatchFirst')
+			return self.generate_match_first(node)
+
+		elif type(node) == pyparsing.CaselessKeyword:
+			# print(tab + 'CaselessKeyword', node.match)
+			return self.generate_caseless_keyword(node)
+
+		elif type(node) == pyparsing.Word:
+			# print(tab + 'Word', node.re)
+			return self.generate_word(node)
+
+		elif type(node) == pyparsing.CharsNotIn:
+			# print(tab + 'CharsNotIn')
+			return self.generate_chars_not_in(node)
+
+		elif 'ErrorStop' in str(type(node)):
+			# print(tab + '_ErrorStop')
+			return ''
+
 		else:
 			raise ValueError('Unknown type %s in a node' % type(node))
 
 	def generate_and(self, node):
+		"""
+		Process and return the string that join the result of all the options on the And
+
+		:param node: node to be processed
+		:return: text generated by the each expression
+		"""
 		text = ''
 		for child in node:
 			text += self.generic_sampler(child)  # + ' '
 		return str(text)
 
+	def generate_each(self, node):
+		"""
+		Convenience method that do the same than generate_and
+
+		:param node: node to be processed
+		:return: text generated by the each expression
+		"""
+		# it currently do the same becuause the only difference is the order and it's not contemplated right now
+		return self.generate_and(node)
+
 	def generate_or(self, node):
+		"""
+		Return the result of one of multiple options
+
+		:param node: node to be processed
+		:return: text generated by the random selected option
+		"""
 		text = ''
 		random_child = random.choice(node)
 		text += self.generic_sampler(random_child)  # + ' '
@@ -149,13 +230,6 @@ class CDSLSampler:
 				times_to_repeat = 0
 		for count in range(times_to_repeat):
 			text += self.generic_sampler(node.expr)  # + ' '
-		return str(text)
-
-	def generate_each(self, node):
-		text = ''
-		# if it a requires state
-		for child in node.exprs:
-			text += self.generic_sampler(child)  # + ' '
 		return str(text)
 
 	def generate_group(self, node):
@@ -236,7 +310,7 @@ class CDSLSampler:
 			self._tabs -= 1
 		if node.match in ';{':
 			text += "\n"
-			# text = self._tab(text, before=False)
+		# text = self._tab(text, before=False)
 
 		# It's a way to add spaces to the needed literals
 		spaced_literals = """,""".split()
@@ -244,7 +318,6 @@ class CDSLSampler:
 			return str(node.match) + " "
 
 		return str(node.match) + text
-
 
 	def generate_word(self, node):
 		"""
@@ -310,7 +383,7 @@ class CDSLSampler:
 				self._available_interfaces.append(interface_name)
 			except:
 				self._special_interfaces.add(next_idsl)
-				printerr("IDSL %s without interface"%next_idsl)
+				printerr("IDSL %s without interface" % next_idsl)
 			self._available_idsls.remove(next_idsl)
 			self._used_idsl.append(next_idsl)
 		return next_idsl
@@ -324,17 +397,26 @@ class CDSLSampler:
 		"""
 		try:
 			interface_name = parseIDSL.IDSLParsing.gimmeIDSL(idsl_filename)['interfaces'][0]['name']
-		except :
-			#There's some .idsl files without interfaces defined on it, just data structures definitions
-			raise ValueError("Couldn't get the interface name for idsl file: %s"%idsl_filename)
+		except:
+			# There's some .idsl files without interfaces defined on it, just data structures definitions
+			raise ValueError("Couldn't get the interface name for idsl file: %s" % idsl_filename)
 		else:
 			return interface_name
+
+	@property
+	def special_interfaces(self):
+		return self._special_interfaces
+
+	@property
+	def nodes_with_names(self):
+		return self._nodes_with_names
 
 
 if __name__ == '__main__':
 	root = parseCDSL.CDSLParsing.getCDSLParser()
 	generator = CDSLSampler()
-	for i in range(100):
+	for i in range(1):
 		output_cdsl = generator.generate_valid_component(root)
 		print(output_cdsl)
-	print(generator._special_interfaces)
+	print(generator.special_interfaces)
+	pprint(generator.nodes_with_names)
