@@ -1,5 +1,6 @@
 import os
 import random
+from os.path import basename
 
 import pyparsing
 import sys
@@ -7,7 +8,13 @@ import sys
 sys.path.append('/opt/robocomp/python')
 import parseCDSL
 import parseIDSL
-
+try:
+	from termcolor import cprint
+	def printerr(text):
+		cprint(text,color='red')
+except:
+	def printerr(text):
+		print(text)
 from pprint import pprint
 
 ROBOCOMP = ''
@@ -38,7 +45,11 @@ COMPONENT_NAMES = ["Camerasy", "VisionRobot", "DevTecnology", "IlluminateDeep", 
 
 
 def get_available_idsls():
-	return os.listdir(IDSL_DIR)
+	idsls_in_dir = []
+	for file in os.listdir(IDSL_DIR):
+		if file.endswith(".idsl") and "agm" not in file.lower():
+			idsls_in_dir.append(file)
+	return idsls_in_dir
 
 
 MAX_IMPORTS = 4
@@ -46,11 +57,13 @@ MAX_IMPORTS = 4
 
 class CDSLSampler:
 	def __init__(self, ros_enable=False):
-		self._available_idsls = get_available_idsls()
+		self._available_idsls = []
+		self._available_interfaces = []
 		self._used_idsl = []
 		self._ros_enable = ros_enable
 		self._tabs = 0
 		self._last_keywords = []
+		self._special_interfaces = set()
 
 	def _tab(self, text, before = True):
 		tabs = ''
@@ -61,7 +74,13 @@ class CDSLSampler:
 		else:
 			return text+tabs
 
-	def generic_sampler(self, node, main_tag=''):
+	def generate_valid_component(self, grammar):
+		self._available_idsls = get_available_idsls()
+		self._used_idsl = []
+		self._last_keywords = []
+		return self.generic_sampler(grammar)
+
+	def generic_sampler(self, node):
 		if type(node) == pyparsing.And:
 			# print(tab + 'And')
 			return self.generate_and(node)
@@ -101,9 +120,7 @@ class CDSLSampler:
 		elif type(node) == pyparsing.Each:
 			return self.generate_each(node)
 		else:
-			print("Unknown type")
-			print(type(node))
-			sys.exit(0)
+			raise ValueError('Unknown type %s in a node' % type(node))
 
 	def generate_and(self, node):
 		text = ''
@@ -142,13 +159,26 @@ class CDSLSampler:
 		return str(text)
 
 	def generate_group(self, node):
+		"""
+		Process special cases of groups. If there's no available interface, no communication must be generated.
+
+		:param node:
+		:return:
+		"""
 		# if the group is "communications" and no IDSL have been imported return empty string ''
-		if node.resultsName == "communications" and len(self._used_idsl) == 0:
+		if node.resultsName == "communications" and len(self._available_interfaces) == 0:
 			return ''
 		else:
 			return self.generic_sampler(node.expr)
 
 	def generate_match_first(self, node):
+		"""
+		Return one random option from several defined on the node
+
+		:param node: node to be processed
+		:return: only one of multiple options
+		"""
+
 		# TODO: add some option for weighted random
 		text = ''
 		random_child = random.choice(node.exprs)
@@ -156,6 +186,12 @@ class CDSLSampler:
 		return text
 
 	def generate_optional(self, node):
+		"""
+		Value or empty string is returned based on a random boolean
+
+		:param node: node to be processed
+		:return: Value of the inner node or empty string ''
+		"""
 		option = bool(random.getrandbits(1))
 		if option:
 			# # TODO: Look for a better way to check if its ros or not
@@ -167,7 +203,13 @@ class CDSLSampler:
 			return ''
 
 	def generate_caseless_keyword(self, node):
+		"""
+		Process and return the string for a keywords.
+		It's taking care of keywords that need to have an <space> after them
 
+		:param node: node to be processed
+		:return: keyword processed
+		"""
 		# It's a way to add spaces to the needed keywords
 		spaced_keywords = """import language component useQt gui Qt
 		requires implements subscribesTo publishes options
@@ -181,6 +223,8 @@ class CDSLSampler:
 
 	def generate_literal(self, node):
 		"""
+		Process the literals from the grammar.
+		Special cases for tabs and new lines are checked and treated
 
 		:param node:
 		:return: text treated to have new lines and tabs
@@ -203,19 +247,38 @@ class CDSLSampler:
 
 
 	def generate_word(self, node):
+		"""
+		Process some special words based on the resultName of the node
+
+		:param node: node to be processed
+		:return: resultName dependant strings or just the characters of the word
+		"""
 		if node.resultsName is not None:
 			return self.generate_by_result_name(node)
 		else:
 			return node.initCharsOrig
 
 	def generate_chars_not_in(self, node):
+		"""
+		Process some special words based on the resultName of the node
+
+		:param node: node to be processed
+		:return: resultName dependant strings or just the characters of the chars
+		"""
 		if node.resultsName is not None:
 			return self.generate_by_result_name(node)
 		else:
 			return 'CharsNotIn(' + node.notChars + ')'
 
 	def generate_by_result_name(self, node):
-		# TODO: Change path name on parseCDSL for a more descriptive name
+		"""
+		Return resultName dependant strings.
+		One special case is for the strings names of the interfaces of the communication.
+
+		:param node: node to be processed
+		:return: resultName dependant strings
+		"""
+
 		if node.resultsName == 'idsl_path':
 			return self.get_random_idsl()
 		if node.resultsName == 'name':
@@ -225,27 +288,45 @@ class CDSLSampler:
 		comm_identifiers = ['reqIdentifier', 'pubIdentifier', 'impIdentifier', 'subIdentifier']
 		if any(node.resultsName == name for name in comm_identifiers):
 			if len(self._used_idsl) > 0:
-				return self.get_interface_name_for_idsl(random.choice(self._used_idsl))
+				return random.choice(self._available_interfaces)
 			else:
 				# TODO: it's not an option to return None.
 				return "<" + str(node.resultsName) + ">"
 		else:
-			return "<" + str(node.resultsName) + ">"
+			raise ValueError('Unknown result name to generate for: %s' % node.resultsName)
 
 	def get_random_idsl(self):
+		"""
+		Return an available .idsl filename from available ones, remove from that list,
+		add it to the _used_idsls list and check if the .idsl have an available interface inside.
+
+		:return: random chosen .idsl filename from available ones
+		"""
 		next_idsl = None
 		if len(self._available_idsls) > 0:
 			next_idsl = random.choice(self._available_idsls)
+			try:
+				interface_name = self.get_interface_name_for_idsl(next_idsl)
+				self._available_interfaces.append(interface_name)
+			except:
+				self._special_interfaces.add(next_idsl)
+				printerr("IDSL %s without interface"%next_idsl)
 			self._available_idsls.remove(next_idsl)
 			self._used_idsl.append(next_idsl)
 		return next_idsl
 
 	def get_interface_name_for_idsl(self, idsl_filename):
+		"""
+		Extract the name of the interface for a idsl file.
+
+		:param idsl_filename: .idsl file name
+		:return: name of the interface defined inside the .idsl file.
+		"""
 		try:
 			interface_name = parseIDSL.IDSLParsing.gimmeIDSL(idsl_filename)['interfaces'][0]['name']
-		except:
-			print("ERR: Couldn't get the interface name for idsl file: %s"%idsl_filename)
-			return basestring(idsl_filename)
+		except :
+			#There's some .idsl files without interfaces defined on it, just data structures definitions
+			raise ValueError("Couldn't get the interface name for idsl file: %s"%idsl_filename)
 		else:
 			return interface_name
 
@@ -253,5 +334,7 @@ class CDSLSampler:
 if __name__ == '__main__':
 	root = parseCDSL.CDSLParsing.getCDSLParser()
 	generator = CDSLSampler()
-	output_cdsl = generator.generic_sampler(root)
-	print(output_cdsl)
+	for i in range(100):
+		output_cdsl = generator.generate_valid_component(root)
+		print(output_cdsl)
+	print(generator._special_interfaces)
