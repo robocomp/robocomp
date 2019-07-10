@@ -15,6 +15,7 @@ CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 ROBOCOMP = ''
 ROBOCOMP_COMP_DIR = os.path.join(os.path.expanduser("~"), "robocomp", "components")
 ROBOCOMPDSL_DIR = os.path.join(CURRENT_DIR, "..", "robocompdsl")
+
 try:
     ROBOCOMP = os.environ['ROBOCOMP']
 except:
@@ -74,7 +75,7 @@ class CDSLDocument:
     def generate_imports(self):
         doc_str = ""
         for imp in self._imports:
-            doc_str += self._t() + "import \"" + imp + "\"\n"
+            doc_str += self._t() + "import \"" + imp + "\";\n"
         return doc_str
 
     def _generate_generic_comunication(self, com_type):
@@ -301,14 +302,22 @@ class RoboCompDSLGui(QMainWindow):
         self._component_directory = None
         self.ui.mainTextEdit.setText(self._cdsl_doc.generate_doc())
 
+        #terminal (QUITAR TerminalTextEdit de la ui)
+        #self._console = QConsole(self.ui.terminalTextEdit)
+        self._console = QConsole(self.ui.centralWidget)
+        self._console.setObjectName("console")
+        self._command_process.readyReadStandardOutput.connect(self._console.standard_output)
+        self._command_process.readyReadStandardError.connect(self._console.error_output)
+        self.ui.gridLayout_2.addWidget(self._console, 1, 0, 3, 1)
+
         #reset button
-        #self.ui.resetButton.clicked.conect(self.reset_cdsl_file)
+        self.ui.resetButton.clicked.connect(self.reset_cdsl_file)
 
         #creation button
         self.ui.createButton.clicked.connect(self.write_cdsl_file)
 
         #generate button
-        #self.ui.generateButton.clicked.conect(self.robocompdsl_generate_component)
+        self.ui.generateButton.clicked.connect(self.robocompdsl_generate_component)
 
         self.setupEditor()
         self.load_idsl_files()
@@ -388,6 +397,13 @@ class RoboCompDSLGui(QMainWindow):
                 self.ui.directoryLineEdit.setText(dir)
                 dir_set = True
 
+    def reset_cdsl_file(self):
+        self._communications = {"implements": [], "requires": [], "subscribesTo": [], "publishes": []}
+        self._interfaces = {}
+        self._cdsl_doc = CDSLDocument()
+        self._command_process = QProcess()
+        self.update_editor()
+
     def write_cdsl_file(self):
         component_dir = str(self.ui.directoryLineEdit.text())
         text = self._cdsl_doc.generate_doc()
@@ -420,9 +436,14 @@ class RoboCompDSLGui(QMainWindow):
                 return False
 
         with open(file_path, 'w') as the_file:
+            #check if file is written correctly
             the_file.write(text)
-        self.execute_robocomp_cdsl()
+        #self.execute_robocomp_cdsl()
         return True
+
+    def robocompdsl_generate_component(self):
+        self.write_cdsl_file()
+        self.execute_robocomp_cdsl()
 
     def execute_robocomp_cdsl(self):
         cdsl_file_path = os.path.join(str(self.ui.directoryLineEdit.text()), str(self.ui.nameLineEdit.text()) + ".cdsl")
@@ -458,6 +479,35 @@ class RoboCompDSLGui(QMainWindow):
         else:
             return True
 
+class QConsole(QTextEdit):
+    def __init__(self, parent=None):
+        super(QConsole, self).__init__(parent)
+        font = QFont("Monospace",9)
+        font.setStyleHint(QFont.TypeWriter)
+        self.setFont(font)
+        # self.setFontWeight(QFont.Light)
+        # self.setFontPointSize(9)
+        self.setTextColor(QColor("LightGreen"))
+        p = self.palette()
+        p.setColor(QPalette.Base, QColor(4, 11, 50))
+        self.setPalette(p)
+        self.setText(">\n")
+
+    def append_custom_text(self, text):
+        self.setTextColor(QColor("white"))
+        self.append(text)
+
+    def standard_output(self):
+        self.setTextColor(QColor("LightGreen"))
+        process = self.sender()
+        text = process.readAllStandardOutput()
+        self.append(str(text))
+
+    def error_output(self):
+        self.setTextColor(QColor("red"))
+        process = self.sender()
+        text = process.readAllStandardError()
+        self.append(str(text))
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
