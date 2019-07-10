@@ -1,5 +1,7 @@
 #!/usr/bin/env python
-from pyparsing import Word, alphas, alphanums, nums, OneOrMore, CharsNotIn, Literal, Combine
+from pprint import pprint
+
+from pyparsing import Word, alphas, alphanums, nums, OneOrMore, CharsNotIn, Literal, Combine, delimitedList, Each
 from pyparsing import cppStyleComment, Optional, Suppress, ZeroOrMore, Group, StringEnd, srange
 from pyparsing import nestedExpr, CaselessLiteral, CaselessKeyword, ParseBaseException
 from collections import Counter
@@ -138,44 +140,44 @@ class CDSLParsing:
 
 		identifier = Word( alphas+"_", alphanums+"_" )
 
-		impIdentifier = Group(identifier('impIdentifier') + Optional(OPAR + (CaselessKeyword("ice")|CaselessKeyword("ros")).setResultsName("type") + CPAR))
-		reqIdentifier = Group(identifier('reqIdentifier') + Optional(
-			OPAR + (CaselessKeyword("ice") | CaselessKeyword("ros")).setResultsName("type") + CPAR))
-		subsIdentifier = Group(identifier('subsIdentifier') + Optional(
-			OPAR + (CaselessKeyword("ice") | CaselessKeyword("ros")).setResultsName("type") + CPAR))
-		pubIdentifier = Group(identifier('pubIdentifier') + Optional(
-			OPAR + (CaselessKeyword("ice") | CaselessKeyword("ros")).setResultsName("type") + CPAR))
-
 		# Imports
-		idslImport  = Suppress(IMPORT) - QUOTE +  CharsNotIn("\";").setResultsName('path') - QUOTE + SEMI
-		idslImports = ZeroOrMore(idslImport)
+		idslImport  = Group(Suppress(IMPORT) - QUOTE +  CharsNotIn("\";").setResultsName('idsl_path') - QUOTE + SEMI)
+		idslImports = ZeroOrMore(idslImport).setResultsName("imports")
 
-		# Communications
-		implementsList = Group(IMPLEMENTS + impIdentifier + ZeroOrMore(Suppress(Word(',')) + impIdentifier) + SEMI)
-		requiresList   = Group(REQUIRES + reqIdentifier + ZeroOrMore(Suppress(Word(',')) + reqIdentifier) + SEMI)
-		subscribesList = Group(SUBSCRIBESTO + subsIdentifier + ZeroOrMore(Suppress(Word(',')) + subsIdentifier) + SEMI)
-		publishesList  = Group(PUBLISHES + pubIdentifier + ZeroOrMore(Suppress(Word(',')) + pubIdentifier) + SEMI)
-		communicationList = implementsList | requiresList | subscribesList | publishesList
-		communications = Group( COMMUNICATIONS.suppress() + OBRACE + ZeroOrMore(communicationList) + CBRACE + SEMI)
+		commType = Optional(OPAR + (CaselessKeyword("ice") | CaselessKeyword("ros")).setResultsName("type") + CPAR)
+
+		implementsList = Optional(IMPLEMENTS + delimitedList(Group(identifier.setResultsName("impIdentifier")+commType)).setResultsName("implements") + SEMI)
+
+		requiresList = Optional(REQUIRES + delimitedList(Group(identifier.setResultsName("reqIdentifier")+commType)).setResultsName("requires") + SEMI)
+
+		subscribesList = Optional(SUBSCRIBESTO + delimitedList(Group(identifier.setResultsName("subIdentifier")+commType)).setResultsName("subscribes") + SEMI)
+
+		publishesList = Optional(PUBLISHES + delimitedList(Group(identifier.setResultsName("pubIdentifier")+commType)).setResultsName("publishes") + SEMI)
+
+		communicationList = Group(implementsList & requiresList & subscribesList & publishesList).setResultsName("communications")
+		communications = COMMUNICATIONS.suppress() + OBRACE + communicationList + CBRACE + SEMI
+
 
 		# Language
-		language = Group(LANGUAGE.suppress() - (CPP | CPP11 | PYTHON) - SEMI)
+		language_options = (CPP | CPP11 | PYTHON).setResultsName('language')
+		language = LANGUAGE.suppress() - language_options - SEMI
 		# Qtversion
-		qtVersion = Group(Optional(USEQt.suppress() + (QT4|QT5) + SEMI))
+		qtVersion = Group(Optional(USEQt.suppress() + (QT4|QT5).setResultsName('useQt') + SEMI))
 		# InnerModelViewer
-		innermodelviewer = Group(Optional(InnerModelViewer.suppress() + (TRUE|FALSE) + SEMI))
+		innermodelviewer = Group(Optional(InnerModelViewer.suppress() + (TRUE|FALSE) + SEMI))('innermodelviewer')
 		# GUI
-		gui_options = Group(QWIDGET|QMAINWINDOW|QDIALOG)
+		gui_options = QWIDGET|QMAINWINDOW|QDIALOG
 		gui = Group(Optional(GUI.suppress() - QT + OPAR - gui_options('gui_options') - CPAR + SEMI ))
 		# additional options
 		options = Group(Optional(OPTIONS.suppress() + identifier + ZeroOrMore(Suppress(Word(',')) + identifier) + SEMI))
-		statemachine = Group(Optional(STATEMACHINE.suppress() + QUOTE + CharsNotIn("\";").setResultsName('path') + QUOTE + SEMI))
+		statemachine = Group(Optional(STATEMACHINE.suppress() + QUOTE + CharsNotIn("\";").setResultsName('machine_path') + QUOTE + SEMI))
 
 		# Component definition
-		componentContents = communications('communications') + language('language') + Optional(gui('gui')) + Optional(options('options')) + Optional(qtVersion('useQt')) + Optional(innermodelviewer('innermodelviewer')) + Optional(statemachine('statemachine'))
-		component = COMPONENT.suppress() + identifier("name") + OBRACE + componentContents("properties") + CBRACE + SEMI
+		componentContents = Group(communications + language + Optional(gui('gui')) + Optional(options('options')) + Optional(qtVersion) + Optional(innermodelviewer) + Optional(statemachine('statemachine'))).setResultsName("content")
+		component = Group(COMPONENT.suppress() + identifier("name") + OBRACE + componentContents + CBRACE + SEMI).setResultsName("component")
 
-		CDSL = idslImports("imports") - component("component")
+		CDSL = idslImports - component
+
 
 		return CDSL
 
@@ -244,10 +246,16 @@ class CDSLParsing:
 
 			# if importedModule['imports'] have a # at the end an emtpy '' is generated
 			idsl_imports = importedModule['imports'].split('#')
-			# we remove all the '' ocurrences
-			idsl_imports = list(filter(('').__ne__, idsl_imports))
+			# we remove all the '' ocurrences and existing imports
+			aux_imports = []
+			for i_import in idsl_imports:
+				if i_import != '' and i_import not in initial_idsls:
+					if communicationIsIce(i_import):
+						aux_imports.append(i_import)
+			idsl_imports = aux_imports
 			if len(idsl_imports) > 0 and idsl_imports[0] != '':
 				new_idsls += idsl_imports + CDSLParsing.generateRecursiveImports(idsl_imports,include_directories)
+
 		return list(set(new_idsls))
 
 	@staticmethod
@@ -260,7 +268,7 @@ class CDSLParsing:
 		# Set options
 		component['options'] = []
 		try:
-			for op in tree['properties']['options']:
+			for op in tree['component']['content']['options']:
 				component['options'].append(op.lower())
 		except:
 			traceback.print_exc()
@@ -288,66 +296,38 @@ class CDSLParsing:
 		iD = includeDirectories + ['/opt/robocomp/interfaces/IDSLs/',
 		                           os.path.expanduser('~/robocomp/interfaces/IDSLs/')]
 		for imp in sorted(imprts):
-			import_basename = os.path.basename(imp)
+			import_basename = os.path.basename(imp['idsl_path'])
 			component['imports'].append(import_basename)
-			# importedModule = None
-			#
-			# try:
-			# 	# print 'iD', iD
-			# 	for directory in iD:
-			# 		attempt = directory+'/'+import_basename
-			# 		# print 'Check', attempt
-			# 		if os.path.isfile(attempt):
-			# 			importedModule = IDSLParsing.fromFile(attempt) # IDSLParsing.gimmeIDSL(attempt)
-			#
-			# except:
-			# 	print 'Error reading IMPORT', import_basename
-			# 	traceback.print_exc()
-			# 	print 'Error reading IMPORT', import_basename
-			# 	os._exit(1)
-			# if importedModule == None:
-			# 	print 'Counldn\'t locate', import_basename
-			# 	os._exit(1)
-			# # recursiveImports holds the necessary imports
-			# importable = False
-			# for interf in importedModule['interfaces']:
-			# 	for comm in tree['properties']['communications']:
-			# 		for interface in comm[1:]:
-			# 			if communicationIsIce(interface):
-			# 				if interf['name'] == interface[0]:
-			# 					importable = True
-			# if importable:
-			# 	component['recursiveImports'] += [x for x in importedModule['imports'].split('#') if len(x)>0]
 		component['recursiveImports'] = CDSLParsing.generateRecursiveImports(component['imports'], includeDirectories)
 		# Language
-		component['language'] = tree['properties']['language'][0]
+		component['language'] = tree['component']['content']['language']
 # Statemachine
-		component['statemachine'] = 'none'
+		component['statemachine'] = None
 		try:
-			statemachine = tree['properties']['statemachine'][0]
+			statemachine = tree['component']['content']['statemachine']['machine_path']
 			component['statemachine'] = statemachine
 		except:
 			pass
 		
 # qtVersion
-		component['useQt'] = 'none'
+		component['useQt'] = False
 		try:
-			component['useQt'] = tree['properties']['useQt'][0]
+			component['useQt'] = tree['component']['content']['useQt']
 			pass
 		except:
 			pass
 		# innermodelviewer
-		component['innermodelviewer'] = 'false'
+		component['innermodelviewer'] = False
 		try:
 			component['innermodelviewer'] = 'innermodelviewer' in [ x.lower() for x in component['options'] ]
 			pass
 		except:
 			pass
 		# GUI
-		component['gui'] = 'none'
+		component['gui'] = None
 		try:
-			uiT = tree['properties']['gui'][0]
-			uiI = tree['properties']['gui']['gui_options'][0]
+			uiT = tree['component']['content']['gui'][0]
+			uiI = tree['component']['content']['gui']['gui_options']
 			if uiT.lower() == 'qt' and uiI in ['QWidget', 'QMainWindow', 'QDialog' ]:
 				component['gui'] = [ uiT, uiI ]
 				pass
@@ -366,10 +346,10 @@ class CDSLParsing:
 		component['requires']     = []
 		component['publishes']    = []
 		component['subscribesTo'] = []
-		component['usingROS'] = "None"
+		component['usingROS'] = False
 		####################
 		com_types = ['implements', 'requires', 'publishes', 'subscribesTo']
-		communications = sorted(tree['properties']['communications'], key=lambda x: x[0])
+		communications = sorted(tree['component']['content']['communications'], key=lambda x: x[0])
 		for comm in communications:
 			if comm[0] in com_types:
 				comm_type = comm[0]
@@ -450,5 +430,70 @@ def isAGM2AgentROS(component):
 	return False
 
 if __name__ == '__main__':
-	component = CDSLParsing.fromFile(sys.argv[1])
-	print component['gui']
+	parser = CDSLParsing.getCDSLParser()
+	result = parser.parseString("""
+import "HandDetection.idsl";
+import "CameraSimple.idsl";
+import "RGBD.idsl";
+import "CommonBehavior.idsl";
+import "TvGames.idsl";
+import "GetAprilTags.idsl";
+import "TouchPoints.idsl";
+import "AdminGame.idsl";
+import "GameMetrics.idsl";
+
+Component tvgames
+{
+	Communications
+	{
+		requires HandDetection (ros), CameraSimple (ice), RGBD, GetAprilTags;
+        implements CommonBehavior, TvGames, AdminGame;
+		publishes TouchPoints, GameMetrics;
+	};
+	language Python;
+	gui Qt(QWidget);
+	useQt Qt5;
+	statemachine "gamestatemachine.smdsl";
+};
+
+
+	""")
+	pprint(result.asDict())
+
+	# component = CDSLParsing.fromFile(sys.argv[1])
+	# pprint(component)
+
+
+# 	component = CDSLParsing.getCDSLParser("""
+# import "HandDetection.idsl";
+# import "CameraSimple.idsl";
+# import "RGBD.idsl";
+# import "CommonBehavior.idsl";
+# import "TvGames.idsl";
+# import "GetAprilTags.idsl";
+# import "TouchPoints.idsl";
+# import "AdminGame.idsl";
+# import "GameMetrics.idsl";
+#
+# Component tvgames
+# {
+# 	Communications
+# 	{
+# 		requires HandDetection (ros), CameraSimple (ice), RGBD, GetAprilTags;
+#         implements CommonBehavior, TvGames, AdminGame;
+# 		publishes TouchPoints, GameMetrics;
+# 	};
+# 	language Python;
+# 	gui Qt(QWidget);
+# 	useQt Qt5;
+# 	statemachine "gamestatemachine.smdsl";
+# };
+#
+#
+# 	""")
+# 	pprint(component)
+
+
+	# with open(sys.argv[1]) as f:
+	# 	result = parser.parseString(f.read(), )
+	# 	pprint(result.asDict())

@@ -17,8 +17,8 @@ includeDirectories = theIDSLPaths.split('#')
 component = CDSLParsing.fromFile(theCDSL, includeDirectories=includeDirectories)
 sm = SMDSLparsing.fromFile(component['statemachine'])
 if sm is None:
-    component['statemachine'] = 'none'
-if component == None:
+    component['statemachine'] = None
+if component is None:
 	print('Can\'t locate', theCDSLs)
 	sys.exit(1)
 
@@ -63,7 +63,7 @@ Z()
 #include <qlog/qlog.h>
 
 [[[cog
-if component['gui'] != 'none':
+if component['gui'] is not None:
 	cog.outl("#if Qt5_FOUND") 
 	cog.outl("<TABHERE>#include <QtWidgets>")
 	cog.outl("#else")
@@ -327,7 +327,7 @@ if component['usingROS'] == True:
 [[[end]]]
 class GenericWorker :
 [[[cog
-if component['gui'] != 'none':
+if component['gui'] is not None:
 	cog.outl("#ifdef USE_QTGUI\n<TABHERE>public " + component['gui'][1] + ", public Ui_guiDlg\n#else\n<TABHERE>public QObject\n #endif")
 else:
 	cog.outl("public QObject")
@@ -652,7 +652,7 @@ if sm is not None:
     cog.outl(sm_virtual_methods)
     cog.outl("//-------------------------")
 
-if (sm is not None and sm['machine']['default'] is True) or component['statemachine'] == 'none':
+if (sm is not None and sm['machine']['default'] is True) or component['statemachine'] is None:
     cog.outl("<TABHERE>virtual void compute() = 0;")
 ]]]
 [[[end]]]

@@ -354,7 +354,7 @@ def main():
                     new_existing_files[os.path.abspath(ofile)] = os.path.abspath(ofile)+'.new'
                     ofile += '.new'
                 ifile = "/opt/robocomp/share/robocompdsl/templateCPP/" + f
-                if f != 'src/mainUI.ui' or component['gui'] != 'none':
+                if f != 'src/mainUI.ui' or component['gui'] is not None:
                     print 'Generating', ofile
                     run = "cog.py -z -d -D theCDSL="+inputFile + " -D theIDSLs="+imports + ' -D theIDSLPaths='+ '#'.join(args.include_dirs) + " -o " + ofile + " " + ifile
                     run = run.split(' ')
@@ -441,8 +441,8 @@ def main():
                     ofile += '.new'
                 ifile = "/opt/robocomp/share/robocompdsl/templatePython/" + f
                 ignoreFile = False
-                if f == 'src/mainUI.ui' and component['gui'] == 'none': ignoreFile = True
-                if f == 'CMakeLists.txt' and component['gui'] == 'none': ignoreFile = True
+                if f == 'src/mainUI.ui' and component['gui'] is None: ignoreFile = True
+                if f == 'CMakeLists.txt' and component['gui'] is None: ignoreFile = True
                 if f == 'README-STORM.txt' and needStorm == False: ignoreFile = True
                 if not ignoreFile:
                     print 'Generating', ofile

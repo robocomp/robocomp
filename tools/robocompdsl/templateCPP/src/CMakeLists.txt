@@ -131,7 +131,7 @@ Z()
 SET (EXECUTABLE_OUTPUT_PATH ${RC_COMPONENT_DEVEL_PATH}/bin)
 
 [[[cog
-	if component['gui'] != 'none':
+	if component['gui'] is not None:
 		cog.outl("QT_WRAP_UI( UI_HEADERS mainUI.ui )")
 ]]]
 [[[end]]]
