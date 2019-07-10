@@ -167,10 +167,12 @@ class CDSLSampler:
 			return ''
 
 	def generate_caseless_keyword(self, node):
-		spaced_keywords = """import language component useQt gui Qt qt4 qt5
+
+		# It's a way to add spaces to the needed keywords
+		spaced_keywords = """import language component useQt gui Qt
 		requires implements subscribesTo publishes options
 		InnerModelViewer statemachine""".split()
-		# It's a way to add spaces to the needed keywords
+
 		self._last_keywords.append(str(node.match))
 		if node.match in spaced_keywords:
 			return str(node.match) + " "
@@ -192,6 +194,10 @@ class CDSLSampler:
 			text += "\n"
 			# text = self._tab(text, before=False)
 
+		# It's a way to add spaces to the needed literals
+		spaced_literals = """,""".split()
+		if node.match in spaced_literals:
+			return str(node.match) + " "
 
 		return str(node.match) + text
 
@@ -214,12 +220,14 @@ class CDSLSampler:
 			return self.get_random_idsl()
 		if node.resultsName == 'name':
 			return random.choice(COMPONENT_NAMES)
+		if node.resultsName == 'machine_path':
+			return "statemachine.smdsl"
 		comm_identifiers = ['reqIdentifier', 'pubIdentifier', 'impIdentifier', 'subIdentifier']
 		if any(node.resultsName == name for name in comm_identifiers):
 			if len(self._used_idsl) > 0:
 				return self.get_interface_name_for_idsl(random.choice(self._used_idsl))
 			else:
-				# TODO: it's not an option to return none. It
+				# TODO: it's not an option to return None.
 				return "<" + str(node.resultsName) + ">"
 		else:
 			return "<" + str(node.resultsName) + ">"
