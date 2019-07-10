@@ -1,6 +1,5 @@
+import os
 import random
-from os.path import basename, splitext
-from os import environ, listdir 
 
 import pyparsing
 import sys
@@ -11,14 +10,20 @@ import parseIDSL
 
 from pprint import pprint
 
-ROBOCOMP = environ['ROBOCOMP']
-IDSL_DIR = ROBOCOMP + '/interfaces/IDSLs'
+ROBOCOMP = ''
+try:
+	ROBOCOMP = os.environ['ROBOCOMP']
+except KeyError:
+	print '$ROBOCOMP environment variable not set, using the default value /opt/robocomp'
+	ROBOCOMP = '/opt/robocomp'
+IDSL_DIR = os.path.join(ROBOCOMP ,'interfaces','IDSLs')
 
 COMPONENT_NAMES = ["Camerasy", "VisionRobot", "DevTecnology", "IlluminateDeep", "CyperCamera", "FissionTecnology",
-                  "DeskRobot", "MechaNeuronal", "PointCamera", "WireRandom", "Neuronry", "CatalystNeuronal",
-                  "CacaComp", "Tecnologyworks", "Tecnologycog", "Camerado", "IntuitionTecnology", "DomainDeep", "OmegaNeuronal",
-                  "Camerax", "ControlDeep", "CheckTecnology", "MachRobot", "ElectricCamera", "ElectricTecnology",
-                  "Neurongenix", "KeyRobot", "Tecnologycouch", "NomadDeep", "DeskRandom", "EdgeNeuronal", "Robotava",
+                   "DeskRobot", "MechaNeuronal", "PointCamera", "WireRandom", "Neuronry", "CatalystNeuronal",
+                   "CacaComp", "Tecnologyworks", "Tecnologycog", "Camerado", "IntuitionTecnology", "DomainDeep",
+                   "OmegaNeuronal",
+                   "Camerax", "ControlDeep", "CheckTecnology", "MachRobot", "ElectricCamera", "ElectricTecnology",
+                   "Neurongenix", "KeyRobot", "Tecnologycouch", "NomadDeep", "DeskRandom", "EdgeNeuronal", "Robotava",
                    "AcumenNeuronal", "AlgorithmNeuronal", "OverdriveDeep", "LinearDeep", "TitanRobot",
                    "ContinuumCamera", "LevelDeep", "AlgorithmRobot", "VeritasDeep", "ArclightCamera",
                    "Randomava", "NestNeuronal", "GraphicsTecnology", "ScopeDeep", "ModelCamera", "OptimalTecnology",
@@ -31,20 +36,21 @@ COMPONENT_NAMES = ["Camerasy", "VisionRobot", "DevTecnology", "IlluminateDeep", 
                    "Neuronhut", "SpireDeep", "CoreNeuronal", "NovusRobot", "DiskDeep", "Neuronlux", "MacroTecnology",
                    "LinkRandom", "IntegrationRandom", "AtlasNeuronal", "PingTecnology", "NetworkNeuronal"]
 
+
 def get_available_idsls():
-        return listdir(IDSL_DIR)
+	return os.listdir(IDSL_DIR)
+
 
 MAX_IMPORTS = 4
 
 
 class CDSLSampler:
-	def __init__(self, ros_enable = False):
+	def __init__(self, ros_enable=False):
 		self._available_idsls = get_available_idsls()
 		self._used_idsl = []
 		self._ros_enable = ros_enable
 
-
-	def generic_sampler(self, node, tab='', main_tag = ''):
+	def generic_sampler(self, node, tab='', main_tag=''):
 		if type(node) == pyparsing.And:
 			# print(tab + 'And')
 			return self.generate_and(node, tab)
@@ -85,20 +91,17 @@ class CDSLSampler:
 			print("Unknown type")
 			sys.exit(0)
 
-
 	def generate_and(self, node, tab):
 		text = ''
 		for child in node:
-			text += self.generic_sampler(child) #+ ' '
+			text += self.generic_sampler(child)  # + ' '
 		return str(text)
-
 
 	def generate_or(self, node, tab):
 		text = ''
 		random_child = random.choice(node)
-		text += self.generic_sampler(random_child) #+ ' '
+		text += self.generic_sampler(random_child)  # + ' '
 		return str(text)
-
 
 	def generate_zero_or_more(self, node, tab):
 		text = ''
@@ -106,17 +109,15 @@ class CDSLSampler:
 		# TODO: look for a better way to check if is the clause for implement|require|subscribe|publishes
 		if "implements" in str(node.expr):
 			# it's the communications generation.
-			if len(self._used_idsl)>0:
+			if len(self._used_idsl) > 0:
 				# 4 different types of communications
 				times_to_repeat = random.randint(0, 4)
 			else:
 				# if no IDSL is imported no communication should be generated
 				times_to_repeat = 0
 		for count in range(times_to_repeat):
-			text += self.generic_sampler(node.expr) #+ ' '
+			text += self.generic_sampler(node.expr)  # + ' '
 		return str(text)
-
-
 
 	def generate_match_first(self, node, tab):
 		# TODO: add some option for weighted random
@@ -124,7 +125,6 @@ class CDSLSampler:
 		random_child = random.choice(node.exprs)
 		text += self.generic_sampler(random_child)
 		return text
-
 
 	def generate_optional(self, node, tab):
 		option = bool(random.getrandbits(1))
@@ -143,7 +143,7 @@ class CDSLSampler:
 		InnerModelViewer statemachine""".split()
 		# It's a way to add spaces to the needed keywords
 		if node.match in spaced_keywords:
-			return str(node.match)+" "
+			return str(node.match) + " "
 		else:
 			return str(node.match)
 
@@ -171,7 +171,8 @@ class CDSLSampler:
 			return self.get_random_idsl()
 		if node.resultsName == 'name':
 			return random.choice(COMPONENT_NAMES)
-		if any(node.resultsName == name for name in ('reqIdentifier', 'pubIdentifier', 'impIdentifier', 'subsIdentifier')):
+		comm_identifiers = ['reqIdentifier', 'pubIdentifier', 'impIdentifier', 'subsIdentifier']
+		if any(node.resultsName == name for name in comm_identifiers):
 			if len(self._used_idsl) > 0:
 				return self.get_interface_name_for_idsl(random.choice(self._used_idsl))
 			else:
@@ -182,14 +183,14 @@ class CDSLSampler:
 
 	def get_random_idsl(self):
 		next_idsl = None
-		if len(self._available_idsls)>0:
+		if len(self._available_idsls) > 0:
 			next_idsl = random.choice(self._available_idsls)
 			self._available_idsls.remove(next_idsl)
 			self._used_idsl.append(next_idsl)
 		return next_idsl
 
 	def get_interface_name_for_idsl(self, idsl_filename):
-                return parseIDSL.IDSLParsing.gimmeIDSL(idsl_filename)['interfaces'][0]['name']
+		return parseIDSL.IDSLParsing.gimmeIDSL(idsl_filename)['interfaces'][0]['name']
 
 
 if __name__ == '__main__':
