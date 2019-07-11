@@ -133,7 +133,7 @@ class CDSLParsing:
 
 		# keywords
 		(IMPORT, COMMUNICATIONS, LANGUAGE, COMPONENT, CPP, CPP11, GUI, QWIDGET, QMAINWINDOW, QDIALOG, USEQt, QT, QT4, QT5, PYTHON, REQUIRES, IMPLEMENTS, SUBSCRIBESTO, PUBLISHES, OPTIONS, TRUE, FALSE,
-		 InnerModelViewer, STATEMACHINE) = map(CaselessKeyword, """
+		 INNERMODELVIEWER, STATEMACHINE) = map(CaselessKeyword, """
 		import communications language component cpp cpp11 gui QWidget QMainWindow QDialog useQt Qt qt4 qt5
 		python requires implements subscribesTo publishes options true false
 		InnerModelViewer statemachine""".split())
@@ -141,40 +141,40 @@ class CDSLParsing:
 		identifier = Word( alphas+"_", alphanums+"_" )
 
 		# Imports
-		idslImport  = Group(Suppress(IMPORT) - QUOTE +  CharsNotIn("\";").setResultsName('idsl_path') - QUOTE + SEMI)
+		idslImport  = Group(Suppress(IMPORT) - QUOTE + CharsNotIn("\";").setResultsName('idsl_path') - QUOTE + SEMI)
 		idslImports = ZeroOrMore(idslImport).setResultsName("imports")
 
-		commType = Optional(OPAR + (CaselessKeyword("ice") | CaselessKeyword("ros")).setResultsName("type") + CPAR)
+		commType = Optional(OPAR - (CaselessKeyword("ice") | CaselessKeyword("ros")).setResultsName("type") + CPAR)
 
-		implementsList = Optional(IMPLEMENTS + delimitedList(Group(identifier.setResultsName("impIdentifier")+commType)).setResultsName("implements") + SEMI)
+		implementsList = Optional(IMPLEMENTS - delimitedList(Group(identifier.setResultsName("impIdentifier")+commType)).setResultsName("implements") + SEMI)
 
-		requiresList = Optional(REQUIRES + delimitedList(Group(identifier.setResultsName("reqIdentifier")+commType)).setResultsName("requires") + SEMI)
+		requiresList = Optional(REQUIRES - delimitedList(Group(identifier.setResultsName("reqIdentifier")+commType)).setResultsName("requires") + SEMI)
 
-		subscribesList = Optional(SUBSCRIBESTO + delimitedList(Group(identifier.setResultsName("subIdentifier")+commType)).setResultsName("subscribes") + SEMI)
+		subscribesList = Optional(SUBSCRIBESTO - delimitedList(Group(identifier.setResultsName("subIdentifier")+commType)).setResultsName("subscribes") + SEMI)
 
-		publishesList = Optional(PUBLISHES + delimitedList(Group(identifier.setResultsName("pubIdentifier")+commType)).setResultsName("publishes") + SEMI)
+		publishesList = Optional(PUBLISHES - delimitedList(Group(identifier.setResultsName("pubIdentifier")+commType)).setResultsName("publishes") + SEMI)
 
 		communicationList = Group(implementsList & requiresList & subscribesList & publishesList).setResultsName("communications")
-		communications = COMMUNICATIONS.suppress() + OBRACE + communicationList + CBRACE + SEMI
+		communications = COMMUNICATIONS.suppress() - OBRACE + communicationList + CBRACE + SEMI
 
 
 		# Language
 		language_options = (CPP | CPP11 | PYTHON).setResultsName('language')
 		language = LANGUAGE.suppress() - language_options - SEMI
 		# Qtversion
-		qtVersion = Group(Optional(USEQt.suppress() + (QT4|QT5).setResultsName('useQt') + SEMI))
+		qtVersion = Group(Optional(USEQt.suppress() - (QT4|QT5).setResultsName('useQt') + SEMI))
 		# InnerModelViewer
-		innermodelviewer = Group(Optional(InnerModelViewer.suppress() + (TRUE|FALSE) + SEMI))('innermodelviewer')
+		innermodelviewer = Group(Optional(INNERMODELVIEWER.suppress() - (TRUE|FALSE) + SEMI))('innermodelviewer')
 		# GUI
 		gui_options = QWIDGET|QMAINWINDOW|QDIALOG
 		gui = Group(Optional(GUI.suppress() - QT + OPAR - gui_options('gui_options') - CPAR + SEMI ))
 		# additional options
-		options = Group(Optional(OPTIONS.suppress() + identifier + ZeroOrMore(Suppress(Word(',')) + identifier) + SEMI))
-		statemachine = Group(Optional(STATEMACHINE.suppress() + QUOTE + CharsNotIn("\";").setResultsName('machine_path') + QUOTE + SEMI))
+		options = Group(Optional(OPTIONS.suppress() - identifier + ZeroOrMore(Suppress(Word(',')) + identifier) + SEMI))
+		statemachine = Group(Optional(STATEMACHINE.suppress() - QUOTE + CharsNotIn("\";").setResultsName('machine_path') + QUOTE + SEMI))
 
 		# Component definition
-		componentContents = Group(communications + language + Optional(gui('gui')) + Optional(options('options')) + Optional(qtVersion) + Optional(innermodelviewer) + Optional(statemachine('statemachine'))).setResultsName("content")
-		component = Group(COMPONENT.suppress() + identifier("name") + OBRACE + componentContents + CBRACE + SEMI).setResultsName("component")
+		componentContents = Group(communications - language + Optional(gui('gui')) + Optional(options('options')) + Optional(qtVersion) + Optional(innermodelviewer) + Optional(statemachine('statemachine'))).setResultsName("content")
+		component = Group(COMPONENT.suppress() - identifier("name") + OBRACE + componentContents + CBRACE + SEMI).setResultsName("component")
 
 		CDSL = idslImports - component
 
