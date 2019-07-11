@@ -95,7 +95,7 @@
       <item row="4" column="2">
        <widget class="QComboBox" name="guiComboBox">
         <property name="enabled">
-         <bool>true</bool>
+         <bool>false</bool>
         </property>
         <item>
          <property name="text">
@@ -142,6 +142,9 @@
       </item>
       <item row="9" column="0">
        <widget class="QPushButton" name="addButton">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
         <property name="text">
          <string>Add Interface</string>
         </property>
