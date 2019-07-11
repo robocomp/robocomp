@@ -45,6 +45,11 @@ class CDSLLanguage:
     CPP = "CPP"
     PYTHON = "Python"
 
+class CDSLGui:
+    QWIDGET = "QWidget"
+    QDIALOG = "QDialog"
+    QMAINWINDOW = "QMainWindow"
+
 class CDSLDocument:
     def __init__(self):
         self.doc = []
@@ -54,6 +59,7 @@ class CDSLDocument:
         self._requires = []
         self._language = CDSLLanguage.PYTHON
         self._gui = False
+        self._gui_combo = CDSLGui.QWIDGET
         self._agmagent = False
         self._innerModel = False
         self._current_indentation = 0
@@ -122,7 +128,7 @@ class CDSLDocument:
     def generate_ui(self):
         doc_str = ""
         if self._gui:
-            doc_str = self._t() + "gui Qt(QWidget);\n"
+            doc_str = self._t() + "gui Qt(" + self._gui_combo + ");\n"
         return doc_str
 
     def generate_agmagent(self):
@@ -192,6 +198,9 @@ class CDSLDocument:
 
     def set_qui(self, gui):
         self._gui = gui
+
+    def set_gui_combo(self, gui_combo):
+        self._gui_combo = gui_combo
 
     def set_agmagent(self, agmagent):
         self._agmagent = agmagent
@@ -288,7 +297,10 @@ class RoboCompDSLGui(QMainWindow):
         self.ui.languageComboBox.currentIndexChanged.connect(self.update_language)
 
         #gui checkbox
-        self.ui.guiCheckBox.stateChanged.connect(self.update_gui_selection)
+        self.ui.guiCheckBox.stateChanged.connect(self.update_gui)
+
+        #gui combobox
+        self.ui.guiComboBox.currentIndexChanged.connect(self.update_gui_combo)
 
         #agmagent checkbox
         self.ui.agmagentCheckBox.stateChanged.connect(self.update_agmagent_selection)
@@ -356,12 +368,19 @@ class RoboCompDSLGui(QMainWindow):
         self._cdsl_doc.set_language(str(language))
         self.update_editor()
 
-    def update_gui_selection(self):
+    def update_gui(self):
         checked = self.ui.guiCheckBox.isChecked()
         if checked:
             self._cdsl_doc.set_qui(True)
+            self.ui.guiComboBox.setEnabled(True)
         else:
             self._cdsl_doc.set_qui(False)
+            self.ui.guiComboBox.setEnabled(False)
+        self.update_editor()
+
+    def update_gui_combo(self):
+        gui_combo = self.ui.guiComboBox.currentText()
+        self._cdsl_doc.set_gui_combo(str(gui_combo))
         self.update_editor()
 
     def update_agmagent_selection(self):
