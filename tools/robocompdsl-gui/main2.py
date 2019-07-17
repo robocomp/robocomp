@@ -4,6 +4,7 @@ import signal
 import sys
 
 from PySide2.QtCore import *
+from PySide2 import QtCore
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 from ui_gui import Ui_MainWindow
@@ -55,7 +56,7 @@ class CDSLDocument:
         self.doc = []
         self._component_name = ""
         self._communications = {"implements": [], "requires": [], "subscribesTo": [], "publishes": []}
-        self._imports = []
+        self._imports = set()
         self._requires = []
         self._language = CDSLLanguage.PYTHON
         self._gui = False
@@ -161,10 +162,10 @@ class CDSLDocument:
         return doc_str
 
     def clear_imports(self):
-        self._imports = []
+        self._imports.clear()
 
     def add_import(self, import_file):
-        self._imports.append(import_file)
+        self._imports.add(import_file)
 
     def add_require(self, require_name):
         self._communications["requires"].append(require_name)
@@ -271,10 +272,10 @@ class RoboCompDSLGui(QMainWindow):
         self._cdsl_doc = CDSLDocument()
         self._command_process = QProcess()
 
-        #Component name
+        #COMPONENT NAME
         self.ui.nameLineEdit.textEdited.connect(self.update_component_name)
 
-        #Directory selection
+        #DIRECTORY SELECTION
         self._dir_completer = QCompleter()
         self._dir_completer_model = QFileSystemModel()
         if os.path.isdir(ROBOCOMP_COMP_DIR):
@@ -284,51 +285,49 @@ class RoboCompDSLGui(QMainWindow):
         self.ui.directoryLineEdit.setCompleter(self._dir_completer)
         self.ui.directoryButton.clicked.connect(self.set_output_directory)
 
-        #List of Robocomp interfaces
-        self.ui.interfacesListWidget.setSelectionMode(QAbstractItemView.ExtendedSelection)
-        self.ui.interfacesListWidget.itemSelectionChanged.connect(self.set_comunication)
+        #CUSTOM INTERFACES LIST WIDGET
+        self._interface_list = customListWidget(self.ui.centralWidget)
+        self.ui.gridLayout.addWidget(self._interface_list, 4, 0, 8, 2)
+        self._interface_list.setSelectionMode(QAbstractItemView.ExtendedSelection)
+        self._interface_list.customItemSelection.connect(self.set_comunication)
 
-        #List of connection types
+        #LIST OF CONNECTION TYPES
         self.ui.communicationsComboBox.currentIndexChanged.connect(self.reselect_existing)
 
-        #Button to add a connection
-
-        #Language
+        #LANGUAGE
         self.ui.languageComboBox.currentIndexChanged.connect(self.update_language)
 
-        #gui checkbox
+        #GUI CHECKBOX
         self.ui.guiCheckBox.stateChanged.connect(self.update_gui)
 
-        #gui combobox
+        #GUI COMBOBOX
         self.ui.guiComboBox.currentIndexChanged.connect(self.update_gui_combo)
 
-        #agmagent checkbox
+        #AGMAGENT CHECKBOX
         self.ui.agmagentCheckBox.stateChanged.connect(self.update_agmagent_selection)
 
-        #innerModelcheckbox
+        #INNERMODEL CHECKBOX
         self.ui.innermodelCheckBox.stateChanged.connect(self.update_innerModel_selection)
 
-        #Text editor
+        #MAIN TEXT EDITOR
         self.ui.mainTextEdit.setHtml("")
         self._document = self.ui.mainTextEdit.document()
         self._component_directory = None
         self.ui.mainTextEdit.setText(self._cdsl_doc.generate_doc())
 
-        #terminal (QUITAR TerminalTextEdit de la ui)
-        #self._console = QConsole(self.ui.terminalTextEdit)
+        #CONSOLE
         self._console = QConsole(self.ui.centralWidget)
-        self._console.setObjectName("console")
+        self.ui.gridLayout_2.addWidget(self._console, 1, 0, 3, 1)
         self._command_process.readyReadStandardOutput.connect(self._console.standard_output)
         self._command_process.readyReadStandardError.connect(self._console.error_output)
-        self.ui.gridLayout_2.addWidget(self._console, 1, 0, 3, 1)
 
-        #reset button
+        #RESET BUTTON
         self.ui.resetButton.clicked.connect(self.reset_cdsl_file)
 
-        #creation button
+        #CREATION BUTTON
         self.ui.createButton.clicked.connect(self.write_cdsl_file)
 
-        #generate button
+        #GENERATE BUTTON
         self.ui.generateButton.clicked.connect(self.robocompdsl_generate_component)
 
         self.setupEditor()
@@ -340,10 +339,10 @@ class RoboCompDSLGui(QMainWindow):
     def load_idsl_files(self):
         idsls_dir = os.path.join(ROBOCOMP_INTERFACES, "IDSLs")
         self._interfaces = LoadInterfaces.load_all_interfaces(LoadInterfaces, idsls_dir)
-        self.ui.interfacesListWidget.addItems(list(self._interfaces.keys()))
+        self._interface_list.addItems(list(self._interfaces.keys()))
 
     def set_comunication(self):
-        interface_names = self.ui.interfacesListWidget.selectedItems()
+        interface_names = self._interface_list.selectedItems()
         com_type = str(self.ui.communicationsComboBox.currentText())
         self._communications[com_type] = []
         self._cdsl_doc.clear_comunication(com_type)
@@ -358,7 +357,8 @@ class RoboCompDSLGui(QMainWindow):
         self._cdsl_doc.clear_imports()
         for com_type in self._communications:
             for iface_name in self._communications[com_type]:
-                imports_list = LoadInterfaces.get_files_from_interface(iface_name)
+                iface_baseName = iface_name.split(':')[0]
+                imports_list = LoadInterfaces.get_files_from_interface(iface_baseName)
                 for imp in imports_list:
                     idsl_full_filename = imp
                     self._cdsl_doc.add_import(idsl_full_filename)
@@ -474,9 +474,11 @@ class RoboCompDSLGui(QMainWindow):
     def reselect_existing(self):
         com_type = self.ui.communicationsComboBox.currentText()
         selected = self._communications[com_type]
-        self.ui.interfacesListWidget.clearSelection()
+        #self.ui.interfacesListWidget.clearSelection()
+        self._interface_list.clearItems()
+
         for iface in selected:
-            items = self.ui.interfacesListWidget.findItems(iface, Qt.MatchFlag.MatchExactly)
+            items = self._interface_list.findItems(iface, Qt.MatchFlag.MatchExactly)
             if len(items) > 0:
                 item = items[0]
                 item.setSelected(True)
@@ -508,7 +510,10 @@ class QConsole(QTextEdit):
         # self.setFontPointSize(9)
         self.setTextColor(QColor("LightGreen"))
         p = self.palette()
-        p.setColor(QPalette.Base, QColor(4, 11, 50))
+        #p.setColor(QPalette.Base, QColor(4, 11, 50))
+        self.setMinimumSize(QtCore.QSize(0, 130))
+        self.setStyleSheet("background-color: rgb(4, 11, 50);")
+        #self.setObjectName("console")
         self.setPalette(p)
         self.setText(">\n")
 
@@ -527,6 +532,60 @@ class QConsole(QTextEdit):
         process = self.sender()
         text = process.readAllStandardError()
         self.append(str(text))
+
+class customListWidget(QListWidget):
+    itemList = []
+    customItemSelection = Signal()
+
+    def __init__(self, parent=None):
+        super(customListWidget, self).__init__(parent)
+        self.itemList = []
+        self.setMinimumSize(QtCore.QSize(160, 0))
+        self.setMaximumSize(QtCore.QSize(245, 16777215))
+        # self.setObjectName("customListWidget")
+
+    def mousePressEvent(self, event):
+        super(customListWidget, self).mousePressEvent(event)
+        item = self.itemAt(event.pos())
+        if item:
+            text = item.text().split(":")[0]
+            # check button clicked
+            if event.button() == Qt.LeftButton:
+                if (event.modifiers() == Qt.ShiftModifier) or (event.modifiers() == Qt.ControlModifier):
+                    self.itemList.append(text)
+                else:
+                    if self.itemList and text not in self.itemList:
+                        self.clearItems()
+                    self.itemList.append(text)
+            elif event.button() == Qt.RightButton:
+                if text in self.itemList:
+                    self.itemList.remove(text)
+
+            # update list text
+            count = self.itemList.count(text)
+            self.itemAt(event.pos()).setSelected(count)
+            if count:
+                self.itemAt(event.pos()).setText(text + ":" + str(count))
+            else:
+                self.itemAt(event.pos()).setText(text)
+
+            self.customItemSelection.emit()
+        else:
+            self.clearItems()
+
+    def clearItems(self):
+        self.itemList = []
+        for pos in range(self.count()):
+            self.item(pos).setText(self.item(pos).text().split(":")[0])
+
+    # return our custom selected item list
+    def customItemList(self):
+        return self.itemlist
+
+    # just for testing
+    @Slot()
+    def print(self):
+        print("Selected items\n", self.itemList)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
