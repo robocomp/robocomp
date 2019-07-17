@@ -32,147 +32,246 @@
    <string>Create a component</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <layout class="QVBoxLayout" name="verticalLayout_2">
-    <item>
-     <layout class="QFormLayout" name="formLayout">
-      <property name="sizeConstraint">
-       <enum>QLayout::SetMaximumSize</enum>
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="5" column="3">
+     <widget class="QCheckBox" name="guiCheckBox">
+      <property name="text">
+       <string>Window</string>
       </property>
-      <item row="0" column="0">
-       <widget class="QLabel" name="nameLabel">
-        <property name="text">
-         <string>Component Name:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0">
-       <widget class="QPushButton" name="directoryButton">
-        <property name="text">
-         <string>Select Directory</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1">
-       <widget class="QLineEdit" name="nameLineEdit"/>
-      </item>
-      <item row="1" column="1">
-       <widget class="QLineEdit" name="directoryLineEdit"/>
-      </item>
-     </layout>
+     </widget>
     </item>
-    <item>
-     <layout class="QGridLayout" name="gridLayout">
-      <item row="2" column="2">
-       <widget class="QLabel" name="guiLabel">
-        <property name="maximumSize">
+    <item row="6" column="3">
+     <widget class="QComboBox" name="guiComboBox">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <item>
+       <property name="text">
+        <string>QWidget</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>QDialog</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>QMainWindow</string>
+       </property>
+      </item>
+     </widget>
+    </item>
+    <item row="2" column="3">
+     <widget class="QLabel" name="languageLabel">
+      <property name="minimumSize">
+       <size>
+        <width>160</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>18</height>
+       </size>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(186, 189, 182);</string>
+      </property>
+      <property name="text">
+       <string>Language</string>
+      </property>
+     </widget>
+    </item>
+    <item row="9" column="3">
+     <widget class="QCheckBox" name="innermodelCheckBox">
+      <property name="text">
+       <string>InnermodelViewer</string>
+      </property>
+     </widget>
+    </item>
+    <item row="7" column="3">
+     <widget class="QLabel" name="optionalLabel">
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>18</height>
+       </size>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(186, 189, 182);</string>
+      </property>
+      <property name="text">
+       <string>Optional Parameters</string>
+      </property>
+     </widget>
+    </item>
+    <item row="8" column="3">
+     <widget class="QCheckBox" name="agmagentCheckBox">
+      <property name="text">
+       <string>Agmagent</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="3">
+     <widget class="QComboBox" name="languageComboBox">
+      <item>
+       <property name="text">
+        <string>Python</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Cpp</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Cpp11</string>
+       </property>
+      </item>
+     </widget>
+    </item>
+    <item row="2" column="0" colspan="2">
+     <widget class="QLabel" name="interfacesLabel">
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>18</height>
+       </size>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(186, 189, 182);</string>
+      </property>
+      <property name="text">
+       <string>Interfaces</string>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="0" rowspan="8" colspan="2">
+     <widget class="QListWidget" name="interfacesListWidget">
+      <property name="minimumSize">
+       <size>
+        <width>160</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>245</width>
+        <height>16777215</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="2" rowspan="10">
+     <widget class="QTextEdit" name="mainTextEdit">
+      <property name="minimumSize">
+       <size>
+        <width>440</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="html">
+       <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Ubuntu'; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+     </widget>
+    </item>
+    <item row="11" column="3">
+     <widget class="QComboBox" name="modulesComboBox">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <item>
+       <property name="text">
+        <string>ROS</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Opencv2</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>PCL</string>
+       </property>
+      </item>
+     </widget>
+    </item>
+    <item row="10" column="3">
+     <widget class="QCheckBox" name="moduleCheckBox">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="text">
+       <string>Module</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="0" colspan="2">
+     <widget class="QComboBox" name="communicationsComboBox">
+      <item>
+       <property name="text">
+        <string>publishes</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>implements</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>subscribesTo</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>requires</string>
+       </property>
+      </item>
+     </widget>
+    </item>
+    <item row="4" column="3">
+     <widget class="QLabel" name="guiLabel">
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>18</height>
+       </size>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(186, 189, 182);</string>
+      </property>
+      <property name="text">
+       <string>GUI</string>
+      </property>
+     </widget>
+    </item>
+    <item row="12" column="0" colspan="4">
+     <layout class="QGridLayout" name="gridLayout_2">
+      <item row="1" column="0" rowspan="3">
+       <widget class="QTextEdit" name="terminalTextEdit">
+        <property name="minimumSize">
          <size>
-          <width>16777215</width>
-          <height>18</height>
+          <width>0</width>
+          <height>130</height>
          </size>
         </property>
         <property name="styleSheet">
-         <string notr="true">background-color: rgb(186, 189, 182);</string>
-        </property>
-        <property name="text">
-         <string>GUI</string>
-        </property>
-       </widget>
-      </item>
-      <item row="6" column="2">
-       <widget class="QCheckBox" name="agmagentCheckBox">
-        <property name="text">
-         <string>Agmagent</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="2">
-       <widget class="QCheckBox" name="guiCheckBox">
-        <property name="text">
-         <string>Window</string>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="2">
-       <widget class="QComboBox" name="guiComboBox">
-        <property name="enabled">
-         <bool>false</bool>
-        </property>
-        <item>
-         <property name="text">
-          <string>QWidget</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>QDialog</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>QMainWindow</string>
-         </property>
-        </item>
-       </widget>
-      </item>
-      <item row="2" column="0" rowspan="7">
-       <widget class="QListWidget" name="interfacesListWidget">
-        <property name="maximumSize">
-         <size>
-          <width>160</width>
-          <height>16777215</height>
-         </size>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="0">
-       <widget class="QLabel" name="interfacesLabel">
-        <property name="maximumSize">
-         <size>
-          <width>16777215</width>
-          <height>18</height>
-         </size>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">background-color: rgb(186, 189, 182);</string>
-        </property>
-        <property name="text">
-         <string>Interfaces</string>
-        </property>
-       </widget>
-      </item>
-      <item row="9" column="0">
-       <widget class="QPushButton" name="addButton">
-        <property name="enabled">
-         <bool>false</bool>
-        </property>
-        <property name="text">
-         <string>Add Interface</string>
-        </property>
-       </widget>
-      </item>
-      <item row="5" column="2">
-       <widget class="QLabel" name="optionalLabel">
-        <property name="maximumSize">
-         <size>
-          <width>16777215</width>
-          <height>18</height>
-         </size>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">background-color: rgb(186, 189, 182);</string>
-        </property>
-        <property name="text">
-         <string>Optional Parameters</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1" rowspan="10">
-       <widget class="QTextEdit" name="mainTextEdit">
-        <property name="maximumSize">
-         <size>
-          <width>16777215</width>
-          <height>16777215</height>
-         </size>
+         <string notr="true">background-color: rgb(4, 11, 50);</string>
         </property>
         <property name="html">
          <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
@@ -183,96 +282,8 @@ p, li { white-space: pre-wrap; }
         </property>
        </widget>
       </item>
-      <item row="8" column="2">
-       <widget class="QCheckBox" name="moduleCheckBox">
-        <property name="enabled">
-         <bool>false</bool>
-        </property>
-        <property name="text">
-         <string>Module</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0">
-       <widget class="QComboBox" name="communicationsComboBox">
-        <item>
-         <property name="text">
-          <string>publishes</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>implements</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>subscribesTo</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>requires</string>
-         </property>
-        </item>
-       </widget>
-      </item>
-      <item row="7" column="2">
-       <widget class="QCheckBox" name="innermodelCheckBox">
-        <property name="text">
-         <string>InnermodelViewer</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="2">
-       <widget class="QComboBox" name="languageComboBox">
-        <item>
-         <property name="text">
-          <string>Python</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Cpp</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Cpp11</string>
-         </property>
-        </item>
-       </widget>
-      </item>
-      <item row="9" column="2">
-       <widget class="QComboBox" name="modulesComboBox">
-        <property name="enabled">
-         <bool>false</bool>
-        </property>
-        <item>
-         <property name="text">
-          <string>ROS</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Opencv2</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>PCL</string>
-         </property>
-        </item>
-       </widget>
-      </item>
-      <item row="0" column="2">
-       <widget class="QLabel" name="languageLabel">
-        <property name="minimumSize">
-         <size>
-          <width>160</width>
-          <height>0</height>
-         </size>
-        </property>
+      <item row="0" column="0">
+       <widget class="QLabel" name="terminalLabel">
         <property name="maximumSize">
          <size>
           <width>16777215</width>
@@ -283,14 +294,10 @@ p, li { white-space: pre-wrap; }
          <string notr="true">background-color: rgb(186, 189, 182);</string>
         </property>
         <property name="text">
-         <string>Language</string>
+         <string>Terminal</string>
         </property>
        </widget>
       </item>
-     </layout>
-    </item>
-    <item>
-     <layout class="QGridLayout" name="gridLayout_2">
       <item row="2" column="1">
        <widget class="QPushButton" name="createButton">
         <property name="text">
@@ -318,37 +325,27 @@ p, li { white-space: pre-wrap; }
         </property>
        </widget>
       </item>
-      <item row="0" column="0">
-       <widget class="QLabel" name="terminalLabel">
-        <property name="maximumSize">
-         <size>
-          <width>16777215</width>
-          <height>18</height>
-         </size>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">background-color: rgb(186, 189, 182);</string>
-        </property>
-        <property name="text">
-         <string>Terminal</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0" rowspan="3">
-       <widget class="QTextEdit" name="terminalTextEdit">
-        <property name="styleSheet">
-         <string notr="true">background-color: rgb(4, 11, 50);</string>
-        </property>
-        <property name="html">
-         <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Ubuntu'; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-        </property>
-       </widget>
-      </item>
      </layout>
+    </item>
+    <item row="0" column="0">
+     <widget class="QLabel" name="nameLabel">
+      <property name="text">
+       <string>Component Name:</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0">
+     <widget class="QPushButton" name="directoryButton">
+      <property name="text">
+       <string>Select Directory</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="1" colspan="3">
+     <widget class="QLineEdit" name="nameLineEdit"/>
+    </item>
+    <item row="1" column="1" colspan="3">
+     <widget class="QLineEdit" name="directoryLineEdit"/>
     </item>
    </layout>
   </widget>
