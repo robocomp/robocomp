@@ -342,12 +342,12 @@ class RoboCompDSLGui(QMainWindow):
         self._interface_list.addItems(list(self._interfaces.keys()))
 
     def set_comunication(self):
-        interface_names = self._interface_list.selectedItems()
+        interfaces_names = self._interface_list.customItemList()
         com_type = str(self.ui.communicationsComboBox.currentText())
         self._communications[com_type] = []
         self._cdsl_doc.clear_comunication(com_type)
-        for iface_name_item in interface_names:
-            iface_name = str(iface_name_item.text())
+        for iface_name_item in interfaces_names:
+            iface_name = iface_name_item
             self._communications[com_type].append(iface_name)
             self._cdsl_doc.add_comunication(com_type, iface_name)
         self.update_imports()
@@ -357,8 +357,7 @@ class RoboCompDSLGui(QMainWindow):
         self._cdsl_doc.clear_imports()
         for com_type in self._communications:
             for iface_name in self._communications[com_type]:
-                iface_baseName = iface_name.split(':')[0]
-                imports_list = LoadInterfaces.get_files_from_interface(iface_baseName)
+                imports_list = LoadInterfaces.get_files_from_interface(iface_name)
                 for imp in imports_list:
                     idsl_full_filename = imp
                     self._cdsl_doc.add_import(idsl_full_filename)
@@ -554,9 +553,10 @@ class customListWidget(QListWidget):
                 if (event.modifiers() == Qt.ShiftModifier) or (event.modifiers() == Qt.ControlModifier):
                     self.itemList.append(text)
                 else:
-                    if self.itemList and text not in self.itemList:
-                        self.clearItems()
-                    self.itemList.append(text)
+                    count = self.itemList.count(text)
+                    self.clearItems()
+                    for c in range(count + 1):
+                        self.itemList.append(text)
             elif event.button() == Qt.RightButton:
                 if text in self.itemList:
                     self.itemList.remove(text)
@@ -580,7 +580,7 @@ class customListWidget(QListWidget):
 
     # return our custom selected item list
     def customItemList(self):
-        return self.itemlist
+        return self.itemList
 
     # just for testing
     @Slot()
