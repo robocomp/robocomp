@@ -287,7 +287,7 @@ class RoboCompDSLGui(QMainWindow):
 
         #CUSTOM INTERFACES LIST WIDGET
         self._interface_list = customListWidget(self.ui.centralWidget)
-        self.ui.gridLayout.addWidget(self._interface_list, 4, 0, 8, 2)
+        self.ui.gridLayout.addWidget(self._interface_list, 4, 0, 9, 2)
         self._interface_list.setSelectionMode(QAbstractItemView.ExtendedSelection)
         self._interface_list.customItemSelection.connect(self.set_comunication)
 
@@ -317,7 +317,7 @@ class RoboCompDSLGui(QMainWindow):
 
         #CONSOLE
         self._console = QConsole(self.ui.centralWidget)
-        self.ui.gridLayout_2.addWidget(self._console, 1, 0, 3, 1)
+        self.ui.gridLayout.addWidget(self._console, 14, 0, 4, 3)
         self._command_process.readyReadStandardOutput.connect(self._console.standard_output)
         self._command_process.readyReadStandardError.connect(self._console.error_output)
 
