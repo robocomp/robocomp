@@ -504,9 +504,10 @@ class RoboCompDSLGui(QMainWindow):
         quit_msg = "Are you sure you want to exit?"
         reply = QMessageBox.question(self, 'Message', quit_msg, QMessageBox.Yes, QMessageBox.No)
         if reply == QMessageBox.Yes:
-            event.accept()
+            QApplication.quit()
         else:
-            event.ignore()
+            if event is not None:
+                event.ignore()
 
 class QConsole(QTextEdit):
     def __init__(self, parent=None):
@@ -596,21 +597,15 @@ class customListWidget(QListWidget):
     def print(self):
         print("Selected items\n", self.itemList)
 
-#SIGNALS Handler with Qt
-def sigint_handler(*args):
-    if QMessageBox.question(None, '', "Are you sure you want to exit?",
-                            QMessageBox.Yes | QMessageBox.No,
-                            QMessageBox.No) == QMessageBox.Yes:
-        QApplication.quit()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    signal.signal(signal.SIGINT, sigint_handler)
     timer = QTimer()
     timer.start(500)
     timer.timeout.connect(lambda: None)
 
     gui = RoboCompDSLGui()
+    signal.signal(signal.SIGINT, lambda self_, event_: gui.closeEvent(None))
     gui.show()
 
     sys.exit(app.exec_())
