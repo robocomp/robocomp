@@ -8,7 +8,7 @@ from PySide2 import QtCore
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 from ui_gui import Ui_MainWindow
-from parseGUI import LoadInterfaces
+from parseGUI import LoadInterfaces, FileChecker
 
 
 # DETECT THE ROBOCOMP INSTALLATION TO IMPORT RCPORTCHECKER CLASS
@@ -455,8 +455,9 @@ class RoboCompDSLGui(QMainWindow):
 
         with open(file_path, 'w') as the_file:
             #check if file is written correctly
+            #FileChecker.check_text(FileChecker, text)
+            #create cdsl file
             the_file.write(text)
-        #self.execute_robocomp_cdsl()
         return True
 
     def robocompdsl_generate_component(self):
@@ -587,10 +588,24 @@ class customListWidget(QListWidget):
     def print(self):
         print("Selected items\n", self.itemList)
 
+#SIGNALS handler
+def sigint_handler(*args):
+    print("\nDo you want to exit?")
+    answer = input("yes/no: ")
+    if answer == "yes":
+        QApplication.quit()
+
+
 if __name__ == "__main__":
+    signal.signal(signal.SIGINT, sigint_handler)
     app = QApplication(sys.argv)
+    timer = QTimer()
+    timer.start(500)
+    timer.timeout.connect(lambda: None)
 
     gui = RoboCompDSLGui()
     gui.show()
 
     sys.exit(app.exec_())
+
+
