@@ -424,7 +424,8 @@ class RoboCompDSLGui(QMainWindow):
 
     def write_cdsl_file(self):
         component_dir = str(self.ui.directoryLineEdit.text())
-        text = self._cdsl_doc.generate_doc()
+        #text = self._cdsl_doc.generate_doc()
+        text = self.ui.mainTextEdit.toPlainText() # read content from main text editor
         if not self.ui.nameLineEdit.text():
             component_name, ok = QInputDialog.getText(self, 'No component name set', 'Enter component name:')
             if ok:
@@ -452,12 +453,18 @@ class RoboCompDSLGui(QMainWindow):
                                                       "Do you want to overwrite?",
                                                       QMessageBox.Yes | QMessageBox.No):
                 return False
-
         with open(file_path, 'w') as the_file:
-            #check if file is written correctly
-            #FileChecker.check_text(FileChecker, text)
-            #create cdsl file
-            the_file.write(text)
+            #check if file is written correctly returning error list
+            errors = FileChecker.check_text(FileChecker, text) #error list
+            if errors:
+                for err in errors:
+                    msg = str(err)
+                    self._console.append_error_text(msg)
+                return False
+            else: #create cdsl file
+                the_file.write(text)
+                msg = "CDSL file created correctly!"
+                self._console.append_custom_text(msg)
         return True
 
     def robocompdsl_generate_component(self):
@@ -524,10 +531,14 @@ class QConsole(QTextEdit):
         self.setStyleSheet("background-color: rgb(4, 11, 50);")
         #self.setObjectName("console")
         self.setPalette(p)
-        self.setText(">\n")
+        self.setText(">")
 
     def append_custom_text(self, text):
         self.setTextColor(QColor("white"))
+        self.append(text)
+
+    def append_error_text(self, text):
+        self.setTextColor(QColor("yellow"))
         self.append(text)
 
     def standard_output(self):
