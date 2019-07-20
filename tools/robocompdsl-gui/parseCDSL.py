@@ -179,6 +179,25 @@ class CDSLParsing:
 
         print(errors)
 
+     #TO TEST GUI
+    @staticmethod
+    def analizeText(inputText, verbose=False, includeDirectories=None):
+        cdsl_content = {}
+        errors = []
+        if verbose:
+            print('Verbose:', verbose)
+
+        if includeDirectories is None:
+            includeDirectories = []
+
+        try:
+            cdsl_content = CDSLParsing.fromString(inputText)
+        except rcExceptions.ParseException as ex:
+            errors.append((ex.line, ex.message))
+        except rcExceptions.RobocompDslException as ex:
+            errors.append((0, ex.message))
+        return cdsl_content, errors
+
     @staticmethod
     def fromFile(filename, verbose=False, includeDirectories=[]):
         try:
