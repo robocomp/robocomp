@@ -421,6 +421,7 @@ class RoboCompDSLGui(QMainWindow):
         self._cdsl_doc = CDSLDocument()
         self._command_process = QProcess()
         self.update_editor()
+        self._console.clear_console()
 
     def write_cdsl_file(self):
         component_dir = str(self.ui.directoryLineEdit.text())
@@ -522,24 +523,20 @@ class QConsole(QTextEdit):
         font = QFont("Monospace",9)
         font.setStyleHint(QFont.TypeWriter)
         self.setFont(font)
-        # self.setFontWeight(QFont.Light)
-        # self.setFontPointSize(9)
         self.setTextColor(QColor("LightGreen"))
-        p = self.palette()
-        #p.setColor(QPalette.Base, QColor(4, 11, 50))
+        self.setReadOnly(True)
         self.setMinimumSize(QtCore.QSize(0, 130))
         self.setStyleSheet("background-color: rgb(4, 11, 50);")
         #self.setObjectName("console")
-        self.setPalette(p)
-        self.setText(">")
+        self.setText("> Welcome to Robocompdsl.")
 
     def append_custom_text(self, text):
         self.setTextColor(QColor("white"))
-        self.append(text)
+        self.append("> " + text)
 
     def append_error_text(self, text):
         self.setTextColor(QColor("yellow"))
-        self.append(text)
+        self.append("> " + text)
 
     def standard_output(self):
         self.setTextColor(QColor("LightGreen"))
@@ -552,6 +549,9 @@ class QConsole(QTextEdit):
         process = self.sender()
         text = process.readAllStandardError()
         self.append(str(text))
+
+    def clear_console(self):
+        self.setText(" ")
 
 class customListWidget(QListWidget):
     itemList = []
