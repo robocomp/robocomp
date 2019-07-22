@@ -262,6 +262,7 @@ class Highlighter(QSyntaxHighlighter):
 
 class RoboCompDSLGui(QMainWindow):
     def __init__(self):
+        self.newLines = 1 ########################################################################################
         super(RoboCompDSLGui, self).__init__()
 
         self.ui = Ui_MainWindow()
@@ -310,10 +311,13 @@ class RoboCompDSLGui(QMainWindow):
         self.ui.innermodelCheckBox.stateChanged.connect(self.update_innerModel_selection)
 
         #MAIN TEXT EDITOR
-        self.ui.mainTextEdit.setHtml("")
+        #self.ui.mainTextEdit.setHtml("")
+        self.ui.mainTextEdit.setPlainText("")
         self._document = self.ui.mainTextEdit.document()
         self._component_directory = None
-        self.ui.mainTextEdit.setText(self._cdsl_doc.generate_doc())
+        #self.ui.mainTextEdit.setText(self._cdsl_doc.generate_doc())
+        self.ui.mainTextEdit.setPlainText(self._cdsl_doc.generate_doc())
+
 
         #CONSOLE
         self._console = QConsole(self.ui.centralWidget)
@@ -403,7 +407,7 @@ class RoboCompDSLGui(QMainWindow):
         self.update_editor()
 
     def update_editor(self):
-        self.ui.mainTextEdit.setText(self._cdsl_doc.generate_doc())
+        self.ui.mainTextEdit.setPlainText(self._cdsl_doc.generate_doc())
 
     def set_output_directory(self):
         dir_set = False
@@ -431,6 +435,7 @@ class RoboCompDSLGui(QMainWindow):
             component_name, ok = QInputDialog.getText(self, 'No component name set', 'Enter component name:')
             if ok:
                 self.update_component_name(component_name)
+                text = self.ui.mainTextEdit.toPlainText() #update text to avoid errors
                 self.ui.nameLineEdit.setText(component_name)
             else:
                 return False
@@ -444,7 +449,7 @@ class RoboCompDSLGui(QMainWindow):
             else:
                 QMessageBox.question(self,
                                      "Directory not exist",
-                                     "Can't create a component witout a valid directory")
+                                     "Can't create a component without a valid directory")
                 return False
 
         file_path = os.path.join(component_dir, str(self.ui.nameLineEdit.text()) + ".cdsl")
@@ -588,7 +593,7 @@ class customListWidget(QListWidget):
             if count:
                 self.itemAt(event.pos()).setText(text + ":" + str(count))
             else:
-                self.itemAt(event.pos()).setText(text)
+                self.itemAt(event.pos()).setPlainText(text)
 
             self.customItemSelection.emit()
         else:
