@@ -27,7 +27,9 @@ class InterfaceNotFound(RobocompDslException):
 class ParseException(RobocompDslException):
 
 	def __init__(self, msg, line, column):
-		info = line + '\n' + " "*(column-1) + "^"
+		#info = line + '\n' + " "*(column-1) + "^"
 		self.line = line
-		self.message = msg + '\n' + info
+		self.column = column
+		#self.message = msg + '\n' + info
+		self.message = msg
 		super(ParseException, self).__init__(self.message)
