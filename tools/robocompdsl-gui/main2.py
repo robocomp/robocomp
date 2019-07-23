@@ -463,6 +463,9 @@ class RoboCompDSLGui(QMainWindow):
             #check if file is written correctly returning error list
             errors = FileChecker.check_text(FileChecker, text) #error list
             if errors:
+                # TODO
+                # error_str = get wrong word
+                # highlight_error(error_str)
                 for err in errors:
                     msg = str(err)
                     self._console.append_error_text(msg)
@@ -512,6 +515,29 @@ class RoboCompDSLGui(QMainWindow):
                 return False
         else:
             return True
+
+    def highligh_error(self, error_str):
+        cursor = self.ui.mainTextEdit.textCursor()
+
+        # Setup the desired format for matches
+        format = QTextCharFormat()
+        format.setBackground(QBrush(QColor("red")))
+
+        # Setup the regex engine
+        pattern = error_str
+        regex = QtCore.QRegExp(pattern)
+
+        # Process the main editor
+        pos = 0
+        index = regex.indexIn(self.ui.mainTextEdit.toPlainText(), pos)
+        while (index != -1):
+            # Select the matched text and apply the desired format
+            cursor.setPosition(index)
+            cursor.movePosition(QTextCursor.EndOfWord, cursor.KeepAnchor, 1)
+            cursor.mergeCharFormat(format)
+            # Move to the next match
+            pos = index + regex.matchedLength()
+            index = regex.indexIn(self.ui.mainTextEdit.toPlainText(), pos)
 
     def closeEvent(self, event):
         quit_msg = "Are you sure you want to exit?"
