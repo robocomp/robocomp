@@ -463,10 +463,14 @@ class RoboCompDSLGui(QMainWindow):
             #check if file is written correctly returning error list
             errors = FileChecker.check_text(FileChecker, text) #error list
             if errors:
-                # TODO
-                # error_str = get wrong word
-                # highlight_error(error_str)
                 for err in errors:
+                    # Get wrong word from error line
+                    error_word = err[0]
+                    error_word = error_word.lstrip()
+                    error_word = error_word.rstrip()
+                    # if wrong_word
+                    if error_word != '0':
+                        self.highlight_error(error_word)
                     msg = str(err)
                     self._console.append_error_text(msg)
                 return False
@@ -516,7 +520,7 @@ class RoboCompDSLGui(QMainWindow):
         else:
             return True
 
-    def highligh_error(self, error_str):
+    def highlight_error(self, error_str):
         cursor = self.ui.mainTextEdit.textCursor()
 
         # Setup the desired format for matches
