@@ -6,6 +6,8 @@ from pyparsing import nestedExpr, CaselessLiteral, CaselessKeyword, ParseBaseExc
 from collections import Counter
 import sys, traceback, os
 
+from CDSLDocument import CDSLDocument
+
 debug = False
 # debug = True
 
@@ -109,8 +111,16 @@ def getNameNumber(aalist):
     return ret
 
 class CDSLParsing:
-    @staticmethod
-    def getCDSLParser():
+
+    CDSLDoc = None  # attribute to store CDSLDocument
+
+    def __init__(self, cdslDoc):
+        self.CDSLDoc = cdslDoc
+
+    def getCDSLDoc(self):
+        return self.CDSLDoc
+
+    def getCDSLParser(self):
         OBRACE, CBRACE, SEMI, OPAR, CPAR = map(Suppress, "{};()")
         QUOTE = Suppress(Word("\""))
 
@@ -140,7 +150,7 @@ class CDSLParsing:
         communications = Group(COMMUNICATIONS.suppress() + OBRACE + ZeroOrMore(communicationList) + CBRACE + SEMI)
 
         # Language
-        language = Group(LANGUAGE.suppress() - (CPP | CPP11 | PYTHON) - SEMI)
+        language = Group(LANGUAGE.suppress() - (CPP | CPP11 | PYTHON) - SEMI).setParseAction(self.CDSLDoc.analize_language )
 
         # InnerModelViewer
         innermodelviewer = Group(Optional(InnerModelViewer.suppress() + (TRUE | FALSE) + SEMI))
@@ -160,8 +170,7 @@ class CDSLParsing:
 
         return CDSL
 
-    @staticmethod
-    def analizeCDSL(filename, verbose=False, includeDirectories=None):
+    def analizeCDSL(self, filename, verbose=False, includeDirectories=None):
         cdsl_content = {}
         errors = []
         if verbose:
@@ -171,7 +180,7 @@ class CDSLParsing:
             includeDirectories = []
 
         try:
-            cdsl_content = CDSLParsing.fromFile(filename, verbose=verbose, includeDirectories=includeDirectories)
+            cdsl_content = self.fromFile(filename, verbose=verbose, includeDirectories=includeDirectories)
         except rcExceptions.ParseException as ex:
             errors.append((ex.line, ex.message))
         except rcExceptions.RobocompDslException as ex:
@@ -180,8 +189,7 @@ class CDSLParsing:
         print(errors)
 
      #TO TEST GUI
-    @staticmethod
-    def analizeText(inputText, verbose=False, includeDirectories=None):
+    def analizeText(self, inputText, verbose=False, includeDirectories=None):
         cdsl_content = {}
         errors = []
         if verbose:
@@ -191,15 +199,16 @@ class CDSLParsing:
             includeDirectories = []
 
         try:
-            cdsl_content = CDSLParsing.fromString(inputText)
+            cdsl_content = self.fromString(inputText)
         except rcExceptions.ParseException as ex:
             errors.append((ex.line, ex.message))
         except rcExceptions.RobocompDslException as ex:
             errors.append((0, ex.message))
+        except:
+            errors.append((0, "Unknown"))
         return cdsl_content, errors
 
-    @staticmethod
-    def fromFile(filename, verbose=False, includeDirectories=[]):
+    def fromFile(self, filename, verbose=False, includeDirectories=[]):
         try:
             inputText = open(filename, 'r').read()
         except (FileNotFoundError, IOError) as ex:
@@ -210,7 +219,7 @@ class CDSLParsing:
             raise rcExceptions.RobocompDslException("Unexpected error: " + sys.exc_info()[0])
 
         try:
-            ret = CDSLParsing.fromString(inputText, includeDirectories=includeDirectories)
+            ret = self.fromString(inputText, includeDirectories=includeDirectories)
         except rcExceptions.ParseException as ex:
             if verbose:
                 traceback.print_exc()
@@ -219,11 +228,10 @@ class CDSLParsing:
         return ret
 
 
-    @staticmethod
-    def fromString(inputText, verbose=False, includeDirectories=[]):
+    def fromString(self, inputText, verbose=False, includeDirectories=[]):
         text = nestedExpr("/*", "*/").suppress().transformString(inputText)
 
-        CDSL = CDSLParsing.getCDSLParser()
+        CDSL = self.getCDSLParser()
         CDSL.ignore(cppStyleComment)
         try:
             tree = CDSL.parseString(text)
@@ -232,15 +240,14 @@ class CDSLParsing:
 
         cdsl_content = {}
         try:
-            cdsl_content = CDSLParsing.component(tree, includeDirectories=includeDirectories)
+            cdsl_content = self.component(tree, includeDirectories=includeDirectories)
         except rcExceptions.RobocompDslException as ex:
             raise ex
         return cdsl_content
 
         # TODO: Check if we can use lru_cache decorator.
 
-    @staticmethod
-    def generateRecursiveImports(initial_idsls, include_directories):
+    def generateRecursiveImports(self, initial_idsls, include_directories):
 
         new_idsls = []
         for idsl_path in initial_idsls:
@@ -267,11 +274,10 @@ class CDSLParsing:
             # we remove all the '' ocurrences
             idsl_imports = list(filter(('').__ne__, idsl_imports))
             if len(idsl_imports) > 0 and idsl_imports[0] != '':
-                new_idsls += idsl_imports + CDSLParsing.generateRecursiveImports(idsl_imports, include_directories)
+                new_idsls += idsl_imports + self.generateRecursiveImports(idsl_imports, include_directories)
         return list(set(new_idsls))
 
-    @staticmethod
-    def printComponent(component, start=''):
+    def printComponent(self, component, start=''):
         # Component name
         print('Component', component['name'])
         # Imports
@@ -291,8 +297,7 @@ class CDSLParsing:
         print('\t\tPublishes', component['publishes'])
         print('\t\tSubscribes', component['subscribesTo'])
 
-    @staticmethod
-    def component(tree, includeDirectories=[], start=''):
+    def component(self, tree, includeDirectories=[], start=''):
         component = {}
         # print 'parseCDSL.component', includeDirectories
 
@@ -330,7 +335,7 @@ class CDSLParsing:
 
         # Language
         try:
-            component['recursiveImports'] = CDSLParsing.generateRecursiveImports(component['imports'], includeDirectories)
+            component['recursiveImports'] = self.generateRecursiveImports(component['imports'], includeDirectories)
         except rcExceptions.RobocompDslException as ex:
             raise ex
         # Language
@@ -460,8 +465,14 @@ def isAGM2AgentROS(component):
 
 if __name__ == '__main__':
     files = ["Comp1.cdsl", "error.cdsl", "Comp2.cdsl", "Comp3.cdsl", "Comp4.cdsl", "Comp5.cdsl", "Comp6.cdsl", "eleComp.cdsl"]
+    cdslDOC = CDSLDocument()
+    parsing = CDSLParsing(cdslDOC)
+    parsing.analizeCDSL("cdslFiles/Comp1.cdsl")
+    parsing.analizeCDSL("cdslFiles/Comp2.cdsl")
+
+    sys.exit()
     for file in files:
         print(file)
-        CDSLParsing.analizeCDSL("cdslFiles/" + file)
+        parsing.analizeCDSL("cdslFiles/" + file)
         print()
 

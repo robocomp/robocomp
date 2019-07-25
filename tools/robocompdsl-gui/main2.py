@@ -9,7 +9,8 @@ from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 from ui_gui import Ui_MainWindow
 from parseGUI import LoadInterfaces, FileChecker
-
+from CDSLDocument import CDSLDocument
+from parseCDSL import CDSLParsing
 
 # DETECT THE ROBOCOMP INSTALLATION TO IMPORT RCPORTCHECKER CLASS
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -50,164 +51,6 @@ class CDSLGui:
     QWIDGET = "QWidget"
     QDIALOG = "QDialog"
     QMAINWINDOW = "QMainWindow"
-
-class CDSLDocument:
-    def __init__(self):
-        self.doc = []
-        self._component_name = ""
-        self._communications = {"implements": [], "requires": [], "subscribesTo": [], "publishes": []}
-        self._imports = set()
-        self._requires = []
-        self._language = CDSLLanguage.PYTHON
-        self._gui = False
-        self._gui_combo = CDSLGui.QWIDGET
-        self._agmagent = False
-        self._innerModel = False
-        self._current_indentation = 0
-
-    def _t(self):
-        doc_str = '\t' * self._current_indentation
-        return doc_str
-
-    def open_sec(self):
-        doc_str = self._t() + "{"
-        self._current_indentation += 1
-        return doc_str
-
-    def close_sec(self):
-        self._current_indentation -= 1
-        doc_str = self._t() + "}"
-        return doc_str
-
-    def generate_imports(self):
-        doc_str = ""
-        for imp in self._imports:
-            doc_str += self._t() + "import \"" + imp + "\";\n"
-        return doc_str
-
-    def _generate_generic_comunication(self, com_type):
-        doc_str = ""
-        if com_type in self._communications:
-            if len(self._communications[com_type]) > 0:
-                doc_str = self._t() + "%s " % (com_type)
-                for pos, element in enumerate(self._communications[com_type]):
-                    doc_str += element
-                    if pos < len(self._communications[com_type]) - 1:
-                        doc_str += ", "
-                    else:
-                        doc_str += ";\n"
-        else:
-            print ("CDSLDocument._generate_generic_comunication: invalid communication type: %s" % com_type)
-        return doc_str
-
-    def generate_implements(self):
-        return self._generate_generic_comunication("implements")
-
-    def generate_requires(self):
-        return self._generate_generic_comunication("requires")
-
-    def generate_publish(self):
-        return self._generate_generic_comunication("publishes")
-
-    def generate_subscribes(self):
-        return self._generate_generic_comunication("subscribesTo")
-
-    def generate_comunications(self):
-        doc_str = self._t() + "communications\n"
-        doc_str += self.open_sec() + "\n"
-        doc_str += self.generate_implements()
-        doc_str += self.generate_requires()
-        doc_str += self.generate_publish()
-        doc_str += self.generate_subscribes()
-        doc_str += self.close_sec() + ";\n"
-        return doc_str
-
-    def generate_language(self):
-        doc_str = self._t() + "language " + self._language + ";\n";
-        return doc_str
-
-    def generate_ui(self):
-        doc_str = ""
-        if self._gui:
-            doc_str = self._t() + "gui Qt(" + self._gui_combo + ");\n"
-        return doc_str
-
-    def generate_agmagent(self):
-        doc_str = ""
-        if self._agmagent:
-            doc_str = self._t() + "options agmagent;\n"
-        return doc_str
-
-    def generate_innerModel(self):
-        doc_str = ""
-        if self._innerModel:
-            doc_str = self._t() + "options innerModelViewer;\n"
-        return doc_str
-
-    def generate_component(self):
-        doc_str = "\ncomponent " + self._component_name
-        doc_str += "\n" + self.open_sec() + "\n"
-        doc_str += self.generate_comunications()
-        doc_str += self.generate_language()
-        doc_str += self.generate_ui()
-        doc_str += self.generate_agmagent()
-        doc_str += self.generate_innerModel()
-        doc_str += self.close_sec() + ";"
-        return doc_str
-
-    def generate_doc(self):
-        doc_str = ""
-        doc_str += self.generate_imports()
-        doc_str += self.generate_component()
-        return doc_str
-
-    def clear_imports(self):
-        self._imports.clear()
-
-    def add_import(self, import_file):
-        self._imports.add(import_file)
-
-    def add_require(self, require_name):
-        self._communications["requires"].append(require_name)
-
-    def add_publish(self, publish_name):
-        self._communications["publishes"].append(publish_name)
-
-    def add_subscribe(self, subscribe_name):
-        self._communications["subscribesTo"].append(subscribe_name)
-
-    def add_implement(self, implement_name):
-        self._communications["implements"].append(implement_name)
-
-    def add_comunication(self, com_type, com_name):
-        if com_type in self._communications:
-            self._communications[com_type].append(com_name)
-        else:
-            print ("CDSLDocument.add_comunication: invalid communication type: %s" % com_type)
-
-    def clear_comunication(self, com_type):
-        if com_type in self._communications:
-            self._communications[com_type] = []
-        else:
-            print("CDSLDocument.add_comunication: invalid communication type: %s" % com_type)
-
-    def set_name(self, name):
-        self._component_name = name
-
-    def set_language(self, language):
-        self._language = language
-
-    def set_qui(self, gui):
-        self._gui = gui
-
-    def set_gui_combo(self, gui_combo):
-        self._gui_combo = gui_combo
-
-    def set_agmagent(self, agmagent):
-        self._agmagent = agmagent
-
-    def set_innerModel(self, innerModel):
-        self._innerModel = innerModel
 
 class Highlighter(QSyntaxHighlighter):
     def __init__(self, parent=None):
@@ -273,6 +116,11 @@ class RoboCompDSLGui(QMainWindow):
         self._cdsl_doc = CDSLDocument()
         self._command_process = QProcess()
 
+        #TESTING
+        self._cdsl_doc.languageChange.connect(self.updateLanguageCombo)
+        self.parser = CDSLParsing(self._cdsl_doc)
+        self.ui.mainTextEdit.textChanged.connect(self.parseText)
+
         #COMPONENT NAME
         self.ui.nameLineEdit.textEdited.connect(self.update_component_name)
 
@@ -316,8 +164,8 @@ class RoboCompDSLGui(QMainWindow):
         self._document = self.ui.mainTextEdit.document()
         self._component_directory = None
         #self.ui.mainTextEdit.setText(self._cdsl_doc.generate_doc())
-        self.ui.mainTextEdit.setPlainText(self._cdsl_doc.generate_doc())
-
+#        self.ui.mainTextEdit.setPlainText(self._cdsl_doc.generate_doc())
+        self.ui.mainTextEdit.setPlainText("")
 
         #CONSOLE
         self._console = QConsole(self.ui.centralWidget)
@@ -365,11 +213,6 @@ class RoboCompDSLGui(QMainWindow):
                 for imp in imports_list:
                     idsl_full_filename = imp
                     self._cdsl_doc.add_import(idsl_full_filename)
-
-    def update_language(self):
-        language = self.ui.languageComboBox.currentText()
-        self._cdsl_doc.set_language(str(language))
-        self.update_editor()
 
     def update_gui(self):
         checked = self.ui.guiCheckBox.isChecked()
@@ -422,7 +265,7 @@ class RoboCompDSLGui(QMainWindow):
     def reset_cdsl_file(self):
         self._communications = {"implements": [], "requires": [], "subscribesTo": [], "publishes": []}
         self._interfaces = {}
-        self._cdsl_doc = CDSLDocument()
+        self._cdsl_doc.clear()
         self._command_process = QProcess()
         self.update_editor()
         self._console.clear_console()
@@ -544,13 +387,44 @@ class RoboCompDSLGui(QMainWindow):
             index = regex.indexIn(self.ui.mainTextEdit.toPlainText(), pos)
 
     def closeEvent(self, event):
-        quit_msg = "Are you sure you want to exit?"
-        reply = QMessageBox.question(self, 'Message', quit_msg, QMessageBox.Yes, QMessageBox.No)
-        if reply == QMessageBox.Yes:
-            QApplication.quit()
-        else:
-            if event is not None:
-                event.ignore()
+        QApplication.quit()
+    #TODO UNCOMMENT
+#        quit_msg = "Are you sure you want to exit?"
+#        reply = QMessageBox.question(self, 'Message', quit_msg, QMessageBox.Yes, QMessageBox.No)
+#        if reply == QMessageBox.Yes:
+#            QApplication.quit()
+#        else:
+#            if event is not None:
+#                event.ignore()
+
+#TESTING
+    @Slot()
+    def updateLanguageCombo(self, language):
+        #TODO maybe we need to disconnect signals before changing combo value
+        print ("UPDATE COMBO")
+        for index in range(self.ui.languageComboBox.count()):
+            if self.ui.languageComboBox.itemText(index).lower() == language.lower():
+                self.ui.mainTextEdit.blockSignals(True)
+                self.ui.languageComboBox.blockSignals(True)
+                self.ui.languageComboBox.setCurrentIndex(index)
+                self.ui.mainTextEdit.blockSignals(False)
+                self.ui.languageComboBox.blockSignals(False)
+                break
+
+    def update_language(self):
+        language = self.ui.languageComboBox.currentText()
+        self.ui.mainTextEdit.blockSignals(True)
+        self._cdsl_doc.set_language(str(language))
+        self.ui.mainTextEdit.blockSignals(False)
+        self.update_editor()
+
+
+    @Slot()
+    def parseText(self):
+        text = self.ui.mainTextEdit.toPlainText()
+        error = self.parser.analizeText(text)
+        print(error)
+
 
 class QConsole(QTextEdit):
     def __init__(self, parent=None):
@@ -589,7 +463,6 @@ class QConsole(QTextEdit):
         self.setText(" ")
 
 class customListWidget(QListWidget):
-    itemList = []
     customItemSelection = Signal()
 
     def __init__(self, parent=None):
