@@ -442,7 +442,7 @@ class RoboCompDSLGui(QMainWindow):
     def parseText(self):
         text = self.ui.mainTextEdit.toPlainText()
         file_dict, error = self.parser.analizeText(text)
-        errors = self.checkErrors(file_dict, error)
+        errors = self.file_checker.check_text(file_dict, error)
         if errors:
             for err in errors:
                 # Get wrong word from error line
@@ -456,21 +456,6 @@ class RoboCompDSLGui(QMainWindow):
                 self._console.append_error_text(msg)
             return False
 
-    def checkErrors(self, file_dict, errors):
-        if not errors:
-            interface_missing = self.file_checker.check_imported_interfaces(file_dict)
-            if interface_missing is not None:
-                if isinstance(interface_missing, list):  # check if list
-                    for i in interface_missing:
-                        msg = "Interface " + i + " must be imported"
-                        errors.append((0, msg))
-                else:
-                    msg = "Interface " + interface_missing + " must be imported"
-                    errors.append((0, msg))
-            if file_dict['innermodelviewer'] is True and file_dict['language'] != 'cpp':
-                msg = "Incompatible innermodelViewer configuration"
-                errors.append((0, msg))
-        return errors
 
 
 class QConsole(QTextEdit):

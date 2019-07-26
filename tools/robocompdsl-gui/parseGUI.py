@@ -87,8 +87,7 @@ class FileChecker:
             print("Invalid file extension")
 
     #TO TEST GUI
-    def check_text(inputText):
-        file_dict, errors = CDSLParsing.analizeText(inputText)
+    def check_text(self, file_dict, errors):
         if not errors:
             interface_missing = self.check_imported_interfaces(file_dict)
             if interface_missing is not None:
