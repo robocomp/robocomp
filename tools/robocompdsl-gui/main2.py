@@ -119,6 +119,24 @@ class RoboCompDSLGui(QMainWindow):
         #TESTING
         self._cdsl_doc.languageChange.connect(self.updateLanguageCombo)
         self.parser = CDSLParsing(self._cdsl_doc)
+        self.file_checker = FileChecker()
+        #TODO => Deleted when not needed
+        self.ui.mainTextEdit.setPlainText("""import "DifferentialRobot.idsl";
+        import "Laser.idsl";
+
+        Component Comp1
+        {
+        	Communications
+
+        	{
+        		requires DifferentialRobot;
+        		implements Laser;
+
+        	};
+        	language cpp;
+        	gui Qt(QWidget);
+
+        };""")
         self.ui.mainTextEdit.textChanged.connect(self.parseText)
 
         #COMPONENT NAME
@@ -160,12 +178,11 @@ class RoboCompDSLGui(QMainWindow):
 
         #MAIN TEXT EDITOR
         #self.ui.mainTextEdit.setHtml("")
-        self.ui.mainTextEdit.setPlainText("")
         self._document = self.ui.mainTextEdit.document()
         self._component_directory = None
         #self.ui.mainTextEdit.setText(self._cdsl_doc.generate_doc())
 #        self.ui.mainTextEdit.setPlainText(self._cdsl_doc.generate_doc())
-        self.ui.mainTextEdit.setPlainText("")
+
 
         #CONSOLE
         self._console = QConsole(self.ui.centralWidget)
@@ -364,6 +381,7 @@ class RoboCompDSLGui(QMainWindow):
             return True
 
     def highlight_error(self, error_str):
+        self.ui.mainTextEdit.blockSignals(True)
         cursor = self.ui.mainTextEdit.textCursor()
 
         # Setup the desired format for matches
@@ -385,6 +403,7 @@ class RoboCompDSLGui(QMainWindow):
             # Move to the next match
             pos = index + regex.matchedLength()
             index = regex.indexIn(self.ui.mainTextEdit.toPlainText(), pos)
+        self.ui.mainTextEdit.blockSignals(False)
 
     def closeEvent(self, event):
         QApplication.quit()
@@ -422,8 +441,36 @@ class RoboCompDSLGui(QMainWindow):
     @Slot()
     def parseText(self):
         text = self.ui.mainTextEdit.toPlainText()
-        error = self.parser.analizeText(text)
-        print(error)
+        file_dict, error = self.parser.analizeText(text)
+        errors = self.checkErrors(file_dict, error)
+        if errors:
+            for err in errors:
+                # Get wrong word from error line
+                error_word = err[0]
+                error_word = error_word.lstrip()
+                error_word = error_word.rstrip()
+                # if wrong_word
+                if error_word != '0':
+                    self.highlight_error(error_word)
+                msg = str(err)
+                self._console.append_error_text(msg)
+            return False
+
+    def checkErrors(self, file_dict, errors):
+        if not errors:
+            interface_missing = self.file_checker.check_imported_interfaces(file_dict)
+            if interface_missing is not None:
+                if isinstance(interface_missing, list):  # check if list
+                    for i in interface_missing:
+                        msg = "Interface " + i + " must be imported"
+                        errors.append((0, msg))
+                else:
+                    msg = "Interface " + interface_missing + " must be imported"
+                    errors.append((0, msg))
+            if file_dict['innermodelviewer'] is True and file_dict['language'] != 'cpp':
+                msg = "Incompatible innermodelViewer configuration"
+                errors.append((0, msg))
+        return errors
 
 
 class QConsole(QTextEdit):

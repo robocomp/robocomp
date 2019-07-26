@@ -50,7 +50,7 @@ dictionary = LoadInterfaces.load_all_interfaces(LoadInterfaces, "/opt/robocomp/i
 #print(dictionary["DifferentialRobot"])
 
 class FileChecker:
-    def check_imported_interfaces(cdsl_dictionary):
+    def check_imported_interfaces(self, cdsl_dictionary):
         imported_interfaces_list = cdsl_dictionary['imports']
         communication_interfaces_list = cdsl_dictionary['requires'] + cdsl_dictionary['implements'] + cdsl_dictionary[
             'subscribesTo'] + cdsl_dictionary['publishes']
@@ -87,7 +87,7 @@ class FileChecker:
             print("Invalid file extension")
 
     #TO TEST GUI
-    def check_text(self, inputText):
+    def check_text(inputText):
         file_dict, errors = CDSLParsing.analizeText(inputText)
         if not errors:
             interface_missing = self.check_imported_interfaces(file_dict)
