@@ -209,6 +209,7 @@ class RoboCompDSLGui(QMainWindow):
         idsls_dir = os.path.join(ROBOCOMP_INTERFACES, "IDSLs")
         self._interfaces = LoadInterfaces.load_all_interfaces(LoadInterfaces, idsls_dir)
         self._interface_list.addItems(list(self._interfaces.keys()))
+        self._interface_list.sortItems()
 
     def set_comunication(self):
         interfaces_names = self._interface_list.customItemList()
@@ -247,19 +248,21 @@ class RoboCompDSLGui(QMainWindow):
         self.update_editor()
 
     def update_agmagent_selection(self):
+        opt = "agmagent"
         checked = self.ui.agmagentCheckBox.isChecked()
         if checked:
-            self._cdsl_doc.set_agmagent(True)
+            self._cdsl_doc.add_option(opt)
         else:
-            self._cdsl_doc.set_agmagent(False)
+            self._cdsl_doc.delete_option(opt)
         self.update_editor()
 
     def update_innerModel_selection(self):
+        opt = "innerModelViewer"
         checked = self.ui.innermodelCheckBox.isChecked()
         if checked:
-            self._cdsl_doc.set_innerModel(True)
+            self._cdsl_doc.add_option(opt)
         else:
-            self._cdsl_doc.set_innerModel(False)
+            self._cdsl_doc.delete_option(opt)
         self.update_editor()
 
     def update_component_name(self, name):
@@ -380,6 +383,22 @@ class RoboCompDSLGui(QMainWindow):
         else:
             return True
 
+    def clear_errors(self):
+        self.ui.mainTextEdit.blockSignals(True)
+
+        cursor = self.ui.mainTextEdit.textCursor()
+        format = QTextCharFormat()
+        format.setBackground(QBrush(QColor("white")))
+
+        # Process the main editor
+        cursor.movePosition(cursor.Start, cursor.KeepAnchor, 4)
+        for i in range(self.ui.mainTextEdit.blockCount()):
+            cursor.mergeCharFormat(format)
+            cursor.movePosition(cursor.Down, cursor.KeepAnchor, 4)
+
+        self.ui.mainTextEdit.blockSignals(False)
+
+
     def highlight_error(self, error_str):
         self.ui.mainTextEdit.blockSignals(True)
         cursor = self.ui.mainTextEdit.textCursor()
@@ -440,6 +459,7 @@ class RoboCompDSLGui(QMainWindow):
 
     @Slot()
     def parseText(self):
+        self.clear_errors()
         text = self.ui.mainTextEdit.toPlainText()
         file_dict, error = self.parser.analizeText(text)
         errors = self.file_checker.check_text(file_dict, error)
