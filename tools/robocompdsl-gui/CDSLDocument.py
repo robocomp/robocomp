@@ -14,6 +14,7 @@ class CDSLDocument(QObject):
         self._requires = []
         self._language = ""
         self._gui = False
+        self._options = []
         self._current_indentation = 0
 
     def _t(self):
@@ -33,7 +34,7 @@ class CDSLDocument(QObject):
     def generate_imports(self):
         doc_str = ""
         for imp in self._imports:
-            doc_str += self._t() + "import \"" + imp + "\"\n"
+            doc_str += self._t() + "import \"" + imp + "\";\n"
         return doc_str
 
     def _generate_generic_comunication(self, com_type):
@@ -64,7 +65,7 @@ class CDSLDocument(QObject):
         return self._generate_generic_comunication("subscribesTo")
 
     def generate_comunications(self):
-        doc_str = self._t() + "Communications\n"
+        doc_str = self._t() + "communications\n"
         doc_str += self.open_sec() + "\n"
         doc_str += self.generate_implements()
         doc_str += self.generate_requires()
@@ -83,12 +84,25 @@ class CDSLDocument(QObject):
             doc_str = self._t() + "gui Qt(QWidget);\n"
         return doc_str
 
+    def generate_options(self):
+        doc_str = ""
+        if len(self._options) > 0:
+            doc_str = self._t() + "options "
+            for pos, element in enumerate(self._options):
+                doc_str += element
+                if pos < len(self._options) - 1:
+                    doc_str += ", "
+                else:
+                    doc_str += ";\n"
+        return doc_str
+
     def generate_component(self):
-        doc_str = "\nComponent " + self._component_name
+        doc_str = "\ncomponent " + self._component_name
         doc_str += "\n" + self.open_sec() + "\n"
         doc_str += self.generate_comunications()
         doc_str += self.generate_language()
         doc_str += self.generate_ui()
+        doc_str += self.generate_options()
         doc_str += self.close_sec() + ";"
         return doc_str
 
@@ -134,7 +148,11 @@ class CDSLDocument(QObject):
     def set_qui(self, gui):
         self._gui = gui
 
+    def add_option(self, option):
+        self._options.append(option)
 
+    def delete_option(self, option):
+        self._options.remove(option)
 
     # TESTING
     def clear(self):
@@ -145,7 +163,6 @@ class CDSLDocument(QObject):
         self._requires = []
         self._language = ""
         self._gui = False
-
 
     def analize_language(self, s, loc, toks):
         lang = toks.language[0]
