@@ -9,7 +9,7 @@ from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 from ui_gui import Ui_MainWindow
 from parseGUI import LoadInterfaces, FileChecker
-from CDSLDocument import CDSLDocument
+from CDSLDocument import CDSLDocument, CDSLLanguage
 from parseCDSL import CDSLParsing
 
 # DETECT THE ROBOCOMP INSTALLATION TO IMPORT RCPORTCHECKER CLASS
@@ -113,6 +113,7 @@ class RoboCompDSLGui(QMainWindow):
         self.file_checker = FileChecker()
 
         self._cdsl_doc.set_name("comp_name")
+        self._cdsl_doc.set_language(CDSLLanguage.CPP)
         self.ui.mainTextEdit.setPlainText(self._cdsl_doc.generate_doc())
 
         #TODO => Deleted when not needed
@@ -243,8 +244,10 @@ class RoboCompDSLGui(QMainWindow):
         opt = "agmagent"
         checked = self.ui.agmagentCheckBox.isChecked()
         if checked:
+            self._cdsl_doc.set_agmagent(True)
             self._cdsl_doc.add_option(opt)
         else:
+            self._cdsl_doc.set_agmagent(False)
             self._cdsl_doc.delete_option(opt)
         self.update_editor()
 
@@ -252,8 +255,10 @@ class RoboCompDSLGui(QMainWindow):
         opt = "innerModelViewer"
         checked = self.ui.innermodelCheckBox.isChecked()
         if checked:
+            self._cdsl_doc.set_innerModel(True)
             self._cdsl_doc.add_option(opt)
         else:
+            self._cdsl_doc.set_innerModel(False)
             self._cdsl_doc.delete_option(opt)
         self.update_editor()
 
