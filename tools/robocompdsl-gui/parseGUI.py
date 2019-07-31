@@ -65,29 +65,30 @@ class FileChecker:
                 return file_required
         return None
 
-    def check_file(self, cdslFile):
-        #comprobar fichero y como resultado devolver lista con < nº_linea, texto, error > mostrar por pantalla
-        if cdslFile.endswith(".cdsl"):
-
-            file_errors = []
-            inputText = open(cdslFile, 'r').read()
-            file_dict = CDSLParsing.fromString(inputText)
-
-            interface_missing = self.check_imported_interfaces(file_dict)
-            if interface_missing is not None:#comprobar si es lista
-                if isinstance(interface_missing, list):
-                    for i in interface_missing:
-                        print ("Interface " + i + " must be imported")
-                else:
-                    print("Interface "+ interface_missing + " must be imported")
-
-            if file_dict['innermodelviewer'] is True and file_dict['language'] != 'cpp' and file_dict['gui'][0] != 'Qt':
-                print("Incompatible innermodelViewer configuration")
-        else:
-            print("Invalid file extension")
+#    def check_file(self, cdslFile):
+#        #comprobar fichero y como resultado devolver lista con < nº_linea, texto, error > mostrar por pantalla
+#        if cdslFile.endswith(".cdsl"):
+#
+#            file_errors = []
+#            inputText = open(cdslFile, 'r').read()
+#            file_dict = CDSLParsing.fromString(inputText)
+#
+#            interface_missing = self.check_imported_interfaces(file_dict)
+#            if interface_missing is not None:#comprobar si es lista
+#                if isinstance(interface_missing, list):
+#                    for i in interface_missing:
+#                        print ("Interface " + i + " must be imported")
+#                else:
+#                    print("Interface "+ interface_missing + " must be imported")
+#
+#            if file_dict['innermodelviewer'] is True and file_dict['language'] != 'cpp' and file_dict['gui'][0] != 'Qt':
+#                print("Incompatible innermodelViewer configuration")
+#        else:
+#            print("Invalid file extension")
 
     #TO TEST GUI
     def check_text(self, file_dict, errors):
+        innermodel = "innerModelViewer"
         if not errors:
             interface_missing = self.check_imported_interfaces(file_dict)
             if interface_missing is not None:
@@ -98,7 +99,7 @@ class FileChecker:
                 else:
                     msg = "Interface " + interface_missing + " must be imported"
                     errors.append((0, msg))
-            if file_dict['innermodelviewer'] is True and file_dict['language'] != 'cpp':
+            if innermodel in file_dict['options'] and file_dict['language'] != 'cpp':
                 msg = "Incompatible innermodelViewer configuration"
                 errors.append((0, msg))
         return errors
