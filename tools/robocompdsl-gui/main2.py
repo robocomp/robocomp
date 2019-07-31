@@ -453,7 +453,14 @@ class RoboCompDSLGui(QMainWindow):
         imports_set = set(cdsl_dict['imports'])
         self._cdsl_doc._imports = imports_set
         self._cdsl_doc._language = cdsl_dict['language']
-        #We have to update GUI
+        if cdsl_dict['gui'] == 'none':
+            self._cdsl_doc._gui = False
+        else:
+            self._cdsl_doc._gui = True
+            gui_list = cdsl_dict['gui']
+            gui_type = gui_list[1]
+            self._cdsl_doc._gui_combo = gui_type
+
         self._cdsl_doc._options = cdsl_dict['options']
 
     @Slot()
@@ -463,7 +470,6 @@ class RoboCompDSLGui(QMainWindow):
         file_dict, error = self.parser.analizeText(text)
         errors = self.file_checker.check_text(file_dict, error)
         if errors:
-            print("ERRORS")
             for err in errors:
                 # Get wrong word from error line
                 error_word = str(err[0])
