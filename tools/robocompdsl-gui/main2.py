@@ -111,23 +111,25 @@ class RoboCompDSLGui(QMainWindow):
         self._cdsl_doc.languageChange.connect(self.updateLanguageCombo)
         self.parser = CDSLParsing(self._cdsl_doc)
         self.file_checker = FileChecker()
+
+        self._cdsl_doc.set_name("comp_name")
+        self.ui.mainTextEdit.setPlainText(self._cdsl_doc.generate_doc())
+
         #TODO => Deleted when not needed
-        self.ui.mainTextEdit.setPlainText("""import "DifferentialRobot.idsl";
+        '''self.ui.mainTextEdit.setPlainText("""
         import "Laser.idsl";
 
-        Component Comp1
+        component Comp1
         {
-        	Communications
+        	communications
 
         	{
-        		requires DifferentialRobot;
         		implements Laser;
 
         	};
         	language cpp;
-        	gui Qt(QWidget);
 
-        };""")
+        };""")'''
         self.ui.mainTextEdit.textChanged.connect(self.parseText)
 
         #COMPONENT NAME
@@ -168,12 +170,11 @@ class RoboCompDSLGui(QMainWindow):
         self.ui.innermodelCheckBox.stateChanged.connect(self.update_innerModel_selection)
 
         #MAIN TEXT EDITOR
-        #self.ui.mainTextEdit.setHtml("")
+        #self.ui.mainTextEdit.setPlainText("")
         self._document = self.ui.mainTextEdit.document()
         self._component_directory = None
         #self.ui.mainTextEdit.setText(self._cdsl_doc.generate_doc())
-#        self.ui.mainTextEdit.setPlainText(self._cdsl_doc.generate_doc())
-
+        #self.ui.mainTextEdit.setPlainText(self._cdsl_doc.generate_doc())
 
         #CONSOLE
         self._console = QConsole(self.ui.centralWidget)
@@ -426,7 +427,7 @@ class RoboCompDSLGui(QMainWindow):
     @Slot()
     def updateLanguageCombo(self, language):
         #TODO maybe we need to disconnect signals before changing combo value
-        print("UPDATE COMBO")
+        #print("UPDATE COMBO")
         for index in range(self.ui.languageComboBox.count()):
             if self.ui.languageComboBox.itemText(index).lower() == language.lower():
                 self.ui.mainTextEdit.blockSignals(True)
@@ -444,7 +445,7 @@ class RoboCompDSLGui(QMainWindow):
         self.update_editor()
 
     def update_cdslDoc(self, cdsl_dict):
-        print("UPDATE CDSLDOC")
+        #print("UPDATE CDSLDOC")
         self._cdsl_doc._component_name = cdsl_dict['name']
         self._cdsl_doc._communications = {'implements': cdsl_dict['implements'], 'requires': cdsl_dict['requires'], 'subscribesTo': cdsl_dict['subscribesTo'], 'publishes': cdsl_dict['publishes']}
         self._communications = {'implements': cdsl_dict['implements'], 'requires': cdsl_dict['requires'],
@@ -460,13 +461,14 @@ class RoboCompDSLGui(QMainWindow):
             gui_list = cdsl_dict['gui']
             gui_type = gui_list[1]
             self._cdsl_doc._gui_combo = gui_type
-
         self._cdsl_doc._options = cdsl_dict['options']
+        self._console.clear_console()
+        self._console.append_custom_text("Component is correct!")
 
     @Slot()
     def parseText(self):
         self.clear_errors()
-        text = self.ui.mainTextEdit.toPlainText()
+        text = self.ui.mainTextEdit.toPlainText()#aqui ya se cargan las interfaces mal###########################
         file_dict, error = self.parser.analizeText(text)
         errors = self.file_checker.check_text(file_dict, error)
         if errors:
