@@ -314,23 +314,19 @@ class RoboCompDSLGui(QMainWindow):
                                                       QMessageBox.Yes | QMessageBox.No):
                 return False
         with open(file_path, 'w') as the_file:
-            #check if file is written correctly returning error list
-            errors = FileChecker.check_text(FileChecker, text) #error list
+            file_diction, errors = self.parser.analizeText(text)
+            msg = "CDSL file created correctly!"
             if errors:
-                for err in errors:
-                    # Get wrong word from error line
-                    error_word = err[0]
-                    error_word = error_word.lstrip()
-                    error_word = error_word.rstrip()
-                    # if wrong_word
-                    if error_word != '0':
-                        self.highlight_error(error_word)
-                    msg = str(err)
-                    self._console.append_error_text(msg)
-                return False
+                if QMessageBox.Yes == QMessageBox.question(self,
+                                                           "The document has errors!",
+                                                           "Do you want to save ir anyway?",
+                                                           QMessageBox.Yes | QMessageBox.No):
+                    the_file.write(text)
+                    self._console.append_custom_text(msg)
+                else:
+                    return False
             else: #create cdsl file
                 the_file.write(text)
-                msg = "CDSL file created correctly!"
                 self._console.append_custom_text(msg)
         return True
 
@@ -430,7 +426,7 @@ class RoboCompDSLGui(QMainWindow):
     @Slot()
     def updateLanguageCombo(self, language):
         #TODO maybe we need to disconnect signals before changing combo value
-#        print("UPDATE COMBO")
+        print("UPDATE COMBO")
         for index in range(self.ui.languageComboBox.count()):
             if self.ui.languageComboBox.itemText(index).lower() == language.lower():
                 self.ui.mainTextEdit.blockSignals(True)
