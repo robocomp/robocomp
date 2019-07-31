@@ -43,15 +43,6 @@ if not os.path.isdir(ROBOCOMP_INTERFACES):
         print("Default Robocomp INTERFACES directory (%s) doesn't exists. Exiting!" % (ROBOCOMP_INTERFACES))
         sys.exit()
 
-class CDSLLanguage:
-    CPP = "CPP"
-    PYTHON = "Python"
-
-class CDSLGui:
-    QWIDGET = "QWidget"
-    QDIALOG = "QDialog"
-    QMAINWINDOW = "QMainWindow"
-
 class Highlighter(QSyntaxHighlighter):
     def __init__(self, parent=None):
         super(Highlighter, self).__init__(parent)
@@ -105,7 +96,7 @@ class Highlighter(QSyntaxHighlighter):
 
 class RoboCompDSLGui(QMainWindow):
     def __init__(self):
-        self.newLines = 1 ########################################################################################
+        self.newLines = 1
         super(RoboCompDSLGui, self).__init__()
 
         self.ui = Ui_MainWindow()
@@ -405,7 +396,7 @@ class RoboCompDSLGui(QMainWindow):
 
         # Setup the desired format for matches
         format = QTextCharFormat()
-        format.setBackground(QBrush(QColor("red")))
+        format.setBackground(QBrush(QColor("lightGrey")))
 
         # Setup the regex engine
         pattern = error_str
@@ -439,7 +430,7 @@ class RoboCompDSLGui(QMainWindow):
     @Slot()
     def updateLanguageCombo(self, language):
         #TODO maybe we need to disconnect signals before changing combo value
-        print ("UPDATE COMBO")
+#        print("UPDATE COMBO")
         for index in range(self.ui.languageComboBox.count()):
             if self.ui.languageComboBox.itemText(index).lower() == language.lower():
                 self.ui.mainTextEdit.blockSignals(True)
@@ -456,6 +447,18 @@ class RoboCompDSLGui(QMainWindow):
         self.ui.mainTextEdit.blockSignals(False)
         self.update_editor()
 
+    def update_cdslDoc(self, cdsl_dict):
+        print("UPDATE CDSLDOC")
+        self._cdsl_doc._component_name = cdsl_dict['name']
+        self._cdsl_doc._communications = {'implements': cdsl_dict['implements'], 'requires': cdsl_dict['requires'], 'subscribesTo': cdsl_dict['subscribesTo'], 'publishes': cdsl_dict['publishes']}
+        self._communications = {'implements': cdsl_dict['implements'], 'requires': cdsl_dict['requires'],
+                                          'subscribesTo': cdsl_dict['subscribesTo'],
+                                          'publishes': cdsl_dict['publishes']}
+        imports_set = set(cdsl_dict['imports'])
+        self._cdsl_doc._imports = imports_set
+        self._cdsl_doc._language = cdsl_dict['language']
+        #We have to update GUI
+        self._cdsl_doc._options = cdsl_dict['options']
 
     @Slot()
     def parseText(self):
@@ -464,9 +467,10 @@ class RoboCompDSLGui(QMainWindow):
         file_dict, error = self.parser.analizeText(text)
         errors = self.file_checker.check_text(file_dict, error)
         if errors:
+            print("ERRORS")
             for err in errors:
                 # Get wrong word from error line
-                error_word = err[0]
+                error_word = str(err[0])
                 error_word = error_word.lstrip()
                 error_word = error_word.rstrip()
                 # if wrong_word
@@ -475,8 +479,8 @@ class RoboCompDSLGui(QMainWindow):
                 msg = str(err)
                 self._console.append_error_text(msg)
             return False
-
-
+        else:
+            self.update_cdslDoc(file_dict)
 
 class QConsole(QTextEdit):
     def __init__(self, parent=None):
@@ -548,7 +552,8 @@ class customListWidget(QListWidget):
             if count:
                 self.itemAt(event.pos()).setText(text + ":" + str(count))
             else:
-                self.itemAt(event.pos()).setPlainText(text)
+                #self.itemAt(event.pos()).setPlainText(text)
+                self.itemAt(event.pos()).setText(text)
 
             self.customItemSelection.emit()
         else:
