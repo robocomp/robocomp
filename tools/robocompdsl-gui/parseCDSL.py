@@ -154,6 +154,7 @@ class CDSLParsing:
 
         # InnerModelViewer
         innermodelviewer = Group(Optional(InnerModelViewer.suppress() + (TRUE | FALSE) + SEMI))
+
         # GUI
         gui = Group(Optional(GUI.suppress() - QT + OPAR - identifier - CPAR + SEMI))
         # additional options
@@ -304,7 +305,9 @@ class CDSLParsing:
         # Set options
         component['options'] = []
         for op in tree['properties']['options']:
-            component['options'].append(op.lower())
+            #component['options'].append(op.lower())
+            component['options'].append(op)
+
 
         # Component name
         component['name'] = tree['component']['name']
@@ -333,7 +336,6 @@ class CDSLParsing:
             import_basename = os.path.basename(imp)
             component['imports'].append(import_basename)
 
-        # Language
         try:
             component['recursiveImports'] = self.generateRecursiveImports(component['imports'], includeDirectories)
         except rcExceptions.RobocompDslException as ex:
