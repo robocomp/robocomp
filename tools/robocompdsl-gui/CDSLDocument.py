@@ -22,6 +22,8 @@ class CDSLDocument(QObject):
         self._language = ""
         self._gui = False
         self._gui_combo = CDSLGui.QWIDGET
+        self._agmagent = False
+        self._innerModel = False
         self._options = []
         self._current_indentation = 0
 
@@ -159,6 +161,12 @@ class CDSLDocument(QObject):
     def set_gui_combo(self, gui_combo):
         self._gui_combo = gui_combo
 
+    def set_agmagent(self, agmagent):
+        self._agmagent = agmagent
+
+    def set_innerModel(self, innerModel):
+        self._innerModel = innerModel
+
     def add_option(self, option):
         if option not in self._options:
             self._options.append(option)
@@ -179,7 +187,7 @@ class CDSLDocument(QObject):
 
     def analize_language(self, s, loc, toks):
         lang = toks.language[0]
-        print("analyze language: ", lang)
+#        print("analyze language: ", lang)
         if self._language != lang:
             self.set_language(lang)
             self.languageChange.emit(self.get_language())
