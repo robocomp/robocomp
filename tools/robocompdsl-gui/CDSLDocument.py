@@ -1,19 +1,27 @@
 from PySide2.QtCore import *
 
+class CDSLLanguage:
+    CPP = "CPP"
+    PYTHON = "Python"
+
+class CDSLGui:
+    QWIDGET = "QWidget"
+    QDIALOG = "QDialog"
+    QMAINWINDOW = "QMainWindow"
 
 class CDSLDocument(QObject):
     languageChange = Signal(str)
-
 
     def __init__(self):
         super(CDSLDocument, self).__init__()
         self.doc = []
         self._component_name = ""
         self._communications = {"implements": [], "requires": [], "subscribesTo": [], "publishes": []}
-        self._imports = []
+        self._imports = set()
         self._requires = []
         self._language = ""
         self._gui = False
+        self._gui_combo = CDSLGui.QWIDGET
         self._options = []
         self._current_indentation = 0
 
@@ -81,7 +89,7 @@ class CDSLDocument(QObject):
     def generate_ui(self):
         doc_str = ""
         if self._gui:
-            doc_str = self._t() + "gui Qt(QWidget);\n"
+            doc_str = self._t() + "gui Qt(" + self._gui_combo + ");\n"
         return doc_str
 
     def generate_options(self):
@@ -113,10 +121,10 @@ class CDSLDocument(QObject):
         return doc_str
 
     def clear_imports(self):
-        self._imports = []
+        self._imports.clear()
 
     def add_import(self, import_file):
-        self._imports.append(import_file)
+        self._imports.add(import_file)
 
     def add_require(self, require_name):
         self._communications["requires"].append(require_name)
@@ -148,18 +156,23 @@ class CDSLDocument(QObject):
     def set_qui(self, gui):
         self._gui = gui
 
+    def set_gui_combo(self, gui_combo):
+        self._gui_combo = gui_combo
+
     def add_option(self, option):
-        self._options.append(option)
+        if option not in self._options:
+            self._options.append(option)
 
     def delete_option(self, option):
-        self._options.remove(option)
+        if option in self._options:
+            self._options.remove(option)
 
     # TESTING
     def clear(self):
         self.doc = []
         self._component_name = ""
         self._communications = {"implements": [], "requires": [], "subscribesTo": [], "publishes": []}
-        self._imports = []
+        self._imports = set()
         self._requires = []
         self._language = ""
         self._gui = False
