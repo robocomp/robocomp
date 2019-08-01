@@ -109,11 +109,16 @@ class RoboCompDSLGui(QMainWindow):
 
         #TESTING
         self._cdsl_doc.languageChange.connect(self.updateLanguageCombo)
+        self._cdsl_doc.innerModelViewerChange.connect(self.updateInnerModelViewerCheck)
+        self._cdsl_doc.agmagentChange.connect(self.updateAgmagentCheck)
         self.parser = CDSLParsing(self._cdsl_doc)
         self.file_checker = FileChecker()
 
         self._cdsl_doc.set_name("comp_name")
         self._cdsl_doc.set_language(CDSLLanguage.CPP)
+        #self.ui.innermodelCheckBox.setCheckState(Qt.Checked)
+        #self._cdsl_doc.set_innerModel(True)
+        #self._cdsl_doc.set_agmagent(True)
         self.ui.mainTextEdit.setPlainText(self._cdsl_doc.generate_doc())
 
         #TODO => Deleted when not needed
@@ -165,10 +170,10 @@ class RoboCompDSLGui(QMainWindow):
         self.ui.guiComboBox.currentIndexChanged.connect(self.update_gui_combo)
 
         #AGMAGENT CHECKBOX
-        self.ui.agmagentCheckBox.stateChanged.connect(self.update_agmagent_selection)
+        self.ui.agmagentCheckBox.stateChanged.connect(self.update_agmagent)
 
         #INNERMODEL CHECKBOX
-        self.ui.innermodelCheckBox.stateChanged.connect(self.update_innerModel_selection)
+        self.ui.innermodelCheckBox.stateChanged.connect(self.update_innerModelViewer)
 
         #MAIN TEXT EDITOR
         #self.ui.mainTextEdit.setPlainText("")
@@ -240,27 +245,22 @@ class RoboCompDSLGui(QMainWindow):
         self._cdsl_doc.set_gui_combo(str(gui_combo))
         self.update_editor()
 
-    def update_agmagent_selection(self):
-        opt = "agmagent"
-        checked = self.ui.agmagentCheckBox.isChecked()
-        if checked:
-            self._cdsl_doc.set_agmagent(True)
-            self._cdsl_doc.add_option(opt)
-        else:
-            self._cdsl_doc.set_agmagent(False)
-            self._cdsl_doc.delete_option(opt)
-        self.update_editor()
+#    def update_agmagent_selection(self):
+#        checked = self.ui.agmagentCheckBox.isChecked()
+#        if checked:
+#            self._cdsl_doc.set_agmagent(True)
+#        else:
+#            self._cdsl_doc.set_agmagent(False)
+#        self.update_editor()
 
-    def update_innerModel_selection(self):
-        opt = "innerModelViewer"
-        checked = self.ui.innermodelCheckBox.isChecked()
-        if checked:
-            self._cdsl_doc.set_innerModel(True)
-            self._cdsl_doc.add_option(opt)
-        else:
-            self._cdsl_doc.set_innerModel(False)
-            self._cdsl_doc.delete_option(opt)
-        self.update_editor()
+#    def update_innerModel_selection(self):
+#        opt = "innerModelViewer"
+#        checked = self.ui.innermodelCheckBox.isChecked()
+#        if checked:
+#            self._cdsl_doc.set_innerModel(True)
+#        else:
+#            self._cdsl_doc.set_innerModel(False)
+#        self.update_editor()
 
     def update_component_name(self, name):
         self._cdsl_doc.set_name(name)
@@ -449,6 +449,54 @@ class RoboCompDSLGui(QMainWindow):
         self.ui.mainTextEdit.blockSignals(False)
         self.update_editor()
 
+    @Slot()
+    def updateInnerModelViewerCheck(self, innerModelViewer):
+        self.ui.mainTextEdit.blockSignals(True)
+        self.ui.innermodelCheckBox.blockSignals(True)
+
+        if self.ui.innermodelCheckBox.isChecked:
+            if innerModelViewer is False:
+                self.ui.innermodelCheckBox.setCheckState(Qt.UnChecked)
+        else:
+            if innerModelViewer is True:
+                self.ui.innermodelCheckBox.setCheckState(Qt.Checked)
+        self.ui.mainTextEdit.blockSignals(False)
+        self.ui.innermodelCheckBox.blockSignals(False)
+
+    def update_innerModelViewer(self):
+        checked = self.ui.innermodelCheckBox.isChecked()
+        self.ui.mainTextEdit.blockSignals(True)
+        if checked:
+            self._cdsl_doc.set_innerModel(True)
+        else:
+            self._cdsl_doc.set_innerModel(False)
+        self.ui.mainTextEdit.blockSignals(False)
+        self.update_editor()
+
+    @Slot()
+    def updateAgmagentCheck(self, agmagent):
+        self.ui.mainTextEdit.blockSignals(True)
+        self.ui.agmagentCheckBox.blockSignals(True)
+
+        if self.ui.agmagentCheckBox.isChecked:
+            if agmagent is False:
+                self.ui.agmagentCheckBox.setCheckState(Qt.UnChecked)
+        else:
+            if agmagent is True:
+                self.ui.agmagentCheckBox.setCheckState(Qt.Checked)
+        self.ui.mainTextEdit.blockSignals(False)
+        self.ui.innermodelCheckBox.blockSignals(False)
+
+    def update_agmagent(self):
+        checked = self.ui.agmagentCheckBox.isChecked()
+        self.ui.mainTextEdit.blockSignals(True)
+        if checked:
+            self._cdsl_doc.set_agmagent(True)
+        else:
+            self._cdsl_doc.set_agmagent(False)
+        self.ui.mainTextEdit.blockSignals(False)
+        self.update_editor()
+
     def update_cdslDoc(self, cdsl_dict):
         #print("UPDATE CDSLDOC")
         self._cdsl_doc._component_name = cdsl_dict['name']
@@ -458,7 +506,7 @@ class RoboCompDSLGui(QMainWindow):
                                           'publishes': cdsl_dict['publishes']}
         imports_set = set(cdsl_dict['imports'])
         self._cdsl_doc._imports = imports_set
-        self._cdsl_doc._language = cdsl_dict['language']
+#        self._cdsl_doc._language = cdsl_dict['language']
         if cdsl_dict['gui'] == 'none':
             self._cdsl_doc._gui = False
         else:
