@@ -115,7 +115,7 @@ class RoboCompDSLGui(QMainWindow):
         self.file_checker = FileChecker()
 
         self._cdsl_doc.set_name("comp_name")
-        self._cdsl_doc.set_language(CDSLLanguage.CPP)
+        self._cdsl_doc.set_language('cpp')
         #self.ui.innermodelCheckBox.setCheckState(Qt.Checked)
         #self._cdsl_doc.set_innerModel(True)
         #self._cdsl_doc.set_agmagent(True)
@@ -457,10 +457,10 @@ class RoboCompDSLGui(QMainWindow):
         self.ui.innermodelCheckBox.blockSignals(True)
 
         if self.ui.innermodelCheckBox.isChecked():
-            if innerModelViewer == 'false':
+            if innerModelViewer is False:
                 self.ui.innermodelCheckBox.setCheckState(Qt.Unchecked)
         else:
-            if innerModelViewer == 'true':
+            if innerModelViewer is True:
                 self.ui.innermodelCheckBox.setCheckState(Qt.Checked)
         self.ui.mainTextEdit.blockSignals(False)
         self.ui.innermodelCheckBox.blockSignals(False)
@@ -481,13 +481,13 @@ class RoboCompDSLGui(QMainWindow):
         self.ui.agmagentCheckBox.blockSignals(True)
 
         if self.ui.agmagentCheckBox.isChecked():
-            if agmagent == 'false':
+            if agmagent is False:
                 self.ui.agmagentCheckBox.setCheckState(Qt.Unchecked)
         else:
-            if agmagent == 'true':
+            if agmagent is True:
                 self.ui.agmagentCheckBox.setCheckState(Qt.Checked)
         self.ui.mainTextEdit.blockSignals(False)
-        self.ui.innermodelCheckBox.blockSignals(False)
+        self.ui.agmagentCheckBox.blockSignals(False)
 
     def update_agmagent(self):
         checked = self.ui.agmagentCheckBox.isChecked()
