@@ -481,10 +481,10 @@ class RoboCompDSLGui(QMainWindow):
         self.ui.agmagentCheckBox.blockSignals(True)
 
         if self.ui.agmagentCheckBox.isChecked():
-            if agmagent is False:
-                self.ui.agmagentCheckBox.setCheckState(Qt.UnChecked)
+            if agmagent == 'false':
+                self.ui.agmagentCheckBox.setCheckState(Qt.Unchecked)
         else:
-            if agmagent is True:
+            if agmagent == 'true':
                 self.ui.agmagentCheckBox.setCheckState(Qt.Checked)
         self.ui.mainTextEdit.blockSignals(False)
         self.ui.innermodelCheckBox.blockSignals(False)
@@ -516,7 +516,7 @@ class RoboCompDSLGui(QMainWindow):
             gui_list = cdsl_dict['gui']
             gui_type = gui_list[1]
             self._cdsl_doc._gui_combo = gui_type
-        self._cdsl_doc._options = cdsl_dict['options']
+#        self._cdsl_doc._options = cdsl_dict['options']
         self._console.clear_console()
         self._console.append_custom_text("Component is correct!")
 
