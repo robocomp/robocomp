@@ -222,10 +222,12 @@ class CDSLDocument(QObject):
         return self._innerModel
 
     def analize_agmagent(self, s, loc, toks):
-        agmagent = toks.agmagent[0]
-        if self._agmagent != agmagent:
-            self.set_agmagent(agmagent)
-            self.agmagentChange.emit(self.get_agmagent())
+        agmagent = False
+        if toks.options:
+            if 'agmagent' in toks.options[0]:
+                agmagent = True
+        self.set_agmagent(agmagent)
+        self.agmagentChange.emit(str(self.get_agmagent()).lower())
 
     def get_agmagent(self):
         return self._agmagent
