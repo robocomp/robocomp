@@ -449,16 +449,18 @@ class RoboCompDSLGui(QMainWindow):
         self.ui.mainTextEdit.blockSignals(False)
         self.update_editor()
 
+    # Working for the current parseCDSL version
+    # To test it try writting: innerModelViewer true; or innerModelViewer false;
     @Slot()
     def updateInnerModelViewerCheck(self, innerModelViewer):
         self.ui.mainTextEdit.blockSignals(True)
         self.ui.innermodelCheckBox.blockSignals(True)
 
-        if self.ui.innermodelCheckBox.isChecked:
-            if innerModelViewer is False:
-                self.ui.innermodelCheckBox.setCheckState(Qt.UnChecked)
+        if self.ui.innermodelCheckBox.isChecked():
+            if innerModelViewer == 'false':
+                self.ui.innermodelCheckBox.setCheckState(Qt.Unchecked)
         else:
-            if innerModelViewer is True:
+            if innerModelViewer == 'true':
                 self.ui.innermodelCheckBox.setCheckState(Qt.Checked)
         self.ui.mainTextEdit.blockSignals(False)
         self.ui.innermodelCheckBox.blockSignals(False)
@@ -478,7 +480,7 @@ class RoboCompDSLGui(QMainWindow):
         self.ui.mainTextEdit.blockSignals(True)
         self.ui.agmagentCheckBox.blockSignals(True)
 
-        if self.ui.agmagentCheckBox.isChecked:
+        if self.ui.agmagentCheckBox.isChecked():
             if agmagent is False:
                 self.ui.agmagentCheckBox.setCheckState(Qt.UnChecked)
         else:
