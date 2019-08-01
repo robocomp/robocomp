@@ -11,6 +11,8 @@ class CDSLGui:
 
 class CDSLDocument(QObject):
     languageChange = Signal(str)
+    innerModelViewerChange = Signal(str)
+    agmagentChange = Signal(str)
 
     def __init__(self):
         super(CDSLDocument, self).__init__()
@@ -163,9 +165,17 @@ class CDSLDocument(QObject):
 
     def set_agmagent(self, agmagent):
         self._agmagent = agmagent
+        if agmagent == True:
+            self.add_option("agmagent")
+        else:
+            self.delete_option("agmagent")
 
     def set_innerModel(self, innerModel):
         self._innerModel = innerModel
+        if innerModel == True:
+            self.add_option("innerModelViewer")
+        else:
+            self.delete_option("innerModelViewer")
 
     def add_option(self, option):
         if option not in self._options:
@@ -197,3 +207,21 @@ class CDSLDocument(QObject):
 
     def get_language(self):
         return self._language
+
+    def analize_innerModelViewer(self, s, loc, toks):
+        inner = toks.innermodelviewer[0]
+        if self._innerModel != inner:
+            self.set_innerModel(inner)
+            self.innerModelViewerChange.emit(self.get_innerModelViewer())
+
+    def get_innerModelViewer(self):
+        return self._innerModel
+
+    def analize_agmagent(self, s, loc, toks):
+        agmagent = toks.agmagent[0]
+        if self._agmagent != agmagent:
+            self.set_agmagent(agmagent)
+            self.agmagentChange.emit(self.get_agmagent())
+
+    def get_agmagent(self):
+        return self._agmagent
