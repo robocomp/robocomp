@@ -209,10 +209,14 @@ class CDSLDocument(QObject):
         return self._language
 
     def analize_innerModelViewer(self, s, loc, toks):
-        inner = toks.innermodelviewer[0]
+        inner_str = toks.innermodelviewer[0]
+        if inner_str == 'true':
+            inner = True
+        elif inner_str == 'false':
+                inner = False
         if self._innerModel != inner:
             self.set_innerModel(inner)
-            self.innerModelViewerChange.emit(self.get_innerModelViewer())
+            self.innerModelViewerChange.emit(str(self.get_innerModelViewer()).lower())
 
     def get_innerModelViewer(self):
         return self._innerModel
