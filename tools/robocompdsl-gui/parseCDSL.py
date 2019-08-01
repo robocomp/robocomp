@@ -159,7 +159,7 @@ class CDSLParsing:
         gui = Group(Optional(GUI.suppress() - QT + OPAR - identifier - CPAR + SEMI))
 
         # additional options
-        options = Group(Optional(OPTIONS.suppress() + identifier + ZeroOrMore(Suppress(Word(',')) + identifier) + SEMI))
+        options = Group(Optional(OPTIONS.suppress() + identifier + ZeroOrMore(Suppress(Word(',')) + identifier) + SEMI)).setParseAction(self.CDSLDoc.analize_agmagent)
 
         statemachine = Group(Optional(STATEMACHINE.suppress() + QUOTE + CharsNotIn("\";").setResultsName('path') + QUOTE + SEMI))
 
