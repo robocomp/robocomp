@@ -153,10 +153,11 @@ class CDSLParsing:
         language = Group(LANGUAGE.suppress() - (CPP | CPP11 | PYTHON) - SEMI).setParseAction(self.CDSLDoc.analize_language )
 
         # InnerModelViewer
-        innermodelviewer = Group(Optional(InnerModelViewer.suppress() + (TRUE | FALSE) + SEMI))
+        innermodelviewer = Group(Optional(InnerModelViewer.suppress() + (TRUE | FALSE) + SEMI)).setParseAction(self.CDSLDoc.analize_innerModelViewer)
 
         # GUI
         gui = Group(Optional(GUI.suppress() - QT + OPAR - identifier - CPAR + SEMI))
+
         # additional options
         options = Group(Optional(OPTIONS.suppress() + identifier + ZeroOrMore(Suppress(Word(',')) + identifier) + SEMI))
 
