@@ -11,8 +11,8 @@ class CDSLGui:
 
 class CDSLDocument(QObject):
     languageChange = Signal(str)
-    innerModelViewerChange = Signal(str)
-    agmagentChange = Signal(str)
+    innerModelViewerChange = Signal(bool)
+    agmagentChange = Signal(bool)
 
     def __init__(self):
         super(CDSLDocument, self).__init__()
@@ -96,6 +96,12 @@ class CDSLDocument(QObject):
             doc_str = self._t() + "gui Qt(" + self._gui_combo + ");\n"
         return doc_str
 
+    def generate_innerModelViewer(self):
+        doc_str = ""
+        if self._innerModel:
+            doc_str = self._t() + "innerModelViewer " + str(self._innerModel) + ";\n"
+        return doc_str
+
     def generate_options(self):
         doc_str = ""
         if len(self._options) > 0:
@@ -114,6 +120,7 @@ class CDSLDocument(QObject):
         doc_str += self.generate_comunications()
         doc_str += self.generate_language()
         doc_str += self.generate_ui()
+        doc_str += self.generate_innerModelViewer()
         doc_str += self.generate_options()
         doc_str += self.close_sec() + ";"
         return doc_str
@@ -172,10 +179,10 @@ class CDSLDocument(QObject):
 
     def set_innerModel(self, innerModel):
         self._innerModel = innerModel
-        if innerModel == True:
-            self.add_option("innerModelViewer")
-        else:
-            self.delete_option("innerModelViewer")
+#        if innerModel == True:
+#            self.add_option("innerModelViewer")
+#        else:
+#            self.delete_option("innerModelViewer")
 
     def add_option(self, option):
         if option not in self._options:
@@ -216,7 +223,7 @@ class CDSLDocument(QObject):
                 inner = False
         if self._innerModel != inner:
             self.set_innerModel(inner)
-            self.innerModelViewerChange.emit(str(self.get_innerModelViewer()).lower())
+            self.innerModelViewerChange.emit(self.get_innerModelViewer())
 
     def get_innerModelViewer(self):
         return self._innerModel
@@ -227,7 +234,7 @@ class CDSLDocument(QObject):
             if 'agmagent' in toks.options[0]:
                 agmagent = True
         self.set_agmagent(agmagent)
-        self.agmagentChange.emit(str(self.get_agmagent()).lower())
+        self.agmagentChange.emit(self.get_agmagent())
 
     def get_agmagent(self):
         return self._agmagent
