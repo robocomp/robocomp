@@ -118,7 +118,7 @@
       </item>
      </widget>
     </item>
-    <item row="15" column="3">
+    <item row="16" column="3">
      <widget class="QPushButton" name="resetButton">
       <property name="text">
        <string>Reset</string>
@@ -147,21 +147,14 @@
     <item row="1" column="1" colspan="3">
      <widget class="QLineEdit" name="directoryLineEdit"/>
     </item>
-    <item row="16" column="3">
+    <item row="17" column="3">
      <widget class="QPushButton" name="createButton">
       <property name="text">
        <string>Create</string>
       </property>
      </widget>
     </item>
-    <item row="8" column="3">
-     <widget class="QCheckBox" name="agmagentCheckBox">
-      <property name="text">
-       <string>Agmagent</string>
-      </property>
-     </widget>
-    </item>
-    <item row="17" column="3">
+    <item row="18" column="3">
      <widget class="QPushButton" name="generateButton">
       <property name="text">
        <string>Generate Component</string>
@@ -197,7 +190,7 @@
       </property>
      </widget>
     </item>
-    <item row="13" column="0" colspan="3">
+    <item row="14" column="0" colspan="3">
      <widget class="QLabel" name="consoleLabel">
       <property name="maximumSize">
        <size>
@@ -213,7 +206,7 @@
       </property>
      </widget>
     </item>
-    <item row="2" column="2" rowspan="11">
+    <item row="2" column="2" rowspan="12">
      <widget class="CodeEditor" name="mainTextEdit">
       <property name="minimumSize">
        <size>
@@ -239,10 +232,17 @@
       </property>
      </widget>
     </item>
-    <item row="7" column="3">
+    <item row="8" column="3">
      <widget class="QCheckBox" name="innermodelCheckBox">
       <property name="text">
        <string>InnermodelViewer</string>
+      </property>
+     </widget>
+    </item>
+    <item row="7" column="3">
+     <widget class="QCheckBox" name="agmagentCheckBox">
+      <property name="text">
+       <string>Agmagent</string>
       </property>
      </widget>
     </item>
@@ -278,7 +278,7 @@
       </item>
      </widget>
     </item>
-    <item row="11" column="3" rowspan="4">
+    <item row="11" column="3" rowspan="5">
      <spacer name="verticalSpacer">
       <property name="orientation">
        <enum>Qt::Vertical</enum>
