@@ -111,6 +111,8 @@ class RoboCompDSLGui(QMainWindow):
         self._cdsl_doc.languageChange.connect(self.updateLanguageCombo)
         self._cdsl_doc.innerModelViewerChange.connect(self.updateInnerModelViewerCheck)
         self._cdsl_doc.agmagentChange.connect(self.updateAgmagentCheck)
+        self._cdsl_doc.guiChange.connect(self.updateGuiCheck)
+        self._cdsl_doc.guiTypeChange.connect(self.updateGuiCombo)
         self.parser = CDSLParsing(self._cdsl_doc)
         self.file_checker = FileChecker()
 
@@ -167,7 +169,7 @@ class RoboCompDSLGui(QMainWindow):
         self.ui.guiCheckBox.stateChanged.connect(self.update_gui)
 
         #GUI COMBOBOX
-        self.ui.guiComboBox.currentIndexChanged.connect(self.update_gui_combo)
+        self.ui.guiComboBox.currentIndexChanged.connect(self.update_gui_type)
 
         #AGMAGENT CHECKBOX
         self.ui.agmagentCheckBox.stateChanged.connect(self.update_agmagent)
@@ -230,20 +232,20 @@ class RoboCompDSLGui(QMainWindow):
                     idsl_full_filename = imp
                     self._cdsl_doc.add_import(idsl_full_filename)
 
-    def update_gui(self):
-        checked = self.ui.guiCheckBox.isChecked()
-        if checked:
-            self._cdsl_doc.set_qui(True)
-            self.ui.guiComboBox.setEnabled(True)
-        else:
-            self._cdsl_doc.set_qui(False)
-            self.ui.guiComboBox.setEnabled(False)
-        self.update_editor()
-
-    def update_gui_combo(self):
-        gui_combo = self.ui.guiComboBox.currentText()
-        self._cdsl_doc.set_gui_combo(str(gui_combo))
-        self.update_editor()
+#    def update_gui(self):
+#        checked = self.ui.guiCheckBox.isChecked()
+#        if checked:
+#            self._cdsl_doc.set_qui(True)
+#            self.ui.guiComboBox.setEnabled(True)
+#        else:
+#            self._cdsl_doc.set_qui(False)
+#            self.ui.guiComboBox.setEnabled(False)
+#        self.update_editor()
+#
+#    def update_gui_combo(self):
+#        gui_combo = self.ui.guiComboBox.currentText()
+#        self._cdsl_doc.set_gui_combo(str(gui_combo))
+#        self.update_editor()
 
 #    def update_agmagent_selection(self):
 #        checked = self.ui.agmagentCheckBox.isChecked()
@@ -499,6 +501,56 @@ class RoboCompDSLGui(QMainWindow):
         self.ui.mainTextEdit.blockSignals(False)
         self.update_editor()
 
+    @Slot()
+    def updateGuiCombo(self, guiType):
+        for index in range(self.ui.guiComboBox.count()):
+            if self.ui.guiComboBox.itemText(index).lower() == guiType.lower():
+                self.ui.mainTextEdit.blockSignals(True)
+                self.ui.guiComboBox.blockSignals(True)
+                self.ui.guiComboBox.setCurrentIndex(index)
+                self.ui.mainTextEdit.blockSignals(False)
+                self.ui.guiComboBox.blockSignals(False)
+                break
+
+    def update_gui_type(self):
+        gui_combo = self.ui.guiComboBox.currentText()
+        self.ui.mainTextEdit.blockSignals(True)
+        self._cdsl_doc.set_gui_type(str(gui_combo))
+        self.ui.mainTextEdit.blockSignals(False)
+        self.update_editor()
+
+    @Slot()
+    def updateGuiCheck(self, gui):
+        self.ui.mainTextEdit.blockSignals(True)
+        self.ui.guiCheckBox.blockSignals(True)
+        if self.ui.guiCheckBox.isChecked():
+            if gui is False:
+                self.ui.guiCheckBox.setCheckState(Qt.Unchecked)
+                self.ui.guiComboBox.setEnabled(False)
+        else:
+            if gui is True:
+                self.ui.guiCheckBox.setCheckState(Qt.Checked)
+                self.ui.guiComboBox.setEnabled(True)
+        self.ui.mainTextEdit.blockSignals(False)
+        self.ui.guiCheckBox.blockSignals(False)
+
+
+    def update_gui(self):
+        checked = self.ui.guiCheckBox.isChecked()
+        self.ui.mainTextEdit.blockSignals(True)
+        if checked:
+            self._cdsl_doc.set_gui(True)
+            self.ui.guiComboBox.setEnabled(True)
+        else:
+            self._cdsl_doc.set_gui(False)
+            self.ui.guiComboBox.setEnabled(False)
+        self.ui.mainTextEdit.blockSignals(False)
+        self.update_editor()
+
+
+
+
+
     def update_cdslDoc(self, cdsl_dict):
         #print("UPDATE CDSLDOC")
         self._cdsl_doc._component_name = cdsl_dict['name']
@@ -509,13 +561,13 @@ class RoboCompDSLGui(QMainWindow):
         imports_set = set(cdsl_dict['imports'])
         self._cdsl_doc._imports = imports_set
 #        self._cdsl_doc._language = cdsl_dict['language']
-        if cdsl_dict['gui'] == 'none':
-            self._cdsl_doc._gui = False
-        else:
-            self._cdsl_doc._gui = True
-            gui_list = cdsl_dict['gui']
-            gui_type = gui_list[1]
-            self._cdsl_doc._gui_combo = gui_type
+#        if cdsl_dict['gui'] == 'none':
+#            self._cdsl_doc._gui = False
+#        else:
+#            self._cdsl_doc._gui = True
+#            gui_list = cdsl_dict['gui']
+#            gui_type = gui_list[1]
+#            self._cdsl_doc._gui_combo = gui_type
 #        self._cdsl_doc._options = cdsl_dict['options']
         self._console.clear_console()
         self._console.append_custom_text("Component is correct!")
