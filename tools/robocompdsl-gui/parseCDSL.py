@@ -156,7 +156,7 @@ class CDSLParsing:
         innermodelviewer = Group(Optional(InnerModelViewer.suppress() + (TRUE | FALSE) + SEMI)).setParseAction(self.CDSLDoc.analize_innerModelViewer)
 
         # GUI
-        gui = Group(Optional(GUI.suppress() - QT + OPAR - identifier - CPAR + SEMI))
+        gui = Group(Optional(GUI.suppress() - QT + OPAR - identifier - CPAR + SEMI)).setParseAction(self.CDSLDoc.analize_gui)
 
         # additional options
         options = Group(Optional(OPTIONS.suppress() + identifier + ZeroOrMore(Suppress(Word(',')) + identifier) + SEMI)).setParseAction(self.CDSLDoc.analize_agmagent)
