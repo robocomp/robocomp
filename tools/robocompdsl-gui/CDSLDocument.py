@@ -13,6 +13,8 @@ class CDSLDocument(QObject):
     languageChange = Signal(str)
     innerModelViewerChange = Signal(bool)
     agmagentChange = Signal(bool)
+    guiChange = Signal(bool)
+    guiTypeChange = Signal(str)
 
     def __init__(self):
         super(CDSLDocument, self).__init__()
@@ -23,7 +25,7 @@ class CDSLDocument(QObject):
         self._requires = []
         self._language = ""
         self._gui = False
-        self._gui_combo = CDSLGui.QWIDGET
+        self._gui_type = CDSLGui.QWIDGET
         self._agmagent = False
         self._innerModel = False
         self._options = []
@@ -93,7 +95,7 @@ class CDSLDocument(QObject):
     def generate_ui(self):
         doc_str = ""
         if self._gui:
-            doc_str = self._t() + "gui Qt(" + self._gui_combo + ");\n"
+            doc_str = self._t() + "gui Qt(" + self._gui_type + ");\n"
         return doc_str
 
     def generate_innerModelViewer(self):
@@ -164,11 +166,11 @@ class CDSLDocument(QObject):
     def set_name(self, name):
         self._component_name = name
 
-    def set_qui(self, gui):
+    def set_gui(self, gui):
         self._gui = gui
 
-    def set_gui_combo(self, gui_combo):
-        self._gui_combo = gui_combo
+    def set_gui_type(self, gui_type):
+        self._gui_type = gui_type
 
     def set_agmagent(self, agmagent):
         self._agmagent = agmagent
@@ -238,3 +240,21 @@ class CDSLDocument(QObject):
 
     def get_agmagent(self):
         return self._agmagent
+
+    def analize_gui(self, s, loc, toks):
+        gui = False
+        if toks.gui:
+            gui_type = toks.gui[1]
+            gui = True
+            if self._gui_type != gui_type:
+                self.set_gui_type(gui_type)
+        self.set_gui(gui)
+        self.guiChange.emit(self.get_gui())
+        self.guiTypeChange.emit(self.get_gui_type())
+
+    def get_gui(self):
+        return self._gui
+
+    def get_gui_type(self):
+        return self._gui_type
+
