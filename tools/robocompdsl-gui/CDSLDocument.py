@@ -122,8 +122,8 @@ class CDSLDocument(QObject):
         doc_str += self.generate_comunications()
         doc_str += self.generate_language()
         doc_str += self.generate_ui()
-        doc_str += self.generate_innerModelViewer()
         doc_str += self.generate_options()
+        doc_str += self.generate_innerModelViewer()
         doc_str += self.close_sec() + ";"
         return doc_str
 
