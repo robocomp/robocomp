@@ -575,7 +575,7 @@ class RoboCompDSLGui(QMainWindow):
     @Slot()
     def parseText(self):
         self.clear_errors()
-        text = self.ui.mainTextEdit.toPlainText()#aqui ya se cargan las interfaces mal###########################
+        text = self.ui.mainTextEdit.toPlainText()
         file_dict, error = self.parser.analizeText(text)
         errors = self.file_checker.check_text(file_dict, error)
         if errors:
