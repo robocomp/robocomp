@@ -190,6 +190,9 @@ class RoboCompDSLGui(QMainWindow):
         self._command_process.readyReadStandardOutput.connect(self._console.standard_output)
         self._command_process.readyReadStandardError.connect(self._console.error_output)
 
+        #LOAD BUTTON
+        self.ui.loadButton.clicked.connect(self.load_cdsl_file)
+
         #RESET BUTTON
         self.ui.resetButton.clicked.connect(self.reset_cdsl_file)
 
@@ -281,6 +284,22 @@ class RoboCompDSLGui(QMainWindow):
                 self.ui.directoryLineEdit.setText(dir)
                 dir_set = True
 
+    def load_cdsl_file(self):
+        path = ROBOCOMP_COMP_DIR
+        filename = self.ui.nameLineEdit.text()
+        if not filename:
+            QMessageBox.warning(self, "Component name is empty",
+                                     "Please enter a component name to load the cdsl file")
+        else:
+            filename = path + "/" + filename + ".cdsl"
+            if os.path.isfile(filename):
+                inputText = open(filename, 'r').read()
+                self.ui.mainTextEdit.setPlainText(inputText)
+                self._console.append_custom_text("CDSL file loaded successfully!")
+            else:
+                QMessageBox.warning(self, "File not found", "The CDSL file could not be loaded")
+
+
     def reset_cdsl_file(self):
         self._communications = {"implements": [], "requires": [], "subscribesTo": [], "publishes": []}
         self._interfaces = {}
@@ -309,7 +328,7 @@ class RoboCompDSLGui(QMainWindow):
                                                        QMessageBox.Yes | QMessageBox.No):
                 os.makedirs(component_dir)
             else:
-                QMessageBox.question(self,
+                QMessageBox.warning(self,
                                      "Directory not exist",
                                      "Can't create a component without a valid directory")
                 return False
@@ -387,7 +406,7 @@ class RoboCompDSLGui(QMainWindow):
 
         # Process the main editor
         cursor.movePosition(cursor.Start, cursor.KeepAnchor, 4)
-        for i in range(self.ui.mainTextEdit.blockCount()):
+        for i in range(self.ui.mainTextEdit.document().blockCount()):
             cursor.mergeCharFormat(format)
             cursor.movePosition(cursor.Down, cursor.KeepAnchor, 4)
 
