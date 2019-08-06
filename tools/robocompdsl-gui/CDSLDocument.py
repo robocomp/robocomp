@@ -1,13 +1,16 @@
 from PySide2.QtCore import *
 
+
 class CDSLLanguage:
     CPP = "CPP"
     PYTHON = "Python"
+
 
 class CDSLGui:
     QWIDGET = "QWidget"
     QDIALOG = "QDialog"
     QMAINWINDOW = "QMainWindow"
+
 
 class CDSLDocument(QObject):
     languageChange = Signal(str)
@@ -51,11 +54,11 @@ class CDSLDocument(QObject):
             doc_str += self._t() + "import \"" + imp + "\";\n"
         return doc_str
 
-    def _generate_generic_comunication(self, com_type):
+    def _generate_generic_communication(self, com_type):
         doc_str = ""
         if com_type in self._communications:
             if len(self._communications[com_type]) > 0:
-                doc_str = self._t() + "%s " % (com_type)
+                doc_str = self._t() + "%s " % com_type
                 for pos, element in enumerate(self._communications[com_type]):
                     doc_str += element
                     if pos < len(self._communications[com_type]) - 1:
@@ -63,22 +66,22 @@ class CDSLDocument(QObject):
                     else:
                         doc_str += ";\n"
         else:
-            print("CDSLDocument._generate_generic_comunication: invalid communication type: %s" % com_type)
+            print("CDSLDocument._generate_generic_communication: invalid communication type: %s" % com_type)
         return doc_str
 
     def generate_implements(self):
-        return self._generate_generic_comunication("implements")
+        return self._generate_generic_communication("implements")
 
     def generate_requires(self):
-        return self._generate_generic_comunication("requires")
+        return self._generate_generic_communication("requires")
 
     def generate_publish(self):
-        return self._generate_generic_comunication("publishes")
+        return self._generate_generic_communication("publishes")
 
     def generate_subscribes(self):
-        return self._generate_generic_comunication("subscribesTo")
+        return self._generate_generic_communication("subscribesTo")
 
-    def generate_comunications(self):
+    def generate_communications(self):
         doc_str = self._t() + "communications\n"
         doc_str += self.open_sec() + "\n"
         doc_str += self.generate_implements()
@@ -89,7 +92,7 @@ class CDSLDocument(QObject):
         return doc_str
 
     def generate_language(self):
-        doc_str = self._t() + "language " + self._language + ";\n";
+        doc_str = self._t() + "language " + self._language + ";\n"
         return doc_str
 
     def generate_ui(self):
@@ -119,7 +122,7 @@ class CDSLDocument(QObject):
     def generate_component(self):
         doc_str = "\ncomponent " + self._component_name
         doc_str += "\n" + self.open_sec() + "\n"
-        doc_str += self.generate_comunications()
+        doc_str += self.generate_communications()
         doc_str += self.generate_language()
         doc_str += self.generate_ui()
         doc_str += self.generate_options()
@@ -151,17 +154,17 @@ class CDSLDocument(QObject):
     def add_implement(self, implement_name):
         self._communications["implements"].append(implement_name)
 
-    def add_comunication(self, com_type, com_name):
+    def add_communication(self, com_type, com_name):
         if com_type in self._communications:
             self._communications[com_type].append(com_name)
         else:
-            print("CDSLDocument.add_comunication: invalid communication type: %s" % com_type)
+            print("CDSLDocument.add_communication: invalid communication type: %s" % com_type)
 
-    def clear_comunication(self, com_type):
+    def clear_communication(self, com_type):
         if com_type in self._communications:
             self._communications[com_type] = []
         else:
-            print("CDSLDocument.add_comunication: invalid communication type: %s" % com_type)
+            print("CDSLDocument.add_communication: invalid communication type: %s" % com_type)
 
     def set_name(self, name):
         self._component_name = name
@@ -174,17 +177,18 @@ class CDSLDocument(QObject):
 
     def set_agmagent(self, agmagent):
         self._agmagent = agmagent
-        if agmagent == True:
+        if agmagent is True:
             self.add_option("agmagent")
         else:
             self.delete_option("agmagent")
 
     def set_innerModel(self, innerModel):
         self._innerModel = innerModel
-#        if innerModel == True:
-#            self.add_option("innerModelViewer")
-#        else:
-#            self.delete_option("innerModelViewer")
+
+    #        if innerModel == True:
+    #            self.add_option("innerModelViewer")
+    #        else:
+    #            self.delete_option("innerModelViewer")
 
     def add_option(self, option):
         if option not in self._options:
@@ -206,7 +210,7 @@ class CDSLDocument(QObject):
 
     def analize_language(self, s, loc, toks):
         lang = toks.language[0]
-#        print("analyze language: ", lang)
+        #        print("analyze language: ", lang)
         if self._language != lang:
             self.set_language(lang)
             self.languageChange.emit(self.get_language())
@@ -219,10 +223,9 @@ class CDSLDocument(QObject):
 
     def analize_innerModelViewer(self, s, loc, toks):
         inner_str = toks.innermodelviewer[0]
+        inner = False
         if inner_str == 'true':
             inner = True
-        elif inner_str == 'false':
-                inner = False
         if self._innerModel != inner:
             self.set_innerModel(inner)
             self.innerModelViewerChange.emit(self.get_innerModelViewer())
@@ -257,4 +260,3 @@ class CDSLDocument(QObject):
 
     def get_gui_type(self):
         return self._gui_type
-
