@@ -190,7 +190,7 @@ class RoboCompDSLGui(QMainWindow):
         self.load_idsl_files()
 
     def setupEditor(self):
-        self.highlighter = Highlighter(self.ui.mainTextEdit.document())
+       self.highlighter = Highlighter(self.ui.mainTextEdit.document())
 
     def load_idsl_files(self):
         idsls_dir = os.path.join(ROBOCOMP_INTERFACES, "IDSLs")
@@ -554,7 +554,7 @@ class RoboCompDSLGui(QMainWindow):
                 error_word = error_word.lstrip()
                 error_word = error_word.rstrip()
                 # if wrong_word
-                if error_word != '0':
+                if error_word != '0' and error_word != "":
                     self.highlight_error(error_word)
                 msg = str(err)
                 self._console.append_error_text(msg)
