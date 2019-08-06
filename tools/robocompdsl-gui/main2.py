@@ -43,6 +43,7 @@ if not os.path.isdir(ROBOCOMP_INTERFACES):
         print("Default Robocomp INTERFACES directory (%s) doesn't exists. Exiting!" % (ROBOCOMP_INTERFACES))
         sys.exit()
 
+
 class Highlighter(QSyntaxHighlighter):
     def __init__(self, parent=None):
         super(Highlighter, self).__init__(parent)
@@ -52,11 +53,12 @@ class Highlighter(QSyntaxHighlighter):
         keywordFormat.setFontWeight(QFont.Bold)
 
         keywordPatterns = ["\\bimport\\b", "\\bcomponent\\b", "\\bcommunications\\b",
-                "\\bpublishes\\b", "\\bimplements\\b", "\\bsubscribesTo\\b", "\\brequires\\b",
-                "\\blanguage\\b", "\\bgui\\b", "\\boptions\\b","\\binnerModelViewer\\b","\\bstateMachine\\b","\\bmodules\\b","\\bagmagent\\b"]
+                           "\\bpublishes\\b", "\\bimplements\\b", "\\bsubscribesTo\\b", "\\brequires\\b",
+                           "\\blanguage\\b", "\\bgui\\b", "\\boptions\\b", "\\binnerModelViewer\\b",
+                           "\\bstateMachine\\b", "\\bmodules\\b", "\\bagmagent\\b"]
 
         self.highlightingRules = [(QRegExp(pattern), keywordFormat)
-                for pattern in keywordPatterns]
+                                  for pattern in keywordPatterns]
 
         self.multiLineCommentFormat = QTextCharFormat()
         self.multiLineCommentFormat.setForeground(Qt.red)
@@ -89,9 +91,9 @@ class Highlighter(QSyntaxHighlighter):
                 commentLength = endIndex - startIndex + self.commentEndExpression.matchedLength()
 
             self.setFormat(startIndex, commentLength,
-                    self.multiLineCommentFormat)
+                           self.multiLineCommentFormat)
             startIndex = self.commentStartExpression.indexIn(text,
-                    startIndex + commentLength);
+                                                             startIndex + commentLength);
 
 
 class RoboCompDSLGui(QMainWindow):
@@ -107,7 +109,7 @@ class RoboCompDSLGui(QMainWindow):
         self._cdsl_doc = CDSLDocument()
         self._command_process = QProcess()
 
-        #TESTING
+        # TESTING
         self._cdsl_doc.languageChange.connect(self.updateLanguageCombo)
         self._cdsl_doc.innerModelViewerChange.connect(self.updateInnerModelViewerCheck)
         self._cdsl_doc.agmagentChange.connect(self.updateAgmagentCheck)
@@ -117,33 +119,15 @@ class RoboCompDSLGui(QMainWindow):
         self.file_checker = FileChecker()
 
         self._cdsl_doc.set_name("comp_name")
-        self._cdsl_doc.set_language('cpp')
-        #self.ui.innermodelCheckBox.setCheckState(Qt.Checked)
-        #self._cdsl_doc.set_innerModel(True)
-        #self._cdsl_doc.set_agmagent(True)
+        self._cdsl_doc.set_language('Python')
         self.ui.mainTextEdit.setPlainText(self._cdsl_doc.generate_doc())
 
-        #TODO => Deleted when not needed
-        '''self.ui.mainTextEdit.setPlainText("""
-        import "Laser.idsl";
-
-        component Comp1
-        {
-        	communications
-
-        	{
-        		implements Laser;
-
-        	};
-        	language cpp;
-
-        };""")'''
         self.ui.mainTextEdit.textChanged.connect(self.parseText)
 
-        #COMPONENT NAME
+        # COMPONENT NAME
         self.ui.nameLineEdit.textEdited.connect(self.update_component_name)
 
-        #DIRECTORY SELECTION
+        # DIRECTORY SELECTION
         self._dir_completer = QCompleter()
         self._dir_completer_model = QFileSystemModel()
         if os.path.isdir(ROBOCOMP_COMP_DIR):
@@ -153,53 +137,53 @@ class RoboCompDSLGui(QMainWindow):
         self.ui.directoryLineEdit.setCompleter(self._dir_completer)
         self.ui.directoryButton.clicked.connect(self.set_output_directory)
 
-        #CUSTOM INTERFACES LIST WIDGET
+        # CUSTOM INTERFACES LIST WIDGET
         self._interface_list = customListWidget(self.ui.centralWidget)
         self.ui.gridLayout.addWidget(self._interface_list, 4, 0, 9, 2)
         self._interface_list.setSelectionMode(QAbstractItemView.ExtendedSelection)
-        self._interface_list.customItemSelection.connect(self.set_comunication)
+        self._interface_list.customItemSelection.connect(self.set_communication)
 
-        #LIST OF CONNECTION TYPES
+        # LIST OF CONNECTION TYPES
         self.ui.communicationsComboBox.currentIndexChanged.connect(self.reselect_existing)
 
-        #LANGUAGE
+        # LANGUAGE
         self.ui.languageComboBox.currentIndexChanged.connect(self.update_language)
 
-        #GUI CHECKBOX
+        # GUI CHECKBOX
         self.ui.guiCheckBox.stateChanged.connect(self.update_gui)
 
-        #GUI COMBOBOX
+        # GUI COMBOBOX
         self.ui.guiComboBox.currentIndexChanged.connect(self.update_gui_type)
 
-        #AGMAGENT CHECKBOX
+        # AGMAGENT CHECKBOX
         self.ui.agmagentCheckBox.stateChanged.connect(self.update_agmagent)
 
-        #INNERMODEL CHECKBOX
+        # INNERMODEL CHECKBOX
         self.ui.innermodelCheckBox.stateChanged.connect(self.update_innerModelViewer)
 
-        #MAIN TEXT EDITOR
-        #self.ui.mainTextEdit.setPlainText("")
+        # MAIN TEXT EDITOR
+        # self.ui.mainTextEdit.setPlainText("")
         self._document = self.ui.mainTextEdit.document()
         self._component_directory = None
-        #self.ui.mainTextEdit.setText(self._cdsl_doc.generate_doc())
-        #self.ui.mainTextEdit.setPlainText(self._cdsl_doc.generate_doc())
+        # self.ui.mainTextEdit.setText(self._cdsl_doc.generate_doc())
+        # self.ui.mainTextEdit.setPlainText(self._cdsl_doc.generate_doc())
 
-        #CONSOLE
+        # CONSOLE
         self._console = QConsole(self.ui.centralWidget)
         self.ui.gridLayout.addWidget(self._console, 14, 0, 4, 3)
         self._command_process.readyReadStandardOutput.connect(self._console.standard_output)
         self._command_process.readyReadStandardError.connect(self._console.error_output)
 
-        #LOAD BUTTON
+        # LOAD BUTTON
         self.ui.loadButton.clicked.connect(self.load_cdsl_file)
 
-        #RESET BUTTON
+        # RESET BUTTON
         self.ui.resetButton.clicked.connect(self.reset_cdsl_file)
 
-        #CREATION BUTTON
+        # CREATION BUTTON
         self.ui.createButton.clicked.connect(self.write_cdsl_file)
 
-        #GENERATE BUTTON
+        # GENERATE BUTTON
         self.ui.generateButton.clicked.connect(self.robocompdsl_generate_component)
 
         self.setupEditor()
@@ -214,15 +198,15 @@ class RoboCompDSLGui(QMainWindow):
         self._interface_list.addItems(list(self._interfaces.keys()))
         self._interface_list.sortItems()
 
-    def set_comunication(self):
+    def set_communication(self):
         interfaces_names = self._interface_list.customItemList()
         com_type = str(self.ui.communicationsComboBox.currentText())
         self._communications[com_type] = []
-        self._cdsl_doc.clear_comunication(com_type)
+        self._cdsl_doc.clear_communication(com_type)
         for iface_name_item in interfaces_names:
             iface_name = iface_name_item
             self._communications[com_type].append(iface_name)
-            self._cdsl_doc.add_comunication(com_type, iface_name)
+            self._cdsl_doc.add_communication(com_type, iface_name)
         self.update_imports()
         self.update_editor()
 
@@ -234,38 +218,6 @@ class RoboCompDSLGui(QMainWindow):
                 for imp in imports_list:
                     idsl_full_filename = imp
                     self._cdsl_doc.add_import(idsl_full_filename)
-
-#    def update_gui(self):
-#        checked = self.ui.guiCheckBox.isChecked()
-#        if checked:
-#            self._cdsl_doc.set_qui(True)
-#            self.ui.guiComboBox.setEnabled(True)
-#        else:
-#            self._cdsl_doc.set_qui(False)
-#            self.ui.guiComboBox.setEnabled(False)
-#        self.update_editor()
-#
-#    def update_gui_combo(self):
-#        gui_combo = self.ui.guiComboBox.currentText()
-#        self._cdsl_doc.set_gui_combo(str(gui_combo))
-#        self.update_editor()
-
-#    def update_agmagent_selection(self):
-#        checked = self.ui.agmagentCheckBox.isChecked()
-#        if checked:
-#            self._cdsl_doc.set_agmagent(True)
-#        else:
-#            self._cdsl_doc.set_agmagent(False)
-#        self.update_editor()
-
-#    def update_innerModel_selection(self):
-#        opt = "innerModelViewer"
-#        checked = self.ui.innermodelCheckBox.isChecked()
-#        if checked:
-#            self._cdsl_doc.set_innerModel(True)
-#        else:
-#            self._cdsl_doc.set_innerModel(False)
-#        self.update_editor()
 
     def update_component_name(self, name):
         self._cdsl_doc.set_name(name)
@@ -289,7 +241,7 @@ class RoboCompDSLGui(QMainWindow):
         filename = self.ui.nameLineEdit.text()
         if not filename:
             QMessageBox.warning(self, "Component name is empty",
-                                     "Please enter a component name to load the cdsl file")
+                                "Please enter a component name to load the cdsl file")
         else:
             filename = path + "/" + filename + ".cdsl"
             if os.path.isfile(filename):
@@ -299,24 +251,25 @@ class RoboCompDSLGui(QMainWindow):
             else:
                 QMessageBox.warning(self, "File not found", "The CDSL file could not be loaded")
 
-
     def reset_cdsl_file(self):
+        self._cdsl_doc.clear()
+        self._console.clear_console()
         self._communications = {"implements": [], "requires": [], "subscribesTo": [], "publishes": []}
         self._interfaces = {}
-        self._cdsl_doc.clear()
         self._command_process = QProcess()
+        self._cdsl_doc.set_name("comp_name")
+        self._cdsl_doc.set_language('Python')
         self.update_editor()
-        self._console.clear_console()
 
     def write_cdsl_file(self):
         component_dir = str(self.ui.directoryLineEdit.text())
-        #text = self._cdsl_doc.generate_doc()
-        text = self.ui.mainTextEdit.toPlainText() # read content from main text editor
+        # text = self._cdsl_doc.generate_doc()
+        text = self.ui.mainTextEdit.toPlainText()  # read content from main text editor
         if not self.ui.nameLineEdit.text():
             component_name, ok = QInputDialog.getText(self, 'No component name set', 'Enter component name:')
             if ok:
                 self.update_component_name(component_name)
-                text = self.ui.mainTextEdit.toPlainText() #update text to avoid errors
+                text = self.ui.mainTextEdit.toPlainText()  # update text to avoid errors
                 self.ui.nameLineEdit.setText(component_name)
             else:
                 return False
@@ -329,8 +282,8 @@ class RoboCompDSLGui(QMainWindow):
                 os.makedirs(component_dir)
             else:
                 QMessageBox.warning(self,
-                                     "Directory not exist",
-                                     "Can't create a component without a valid directory")
+                                    "Directory not exist",
+                                    "Can't create a component without a valid directory")
                 return False
 
         file_path = os.path.join(component_dir, str(self.ui.nameLineEdit.text()) + ".cdsl")
@@ -352,7 +305,7 @@ class RoboCompDSLGui(QMainWindow):
                     self._console.append_custom_text(msg)
                 else:
                     return False
-            else: #create cdsl file
+            else:  # create cdsl file
                 the_file.write(text)
                 self._console.append_custom_text(msg)
         return True
@@ -371,7 +324,7 @@ class RoboCompDSLGui(QMainWindow):
     def reselect_existing(self):
         com_type = self.ui.communicationsComboBox.currentText()
         selected = self._communications[com_type]
-        #self.ui.interfacesListWidget.clearSelection()
+        # self.ui.interfacesListWidget.clearSelection()
         self._interface_list.clearItems()
 
         for iface in selected:
@@ -412,7 +365,6 @@ class RoboCompDSLGui(QMainWindow):
 
         self.ui.mainTextEdit.blockSignals(False)
 
-
     def highlight_error(self, error_str):
         self.ui.mainTextEdit.blockSignals(True)
         cursor = self.ui.mainTextEdit.textCursor()
@@ -440,20 +392,21 @@ class RoboCompDSLGui(QMainWindow):
 
     def closeEvent(self, event):
         QApplication.quit()
-    #TODO UNCOMMENT
-#        quit_msg = "Are you sure you want to exit?"
-#        reply = QMessageBox.question(self, 'Message', quit_msg, QMessageBox.Yes, QMessageBox.No)
-#        if reply == QMessageBox.Yes:
-#            QApplication.quit()
-#        else:
-#            if event is not None:
-#                event.ignore()
 
-#TESTING
+    # TODO UNCOMMENT
+    #        quit_msg = "Are you sure you want to exit?"
+    #        reply = QMessageBox.question(self, 'Message', quit_msg, QMessageBox.Yes, QMessageBox.No)
+    #        if reply == QMessageBox.Yes:
+    #            QApplication.quit()
+    #        else:
+    #            if event is not None:
+    #                event.ignore()
+
+    # TESTING
     @Slot()
     def updateLanguageCombo(self, language):
-        #TODO maybe we need to disconnect signals before changing combo value
-        #print("UPDATE COMBO")
+        # TODO maybe we need to disconnect signals before changing combo value
+        # print("UPDATE COMBO")
         for index in range(self.ui.languageComboBox.count()):
             if self.ui.languageComboBox.itemText(index).lower() == language.lower():
                 self.ui.mainTextEdit.blockSignals(True)
@@ -553,7 +506,6 @@ class RoboCompDSLGui(QMainWindow):
         self.ui.mainTextEdit.blockSignals(False)
         self.ui.guiCheckBox.blockSignals(False)
 
-
     def update_gui(self):
         checked = self.ui.guiCheckBox.isChecked()
         self.ui.mainTextEdit.blockSignals(True)
@@ -566,28 +518,26 @@ class RoboCompDSLGui(QMainWindow):
         self.ui.mainTextEdit.blockSignals(False)
         self.update_editor()
 
-
-
-
-
     def update_cdslDoc(self, cdsl_dict):
-        #print("UPDATE CDSLDOC")
+        # print("UPDATE CDSLDOC")
         self._cdsl_doc._component_name = cdsl_dict['name']
-        self._cdsl_doc._communications = {'implements': cdsl_dict['implements'], 'requires': cdsl_dict['requires'], 'subscribesTo': cdsl_dict['subscribesTo'], 'publishes': cdsl_dict['publishes']}
-        self._communications = {'implements': cdsl_dict['implements'], 'requires': cdsl_dict['requires'],
+        self._cdsl_doc._communications = {'implements': cdsl_dict['implements'], 'requires': cdsl_dict['requires'],
                                           'subscribesTo': cdsl_dict['subscribesTo'],
                                           'publishes': cdsl_dict['publishes']}
+        self._communications = {'implements': cdsl_dict['implements'], 'requires': cdsl_dict['requires'],
+                                'subscribesTo': cdsl_dict['subscribesTo'],
+                                'publishes': cdsl_dict['publishes']}
         imports_set = set(cdsl_dict['imports'])
         self._cdsl_doc._imports = imports_set
-#        self._cdsl_doc._language = cdsl_dict['language']
-#        if cdsl_dict['gui'] == 'none':
-#            self._cdsl_doc._gui = False
-#        else:
-#            self._cdsl_doc._gui = True
-#            gui_list = cdsl_dict['gui']
-#            gui_type = gui_list[1]
-#            self._cdsl_doc._gui_combo = gui_type
-#        self._cdsl_doc._options = cdsl_dict['options']
+        #        self._cdsl_doc._language = cdsl_dict['language']
+        #        if cdsl_dict['gui'] == 'none':
+        #            self._cdsl_doc._gui = False
+        #        else:
+        #            self._cdsl_doc._gui = True
+        #            gui_list = cdsl_dict['gui']
+        #            gui_type = gui_list[1]
+        #            self._cdsl_doc._gui_combo = gui_type
+        #        self._cdsl_doc._options = cdsl_dict['options']
         self._console.clear_console()
         self._console.append_custom_text("Component is correct!")
 
@@ -612,17 +562,18 @@ class RoboCompDSLGui(QMainWindow):
         else:
             self.update_cdslDoc(file_dict)
 
+
 class QConsole(QTextEdit):
     def __init__(self, parent=None):
         super(QConsole, self).__init__(parent)
-        font = QFont("Monospace",9)
+        font = QFont("Monospace", 9)
         font.setStyleHint(QFont.TypeWriter)
         self.setFont(font)
         self.setTextColor(QColor("LightGreen"))
         self.setReadOnly(True)
         self.setMinimumSize(QtCore.QSize(0, 130))
         self.setStyleSheet("background-color: rgb(4, 11, 50);")
-        #self.setObjectName("console")
+        # self.setObjectName("console")
         self.setText("> Welcome to Robocompdsl.")
 
     def append_custom_text(self, text):
@@ -647,6 +598,7 @@ class QConsole(QTextEdit):
 
     def clear_console(self):
         self.setText(" ")
+
 
 class customListWidget(QListWidget):
     customItemSelection = Signal()
@@ -682,7 +634,7 @@ class customListWidget(QListWidget):
             if count:
                 self.itemAt(event.pos()).setText(text + ":" + str(count))
             else:
-                #self.itemAt(event.pos()).setPlainText(text)
+                # self.itemAt(event.pos()).setPlainText(text)
                 self.itemAt(event.pos()).setText(text)
 
             self.customItemSelection.emit()
@@ -715,5 +667,3 @@ if __name__ == "__main__":
     gui.show()
 
     sys.exit(app.exec_())
-
-
