@@ -2,6 +2,7 @@ from PySide2.QtWidgets import *
 from PySide2.QtGui import *
 from PySide2.QtCore import *
 
+
 class LineNumberArea(QWidget):
     def __init__(self, editor):
         QWidget.__init__(self, parent=editor)
@@ -12,6 +13,7 @@ class LineNumberArea(QWidget):
 
     def paintEvent(self, event):
         self.codeEditor.lineNumberAreaPaintEvent(event)
+
 
 class CodeEditor(QPlainTextEdit):
     def __init__(self, parent=None):
@@ -35,8 +37,8 @@ class CodeEditor(QPlainTextEdit):
                 number = str(blockNumber + 1)
                 painter.setPen(Qt.black)
                 painter.drawText(0, top, self.lineNumberArea.width(),
-                    self.fontMetrics().height(),
-                    Qt.AlignRight, number)
+                                 self.fontMetrics().height(),
+                                 Qt.AlignRight, number)
             block = block.next()
             top = bottom
             bottom = top + self.blockBoundingRect(block).height()
@@ -44,7 +46,7 @@ class CodeEditor(QPlainTextEdit):
 
     def lineNumberAreaWidth(self):
         digits = len(str(self.blockCount()))
-        space = 3 + self.fontMetrics().width('9')*digits
+        space = 3 + self.fontMetrics().width('9') * digits
         return space
 
     def resizeEvent(self, event):
@@ -54,7 +56,6 @@ class CodeEditor(QPlainTextEdit):
 
     def updateLineNumberAreaWidth(self, newBlockCount):
         self.setViewportMargins(self.lineNumberAreaWidth(), 0, 0, 0);
-
 
     def updateLineNumberArea(self, rect, dy):
         if dy:
