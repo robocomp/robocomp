@@ -4,7 +4,9 @@ from pyparsing import Word, alphas, alphanums, nums, OneOrMore, CharsNotIn, Lite
 from pyparsing import cppStyleComment, Optional, Suppress, ZeroOrMore, Group, StringEnd, srange
 from pyparsing import nestedExpr, CaselessLiteral, CaselessKeyword, ParseBaseException
 from collections import Counter
-import sys, traceback, os
+import sys
+import traceback
+import os
 
 from CDSLDocument import CDSLDocument
 
@@ -306,8 +308,8 @@ class CDSLParsing:
         # Set options
         component['options'] = []
         for op in tree['properties']['options']:
-            #component['options'].append(op.lower())
-            component['options'].append(op)
+            component['options'].append(op.lower())
+            #component['options'].append(op)
 
 
         # Component name
