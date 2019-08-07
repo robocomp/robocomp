@@ -111,13 +111,18 @@ class RoboCompDSLGui(QMainWindow):
         self._command_process = QProcess()
         self.file_checker = FileChecker()
 
-        # connect signals
+        # CDSL Signals
         self._cdsl_doc.languageChange.connect(self.updateLanguageCombo)
         self._cdsl_doc.innerModelViewerChange.connect(self.updateInnerModelViewerCheck)
         self._cdsl_doc.agmagentChange.connect(self.updateAgmagentCheck)
         self._cdsl_doc.guiChange.connect(self.updateGuiCheck)
         self._cdsl_doc.guiTypeChange.connect(self.updateGuiCombo)
+        self._cdsl_doc.nameChange.connect(self.updateName)
+
+        # PARSER TEXT
         self.ui.mainTextEdit.textChanged.connect(self.parseText)
+
+        # COMPONENT NAME
         self.ui.nameLineEdit.textEdited.connect(self.update_component_name)
 
         # DIRECTORY SELECTION
@@ -484,6 +489,11 @@ class RoboCompDSLGui(QMainWindow):
                 self.ui.guiCheckBox.setCheckState(Qt.Checked)
                 self.ui.guiComboBox.setEnabled(True)
         self.ui.guiCheckBox.blockSignals(False)
+
+    def updateName(self):
+        self.ui.nameLineEdit.blockSignals(True)
+        self.ui.nameLineEdit.setText(self._cdsl_doc.get_name())
+        self.ui.nameLineEdit.blockSignals(False)
 
     def update_gui(self):
         checked = self.ui.guiCheckBox.isChecked()

@@ -18,6 +18,7 @@ class CDSLDocument(QObject):
     agmagentChange = Signal(bool)
     guiChange = Signal(bool)
     guiTypeChange = Signal(str)
+    nameChange = Signal(str)
 
     def __init__(self):
         super(CDSLDocument, self).__init__()
@@ -304,5 +305,10 @@ class CDSLDocument(QObject):
     def get_gui_type(self):
         return self._gui_type
 
+    def get_name(self):
+        return self._component_name
+
     def analize_compname(self, s, loc, toks):
-        print(toks)
+        self.set_name(toks[0])
+        self.nameChange.emit(self.get_name())
+

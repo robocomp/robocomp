@@ -139,6 +139,8 @@ class CDSLParsing:
         commIdentifier = Group(identifier('identifier') + Optional(
             OPAR + (CaselessKeyword("ice") | CaselessKeyword("ros")).setResultsName("type") + CPAR))
 
+
+
         # Imports
         idslImport = Suppress(IMPORT) - QUOTE + CharsNotIn("\";").setResultsName('path') - QUOTE + SEMI
         idslImports = ZeroOrMore(idslImport)
@@ -174,7 +176,10 @@ class CDSLParsing:
         # Component definition
         componentContents = communications('communications') + language('language') + Optional(gui('gui')) + Optional(
             options('options')) + Optional(innermodelviewer('innermodelviewer'))
+
         component = COMPONENT.suppress() + identifier("name") + OBRACE + componentContents("properties") + CBRACE + SEMI
+
+        component.setParseAction(self.CDSLDoc.analize_compname)
 
         CDSL = idslImports("imports") - component("component")
 
@@ -213,9 +218,9 @@ class CDSLParsing:
         except rcExceptions.ParseException as ex:
             errors.append((ex.line, ex.message))
         except rcExceptions.RobocompDslException as ex:
-            errors.append((0, ex.message))
-        except:
-            errors.append((0, "Unknown"))
+            errors.append((ex.line, ex.message))
+        except Exception as ex:
+            errors.append((ex.line, "Unknown: " + ex.message))
         return cdsl_content, errors
 
     def fromFile(self, filename, verbose=False, includeDirectories=[]):
