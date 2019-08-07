@@ -239,15 +239,17 @@ class RoboCompDSLGui(QMainWindow):
                 dir_set = True
 
     def load_cdsl_file(self):
-        path = ROBOCOMP_COMP_DIR
-        filename = self.ui.nameLineEdit.text()
-        if not filename:
-            QMessageBox.warning(self, "Component name is empty",
-                                "Please enter a component name to load the cdsl file")
-        else:
-            filename = path + "/" + filename + ".cdsl"
-            if os.path.isfile(filename):
-                inputText = open(filename, 'r').read()
+        filePath, _ = QFileDialog.getOpenFileName(self, "Select cdsl file",
+                                           ROBOCOMP_COMP_DIR,
+                                           "CDSL (*.cdsl)")
+        if filePath:
+            if os.path.isfile(filePath):
+                fileInfo = QFileInfo(filePath)
+                self.ui.directoryLineEdit.setText(fileInfo.absolutePath())
+                self.ui.nameLineEdit.blockSignals(True)
+                self.ui.nameLineEdit.setText(fileInfo.fileName())
+                self.ui.nameLineEdit.blockSignals(False)
+                inputText = open(filePath, 'r').read()
                 self.ui.mainTextEdit.setPlainText(inputText)
                 self._console.append_custom_text("CDSL file loaded successfully!")
             else:

@@ -50,7 +50,7 @@ class CDSLDocument(QObject):
 
     def generate_imports(self):
         doc_str = ""
-        for imp in self._imports:
+        for imp in sorted(self._imports):
             doc_str += self._t() + "import \"" + imp + "\";\n"
         return doc_str
 
@@ -59,7 +59,7 @@ class CDSLDocument(QObject):
         if com_type in self._communications:
             if len(self._communications[com_type]) > 0:
                 doc_str = self._t() + "%s " % com_type
-                for pos, element in enumerate(self._communications[com_type]):
+                for pos, element in enumerate(sorted(self._communications[com_type])):
                     doc_str += element
                     if pos < len(self._communications[com_type]) - 1:
                         doc_str += ", "
@@ -246,7 +246,7 @@ class CDSLDocument(QObject):
         self.doc = []
         self._component_name = ""
         self._communications = {"implements": [], "requires": [], "subscribesTo": [], "publishes": []}
-        self._imports = set()
+        self._imports = OrderedSet()
         self._requires = []
         self._language = ""
         self._gui = False
