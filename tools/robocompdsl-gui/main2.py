@@ -355,11 +355,8 @@ class RoboCompDSLGui(QMainWindow):
     #            if event is not None:
     #                event.ignore()
 
-    # TESTING
     @Slot()
     def updateLanguageCombo(self, language):
-        # TODO maybe we need to disconnect signals before changing combo value
-        # print("UPDATE COMBO")
         for index in range(self.ui.languageComboBox.count()):
             if self.ui.languageComboBox.itemText(index).lower() == language.lower():
                 self.ui.languageComboBox.blockSignals(True)
@@ -377,40 +374,23 @@ class RoboCompDSLGui(QMainWindow):
     @Slot()
     def updateInnerModelViewerCheck(self, innerModelViewer):
         self.ui.innermodelCheckBox.blockSignals(True)
-
-        if self.ui.innermodelCheckBox.isChecked():
-            if innerModelViewer is False:
-                self.ui.innermodelCheckBox.setCheckState(Qt.Unchecked)
-        else:
-            if innerModelViewer is True:
-                self.ui.innermodelCheckBox.setCheckState(Qt.Checked)
+        self.ui.innermodelCheckBox.setChecked(self.ui.innermodelCheckBox.isChecked())
         self.ui.innermodelCheckBox.blockSignals(False)
+//TODO: review
 
     def update_innerModelViewer(self):
-        checked = self.ui.innermodelCheckBox.isChecked()
-        if checked:
-            self._cdsl_doc.set_innerModel(True)
-        else:
-            self._cdsl_doc.set_innerModel(False)
+        self._cdsl_doc.set_innerModel(self.ui.innermodelCheckBox.isChecked())
         self.update_editor()
 
     @Slot()
     def updateAgmagentCheck(self, agmagent):
         self.ui.agmagentCheckBox.blockSignals(True)
-        if self.ui.agmagentCheckBox.isChecked():
-            if agmagent is False:
-                self.ui.agmagentCheckBox.setCheckState(Qt.Unchecked)
-        else:
-            if agmagent is True:
-                self.ui.agmagentCheckBox.setCheckState(Qt.Checked)
+        self.ui.agmagentCheckBox.setChecked(agmagent)
         self.update_editor()
         self.ui.agmagentCheckBox.blockSignals(False)
 
     def update_agmagent(self):
-        if self.ui.agmagentCheckBox.isChecked():
-            self._cdsl_doc.set_agmagent(True)
-        else:
-            self._cdsl_doc.set_agmagent(False)
+        self._cdsl_doc.set_agmagent(self.ui.agmagentCheckBox.isChecked())
         self.update_editor()
 
     @Slot()
@@ -430,14 +410,8 @@ class RoboCompDSLGui(QMainWindow):
     @Slot()
     def updateGuiCheck(self, gui):
         self.ui.guiCheckBox.blockSignals(True)
-        if self.ui.guiCheckBox.isChecked():
-            if gui is False:
-                self.ui.guiCheckBox.setCheckState(Qt.Unchecked)
-                self.ui.guiComboBox.setEnabled(False)
-        else:
-            if gui is True:
-                self.ui.guiCheckBox.setCheckState(Qt.Checked)
-                self.ui.guiComboBox.setEnabled(True)
+        self.ui.guiCheckBox.setChecked(gui)
+        self.ui.guiComboBox.setEnabled(gui)
         self.ui.guiCheckBox.blockSignals(False)
 
     def updateName(self):
@@ -447,12 +421,8 @@ class RoboCompDSLGui(QMainWindow):
 
     def update_gui(self):
         checked = self.ui.guiCheckBox.isChecked()
-        if checked:
-            self._cdsl_doc.set_gui(True)
-            self.ui.guiComboBox.setEnabled(True)
-        else:
-            self._cdsl_doc.set_gui(False)
-            self.ui.guiComboBox.setEnabled(False)
+        self._cdsl_doc.set_gui(checked)
+        self.ui.guiComboBox.setEnabled(checked)
         self.update_editor()
 
     def update_cdslDoc(self, cdsl_dict):
