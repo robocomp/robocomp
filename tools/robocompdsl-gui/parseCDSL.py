@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 
-from pyparsing import Word, alphas, alphanums, nums, OneOrMore, CharsNotIn, Literal, Combine
-from pyparsing import cppStyleComment, Optional, Suppress, ZeroOrMore, Group, StringEnd, srange
-from pyparsing import nestedExpr, CaselessLiteral, CaselessKeyword, ParseBaseException
-from collections import Counter
 import sys
 import traceback
 import os
 
+from pyparsing import Word, alphas, alphanums, nums, OneOrMore, CharsNotIn, Literal, Combine
+from pyparsing import cppStyleComment, Optional, Suppress, ZeroOrMore, Group, StringEnd, srange
+from pyparsing import nestedExpr, CaselessLiteral, CaselessKeyword, ParseBaseException
+from collections import Counter
 from CDSLDocument import CDSLDocument
 
 debug = False
@@ -112,8 +112,8 @@ def getNameNumber(aalist):
                 ret.append([k, ''])
     return ret
 
-class CDSLParsing:
 
+class CDSLParsing:
     CDSLDoc = None  # attribute to store CDSLDocument
 
     def __init__(self, cdslDoc):
@@ -128,11 +128,11 @@ class CDSLParsing:
 
         # keywords
         (
-        IMPORT, COMMUNICATIONS, LANGUAGE, COMPONENT, CPP, CPP11, GUI, QT, PYTHON, REQUIRES, IMPLEMENTS,
-        SUBSCRIBESTO, PUBLISHES, OPTIONS, TRUE, FALSE, InnerModelViewer, STATEMACHINE) = map(CaselessKeyword, """
+            IMPORT, COMMUNICATIONS, LANGUAGE, COMPONENT, CPP, CPP11, GUI, QT, PYTHON, REQUIRES, IMPLEMENTS,
+            SUBSCRIBESTO, PUBLISHES, OPTIONS, TRUE, FALSE, InnerModelViewer, STATEMACHINE, QWIDGET, QDIALOG, QMAINWINDOW) = map(CaselessKeyword, """
         import communications language component cpp cpp11 gui Qt 
         python requires implements subscribesTo publishes options true false
-        InnerModelViewer statemachine""".split())
+        InnerModelViewer statemachine QWidget QDialog QMainWindow""".split())
 
         identifier = Word(alphas + "_", alphanums + "_")
 
@@ -152,18 +152,24 @@ class CDSLParsing:
         communications = Group(COMMUNICATIONS.suppress() + OBRACE + ZeroOrMore(communicationList) + CBRACE + SEMI)
 
         # Language
-        language = Group(LANGUAGE.suppress() - (CPP | CPP11 | PYTHON) - SEMI).setParseAction(self.CDSLDoc.analize_language )
-
-        # InnerModelViewer
-        innermodelviewer = Group(Optional(InnerModelViewer.suppress() + (TRUE | FALSE) + SEMI)).setParseAction(self.CDSLDoc.analize_innerModelViewer)
+        language = Group(LANGUAGE.suppress() - (CPP | CPP11 | PYTHON) - SEMI).setParseAction(
+            self.CDSLDoc.analize_language)
 
         # GUI
-        gui = Group(Optional(GUI.suppress() - QT + OPAR - identifier - CPAR + SEMI)).setParseAction(self.CDSLDoc.analize_gui)
+        gui = Group(Optional(GUI.suppress() - QT + OPAR - (QWIDGET | QDIALOG | QMAINWINDOW) - CPAR + SEMI)).setParseAction(
+            self.CDSLDoc.analize_gui)
+
+        # InnerModelViewer
+        innermodelviewer = Group(Optional(InnerModelViewer.suppress() + (TRUE | FALSE) + SEMI)).setParseAction(
+            self.CDSLDoc.analize_innerModelViewer)
 
         # additional options
-        options = Group(Optional(OPTIONS.suppress() + identifier + ZeroOrMore(Suppress(Word(',')) + identifier) + SEMI)).setParseAction(self.CDSLDoc.analize_agmagent)
+        options = Group(Optional(
+            OPTIONS.suppress() + identifier + ZeroOrMore(Suppress(Word(',')) + identifier) + SEMI)).setParseAction(
+            self.CDSLDoc.analize_agmagent)
 
-        statemachine = Group(Optional(STATEMACHINE.suppress() + QUOTE + CharsNotIn("\";").setResultsName('path') + QUOTE + SEMI))
+        statemachine = Group(
+            Optional(STATEMACHINE.suppress() + QUOTE + CharsNotIn("\";").setResultsName('path') + QUOTE + SEMI))
 
         # Component definition
         componentContents = communications('communications') + language('language') + Optional(gui('gui')) + Optional(
@@ -192,7 +198,7 @@ class CDSLParsing:
 
         print(errors)
 
-     #TO TEST GUI
+    # TO TEST GUI
     def analizeText(self, inputText, verbose=False, includeDirectories=None):
         cdsl_content = {}
         errors = []
@@ -230,7 +236,6 @@ class CDSLParsing:
             raise ex
         ret['filename'] = filename
         return ret
-
 
     def fromString(self, inputText, verbose=False, includeDirectories=[]):
         text = nestedExpr("/*", "*/").suppress().transformString(inputText)
@@ -309,8 +314,7 @@ class CDSLParsing:
         component['options'] = []
         for op in tree['properties']['options']:
             component['options'].append(op.lower())
-            #component['options'].append(op)
-
+            # component['options'].append(op)
 
         # Component name
         component['name'] = tree['component']['name']
@@ -469,7 +473,8 @@ def isAGM2AgentROS(component):
 
 
 if __name__ == '__main__':
-    files = ["Comp1.cdsl", "error.cdsl", "Comp2.cdsl", "Comp3.cdsl", "Comp4.cdsl", "Comp5.cdsl", "Comp6.cdsl", "eleComp.cdsl"]
+    files = ["Comp1.cdsl", "error.cdsl", "Comp2.cdsl", "Comp3.cdsl", "Comp4.cdsl", "Comp5.cdsl", "Comp6.cdsl",
+             "eleComp.cdsl"]
     cdslDOC = CDSLDocument()
     parsing = CDSLParsing(cdslDOC)
     parsing.analizeCDSL("cdslFiles/Comp1.cdsl")
@@ -480,4 +485,3 @@ if __name__ == '__main__':
         print(file)
         parsing.analizeCDSL("cdslFiles/" + file)
         print()
-
