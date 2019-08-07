@@ -453,13 +453,13 @@ class RoboCompDSLGui(QMainWindow):
     def updateAgmagentCheck(self, agmagent):
         self.ui.mainTextEdit.blockSignals(True)
         self.ui.agmagentCheckBox.blockSignals(True)
-
         if self.ui.agmagentCheckBox.isChecked():
             if agmagent is False:
                 self.ui.agmagentCheckBox.setCheckState(Qt.Unchecked)
         else:
             if agmagent is True:
                 self.ui.agmagentCheckBox.setCheckState(Qt.Checked)
+        self.update_editor()
         self.ui.mainTextEdit.blockSignals(False)
         self.ui.agmagentCheckBox.blockSignals(False)
 
