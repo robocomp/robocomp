@@ -1,5 +1,4 @@
 import os
-import re
 import signal
 import sys
 
@@ -7,10 +6,14 @@ from PySide2.QtCore import *
 from PySide2 import QtCore
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
+
+# local file
 from ui_gui import Ui_MainWindow
 from parseGUI import LoadInterfaces, FileChecker
 from CDSLDocument import CDSLDocument, CDSLLanguage
 from parseCDSL import CDSLParsing
+from highlighter import Highlighter
+from customListWidget import CustomListWidget
 
 # DETECT THE ROBOCOMP INSTALLATION TO IMPORT RCPORTCHECKER CLASS
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -40,66 +43,15 @@ if not os.path.isdir(ROBOCOMP_INTERFACES):
     print('ROBOCOMP INTERFACES not found at %s! Trying HOME directory (%s)' % (ROBOCOMP_INTERFACES, new_path))
     ROBOCOMP_INTERFACES = new_path
     if not os.path.isdir(ROBOCOMP_INTERFACES):
-        print("Default Robocomp INTERFACES directory (%s) doesn't exists. Exiting!" % (ROBOCOMP_INTERFACES))
+        print("Default RoboComp INTERFACES directory (%s) doesn't exists. Exiting!" % (ROBOCOMP_INTERFACES))
         sys.exit()
-
-
-class Highlighter(QSyntaxHighlighter):
-    def __init__(self, parent=None):
-        super(Highlighter, self).__init__(parent)
-
-        keywordFormat = QTextCharFormat()
-        keywordFormat.setForeground(Qt.darkBlue)
-        keywordFormat.setFontWeight(QFont.Bold)
-
-        keywordPatterns = ["\\bimport\\b", "\\bcomponent\\b", "\\bcommunications\\b",
-                           "\\bpublishes\\b", "\\bimplements\\b", "\\bsubscribesTo\\b", "\\brequires\\b",
-                           "\\blanguage\\b", "\\bgui\\b", "\\boptions\\b", "\\binnerModelViewer\\b",
-                           "\\bstateMachine\\b", "\\bmodules\\b", "\\bagmagent\\b"]
-
-        self.highlightingRules = [(QRegExp(pattern), keywordFormat)
-                                  for pattern in keywordPatterns]
-
-        self.multiLineCommentFormat = QTextCharFormat()
-        self.multiLineCommentFormat.setForeground(Qt.red)
-
-        self.commentStartExpression = QRegExp("/\\*")
-        self.commentEndExpression = QRegExp("\\*/")
-
-    def highlightBlock(self, text):
-        for pattern, format in self.highlightingRules:
-            expression = QRegExp(pattern)
-            index = expression.indexIn(text)
-            while index >= 0:
-                length = expression.matchedLength()
-                self.setFormat(index, length, format)
-                index = expression.indexIn(text, index + length)
-
-        self.setCurrentBlockState(0)
-
-        startIndex = 0
-        if self.previousBlockState() != 1:
-            startIndex = self.commentStartExpression.indexIn(text)
-
-        while startIndex >= 0:
-            endIndex = self.commentEndExpression.indexIn(text, startIndex)
-
-            if endIndex == -1:
-                self.setCurrentBlockState(1)
-                commentLength = len(text) - startIndex
-            else:
-                commentLength = endIndex - startIndex + self.commentEndExpression.matchedLength()
-
-            self.setFormat(startIndex, commentLength,
-                           self.multiLineCommentFormat)
-            startIndex = self.commentStartExpression.indexIn(text,
-                                                             startIndex + commentLength);
 
 
 class RoboCompDSLGui(QMainWindow):
     def __init__(self):
-        self.newLines = 1
         super(RoboCompDSLGui, self).__init__()
+
+        self.newLines = 1
 
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
@@ -136,7 +88,7 @@ class RoboCompDSLGui(QMainWindow):
         self.ui.directoryButton.clicked.connect(self.set_output_directory)
 
         # CUSTOM INTERFACES LIST WIDGET
-        self._interface_list = customListWidget(self.ui.centralWidget)
+        self._interface_list = CustomListWidget(self.ui.centralWidget)
         self.ui.gridLayout.addWidget(self._interface_list, 4, 0, 9, 2)
         self._interface_list.setSelectionMode(QAbstractItemView.ExtendedSelection)
         self._interface_list.customItemSelection.connect(self.set_communication)
@@ -461,8 +413,6 @@ class RoboCompDSLGui(QMainWindow):
             self._cdsl_doc.set_agmagent(False)
         self.update_editor()
 
-
-
     @Slot()
     def updateGuiCombo(self, guiType):
         for index in range(self.ui.guiComboBox.count()):
@@ -585,62 +535,6 @@ class QConsole(QTextEdit):
 
     def clear_console(self):
         self.setText(" ")
-
-
-class customListWidget(QListWidget):
-    customItemSelection = Signal()
-
-    def __init__(self, parent=None):
-        super(customListWidget, self).__init__(parent)
-        self.itemList = []
-        self.setMinimumSize(QtCore.QSize(160, 0))
-        self.setMaximumSize(QtCore.QSize(245, 16777215))
-        # self.setObjectName("customListWidget")
-
-    def mousePressEvent(self, event):
-        super(customListWidget, self).mousePressEvent(event)
-        item = self.itemAt(event.pos())
-        if item:
-            text = item.text().split(":")[0]
-            # check button clicked
-            if event.button() == Qt.LeftButton:
-                if (event.modifiers() == Qt.ShiftModifier) or (event.modifiers() == Qt.ControlModifier):
-                    self.itemList.append(text)
-                else:
-                    count = self.itemList.count(text)
-                    self.clearItems()
-                    for c in range(count + 1):
-                        self.itemList.append(text)
-            elif event.button() == Qt.RightButton:
-                if text in self.itemList:
-                    self.itemList.remove(text)
-
-            # update list text
-            count = self.itemList.count(text)
-            self.itemAt(event.pos()).setSelected(count)
-            if count:
-                self.itemAt(event.pos()).setText(text + ":" + str(count))
-            else:
-                # self.itemAt(event.pos()).setPlainText(text)
-                self.itemAt(event.pos()).setText(text)
-
-            self.customItemSelection.emit()
-        else:
-            self.clearItems()
-
-    def clearItems(self):
-        self.itemList = []
-        for pos in range(self.count()):
-            self.item(pos).setText(self.item(pos).text().split(":")[0])
-
-    # return our custom selected item list
-    def customItemList(self):
-        return self.itemList
-
-    # just for testing
-    @Slot()
-    def print(self):
-        print("Selected items\n", self.itemList)
 
 
 if __name__ == "__main__":
