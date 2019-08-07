@@ -142,21 +142,48 @@ class CDSLDocument(QObject):
     def add_import(self, import_file):
         self._imports.add(import_file)
 
-    def add_require(self, require_name):
+    def remove_import(self, import_file):
+        if import_file in self._imports:
+            self._imports.remove(import_file)
+
+    def add_requires(self, require_name):
         self._communications["requires"].append(require_name)
 
-    def add_publish(self, publish_name):
+    def remove_requires(self, require_name):
+        if require_name in self._communications["requires"]:
+            self._communications["requires"].remove(require_name)
+
+    def add_publishes(self, publish_name):
         self._communications["publishes"].append(publish_name)
 
-    def add_subscribe(self, subscribe_name):
+    def remove_publishes(self, publish_name):
+        if publish_name in self._communications["publishes"]:
+            self._communications["publishes"].remove(require_name)
+
+    def add_subscribesTo(self, subscribe_name):
         self._communications["subscribesTo"].append(subscribe_name)
 
-    def add_implement(self, implement_name):
+    def remove_subscribesTo(self, subscribe_name):
+        if subscribe_name in self._communications["subscribesTo"]:
+            self._communications["subscribesTo"].remove(require_name)
+
+    def add_implements(self, implement_name):
         self._communications["implements"].append(implement_name)
+
+    def remove_implements(self, implement_name):
+        if implement_name in self._communications["implements"]:
+            self._communications["implements"].remove(require_name)
 
     def add_communication(self, com_type, com_name):
         if com_type in self._communications:
             self._communications[com_type].append(com_name)
+        else:
+            print("CDSLDocument.add_communication: invalid communication type: %s" % com_type)
+
+    def remove_communication(self, com_type, com_name):
+        if com_type in self._communications:
+            if com_name in self._communications[com_type]:
+                self._communications[com_type].remove(com_name)
         else:
             print("CDSLDocument.add_communication: invalid communication type: %s" % com_type)
 
@@ -177,10 +204,26 @@ class CDSLDocument(QObject):
 
     def set_agmagent(self, agmagent):
         self._agmagent = agmagent
+        agm_import = ['AGMExecutive.idsl', 'AGMCommonBehavior.idsl', 'AGMWorldModel.idsl']
         if agmagent is True:
             self.add_option("agmagent")
+            # imports
+            for file in agm_import:
+                self.add_import(file)
+            # communications
+            if 'AGMCommonBehavior' not in self._communications['implements']:
+                self.add_communication('implements', 'AGMCommonBehavior')
+            if 'AGMExecutive' not in self._communications['requires']:
+                self.add_communication('requires', 'AGMExecutive')
+            if 'AGMExecutiveTopic' not in self._communications['subscribesTo']:
+                self.add_communication('subscribesTo', 'AGMExecutiveTopic')
         else:
             self.delete_option("agmagent")
+            for file in agm_import:
+                self.remove_import(file)
+            self.remove_communication('implements', 'AGMCommonBehavior')
+            self.remove_communication('requires', 'AGMExecutive')
+            self.remove_communication('subscribesTo', 'AGMExecutiveTopic')
 
     def set_innerModel(self, innerModel):
         self._innerModel = innerModel
@@ -236,7 +279,7 @@ class CDSLDocument(QObject):
     def analize_agmagent(self, s, loc, toks):
         agmagent = False
         if toks.options:
-            if 'agmagent' in toks.options[0]:
+            if 'agmagent' in toks.options[0].lower():
                 agmagent = True
         self.set_agmagent(agmagent)
         self.agmagentChange.emit(self.get_agmagent())

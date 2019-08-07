@@ -464,14 +464,14 @@ class RoboCompDSLGui(QMainWindow):
         self.ui.agmagentCheckBox.blockSignals(False)
 
     def update_agmagent(self):
-        checked = self.ui.agmagentCheckBox.isChecked()
         self.ui.mainTextEdit.blockSignals(True)
-        if checked:
+        if self.ui.agmagentCheckBox.isChecked():
             self._cdsl_doc.set_agmagent(True)
         else:
             self._cdsl_doc.set_agmagent(False)
-        self.ui.mainTextEdit.blockSignals(False)
         self.update_editor()
+        self.ui.mainTextEdit.blockSignals(False)
+
 
     @Slot()
     def updateGuiCombo(self, guiType):
