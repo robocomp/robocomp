@@ -241,12 +241,11 @@ class CDSLDocument(QObject):
         if option in self._options:
             self._options.remove(option)
 
-    # TESTING
     def clear(self):
         self.doc = []
         self._component_name = ""
         self._communications = {"implements": [], "requires": [], "subscribesTo": [], "publishes": []}
-        self._imports = OrderedSet()
+        self._imports = set()
         self._requires = []
         self._language = ""
         self._gui = False
@@ -304,3 +303,6 @@ class CDSLDocument(QObject):
 
     def get_gui_type(self):
         return self._gui_type
+
+    def analize_compname(self, s, loc, toks):
+        print(toks)

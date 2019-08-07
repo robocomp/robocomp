@@ -107,24 +107,17 @@ class RoboCompDSLGui(QMainWindow):
         self._communications = {"implements": [], "requires": [], "subscribesTo": [], "publishes": []}
         self._interfaces = {}
         self._cdsl_doc = CDSLDocument()
+        self.parser = CDSLParsing(self._cdsl_doc)
         self._command_process = QProcess()
+        self.file_checker = FileChecker()
 
-        # TESTING
+        # connect signals
         self._cdsl_doc.languageChange.connect(self.updateLanguageCombo)
         self._cdsl_doc.innerModelViewerChange.connect(self.updateInnerModelViewerCheck)
         self._cdsl_doc.agmagentChange.connect(self.updateAgmagentCheck)
         self._cdsl_doc.guiChange.connect(self.updateGuiCheck)
         self._cdsl_doc.guiTypeChange.connect(self.updateGuiCombo)
-        self.parser = CDSLParsing(self._cdsl_doc)
-        self.file_checker = FileChecker()
-
-        self._cdsl_doc.set_name("comp_name")
-        self._cdsl_doc.set_language('Python')
-        self.ui.mainTextEdit.setPlainText(self._cdsl_doc.generate_doc())
-
         self.ui.mainTextEdit.textChanged.connect(self.parseText)
-
-        # COMPONENT NAME
         self.ui.nameLineEdit.textEdited.connect(self.update_component_name)
 
         # DIRECTORY SELECTION
@@ -162,11 +155,8 @@ class RoboCompDSLGui(QMainWindow):
         self.ui.innermodelCheckBox.stateChanged.connect(self.update_innerModelViewer)
 
         # MAIN TEXT EDITOR
-        # self.ui.mainTextEdit.setPlainText("")
         self._document = self.ui.mainTextEdit.document()
         self._component_directory = None
-        # self.ui.mainTextEdit.setText(self._cdsl_doc.generate_doc())
-        # self.ui.mainTextEdit.setPlainText(self._cdsl_doc.generate_doc())
 
         # CONSOLE
         self._console = QConsole(self.ui.centralWidget)
@@ -188,6 +178,8 @@ class RoboCompDSLGui(QMainWindow):
 
         self.setupEditor()
         self.load_idsl_files()
+        # initialize file
+        self.reset_cdsl_file()
 
     def setupEditor(self):
        self.highlighter = Highlighter(self.ui.mainTextEdit.document())
@@ -247,7 +239,7 @@ class RoboCompDSLGui(QMainWindow):
                 fileInfo = QFileInfo(filePath)
                 self.ui.directoryLineEdit.setText(fileInfo.absolutePath())
                 self.ui.nameLineEdit.blockSignals(True)
-                self.ui.nameLineEdit.setText(fileInfo.fileName())
+                self.ui.nameLineEdit.setText(fileInfo.completeBaseName())
                 self.ui.nameLineEdit.blockSignals(False)
                 inputText = open(filePath, 'r').read()
                 self.ui.mainTextEdit.setPlainText(inputText)
