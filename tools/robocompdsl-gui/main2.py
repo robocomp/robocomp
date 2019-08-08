@@ -370,13 +370,11 @@ class RoboCompDSLGui(QMainWindow):
         self.update_editor()
 
     # Working for the current parseCDSL version
-    # To test it try writting: innerModelViewer true; or innerModelViewer false;
     @Slot()
     def updateInnerModelViewerCheck(self, innerModelViewer):
         self.ui.innermodelCheckBox.blockSignals(True)
         self.ui.innermodelCheckBox.setChecked(self.ui.innermodelCheckBox.isChecked())
         self.ui.innermodelCheckBox.blockSignals(False)
-//TODO: review
 
     def update_innerModelViewer(self):
         self._cdsl_doc.set_innerModel(self.ui.innermodelCheckBox.isChecked())

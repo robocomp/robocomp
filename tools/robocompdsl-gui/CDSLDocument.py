@@ -30,8 +30,6 @@ class CDSLDocument(QObject):
         self._language = ""
         self._gui = False
         self._gui_type = CDSLGui.QWIDGET
-        self._agmagent = False
-        self._innerModel = False
         self._options = []
         self._current_indentation = 0
 
@@ -102,12 +100,6 @@ class CDSLDocument(QObject):
             doc_str = self._t() + "gui Qt(" + self._gui_type + ");\n"
         return doc_str
 
-    def generate_innerModelViewer(self):
-        doc_str = ""
-        if self._innerModel:
-            doc_str = self._t() + "innerModelViewer " + str(self._innerModel) + ";\n"
-        return doc_str
-
     def generate_options(self):
         doc_str = ""
         if len(self._options) > 0:
@@ -127,7 +119,6 @@ class CDSLDocument(QObject):
         doc_str += self.generate_language()
         doc_str += self.generate_ui()
         doc_str += self.generate_options()
-        doc_str += self.generate_innerModelViewer()
         doc_str += self.close_sec() + ";"
         return doc_str
 
@@ -204,7 +195,7 @@ class CDSLDocument(QObject):
         self._gui_type = gui_type
 
     def set_agmagent(self, agmagent):
-        self._agmagent = agmagent
+        self.add_option("agmagent")
         agm_import = ['AGMExecutive.idsl', 'AGMCommonBehavior.idsl', 'AGMWorldModel.idsl']
         if agmagent is True:
             self.add_option("agmagent")
@@ -219,7 +210,7 @@ class CDSLDocument(QObject):
             if 'AGMExecutiveTopic' not in self._communications['subscribesTo']:
                 self.add_communication('subscribesTo', 'AGMExecutiveTopic')
         else:
-            self.delete_option("agmagent")
+            self.remove_option("agmagent")
             for file in agm_import:
                 self.remove_import(file)
             self.remove_communication('implements', 'AGMCommonBehavior')
@@ -227,18 +218,16 @@ class CDSLDocument(QObject):
             self.remove_communication('subscribesTo', 'AGMExecutiveTopic')
 
     def set_innerModel(self, innerModel):
-        self._innerModel = innerModel
-
-    #        if innerModel == True:
-    #            self.add_option("innerModelViewer")
-    #        else:
-    #            self.delete_option("innerModelViewer")
+        if innerModel:
+            self.add_option("innermodelviewer")
+        else:
+            self.remove_option("innermodelviewer")
 
     def add_option(self, option):
         if option not in self._options:
             self._options.append(option)
 
-    def delete_option(self, option):
+    def remove_option(self, option):
         if option in self._options:
             self._options.remove(option)
 
@@ -264,29 +253,21 @@ class CDSLDocument(QObject):
     def get_language(self):
         return self._language
 
-    def analize_innerModelViewer(self, s, loc, toks):
-        inner_str = toks.innermodelviewer[0]
-        inner = False
-        if inner_str == 'true':
-            inner = True
-        if self._innerModel != inner:
-            self.set_innerModel(inner)
-            self.innerModelViewerChange.emit(self.get_innerModelViewer())
-
-    def get_innerModelViewer(self):
-        return self._innerModel
-
-    def analize_agmagent(self, s, loc, toks):
-        if toks.options:
-            if 'agmagent' in toks.options[0].lower():
-                self.set_agmagent(True)
-                self.agmagentChange.emit(self.get_agmagent())
-        elif self._agmagent:
+    def analize_options(self, s, loc, toks):
+        names = [item.lower() for sublist in toks for item in sublist]
+        #TODO: review
+        if 'agmagent' in names:
+            self.set_agmagent(True)
+            self.agmagentChange.emit(True)
+        elif 'agmagent' in self._options:
             self.set_agmagent(False)
-            self.agmagentChange.emit(self.get_agmagent())
-
-    def get_agmagent(self):
-        return self._agmagent
+            self.agmagentChange.emit(False)
+        if 'innermodelviewer' in names:
+            self.add_option('innermodelviewer')
+            self.innerModelViewerChange.emit(True)
+        elif 'innermodelviewer' in self._options:
+            self.remove_option('innermodelviewer')
+            self.innerModelViewerChange.emit(False)
 
     def analize_gui(self, s, loc, toks):
         gui = False

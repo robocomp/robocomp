@@ -12,7 +12,7 @@ class Highlighter(QSyntaxHighlighter):
 
         keywordPatterns = ["\\bimport\\b", "\\bcomponent\\b", "\\bcommunications\\b",
                            "\\bpublishes\\b", "\\bimplements\\b", "\\bsubscribesTo\\b", "\\brequires\\b",
-                           "\\blanguage\\b", "\\bgui\\b", "\\boptions\\b", "\\binnerModelViewer\\b",
+                           "\\blanguage\\b", "\\bgui\\b", "\\boptions\\b", "\\binnermodelviewer\\b",
                            "\\bstateMachine\\b", "\\bmodules\\b", "\\bagmagent\\b"]
 
         self.highlightingRules = [(QRegExp(pattern), keywordFormat)

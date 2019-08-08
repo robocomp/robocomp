@@ -6,7 +6,7 @@ import os
 
 from pyparsing import Word, alphas, alphanums, nums, OneOrMore, CharsNotIn, Literal, Combine
 from pyparsing import cppStyleComment, Optional, Suppress, ZeroOrMore, Group, StringEnd, srange
-from pyparsing import nestedExpr, CaselessLiteral, CaselessKeyword, ParseBaseException
+from pyparsing import nestedExpr, CaselessLiteral, CaselessKeyword, ParseBaseException, delimitedList
 from collections import Counter
 from CDSLDocument import CDSLDocument
 
@@ -129,17 +129,16 @@ class CDSLParsing:
         # keywords
         (
             IMPORT, COMMUNICATIONS, LANGUAGE, COMPONENT, CPP, CPP11, GUI, QT, PYTHON, REQUIRES, IMPLEMENTS,
-            SUBSCRIBESTO, PUBLISHES, OPTIONS, TRUE, FALSE, InnerModelViewer, STATEMACHINE, QWIDGET, QDIALOG, QMAINWINDOW) = map(CaselessKeyword, """
+            SUBSCRIBESTO, PUBLISHES, OPTIONS, AGMAGENT, INNERMODELVIEWER, STATEMACHINE, QWIDGET,
+            QDIALOG, QMAINWINDOW) = map(CaselessKeyword, """
         import communications language component cpp cpp11 gui Qt 
-        python requires implements subscribesTo publishes options true false
-        InnerModelViewer statemachine QWidget QDialog QMainWindow""".split())
+        python requires implements subscribesTo publishes options agmagent
+        innermodelviewer statemachine QWidget QDialog QMainWindow""".split())
 
         identifier = Word(alphas + "_", alphanums + "_")
 
         commIdentifier = Group(identifier('identifier') + Optional(
             OPAR + (CaselessKeyword("ice") | CaselessKeyword("ros")).setResultsName("type") + CPAR))
-
-
 
         # Imports
         idslImport = Suppress(IMPORT) - QUOTE + CharsNotIn("\";").setResultsName('path') - QUOTE + SEMI
@@ -161,21 +160,24 @@ class CDSLParsing:
         gui = Group(Optional(GUI.suppress() - QT + OPAR - (QWIDGET | QDIALOG | QMAINWINDOW) - CPAR + SEMI)).setParseAction(
             self.CDSLDoc.analize_gui)
 
-        # InnerModelViewer
-        innermodelviewer = Group(Optional(InnerModelViewer.suppress() + (TRUE | FALSE) + SEMI)).setParseAction(
-            self.CDSLDoc.analize_innerModelViewer)
-
         # additional options
         options = Group(Optional(
-            OPTIONS.suppress() + identifier + ZeroOrMore(Suppress(Word(',')) + identifier) + SEMI)).setParseAction(
-            self.CDSLDoc.analize_agmagent)
+            OPTIONS.suppress() + identifier + ZeroOrMore(Suppress(Word(',')) + identifier) + SEMI))
+
+        #not working
+        #available_options = INNERMODELVIEWER | AGMAGENT
+        #available_options_list = delimitedList(Group(available_options.setResultsName("option"))).setResultsName(
+        #    "options")
+        #options = Group(Optional(OPTIONS + available_options_list("options") + SEMI))
+        options.setParseAction(self.CDSLDoc.analize_options)
+
 
         statemachine = Group(
             Optional(STATEMACHINE.suppress() + QUOTE + CharsNotIn("\";").setResultsName('path') + QUOTE + SEMI))
 
         # Component definition
         componentContents = communications('communications') + language('language') + Optional(gui('gui')) + Optional(
-            options('options')) + Optional(innermodelviewer('innermodelviewer'))
+            options('options'))
 
         component = COMPONENT.suppress() + identifier("name") + OBRACE + componentContents("properties") + CBRACE + SEMI
 
@@ -220,7 +222,7 @@ class CDSLParsing:
         except rcExceptions.RobocompDslException as ex:
             errors.append((ex.line, ex.message))
         except Exception as ex:
-            errors.append((ex.line, "Unknown: " + ex.message))
+            errors.append((0, "Unknown: " + str(ex)))
         return cdsl_content, errors
 
     def fromFile(self, filename, verbose=False, includeDirectories=[]):
