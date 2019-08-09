@@ -1,5 +1,5 @@
 from PySide2.QtWidgets import QListWidget
-from PySide2.QtCore import Signal, Slot
+from PySide2.QtCore import Signal, Slot, Qt
 from PySide2 import QtCore
 
 
