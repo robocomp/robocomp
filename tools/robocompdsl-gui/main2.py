@@ -1,4 +1,5 @@
 import os
+import re
 import signal
 import sys
 
@@ -318,29 +319,50 @@ class RoboCompDSLGui(QMainWindow):
 
         self.ui.mainTextEdit.blockSignals(False)
 
+#    def highlight_error(self, error_str):
+#        self.ui.mainTextEdit.blockSignals(True)
+#        cursor = self.ui.mainTextEdit.textCursor()
+#
+#        # Setup the desired format for matches
+#        format = QTextCharFormat()
+#        format.setBackground(QBrush(QColor("lightGrey")))
+#
+#        # Setup the regex engine
+#        pattern = error_str
+#        regex = QtCore.QRegExp(pattern)
+#
+#        # Process the main editor
+#        pos = 0
+#        index = regex.indexIn(self.ui.mainTextEdit.toPlainText(), pos)
+#        while (index != -1):
+#            # Select the matched text and apply the desired format
+#            cursor.setPosition(index)
+#            cursor.movePosition(QTextCursor.EndOfWord, cursor.KeepAnchor, 1)
+#            cursor.mergeCharFormat(format)
+#            # Move to the next match
+#            pos = index + regex.matchedLength()
+#            index = regex.indexIn(self.ui.mainTextEdit.toPlainText(), pos)
+#        self.ui.mainTextEdit.blockSignals(False)
+
     def highlight_error(self, error_str):
         self.ui.mainTextEdit.blockSignals(True)
-        cursor = self.ui.mainTextEdit.textCursor()
+        result = re.search('line:(.*),', error_str)
+        line = int(result.group(1))
 
-        # Setup the desired format for matches
-        format = QTextCharFormat()
-        format.setBackground(QBrush(QColor("lightGrey")))
+        fmt = QTextCharFormat()
+        lineColor = QColor("Grey").lighter(180)
+        fmt.setBackground(lineColor)
+        # TODO: highlight all line
+        #fmt.setProperty(QTextFormat.FullWidthSelection, True)
 
-        # Setup the regex engine
-        pattern = error_str
-        regex = QtCore.QRegExp(pattern)
+        block = self.ui.mainTextEdit.document().findBlockByLineNumber(line-1)
+        blockPos = block.position()
 
-        # Process the main editor
-        pos = 0
-        index = regex.indexIn(self.ui.mainTextEdit.toPlainText(), pos)
-        while (index != -1):
-            # Select the matched text and apply the desired format
-            cursor.setPosition(index)
-            cursor.movePosition(QTextCursor.EndOfWord, cursor.KeepAnchor, 1)
-            cursor.mergeCharFormat(format)
-            # Move to the next match
-            pos = index + regex.matchedLength()
-            index = regex.indexIn(self.ui.mainTextEdit.toPlainText(), pos)
+        cursor = QTextCursor(self.ui.mainTextEdit.document())
+        cursor.setPosition(blockPos)
+        cursor.select(QTextCursor.LineUnderCursor)
+        cursor.setCharFormat(fmt)
+
         self.ui.mainTextEdit.blockSignals(False)
 
     def closeEvent(self, event):
@@ -456,11 +478,12 @@ class RoboCompDSLGui(QMainWindow):
             for err in errors:
                 # Get wrong word from error line
                 error_word = str(err[0])
-                error_word = error_word.lstrip()
-                error_word = error_word.rstrip()
+                #error_word = error_word.lstrip()
+                #error_word = error_word.rstrip()
                 # if wrong_word
                 if error_word != '0' and error_word != "":
-                    self.highlight_error(error_word)
+                    #self.highlight_error(error_word)
+                    self.highlight_error(str(err[1]))
                 msg = str(err)
                 self._console.append_error_text(msg)
             return False
