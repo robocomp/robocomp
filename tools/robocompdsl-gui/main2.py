@@ -346,21 +346,24 @@ class RoboCompDSLGui(QMainWindow):
 
     def highlight_error(self, error_str):
         self.ui.mainTextEdit.blockSignals(True)
-        result = re.search('line:(.*),', error_str)
-        line = int(result.group(1))
+        row_str = re.search('line:(.*),', error_str)
+        row = int(row_str.group(1))
+        col_str = error_str.split("col:", 1)[1]
+        col = int(col_str[:-1])
 
         fmt = QTextCharFormat()
-        lineColor = QColor("Grey").lighter(180)
+        lineColor = QColor("Red").lighter(180)
         fmt.setBackground(lineColor)
-        # TODO: highlight all line
-        #fmt.setProperty(QTextFormat.FullWidthSelection, True)
 
-        block = self.ui.mainTextEdit.document().findBlockByLineNumber(line-1)
-        blockPos = block.position()
-
+        current_block = self.ui.mainTextEdit.document().findBlockByLineNumber(row-1)
+        string = current_block.text()
+        if string.startswith('\t'):
+            col = col - 4
         cursor = QTextCursor(self.ui.mainTextEdit.document())
-        cursor.setPosition(blockPos)
-        cursor.select(QTextCursor.LineUnderCursor)
+        cursor.setPosition(0)
+        cursor.movePosition(QTextCursor.Down, QTextCursor.MoveAnchor, row-1)
+        cursor.movePosition(QTextCursor.Right, QTextCursor.MoveAnchor, col-1)
+        cursor.select(QTextCursor.WordUnderCursor)
         cursor.setCharFormat(fmt)
 
         self.ui.mainTextEdit.blockSignals(False)
