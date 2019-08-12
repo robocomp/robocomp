@@ -12,7 +12,7 @@ module RoboCompFaceIdentification
 
 	interface FaceIdentification
 	{
-		idempotent void addNewFace(TImage faceImg, string faceLabel);
+		idempotent void addNewFace(TImage faceImg, string faceLabel, out bool status);
 		idempotent void getFaceLabels(TImage faceImg, out string faceLabel);  
 		idempotent void deleteLabel(string faceLabel);
 	};
