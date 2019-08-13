@@ -10,7 +10,7 @@ CDSL structure
 ---
 The CDSL file structure will be explained in the following paragraphs. To better understand its layout, it is attached an example file below:
 
-```sh
+```
 import "Laser.idsl";
 import "DifferentialRobot.idsl";
 
@@ -133,7 +133,7 @@ component component_name
 This feature is still in beta version, so there are some restrictions when modifying the editor manually, that are listed below:
 “options”: It is not possible to change this block manually in the current version.
 
-Robocompdsl-gui features
+Extra features
 ---
 - Syntax Highlighter: when the user writes a corret keyword, it will be hilighted in blue bold font.   
 - Error Highlighter: when the user write s wrong word he will be warn with an red underlined highlight.
@@ -148,4 +148,4 @@ Rbocompdsl-GUI was developed using the following language and libraries versions
 - PyParsing 2.2
 - PySide2 (v. 5.12)
 
->For further information about Robocompdsl please read the robocompdsl User Guide.
+>For further information about Robocompdsl please read the Robocompdsl User Guide.
