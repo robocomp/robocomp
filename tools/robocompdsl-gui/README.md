@@ -1,4 +1,4 @@
-# Robocompdsl-GUI User Guide
+# Robocompdsl-gui User Guide
 
 Introduction
 ---
