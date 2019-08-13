@@ -51,7 +51,7 @@ Graphical Interface Elements and Functions
 
 Robocompdsl-gui layout is organized as we see in the following picture:
 
-[https://github.com/elebarr/robocomp/blob/development/tools/robocompdsl-gui/robocompdsl-gui_ex.png]
+![Robocompdsl-gui](https://github.com/elebarr/robocomp/blob/development/tools/robocompdsl-gui/robocompdsl-gui_ex.png)
 
 The graphical interface elements are grouped into different parts: top, left side, right side and bottom of the window.
 
