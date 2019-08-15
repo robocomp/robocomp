@@ -131,8 +131,9 @@ component component_name
 };
 ```
 
-This feature is still in beta version, so there are some restrictions when modifying the editor manually, that are listed below:
-“options”: It is not possible to change this block manually in the current version.
+This feature is still in beta version, so there are some restrictions when modifying the editor manually that are listed below:
+- Options agmagent : It is not possible to change this block manually in the current version.
+- Options innermodelviewer : It is not possible to change this block manually in the current version.
 
 Extra features
 ---
