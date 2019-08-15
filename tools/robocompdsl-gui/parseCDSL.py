@@ -95,7 +95,6 @@ def decoratorAndType_to_const_ampersand(decorator, vtype, modulePool, cpp11=Fals
                     else:
                         ampersand = ''
                         const = ''
-
     return const, ampersand
 
 
@@ -157,20 +156,22 @@ class CDSLParsing:
             self.CDSLDoc.analize_language)
 
         # GUI
-        gui = Group(Optional(GUI.suppress() - QT + OPAR - (QWIDGET | QDIALOG | QMAINWINDOW) - CPAR + SEMI)).setParseAction(
+        gui = Group(
+            Optional(GUI.suppress() - QT + OPAR - (QWIDGET | QDIALOG | QMAINWINDOW) - CPAR + SEMI)).setParseAction(
             self.CDSLDoc.analize_gui)
 
         # additional options
         options = Group(Optional(
             OPTIONS.suppress() + identifier + ZeroOrMore(Suppress(Word(',')) + identifier) + SEMI))
 
-        #not working
-        #available_options = INNERMODELVIEWER | AGMAGENT
-        #available_options_list = delimitedList(Group(available_options.setResultsName("option"))).setResultsName(
+        # not working
+        # available_options = INNERMODELVIEWER | AGMAGENT
+        # available_options_list = delimitedList(Group(available_options.setResultsName("option"))).setResultsName(
         #    "options")
-        #options = Group(Optional(OPTIONS + available_options_list("options") + SEMI))
-        options.setParseAction(self.CDSLDoc.analize_options)
+        # options = Group(Optional(OPTIONS + available_options_list("options") + SEMI))
 
+        # TODO: uncomment when working
+        # options.setParseAction(self.CDSLDoc.analize_options)
 
         statemachine = Group(
             Optional(STATEMACHINE.suppress() + QUOTE + CharsNotIn("\";").setResultsName('path') + QUOTE + SEMI))
@@ -480,15 +481,6 @@ def isAGM2AgentROS(component):
 
 
 if __name__ == '__main__':
-    files = ["Comp1.cdsl", "error.cdsl", "Comp2.cdsl", "Comp3.cdsl", "Comp4.cdsl", "Comp5.cdsl", "Comp6.cdsl",
-             "eleComp.cdsl"]
     cdslDOC = CDSLDocument()
     parsing = CDSLParsing(cdslDOC)
-    parsing.analizeCDSL("cdslFiles/Comp1.cdsl")
-    parsing.analizeCDSL("cdslFiles/Comp2.cdsl")
-
     sys.exit()
-    for file in files:
-        print(file)
-        parsing.analizeCDSL("cdslFiles/" + file)
-        print()

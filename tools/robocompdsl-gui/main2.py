@@ -217,7 +217,6 @@ class RoboCompDSLGui(QMainWindow):
 
     def write_cdsl_file(self):
         component_dir = str(self.ui.directoryLineEdit.text())
-        # text = self._cdsl_doc.generate_doc()
         text = self.ui.mainTextEdit.toPlainText()  # read content from main text editor
         if not self.ui.nameLineEdit.text():
             component_name, ok = QInputDialog.getText(self, 'No component name set', 'Enter component name:')
@@ -278,7 +277,6 @@ class RoboCompDSLGui(QMainWindow):
     def reselect_existing(self):
         com_type = self.ui.communicationsComboBox.currentText()
         selected = self._communications[com_type]
-        # self.ui.interfacesListWidget.clearSelection()
         self._interface_list.clearItems()
 
         for iface in selected:
@@ -306,7 +304,6 @@ class RoboCompDSLGui(QMainWindow):
 
     def clear_errors(self):
         self.ui.mainTextEdit.blockSignals(True)
-
         cursor = self.ui.mainTextEdit.textCursor()
         format = QTextCharFormat()
         format.setBackground(QBrush(QColor("white")))
@@ -316,33 +313,7 @@ class RoboCompDSLGui(QMainWindow):
         for i in range(self.ui.mainTextEdit.document().blockCount()):
             cursor.mergeCharFormat(format)
             cursor.movePosition(cursor.Down, cursor.KeepAnchor, 4)
-
         self.ui.mainTextEdit.blockSignals(False)
-
-#    def highlight_error(self, error_str):
-#        self.ui.mainTextEdit.blockSignals(True)
-#        cursor = self.ui.mainTextEdit.textCursor()
-#
-#        # Setup the desired format for matches
-#        format = QTextCharFormat()
-#        format.setBackground(QBrush(QColor("lightGrey")))
-#
-#        # Setup the regex engine
-#        pattern = error_str
-#        regex = QtCore.QRegExp(pattern)
-#
-#        # Process the main editor
-#        pos = 0
-#        index = regex.indexIn(self.ui.mainTextEdit.toPlainText(), pos)
-#        while (index != -1):
-#            # Select the matched text and apply the desired format
-#            cursor.setPosition(index)
-#            cursor.movePosition(QTextCursor.EndOfWord, cursor.KeepAnchor, 1)
-#            cursor.mergeCharFormat(format)
-#            # Move to the next match
-#            pos = index + regex.matchedLength()
-#            index = regex.indexIn(self.ui.mainTextEdit.toPlainText(), pos)
-#        self.ui.mainTextEdit.blockSignals(False)
 
     def highlight_error(self, error_str):
         self.ui.mainTextEdit.blockSignals(True)
@@ -394,7 +365,6 @@ class RoboCompDSLGui(QMainWindow):
         self._cdsl_doc.set_language(str(language))
         self.update_editor()
 
-    # Working for the current parseCDSL version
     @Slot()
     def updateInnerModelViewerCheck(self, innerModelViewer):
         self.ui.innermodelCheckBox.blockSignals(True)
@@ -449,7 +419,6 @@ class RoboCompDSLGui(QMainWindow):
         self.update_editor()
 
     def update_cdslDoc(self, cdsl_dict):
-        # print("UPDATE CDSLDOC")
         self._cdsl_doc._component_name = cdsl_dict['name']
         self._cdsl_doc._communications = {'implements': cdsl_dict['implements'], 'requires': cdsl_dict['requires'],
                                           'subscribesTo': cdsl_dict['subscribesTo'],
@@ -459,15 +428,7 @@ class RoboCompDSLGui(QMainWindow):
                                 'publishes': cdsl_dict['publishes']}
         imports_set = set(cdsl_dict['imports'])
         self._cdsl_doc._imports = imports_set
-        #        self._cdsl_doc._language = cdsl_dict['language']
-        #        if cdsl_dict['gui'] == 'none':
-        #            self._cdsl_doc._gui = False
-        #        else:
-        #            self._cdsl_doc._gui = True
-        #            gui_list = cdsl_dict['gui']
-        #            gui_type = gui_list[1]
-        #            self._cdsl_doc._gui_combo = gui_type
-        #        self._cdsl_doc._options = cdsl_dict['options']
+        self._cdsl_doc._options = cdsl_dict['options']
         self._console.clear_console()
         self._console.append_custom_text("Component is correct!")
 
@@ -481,11 +442,7 @@ class RoboCompDSLGui(QMainWindow):
             for err in errors:
                 # Get wrong word from error line
                 error_word = str(err[0])
-                #error_word = error_word.lstrip()
-                #error_word = error_word.rstrip()
-                # if wrong_word
                 if error_word != '0' and error_word != "":
-                    #self.highlight_error(error_word)
                     self.highlight_error(str(err[1]))
                 msg = str(err)
                 self._console.append_error_text(msg)
@@ -504,7 +461,6 @@ class QConsole(QTextEdit):
         self.setReadOnly(True)
         self.setMinimumSize(QtCore.QSize(0, 130))
         self.setStyleSheet("background-color: rgb(4, 11, 50);")
-        # self.setObjectName("console")
         self.setText("> Welcome to Robocompdsl.")
 
     def append_custom_text(self, text):

@@ -51,8 +51,3 @@ class CustomListWidget(QListWidget):
     # return our custom selected item list
     def customItemList(self):
         return self.itemList
-
-    # just for testing
-    @Slot()
-    def print(self):
-        print("Selected items\n", self.itemList)

@@ -78,4 +78,3 @@ class FileChecker:
                 msg = "Incompatible innermodelViewer configuration"
                 errors.append((0, msg))
         return errors
-

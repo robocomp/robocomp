@@ -242,7 +242,6 @@ class CDSLDocument(QObject):
 
     def analize_language(self, s, loc, toks):
         lang = toks.language[0]
-        #        print("analyze language: ", lang)
         if self._language != lang:
             self.set_language(lang)
             self.languageChange.emit(self.get_language())

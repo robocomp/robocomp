@@ -51,5 +51,6 @@ class Highlighter(QSyntaxHighlighter):
             self.setFormat(startIndex, commentLength,
                            self.multiLineCommentFormat)
             startIndex = self.commentStartExpression.indexIn(text,
-                                                             startIndex + commentLength);
+                                                             startIndex + commentLength)
+
 
