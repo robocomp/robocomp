@@ -340,16 +340,13 @@ class RoboCompDSLGui(QMainWindow):
         self.ui.mainTextEdit.blockSignals(False)
 
     def closeEvent(self, event):
-        QApplication.quit()
-
-    # TODO UNCOMMENT
-    #        quit_msg = "Are you sure you want to exit?"
-    #        reply = QMessageBox.question(self, 'Message', quit_msg, QMessageBox.Yes, QMessageBox.No)
-    #        if reply == QMessageBox.Yes:
-    #            QApplication.quit()
-    #        else:
-    #            if event is not None:
-    #                event.ignore()
+        quit_msg = "Are you sure you want to exit?"
+        reply = QMessageBox.question(self, 'Message', quit_msg, QMessageBox.Yes, QMessageBox.No)
+        if reply == QMessageBox.Yes:
+            QApplication.quit()
+        else:
+            if event is not None:
+                event.ignore()
 
     @Slot()
     def updateLanguageCombo(self, language):
