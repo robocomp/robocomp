@@ -1,9 +1,6 @@
 module RoboCompActivityRecognition
 {
-	string currentActivity;
 	sequence<float> FrameJoints
-	sequence<FrameJoints> frames;
-	bool ready;
 
 	interface ActivityRecognition
 	{
