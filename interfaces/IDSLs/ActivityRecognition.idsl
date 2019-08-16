@@ -1,6 +1,6 @@
 module RoboCompActivityRecognition
 {
-	sequence<float> FrameJoints
+	sequence<float> FrameJoints;
 
 	interface ActivityRecognition
 	{
