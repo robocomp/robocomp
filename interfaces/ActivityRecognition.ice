@@ -3,11 +3,12 @@
 
 module RoboCompActivityRecognition
 {
-        sequence<float> FrameJoints;
+        sequence<float> Joint;
+        sequence<Joint> Skeleton3D;
 
         interface ActivityRecognition
         {
-                bool addSkeleton(FrameJoints skeleton);
+                bool addSkeleton(Skeleton3D skeleton);
                 idempotent string getCurrentActivity();  
         };
 };
