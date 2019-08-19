@@ -304,3 +304,5 @@ bobComp=12252
 =======
 personComp=12249
 >>>>>>> 9993d09c37a1802b7c811463d5733ca549aca4b0
+ActivityRecognition=12253
+PoseEstimation=12254
