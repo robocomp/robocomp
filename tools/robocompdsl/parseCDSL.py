@@ -20,15 +20,15 @@ def getTypeFromModule(vtype, module):
 
 
 def getKindFromPool(vtype, modulePool, debug=False):
-	if debug: print vtype
+	if debug: print(vtype)
 	split = vtype.split("::")
-	if debug: print split
+	if debug: print(split)
 	if len(split) > 1:
 		vtype = split[1]
 		mname = split[0]
-		if debug: print 'SPLIT (' + vtype+'), (' + mname + ')'
+		if debug: print('SPLIT (' + vtype+'), (' + mname + ')')
 		if mname in modulePool.modulePool:
-			if debug: print 'dentro SPLIT (' + vtype+'), (' + mname + ')'
+			if debug: print('dentro SPLIT (' + vtype+'), (' + mname + ')')
 			r = getTypeFromModule(vtype, modulePool.modulePool[mname])
 			if r != None: return r
 		if mname.startswith("RoboComp"):
@@ -36,9 +36,9 @@ def getKindFromPool(vtype, modulePool, debug=False):
 				r = getTypeFromModule(vtype, modulePool.modulePool[mname[8:]])
 				if r != None: return r
 	else:
-		if debug: print 'no split'
+		if debug: print('no split')
 		for module in modulePool.modulePool:
-			if debug: print '  '+str(module)
+			if debug: print('  '+str(module))
 			r = getTypeFromModule(vtype, modulePool.modulePool[module])
 			if r != None: return r
 
@@ -111,17 +111,17 @@ def getNameNumber(aalist):
 class CDSLParsing:
 	@staticmethod
 	def fromFile(filename, verbose=False, includeIncludes=True, includeDirectories=None):
-		# print 'fromFile', includeDirectories
+		# print('fromFile', includeDirectories)
 		if includeDirectories == None:
 			includeDirectories = []
 		inputText = open(filename, 'r').read()
 		try:
-			# print 'fromFile2', includeDirectories
+			# print('fromFile2', includeDirectories)
 			ret = CDSLParsing.fromString(inputText, includeDirectories=includeDirectories)
 		except:
-			print 'Error reading', filename
+			print('Error reading', filename)
 			traceback.print_exc()
-			print 'Error reading', filename
+			print('Error reading', filename)
 			sys.exit(1)
 		ret['filename'] = filename
 		return ret
@@ -186,7 +186,7 @@ class CDSLParsing:
 	def fromString(inputText, verbose=False, includeDirectories=None):
 		if includeDirectories == None:
 			includeDirectories = []
-		if verbose: print 'Verbose:', verbose
+		if verbose: print('Verbose:', verbose)
 		text = nestedExpr("/*", "*/").suppress().transformString(inputText) 
 
 		CDSL = CDSLParsing.getCDSLParser()
@@ -200,23 +200,23 @@ class CDSLParsing:
 	@staticmethod
 	def printComponent(component, start=''):
 		# Component name
-		print 'Component', component['name']
+		print('Component', component['name'])
 		# Imports
-		print '\tImports:'
+		print('\tImports:')
 		for imp in component['imports']:
-			print '\t\t', imp
+			print('\t\t', imp)
 		# Language
-		print '\tLanguage:'
-		print '\t\t', component['language']
+		print('\tLanguage:')
+		print('\t\t', component['language'])
 		# GUI
-		print '\tGUI:'
-		print '\t\t', component['gui']
+		print('\tGUI:')
+		print('\t\t', component['gui'])
 		# Communications
-		print '\tCommunications:'
-		print '\t\tImplements', component['implements']
-		print '\t\tRequires', component['requires']
-		print '\t\tPublishes', component['publishes']
-		print '\t\tSubscribes', component['subscribesTo']
+		print('\tCommunications:')
+		print('\t\tImplements', component['implements'])
+		print('\t\tRequires', component['requires'])
+		print('\t\tPublishes', component['publishes'])
+		print('\t\tSubscribes', component['subscribesTo'])
 
 	# TODO: Check if we can use lru_cache decorator.
 	@staticmethod
@@ -230,17 +230,17 @@ class CDSLParsing:
 			try:
 				for directory in iD:
 					attempt = directory + '/' + idsl_basename
-					# print 'Check', attempt
+					# print('Check', attempt)
 					if os.path.isfile(attempt):
 						importedModule = IDSLParsing.fromFile(attempt)  # IDSLParsing.gimmeIDSL(attempt)
 						break
 			except:
-				print 'Error reading IMPORT', idsl_basename
+				print('Error reading IMPORT', idsl_basename)
 				traceback.print_exc()
-				print 'Error reading IMPORT', idsl_basename
+				print('Error reading IMPORT', idsl_basename)
 				os._exit(1)
 			if importedModule == None:
-				print 'Counldn\'t locate', idsl_basename
+				print('Counldn\'t locate', idsl_basename)
 				os._exit(1)
 
 
@@ -261,7 +261,7 @@ class CDSLParsing:
 	@staticmethod
 	def component(tree, includeDirectories=None, start=''):
 		component = {}
-		# print 'parseCDSL.component', includeDirectories
+		# print('parseCDSL.component', includeDirectories)
 		if includeDirectories == None:
 			includeDirectories = []
 
@@ -332,7 +332,7 @@ class CDSLParsing:
 				component['gui'] = [ uiT, uiI ]
 				pass
 			else:
-				print 'Wrong UI specification', tree['properties']['gui']
+				print('Wrong UI specification', tree['properties']['gui'])
 				sys.exit(1)
 		except:
 			# TODO: check exceptions and do something when accessing gui options fails.

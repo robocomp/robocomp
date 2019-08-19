@@ -14,11 +14,11 @@ class IDSLParsing:
 		inputText = open(filename, 'r').read()
 		try:
 			ret = IDSLParsing.fromString(inputText)
-		except ParseException, p:
-			print 'Error reading IDSL', filename
+		except ParseException as p:
+			print('Error reading IDSL', filename)
 			traceback.print_exc()
-			print 'Error reading IDSL', filename
-			print p.markInputline()
+			print('Error reading IDSL', filename)
+			print(p.markInputline())
 			os._exit(1)
 		ret['filename'] = filename
 		return ret
@@ -29,11 +29,11 @@ class IDSLParsing:
 		try:
 			ret = IDSLParsing.fromString(inputText)
 			ret = IDSLParsing.module(ret)
-		except ParseException, p:
-			print 'Error reading IDSL', filename
+		except ParseException as p:
+			print('Error reading IDSL', filename)
 			traceback.print_exc()
-			print 'Error reading IDSL', filename
-			print p.markInputline()
+			print('Error reading IDSL', filename)
+			print(p.markInputline())
 			os._exit(1)
 		ret['filename'] = filename
 		return ret
@@ -106,9 +106,9 @@ class IDSLParsing:
 			try:
 				path = p+'/'+name
 				return IDSLParsing.fromFile(path)
-			except IOError, e:
+			except IOError as e:
 				pass
-		print 'Couldn\'t locate ', name
+		print('Couldn\'t locate ', name)
 		sys.exit(-1)
 	@staticmethod
 	def gimmeIDSLStruct(name, files='', includeDirectories=None):
@@ -128,9 +128,9 @@ class IDSLParsing:
 			try:
 				path = p+'/'+name
 				return IDSLParsing.fromFileIDSL(path)
-			except IOError, e:
+			except IOError as e:
 				pass
-		print 'Couldn\'t locate ', name
+		print('Couldn\'t locate ', name)
 		sys.exit(-1)
 
 	@staticmethod
@@ -142,11 +142,11 @@ class IDSLParsing:
 
 		module['imports'] = ''
 		if 'imports' in tree:
-			#print module['name'], tree['imports']
+			#print(module['name'], tree['imports'])
 			for imp in tree['imports']:
-				#print 'proc', imp
-				#print 'has', IDSLParsing.gimmeIDSL(imp)['imports']
-				#print ''
+				#print('proc', imp)
+				#print('has', IDSLParsing.gimmeIDSL(imp)['imports'])
+				#print('')
 				module['imports'] += imp + '#' + IDSLParsing.gimmeIDSL(imp)['imports']
 		# INTERFACES DEFINED IN THE MODULE
 		module['interfaces'] = []
@@ -182,21 +182,21 @@ class IDSLParsing:
 				module['interfaces'].append(interface)
 		# TYPES DEFINED IN THE MODULE
 		module['types'] = []
-		#print '---\n---\nPARSE IDSL TYPES'
+		#print('---\n---\nPARSE IDSL TYPES')
 		for contentDef in tree['module']['contents']:
-			#print contentDef[0]
+			#print(contentDef[0])
 			if contentDef[0] in [ 'enum', 'struct', 'exception' ]:
 				typedef = { 'name':contentDef[1], 'type':contentDef[0]}
-				#print typedef
+				#print(typedef)
 				module['types'].append(typedef)
 			elif contentDef[0] in [ 'sequence', 'dictionary' ]:
 				typedef = { 'name':contentDef[-1], 'type':contentDef[0]}
-				#print typedef
+				#print(typedef)
 				module['types'].append(typedef)
 			elif contentDef[0] in ['interface']:
 				pass
 			else:
-				print 'Unknown module content', contentDef
+				print('Unknown module content', contentDef)
 		# SEQUENCES DEFINED IN THE MODULE
 		module['sequences'] = []
 		module['simpleSequences'] = []
@@ -204,7 +204,7 @@ class IDSLParsing:
 			if contentDef['type'] == 'sequence':
 				seqdef       = { 'name':tree['module']['name']+"/"+contentDef['name'], 'type':contentDef['type']}
 				simpleSeqdef = { 'name':tree['module']['name'], 'strName':contentDef['name']}
-				#print structdef
+				#print(structdef)
 				module['sequences'].append(seqdef)
 				module['simpleSequences'].append(simpleSeqdef)
 		# STRUCTS DEFINED IN THE MODULE
@@ -214,7 +214,7 @@ class IDSLParsing:
 			if contentDef['type'] == 'struct':
 				structdef       = { 'name':tree['module']['name']+"/"+contentDef['name'], 'type':contentDef['type']}
 				simpleStructdef = { 'name':tree['module']['name'], 'strName':contentDef['name']}
-				#print structdef
+				#print(structdef)
 				module['structs'].append(structdef)
 				module['simpleStructs'].append(simpleStructdef)
 
@@ -222,18 +222,18 @@ class IDSLParsing:
 
 	@staticmethod
 	def printModule(module, start=''):
-		print 'MODULE', module['name']+':'
-		print ' ', 'INTERFACES:'
+		print('MODULE', module['name']+':')
+		print(' ', 'INTERFACES:')
 		for interface in module['interfaces']:
-			print '   ', interface['name']
+			print('   ', interface['name'])
 			for mname in interface['methods']:
 				method = interface['methods'][mname]
-				print '     ', method['name']
-				print '        decorator', method['decorator']
-				print '        return', method['return']
-				print '        params'
+				print('     ', method['name'])
+				print('        decorator', method['decorator'])
+				print('        return', method['return'])
+				print('        params')
 				for p in method['params']:
-					print '         ', '<', p['decorator'], '>  <', p['type'], '>  <', p['name'], '>'
+					print('         ', '<', p['decorator'], '>  <', p['type'], '>  <', p['name'], '>')
 
 
 
@@ -267,10 +267,10 @@ class IDSLPool:
 						modulePool[filename] = module
 						self.includeInPool(module['imports'], modulePool, includeDirectories)
 						break
-					except IOError, e:
+					except IOError as e:
 						pass
 				if not filename in self.modulePool:
-					print 'Couldn\'t locate ', f
+					print('Couldn\'t locate ', f)
 					sys.exit(-1)
 	def IDSLsModule(self, module):
 		for filename in self.modulePool.keys():
@@ -327,4 +327,4 @@ class IDSLPool:
 
 if __name__ == '__main__':
 	idsl = IDSLParsing.fromFile(sys.argv[1])
-	print idsl
+	print(idsl)
