@@ -124,7 +124,7 @@ void InnerModelReader::recursive(QDomNode parentDomNode, InnerModel *model, Inne
 		if (not parentDomNode.firstChild().isNull())
 			qFatal("Only <innerModel>, <transform>, <translation>, <rotation> <prismaticjoint> or <joint> nodes may have childs. Line %d (%s)", parentDomNode.lineNumber(), qPrintable(parentDomNode.toElement().tagName()));
 
-	InnerModelNode *node;
+	InnerModelNode *node=NULL;
 	QDomElement e;
 	for (QDomNode domNode = parentDomNode.firstChild(); not domNode.isNull(); domNode = domNode.nextSibling())
 	{
@@ -141,7 +141,7 @@ void InnerModelReader::recursive(QDomNode parentDomNode, InnerModel *model, Inne
 					qFatal("Line %d: <%s> is not a valid tag name", domNode.lineNumber(), e.tagName().toStdString().c_str());
 				}
 				validAttrs = getValidNodeAttributes()[e.tagName().toLower()];
-				for (uint i=0; i < e.attributes().length(); i++)
+				for (int i=0; i < e.attributes().length(); i++)
 				{
 					if (not validAttrs.contains(e.attributes().item(i).toAttr().name()))
 					{
