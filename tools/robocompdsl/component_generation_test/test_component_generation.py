@@ -60,7 +60,7 @@ class ComponentGenerationChecker:
 			with open("generation_output.log", "wb") as log:
 				command_output = subprocess.Popen(
 					"python " + os.path.expanduser("~/robocomp/tools/robocompdsl/robocompdsl.py") + " %s ." % cdsl_file,
-					stdout=subprocess.PIPE,
+					stdout=log,
 					stderr=log,
 					shell=True)
 				stdout, stderr = command_output.communicate()
@@ -76,7 +76,7 @@ class ComponentGenerationChecker:
 		"""
 		with open("cmake_output.log", "wb") as log:
 			command_output = subprocess.Popen("cmake .",
-			                                  stdout=subprocess.PIPE,
+			                                  stdout=log,
 			                                  stderr=log,
 			                                  shell=True)
 			stdout, stderr = command_output.communicate()
@@ -95,7 +95,7 @@ class ComponentGenerationChecker:
 			command += " --dry-run"
 		with open("make_output.log", "wb") as log:
 			command_output = subprocess.Popen(command,
-			                                  stdout=subprocess.PIPE,
+			                                  stdout=log,
 			                                  stderr=log,
 			                                  shell=True)
 			stdout, stderr = command_output.communicate()
@@ -179,7 +179,7 @@ class ComponentGenerationChecker:
 								self.comp_failed += 1
 								cprint("%s compilation FAILED" % dir, 'red')
 					else:
-						cprint("$dir $cdsl_file generation FAILED", 'red')
+						cprint("%s generation FAILED"%os.path.join(dir,cdsl_file), 'red')
 						self.gen_failed += 1
 						self.results[dir]['generation'] = False
 					if not dirty:

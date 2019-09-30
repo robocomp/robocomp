@@ -27,7 +27,7 @@ component = CDSLParsing.fromFile(theCDSL, includeDirectories=includeDirectories)
 
 // Comment out this line if your application has a QtGui
 [[[cog
-if component['gui'] != 'none':
+if component['gui'] is not None:
 	cog.outl("#define USE_QTGUI\n")
 ]]]
 [[[end]]]

@@ -18,8 +18,8 @@ includeDirectories = theIDSLPaths.split('#')
 component = CDSLParsing.fromFile(theCDSL, includeDirectories=includeDirectories)
 sm = SMDSLparsing.fromFile(component['statemachine'])
 if sm is None:
-    component['statemachine'] = 'none'  
-if component == None:
+    component['statemachine'] = None
+if component is None:
 	print('Can\'t locate', theCDSLs)
 	sys.exit(1)
 
@@ -242,7 +242,7 @@ if sm is not None and sm['machine']['default']:
 }
 
 [[[cog
-if (sm is not None and sm['machine']['default'] is True) or component['statemachine'] == 'none':
+if (sm is not None and sm['machine']['default'] is True) or component['statemachine'] is None:
     cog.outl("void SpecificWorker::compute()")
     cog.outl("{")
     cog.outl("//computeCODE")

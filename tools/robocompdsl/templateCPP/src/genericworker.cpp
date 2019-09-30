@@ -18,8 +18,8 @@ includeDirectories = theIDSLPaths.split('#')
 component = CDSLParsing.fromFile(theCDSL, includeDirectories=includeDirectories)
 sm = SMDSLparsing.fromFile(component['statemachine'])
 if sm is None:
-    component['statemachine'] = 'none'
-if component == None:
+    component['statemachine'] = None
+if component is None:
 	print('Can\'t locate', theCDSLs)
 	sys.exit(1)
 
@@ -63,7 +63,7 @@ if component['language'].lower() == 'cpp':
 	cog.outl("GenericWorker::GenericWorker(MapPrx& mprx) :")
 else:
 	cog.outl("GenericWorker::GenericWorker(TuplePrx tprx) :")
-if component['gui'] != 'none':
+if component['gui'] is not None:
 	cog.outl("""#ifdef USE_QTGUI
 Ui_guiDlg()
 #else
@@ -215,7 +215,7 @@ if 'requires' in component:
 				cog.outl("<TABHERE>"+req.lower()+"_rosproxy = new ServiceClient"+req+"(&node);")
 			else:
 				cog.outl("<TABHERE>"+req.lower()+"_proxy = new ServiceClient"+req+"(&node);")
-if component['gui'] != 'none':
+if component['gui'] is not None:
 	cog.outl("""<TABHERE>#ifdef USE_QTGUI
 		setupUi(this);
 		show();
@@ -224,7 +224,7 @@ if component['gui'] != 'none':
 [[[end]]]
 	Period = BASIC_PERIOD;
 [[[cog
-if (sm is not None and sm['machine']['default'] is True) or component['statemachine'] == 'none':
+if (sm is not None and sm['machine']['default'] is True) or component['statemachine'] is None:
 	cog.outl("<TABHERE>connect(&timer, SIGNAL(timeout()), this, SLOT(compute()));")
 ]]]
 [[[end]]]

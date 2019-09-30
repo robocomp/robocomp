@@ -98,7 +98,7 @@ if sm is not None:
 		return True
 
 [[[cog
-if (sm is not None and sm['machine']['default'] is True) or component['statemachine'] == 'none':
+if (sm is not None and sm['machine']['default'] is True) or component['statemachine'] is None:
 	cog.outl("<TABHERE>@QtCore.Slot()")
 	cog.outl("<TABHERE>def compute(self):")
 	cog.outl("<TABHERE><TABHERE>print 'SpecificWorker.compute...'")
