@@ -8,21 +8,14 @@
 //****************************************************************** 
 #ifndef ROBOCOMPFULLPOSEESTIMATIONPUB_ICE
 #define ROBOCOMPFULLPOSEESTIMATIONPUB_ICE
+
+#include <FullPoseEstimation.ice>
+
 module RoboCompFullPoseEstimationPub
 {
-	exception HardwareFailedException{ string what; };
-	struct FullPose
-	{
-		 float x;
-		 float y;
-		 float z;
-		 float rx;
-		 float ry;
-		 float rz;
-	};
 	interface FullPoseEstimationPub
 	{
-		void newFullPose (FullPose pose);
+		void newFullPose (RoboCompFullPoseEstimation::FullPose pose);
 	};
 };
 

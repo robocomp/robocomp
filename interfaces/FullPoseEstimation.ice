@@ -13,6 +13,7 @@ module RoboCompFullPoseEstimation
 	exception HardwareFailedException{ string what; };
 	struct FullPose
 	{
+		 string source;
 		 float x;
 		 float y;
 		 float z;

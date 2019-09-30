@@ -848,6 +848,7 @@ bool InnerModel::collidable(const QString &a)
 	catch(...)
 	{
 		qDebug() <<__FUNCTION__ << "No node" << a;
+		return false;
 	}
 	if (node)
 	{

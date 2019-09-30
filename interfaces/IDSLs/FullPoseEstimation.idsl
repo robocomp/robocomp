@@ -4,6 +4,7 @@ module RoboCompFullPoseEstimation
 
     struct FullPose
     {
+        string source;
         float x;
         float y;
 	    float z;

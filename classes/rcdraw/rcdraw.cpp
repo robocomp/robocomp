@@ -679,7 +679,7 @@ void RCDraw::mouseMoveEvent(QMouseEvent *e)
 void RCDraw::mouseReleaseEvent ( QMouseEvent *e )
 {
 	emit endMouseCoor( QPoint(e->x(), e->y()) );
-	emit endCoor(e->posF());
+	emit endCoor(e->pos());
 	inicio.setX ( e->x() );
 	inicio.setY ( e->y() );
 
