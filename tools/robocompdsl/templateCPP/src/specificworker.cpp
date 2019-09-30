@@ -187,7 +187,7 @@ cog.outl("""//       THE FOLLOWING IS JUST AN EXAMPLE
 //		std::string innermodel_path = par.value;
 //		innerModel = new InnerModel(innermodel_path);
 //	}
-//	catch(std::exception e) { qFatal("Error reading config params"); }
+//	catch(const std::exception &e) { qFatal("Error reading config params"); }
 
 """)
 if component['innermodelviewer']:
