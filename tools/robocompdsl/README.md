@@ -166,12 +166,29 @@ Machine_testcpp{
 If the CDSL file have the `statemachine "filename.smdsl"` option in it and point to a valid smdsl the robocompdsl tool will create the defined states
 and transitions defined on this smdsl file.
 
+When you create a component with the State Machine definition some new methods and attributes are added to your specificworker class.  
+You will see methods with the `sm_` prefix created for each state defined in the smdsl file.  
+You will also have available a signal for each possible transition of your state machine.  
+Those signals are attributes of your specificworker class and have the `t_` prefix and the name have a syntax like this: `t_state1_to_state2`.  
+If you want to transition from a state to another you need to call the emit of that signal with something similar to this:
+```python
+# python
+self.t_state1_to_state2.emit()
+```
+or
+```c++
+// c++
+this.t_state1_to_state2.emit();
+```
+
+In the special case of using the DefaultMachine generated with the initial smdsl file, some emit are automatically added for you to call init and compute state on the way it was done previous to the State Machine framework.
+
 > Note: Most of the implementation of the State Machine behaviour was a contribution from [@ibarbech](https://github.com/ibarbech) during his participation on [GSoC 2016](https://robocomp.github.io/web/gsoc/2016/index).    
 
 
 
 ### 3.- Regenerating a component
-If you need to make any change on the cdsl to include new interfaces or options or if you make changes to the smdsl file you will need to regenerate
+If you need to make any change in the cdsl file to include new interfaces or options or if you make changes to the smdsl file you will need to regenerate the component to get those changes on the code of your component.
 the component to get those changes on the code of your component.  
 `robocompdsl` will only overwrite the main file and the generic* versions of the other files. The specific* version of the files will not be overwrited
 and a *.new file will be created side to side to your modified files.  
