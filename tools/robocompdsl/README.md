@@ -80,7 +80,7 @@ This will generate a CDSL file with the following content:
 	* statemachine: It must be followed by a path to a valid smdsl file that would describe the state machine that will be implemented on the component.
 	
 ### 2.- The SMDSL (State Machine DSL) file
-The smdsl is a domain-specific language that let us define the State Machine that would be in charge of the main functionality of the component component.  
+The smdsl is a domain-specific language that let us define the State Machine that would be in charge of the main functionality of the component behaviour.  
 If you want to know more about the State Machine Framework you can read about this on in the [QT Documentation](https://doc.qt.io/qt-5/statemachine-api.html).  
 Currently this language is defined like this:
 
@@ -163,6 +163,8 @@ Machine_testcpp{
 
 If the CDSL file have the `statemachine "filename.smdsl"` option in it and point to a valid smdsl the robocompdsl tool will create the defined states
 and transitions defined on this smdsl file.
+
+> Note: Most of the implementation of the State Machine behaviour was a contribution from [@ibarbech](https://github.com/ibarbech) during his participation on [GSoC 2016](https://robocomp.github.io/web/gsoc/2016/index).    
 
 
 
