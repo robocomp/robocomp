@@ -35,8 +35,8 @@ RoboCompDSL can generate template CDSL files to be used as a guide when writing 
 
 This will generate a CDSL file with the following content:
 
-    import "/robocomp/interfaces/IDSLs/import1.idsl";
-    import "/robocomp/interfaces/IDSLs/import2.idsl";
+    import "import1.idsl";
+    import "import2.idsl";
 
     Component CHANGETHECOMPONENTNAME
     {
@@ -77,7 +77,108 @@ This will generate a CDSL file with the following content:
 	* agmagent: Include Cortex-Agent communication patterns
 	* UseQt (Qt4, Qt5):  Use Qt4 (https://doc.qt.io/archives/qt-4.8/qt4-8-intro.html) or Qt5 (https://doc.qt.io/qt-5/qt5-intro.html) library version
 	* InnerModelViewer: Include innermodelViewer resources (https://github.com/robocomp/robocomp/tree/stable/libs/innermodel)
+	* statemachine: It must be followed by a path to a valid smdsl file that would describe the state machine that will be implemented on the component.
+	
+### 2.- The SMDSL (State Machine DSL) file
+The smdsl is a domain-specific language that let us define the State Machine that would be in charge of the main functionality of the component component.  
+If you want to know more about the State Machine Framework you can read about this on in the [QT Documentation](https://doc.qt.io/qt-5/statemachine-api.html).  
+Currently this language is defined like this:
 
+```
+name_machine{
+  [states name_state *[, name_state];]
+  initial_state name_state;
+  [end_state name_state;]
+  [transition{
+      name_state=>name_state *[, name_state];
+      *[name_state=>name_state *[, name_state];]
+  };]
+};
+
+*[ :father_state [parallel]{
+  [states name_state *[, name_state];]
+  [initial_state name_state;]
+  [end_state name_state;]
+  [transition{
+      name_state=>name_state *[, name_state];
+      *[name_state=>name_state *[, name_state];]
+  };]
+};]
+
+
+```
+`[]`    → optionality  
+`*`   → Item List
+
+A complete example of the content of a valid smdsl file would be like this:
+
+```
+Machine_testcpp{
+    states test2, test3, test4, test5;
+    initial_state test1;
+    end_state test6;
+    transitions{
+	test1 => test1, test2;
+	test2 => test3, test5, test6;
+	test3 => test3, test4;
+	test4 => test5;
+	test5 => test6;
+    };
+};
+
+:test1 parallel{
+    states test1sub1, test1sub2;
+    transitions{
+	test1sub1 => test1sub1;
+	test1sub2 => test1sub2;
+    };
+};
+
+:test1sub2{
+    initial_state test1sub21;
+    end_state test1sub22;
+    transition{
+	test1sub21 => test1sub21,test1sub22;
+    };
+};
+
+:test3 parallel{
+    states test3sub1, test3sub2, test3sub3;
+    transitions{
+	test3sub1 => test3sub1;
+	test3sub2 => test3sub2;
+    };
+};
+
+:test5{
+    states test5sub2;
+    initial_state test5sub1;
+    transitions{
+	test5sub1 => test1sub2;
+	test1sub2 => test5sub1;
+    };
+};
+
+```
+
+If the CDSL file have the `statemachine "filename.smdsl"` option in it and point to a valid smdsl the robocompdsl tool will create the defined states
+and transitions defined on this smdsl file.
+
+
+
+### 3.- Regenerating a component
+If you need to make any change on the cdsl to include new interfaces or options or if you make changes to the smdsl file you will need to regenerate
+the component to get those changes on the code of your component.  
+`robocompdsl` will only overwrite the main file and the generic* versions of the other files. The specific* version of the files will not be overwrited
+and a *.new file will be created side to side to your modified files.  
+`robocompdsl` currently also have an execution option `-d` where a diff command can be provided and used to show a comparation of the old and new file versions and the the changes can be incorporated easily.
+This way if execute
+```bash
+robocompdsl -d meld component.cdsl . 
+```  
+the meld diff tool ui will be launched for each existing specific file and its *.new version.  
+Tools like meld gives the user the option copy lines from a file to another and the save the changes. 
+  
 
 ## Generating an IDSL file
 
