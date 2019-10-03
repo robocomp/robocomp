@@ -171,7 +171,7 @@ SpecificWorker::~SpecificWorker()
 	std::cout << "Destroying SpecificWorker" << std::endl;
 [[[cog
 if sm is not None and sm['machine']['default']:
-	cog.outl("<TABHERE>emit computetofinalize();")
+	cog.outl("<TABHERE>emit t_compute_to_finalize();")
 ]]]
 [[[end]]]
 }
@@ -235,7 +235,7 @@ void SpecificWorker::initialize(int period)
 	timer.start(Period);
 [[[cog
 if sm is not None and sm['machine']['default']:
-    cog.outl("<TABHERE>emit this->initializetocompute();")
+    cog.outl("<TABHERE>emit this->t_initialize_to_compute();")
     ]]]
 [[[end]]]
 

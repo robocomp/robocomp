@@ -86,13 +86,13 @@ if sm is not None:
     if sm['machine']['contents']['transitions'] != "none":
         for transi in sm['machine']['contents']['transitions']:
             for dest in transi['dest']:
-                codaddTransition += "<TABHERE>" + transi['src'] + "State->addTransition(" + "this, SIGNAL("+transi['src'] + "to" + dest+"()), " + dest + "State);\n"
+                codaddTransition += "<TABHERE>" + transi['src'] + "State->addTransition(" + "this, SIGNAL(t_"+transi['src'] + "_to_" + dest+"()), " + dest + "State);\n"
     if sm['substates'] != "none":
         for substates in sm['substates']:
             if substates['contents']['transitions'] != "none":
                 for transi in substates['contents']['transitions']:
                     for dest in transi['dest']:
-                        codaddTransition += "<TABHERE>" + transi['src'] + "State->addTransition(" + "this, SIGNAL("+transi['src'] + "to" + dest+"()), " + dest + "State);\n"
+                        codaddTransition += "<TABHERE>" + transi['src'] + "State->addTransition(" + "this, SIGNAL(t_"+transi['src'] + "_to_" + dest+"()), " + dest + "State);\n"
     if sm['machine']['contents']['states'] is not "none":
         for state in sm['machine']['contents']['states']:
             codaddState += "<TABHERE>" + sm['machine']['name'] +  ".addState(" + state + "State);\n"
@@ -126,7 +126,7 @@ if sm is not None:
                     codConnect += "<TABHERE>QObject::connect(" + state + "State, SIGNAL(entered()), this, SLOT(sm_" + state + "()));\n"
                     states += state + ","
     if sm['machine']['default']:
-        codConnect += "<TABHERE>QObject::connect(&timer, SIGNAL(timeout()), this, SIGNAL(computetocompute()));\n"
+        codConnect += "<TABHERE>QObject::connect(&timer, SIGNAL(timeout()), this, SIGNAL(t_compute_to_compute()));\n"
     cog.outl("//Initialization State machine")
     cog.outl(codaddTransition)
     cog.outl(codaddState)
@@ -224,7 +224,7 @@ if component['gui'] is not None:
 [[[end]]]
 	Period = BASIC_PERIOD;
 [[[cog
-if (sm is not None and sm['machine']['default'] is True) or component['statemachine'] is None:
+if (sm is not None and sm['machine']['default'] is False) or component['statemachine'] is None:
 	cog.outl("<TABHERE>connect(&timer, SIGNAL(timeout()), this, SLOT(compute()));")
 ]]]
 [[[end]]]

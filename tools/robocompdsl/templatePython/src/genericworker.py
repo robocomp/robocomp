@@ -281,13 +281,13 @@ if sm is not None:
     if sm['machine']['contents']['transitions'] != "none":
         for transi in sm['machine']['contents']['transitions']:
             for dest in transi['dest']:
-                codsignals += "<TABHERE>" + transi['src'] + "to" + dest + " = QtCore.Signal()\n"
+                codsignals += "<TABHERE>t_" + transi['src'] + "_to_" + dest + " = QtCore.Signal()\n"
     if sm['substates']!="none":
         for substates in sm['substates']:
             if substates['contents']['transitions'] != "none":
                 for transi in substates['contents']['transitions']:
                     for dest in transi['dest']:
-                        codsignals += "<TABHERE>" + transi['src'] + "to" + dest + " = QtCore.Signal()\n"
+                        codsignals += "<TABHERE>t_" + transi['src'] + "_to_" + dest + " = QtCore.Signal()\n"
     cog.outl("#Signals for State Machine")
     cog.outl(codsignals)
     cog.outl("#-------------------------")
@@ -433,13 +433,13 @@ if sm is not None:
 	if sm['machine']['contents']['transitions'] != "none":
 		for transi in sm['machine']['contents']['transitions']:
 			for dest in transi['dest']:
-				codaddTransition += "<TABHERE><TABHERE>self." + transi['src'] + "_state.addTransition(self." + transi['src'] + "to" + dest+", self." + dest + "_state)\n"
+				codaddTransition += "<TABHERE><TABHERE>self." + transi['src'] + "_state.addTransition(self.t_" + transi['src'] + "_to_" + dest+", self." + dest + "_state)\n"
 	if sm['substates'] != "none":
 		for substates in sm['substates']:
 			if substates['contents']['transitions'] != "none":
 				for transi in substates['contents']['transitions']:
 					for dest in transi['dest']:
-						codaddTransition += "<TABHERE><TABHERE>self." + transi['src'] + "_state.addTransition(self." + transi['src'] + "to" + dest+", self." + dest + "_state)\n"
+						codaddTransition += "<TABHERE><TABHERE>self." + transi['src'] + "_state.addTransition(self.t_" + transi['src'] + "_to_" + dest+", self." + dest + "_state)\n"
 	if sm['machine']['contents']['states'] is not "none":
 		for state in sm['machine']['contents']['states']:
 			codConnect += "<TABHERE><TABHERE>self." + state + "_state.entered.connect(self.sm_" + state + ")\n"
@@ -463,7 +463,7 @@ if sm is not None:
 				for state in substates['contents']['states']:
 					codConnect += "<TABHERE><TABHERE>self." + state + "_state.entered.connect(self.sm_" + state + ")\n"
 	if sm['machine']['default']:
-		codConnect += "<TABHERE><TABHERE>self.timer.timeout.connect(self.computetocompute)\n"
+		codConnect += "<TABHERE><TABHERE>self.timer.timeout.connect(self.t_compute_to_compute)\n"
 	cog.outl("#Initialization State machine")
 	cog.outl(codaddTransition)
 	cog.outl(codaddState)

@@ -666,13 +666,13 @@ if sm is not None:
     if sm['machine']['contents']['transitions'] != "none":
         for transi in sm['machine']['contents']['transitions']:
             for dest in transi['dest']:
-                codsignals += "<TABHERE>void " +  transi['src'] + "to" + dest + "();\n"
+                codsignals += "<TABHERE>void t_" +  transi['src'] + "_to_" + dest + "();\n"
     if sm['substates']!="none":
         for substates in sm['substates']:
             if substates['contents']['transitions'] != "none":
                 for transi in substates['contents']['transitions']:
                     for dest in transi['dest']:
-                        codsignals += "<TABHERE>void " + transi['src'] + "to" + dest + "();\n"
+                        codsignals += "<TABHERE>void t_" + transi['src'] + "_to_" + dest + "();\n"
     cog.outl("//Signals for State Machine")
     cog.outl(codsignals)
     cog.outl("//-------------------------")

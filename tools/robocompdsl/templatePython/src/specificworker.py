@@ -82,7 +82,7 @@ if sm is None:
 if sm is not None:
 	cog.outl("<TABHERE><TABHERE>self." + sm['machine']['name'] + ".start()")
 	if sm['machine']['default']:
-		cog.outl("<TABHERE><TABHERE>self.destroyed.connect(self.computetofinalize)")
+		cog.outl("<TABHERE><TABHERE>self.destroyed.connect(self.t_compute_to_finalize)")
 ]]]
 [[[end]]]
 
@@ -127,7 +127,7 @@ if sm is not None:
 	# Generate code for the methods of the StateMachine.
 	if sm['machine']['contents']['initialstate'] != "none":
 		if sm['machine']['default']:
-			codVirtuals += "<TABHERE>#\n<TABHERE># sm_" + sm['machine']['contents']['initialstate'][0] + "\n<TABHERE>#\n<TABHERE>@QtCore.Slot()\n<TABHERE>def sm_" + sm['machine']['contents']['initialstate'][0] + "(self):\n<TABHERE><TABHERE>print(\"Entered state " + sm['machine']['contents']['initialstate'][0] + "\")\n<TABHERE><TABHERE>self.initializetocompute.emit()\n<TABHERE><TABHERE>pass\n\n"
+			codVirtuals += "<TABHERE>#\n<TABHERE># sm_" + sm['machine']['contents']['initialstate'][0] + "\n<TABHERE>#\n<TABHERE>@QtCore.Slot()\n<TABHERE>def sm_" + sm['machine']['contents']['initialstate'][0] + "(self):\n<TABHERE><TABHERE>print(\"Entered state " + sm['machine']['contents']['initialstate'][0] + "\")\n<TABHERE><TABHERE>self.t_initialize_to_compute.emit()\n<TABHERE><TABHERE>pass\n\n"
 		else:
 			codVirtuals += "<TABHERE>#\n<TABHERE># sm_" + sm['machine']['contents']['initialstate'][0] + "\n<TABHERE>#\n<TABHERE>@QtCore.Slot()\n<TABHERE>def sm_" + sm['machine']['contents']['initialstate'][0] + "(self):\n<TABHERE><TABHERE>print(\"Entered state " + sm['machine']['contents']['initialstate'][0] + "\")\n<TABHERE><TABHERE>pass\n\n"
 
