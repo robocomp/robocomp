@@ -6,6 +6,8 @@ RoboCompDSL's User Guide
 1. [Introduction](#introduction)
 2. [Generating a CDSL template file](#generating-a-cdsl-template-file)
 	1. [Parameters description](#1--parameters)
+	2. [The SMDSL (State Machine DSL) file](#2--the-smdsl-state-machine-dsl-file)
+	3. [Regenerating a component](#3--regenerating-a-component)
 3. [Generating an IDSL file](#generating-an-idsl-file)
     1. [Restrictions](#restrictions)
     2. [Basic types for ICE & ROS](#basic-types-for-ice--ros)
