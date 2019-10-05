@@ -129,7 +129,7 @@ class CDSLParsing:
 	@staticmethod
 	def getCDSLParser():
 		OBRACE,CBRACE,SEMI,OPAR,CPAR = map(Suppress, "{};()")
-		QUOTE     					 = Suppress(Word("\""))
+		QUOTE = Suppress(Word("\""))
 
 		# keywords
 		(IMPORT, COMMUNICATIONS, LANGUAGE, COMPONENT, CPP, CPP11, GUI, QWIDGET, QMAINWINDOW, QDIALOG, USEQt, QT, QT4, QT5, PYTHON, REQUIRES, IMPLEMENTS, SUBSCRIBESTO, PUBLISHES, OPTIONS, TRUE, FALSE,
@@ -349,14 +349,12 @@ class CDSLParsing:
 		component['usingROS'] = False
 		####################
 		com_types = ['implements', 'requires', 'publishes', 'subscribesTo']
-		communications = sorted(tree['component']['content']['communications'], key=lambda x: x[0])
-		for comm in communications:
-			if comm[0] in com_types:
-				comm_type = comm[0]
-				interfaces = sorted(comm[1:], key=lambda x: x[0])
-				for interface in interfaces:
-					component[comm_type].append(interface[0])
-					if communicationIsIce(interface):
+		com_tree = tree['component']['content']['communications']
+		for comm in com_types:
+			if comm in com_tree:
+				for interface in com_tree[comm]:
+					component[comm].append(interface[0])
+					if communicationIsIce(interface[0]):
 						component['iceInterfaces'].append(interface[0])
 					else:
 						component['rosInterfaces'].append(interface[0])
