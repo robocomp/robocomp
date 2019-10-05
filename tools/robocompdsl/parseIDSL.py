@@ -137,8 +137,11 @@ class IDSLParsing:
 	def module(tree, start=''):
 		module = {}
 
-		#module name
-		module['name'] = tree['module']['name']
+		# Hack to make robocompdsl work with pyparsing > 2.2
+		try:
+			module['name'] = tree['module']['name']
+		except:
+			module['name'] = tree['name']
 
 		module['imports'] = ''
 		if 'imports' in tree:
@@ -150,7 +153,14 @@ class IDSLParsing:
 				module['imports'] += imp + '#' + IDSLParsing.gimmeIDSL(imp)['imports']
 		# INTERFACES DEFINED IN THE MODULE
 		module['interfaces'] = []
-		for contentDef in tree['module']['contents']:
+
+		# Hack to make robocompdsl work with pyparsing > 2.2
+		try:
+			contents = tree['module']['contents']
+		except:
+			contents = tree['contents']
+
+		for contentDef in contents:
 			if contentDef[0] == 'interface':
 				interface = { 'name':contentDef[1], 'methods':{}}
 				for method in contentDef[2]:
@@ -183,7 +193,7 @@ class IDSLParsing:
 		# TYPES DEFINED IN THE MODULE
 		module['types'] = []
 		#print '---\n---\nPARSE IDSL TYPES'
-		for contentDef in tree['module']['contents']:
+		for contentDef in contents:
 			#print contentDef[0]
 			if contentDef[0] in [ 'enum', 'struct', 'exception' ]:
 				typedef = { 'name':contentDef[1], 'type':contentDef[0]}
@@ -200,20 +210,20 @@ class IDSLParsing:
 		# SEQUENCES DEFINED IN THE MODULE
 		module['sequences'] = []
 		module['simpleSequences'] = []
-		for contentDef in tree['module']['contents']:
+		for contentDef in contents:
 			if contentDef['type'] == 'sequence':
-				seqdef       = { 'name':tree['module']['name']+"/"+contentDef['name'], 'type':contentDef['type']}
-				simpleSeqdef = { 'name':tree['module']['name'], 'strName':contentDef['name']}
+				seqdef       = { 'name':module['name']+"/"+contentDef['name'], 'type':contentDef['type']}
+				simpleSeqdef = { 'name':module['name'], 'strName':contentDef['name']}
 				#print structdef
 				module['sequences'].append(seqdef)
 				module['simpleSequences'].append(simpleSeqdef)
 		# STRUCTS DEFINED IN THE MODULE
 		module['structs'] = []
 		module['simpleStructs'] = []
-		for contentDef in tree['module']['contents']:
+		for contentDef in contents:
 			if contentDef['type'] == 'struct':
-				structdef       = { 'name':tree['module']['name']+"/"+contentDef['name'], 'type':contentDef['type']}
-				simpleStructdef = { 'name':tree['module']['name'], 'strName':contentDef['name']}
+				structdef       = { 'name':module['name']+"/"+contentDef['name'], 'type':contentDef['type']}
+				simpleStructdef = { 'name':module['name'], 'strName':contentDef['name']}
 				#print structdef
 				module['structs'].append(structdef)
 				module['simpleStructs'].append(simpleStructdef)

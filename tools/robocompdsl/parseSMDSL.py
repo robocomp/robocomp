@@ -3,7 +3,7 @@ from pyparsing import cppStyleComment, Optional, Suppress, ZeroOrMore, Group, St
 from pyparsing import nestedExpr, CaselessLiteral
 
 import sys, traceback, os
-
+import copy
 
 
 class BColors(str):
@@ -94,7 +94,15 @@ class SMDSLparsing:
     def component(tree, start=''):
         component = {}
         component['machine'] = {}
-        component['machine']['name'] = tree['machine']['name']
+
+        # Horrible hack to make robocompdsl work with pyparsing > 2.2
+        try:
+            component['machine']['name'] = tree['machine']['name']
+        except:
+            component['machine']['name'] = tree['name']
+            tree['machine'] = copy.deepcopy(tree)
+
+
         if component['machine']['name'] == "defaultMachine":
             component['machine']['default'] = True
         else:
