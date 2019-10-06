@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 
 # TODO
@@ -34,13 +34,13 @@ def generateROSHeaders(idslFile, outputPath, comp, includeDirectories): #idslFil
             if imp['type'] in ['struct','sequence']:
                 for f in [ "SERVANT.MSG"]:
                     ofile = outputPath+"/"+imp['name'] + "." + f.split('.')[-1].lower()
-                    print 'Generating', ofile, ' (servant for', idslFile.split('.')[0].lower() + ')'
+                    print('Generating', ofile, ' (servant for', idslFile.split('.')[0].lower() + ')')
                     # Call cog
                     run = "cog.py -z -d" + ' -D theIDSLPaths='+ '#'.join(includeDirectories) + " -D structName=" + imp['name'] +" -D theIDSL="+idslFile+ " -o " + ofile + " " + "/opt/robocomp/share/robocompdsl/templateCPP/" + f
                     run = run.split(' ')
                     ret = Cog().main(run)
                     if ret != 0:
-                        print 'ERROR'
+                        print('ERROR')
                         sys.exit(-1)
                     replaceTagsInFile(ofile)
                     commandCPP = "/opt/ros/melodic/lib/gencpp/gen_cpp.py " + ofile + " -Istd_msgs:/opt/ros/melodic/share/std_msgs/msg -I" + idsl['module']['name'] + "ROS:" + outputPath
@@ -75,13 +75,13 @@ def generateROSHeaders(idslFile, outputPath, comp, includeDirectories): #idslFil
                                 if len(method['params']) == 2:
                                     for f in [ "SERVANT.SRV"]:
                                         ofile = outputPath+"/"+method['name'] + "." + f.split('.')[-1].lower()
-                                        print 'Generating', ofile, ' (servant for', idslFile.split('.')[0].lower() + ')'
+                                        print('Generating', ofile, ' (servant for', idslFile.split('.')[0].lower() + ')')
                                         # Call cog
                                         run = "cog.py -z -d" + ' -D theIDSLPaths='+ '#'.join(includeDirectories) + " -D methodName=" + method['name'] +" -D theIDSL="+idslFile+ " -o " + ofile + " " + "/opt/robocomp/share/robocompdsl/templateCPP/" + f
                                         run = run.split(' ')
                                         ret = Cog().main(run)
                                         if ret != 0:
-                                            print 'ERROR'
+                                            print('ERROR')
                                             sys.exit(-1)
                                         replaceTagsInFile(ofile)
                                         commandCPP = "/opt/ros/melodic/lib/gencpp/gen_cpp.py " +ofile+ " -Istd_msgs:/opt/ros/melodic/share/std_msgs/msg -Istd_srvs:/opt/ros/melodic/share/std_srv/cmake/../srv -I" + idsl['module']['name'] + "ROS:" + outputPath
@@ -105,12 +105,12 @@ def generateROSHeaders(idslFile, outputPath, comp, includeDirectories): #idslFil
                                         except:
                                             pass
                                 else:
-                                    print "error: ROS service with incorrect number of parameters. ROS only supports remote procedure calls of the form: void method(type inVar, out type outVar);"
+                                    print("error: ROS service with incorrect number of parameters. ROS only supports remote procedure calls of the form: void method(type inVar, out type outVar);")
                                     for param in enumerate(method['params']):
-                                        print param[0], '-->', param[1]
+                                        print(param[0], '-->', param[1])
                                     sys.exit(-1)
                             else:
-                                print "error: service without params. Form is: void method(type inVar, out type outVar);"
+                                print("error: service without params. Form is: void method(type inVar, out type outVar);")
                                 sys.exit(-1)
         os.system("touch "+outputPath + "/" + idsl['module']['name'] + "ROS/__init__.py")
         return idsl['module']['name']+"ROS"
@@ -145,9 +145,9 @@ def replaceTagsInFile(path):
 
 def generateDummyCDSL(path):
     if os.path.exists(path):
-        print "File", path, "already exists.\nExiting..."
+        print("File", path, "already exists.\nExiting...")
     else:
-        print "Generating dummy CDSL file:", path
+        print("Generating dummy CDSL file:", path)
         string = """import "import1.idsl";
 import "import2.idsl";
 
@@ -173,9 +173,9 @@ Component <CHANGETHECOMPONENTNAME>
 
 def generateDummySMDSL(path):
 	if os.path.exists(path):
-		print "File", path, "already exists.\nExiting..."
+		print("File", path, "already exists.\nExiting...")
 	else:
-		print "Generating dummy SMDSL file:", path
+		print("Generating dummy SMDSL file:", path)
 		state_machine_string = """
 /* CHANGE THE NAME OF THE MACHINE IF YOU MAKE
    ANY CHANGE TO THE DEFAULT STATES OR TRANSITIONS */
@@ -236,15 +236,15 @@ def get_diff_tool(prefered=None):
 # Function to create directories
 def create_directory(directory):
     try:
-        print 'Creating', directory,
+        print('Creating', directory,)
         os.mkdir(directory)
-        print ''
+        print('')
     except:
         if os.path.isdir(directory):
-            print '(already existed)'
+            print('(already existed)')
             pass
         else:
-            print '\nCOULDN\'T CREATE', directory
+            print('\nCOULDN\'T CREATE', directory)
             sys.exit(-1)
 
 #Class deffining colors for terminal printing
@@ -258,7 +258,7 @@ class BColors:
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
 
-#Class to print colored error message on argparse
+#Class to print(colored error message on argparse
 class MyParser(argparse.ArgumentParser):
     def error(self, message):
         sys.stderr.write((BColors.FAIL + 'error: %s\n' + BColors.ENDC) % message)
@@ -302,8 +302,8 @@ def main():
             generateDummySMDSL("statemachine.smdsl")
             sys.exit(0)
         else:
-            print args.output_path, args.input_file
-            print parser.error("No output path with non .cdsl file")
+            print(args.output_path, args.input_file)
+            print(parser.error("No output path with non .cdsl file"))
             sys.exit(-1)
 
     inputFile = args.input_file
@@ -339,7 +339,7 @@ def main():
                 create_directory(outputPath + "/etc")
                 create_directory(outputPath + "/src")
             except:
-                print 'There was a problem creating a directory'
+                print('There was a problem creating a directory')
                 sys.exit(1)
                 pass
             #
@@ -350,17 +350,17 @@ def main():
             for f in files:
                 ofile = outputPath + '/' + f
                 if f in specificFiles and os.path.exists(ofile):
-                    print 'Not overwriting specific file "'+ ofile +'", saving it to '+ofile+'.new'
+                    print('Not overwriting specific file "'+ ofile +'", saving it to '+ofile+'.new')
                     new_existing_files[os.path.abspath(ofile)] = os.path.abspath(ofile)+'.new'
                     ofile += '.new'
                 ifile = "/opt/robocomp/share/robocompdsl/templateCPP/" + f
                 if f != 'src/mainUI.ui' or component['gui'] is not None:
-                    print 'Generating', ofile
+                    print('Generating', ofile)
                     run = "cog.py -z -d -D theCDSL="+inputFile + " -D theIDSLs="+imports + ' -D theIDSLPaths='+ '#'.join(args.include_dirs) + " -o " + ofile + " " + ifile
                     run = run.split(' ')
                     ret = Cog().main(run)
                     if ret != 0:
-                        print 'ERROR'
+                        print('ERROR')
                         sys.exit(-1)
                     replaceTagsInFile(ofile)
             #
@@ -373,13 +373,13 @@ def main():
                 if communicationIsIce(ima):
                     for f in [ "SERVANT.H", "SERVANT.CPP"]:
                         ofile = outputPath + '/src/' + im.lower() + 'I.' + f.split('.')[-1].lower()
-                        print 'Generating ', ofile, ' (servant for', im + ')'
+                        print('Generating ', ofile, ' (servant for', im + ')')
                         # Call cog
                         run = "cog.py -z -d -D theCDSL="+inputFile  + " -D theIDSLs="+imports + ' -D theIDSLPaths='+ '#'.join(args.include_dirs) + " -D theInterface="+im + " -o " + ofile + " " + "/opt/robocomp/share/robocompdsl/templateCPP/" + f
                         run = run.split(' ')
                         ret = Cog().main(run)
                         if ret != 0:
-                            print 'ERROR'
+                            print('ERROR')
                             sys.exit(-1)
                         replaceTagsInFile(ofile)
 
@@ -390,17 +390,17 @@ def main():
                 if communicationIsIce(imp):
                     for f in [ "SERVANT.H", "SERVANT.CPP"]:
                         ofile = outputPath + '/src/' + im.lower() + 'I.' + f.split('.')[-1].lower()
-                        print 'Generating ', ofile, ' (servant for', im + ')'
+                        print('Generating ', ofile, ' (servant for', im + ')')
                         # Call cog
                         theInterfaceStr = im
                         if type(theInterfaceStr) == type([]):
                             theInterfaceStr = str(';'.join(im))
                         run = "cog.py -z -d -D theCDSL="+inputFile  + " -D theIDSLs="+imports  + ' -D theIDSLPaths='+ '#'.join(args.include_dirs) + " -D theInterface="+theInterfaceStr + " -o " + ofile + " " + "/opt/robocomp/share/robocompdsl/templateCPP/" + f
-                        #print run
+                        #print(run
                         run = run.split(' ')
                         ret = Cog().main(run)
                         if ret != 0:
-                            print 'ERROR'
+                            print('ERROR')
                             sys.exit(-1)
                         replaceTagsInFile(ofile)
         elif component['language'].lower() == 'python':
@@ -414,7 +414,7 @@ def main():
                 create_directory(outputPath + "/etc")
                 create_directory(outputPath + "/src")
             except:
-                print 'There was a problem creating a directory'
+                print('There was a problem creating a directory')
                 sys.exit(1)
                 pass
 
@@ -436,7 +436,7 @@ def main():
                 else:
                     ofile = outputPath + '/' + f
                 if f in specificFiles and os.path.exists(ofile):
-                    print 'Not overwriting specific file "'+ ofile +'", saving it to '+ofile+'.new'
+                    print('Not overwriting specific file "'+ ofile +'", saving it to '+ofile+'.new')
                     new_existing_files[os.path.abspath(ofile)] = os.path.abspath(ofile) + '.new'
                     ofile += '.new'
                 ifile = "/opt/robocomp/share/robocompdsl/templatePython/" + f
@@ -445,15 +445,15 @@ def main():
                 if f == 'CMakeLists.txt' and component['gui'] is None: ignoreFile = True
                 if f == 'README-STORM.txt' and needStorm == False: ignoreFile = True
                 if not ignoreFile:
-                    print 'Generating', ofile
+                    print('Generating', ofile)
                     run = "cog.py -z -d -D theCDSL="+inputFile + " -D theIDSLs="+imports + ' -D theIDSLPaths='+ '#'.join(args.include_dirs) + " -o " + ofile + " " + ifile
                     run = run.split(' ')
                     ret = Cog().main(run)
                     if ret != 0:
-                        print 'ERROR'
+                        print('ERROR')
                         sys.exit(-1)
                     replaceTagsInFile(ofile)
-                    if f == 'src/main.py': os.chmod(ofile, os.stat(ofile).st_mode | 0111 )
+                    if f == 'src/main.py': os.chmod(ofile, os.stat(ofile).st_mode | 0o111)
             #
             # Generate interface-dependent files
             #
@@ -465,17 +465,17 @@ def main():
                 if communicationIsIce(imp):
                     for f in [ "SERVANT.PY"]:
                         ofile = outputPath + '/src/' + im.lower() + 'I.' + f.split('.')[-1].lower()
-                        print 'Generating', ofile, ' (servant for', im + ')'
+                        print('Generating', ofile, ' (servant for', im + ')')
                         # Call cog
                         run = "cog.py -z -d -D theCDSL="+inputFile  + " -D theIDSLs="+imports  + ' -D theIDSLPaths='+ '#'.join(args.include_dirs) + " -D theInterface="+im + " -o " + ofile + " " + "/opt/robocomp/share/robocompdsl/templatePython/" + f
                         run = run.split(' ')
                         ret = Cog().main(run)
                         if ret != 0:
-                            print 'ERROR'
+                            print('ERROR')
                             sys.exit(-1)
                         replaceTagsInFile(ofile)
         else:
-            print 'Unsupported language', component['language']
+            print('Unsupported language', component['language'])
 
 
         if component['usingROS'] == True:
@@ -488,7 +488,7 @@ def main():
             print("Executing diff tool for existing files. Close if no change is needed.")
             for o_file, n_file in new_existing_files.items():
                 if not filecmp.cmp(o_file,n_file):
-                    print [diff_tool, o_file, n_file]
+                    print([diff_tool, o_file, n_file])
                     try:
                         subprocess.call([diff_tool, o_file, n_file])
                     except KeyboardInterrupt as e:
@@ -506,12 +506,12 @@ def main():
 
     elif inputFile.endswith(".idsl"):
         #idsl = IDSLParsing.fromFileIDSL(inputFile)
-        print 'Generating ICE file ', outputPath
+        print('Generating ICE file ', outputPath)
         # Call cog
         run = "cog.py -z -d" + " -D theIDSL="+inputFile + ' -D theIDSLPaths='+ '#'.join(args.include_dirs) +" -o " + outputPath + " /opt/robocomp/share/robocompdsl/TEMPLATE.ICE"
         run = run.split(' ')
         ret = Cog().main(run)
         if ret != 0:
-            print 'ERROR'
+            print('ERROR')
             sys.exit(-1)
         replaceTagsInFile(outputPath)
