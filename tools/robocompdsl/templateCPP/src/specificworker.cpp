@@ -264,7 +264,7 @@ if (sm is not None and sm['machine']['default'] is True) or component['statemach
         cog.outl("<TABHERE>if (innerModelViewer) innerModelViewer->update();")
         cog.outl("<TABHERE>osgView->frame();")
         cog.outl("#endif")
-        cog.outl("}")
+    cog.outl("}")
 ]]]
 [[[end]]]
 
