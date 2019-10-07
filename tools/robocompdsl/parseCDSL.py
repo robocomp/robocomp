@@ -151,7 +151,7 @@ class CDSLParsing:
 		requiresList = Optional(REQUIRES - Group(delimitedList(identifier.setResultsName("reqIdentifier")+commType)).setResultsName("requires") + SEMI)
 
 
-		subscribesList = Optional(SUBSCRIBESTO - Group(delimitedList(identifier.setResultsName("subIdentifier")+commType)).setResultsName("subscribes") + SEMI)
+		subscribesList = Optional(SUBSCRIBESTO - Group(delimitedList(identifier.setResultsName("subIdentifier")+commType)).setResultsName("subscribesTo") + SEMI)
 
 		publishesList = Optional(PUBLISHES - Group(delimitedList(identifier.setResultsName("pubIdentifier")+commType)).setResultsName("publishes") + SEMI)
 
