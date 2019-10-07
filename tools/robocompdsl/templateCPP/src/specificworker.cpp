@@ -257,7 +257,14 @@ if (sm is not None and sm['machine']['default'] is True) or component['statemach
     cog.outl("//<TABHERE>{")
     cog.outl("//<TABHERE><TABHERE>std::cout << \"Error reading from Camera\" << e << std::endl;")
     cog.outl("//<TABHERE>}")
-    cog.outl("}")
+    if component['usingROS'] == True:
+        cog.outl("<TABHERE>ros::spinOnce();")
+    if component['innermodelviewer']:
+        cog.outl("#ifdef USE_QTGUI")
+        cog.outl("<TABHERE>if (innerModelViewer) innerModelViewer->update();")
+        cog.outl("<TABHERE>osgView->frame();")
+        cog.outl("#endif")
+        cog.outl("}")
 ]]]
 [[[end]]]
 
@@ -285,13 +292,7 @@ if sm is not None:
 				sm_implementation += "void SpecificWorker::sm_" + substates['contents']['finalstate'] + "()\n{\n<TABHERE>std::cout<<\"Entered state "+substates['contents']['finalstate']+"\"<<std::endl;\n}\n\n"
 	cog.outl(sm_implementation)
 
-if component['usingROS'] == True:
-	cog.outl("<TABHERE>ros::spinOnce();")
-if component['innermodelviewer']:
-	cog.outl("#ifdef USE_QTGUI")
-	cog.outl("<TABHERE>if (innerModelViewer) innerModelViewer->update();")
-	cog.outl("<TABHERE>osgView->frame();")
-	cog.outl("#endif")
+
 ]]]
 [[[end]]]
 
