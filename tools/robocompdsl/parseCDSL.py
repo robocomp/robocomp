@@ -4,7 +4,7 @@ from pprint import pprint
 from pyparsing import Word, alphas, alphanums, nums, OneOrMore, CharsNotIn, Literal, Combine, delimitedList, Each
 from pyparsing import cppStyleComment, Optional, Suppress, ZeroOrMore, Group, StringEnd, srange
 from pyparsing import nestedExpr, CaselessLiteral, CaselessKeyword, ParseBaseException
-from collections import Counter
+from collections import Counter, OrderedDict
 import sys, traceback, os
 debug = False
 #debug = True
@@ -146,13 +146,14 @@ class CDSLParsing:
 
 		commType = Optional(OPAR - (CaselessKeyword("ice") | CaselessKeyword("ros")).setResultsName("type") + CPAR)
 
-		implementsList = Optional(IMPLEMENTS - delimitedList(Group(identifier.setResultsName("impIdentifier")+commType)).setResultsName("implements") + SEMI)
+		implementsList = Optional(IMPLEMENTS - Group(delimitedList(identifier.setResultsName("impIdentifier")+commType)).setResultsName("implements") + SEMI)
 
-		requiresList = Optional(REQUIRES - delimitedList(Group(identifier.setResultsName("reqIdentifier")+commType)).setResultsName("requires") + SEMI)
+		requiresList = Optional(REQUIRES - Group(delimitedList(identifier.setResultsName("reqIdentifier")+commType)).setResultsName("requires") + SEMI)
 
-		subscribesList = Optional(SUBSCRIBESTO - delimitedList(Group(identifier.setResultsName("subIdentifier")+commType)).setResultsName("subscribes") + SEMI)
 
-		publishesList = Optional(PUBLISHES - delimitedList(Group(identifier.setResultsName("pubIdentifier")+commType)).setResultsName("publishes") + SEMI)
+		subscribesList = Optional(SUBSCRIBESTO - Group(delimitedList(identifier.setResultsName("subIdentifier")+commType)).setResultsName("subscribes") + SEMI)
+
+		publishesList = Optional(PUBLISHES - Group(delimitedList(identifier.setResultsName("pubIdentifier")+commType)).setResultsName("publishes") + SEMI)
 
 		communicationList = Group(implementsList & requiresList & subscribesList & publishesList).setResultsName("communications")
 		communications = COMMUNICATIONS.suppress() - OBRACE + communicationList + CBRACE + SEMI
@@ -260,7 +261,7 @@ class CDSLParsing:
 
 	@staticmethod
 	def component(tree, includeDirectories=None, start=''):
-		component = {}
+		component = OrderedDict()
 		# print 'parseCDSL.component', includeDirectories
 		if includeDirectories == None:
 			includeDirectories = []
@@ -349,15 +350,16 @@ class CDSLParsing:
 		component['usingROS'] = False
 		####################
 		com_types = ['implements', 'requires', 'publishes', 'subscribesTo']
-		com_tree = tree['component']['content']['communications']
-		for comm in com_types:
-			if comm in com_tree:
-				for interface in com_tree[comm]:
-					component[comm].append(interface[0])
-					if communicationIsIce(interface[0]):
-						component['iceInterfaces'].append(interface[0])
+		communications = tree['component']['content']['communications']
+		for comm_type in com_types:
+			if comm_type in communications:
+				interfaces = sorted(communications[comm_type])
+				for interface in interfaces:
+					component[comm_type].append(interface)
+					if communicationIsIce(interface):
+						component['iceInterfaces'].append(interface)
 					else:
-						component['rosInterfaces'].append(interface[0])
+						component['rosInterfaces'].append(interface)
 						component['usingROS'] = True
 		# Handle options for communications
 		if isAGM1Agent(component):

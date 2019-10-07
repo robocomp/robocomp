@@ -28,11 +28,12 @@ class SMDSLparsing:
     def fromFile(filename, verbose=False, includeIncludes=True):
         # Open input file
         # inputText = "\n".join([line for line in open(filename, 'r').read().split("\n") if not line.lstrip(" \t").startswith('//')])
-        if filename == "none":
+        if filename is None or filename == "":
             return None
         try:
             inputText = open(filename, 'r').read()
         except:
+            print("Error reading input file for SMDSL")
             return None
         try:
             ret = SMDSLparsing.fromString(inputText)
