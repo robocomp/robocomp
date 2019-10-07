@@ -139,9 +139,11 @@ class CDSLParsing:
 		InnerModelViewer statemachine""".split()))
 
 		identifier = Word( alphas+"_", alphanums+"_" )
+		PATH = CharsNotIn("\";")
 
 		# Imports
-		idslImport  = Group(Suppress(IMPORT) - QUOTE + CharsNotIn("\";").setResultsName('idsl_path') - QUOTE + SEMI)
+		idslImport = Group(Suppress(IMPORT) - QUOTE + PATH.setResultsName('idsl_path') - QUOTE + SEMI)
+
 		idslImports = ZeroOrMore(idslImport).setResultsName("imports")
 
 		commType = Optional(OPAR - (CaselessKeyword("ice") | CaselessKeyword("ros")).setResultsName("type") + CPAR)
@@ -280,24 +282,18 @@ class CDSLParsing:
 		component['imports'] = []
 		component['recursiveImports'] = []
 		try:
-			imprts = tree['imports']
+			imprts = [path['idsl_path'] for path in tree.asDict()["imports"]]
 		except:
 			tree['imports'] = []
 			imprts = []
 		if isAGM1Agent(component):
-			imprts = ['AGMExecutive.idsl', 'AGMCommonBehavior.idsl', 'AGMWorldModel.idsl']
-			for i in tree['imports']:
-				if not i in imprts:
-					imprts.append(i)
+			imprts.extend(['AGMExecutive.idsl', 'AGMCommonBehavior.idsl', 'AGMWorldModel.idsl'])
 		if isAGM2Agent(component):
-			imprts = ['AGM2.idsl']
-			for i in tree['imports']:
-				if not i in imprts:
-					imprts.append(i)
+			imprts.extend(['AGM2.idsl'])
 		iD = includeDirectories + ['/opt/robocomp/interfaces/IDSLs/',
 		                           os.path.expanduser('~/robocomp/interfaces/IDSLs/')]
 		for imp in sorted(imprts):
-			import_basename = os.path.basename(imp['idsl_path'])
+			import_basename = os.path.basename(imp)
 			component['imports'].append(import_basename)
 		component['recursiveImports'] = CDSLParsing.generateRecursiveImports(component['imports'], includeDirectories)
 		# Language
