@@ -29,12 +29,12 @@ REQUIRE_STR = """
 <TABHERE><TABHERE><TABHERE><LOWER><NUM>_proxy = <NORMAL>Prx.checkedCast(basePrx)
 <TABHERE><TABHERE><TABHERE>mprx["<NORMAL>Proxy<NUM>"] = <LOWER><NUM>_proxy
 <TABHERE><TABHERE>except Ice.Exception:
-<TABHERE><TABHERE><TABHERE>print 'Cannot connect to the remote object (<NORMAL>)', proxyString
+<TABHERE><TABHERE><TABHERE>print('Cannot connect to the remote object (<NORMAL>)', proxyString)
 <TABHERE><TABHERE><TABHERE>#traceback.print_exc()
 <TABHERE><TABHERE><TABHERE>status = 1
 <TABHERE>except Ice.Exception, e:
-<TABHERE><TABHERE>print e
-<TABHERE><TABHERE>print 'Cannot get <NORMAL>Proxy property.'
+<TABHERE><TABHERE>print(e)
+<TABHERE><TABHERE>print('Cannot get <NORMAL>Proxy property.')
 <TABHERE><TABHERE>status = 1
 """
 
@@ -49,13 +49,13 @@ SUBSCRIBESTO_STR = """
 <TABHERE><TABHERE><TABHERE><LOWER>_topic = topicManager.retrieve("<NORMAL>")
 <TABHERE><TABHERE><TABHERE>subscribeDone = True
 <TABHERE><TABHERE>except Ice.Exception, e:
-<TABHERE><TABHERE><TABHERE>print "Error. Topic does not exist (creating)"
+<TABHERE><TABHERE><TABHERE>print("Error. Topic does not exist (creating)")
 <TABHERE><TABHERE><TABHERE>time.sleep(1)
 <TABHERE><TABHERE><TABHERE>try:
 <TABHERE><TABHERE><TABHERE><TABHERE><LOWER>_topic = topicManager.create("<NORMAL>")
 <TABHERE><TABHERE><TABHERE><TABHERE>subscribeDone = True
 <TABHERE><TABHERE><TABHERE>except:
-<TABHERE><TABHERE><TABHERE><TABHERE>print "Error. Topic could not be created. Exiting"
+<TABHERE><TABHERE><TABHERE><TABHERE>print("Error. Topic could not be created. Exiting")
 <TABHERE><TABHERE><TABHERE><TABHERE>status = 0
 <TABHERE>qos = {}
 <TABHERE><LOWER>_topic.subscribeAndGetPublisher(qos, <LOWER>_proxy)
@@ -76,7 +76,7 @@ PUBLISHES_STR = """
 <TABHERE><TABHERE><TABHERE>try:
 <TABHERE><TABHERE><TABHERE><TABHERE>topic = topicManager.create("<NORMAL>")
 <TABHERE><TABHERE><TABHERE>except:
-<TABHERE><TABHERE><TABHERE><TABHERE>print 'Another client created the <NORMAL> topic? ...'
+<TABHERE><TABHERE><TABHERE><TABHERE>print('Another client created the <NORMAL> topic? ...')
 <TABHERE>pub = topic.getPublisher().ice_oneway()
 <TABHERE><LOWER>Topic = <NORMAL>Prx.uncheckedCast(pub)
 <TABHERE>mprx["<NORMAL>Pub"] = <LOWER>Topic
@@ -164,7 +164,7 @@ Z()
 #
 #
 
-import sys, traceback, IceStorm, subprocess, threading, time, Queue, os, copy
+import sys, traceback, IceStorm, subprocess, threading, time, queue, os, copy
 
 # Ctrl+c handling
 import signal
@@ -190,14 +190,14 @@ class CommonBehaviorI(RoboCompCommonBehavior.CommonBehavior):
 		try:
 			return self.handler.timeAwake()
 		except:
-			print 'Problem getting timeAwake'
+			print('Problem getting timeAwake')
 	def killYourSelf(self, current = None):
 		self.handler.killYourSelf()
 	def getAttrList(self, current = None):
 		try:
 			return self.handler.getAttrList()
 		except:
-			print 'Problem getting getAttrList'
+			print('Problem getting getAttrList')
 			traceback.print_exc()
 			status = 1
 			return
@@ -253,7 +253,7 @@ try:
 <TABHERE>try:
 <TABHERE><TABHERE>topicManager = IceStorm.TopicManagerPrx.checkedCast(obj)
 <TABHERE>except Ice.ConnectionRefusedException, e:
-<TABHERE><TABHERE>print 'Cannot connect to IceStorm! ('+proxy+')'
+<TABHERE><TABHERE>print('Cannot connect to IceStorm! ('+proxy+')')
 <TABHERE><TABHERE>status = 1""")
 except:
 	pass
@@ -272,7 +272,7 @@ cog.outl("<TABHERE>if status == 0:")
 cog.outl("<TABHERE><TABHERE>worker = SpecificWorker(mprx)")
 cog.outl("<TABHERE><TABHERE>worker.setParams(parameters)")
 cog.outl("<TABHERE>else:")
-cog.outl("<TABHERE><TABHERE>print \"Error getting required connections, check config file\"")
+cog.outl("<TABHERE><TABHERE>print(\"Error getting required connections, check config file\")")
 cog.outl("<TABHERE><TABHERE>sys.exit(-1)")
 
 for imp in component['implements']:
@@ -292,7 +292,7 @@ for sub in component['subscribesTo']:
 		nname = nname[0]
 	module = pool.moduleProviding(nname)
 	if module == None:
-		print ('\nCan\'t find module providing', nname, '\n')
+		print('\nCan\'t find module providing', nname, '\n')
 		sys.exit(-1)
 	if not communicationIsIce(sub):
 		for interface in module['interfaces']:
@@ -318,7 +318,7 @@ for imp in component['implements']:
 		nname = nname[0]
 	module = pool.moduleProviding(nname)
 	if module == None:
-		print ('\nCan\'t find module providing', nname, '\n')
+		print('\nCan\'t find module providing', nname, '\n')
 		sys.exit(-1)
 	if not communicationIsIce(imp):
 		for interface in module['interfaces']:
