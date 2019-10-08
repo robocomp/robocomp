@@ -123,41 +123,41 @@ Z()
 * \brief Default constructor
 */
 [[[cog
-	if component['language'].lower() == 'cpp':
-		cog.outl("SpecificWorker::SpecificWorker(MapPrx& mprx) : GenericWorker(mprx)")
-	else:
-		cog.outl("SpecificWorker::SpecificWorker(TuplePrx tprx) : GenericWorker(tprx)")
+    if component['language'].lower() == 'cpp':
+        cog.outl("SpecificWorker::SpecificWorker(MapPrx& mprx) : GenericWorker(mprx)")
+    else:
+        cog.outl("SpecificWorker::SpecificWorker(TuplePrx tprx) : GenericWorker(tprx)")
 ]]]
 [[[end]]]
 {
 
 [[[cog
 if component['innermodelviewer']:
-	cog.outl("#ifdef USE_QTGUI")
-	cog.outl("<TABHERE>innerModelViewer = NULL;")
-	cog.outl("<TABHERE>osgView = new OsgView(this);")
-	cog.outl("<TABHERE>osgGA::TrackballManipulator *tb = new osgGA::TrackballManipulator;")
-	cog.outl("<TABHERE>osg::Vec3d eye(osg::Vec3(4000.,4000.,-1000.));")
-	cog.outl("<TABHERE>osg::Vec3d center(osg::Vec3(0.,0.,-0.));")
-	cog.outl("<TABHERE>osg::Vec3d up(osg::Vec3(0.,1.,0.));")
-	cog.outl("<TABHERE>tb->setHomePosition(eye, center, up, true);")
-	cog.outl("<TABHERE>tb->setByMatrix(osg::Matrixf::lookAt(eye,center,up));")
- 	cog.outl("<TABHERE>osgView->setCameraManipulator(tb);")
-	cog.outl("#endif")
+    cog.outl("#ifdef USE_QTGUI")
+    cog.outl("<TABHERE>innerModelViewer = NULL;")
+    cog.outl("<TABHERE>osgView = new OsgView(this);")
+    cog.outl("<TABHERE>osgGA::TrackballManipulator *tb = new osgGA::TrackballManipulator;")
+    cog.outl("<TABHERE>osg::Vec3d eye(osg::Vec3(4000.,4000.,-1000.));")
+    cog.outl("<TABHERE>osg::Vec3d center(osg::Vec3(0.,0.,-0.));")
+    cog.outl("<TABHERE>osg::Vec3d up(osg::Vec3(0.,1.,0.));")
+    cog.outl("<TABHERE>tb->setHomePosition(eye, center, up, true);")
+    cog.outl("<TABHERE>tb->setByMatrix(osg::Matrixf::lookAt(eye,center,up));")
+    cog.outl("<TABHERE>osgView->setCameraManipulator(tb);")
+    cog.outl("#endif")
 try:
-	if isAGM1Agent(component):
-		cog.outl("<TABHERE>active = false;")
-		cog.outl("<TABHERE>worldModel = AGMModel::SPtr(new AGMModel());")
-		cog.outl("<TABHERE>worldModel->name = "+"\"worldModel\";")
-		cog.outl("<TABHERE>innerModel = new InnerModel();")
-	if isAGM2Agent(component):
-		cog.outl("<TABHERE>active = false;")
-		cog.outl("<TABHERE>worldModel = AGMModel::SPtr(new AGMModel());")
-		cog.outl("<TABHERE>worldModel->name = "+"\"worldModel\";")
-		cog.outl("<TABHERE>innerModel = new InnerModel();")
+    if isAGM1Agent(component):
+        cog.outl("<TABHERE>active = false;")
+        cog.outl("<TABHERE>worldModel = AGMModel::SPtr(new AGMModel());")
+        cog.outl("<TABHERE>worldModel->name = "+"\"worldModel\";")
+        cog.outl("<TABHERE>innerModel = new InnerModel();")
+    if isAGM2Agent(component):
+        cog.outl("<TABHERE>active = false;")
+        cog.outl("<TABHERE>worldModel = AGMModel::SPtr(new AGMModel());")
+        cog.outl("<TABHERE>worldModel->name = "+"\"worldModel\";")
+        cog.outl("<TABHERE>innerModel = new InnerModel();")
 
 except:
-	pass
+    pass
 
 ]]]
 [[[end]]]

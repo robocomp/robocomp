@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 [[[cog
 
@@ -67,7 +67,7 @@ ROBOCOMP = ''
 try:
 	ROBOCOMP = os.environ['ROBOCOMP']
 except KeyError:
-	print '$ROBOCOMP environment variable not set, using the default value /opt/robocomp'
+	print('$ROBOCOMP environment variable not set, using the default value /opt/robocomp')
 	ROBOCOMP = '/opt/robocomp'
 
 preStr = "-I/opt/robocomp/interfaces/ -I"+ROBOCOMP+"/interfaces/ --all /opt/robocomp/interfaces/"
@@ -83,7 +83,7 @@ try:
 		additionalPathStr += ' -I' + p + ' '
 	icePaths.append('/opt/robocomp/interfaces')
 except:
-	print 'SLICE_PATH environment variable was not exported. Using only the default paths'
+	print('SLICE_PATH environment variable was not exported. Using only the default paths')
 	pass
 
 [[[cog
@@ -105,7 +105,7 @@ for name in usingList:
 	cog.outl('<TABHERE><TABHERE>ice_'+incl+' = True')
 	cog.outl('<TABHERE><TABHERE>break')
 	cog.outl('if not ice_'+incl+':')
-	cog.outl("<TABHERE>print 'Couln\\\'t load "+incl+"'")
+	cog.outl("<TABHERE>print('Couln\\\'t load "+incl+"')")
 	cog.outl('<TABHERE>sys.exit(-1)')
 
 	module = IDSLParsing.gimmeIDSL(eso, files='', includeDirectories=includeDirectories)
@@ -136,7 +136,7 @@ if component['usingROS'] == True:
 			for interface in module['interfaces']:
 				if interface['name'] == im:
 					for mname in interface['methods']:
-						msgIncludes[module['name']] = 'try:\n<TABHERE>from '+module['name']+'ROS.msg import *\nexcept:\n<TABHERE>print \"couldn\'t load msg\"'
+						msgIncludes[module['name']] = 'try:\n<TABHERE>from '+module['name']+'ROS.msg import *\nexcept:\n<TABHERE>print(\"couldn\'t load msg\")'
 	for imp in component['subscribesTo']:
 		if type(imp) == str:
 			im = imp
@@ -147,7 +147,7 @@ if component['usingROS'] == True:
 			for interface in module['interfaces']:
 				if interface['name'] == im:
 					for mname in interface['methods']:
-						msgIncludes[module['name']] = 'try:\n<TABHERE>from '+module['name']+'ROS.msg import *\nexcept:\n<TABHERE>print \"couldn\'t load msg\"'
+						msgIncludes[module['name']] = 'try:\n<TABHERE>from '+module['name']+'ROS.msg import *\nexcept:\n<TABHERE>print(\"couldn\'t load msg\")'
 	for msg in msgIncludes.values():
 		cog.outl(msg)
 	srvIncludes = {}
@@ -181,7 +181,7 @@ if component['gui'] is not None:
 	cog.outl('try:')
 	cog.outl('<TABHERE>from ui_mainUI import *')
 	cog.outl('except:')
-	cog.outl('<TABHERE>print "Can\'t import UI file. Did you run \'make\'?"')
+	cog.outl('<TABHERE>print("Can\'t import UI file. Did you run \'make\'?")')
 	cog.outl('<TABHERE>sys.exit(-1)')
 Z()
 ]]]
@@ -196,7 +196,7 @@ if component['usingROS'] == True:
 			nname = nname[0]
 		module = pool.moduleProviding(nname)
 		if module == None:
-			print ('\nCan\'t find module providing', nname, '\n')
+			print('\nCan\'t find module providing', nname, '\n')
 			sys.exit(-1)
 		if not communicationIsIce(imp):
 			cog.outl("#class for rosPublisher")
@@ -232,7 +232,7 @@ if component['usingROS'] == True:
 			nname = nname[0]
 		module = pool.moduleProviding(nname)
 		if module == None:
-			print ('\nCan\'t find module providing', nname, '\n')
+			print('\nCan\'t find module providing', nname, '\n')
 			sys.exit(-1)
 		if not communicationIsIce(imp):
 			cog.outl("#class for rosServiceClient")
@@ -478,24 +478,24 @@ if sm is not None:
 	codVirtuals = ""
 	codcompsubclas = ""
 	for state in sm['machine']['contents']['states']:
-		codVirtuals += "<TABHERE>@QtCore.Slot()\n<TABHERE>def sm_" + state + '(self):\n<TABHERE><TABHERE>print "Error: lack sm_' + state + ' in Specificworker"\n<TABHERE><TABHERE>sys.exit(-1)\n\n'
+		codVirtuals += "<TABHERE>@QtCore.Slot()\n<TABHERE>def sm_" + state + '(self):\n<TABHERE><TABHERE>print("Error: lack sm_' + state + ' in Specificworker")\n<TABHERE><TABHERE>sys.exit(-1)\n\n'
 	if sm['machine']['contents']['initialstate'] != "none":
 		codVirtuals += "<TABHERE>@QtCore.Slot()\n<TABHERE>def sm_" + \
-					   sm['machine']['contents']['initialstate'][0] + '(self):\n<TABHERE><TABHERE>print "Error: lack sm_' + sm['machine']['contents']['initialstate'][0] + ' in Specificworker"\n<TABHERE><TABHERE>sys.exit(-1)\n\n'
+					   sm['machine']['contents']['initialstate'][0] + '(self):\n<TABHERE><TABHERE>print("Error: lack sm_' + sm['machine']['contents']['initialstate'][0] + ' in Specificworker")\n<TABHERE><TABHERE>sys.exit(-1)\n\n'
 	if sm['machine']['contents']['finalstate'] != "none":
 		codVirtuals += "<TABHERE>@QtCore.Slot()\n<TABHERE>def sm_" + \
-					   sm['machine']['contents']['finalstate'][0] + '(self):\n<TABHERE><TABHERE>print "Error: lack sm_' + sm['machine']['contents']['finalstate'][0] + ' in Specificworker"\n<TABHERE><TABHERE>sys.exit(-1)\n\n'
+					   sm['machine']['contents']['finalstate'][0] + '(self):\n<TABHERE><TABHERE>print("Error: lack sm_' + sm['machine']['contents']['finalstate'][0] + ' in Specificworker")\n<TABHERE><TABHERE>sys.exit(-1)\n\n'
 	if sm['substates'] != "none":
 		for substates in sm['substates']:
 			if substates['contents']['states'] is not "none":
 				for state in substates['contents']['states']:
-					codVirtuals += "<TABHERE>@QtCore.Slot()\n<TABHERE>def sm_" + state + '(self):\n<TABHERE><TABHERE>print "Error: lack sm_' + state + ' in Specificworker"\n<TABHERE><TABHERE>sys.exit(-1)\n\n'
+					codVirtuals += "<TABHERE>@QtCore.Slot()\n<TABHERE>def sm_" + state + '(self):\n<TABHERE><TABHERE>print("Error: lack sm_' + state + ' in Specificworker")\n<TABHERE><TABHERE>sys.exit(-1)\n\n'
 			if substates['contents']['initialstate'] != "none":
 				codVirtuals += "<TABHERE>@QtCore.Slot()\n<TABHERE>def sm_" + \
-							   substates['contents']['initialstate'] + '(self):\n<TABHERE><TABHERE>print "Error: lack sm_' + substates['contents']['initialstate'] + ' in Specificworker"\n<TABHERE><TABHERE>sys.exit(-1)\n\n'
+							   substates['contents']['initialstate'] + '(self):\n<TABHERE><TABHERE>print("Error: lack sm_' + substates['contents']['initialstate'] + ' in Specificworker")\n<TABHERE><TABHERE>sys.exit(-1)\n\n'
 			if substates['contents']['finalstate'] != "none":
 				codVirtuals += "<TABHERE>@QtCore.Slot()\n<TABHERE>def sm_" + \
-							   substates['contents']['finalstate'] + '(self):\n<TABHERE><TABHERE>print "Error: lack sm_' + substates['contents']['finalstate'] + ' in Specificworker"\n<TABHERE><TABHERE>sys.exit(-1)\n\n'
+							   substates['contents']['finalstate'] + '(self):\n<TABHERE><TABHERE>print("Error: lack sm_' + substates['contents']['finalstate'] + ' in Specificworker")\n<TABHERE><TABHERE>sys.exit(-1)\n\n'
 		cog.outl("#Slots funtion State Machine")
 		cog.outl(codVirtuals)
 		cog.outl("#-------------------------")

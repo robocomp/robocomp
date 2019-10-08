@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 [[[cog
 
@@ -87,25 +87,25 @@ if sm is not None:
 [[[end]]]
 
 	def __del__(self):
-		print 'SpecificWorker destructor'
+		print('SpecificWorker destructor')
 
 	def setParams(self, params):
 		#try:
 		#	self.innermodel = InnerModel(params["InnerModelPath"])
 		#except:
 		#	traceback.print_exc()
-		#	print "Error reading config params"
+		#	print("Error reading config params")
 		return True
 
 [[[cog
 if (sm is not None and sm['machine']['default'] is True) or component['statemachine'] is None:
 	cog.outl("<TABHERE>@QtCore.Slot()")
 	cog.outl("<TABHERE>def compute(self):")
-	cog.outl("<TABHERE><TABHERE>print 'SpecificWorker.compute...'")
+	cog.outl("<TABHERE><TABHERE>print('SpecificWorker.compute...')")
 	cog.outl("<TABHERE><TABHERE>#computeCODE")
 	cog.outl("<TABHERE><TABHERE>#try:")
 	cog.outl("<TABHERE><TABHERE>#<TABHERE>self.differentialrobot_proxy.setSpeedBase(100, 0)")
-	cog.outl("<TABHERE><TABHERE>#except Ice.Exception, e:")
+	cog.outl("<TABHERE><TABHERE>#except Ice.Exception as e:")
 	cog.outl("<TABHERE><TABHERE>#<TABHERE>traceback.print_exc()")
 	cog.outl("<TABHERE><TABHERE>#<TABHERE>print e")
 	cog.outl("")
@@ -114,7 +114,7 @@ if (sm is not None and sm['machine']['default'] is True) or component['statemach
 	cog.outl("<TABHERE><TABHERE># z = librobocomp_qmat.QVec(3,0)")
 	cog.outl("<TABHERE><TABHERE># r = self.innermodel.transform('rgbd', z, 'laser')")
 	cog.outl("<TABHERE><TABHERE># r.printvector('d')")
-	cog.outl("<TABHERE><TABHERE># print r[0], r[1], r[2]")
+	cog.outl("<TABHERE><TABHERE># print(r[0], r[1], r[2])")
 	cog.outl("")
 	cog.outl("<TABHERE><TABHERE>return True")
 ]]]
