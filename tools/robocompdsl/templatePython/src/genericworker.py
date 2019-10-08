@@ -512,5 +512,5 @@ if sm is not None:
 	@QtCore.Slot(int)
 	def setPeriod(self, p):
 		print("Period changed", p)
-		Period = p
-		timer.start(Period)
+		self.Period = p
+		self.timer.start(self.Period)
