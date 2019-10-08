@@ -105,7 +105,7 @@ if (sm is not None and sm['machine']['default'] is True) or component['statemach
 	cog.outl("<TABHERE><TABHERE>#computeCODE")
 	cog.outl("<TABHERE><TABHERE>#try:")
 	cog.outl("<TABHERE><TABHERE>#<TABHERE>self.differentialrobot_proxy.setSpeedBase(100, 0)")
-	cog.outl("<TABHERE><TABHERE>#except Ice.Exception, e:")
+	cog.outl("<TABHERE><TABHERE>#except Ice.Exception as e:")
 	cog.outl("<TABHERE><TABHERE>#<TABHERE>traceback.print_exc()")
 	cog.outl("<TABHERE><TABHERE>#<TABHERE>print e")
 	cog.outl("")

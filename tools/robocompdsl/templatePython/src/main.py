@@ -32,7 +32,7 @@ REQUIRE_STR = """
 <TABHERE><TABHERE><TABHERE>print('Cannot connect to the remote object (<NORMAL>)', proxyString)
 <TABHERE><TABHERE><TABHERE>#traceback.print_exc()
 <TABHERE><TABHERE><TABHERE>status = 1
-<TABHERE>except Ice.Exception, e:
+<TABHERE>except Ice.Exception as e:
 <TABHERE><TABHERE>print(e)
 <TABHERE><TABHERE>print('Cannot get <NORMAL>Proxy property.')
 <TABHERE><TABHERE>status = 1
@@ -48,7 +48,7 @@ SUBSCRIBESTO_STR = """
 <TABHERE><TABHERE>try:
 <TABHERE><TABHERE><TABHERE><LOWER>_topic = topicManager.retrieve("<NORMAL>")
 <TABHERE><TABHERE><TABHERE>subscribeDone = True
-<TABHERE><TABHERE>except Ice.Exception, e:
+<TABHERE><TABHERE>except Ice.Exception as e:
 <TABHERE><TABHERE><TABHERE>print("Error. Topic does not exist (creating)")
 <TABHERE><TABHERE><TABHERE>time.sleep(1)
 <TABHERE><TABHERE><TABHERE>try:
@@ -252,7 +252,7 @@ try:
 <TABHERE>obj = ic.stringToProxy(proxy)
 <TABHERE>try:
 <TABHERE><TABHERE>topicManager = IceStorm.TopicManagerPrx.checkedCast(obj)
-<TABHERE>except Ice.ConnectionRefusedException, e:
+<TABHERE>except Ice.ConnectionRefusedException as e:
 <TABHERE><TABHERE>print('Cannot connect to IceStorm! ('+proxy+')')
 <TABHERE><TABHERE>status = 1""")
 except:
