@@ -511,6 +511,6 @@ if sm is not None:
 	# @param per Period in ms
 	@QtCore.Slot(int)
 	def setPeriod(self, p):
-		print "Period changed", p
-		Period = p
-		timer.start(Period)
+		print("Period changed", p)
+		self.Period = p
+		self.timer.start(self.Period)
