@@ -271,7 +271,7 @@ if (sm is not None and sm['machine']['default'] is True) or component['statemach
 [[[cog
 if sm is not None:
 	sm_implementation = "\n"
-	if sm['machine']['contents']['states'] is not "none":
+	if sm['machine']['contents']['states'] is not None:
 		for state in sm['machine']['contents']['states']:
 		    if sm['machine']['default'] and state == 'compute':
 		        sm_implementation += "void SpecificWorker::sm_" + state + "()\n{\n<TABHERE>std::cout<<\"Entered state "+state+"\"<<std::endl;\n<TABHERE>compute();\n}\n\n"
@@ -279,16 +279,16 @@ if sm is not None:
 			    sm_implementation += "void SpecificWorker::sm_" + state + "()\n{\n<TABHERE>std::cout<<\"Entered state "+state+"\"<<std::endl;\n}\n\n"
 	if sm['machine']['contents']['initialstate'] != "none":
 		sm_implementation += "void SpecificWorker::sm_" + sm['machine']['contents']['initialstate'][0] + "()\n{\n<TABHERE>std::cout<<\"Entered initial state "+sm['machine']['contents']['initialstate'][0]+"\"<<std::endl;\n}\n\n"
-	if sm['machine']['contents']['finalstate'] != "none":
+	if sm['machine']['contents']['finalstate'] is not None:
 		sm_implementation += "void SpecificWorker::sm_" + sm['machine']['contents']['finalstate'][0] + "()\n{\n<TABHERE>std::cout<<\"Entered final state "+sm['machine']['contents']['finalstate'][0] +"\"<<std::endl;\n}\n\n"
 	if sm['substates'] != "none":
 		for substates in sm['substates']:
-			if substates['contents']['states'] is not "none":
+			if substates['contents']['states'] is not None:
 				for state in substates['contents']['states']:
 					sm_implementation += "void SpecificWorker::sm_" + state + "()\n{\n<TABHERE>std::cout<<\"Entered state "+state+"\"<<std::endl;\n}\n\n"
 			if substates['contents']['initialstate'] != "none":
 				sm_implementation += "void SpecificWorker::sm_" + substates['contents']['initialstate'] + "()\n{\n<TABHERE>std::cout<<\"Entered state "+substates['contents']['initialstate']+"\"<<std::endl;\n}\n\n"
-			if substates['contents']['finalstate'] != "none":
+			if substates['contents']['finalstate'] is not None:
 				sm_implementation += "void SpecificWorker::sm_" + substates['contents']['finalstate'] + "()\n{\n<TABHERE>std::cout<<\"Entered state "+substates['contents']['finalstate']+"\"<<std::endl;\n}\n\n"
 	cog.outl(sm_implementation)
 

@@ -211,19 +211,19 @@ if (sm is not None and sm['machine']['default'] is True) or component['statemach
 [[[cog
 if component['statemachine'] is not None:
     sm_specification = ""
-    if sm['machine']['contents']['states'] is not "none":
+    if sm['machine']['contents']['states'] is not None:
         for state in sm['machine']['contents']['states']:
             sm_specification += "<TABHERE>void sm_" + state + "();\n"
-    if sm['machine']['contents']['initialstate'] != "none":
+    if sm['machine']['contents']['initialstate'] is not None:
         sm_specification += "<TABHERE>void sm_" + sm['machine']['contents']['initialstate'][0] + "();\n"
-    if sm['machine']['contents']['finalstate'] != "none":
+    if sm['machine']['contents']['finalstate'] is not None:
         sm_specification += "<TABHERE>void sm_" + sm['machine']['contents']['finalstate'][0] + "();\n"
-    if sm['substates'] != "none":
+    if sm['substates'] is not None:
         for substates in sm['substates']:
-            if substates['contents']['states'] is not "none":
+            if substates['contents']['states'] is not None:
                 for state in substates['contents']['states']:
                     sm_specification += "<TABHERE>void sm_" + state + "();\n"
-            if substates['contents']['initialstate'] != "none":
+            if substates['contents']['initialstate'] is not None:
                 sm_specification += "<TABHERE>void sm_" + substates['contents']['initialstate'] + "();\n"
             if substates['contents']['finalstate'] != "none":
                 sm_specification += "<TABHERE>void sm_" + substates['contents']['finalstate'] + "();\n"

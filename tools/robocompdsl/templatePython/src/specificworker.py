@@ -125,13 +125,13 @@ if sm is not None:
 	codVirtuals = ""
 
 	# Generate code for the methods of the StateMachine.
-	if sm['machine']['contents']['initialstate'] != "none":
+	if sm['machine']['contents']['initialstate'] is not None:
 		if sm['machine']['default']:
 			codVirtuals += "<TABHERE>#\n<TABHERE># sm_" + sm['machine']['contents']['initialstate'][0] + "\n<TABHERE>#\n<TABHERE>@QtCore.Slot()\n<TABHERE>def sm_" + sm['machine']['contents']['initialstate'][0] + "(self):\n<TABHERE><TABHERE>print(\"Entered state " + sm['machine']['contents']['initialstate'][0] + "\")\n<TABHERE><TABHERE>self.t_initialize_to_compute.emit()\n<TABHERE><TABHERE>pass\n\n"
 		else:
 			codVirtuals += "<TABHERE>#\n<TABHERE># sm_" + sm['machine']['contents']['initialstate'][0] + "\n<TABHERE>#\n<TABHERE>@QtCore.Slot()\n<TABHERE>def sm_" + sm['machine']['contents']['initialstate'][0] + "(self):\n<TABHERE><TABHERE>print(\"Entered state " + sm['machine']['contents']['initialstate'][0] + "\")\n<TABHERE><TABHERE>pass\n\n"
 
-	if sm['machine']['contents']['states'] is not "none":
+	if sm['machine']['contents']['states'] is not None:
 		for state in sorted(sm['machine']['contents']['states']):
 			if sm['machine']['default']:
 				if state == 'compute':
@@ -139,18 +139,18 @@ if sm is not None:
 			else:
 				codVirtuals += "<TABHERE>#\n<TABHERE># sm_" + state + "\n<TABHERE>#\n<TABHERE>@QtCore.Slot()\n<TABHERE>def sm_" + state + "(self):\n<TABHERE><TABHERE>print(\"Entered state " + state + "\")\n<TABHERE><TABHERE>pass\n\n"
 
-	if sm['machine']['contents']['finalstate'] != "none":
+	if sm['machine']['contents']['finalstate'] is not None:
 		codVirtuals += "<TABHERE>#\n<TABHERE># sm_" + sm['machine']['contents']['finalstate'][0] + "\n<TABHERE>#\n<TABHERE>@QtCore.Slot()\n<TABHERE>def sm_" + sm['machine']['contents']['finalstate'][0] + "(self):\n<TABHERE><TABHERE>print(\"Entered state "+sm['machine']['contents']['finalstate'][0]+"\")\n<TABHERE><TABHERE>pass\n\n"
 
 	# Generate code for the methods of the StateMachine transitions for substates.
-	if sm['substates'] != "none":
+	if sm['substates'] is not None:
 		for substates in sm['substates']:
-			if substates['contents']['initialstate'] != "none":
+			if substates['contents']['initialstate'] is not None:
 				codVirtuals += "<TABHERE>#\n<TABHERE># sm_" + substates['contents']['initialstate'] + "\n<TABHERE>#\n<TABHERE>@QtCore.Slot()\n<TABHERE>def sm_" + substates['contents']['initialstate'] + "(self):\n<TABHERE><TABHERE>print(\"Entered state " + substates['contents']['initialstate'] + "\")\n<TABHERE><TABHERE>pass\n\n"
-			if substates['contents']['states'] is not "none":
+			if substates['contents']['states'] is not None:
 				for state in sorted(substates['contents']['states']):
 					codVirtuals += "<TABHERE>#\n<TABHERE># sm_" + state + "\n<TABHERE>#\n<TABHERE>@QtCore.Slot()\n<TABHERE>def sm_" + state + "(self):\n<TABHERE><TABHERE>print(\"Entered state "+state+"\")\n<TABHERE><TABHERE>pass\n\n"
-			if substates['contents']['finalstate'] != "none":
+			if substates['contents']['finalstate'] is not None:
 				codVirtuals += "<TABHERE>#\n<TABHERE># sm_" + substates['contents']['finalstate'] + "\n<TABHERE>#\n<TABHERE>@QtCore.Slot()\n<TABHERE>def sm_" + substates['contents']['finalstate'] + "(self):\n<TABHERE><TABHERE>print(\"Entered state "+substates['contents']['finalstate']+"\")\n<TABHERE><TABHERE>pass\n\n"
 
 	cog.outl("# =============== Slots methods for State Machine ===================")
