@@ -164,7 +164,7 @@ Z()
 #
 #
 
-import sys, traceback, IceStorm, subprocess, threading, time, queue, os, copy
+import sys, traceback, IceStorm, time, os, copy
 
 # Ctrl+c handling
 import signal
