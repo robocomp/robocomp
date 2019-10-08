@@ -492,18 +492,18 @@ if sm is not None:
     codQStateMachine = ""
     lsstates = ""
     codQStateMachine = "<TABHERE>QStateMachine " + sm['machine']['name'] + ";\n"
-    if sm['machine']['contents']['states'] is not "none":
+    if sm['machine']['contents']['states'] is not None:
         for state in sm['machine']['contents']['states']:
             aux = "<TABHERE>QState *" + state + "State = new QState();\n"
             lsstates += state +","
-            if sm['substates'] is not "none":
+            if sm['substates'] is not None:
                 for substates in sm['substates']:
                     if state == substates['parent']:
                         if substates['parallel'] is "parallel":
                             aux = "<TABHERE>QState *" + state + "State = new QState(QState::ParallelStates);\n"
                             break
             codQState += aux
-    if sm['machine']['contents']['initialstate'] != "none":
+    if sm['machine']['contents']['initialstate'] is not None:
         state = sm['machine']['contents']['initialstate'][0]
         aux = "<TABHERE>QState *" + state + "State = new QState();\n"
         lsstates += state +","
@@ -516,14 +516,14 @@ if sm is not None:
         codQState += aux
 
 
-    if sm['machine']['contents']['finalstate'] != "none":
+    if sm['machine']['contents']['finalstate'] is not None:
         state = sm['machine']['contents']['finalstate'][0]
         codQState +="<TABHERE>QFinalState *" + state + "State = new QFinalState();\n"
         lsstates += state +","
 
-    if sm['substates'] != "none":
+    if sm['substates'] is not None:
         for substates in sm['substates']:
-            if substates['contents']['states'] is not "none":
+            if substates['contents']['states'] is not None:
                 for state in substates['contents']['states']:
                     aux = "<TABHERE>QState *" + state + "State = new QState(" + substates['parent'] +"State);\n"
                     lsstates += state +","
@@ -542,7 +542,7 @@ if sm is not None:
                             aux = "<TABHERE>QState *" + state + "State = new QState(QState::ParallelStates, " + substates['parent'] + "State);\n"
                             break
                 codQState += aux
-            if substates['contents']['finalstate'] != "none":
+            if substates['contents']['finalstate'] is not None:
                 codQState += "<TABHERE>QFinalState *" + substates['contents']['finalstate'] + "State = new QFinalState(" +substates['parent'] + "State);\n"
                 lsstates += state +","
 
@@ -632,21 +632,21 @@ public slots:
 [[[cog
 if sm is not None:
     sm_virtual_methods = ""
-    if sm['machine']['contents']['states'] is not "none":
+    if sm['machine']['contents']['states'] is not None:
         for state in sm['machine']['contents']['states']:
             sm_virtual_methods += "<TABHERE>virtual void sm_" + state + "() = 0;\n"
-    if sm['machine']['contents']['initialstate'] != "none":
+    if sm['machine']['contents']['initialstate'] is not None    :
         sm_virtual_methods += "<TABHERE>virtual void sm_" + sm['machine']['contents']['initialstate'][0] + "() = 0;\n"
     if sm['machine']['contents']['finalstate'] != "none":
         sm_virtual_methods += "<TABHERE>virtual void sm_" + sm['machine']['contents']['finalstate'][0] + "() = 0;\n"
-    if sm['substates'] != "none":
+    if sm['substates'] is not None:
         for substates in sm['substates']:
-            if substates['contents']['states'] is not "none":
+            if substates['contents']['states'] is not None:
                 for state in substates['contents']['states']:
                     sm_virtual_methods += "<TABHERE>virtual void sm_" + state + "() = 0;\n"
-            if substates['contents']['initialstate'] != "none":
+            if substates['contents']['initialstate'] is not None:
                 sm_virtual_methods += "<TABHERE>virtual void sm_" + substates['contents']['initialstate'] + "() = 0;\n"
-            if substates['contents']['finalstate'] != "none":
+            if substates['contents']['finalstate'] is not None:
                 sm_virtual_methods += "<TABHERE>virtual void sm_" + substates['contents']['finalstate'] + "() = 0;\n"
     cog.outl("//Slots funtion State Machine")
     cog.outl(sm_virtual_methods)
@@ -667,9 +667,9 @@ if sm is not None:
         for transi in sm['machine']['contents']['transitions']:
             for dest in transi['dest']:
                 codsignals += "<TABHERE>void t_" +  transi['src'] + "_to_" + dest + "();\n"
-    if sm['substates']!="none":
+    if sm['substates'] is not None:
         for substates in sm['substates']:
-            if substates['contents']['transitions'] != "none":
+            if substates['contents']['transitions'] is not None:
                 for transi in substates['contents']['transitions']:
                     for dest in transi['dest']:
                         codsignals += "<TABHERE>void t_" + transi['src'] + "_to_" + dest + "();\n"
