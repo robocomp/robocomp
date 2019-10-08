@@ -514,8 +514,8 @@ def main():
                     print("Binary equal files %s and %s"%(o_file, n_file))
 
     elif inputFile.endswith(".idsl"):
-        #idsl = IDSLParsing.fromFileIDSL(inputFile)
-        print 'Generating ICE file ', outputPath
+        # idsl = IDSLParsing.fromFileIDSL(inputFile)
+        print('Generating ICE file ', outputPath)
         # Call cog
         run = "cog.py -z -d" + " -D theIDSL="+inputFile + ' -D theIDSLPaths='+ '#'.join(args.include_dirs) +" -o " + outputPath + " /opt/robocomp/share/robocompdsl/TEMPLATE.ICE"
         run = run.split(' ')
