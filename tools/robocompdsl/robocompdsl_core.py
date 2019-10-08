@@ -20,7 +20,16 @@ from parseIDSL import *
 
 DIFF_TOOLS = ["meld", "kdiff3", "diff"]
 
-def generateROSHeaders(idslFile, outputPath, comp, includeDirectories): #idslFileis the IDSL file imported in the CDSL, outputPath is the path where the ROS headers are to be generated
+
+def generateROSHeaders(idslFile, outputPath, comp, includeDirectories):
+    """
+
+    :param idslFile: is the IDSL file imported in the CDSL, outputPath is the path where the ROS headers are to be generated
+    :param outputPath:
+    :param comp:
+    :param includeDirectories:
+    :return:
+    """
     imported = []
     idsl = IDSLParsing.gimmeIDSL(idslFile, files='', includeDirectories=includeDirectories)
     if not os.path.exists(outputPath):
