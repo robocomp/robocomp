@@ -123,41 +123,41 @@ Z()
 * \brief Default constructor
 */
 [[[cog
-	if component['language'].lower() == 'cpp':
-		cog.outl("SpecificWorker::SpecificWorker(MapPrx& mprx) : GenericWorker(mprx)")
-	else:
-		cog.outl("SpecificWorker::SpecificWorker(TuplePrx tprx) : GenericWorker(tprx)")
+    if component['language'].lower() == 'cpp':
+        cog.outl("SpecificWorker::SpecificWorker(MapPrx& mprx) : GenericWorker(mprx)")
+    else:
+        cog.outl("SpecificWorker::SpecificWorker(TuplePrx tprx) : GenericWorker(tprx)")
 ]]]
 [[[end]]]
 {
 
 [[[cog
 if component['innermodelviewer']:
-	cog.outl("#ifdef USE_QTGUI")
-	cog.outl("<TABHERE>innerModelViewer = NULL;")
-	cog.outl("<TABHERE>osgView = new OsgView(this);")
-	cog.outl("<TABHERE>osgGA::TrackballManipulator *tb = new osgGA::TrackballManipulator;")
-	cog.outl("<TABHERE>osg::Vec3d eye(osg::Vec3(4000.,4000.,-1000.));")
-	cog.outl("<TABHERE>osg::Vec3d center(osg::Vec3(0.,0.,-0.));")
-	cog.outl("<TABHERE>osg::Vec3d up(osg::Vec3(0.,1.,0.));")
-	cog.outl("<TABHERE>tb->setHomePosition(eye, center, up, true);")
-	cog.outl("<TABHERE>tb->setByMatrix(osg::Matrixf::lookAt(eye,center,up));")
- 	cog.outl("<TABHERE>osgView->setCameraManipulator(tb);")
-	cog.outl("#endif")
+    cog.outl("#ifdef USE_QTGUI")
+    cog.outl("<TABHERE>innerModelViewer = NULL;")
+    cog.outl("<TABHERE>osgView = new OsgView(this);")
+    cog.outl("<TABHERE>osgGA::TrackballManipulator *tb = new osgGA::TrackballManipulator;")
+    cog.outl("<TABHERE>osg::Vec3d eye(osg::Vec3(4000.,4000.,-1000.));")
+    cog.outl("<TABHERE>osg::Vec3d center(osg::Vec3(0.,0.,-0.));")
+    cog.outl("<TABHERE>osg::Vec3d up(osg::Vec3(0.,1.,0.));")
+    cog.outl("<TABHERE>tb->setHomePosition(eye, center, up, true);")
+    cog.outl("<TABHERE>tb->setByMatrix(osg::Matrixf::lookAt(eye,center,up));")
+    cog.outl("<TABHERE>osgView->setCameraManipulator(tb);")
+    cog.outl("#endif")
 try:
-	if isAGM1Agent(component):
-		cog.outl("<TABHERE>active = false;")
-		cog.outl("<TABHERE>worldModel = AGMModel::SPtr(new AGMModel());")
-		cog.outl("<TABHERE>worldModel->name = "+"\"worldModel\";")
-		cog.outl("<TABHERE>innerModel = new InnerModel();")
-	if isAGM2Agent(component):
-		cog.outl("<TABHERE>active = false;")
-		cog.outl("<TABHERE>worldModel = AGMModel::SPtr(new AGMModel());")
-		cog.outl("<TABHERE>worldModel->name = "+"\"worldModel\";")
-		cog.outl("<TABHERE>innerModel = new InnerModel();")
+    if isAGM1Agent(component):
+        cog.outl("<TABHERE>active = false;")
+        cog.outl("<TABHERE>worldModel = AGMModel::SPtr(new AGMModel());")
+        cog.outl("<TABHERE>worldModel->name = "+"\"worldModel\";")
+        cog.outl("<TABHERE>innerModel = new InnerModel();")
+    if isAGM2Agent(component):
+        cog.outl("<TABHERE>active = false;")
+        cog.outl("<TABHERE>worldModel = AGMModel::SPtr(new AGMModel());")
+        cog.outl("<TABHERE>worldModel->name = "+"\"worldModel\";")
+        cog.outl("<TABHERE>innerModel = new InnerModel();")
 
 except:
-	pass
+    pass
 
 ]]]
 [[[end]]]
@@ -171,7 +171,7 @@ SpecificWorker::~SpecificWorker()
 	std::cout << "Destroying SpecificWorker" << std::endl;
 [[[cog
 if sm is not None and sm['machine']['default']:
-	cog.outl("<TABHERE>emit computetofinalize();")
+	cog.outl("<TABHERE>emit t_compute_to_finalize();")
 ]]]
 [[[end]]]
 }
@@ -187,7 +187,7 @@ cog.outl("""//       THE FOLLOWING IS JUST AN EXAMPLE
 //		std::string innermodel_path = par.value;
 //		innerModel = new InnerModel(innermodel_path);
 //	}
-//	catch(std::exception e) { qFatal("Error reading config params"); }
+//	catch(const std::exception &e) { qFatal("Error reading config params"); }
 
 """)
 if component['innermodelviewer']:
@@ -235,7 +235,7 @@ void SpecificWorker::initialize(int period)
 	timer.start(Period);
 [[[cog
 if sm is not None and sm['machine']['default']:
-    cog.outl("<TABHERE>emit this->initializetocompute();")
+    cog.outl("<TABHERE>emit this->t_initialize_to_compute();")
     ]]]
 [[[end]]]
 
@@ -257,6 +257,13 @@ if (sm is not None and sm['machine']['default'] is True) or component['statemach
     cog.outl("//<TABHERE>{")
     cog.outl("//<TABHERE><TABHERE>std::cout << \"Error reading from Camera\" << e << std::endl;")
     cog.outl("//<TABHERE>}")
+    if component['usingROS'] == True:
+        cog.outl("<TABHERE>ros::spinOnce();")
+    if component['innermodelviewer']:
+        cog.outl("#ifdef USE_QTGUI")
+        cog.outl("<TABHERE>if (innerModelViewer) innerModelViewer->update();")
+        cog.outl("<TABHERE>osgView->frame();")
+        cog.outl("#endif")
     cog.outl("}")
 ]]]
 [[[end]]]
@@ -264,34 +271,28 @@ if (sm is not None and sm['machine']['default'] is True) or component['statemach
 [[[cog
 if sm is not None:
 	sm_implementation = "\n"
-	if sm['machine']['contents']['states'] is not "none":
+	if sm['machine']['contents']['states'] is not None:
 		for state in sm['machine']['contents']['states']:
 		    if sm['machine']['default'] and state == 'compute':
 		        sm_implementation += "void SpecificWorker::sm_" + state + "()\n{\n<TABHERE>std::cout<<\"Entered state "+state+"\"<<std::endl;\n<TABHERE>compute();\n}\n\n"
 		    else:
 			    sm_implementation += "void SpecificWorker::sm_" + state + "()\n{\n<TABHERE>std::cout<<\"Entered state "+state+"\"<<std::endl;\n}\n\n"
-	if sm['machine']['contents']['initialstate'] != "none":
-		sm_implementation += "void SpecificWorker::sm_" + sm['machine']['contents']['initialstate'][0] + "()\n{\n<TABHERE>std::cout<<\"Entered initial state "+sm['machine']['contents']['initialstate'][0]+"\"<<std::endl;\n}\n\n"
-	if sm['machine']['contents']['finalstate'] != "none":
-		sm_implementation += "void SpecificWorker::sm_" + sm['machine']['contents']['finalstate'][0] + "()\n{\n<TABHERE>std::cout<<\"Entered final state "+sm['machine']['contents']['finalstate'][0] +"\"<<std::endl;\n}\n\n"
-	if sm['substates'] != "none":
+	if sm['machine']['contents']['initialstate'] is not None:
+		sm_implementation += "void SpecificWorker::sm_" + sm['machine']['contents']['initialstate'] + "()\n{\n<TABHERE>std::cout<<\"Entered initial state "+sm['machine']['contents']['initialstate']+"\"<<std::endl;\n}\n\n"
+	if sm['machine']['contents']['finalstate'] is not None:
+		sm_implementation += "void SpecificWorker::sm_" + sm['machine']['contents']['finalstate'] + "()\n{\n<TABHERE>std::cout<<\"Entered final state "+sm['machine']['contents']['finalstate'] +"\"<<std::endl;\n}\n\n"
+	if sm['substates'] is not None:
 		for substates in sm['substates']:
-			if substates['contents']['states'] is not "none":
+			if substates['contents']['states'] is not None:
 				for state in substates['contents']['states']:
 					sm_implementation += "void SpecificWorker::sm_" + state + "()\n{\n<TABHERE>std::cout<<\"Entered state "+state+"\"<<std::endl;\n}\n\n"
-			if substates['contents']['initialstate'] != "none":
+			if substates['contents']['initialstate'] is not None:
 				sm_implementation += "void SpecificWorker::sm_" + substates['contents']['initialstate'] + "()\n{\n<TABHERE>std::cout<<\"Entered state "+substates['contents']['initialstate']+"\"<<std::endl;\n}\n\n"
-			if substates['contents']['finalstate'] != "none":
+			if substates['contents']['finalstate'] is not None:
 				sm_implementation += "void SpecificWorker::sm_" + substates['contents']['finalstate'] + "()\n{\n<TABHERE>std::cout<<\"Entered state "+substates['contents']['finalstate']+"\"<<std::endl;\n}\n\n"
 	cog.outl(sm_implementation)
 
-if component['usingROS'] == True:
-	cog.outl("<TABHERE>ros::spinOnce();")
-if component['innermodelviewer']:
-	cog.outl("#ifdef USE_QTGUI")
-	cog.outl("<TABHERE>if (innerModelViewer) innerModelViewer->update();")
-	cog.outl("<TABHERE>osgView->frame();")
-	cog.outl("#endif")
+
 ]]]
 [[[end]]]
 

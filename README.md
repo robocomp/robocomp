@@ -166,9 +166,9 @@ Drop comments and ask questions in:
 - https://groups.google.com/forum/?hl=es#!forum/robocomp-dev
 - https://gitter.im/robocomp
 
-Please, report any bugs to pbustos@unex.es
+Please, report any bugs with the github issue system: [Robocomp Issues](https://github.com/robocomp/robocomp/issues)
 
-If you have any suggestions to improve the repository, like features or tutorials, please contact: robocomp.team@gmail.com 
+If you have any suggestions to improve the repository, like features or tutorials, please contact us on [![Join the chat at https://gitter.im/robocomp/robocomp](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/robocomp/robocomp?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) or create a feature request [here](https://github.com/robocomp/robocomp/issues).
 
 
 

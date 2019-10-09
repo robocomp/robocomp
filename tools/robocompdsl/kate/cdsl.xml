@@ -12,6 +12,7 @@
 			<item> gui </item>
 			<item> useQt </item>
 			<item> useViewer </item>
+            <item> statemachine </item>
 		</list>
 		<contexts>
 			<context attribute="Normal Text" lineEndContext="#pop" name="Normal Text" >

@@ -4,7 +4,7 @@ from pprint import pprint
 from pyparsing import Word, alphas, alphanums, nums, OneOrMore, CharsNotIn, Literal, Combine, delimitedList, Each
 from pyparsing import cppStyleComment, Optional, Suppress, ZeroOrMore, Group, StringEnd, srange
 from pyparsing import nestedExpr, CaselessLiteral, CaselessKeyword, ParseBaseException
-from collections import Counter
+from collections import Counter, OrderedDict
 import sys, traceback, os
 debug = False
 #debug = True
@@ -26,9 +26,9 @@ def getKindFromPool(vtype, modulePool, debug=False):
 	if len(split) > 1:
 		vtype = split[1]
 		mname = split[0]
-		if debug: print('SPLIT (' + vtype+'), (' + mname + ')')
+		if debug: print(('SPLIT (' + vtype+'), (' + mname + ')'))
 		if mname in modulePool.modulePool:
-			if debug: print('dentro SPLIT (' + vtype+'), (' + mname + ')')
+			if debug: print(('dentro SPLIT (' + vtype+'), (' + mname + ')'))
 			r = getTypeFromModule(vtype, modulePool.modulePool[mname])
 			if r != None: return r
 		if mname.startswith("RoboComp"):
@@ -38,7 +38,7 @@ def getKindFromPool(vtype, modulePool, debug=False):
 	else:
 		if debug: print('no split')
 		for module in modulePool.modulePool:
-			if debug: print('  '+str(module))
+			if debug: print(('  '+str(module)))
 			r = getTypeFromModule(vtype, modulePool.modulePool[module])
 			if r != None: return r
 
@@ -119,40 +119,43 @@ class CDSLParsing:
 			# print('fromFile2', includeDirectories)
 			ret = CDSLParsing.fromString(inputText, includeDirectories=includeDirectories)
 		except:
-			print('Error reading', filename)
+			print(('Error reading', filename))
 			traceback.print_exc()
-			print('Error reading', filename)
+			print(('Error reading', filename))
 			sys.exit(1)
 		ret['filename'] = filename
 		return ret
 
 	@staticmethod
 	def getCDSLParser():
-		OBRACE,CBRACE,SEMI,OPAR,CPAR = map(Suppress, "{};()")
-		QUOTE     					 = Suppress(Word("\""))
+		OBRACE,CBRACE,SEMI,OPAR,CPAR = list(map(Suppress, "{};()"))
+		QUOTE = Suppress(Word("\""))
 
 		# keywords
 		(IMPORT, COMMUNICATIONS, LANGUAGE, COMPONENT, CPP, CPP11, GUI, QWIDGET, QMAINWINDOW, QDIALOG, USEQt, QT, QT4, QT5, PYTHON, REQUIRES, IMPLEMENTS, SUBSCRIBESTO, PUBLISHES, OPTIONS, TRUE, FALSE,
-		 INNERMODELVIEWER, STATEMACHINE) = map(CaselessKeyword, """
+		 INNERMODELVIEWER, STATEMACHINE) = list(map(CaselessKeyword, """
 		import communications language component cpp cpp11 gui QWidget QMainWindow QDialog useQt Qt qt4 qt5
 		python requires implements subscribesTo publishes options true false
-		InnerModelViewer statemachine""".split())
+		InnerModelViewer statemachine""".split()))
 
 		identifier = Word( alphas+"_", alphanums+"_" )
+		PATH = CharsNotIn("\";")
 
 		# Imports
-		idslImport  = Group(Suppress(IMPORT) - QUOTE + CharsNotIn("\";").setResultsName('idsl_path') - QUOTE + SEMI)
+		idslImport = Group(Suppress(IMPORT) - QUOTE + PATH.setResultsName('idsl_path') - QUOTE + SEMI)
+
 		idslImports = ZeroOrMore(idslImport).setResultsName("imports")
 
 		commType = Optional(OPAR - (CaselessKeyword("ice") | CaselessKeyword("ros")).setResultsName("type") + CPAR)
 
-		implementsList = Optional(IMPLEMENTS - delimitedList(Group(identifier.setResultsName("impIdentifier")+commType)).setResultsName("implements") + SEMI)
+		implementsList = Optional(IMPLEMENTS - Group(delimitedList(identifier.setResultsName("impIdentifier")+commType)).setResultsName("implements") + SEMI)
 
-		requiresList = Optional(REQUIRES - delimitedList(Group(identifier.setResultsName("reqIdentifier")+commType)).setResultsName("requires") + SEMI)
+		requiresList = Optional(REQUIRES - Group(delimitedList(identifier.setResultsName("reqIdentifier")+commType)).setResultsName("requires") + SEMI)
 
-		subscribesList = Optional(SUBSCRIBESTO - delimitedList(Group(identifier.setResultsName("subIdentifier")+commType)).setResultsName("subscribes") + SEMI)
 
-		publishesList = Optional(PUBLISHES - delimitedList(Group(identifier.setResultsName("pubIdentifier")+commType)).setResultsName("publishes") + SEMI)
+		subscribesList = Optional(SUBSCRIBESTO - Group(delimitedList(identifier.setResultsName("subIdentifier")+commType)).setResultsName("subscribesTo") + SEMI)
+
+		publishesList = Optional(PUBLISHES - Group(delimitedList(identifier.setResultsName("pubIdentifier")+commType)).setResultsName("publishes") + SEMI)
 
 		communicationList = Group(implementsList & requiresList & subscribesList & publishesList).setResultsName("communications")
 		communications = COMMUNICATIONS.suppress() - OBRACE + communicationList + CBRACE + SEMI
@@ -186,7 +189,7 @@ class CDSLParsing:
 	def fromString(inputText, verbose=False, includeDirectories=None):
 		if includeDirectories == None:
 			includeDirectories = []
-		if verbose: print('Verbose:', verbose)
+		if verbose: print(('Verbose:', verbose))
 		text = nestedExpr("/*", "*/").suppress().transformString(inputText) 
 
 		CDSL = CDSLParsing.getCDSLParser()
@@ -200,23 +203,23 @@ class CDSLParsing:
 	@staticmethod
 	def printComponent(component, start=''):
 		# Component name
-		print('Component', component['name'])
+		print(('Component', component['name']))
 		# Imports
 		print('\tImports:')
 		for imp in component['imports']:
-			print('\t\t', imp)
+			print(('\t\t', imp))
 		# Language
 		print('\tLanguage:')
-		print('\t\t', component['language'])
+		print(('\t\t', component['language']))
 		# GUI
 		print('\tGUI:')
-		print('\t\t', component['gui'])
+		print(('\t\t', component['gui']))
 		# Communications
 		print('\tCommunications:')
-		print('\t\tImplements', component['implements'])
-		print('\t\tRequires', component['requires'])
-		print('\t\tPublishes', component['publishes'])
-		print('\t\tSubscribes', component['subscribesTo'])
+		print(('\t\tImplements', component['implements']))
+		print(('\t\tRequires', component['requires']))
+		print(('\t\tPublishes', component['publishes']))
+		print(('\t\tSubscribes', component['subscribesTo']))
 
 	# TODO: Check if we can use lru_cache decorator.
 	@staticmethod
@@ -235,12 +238,12 @@ class CDSLParsing:
 						importedModule = IDSLParsing.fromFile(attempt)  # IDSLParsing.gimmeIDSL(attempt)
 						break
 			except:
-				print('Error reading IMPORT', idsl_basename)
+				print(('Error reading IMPORT', idsl_basename))
 				traceback.print_exc()
-				print('Error reading IMPORT', idsl_basename)
+				print(('Error reading IMPORT', idsl_basename))
 				os._exit(1)
 			if importedModule == None:
-				print('Counldn\'t locate', idsl_basename)
+				print(('Counldn\'t locate', idsl_basename))
 				os._exit(1)
 
 
@@ -260,8 +263,8 @@ class CDSLParsing:
 
 	@staticmethod
 	def component(tree, includeDirectories=None, start=''):
-		component = {}
-		# print('parseCDSL.component', includeDirectories)
+		component = OrderedDict()
+		# print 'parseCDSL.component', includeDirectories
 		if includeDirectories == None:
 			includeDirectories = []
 
@@ -279,24 +282,18 @@ class CDSLParsing:
 		component['imports'] = []
 		component['recursiveImports'] = []
 		try:
-			imprts = tree['imports']
+			imprts = [path['idsl_path'] for path in tree.asDict()["imports"]]
 		except:
 			tree['imports'] = []
 			imprts = []
 		if isAGM1Agent(component):
-			imprts = ['AGMExecutive.idsl', 'AGMCommonBehavior.idsl', 'AGMWorldModel.idsl']
-			for i in tree['imports']:
-				if not i in imprts:
-					imprts.append(i)
+			imprts.extend(['AGMExecutive.idsl', 'AGMCommonBehavior.idsl', 'AGMWorldModel.idsl'])
 		if isAGM2Agent(component):
-			imprts = ['AGM2.idsl']
-			for i in tree['imports']:
-				if not i in imprts:
-					imprts.append(i)
+			imprts.extend(['AGM2.idsl'])
 		iD = includeDirectories + ['/opt/robocomp/interfaces/IDSLs/',
 		                           os.path.expanduser('~/robocomp/interfaces/IDSLs/')]
 		for imp in sorted(imprts):
-			import_basename = os.path.basename(imp['idsl_path'])
+			import_basename = os.path.basename(imp)
 			component['imports'].append(import_basename)
 		component['recursiveImports'] = CDSLParsing.generateRecursiveImports(component['imports'], includeDirectories)
 		# Language
@@ -332,7 +329,7 @@ class CDSLParsing:
 				component['gui'] = [ uiT, uiI ]
 				pass
 			else:
-				print('Wrong UI specification', tree['properties']['gui'])
+				print(('Wrong UI specification', tree['properties']['gui']))
 				sys.exit(1)
 		except:
 			# TODO: check exceptions and do something when accessing gui options fails.
@@ -349,17 +346,16 @@ class CDSLParsing:
 		component['usingROS'] = False
 		####################
 		com_types = ['implements', 'requires', 'publishes', 'subscribesTo']
-		communications = sorted(tree['component']['content']['communications'], key=lambda x: x[0])
-		for comm in communications:
-			if comm[0] in com_types:
-				comm_type = comm[0]
-				interfaces = sorted(comm[1:], key=lambda x: x[0])
+		communications = tree['component']['content']['communications']
+		for comm_type in com_types:
+			if comm_type in communications:
+				interfaces = sorted(communications[comm_type])
 				for interface in interfaces:
-					component[comm_type].append(interface[0])
+					component[comm_type].append(interface)
 					if communicationIsIce(interface):
-						component['iceInterfaces'].append(interface[0])
+						component['iceInterfaces'].append(interface)
 					else:
-						component['rosInterfaces'].append(interface[0])
+						component['rosInterfaces'].append(interface)
 						component['usingROS'] = True
 		# Handle options for communications
 		if isAGM1Agent(component):
