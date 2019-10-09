@@ -79,7 +79,7 @@ COMPONENT_NAMES = ["Camerasy", "VisionRobot", "DevTecnology", "IlluminateDeep", 
 def get_available_idsls():
 	idsls_in_dir = []
 	for file in os.listdir(IDSL_DIR):
-		if file.endswith(".idsl"):
+		if file.endswith(".idsl") and "agm" not in file.lower():
 			idsls_in_dir.append(file)
 	return idsls_in_dir
 
