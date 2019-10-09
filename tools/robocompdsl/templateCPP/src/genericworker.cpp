@@ -85,27 +85,27 @@ if sm is not None:
     states = ""
     if sm['machine']['contents']['transitions'] is not None:
         for transi in sm['machine']['contents']['transitions']:
-            for dest in transi['dest']:
+            for dest in transi['dests']:
                 codaddTransition += "<TABHERE>" + transi['src'] + "State->addTransition(" + "this, SIGNAL(t_"+transi['src'] + "_to_" + dest+"()), " + dest + "State);\n"
     if sm['substates'] != "none":
         for substates in sm['substates']:
             if substates['contents']['transitions'] is not None:
                 for transi in substates['contents']['transitions']:
-                    for dest in transi['dest']:
+                    for dest in transi['dests']:
                         codaddTransition += "<TABHERE>" + transi['src'] + "State->addTransition(" + "this, SIGNAL(t_"+transi['src'] + "_to_" + dest+"()), " + dest + "State);\n"
     if sm['machine']['contents']['states'] is not "none":
         for state in sm['machine']['contents']['states']:
             codaddState += "<TABHERE>" + sm['machine']['name'] +  ".addState(" + state + "State);\n"
             codConnect += "<TABHERE>QObject::connect(" + state + "State, SIGNAL(entered()), this, SLOT(sm_" + state + "()));\n"
             states += state + ","
-    if sm['machine']['contents']['initialstate'][0] is not None:
-        state = sm['machine']['contents']['initialstate'][0]
+    if sm['machine']['contents']['initialstate'] is not None:
+        state = sm['machine']['contents']['initialstate']
         codaddState += "<TABHERE>" + sm['machine']['name'] +  ".addState(" + state + "State);\n"
         codsetInitialState += "<TABHERE>" + sm['machine']['name'] +  ".setInitialState(" + state +"State);\n"
         codConnect += "<TABHERE>QObject::connect(" + state + "State, SIGNAL(entered()), this, SLOT(sm_" + state + "()));\n"
         states += state + ","
     if sm['machine']['contents']['finalstate'] is not "none":
-        state = sm['machine']['contents']['finalstate'][0]
+        state = sm['machine']['contents']['finalstate']
         codaddState += "<TABHERE>" + sm['machine']['name'] +  ".addState(" + state + "State);\n"
         codConnect += "<TABHERE>QObject::connect(" + state + "State, SIGNAL(entered()), this, SLOT(sm_" + state + "()));\n"
         states += state + ","

@@ -278,9 +278,9 @@ if sm is not None:
 		    else:
 			    sm_implementation += "void SpecificWorker::sm_" + state + "()\n{\n<TABHERE>std::cout<<\"Entered state "+state+"\"<<std::endl;\n}\n\n"
 	if sm['machine']['contents']['initialstate'] != "none":
-		sm_implementation += "void SpecificWorker::sm_" + sm['machine']['contents']['initialstate'][0] + "()\n{\n<TABHERE>std::cout<<\"Entered initial state "+sm['machine']['contents']['initialstate'][0]+"\"<<std::endl;\n}\n\n"
+		sm_implementation += "void SpecificWorker::sm_" + sm['machine']['contents']['initialstate'] + "()\n{\n<TABHERE>std::cout<<\"Entered initial state "+sm['machine']['contents']['initialstate']+"\"<<std::endl;\n}\n\n"
 	if sm['machine']['contents']['finalstate'] is not None:
-		sm_implementation += "void SpecificWorker::sm_" + sm['machine']['contents']['finalstate'][0] + "()\n{\n<TABHERE>std::cout<<\"Entered final state "+sm['machine']['contents']['finalstate'][0] +"\"<<std::endl;\n}\n\n"
+		sm_implementation += "void SpecificWorker::sm_" + sm['machine']['contents']['finalstate'] + "()\n{\n<TABHERE>std::cout<<\"Entered final state "+sm['machine']['contents']['finalstate'] +"\"<<std::endl;\n}\n\n"
 	if sm['substates'] != "none":
 		for substates in sm['substates']:
 			if substates['contents']['states'] is not None:

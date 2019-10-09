@@ -215,9 +215,9 @@ if component['statemachine'] is not None:
         for state in sm['machine']['contents']['states']:
             sm_specification += "<TABHERE>void sm_" + state + "();\n"
     if sm['machine']['contents']['initialstate'] is not None:
-        sm_specification += "<TABHERE>void sm_" + sm['machine']['contents']['initialstate'][0] + "();\n"
+        sm_specification += "<TABHERE>void sm_" + sm['machine']['contents']['initialstate'] + "();\n"
     if sm['machine']['contents']['finalstate'] is not None:
-        sm_specification += "<TABHERE>void sm_" + sm['machine']['contents']['finalstate'][0] + "();\n"
+        sm_specification += "<TABHERE>void sm_" + sm['machine']['contents']['finalstate'] + "();\n"
     if sm['substates'] is not None:
         for substates in sm['substates']:
             if substates['contents']['states'] is not None:

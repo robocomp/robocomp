@@ -504,7 +504,7 @@ if sm is not None:
                             break
             codQState += aux
     if sm['machine']['contents']['initialstate'] is not None:
-        state = sm['machine']['contents']['initialstate'][0]
+        state = sm['machine']['contents']['initialstate']
         aux = "<TABHERE>QState *" + state + "State = new QState();\n"
         lsstates += state +","
         if sm['substates'] is not "none":
@@ -517,7 +517,7 @@ if sm is not None:
 
 
     if sm['machine']['contents']['finalstate'] is not None:
-        state = sm['machine']['contents']['finalstate'][0]
+        state = sm['machine']['contents']['finalstate']
         codQState +="<TABHERE>QFinalState *" + state + "State = new QFinalState();\n"
         lsstates += state +","
 
@@ -636,9 +636,9 @@ if sm is not None:
         for state in sm['machine']['contents']['states']:
             sm_virtual_methods += "<TABHERE>virtual void sm_" + state + "() = 0;\n"
     if sm['machine']['contents']['initialstate'] is not None    :
-        sm_virtual_methods += "<TABHERE>virtual void sm_" + sm['machine']['contents']['initialstate'][0] + "() = 0;\n"
+        sm_virtual_methods += "<TABHERE>virtual void sm_" + sm['machine']['contents']['initialstate'] + "() = 0;\n"
     if sm['machine']['contents']['finalstate'] != "none":
-        sm_virtual_methods += "<TABHERE>virtual void sm_" + sm['machine']['contents']['finalstate'][0] + "() = 0;\n"
+        sm_virtual_methods += "<TABHERE>virtual void sm_" + sm['machine']['contents']['finalstate'] + "() = 0;\n"
     if sm['substates'] is not None:
         for substates in sm['substates']:
             if substates['contents']['states'] is not None:
@@ -665,13 +665,13 @@ if sm is not None:
     codsignals = ""
     if sm['machine']['contents']['transitions'] != "none":
         for transi in sm['machine']['contents']['transitions']:
-            for dest in transi['dest']:
+            for dest in transi['dests']:
                 codsignals += "<TABHERE>void t_" +  transi['src'] + "_to_" + dest + "();\n"
     if sm['substates'] is not None:
         for substates in sm['substates']:
             if substates['contents']['transitions'] is not None:
                 for transi in substates['contents']['transitions']:
-                    for dest in transi['dest']:
+                    for dest in transi['dests']:
                         codsignals += "<TABHERE>void t_" + transi['src'] + "_to_" + dest + "();\n"
     cog.outl("//Signals for State Machine")
     cog.outl(codsignals)

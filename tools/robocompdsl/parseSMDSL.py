@@ -1,4 +1,5 @@
-from pyparsing import Word, alphas, alphanums, nums, OneOrMore, CharsNotIn, Literal, Combine
+from pyparsing import Word, alphas, alphanums, nums, OneOrMore, CharsNotIn, Literal, Combine, CaselessKeyword, \
+    delimitedList
 from pyparsing import cppStyleComment, Optional, Suppress, ZeroOrMore, Group, StringEnd, srange
 from pyparsing import nestedExpr, CaselessLiteral
 
@@ -48,46 +49,41 @@ class SMDSLparsing:
     def fromString(inputText, verbose=False):
         if verbose: print(('Verbose:', verbose))
 
-        # TODO: remove. it's already done with SMDSL = machinelist.ignore(cppStyleComment)
-        # text = nestedExpr("/*", "*/").suppress().transformString(inputText)
+        (TRANSITIONS, INITIAL_STATE, END_STATE, STATES, PARALLEL) = list(map(CaselessKeyword, """
+        		transitions initial_state end_state states parallel""".split()))
 
         semicolon = Suppress(Word(";"))
-        quote = Suppress(Word("\""))
         op = Suppress(Word("{"))
         cl = Suppress(Word("}"))
-        opp = Suppress(Word("("))
-        clp = Suppress(Word(")"))
         to = Suppress(CaselessLiteral("=>"))
 
         identifier = Word(alphas + "_", alphanums + "_")
 
-        list_identifer = identifier + ZeroOrMore(Suppress(Word(',')) + identifier)
+        list_identifiers = delimitedList(identifier)
 
-#---parse States
-        stateslist = Group(Suppress(CaselessLiteral('states')) + list_identifer + semicolon).setResultsName('states')
+        # parse States
+        stateslist = Group(Suppress(STATES) + list_identifiers + semicolon).setResultsName('states')
 
-#---parse Transitions
-        transition = Group(identifier.setResultsName('src') + to + list_identifer.setResultsName('dest') + semicolon)
-        transitions = Group(Suppress(CaselessLiteral('transitions')) + op + transition + ZeroOrMore(transition) + cl + semicolon).setResultsName('transitions')
+        # parse Transitions
+        transition = identifier.setResultsName('src') + to + list_identifiers.setResultsName('dests') + semicolon
+        transitions_list = Group(OneOrMore(Group(transition))).setResultsName("transitions")
+        transitions = Suppress(TRANSITIONS) + op + transitions_list + cl + semicolon
 
-#---parse initialstate and finalstate
-        initialstate = (Suppress(CaselessLiteral('initial_state')) + identifier + semicolon).setResultsName('initialstate')
-        finalstate = (Suppress(CaselessLiteral('end_state')) + identifier + semicolon).setResultsName('finalstate')
+        # parse initialstate and finalstate
+        initialstate = Suppress(INITIAL_STATE) + identifier.setResultsName('initialstate') + semicolon
+        finalstate = Suppress(END_STATE) + identifier.setResultsName('finalstate') + semicolon
 
-#---parse machine
+        # parse machine
         contents = stateslist | initialstate | finalstate | transitions
-        machine_content = Group(op + ZeroOrMore(contents) + cl + semicolon)
+        machine_content = op + ZeroOrMore(contents) + cl + semicolon
 
-        parent = Suppress(Word(":")) + identifier
-        parallel = CaselessLiteral('parallel')
-        substate = Group(parent.setResultsName('parent') + ZeroOrMore(parallel.setResultsName('parallel')) + machine_content.setResultsName("contents"))
+        parent = Suppress(Word(":")) + identifier.setResultsName('parent')
 
-        machine = identifier.setResultsName("name") + machine_content.setResultsName("contents")
+        substate = parent + Optional(PARALLEL.setResultsName('parallel').setParseAction(lambda t: True)) + Group(machine_content).setResultsName("contents")
 
-#---parse list machine
-        machinelist = machine.setResultsName("machine") + ZeroOrMore(substate).setResultsName("substates")
+        machine = identifier.setResultsName("name") + Group(machine_content).setResultsName("contents") + Group(ZeroOrMore(Group(substate))).setResultsName("substates")
 
-        SMDSL = machinelist.ignore(cppStyleComment)
+        SMDSL = Group(machine.ignore(cppStyleComment)).setResultsName("machine")
 
         tree= SMDSL.parseString(inputText)
         return SMDSLparsing.component(tree)
@@ -116,57 +112,64 @@ class SMDSLparsing:
             component['machine']['contents']['states'] = None
         try:
             component['machine']['contents']['finalstate'] = tree['machine']['contents']['finalstate']
-            for state in component['machine']['contents']['states']:
-                if component['machine']['contents']['finalstate'][0] == state:
-                    print(("Error: this final state " + component['machine']['contents']['finalstate'][0] + " is in states"))
         except:
             component['machine']['contents']['finalstate'] = None
+        else:
+            if component['machine']['contents']['states'] is not None:
+                for state in component['machine']['contents']['states']:
+                    if component['machine']['contents']['finalstate'] == state:
+                        print(("Error: this final state " + component['machine']['contents']['finalstate'] + " is in states"))
         try:
-            component['machine']['contents']['initialstate'] = tree['machine']['contents']['initialstate']
-            for state in component['machine']['contents']['states']:
-                if component['machine']['contents']['initialstate'][0] == state:
-                    print(("Error: this initial state " + component['machine']['contents']['initialstate'][0] + " is in states"))
 
-            if component['machine']['contents']['finalstate'] != None:
-                if component['machine']['contents']['initialstate'][0] == component['machine']['contents']['finalstate'][0]:
-                    print("Error: initial state is equal final state")
+            component['machine']['contents']['initialstate'] = tree['machine']['contents']['initialstate']
         except:
             print("Error: The state machine needs initial state")
+        else:
+            if component['machine']['contents']['states'] is not None:
+                for state in component['machine']['contents']['states']:
+                    if component['machine']['contents']['initialstate'] == state:
+                        print(("Error: this initial state " + component['machine']['contents'][
+                            'initialstate'] + " is in states"))
+
+            if component['machine']['contents']['finalstate'] is not None:
+                if component['machine']['contents']['initialstate'] == component['machine']['contents']['finalstate']:
+                    print("Error: initial state is equal final state")
+
         try:
             component['machine']['contents']['transitions'] = tree['machine']['contents']['transitions']
         except:
             component['machine']['contents']['transitions'] = None
         try:
-            aux = tree['substates']
+            aux = tree['machine']['substates']
             component['substates'] = []
         except:
             component['substates'] = None
-        if component['substates'] != None:
-            for sub in tree['substates']:
+        if component['substates'] is not None:
+            for sub in tree['machine']['substates']:
                 a = {}
                 # a['name'] = sub['name']
                 try:
                     a['parallel'] = sub['parallel']
                 except:
-                    a['parallel'] = None
+                    a['parallel'] = False
                 try:
-                    a['parent'] = sub['parent'][0]
+                    a['parent'] = sub['parent']
                 except:
                     print("Error: substate missing parent")
                     sys.exit(-1)
                 a['contents'] = {}
-                if a['parallel'] is not None:
+                if a['parallel']:
                     try:
                         a['contents']['states'] = sub['contents']['states']
                     except:
                         print(("Error: substate " + a['parent'] + " missing states"))
                     try:
-                        a['contents']['finalstate'] = sub['contents']['finalstate'][0]
+                        a['contents']['finalstate'] = sub['contents']['finalstate']
                         print(("Error substate " + a['parent'] + " can't have final state"))
                     except:
                         a['contents']['finalstate'] = None
                     try:
-                        a['contents']['initialstate'] = sub['contents']['initialstate'][0]
+                        a['contents']['initialstate'] = sub['contents']['initialstate']
                         print(("Error substate " + a['parent'] + " can't have initial state"))
                     except:
                         a['contents']['initialstate'] = None
@@ -176,21 +179,26 @@ class SMDSLparsing:
                     except:
                         a['contents']['states'] = None
                     try:
-                        a['contents']['finalstate'] = sub['contents']['finalstate'][0]
-                        for state in a['contents']['states']:
-                            if a['contents']['finalstate'] == state:
-                                print(("Error: substate " + a['parent'] + " this final state " + a['contents']['finalstate'] + " is in states"))
+                        a['contents']['finalstate'] = sub['contents']['finalstate']
+
                     except:
                         a['contents']['finalstate'] = None
+                    else:
+                        if a['contents']['states'] is not None:
+                            for state in a['contents']['states']:
+                                if a['contents']['finalstate'] == state:
+                                    print(("Error: substate " + a['parent'] + " this final state " + a['contents']['finalstate'] + " is in states"))
                     try:
-                        a['contents']['initialstate'] = sub['contents']['initialstate'][0]
-                        for state in a['contents']['states']:
-                            if a['contents']['initialstate'] == state:
-                                print(("Error: " + a['parent'] + " this initial state " + a['contents']['initialstate'] + " is in states"))
-                        if a['contents']['initialstate'] == a['contents']['finalstate']:
-                            print(("Error: " + a['parent'] + " initial state is equal final state"))
+                        a['contents']['initialstate'] = sub['contents']['initialstate']
                     except:
                         print(("Error substate " + a['parent'] + " needs initial state"))
+                    else:
+                        if a['contents']['states'] is not None:
+                            for state in a['contents']['states']:
+                                if a['contents']['initialstate'] == state:
+                                    print(("Error: " + a['parent'] + " this initial state " + a['contents']['initialstate'] + " is in states"))
+                        if a['contents']['initialstate'] == a['contents']['finalstate']:
+                            print(("Error: " + a['parent'] + " initial state is equal final state"))
                 try:
                     a['contents']['transitions'] = sub['contents']['transitions']
                 except:
