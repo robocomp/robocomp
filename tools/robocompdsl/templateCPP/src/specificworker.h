@@ -225,7 +225,7 @@ if component['statemachine'] is not None:
                     sm_specification += "<TABHERE>void sm_" + state + "();\n"
             if substates['contents']['initialstate'] is not None:
                 sm_specification += "<TABHERE>void sm_" + substates['contents']['initialstate'] + "();\n"
-            if substates['contents']['finalstate'] != "none":
+            if substates['contents']['finalstate'] is not None:
                 sm_specification += "<TABHERE>void sm_" + substates['contents']['finalstate'] + "();\n"
     cog.outl("//Specification slot methods State Machine")
     cog.outl(sm_specification)

@@ -87,13 +87,13 @@ if sm is not None:
         for transi in sm['machine']['contents']['transitions']:
             for dest in transi['dests']:
                 codaddTransition += "<TABHERE>" + transi['src'] + "State->addTransition(" + "this, SIGNAL(t_"+transi['src'] + "_to_" + dest+"()), " + dest + "State);\n"
-    if sm['substates'] != "none":
+    if sm['substates'] is not None:
         for substates in sm['substates']:
             if substates['contents']['transitions'] is not None:
                 for transi in substates['contents']['transitions']:
                     for dest in transi['dests']:
                         codaddTransition += "<TABHERE>" + transi['src'] + "State->addTransition(" + "this, SIGNAL(t_"+transi['src'] + "_to_" + dest+"()), " + dest + "State);\n"
-    if sm['machine']['contents']['states'] is not "none":
+    if sm['machine']['contents']['states'] is not None:
         for state in sm['machine']['contents']['states']:
             codaddState += "<TABHERE>" + sm['machine']['name'] +  ".addState(" + state + "State);\n"
             codConnect += "<TABHERE>QObject::connect(" + state + "State, SIGNAL(entered()), this, SLOT(sm_" + state + "()));\n"
@@ -104,7 +104,7 @@ if sm is not None:
         codsetInitialState += "<TABHERE>" + sm['machine']['name'] +  ".setInitialState(" + state +"State);\n"
         codConnect += "<TABHERE>QObject::connect(" + state + "State, SIGNAL(entered()), this, SLOT(sm_" + state + "()));\n"
         states += state + ","
-    if sm['machine']['contents']['finalstate'] is not "none":
+    if sm['machine']['contents']['finalstate'] is not None:
         state = sm['machine']['contents']['finalstate']
         codaddState += "<TABHERE>" + sm['machine']['name'] +  ".addState(" + state + "State);\n"
         codConnect += "<TABHERE>QObject::connect(" + state + "State, SIGNAL(entered()), this, SLOT(sm_" + state + "()));\n"
@@ -112,7 +112,7 @@ if sm is not None:
 
     if sm['substates'] is not None:
         for substates in sm['substates']:
-            if substates['contents']['initialstate'] is not "none":
+            if substates['contents']['initialstate'] is not None:
                 state = substates['contents']['initialstate']
                 codsetInitialState += "<TABHERE>" + substates['parent'] +  "State->setInitialState(" + state +"State);\n"
                 codConnect += "<TABHERE>QObject::connect(" + state + "State, SIGNAL(entered()), this, SLOT(sm_" + state + "()));\n"
@@ -121,7 +121,7 @@ if sm is not None:
                 state = substates['contents']['finalstate']
                 codConnect += "<TABHERE>QObject::connect(" + state + "State, SIGNAL(entered()), this, SLOT(sm_" + state + "()));\n"
                 states += state + ","
-            if substates['contents']['states'] is not "none":
+            if substates['contents']['states'] is not None:
                 for state in substates['contents']['states']:
                     codConnect += "<TABHERE>QObject::connect(" + state + "State, SIGNAL(entered()), this, SLOT(sm_" + state + "()));\n"
                     states += state + ","

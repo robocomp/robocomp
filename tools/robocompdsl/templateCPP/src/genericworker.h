@@ -507,7 +507,7 @@ if sm is not None:
         state = sm['machine']['contents']['initialstate']
         aux = "<TABHERE>QState *" + state + "State = new QState();\n"
         lsstates += state +","
-        if sm['substates'] is not "none":
+        if sm['substates'] is not None:
             for substates in sm['substates']:
                 if state == substates['parent']:
                     if substates['parallel'] is "parallel":
@@ -533,7 +533,7 @@ if sm is not None:
                                 aux = "<TABHERE>QState *" + state + "State = new QState(QState::ParallelStates, " + substates['parent'] +"State);\n"
                                 break
                     codQState += aux
-            if substates['contents']['initialstate'] != "none":
+            if substates['contents']['initialstate'] is not None:
                 aux = "<TABHERE>QState *" + substates['contents']['initialstate'] + "State = new QState(" + substates['parent'] + "State);\n"
                 lsstates += state +","
                 for sub in sm['substates']:
@@ -637,7 +637,7 @@ if sm is not None:
             sm_virtual_methods += "<TABHERE>virtual void sm_" + state + "() = 0;\n"
     if sm['machine']['contents']['initialstate'] is not None    :
         sm_virtual_methods += "<TABHERE>virtual void sm_" + sm['machine']['contents']['initialstate'] + "() = 0;\n"
-    if sm['machine']['contents']['finalstate'] != "none":
+    if sm['machine']['contents']['finalstate'] is not None:
         sm_virtual_methods += "<TABHERE>virtual void sm_" + sm['machine']['contents']['finalstate'] + "() = 0;\n"
     if sm['substates'] is not None:
         for substates in sm['substates']:
@@ -663,7 +663,7 @@ signals:
 [[[cog
 if sm is not None:
     codsignals = ""
-    if sm['machine']['contents']['transitions'] != "none":
+    if sm['machine']['contents']['transitions'] is not None:
         for transi in sm['machine']['contents']['transitions']:
             for dest in transi['dests']:
                 codsignals += "<TABHERE>void t_" +  transi['src'] + "_to_" + dest + "();\n"
