@@ -22,6 +22,8 @@
 """
 TODO: add generate_ methods for the specific resultNames of some nodes.
 TODO: functions could be "installed" for combination of node type and resultName, that way specific actions could be taken
+
+TODO: add a new mode to generate not random cdsl but try to get all the options of the grammar generated/tested in several components
 """
 
 import os
@@ -77,7 +79,7 @@ COMPONENT_NAMES = ["Camerasy", "VisionRobot", "DevTecnology", "IlluminateDeep", 
 def get_available_idsls():
 	idsls_in_dir = []
 	for file in os.listdir(IDSL_DIR):
-		if file.endswith(".idsl") and "agm" not in file.lower():
+		if file.endswith(".idsl"):
 			idsls_in_dir.append(file)
 	return idsls_in_dir
 
@@ -218,16 +220,6 @@ class CDSLSampler:
 	def generate_zero_or_more(self, node):
 		text = ''
 		times_to_repeat = random.randint(0, MAX_IMPORTS)
-		# TODO: look for a better way to check if is the clause for implement|require|subscribes|publishes
-		# DEPRECATED: communications now are an EACH statement
-		if "implements" in str(node.expr):
-			# it's the communications generation.
-			if len(self._used_idsl) > 0:
-				# 4 different types of communications
-				times_to_repeat = random.randint(0, 4)
-			else:
-				# if no IDSL is imported no communication should be generated
-				times_to_repeat = 0
 		for count in range(times_to_repeat):
 			text += self.generic_sampler(node.expr)  # + ' '
 		return str(text)
@@ -268,10 +260,6 @@ class CDSLSampler:
 		"""
 		option = bool(random.getrandbits(1))
 		if option:
-			# # TODO: Look for a better way to check if its ros or not
-			# if len(str(node.expr)) < 30 and "{\"ice\" | \"ros\"}" in str(node.expr) and not self._ros_enable:
-			# 	return ''
-			# else:
 			return self.generic_sampler(node.expr)
 		else:
 			return ''
@@ -360,13 +348,14 @@ class CDSLSampler:
 			return "statemachine.smdsl"
 		comm_identifiers = ['reqIdentifier', 'pubIdentifier', 'impIdentifier', 'subIdentifier']
 		if any(node.resultsName == name for name in comm_identifiers):
-			if len(self._used_idsl) > 0:
+			if len(self._available_interfaces) > 0:
 				return random.choice(self._available_interfaces)
 			else:
-				# TODO: it's not an option to return None.
+				# It would never arrive here becuase a previous check on communications of len(self._available_interfaces) > 0
 				return "<" + str(node.resultsName) + ">"
 		else:
 			raise ValueError('Unknown result name to generate for: %s' % node.resultsName)
+
 
 	def get_random_idsl(self):
 		"""
