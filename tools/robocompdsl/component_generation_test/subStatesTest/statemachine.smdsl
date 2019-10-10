@@ -14,7 +14,7 @@ myStateMachine{
 :two parallel{
     states test2sub1, test2sub2;
     transitions{
-	test2sub1 => test2sub1;
+	test2sub1 => test2sub2;
 	test2sub2 => test2sub2;
     };
 };
