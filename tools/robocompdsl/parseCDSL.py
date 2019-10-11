@@ -132,9 +132,9 @@ class CDSLParsing:
 		QUOTE = Suppress(Word("\""))
 
 		# keywords
-		(IMPORT, COMMUNICATIONS, LANGUAGE, COMPONENT, CPP, CPP11, GUI, QWIDGET, QMAINWINDOW, QDIALOG, USEQt, QT, QT4, QT5, PYTHON, REQUIRES, IMPLEMENTS, SUBSCRIBESTO, PUBLISHES, OPTIONS, TRUE, FALSE,
+		(IMPORT, COMMUNICATIONS, LANGUAGE, COMPONENT, CPP, CPP11, GUI, QWIDGET, QMAINWINDOW, QDIALOG, QT,  PYTHON, REQUIRES, IMPLEMENTS, SUBSCRIBESTO, PUBLISHES, OPTIONS, TRUE, FALSE,
 		 INNERMODELVIEWER, STATEMACHINE) = list(map(CaselessKeyword, """
-		import communications language component cpp cpp11 gui QWidget QMainWindow QDialog useQt Qt qt4 qt5
+		import communications language component cpp cpp11 gui QWidget QMainWindow QDialog Qt
 		python requires implements subscribesTo publishes options true false
 		InnerModelViewer statemachine""".split()))
 
@@ -164,8 +164,7 @@ class CDSLParsing:
 		# Language
 		language_options = (CPP | CPP11 | PYTHON).setResultsName('language')
 		language = LANGUAGE.suppress() - language_options - SEMI
-		# Qtversion
-		qtVersion = Group(Optional(USEQt.suppress() - (QT4|QT5).setResultsName('useQt') + SEMI))
+
 		# InnerModelViewer
 		innermodelviewer = Group(Optional(INNERMODELVIEWER.suppress() - (TRUE|FALSE) + SEMI))('innermodelviewer')
 		# GUI
@@ -176,7 +175,7 @@ class CDSLParsing:
 		statemachine = Group(Optional(STATEMACHINE.suppress() - QUOTE + CharsNotIn("\";").setResultsName('machine_path') + QUOTE + SEMI))
 
 		# Component definition
-		componentContents = Group(communications - language + Optional(gui('gui')) + Optional(options('options')) + Optional(qtVersion) + Optional(innermodelviewer) + Optional(statemachine('statemachine'))).setResultsName("content")
+		componentContents = Group(communications - language + Optional(gui('gui')) + Optional(options('options')) + Optional(innermodelviewer) + Optional(statemachine('statemachine'))).setResultsName("content")
 		component = Group(COMPONENT.suppress() - identifier("name") + OBRACE + componentContents + CBRACE + SEMI).setResultsName("component")
 
 		CDSL = idslImports - component
@@ -306,14 +305,6 @@ class CDSLParsing:
 		except:
 			pass
 		
-# qtVersion
-		component['useQt'] = False
-		try:
-			component['useQt'] = tree['component']['content']['useQt']
-			pass
-		except:
-			pass
-		# innermodelviewer
 		component['innermodelviewer'] = False
 		try:
 			component['innermodelviewer'] = 'innermodelviewer' in [ x.lower() for x in component['options'] ]
@@ -448,7 +439,6 @@ Component tvgames
 	};
 	language Python;
 	gui Qt(QWidget);
-	useQt Qt5;
 	statemachine "gamestatemachine.smdsl";
 };
 
@@ -481,7 +471,6 @@ Component tvgames
 # 	};
 # 	language Python;
 # 	gui Qt(QWidget);
-# 	useQt Qt5;
 # 	statemachine "gamestatemachine.smdsl";
 # };
 #

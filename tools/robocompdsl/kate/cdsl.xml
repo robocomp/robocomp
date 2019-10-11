@@ -10,7 +10,6 @@
 			<item> subscribes </item>
 			<item> language </item>
 			<item> gui </item>
-			<item> useQt </item>
 			<item> useViewer </item>
             <item> statemachine </item>
 		</list>

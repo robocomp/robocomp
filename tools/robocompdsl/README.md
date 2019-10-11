@@ -77,7 +77,6 @@ This will generate a CDSL file with the following content:
 	* QMainWindow: https://doc.qt.io/qt-5/qmainwindow.html
 * Optionals: 
 	* agmagent: Include Cortex-Agent communication patterns
-	* UseQt (Qt4, Qt5):  Use Qt4 (https://doc.qt.io/archives/qt-4.8/qt4-8-intro.html) or Qt5 (https://doc.qt.io/qt-5/qt5-intro.html) library version
 	* InnerModelViewer: Include innermodelViewer resources (https://github.com/robocomp/robocomp/tree/stable/libs/innermodel)
 	* statemachine: It must be followed by a path to a valid smdsl file that would describe the state machine that will be implemented on the component.
 	
