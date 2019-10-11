@@ -12,14 +12,15 @@ def Z():
 def TAB():
 	cog.out('<TABHERE>')
 
-from parseCDSL import *
+from dsl_parsers.dsl_factory import DSLFactory
+from dsl_parsers.parsing_utils import decoratorAndType_to_const_ampersand
 includeDirectories = theIDSLPaths.split('#')
-component = CDSLParsing.fromFile(theCDSL, includeDirectories=includeDirectories)
+component = DSLFactory().from_file(theCDSL, include_directories=includeDirectories)
 if component == None:
 	print('Can\'t locate', theCDSLs)
 	sys.exit(1)
 
-from parseIDSL import *
+from parseIDSL import IDSLPool
 modulePool = IDSLPool(theIDSLs, includeDirectories)
 
 theInterface = theInterface.split(';')

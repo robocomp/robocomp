@@ -1,27 +1,3 @@
-[[[cog
-
-import sys
-sys.path.append('/opt/robocomp/python')
-
-import cog
-def A():
-	cog.out('<@@<')
-def Z():
-	cog.out('>@@>')
-def TAB():
-	cog.out('<TABHERE>')
-def SPACE(i=0):
-	s = ''
-	if i>0:
-		s = str(i)
-	cog.out('<S'+s+'>')
-
-from dsl_parsers.dsl_factory import DSLFactory
-includeDirectories = theIDSLPaths.split('#')
-component = DSLFactory().from_file(theCDSL, include_directories=includeDirectories)
-
-]]]
-[[[end]]]
 # Doxyfile 1.6.1
 
 # This file describes the settings to be used by the documentation system
@@ -42,13 +18,7 @@ component = DSLFactory().from_file(theCDSL, include_directories=includeDirectori
 DOXYFILE_ENCODING      = UTF-8
 
 # ROBOCOMP
-PROJECT_NAME           =
-[[[cog
-A()
-cog.out( component['name'] + ' ')
-Z()
-]]]
-[[[end]]]
+PROJECT_NAME           = speechComp
 
 PROJECT_NUMBER         =
 
@@ -230,8 +200,7 @@ DISTRIBUTE_GROUP_DOC   = NO
 # the same type (for instance a group of public functions) to be put as a
 # subgroup of that type (e.g. under the Public Functions section). Set it to
 # NO to prevent subgrouping. Alternatively, this can be done per class using
-# the
-osubgrouping command.
+# the \nosubgrouping command.
 
 SUBGROUPING            = YES
 
@@ -270,7 +239,6 @@ SYMBOL_CACHE_SIZE      = 0
 # Private class members and static file members will be hidden unless
 # the EXTRACT_PRIVATE and EXTRACT_STATIC tags are set to YES
 
-#robocomp
 EXTRACT_ALL            = YES
 
 # If the EXTRACT_PRIVATE tag is set to YES all private members of a class
@@ -383,13 +351,13 @@ SORT_GROUP_NAMES       = NO
 SORT_BY_SCOPE_NAME     = NO
 
 # The GENERATE_TODOLIST tag can be used to enable (YES) or
-# disable (NO) the todo list. This list is created by putting 	odo
+# disable (NO) the todo list. This list is created by putting \todo
 # commands in the documentation.
 
 GENERATE_TODOLIST      = YES
 
 # The GENERATE_TESTLIST tag can be used to enable (YES) or
-# disable (NO) the test list. This list is created by putting 	est
+# disable (NO) the test list. This list is created by putting \test
 # commands in the documentation.
 
 GENERATE_TESTLIST      = YES
@@ -524,7 +492,6 @@ INPUT_ENCODING         = UTF-8
 # *.c *.cc *.cxx *.cpp *.c++ *.java *.ii *.ixx *.ipp *.i++ *.inl *.h *.hh *.hxx
 # *.hpp *.h++ *.idl *.odl *.cs *.php *.php3 *.inc *.m *.mm *.py *.f90
 
-#robocomp
 FILE_PATTERNS          = *.cpp *.h *.c *.py
 
 # The RECURSIVE tag can be used to turn specify whether or not subdirectories
@@ -539,7 +506,6 @@ RECURSIVE              = YES
 
 # ROBOCOMP
 EXCLUDE                =
-#Base.h Base.cpp Camara.h Camara.cpp CamMotion.h CamMotion.cpp Laser.h Laser.cpp Micro.h Micro.cpp
 
 # The EXCLUDE_SYMLINKS tag can be used select whether or not files or
 # directories that are symbolic links (a Unix filesystem feature) are excluded
@@ -553,7 +519,6 @@ EXCLUDE_SYMLINKS       = NO
 # against the file with absolute path, so to exclude all test directories
 # for example use the pattern */test/*
 
-# ROBOCOMP
 EXCLUDE_PATTERNS       = A* B* C* D* E* F* G* H* I* J* K* L* M* N* O* P* Q* R* S* T* U* V* W* X* Y* Z*
 
 # The EXCLUDE_SYMBOLS tag can be used to specify one or more symbol names
@@ -627,7 +592,6 @@ FILTER_SOURCE_FILES    = NO
 # Note: To get rid of all source code in the generated output, make sure also
 # VERBATIM_HEADERS is set to NO.
 
-#robocomp
 SOURCE_BROWSER         = YES
 
 # Setting the INLINE_SOURCES tag to YES will include the body
@@ -747,7 +711,6 @@ HTML_ALIGN_MEMBERS     = YES
 # JavaScript and DHTML is required (for instance Mozilla 1.0+, Firefox
 # Netscape 6.0+, Internet explorer 5.0+, Konqueror, or Safari).
 
-#robocomp
 HTML_DYNAMIC_SECTIONS  = YES
 
 # If the GENERATE_DOCSET tag is set to YES, additional index files
@@ -824,7 +787,7 @@ TOC_EXPAND             = NO
 # are set, an additional index file will be generated that can be used as input for
 # Qt's qhelpgenerator to generate a Qt Compressed Help (.qch) of the generated
 # HTML documentation.
-#robocomp
+
 GENERATE_QHP           = NO
 
 # If the QHG_LOCATION tag is specified, the QCH_FILE tag can
@@ -979,7 +942,7 @@ PDF_HYPERLINKS         = YES
 
 USE_PDFLATEX           = YES
 
-# If the LATEX_BATCHMODE tag is set to YES, doxygen will add the \batchmode.
+# If the LATEX_BATCHMODE tag is set to YES, doxygen will add the \\batchmode.
 # command to the generated LaTeX files. This will instruct LaTeX to keep
 # running if errors occur, instead of asking the user for help.
 # This option is also used when generating formulas in HTML.

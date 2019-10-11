@@ -13,16 +13,17 @@ def Z():
 def TAB():
 	cog.out('<TABHERE>')
 
-from parseCDSL import *
-from parseSMDSL import *
+from dsl_parsers.dsl_factory import DSLFactory
+from dsl_parsers.parsing_utils import getNameNumber, gimmeIDSL, communicationIsIce
+
 includeDirectories = theIDSLPaths.split('#')
-component = CDSLParsing.fromFile(theCDSL, includeDirectories=includeDirectories)
-sm = SMDSLparsing.fromFile(component['statemachine'])
+component = DSLFactory().from_file(theCDSL, include_directories=includeDirectories)
+sm = DSLFactory().from_file(component['statemachine'])
 if component == None:
 	print('Can\'t locate', theCDSLs)
 	sys.exit(1)
 
-from parseIDSL import *
+from parseIDSL import IDSLPool
 pool = IDSLPool(theIDSLs, includeDirectories)
 
 def replaceTypeCPP2Python(t):

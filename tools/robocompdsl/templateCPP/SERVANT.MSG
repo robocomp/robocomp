@@ -16,11 +16,12 @@ def SPACE(i=0):
 		s = str(i)
 	cog.out('<S'+s+'>')
 
-from parseIDSL import *
+
+from dsl_parsers.parsing_utils import gimmeIDSLStruct
 customTypesList = []
 
 includeDirectories = theIDSLPaths.split('#')
-idsl = IDSLParsing.gimmeIDSLStruct(theIDSL, files='', includeDirectories=includeDirectories)
+idsl = gimmeIDSLStruct(theIDSL, files='', includeDirectories=includeDirectories)
 for imp in idsl['module']['contents']:
 	if imp['type'] in ('sequence', 'struct'):
 		customTypesList.append(imp)

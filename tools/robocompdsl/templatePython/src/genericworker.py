@@ -19,16 +19,17 @@ def SPACE(i=0):
 	cog.out('<S'+s+'>')
 
 includeDirectories = theIDSLPaths.split('#')
-from parseCDSL import *
-from parseSMDSL import *
-component = CDSLParsing.fromFile(theCDSL, includeDirectories=includeDirectories)
-sm = SMDSLparsing.fromFile(component['statemachine'])
+from dsl_parsers.dsl_factory import DSLFactory
+from dsl_parsers.parsing_utils import getNameNumber, gimmeIDSL
+
+component = DSLFactory().from_file(theCDSL, include_directories=includeDirectories)
+sm = DSLFactory().from_file(component['statemachine'])
 
 if component == None:
 	print('Can\'t locate', theCDSLs)
 	os.__exit(1)
 
-from parseIDSL import *
+from parseIDSL import IDSLPool
 pool = IDSLPool(theIDSLs, includeDirectories)
 modulesList = pool.rosModulesImports()
 
@@ -108,7 +109,7 @@ for name in usingList:
 	cog.outl("<TABHERE>print('Couln\\\'t load "+incl+"')")
 	cog.outl('<TABHERE>sys.exit(-1)')
 
-	module = IDSLParsing.gimmeIDSL(eso, files='', includeDirectories=includeDirectories)
+	module = gimmeIDSL(eso, files='', includeDirectories=includeDirectories)
 	cog.outl('from '+ module['name'] +' import *')
 ]]]
 [[[end]]]
