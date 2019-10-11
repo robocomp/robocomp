@@ -24,16 +24,16 @@ class Singleton(object):
         return classtype.__instance
 
 
-
 class DSLFactory(Singleton):
     """
-    This class create an cache parsers for different dsl files.
-    This is a singleton class. A single instance of this is shared no matter how many it's "created",
-
+    This class create a cache of parsers for different dsl files. This is a singleton class. A single instance of
+    this is shared no matter how many times it's "created". Given a file the method "from_file" generate and return (
+    and store in it's cache) the structure representing the dsl file. If from_file method is called again to generate
+    and return the same file this will be obtained from the cache unless the "update" parameter is passed to this
+    method.
     """
     def __init__(self):
         super(DSLFactory, self).__init__()
-        
 
     def from_string(self, string, dsl_type):
         """
@@ -65,8 +65,7 @@ class DSLFactory(Singleton):
                 return None
 
             # get format from filename
-            format = path.splitext(file_path)[1][1:]
-
+            dsl_type = path.splitext(file_path)[1][1:]
 
             # get string from file
             try:
@@ -79,7 +78,7 @@ class DSLFactory(Singleton):
 
             # get the result from string
             try:
-                result, parser = self.from_string(string, format)
+                result, parser = self.from_string(string, dsl_type)
             except:
                 cprint('Error parsing %s' % file_path, 'red')
                 traceback.print_exc()
@@ -108,7 +107,6 @@ class DSLFactory(Singleton):
 if __name__ == '__main__':
     factory = DSLFactory()
     a = factory.from_file("/home/robolab/robocomp/components/euroage-tv/components/tvGames/gamestatemachine.smdsl")
-    pprint(dict(a))
     factory2 = DSLFactory()
     b = factory.from_file("/home/robolab/robocomp/components/euroage-tv/components/tvGames/gamestatemachine.smdsl")
     factory3 = DSLFactory()
@@ -117,7 +115,6 @@ if __name__ == '__main__':
     d = factory.from_file("/home/robolab/robocomp/interfaces/IDSLs/JointMotor.idsl")
     factory5 = DSLFactory()
     e = factory.from_file("/home/robolab/robocomp/components/euroage-tv/components/tvGames/tvgames.cdsl")
-    pprint(dict(a))
     factory6 = DSLFactory()
     f = factory.from_file("/home/robolab/robocomp/components/euroage-tv/components/tvGames/tvgames.cdsl",update=True)
-    print((b==a) and (c==d) and (e==f))
+    print((b == a) and (c == d) and (e == f))

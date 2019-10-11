@@ -23,8 +23,7 @@ class BColors(str):
         return obj
 
 
-
-class SMDSLparsing:
+class SMDSLparsing(object):
     @staticmethod
     def fromFile(filename, verbose=False, includeIncludes=True):
         # Open input file
@@ -208,5 +207,5 @@ class SMDSLparsing:
         return component
 
 if __name__ == '__main__':
-	from pprint import pprint
-	pprint(SMDSLparsing.fromFile(sys.argv[1]))
+    from pprint import pprint
+    pprint(SMDSLparsing.fromFile(sys.argv[1]))
