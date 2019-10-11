@@ -65,7 +65,7 @@ class IDSLParser(DSLParserTemplate):
         IDSL.ignore(cppStyleComment)
         return IDSL
 
-    def string_to_struct(self, string):
+    def string_to_struct(self, string, **kwargs):
         parsing_result = self.parse_string(string)
         result_dict = {}
 

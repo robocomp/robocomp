@@ -54,7 +54,7 @@ class SMDSLParser(DSLParserTemplate):
 
         return SMDSL
 
-    def string_to_struct(self, string):
+    def string_to_struct(self, string, **kwargs):
         parsing_result = self.parse_string(string)
         result_dict = {'machine': {}}
 
