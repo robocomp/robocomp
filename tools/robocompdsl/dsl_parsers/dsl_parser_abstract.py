@@ -76,5 +76,5 @@ class DSLParserTemplate:
         pass
 
     @abc.abstractmethod
-    def string_to_struct(self, string):
+    def string_to_struct(self, string, **kwargs):
         pass

@@ -3,7 +3,7 @@ import traceback
 from collections import OrderedDict
 
 from pyparsing import Suppress, Word, CaselessKeyword, alphas, alphanums, CharsNotIn, Group, ZeroOrMore, Optional, \
-    delimitedList
+    delimitedList, cppStyleComment
 
 from dsl_parsers.dsl_parser_abstract import DSLParserTemplate
 from dsl_parsers.parsing_utils import isAGM2Agent, isAGM2AgentROS, communicationIsIce, isAGM1Agent, \
@@ -80,16 +80,17 @@ class CDSLParser(DSLParserTemplate):
             "component")
 
         CDSL = idslImports - component
-
+        CDSL.ignore(cppStyleComment)
         return CDSL
 
-    def string_to_struct(self, string):
+    def string_to_struct(self, string, **kwargs):
         parsing_result = self.parse_string(string)
         component = OrderedDict()
         # print 'parseCDSL.component', includeDirectories
         if self._include_directories == None:
             self._include_directories = []
-
+        if "include_directories" in kwargs:
+            self._include_directories = kwargs["include_directories"]
         # Set options
         component['options'] = []
         try:

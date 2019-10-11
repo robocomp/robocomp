@@ -35,7 +35,7 @@ class DSLFactory(Singleton):
     def __init__(self):
         super(DSLFactory, self).__init__()
 
-    def from_string(self, string, dsl_type):
+    def from_string(self, string, dsl_type, **kwargs):
         """
         Return a struct/dict representing constructed from a string representing a dsl with the type dsl_type
         :param string: string containing the dsl with a syntax of the dsl_type
@@ -45,10 +45,10 @@ class DSLFactory(Singleton):
         # get the parser for the dsl type
         parser = self.create_parser(dsl_type)
         # get the result as a dict from the string
-        result = parser.string_to_struct(string)
+        result = parser.string_to_struct(string, **kwargs)
         return result, parser
 
-    def from_file(self, file_path, update=False):
+    def from_file(self, file_path, update=False, **kwargs):
         """
         Return a struct/dict representing constructed from a file representing a dsl with the type dsl_type
         By default the result of parsing a file is cached.
@@ -58,8 +58,10 @@ class DSLFactory(Singleton):
         """
         # if update is false and file_path exists in the cache, it's returned
         if file_path in self. _cache and update is False:
+            print("______________________Cached %s______________" % file_path)
             result = self._cache[file_path].struct
         else:
+            print("______________________Parsing %s______________" % file_path)
             if file_path is None or file_path == "":
                 # TODO: Raise Exception
                 return None
@@ -72,13 +74,13 @@ class DSLFactory(Singleton):
                 with open(file_path, 'r') as reader:
                     string = reader.read()
             except:
-                print("Error reading input file for SMDSL")
+                print("Error reading input file %s"%file_path)
                 # TODO: Raise Exception
                 return None
 
             # get the result from string
             try:
-                result, parser = self.from_string(string, dsl_type)
+                result, parser = self.from_string(string, dsl_type, **kwargs)
             except:
                 cprint('Error parsing %s' % file_path, 'red')
                 traceback.print_exc()
@@ -114,7 +116,7 @@ if __name__ == '__main__':
     factory4 = DSLFactory()
     d = factory.from_file("/home/robolab/robocomp/interfaces/IDSLs/JointMotor.idsl")
     factory5 = DSLFactory()
-    e = factory.from_file("/home/robolab/robocomp/components/euroage-tv/components/tvGames/tvgames.cdsl")
+    e = factory.from_file("/home/robolab/robocomp/tools/robocompdsl/component_generation_test/customStateMachinePython/test.cdsl", include_directories=["patata", "patata2"])
     factory6 = DSLFactory()
     f = factory.from_file("/home/robolab/robocomp/components/euroage-tv/components/tvGames/tvgames.cdsl",update=True)
     print((b == a) and (c == d) and (e == f))
