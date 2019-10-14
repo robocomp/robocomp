@@ -215,3 +215,131 @@ def getTypeFromModule(vtype, module):
 		if t['name'] == vtype:
 			return t['type']
 	return None
+
+
+class IDSLPool:
+    """
+    This class is intended to load and store idsl modules from the corresponding files.
+    idsl is the idsl filename or path
+    module is the python structure loaded from an idsl file
+    interfaces are the names defined for the communication inside idsl files and loaded in the modules.
+    """
+
+    rosTypes = (
+    'int8', 'int16', 'int32', 'int64', 'float8', 'float16', 'float32', 'float64', 'byte', 'bool', 'string', 'time',
+    'empty')
+
+    def __init__(self, files, iD):
+        self.modulePool = {}
+        includeDirectories = iD + ['/opt/robocomp/interfaces/IDSLs/', os.path.expanduser('~/robocomp/interfaces/IDSLs/')]
+        self.includeInPool(files, self.modulePool, includeDirectories)
+
+    def getRosTypes(self):
+        return self.rosTypes
+
+    def includeInPool(self, files, modulePool, includeDirectories):
+        """
+        Recursively add the loaded modules to the pool.
+
+        """
+        fileList = []
+
+        # Extracting files names from string argument "-I filename.idsl#filename2.idsl"
+        for p in [f for f in files.split('#') if len(f)>0]:
+            if p.startswith("-I"):
+                pass
+            else:
+                fileList.append(p)
+
+        # look for the files in the includeDirectories
+        for f in fileList:
+            filename = f.split('.')[0]
+            if not filename in modulePool:
+                for p in includeDirectories:
+                    try:
+                        path = os.path.join(p,f)
+                        # if found, load the module from the file
+                        # WARN: import is here to avoid problem with recursive import on startup
+                        from dsl_parsers.dsl_factory import DSLFactory
+                        module = DSLFactory().from_file(path)
+                        # store the module
+                        modulePool[filename] = module
+                        # try to add the modules that this one imports
+                        self.includeInPool(module['imports'], modulePool, includeDirectories)
+                        break
+                    except IOError as e:
+                        pass
+                if not filename in self.modulePool:
+                    print(('Couldn\'t locate ', f))
+                    # TODO: replace with an exception
+                    sys.exit(-1)
+
+    def IDSLsModule(self, module):
+        """
+        Return the file path given the module object
+        :param module: module to query on the pool for the related idsl file path
+        :return: idsl file path
+        """
+        for filename in list(self.modulePool.keys()):
+            if self.modulePool[filename] == module:
+                return '/opt/robocomp/interfaces/IDSLs/'+filename+'.idsl'
+
+    def moduleProviding(self, interface):
+        """
+        Query the pool to get the module providing an interface
+        :param interface: an interface to query the pool
+        :return: the module providing the queried interface
+        """
+        for module in self.modulePool:
+            for m in self.modulePool[module]['interfaces']:
+                if m['name'] == interface:
+                    return self.modulePool[module]
+        return None
+
+    def interfaces(self):
+        """
+        :return: a list of all the interfaces defined inside the modules
+        """
+        interfaces = []
+        for module in self.modulePool:
+            for m in self.modulePool[module]['interfaces']:
+                interfaces.append(m['name'])
+        return interfaces
+
+    def rosImports(self):
+        includesList = []
+        for module in self.modulePool:
+            for m in self.modulePool[module]['structs']:
+                includesList.append(m['name'].split('/')[0]+"ROS/"+m['name'].split('/')[1])
+            for m in self.modulePool[module]['sequences']:
+                includesList.append(m['name'].split('/')[0]+"ROS/"+m['name'].split('/')[1])
+            stdIncludes = {}
+            for interface in self.modulePool[module]['interfaces']:
+                for mname in interface['methods']:
+                    method = interface['methods'][mname]
+                    for p in method['params']:
+                        if p['type'] in ('int','float'):
+                            m = "std_msgs/"+p['type'].capitalize()+"32"
+                            stdIncludes[p['type']] = m
+                        elif p['type'] in ('uint8','uint16','uint32','uint64'):
+                            m = "std_msgs/UInt"+p['type'].split('t')[1]
+                        elif p['type'] in self.rosTypes:
+                            m = "std_msgs/"+p['type'].capitalize()
+                            stdIncludes[p['type']] = m
+            for std in list(stdIncludes.values()):
+                includesList.append(std)
+        return includesList
+
+    def rosModulesImports(self):
+        modulesList = []
+        for module in self.modulePool:
+            for m in self.modulePool[module]['simpleStructs']:
+                modulesList.append(m)
+            for m in self.modulePool[module]['simpleSequences']:
+                modulesList.append(m)
+        return modulesList
+
+
+if __name__ == '__main__':
+    pool = IDSLPool("AprilTags.idsl",[])
+    pool = IDSLPool("AprilTags.idsl", [])
