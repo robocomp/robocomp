@@ -14,6 +14,7 @@ from distutils import spawn
 from cogapp import Cog
 # from parseCDSL import *
 from dsl_parsers.dsl_factory import DSLFactory
+from dsl_parsers.parsing_utils import communicationIsIce
 from parseIDSL import IDSLPool
 import rcExceptions
 import sys
