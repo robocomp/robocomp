@@ -87,12 +87,12 @@ def gimmeIDSL(name, files='', includeDirectories=None):
             pathList.append(p[2:])
         else:
             fileList.append(p)
-    pathList.append('/home/robocomp/robocomp/interfaces/IDSLs/')
     pathList.append('/opt/robocomp/interfaces/IDSLs/')
+    pathList.append(os.path.expanduser('~/robocomp/interfaces/IDSLs/'))
     filename = name.split('.')[0]
     for p in pathList:
         try:
-            path = p+'/'+name
+            path = os.path.join(p,name)
             # WARN: import is here to avoid problem with recursive import on startup
             from dsl_parsers.dsl_factory import DSLFactory
             return DSLFactory().from_file(path)
