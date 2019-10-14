@@ -101,29 +101,6 @@ def gimmeIDSL(name, files='', includeDirectories=None):
     print(('Couldn\'t locate ', name))
     sys.exit(-1)
 
-def gimmeIDSLStruct(name, files='', includeDirectories=None):
-    pathList = []
-    if includeDirectories!= None:
-        pathList += [x for x in includeDirectories]
-    fileList = []
-    for p in [f for f in files.split('#') if len(f)>0]:
-        if p.startswith("-I"):
-            pathList.append(p[2:])
-        else:
-            fileList.append(p)
-    pathList.append('/home/robocomp/robocomp/interfaces/IDSLs/')
-    pathList.append('/opt/robocomp/interfaces/IDSLs/')
-    filename = name.split('.')[0]
-    for p in pathList:
-        try:
-            path = p+'/'+name
-            return IDSLParsing.fromFileIDSL(path)
-        except IOError as e:
-            pass
-    print(('Couldn\'t locate ', name))
-    sys.exit(-1)
-
-
 def getNameNumber(aalist):
     ret = []
     c = Counter(aalist)
