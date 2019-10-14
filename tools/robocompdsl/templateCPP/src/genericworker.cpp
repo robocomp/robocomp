@@ -14,7 +14,7 @@ def TAB():
 
 
 from dsl_parsers.dsl_factory import DSLFactory
-from dsl_parsers.parsing_utils import getNameNumber, communicationIsIce
+from dsl_parsers.parsing_utils import getNameNumber, communicationIsIce, IDSLPool
 includeDirectories = theIDSLPaths.split('#')
 component = DSLFactory().from_file(theCDSL, include_directories=includeDirectories)
 sm = DSLFactory().from_file(component['statemachine'])
@@ -24,7 +24,6 @@ if component is None:
 	print('Can\'t locate', theCDSLs)
 	sys.exit(1)
 
-from parseIDSL import *
 pool = IDSLPool(theIDSLs, includeDirectories)
 
 

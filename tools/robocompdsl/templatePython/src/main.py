@@ -14,11 +14,11 @@ def TAB():
 	cog.out('<TABHERE>')
 
 from dsl_parsers.dsl_factory import DSLFactory
-from dsl_parsers.parsing_utils import getNameNumber
+from dsl_parsers.parsing_utils import getNameNumber, IDSLPool
 includeDirectories = theIDSLPaths.split('#')
 component = DSLFactory().from_file(theCDSL, include_directories=includeDirectories)
 
-from parseIDSL import IDSLPool
+
 pool = IDSLPool(theIDSLs, includeDirectories)
 
 REQUIRE_STR = """

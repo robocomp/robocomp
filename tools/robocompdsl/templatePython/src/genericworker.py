@@ -20,7 +20,7 @@ def SPACE(i=0):
 
 includeDirectories = theIDSLPaths.split('#')
 from dsl_parsers.dsl_factory import DSLFactory
-from dsl_parsers.parsing_utils import getNameNumber, gimmeIDSL
+from dsl_parsers.parsing_utils import getNameNumber, gimmeIDSL, IDSLPool
 
 component = DSLFactory().from_file(theCDSL, include_directories=includeDirectories)
 sm = DSLFactory().from_file(component['statemachine'])
@@ -29,7 +29,7 @@ if component == None:
 	print('Can\'t locate', theCDSLs)
 	os.__exit(1)
 
-from parseIDSL import IDSLPool
+
 pool = IDSLPool(theIDSLs, includeDirectories)
 modulesList = pool.rosModulesImports()
 

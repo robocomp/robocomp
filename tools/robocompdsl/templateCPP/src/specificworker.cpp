@@ -13,7 +13,7 @@ def TAB():
 	cog.out('<TABHERE>')
 
 from dsl_parsers.dsl_factory import DSLFactory
-from dsl_parsers.parsing_utils import communicationIsIce, isAGM1Agent, isAGM2Agent, isAGM2AgentROS
+from dsl_parsers.parsing_utils import communicationIsIce, isAGM1Agent, isAGM2Agent, isAGM2AgentROS, IDSLPool
 includeDirectories = theIDSLPaths.split('#')
 component = DSLFactory().from_file(theCDSL, include_directories=includeDirectories)
 sm = DSLFactory().from_file(component['statemachine'])
@@ -25,7 +25,6 @@ if component is None:
 
 
 
-from parseIDSL import *
 pool = IDSLPool(theIDSLs, includeDirectories)
 rosTypes = pool.getRosTypes()
 
