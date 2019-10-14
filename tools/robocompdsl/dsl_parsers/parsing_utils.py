@@ -1,7 +1,8 @@
 import os
+import sys
+import traceback
 from collections import Counter
 
-from parseIDSL import IDSLParsing
 
 
 def generateRecursiveImports(initial_idsls, include_directories):
@@ -16,7 +17,9 @@ def generateRecursiveImports(initial_idsls, include_directories):
                 attempt = directory + '/' + idsl_basename
                 # print 'Check', attempt
                 if os.path.isfile(attempt):
-                    importedModule = IDSLParsing.fromFile(attempt)  # IDSLParsing.gimmeIDSL(attempt)
+                    # WARN: import is here to avoid problem with recursive import on startup
+                    from dsl_parsers.dsl_factory import DSLFactory
+                    importedModule = DSLFactory().from_file(attempt)  # IDSLParsing.gimmeIDSL(attempt)
                     break
         except:
             print(('Error reading IMPORT', idsl_basename))
@@ -90,7 +93,9 @@ def gimmeIDSL(name, files='', includeDirectories=None):
     for p in pathList:
         try:
             path = p+'/'+name
-            return IDSLParsing.fromFile(path)
+            # WARN: import is here to avoid problem with recursive import on startup
+            from dsl_parsers.dsl_factory import DSLFactory
+            return DSLFactory().from_file(path)
         except IOError as e:
             pass
     print(('Couldn\'t locate ', name))
