@@ -122,15 +122,68 @@ class DSLFactory(Singleton):
 
 if __name__ == '__main__':
     factory = DSLFactory()
-    a = factory.from_file("/home/robolab/robocomp/components/euroage-tv/components/tvGames/gamestatemachine.smdsl")
-    factory2 = DSLFactory()
-    b = factory.from_file("/home/robolab/robocomp/components/euroage-tv/components/tvGames/gamestatemachine.smdsl")
-    factory3 = DSLFactory()
-    c = factory.from_file("/home/robolab/robocomp/interfaces/IDSLs/JointMotor.idsl")
-    factory4 = DSLFactory()
-    d = factory.from_file("/home/robolab/robocomp/interfaces/IDSLs/JointMotor.idsl")
-    factory5 = DSLFactory()
-    e = factory.from_file("/home/robolab/robocomp/tools/robocompdsl/component_generation_test/customStateMachinePython/test.cdsl", include_directories=["patata", "patata2"])
-    factory6 = DSLFactory()
-    f = factory.from_file("/home/robolab/robocomp/components/euroage-tv/components/tvGames/tvgames.cdsl",update=True)
-    print((b == a) and (c == d) and (e == f))
+    for idsl_path in os.listdir("/opt/robocomp/interfaces/IDSLs"):
+        if idsl_path.endswith(".idsl"):
+            idsl = factory.from_file(idsl_path)
+            from pprint import pprint
+            print("#ifndef " + idsl['name'].upper() + "_ICE")
+            print("#define " + idsl['name'].upper() + "_ICE")
+            if 'imports' in idsl and idsl["imports"] != '':
+                for imp in idsl['imports'].split('#'):
+                    print("#include <" + imp.split('.')[0] + ".ice>")
+            print("module " + idsl['name'] + "\n{")
+            if "interfaces" in idsl:
+                for interface in idsl['interfaces']:
+                    print("<TABHERE>interface " + interface['name'] + "\n<TABHERE>{")
+                    for method in interface['methods'].values():
+                        if method['decorator'] != '':
+                            print("<TABHERE><TABHERE>" + method['decorator'] + " " + method['return'] + " "),
+                        else:
+                            print("<TABHERE><TABHERE>" + method['return'] + " "),
+                        print(method['name'] + " ("),
+                        try:
+                            paramStrA = ''
+                            for p in method['params']:
+                                # delim
+                                if paramStrA == '':
+                                    delim = ''
+                                else:
+                                    delim = ', '
+                                # STR
+                                if p['decorator'] != "none" and p['decorator'] != '':
+                                    paramStrA += delim + p['decorator'] + ' ' + p['type'] + ' ' + p['name']
+                                else:
+                                    paramStrA += delim + p['type'] + ' ' + p['name']
+                            print(paramStrA + ")"),
+                        except:
+                            print(")"),
+                        try:
+                            if method['throws'] != "nothing":
+                                print(" throws "),
+                                for p in method['throws']:
+                                    # STR
+                                    print(p),
+                        except:
+                            pass
+                        print(";")
+                    print("<TABHERE>};")
+            continue
+            for content in idsl['module']['contents']:
+                if content['type'] == 'exception':
+                    print("<TABHERE>exception " + content['name'] + "{" + content['content'] + "};")
+                if content['type'] == 'sequence':
+                    print("<TABHERE>sequence <" + content['typeSequence'] + "> " + content['name'] + ";")
+                if content['type'] == 'dictionary':
+                    print("<TABHERE>dictionary <" + content['content'] + "> " + content['name'] + ";")
+                if content['type'] == 'enum':
+                    print("<TABHERE>enum " + content['name'] + " { " + content['content'] + " };")
+                if content['type'] == 'struct':
+                    print("<TABHERE>struct " + content['name'] + "\n<TABHERE>{")
+                    for var in content['structIdentifiers']:
+                        cog.out("<TABHERE><TABHERE> " + var['type'] + " " + var['identifier'])
+                        try:
+                            print(" =" + var['defaultValue'] + ";")
+                        except:
+                            print(";")
+                    print("<TABHERE>};")
+
