@@ -1,0 +1,18 @@
+import "AGMWorldModel.idsl";
+import "Planning.idsl";
+import "AGMExecutive.idsl";
+
+module RoboCompAGMExecutiveTopic
+{
+	interface AGMExecutiveTopic
+	{
+		void structuralChange(RoboCompAGMWorldModel::World w);
+
+		void symbolUpdated(RoboCompAGMWorldModel::Node modification);
+		void symbolsUpdated(RoboCompAGMWorldModel::NodeSequence modifications);
+
+		void edgeUpdated(RoboCompAGMWorldModel::Edge modification);
+		void edgesUpdated(RoboCompAGMWorldModel::EdgeSequence modifications);
+	};
+};
+
