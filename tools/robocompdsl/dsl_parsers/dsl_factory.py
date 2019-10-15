@@ -56,6 +56,15 @@ class DSLFactory(Singleton):
         :param update: force the update of any cached file
         :return: struct/dict containing the information of the dsl contained in the file
         """
+        if not os.path.isfile(file_path):
+            # local import to avoid problem with mutual imports
+            from dsl_parsers.parsing_utils import idsl_robocomp_path
+            new_file_path = idsl_robocomp_path(file_path)
+            if new_file_path is None or not os.path.isfile(new_file_path):
+                print("DSLFactory. %s could not be found in Robocomp"%file_path)
+                raise IOError(errno.ENOENT, os.strerror(errno.ENOENT), file_path)
+            else:
+                file_path = new_file_path
         # if update is false and file_path exists in the cache, it's returned
         if file_path in self. _cache and update is False:
             # print("______________________Cached %s______________" % file_path)
