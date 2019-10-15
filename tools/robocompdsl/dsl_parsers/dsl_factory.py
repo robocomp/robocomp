@@ -1,3 +1,5 @@
+import errno
+import os
 import sys
 import traceback
 from os import path
@@ -8,7 +10,6 @@ from termcolor import cprint
 from dsl_parsers.specific_parsers.cdsl_parser import CDSLParser
 from dsl_parsers.specific_parsers.idsl_parser import IDSLParser
 from dsl_parsers.specific_parsers.smdsl_parser import SMDSLParser
-
 
 class Singleton(object):
     """
@@ -57,6 +58,8 @@ class DSLFactory(Singleton):
         :return: struct/dict containing the information of the dsl contained in the file
         """
         if not os.path.isfile(file_path):
+            print("DSLFactory. %s could not be found in Robocomp" % file_path)
+            raise IOError(errno.ENOENT, os.strerror(errno.ENOENT), file_path)
             # local import to avoid problem with mutual imports
             from dsl_parsers.parsing_utils import idsl_robocomp_path
             new_file_path = idsl_robocomp_path(file_path)
@@ -83,7 +86,7 @@ class DSLFactory(Singleton):
                 with open(file_path, 'r') as reader:
                     string = reader.read()
             except:
-                print("Error reading input file %s"%file_path)
+                print("DSLFactory: Error reading input file %s"%file_path)
                 # TODO: Raise Exception
                 return None
 
@@ -113,6 +116,8 @@ class DSLFactory(Singleton):
             return SMDSLParser()
         elif dsl_type.lower() == 'idsl':
             return IDSLParser()
+        else:
+            raise ValueError("Invalid dsl type '%s'. No valid parser found for it."%dsl_type)
 
 
 if __name__ == '__main__':
