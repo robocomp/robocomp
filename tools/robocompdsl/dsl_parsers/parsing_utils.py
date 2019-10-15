@@ -45,34 +45,48 @@ def generateRecursiveImports(initial_idsls, include_directories):
     return list(set(new_idsls))
 
 def communicationIsIce(sb):
-	isIce = True
-	if len(sb) == 2:
-		if sb[1] == 'ros'.lower():
-			isIce = False
-		elif sb[1] != 'ice'.lower() :
-			print('Only ICE and ROS are supported')
-			sys.exit(-1)
-	return isIce
+    isIce = True
+    if len(sb) == 2:
+        if sb[1] == 'ros'.lower():
+            isIce = False
+        elif sb[1] != 'ice'.lower() :
+            print('Only ICE and ROS are supported')
+            sys.exit(-1)
+    return isIce
 
 def isAGM1Agent(component):
-	options = component['options']
-	return 'agmagent' in [ x.lower() for x in options]
+    options = component['options']
+    return 'agmagent' in [ x.lower() for x in options]
 
 def isAGM2Agent(component):
-	valid = ['agm2agent', 'agm2agentros', 'agm2agentice']
-	options = component['options']
-	for v in valid:
-		if v.lower() in options:
-			return True
-	return False
+    valid = ['agm2agent', 'agm2agentros', 'agm2agentice']
+    options = component['options']
+    for v in valid:
+        if v.lower() in options:
+            return True
+    return False
 
 def isAGM2AgentROS(component):
-	valid = ['agm2agentROS']
-	options = component['options']
-	for v in valid:
-		if v.lower() in options:
-			return True
-	return False
+    valid = ['agm2agentROS']
+    options = component['options']
+    for v in valid:
+        if v.lower() in options:
+            return True
+    return False
+
+def idsl_robocomp_path(idsl_name, include_directories = None):
+    pathList = []
+    if include_directories != None:
+        pathList += [x for x in include_directories]
+    pathList.append('/opt/robocomp/interfaces/IDSLs/')
+    pathList.append(os.path.expanduser('~/robocomp/interfaces/IDSLs/'))
+
+    for p in pathList:
+        path = os.path.join(p , idsl_name)
+        if os.path.isfile(path):
+            return path
+    print(('Couldn\'t locate ', idsl_name))
+    return None
 
 def gimmeIDSL(name, files='', includeDirectories=None):
     if not '.idsl' in name:
@@ -115,83 +129,83 @@ def getNameNumber(aalist):
     return ret
 
 def decoratorAndType_to_const_ampersand(decorator, vtype, modulePool, cpp11=False):
-	ampersand = ' & '
-	const = ' '
+    ampersand = ' & '
+    const = ' '
 
-	if vtype in [ 'float', 'int', 'short', 'long', 'double' ]: # MAIN BASIC TYPES
-		if decorator in [ 'out' ]: #out
-			ampersand = ' &'
-			const = ' '
-		else:                      #read-only
-			ampersand = ' '
-			const = 'const '
-	elif vtype in [ 'bool' ]:        # BOOL SEEM TO BE SPECIAL
-		const = ' '
-		if decorator in [ 'out' ]: # out
-			ampersand = ' &'
-		else:                      #read-only
-			ampersand = ' '
-	elif vtype in [ 'string' ]:      # STRINGS
-		if decorator in [ 'out' ]: # out
-			const = ' '
-			ampersand = ' &'
-		else:                      #read-only
-			const = 'const '
-			ampersand = ' &'
-	else:                            # GENERIC, USED FOR USER-DEFINED DATA TYPES
-		kind = getKindFromPool(vtype, modulePool)
-		if kind == None:
-			kind = getKindFromPool(vtype, modulePool, debug=True)
-			raise Exception('error, unknown data structure, map or sequence '+vtype)
-		else:
-			if kind == 'enum':               # ENUM
-				const = ' '
-				if decorator in [ 'out' ]: # out
-					ampersand = ' &'
-				else:                      #read-only
-					ampersand = ' '
-			else:                            # THE REST
-				if decorator in [ 'out' ]: # out
-					ampersand = ' &'
-					const = ' '
-				else:                      # read-only
-					if not cpp11:
-						ampersand = ' &'
-						const = 'const '
-					else:
-						ampersand = ''
-						const = ''
+    if vtype in [ 'float', 'int', 'short', 'long', 'double' ]: # MAIN BASIC TYPES
+        if decorator in [ 'out' ]: #out
+            ampersand = ' &'
+            const = ' '
+        else:                      #read-only
+            ampersand = ' '
+            const = 'const '
+    elif vtype in [ 'bool' ]:        # BOOL SEEM TO BE SPECIAL
+        const = ' '
+        if decorator in [ 'out' ]: # out
+            ampersand = ' &'
+        else:                      #read-only
+            ampersand = ' '
+    elif vtype in [ 'string' ]:      # STRINGS
+        if decorator in [ 'out' ]: # out
+            const = ' '
+            ampersand = ' &'
+        else:                      #read-only
+            const = 'const '
+            ampersand = ' &'
+    else:                            # GENERIC, USED FOR USER-DEFINED DATA TYPES
+        kind = getKindFromPool(vtype, modulePool)
+        if kind == None:
+            kind = getKindFromPool(vtype, modulePool, debug=True)
+            raise Exception('error, unknown data structure, map or sequence '+vtype)
+        else:
+            if kind == 'enum':               # ENUM
+                const = ' '
+                if decorator in [ 'out' ]: # out
+                    ampersand = ' &'
+                else:                      #read-only
+                    ampersand = ' '
+            else:                            # THE REST
+                if decorator in [ 'out' ]: # out
+                    ampersand = ' &'
+                    const = ' '
+                else:                      # read-only
+                    if not cpp11:
+                        ampersand = ' &'
+                        const = 'const '
+                    else:
+                        ampersand = ''
+                        const = ''
 
-	return const, ampersand
+    return const, ampersand
 
 def getKindFromPool(vtype, modulePool, debug=False):
-	if debug: print(vtype)
-	split = vtype.split("::")
-	if debug: print(split)
-	if len(split) > 1:
-		vtype = split[1]
-		mname = split[0]
-		if debug: print(('SPLIT (' + vtype+'), (' + mname + ')'))
-		if mname in modulePool.modulePool:
-			if debug: print(('dentro SPLIT (' + vtype+'), (' + mname + ')'))
-			r = getTypeFromModule(vtype, modulePool.modulePool[mname])
-			if r != None: return r
-		if mname.startswith("RoboComp"):
-			if mname[8:] in modulePool.modulePool:
-				r = getTypeFromModule(vtype, modulePool.modulePool[mname[8:]])
-				if r != None: return r
-	else:
-		if debug: print('no split')
-		for module in modulePool.modulePool:
-			if debug: print(('  '+str(module)))
-			r = getTypeFromModule(vtype, modulePool.modulePool[module])
-			if r != None: return r
+    if debug: print(vtype)
+    split = vtype.split("::")
+    if debug: print(split)
+    if len(split) > 1:
+        vtype = split[1]
+        mname = split[0]
+        if debug: print(('SPLIT (' + vtype+'), (' + mname + ')'))
+        if mname in modulePool.modulePool:
+            if debug: print(('dentro SPLIT (' + vtype+'), (' + mname + ')'))
+            r = getTypeFromModule(vtype, modulePool.modulePool[mname])
+            if r != None: return r
+        if mname.startswith("RoboComp"):
+            if mname[8:] in modulePool.modulePool:
+                r = getTypeFromModule(vtype, modulePool.modulePool[mname[8:]])
+                if r != None: return r
+    else:
+        if debug: print('no split')
+        for module in modulePool.modulePool:
+            if debug: print(('  '+str(module)))
+            r = getTypeFromModule(vtype, modulePool.modulePool[module])
+            if r != None: return r
 
 def getTypeFromModule(vtype, module):
-	for t in module['types']:
-		if t['name'] == vtype:
-			return t['type']
-	return None
+    for t in module['types']:
+        if t['name'] == vtype:
+            return t['type']
+    return None
 
 
 class IDSLPool:
@@ -318,5 +332,6 @@ class IDSLPool:
 
 
 if __name__ == '__main__':
-    pool = IDSLPool("AprilTags.idsl",[])
+    pool = IDSLPool("AGMCommonBehavior.idsl",[])
+    print(pool.modulePool["AGMCommonBehavior"]["imports"])
     pool = IDSLPool("AprilTags.idsl", [])
