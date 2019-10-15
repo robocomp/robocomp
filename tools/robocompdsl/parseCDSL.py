@@ -350,7 +350,7 @@ class CDSLParsing:
 						component['usingROS'] = True
 		# Handle options for communications
 		if isAGM1Agent(component):
-			component['iceInterfaces'] += ['AGMCommonBehavior', 'AGMExecutive', 'AGMWorldModel']
+			component['iceInterfaces'] += ['AGMCommonBehavior', 'AGMExecutive', 'AGMWorldModel', 'AGMExecutiveTopic']
 			if not 'AGMCommonBehavior' in component['implements']:
 				component['implements'] =   ['AGMCommonBehavior'] + component['implements']
 			if not 'AGMExecutive' in component['requires']:
