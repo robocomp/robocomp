@@ -28,8 +28,12 @@ cog.outl("//  Source: "+theIDSL)
 [[[cog
 from parseIDSL import *
 idsl = IDSLParsing.fromFileIDSL(theIDSL)
-cog.outl("#ifndef "+idsl['module']['name'].upper()+"_ICE")
-cog.outl("#define "+idsl['module']['name'].upper()+"_ICE")
+from dsl_parsers.dsl_factory import DSLFactory
+idsl2 = DSLFactory().from_file(theIDSL)
+from pprint import pprint
+pprint(idsl2)
+cog.outl("#ifndef "+idsl2['name'].upper()+"_ICE")
+cog.outl("#define "+idsl2['name'].upper()+"_ICE")
 if 'imports' in idsl.keys():
 	for imp in idsl['imports']:
 		cog.outl("#include <"+imp.split('.')[0]+".ice>")
