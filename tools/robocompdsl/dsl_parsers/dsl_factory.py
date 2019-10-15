@@ -58,10 +58,10 @@ class DSLFactory(Singleton):
         """
         # if update is false and file_path exists in the cache, it's returned
         if file_path in self. _cache and update is False:
-            print("______________________Cached %s______________" % file_path)
+            # print("______________________Cached %s______________" % file_path)
             result = self._cache[file_path].struct
         else:
-            print("______________________Parsing %s______________" % file_path)
+            # print("______________________Parsing %s______________" % file_path)
             if file_path is None or file_path == "":
                 # TODO: Raise Exception
                 return None
