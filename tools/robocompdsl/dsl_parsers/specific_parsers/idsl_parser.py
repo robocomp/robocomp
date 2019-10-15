@@ -71,7 +71,7 @@ class IDSLParser(DSLParserTemplate):
 
         # Hack to make robocompdsl work with pyparsing > 2.2
         try:
-            result_dict['name'] = parsing_result['result_dict']['name']
+            result_dict['name'] = parsing_result['module']['name']
         except:
             result_dict['name'] = parsing_result['name']
 
@@ -88,7 +88,7 @@ class IDSLParser(DSLParserTemplate):
 
         # Hack to make robocompdsl work with pyparsing > 2.2
         try:
-            contents = parsing_result['result_dict']['contents']
+            contents = parsing_result['module']['contents']
         except:
             contents = parsing_result['contents']
 
@@ -118,7 +118,7 @@ class IDSLParser(DSLParserTemplate):
                     interface['methods'][method['name']]['params'] = params
 
                     try:
-                        interface['methods'][method['name']]['throws'] = method['decorator']
+                        interface['methods'][method['name']]['throws'] = method['raise']
                     except:
                         interface['methods'][method['name']]['throws'] = 'nothing'
                 result_dict['interfaces'].append(interface)
@@ -138,7 +138,7 @@ class IDSLParser(DSLParserTemplate):
             elif contentDef[0] in ['interface']:
                 pass
             else:
-                print(('Unknown result_dict content', contentDef))
+                print(('Unknown module content', contentDef))
         # SEQUENCES DEFINED IN THE MODULE
         result_dict['sequences'] = []
         result_dict['simpleSequences'] = []

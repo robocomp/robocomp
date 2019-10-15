@@ -2,7 +2,6 @@ import unittest
 
 from dsl_parsers.dsl_factory import DSLFactory
 
-
 class DSLFactoryTestCase(unittest.TestCase):
 
     def test_dsl_factory(self):
@@ -25,8 +24,6 @@ class DSLFactoryTestCase(unittest.TestCase):
         # test for cached query
         f = factory.from_file("/home/robolab/robocomp/tools/robocompdsl/component_generation_test/customStateMachinePython/test.cdsl")
         self.assertIs(e, f)
-
-
 
 
 if __name__ == '__main__':
