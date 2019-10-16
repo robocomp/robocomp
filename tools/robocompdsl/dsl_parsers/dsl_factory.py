@@ -58,8 +58,6 @@ class DSLFactory(Singleton):
         :return: struct/dict containing the information of the dsl contained in the file
         """
         if not os.path.isfile(file_path):
-            print("DSLFactory. %s could not be found in Robocomp" % file_path)
-            raise IOError(errno.ENOENT, os.strerror(errno.ENOENT), file_path)
             # local import to avoid problem with mutual imports
             from dsl_parsers.parsing_utils import idsl_robocomp_path
             new_file_path = idsl_robocomp_path(file_path)
@@ -130,8 +128,29 @@ if __name__ == '__main__':
             print("#define " + idsl['name'].upper() + "_ICE")
             if 'imports' in idsl and idsl["imports"] != '':
                 for imp in idsl['imports'].split('#'):
-                    print("#include <" + imp.split('.')[0] + ".ice>")
+                    if imp != '':
+                        print("#include <" + imp.split('.')[0] + ".ice>")
             print("module " + idsl['name'] + "\n{")
+            if 'types' in idsl:
+                for next_type in idsl["types"]:
+                    if "exception" == next_type["type"]:
+                        print("<TABHERE>exception " + next_type['name'] + "{" + next_type['content'] + "};")
+                    if "struct" == next_type["type"]:
+                        struct= next_type
+                        print("<TABHERE>struct " + struct['name'] + "\n<TABHERE>{")
+                        for var in struct['structIdentifiers']:
+                            print("<TABHERE><TABHERE> " + var['type'] + " " + var['identifier']),
+                            try:
+                                print(" =" + var['defaultValue'] + ";")
+                            except:
+                                print(";")
+                        print("<TABHERE>};")
+                    if "sequence" == next_type["type"]:
+                        print("<TABHERE>sequence <" + next_type['typeSequence'] + "> " + next_type['name'] + ";")
+                    if "dictionary" == next_type['type']:
+                        print("<TABHERE>dictionary <" + next_type['content'] + "> " + next_type['name'] + ";")
+                    if "enum" == next_type['type']:
+                        print("<TABHERE>enum " + next_type['name'] + " { " + next_type['content'] + " };")
             if "interfaces" in idsl:
                 for interface in idsl['interfaces']:
                     print("<TABHERE>interface " + interface['name'] + "\n<TABHERE>{")
@@ -167,23 +186,8 @@ if __name__ == '__main__':
                             pass
                         print(";")
                     print("<TABHERE>};")
-            continue
-            for content in idsl['module']['contents']:
-                if content['type'] == 'exception':
-                    print("<TABHERE>exception " + content['name'] + "{" + content['content'] + "};")
-                if content['type'] == 'sequence':
-                    print("<TABHERE>sequence <" + content['typeSequence'] + "> " + content['name'] + ";")
-                if content['type'] == 'dictionary':
-                    print("<TABHERE>dictionary <" + content['content'] + "> " + content['name'] + ";")
-                if content['type'] == 'enum':
-                    print("<TABHERE>enum " + content['name'] + " { " + content['content'] + " };")
-                if content['type'] == 'struct':
-                    print("<TABHERE>struct " + content['name'] + "\n<TABHERE>{")
-                    for var in content['structIdentifiers']:
-                        cog.out("<TABHERE><TABHERE> " + var['type'] + " " + var['identifier'])
-                        try:
-                            print(" =" + var['defaultValue'] + ";")
-                        except:
-                            print(";")
-                    print("<TABHERE>};")
+
+
+
+
 

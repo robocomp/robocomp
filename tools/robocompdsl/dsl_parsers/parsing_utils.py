@@ -5,13 +5,14 @@ from collections import Counter
 
 
 
-def generateRecursiveImports(initial_idsls, include_directories):
+def generateRecursiveImports(initial_idsls, include_directories=[]):
     new_idsls = []
     for idsl_path in initial_idsls:
         importedModule = None
         idsl_basename = os.path.basename(idsl_path)
         iD = include_directories + ['/opt/robocomp/interfaces/IDSLs/',
                                     os.path.expanduser('~/robocomp/interfaces/IDSLs/')]
+        # TODO: Replace by idsl_robocomp_path
         try:
             for directory in iD:
                 attempt = directory + '/' + idsl_basename
@@ -256,7 +257,7 @@ class IDSLPool:
                         # store the module
                         modulePool[filename] = module
                         # try to add the modules that this one imports
-                        self.includeInPool(module['imports'], modulePool, includeDirectories)
+                        self.includeInPool(module['imports']+module['recursive_imports'], modulePool, includeDirectories)
                         break
                     except IOError as e:
                         pass

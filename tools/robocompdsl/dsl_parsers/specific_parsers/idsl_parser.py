@@ -2,7 +2,7 @@ from pyparsing import Suppress, Word, alphas, alphanums, Group, \
     OneOrMore, ZeroOrMore, Optional, cppStyleComment, Literal, CharsNotIn
 
 from dsl_parsers.dsl_parser_abstract import DSLParserTemplate
-from dsl_parsers.parsing_utils import gimmeIDSL
+from dsl_parsers.parsing_utils import gimmeIDSL, generateRecursiveImports
 
 
 class IDSLParser(DSLParserTemplate):
@@ -76,13 +76,12 @@ class IDSLParser(DSLParserTemplate):
             result_dict['name'] = parsing_result['name']
 
         result_dict['imports'] = ''
+        result_dict['recursive_imports'] = ''
         if 'imports' in parsing_result:
             # print result_dict['name'], parsing_result['imports']
-            for imp in parsing_result['imports']:
-                # print 'proc', imp
-                # print 'has', IDSLParsing.gimmeIDSL(imp)['imports']
-                # print ''
-                result_dict['imports'] += imp + '#' + gimmeIDSL(imp)['imports']
+            result_dict['imports'] = '#'.join(parsing_result['imports'])
+            result_dict['recursive_imports'] = '#'.join(generateRecursiveImports(parsing_result['imports']))
+            pass
         # INTERFACES DEFINED IN THE MODULE
         result_dict['interfaces'] = []
 
@@ -128,11 +127,13 @@ class IDSLParser(DSLParserTemplate):
         for contentDef in contents:
             # print contentDef[0]
             if contentDef[0] in ['enum', 'struct', 'exception']:
-                typedef = {'name': contentDef[1], 'type': contentDef[0]}
+                # typedef = {'name': contentDef[1], 'type': contentDef[0]}
+                typedef = contentDef.asDict()
+
                 # print typedef
                 result_dict['types'].append(typedef)
             elif contentDef[0] in ['sequence', 'dictionary']:
-                typedef = {'name': contentDef[-1], 'type': contentDef[0]}
+                typedef = contentDef.asDict()
                 # print typedef
                 result_dict['types'].append(typedef)
             elif contentDef[0] in ['interface']:

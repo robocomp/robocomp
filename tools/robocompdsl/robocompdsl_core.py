@@ -125,7 +125,7 @@ def generateROSHeaders(idslFile, outputPath, comp, includeDirectories):
         os.system("touch "+outputPath + "/" + idsl['module']['name'] + "ROS/__init__.py")
         return idsl['module']['name']+"ROS"
     try:
-        for importIDSL in idsl['imports']:
+        for importIDSL in idsl['imports']+idsl['recursive_imports']:
             imported.append(generarH("/opt/robocomp/interfaces/IDSLs/"+importIDSL, []))
     except:
         pass
