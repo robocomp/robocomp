@@ -81,7 +81,6 @@ class IDSLParser(DSLParserTemplate):
             # print result_dict['name'], parsing_result['imports']
             result_dict['imports'] = '#'.join(parsing_result['imports'])
             result_dict['recursive_imports'] = '#'.join(generateRecursiveImports(parsing_result['imports']))
-            pass
         # INTERFACES DEFINED IN THE MODULE
         result_dict['interfaces'] = []
 

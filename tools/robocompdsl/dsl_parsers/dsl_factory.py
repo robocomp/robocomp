@@ -129,7 +129,7 @@ if __name__ == '__main__':
             if 'imports' in idsl and idsl["imports"] != '':
                 for imp in idsl['imports'].split('#'):
                     if imp != '':
-                        print("#include <" + imp.split('.')[0] + ".ice>")
+                        print("#include <" + os.path.basename(imp).split('.')[0] + ".ice>")
             print("module " + idsl['name'] + "\n{")
             if 'types' in idsl:
                 for next_type in idsl["types"]:

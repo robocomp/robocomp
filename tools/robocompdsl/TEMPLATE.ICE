@@ -5,6 +5,7 @@
 [[[cog
 
 import sys
+import os
 sys.path.append('/opt/robocomp/python')
 
 import cog
@@ -34,7 +35,7 @@ cog.outl("#define " + idsl['name'].upper() + "_ICE")
 if 'imports' in idsl and idsl["imports"] != '':
     for imp in idsl['imports'].split('#'):
         if imp != '':
-            cog.outl("#include <" + imp.split('.')[0] + ".ice>")
+            cog.outl("#include <" + os.path.basename(imp).split('.')[0] + ".ice>")
 cog.outl("module " + idsl['name'] + "\n{")
 if 'types' in idsl:
     for next_type in idsl["types"]:
