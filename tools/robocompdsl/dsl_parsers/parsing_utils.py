@@ -1,8 +1,7 @@
 import os
 import sys
 import traceback
-from collections import Counter
-
+from collections import Counter, OrderedDict
 
 
 def generateRecursiveImports(initial_idsls, include_directories=[]):
@@ -222,7 +221,7 @@ class IDSLPool:
     'empty')
 
     def __init__(self, files, iD):
-        self.modulePool = {}
+        self.modulePool = OrderedDict()
         includeDirectories = iD + ['/opt/robocomp/interfaces/IDSLs/', os.path.expanduser('~/robocomp/interfaces/IDSLs/')]
         self.includeInPool(files, self.modulePool, includeDirectories)
 

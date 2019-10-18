@@ -1,3 +1,6 @@
+from collections import OrderedDict
+from operator import attrgetter
+
 from pyparsing import Suppress, Word, alphas, alphanums, Group, \
     OneOrMore, ZeroOrMore, Optional, cppStyleComment, Literal, CharsNotIn
 
@@ -67,7 +70,7 @@ class IDSLParser(DSLParserTemplate):
 
     def string_to_struct(self, string, **kwargs):
         parsing_result = self.parse_string(string)
-        result_dict = {}
+        result_dict = OrderedDict()
 
         # Hack to make robocompdsl work with pyparsing > 2.2
         try:
@@ -92,8 +95,8 @@ class IDSLParser(DSLParserTemplate):
 
         for contentDef in contents:
             if contentDef[0] == 'interface':
-                interface = {'name': contentDef[1], 'methods': {}}
-                for method in contentDef[2]:
+                interface = {'name': contentDef[1], 'methods': OrderedDict()}
+                for method in sorted(contentDef['methods'], key=attrgetter('name')):
                     interface['methods'][method['name']] = {}
 
                     interface['methods'][method['name']]['name'] = method['name']
