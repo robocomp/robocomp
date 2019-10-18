@@ -110,7 +110,7 @@ class CDSLParser(DSLParserTemplate):
             parsing_result['imports'] = []
             imprts = []
         if isAGM1Agent(component):
-            imprts.extend(['AGMExecutive.idsl', 'AGMCommonBehavior.idsl', 'AGMWorldModel.idsl'])
+            imprts.extend(['AGMExecutive.idsl', 'AGMCommonBehavior.idsl', 'AGMWorldModel.idsl', 'AGMExecutiveTopic.idsl'])
         if isAGM2Agent(component):
             imprts.extend(['AGM2.idsl'])
         iD = self._include_directories + ['/opt/robocomp/interfaces/IDSLs/',
