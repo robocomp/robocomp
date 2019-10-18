@@ -292,19 +292,19 @@ class ComponentGenerationChecker:
             self.remove_genetared_files(output_dir, self.dry_run)
         print("")
         os.chdir(previous_dir)
-        cprint("The * indictate tha the old file is probably deprecated and generated with an old version of .ice generation.", "magenta", attrs=['bold'])
+        cprint("The * indictate that the old file is probably deprecated and generated with an old version of .ice generation.", "magenta", attrs=['bold'])
 
 
 if __name__ == '__main__':
     parser = MyParser(description=colored(
-        'This application generate .ice files from idsl files to check generation/comparation tol old verions\n', 'magenta'),
+        'This application generate .ice files from idsl files to check generation and comparation  to old verions  \n', 'magenta'),
         formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument('indir', type=str, help='Input dir for idsl files')
-    parser.add_argument('outdir', nargs='?', default=os.getcwd(), help='Output dir for .ice and l.log files')
+    parser.add_argument('outdir', nargs='?', default=os.getcwd(), help='Output dir for .ice and .log files')
     parser.add_argument("-g", "--generate-only", action="store_true",
-                        help="Only the generation with robocompdsl is checked. No comparation is checked")
+                        help="Only the generation with robocompdsl is checked. No comparation is checked.")
     parser.add_argument("-d", "--dirty",
-                        help="No cleaning is done after execution. All .ice and .log files will be left on their dirs.",
+                        help="No cleaning is done after execution. All .ice and .log files will be left on the output dir.",
                         action="store_true")
     # parser.add_argument("-c", "--clean",
     #                     help="Just clean all source files and temp will be left on their dirs. .cdsl, .smdsl and .logs are kept on their dirs.",
@@ -313,12 +313,12 @@ if __name__ == '__main__':
                         help="Executing dry run. No remove, generation or comparation will be executed in dry run mode.",
                         action="store_true")
     parser.add_argument("-i", "--installation", type=str,
-                        help="Installation directory where robocompdsl.py can be found.",
+                        help="Option to change where the robocompdsl.py tool script will be found.",
                         default="/opt/robocomp/tools/robocompdsl/")
     parser.add_argument("-f", "--filter", type=str,
-                        help="Execute the check only for directories containing this string.", default="")
+                        help="Execute the checks only for .idsl files containing the FILTER string.", default="")
     parser.add_argument("-v", "--visual",
-                        help="open meld application to visually compare old and new ice files",
+                        help="gives a visual output of the different lines at the end  of the execution for each file.",
                         action="store_true")
     args = parser.parse_args()
 
