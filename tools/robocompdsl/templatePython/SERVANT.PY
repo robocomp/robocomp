@@ -12,7 +12,7 @@ def TAB():
 	cog.out('<TABHERE>')
 
 from dsl_parsers.dsl_factory import DSLFactory
-from dsl_parsers.parsing_utils import IDSLPool
+from dsl_parsers.parsing_utils import IDSLPool, gimmeIDSL
 includeDirectories = theIDSLPaths.split('#')
 component = DSLFactory().from_file(theCDSL, include_directories=includeDirectories)
 if component == None:
@@ -98,7 +98,7 @@ for incl1 in theIDSLs.strip().split('#'):
 	cog.outl('if not ice_'+incl+':')
 	cog.outl("<TABHERE>print 'Couldn\\\'t load "+incl+"'")
 	cog.outl('<TABHERE>sys.exit(-1)')
-	module2 = IDSLParsing.gimmeIDSL(incl+'.idsl', files='', includeDirectories=includeDirectories)
+	module2 = gimmeIDSL(incl+'.idsl', files='', includeDirectories=includeDirectories)
 	cog.outl('from '+ module2['name'] +' import *')
 
 cog.outl('\nclass ' + theInterface+ 'I('+theInterface+'):')
