@@ -4,6 +4,7 @@ import argparse
 import os
 import subprocess
 import sys
+import traceback
 from shutil import rmtree
 
 from termcolor import cprint, colored
@@ -157,7 +158,7 @@ class ComponentGenerationChecker:
                         os.chdir("..")
                         continue
                     self.valid += 1
-                    self.results[current_dir] = {}
+                    self.results[current_dir] = {"generation":False, "compilation": False}
                     if self.generate_code(cdsl_file, "generation_output.log", False) == 0:
                         self.results[current_dir]['generation'] = True
                         self.generated += 1
@@ -233,7 +234,7 @@ if __name__ == '__main__':
                         action="store_true")
     parser.add_argument("-i", "--installation", type=str,
                         help="Installation directory where robocompdsl.py can be found.",
-                        default="~/robocomp/tools/robocompdsl/component_generation_test")
+                        default="~/robocomp/tools/robocompdsl/test/test_cdsl/")
 
     parser.add_argument("-f", "--filter", type=str,
                         help="Execute the check only for directories containing this string.", default="")
@@ -251,4 +252,5 @@ if __name__ == '__main__':
         sys.exit()
     except Exception as e:
         cprint("Unexpected exception: %s"%e.message, 'red')
+        traceback.print_stack()
 
