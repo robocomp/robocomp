@@ -57,6 +57,8 @@ class DSLFactory(Singleton):
         :param update: force the update of any cached file
         :return: struct/dict containing the information of the dsl contained in the file
         """
+        if file_path is None:
+            return
         if not os.path.isfile(file_path):
             # local import to avoid problem with mutual imports
             from dsl_parsers.parsing_utils import idsl_robocomp_path
