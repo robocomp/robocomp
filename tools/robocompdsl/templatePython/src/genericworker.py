@@ -19,16 +19,17 @@ def SPACE(i=0):
 	cog.out('<S'+s+'>')
 
 includeDirectories = theIDSLPaths.split('#')
-from parseCDSL import *
-from parseSMDSL import *
-component = CDSLParsing.fromFile(theCDSL, includeDirectories=includeDirectories)
-sm = SMDSLparsing.fromFile(component['statemachine'])
+from dsl_parsers.dsl_factory import DSLFactory
+from dsl_parsers.parsing_utils import getNameNumber, gimmeIDSL, IDSLPool, communicationIsIce
+
+component = DSLFactory().from_file(theCDSL, include_directories=includeDirectories)
+sm = DSLFactory().from_file(component['statemachine'])
 
 if component == None:
 	print('Can\'t locate', theCDSLs)
 	os.__exit(1)
 
-from parseIDSL import *
+
 pool = IDSLPool(theIDSLs, includeDirectories)
 modulesList = pool.rosModulesImports()
 
@@ -87,29 +88,25 @@ except:
 	pass
 
 [[[cog
-usingList = []
+import os
 for imp in set(component['recursiveImports'] + component["imports"]):
-	name = imp.split('/')[-1].split('.')[0]
-	if not name in usingList:
-		usingList.append(name)
-for name in usingList:
-	eso = imp.split('/')[-1]
-	incl = eso.split('.')[0]
+    file_name = os.path.basename(imp)
+    name = os.path.splitext(file_name)[0]
 
-	cog.outl('ice_'+incl+' = False')
-	cog.outl('for p in icePaths:')
-	cog.outl('<TABHERE>if os.path.isfile(p+\'/'+incl+'.ice\'):')
-	cog.outl('<TABHERE><TABHERE>preStr = "-I/opt/robocomp/interfaces/ -I"+ROBOCOMP+"/interfaces/ " + additionalPathStr + " --all "+p+\'/\'')
-	cog.outl('<TABHERE><TABHERE>wholeStr = preStr+"'+incl+'.ice"')
-	cog.outl('<TABHERE><TABHERE>Ice.loadSlice(wholeStr)')
-	cog.outl('<TABHERE><TABHERE>ice_'+incl+' = True')
-	cog.outl('<TABHERE><TABHERE>break')
-	cog.outl('if not ice_'+incl+':')
-	cog.outl("<TABHERE>print('Couln\\\'t load "+incl+"')")
-	cog.outl('<TABHERE>sys.exit(-1)')
+    cog.outl('ice_'+name+' = False')
+    cog.outl('for p in icePaths:')
+    cog.outl('<TABHERE>if os.path.isfile(p+\'/'+name+'.ice\'):')
+    cog.outl('<TABHERE><TABHERE>preStr = "-I/opt/robocomp/interfaces/ -I"+ROBOCOMP+"/interfaces/ " + additionalPathStr + " --all "+p+\'/\'')
+    cog.outl('<TABHERE><TABHERE>wholeStr = preStr+"'+name+'.ice"')
+    cog.outl('<TABHERE><TABHERE>Ice.loadSlice(wholeStr)')
+    cog.outl('<TABHERE><TABHERE>ice_'+name+' = True')
+    cog.outl('<TABHERE><TABHERE>break')
+    cog.outl('if not ice_'+name+':')
+    cog.outl("<TABHERE>print('Couln\\\'t load "+name+"')")
+    cog.outl('<TABHERE>sys.exit(-1)')
 
-	module = IDSLParsing.gimmeIDSL(eso, files='', includeDirectories=includeDirectories)
-	cog.outl('from '+ module['name'] +' import *')
+    module = gimmeIDSL(file_name, files='', includeDirectories=includeDirectories)
+    cog.outl('from '+ module['name'] +' import *')
 ]]]
 [[[end]]]
 

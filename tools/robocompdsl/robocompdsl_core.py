@@ -12,11 +12,11 @@ import sys, os, subprocess
 from distutils import spawn
 
 from cogapp import Cog
-from parseCDSL import *
-from parseIDSL import *
+# from parseCDSL import *
+from dsl_parsers.dsl_factory import DSLFactory
+from dsl_parsers.parsing_utils import communicationIsIce, IDSLPool
 import rcExceptions
 import sys
-from parseIDSL import *
 
 DIFF_TOOLS = ["meld", "kdiff3", "diff"]
 
@@ -31,12 +31,12 @@ def generateROSHeaders(idslFile, outputPath, comp, includeDirectories):
     :return:
     """
     imported = []
-    idsl = IDSLParsing.gimmeIDSL(idslFile, files='', includeDirectories=includeDirectories)
+    idsl = gimmeIDSL(idslFile, files='', includeDirectories=includeDirectories)
     if not os.path.exists(outputPath):
         create_directory(outputPath)
 
     def generarH(idslFile, imported):
-        idsl = IDSLParsing.gimmeIDSLStruct(idslFile, files='', includeDirectories=includeDirectories)
+        idsl = gimmeIDSLStruct(idslFile, files='', includeDirectories=includeDirectories)
         os.system("rm -f "+outputPath + "/" + idsl['module']['name'] + "ROS/msg/__init__.py")
         os.system("rm -f "+outputPath + "/" + idsl['module']['name'] + "ROS/srv/__init__.py")
         for imp in idsl['module']['contents']:
@@ -124,7 +124,7 @@ def generateROSHeaders(idslFile, outputPath, comp, includeDirectories):
         os.system("touch "+outputPath + "/" + idsl['module']['name'] + "ROS/__init__.py")
         return idsl['module']['name']+"ROS"
     try:
-        for importIDSL in idsl['imports']:
+        for importIDSL in idsl['imports']+idsl['recursive_imports']:
             imported.append(generarH("/opt/robocomp/interfaces/IDSLs/"+importIDSL, []))
     except:
         pass
@@ -324,7 +324,7 @@ def main():
 
     if inputFile.endswith(".cdsl"):
 
-        component = CDSLParsing.fromFile(inputFile, includeDirectories=args.include_dirs)
+        component = DSLFactory().from_file(inputFile, includeDirectories=args.include_dirs)
         imports = ''.join( [ imp+'#' for imp in component['imports'] ] )
 
         # verification

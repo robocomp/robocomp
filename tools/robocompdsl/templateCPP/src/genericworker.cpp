@@ -12,18 +12,18 @@ def Z():
 def TAB():
 	cog.out('<TABHERE>')
 
-from parseSMDSL import *
-from parseCDSL import *
+
+from dsl_parsers.dsl_factory import DSLFactory
+from dsl_parsers.parsing_utils import getNameNumber, communicationIsIce, IDSLPool
 includeDirectories = theIDSLPaths.split('#')
-component = CDSLParsing.fromFile(theCDSL, includeDirectories=includeDirectories)
-sm = SMDSLparsing.fromFile(component['statemachine'])
+component = DSLFactory().from_file(theCDSL, include_directories=includeDirectories)
+sm = DSLFactory().from_file(component['statemachine'])
 if sm is None:
     component['statemachine'] = None
 if component is None:
 	print('Can\'t locate', theCDSLs)
 	sys.exit(1)
 
-from parseIDSL import *
 pool = IDSLPool(theIDSLs, includeDirectories)
 
 

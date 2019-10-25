@@ -15,9 +15,9 @@ def SPACE(i=0):
 	if i>0:
 		s = str(i)
 	cog.out('<S'+s+'>')
+from dsl_parsers.dsl_factory import DSLFactory
 includeDirectories = theIDSLPaths.split('#')
-from parseCDSL import *
-component = CDSLParsing.fromFile(theCDSL, includeDirectories=includeDirectories)
+component = DSLFactory().from_file(theCDSL, include_directories=includeDirectories)
 
 
 ]]]
