@@ -22,10 +22,10 @@ class CDSLParser(DSLParserTemplate):
         # keywords
         (IMPORT, COMMUNICATIONS, LANGUAGE, COMPONENT, CPP, CPP11, GUI, QWIDGET, QMAINWINDOW, QDIALOG, QT,
          PYTHON, REQUIRES, IMPLEMENTS, SUBSCRIBESTO, PUBLISHES, OPTIONS, TRUE, FALSE,
-         INNERMODELVIEWER, STATEMACHINE) = list(map(CaselessKeyword, """
+         INNERMODELVIEWER, STATEMACHINE, VISUAL) = list(map(CaselessKeyword, """
         import communications language component cpp cpp11 gui QWidget QMainWindow QDialog Qt 
         python requires implements subscribesTo publishes options true false
-        InnerModelViewer statemachine""".split()))
+        InnerModelViewer statemachine visual""".split()))
 
         identifier = Word(alphas + "_", alphanums + "_")
         PATH = CharsNotIn("\";")
@@ -69,7 +69,7 @@ class CDSLParser(DSLParserTemplate):
         # additional options
         options = Group(Optional(OPTIONS.suppress() - identifier + ZeroOrMore(Suppress(Word(',')) + identifier) + SEMI))
         statemachine = Group(
-            Optional(STATEMACHINE.suppress() - QUOTE + CharsNotIn("\";").setResultsName('machine_path') + QUOTE + SEMI))
+            Optional(STATEMACHINE.suppress() - QUOTE + CharsNotIn("\";").setResultsName('machine_path') + QUOTE + Optional(VISUAL.setResultsName('visual').setParseAction(lambda t: True))+ SEMI))
 
         # Component definition
         componentContents = Group(
@@ -128,6 +128,12 @@ class CDSLParser(DSLParserTemplate):
             component['statemachine'] = statemachine
         except:
             pass
+        try:
+            statemachine_visual = parsing_result['component']['content']['statemachine']['visual']
+        except:
+            component['statemachine_visual'] = False
+        else:
+            component['statemachine_visual'] = statemachine_visual
 
         # innermodelviewer
         component['innermodelviewer'] = False
