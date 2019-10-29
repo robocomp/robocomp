@@ -408,6 +408,17 @@ class TheThing(QtGui.QDialog):
 		self.requests = self.requests | set([itsconfig.alias])
 		self.clearFocus()
 
+
+	# Queues the user request to turn on a component
+	def up_by_name(self, name):
+		for idx in range(self.ui.checkList.count()):
+			if self.ui.checkList.item(idx).text() == name:
+				self.ui.checkList.setCurrentRow(idx)
+				self.selectCheck()
+				self.up()
+				break
+
+
 	# Queues the user request to turn off a component
 	def down(self):
 		self.bg_exec(str(self.ui.downEdit.text()), self.ui.wdEdit.text())
@@ -924,6 +935,8 @@ if __name__ == '__main__':
 
 	if len(sys.argv) > 1:
 		window.openFile(sys.argv[1])
+	if len(sys.argv) > 2:
+		window.up_by_name(sys.argv[2])
 	ret = -1
 
 	try:
