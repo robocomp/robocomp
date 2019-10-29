@@ -108,7 +108,7 @@ if (sm is not None and sm['machine']['default'] is True) or component['statemach
 	cog.outl("<TABHERE><TABHERE>#<TABHERE>self.differentialrobot_proxy.setSpeedBase(100, 0)")
 	cog.outl("<TABHERE><TABHERE>#except Ice.Exception as e:")
 	cog.outl("<TABHERE><TABHERE>#<TABHERE>traceback.print_exc()")
-	cog.outl("<TABHERE><TABHERE>#<TABHERE>print e")
+	cog.outl("<TABHERE><TABHERE>#<TABHERE>print(e)")
 	cog.outl("")
 	cog.outl("<TABHERE><TABHERE># The API of python-innermodel is not exactly the same as the C++ version")
 	cog.outl("<TABHERE><TABHERE># self.innermodel.updateTransformValues('head_rot_tilt_pose', 0, 0, 0, 1.3, 0, 0)")

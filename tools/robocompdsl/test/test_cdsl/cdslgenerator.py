@@ -52,7 +52,7 @@ ROBOCOMP = ''
 try:
     ROBOCOMP = os.environ['ROBOCOMP']
 except KeyError:
-    print '$ROBOCOMP environment variable not set, using the default value /opt/robocomp'
+    print('$ROBOCOMP environment variable not set, using the default value /opt/robocomp')
     ROBOCOMP = '/opt/robocomp'
 IDSL_DIR = os.path.join(ROBOCOMP, 'interfaces', 'IDSLs')
 
