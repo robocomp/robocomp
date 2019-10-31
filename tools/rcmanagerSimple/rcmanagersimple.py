@@ -29,6 +29,7 @@
 #
 # CODE BEGINS
 #
+import argparse
 import sys, time, traceback, os, math, random, threading, time
 import Ice
 
@@ -931,18 +932,27 @@ class GraphView(QtGui.QWidget):
 if __name__ == '__main__':
 	app = QtGui.QApplication(sys.argv)
 	window = TheThing()
-	window.show()
+	parser = argparse.ArgumentParser()
 
-	if len(sys.argv) > 1:
-		window.openFile(sys.argv[1])
-	if len(sys.argv) > 2:
-		window.up_by_name(sys.argv[2])
+	parser.add_argument('input_file')
+	parser.add_argument('-u', "--up", dest='up')
+	parser.add_argument('--hide', action='store_true')
+
+	args = parser.parse_args()
+
+	if args.input_file:
+		window.openFile(args.input_file)
+	else:
+		print('input file needed to start rcmanager')
+	if args.up:
+		window.up_by_name(args.up)
 	ret = -1
-
+	if not args.hide:
+		window.show()
 	try:
 		ret = app.exec_()
 	except:
-		print 'Some error happened.'
+		print('Some error happened.')
 
 	sys.exit()
 
