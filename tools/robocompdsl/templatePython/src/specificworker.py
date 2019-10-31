@@ -127,6 +127,18 @@ if sm is not None:
 
 	# Generate code for the methods of the StateMachine.
 	if sm['machine']['contents']['initialstate'] is not None:
+
+        #TODO: code to
+        # if sm['machine']['contents']['transitions'] is not None:
+        #     for transi in sm['machine']['contents']['transitions']:
+        #             if sm['machine']['contents']['initialstate'] == trasi["src"]
+        #                 codsignals += "<TABHERE>#<TABHERE>%s >>> %s" % ( transi['src'], sm['machine']['contents']['initialstate'])
+        # if sm['machine']['contents']['transitions'] is not None:
+        #     for transi in sm['machine']['contents']['transitions']:
+        #         for dest in transi['dests']:
+        #             if  sm['machine']['contents']['initialstate'] == dest
+        #                 codsignals += "<TABHERE>#<TABHERE>%s <<< %s"%(sm['machine']['contents']['initialstate'], transi['src'])
+
 		if sm['machine']['default']:
 			codVirtuals += "<TABHERE>#\n<TABHERE># sm_" + sm['machine']['contents']['initialstate'] + "\n<TABHERE>#\n<TABHERE>@QtCore.Slot()\n<TABHERE>def sm_" + sm['machine']['contents']['initialstate'] + "(self):\n<TABHERE><TABHERE>print(\"Entered state " + sm['machine']['contents']['initialstate'] + "\")\n<TABHERE><TABHERE>self.t_initialize_to_compute.emit()\n<TABHERE><TABHERE>pass\n\n"
 		else:
@@ -146,6 +158,7 @@ if sm is not None:
 	# Generate code for the methods of the StateMachine transitions for substates.
 	if sm['substates'] is not None:
 		for substates in sm['substates']:
+            #TODO: Add commented header with the parent of this methods.
 			if substates['contents']['initialstate'] is not None:
 				codVirtuals += "<TABHERE>#\n<TABHERE># sm_" + substates['contents']['initialstate'] + "\n<TABHERE>#\n<TABHERE>@QtCore.Slot()\n<TABHERE>def sm_" + substates['contents']['initialstate'] + "(self):\n<TABHERE><TABHERE>print(\"Entered state " + substates['contents']['initialstate'] + "\")\n<TABHERE><TABHERE>pass\n\n"
 			if substates['contents']['states'] is not None:
