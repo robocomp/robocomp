@@ -40,8 +40,8 @@ MACRO( WRAP_PYTHON_UI )
   FOREACH( input_file ${ARGN} )
     ADD_CUSTOM_COMMAND (
       OUTPUT src/ui_${input_file}.py
-      COMMAND pyside2-uic src/${input_file}.ui -o src/ui_${input_file}.py
-      DEPENDS src/${input_file}.ui
+      COMMAND pyside2-uic ${CMAKE_CURRENT_SOURCE_DIR}/src/${input_file}.ui -o ${CMAKE_CURRENT_SOURCE_DIR}/src/ui_${input_file}.py
+      DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/${input_file}.ui
       COMMENT "Generating src/ui_${input_file}.py from src/${input_file}.ui"
     )
     ADD_CUSTOM_TARGET(ui_${input_file} ALL DEPENDS src/ui_${input_file}.py )
