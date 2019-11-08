@@ -22,8 +22,8 @@ module RoboCompAGMExecutive
 		void structuralChangeProposal (RoboCompAGMWorldModel::World w, string sender, string log) throws Locked,OldModel,InvalidChange;
 		void symbolUpdate (RoboCompAGMWorldModel::Node n);
 		void symbolsUpdate (RoboCompAGMWorldModel::NodeSequence ns);
-		void edgeUpdated (RoboCompAGMWorldModel::Edge e);
-		void edgesUpdated (RoboCompAGMWorldModel::EdgeSequence es);
+		void edgeUpdate (RoboCompAGMWorldModel::Edge e);
+		void edgesUpdate (RoboCompAGMWorldModel::EdgeSequence es);
 		void setMission (string path);
 		RoboCompAGMWorldModel::World getModel ();
 		RoboCompAGMWorldModel::Node getNode (int identifier);
