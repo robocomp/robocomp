@@ -76,6 +76,8 @@ if component['gui'] is not None:
 if sm is not None:
 	cog.outl("#include <QStateMachine>")
 	cog.outl("#include <QState>")
+	if component['statemachine_visual']:
+	    cog.outl("#include \"statemachinewidget/qstateMachineWrapper.h\"")
 ]]]
 [[[end]]]
 #include <CommonBehavior.h>
@@ -491,7 +493,10 @@ if sm is not None:
     codQState = ""
     codQStateMachine = ""
     lsstates = ""
-    codQStateMachine = "<TABHERE>QStateMachine " + sm['machine']['name'] + ";\n"
+    if  not component['statemachine_visual']:
+        codQStateMachine = "<TABHERE>QStateMachine " + sm['machine']['name'] + ";\n"
+    else:
+        codQStateMachine = "<TABHERE>QStateMachineWrapper " + sm['machine']['name'] + ";\n"
     if sm['machine']['contents']['states'] is not None:
         for state in sm['machine']['contents']['states']:
             aux = "<TABHERE>QState *" + state + "State = new QState();\n"
