@@ -15,7 +15,7 @@ QStateMachineWrapper::~QStateMachineWrapper()
 {
 }
 
-QState* QStateMachineWrapper::addState(QString id, QState *parent, ChildMode childMode)
+QState* QStateMachineWrapper::addState(QString id, ChildMode childMode, QState *parent)
 {
 	QState *state;
 	if (parent != NULL)

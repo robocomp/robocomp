@@ -499,59 +499,57 @@ if sm is not None:
         codQStateMachine = "<TABHERE>QStateMachineWrapper " + sm['machine']['name'] + ";\n"
     if sm['machine']['contents']['states'] is not None:
         for state in sm['machine']['contents']['states']:
-            aux = "<TABHERE>QState *" + state + "State = new QState();\n"
+            aux = "<TABHERE>QState *" + state + "State;\n"
             lsstates += state +","
             if sm['substates'] is not None:
                 for substates in sm['substates']:
                     if state == substates['parent']:
                         if substates['parallel'] is "parallel":
-                            aux = "<TABHERE>QState *" + state + "State = new QState(QState::ParallelStates);\n"
+                            aux = "<TABHERE>QState *" + state + "State;\n"
                             break
             codQState += aux
     if sm['machine']['contents']['initialstate'] is not None:
         state = sm['machine']['contents']['initialstate']
-        aux = "<TABHERE>QState *" + state + "State = new QState();\n"
+        aux = "<TABHERE>QState *" + state + "State;\n"
         lsstates += state +","
         if sm['substates'] is not None:
             for substates in sm['substates']:
                 if state == substates['parent']:
                     if substates['parallel'] is "parallel":
-                        aux = "<TABHERE>QState *" + state + "State = new QState(QState::ParallelStates);\n"
+                        aux = "<TABHERE>QState *" + state + "State;\n"
                         break
         codQState += aux
 
 
     if sm['machine']['contents']['finalstate'] is not None:
         state = sm['machine']['contents']['finalstate']
-        codQState +="<TABHERE>QFinalState *" + state + "State = new QFinalState();\n"
+        codQState +="<TABHERE>QFinalState *" + state + "State;\n"
         lsstates += state +","
 
     if sm['substates'] is not None:
         for substates in sm['substates']:
             if substates['contents']['states'] is not None:
                 for state in substates['contents']['states']:
-                    aux = "<TABHERE>QState *" + state + "State = new QState(" + substates['parent'] +"State);\n"
+                    aux = "<TABHERE>QState *" + state + "State;\n"
                     lsstates += state +","
                     for sub in sm['substates']:
                         if state == sub['parent']:
                             if sub['parallel'] is "parallel":
-                                aux = "<TABHERE>QState *" + state + "State = new QState(QState::ParallelStates, " + substates['parent'] +"State);\n"
+                                aux = "<TABHERE>QState *" + state + "State;\n"
                                 break
                     codQState += aux
             if substates['contents']['initialstate'] is not None:
-                aux = "<TABHERE>QState *" + substates['contents']['initialstate'] + "State = new QState(" + substates['parent'] + "State);\n"
+                aux = "<TABHERE>QState *" + substates['contents']['initialstate'] + "State;\n"
                 lsstates += state +","
                 for sub in sm['substates']:
                     if state == sub['parent']:
                         if sub['parallel'] is "parallel":
-                            aux = "<TABHERE>QState *" + state + "State = new QState(QState::ParallelStates, " + substates['parent'] + "State);\n"
+                            aux = "<TABHERE>QState *" + state + "State;\n"
                             break
                 codQState += aux
             if substates['contents']['finalstate'] is not None:
-                codQState += "<TABHERE>QFinalState *" + substates['contents']['finalstate'] + "State = new QFinalState(" +substates['parent'] + "State);\n"
+                codQState += "<TABHERE>QFinalState *" + substates['contents']['finalstate'] + "State;\n"
                 lsstates += state +","
-
-
 
     cog.outl("//State Machine")
     cog.outl(codQStateMachine)

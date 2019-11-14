@@ -17,7 +17,7 @@ public:
 	void resize(QSize s) { widget->resize(s); }
 	
 	
-	QState *addState(QString id, QState *parent=0, ChildMode childMode=QState::ExclusiveStates);
+	QState *addState(QString id, ChildMode childMode=QState::ExclusiveStates, QState *parent=0);
 	QFinalState *addFinalState(QString id, QState *parent=0);
 	
 	QSignalTransition* addTransition(QAbstractState *source,QObject *sender,const char *signal,QAbstractState *target,EdgeType t = Normal);
