@@ -83,32 +83,104 @@ if sm is not None:
     codConnect = ""
     codsetInitialState = ""
     states = ""
+
+    if sm['machine']['contents']['states'] is not None:
+        for state in sm['machine']['contents']['states']:
+            childMode = "QState::ExclusiveStates"
+            if sm['substates'] is not None:
+                for substates in sm['substates']:
+                    if state == substates['parent']:
+                        if substates['parallel'] is "parallel":
+                            childMode = "QState::ParallelStates"
+                            break
+            if not component['statemachine_visual']:
+                codaddState += "<TABHERE>" + state + "State = new QState(" + childMode + ");\n"
+                codaddState += "<TABHERE>" + sm['machine']['name'] +  ".addState(" + state + "State);\n"
+            else:
+                codaddState += "<TABHERE>" + state +"State = " + sm['machine']['name'] + ".addState(\"" + state + "\"," + childMode +");\n"
+
+            codConnect += "<TABHERE>QObject::connect(" + state + "State, SIGNAL(entered()), this, SLOT(sm_" + state + "()));\n"
+            states += state + ","
+
+    if sm['machine']['contents']['initialstate'] is not None:
+        state = sm['machine']['contents']['initialstate']
+        childMode = "QState::ExclusiveStates"
+        if sm['substates'] is not None:
+            for substates in sm['substates']:
+                if state == substates['parent']:
+                    if substates['parallel'] is "parallel":
+                        childMode = "QState::ParallelStates"
+                        break
+        if not component['statemachine_visual']:
+            codaddState += "<TABHERE>" + state + "State = new QState(" + childMode + ");\n"
+            codaddState += "<TABHERE>" + sm['machine']['name'] +  ".addState(" + state + "State);\n"
+        else:
+            codaddState += "<TABHERE>" + state +"State = " + sm['machine']['name'] + ".addState(\"" + state + "\"," + childMode +");\n"
+        codsetInitialState += "<TABHERE>" + sm['machine']['name'] +  ".setInitialState(" + state +"State);\n"
+        codConnect += "<TABHERE>QObject::connect(" + state + "State, SIGNAL(entered()), this, SLOT(sm_" + state + "()));\n"
+        states += state + ","
+
+    if sm['machine']['contents']['finalstate'] is not None:
+        state = sm['machine']['contents']['finalstate']
+        if not component['statemachine_visual']:
+            codaddState += "<TABHERE>" + state + "State = new QFinalState();\n"
+            codaddState += "<TABHERE>" + sm['machine']['name'] +  ".addState(" + state + "State);\n"
+        else:
+            codaddState += "<TABHERE>" + state +"State = " + sm['machine']['name'] + ".addFinalState(\"" + state + "\");\n"
+        codConnect += "<TABHERE>QObject::connect(" + state + "State, SIGNAL(entered()), this, SLOT(sm_" + state + "()));\n"
+        states += state + ","
+
+    if sm['substates'] is not None:
+        for substates in sm['substates']:
+            childMode = "QState::ExclusiveStates"
+            if substates['contents']['states'] is not None:
+                for state in substates['contents']['states']:
+                    for sub in sm['substates']:
+                        if state == sub['parent']:
+                            if sub['parallel'] is "parallel":
+                                childMode = "QState::ParallelStates"
+                                break
+                    if not component['statemachine_visual']:
+                        codaddState += "<TABHERE>" + state + "State = new QState(" + childMode + ", " + substates['parent'] +"State);\n"
+                        codaddState += "<TABHERE>" + sm['machine']['name'] +  ".addState(" + state + "State);\n"
+                    else:
+                        codaddState += "<TABHERE>" + state +"State = " + sm['machine']['name'] + ".addState(\"" + state + "\", " + childMode + ", " + substates['parent'] +"State);\n"
+
+            if substates['contents']['initialstate'] is not None:
+                childMode = "QState::ExclusiveStates"
+                for sub in sm['substates']:
+                    if substates['contents']['initialstate'] == sub['parent']:
+                        if sub['parallel'] is "parallel":
+                            childMode = "QState::ParallelStates"
+                            break
+                if not component['statemachine_visual']:
+                    codaddState += "<TABHERE>" + substates['contents']['initialstate'] + "State = new QState(" + childMode + ", " + substates['parent'] +"State);\n"
+                    codaddState += "<TABHERE>" + sm['machine']['name'] +  ".addState(" + state + "State);\n"
+                else:
+                    codaddState += "<TABHERE>" + substates['contents']['initialstate'] +"State = " + sm['machine']['name'] + ".addState(\"" + state + "\", " + childMode + ", " + substates['parent'] +"State);\n"
+
+            if substates['contents']['finalstate'] is not None:
+                if not component['statemachine_visual']:
+                    codaddState += "<TABHERE>" + substates['contents']['finalstate'] + "State = new QFinalState(" +substates['parent'] + "State);\n"
+                else:
+                    codaddState += "<TABHERE>" + substates['contents']['finalstate'] +"State = " + sm['machine']['name'] + ".addFinalState(\"" + state + "\");\n"
+
     if sm['machine']['contents']['transitions'] is not None:
         for transi in sm['machine']['contents']['transitions']:
             for dest in transi['dests']:
-                codaddTransition += "<TABHERE>" + transi['src'] + "State->addTransition(" + "this, SIGNAL(t_"+transi['src'] + "_to_" + dest+"()), " + dest + "State);\n"
+                if not component['statemachine_visual']:
+                    codaddTransition += "<TABHERE>" + transi['src'] + "State->addTransition(" + "this, SIGNAL(t_"+transi['src'] + "_to_" + dest+"()), " + dest + "State);\n"
+                else:
+                    codaddTransition += "<TABHERE>" +  sm['machine']['name'] + ".addTransition(" +  transi['src'] + "State, this, SIGNAL(t_"+transi['src'] + "_to_" + dest+"()), " + dest + "State);\n"
     if sm['substates'] is not None:
         for substates in sm['substates']:
             if substates['contents']['transitions'] is not None:
                 for transi in substates['contents']['transitions']:
                     for dest in transi['dests']:
-                        codaddTransition += "<TABHERE>" + transi['src'] + "State->addTransition(" + "this, SIGNAL(t_"+transi['src'] + "_to_" + dest+"()), " + dest + "State);\n"
-    if sm['machine']['contents']['states'] is not None:
-        for state in sm['machine']['contents']['states']:
-            codaddState += "<TABHERE>" + sm['machine']['name'] +  ".addState(" + state + "State);\n"
-            codConnect += "<TABHERE>QObject::connect(" + state + "State, SIGNAL(entered()), this, SLOT(sm_" + state + "()));\n"
-            states += state + ","
-    if sm['machine']['contents']['initialstate'] is not None:
-        state = sm['machine']['contents']['initialstate']
-        codaddState += "<TABHERE>" + sm['machine']['name'] +  ".addState(" + state + "State);\n"
-        codsetInitialState += "<TABHERE>" + sm['machine']['name'] +  ".setInitialState(" + state +"State);\n"
-        codConnect += "<TABHERE>QObject::connect(" + state + "State, SIGNAL(entered()), this, SLOT(sm_" + state + "()));\n"
-        states += state + ","
-    if sm['machine']['contents']['finalstate'] is not None:
-        state = sm['machine']['contents']['finalstate']
-        codaddState += "<TABHERE>" + sm['machine']['name'] +  ".addState(" + state + "State);\n"
-        codConnect += "<TABHERE>QObject::connect(" + state + "State, SIGNAL(entered()), this, SLOT(sm_" + state + "()));\n"
-        states += state + ","
+                        if not component['statemachine_visual']:
+                            codaddTransition += "<TABHERE>" + transi['src'] + "State->addTransition(" + "this, SIGNAL(t_"+transi['src'] + "_to_" + dest+"()), " + dest + "State);\n"
+                        else:
+                            codaddTransition += "<TABHERE>" +  sm['machine']['name'] + ".addTransition(" +  transi['src'] + "State, this, SIGNAL(t_"+transi['src'] + "_to_" + dest+"()), " + dest + "State);\n"
 
     if sm['substates'] is not None:
         for substates in sm['substates']:
@@ -128,9 +200,9 @@ if sm is not None:
     if sm['machine']['default']:
         codConnect += "<TABHERE>QObject::connect(&timer, SIGNAL(timeout()), this, SIGNAL(t_compute_to_compute()));\n"
     cog.outl("//Initialization State machine")
-    cog.outl(codaddTransition)
     cog.outl(codaddState)
     cog.outl(codsetInitialState)
+    cog.outl(codaddTransition)
     cog.outl(codConnect)
     cog.outl("//------------------")	
 ]]]

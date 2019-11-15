@@ -83,7 +83,11 @@ for subscribe in component['subscribesTo']:
 	if communicationIsIce(subscribe):
 		cog.outl('<S2>' + subs.lower() + 'I.cpp')
 
-
+if  component['statemachine_visual']:
+    cog.outl("  $ENV{ROBOCOMP}/classes/statemachinewidget/edge.cpp")
+    cog.outl("  $ENV{ROBOCOMP}/classes/statemachinewidget/node.cpp")
+    cog.outl("  $ENV{ROBOCOMP}/classes/statemachinewidget/graphwidget.cpp")
+    cog.outl("  $ENV{ROBOCOMP}/classes/statemachinewidget/qstateMachineWrapper.cpp")
 ]]]
 [[[end]]]
 )
