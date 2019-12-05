@@ -32,6 +32,7 @@ module RoboCompHumanTrackerJointsAndRGB
 	dictionary <int, TPerson> PersonList;
 	struct MixedJointsRGB
 	{
+         int cameraID;
 		 long timeStamp;
 		 PersonList persons;
 		 TImage rgbImage;
