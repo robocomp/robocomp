@@ -25,11 +25,11 @@ def SPACE(i=0):
 	cog.out('<S'+s+'>')
 
 
-from parseCDSL import *
-
+from dsl_parsers.dsl_factory import DSLFactory
+from dsl_parsers.parsing_utils import communicationIsIce
 
 includeDirectories = theIDSLPaths.split('#')
-component = CDSLParsing.fromFile(theCDSL, includeDirectories=includeDirectories)
+component = DSLFactory().from_file(theCDSL, include_directories=includeDirectories)
 
 ]]]
 [[[end]]]
@@ -83,7 +83,11 @@ for subscribe in component['subscribesTo']:
 	if communicationIsIce(subscribe):
 		cog.outl('<S2>' + subs.lower() + 'I.cpp')
 
-
+if  component['statemachine_visual']:
+    cog.outl("  $ENV{ROBOCOMP}/classes/statemachinewidget/edge.cpp")
+    cog.outl("  $ENV{ROBOCOMP}/classes/statemachinewidget/node.cpp")
+    cog.outl("  $ENV{ROBOCOMP}/classes/statemachinewidget/graphwidget.cpp")
+    cog.outl("  $ENV{ROBOCOMP}/classes/statemachinewidget/qstateMachineWrapper.cpp")
 ]]]
 [[[end]]]
 )

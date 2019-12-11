@@ -1,8 +1,11 @@
+from collections import OrderedDict
+from operator import attrgetter
+
 from pyparsing import Suppress, Word, alphas, alphanums, Group, \
     OneOrMore, ZeroOrMore, Optional, cppStyleComment, Literal, CharsNotIn
 
 from dsl_parsers.dsl_parser_abstract import DSLParserTemplate
-from dsl_parsers.parsing_utils import gimmeIDSL
+from dsl_parsers.parsing_utils import gimmeIDSL, generateRecursiveImports
 
 
 class IDSLParser(DSLParserTemplate):
@@ -67,35 +70,33 @@ class IDSLParser(DSLParserTemplate):
 
     def string_to_struct(self, string, **kwargs):
         parsing_result = self.parse_string(string)
-        result_dict = {}
+        result_dict = OrderedDict()
 
         # Hack to make robocompdsl work with pyparsing > 2.2
         try:
-            result_dict['name'] = parsing_result['result_dict']['name']
+            result_dict['name'] = parsing_result['module']['name']
         except:
             result_dict['name'] = parsing_result['name']
 
         result_dict['imports'] = ''
+        result_dict['recursive_imports'] = ''
         if 'imports' in parsing_result:
             # print result_dict['name'], parsing_result['imports']
-            for imp in parsing_result['imports']:
-                # print 'proc', imp
-                # print 'has', IDSLParsing.gimmeIDSL(imp)['imports']
-                # print ''
-                result_dict['imports'] += imp + '#' + gimmeIDSL(imp)['imports']
+            result_dict['imports'] = '#'.join(parsing_result['imports'])
+            result_dict['recursive_imports'] = '#'.join(generateRecursiveImports(parsing_result['imports']))
         # INTERFACES DEFINED IN THE MODULE
         result_dict['interfaces'] = []
 
         # Hack to make robocompdsl work with pyparsing > 2.2
         try:
-            contents = parsing_result['result_dict']['contents']
+            contents = parsing_result['module']['contents']
         except:
             contents = parsing_result['contents']
 
         for contentDef in contents:
             if contentDef[0] == 'interface':
-                interface = {'name': contentDef[1], 'methods': {}}
-                for method in contentDef[2]:
+                interface = {'name': contentDef[1], 'methods': OrderedDict()}
+                for method in sorted(contentDef['methods'], key=attrgetter('name')):
                     interface['methods'][method['name']] = {}
 
                     interface['methods'][method['name']]['name'] = method['name']
@@ -118,7 +119,7 @@ class IDSLParser(DSLParserTemplate):
                     interface['methods'][method['name']]['params'] = params
 
                     try:
-                        interface['methods'][method['name']]['throws'] = method['decorator']
+                        interface['methods'][method['name']]['throws'] = method['raise']
                     except:
                         interface['methods'][method['name']]['throws'] = 'nothing'
                 result_dict['interfaces'].append(interface)
@@ -128,17 +129,19 @@ class IDSLParser(DSLParserTemplate):
         for contentDef in contents:
             # print contentDef[0]
             if contentDef[0] in ['enum', 'struct', 'exception']:
-                typedef = {'name': contentDef[1], 'type': contentDef[0]}
+                # typedef = {'name': contentDef[1], 'type': contentDef[0]}
+                typedef = contentDef.asDict()
+
                 # print typedef
                 result_dict['types'].append(typedef)
             elif contentDef[0] in ['sequence', 'dictionary']:
-                typedef = {'name': contentDef[-1], 'type': contentDef[0]}
+                typedef = contentDef.asDict()
                 # print typedef
                 result_dict['types'].append(typedef)
             elif contentDef[0] in ['interface']:
                 pass
             else:
-                print(('Unknown result_dict content', contentDef))
+                print(('Unknown module content', contentDef))
         # SEQUENCES DEFINED IN THE MODULE
         result_dict['sequences'] = []
         result_dict['simpleSequences'] = []

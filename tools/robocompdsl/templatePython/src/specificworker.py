@@ -13,16 +13,17 @@ def Z():
 def TAB():
 	cog.out('<TABHERE>')
 
-from parseCDSL import *
-from parseSMDSL import *
+from dsl_parsers.dsl_factory import DSLFactory
+from dsl_parsers.parsing_utils import getNameNumber, gimmeIDSL, communicationIsIce, IDSLPool
+
 includeDirectories = theIDSLPaths.split('#')
-component = CDSLParsing.fromFile(theCDSL, includeDirectories=includeDirectories)
-sm = SMDSLparsing.fromFile(component['statemachine'])
+component = DSLFactory().from_file(theCDSL, include_directories=includeDirectories)
+sm = DSLFactory().from_file(component['statemachine'])
 if component == None:
 	print('Can\'t locate', theCDSLs)
 	sys.exit(1)
 
-from parseIDSL import *
+
 pool = IDSLPool(theIDSLs, includeDirectories)
 
 def replaceTypeCPP2Python(t):
@@ -107,7 +108,7 @@ if (sm is not None and sm['machine']['default'] is True) or component['statemach
 	cog.outl("<TABHERE><TABHERE>#<TABHERE>self.differentialrobot_proxy.setSpeedBase(100, 0)")
 	cog.outl("<TABHERE><TABHERE>#except Ice.Exception as e:")
 	cog.outl("<TABHERE><TABHERE>#<TABHERE>traceback.print_exc()")
-	cog.outl("<TABHERE><TABHERE>#<TABHERE>print e")
+	cog.outl("<TABHERE><TABHERE>#<TABHERE>print(e)")
 	cog.outl("")
 	cog.outl("<TABHERE><TABHERE># The API of python-innermodel is not exactly the same as the C++ version")
 	cog.outl("<TABHERE><TABHERE># self.innermodel.updateTransformValues('head_rot_tilt_pose', 0, 0, 0, 1.3, 0, 0)")
@@ -126,6 +127,18 @@ if sm is not None:
 
 	# Generate code for the methods of the StateMachine.
 	if sm['machine']['contents']['initialstate'] is not None:
+
+        #TODO: code to
+        # if sm['machine']['contents']['transitions'] is not None:
+        #     for transi in sm['machine']['contents']['transitions']:
+        #             if sm['machine']['contents']['initialstate'] == trasi["src"]
+        #                 codsignals += "<TABHERE>#<TABHERE>%s >>> %s" % ( transi['src'], sm['machine']['contents']['initialstate'])
+        # if sm['machine']['contents']['transitions'] is not None:
+        #     for transi in sm['machine']['contents']['transitions']:
+        #         for dest in transi['dests']:
+        #             if  sm['machine']['contents']['initialstate'] == dest
+        #                 codsignals += "<TABHERE>#<TABHERE>%s <<< %s"%(sm['machine']['contents']['initialstate'], transi['src'])
+
 		if sm['machine']['default']:
 			codVirtuals += "<TABHERE>#\n<TABHERE># sm_" + sm['machine']['contents']['initialstate'] + "\n<TABHERE>#\n<TABHERE>@QtCore.Slot()\n<TABHERE>def sm_" + sm['machine']['contents']['initialstate'] + "(self):\n<TABHERE><TABHERE>print(\"Entered state " + sm['machine']['contents']['initialstate'] + "\")\n<TABHERE><TABHERE>self.t_initialize_to_compute.emit()\n<TABHERE><TABHERE>pass\n\n"
 		else:
@@ -145,6 +158,7 @@ if sm is not None:
 	# Generate code for the methods of the StateMachine transitions for substates.
 	if sm['substates'] is not None:
 		for substates in sm['substates']:
+            #TODO: Add commented header with the parent of this methods.
 			if substates['contents']['initialstate'] is not None:
 				codVirtuals += "<TABHERE>#\n<TABHERE># sm_" + substates['contents']['initialstate'] + "\n<TABHERE>#\n<TABHERE>@QtCore.Slot()\n<TABHERE>def sm_" + substates['contents']['initialstate'] + "(self):\n<TABHERE><TABHERE>print(\"Entered state " + substates['contents']['initialstate'] + "\")\n<TABHERE><TABHERE>pass\n\n"
 			if substates['contents']['states'] is not None:

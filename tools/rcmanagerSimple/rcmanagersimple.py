@@ -29,6 +29,7 @@
 #
 # CODE BEGINS
 #
+import argparse
 import sys, time, traceback, os, math, random, threading, time
 import Ice
 
@@ -407,6 +408,17 @@ class TheThing(QtGui.QDialog):
 		itsconfig = self.compConfig[self.ui.checkList.currentRow()]
 		self.requests = self.requests | set([itsconfig.alias])
 		self.clearFocus()
+
+
+	# Queues the user request to turn on a component
+	def up_by_name(self, name):
+		for idx in range(self.ui.checkList.count()):
+			if self.ui.checkList.item(idx).text() == name:
+				self.ui.checkList.setCurrentRow(idx)
+				self.selectCheck()
+				self.up()
+				break
+
 
 	# Queues the user request to turn off a component
 	def down(self):
@@ -920,16 +932,27 @@ class GraphView(QtGui.QWidget):
 if __name__ == '__main__':
 	app = QtGui.QApplication(sys.argv)
 	window = TheThing()
-	window.show()
+	parser = argparse.ArgumentParser()
 
-	if len(sys.argv) > 1:
-		window.openFile(sys.argv[1])
+	parser.add_argument('input_file')
+	parser.add_argument('-u', "--up", dest='up')
+	parser.add_argument('--hide', action='store_true')
+
+	args = parser.parse_args()
+
+	if args.input_file:
+		window.openFile(args.input_file)
+	else:
+		print('input file needed to start rcmanager')
+	if args.up:
+		window.up_by_name(args.up)
 	ret = -1
-
+	if not args.hide:
+		window.show()
 	try:
 		ret = app.exec_()
 	except:
-		print 'Some error happened.'
+		print('Some error happened.')
 
 	sys.exit()
 
