@@ -26,7 +26,7 @@ def SPACE(i=0):
 
 
 from dsl_parsers.dsl_factory import DSLFactory
-from dsl_parsers.parsing_utils import communicationIsIce
+from dsl_parsers.parsing_utils import communicationIsIce, isAGM1Agent, isAGM2Agent
 
 includeDirectories = theIDSLPaths.split('#')
 component = DSLFactory().from_file(theCDSL, include_directories=includeDirectories)
@@ -123,7 +123,7 @@ cog.out(' '.join(imp))
 try:
 	options = [ x.lower() for x in component['options'] ]
 	if 'agmagent' in options:
-		cog.out(" AGMExecutive AGMWorldModel Planning AGMCommonBehavior ")
+		cog.out(" AGMExecutive AGMExecutiveTopic AGMWorldModel Planning AGMCommonBehavior ")
 	elif 'agm2agent' in options or 'agm2agentICE' in options or 'agm2agentROS' in options:
 		cog.out(" AGM2 ")
 except:
@@ -152,6 +152,7 @@ try:
 		cog.outl("ADD_DEFINITIONS( -I/usr/include/libxml2/ )")
 		cog.outl("include(/usr/local/share/cmake/FindAGM2.cmake)")
 except:
+	print("Can't check if the component is an agent")
 	pass
 
 ]]]
