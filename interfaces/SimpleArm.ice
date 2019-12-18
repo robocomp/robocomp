@@ -10,9 +10,21 @@
 #define ROBOCOMPSIMPLEARM_ICE
 module RoboCompSimpleArm
 {
+	struct Pose6D
+	{
+		 float x;
+		 float y;
+		 float z;
+		 float rx;
+		 float ry;
+		 float rz;
+	};
 	interface SimpleArm
 	{
-		void moveHandXYZ (float x, float y, float z);
+		void closeFingers (float d);
+		void moveTo (Pose6D pose);
+		void openFingers (float d);
+		void stop ();
 	};
 };
 
