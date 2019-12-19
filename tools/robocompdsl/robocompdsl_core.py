@@ -171,8 +171,7 @@ Component <CHANGETHECOMPONENTNAME>
     };
 	language Cpp//Cpp11//python;
 	gui Qt(QWidget//QDialog//QMainWindow);
-	//options agmagent;
-	//options InnerModelViewer;
+	//options agmagent, InnerModelViewer;
 	statemachine "statemachine.smdsl";
 };\n\n"""
         name = path.split('/')[-1].split('.')[0]
