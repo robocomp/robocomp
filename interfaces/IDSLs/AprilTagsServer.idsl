@@ -9,6 +9,8 @@ module RoboCompAprilTagsServer
 		float rx;
 		float ry;
 		float rz;
+		int cx;
+		int cy;
 	};
 
 	sequence<tag> tagsList;
