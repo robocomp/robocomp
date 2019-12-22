@@ -13,7 +13,6 @@ module RoboCompCameraSimple
     ImgType image;
   };
 
- 
   interface CameraSimple
   {
     idempotent void getImage(out TImage im) throws HardwareFailedException;

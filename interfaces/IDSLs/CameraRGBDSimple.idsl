@@ -1,0 +1,30 @@
+module RoboCompCameraRGBDSimple
+{
+  exception HardwareFailedException { string what; };
+
+  sequence<byte> ImgType;
+  sequence<float> DepthType;
+
+  struct TImage
+  {
+
+    int width;
+    int height;
+    int depth;
+    ImgType image;
+  };
+
+ struct TDepth
+  {
+    int width;
+    int height;
+    DepthType depth;
+  };
+ 
+  interface CameraRGBDSimple
+  {
+    idempotent void getImage(out TImage im) throws HardwareFailedException;
+    idempotent void getDepth(out TDepth dep) throws HardwareFailedException;
+    idempotent void getAll(out TImage im, out TDepth dep) throws HardwareFailedException;
+  };
+};
