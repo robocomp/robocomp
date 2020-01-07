@@ -165,6 +165,7 @@ if len(sys.argv) < 3:
 		sys.exit(0)
 	else: correct = False
 if not correct:
+	print "INVALID file extension given. Ensure that it ends with '.cdsl' or '.idsl'"
 	print 'Usage:'
 	print '\ta) to generate code from a CDSL file:     '+sys.argv[0].split('/')[-1]+'   INPUT_FILE.CDSL   OUTPUT_DIRECTORY'
 	print '\tb) to generate a new CDSL file:           '+sys.argv[0].split('/')[-1]+'   NEW_COMPONENT_DESCRIPTOR.CDSL'
