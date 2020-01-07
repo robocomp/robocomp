@@ -204,9 +204,9 @@ for imp in lst:
 				cog.outl('<TABHERE># ' + method['name'])
 				cog.outl('<TABHERE>#')
 				if not communicationIsIce(imp):
-					cog.outl('<TABHERE>def ROS' + method['name'] + '(self' + paramStrA + "):")
+					cog.outl('<TABHERE>def ROS' + interface['name'] + "_" + method['name'] + '(self' + paramStrA + "):")
 				else:
-					cog.outl('<TABHERE>def ' + method['name'] + '(self' + paramStrA + "):")
+					cog.outl('<TABHERE>def ' + interface['name'] + "_" + method['name'] + '(self' + paramStrA + "):")
 				if method['return'] != 'void': cog.outl("<TABHERE><TABHERE>ret = "+method['return']+'()')
 				cog.outl("<TABHERE><TABHERE>#")
 				cog.outl("<TABHERE><TABHERE>#subscribesToCODE")
@@ -246,7 +246,7 @@ if component['implements']:
 				if interface['name'] == im:
 					for mname in interface['methods']:
 						method = interface['methods'][mname]
-						cog.outl('<TABHERE>def ROS' + method['name'] + "(self, req):")
+						cog.outl('<TABHERE>def ROS' + interface['name'] + "_" + method['name'] + "(self, req):")
 						cog.outl("<TABHERE><TABHERE>#")
 						cog.outl("<TABHERE><TABHERE># implementCODE")
 						cog.outl("<TABHERE><TABHERE># Example ret = req.a + req.b")
@@ -271,7 +271,7 @@ if component['implements']:
 						cog.outl('<TABHERE>#')
 						cog.outl('<TABHERE># ' + method['name'])
 						cog.outl('<TABHERE>#')
-						cog.outl('<TABHERE>def ' + method['name'] + '(self' + paramStrA + "):")
+						cog.outl('<TABHERE>def ' + interface['name'] + "_" + method['name'] + '(self' + paramStrA + "):")
 						if method['return'] != 'void': cog.outl("<TABHERE><TABHERE>ret = "+method['return']+'()')
 						cog.outl("<TABHERE><TABHERE>#")
 						cog.outl("<TABHERE><TABHERE># implementCODE")

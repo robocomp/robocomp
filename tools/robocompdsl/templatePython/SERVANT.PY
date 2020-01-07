@@ -80,27 +80,21 @@ except:
 	pass
 
 [[[cog
-for incl1 in theIDSLs.strip().split('#'):
-	incl = incl1.split('.')[0]
-	if len(incl) == 0:
-		continue
-	# print('SERVANT <'+incl+'>')
-	cog.outl('ice_'+incl+' = False')
-	cog.outl('for p in icePaths:')
-	cog.outl('<TABHERE>print(\'Trying\', p, \'to load ' + incl + '.ice\')')
-	cog.outl('<TABHERE>if os.path.isfile(p+\'/'+incl+'.ice\'):')
-	cog.outl('<TABHERE><TABHERE>print(\'Using\', p, \'to load '+incl+'.ice\')')
-	cog.outl('<TABHERE><TABHERE>preStr = "-I/opt/robocomp/interfaces/ -I"+ROBOCOMP+"/interfaces/ " + additionalPathStr + " --all "+p+\'/\'')
-	cog.outl('<TABHERE><TABHERE>wholeStr = preStr+"'+incl+'.ice"')
-	cog.outl('<TABHERE><TABHERE>Ice.loadSlice(wholeStr)')
-	cog.outl('<TABHERE><TABHERE>ice_'+incl+' = True')
-	cog.outl('<TABHERE><TABHERE>break')
-	cog.outl('if not ice_'+incl+':')
-	cog.outl("<TABHERE>print('Couldn\\\'t load "+incl+"')")
-	cog.outl('<TABHERE>sys.exit(-1)')
-	module2 = gimmeIDSL(incl+'.idsl', files='', includeDirectories=includeDirectories)
-	cog.outl('from '+ module2['name'] +' import *')
-
+cog.outl('ice_'+theInterface+' = False')
+cog.outl('for p in icePaths:')
+cog.outl('<TABHERE>print(\'Trying\', p, \'to load ' + theInterface + '.ice\')')
+cog.outl('<TABHERE>if os.path.isfile(p+\'/'+theInterface+'.ice\'):')
+cog.outl('<TABHERE><TABHERE>print(\'Using\', p, \'to load '+theInterface+'.ice\')')
+cog.outl('<TABHERE><TABHERE>preStr = "-I/opt/robocomp/interfaces/ -I"+ROBOCOMP+"/interfaces/ " + additionalPathStr + " --all "+p+\'/\'')
+cog.outl('<TABHERE><TABHERE>wholeStr = preStr+"'+theInterface+'.ice"')
+cog.outl('<TABHERE><TABHERE>Ice.loadSlice(wholeStr)')
+cog.outl('<TABHERE><TABHERE>ice_'+theInterface+' = True')
+cog.outl('<TABHERE><TABHERE>break')
+cog.outl('if not ice_'+theInterface+':')
+cog.outl("<TABHERE>print('Couldn\\\'t load "+theInterface+"')")
+cog.outl('<TABHERE>sys.exit(-1)')
+module2 = gimmeIDSL(theInterface+'.idsl', files='', includeDirectories=includeDirectories)
+cog.outl('from '+ module2['name'] +' import *')
 cog.outl('\nclass ' + theInterface+ 'I('+theInterface+'):')
 ]]]
 [[[end]]]
@@ -114,7 +108,7 @@ cog.outl('\nclass ' + theInterface+ 'I('+theInterface+'):')
 			for mname in interface['methods']:
 				method = interface['methods'][mname]
 
-				name = method['name']
+				name = interface['name'] + "_" + method['name']
 
 				paramStrA = ''
 				for p in method['params']:
