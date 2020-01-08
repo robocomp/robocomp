@@ -20,6 +20,8 @@ module RoboCompAGMExecutiveTopic
 		void symbolsUpdated (RoboCompAGMWorldModel::NodeSequence modifications);
 		void edgeUpdated (RoboCompAGMWorldModel::Edge modification);
 		void edgesUpdated (RoboCompAGMWorldModel::EdgeSequence modifications);
+		void selfEdgeAdded (int nodeid, string edgeType, RoboCompAGMWorldModel::StringDictionary attributes);
+		void selfEdgeDeleted (int nodeid, string edgeType);
 	};
 };
 
