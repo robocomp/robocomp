@@ -108,7 +108,7 @@ cog.outl('\nclass ' + theInterface+ 'I('+theInterface+'):')
 			for mname in interface['methods']:
 				method = interface['methods'][mname]
 
-				name = interface['name'] + "_" + method['name']
+				name = method['name']
 
 				paramStrA = ''
 				for p in method['params']:
@@ -123,7 +123,7 @@ cog.outl('\nclass ' + theInterface+ 'I('+theInterface+'):')
 
 
 				cog.outl('<TABHERE>def ' + name + '(self, ' + paramStrA + 'c):')
-				cog.out('<TABHERE><TABHERE>return self.worker.'+name+'(')
+				cog.out('<TABHERE><TABHERE>return self.worker.' + interface['name'] + "_" + name+'(')
 				cog.out(paramStrB)
 				cog.out(')\n')
 
