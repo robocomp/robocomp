@@ -1,0 +1,8 @@
+interfaces/CameraRGBDSimple.ice
+camerargbdsimple
+localhost
+tcp
+10178
+10
+camerargbdsimple.py
+
