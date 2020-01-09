@@ -109,6 +109,15 @@ if component['language'].lower() == "cpp11":
 ]]]
 [[[end]]]
 
+[[[cog
+	if 'agmagent' in [ x.lower() for x in component['options'] ]:
+		cog.outl('# AGM Agent\'s requirements')
+		cog.outl('find_package(LibXml2 REQUIRED)')
+		cog.outl('include_directories(LIBXML2_INCLUDE_DIRS)')
+		cog.outl('include_directories(/usr/include/libxml2/)')
+		cog.outl('SET (LIBS ${LIBS} -lagm )')
+]]]
+[[[end]]]
 
 #ROBOCOMP
 ROBOCOMP_INITIALIZE( $ENV{ROBOCOMP}/ )
@@ -123,7 +132,7 @@ cog.out(' '.join(imp))
 try:
 	options = [ x.lower() for x in component['options'] ]
 	if 'agmagent' in options:
-		cog.out(" AGMExecutive AGMWorldModel Planning AGMCommonBehavior ")
+		cog.out(" AGMExecutive AGMExecutiveTopic ")
 	elif 'agm2agent' in options or 'agm2agentICE' in options or 'agm2agentROS' in options:
 		cog.out(" AGM2 ")
 except:
