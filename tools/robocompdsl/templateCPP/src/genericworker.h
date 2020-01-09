@@ -133,6 +133,12 @@ except:
 ]]]
 [[[end]]]
 
+[[[cog
+	if 'agmagent' in [ x.lower() for x in component['options'] ]:
+		cog.out('#include <agm.h>')
+]]]
+[[[end]]]
+
 #define CHECK_PERIOD 5000
 #define BASIC_PERIOD 100
 

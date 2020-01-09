@@ -36,14 +36,22 @@ def bodyCodeFromName(name, component):
 		#######################################################
 		if name == 'symbolUpdated':
 			bodyCode = "\tQMutexLocker locker(mutex);\n\tAGMModelConverter::includeIceModificationInInternalModel(modification, worldModel);\n"
-		if name == 'symbolsUpdated':
+		elif name == 'symbolsUpdated':
 			bodyCode = "\tQMutexLocker l(mutex);\n\tfor (auto modification : modifications)\n\t\tAGMModelConverter::includeIceModificationInInternalModel(modification, worldModel);\n"
-		if name == 'edgeUpdated':
+		elif name == 'edgeUpdated':
 			bodyCode = "\tQMutexLocker locker(mutex);\n\tAGMModelConverter::includeIceModificationInInternalModel(modification, worldModel);\n\tAGMInner::updateImNodeFromEdge(worldModel, modification, innerModel.get());\n"
-		if name == 'edgesUpdated':
+		elif name == 'edgesUpdated':
 			bodyCode = "\tQMutexLocker lockIM(mutex);\n\tfor (auto modification : modifications)\n\t{\n\t\tAGMModelConverter::includeIceModificationInInternalModel(modification, worldModel);\n\t\tAGMInner::updateImNodeFromEdge(worldModel, modification, innerModel.get());\n\t}\n"
-		if name == 'structuralChange':
-			bodyCode = "<TABHERE>QMutexLocker lockIM(mutex);\n <TABHERE>AGMModelConverter::fromIceToInternal(w, worldModel);\n \n<TABHERE>innerModel = std::make_shared<InnerModel>(AGMInner::extractInnerModel(worldModel));"
+		elif name == 'structuralChange':
+			bodyCode = "\tQMutexLocker lockIM(mutex);\n <TABHERE>AGMModelConverter::fromIceToInternal(w, worldModel);\n \n<TABHERE>innerModel = std::make_shared<InnerModel>(AGMInner::extractInnerModel(worldModel));"
+			if 'innermodelviewer' in [ x.lower() for x in component['options'] ]:
+				bodyCode += "\n<TABHERE>regenerateInnerModelViewer();"
+		elif name == 'selfEdgeAdded':
+			bodyCode = "\tQMutexLocker lockIM(mutex);\n <TABHERE>try { worldModel->addEdgeByIdentifiers(nodeid, nodeid, edgeType, attributes); } catch(...){ printf(\"Couldn't add an edge. Duplicate?\\n\"); }\n \n<TABHERE>try { innerModel = std::make_shared<InnerModel>(AGMInner::extractInnerModel(worldModel)); } catch(...) { printf(\"Can't extract an InnerModel from the current model.\\n\"); }"
+			if 'innermodelviewer' in [ x.lower() for x in component['options'] ]:
+				bodyCode += "\n<TABHERE>regenerateInnerModelViewer();"
+		elif name == 'selfEdgeDeleted':
+			bodyCode = "\tQMutexLocker lockIM(mutex);\n <TABHERE>try { worldModel->removeEdgeByIdentifiers(nodeid, nodeid, edgeType); } catch(...) { printf(\"Couldn't remove an edge\\n\"); }\n \n<TABHERE>try { innerModel = std::make_shared<InnerModel>(AGMInner::extractInnerModel(worldModel)); } catch(...) { printf(\"Can't extract an InnerModel from the current model.\\n\"); }"
 			if 'innermodelviewer' in [ x.lower() for x in component['options'] ]:
 				bodyCode += "\n<TABHERE>regenerateInnerModelViewer();"
 		#######################################
@@ -192,15 +200,9 @@ if component['innermodelviewer']:
 [[[end]]]
 
 [[[cog
-if sm is not None:
-    cog.outl("<TABHERE>" + sm['machine']['name'] + ".start();")
-]]]
-[[[end]]]
-	
-
-[[[cog
 try:
 	if isAGM1Agent(component):
+		cog.outl("<TABHERE>innerModel = std::make_shared<InnerModel>(new InnerModel());")
 		cog.outl("<TABHERE>try")
 		cog.outl("<TABHERE>{")
 		cog.outl("<TABHERE><TABHERE>RoboCompAGMWorldModel::World w = agmexecutive_proxy->getModel();")
@@ -217,6 +219,13 @@ except:
 	pass
 ]]]
 [[[end]]]
+
+[[[cog
+if sm is not None:
+    cog.outl("<TABHERE>" + sm['machine']['name'] + ".start();")
+]]]
+[[[end]]]
+	
 
 	return true;
 }

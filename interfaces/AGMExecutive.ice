@@ -24,6 +24,8 @@ module RoboCompAGMExecutive
 		void symbolsUpdate (RoboCompAGMWorldModel::NodeSequence ns);
 		void edgeUpdate (RoboCompAGMWorldModel::Edge e);
 		void edgesUpdate (RoboCompAGMWorldModel::EdgeSequence es);
+		void addSelfEdge (int nodeid, string edgeType, RoboCompAGMWorldModel::StringDictionary attributes);
+		void delSelfEdge (int nodeid, string edgeType);
 		void setMission (string path);
 		RoboCompAGMWorldModel::World getModel ();
 		RoboCompAGMWorldModel::Node getNode (int identifier);

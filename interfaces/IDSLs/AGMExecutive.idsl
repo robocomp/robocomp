@@ -19,6 +19,8 @@ module RoboCompAGMExecutive
 		void symbolsUpdate(RoboCompAGMWorldModel::NodeSequence ns);
 		void edgeUpdate(RoboCompAGMWorldModel::Edge e);
 		void edgesUpdate(RoboCompAGMWorldModel::EdgeSequence es);
+		void addSelfEdge(int nodeid, string edgeType, StringDictionary attributes);
+		void delSelfEdge(int nodeid, string edgeType);
 
 		// For setting the mission
 		void setMission(string path);
