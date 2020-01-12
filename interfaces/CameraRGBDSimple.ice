@@ -28,9 +28,9 @@ module RoboCompCameraRGBDSimple
 	};
 	interface CameraRGBDSimple
 	{
-		idempotent void getAll (out TImage im, out TDepth dep) throws HardwareFailedException;
-		idempotent void getDepth (out TDepth dep) throws HardwareFailedException;
-		idempotent void getImage (out TImage im) throws HardwareFailedException;
+		void getAll (out TImage im, out TDepth dep);
+		void getDepth (out TDepth dep);
+		void getImage (out TImage im);
 	};
 };
 
