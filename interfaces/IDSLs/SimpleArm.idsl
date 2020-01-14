@@ -16,5 +16,6 @@ module RoboCompSimpleArm
 		void moveTo(Pose6D pose);
 		void stop();
 		void closeFingers(float d);
+		void home();
 	};
 };

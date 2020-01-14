@@ -22,6 +22,7 @@ module RoboCompSimpleArm
 	interface SimpleArm
 	{
 		void closeFingers (float d);
+		void home ();
 		void moveTo (Pose6D pose);
 		void openFingers (float d);
 		void stop ();
