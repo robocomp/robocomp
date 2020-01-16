@@ -233,7 +233,7 @@ void SpecificWorker::updateLasers()
 		laserDataArray.insert_or_assign(id, laserData);
 
 		// create and insert laser shape
-		if (true) // DRAW LASER
+		if (false) // DRAW LASER
 		{
 			osg::ref_ptr<osg::Node> p = nullptr;
 			if(id == "laserSecurity")
