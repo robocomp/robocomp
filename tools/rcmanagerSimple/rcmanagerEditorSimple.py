@@ -33,7 +33,7 @@ import sys, time, traceback, os
 
 import Ice
 
-from PySide import QtCore, QtGui
+from PySide2 import QtCore, QtGui, QtWidgets
 from ui_editorFormSimple import Ui_Form
 
 import rcmanagerConfigSimple
@@ -43,13 +43,13 @@ configFile = os.path.expanduser('~/.rcmanager')
 #
 # Application main class.
 #
-class rcmanagerEditorWidget(QtGui.QDialog):
+class rcmanagerEditorWidget(QtWidgets.QDialog):
 	def __init__(self):
 		self.compConfig = []
 
 
 		# Gui config
-		QtGui.QDialog.__init__(self)
+		QtWidgets.QDialog.__init__(self)
 		self.ui = Ui_Form()
 		self.ui.setupUi(self)
 
@@ -108,14 +108,14 @@ class rcmanagerEditorWidget(QtGui.QDialog):
 
 	def read(self):
 		s = QtGui.QFileDialog.getOpenFileName (self, "Open file", os.environ["HOME"], "*.xml")
-		print s
+		print (s)
 		self.readConfig(s)
 	def write(self):
 		global dict
 		s = QtGui.QFileDialog.getSaveFileName (self, "Save file", os.environ["HOME"], "*.xml")
 		self.compConfig = []
 
-		print self.ui.table.rowCount()
+		print (self.ui.table.rowCount())
 		for row in range(self.ui.table.rowCount()):
 			comp = rcmanagerConfig.CompInfo()
 			comp.alias = str(self.ui.table.item(row, 0).text())

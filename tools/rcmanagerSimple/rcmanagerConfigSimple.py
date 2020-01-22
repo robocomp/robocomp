@@ -27,7 +27,7 @@
 
 # Importamos el modulo libxml2
 import libxml2, sys
-from PySide import QtCore, QtGui
+from PySide2 import QtCore, QtGui
 
 filePath = 'rcmanager.xml'
 
@@ -104,7 +104,7 @@ def writeConfigToFile(dict, components, path):
 	try:
 		file = open(path, 'w')
 	except:
-		print 'Can\'t open ' + path + '.'
+		print ('Can\'t open ' + path + '.')
 		return False
 	writeToFile(file, '<?xml version="1.0" encoding="UTF-8"?>\n')
 	writeToFile(file, '<rcmanager>\n')
@@ -151,10 +151,10 @@ def writeConfigToFile(dict, components, path):
 		writeToFile(file, string)
 
 	writeToFile(file, ' </generalInformation>')
- 	writeToFile(file, '')
+	writeToFile(file, '')
 
 	for comp in reversed(components):
-		print comp
+		print (comp)
 		writeToFile(file, ' <node alias="' + comp.alias + '" endpoint="' + comp.endpoint + '">')
 		for dep in comp.dependences:
 			writeToFile(file, '  <dependence alias="' + dep + '" />')
@@ -202,7 +202,7 @@ def getConfigFromFile(path):
 	try:
 		file = open(path, 'r')
 	except:
-		print 'Can\'t open ' + path + '.'
+		print ('Can\'t open ' + path + '.')
 		return [], getDefaultValues()
 
 	data = file.read()
@@ -213,7 +213,7 @@ def getConfigFromFile(path):
 	if root is not None:
 		components, newDict = parsercmanager(root)
 
-	for k, v in newDict.iteritems():
+	for k, v in newDict.items():
 		dict[k] = v
 
 	xmldoc.freeDoc()
@@ -233,7 +233,7 @@ def parsercmanager(node):
 				elif child.name == "node":
 					parseNode(child, components)
 				elif stringIsUseful(str(node.properties)):
-					print 'ERROR when parsing rcmanager: '+str(child.name)+': '+str(child.properties)
+					print ('ERROR when parsing rcmanager: '+str(child.name)+': '+str(child.properties))
 			child = child.next
 
 	return components, dict
@@ -256,13 +256,13 @@ def parseGeneralInformation(node, dict):
 				elif child.name == "simulation":
 					parseSimulation(child, dict)
 				elif stringIsUseful(str(child.properties)):
-					print 'ERROR when parsing generalInformation: '+str(child.name)+': '+str(child.properties)
+					print ('ERROR when parsing generalInformation: '+str(child.name)+': '+str(child.properties))
 			child = child.next
 	elif node.type == "text":
 		if stringIsUseful(str(node.properties)):
-			print ''+str(node.properties)
+			print (''+str(node.properties))
 	else:
-		print "error: " + str(node.name)
+		print ("error: " + str(node.name))
 
 
 def parseNode(node, components):
@@ -303,25 +303,25 @@ def parseNode(node, components):
 				elif child.name == "color":
 					parseColor(child, component)
 				elif stringIsUseful(str(child.properties)):
-					print 'ERROR when parsing rcmanager: '+str(child.name)+': '+str(child.properties)
+					print ('ERROR when parsing rcmanager: '+str(child.name)+': '+str(child.properties))
 			child = child.next
 		if mandatory<15:
-			if   mandatory^15 == 1: print 'ERROR Not all mandatory labels were specified (workingDir)'
-			elif mandatory^15 == 2: print 'ERROR Not all mandatory labels were specified (upCommand)'
-			elif mandatory^15 == 4: print 'ERROR Not all mandatory labels were specified (downCommand)'
-			elif mandatory^15 == 8: print 'ERROR Not all mandatory labels were specified (configFile)'
+			if   mandatory^15 == 1: print ('ERROR Not all mandatory labels were specified (workingDir)')
+			elif mandatory^15 == 2: print ('ERROR Not all mandatory labels were specified (upCommand)')
+			elif mandatory^15 == 4: print ('ERROR Not all mandatory labels were specified (downCommand)')
+			elif mandatory^15 == 8: print ('ERROR Not all mandatory labels were specified (configFile)')
 			raise str(mandatory)
 		if block_optional<7 and block_optional != 0:
-			if   block_optional^7 == 1: print 'ERROR Not all pos-radius labels were specified (xpos)'
-			elif block_optional^7 == 2: print 'ERROR Not all pos-radius labels were specified (ypos)'
-			elif block_optional^7 == 4: print 'ERROR Not all pos-radius labels were specified (radius)'
+			if   block_optional^7 == 1: print ('ERROR Not all pos-radius labels were specified (xpos)')
+			elif block_optional^7 == 2: print ('ERROR Not all pos-radius labels were specified (ypos)')
+			elif block_optional^7 == 4: print ('ERROR Not all pos-radius labels were specified (radius)')
 			raise str(block_optional)
 		components.append(component)
 	elif node.type == "text":
 		if stringIsUseful(str(node.properties)):
-			print '    tssssssss'+str(node.properties)
+			print ('    tssssssss'+str(node.properties))
 	else:
-		print "error: "+str(node.name)
+		print ("error: "+str(node.name))
 
 
 def stringIsUseful(string):
@@ -337,14 +337,14 @@ def stringIsUseful(string):
 	return True
 
 def parseGeneralValues(node, dict, arg):
-	if node.children != None: print 'WARNING: No children expected'
+	if node.children != None: print ('WARNING: No children expected')
 	for attr in arg:
 		if node.hasProp(attr):
 			dict[attr] = node.prop(attr)
 			node.unsetProp(attr)
 
 def checkForMoreProperties(node):
-	if node.properties != None: print 'WARNING: Attributes unexpected: ' + str(node.properties)
+	if node.properties != None: print ('WARNING: Attributes unexpected: ' + str(node.properties))
 
 #
 # General information subfunctions
@@ -355,42 +355,42 @@ def parseEditor(node, dict):
 def parseTimeouts(node, dict):
 	parseGeneralValues(node, dict, ['fixed', 'blink'])
 	checkForMoreProperties(node)
-	if dict.has_key('fixed'): dict['fixed'] = float(dict['fixed'])
-	if dict.has_key('blink'): dict['blink'] = float(dict['blink'])
+	if 'fixed' in dict: dict['fixed'] = float(dict['fixed'])
+	if 'blink' in dict: dict['blink'] = float(dict['blink'])
 def parseClicks(node, dict):
 	parseGeneralValues(node, dict, ['switch', 'interval'])
 	checkForMoreProperties(node)
-	if dict.has_key('switch'): dict['switch'] = float(dict['switch'])
-	if dict.has_key('interval'): dict['interval'] = float(dict['interval'])
+	if 'switch' in dict: dict['switch'] = float(dict['switch'])
+	if 'interval' in dict: dict['interval'] = float(dict['interval'])
 def parseGraph(node, dict):
 	parseGeneralValues(node, dict, ['alpha', 'active', 'scale'])
 	checkForMoreProperties(node)
-	if dict.has_key('alpha'): dict['alpha'] = float(dict['alpha'])
-	if dict.has_key('scale'): dict['scale'] = float(dict['scale'])
+	if 'alpha' in dict: dict['alpha'] = float(dict['alpha'])
+	if 'scale' in dict: dict['scale'] = float(dict['scale'])
 def parseGraphTiming(node, dict):
 	parseGeneralValues(node, dict, ['idletime', 'focustime', 'fasttime', 'fastperiod'])
 	checkForMoreProperties(node)
-	if dict.has_key('idletime'): dict['idletime'] = float(dict['idletime'])
-	if dict.has_key('focustime'): dict['focustime'] = float(dict['focustime'])
-	if dict.has_key('fasttime'): dict['fasttime'] = float(dict['fasttime'])
-	if dict.has_key('fastperiod'): dict['fastperiod'] = float(dict['fastperiod'])
+	if 'idletime' in dict: dict['idletime'] = float(dict['idletime'])
+	if 'focustime' in dict: dict['focustime'] = float(dict['focustime'])
+	if 'fasttime' in dict: dict['fasttime'] = float(dict['fasttime'])
+	if 'fastperiod' in dict: dict['fastperiod'] = float(dict['fastperiod'])
 def parseSimulation(node, dict):
 	parseGeneralValues(node, dict, ['hookes', 'springlength', 'friction', 'step', 'fieldforce'])
 	checkForMoreProperties(node)
-	if dict.has_key('hookes'): dict['hookes'] = float(dict['hookes'])
-	if dict.has_key('springlength'): dict['springlength'] = float(dict['springlength'])
-	if dict.has_key('friction'): dict['friction'] = float(dict['friction'])
-	if dict.has_key('step'): dict['step'] = float(dict['step'])
-	if dict.has_key('fieldforce'): dict['fieldforce'] = float(dict['fieldforce'])
+	if 'hookes' in dict: dict['hookes'] = float(dict['hookes'])
+	if 'springlength' in dict: dict['springlength'] = float(dict['springlength'])
+	if 'friction' in dict: dict['friction'] = float(dict['friction'])
+	if 'step' in dict: dict['step'] = float(dict['step'])
+	if 'fieldforce' in dict: dict['fieldforce'] = float(dict['fieldforce'])
 
 
 #
 # Node subfunctions
 #
 def parseSingleValue(node, arg, doCheck=True, optional=False):
-	if node.children != None and doCheck == True: print 'WARNING: No children expected'
+	if node.children != None and doCheck == True: print ('WARNING: No children expected')
 	if not node.hasProp(arg) and not optional:
-		print 'WARNING: ' + arg + ' attribute expected'
+		print ('WARNING: ' + arg + ' attribute expected')
 	else:
 		ret = node.prop(arg)
 		node.unsetProp(arg)

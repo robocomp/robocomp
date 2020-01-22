@@ -33,7 +33,7 @@ import argparse
 import sys, time, traceback, os, math, random, threading, time
 import Ice
 
-from PySide import QtCore, QtGui
+from PySide2 import QtCore, QtGui, QtWidgets
 from ui_formManagerSimple import Ui_Form
 
 import rcmanagerConfigSimple
@@ -55,33 +55,39 @@ import rcmanagerEditorSimple
 
 
 # CommandDialog class: It's the dialog sending "up()/down() component X signal to the main
-class CommandDialog(QtGui.QWidget):
+class CommandDialog(QtWidgets.QWidget):
+	up = QtCore.Signal()
+	down = QtCore.Signal()
+	restart = QtCore.Signal()
+	config = QtCore.Signal()
+	
 	def __init__(self, parent, x, y):
-		QtGui.QWidget.__init__(self)
+		QtWidgets.QWidget.__init__(self)
 		self.setParent(parent)
 		self.setGeometry(x, y, 100, 75)
-		self.button1 = QtGui.QPushButton(self)
+		self.button1 = QtWidgets.QPushButton(self)
 		self.button1.setGeometry(0, 0, 100, 25)
 		self.button1.setText('up')
-		self.button2 = QtGui.QPushButton(self)
+		self.button2 = QtWidgets.QPushButton(self)
 		self.button2.setGeometry(0, 25, 100, 25)
 		self.button2.setText('down')
-		self.button4 = QtGui.QPushButton(self)
-		self.button4.setGeometry(0, 50, 100, 25)
-		self.button4.setText("restart")
-		self.button3 = QtGui.QPushButton(self)
-		self.button3.setGeometry(0, 75, 100, 25)
-		self.button3.setText('edit config')
+		self.button3 = QtWidgets.QPushButton(self)
+		self.button3.setGeometry(0, 50, 100, 25)
+		self.button3.setText("restart")
+		self.button4 = QtWidgets.QPushButton(self)
+		self.button4.setGeometry(0, 75, 100, 25)
+		self.button4.setText('edit config')
 
-		self.show()
 		self.connect(self.button1, QtCore.SIGNAL('clicked()'), self.but1)
 		self.connect(self.button2, QtCore.SIGNAL('clicked()'), self.but2)
 		self.connect(self.button3, QtCore.SIGNAL('clicked()'), self.but3)
 		self.connect(self.button4, QtCore.SIGNAL('clicked()'), self.but4)
-	def but1(self): self.emit(QtCore.SIGNAL("up()"))
-	def but2(self): self.emit(QtCore.SIGNAL("down()"))
-	def but3(self): self.emit(QtCore.SIGNAL("config()"))
-	def but4(self): self.emit(QtCore.SIGNAL("restart()"))
+		self.show()
+
+	def but1(self): self.up.emit()
+	def but2(self): self.down.emit()
+	def but3(self): self.restart.emit()
+	def but4(self): self.config.emit()
 
 
 # ComponentChecker class: Threaded endpoint-pinging class.
@@ -98,9 +104,9 @@ class ComponentChecker(threading.Thread):
 			self.aPrx = global_ic.stringToProxy(endpoint)
 			self.aPrx.ice_timeout(1)
 		except:
-			print "Error creating proxy to " + endpoint
+			print ("Error creating proxy to " + endpoint)
 			if len(endpoint) == 0:
-				print 'please, provide an endpoint'
+				print ('Please, provide an endpoint')
 			raise
 			
 	def run(self):
@@ -133,14 +139,14 @@ class ComponentChecker(threading.Thread):
 #
 # Application main class.
 #
-class TheThing(QtGui.QDialog):
+class TheThing(QtWidgets.QDialog):
 	def __init__(self):
 		# Create a component checker
 		self.componentChecker = {}
 		self.configFile = os.path.expanduser('~/rcmanager.xml')
 		# Gui config
 		global dict
-		QtGui.QDialog.__init__(self)
+		QtWidgets.QDialog.__init__(self)
 		self.root = '/opt/robocomp/'
 		self.ui = Ui_Form()
 		self.ui.setupUi(self)
@@ -185,7 +191,7 @@ class TheThing(QtGui.QDialog):
 		self.timer.start(dict['fixed'])
 
 
-		self.menu = QtGui.QMenuBar(None)
+		self.menu = QtWidgets.QMenuBar(None)
 		self.ui.verticalLayout_3.insertWidget(0, self.menu)
 		self.menuFile = self.menu.addMenu('File')
 		self.menuSim = self.menu.addMenu('Simulation')
@@ -257,7 +263,7 @@ class TheThing(QtGui.QDialog):
 			if self.canvas.ui != None: self.canvas.ui.close()
 			self.readConfig()
 		else:
-			print 'len(cfgFile) == 0'
+			print ('len(cfgFile) == 0')
 
 
 	# Save the current configuration to a new file
@@ -279,7 +285,7 @@ class TheThing(QtGui.QDialog):
 		global dict
 		if self.canvas.ui != None: self.canvas.ui.close()
 		if self.doDock == False:
-			self.systray = QtGui.QSystemTrayIcon(self)
+			self.systray = QtWidgets.QSystemTrayIcon(self)
 			self.systray.setIcon(self.iconOK)
 			self.systray.setVisible(True)
 			self.connect(self.systray, QtCore.SIGNAL("activated (QSystemTrayIcon::ActivationReason)"), self.toggle)
@@ -450,12 +456,12 @@ class TheThing(QtGui.QDialog):
 
 		newList, newDict = rcmanagerConfigSimple.getConfigFromFile(self.configFile)
 
-		for k, v in newDict.iteritems():
+		for k, v in newDict.items():
 			dict[k] = v
 
 		self.componentChecker.clear()
 		for listItem in newList:
-			item = QtGui.QListWidgetItem()
+			item = QtWidgets.QListWidgetItem()
 			item.setText(listItem.alias)
 			self.ui.checkList.insertItem(0, item)
 			self.compConfig.insert(0, listItem)
@@ -542,11 +548,11 @@ class TheThing(QtGui.QDialog):
 				if (not dep in self.componentChecker) or (not self.componentChecker[dep].isalive()):
 					unavailableDependences.append(dep)
 			if len(unavailableDependences) == 0:
-				print 'rcmanager:', alias, 'is now ready to run.'
+				print ('rcmanager:', alias, 'is now ready to run.')
 				self.upConfig(itsconfig)
 				future_requests = future_requests - set([alias])
 			else:
-				print 'rcmanager:', alias, 'has unavailable dependences:', unavailableDependences
+				print ('rcmanager:', alias, 'has unavailable dependences:', unavailableDependences)
 				future_requests = future_requests | set(unavailableDependences)
 		self.requests = future_requests
 
@@ -568,7 +574,7 @@ class TheThing(QtGui.QDialog):
 		currentWorkDir = os.getcwd()
 		os.chdir(workDir)
 		proc = QtCore.QProcess()
-		print '\nQProcess::startDetached( ' + program + ' , ' + str(args) + ' ) @ ' + os.getcwd() + '\n'
+		print ('\nQProcess::startDetached( ' + program + ' , ' + str(args) + ' ) @ ' + os.getcwd() + '\n')
 		proc.startDetached(program, args)
 		os.chdir(currentWorkDir)
 
@@ -668,9 +674,9 @@ class GraphNode:
 		self.vel_y = 0.
 
 
-class GraphView(QtGui.QWidget):
+class GraphView(QtWidgets.QWidget):
 	def __init__(self, parent=None):
-		QtGui.QWidget.__init__(self, parent)
+		QtWidgets.QWidget.__init__(self, parent)
 		self.tab = parent
 		self.initialize()
 	def initialize(self):
@@ -930,7 +936,7 @@ class GraphView(QtGui.QWidget):
 # Create the Qt application, the class, and runs the program
 #
 if __name__ == '__main__':
-	app = QtGui.QApplication(sys.argv)
+	app = QtWidgets.QApplication(sys.argv)
 	window = TheThing()
 	parser = argparse.ArgumentParser()
 
