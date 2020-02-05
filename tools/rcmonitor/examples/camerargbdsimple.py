@@ -97,7 +97,7 @@ class C(QWidget):
 		painter.setRenderHint(QPainter.Antialiasing, True)
 
 		if depth_image_width!= 0 and depth_image_height!=0:
-			depth = np.array(self.depth.depth, dtype=np.float32)
+			depth = np.asanyarray(self.depth.depth, dtype=np.float32)
 			depth_min = np.min(depth)
 			depth_max = np.max(depth)
 			if depth_max != depth_min and depth_max > 0:
