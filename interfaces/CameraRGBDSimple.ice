@@ -18,12 +18,18 @@ module RoboCompCameraRGBDSimple
 		 int width;
 		 int height;
 		 int depth;
+		 int focalx;
+		 int focaly;
+		 int alivetime;
 		 ImgType image;
 	};
 	struct TDepth
 	{
 		 int width;
 		 int height;
+		 int focalx;
+		 int focaly;
+		 int alivetime;
 		 DepthType depth;
 	};
 	interface CameraRGBDSimple

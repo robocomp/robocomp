@@ -8,26 +8,14 @@
 //****************************************************************** 
 #ifndef ROBOCOMPCAMERARGBDSIMPLEPUB_ICE
 #define ROBOCOMPCAMERARGBDSIMPLEPUB_ICE
+
+#include <CameraRGBDSimple.ice>
+
 module RoboCompCameraRGBDSimplePub
 {
-	sequence <byte> ImgType;
-	sequence <float> DepthType;
-	struct TImage
-	{
-		 int width;
-		 int height;
-		 int depth;
-		 ImgType image;
-	};
-	struct TDepth
-	{
-		 int width;
-		 int height;
-		 DepthType depth;
-	};
 	interface CameraRGBDSimplePub
 	{
-		idempotent void pushRGBD (TImage im, TDepth dep);
+		idempotent void pushRGBD (RoboCompCameraRGBDSimple::TImage im, RoboCompCameraRGBDSimple::TDepth dep);
 	};
 };
 

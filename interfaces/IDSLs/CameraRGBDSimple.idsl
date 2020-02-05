@@ -11,6 +11,9 @@ module RoboCompCameraRGBDSimple
     int width;
     int height;
     int depth;
+    int focalx;
+    int focaly;
+    int alivetime;
     ImgType image;
   };
 
@@ -18,6 +21,9 @@ module RoboCompCameraRGBDSimple
   {
     int width;
     int height;
+    int focalx;
+    int focaly;
+    int alivetime;
     DepthType depth;
   };
  
