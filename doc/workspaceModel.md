@@ -1,6 +1,6 @@
 # Robocomp Workspace Model
 
-The Robocomp workspace is used by who people who are developing components rather than the framework itself. 
+The Robocomp workspace is used by people who are developing components rather than the framework itself. 
 
 The main advantage of having a workspace is that it will make the workflow a lot more organized and easier to work with. It basically tidies up the development process. 
 

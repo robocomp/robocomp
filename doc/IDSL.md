@@ -86,7 +86,7 @@ The value type of a dictionary can be any IDSL type. However, the key type of a 
 
 IDSL interface is the core of what makes up Robocomp. 
 
-For communication between components to take place, you must invoke operations on an components proxy, which refers to an interface implimented in the component. To make the structure accessible, you must create an interface that allows clients to access the structure. 
+For communication between components to take place, you must invoke operations on an components proxy, which refers to an interface implemented in the component. To make the structure accessible, you must create an interface that allows clients to access the structure. 
 
 A component may impliment one or more interfaces and each of those interface will have its own unique proxy.
 
