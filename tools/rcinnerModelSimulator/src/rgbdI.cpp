@@ -143,11 +143,11 @@ void RGBDI::getImage ( ColorSeq& color, DepthSeq& depth, PointSeq& points, RoboC
 		
 		bool bstateUpd = false;
 		//if (base != worker->servers.omn_servers.end())
-		if (base != worker->servers.hMaps.cend())
+		/*if (base != worker->servers.hMaps.cend())
 		{
 			std::get<OmniRobotServer>(base->second).interface->getBaseState( bState );
 			bstateUpd = true;
-		}
+		}*/
 		//std::map<uint32_t, DifferentialRobotServer>::iterator baseD;
 		//baseD = worker->servers.dfr_servers.find( basePort );
 		auto baseD = worker->servers.hMaps.find( basePort );
@@ -246,6 +246,7 @@ void RGBDI::getDepth ( DepthSeq& depth, RoboCompJointMotor ::MotorStateMap& hSta
 
 void RGBDI::getRGB ( ColorSeq& color, RoboCompJointMotor ::MotorStateMap& hState, RoboCompGenericBase::TBaseState& bState, const Ice::Current& )
 {
+	qDebug()<<"get image";
 	DepthSeq depth;
 	PointSeq points;
 	this->getImage ( color, depth, points, hState, bState );

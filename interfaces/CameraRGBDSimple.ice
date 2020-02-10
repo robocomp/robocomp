@@ -15,15 +15,23 @@ module RoboCompCameraRGBDSimple
 	sequence <float> DepthType;
 	struct TImage
 	{
+		 int cameraID;
 		 int width;
 		 int height;
 		 int depth;
+		 int focalx;
+		 int focaly;
+		 int alivetime;
 		 ImgType image;
 	};
 	struct TDepth
 	{
+		 int cameraID;
 		 int width;
 		 int height;
+		 int focalx;
+		 int focaly;
+		 int alivetime;
 		 DepthType depth;
 	};
 	interface CameraRGBDSimple
