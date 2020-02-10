@@ -7,7 +7,7 @@ module RoboCompCameraRGBDSimple
 
   struct TImage
   {
-
+	int cameraID;
     int width;
     int height;
     int depth;
@@ -19,6 +19,7 @@ module RoboCompCameraRGBDSimple
 
  struct TDepth
   {
+	int cameraID;
     int width;
     int height;
     int focalx;
