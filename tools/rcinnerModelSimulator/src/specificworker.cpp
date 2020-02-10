@@ -30,6 +30,7 @@ SpecificWorker::SpecificWorker(MapPrx& _mprx, Ice::CommunicatorPtr _communicator
 {
 	communicator = _communicator;
 	laserDataCartArray.clear();
+    nodeLaser = nullptr;
 
 	// Initialize InnerModel from file
 	innerModel = std::make_shared<InnerModel>(_innerModelXML);
@@ -233,16 +234,24 @@ void SpecificWorker::updateLasers()
 		laserDataArray.insert_or_assign(id, laserData);
 
 		// create and insert laser shape
-		if (true) // DRAW LASER
+		if (drawLaser->isChecked()) // DRAW LASER
 		{
-			osg::ref_ptr<osg::Node> p = nullptr;
+            //drawLaser->setEnabled(false);
+			osg::ref_ptr<osg::Node> p = nullptr;            
 			if(id == "laserSecurity")
 				p = viewer->addPolygon(*(laserDataCartArray[id]), osg::Vec4(0.,0.,1.,0.4));
 			else
 				p = viewer->addPolygon(*(laserDataCartArray[id]));
 			if (p != nullptr)
-				laserValue.osgNode->addChild(p);
+            {
+				laserValue.osgNode->addChild(p);                
+            }
+            nodeLaser = p;
 		}
+		else{
+            if (nodeLaser != nullptr)
+                laserValue.osgNode->removeChild(nodeLaser);
+        }
 	}
 }
 

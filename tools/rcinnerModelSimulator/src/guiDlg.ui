@@ -278,6 +278,16 @@
              </widget>
             </item>
             <item>
+             <widget class="QCheckBox" name="drawLaser">
+              <property name="text">
+               <string>Draw Laser</string>
+              </property>
+              <property name="checked">
+               <bool>false</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
              <widget class="QCheckBox" name="showBalls">
               <property name="enabled">
                <bool>false</bool>
@@ -512,7 +522,7 @@
      <x>0</x>
      <y>0</y>
      <width>1133</width>
-     <height>27</height>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuSimulation">
