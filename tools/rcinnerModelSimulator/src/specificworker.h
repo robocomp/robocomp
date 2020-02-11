@@ -93,7 +93,8 @@ Q_OBJECT
 		QSettings *settings;
 		OsgView *viewer;
 		osgGA::TrackballManipulator *manipulator;
-        osg::ref_ptr<osg::Node> nodeLaser; 
+        //osg::ref_ptr<osg::Node> nodeLaser;
+        std::map<std::string, osg::ref_ptr<osg::Node>> nodeLaser; 
 		
 		//RoboCompLaser::TLaserData LASER_createLaserData(const IMVLaser &laser);
 		//RoboCompTouchSensor::SensorMap TOUCH_createTouchData(const IMVLaser &laser);
