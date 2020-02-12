@@ -143,19 +143,23 @@ void RGBDI::getImage ( ColorSeq& color, DepthSeq& depth, PointSeq& points, RoboC
 		
 		bool bstateUpd = false;
 		//if (base != worker->servers.omn_servers.end())
-		/*if (base != worker->servers.hMaps.cend())
+		if (base != worker->servers.hMaps.cend())
 		{
-			std::get<OmniRobotServer>(base->second).interface->getBaseState( bState );
-			bstateUpd = true;
-		}*/
+			try{ //Check if object is type omni or differential
+				std::get<OmniRobotServer>(base->second).interface->getBaseState( bState );
+				bstateUpd = true;
+			}catch(...){/*cout<<"Not omni base"<<std::endl;*/}
+		}
 		//std::map<uint32_t, DifferentialRobotServer>::iterator baseD;
 		//baseD = worker->servers.dfr_servers.find( basePort );
 		auto baseD = worker->servers.hMaps.find( basePort );
 		//if (baseD != worker->servers.dfr_servers.end())
 		if (baseD != worker->servers.hMaps.end())
 		{
-			std::get<DifferentialRobotServer>(baseD->second).interface->getBaseState( bState );
-			bstateUpd = true;
+			try{ //Check if object is type omni or differential
+				std::get<DifferentialRobotServer>(baseD->second).interface->getBaseState( bState );
+				bstateUpd = true;
+			}catch(...){/*cout<<"Not differential base"<<std::endl;*/}
 		}
 		if (not bstateUpd)
 		{
