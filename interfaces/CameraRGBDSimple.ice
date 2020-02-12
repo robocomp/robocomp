@@ -12,7 +12,7 @@ module RoboCompCameraRGBDSimple
 {
 	exception HardwareFailedException{ string what; };
 	sequence <byte> ImgType;
-	sequence <float> DepthType;
+	sequence <byte> DepthType;
 	struct TImage
 	{
 		 int cameraID;
