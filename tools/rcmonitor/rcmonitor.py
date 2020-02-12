@@ -72,18 +72,19 @@ global_ic = None
 force_host = ''
 force_port = ''
 
-BasePoseCodeTemplate = '''# Base Pose Template\nimport Ice\nimport sys\nclass C():\n  def __init__(self, endpoint, modules):\n    self.ic = Ice.initialize(sys.argv)\n    self.mods = modules\n    self.prx = self.ic.stringToProxy(endpoint)\n    self.proxy = self.mods['RoboCompDifferentialRobot'].DifferentialRobotPrx.checkedCast(self.prx)\n    self.x = 0\n    self.z = 0\n    self.a = 0\n  def job(self):\n    pose = self.proxy.getBasePose()\n    print pose\n    print len(pose)\n    return ['pose', [ pose[0]/10, pose[1]/10, pose[2] ] ]\n'''
-CameraRGBCodeTemplate = '''# Camera RGB Image Template\nimport Ice\nimport sys\nclass C():\n  def __init__(self, endpoint, modules):\n    self.ic = Ice.initialize(sys.argv)\n    self.mods = modules\n    self.prx = self.ic.stringToProxy(endpoint)\n    self.proxy = self.mods['RoboCompCamera'].CameraPrx.checkedCast(self.prx)\n    self.params = self.proxy.getCamParams()\n  def job(self):\n    vector, hState, bState = self.proxy.getRGBPackedImage(5)\n    if len(vector) == 0:\n     print 'Error retrieving images!'\n    return ['rgbImage', [ vector, self.params.width, self.params.height*self.params.numCams ] ]\n'''
-CameraGreyCodeTemplate = '''# Camera grey Image Template\nimport Ice\nimport sys\nclass C():\n  def __init__(self, endpoint, modules):\n    self.ic = Ice.initialize(sys.argv)\n    self.mods = modules\n    self.prx = self.ic.stringToProxy(endpoint)\n    self.proxy = self.mods['RoboCompCamera'].CameraPrx.checkedCast(self.prx)\n    self.params = self.proxy.getCamParams()\n  def job(self):\n    vector, hState, bState = self.proxy.getYImage(5)\n    if len(vector) == 0:\n     print 'Error retrieving images!'\n    return ['greyImage', [ vector, self.params.width, self.params.height*self.params.numCams ] ]\n'''
-CustomCodeTemplate = '''# Custom Template\nimport Ice\nimport sys\n\nfrom PySide.QtCore import *\nfrom PySide.QtGui import *\n \nclass C(QWidget):\n  def __init__(self, endpoint, modules):\n    QWidget.__init__(self)\n    self.ic = Ice.initialize(sys.argv)\n    self.mods = modules\n    self.prx = self.ic.stringToProxy(endpoint)\n    self.proxy = self.mods['RoboCompCamera'].CameraPrx.checkedCast(self.prx)\n    self.measures = range(33)\n    self.params = self.proxy.getCamParams();\n    self.job()\n\n  def job(self):\n    # Remote procedure call\n    self.image, head, bstate = self.proxy.getRGBPackedImage(0) # vector, head, bState\n\n    # Store pos measure\n    self.measures.pop(0)\n    self.measures.append(head.tilt.pos)\n\n  def paintEvent(self, event=None):\n    painter = QPainter(self)\n    painter.setRenderHint(QPainter.Antialiasing, True)\n    # Draw image\n    qimage = QImage(self.image, self.params.width, self.params.height, QImage.Format_RGB888)\n    painter.drawImage(QPointF(0, 0), qimage)\n    # Draw signal\n    for idx in range(len(self.measures)-1):\n      painter.drawLine(idx*10, (self.height()/2)-(self.measures[idx]*100), (idx+1)*10, (self.height()/2)-(self.measures[idx+1]*100))\n\n    painter.end()\n\n'''
-SignalCodeTemplate = '''# Signal Template\nimport Ice\nimport sys\nclass C():\n  def __init__(self, endpoint, modules):\n    self.ic = Ice.initialize(sys.argv)\n    self.mods = modules\n    self.prx = self.ic.stringToProxy(endpoint)\n    self.proxy = self.mods['RoboCompCamMotion'].CamMotionPrx.checkedCast(self.prx)\n  def job(self):\n    hState = self.proxy.getHeadState()\n    print hState.tilt.pos\n    return ['signal', [ hState.tilt.pos, 200 ] ]\n'''
+BasePoseCodeTemplate = '''# Base Pose Template\nimport Ice\nimport sys\nclass C():\n  def __init__(self, endpoint, modules):\n    self.ic = Ice.initialize(sys.argv)\n    self.mods = modules\n    self.prx = self.ic.stringToProxy(endpoint)\n    self.proxy = self.mods['RoboCompDifferentialRobot'].DifferentialRobotPrx.checkedCast(self.prx)\n    self.x = 0\n    self.z = 0\n    self.a = 0\n  def job(self):\n    pose = self.proxy.getBasePose()\n    print (pose)\n    print (len(pose))\n    return ['pose', [ pose[0]/10, pose[1]/10, pose[2] ] ]\n'''
+CameraRGBCodeTemplate = '''# Camera RGB Image Template\nimport Ice\nimport sys\nclass C():\n  def __init__(self, endpoint, modules):\n    self.ic = Ice.initialize(sys.argv)\n    self.mods = modules\n    self.prx = self.ic.stringToProxy(endpoint)\n    self.proxy = self.mods['RoboCompCamera'].CameraPrx.checkedCast(self.prx)\n    self.params = self.proxy.getCamParams()\n  def job(self):\n    vector, hState, bState = self.proxy.getRGBPackedImage(5)\n    if len(vector) == 0:\n     print ('Error retrieving images!')\n    return ['rgbImage', [ vector, self.params.width, self.params.height*self.params.numCams ] ]\n'''
+CameraGreyCodeTemplate = '''# Camera grey Image Template\nimport Ice\nimport sys\nclass C():\n  def __init__(self, endpoint, modules):\n    self.ic = Ice.initialize(sys.argv)\n    self.mods = modules\n    self.prx = self.ic.stringToProxy(endpoint)\n    self.proxy = self.mods['RoboCompCamera'].CameraPrx.checkedCast(self.prx)\n    self.params = self.proxy.getCamParams()\n  def job(self):\n    vector, hState, bState = self.proxy.getYImage(5)\n    if len(vector) == 0:\n     print ('Error retrieving images!')\n    return ['greyImage', [ vector, self.params.width, self.params.height*self.params.numCams ] ]\n'''
+CustomCodeTemplate = '''# Custom Template\nimport Ice\nimport sys\n\nfrom PySide2.QtCore import *\nfrom PySide2.QtGui import *\n \nclass C(QWidget):\n  def __init__(self, endpoint, modules):\n    QWidget.__init__(self)\n    self.ic = Ice.initialize(sys.argv)\n    self.mods = modules\n    self.prx = self.ic.stringToProxy(endpoint)\n    self.proxy = self.mods['RoboCompCamera'].CameraPrx.checkedCast(self.prx)\n    self.measures = range(33)\n    self.params = self.proxy.getCamParams();\n    self.job()\n\n  def job(self):\n    # Remote procedure call\n    self.image, head, bstate = self.proxy.getRGBPackedImage(0) # vector, head, bState\n\n    # Store pos measure\n    self.measures.pop(0)\n    self.measures.append(head.tilt.pos)\n\n  def paintEvent(self, event=None):\n    painter = QPainter(self)\n    painter.setRenderHint(QPainter.Antialiasing, True)\n    # Draw image\n    qimage = QImage(self.image, self.params.width, self.params.height, QImage.Format_RGB888)\n    painter.drawImage(QPointF(0, 0), qimage)\n    # Draw signal\n    for idx in range(len(self.measures)-1):\n      painter.drawLine(idx*10, (self.height()/2)-(self.measures[idx]*100), (idx+1)*10, (self.height()/2)-(self.measures[idx+1]*100))\n\n    painter.end()\n\n'''
+SignalCodeTemplate = '''# Signal Template\nimport Ice\nimport sys\nclass C():\n  def __init__(self, endpoint, modules):\n    self.ic = Ice.initialize(sys.argv)\n    self.mods = modules\n    self.prx = self.ic.stringToProxy(endpoint)\n    self.proxy = self.mods['RoboCompCamMotion'].CamMotionPrx.checkedCast(self.prx)\n  def job(self):\n    hState = self.proxy.getHeadState()\n    print (hState.tilt.pos)\n    return ['signal', [ hState.tilt.pos, 200 ] ]\n'''
 #
 # CODE BEGINS
 #
-import sys, time, traceback, os, math, random, threading, time, new, Ice
+import sys, time, traceback, os, math, random, threading, time, types, Ice
 
-from PySide.QtCore import *
-from PySide.QtGui import *
+from PySide2.QtCore import *
+from PySide2.QtGui import *
+from PySide2.QtWidgets import *
 from ui_formMonitor import Ui_Form
 from ui_openA import Ui_OpenA
 from ui_period import Ui_Period
@@ -115,8 +116,8 @@ def exists(parent, name):
 
 
 def importCode(code, name):
-	module = new.module(name)
-	exec code in module.__dict__
+	module = types.ModuleType(name)
+	exec(code, module.__dict__)
 	return module
 
 
@@ -141,34 +142,31 @@ class SliceReader():
 		self.RoboComps = dict()
 
 		loadCommand = self.sliceOpts+' '+self.slicePath
-		print 'Loading SLICE file: "'+loadCommand+'"'
-		print '1'
+		print ('Loading SLICE file: "'+loadCommand+'"')
 		modulesA = [ module for module in sys.modules ]
-		print '2'
 		try:
-			print '3', loadCommand
 			Ice.loadSlice(loadCommand)
-			print '4'
 
 			modulesB = [ module for module in sys.modules ]
 			newModules = [ module for module in modulesB if not module in modulesA ]
 
 			for newModule in newModules:
-				print '  New module: ' + newModule
+				print ('  New module: ' + newModule)
 				self.RoboComps[str(newModule)] = __import__(newModule)
 			try:
 				global global_ic
 				global_ic = Ice.initialize(sys.argv)
 			except:
-				print '  global_ic'
+				print ('  global_ic')
 		except:
 			traceback.print_exc(file=sys.stdout)
-			print 'Error loading ' + loadCommand + '.'
+			print ('Error loading ' + loadCommand + '.')
 		finally:
-			print 'Done loading ' + self.slicePath + '.'
+			print ('Done loading ' + self.slicePath + '.')
 
 
 class PeriodConfig(QDialog):
+	done = Signal()
 	def __init__(self, parent=None):
 		QDialog.__init__(self, parent)
 		self.ui = Ui_Period()
@@ -182,7 +180,7 @@ class PeriodConfig(QDialog):
 		self.connect(self.ui.buttonBox, SIGNAL('rejected()'), self.slotRejected)
 
 	def slotAccepted(self):
-		self.emit(SIGNAL("done()"))
+		self.done.emit()
 		self.hide()
 	def slotRejected(self):
 		self.hide()
@@ -201,6 +199,7 @@ class PeriodConfig(QDialog):
 
 
 class OpenConnection(QDialog):
+	done = Signal()
 	def __init__(self, parent=None):
 		QDialog.__init__(self, parent)
 		self.achoParent = parent
@@ -233,14 +232,14 @@ class OpenConnection(QDialog):
 		# Automatically set host name
 		self.ui.hostName.setText(config[2])
 		# Automatically set endpoint protocol
-		if (config[3].split()[0] == 'tcp'):
+		if config[3].split()[0] == 'tcp':
 			self.ui.endpointProtocol.setCurrentIndex(0)
-		elif (config[3].split()[0] == 'udp'):
+		elif config[3].split()[0] == 'udp':
 			self.ui.endpointProtocol.setCurrentIndex(1)
-		elif (config[3].split()[0] == 'ws'):
+		elif config[3].split()[0] == 'ws':
 			self.ui.endpointProtocol.setCurrentIndex(2)
 		else:
-			print 'Wrong protocol:',config[3].split()[0]
+			print('Wrong protocol:', config[3].split()[0])
 			sys.exit()
 		# Automatically set endpoint port number
 		self.ui.endpointPort.setValue(int(config[4]))
@@ -250,18 +249,18 @@ class OpenConnection(QDialog):
 			codePath += "/"
 		codePath += config[5]
 		try:
-			print 'Opening code file <'+codePath+'>'
+			print ('Opening code file <'+codePath+'>')
 			f = open(codePath, 'r')
 		except:
-			print 'Cannot open code file <'+codePath+'>'
+			print ('Cannot open code file <'+codePath+'>')
 			sys.exit(1)
 		self.slotAccepted1()
 		self.ui.textEdit.setText('')
-		#print '<CODE'
+		#print ('<CODE')
 		for line in f.readlines():
 			self.ui.textEdit.append(line.rstrip())
-			#print line,
-		#print 'CODE>'
+			#print (line)
+		#print ('CODE>')
 		self.slotAccepted2()
 	def sliceChanged(self, qstr):
 		if self.ui.endpointName.text().size() == 0:
@@ -285,7 +284,7 @@ class OpenConnection(QDialog):
 		self.endpoint = self.endpoint + str(self.ui.endpointProtocol.currentText() + ' -p ' + self.ui.endpointPort.text())
 		if len(str(self.ui.hostName.text())) != 0:
 			self.endpoint = self.endpoint + str(' -h ' + self.ui.hostName.text() + ' ')
-		#print self.endpoint
+		#print (self.endpoint)
 		sliceOpts = ''
 		for directory in str(self.ui.sliceOpts.toPlainText()).split('\n'):
 			if len(directory)>0:
@@ -293,7 +292,7 @@ class OpenConnection(QDialog):
 		sliceOpts = sliceOpts + ' -I. '
 		sliceOpts = sliceOpts + ' -I' + ROBOCOMP + '/interfaces '
 		sliceOpts = sliceOpts + ' --all'
-		print 'Slice options:', sliceOpts
+		print ('Slice options:', sliceOpts)
 		self.sr = SliceReader(self.slicePath, sliceOpts)
 
 		self.importedSymbols = ''
@@ -326,7 +325,7 @@ class OpenConnection(QDialog):
 		src = str(self.ui.textEdit.toPlainText())
 		self.module = importCode(src, 'modulillo')
 		self.hide()
-		self.emit(SIGNAL("done()"))
+		self.done.emit()
 	def slotRejected(self):
 		self.hide()
 
@@ -347,7 +346,7 @@ class DrawData(QWidget):
 			self.data.append(float(data[0]))
 		else:
 			self.data = data
- 	def paintEvent(self, event=None):
+	def paintEvent(self, event=None):
 		painter = QPainter(self)
 		painter.setRenderHint(QPainter.Antialiasing, True)
 		w = float(self.width())
@@ -427,13 +426,13 @@ class RCOMPMonitor(QMainWindow):
 			global force_host
 			global force_port
 			try:
-				print 'Opening configuration file', sys.argv[1]
+				print ('Opening configuration file', sys.argv[1])
 				f = open(sys.argv[1], 'r')
 			except:
-				print 'Cannot open configuration file', sys.argv[1]
+				print ('Cannot open configuration file', sys.argv[1])
 				sys.exit()
 			argIdx = getParamIdx()
-			print argIdx
+			print (argIdx)
 			for idx in argIdx:
 				if sys.argv[idx] == '-h':
 					force_host = sys.argv[idx+1]
@@ -475,6 +474,7 @@ class RCOMPMonitor(QMainWindow):
 	def startNewConnection(self):
 		self.triggerClose()
 	def doJob(self):
+		print("doJob")
 		self.subwindow.close()
 		if exists(self, 'openA') and exists(self.openA.module, 'C'):
 			self.doer = self.openA.module.C(self.openA.endpoint, self.openA.sr.RoboComps)
@@ -505,6 +505,7 @@ class RCOMPMonitor(QMainWindow):
 			self.statusBar().showMessage(str('Ticks: ')+str(self.ticks))
 			self.ticks = self.ticks + 1
 	def periodChange(self):
+		print("perdiod change", self.periodConfig.value)
 		self.period = self.periodConfig.value
 		if exists(self, 'timer'): self.timer.start(self.period)
 

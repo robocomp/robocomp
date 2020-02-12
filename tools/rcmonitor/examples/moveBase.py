@@ -20,8 +20,10 @@
 
 import Ice, sys, math, traceback
 
-from PySide.QtCore import *
-from PySide.QtGui import *
+from PySide2.QtCore import *
+from PySide2.QtGui import *
+from PySide2.QtWidgets import *
+
 
 class C(QWidget):
 	def __init__(self, endpoint, modules):
@@ -73,12 +75,12 @@ class C(QWidget):
 #		sendCommand = True
 		if sendCommand: self.proxy.setSpeedBase(float(self.speed.value()), float(self.steer.value()))
 		self.bState = self.proxy.getBaseState()
-		print 'corrected', self.bState.correctedX, self.bState.correctedZ, self.bState.correctedAlpha
+		print ('corrected', self.bState.correctedX, self.bState.correctedZ, self.bState.correctedAlpha)
 
 	def paintEvent(self, event=None):
 		xOff = self.width()/2.
 		yOff = self.height()/2.
-		print self.bState.x, self.bState.z, self.bState.alpha
+		print (self.bState.x, self.bState.z, self.bState.alpha)
 
 		xPos = 0
 		yPos = 0
@@ -103,9 +105,9 @@ class C(QWidget):
 				try:
 					painter.drawPie(xPos, yPos, 18, 18, start, 20*2*16)
 				except:
-					print 'BASE :-('
-					print type(xPos-7)
-					print self.bState.z, self.bState.x, self.bState.alpha
+					print ('BASE :-(')
+					print (type(xPos-7))
+					print (self.bState.z, self.bState.x, self.bState.alpha)
 		except:
 			pass
 
@@ -120,16 +122,16 @@ class C(QWidget):
 				try:
 					painter.drawPie(xPos, yPos, 18, 18, start, 20*2*16)
 				except:
-					print 'BASE :-('
-					print type(xPos-7)
-					print self.bState.correctedZ, self.bState.correctedX, self.bState.correctedAlpha
+					print ('BASE :-(')
+					print (type(xPos-7))
+					print (self.bState.correctedZ, self.bState.correctedX, self.bState.correctedAlpha)
 		except:
 			pass
 		
-		print '-----------------------'
-		print self.bState.x, self.bState.z, self.bState.alpha
-		print self.bState.correctedX, self.bState.correctedZ, self.bState.correctedAlpha
-		print '-----------------------'
+		print ('-----------------------')
+		print (self.bState.x, self.bState.z, self.bState.alpha)
+		print (self.bState.correctedX, self.bState.correctedZ, self.bState.correctedAlpha)
+		print ('-----------------------')
 
 		painter.end()
 		painter = None
