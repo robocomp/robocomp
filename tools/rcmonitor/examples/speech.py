@@ -21,8 +21,10 @@
 import Ice, sys, math, traceback
 import random
 
-from PySide.QtCore import *
-from PySide.QtGui import *
+from PySide2.QtCore import *
+from PySide2.QtGui import *
+from PySide2.QtWidgets import *
+
 
 class C(QWidget):
 	def __init__(self, endpoint, modules):
@@ -94,7 +96,7 @@ class C(QWidget):
 				texto=file.readline()
 			file.close()
 			#texto =  texto, "utf-8" )
-			print texto
+			print (texto)
 			self.proxy.say(texto,True)
 		except Ice.Exception:
 			traceback.print_exc()

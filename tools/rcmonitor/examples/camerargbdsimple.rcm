@@ -1,4 +1,4 @@
-interfaces/CameraRGBDSimple.ice
+/interfaces/CameraRGBDSimple.ice
 camerargbdsimple
 localhost
 tcp

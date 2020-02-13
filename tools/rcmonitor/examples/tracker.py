@@ -20,15 +20,17 @@
 
 import Ice, sys, math, traceback
 
-from PySide.QtCore import *
-from PySide.QtGui import *
+from PySide2.QtCore import *
+from PySide2.QtGui import *
+from PySide2.QtWidget import *
+
 
 class C(QWidget):
 	def __init__(self, endpoint, modules):
 		QWidget.__init__(self)
 		self.ic = Ice.initialize(sys.argv)
 		self.mods = modules
-		print 'Endpoint', endpoint
+		print ('Endpoint', endpoint)
 		self.prx = self.ic.stringToProxy(endpoint)
 		self.proxy = self.mods['RoboCompTracker'].TrackerPrx.checkedCast(self.prx)
 		self.pyrList = []
@@ -44,7 +46,7 @@ class C(QWidget):
 		self.sizeList = output[3]
 		
 		output = self.proxy.getTrackerState()
-		print 'TrackerState', output
+		print ('TrackerState', output)
 		#if output==self.proxy.TrackerState.NoTarget:
 			#print 'TrackerState: NoTarget'
 		#elif output=='RoboCompTracker::LostTarget':

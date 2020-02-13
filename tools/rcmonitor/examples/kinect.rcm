@@ -1,4 +1,4 @@
-/home/robocomp/robocomp/Interfaces/Kinect.ice
+/interfaces/Kinect.ice
 kinect
 localhost
 tcp

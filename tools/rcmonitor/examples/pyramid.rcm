@@ -1,4 +1,4 @@
-/home/robocomp/robocomp/Interfaces/Vision.ice
+/interfaces/Vision.ice
 vision
 localhost
 tcp

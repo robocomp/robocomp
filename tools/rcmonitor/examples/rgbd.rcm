@@ -1,4 +1,4 @@
-interfaces/RGBD.ice
+/interfaces/RGBD.ice
 rgbd
 localhost
 tcp

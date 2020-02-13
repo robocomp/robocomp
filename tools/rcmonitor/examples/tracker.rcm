@@ -1,4 +1,4 @@
-/home/robocomp/robocomp/Interfaces/Tracker.ice
+/interfaces/Tracker.ice
 tracker
 localhost
 tcp

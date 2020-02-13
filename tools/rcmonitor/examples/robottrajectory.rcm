@@ -1,4 +1,4 @@
-/home/robocomp/robocomp/Interfaces/RobotTrajectory.ice
+/interfaces/RobotTrajectory.ice
 robottrajectory
 localhost
 tcp

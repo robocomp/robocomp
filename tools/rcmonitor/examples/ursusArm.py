@@ -20,8 +20,10 @@
 
 import Ice, sys, math, traceback
 
-from PySide.QtCore import *
-from PySide.QtGui import *
+from PySide2.QtCore import *
+from PySide2.QtGui import *
+from PySide2.QtWidgets import *
+
 
 class C(QWidget):
 	def __init__(self, endpoint, modules):
@@ -245,7 +247,7 @@ class C(QWidget):
 				treceback.print_exc()
 
 	def changeArmSlot(self):
-		print self.leftPaused,self.rightPaused
+		print (self.leftPaused,self.rightPaused)
 		self.pauseB.setText("Pause")
 		self.pauseB.setChecked(False)
 		if((self.rbLeft.isChecked() and self.leftPaused) or (self.rbRight.isChecked() and self.rightPaused)):

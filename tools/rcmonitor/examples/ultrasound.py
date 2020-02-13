@@ -20,8 +20,10 @@
 
 import Ice, sys, math, traceback
 
-from PySide.QtCore import *
-from PySide.QtGui import *
+from PySide2.QtCore import *
+from PySide2.QtGui import *
+from PySide2.QtWidgets import *
+
 
 class C(QWidget):
 	def __init__(self, endpoint, modules):
@@ -38,10 +40,10 @@ class C(QWidget):
 		self.combo.move(10,10)
 
 		self.sensors = self.proxy.getAllSensorParams()
-		print 'Sensors: ',
-		if len(self.sensors)==0: print 'UltraSound: Error: No sensors.'
+		print ('Sensors: ',)
+		if len(self.sensors)==0: print ('UltraSound: Error: No sensors.')
 		for item in self.sensors:
-			print item.name
+			print (item.name)
 			self.combo.addItem(item.name)
 		
 
@@ -55,7 +57,3 @@ class C(QWidget):
 	def job(self):
 		self.distance = self.proxy.getSensorDistance(str(self.combo.currentText()))
 		self.lcdNumber.display(self.distance)
-		
-		
-
-

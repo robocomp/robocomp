@@ -1,4 +1,4 @@
-/home/robocomp/robocomp/Interfaces/Rrtplanner2d.ice
+/interfaces/Rrtplanner2d.ice
 rrtplanner2d
 localhost
 tcp

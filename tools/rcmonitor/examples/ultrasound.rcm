@@ -1,4 +1,4 @@
-/home/robocomp/robocomp/Interfaces/Ultrasound.ice
+/interfaces/Ultrasound.ice
 ultrasound
 localhost
 tcp

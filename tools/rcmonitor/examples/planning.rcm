@@ -1,4 +1,4 @@
-/Interfaces/Planning.ice
+/interfaces/Planning.ice
 planning
 localhost
 tcp

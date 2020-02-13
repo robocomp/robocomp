@@ -1,6 +1,6 @@
-/home/robocomp/robocomp/Interfaces/DifferentialRobot.ice
+/interfaces/DifferentialRobot.ice
 differentialrobot
-pulguita.local
+localhost
 tcp
 10004
 30
