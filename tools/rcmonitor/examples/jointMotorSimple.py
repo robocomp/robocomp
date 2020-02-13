@@ -20,8 +20,10 @@
 
 import Ice, sys, math, traceback
 
-from PySide.QtCore import *
-from PySide.QtGui import *
+from PySide2.QtCore import *
+from PySide2.QtGui import *
+from PySide2.QtGui import *
+
 
 class C(QWidget):
 	def __init__(self, endpoint, modules):
@@ -37,11 +39,11 @@ class C(QWidget):
 		self.combo.resize(200, 50)
 
 		self.motors = self.proxy.getAllMotorParams()
-		print 'Motors: ',
+		print ('Motors: ',)
 		for item in self.motors:
-			print item.name
+			print (item.name)
 			self.combo.addItem(item.name)
-		if len(self.motors)==0: print 'JointMotor: Error: No motors.'
+		if len(self.motors)==0: print ('JointMotor: Error: No motors.')
 
 		self.enableButton = QPushButton("Enable", self)
 		self.enableButton.show()
@@ -129,8 +131,8 @@ class C(QWidget):
 	def job(self):
 		self.states = self.proxy.getAllMotorState()
 		#for k in self.states.keys():
-			#print k, self.states[k].pos
-		#print '-------'
+			#print (k, self.states[k].pos)
+		#print ('-------')
 		state = self.states[str(self.combo.currentText())]
 		self.readLabel.setText(QString.number(state.pos))
 		self.templabel.setText(QString.number(state.temperature))
@@ -146,14 +148,14 @@ class C(QWidget):
 		goal.position = self.spinBox.value()
 		goal.name = str(self.combo.currentText())
 		goal.maxSpeed = self.spinBoxSpeed.value()
-		print "target pos" , goal.position, "name", goal.name, "maxSpeed" , goal.maxSpeed
+		print ("target pos" , goal.position, "name", goal.name, "maxSpeed" , goal.maxSpeed)
 		self.proxy.setPosition(goal)
 	def clicked2(self):
 		goal = self.mods['RoboCompJointMotor'].MotorGoalVelocity()
 		goal.velocity = self.spinBox2.value()
 		goal.name = str(self.combo.currentText())
 		goal.maxAcc = 1.5
-		print goal.velocity, goal.name, goal.maxAcc
+		print (goal.velocity, goal.name, goal.maxAcc)
 		self.proxy.setVelocity(goal)
 	def enable(self):
 		self.proxy.enableBrakeMotor(str(self.combo.currentText()))

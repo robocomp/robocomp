@@ -21,8 +21,10 @@
 import Ice, sys, math, traceback
 import time
 from random import randint
-from PySide.QtCore import *
-from PySide.QtGui import *
+from PySide2.QtCore import *
+from PySide2.QtGui import *
+from PySide2.QtWidgets import *
+
 
 #Position dictionary: could contain:  
 # 6D postion ==> 'name':(,x,y,z,rx,ry,rz)
@@ -51,9 +53,9 @@ class C(QWidget):
 		self.combo.show()
 		self.combo.resize(200, 50)
 		
-		print 'Load positions: ',
+		print ('Load positions: ',)
 		for name in posDict.keys():
-			print name
+			print (name)
 			self.combo.addItem(name)
 	
 		self.setPosition = QPushButton("Go pos List", self)
@@ -157,10 +159,10 @@ class C(QWidget):
 	def set_position_list(self):
 		target = self.mods['RoboCompInverseKinematics'].Pose6D()
 		values = posDict[str(self.combo.currentText())]
-		print "\nMove: " + str(self.combo.currentText())
+		print ("\nMove: " + str(self.combo.currentText()))
 		if isinstance(values,tuple):
-			print '6D move'
-			print values
+			print ('6D move')
+			print (values)
 			target.x = values[0]
 			target.y = values[1]
 			target.z = values[2]
@@ -169,24 +171,24 @@ class C(QWidget):
 			target.rz = values[5]
 			self.sendMove(target)
 		elif isinstance(values,list):
-			print 'Joint move'
+			print ('Joint move')
 			for item in values:
-				print item
+				print (item)
 				self.setJoint(item[0],item[1])
 		else: 
-			print "Unknow movement type, check movements list"
+			print ("Unknow movement type, check movements list")
 
 	def stop(self):
 		try:
 			self.proxy.stop(bodyPart)
 		except:
-			print sys.exc_info()[0]
+			print (sys.exc_info()[0])
 
 	def setJoint(self, joint, angle,vel=0.5):
 		try:
 			self.proxy.setJoint(joint, angle,vel)
 		except:
-			print sys.exc_info()[0]
+			print (sys.exc_info()[0])
 
 	def sendMove(self,target):
 		weights = self.mods['RoboCompInverseKinematics'].WeightVector()
@@ -199,7 +201,7 @@ class C(QWidget):
 		try:
 			self.proxy.setTargetPose6D(bodyPart, target, weights)
 		except:
-			print sys.exc_info()[0]
+			print (sys.exc_info()[0])
 
 	def test(self):
 		aux ='\n\nMove\n'

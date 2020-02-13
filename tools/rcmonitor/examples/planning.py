@@ -21,8 +21,10 @@
 import Ice, sys, math, traceback
 import random
 
-from PySide.QtCore import *
-from PySide.QtGui import *
+from PySide2.QtCore import *
+from PySide2.QtGui import *
+from PySide2.QtWidgets import *
+
 
 domain=open('domain.pddl', 'r').read()
 problem=open('problem.pddl', 'r').read()
@@ -56,21 +58,21 @@ class C(QWidget):
 	def clicked(self):
 		ret = False
 		try:
-			print "<<<"
+			print ("<<<")
 			ret, plan = self.proxy.getSolution(domain, problem)
-			print ">>>"
+			print (">>>")
 		except Ice.Exception:
 			traceback.print_exc()
 			return
 
 		if ret:
-			print "Plan found!"
-			print "Cost:", plan.cost
+			print ("Plan found!")
+			print ("Cost:", plan.cost)
 			for action in plan.actions:
-				print action.name, ": ",
+				print (action.name, ": ",)
 				for sym in action.symbols:
-					print sym,
-				print ''
+					print (sym,)
+				print ('')
 		else:
-			print "No plan found"
+			print ("No plan found")
 

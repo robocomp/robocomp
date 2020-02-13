@@ -38,5 +38,5 @@ class C():
   def job(self):
     vector, hState, bState = self.proxy.getRGBPackedImage(self.cameraNum) # imageVector, headState, baseState
     if len(vector) == 0:
-     print 'Error retrieving images!'
+     print ('Error retrieving images!')
     return ['rgbImage', [ vector, self.params.width, self.params.height*self.params.numCams ] ]

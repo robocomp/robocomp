@@ -20,8 +20,9 @@
 
 import Ice, sys, math, traceback
 
-from PySide.QtCore import *
-from PySide.QtGui import *
+from PySide2.QtCore import *
+from PySide2.QtGui import *
+from PySide2.QtWidgets import *
 
 
 class C(QWidget):
@@ -61,7 +62,7 @@ class C(QWidget):
 		pose.rz = 0.
 		self.proxy.setPoseFromParent("caja1", pose)
 		self.collided = self.proxy.collide("cajaMesh1", "cajaMesh2")
-		print self.x, self.collided
+		print (self.x, self.collided)
 
 		self.x += 0.05
 

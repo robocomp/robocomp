@@ -20,8 +20,9 @@
 
 import Ice, sys, math, traceback
 
-from PySide.QtCore import *
-from PySide.QtGui import *
+from PySide2.QtCore import *
+from PySide2.QtGui import *
+from PySide2.QtWidgets import *
 from ui_kinectDlg import Ui_KinectDlg
 import numpy as np
 import cv2
@@ -52,26 +53,26 @@ class C(QWidget):
 		self.job()
 
 	def job(self):
-		self.method_combo = unicode(self.ui.method_combobox.currentText())
+		self.method_combo = str(self.ui.method_combobox.currentText())
 		if "getData" in self.method_combo:
 			try:
 				self.color, self.depth = self.proxy.getAll()
 				if (len(self.color.image) == 0) or (len(self.depth.depth) == 0):
-					print 'Error retrieving images!'
+					print ('Error retrieving images!')
 			except Ice.Exception:
 				traceback.print_exc()
 		elif "getImage" in self.method_combo:
 			try:
 				self.color = self.proxy.getImage()
 				if (len(self.color.image) == 0):
-					print 'Error retrieving images!'
+					print ('Error retrieving images!')
 			except Ice.Exception:
 				traceback.print_exc()
 		elif "getDepth" in self.method_combo:
 			try:
 				self.depth = self.proxy.getDepth()
 				if (len(self.depth.depth) == 0):
-					print 'Error retrieving images!'
+					print ('Error retrieving images!')
 			except Ice.Exception:
 				traceback.print_exc()
 

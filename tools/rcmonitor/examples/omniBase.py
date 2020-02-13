@@ -20,8 +20,10 @@
 
 import Ice, sys, math, traceback
 
-from PySide.QtCore import *
-from PySide.QtGui import *
+from PySide2.QtCore import *
+from PySide2.QtGui import *
+from PySide2.QtWidgets import *
+
 
 class C(QWidget):
 	def __init__(self, endpoint, modules):
@@ -93,7 +95,7 @@ class C(QWidget):
 	def paintEvent(self, event=None):
 		xOff = self.width()/2.
 		yOff = self.height()/2.
-		print 'corr', self.bState.correctedX, self.bState.correctedZ, self.bState.correctedAlpha
+		print ('corr', self.bState.correctedX, self.bState.correctedZ, self.bState.correctedAlpha)
 
 		xPos = 0
 		yPos = 0
@@ -118,8 +120,8 @@ class C(QWidget):
 				try:
 					painter.drawPie(xPos, yPos, 18, 18, start, 20*2*16)
 				except:
-					print 'BASE :-('
-					print type(xPos-7)
+					print ('BASE :-(')
+					print (type(xPos-7))
 		except:
 			pass
 
@@ -134,14 +136,14 @@ class C(QWidget):
 				try:
 					painter.drawPie(xPos, yPos, 18, 18, start, 20*2*16)
 				except:
-					print 'BASE :-('
+					print ('BASE :-(')
 		except:
 			pass
 		
-		print '-----------------------'
-		print self.bState.x, self.bState.z, self.bState.alpha
-		print self.bState.correctedX, self.bState.correctedZ, self.bState.correctedAlpha
-		print '-----------------------'
+		print ('-----------------------')
+		print (self.bState.x, self.bState.z, self.bState.alpha)
+		print (self.bState.correctedX, self.bState.correctedZ, self.bState.correctedAlpha)
+		print ('-----------------------')
 
 		painter.end()
 		painter = None

@@ -20,8 +20,9 @@
 
 import Ice, sys, math, traceback,os
 
-from PySide.QtCore import *
-from PySide.QtGui import *
+from PySide2.QtCore import *
+from PySide2.QtGui import *
+from PySide2.QtWidgets import *
 
 
 class C(QWidget):
@@ -81,7 +82,7 @@ class C(QWidget):
 	  
 	def load(self):
 		filename = QFileDialog.getOpenFileName(self, str("Load image"),str(os.environ['HOME']),str("Images (*.png *.gif *.jpg)"))
-		print filename
+		print (filename)
 		self.image.load(filename)
 
 

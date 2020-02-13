@@ -20,8 +20,10 @@
 
 import Ice, sys, math, traceback
 
-from PySide.QtCore import *
-from PySide.QtGui import *
+from PySide2.QtCore import *
+from PySide2.QtGui import *
+from PySide2.QtWidgets import *
+
 
 class C(QWidget):
 	def __init__(self, endpoint, modules):
@@ -51,7 +53,7 @@ class C(QWidget):
 		for item in self.motors:
 			self.combo.addItem(item.name)
 		if len(self.motors)==0:
-			print 'JointMotor: Error: No motors.'
+			print ('JointMotor: Error: No motors.')
 		
 		# Enable motor
 		self.enableButton = QPushButton("Enable", self)

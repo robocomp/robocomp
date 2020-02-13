@@ -20,8 +20,9 @@
 
 import Ice, sys, math, traceback
 
-from PySide.QtCore import *
-from PySide.QtGui import *
+from PySide2.QtCore import *
+from PySide2.QtGui import *
+from PySide2.QtWidgets import *
 
 
 class C(QWidget):
@@ -45,14 +46,14 @@ class C(QWidget):
 
 	def buttonSlot(self):
 		if self.included:
-			print "Removing"
+			print ("Removing")
 			self.remove()
-			print "Removed"
+			print ("Removed")
 			self.included = False
 		else:
-			print "Including"
+			print ("Including")
 			self.include()
-			print "Included"
+			print ("Included")
 			self.included = True
 
 	def include(self):

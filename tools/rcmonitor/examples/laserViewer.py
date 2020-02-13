@@ -20,8 +20,10 @@
 
 import Ice, sys, math, traceback
 
-from PySide.QtCore import *
-from PySide.QtGui import *
+from PySide2.QtCore import *
+from PySide2.QtGui import *
+from PySide2.QtWidgets import *
+
 
 class C(QWidget):
 	def __init__(self, endpoint, modules):
@@ -43,12 +45,12 @@ class C(QWidget):
 		self.spinBox.setDecimals(6);
 		self.spinBox.setSingleStep(0.00005)
 		self.job()
-		print self.proxy.getLaserConfData()
+		print (self.proxy.getLaserConfData())
 
 	def job(self):
 		try:
 			self.data, basura = self.proxy.getLaserAndBStateData()
-			print '-----'
+			print ('-----')
 			m = -1
 			M = -1
 			for d in self.data:
@@ -56,10 +58,10 @@ class C(QWidget):
 					m = d.dist
 				if M == -1 or d.dist > M:
 					M = d.dist
-			print len(self.data), ' from', m, 'to', M
+			print (len(self.data), ' from', m, 'to', M)
 			
 		except:
-			print 'No laser connection.'
+			print ('No laser connection.')
 		return None
 	def measure2coord(self, measure):
 		const_mul = self.spinBox.value()
