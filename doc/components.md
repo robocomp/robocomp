@@ -8,7 +8,7 @@ Robotics is a mixed bag of technology, where almost everything finds its way thr
 
 Because of this, we organize the software for our robots in big architectures that try to reproduce whatever we understand as intelligent behavior. The most audacious architectures are called *cognitive architectures* and try to integrate all levels of behavior and reasoning needed to achieve intelligence. Some of them have been with us for more than 30 years, like [SOAR](http://soar.eecs.umich.edu/).
 
-The problem with building these little monsters is that you need a very powerful underlying infrastructure, that lets you build and modify software created by many people, and that has to execute on real, moving machines. Also, everybody expect robots to be smarter than they really are and that is a lot of preassure. 
+The problem with building these little monsters is that you need a very powerful underlying infrastructure, that lets you build and modify software created by many people, and that has to execute on real, moving machines. Also, everybody expects robots to be smarter than they really are and that is a lot of pressure. 
 
 ## Why use Components in the first place?
 
@@ -24,7 +24,7 @@ You need to define what is a generic component and consequently how its internal
 
 In RoboComp (2005- ) we have created our own component model, inspired by the [ORCA](http://orca-robotics.sourceforge.net/) model and making it evolve to fit our needs along these years. As a middleware, RoboComp primarily uses [Ice](www.zeroc.com) and there is ongoing experimental work to make RoboComp middleware agnostic, so its components can be re-generated to use other middlewares such as [DDS](http://portals.omg.org/dds/).
 
-RoboComp's components model is quite simple and we always try to simplify it even more. It can be best explained through two Domain Specific Languages (DSLs) that have been created to define a component at a very high level of abstraction. 
+RoboComp's components model is quite simple and we always try to simplify it even more. It can be best explained through two Domain-Specific Languages (DSLs) that have been created to define a component at a very high level of abstraction. 
 
 **IDSL** stands for "Interface Definition Specific Language" and currently is a subset of Ice's Slice interface language. With IDSL you write the data structures and functions that a component can implement, require, subscribe to or publish. A component can implement several interfaces, offering different views of its internal functioning. Also, the same interface can be implemented by many components. This is an example of a simple interface written in IDSL:
 
@@ -39,7 +39,7 @@ module RoboCompSpeech
 };
 ```
 
-**CDSL** stands for "Component Definition Specific Language" and allows the user to specifiy its name, accesible interfaces, communication connections, target language and other available modules or libraries that you want to include in the building scripts.
+**CDSL** stands for "Component Definition Specific Language" and allows the user to specify its name, accessible interfaces, communication connections, target language and other available modules or libraries that you want to include in the building scripts.
 
 ```cpp
 import "/robocomp/interfaces/IDSLs/DifferentialRobot.idsl";
@@ -55,6 +55,6 @@ Component prueba
 };
 ```
 
-Using these two DSLs, RoboComp can generate the source code of the component using a tool designed to this end. The complete, functioning code of a component is created ready to be compiled and executed. We use a smart inheritance mechanism to separate the generic stuff from the user specific stuff and, based on it, the next time you generate a component, your code will remain untouched but access to new defined proxies will be there.
+Using these two DSLs, RoboComp can generate the source code of the component using a tool designed to this end. The complete, functioning code of a component is created ready to be compiled and executed. We use a smart inheritance mechanism to separate the generic stuff from the user-specific stuff and, based on it, the next time you generate a component, your code will remain untouched but access to newly defined proxies will be there.
 
 

@@ -6,11 +6,11 @@
 by [RoboLab (Universidad de Extremadura)](http://robolab.unex.es), [Aston University](https://www2.aston.ac.uk/eas), [ISIS (Universidad de Málaga)](http://www.grupoisis.uma.es/index.php?option=com_jresearch&view=staff&Itemid=3&lang=es) and many other collaborators from the Google Summer of Code program.
 
 RoboComp is an open-source Robotics framework providing the tools to create and modify software components that communicate through public interfaces. Components may *require*, *subscribe*, *implement* or *publish*
-interfaces in a seamless way. Building new components is done using two domain specific languages, IDSL and CDSL. With IDSL you define an interface and with CDSL you specify how the component will communicate with the world. With this information, a code generator creates C++ and/or Python sources, based on CMake, that compile and execute flawlessly. When some of these features have to be changed, the component can be easily regenerated and all the user specific code is preserved thanks to a simple inheritance mechanism.
+interfaces in a seamless way. Building new components is done using two domain-specific languages, IDSL and CDSL. With IDSL you define an interface and with CDSL you specify how the component will communicate with the world. With this information, a code generator creates C++ and/or Python sources, based on CMake, that compile and execute flawlessly. When some of these features have to be changed, the component can be easily regenerated and all the user-specific code is preserved thanks to a simple inheritance mechanism.
 
 If you already have RoboComp installed, jump to [tutorials](doc/README.md) to start coding! 
 
-:warning: If you want to contribute with something new to Robocomp, please do it on the [development branch](https://github.com/robocomp/robocomp/tree/development). If you fix something on the stable branch, please check if it's also relevant for development branch and try to [cherrypick](https://git-scm.com/docs/git-cherry-pick) your commit.  
+:warning: If you want to contribute with something new to Robocomp, please do it on the [development branch](https://github.com/robocomp/robocomp/tree/development). If you fix something on the stable branch, please check if it's also relevant for the development branch and try to [cherrypick](https://git-scm.com/docs/git-cherry-pick) your commit.  
 
 :question: If you have a question please look for it in the [FAQ](doc/FAQ.md). 
 -
@@ -47,11 +47,11 @@ It is recommendable to install the following packages::
 
     sudo apt-get install yakuake qt4-designer
 
-Note: RoboComp uses python2 for now, so make sure that you set python2 as your deafult choide if you also have python3 installed on your system. You can do so by adding this line into your ~/.bashrc file and then save it:
+Note: RoboComp uses python2 for now, so make sure that you set python2 as your default choice if you also have python3 installed on your system. You can do so by adding this line into your ~/.bashrc file and then save it:
 
     alias python=python2
     
-Note: One of the main tools of Robocomp, robocompdsl is using pyparsing and the current code doesn't work with 2.4 version of this library. With the previous commands we are installing the 2.2 version (python-pyparsing=2.2.0+dfsg1-2). If you a have more recent version of pyparsing installed with apt or pip we recomend you to uninstall it and install the 2.2 version. You can check your curren version of pyparsing with this command:
+Note: One of the main tools of Robocomp, robocompdsl is using pyparsing and the current code doesn't work with 2.4 version of this library. With the previous commands, we are installing the 2.2 version (python-pyparsing=2.2.0+dfsg1-2). If you have a more recent version of pyparsing installed with apt or pip we recommend you to uninstall it and install the 2.2 version. You can check your current version of pyparsing with this command:
 
     python -c "import pyparsing; print(pyparsing.__version__)"
     
@@ -120,7 +120,7 @@ Now let's run the simulator.
     cd ~/robocomp/files/innermodel
     rcis simpleworld.xml
   
-You can also use the default innermodel simpleworld.xml anywhere if you have set the ROBOCOMP environment variable.
+You can also use the default inner model simpleworld.xml anywhere if you have set the ROBOCOMP environment variable.
 
     rcis
     
@@ -128,7 +128,7 @@ Congratulations! RCIS should be up and running with a simple robot endowed with 
  
 #### Installing some RoboLab's components from GitHub
 
-The software of the robots using RoboComp is composed of different software components working together, communicating among them. What we just installed is just the core of RoboComp (the simulator, a component generator and some libraries). To have other features like joystick control we have to run additional software components available from other repositories, for example robocomp-robolab:
+The software of the robots using RoboComp is composed of different software components working together, communicating among them. What we just installed is just the core of RoboComp (the simulator, a component generator, and some libraries). To have other features like joystick control we have to run additional software components available from other repositories, for example, robocomp-robolab:
 
     cd ~/robocomp/components
     git clone https://github.com/robocomp/robocomp-robolab.git
@@ -150,7 +150,7 @@ Your joystick should be now running. It will make the robot advance and turn at 
 
     ./forceStopJoyStickComp.sh
     
-and check where the joystick device file has been created (e.g., `/dev/input/js0`). If it is not `/dev/input/js0`, edit `~/robocomp/components/robocomp-robolab/components/joystickComp/etc/config` change it accordingly and restart. Note that you might want to save the *config* file to the component's home directory so it does not interfere with future github updates.
+and check where the joystick device file has been created (e.g., `/dev/input/js0`). If it is not `/dev/input/js0`, edit `~/robocomp/components/robocomp-robolab/components/joystickComp/etc/config` change it accordingly and restart. Note that you might want to save the *config* file to the component's home directory so it does not interfere with future GitHub updates.
 
 
 ## Using the keyboard as a JoyStick
@@ -162,7 +162,7 @@ If you don't have a JoyStick install this component,
     make
     src/keyboardrobotcontroller.py etc/config
     
-and use the arrow keys to navigate the robot, the space bar to stop it an 'q' to exit.
+and use the arrow keys to navigate the robot, the space bar to stop it and 'q' to exit.
 
 Note 1: You must have your simulator running in a terminal and only then you can run a component in another terminal. You will get an error message if you run the above component without having RCIS already running.
 
