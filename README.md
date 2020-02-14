@@ -120,7 +120,7 @@ Now let's run the simulator.
     cd ~/robocomp/files/innermodel
     rcis simpleworld.xml
   
-You can also use the default inner model simpleworld.xml anywhere if you have set the ROBOCOMP environment variable.
+You can also use the default `innermodel/simpleworld.xml` anywhere if you have set the ROBOCOMP environment variable.
 
     rcis
     
