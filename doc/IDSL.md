@@ -19,8 +19,8 @@ IDSL is  Interface Definition Language used to create and define interfaces in R
 |interface |sequence | exception|short|
 
 - Identifiers begin with an alphabetic character, followed by any number of alphabetic characters or digits. Underscores are also permitted in identifiers with the following limitations:
-	* an identifier cannot begin or end with an underscore.
-	* an identifier cannot contain multiple consecutive underscores.
+    * an identifier cannot begin or end with an underscore.
+    * an identifier cannot contain multiple consecutive underscores.
 
 ### Modules
 
@@ -30,26 +30,26 @@ As in Zeroc Ice [[1](https://doc.zeroc.com/ice/3.6/the-slice-language/modules)],
 
 - IDSL requires all definitions to be nested inside a module, that is, you cannot define anything other than a module at global scope.
 
-- They can be reopened, even in different files. Such reopening can be usefull for large projects. Modules map to a corresponding scoping construct in each programming language. For example, scopes in C++ and packages in Java.
+- They can be reopened, even in different files. Such reopening can be useful for large projects. Modules map to a corresponding scoping construct in each programming language. For example, scopes in C++ and packages in Java.
 
 ### Types
 
 It contains all standard C++ data types, such as,` bool`, `byte`, `short`, `int`, `long`, `double`, `string`.
 
 It supports C++ style __Enumerator__.
-	
+    
     enum Fruit { Apple = 0, Pear = PearValue, Orange };
 
 It supports C++ style __struct__, but they __can't__ be nested. It can contain any of the basic types including enum.
 
 ```cpp
 struct Point {
-    	short x;
-    	short y;
+        short x;
+        short y;
 };
 
 struct TwoPoints {
-	Point coord1;
+    Point coord1;
         Point coord2;
 };
 ```
@@ -58,7 +58,7 @@ struct TwoPoints {
 
 Sequences are variable-length collections of elements. A sequence can be empty, or it can hold any number of elements up to the memory limits of your platform. Sequences can contain elements that are themselves sequences. This arrangement allows you to create lists of lists:
 
-	sequence<Fruit> FruitPlatter;
+    sequence<Fruit> FruitPlatter;
 
 Sequences are used to model a variety of collections, such as vectors, lists, queues, sets, bags, or trees.
 
@@ -68,11 +68,11 @@ A dictionary is a mapping from a key type to a value type.
 
 ```cpp
 struct Employee {
-	long number;
-	string firstName;
-	string lastName;
+    long number;
+    string firstName;
+    string lastName;
 };
-	 
+     
 dictionary<long, Employee> EmployeeMap;
 ```
 
@@ -86,11 +86,11 @@ The value type of a dictionary can be any IDSL type. However, the key type of a 
 
 IDSL interface is the core of what makes up Robocomp. 
 
-For communication between components to take place, you must invoke operations on an components proxy, which refers to an interface implimented in the component. To make the structure accessible, you must create an interface that allows clients to access the structure. 
+For communication between components to take place, you must invoke operations on a component's proxy, which refers to an interface implemented in the component. To make the structure accessible, you must create an interface that allows clients to access the structure. 
 
-A component may impliment one or more interfaces and each of those interface will have its own unique proxy.
+A component may implement one or more interfaces and each of those interfaces will have its unique proxy.
 
-You can think of an interface definition as the equivalent of the public part of a C++ class definition, or a Java interface, and of operation definitions as (virtual) member functions. 
+You can think of an interface definition as the equivalent of the public part of a C++ class definition, or a Java interface, and operation definitions as (virtual) member functions. 
 
 Note that nothing but operation definitions are allowed to appear inside an interface definition. In particular, you cannot define a type, an exception, or a data member inside an interface.
 
@@ -98,20 +98,20 @@ Note that nothing but operation definitions are allowed to appear inside an inte
 
 Operations are simply methods defined in the interface which can be invoked using a proxy to the interface.
 
-An operation definition must contain a return type and parameter definitions (it can also be left empty). You must use void to indicate that an operation returns no value — there is no default return type for operations.
+An operation definition must contain a return type and parameter definitions (it can also be left empty). You must use void to indicate that a operation returns no value — there is no default return type for operations.
 
 ```cpp
 interface CircadianRhythm {
-    	void setSleepPeriod(TimeOfDay startTime, TimeOfDay stopTime);
-    	// ...
+        void setSleepPeriod(TimeOfDay startTime, TimeOfDay stopTime);
+        // ...
 };
 ```
 
-The parameters can be either input or output. As with input parameters, you can use multiple output parameters. If you have both input and output parameters for an operation, the output parameters must follow the input parameters.
+The parameters can be either input or output. As with input parameters, you can use multiple output parameters. If you have both input and output parameters for an operation, then output parameters must follow the input parameters.
 
 ```cpp
 void changeSleepPeriod(TimeOfDay startTime, TimeOfDay stopTime, 
-	out TimeOfDay prevStartTime, out TimeOfDay prevStopTime);
+    out TimeOfDay prevStartTime, out TimeOfDay prevStopTime);
 ```
  
 #### Overloading
@@ -120,12 +120,12 @@ IDSL does not support any form of overloading of operations.
 
 #### Idempotent Operations
 
-Idompotent Operations are operations that do not modify the state of the object they operate on. For example, `x = 1;` is an idempotent operation because it does not matter whether it is executed once or twice - either way, x ends up with the value 1. On the other hand, `x += 1;` is not an idempotent operation because executing it twice results in a different value for x than executing it once. By definition any read-only operation is idempotent.
+Idempotent Operations are operations that do not modify the state of the object they operate on. For example, `x = 1;` is an idempotent operation because it does not matter whether it is executed once or twice - either way, x ends up with the value 1. On the other hand, `x += 1;` is not an idempotent operation because executing it twice results in a different value for x than executing it once. By definition any read-only operation is idempotent.
 
 ```cpp
 interface Clock {
-	idempotent TimeOfDay getTime();
-	idempotent void setTime(TimeOfDay time);
+    idempotent TimeOfDay getTime();
+    idempotent void setTime(TimeOfDay time);
 };
 ```
     
@@ -146,9 +146,9 @@ Exceptions allow you to return an arbitrary amount of error information to the c
 
 ```cpp
 interface Clock {
-	idempotent TimeOfDay getTime();
-      	idempotent void setTime(TimeOfDay timep)
-        	throws RangeError, Error;
+    idempotent TimeOfDay getTime();
+        idempotent void setTime(TimeOfDay timep)
+            throws RangeError, Error;
 };
 ```
     
@@ -167,7 +167,7 @@ An operation can throw only those user exceptions that are listed in its excepti
 
 ```cpp
 exception ErrorBase {
-	string reason;
+    string reason;
 };
 
 exception RuntimeError extends ErrorBase {
