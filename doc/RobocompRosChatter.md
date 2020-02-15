@@ -1,6 +1,6 @@
 # RoboComp Component & Ros Node chatter
 
-We will create a RoboComp Component which can communicate with a Ros Node using Ros Middleware.
+We will create a RoboComp Component that can communicate with a Ros Node using Ros Middleware.
 
 The Ros Node which we will use can be found [here](https://github.com/robocomp/robocomp/tree/highlyunstable/doc/src/beginner_tutorials). 
 
@@ -33,7 +33,7 @@ ros::Publisher chatter_pub = n.advertise<beginner_tutorials::image>("chatter", 1
 // %EndTag(PUBLISHER)%
 ```
 
-Talker (the Ros Node) publishes this msg through the topic  called `chatter`.
+Talker (the Ros Node) publishes this msg through the topic called `chatter`.
 
 **For more info** about topics visit this [tutorial](http://wiki.ros.org/ROS/Tutorials/UnderstandingTopics) from ROS.
 
@@ -49,7 +49,7 @@ module RoboCompListener{
     struct Image {
         string name;
         uint size;
-    	 imageVector image;
+         imageVector image;
 };
 
 interface chat{
@@ -83,7 +83,7 @@ Component listener
 
 And use RoboCompDSL to generate your component.
 
-**For more info** about about creating components, look at this [tutorial](https://github.com/robocomp/robocomp/blob/highlyunstable/doc/robocompdsl.md) created by Robocomp.
+**For more info** about creating components, look at this [tutorial](https://github.com/robocomp/robocomp/blob/highlyunstable/doc/robocompdsl.md) created by Robocomp.
 
 ## 4. Run it
 
