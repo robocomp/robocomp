@@ -8,13 +8,13 @@ Robotics is a mixed bag of technology, where almost everything finds its way thr
 
 Because of this, we organize the software for our robots in big architectures that try to reproduce whatever we understand as intelligent behavior. The most audacious architectures are called *cognitive architectures* and try to integrate all levels of behavior and reasoning needed to achieve intelligence. Some of them have been with us for more than 30 years, like [SOAR](http://soar.eecs.umich.edu/).
 
-The problem with building these little monsters is that you need a very powerful underlying infrastructure, that lets you build and modify software created by many people, and that has to execute on real, moving machines. Also, everybody expect robots to be smarter than they really are and that is a lot of preassure. 
+The problem with building these little monsters is that you need a very powerful underlying infrastructure, that lets you build and modify software created by many people, and that has to execute on real, moving machines. Also, everybody expects robots to be smarter than they really are and that is a lot of pressure. 
 
 ## Why use Components in the first place?
 
 Components provide a new, developing technology that can be very helpful. Components are *programs that communicate* and as such, they are built with everything at hand: libraries, objects, threads, sockets, lambda functions and any other thing you can come up with to code a program. 
 
-Components need a way to share information among them, and here is where communication middlewares get in. If you want to communicate programs written in different languages, running across the internet, executing on different hardware architectures -even browsers- then you cannot deal with just a socket. You need a middleware. 
+Components need a way to share information among them, and here is where communication middlewares get in. If you want to communicate applications written in different languages, running across the internet, executing on different hardware architectures -even browsers- then you cannot deal with just a socket. You need a middleware. 
 
 Putting together programs and a communication middleware, you can almost come up with a way to make more components. Except, one more thing is needed, a model for your components. 
 
@@ -39,7 +39,7 @@ module RoboCompSpeech
 };
 ```
 
-**CDSL** stands for "Component Definition Specific Language" and allows the user to specifiy its name, accesible interfaces, communication connections, target language and other available modules or libraries that you want to include in the building scripts.
+**CDSL** stands for "Component Definition Specific Language" and allows the user to specify its name, accessible interfaces, communication connections, target language and other available modules or libraries that you want to include in the building scripts.
 
 ```cpp
 import "/robocomp/interfaces/IDSLs/DifferentialRobot.idsl";
@@ -55,6 +55,6 @@ Component prueba
 };
 ```
 
-Using these two DSLs, RoboComp can generate the source code of the component using a tool designed to this end. The complete, functioning code of a component is created ready to be compiled and executed. We use a smart inheritance mechanism to separate the generic stuff from the user specific stuff and, based on it, the next time you generate a component, your code will remain untouched but access to new defined proxies will be there.
+Using these two DSLs, RoboComp can generate the source code of the component using a tool designed to this end. The complete, functioning code of a component is created ready to be compiled and executed. We use a smart inheritance mechanism to separate the generic stuff from the user-specific stuff and, based on it, the next time you generate a component, your code will remain untouched but access to newly defined proxies will be there.
 
 

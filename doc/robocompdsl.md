@@ -139,7 +139,7 @@ void SpecificWorker::compute( )
     }
 }
 ```
-save and, 
+save and, run cmake
 
 ##Added the cmake command 
 ```bash
@@ -150,8 +150,7 @@ save and,
 
 Note that we are using a lambda function as a parameter to the std::sort function so you will need a gcc compiler version equal or newer than 4.9. Check with `gcc -v`. If you don't have it, substitute the sort method with your own sorting procedure.
 
-If you have generated the code using python the replace the *specificworker.py* found in the src folder with this code
-
+If you have generated the code using python then, open *specificworker.py* in your favorite editor. Go to the **def compute(self):** method and replace it with,
 ```python
 def compute(self):
 	print 'SpecificWorker.compute...'
@@ -172,15 +171,22 @@ def compute(self):
 				time.sleep(1)
 			else:
 				self.differentialrobot_proxy.setSpeedBase(100, 0)
-		except Ice.Exception, e:
-			traceback.print_exc()
-			print e
-		return True
+	except Ice.Exception, e:
+		traceback.print_exc()
+		print e
+	return True
 ```
 
-Save the file.
+Save the file and run cmake
+
+```bash
+    cd ..
+    cmake .
+    make
+```
 
 Now we need to tell the component where to find the DifferentialRobot and the Laser interfaces. Of course they are implemented by the rcis simulator, Run rcis <innemodel> and you can find the port numbers for each interface, so now we only need to change the ports in the configuration file. Copy the configuration file to your component home directory:
+
 
 ```bash
 cd path/to/mycomponent
