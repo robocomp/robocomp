@@ -49,7 +49,7 @@ module RoboCompListener{
     struct Image {
         string name;
         uint size;
-         imageVector image;
+        imageVector image;
 };
 
 interface chat{
