@@ -1,6 +1,6 @@
 # Robocomp Workspace Model
 
-The Robocomp workspace is used by who people who are developing components rather than the framework itself. 
+The Robocomp workspace is used by people who are developing components rather than the framework itself. 
 
 The main advantage of having a workspace is that it will make the workflow a lot more organized and easier to work with. It basically tidies up the development process. 
 
@@ -16,7 +16,7 @@ For example, for building or running a component you have to go to its directory
 
 The `workspace` is the folder inside which you are going to be actively developing components. Keeping things in a folder with connected development helps keep development models separated. In other words, a workspace can be thought of as a group different components. 
 
-For example Robocomp has some default components, if you create new components, Robocomp's components can be in a workspace while your components are in another. 
+For example, Robocomp has some default components, if you create new components, Robocomp's components can be in a workspace while your components are in another. 
 
 - The config file in ~/.config/RoboComp/rc_worksapce.config maintains a list of all the registered workspaces.
 
@@ -34,19 +34,19 @@ This folder is easily identified, as it is where the `toplevel.cmake` is linked 
 
 The build space is the folder in which `cmake` is invoked and generates artifacts such as the `CMakeCache`. 
 
-- This need not be a direct sub directory of workspace, it can be anywhere. This is basically a build directory of all the components.
+- This need not be a direct subdirectory of workspace, it can be anywhere. This is basically a build directory of all the components.
 
 ### Development Space
 
 The development space is where the build system generates the binaries and config files, which are executable before installation. 
 
-It will have a separate directory for each component. Each component directory contains a folder `bin` which has the build binaries, and a `etc` directory which contain config files. This should be a direct subdirectory of workspace.
+It will have a separate directory for each component. Each component directory contains a folder `bin` which has the build binaries and a `etc` directory which contain config files. This should be a direct subdirectory of the workspace.
 
-- Currently the devel space is merged with the source space, as you can seen in the layout graph.
+- Currently, the devel space is merged with the source space, as you can see in the layout graph.
 
 ### Install Space
 
-This is the default directory in which the components in current workspace will get installed, along with generated docs. This directory contains a file named *.rc_install* which marks this as an install space. 
+This is the default directory in which components in the current workspace will get installed, along with generated docs. This directory contains a file named *.rc_install* which marks this as an install space. 
 
 - Please note that the robocomp install path `/opt/robocomp` is also an install space by default.
 
