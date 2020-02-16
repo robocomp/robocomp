@@ -79,7 +79,7 @@ The whole world is embraced inside the _innermodel_ tag. Inside it we find the f
         - 1 mesh for the robot's body representation
     - 1 translation to position the laser
       - 1 laser
-	  - 1 plane for the laser's body representation
+      - 1 plane for the laser's body representation
       and so on for the rgbd camera ...
       
 Each of these elements is read into memory and corresponding classes are instantiated. Geometric transforms are encoded as RT matrices using a left-hand reference system with Y-axis pointing up, Z-axis pointing front and X-axis pointing right.
