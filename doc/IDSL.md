@@ -107,7 +107,7 @@ interface CircadianRhythm {
 };
 ```
 
-The parameters can be either input or output. As with input parameters, you can use multiple output parameters. If you have both input and output parameters for an operation, then output parameters must follow the input parameters.
+The parameters can be either input or output. As with input parameters, you can use multiple output parameters. If you have both input and output parameters for an operation, the output parameters must follow the input parameters.
 
 ```cpp
 void changeSleepPeriod(TimeOfDay startTime, TimeOfDay stopTime, 
