@@ -6,7 +6,7 @@ This tutorial complements [Creating my First Component using robocompdsl](roboco
 
 ## Creating the repository
 
-For example, if your GitHub account is *myaccount*, first log in with your browser and create a new repository named *mycomponents*. If you need help you can follow this instructions: 
+For example, if your GitHub account is *myaccount*, first log in with your browser and create a new repository named *mycomponents*. If you need help you can follow these instructions: 
 
 https://help.github.com/articles/create-a-repo/
     

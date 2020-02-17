@@ -14,11 +14,11 @@ There are three tasks we can acomplish using **robocompdsl**. We can generate:
 
 ## Generating a CDSL template file
 Even though writing CDSL files is easy -their structure is simple and the number of reserved words is very limited- robocompdsl can generate template CDSL files to be used as a guide when writing CDSL files.
-Start by creating a new directory for your component named, for instance, *myFirstComponent*, inside the robocomp directory. Then run the code generator:
+Start by creating a new directory for your component named, for instance, *myComponent*, inside the robocomp directory. Then run the code generator:
 
 ```bash
-$ mkdir myFirstComponent	
-$ robocompdsl myFirstComponent/myFirstComponent.cdsl
+$ mkdir myComponent	
+$ robocompdsl myComponent/myComponent.cdsl
 ```
 
 This will generate a CDSL file with the following content:
@@ -27,7 +27,7 @@ This will generate a CDSL file with the following content:
 import "import1.idsl";
 import "import2.idsl";
 
-Component myFirstComponent
+Component myComponent
 {
         Communications
         {
@@ -53,7 +53,7 @@ Let's change the template file above by something like this,
 ```cpp
     import "DifferentialRobot.idsl";
     import "Laser.idsl";
-    Component myFirstComponent
+    Component MyFirstComp
     {
         Communications
 	{
@@ -63,14 +63,14 @@ Let's change the template file above by something like this,
     };
 ```    
     
-and save it as *myFirstComponent.cdsl*. Now run again robocompdsl with the CDSL file as first argument and the directory where the code should be placed as the second argument.
+and save it as *myComponent.cdsl*. Now run again robocompdsl with the CDSL file as first argument and the directory where the code should be placed as the second argument.
 
 From the component's directory:
     
 ```bash
-cd path/to/myFistComponent
+cd path/to/myComponent
 # There is a dot at the end of the following line!
-robocompdsl myFirstComponent.cdsl .
+robocompdsl myComponent.cdsl .
 ```
 
 **Watch the dot at the end!**
@@ -89,7 +89,10 @@ sudo pip2 uninstall pyparsing
 ```bash
 sudo apt-get install pypy-pyparsing
 ```
-
+NOTE 3: If installing pypy-parsing does not work and produces an error like :no module named pyparsing then run the following command : 
+```bash
+sudo pip2 install pyparsing==2.2
+```
 ## Modifying the component to write a simple controller for the robot
 
 Check that the *rcis simulator* is up and running. You should have two open windows, one with a camara looking at the world and another with the subjective camera of the robot. In not, in a new terminal type,
@@ -102,7 +105,7 @@ rcis simpleworld.xml
 Now, goto to the src subdirectory of the new component, 
 
 ```bash
-cd path/to/myFirstComponent/src
+cd path/to/mycomponent/src
 ```
     
 and open *specificworker.cpp* in your favorite editor. Go to the **void SpecificWorker::compute()** method and replace it with,
@@ -137,7 +140,7 @@ void SpecificWorker::compute( )
     }
 }
 ```
-save and, 
+save and, run cmake
 
 ##Added the cmake command 
 ```bash
@@ -148,8 +151,7 @@ save and,
 
 Note that we are using a lambda function as a parameter to the std::sort function so you will need a gcc compiler version equal or newer than 4.9. Check with `gcc -v`. If you don't have it, substitute the sort method with your own sorting procedure.
 
-If you have generated the code using python the replace the *specificworker.py* found in the src folder with this code
-
+If you have generated the code using python then, open *specificworker.py* in your favorite editor. Go to the **def compute(self):** method and replace it with,
 ```python
 def compute(self):
 	print 'SpecificWorker.compute...'
@@ -167,6 +169,7 @@ def compute(self):
 			print distance
 			if distance < 400:
 				self.differentialrobot_proxy.setSpeedBase(0, rot)
+				time.sleep(1)
 			else:
 				self.differentialrobot_proxy.setSpeedBase(100, 0)
 	except Ice.Exception, e:
@@ -175,12 +178,19 @@ def compute(self):
 	return True
 ```
 
-Save the file.
+Save the file and run cmake
+
+```bash
+    cd ..
+    cmake .
+    make
+```
 
 Now we need to tell the component where to find the DifferentialRobot and the Laser interfaces. Of course they are implemented by the rcis simulator, Run rcis <innemodel> and you can find the port numbers for each interface, so now we only need to change the ports in the configuration file. Copy the configuration file to your component home directory:
 
+
 ```bash
-cd path/to/myFirstComponent
+cd path/to/mycomponent
 cp etc/config .
 gedit config
 ```
@@ -208,13 +218,13 @@ Now start the component,
 For C++:
 
 ```bash
-bin/myFirsComponent --Ice.Config=etc/config
+bin/mycomponent --Ice.Config=etc/config
 ```
 
 For Python:
 
 ```bash
-python src/myFirstComponent.py --Ice.Config=etc/config
+python src/MyFirstComp.py --Ice.Config=etc/config
 ```
 and watch the robot avoiding obstacles! 
 Change the code to improve this simple behavior of the robot. Stop the component by closing its UI window, then modify, recompile and execute again.
