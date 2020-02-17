@@ -25,7 +25,7 @@ import sys, traceback, Ice, os, copy
 import signal, hashlib
 signal.signal(signal.SIGINT, signal.SIG_DFL) # Ctrl+c handling
 
-from PySide import QtCore, QtGui
+from PySide2 import QtCore, QtGui
 
 import string
 import random
@@ -39,7 +39,7 @@ try:
 except:
 	pass
 if len(ROBOCOMP)<1:
-	print 'ROBOCOMP environment variable not set! Exiting.'
+	print ('ROBOCOMP environment variable not set! Exiting.')
 	sys.exit()
 
 
@@ -60,7 +60,7 @@ def getPassFor(host_param):
 
 
 if len(sys.argv) < 5:
-	print "EXAMPLE: rcremote localhost mytabname /home/robocomp touch argument1 argument2"
+	print ("EXAMPLE: rcremote localhost mytabname /home/robocomp touch argument1 argument2")
 	sys.exit(-1)
 
 if __name__ == '__main__':
@@ -77,12 +77,12 @@ if __name__ == '__main__':
 				rcremote_proxy = RoboCompRemote.RCRemotePrx.checkedCast(basePrx)
 				mprx["RCRemoteProxy"] = rcremote_proxy
 			except Ice.Exception:
-				print 'Cannot connect to the remote object (RCRemote)', proxyString
+				print ('Cannot connect to the remote object (RCRemote)', proxyString)
 				#traceback.print_exc()
 				status = 1
 		except Ice.Exception, e:
-			print e
-			print 'Cannot get RCRemoteProxy property.'
+			print (e)
+			print ('Cannot get RCRemoteProxy property.')
 			status = 1
 
 	except:
@@ -91,25 +91,25 @@ if __name__ == '__main__':
 
 
 	if status == 0:
-		print argv
+		print (argv)
 		host = argv[1]
 		yakuakeTabName = argv[2]
 		path = argv[3]
 		binary = argv[4]
 		arguments = argv[5:]
-		print 'path', path
-		print 'binary', binary
-		print 'arguments', arguments
+		print ('path', path)
+		print ('binary', binary)
+		print ('arguments', arguments)
 		randomStuff = random_stuff_generator()
 		password = getPassFor(host)
 		hashedPassword = hashlib.sha224(randomStuff+password).hexdigest()
 		if rcremote_proxy.run(randomStuff, hashedPassword, path, binary, arguments, yakuakeTabName):
-			print 'ok'
+			print ('ok')
 			sys.exit(0)
 		else:
-			print 'error'
+			print ('error')
 			sys.exit(-1)
 	else:
-		print 'probleemm'
+		print ('probleemm')
 		sys.exit(-1)
 

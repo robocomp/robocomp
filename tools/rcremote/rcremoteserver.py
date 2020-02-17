@@ -27,7 +27,7 @@ import hashlib
 import signal
 signal.signal(signal.SIGINT, signal.SIG_DFL)
 
-from PySide import QtGui, QtCore
+from PySide2 import QtGui, QtCore
 
 import subprocess
 
@@ -56,7 +56,7 @@ class GenericWorker(QtCore.QObject):
 	# @param per Period in ms
 	@QtCore.Slot(int)
 	def setPeriod(self, p):
-		print "Period changed", p
+		print ("Period changed", p)
 		Period = p
 		timer.start(Period)
 
@@ -66,20 +66,20 @@ try:
 except:
 	pass
 if len(ROBOCOMP)<1:
-	print 'ROBOCOMP environment variable not set! Trying to read ~/.robocomp'
+	print ('ROBOCOMP environment variable not set! Trying to read ~/.robocomp')
 	try:
 		lines = [x.strip() for x in open(os.getenv("HOME")+'/.robocomp', 'r').readlines() if len(x.strip())>0 and x[0] != '#']
 	except:
-		print 'can\'t read file'
+		print ('can\'t read file')
 		sys.exit()
 	if len(lines) != 1:
-		print 'empty?'
+		print ('empty?')
 		sys.exit()
 	if lines[0][0] != '/':
-		print 'we need an absolute path in ~/.robocomp'
+		print ('we need an absolute path in ~/.robocomp')
 		sys.exit()
 	ROBOCOMP = lines[0]
-	print "Read $ROBOCOMP from ~/.robocomp <"+ROBOCOMP+">"
+	print ("Read $ROBOCOMP from ~/.robocomp <"+ROBOCOMP+">")
 		
 	
 
@@ -133,15 +133,15 @@ class SpecificWorker(GenericWorker):
 	# run
 	#
 	def run(self, stuff, hashedPassword, path, binary, arguments, yakuakeTabName):
-		print 'BINARY', binary
-		print 'PATH', path
-		print 'TABNAME', yakuakeTabName
-		print 'ARGS', arguments
+		print ('BINARY', binary)
+		print ('PATH', path)
+		print ('TABNAME', yakuakeTabName)
+		print ('ARGS', arguments)
 	
 		time.sleep(0.5)
 		with QtCore.QMutexLocker(self.mutex) as locker:
 			if hashedPassword != hashlib.sha224(stuff+self.passwd).hexdigest():
-				print 'WRONG PASSWORD', hashedPassword
+				print ('WRONG PASSWORD', hashedPassword)
 				return False
 			else:
 				if not yakuakeTabName in self.onTheirWay:
@@ -173,12 +173,12 @@ if __name__ == '__main__':
 
 	if len(sys.argv) < 2:
 		try:
-			print 'Reading password from ~/.rcremote...'
+			print ('Reading password from ~/.rcremote...')
 			password = getPassFor('localhost')
-			print 'ok.'
+			print ('ok.')
 		except:
-			print 'Couldn\'t read password from file!'
-			print '\nUsage: rcremoteserver <password>'
+			print ('Couldn\'t read password from file!')
+			print ('\nUsage: rcremoteserver <password>')
 			sys.exit(-1)
 	else:
 		password = sys.argv[1]
