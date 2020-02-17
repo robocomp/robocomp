@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 #
@@ -20,7 +20,7 @@
 #    along with RoboComp.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-import sys, traceback, Ice, IceStorm, subprocess, threading, time, Queue, os
+import sys, traceback, Ice, IceStorm, subprocess, threading, time, os
 import hashlib
 
 # Ctrl+c handling
@@ -140,7 +140,8 @@ class SpecificWorker(GenericWorker):
 	
 		time.sleep(0.5)
 		with QtCore.QMutexLocker(self.mutex) as locker:
-			if hashedPassword != hashlib.sha224(stuff+self.passwd).hexdigest():
+			stuff_pass = str(stuff+self.passwd).encode('utf-8')
+			if hashedPassword != hashlib.sha224(stuff_pass).hexdigest():
 				print ('WRONG PASSWORD', hashedPassword)
 				return False
 			else:
