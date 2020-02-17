@@ -29,7 +29,7 @@
 - rgbd
 
 
-A tree made up of elements (robots, bodies, sensors and actuators) connected through 6D geometric transformations is a _kinematic tree_ . The basic relationship among elements is "part_of" meaning that a child is rigidly attached to her parent and will move with it. The precise position of the child with respect to her parent is encoded in an intermediate node that will typically  be a _transform_ (6D geometric transformation). It also can be divided in a _translation_ or a _rotation_.
+A tree made up of elements (robots, bodies, sensors, and actuators) connected through 6D geometric transformations is a _kinematic tree_ . The basic relationship among elements is "part_of" meaning that a child is rigidly attached to her parent and will move with it. The precise position of the child with respect to her parent is encoded in an intermediate node that will typically be a _transform_ (6D geometric transformation). It also can be divided into a _translation_ or a _rotation_.
 
 The InnerModel tree can be expressed as an XML file. This file can be written to disk at any time or read from a file when the components start. Once in memory, the InnerModel class holds a tree data structure and offers an API to access and modify its nodes and edges.
 
