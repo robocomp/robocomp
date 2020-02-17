@@ -40,20 +40,21 @@ Tested in Ubuntu 18.04.
 Make sure you have installed the following packages from the Ubuntu repository:
 
     sudo apt-get update
-    sudo apt-get install git git-annex cmake g++ libgsl-dev libopenscenegraph-dev cmake-qt-gui zeroc-ice-all-dev freeglut3-dev libboost-system-dev libboost-thread-dev qt5-default libqt5xmlpatterns5-dev python-pip python-pyparsing=2.2.0+dfsg1-2 python-numpy libxt-dev libboost-test-dev libboost-filesystem-dev python-libxml2 python-xmltodict libccd-dev python-pyside pyside-tools python-zeroc-ice zeroc-ice-all-runtime
-    sudo pip install networkx pyside2 argcomplete
+    sudo apt-get install git git-annex cmake g++ libgsl-dev libopenscenegraph-dev cmake-qt-gui zeroc-ice-all-dev freeglut3-dev libboost-system-dev libboost-thread-dev qt5-default libqt5xmlpatterns5-dev libxt-dev libboost-test-dev libboost-filesystem-dev  libccd-dev  zeroc-ice-all-runtime
+    sudo apt-get install python3-pip python3-pyparsing=2.2.0+dfsg1-2 python3-numpy python3-libxml2 python3-xmltodict  python3-zeroc-ice
+    sudo pip3 install networkx pyside2 argcomplete termcolor cogapp
 
 It is recommendable to install the following packages::
 
     sudo apt-get install yakuake qttools5-dev-tools qt5-assistant
 
-Note: RoboComp uses python2 for now, so make sure that you set python2 as your default choice if you also have python3 installed on your system. You can do so by adding this line into your ~/.bashrc file and then save it:
+<!--Note: RoboComp uses python2 for now, so make sure that you set python2 as your default choice if you also have python3 installed on your system. You can do so by adding this line into your ~/.bashrc file and then save it:
 
     alias python=python2
-    
+--> 
 Note: One of the main tools of Robocomp, robocompdsl is using pyparsing and the current code doesn't work with 2.4 version of this library. With the previous commands, we are installing the 2.2 version (python-pyparsing=2.2.0+dfsg1-2). If you have a more recent version of pyparsing installed with apt or pip we recommend you to uninstall it and install the 2.2 version. You can check your current version of pyparsing with this command:
 
-    python -c "import pyparsing; print(pyparsing.__version__)"
+    python3 -c "import pyparsing; print(pyparsing.__version__)"
     
 
 ## Installation itself
@@ -150,14 +151,14 @@ Your joystick should be now running. It will make the robot advance and turn at 
 
     ./forceStopJoyStickComp.sh
     
-and check where the joystick device file has been created (e.g., `/dev/input/js0`). If it is not `/dev/input/js0`, edit `~/robocomp/components/robocomp-robolab/components/joystickComp/etc/config` change it accordingly and restart. Note that you might want to save the *config* file to the component's home directory so it does not interfere with future GitHub updates.
+and check where the joystick device file has been created (e.g., `/dev/input/js0`). If it is not `/dev/input/js0`, edit `~/robocomp/components/robocomp-robolab/components/hardware/external_control/joystickComp/etc/config` change it accordingly and restart. Note that you might want to save the *config* file to the component's home directory so it does not interfere with future GitHub updates.
 
 
 ## Using the keyboard as a JoyStick
 
 If you don't have a JoyStick install this component,
 
-    cd ~/robocomp/components/robocomp-robolab/components/keyboardrobotcontroller
+    cd ~/robocomp/components/robocomp-robolab/components/hardware/external_control/keyboardrobotcontroller
     cmake .
     make
     src/keyboardrobotcontroller.py etc/config
