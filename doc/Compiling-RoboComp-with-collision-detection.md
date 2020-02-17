@@ -2,6 +2,11 @@
 
 - Install libfcl-dev from the Ubuntu repository
 
+```bash
+sudo apt-get update -y
+sudo apt-get install -y libfcl-dev
+```
+
 - Change Robocomp's cmake configuration
 
 ```bash
