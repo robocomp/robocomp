@@ -523,3 +523,7 @@ def main():
             print('ERROR')
             sys.exit(-1)
         replaceTagsInFile(outputPath)
+
+
+if __name__ == '__main__':
+	app = main()
