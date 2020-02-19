@@ -1,8 +1,0 @@
-import "/robocomp/interfaces/IDSLs/rcdns.idsl";
-
-Component rcdns{
-	Communications{
-		implements rcdns;
-	};
-	language Python;
-};
