@@ -220,6 +220,10 @@ class RCDeploymentChecker:
                 upcommand["component_path"] = result.group(3)
                 upcommand["component_command"] = result.group(4)
                 upcommand["component_config"] = result.group(5)
+                if ".conf" in upcommand["component_command"]:
+                    upcommand["component_config"] = upcommand["component_command"]
+                    upcommand["component_command"] = upcommand["component_path"]
+                    upcommand["component_path"] = ""
                 upcommand["component_config"] = self.extract_upcommand_config_file_full_path(upcommand)
                 upcommand["component_path"] = self.extract_upcommand_component_full_path(upcommand)
                 result.group(3)
@@ -329,40 +333,40 @@ class RCDeploymentChecker:
         except:
             print("Pyro4 is needed to check interfaces in remote hosts")
         else:
-        for endpoint, paths in self.remote_interfaces.items():
-            endpoint_name = endpoint.split(":")[0]
-            endpoint_port = int(re.findall(r'-p\s*(\d+)', endpoint)[0])
-            endpoint_host = re.findall(r'-h\s*('+RExp.HOST+')', endpoint)[0]
-            for path in paths:
-                remote_object = Pyro4.core.Proxy('PYRO:Greeting@' + endpoint_host + ':9090')
-                try:
-                    result, data = remote_object.check_endpoint_in_config_file(endpoint, path)
-                except:
-                    print("Could not find remote object for %s" % endpoint_host)
-                else:
-                    if result == 2:
-                        matched_port_interface, _ = data
-                        print((BColors.WARNING + "[?]" + BColors.ENDC +
-                               " Need check: Found an interface configured on port " +
-                               BColors.OKGREEN + "%d." + BColors.ENDC + " Is " +
-                               BColors.OKBLUE + "%s" + BColors.ENDC + " the interface for the endpoint " +
-                               BColors.OKBLUE + "%s" + BColors.ENDC + " (%s - %s)") %
-                              (endpoint_port,
-                               matched_port_interface,
-                               endpoint,
-                               matched_port_interface,
-                               endpoint_name))
-                    elif result == 0:
-                        config_port, _ = data
-                        print(
-                                    BColors.FAIL + "[!]" + BColors.ENDC + " WRONG PORT %s vs %s for endpoint %s in config file %s" % (
-                                str(endpoint_port), str(config_port), endpoint, path))
-                    elif result == 1:
-                        if self.debug:
-                            print("[+] Matching ports for endpoint %s" % endpoint)
-                    elif result == -1:
-                        print((BColors.FAIL + "[!]" + BColors.ENDC + " Not found: Expected path %s for endpoint %s") % (
-                        path, endpoint))
+            for endpoint, paths in self.remote_interfaces.items():
+                endpoint_name = endpoint.split(":")[0]
+                endpoint_port = int(re.findall(r'-p\s*(\d+)', endpoint)[0])
+                endpoint_host = re.findall(r'-h\s*('+RExp.HOST+')', endpoint)[0]
+                for path in paths:
+                    remote_object = Pyro4.core.Proxy('PYRO:rcdeploymentchecker@' + endpoint_host + ':9090')
+                    try:
+                        result, data = remote_object.check_endpoint_in_config_file(endpoint, path)
+                    except:
+                        print("Could not find remote object for %s" % endpoint_host)
+                    else:
+                        if result == 2:
+                            matched_port_interface, _ = data
+                            print((BColors.WARNING + "[?]" + BColors.ENDC +
+                                   " Need check: Found an interface configured on port " +
+                                   BColors.OKGREEN + "%d." + BColors.ENDC + " Is " +
+                                   BColors.OKBLUE + "%s" + BColors.ENDC + " the interface for the endpoint " +
+                                   BColors.OKBLUE + "%s" + BColors.ENDC + " (%s - %s)") %
+                                  (endpoint_port,
+                                   matched_port_interface,
+                                   endpoint,
+                                   matched_port_interface,
+                                   endpoint_name))
+                        elif result == 0:
+                            config_port, _ = data
+                            print(
+                                        BColors.FAIL + "[!]" + BColors.ENDC + " WRONG PORT %s vs %s for endpoint %s in config file %s" % (
+                                    str(endpoint_port), str(config_port), endpoint, path))
+                        elif result == 1:
+                            if self.debug:
+                                print("[+] Matching ports for endpoint %s" % endpoint)
+                        elif result == -1:
+                            print((BColors.FAIL + "[!]" + BColors.ENDC + " Not found: Expected path %s for endpoint %s") % (
+                            path, endpoint))
 
     def check_endpoint_in_config_file(self, endpoint, path):
         endpoint_name = endpoint.split(":")[0]
@@ -400,14 +404,15 @@ class RCDeploymentChecker:
     def listener(self):
         import Pyro4
         Pyro4.Daemon.serveSimple({
-            RCDeploymentChecker: 'Greeting',
-        }, host="158.49.247.177", port=9090, ns=False, verbose=True)
+            RCDeploymentChecker: 'rcdeploymentchecker',
+        }, host="0.0.0.0", port=9090, ns=False, verbose=True)
 
 def main():
     parser = MyParser(description='Application to check and existing deployment xml file for ports and endpoints')
+    group = parser.add_mutually_exclusive_group()
     parser.add_argument("-v", "--verbose", help="increase output verbosity",
                         action="store_true")
-    parser.add_argument("-l", "--listen", help="wait for connections from other deployments",
+    group.add_argument("-l", "--listen", help="wait for connections from other rcdeploymentchecker",
                         action="store_true")
     # parser.add_argument("-p", "--port", help="List only the selected port information",
     # 					type=int)
@@ -423,17 +428,20 @@ def main():
     # 					help="List only interfaces that contains this string",
     # 					type=str)
     # parser.add_argument('action', choices=('ports', 'interfaces'), help="Show the interfaces by name or by port")
-    parser.add_argument('path',
+    group.add_argument('path', nargs='?',
                         help="path to look for deployment file (xml of rcmanager tool)")
     args = parser.parse_args()
 
     rcdeplymentchecker = RCDeploymentChecker(args.verbose)
     if args.listen:
         rcdeplymentchecker.listener()
-    else:
+    elif args.path:
         rcdeplymentchecker.parse_deployment_file(args.path)
         rcdeplymentchecker.print_local_interfaces_check()
         rcdeplymentchecker.print_remote_interfaces_check()
+    else:
+        parser.print_help()
+
 
 
 
