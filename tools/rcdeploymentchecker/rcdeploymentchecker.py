@@ -28,7 +28,6 @@ import argparse
 import os
 import re
 import sys
-import Pyro4
 
 
 # DETECT THE ROBOCOMP INSTALLATION TO IMPORT RCPORTCHECKER CLASS
@@ -82,8 +81,24 @@ class MyParser(argparse.ArgumentParser):
         self.print_help()
         sys.exit(2)
 
-@Pyro4.expose
-@Pyro4.behavior(instance_mode="single")
+def Pyro4_decorator1():
+    try:
+        import Pyro4
+    except:
+        return lambda x: x
+    else:
+        return Pyro4.expose
+
+def Pyro4_decorator2():
+    try:
+        import Pyro4
+    except:
+        return lambda x: x
+    else:
+        return Pyro4.behavior(instance_mode="single")
+
+@Pyro4_decorator1()
+@Pyro4_decorator2()
 class RCDeploymentChecker:
     def __init__(self, debug=False):
         self.debug = debug
@@ -309,7 +324,11 @@ class RCDeploymentChecker:
                     path, endpoint))
 
     def print_remote_interfaces_check(self):
-
+        try:
+            import Pyro4
+        except:
+            print("Pyro4 is needed to check interfaces in remote hosts")
+        else:
         for endpoint, paths in self.remote_interfaces.items():
             endpoint_name = endpoint.split(":")[0]
             endpoint_port = int(re.findall(r'-p\s*(\d+)', endpoint)[0])
@@ -379,7 +398,7 @@ class RCDeploymentChecker:
             self.interfaces_to_check[endpoint_string] = [config_file_path]
 
     def listener(self):
-
+        import Pyro4
         Pyro4.Daemon.serveSimple({
             RCDeploymentChecker: 'Greeting',
         }, host="158.49.247.177", port=9090, ns=False, verbose=True)
