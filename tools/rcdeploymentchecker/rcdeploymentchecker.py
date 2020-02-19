@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 #
@@ -28,6 +28,8 @@ import argparse
 import os
 import re
 import sys
+import Pyro4
+
 
 # DETECT THE ROBOCOMP INSTALLATION TO IMPORT RCPORTCHECKER CLASS
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -47,6 +49,7 @@ except:
         print("Default Robocomp directory (%s) doesn't exists. Exiting!" % (default_robocomp_path))
         sys.exit()
 sys.path.append(os.path.join(ROBOCOMP, "python"))
+sys.path.append(os.path.join(ROBOCOMP, "tools/rcportchecker"))
 from rcportchecker import RCPortChecker, BColors
 
 try:
@@ -68,7 +71,7 @@ class BColors:
 
 
 class RExp:
-    HOST = '(?:localhost|(?:\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}))'
+    HOST = '(?:localhost|(?:\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})|(?:[\w\-\_]+\.local))'
     PATH = '[\\\/]?(?:[^\\^\\/^\\s]+[\\\/]?)+'
     COMMAND = '(?:(?:python\\s+)?' + PATH + "|rcnode)"
 
@@ -79,9 +82,10 @@ class MyParser(argparse.ArgumentParser):
         self.print_help()
         sys.exit(2)
 
-
+@Pyro4.expose
+@Pyro4.behavior(instance_mode="single")
 class RCDeploymentChecker:
-    def __init__(self, debug):
+    def __init__(self, debug=False):
         self.debug = debug
         self.interfaces_to_check = {}
         self.remote_interfaces = {}
@@ -104,7 +108,7 @@ class RCDeploymentChecker:
         for node in tree.iterfind('node'):
             endpoint_string = node.attrib["endpoint"]
             # look for ip on the endpoint string
-            ip = re.findall(r'(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})', endpoint_string)
+            ip = re.findall(r'(?:(?:\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})|(?:[\w\-\_]+\.local))', endpoint_string)
             if "localhost" in endpoint_string.lower() or len(ip) == 0 or "127.0.0.1" in ip[0]:
                 if self.debug:
                     print("[+] Found local node: %s" % endpoint_string)
@@ -207,7 +211,7 @@ class RCDeploymentChecker:
                 return upcommand
             else:
                 if self.debug:
-                    print("Bad rcremote command")
+                    print((BColors.FAIL + "[!] Failed parsing rcremote command from config file: " + BColors.ENDC + upcommand_string))
                 return None
         elif upcommand_string.strip() == "":
             return None
@@ -304,6 +308,43 @@ class RCDeploymentChecker:
                     print((BColors.FAIL + "[!]" + BColors.ENDC + " Not found: Expected path %s for endpoint %s") % (
                     path, endpoint))
 
+    def print_remote_interfaces_check(self):
+
+        for endpoint, paths in self.remote_interfaces.items():
+            endpoint_name = endpoint.split(":")[0]
+            endpoint_port = int(re.findall(r'-p\s*(\d+)', endpoint)[0])
+            endpoint_host = re.findall(r'-h\s*('+RExp.HOST+')', endpoint)[0]
+            for path in paths:
+                remote_object = Pyro4.core.Proxy('PYRO:Greeting@' + endpoint_host + ':9090')
+                try:
+                    result, data = remote_object.check_endpoint_in_config_file(endpoint, path)
+                except:
+                    print("Could not find remote object for %s" % endpoint_host)
+                else:
+                    if result == 2:
+                        matched_port_interface, _ = data
+                        print((BColors.WARNING + "[?]" + BColors.ENDC +
+                               " Need check: Found an interface configured on port " +
+                               BColors.OKGREEN + "%d." + BColors.ENDC + " Is " +
+                               BColors.OKBLUE + "%s" + BColors.ENDC + " the interface for the endpoint " +
+                               BColors.OKBLUE + "%s" + BColors.ENDC + " (%s - %s)") %
+                              (endpoint_port,
+                               matched_port_interface,
+                               endpoint,
+                               matched_port_interface,
+                               endpoint_name))
+                    elif result == 0:
+                        config_port, _ = data
+                        print(
+                                    BColors.FAIL + "[!]" + BColors.ENDC + " WRONG PORT %s vs %s for endpoint %s in config file %s" % (
+                                str(endpoint_port), str(config_port), endpoint, path))
+                    elif result == 1:
+                        if self.debug:
+                            print("[+] Matching ports for endpoint %s" % endpoint)
+                    elif result == -1:
+                        print((BColors.FAIL + "[!]" + BColors.ENDC + " Not found: Expected path %s for endpoint %s") % (
+                        path, endpoint))
+
     def check_endpoint_in_config_file(self, endpoint, path):
         endpoint_name = endpoint.split(":")[0]
         endpoint_port = int(re.findall(r'-p\s*(\d+)', endpoint)[0])
@@ -337,10 +378,17 @@ class RCDeploymentChecker:
         else:
             self.interfaces_to_check[endpoint_string] = [config_file_path]
 
+    def listener(self):
+
+        Pyro4.Daemon.serveSimple({
+            RCDeploymentChecker: 'Greeting',
+        }, host="158.49.247.177", port=9090, ns=False, verbose=True)
 
 def main():
     parser = MyParser(description='Application to check and existing deployment xml file for ports and endpoints')
     parser.add_argument("-v", "--verbose", help="increase output verbosity",
+                        action="store_true")
+    parser.add_argument("-l", "--listen", help="wait for connections from other deployments",
                         action="store_true")
     # parser.add_argument("-p", "--port", help="List only the selected port information",
     # 					type=int)
@@ -361,8 +409,12 @@ def main():
     args = parser.parse_args()
 
     rcdeplymentchecker = RCDeploymentChecker(args.verbose)
-    rcdeplymentchecker.parse_deployment_file(args.path)
-    rcdeplymentchecker.print_local_interfaces_check()
+    if args.listen:
+        rcdeplymentchecker.listener()
+    else:
+        rcdeplymentchecker.parse_deployment_file(args.path)
+        rcdeplymentchecker.print_local_interfaces_check()
+        rcdeplymentchecker.print_remote_interfaces_check()
 
 
 
