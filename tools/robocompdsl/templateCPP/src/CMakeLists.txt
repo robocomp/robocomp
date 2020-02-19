@@ -132,7 +132,7 @@ cog.out(' '.join(imp))
 try:
 	options = [ x.lower() for x in component['options'] ]
 	if 'agmagent' in options:
-		cog.out(" AGMExecutive AGMExecutiveTopic AGMWorldModel Planning AGMCommonBehavior ")
+		cog.out(" AGMExecutive AGMExecutiveTopic ")
 	elif 'agm2agent' in options or 'agm2agentICE' in options or 'agm2agentROS' in options:
 		cog.out(" AGM2 ")
 except:
