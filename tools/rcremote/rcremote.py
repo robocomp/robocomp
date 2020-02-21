@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 #
@@ -80,7 +80,7 @@ if __name__ == '__main__':
 				print ('Cannot connect to the remote object (RCRemote)', proxyString)
 				#traceback.print_exc()
 				status = 1
-		except Ice.Exception, e:
+		except Ice.Exception as e:
 			print (e)
 			print ('Cannot get RCRemoteProxy property.')
 			status = 1
@@ -102,7 +102,7 @@ if __name__ == '__main__':
 		print ('arguments', arguments)
 		randomStuff = random_stuff_generator()
 		password = getPassFor(host)
-		hashedPassword = hashlib.sha224(randomStuff+password).hexdigest()
+		hashedPassword = hashlib.sha224(str(randomStuff+password).encode('utf-8')).hexdigest()
 		if rcremote_proxy.run(randomStuff, hashedPassword, path, binary, arguments, yakuakeTabName):
 			print ('ok')
 			sys.exit(0)

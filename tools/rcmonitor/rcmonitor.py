@@ -89,6 +89,10 @@ from ui_formMonitor import Ui_Form
 from ui_openA import Ui_OpenA
 from ui_period import Ui_Period
 
+# Ctrl+c handling
+import signal
+signal.signal(signal.SIGINT, signal.SIG_DFL)
+
 ROBOCOMP = ''
 try:
 	ROBOCOMP = os.environ['ROBOCOMP']

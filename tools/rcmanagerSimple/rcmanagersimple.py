@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 #  -----------------------
@@ -240,18 +240,20 @@ class TheThing(QtWidgets.QDialog):
 		self.canvas.update()
 
 		# Get settings
-		settings = QtCore.QSettings("RoboComp", "rcmanager")
-		value = QtCore.QByteArray(settings.value("geometry"))
-		if value != None:
-			self.restoreGeometry(value)
-		value = int(settings.value("page"))
-		if value != None:
-			self.ui.tabWidget.setCurrentIndex(value)
-		value = bool(settings.value("docking"))
-		if value != None:
-			if value == True:
-				self.changeDock()
-
+		try:
+			settings = QtCore.QSettings("RoboComp", "rcmanager")
+			value = QtCore.QByteArray(settings.value("geometry"))
+			if value != None:
+				self.restoreGeometry(value)
+			value = int(settings.value("page"))
+			if value != None:
+				self.ui.tabWidget.setCurrentIndex(value)
+			value = bool(settings.value("docking"))
+			if value != None:
+				if value == True:
+					self.changeDock()
+		except:
+			print("Could not read preferred settings")
 	# Select a new rcmanager configuration file
 	def openFile(self, path=None):
 		if path is None or path is False:

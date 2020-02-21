@@ -1,8 +1,0 @@
-import "/robocomp/interfaces/IDSLs/rcdns.idsl";
-
-Component clientDNSp{
-	Communications{
-		requires rcdns;
-	};
-	language Python;
-};
