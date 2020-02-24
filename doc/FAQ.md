@@ -12,7 +12,7 @@ Thank you for wanting to improve the project!
 
 So you are informed, please first read [the Contributing Guide](../CONTRIBUTING.md), and the documentation for the project. [Here](https://robocomp.github.io/web/blog) you can see the list of projects for Google Summer of Code for some ideas on what is needed. If you need additional help, drop a message on [Google Groups](https://groups.google.com/forum/?hl=es#!forum/robocomp-dev) or [Gitter](https://gitter.im/robocomp).
 
-If you make your own project with Robocomp, we would love to hear about it. Tell us at robocomp.team@gmail.com.
+If you make your own project with Robocomp, we would love to hear about it. Tell us on [Gitter](https://gitter.im/robocomp).
 
 ## What kind of work can you do to improve Robocomp?
 
