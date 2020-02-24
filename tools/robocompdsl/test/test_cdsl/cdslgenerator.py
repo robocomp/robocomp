@@ -40,11 +40,14 @@ from dsl_parsers.specific_parsers.cdsl_parser import CDSLParser
 try:
     from termcolor import cprint
 
-
+    def printwarn(text):
+        cprint(text, color='yellow')
     def printerr(text):
         cprint(text, color='red')
 except ImportError as error:
     def printerr(text):
+        print(text)
+    def printwarn(text):
         print(text)
 
 from pprint import pprint
@@ -53,7 +56,7 @@ ROBOCOMP = ''
 try:
     ROBOCOMP = os.environ['ROBOCOMP']
 except KeyError:
-    print('$ROBOCOMP environment variable not set, using the default value /opt/robocomp')
+    printwarn('$ROBOCOMP environment variable not set, using the default value /opt/robocomp')
     ROBOCOMP = '/opt/robocomp'
 IDSL_DIR = os.path.join(ROBOCOMP, 'interfaces', 'IDSLs')
 
@@ -88,14 +91,14 @@ def get_available_idsls():
 
 class CDSLSampler:
     def __init__(self, ros_enable=False):
-        self._available_idsls = []
-        self._available_interfaces = []
-        self._used_idsl = []
-        self._ros_enable = ros_enable
+        self.__available_idsls = []
+        self.__available_interfaces = []
+        self.__used_idsl = []
+        self.__ros_enable = ros_enable
         self._tabs = 0
-        self._last_keywords = []
-        self._special_interfaces = set()
-        self._nodes_with_names = {}
+        self.__last_keywords = []
+        self.__special_interfaces = set()
+        self.__nodes_with_names = {}
 
     def _tab(self, text, before=True):
         tabs = ''
@@ -113,10 +116,10 @@ class CDSLSampler:
         :param grammar:
         :return:
         """
-        self._available_idsls = get_available_idsls()
-        self._used_idsl = []
-        self._last_keywords = []
-        self._nodes_with_names = {}
+        self.__available_idsls = get_available_idsls()
+        self.__used_idsl = []
+        self.__last_keywords = []
+        self.__nodes_with_names = {}
         return self.generic_sampler(grammar)
 
     def generic_sampler(self, node):
@@ -129,7 +132,7 @@ class CDSLSampler:
 
         if node.resultsName is not None:
             # setdefault(type(node), set()) is a quick way to check if key exist and if not create an empty set to add to
-            self._nodes_with_names.setdefault(type(node), set()).add(node.resultsName)
+            self.__nodes_with_names.setdefault(type(node), set()).add(node.resultsName)
 
         if isinstance(node,pyparsing.And):
             # print(tab + 'And')
@@ -233,7 +236,7 @@ class CDSLSampler:
         :return:
         """
         # if the group is "communications" and no IDSL have been imported return empty string ''
-        if node.resultsName == "communications" and len(self._available_interfaces) == 0:
+        if node.resultsName == "communications" and len(self.__available_interfaces) == 0:
             return ''
         else:
             return self.generic_sampler(node.expr)
@@ -274,13 +277,16 @@ class CDSLSampler:
         :return: keyword processed
         """
         # It's a way to add spaces to the needed keywords
-        spaced_keywords = """import language component useQt gui Qt
+        back_spaced_keywords = """import language component useQt gui Qt
         requires implements subscribesTo publishes options
         InnerModelViewer statemachine""".split()
+        front_spaced_keywords = """visual""".split()
 
-        self._last_keywords.append(str(node.match))
-        if node.match in spaced_keywords:
+        self.__last_keywords.append(str(node.match))
+        if node.match in back_spaced_keywords:
             return str(node.match) + " "
+        if node.match in front_spaced_keywords:
+            return " " + str(node.match)
         else:
             return str(node.match)
 
@@ -349,8 +355,8 @@ class CDSLSampler:
             return "statemachine.smdsl"
         comm_identifiers = ['reqIdentifier', 'pubIdentifier', 'impIdentifier', 'subIdentifier']
         if any(node.resultsName == name for name in comm_identifiers):
-            if len(self._available_interfaces) > 0:
-                return random.choice(self._available_interfaces)
+            if len(self.__available_interfaces) > 0:
+                return random.choice(self.__available_interfaces)
             else:
                 # It would never arrive here becuase a previous check on communications of len(self._available_interfaces) > 0
                 return "<" + str(node.resultsName) + ">"
@@ -366,16 +372,16 @@ class CDSLSampler:
         :return: random chosen .idsl filename from available ones
         """
         next_idsl = None
-        if len(self._available_idsls) > 0:
-            next_idsl = random.choice(self._available_idsls)
+        if len(self.__available_idsls) > 0:
+            next_idsl = random.choice(self.__available_idsls)
             try:
                 interface_name = self.get_interface_name_for_idsl(next_idsl)
-                self._available_interfaces.append(interface_name)
+                self.__available_interfaces.append(interface_name)
             except:
-                self._special_interfaces.add(next_idsl)
+                self.__special_interfaces.add(next_idsl)
                 printerr("IDSL %s without interface" % next_idsl)
-            self._available_idsls.remove(next_idsl)
-            self._used_idsl.append(next_idsl)
+            self.__available_idsls.remove(next_idsl)
+            self.__used_idsl.append(next_idsl)
         return next_idsl
 
     def get_interface_name_for_idsl(self, idsl_filename):
@@ -395,11 +401,11 @@ class CDSLSampler:
 
     @property
     def special_interfaces(self):
-        return self._special_interfaces
+        return self.__special_interfaces
 
     @property
     def nodes_with_names(self):
-        return self._nodes_with_names
+        return self.__nodes_with_names
 
 
 if __name__ == '__main__':
