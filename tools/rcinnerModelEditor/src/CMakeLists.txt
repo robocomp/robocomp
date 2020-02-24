@@ -25,7 +25,7 @@ SET ( SOURCES
   specificmonitor.cpp
   commonbehaviorI.cpp
   genericworker.cpp
-  smtp.cpp
+#  smtp.cpp
   specificworker.cpp
 )
 
@@ -37,7 +37,7 @@ ROBOCOMP_WRAP_ICE( CommonBehavior)
 SET (EXECUTABLE_OUTPUT_PATH ${RC_COMPONENT_DEVEL_PATH}/bin)
 
 # Qt
-include(${RoboComp_SOURCE_DIR}/cmake/modules/qt.cmake)
+include($ENV{ROBOCOMP}/cmake/modules/qt.cmake)
 
 
 # Specify construction and link process

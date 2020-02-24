@@ -1232,10 +1232,10 @@ void SpecificWorker::sendmsg()
 	}
 	else
 	{
-		Smtp *newMail  = new Smtp(465);
-		connect(newMail, SIGNAL(status(QString)), this, SLOT(mailSent(QString)));
+//		Smtp *newMail  = new Smtp(465);
+//		connect(newMail, SIGNAL(status(QString)), this, SLOT(mailSent(QString)));
 
-		newMail->sendMail(EmailText->text(), "robocomp.bugreport@mail.com" , SubjectBox->text(),BugBox->toPlainText()+ "\n From: "+ Nametext->text());
+//		newMail->sendMail(EmailText->text(), "robocomp.bugreport@mail.com" , SubjectBox->text(),BugBox->toPlainText()+ "\n From: "+ Nametext->text());
 		EmailText->clear();
 		Nametext->clear();
 		SubjectBox->clear();

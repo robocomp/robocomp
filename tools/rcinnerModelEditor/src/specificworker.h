@@ -27,11 +27,12 @@
 #ifndef SPECIFICWORKER_H
 #define SPECIFICWORKER_H
 
+#include <QtWidgets>
 #include <genericworker.h>
 #include <innermodel/innermodel.h>
 #include <innermodel/innermodelviewer.h>
 #include <qmat/QMatAll>
-#include <smtp.h>
+//#include <smtp.h>
 
 enum NodeType { IMTransform, IMRotation, IMTranslation, IMMesh, IMPlane, IMCamera, IMIMU, IMLaser, IMRGBD, IMJoint, IMDisplay };
 
