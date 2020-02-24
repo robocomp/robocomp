@@ -1,0 +1,37 @@
+module RoboCompCameraRGBDSimple
+{
+  exception HardwareFailedException { string what; };
+
+  sequence<byte> ImgType;
+  sequence<byte> DepthType;
+
+  struct TImage
+  {
+	int cameraID;
+    int width;
+    int height;
+    int depth;
+    int focalx;
+    int focaly;
+    int alivetime;
+    ImgType image;
+  };
+
+ struct TDepth
+  {
+	int cameraID;
+    int width;
+    int height;
+    int focalx;
+    int focaly;
+    int alivetime;
+    DepthType depth;
+  };
+ 
+  interface CameraRGBDSimple
+  {
+    void getImage(out TImage im);
+    void getDepth(out TDepth dep);
+    void getAll(out TImage im, out TDepth dep);
+  };
+};

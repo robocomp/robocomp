@@ -20,8 +20,10 @@
 
 import Ice, sys, math, traceback
 
-from PySide.QtCore import *
-from PySide.QtGui import *
+from PySide2.QtCore import *
+from PySide2.QtGui import *
+from PySide2.QtWidgets import *
+
 
 class C(QWidget):
 	def __init__(self, endpoint, modules):
@@ -119,10 +121,10 @@ class C(QWidget):
 		pass
  
 	def Advance(self):
-		print self.sbAdvance.value()
+		print (self.sbAdvance.value())
 		self.proxy.advanceVel(self.sbAdvance.value()*1.0,300.0)
 	def Back(self):
-		print self.sbAdvance.value()
+		print (self.sbAdvance.value())
 		self.proxy.backVel(self.sbBack.value()*1.0,150.0)
 	def Rotate(self):
 		if(self.cbRotate.isChecked()):
@@ -130,5 +132,5 @@ class C(QWidget):
 		else:
 			self.proxy.rotateVel(self.sbRotate.value(),1.5)
 	def Goto(self):
-		print self.xPosition.value(), self.zPosition.value()
+		print (self.xPosition.value(), self.zPosition.value())
 		self.proxy.gotoPointVel(self.xPosition.value(), self.zPosition.value(),300.0,1.5)

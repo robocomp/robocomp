@@ -19,13 +19,11 @@
 #
 
 import Ice, threading
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
-from PyQt4.Qt import *
+from PySide2.QtCore import *
+from PySide2.QtGui import *
+from PySide2.QtWidgets import *
 import math
 import os
-
-
 
 
 import RoboCompKinect
@@ -100,10 +98,10 @@ class KinectRecorder:
 	def getConfiguration(self):
 		return True
 	def getMeasure(self):
-		print 'Reading measure'
+		print ('Reading measure')
 		self.numMeasure = self.numMeasure + 1
 		self.measure = [self.proxy.getDataRGBZinRGB(), self.proxy.getXYZ()]
-		print 'Measures read', self.numMeasure
+		print ('Measures read', self.numMeasure)
 		os.system('mplayer /home/robolab/beep.wav')
 		return self.measure
 	def measure(self):

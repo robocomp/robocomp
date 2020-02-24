@@ -5,6 +5,7 @@
 [[[cog
 
 import sys
+import os
 sys.path.append('/opt/robocomp/python')
 
 import cog
@@ -26,65 +27,71 @@ cog.outl("//  Source: "+theIDSL)
 //  
 //****************************************************************** 
 [[[cog
-from parseIDSL import *
-idsl = IDSLParsing.fromFileIDSL(theIDSL)
-cog.outl("#ifndef "+idsl['module']['name'].upper()+"_ICE")
-cog.outl("#define "+idsl['module']['name'].upper()+"_ICE")
-if 'imports' in idsl.keys():
-	for imp in idsl['imports']:
-		cog.outl("#include <"+imp.split('.')[0]+".ice>")
-cog.outl("module "+idsl['module']['name']+"\n{")
-for content in idsl['module']['contents']:
-	if content['type'] == 'exception':
-		cog.outl("<TABHERE>exception "+content['name']+"{"+content['content']+"};")
-	if content['type'] == 'sequence':
-		cog.outl("<TABHERE>sequence <"+content['typeSequence']+"> "+content['name']+";")
-	if content['type'] == 'dictionary':
-		cog.outl("<TABHERE>dictionary <"+content['content']+"> "+content['name']+";")
-	if content['type'] == 'enum':
-		cog.outl("<TABHERE>enum "+content['name']+" { "+content['content']+" };")
-	if content['type'] == 'struct':
-		cog.outl("<TABHERE>struct "+content['name']+"\n<TABHERE>{")
-		for var in content['structIdentifiers']:
-			cog.out("<TABHERE><TABHERE> "+var['type']+" "+var['identifier'])
-			try:
-				cog.outl(" =" + var['defaultValue'] + ";")
-			except:
-				cog.outl(";")
-		cog.outl("<TABHERE>};")
-	if content['type'] == 'interface':
-		cog.outl("<TABHERE>interface "+content['name']+"\n<TABHERE>{")
-		for method in content['methods']:
-			try:
-				cog.out("<TABHERE><TABHERE>"+method['decorator']+" "+method['ret']+" ")
-				
-			except:
-				cog.out("<TABHERE><TABHERE>"+method['ret']+" ")
-			cog.out(method['name']+" (")
-			try:
-				paramStrA = ''
-				for p in method['params']:
-					# delim
-					if paramStrA == '': delim = ''
-					else: delim = ', '
-					# STR
-					try:
-						paramStrA += delim + p['decorator'] + ' ' + p['type'] + ' ' + p['name']
-					except:
-						paramStrA += delim + p['type'] + ' ' + p['name']
-				cog.out(paramStrA + ")")
-			except:
-				cog.out(")")
-			try:
-				if len(method['raise']) > 0:
-					cog.out(" throws ")
-					for p in method['raise']:
-						# STR
-						cog.out(p)
-			except:
-				pass
-			cog.outl(";")
-		cog.outl("<TABHERE>};")
+from dsl_parsers.dsl_factory import DSLFactory
+idsl = DSLFactory().from_file(theIDSL)
+from pprint import pprint
+cog.outl("#ifndef " + idsl['name'].upper() + "_ICE")
+cog.outl("#define " + idsl['name'].upper() + "_ICE")
+if 'imports' in idsl and idsl["imports"] != '':
+    for imp in idsl['imports'].split('#'):
+        if imp != '':
+            cog.outl("#include <" + os.path.basename(imp).split('.')[0] + ".ice>")
+cog.outl("module " + idsl['name'] + "\n{")
+if 'types' in idsl:
+    for next_type in idsl["types"]:
+        if "exception" == next_type["type"]:
+            cog.outl("<TABHERE>exception " + next_type['name'] + "{" + next_type['content'] + "};")
+        if "struct" == next_type["type"]:
+            struct= next_type
+            cog.outl("<TABHERE>struct " + struct['name'] + "\n<TABHERE>{")
+            for var in struct['structIdentifiers']:
+                cog.out("<TABHERE><TABHERE> " + var['type'] + " " + var['identifier'])
+                try:
+                    cog.outl(" =" + var['defaultValue'] + ";")
+                except:
+                    cog.outl(";")
+            cog.outl("<TABHERE>};")
+        if "sequence" == next_type["type"]:
+            cog.outl("<TABHERE>sequence <" + next_type['typeSequence'] + "> " + next_type['name'] + ";")
+        if "dictionary" == next_type['type']:
+            cog.outl("<TABHERE>dictionary <" + next_type['content'] + "> " + next_type['name'] + ";")
+        if "enum" == next_type['type']:
+            cog.outl("<TABHERE>enum " + next_type['name'] + " { " + next_type['content'] + " };")
+if "interfaces" in idsl:
+    for interface in idsl['interfaces']:
+        cog.outl("<TABHERE>interface " + interface['name'] + "\n<TABHERE>{")
+        for method in interface['methods'].values():
+            if method['decorator'] != '':
+                cog.out("<TABHERE><TABHERE>" + method['decorator'] + " " + method['return'] + " ")
+            else:
+                cog.out("<TABHERE><TABHERE>" + method['return'] + " ")
+            cog.out(method['name'] + " (")
+            try:
+                paramStrA = ''
+                for p in method['params']:
+                    # delim
+                    if paramStrA == '':
+                        delim = ''
+                    else:
+                        delim = ', '
+                    # STR
+                    if p['decorator'] != "none" and p['decorator'] != '':
+                        paramStrA += delim + p['decorator'] + ' ' + p['type'] + ' ' + p['name']
+                    else:
+                        paramStrA += delim + p['type'] + ' ' + p['name']
+                cog.out(paramStrA + ")")
+            except:
+                cog.out(")")
+            try:
+                if method['throws'] != "nothing":
+                    cog.out(" throws ")
+                    for p in method['throws']:
+                        # STR
+                        cog.out(p)
+            except:
+                pass
+            cog.outl(";")
+        cog.outl("<TABHERE>};")
 ]]]
 [[[end]]]
 };

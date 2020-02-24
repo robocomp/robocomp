@@ -20,8 +20,10 @@
 
 import Ice, sys, math, traceback
 
-from PySide.QtCore import *
-from PySide.QtGui import *
+from PySide2.QtCore import *
+from PySide2.QtGui import *
+from PySide2.QtWidgets import *
+
 
 class C(QWidget):
 	def __init__(self, endpoint, modules):
@@ -39,7 +41,7 @@ class C(QWidget):
 		self.roiList = output[0]
 		self.bState = output[1].bState
 		# Print number of ROIs
-		print len(self.roiList)
+		print (len(self.roiList))
 
 	def paintEvent(self, event=None):
 		xOff = self.width()/2.
@@ -70,10 +72,10 @@ class C(QWidget):
 				try:
 					painter.drawEllipse(int(xPos), int(yPos), 6, 6)
 				except:
-					print 'ROI :-(', int(xPos)
-					print type(xPos)
-					print type(int(xPos))
-					print roi.x3D, roi.x3D
+					print ('ROI :-(', int(xPos))
+					print (type(xPos))
+					print (type(int(xPos)))
+					print (roi.x3D, roi.x3D)
 					traceback.print_stack()
 		# Draw base
 		painter.setPen(Qt.blue)
@@ -88,9 +90,9 @@ class C(QWidget):
 			try:
 				painter.drawPie(xPos, yPos, 18, 18, start, 20*2*16)
 			except:
-				print 'BASE :-('
-				print type(xPos-7)
-				print self.bState.z, self.bState.x, self.bState.alfa
+				print ('BASE :-(')
+				print (type(xPos-7))
+				print (self.bState.z, self.bState.x, self.bState.alfa)
 
 		painter.end()
 		painter = None

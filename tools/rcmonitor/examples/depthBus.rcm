@@ -1,4 +1,4 @@
-Interfaces/RGBDBus.ice
+/interfaces/RGBDBus.ice
 rgbdbus
 localhost
 tcp

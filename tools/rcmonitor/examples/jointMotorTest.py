@@ -20,8 +20,10 @@
 
 import Ice, sys, math, traceback, random, copy,time
 
-from PySide.QtCore import *
-from PySide.QtGui import *
+from PySide2.QtCore import *
+from PySide2.QtGui import *
+from PySide2.QtWidgets import *
+
 
 class C(QWidget):
 	def __init__(self, endpoint, modules):
@@ -163,21 +165,15 @@ class C(QWidget):
 
 		self.motors = self.proxy.getAllMotorParams()
 		self.motorNames = list()
-		print 'Motors: ',
+		print ('Motors: ',)
 		for item in self.motors:
-			print item.name
+			print (item.name)
 			self.motorNames.append(item.name)
 			self.combo.addItem(item.name)
-		if len(self.motors)==0: print 'JointMotor: Error: No motors.'
-
-		
-
-		
+		if len(self.motors)==0: print ('JointMotor: Error: No motors.')
 
 		self.setMinimumSize(250, 440)
 		self.states = self.proxy.getAllMotorState()
-		
-		
 		
 		self.times = 0
 		self.synch = 0
@@ -199,7 +195,7 @@ class C(QWidget):
 		
 	def switchMode(self, value):
 		self.positionMode = not self.positionMode
-		print "Mode switched to"+str(self.positionMode)
+		print ("Mode switched to"+str(self.positionMode))
 	
 	def test(self):
 		if not self.testActive:
@@ -216,7 +212,7 @@ class C(QWidget):
 					self.proxy.setPosition(goal)
 					self.times += 1
 					if self.times%10 == 0:
-						print "Sacadic #"+str(self.times), "("+str(self.synch)+") synch"
+						print ("Sacadic #"+str(self.times), "("+str(self.synch)+") synch")
 				except Ice.ConnectionRefusedException:
 					self.times = 0
 			else:
@@ -244,7 +240,7 @@ class C(QWidget):
 						self.times += 1
 						self.synch += 1
 						if self.times%10 == 0:
-							print "Sacadic #"+str(self.times), "("+str(self.synch)+") synch"
+							print ("Sacadic #"+str(self.times), "("+str(self.synch)+") synch")
 					except Ice.ConnectionRefusedException:
 						self.times = 0
 				else:
@@ -262,7 +258,7 @@ class C(QWidget):
 						self.times += 1
 						self.synch += 1
 						if self.times%10 == 0:
-							print "Sacadic #"+str(self.times), "("+str(self.synch)+") synch"
+							print ("Sacadic #"+str(self.times), "("+str(self.synch)+") synch")
 					except Ice.ConnectionRefusedException:
 						self.times = 0
 			else:
@@ -282,7 +278,7 @@ class C(QWidget):
 						self.times += 1
 						self.synch += 1
 						if self.times%10 == 0:
-							print "Sacadic #"+str(self.times), "("+str(self.synch)+") synch"
+							print ("Sacadic #"+str(self.times), "("+str(self.synch)+") synch")
 					except Ice.ConnectionRefusedException:
 						self.times = 0
 				else:
@@ -300,7 +296,7 @@ class C(QWidget):
 						self.times += 1
 						self.synch += 1
 						if self.times%10 == 0:
-							print "Sacadic #"+str(self.times), "("+str(self.synch)+") synch"
+							print ("Sacadic #"+str(self.times), "("+str(self.synch)+") synch")
 					except Ice.ConnectionRefusedException:
 						self.times = 0
 		else: # do nothing
@@ -320,7 +316,7 @@ class C(QWidget):
 		except Ice.ConnectionRefusedException:
 			if self.refused == 0:
 				self.refused = 1
-				print 'Connection refused'
+				print ('Connection refused')
 			elif self.refused == 1:
 				self.refused == 2
 		#self.clicked()
@@ -330,7 +326,7 @@ class C(QWidget):
 		goal.position = self.spinBoxCommand.value()
 		goal.name = str(self.combo.currentText())
 		goal.maxSpeed = self.spinBoxTestV.value()
-		print goal.position, goal.name, goal.maxSpeed
+		print (goal.position, goal.name, goal.maxSpeed)
 		self.proxy.setPosition(goal)
 
 	def velocity(self):
@@ -344,14 +340,10 @@ class C(QWidget):
 		goal2.velocity = self.spinBoxTestV.value()
 		goalList.append(goal2)
 			
-		
-		print goalList
+		print (goalList)
 		try:
 #			self.proxy.setSyncVelocity(goalList)
 			self.proxy.setVelocity(goal)
 		except Ice.ConnectionRefusedException:
 			self.times = 0
-			
-		
-			
 			

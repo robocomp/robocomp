@@ -1,6 +1,6 @@
 # Introduction to InnerModel: RoboComp's internal representation of the world and the robot itself.
 
-**InnerModel** is a C++ group of classes used by RoboComp to represent the world and and the robot in it. As a data structure, InnerModel is a tree whose nodes represent entities in the world and geometric transformations among those entities. The current list of entities include:
+**InnerModel** is a C++ group of classes used by RoboComp to represent the world and the robot in it. As a data structure, InnerModel is a tree whose nodes represent entities in the world and geometric transformations among those entities. The current list of entities include:
 
 *Geometry*
 - innermodel
@@ -29,9 +29,9 @@
 - rgbd
 
 
-A tree made up of elements (robots, bodies, sensors and actuators) connected through 6D geomtric tranformations is a _kinematic tree_ . The basic relationship among elements is "part_of" meaning that a child is rigidly attached to her parent and wim move with it. The precise position of the child with respect to her parent is encoded in an intermediate node that will typically  be a _transform_ (6D geometric transformation). It also can be divided in a _translation_ or a _rotation_.
+A tree made up of elements (robots, bodies, sensors, and actuators) connected through 6D geometric transformations is a _kinematic tree_ . The basic relationship among elements is "part_of" meaning that a child is rigidly attached to her parent and will move with it. The precise position of the child with respect to her parent is encoded in an intermediate node that will typically be a _transform_ (6D geometric transformation). It also can be divided into a _translation_ or a _rotation_.
 
-The InnerMdel tree can be expressed as an XML file. This file can be written to disk at any time or read from a file when the components start. Once in memory, the InnerModel class holds a tree data structure and offers an API to access and modifiy its nodes and edges.
+The InnerModel tree can be expressed as an XML file. This file can be written to disk at any time or read from a file when the components start. Once in memory, the InnerModel class holds a tree data structure and offers an API to access and modify its nodes and edges.
 
 Let's start with a simple XML file describing a 5000mm x 5000mm square, a few boxes on it and a differential drive robot endowed with a laser and an RGBD camera: (the file can be found in ~/robocomp/files/innermodel/simplesimple.xml)
 
@@ -77,12 +77,12 @@ The whole world is embraced inside the _innermodel_ tag. Inside it we find the f
       - 1 plane(box) for the object
     - 1 differentialrobot object
         - 1 mesh for the robot's body representation
-	- 1 translation to position the laser
-	  - 1 laser
-	    1 1 plane for the laser's body representation
+    - 1 translation to position the laser
+      - 1 laser
+      - 1 plane for the laser's body representation
       and so on for the rgbd camera ...
       
-Each of these elements are read into memory and corresponding classes are instantiated. Geometric transforms are encoded as RT matrices using a left-hand reference system with Y axis pointing up, Z axis pointing front and X axis pointing right.
+Each of these elements is read into memory and corresponding classes are instantiated. Geometric transforms are encoded as RT matrices using a left-hand reference system with Y-axis pointing up, Z-axis pointing front and X-axis pointing right.
 
 InnerModel's API provides methods to:
 - access the nodes and their specific APIs
@@ -91,4 +91,4 @@ InnerModel's API provides methods to:
 
 Perceptive components typically extend or update InnerModel after processing data coming from sensors.
 
-A simple example of the use of InnerModel in a generated component is when we want to create a controller tha drives the robot to reach some 2D point on the floor. The easiest way is to transform the world coordiantes of the target into the robot's reference system. This transformed point is actually a vector coming out from the robot and reaching the target. We only need to compute the angle between this vector and the robot heading direction and use it to set a correcting rotation speed that will eventually align the robot with the target. At the same time, the module of that vector can be a good magnitude to control the advence speed of the robot. 
+A simple example of the use of InnerModel in a generated component is when we want to create a controller that drives the robot to reach some 2D point on the floor. The easiest way is to transform the world coordinates of the target into the robot's reference system. This transformed point is actually a vector coming out from the robot and reaching the target. We only need to compute the angle between this vector and the robot heading direction and use it to set a correcting rotation speed that will eventually align the robot with the target. At the same time, the module of that vector can be a good magnitude to control the advance speed of the robot. 

@@ -65,7 +65,7 @@ void DifferentialRobotI::run()
 		worker->innerModel->mutex.lock();
 			updateInnerModelPose();
 		worker->innerModel->mutex.unlock();
-		usleep(100000);
+		usleep(50000);
 	}
 }
 

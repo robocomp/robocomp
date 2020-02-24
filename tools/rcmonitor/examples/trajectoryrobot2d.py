@@ -20,8 +20,9 @@
 
 import Ice, sys, math, traceback, time
 
-from PySide.QtCore import *
-from PySide.QtGui import *
+from PySide2.QtCore import *
+from PySide2.QtGui import *
+from PySide2.QtWidgets import *
 from random import uniform
 
 class C(QWidget):
@@ -165,7 +166,7 @@ class C(QWidget):
 			self.numTargets.setValue(self.numTargets.value()-2)
 			
 			if self.numTargets.value() <= 0:
-				print "done!"
+				print ("done!")
 
 
 	def go(self):
@@ -177,8 +178,8 @@ class C(QWidget):
 		tp.ry = self.steer.value()
 		tp.doRotation = self.dsteer.isChecked()
 		
-		print 'T', tp.x, tp.y, tp.z
-		print 'R', tp.rx, tp.ry, tp.rz
+		print ('T', tp.x, tp.y, tp.z)
+		print ('R', tp.rx, tp.ry, tp.rz)
 		self.proxy.go(tp)
 
 	def goAll(self):
@@ -190,7 +191,7 @@ class C(QWidget):
 
 	def goSomewhere(self, tp):
 			strS = str(tp.x)+" "+str(tp.z)+" "+str(tp.ry)+" "+QTime().currentTime().toString()+"\n"
-			print strS
+			print (strS)
 			self.salida.write(strS)
 			
 			goOk = False

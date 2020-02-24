@@ -1,4 +1,4 @@
-/home/robocomp/robocomp/Interfaces/Qrdecode.ice
+/interfaces/Qrdecode.ice
 qrdecode
 localhost
 tcp

@@ -11,14 +11,14 @@ def Z():
 def TAB():
 	cog.out('<TABHERE>')
 
-from parseCDSL import *
+from dsl_parsers.dsl_factory import DSLFactory
+from dsl_parsers.parsing_utils import IDSLPool, gimmeIDSL
 includeDirectories = theIDSLPaths.split('#')
-component = CDSLParsing.fromFile(theCDSL, includeDirectories=includeDirectories)
+component = DSLFactory().from_file(theCDSL, include_directories=includeDirectories)
 if component == None:
 	print('Can\'t locate', theCDSLs)
 	sys.exit(1)
 
-from parseIDSL import *
 modulePool = IDSLPool(theIDSLs, includeDirectories)
 module = modulePool.moduleProviding(theInterface)
 if module == None:
@@ -61,10 +61,10 @@ ROBOCOMP = ''
 try:
 	ROBOCOMP = os.environ['ROBOCOMP']
 except:
-	print '$ROBOCOMP environment variable not set, using the default value /opt/robocomp'
+	print('$ROBOCOMP environment variable not set, using the default value /opt/robocomp')
 	ROBOCOMP = '/opt/robocomp'
 if len(ROBOCOMP)<1:
-	print 'ROBOCOMP environment variable not set! Exiting.'
+	print('ROBOCOMP environment variable not set! Exiting.')
 	sys.exit()
 
 additionalPathStr = ''
@@ -76,31 +76,25 @@ try:
 		icePaths.append(p)
 		additionalPathStr += ' -I' + p + ' '
 except:
-	print 'SLICE_PATH environment variable was not exported. Using only the default paths'
+	print('SLICE_PATH environment variable was not exported. Using only the default paths')
 	pass
 
 [[[cog
-for incl1 in theIDSLs.strip().split('#'):
-	incl = incl1.split('.')[0]
-	if len(incl) == 0:
-		continue
-	# print('SERVANT <'+incl+'>')
-	cog.outl('ice_'+incl+' = False')
-	cog.outl('for p in icePaths:')
-	cog.outl('<TABHERE>print \'Trying\', p, \'to load ' + incl + '.ice\'')
-	cog.outl('<TABHERE>if os.path.isfile(p+\'/'+incl+'.ice\'):')
-	cog.outl('<TABHERE><TABHERE>print \'Using\', p, \'to load '+incl+'.ice\'')
-	cog.outl('<TABHERE><TABHERE>preStr = "-I/opt/robocomp/interfaces/ -I"+ROBOCOMP+"/interfaces/ " + additionalPathStr + " --all "+p+\'/\'')
-	cog.outl('<TABHERE><TABHERE>wholeStr = preStr+"'+incl+'.ice"')
-	cog.outl('<TABHERE><TABHERE>Ice.loadSlice(wholeStr)')
-	cog.outl('<TABHERE><TABHERE>ice_'+incl+' = True')
-	cog.outl('<TABHERE><TABHERE>break')
-	cog.outl('if not ice_'+incl+':')
-	cog.outl("<TABHERE>print 'Couldn\\\'t load "+incl+"'")
-	cog.outl('<TABHERE>sys.exit(-1)')
-	module2 = IDSLParsing.gimmeIDSL(incl+'.idsl', files='', includeDirectories=includeDirectories)
-	cog.outl('from '+ module2['name'] +' import *')
-
+cog.outl('ice_'+theInterface+' = False')
+cog.outl('for p in icePaths:')
+cog.outl('<TABHERE>print(\'Trying\', p, \'to load ' + theInterface + '.ice\')')
+cog.outl('<TABHERE>if os.path.isfile(p+\'/'+theInterface+'.ice\'):')
+cog.outl('<TABHERE><TABHERE>print(\'Using\', p, \'to load '+theInterface+'.ice\')')
+cog.outl('<TABHERE><TABHERE>preStr = "-I/opt/robocomp/interfaces/ -I"+ROBOCOMP+"/interfaces/ " + additionalPathStr + " --all "+p+\'/\'')
+cog.outl('<TABHERE><TABHERE>wholeStr = preStr+"'+theInterface+'.ice"')
+cog.outl('<TABHERE><TABHERE>Ice.loadSlice(wholeStr)')
+cog.outl('<TABHERE><TABHERE>ice_'+theInterface+' = True')
+cog.outl('<TABHERE><TABHERE>break')
+cog.outl('if not ice_'+theInterface+':')
+cog.outl("<TABHERE>print('Couldn\\\'t load "+theInterface+"')")
+cog.outl('<TABHERE>sys.exit(-1)')
+module2 = gimmeIDSL(theInterface+'.idsl', files='', includeDirectories=includeDirectories)
+cog.outl('from '+ module2['name'] +' import *')
 cog.outl('\nclass ' + theInterface+ 'I('+theInterface+'):')
 ]]]
 [[[end]]]
@@ -129,7 +123,7 @@ cog.outl('\nclass ' + theInterface+ 'I('+theInterface+'):')
 
 
 				cog.outl('<TABHERE>def ' + name + '(self, ' + paramStrA + 'c):')
-				cog.out('<TABHERE><TABHERE>return self.worker.'+name+'(')
+				cog.out('<TABHERE><TABHERE>return self.worker.' + interface['name'] + "_" + name+'(')
 				cog.out(paramStrB)
 				cog.out(')\n')
 

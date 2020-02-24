@@ -1,4 +1,4 @@
-/home/robocomp/robocomp/Interfaces/SlamLaser.ice
+/interfaces/SlamLaser.ice
 slamlaser
 localhost
 tcp

@@ -1,4 +1,4 @@
-/home/robocomp/robocomp/Interfaces/HeadNTP.ice
+/interfaces/HeadNTP.ice
 headntp
 pulguita.local
 tcp

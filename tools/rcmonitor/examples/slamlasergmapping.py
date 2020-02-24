@@ -20,8 +20,10 @@
 
 # Camera RGB Image Template
 import Ice, sys
-from PySide.QtCore import *
-from PySide.QtGui import *
+from PySide2.QtCore import *
+from PySide2.QtGui import *
+from PySide2.QtWidgets import *
+
 
 class C(QWidget):
   def __init__(self, endpoint, modules):
@@ -49,12 +51,12 @@ class C(QWidget):
     pass
 
   def getMap(self):
-    print "clicked"
+    print ("clicked")
     try:
         self.gridMap , self.pose = self.proxy.getWholeGrid()
-        print self.gridMap.params.width
+        print (self.gridMap.params.width)
     except Ice.Exception:
-        print 'SlamLaser: Error: Map not available.'
+        print ('SlamLaser: Error: Map not available.')
         traceback.print_exc()
     self.frame.setFixedSize(self.gridMap.params.width,self.gridMap.params.height)
   

@@ -20,8 +20,9 @@
 
 import Ice, sys, math, traceback
 
-from PySide.QtCore import *
-from PySide.QtGui import *
+from PySide2.QtCore import *
+from PySide2.QtGui import *
+from PySide2.QtWidgets import *
 from ui_headt2pDlg import Ui_HeadT2PDlg
 
 
@@ -34,13 +35,10 @@ class C(QWidget):
 	self.t = 0.
 	self.ic = Ice.initialize(sys.argv)
 	self.mods = modules
-	print "init2"
 	self.prx = self.ic.stringToProxy(endpoint)
 	print endpoint
 	self.proxy = self.mods['RoboCompHeadT2P'].HeadT2PPrx.checkedCast(self.prx)
-	print "init3"
 	self.show()
-	print "init4"
 	#Init spinboxes values
 	map = self.proxy.getHeadState()
 

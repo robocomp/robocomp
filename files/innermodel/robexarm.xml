@@ -27,7 +27,7 @@
 						<mesh id="barrahombro" file="/home/robocomp/robocomp/files/osgModels/robexarm/barrahombro.3ds" tx="-150" ty="0" tz="930" ry="-1.5707963267948966" scale="1000"  />
 						<mesh id="barracuello" file="/home/robocomp/robocomp/files/osgModels/robexarm/barracuello.ive" tx="0" ty="0" tz="930" rx="3.14159265359" scale="1000"  />
 
-						<mesh id="barracolumna" file="/home/robocomp/robocomp/files/osgModels/robexarm/barracolumna.ive" tx="30" ty="-15" tz="915" rz="1.5707963267948966" scale="1000"  />
+						<mesh id="barracolumna" file="/home/robocomp/robocomp/files/osgModels/robexarm/barracolumna.osg" tx="30" ty="-15" tz="915" rz="1.5707963267948966" scale="1000"  />
 						
 						
 						<transform id="base_head" tz="1080"    >

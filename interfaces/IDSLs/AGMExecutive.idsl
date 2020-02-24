@@ -17,8 +17,10 @@ module RoboCompAGMExecutive
 		void structuralChangeProposal(RoboCompAGMWorldModel::World w, string sender, string log) throws Locked, OldModel, InvalidChange;
 		void symbolUpdate(RoboCompAGMWorldModel::Node n);
 		void symbolsUpdate(RoboCompAGMWorldModel::NodeSequence ns);
-		void edgeUpdated(RoboCompAGMWorldModel::Edge e);
-		void edgesUpdated(RoboCompAGMWorldModel::EdgeSequence es);
+		void edgeUpdate(RoboCompAGMWorldModel::Edge e);
+		void edgesUpdate(RoboCompAGMWorldModel::EdgeSequence es);
+		void addSelfEdge(int nodeid, string edgeType, StringDictionary attributes);
+		void delSelfEdge(int nodeid, string edgeType);
 
 		// For setting the mission
 		void setMission(string path);
@@ -34,22 +36,5 @@ module RoboCompAGMExecutive
 		void broadcastPlan();
 	};
 
-	interface AGMExecutiveVisualizationTopic
-	{
-		void update(RoboCompAGMWorldModel::World world, string target, RoboCompPlanning::Plan plan);
-		//void successFulChange(RoboCompPlanning::ActionSequence actions);
-		//ovoid aimedChange(RoboCompPlanning::Action action);
-	};
-
-	interface AGMExecutiveTopic
-	{
-		void structuralChange(RoboCompAGMWorldModel::World w);
-
-		void symbolUpdated(RoboCompAGMWorldModel::Node modification);
-		void symbolsUpdated(RoboCompAGMWorldModel::NodeSequence modifications);
-
-		void edgeUpdated(RoboCompAGMWorldModel::Edge modification);
-		void edgesUpdated(RoboCompAGMWorldModel::EdgeSequence modifications);
-	};
 };
 

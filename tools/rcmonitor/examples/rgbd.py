@@ -20,8 +20,9 @@
 
 import Ice, sys, math, traceback
 
-from PySide.QtCore import *
-from PySide.QtGui import *
+from PySide2.QtCore import *
+from PySide2.QtGui import *
+from PySide2.QtWidgets import *
 from ui_kinectDlg import Ui_KinectDlg
 import numpy as np
 import cv2
@@ -52,49 +53,49 @@ class C(QWidget):
 		self.job()
 
 	def job(self):
-		self.method_combo = unicode(self.ui.method_combobox.currentText())
+		self.method_combo = str(self.ui.method_combobox.currentText())
 		if "getData" in self.method_combo:
 			try:
 				self.color, self.depth, self.headState, self.baseState = self.proxy.getData()
 				#print 'c', len(self.color)
 				#print 'd', len(self.depth)
 				if (len(self.color) == 0) or (len(self.depth) == 0):
-					print 'Error retrieving images!'
+					print ('Error retrieving images!')
 			except Ice.Exception:
 				traceback.print_exc()
 		elif "getImage" in self.method_combo:
 			try:
 				self.color, self.depth, _, self.headState, self.baseState = self.proxy.getImage()
-				#print 'c', len(self.color)
-				#print 'd', len(self.depth)
+				#print ('c', len(self.color))
+				#print ('d', len(self.depth))
 				if (len(self.color) == 0) or (len(self.depth) == 0):
-					print 'Error retrieving images!'
+					print ('Error retrieving images!')
 			except Ice.Exception:
 				traceback.print_exc()
 		elif "getRGB" in self.method_combo:
 			try:
 				self.color, self.headState, self.baseState = self.proxy.getRGB()
-				#print 'c', len(self.color)
-				#print 'd', len(self.depth)
+				#print ('c', len(self.color))
+				#print ('d', len(self.depth))
 				if (len(self.color) == 0) or (len(self.depth) == 0):
-					print 'Error retrieving images!'
+					print ('Error retrieving images!')
 			except Ice.Exception:
 				traceback.print_exc()
 		elif "getDepth" in self.method_combo:
 			try:
 				self.depth, self.headState, self.baseState = self.proxy.getDepth()
-				#print 'c', len(self.color)
-				#print 'd', len(self.depth)
+				#print ('c', len(self.color))
+				#print ('d', len(self.depth))
 				if (len(self.color) == 0) or (len(self.depth) == 0):
-					print 'Error retrieving images!'
+					print ('Error retrieving images!')
 			except Ice.Exception:
 				traceback.print_exc()
 		elif "getXYZ" in self.method_combo:
 			try:
 				self.depth, self.headState, self.baseState = self.proxy.getXYZByteStream()
-				# print len(self.depth)
+				# print (len(self.depth))
 				if (len(self.depth) == 0):
-					print 'Error retrieving XYZ!'
+					print ('Error retrieving XYZ!')
 			except Ice.Exception:
 				traceback.print_exc()
 
@@ -103,7 +104,7 @@ class C(QWidget):
 		color_image_width = 0
 		depth_image_height = 0
 		depth_image_width = 0
-		# print "Paint event "+str(len(self.depth))+" "+str(type(self.depth))
+		# print ("Paint event "+str(len(self.depth))+" "+str(type(self.depth)))
 		if "getData" in self.method_combo or "getImage" in self.method_combo or "getDepth" in self.method_combo:
 			if (len(self.depth) == 640 * 480):
 				depth_image_width = 640
@@ -111,9 +112,9 @@ class C(QWidget):
 			elif (len(self.depth) == 320 * 240):
 				depth_image_width = 320
 				depth_image_height = 240
-			# print "color", len(self.color), "depth", len(self.depth)
+			# print ("color", len(self.color), "depth", len(self.depth))
 			else:
-				print 'Undetermined Depth image size: we shall not paint! %d'%(len(self.depth))
+				print ('Undetermined Depth image size: we shall not paint! %d'%(len(self.depth)))
 				return
 		if "getData" in self.method_combo:
 			# print type(self.color)
@@ -123,9 +124,9 @@ class C(QWidget):
 			elif (len(self.color) == 3*320*240):
 				color_image_width = 320
 				color_image_height = 240
-				#print "color", len(self.color), "depth", len(self.depth)
+				#print ("color", len(self.color), "depth", len(self.depth))
 			else:
-				print 'Undetermined Color image size: we shall not paint! %d'%(len(self.color))
+				print ('Undetermined Color image size: we shall not paint! %d'%(len(self.color)))
 				return
 		elif "getRGB" in self.method_combo or "getImage" in self.method_combo:
 			new_color = ''
@@ -136,7 +137,7 @@ class C(QWidget):
 				color_image_width = 320
 				color_image_height = 240
 			else:
-				print 'Undetermined Color image size in getRGB: we shall not paint! %d'%(len(self.color))
+				print ('Undetermined Color image size in getRGB: we shall not paint! %d'%(len(self.color)))
 				return
 			for color_struct in self.color:
 				new_color+=chr(color_struct.red)
@@ -158,7 +159,7 @@ class C(QWidget):
 
 		if depth_image_height != color_image_height or depth_image_width != color_image_width:
 			if "getData" in self.method_combo:
-				print "Warning: Depth (%d,%d) and Color(%d,%d) sizes mismatch"%(depth_image_width, depth_image_height, color_image_width, color_image_height)
+				print ("Warning: Depth (%d,%d) and Color(%d,%d) sizes mismatch"%(depth_image_width, depth_image_height, color_image_width, color_image_height))
 		
 		painter = QPainter(self)
 		painter.setRenderHint(QPainter.Antialiasing, True)

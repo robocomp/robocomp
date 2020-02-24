@@ -30,6 +30,7 @@ SpecificWorker::SpecificWorker(MapPrx& _mprx, Ice::CommunicatorPtr _communicator
 {
 	communicator = _communicator;
 	laserDataCartArray.clear();
+    nodeLaser.clear();
 
 	// Initialize InnerModel from file
 	innerModel = std::make_shared<InnerModel>(_innerModelXML);
@@ -156,13 +157,13 @@ void SpecificWorker::updateCameras()
 void SpecificWorker::updateLasers()
 {
 	// Delete existing lasers
+    
 	for (const auto &laserKey : imv->lasers.keys())
 	{
 		const auto &laserValue = imv->lasers.value(laserKey);
 		if (laserValue.osgNode->getNumChildren() > 0)
 			laserValue.osgNode->removeChild(0, laserValue.osgNode->getNumChildren());
 	}
-	
 	// Laser
 	for (const auto &laserKey : imv->lasers.keys())			 // NO DEBERIAMOS ITERAR SOBRE LOS LASERS DE INNERMODEL?
 	{
@@ -175,7 +176,7 @@ void SpecificWorker::updateLasers()
 			v->resize(laserValue.laserNode->measures+1);
 			laserDataCartArray.insert(std::make_pair(id,v));
 		}
-
+        
 		// create and insert synthetic laser data
 		static RoboCompLaser::TLaserData laserData;
 		const int measures = laserValue.laserNode->measures;
@@ -204,7 +205,7 @@ void SpecificWorker::updateLasers()
 			//Creamos el segmento de interseccion
 			osg::ref_ptr<osgUtil::LineSegmentIntersector> intersector = new osgUtil::LineSegmentIntersector(osgUtil::Intersector::MODEL, P, Q);
 			osgUtil::IntersectionVisitor visitor(intersector.get());
-
+            
 			/// Pasando el visitor al root
 			viewer->getRootGroup()->accept(visitor);
 
@@ -230,20 +231,25 @@ void SpecificWorker::updateLasers()
 			}
 			angle -= incAngle;
 		}
-		laserDataArray.insert_or_assign(id, laserData);
+		laserDataArray.insert_or_assign(id, laserData);  
+//         std::cout<<"node laser size "<<nodeLaser.size()<<"\n";
 
 		// create and insert laser shape
-		if (true) // DRAW LASER
-		{
-			osg::ref_ptr<osg::Node> p = nullptr;
+ 		if (drawLaser->isChecked()) // DRAW LASER        
+		{            
+			osg::ref_ptr<osg::Node> p = nullptr;            
 			if(id == "laserSecurity")
 				p = viewer->addPolygon(*(laserDataCartArray[id]), osg::Vec4(0.,0.,1.,0.4));
 			else
 				p = viewer->addPolygon(*(laserDataCartArray[id]));
 			if (p != nullptr)
-				laserValue.osgNode->addChild(p);
-		}
+            {
+				laserValue.osgNode->addChild(p);                
+            }
+           nodeLaser.insert_or_assign(id, p);
+		}		
 	}
+	
 }
 
 // Update all the joint positions

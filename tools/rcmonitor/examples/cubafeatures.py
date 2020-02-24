@@ -21,8 +21,10 @@
 
 import Ice
 import sys
-from PySide.QtCore import *
-from PySide.QtGui import *
+from PySide2.QtCore import *
+from PySide2.QtGui import *
+from PySide2.QtWidgets import *
+
 
 class C(QWidget):
   def __init__(self, endpoint, modules):
@@ -57,14 +59,14 @@ class C(QWidget):
     self.drawCenter(painter)
     
     painter.setPen(Qt.blue)
-    print len(self.features.p)
+    print (len(self.features.p))
     for point in self.features.p:
-      print point.x, point.z
+      print (point.x, point.z)
       self.drawCircle(painter, point.x, point.z, 14)
 
     painter.setPen(Qt.green)
     for segment in self.features.s:
-      print segment.p1x, segment.p1z, segment.p2x, segment.p2z
+      print (segment.p1x, segment.p1z, segment.p2x, segment.p2z)
       self.drawLineCUBA(painter, segment.p1x, segment.p1z, segment.p2x, segment.p2z, 1)
 
     painter.end()

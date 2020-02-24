@@ -20,15 +20,16 @@
 
 import Ice, sys, math, traceback
 
-from PySide.QtCore import *
-from PySide.QtGui import *
+from PySide2.QtCore import *
+from PySide2.QtGui import *
+from PySide2.QtWidgets import *
 from ui_kinectDlg import Ui_KinectDlg
 
 
 class C(QWidget):
 	def __init__(self, endpoint, modules):
 		QWidget.__init__(self)
-		print "init"
+		print ("init")
 		self.ui = Ui_KinectDlg()
 		self.ui.setupUi(self)
 		self.t = 0.
@@ -37,7 +38,7 @@ class C(QWidget):
 		self.ic = Ice.initialize(arg)
 		self.mods = modules
 		self.prx = self.ic.stringToProxy(endpoint)
-		print endpoint
+		print (endpoint)
 		self.proxy = self.mods['RoboCompKinect'].KinectPrx.checkedCast(self.prx)
 		self.show()
 		self.ui.cbLedOpt.addItem("OFF")
@@ -57,7 +58,7 @@ class C(QWidget):
 		try:
 			self.vector = self.proxy.getDataRGBZinIR() # imageVector, depthVector, headState, baseState
 			if len(self.vector) == 0:
-				print 'Error retrieving images!'
+				print ('Error retrieving images!')
 		except Ice.Exception:
 			traceback.print_exc()
 
@@ -74,7 +75,7 @@ class C(QWidget):
 
 	def doSetLed(self):
 		ledLight = self.textToEnum(self.ui.cbLedOpt.currentText())
-		print ledLight
+		print (ledLight)
 		try:
 			self.proxy.setLed( ledLight )
 		except Ice.Exception:

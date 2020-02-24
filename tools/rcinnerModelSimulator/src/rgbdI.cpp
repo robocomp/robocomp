@@ -145,8 +145,10 @@ void RGBDI::getImage ( ColorSeq& color, DepthSeq& depth, PointSeq& points, RoboC
 		//if (base != worker->servers.omn_servers.end())
 		if (base != worker->servers.hMaps.cend())
 		{
-			std::get<OmniRobotServer>(base->second).interface->getBaseState( bState );
-			bstateUpd = true;
+			try{ //Check if object is type omni or differential
+				std::get<OmniRobotServer>(base->second).interface->getBaseState( bState );
+				bstateUpd = true;
+			}catch(...){/*cout<<"Not omni base"<<std::endl;*/}
 		}
 		//std::map<uint32_t, DifferentialRobotServer>::iterator baseD;
 		//baseD = worker->servers.dfr_servers.find( basePort );
@@ -154,8 +156,10 @@ void RGBDI::getImage ( ColorSeq& color, DepthSeq& depth, PointSeq& points, RoboC
 		//if (baseD != worker->servers.dfr_servers.end())
 		if (baseD != worker->servers.hMaps.end())
 		{
-			std::get<DifferentialRobotServer>(baseD->second).interface->getBaseState( bState );
-			bstateUpd = true;
+			try{ //Check if object is type omni or differential
+				std::get<DifferentialRobotServer>(baseD->second).interface->getBaseState( bState );
+				bstateUpd = true;
+			}catch(...){/*cout<<"Not differential base"<<std::endl;*/}
 		}
 		if (not bstateUpd)
 		{
@@ -246,6 +250,7 @@ void RGBDI::getDepth ( DepthSeq& depth, RoboCompJointMotor ::MotorStateMap& hSta
 
 void RGBDI::getRGB ( ColorSeq& color, RoboCompJointMotor ::MotorStateMap& hState, RoboCompGenericBase::TBaseState& bState, const Ice::Current& )
 {
+	qDebug()<<"get image";
 	DepthSeq depth;
 	PointSeq points;
 	this->getImage ( color, depth, points, hState, bState );

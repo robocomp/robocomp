@@ -1,4 +1,4 @@
-Interfaces/IMU.ice
+/interfaces/IMU.ice
 imu
 localhost
 tcp

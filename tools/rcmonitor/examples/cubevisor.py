@@ -2,8 +2,10 @@
 import Ice
 import sys
 
-from PySide.QtCore import *
-from PySide.QtGui import *
+from PySide2.QtCore import *
+from PySide2.QtGui import *
+from PySide2.QtWidgets import *
+
 
 class C(QWidget):
   def __init__(self, endpoint, modules):
@@ -20,6 +22,7 @@ class C(QWidget):
     self.NumberOfRooms.show()
     self.NumberOfRooms.setSegmentStyle(QLCDNumber.Flat)
     self.NumberOfRooms.move(350,80)
+  
   def job(self):
     nModels = self.proxy.getNumberOfModels()
     self.NumberOfRooms.display(nModels)

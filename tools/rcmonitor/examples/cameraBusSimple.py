@@ -20,8 +20,9 @@
 
 import Ice, sys, math, traceback
 
-from PySide.QtCore import *
-from PySide.QtGui import *
+from PySide2.QtCore import *
+from PySide2.QtGui import *
+from PySide2.QtWidgets import *
 
 class C(QWidget):
 	def __init__(self, endpoint, modules):
@@ -35,9 +36,9 @@ class C(QWidget):
 		self.show()
 
 		try:
-			print self.proxy.getBusParams()
+			print (self.proxy.getBusParams())
 		except Ice.Exception:
-			print "CameraBusComp not found"
+			print ("CameraBusComp not found")
 			traceback.print_exc()
 
 		self.comboLabel = QLabel("Camera")
@@ -46,12 +47,12 @@ class C(QWidget):
 		try:
 			self.cameras = self.proxy.getAllCameraParams()
 		except Ice.Exception:
-			print 'CameraBus: Error: No cameras.'
+			print ('CameraBus: Error: No cameras.')
 			traceback.print_exc()
 			
-		print 'Cameras: ',
+		print ('Cameras: ',)
 		for item in self.cameras:
-			print item
+			print (item)
 			self.combo.addItem(item.name)
 		self.combo.addItem("all")
 		
@@ -102,7 +103,7 @@ class C(QWidget):
 			else:
 				self.imageList = self.proxy.getSyncImages(self.cameraList,self.format,True)
 		except Ice.Exception:
-			print 'CameraBus: Error: Image not available.'
+			print ('CameraBus: Error: Image not available.')
 			traceback.print_exc()
 
 	def paintEvent(self, event=None):
@@ -151,6 +152,3 @@ class C(QWidget):
 		self.job()
 	def cameraChanged(self):
 		self.camera = str(self.combo.currentText())
-
-
-

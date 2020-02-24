@@ -13,11 +13,12 @@ def Z():
 def TAB():
 	cog.out('<TABHERE>')
 
-from parseCDSL import *
+from dsl_parsers.dsl_factory import DSLFactory
+from dsl_parsers.parsing_utils import getNameNumber, IDSLPool, communicationIsIce
 includeDirectories = theIDSLPaths.split('#')
-component = CDSLParsing.fromFile(theCDSL, includeDirectories=includeDirectories)
+component = DSLFactory().from_file(theCDSL, include_directories=includeDirectories)
 
-from parseIDSL import *
+
 pool = IDSLPool(theIDSLs, includeDirectories)
 
 REQUIRE_STR = """
@@ -26,7 +27,7 @@ REQUIRE_STR = """
 <TABHERE><TABHERE>proxyString = ic.getProperties().getProperty('<NORMAL><NUM>Proxy')
 <TABHERE><TABHERE>try:
 <TABHERE><TABHERE><TABHERE>basePrx = ic.stringToProxy(proxyString)
-<TABHERE><TABHERE><TABHERE><LOWER><NUM>_proxy = <NORMAL>Prx.checkedCast(basePrx)
+<TABHERE><TABHERE><TABHERE><LOWER><NUM>_proxy = <NORMAL>Prx.uncheckedCast(basePrx)
 <TABHERE><TABHERE><TABHERE>mprx["<NORMAL>Proxy<NUM>"] = <LOWER><NUM>_proxy
 <TABHERE><TABHERE>except Ice.Exception:
 <TABHERE><TABHERE><TABHERE>print('Cannot connect to the remote object (<NORMAL>)', proxyString)

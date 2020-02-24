@@ -19,25 +19,28 @@
 #    along with RoboComp.  If not, see <http://www.gnu.org/licenses/>.
 #
 debug = False
-import sys, os, time, new, traceback, threading
-try:
-	import cPickle as pickle
-except:
-	import cpickle
+import sys, os, time, traceback, threading, types
+import pickle
 import Ice
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
-from PyQt4.Qt import *
+from PySide2 import QtCore
+from PySide2.QtCore import *
+from PySide2.QtGui import *
+from PySide2.QtWidgets import *
 from ui_gui import Ui_ReplayMainWindow
 from ui_frameskip import Ui_ReplayFrameskipMainWindow
+
+# Ctrl+c handling
+import signal
+signal.signal(signal.SIGINT, signal.SIG_DFL)
 
 # Get environment variables
 ROBOCOMP = ''
 SLICE_PATH = ''
 try:
-	ROBOCOMP = os.environ['ROBOCOMP']
+	ROBOCOMP = "/home/robocomp/robocomp/"
+	#ROBOCOMP = os.environ['ROBOCOMP']
 except:
-	print 'ROBOCOMP environment variable not set! Exiting.'
+	print ('ROBOCOMP environment variable not set! Exiting.')
 	sys.exit()
 try:
 	SLICE_PATH = os.environ['SLICE_PATH']
@@ -45,13 +48,13 @@ except:
 	pass
 
 def helpMsg(argv):
-	print 'replayComp: Error: A configuration file must be specified.',
-	if len(argv)>2: print 'And only one.',
-	print '\ne.g.:  ', argv[0], 'replay.conf'
-	print '       ', argv[0], '--Ice.Config=replay.conf'
-	print '\ne.g.:  ', argv[0], 'replay.conf --frameskip'
-	print '       ', argv[0], '--Ice.Config=replay.conf --frameskip'
-	print 'The "frameskip" flag can be used to reduce the number of measures per second in a replayComp file.'
+	print ('replayComp: Error: A configuration file must be specified.',)
+	if len(argv)>2: print ('And only one.')
+	print ('\ne.g.:  ', argv[0], 'replay.conf')
+	print ('       ', argv[0], '--Ice.Config=replay.conf')
+	print ('\ne.g.:  ', argv[0], 'replay.conf --frameskip')
+	print ('       ', argv[0], '--Ice.Config=replay.conf --frameskip')
+	print ('The "frameskip" flag can be used to reduce the number of measures per second in a replayComp file.')
 # Global communicator
 argv = sys.argv
 if len(argv)<2:
@@ -63,7 +66,7 @@ elif argv[1].rfind('--Ice.Config=') != 0:
 try:
 	global_ic = Ice.initialize(argv)
 except Ice.FileException:
-	print 'replayComp: Error: Make sure the file specified ('+argv[1][13:] + ') exists.'
+	print ('replayComp: Error: Make sure the file specified ('+argv[1][13:] + ') exists.')
 	sys.exit(-1)
 except:
 	traceback.print_exc()
@@ -73,8 +76,8 @@ def importCode(path, name):
 	filed = open(path, 'r')
 	code = filed.read()
 	filed.close()
-	module = new.module(name)
-	exec code in module.__dict__
+	module = types.ModuleType(name)
+	exec (code, module.__dict__)
 	return module
 
 
@@ -105,7 +108,7 @@ class ReplayExitMessage(QThread):
 		while not self.stop:
 			time.sleep(0.01)
 			if tick%20 == 0:
-				print '.',
+				print ('.')
 			tick+=1
 
 ################################
@@ -190,54 +193,71 @@ class ReplayStorageWriter:
 	def __init__(self, path):
 		self.path = path
 		global debug
-		if debug: print 'Opening', self.path, 'with write permissions'
+		if debug:
+			print('Opening', self.path, 'with write permissions')
 		self.wfile = open(self.path, 'wb')
 		self.measures = 0
 		# Alloc file space for the header pointer
-		self.wfile.write('0'*15)
+		string = str("").zfill(15)
+		self.wfile.write(bytes(string, 'ascii'))
+
 	def writeMeasure(self, measure):
 		ret = self.wfile.tell()
 		pickle.dump(measure, self.wfile, 2)
-		self.measures+=1
+		self.measures += 1
 		return ret
+
 	def done(self, header):
 		global debug
-		if debug: print 'Header index length', len(header.index)
+		if debug:
+			print('Header index length', len(header.index))
 		for cfg in header.cfgDict.values():
 			cfg.worker_class = None
 			cfg.gui_class = None
 			cfg.module = None
 			header.cfgDict[cfg.identifier] = cfg
-		print 'Writing header'
+		print('Writing header')
 		header_pointer = self.wfile.tell()
 		pickle.dump(header, self.wfile, 2)
 		self.wfile.seek(0, os.SEEK_SET)
-		self.wfile.write(str(header_pointer).zfill(15))
+		header_string = str(header_pointer).zfill(15)
+		self.wfile.write(bytes(header_string, 'ascii'))
 		self.wfile.close()
-		print 'Written', self.measures, 'measures'
+		print('Written', self.measures, 'measures')
 
 ###################
 ##  R E A D E R  ##
 ###################
+
+
 class ReplayStorageReader:
+
 	def __init__(self, path):
 		global debug
-		if debug: print 'Opening', path, 'with read permissions'
+		if debug:
+			print('Opening', path, 'with read permissions')
+
 		self.rfile = open(path, 'rb')
-		self.header_pointer = int(self.rfile.read(15))
+		self.rfile.seek(0, os.SEEK_SET)
+		self.header_pointer = int(self.rfile.read(15).decode('ascii'))
+#		print(os.path.getsize(path))
 		self.rfile.seek(self.header_pointer, os.SEEK_SET)
+		print(self.rfile.tell())
 		self.header = pickle.load(self.rfile)
 		if debug:
 			for identifier in self.header.cfgDict:
-				print identifier
-				print ' ', type(self.header.cfgDict[identifier].configuration), self.header.cfgDict[identifier].configuration
+				print(identifier)
+				print(' ', type(self.header.cfgDict[identifier].configuration), self.header.cfgDict[identifier].configuration)
 		self.rfile.seek(15, os.SEEK_SET)
 		self.measures = 0
+
 	def goto(self, idx):
 		self.rfile.seek(self.header.index[idx], os.SEEK_SET)
 		self.measures = idx
+
 	def advance(self, units):
 		self.goto(self.measures+units)
+
 	def readMeasure(self):
 		if self.header_pointer > self.rfile.tell():
 			try:
@@ -247,15 +267,17 @@ class ReplayStorageReader:
 			except:
 				raise 'end'
 				traceback.print_exc()
-			self.measures+=1
+			self.measures += 1
 			return ret
 		else:
 			raise 'end'
+
 	def eof(self):
 		if self.header_pointer > self.rfile.tell():
 			return False
 		else:
 			return True
+
 	def done(self):
 		self.rfile.close()
 
@@ -264,19 +286,22 @@ class ReplayStorageReader:
 ##   M A I N    C L A S S   ##
 ##############################
 class ReplayCompIce(QThread, QObject):
+
 	def readAliasProperty(self, alias, string):
 		try:
 			return global_ic.getProperties().getProperty(alias+'.'+string)
 		except:
 			traceback.print_exc()
-			print 'Can\'t read '+string+' for component', alias
+			print('Can\'t read '+string+' for component', alias)
 			sys.exit(1)
+
 	def initialization(self, start=True):
+		self.connect(self, QtCore.SIGNAL('startTimerSignal()'), self.startTimer)
 		self.running = False
 		self.finished = False
 		self.speedup = 1.
 		self.time = QTime.currentTime()
-		self.status = 0;
+		self.status = 0
 		global global_ic
 		try:
 			#
@@ -288,15 +313,15 @@ class ReplayCompIce(QThread, QObject):
 			self.header = ReplayHeader(self.aliases, self.mode, self.filename, dict())
 		except:
 			traceback.print_exc()
-			print 'Can\'t read global header parameters'
+			print ('Can\'t read global header parameters')
 			sys.exit(1)
 		#
 		# Set plug-in specific parameters
 		global debug
-		if debug: print 'Aliases:', self.aliases
+		if debug: print ('Aliases:', self.aliases)
 		cfgDict = dict()
 		for alias in self.aliases:
-			if debug: print '\nReading config for', alias
+			if debug: print ('\nReading config for', alias)
 			name = self.readAliasProperty(alias, 'name')
 			path = self.readAliasProperty(alias, 'codePath')
 			identifier = self.readAliasProperty(alias, 'identifier')
@@ -307,7 +332,7 @@ class ReplayCompIce(QThread, QObject):
 				if len(spath) > 0:
 					string_final += ' -I' + spath
 			string_final += ' --all'
-			if debug: print 'slice2py string:', string_final
+			if debug: print ('slice2py string:', string_final)
 			Ice.loadSlice(string_final)
 			module = importCode(path, name)
 
@@ -319,11 +344,11 @@ class ReplayCompIce(QThread, QObject):
 					worker_class = module.getReplayClass()
 				except:
 					traceback.print_exc()
-					print 'Can\'t get replay class. Check your module "getReplayClass()'
+					print ('Can\'t get replay class. Check your module "getReplayClass()')
 				try:
 					adapter.add(worker_class, global_ic.stringToIdentity(name))
 				except:
-					print 'Can\'t add adapter.', name
+					print ('Can\'t add adapter.', name)
 				adapter.activate()
 				cfg = ReplayComponentConfig(name, path, slicePath, module, worker_class, identifier)
 				cfgDict[identifier] = cfg
@@ -333,8 +358,8 @@ class ReplayCompIce(QThread, QObject):
 				cfg = ReplayComponentConfig(name, path, slicePath, module, worker_class, identifier)
 				cfg.configuration = cfg.worker_class.getConfiguration()
 				cfgDict[identifier] = cfg
-		if debug: print 'Done reading configuration'
-		if debug: print cfgDict.keys()
+		if debug: print ('Done reading configuration')
+		if debug: print (cfgDict.keys())
 		self.header.cfgDict = cfgDict
 
 		if start:
@@ -355,7 +380,7 @@ class ReplayCompIce(QThread, QObject):
 					self.writer = ReplayStorageWriter(self.filename)
 			except:
 				traceback.print_exc()
-				print 'Can\'t read '
+				print ('Can\'t read ')
 				sys.exit(1)
 	def run (self):
 		self.initialization()
@@ -363,13 +388,13 @@ class ReplayCompIce(QThread, QObject):
 			global debug
 			if debug:
 				for identifier in self.header.cfgDict:
-					print identifier
-					print ' ', type(self.header.cfgDict[identifier].configuration), self.header.cfgDict[identifier].configuration
+					print (identifier)
+					print (' ', type(self.header.cfgDict[identifier].configuration), self.header.cfgDict[identifier].configuration)
 			try:
 				self.measureSet = self.reader.readMeasure()
 			except:
 				traceback.print_exc()
-				print 'We could read the header but not a measure'
+				print ('We could read the header but not a measure')
 				sys.exit(1)
 		self.running = True
 		try:
@@ -380,7 +405,7 @@ class ReplayCompIce(QThread, QObject):
 	# write
 	def writeMeasureSet(self):
 		if self.finished:
-			print 'calling WriteMeasureSet() when ReplayCompIce is already finished'
+			print ('calling WriteMeasureSet() when ReplayCompIce is already finished')
 			return
 		if self.mode == 'capture':
 			measureSet = ComponentMeasureSet(self.time.msecsTo(QTime.currentTime()))
@@ -396,7 +421,7 @@ class ReplayCompIce(QThread, QObject):
 	# read
 	def readMeasureSet(self, force=False):
 		if self.finished:
-			print 'calling WriteMeasureSet() when ReplayCompIce is already finished'
+			print ('calling WriteMeasureSet() when ReplayCompIce is already finished')
 			return False
 		ret = False
 		val = (self.measureSet.time)-self.time.msecsTo(QTime.currentTime())*self.speedup
@@ -416,28 +441,30 @@ class ReplayCompIce(QThread, QObject):
 			try:
 				self.measureSet = self.reader.readMeasure()
 			except:
-				print 'Starting over.'
+				print ('Starting over.')
 				try:
 					if self.reader.eof():
 						self.reader.goto(0)
 					else:
 						self.reader.advance(int(1))
 				except:
-					print 'Could not re-read header'
+					print ('Could not re-read header')
 					sys.exit(-1)
 			ret = True
 			force = False
-		if ret: self.sTimer.start(1)
+#		if ret:
+#			self.sTimer.start(1)
 		return ret
+
 	def goto(self, newIdx):
 		self.reader.goto(newIdx)
 		self.measureSet = self.reader.readMeasure()
 		self.setSpeedUp(self.speedup)
-
+	
 	# done
 	def done(self):
 		if self.finished:
-			print 'calling WriteMeasureSet() when ReplayCompIce is already finished'
+			print ('calling WriteMeasureSet() when ReplayCompIce is already finished')
 			return
 		if self.mode == 'capture':
 			self.writer.done(self.header)
@@ -491,6 +518,7 @@ class ReplayFrameskipUI(QMainWindow):
 			self.salida.write('0'*15)
 			self.endReached = False
 			self.timer = QTimer()
+			print ("timer 491")
 			self.timer.start(1)
 			self.index = list()
 			self.connect(self.timer, SIGNAL('timeout()'), self.timeout)
@@ -513,10 +541,10 @@ class ReplayFrameskipUI(QMainWindow):
 						self.writtenMeasures += 1
 					self.ui.progressBar.setValue((self.measures*99.9)/len(self.header.index))
 				except EOFError:
-					print "Nos hemos pasado leyendo"
+					print ("Nos hemos pasado leyendo")
 					self.endReached = True
 				except:
-					print "Algun otro error"
+					print ("Algun otro error")
 					self.endReached = True
 			else:
 				self.endReached = True
@@ -528,7 +556,7 @@ class ReplayFrameskipUI(QMainWindow):
 			self.salida.write(str(self.header_pointer).zfill(15))
 			self.timer.stop()
 			self.salida.close()
-			print 'done'
+			print ('done')
 			for i in range(3):
 				self.ui.tabWidget.setTabEnabled(i, False)
 			self.ui.tabWidget.setTabEnabled(2, True)
@@ -577,9 +605,9 @@ class ReplayCompUI(QMainWindow):
 		self.connect(self.ui.actionCascade, SIGNAL('triggered(bool)'), self.cascade)
 		# Add plug-in windows to the MDI area
 		global debug
-		if debug: print 'Header list'
+		if debug: print ('Header list')
 		for cfgId in self.ice.header.cfgDict:
-			if debug: print cfgId
+			if debug: print (cfgId)
 			cfg = self.ice.header.cfgDict[cfgId]
 			cfg.gui_class = cfg.module.getGraphicalUserInterface()
 			cfg.gui_class.setConfiguration(cfg.configuration)
@@ -617,7 +645,9 @@ class ReplayCompUI(QMainWindow):
 			self.tray.setContextMenu(self.menu);
 		# Signal handling
 		self.timer = QTimer()
-		if self.mode == 'capture': self.timer.start(200)
+		if self.mode == 'capture': 
+			print ("timer 619")
+			self.timer.start(200)
 		else: self.changeSpeed(1.)
 		self.connect(self.timer, SIGNAL('timeout()'), self.timeout)
 		self.connect(self.ui.spinBox, SIGNAL('valueChanged(double)'), self.changeSpeed)
@@ -662,6 +692,7 @@ class ReplayCompUI(QMainWindow):
 		self.ui_ticks += 1
 #
 # Handle quit
+
 	def finish(self):
 		self.disconnect(self.timer, SIGNAL('timeout()'), self.timeout)
 		self.ice.done()
@@ -674,6 +705,7 @@ class ReplayCompUI(QMainWindow):
 	def changeSpeed(self, newSpeed):
 		self.ice.setSpeedUp(newSpeed)
 		self.period = int(round(30./newSpeed))
+		print ("timer 677")
 		self.timer.start(self.period)
 #
 # Handle jumps in time

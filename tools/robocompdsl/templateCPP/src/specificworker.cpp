@@ -12,11 +12,11 @@ def Z():
 def TAB():
 	cog.out('<TABHERE>')
 
-from parseCDSL import *
-from parseSMDSL import *
+from dsl_parsers.dsl_factory import DSLFactory
+from dsl_parsers.parsing_utils import communicationIsIce, isAGM1Agent, isAGM2Agent, isAGM2AgentROS, IDSLPool
 includeDirectories = theIDSLPaths.split('#')
-component = CDSLParsing.fromFile(theCDSL, includeDirectories=includeDirectories)
-sm = SMDSLparsing.fromFile(component['statemachine'])
+component = DSLFactory().from_file(theCDSL, include_directories=includeDirectories)
+sm = DSLFactory().from_file(component['statemachine'])
 if sm is None:
     component['statemachine'] = None
 if component is None:
@@ -25,7 +25,6 @@ if component is None:
 
 
 
-from parseIDSL import *
 pool = IDSLPool(theIDSLs, includeDirectories)
 rosTypes = pool.getRosTypes()
 
@@ -37,14 +36,22 @@ def bodyCodeFromName(name, component):
 		#######################################################
 		if name == 'symbolUpdated':
 			bodyCode = "\tQMutexLocker locker(mutex);\n\tAGMModelConverter::includeIceModificationInInternalModel(modification, worldModel);\n"
-		if name == 'symbolsUpdated':
+		elif name == 'symbolsUpdated':
 			bodyCode = "\tQMutexLocker l(mutex);\n\tfor (auto modification : modifications)\n\t\tAGMModelConverter::includeIceModificationInInternalModel(modification, worldModel);\n"
-		if name == 'edgeUpdated':
-			bodyCode = "\tQMutexLocker locker(mutex);\n\tAGMModelConverter::includeIceModificationInInternalModel(modification, worldModel);\n\tAGMInner::updateImNodeFromEdge(worldModel, modification, innerModel);\n"
-		if name == 'edgesUpdated':
-			bodyCode = "\tQMutexLocker lockIM(mutex);\n\tfor (auto modification : modifications)\n\t{\n\t\tAGMModelConverter::includeIceModificationInInternalModel(modification, worldModel);\n\t\tAGMInner::updateImNodeFromEdge(worldModel, modification, innerModel);\n\t}\n"
-		if name == 'structuralChange':
-			bodyCode = "<TABHERE>QMutexLocker lockIM(mutex);\n <TABHERE>AGMModelConverter::fromIceToInternal(w, worldModel);\n \n<TABHERE>delete innerModel;\n<TABHERE>innerModel = AGMInner::extractInnerModel(worldModel);"
+		elif name == 'edgeUpdated':
+			bodyCode = "\tQMutexLocker locker(mutex);\n\tAGMModelConverter::includeIceModificationInInternalModel(modification, worldModel);\n\tAGMInner::updateImNodeFromEdge(worldModel, modification, innerModel.get());\n"
+		elif name == 'edgesUpdated':
+			bodyCode = "\tQMutexLocker lockIM(mutex);\n\tfor (auto modification : modifications)\n\t{\n\t\tAGMModelConverter::includeIceModificationInInternalModel(modification, worldModel);\n\t\tAGMInner::updateImNodeFromEdge(worldModel, modification, innerModel.get());\n\t}\n"
+		elif name == 'structuralChange':
+			bodyCode = "\tQMutexLocker lockIM(mutex);\n <TABHERE>AGMModelConverter::fromIceToInternal(w, worldModel);\n \n<TABHERE>innerModel = std::make_shared<InnerModel>(AGMInner::extractInnerModel(worldModel));"
+			if 'innermodelviewer' in [ x.lower() for x in component['options'] ]:
+				bodyCode += "\n<TABHERE>regenerateInnerModelViewer();"
+		elif name == 'selfEdgeAdded':
+			bodyCode = "\tQMutexLocker lockIM(mutex);\n <TABHERE>try { worldModel->addEdgeByIdentifiers(nodeid, nodeid, edgeType, attributes); } catch(...){ printf(\"Couldn't add an edge. Duplicate?\\n\"); }\n \n<TABHERE>try { innerModel = std::make_shared<InnerModel>(AGMInner::extractInnerModel(worldModel)); } catch(...) { printf(\"Can't extract an InnerModel from the current model.\\n\"); }"
+			if 'innermodelviewer' in [ x.lower() for x in component['options'] ]:
+				bodyCode += "\n<TABHERE>regenerateInnerModelViewer();"
+		elif name == 'selfEdgeDeleted':
+			bodyCode = "\tQMutexLocker lockIM(mutex);\n <TABHERE>try { worldModel->removeEdgeByIdentifiers(nodeid, nodeid, edgeType); } catch(...) { printf(\"Couldn't remove an edge\\n\"); }\n \n<TABHERE>try { innerModel = std::make_shared<InnerModel>(AGMInner::extractInnerModel(worldModel)); } catch(...) { printf(\"Can't extract an InnerModel from the current model.\\n\"); }"
 			if 'innermodelviewer' in [ x.lower() for x in component['options'] ]:
 				bodyCode += "\n<TABHERE>regenerateInnerModelViewer();"
 		#######################################
@@ -78,7 +85,7 @@ def bodyCodeFromName(name, component):
 			bodyCode = "\tQMutexLocker locker(mutex);\n\tfor (auto e : modification"
 			if mdlw == 'ROS':
 				bodyCode += ".EdgeSequence"
-			bodyCode += ")\n\t{\n\t\tAGMModelConverter::include" + mdlw + "ModificationInInternalModel(e, worldModel);\n\t\tAGMInner::updateImNodeFromEdge(worldModel, e, innerModelViewer->innerModel);\n\t}\n"
+			bodyCode += ")\n\t{\n\t\tAGMModelConverter::include" + mdlw + "ModificationInInternalModel(e, worldModel);\n\t\tAGMInner::updateImNodeFromEdge(worldModel, e, innerModelViewer->innerModel.get());\n\t}\n"
 		elif name == 'structuralChange':
 			bodyCode = "\tQMutexLocker locker(mutex);\n\tAGMModelConverter::from" + mdlw + "ToInternal(w, worldModel);\n\t\n\tInnerModel *newIM = AGMInner::extractInnerModel(worldModel);\n"
 			if 'innermodelviewer' in component['options']:
@@ -145,16 +152,10 @@ if component['innermodelviewer']:
     cog.outl("<TABHERE>osgView->setCameraManipulator(tb);")
     cog.outl("#endif")
 try:
-    if isAGM1Agent(component):
+    if isAGM1Agent(component) or isAGM2Agent(component):
         cog.outl("<TABHERE>active = false;")
         cog.outl("<TABHERE>worldModel = AGMModel::SPtr(new AGMModel());")
         cog.outl("<TABHERE>worldModel->name = "+"\"worldModel\";")
-        cog.outl("<TABHERE>innerModel = new InnerModel();")
-    if isAGM2Agent(component):
-        cog.outl("<TABHERE>active = false;")
-        cog.outl("<TABHERE>worldModel = AGMModel::SPtr(new AGMModel());")
-        cog.outl("<TABHERE>worldModel->name = "+"\"worldModel\";")
-        cog.outl("<TABHERE>innerModel = new InnerModel();")
 
 except:
     pass
@@ -199,15 +200,9 @@ if component['innermodelviewer']:
 [[[end]]]
 
 [[[cog
-if sm is not None:
-    cog.outl("<TABHERE>" + sm['machine']['name'] + ".start();")
-]]]
-[[[end]]]
-	
-
-[[[cog
 try:
 	if isAGM1Agent(component):
+		cog.outl("<TABHERE>innerModel = std::make_shared<InnerModel>(new InnerModel());")
 		cog.outl("<TABHERE>try")
 		cog.outl("<TABHERE>{")
 		cog.outl("<TABHERE><TABHERE>RoboCompAGMWorldModel::World w = agmexecutive_proxy->getModel();")
@@ -224,6 +219,13 @@ except:
 	pass
 ]]]
 [[[end]]]
+
+[[[cog
+if sm is not None:
+    cog.outl("<TABHERE>" + sm['machine']['name'] + ".start();")
+]]]
+[[[end]]]
+	
 
 	return true;
 }

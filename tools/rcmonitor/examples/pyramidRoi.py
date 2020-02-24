@@ -20,15 +20,17 @@
 
 import Ice, sys, math, traceback
 
-from PySide.QtCore import *
-from PySide.QtGui import *
+from PySide2.QtCore import *
+from PySide2.QtGui import *
+from PySide2.QtWidgets import *
+
 
 class C(QWidget):
 	def __init__(self, endpoint, modules):
 		QWidget.__init__(self)
 		self.ic = Ice.initialize(sys.argv)
 		self.mods = modules
-		print 'Endpoint', endpoint
+		print ('Endpoint', endpoint)
 		self.prx = self.ic.stringToProxy(endpoint)
 		self.proxy = self.mods['RoboCompRoimant'].RoimantPrx.checkedCast(self.prx)
 		self.pyrList = []

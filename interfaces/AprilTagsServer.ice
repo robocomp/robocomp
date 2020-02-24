@@ -19,6 +19,8 @@ module RoboCompAprilTagsServer
 		 float rx;
 		 float ry;
 		 float rz;
+         int cx;
+         int cy;
 	};
 	sequence <tag> tagsList;
 	enum Mode { YUV422, GRAY8, RGB888Packet, RGB888Planar };

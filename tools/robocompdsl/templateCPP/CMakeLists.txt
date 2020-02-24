@@ -20,8 +20,9 @@ def SPACE(i=0):
 		s = str(i)
 	cog.out('<S'+s+'>')
 
-from parseCDSL import *
-component = CDSLParsing.fromFile(theCDSL, includeDirectories=includeDirectories)
+from dsl_parsers.dsl_factory import DSLFactory
+includeDirectories = theIDSLPaths.split('#')
+component = DSLFactory().from_file(theCDSL, include_directories=includeDirectories)
 
 ]]]
 [[[end]]]

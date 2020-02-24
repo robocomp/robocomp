@@ -3,14 +3,19 @@
 
 [![Join the chat at https://gitter.im/robocomp/robocomp](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/robocomp/robocomp?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-by [RoboLab](http://robolab.unex.es), [Aston University](https://www2.aston.ac.uk/eas), [ISIS](http://www.grupoisis.uma.es/index.php?option=com_jresearch&view=staff&Itemid=3&lang=es) and many other collaborators.
+by [RoboLab (Universidad de Extremadura)](http://robolab.unex.es), [Aston University](https://www2.aston.ac.uk/eas), [ISIS (Universidad de Málaga)](http://www.grupoisis.uma.es/index.php?option=com_jresearch&view=staff&Itemid=3&lang=es) and many other collaborators from the Google Summer of Code program.
 
-RoboComp is an open-source Robotics framework providing the tools to create and modify software components that communicate through public interfaces. Components may *require*, *subscribe*, *implement* or *publish* interfaces in a seamless way. Building new components is done using two domain specific languages, IDSL and CDSL. With IDSL you define an interface and with CDSL you specify how the component will communicate with the world. With this information, a code generator creates C++ and/or Python sources, based on CMake, that compile and execute flawlessly. When some of these features have to be changed, the component can be easily regenerated and all the user specific code is preserved thanks to a simple inheritance mechanism.
+RoboComp is an open-source Robotics framework providing the tools to create and modify software components that communicate through public interfaces. Components may *require*, *subscribe*, *implement* or *publish*
+interfaces in a seamless way. Building new components is done using two domain-specific languages, IDSL and CDSL. With IDSL you define an interface and with CDSL you specify how the component will communicate with the world. With this information, a code generator creates C++ and/or Python sources, based on CMake, that compile and execute flawlessly. When some of these features have to be changed, the component can be easily regenerated and all the user-specific code is preserved thanks to a simple inheritance mechanism.
 
 If you already have RoboComp installed, jump to [tutorials](doc/README.md) to start coding! 
 
+:warning: If you want to contribute with something new to Robocomp, please do it on the [development branch](https://github.com/robocomp/robocomp/tree/development). If you fix something on the stable branch, please check if it's also relevant for the development branch and try to [cherrypick](https://git-scm.com/docs/git-cherry-pick) your commit.  
+
 :question: If you have a question please look for it in the [FAQ](doc/FAQ.md). 
 -
+
+
 # Installation in Ubuntu from PPA
 
 Coming soon...
@@ -26,7 +31,8 @@ Remember to start a new bash session before continue using RoboComp: new variabl
 # Installation from source
 
 Tested in Ubuntu 18.04.  
-**Note:** RoboComp is not compatible with Ubuntu 16.04. RoboComp needs to be compiled using C++11. Ice libraries with C++11 support are only available for zeroc-ice 3.7 and the packages for this version are only available since Ubuntu 18.04.  
+**Note:** RoboComp is not compatible with Ubuntu 16.04. RoboComp needs to be compiled using C++11. Ice libraries with C++11 support are only available for zeroc-ice 3.7 and the packages for this version are only available since Ubuntu 18.04.
+{: .note}
 <!--If you are not an Ubuntu user, need to modify the core of RoboComp, or just feel like installing from sources, you can follow these instructions (they have been tested in Ubuntu 14.04, 14.10, 15.04, 16.04). If you're not in any of these scenarios, please use the packaged version.
 -->
 
@@ -34,20 +40,21 @@ Tested in Ubuntu 18.04.
 Make sure you have installed the following packages from the Ubuntu repository:
 
     sudo apt-get update
-    sudo apt-get install git git-annex cmake g++ libgsl-dev libopenscenegraph-dev cmake-qt-gui zeroc-ice-all-dev freeglut3-dev libboost-system-dev libboost-thread-dev qt5-default libqt5xmlpatterns5-dev python-pip python-pyparsing=2.2.0+dfsg1-2 python-numpy libxt-dev libboost-test-dev libboost-filesystem-dev python-libxml2 python-xmltodict libccd-dev python-pyside pyside-tools python-zeroc-ice zeroc-ice-all-runtime
-    sudo pip install networkx pyside2 argcomplete
+    sudo apt-get install git git-annex cmake make g++ libgsl-dev libopenscenegraph-dev cmake-qt-gui zeroc-ice-all-dev freeglut3-dev libboost-system-dev libboost-thread-dev qt5-default libqt5xmlpatterns5-dev libqt5opengl5-dev libxt-dev libboost-test-dev libboost-filesystem-dev  libccd-dev zeroc-ice-all-runtime
+    sudo apt-get install python3-pip python3-setuptools python3-pyparsing=2.2.0+dfsg1-2 python3-numpy python3-libxml2 python3-xmltodict python3-zeroc-ice
+    sudo pip3 install networkx pyside2 argcomplete termcolor cogapp
 
 It is recommendable to install the following packages::
 
     sudo apt-get install yakuake qttools5-dev-tools qt5-assistant
 
-Note: RoboComp uses python2 for now, so make sure that you set python2 as your deafult choide if you also have python3 installed on your system. You can do so by adding this line into your ~/.bashrc file and then save it:
+<!--Note: RoboComp uses python2 for now, so make sure that you set python2 as your default choice if you also have python3 installed on your system. You can do so by adding this line into your ~/.bashrc file and then save it:
 
     alias python=python2
-    
-Note: One of the main tools of Robocomp, robocompdsl is using pyparsing and the current code doesn't work with 2.4 version of this library. With the previous commands we are installing the 2.2 version (python-pyparsing=2.2.0+dfsg1-2). If you a have more recent version of pyparsing installed with apt or pip we recomend you to uninstall it and install the 2.2 version. You can check your curren version of pyparsing with this command:
+--> 
+Note: One of the main tools of Robocomp, robocompdsl is using pyparsing and the current code doesn't work with 2.4 version of this library. With the previous commands, we are installing the 2.2 version (python-pyparsing=2.2.0+dfsg1-2). If you have a more recent version of pyparsing installed with apt or pip we recommend you to uninstall it and install the 2.2 version. You can check your current version of pyparsing with this command:
 
-    python -c "import pyparsing; print(pyparsing.__version__)"
+    python3 -c "import pyparsing; print(pyparsing.__version__)"
     
 
 ## Installation itself
@@ -113,12 +120,16 @@ Now let's run the simulator.
 
     cd ~/robocomp/files/innermodel
     rcis simpleworld.xml
+  
+You can also use the default `innermodel/simpleworld.xml` anywhere if you have set the ROBOCOMP environment variable.
+
+    rcis
     
 Congratulations! RCIS should be up and running with a simple robot endowed with a laser and an RGBD camera, moving on a wooden floor. Don't forget to turn around the floor to see the robot from above.
  
 #### Installing some RoboLab's components from GitHub
 
-The software of the robots using RoboComp is composed of different software components working together, communicating among them. What we just installed is just the core of RoboComp (the simulator, a component generator and some libraries). To have other features like joystick control we have to run additional software components available from other repositories, for example robocomp-robolab:
+The software of the robots using RoboComp is composed of different software components working together, communicating among them. What we just installed is just the core of RoboComp (the simulator, a component generator, and some libraries). To have other features like joystick control we have to run additional software components available from other repositories, for example, robocomp-robolab:
 
     cd ~/robocomp/components
     git clone https://github.com/robocomp/robocomp-robolab.git
@@ -140,19 +151,19 @@ Your joystick should be now running. It will make the robot advance and turn at 
 
     ./forceStopJoyStickComp.sh
     
-and check where the joystick device file has been created (e.g., `/dev/input/js0`). If it is not `/dev/input/js0`, edit `~/robocomp/components/robocomp-robolab/components/joystickComp/etc/config` change it accordingly and restart. Note that you might want to save the *config* file to the component's home directory so it does not interfere with future github updates.
+and check where the joystick device file has been created (e.g., `/dev/input/js0`). If it is not `/dev/input/js0`, edit `~/robocomp/components/robocomp-robolab/components/hardware/external_control/joystickComp/etc/config` change it accordingly and restart. Note that you might want to save the *config* file to the component's home directory so it does not interfere with future GitHub updates.
 
 
 ## Using the keyboard as a JoyStick
 
 If you don't have a JoyStick install this component,
 
-    cd ~/robocomp/components/robocomp-robolab/components/keyboardrobotcontroller
+    cd ~/robocomp/components/robocomp-robolab/components/hardware/external_control/keyboardrobotcontroller
     cmake .
     make
-    src/keyboardrobotcontroller.py --Ice.Config=etc/config
+    src/keyboardrobotcontroller.py etc/config
     
-and use the arrow keys to navigate the robot, the space bar to stop it an 'q' to exit.
+and use the arrow keys to navigate the robot, the space bar to stop it and 'q' to exit.
 
 Note 1: You must have your simulator running in a terminal and only then you can run a component in another terminal. You will get an error message if you run the above component without having RCIS already running.
 
@@ -163,7 +174,7 @@ You can find more tutorials on RoboComp in [tutorials](doc/README.md)
 
 Drop comments and ask questions in:
 
-- https://groups.google.com/forum/?hl=es#!forum/robocomp-dev
+- https://groups.google.com/forum/?hl=en#!forum/robocomp-dev
 - https://gitter.im/robocomp
 
 Please, report any bugs with the github issue system: [Robocomp Issues](https://github.com/robocomp/robocomp/issues)

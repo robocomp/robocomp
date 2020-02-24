@@ -1,4 +1,4 @@
-interfaces/InverseKinematics.ice
+/interfaces/InverseKinematics.ice
 inversekinematics
 localhost
 tcp

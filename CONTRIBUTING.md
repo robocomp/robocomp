@@ -4,7 +4,7 @@
 
 However, for those individuals who want a bit more guidance on the best way to contribute to the project, read on. This document will cover what you are looking for. By addressing all these points, it raises the chances we can quickly address your contributions.
 
-__Important__: The default branch of Robocomp is `highlyunstable`. This means that new features or bug reports 
+__Important__: The default branch of Robocomp is `development`. This means that new features or bug reports 
 for this branch are our priority.
 
 ## Issues

@@ -19,12 +19,10 @@
 #
 
 import Ice, threading
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
-from PyQt4.Qt import *
+from PySide2.QtCore import *
+from PySide2.QtGui import *
+from PySide2.QtWidgets import *
 import math
-
-
 
 import RoboCompIMU
 global RoboCompIMU
@@ -76,7 +74,7 @@ class IMUI(RoboCompIMU.IMU):
 		acc.XAcc = self.measure.XAcc
 		acc.YAcc = self.measure.YAcc
 		acc.ZAcc = self.measure.ZAcc
-		print acc.XAcc, acc.YAcc, acc.ZAcc
+		print (acc.XAcc, acc.YAcc, acc.ZAcc)
 		return acc
 	def getVelangular(self, current = None):
 		return True

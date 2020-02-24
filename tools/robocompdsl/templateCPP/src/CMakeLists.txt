@@ -25,11 +25,11 @@ def SPACE(i=0):
 	cog.out('<S'+s+'>')
 
 
-from parseCDSL import *
-
+from dsl_parsers.dsl_factory import DSLFactory
+from dsl_parsers.parsing_utils import communicationIsIce, isAGM1Agent, isAGM2Agent
 
 includeDirectories = theIDSLPaths.split('#')
-component = CDSLParsing.fromFile(theCDSL, includeDirectories=includeDirectories)
+component = DSLFactory().from_file(theCDSL, include_directories=includeDirectories)
 
 ]]]
 [[[end]]]
@@ -83,7 +83,11 @@ for subscribe in component['subscribesTo']:
 	if communicationIsIce(subscribe):
 		cog.outl('<S2>' + subs.lower() + 'I.cpp')
 
-
+if  component['statemachine_visual']:
+    cog.outl("  $ENV{ROBOCOMP}/classes/statemachinewidget/edge.cpp")
+    cog.outl("  $ENV{ROBOCOMP}/classes/statemachinewidget/node.cpp")
+    cog.outl("  $ENV{ROBOCOMP}/classes/statemachinewidget/graphwidget.cpp")
+    cog.outl("  $ENV{ROBOCOMP}/classes/statemachinewidget/qstateMachineWrapper.cpp")
 ]]]
 [[[end]]]
 )
@@ -105,6 +109,15 @@ if component['language'].lower() == "cpp11":
 ]]]
 [[[end]]]
 
+[[[cog
+	if 'agmagent' in [ x.lower() for x in component['options'] ]:
+		cog.outl('# AGM Agent\'s requirements')
+		cog.outl('find_package(LibXml2 REQUIRED)')
+		cog.outl('include_directories(LIBXML2_INCLUDE_DIRS)')
+		cog.outl('include_directories(/usr/include/libxml2/)')
+		cog.outl('SET (LIBS ${LIBS} -lagm )')
+]]]
+[[[end]]]
 
 #ROBOCOMP
 ROBOCOMP_INITIALIZE( $ENV{ROBOCOMP}/ )
@@ -119,7 +132,7 @@ cog.out(' '.join(imp))
 try:
 	options = [ x.lower() for x in component['options'] ]
 	if 'agmagent' in options:
-		cog.out(" AGMExecutive AGMWorldModel Planning AGMCommonBehavior ")
+		cog.out(" AGMExecutive AGMExecutiveTopic ")
 	elif 'agm2agent' in options or 'agm2agentICE' in options or 'agm2agentROS' in options:
 		cog.out(" AGM2 ")
 except:
@@ -148,6 +161,7 @@ try:
 		cog.outl("ADD_DEFINITIONS( -I/usr/include/libxml2/ )")
 		cog.outl("include(/usr/local/share/cmake/FindAGM2.cmake)")
 except:
+	print("Can't check if the component is an agent")
 	pass
 
 ]]]
