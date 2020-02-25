@@ -22,7 +22,7 @@ See the projects done in [Google Summer of Code](https://robocomp.github.io/web/
 
 ## In which branch should you make changes?
 
-Our up-to-date branch is currently `highlyunstable`. If you are going to file an issue or make an improvement, this is the branch to do it. 
+Our up-to-date branch is currently `development`. If you are going to file an issue or make an improvement, this is the branch to do it. 
 
 ## What is the Learnbot?
 

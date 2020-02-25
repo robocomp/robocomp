@@ -2,7 +2,7 @@
 
 We will create a RoboComp Component that can communicate with a Ros Node using Ros Middleware.
 
-The Ros Node which we will use can be found [here](https://github.com/robocomp/robocomp/tree/highlyunstable/doc/src/beginner_tutorials). 
+The Ros Node which we will use can be found [here](https://github.com/robocomp/robocomp/tree/development/doc/src/beginner_tutorials). 
 
 **Steps for Creating a Component:**
 
@@ -62,7 +62,7 @@ interface chat{
 
 We have created a structure image and a topic called chatter.
 
-**For more info** about IDSL visit this [tutorial](https://github.com/robocomp/robocomp/blob/highlyunstable/doc/IDSL.md) created by Robocomp.
+**For more info** about IDSL visit this [tutorial](https://github.com/robocomp/robocomp/blob/development/doc/IDSL.md) created by Robocomp.
 
 ## 3. Generate the RoboComp Component
 
@@ -83,7 +83,7 @@ Component listener
 
 And use RoboCompDSL to generate your component.
 
-**For more info** about creating components, look at this [tutorial](https://github.com/robocomp/robocomp/blob/highlyunstable/doc/robocompdsl.md) created by Robocomp.
+**For more info** about creating components, look at this [tutorial](https://github.com/robocomp/robocomp/blob/development/doc/robocompdsl.md) created by Robocomp.
 
 ## 4. Run it
 
