@@ -30,6 +30,12 @@ module RoboCompHumanCameraBody
 	{
 		 int id;
 		 TJoints joints;
+		 float x;
+		 float y;
+		 float z;
+		 float rx;
+		 float ry;
+		 float rz;
 	};
 	sequence <Person> People;
 	struct PeopleData
