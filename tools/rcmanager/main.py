@@ -33,21 +33,14 @@ import argparse
 import logging
 
 from PyQt4.QtGui import QApplication
-from viewer import Viewer
-from model import Model
-from controller import Controller
-from PyQt4 import QtCore, QtGui
-from rcmanagerSignals import CustomSignalCollection
+
+from yakuake_support import create_yakuake_start_shell_script
 
 class Main():
     """This is the Main class which spawns the objects for the Model,
     Viewer and the Controller, for our MVC model."""
 
-    def __init__(self):
-        parser = argparse.ArgumentParser()
-        parser.add_argument('filename', help='the xml file containing the component graph data')
-        parser.add_argument('-v', '--verbose', help='show debug messages', dest='verbosity', action='store_true')
-        args = parser.parse_args()
+    def __init__(self, verbosity, filename):
 
         # create model as a NetworkX graph using dict
         self.model = Model()
@@ -61,9 +54,9 @@ class Main():
         self.setup_signal_connection()
 
         # set verbosity levels for the loggers of Model, Viewer and Controller
-        self.set_verbosity(args.verbosity)
+        self.set_verbosity(verbosity)
 
-        CustomSignalCollection.controllerIsReady.emit(args.filename)
+        CustomSignalCollection.controllerIsReady.emit(filename)
 
     def set_verbosity(self, verbosity):
         if verbosity:
@@ -97,7 +90,30 @@ if __name__ == '__main__':
     # process params with a argparse
     app = QApplication(sys.argv)
     signal.signal(signal.SIGINT, signal.SIG_DFL)
-    main = Main()
+
+    script_help="""Create script to restore yakuake session.\n
+    Only tabs that does not contain "Shell" on its name are saved.\n
+    IMPORTANT: commands need to be stopped on all tabs before executing this.\n
+    IMPORTANT2: Only the last command on each tab will be saved."""
+
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-v', '--verbose', help='show debug messages', dest='verbosity', action='store_true')
+    group1 = parser.add_mutually_exclusive_group()
+    group1.add_argument('filename', nargs='*', default=[], help='the xml file containing the component graph data')
+    group1.add_argument('-s', '--script', help=script_help, dest='script',
+                        action='store_true')
+    args = parser.parse_args()
+
+    if args.script:
+        create_yakuake_start_shell_script()
+        exit(0)
+
+    from viewer import Viewer
+    from model import Model
+    from controller import Controller
+    from rcmanagerSignals import CustomSignalCollection
+    main = Main(args.verbosity, args.filename)
     ret = app.exec_()
     sys.exit(ret)
     
