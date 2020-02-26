@@ -31,10 +31,11 @@ import random
 import pyparsing
 import sys
 
+sys.path.append('/opt/robocomp/python')
+
 from dsl_parsers.parsing_utils import gimmeIDSL
 from dsl_parsers.specific_parsers.cdsl_parser import CDSLParser
 
-sys.path.append('/opt/robocomp/python')
 
 try:
     from termcolor import cprint
@@ -404,7 +405,7 @@ class CDSLSampler:
 if __name__ == '__main__':
     root = CDSLParser().parser
     generator = CDSLSampler()
-    for i in range(1):
+    for i in range(100):
         output_cdsl = generator.generate_valid_component(root)
         print(output_cdsl)
     # print(generator.special_interfaces)
