@@ -76,4 +76,6 @@ ui_**.pyc
 
 *.cmake
 
-CMakeCache.txt
+*CMakeCache.txt
+
+*build/
