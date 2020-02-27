@@ -93,8 +93,7 @@ if __name__ == '__main__':
 
     script_help="""Create script to restore yakuake session.\n
     Only tabs that does not contain "Shell" on its name are saved.\n
-    IMPORTANT: commands need to be stopped on all tabs before executing this.\n
-    IMPORTANT2: Only the last command on each tab will be saved."""
+    IMPORTANT: Only the last command on each tab will be saved."""
 
 
     parser = argparse.ArgumentParser()

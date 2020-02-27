@@ -49,6 +49,22 @@ qdbus org.kde.yakuake /yakuake/sessions org.kde.yakuake.runCommand "%s"
 qdbus org.kde.yakuake /yakuake/tabs org.kde.yakuake.setTabTitle $sess0 "%s"
 """
 
+
+def get_command_return(command):
+    proc = subprocess.Popen(shlex.split(command), stderr=subprocess.PIPE,
+                            stdout=subprocess.PIPE, shell=False)
+    (result, error) = proc.communicate()
+    return result, error
+
+def get_last_child(pid):
+    last_pid = pid
+    while(True):
+        child_pid,_ = get_command_return("pgrep -P %s"%last_pid)
+        if not child_pid:
+            return last_pid
+        else:
+            last_pid = int(child_pid)
+
 class YakuakeTab:
     def __init__(self):
         self.session_id = -1
@@ -73,30 +89,49 @@ def load_open_tabs_info():
         if "Shell" in yakuake_tab.name:
             continue
         yakuake_tab.terminal_id = sessions.terminalIdsForSessionId(session_id)
-        yakuake_tab.tmp_path = "/tmp/manager_commands_%d.txt" % session_id
-        sessions.runCommandInTerminal(int(yakuake_tab.terminal_id),
-                                      "pwd > %s" % yakuake_tab.tmp_path)
-        sessions.runCommandInTerminal(int(yakuake_tab.terminal_id),"history 3 | head -1 | cut -d' ' -f4- >> %s"%yakuake_tab.tmp_path)
+
+        konsole_session = bus.get_object('org.kde.yakuake','/Sessions/%s'%(session_id+1),'org.kde.konsole.Session')
+        foreground_pid = konsole_session.foregroundProcessId()
+        session_pid = konsole_session.processId()
+        # Not executing the command
+        if foreground_pid == session_pid:
+            yakuake_tab.tmp_path = "/tmp/manager_commands_%d.txt" % session_id
+            sessions.runCommandInTerminal(int(yakuake_tab.terminal_id),
+                                          "pwd > %s" % yakuake_tab.tmp_path)
+            sessions.runCommandInTerminal(int(yakuake_tab.terminal_id),
+                                          "history 3 | head -1 | cut -d' ' -f4- >> %s" % yakuake_tab.tmp_path)
+            sleep(0.5)
+
+            for retrie in range(5):
+                try:
+                    with open(yakuake_tab.tmp_path) as command_file:
+                        file_lines = command_file.read().splitlines()
+                        if len(file_lines) > 0:
+                            yakuake_tab.current_directory = file_lines[0]
+                        if len(file_lines) > 1:
+                            yakuake_tab.last_command = file_lines[1]
+
+                        # print("Tab name: %s \n\tId: %d \n\tLast Command: %s \n\tCurrent dir:%s\n" % (yakuake_tab.name,yakuake_tab.session_id, yakuake_tab.last_command, yakuake_tab.current_directory))
+                        break
+                except:
+                    if retrie == 4:
+                        print(
+                                    "Could not get command from \"%s\" tab. Check that you finished the process that tab." % yakuake_tab.name)
+        else:
+            child_pid = get_last_child(foreground_pid)
+            pwdx_command = "pwdx %s" % child_pid
+            pwd, error = get_command_return(pwdx_command)
+            pwd = pwd.split()[1].strip()
+            yakuake_tab.current_directory = pwd
+            ps_command = "ps -p %s -o cmd h" % child_pid
+            command, error = get_command_return(ps_command)
+            command = command.strip()
+            yakuake_tab.last_command = command
+
         all_tabs[yakuake_tab.name] = yakuake_tab
         # finishing writting temp files
 
-    sleep(0.5)
 
-    for yakuake_tab in all_tabs.values():
-        for retrie in range(5):
-            try:
-                with open(yakuake_tab.tmp_path) as command_file:
-                    file_lines = command_file.read().splitlines()
-                    if len(file_lines) > 0:
-                        yakuake_tab.current_directory = file_lines[0]
-                    if len(file_lines) > 1:
-                        yakuake_tab.last_command = file_lines[1]
-
-                    # print("Tab name: %s \n\tId: %d \n\tLast Command: %s \n\tCurrent dir:%s\n" % (yakuake_tab.name,yakuake_tab.session_id, yakuake_tab.last_command, yakuake_tab.current_directory))
-                    continue
-            except:
-                if retrie == 4:
-                    print("Could not get command from \"%s\" tab. Check that you finished the process that tab."%yakuake_tab.name)
     return all_tabs
 
 def create_xml(tabs):
@@ -249,4 +284,7 @@ class ProcessHandler():
         return processId
 
 if __name__ == '__main__':
-    processHandler = ProcessHandler()
+    load_open_tabs_info()
+    # processHandler = ProcessHandler()
+
+
