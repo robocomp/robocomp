@@ -476,7 +476,7 @@ class TheThing(QtWidgets.QDialog):
 		if n > 1:
 			msg = 'WARNING: ' + str(n) + ' unconnected component groups'
 			self.log(msg)
-			QtGui.QMessageBox.warning(self, 'Warning', msg)
+			QtWidgets.QMessageBox.warning(self, 'Warning', msg)
 		self.setFastState()
 
 		# Call-back when
