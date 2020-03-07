@@ -54,6 +54,8 @@ It is recommendable to install the following packages::
 --> 
 Note: One of the main tools of Robocomp, robocompdsl is using pyparsing and the current code doesn't work with 2.4 version of this library. With the previous commands, we are installing the 2.2 version (python-pyparsing=2.2.0+dfsg1-2). If you have a more recent version of pyparsing installed with apt or pip we recommend you to uninstall it and install the 2.2 version. You can check your current version of pyparsing with this command:
 
+Unstall the latest version by using the following command : sudo pip2 uninstall pyparsing and again install it by using this command : sudo pip2 install pyparsing==2.2
+
     python3 -c "import pyparsing; print(pyparsing.__version__)"
     
 
