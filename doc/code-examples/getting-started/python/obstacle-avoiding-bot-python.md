@@ -14,7 +14,7 @@ Here rotation is set to a variable which keep changing in each loop. This is don
 The code for the above algorithm is
 
 		def compute(self):
-			print 'SpecificWorker.compute...'
+			print('SpecificWorker.compute...')
 			rot = 0.7
 			try:
 				ldata = []
@@ -26,7 +26,7 @@ The code for the above algorithm is
 					d.append(y)
 				d.sort()
 				distance = d[0]
-				print distance
+				print(distance)
 				if distance < 400:
 					self.differentialrobot_proxy.setSpeedBase(0, rot)
 					time.sleep(1)
@@ -38,9 +38,9 @@ The code for the above algorithm is
 				else:
 					self.differentialrobot_proxy.setSpeedBase(100, 0)
 					time.sleep(1)
-			except Ice.Exception, e:
+			except Ice.Exception as e:
 				traceback.print_exc()
-				print e
+				print(e)
 			return True
 
 Note that here the values set are arbitrary and can be changed according to your requirements. Save the file and in a new tab simulate a innermodel

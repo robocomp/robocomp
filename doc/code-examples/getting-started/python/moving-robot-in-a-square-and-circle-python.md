@@ -50,15 +50,15 @@ This will set the speed of the bot to 100 and 0 radians per second. So to move i
 In the above code 1.5705 is ntn but 90 degrees written in radians per second and a 1 second delay is introduced or each setSpeedBase will execute for a second. Now you compute function should look like this
 
 		def compute(self):
-		print 'SpecificWorker.compute...'
+		print('SpecificWorker.compute...')
 		try:
 			self.differentialrobot_proxy.setSpeedBase(100, 0)
 			time.sleep(1)
 			self.differentialrobot_proxy.setSpeedBase(10, 1.5707)
 			time.sleep(1)
-		except Ice.Exception, e:
+		except Ice.Exception as e:
 			traceback.print_exc()
-			print e
+			print(e)
 		return True
 
 After you have written the algorithm as desired you can save the code and come back to the build folder
