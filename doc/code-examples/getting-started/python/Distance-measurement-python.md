@@ -38,14 +38,14 @@ The algorithm is as follows we move the bot randomly first and then collect the 
 		a.sort()
 		distance = d[0]
 		angle = a[0]
-		print distance
-		print angle
+		print(distance)
+		print(angle)
 		time.sleep(3)
 
 As told in the algorithm we first define the ldata, Start moving the bot randomly and collect the laser data, sort the distance only by appending it to a new list. Take the first element for the new list and output the same on the command window. Your final compute function will look something like this
 
 		def compute(self):
-		print 'SpecificWorker.compute...'
+		print('SpecificWorker.compute...')
 		try:
 			ldata = []
 			d= []
@@ -65,12 +65,12 @@ As told in the algorithm we first define the ldata, Start moving the bot randoml
 			a.sort()
 			distance = d[0]
 			angle = a[0]
-			print distance
-			print angle
+			print(distance)
+			print(angle)
 			time.sleep(3)
-		except Ice.Exception, e:
+		except Ice.Exception as e:
 			traceback.print_exc()
-			print e
+			print(e)
 		return True
 
 Save it and run the component by executing
