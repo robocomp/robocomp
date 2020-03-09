@@ -42,7 +42,7 @@ Make sure you have installed the following packages from the Ubuntu repository:
     sudo apt-get update
     sudo apt-get install git git-annex cmake make g++ libgsl-dev libopenscenegraph-dev cmake-qt-gui zeroc-ice-all-dev freeglut3-dev libboost-system-dev libboost-thread-dev qt5-default libqt5xmlpatterns5-dev libqt5opengl5-dev libxt-dev libboost-test-dev libboost-filesystem-dev  libccd-dev zeroc-ice-all-runtime
     sudo apt-get install python3-pip python3-setuptools python3-pyparsing=2.2.0+dfsg1-2 python3-numpy python3-libxml2 python3-xmltodict python3-zeroc-ice
-    sudo pip3 install networkx pyside2 argcomplete termcolor cogapp
+    sudo pip install networkx pyside2 argcomplete termcolor cogapp
 
 It is recommendable to install the following packages::
 
