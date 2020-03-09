@@ -2,7 +2,7 @@
 
 ## Some Background
 
-Two major problems encountered when creating large, complex software are scalability and reusability. These problems become especially acute when it comes to writing the software that controls today robots. 
+Two major problems encountered when creating large, complex software are scalability and reusability. These problems become especially acute when it comes to writing the software that controls the robots nowadays. 
 
 Robotics is a mixed bag of technology, where almost everything finds its way through. Also, Robotics is the place where our dreams of intelligent machines meet, in an endless attempt to build a truly useful tool for our daily lives. 
 
@@ -14,7 +14,7 @@ The problem with building these little monsters is that you need a very powerful
 
 Components provide a new, developing technology that can be very helpful. Components are *programs that communicate* and as such, they are built with everything at hand: libraries, objects, threads, sockets, lambda functions and any other thing you can come up with to code a program. 
 
-Components need a way to share information among them, and here is where communication middlewares get in. If you want to communicate applications written in different languages, running across the internet, executing on different hardware architectures -even browsers- then you cannot deal with just a socket. You need a middleware. 
+Components need a way to share information among them, and here is where communication middlewares get in. If you want applications written in different languages to communicate, running across the internet, executing on different hardware architectures -even browsers- then you cannot deal with just a socket. You need a middleware. 
 
 Putting together programs and a communication middleware, you can almost come up with a way to make more components. Except, one more thing is needed, a model for your components. 
 
