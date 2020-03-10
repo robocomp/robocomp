@@ -43,10 +43,10 @@ Define a parameter key which will get the input form the keyboard. If in case th
                	elif key == ord('q'):
 		    curses.endwin()
 		    sys.exit() 
-            except Ice.Exception, e:
+            except Ice.Exception as e:
 		curses.endwin()
                 traceback.print_exc()
-                print e
+                print(e)
             return True
 
 Save the code and simulate the innermodel simpleworld.xml and run the component by executing,
