@@ -30,8 +30,8 @@ module RoboCompCameraRGBDSimple
  
   interface CameraRGBDSimple
   {
-    void getImage(out TImage im);
-    void getDepth(out TDepth dep);
-    void getAll(out TImage im, out TDepth dep);
+    void getImage(out TImage im)  throws HardwareFailedException;;
+    void getDepth(out TDepth dep)  throws HardwareFailedException;;
+    void getAll(out TImage im, out TDepth dep)  throws HardwareFailedException;;
   };
 };
