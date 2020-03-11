@@ -32,7 +32,8 @@ Remember to start a new bash session before continue using RoboComp: new variabl
 
 Tested in Ubuntu 18.04.  
 **Note:** RoboComp is not compatible with Ubuntu 16.04. RoboComp needs to be compiled using C++11. Ice libraries with C++11 support are only available for zeroc-ice 3.7 and the packages for this version are only available since Ubuntu 18.04.
-{: .note}
+
+**Note:** If you have installed Anaconda in your system. [Then you need to change the python from anaconda to default](https://github.com/robocomp/robocomp/issues/248).
 <!--If you are not an Ubuntu user, need to modify the core of RoboComp, or just feel like installing from sources, you can follow these instructions (they have been tested in Ubuntu 14.04, 14.10, 15.04, 16.04). If you're not in any of these scenarios, please use the packaged version.
 -->
 
@@ -142,18 +143,16 @@ The RoboLab's set of basic robotics components are now dowloaded. You can see th
 
 If you have a joystick around, connect it to the USB port and:
 
-    cd ~/robocomp/components/robocomp-robolab/components/joystickComp
+    cd ~/robocomp/components/robocomp-robolab/components/hardware/external_control/joystickComp
     cmake .
     make
     cd bin
-    sudo addgroup your-user dialout   // To solve some permissions issues in Ubuntu
-    ./startJoyStick.sh 
+    sudo addgroup your-user dialout   // If you find permissions issues in Ubuntu
+    check the config file in the component's etc folder and male sure that the port matches the DifferentialRobot endpoint in     RCIS.
+    bin/joystick etc/config
     
-Your joystick should be now running. It will make the robot advance and turn at your will. If the component does not start or the robot does not move stop joystickcomp with:
-
-    ./forceStopJoyStickComp.sh
-    
-and check where the joystick device file has been created (e.g., `/dev/input/js0`). If it is not `/dev/input/js0`, edit `~/robocomp/components/robocomp-robolab/components/hardware/external_control/joystickComp/etc/config` change it accordingly and restart. Note that you might want to save the *config* file to the component's home directory so it does not interfere with future GitHub updates.
+Your joystick should be now running. It will make the robot advance and turn at your will. If it does not work, 
+check where the joystick device file has been created (e.g., `/dev/input/js0`). If it is not `/dev/input/js0`, edit `~/robocomp/components/robocomp-robolab/components/hardware/external_control/joystickComp/etc/config` change it accordingly and restart. Note that you might want to save the *config* file to the component's home directory so it does not interfere with future GitHub updates.
 
 
 ## Using the keyboard as a JoyStick

@@ -203,6 +203,13 @@ void InnerModelViewer::recursiveConstructor(InnerModelNode *node, osg::Group* pa
 			cam.viewerCamera->getCamera()->attach(osg::Camera::COLOR_BUFFER, cam.rgb);
 			cam.viewerCamera->getCamera()->attach(osg::Camera::DEPTH_BUFFER, cam.d);
 			cam.viewerCamera->getCamera()->setProjectionMatrix(::osg::Matrix::perspective(fov*180./M_PIl, aspectRatio, zNear, zFar));
+			osg::StateSet* cameraStateSet = cam.viewerCamera->getCamera()->getOrCreateStateSet();
+			cameraStateSet->setMode(GL_LIGHTING,osg::StateAttribute::ON);
+			osg::Light* light = cam.viewerCamera->getLight();
+			light->setAmbient(  osg::Vec4( 0.4f,    0.4f, 0.4f,  1.f ));
+			light->setDiffuse(  osg::Vec4( 0.8f,    0.8f, 0.8f,  1.f ));
+			light->setSpecular( osg::Vec4( 0.2f,    0.2f, 0.2f,  1.f ));
+			light->setPosition( osg::Vec4( 0.0f, 3000.0f, 0.0f,  1.f));
 			
 			// set windowName to innerModel id. Using Traits!
 			osg::ref_ptr< osg::GraphicsContext::Traits > traits =  new osg::GraphicsContext::Traits (*cam.viewerCamera->getCamera()->getGraphicsContext()->getTraits());
