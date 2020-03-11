@@ -63,7 +63,7 @@ The source_package.cmake script is used to create a debian source package.
 
 The main CMakeLists.txt file defines a target `spackage` that builds the source package in build/Debian with `make spackage`
 
-For uploading the package to ppa, First change the **PPA\_PGP\_KEY** in [package_details.cmake](../cmake/package_details.cmake#L26) to details to the full-name of the PGP key  details registered with your ppa account For more details on setting up the pgp key see the [tutorial](./setting_up_ppa.md).Then create a source package by building the target *spackage*.Once the Source package is build successfully, upload it to your ppa by:
+For uploading the package to ppa, First change the **PPA\_PGP\_KEY** in [package_details.cmake](../cmake/package_details.cmake#L26) to details to the full-name of the PGP key  details registered with your ppa account For more details on setting up the pgp key see the [tutorial](https://robocomp.github.io/website/2015/07/25/nithin10/).Then create a source package by building the target *spackage*.Once the Source package is build successfully, upload it to your ppa by:
 
     cd Debian/
     dput ppa:<lp-username>/<ppa-name> <packet->source.changes
