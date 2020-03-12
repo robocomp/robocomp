@@ -296,7 +296,7 @@ if component['gui'] is not None:
 [[[end]]]
 	Period = BASIC_PERIOD;
 [[[cog
-if (sm is not None and sm['machine']['default'] is True) or component['statemachine'] is None:
+if component['statemachine'] is None:
 	cog.outl("<TABHERE>connect(&timer, SIGNAL(timeout()), this, SLOT(compute()));")
 ]]]
 [[[end]]]
