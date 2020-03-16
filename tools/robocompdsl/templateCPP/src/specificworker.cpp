@@ -186,7 +186,7 @@ cog.outl("""//       THE FOLLOWING IS JUST AN EXAMPLE
 //	{
 //		RoboCompCommonBehavior::Parameter par = params.at("InnerModelPath");
 //		std::string innermodel_path = par.value;
-//		innerModel = new InnerModel(innermodel_path);
+//		innerModel = std::make_shared(innermodel_path);
 //	}
 //	catch(const std::exception &e) { qFatal("Error reading config params"); }
 
