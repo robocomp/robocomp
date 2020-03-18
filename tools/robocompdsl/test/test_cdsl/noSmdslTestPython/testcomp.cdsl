@@ -1,9 +1,9 @@
-Component test
+Component testcomp
 {
     Communications
     {
     };
-	language Cpp;
+	language python;
 	gui Qt(QWidget);
 	//options agmagent;
 	//options InnerModelViewer;
