@@ -65,6 +65,12 @@ SUBSCRIBESTO_STR = """
 <TABHERE><TABHERE><TABHERE><TABHERE><TABHERE><TABHERE>//Error. Topic does not exist
 <TABHERE><TABHERE><TABHERE><TABHERE><TABHERE>}
 <TABHERE><TABHERE><TABHERE><TABHERE>}
+<TABHERE><TABHERE><TABHERE><TABHERE>catch(const IceUtil::NullHandleException&)
+<TABHERE><TABHERE><TABHERE><TABHERE>{
+<TABHERE><TABHERE><TABHERE><TABHERE><TABHERE>cout << "[" << PROGRAM_NAME << "]: ERROR TopicManager is Null. Check that your configuration file contains an entry like:\\n"<<
+<TABHERE><TABHERE><TABHERE><TABHERE><TABHERE>"\\t\\tTopicManager.Proxy=IceStorm/TopicManager:default -p <port>\\n";
+<TABHERE><TABHERE><TABHERE><TABHERE><TABHERE>return EXIT_FAILURE;
+<TABHERE><TABHERE><TABHERE><TABHERE>}
 <TABHERE><TABHERE><TABHERE><TABHERE>IceStorm::QoS qos;
 <TABHERE><TABHERE><TABHERE><TABHERE><LOWER>_topic->subscribeAndGetPublisher(qos, <PROXYNAME>);
 <TABHERE><TABHERE><TABHERE>}
@@ -95,6 +101,12 @@ PUBLISHES_STR = """
 <TABHERE><TABHERE><TABHERE><TABHERE>// Another client created the topic.
 <TABHERE><TABHERE><TABHERE><TABHERE>cout << "[" << PROGRAM_NAME << "]: ERROR publishing the <NORMAL> topic. It's possible that other component have created\\n";
 <TABHERE><TABHERE><TABHERE>}
+<TABHERE><TABHERE>}
+<TABHERE><TABHERE>catch(const IceUtil::NullHandleException&)
+<TABHERE><TABHERE>{
+<TABHERE><TABHERE><TABHERE>cout << "[" << PROGRAM_NAME << "]: ERROR TopicManager is Null. Check that your configuration file contains an entry like:\\n"<<
+<TABHERE><TABHERE><TABHERE>"\\t\\tTopicManager.Proxy=IceStorm/TopicManager:default -p <port>\\n";
+<TABHERE><TABHERE><TABHERE>return EXIT_FAILURE;
 <TABHERE><TABHERE>}
 <TABHERE>}
 """
