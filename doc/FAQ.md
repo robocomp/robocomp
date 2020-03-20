@@ -32,7 +32,7 @@ But Learnbot is part of a more ambitious ecosystem, Learnblock, which is being c
 
 ## How should I download Robocomp?
 
-Follow the install guide from the Readme page, or for a faster way, use [this installation script](https://github.com/robocomp/robocomp/blob/development/doc/installScript.md). 
+Follow the install guide from the [Readme page](https://github.com/robocomp/robocomp/blob/development/README.md), or for a faster way, use [this installation script](https://github.com/robocomp/robocomp/blob/development/doc/installScript.md). 
 
 To use the installation script you need to download the Raw of the file, then from the terminal:
 
