@@ -179,13 +179,8 @@ def compute(self):
 	return True
 ```
 
-Save the file and run cmake
+Save the file
 
-```bash
-    cd ..
-    cmake .
-    make
-```
 
 Now we need to tell the component where to find the DifferentialRobot and the Laser interfaces. Of course they are implemented by the rcis simulator, Run rcis <innemodel> and you can find the port numbers for each interface, so now we only need to change the ports in the configuration file. Copy the configuration file to your component home directory:
 
