@@ -7,7 +7,7 @@ install:
   - sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends git git-annex cmake make g++ libgsl-dev libopenscenegraph-dev cmake-qt-gui zeroc-ice-all-dev freeglut3-dev libboost-system-dev libboost-thread-dev qt5-default libqt5xmlpatterns5-dev libxt-dev libboost-test-dev libboost-filesystem-dev  libccd-dev zeroc-ice-all-runtime libqt5opengl5-dev
   - sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends python3-pip python3-setuptools python3-pyparsing=2.2.0+dfsg1-2 python3-numpy python3-libxml2 python3-xmltodict python3-zeroc-ice
   - sudo pip3 install networkx pyside2 argcomplete termcolor cogapp
-  - git clone -b https://github.com/robocomp/robocomp.git
+  - git clone https://github.com/robocomp/robocomp.git
 script:  
   - sudo ln -s ~ /home/robocomp
   - echo "export ROBOCOMP=~/robocomp" >> ~/.bashrc
