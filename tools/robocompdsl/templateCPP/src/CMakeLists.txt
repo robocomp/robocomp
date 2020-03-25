@@ -34,14 +34,6 @@ component = DSLFactory().from_file(theCDSL, include_directories=includeDirectori
 ]]]
 [[[end]]]
 cmake_minimum_required(VERSION 2.8.11)
-PROJECT(
-[[[cog
-A()
-cog.out(' ' + component['name'])
-Z()
-]]]
-[[[end]]]
- )
 
 
 IF ( "$ENV{ROBOCOMP}" STREQUAL "")

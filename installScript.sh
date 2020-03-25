@@ -52,9 +52,10 @@ echo -e $cyan"Updating system and Installing Dependencies\nDepending on your int
 echo -e $white
 
 sudo apt-get update
-sudo apt-get install git git-annex cmake g++ libgsl0-dev libopenscenegraph-dev cmake-qt-gui zeroc-ice35 freeglut3-dev libboost-system-dev libboost-thread-dev qt4-dev-tools python-pip  python-pyparsing python-numpy python-pyside pyside-tools libxt-dev pyqt4-dev-tools libboost-test-dev libboost-filesystem-dev python-libxml2 python-xmltodict libccd-dev
-sudo pip install networkx
-sudo apt-get install yakuake qt4-designer
+sudo apt-get install git git-annex cmake make g++ libgsl-dev libopenscenegraph-dev cmake-qt-gui zeroc-ice-all-dev freeglut3-dev libboost-system-dev libboost-thread-dev qt5-default libqt5xmlpatterns5-dev libqt5opengl5-dev libxt-dev libboost-test-dev libboost-filesystem-dev  libccd-dev zeroc-ice-all-runtime
+sudo apt-get install python3-pip python3-setuptools python3-pyparsing=2.2.0+dfsg1-2 python3-numpy python3-libxml2 python3-xmltodict python3-zeroc-ice
+sudo pip3 install networkx pyside2 argcomplete termcolor cogapp
+sudo apt-get install yakuake qttools5-dev-tools qt5-assistant
 
 echo ""
 echo -e $cyan"Installing Source from Github.

@@ -201,7 +201,7 @@ for imp in lst:
 						paramStrA += ', ' +  p['name']
 				cog.outl('')
 				cog.outl('<TABHERE>#')
-				cog.outl('<TABHERE># ' + method['name'])
+				cog.outl('<TABHERE># ' + 'SUBSCRIPTION to '+ method['name'] +' method from ' + interface['name'] + ' interface')
 				cog.outl('<TABHERE>#')
 				if not communicationIsIce(imp):
 					cog.outl('<TABHERE>def ROS' + interface['name'] + "_" + method['name'] + '(self' + paramStrA + "):")

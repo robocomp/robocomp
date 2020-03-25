@@ -1,10 +1,12 @@
-Component test
+Component testcomp
 {
     Communications
     {
     };
-	language python;
+	language Cpp;
 	gui Qt(QWidget);
+	//options agmagent;
+	//options InnerModelViewer;
 	statemachine "statemachine.smdsl";
 };
 

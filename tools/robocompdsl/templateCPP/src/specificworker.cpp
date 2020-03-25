@@ -186,7 +186,7 @@ cog.outl("""//       THE FOLLOWING IS JUST AN EXAMPLE
 //	{
 //		RoboCompCommonBehavior::Parameter par = params.at("InnerModelPath");
 //		std::string innermodel_path = par.value;
-//		innerModel = new InnerModel(innermodel_path);
+//		innerModel = std::make_shared(innermodel_path);
 //	}
 //	catch(const std::exception &e) { qFatal("Error reading config params"); }
 
@@ -376,6 +376,7 @@ if 'subscribesTo' in component:
 									ampersand = ''
 							# STR
 							paramStrA += delim + const + p['type'] + ' ' + ampersand + p['name']
+						cog.outl("//SUBSCRIPTION to "+ method['name'] + " method from "+ interface['name'] + " interface")
 						cog.outl(method['return'] + ' SpecificWorker::' +interface['name'] + "_" + method['name'] + '(' + paramStrA + ")\n{\n//subscribesToCODE\n"+bodyCode+"\n}\n")
 					else:
 						for p in method['params']:
