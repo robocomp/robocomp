@@ -17,12 +17,12 @@ def SPACE(i=0):
 	cog.out('<S'+s+'>')
 
 
-from dsl_parsers.parsing_utils import gimmeIDSLStruct
+from dsl_parsers.dsl_factory import DSLFactory
 customTypesList = []
 
 includeDirectories = theIDSLPaths.split('#')
-idsl = gimmeIDSLStruct(theIDSL, files='', includeDirectories=includeDirectories)
-for imp in idsl['module']['contents']:
+idsl = DSLFactory().from_file(theIDSL, files='', includeDirectories=includeDirectories)
+for imp in idsl['structs']+idsl['sequences']:
 	if imp['type'] in ('sequence', 'struct'):
 		customTypesList.append(imp)
 	if imp['type'] == 'struct' and imp['name'] == structName:

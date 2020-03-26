@@ -147,7 +147,7 @@ class IDSLParser(DSLParserTemplate):
         result_dict['simpleSequences'] = []
         for contentDef in contents:
             if contentDef['type'] == 'sequence':
-                seqdef = {'name': result_dict['name'] + "/" + contentDef['name'], 'type': contentDef['type']}
+                seqdef = {'name': result_dict['name'] + "/" + contentDef['name'], 'type': contentDef['type'], 'typeSequence': contentDef['typeSequence']}
                 simpleSeqdef = {'name': result_dict['name'], 'strName': contentDef['name']}
                 # print structdef
                 result_dict['sequences'].append(seqdef)
@@ -157,7 +157,7 @@ class IDSLParser(DSLParserTemplate):
         result_dict['simpleStructs'] = []
         for contentDef in contents:
             if contentDef['type'] == 'struct':
-                structdef = {'name': result_dict['name'] + "/" + contentDef['name'], 'type': contentDef['type']}
+                structdef = {'name': result_dict['name'] + "/" + contentDef['name'], 'type': contentDef['type'], 'structIdentifiers':contentDef['structIdentifiers']}
                 simpleStructdef = {'name': result_dict['name'], 'strName': contentDef['name']}
                 # print structdef
                 result_dict['structs'].append(structdef)

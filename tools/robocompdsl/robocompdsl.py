@@ -96,79 +96,85 @@ def generate_ROS_headers(idsl_file, output_path, comp, include_directories):
         create_directory(output_path)
 
     def generarH(idslFile, imported):
-        idsl = gimmeIDSLStruct(idslFile, files='', includeDirectories=includeDirectories)
-        os.system("rm -f "+outputPath + "/" + idsl['module']['name'] + "ROS/msg/__init__.py")
-        os.system("rm -f "+outputPath + "/" + idsl['module']['name'] + "ROS/srv/__init__.py")
-        for imp in idsl['module']['contents']:
+        idsl = DSLFactory().from_file(idslFile)
+        try:
+            os.system("rm -f " + output_path + "/" + idsl['module']['name'] + "ROS/msg/__init__.py")
+            os.system("rm -f " + output_path + "/" + idsl['module']['name'] + "ROS/srv/__init__.py")
+        except KeyError:
+            print("No module found in %s"%idsl_file)
+        for imp in idsl['structs']+idsl['sequences']:
             if imp['type'] in ['struct','sequence']:
                 for f in [ "SERVANT.MSG"]:
-                    ofile = outputPath+"/"+imp['name'] + "." + f.split('.')[-1].lower()
+                    ofile = output_path + "/" + imp['name'] + "." + f.split('.')[-1].lower()
                     print('Generating', ofile, ' (servant for', idslFile.split('.')[0].lower() + ')')
+
+                    ofile_dir = os.path.dirname(ofile)
+                    if not os.path.exists(ofile_dir):
+                        os.makedirs(ofile_dir)
                     # Call cog
-                    run = "cog.py -z -d" + ' -D theIDSLPaths='+ '#'.join(includeDirectories) + " -D structName=" + imp['name'] +" -D theIDSL="+idslFile+ " -o " + ofile + " " + "/opt/robocomp/share/robocompdsl/templateCPP/" + f
+                    run = "cog.py -z -d" + ' -D theIDSLPaths=' + '#'.join(include_directories) + " -D structName=" + imp['name'] + " -D theIDSL=" + idslFile + " -o " + ofile + " " + "/opt/robocomp/share/robocompdsl/templateCPP/" + f
                     run = run.split(' ')
                     ret = Cog().main(run)
                     if ret != 0:
                         print('ERROR')
                         sys.exit(-1)
                     replaceTagsInFile(ofile)
-                    commandCPP = "/opt/ros/melodic/lib/gencpp/gen_cpp.py " + ofile + " -Istd_msgs:/opt/ros/melodic/share/std_msgs/msg -I" + idsl['module']['name'] + "ROS:" + outputPath
-                    commandPY  = "/opt/ros/melodic/lib/genpy/genmsg_py.py " + ofile + " -Istd_msgs:/opt/ros/melodic/share/std_msgs/msg -I" + idsl['module']['name'] + "ROS:" + outputPath
+                    commandCPP = "/opt/ros/melodic/lib/gencpp/gen_cpp.py " + ofile + " -Istd_msgs:/opt/ros/melodic/share/std_msgs/msg -I" + idsl['name'] + "ROS:" + output_path
+                    commandPY  = "/opt/ros/melodic/lib/genpy/genmsg_py.py " + ofile + " -Istd_msgs:/opt/ros/melodic/share/std_msgs/msg -I" + idsl['name'] + "ROS:" + output_path
                     for impo in imported:
                         if not impo == idsl['module']['name']+"ROS":
-                            commandCPP = commandCPP + " -I" + impo + ":" + outputPath
-                            commandPY  = commandPY + " -I" + impo + ":" + outputPath
-                    if not os.path.exists(outputPath):
-                        create_directory(outputPath)
-                    commandCPP = commandCPP + " -p "+ idsl['module']['name'] + "ROS -o " + outputPath + "/" + idsl['module']['name'] + "ROS -e /opt/ros/melodic/share/gencpp"
-                    commandPY = commandPY + " -p "+ idsl['module']['name'] + "ROS -o " + outputPath + "/" + idsl['module']['name'] +"ROS/msg"
+                            commandCPP = commandCPP + " -I" + impo + ":" + output_path
+                            commandPY  = commandPY + " -I" + impo + ":" + output_path
+                    if not os.path.exists(output_path):
+                        create_directory(output_path)
+                    commandCPP = commandCPP + " -p " + idsl['name'] + "ROS -o " + output_path + "/" + idsl['name'] + "ROS -e /opt/ros/melodic/share/gencpp"
+                    commandPY = commandPY + " -p " + idsl['name'] + "ROS -o " + output_path + "/" + idsl['name'] + "ROS/msg"
                     if comp['language'].lower() == 'cpp':
                         os.system(commandCPP)
                     else:
                         os.system(commandPY)
                     try:
-                        fileInit = open(outputPath + "/" + idsl['module']['name'] + "ROS/msg/__init__.py", 'a')
+                        fileInit = open(output_path + "/" + idsl['name'] + "ROS/msg/__init__.py", 'a')
                         fileInit.write("from ._"+imp['name']+" import *\n")
                         fileInit.close()
                     except:
                         pass
-        for imp in idsl['module']['contents']:
-            if imp['type'] == 'interface':
-                for ima in component['implements']+component['requires']:
+        for imp in idsl['interfaces']:
+                for ima in [comp['implements']+comp['requires']]:
                     im = ima
                     if type(im) != type(''):
                         im = im[0]
-                    if not communicationIsIce(ima) and im == imp['name']:
-                        for method in imp['methods']:
+                    if not communication_is_ice(ima) and im == imp['name']:
+                        for method in imp['methods'].values():
                             if 'params' in method:
                                 if len(method['params']) == 2:
                                     for f in [ "SERVANT.SRV"]:
-                                        ofile = outputPath+"/"+method['name'] + "." + f.split('.')[-1].lower()
+                                        ofile = output_path + "/" + method['name'] + "." + f.split('.')[-1].lower()
                                         print('Generating', ofile, ' (servant for', idslFile.split('.')[0].lower() + ')')
                                         # Call cog
-                                        run = "cog.py -z -d" + ' -D theIDSLPaths='+ '#'.join(includeDirectories) + " -D methodName=" + method['name'] +" -D theIDSL="+idslFile+ " -o " + ofile + " " + "/opt/robocomp/share/robocompdsl/templateCPP/" + f
+                                        run = "cog.py -z -d" + ' -D theIDSLPaths=' + '#'.join(include_directories) + " -D methodName=" + method['name'] + " -D theIDSL=" + idslFile + " -o " + ofile + " " + "/opt/robocomp/share/robocompdsl/templateCPP/" + f
                                         run = run.split(' ')
                                         ret = Cog().main(run)
                                         if ret != 0:
                                             print('ERROR')
                                             sys.exit(-1)
                                         replaceTagsInFile(ofile)
-                                        commandCPP = "/opt/ros/melodic/lib/gencpp/gen_cpp.py " +ofile+ " -Istd_msgs:/opt/ros/melodic/share/std_msgs/msg -Istd_srvs:/opt/ros/melodic/share/std_srv/cmake/../srv -I" + idsl['module']['name'] + "ROS:" + outputPath
-                                        commandPY  = "/opt/ros/melodic/lib/genpy/gensrv_py.py " +ofile+ " -Istd_msgs:/opt/ros/melodic/share/std_msgs/msg -Istd_srvs:/opt/ros/kinetic/share/std_srv/cmake/../srv -I" + idsl['module']['name'] + "ROS:" + outputPath
+                                        commandCPP = "/opt/ros/melodic/lib/gencpp/gen_cpp.py " + ofile + " -Istd_msgs:/opt/ros/melodic/share/std_msgs/msg -Istd_srvs:/opt/ros/melodic/share/std_srv/cmake/../srv -I" + idsl['module']['name'] + "ROS:" + output_path
+                                        commandPY  = "/opt/ros/melodic/lib/genpy/gensrv_py.py " + ofile + " -Istd_msgs:/opt/ros/melodic/share/std_msgs/msg -Istd_srvs:/opt/ros/kinetic/share/std_srv/cmake/../srv -I" + idsl['module']['name'] + "ROS:" + output_path
                                         for impo in imported:
                                             if not impo == idsl['module']['name']+"ROS":
-                                                commandCPP = commandCPP + " -I" + impo + ":" + outputPath
-                                                commandPY  = commandPY + " -I" + impo + ":" + outputPath
-                                        if not os.path.exists(outputPath):
-                                            create_directory(outputPath)
-                                        commandCPP = commandCPP + " -p "+ idsl['module']['name'] + "ROS -o "+ outputPath+"/"+idsl['module']['name'] + "ROS -e /opt/ros/melodic/share/gencpp/cmake/.."
-                                        commandPY = commandPY + " -p "+ idsl['module']['name'] + "ROS -o "+ outputPath+"/"+idsl['module']['name'] +"ROS/srv"
+                                                commandCPP = commandCPP + " -I" + impo + ":" + output_path
+                                                commandPY  = commandPY + " -I" + impo + ":" + output_path
+                                        if not os.path.exists(output_path):
+                                            create_directory(output_path)
+                                        commandCPP = commandCPP + " -p " + idsl['module']['name'] + "ROS -o " + output_path + "/" + idsl['module']['name'] + "ROS -e /opt/ros/melodic/share/gencpp/cmake/.."
+                                        commandPY = commandPY + " -p " + idsl['module']['name'] + "ROS -o " + output_path + "/" + idsl['module']['name'] + "ROS/srv"
                                         if comp['language'].lower() == 'cpp':
                                             os.system(commandCPP)
                                         else:
                                             os.system(commandPY)
                                         try:
-                                            fileInit = open(outputPath + "/" + idsl['module']['name'] + "ROS/srv/__init__.py", 'a')
+                                            fileInit = open(output_path + "/" + idsl['module']['name'] + "ROS/srv/__init__.py", 'a')
                                             fileInit.write("from ._"+method['name']+" import *\n")
                                             fileInit.close()
                                         except:
@@ -181,7 +187,7 @@ def generate_ROS_headers(idsl_file, output_path, comp, include_directories):
                             else:
                                 print("error: service without params. Form is: void method(type inVar, out type outVar);")
                                 sys.exit(-1)
-        os.system("touch "+outputPath + "/" + idsl['module']['name'] + "ROS/__init__.py")
+        os.system("touch " + output_path + "/" + idsl['module']['name'] + "ROS/__init__.py")
         return idsl['module']['name']+"ROS"
     try:
         for importIDSL in idsl['imports']+idsl['recursive_imports']:
@@ -189,9 +195,9 @@ def generate_ROS_headers(idsl_file, output_path, comp, include_directories):
     except:
         pass
 
-    generarH(idslFile, imported)
-    os.system("rm "+outputPath+"/*.msg")
-    os.system("rm "+outputPath+"/*.srv")
+    generarH(idsl_file, imported)
+    os.system("rm " + output_path + "/*.msg")
+    os.system("rm " + output_path + "/*.srv")
 #
 # Misc functions
 #
@@ -217,75 +223,19 @@ def generateDummyCDSL(path):
         print("File", path, "already exists.\nExiting...")
     else:
         print("Generating dummy CDSL file:", path)
-        string = """import "import1.idsl";
-import "import2.idsl";
 
-Component <CHANGETHECOMPONENTNAME>
-{
-    Communications
-    {
-        implements interfaceName;
-        requires otherName;
-        subscribesTo topicToSubscribeTo;
-        publishes topicToPublish;
-    };
-	language Cpp//Cpp11//python;
-	gui Qt(QWidget//QDialog//QMainWindow);
-	//options agmagent, InnerModelViewer;
-	statemachine "statemachine.smdsl";
-};\n\n"""
         name = path.split('/')[-1].split('.')[0]
-        string = string.replace('<CHANGETHECOMPONENTNAME>', name)
+        string = DUMMY_CDSL_STRING.replace('<CHANGETHECOMPONENTNAME>', name)
         open(path, "w").write(string)
 
 
 def generateDummySMDSL(path):
-	if os.path.exists(path):
-		print("File", path, "already exists.\nExiting...")
-	else:
-		print("Generating dummy SMDSL file:", path)
-		state_machine_string = """
-/* CHANGE THE NAME OF THE MACHINE IF YOU MAKE
-   ANY CHANGE TO THE DEFAULT STATES OR TRANSITIONS */
+    if os.path.exists(path):
+        print("File", path, "already exists.\nExiting...")
+    else:
+        print("Generating dummy SMDSL file:", path)
 
-defaultMachine{
-    states compute;
-    initial_state initialize;
-    end_state finalize;
-    transitions{
-        initialize => compute;
-        compute => compute;
-        compute => finalize;
-    };
-};
-
-
-/* --------------------------------------------------------------
-   This is the accepted syntax for the State Machine definition 
-
-name_machine{
-    [states name_state *[, name_state];]
-    [initial_state name_state;]
-    [end_state name_state;]
-    [transitions{
-        name_state => name_state *[, name_state];
-        *[name_state => name_state *[, name_state];]
-    };]
-};
-
-[:parent_state [parallel]{
-    states name_state *[, name_state];
-    [initial_state name_state;]
-    [end_state name_state;]
-    [transitions{
-        name_state => name_state *[, name_state];
-        *[name_state => name_state *[, name_state];]
-    };]
-};]
-
------------------------------------------------------------------- */\n"""
-
-		open(path, "w").write(state_machine_string)
+        open(path, "w").write(DUMMY_SMDSL_STRING)
 
 def get_diff_tool(prefered=None):
     if prefered in DIFF_TOOLS:
@@ -586,4 +536,4 @@ def main():
 
 
 if __name__ == '__main__':
-	app = main()
+    app = main()
