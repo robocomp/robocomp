@@ -5,6 +5,7 @@ from collections import Counter, OrderedDict
 
 
 def generate_recursive_imports(initial_idsls, include_directories=[]):
+    assert isinstance(initial_idsls, list), "initial_idsl, parameter must be a list, not %s"%str(type(initial_idsls))
     new_idsls = []
     for idsl_path in initial_idsls:
         importedModule = None
@@ -46,19 +47,28 @@ def generate_recursive_imports(initial_idsls, include_directories=[]):
 
 def communication_is_ice(sb):
     isIce = True
-    if len(sb) == 2:
-        if sb[1] == 'ros'.lower():
-            isIce = False
-        elif sb[1] != 'ice'.lower() :
-            print('Only ICE and ROS are supported')
-            sys.exit(-1)
+    if isinstance(sb, str):
+       isIce = True
+    elif isinstance(sb, list):
+        if len(sb) == 2:
+            if sb[1] == 'ros'.lower():
+                isIce = False
+            elif sb[1] != 'ice'.lower() :
+                print('Only ICE and ROS are supported')
+                raise ValueError("Communication not ros and not ice, but %s"%sb[1])
+    else:
+        raise ValueError("Parameter %s of invalid type %s" %(str(sb), str(type(sb[1]))))
     return isIce
 
 def is_agm1_agent(component):
+    assert isinstance(component, (dict, OrderedDict)), \
+        "Component parameter is expected to be a dict or OrderedDict but %s"%str(type(component))
     options = component['options']
-    return 'agmagent' in [ x.lower() for x in options]
+    return 'agmagent' in [x.lower() for x in options]
 
 def is_agm2_agent(component):
+    assert isinstance(component, (dict, OrderedDict)), \
+        "Component parameter is expected to be a dict or OrderedDict but %s" % str(type(component))
     valid = ['agm2agent', 'agm2agentros', 'agm2agentice']
     options = component['options']
     for v in valid:
@@ -67,6 +77,8 @@ def is_agm2_agent(component):
     return False
 
 def is_agm2_agent_ROS(component):
+    assert isinstance(component, (dict, OrderedDict)), \
+        "Component parameter is expected to be a dict or OrderedDict but %s" % str(type(component))
     valid = ['agm2agentROS']
     options = component['options']
     for v in valid:
@@ -75,6 +87,9 @@ def is_agm2_agent_ROS(component):
     return False
 
 def idsl_robocomp_path(idsl_name, include_directories = None):
+    assert isinstance(idsl_name, str), "idsl_name parameter must be a string"
+    assert include_directories is None or isinstance(include_directories, list), \
+        "include_directories must be a list of strings not %s" % str(type(include_directories))
     pathList = []
     if include_directories != None:
         pathList += [x for x in include_directories]
@@ -89,6 +104,7 @@ def idsl_robocomp_path(idsl_name, include_directories = None):
     return None
 
 def gimmeIDSL(name, files='', includeDirectories=None):
+    assert not isinstance(includeDirectories, str), "includeDirectories must be a list of paths, not an str"
     if not '.idsl' in name:
         name += '.idsl'
     name = os.path.basename(name)
@@ -115,7 +131,7 @@ def gimmeIDSL(name, files='', includeDirectories=None):
     print(('Couldn\'t locate ', name))
     sys.exit(-1)
 
-# def gimmeIDSLStruct(name, files='', includeDirectories=None):
+
 def get_name_number(names_list):
     """
     Used add a number in case of multiple equal names
