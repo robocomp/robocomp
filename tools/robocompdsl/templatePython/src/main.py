@@ -14,7 +14,7 @@ def TAB():
 	cog.out('<TABHERE>')
 
 from dsl_parsers.dsl_factory import DSLFactory
-from dsl_parsers.parsing_utils import getNameNumber, IDSLPool, communicationIsIce
+from dsl_parsers.parsing_utils import get_name_number, IDSLPool, communication_is_ice
 includeDirectories = theIDSLPaths.split('#')
 component = DSLFactory().from_file(theCDSL, include_directories=includeDirectories)
 
@@ -233,17 +233,17 @@ try:
 	needIce = False
 	needStorm = False
 	for req in component['requires']:
-		if communicationIsIce(req):
+		if communication_is_ice(req):
 			needIce = True
 	for imp in component['implements']:
-		if communicationIsIce(imp):
+		if communication_is_ice(imp):
 			needIce = True
 	for pub in component['publishes']:
-		if communicationIsIce(pub):
+		if communication_is_ice(pub):
 			needIce = True
 			needStorm = True
 	for sub in component['subscribesTo']:
-		if communicationIsIce(sub):
+		if communication_is_ice(sub):
 			needIce = True
 			needStorm = True
 	if needStorm:
@@ -259,13 +259,13 @@ try:
 except:
 	pass
 
-for req, num in getNameNumber(component['requires']):
-	if communicationIsIce(req):
+for req, num in get_name_number(component['requires']):
+	if communication_is_ice(req):
 		w = REQUIRE_STR.replace("<NORMAL>", req).replace("<LOWER>", req.lower()).replace("<NUM>",num)
 		cog.outl(w)
 
-for pub, num in getNameNumber(component['publishes']):
-	if communicationIsIce(pub):
+for pub, num in get_name_number(component['publishes']):
+	if communication_is_ice(pub):
 		w = PUBLISHES_STR.replace("<NORMAL>", pub).replace("<LOWER>", pub.lower())
 		cog.outl(w)
 
@@ -277,12 +277,12 @@ cog.outl("<TABHERE><TABHERE>print(\"Error getting required connections, check co
 cog.outl("<TABHERE><TABHERE>sys.exit(-1)")
 
 for imp in component['implements']:
-	if communicationIsIce(imp):
+	if communication_is_ice(imp):
 		w = IMPLEMENTS_STR.replace("<NORMAL>", imp).replace("<LOWER>", imp.lower())
 		cog.outl(w)
 
 for sut in component['subscribesTo']:
-	if communicationIsIce(sut):
+	if communication_is_ice(sut):
 		w = SUBSCRIBESTO_STR.replace("<NORMAL>", sut).replace("<LOWER>", sut.lower())
 		cog.outl(w)
 if component['usingROS'] == True:
@@ -295,7 +295,7 @@ for sub in component['subscribesTo']:
 	if module == None:
 		print('\nCan\'t find module providing', nname, '\n')
 		sys.exit(-1)
-	if not communicationIsIce(sub):
+	if not communication_is_ice(sub):
 		for interface in module['interfaces']:
 			if interface['name'] == nname:
 				for mname in interface['methods']:
@@ -321,7 +321,7 @@ for imp in component['implements']:
 	if module == None:
 		print('\nCan\'t find module providing', nname, '\n')
 		sys.exit(-1)
-	if not communicationIsIce(imp):
+	if not communication_is_ice(imp):
 		for interface in module['interfaces']:
 			if interface['name'] == nname:
 				for mname in interface['methods']:

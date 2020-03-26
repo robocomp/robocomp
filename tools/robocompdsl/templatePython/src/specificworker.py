@@ -14,7 +14,7 @@ def TAB():
 	cog.out('<TABHERE>')
 
 from dsl_parsers.dsl_factory import DSLFactory
-from dsl_parsers.parsing_utils import getNameNumber, gimmeIDSL, communicationIsIce, IDSLPool
+from dsl_parsers.parsing_utils import get_name_number, gimmeIDSL, communication_is_ice, IDSLPool
 
 includeDirectories = theIDSLPaths.split('#')
 component = DSLFactory().from_file(theCDSL, include_directories=includeDirectories)
@@ -203,7 +203,7 @@ for imp in lst:
 				cog.outl('<TABHERE>#')
 				cog.outl('<TABHERE># ' + 'SUBSCRIPTION to '+ method['name'] +' method from ' + interface['name'] + ' interface')
 				cog.outl('<TABHERE>#')
-				if not communicationIsIce(imp):
+				if not communication_is_ice(imp):
 					cog.outl('<TABHERE>def ROS' + interface['name'] + "_" + method['name'] + '(self' + paramStrA + "):")
 				else:
 					cog.outl('<TABHERE>def ' + interface['name'] + "_" + method['name'] + '(self' + paramStrA + "):")
@@ -240,7 +240,7 @@ if component['implements']:
 			im = imp
 		else:
 			im = imp[0]
-		if not communicationIsIce(imp):
+		if not communication_is_ice(imp):
 			module = pool.moduleProviding(im)
 			for interface in module['interfaces']:
 				if interface['name'] == im:

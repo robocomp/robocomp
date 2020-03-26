@@ -13,7 +13,7 @@ def TAB():
 	cog.out('<TABHERE>')
 
 from dsl_parsers.dsl_factory import DSLFactory
-from dsl_parsers.parsing_utils import communicationIsIce, isAGM1Agent, isAGM2Agent, IDSLPool
+from dsl_parsers.parsing_utils import communication_is_ice, is_agm1_agent, is_agm2_agent, IDSLPool
 includeDirectories = theIDSLPaths.split('#')
 component = DSLFactory().from_file(theCDSL, include_directories=includeDirectories)
 sm = DSLFactory().from_file(component['statemachine'])
@@ -111,7 +111,7 @@ if 'implements' in component:
 				for mname in interface['methods']:
 					method = interface['methods'][mname]
 					paramStrA = ''
-					if communicationIsIce(impa):
+					if communication_is_ice(impa):
 						for p in method['params']:
 							# delim
 							if paramStrA == '': delim = ''
@@ -150,7 +150,7 @@ if 'subscribesTo' in component:
 				for mname in interface['methods']:
 					method = interface['methods'][mname]
 					paramStrA = ''
-					if communicationIsIce(impa):
+					if communication_is_ice(impa):
 						for p in method['params']:
 							# delim
 							if paramStrA == '': delim = ''
@@ -240,7 +240,7 @@ if component['innermodelviewer']:
 	cog.outl("<TABHERE>InnerModelViewer *innerModelViewer;")
 	cog.outl("#endif")
 try:
-	if isAGM1Agent(component):
+	if is_agm1_agent(component):
 		cog.outl("<TABHERE>std::string action;")
 		cog.outl("<TABHERE>ParameterMap params;")
 		cog.outl("<TABHERE>AGMModel::SPtr worldModel;")
@@ -249,7 +249,7 @@ try:
 			cog.outl("<TABHERE>void regenerateInnerModelViewer();")
 		cog.outl("<TABHERE>bool setParametersAndPossibleActivation(const ParameterMap &prs, bool &reactivated);")
 		cog.outl("<TABHERE>void sendModificationProposal(AGMModel::SPtr &worldModel, AGMModel::SPtr &newModel);")
-	elif isAGM2Agent(component):
+	elif is_agm2_agent(component):
 		cog.outl("<TABHERE>std::string action;")
 		cog.outl("<TABHERE>AGMModel::SPtr worldModel;")
 		cog.outl("<TABHERE>bool active;")

@@ -5,7 +5,7 @@ from pyparsing import Suppress, Word, alphas, alphanums, Group, \
     OneOrMore, ZeroOrMore, Optional, cppStyleComment, Literal, CharsNotIn
 
 from dsl_parsers.dsl_parser_abstract import DSLParserTemplate
-from dsl_parsers.parsing_utils import gimmeIDSL, generateRecursiveImports
+from dsl_parsers.parsing_utils import gimmeIDSL, generate_recursive_imports
 
 
 class IDSLParser(DSLParserTemplate):
@@ -83,7 +83,7 @@ class IDSLParser(DSLParserTemplate):
         if 'imports' in parsing_result:
             # print result_dict['name'], parsing_result['imports']
             result_dict['imports'] = '#'.join(parsing_result['imports'])
-            result_dict['recursive_imports'] = '#'.join(generateRecursiveImports(parsing_result['imports']))
+            result_dict['recursive_imports'] = '#'.join(generate_recursive_imports(list(parsing_result['imports'])))
         # INTERFACES DEFINED IN THE MODULE
         result_dict['interfaces'] = []
 

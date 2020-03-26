@@ -4,7 +4,7 @@ import traceback
 from collections import Counter, OrderedDict
 
 
-def generateRecursiveImports(initial_idsls, include_directories=[]):
+def generate_recursive_imports(initial_idsls, include_directories=[]):
     new_idsls = []
     for idsl_path in initial_idsls:
         importedModule = None
@@ -36,15 +36,15 @@ def generateRecursiveImports(initial_idsls, include_directories=[]):
         aux_imports = []
         for i_import in idsl_imports:
             if i_import != '' and i_import not in initial_idsls:
-                if communicationIsIce(i_import):
+                if communication_is_ice(i_import):
                     aux_imports.append(i_import)
         idsl_imports = aux_imports
         if len(idsl_imports) > 0 and idsl_imports[0] != '':
-            new_idsls += idsl_imports + generateRecursiveImports(idsl_imports, include_directories)
+            new_idsls += idsl_imports + generate_recursive_imports(idsl_imports, include_directories)
 
     return list(set(new_idsls))
 
-def communicationIsIce(sb):
+def communication_is_ice(sb):
     isIce = True
     if len(sb) == 2:
         if sb[1] == 'ros'.lower():
@@ -54,11 +54,11 @@ def communicationIsIce(sb):
             sys.exit(-1)
     return isIce
 
-def isAGM1Agent(component):
+def is_agm1_agent(component):
     options = component['options']
     return 'agmagent' in [ x.lower() for x in options]
 
-def isAGM2Agent(component):
+def is_agm2_agent(component):
     valid = ['agm2agent', 'agm2agentros', 'agm2agentice']
     options = component['options']
     for v in valid:
@@ -66,7 +66,7 @@ def isAGM2Agent(component):
             return True
     return False
 
-def isAGM2AgentROS(component):
+def is_agm2_agent_ROS(component):
     valid = ['agm2agentROS']
     options = component['options']
     for v in valid:
@@ -115,9 +115,18 @@ def gimmeIDSL(name, files='', includeDirectories=None):
     print(('Couldn\'t locate ', name))
     sys.exit(-1)
 
-def getNameNumber(aalist):
+# def gimmeIDSLStruct(name, files='', includeDirectories=None):
+def get_name_number(names_list):
+    """
+    Used add a number in case of multiple equal names
+    :param names_list: list of names
+    :return:
+    """
+    assert isinstance(names_list, list), "names_list must be a 'list' of names (str) not %s" % str(type(names_list))
+    for name in names_list:
+        assert isinstance(name, str), "names must be a 'str' not %s" % str(type(name))
     ret = []
-    c = Counter(aalist)
+    c = Counter(names_list)
     keys = sorted(c)
 
     for k in keys:

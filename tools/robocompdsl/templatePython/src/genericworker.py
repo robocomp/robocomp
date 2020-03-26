@@ -20,7 +20,7 @@ def SPACE(i=0):
 
 includeDirectories = theIDSLPaths.split('#')
 from dsl_parsers.dsl_factory import DSLFactory
-from dsl_parsers.parsing_utils import getNameNumber, gimmeIDSL, IDSLPool, communicationIsIce
+from dsl_parsers.parsing_utils import get_name_number, gimmeIDSL, IDSLPool, communication_is_ice
 
 component = DSLFactory().from_file(theCDSL, include_directories=includeDirectories)
 sm = DSLFactory().from_file(component['statemachine'])
@@ -113,7 +113,7 @@ for imp in set(component['recursiveImports'] + component["imports"]):
 
 [[[cog
 	for im in component['implements'] + component['subscribesTo']:
-		if communicationIsIce(im):
+		if communication_is_ice(im):
 			cog.outl('from ' + im.lower() + 'I import *')
 ]]]
 [[[end]]]
@@ -128,7 +128,7 @@ if component['usingROS'] == True:
 			im = imp
 		else:
 			im = imp[0]
-		if not communicationIsIce(imp):
+		if not communication_is_ice(imp):
 			module = pool.moduleProviding(im)
 			for interface in module['interfaces']:
 				if interface['name'] == im:
@@ -139,7 +139,7 @@ if component['usingROS'] == True:
 			im = imp
 		else:
 			im = imp[0]
-		if not communicationIsIce(imp):
+		if not communication_is_ice(imp):
 			module = pool.moduleProviding(im)
 			for interface in module['interfaces']:
 				if interface['name'] == im:
@@ -153,7 +153,7 @@ if component['usingROS'] == True:
 			im = imp
 		else:
 			im = imp[0]
-		if not communicationIsIce(imp):
+		if not communication_is_ice(imp):
 			module = pool.moduleProviding(im)
 			for interface in module['interfaces']:
 				if interface['name'] == im:
@@ -164,7 +164,7 @@ if component['usingROS'] == True:
 			im = imp
 		else:
 			im = imp[0]
-		if not communicationIsIce(imp):
+		if not communication_is_ice(imp):
 			module = pool.moduleProviding(im)
 			for interface in module['interfaces']:
 				if interface['name'] == im:
@@ -195,7 +195,7 @@ if component['usingROS'] == True:
 		if module == None:
 			print('\nCan\'t find module providing', nname, '\n')
 			sys.exit(-1)
-		if not communicationIsIce(imp):
+		if not communication_is_ice(imp):
 			cog.outl("#class for rosPublisher")
 			cog.outl("class Publisher"+nname+"():")
 			cog.outl("<TABHERE>def __init__(self):")
@@ -231,7 +231,7 @@ if component['usingROS'] == True:
 		if module == None:
 			print('\nCan\'t find module providing', nname, '\n')
 			sys.exit(-1)
-		if not communicationIsIce(imp):
+		if not communication_is_ice(imp):
 			cog.outl("#class for rosServiceClient")
 			cog.outl("class ServiceClient"+nname+"():")
 			cog.outl("<TABHERE>def __init__(self):")
@@ -296,12 +296,12 @@ if sm is not None:
 
 
 [[[cog
-for req, num in getNameNumber(component['requires']):
+for req, num in get_name_number(component['requires']):
 	if type(req) == str:
 		rq = req
 	else:
 		rq = req[0]
-	if communicationIsIce(req):
+	if communication_is_ice(req):
 		cog.outl("<TABHERE><TABHERE>self."+rq.lower()+num+"_proxy = mprx[\""+rq+"Proxy"+num+"\"]")
 	else:
 		if rq in component['iceInterfaces']:
@@ -309,12 +309,12 @@ for req, num in getNameNumber(component['requires']):
 		else:
 			cog.outl("<TABHERE><TABHERE>self."+rq.lower()+"_proxy = ServiceClient"+rq+"()")
 
-for pb, num in getNameNumber(component['publishes']):
+for pb, num in get_name_number(component['publishes']):
 	if type(pb) == str:
 		pub = pb
 	else:
 		pub = pb[0]
-	if communicationIsIce(pb):
+	if communication_is_ice(pb):
 		cog.outl("<TABHERE><TABHERE>self."+pub.lower()+num+"_proxy = mprx[\""+pub+"Pub"+num+"\"]")
 	else:
 		if pub in component['iceInterfaces']:

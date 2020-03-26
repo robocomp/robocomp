@@ -1,17 +1,17 @@
 import unittest
 
-from dsl_parsers.parsing_utils import communicationIsIce, IDSLPool
+from dsl_parsers.parsing_utils import communication_is_ice, IDSLPool
 
 
 class TestRoi(unittest.TestCase):
 
-    # def test_communicationIsIce(self):
+    # def test_communication_is_ice(self):
     #     """
     #     Test that check the creation of roi from frames
     #     """
     #
-    #     communicationIsIce('')
-    #     # def communicationIsIce(sb):
+    #     communication_is_ice('')
+    #     # def communication_is_ice(sb):
     #     # 	isIce = True
     #     # 	if len(sb) == 2:
     #     # 		if sb[1] == 'ros'.lower():

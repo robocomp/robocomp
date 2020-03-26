@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-
 # TODO
 #
 # Read ports from component-ports.txt for the files in etc.
@@ -15,26 +14,86 @@ from cogapp import Cog
 # from parseCDSL import *
 sys.path.append("/opt/robocomp/python")
 from dsl_parsers.dsl_factory import DSLFactory
-from dsl_parsers.parsing_utils import communicationIsIce, IDSLPool
+from dsl_parsers.parsing_utils import communication_is_ice, IDSLPool, gimmeIDSL
 import rcExceptions
 import sys
 
 DIFF_TOOLS = ["meld", "kdiff3", "diff"]
 
+DUMMY_CDSL_STRING = """import "import1.idsl";
+import "import2.idsl";
 
-def generateROSHeaders(idslFile, outputPath, comp, includeDirectories):
+Component <CHANGETHECOMPONENTNAME>
+{
+    Communications
+    {
+        implements interfaceName;
+        requires otherName;
+        subscribesTo topicToSubscribeTo;
+        publishes topicToPublish;
+    };
+    language Cpp//Cpp11//python;
+    gui Qt(QWidget//QDialog//QMainWindow);
+    //options agmagent, InnerModelViewer;
+    statemachine "statemachine.smdsl";
+};\n\n"""
+
+DUMMY_SMDSL_STRING = """
+/* CHANGE THE NAME OF THE MACHINE IF YOU MAKE
+   ANY CHANGE TO THE DEFAULT STATES OR TRANSITIONS */
+
+defaultMachine{
+    states compute;
+    initial_state initialize;
+    end_state finalize;
+    transitions{
+        initialize => compute;
+        compute => compute;
+        compute => finalize;
+    };
+};
+
+
+/* --------------------------------------------------------------
+   This is the accepted syntax for the State Machine definition 
+
+name_machine{
+    [states name_state *[, name_state];]
+    [initial_state name_state;]
+    [end_state name_state;]
+    [transitions{
+        name_state => name_state *[, name_state];
+        *[name_state => name_state *[, name_state];]
+    };]
+};
+
+[:parent_state [parallel]{
+    states name_state *[, name_state];
+    [initial_state name_state;]
+    [end_state name_state;]
+    [transitions{
+        name_state => name_state *[, name_state];
+        *[name_state => name_state *[, name_state];]
+    };]
+};]
+
+------------------------------------------------------------------ */\n"""
+
+
+
+def generate_ROS_headers(idsl_file, output_path, comp, include_directories):
     """
 
-    :param idslFile: is the IDSL file imported in the CDSL, outputPath is the path where the ROS headers are to be generated
-    :param outputPath:
+    :param idsl_file: is the IDSL file imported in the CDSL, outputPath is the path where the ROS headers are to be generated
+    :param output_path:
     :param comp:
-    :param includeDirectories:
+    :param include_directories:
     :return:
     """
     imported = []
-    idsl = gimmeIDSL(idslFile, files='', includeDirectories=includeDirectories)
-    if not os.path.exists(outputPath):
-        create_directory(outputPath)
+    idsl = gimmeIDSL(idsl_file, files='', includeDirectories=include_directories)
+    if not os.path.exists(output_path):
+        create_directory(output_path)
 
     def generarH(idslFile, imported):
         idsl = gimmeIDSLStruct(idslFile, files='', includeDirectories=includeDirectories)
@@ -379,7 +438,7 @@ def main():
                 im = ima
                 if type(im) != type(''):
                     im = im[0]
-                if communicationIsIce(ima):
+                if communication_is_ice(ima):
                     for f in [ "SERVANT.H", "SERVANT.CPP"]:
                         ofile = outputPath + '/src/' + im.lower() + 'I.' + f.split('.')[-1].lower()
                         print('Generating ', ofile, ' (servant for', im + ')')
@@ -396,7 +455,7 @@ def main():
                 im = imp
                 if type(im) != type(''):
                     im = im[0]
-                if communicationIsIce(imp):
+                if communication_is_ice(imp):
                     for f in [ "SERVANT.H", "SERVANT.CPP"]:
                         ofile = outputPath + '/src/' + im.lower() + 'I.' + f.split('.')[-1].lower()
                         print('Generating ', ofile, ' (servant for', im + ')')
@@ -429,10 +488,10 @@ def main():
 
             needStorm = False
             for pub in component['publishes']:
-                if communicationIsIce(pub):
+                if communication_is_ice(pub):
                     needStorm = True
             for sub in component['subscribesTo']:
-                if communicationIsIce(sub):
+                if communication_is_ice(sub):
                     needStorm = True
             #
             # Generate regular files
@@ -471,7 +530,7 @@ def main():
                     im = imp[0]
                 else:
                     im = imp
-                if communicationIsIce(imp):
+                if communication_is_ice(imp):
                     for f in [ "SERVANT.PY"]:
                         ofile = outputPath + '/src/' + im.lower() + 'I.' + f.split('.')[-1].lower()
                         print('Generating', ofile, ' (servant for', im + ')')
@@ -489,7 +548,7 @@ def main():
 
         if component['usingROS'] == True:
             for imp in component['imports']:
-                generateROSHeaders(imp, outputPath+"/src", component, args.include_dirs)
+                generate_ROS_headers(imp, outputPath + "/src", component, args.include_dirs)
 
         # Code to launch diff tool on .new files to be compared with their old version
         if args.diff is not None:
