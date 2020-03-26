@@ -234,7 +234,7 @@ if __name__ == '__main__':
                         action="store_true")
     parser.add_argument("-i", "--installation", type=str,
                         help="Installation directory where robocompdsl.py can be found.",
-                        default="~/robocomp/tools/robocompdsl/test/test_cdsl/")
+                        default="~/robocomp/tools/robocompdsl/autogeneration_tests/test_cdsl/")
 
     parser.add_argument("-f", "--filter", type=str,
                         help="Execute the check only for directories containing this string.", default="")
@@ -251,6 +251,6 @@ if __name__ == '__main__':
         cprint("Use -c option to clean all the generated files.", 'yellow')
         sys.exit()
     except Exception as e:
-        cprint("Unexpected exception: %s"%e.message, 'red')
+        cprint("Unexpected exception: %s"%e, 'red')
         traceback.print_stack()
 
