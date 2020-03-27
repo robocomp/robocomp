@@ -132,7 +132,7 @@ class ComponentGenerationChecker:
                     else:
                         rmtree(file)
 
-    def check_components_generation(self, test_component_dir, dry_run, dirty, generate_only=False, filter="",
+    def check_components_generation(self, test_component_dir, dry_run, dirty, generate_only=False, filter="", ignore="",
                                     clean_only=False):
         """
         Main method of the class. Generate needed code, compile and show the results
@@ -150,7 +150,7 @@ class ComponentGenerationChecker:
         os.chdir(os.path.expanduser(test_component_dir))
         list_dir = glob.glob("test_*")
         for item in list_dir:
-            if os.path.isdir(item) and filter in item:
+            if os.path.isdir(item) and filter in item and not item.lower() == ignore.lower():
                 current_dir = item
                 cprint("Entering dir %s" % current_dir, 'magenta')
                 os.chdir(current_dir)
@@ -249,12 +249,14 @@ if __name__ == '__main__':
 
     parser.add_argument("-f", "--filter", type=str,
                         help="Execute the check only for directories containing this string.", default="")
+    parser.add_argument("-i", "--ignore", type=str,
+                        help="Execute the check only for directories containing this string.", default="")
     args = parser.parse_args()
 
     try:
         checker = ComponentGenerationChecker()
         checker.check_components_generation(args.test_folder, args.dry_run, args.dirty, args.generate_only,
-                                            args.filter,
+                                            args.filter, args.ignore,
                                             args.clean)
     except (KeyboardInterrupt, SystemExit):
         cprint("\nExiting in the middle of the execution.", 'red')

@@ -13,7 +13,7 @@ from autogeneration_tests.test_cdsl.test_component_generation import ComponentGe
 class ParsingUtilsTest(unittest.TestCase):
     def test_component_generation_checker(self):
         checker = ComponentGenerationChecker()
-        self.assertTrue(checker.check_components_generation(TEST_DIR, False, False))
+        self.assertTrue(checker.check_components_generation(TEST_DIR, False, False, ignore="test_agmTestCpp"))
 
 
 # component = specific_parsers.DSLFactory().from_file("/home/robolab/robocomp/components/robocomp-robolab/components/hardware/camera/camerasimple/camerasimple.cdsl")
