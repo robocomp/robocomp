@@ -10,4 +10,4 @@ script:
   - sudo make install
   - sudo sh -c "echo '/opt/robocomp/lib/' >> /etc/ld.so.conf"
   - sudo ldconfig
-  - rcportchecker -h
+  - python -m unittest discover -s robocomp/tools/robocompdsl/test
