@@ -1,0 +1,11 @@
+import "CameraSimple.idsl";
+
+Component camerasimple
+{
+	Communications
+	{
+		implements CameraSimple (ros);
+	};
+	language Python;
+};
+

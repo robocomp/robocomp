@@ -70,10 +70,10 @@ class ParsingUtilsTest(unittest.TestCase):
 
     def test_is_agm1_agent(self):
         component = DSLFactory().from_file(
-            "/home/robolab/robocomp/components/robocomp-robolab/components/hardware/camera/camerasimple/camerasimple.cdsl")
+            os.path.join(CURRENT_DIR, "resources", "camerasimple.cdsl"))
         self.assertFalse(parsing_utils.is_agm1_agent(component))
         component = DSLFactory().from_file(
-            "/home/robolab/robocomp/components/robocomp-viriato/components/humanAgent/humanAgent.cdsl")
+            os.path.join(CURRENT_DIR, "resources", "humanAgent.cdsl"))
         self.assertTrue(parsing_utils.is_agm1_agent(component))
         self.assertRaises(AssertionError, parsing_utils.is_agm1_agent, "CameraSimple")
 
