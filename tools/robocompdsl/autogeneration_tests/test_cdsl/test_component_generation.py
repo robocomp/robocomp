@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import argparse
+import glob
 import os
 import subprocess
 import sys
@@ -9,6 +10,8 @@ from shutil import rmtree
 
 from termcolor import cprint, colored
 
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+TESTS_DIR = os.path.join(CURRENT_DIR)
 
 class MyParser(argparse.ArgumentParser):
     """
@@ -124,11 +127,11 @@ class ComponentGenerationChecker:
                     else:
                         rmtree(file)
 
-    def check_components_generation(self, robocompdsl_dir, dry_run, dirty, generate_only=False, filter="",
+    def check_components_generation(self, test_component_dir, dry_run, dirty, generate_only=False, filter="",
                                     clean_only=False):
         """
         Main method of the class. Generate needed code, compile and show the results
-        :param robocompdsl_dir: alternative dir for the robocompdsl installation
+        :param test_component_dir: alternative dir for the robocompdsl installation
         :param dry_run: just show what would be done. No file is removed.
         :param dirty: Leave all the generated files. No clean is done at the end of the script.
         :param generate_only: No compilation is executed for the components.
@@ -136,20 +139,20 @@ class ComponentGenerationChecker:
         :param clean_only: Just clean the generated files.
         :return: None
         """
+        global_result = True
         self.dry_run = dry_run
         previous_dir = os.getcwd()
-        os.chdir(os.path.expanduser(robocompdsl_dir))
-        list_dir = os.listdir(".")
+        os.chdir(os.path.expanduser(test_component_dir))
+        list_dir = glob.glob("test_*")
         for item in list_dir:
             if os.path.isdir(item) and filter in item:
                 current_dir = item
                 cprint("Entering dir %s" % current_dir, 'magenta')
                 os.chdir(current_dir)
                 cdsl_file = None
-                for file in os.listdir("."):
-                    if file.endswith(".cdsl"):
-                        cdsl_file = file
-                        break;
+                for file in glob.glob("*.cdsl"):
+                    cdsl_file = file
+                    break
                 if cdsl_file:
                     # With the remove inside the cdsl_check we avoid cleaning dirs that don't have .cdsl files. Potentialy wrong directories.
                     self.remove_genetared_files(".", self.dry_run)
@@ -179,10 +182,12 @@ class ComponentGenerationChecker:
                                 self.results[current_dir]['compilation'] = False
                                 self.comp_failed += 1
                                 cprint("%s compilation FAILED" % current_dir, 'red')
+                                global_result = False
                     else:
                         cprint("%s generation FAILED"%os.path.join(current_dir,cdsl_file), 'red')
                         self.gen_failed += 1
                         self.results[current_dir]['generation'] = False
+                        global_result = False
                     if not dirty:
                         self.remove_genetared_files(".", self.dry_run)
                 print("")
@@ -215,6 +220,7 @@ class ComponentGenerationChecker:
                     print("\t%s have been generated? %s" % (cname, gen_result))
                 else:
                     print("\t%s have been generated? %s compile? %s" % (cname, gen_result, comp_result))
+        return global_result
 
 
 if __name__ == '__main__':
@@ -232,9 +238,9 @@ if __name__ == '__main__':
     parser.add_argument("-n", "--dry-run",
                         help="Executing dry run. No remove and make will be executed in dry run mode. CMake is executed and some files generated.",
                         action="store_true")
-    parser.add_argument("-i", "--installation", type=str,
-                        help="Installation directory where robocompdsl.py can be found.",
-                        default="~/robocomp/tools/robocompdsl/autogeneration_tests/test_cdsl/")
+    parser.add_argument("-t", "--test-folder", type=str,
+                        help=".",
+                        default=TESTS_DIR)
 
     parser.add_argument("-f", "--filter", type=str,
                         help="Execute the check only for directories containing this string.", default="")
@@ -242,7 +248,7 @@ if __name__ == '__main__':
 
     try:
         checker = ComponentGenerationChecker()
-        checker.check_components_generation(args.installation, args.dry_run, args.dirty, args.generate_only,
+        checker.check_components_generation(args.test_folder, args.dry_run, args.dirty, args.generate_only,
                                             args.filter,
                                             args.clean)
     except (KeyboardInterrupt, SystemExit):

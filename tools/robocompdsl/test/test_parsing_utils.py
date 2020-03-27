@@ -1,6 +1,11 @@
 import os
+import sys
 import unittest
 from unittest import TestCase
+
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+ROBOCOMPDSL_DIR = os.path.join(CURRENT_DIR, "..")
+sys.path.append(ROBOCOMPDSL_DIR)
 
 from dsl_parsers import parsing_utils
 from dsl_parsers.dsl_factory import DSLFactory
