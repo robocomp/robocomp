@@ -3,6 +3,7 @@
 import argparse
 import glob
 import os
+import shutil
 import subprocess
 import sys
 import traceback
@@ -46,24 +47,28 @@ class ComponentGenerationChecker:
         :param dry_run: Force to just show messages of what would be done but no command is executed.
         :return: command execution return code
         """
+        robocompdsl_exe = shutil.which("robocompdsl")
+        if not robocompdsl_exe:
+            if os.path.isfile("/opt/robocomp/bin/robocompdsl") and os.access("/opt/robocomp/bin/robocompdsl",                                                                                 os.X_OK):
+                robocompdsl_exe = "/opt/robocomp/bin/robocompdsl"
+            elif os.path.isfile("~/robocomp/tools/robocompdsl/robocompdsl.py"):
+                robocompdsl_exe = "python " + os.path.expanduser("~/robocomp/tools/robocompdsl/robocompdsl.py")
         if dry_run:
-            print('robocompdsl %file > /dev/null 2>&1' % cdsl_file)
-            print('robocompdsl %cdsl_file . > %log_file 2>&1' % (cdsl_file, log_file))
+            print(robocompdsl_exe+' %file > /dev/null 2>&1' % cdsl_file)
+            print(robocompdsl_exe+' %cdsl_file . > %log_file 2>&1' % (cdsl_file, log_file))
             return 0
         else:
             # completedProc = subprocess.Popen('robocompdsl %s > /dev/null 2>&1'%cdsl_file)
             # completedProc = subprocess.Popen('robocompdsl %s . > %s 2>&1' % (cdsl_file, log_file))
+
             command_output = subprocess.Popen(
-                "python " + os.path.expanduser("~/robocomp/tools/robocompdsl/robocompdsl.py %s" % cdsl_file),
+                robocompdsl_exe + " %s" % cdsl_file,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT, shell=True)
             stdout, stderr = command_output.communicate()
-            # print(stdout)
-            # print(stderr)
-
             with open("generation_output.log", "wb") as log:
                 command_output = subprocess.Popen(
-                    "python " + os.path.expanduser("~/robocomp/tools/robocompdsl/robocompdsl.py") + " %s ." % cdsl_file,
+                    robocompdsl_exe+" %s ." % cdsl_file,
                     stdout=log,
                     stderr=log,
                     shell=True)
