@@ -11,7 +11,7 @@ for this branch are our priority.
 
 ### Reporting an Issue
 
-- Make sure you test against the latest version (of the highly unstable branch). It is possible we 
+- Make sure you test against the latest version (of the development branch). It is possible we 
 already fixed the bug you're experiencing.
 
 - Provide a reproducible test case, explaining your bug as thoroughly as possible. For example, screenshots of  your
@@ -40,8 +40,8 @@ If you need to sync commits from `robocomp/robocomp` to push your own changes, f
 be sure to update the `Readme.md` installation tutorial to include your changes.
 
 - If you plan to make big changes, ensure you are not breaking Robocomp's core functionalities.
-Even though Travis tests the build, you could break an internal function. 
-Please ensure you test new features locally at first.
+Even though CI tests the build, you could break an internal function. 
+Please ensure you test new features locally at first and add some unit tests for the new functionalities.
 
 ### Code of Conduct
 
