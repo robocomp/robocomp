@@ -1,0 +1,48 @@
+application_machine
+{
+    initial_state game_machine;
+    end_state app_end;
+    transitions{
+        game_machine => app_end;
+    };
+};
+
+
+:game_machine{
+    states session_init, game_start_wait, game_init, game_loop, game_pause, game_resume, game_reset, game_end, game_won, game_lost, session_end;
+    initial_state session_start_wait;
+    transitions{
+        session_start_wait => session_init;
+        session_init => game_start_wait;
+        game_start_wait => game_start_wait;
+        game_start_wait => game_init;
+        game_start_wait => session_end;
+        session_end => session_start_wait;
+        game_init => game_loop;
+        game_loop => game_loop, game_pause, game_won, game_lost, game_end;
+//        game_won => game_start_wait;
+//        game_lost => game_start_wait;
+        game_pause => game_loop;
+        game_pause => game_reset;
+        game_pause => game_resume;
+        game_pause => game_end;
+        game_resume => game_loop;
+        game_end => game_lost;
+        game_end => game_won;
+        game_lost => game_start_wait;
+        game_won => game_start_wait;
+        game_reset => game_start_wait;
+    };
+};
+
+:session_init {
+    initial_state player_acquisition_init;
+    states player_acquisition_loop;
+    end_state player_acquisition_ended;
+    transitions{
+        player_acquisition_init => player_acquisition_loop;
+        player_acquisition_loop => player_acquisition_loop;
+        player_acquisition_loop => player_acquisition_ended;
+    };
+};
+

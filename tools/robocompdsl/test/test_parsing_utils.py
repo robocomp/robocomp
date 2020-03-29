@@ -90,10 +90,20 @@ class ParsingUtilsTest(unittest.TestCase):
                          os.path.expanduser('~/robocomp/interfaces/IDSLs/CameraSimple.idsl')])
 
     def test_get_name_number(self):
-        self.assertCountEqual(parsing_utils.get_name_number(['AGMExecutiveTopic', 'HumanPose']),[['AGMExecutiveTopic',''], ['HumanPose','']])
-        self.assertCountEqual(parsing_utils.get_name_number(['AGMExecutiveTopic', 'HumanPose', 'HumanPose']), [['AGMExecutiveTopic', ''], ['HumanPose', ''], ['HumanPose', '1']])
-        self.assertCountEqual(parsing_utils.get_name_number(['HumanPose', 'HumanPose', 'HumanPose']), [['HumanPose', ''], ['HumanPose', '1'], ['HumanPose', '2']])
+        self.assertCountEqual(parsing_utils.get_name_number(['AGMExecutiveTopic', 'HumanPose']),
+                              [['AGMExecutiveTopic', ''], ['HumanPose', '']])
+        self.assertCountEqual(parsing_utils.get_name_number(['AGMExecutiveTopic', 'HumanPose', 'HumanPose']),
+                              [['AGMExecutiveTopic', ''], ['HumanPose', ''], ['HumanPose', '1']])
+        self.assertCountEqual(parsing_utils.get_name_number(['HumanPose', 'HumanPose', 'HumanPose']),
+                              [['HumanPose', ''], ['HumanPose', '1'], ['HumanPose', '2']])
         self.assertRaises(AssertionError, parsing_utils.get_name_number, "lapatochada")
         self.assertRaises(AssertionError, parsing_utils.get_name_number, ["lapatochada", 8, 3.9])
 
-
+    def test_decorator_and_type_to_const_ampersand(self):
+        modulePool = parsing_utils.IDSLPool(["AprilTags.idsl"], [])
+        # theInterface = theInterface.split(';')
+        # module = modulePool.moduleProviding(theInterface[0])
+        # if module == None:
+        #     print('Can\'t locate', theIDSLs)
+        #     sys.exit(1)
+        self.fail()
