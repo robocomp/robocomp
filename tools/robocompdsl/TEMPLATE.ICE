@@ -20,8 +20,8 @@ def SPACE(i=0):
 	if i>0:
 		s = str(i)
 	cog.out('<S'+s+'>')
-cog.outl("//  File name: "+theIDSL.split('.')[0]+".ice")
-cog.outl("//  Source: "+theIDSL)
+cog.outl("//  File name: "+os.path.basename(theIDSL).split('.')[0]+".ice")
+cog.outl("//  Source: "+os.path.basename(theIDSL))
 ]]]
 [[[end]]]
 //  
