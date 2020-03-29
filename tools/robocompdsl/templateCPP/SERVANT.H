@@ -13,7 +13,7 @@ def TAB():
 	cog.out('<TABHERE>')
 
 from dsl_parsers.dsl_factory import DSLFactory
-from dsl_parsers.parsing_utils import decoratorAndType_to_const_ampersand,IDSLPool
+from dsl_parsers.parsing_utils import decorator_and_type_to_const_ampersand,IDSLPool
 includeDirectories = theIDSLPaths.split('#')
 component = DSLFactory().from_file(theCDSL, include_directories=includeDirectories)
 if component == None:
@@ -152,7 +152,7 @@ I();
 				paramStr = ''
 				for p in method['params']:
 
-					const, ampersand = decoratorAndType_to_const_ampersand(p['decorator'], p['type'], modulePool, component['language'].lower() == "cpp11")
+					const, ampersand = decorator_and_type_to_const_ampersand(p['decorator'], p['type'], modulePool, component['language'].lower() == "cpp11")
 					if p['type'] == 'long':
 						paramStr += const + 'Ice::Long' + ' ' + ampersand + p['name'] + ', '
 					else:

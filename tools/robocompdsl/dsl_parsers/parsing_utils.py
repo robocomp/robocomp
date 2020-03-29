@@ -23,12 +23,12 @@ def generate_recursive_imports(initial_idsls, include_directories=[]):
                     importedModule = DSLFactory().from_file(attempt)  # IDSLParsing.gimmeIDSL(attempt)
                     break
         except:
-            print(('Error reading IMPORT', idsl_basename))
+            print(('generate_recursive_imports: Error reading IMPORT', idsl_basename))
             traceback.print_exc()
-            print(('Error reading IMPORT', idsl_basename))
+            print(('generate_recursive_imports: Error reading IMPORT', idsl_basename))
             os._exit(1)
         if importedModule == None:
-            print(('Counldn\'t locate', idsl_basename))
+            print('generate_recursive_imports: Couldn\'t locate %s'% idsl_basename)
             os._exit(1)
 
         # if importedModule['imports'] have a # at the end an emtpy '' is generated
@@ -153,7 +153,7 @@ def get_name_number(names_list):
                 ret.append([k, ''])
     return ret
 
-def decoratorAndType_to_const_ampersand(decorator, vtype, modulePool, cpp11=False):
+def decorator_and_type_to_const_ampersand(decorator, vtype, modulePool, cpp11=False):
     ampersand = ' & '
     const = ' '
 
