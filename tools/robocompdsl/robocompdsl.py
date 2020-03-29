@@ -363,7 +363,7 @@ def generate_component_from_cdsl(inputFile, outputPath, include_dirs, diff=False
             generate_ROS_headers(imp, outputPath + "/src", component, include_dirs)
 
     # Code to launch diff tool on .new files to be compared with their old version
-    if diff is not None:
+    if diff is not None and len(new_existing_files) >   0:
         diff_tool, _ = get_diff_tool(prefered=diff)
         print("Executing diff tool for existing files. Close if no change is needed.")
         for o_file, n_file in new_existing_files.items():
@@ -460,6 +460,7 @@ def generate_python_component(component, inputFile, outputPath, include_dirs, im
                     print('ERROR')
                     sys.exit(-1)
                 replaceTagsInFile(ofile)
+    return new_existing_files
 
 def generate_cpp_component(component, inputFile, outputPath, include_dirs, imports):
     #

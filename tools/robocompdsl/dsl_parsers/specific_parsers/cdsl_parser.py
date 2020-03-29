@@ -65,7 +65,7 @@ class CDSLParser(DSLParserTemplate):
         innermodelviewer = Group(Optional(INNERMODELVIEWER.suppress() - (TRUE | FALSE) + SEMI))('innermodelviewer')
         # GUI
         gui_options = QWIDGET | QMAINWINDOW | QDIALOG
-        gui = Group(Optional(GUI.suppress() - QT + OPAR - gui_options('gui_options') - CPAR + SEMI))
+        gui = Group(Optional(GUI.suppress() - QT('type') + OPAR - gui_options('gui_options') - CPAR + SEMI))
         # additional options
         options = Group(Optional(OPTIONS.suppress() - identifier + ZeroOrMore(Suppress(Word(',')) + identifier) + SEMI))
         statemachine = Group(
@@ -145,7 +145,7 @@ class CDSLParser(DSLParserTemplate):
         # GUI
         component['gui'] = None
         try:
-            uiT = parsing_result['component']['content']['gui'][0]
+            uiT = parsing_result['component']['content']['gui']['type']
             uiI = parsing_result['component']['content']['gui']['gui_options']
             if uiT.lower() == 'qt' and uiI in ['QWidget', 'QMainWindow', 'QDialog']:
                 component['gui'] = [uiT, uiI]

@@ -168,7 +168,7 @@ class SMDSLParser(DSLParserTemplate):
                         if a['contents']['initialstate'] == a['contents']['finalstate']:
                             print(("Error: " + a['parent'] + " initial state is equal final state"))
                 try:
-                    a['contents']['transitions'] = sub['contents']['transitions']
+                    a['contents']['transitions'] = sub['contents']['transitions'].toDict()
                 except:
                     a['contents']['transitions'] = None
                 result_dict['substates'].append(a)
