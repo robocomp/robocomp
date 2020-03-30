@@ -31,9 +31,10 @@ import random
 import pyparsing
 import sys
 
+from dsl_parsers.dsl_factory import DSLFactory
+
 sys.path.append('/opt/robocomp/python')
 
-from dsl_parsers.parsing_utils import gimmeIDSL
 from dsl_parsers.specific_parsers.cdsl_parser import CDSLParser
 
 
@@ -386,7 +387,7 @@ class CDSLSampler:
         :return: name of the interface defined inside the .idsl file.
         """
         try:
-            interface_name = gimmeIDSL(idsl_filename)['interfaces'][0]['name']
+            interface_name = DSLFactory.from_file(idsl_filename)['interfaces'][0]['name']
         except:
             # There's some .idsl files without interfaces defined on it, just data structures definitions
             raise ValueError("Couldn't get the interface name for idsl file: %s" % idsl_filename)

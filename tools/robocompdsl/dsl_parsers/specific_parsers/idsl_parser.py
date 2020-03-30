@@ -5,7 +5,7 @@ from pyparsing import Suppress, Word, alphas, alphanums, Group, \
     OneOrMore, ZeroOrMore, Optional, cppStyleComment, Literal, CharsNotIn
 
 from dsl_parsers.dsl_parser_abstract import DSLParserTemplate
-from dsl_parsers.parsing_utils import gimmeIDSL, generate_recursive_imports
+from dsl_parsers.parsing_utils import generate_recursive_imports
 
 
 class IDSLParser(DSLParserTemplate):

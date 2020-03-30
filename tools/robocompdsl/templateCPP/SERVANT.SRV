@@ -16,10 +16,10 @@ def SPACE(i=0):
 		s = str(i)
 	cog.out('<S'+s+'>')
 
-from dsl_parsers.parsing_utils import gimmeIDSLStruct
+from dsl_parsers.dsl_factory import DSLFactory
 
 includeDirectories = theIDSLPaths.split('#')
-idsl = gimmeIDSLStruct(theIDSL, files='', includeDirectories=includeDirectories)
+idsl = DSLFactory.from_file(theIDSL, includeDirectories=includeDirectories)
 for imp in idsl['module']['contents']:
 	if imp['type'] == 'interface':
 		for method in imp['methods']:

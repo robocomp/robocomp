@@ -14,7 +14,7 @@ def TAB():
 	cog.out('<TABHERE>')
 
 from dsl_parsers.dsl_factory import DSLFactory
-from dsl_parsers.parsing_utils import get_name_number, gimmeIDSL, communication_is_ice, IDSLPool
+from dsl_parsers.parsing_utils import communication_is_ice, IDSLPool
 
 includeDirectories = theIDSLPaths.split('#')
 component = DSLFactory().from_file(theCDSL, include_directories=includeDirectories)

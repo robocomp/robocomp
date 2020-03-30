@@ -14,7 +14,7 @@ from cogapp import Cog
 # from parseCDSL import *
 sys.path.append("/opt/robocomp/python")
 from dsl_parsers.dsl_factory import DSLFactory
-from dsl_parsers.parsing_utils import communication_is_ice, IDSLPool, gimmeIDSL
+from dsl_parsers.parsing_utils import communication_is_ice, IDSLPool
 import rcExceptions
 import sys
 
@@ -91,7 +91,7 @@ def generate_ROS_headers(idsl_file, output_path, comp, include_directories):
     :return:
     """
     imported = []
-    idsl = gimmeIDSL(idsl_file, files='', includeDirectories=include_directories)
+    idsl = DSLFactory.from_file(idsl_file, files='', includeDirectories=include_directories)
     if not os.path.exists(output_path):
         create_directory(output_path)
 

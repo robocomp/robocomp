@@ -20,7 +20,7 @@ def SPACE(i=0):
 
 includeDirectories = theIDSLPaths.split('#')
 from dsl_parsers.dsl_factory import DSLFactory
-from dsl_parsers.parsing_utils import get_name_number, gimmeIDSL, IDSLPool, communication_is_ice
+from dsl_parsers.parsing_utils import get_name_number, IDSLPool, communication_is_ice
 
 component = DSLFactory().from_file(theCDSL, include_directories=includeDirectories)
 sm = DSLFactory().from_file(component['statemachine'])
@@ -105,7 +105,7 @@ for imp in set(component['recursiveImports'] + component["imports"]):
     cog.outl("<TABHERE>print('Couln\\\'t load "+name+"')")
     cog.outl('<TABHERE>sys.exit(-1)')
 
-    module = gimmeIDSL(file_name, files='', includeDirectories=includeDirectories)
+    module = DSLFactory.from_file(file_name, includeDirectories=includeDirectories)
     cog.outl('from '+ module['name'] +' import *')
 ]]]
 [[[end]]]

@@ -103,34 +103,6 @@ def idsl_robocomp_path(idsl_name, include_directories = None):
     print(('Couldn\'t locate ', idsl_name))
     return None
 
-def gimmeIDSL(name, files='', includeDirectories=None):
-    assert not isinstance(includeDirectories, str), "includeDirectories must be a list of paths, not an str"
-    if not '.idsl' in name:
-        name += '.idsl'
-    name = os.path.basename(name)
-    pathList = []
-    if includeDirectories!= None:
-        pathList += [x for x in includeDirectories]
-    fileList = []
-    for p in [f for f in files.split('#') if len(f)>0]:
-        if p.startswith("-I"):
-            pathList.append(p[2:])
-        else:
-            fileList.append(p)
-    pathList.append('/opt/robocomp/interfaces/IDSLs/')
-    pathList.append(os.path.expanduser('~/robocomp/interfaces/IDSLs/'))
-    filename = name.split('.')[0]
-    for p in pathList:
-        try:
-            path = os.path.join(p,name)
-            # WARN: import is here to avoid problem with recursive import on startup
-            from dsl_parsers.dsl_factory import DSLFactory
-            return DSLFactory().from_file(path)
-        except IOError as e:
-            pass
-    print(('Couldn\'t locate ', name))
-    sys.exit(-1)
-
 
 def get_name_number(names_list):
     """
