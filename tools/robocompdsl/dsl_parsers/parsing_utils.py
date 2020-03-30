@@ -4,6 +4,7 @@ import traceback
 from collections import Counter, OrderedDict
 
 
+
 def generate_recursive_imports(initial_idsls, include_directories=[]):
     assert isinstance(initial_idsls, list), "initial_idsl, parameter must be a list, not %s"%str(type(initial_idsls))
     new_idsls = []
@@ -13,23 +14,11 @@ def generate_recursive_imports(initial_idsls, include_directories=[]):
         iD = include_directories + ['/opt/robocomp/interfaces/IDSLs/',
                                     os.path.expanduser('~/robocomp/interfaces/IDSLs/')]
         # TODO: Replace by idsl_robocomp_path
-        try:
-            for directory in iD:
-                attempt = directory + '/' + idsl_basename
-                # print 'Check', attempt
-                if os.path.isfile(attempt):
-                    # WARN: import is here to avoid problem with recursive import on startup
-                    from dsl_parsers.dsl_factory import DSLFactory
-                    importedModule = DSLFactory().from_file(attempt)  # IDSLParsing.gimmeIDSL(attempt)
-                    break
-        except:
-            print(('generate_recursive_imports: Error reading IMPORT', idsl_basename))
-            traceback.print_exc()
-            print(('generate_recursive_imports: Error reading IMPORT', idsl_basename))
-            os._exit(1)
-        if importedModule == None:
-            print('generate_recursive_imports: Couldn\'t locate %s'% idsl_basename)
-            os._exit(1)
+        new_idsl_path = idsl_robocomp_path(idsl_basename, include_directories)
+        from dsl_parsers.dsl_factory import DSLFactory
+        importedModule = DSLFactory().from_file(new_idsl_path)  # IDSLParsing.gimmeIDSL(attempt)
+        if importedModule is None:
+            raise FileNotFoundError('generate_recursive_imports: Couldn\'t locate %s'% idsl_basename)
 
         # if importedModule['imports'] have a # at the end an emtpy '' is generated
         idsl_imports = importedModule['imports'].split('#')
@@ -57,7 +46,7 @@ def communication_is_ice(sb):
                 print('Only ICE and ROS are supported')
                 raise ValueError("Communication not ros and not ice, but %s"%sb[1])
     else:
-        raise ValueError("Parameter %s of invalid type %s" %(str(sb), str(type(sb[1]))))
+        raise ValueError("Parameter %s of invalid type %s" %(str(sb), str(type(sb))))
     return isIce
 
 def is_agm1_agent(component):
@@ -90,6 +79,8 @@ def idsl_robocomp_path(idsl_name, include_directories = None):
     assert isinstance(idsl_name, str), "idsl_name parameter must be a string"
     assert include_directories is None or isinstance(include_directories, list), \
         "include_directories must be a list of strings not %s" % str(type(include_directories))
+    if not idsl_name.endswith('.idsl'):
+        idsl_name += '.idsl'
     pathList = []
     if include_directories != None:
         pathList += [x for x in include_directories]
