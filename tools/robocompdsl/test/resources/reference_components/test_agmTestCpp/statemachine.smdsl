@@ -1,0 +1,25 @@
+
+/* CHANGE THE NAME OF THE MACHINE IF YOU MAKE
+   ANY CHANGE TO THE DEFAULT STATES OR TRANSITIONS */
+
+customMachine{
+    states publish, pop_data, read_uwb, read_rs, read_april, compute_pose;
+    initial_state initialize;
+    end_state finalize;
+    transitions{
+        initialize => pop_data;
+        pop_data => pop_data;
+        pop_data => read_uwb;
+        read_uwb => pop_data;
+        pop_data => read_rs;
+        pop_data => read_april;
+        read_april => compute_pose;
+        read_rs => compute_pose;
+        compute_pose => publish;
+        compute_pose => pop_data;
+        publish => pop_data;        
+        pop_data => finalize;
+    };
+};
+
+

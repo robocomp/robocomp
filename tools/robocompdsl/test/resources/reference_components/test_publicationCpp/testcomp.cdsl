@@ -1,0 +1,15 @@
+import "IMUPub.idsl";
+
+Component testcomp
+{
+    Communications
+    {
+        publishes IMUPub;
+    };
+	language Cpp;
+	gui Qt(QWidget);
+	//options agmagent;
+	//options InnerModelViewer;
+	statemachine "statemachine.smdsl";
+};
+

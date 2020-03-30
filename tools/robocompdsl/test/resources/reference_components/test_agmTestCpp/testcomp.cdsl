@@ -1,0 +1,11 @@
+
+Component AGMTest
+{
+        Communications
+        {
+
+        };
+        language Cpp;
+        options agmagent;
+        statemachine "statemachine.smdsl";
+};
