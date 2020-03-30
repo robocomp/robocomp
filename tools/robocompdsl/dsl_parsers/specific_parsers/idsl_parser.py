@@ -119,7 +119,7 @@ class IDSLParser(DSLParserTemplate):
                     interface['methods'][method['name']]['params'] = params
 
                     try:
-                        interface['methods'][method['name']]['throws'] = method['raise']
+                        interface['methods'][method['name']]['throws'] = method['raise'].asList()
                     except:
                         interface['methods'][method['name']]['throws'] = 'nothing'
                 result_dict['interfaces'].append(interface)
@@ -157,7 +157,7 @@ class IDSLParser(DSLParserTemplate):
         result_dict['simpleStructs'] = []
         for contentDef in contents:
             if contentDef['type'] == 'struct':
-                structdef = {'name': result_dict['name'] + "/" + contentDef['name'], 'type': contentDef['type'], 'structIdentifiers':contentDef['structIdentifiers']}
+                structdef = {'name': result_dict['name'] + "/" + contentDef['name'], 'type': contentDef['type'], 'structIdentifiers':contentDef['structIdentifiers'].asList()}
                 simpleStructdef = {'name': result_dict['name'], 'strName': contentDef['name']}
                 # print structdef
                 result_dict['structs'].append(structdef)
