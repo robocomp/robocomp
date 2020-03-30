@@ -99,11 +99,11 @@ class ParsingUtilsTest(unittest.TestCase):
         self.assertRaises(AssertionError, parsing_utils.get_name_number, "lapatochada")
         self.assertRaises(AssertionError, parsing_utils.get_name_number, ["lapatochada", 8, 3.9])
 
-    def test_decorator_and_type_to_const_ampersand(self):
-        modulePool = parsing_utils.IDSLPool(["AprilTags.idsl"], [])
-        # theInterface = theInterface.split(';')
-        # module = modulePool.moduleProviding(theInterface[0])
-        # if module == None:
-        #     print('Can\'t locate', theIDSLs)
-        #     sys.exit(1)
-        self.fail()
+    # def test_decorator_and_type_to_const_ampersand(self):
+    #     modulePool = parsing_utils.IDSLPool(["AprilTags.idsl"], [])
+    #     # theInterface = theInterface.split(';')
+    #     # module = modulePool.moduleProviding(theInterface[0])
+    #     # if module == None:
+    #     #     print('Can\'t locate', theIDSLs)
+    #     #     sys.exit(1)
+    #     self.fail()
