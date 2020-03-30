@@ -3,6 +3,8 @@ import sys
 import unittest
 from collections import OrderedDict
 
+from pyparsing import ParseException
+
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 ROBOCOMPDSL_DIR = os.path.join(CURRENT_DIR, "..")
 RESOURCES_DIR = os.path.join(CURRENT_DIR, "resources")
@@ -22,43 +24,109 @@ class DSLFactoryTestCase(unittest.TestCase):
 
     def test_factory_smdsl(self):
         a = self.factory.from_file(os.path.join(RESOURCES_DIR, "gamestatemachine.smdsl"))
-        self.assertDictEqual(a, {'machine': {'name': 'application_machine', 'default': False,
-                                             'contents': {'states': None, 'finalstate': 'app_end',
-                                                          'initialstate': 'game_machine', 'transitions': [
-                                                     {'src': 'game_machine', 'dests': ['app_end']}]}},
-                                 'substates': [{'parallel': False, 'parent': 'game_machine', 'contents': {
-                                     'states': ['session_init', 'game_start_wait', 'game_init', 'game_loop',
-                                                'game_pause', 'game_resume', 'game_reset', 'game_end', 'game_won',
-                                                'game_lost', 'session_end'], 'finalstate': None,
-                                     'initialstate': 'session_start_wait', 'transitions': None}},
-                                               {'parallel': False, 'parent': 'session_init',
-                                                'contents': {'states': ['player_acquisition_loop'],
-                                                             'finalstate': 'player_acquisition_ended',
-                                                             'initialstate': 'player_acquisition_init',
-                                                             'transitions': None}}],
-                                 'filename': os.path.join(RESOURCES_DIR, "gamestatemachine.smdsl")})
+        self.assertDictEqual(a, {
+            'machine': {
+                'name': 'application_machine',
+                'default': False,
+                'contents': {
+                    'states': None,
+                    'finalstate': 'app_end',
+                    'initialstate': 'game_machine',
+                    'transitions': [
+                        {'src': 'game_machine', 'dests': ['app_end']}]
+                }
+            },
+            'substates': [
+                {
+                    'parallel': False,
+                    'parent': 'game_machine',
+                    'contents': {
+                        'states': [
+                            'session_init',
+                            'game_start_wait',
+                            'game_init',
+                            'game_loop',
+                            'game_pause',
+                            'game_resume',
+                            'game_reset',
+                            'game_end',
+                            'game_won',
+                            'game_lost',
+                            'session_end'],
+                        'finalstate': None,
+                        'initialstate': 'session_start_wait',
+                        'transitions': None
+                    }
+                },
+                {
+                    'parallel': False,
+                    'parent': 'session_init',
+                    'contents': {
+                        'states': [
+                            'player_acquisition_loop'],
+                        'finalstate': 'player_acquisition_ended',
+                        'initialstate': 'player_acquisition_init',
+                        'transitions': None
+                    }
+                }
+            ],
+            'filename': os.path.join(RESOURCES_DIR, "gamestatemachine.smdsl")
+        })
         # Test for cached query
         b = self.factory.from_file(os.path.join(RESOURCES_DIR, "gamestatemachine.smdsl"))
         self.assertIs(a, b)
 
     def test_factory_idsl(self):
         c = self.factory.from_file("/opt/robocomp/interfaces/IDSLs/JointMotor.idsl")
-        self.assertDictEqual(dict(c), dict(OrderedDict([('name', 'RoboCompJointMotor'), ('imports', ''), ('recursive_imports', ''), ('interfaces', [{'name': 'JointMotor', 'methods': OrderedDict([('getAllMotorParams', {'name': 'getAllMotorParams', 'decorator': '', 'return': 'MotorParamsList', 'params': [], 'throws': 'nothing'}), ('getAllMotorState', {'name': 'getAllMotorState', 'decorator': '', 'return': 'void', 'params': [{'decorator': 'out', 'type': 'MotorStateMap', 'name': 'mstateMap'}], 'throws': ['UnknownMotorException']}), ('getBusParams', {'name': 'getBusParams', 'decorator': '', 'return': 'BusParams', 'params': [], 'throws': 'nothing'}), ('getMotorParams', {'name': 'getMotorParams', 'decorator': '', 'return': 'MotorParams', 'params': [{'decorator': 'none', 'type': 'string', 'name': 'motor'}], 'throws': ['UnknownMotorException']}), ('getMotorState', {'name': 'getMotorState', 'decorator': '', 'return': 'MotorState', 'params': [{'decorator': 'none', 'type': 'string', 'name': 'motor'}], 'throws': ['UnknownMotorException']}), ('getMotorStateMap', {'name': 'getMotorStateMap', 'decorator': '', 'return': 'MotorStateMap', 'params': [{'decorator': 'none', 'type': 'MotorList', 'name': 'mList'}], 'throws': ['UnknownMotorException']}), ('setPosition', {'name': 'setPosition', 'decorator': '', 'return': 'void', 'params': [{'decorator': 'none', 'type': 'MotorGoalPosition', 'name': 'goal'}], 'throws': ['UnknownMotorException', ',', 'HardwareFailedException', ',', 'CollisionException']}), ('setSyncPosition', {'name': 'setSyncPosition', 'decorator': '', 'return': 'void', 'params': [{'decorator': 'none', 'type': 'MotorGoalPositionList', 'name': 'listGoals'}], 'throws': ['UnknownMotorException', ',', 'HardwareFailedException']}), ('setSyncVelocity', {'name': 'setSyncVelocity', 'decorator': '', 'return': 'void', 'params': [{'decorator': 'none', 'type': 'MotorGoalVelocityList', 'name': 'listGoals'}], 'throws': ['UnknownMotorException', ',', 'HardwareFailedException']}), ('setSyncZeroPos', {'name': 'setSyncZeroPos', 'decorator': '', 'return': 'void', 'params': [], 'throws': ['UnknownMotorException', ',', 'HardwareFailedException']}), ('setVelocity', {'name': 'setVelocity', 'decorator': '', 'return': 'void', 'params': [{'decorator': 'none', 'type': 'MotorGoalVelocity', 'name': 'goal'}], 'throws': ['UnknownMotorException', ',', 'HardwareFailedException']}), ('setZeroPos', {'name': 'setZeroPos', 'decorator': '', 'return': 'void', 'params': [{'decorator': 'none', 'type': 'string', 'name': 'name'}], 'throws': ['UnknownMotorException', ',', 'HardwareFailedException']})])}, {'name': 'JointMotorPublish', 'methods': OrderedDict([('motorStates', {'name': 'motorStates', 'decorator': '', 'return': 'void', 'params': [{'decorator': 'none', 'type': 'MotorStateMap', 'name': 'mstateMap'}], 'throws': 'nothing'})])}]), ('types', [{'type': 'exception', 'name': 'HardwareFailedException', 'content': '\n                string  what;\n        '}, {'type': 'exception', 'name': 'OutOfRangeException', 'content': '\n                string  what;\n        '}, {'type': 'exception', 'name': 'UnknownMotorException', 'content': '\n                string  what;\n        '}, {'type': 'exception', 'name': 'CollisionException', 'content': '\n                string what;\n        '}, {'type': 'struct', 'name': 'MotorState', 'structIdentifiers': [{'type': 'float', 'identifier': 'pos'}, {'type': 'float', 'identifier': 'vel'}, {'type': 'float', 'identifier': 'power'}, {'type': 'string', 'identifier': 'timeStamp'}, {'type': 'int', 'identifier': 'p'}, {'type': 'int', 'identifier': 'v'}, {'type': 'bool', 'identifier': 'isMoving'}, {'type': 'int', 'identifier': 'temperature'}]}, {'type': 'dictionary', 'content': 'string,MotorState', 'name': 'MotorStateMap'}, {'type': 'struct', 'name': 'MotorParams', 'structIdentifiers': [{'type': 'string', 'identifier': 'name'}, {'type': 'byte', 'identifier': 'busId'}, {'type': 'float', 'identifier': 'minPos'}, {'type': 'float', 'identifier': 'maxPos'}, {'type': 'float', 'identifier': 'maxVelocity'}, {'type': 'float', 'identifier': 'zeroPos'}, {'type': 'float', 'identifier': 'stepsRange'}, {'type': 'float', 'identifier': 'maxDegrees'}, {'type': 'bool', 'identifier': 'invertedSign'}, {'type': 'float', 'identifier': 'offset'}, {'type': 'float', 'identifier': 'unitsRange'}]}, {'type': 'sequence', 'typeSequence': 'MotorParams', 'name': 'MotorParamsList'}, {'type': 'struct', 'name': 'BusParams', 'structIdentifiers': [{'type': 'string', 'identifier': 'handler'}, {'type': 'string', 'identifier': 'device'}, {'type': 'int', 'identifier': 'numMotors'}, {'type': 'int', 'identifier': 'baudRate'}, {'type': 'int', 'identifier': 'basicPeriod'}]}, {'type': 'struct', 'name': 'MotorGoalPosition', 'structIdentifiers': [{'type': 'string', 'identifier': 'name'}, {'type': 'float', 'identifier': 'position'}, {'type': 'float', 'identifier': 'maxSpeed'}]}, {'type': 'sequence', 'typeSequence': 'MotorGoalPosition', 'name': 'MotorGoalPositionList'}, {'type': 'struct', 'name': 'MotorGoalVelocity', 'structIdentifiers': [{'type': 'string', 'identifier': 'name'}, {'type': 'float', 'identifier': 'velocity'}, {'type': 'float', 'identifier': 'maxAcc'}]}, {'type': 'sequence', 'typeSequence': 'MotorGoalVelocity', 'name': 'MotorGoalVelocityList'}, {'type': 'sequence', 'typeSequence': 'string', 'name': 'MotorList'}]), ('sequences', [{'name': 'RoboCompJointMotor/MotorParamsList', 'type': 'sequence', 'typeSequence': 'MotorParams'}, {'name': 'RoboCompJointMotor/MotorGoalPositionList', 'type': 'sequence', 'typeSequence': 'MotorGoalPosition'}, {'name': 'RoboCompJointMotor/MotorGoalVelocityList', 'type': 'sequence', 'typeSequence': 'MotorGoalVelocity'}, {'name': 'RoboCompJointMotor/MotorList', 'type': 'sequence', 'typeSequence': 'string'}]), ('simpleSequences', [{'name': 'RoboCompJointMotor', 'strName': 'MotorParamsList'}, {'name': 'RoboCompJointMotor', 'strName': 'MotorGoalPositionList'}, {'name': 'RoboCompJointMotor', 'strName': 'MotorGoalVelocityList'}, {'name': 'RoboCompJointMotor', 'strName': 'MotorList'}]), ('structs', [{'name': 'RoboCompJointMotor/MotorState', 'type': 'struct', 'structIdentifiers': [['float', 'pos'], ['float', 'vel'], ['float', 'power'], ['string', 'timeStamp'], ['int', 'p'], ['int', 'v'], ['bool', 'isMoving'], ['int', 'temperature']]}, {'name': 'RoboCompJointMotor/MotorParams', 'type': 'struct', 'structIdentifiers': [['string', 'name'], ['byte', 'busId'], ['float', 'minPos'], ['float', 'maxPos'], ['float', 'maxVelocity'], ['float', 'zeroPos'], ['float', 'stepsRange'], ['float', 'maxDegrees'], ['bool', 'invertedSign'], ['float', 'offset'], ['float', 'unitsRange']]}, {'name': 'RoboCompJointMotor/BusParams', 'type': 'struct', 'structIdentifiers': [['string', 'handler'], ['string', 'device'], ['int', 'numMotors'], ['int', 'baudRate'], ['int', 'basicPeriod']]}, {'name': 'RoboCompJointMotor/MotorGoalPosition', 'type': 'struct', 'structIdentifiers': [['string', 'name'], ['float', 'position'], ['float', 'maxSpeed']]}, {'name': 'RoboCompJointMotor/MotorGoalVelocity', 'type': 'struct', 'structIdentifiers': [['string', 'name'], ['float', 'velocity'], ['float', 'maxAcc']]}]), ('simpleStructs', [{'name': 'RoboCompJointMotor', 'strName': 'MotorState'}, {'name': 'RoboCompJointMotor', 'strName': 'MotorParams'}, {'name': 'RoboCompJointMotor', 'strName': 'BusParams'}, {'name': 'RoboCompJointMotor', 'strName': 'MotorGoalPosition'}, {'name': 'RoboCompJointMotor', 'strName': 'MotorGoalVelocity'}]), ('filename', '/opt/robocomp/interfaces/IDSLs/JointMotor.idsl')])))
+        self.assertDictEqual(c, {'name': 'RoboCompJointMotor', 'imports': '', 'recursive_imports': '', 'interfaces': [{'name': 'JointMotor', 'methods': OrderedDict([('getAllMotorParams', {'name': 'getAllMotorParams', 'decorator': '', 'return': 'MotorParamsList', 'params': [], 'throws': 'nothing'}), ('getAllMotorState', {'name': 'getAllMotorState', 'decorator': '', 'return': 'void', 'params': [{'decorator': 'out', 'type': 'MotorStateMap', 'name': 'mstateMap'}], 'throws': ['UnknownMotorException']}), ('getBusParams', {'name': 'getBusParams', 'decorator': '', 'return': 'BusParams', 'params': [], 'throws': 'nothing'}), ('getMotorParams', {'name': 'getMotorParams', 'decorator': '', 'return': 'MotorParams', 'params': [{'decorator': 'none', 'type': 'string', 'name': 'motor'}], 'throws': ['UnknownMotorException']}), ('getMotorState', {'name': 'getMotorState', 'decorator': '', 'return': 'MotorState', 'params': [{'decorator': 'none', 'type': 'string', 'name': 'motor'}], 'throws': ['UnknownMotorException']}), ('getMotorStateMap', {'name': 'getMotorStateMap', 'decorator': '', 'return': 'MotorStateMap', 'params': [{'decorator': 'none', 'type': 'MotorList', 'name': 'mList'}], 'throws': ['UnknownMotorException']}), ('setPosition', {'name': 'setPosition', 'decorator': '', 'return': 'void', 'params': [{'decorator': 'none', 'type': 'MotorGoalPosition', 'name': 'goal'}], 'throws': ['UnknownMotorException', ',', 'HardwareFailedException', ',', 'CollisionException']}), ('setSyncPosition', {'name': 'setSyncPosition', 'decorator': '', 'return': 'void', 'params': [{'decorator': 'none', 'type': 'MotorGoalPositionList', 'name': 'listGoals'}], 'throws': ['UnknownMotorException', ',', 'HardwareFailedException']}), ('setSyncVelocity', {'name': 'setSyncVelocity', 'decorator': '', 'return': 'void', 'params': [{'decorator': 'none', 'type': 'MotorGoalVelocityList', 'name': 'listGoals'}], 'throws': ['UnknownMotorException', ',', 'HardwareFailedException']}), ('setSyncZeroPos', {'name': 'setSyncZeroPos', 'decorator': '', 'return': 'void', 'params': [], 'throws': ['UnknownMotorException', ',', 'HardwareFailedException']}), ('setVelocity', {'name': 'setVelocity', 'decorator': '', 'return': 'void', 'params': [{'decorator': 'none', 'type': 'MotorGoalVelocity', 'name': 'goal'}], 'throws': ['UnknownMotorException', ',', 'HardwareFailedException']}), ('setZeroPos', {'name': 'setZeroPos', 'decorator': '', 'return': 'void', 'params': [{'decorator': 'none', 'type': 'string', 'name': 'name'}], 'throws': ['UnknownMotorException', ',', 'HardwareFailedException']})])}, {'name': 'JointMotorPublish', 'methods': OrderedDict([('motorStates', {'name': 'motorStates', 'decorator': '', 'return': 'void', 'params': [{'decorator': 'none', 'type': 'MotorStateMap', 'name': 'mstateMap'}], 'throws': 'nothing'})])}], 'types': [{'type': 'exception', 'name': 'HardwareFailedException', 'content': '\n                string  what;\n        '}, {'type': 'exception', 'name': 'OutOfRangeException', 'content': '\n                string  what;\n        '}, {'type': 'exception', 'name': 'UnknownMotorException', 'content': '\n                string  what;\n        '}, {'type': 'exception', 'name': 'CollisionException', 'content': '\n                string what;\n        '}, {'type': 'struct', 'name': 'MotorState', 'structIdentifiers': [{'type': 'float', 'identifier': 'pos'}, {'type': 'float', 'identifier': 'vel'}, {'type': 'float', 'identifier': 'power'}, {'type': 'string', 'identifier': 'timeStamp'}, {'type': 'int', 'identifier': 'p'}, {'type': 'int', 'identifier': 'v'}, {'type': 'bool', 'identifier': 'isMoving'}, {'type': 'int', 'identifier': 'temperature'}]}, {'type': 'dictionary', 'content': 'string,MotorState', 'name': 'MotorStateMap'}, {'type': 'struct', 'name': 'MotorParams', 'structIdentifiers': [{'type': 'string', 'identifier': 'name'}, {'type': 'byte', 'identifier': 'busId'}, {'type': 'float', 'identifier': 'minPos'}, {'type': 'float', 'identifier': 'maxPos'}, {'type': 'float', 'identifier': 'maxVelocity'}, {'type': 'float', 'identifier': 'zeroPos'}, {'type': 'float', 'identifier': 'stepsRange'}, {'type': 'float', 'identifier': 'maxDegrees'}, {'type': 'bool', 'identifier': 'invertedSign'}, {'type': 'float', 'identifier': 'offset'}, {'type': 'float', 'identifier': 'unitsRange'}]}, {'type': 'sequence', 'typeSequence': 'MotorParams', 'name': 'MotorParamsList'}, {'type': 'struct', 'name': 'BusParams', 'structIdentifiers': [{'type': 'string', 'identifier': 'handler'}, {'type': 'string', 'identifier': 'device'}, {'type': 'int', 'identifier': 'numMotors'}, {'type': 'int', 'identifier': 'baudRate'}, {'type': 'int', 'identifier': 'basicPeriod'}]}, {'type': 'struct', 'name': 'MotorGoalPosition', 'structIdentifiers': [{'type': 'string', 'identifier': 'name'}, {'type': 'float', 'identifier': 'position'}, {'type': 'float', 'identifier': 'maxSpeed'}]}, {'type': 'sequence', 'typeSequence': 'MotorGoalPosition', 'name': 'MotorGoalPositionList'}, {'type': 'struct', 'name': 'MotorGoalVelocity', 'structIdentifiers': [{'type': 'string', 'identifier': 'name'}, {'type': 'float', 'identifier': 'velocity'}, {'type': 'float', 'identifier': 'maxAcc'}]}, {'type': 'sequence', 'typeSequence': 'MotorGoalVelocity', 'name': 'MotorGoalVelocityList'}, {'type': 'sequence', 'typeSequence': 'string', 'name': 'MotorList'}], 'sequences': [{'name': 'RoboCompJointMotor/MotorParamsList', 'type': 'sequence', 'typeSequence': 'MotorParams'}, {'name': 'RoboCompJointMotor/MotorGoalPositionList', 'type': 'sequence', 'typeSequence': 'MotorGoalPosition'}, {'name': 'RoboCompJointMotor/MotorGoalVelocityList', 'type': 'sequence', 'typeSequence': 'MotorGoalVelocity'}, {'name': 'RoboCompJointMotor/MotorList', 'type': 'sequence', 'typeSequence': 'string'}], 'simpleSequences': [{'name': 'RoboCompJointMotor', 'strName': 'MotorParamsList'}, {'name': 'RoboCompJointMotor', 'strName': 'MotorGoalPositionList'}, {'name': 'RoboCompJointMotor', 'strName': 'MotorGoalVelocityList'}, {'name': 'RoboCompJointMotor', 'strName': 'MotorList'}], 'structs': [{'name': 'RoboCompJointMotor/MotorState', 'type': 'struct', 'structIdentifiers': [['float', 'pos'], ['float', 'vel'], ['float', 'power'], ['string', 'timeStamp'], ['int', 'p'], ['int', 'v'], ['bool', 'isMoving'], ['int', 'temperature']]}, {'name': 'RoboCompJointMotor/MotorParams', 'type': 'struct', 'structIdentifiers': [['string', 'name'], ['byte', 'busId'], ['float', 'minPos'], ['float', 'maxPos'], ['float', 'maxVelocity'], ['float', 'zeroPos'], ['float', 'stepsRange'], ['float', 'maxDegrees'], ['bool', 'invertedSign'], ['float', 'offset'], ['float', 'unitsRange']]}, {'name': 'RoboCompJointMotor/BusParams', 'type': 'struct', 'structIdentifiers': [['string', 'handler'], ['string', 'device'], ['int', 'numMotors'], ['int', 'baudRate'], ['int', 'basicPeriod']]}, {'name': 'RoboCompJointMotor/MotorGoalPosition', 'type': 'struct', 'structIdentifiers': [['string', 'name'], ['float', 'position'], ['float', 'maxSpeed']]}, {'name': 'RoboCompJointMotor/MotorGoalVelocity', 'type': 'struct', 'structIdentifiers': [['string', 'name'], ['float', 'velocity'], ['float', 'maxAcc']]}], 'simpleStructs': [{'name': 'RoboCompJointMotor', 'strName': 'MotorState'}, {'name': 'RoboCompJointMotor', 'strName': 'MotorParams'}, {'name': 'RoboCompJointMotor', 'strName': 'BusParams'}, {'name': 'RoboCompJointMotor', 'strName': 'MotorGoalPosition'}, {'name': 'RoboCompJointMotor', 'strName': 'MotorGoalVelocity'}], 'filename': '/opt/robocomp/interfaces/IDSLs/JointMotor.idsl'})
         # test for cached query
         d = self.factory.from_file("/opt/robocomp/interfaces/IDSLs/JointMotor.idsl")
         self.assertIs(c, d)
 
     def test_factory_cdsl(self):
+        # TODO: Use a better cdsl example than this
         g = self.factory.from_file(os.path.join(RESOURCES_DIR, "customstatemachinecpp.cdsl"))
-        self.assertCountEqual(g, OrderedDict(
-            [('options', []), ('name', 'testcomp'), ('imports', []), ('recursiveImports', []), ('language', 'python'),
-             ('statemachine', 'gamestatemachine.smdsl'), ('statemachine_visual', False), ('innermodelviewer', False),
-             ('gui', ['Qt', 'QWidget']), ('rosInterfaces', []), ('iceInterfaces', []), ('implements', []),
-             ('requires', []), ('publishes', []), ('subscribesTo', []), ('usingROS', False),
-             ('filename', os.path.join(RESOURCES_DIR, "customstatemachinecpp.cdsl"))]))
+        self.assertDictEqual(g, {
+            'options': [],
+            'name': 'testcomp',
+            'imports': [],
+            'recursiveImports': [],
+            'language': 'cpp',
+            'statemachine': 'gamestatemachine.smdsl',
+            'statemachine_visual': False,
+            'innermodelviewer': False,
+            'gui': ['Qt', 'QWidget'],
+            'rosInterfaces': [],
+            'iceInterfaces': [],
+            'implements': [],
+            'requires': [],
+            'publishes': [],
+            'subscribesTo': [],
+            'usingROS': False,
+            'filename': os.path.join(RESOURCES_DIR, "customstatemachinecpp.cdsl")})
         # test for cached query
         h = self.factory.from_file(os.path.join(RESOURCES_DIR, "customstatemachinecpp.cdsl"))
         self.assertIs(g, h)
+
+    def test_factory_special_cases(self):
+        # valid idsl without path
+        a = self.factory.from_file("JointMotor.idsl")
+        b = self.factory.from_file("/opt/robocomp/interfaces/IDSLs/JointMotor.idsl")
+        self.assertEqual(a,b)
+
+        # Not valid idsl without path
+        self.assertRaises(IOError, self.factory.from_file,"NotAnIdsl.idsl")
+
+        # None as path
+        self.assertRaises(ValueError, self.factory.from_file, None)
+
+        # invalid dsl type from file extension
+        self.assertRaises(ValueError, self.factory.from_string,"asdafafsdfasfsdfasdff", "ppsl")
+
+        # invalid dsl type from file extension
+        self.assertRaises(ParseException, self.factory.from_string, "this is not a valid string for the parser", "idsl")
+
+
 
     def assertFilesSame(self, sFName1, sFName2):
         text1 = open(os.path.join(self.tempdir, sFName1), 'rb').read()

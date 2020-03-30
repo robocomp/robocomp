@@ -16,7 +16,7 @@ sys.path.append(ROBOCOMPDSL_DIR)
 from autogeneration_tests.test_cdsl.test_component_generation import ComponentGenerationChecker
 
 
-class ParsingUtilsTest(unittest.TestCase):
+class RobocompdslTest(unittest.TestCase):
     def setUp(self):
         self.maxDiff = None
         self.renew_temp_dir()
