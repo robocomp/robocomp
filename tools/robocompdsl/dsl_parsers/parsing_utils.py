@@ -144,7 +144,7 @@ def decorator_and_type_to_const_ampersand(decorator, vtype, modulePool, cpp11=Fa
         kind = getKindFromPool(vtype, modulePool)
         if kind == None:
             kind = getKindFromPool(vtype, modulePool, debug=True)
-            raise Exception('error, unknown data structure, map or sequence '+vtype)
+            raise TypeError('error, unknown data structure, map or sequence '+vtype)
         else:
             if kind == 'enum':               # ENUM
                 const = ' '

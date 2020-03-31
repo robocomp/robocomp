@@ -105,14 +105,78 @@ class ParsingUtilsTest(unittest.TestCase):
         self.assertRaises(AssertionError, parsing_utils.get_name_number, "lapatochada")
         self.assertRaises(AssertionError, parsing_utils.get_name_number, ["lapatochada", 8, 3.9])
 
-    # def test_decorator_and_type_to_const_ampersand(self):
-    #     modulePool = parsing_utils.IDSLPool(["AprilTags.idsl"], [])
-    #     # theInterface = theInterface.split(';')
-    #     # module = modulePool.moduleProviding(theInterface[0])
-    #     # if module == None:
-    #     #     print('Can\'t locate', theIDSLs)
-    #     #     sys.exit(1)
-    #     self.fail()
+    def test_decorator_and_type_to_const_ampersand(self):
+        type1 = [ 'float', 'int', 'short', 'long', 'double' ]
+        for vtype in type1:
+            self.assertEqual(
+                parsing_utils.decorator_and_type_to_const_ampersand(decorator=' ', vtype=vtype, modulePool=None, cpp11=False),
+                ('const ', ' '))
+            self.assertEqual(
+                parsing_utils.decorator_and_type_to_const_ampersand(decorator='out', vtype=vtype, modulePool=None, cpp11=False),
+                (' ', ' &'))
+
+        # bool
+        self.assertEqual(
+            parsing_utils.decorator_and_type_to_const_ampersand(decorator='out', vtype='bool', modulePool=None,
+                                                                    cpp11=False),
+                (' ', ' &'))
+        self.assertEqual(
+            parsing_utils.decorator_and_type_to_const_ampersand(decorator=' ', vtype='bool', modulePool=None,
+                                                                cpp11=False),
+            (' ', ' '))
+
+        # string
+        self.assertEqual(
+            parsing_utils.decorator_and_type_to_const_ampersand(decorator='out', vtype='string', modulePool=None,
+                                                                cpp11=False),
+            (' ', ' &'))
+        self.assertEqual(
+            parsing_utils.decorator_and_type_to_const_ampersand(decorator=' ', vtype='string', modulePool=None,
+                                                                cpp11=False),
+            ('const ', ' &'))
+
+        # custom types
+        the_idsls = parsing_utils.generate_recursive_imports(["AprilTags.idsl"], [])
+        the_idsls.append('AprilTags.idsl')
+        modulePool = parsing_utils.IDSLPool('#'.join(the_idsls), [])
+        self.assertEqual(
+            parsing_utils.decorator_and_type_to_const_ampersand(decorator='out', vtype='MotorParams', modulePool=modulePool,
+                                                                cpp11=False),
+            (' ', ' &'))
+        self.assertEqual(
+            parsing_utils.decorator_and_type_to_const_ampersand(decorator=' ', vtype='MotorParams',
+                                                                modulePool=modulePool,
+                                                                cpp11=False),
+            ('const ', ' &'))
+
+        # cpp11 True
+        self.assertEqual(
+            parsing_utils.decorator_and_type_to_const_ampersand(decorator=' ', vtype='MotorParams',
+                                                                modulePool=modulePool,
+                                                                cpp11=True),
+            ('', ''))
+
+        # invalid vtype
+        self.assertRaises(TypeError,
+            parsing_utils.decorator_and_type_to_const_ampersand, decorator=' ', vtype='InvalidType',
+                                                                modulePool=modulePool,
+                                                                cpp11=True)
+
+        the_idsls = parsing_utils.generate_recursive_imports(["TouchPoints.idsl"], [])
+        the_idsls.append('TouchPoints.idsl')
+        modulePool = parsing_utils.IDSLPool('#'.join(the_idsls), [])
+        self.assertEqual(
+            parsing_utils.decorator_and_type_to_const_ampersand(decorator='out', vtype='StateEnum',
+                                                                modulePool=modulePool,
+                                                                cpp11=False),
+            (' ', ' &'))
+
+        self.assertEqual(
+            parsing_utils.decorator_and_type_to_const_ampersand(decorator=' ', vtype='StateEnum',
+                                                                modulePool=modulePool,
+                                                                cpp11=False),
+            (' ', ' '))
+
 
     # def test_gimme_idsl(self):
     #     # Full existing path
