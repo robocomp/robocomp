@@ -22,17 +22,17 @@ See the projects done in [Google Summer of Code](https://robocomp.github.io/web/
 
 ## In which branch should you make changes?
 
-Our up-to-date branch is currently `highlyunstable`. If you are going to file an issue or make an improvement, this is the branch to do it. 
+Our up-to-date branch is currently `development`. If you are going to file an issue or make an improvement, this is the branch to do it. 
 
 ## What is the Learnbot?
 
 [`Taken from the wiki:`](https://github.com/robocomp/learnbot/wiki) LearnBot is a social low cost robot that has been designed in to the area of educational robotics for promoting the development of computational thinking in diferent educational stages, specically through the learning of the Python language. It has being entirely built using a robotics framework developed by our Robotic Laboratory.
 
-But Learnbot is part of a more ambitious ecosystem, Learnblock, which is being created as a facilitator environment to encourage current teacher swith out programming knowledge to learn the basics of programming, it is a IDE similar to Scrach, at least into a level where they can introduce their students into the digital world.
+But Learnbot is part of a more ambitious ecosystem, Learnblock, which is being created as a facilitator environment to encourage current teacher swith out programming knowledge to learn the basics of programming, it is an IDE similar to Scrach, at least into a level where they can introduce their students into the digital world.
 
 ## How should I download Robocomp?
 
-Follow the install guide from the Readme page, or for a faster way, use [this installation script](../InstallScript.md). 
+Follow the install guide from the [Readme page](https://github.com/robocomp/robocomp/blob/development/README.md), or for a faster way, use [this installation script](https://github.com/robocomp/robocomp/blob/development/doc/installScript.md). 
 
 To use the installation script you need to download the Raw of the file, then from the terminal:
 
@@ -45,11 +45,7 @@ chmod +x installScript.sh
 ./installScript.sh
 ```
 
-Here is a gif illustrating the process:
-
-![Gif of the process](https://media.giphy.com/media/443jBBDpRyGRhbPrZ5/giphy.gif)
-
-For a more detailed explanation, please see the [tutorial](installScript.md).
+For a more detailed explanation, please see the [tutorial](https://github.com/robocomp/robocomp/blob/development/installScript.sh).
 
 ## How can Windows, Arch Linux, Linux Mint or any other Operating System that is not Ubuntu be used?
 

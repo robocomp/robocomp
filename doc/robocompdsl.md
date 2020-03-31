@@ -142,7 +142,8 @@ void SpecificWorker::compute( )
 ```
 save and, run cmake
 
-##Added the cmake command 
+## Added the cmake command 
+
 ```bash
     cd ..
     cmake .
@@ -154,7 +155,7 @@ Note that we are using a lambda function as a parameter to the std::sort functio
 If you have generated the code using python then, open *specificworker.py* in your favorite editor. Go to the **def compute(self):** method and replace it with,
 ```python
 def compute(self):
-	print 'SpecificWorker.compute...'
+	print('SpecificWorker.compute...')
 	rot = 0.7
 	try:
 		ldata = []
@@ -166,15 +167,15 @@ def compute(self):
 			d.append(y)
 			d.sort()
 			distance = d[0]
-			print distance
+			print(distance)
 			if distance < 400:
 				self.differentialrobot_proxy.setSpeedBase(0, rot)
 				time.sleep(1)
 			else:
 				self.differentialrobot_proxy.setSpeedBase(100, 0)
-	except Ice.Exception, e:
+	except Ice.Exception as e:
 		traceback.print_exc()
-		print e
+		print(e)
 	return True
 ```
 

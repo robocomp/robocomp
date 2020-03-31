@@ -13,7 +13,7 @@ def TAB():
 	cog.out('<TABHERE>')
 
 from dsl_parsers.dsl_factory import DSLFactory
-from dsl_parsers.parsing_utils import getNameNumber, communicationIsIce, IDSLPool, isAGM1Agent,isAGM2Agent
+from dsl_parsers.parsing_utils import get_name_number, communication_is_ice, IDSLPool, is_agm1_agent,is_agm2_agent
 includeDirectories = theIDSLPaths.split('#')
 component = DSLFactory().from_file(theCDSL, include_directories=includeDirectories)
 sm = DSLFactory().from_file(component['statemachine'])
@@ -102,7 +102,7 @@ if component['usingROS'] == True:
 			im = imp
 		else:
 			im = imp[0]
-		if not communicationIsIce(imp):
+		if not communication_is_ice(imp):
 			module = pool.moduleProviding(im)
 			for interface in module['interfaces']:
 				if interface['name'] == im:
@@ -113,7 +113,7 @@ if component['usingROS'] == True:
 			im = imp
 		else:
 			im = imp[0]
-		if not communicationIsIce(imp):
+		if not communication_is_ice(imp):
 			module = pool.moduleProviding(im)
 			for interface in module['interfaces']:
 				if interface['name'] == im:
@@ -123,9 +123,9 @@ if component['usingROS'] == True:
 		cog.outl(srv)
 
 try:
-	if isAGM1Agent(component):
+	if is_agm1_agent(component):
 		cog.outl("#include <agm.h>")
-	if isAGM2Agent(component):
+	if is_agm2_agent(component):
 		cog.outl("#include <AGM2.h>")
 		cog.outl("#include <agm2.h>")
 except:
@@ -191,7 +191,7 @@ if component['usingROS'] == True:
 		if module == None:
 			print ('\nCan\'t find module providing', nname, '\n')
 			sys.exit(-1)
-		if not communicationIsIce(imp):
+		if not communication_is_ice(imp):
 			theIdsl = pool.IDSLsModule(module)
 			idsl = IDSLParsing.fromFileIDSL(theIdsl)
 			cog.outl("<TABHERE>//class for rosPublisher")
@@ -256,7 +256,7 @@ if component['usingROS'] == True:
 		if module == None:
 			print ('\nCan\'t find module providing', nname, '\n')
 			sys.exit(-1)
-		if not communicationIsIce(imp):
+		if not communication_is_ice(imp):
 			cog.outl("<TABHERE>//class for rosServiceClient")
 			cog.outl("class ServiceClient"+nname+"\n{\npublic:")
 			for interface in module['interfaces']:
@@ -372,15 +372,15 @@ except:
 
 
 [[[cog
-for name, num in getNameNumber(component['requires']):
-	if communicationIsIce(name):
+for name, num in get_name_number(component['requires']):
+	if communication_is_ice(name):
 		if component['language'].lower() == "cpp":
 			cog.outl('<TABHERE>'+name+'Prx '+name.lower()+num +'_proxy;')
 		else:
 			cog.outl('<TABHERE>'+name+'PrxPtr '+name.lower()+num +'_proxy;')
 
-for name, num in getNameNumber(component['publishes']):
-	if communicationIsIce(name):
+for name, num in get_name_number(component['publishes']):
+	if communication_is_ice(name):
 		if component['language'].lower() == "cpp":
 			cog.outl('<TABHERE>'+name+'Prx '+name.lower()+num +'_pubproxy;')
 		else:
@@ -402,7 +402,7 @@ if 'implements' in component:
 				for mname in interface['methods']:
 					method = interface['methods'][mname]
 					paramStrA = ''
-					if communicationIsIce(impa):
+					if communication_is_ice(impa):
 						for p in method['params']:
 							# delim
 							if paramStrA == '': delim = ''
@@ -443,7 +443,7 @@ if 'subscribesTo' in component:
 				for mname in interface['methods']:
 					method = interface['methods'][mname]
 					paramStrA = ''
-					if communicationIsIce(impa):
+					if communication_is_ice(impa):
 						for p in method['params']:
 							# delim
 							if paramStrA == '': delim = ''
@@ -579,7 +579,7 @@ for imp in component['subscribesTo']:
 	if module == None:
 		print ('\nCan\'t find module providing', nname, '\n')
 		sys.exit(-1)
-	if not communicationIsIce(imp):
+	if not communication_is_ice(imp):
 		for interface in module['interfaces']:
 			if interface['name'] == nname:
 				for mname in interface['methods']:
@@ -593,7 +593,7 @@ for imp in component['implements']:
 	if module == None:
 		print ('\nCan\'t find module providing', nname, '\n')
 		sys.exit(-1)
-	if not communicationIsIce(imp):
+	if not communication_is_ice(imp):
 		for interface in module['interfaces']:
 			if interface['name'] == nname:
 				for mname in interface['methods']:
@@ -604,7 +604,7 @@ if 'publishes' in component:
 		pubs = publish
 		while type(pubs) != type(''):
 			pubs = pubs[0]
-		if not communicationIsIce(publish):
+		if not communication_is_ice(publish):
 			if pubs in component['iceInterfaces']:
 				cog.outl("<TABHERE>Publisher"+pubs+" *"+pubs.lower()+"_rosproxy;")
 			else:
@@ -614,7 +614,7 @@ if 'requires' in component:
 		req = require
 		while type(req) != type(''):
 			req = req[0]
-		if not communicationIsIce(require):
+		if not communication_is_ice(require):
 			if req in component['iceInterfaces']:
 				cog.outl("<TABHERE>ServiceClient"+req+" *"+req.lower()+"_rosproxy;")
 			else:

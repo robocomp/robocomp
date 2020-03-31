@@ -71,7 +71,7 @@ class SMDSLParser(DSLParserTemplate):
             result_dict['machine']['default'] = False
         result_dict['machine']['contents'] = {}
         try:
-            result_dict['machine']['contents']['states'] = parsing_result['machine']['contents']['states']
+            result_dict['machine']['contents']['states'] = parsing_result['machine']['contents']['states'].asList()
         except:
             result_dict['machine']['contents']['states'] = None
         try:
@@ -100,8 +100,10 @@ class SMDSLParser(DSLParserTemplate):
                 if result_dict['machine']['contents']['initialstate'] == result_dict['machine']['contents']['finalstate']:
                     print("Error: initial state is equal final state")
 
+        result_dict['machine']['contents']['transitions'] = []
         try:
-            result_dict['machine']['contents']['transitions'] = parsing_result['machine']['contents']['transitions']
+            for transition in parsing_result['machine']['contents']['transitions']:
+                 result_dict['machine']['contents']['transitions'].append(transition.asDict())
         except:
             result_dict['machine']['contents']['transitions'] = None
         try:
@@ -141,7 +143,7 @@ class SMDSLParser(DSLParserTemplate):
                         a['contents']['initialstate'] = None
                 else:
                     try:
-                        a['contents']['states'] = sub['contents']['states']
+                        a['contents']['states'] = sub['contents']['states'].asList()
                     except:
                         a['contents']['states'] = None
                     try:
@@ -168,7 +170,7 @@ class SMDSLParser(DSLParserTemplate):
                         if a['contents']['initialstate'] == a['contents']['finalstate']:
                             print(("Error: " + a['parent'] + " initial state is equal final state"))
                 try:
-                    a['contents']['transitions'] = sub['contents']['transitions']
+                    a['contents']['transitions'] = sub['contents']['transitions'].toDict()
                 except:
                     a['contents']['transitions'] = None
                 result_dict['substates'].append(a)

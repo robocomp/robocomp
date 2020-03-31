@@ -6,8 +6,8 @@ from pyparsing import Suppress, Word, CaselessKeyword, alphas, alphanums, CharsN
     delimitedList, cppStyleComment
 
 from dsl_parsers.dsl_parser_abstract import DSLParserTemplate
-from dsl_parsers.parsing_utils import isAGM2Agent, isAGM2AgentROS, communicationIsIce, isAGM1Agent, \
-    generateRecursiveImports
+from dsl_parsers.parsing_utils import is_agm2_agent, is_agm2_agent_ROS, communication_is_ice, is_agm1_agent, \
+    generate_recursive_imports
 
 
 class CDSLParser(DSLParserTemplate):
@@ -65,7 +65,7 @@ class CDSLParser(DSLParserTemplate):
         innermodelviewer = Group(Optional(INNERMODELVIEWER.suppress() - (TRUE | FALSE) + SEMI))('innermodelviewer')
         # GUI
         gui_options = QWIDGET | QMAINWINDOW | QDIALOG
-        gui = Group(Optional(GUI.suppress() - QT + OPAR - gui_options('gui_options') - CPAR + SEMI))
+        gui = Group(Optional(GUI.suppress() - QT('type') + OPAR - gui_options('gui_options') - CPAR + SEMI))
         # additional options
         options = Group(Optional(OPTIONS.suppress() - identifier + ZeroOrMore(Suppress(Word(',')) + identifier) + SEMI))
         statemachine = Group(
@@ -109,16 +109,16 @@ class CDSLParser(DSLParserTemplate):
         except:
             parsing_result['imports'] = []
             imprts = []
-        if isAGM1Agent(component):
+        if is_agm1_agent(component):
             imprts.extend(['AGMExecutive.idsl', 'AGMCommonBehavior.idsl', 'AGMWorldModel.idsl', 'AGMExecutiveTopic.idsl'])
-        if isAGM2Agent(component):
+        if is_agm2_agent(component):
             imprts.extend(['AGM2.idsl'])
         iD = self._include_directories + ['/opt/robocomp/interfaces/IDSLs/',
                                    os.path.expanduser('~/robocomp/interfaces/IDSLs/')]
         for imp in sorted(imprts):
             import_basename = os.path.basename(imp)
             component['imports'].append(import_basename)
-        component['recursiveImports'] = generateRecursiveImports(component['imports'], self._include_directories)
+        component['recursiveImports'] = generate_recursive_imports(list(component['imports']), self._include_directories)
         # Language
         component['language'] = parsing_result['component']['content']['language']
         # Statemachine
@@ -145,7 +145,7 @@ class CDSLParser(DSLParserTemplate):
         # GUI
         component['gui'] = None
         try:
-            uiT = parsing_result['component']['content']['gui'][0]
+            uiT = parsing_result['component']['content']['gui']['type']
             uiI = parsing_result['component']['content']['gui']['gui_options']
             if uiT.lower() == 'qt' and uiI in ['QWidget', 'QMainWindow', 'QDialog']:
                 component['gui'] = [uiT, uiI]
@@ -173,13 +173,13 @@ class CDSLParser(DSLParserTemplate):
                 interfaces = sorted(communications[comm_type])
                 for interface in interfaces:
                     component[comm_type].append(interface)
-                    if communicationIsIce(interface):
+                    if communication_is_ice(interface):
                         component['iceInterfaces'].append(interface)
                     else:
                         component['rosInterfaces'].append(interface)
                         component['usingROS'] = True
         # Handle options for communications
-        if isAGM1Agent(component):
+        if is_agm1_agent(component):
             component['iceInterfaces'] += ['AGMCommonBehavior', 'AGMExecutive', 'AGMExecutiveTopic', 'AGMWorldModel']
             if not 'AGMCommonBehavior' in component['implements']:
                 component['implements'] = ['AGMCommonBehavior'] + component['implements']
@@ -187,8 +187,8 @@ class CDSLParser(DSLParserTemplate):
                 component['requires'] = ['AGMExecutive'] + component['requires']
             if not 'AGMExecutiveTopic' in component['subscribesTo']:
                 component['subscribesTo'] = ['AGMExecutiveTopic'] + component['subscribesTo']
-        if isAGM2Agent(component):
-            if isAGM2AgentROS(component):
+        if is_agm2_agent(component):
+            if is_agm2_agent_ROS(component):
                 component['usingROS'] = True
                 agm2agent_requires = [['AGMDSRService', 'ros']]
                 agm2agent_subscribesTo = [['AGMExecutiveTopic', 'ros'], ['AGMDSRTopic', 'ros']]

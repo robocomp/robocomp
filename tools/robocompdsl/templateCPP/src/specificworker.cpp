@@ -13,7 +13,7 @@ def TAB():
 	cog.out('<TABHERE>')
 
 from dsl_parsers.dsl_factory import DSLFactory
-from dsl_parsers.parsing_utils import communicationIsIce, isAGM1Agent, isAGM2Agent, isAGM2AgentROS, IDSLPool
+from dsl_parsers.parsing_utils import communication_is_ice, is_agm1_agent, is_agm2_agent, is_agm2_agent_ROS, IDSLPool
 includeDirectories = theIDSLPaths.split('#')
 component = DSLFactory().from_file(theCDSL, include_directories=includeDirectories)
 sm = DSLFactory().from_file(component['statemachine'])
@@ -30,7 +30,7 @@ rosTypes = pool.getRosTypes()
 
 def bodyCodeFromName(name, component):
 	bodyCode=""
-	if isAGM1Agent(component):
+	if is_agm1_agent(component):
 		#######################################################
 		# code to implement subscription to AGMExecutiveTopic #
 		#######################################################
@@ -72,9 +72,9 @@ def bodyCodeFromName(name, component):
 		elif name == 'reloadConfigAgent':
 			bodyCode = "<TABHERE>return true;"
 
-	elif isAGM2Agent(component):
+	elif is_agm2_agent(component):
 		mdlw = 'Ice'
-		if isAGM2AgentROS(component):
+		if is_agm2_agent_ROS(component):
 			mdlw = 'ROS'
 		elif name == 'symbolsUpdated':
 			bodyCode = "\tQMutexLocker locker(mutex);\n\tfor (auto n : modification"
@@ -152,7 +152,7 @@ if component['innermodelviewer']:
     cog.outl("<TABHERE>osgView->setCameraManipulator(tb);")
     cog.outl("#endif")
 try:
-    if isAGM1Agent(component) or isAGM2Agent(component):
+    if is_agm1_agent(component) or is_agm2_agent(component):
         cog.outl("<TABHERE>active = false;")
         cog.outl("<TABHERE>worldModel = AGMModel::SPtr(new AGMModel());")
         cog.outl("<TABHERE>worldModel->name = "+"\"worldModel\";")
@@ -186,7 +186,7 @@ cog.outl("""//       THE FOLLOWING IS JUST AN EXAMPLE
 //	{
 //		RoboCompCommonBehavior::Parameter par = params.at("InnerModelPath");
 //		std::string innermodel_path = par.value;
-//		innerModel = new InnerModel(innermodel_path);
+//		innerModel = std::make_shared(innermodel_path);
 //	}
 //	catch(const std::exception &e) { qFatal("Error reading config params"); }
 
@@ -201,7 +201,7 @@ if component['innermodelviewer']:
 
 [[[cog
 try:
-	if isAGM1Agent(component):
+	if is_agm1_agent(component):
 		cog.outl("<TABHERE>innerModel = std::make_shared<InnerModel>(new InnerModel());")
 		cog.outl("<TABHERE>try")
 		cog.outl("<TABHERE>{")
@@ -212,7 +212,7 @@ try:
 		cog.outl("<TABHERE>{")
 		cog.outl("<TABHERE><TABHERE>printf(\"The executive is probably not running, waiting for first AGM model publication...\");")
 		cog.outl("<TABHERE>}")
-	elif isAGM2Agent(component):
+	elif is_agm2_agent(component):
 		cog.outl("// TODO: Here we should ask the DSR for the current model for initialization purposes.")
 
 except:
@@ -314,7 +314,7 @@ if 'implements' in component:
 					method = interface['methods'][mname]
 					paramStrA = ''
 					bodyCode = bodyCodeFromName(method['name'], component)
-					if communicationIsIce(impa):
+					if communication_is_ice(impa):
 						for p in method['params']:
 							# delim
 							if paramStrA == '': delim = ''
@@ -357,7 +357,7 @@ if 'subscribesTo' in component:
 					method = interface['methods'][mname]
 					paramStrA = ''
 					bodyCode = bodyCodeFromName(method['name'], component)
-					if communicationIsIce(impa):
+					if communication_is_ice(impa):
 						for p in method['params']:
 							# delim
 							if paramStrA == '': delim = ''

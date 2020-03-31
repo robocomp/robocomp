@@ -1,0 +1,13 @@
+Component testcomp
+{
+    Communications
+    {
+
+    };
+	language Cpp;
+	gui Qt(QWidget);
+	//options agmagent;
+	//options InnerModelViewer;
+	statemachine "statemachine.smdsl";
+};
+

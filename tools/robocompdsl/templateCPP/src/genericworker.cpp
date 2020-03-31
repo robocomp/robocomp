@@ -14,7 +14,7 @@ def TAB():
 
 
 from dsl_parsers.dsl_factory import DSLFactory
-from dsl_parsers.parsing_utils import getNameNumber, communicationIsIce, IDSLPool
+from dsl_parsers.parsing_utils import get_name_number, communication_is_ice, IDSLPool
 includeDirectories = theIDSLPaths.split('#')
 component = DSLFactory().from_file(theCDSL, include_directories=includeDirectories)
 sm = DSLFactory().from_file(component['statemachine'])
@@ -209,16 +209,16 @@ if sm is not None:
 [[[end]]]
 [[[cog
 cont = 0
-for name, num in getNameNumber(component['requires']):
-	if communicationIsIce(name):
+for name, num in get_name_number(component['requires']):
+	if communication_is_ice(name):
 		if component['language'].lower() == 'cpp':
 			cog.outl("<TABHERE>"+name.lower()+num+"_proxy = (*("+name+"Prx*)mprx[\""+name+"Proxy"+num+"\"]);")
 		else:
 			cog.outl("<TABHERE>"+name.lower()+num+"_proxy = std::get<" + str(cont) + ">(tprx);")
 	cont = cont + 1
 
-for name, num in getNameNumber(component['publishes']):
-	if communicationIsIce(name):
+for name, num in get_name_number(component['publishes']):
+	if communication_is_ice(name):
 		if component['language'].lower() == 'cpp':
 			cog.outl("<TABHERE>"+name.lower()+num+"_pubproxy = (*("+name+"Prx*)mprx[\""+name+"Pub"+num+"\"]);")
 		else:
@@ -240,7 +240,7 @@ if component['usingROS'] == True:
 		if module == None:
 			print ('\nCan\'t find module providing', nname, '\n')
 			sys.exit(-1)
-		if not communicationIsIce(imp):
+		if not communication_is_ice(imp):
 			for interface in module['interfaces']:
 				if interface['name'] == nname:
 					for mname in interface['methods']:
@@ -258,7 +258,7 @@ if component['usingROS'] == True:
 		if module == None:
 			print ('\nCan\'t find module providing', nname, '\n')
 			sys.exit(-1)
-		if not communicationIsIce(imp):
+		if not communication_is_ice(imp):
 			for interface in module['interfaces']:
 				if interface['name'] == nname:
 					for mname in interface['methods']:
@@ -272,7 +272,7 @@ if 'publishes' in component:
 		pubs = publish
 		while type(pubs) != type(''):
 			pubs = pubs[0]
-		if not communicationIsIce(publish):
+		if not communication_is_ice(publish):
 			if pubs in component['iceInterfaces']:
 				cog.outl("<TABHERE>"+pubs.lower()+"_rosproxy = new Publisher"+pubs+"(&node);")
 			else:
@@ -282,7 +282,7 @@ if 'requires' in component:
 		req = require
 		while type(req) != type(''):
 			req = req[0]
-		if not communicationIsIce(require):
+		if not communication_is_ice(require):
 			if req in component['iceInterfaces']:
 				cog.outl("<TABHERE>"+req.lower()+"_rosproxy = new ServiceClient"+req+"(&node);")
 			else:
@@ -296,7 +296,7 @@ if component['gui'] is not None:
 [[[end]]]
 	Period = BASIC_PERIOD;
 [[[cog
-if (sm is not None and sm['machine']['default'] is True) or component['statemachine'] is None:
+if component['statemachine'] is None:
 	cog.outl("<TABHERE>connect(&timer, SIGNAL(timeout()), this, SLOT(compute()));")
 ]]]
 [[[end]]]

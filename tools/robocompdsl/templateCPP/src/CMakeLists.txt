@@ -26,7 +26,7 @@ def SPACE(i=0):
 
 
 from dsl_parsers.dsl_factory import DSLFactory
-from dsl_parsers.parsing_utils import communicationIsIce, isAGM1Agent, isAGM2Agent
+from dsl_parsers.parsing_utils import communication_is_ice, is_agm1_agent, is_agm2_agent
 
 includeDirectories = theIDSLPaths.split('#')
 component = DSLFactory().from_file(theCDSL, include_directories=includeDirectories)
@@ -34,14 +34,6 @@ component = DSLFactory().from_file(theCDSL, include_directories=includeDirectori
 ]]]
 [[[end]]]
 cmake_minimum_required(VERSION 2.8.11)
-PROJECT(
-[[[cog
-A()
-cog.out(' ' + component['name'])
-Z()
-]]]
-[[[end]]]
- )
 
 
 IF ( "$ENV{ROBOCOMP}" STREQUAL "")
@@ -73,14 +65,14 @@ for ima in component['implements']:
 		im = ima
 	else:
 		im = ima[0]
-	if communicationIsIce(ima):
+	if communication_is_ice(ima):
 		cog.outl('<S2>' + im.lower() + 'I.cpp')
 
 for subscribe in component['subscribesTo']:
 	subs = subscribe
 	while type(subs) != type(''):
 		subs = subs[0]
-	if communicationIsIce(subscribe):
+	if communication_is_ice(subscribe):
 		cog.outl('<S2>' + subs.lower() + 'I.cpp')
 
 if  component['statemachine_visual']:
@@ -153,10 +145,10 @@ SET (EXECUTABLE_OUTPUT_PATH ${RC_COMPONENT_DEVEL_PATH}/bin)
 [[[cog
 
 try:
-	if isAGM1Agent(component):
+	if is_agm1_agent(component):
 		cog.outl("SET(LIBS ${LIBS} -lagm)")
 		cog.outl("ADD_DEFINITIONS( -I/usr/include/libxml2/ )")
-	if isAGM2Agent(component):
+	if is_agm2_agent(component):
 		cog.outl("SET(LIBS ${LIBS} -lagm2)")
 		cog.outl("ADD_DEFINITIONS( -I/usr/include/libxml2/ )")
 		cog.outl("include(/usr/local/share/cmake/FindAGM2.cmake)")

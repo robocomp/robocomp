@@ -58,7 +58,7 @@ class DSLFactory(Singleton):
         :return: struct/dict containing the information of the dsl contained in the file
         """
         if file_path is None:
-            return None
+            raise ValueError("None is not a valid value for file_path")
         if not os.path.isfile(file_path):
             # local import to avoid problem with mutual imports
             from dsl_parsers.parsing_utils import idsl_robocomp_path
@@ -68,6 +68,8 @@ class DSLFactory(Singleton):
                 raise IOError(errno.ENOENT, os.strerror(errno.ENOENT), file_path)
             else:
                 file_path = new_file_path
+        else:
+            file_path = os.path.abspath(file_path)
         # if update is false and file_path exists in the cache, it's returned
         if file_path in self. _cache and update is False:
             # print("______________________Cached %s______________" % file_path)
@@ -75,8 +77,7 @@ class DSLFactory(Singleton):
         else:
             # print("______________________Parsing %s______________" % file_path)
             if file_path is None or file_path == "":
-                # TODO: Raise Exception
-                return None
+                raise IOError(errno.ENOENT, os.strerror(errno.ENOENT), file_path)
 
             # get format from filename
             dsl_type = path.splitext(file_path)[1][1:]
@@ -118,78 +119,3 @@ class DSLFactory(Singleton):
             return IDSLParser()
         else:
             raise ValueError("Invalid dsl type '%s'. No valid parser found for it."%dsl_type)
-
-
-if __name__ == '__main__':
-    factory = DSLFactory()
-    for idsl_path in os.listdir("/opt/robocomp/interfaces/IDSLs"):
-        if idsl_path.endswith(".idsl"):
-            idsl = factory.from_file(idsl_path)
-            from pprint import pprint
-            print("#ifndef " + idsl['name'].upper() + "_ICE")
-            print("#define " + idsl['name'].upper() + "_ICE")
-            if 'imports' in idsl and idsl["imports"] != '':
-                for imp in idsl['imports'].split('#'):
-                    if imp != '':
-                        print("#include <" + os.path.basename(imp).split('.')[0] + ".ice>")
-            print("module " + idsl['name'] + "\n{")
-            if 'types' in idsl:
-                for next_type in idsl["types"]:
-                    if "exception" == next_type["type"]:
-                        print("<TABHERE>exception " + next_type['name'] + "{" + next_type['content'] + "};")
-                    if "struct" == next_type["type"]:
-                        struct= next_type
-                        print("<TABHERE>struct " + struct['name'] + "\n<TABHERE>{")
-                        for var in struct['structIdentifiers']:
-                            print("<TABHERE><TABHERE> " + var['type'] + " " + var['identifier']),
-                            try:
-                                print(" =" + var['defaultValue'] + ";")
-                            except:
-                                print(";")
-                        print("<TABHERE>};")
-                    if "sequence" == next_type["type"]:
-                        print("<TABHERE>sequence <" + next_type['typeSequence'] + "> " + next_type['name'] + ";")
-                    if "dictionary" == next_type['type']:
-                        print("<TABHERE>dictionary <" + next_type['content'] + "> " + next_type['name'] + ";")
-                    if "enum" == next_type['type']:
-                        print("<TABHERE>enum " + next_type['name'] + " { " + next_type['content'] + " };")
-            if "interfaces" in idsl:
-                for interface in idsl['interfaces']:
-                    print("<TABHERE>interface " + interface['name'] + "\n<TABHERE>{")
-                    for method in interface['methods'].values():
-                        if method['decorator'] != '':
-                            print("<TABHERE><TABHERE>" + method['decorator'] + " " + method['return'] + " "),
-                        else:
-                            print("<TABHERE><TABHERE>" + method['return'] + " "),
-                        print(method['name'] + " ("),
-                        try:
-                            paramStrA = ''
-                            for p in method['params']:
-                                # delim
-                                if paramStrA == '':
-                                    delim = ''
-                                else:
-                                    delim = ', '
-                                # STR
-                                if p['decorator'] != "none" and p['decorator'] != '':
-                                    paramStrA += delim + p['decorator'] + ' ' + p['type'] + ' ' + p['name']
-                                else:
-                                    paramStrA += delim + p['type'] + ' ' + p['name']
-                            print(paramStrA + ")"),
-                        except:
-                            print(")"),
-                        try:
-                            if method['throws'] != "nothing":
-                                print(" throws "),
-                                for p in method['throws']:
-                                    # STR
-                                    print(p),
-                        except:
-                            pass
-                        print(";")
-                    print("<TABHERE>};")
-
-
-
-
-

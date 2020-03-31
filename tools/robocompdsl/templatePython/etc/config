@@ -16,7 +16,7 @@ def SPACE(i=0):
 		s = str(i)
 	cog.out('<S'+s+'>')
 from dsl_parsers.dsl_factory import DSLFactory
-from dsl_parsers.parsing_utils import getNameNumber, communicationIsIce
+from dsl_parsers.parsing_utils import get_name_number, communication_is_ice
 includeDirectories = theIDSLPaths.split('#')
 component = DSLFactory().from_file(theCDSL, include_directories=includeDirectories)
 
@@ -27,7 +27,7 @@ for imp in component['implements']:
 		im = imp
 	else:
 		im = imp[0]
-	if communicationIsIce(imp):
+	if communication_is_ice(imp):
 		if text == False:
 			cog.outl('# Endpoints for implemented interfaces')
 			text = True
@@ -42,7 +42,7 @@ for sub in component['subscribesTo']:
 		sb = sub
 	else:
 		sb = sub[0]
-	if communicationIsIce(sub):
+	if communication_is_ice(sub):
 		if text == False:
 			cog.outl('# Endpoints for subscriptions')
 			text = True
@@ -52,12 +52,12 @@ if text:
 
 
 text = False
-for req, num in getNameNumber(component['requires']):
+for req, num in get_name_number(component['requires']):
 	if type(req) == str:
 		rq = req
 	else:
 		rq = req[0]
-	if communicationIsIce(req):
+	if communication_is_ice(req):
 		if text == False:
 			cog.outl('# Proxies for required interfaces')
 			text = True

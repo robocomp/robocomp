@@ -1,0 +1,13 @@
+import "HumanPose.idsl";
+
+Component humanAgent
+{
+	Communications
+	{
+		subscribesTo HumanPose;
+	};
+	
+	language Cpp;
+	options agmagent;
+};
+

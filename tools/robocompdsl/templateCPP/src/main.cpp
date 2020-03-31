@@ -13,7 +13,7 @@ def TAB():
 	cog.out('<TABHERE>')
 
 from dsl_parsers.dsl_factory import DSLFactory
-from dsl_parsers.parsing_utils import getNameNumber, communicationIsIce
+from dsl_parsers.parsing_utils import get_name_number, communication_is_ice
 includeDirectories = theIDSLPaths.split('#')
 component = DSLFactory().from_file(theCDSL, include_directories=includeDirectories)
 
@@ -65,6 +65,12 @@ SUBSCRIBESTO_STR = """
 <TABHERE><TABHERE><TABHERE><TABHERE><TABHERE><TABHERE>//Error. Topic does not exist
 <TABHERE><TABHERE><TABHERE><TABHERE><TABHERE>}
 <TABHERE><TABHERE><TABHERE><TABHERE>}
+<TABHERE><TABHERE><TABHERE><TABHERE>catch(const IceUtil::NullHandleException&)
+<TABHERE><TABHERE><TABHERE><TABHERE>{
+<TABHERE><TABHERE><TABHERE><TABHERE><TABHERE>cout << "[" << PROGRAM_NAME << "]: ERROR TopicManager is Null. Check that your configuration file contains an entry like:\\n"<<
+<TABHERE><TABHERE><TABHERE><TABHERE><TABHERE>"\\t\\tTopicManager.Proxy=IceStorm/TopicManager:default -p <port>\\n";
+<TABHERE><TABHERE><TABHERE><TABHERE><TABHERE>return EXIT_FAILURE;
+<TABHERE><TABHERE><TABHERE><TABHERE>}
 <TABHERE><TABHERE><TABHERE><TABHERE>IceStorm::QoS qos;
 <TABHERE><TABHERE><TABHERE><TABHERE><LOWER>_topic->subscribeAndGetPublisher(qos, <PROXYNAME>);
 <TABHERE><TABHERE><TABHERE>}
@@ -95,6 +101,12 @@ PUBLISHES_STR = """
 <TABHERE><TABHERE><TABHERE><TABHERE>// Another client created the topic.
 <TABHERE><TABHERE><TABHERE><TABHERE>cout << "[" << PROGRAM_NAME << "]: ERROR publishing the <NORMAL> topic. It's possible that other component have created\\n";
 <TABHERE><TABHERE><TABHERE>}
+<TABHERE><TABHERE>}
+<TABHERE><TABHERE>catch(const IceUtil::NullHandleException&)
+<TABHERE><TABHERE>{
+<TABHERE><TABHERE><TABHERE>cout << "[" << PROGRAM_NAME << "]: ERROR TopicManager is Null. Check that your configuration file contains an entry like:\\n"<<
+<TABHERE><TABHERE><TABHERE>"\\t\\tTopicManager.Proxy=IceStorm/TopicManager:default -p <port>\\n";
+<TABHERE><TABHERE><TABHERE>return EXIT_FAILURE;
 <TABHERE><TABHERE>}
 <TABHERE>}
 """
@@ -242,14 +254,14 @@ for ima in component['implements']:
 		im = ima
 	else:
 		im = ima[0]
-	if communicationIsIce(ima):
+	if communication_is_ice(ima):
 		cog.outl('#include <'+im.lower()+'I.h>')
 
 for subscribe in component['subscribesTo']:
 	subs = subscribe
 	while type(subs) != type(''):
 		subs = subs[0]
-	if communicationIsIce(subscribe):
+	if communication_is_ice(subscribe):
 		cog.outl('#include <'+subs.lower()+'I.h>')
 
 cog.outl('')
@@ -348,15 +360,15 @@ Z()
 	int status=EXIT_SUCCESS;
 
 [[[cog
-for name, num in getNameNumber(component['publishes']):
-	if communicationIsIce(name):
+for name, num in get_name_number(component['publishes']):
+	if communication_is_ice(name):
 		if component['language'].lower() == "cpp":
 			cog.outl('<TABHERE>'+name+'Prx '+name.lower()+num +'_pubproxy;')
 		else:
 			cog.outl('<TABHERE>'+name+'PrxPtr '+name.lower()+num +'_pubproxy;')
 
-for name, num in  getNameNumber(component['requires']):
-	if communicationIsIce(name):
+for name, num in  get_name_number(component['requires']):
+	if communication_is_ice(name):
 		if component['language'].lower() == "cpp":
 			cog.outl('<TABHERE>'+name+'Prx '+name.lower()+num +'_proxy;')
 		else:
@@ -369,8 +381,8 @@ for name, num in  getNameNumber(component['requires']):
 
 [[[cog
 proxy_list = []
-for name, num in getNameNumber(component['requires']):
-	if communicationIsIce(name):
+for name, num in get_name_number(component['requires']):
+	if communication_is_ice(name):
 		if component['language'].lower() == "cpp":
 			cpp = "<PROXYNAME>_proxy = <NORMAL>Prx::uncheckedCast( communicator()->stringToProxy( proxy ) );"
 		else:
@@ -385,10 +397,10 @@ for name, num in getNameNumber(component['requires']):
 	
 need_topic=False
 for pub in component['publishes']:
-	if communicationIsIce(pub):
+	if communication_is_ice(pub):
 		need_topic = True
 for pub in component['subscribesTo']:
-	if communicationIsIce(pub):
+	if communication_is_ice(pub):
 		need_topic = True
 if need_topic:
 	if component['language'].lower() == "cpp":
@@ -414,7 +426,7 @@ for pba in component['publishes']:
 		pb = pba
 	else:
 		pb = pba[0]
-	if communicationIsIce(pba):
+	if communication_is_ice(pba):
 		if component['language'].lower() == "cpp":
 			cog.outl("<TABHERE>IceStorm::TopicPrx "+pb.lower() + "_topic;")
 		else:
@@ -497,7 +509,7 @@ for ima in component['implements']:
 		im = ima
 	else:
 		im = ima[0]
-	if communicationIsIce(ima):
+	if communication_is_ice(ima):
 		if component['language'].lower() == "cpp":
 			cpp = "<NORMAL>I *<LOWER> = new <NORMAL>I(worker);"
 		else:
@@ -508,11 +520,11 @@ for ima in component['implements']:
 [[[end]]]
 
 [[[cog
-for name, num in getNameNumber(component['subscribesTo']):
+for name, num in get_name_number(component['subscribesTo']):
 	nname = name
 	while type(nname) != type(''):
 		nname = name[0]
-	if communicationIsIce(name):
+	if communication_is_ice(name):
 		if component['language'].lower() == "cpp":
 			change1 = "IceStorm::TopicPrx"
 			change2 = "Ice::ObjectPrx"
@@ -546,7 +558,7 @@ for sub in component['subscribesTo']:
 	nname = sub
 	while type(nname) != type(''):
 		nname = sub[0]
-	if communicationIsIce(sub):
+	if communication_is_ice(sub):
 		cog.outl("<TABHERE><TABHERE>try")
 		cog.outl("<TABHERE><TABHERE>{")
 		cog.outl("<TABHERE><TABHERE><TABHERE>std::cout << \"Unsubscribing topic: "+nname.lower()+" \" <<std::endl;")
