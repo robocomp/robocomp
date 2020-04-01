@@ -91,7 +91,7 @@ def generate_ROS_headers(idsl_file, output_path, comp, include_directories):
     :return:
     """
     imported = []
-    idsl = DSLFactory.from_file(idsl_file, files='', includeDirectories=include_directories)
+    idsl = DSLFactory().from_file(idsl_file, includeDirectories=include_directories)
     if not os.path.exists(output_path):
         create_directory(output_path)
 

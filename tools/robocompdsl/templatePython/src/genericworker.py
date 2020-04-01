@@ -104,7 +104,7 @@ for imp in set(component['recursiveImports'] + component["imports"]):
     cog.outl("<TABHERE>print('Couln\\\'t load "+name+"')")
     cog.outl('<TABHERE>sys.exit(-1)')
 
-    module = DSLFactory.from_file(file_name, includeDirectories=includeDirectories)
+    module = DSLFactory().from_file(file_name, includeDirectories=includeDirectories)
     cog.outl('from '+ module['name'] +' import *')
 ]]]
 [[[end]]]

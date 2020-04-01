@@ -91,7 +91,7 @@ cog.outl('<TABHERE><TABHERE>break')
 cog.outl('if not ice_'+theInterface+':')
 cog.outl("<TABHERE>print('Couldn\\\'t load "+theInterface+"')")
 cog.outl('<TABHERE>sys.exit(-1)')
-module2 = DSLFactory.from_file(theInterface+'.idsl', files='', includeDirectories=includeDirectories)
+module2 = DSLFactory().from_file(theInterface+'.idsl', includeDirectories=includeDirectories)
 cog.outl('from '+ module2['name'] +' import *')
 cog.outl('\nclass ' + theInterface+ 'I('+theInterface+'):')
 ]]]
