@@ -112,20 +112,19 @@ def generate_ROS_headers(idsl_file, output_path, comp, include_directories):
                     if not os.path.exists(ofile_dir):
                         os.makedirs(ofile_dir)
                     # Call cog
-                    run = "cog.py -z -d" + ' -D theIDSLPaths=' + '#'.join(include_directories) + " -D structName=" + imp['name'] + " -D theIDSL=" + idslFile + " -o " + ofile + " " + "/opt/robocomp/share/robocompdsl/templateCPP/" + f
-                    run = run.split(' ')
-                    ret = Cog().main(run)
-                    if ret != 0:
-                        raise RuntimeError('ERROR %d executing cog %s' % (ret, run))
-                    replaceTagsInFile(ofile)
+                    params = {
+                        "theIDSLPaths": '#'.join(include_directories),
+                        "structName": imp['name'],
+                        "theIDSL": idslFile
+                    }
+                    cog_command = generate_cog_command(params, "/opt/robocomp/share/robocompdsl/templateCPP/" + f, ofile)
+                    run_cog_and_replace_tags(cog_command, ofile)
                     commandCPP = "/opt/ros/melodic/lib/gencpp/gen_cpp.py " + ofile + " -Istd_msgs:/opt/ros/melodic/share/std_msgs/msg -I" + idsl['name'] + "ROS:" + output_path
                     commandPY  = "/opt/ros/melodic/lib/genpy/genmsg_py.py " + ofile + " -Istd_msgs:/opt/ros/melodic/share/std_msgs/msg -I" + idsl['name'] + "ROS:" + output_path
                     for impo in imported:
                         if not impo == idsl['module']['name']+"ROS":
                             commandCPP = commandCPP + " -I" + impo + ":" + output_path
                             commandPY  = commandPY + " -I" + impo + ":" + output_path
-                    if not os.path.exists(output_path):
-                        create_directory(output_path)
                     commandCPP = commandCPP + " -p " + idsl['name'] + "ROS -o " + output_path + "/" + idsl['name'] + "ROS -e /opt/ros/melodic/share/gencpp"
                     commandPY = commandPY + " -p " + idsl['name'] + "ROS -o " + output_path + "/" + idsl['name'] + "ROS/msg"
                     if comp['language'].lower() == 'cpp':
@@ -151,12 +150,13 @@ def generate_ROS_headers(idsl_file, output_path, comp, include_directories):
                                         ofile = output_path + "/" + method['name'] + "." + f.split('.')[-1].lower()
                                         print('Generating', ofile, ' (servant for', idslFile.split('.')[0].lower() + ')')
                                         # Call cog
-                                        run = "cog.py -z -d" + ' -D theIDSLPaths=' + '#'.join(include_directories) + " -D methodName=" + method['name'] + " -D theIDSL=" + idslFile + " -o " + ofile + " " + "/opt/robocomp/share/robocompdsl/templateCPP/" + f
-                                        run = run.split(' ')
-                                        ret = Cog().main(run)
-                                        if ret != 0:
-                                            raise RuntimeError('ERROR %d executing cog %s' % (ret,run))
-                                        replaceTagsInFile(ofile)
+                                        params = {
+                                            "theIDSLPaths": '#'.join(include_directories),
+                                            "methodName": method['name'],
+                                            "theIDSL": idslFile
+                                        }
+                                        cog_command = generate_cog_command(params, "/opt/robocomp/share/robocompdsl/templateCPP/" + f, ofile)
+                                        run_cog_and_replace_tags(cog_command, ofile)
                                         commandCPP = "/opt/ros/melodic/lib/gencpp/gen_cpp.py " + ofile + " -Istd_msgs:/opt/ros/melodic/share/std_msgs/msg -Istd_srvs:/opt/ros/melodic/share/std_srv/cmake/../srv -I" + idsl['module']['name'] + "ROS:" + output_path
                                         commandPY  = "/opt/ros/melodic/lib/genpy/gensrv_py.py " + ofile + " -Istd_msgs:/opt/ros/melodic/share/std_msgs/msg -Istd_srvs:/opt/ros/kinetic/share/std_srv/cmake/../srv -I" + idsl['module']['name'] + "ROS:" + output_path
                                         for impo in imported:
@@ -424,13 +424,13 @@ def generate_python_component(component, inputFile, outputPath, include_dirs, im
         if f == 'README-STORM.txt' and needStorm == False: ignoreFile = True
         if not ignoreFile:
             print('Generating', ofile)
-            run = "cog.py -z -d -D theCDSL=" + inputFile + " -D theIDSLs=" + imports + ' -D theIDSLPaths=' + '#'.join(
-                include_dirs) + " -o " + ofile + " " + ifile
-            run = run.split(' ')
-            ret = Cog().main(run)
-            if ret != 0:
-                raise RuntimeError('ERROR %d executing cog %s' % (ret, run))
-            replaceTagsInFile(ofile)
+            params = {
+                "theCDSL": inputFile,
+                "theIDSLs": imports,
+                "theIDSLPaths": '#'.join(include_dirs)
+            }
+            cog_command = generate_cog_command(params, ifile, ofile)
+            run_cog_and_replace_tags(cog_command, ofile)
             if f == 'src/main.py': os.chmod(ofile, os.stat(ofile).st_mode | 0o111)
     #
     # Generate interface-dependent files
@@ -442,16 +442,7 @@ def generate_python_component(component, inputFile, outputPath, include_dirs, im
             im = imp
         if communication_is_ice(imp):
             for f in ["SERVANT.PY"]:
-                ofile = outputPath + '/src/' + im.lower() + 'I.' + f.split('.')[-1].lower()
-                print('Generating', ofile, ' (servant for', im + ')')
-                # Call cog
-                run = "cog.py -z -d -D theCDSL=" + inputFile + " -D theIDSLs=" + imports + ' -D theIDSLPaths=' + '#'.join(
-                    include_dirs) + " -D theInterface=" + im + " -o " + ofile + " " + "/opt/robocomp/share/robocompdsl/templatePython/" + f
-                run = run.split(' ')
-                ret = Cog().main(run)
-                if ret != 0:
-                    raise RuntimeError('ERROR %d executing cog %s' % (ret, run))
-                replaceTagsInFile(ofile)
+                run_cog(f, inputFile, outputPath, im, imports, include_dirs, "/opt/robocomp/share/robocompdsl/templatePython/")
     return new_existing_files
 
 def generate_cpp_component(component, inputFile, outputPath, include_dirs, imports):
@@ -489,66 +480,83 @@ def generate_cpp_component(component, inputFile, outputPath, include_dirs, impor
         ifile = "/opt/robocomp/share/robocompdsl/templateCPP/" + f
         if f != 'src/mainUI.ui' or component['gui'] is not None:
             print('Generating', ofile)
-            run = "cog.py -z -d -D theCDSL=" + inputFile + " -D theIDSLs=" + imports + ' -D theIDSLPaths=' + '#'.join(
-                include_dirs) + " -o " + ofile + " " + ifile
-            run = run.split(' ')
-            ret = Cog().main(run)
-            if ret != 0:
-                raise RuntimeError('ERROR %d executing cog %s' % (ret, run))
-            replaceTagsInFile(ofile)
+
+            params = {
+                "theCDSL": inputFile,
+                "theIDSLs": imports,
+                "theIDSLPaths": '#'.join(include_dirs)
+            }
+            cog_command = generate_cog_command(params, ifile, ofile)
+            run_cog_and_replace_tags(cog_command, ofile)
     #
     # Generate interface-dependent files
     #
     for ima in component['implements']:
-        im = ima
-        if type(im) != type(''):
-            im = im[0]
+        iface_name = ima
+        if type(iface_name) != type(''):
+            iface_name = iface_name[0]
         if communication_is_ice(ima):
             for f in ["SERVANT.H", "SERVANT.CPP"]:
-                ofile = outputPath + '/src/' + im.lower() + 'I.' + f.split('.')[-1].lower()
-                print('Generating ', ofile, ' (servant for', im + ')')
-                # Call cog
-                run = "cog.py -z -d -D theCDSL=" + inputFile + " -D theIDSLs=" + imports + ' -D theIDSLPaths=' + '#'.join(
-                    include_dirs) + " -D theInterface=" + im + " -o " + ofile + " " + "/opt/robocomp/share/robocompdsl/templateCPP/" + f
-                run = run.split(' ')
-                ret = Cog().main(run)
-                if ret != 0:
-                    raise RuntimeError('ERROR %d executing cog %s' % (ret, run))
-                replaceTagsInFile(ofile)
+                run_cog(f, inputFile,outputPath,iface_name,imports,include_dirs, "/opt/robocomp/share/robocompdsl/templateCPP/")
+
 
     for imp in component['subscribesTo']:
-        im = imp
-        if type(im) != type(''):
-            im = im[0]
+        iface_name = imp
+        if type(iface_name) != type(''):
+            iface_name = iface_name[0]
         if communication_is_ice(imp):
             for f in ["SERVANT.H", "SERVANT.CPP"]:
-                ofile = outputPath + '/src/' + im.lower() + 'I.' + f.split('.')[-1].lower()
-                print('Generating ', ofile, ' (servant for', im + ')')
+                ofile = outputPath + '/src/' + iface_name.lower() + 'I.' + f.split('.')[-1].lower()
+                print('Generating ', ofile, ' (servant for', iface_name + ')')
                 # Call cog
-                theInterfaceStr = im
+                theInterfaceStr = iface_name
                 if type(theInterfaceStr) == type([]):
-                    theInterfaceStr = str(';'.join(im))
-                run = "cog.py -z -d -D theCDSL=" + inputFile + " -D theIDSLs=" + imports + ' -D theIDSLPaths=' + '#'.join(
-                    include_dirs) + " -D theInterface=" + theInterfaceStr + " -o " + ofile + " " + "/opt/robocomp/share/robocompdsl/templateCPP/" + f
-                # print(run
-                run = run.split(' ')
-                ret = Cog().main(run)
-                if ret != 0:
-                    raise RuntimeError('ERROR %d executing cog %s' % (ret, run))
-                replaceTagsInFile(ofile)
+                    theInterfaceStr = str(';'.join(iface_name))
+                params = {
+                    "theCDSL": inputFile,
+                    "theIDSLs": imports,
+                    "theIDSLPaths": '#'.join(include_dirs),
+                    "theInterface": theInterfaceStr
+                }
+                cog_command = generate_cog_command(params, "/opt/robocomp/share/robocompdsl/templateCPP/" + f, ofile)
+                run_cog_and_replace_tags(cog_command, ofile)
     return new_existing_files
 
-def generate_idsl_file(inputFile, outputPath, include_dirs):
+def generate_idsl_file(input_file, output_file, include_dirs):
     # idsl = IDSLParsing.fromFileIDSL(inputFile)
-    print('Generating ICE file ', outputPath)
+    print('Generating ICE file ', output_file)
     # Call cog
-    run = "cog.py -z -d" + " -D theIDSL=" + inputFile + ' -D theIDSLPaths=' + '#'.join(
-        include_dirs) + " -o " + outputPath + " /opt/robocomp/share/robocompdsl/TEMPLATE.ICE"
-    run = run.split(' ')
+    params = {
+        "theIDSL": input_file,
+        "theIDSLPaths": '#'.join(include_dirs)
+    }
+    cog_command = generate_cog_command(params,"/opt/robocomp/share/robocompdsl/TEMPLATE.ICE", output_file)
+    run_cog_and_replace_tags(cog_command, output_file)
+
+
+def generate_cog_command(params, template, output_file):
+    params_strings = ["-D %s=%s" % (key, value) for key,value in params.items()]
+    return "cog.py -z -d %s -o %s %s" % (" ".join(params_strings), output_file, template)
+
+def run_cog(cog_file, cdsl_file, output_path, iface_name, imports, include_dirs, template_dir):
+    ofile = output_path + '/src/' + iface_name.lower() + 'I.' + cog_file.split('.')[-1].lower()
+    print('Generating ', ofile, ' (servant for', iface_name + ')')
+    # Call cog
+    params = {
+        "theCDSL": cdsl_file,
+        "theIDSLs": imports,
+        "theIDSLPaths": '#'.join(include_dirs),
+        "theInterface": iface_name
+    }
+    cog_command = generate_cog_command(params, template_dir + cog_file, ofile)
+    run_cog_and_replace_tags(cog_command, ofile)
+
+def run_cog_and_replace_tags(cog_command, ofile):
+    run = cog_command.split(' ')
     ret = Cog().main(run)
     if ret != 0:
-        raise RuntimeError('ERROR %d executing cog %s' % (ret, run))
-    replaceTagsInFile(outputPath)
+        raise RuntimeError('ERROR %d executing cog %s' % (ret, cog_command))
+    replaceTagsInFile(ofile)
 
 if __name__ == '__main__':
     app = main()
