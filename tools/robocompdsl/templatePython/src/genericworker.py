@@ -88,7 +88,7 @@ except:
 
 [[[cog
 import os
-for imp in set(component['recursiveImports'] + component["imports"]):
+for imp in sorted(set(component['recursiveImports'] + component["imports"])):
     file_name = os.path.basename(imp)
     name = os.path.splitext(file_name)[0]
 
