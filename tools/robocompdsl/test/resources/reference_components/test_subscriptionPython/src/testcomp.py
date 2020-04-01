@@ -116,31 +116,35 @@ if __name__ == '__main__':
 	except Ice.ConnectionRefusedException as e:
 		print('Cannot connect to IceStorm! ('+proxy+')')
 		status = 1
-
-	# Create a proxy to publish a IMUPub topic
-	topic = False
-	try:
-		topic = topicManager.retrieve("IMUPub")
-	except:
-		pass
-	while not topic:
-		try:
-			topic = topicManager.retrieve("IMUPub")
-		except IceStorm.NoSuchTopic:
-			try:
-				topic = topicManager.create("IMUPub")
-			except:
-				print('Another client created the IMUPub topic? ...')
-	pub = topic.getPublisher().ice_oneway()
-	imupubTopic = IMUPubPrx.uncheckedCast(pub)
-	mprx["IMUPubPub"] = imupubTopic
-
 	if status == 0:
 		worker = SpecificWorker(mprx)
 		worker.setParams(parameters)
 	else:
 		print("Error getting required connections, check config file")
 		sys.exit(-1)
+
+	IMUPub_adapter = ic.createObjectAdapter("IMUPubTopic")
+	imupubI_ = IMUPubI(worker)
+	imupub_proxy = IMUPub_adapter.addWithUUID(imupubI_).ice_oneway()
+
+	subscribeDone = False
+	while not subscribeDone:
+		try:
+			imupub_topic = topicManager.retrieve("IMUPub")
+			subscribeDone = True
+		except Ice.Exception as e:
+			print("Error. Topic does not exist (creating)")
+			time.sleep(1)
+			try:
+				imupub_topic = topicManager.create("IMUPub")
+				subscribeDone = True
+			except:
+				print("Error. Topic could not be created. Exiting")
+				status = 0
+	qos = {}
+	imupub_topic.subscribeAndGetPublisher(qos, imupub_proxy)
+	IMUPub_adapter.activate()
+
 
 	signal.signal(signal.SIGINT, sigint_handler)
 	app.exec_()

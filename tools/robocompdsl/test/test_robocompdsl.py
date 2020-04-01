@@ -19,7 +19,6 @@ from autogeneration_tests.test_cdsl.test_component_generation import ComponentGe
 class RobocompdslTest(unittest.TestCase):
     def setUp(self):
         self.maxDiff = None
-        self.renew_temp_dir()
 
     def renew_temp_dir(self, name= None):
         if name is None:
@@ -53,6 +52,8 @@ class RobocompdslTest(unittest.TestCase):
             "test_noSmdslTestPython",
             "test_publicationCpp",
             "test_subscriptionCpp",
+            "test_publicationPython",
+            "test_subscriptionPython",
             "test_subStatesTestCpp",
             "test_subStatesTestPython"
         ]
@@ -66,7 +67,11 @@ class RobocompdslTest(unittest.TestCase):
                smdsl= shutil.copy(smdsl, self.tempdir)
             self.olddir = os.getcwd()
             os.chdir(self.tempdir)
+            try:
             robocompdsl.generate_component_from_cdsl(cdsl, self.tempdir, [])
+            except:
+                pass
+            finally:
             os.chdir(self.olddir)
             self.compare_components(component_path, self.tempdir)
             shutil.rmtree(self.tempdir, ignore_errors=True)

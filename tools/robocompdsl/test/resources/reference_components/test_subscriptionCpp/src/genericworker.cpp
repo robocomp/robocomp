@@ -49,7 +49,6 @@ QObject()
 	QObject::connect(&timer, SIGNAL(timeout()), this, SIGNAL(t_compute_to_compute()));
 
 //------------------
-	imupub_pubproxy = (*(IMUPubPrx*)mprx["IMUPubPub"]);
 
 	mutex = new QMutex(QMutex::Recursive);
 

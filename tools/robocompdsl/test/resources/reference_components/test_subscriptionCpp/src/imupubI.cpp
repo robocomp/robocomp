@@ -1,5 +1,5 @@
 /*
- *    Copyright (C)2020 by YOUR NAME HERE
+ *    Copyright (C) 2020 by YOUR NAME HERE
  *
  *    This file is part of RoboComp
  *
@@ -16,42 +16,20 @@
  *    You should have received a copy of the GNU General Public License
  *    along with RoboComp.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include "imupubI.h"
 
-/**
-       \brief
-       @author authorname
-*/
-
-
-
-#ifndef SPECIFICWORKER_H
-#define SPECIFICWORKER_H
-
-#include <genericworker.h>
-#include <innermodel/innermodel.h>
-
-class SpecificWorker : public GenericWorker
+IMUPubI::IMUPubI(GenericWorker *_worker)
 {
-Q_OBJECT
-public:
-	SpecificWorker(MapPrx& mprx);
-	~SpecificWorker();
-	bool setParams(RoboCompCommonBehavior::ParameterList params);
+	worker = _worker;
+}
 
-	void IMUPub_publish(const RoboCompIMU::DataImu &imu);
 
-public slots:
-	void compute();
-	void initialize(int period);
-//Specification slot methods State Machine
-	void sm_compute();
-	void sm_initialize();
-	void sm_finalize();
+IMUPubI::~IMUPubI()
+{
+}
 
-//--------------------
-private:
-	std::shared_ptr<InnerModel> innerModel;
+void IMUPubI::publish(const RoboCompIMU::DataImu  &imu, const Ice::Current&)
+{
+	worker->IMUPub_publish(imu);
+}
 
-};
-
-#endif

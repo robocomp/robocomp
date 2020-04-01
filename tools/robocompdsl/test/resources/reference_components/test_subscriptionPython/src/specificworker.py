@@ -98,3 +98,13 @@ class SpecificWorker(GenericWorker):
 # =================================================================
 # =================================================================
 
+
+	#
+	# SUBSCRIPTION to publish method from IMUPub interface
+	#
+	def IMUPub_publish(self, imu):
+		#
+		#subscribesToCODE
+		#
+		pass
+

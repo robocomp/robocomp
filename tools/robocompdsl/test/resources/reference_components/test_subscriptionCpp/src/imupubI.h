@@ -16,41 +16,29 @@
  *    You should have received a copy of the GNU General Public License
  *    along with RoboComp.  If not, see <http://www.gnu.org/licenses/>.
  */
+#ifndef IMUPUB_H
+#define IMUPUB_H
 
-/**
-       \brief
-       @author authorname
-*/
+// Ice includes
+#include <Ice/Ice.h>
+#include <IMUPub.h>
 
+#include <config.h>
+#include "genericworker.h"
 
+using namespace RoboCompIMUPub;
 
-#ifndef SPECIFICWORKER_H
-#define SPECIFICWORKER_H
-
-#include <genericworker.h>
-#include <innermodel/innermodel.h>
-
-class SpecificWorker : public GenericWorker
+class IMUPubI : public virtual RoboCompIMUPub::IMUPub
 {
-Q_OBJECT
 public:
-	SpecificWorker(MapPrx& mprx);
-	~SpecificWorker();
-	bool setParams(RoboCompCommonBehavior::ParameterList params);
+IMUPubI(GenericWorker *_worker);
+	~IMUPubI();
 
-	void IMUPub_publish(const RoboCompIMU::DataImu &imu);
+	void publish(const RoboCompIMU::DataImu  &imu, const Ice::Current&);
 
-public slots:
-	void compute();
-	void initialize(int period);
-//Specification slot methods State Machine
-	void sm_compute();
-	void sm_initialize();
-	void sm_finalize();
-
-//--------------------
 private:
-	std::shared_ptr<InnerModel> innerModel;
+
+	GenericWorker *worker;
 
 };
 

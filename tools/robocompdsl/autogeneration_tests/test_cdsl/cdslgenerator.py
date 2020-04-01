@@ -387,7 +387,7 @@ class CDSLSampler:
         :return: name of the interface defined inside the .idsl file.
         """
         try:
-            interface_name = DSLFactory.from_file(idsl_filename)['interfaces'][0]['name']
+            interface_name = DSLFactory().from_file(idsl_filename)['interfaces'][0]['name']
         except:
             # There's some .idsl files without interfaces defined on it, just data structures definitions
             raise ValueError("Couldn't get the interface name for idsl file: %s" % idsl_filename)

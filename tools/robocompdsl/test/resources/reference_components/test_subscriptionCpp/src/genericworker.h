@@ -65,8 +65,8 @@ public:
 	QMutex *mutex;
 
 
-	IMUPubPrx imupub_pubproxy;
 
+	virtual void IMUPub_publish(const RoboCompIMU::DataImu &imu) = 0;
 
 protected:
 //State Machine

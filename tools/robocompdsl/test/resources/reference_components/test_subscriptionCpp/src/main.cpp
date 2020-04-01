@@ -81,6 +81,7 @@
 #include "specificmonitor.h"
 #include "commonbehaviorI.h"
 
+#include <imupubI.h>
 
 #include <IMU.h>
 
@@ -134,7 +135,6 @@ int ::testcomp::run(int argc, char* argv[])
 
 	int status=EXIT_SUCCESS;
 
-	IMUPubPrx imupub_pubproxy;
 
 	string proxy, tmp;
 	initialize();
@@ -149,37 +149,6 @@ int ::testcomp::run(int argc, char* argv[])
 		cout << "[" << PROGRAM_NAME << "]: Exception: STORM not running: " << ex << endl;
 		return EXIT_FAILURE;
 	}
-	IceStorm::TopicPrx imupub_topic;
-
-	while (!imupub_topic)
-	{
-		try
-		{
-			imupub_topic = topicManager->retrieve("IMUPub");
-		}
-		catch (const IceStorm::NoSuchTopic&)
-		{
-			cout << "[" << PROGRAM_NAME << "]: ERROR retrieving IMUPub topic. \n";
-			try
-			{
-				imupub_topic = topicManager->create("IMUPub");
-			}
-			catch (const IceStorm::TopicExists&){
-				// Another client created the topic.
-				cout << "[" << PROGRAM_NAME << "]: ERROR publishing the IMUPub topic. It's possible that other component have created\n";
-			}
-		}
-		catch(const IceUtil::NullHandleException&)
-		{
-			cout << "[" << PROGRAM_NAME << "]: ERROR TopicManager is Null. Check that your configuration file contains an entry like:\n"<<
-			"\t\tTopicManager.Proxy=IceStorm/TopicManager:default -p <port>\n";
-			return EXIT_FAILURE;
-		}
-	}
-
-	Ice::ObjectPrx imupub_pub = imupub_topic->getPublisher()->ice_oneway();
-	imupub_pubproxy = IMUPubPrx::uncheckedCast(imupub_pub);
-	mprx["IMUPubPub"] = (::IceProxy::Ice::Object*)(&imupub_pubproxy);
 
 	SpecificWorker *worker = new SpecificWorker(mprx);
 	//Monitor thread
@@ -221,6 +190,52 @@ int ::testcomp::run(int argc, char* argv[])
 
 
 		// Server adapter creation and publication
+		IceStorm::TopicPrx imupub_topic;
+		Ice::ObjectPrx imupub;
+		try
+		{
+			if (not GenericMonitor::configGetString(communicator(), prefix, "IMUPubTopic.Endpoints", tmp, ""))
+			{
+				cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy IMUPubProxy";
+			}
+			Ice::ObjectAdapterPtr IMUPub_adapter = communicator()->createObjectAdapterWithEndpoints("imupub", tmp);
+			IMUPubPtr imupubI_ =  new IMUPubI(worker);
+			Ice::ObjectPrx imupub = IMUPub_adapter->addWithUUID(imupubI_)->ice_oneway();
+			if(!imupub_topic)
+			{
+				try {
+					imupub_topic = topicManager->create("IMUPub");
+				}
+				catch (const IceStorm::TopicExists&) {
+					//Another client created the topic
+					try{
+						cout << "[" << PROGRAM_NAME << "]: Probably other client already opened the topic. Trying to connect.\n";
+						imupub_topic = topicManager->retrieve("IMUPub");
+					}
+					catch(const IceStorm::NoSuchTopic&)
+					{
+						cout << "[" << PROGRAM_NAME << "]: Topic doesn't exists and couldn't be created.\n";
+						//Error. Topic does not exist
+					}
+				}
+				catch(const IceUtil::NullHandleException&)
+				{
+					cout << "[" << PROGRAM_NAME << "]: ERROR TopicManager is Null. Check that your configuration file contains an entry like:\n"<<
+					"\t\tTopicManager.Proxy=IceStorm/TopicManager:default -p <port>\n";
+					return EXIT_FAILURE;
+				}
+				IceStorm::QoS qos;
+				imupub_topic->subscribeAndGetPublisher(qos, imupub);
+			}
+			IMUPub_adapter->activate();
+		}
+		catch(const IceStorm::NoSuchTopic&)
+		{
+			cout << "[" << PROGRAM_NAME << "]: Error creating IMUPub topic.\n";
+			//Error. Topic does not exist
+		}
+
+		// Server adapter creation and publication
 		cout << SERVER_FULL_NAME " started" << endl;
 
 		// User defined QtGui elements ( main window, dialogs, etc )
@@ -232,6 +247,15 @@ int ::testcomp::run(int argc, char* argv[])
 		// Run QT Application Event Loop
 		a.exec();
 
+		try
+		{
+			std::cout << "Unsubscribing topic: imupub " <<std::endl;
+			imupub_topic->unsubscribe( imupub );
+		}
+		catch(const Ice::Exception& ex)
+		{
+			std::cout << "ERROR Unsubscribing topic: imupub " <<std::endl;
+		}
 
 		status = EXIT_SUCCESS;
 	}
