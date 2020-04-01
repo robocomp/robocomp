@@ -101,7 +101,7 @@ def generate_ROS_headers(idsl_file, output_path, comp, include_directories):
             os.system("rm -f " + output_path + "/" + idsl['module']['name'] + "ROS/msg/__init__.py")
             os.system("rm -f " + output_path + "/" + idsl['module']['name'] + "ROS/srv/__init__.py")
         except KeyError:
-            print("No module found in %s"%idsl_file)
+            print("No module found in %s" % idsl_file)
         for imp in idsl['structs']+idsl['sequences']:
             if imp['type'] in ['struct','sequence']:
                 for f in [ "SERVANT.MSG"]:
@@ -147,7 +147,7 @@ def generate_ROS_headers(idsl_file, output_path, comp, include_directories):
                         for method in imp['methods'].values():
                             if 'params' in method:
                                 if len(method['params']) == 2:
-                                    for f in [ "SERVANT.SRV"]:
+                                    for f in ["SERVANT.SRV"]:
                                         ofile = output_path + "/" + method['name'] + "." + f.split('.')[-1].lower()
                                         print('Generating', ofile, ' (servant for', idslFile.split('.')[0].lower() + ')')
                                         # Call cog
@@ -163,8 +163,7 @@ def generate_ROS_headers(idsl_file, output_path, comp, include_directories):
                                             if not impo == idsl['module']['name']+"ROS":
                                                 commandCPP = commandCPP + " -I" + impo + ":" + output_path
                                                 commandPY  = commandPY + " -I" + impo + ":" + output_path
-                                        if not os.path.exists(output_path):
-                                            create_directory(output_path)
+
                                         commandCPP = commandCPP + " -p " + idsl['module']['name'] + "ROS -o " + output_path + "/" + idsl['module']['name'] + "ROS -e /opt/ros/melodic/share/gencpp/cmake/.."
                                         commandPY = commandPY + " -p " + idsl['module']['name'] + "ROS -o " + output_path + "/" + idsl['module']['name'] + "ROS/srv"
                                         if comp['language'].lower() == 'cpp':

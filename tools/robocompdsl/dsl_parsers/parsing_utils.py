@@ -51,7 +51,7 @@ def communication_is_ice(sb):
 
 def is_agm1_agent(component):
     assert isinstance(component, (dict, OrderedDict)), \
-        "Component parameter is expected to be a dict or OrderedDict but %s"%str(type(component))
+        "Component parameter is expected to be a dict or OrderedDict but %s" % str(type(component))
     options = component['options']
     return 'agmagent' in [x.lower() for x in options]
 
@@ -287,9 +287,7 @@ class IDSLPool:
     def rosImports(self):
         includesList = []
         for module in self.modulePool:
-            for m in self.modulePool[module]['structs']:
-                includesList.append(m['name'].split('/')[0]+"ROS/"+m['name'].split('/')[1])
-            for m in self.modulePool[module]['sequences']:
+            for m in self.modulePool[module]['structs']+self.modulePool[module]['sequences']:
                 includesList.append(m['name'].split('/')[0]+"ROS/"+m['name'].split('/')[1])
             stdIncludes = {}
             for interface in self.modulePool[module]['interfaces']:
