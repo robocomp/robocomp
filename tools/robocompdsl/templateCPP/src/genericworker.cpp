@@ -21,8 +21,7 @@ sm = DSLFactory().from_file(component['statemachine'])
 if sm is None:
     component['statemachine'] = None
 if component is None:
-	print('Can\'t locate', theCDSLs)
-	sys.exit(1)
+    raise ValueError('genericworker.cpp: Can\'t locate %s' % theCDSL)
 
 pool = IDSLPool(theIDSLs, includeDirectories)
 
@@ -238,8 +237,7 @@ if component['usingROS'] == True:
 			nname = nname[0]
 		module = pool.moduleProviding(nname)
 		if module == None:
-			print ('\nCan\'t find module providing', nname, '\n')
-			sys.exit(-1)
+			raise ValueError('\nCan\'t find module providing %s \n' % nname)
 		if not communication_is_ice(imp):
 			for interface in module['interfaces']:
 				if interface['name'] == nname:
@@ -256,8 +254,7 @@ if component['usingROS'] == True:
 			nname = nname[0]
 		module = pool.moduleProviding(nname)
 		if module == None:
-			print ('\nCan\'t find module providing', nname, '\n')
-			sys.exit(-1)
+			raise ('\nCan\'t find module providing %s\n' % nname)
 		if not communication_is_ice(imp):
 			for interface in module['interfaces']:
 				if interface['name'] == nname:

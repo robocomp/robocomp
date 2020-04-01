@@ -20,8 +20,7 @@ sm = DSLFactory().from_file(component['statemachine'])
 if sm is None:
     component['statemachine'] = None
 if component is None:
-	print('Can\'t locate', theCDSLs)
-	sys.exit(1)
+    raise ValueError('genericworker.h: Can\'t locate %s' % theCDSL)
 
 pool = IDSLPool(theIDSLs, includeDirectories)
 includeList = pool.rosImports()
@@ -189,8 +188,7 @@ if component['usingROS'] == True:
 			nname = nname[0]
 		module = pool.moduleProviding(nname)
 		if module == None:
-			print ('\nCan\'t find module providing', nname, '\n')
-			sys.exit(-1)
+			raise ValueError('\nCan\'t find module providing %s \n'% nname)
 		if not communication_is_ice(imp):
 			theIdsl = pool.IDSLsModule(module)
 			idsl = IDSLParsing.fromFileIDSL(theIdsl)
@@ -254,8 +252,7 @@ if component['usingROS'] == True:
 			nname = nname[0]
 		module = pool.moduleProviding(nname)
 		if module == None:
-			print ('\nCan\'t find module providing', nname, '\n')
-			sys.exit(-1)
+			raise ValueError('\nCan\'t find module providing %s\n' % nname)
 		if not communication_is_ice(imp):
 			cog.outl("<TABHERE>//class for rosServiceClient")
 			cog.outl("class ServiceClient"+nname+"\n{\npublic:")
@@ -436,8 +433,7 @@ if 'subscribesTo' in component:
 			imp = impa[0]
 		module = pool.moduleProviding(imp)
 		if module == None:
-			print ('\nCan\'t find module providing', imp, '\n')
-			sys.exit(-1)
+			raise ValueError('\nCan\'t find module providing %s \n' % imp)
 		for interface in module['interfaces']:
 			if interface['name'] == imp:
 				for mname in interface['methods']:
@@ -577,8 +573,7 @@ for imp in component['subscribesTo']:
 		nname = nname[0]
 	module = pool.moduleProviding(nname)
 	if module == None:
-		print ('\nCan\'t find module providing', nname, '\n')
-		sys.exit(-1)
+		raise ValueError('\nCan\'t find module providing %s\n' % nname)
 	if not communication_is_ice(imp):
 		for interface in module['interfaces']:
 			if interface['name'] == nname:
@@ -591,8 +586,7 @@ for imp in component['implements']:
 		nname = nname[0]
 	module = pool.moduleProviding(nname)
 	if module == None:
-		print ('\nCan\'t find module providing', nname, '\n')
-		sys.exit(-1)
+		raise ValueError('\nCan\'t find module providing %s \n' nname)
 	if not communication_is_ice(imp):
 		for interface in module['interfaces']:
 			if interface['name'] == nname:

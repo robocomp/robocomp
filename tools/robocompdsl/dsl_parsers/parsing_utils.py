@@ -248,10 +248,9 @@ class IDSLPool:
                         break
                     except IOError as e:
                         pass
-                if not filename in self.modulePool:
-                    print(('Couldn\'t locate ', f))
-                    # TODO: replace with an exception
-                    sys.exit(-1)
+                if filename not in self.modulePool:
+                    raise ValueError('Couldn\'t locate %s ' % f)
+
 
     def IDSLsModule(self, module):
         """

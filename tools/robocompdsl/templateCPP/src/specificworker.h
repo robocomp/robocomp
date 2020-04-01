@@ -20,8 +20,7 @@ sm = DSLFactory().from_file(component['statemachine'])
 if sm is None:
     component['statemachine'] = None
 if component is None:
-	print('Can\'t locate', theCDSLs)
-	sys.exit(1)
+	raise ValueError('specificworker.h: Can\'t locate %s' % theCDSLs)
 
 pool = IDSLPool(theIDSLs, includeDirectories)
 rosTypes = pool.getRosTypes()

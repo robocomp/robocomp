@@ -20,8 +20,8 @@ includeDirectories = theIDSLPaths.split('#')
 component = DSLFactory().from_file(theCDSL, include_directories=includeDirectories)
 sm = DSLFactory().from_file(component['statemachine'])
 if component == None:
-	print('Can\'t locate', theCDSLs)
-	sys.exit(1)
+	raise ValueError("specificworker.py: Can\'t locate %s" % theCDSLs)
+
 
 
 pool = IDSLPool(theIDSLs, includeDirectories)

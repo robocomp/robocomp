@@ -17,8 +17,7 @@ from dsl_parsers.parsing_utils import decorator_and_type_to_const_ampersand,IDSL
 includeDirectories = theIDSLPaths.split('#')
 component = DSLFactory().from_file(theCDSL, include_directories=includeDirectories)
 if component == None:
-	print('Can\'t locate', theCDSLs)
-	sys.exit(1)
+    raise ValueError('SERVANT.H: Can\'t locate %s' % theCDSLs)
 
 modulePool = IDSLPool(theIDSLs, includeDirectories)
 
@@ -28,8 +27,7 @@ while type(theInterface) != type(''):
 
 module = modulePool.moduleProviding(theInterface)
 if module == None:
-	print('Can\'t locate', theInterface)
-	sys.exit(1)
+	raise ValueError('SERVANT.H: Can\'t locate %s' % theInterface)
 ]]]
 [[[end]]]
  *    Copyright (C)

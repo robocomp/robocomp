@@ -97,8 +97,7 @@ class DSLFactory(Singleton):
             except:
                 cprint('Error parsing %s' % file_path, 'red')
                 traceback.print_exc()
-                # TODO: remove Exit. Add Exception.
-                sys.exit(-1)
+                raise
             else:
                 result['filename'] = file_path
                 # store the parser with the result in the cache fo the factory

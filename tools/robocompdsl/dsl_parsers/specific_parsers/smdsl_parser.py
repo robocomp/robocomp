@@ -124,7 +124,7 @@ class SMDSLParser(DSLParserTemplate):
                 except:
                     print("Error: substate missing parent")
                     # TODO: Raise exception. Don't Exit.
-                    sys.exit(-1)
+                    raise KeyError("Substate must have a parent %s" % str(sub))
                 a['contents'] = {}
                 if a['parallel']:
                     try:

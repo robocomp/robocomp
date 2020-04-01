@@ -116,8 +116,7 @@ def generate_ROS_headers(idsl_file, output_path, comp, include_directories):
                     run = run.split(' ')
                     ret = Cog().main(run)
                     if ret != 0:
-                        print('ERROR')
-                        sys.exit(-1)
+                        raise RuntimeError('ERROR %d executing cog %s' % (ret, run))
                     replaceTagsInFile(ofile)
                     commandCPP = "/opt/ros/melodic/lib/gencpp/gen_cpp.py " + ofile + " -Istd_msgs:/opt/ros/melodic/share/std_msgs/msg -I" + idsl['name'] + "ROS:" + output_path
                     commandPY  = "/opt/ros/melodic/lib/genpy/genmsg_py.py " + ofile + " -Istd_msgs:/opt/ros/melodic/share/std_msgs/msg -I" + idsl['name'] + "ROS:" + output_path
@@ -156,8 +155,7 @@ def generate_ROS_headers(idsl_file, output_path, comp, include_directories):
                                         run = run.split(' ')
                                         ret = Cog().main(run)
                                         if ret != 0:
-                                            print('ERROR')
-                                            sys.exit(-1)
+                                            raise RuntimeError('ERROR %d executing cog %s' % (ret,run))
                                         replaceTagsInFile(ofile)
                                         commandCPP = "/opt/ros/melodic/lib/gencpp/gen_cpp.py " + ofile + " -Istd_msgs:/opt/ros/melodic/share/std_msgs/msg -Istd_srvs:/opt/ros/melodic/share/std_srv/cmake/../srv -I" + idsl['module']['name'] + "ROS:" + output_path
                                         commandPY  = "/opt/ros/melodic/lib/genpy/gensrv_py.py " + ofile + " -Istd_msgs:/opt/ros/melodic/share/std_msgs/msg -Istd_srvs:/opt/ros/kinetic/share/std_srv/cmake/../srv -I" + idsl['module']['name'] + "ROS:" + output_path
@@ -180,13 +178,12 @@ def generate_ROS_headers(idsl_file, output_path, comp, include_directories):
                                         except:
                                             pass
                                 else:
-                                    print("error: ROS service with incorrect number of parameters. ROS only supports remote procedure calls of the form: void method(type inVar, out type outVar);")
                                     for param in enumerate(method['params']):
                                         print(param[0], '-->', param[1])
-                                    sys.exit(-1)
+                                    raise IndexError("ERROR: ROS service with incorrect number of parameters. ROS only supports remote procedure calls of the form: void method(type inVar, out type outVar);")
                             else:
-                                print("error: service without params. Form is: void method(type inVar, out type outVar);")
-                                sys.exit(-1)
+                                raise KeyError("ERROR: service without params. Form is: void method(type inVar, out type outVar);")
+
         os.system("touch " + output_path + "/" + idsl['module']['name'] + "ROS/__init__.py")
         return idsl['module']['name']+"ROS"
     try:
@@ -262,8 +259,7 @@ def create_directory(directory):
             print('(already existed)')
             pass
         else:
-            print('\nCOULDN\'T CREATE', directory)
-            sys.exit(-1)
+            raise RuntimeError('\nCOULDN\'T CREATE %s' % directory)
 
 #Class deffining colors for terminal printing
 class BColors:
@@ -397,7 +393,6 @@ def generate_python_component(component, inputFile, outputPath, include_dirs, im
     except:
         print('There was a problem creating a directory')
         sys.exit(1)
-        pass
 
     needStorm = False
     for pub in component['publishes']:
@@ -435,8 +430,7 @@ def generate_python_component(component, inputFile, outputPath, include_dirs, im
             run = run.split(' ')
             ret = Cog().main(run)
             if ret != 0:
-                print('ERROR')
-                sys.exit(-1)
+                raise RuntimeError('ERROR %d executing cog %s' % (ret, run))
             replaceTagsInFile(ofile)
             if f == 'src/main.py': os.chmod(ofile, os.stat(ofile).st_mode | 0o111)
     #
@@ -457,8 +451,7 @@ def generate_python_component(component, inputFile, outputPath, include_dirs, im
                 run = run.split(' ')
                 ret = Cog().main(run)
                 if ret != 0:
-                    print('ERROR')
-                    sys.exit(-1)
+                    raise RuntimeError('ERROR %d executing cog %s' % (ret, run))
                 replaceTagsInFile(ofile)
     return new_existing_files
 
@@ -502,8 +495,7 @@ def generate_cpp_component(component, inputFile, outputPath, include_dirs, impor
             run = run.split(' ')
             ret = Cog().main(run)
             if ret != 0:
-                print('ERROR')
-                sys.exit(-1)
+                raise RuntimeError('ERROR %d executing cog %s' % (ret, run))
             replaceTagsInFile(ofile)
     #
     # Generate interface-dependent files
@@ -522,8 +514,7 @@ def generate_cpp_component(component, inputFile, outputPath, include_dirs, impor
                 run = run.split(' ')
                 ret = Cog().main(run)
                 if ret != 0:
-                    print('ERROR')
-                    sys.exit(-1)
+                    raise RuntimeError('ERROR %d executing cog %s' % (ret, run))
                 replaceTagsInFile(ofile)
 
     for imp in component['subscribesTo']:
@@ -544,8 +535,7 @@ def generate_cpp_component(component, inputFile, outputPath, include_dirs, impor
                 run = run.split(' ')
                 ret = Cog().main(run)
                 if ret != 0:
-                    print('ERROR')
-                    sys.exit(-1)
+                    raise RuntimeError('ERROR %d executing cog %s' % (ret, run))
                 replaceTagsInFile(ofile)
     return new_existing_files
 
@@ -558,8 +548,7 @@ def generate_idsl_file(inputFile, outputPath, include_dirs):
     run = run.split(' ')
     ret = Cog().main(run)
     if ret != 0:
-        print('ERROR')
-        sys.exit(-1)
+        raise RuntimeError('ERROR %d executing cog %s' % (ret, run))
     replaceTagsInFile(outputPath)
 
 if __name__ == '__main__':

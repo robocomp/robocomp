@@ -151,8 +151,7 @@ class CDSLParser(DSLParserTemplate):
                 component['gui'] = [uiT, uiI]
                 pass
             else:
-                print(('Wrong UI specification', parsing_result['properties']['gui']))
-                sys.exit(1)
+                raise ValueError('Wrong UI specification %s' % parsing_result['properties']['gui'])
         except:
             # TODO: check exceptions and do something when accessing gui options fails.
             pass
