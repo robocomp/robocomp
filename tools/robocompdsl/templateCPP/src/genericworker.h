@@ -586,7 +586,7 @@ for imp in component['implements']:
 		nname = nname[0]
 	module = pool.moduleProviding(nname)
 	if module == None:
-		raise ValueError('\nCan\'t find module providing %s \n' nname)
+		raise ValueError('\nCan\'t find module providing %s \n' % nname)
 	if not communication_is_ice(imp):
 		for interface in module['interfaces']:
 			if interface['name'] == nname:
