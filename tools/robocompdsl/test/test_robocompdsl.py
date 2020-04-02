@@ -61,25 +61,24 @@ class RobocompdslTest(unittest.TestCase):
             "test_subStatesTestPython"
         ]
         for python_component in python_components:
-            with self.subTest("Component creation of %s" % python_component, python_component=python_component):
-                component_path = os.path.join(REF_COMPONENTS_PATH, python_component)
-                self.renew_temp_dir(python_component)
-                cdsl = os.path.join(component_path, 'testcomp.cdsl')
-                cdsl = shutil.copy(cdsl, self.tempdir)
-                smdsl = os.path.join(component_path, 'statemachine.smdsl')
-                if os.path.exists(smdsl):
-                    smdsl = shutil.copy(smdsl, self.tempdir)
-                self.olddir = os.getcwd()
-                os.chdir(self.tempdir)
-                try:
-                    ComponentGenerator().generate(cdsl, self.tempdir, [])
-                except Exception as e:
-                    self.fail(str(e))
-                else:
-                    self.compare_components(component_path, self.tempdir)
-                finally:
-                    os.chdir(self.olddir)
-                    shutil.rmtree(self.tempdir, ignore_errors=True)
+            component_path = os.path.join(REF_COMPONENTS_PATH, python_component)
+            self.renew_temp_dir(python_component)
+            cdsl = os.path.join(component_path, 'testcomp.cdsl')
+            cdsl = shutil.copy(cdsl, self.tempdir)
+            smdsl = os.path.join(component_path, 'statemachine.smdsl')
+            if os.path.exists(smdsl):
+                smdsl = shutil.copy(smdsl, self.tempdir)
+            self.olddir = os.getcwd()
+            os.chdir(self.tempdir)
+            try:
+                ComponentGenerator().generate(cdsl, self.tempdir, [])
+            except Exception as e:
+                self.fail(str(e))
+            else:
+                self.compare_components(component_path, self.tempdir)
+            finally:
+                os.chdir(self.olddir)
+                shutil.rmtree(self.tempdir, ignore_errors=True)
 
     def assertFilesSame(self, path1, path2):
         print("Cheking file %s" % os.path.basename(path1))
@@ -93,13 +92,14 @@ class RobocompdslTest(unittest.TestCase):
             ref_root = root.replace(reference, generated)
             generated_files = os.listdir(ref_root)
             for filename in filenames:
-                if filename in generated_files:
-                    self.assertFilesSame(
-                        os.path.join(root, filename),
-                        os.path.join(ref_root, filename)
-                    )
-                else:
-                    self.fail("File %s found in reference is not in generated comp" % filename)
+                with self.subTest("Component comparation for %s" % root, directory=root, filename=filename):
+                    if filename in generated_files:
+                        self.assertFilesSame(
+                            os.path.join(root, filename),
+                            os.path.join(ref_root, filename)
+                        )
+                    else:
+                        self.fail("File %s found in reference is not in generated comp" % filename)
 
 # component = specific_parsers.DSLFactory().from_file("/home/robolab/robocomp/components/robocomp-robolab/components/hardware/camera/camerasimple/camerasimple.cdsl")
 # robocompdsl.generate_ROS_headers("CameraSimple.idsl", ".", component, ["/home/robolab/robocomp/interfaces/IDSLs/"])
