@@ -41,6 +41,8 @@ class RobocompdslTest(unittest.TestCase):
         self.assertFilesSame(output_file, truth_file)
         os.remove(output_file)
 
+        # self.assertRaises(FileNotFoundError,robocompdsl.generate_idsl_file("NonExisting.idsl", "outputfile.ice", []))
+        # os.remove("outputfile.ice")
 
     def test_python_component_creation(self):
         python_components = [
@@ -60,24 +62,24 @@ class RobocompdslTest(unittest.TestCase):
         ]
         for python_component in python_components:
             with self.subTest("Component creation of %s" % python_component, python_component=python_component):
-            component_path = os.path.join(REF_COMPONENTS_PATH, python_component)
-            self.renew_temp_dir(python_component)
-            cdsl = os.path.join(component_path, 'testcomp.cdsl')
-            cdsl = shutil.copy(cdsl, self.tempdir)
-            smdsl = os.path.join(component_path, 'statemachine.smdsl')
-            if os.path.exists(smdsl):
-                smdsl = shutil.copy(smdsl, self.tempdir)
-            self.olddir = os.getcwd()
-            os.chdir(self.tempdir)
-            try:
+                component_path = os.path.join(REF_COMPONENTS_PATH, python_component)
+                self.renew_temp_dir(python_component)
+                cdsl = os.path.join(component_path, 'testcomp.cdsl')
+                cdsl = shutil.copy(cdsl, self.tempdir)
+                smdsl = os.path.join(component_path, 'statemachine.smdsl')
+                if os.path.exists(smdsl):
+                    smdsl = shutil.copy(smdsl, self.tempdir)
+                self.olddir = os.getcwd()
+                os.chdir(self.tempdir)
+                try:
                     ComponentGenerator().generate(cdsl, self.tempdir, [])
                 except Exception as e:
                     self.fail(str(e))
                 else:
                     self.compare_components(component_path, self.tempdir)
-            finally:
-            os.chdir(self.olddir)
-            shutil.rmtree(self.tempdir, ignore_errors=True)
+                finally:
+                    os.chdir(self.olddir)
+                    shutil.rmtree(self.tempdir, ignore_errors=True)
 
     def assertFilesSame(self, path1, path2):
         print("Cheking file %s" % os.path.basename(path1))
