@@ -172,7 +172,9 @@ def main():
 
     elif input_file.endswith(".idsl"):
         generate_idsl_file(input_file, output_path, args.include_dirs)
-
+        
+    else:
+        print("Please check the Input file \n" + "Input File should be either .cdsl or .idsl")
 
 if __name__ == '__main__':
     main()
