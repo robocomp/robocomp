@@ -34,8 +34,7 @@ Tested in Ubuntu 18.04.
 **Note:** RoboComp is not compatible with Ubuntu 16.04. RoboComp needs to be compiled using C++11. Ice libraries with C++11 support are only available for zeroc-ice 3.7 and the packages for this version are only available since Ubuntu 18.04.
 
 **Note:** If you have installed Anaconda in your system. [Then you need to change the python from anaconda to default](https://github.com/robocomp/robocomp/issues/248).
-<!--If you are not an Ubuntu user, need to modify the core of RoboComp, or just feel like installing from sources, you can follow these instructions (they have been tested in Ubuntu 14.04, 14.10, 15.04, 16.04). If you're not in any of these scenarios, please use the packaged version.
--->
+
 
 ## Requirements
 Make sure you have installed the following packages from the Ubuntu repository:
@@ -50,10 +49,6 @@ It is recommendable to install the following packages::
 
     sudo apt-get install yakuake qttools5-dev-tools qt5-assistant
 
-<!--Note: RoboComp uses python2 for now, so make sure that you set python2 as your default choice if you also have python3 installed on your system. You can do so by adding this line into your ~/.bashrc file and then save it:
-
-    alias python=python2
---> 
 Note: One of the main tools of Robocomp, robocompdsl is using pyparsing and the current code doesn't work with 2.4 version of this library. With the previous commands, we are installing the 2.2 version (python-pyparsing=2.2.0+dfsg1-2). If you have a more recent version of pyparsing installed with apt or pip we recommend you to uninstall it and install the 2.2 version. You can check your current version of pyparsing with this command:
 
     python3 -c "import pyparsing; print(pyparsing.__version__)"
