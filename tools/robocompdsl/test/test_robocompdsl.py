@@ -5,6 +5,7 @@ import sys
 import tempfile
 import unittest
 import robocompdsl
+from componentgenerator import ComponentGenerator
 
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 ROBOCOMPDSL_DIR = os.path.join(CURRENT_DIR, "..")
@@ -20,11 +21,11 @@ class RobocompdslTest(unittest.TestCase):
     def setUp(self):
         self.maxDiff = None
 
-    def renew_temp_dir(self, name= None):
+    def renew_temp_dir(self, name=None):
         if name is None:
             self.tempdir = os.path.join(tempfile.gettempdir(), 'testrobocompdsl_tempdir_' + str(random.random())[2:])
         else:
-            self.tempdir = os.path.join(tempfile.gettempdir(), name )
+            self.tempdir = os.path.join(tempfile.gettempdir(), name)
         shutil.rmtree(self.tempdir, ignore_errors=True)
         os.mkdir(self.tempdir)
 
@@ -58,6 +59,7 @@ class RobocompdslTest(unittest.TestCase):
             "test_subStatesTestPython"
         ]
         for python_component in python_components:
+            with self.subTest("Component creation of %s" % python_component, python_component=python_component):
             component_path = os.path.join(REF_COMPONENTS_PATH, python_component)
             self.renew_temp_dir(python_component)
             cdsl = os.path.join(component_path, 'testcomp.cdsl')
@@ -68,12 +70,13 @@ class RobocompdslTest(unittest.TestCase):
             self.olddir = os.getcwd()
             os.chdir(self.tempdir)
             try:
-            robocompdsl.generate_component_from_cdsl(cdsl, self.tempdir, [])
-            except:
-                pass
+                    ComponentGenerator().generate(cdsl, self.tempdir, [])
+                except Exception as e:
+                    self.fail(str(e))
+                else:
+                    self.compare_components(component_path, self.tempdir)
             finally:
             os.chdir(self.olddir)
-            self.compare_components(component_path, self.tempdir)
             shutil.rmtree(self.tempdir, ignore_errors=True)
 
     def assertFilesSame(self, path1, path2):
