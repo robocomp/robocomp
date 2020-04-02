@@ -51,7 +51,7 @@ def communication_is_ice(sb):
 
 def is_agm1_agent(component):
     assert isinstance(component, (dict, OrderedDict)), \
-        "Component parameter is expected to be a dict or OrderedDict but %s"%str(type(component))
+        "Component parameter is expected to be a dict or OrderedDict but %s" % str(type(component))
     options = component['options']
     return 'agmagent' in [x.lower() for x in options]
 
@@ -144,7 +144,7 @@ def decorator_and_type_to_const_ampersand(decorator, vtype, modulePool, cpp11=Fa
         kind = getKindFromPool(vtype, modulePool)
         if kind == None:
             kind = getKindFromPool(vtype, modulePool, debug=True)
-            raise Exception('error, unknown data structure, map or sequence '+vtype)
+            raise TypeError('error, unknown data structure, map or sequence '+vtype)
         else:
             if kind == 'enum':               # ENUM
                 const = ' '
@@ -248,10 +248,9 @@ class IDSLPool:
                         break
                     except IOError as e:
                         pass
-                if not filename in self.modulePool:
-                    print(('Couldn\'t locate ', f))
-                    # TODO: replace with an exception
-                    sys.exit(-1)
+                if filename not in self.modulePool:
+                    raise ValueError('Couldn\'t locate %s ' % f)
+
 
     def IDSLsModule(self, module):
         """
@@ -288,9 +287,7 @@ class IDSLPool:
     def rosImports(self):
         includesList = []
         for module in self.modulePool:
-            for m in self.modulePool[module]['structs']:
-                includesList.append(m['name'].split('/')[0]+"ROS/"+m['name'].split('/')[1])
-            for m in self.modulePool[module]['sequences']:
+            for m in self.modulePool[module]['structs']+self.modulePool[module]['sequences']:
                 includesList.append(m['name'].split('/')[0]+"ROS/"+m['name'].split('/')[1])
             stdIncludes = {}
             for interface in self.modulePool[module]['interfaces']:

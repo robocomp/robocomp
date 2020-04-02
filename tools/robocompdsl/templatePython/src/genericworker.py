@@ -26,8 +26,7 @@ component = DSLFactory().from_file(theCDSL, include_directories=includeDirectori
 sm = DSLFactory().from_file(component['statemachine'])
 
 if component == None:
-	print('Can\'t locate', theCDSLs)
-	os.__exit(1)
+	raise ValueError('genericworker.py: Can\'t locate %s' % theCDSL)
 
 
 pool = IDSLPool(theIDSLs, includeDirectories)
@@ -89,7 +88,7 @@ except:
 
 [[[cog
 import os
-for imp in set(component['recursiveImports'] + component["imports"]):
+for imp in sorted(set(component['recursiveImports'] + component["imports"])):
     file_name = os.path.basename(imp)
     name = os.path.splitext(file_name)[0]
 
@@ -105,7 +104,7 @@ for imp in set(component['recursiveImports'] + component["imports"]):
     cog.outl("<TABHERE>print('Couln\\\'t load "+name+"')")
     cog.outl('<TABHERE>sys.exit(-1)')
 
-    module = DSLFactory.from_file(file_name, includeDirectories=includeDirectories)
+    module = DSLFactory().from_file(file_name, includeDirectories=includeDirectories)
     cog.outl('from '+ module['name'] +' import *')
 ]]]
 [[[end]]]
@@ -193,8 +192,7 @@ if component['usingROS'] == True:
 			nname = nname[0]
 		module = pool.moduleProviding(nname)
 		if module == None:
-			print('\nCan\'t find module providing', nname, '\n')
-			sys.exit(-1)
+			raise ValueError('\nCan\'t find module providing %s\n' % nname)
 		if not communication_is_ice(imp):
 			cog.outl("#class for rosPublisher")
 			cog.outl("class Publisher"+nname+"():")
@@ -229,8 +227,7 @@ if component['usingROS'] == True:
 			nname = nname[0]
 		module = pool.moduleProviding(nname)
 		if module == None:
-			print('\nCan\'t find module providing', nname, '\n')
-			sys.exit(-1)
+			raise ValueError('\nCan\'t find module providing %s\n' % nname)
 		if not communication_is_ice(imp):
 			cog.outl("#class for rosServiceClient")
 			cog.outl("class ServiceClient"+nname+"():")

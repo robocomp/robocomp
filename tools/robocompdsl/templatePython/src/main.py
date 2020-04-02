@@ -293,8 +293,7 @@ for sub in component['subscribesTo']:
 		nname = nname[0]
 	module = pool.moduleProviding(nname)
 	if module == None:
-		print('\nCan\'t find module providing', nname, '\n')
-		sys.exit(-1)
+		raise ValueError('\nCan\'t find module providing %s\n' % nname)
 	if not communication_is_ice(sub):
 		for interface in module['interfaces']:
 			if interface['name'] == nname:

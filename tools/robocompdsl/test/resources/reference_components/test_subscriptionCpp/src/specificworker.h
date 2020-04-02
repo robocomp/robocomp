@@ -38,6 +38,7 @@ public:
 	~SpecificWorker();
 	bool setParams(RoboCompCommonBehavior::ParameterList params);
 
+	void IMUPub_publish(const RoboCompIMU::DataImu &imu);
 
 public slots:
 	void compute();

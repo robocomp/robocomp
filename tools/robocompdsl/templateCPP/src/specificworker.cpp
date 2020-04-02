@@ -20,8 +20,7 @@ sm = DSLFactory().from_file(component['statemachine'])
 if sm is None:
     component['statemachine'] = None
 if component is None:
-	print('Can\'t locate', theCDSLs)
-	sys.exit(1)
+    raise ValueError('specificworker.cpp: Can\'t locate %s' % theCDSL)
 
 
 
@@ -349,8 +348,7 @@ if 'subscribesTo' in component:
 			imp = impa[0]
 		module = pool.moduleProviding(imp)
 		if module == None:
-			print ('\nCan\'t find module providing', imp, '\n')
-			sys.exit(-1)
+			raise ValueError('\nCan\'t find module providing %s\n' % imp)
 		for interface in module['interfaces']:
 			if interface['name'] == imp:
 				for mname in interface['methods']:

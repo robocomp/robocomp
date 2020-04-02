@@ -15,8 +15,7 @@ from dsl_parsers.dsl_factory import DSLFactory
 includeDirectories = theIDSLPaths.split('#')
 component = DSLFactory().from_file(theCDSL, include_directories=includeDirectories)
 if component is None:
-	print('Can\'t locate', theCDSLs)
-	sys.exit(1)
+	raise ValueError('mainUI.ui: Can\'t locate %s' % theCDSL)
 
 ]]]
 [[[end]]]

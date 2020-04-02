@@ -24,6 +24,7 @@ SET ( SOURCES
   genericmonitor.cpp
   commonbehaviorI.cpp
   genericworker.cpp
+  imupubI.cpp
 )
 
 

@@ -102,4 +102,11 @@ void SpecificWorker::sm_finalize()
 
 
 
+//SUBSCRIPTION to publish method from IMUPub interface
+void SpecificWorker::IMUPub_publish(const RoboCompIMU::DataImu &imu)
+{
+//subscribesToCODE
+
+}
+
 

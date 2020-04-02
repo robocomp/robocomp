@@ -4,7 +4,7 @@ Component testcomp
 {
     Communications
     {
-        publishes IMUPub;
+        subscribesTo IMUPub;
     };
 	language Cpp;
 	gui Qt(QWidget);

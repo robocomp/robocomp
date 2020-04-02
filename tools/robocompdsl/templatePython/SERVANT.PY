@@ -16,14 +16,12 @@ from dsl_parsers.parsing_utils import IDSLPool
 includeDirectories = theIDSLPaths.split('#')
 component = DSLFactory().from_file(theCDSL, include_directories=includeDirectories)
 if component == None:
-	print('Can\'t locate', theCDSLs)
-	sys.exit(1)
+	raise ValueError('SERVANT.PY: Can\'t locate %s' % theCDSLs)
 
 modulePool = IDSLPool(theIDSLs, includeDirectories)
 module = modulePool.moduleProviding(theInterface)
 if module == None:
-	print('Can\'t locate', theIDSLs)
-	sys.exit(1)
+	raise ValueError('SERVANT.PY: Can\'t locate %s' % theIDSLs)
 
 
 ]]]
@@ -64,8 +62,8 @@ except:
 	print('$ROBOCOMP environment variable not set, using the default value /opt/robocomp')
 	ROBOCOMP = '/opt/robocomp'
 if len(ROBOCOMP)<1:
-	print('ROBOCOMP environment variable not set! Exiting.')
-	sys.exit()
+	raise RuntimeError('ROBOCOMP environment variable not set! Exiting.')
+
 
 additionalPathStr = ''
 icePaths = []
@@ -93,7 +91,7 @@ cog.outl('<TABHERE><TABHERE>break')
 cog.outl('if not ice_'+theInterface+':')
 cog.outl("<TABHERE>print('Couldn\\\'t load "+theInterface+"')")
 cog.outl('<TABHERE>sys.exit(-1)')
-module2 = DSLFactory.from_file(theInterface+'.idsl', files='', includeDirectories=includeDirectories)
+module2 = DSLFactory().from_file(theInterface+'.idsl', includeDirectories=includeDirectories)
 cog.outl('from '+ module2['name'] +' import *')
 cog.outl('\nclass ' + theInterface+ 'I('+theInterface+'):')
 ]]]

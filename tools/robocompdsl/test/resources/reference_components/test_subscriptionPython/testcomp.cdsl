@@ -1,0 +1,15 @@
+import "IMUPub.idsl";
+
+Component testcomp
+{
+    Communications
+    {
+        subscribesTo IMUPub;
+    };
+	language Python;
+	gui Qt(QWidget);
+	//options agmagent;
+	//options InnerModelViewer;
+	statemachine "statemachine.smdsl";
+};
+

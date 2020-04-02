@@ -17,16 +17,14 @@ from dsl_parsers.parsing_utils import decorator_and_type_to_const_ampersand, IDS
 includeDirectories = theIDSLPaths.split('#')
 component = DSLFactory().from_file(theCDSL, include_directories=includeDirectories)
 if component == None:
-	print('Can\'t locate', theCDSLs)
-	sys.exit(1)
+	raise ValueError('SERVANT.CPP Can\'t locate %s ' % theCDSLs)
 
 modulePool = IDSLPool(theIDSLs, includeDirectories)
 
 theInterface = theInterface.split(';')
 module = modulePool.moduleProviding(theInterface[0])
 if module == None:
-	print('Can\'t locate', theIDSLs)
-	sys.exit(1)
+	raise ValueError('SERVANT.CPP: Can\'t locate %s' % theIDSLs)
 
 
 ]]]
