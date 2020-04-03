@@ -83,7 +83,7 @@ class CDSLDocument:
 	def generate_imports(self):
 		doc_str = ""
 		for imp in self._imports:
-			doc_str += self._t() + "import \"" + imp + "\"\n"
+			doc_str += self._t() + "import \"" + imp + "\";\n"
 		return doc_str
 
 	def _generate_generic_comunication(self, com_type):
