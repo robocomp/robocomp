@@ -42,12 +42,6 @@ public:
 public slots:
 	void compute();
 	void initialize(int period);
-//Specification slot methods State Machine
-	void sm_compute();
-	void sm_initialize();
-	void sm_finalize();
-
-//--------------------
 private:
 	std::shared_ptr<InnerModel> innerModel;
 

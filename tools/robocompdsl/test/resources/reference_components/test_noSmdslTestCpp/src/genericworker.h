@@ -29,8 +29,6 @@
 	#include <QtGui>
 #endif
 #include <ui_mainUI.h>
-#include <QStateMachine>
-#include <QState>
 #include <CommonBehavior.h>
 
 
@@ -64,14 +62,6 @@ public:
 
 
 protected:
-//State Machine
-	QStateMachine defaultMachine;
-
-	QState *computeState;
-	QState *initializeState;
-	QFinalState *finalizeState;
-
-//-------------------------
 
 	QTimer timer;
 	int Period;
@@ -80,23 +70,11 @@ private:
 
 
 public slots:
-//Slots funtion State Machine
-	virtual void sm_compute() = 0;
-	virtual void sm_initialize() = 0;
-	virtual void sm_finalize() = 0;
-
-//-------------------------
 	virtual void compute() = 0;
     virtual void initialize(int period) = 0;
 	
 signals:
 	void kill();
-//Signals for State Machine
-	void t_initialize_to_compute();
-	void t_compute_to_compute();
-	void t_compute_to_finalize();
-
-//-------------------------
 };
 
 #endif

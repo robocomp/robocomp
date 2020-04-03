@@ -7,6 +7,5 @@ Component testcomp
 	gui Qt(QWidget);
 	//options agmagent;
 	//options InnerModelViewer;
-	statemachine "statemachine.smdsl";
 };
 

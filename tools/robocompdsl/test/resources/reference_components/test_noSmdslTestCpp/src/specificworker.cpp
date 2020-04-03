@@ -32,7 +32,6 @@ SpecificWorker::SpecificWorker(MapPrx& mprx) : GenericWorker(mprx)
 SpecificWorker::~SpecificWorker()
 {
 	std::cout << "Destroying SpecificWorker" << std::endl;
-	emit t_compute_to_finalize();
 }
 
 bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
@@ -50,7 +49,6 @@ bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
 
 
 
-	defaultMachine.start();
 	
 
 	return true;
@@ -61,7 +59,6 @@ void SpecificWorker::initialize(int period)
 	std::cout << "Initialize worker" << std::endl;
 	this->Period = period;
 	timer.start(Period);
-	emit this->t_initialize_to_compute();
 
 }
 
@@ -80,24 +77,6 @@ void SpecificWorker::compute()
 //		std::cout << "Error reading from Camera" << e << std::endl;
 //	}
 }
-
-
-void SpecificWorker::sm_compute()
-{
-	std::cout<<"Entered state compute"<<std::endl;
-	compute();
-}
-
-void SpecificWorker::sm_initialize()
-{
-	std::cout<<"Entered initial state initialize"<<std::endl;
-}
-
-void SpecificWorker::sm_finalize()
-{
-	std::cout<<"Entered final state finalize"<<std::endl;
-}
-
 
 
 
