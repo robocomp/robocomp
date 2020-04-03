@@ -91,6 +91,7 @@ class ComponentGenerator:
 
     def load_component(self, diff=False):
         self.component = dsl_factory.DSLFactory().from_file(self.cdsl_file, includeDirectories=self.include_dirs)
+
         # TODO: '#'.join? and remane to imports_str
         self.imports = ''.join([imp + '#' for imp in self.component['imports']])
 
@@ -109,11 +110,8 @@ class ComponentGenerator:
         self.create_component_directories()
 
         # Generate specific_component
-        if self.component['language'].lower() in ['cpp', 'cpp11', 'python']:
-            new_existing_files = self.generate_component()
-        else:
-            print('Unsupported language', self.component['language'])
-            sys.exit(-1)
+        new_existing_files = self.generate_component()
+
 
         if self.component['usingROS'] is True:
             for imp in self.component['imports']:
@@ -348,6 +346,5 @@ class ComponentGenerator:
                 robocompdslutils.create_directory(os.path.join(self.output_path, new_dir))
             except:
                 print('There was a problem creating a directory %s' % new_dir)
-                # TODO: change sys.exit for raise
-                sys.exit(1)
+                raise
 

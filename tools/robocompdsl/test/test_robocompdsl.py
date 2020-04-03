@@ -4,6 +4,9 @@ import shutil
 import sys
 import tempfile
 import unittest
+
+import pyparsing
+
 import robocompdsl
 from componentgenerator import ComponentGenerator
 
@@ -79,6 +82,13 @@ class RobocompdslTest(unittest.TestCase):
             finally:
                 os.chdir(self.olddir)
                 shutil.rmtree(self.tempdir, ignore_errors=True)
+
+    def test_invalid_language(self):
+        self.renew_temp_dir("Invalid")
+        cdsl = os.path.join(RESOURCES_DIR, "InvalidLanguage.cdsl")
+        self.assertRaises(pyparsing.ParseSyntaxException, ComponentGenerator().generate, cdsl, self.tempdir, [])
+        shutil.rmtree(self.tempdir, ignore_errors=True)
+
 
     def assertFilesSame(self, path1, path2):
         print("Cheking file %s" % os.path.basename(path1))

@@ -1,0 +1,11 @@
+Component testcomp
+{
+    Communications
+    {
+    };
+	language N++;
+	gui Qt(QWidget);
+	//options agmagent;
+	//options InnerModelViewer;
+};
+
