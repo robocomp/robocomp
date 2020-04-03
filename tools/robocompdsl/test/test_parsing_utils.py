@@ -19,7 +19,7 @@ class ParsingUtilsTest(unittest.TestCase):
         # input string but list is expected
         self.assertRaises(AssertionError, parsing_utils.generate_recursive_imports, "AprilTags.idsl", [])
 
-        self.assertRaises(ValueError, parsing_utils.generate_recursive_imports, ["NoExists.idsl"], [])
+        self.assertRaises(FileNotFoundError, parsing_utils.generate_recursive_imports, ["NoExists.idsl"], [])
 
         self.assertCountEqual(parsing_utils.generate_recursive_imports(["AprilTags.idsl"], []),
                               ['JointMotor.idsl', 'GenericBase.idsl'])
