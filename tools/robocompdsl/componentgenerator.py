@@ -15,7 +15,7 @@ from dsl_parsers.parsing_utils import communication_is_ice, IDSLPool
 FILES = {
     'python': {
         'files': [
-            'CMakeLists.txt', 'DoxyFile', 'README-STORM.txt', 'README.md', 'etc/config', 'src/main.py',
+            'CMakeLists.txt', 'DoxyFile', 'README-RCNODE.txt', 'README.md', 'etc/config', 'src/main.py',
             'src/genericworker.py', 'src/specificworker.py', 'src/mainUI.ui'
         ],
         'avoid_overwrite': [
@@ -26,7 +26,7 @@ FILES = {
     },
     'cpp': {
         'files': [
-            'CMakeLists.txt', 'DoxyFile', 'README-STORM.txt', 'README.md', 'etc/config', 'src/main.cpp',
+            'CMakeLists.txt', 'DoxyFile', 'README-RCNODE.txt', 'README.md', 'etc/config', 'src/main.cpp',
             'src/CMakeLists.txt', 'src/CMakeListsSpecific.txt', 'src/commonbehaviorI.h', 'src/commonbehaviorI.cpp',
             'src/genericmonitor.h', 'src/genericmonitor.cpp', 'src/config.h', 'src/specificmonitor.h',
             'src/specificmonitor.cpp', 'src/genericworker.h', 'src/genericworker.cpp', 'src/specificworker.h',
@@ -159,7 +159,7 @@ class ComponentGenerator:
         for template_file in FILES[language]['files']:
             if template_file == 'src/mainUI.ui' and self.component['gui'] is None: continue
             if language == 'python' and template_file == 'CMakeLists.txt' and self.component['gui'] is None: continue
-            if template_file == 'README-STORM.txt' and not need_storm: continue
+            if template_file == 'README-RCNODE.txt' and not need_storm: continue
 
             if language == 'python' and template_file == 'src/main.py':
                 ofile = os.path.join(self.output_path, 'src', self.component['name'] + '.py')
