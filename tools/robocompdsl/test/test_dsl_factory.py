@@ -118,7 +118,7 @@ class DSLFactoryTestCase(unittest.TestCase):
         self.assertRaises(IOError, self.factory.from_file,"NotAnIdsl.idsl")
 
         # None as path
-        self.assertRaises(ValueError, self.factory.from_file, None)
+        self.assertEqual(self.factory.from_file(None), None)
 
         # invalid dsl type from file extension
         self.assertRaises(ValueError, self.factory.from_string,"asdafafsdfasfsdfasdff", "ppsl")

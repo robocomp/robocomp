@@ -29,26 +29,6 @@ QObject()
 
 {
 
-//Initialization State machine
-	computeState = new QState(QState::ExclusiveStates);
-	defaultMachine.addState(computeState);
-	initializeState = new QState(QState::ExclusiveStates);
-	defaultMachine.addState(initializeState);
-	finalizeState = new QFinalState();
-	defaultMachine.addState(finalizeState);
-
-	defaultMachine.setInitialState(initializeState);
-
-	initializeState->addTransition(this, SIGNAL(t_initialize_to_compute()), computeState);
-	computeState->addTransition(this, SIGNAL(t_compute_to_compute()), computeState);
-	computeState->addTransition(this, SIGNAL(t_compute_to_finalize()), finalizeState);
-
-	QObject::connect(computeState, SIGNAL(entered()), this, SLOT(sm_compute()));
-	QObject::connect(initializeState, SIGNAL(entered()), this, SLOT(sm_initialize()));
-	QObject::connect(finalizeState, SIGNAL(entered()), this, SLOT(sm_finalize()));
-	QObject::connect(&timer, SIGNAL(timeout()), this, SIGNAL(t_compute_to_compute()));
-
-//------------------
 
 	mutex = new QMutex(QMutex::Recursive);
 
@@ -57,6 +37,7 @@ QObject()
 		show();
 	#endif
 	Period = BASIC_PERIOD;
+	connect(&timer, SIGNAL(timeout()), this, SLOT(compute()));
 
 }
 

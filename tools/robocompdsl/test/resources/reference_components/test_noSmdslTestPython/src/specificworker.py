@@ -30,11 +30,10 @@ from genericworker import *
 class SpecificWorker(GenericWorker):
 	def __init__(self, proxy_map):
 		super(SpecificWorker, self).__init__(proxy_map)
+		self.timer.timeout.connect(self.compute)
 		self.Period = 2000
 		self.timer.start(self.Period)
 
-		self.defaultMachine.start()
-		self.destroyed.connect(self.t_compute_to_finalize)
 
 	def __del__(self):
 		print('SpecificWorker destructor')
@@ -65,36 +64,4 @@ class SpecificWorker(GenericWorker):
 		# print(r[0], r[1], r[2])
 
 		return True
-
-# =============== Slots methods for State Machine ===================
-# ===================================================================
-	#
-	# sm_initialize
-	#
-	@QtCore.Slot()
-	def sm_initialize(self):
-		print("Entered state initialize")
-		self.t_initialize_to_compute.emit()
-		pass
-
-	#
-	# sm_compute
-	#
-	@QtCore.Slot()
-	def sm_compute(self):
-		print("Entered state compute")
-		self.compute()
-		pass
-
-	#
-	# sm_finalize
-	#
-	@QtCore.Slot()
-	def sm_finalize(self):
-		print("Entered state finalize")
-		pass
-
-
-# =================================================================
-# =================================================================
 
