@@ -21,7 +21,7 @@ def get_diff_tool(prefered=None):
 
 
 def replaceTagsInFile(path):
-    i = open(path, 'r')
+    i = open(path, 'r', encoding='utf-8', errors='ignore')
     text = i.read()
     reps = []
     reps.append(["\n<@@<" ,""])

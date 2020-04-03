@@ -4,11 +4,11 @@ rcnode internally will launch the icebox application with some predefined config
 
 $ icebox --Ice.Config=config.icebox
 
-· config.icebox contents:
+- config.icebox contents:
 
 IceBox.Service.IceStorm=IceStormService,34:createIceStorm --Ice.Config=config.icestorm
 
-· config.icestorm contents:
+- config.icestorm contents:
 
 IceStorm.TopicManager.Endpoints=tcp -p 9999
 IceStorm.Publish.Endpoints=tcp -p 10000
