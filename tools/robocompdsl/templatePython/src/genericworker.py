@@ -23,10 +23,11 @@ from dsl_parsers.dsl_factory import DSLFactory
 from dsl_parsers.parsing_utils import get_name_number, IDSLPool, communication_is_ice
 
 component = DSLFactory().from_file(theCDSL, include_directories=includeDirectories)
-sm = DSLFactory().from_file(component['statemachine'])
 
 if component == None:
 	raise ValueError('genericworker.py: Can\'t locate %s' % theCDSL)
+
+sm = DSLFactory().from_file(component['statemachine'])
 
 
 pool = IDSLPool(theIDSLs, includeDirectories)
