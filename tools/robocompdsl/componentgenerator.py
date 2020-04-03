@@ -147,12 +147,11 @@ class ComponentGenerator:
     def generate_component(self):
         language = self.component['language'].lower()
         need_storm = False
-        for pub in self.component['publishes']:
+        for pub in self.component['publishes'] + self.component['subscribesTo']:
             if communication_is_ice(pub):
                 need_storm = True
-        for sub in self.component['subscribesTo']:
-            if communication_is_ice(sub):
-                need_storm = True
+                break
+
         #
         # Generate regular files
         #
@@ -163,16 +162,16 @@ class ComponentGenerator:
             if template_file == 'README-STORM.txt' and not need_storm: continue
 
             if language == 'python' and template_file == 'src/main.py':
-                ofile = self.output_path + '/src/' + self.component['name'] + '.py'
+                ofile = os.path.join(self.output_path, 'src', self.component['name'] + '.py')
             else:
-                ofile = self.output_path + '/' + template_file
+                ofile = os.path.join(self.output_path, template_file)
 
             if template_file in FILES[language]['avoid_overwrite'] and os.path.exists(ofile):
                 print('Not overwriting specific file "' + ofile + '", saving it to ' + ofile + '.new')
                 new_existing_files[os.path.abspath(ofile)] = os.path.abspath(ofile) + '.new'
                 ofile += '.new'
 
-            ifile = FILES[language]['template_path'] + template_file
+            ifile = os.path.join(FILES[language]['template_path'], template_file)
             print('Generating', ofile)
             params = {
                 "theCDSL": self.cdsl_file,
@@ -194,8 +193,8 @@ class ComponentGenerator:
                 interface_name = interface
             if communication_is_ice(interface):
                 for template_file in FILES[language]['servant_files']:
-                    ofile = self.output_path + '/src/' + interface_name.lower() + 'I.' + template_file.split('.')[
-                        -1].lower()
+                    ofile = os.path.join(self.output_path, 'src', interface_name.lower() + 'I.' + template_file.split('.')[
+                        -1].lower())
                     print('Generating ', ofile, ' (servant for', interface_name + ')')
                     # Call cog
                     params = {
