@@ -168,7 +168,7 @@ def main():
     output_path = args.output_path
 
     if input_file.endswith(".cdsl"):
-        ComponentGenerator().generate(input_file, output_path, args.include_dirs)
+        ComponentGenerator().generate(input_file, output_path, args.include_dirs, args.diff)
 
     elif input_file.endswith(".idsl"):
         generate_idsl_file(input_file, output_path, args.include_dirs)
