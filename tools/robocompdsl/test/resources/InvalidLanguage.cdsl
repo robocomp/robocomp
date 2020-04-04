@@ -2,12 +2,10 @@ Component testcomp
 {
     Communications
     {
-
     };
-	language Cpp;
+	language N++;
 	gui Qt(QWidget);
 	//options agmagent;
 	//options InnerModelViewer;
-	statemachine "statemachine.smdsl";
 };
 
