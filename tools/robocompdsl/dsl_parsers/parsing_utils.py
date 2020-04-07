@@ -49,6 +49,26 @@ def communication_is_ice(sb):
         raise ValueError("Parameter %s of invalid type %s" %(str(sb), str(type(sb))))
     return isIce
 
+def is_valid_pubsub_idsl(idsl):
+    for interface in idsl['interfaces']:
+        if len(interface["methods"]) != 1:
+            return False
+        for method in interface["methods"].values():
+            if method["return"] != "void":
+                return False
+            for param in method["params"]:
+                if param["decorator"] == "out":
+                    return False
+    return True
+
+def is_valid_rpc_idsl(idsl):
+    for interface in idsl['interfaces']:
+        if len(interface["methods"]) > 0:
+            return True
+    return False
+
+
+
 def is_agm1_agent(component):
     assert isinstance(component, (dict, OrderedDict)), \
         "Component parameter is expected to be a dict or OrderedDict but %s" % str(type(component))
