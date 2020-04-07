@@ -217,7 +217,7 @@ int main(int argc, char* argv[])
 	string arg;
 
 	// Set config file
-	std::string configFile = "config";
+	std::string configFile = "etc/config";
 	if (argc > 1)
 	{
 		std::string initIC("--Ice.Config=");

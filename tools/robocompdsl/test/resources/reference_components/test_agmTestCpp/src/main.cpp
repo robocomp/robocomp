@@ -161,7 +161,7 @@ int ::AGMTest::run(int argc, char* argv[])
 	}
 	catch (const Ice::Exception &ex)
 	{
-		cout << "[" << PROGRAM_NAME << "]: Exception: STORM not running: " << ex << endl;
+		cout << "[" << PROGRAM_NAME << "]: Exception: 'rcnode' not running: " << ex << endl;
 		return EXIT_FAILURE;
 	}
 
@@ -317,7 +317,7 @@ int main(int argc, char* argv[])
 	string arg;
 
 	// Set config file
-	std::string configFile = "config";
+	std::string configFile = "etc/config";
 	if (argc > 1)
 	{
 		std::string initIC("--Ice.Config=");
