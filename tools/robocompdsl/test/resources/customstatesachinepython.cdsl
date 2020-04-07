@@ -5,8 +5,6 @@ Component testcomp
     };
 	language python;
 	gui Qt(QWidget);
-	//options agmagent;
-	//options InnerModelViewer;
 	statemachine "gamestatemachine.smdsl";
 };
 

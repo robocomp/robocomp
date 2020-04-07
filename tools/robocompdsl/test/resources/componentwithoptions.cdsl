@@ -5,6 +5,6 @@ Component testcomp
     };
 	language Cpp;
 	gui Qt(QWidget);
-	statemachine "gamestatemachine.smdsl";
+	options agmagent, InnerModelViewer;
 };
 

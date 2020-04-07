@@ -108,6 +108,68 @@ class DSLFactoryTestCase(unittest.TestCase):
         h = self.factory.from_file(os.path.join(RESOURCES_DIR, "customstatemachinecpp.cdsl"))
         self.assertIs(g, h)
 
+    def test_factory_cdsl_with_options(self):
+        # TODO: Use a better cdsl example than this
+        g = self.factory.from_file(os.path.join(RESOURCES_DIR, "componentwithoptions.cdsl"))
+        self.assertDictEqual(g, {
+            'options': ['agmagent', 'innermodelviewer'],
+            'name': 'testcomp',
+            'imports': ['AGMCommonBehavior.idsl',
+                        'AGMExecutive.idsl',
+                        'AGMExecutiveTopic.idsl',
+                        'AGMWorldModel.idsl'],
+            'recursiveImports': ['Planning.idsl'],
+            'language': 'cpp',
+            'statemachine': None,
+            'statemachine_visual': False,
+            'innermodelviewer': True,
+            'gui': ['Qt', 'QWidget'],
+            'rosInterfaces': [],
+            'iceInterfaces': ['AGMCommonBehavior',
+                              'AGMExecutive',
+                              'AGMExecutiveTopic',
+                              'AGMWorldModel'],
+            'implements': ['AGMCommonBehavior'],
+            'requires': ['AGMExecutive'],
+            'publishes': [],
+            'subscribesTo': ['AGMExecutiveTopic'],
+            'usingROS': False,
+            'filename': os.path.join(RESOURCES_DIR, "componentwithoptions.cdsl")})
+        # test for cached query
+        h = self.factory.from_file(os.path.join(RESOURCES_DIR, "componentwithoptions.cdsl"))
+        self.assertIs(g, h)
+
+    def test_factory_jcdsl(self):
+        # TODO: Use a better cdsl example than this
+        g = self.factory.from_file(os.path.join(RESOURCES_DIR, "jsoncomp.jcdsl"))
+        self.assertCountEqual(g, {
+            'options': ['agmagent', 'innermodelviewer'],
+            'name': 'testcomp',
+            'imports': ['AGMCommonBehavior.idsl',
+                        'AGMExecutive.idsl',
+                        'AGMExecutiveTopic.idsl',
+                        'AGMWorldModel.idsl'],
+            'recursiveImports': ['Planning.idsl'],
+            'language': 'cpp',
+            'statemachine': None,
+            'statemachine_visual': False,
+            'innermodelviewer': True,
+            'gui': ['Qt', 'QWidget'],
+            'rosInterfaces': [],
+            'iceInterfaces': ['AGMCommonBehavior',
+                              'AGMExecutive',
+                              'AGMExecutiveTopic',
+                              'AGMWorldModel'],
+            'implements': ['AGMCommonBehavior'],
+            'requires': ['AGMExecutive'],
+            'publishes': [],
+            'subscribesTo': ['AGMExecutiveTopic'],
+            'usingROS': False,
+            'filename': os.path.join(RESOURCES_DIR, "jsoncomp.jcdsl")})
+        # test for cached query
+        h = self.factory.from_file(os.path.join(RESOURCES_DIR, "jsoncomp.jcdsl"))
+        self.assertIs(g, h)
+
     def test_factory_special_cases(self):
         # valid idsl without path
         a = self.factory.from_file("JointMotor.idsl")
