@@ -7,6 +7,7 @@ from pprint import pprint
 
 from termcolor import cprint
 
+from dsl_parsers.specific_parsers.jcdsl_parser import CDSLJsonParser
 from dsl_parsers.specific_parsers.cdsl_parser import CDSLParser
 from dsl_parsers.specific_parsers.idsl_parser import IDSLParser
 from dsl_parsers.specific_parsers.smdsl_parser import SMDSLParser
@@ -116,5 +117,7 @@ class DSLFactory(Singleton):
             return SMDSLParser()
         elif dsl_type.lower() == 'idsl':
             return IDSLParser()
+        elif dsl_type.lower() == 'jcdsl':
+            return CDSLJsonParser()
         else:
             raise ValueError("Invalid dsl type '%s'. No valid parser found for it."%dsl_type)

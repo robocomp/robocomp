@@ -167,7 +167,7 @@ def main():
     input_file = args.input_file
     output_path = args.output_path
 
-    if input_file.endswith(".cdsl"):
+    if input_file.endswith(".cdsl") or input_file.endswith(".jcdsl"):
         ComponentGenerator().generate(input_file, output_path, args.include_dirs, args.diff)
 
     elif input_file.endswith(".idsl"):
@@ -175,6 +175,7 @@ def main():
         
     else:
         print("Please check the Input file \n" + "Input File should be either .cdsl or .idsl")
+        sys.exit(-1)
 
 if __name__ == '__main__':
     main()

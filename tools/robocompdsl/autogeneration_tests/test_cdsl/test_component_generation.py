@@ -123,7 +123,7 @@ class ComponentGenerationChecker:
         component_files = os.listdir(current_dir)
         # Remove not useful files
         for file in component_files:
-            if not any(file.endswith(extension) for extension in (".smdsl", ".cdsl", ".log")):
+            if not any(file.endswith(extension) for extension in (".smdsl", ".cdsl",".jcdsl", ".log")):
                 if dry_run:
                     print("rm -r %s" % file)
                 else:
@@ -155,7 +155,7 @@ class ComponentGenerationChecker:
                 cprint("Entering dir %s" % current_dir, 'magenta')
                 os.chdir(current_dir)
                 cdsl_file = None
-                for file in glob.glob("*.cdsl"):
+                for file in glob.glob("*.cdsl")+glob.glob("*.jcdsl"):
                     cdsl_file = file
                     break
                 if cdsl_file:
