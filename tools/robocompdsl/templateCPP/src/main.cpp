@@ -416,7 +416,7 @@ if need_topic:
 	cog.outl('<TABHERE>}')
 	cog.outl('<TABHERE>catch (const Ice::Exception &ex)')
 	cog.outl('<TABHERE>{')
-	cog.outl('<TABHERE><TABHERE>cout << "[" << PROGRAM_NAME << "]: Exception: STORM not running: " << ex << endl;')
+	cog.outl('<TABHERE><TABHERE>cout << "[" << PROGRAM_NAME << "]: Exception: \'rcnode\' not running: " << ex << endl;')
 	cog.outl('<TABHERE><TABHERE>return EXIT_FAILURE;')
 	cog.outl('<TABHERE>}')
 
@@ -599,7 +599,7 @@ int main(int argc, char* argv[])
 	string arg;
 
 	// Set config file
-	std::string configFile = "config";
+	std::string configFile = "etc/config";
 	if (argc > 1)
 	{
 		std::string initIC("--Ice.Config=");
