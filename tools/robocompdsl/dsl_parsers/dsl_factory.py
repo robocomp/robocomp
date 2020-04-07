@@ -74,7 +74,7 @@ class DSLFactory(Singleton):
         # if update is false and file_path exists in the cache, it's returned
         if file_path in self. _cache and update is False:
             # print("______________________Cached %s______________" % file_path)
-            result = self._cache[file_path].struct
+            result = self._cache[file_path]
         else:
             # print("______________________Parsing %s______________" % file_path)
             if file_path is None or file_path == "":
@@ -102,7 +102,7 @@ class DSLFactory(Singleton):
             else:
                 result['filename'] = file_path
                 # store the parser with the result in the cache fo the factory
-                self._cache[file_path] = parser
+                self._cache[file_path] = result
         return result
 
     def create_parser(self, dsl_type):
