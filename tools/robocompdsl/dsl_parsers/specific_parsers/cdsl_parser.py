@@ -22,10 +22,10 @@ class CDSLParser(DSLParserTemplate):
         # keywords
         (IMPORT, COMMUNICATIONS, LANGUAGE, COMPONENT, CPP, CPP11, GUI, QWIDGET, QMAINWINDOW, QDIALOG, QT,
          PYTHON, REQUIRES, IMPLEMENTS, SUBSCRIBESTO, PUBLISHES, OPTIONS, TRUE, FALSE,
-         INNERMODELVIEWER, STATEMACHINE, VISUAL) = list(map(CaselessKeyword, """
+         INNERMODELVIEWER, STATEMACHINE, VISUAL, AGMAGENT, AGM2AGENT, AGM2AGENTROS, AGM2AGENTICE, ICE, ROS) = list(map(CaselessKeyword, """
         import communications language component cpp cpp11 gui QWidget QMainWindow QDialog Qt 
         python requires implements subscribesTo publishes options true false
-        InnerModelViewer statemachine visual""".split()))
+        InnerModelViewer statemachine visual agmagent agm2agent agm2agentros agm2agentice ice ros""".split()))
 
         identifier = Word(alphas + "_", alphanums + "_")
         PATH = CharsNotIn("\";")
@@ -35,7 +35,7 @@ class CDSLParser(DSLParserTemplate):
 
         idslImports = ZeroOrMore(idslImport).setResultsName("imports")
 
-        commType = Optional(OPAR - (CaselessKeyword("ice") | CaselessKeyword("ros")).setResultsName("type") + CPAR)
+        commType = Optional(OPAR - (ICE | ROS).setResultsName("type") + CPAR)
 
         implementsList = Optional(
             IMPLEMENTS - Group(delimitedList(identifier.setResultsName("impIdentifier") + commType)).setResultsName(
@@ -61,19 +61,18 @@ class CDSLParser(DSLParserTemplate):
         language_options = (CPP | CPP11 | PYTHON).setResultsName('language')
         language = LANGUAGE.suppress() - language_options - SEMI
 
-        # InnerModelViewer
-        innermodelviewer = Group(Optional(INNERMODELVIEWER.suppress() - (TRUE | FALSE) + SEMI))('innermodelviewer')
         # GUI
         gui_options = QWIDGET | QMAINWINDOW | QDIALOG
         gui = Group(Optional(GUI.suppress() - QT('type') + OPAR - gui_options('gui_options') - CPAR + SEMI))
         # additional options
-        options = Group(Optional(OPTIONS.suppress() - identifier + ZeroOrMore(Suppress(Word(',')) + identifier) + SEMI))
+        valid_options = INNERMODELVIEWER | AGMAGENT
+        options = Group(Optional(OPTIONS.suppress() - delimitedList(valid_options)) + SEMI)
         statemachine = Group(
             Optional(STATEMACHINE.suppress() - QUOTE + CharsNotIn("\";").setResultsName('machine_path') + QUOTE + Optional(VISUAL.setResultsName('visual').setParseAction(lambda t: True))+ SEMI))
 
         # Component definition
         componentContents = Group(
-            communications - language + Optional(gui('gui')) + Optional(options('options')) + Optional(innermodelviewer) + Optional(statemachine('statemachine'))).setResultsName(
+            communications - language + Optional(gui('gui')) + Optional(options('options')) + Optional(statemachine('statemachine'))).setResultsName(
             "content")
         component = Group(
             COMPONENT.suppress() - identifier("name") + OBRACE + componentContents + CBRACE + SEMI).setResultsName(
@@ -97,7 +96,7 @@ class CDSLParser(DSLParserTemplate):
             for op in parsing_result['component']['content']['options']:
                 component['options'].append(op.lower())
         except:
-            traceback.print_exc()
+            component['options'] = []
 
         # Component name
         component['name'] = parsing_result['component']['name']
