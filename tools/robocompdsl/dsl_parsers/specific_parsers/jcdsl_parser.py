@@ -25,6 +25,22 @@ class ComponentInspections:
                     }
             },
             {
+                "function": "check_exists_or_fail",
+                "object_path": ["language", "name"],
+                "params":
+                    {
+                        "message": "language is mandatory for a component"
+                    }
+            },
+            {
+                "function": "check_value_in",
+                "object_path": ['language', 'name'],
+                "params":
+                    {
+                        'values': ['python', 'cpp', 'cpp11']
+                    }
+            },
+            {
                 "function": "check_valid_keys",
                 "object_path": [],
                 "params":
@@ -46,24 +62,28 @@ class ComponentInspections:
                             'name',
                             'modules',
                             'gui',
-                            'statemachine'
+                            'statemachine',
+                            'statemachine_visual'
                         ]
                     }
             },
             {
-                "function": "check_exists_or_create",
-                "object_path": ["implements"],
+                "function": "check_and_set_default_values",
+                "object_path": [],
                 "params":
                     {
-                    "value": []
-                    }
-            },
-            {
-                "function": "check_exists_or_create",
-                "object_path": ["innermodelviewer"],
-                "params":
-                    {
-                        "value": False
+                        "checks": [
+                            {"object_path": ["implements"], "value": []},
+                            {"object_path": ["requires"], "value": []},
+                            {"object_path": ["publishes"], "value": []},
+                            {"object_path": ["subscribesTo"], "value": []},
+                            {"object_path": ["rosInterfaces"], "value": []},
+                            {"object_path": ["iceInterfaces"], "value": []},
+                            {"object_path": ["innermodelviewer"], "value": False},
+                            {"object_path": ["usingROS"], "value": False},
+                            {"object_path": ["gui"], "value": None},
+                            {"object_path": ["statemachine"], "value": None}
+                        ]
                     }
             },
             {
@@ -125,6 +145,13 @@ class ComponentInspections:
             pointer[object_path[-1]] = params['value']
         return True
 
+    def check_and_set_default_values(self, object, object_path, params):
+        result = True
+        nested_object = reduce(dict.get, object_path, object)
+        for default in params['checks']:
+            result = result and self.check_exists_or_create(nested_object, default['object_path'], default)
+        return result
+
     def check_valid_keys(self, object, object_path, params):
         nested_object = reduce(dict.get, object_path, object)
         for key in nested_object.keys():
@@ -142,10 +169,23 @@ class ComponentInspections:
 
     def check_value(self, object, object_path, params):
         value = reduce(dict.get, object_path, object)
+        if isinstance(value, str):
+            value = value.casefold()
+        if isinstance(params['value'], str):
+            params['value'] =  params['value'].casefold()
         if value != params['value']:
             return False
         else:
             return True
+
+    def check_value_in(self, object, object_path, params):
+        value = reduce(dict.get, object_path, object)
+        references = params['values']
+        if isinstance(value, str):
+            value = value.casefold()
+        if all(isinstance(x, int) for x in params['values']):
+            references = map(lambda x: x.lower(), params['values'])
+        return value in references
 
     def check_list_values_in(self, object, object_path, params):
         list_to_check = reduce(dict.get, object_path, object)
@@ -163,7 +203,7 @@ class ComponentInspections:
             if 'false' in params:
                 false_method = getattr(self, params['false']['function'])
                 return false_method(nested_object, params['false']['object_path'], params['false']['params'])
-            return False
+            return True
 
     def __find_best_match(self, reference, keys):
         max_ratio = -1
@@ -178,26 +218,25 @@ class ComponentInspections:
 
 
 
-
-
 class CDSLJsonParser(DSLParserTemplate):
-    def __init__(self, include_directories = []):
+    def __init__(self, include_directories=[]):
         super(CDSLJsonParser, self).__init__()
         self._include_directories = include_directories
 
     def _create_parser(self):
         pass
 
-    def string_to_struct(self, string, **kwargs):
-        component = OrderedDict(json.loads(string))
+    def string_to_struct(self, dsl_string, **kwargs):
+        component = OrderedDict(json.loads(dsl_string))
+        inspections = ComponentInspections()
+        inspections.check_all_inspections(component)
+
         # print 'parseCDSL.component', includeDirectories
-        if self._include_directories == None:
+        if self._include_directories is None:
             self._include_directories = []
+
         if "include_directories" in kwargs:
             self._include_directories = kwargs["include_directories"]
-
-        if 'name' not in component:
-            raise RuntimeError()
 
         if 'imports' in component:
             imprts = component['imports']
@@ -213,55 +252,21 @@ class CDSLJsonParser(DSLParserTemplate):
         component['imports'] = list(map(os.path.basename, imprts))
 
         component['recursiveImports'] = generate_recursive_imports(list(component['imports']), self._include_directories)
-        # # Language
-        # component['language'] = parsing_result['component']['content']['language']
-        # Statemachine
-        if 'statemachine' not in component:
-            component['statemachine'] = None
-        # component['statemachine'] = None
-        # try:
-        #     statemachine = parsing_result['component']['content']['statemachine']['machine_path']
-        #     component['statemachine'] = statemachine
-        # except:
-        #     pass
+
         component['statemachine_visual'] = False
         if isinstance(component['statemachine'], list):
             if len(component['statemachine']) > 1:
                 if component['statemachine'] == 'visual':
                     component['statemachine_visual'] = True
 
-
-        # innermodelviewer
-        component['innermodelviewer'] = False
         try:
             component['innermodelviewer'] = 'innermodelviewer' in [x.lower() for x in component['options']]
         except:
             pass
-        if 'gui' not in component:
-            component['gui'] = None
-        # GUI
-        # component['gui'] = None
-        # try:
-        #     uiT = parsing_result['component']['content']['gui']['type']
-        #     uiI = parsing_result['component']['content']['gui']['gui_options']
-        #     if uiT.lower() == 'qt' and uiI in ['QWidget', 'QMainWindow', 'QDialog']:
-        #         component['gui'] = [uiT, uiI]
-        #         pass
-        #     else:
-        #         raise ValueError('Wrong UI specification %s' % parsing_result['properties']['gui'])
-        # except:
-        #     # TODO: check exceptions and do something when accessing gui options fails.
-        #     pass
 
-        # Communications
-        component['rosInterfaces'] = []
-        component['iceInterfaces'] = []
-        if 'implements' not in component: component['implements'] = []
-        if 'requires' not in component: component['requires'] = []
-        if 'publishes' not in component: component['publishes'] = []
-        if 'subscribesTo' not in component: component['subscribesTo'] = []
-        component['usingROS'] = False
-        ####################
+        # TODO: Fix this ugly thing
+        component["language"] = component["language"]["name"]
+
         com_types = ['implements', 'requires', 'publishes', 'subscribesTo']
         for comm_type in com_types:
             if comm_type in component:
@@ -336,7 +341,4 @@ if __name__ == '__main__':
     with open(file_path, 'r') as reader:
         string = reader.read()
     struct = parser.string_to_struct(string)
-    inspections = ComponentInspections()
-    struct['language'] = {"name": 'python', "modules": ["opencv"]}
-    inspections.check_all_inspections(struct)
     pass

@@ -6,7 +6,9 @@
     "subscribesTo": [
         "HumanPose"
         ],
-    "language": "Cpp",
+    "language": {
+        "name": "Cpp"
+    },
     "options": [
         "agmagent"
         ]
