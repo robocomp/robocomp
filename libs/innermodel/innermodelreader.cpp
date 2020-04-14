@@ -129,6 +129,11 @@ void InnerModelReader::recursive(QDomNode parentDomNode, InnerModel *model, Inne
 	for (QDomNode domNode = parentDomNode.firstChild(); not domNode.isNull(); domNode = domNode.nextSibling())
 	{
 		e = domNode.toElement();
+		if (model->hash.keys().contains(e.attribute("id")) )
+		{
+			printf("Error: identifier \"%s\" used more than once! Please check your InnerModel XML file.\n", e.attribute("id").toStdString().c_str());
+			exit(1);
+		}
 
 		if (not e.isNull())
 		{
