@@ -14,6 +14,13 @@ module RoboCompHumanCameraBody
 	sequence <byte> DescriptorByte;
 	sequence <DescriptorByte> DescByteList;
 	sequence <DescriptorFloat> DescFloatList;
+	sequence<byte> ImgType;
+	struct TImage
+	{
+		int width;
+		int height;
+		ImgType image;
+    };
 	struct KeyPoint
 	{
 		 float x;
@@ -36,6 +43,7 @@ module RoboCompHumanCameraBody
 		 float rx;
 		 float ry;
 		 float rz;
+		 TImage roi;
 	};
 	sequence <Person> People;
 	struct PeopleData
