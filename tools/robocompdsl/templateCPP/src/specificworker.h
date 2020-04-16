@@ -12,6 +12,7 @@ def Z():
 def TAB():
 	cog.out('<TABHERE>')
 
+from templateCPP import functions
 from dsl_parsers.dsl_factory import DSLFactory
 from dsl_parsers.parsing_utils import communication_is_ice, is_agm1_agent, is_agm2_agent, IDSLPool
 includeDirectories = theIDSLPaths.split('#')
@@ -98,44 +99,7 @@ public:
 	bool setParams(RoboCompCommonBehavior::ParameterList params);
 
 [[[cog
-if 'implements' in component:
-	for impa in component['implements']:
-		if type(impa) == str:
-			imp = impa
-		else:
-			imp = impa[0]
-		module = pool.moduleProviding(imp)
-		for interface in module['interfaces']:
-			if interface['name'] == imp:
-				for mname in interface['methods']:
-					method = interface['methods'][mname]
-					paramStrA = ''
-					if communication_is_ice(impa):
-						for p in method['params']:
-							# delim
-							if paramStrA == '': delim = ''
-							else: delim = ', '
-							# decorator
-							ampersand = '&'
-							if p['decorator'] == 'out':
-								const = ''
-							else:
-								if component['language'].lower() == "cpp":
-									const = 'const '
-								else:
-									const = ''
-									ampersand = ''
-								if p['type'].lower() in ['int', '::ice::int', 'float', '::ice::float']:
-									ampersand = ''
-							# STR
-							paramStrA += delim + const + p['type'] + ' ' + ampersand + p['name']
-						cog.outl("<TABHERE>" + method['return'] + ' ' +interface['name'] + "_" + method['name'] + '(' + paramStrA + ");")
-					else:
-						paramStrA = module['name'] +"ROS::"+method['name']+"::Request &req, "+module['name']+"ROS::"+method['name']+"::Response &res"
-						if imp in component['iceInterfaces']:
-							cog.outl("<TABHERE>bool ROS" + method['name'] + '(' + paramStrA + ");")
-						else:
-							cog.outl("<TABHERE>bool " + method['name'] + '(' + paramStrA + ");")
+cog.out(functions.specificworker_implements_method_definition(pool, component))
 
 if 'subscribesTo' in component:
 	for impa in component['subscribesTo']:
