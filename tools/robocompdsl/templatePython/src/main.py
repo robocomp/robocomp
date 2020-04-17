@@ -121,7 +121,7 @@ Z()
 # \mainpage RoboComp::
 [[[cog
 A()
-cog.out(component['name'])
+cog.out(component.name)
 ]]]
 [[[end]]]
 #
@@ -154,7 +154,7 @@ cog.out(component['name'])
 # Just: "${PATH_TO_BINARY}/
 [[[cog
 A()
-cog.out(component['name'])
+cog.out(component.name)
 Z()
 ]]]
 [[[end]]]
@@ -172,7 +172,7 @@ import signal
 
 from PySide2 import QtCore
 [[[cog
-    if component['gui'] is not None:
+    if component.gui is not None:
         cog.outl('from PySide2 import QtWidgets')
 ]]]
 [[[end]]]
@@ -209,7 +209,7 @@ def sigint_handler(*args):
     
 if __name__ == '__main__':
 [[[cog
-	if component['gui'] is not None:
+	if component.gui is not None:
 		cog.outl('<TABHERE>app = QtWidgets.QApplication(sys.argv)')
 	else:
 		cog.outl('<TABHERE>app = QtCore.QCoreApplication(sys.argv)')
@@ -232,17 +232,17 @@ if __name__ == '__main__':
 try:
 	needIce = False
 	needStorm = False
-	for req in component['requires']:
+	for req in component.requires:
 		if communication_is_ice(req):
 			needIce = True
-	for imp in component['implements']:
+	for imp in component.implements:
 		if communication_is_ice(imp):
 			needIce = True
-	for pub in component['publishes']:
+	for pub in component.publishes:
 		if communication_is_ice(pub):
 			needIce = True
 			needStorm = True
-	for sub in component['subscribesTo']:
+	for sub in component.subscribesTo:
 		if communication_is_ice(sub):
 			needIce = True
 			needStorm = True
@@ -259,12 +259,12 @@ try:
 except:
 	pass
 
-for req, num in get_name_number(component['requires']):
+for req, num in get_name_number(component.requires):
 	if communication_is_ice(req):
 		w = REQUIRE_STR.replace("<NORMAL>", req).replace("<LOWER>", req.lower()).replace("<NUM>",num)
 		cog.outl(w)
 
-for pub, num in get_name_number(component['publishes']):
+for pub, num in get_name_number(component.publishes):
 	if communication_is_ice(pub):
 		w = PUBLISHES_STR.replace("<NORMAL>", pub).replace("<LOWER>", pub.lower())
 		cog.outl(w)
@@ -276,18 +276,18 @@ cog.outl("<TABHERE>else:")
 cog.outl("<TABHERE><TABHERE>print(\"Error getting required connections, check config file\")")
 cog.outl("<TABHERE><TABHERE>sys.exit(-1)")
 
-for imp in component['implements']:
+for imp in component.implements:
 	if communication_is_ice(imp):
 		w = IMPLEMENTS_STR.replace("<NORMAL>", imp).replace("<LOWER>", imp.lower())
 		cog.outl(w)
 
-for sut in component['subscribesTo']:
+for sut in component.subscribesTo:
 	if communication_is_ice(sut):
 		w = SUBSCRIBESTO_STR.replace("<NORMAL>", sut).replace("<LOWER>", sut.lower())
 		cog.outl(w)
-if component['usingROS'] == True:
-	cog.outl("<TABHERE>rospy.init_node(\""+component['name']+"\", anonymous=True)")
-for sub in component['subscribesTo']:
+if component.usingROS == True:
+	cog.outl("<TABHERE>rospy.init_node(\""+component.name+"\", anonymous=True)")
+for sub in component.subscribesTo:
 	nname = sub
 	while type(nname) != type(''):
 		nname = nname[0]
@@ -312,7 +312,7 @@ for sub in component['subscribesTo']:
 						else:
 							cog.outl("<TABHERE>rospy.Subscriber("+s+", "+p['type']+", worker.ROS"+method['name']+")")
 
-for imp in component['implements']:
+for imp in component.implements:
 	nname = imp
 	while type(nname) != type(''):
 		nname = nname[0]

@@ -17,9 +17,9 @@ from dsl_parsers.dsl_factory import DSLFactory
 from dsl_parsers.parsing_utils import communication_is_ice, is_agm1_agent, is_agm2_agent, IDSLPool
 includeDirectories = theIDSLPaths.split('#')
 component = DSLFactory().from_file(theCDSL, include_directories=includeDirectories)
-sm = DSLFactory().from_file(component['statemachine'])
+sm = DSLFactory().from_file(component.statemachine)
 if sm is None:
-    component['statemachine'] = None
+    component.statemachine = None
 if component is None:
 	raise ValueError('specificworker.h: Can\'t locate %s' % theCDSLs)
 
@@ -62,7 +62,7 @@ Z()
 
 [[[cog
 try:
-	if 'agmagent' in [ x.lower() for x in component['options'] ]:
+	if 'agmagent' in [ x.lower() for x in component.options ]:
 		cog.outl("// THIS IS AN AGENT")
 except:
 	pass
@@ -76,7 +76,7 @@ except:
 #include <genericworker.h>
 #include <innermodel/innermodel.h>
 [[[cog
-if component['innermodelviewer']:
+if component.innermodelviewer:
 	cog.outl("#ifdef USE_QTGUI")
 	cog.outl("<TABHERE>#include <osgviewer/osgview.h>")
 	cog.outl("<TABHERE>#include <innermodel/innermodelviewer.h>")
@@ -89,7 +89,7 @@ class SpecificWorker : public GenericWorker
 Q_OBJECT
 public:
 [[[cog
-	if component['language'].lower() == 'cpp':
+	if component.language.lower() == 'cpp':
 		cog.outl("<TABHERE>SpecificWorker(MapPrx& mprx);")
 	else:
 		cog.outl("<TABHERE>SpecificWorker(TuplePrx tprx);")
@@ -99,105 +99,28 @@ public:
 	bool setParams(RoboCompCommonBehavior::ParameterList params);
 
 [[[cog
-cog.out(functions.specificworker_implements_method_definition(pool, component))
+cog.out(functions.specificworker_implements_method_definitions(pool, component))
 
-if 'subscribesTo' in component:
-	for impa in component['subscribesTo']:
-		if type(impa) == str:
-			imp = impa
-		else:
-			imp = impa[0]
-		module = pool.moduleProviding(imp)
-		for interface in module['interfaces']:
-			if interface['name'] == imp:
-				for mname in interface['methods']:
-					method = interface['methods'][mname]
-					paramStrA = ''
-					if communication_is_ice(impa):
-						for p in method['params']:
-							# delim
-							if paramStrA == '': delim = ''
-							else: delim = ', '
-							# decorator
-							ampersand = '&'
-							if p['decorator'] == 'out':
-								const = ''
-							else:
-								if component['language'].lower() == "cpp":
-									const = 'const '
-								else:
-									const = ''
-									ampersand = ''
-								if p['type'].lower() in ['int', '::ice::int', 'float', '::ice::float']:
-									ampersand = ''
-							# STR
-							paramStrA += delim + const + p['type'] + ' ' + ampersand + p['name']
-						cog.outl("<TABHERE>" + method['return'] + ' ' +interface['name'] + "_" + method['name'] + '(' + paramStrA + ");")
-					else:
-						for p in method['params']:
-							# delim
-							if paramStrA == '': delim = ''
-							else: delim = ', '
-							# decorator
-							ampersand = '&'
-							if p['decorator'] == 'out':
-								const = ''
-							else:
-								const = 'const '
-								ampersand = ''
-							if p['type'] in ('float','int'):
-								p['type'] = "std_msgs::"+p['type'].capitalize()+"32"
-							elif p['type'] in ('uint8','uint16','uint32','uint64'):
-								p['type'] = "std_msgs::UInt"+p['type'].split('t')[1]
-							elif p['type'] in rosTypes:
-								p['type'] = "std_msgs::"+p['type'].capitalize()
-							elif not '::' in p['type']:
-								p['type'] = module['name']+"ROS::"+p['type']
-							# STR
-							paramStrA += delim + p['type'] + ' ' + p['name']
-						if imp in component['iceInterfaces']:
-							cog.outl("<TABHERE>void ROS" + method['name'] + '(' + paramStrA + ");")
-						else:
-							cog.outl("<TABHERE>void " + method['name'] + '(' + paramStrA + ");")
+cog.out(functions.specificworker_subscribes_method_definitions(pool, component))
 
 ]]]
 [[[end]]]
 
 public slots:
 [[[cog
-if (sm is not None and sm['machine']['default'] is True) or component['statemachine'] is None:
+if (sm is not None and sm['machine']['default'] is True) or component.statemachine is None:
 	cog.outl("<TABHERE>void compute();")
 ]]]
 [[[end]]]
 	void initialize(int period);
 [[[cog
-if component['statemachine'] is not None:
-    sm_specification = ""
-    if sm['machine']['contents']['states'] is not None:
-        for state in sm['machine']['contents']['states']:
-            sm_specification += "<TABHERE>void sm_" + state + "();\n"
-    if sm['machine']['contents']['initialstate'] is not None:
-        sm_specification += "<TABHERE>void sm_" + sm['machine']['contents']['initialstate'] + "();\n"
-    if sm['machine']['contents']['finalstate'] is not None:
-        sm_specification += "<TABHERE>void sm_" + sm['machine']['contents']['finalstate'] + "();\n"
-    if sm['substates'] is not None:
-        for substates in sm['substates']:
-            if substates['contents']['states'] is not None:
-                for state in substates['contents']['states']:
-                    sm_specification += "<TABHERE>void sm_" + state + "();\n"
-            if substates['contents']['initialstate'] is not None:
-                sm_specification += "<TABHERE>void sm_" + substates['contents']['initialstate'] + "();\n"
-            if substates['contents']['finalstate'] is not None:
-                sm_specification += "<TABHERE>void sm_" + substates['contents']['finalstate'] + "();\n"
-    cog.outl("//Specification slot methods State Machine")
-    cog.outl(sm_specification)
-    cog.outl("//--------------------")
+cog.out(functions.specificworker_statemachine_methods_definitions(component, sm))
 ]]]
 [[[end]]]
 private:
 	std::shared_ptr<InnerModel> innerModel;
 [[[cog
-if component['innermodelviewer']:
+if component.innermodelviewer:
 	cog.outl("#ifdef USE_QTGUI")
 	cog.outl("<TABHERE>OsgView *osgView;")
 	cog.outl("<TABHERE>InnerModelViewer *innerModelViewer;")
@@ -208,7 +131,7 @@ try:
 		cog.outl("<TABHERE>ParameterMap params;")
 		cog.outl("<TABHERE>AGMModel::SPtr worldModel;")
 		cog.outl("<TABHERE>bool active;")
-		if 'innermodelviewer' in [ x.lower() for x in component['options'] ]:
+		if 'innermodelviewer' in [ x.lower() for x in component.options ]:
 			cog.outl("<TABHERE>void regenerateInnerModelViewer();")
 		cog.outl("<TABHERE>bool setParametersAndPossibleActivation(const ParameterMap &prs, bool &reactivated);")
 		cog.outl("<TABHERE>void sendModificationProposal(AGMModel::SPtr &worldModel, AGMModel::SPtr &newModel);")

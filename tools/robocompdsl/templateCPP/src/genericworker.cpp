@@ -17,9 +17,9 @@ from dsl_parsers.dsl_factory import DSLFactory
 from dsl_parsers.parsing_utils import get_name_number, communication_is_ice, IDSLPool
 includeDirectories = theIDSLPaths.split('#')
 component = DSLFactory().from_file(theCDSL, include_directories=includeDirectories)
-sm = DSLFactory().from_file(component['statemachine'])
+sm = DSLFactory().from_file(component.statemachine)
 if sm is None:
-    component['statemachine'] = None
+    component.statemachine = None
 if component is None:
     raise ValueError('genericworker.cpp: Can\'t locate %s' % theCDSL)
 
@@ -58,11 +58,11 @@ Z()
 * \brief Default constructor
 */
 [[[cog
-if component['language'].lower() == 'cpp':
+if component.language.lower() == 'cpp':
 	cog.outl("GenericWorker::GenericWorker(MapPrx& mprx) :")
 else:
 	cog.outl("GenericWorker::GenericWorker(TuplePrx tprx) :")
-if component['gui'] is not None:
+if component.gui is not None:
 	cog.outl("""#ifdef USE_QTGUI
 Ui_guiDlg()
 #else
@@ -92,7 +92,7 @@ if sm is not None:
                         if substates['parallel'] is "parallel":
                             childMode = "QState::ParallelStates"
                             break
-            if not component['statemachine_visual']:
+            if not component.statemachine_visual:
                 codaddState += "<TABHERE>" + state + "State = new QState(" + childMode + ");\n"
                 codaddState += "<TABHERE>" + sm['machine']['name'] +  ".addState(" + state + "State);\n"
             else:
@@ -110,7 +110,7 @@ if sm is not None:
                     if substates['parallel'] is "parallel":
                         childMode = "QState::ParallelStates"
                         break
-        if not component['statemachine_visual']:
+        if not component.statemachine_visual:
             codaddState += "<TABHERE>" + state + "State = new QState(" + childMode + ");\n"
             codaddState += "<TABHERE>" + sm['machine']['name'] +  ".addState(" + state + "State);\n"
         else:
@@ -121,7 +121,7 @@ if sm is not None:
 
     if sm['machine']['contents']['finalstate'] is not None:
         state = sm['machine']['contents']['finalstate']
-        if not component['statemachine_visual']:
+        if not component.statemachine_visual:
             codaddState += "<TABHERE>" + state + "State = new QFinalState();\n"
             codaddState += "<TABHERE>" + sm['machine']['name'] +  ".addState(" + state + "State);\n"
         else:
@@ -139,7 +139,7 @@ if sm is not None:
                             if sub['parallel'] is "parallel":
                                 childMode = "QState::ParallelStates"
                                 break
-                    if not component['statemachine_visual']:
+                    if not component.statemachine_visual:
                         codaddState += "<TABHERE>" + state + "State = new QState(" + childMode + ", " + substates['parent'] +"State);\n"
                         codaddState += "<TABHERE>" + sm['machine']['name'] +  ".addState(" + state + "State);\n"
                     else:
@@ -152,14 +152,14 @@ if sm is not None:
                         if sub['parallel'] is "parallel":
                             childMode = "QState::ParallelStates"
                             break
-                if not component['statemachine_visual']:
+                if not component.statemachine_visual:
                     codaddState += "<TABHERE>" + substates['contents']['initialstate'] + "State = new QState(" + childMode + ", " + substates['parent'] +"State);\n"
                     codaddState += "<TABHERE>" + sm['machine']['name'] +  ".addState(" + state + "State);\n"
                 else:
                     codaddState += "<TABHERE>" + substates['contents']['initialstate'] +"State = " + sm['machine']['name'] + ".addState(\"" + state + "\", " + childMode + ", " + substates['parent'] +"State);\n"
 
             if substates['contents']['finalstate'] is not None:
-                if not component['statemachine_visual']:
+                if not component.statemachine_visual:
                     codaddState += "<TABHERE>" + substates['contents']['finalstate'] + "State = new QFinalState(" +substates['parent'] + "State);\n"
                 else:
                     codaddState += "<TABHERE>" + substates['contents']['finalstate'] +"State = " + sm['machine']['name'] + ".addFinalState(\"" + state + "\");\n"
@@ -167,7 +167,7 @@ if sm is not None:
     if sm['machine']['contents']['transitions'] is not None:
         for transi in sm['machine']['contents']['transitions']:
             for dest in transi['dests']:
-                if not component['statemachine_visual']:
+                if not component.statemachine_visual:
                     codaddTransition += "<TABHERE>" + transi['src'] + "State->addTransition(" + "this, SIGNAL(t_"+transi['src'] + "_to_" + dest+"()), " + dest + "State);\n"
                 else:
                     codaddTransition += "<TABHERE>" +  sm['machine']['name'] + ".addTransition(" +  transi['src'] + "State, this, SIGNAL(t_"+transi['src'] + "_to_" + dest+"()), " + dest + "State);\n"
@@ -176,7 +176,7 @@ if sm is not None:
             if substates['contents']['transitions'] is not None:
                 for transi in substates['contents']['transitions']:
                     for dest in transi['dests']:
-                        if not component['statemachine_visual']:
+                        if not component.statemachine_visual:
                             codaddTransition += "<TABHERE>" + transi['src'] + "State->addTransition(" + "this, SIGNAL(t_"+transi['src'] + "_to_" + dest+"()), " + dest + "State);\n"
                         else:
                             codaddTransition += "<TABHERE>" +  sm['machine']['name'] + ".addTransition(" +  transi['src'] + "State, this, SIGNAL(t_"+transi['src'] + "_to_" + dest+"()), " + dest + "State);\n"
@@ -208,17 +208,17 @@ if sm is not None:
 [[[end]]]
 [[[cog
 cont = 0
-for name, num in get_name_number(component['requires']):
+for name, num in get_name_number(component.requires):
 	if communication_is_ice(name):
-		if component['language'].lower() == 'cpp':
+		if component.language.lower() == 'cpp':
 			cog.outl("<TABHERE>"+name.lower()+num+"_proxy = (*("+name+"Prx*)mprx[\""+name+"Proxy"+num+"\"]);")
 		else:
 			cog.outl("<TABHERE>"+name.lower()+num+"_proxy = std::get<" + str(cont) + ">(tprx);")
 	cont = cont + 1
 
-for name, num in get_name_number(component['publishes']):
+for name, num in get_name_number(component.publishes):
 	if communication_is_ice(name):
-		if component['language'].lower() == 'cpp':
+		if component.language.lower() == 'cpp':
 			cog.outl("<TABHERE>"+name.lower()+num+"_pubproxy = (*("+name+"Prx*)mprx[\""+name+"Pub"+num+"\"]);")
 		else:
 			cog.outl("<TABHERE>"+name.lower()+num+"_pubproxy = std::get<" + str(cont) + ">(tprx);")
@@ -229,9 +229,9 @@ for name, num in get_name_number(component['publishes']):
 	mutex = new QMutex(QMutex::Recursive);
 
 [[[cog
-if component['usingROS'] == True:
+if component.usingROS == True:
 	#INICIALIZANDO SUBSCRIBERS
-	for imp in component['subscribesTo']:
+	for imp in component.subscribesTo:
 		nname = imp
 		while type(nname) != type(''):
 			nname = nname[0]
@@ -243,12 +243,12 @@ if component['usingROS'] == True:
 				if interface['name'] == nname:
 					for mname in interface['methods']:
 						s = "\""+mname+"\""
-						if nname in component['iceInterfaces']:
+						if nname in component.iceInterfaces:
 							cog.outl("<TABHERE>"+nname+"_"+mname+" = node.subscribe("+s+", 1000, &GenericWorker::ROS"+mname+", this);")
 						else:
 							cog.outl("<TABHERE>"+nname+"_"+mname+" = node.subscribe("+s+", 1000, &GenericWorker::"+mname+", this);")
 	#INICIALIZANDO IMPLEMENTS
-	for imp in component['implements']:
+	for imp in component.implements:
 		nname = imp
 		while type(nname) != type(''):
 			nname = nname[0]
@@ -260,31 +260,31 @@ if component['usingROS'] == True:
 				if interface['name'] == nname:
 					for mname in interface['methods']:
 						s = "\""+mname+"\""
-						if nname in component['iceInterfaces']:
+						if nname in component.iceInterfaces:
 							cog.outl("<TABHERE>"+nname+"_"+mname+" = node.advertiseService("+s+", &GenericWorker::ROS"+mname+", this);")
 						else:
 							cog.outl("<TABHERE>"+nname+"_"+mname+" = node.advertiseService("+s+", &GenericWorker::"+mname+", this);")
 if 'publishes' in component:
-	for publish in component['publishes']:
+	for publish in component.publishes:
 		pubs = publish
 		while type(pubs) != type(''):
 			pubs = pubs[0]
 		if not communication_is_ice(publish):
-			if pubs in component['iceInterfaces']:
+			if pubs in component.iceInterfaces:
 				cog.outl("<TABHERE>"+pubs.lower()+"_rosproxy = new Publisher"+pubs+"(&node);")
 			else:
 				cog.outl("<TABHERE>"+pubs.lower()+"_proxy = new Publisher"+pubs+"(&node);")
 if 'requires' in component:
-	for require in component['requires']:
+	for require in component.requires:
 		req = require
 		while type(req) != type(''):
 			req = req[0]
 		if not communication_is_ice(require):
-			if req in component['iceInterfaces']:
+			if req in component.iceInterfaces:
 				cog.outl("<TABHERE>"+req.lower()+"_rosproxy = new ServiceClient"+req+"(&node);")
 			else:
 				cog.outl("<TABHERE>"+req.lower()+"_proxy = new ServiceClient"+req+"(&node);")
-if component['gui'] is not None:
+if component.gui is not None:
 	cog.outl("""<TABHERE>#ifdef USE_QTGUI
 		setupUi(this);
 		show();
@@ -293,7 +293,7 @@ if component['gui'] is not None:
 [[[end]]]
 	Period = BASIC_PERIOD;
 [[[cog
-if component['statemachine'] is None:
+if component.statemachine is None:
 	cog.outl("<TABHERE>connect(&timer, SIGNAL(timeout()), this, SLOT(compute()));")
 ]]]
 [[[end]]]
@@ -325,7 +325,7 @@ void GenericWorker::setPeriod(int p)
 
 [[[cog
 try:
-	if 'agmagent' in [ x.lower() for x in component['options'] ]:
+	if 'agmagent' in [ x.lower() for x in component.options ]:
 		cog.outl("""RoboCompPlanning::Action GenericWorker::createAction(std::string s)
 {
 	// Remove useless characters

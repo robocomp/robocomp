@@ -27,7 +27,7 @@ cmake_minimum_required(VERSION 2.6)
 PROJECT( 
 [[[cog
 A()
-cog.out(' ' + component['name'])
+cog.out(' ' + component.name)
 Z()
 ]]]
 [[[end]]]
@@ -50,7 +50,7 @@ ENDMACRO( WRAP_PYTHON_UI )
 
 [[[cog
 A()
-if component['gui'] is not None:
+if component.gui is not None:
 	cog.out('WRAP_PYTHON_UI( mainUI )')
 Z()
 ]]]

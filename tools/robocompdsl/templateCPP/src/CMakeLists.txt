@@ -60,7 +60,7 @@ SET ( SOURCES
   commonbehaviorI.cpp
   genericworker.cpp
 [[[cog
-for ima in component['implements']:
+for ima in component.implements:
 	if type(ima) == str:
 		im = ima
 	else:
@@ -68,14 +68,14 @@ for ima in component['implements']:
 	if communication_is_ice(ima):
 		cog.outl('<S2>' + im.lower() + 'I.cpp')
 
-for subscribe in component['subscribesTo']:
+for subscribe in component.subscribesTo:
 	subs = subscribe
 	while type(subs) != type(''):
 		subs = subs[0]
 	if communication_is_ice(subscribe):
 		cog.outl('<S2>' + subs.lower() + 'I.cpp')
 
-if  component['statemachine_visual']:
+if  component.statemachine_visual:
     cog.outl("  $ENV{ROBOCOMP}/classes/statemachinewidget/edge.cpp")
     cog.outl("  $ENV{ROBOCOMP}/classes/statemachinewidget/node.cpp")
     cog.outl("  $ENV{ROBOCOMP}/classes/statemachinewidget/graphwidget.cpp")
@@ -85,7 +85,7 @@ if  component['statemachine_visual']:
 )
 
 [[[cog
-if component['usingROS'] == True:
+if component.usingROS == True:
 	cog.outl('#ROS')
 	cog.outl('find_package(catkin REQUIRED)')
 	cog.outl('include_directories(  ${catkin_INCLUDE_DIRS} )')
@@ -95,14 +95,14 @@ if component['usingROS'] == True:
 [[[end]]]
 
 [[[cog
-if component['language'].lower() == "cpp11":
+if component.language.lower() == "cpp11":
 	cog.outl('ADD_DEFINITIONS ("-DICE_CPP11_MAPPING")')
 	cog.outl('FIND_PACKAGE( Ice REQUIRED COMPONENTS Ice++11 IceStorm++11)')
 ]]]
 [[[end]]]
 
 [[[cog
-	if 'agmagent' in [ x.lower() for x in component['options'] ]:
+	if 'agmagent' in [ x.lower() for x in component.options ]:
 		cog.outl('# AGM Agent\'s requirements')
 		cog.outl('find_package(LibXml2 REQUIRED)')
 		cog.outl('include_directories(LIBXML2_INCLUDE_DIRS)')
@@ -117,12 +117,12 @@ ROBOCOMP_WRAP_ICE( CommonBehavior
 [[[cog
 A()
 imp = []
-for im in component['recursiveImports'] + component["iceInterfaces"]:
+for im in component.recursiveImports + component.iceInterfaces:
     name = im.split('/')[-1].split('.')[0]
     imp.append(name)
 cog.out(' '.join(imp))
 try:
-	options = [ x.lower() for x in component['options'] ]
+	options = [ x.lower() for x in component.options ]
 	if 'agmagent' in options:
 		cog.out(" AGMExecutive AGMExecutiveTopic ")
 	elif 'agm2agent' in options or 'agm2agentICE' in options or 'agm2agentROS' in options:
@@ -136,7 +136,7 @@ Z()
 SET (EXECUTABLE_OUTPUT_PATH ${RC_COMPONENT_DEVEL_PATH}/bin)
 
 [[[cog
-	if component['gui'] is not None:
+	if component.gui is not None:
 		cog.outl("QT_WRAP_UI( UI_HEADERS mainUI.ui )")
 ]]]
 [[[end]]]
@@ -161,7 +161,7 @@ except:
 ADD_EXECUTABLE(
 [[[cog
 A()
-cog.out(' ' + component['name'] + ' ')
+cog.out(' ' + component.name + ' ')
 Z()
 ]]]
 [[[end]]]
@@ -169,7 +169,7 @@ ${SOURCES} ${MOC_SOURCES} ${RC_SOURCES} ${UI_HEADERS} )
 TARGET_LINK_LIBRARIES(
 [[[cog
 A()
-cog.out(' ' + component['name'] + ' ')
+cog.out(' ' + component.name + ' ')
 Z()
 ]]]
 [[[end]]]
@@ -177,7 +177,7 @@ ${LIBS} ${STATIC_LIBS} ${SPECIFIC_LIBS} ${QT_LIBRARIES} ${Ice_LIBRARIES})
 INSTALL(FILES ${EXECUTABLE_OUTPUT_PATH}/
 [[[cog
 A()
-cog.out(component['name'] + ' ')
+cog.out(component.name + ' ')
 Z()
 ]]]
 [[[end]]]

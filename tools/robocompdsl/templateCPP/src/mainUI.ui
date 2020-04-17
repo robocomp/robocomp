@@ -29,7 +29,7 @@ pool = IDSLPool(theIDSLs, includeDirectories)
  <widget class="
 [[[cog
 A()
-cog.out(component['gui'][1])
+cog.out(component.gui[1])
 Z()
 ]]]
 [[[end]]]
@@ -46,7 +46,7 @@ Z()
    <string>
 [[[cog
 A()
-cog.out(component['name'])
+cog.out(component.name)
 Z()
 ]]]
 [[[end]]]

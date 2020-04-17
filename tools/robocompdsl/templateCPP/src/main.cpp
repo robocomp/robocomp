@@ -162,7 +162,7 @@ Z()
 /** \mainpage RoboComp::
 [[[cog
 A()
-cog.out(component['name'])
+cog.out(component.name)
 ]]]
 [[[end]]]
  *
@@ -171,7 +171,7 @@ cog.out(component['name'])
  * The
 [[[cog
 A()
-cog.out(' ' + component['name'])
+cog.out(' ' + component.name)
 Z()
 ]]]
 [[[end]]]
@@ -190,7 +190,7 @@ Z()
  * cd
 [[[cog
 A()
-cog.out(' ' + component['name'])
+cog.out(' ' + component.name)
 Z()
 ]]]
 [[[end]]]
@@ -215,7 +215,7 @@ Z()
  * Just: "${PATH_TO_BINARY}/
 [[[cog
 A()
-cog.out(component['name'])
+cog.out(component.name)
 Z()
 ]]]
 [[[end]]]
@@ -249,7 +249,7 @@ Z()
 #include "commonbehaviorI.h"
 
 [[[cog
-for ima in component['implements']:
+for ima in component.implements:
 	if type(ima) == str:
 		im = ima
 	else:
@@ -257,7 +257,7 @@ for ima in component['implements']:
 	if communication_is_ice(ima):
 		cog.outl('#include <'+im.lower()+'I.h>')
 
-for subscribe in component['subscribesTo']:
+for subscribe in component.subscribesTo:
 	subs = subscribe
 	while type(subs) != type(''):
 		subs = subs[0]
@@ -266,7 +266,7 @@ for subscribe in component['subscribesTo']:
 
 cog.outl('')
 
-for imp in component['recursiveImports']:
+for imp in component.recursiveImports:
 	incl = imp.split('/')[-1].split('.')[0]
 	cog.outl('#include <'+incl+'.h>')
 
@@ -283,7 +283,7 @@ using namespace RoboCompCommonBehavior;
 class
 [[[cog
 A()
-cog.out(' ' + component['name'] + ' ')
+cog.out(' ' + component.name + ' ')
 Z()
 ]]]
 [[[end]]]
@@ -291,14 +291,14 @@ Z()
 {
 public:
 [[[cog
-cog.out('<TABHERE>' + component['name'] + ' (QString prfx) { prefix = prfx.toStdString(); }')
+cog.out('<TABHERE>' + component.name + ' (QString prfx) { prefix = prfx.toStdString(); }')
 ]]]
 [[[end]]]
 private:
 	void initialize();
 	std::string prefix;
 [[[cog
-	if component['language'].lower() == "cpp":
+	if component.language.lower() == "cpp":
 		cog.outl('<TABHERE>MapPrx mprx;')
 	else:
 		cog.outl('<TABHERE>TuplePrx tprx;')
@@ -312,7 +312,7 @@ public:
 void
 [[[cog
 A()
-cog.out(' ::' + component['name'])
+cog.out(' ::' + component.name)
 Z()
 ]]]
 [[[end]]]
@@ -326,14 +326,14 @@ Z()
 int
 [[[cog
 A()
-cog.out(' ::' + component['name'])
+cog.out(' ::' + component.name)
 Z()
 ]]]
 [[[end]]]
 ::run(int argc, char* argv[])
 {
 [[[cog
-	if component['gui'] is not None:
+	if component.gui is not None:
 		cog.outl("#ifdef USE_QTGUI")
 		cog.outl("<TABHERE>QApplication a(argc, argv);  // GUI application")
 		cog.outl("#else")
@@ -360,16 +360,16 @@ Z()
 	int status=EXIT_SUCCESS;
 
 [[[cog
-for name, num in get_name_number(component['publishes']):
+for name, num in get_name_number(component.publishes):
 	if communication_is_ice(name):
-		if component['language'].lower() == "cpp":
+		if component.language.lower() == "cpp":
 			cog.outl('<TABHERE>'+name+'Prx '+name.lower()+num +'_pubproxy;')
 		else:
 			cog.outl('<TABHERE>'+name+'PrxPtr '+name.lower()+num +'_pubproxy;')
 
-for name, num in  get_name_number(component['requires']):
+for name, num in  get_name_number(component.requires):
 	if communication_is_ice(name):
-		if component['language'].lower() == "cpp":
+		if component.language.lower() == "cpp":
 			cog.outl('<TABHERE>'+name+'Prx '+name.lower()+num +'_proxy;')
 		else:
 			cog.outl('<TABHERE>'+name+'PrxPtr '+name.lower()+num +'_proxy;')
@@ -381,35 +381,35 @@ for name, num in  get_name_number(component['requires']):
 
 [[[cog
 proxy_list = []
-for name, num in get_name_number(component['requires']):
+for name, num in get_name_number(component.requires):
 	if communication_is_ice(name):
-		if component['language'].lower() == "cpp":
+		if component.language.lower() == "cpp":
 			cpp = "<PROXYNAME>_proxy = <NORMAL>Prx::uncheckedCast( communicator()->stringToProxy( proxy ) );"
 		else:
 			cpp = "<PROXYNAME>_proxy = Ice::uncheckedCast<<NORMAL>Prx>( communicator()->stringToProxy( proxy ) );"
 	
 		w = REQUIRE_STR.replace("<C++_VERSION>", cpp).replace("<NORMAL>", name).replace("<LOWER>", name.lower()).replace("<PROXYNAME>", name.lower()+num).replace("<PROXYNUMBER>", num)
 		cog.outl(w)
-	if component['language'].lower() == "cpp":
+	if component.language.lower() == "cpp":
 		cog.outl("<TABHERE>mprx[\""+name+"Proxy"+num+"\"] = (::IceProxy::Ice::Object*)(&"+name.lower()+num+"_proxy);//Remote server proxy creation example");
 	else:
 		proxy_list.append(name.lower()+num+"_proxy")
 	
 need_topic=False
-for pub in component['publishes']:
+for pub in component.publishes:
 	if communication_is_ice(pub):
 		need_topic = True
-for pub in component['subscribesTo']:
+for pub in component.subscribesTo:
 	if communication_is_ice(pub):
 		need_topic = True
 if need_topic:
-	if component['language'].lower() == "cpp":
+	if component.language.lower() == "cpp":
 		cog.outl('<TABHERE>IceStorm::TopicManagerPrx topicManager;')
 	else:
 		cog.outl('<TABHERE>IceStorm::TopicManagerPrxPtr topicManager;')
 	cog.outl('<TABHERE>try')
 	cog.outl('<TABHERE>{')
-	if component['language'].lower() == "cpp":
+	if component.language.lower() == "cpp":
 		cog.outl('<TABHERE><TABHERE>topicManager = IceStorm::TopicManagerPrx::checkedCast(communicator()->propertyToProxy("TopicManager.Proxy"));')
 	else:
 		cog.outl('<TABHERE><TABHERE>topicManager = Ice::checkedCast<IceStorm::TopicManagerPrx>(communicator()->propertyToProxy("TopicManager.Proxy"));')
@@ -421,19 +421,19 @@ if need_topic:
 	cog.outl('<TABHERE>}')
 
 
-for pba in component['publishes']:
+for pba in component.publishes:
 	if type(pba) == str:
 		pb = pba
 	else:
 		pb = pba[0]
 	if communication_is_ice(pba):
-		if component['language'].lower() == "cpp":
+		if component.language.lower() == "cpp":
 			cog.outl("<TABHERE>IceStorm::TopicPrx "+pb.lower() + "_topic;")
 		else:
 			cog.outl("<TABHERE>std::shared_ptr<IceStorm::TopicPrx> "+pb.lower() + "_topic;")
 		w = PUBLISHES_STR.replace("<NORMAL>", pb).replace("<LOWER>", pb.lower())
 		cog.outl(w)
-		if component['language'].lower() == "cpp":
+		if component.language.lower() == "cpp":
 			cog.outl("<TABHERE>Ice::ObjectPrx " + pb.lower() + "_pub = " + pb.lower() + "_topic->getPublisher()->ice_oneway();")
 			cog.outl("<TABHERE>" + pb.lower() + "_pubproxy = " + pb + "Prx::uncheckedCast(" + pb.lower() + "_pub);")
 			cog.outl("<TABHERE>mprx[\"" + pb + "Pub\"] = (::IceProxy::Ice::Object*)(&" + pb.lower() + "_pubproxy);")
@@ -443,15 +443,15 @@ for pba in component['publishes']:
 			proxy_list.append(pb.lower() + "_pubproxy")
 
 
-if component['usingROS'] == True:
-	cog.outl("<TABHERE>ros::init(argc, argv, \""+component['name']+"\");")
+if component.usingROS == True:
+	cog.outl("<TABHERE>ros::init(argc, argv, \""+component.name+"\");")
 
 
 ]]]
 [[[end]]]
 
 [[[cog
-    if component['language'].lower() == "cpp":
+    if component.language.lower() == "cpp":
         cog.outl("<TABHERE>SpecificWorker *worker = new SpecificWorker(mprx);")
     else:
         if proxy_list:
@@ -484,7 +484,7 @@ if component['usingROS'] == True:
 			}
 			Ice::ObjectAdapterPtr adapterCommonBehavior = communicator()->createObjectAdapterWithEndpoints("commonbehavior", tmp);
 			[[[cog
-				if component['language'].lower() == "cpp":
+				if component.language.lower() == "cpp":
 					cog.outl("CommonBehaviorI *commonbehaviorI = new CommonBehaviorI(monitor);")
 				else:
 					cog.outl("auto commonbehaviorI = std::make_shared<CommonBehaviorI>(monitor);")
@@ -504,13 +504,13 @@ if component['usingROS'] == True:
 
 
 [[[cog
-for ima in component['implements']:
+for ima in component.implements:
 	if type(ima) == str:
 		im = ima
 	else:
 		im = ima[0]
 	if communication_is_ice(ima):
-		if component['language'].lower() == "cpp":
+		if component.language.lower() == "cpp":
 			cpp = "<NORMAL>I *<LOWER> = new <NORMAL>I(worker);"
 		else:
 			cpp = "auto <LOWER> = std::make_shared<<NORMAL>I>(worker);"
@@ -520,12 +520,12 @@ for ima in component['implements']:
 [[[end]]]
 
 [[[cog
-for name, num in get_name_number(component['subscribesTo']):
+for name, num in get_name_number(component.subscribesTo):
 	nname = name
 	while type(nname) != type(''):
 		nname = name[0]
 	if communication_is_ice(name):
-		if component['language'].lower() == "cpp":
+		if component.language.lower() == "cpp":
 			change1 = "IceStorm::TopicPrx"
 			change2 = "Ice::ObjectPrx"
 			change3 = " new <NORMAL>I"
@@ -554,7 +554,7 @@ for name, num in get_name_number(component['subscribesTo']):
 		a.exec();
 
 [[[cog
-for sub in component['subscribesTo']:
+for sub in component.subscribesTo:
 	nname = sub
 	while type(nname) != type(''):
 		nname = sub[0]
@@ -631,7 +631,7 @@ int main(int argc, char* argv[])
 
 [[[cog
 A()
-cog.out('<TABHERE>::' + component['name'] + ' ')
+cog.out('<TABHERE>::' + component.name + ' ')
 Z()
 ]]]
 [[[end]]]

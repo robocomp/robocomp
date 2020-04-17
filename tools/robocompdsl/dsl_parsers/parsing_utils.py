@@ -72,14 +72,14 @@ def is_valid_rpc_idsl(idsl):
 def is_agm1_agent(component):
     assert isinstance(component, (dict, OrderedDict)), \
         "Component parameter is expected to be a dict or OrderedDict but %s" % str(type(component))
-    options = component['options']
+    options = component.options
     return 'agmagent' in [x.lower() for x in options]
 
 def is_agm2_agent(component):
     assert isinstance(component, (dict, OrderedDict)), \
         "Component parameter is expected to be a dict or OrderedDict but %s" % str(type(component))
     valid = ['agm2agent', 'agm2agentros', 'agm2agentice']
-    options = component['options']
+    options = component.options
     for v in valid:
         if v.lower() in options:
             return True
@@ -89,7 +89,7 @@ def is_agm2_agent_ROS(component):
     assert isinstance(component, (dict, OrderedDict)), \
         "Component parameter is expected to be a dict or OrderedDict but %s" % str(type(component))
     valid = ['agm2agentROS']
-    options = component['options']
+    options = component.options
     for v in valid:
         if v.lower() in options:
             return True

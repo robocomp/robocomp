@@ -109,7 +109,7 @@ I()
 
 				paramStrA = ''
 				for p in method['params']:
-					const, ampersand = decorator_and_type_to_const_ampersand(p['decorator'], p['type'], modulePool, component['language'].lower() == "cpp11")
+					const, ampersand = decorator_and_type_to_const_ampersand(p['decorator'], p['type'], modulePool, component.language.lower() == "cpp11")
 					if p['type'] == 'long':
 						paramStrA += const + 'Ice::Long' + ' ' + ampersand + p['name'] + ', '
 					else:

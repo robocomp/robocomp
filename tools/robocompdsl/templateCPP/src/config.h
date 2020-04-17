@@ -27,7 +27,7 @@ component = DSLFactory().from_file(theCDSL, include_directories=includeDirectori
 
 // Comment out this line if your application has a QtGui
 [[[cog
-if component['gui'] is not None:
+if component.gui is not None:
 	cog.outl("#define USE_QTGUI\n")
 ]]]
 [[[end]]]
@@ -35,7 +35,7 @@ if component['gui'] is not None:
 #define PROGRAM_NAME    "
 [[[cog
 A()
-cog.out(component['name'])
+cog.out(component.name)
 Z()
 ]]]
 [[[end]]]
@@ -43,14 +43,14 @@ Z()
 #define SERVER_FULL_NAME   "RoboComp
 [[[cog
 A()
-cog.out(' ' + component['name'])
+cog.out(' ' + component.name)
 Z()
 ]]]
 [[[end]]]
 ::
 [[[cog
 A()
-cog.out(' ' + component['name'])
+cog.out(' ' + component.name)
 Z()
 ]]]
 [[[end]]]

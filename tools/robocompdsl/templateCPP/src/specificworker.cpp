@@ -16,9 +16,9 @@ from dsl_parsers.dsl_factory import DSLFactory
 from dsl_parsers.parsing_utils import communication_is_ice, is_agm1_agent, is_agm2_agent, is_agm2_agent_ROS, IDSLPool
 includeDirectories = theIDSLPaths.split('#')
 component = DSLFactory().from_file(theCDSL, include_directories=includeDirectories)
-sm = DSLFactory().from_file(component['statemachine'])
+sm = DSLFactory().from_file(component.statemachine)
 if sm is None:
-    component['statemachine'] = None
+    component.statemachine = None
 if component is None:
     raise ValueError('specificworker.cpp: Can\'t locate %s' % theCDSL)
 
@@ -43,15 +43,15 @@ def bodyCodeFromName(name, component):
 			bodyCode = "\tQMutexLocker lockIM(mutex);\n\tfor (auto modification : modifications)\n\t{\n\t\tAGMModelConverter::includeIceModificationInInternalModel(modification, worldModel);\n\t\tAGMInner::updateImNodeFromEdge(worldModel, modification, innerModel.get());\n\t}\n"
 		elif name == 'structuralChange':
 			bodyCode = "\tQMutexLocker lockIM(mutex);\n <TABHERE>AGMModelConverter::fromIceToInternal(w, worldModel);\n \n<TABHERE>innerModel = std::make_shared<InnerModel>(AGMInner::extractInnerModel(worldModel));"
-			if 'innermodelviewer' in [ x.lower() for x in component['options'] ]:
+			if 'innermodelviewer' in [ x.lower() for x in component.options ]:
 				bodyCode += "\n<TABHERE>regenerateInnerModelViewer();"
 		elif name == 'selfEdgeAdded':
 			bodyCode = "\tQMutexLocker lockIM(mutex);\n <TABHERE>try { worldModel->addEdgeByIdentifiers(nodeid, nodeid, edgeType, attributes); } catch(...){ printf(\"Couldn't add an edge. Duplicate?\\n\"); }\n \n<TABHERE>try { innerModel = std::make_shared<InnerModel>(AGMInner::extractInnerModel(worldModel)); } catch(...) { printf(\"Can't extract an InnerModel from the current model.\\n\"); }"
-			if 'innermodelviewer' in [ x.lower() for x in component['options'] ]:
+			if 'innermodelviewer' in [ x.lower() for x in component.options ]:
 				bodyCode += "\n<TABHERE>regenerateInnerModelViewer();"
 		elif name == 'selfEdgeDeleted':
 			bodyCode = "\tQMutexLocker lockIM(mutex);\n <TABHERE>try { worldModel->removeEdgeByIdentifiers(nodeid, nodeid, edgeType); } catch(...) { printf(\"Couldn't remove an edge\\n\"); }\n \n<TABHERE>try { innerModel = std::make_shared<InnerModel>(AGMInner::extractInnerModel(worldModel)); } catch(...) { printf(\"Can't extract an InnerModel from the current model.\\n\"); }"
-			if 'innermodelviewer' in [ x.lower() for x in component['options'] ]:
+			if 'innermodelviewer' in [ x.lower() for x in component.options ]:
 				bodyCode += "\n<TABHERE>regenerateInnerModelViewer();"
 		#######################################
 		# code to implement AGMCommonBehavior #
@@ -87,10 +87,10 @@ def bodyCodeFromName(name, component):
 			bodyCode += ")\n\t{\n\t\tAGMModelConverter::include" + mdlw + "ModificationInInternalModel(e, worldModel);\n\t\tAGMInner::updateImNodeFromEdge(worldModel, e, innerModelViewer->innerModel.get());\n\t}\n"
 		elif name == 'structuralChange':
 			bodyCode = "\tQMutexLocker locker(mutex);\n\tAGMModelConverter::from" + mdlw + "ToInternal(w, worldModel);\n\t\n\tInnerModel *newIM = AGMInner::extractInnerModel(worldModel);\n"
-			if 'innermodelviewer' in component['options']:
+			if 'innermodelviewer' in component.options:
 				bodyCode += "\tif (innerModelViewer)\n\t{\n\t\tosgView->getRootGroup()->removeChild(innerModelViewer);\n\t\tdelete innerModel;\n\t}\n"
 			bodyCode += "\tinnerModel = newIM;\n"
-			if 'innermodelviewer' in component['options']:
+			if 'innermodelviewer' in component.options:
 				bodyCode += "\tinnerModelViewer = new InnerModelViewer(innerModel, \"root\", osgView->getRootGroup(), true);\n"
 
 	return bodyCode
@@ -129,7 +129,7 @@ Z()
 * \brief Default constructor
 */
 [[[cog
-    if component['language'].lower() == 'cpp':
+    if component.language.lower() == 'cpp':
         cog.outl("SpecificWorker::SpecificWorker(MapPrx& mprx) : GenericWorker(mprx)")
     else:
         cog.outl("SpecificWorker::SpecificWorker(TuplePrx tprx) : GenericWorker(tprx)")
@@ -138,7 +138,7 @@ Z()
 {
 
 [[[cog
-if component['innermodelviewer']:
+if component.innermodelviewer:
     cog.outl("#ifdef USE_QTGUI")
     cog.outl("<TABHERE>innerModelViewer = NULL;")
     cog.outl("<TABHERE>osgView = new OsgView(this);")
@@ -190,7 +190,7 @@ cog.outl("""//       THE FOLLOWING IS JUST AN EXAMPLE
 //	catch(const std::exception &e) { qFatal("Error reading config params"); }
 
 """)
-if component['innermodelviewer']:
+if component.innermodelviewer:
 	cog.outl("#ifdef USE_QTGUI")
 	cog.outl("<TABHERE>innerModel = std::make_shared<InnerModel>(); //InnerModel creation example")
 	cog.outl("<TABHERE>innerModelViewer = new InnerModelViewer (innerModel, \"root\", osgView->getRootGroup(), true);")
@@ -243,7 +243,7 @@ if sm is not None and sm['machine']['default']:
 }
 
 [[[cog
-if (sm is not None and sm['machine']['default'] is True) or component['statemachine'] is None:
+if (sm is not None and sm['machine']['default'] is True) or component.statemachine is None:
     cog.outl("void SpecificWorker::compute()")
     cog.outl("{")
     cog.outl("//computeCODE")
@@ -258,9 +258,9 @@ if (sm is not None and sm['machine']['default'] is True) or component['statemach
     cog.outl("//<TABHERE>{")
     cog.outl("//<TABHERE><TABHERE>std::cout << \"Error reading from Camera\" << e << std::endl;")
     cog.outl("//<TABHERE>}")
-    if component['usingROS'] == True:
+    if component.usingROS == True:
         cog.outl("<TABHERE>ros::spinOnce();")
-    if component['innermodelviewer']:
+    if component.innermodelviewer:
         cog.outl("#ifdef USE_QTGUI")
         cog.outl("<TABHERE>if (innerModelViewer) innerModelViewer->update();")
         cog.outl("<TABHERE>osgView->frame();")
@@ -301,7 +301,7 @@ if sm is not None:
 
 [[[cog
 if 'implements' in component:
-	for impa in component['implements']:
+	for impa in component.implements:
 		if type(impa) == str:
 			imp = impa
 		else:
@@ -323,7 +323,7 @@ if 'implements' in component:
 							if p['decorator'] == 'out':
 								const = ''
 							else:
-								if component['language'].lower() == "cpp":
+								if component.language.lower() == "cpp":
 									const = 'const '
 								else:
 									const = ''
@@ -335,13 +335,13 @@ if 'implements' in component:
 						cog.outl(method['return'] + ' SpecificWorker::' +interface['name'] + "_" + method['name'] + '(' + paramStrA + ")\n{\n//implementCODE\n"+bodyCode+"\n}\n")
 					else:
 						paramStrA = module['name'] +"ROS::"+method['name']+"::Request &req, "+module['name']+"ROS::"+method['name']+"::Response &res"
-						if imp in component['iceInterfaces']:
+						if imp in component.iceInterfaces:
 							cog.outl('bool SpecificWorker::ROS' + method['name'] + '(' + paramStrA + ")\n{\n//implementCODE\n"+bodyCode+"\n}\n")
 						else:
 							cog.outl('bool SpecificWorker::' + method['name'] + '(' + paramStrA + ")\n{\n//implementCODE\n"+bodyCode+"\n}\n")
 
 if 'subscribesTo' in component:
-	for impa in component['subscribesTo']:
+	for impa in component.subscribesTo:
 		if type(impa) == str:
 			imp = impa
 		else:
@@ -365,7 +365,7 @@ if 'subscribesTo' in component:
 							if p['decorator'] == 'out':
 								const = ''
 							else:
-								if component['language'].lower() == "cpp":
+								if component.language.lower() == "cpp":
 									const = 'const '
 								else:
 									const = ''
@@ -398,7 +398,7 @@ if 'subscribesTo' in component:
 								p['type'] = module['name']+"ROS::"+p['type']
 							# STR
 							paramStrA += delim + p['type'] + ' ' + p['name']
-						if imp in component['iceInterfaces']:
+						if imp in component.iceInterfaces:
 							cog.outl('void SpecificWorker::ROS' + method['name'] + '(' + paramStrA + ")\n{\n//subscribesToCODE\n"+bodyCode+"\n}\n")
 						else:
 							cog.outl('void SpecificWorker::' + method['name'] + '(' + paramStrA + ")\n{\n//subscribesToCODE\n"+bodyCode+"\n}\n")
@@ -407,7 +407,7 @@ if 'subscribesTo' in component:
 
 [[[cog
 try:
-	if ('agmagent' in [ x.lower() for x in component['options'] ]) and ('innermodelviewer' in [ x.lower() for x in component['options'] ]):
+	if ('agmagent' in [ x.lower() for x in component.options ]) and ('innermodelviewer' in [ x.lower() for x in component.options ]):
 		cog.outl("""
 void SpecificWorker::regenerateInnerModelViewer()
 {
@@ -419,7 +419,7 @@ void SpecificWorker::regenerateInnerModelViewer()
 	innerModelViewer = new InnerModelViewer(innerModel, "root", osgView->getRootGroup(), true);
 }\n""")
 
-	if 'agmagent' in [ x.lower() for x in component['options'] ]:
+	if 'agmagent' in [ x.lower() for x in component.options ]:
 		cog.outl("""
 bool SpecificWorker::setParametersAndPossibleActivation(const ParameterMap &prs, bool &reactivated)
 {
@@ -469,8 +469,8 @@ bool SpecificWorker::setParametersAndPossibleActivation(const ParameterMap &prs,
 {
 	try
 	{""")
-		agentName=component['name']
-		if component['language'].lower() == "cpp":
+		agentName=component.name
+		if component.language.lower() == "cpp":
 			cog.outl("<TABHERE><TABHERE>AGMMisc::publishModification(newModel, agmexecutive_proxy, \""+ agentName+"Agent\");")
 		else:
 			cog.outl("<TABHERE><TABHERE>AGMMisc::publishModification(newModel, *agmexecutive_proxy.get(), \""+ agentName+"Agent\");")

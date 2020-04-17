@@ -27,7 +27,7 @@ component = DSLFactory().from_file(theCDSL, include_directories=includeDirectori
 if component == None:
 	raise ValueError('genericworker.py: Can\'t locate %s' % theCDSL)
 
-sm = DSLFactory().from_file(component['statemachine'])
+sm = DSLFactory().from_file(component.statemachine)
 
 
 pool = IDSLPool(theIDSLs, includeDirectories)
@@ -89,7 +89,7 @@ except:
 
 [[[cog
 import os
-for imp in sorted(set(component['recursiveImports'] + component["imports"])):
+for imp in sorted(set(component.recursiveImports + component.imports)):
     file_name = os.path.basename(imp)
     name = os.path.splitext(file_name)[0]
 
@@ -112,18 +112,18 @@ for imp in sorted(set(component['recursiveImports'] + component["imports"])):
 
 
 [[[cog
-	for im in component['implements'] + component['subscribesTo']:
+	for im in component.implements + component.subscribesTo:
 		if communication_is_ice(im):
 			cog.outl('from ' + im.lower() + 'I import *')
 ]]]
 [[[end]]]
 
 [[[cog
-if component['usingROS'] == True:
+if component.usingROS == True:
 	cog.outl('import rospy')
 	cog.outl('from std_msgs.msg import *')
 	msgIncludes = {}
-	for imp in component['publishes']:
+	for imp in component.publishes:
 		if type(imp) == str:
 			im = imp
 		else:
@@ -134,7 +134,7 @@ if component['usingROS'] == True:
 				if interface['name'] == im:
 					for mname in interface['methods']:
 						msgIncludes[module['name']] = 'try:\n<TABHERE>from '+module['name']+'ROS.msg import *\nexcept:\n<TABHERE>print(\"couldn\'t load msg\")'
-	for imp in component['subscribesTo']:
+	for imp in component.subscribesTo:
 		if type(imp) == str:
 			im = imp
 		else:
@@ -148,7 +148,7 @@ if component['usingROS'] == True:
 	for msg in msgIncludes.values():
 		cog.outl(msg)
 	srvIncludes = {}
-	for imp in component['requires']:
+	for imp in component.requires:
 		if type(imp) == str:
 			im = imp
 		else:
@@ -159,7 +159,7 @@ if component['usingROS'] == True:
 				if interface['name'] == im:
 					for mname in interface['methods']:
 						srvIncludes[module['name']] = 'from '+module['name']+'ROS.srv import *'
-	for imp in component['implements']:
+	for imp in component.implements:
 		if type(imp) == str:
 			im = imp
 		else:
@@ -173,7 +173,7 @@ if component['usingROS'] == True:
 	for srv in srvIncludes.values():
 		cog.outl(srv)
 A()
-if component['gui'] is not None:
+if component.gui is not None:
 	cog.outl('')
 	cog.outl('try:')
 	cog.outl('<TABHERE>from ui_mainUI import *')
@@ -185,9 +185,9 @@ Z()
 [[[end]]]
 
 [[[cog
-if component['usingROS'] == True:
+if component.usingROS == True:
 	#CREANDO CLASES PARA LOS PUBLISHERS
-	for imp in component['publishes']:
+	for imp in component.publishes:
 		nname = imp
 		while type(nname) != type(''):
 			nname = nname[0]
@@ -222,7 +222,7 @@ if component['usingROS'] == True:
 							cog.outl("<TABHERE>def "+mname+"(self, "+p['name']+"):")
 							cog.outl("<TABHERE><TABHERE>self.pub_"+mname+".publish("+p['name']+")")
 	#CREANDO CLASES PARA LOS REQUIRES
-	for imp in component['requires']:
+	for imp in component.requires:
 		nname = imp
 		while type(nname) != type(''):
 			nname = nname[0]
@@ -255,8 +255,8 @@ if component['usingROS'] == True:
 class GenericWorker(
 [[[cog
 A()
-if component['gui'] is not None:
-	cog.out('QtWidgets.'+component['gui'][1])
+if component.gui is not None:
+	cog.out('QtWidgets.'+component.gui[1])
 else:
 	cog.out('QtCore.QObject')
 Z()
@@ -294,7 +294,7 @@ if sm is not None:
 
 
 [[[cog
-for req, num in get_name_number(component['requires']):
+for req, num in get_name_number(component.requires):
 	if type(req) == str:
 		rq = req
 	else:
@@ -302,12 +302,12 @@ for req, num in get_name_number(component['requires']):
 	if communication_is_ice(req):
 		cog.outl("<TABHERE><TABHERE>self."+rq.lower()+num+"_proxy = mprx[\""+rq+"Proxy"+num+"\"]")
 	else:
-		if rq in component['iceInterfaces']:
+		if rq in component.iceInterfaces:
 			cog.outl("<TABHERE><TABHERE>self."+rq.lower()+"_rosproxy = ServiceClient"+rq+"()")
 		else:
 			cog.outl("<TABHERE><TABHERE>self."+rq.lower()+"_proxy = ServiceClient"+rq+"()")
 
-for pb, num in get_name_number(component['publishes']):
+for pb, num in get_name_number(component.publishes):
 	if type(pb) == str:
 		pub = pb
 	else:
@@ -315,7 +315,7 @@ for pb, num in get_name_number(component['publishes']):
 	if communication_is_ice(pb):
 		cog.outl("<TABHERE><TABHERE>self."+pub.lower()+num+"_proxy = mprx[\""+pub+"Pub"+num+"\"]")
 	else:
-		if pub in component['iceInterfaces']:
+		if pub in component.iceInterfaces:
 			cog.outl("<TABHERE><TABHERE>self."+pub.lower()+"_rosproxy = Publisher"+pub+"()")
 		else:
 			cog.outl("<TABHERE><TABHERE>self."+pub.lower()+"_proxy = Publisher"+pub+"()")
@@ -324,7 +324,7 @@ for pb, num in get_name_number(component['publishes']):
 
 [[[cog
 A()
-if component['gui'] is not None:
+if component.gui is not None:
 	cog.outl("<TABHERE><TABHERE>self.ui = Ui_guiDlg()")
 	cog.outl("<TABHERE><TABHERE>self.ui.setupUi(self)")
 	cog.outl("<TABHERE><TABHERE>self.show()")

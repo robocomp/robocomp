@@ -18,7 +18,7 @@ from dsl_parsers.parsing_utils import communication_is_ice, IDSLPool
 
 includeDirectories = theIDSLPaths.split('#')
 component = DSLFactory().from_file(theCDSL, include_directories=includeDirectories)
-sm = DSLFactory().from_file(component['statemachine'])
+sm = DSLFactory().from_file(component.statemachine)
 if component == None:
 	raise ValueError("specificworker.py: Can\'t locate %s" % theCDSLs)
 
@@ -99,7 +99,7 @@ if sm is not None:
 		return True
 
 [[[cog
-if (sm is not None and sm['machine']['default'] is True) or component['statemachine'] is None:
+if (sm is not None and sm['machine']['default'] is True) or component.statemachine is None:
 	cog.outl("<TABHERE>@QtCore.Slot()")
 	cog.outl("<TABHERE>def compute(self):")
 	cog.outl("<TABHERE><TABHERE>print('SpecificWorker.compute...')")
@@ -177,7 +177,7 @@ if sm is not None:
 [[[cog
 lst = []
 try:
-	lst += component['subscribesTo']
+	lst += component.subscribesTo
 except:
 	pass
 for imp in lst:
@@ -232,10 +232,10 @@ for imp in lst:
 							first = False
 					cog.out("]\n\n")
 
-if component['implements']:
+if component.implements:
 	cog.outl("# =============== Methods for Component Implements ==================")
 	cog.outl("# ===================================================================")
-	for imp in sorted(component['implements']):
+	for imp in sorted(component.implements):
 		if type(imp) == str:
 			im = imp
 		else:

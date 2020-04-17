@@ -27,7 +27,7 @@ component = DSLFactory().from_file(theCDSL, include_directories=includeDirectori
 ```
 [[[cog
 A()
-cog.out(' ' + component['name'])
+cog.out(' ' + component.name)
 ]]]
 [[[end]]]
 ```
@@ -39,7 +39,7 @@ As any other component,
 ```
 [[[cog
 A()
-cog.out(' *' + component['name'] + '* ')
+cog.out(' *' + component.name + '* ')
 Z()
 ]]]
 [[[end]]]
@@ -61,7 +61,7 @@ To avoid changing the *config* file in the repository, we can copy it to the com
 ```
 [[[cog
 A()
-cog.out(' <' + component['name'] + ' \'s path> ')
+cog.out(' <' + component.name + ' \'s path> ')
 Z()
 ]]]
 [[[end]]]
@@ -76,7 +76,7 @@ After editing the new config file we can run the component:
 ```
 [[[cog
 A()
-cog.out(component['name'] + ' ')
+cog.out(component.name + ' ')
 Z()
 ]]]
 [[[end]]]

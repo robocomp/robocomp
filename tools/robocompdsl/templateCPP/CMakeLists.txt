@@ -30,7 +30,7 @@ cmake_minimum_required( VERSION 2.8 )
 PROJECT(
 [[[cog
 A()
-cog.out(' ' + component['name'])
+cog.out(' ' + component.name)
 Z()
 ]]]
 [[[end]]]
@@ -52,7 +52,7 @@ SUBDIRS( src )
 INSTALL(FILES etc/config DESTINATION ${RC_COMPONENT_INSTALL_PATH}/etc-default/ RENAME
 [[[cog
 A()
-cog.out(' ' + component['name'])
+cog.out(' ' + component.name)
 Z()
 ]]]
 [[[end]]]
@@ -62,7 +62,7 @@ Z()
 #ADD_CUSTOM_TARGET(installdoc mkdir -p ${RC_COMPONENT_INSTALL_PATH}/doc COMMAND cp -R doc/html ${RC_COMPONENT_INSTALL_PATH}/doc/
 [[[cog
 A()
-cog.out( component['name'] + ' ')
+cog.out( component.name + ' ')
 Z()
 ]]]
 [[[end]]]

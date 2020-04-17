@@ -45,7 +45,7 @@ DOXYFILE_ENCODING      = UTF-8
 PROJECT_NAME           =
 [[[cog
 A()
-cog.out( component['name'] + ' ')
+cog.out( component.name + ' ')
 Z()
 ]]]
 [[[end]]]

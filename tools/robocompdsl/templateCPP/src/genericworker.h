@@ -16,9 +16,9 @@ from dsl_parsers.dsl_factory import DSLFactory
 from dsl_parsers.parsing_utils import get_name_number, communication_is_ice, IDSLPool, is_agm1_agent,is_agm2_agent
 includeDirectories = theIDSLPaths.split('#')
 component = DSLFactory().from_file(theCDSL, include_directories=includeDirectories)
-sm = DSLFactory().from_file(component['statemachine'])
+sm = DSLFactory().from_file(component.statemachine)
 if sm is None:
-    component['statemachine'] = None
+    component.statemachine = None
 if component is None:
     raise ValueError('genericworker.h: Can\'t locate %s' % theCDSL)
 
@@ -62,7 +62,7 @@ Z()
 #include <qlog/qlog.h>
 
 [[[cog
-if component['gui'] is not None:
+if component.gui is not None:
 	cog.outl("#if Qt5_FOUND") 
 	cog.outl("<TABHERE>#include <QtWidgets>")
 	cog.outl("#else")
@@ -75,7 +75,7 @@ if component['gui'] is not None:
 if sm is not None:
 	cog.outl("#include <QStateMachine>")
 	cog.outl("#include <QState>")
-	if component['statemachine_visual']:
+	if component.statemachine_visual:
 	    cog.outl("#include \"statemachinewidget/qstateMachineWrapper.h\"")
 ]]]
 [[[end]]]
@@ -83,7 +83,7 @@ if sm is not None:
 
 [[[cog
 usingList = []
-for imp in component['recursiveImports'] + component["iceInterfaces"]:
+for imp in component.recursiveImports + component.iceInterfaces:
 	name = imp.split('/')[-1].split('.')[0]
 	if not name in usingList:
 		usingList.append(name)
@@ -91,12 +91,12 @@ for name in usingList:
 	cog.outl('#include <'+name+'.h>')
 
 
-if component['usingROS'] == True:
+if component.usingROS == True:
 	cog.outl('#include <ros/ros.h>')
 	for include in includeList:
 		cog.outl('#include <'+include+'.h>')
 	srvIncludes = {}
-	for imp in component['requires']:
+	for imp in component.requires:
 		if type(imp) == str:
 			im = imp
 		else:
@@ -107,7 +107,7 @@ if component['usingROS'] == True:
 				if interface['name'] == im:
 					for mname in interface['methods']:
 						srvIncludes[mname] = '#include <'+module['name']+'ROS/'+mname+'.h>'
-	for imp in component['implements']:
+	for imp in component.implements:
 		if type(imp) == str:
 			im = imp
 		else:
@@ -133,7 +133,7 @@ except:
 [[[end]]]
 
 [[[cog
-	if 'agmagent' in [ x.lower() for x in component['options'] ]:
+	if 'agmagent' in [ x.lower() for x in component.options ]:
 		cog.out('#include <agm.h>')
 ]]]
 [[[end]]]
@@ -144,7 +144,7 @@ except:
 using namespace std;
 [[[cog
 usingList = []
-for imp in component['recursiveImports'] + component["iceInterfaces"]:
+for imp in component.recursiveImports + component.iceInterfaces:
 	name = imp.split('/')[-1].split('.')[0]
 	if not name in usingList:
 		usingList.append(name)
@@ -154,11 +154,11 @@ for name in usingList:
 [[[end]]]
 
 [[[cog
-if component['language'].lower() == 'cpp':
+if component.language.lower() == 'cpp':
 	cog.outl("typedef map <string,::IceProxy::Ice::Object*> MapPrx;")
 else:
 	proxy_list = []
-	for name in component['requires'] + component['publishes']:
+	for name in component.requires + component.publishes:
 		proxy_list.append("RoboComp" + name + "::" + name + "PrxPtr")
 	cog.outl("using TuplePrx = std::tuple<" + ",".join(proxy_list) + ">;")
 ]]]
@@ -166,7 +166,7 @@ else:
 
 [[[cog
 try:
-	if 'agmagent' in [ x.lower() for x in component['options'] ]:
+	if 'agmagent' in [ x.lower() for x in component.options ]:
 		cog.outl("""
 		struct BehaviorParameters
 		{
@@ -180,9 +180,9 @@ except:
 [[[end]]]
 
 [[[cog
-if component['usingROS'] == True:
+if component.usingROS == True:
 	#CREANDO CLASES PARA LOS PUBLISHERS
-	for imp in component['publishes']:
+	for imp in component.publishes:
 		nname = imp
 		while type(nname) != type(''):
 			nname = nname[0]
@@ -246,7 +246,7 @@ if component['usingROS'] == True:
 			cog.outl("};")
 
 	#CREANDO CLASES PARA LOS REQUIRES
-	for imp in component['requires']:
+	for imp in component.requires:
 		nname = imp
 		while type(nname) != type(''):
 			nname = nname[0]
@@ -332,8 +332,8 @@ if component['usingROS'] == True:
 [[[end]]]
 class GenericWorker :
 [[[cog
-if component['gui'] is not None:
-	cog.outl("#ifdef USE_QTGUI\n<TABHERE>public " + component['gui'][1] + ", public Ui_guiDlg\n#else\n<TABHERE>public QObject\n #endif")
+if component.gui is not None:
+	cog.outl("#ifdef USE_QTGUI\n<TABHERE>public " + component.gui[1] + ", public Ui_guiDlg\n#else\n<TABHERE>public QObject\n #endif")
 else:
 	cog.outl("public QObject")
 ]]]
@@ -342,7 +342,7 @@ else:
 Q_OBJECT
 public:
 [[[cog
-if component['language'].lower() == 'cpp':
+if component.language.lower() == 'cpp':
 	cog.outl("<TABHERE>GenericWorker(MapPrx& mprx);")
 else:
 	cog.outl("<TABHERE>GenericWorker(TuplePrx tprx);")
@@ -357,7 +357,7 @@ else:
 [[[cog
 
 try:
-	if 'agmagent' in [ x.lower() for x in component['options'] ]:
+	if 'agmagent' in [ x.lower() for x in component.options ]:
 		cog.outl("<TABHERE>bool activate(const BehaviorParameters& parameters);")
 		cog.outl("<TABHERE>bool deactivate();")
 		cog.outl("<TABHERE>bool isActive() { return active; }")
@@ -369,16 +369,16 @@ except:
 
 
 [[[cog
-for name, num in get_name_number(component['requires']):
+for name, num in get_name_number(component.requires):
 	if communication_is_ice(name):
-		if component['language'].lower() == "cpp":
+		if component.language.lower() == "cpp":
 			cog.outl('<TABHERE>'+name+'Prx '+name.lower()+num +'_proxy;')
 		else:
 			cog.outl('<TABHERE>'+name+'PrxPtr '+name.lower()+num +'_proxy;')
 
-for name, num in get_name_number(component['publishes']):
+for name, num in get_name_number(component.publishes):
 	if communication_is_ice(name):
-		if component['language'].lower() == "cpp":
+		if component.language.lower() == "cpp":
 			cog.outl('<TABHERE>'+name+'Prx '+name.lower()+num +'_pubproxy;')
 		else:
 			cog.outl('<TABHERE>'+name+'PrxPtr '+name.lower()+num +'_pubproxy;')
@@ -388,7 +388,7 @@ for name, num in get_name_number(component['publishes']):
 
 [[[cog
 if 'implements' in component:
-	for impa in component['implements']:
+	for impa in component.implements:
 		if type(impa) == str:
 			imp = impa
 		else:
@@ -409,7 +409,7 @@ if 'implements' in component:
 							if p['decorator'] == 'out':
 								const = ''
 							else:
-								if component['language'].lower() == "cpp":
+								if component.language.lower() == "cpp":
 									const = 'const '
 								else:
 									const = ''
@@ -421,12 +421,12 @@ if 'implements' in component:
 						cog.outl("<TABHERE>virtual " + method['return'] + ' ' + interface['name'] + "_" + method['name'] + '(' + paramStrA + ") = 0;")
 					else:
 						paramStrA = module['name'] +"ROS::"+method['name']+"::Request &req, "+module['name']+"ROS::"+method['name']+"::Response &res"
-						if imp in component['iceInterfaces']:
+						if imp in component.iceInterfaces:
 							cog.outl("<TABHERE>virtual bool ROS" + method['name'] + '(' + paramStrA + ") = 0;")
 						else:
 							cog.outl("<TABHERE>virtual bool " + method['name'] + '(' + paramStrA + ") = 0;")
 if 'subscribesTo' in component:
-	for impa in component['subscribesTo']:
+	for impa in component.subscribesTo:
 		if type(impa) == str:
 			imp = impa
 		else:
@@ -449,7 +449,7 @@ if 'subscribesTo' in component:
 							if p['decorator'] == 'out':
 								const = ''
 							else:
-								if component['language'].lower() == "cpp":
+								if component.language.lower() == "cpp":
 									const = 'const '
 								else:
 									const = ''
@@ -481,7 +481,7 @@ if 'subscribesTo' in component:
 								p['type'] = module['name']+"ROS::"+p['type']
 							# STR
 							paramStrA += delim + p['type'] + ' ' + p['name']
-						if imp in component['iceInterfaces']:
+						if imp in component.iceInterfaces:
 							cog.outl("<TABHERE>virtual void ROS" + method['name'] + '(' + paramStrA + ") = 0;")
 						else:
 							cog.outl("<TABHERE>virtual void " + method['name'] + '(' + paramStrA + ") = 0;")
@@ -495,7 +495,7 @@ if sm is not None:
     codQState = ""
     codQStateMachine = ""
     lsstates = ""
-    if  not component['statemachine_visual']:
+    if  not component.statemachine_visual:
         codQStateMachine = "<TABHERE>QStateMachine " + sm['machine']['name'] + ";\n"
     else:
         codQStateMachine = "<TABHERE>QStateMachineWrapper " + sm['machine']['name'] + ";\n"
@@ -565,9 +565,9 @@ if sm is not None:
 	QTimer timer;
 	int Period;
 [[[cog
-if component['usingROS'] == True:
+if component.usingROS == True:
 	cog.outl("<TABHERE>ros::NodeHandle node;")
-for imp in component['subscribesTo']:
+for imp in component.subscribesTo:
 	nname = imp
 	while type(nname) != type(''):
 		nname = nname[0]
@@ -580,7 +580,7 @@ for imp in component['subscribesTo']:
 				for mname in interface['methods']:
 					method = interface['methods'][mname]
 					cog.outl("<TABHERE>ros::Subscriber "+nname+"_"+mname+";")
-for imp in component['implements']:
+for imp in component.implements:
 	nname = imp
 	while type(nname) != type(''):
 		nname = nname[0]
@@ -594,27 +594,27 @@ for imp in component['implements']:
 					method = interface['methods'][mname]
 					cog.outl("<TABHERE>ros::ServiceServer "+nname+"_"+mname+";")
 if 'publishes' in component:
-	for publish in component['publishes']:
+	for publish in component.publishes:
 		pubs = publish
 		while type(pubs) != type(''):
 			pubs = pubs[0]
 		if not communication_is_ice(publish):
-			if pubs in component['iceInterfaces']:
+			if pubs in component.iceInterfaces:
 				cog.outl("<TABHERE>Publisher"+pubs+" *"+pubs.lower()+"_rosproxy;")
 			else:
 				cog.outl("<TABHERE>Publisher"+pubs+" *"+pubs.lower()+"_proxy;")
 if 'requires' in component:
-	for require in component['requires']:
+	for require in component.requires:
 		req = require
 		while type(req) != type(''):
 			req = req[0]
 		if not communication_is_ice(require):
-			if req in component['iceInterfaces']:
+			if req in component.iceInterfaces:
 				cog.outl("<TABHERE>ServiceClient"+req+" *"+req.lower()+"_rosproxy;")
 			else:
 				cog.outl("<TABHERE>ServiceClient"+req+" *"+req.lower()+"_proxy;")
 try:
-	if 'agmagent' in [ x.lower() for x in component['options'] ]:
+	if 'agmagent' in [ x.lower() for x in component.options ]:
 		cog.outl("<TABHERE>bool active;")
 		cog.outl("<TABHERE>AGMModel::SPtr worldModel;")
 		cog.outl("<TABHERE>BehaviorParameters p;")
@@ -655,7 +655,7 @@ if sm is not None:
     cog.outl(sm_virtual_methods)
     cog.outl("//-------------------------")
 
-if (sm is not None and sm['machine']['default'] is True) or component['statemachine'] is None:
+if (sm is not None and sm['machine']['default'] is True) or component.statemachine is None:
     cog.outl("<TABHERE>virtual void compute() = 0;")
 ]]]
 [[[end]]]
