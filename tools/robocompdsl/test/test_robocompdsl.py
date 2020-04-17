@@ -86,7 +86,7 @@ class RobocompdslTest(unittest.TestCase):
     def test_invalid_language(self):
         self.renew_temp_dir("Invalid")
         cdsl = os.path.join(RESOURCES_DIR, "InvalidLanguage.cdsl")
-        self.assertRaises(pyparsing.ParseSyntaxException, ComponentGenerator().generate, cdsl, self.tempdir, [])
+        self.assertRaises(ValueError, ComponentGenerator().generate, cdsl, self.tempdir, [])
         shutil.rmtree(self.tempdir, ignore_errors=True)
 
 

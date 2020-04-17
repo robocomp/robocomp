@@ -40,7 +40,7 @@ def replaceTagsInFile(path):
 
 def generate_cog_command(params, template, output_file):
     params_strings = ["-D %s=%s" % (key, value) for key, value in params.items()]
-    return "cog.py -z -d %s -o %s %s" % (" ".join(params_strings), output_file, template)
+    return "cog -z -d %s -o %s %s" % (" ".join(params_strings), output_file, template)
 
 
 def run_cog_and_replace_tags(cog_command, ofile):
