@@ -1,14 +1,12 @@
 import errno
 import os
-import sys
 import traceback
 from os import path
-from pprint import pprint
 
 from termcolor import cprint
 
-from dsl_parsers.specific_parsers.jcdsl_parser import CDSLJsonParser
-from dsl_parsers.specific_parsers.cdsl_parser import CDSLParser
+from dsl_parsers.specific_parsers.cdsl.jcdsl_parser import CDSLJsonParser
+from dsl_parsers.specific_parsers.cdsl.cdsl_parser import CDSLParser
 from dsl_parsers.specific_parsers.idsl_parser import IDSLParser
 from dsl_parsers.specific_parsers.smdsl_parser import SMDSLParser
 

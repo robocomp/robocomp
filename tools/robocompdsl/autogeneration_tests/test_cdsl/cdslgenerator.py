@@ -35,7 +35,7 @@ from dsl_parsers.dsl_factory import DSLFactory
 
 sys.path.append('/opt/robocomp/python')
 
-from dsl_parsers.specific_parsers.cdsl_parser import CDSLParser
+from dsl_parsers.specific_parsers.cdsl.cdsl_parser import CDSLParser
 
 
 try:
@@ -47,8 +47,6 @@ try:
 except ImportError as error:
     def printerr(text):
         print(text)
-
-from pprint import pprint
 
 ROBOCOMP = ''
 try:

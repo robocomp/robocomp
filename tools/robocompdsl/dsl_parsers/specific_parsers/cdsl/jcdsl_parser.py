@@ -6,7 +6,7 @@ from collections import OrderedDict
 from dsl_parsers.dsl_parser_abstract import DSLParserTemplate
 from dsl_parsers.parsing_utils import is_agm2_agent, is_agm2_agent_ROS, communication_is_ice, is_agm1_agent, \
     generate_recursive_imports
-from dsl_parsers.specific_parsers.componentinspections import ComponentInspections
+from dsl_parsers.specific_parsers.cdsl.componentinspections import ComponentInspections
 
 
 class CDSLJsonParser(DSLParserTemplate):
@@ -127,7 +127,7 @@ class CDSLJsonParser(DSLParserTemplate):
 
 
 if __name__ == '__main__':
-    file_path = "/home/robolab/robocomp/tools/robocompdsl/test/resources/jsoncomp.jcdsl"
+    file_path = "/test/resources/jsoncomp.jcdsl"
     parser = CDSLJsonParser()
     with open(file_path, 'r') as reader:
         string = reader.read()
