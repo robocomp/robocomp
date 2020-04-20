@@ -12,7 +12,7 @@ def Z():
 def TAB():
 	cog.out('<TABHERE>')
 
-from templateCPP import functions
+import templateCPP.functions.src.specificworker_h as functions
 from dsl_parsers.dsl_factory import DSLFactory
 from dsl_parsers.parsing_utils import communication_is_ice, is_agm1_agent, is_agm2_agent, IDSLPool
 includeDirectories = theIDSLPaths.split('#')
@@ -121,7 +121,7 @@ private:
 	std::shared_ptr<InnerModel> innerModel;
 [[[cog
 cog.out(functions.specificworker_innermodelviewer_attributes(component.innermodelviewer))
-cog.out(functions.specificworker_innermodelviewer_attributes(component.innermodelviewer))
+cog.out(functions.specificworker_agm_attributes(component))
 
 ]]]
 [[[end]]]
