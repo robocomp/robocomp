@@ -120,27 +120,8 @@ cog.out(functions.specificworker_statemachine_methods_definitions(component, sm)
 private:
 	std::shared_ptr<InnerModel> innerModel;
 [[[cog
-if component.innermodelviewer:
-	cog.outl("#ifdef USE_QTGUI")
-	cog.outl("<TABHERE>OsgView *osgView;")
-	cog.outl("<TABHERE>InnerModelViewer *innerModelViewer;")
-	cog.outl("#endif")
-try:
-	if is_agm1_agent(component):
-		cog.outl("<TABHERE>std::string action;")
-		cog.outl("<TABHERE>ParameterMap params;")
-		cog.outl("<TABHERE>AGMModel::SPtr worldModel;")
-		cog.outl("<TABHERE>bool active;")
-		if 'innermodelviewer' in [ x.lower() for x in component.options ]:
-			cog.outl("<TABHERE>void regenerateInnerModelViewer();")
-		cog.outl("<TABHERE>bool setParametersAndPossibleActivation(const ParameterMap &prs, bool &reactivated);")
-		cog.outl("<TABHERE>void sendModificationProposal(AGMModel::SPtr &worldModel, AGMModel::SPtr &newModel);")
-	elif is_agm2_agent(component):
-		cog.outl("<TABHERE>std::string action;")
-		cog.outl("<TABHERE>AGMModel::SPtr worldModel;")
-		cog.outl("<TABHERE>bool active;")
-except:
-	pass
+cog.out(functions.specificworker_innermodelviewer_attributes(component.innermodelviewer))
+cog.out(functions.specificworker_innermodelviewer_attributes(component.innermodelviewer))
 
 ]]]
 [[[end]]]

@@ -1,4 +1,5 @@
-from dsl_parsers.parsing_utils import communication_is_ice
+import dsl_parsers.parsing_utils as p_utils
+
 
 def generate_ice_method_params(param, language):
     params_string = ''
@@ -34,7 +35,7 @@ def generate_interface_method_definition(component, interface, pool):
         if idsl_interface['name'] == interface_name:
             for method_name, method in idsl_interface['methods'].items():
                 params_string = ''
-                if communication_is_ice(interface):
+                if p_utils.communication_is_ice(interface):
                     for param in method['params']:
                         params_string += generate_ice_method_params(param, component.language.lower())
                     result += "<TABHERE>" + method['return'] + ' ' + idsl_interface['name'] + "_" + method[
@@ -69,7 +70,7 @@ def specificworker_subscribes_method_definitions(pool, component):
                     for mname in interface['methods']:
                         method = interface['methods'][mname]
                         paramStrA = ''
-                        if communication_is_ice(impa):
+                        if p_utils.communication_is_ice(impa):
                             for p in method['params']:
                                 # delim
                                 if paramStrA == '':
@@ -144,4 +145,33 @@ def specificworker_statemachine_methods_definitions(component, sm):
         result += "//Specification slot methods State Machine\n"
         result += sm_specification+'\n'
         result += "//--------------------\n"
+    return result
+
+def specificworker_innermodelviewer_attributes(innermodelviewer):
+    result = ""
+    if innermodelviewer:
+        result +="#ifdef USE_QTGUI\n"
+        result +="<TABHERE>OsgView *osgView;\n"
+        result +="<TABHERE>InnerModelViewer *innerModelViewer;\n"
+        result +="#endif\n"
+    return result
+
+def specificworker_agm_attributes(component):
+    result = ''
+    try:
+        if p_utils.is_agm1_agent(component):
+            result += "<TABHERE>std::string action;\n"
+            result += "<TABHERE>ParameterMap params;\n"
+            result += "<TABHERE>AGMModel::SPtr worldModel;\n"
+            result += "<TABHERE>bool active;\n"
+            if 'innermodelviewer' in [x.lower() for x in component.options]:
+                result += "<TABHERE>void regenerateInnerModelViewer();\n"
+            result += "<TABHERE>bool setParametersAndPossibleActivation(const ParameterMap &prs, bool &reactivated);\n"
+            result += "<TABHERE>void sendModificationProposal(AGMModel::SPtr &worldModel, AGMModel::SPtr &newModel);\n"
+        elif p_utils.is_agm2_agent(component):
+            result += "<TABHERE>std::string action;\n"
+            result += "<TABHERE>AGMModel::SPtr worldModel;\n"
+            result += "<TABHERE>bool active;\n"
+    except:
+        pass
     return result
