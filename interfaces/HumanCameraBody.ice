@@ -21,6 +21,16 @@ module RoboCompHumanCameraBody
 		int height;
 		ImgType image;
     };
+	struct TGroundTruth
+	{
+		float x;
+		float y;
+		float z;
+		float rx;
+		float ry;
+		float rz;
+	};
+	sequence<TGroundTruth> GroundTruth;
 	struct KeyPoint
 	{
 		 float x;
@@ -37,12 +47,6 @@ module RoboCompHumanCameraBody
 	{
 		 int id;
 		 TJoints joints;
-		 float x;
-		 float y;
-		 float z;
-		 float rx;
-		 float ry;
-		 float rz;
 		 TImage roi;
 	};
 	sequence <Person> People;
