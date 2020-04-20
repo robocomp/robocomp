@@ -55,6 +55,7 @@ module RoboCompHumanCameraBody
 		 int cameraId;
 		 long timestamp;
 		 People peoplelist;
+		 GroundTruth gt;
 	};
 	interface HumanCameraBody
 	{
