@@ -78,40 +78,48 @@ void SpecificWorker::initialize(int period)
 
 
 
+
 void SpecificWorker::sm_publish()
 {
 	std::cout<<"Entered state publish"<<std::endl;
 }
+
 
 void SpecificWorker::sm_pop_data()
 {
 	std::cout<<"Entered state pop_data"<<std::endl;
 }
 
+
 void SpecificWorker::sm_read_uwb()
 {
 	std::cout<<"Entered state read_uwb"<<std::endl;
 }
+
 
 void SpecificWorker::sm_read_rs()
 {
 	std::cout<<"Entered state read_rs"<<std::endl;
 }
 
+
 void SpecificWorker::sm_read_april()
 {
 	std::cout<<"Entered state read_april"<<std::endl;
 }
+
 
 void SpecificWorker::sm_compute_pose()
 {
 	std::cout<<"Entered state compute_pose"<<std::endl;
 }
 
+
 void SpecificWorker::sm_initialize()
 {
 	std::cout<<"Entered initial state initialize"<<std::endl;
 }
+
 
 void SpecificWorker::sm_finalize()
 {
@@ -311,6 +319,7 @@ bool SpecificWorker::setParametersAndPossibleActivation(const ParameterMap &prs,
 
 	return true;
 }
+
 void SpecificWorker::sendModificationProposal(AGMModel::SPtr &worldModel, AGMModel::SPtr &newModel)
 {
 	try

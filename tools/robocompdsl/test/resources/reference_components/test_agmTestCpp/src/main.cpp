@@ -137,7 +137,6 @@ int ::AGMTest::run(int argc, char* argv[])
 	string proxy, tmp;
 	initialize();
 
-
 	try
 	{
 		if (not GenericMonitor::configGetString(communicator(), prefix, "AGMExecutiveProxy", proxy, ""))
@@ -154,6 +153,7 @@ int ::AGMTest::run(int argc, char* argv[])
 	rInfo("AGMExecutiveProxy initialized Ok!");
 
 	mprx["AGMExecutiveProxy"] = (::IceProxy::Ice::Object*)(&agmexecutive_proxy);//Remote server proxy creation example
+
 	IceStorm::TopicManagerPrx topicManager;
 	try
 	{
@@ -215,11 +215,10 @@ int ::AGMTest::run(int argc, char* argv[])
 			adapterAGMCommonBehavior->add(agmcommonbehavior, Ice::stringToIdentity("agmcommonbehavior"));
 			adapterAGMCommonBehavior->activate();
 			cout << "[" << PROGRAM_NAME << "]: AGMCommonBehavior adapter created in port " << tmp << endl;
-			}
-			catch (const IceStorm::TopicExists&){
-				cout << "[" << PROGRAM_NAME << "]: ERROR creating or activating adapter for AGMCommonBehavior\n";
-			}
-
+		}
+		catch (const IceStorm::TopicExists&){
+			cout << "[" << PROGRAM_NAME << "]: ERROR creating or activating adapter for AGMCommonBehavior\n";
+		}
 
 
 		// Server adapter creation and publication
@@ -267,6 +266,7 @@ int ::AGMTest::run(int argc, char* argv[])
 			cout << "[" << PROGRAM_NAME << "]: Error creating AGMExecutiveTopic topic.\n";
 			//Error. Topic does not exist
 		}
+
 
 		// Server adapter creation and publication
 		cout << SERVER_FULL_NAME " started" << endl;

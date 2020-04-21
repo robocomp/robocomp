@@ -137,7 +137,6 @@ int ::testcomp::run(int argc, char* argv[])
 	string proxy, tmp;
 	initialize();
 
-
 	SpecificWorker *worker = new SpecificWorker(mprx);
 	//Monitor thread
 	SpecificMonitor *monitor = new SpecificMonitor(worker,communicator());
@@ -173,7 +172,6 @@ int ::testcomp::run(int argc, char* argv[])
 			cout << ex;
 
 		}
-
 
 
 

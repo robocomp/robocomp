@@ -65,74 +65,88 @@ void SpecificWorker::initialize(int period)
 
 
 
+
 void SpecificWorker::sm_two()
 {
 	std::cout<<"Entered state two"<<std::endl;
 }
+
 
 void SpecificWorker::sm_three()
 {
 	std::cout<<"Entered state three"<<std::endl;
 }
 
+
 void SpecificWorker::sm_four()
 {
 	std::cout<<"Entered state four"<<std::endl;
 }
+
 
 void SpecificWorker::sm_one()
 {
 	std::cout<<"Entered initial state one"<<std::endl;
 }
 
+
 void SpecificWorker::sm_five()
 {
 	std::cout<<"Entered final state five"<<std::endl;
 }
 
+
 void SpecificWorker::sm_test2sub1()
 {
-	std::cout<<"Entered state test2sub1"<<std::endl;
+	std::cout<<"Entered substate test2sub1"<<std::endl;
 }
+
 
 void SpecificWorker::sm_test2sub2()
 {
-	std::cout<<"Entered state test2sub2"<<std::endl;
+	std::cout<<"Entered substate test2sub2"<<std::endl;
 }
+
 
 void SpecificWorker::sm_test2sub21()
 {
-	std::cout<<"Entered state test2sub21"<<std::endl;
+	std::cout<<"Entered initial substate test2sub21"<<std::endl;
 }
+
 
 void SpecificWorker::sm_test2sub22()
 {
-	std::cout<<"Entered state test2sub22"<<std::endl;
+	std::cout<<"Entered final substate test2sub22"<<std::endl;
 }
+
 
 void SpecificWorker::sm_test3sub1()
 {
-	std::cout<<"Entered state test3sub1"<<std::endl;
+	std::cout<<"Entered substate test3sub1"<<std::endl;
 }
+
 
 void SpecificWorker::sm_test3sub2()
 {
-	std::cout<<"Entered state test3sub2"<<std::endl;
+	std::cout<<"Entered substate test3sub2"<<std::endl;
 }
+
 
 void SpecificWorker::sm_test3sub3()
 {
-	std::cout<<"Entered state test3sub3"<<std::endl;
+	std::cout<<"Entered substate test3sub3"<<std::endl;
 }
+
 
 void SpecificWorker::sm_test4sub2()
 {
-	std::cout<<"Entered state test4sub2"<<std::endl;
+	std::cout<<"Entered substate test4sub2"<<std::endl;
 }
+
 
 void SpecificWorker::sm_test4sub1()
 {
-	std::cout<<"Entered state test4sub1"<<std::endl;
+	std::cout<<"Entered initial substate test4sub1"<<std::endl;
 }
 
 

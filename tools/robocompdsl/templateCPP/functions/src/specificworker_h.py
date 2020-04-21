@@ -49,14 +49,14 @@ def generate_interface_method_definition(component, interface, pool):
                         result += "<TABHERE>bool " + method['name'] + '(' + params_string + ");\n"
     return result
 
-def specificworker_implements_method_definitions(pool, component):
+def implements_method_definitions(pool, component):
     result = ""
     if 'implements' in component:
         for interface in component.implements:
             result += generate_interface_method_definition(component, interface, pool)
     return result
 
-def specificworker_subscribes_method_definitions(pool, component):
+def subscribes_method_definitions(pool, component):
     result = ""
     if 'subscribesTo' in component:
         for impa in component.subscribesTo:
@@ -134,7 +134,7 @@ def statemachine_methods(machine):
         result += f"<TABHERE>void sm_{machine['contents']['finalstate']}();\n"
     return result
 
-def specificworker_statemachine_methods_definitions(component, sm):
+def statemachine_methods_definitions(component, sm):
     result = ""
     if component.statemachine is not None:
         sm_specification = ""
@@ -147,7 +147,7 @@ def specificworker_statemachine_methods_definitions(component, sm):
         result += "//--------------------\n"
     return result
 
-def specificworker_innermodelviewer_attributes(innermodelviewer):
+def innermodelviewer_attributes(innermodelviewer):
     result = ""
     if innermodelviewer:
         result +="#ifdef USE_QTGUI\n"
@@ -156,7 +156,7 @@ def specificworker_innermodelviewer_attributes(innermodelviewer):
         result +="#endif\n"
     return result
 
-def specificworker_agm_attributes(component):
+def agm_attributes(component):
     result = ''
     try:
         if p_utils.is_agm1_agent(component):

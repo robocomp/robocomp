@@ -12,7 +12,7 @@ def Z():
 def TAB():
 	cog.out('<TABHERE>')
 
-import templateCPP.functions.src.specificworker_h as functions
+import templateCPP.functions.src.specificworker_h as specificworker
 from dsl_parsers.dsl_factory import DSLFactory
 from dsl_parsers.parsing_utils import communication_is_ice, is_agm1_agent, is_agm2_agent, IDSLPool
 includeDirectories = theIDSLPaths.split('#')
@@ -99,9 +99,9 @@ public:
 	bool setParams(RoboCompCommonBehavior::ParameterList params);
 
 [[[cog
-cog.out(functions.specificworker_implements_method_definitions(pool, component))
+cog.out(specificworker.implements_method_definitions(pool, component))
 
-cog.out(functions.specificworker_subscribes_method_definitions(pool, component))
+cog.out(specificworker.subscribes_method_definitions(pool, component))
 
 ]]]
 [[[end]]]
@@ -114,14 +114,14 @@ if (sm is not None and sm['machine']['default'] is True) or component.statemachi
 [[[end]]]
 	void initialize(int period);
 [[[cog
-cog.out(functions.specificworker_statemachine_methods_definitions(component, sm))
+cog.out(specificworker.statemachine_methods_definitions(component, sm))
 ]]]
 [[[end]]]
 private:
 	std::shared_ptr<InnerModel> innerModel;
 [[[cog
-cog.out(functions.specificworker_innermodelviewer_attributes(component.innermodelviewer))
-cog.out(functions.specificworker_agm_attributes(component))
+cog.out(specificworker.innermodelviewer_attributes(component.innermodelviewer))
+cog.out(specificworker.agm_attributes(component))
 
 ]]]
 [[[end]]]

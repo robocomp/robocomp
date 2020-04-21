@@ -219,7 +219,6 @@ int ::testcomp::run(int argc, char* argv[])
 
 
 
-
 		// Server adapter creation and publication
 		cout << SERVER_FULL_NAME " started" << endl;
 
