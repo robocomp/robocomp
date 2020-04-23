@@ -96,12 +96,12 @@ class ParsingUtilsTest(unittest.TestCase):
                          os.path.expanduser('~/robocomp/interfaces/IDSLs/CameraSimple.idsl')])
 
     def test_get_name_number(self):
-        self.assertCountEqual(parsing_utils.get_name_number(['AGMExecutiveTopic', 'HumanPose']),
-                              [['AGMExecutiveTopic', ''], ['HumanPose', '']])
-        self.assertCountEqual(parsing_utils.get_name_number(['AGMExecutiveTopic', 'HumanPose', 'HumanPose']),
-                              [['AGMExecutiveTopic', ''], ['HumanPose', ''], ['HumanPose', '1']])
-        self.assertCountEqual(parsing_utils.get_name_number(['HumanPose', 'HumanPose', 'HumanPose']),
-                              [['HumanPose', ''], ['HumanPose', '1'], ['HumanPose', '2']])
+        self.assertCountEqual(parsing_utils.get_name_number([['AGMExecutiveTopic', 'ice'], ['HumanPose', 'ice']]),
+                              [[('AGMExecutiveTopic', 'ice'), ''], [('HumanPose', 'ice'), '']])
+        self.assertCountEqual(parsing_utils.get_name_number([['AGMExecutiveTopic', 'ice'], ['HumanPose', 'ice'], ['HumanPose', 'ice']]),
+                              [[('AGMExecutiveTopic', 'ice'), ''], [('HumanPose', 'ice'), ''], [('HumanPose', 'ice'), '1']])
+        self.assertCountEqual(parsing_utils.get_name_number([['HumanPose', 'ice'], ['HumanPose', 'ice'], ['HumanPose', 'ice']]),
+                              [[('HumanPose', 'ice'), ''], [('HumanPose', 'ice'), '1'], [('HumanPose', 'ice'), '2']])
         self.assertRaises(AssertionError, parsing_utils.get_name_number, "lapatochada")
         self.assertRaises(AssertionError, parsing_utils.get_name_number, ["lapatochada", 8, 3.9])
 

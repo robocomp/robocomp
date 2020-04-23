@@ -236,8 +236,9 @@ class IDSLPool:
         includeDirectories = iD + ['/opt/robocomp/interfaces/IDSLs/', os.path.expanduser('~/robocomp/interfaces/IDSLs/')]
         self.includeInPool(files, self.modulePool, includeDirectories)
 
-    def getRosTypes(self):
-        return self.rosTypes
+    @classmethod
+    def getRosTypes(cls):
+        return cls.rosTypes
 
     def includeInPool(self, files, modulePool, includeDirectories):
         """

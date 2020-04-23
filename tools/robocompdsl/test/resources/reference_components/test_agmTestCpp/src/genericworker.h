@@ -22,29 +22,27 @@
 #include "config.h"
 #include <stdint.h>
 #include <qlog/qlog.h>
-
 #include <QStateMachine>
 #include <QState>
 #include <CommonBehavior.h>
 
-#include <Planning.h>
 #include <AGMCommonBehavior.h>
 #include <AGMExecutive.h>
 #include <AGMExecutiveTopic.h>
 #include <AGMWorldModel.h>
+#include <Planning.h>
 #include <agm.h>
 
-#include <agm.h>
 
 #define CHECK_PERIOD 5000
 #define BASIC_PERIOD 100
 
 using namespace std;
-using namespace RoboCompPlanning;
 using namespace RoboCompAGMCommonBehavior;
 using namespace RoboCompAGMExecutive;
 using namespace RoboCompAGMExecutiveTopic;
 using namespace RoboCompAGMWorldModel;
+using namespace RoboCompPlanning;
 
 typedef map <string,::IceProxy::Ice::Object*> MapPrx;
 

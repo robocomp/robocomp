@@ -12,6 +12,7 @@ def Z():
 def TAB():
 	cog.out('<TABHERE>')
 
+import templateCPP.functions.src.genericworker_h as genericworker
 from dsl_parsers.dsl_factory import DSLFactory
 from dsl_parsers.parsing_utils import get_name_number, communication_is_ice, IDSLPool, is_agm1_agent,is_agm2_agent
 includeDirectories = theIDSLPaths.split('#')
@@ -60,127 +61,45 @@ Z()
 #include "config.h"
 #include <stdint.h>
 #include <qlog/qlog.h>
-
 [[[cog
-if component.gui is not None:
-	cog.outl("#if Qt5_FOUND") 
-	cog.outl("<TABHERE>#include <QtWidgets>")
-	cog.outl("#else")
-	cog.outl("<TABHERE>#include <QtGui>")
-	cog.outl("#endif") 
-	cog.outl("#include <ui_mainUI.h>")
+cog.out(genericworker.gui_includes(component.gui))
 ]]]
 [[[end]]]
 [[[cog
-if sm is not None:
-	cog.outl("#include <QStateMachine>")
-	cog.outl("#include <QState>")
-	if component.statemachine_visual:
-	    cog.outl("#include \"statemachinewidget/qstateMachineWrapper.h\"")
+cog.out(genericworker.statemachine_includes(sm, component.statemachine_visual))
 ]]]
 [[[end]]]
 #include <CommonBehavior.h>
 
 [[[cog
-usingList = []
-for imp in component.recursiveImports + component.iceInterfaces:
-	name = imp.split('/')[-1].split('.')[0]
-	if not name in usingList:
-		usingList.append(name)
-for name in usingList:
-	cog.outl('#include <'+name+'.h>')
-
-
-if component.usingROS == True:
-	cog.outl('#include <ros/ros.h>')
-	for include in includeList:
-		cog.outl('#include <'+include+'.h>')
-	srvIncludes = {}
-	for imp in component.requires:
-		if type(imp) == str:
-			im = imp
-		else:
-			im = imp[0]
-		if not communication_is_ice(imp):
-			module = pool.moduleProviding(im)
-			for interface in module['interfaces']:
-				if interface['name'] == im:
-					for mname in interface['methods']:
-						srvIncludes[mname] = '#include <'+module['name']+'ROS/'+mname+'.h>'
-	for imp in component.implements:
-		if type(imp) == str:
-			im = imp
-		else:
-			im = imp[0]
-		if not communication_is_ice(imp):
-			module = pool.moduleProviding(im)
-			for interface in module['interfaces']:
-				if interface['name'] == im:
-					for mname in interface['methods']:
-						srvIncludes[mname] = '#include <'+module['name']+'ROS/'+mname+'.h>'
-	for srv in srvIncludes.values():
-		cog.outl(srv)
-
-try:
-	if is_agm1_agent(component):
-		cog.outl("#include <agm.h>")
-	if is_agm2_agent(component):
-		cog.outl("#include <AGM2.h>")
-		cog.outl("#include <agm2.h>")
-except:
-	pass
+cog.out(genericworker.interfaces_includes(component, pool))
+cog.out(genericworker.agm_includes(component))
 ]]]
 [[[end]]]
 
-[[[cog
-	if 'agmagent' in [ x.lower() for x in component.options ]:
-		cog.out('#include <agm.h>')
-]]]
-[[[end]]]
 
 #define CHECK_PERIOD 5000
 #define BASIC_PERIOD 100
 
 using namespace std;
 [[[cog
-usingList = []
-for imp in component.recursiveImports + component.iceInterfaces:
-	name = imp.split('/')[-1].split('.')[0]
-	if not name in usingList:
-		usingList.append(name)
-for name in usingList:
-	cog.outl("using namespace RoboComp"+name+";")
+cog.out(genericworker.namespaces(component))
 ]]]
 [[[end]]]
 
 [[[cog
-if component.language.lower() == 'cpp':
-	cog.outl("typedef map <string,::IceProxy::Ice::Object*> MapPrx;")
-else:
-	proxy_list = []
-	for name in component.requires + component.publishes:
-		proxy_list.append("RoboComp" + name + "::" + name + "PrxPtr")
-	cog.outl("using TuplePrx = std::tuple<" + ",".join(proxy_list) + ">;")
+cog.out(genericworker.ice_proxies_map(component))
 ]]]
 [[[end]]]
 
 [[[cog
-try:
-	if 'agmagent' in [ x.lower() for x in component.options ]:
-		cog.outl("""
-		struct BehaviorParameters
-		{
-			RoboCompPlanning::Action action;
-			std::vector< std::vector <std::string> > plan;
-		};""")
-except:
-	pass
-
+cog.out(genericworker.agm_behaviour_parameter_struct(component))
 ]]]
 [[[end]]]
 
 [[[cog
 if component.usingROS == True:
+	genericworker.ros_publishes_classes(component, pool)
 	#CREANDO CLASES PARA LOS PUBLISHERS
 	for imp in component.publishes:
 		nname = imp
