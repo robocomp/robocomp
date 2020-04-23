@@ -259,14 +259,16 @@ try:
 except:
 	pass
 
-for req, num in get_name_number(component.requires):
-	if communication_is_ice(req):
-		w = REQUIRE_STR.replace("<NORMAL>", req).replace("<LOWER>", req.lower()).replace("<NUM>",num)
+for iface, num in get_name_number(component.requires):
+	if communication_is_ice(iface):
+		name= iface[0]
+		w = REQUIRE_STR.replace("<NORMAL>", name).replace("<LOWER>", name.lower()).replace("<NUM>",num)
 		cog.outl(w)
 
-for pub, num in get_name_number(component.publishes):
-	if communication_is_ice(pub):
-		w = PUBLISHES_STR.replace("<NORMAL>", pub).replace("<LOWER>", pub.lower())
+for iface, num in get_name_number(component.publishes):
+	if communication_is_ice(iface):
+		name = iface[0]
+		w = PUBLISHES_STR.replace("<NORMAL>", name).replace("<LOWER>", name.lower())
 		cog.outl(w)
 
 cog.outl("<TABHERE>if status == 0:")
@@ -278,12 +280,14 @@ cog.outl("<TABHERE><TABHERE>sys.exit(-1)")
 
 for imp in component.implements:
 	if communication_is_ice(imp):
-		w = IMPLEMENTS_STR.replace("<NORMAL>", imp).replace("<LOWER>", imp.lower())
+		name = imp[0]
+		w = IMPLEMENTS_STR.replace("<NORMAL>", name).replace("<LOWER>", name.lower())
 		cog.outl(w)
 
 for sut in component.subscribesTo:
 	if communication_is_ice(sut):
-		w = SUBSCRIBESTO_STR.replace("<NORMAL>", sut).replace("<LOWER>", sut.lower())
+		name = sut[0]
+		w = SUBSCRIBESTO_STR.replace("<NORMAL>", name).replace("<LOWER>", name.lower())
 		cog.outl(w)
 if component.usingROS == True:
 	cog.outl("<TABHERE>rospy.init_node(\""+component.name+"\", anonymous=True)")

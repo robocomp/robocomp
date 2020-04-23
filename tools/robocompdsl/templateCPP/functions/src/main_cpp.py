@@ -21,11 +21,12 @@ PROXY_PTR_STR = """${name}Prx${ptr} ${lower}${num}_${prefix}proxy;\n"""
 
 def proxy_ptr(interfaces,language, prefix=''):
     result = ""
-    for name, num in get_name_number(interfaces):
-        if communication_is_ice(name):
+    for iface, num in get_name_number(interfaces):
+        if communication_is_ice(iface):
             ptr = ""
             if language.lower() != "cpp":
                 ptr = "Ptr"
+            name = iface[0]
             result += Template(PROXY_PTR_STR).substitute(name=name, ptr=ptr, lower=name.lower(), num=num, prefix=prefix)
     return result
 
@@ -247,13 +248,13 @@ rInfo("<NORMAL>Proxy<PROXYNUMBER> initialized Ok!");
 def requires(component):
     result = ""
     proxy_list = []
-    for name, num in get_name_number(component.requires):
-        if communication_is_ice(name):
+    for iface, num in get_name_number(component.requires):
+        if communication_is_ice(iface):
             if component.language.lower() == "cpp":
                 cpp = "<PROXYNAME>_proxy = <NORMAL>Prx::uncheckedCast( communicator()->stringToProxy( proxy ) );"
             else:
                 cpp = "<PROXYNAME>_proxy = Ice::uncheckedCast<<NORMAL>Prx>( communicator()->stringToProxy( proxy ) );"
-
+            name = iface[0]
             result += REQUIRE_STR.replace("<C++_VERSION>", cpp).replace("<NORMAL>", name).replace("<LOWER>",
                                                                                                  name.lower()).replace(
                 "<PROXYNAME>", name.lower() + num).replace("<PROXYNUMBER>", num)

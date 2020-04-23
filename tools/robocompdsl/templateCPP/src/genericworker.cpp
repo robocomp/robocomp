@@ -208,16 +208,18 @@ if sm is not None:
 [[[end]]]
 [[[cog
 cont = 0
-for name, num in get_name_number(component.requires):
-	if communication_is_ice(name):
+for iface, num in get_name_number(component.requires):
+	if communication_is_ice(iface):
+		name = iface[0]
 		if component.language.lower() == 'cpp':
 			cog.outl("<TABHERE>"+name.lower()+num+"_proxy = (*("+name+"Prx*)mprx[\""+name+"Proxy"+num+"\"]);")
 		else:
 			cog.outl("<TABHERE>"+name.lower()+num+"_proxy = std::get<" + str(cont) + ">(tprx);")
 	cont = cont + 1
 
-for name, num in get_name_number(component.publishes):
-	if communication_is_ice(name):
+for iface, num in get_name_number(component.publishes):
+	if communication_is_ice(iface):
+		name = iface[0]
 		if component.language.lower() == 'cpp':
 			cog.outl("<TABHERE>"+name.lower()+num+"_pubproxy = (*("+name+"Prx*)mprx[\""+name+"Pub"+num+"\"]);")
 		else:

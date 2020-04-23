@@ -87,3 +87,12 @@ class ComponentFacade(dict):
     def language(self):
         return self.get_property_with_mapping('language')
 
+    @property
+    def ice_interfaces_names(self):
+        names = []
+        for item in self.get_property_with_mapping('iceInterfaces'):
+            if isinstance(item, list):
+                names.append(item[0])
+            else:
+                names.append(item)
+        return names

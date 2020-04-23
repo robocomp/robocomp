@@ -117,7 +117,7 @@ ROBOCOMP_WRAP_ICE( CommonBehavior
 [[[cog
 A()
 imp = []
-for im in component.recursiveImports + component.iceInterfaces:
+for im in component.recursiveImports + component.ice_interfaces_names:
     name = im.split('/')[-1].split('.')[0]
     imp.append(name)
 cog.out(' '.join(imp))

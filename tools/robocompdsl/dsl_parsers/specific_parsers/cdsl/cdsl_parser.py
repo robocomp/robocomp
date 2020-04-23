@@ -1,6 +1,7 @@
 import os
 import traceback
 from collections import OrderedDict
+from operator import itemgetter
 
 from pyparsing import Suppress, Word, CaselessKeyword, alphas, alphanums, CharsNotIn, Group, ZeroOrMore, Optional, \
     delimitedList, cppStyleComment, ParseSyntaxException
@@ -36,22 +37,22 @@ class CDSLParser(DSLParserTemplate):
 
         idslImports = ZeroOrMore(idslImport).setResultsName("imports")
 
-        commType = Optional(OPAR - (ICE | ROS).setResultsName("type") + CPAR)
+        commType = Optional(OPAR - (ICE | ROS).setResultsName("type") + CPAR, default='ice')
 
         implementsList = Optional(
-            IMPLEMENTS - Group(delimitedList(identifier.setResultsName("impIdentifier") + commType)).setResultsName(
+            IMPLEMENTS - Group(delimitedList(Group(identifier.setResultsName("impIdentifier") + commType))).setResultsName(
                 "implements") + SEMI)
 
         requiresList = Optional(
-            REQUIRES - Group(delimitedList(identifier.setResultsName("reqIdentifier") + commType)).setResultsName(
+            REQUIRES - Group(delimitedList(Group(identifier.setResultsName("reqIdentifier") + commType))).setResultsName(
                 "requires") + SEMI)
 
         subscribesList = Optional(
-            SUBSCRIBESTO - Group(delimitedList(identifier.setResultsName("subIdentifier") + commType)).setResultsName(
+            SUBSCRIBESTO - Group(delimitedList(Group(identifier.setResultsName("subIdentifier") + commType))).setResultsName(
                 "subscribesTo") + SEMI)
 
         publishesList = Optional(
-            PUBLISHES - Group(delimitedList(identifier.setResultsName("pubIdentifier") + commType)).setResultsName(
+            PUBLISHES - Group(delimitedList(Group(identifier.setResultsName("pubIdentifier") + commType))).setResultsName(
                 "publishes") + SEMI)
 
         communicationList = Group(implementsList & requiresList & subscribesList & publishesList).setResultsName(
@@ -172,8 +173,7 @@ class CDSLParser(DSLParserTemplate):
         communications = parsing_result['component']['content']['communications']
         for comm_type in com_types:
             if comm_type in communications:
-                interfaces = sorted(communications[comm_type])
-                # TODO: FIX when interfaces are tuples with name and type!
+                interfaces = sorted(communications[comm_type].asList(), key=itemgetter(0))
                 for interface in interfaces:
                     getattr(component,comm_type).append(interface)
                     if communication_is_ice(interface):
@@ -183,29 +183,27 @@ class CDSLParser(DSLParserTemplate):
                         component.usingROS = True
         # Handle options for communications
         if is_agm1_agent(component):
-            component.iceInterfaces += ['AGMCommonBehavior', 'AGMExecutive', 'AGMExecutiveTopic', 'AGMWorldModel']
+            component.iceInterfaces += [['AGMCommonBehavior', 'ice'], ['AGMExecutive', 'ice'], ['AGMExecutiveTopic', 'ice'], ['AGMWorldModel', 'ice']]
             if not 'AGMCommonBehavior' in component.implements:
-                component.implements = ['AGMCommonBehavior'] + component.implements
+                component.implements = [['AGMCommonBehavior', 'ice']] + component.implements
             if not 'AGMExecutive' in component.requires:
-                component.requires = ['AGMExecutive'] + component.requires
+                component.requires = [['AGMExecutive', 'ice']] + component.requires
             if not 'AGMExecutiveTopic' in component.subscribesTo:
-                component.subscribesTo = ['AGMExecutiveTopic'] + component.subscribesTo
+                component.subscribesTo = [['AGMExecutiveTopic', 'ice']] + component.subscribesTo
         if is_agm2_agent(component):
             if is_agm2_agent_ROS(component):
                 component.usingROS = True
                 agm2agent_requires = [['AGMDSRService', 'ros']]
                 agm2agent_subscribesTo = [['AGMExecutiveTopic', 'ros'], ['AGMDSRTopic', 'ros']]
-                if not 'AGMDSRService' in component.rosInterfaces: component.rosInterfaces.append('AGMDSRService')
-                if not 'AGMDSRTopic' in component.rosInterfaces: component.rosInterfaces.append('AGMDSRTopic')
-                if not 'AGMExecutiveTopic' in component.rosInterfaces: component.rosInterfaces.append(
-                    'AGMExecutiveTopic')
+                if not 'AGMDSRService' in component.rosInterfaces: component.rosInterfaces.append(['AGMDSRService','ros'])
+                if not 'AGMDSRTopic' in component.rosInterfaces: component.rosInterfaces.append(['AGMDSRTopic','ros'])
+                if not 'AGMExecutiveTopic' in component.rosInterfaces: component.rosInterfaces.append(['AGMExecutiveTopic','ros'])
             else:
                 agm2agent_requires = [['AGMDSRService', 'ice']]
                 agm2agent_subscribesTo = [['AGMExecutiveTopic', 'ice'], ['AGMDSRTopic', 'ice']]
-                if not 'AGMDSRService' in component.iceInterfaces: component.iceInterfaces.append('AGMDSRService')
-                if not 'AGMDSRTopic' in component.iceInterfaces: component.iceInterfaces.append('AGMDSRTopic')
-                if not 'AGMExecutiveTopic' in component.iceInterfaces: component.iceInterfaces.append(
-                    'AGMExecutiveTopic')
+                if not 'AGMDSRService' in component.iceInterfaces: component.iceInterfaces.append(['AGMDSRService', 'ice'])
+                if not 'AGMDSRTopic' in component.iceInterfaces: component.iceInterfaces.append(['AGMDSRTopic', 'ice'])
+                if not 'AGMExecutiveTopic' in component.iceInterfaces: component.iceInterfaces.append(['AGMExecutiveTopic', 'ice'])
 
             # AGM2 agents REQUIRES
             for agm2agent_req in agm2agent_requires:

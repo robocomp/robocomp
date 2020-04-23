@@ -114,7 +114,8 @@ for imp in sorted(set(component.recursiveImports + component.imports)):
 [[[cog
 	for im in component.implements + component.subscribesTo:
 		if communication_is_ice(im):
-			cog.outl('from ' + im.lower() + 'I import *')
+			name = im[0]
+			cog.outl('from ' + name.lower() + 'I import *')
 ]]]
 [[[end]]]
 

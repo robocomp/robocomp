@@ -185,7 +185,7 @@ class ComponentGenerator:
         # Generate interface-dependent files
         #
         for interface in self.component.implements + self.component.subscribesTo:
-            if isinstance(interface, list):
+            if isinstance(interface, (list, tuple)):
                 interface_name = interface[0]
             else:
                 interface_name = interface

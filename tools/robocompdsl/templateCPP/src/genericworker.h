@@ -369,15 +369,17 @@ except:
 
 
 [[[cog
-for name, num in get_name_number(component.requires):
-	if communication_is_ice(name):
+for iface, num in get_name_number(component.requires):
+	if communication_is_ice(iface):
+		name = iface[0]
 		if component.language.lower() == "cpp":
 			cog.outl('<TABHERE>'+name+'Prx '+name.lower()+num +'_proxy;')
 		else:
 			cog.outl('<TABHERE>'+name+'PrxPtr '+name.lower()+num +'_proxy;')
 
-for name, num in get_name_number(component.publishes):
-	if communication_is_ice(name):
+for iface, num in get_name_number(component.publishes):
+	if communication_is_ice(iface):
+		name = iface[0]
 		if component.language.lower() == "cpp":
 			cog.outl('<TABHERE>'+name+'Prx '+name.lower()+num +'_pubproxy;')
 		else:
