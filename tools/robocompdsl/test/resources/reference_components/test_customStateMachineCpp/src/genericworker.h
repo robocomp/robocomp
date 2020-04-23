@@ -64,7 +64,7 @@ public:
 
 
 protected:
-//State Machine
+	//State Machine
 	QStateMachine myStateMachine;
 
 	QState *twoState;
@@ -73,7 +73,7 @@ protected:
 	QState *oneState;
 	QFinalState *fiveState;
 
-//-------------------------
+	//-------------------------
 
 	QTimer timer;
 	int Period;
@@ -82,26 +82,26 @@ private:
 
 
 public slots:
-//Slots funtion State Machine
+	//Slots funtion State Machine
 	virtual void sm_two() = 0;
 	virtual void sm_three() = 0;
 	virtual void sm_four() = 0;
 	virtual void sm_one() = 0;
 	virtual void sm_five() = 0;
 
-//-------------------------
-    virtual void initialize(int period) = 0;
+	//-------------------------
+	virtual void initialize(int period) = 0;
 	
 signals:
 	void kill();
-//Signals for State Machine
+	//Signals for State Machine
 	void t_one_to_two();
 	void t_two_to_three();
 	void t_three_to_four();
 	void t_four_to_one();
 	void t_four_to_five();
 
-//-------------------------
+	//-------------------------
 };
 
 #endif
