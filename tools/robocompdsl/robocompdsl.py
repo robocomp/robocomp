@@ -12,6 +12,7 @@ import sys
 from termcolor import colored
 
 sys.path.append("/opt/robocomp/python")
+sys.path.append('/opt/robocomp/share/robocompdsl/')
 import rcExceptions
 from componentgenerator import ComponentGenerator
 import robocompdslutils

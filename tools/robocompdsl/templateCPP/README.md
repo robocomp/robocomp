@@ -1,4 +1,3 @@
-```
 [[[cog
 
 import sys
@@ -20,67 +19,46 @@ def SPACE(i=0):
 from dsl_parsers.dsl_factory import DSLFactory
 includeDirectories = theIDSLPaths.split('#')
 component = DSLFactory().from_file(theCDSL, include_directories=includeDirectories)
-
 ]]]
 [[[end]]]
-```
-#
-```
 [[[cog
-A()
-cog.out(' ' + component.name)
+cog.out('# ' + component.name)
 ]]]
 [[[end]]]
-```
 Intro to component here
 
 
 ## Configuration parameters
-As any other component,
-```
 [[[cog
-A()
-cog.out(' *' + component.name + '* ')
-Z()
+cog.out('As any other component, *' + component.name + '* needs a configuration file to start. In')
 ]]]
 [[[end]]]
 ```
-needs a configuration file to start. In
-
-    etc/config
-
+etc/config
+```
 you can find an example of a configuration file. We can find there the following lines:
-
-    EXAMPLE HERE
-
+```
+EXAMPLE HERE
+```
 
 ## Starting the component
 To avoid changing the *config* file in the repository, we can copy it to the component's home directory, so changes will remain untouched by future git pulls:
 
-    cd
-
 ```
 [[[cog
-A()
-cog.out(' <' + component.name + ' \'s path> ')
-Z()
+cog.out('cd <' + component.name + '\'s path> ')
 ]]]
 [[[end]]]
 ```
-
-    cp etc/config config
+```
+cp etc/config config
+```
 
 After editing the new config file we can run the component:
 
-    bin/
-
 ```
 [[[cog
-A()
-cog.out(component.name + ' ')
-Z()
+cog.out('bin/'+component.name + ' config')
 ]]]
 [[[end]]]
 ```
-
-    --Ice.Config=config

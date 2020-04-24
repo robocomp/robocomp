@@ -12,6 +12,7 @@ def Z():
 def TAB():
 	cog.out('<TABHERE>')
 
+import templateCPP.functions.servant_cpp as servant
 from dsl_parsers.dsl_factory import DSLFactory
 from dsl_parsers.parsing_utils import decorator_and_type_to_const_ampersand, IDSLPool
 includeDirectories = theIDSLPaths.split('#')
@@ -54,82 +55,29 @@ Z()
  *    You should have received a copy of the GNU General Public License
  *    along with RoboComp.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "
 [[[cog
-A()
-cog.out(theInterface[0].lower())
-Z()
+cog.out("#include \""+theInterface[0].lower()+"I.h\"")
 ]]]
 [[[end]]]
-I.h"
 
 [[[cog
-cog.out(theInterface[0])
-Z()
+cog.out(theInterface[0]+"I::"+theInterface[0]+"I(GenericWorker *_worker)")
 ]]]
 [[[end]]]
-I::
-[[[cog
-A()
-cog.out(theInterface[0])
-Z()
-]]]
-[[[end]]]
-I(GenericWorker *_worker)
 {
 	worker = _worker;
 }
 
 
 [[[cog
-cog.out(theInterface[0])
-Z()
+cog.out(theInterface[0]+"I::~"+theInterface[0]+"I()")
 ]]]
 [[[end]]]
-I::~
-[[[cog
-A()
-cog.out(theInterface[0])
-Z()
-]]]
-[[[end]]]
-I()
 {
 }
 
 [[[cog
-
-	for interface in module['interfaces']:
-		if interface['name'] == theInterface[0]:
-			for mname in interface['methods']:
-				method = interface['methods'][mname]
-
-				ret = method['return']
-				name = method['name']
-
-				paramStrA = ''
-				for p in method['params']:
-					const, ampersand = decorator_and_type_to_const_ampersand(p['decorator'], p['type'], modulePool, component.language.lower() == "cpp11")
-					if p['type'] == 'long':
-						paramStrA += const + 'Ice::Long' + ' ' + ampersand + p['name'] + ', '
-					else:
-						paramStrA += const + p['type'] + ' ' + ampersand + p['name'] + ', '
-
-				paramStrB = ''
-				for p in method['params']:
-					if paramStrB == '': delim = ''
-					else: delim = ', '
-					paramStrB += delim + p['name']
-
-				cog.outl(ret + ' ' + theInterface[0] + 'I::' + name + '(' + paramStrA + 'const Ice::Current&)')
-				cog.outl('{')
-				cog.out('<TABHERE>')
-				if ret != 'void':
-					cog.out('return ')
-				cog.out('worker->'+interface['name']+"_"+name+'(')
-				cog.out(paramStrB)
-				cog.out(');\n')
-				cog.outl('}\n')
-
+cog.out(servant.interface_methods_creation(component, modulePool, theInterface), trimblanklines=True)
 ]]]
 [[[end]]]
+
