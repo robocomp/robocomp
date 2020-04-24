@@ -29,7 +29,7 @@ QObject()
 
 {
 
-//Initialization State machine
+	//Initialization State machine
 	twoState = new QState(QState::ExclusiveStates);
 	myStateMachine.addState(twoState);
 	threeState = new QState(QState::ExclusiveStates);
@@ -83,9 +83,10 @@ QObject()
 	QObject::connect(test4sub1State, SIGNAL(entered()), this, SLOT(sm_test4sub1()));
 	QObject::connect(test4sub2State, SIGNAL(entered()), this, SLOT(sm_test4sub2()));
 
-//------------------
+	//------------------
 
 	mutex = new QMutex(QMutex::Recursive);
+
 
 	#ifdef USE_QTGUI
 		setupUi(this);
@@ -117,4 +118,3 @@ void GenericWorker::setPeriod(int p)
 	Period = p;
 	timer.start(Period);
 }
-

@@ -24,7 +24,7 @@ GenericWorker::GenericWorker(MapPrx& mprx) :
 QObject()
 {
 
-//Initialization State machine
+	//Initialization State machine
 	publishState = new QState(QState::ExclusiveStates);
 	customMachine.addState(publishState);
 	pop_dataState = new QState(QState::ExclusiveStates);
@@ -66,7 +66,7 @@ QObject()
 	QObject::connect(initializeState, SIGNAL(entered()), this, SLOT(sm_initialize()));
 	QObject::connect(finalizeState, SIGNAL(entered()), this, SLOT(sm_finalize()));
 
-//------------------
+	//------------------
 	agmexecutive_proxy = (*(AGMExecutivePrx*)mprx["AGMExecutiveProxy"]);
 
 	mutex = new QMutex(QMutex::Recursive);
@@ -131,7 +131,6 @@ RoboCompPlanning::Action GenericWorker::createAction(std::string s)
 
 	return ret;
 }
-
 
 bool GenericWorker::activate(const BehaviorParameters &prs)
 {

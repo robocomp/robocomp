@@ -29,7 +29,7 @@ QObject()
 
 {
 
-//Initialization State machine
+	//Initialization State machine
 	computeState = new QState(QState::ExclusiveStates);
 	defaultMachine.addState(computeState);
 	initializeState = new QState(QState::ExclusiveStates);
@@ -48,10 +48,11 @@ QObject()
 	QObject::connect(finalizeState, SIGNAL(entered()), this, SLOT(sm_finalize()));
 	QObject::connect(&timer, SIGNAL(timeout()), this, SIGNAL(t_compute_to_compute()));
 
-//------------------
+	//------------------
 	imupub_pubproxy = (*(IMUPubPrx*)mprx["IMUPubPub"]);
 
 	mutex = new QMutex(QMutex::Recursive);
+
 
 	#ifdef USE_QTGUI
 		setupUi(this);
@@ -83,4 +84,3 @@ void GenericWorker::setPeriod(int p)
 	Period = p;
 	timer.start(Period);
 }
-
