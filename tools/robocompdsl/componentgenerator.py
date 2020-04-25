@@ -22,7 +22,7 @@ FILES = {
             'src/specificworker.py', 'src/mainUI.ui', 'README.md', 'etc/config'
         ],
         'servant_files': ["SERVANT.PY"],
-        'template_path': "/opt/robocomp/share/robocompdsl/templatePython/"
+        'template_path': "/home/robolab/robocomp/tools/robocompdsl/templatePython/"
     },
     'cpp': {
         'files': [
@@ -38,7 +38,7 @@ FILES = {
             'etc/config'
         ],
         'servant_files': ["SERVANT.H", "SERVANT.CPP"],
-        'template_path': "/opt/robocomp/share/robocompdsl/templateCPP/"
+        'template_path': "/home/robolab/robocomp/tools/robocompdsl/templateCPP/"
     }
 
 }
@@ -164,8 +164,8 @@ class ComponentGenerator:
         new_existing_files = {}
         template = LANG_TO_TEMPLATE[language]
         for template_file in FILES[template]['files']:
-            if template_file == 'src/mainUI.ui' and self.component['gui'] is None: continue
-            if language == 'python' and template_file == 'CMakeLists.txt' and self.component['gui'] is None: continue
+            if template_file == 'src/mainUI.ui' and self.component.gui is None: continue
+            if language == 'python' and template_file == 'CMakeLists.txt' and self.component.gui is None: continue
             if template_file == 'README-RCNODE.txt' and not need_storm: continue
 
             if language == 'python' and template_file == 'src/main.py':
