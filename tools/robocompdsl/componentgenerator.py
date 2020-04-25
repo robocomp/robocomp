@@ -43,6 +43,14 @@ FILES = {
 
 }
 
+LANG_TO_TEMPLATE = {
+    'cpp': 'cpp',
+    'cpp11': 'cpp',
+    'python': 'python',
+    'python3': 'python',
+    'python2': 'python'
+}
+
 class ComponentGenerator:
     def __init__(self):
         self.__cdsl_file = None
@@ -154,7 +162,8 @@ class ComponentGenerator:
         # Generate regular files
         #
         new_existing_files = {}
-        for template_file in FILES[language]['files']:
+        template = LANG_TO_TEMPLATE[language]
+        for template_file in FILES[template]['files']:
             if template_file == 'src/mainUI.ui' and self.component['gui'] is None: continue
             if language == 'python' and template_file == 'CMakeLists.txt' and self.component['gui'] is None: continue
             if template_file == 'README-RCNODE.txt' and not need_storm: continue
@@ -164,12 +173,12 @@ class ComponentGenerator:
             else:
                 ofile = os.path.join(self.output_path, template_file)
 
-            if template_file in FILES[language]['avoid_overwrite'] and os.path.exists(ofile):
+            if template_file in FILES[template]['avoid_overwrite'] and os.path.exists(ofile):
                 print('Not overwriting specific file "' + ofile + '", saving it to ' + ofile + '.new')
                 new_existing_files[os.path.abspath(ofile)] = os.path.abspath(ofile) + '.new'
                 ofile += '.new'
 
-            ifile = os.path.join(FILES[language]['template_path'], template_file)
+            ifile = os.path.join(FILES[template]['template_path'], template_file)
             print('Generating', ofile)
             params = {
                 "theCDSL": self.cdsl_file,
@@ -190,7 +199,7 @@ class ComponentGenerator:
             else:
                 interface_name = interface
             if communication_is_ice(interface):
-                for template_file in FILES[language]['servant_files']:
+                for template_file in FILES[template]['servant_files']:
                     ofile = os.path.join(self.output_path, 'src', interface_name.lower() + 'I.' + template_file.split('.')[
                         -1].lower())
                     print('Generating ', ofile, ' (servant for', interface_name + ')')
@@ -202,7 +211,7 @@ class ComponentGenerator:
                         "theInterface": interface_name
                     }
                     cog_command = robocompdslutils.generate_cog_command(params,
-                                                                        FILES[language][
+                                                                        FILES[template][
                                                                             'template_path'] + template_file,
                                                                         ofile)
                     robocompdslutils.run_cog_and_replace_tags(cog_command, ofile)
