@@ -1,0 +1,9 @@
+
+Component idserver
+{
+    Communications
+    {
+    };
+    language Cpp11;
+    statemachine "statemachine.smdsl";
+};
