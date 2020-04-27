@@ -1,0 +1,9 @@
+module RoboCompDSRGetID
+{
+	interface DSRGetID
+    {
+        int getID();
+	};
+};
+  
+#endif
