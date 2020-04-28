@@ -12,7 +12,7 @@ def Z():
 def TAB():
 	cog.out('<TABHERE>')
 
-import templateCPP.functions.servant_h as servant
+from templateCPP.functions import servant
 from dsl_parsers.dsl_factory import DSLFactory
 from dsl_parsers.parsing_utils import decorator_and_type_to_const_ampersand,IDSLPool
 includeDirectories = theIDSLPaths.split('#')
