@@ -7,12 +7,13 @@ sys.path.append('/opt/robocomp/python')
 
 import cog
 def A():
-	cog.out('<@@<')
+    cog.out('<@@<')
 def Z():
-	cog.out('>@@>')
+    cog.out('>@@>')
 def TAB():
-	cog.out('<TABHERE>')
+    cog.out('<TABHERE>')
 
+from templatePython.functions import main_py as main
 from dsl_parsers.dsl_factory import DSLFactory
 from dsl_parsers.parsing_utils import get_name_number, IDSLPool, communication_is_ice
 includeDirectories = theIDSLPaths.split('#')
@@ -20,7 +21,6 @@ component = DSLFactory().from_file(theCDSL, include_directories=includeDirectori
 
 
 pool = IDSLPool(theIDSLs, includeDirectories)
-
 REQUIRE_STR = """
 <TABHERE># Remote object connection for <NORMAL>
 <TABHERE>try:
@@ -92,15 +92,11 @@ IMPLEMENTS_STR = """
 [[[end]]]
 
 #
-# Copyright (C)
 [[[cog
-A()
 import datetime
-cog.out(' '+str(datetime.date.today().year))
-Z()
+cog.out('# Copyright (C) '+str(datetime.date.today().year)+' by YOUR NAME HERE')
 ]]]
 [[[end]]]
- by YOUR NAME HERE
 #
 #    This file is part of RoboComp
 #
@@ -118,10 +114,8 @@ Z()
 #    along with RoboComp.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-# \mainpage RoboComp::
 [[[cog
-A()
-cog.out(component.name)
+cog.out('# \\mainpage RoboComp::'+component.name)
 ]]]
 [[[end]]]
 #
@@ -151,14 +145,10 @@ cog.out(component.name)
 #
 # \subsection execution_ssec Execution
 #
-# Just: "${PATH_TO_BINARY}/
 [[[cog
-A()
-cog.out(component.name)
-Z()
+cog.out('# Just: "${PATH_TO_BINARY}/'+component.name+' --Ice.Config=${PATH_TO_CONFIG_FILE}"')
 ]]]
 [[[end]]]
- --Ice.Config=${PATH_TO_CONFIG_FILE}"
 #
 # \subsection running_ssec Once running
 #
@@ -181,166 +171,131 @@ from specificworker import *
 
 
 class CommonBehaviorI(RoboCompCommonBehavior.CommonBehavior):
-	def __init__(self, _handler):
-		self.handler = _handler
-	def getFreq(self, current = None):
-		self.handler.getFreq()
-	def setFreq(self, freq, current = None):
-		self.handler.setFreq()
-	def timeAwake(self, current = None):
-		try:
-			return self.handler.timeAwake()
-		except:
-			print('Problem getting timeAwake')
-	def killYourSelf(self, current = None):
-		self.handler.killYourSelf()
-	def getAttrList(self, current = None):
-		try:
-			return self.handler.getAttrList()
-		except:
-			print('Problem getting getAttrList')
-			traceback.print_exc()
-			status = 1
-			return
+    def __init__(self, _handler):
+        self.handler = _handler
+    def getFreq(self, current = None):
+        self.handler.getFreq()
+    def setFreq(self, freq, current = None):
+        self.handler.setFreq()
+    def timeAwake(self, current = None):
+        try:
+            return self.handler.timeAwake()
+        except:
+            print('Problem getting timeAwake')
+    def killYourSelf(self, current = None):
+        self.handler.killYourSelf()
+    def getAttrList(self, current = None):
+        try:
+            return self.handler.getAttrList()
+        except:
+            print('Problem getting getAttrList')
+            traceback.print_exc()
+            status = 1
+            return
 
 #SIGNALS handler
 def sigint_handler(*args):
-	QtCore.QCoreApplication.quit()
+    QtCore.QCoreApplication.quit()
     
 if __name__ == '__main__':
+    [[[cog
+        if component.gui is not None:
+            cog.outl('app = QtWidgets.QApplication(sys.argv)')
+        else:
+            cog.outl('app = QtCore.QCoreApplication(sys.argv)')
+    ]]]
+    [[[end]]]
+    params = copy.deepcopy(sys.argv)
+    if len(params) > 1:
+        if not params[1].startswith('--Ice.Config='):
+            params[1] = '--Ice.Config=' + params[1]
+    elif len(params) == 1:
+        params.append('--Ice.Config=etc/config')
+    ic = Ice.initialize(params)
+    status = 0
+    mprx = {}
+    parameters = {}
+    for i in ic.getProperties():
+        parameters[str(i)] = str(ic.getProperties().getProperty(i))
+    [[[cog
+    cog.out(main.storm_topic_manager_creation(component))
+
+    cog.out(main.require_proxy_creation(component))
+
+    cog.out(main.publish_proxy_creation(component))
+    ]]]
+    [[[end]]]
+
+    if status == 0:
+        worker = SpecificWorker(mprx)
+        worker.setParams(parameters)
+    else:
+        print("Error getting required connections, check config file")
+        sys.exit(-1)
 [[[cog
-	if component.gui is not None:
-		cog.outl('<TABHERE>app = QtWidgets.QApplication(sys.argv)')
-	else:
-		cog.outl('<TABHERE>app = QtCore.QCoreApplication(sys.argv)')
-]]]
-[[[end]]]
-	params = copy.deepcopy(sys.argv)
-	if len(params) > 1:
-		if not params[1].startswith('--Ice.Config='):
-			params[1] = '--Ice.Config=' + params[1]
-	elif len(params) == 1:
-		params.append('--Ice.Config=etc/config')
-	ic = Ice.initialize(params)
-	status = 0
-	mprx = {}
-	parameters = {}
-	for i in ic.getProperties():
-		parameters[str(i)] = str(ic.getProperties().getProperty(i))
-[[[cog
-
-try:
-	needIce = False
-	needStorm = False
-	for req in component.requires:
-		if communication_is_ice(req):
-			needIce = True
-	for imp in component.implements:
-		if communication_is_ice(imp):
-			needIce = True
-	for pub in component.publishes:
-		if communication_is_ice(pub):
-			needIce = True
-			needStorm = True
-	for sub in component.subscribesTo:
-		if communication_is_ice(sub):
-			needIce = True
-			needStorm = True
-	if needStorm:
-		cog.outl("""
-<TABHERE># Topic Manager
-<TABHERE>proxy = ic.getProperties().getProperty("TopicManager.Proxy")
-<TABHERE>obj = ic.stringToProxy(proxy)
-<TABHERE>try:
-<TABHERE><TABHERE>topicManager = IceStorm.TopicManagerPrx.checkedCast(obj)
-<TABHERE>except Ice.ConnectionRefusedException as e:
-<TABHERE><TABHERE>print('Cannot connect to IceStorm! ('+proxy+')')
-<TABHERE><TABHERE>status = 1""")
-except:
-	pass
-
-for iface, num in get_name_number(component.requires):
-	if communication_is_ice(iface):
-		name= iface[0]
-		w = REQUIRE_STR.replace("<NORMAL>", name).replace("<LOWER>", name.lower()).replace("<NUM>",num)
-		cog.outl(w)
-
-for iface, num in get_name_number(component.publishes):
-	if communication_is_ice(iface):
-		name = iface[0]
-		w = PUBLISHES_STR.replace("<NORMAL>", name).replace("<LOWER>", name.lower())
-		cog.outl(w)
-
-cog.outl("<TABHERE>if status == 0:")
-cog.outl("<TABHERE><TABHERE>worker = SpecificWorker(mprx)")
-cog.outl("<TABHERE><TABHERE>worker.setParams(parameters)")
-cog.outl("<TABHERE>else:")
-cog.outl("<TABHERE><TABHERE>print(\"Error getting required connections, check config file\")")
-cog.outl("<TABHERE><TABHERE>sys.exit(-1)")
-
 for imp in component.implements:
-	if communication_is_ice(imp):
-		name = imp[0]
-		w = IMPLEMENTS_STR.replace("<NORMAL>", name).replace("<LOWER>", name.lower())
-		cog.outl(w)
+    if communication_is_ice(imp):
+        name = imp[0]
+        w = IMPLEMENTS_STR.replace("<NORMAL>", name).replace("<LOWER>", name.lower())
+        cog.outl(w)
 
 for sut in component.subscribesTo:
-	if communication_is_ice(sut):
-		name = sut[0]
-		w = SUBSCRIBESTO_STR.replace("<NORMAL>", name).replace("<LOWER>", name.lower())
-		cog.outl(w)
+    if communication_is_ice(sut):
+        name = sut[0]
+        w = SUBSCRIBESTO_STR.replace("<NORMAL>", name).replace("<LOWER>", name.lower())
+        cog.outl(w)
 if component.usingROS == True:
-	cog.outl("<TABHERE>rospy.init_node(\""+component.name+"\", anonymous=True)")
+    cog.outl("<TABHERE>rospy.init_node(\""+component.name+"\", anonymous=True)")
 for sub in component.subscribesTo:
-	nname = sub
-	while type(nname) != type(''):
-		nname = nname[0]
-	module = pool.moduleProviding(nname)
-	if module == None:
-		raise ValueError('\nCan\'t find module providing %s\n' % nname)
-	if not communication_is_ice(sub):
-		for interface in module['interfaces']:
-			if interface['name'] == nname:
-				for mname in interface['methods']:
-					method = interface['methods'][mname]
-					for p in method['params']:
-						s = "\""+mname+"\""
-						if p['type'] in ('float','int'):
-							cog.outl("<TABHERE>rospy.Subscriber("+s+", "+p['type'].capitalize()+"32, worker.ROS"+method['name']+")")
-						elif p['type'] in ('uint8','uint16','uint32','uint64'):
-							cog.outl("<TABHERE>rospy.Subscriber("+s+", UInt"+p['type'].split('t')[1]+", worker.ROS"+method['name']+")")
-						elif p['type'] in rosTypes:
-							cog.outl("<TABHERE>rospy.Subscriber("+s+", "+p['type'].capitalize()+", worker.ROS"+method['name']+")")
-						elif '::' in p['type']:
-							cog.outl("<TABHERE>rospy.Subscriber("+s+", "+p['type'].split('::')[1]+", worker.ROS"+method['name']+")")
-						else:
-							cog.outl("<TABHERE>rospy.Subscriber("+s+", "+p['type']+", worker.ROS"+method['name']+")")
+    nname = sub
+    while type(nname) != type(''):
+        nname = nname[0]
+    module = pool.moduleProviding(nname)
+    if module == None:
+        raise ValueError('\nCan\'t find module providing %s\n' % nname)
+    if not communication_is_ice(sub):
+        for interface in module['interfaces']:
+            if interface['name'] == nname:
+                for mname in interface['methods']:
+                    method = interface['methods'][mname]
+                    for p in method['params']:
+                        s = "\""+mname+"\""
+                        if p['type'] in ('float','int'):
+                            cog.outl("<TABHERE>rospy.Subscriber("+s+", "+p['type'].capitalize()+"32, worker.ROS"+method['name']+")")
+                        elif p['type'] in ('uint8','uint16','uint32','uint64'):
+                            cog.outl("<TABHERE>rospy.Subscriber("+s+", UInt"+p['type'].split('t')[1]+", worker.ROS"+method['name']+")")
+                        elif p['type'] in rosTypes:
+                            cog.outl("<TABHERE>rospy.Subscriber("+s+", "+p['type'].capitalize()+", worker.ROS"+method['name']+")")
+                        elif '::' in p['type']:
+                            cog.outl("<TABHERE>rospy.Subscriber("+s+", "+p['type'].split('::')[1]+", worker.ROS"+method['name']+")")
+                        else:
+                            cog.outl("<TABHERE>rospy.Subscriber("+s+", "+p['type']+", worker.ROS"+method['name']+")")
 
 for imp in component.implements:
-	nname = imp
-	while type(nname) != type(''):
-		nname = nname[0]
-	module = pool.moduleProviding(nname)
-	if module == None:
-		print('\nCan\'t find module providing', nname, '\n')
-		sys.exit(-1)
-	if not communication_is_ice(imp):
-		for interface in module['interfaces']:
-			if interface['name'] == nname:
-				for mname in interface['methods']:
-					method = interface['methods'][mname]
-					s = "\""+mname+"\""
-					cog.outl("<TABHERE>rospy.Service("+s+", "+mname+", worker.ROS"+method['name']+")")
+    nname = imp
+    while type(nname) != type(''):
+        nname = nname[0]
+    module = pool.moduleProviding(nname)
+    if module == None:
+        print('\nCan\'t find module providing', nname, '\n')
+        sys.exit(-1)
+    if not communication_is_ice(imp):
+        for interface in module['interfaces']:
+            if interface['name'] == nname:
+                for mname in interface['methods']:
+                    method = interface['methods'][mname]
+                    s = "\""+mname+"\""
+                    cog.outl("<TABHERE>rospy.Service("+s+", "+mname+", worker.ROS"+method['name']+")")
 
 ]]]
 [[[end]]]
 
-	signal.signal(signal.SIGINT, sigint_handler)
-	app.exec_()
+    signal.signal(signal.SIGINT, sigint_handler)
+    app.exec_()
 
-	if ic:
-		try:
-			ic.destroy()
-		except:
-			traceback.print_exc()
-			status = 1
+    if ic:
+        try:
+            ic.destroy()
+        except:
+            traceback.print_exc()
+            status = 1
