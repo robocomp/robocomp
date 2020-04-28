@@ -6,7 +6,7 @@ INCLUDE_STR = '#include <${iface_name}${suffix}.h>\n'
 
 def interface_includes(interfaces, suffix='', lower=False):
     result = ""
-    for iface in interfaces:
+    for iface in sorted(interfaces):
         if communication_is_ice(iface):
             iface_name = iface
             while not isinstance(iface_name, str):

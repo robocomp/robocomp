@@ -87,7 +87,7 @@ def wrap_ice(component):
     result = """ROBOCOMP_WRAP_ICE( CommonBehavior """
 
     iface_names = []
-    for im in component.recursiveImports + component.ice_interfaces_names:
+    for im in sorted(component.recursiveImports + component.ice_interfaces_names):
         name = im.split('/')[-1].split('.')[0]
         iface_names.append(name)
     result += ' '.join(iface_names)
