@@ -50,6 +50,8 @@ class RobocompdslTest(unittest.TestCase):
     def test_python_component_creation(self):
         python_components = [
             "test_agmTestCpp",
+            "test_allCommunicationsCpp",
+            "test_allCommunicationsPython",
             "test_cpp11",
             "test_customStateMachineCpp",
             "test_customStateMachinePython",
