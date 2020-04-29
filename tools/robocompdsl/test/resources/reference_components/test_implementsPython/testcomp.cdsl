@@ -1,0 +1,13 @@
+import "HandDetection.idsl";
+
+Component testcomp
+{
+    Communications
+    {
+        implements HandDetection;
+    };
+	language Python;
+	gui Qt(QWidget);
+	statemachine "statemachine.smdsl";
+};
+
