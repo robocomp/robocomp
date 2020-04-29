@@ -22,7 +22,7 @@ FILES = {
             'src/specificworker.py', 'src/mainUI.ui', 'README.md', 'etc/config'
         ],
         'servant_files': ["SERVANT.PY"],
-        'template_path': "/home/robolab/robocomp/tools/robocompdsl/templatePython/"
+        'template_path': "/opt/robocomp/share/robocompdsl/templatePython/"
     },
     'cpp': {
         'files': [
@@ -38,7 +38,7 @@ FILES = {
             'etc/config'
         ],
         'servant_files': ["SERVANT.H", "SERVANT.CPP"],
-        'template_path': "/home/robolab/robocomp/tools/robocompdsl/templateCPP/"
+        'template_path': "/opt/robocomp/share/robocompdsl/templateCPP/"
     }
 
 }
