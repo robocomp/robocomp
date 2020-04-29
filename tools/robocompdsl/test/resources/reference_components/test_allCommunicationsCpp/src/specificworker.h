@@ -38,7 +38,7 @@ public:
 	~SpecificWorker();
 	bool setParams(RoboCompCommonBehavior::ParameterList params);
 
-	int HandDetection_addNewHand(const int expectedHandsconst TRoi &roi);
+	int HandDetection_addNewHand(const int expectedHands, const TRoi &roi);
 	Hands HandDetection_getHands();
 	int HandDetection_getHandsCount();
 	void AprilTags_newAprilTag(const tagsList &tags);

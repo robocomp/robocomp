@@ -3,11 +3,6 @@ import dsl_parsers.parsing_utils as p_utils
 
 def generate_ice_method_params(param, language):
     params_string = ''
-    # delim
-    if params_string == '':
-        delim = ''
-    else:
-        delim = ', '
     # decorator
     ampersand = '&'
     if param['decorator'] == 'out':
@@ -21,7 +16,7 @@ def generate_ice_method_params(param, language):
         if param['type'].lower() in ['int', '::ice::int', 'float', '::ice::float']:
             ampersand = ''
     # STR
-    params_string += delim + const + param['type'] + ' ' + ampersand + param['name']
+    params_string += const + param['type'] + ' ' + ampersand + param['name']
     return params_string
 
 def generate_interface_method_definition(component, interface, pool):
@@ -36,8 +31,13 @@ def generate_interface_method_definition(component, interface, pool):
             for method_name, method in idsl_interface['methods'].items():
                 params_string = ''
                 if p_utils.communication_is_ice(interface):
-                    for param in method['params']:
-                        params_string += generate_ice_method_params(param, component.language.lower())
+                    delim = ''
+                    for index, param in enumerate(method['params']):
+                        if index != 0:
+                            delim=', '
+                        params_string += delim + generate_ice_method_params(param, component.language.lower())
+
+
                     result += "<TABHERE>" + method['return'] + ' ' + idsl_interface['name'] + "_" + method[
                         'name'] + '(' + params_string + ");\n"
                 else:
