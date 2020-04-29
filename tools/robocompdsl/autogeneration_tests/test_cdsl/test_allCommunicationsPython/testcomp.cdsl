@@ -1,0 +1,21 @@
+import "AprilTags.idsl";
+import "AprilBasedLocalization.idsl";
+import "HandDetection.idsl";
+import "CameraSimple.idsl";
+import "RGBD.idsl";
+
+
+Component testcomp
+{
+    Communications
+    {
+	subscribesTo AprilTags;
+	publishes AprilBasedLocalization;
+        requires CameraSimple, RGBD;
+        implements HandDetection;
+    };
+    language python;
+    gui Qt(QDialog);
+    statemachine "statemachine.smdsl";
+};
+

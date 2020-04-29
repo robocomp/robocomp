@@ -6,12 +6,6 @@ import cog
 
 includeDirectories = theIDSLPaths.split('#')
 
-
-
-
-
-
-
 def A():
 	cog.out('<@@<')
 def Z():
@@ -24,7 +18,7 @@ def SPACE(i=0):
 		s = str(i)
 	cog.out('<S'+s+'>')
 
-
+import templateCPP.functions.src.cmakelists_txt as cmakelists
 from dsl_parsers.dsl_factory import DSLFactory
 from dsl_parsers.parsing_utils import communication_is_ice, is_agm1_agent, is_agm2_agent
 
@@ -59,126 +53,46 @@ SET ( SOURCES
   genericmonitor.cpp
   commonbehaviorI.cpp
   genericworker.cpp
-[[[cog
-for ima in component['implements']:
-	if type(ima) == str:
-		im = ima
-	else:
-		im = ima[0]
-	if communication_is_ice(ima):
-		cog.outl('<S2>' + im.lower() + 'I.cpp')
-
-for subscribe in component['subscribesTo']:
-	subs = subscribe
-	while type(subs) != type(''):
-		subs = subs[0]
-	if communication_is_ice(subscribe):
-		cog.outl('<S2>' + subs.lower() + 'I.cpp')
-
-if  component['statemachine_visual']:
-    cog.outl("  $ENV{ROBOCOMP}/classes/statemachinewidget/edge.cpp")
-    cog.outl("  $ENV{ROBOCOMP}/classes/statemachinewidget/node.cpp")
-    cog.outl("  $ENV{ROBOCOMP}/classes/statemachinewidget/graphwidget.cpp")
-    cog.outl("  $ENV{ROBOCOMP}/classes/statemachinewidget/qstateMachineWrapper.cpp")
-]]]
-[[[end]]]
+  [[[cog
+  cog.out(cmakelists.interface_sources(component))
+  cog.out(cmakelists.statemachine_visual_sources(component.statemachine_visual), trimblanklines=True)
+  ]]]
+  [[[end]]]
 )
 
 [[[cog
-if component['usingROS'] == True:
-	cog.outl('#ROS')
-	cog.outl('find_package(catkin REQUIRED)')
-	cog.outl('include_directories(  ${catkin_INCLUDE_DIRS} )')
-	cog.outl('include_directories(  "/opt/ros/melodic/include" )')
-	cog.outl('SET ( LIBS ${LIBS} ${catkin_LIBRARIES} -L/opt/ros/melodic/lib -lroscpp -lrosconsole -lroscpp_serialization -lrostime -lxmlrpcpp -lcpp_common -lrosconsole_log4cxx -lrosconsole_backend_interface)')
+cog.out(cmakelists.ros_includes(component.usingROS), trimblanklines=True)
 ]]]
 [[[end]]]
 
 [[[cog
-if component['language'].lower() == "cpp11":
-	cog.outl('ADD_DEFINITIONS ("-DICE_CPP11_MAPPING")')
-	cog.outl('FIND_PACKAGE( Ice REQUIRED COMPONENTS Ice++11 IceStorm++11)')
+cog.out(cmakelists.cpp11_ice_packages(component.language))
 ]]]
 [[[end]]]
 
 [[[cog
-	if 'agmagent' in [ x.lower() for x in component['options'] ]:
-		cog.outl('# AGM Agent\'s requirements')
-		cog.outl('find_package(LibXml2 REQUIRED)')
-		cog.outl('include_directories(LIBXML2_INCLUDE_DIRS)')
-		cog.outl('include_directories(/usr/include/libxml2/)')
-		cog.outl('SET (LIBS ${LIBS} -lagm )')
+cog.out(cmakelists.agm_includes(component), trimblanklines=True)
 ]]]
 [[[end]]]
 
 #ROBOCOMP
 ROBOCOMP_INITIALIZE( $ENV{ROBOCOMP}/ )
-ROBOCOMP_WRAP_ICE( CommonBehavior 
 [[[cog
-A()
-imp = []
-for im in component['recursiveImports'] + component["iceInterfaces"]:
-    name = im.split('/')[-1].split('.')[0]
-    imp.append(name)
-cog.out(' '.join(imp))
-try:
-	options = [ x.lower() for x in component['options'] ]
-	if 'agmagent' in options:
-		cog.out(" AGMExecutive AGMExecutiveTopic ")
-	elif 'agm2agent' in options or 'agm2agentICE' in options or 'agm2agentROS' in options:
-		cog.out(" AGM2 ")
-except:
-	pass
-Z()
+cog.out(cmakelists.wrap_ice(component))
 ]]]
 [[[end]]]
-)
 SET (EXECUTABLE_OUTPUT_PATH ${RC_COMPONENT_DEVEL_PATH}/bin)
 
 [[[cog
-	if component['gui'] is not None:
-		cog.outl("QT_WRAP_UI( UI_HEADERS mainUI.ui )")
+if component.gui is not None:
+    cog.outl("QT_WRAP_UI( UI_HEADERS mainUI.ui )")
 ]]]
 [[[end]]]
 
 # Specify construction and link process
 [[[cog
-
-try:
-	if is_agm1_agent(component):
-		cog.outl("SET(LIBS ${LIBS} -lagm)")
-		cog.outl("ADD_DEFINITIONS( -I/usr/include/libxml2/ )")
-	if is_agm2_agent(component):
-		cog.outl("SET(LIBS ${LIBS} -lagm2)")
-		cog.outl("ADD_DEFINITIONS( -I/usr/include/libxml2/ )")
-		cog.outl("include(/usr/local/share/cmake/FindAGM2.cmake)")
-except:
-	print("Can't check if the component is an agent")
-	pass
-
+cog.outl("ADD_EXECUTABLE( "+component.name +" ${SOURCES} ${MOC_SOURCES} ${RC_SOURCES} ${UI_HEADERS} )")
+cog.outl("TARGET_LINK_LIBRARIES( "+ component.name +" ${LIBS} ${STATIC_LIBS} ${SPECIFIC_LIBS} ${QT_LIBRARIES} ${Ice_LIBRARIES})")
+cog.outl("INSTALL(FILES ${EXECUTABLE_OUTPUT_PATH}/"+component.name +" DESTINATION ${RC_COMPONENT_INSTALL_PATH}/bin/ PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE )")
 ]]]
 [[[end]]]
-ADD_EXECUTABLE(
-[[[cog
-A()
-cog.out(' ' + component['name'] + ' ')
-Z()
-]]]
-[[[end]]]
-${SOURCES} ${MOC_SOURCES} ${RC_SOURCES} ${UI_HEADERS} )
-TARGET_LINK_LIBRARIES(
-[[[cog
-A()
-cog.out(' ' + component['name'] + ' ')
-Z()
-]]]
-[[[end]]]
-${LIBS} ${STATIC_LIBS} ${SPECIFIC_LIBS} ${QT_LIBRARIES} ${Ice_LIBRARIES})
-INSTALL(FILES ${EXECUTABLE_OUTPUT_PATH}/
-[[[cog
-A()
-cog.out(component['name'] + ' ')
-Z()
-]]]
-[[[end]]]
-DESTINATION ${RC_COMPONENT_INSTALL_PATH}/bin/ PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE )

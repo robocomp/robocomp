@@ -22,7 +22,7 @@ component = DSLFactory().from_file(theCDSL, include_directories=includeDirectori
 
 
 text = False
-for imp in component['implements']:
+for imp in component.implements:
 	if type(imp) == str:
 		im = imp
 	else:
@@ -37,7 +37,7 @@ if text:
 
 
 text = False
-for sub in component['subscribesTo']:
+for sub in component.subscribesTo:
 	if type(sub) == str:
 		sb = sub
 	else:
@@ -52,7 +52,7 @@ if text:
 
 
 text = False
-for req, num in get_name_number(component['requires']):
+for req, num in get_name_number(component.requires):
 	if type(req) == str:
 		rq = req
 	else:

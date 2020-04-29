@@ -22,7 +22,7 @@ FILES = {
             'src/specificworker.py', 'src/mainUI.ui', 'README.md', 'etc/config'
         ],
         'servant_files': ["SERVANT.PY"],
-        'template_path': "/opt/robocomp/share/robocompdsl/templatePython/"
+        'template_path': "/home/robolab/robocomp/tools/robocompdsl/templatePython/"
     },
     'cpp': {
         'files': [
@@ -38,7 +38,7 @@ FILES = {
             'etc/config'
         ],
         'servant_files': ["SERVANT.H", "SERVANT.CPP"],
-        'template_path': "/opt/robocomp/share/robocompdsl/templateCPP/"
+        'template_path': "/home/robolab/robocomp/tools/robocompdsl/templateCPP/"
     }
 
 }
@@ -101,12 +101,12 @@ class ComponentGenerator:
         self.component = dsl_factory.DSLFactory().from_file(self.cdsl_file, includeDirectories=self.include_dirs)
 
         # TODO: '#'.join? and remane to imports_str
-        self.imports = ''.join([imp + '#' for imp in self.component['imports']])
+        self.imports = ''.join([imp + '#' for imp in self.component.imports])
 
         # verification
         pool = IDSLPool(self.imports, self.include_dirs)
-        interface_list = self.component['requires'] + self.component['implements'] + self.component['subscribesTo'] + self.component[
-            'publishes']
+        interface_list = self.component.requires + self.component.implements + self.component.subscribesTo + \
+                         self.component.publishes
 
         for interface_required in interface_list:
             interface_required = interface_required if isinstance(interface_required, str) else interface_required[0]
@@ -121,8 +121,8 @@ class ComponentGenerator:
         new_existing_files = self.generate_component()
 
 
-        if self.component['usingROS'] is True:
-            for imp in self.component['imports']:
+        if self.component.usingROS is True:
+            for imp in self.component.imports:
                 self.generate_ROS_headers(imp)
 
         return new_existing_files
@@ -151,9 +151,9 @@ class ComponentGenerator:
                     print("Binary equal files %s and %s" % (o_file, n_file))
 
     def generate_component(self):
-        language = self.component['language'].lower()
+        language = self.component.language.lower()
         need_storm = False
-        for pub in self.component['publishes'] + self.component['subscribesTo']:
+        for pub in self.component.publishes + self.component.subscribesTo:
             if communication_is_ice(pub):
                 need_storm = True
                 break
@@ -164,12 +164,12 @@ class ComponentGenerator:
         new_existing_files = {}
         template = LANG_TO_TEMPLATE[language]
         for template_file in FILES[template]['files']:
-            if template_file == 'src/mainUI.ui' and self.component['gui'] is None: continue
-            if language == 'python' and template_file == 'CMakeLists.txt' and self.component['gui'] is None: continue
+            if template_file == 'src/mainUI.ui' and self.component.gui is None: continue
+            if language == 'python' and template_file == 'CMakeLists.txt' and self.component.gui is None: continue
             if template_file == 'README-RCNODE.txt' and not need_storm: continue
 
             if language == 'python' and template_file == 'src/main.py':
-                ofile = os.path.join(self.output_path, 'src', self.component['name'] + '.py')
+                ofile = os.path.join(self.output_path, 'src', self.component.name + '.py')
             else:
                 ofile = os.path.join(self.output_path, template_file)
 
@@ -193,8 +193,8 @@ class ComponentGenerator:
         #
         # Generate interface-dependent files
         #
-        for interface in self.component['implements'] + self.component['subscribesTo']:
-            if isinstance(interface, list):
+        for interface in self.component.implements + self.component.subscribesTo:
+            if isinstance(interface, (list, tuple)):
                 interface_name = interface[0]
             else:
                 interface_name = interface
@@ -202,7 +202,7 @@ class ComponentGenerator:
                 for template_file in FILES[template]['servant_files']:
                     ofile = os.path.join(self.output_path, 'src', interface_name.lower() + 'I.' + template_file.split('.')[
                         -1].lower())
-                    print('Generating ', ofile, ' (servant for', interface_name + ')')
+                    print('Generating %s (servant for %s)' %    (ofile, interface_name))
                     # Call cog
                     params = {
                         "theCDSL": self.cdsl_file,
@@ -264,7 +264,7 @@ class ComponentGenerator:
                             'name'] + "ROS -e /opt/ros/melodic/share/gencpp"
                         commandPY = commandPY + " -p " + idsl['name'] + "ROS -o " + self.output_path + "/" + idsl[
                             'name'] + "ROS/msg"
-                        if self.component['language'].lower() == 'cpp':
+                        if self.component.language.lower() == 'cpp':
                             os.system(commandCPP)
                         else:
                             os.system(commandPY)
@@ -275,7 +275,7 @@ class ComponentGenerator:
                         except:
                             pass
             for imp in idsl['interfaces']:
-                for ima in [self.component['implements'] + self.component['requires']]:
+                for ima in [self.component.implements + self.component.requires]:
                     im = ima
                     if type(im) != type(''):
                         im = im[0]
@@ -311,7 +311,7 @@ class ComponentGenerator:
                                                          'name'] + "ROS -e /opt/ros/melodic/share/gencpp/cmake/.."
                                         commandPY = commandPY + " -p " + idsl['module'][
                                             'name'] + "ROS -o " + self.output_path + "/" + idsl['module']['name'] + "ROS/srv"
-                                        if self.component['language'].lower() == 'cpp':
+                                        if self.component.language.lower() == 'cpp':
                                             os.system(commandCPP)
                                         else:
                                             os.system(commandPY)
@@ -350,7 +350,7 @@ class ComponentGenerator:
         # Create directories within the output directory
         new_dirs = ["bin", "src", "etc"]
         for new_dir in new_dirs:
-            if self.component['language'].lower() == "python" and new_dir == "bin": continue
+            if self.component.language.lower() == "python" and new_dir == "bin": continue
             try:
                 robocompdslutils.create_directory(os.path.join(self.output_path, new_dir))
             except:

@@ -15,7 +15,7 @@ class ComponentInspections:
             },
             {
                 "function": "check_exists_or_fail",
-                "object_path": ["language", "name"],
+                "object_path": ["language"],
                 "params":
                     {
                         "message": "language is mandatory for a component"
@@ -23,7 +23,7 @@ class ComponentInspections:
             },
             {
                 "function": "check_value_in",
-                "object_path": ['language', 'name'],
+                "object_path": ['language'],
                 "params":
                     {
                         'values': ['python', 'cpp', 'cpp11']
@@ -71,36 +71,37 @@ class ComponentInspections:
                             {"object_path": ["innermodelviewer"], "value": False},
                             {"object_path": ["usingROS"], "value": False},
                             {"object_path": ["gui"], "value": None},
-                            {"object_path": ["statemachine"], "value": None}
+                            {"object_path": ["statemachine"], "value": None},
+                            {"object_path": ["options"], "value": []}
                         ]
                     }
             },
-            {
-                "function": "check_if",
-                "object_path": [],
-                "message": "You introduced modules not valid for Python",
-                "params":
-                    {
-                        "condition":
-                            {
-                                "function": "check_value",
-                                "object_path": ['language', 'name'],
-                                "params":
-                                    {
-                                        'value': 'python'
-                                    }
-                            },
-                        "true":
-                            {
-                                "function": "check_list_values_in",
-                                "object_path": ['language', 'modules'],
-                                "params":
-                                    {
-                                        'values': ['opencv']
-                                    }
-                            }
-                    }
-            }
+            # {
+            #     "function": "check_if",
+            #     "object_path": [],
+            #     "message": "You introduced modules not valid for Python",
+            #     "params":
+            #         {
+            #             "condition":
+            #                 {
+            #                     "function": "check_value",
+            #                     "object_path": ['language'],
+            #                     "params":
+            #                         {
+            #                             'value': 'python'
+            #                         }
+            #                 },
+            #             "true":
+            #                 {
+            #                     "function": "check_list_values_in",
+            #                     "object_path": ['language', 'modules'],
+            #                     "params":
+            #                         {
+            #                             'values': ['opencv']
+            #                         }
+            #                 }
+            #         }
+            # }
         ]
 
     def check_all_inspections(self, object):
@@ -115,7 +116,7 @@ class ComponentInspections:
                 cprint("NOT PASSED: %s" % message)
 
     def check_exists(self, object, object_path, params):
-        if reduce(dict.get, object_path, object) is None:
+        if self.get_value_in_object_path(object_path, object) is None:
             return False
         else:
             return True
@@ -126,23 +127,23 @@ class ComponentInspections:
         return True
 
     def check_exists_or_create(self, object, object_path, params):
-        if reduce(dict.get, object_path, object) is None:
+        if self.get_value_in_object_path(object_path, object) is None:
             for key in object_path[:-1]:
                 if not key in object:
                     object[key] = {}
-            pointer = reduce(dict.get, object_path[:-1], object)
+            pointer = self.get_value_in_object_path(object_path[:-1], object)
             pointer[object_path[-1]] = params['value']
         return True
 
     def check_and_set_default_values(self, object, object_path, params):
         result = True
-        nested_object = reduce(dict.get, object_path, object)
+        nested_object = self.get_value_in_object_path(object_path, object)
         for default in params['checks']:
             result = result and self.check_exists_or_create(nested_object, default['object_path'], default)
         return result
 
     def check_valid_keys(self, object, object_path, params):
-        nested_object = reduce(dict.get, object_path, object)
+        nested_object = self.get_value_in_object_path(object_path, object)
         for key in nested_object.keys():
             if key not in params['keys']:
                 path = "".join(["[\'%s\']"% key for key in object_path+[key]])
@@ -157,7 +158,7 @@ class ComponentInspections:
         return True
 
     def check_value(self, object, object_path, params):
-        value = reduce(dict.get, object_path, object)
+        value = self.get_value_in_object_path(object_path, object)
         if isinstance(value, str):
             value = value.casefold()
         if isinstance(params['value'], str):
@@ -168,7 +169,7 @@ class ComponentInspections:
             return True
 
     def check_value_in(self, object, object_path, params):
-        value = reduce(dict.get, object_path, object)
+        value = self.get_value_in_object_path(object_path, object)
         references = params['values']
         if isinstance(value, str):
             value = value.casefold()
@@ -177,11 +178,11 @@ class ComponentInspections:
         return value in references
 
     def check_list_values_in(self, object, object_path, params):
-        list_to_check = reduce(dict.get, object_path, object)
+        list_to_check = self.get_value_in_object_path(object_path, object)
         return all([x in params['values'] for x in list_to_check])
 
     def check_if(self,object, object_path, params):
-        nested_object = reduce(dict.get, object_path, object)
+        nested_object = self.get_value_in_object_path(object_path, object)
         condition_method = getattr(self, params['condition']['function'])
         if condition_method(nested_object, params['condition']['object_path'], params['condition']['params']):
             if 'true' in params:
@@ -203,3 +204,9 @@ class ComponentInspections:
                 max_ratio = ratio
                 best_match = key
         return best_match
+
+    def get_value_in_object_path(self, object_path, object):
+        try:
+            return reduce(dict.get, object_path, object)
+        except TypeError:
+            cprint("Path %s not found in object"%object_path, 'red')

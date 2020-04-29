@@ -103,7 +103,7 @@ ParameterList CommonBehaviorI::getParameterList( const Ice::Current&)
 * @param l Configuration parameters list
 */
 [[[cog
-	if component['language'].lower() == 'cpp':
+	if component.language.lower() == 'cpp':
 		cog.outl("void CommonBehaviorI::setParameterList(const RoboCompCommonBehavior::ParameterList &l, const Ice::Current&) ")
 	else:
 		cog.outl("void CommonBehaviorI::setParameterList(RoboCompCommonBehavior::ParameterList l, const Ice::Current&) ")

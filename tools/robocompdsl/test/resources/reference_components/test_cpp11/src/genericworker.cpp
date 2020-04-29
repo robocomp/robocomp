@@ -24,7 +24,7 @@ GenericWorker::GenericWorker(TuplePrx tprx) :
 QObject()
 {
 
-//Initialization State machine
+	//Initialization State machine
 	computeState = new QState(QState::ExclusiveStates);
 	defaultMachine.addState(computeState);
 	initializeState = new QState(QState::ExclusiveStates);
@@ -43,7 +43,7 @@ QObject()
 	QObject::connect(finalizeState, SIGNAL(entered()), this, SLOT(sm_finalize()));
 	QObject::connect(&timer, SIGNAL(timeout()), this, SIGNAL(t_compute_to_compute()));
 
-//------------------
+	//------------------
 
 	mutex = new QMutex(QMutex::Recursive);
 
@@ -73,4 +73,3 @@ void GenericWorker::setPeriod(int p)
 	Period = p;
 	timer.start(Period);
 }
-

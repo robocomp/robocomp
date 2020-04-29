@@ -71,7 +71,7 @@ private:
 
 public slots:
 	virtual void compute() = 0;
-    virtual void initialize(int period) = 0;
+	virtual void initialize(int period) = 0;
 	
 signals:
 	void kill();

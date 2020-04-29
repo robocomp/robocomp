@@ -82,16 +82,19 @@ void SpecificWorker::compute()
 }
 
 
+
 void SpecificWorker::sm_compute()
 {
 	std::cout<<"Entered state compute"<<std::endl;
 	compute();
 }
 
+
 void SpecificWorker::sm_initialize()
 {
 	std::cout<<"Entered initial state initialize"<<std::endl;
 }
+
 
 void SpecificWorker::sm_finalize()
 {

@@ -50,6 +50,8 @@ class RobocompdslTest(unittest.TestCase):
     def test_python_component_creation(self):
         python_components = [
             "test_agmTestCpp",
+            "test_allCommunicationsCpp",
+            "test_allCommunicationsPython",
             "test_cpp11",
             "test_customStateMachineCpp",
             "test_customStateMachinePython",
@@ -87,7 +89,7 @@ class RobocompdslTest(unittest.TestCase):
     def test_invalid_language(self):
         self.renew_temp_dir("Invalid")
         cdsl = os.path.join(RESOURCES_DIR, "InvalidLanguage.cdsl")
-        self.assertRaises(pyparsing.ParseSyntaxException, ComponentGenerator().generate, cdsl, self.tempdir, [])
+        self.assertRaises(ValueError, ComponentGenerator().generate, cdsl, self.tempdir, [])
         shutil.rmtree(self.tempdir, ignore_errors=True)
 
 

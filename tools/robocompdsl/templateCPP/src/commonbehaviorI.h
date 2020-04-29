@@ -76,7 +76,7 @@ public:
 	void killYourSelf( const Ice::Current & = Ice::Current());
 	ParameterList getParameterList( const Ice::Current & = Ice::Current());
 [[[cog
-	if component['language'].lower() == 'cpp':
+	if component.language.lower() == 'cpp':
 		cog.outl("<TABHERE>void setParameterList(const RoboCompCommonBehavior::ParameterList &l, const Ice::Current & = Ice::Current());")
 	else:
 		cog.outl("<TABHERE>void setParameterList(RoboCompCommonBehavior::ParameterList l, const Ice::Current & = Ice::Current());")

@@ -133,7 +133,6 @@ int ::idserver::run(int argc, char* argv[])
 	string proxy, tmp;
 	initialize();
 
-
 	tprx = std::tuple<>();
 	SpecificWorker *worker = new SpecificWorker(tprx);
 	//Monitor thread
@@ -170,7 +169,6 @@ int ::idserver::run(int argc, char* argv[])
 			cout << ex;
 
 		}
-
 
 
 

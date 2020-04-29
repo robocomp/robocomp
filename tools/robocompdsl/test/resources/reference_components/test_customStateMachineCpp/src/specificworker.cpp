@@ -65,25 +65,30 @@ void SpecificWorker::initialize(int period)
 
 
 
+
 void SpecificWorker::sm_two()
 {
 	std::cout<<"Entered state two"<<std::endl;
 }
+
 
 void SpecificWorker::sm_three()
 {
 	std::cout<<"Entered state three"<<std::endl;
 }
 
+
 void SpecificWorker::sm_four()
 {
 	std::cout<<"Entered state four"<<std::endl;
 }
 
+
 void SpecificWorker::sm_one()
 {
 	std::cout<<"Entered initial state one"<<std::endl;
 }
+
 
 void SpecificWorker::sm_five()
 {

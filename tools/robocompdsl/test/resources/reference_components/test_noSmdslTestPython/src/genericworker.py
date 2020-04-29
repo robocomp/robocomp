@@ -23,10 +23,10 @@ from PySide2 import QtWidgets, QtCore
 
 ROBOCOMP = ''
 try:
-	ROBOCOMP = os.environ['ROBOCOMP']
+    ROBOCOMP = os.environ['ROBOCOMP']
 except KeyError:
-	print('$ROBOCOMP environment variable not set, using the default value /opt/robocomp')
-	ROBOCOMP = '/opt/robocomp'
+    print('$ROBOCOMP environment variable not set, using the default value /opt/robocomp')
+    ROBOCOMP = '/opt/robocomp'
 
 preStr = "-I/opt/robocomp/interfaces/ -I"+ROBOCOMP+"/interfaces/ --all /opt/robocomp/interfaces/"
 Ice.loadSlice(preStr+"CommonBehavior.ice")
@@ -35,52 +35,52 @@ import RoboCompCommonBehavior
 additionalPathStr = ''
 icePaths = [ '/opt/robocomp/interfaces' ]
 try:
-	SLICE_PATH = os.environ['SLICE_PATH'].split(':')
-	for p in SLICE_PATH:
-		icePaths.append(p)
-		additionalPathStr += ' -I' + p + ' '
-	icePaths.append('/opt/robocomp/interfaces')
+    SLICE_PATH = os.environ['SLICE_PATH'].split(':')
+    for p in SLICE_PATH:
+        icePaths.append(p)
+        additionalPathStr += ' -I' + p + ' '
+    icePaths.append('/opt/robocomp/interfaces')
 except:
-	print('SLICE_PATH environment variable was not exported. Using only the default paths')
-	pass
+    print('SLICE_PATH environment variable was not exported. Using only the default paths')
+    pass
 
 
 
 
 try:
-	from ui_mainUI import *
+    from ui_mainUI import *
 except:
-	print("Can't import UI file. Did you run 'make'?")
-	sys.exit(-1)
+    print("Can't import UI file. Did you run 'make'?")
+    sys.exit(-1)
+
 
 
 class GenericWorker(QtWidgets.QWidget):
 
-	kill = QtCore.Signal()
+    kill = QtCore.Signal()
 
-	def __init__(self, mprx):
-		super(GenericWorker, self).__init__()
-
-
-		self.ui = Ui_guiDlg()
-		self.ui.setupUi(self)
-		self.show()
-
-		
-		self.mutex = QtCore.QMutex(QtCore.QMutex.Recursive)
-		self.Period = 30
-		self.timer = QtCore.QTimer(self)
+    def __init__(self, mprx):
+        super(GenericWorker, self).__init__()
 
 
-	@QtCore.Slot()
-	def killYourSelf(self):
-		rDebug("Killing myself")
-		self.kill.emit()
+        self.ui = Ui_guiDlg()
+        self.ui.setupUi(self)
+        self.show()
 
-	# \brief Change compute period
-	# @param per Period in ms
-	@QtCore.Slot(int)
-	def setPeriod(self, p):
-		print("Period changed", p)
-		self.Period = p
-		self.timer.start(self.Period)
+        self.mutex = QtCore.QMutex(QtCore.QMutex.Recursive)
+        self.Period = 30
+        self.timer = QtCore.QTimer(self)
+
+
+    @QtCore.Slot()
+    def killYourSelf(self):
+        rDebug("Killing myself")
+        self.kill.emit()
+
+    # \brief Change compute period
+    # @param per Period in ms
+    @QtCore.Slot(int)
+    def setPeriod(self, p):
+        print("Period changed", p)
+        self.Period = p
+        self.timer.start(self.Period)

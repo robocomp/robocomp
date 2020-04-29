@@ -188,7 +188,6 @@ int ::testcomp::run(int argc, char* argv[])
 
 
 
-
 		// Server adapter creation and publication
 		IceStorm::TopicPrx imupub_topic;
 		Ice::ObjectPrx imupub;
@@ -234,6 +233,7 @@ int ::testcomp::run(int argc, char* argv[])
 			cout << "[" << PROGRAM_NAME << "]: Error creating IMUPub topic.\n";
 			//Error. Topic does not exist
 		}
+
 
 		// Server adapter creation and publication
 		cout << SERVER_FULL_NAME " started" << endl;

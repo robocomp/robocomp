@@ -3,19 +3,6 @@
 import sys
 sys.path.append('/opt/robocomp/python')
 
-import cog
-def A():
-	cog.out('<@@<')
-def Z():
-	cog.out('>@@>')
-def TAB():
-	cog.out('<TABHERE>')
-def SPACE(i=0):
-	s = ''
-	if i>0:
-		s = str(i)
-	cog.out('<S'+s+'>')
-
 from dsl_parsers.dsl_factory import DSLFactory
 includeDirectories = theIDSLPaths.split('#')
 component = DSLFactory().from_file(theCDSL, include_directories=includeDirectories)
@@ -42,14 +29,10 @@ component = DSLFactory().from_file(theCDSL, include_directories=includeDirectori
 DOXYFILE_ENCODING      = UTF-8
 
 # ROBOCOMP
-PROJECT_NAME           =
 [[[cog
-A()
-cog.out( component['name'] + ' ')
-Z()
+cog.out('PROJECT_NAME           ='+ component.name + ' ')
 ]]]
 [[[end]]]
-
 PROJECT_NUMBER         =
 
 

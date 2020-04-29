@@ -22,29 +22,27 @@
 #include "config.h"
 #include <stdint.h>
 #include <qlog/qlog.h>
-
 #include <QStateMachine>
 #include <QState>
 #include <CommonBehavior.h>
 
-#include <Planning.h>
 #include <AGMCommonBehavior.h>
 #include <AGMExecutive.h>
 #include <AGMExecutiveTopic.h>
 #include <AGMWorldModel.h>
+#include <Planning.h>
 #include <agm.h>
 
-#include <agm.h>
 
 #define CHECK_PERIOD 5000
 #define BASIC_PERIOD 100
 
 using namespace std;
-using namespace RoboCompPlanning;
 using namespace RoboCompAGMCommonBehavior;
 using namespace RoboCompAGMExecutive;
 using namespace RoboCompAGMExecutiveTopic;
 using namespace RoboCompAGMWorldModel;
+using namespace RoboCompPlanning;
 
 typedef map <string,::IceProxy::Ice::Object*> MapPrx;
 
@@ -91,7 +89,7 @@ public:
 	virtual void AGMExecutiveTopic_symbolsUpdated(const RoboCompAGMWorldModel::NodeSequence &modifications) = 0;
 
 protected:
-//State Machine
+	//State Machine
 	QStateMachine customMachine;
 
 	QState *publishState;
@@ -103,10 +101,11 @@ protected:
 	QState *initializeState;
 	QFinalState *finalizeState;
 
-//-------------------------
+	//-------------------------
 
 	QTimer timer;
 	int Period;
+
 	bool active;
 	AGMModel::SPtr worldModel;
 	BehaviorParameters p;
@@ -119,7 +118,7 @@ private:
 
 
 public slots:
-//Slots funtion State Machine
+	//Slots funtion State Machine
 	virtual void sm_publish() = 0;
 	virtual void sm_pop_data() = 0;
 	virtual void sm_read_uwb() = 0;
@@ -129,12 +128,12 @@ public slots:
 	virtual void sm_initialize() = 0;
 	virtual void sm_finalize() = 0;
 
-//-------------------------
-    virtual void initialize(int period) = 0;
+	//-------------------------
+	virtual void initialize(int period) = 0;
 	
 signals:
 	void kill();
-//Signals for State Machine
+	//Signals for State Machine
 	void t_initialize_to_pop_data();
 	void t_pop_data_to_pop_data();
 	void t_pop_data_to_read_uwb();
@@ -148,7 +147,7 @@ signals:
 	void t_publish_to_pop_data();
 	void t_pop_data_to_finalize();
 
-//-------------------------
+	//-------------------------
 };
 
 #endif

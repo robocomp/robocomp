@@ -31,7 +31,7 @@ using namespace RoboCompAGMCommonBehavior;
 class AGMCommonBehaviorI : public virtual RoboCompAGMCommonBehavior::AGMCommonBehavior
 {
 public:
-AGMCommonBehaviorI(GenericWorker *_worker);
+	AGMCommonBehaviorI(GenericWorker *_worker);
 	~AGMCommonBehaviorI();
 
 	bool activateAgent(const ParameterMap  &prs, const Ice::Current&);

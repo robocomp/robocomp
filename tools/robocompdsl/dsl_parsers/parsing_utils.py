@@ -38,7 +38,7 @@ def communication_is_ice(sb):
     isIce = True
     if isinstance(sb, str):
        isIce = True
-    elif isinstance(sb, list):
+    elif isinstance(sb, (list,tuple)):
         if len(sb) == 2:
             if sb[1] == 'ros'.lower():
                 isIce = False
@@ -72,14 +72,14 @@ def is_valid_rpc_idsl(idsl):
 def is_agm1_agent(component):
     assert isinstance(component, (dict, OrderedDict)), \
         "Component parameter is expected to be a dict or OrderedDict but %s" % str(type(component))
-    options = component['options']
+    options = component.options
     return 'agmagent' in [x.lower() for x in options]
 
 def is_agm2_agent(component):
     assert isinstance(component, (dict, OrderedDict)), \
         "Component parameter is expected to be a dict or OrderedDict but %s" % str(type(component))
     valid = ['agm2agent', 'agm2agentros', 'agm2agentice']
-    options = component['options']
+    options = component.options
     for v in valid:
         if v.lower() in options:
             return True
@@ -89,7 +89,7 @@ def is_agm2_agent_ROS(component):
     assert isinstance(component, (dict, OrderedDict)), \
         "Component parameter is expected to be a dict or OrderedDict but %s" % str(type(component))
     valid = ['agm2agentROS']
-    options = component['options']
+    options = component.options
     for v in valid:
         if v.lower() in options:
             return True
@@ -117,13 +117,16 @@ def idsl_robocomp_path(idsl_name, include_directories = None):
 
 def get_name_number(names_list):
     """
-    Used add a number in case of multiple equal names
+    Used to add a number in case of multiple equal names
     :param names_list: list of names
     :return:
     """
-    assert isinstance(names_list, list), "names_list must be a 'list' of names (str) not %s" % str(type(names_list))
-    for name in names_list:
-        assert isinstance(name, str), "names must be a 'str' not %s" % str(type(name))
+    assert isinstance(names_list, list), "names_list must be a 'list' of interfaces (list) not %s" % str(type(names_list))
+    for index, name in enumerate(names_list):
+        assert isinstance(name, (list, tuple)), "names_list elements be a 'list' or tuple not %s" % str(type(names_list))
+        if isinstance(name, list):
+            names_list[index] = tuple(name)
+
     ret = []
     c = Counter(names_list)
     keys = sorted(c)
@@ -233,8 +236,9 @@ class IDSLPool:
         includeDirectories = iD + ['/opt/robocomp/interfaces/IDSLs/', os.path.expanduser('~/robocomp/interfaces/IDSLs/')]
         self.includeInPool(files, self.modulePool, includeDirectories)
 
-    def getRosTypes(self):
-        return self.rosTypes
+    @classmethod
+    def getRosTypes(cls):
+        return cls.rosTypes
 
     def includeInPool(self, files, modulePool, includeDirectories):
         """

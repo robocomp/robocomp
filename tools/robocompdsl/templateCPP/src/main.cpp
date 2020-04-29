@@ -16,119 +16,7 @@ from dsl_parsers.dsl_factory import DSLFactory
 from dsl_parsers.parsing_utils import get_name_number, communication_is_ice
 includeDirectories = theIDSLPaths.split('#')
 component = DSLFactory().from_file(theCDSL, include_directories=includeDirectories)
-
-
-REQUIRE_STR = """
-<TABHERE>try
-<TABHERE>{
-<TABHERE><TABHERE>if (not GenericMonitor::configGetString(communicator(), prefix, "<NORMAL><PROXYNUMBER>Proxy", proxy, ""))
-<TABHERE><TABHERE>{
-<TABHERE><TABHERE><TABHERE>cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy <NORMAL>Proxy\\n";
-<TABHERE><TABHERE>}
-<TABHERE><TABHERE><C++_VERSION>
-<TABHERE>}
-<TABHERE>catch(const Ice::Exception& ex)
-<TABHERE>{
-<TABHERE><TABHERE>cout << "[" << PROGRAM_NAME << "]: Exception creating proxy <NORMAL><PROXYNUMBER>: " << ex;
-<TABHERE><TABHERE>return EXIT_FAILURE;
-<TABHERE>}
-<TABHERE>rInfo("<NORMAL>Proxy<PROXYNUMBER> initialized Ok!");
-"""
-
-SUBSCRIBESTO_STR = """
-<TABHERE><TABHERE>// Server adapter creation and publication
-<TABHERE><TABHERE><CHANGE1> <LOWER>_topic;
-<TABHERE><TABHERE><CHANGE2> <PROXYNAME>;
-<TABHERE><TABHERE>try
-<TABHERE><TABHERE>{
-<TABHERE><TABHERE><TABHERE>if (not GenericMonitor::configGetString(communicator(), prefix, "<NORMAL>Topic.Endpoints", tmp, ""))
-<TABHERE><TABHERE><TABHERE>{
-<TABHERE><TABHERE><TABHERE><TABHERE>cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy <NORMAL>Proxy";
-<TABHERE><TABHERE><TABHERE>}
-<TABHERE><TABHERE><TABHERE>Ice::ObjectAdapterPtr <NORMAL>_adapter = communicator()->createObjectAdapterWithEndpoints("<LOWER>", tmp);
-<TABHERE><TABHERE><TABHERE><NORMAL>Ptr <LOWER>I_ = <CHANGE3>(worker);
-<TABHERE><TABHERE><TABHERE><CHANGE4> <PROXYNAME> = <NORMAL>_adapter->addWithUUID(<LOWER>I_)->ice_oneway();
-<TABHERE><TABHERE><TABHERE>if(!<LOWER>_topic)
-<TABHERE><TABHERE><TABHERE>{
-<TABHERE><TABHERE><TABHERE><TABHERE>try {
-<TABHERE><TABHERE><TABHERE><TABHERE><TABHERE><LOWER>_topic = topicManager->create("<NORMAL>");
-<TABHERE><TABHERE><TABHERE><TABHERE>}
-<TABHERE><TABHERE><TABHERE><TABHERE>catch (const IceStorm::TopicExists&) {
-<TABHERE><TABHERE><TABHERE><TABHERE><TABHERE>//Another client created the topic
-<TABHERE><TABHERE><TABHERE><TABHERE><TABHERE>try{
-<TABHERE><TABHERE><TABHERE><TABHERE><TABHERE><TABHERE>cout << "[" << PROGRAM_NAME << "]: Probably other client already opened the topic. Trying to connect.\\n";
-<TABHERE><TABHERE><TABHERE><TABHERE><TABHERE><TABHERE><LOWER>_topic = topicManager->retrieve("<NORMAL>");
-<TABHERE><TABHERE><TABHERE><TABHERE><TABHERE>}
-<TABHERE><TABHERE><TABHERE><TABHERE><TABHERE>catch(const IceStorm::NoSuchTopic&)
-<TABHERE><TABHERE><TABHERE><TABHERE><TABHERE>{
-<TABHERE><TABHERE><TABHERE><TABHERE><TABHERE><TABHERE>cout << "[" << PROGRAM_NAME << "]: Topic doesn't exists and couldn't be created.\\n";
-<TABHERE><TABHERE><TABHERE><TABHERE><TABHERE><TABHERE>//Error. Topic does not exist
-<TABHERE><TABHERE><TABHERE><TABHERE><TABHERE>}
-<TABHERE><TABHERE><TABHERE><TABHERE>}
-<TABHERE><TABHERE><TABHERE><TABHERE>catch(const IceUtil::NullHandleException&)
-<TABHERE><TABHERE><TABHERE><TABHERE>{
-<TABHERE><TABHERE><TABHERE><TABHERE><TABHERE>cout << "[" << PROGRAM_NAME << "]: ERROR TopicManager is Null. Check that your configuration file contains an entry like:\\n"<<
-<TABHERE><TABHERE><TABHERE><TABHERE><TABHERE>"\\t\\tTopicManager.Proxy=IceStorm/TopicManager:default -p <port>\\n";
-<TABHERE><TABHERE><TABHERE><TABHERE><TABHERE>return EXIT_FAILURE;
-<TABHERE><TABHERE><TABHERE><TABHERE>}
-<TABHERE><TABHERE><TABHERE><TABHERE>IceStorm::QoS qos;
-<TABHERE><TABHERE><TABHERE><TABHERE><LOWER>_topic->subscribeAndGetPublisher(qos, <PROXYNAME>);
-<TABHERE><TABHERE><TABHERE>}
-<TABHERE><TABHERE><TABHERE><NORMAL>_adapter->activate();
-<TABHERE><TABHERE>}
-<TABHERE><TABHERE>catch(const IceStorm::NoSuchTopic&)
-<TABHERE><TABHERE>{
-<TABHERE><TABHERE><TABHERE>cout << "[" << PROGRAM_NAME << "]: Error creating <NORMAL> topic.\\n";
-<TABHERE><TABHERE><TABHERE>//Error. Topic does not exist
-<TABHERE><TABHERE>}
-"""
-
-PUBLISHES_STR = """
-<TABHERE>while (!<LOWER>_topic)
-<TABHERE>{
-<TABHERE><TABHERE>try
-<TABHERE><TABHERE>{
-<TABHERE><TABHERE><TABHERE><LOWER>_topic = topicManager->retrieve("<NORMAL>");
-<TABHERE><TABHERE>}
-<TABHERE><TABHERE>catch (const IceStorm::NoSuchTopic&)
-<TABHERE><TABHERE>{
-<TABHERE><TABHERE><TABHERE>cout << "[" << PROGRAM_NAME << "]: ERROR retrieving <NORMAL> topic. \\n";
-<TABHERE><TABHERE><TABHERE>try
-<TABHERE><TABHERE><TABHERE>{
-<TABHERE><TABHERE><TABHERE><TABHERE><LOWER>_topic = topicManager->create("<NORMAL>");
-<TABHERE><TABHERE><TABHERE>}
-<TABHERE><TABHERE><TABHERE>catch (const IceStorm::TopicExists&){
-<TABHERE><TABHERE><TABHERE><TABHERE>// Another client created the topic.
-<TABHERE><TABHERE><TABHERE><TABHERE>cout << "[" << PROGRAM_NAME << "]: ERROR publishing the <NORMAL> topic. It's possible that other component have created\\n";
-<TABHERE><TABHERE><TABHERE>}
-<TABHERE><TABHERE>}
-<TABHERE><TABHERE>catch(const IceUtil::NullHandleException&)
-<TABHERE><TABHERE>{
-<TABHERE><TABHERE><TABHERE>cout << "[" << PROGRAM_NAME << "]: ERROR TopicManager is Null. Check that your configuration file contains an entry like:\\n"<<
-<TABHERE><TABHERE><TABHERE>"\\t\\tTopicManager.Proxy=IceStorm/TopicManager:default -p <port>\\n";
-<TABHERE><TABHERE><TABHERE>return EXIT_FAILURE;
-<TABHERE><TABHERE>}
-<TABHERE>}
-"""
-
-IMPLEMENTS_STR = """
-<TABHERE><TABHERE>try
-<TABHERE><TABHERE>{
-<TABHERE><TABHERE><TABHERE>// Server adapter creation and publication
-<TABHERE><TABHERE><TABHERE>if (not GenericMonitor::configGetString(communicator(), prefix, "<NORMAL>.Endpoints", tmp, ""))
-<TABHERE><TABHERE><TABHERE>{
-<TABHERE><TABHERE><TABHERE><TABHERE>cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy <NORMAL>";
-<TABHERE><TABHERE><TABHERE>}
-<TABHERE><TABHERE><TABHERE>Ice::ObjectAdapterPtr adapter<NORMAL> = communicator()->createObjectAdapterWithEndpoints("<NORMAL>", tmp);
-<TABHERE><TABHERE><TABHERE><C++_VERSION>
-<TABHERE><TABHERE><TABHERE>adapter<NORMAL>->add(<LOWER>, Ice::stringToIdentity("<LOWER>"));
-<TABHERE><TABHERE><TABHERE>adapter<NORMAL>->activate();
-<TABHERE><TABHERE><TABHERE>cout << "[" << PROGRAM_NAME << "]: <NORMAL> adapter created in port " << tmp << endl;
-<TABHERE><TABHERE><TABHERE>}
-<TABHERE><TABHERE><TABHERE>catch (const IceStorm::TopicExists&){
-<TABHERE><TABHERE><TABHERE><TABHERE>cout << "[" << PROGRAM_NAME << "]: ERROR creating or activating adapter for <NORMAL>\\n";
-<TABHERE><TABHERE><TABHERE>}
-"""
+import templateCPP.functions.src.main_cpp as main
 
 ]]]
 [[[end]]]
@@ -162,7 +50,7 @@ Z()
 /** \mainpage RoboComp::
 [[[cog
 A()
-cog.out(component['name'])
+cog.out(component.name)
 ]]]
 [[[end]]]
  *
@@ -171,7 +59,7 @@ cog.out(component['name'])
  * The
 [[[cog
 A()
-cog.out(' ' + component['name'])
+cog.out(' ' + component.name)
 Z()
 ]]]
 [[[end]]]
@@ -190,7 +78,7 @@ Z()
  * cd
 [[[cog
 A()
-cog.out(' ' + component['name'])
+cog.out(' ' + component.name)
 Z()
 ]]]
 [[[end]]]
@@ -215,7 +103,7 @@ Z()
  * Just: "${PATH_TO_BINARY}/
 [[[cog
 A()
-cog.out(component['name'])
+cog.out(component.name)
 Z()
 ]]]
 [[[end]]]
@@ -249,27 +137,10 @@ Z()
 #include "commonbehaviorI.h"
 
 [[[cog
-for ima in component['implements']:
-	if type(ima) == str:
-		im = ima
-	else:
-		im = ima[0]
-	if communication_is_ice(ima):
-		cog.outl('#include <'+im.lower()+'I.h>')
-
-for subscribe in component['subscribesTo']:
-	subs = subscribe
-	while type(subs) != type(''):
-		subs = subs[0]
-	if communication_is_ice(subscribe):
-		cog.outl('#include <'+subs.lower()+'I.h>')
-
+cog.out(main.interface_includes(component.implements, 'I', True))
+cog.out(main.interface_includes(component.subscribesTo, 'I', True))
 cog.outl('')
-
-for imp in component['recursiveImports']:
-	incl = imp.split('/')[-1].split('.')[0]
-	cog.outl('#include <'+incl+'.h>')
-
+cog.out(main.interface_includes(component.recursiveImports))
 ]]]
 [[[end]]]
 
@@ -283,27 +154,27 @@ using namespace RoboCompCommonBehavior;
 class
 [[[cog
 A()
-cog.out(' ' + component['name'] + ' ')
+cog.out(' ' + component.name + ' ')
 Z()
 ]]]
 [[[end]]]
 : public RoboComp::Application
 {
 public:
-[[[cog
-cog.out('<TABHERE>' + component['name'] + ' (QString prfx) { prefix = prfx.toStdString(); }')
-]]]
-[[[end]]]
+	[[[cog
+	cog.out(component.name + ' (QString prfx) { prefix = prfx.toStdString(); }')
+	]]]
+	[[[end]]]
 private:
 	void initialize();
 	std::string prefix;
-[[[cog
-	if component['language'].lower() == "cpp":
-		cog.outl('<TABHERE>MapPrx mprx;')
-	else:
-		cog.outl('<TABHERE>TuplePrx tprx;')
-]]]
-[[[end]]]
+	[[[cog
+		if component.language.lower() == "cpp":
+			cog.outl('MapPrx mprx;')
+		else:
+			cog.outl('TuplePrx tprx;')
+	]]]
+	[[[end]]]
 
 public:
 	virtual int run(int, char*[]);
@@ -312,7 +183,7 @@ public:
 void
 [[[cog
 A()
-cog.out(' ::' + component['name'])
+cog.out(' ::' + component.name)
 Z()
 ]]]
 [[[end]]]
@@ -326,14 +197,14 @@ Z()
 int
 [[[cog
 A()
-cog.out(' ::' + component['name'])
+cog.out(' ::' + component.name)
 Z()
 ]]]
 [[[end]]]
 ::run(int argc, char* argv[])
 {
 [[[cog
-	if component['gui'] is not None:
+	if component.gui is not None:
 		cog.outl("#ifdef USE_QTGUI")
 		cog.outl("<TABHERE>QApplication a(argc, argv);  // GUI application")
 		cog.outl("#else")
@@ -359,108 +230,33 @@ Z()
 
 	int status=EXIT_SUCCESS;
 
-[[[cog
-for name, num in get_name_number(component['publishes']):
-	if communication_is_ice(name):
-		if component['language'].lower() == "cpp":
-			cog.outl('<TABHERE>'+name+'Prx '+name.lower()+num +'_pubproxy;')
-		else:
-			cog.outl('<TABHERE>'+name+'PrxPtr '+name.lower()+num +'_pubproxy;')
-
-for name, num in  get_name_number(component['requires']):
-	if communication_is_ice(name):
-		if component['language'].lower() == "cpp":
-			cog.outl('<TABHERE>'+name+'Prx '+name.lower()+num +'_proxy;')
-		else:
-			cog.outl('<TABHERE>'+name+'PrxPtr '+name.lower()+num +'_proxy;')
-]]]
-[[[end]]]
+	[[[cog
+	cog.out(main.proxy_ptr(component.publishes, component.language, 'pub'))
+	cog.out(main.proxy_ptr(component.requires, component.language))
+	]]]
+	[[[end]]]
 
 	string proxy, tmp;
 	initialize();
+	[[[cog
+	proxy_list = []
+	require_str, req_proxy_list = main.requires(component)
+	proxy_list.extend(req_proxy_list)
+	cog.out(require_str)
+	cog.out(main.topic_manager_creation(component))
+	]]]
+    [[[end]]]
+	[[[cog
+	publish_str, pub_proxy_list = main.publish(component)
+	cog.out(publish_str)
+	proxy_list.extend(pub_proxy_list)
 
-[[[cog
-proxy_list = []
-for name, num in get_name_number(component['requires']):
-	if communication_is_ice(name):
-		if component['language'].lower() == "cpp":
-			cpp = "<PROXYNAME>_proxy = <NORMAL>Prx::uncheckedCast( communicator()->stringToProxy( proxy ) );"
-		else:
-			cpp = "<PROXYNAME>_proxy = Ice::uncheckedCast<<NORMAL>Prx>( communicator()->stringToProxy( proxy ) );"
-	
-		w = REQUIRE_STR.replace("<C++_VERSION>", cpp).replace("<NORMAL>", name).replace("<LOWER>", name.lower()).replace("<PROXYNAME>", name.lower()+num).replace("<PROXYNUMBER>", num)
-		cog.outl(w)
-	if component['language'].lower() == "cpp":
-		cog.outl("<TABHERE>mprx[\""+name+"Proxy"+num+"\"] = (::IceProxy::Ice::Object*)(&"+name.lower()+num+"_proxy);//Remote server proxy creation example");
-	else:
-		proxy_list.append(name.lower()+num+"_proxy")
-	
-need_topic=False
-for pub in component['publishes']:
-	if communication_is_ice(pub):
-		need_topic = True
-for pub in component['subscribesTo']:
-	if communication_is_ice(pub):
-		need_topic = True
-if need_topic:
-	if component['language'].lower() == "cpp":
-		cog.outl('<TABHERE>IceStorm::TopicManagerPrx topicManager;')
-	else:
-		cog.outl('<TABHERE>IceStorm::TopicManagerPrxPtr topicManager;')
-	cog.outl('<TABHERE>try')
-	cog.outl('<TABHERE>{')
-	if component['language'].lower() == "cpp":
-		cog.outl('<TABHERE><TABHERE>topicManager = IceStorm::TopicManagerPrx::checkedCast(communicator()->propertyToProxy("TopicManager.Proxy"));')
-	else:
-		cog.outl('<TABHERE><TABHERE>topicManager = Ice::checkedCast<IceStorm::TopicManagerPrx>(communicator()->propertyToProxy("TopicManager.Proxy"));')
-	cog.outl('<TABHERE>}')
-	cog.outl('<TABHERE>catch (const Ice::Exception &ex)')
-	cog.outl('<TABHERE>{')
-	cog.outl('<TABHERE><TABHERE>cout << "[" << PROGRAM_NAME << "]: Exception: \'rcnode\' not running: " << ex << endl;')
-	cog.outl('<TABHERE><TABHERE>return EXIT_FAILURE;')
-	cog.outl('<TABHERE>}')
+	if component.usingROS == True:
+		cog.outl("ros::init(argc, argv, \""+component.name+"\");")
 
-
-for pba in component['publishes']:
-	if type(pba) == str:
-		pb = pba
-	else:
-		pb = pba[0]
-	if communication_is_ice(pba):
-		if component['language'].lower() == "cpp":
-			cog.outl("<TABHERE>IceStorm::TopicPrx "+pb.lower() + "_topic;")
-		else:
-			cog.outl("<TABHERE>std::shared_ptr<IceStorm::TopicPrx> "+pb.lower() + "_topic;")
-		w = PUBLISHES_STR.replace("<NORMAL>", pb).replace("<LOWER>", pb.lower())
-		cog.outl(w)
-		if component['language'].lower() == "cpp":
-			cog.outl("<TABHERE>Ice::ObjectPrx " + pb.lower() + "_pub = " + pb.lower() + "_topic->getPublisher()->ice_oneway();")
-			cog.outl("<TABHERE>" + pb.lower() + "_pubproxy = " + pb + "Prx::uncheckedCast(" + pb.lower() + "_pub);")
-			cog.outl("<TABHERE>mprx[\"" + pb + "Pub\"] = (::IceProxy::Ice::Object*)(&" + pb.lower() + "_pubproxy);")
-		else:
-			cog.outl("<TABHERE>auto " + pb.lower() + "_pub = " + pb.lower() + "_topic->getPublisher()->ice_oneway();")
-			cog.outl("<TABHERE>" + pb.lower() + "_pubproxy = Ice::uncheckedCast<" + pb + "Prx>(" + pb.lower() + "_pub);")
-			proxy_list.append(pb.lower() + "_pubproxy")
-
-
-if component['usingROS'] == True:
-	cog.outl("<TABHERE>ros::init(argc, argv, \""+component['name']+"\");")
-
-
-]]]
-[[[end]]]
-
-[[[cog
-    if component['language'].lower() == "cpp":
-        cog.outl("<TABHERE>SpecificWorker *worker = new SpecificWorker(mprx);")
-    else:
-        if proxy_list:
-            cog.outl("<TABHERE>tprx = std::make_tuple(" + ",".join(proxy_list) + ");")
-        else:
-            cog.outl("<TABHERE>tprx = std::tuple<>();")
-        cog.outl("<TABHERE>SpecificWorker *worker = new SpecificWorker(tprx);")
-]]]
-[[[end]]]
+	cog.out(main.specificworker_creation(component.language, proxy_list))
+	]]]
+	[[[end]]]
 	//Monitor thread
 	SpecificMonitor *monitor = new SpecificMonitor(worker,communicator());
 	QObject::connect(monitor, SIGNAL(kill()), &a, SLOT(quit()));
@@ -484,7 +280,7 @@ if component['usingROS'] == True:
 			}
 			Ice::ObjectAdapterPtr adapterCommonBehavior = communicator()->createObjectAdapterWithEndpoints("commonbehavior", tmp);
 			[[[cog
-				if component['language'].lower() == "cpp":
+				if component.language.lower() == "cpp":
 					cog.outl("CommonBehaviorI *commonbehaviorI = new CommonBehaviorI(monitor);")
 				else:
 					cog.outl("auto commonbehaviorI = std::make_shared<CommonBehaviorI>(monitor);")
@@ -503,43 +299,11 @@ if component['usingROS'] == True:
 		}
 
 
-[[[cog
-for ima in component['implements']:
-	if type(ima) == str:
-		im = ima
-	else:
-		im = ima[0]
-	if communication_is_ice(ima):
-		if component['language'].lower() == "cpp":
-			cpp = "<NORMAL>I *<LOWER> = new <NORMAL>I(worker);"
-		else:
-			cpp = "auto <LOWER> = std::make_shared<<NORMAL>I>(worker);"
-		w = IMPLEMENTS_STR.replace("<C++_VERSION>", cpp).replace("<NORMAL>", im).replace("<LOWER>", im.lower())
-		cog.outl(w)
-]]]
-[[[end]]]
-
-[[[cog
-for name, num in get_name_number(component['subscribesTo']):
-	nname = name
-	while type(nname) != type(''):
-		nname = name[0]
-	if communication_is_ice(name):
-		if component['language'].lower() == "cpp":
-			change1 = "IceStorm::TopicPrx"
-			change2 = "Ice::ObjectPrx"
-			change3 = " new <NORMAL>I"
-			change4 = "Ice::ObjectPrx"
-		else:
-			change1 = "std::shared_ptr<IceStorm::TopicPrx>"
-			change2 = "Ice::ObjectPrxPtr"
-			change3 = " std::make_shared <<NORMAL>I>"
-			change4 = "auto"
-		
-		w = SUBSCRIBESTO_STR.replace("<CHANGE1>", change1).replace("<CHANGE2>", change2).replace("<CHANGE3>", change3).replace("<CHANGE4>", change4).replace("<NORMAL>", nname).replace("<LOWER>", nname.lower()).replace("<PROXYNAME>", nname.lower()+num).replace("<PROXYNUMBER>", num)
-		cog.out(w)
-]]]
-[[[end]]]
+		[[[cog
+		cog.out(main.implements(component))
+		cog.out(main.subscribes_to(component))
+		]]]
+		[[[end]]]
 
 		// Server adapter creation and publication
 		cout << SERVER_FULL_NAME " started" << endl;
@@ -552,25 +316,10 @@ for name, num in get_name_number(component['subscribesTo']):
 		#endif
 		// Run QT Application Event Loop
 		a.exec();
-
-[[[cog
-for sub in component['subscribesTo']:
-	nname = sub
-	while type(nname) != type(''):
-		nname = sub[0]
-	if communication_is_ice(sub):
-		cog.outl("<TABHERE><TABHERE>try")
-		cog.outl("<TABHERE><TABHERE>{")
-		cog.outl("<TABHERE><TABHERE><TABHERE>std::cout << \"Unsubscribing topic: "+nname.lower()+" \" <<std::endl;")
-		cog.outl("<TABHERE><TABHERE><TABHERE>"+ nname.lower() + "_topic->unsubscribe( "+ nname.lower() +" );" )
-		cog.outl("<TABHERE><TABHERE>}")
-		cog.outl("<TABHERE><TABHERE>catch(const Ice::Exception& ex)")
-		cog.outl("<TABHERE><TABHERE>{")
-		cog.outl("<TABHERE><TABHERE><TABHERE>std::cout << \"ERROR Unsubscribing topic: "+nname.lower()+" \" <<std::endl;")
-		cog.outl("<TABHERE><TABHERE>}")
-
-]]]
-[[[end]]]
+		[[[cog
+		cog.out(main.unsubscribe_code(component))
+		]]]
+		[[[end]]]
 
 		status = EXIT_SUCCESS;
 	}
@@ -628,14 +377,10 @@ int main(int argc, char* argv[])
 			printf("Configuration prefix: <%s>\n", prefix.toStdString().c_str());
 		}
 	}
-
-[[[cog
-A()
-cog.out('<TABHERE>::' + component['name'] + ' ')
-Z()
-]]]
-[[[end]]]
-app(prefix);
+	[[[cog
+	cog.outl('::' + component.name + ' app(prefix);')
+	]]]
+	[[[end]]]
 
 	return app.main(argc, argv, configFile.c_str());
 }

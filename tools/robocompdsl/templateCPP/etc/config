@@ -27,7 +27,7 @@ component = DSLFactory().from_file(theCDSL, include_directories=includeDirectori
 storm = False
 
 text = False
-for ima in component['implements']:
+for ima in component.implements:
 	if type(ima) == str:
 		im = ima
 	else:
@@ -42,7 +42,7 @@ if text:
 
 
 text = False
-for sb in component['subscribesTo']:
+for sb in component.subscribesTo:
 	if text == False:
 		cog.outl('# Endpoints for subscriptions')
 		text = True
@@ -59,7 +59,7 @@ if text:
 
 
 text = False
-for namea, number in get_name_number(component['requires']):
+for namea, number in get_name_number(component.requires):
 	if type(namea) == str:
 		name = namea
 	else:
@@ -76,7 +76,7 @@ if text:
 	cog.out('\n\n')
 
 #text = False
-for namea in component['publishes']:
+for namea in component.publishes:
 	storm = True
 #	if text == False:
 #		cog.outl('# Proxies for published topics')

@@ -34,17 +34,16 @@ SET ( SOURCES
 find_package(LibXml2 REQUIRED)
 include_directories(LIBXML2_INCLUDE_DIRS)
 include_directories(/usr/include/libxml2/)
-SET (LIBS ${LIBS} -lagm )
+SET(LIBS ${LIBS} -lagm)
+ADD_DEFINITIONS( -I/usr/include/libxml2/)
 
 #ROBOCOMP
 ROBOCOMP_INITIALIZE( $ENV{ROBOCOMP}/ )
-ROBOCOMP_WRAP_ICE( CommonBehavior Planning AGMCommonBehavior AGMExecutive AGMExecutiveTopic AGMWorldModel AGMExecutive AGMExecutiveTopic )
+ROBOCOMP_WRAP_ICE( CommonBehavior AGMCommonBehavior AGMExecutive AGMExecutiveTopic AGMWorldModel Planning AGMExecutive AGMExecutiveTopic )
 SET (EXECUTABLE_OUTPUT_PATH ${RC_COMPONENT_DEVEL_PATH}/bin)
 
 
 # Specify construction and link process
-SET(LIBS ${LIBS} -lagm)
-ADD_DEFINITIONS( -I/usr/include/libxml2/ )
 ADD_EXECUTABLE( AGMTest ${SOURCES} ${MOC_SOURCES} ${RC_SOURCES} ${UI_HEADERS} )
 TARGET_LINK_LIBRARIES( AGMTest ${LIBS} ${STATIC_LIBS} ${SPECIFIC_LIBS} ${QT_LIBRARIES} ${Ice_LIBRARIES})
 INSTALL(FILES ${EXECUTABLE_OUTPUT_PATH}/AGMTest DESTINATION ${RC_COMPONENT_INSTALL_PATH}/bin/ PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE )
