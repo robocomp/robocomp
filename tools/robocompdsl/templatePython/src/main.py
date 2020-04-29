@@ -21,73 +21,6 @@ component = DSLFactory().from_file(theCDSL, include_directories=includeDirectori
 
 
 pool = IDSLPool(theIDSLs, includeDirectories)
-REQUIRE_STR = """
-<TABHERE># Remote object connection for <NORMAL>
-<TABHERE>try:
-<TABHERE><TABHERE>proxyString = ic.getProperties().getProperty('<NORMAL><NUM>Proxy')
-<TABHERE><TABHERE>try:
-<TABHERE><TABHERE><TABHERE>basePrx = ic.stringToProxy(proxyString)
-<TABHERE><TABHERE><TABHERE><LOWER><NUM>_proxy = <NORMAL>Prx.uncheckedCast(basePrx)
-<TABHERE><TABHERE><TABHERE>mprx["<NORMAL>Proxy<NUM>"] = <LOWER><NUM>_proxy
-<TABHERE><TABHERE>except Ice.Exception:
-<TABHERE><TABHERE><TABHERE>print('Cannot connect to the remote object (<NORMAL>)', proxyString)
-<TABHERE><TABHERE><TABHERE>#traceback.print_exc()
-<TABHERE><TABHERE><TABHERE>status = 1
-<TABHERE>except Ice.Exception as e:
-<TABHERE><TABHERE>print(e)
-<TABHERE><TABHERE>print('Cannot get <NORMAL>Proxy property.')
-<TABHERE><TABHERE>status = 1
-"""
-
-SUBSCRIBESTO_STR = """
-<TABHERE><NORMAL>_adapter = ic.createObjectAdapter("<NORMAL>Topic")
-<TABHERE><LOWER>I_ = <NORMAL>I(worker)
-<TABHERE><LOWER>_proxy = <NORMAL>_adapter.addWithUUID(<LOWER>I_).ice_oneway()
-
-<TABHERE>subscribeDone = False
-<TABHERE>while not subscribeDone:
-<TABHERE><TABHERE>try:
-<TABHERE><TABHERE><TABHERE><LOWER>_topic = topicManager.retrieve("<NORMAL>")
-<TABHERE><TABHERE><TABHERE>subscribeDone = True
-<TABHERE><TABHERE>except Ice.Exception as e:
-<TABHERE><TABHERE><TABHERE>print("Error. Topic does not exist (creating)")
-<TABHERE><TABHERE><TABHERE>time.sleep(1)
-<TABHERE><TABHERE><TABHERE>try:
-<TABHERE><TABHERE><TABHERE><TABHERE><LOWER>_topic = topicManager.create("<NORMAL>")
-<TABHERE><TABHERE><TABHERE><TABHERE>subscribeDone = True
-<TABHERE><TABHERE><TABHERE>except:
-<TABHERE><TABHERE><TABHERE><TABHERE>print("Error. Topic could not be created. Exiting")
-<TABHERE><TABHERE><TABHERE><TABHERE>status = 0
-<TABHERE>qos = {}
-<TABHERE><LOWER>_topic.subscribeAndGetPublisher(qos, <LOWER>_proxy)
-<TABHERE><NORMAL>_adapter.activate()
-"""
-
-PUBLISHES_STR = """
-<TABHERE># Create a proxy to publish a <NORMAL> topic
-<TABHERE>topic = False
-<TABHERE>try:
-<TABHERE><TABHERE>topic = topicManager.retrieve("<NORMAL>")
-<TABHERE>except:
-<TABHERE><TABHERE>pass
-<TABHERE>while not topic:
-<TABHERE><TABHERE>try:
-<TABHERE><TABHERE><TABHERE>topic = topicManager.retrieve("<NORMAL>")
-<TABHERE><TABHERE>except IceStorm.NoSuchTopic:
-<TABHERE><TABHERE><TABHERE>try:
-<TABHERE><TABHERE><TABHERE><TABHERE>topic = topicManager.create("<NORMAL>")
-<TABHERE><TABHERE><TABHERE>except:
-<TABHERE><TABHERE><TABHERE><TABHERE>print('Another client created the <NORMAL> topic? ...')
-<TABHERE>pub = topic.getPublisher().ice_oneway()
-<TABHERE><LOWER>Topic = <NORMAL>Prx.uncheckedCast(pub)
-<TABHERE>mprx["<NORMAL>Pub"] = <LOWER>Topic
-"""
-
-IMPLEMENTS_STR = """
-<TABHERE>adapter = ic.createObjectAdapter('<NORMAL>')
-<TABHERE>adapter.add(<NORMAL>I(worker), ic.stringToIdentity('<LOWER>'))
-<TABHERE>adapter.activate()
-"""
 ]]]
 [[[end]]]
 
@@ -232,63 +165,15 @@ if __name__ == '__main__':
     else:
         print("Error getting required connections, check config file")
         sys.exit(-1)
-[[[cog
-for imp in component.implements:
-    if communication_is_ice(imp):
-        name = imp[0]
-        w = IMPLEMENTS_STR.replace("<NORMAL>", name).replace("<LOWER>", name.lower())
-        cog.outl(w)
-
-for sut in component.subscribesTo:
-    if communication_is_ice(sut):
-        name = sut[0]
-        w = SUBSCRIBESTO_STR.replace("<NORMAL>", name).replace("<LOWER>", name.lower())
-        cog.outl(w)
-if component.usingROS == True:
-    cog.outl("<TABHERE>rospy.init_node(\""+component.name+"\", anonymous=True)")
-for sub in component.subscribesTo:
-    nname = sub
-    while type(nname) != type(''):
-        nname = nname[0]
-    module = pool.moduleProviding(nname)
-    if module == None:
-        raise ValueError('\nCan\'t find module providing %s\n' % nname)
-    if not communication_is_ice(sub):
-        for interface in module['interfaces']:
-            if interface['name'] == nname:
-                for mname in interface['methods']:
-                    method = interface['methods'][mname]
-                    for p in method['params']:
-                        s = "\""+mname+"\""
-                        if p['type'] in ('float','int'):
-                            cog.outl("<TABHERE>rospy.Subscriber("+s+", "+p['type'].capitalize()+"32, worker.ROS"+method['name']+")")
-                        elif p['type'] in ('uint8','uint16','uint32','uint64'):
-                            cog.outl("<TABHERE>rospy.Subscriber("+s+", UInt"+p['type'].split('t')[1]+", worker.ROS"+method['name']+")")
-                        elif p['type'] in rosTypes:
-                            cog.outl("<TABHERE>rospy.Subscriber("+s+", "+p['type'].capitalize()+", worker.ROS"+method['name']+")")
-                        elif '::' in p['type']:
-                            cog.outl("<TABHERE>rospy.Subscriber("+s+", "+p['type'].split('::')[1]+", worker.ROS"+method['name']+")")
-                        else:
-                            cog.outl("<TABHERE>rospy.Subscriber("+s+", "+p['type']+", worker.ROS"+method['name']+")")
-
-for imp in component.implements:
-    nname = imp
-    while type(nname) != type(''):
-        nname = nname[0]
-    module = pool.moduleProviding(nname)
-    if module == None:
-        print('\nCan\'t find module providing', nname, '\n')
-        sys.exit(-1)
-    if not communication_is_ice(imp):
-        for interface in module['interfaces']:
-            if interface['name'] == nname:
-                for mname in interface['methods']:
-                    method = interface['methods'][mname]
-                    s = "\""+mname+"\""
-                    cog.outl("<TABHERE>rospy.Service("+s+", "+mname+", worker.ROS"+method['name']+")")
-
-]]]
-[[[end]]]
+    [[[cog
+    cog.out(main.implements_adapters_creation(component))
+    cog.out(main.subscribes_adapters_creation(component))
+    ]]]
+    [[[end]]]
+    [[[cog
+    cog.out(main.ros_service_and_subscribe_creation(component, pool))
+    ]]]
+    [[[end]]]
 
     signal.signal(signal.SIGINT, sigint_handler)
     app.exec_()

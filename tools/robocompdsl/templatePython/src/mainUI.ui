@@ -22,14 +22,10 @@ if component is None:
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>guiDlg</class>
- <widget class="
-[[[cog
-A()
-cog.out(component.gui[1])
-Z()
-]]]
-[[[end]]]
-" name="guiDlg">
+ [[[cog
+    cog.out("<widget class=\""+component.gui[1]+"\" name=\"guiDlg\">")
+ ]]]
+ [[[end]]]
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -39,14 +35,10 @@ Z()
    </rect>
   </property>
   <property name="windowTitle">
-   <string>
-[[[cog
-A()
-cog.out(component.name)
-Z()
-]]]
-[[[end]]]
-</string>
+   [[[cog
+    cog.out("<string>"+component.name+"</string>")
+   ]]]
+   [[[end]]]
   </property>
  </widget>
  <resources/>

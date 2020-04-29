@@ -177,32 +177,31 @@ if __name__ == '__main__':
         print("Error getting required connections, check config file")
         sys.exit(-1)
 
-	adapter = ic.createObjectAdapter('HandDetection')
-	adapter.add(HandDetectionI(worker), ic.stringToIdentity('handdetection'))
-	adapter.activate()
+    adapter = ic.createObjectAdapter('HandDetection')
+    adapter.add(HandDetectionI(worker), ic.stringToIdentity('handdetection'))
+    adapter.activate()
 
+    AprilTags_adapter = ic.createObjectAdapter("AprilTagsTopic")
+    apriltagsI_ = AprilTagsI(worker)
+    apriltags_proxy = AprilTags_adapter.addWithUUID(apriltagsI_).ice_oneway()
 
-	AprilTags_adapter = ic.createObjectAdapter("AprilTagsTopic")
-	apriltagsI_ = AprilTagsI(worker)
-	apriltags_proxy = AprilTags_adapter.addWithUUID(apriltagsI_).ice_oneway()
-
-	subscribeDone = False
-	while not subscribeDone:
-		try:
-			apriltags_topic = topicManager.retrieve("AprilTags")
-			subscribeDone = True
-		except Ice.Exception as e:
-			print("Error. Topic does not exist (creating)")
-			time.sleep(1)
-			try:
-				apriltags_topic = topicManager.create("AprilTags")
-				subscribeDone = True
-			except:
-				print("Error. Topic could not be created. Exiting")
-				status = 0
-	qos = {}
-	apriltags_topic.subscribeAndGetPublisher(qos, apriltags_proxy)
-	AprilTags_adapter.activate()
+    subscribeDone = False
+    while not subscribeDone:
+        try:
+            apriltags_topic = topicManager.retrieve("AprilTags")
+            subscribeDone = True
+        except Ice.Exception as e:
+            print("Error. Topic does not exist (creating)")
+            time.sleep(1)
+            try:
+                apriltags_topic = topicManager.create("AprilTags")
+                subscribeDone = True
+            except:
+                print("Error. Topic could not be created. Exiting")
+                status = 0
+    qos = {}
+    apriltags_topic.subscribeAndGetPublisher(qos, apriltags_proxy)
+    AprilTags_adapter.activate()
 
 
     signal.signal(signal.SIGINT, sigint_handler)

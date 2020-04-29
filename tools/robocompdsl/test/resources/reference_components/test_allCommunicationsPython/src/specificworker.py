@@ -28,131 +28,135 @@ from genericworker import *
 # import librobocomp_innermodel
 
 class SpecificWorker(GenericWorker):
-	def __init__(self, proxy_map):
-		super(SpecificWorker, self).__init__(proxy_map)
-		self.Period = 2000
-		self.timer.start(self.Period)
+    def __init__(self, proxy_map):
+        super(SpecificWorker, self).__init__(proxy_map)
+        self.Period = 2000
+        self.timer.start(self.Period)
 
-		self.defaultMachine.start()
-		self.destroyed.connect(self.t_compute_to_finalize)
+        self.defaultMachine.start()
+        self.destroyed.connect(self.t_compute_to_finalize)
 
-	def __del__(self):
-		print('SpecificWorker destructor')
+    def __del__(self):
+        print('SpecificWorker destructor')
 
-	def setParams(self, params):
-		#try:
-		#	self.innermodel = InnerModel(params["InnerModelPath"])
-		#except:
-		#	traceback.print_exc()
-		#	print("Error reading config params")
-		return True
-
-	@QtCore.Slot()
-	def compute(self):
-		print('SpecificWorker.compute...')
-		#computeCODE
-		#try:
-		#	self.differentialrobot_proxy.setSpeedBase(100, 0)
-		#except Ice.Exception as e:
-		#	traceback.print_exc()
-		#	print(e)
-
-		# The API of python-innermodel is not exactly the same as the C++ version
-		# self.innermodel.updateTransformValues('head_rot_tilt_pose', 0, 0, 0, 1.3, 0, 0)
-		# z = librobocomp_qmat.QVec(3,0)
-		# r = self.innermodel.transform('rgbd', z, 'laser')
-		# r.printvector('d')
-		# print(r[0], r[1], r[2])
-
-		return True
-
-# =============== Slots methods for State Machine ===================
-# ===================================================================
-	#
-	# sm_initialize
-	#
-	@QtCore.Slot()
-	def sm_initialize(self):
-		print("Entered state initialize")
-		self.t_initialize_to_compute.emit()
-		pass
-
-	#
-	# sm_compute
-	#
-	@QtCore.Slot()
-	def sm_compute(self):
-		print("Entered state compute")
-		self.compute()
-		pass
-
-	#
-	# sm_finalize
-	#
-	@QtCore.Slot()
-	def sm_finalize(self):
-		print("Entered state finalize")
-		pass
+    def setParams(self, params):
+        #try:
+        #	self.innermodel = InnerModel(params["InnerModelPath"])
+        #except:
+        #	traceback.print_exc()
+        #	print("Error reading config params")
+        return True
 
 
-# =================================================================
-# =================================================================
+    @QtCore.Slot()
+    def compute(self):
+        print('SpecificWorker.compute...')
+        # computeCODE
+        # try:
+        #   self.differentialrobot_proxy.setSpeedBase(100, 0)
+        # except Ice.Exception as e:
+        #   traceback.print_exc()
+        #   print(e)
+
+        # The API of python-innermodel is not exactly the same as the C++ version
+        # self.innermodel.updateTransformValues('head_rot_tilt_pose', 0, 0, 0, 1.3, 0, 0)
+        # z = librobocomp_qmat.QVec(3,0)
+        # r = self.innermodel.transform('rgbd', z, 'laser')
+        # r.printvector('d')
+        # print(r[0], r[1], r[2])
+
+        return True
+
+    # =============== Slots methods for State Machine ===================
+    # ===================================================================
+
+    #
+    # sm_initialize
+    #
+    @QtCore.Slot()
+    def sm_initialize(self):
+        print("Entered state initialize")
+        self.t_initialize_to_compute.emit()
+        pass
+        
+
+    #
+    # sm_compute
+    #
+    @QtCore.Slot()
+    def sm_compute(self):
+        print("Entered state compute")
+        self.compute()
+        pass
 
 
-	#
-	# SUBSCRIPTION to newAprilTag method from AprilTags interface
-	#
-	def AprilTags_newAprilTag(self, tags):
-		#
-		#subscribesToCODE
-		#
-		pass
+    #
+    # sm_finalize
+    #
+    @QtCore.Slot()
+    def sm_finalize(self):
+        print("Entered state finalize")
+        pass
+        
+
+    # =================================================================
+    # =================================================================
+
+    #
+    # SUBSCRIPTION to newAprilTag method from AprilTags interface
+    #
+    def AprilTags_newAprilTag(self, tags):
+        #
+        #subscribesToCODE
+        #
+        pass
 
 
-	#
-	# SUBSCRIPTION to newAprilTagAndPose method from AprilTags interface
-	#
-	def AprilTags_newAprilTagAndPose(self, tags, bState, hState):
-		#
-		#subscribesToCODE
-		#
-		pass
-
-# =============== Methods for Component Implements ==================
-# ===================================================================
-
-	#
-	# addNewHand
-	#
-	def HandDetection_addNewHand(self, expectedHands, roi):
-		ret = int()
-		#
-		# implementCODE
-		#
-		return ret
+    #
+    # SUBSCRIPTION to newAprilTagAndPose method from AprilTags interface
+    #
+    def AprilTags_newAprilTagAndPose(self, tags, bState, hState):
+        #
+        #subscribesToCODE
+        #
+        pass
 
 
-	#
-	# getHands
-	#
-	def HandDetection_getHands(self):
-		ret = Hands()
-		#
-		# implementCODE
-		#
-		return ret
+    # =============== Methods for Component Implements ==================
+    # ===================================================================
+
+    #
+    # addNewHand
+    #
+    def HandDetection_addNewHand(self, expectedHands, roi):
+        ret = int()
+        #
+        # implementCODE
+        #
+        return ret
 
 
-	#
-	# getHandsCount
-	#
-	def HandDetection_getHandsCount(self):
-		ret = int()
-		#
-		# implementCODE
-		#
-		return ret
+    #
+    # getHands
+    #
+    def HandDetection_getHands(self):
+        ret = Hands()
+        #
+        # implementCODE
+        #
+        return ret
 
-# ===================================================================
-# ===================================================================
+
+    #
+    # getHandsCount
+    #
+    def HandDetection_getHandsCount(self):
+        ret = int()
+        #
+        # implementCODE
+        #
+        return ret
+
+    # ===================================================================
+    # ===================================================================
 

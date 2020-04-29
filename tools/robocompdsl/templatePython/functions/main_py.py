@@ -1,6 +1,7 @@
+import sys
 from string import Template
 
-from dsl_parsers.parsing_utils import communication_is_ice, get_name_number
+from dsl_parsers.parsing_utils import communication_is_ice, get_name_number, IDSLPool
 
 SUBSCRIBESTO_STR = """
 ${iface_name}_adapter = ic.createObjectAdapter("${iface_name}Topic")
@@ -123,4 +124,60 @@ def implements_adapters_creation(component):
         if communication_is_ice(iface):
             name = iface[0]
             result += Template(IMPLEMENTS_STR).substitute(iface_name=name, iface_name_lower=name.lower())
+    return result
+
+
+def subscribes_adapters_creation(component):
+    result = ""
+    for sut in component.subscribesTo:
+        if communication_is_ice(sut):
+            name = sut[0]
+            result += Template(SUBSCRIBESTO_STR).substitute(iface_name=name, iface_name_lower=name.lower())
+    return result
+
+# TODO: refactor. Check ros type conversions in cpp template
+def ros_service_and_subscribe_creation(component, pool):
+    result = ""
+    if component.usingROS == True:
+        result += "<TABHERE>rospy.init_node(\"" + component.name + "\", anonymous=True)\n"
+    for sub in component.subscribesTo:
+        nname = sub
+        while type(nname) != type(''):
+            nname = nname[0]
+        module = pool.moduleProviding(nname)
+        if module == None:
+            raise ValueError('\nCan\'t find module providing %s\n' % nname)
+        if not communication_is_ice(sub):
+            for interface in module['interfaces']:
+                if interface['name'] == nname:
+                    for mname in interface['methods']:
+                        method = interface['methods'][mname]
+                        for p in method['params']:
+                            s = "\"" + mname + "\""
+                            if p['type'] in ('float', 'int'):
+                                result += "<TABHERE>rospy.Subscriber(" + s + ", " + p['type'].capitalize() + "32, worker.ROS" + method['name'] + ")\n"
+                            elif p['type'] in ('uint8', 'uint16', 'uint32', 'uint64'):
+                                result += "<TABHERE>rospy.Subscriber(" + s + ", UInt" + p['type'].split('t')[1] + ", worker.ROS" + method['name'] + ")\n"
+                            elif p['type'] in IDSLPool.getRosTypes():
+                                result += "<TABHERE>rospy.Subscriber(" + s + ", " + p['type'].capitalize() + ", worker.ROS" + method['name'] + ")\n"
+                            elif '::' in p['type']:
+                                result += "<TABHERE>rospy.Subscriber(" + s + ", " + p['type'].split('::')[1] + ", worker.ROS" + method['name'] + ")\n"
+                            else:
+                                result += "<TABHERE>rospy.Subscriber(" + s + ", " + p['type'] + ", worker.ROS" + method['name'] + ")\n"
+
+    for imp in component.implements:
+        nname = imp
+        while type(nname) != type(''):
+            nname = nname[0]
+        module = pool.moduleProviding(nname)
+        if module == None:
+            print('\nCan\'t find module providing', nname, '\n')
+            sys.exit(-1)
+        if not communication_is_ice(imp):
+            for interface in module['interfaces']:
+                if interface['name'] == nname:
+                    for mname in interface['methods']:
+                        method = interface['methods'][mname]
+                        s = "\"" + mname + "\""
+                        result += "<TABHERE>rospy.Service(" + s + ", " + mname + ", worker.ROS" + method['name'] + ")\n"
     return result

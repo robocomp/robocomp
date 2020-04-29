@@ -124,27 +124,27 @@ if __name__ == '__main__':
         print("Error getting required connections, check config file")
         sys.exit(-1)
 
-	IMUPub_adapter = ic.createObjectAdapter("IMUPubTopic")
-	imupubI_ = IMUPubI(worker)
-	imupub_proxy = IMUPub_adapter.addWithUUID(imupubI_).ice_oneway()
+    IMUPub_adapter = ic.createObjectAdapter("IMUPubTopic")
+    imupubI_ = IMUPubI(worker)
+    imupub_proxy = IMUPub_adapter.addWithUUID(imupubI_).ice_oneway()
 
-	subscribeDone = False
-	while not subscribeDone:
-		try:
-			imupub_topic = topicManager.retrieve("IMUPub")
-			subscribeDone = True
-		except Ice.Exception as e:
-			print("Error. Topic does not exist (creating)")
-			time.sleep(1)
-			try:
-				imupub_topic = topicManager.create("IMUPub")
-				subscribeDone = True
-			except:
-				print("Error. Topic could not be created. Exiting")
-				status = 0
-	qos = {}
-	imupub_topic.subscribeAndGetPublisher(qos, imupub_proxy)
-	IMUPub_adapter.activate()
+    subscribeDone = False
+    while not subscribeDone:
+        try:
+            imupub_topic = topicManager.retrieve("IMUPub")
+            subscribeDone = True
+        except Ice.Exception as e:
+            print("Error. Topic does not exist (creating)")
+            time.sleep(1)
+            try:
+                imupub_topic = topicManager.create("IMUPub")
+                subscribeDone = True
+            except:
+                print("Error. Topic could not be created. Exiting")
+                status = 0
+    qos = {}
+    imupub_topic.subscribeAndGetPublisher(qos, imupub_proxy)
+    IMUPub_adapter.activate()
 
 
     signal.signal(signal.SIGINT, sigint_handler)
