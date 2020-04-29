@@ -4,7 +4,8 @@ import unittest
 from collections import OrderedDict
 
 from pyparsing import ParseException
-
+sys.path.append("/opt/robocomp/python")
+sys.path.append('/opt/robocomp/share/robocompdsl/')
 from dsl_parsers.specific_parsers.componentfacade import ComponentFacade
 
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
