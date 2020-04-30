@@ -57,6 +57,7 @@ class RobocompdslTest(unittest.TestCase):
             "test_customStateMachinePython",
             "test_defaultStateMachineCpp",
             "test_defaultStateMachinePython",
+            "test_implementsPython",
             "test_noSmdslTestCpp",
             "test_noSmdslTestPython",
             "test_publicationCpp",

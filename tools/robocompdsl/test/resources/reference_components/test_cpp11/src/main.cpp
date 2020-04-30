@@ -82,6 +82,7 @@
 #include "commonbehaviorI.h"
 
 
+#include <GenericBase.h>
 
 
 // User includes here
@@ -129,11 +130,28 @@ int ::idserver::run(int argc, char* argv[])
 
 	int status=EXIT_SUCCESS;
 
+	OmniRobotPrxPtr omnirobot_proxy;
 
 	string proxy, tmp;
 	initialize();
 
-	tprx = std::tuple<>();
+	try
+	{
+		if (not GenericMonitor::configGetString(communicator(), prefix, "OmniRobotProxy", proxy, ""))
+		{
+			cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy OmniRobotProxy\n";
+		}
+		omnirobot_proxy = Ice::uncheckedCast<OmniRobotPrx>( communicator()->stringToProxy( proxy ) );
+	}
+	catch(const Ice::Exception& ex)
+	{
+		cout << "[" << PROGRAM_NAME << "]: Exception creating proxy OmniRobot: " << ex;
+		return EXIT_FAILURE;
+	}
+	rInfo("OmniRobotProxy initialized Ok!");
+
+
+	tprx = std::make_tuple(omnirobot_proxy);
 	SpecificWorker *worker = new SpecificWorker(tprx);
 	//Monitor thread
 	SpecificMonitor *monitor = new SpecificMonitor(worker,communicator());

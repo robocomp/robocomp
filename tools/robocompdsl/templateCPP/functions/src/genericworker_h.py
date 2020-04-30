@@ -82,6 +82,8 @@ def ice_proxies_map(component):
     else:
         proxy_list = []
         for name in component.requires + component.publishes:
+            while not isinstance(name, str):
+                name = name[0]
             proxy_list.append("RoboComp{name}::{name}PrxPtr".format(name=name))
         result += "using TuplePrx = std::tuple<" + ",".join(proxy_list) + ">;\n"
     return result

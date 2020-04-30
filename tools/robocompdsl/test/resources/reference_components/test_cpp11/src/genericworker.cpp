@@ -44,6 +44,7 @@ QObject()
 	QObject::connect(&timer, SIGNAL(timeout()), this, SIGNAL(t_compute_to_compute()));
 
 	//------------------
+	omnirobot_proxy = std::get<0>(tprx);
 
 	mutex = new QMutex(QMutex::Recursive);
 

@@ -26,14 +26,18 @@
 #include <QState>
 #include <CommonBehavior.h>
 
+#include <GenericBase.h>
+#include <OmniRobot.h>
 
 
 #define CHECK_PERIOD 5000
 #define BASIC_PERIOD 100
 
 using namespace std;
+using namespace RoboCompGenericBase;
+using namespace RoboCompOmniRobot;
 
-using TuplePrx = std::tuple<>;
+using TuplePrx = std::tuple<RoboCompOmniRobot::OmniRobotPrxPtr>;
 
 
 class GenericWorker :
@@ -50,6 +54,7 @@ public:
 	QMutex *mutex;
 
 
+	OmniRobotPrxPtr omnirobot_proxy;
 
 
 protected:

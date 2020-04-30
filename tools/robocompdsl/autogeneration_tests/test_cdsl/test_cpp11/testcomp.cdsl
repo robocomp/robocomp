@@ -1,8 +1,10 @@
+import "OmniRobot.idsl";
 
 Component idserver
 {
     Communications
     {
+        requires OmniRobot;
     };
     language Cpp11;
     statemachine "statemachine.smdsl";
