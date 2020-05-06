@@ -99,7 +99,11 @@ class DSLFactory(Singleton):
                 traceback.print_exc()
                 raise
             else:
-                result['filename'] = file_path
+                # TODO: Fix this. It's because of the different types returned by cdsl parser and smdsl and idsl.
+                try:
+                    result['filename'] = file_path
+                except:
+                    result.filename = file_path
                 # store the parser with the result in the cache fo the factory
                 self._cache[file_path] = result
         return result

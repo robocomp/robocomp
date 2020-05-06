@@ -124,8 +124,6 @@ def get_name_number(names_list):
     assert isinstance(names_list, list), "names_list must be a 'list' of interfaces (list) not %s" % str(type(names_list))
     for index, name in enumerate(names_list):
         assert isinstance(name, (list, tuple)), "names_list elements be a 'list' or tuple not %s" % str(type(names_list))
-        if isinstance(name, list):
-            names_list[index] = tuple(name)
 
     ret = []
     c = Counter(names_list)

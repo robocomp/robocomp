@@ -1,3 +1,4 @@
+import datetime
 from string import Template
 
 from dsl_parsers.dsl_factory import DSLFactory
@@ -17,8 +18,8 @@ if not ice_${interface_name}:
     sys.exit(-1)
 """
 
-# TODO: Check if can be merged with servant_py.py slice_loading function
-def load_slice_and_create_imports(component, includeDirectories):
+# TODO: Check if can be merged with SERVANT_PY.py slice_loading function
+def load_slice_and_create_imports(component, includeDirectories=None):
     result = ""
     import os
     for imp in sorted(set(component.recursiveImports + component.imports)):
@@ -37,8 +38,9 @@ except:
 """
 
 # TODO: Refactor, too much repeated code.
-def ros_imports(component, pool):
+def ros_imports(component):
     result = ""
+    pool = component.idsl_pool
     if component.usingROS == True:
         result += 'import rospy\n'
         result += 'from std_msgs.msg import *\n'
@@ -81,8 +83,9 @@ def ui_import(gui):
     return result
 
 # TODO: extract code strings and refactor
-def ros_class_creation(component, pool):
+def ros_class_creation(component):
     result = ""
+    pool = component.idsl_pool
     if component.usingROS == True:
         # CREANDO CLASES PARA LOS PUBLISHERS
         for imp in component.publishes:
@@ -389,3 +392,35 @@ def statemachine_slots_creation(statemachine):
             result += codVirtuals+'\n'
             result += "#-------------------------\n"
     return result
+
+def implements_and_subscribes_imports(component):
+    result = ""
+    for im in component.implements + component.subscribesTo:
+        if communication_is_ice(im):
+            result += 'from ' + im.name.lower() + 'I import *\n'
+    return result
+
+def qt_class_type(component):
+    if component.gui is not None:
+        inherit_from = 'QtWidgets.' + component.gui[1]
+    else:
+        inherit_from = 'QtCore.QObject'
+    return inherit_from
+
+def get_template_dict(component):
+    return {
+        'year': str(datetime.date.today().year),
+        'load_slice_and_create_imports': load_slice_and_create_imports(component),
+        'implements_and_subscribes_imports': implements_and_subscribes_imports(component),
+        'ros_imports': ros_imports(component),
+        'ui_import': ui_import(component.gui),
+        'ros_class_creation': ros_class_creation(component),
+        'qt_class_type': qt_class_type(component),
+        'statemachine_signals': statemachine_signals(component.statemachine),
+        'requires_proxies': requires_proxies(component),
+        'publishes_proxies': publishes_proxies(component),
+        'gui_setup': gui_setup(component.gui),
+        'statemachine_states_creation': statemachine_states_creation(component.statemachine),
+        'statemachine_slots_creation': statemachine_slots_creation(component.statemachine),
+
+    }

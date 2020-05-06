@@ -1,3 +1,4 @@
+import datetime
 import sys
 from string import Template
 
@@ -29,7 +30,7 @@ ${iface_name}_adapter.activate()
 """
 
 
-TOPIC_MANAGER_STR ="""
+TOPIC_MANAGER_STR ="""\
 # Topic Manager
 proxy = ic.getProperties().getProperty("TopicManager.Proxy")
 obj = ic.stringToProxy(proxy)
@@ -112,10 +113,11 @@ def publish_proxy_creation(component):
             result += Template(PUBLISHES_STR).substitute(iface_name=name, iface_name_lower=name.lower())
     return result
 
-IMPLEMENTS_STR = """
+IMPLEMENTS_STR = """\
 adapter = ic.createObjectAdapter('${iface_name}')
 adapter.add(${iface_name}I(worker), ic.stringToIdentity('${iface_name_lower}'))
 adapter.activate()
+
 """
 
 def implements_adapters_creation(component):
@@ -136,7 +138,8 @@ def subscribes_adapters_creation(component):
     return result
 
 # TODO: refactor. Check ros type conversions in cpp template
-def ros_service_and_subscribe_creation(component, pool):
+def ros_service_and_subscribe_creation(component):
+    pool = component.idsl_pool
     result = ""
     if component.usingROS == True:
         result += "<TABHERE>rospy.init_node(\"" + component.name + "\", anonymous=True)\n"
@@ -181,3 +184,32 @@ def ros_service_and_subscribe_creation(component, pool):
                         s = "\"" + mname + "\""
                         result += "<TABHERE>rospy.Service(" + s + ", " + mname + ", worker.ROS" + method['name'] + ")\n"
     return result
+
+
+def import_qtwidgets(component):
+    result = ""
+    if component.gui is not None:
+        result += 'from PySide2 import QtWidgets\n'
+    return result
+
+def app_creation(component):
+    result = ""
+    if component.gui is not None:
+        result += 'app = QtWidgets.QApplication(sys.argv)\n'
+    else:
+        result += 'app = QtCore.QCoreApplication(sys.argv)\n'
+    return result
+
+def get_template_dict(component):
+    return {
+        'year': str(datetime.date.today().year),
+        'import_qtwidgets': import_qtwidgets(component),
+        'component_name': component.name,
+        'app_creation': app_creation(component),
+        'storm_topic_manager_creation': storm_topic_manager_creation(component),
+        'require_proxy_creation': require_proxy_creation(component),
+        'publish_proxy_creation': publish_proxy_creation(component),
+        'implements_adapters_creation': implements_adapters_creation(component),
+        'subscribes_adapters_creation': subscribes_adapters_creation(component),
+        'ros_service_and_subscribe_creation': ros_service_and_subscribe_creation(component)
+    }

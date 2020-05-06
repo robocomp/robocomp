@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 #
-# Copyright (C) 2020 by YOUR NAME HERE
+#    Copyright (C) 2020 by YOUR NAME HERE
 #
 #    This file is part of RoboComp
 #
@@ -116,13 +116,13 @@ if __name__ == '__main__':
     except Ice.ConnectionRefusedException as e:
         print('Cannot connect to IceStorm! ('+proxy+')')
         status = 1
-
     if status == 0:
         worker = SpecificWorker(mprx)
         worker.setParams(parameters)
     else:
         print("Error getting required connections, check config file")
         sys.exit(-1)
+
 
     IMUPub_adapter = ic.createObjectAdapter("IMUPubTopic")
     imupubI_ = IMUPubI(worker)
@@ -145,7 +145,6 @@ if __name__ == '__main__':
     qos = {}
     imupub_topic.subscribeAndGetPublisher(qos, imupub_proxy)
     IMUPub_adapter.activate()
-
 
     signal.signal(signal.SIGINT, sigint_handler)
     app.exec_()

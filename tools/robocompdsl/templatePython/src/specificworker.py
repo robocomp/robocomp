@@ -1,45 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
-[[[cog
-
-import sys
-sys.path.append('/opt/robocomp/python')
-
-import cog
-def A():
-    cog.out('<@@<')
-def Z():
-    cog.out('>@@>')
-def TAB():
-    cog.out('<TABHERE>')
-
-from templatePython.functions import specificworker_py as specificworker
-from dsl_parsers.dsl_factory import DSLFactory
-from dsl_parsers.parsing_utils import communication_is_ice, IDSLPool
-
-includeDirectories = theIDSLPaths.split('#')
-component = DSLFactory().from_file(theCDSL, include_directories=includeDirectories)
-sm = DSLFactory().from_file(component.statemachine)
-if component == None:
-    raise ValueError("specificworker.py: Can\'t locate %s" % theCDSLs)
-
-
-
-pool = IDSLPool(theIDSLs, includeDirectories)
-
-def replaceTypeCPP2Python(t):
-    t = t.replace('::','.')
-    t = t.replace('string', 'str')
-    return t
-
-]]]
-[[[end]]]
 #
-[[[cog
-import datetime
-cog.out('# Copyright (C) '+str(datetime.date.today().year)+' by YOUR NAME HERE')
-]]]
-[[[end]]]
+#    Copyright (C) ${year} by YOUR NAME HERE
 #
 #    This file is part of RoboComp
 #
@@ -68,21 +30,11 @@ from genericworker import *
 class SpecificWorker(GenericWorker):
     def __init__(self, proxy_map):
         super(SpecificWorker, self).__init__(proxy_map)
-        [[[cog
-        if sm is None:
-            cog.outl("self.timer.timeout.connect(self.compute)")
-        ]]]
-        [[[end]]]
+        ${timeout_compute_connect}
         self.Period = 2000
         self.timer.start(self.Period)
 
-        [[[cog
-        if sm is not None:
-            cog.outl("self." + sm['machine']['name'] + ".start()")
-            if sm['machine']['default']:
-                cog.outl("self.destroyed.connect(self.t_compute_to_finalize)")
-        ]]]
-        [[[end]]]
+        ${statemachine_start_and_destroy}
 
     def __del__(self):
         print('SpecificWorker destructor')
@@ -95,21 +47,11 @@ class SpecificWorker(GenericWorker):
         #	print("Error reading config params")
         return True
 
-    [[[cog
-    cog.out(specificworker.compute_creation(component, sm))
-    ]]]
-    [[[end]]]
+    ${compute_creation}
 
-    [[[cog
-    cog.out(specificworker.statemachine_slots(sm))
-    ]]]
-    [[[end]]]
-    [[[cog
-    cog.out(specificworker.subscription_methods(component, pool))
-    ]]]
-    [[[end]]]
+    ${statemachine_slots}
 
-    [[[cog
-    cog.out(specificworker.implements_methods(component, pool))
-    ]]]
-    [[[end]]]
+    ${subscription_methods}
+
+    ${implements_methods}
+

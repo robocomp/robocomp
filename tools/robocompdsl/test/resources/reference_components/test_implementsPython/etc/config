@@ -1,4 +1,4 @@
-# Endpoints for implemented interfaces
+# Endpoints for implements interfaces
 HandDetection.Endpoints=tcp -p 0
 
 

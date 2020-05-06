@@ -1,3 +1,4 @@
+import datetime
 from string import Template
 
 from dsl_parsers.parsing_utils import communication_is_ice
@@ -31,7 +32,7 @@ def compute(self):
 
 def compute_creation(component, statemachine):
     result = ""
-    if (statemachine is not None and statemachine['machine']['default'] is True) or component.statemachine is None:
+    if (statemachine is not None and statemachine['machine']['default'] is True) or component.statemachine_path is None:
         result += COMPUTE_METHOD_STR
     return result
 
@@ -68,7 +69,6 @@ STATEMACHINE_METHOD_STR = """
 def sm_${state_method}(self):
     print("Entered state ${state_method}")
     pass
-    
 """
 
 
@@ -130,7 +130,8 @@ def statemachine_slots(statemachine):
 # TODO: Refactor to extract code snippets
 # TODO: isinstance
 # TODO: extract similar code from implements_methods
-def subscription_methods(component, pool):
+def subscription_methods(component):
+    pool = component.idsl_pool
     result = ""
     for iface in component.subscribesTo:
         if type(iface) == str:
@@ -187,7 +188,8 @@ def subscription_methods(component, pool):
 
 # TODO: Refactor to extract code snippets
 # TODO: isinstance
-def implements_methods(component, pool):
+def implements_methods(component):
+    pool = component.idsl_pool
     result = ""
     if component.implements:
         result += "# =============== Methods for Component Implements ==================\n"
@@ -256,3 +258,29 @@ def implements_methods(component, pool):
         result += "# ===================================================================\n"
         result += "# ===================================================================\n\n"
     return result
+
+def timeout_compute_connect(statemachine):
+    result = ""
+    if statemachine is None:
+        result += "self.timer.timeout.connect(self.compute)\n"
+    return result
+
+def statemachine_start_and_destroy(statemachine):
+    result = ""
+    if statemachine is not None:
+        result += "self." + statemachine['machine']['name'] + ".start()\n"
+        if statemachine['machine']['default']:
+            result +="self.destroyed.connect(self.t_compute_to_finalize)\n"
+    return result
+
+
+def get_template_dict(component):
+    return {
+        'year': str(datetime.date.today().year),
+        'timeout_compute_connect': timeout_compute_connect(component.statemachine),
+        'statemachine_start_and_destroy': statemachine_start_and_destroy(component.statemachine),
+        'compute_creation': compute_creation(component, component.statemachine),
+        'statemachine_slots': statemachine_slots(component.statemachine),
+        'subscription_methods': subscription_methods(component),
+        'implements_methods': implements_methods(component)
+    }

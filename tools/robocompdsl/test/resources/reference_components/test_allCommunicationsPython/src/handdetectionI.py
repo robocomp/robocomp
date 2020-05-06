@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2020 by YOUR NAME HERE
+#    Copyright (C) 2020 by YOUR NAME HERE
 #
 #    This file is part of RoboComp
 #
@@ -54,6 +54,7 @@ for p in icePaths:
 if not ice_HandDetection:
     print('Couldn\'t load HandDetection')
     sys.exit(-1)
+
 from RoboCompHandDetection import *
 
 class HandDetectionI(HandDetection):

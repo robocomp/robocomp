@@ -1,8 +1,8 @@
-# Endpoints for implemented interfaces
+# Endpoints for implements interfaces
 HandDetection.Endpoints=tcp -p 0
 
 
-# Endpoints for subscriptions
+# Endpoints for subscriptions interfaces
 AprilTagsTopic.Endpoints=tcp -p 0
 
 

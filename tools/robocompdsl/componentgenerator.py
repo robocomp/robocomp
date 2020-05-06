@@ -10,6 +10,7 @@ from dsl_parsers.dsl_factory import DSLFactory
 sys.path.append("/opt/robocomp/python")
 from dsl_parsers import dsl_factory
 from dsl_parsers.parsing_utils import communication_is_ice, IDSLPool
+from templatepython import AbstractTemplate
 
 
 FILES = {
@@ -185,8 +186,12 @@ class ComponentGenerator:
                 "theIDSLs": self.imports,
                 "theIDSLPaths": '#'.join(self.include_dirs)
             }
-            cog_command = robocompdslutils.generate_cog_command(params, ifile, ofile)
-            robocompdslutils.run_cog_and_replace_tags(cog_command, ofile)
+            if template == 'python':
+                template_obj = AbstractTemplate(self.component)
+                template_obj.template_to_file(FILES[template]['template_path'] + template_file, ofile)
+            else:
+                cog_command = robocompdslutils.generate_cog_command(params, ifile, ofile)
+                robocompdslutils.run_cog_and_replace_tags(cog_command, ofile)
             if language == 'python' and template_file == 'src/main.py':
                 os.chmod(ofile, os.stat(ofile).st_mode | 0o111)
 
@@ -210,11 +215,18 @@ class ComponentGenerator:
                         "theIDSLPaths": '#'.join(self.include_dirs),
                         "theInterface": interface_name
                     }
-                    cog_command = robocompdslutils.generate_cog_command(params,
-                                                                        FILES[template][
-                                                                            'template_path'] + template_file,
-                                                                        ofile)
-                    robocompdslutils.run_cog_and_replace_tags(cog_command, ofile)
+                    # TODO: remove after testing new templates
+                    if template == 'python':
+                        template_obj = AbstractTemplate(self.component)
+                        template_obj.template_to_file_interface(interface_name, FILES[template]['template_path'] + template_file,
+                                                      ofile)
+                    else:
+                        cog_command = robocompdslutils.generate_cog_command(params,
+                                                                            FILES[template][
+                                                                                'template_path'] + template_file,
+                                                                            ofile)
+                        robocompdslutils.run_cog_and_replace_tags(cog_command, ofile)
+
         return new_existing_files
 
     def generate_ROS_headers(self, idsl_file):

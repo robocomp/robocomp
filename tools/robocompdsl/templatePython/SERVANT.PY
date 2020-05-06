@@ -1,38 +1,5 @@
-[[[cog
-
-import sys
-sys.path.append('/opt/robocomp/python')
-
-import cog
-def A():
-    cog.out('<@@<')
-def Z():
-    cog.out('>@@>')
-def TAB():
-    cog.out('<TABHERE>')
-
-from templatePython.functions import servant_py as servant
-from dsl_parsers.dsl_factory import DSLFactory
-from dsl_parsers.parsing_utils import IDSLPool
-includeDirectories = theIDSLPaths.split('#')
-component = DSLFactory().from_file(theCDSL, include_directories=includeDirectories)
-if component == None:
-    raise ValueError('SERVANT.PY: Can\'t locate %s' % theCDSLs)
-
-modulePool = IDSLPool(theIDSLs, includeDirectories)
-module = modulePool.moduleProviding(theInterface)
-if module == None:
-    raise ValueError('SERVANT.PY: Can\'t locate %s' % theIDSLs)
-
-
-]]]
-[[[end]]]
 #
-[[[cog
-import datetime
-cog.out('# Copyright (C) '+str(datetime.date.today().year)+' by YOUR NAME HERE')
-]]]
-[[[end]]]
+#    Copyright (C) ${year} by YOUR NAME HERE
 #
 #    This file is part of RoboComp
 #
@@ -56,7 +23,7 @@ ROBOCOMP = ''
 try:
     ROBOCOMP = os.environ['ROBOCOMP']
 except:
-    print('$ROBOCOMP environment variable not set, using the default value /opt/robocomp')
+    print('$$ROBOCOMP environment variable not set, using the default value /opt/robocomp')
     ROBOCOMP = '/opt/robocomp'
 if len(ROBOCOMP)<1:
     raise RuntimeError('ROBOCOMP environment variable not set! Exiting.')
@@ -73,17 +40,25 @@ try:
 except:
     print('SLICE_PATH environment variable was not exported. Using only the default paths')
     pass
-[[[cog
-cog.out(servant.slice_loading(theInterface), trimblanklines=False)
-module2 = DSLFactory().from_file(theInterface+'.idsl', includeDirectories=includeDirectories)
-cog.outl('from '+ module2['name'] +' import *')
-cog.outl('\nclass ' + theInterface+ 'I('+theInterface+'):')
-]]]
-[[[end]]]
+
+ice_${iface_name} = False
+for p in icePaths:
+    print('Trying', p, 'to load ${iface_name}.ice')
+    if os.path.isfile(p+'/${iface_name}.ice'):
+        print('Using', p, 'to load ${iface_name}.ice')
+        preStr = "-I/opt/robocomp/interfaces/ -I"+ROBOCOMP+"/interfaces/ " + additionalPathStr + " --all "+p+'/'
+        wholeStr = preStr+"${iface_name}.ice"
+        Ice.loadSlice(wholeStr)
+        ice_${iface_name} = True
+        break
+if not ice_${iface_name}:
+    print('Couldn\'t load ${iface_name}')
+    sys.exit(-1)
+
+from ${module_name} import *
+
+class ${iface_name}I(${iface_name}):
     def __init__(self, worker):
         self.worker = worker
 
-    [[[cog
-    cog.out(servant.interface_methods(module, theInterface),  trimblanklines=True)
-    ]]]
-    [[[end]]]
+    ${interface_methods}

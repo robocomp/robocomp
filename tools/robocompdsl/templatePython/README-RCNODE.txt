@@ -2,7 +2,7 @@ Components publishing and subscribing needs the rcnode application to be running
 
 rcnode internally will launch the icebox application with some predefined configuration.
 
-$ icebox --Ice.Config=config.icebox
+$$ icebox --Ice.Config=config.icebox
 
 - config.icebox contents:
 

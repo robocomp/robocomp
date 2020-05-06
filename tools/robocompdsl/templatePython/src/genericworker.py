@@ -1,47 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
-[[[cog
-
-import sys
-sys.path.append('/opt/robocomp/python')
-
-import cog
-def A():
-    cog.out('<@@<')
-def Z():
-    cog.out('>@@>')
-def TAB():
-    cog.out('<TABHERE>')
-def SPACE(i=0):
-    s = ''
-    if i>0:
-        s = str(i)
-    cog.out('<S'+s+'>')
-
-includeDirectories = theIDSLPaths.split('#')
-from templatePython.functions import genericworker_py as genericworker
-from dsl_parsers.dsl_factory import DSLFactory
-from dsl_parsers.parsing_utils import get_name_number, IDSLPool, communication_is_ice
-
-component = DSLFactory().from_file(theCDSL, include_directories=includeDirectories)
-
-if component == None:
-    raise ValueError('genericworker.py: Can\'t locate %s' % theCDSL)
-
-sm = DSLFactory().from_file(component.statemachine)
-
-
-pool = IDSLPool(theIDSLs, includeDirectories)
-modulesList = pool.rosModulesImports()
-
-]]]
-[[[end]]]
 #
-[[[cog
-import datetime
-cog.out('# Copyright (C) '+str(datetime.date.today().year)+' by YOUR NAME HERE')
-]]]
-[[[end]]]
+#    Copyright (C) ${year} by YOUR NAME HERE
 #
 #    This file is part of RoboComp
 #
@@ -65,7 +25,7 @@ ROBOCOMP = ''
 try:
     ROBOCOMP = os.environ['ROBOCOMP']
 except KeyError:
-    print('$ROBOCOMP environment variable not set, using the default value /opt/robocomp')
+    print('$$ROBOCOMP environment variable not set, using the default value /opt/robocomp')
     ROBOCOMP = '/opt/robocomp'
 
 preStr = "-I/opt/robocomp/interfaces/ -I"+ROBOCOMP+"/interfaces/ --all /opt/robocomp/interfaces/"
@@ -84,78 +44,35 @@ except:
     print('SLICE_PATH environment variable was not exported. Using only the default paths')
     pass
 
-[[[cog
-cog.out(genericworker.load_slice_and_create_imports(component, includeDirectories), trimblanklines=True)
-]]]
-[[[end]]]
+${load_slice_and_create_imports}
 
-[[[cog
-    for im in component.implements + component.subscribesTo:
-        if communication_is_ice(im):
-            name = im[0]
-            cog.outl('from ' + name.lower() + 'I import *')
-]]]
-[[[end]]]
+${implements_and_subscribes_imports}
 
-[[[cog
-cog.out(genericworker.ros_imports(component, pool))
-cog.out(genericworker.ui_import(component.gui))
-]]]
-[[[end]]]
+${ros_imports}
+${ui_import}
 
-[[[cog
-cog.out(genericworker.ros_class_creation(component, pool))
-]]]
-[[[end]]]
+${ros_class_creation}
 
 
-[[[cog
-if component.gui is not None:
-    inherit_from = 'QtWidgets.'+component.gui[1]
-else:
-    inherit_from = 'QtCore.QObject'
-cog.outl('class GenericWorker({}):'.format(inherit_from))
-]]]
-[[[end]]]
-    [[[cog
-    #if sm is not "none":
-        #cog.outl("QtCore.__metaclass__  =  ABCMeta")
-    ]]]
-    [[[end]]]
+class GenericWorker(${qt_class_type}):
 
     kill = QtCore.Signal()
-    [[[cog
-    cog.out(genericworker.statemachine_signals(sm))
-    ]]]
-    [[[end]]]
+    ${statemachine_signals}
 
     def __init__(self, mprx):
         super(GenericWorker, self).__init__()
 
-
-        [[[cog
-        cog.out(genericworker.requires_proxies(component))
-        cog.out(genericworker.publishes_proxies(component))
-        ]]]
-        [[[end]]]
-        [[[cog
-        cog.out(genericworker.gui_setup(component.gui), trimblanklines=True)
-        ]]]
-        [[[end]]]
+        ${requires_proxies}
+        ${publishes_proxies}
+        ${gui_setup}
 
         self.mutex = QtCore.QMutex(QtCore.QMutex.Recursive)
         self.Period = 30
         self.timer = QtCore.QTimer(self)
 
-        [[[cog
-        cog.out(genericworker.statemachine_states_creation(sm))
-        ]]]
-        [[[end]]]
+        ${statemachine_states_creation}
 
-    [[[cog
-    cog.out(genericworker.statemachine_slots_creation(sm))
-    ]]]
-    [[[end]]]
+    ${statemachine_slots_creation}
     @QtCore.Slot()
     def killYourSelf(self):
         rDebug("Killing myself")

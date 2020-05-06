@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 #
-# Copyright (C) 2020 by YOUR NAME HERE
+#    Copyright (C) 2020 by YOUR NAME HERE
 #
 #    This file is part of RoboComp
 #
@@ -134,7 +134,6 @@ if __name__ == '__main__':
     pub = topic.getPublisher().ice_oneway()
     imupubTopic = IMUPubPrx.uncheckedCast(pub)
     mprx["IMUPubPub"] = imupubTopic
-
 
     if status == 0:
         worker = SpecificWorker(mprx)

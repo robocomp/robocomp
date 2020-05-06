@@ -1,35 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-[[[cog
-
-import sys
-sys.path.append('/opt/robocomp/python')
-
-import cog
-def A():
-    cog.out('<@@<')
-def Z():
-    cog.out('>@@>')
-def TAB():
-    cog.out('<TABHERE>')
-
-from templatePython.functions import main_py as main
-from dsl_parsers.dsl_factory import DSLFactory
-from dsl_parsers.parsing_utils import get_name_number, IDSLPool, communication_is_ice
-includeDirectories = theIDSLPaths.split('#')
-component = DSLFactory().from_file(theCDSL, include_directories=includeDirectories)
-
-
-pool = IDSLPool(theIDSLs, includeDirectories)
-]]]
-[[[end]]]
 
 #
-[[[cog
-import datetime
-cog.out('# Copyright (C) '+str(datetime.date.today().year)+' by YOUR NAME HERE')
-]]]
-[[[end]]]
+#    Copyright (C) ${year} by YOUR NAME HERE
 #
 #    This file is part of RoboComp
 #
@@ -47,10 +20,7 @@ cog.out('# Copyright (C) '+str(datetime.date.today().year)+' by YOUR NAME HERE')
 #    along with RoboComp.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-[[[cog
-cog.out('# \\mainpage RoboComp::'+component.name)
-]]]
-[[[end]]]
+# \mainpage RoboComp::${component_name}
 #
 # \section intro_sec Introduction
 #
@@ -78,10 +48,7 @@ cog.out('# \\mainpage RoboComp::'+component.name)
 #
 # \subsection execution_ssec Execution
 #
-[[[cog
-cog.out('# Just: "${PATH_TO_BINARY}/'+component.name+' --Ice.Config=${PATH_TO_CONFIG_FILE}"')
-]]]
-[[[end]]]
+# Just: "$${PATH_TO_BINARY}/${component_name} --Ice.Config=$${PATH_TO_CONFIG_FILE}"
 #
 # \subsection running_ssec Once running
 #
@@ -94,11 +61,7 @@ import sys, traceback, IceStorm, time, os, copy
 import signal
 
 from PySide2 import QtCore
-[[[cog
-    if component.gui is not None:
-        cog.outl('from PySide2 import QtWidgets')
-]]]
-[[[end]]]
+${import_qtwidgets}
 
 from specificworker import *
 
@@ -131,13 +94,7 @@ def sigint_handler(*args):
     QtCore.QCoreApplication.quit()
     
 if __name__ == '__main__':
-    [[[cog
-        if component.gui is not None:
-            cog.outl('app = QtWidgets.QApplication(sys.argv)')
-        else:
-            cog.outl('app = QtCore.QCoreApplication(sys.argv)')
-    ]]]
-    [[[end]]]
+    ${app_creation}
     params = copy.deepcopy(sys.argv)
     if len(params) > 1:
         if not params[1].startswith('--Ice.Config='):
@@ -150,31 +107,20 @@ if __name__ == '__main__':
     parameters = {}
     for i in ic.getProperties():
         parameters[str(i)] = str(ic.getProperties().getProperty(i))
-    [[[cog
-    cog.out(main.storm_topic_manager_creation(component))
 
-    cog.out(main.require_proxy_creation(component))
-
-    cog.out(main.publish_proxy_creation(component))
-    ]]]
-    [[[end]]]
-
+    ${storm_topic_manager_creation}
+    ${require_proxy_creation}
+    ${publish_proxy_creation}
     if status == 0:
         worker = SpecificWorker(mprx)
         worker.setParams(parameters)
     else:
         print("Error getting required connections, check config file")
         sys.exit(-1)
-    [[[cog
-    cog.out(main.implements_adapters_creation(component))
-    cog.out(main.subscribes_adapters_creation(component))
-    ]]]
-    [[[end]]]
-    [[[cog
-    cog.out(main.ros_service_and_subscribe_creation(component, pool))
-    ]]]
-    [[[end]]]
 
+    ${implements_adapters_creation}
+    ${subscribes_adapters_creation}
+    ${ros_service_and_subscribe_creation}
     signal.signal(signal.SIGINT, sigint_handler)
     app.exec_()
 

@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2020 by YOUR NAME HERE
+#    Copyright (C) 2020 by YOUR NAME HERE
 #
 #    This file is part of RoboComp
 #
@@ -57,7 +57,6 @@ class SpecificWorker(GenericWorker):
     def sm_one(self):
         print("Entered state one")
         pass
-        
 
     #
     # sm_four
@@ -66,7 +65,6 @@ class SpecificWorker(GenericWorker):
     def sm_four(self):
         print("Entered state four")
         pass
-        
 
     #
     # sm_three
@@ -75,7 +73,6 @@ class SpecificWorker(GenericWorker):
     def sm_three(self):
         print("Entered state three")
         pass
-        
 
     #
     # sm_two
@@ -84,7 +81,6 @@ class SpecificWorker(GenericWorker):
     def sm_two(self):
         print("Entered state two")
         pass
-        
 
     #
     # sm_five
@@ -93,8 +89,9 @@ class SpecificWorker(GenericWorker):
     def sm_five(self):
         print("Entered state five")
         pass
-        
 
     # =================================================================
     # =================================================================
+
+
 
