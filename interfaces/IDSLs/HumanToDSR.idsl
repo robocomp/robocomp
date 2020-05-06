@@ -1,0 +1,29 @@
+module RoboCompHumanToDSR
+{
+    struct TJointData
+    {
+        float x;
+        float y;
+        float z;
+    };
+    dictionary <string, TJointData> TJoints;
+    struct Person
+    {
+        int id;
+        float x;
+        float y;
+        float z;
+        TJoints joints;
+    };
+    sequence<Person> People;
+    struct PeopleData
+    {
+        long timestamp;
+        People peoplelist;
+    };
+
+    interface HumanToDSR
+    {
+        void newPeopleData(PeopleData people);
+    };
+};
