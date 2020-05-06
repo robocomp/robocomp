@@ -1,43 +1,5 @@
 /*
-[[[cog
-
-import sys
-sys.path.append('/opt/robocomp/python')
-
-import cog
-def A():
-	cog.out('<@@<')
-def Z():
-	cog.out('>@@>')
-def TAB():
-	cog.out('<TABHERE>')
-
-import templateCPP.functions.src.specificworker_h as specificworker
-from dsl_parsers.dsl_factory import DSLFactory
-from dsl_parsers.parsing_utils import communication_is_ice, is_agm1_agent, is_agm2_agent, IDSLPool
-includeDirectories = theIDSLPaths.split('#')
-component = DSLFactory().from_file(theCDSL, include_directories=includeDirectories)
-sm = DSLFactory().from_file(component.statemachine_path)
-if sm is None:
-    component.statemachine_path = None
-if component is None:
-	raise ValueError('specificworker.h: Can\'t locate %s' % theCDSLs)
-
-pool = IDSLPool(theIDSLs, includeDirectories)
-rosTypes = pool.getRosTypes()
-
-
-]]]
-[[[end]]]
- *    Copyright (C)
-[[[cog
-A()
-import datetime
-cog.out(str(datetime.date.today().year))
-Z()
-]]]
-[[[end]]]
- by YOUR NAME HERE
+ *    Copyright (C)${year} by YOUR NAME HERE
  *
  *    This file is part of RoboComp
  *
@@ -56,18 +18,11 @@ Z()
  */
 
 /**
-       \brief
-       @author authorname
+	\brief
+	@author authorname
 */
 
-[[[cog
-try:
-	if 'agmagent' in [ x.lower() for x in component.options ]:
-		cog.outl("// THIS IS AN AGENT")
-except:
-	pass
-]]]
-[[[end]]]
+${agmagent_comment}
 
 
 #ifndef SPECIFICWORKER_H
@@ -75,56 +30,28 @@ except:
 
 #include <genericworker.h>
 #include <innermodel/innermodel.h>
-[[[cog
-if component.innermodelviewer:
-	cog.outl("#ifdef USE_QTGUI")
-	cog.outl("<TABHERE>#include <osgviewer/osgview.h>")
-	cog.outl("<TABHERE>#include <innermodel/innermodelviewer.h>")
-	cog.outl("#endif")
-]]]
-[[[end]]]
+${innermodelviewer_includes}
 
 class SpecificWorker : public GenericWorker
 {
 Q_OBJECT
 public:
-[[[cog
-	if component.language.lower() == 'cpp':
-		cog.outl("<TABHERE>SpecificWorker(MapPrx& mprx);")
-	else:
-		cog.outl("<TABHERE>SpecificWorker(TuplePrx tprx);")
-]]]
-[[[end]]]
+	SpecificWorker(${constructor_proxies});
 	~SpecificWorker();
 	bool setParams(RoboCompCommonBehavior::ParameterList params);
 
-[[[cog
-cog.out(specificworker.implements_method_definitions(pool, component))
+	${implements_method_definitions}
 
-cog.out(specificworker.subscribes_method_definitions(pool, component))
-
-]]]
-[[[end]]]
+	${subscribes_method_definitions}
 
 public slots:
-[[[cog
-if (sm is not None and sm['machine']['default'] is True) or component.statemachine_path is None:
-	cog.outl("<TABHERE>void compute();")
-]]]
-[[[end]]]
+	${compute}
 	void initialize(int period);
-[[[cog
-cog.out(specificworker.statemachine_methods_definitions(component, sm))
-]]]
-[[[end]]]
+	${statemachine_methods_definitions}
 private:
 	std::shared_ptr<InnerModel> innerModel;
-[[[cog
-cog.out(specificworker.innermodelviewer_attributes(component.innermodelviewer))
-cog.out(specificworker.agm_attributes(component))
-
-]]]
-[[[end]]]
+	${innermodelviewer_attributes}
+	${agm_attributes}
 
 };
 

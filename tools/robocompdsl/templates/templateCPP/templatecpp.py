@@ -1,6 +1,9 @@
+import datetime
 import importlib
 from collections import ChainMap
 from string import Template
+
+from templates.templateCPP.functions import servant
 
 
 class MyTemplate(Template):
@@ -82,7 +85,7 @@ class MyTemplate(Template):
 
 
 
-class TemplatePython:
+class TemplateCpp:
     def __init__(self, component):
         self.component = component
 
@@ -92,10 +95,11 @@ class TemplatePython:
                 function_name = template.split('/')[-1].replace('.', '_').replace('-','_')
                 if hasattr(self,function_name):
                     function = getattr(self, function_name)
-                    template_dict = function()
+                    template_dict = function(self.component)
                 # Dynamically import functions needed for this template file
                 else:
-                    functions = importlib.import_module("templatePython.functions."+template.split('/')[-1].replace('.','_'))
+                    functions_file = template[template.find("templateCPP/files")+len("templateCPP/files"):].replace('.', '_').replace('/','.')
+                    functions = importlib.import_module("templates.templateCPP.functions"+functions_file)
                     template_dict = functions.get_template_dict(self.component)
                 template_object = MyTemplate(content, trimlines=False)
                 template_object.identifiers()
@@ -109,36 +113,50 @@ class TemplatePython:
                 function_name = template.split('/')[-1].replace('.', '_')
                 if hasattr(self,function_name):
                     function = getattr(self, function_name)
-                    template_dict = function(self.component)
+                    template_dict = function(interface_name, self.component)
                 # Dynamically import functions needed for this template file
                 else:
-                    functions = importlib.import_module("templatePython.functions."+template.split('/')[-1].replace('.','_'))
+                    functions_file = template.replace("templateCPP/functions/", "").replace('.', '_').replace('/','.')
+                    functions = importlib.import_module("templateCPP.functions." + functions_file)
                     template_dict = functions.get_template_dict(self.component, interface_name)
                 template_object = MyTemplate(content)
                 template_object.identifiers()
                 file_content = template_object.substitute(**template_dict)
-                file_content = file_content.replace('<LINEREMOVE>\n','')
                 with open(output_file, 'w') as ostream:
                     ostream.write(file_content)
 
-    def README_md(self):
-        return {'component_name': self.component.name}
+    def SERVANT_H(self, interface_name, component):
+        module = component.idsl_pool.moduleProviding(interface_name)
+        return {
+            'year': str(datetime.date.today().year),
+            'interface_name': interface_name,
+            'interface_name_upper': interface_name.upper(),
+            'filename_without_extension': module['filename'].split('/')[-1].split('.')[0],
+            'module_name': module['name'],
+            'interface_methods_definition': servant.interface_methods_definition(component,
+                                                                                 module,
+                                                                                 interface_name)
+        }
 
-    def DoxyFile(self):
-        return {}
+    def SERVANT_CPP(self, interface_name, component):
+        return {
+            'year': str(datetime.date.today().year),
+            'interface_name': interface_name,
+            'interface_name_lower': interface_name.lower(),
+            'interface_methods_creation': servant.interface_methods_creation(component, interface_name)
+        }
 
-    def README_RCNODE_txt(self):
-        return {}
+    def README_md(self, component):
+        return {
+            'component_name': component.name
+        }
 
-    def CMakeLists_txt(self):
-        if self.component.gui is not None:
-            wrap_python_ui="WRAP_PYTHON_UI( mainUI )"
-        else:
-            wrap_python_ui = ""
+    def DoxyFile(self, component):
+        return {
+            'component_name': component.name
+        }
 
-        return {'wrap_python_ui': wrap_python_ui,
-                'component_name': self.component.name}
-
-    def mainUI_ui(self):
-        return {'gui_type': self.component.gui.widget,
-                'component_name': self.component.name}
+    def CMakeLists_txt(self, component):
+        return {
+            'component_name': component.name
+        }

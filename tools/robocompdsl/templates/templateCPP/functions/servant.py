@@ -3,8 +3,9 @@ from string import Template
 from dsl_parsers.parsing_utils import decorator_and_type_to_const_ampersand
 
 
-def interface_methods_definition(component, module, modulePool, theInterface):
+def interface_methods_definition(component, module, theInterface):
     result = ""
+    pool = component.idsl_pool
     for interface in module['interfaces']:
         if interface['name'] == theInterface:
             for mname in interface['methods']:
@@ -16,7 +17,7 @@ def interface_methods_definition(component, module, modulePool, theInterface):
                 paramStr = ''
                 for p in method['params']:
 
-                    const, ampersand = decorator_and_type_to_const_ampersand(p['decorator'], p['type'], modulePool,
+                    const, ampersand = decorator_and_type_to_const_ampersand(p['decorator'], p['type'], pool,
                                                                              component.language.lower() == "cpp11")
                     if p['type'] == 'long':
                         paramStr += const + 'Ice::Long' + ' ' + ampersand + p['name'] + ', '
@@ -33,13 +34,14 @@ ${ret} ${interface_name}I::${method_name}(${input_params}const Ice::Current&)
 }
 """
 
-def interface_methods_creation(component, modulePool, the_interface):
+def interface_methods_creation(component, interface_name):
     result = ""
-    module = modulePool.moduleProviding(the_interface[0])
+    pool = component.idsl_pool
+    module = pool.moduleProviding(interface_name)
     if module is None:
         return result
     for interface in module['interfaces']:
-        if interface['name'] == the_interface[0]:
+        if interface['name'] == interface_name:
             for mname in interface['methods']:
                 method = interface['methods'][mname]
 
@@ -48,7 +50,7 @@ def interface_methods_creation(component, modulePool, the_interface):
 
                 paramStrA = ''
                 for p in method['params']:
-                    const, ampersand = decorator_and_type_to_const_ampersand(p['decorator'], p['type'], modulePool,
+                    const, ampersand = decorator_and_type_to_const_ampersand(p['decorator'], p['type'], pool,
                                                                              component.language.lower() == "cpp11")
                     if p['type'] == 'long':
                         paramStrA += const + 'Ice::Long' + ' ' + ampersand + p['name'] + ', '

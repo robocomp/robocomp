@@ -18,7 +18,7 @@
 DOXYFILE_ENCODING      = UTF-8
 
 # ROBOCOMP
-PROJECT_NAME           =idserver 
+PROJECT_NAME           = idserver
 PROJECT_NUMBER         =
 
 

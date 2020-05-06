@@ -6,11 +6,12 @@ import sys
 import rcExceptions
 import robocompdslutils
 from dsl_parsers.dsl_factory import DSLFactory
+from templates.templateCPP.templatecpp import TemplateCpp
 
 sys.path.append("/opt/robocomp/python")
 from dsl_parsers import dsl_factory
 from dsl_parsers.parsing_utils import communication_is_ice, IDSLPool
-from templates.templatePython.templatepython import AbstractTemplate
+from templates.templatePython.templatepython import TemplatePython
 
 
 FILES = {
@@ -164,6 +165,10 @@ class ComponentGenerator:
         #
         new_existing_files = {}
         template = LANG_TO_TEMPLATE[language]
+        if language == 'python':
+            template_obj = TemplatePython(self.component)
+        else:
+            template_obj = TemplateCpp(self.component)
         for template_file in FILES[template]['files']:
             if template_file == 'src/mainUI.ui' and self.component.gui is None: continue
             if language == 'python' and template_file == 'CMakeLists.txt' and self.component.gui is None: continue
@@ -187,11 +192,13 @@ class ComponentGenerator:
                 "theIDSLPaths": '#'.join(self.include_dirs)
             }
             if template == 'python':
-                template_obj = AbstractTemplate(self.component)
                 template_obj.template_to_file(FILES[template]['template_path'] + template_file, ofile)
             else:
-                cog_command = robocompdslutils.generate_cog_command(params, ifile, ofile)
-                robocompdslutils.run_cog_and_replace_tags(cog_command, ofile)
+                if template_file in ['README.md', 'DoxyFile', 'CMakeLists.txt', 'src/specificworker.h']:
+                    template_obj.template_to_file(FILES[template]['template_path'] + template_file, ofile)
+                else:
+                    cog_command = robocompdslutils.generate_cog_command(params, ifile, ofile)
+                    robocompdslutils.run_cog_and_replace_tags(cog_command, ofile)
             if language == 'python' and template_file == 'src/main.py':
                 os.chmod(ofile, os.stat(ofile).st_mode | 0o111)
 
@@ -217,15 +224,17 @@ class ComponentGenerator:
                     }
                     # TODO: remove after testing new templates
                     if template == 'python':
-                        template_obj = AbstractTemplate(self.component)
                         template_obj.template_to_file_interface(interface_name, FILES[template]['template_path'] + template_file,
                                                       ofile)
                     else:
-                        cog_command = robocompdslutils.generate_cog_command(params,
-                                                                            FILES[template][
-                                                                                'template_path'] + template_file,
-                                                                            ofile)
-                        robocompdslutils.run_cog_and_replace_tags(cog_command, ofile)
+                        if template_file in ['SERVANT.H', 'SERVANT.CPP']:
+                            template_obj.template_to_file_interface(interface_name, FILES[template]['template_path'] + template_file, ofile)
+                        else:
+                            cog_command = robocompdslutils.generate_cog_command(params,
+                                                                                FILES[template][
+                                                                                    'template_path'] + template_file,
+                                                                                ofile)
+                            robocompdslutils.run_cog_and_replace_tags(cog_command, ofile)
 
         return new_existing_files
 

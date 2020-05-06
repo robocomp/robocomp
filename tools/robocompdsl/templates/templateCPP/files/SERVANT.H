@@ -1,45 +1,5 @@
 /*
-[[[cog
-
-import sys
-sys.path.append('/opt/robocomp/python')
-
-import cog
-def A():
-	cog.out('<@@<')
-def Z():
-	cog.out('>@@>')
-def TAB():
-	cog.out('<TABHERE>')
-
-from templateCPP.functions import servant
-from dsl_parsers.dsl_factory import DSLFactory
-from dsl_parsers.parsing_utils import decorator_and_type_to_const_ampersand,IDSLPool
-includeDirectories = theIDSLPaths.split('#')
-component = DSLFactory().from_file(theCDSL, include_directories=includeDirectories)
-if component == None:
-    raise ValueError('SERVANT.H: Can\'t locate %s' % theCDSLs)
-
-modulePool = IDSLPool(theIDSLs, includeDirectories)
-
-theInterface = theInterface.split(';')
-while type(theInterface) != type(''):
-	theInterface = theInterface[0]
-
-module = modulePool.moduleProviding(theInterface)
-if module == None:
-	raise ValueError('SERVANT.H: Can\'t locate %s' % theInterface)
-]]]
-[[[end]]]
- *    Copyright (C)
-[[[cog
-A()
-import datetime
-cog.out(str(datetime.date.today().year))
-Z()
-]]]
-[[[end]]]
- by YOUR NAME HERE
+ *    Copyright (C) ${year} by YOUR NAME HERE
  *
  *    This file is part of RoboComp
  *
@@ -56,43 +16,25 @@ Z()
  *    You should have received a copy of the GNU General Public License
  *    along with RoboComp.  If not, see <http://www.gnu.org/licenses/>.
  */
-[[[cog
-cog.outl('#ifndef ' + theInterface.upper()+'_H')
-cog.outl('#define ' + theInterface.upper()+'_H')
-]]]
-[[[end]]]
+#ifndef ${interface_name_upper}_H
+#define ${interface_name_upper}_H
 
 // Ice includes
 #include <Ice/Ice.h>
-[[[cog
-cog.out('#include <'+module['filename'].split('/')[-1].split('.')[0]+'.h>')
-]]]
-[[[end]]]
+#include <${filename_without_extension}.h>
 
 #include <config.h>
 #include "genericworker.h"
 
-[[[cog
-cog.out('using namespace ' + module['name']+';')
-]]]
-[[[end]]]
+using namespace ${module_name};
 
-[[[cog
-cog.out('class ' + theInterface+'I : public virtual ' + module['name']+'::'+theInterface)
-]]]
-[[[end]]]
+class ${interface_name}I : public virtual ${module_name}::${interface_name}
 {
 public:
-	[[[cog
-	cog.outl(theInterface+'I(GenericWorker *_worker);')
-	cog.outl('~'+theInterface+'I();')
-	]]]
-	[[[end]]]
+	${interface_name}I(GenericWorker *_worker);
+	~${interface_name}I();
 
-	[[[cog
-	cog.out(servant.interface_methods_definition(component, module, modulePool, theInterface))
-	]]]
-	[[[end]]]
+	${interface_methods_definition}
 
 private:
 

@@ -1,44 +1,5 @@
 /*
-[[[cog
-
-import sys
-sys.path.append('/opt/robocomp/python')
-
-import cog
-def A():
-	cog.out('<@@<')
-def Z():
-	cog.out('>@@>')
-def TAB():
-	cog.out('<TABHERE>')
-
-from templateCPP.functions import servant
-from dsl_parsers.dsl_factory import DSLFactory
-from dsl_parsers.parsing_utils import decorator_and_type_to_const_ampersand, IDSLPool
-includeDirectories = theIDSLPaths.split('#')
-component = DSLFactory().from_file(theCDSL, include_directories=includeDirectories)
-if component == None:
-	raise ValueError('SERVANT.CPP Can\'t locate %s ' % theCDSLs)
-
-modulePool = IDSLPool(theIDSLs, includeDirectories)
-
-theInterface = theInterface.split(';')
-module = modulePool.moduleProviding(theInterface[0])
-if module == None:
-	raise ValueError('SERVANT.CPP: Can\'t locate %s' % theIDSLs)
-
-
-]]]
-[[[end]]]
- *    Copyright (C)
-[[[cog
-A()
-import datetime
-cog.out(' '+str(datetime.date.today().year))
-Z()
-]]]
-[[[end]]]
- by YOUR NAME HERE
+ *    Copyright (C) ${year} by YOUR NAME HERE
  *
  *    This file is part of RoboComp
  *
@@ -55,29 +16,17 @@ Z()
  *    You should have received a copy of the GNU General Public License
  *    along with RoboComp.  If not, see <http://www.gnu.org/licenses/>.
  */
-[[[cog
-cog.out("#include \""+theInterface[0].lower()+"I.h\"")
-]]]
-[[[end]]]
+#include "${interface_name_lower}I.h"
 
-[[[cog
-cog.out(theInterface[0]+"I::"+theInterface[0]+"I(GenericWorker *_worker)")
-]]]
-[[[end]]]
+${interface_name}I::${interface_name}I(GenericWorker *_worker)
 {
 	worker = _worker;
 }
 
 
-[[[cog
-cog.out(theInterface[0]+"I::~"+theInterface[0]+"I()")
-]]]
-[[[end]]]
+${interface_name}I::~${interface_name}I()
 {
 }
 
-[[[cog
-cog.out(servant.interface_methods_creation(component, modulePool, theInterface), trimblanklines=True)
-]]]
-[[[end]]]
+${interface_methods_creation}
 
