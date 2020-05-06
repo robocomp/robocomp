@@ -10,7 +10,7 @@ from dsl_parsers.dsl_factory import DSLFactory
 sys.path.append("/opt/robocomp/python")
 from dsl_parsers import dsl_factory
 from dsl_parsers.parsing_utils import communication_is_ice, IDSLPool
-from templatepython import AbstractTemplate
+from templates.templatePython.templatepython import AbstractTemplate
 
 
 FILES = {
@@ -23,7 +23,7 @@ FILES = {
             'src/specificworker.py', 'src/mainUI.ui', 'README.md', 'etc/config'
         ],
         'servant_files': ["SERVANT.PY"],
-        'template_path': "/opt/robocomp/share/robocompdsl/templatePython/"
+        'template_path': "/opt/robocomp/share/robocompdsl/templates/templatePython/files/"
     },
     'cpp': {
         'files': [
@@ -39,7 +39,7 @@ FILES = {
             'etc/config'
         ],
         'servant_files': ["SERVANT.H", "SERVANT.CPP"],
-        'template_path': "/opt/robocomp/share/robocompdsl/templateCPP/"
+        'template_path': "/opt/robocomp/share/robocompdsl/templates/templateCPP/files/"
     }
 
 }

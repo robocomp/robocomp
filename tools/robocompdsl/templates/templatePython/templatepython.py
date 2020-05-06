@@ -1,10 +1,6 @@
 import importlib
 from collections import ChainMap
-import datetime
 from string import Template
-from templatePython.functions import SERVANT_PY as servant
-from dsl_parsers.dsl_factory import DSLFactory
-from dsl_parsers.parsing_utils import IDSLPool
 
 
 class MyTemplate(Template):
