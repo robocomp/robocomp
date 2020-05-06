@@ -18,9 +18,9 @@ from dsl_parsers.dsl_factory import DSLFactory
 from dsl_parsers.parsing_utils import communication_is_ice, is_agm1_agent, is_agm2_agent, is_agm2_agent_ROS, IDSLPool
 includeDirectories = theIDSLPaths.split('#')
 component = DSLFactory().from_file(theCDSL, include_directories=includeDirectories)
-sm = DSLFactory().from_file(component.statemachine)
+sm = DSLFactory().from_file(component.statemachine_path)
 if sm is None:
-    component.statemachine = None
+    component.statemachine_path = None
 if component is None:
     raise ValueError('specificworker.cpp: Can\'t locate %s' % theCDSL)
 

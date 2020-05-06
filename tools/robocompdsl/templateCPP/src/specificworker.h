@@ -17,9 +17,9 @@ from dsl_parsers.dsl_factory import DSLFactory
 from dsl_parsers.parsing_utils import communication_is_ice, is_agm1_agent, is_agm2_agent, IDSLPool
 includeDirectories = theIDSLPaths.split('#')
 component = DSLFactory().from_file(theCDSL, include_directories=includeDirectories)
-sm = DSLFactory().from_file(component.statemachine)
+sm = DSLFactory().from_file(component.statemachine_path)
 if sm is None:
-    component.statemachine = None
+    component.statemachine_path = None
 if component is None:
 	raise ValueError('specificworker.h: Can\'t locate %s' % theCDSLs)
 
@@ -108,7 +108,7 @@ cog.out(specificworker.subscribes_method_definitions(pool, component))
 
 public slots:
 [[[cog
-if (sm is not None and sm['machine']['default'] is True) or component.statemachine is None:
+if (sm is not None and sm['machine']['default'] is True) or component.statemachine_path is None:
 	cog.outl("<TABHERE>void compute();")
 ]]]
 [[[end]]]

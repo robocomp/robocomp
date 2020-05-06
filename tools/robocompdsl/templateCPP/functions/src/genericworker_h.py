@@ -57,9 +57,9 @@ def interfaces_includes(component, pool):
 def agm_includes(component):
     result = ""
     try:
-        if is_agm1_agent(component):
+        if component.is_agm1_agent():
             result += "#include <agm.h>\n"
-        if is_agm2_agent(component):
+        if component.is_agm2_agent():
             result += "#include <AGM2.h>\n"
             result += "#include <agm2.h>\n"
     except:
@@ -345,115 +345,113 @@ def create_proxies(component):
 
 def implements(component, pool):
     result = ""
-    if 'implements' in component:
-        for impa in component.implements:
-            if type(impa) == str:
-                imp = impa
-            else:
-                imp = impa[0]
-            module = pool.moduleProviding(imp)
-            for interface in module['interfaces']:
-                if interface['name'] == imp:
-                    for mname in interface['methods']:
-                        method = interface['methods'][mname]
-                        paramStrA = ''
-                        if communication_is_ice(impa):
-                            for p in method['params']:
-                                # delim
-                                if paramStrA == '':
-                                    delim = ''
-                                else:
-                                    delim = ', '
-                                # decorator
-                                ampersand = '&'
-                                if p['decorator'] == 'out':
-                                    const = ''
-                                else:
-                                    if component.language.lower() == "cpp":
-                                        const = 'const '
-                                    else:
-                                        const = ''
-                                        ampersand = ''
-                                    if p['type'].lower() in ['int', '::ice::int', 'float', '::ice::float']:
-                                        ampersand = ''
-                                # STR
-                                paramStrA += delim + const + p['type'] + ' ' + ampersand + p['name']
-                            result += "virtual " + method['return'] + ' ' + interface['name'] + "_" + method['name'] + "(" + paramStrA + ") = 0;\n"
-                        else:
-                            paramStrA = module['name'] + "ROS::" + method['name'] + "::Request &req, " + module[
-                                'name'] + "ROS::" + method['name'] + "::Response &res"
-                            if imp in component.iceInterfaces:
-                                result += "virtual bool ROS" + method['name'] + "(" + paramStrA + ") = 0;\n"
+    for impa in component.implements:
+        if type(impa) == str:
+            imp = impa
+        else:
+            imp = impa[0]
+        module = pool.moduleProviding(imp)
+        for interface in module['interfaces']:
+            if interface['name'] == imp:
+                for mname in interface['methods']:
+                    method = interface['methods'][mname]
+                    paramStrA = ''
+                    if communication_is_ice(impa):
+                        for p in method['params']:
+                            # delim
+                            if paramStrA == '':
+                                delim = ''
                             else:
-                                result += "virtual bool " + method['name'] + "(" + paramStrA + ") = 0;\n"
+                                delim = ', '
+                            # decorator
+                            ampersand = '&'
+                            if p['decorator'] == 'out':
+                                const = ''
+                            else:
+                                if component.language.lower() == "cpp":
+                                    const = 'const '
+                                else:
+                                    const = ''
+                                    ampersand = ''
+                                if p['type'].lower() in ['int', '::ice::int', 'float', '::ice::float']:
+                                    ampersand = ''
+                            # STR
+                            paramStrA += delim + const + p['type'] + ' ' + ampersand + p['name']
+                        result += "virtual " + method['return'] + ' ' + interface['name'] + "_" + method['name'] + "(" + paramStrA + ") = 0;\n"
+                    else:
+                        paramStrA = module['name'] + "ROS::" + method['name'] + "::Request &req, " + module[
+                            'name'] + "ROS::" + method['name'] + "::Response &res"
+                        if imp in component.iceInterfaces:
+                            result += "virtual bool ROS" + method['name'] + "(" + paramStrA + ") = 0;\n"
+                        else:
+                            result += "virtual bool " + method['name'] + "(" + paramStrA + ") = 0;\n"
     return result
 
 def subscribes(component, pool):
     result = ""
-    if 'subscribesTo' in component:
-        for impa in component.subscribesTo:
-            if type(impa) == str:
-                imp = impa
-            else:
-                imp = impa[0]
-            module = pool.moduleProviding(imp)
-            if module == None:
-                raise ValueError('\nCan\'t find module providing %s \n' % imp)
-            for interface in module['interfaces']:
-                if interface['name'] == imp:
-                    for mname in interface['methods']:
-                        method = interface['methods'][mname]
-                        paramStrA = ''
-                        if communication_is_ice(impa):
-                            for p in method['params']:
-                                # delim
-                                if paramStrA == '':
-                                    delim = ''
-                                else:
-                                    delim = ', '
-                                # decorator
-                                ampersand = '&'
-                                if p['decorator'] == 'out':
-                                    const = ''
-                                else:
-                                    if component.language.lower() == "cpp":
-                                        const = 'const '
-                                    else:
-                                        const = ''
-                                        ampersand = ''
-                                    if p['type'].lower() in ['int', '::ice::int', 'float', '::ice::float']:
-                                        ampersand = ''
-                                # STR
-                                paramStrA += delim + const + p['type'] + " " + ampersand + p['name']
-                            result += "virtual " + method['return'] + " " + interface['name'] + "_" + method['name'] + "(" + paramStrA + ") = 0;\n"
-                        else:
-                            for p in method['params']:
-                                # delim
-                                if paramStrA == '':
-                                    delim = ''
-                                else:
-                                    delim = ', '
-                                # decorator
-                                ampersand = '&'
-                                if p['decorator'] == 'out':
-                                    const = ''
-                                else:
-                                    const = 'const '
-                                    ampersand = ''
-                                if p['type'] in ('float', 'int'):
-                                    p['type'] = "std_msgs::" + p['type'].capitalize() + "32"
-                                elif p['type'] in ('uint8', 'uint16', 'uint32', 'uint64'):
-                                    p['type'] = "std_msgs::UInt" + p['type'].split('t')[1]
-                                elif p['type'] in IDSLPool.getRosTypes():
-                                    p['type'] = "std_msgs::" + p['type'].capitalize()
-                                elif not '::' in p['type']:
-                                    p['type'] = module['name'] + "ROS::" + p['type']
-                                # STR
-                                paramStrA += delim + p['type'] + " " + p['name']
-                            if imp in component.iceInterfaces:
-                                result += "virtual void ROS" + method['name'] + "(" + paramStrA + ") = 0;\n"
+    for impa in component.subscribesTo:
+        if type(impa) == str:
+            imp = impa
+        else:
+            imp = impa[0]
+        module = pool.moduleProviding(imp)
+        if module == None:
+            raise ValueError('\nCan\'t find module providing %s \n' % imp)
+        for interface in module['interfaces']:
+            if interface['name'] == imp:
+                for mname in interface['methods']:
+                    method = interface['methods'][mname]
+                    paramStrA = ''
+                    if communication_is_ice(impa):
+                        for p in method['params']:
+                            # delim
+                            if paramStrA == '':
+                                delim = ''
                             else:
-                                result += "virtual void " + method['name'] + "(" + paramStrA + ") = 0;\n"
+                                delim = ', '
+                            # decorator
+                            ampersand = '&'
+                            if p['decorator'] == 'out':
+                                const = ''
+                            else:
+                                if component.language.lower() == "cpp":
+                                    const = 'const '
+                                else:
+                                    const = ''
+                                    ampersand = ''
+                                if p['type'].lower() in ['int', '::ice::int', 'float', '::ice::float']:
+                                    ampersand = ''
+                            # STR
+                            paramStrA += delim + const + p['type'] + " " + ampersand + p['name']
+                        result += "virtual " + method['return'] + " " + interface['name'] + "_" + method['name'] + "(" + paramStrA + ") = 0;\n"
+                    else:
+                        for p in method['params']:
+                            # delim
+                            if paramStrA == '':
+                                delim = ''
+                            else:
+                                delim = ', '
+                            # decorator
+                            ampersand = '&'
+                            if p['decorator'] == 'out':
+                                const = ''
+                            else:
+                                const = 'const '
+                                ampersand = ''
+                            if p['type'] in ('float', 'int'):
+                                p['type'] = "std_msgs::" + p['type'].capitalize() + "32"
+                            elif p['type'] in ('uint8', 'uint16', 'uint32', 'uint64'):
+                                p['type'] = "std_msgs::UInt" + p['type'].split('t')[1]
+                            elif p['type'] in IDSLPool.getRosTypes():
+                                p['type'] = "std_msgs::" + p['type'].capitalize()
+                            elif not '::' in p['type']:
+                                p['type'] = module['name'] + "ROS::" + p['type']
+                            # STR
+                            paramStrA += delim + p['type'] + " " + p['name']
+                        if imp in component.iceInterfaces:
+                            result += "virtual void ROS" + method['name'] + "(" + paramStrA + ") = 0;\n"
+                        else:
+                            result += "virtual void " + method['name'] + "(" + paramStrA + ") = 0;\n"
     return result
 
 def statemachine_creation(sm, visual):

@@ -216,26 +216,24 @@ def ros_nodes_creation(component, pool):
 
 def ros_proxies_creation(component):
     result = ""
-    if 'publishes' in component:
-        for publish in component.publishes:
-            pubs = publish
-            while type(pubs) != type(''):
-                pubs = pubs[0]
-            if not communication_is_ice(publish):
-                if pubs in component.iceInterfaces:
-                    result += pubs.lower() + "_rosproxy = new Publisher" + pubs + "(&node);\n"
-                else:
-                    result += pubs.lower() + "_proxy = new Publisher" + pubs + "(&node);\n"
-    if 'requires' in component:
-        for require in component.requires:
-            req = require
-            while type(req) != type(''):
-                req = req[0]
-            if not communication_is_ice(require):
-                if req in component.iceInterfaces:
-                    result += req.lower() + "_rosproxy = new ServiceClient" + req + "(&node);\n"
-                else:
-                    result += req.lower() + "_proxy = new ServiceClient" + req + "(&node);\n"
+    for publish in component.publishes:
+        pubs = publish
+        while type(pubs) != type(''):
+            pubs = pubs[0]
+        if not communication_is_ice(publish):
+            if pubs in component.iceInterfaces:
+                result += pubs.lower() + "_rosproxy = new Publisher" + pubs + "(&node);\n"
+            else:
+                result += pubs.lower() + "_proxy = new Publisher" + pubs + "(&node);\n"
+    for require in component.requires:
+        req = require
+        while type(req) != type(''):
+            req = req[0]
+        if not communication_is_ice(require):
+            if req in component.iceInterfaces:
+                result += req.lower() + "_rosproxy = new ServiceClient" + req + "(&node);\n"
+            else:
+                result += req.lower() + "_proxy = new ServiceClient" + req + "(&node);\n"
     return result
 
 GUI_SETUP_STR = """

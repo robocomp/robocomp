@@ -17,9 +17,9 @@ from dsl_parsers.dsl_factory import DSLFactory
 from dsl_parsers.parsing_utils import get_name_number, communication_is_ice, IDSLPool, is_agm1_agent,is_agm2_agent
 includeDirectories = theIDSLPaths.split('#')
 component = DSLFactory().from_file(theCDSL, include_directories=includeDirectories)
-sm = DSLFactory().from_file(component.statemachine)
+sm = DSLFactory().from_file(component.statemachine_path)
 if sm is None:
-    component.statemachine = None
+    component.statemachine_path = None
 if component is None:
     raise ValueError('genericworker.h: Can\'t locate %s' % theCDSL)
 
@@ -171,7 +171,7 @@ public slots:
 	[[[cog
 	cog.out(genericworker.statemachine_slots(sm))
 
-	if (sm is not None and sm['machine']['default'] is True) or component.statemachine is None:
+	if (sm is not None and sm['machine']['default'] is True) or component.statemachine_path is None:
 		cog.outl("virtual void compute() = 0;")
 	]]]
 	[[[end]]]

@@ -51,76 +51,74 @@ def generate_interface_method_definition(component, interface, pool):
 
 def implements_method_definitions(pool, component):
     result = ""
-    if 'implements' in component:
-        for interface in component.implements:
-            result += generate_interface_method_definition(component, interface, pool)
+    for interface in component.implements:
+        result += generate_interface_method_definition(component, interface, pool)
     return result
 
 def subscribes_method_definitions(pool, component):
     result = ""
-    if 'subscribesTo' in component:
-        for impa in component.subscribesTo:
-            if type(impa) == str:
-                imp = impa
-            else:
-                imp = impa[0]
-            module = pool.moduleProviding(imp)
-            for interface in module['interfaces']:
-                if interface['name'] == imp:
-                    for mname in interface['methods']:
-                        method = interface['methods'][mname]
-                        paramStrA = ''
-                        if p_utils.communication_is_ice(impa):
-                            for p in method['params']:
-                                # delim
-                                if paramStrA == '':
-                                    delim = ''
-                                else:
-                                    delim = ', '
-                                # decorator
-                                ampersand = '&'
-                                if p['decorator'] == 'out':
-                                    const = ''
-                                else:
-                                    if component.language.lower() == "cpp":
-                                        const = 'const '
-                                    else:
-                                        const = ''
-                                        ampersand = ''
-                                    if p['type'].lower() in ['int', '::ice::int', 'float', '::ice::float']:
-                                        ampersand = ''
-                                # STR
-                                paramStrA += delim + const + p['type'] + ' ' + ampersand + p['name']
-                            result += "<TABHERE>" + method['return'] + ' ' + interface['name'] + "_" + method[
-                                'name'] + '(' + paramStrA + ");\n"
-                        else:
-                            for p in method['params']:
-                                # delim
-                                if paramStrA == '':
-                                    delim = ''
-                                else:
-                                    delim = ', '
-                                # decorator
-                                ampersand = '&'
-                                if p['decorator'] == 'out':
-                                    const = ''
-                                else:
-                                    const = 'const '
-                                    ampersand = ''
-                                if p['type'] in ('float', 'int'):
-                                    p['type'] = "std_msgs::" + p['type'].capitalize() + "32"
-                                elif p['type'] in ('uint8', 'uint16', 'uint32', 'uint64'):
-                                    p['type'] = "std_msgs::UInt" + p['type'].split('t')[1]
-                                elif p['type'] in pool.getRosTypes():
-                                    p['type'] = "std_msgs::" + p['type'].capitalize()
-                                elif not '::' in p['type']:
-                                    p['type'] = module['name'] + "ROS::" + p['type']
-                                # STR
-                                paramStrA += delim + p['type'] + ' ' + p['name']
-                            if imp in component.iceInterfaces:
-                                result += "<TABHERE>void ROS" + method['name'] + '(' + paramStrA + ");\n"
+    for impa in component.subscribesTo:
+        if type(impa) == str:
+            imp = impa
+        else:
+            imp = impa[0]
+        module = pool.moduleProviding(imp)
+        for interface in module['interfaces']:
+            if interface['name'] == imp:
+                for mname in interface['methods']:
+                    method = interface['methods'][mname]
+                    paramStrA = ''
+                    if p_utils.communication_is_ice(impa):
+                        for p in method['params']:
+                            # delim
+                            if paramStrA == '':
+                                delim = ''
                             else:
-                                result += "<TABHERE>void " + method['name'] + '(' + paramStrA + ");\n"
+                                delim = ', '
+                            # decorator
+                            ampersand = '&'
+                            if p['decorator'] == 'out':
+                                const = ''
+                            else:
+                                if component.language.lower() == "cpp":
+                                    const = 'const '
+                                else:
+                                    const = ''
+                                    ampersand = ''
+                                if p['type'].lower() in ['int', '::ice::int', 'float', '::ice::float']:
+                                    ampersand = ''
+                            # STR
+                            paramStrA += delim + const + p['type'] + ' ' + ampersand + p['name']
+                        result += "<TABHERE>" + method['return'] + ' ' + interface['name'] + "_" + method[
+                            'name'] + '(' + paramStrA + ");\n"
+                    else:
+                        for p in method['params']:
+                            # delim
+                            if paramStrA == '':
+                                delim = ''
+                            else:
+                                delim = ', '
+                            # decorator
+                            ampersand = '&'
+                            if p['decorator'] == 'out':
+                                const = ''
+                            else:
+                                const = 'const '
+                                ampersand = ''
+                            if p['type'] in ('float', 'int'):
+                                p['type'] = "std_msgs::" + p['type'].capitalize() + "32"
+                            elif p['type'] in ('uint8', 'uint16', 'uint32', 'uint64'):
+                                p['type'] = "std_msgs::UInt" + p['type'].split('t')[1]
+                            elif p['type'] in pool.getRosTypes():
+                                p['type'] = "std_msgs::" + p['type'].capitalize()
+                            elif not '::' in p['type']:
+                                p['type'] = module['name'] + "ROS::" + p['type']
+                            # STR
+                            paramStrA += delim + p['type'] + ' ' + p['name']
+                        if imp in component.iceInterfaces:
+                            result += "<TABHERE>void ROS" + method['name'] + '(' + paramStrA + ");\n"
+                        else:
+                            result += "<TABHERE>void " + method['name'] + '(' + paramStrA + ");\n"
     return result
 
 def statemachine_methods(machine):
@@ -136,7 +134,7 @@ def statemachine_methods(machine):
 
 def statemachine_methods_definitions(component, sm):
     result = ""
-    if component.statemachine is not None:
+    if component.statemachine_path is not None:
         sm_specification = ""
         sm_specification += statemachine_methods(sm['machine'])
         if sm['substates'] is not None:
@@ -159,7 +157,7 @@ def innermodelviewer_attributes(innermodelviewer):
 def agm_attributes(component):
     result = ''
     try:
-        if p_utils.is_agm1_agent(component):
+        if component.is_agm1_agent():
             result += "<TABHERE>std::string action;\n"
             result += "<TABHERE>ParameterMap params;\n"
             result += "<TABHERE>AGMModel::SPtr worldModel;\n"
@@ -168,7 +166,7 @@ def agm_attributes(component):
                 result += "<TABHERE>void regenerateInnerModelViewer();\n"
             result += "<TABHERE>bool setParametersAndPossibleActivation(const ParameterMap &prs, bool &reactivated);\n"
             result += "<TABHERE>void sendModificationProposal(AGMModel::SPtr &worldModel, AGMModel::SPtr &newModel);\n"
-        elif p_utils.is_agm2_agent(component):
+        elif component.is_agm2_agent():
             result += "<TABHERE>std::string action;\n"
             result += "<TABHERE>AGMModel::SPtr worldModel;\n"
             result += "<TABHERE>bool active;\n"

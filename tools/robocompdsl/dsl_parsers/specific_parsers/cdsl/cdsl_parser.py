@@ -1,15 +1,12 @@
 import os
-import traceback
-from collections import OrderedDict
 from operator import itemgetter
 
 from pyparsing import Suppress, Word, CaselessKeyword, alphas, alphanums, CharsNotIn, Group, ZeroOrMore, Optional, \
     delimitedList, cppStyleComment, ParseSyntaxException
 
 from dsl_parsers.dsl_parser_abstract import DSLParserTemplate
-from dsl_parsers.parsing_utils import is_agm2_agent, is_agm2_agent_ROS, communication_is_ice, is_agm1_agent, \
-    generate_recursive_imports
-from dsl_parsers.specific_parsers.componentfacade import ComponentFacade
+from dsl_parsers.parsing_utils import is_agm2_agent_ROS, communication_is_ice, generate_recursive_imports
+from . import componentfacade
 
 
 class CDSLParser(DSLParserTemplate):
@@ -89,7 +86,7 @@ class CDSLParser(DSLParserTemplate):
             parsing_result = self.parse_string(string)
         except ParseSyntaxException:
             raise ValueError("There was some problem parsing the component file.")
-        component = ComponentFacade()
+        component = componentfacade.ComponentFacade()
         # print 'parseCDSL.component', includeDirectories
         if self._include_directories == None:
             self._include_directories = []
@@ -113,23 +110,21 @@ class CDSLParser(DSLParserTemplate):
         except:
             parsing_result['imports'] = []
             imprts = []
-        if is_agm1_agent(component):
+        if component.is_agm1_agent():
             imprts.extend(['AGMExecutive.idsl', 'AGMCommonBehavior.idsl', 'AGMWorldModel.idsl', 'AGMExecutiveTopic.idsl'])
-        if is_agm2_agent(component):
+        if component.is_agm2_agent():
             imprts.extend(['AGM2.idsl'])
         iD = self._include_directories + ['/opt/robocomp/interfaces/IDSLs/',
                                    os.path.expanduser('~/robocomp/interfaces/IDSLs/')]
-        for imp in sorted(imprts):
-            import_basename = os.path.basename(imp)
-            component.imports.append(import_basename)
+        component.imports.extend(list(map(os.path.basename, sorted(imprts))))
         component.recursiveImports = generate_recursive_imports(list(component.imports), self._include_directories)
         # Language
         component.language = parsing_result['component']['content']['language']
         # Statemachine
-        component.statemachine = None
+        component.statemachine_path = None
         try:
             statemachine = parsing_result['component']['content']['statemachine']['machine_path']
-            component.statemachine = statemachine
+            component.statemachine_path = statemachine
         except:
             pass
         try:
@@ -182,7 +177,7 @@ class CDSLParser(DSLParserTemplate):
                         component.rosInterfaces.append(interface)
                         component.usingROS = True
         # Handle options for communications
-        if is_agm1_agent(component):
+        if component.is_agm1_agent():
             component.iceInterfaces += [['AGMCommonBehavior', 'ice'], ['AGMExecutive', 'ice'], ['AGMExecutiveTopic', 'ice'], ['AGMWorldModel', 'ice']]
             if not 'AGMCommonBehavior' in component.implements:
                 component.implements = [['AGMCommonBehavior', 'ice']] + component.implements
@@ -190,7 +185,7 @@ class CDSLParser(DSLParserTemplate):
                 component.requires = [['AGMExecutive', 'ice']] + component.requires
             if not 'AGMExecutiveTopic' in component.subscribesTo:
                 component.subscribesTo = [['AGMExecutiveTopic', 'ice']] + component.subscribesTo
-        if is_agm2_agent(component):
+        if component.is_agm2_agent():
             if is_agm2_agent_ROS(component):
                 component.usingROS = True
                 agm2agent_requires = [['AGMDSRService', 'ros']]

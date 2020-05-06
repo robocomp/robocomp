@@ -17,9 +17,9 @@ from dsl_parsers.dsl_factory import DSLFactory
 from dsl_parsers.parsing_utils import get_name_number, communication_is_ice, IDSLPool
 includeDirectories = theIDSLPaths.split('#')
 component = DSLFactory().from_file(theCDSL, include_directories=includeDirectories)
-sm = DSLFactory().from_file(component.statemachine)
+sm = DSLFactory().from_file(component.statemachine_path)
 if sm is None:
-    component.statemachine = None
+    component.statemachine_path = None
 if component is None:
     raise ValueError('genericworker.cpp: Can\'t locate %s' % theCDSL)
 
@@ -88,7 +88,7 @@ else:
 	[[[end]]]
 	Period = BASIC_PERIOD;
 	[[[cog
-	if component.statemachine is None:
+	if component.statemachine_path is None:
 		cog.outl("connect(&timer, SIGNAL(timeout()), this, SLOT(compute()));")
 	]]]
 	[[[end]]]

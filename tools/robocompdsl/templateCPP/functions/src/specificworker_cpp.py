@@ -5,7 +5,7 @@ import dsl_parsers.parsing_utils as p_utils
 
 def body_code_from_name(name, component):
     bodyCode = ""
-    if p_utils.is_agm1_agent(component):
+    if component.is_agm1_agent():
         #######################################################
         # code to implement subscription to AGMExecutiveTopic #
         #######################################################
@@ -47,7 +47,7 @@ def body_code_from_name(name, component):
         elif name == 'reloadConfigAgent':
             bodyCode = "<TABHERE>return true;"
 
-    elif p_utils.is_agm2_agent(component):
+    elif component.is_agm2_agent():
         mdlw = 'Ice'
         if p_utils.is_agm2_agent_ROS(component):
             mdlw = 'ROS'
@@ -91,7 +91,7 @@ def innermodelviewer_code(innermodelviewer):
 def agmagent_attributes(component):
     result = ""
     try:
-        if p_utils.is_agm1_agent(component) or p_utils.is_agm2_agent(component):
+        if component.is_agm1_agent() or component.is_agm2_agent():
             result += "<TABHERE>active = false;\n"
             result += "<TABHERE>worldModel = AGMModel::SPtr(new AGMModel());\n"
             result += "<TABHERE>worldModel->name = " + "\"worldModel\";\n"
@@ -112,7 +112,7 @@ def innermodel_and_viewer_attribute_init(innermodelviewer):
 def agm_innermodel_association(component):
     result = ""
     try:
-        if p_utils.is_agm1_agent(component):
+        if component.is_agm1_agent():
             result += "<TABHERE>innerModel = std::make_shared<InnerModel>(new InnerModel());\n"
             result += "<TABHERE>try\n"
             result += "<TABHERE>{\n"
@@ -123,7 +123,7 @@ def agm_innermodel_association(component):
             result += "<TABHERE>{\n"
             result += "<TABHERE><TABHERE>printf(\"The executive is probably not running, waiting for first AGM model publication...\");\n"
             result += "<TABHERE>}\n"
-        elif p_utils.is_agm2_agent(component):
+        elif component.is_agm2_agent():
             result += "// TODO: Here we should ask the DSR for the current model for initialization purposes.\n"
     except:
         pass
@@ -132,7 +132,7 @@ def agm_innermodel_association(component):
 
 def compute_method(component, statemachine):
     result = ""
-    if (statemachine is not None and statemachine['machine']['default'] is True) or component.statemachine is None:
+    if (statemachine is not None and statemachine['machine']['default'] is True) or component.statemachine_path is None:
         result += "void SpecificWorker::compute()\n"
         result += "{\n"
         result += "//computeCODE\n"
@@ -213,126 +213,124 @@ def statemachine_methods_creation(statemachine):
 
 def implements(component, pool):
     result = ""
-    if 'implements' in component:
-        for impa in component.implements:
-            if type(impa) == str:
-                imp = impa
-            else:
-                imp = impa[0]
-            module = pool.moduleProviding(imp)
-            for interface in module['interfaces']:
-                if interface['name'] == imp:
-                    for mname in interface['methods']:
-                        method = interface['methods'][mname]
-                        paramStrA = ''
-                        bodyCode = body_code_from_name(method['name'], component)
-                        if p_utils.communication_is_ice(impa):
-                            for p in method['params']:
-                                # delim
-                                if paramStrA == '':
-                                    delim = ''
+    for impa in component.implements:
+        if type(impa) == str:
+            imp = impa
+        else:
+            imp = impa[0]
+        module = pool.moduleProviding(imp)
+        for interface in module['interfaces']:
+            if interface['name'] == imp:
+                for mname in interface['methods']:
+                    method = interface['methods'][mname]
+                    paramStrA = ''
+                    bodyCode = body_code_from_name(method['name'], component)
+                    if p_utils.communication_is_ice(impa):
+                        for p in method['params']:
+                            # delim
+                            if paramStrA == '':
+                                delim = ''
+                            else:
+                                delim = ', '
+                            # decorator
+                            ampersand = '&'
+                            if p['decorator'] == 'out':
+                                const = ''
+                            else:
+                                if component.language.lower() == "cpp":
+                                    const = 'const '
                                 else:
-                                    delim = ', '
-                                # decorator
-                                ampersand = '&'
-                                if p['decorator'] == 'out':
                                     const = ''
-                                else:
-                                    if component.language.lower() == "cpp":
-                                        const = 'const '
-                                    else:
-                                        const = ''
-                                        ampersand = ''
-                                    if p['type'].lower() in ['int', '::ice::int', 'float', '::ice::float']:
-                                        ampersand = ''
-                                # STR
-                                paramStrA += delim + const + p['type'] + ' ' + ampersand + p['name']
-                            result += method['return'] + ' SpecificWorker::' + interface['name'] + "_" + method[
+                                    ampersand = ''
+                                if p['type'].lower() in ['int', '::ice::int', 'float', '::ice::float']:
+                                    ampersand = ''
+                            # STR
+                            paramStrA += delim + const + p['type'] + ' ' + ampersand + p['name']
+                        result += method['return'] + ' SpecificWorker::' + interface['name'] + "_" + method[
+                            'name'] + '(' + paramStrA + ")\n{\n//implementCODE\n" + bodyCode + "\n}\n\n"
+                    else:
+                        paramStrA = module['name'] + "ROS::" + method['name'] + "::Request &req, " + module[
+                            'name'] + "ROS::" + method['name'] + "::Response &res"
+                        if imp in component.iceInterfaces:
+                            result += 'bool SpecificWorker::ROS' + method[
                                 'name'] + '(' + paramStrA + ")\n{\n//implementCODE\n" + bodyCode + "\n}\n\n"
                         else:
-                            paramStrA = module['name'] + "ROS::" + method['name'] + "::Request &req, " + module[
-                                'name'] + "ROS::" + method['name'] + "::Response &res"
-                            if imp in component.iceInterfaces:
-                                result += 'bool SpecificWorker::ROS' + method[
-                                    'name'] + '(' + paramStrA + ")\n{\n//implementCODE\n" + bodyCode + "\n}\n\n"
-                            else:
-                                result += 'bool SpecificWorker::' + method[
-                                    'name'] + '(' + paramStrA + ")\n{\n//implementCODE\n" + bodyCode + "\n}\n\n"
+                            result += 'bool SpecificWorker::' + method[
+                                'name'] + '(' + paramStrA + ")\n{\n//implementCODE\n" + bodyCode + "\n}\n\n"
     return result
 
 def subscribes(component, pool):
     result = ""
     ros_types = pool.getRosTypes()
-    if 'subscribesTo' in component:
-        for impa in component.subscribesTo:
-            if type(impa) == str:
-                imp = impa
-            else:
-                imp = impa[0]
-            module = pool.moduleProviding(imp)
-            if module == None:
-                raise ValueError('\nCan\'t find module providing %s\n' % imp)
-            for interface in module['interfaces']:
-                if interface['name'] == imp:
-                    for mname in interface['methods']:
-                        method = interface['methods'][mname]
-                        paramStrA = ''
-                        bodyCode = body_code_from_name(method['name'], component)
-                        if p_utils.communication_is_ice(impa):
-                            for p in method['params']:
-                                # delim
-                                if paramStrA == '':
-                                    delim = ''
+    for impa in component.subscribesTo:
+        if type(impa) == str:
+            imp = impa
+        else:
+            imp = impa[0]
+        module = pool.moduleProviding(imp)
+        if module == None:
+            raise ValueError('\nCan\'t find module providing %s\n' % imp)
+        for interface in module['interfaces']:
+            if interface['name'] == imp:
+                for mname in interface['methods']:
+                    method = interface['methods'][mname]
+                    paramStrA = ''
+                    bodyCode = body_code_from_name(method['name'], component)
+                    if p_utils.communication_is_ice(impa):
+                        for p in method['params']:
+                            # delim
+                            if paramStrA == '':
+                                delim = ''
+                            else:
+                                delim = ', '
+                            # decorator
+                            ampersand = '&'
+                            if p['decorator'] == 'out':
+                                const = ''
+                            else:
+                                if component.language.lower() == "cpp":
+                                    const = 'const '
                                 else:
-                                    delim = ', '
-                                # decorator
-                                ampersand = '&'
-                                if p['decorator'] == 'out':
                                     const = ''
-                                else:
-                                    if component.language.lower() == "cpp":
-                                        const = 'const '
-                                    else:
-                                        const = ''
-                                        ampersand = ''
-                                    if p['type'].lower() in ['int', '::ice::int', 'float', '::ice::float']:
-                                        ampersand = ''
-                                # STR
-                                paramStrA += delim + const + p['type'] + ' ' + ampersand + p['name']
-                            result += "//SUBSCRIPTION to " + method['name'] + " method from " + interface[
-                                'name'] + " interface\n"
-                            result += method['return'] + ' SpecificWorker::' + interface['name'] + "_" + method[
+                                    ampersand = ''
+                                if p['type'].lower() in ['int', '::ice::int', 'float', '::ice::float']:
+                                    ampersand = ''
+                            # STR
+                            paramStrA += delim + const + p['type'] + ' ' + ampersand + p['name']
+                        result += "//SUBSCRIPTION to " + method['name'] + " method from " + interface[
+                            'name'] + " interface\n"
+                        result += method['return'] + ' SpecificWorker::' + interface['name'] + "_" + method[
+                            'name'] + '(' + paramStrA + ")\n{\n//subscribesToCODE\n" + bodyCode + "\n}\n\n"
+                    else:
+                        for p in method['params']:
+                            # delim
+                            if paramStrA == '':
+                                delim = ''
+                            else:
+                                delim = ', '
+                            # decorator
+                            ampersand = '&'
+                            if p['decorator'] == 'out':
+                                const = ''
+                            else:
+                                const = 'const '
+                                ampersand = ''
+                            if p['type'] in ('float', 'int'):
+                                p['type'] = "std_msgs::" + p['type'].capitalize() + "32"
+                            elif p['type'] in ('uint8', 'uint16', 'uint32', 'uint64'):
+                                p['type'] = "std_msgs::UInt" + p['type'].split('t')[1]
+                            elif p['type'] in ros_types:
+                                p['type'] = "std_msgs::" + p['type'].capitalize()
+                            elif not '::' in p['type']:
+                                p['type'] = module['name'] + "ROS::" + p['type']
+                            # STR
+                            paramStrA += delim + p['type'] + ' ' + p['name']
+                        if imp in component.iceInterfaces:
+                            result += 'void SpecificWorker::ROS' + method[
                                 'name'] + '(' + paramStrA + ")\n{\n//subscribesToCODE\n" + bodyCode + "\n}\n\n"
                         else:
-                            for p in method['params']:
-                                # delim
-                                if paramStrA == '':
-                                    delim = ''
-                                else:
-                                    delim = ', '
-                                # decorator
-                                ampersand = '&'
-                                if p['decorator'] == 'out':
-                                    const = ''
-                                else:
-                                    const = 'const '
-                                    ampersand = ''
-                                if p['type'] in ('float', 'int'):
-                                    p['type'] = "std_msgs::" + p['type'].capitalize() + "32"
-                                elif p['type'] in ('uint8', 'uint16', 'uint32', 'uint64'):
-                                    p['type'] = "std_msgs::UInt" + p['type'].split('t')[1]
-                                elif p['type'] in ros_types:
-                                    p['type'] = "std_msgs::" + p['type'].capitalize()
-                                elif not '::' in p['type']:
-                                    p['type'] = module['name'] + "ROS::" + p['type']
-                                # STR
-                                paramStrA += delim + p['type'] + ' ' + p['name']
-                            if imp in component.iceInterfaces:
-                                result += 'void SpecificWorker::ROS' + method[
-                                    'name'] + '(' + paramStrA + ")\n{\n//subscribesToCODE\n" + bodyCode + "\n}\n\n"
-                            else:
-                                result += 'void SpecificWorker::' + method[
-                                    'name'] + '(' + paramStrA + ")\n{\n//subscribesToCODE\n" + bodyCode + "\n}\n\n"
+                            result += 'void SpecificWorker::' + method[
+                                'name'] + '(' + paramStrA + ")\n{\n//subscribesToCODE\n" + bodyCode + "\n}\n\n"
     return result
 
 REGENERATE_INNERMODEL = """

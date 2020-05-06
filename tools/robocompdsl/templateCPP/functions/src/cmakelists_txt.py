@@ -71,10 +71,10 @@ def agm_includes(component):
     if 'agmagent' in [x.lower() for x in component.options]:
         result += AGM_INCLUDES_STR
     try:
-        if is_agm1_agent(component):
+        if component.is_agm1_agent():
             result += 'SET(LIBS ${LIBS} -lagm)\n'
             result += 'ADD_DEFINITIONS( -I/usr/include/libxml2/)\n'
-        if is_agm2_agent(component):
+        if component.is_agm2_agent():
             result += 'SET(LIBS ${LIBS} -lagm2)\n'
             result += 'ADD_DEFINITIONS( -I/usr/include/libxml2/)\n'
             result += 'include(/usr/local/share/cmake/FindAGM2.cmake)\n'
