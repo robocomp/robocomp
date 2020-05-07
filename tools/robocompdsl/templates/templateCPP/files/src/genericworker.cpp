@@ -1,38 +1,5 @@
 /*
-[[[cog
-
-import sys
-sys.path.append('/opt/robocomp/python')
-
-import cog
-def A():
-	cog.out('<@@<')
-def Z():
-	cog.out('>@@>')
-def TAB():
-	cog.out('<TABHERE>')
-
-import templateCPP.functions.src.genericworker_cpp as genericworker
-from dsl_parsers.dsl_factory import DSLFactory
-from dsl_parsers.parsing_utils import get_name_number, communication_is_ice, IDSLPool
-includeDirectories = theIDSLPaths.split('#')
-component = DSLFactory().from_file(theCDSL, include_directories=includeDirectories)
-sm = DSLFactory().from_file(component.statemachine_path)
-if sm is None:
-    component.statemachine_path = None
-if component is None:
-    raise ValueError('genericworker.cpp: Can\'t locate %s' % theCDSL)
-
-pool = IDSLPool(theIDSLs, includeDirectories)
-
-
-]]]
-[[[end]]]
- [[[cog
- import datetime
- cog.out("*    Copyright (C)"+str(datetime.date.today().year)+" by YOUR NAME HERE")
- ]]]
- [[[end]]]
+ *    Copyright (C) ${year} by YOUR NAME HERE
  *
  *    This file is part of RoboComp
  *
@@ -53,45 +20,19 @@ pool = IDSLPool(theIDSLs, includeDirectories)
 /**
 * \brief Default constructor
 */
-[[[cog
-if component.language.lower() == 'cpp':
-	cog.outl("GenericWorker::GenericWorker(MapPrx& mprx) :")
-else:
-	cog.outl("GenericWorker::GenericWorker(TuplePrx tprx) :")
-if component.gui is not None:
-	cog.outl("""#ifdef USE_QTGUI
-Ui_guiDlg()
-#else
-QObject()
-#endif
-""")
-else:
-	cog.outl("QObject()")
-]]]
-[[[end]]]
+GenericWorker::GenericWorker(${constructor_proxies}) : ${inherited_constructor}
 {
 
-	[[[cog
-	cog.out(genericworker.statemachine_initialization(sm, component.statemachine_visual))
-
-	cog.out(genericworker.require_and_publish_proxies_creation(component))
-	]]]
-	[[[end]]]
+	${statemachine_initialization}
+	${require_and_publish_proxies_creation}
 
 	mutex = new QMutex(QMutex::Recursive);
 
-	[[[cog
-	cog.out(genericworker.ros_nodes_creation(component, pool))
-	cog.out(genericworker.ros_proxies_creation(component))
-	cog.out(genericworker.gui_setup(component.gui))
-	]]]
-	[[[end]]]
+	${ros_nodes_creation}
+	${ros_proxies_creation}
+	${gui_setup}
 	Period = BASIC_PERIOD;
-	[[[cog
-	if component.statemachine_path is None:
-		cog.outl("connect(&timer, SIGNAL(timeout()), this, SLOT(compute()));")
-	]]]
-	[[[end]]]
+	${compute_connect}
 
 }
 
@@ -117,7 +58,4 @@ void GenericWorker::setPeriod(int p)
 	Period = p;
 	timer.start(Period);
 }
-//[[[cog
-//cog.out(genericworker.agm_methods(component))
-//]]]
-//[[[end]]]
+${agm_methods}

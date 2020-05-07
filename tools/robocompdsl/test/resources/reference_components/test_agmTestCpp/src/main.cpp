@@ -115,7 +115,11 @@ void ::AGMTest::initialize()
 
 int ::AGMTest::run(int argc, char* argv[])
 {
+#ifdef USE_QTGUI
+	QApplication a(argc, argv);  // GUI application
+#else
 	QCoreApplication a(argc, argv);  // NON-GUI application
+#endif
 
 
 	sigset_t sigs;
@@ -289,6 +293,7 @@ int ::AGMTest::run(int argc, char* argv[])
 		{
 			std::cout << "ERROR Unsubscribing topic: agmexecutivetopic " <<std::endl;
 		}
+
 
 		status = EXIT_SUCCESS;
 	}

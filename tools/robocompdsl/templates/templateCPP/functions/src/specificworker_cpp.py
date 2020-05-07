@@ -1,8 +1,10 @@
+import datetime
 from string import Template
 
 import dsl_parsers.parsing_utils as p_utils
 
 
+# TODO: Extract pieces of code to strings and refactor
 def body_code_from_name(name, component):
     bodyCode = ""
     if component.is_agm1_agent():
@@ -18,34 +20,34 @@ def body_code_from_name(name, component):
         elif name == 'edgesUpdated':
             bodyCode = "\tQMutexLocker lockIM(mutex);\n\tfor (auto modification : modifications)\n\t{\n\t\tAGMModelConverter::includeIceModificationInInternalModel(modification, worldModel);\n\t\tAGMInner::updateImNodeFromEdge(worldModel, modification, innerModel.get());\n\t}\n"
         elif name == 'structuralChange':
-            bodyCode = "\tQMutexLocker lockIM(mutex);\n <TABHERE>AGMModelConverter::fromIceToInternal(w, worldModel);\n \n<TABHERE>innerModel = std::make_shared<InnerModel>(AGMInner::extractInnerModel(worldModel));"
+            bodyCode = "\tQMutexLocker lockIM(mutex);\n \tAGMModelConverter::fromIceToInternal(w, worldModel);\n \n\tinnerModel = std::make_shared<InnerModel>(AGMInner::extractInnerModel(worldModel));"
             if 'innermodelviewer' in [x.lower() for x in component.options]:
-                bodyCode += "\n<TABHERE>regenerateInnerModelViewer();"
+                bodyCode += "\n\tregenerateInnerModelViewer();"
         elif name == 'selfEdgeAdded':
-            bodyCode = "\tQMutexLocker lockIM(mutex);\n <TABHERE>try { worldModel->addEdgeByIdentifiers(nodeid, nodeid, edgeType, attributes); } catch(...){ printf(\"Couldn't add an edge. Duplicate?\\n\"); }\n \n<TABHERE>try { innerModel = std::make_shared<InnerModel>(AGMInner::extractInnerModel(worldModel)); } catch(...) { printf(\"Can't extract an InnerModel from the current model.\\n\"); }"
+            bodyCode = "\tQMutexLocker lockIM(mutex);\n \ttry { worldModel->addEdgeByIdentifiers(nodeid, nodeid, edgeType, attributes); } catch(...){ printf(\"Couldn't add an edge. Duplicate?\\n\"); }\n \n\ttry { innerModel = std::make_shared<InnerModel>(AGMInner::extractInnerModel(worldModel)); } catch(...) { printf(\"Can't extract an InnerModel from the current model.\\n\"); }"
             if 'innermodelviewer' in [x.lower() for x in component.options]:
-                bodyCode += "\n<TABHERE>regenerateInnerModelViewer();"
+                bodyCode += "\n\tregenerateInnerModelViewer();"
         elif name == 'selfEdgeDeleted':
-            bodyCode = "\tQMutexLocker lockIM(mutex);\n <TABHERE>try { worldModel->removeEdgeByIdentifiers(nodeid, nodeid, edgeType); } catch(...) { printf(\"Couldn't remove an edge\\n\"); }\n \n<TABHERE>try { innerModel = std::make_shared<InnerModel>(AGMInner::extractInnerModel(worldModel)); } catch(...) { printf(\"Can't extract an InnerModel from the current model.\\n\"); }"
+            bodyCode = "\tQMutexLocker lockIM(mutex);\n \ttry { worldModel->removeEdgeByIdentifiers(nodeid, nodeid, edgeType); } catch(...) { printf(\"Couldn't remove an edge\\n\"); }\n \n\ttry { innerModel = std::make_shared<InnerModel>(AGMInner::extractInnerModel(worldModel)); } catch(...) { printf(\"Can't extract an InnerModel from the current model.\\n\"); }"
             if 'innermodelviewer' in [x.lower() for x in component.options]:
-                bodyCode += "\n<TABHERE>regenerateInnerModelViewer();"
+                bodyCode += "\n\tregenerateInnerModelViewer();"
         #######################################
         # code to implement AGMCommonBehavior #
         #######################################
         elif name == 'activateAgent':
-            bodyCode = "<TABHERE>bool activated = false;\n<TABHERE>if (setParametersAndPossibleActivation(prs, activated))\n<TABHERE>{\n<TABHERE><TABHERE>if (not activated)\n<TABHERE><TABHERE>{\n<TABHERE><TABHERE><TABHERE>return activate(p);\n<TABHERE><TABHERE>}\n<TABHERE>}\n<TABHERE>else\n<TABHERE>{\n<TABHERE><TABHERE>return false;\n<TABHERE>}\n<TABHERE>return true;"
+            bodyCode = "\tbool activated = false;\n\tif (setParametersAndPossibleActivation(prs, activated))\n\t{\n\t\tif (not activated)\n\t\t{\n\t\t\treturn activate(p);\n\t\t}\n\t}\n\telse\n\t{\n\t\treturn false;\n\t}\n\treturn true;"
         elif name == 'deactivateAgent':
-            bodyCode = "<TABHERE>return deactivate();"
+            bodyCode = "\treturn deactivate();"
         elif name == 'getAgentState':
-            bodyCode = "<TABHERE>StateStruct s;\n<TABHERE>if (isActive())\n<TABHERE>{\n<TABHERE><TABHERE>s.state = RoboCompAGMCommonBehavior::StateEnum::Running;\n<TABHERE>}\n<TABHERE>else\n<TABHERE>{\n<TABHERE><TABHERE>s.state = RoboCompAGMCommonBehavior::StateEnum::Stopped;\n<TABHERE>}\n<TABHERE>s.info = p.action.name;\n<TABHERE>return s;"
+            bodyCode = "\tStateStruct s;\n\tif (isActive())\n\t{\n\t\ts.state = RoboCompAGMCommonBehavior::StateEnum::Running;\n\t}\n\telse\n\t{\n\t\ts.state = RoboCompAGMCommonBehavior::StateEnum::Stopped;\n\t}\n\ts.info = p.action.name;\n\treturn s;"
         elif name == 'getAgentParameters':
-            bodyCode = "<TABHERE>return params;"
+            bodyCode = "\treturn params;"
         elif name == 'setAgentParameters':
-            bodyCode = "<TABHERE>bool activated = false;\n<TABHERE>return setParametersAndPossibleActivation(prs, activated);"
+            bodyCode = "\tbool activated = false;\n\treturn setParametersAndPossibleActivation(prs, activated);"
         elif name == 'uptimeAgent':
-            bodyCode = "<TABHERE>return 0;"
+            bodyCode = "\treturn 0;"
         elif name == 'reloadConfigAgent':
-            bodyCode = "<TABHERE>return true;"
+            bodyCode = "\treturn true;"
 
     elif component.is_agm2_agent():
         mdlw = 'Ice'
@@ -92,9 +94,9 @@ def agmagent_attributes(component):
     result = ""
     try:
         if component.is_agm1_agent() or component.is_agm2_agent():
-            result += "<TABHERE>active = false;\n"
-            result += "<TABHERE>worldModel = AGMModel::SPtr(new AGMModel());\n"
-            result += "<TABHERE>worldModel->name = " + "\"worldModel\";\n"
+            result += "active = false;\n"
+            result += "worldModel = AGMModel::SPtr(new AGMModel());\n"
+            result += "worldModel->name = \"worldModel\";\n"
 
     except:
         pass
@@ -109,53 +111,76 @@ def innermodel_and_viewer_attribute_init(innermodelviewer):
         result += "#endif\n"
     return result
 
+AGM_INNERMODEL_ASSOCIATION_STR = """\
+innerModel = std::make_shared<InnerModel>(new InnerModel());
+try
+{
+	RoboCompAGMWorldModel::World w = agmexecutive_proxy->getModel();
+	AGMExecutiveTopic_structuralChange(w);
+}
+catch(...)
+{
+	printf("The executive is probably not running, waiting for first AGM model publication...");
+}
+"""
+
 def agm_innermodel_association(component):
     result = ""
     try:
         if component.is_agm1_agent():
-            result += "<TABHERE>innerModel = std::make_shared<InnerModel>(new InnerModel());\n"
-            result += "<TABHERE>try\n"
-            result += "<TABHERE>{\n"
-            result += "<TABHERE><TABHERE>RoboCompAGMWorldModel::World w = agmexecutive_proxy->getModel();\n"
-            result += "<TABHERE><TABHERE>AGMExecutiveTopic_structuralChange(w);\n"
-            result += "<TABHERE>}\n"
-            result += "<TABHERE>catch(...)\n"
-            result += "<TABHERE>{\n"
-            result += "<TABHERE><TABHERE>printf(\"The executive is probably not running, waiting for first AGM model publication...\");\n"
-            result += "<TABHERE>}\n"
+            result += AGM_INNERMODEL_ASSOCIATION_STR
         elif component.is_agm2_agent():
             result += "// TODO: Here we should ask the DSR for the current model for initialization purposes.\n"
     except:
         pass
     return result
 
+COMPUTE_METHOD_STR = """\
+void SpecificWorker::compute()
+{
+	//computeCODE
+	//QMutexLocker locker(mutex);
+	//try
+	//{
+	//  camera_proxy->getYImage(0,img, cState, bState);
+	//  memcpy(image_gray.data, &img[0], m_width*m_height*sizeof(uchar));
+	//  searchTags(image_gray);
+	//}
+	//catch(const Ice::Exception &e)
+	//{
+	//  std::cout << "Error reading from Camera" << e << std::endl;
+	//}
+	${compute_ros}
+	${compute_innermodelviewer}
+}
+"""
 
 def compute_method(component, statemachine):
     result = ""
     if (statemachine is not None and statemachine['machine']['default'] is True) or component.statemachine_path is None:
-        result += "void SpecificWorker::compute()\n"
-        result += "{\n"
-        result += "//computeCODE\n"
-        result += "//QMutexLocker locker(mutex);\n"
-        result += "//<TABHERE>try\n"
-        result += "//<TABHERE>{\n"
-        result += "//<TABHERE><TABHERE>camera_proxy->getYImage(0,img, cState, bState);\n"
-        result += "//<TABHERE><TABHERE>memcpy(image_gray.data, &img[0], m_width*m_height*sizeof(uchar));\n"
-        result += "//<TABHERE><TABHERE>searchTags(image_gray);\n"
-        result += "//<TABHERE>}\n"
-        result += "//<TABHERE>catch(const Ice::Exception &e)\n"
-        result += "//<TABHERE>{\n"
-        result += "//<TABHERE><TABHERE>std::cout << \"Error reading from Camera\" << e << std::endl;\n"
-        result += "//<TABHERE>}\n"
-        if component.usingROS == True:
-            result += "<TABHERE>ros::spinOnce();\n"
-        if component.innermodelviewer:
-            result += "#ifdef USE_QTGUI\n"
-            result += "<TABHERE>if (innerModelViewer) innerModelViewer->update();\n"
-            result += "<TABHERE>osgView->frame();\n"
-            result += "#endif\n"
-        result += "}\n"
+        result += Template(COMPUTE_METHOD_STR).substitute(compute_ros=compute_ros(component),
+                                                          compute_innermodelviewer=compute_innermodelviewer(component))
     return result
+
+def compute_ros(component):
+    if component.usingROS == True:
+        return "ros::spinOnce();"
+    else:
+        return ""
+
+INNERMODEL_COMPUTE_STR= """\
+#ifdef USE_QTGUI
+    if (innerModelViewer) innerModelViewer->update();
+    osgView->frame();
+#endif
+"""
+
+def compute_innermodelviewer(component):
+    result = ""
+    if component.innermodelviewer:
+        result += INNERMODEL_COMPUTE_STR
+    return result
+
 
 STATEMACHINE_WITH_COMPUTE_METHOD = """
 void SpecificWorker::sm_${state}()
@@ -211,8 +236,9 @@ def statemachine_methods_creation(statemachine):
         sm_implementation += '\n'
     return sm_implementation
 
-def implements(component, pool):
+def implements(component):
     result = ""
+    pool = component.idsl_pool
     for impa in component.implements:
         if type(impa) == str:
             imp = impa
@@ -259,8 +285,9 @@ def implements(component, pool):
                                 'name'] + '(' + paramStrA + ")\n{\n//implementCODE\n" + bodyCode + "\n}\n\n"
     return result
 
-def subscribes(component, pool):
+def subscribes(component):
     result = ""
+    pool = component.idsl_pool
     ros_types = pool.getRosTypes()
     for impa in component.subscribesTo:
         if type(impa) == str:
@@ -432,3 +459,52 @@ def agm_specific_code(component):
             proxy = "*agmexecutive_proxy.get()"
         result += Template(SEND_MODIFICATION_PROPOSAL).substitute(proxy=proxy, agent_name=agentName)
     return result
+
+def proxy_map_type(component):
+    if component.language.lower() == 'cpp':
+        return "MapPrx&"
+    else:
+        return "TuplePrx"
+
+def proxy_map_name(component):
+    if component.language.lower() == 'cpp':
+        return "mprx"
+    else:
+        return "tprx"
+
+def statemachine_finalize_emit(statemachine):
+    result = ""
+    if statemachine is not None and statemachine['machine']['default']:
+        result += "emit t_compute_to_finalize();\n"
+    return result
+
+def state_machine_start(statemachine):
+    result = ""
+    if statemachine is not None:
+        result += statemachine['machine']['name'] + ".start();\n"
+    return result
+
+def statemachine_initialize_to_compute(statemachine):
+    result = ""
+    if statemachine is not None and statemachine['machine']['default']:
+        result += "emit this->t_initialize_to_compute();\n"
+    return result
+
+def get_template_dict(component):
+    return {
+        'year': str(datetime.date.today().year),
+        'proxy_map_type': proxy_map_type(component),
+        'proxy_map_name': proxy_map_name(component),
+        'innermodelviewer_code': innermodelviewer_code(component.innermodelviewer),
+        'agmagent_attributes': agmagent_attributes(component),
+        'statemachine_finalize_emit': statemachine_finalize_emit(component.statemachine),
+        'innermodel_and_viewer_attribute_init': innermodel_and_viewer_attribute_init(component.innermodelviewer),
+        'agm_innermodel_association': agm_innermodel_association(component),
+        'state_machine_start': state_machine_start(component.statemachine),
+        'statemachine_initialize_to_compute': statemachine_initialize_to_compute(component.statemachine),
+        'compute_method': compute_method(component, component.statemachine),
+        'statemachine_methods_creation': statemachine_methods_creation(component.statemachine),
+        'implements': implements(component),
+        'subscribes': subscribes(component),
+        'agm_specific_code': agm_specific_code(component)
+    }

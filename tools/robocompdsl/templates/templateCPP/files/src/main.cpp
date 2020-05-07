@@ -1,34 +1,5 @@
 /*
-[[[cog
-
-import sys
-sys.path.append('/opt/robocomp/python')
-
-import cog
-def A():
-	cog.out('<@@<')
-def Z():
-	cog.out('>@@>')
-def TAB():
-	cog.out('<TABHERE>')
-
-from dsl_parsers.dsl_factory import DSLFactory
-from dsl_parsers.parsing_utils import get_name_number, communication_is_ice
-includeDirectories = theIDSLPaths.split('#')
-component = DSLFactory().from_file(theCDSL, include_directories=includeDirectories)
-import templateCPP.functions.src.main_cpp as main
-
-]]]
-[[[end]]]
- *    Copyright (C)
-[[[cog
-A()
-import datetime
-cog.out(' ' + str(datetime.date.today().year))
-Z()
-]]]
-[[[end]]]
- by YOUR NAME HERE
+ *    Copyright (C) ${year} by YOUR NAME HERE
  *
  *    This file is part of RoboComp
  *
@@ -47,23 +18,11 @@ Z()
  */
 
 
-/** \mainpage RoboComp::
-[[[cog
-A()
-cog.out(component.name)
-]]]
-[[[end]]]
+/** \mainpage RoboComp::${component_name}
  *
  * \section intro_sec Introduction
  *
- * The
-[[[cog
-A()
-cog.out(' ' + component.name)
-Z()
-]]]
-[[[end]]]
- component...
+ * The ${component_name} component...
  *
  * \section interface_sec Interface
  *
@@ -75,14 +34,7 @@ Z()
  * ...
  *
  * \subsection install2_ssec Compile and install
- * cd
-[[[cog
-A()
-cog.out(' ' + component.name)
-Z()
-]]]
-[[[end]]]
-
+ * cd ${component_name}
  * <br>
  * cmake . && make
  * <br>
@@ -100,14 +52,7 @@ Z()
  *
  * \subsection execution_ssec Execution
  *
- * Just: "${PATH_TO_BINARY}/
-[[[cog
-A()
-cog.out(component.name)
-Z()
-]]]
-[[[end]]]
- --Ice.Config=${PATH_TO_CONFIG_FILE}"
+ * Just: "$${PATH_TO_BINARY}/${component_name} --Ice.Config=$${PATH_TO_CONFIG_FILE}"
  *
  * \subsection running_ssec Once running
  *
@@ -136,13 +81,10 @@ Z()
 #include "specificmonitor.h"
 #include "commonbehaviorI.h"
 
-[[[cog
-cog.out(main.interface_includes(component.implements, 'I', True))
-cog.out(main.interface_includes(component.subscribesTo, 'I', True))
-cog.outl('')
-cog.out(main.interface_includes(component.recursiveImports))
-]]]
-[[[end]]]
+${implements_interface_includes}
+${subscribes_interface_includes}
+
+${imports_interface_includes}
 
 
 // User includes here
@@ -151,69 +93,33 @@ cog.out(main.interface_includes(component.recursiveImports))
 using namespace std;
 using namespace RoboCompCommonBehavior;
 
-class
-[[[cog
-A()
-cog.out(' ' + component.name + ' ')
-Z()
-]]]
-[[[end]]]
-: public RoboComp::Application
+class ${component_name} : public RoboComp::Application
 {
 public:
-	[[[cog
-	cog.out(component.name + ' (QString prfx) { prefix = prfx.toStdString(); }')
-	]]]
-	[[[end]]]
+	${component_name} (QString prfx) { prefix = prfx.toStdString(); }
 private:
 	void initialize();
 	std::string prefix;
-	[[[cog
-		if component.language.lower() == "cpp":
-			cog.outl('MapPrx mprx;')
-		else:
-			cog.outl('TuplePrx tprx;')
-	]]]
-	[[[end]]]
+	${proxies_map_creation}
 
 public:
 	virtual int run(int, char*[]);
 };
 
-void
-[[[cog
-A()
-cog.out(' ::' + component.name)
-Z()
-]]]
-[[[end]]]
-::initialize()
+void ::${component_name}::initialize()
 {
 	// Config file properties read example
 	// configGetString( PROPERTY_NAME_1, property1_holder, PROPERTY_1_DEFAULT_VALUE );
 	// configGetInt( PROPERTY_NAME_2, property1_holder, PROPERTY_2_DEFAULT_VALUE );
 }
 
-int
-[[[cog
-A()
-cog.out(' ::' + component.name)
-Z()
-]]]
-[[[end]]]
-::run(int argc, char* argv[])
+int ::${component_name}::run(int argc, char* argv[])
 {
-[[[cog
-	if component.gui is not None:
-		cog.outl("#ifdef USE_QTGUI")
-		cog.outl("<TABHERE>QApplication a(argc, argv);  // GUI application")
-		cog.outl("#else")
-		cog.outl("<TABHERE>QCoreApplication a(argc, argv);  // NON-GUI application")
-		cog.outl("#endif")
-	else:
-		cog.outl("<TABHERE>QCoreApplication a(argc, argv);  // NON-GUI application")
-]]]
-[[[end]]]
+#ifdef USE_QTGUI
+	QApplication a(argc, argv);  // GUI application
+#else
+	QCoreApplication a(argc, argv);  // NON-GUI application
+#endif
 
 
 	sigset_t sigs;
@@ -230,33 +136,17 @@ Z()
 
 	int status=EXIT_SUCCESS;
 
-	[[[cog
-	cog.out(main.proxy_ptr(component.publishes, component.language, 'pub'))
-	cog.out(main.proxy_ptr(component.requires, component.language))
-	]]]
-	[[[end]]]
+	${publishes_proxy_ptr}
+	${requires_proxy_ptr}
 
 	string proxy, tmp;
 	initialize();
-	[[[cog
-	proxy_list = []
-	require_str, req_proxy_list = main.requires(component)
-	proxy_list.extend(req_proxy_list)
-	cog.out(require_str)
-	cog.out(main.topic_manager_creation(component))
-	]]]
-    [[[end]]]
-	[[[cog
-	publish_str, pub_proxy_list = main.publish(component)
-	cog.out(publish_str)
-	proxy_list.extend(pub_proxy_list)
+	${requires}
+	${topic_manager_creation}
+	${publish}
+	${ros_init}
 
-	if component.usingROS == True:
-		cog.outl("ros::init(argc, argv, \""+component.name+"\");")
-
-	cog.out(main.specificworker_creation(component.language, proxy_list))
-	]]]
-	[[[end]]]
+	${specificworker_creation}
 	//Monitor thread
 	SpecificMonitor *monitor = new SpecificMonitor(worker,communicator());
 	QObject::connect(monitor, SIGNAL(kill()), &a, SLOT(quit()));
@@ -279,13 +169,7 @@ Z()
 				cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy CommonBehavior\n";
 			}
 			Ice::ObjectAdapterPtr adapterCommonBehavior = communicator()->createObjectAdapterWithEndpoints("commonbehavior", tmp);
-			[[[cog
-				if component.language.lower() == "cpp":
-					cog.outl("CommonBehaviorI *commonbehaviorI = new CommonBehaviorI(monitor);")
-				else:
-					cog.outl("auto commonbehaviorI = std::make_shared<CommonBehaviorI>(monitor);")
-			]]]
-			[[[end]]]
+			${commonbehaviorI_creation}
 			adapterCommonBehavior->add(commonbehaviorI, Ice::stringToIdentity("commonbehavior"));
 			adapterCommonBehavior->activate();
 		}
@@ -299,11 +183,8 @@ Z()
 		}
 
 
-		[[[cog
-		cog.out(main.implements(component))
-		cog.out(main.subscribes_to(component))
-		]]]
-		[[[end]]]
+		${implements}
+		${subscribes_to}
 
 		// Server adapter creation and publication
 		cout << SERVER_FULL_NAME " started" << endl;
@@ -316,10 +197,8 @@ Z()
 		#endif
 		// Run QT Application Event Loop
 		a.exec();
-		[[[cog
-		cog.out(main.unsubscribe_code(component))
-		]]]
-		[[[end]]]
+		${unsubscribe_code}
+
 
 		status = EXIT_SUCCESS;
 	}
@@ -377,10 +256,7 @@ int main(int argc, char* argv[])
 			printf("Configuration prefix: <%s>\n", prefix.toStdString().c_str());
 		}
 	}
-	[[[cog
-	cog.outl('::' + component.name + ' app(prefix);')
-	]]]
-	[[[end]]]
+	::${component_name} app(prefix);
 
 	return app.main(argc, argv, configFile.c_str());
 }

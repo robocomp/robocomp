@@ -1,5 +1,5 @@
 /*
- *    Copyright (C)2020 by YOUR NAME HERE
+ *    Copyright (C) 2020 by YOUR NAME HERE
  *
  *    This file is part of RoboComp
  *
@@ -18,8 +18,8 @@
  */
 
 /**
-       \brief
-       @author authorname
+	\brief
+	@author authorname
 */
 
 // THIS IS AN AGENT
@@ -47,6 +47,7 @@ public:
 	bool AGMCommonBehavior_reloadConfigAgent();
 	bool AGMCommonBehavior_setAgentParameters(const ParameterMap &prs);
 	int AGMCommonBehavior_uptimeAgent();
+
 	void AGMExecutiveTopic_edgeUpdated(const RoboCompAGMWorldModel::Edge &modification);
 	void AGMExecutiveTopic_edgesUpdated(const RoboCompAGMWorldModel::EdgeSequence &modifications);
 	void AGMExecutiveTopic_selfEdgeAdded(const int nodeid, const string &edgeType, const RoboCompAGMWorldModel::StringDictionary &attributes);
@@ -57,7 +58,7 @@ public:
 
 public slots:
 	void initialize(int period);
-//Specification slot methods State Machine
+	//Specification slot methods State Machine
 	void sm_publish();
 	void sm_pop_data();
 	void sm_read_uwb();
@@ -67,7 +68,7 @@ public slots:
 	void sm_initialize();
 	void sm_finalize();
 
-//--------------------
+	//--------------------
 private:
 	std::shared_ptr<InnerModel> innerModel;
 	std::string action;

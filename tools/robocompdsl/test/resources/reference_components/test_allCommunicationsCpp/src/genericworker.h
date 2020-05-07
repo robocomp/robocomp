@@ -1,5 +1,5 @@
 /*
- *    Copyright (C)2020 by YOUR NAME HERE
+ *    Copyright (C) 2020 by YOUR NAME HERE
  *
  *    This file is part of RoboComp
  *
@@ -57,12 +57,7 @@ using namespace RoboCompRGBD;
 typedef map <string,::IceProxy::Ice::Object*> MapPrx;
 
 
-class GenericWorker :
-#ifdef USE_QTGUI
-	public QDialog, public Ui_guiDlg
-#else
-	public QObject
- #endif
+class GenericWorker : public QDialog, public Ui_guiDlg
 {
 Q_OBJECT
 public:

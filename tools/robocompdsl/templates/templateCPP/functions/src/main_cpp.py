@@ -1,3 +1,4 @@
+import datetime
 from string import Template
 
 from dsl_parsers.parsing_utils import communication_is_ice, get_name_number
@@ -95,7 +96,6 @@ while (!<LOWER>_topic)
 
 def publish(component):
     result = ""
-    proxy_list = []
     for pba in component.publishes:
         if type(pba) == str:
             pb = pba
@@ -114,8 +114,7 @@ def publish(component):
             else:
                 result += "auto " + pb.lower() + "_pub = " + pb.lower() + "_topic->getPublisher()->ice_oneway();\n"
                 result += "" + pb.lower() + "_pubproxy = Ice::uncheckedCast<" + pb + "Prx>(" + pb.lower() + "_pub);\n"
-                proxy_list.append(pb.lower() + "_pubproxy")
-    return result, proxy_list
+    return result
 
 SUBSCRIBESTO_STR = """
 // Server adapter creation and publication
@@ -247,7 +246,6 @@ rInfo("<NORMAL>Proxy<PROXYNUMBER> initialized Ok!");
 
 def requires(component):
     result = ""
-    proxy_list = []
     for iface, num in get_name_number(component.requires):
         if communication_is_ice(iface):
             if component.language.lower() == "cpp":
@@ -260,17 +258,17 @@ def requires(component):
                 "<PROXYNAME>", name.lower() + num).replace("<PROXYNUMBER>", num)
         if component.language.lower() == "cpp":
             result += "mprx[\"" + name + "Proxy" + num + "\"] = (::IceProxy::Ice::Object*)(&" + name.lower() + num + "_proxy);//Remote server proxy creation example\n"
-        else:
-            proxy_list.append(name.lower() + num + "_proxy")
-    return result, proxy_list
+    return result
 
 
-def specificworker_creation(language, proxy_list):
-    result = "\n"
-    if language.lower() == "cpp":
+def specificworker_creation(component):
+    result = ""
+    if component.language.lower() == "cpp":
         var_name = 'm'
     else:
         var_name = 't'
+        proxy_list = [iface.name.lower() + num + "_proxy" for iface, num in get_name_number(component.requires)]
+        proxy_list += [iface.name.lower() + "_pubproxy" for iface in component.publishes]
         if proxy_list:
             result += "tprx = std::make_tuple(" + ",".join(proxy_list) + ");\n"
         else:
@@ -293,9 +291,50 @@ catch(const Ice::Exception& ex)
 def unsubscribe_code(component):
     result = "\n"
     for iface in component.subscribesTo:
-        iface_name = iface
-        while type(iface_name) != type(''):
-            iface_name = iface[0]
         if communication_is_ice(iface):
-            result = Template(UNSUBSCRIBE_STR).substitute(name=iface_name.lower())
+            result = Template(UNSUBSCRIBE_STR).substitute(name=iface.name.lower())
     return result
+
+def proxies_map_creation(component):
+    result = ""
+    if component.language.lower() == 'cpp':
+        result += "MapPrx mprx;\n"
+    else:
+        result += "TuplePrx tprx;\n"
+    return result
+
+def commonbehaviorI_creation(component):
+    result = ""
+    if component.language.lower() == "cpp":
+        result += "CommonBehaviorI *commonbehaviorI = new CommonBehaviorI(monitor);\n"
+    else:
+        result += "auto commonbehaviorI = std::make_shared<CommonBehaviorI>(monitor);\n"
+    return result
+
+def ros_init(component):
+    result = ""
+    if component.usingROS == True:
+        result += "ros::init(argc, argv, \"" + component.name + "\");\n"
+    return result
+
+def get_template_dict(component):
+    return {
+        'year': str(datetime.date.today().year),
+        'component_name': component.name,
+        'implements_interface_includes': interface_includes(component.implements, 'I', True),
+        'subscribes_interface_includes': interface_includes(component.subscribesTo, 'I', True),
+        'imports_interface_includes': interface_includes(component.recursiveImports),
+        'interface_includes': interface_includes(component.recursiveImports),
+        'proxies_map_creation': proxies_map_creation(component),
+        'publishes_proxy_ptr': proxy_ptr(component.publishes, component.language, 'pub'),
+        'requires': requires(component),
+        'requires_proxy_ptr': proxy_ptr(component.requires, component.language),
+        'topic_manager_creation': topic_manager_creation(component),
+        'publish': publish(component),
+        'ros_init': ros_init(component),
+        'specificworker_creation': specificworker_creation(component),
+        'commonbehaviorI_creation': commonbehaviorI_creation(component),
+        'implements': implements(component),
+        'subscribes_to': subscribes_to(component),
+        'unsubscribe_code': unsubscribe_code(component)
+    }

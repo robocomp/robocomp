@@ -257,6 +257,7 @@ int ::testcomp::run(int argc, char* argv[])
 			std::cout << "ERROR Unsubscribing topic: imupub " <<std::endl;
 		}
 
+
 		status = EXIT_SUCCESS;
 	}
 	catch(const Ice::Exception& ex)

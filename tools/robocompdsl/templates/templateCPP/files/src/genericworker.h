@@ -1,44 +1,5 @@
 /*
-[[[cog
-
-import sys
-sys.path.append('/opt/robocomp/python')
-
-import cog
-def A():
-	cog.out('<@@<')
-def Z():
-	cog.out('>@@>')
-def TAB():
-	cog.out('<TABHERE>')
-
-import templateCPP.functions.src.genericworker_h as genericworker
-from dsl_parsers.dsl_factory import DSLFactory
-from dsl_parsers.parsing_utils import get_name_number, communication_is_ice, IDSLPool, is_agm1_agent,is_agm2_agent
-includeDirectories = theIDSLPaths.split('#')
-component = DSLFactory().from_file(theCDSL, include_directories=includeDirectories)
-sm = DSLFactory().from_file(component.statemachine_path)
-if sm is None:
-    component.statemachine_path = None
-if component is None:
-    raise ValueError('genericworker.h: Can\'t locate %s' % theCDSL)
-
-pool = IDSLPool(theIDSLs, includeDirectories)
-includeList = pool.rosImports()
-rosTypes = pool.getRosTypes()
-
-
-]]]
-[[[end]]]
- *    Copyright (C)
-[[[cog
-A()
-import datetime
-cog.out(str(datetime.date.today().year))
-Z()
-]]]
-[[[end]]]
- by YOUR NAME HERE
+ *    Copyright (C) ${year} by YOUR NAME HERE
  *
  *    This file is part of RoboComp
  *
@@ -61,128 +22,64 @@ Z()
 #include "config.h"
 #include <stdint.h>
 #include <qlog/qlog.h>
-[[[cog
-cog.out(genericworker.gui_includes(component.gui))
-]]]
-[[[end]]]
-[[[cog
-cog.out(genericworker.statemachine_includes(sm, component.statemachine_visual))
-]]]
-[[[end]]]
+${gui_includes}
+${statemachine_includes}
 #include <CommonBehavior.h>
 
-[[[cog
-cog.out(genericworker.interfaces_includes(component, pool))
-cog.out(genericworker.agm_includes(component))
-]]]
-[[[end]]]
+${interfaces_includes}
+${agm_includes}
 
 
 #define CHECK_PERIOD 5000
 #define BASIC_PERIOD 100
 
 using namespace std;
-[[[cog
-cog.out(genericworker.namespaces(component))
-]]]
-[[[end]]]
+${namespaces}
 
-[[[cog
-cog.out(genericworker.ice_proxies_map(component))
-]]]
-[[[end]]]
+${ice_proxies_map}
 
-[[[cog
-cog.out(genericworker.agm_behaviour_parameter_struct(component))
-]]]
-[[[end]]]
+${agm_behaviour_parameter_struct}
 
-[[[cog
-if component.usingROS == True:
-	genericworker.ros_publishes_classes(component, pool)
-
-	genericworker.ros_requires_classes(component, pool)
-]]]
-[[[end]]]
-class GenericWorker :
-[[[cog
-if component.gui is not None:
-	cog.outl("#ifdef USE_QTGUI\n<TABHERE>public " + component.gui[1] + ", public Ui_guiDlg\n#else\n<TABHERE>public QObject\n #endif")
-else:
-	cog.outl("public QObject")
-]]]
-[[[end]]]
+${ros_publishes_classes}
+${ros_requires_classes}
+class GenericWorker : ${inherited_object}
 {
 Q_OBJECT
 public:
-[[[cog
-if component.language.lower() == 'cpp':
-	cog.outl("<TABHERE>GenericWorker(MapPrx& mprx);")
-else:
-	cog.outl("<TABHERE>GenericWorker(TuplePrx tprx);")
-]]]
-[[[end]]]
+	GenericWorker(${constructor_proxies});
 	virtual ~GenericWorker();
 	virtual void killYourSelf();
 	virtual void setPeriod(int p);
 
 	virtual bool setParams(RoboCompCommonBehavior::ParameterList params) = 0;
 	QMutex *mutex;
-	[[[cog
-	cog.out(genericworker.agm_methods(component))
-	]]]
-	[[[end]]]
+	${agm_methods}
 
 
-	[[[cog
-	cog.out(genericworker.create_proxies(component))
-	]]]
-	[[[end]]]
+	${create_proxies}
 
-	[[[cog
-	cog.out(genericworker.implements(component, pool))
-	cog.out(genericworker.subscribes(component, pool))
-	]]]
-	[[[end]]]
+	${implements}
+	${subscribes}
 
 protected:
-	[[[cog
-	cog.out(genericworker.statemachine_creation(sm, component.statemachine_visual))
-	]]]
-	[[[end]]]
+	${statemachine_creation}
 
 	QTimer timer;
 	int Period;
-    [[[cog
-    if component.usingROS == True:
-        cog.outl("ros::NodeHandle node;")
-        cog.out(genericworker.ros_subscribers_creation(component, pool))
-        cog.out(genericworker.ros_implements_creation(component, pool))
-        cog.out(genericworker.ros_publishes_creation(component))
-        cog.out(genericworker.ros_requires_creation(component))
-    cog.out(genericworker.agm_attributes_creation(component))
-]]]
-[[[end]]]
+	${ros_interfaces_creation}
+	${agm_attributes_creation}
 
 private:
 
 
 public slots:
-	[[[cog
-	cog.out(genericworker.statemachine_slots(sm))
-
-	if (sm is not None and sm['machine']['default'] is True) or component.statemachine_path is None:
-		cog.outl("virtual void compute() = 0;")
-	]]]
-	[[[end]]]
+	${statemachine_slots}
+	${virtual_compute}
 	virtual void initialize(int period) = 0;
 	
 signals:
 	void kill();
-	[[[cog
-	cog.out(genericworker.statemachine_signals(sm))
-	]]]
-	[[[end]]]
+	${statemachine_signals}
 };
 
 #endif

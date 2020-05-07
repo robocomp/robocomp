@@ -1,5 +1,5 @@
 /*
- *    Copyright (C)${year} by YOUR NAME HERE
+ *    Copyright (C) ${year} by YOUR NAME HERE
  *
  *    This file is part of RoboComp
  *

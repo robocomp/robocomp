@@ -1,3 +1,4 @@
+import datetime
 from string import Template
 
 from dsl_parsers.dsl_factory import DSLFactory
@@ -30,14 +31,15 @@ def statemachine_includes(statemachine, visual):
     return result
 
 
-def interfaces_includes(component, pool):
+def interfaces_includes(component):
     result = ""
+    pool = component.idsl_pool
     for iface in sorted(list(set(component.recursiveImports + component.ice_interfaces_names))):
         name = iface.split('/')[-1].split('.')[0]
         result += '#include <' + name + '.h>\n'
     if component.usingROS is True:
         result += '#include <ros/ros.h>\n'
-        for iface in sorted(pool.rosImports()):
+        for iface in sorted(IDSLPool.rosImports()):
             name = iface.split('/')[-1].split('.')[0]
             result += '#include <' + name + '.h>\n'
         for iface in component.requires + component.implements:
@@ -109,7 +111,7 @@ def agm_behaviour_parameter_struct(component):
 
 
 PUBLISHES_CLASS_STR = """
-    //class for rosPublisher
+//class for rosPublisher
 class Publisher${iface_name}
 {
 public:
@@ -124,7 +126,7 @@ ${publishers_methods}
 """
 
 REQUIRES_CLASS_STR = """
-<TABHERE>//class for rosServiceClient
+//class for rosServiceClient
 class ServiceClient${iface_name}
 {
 public:
@@ -288,30 +290,38 @@ def ros_require_method(interface, method_name, module, idsl):
     return result
 
 
-def ros_publishes_classes(component, pool):
-    # Creating ros publisher classes
-    for iface in component.publishes:
-        iface_name = iface
-        while not isinstance(iface_name, str):
-            iface_name = iface_name[0]
-        module = pool.moduleProviding(iface_name)
-        if module is None:
-            raise ValueError('\nCan\'t find module providing %s \n' % iface_name)
-        if not communication_is_ice(iface):
-            ros_create_publish_class(iface_name, module)
+def ros_publishes_classes(component):
+    result = ""
+    if component.usingROS:
+        pool = component.idsl_pool
+        # Creating ros publisher classes
+        for iface in component.publishes:
+            iface_name = iface
+            while not isinstance(iface_name, str):
+                iface_name = iface_name[0]
+            module = pool.moduleProviding(iface_name)
+            if module is None:
+                raise ValueError('\nCan\'t find module providing %s \n' % iface_name)
+            if not communication_is_ice(iface):
+                result += ros_create_publish_class(iface_name, module)
+    return result
 
-def ros_requires_classes(component, pool):
-    for iface in component.requires:
-        iface_name = iface
-        while type(iface_name) != type(''):
-            iface_name = iface_name[0]
-        module = pool.moduleProviding(iface_name)
-        theIdsl = pool.IDSLsModule(module)
-        idsl = DSLFactory.from_file(theIdsl)
-        if module == None:
-            raise ValueError('\nCan\'t find module providing %s\n' % iface_name)
-        if not communication_is_ice(iface):
-            ros_create_require_class(iface_name, module, idsl)
+def ros_requires_classes(component):
+    result = ""
+    if component.usingROS == True:
+        pool = component.idsl_pool
+        for iface in component.requires:
+            iface_name = iface
+            while type(iface_name) != type(''):
+                iface_name = iface_name[0]
+            module = pool.moduleProviding(iface_name)
+            theIdsl = pool.IDSLsModule(module)
+            idsl = DSLFactory().from_file(theIdsl)
+            if module == None:
+                raise ValueError('\nCan\'t find module providing %s\n' % iface_name)
+            if not communication_is_ice(iface):
+                result += ros_create_require_class(iface_name, module, idsl)
+    return result
 
 def agm_methods(component):
     result = ""
@@ -343,20 +353,17 @@ def create_proxies(component):
                 result += name + 'PrxPtr ' + name.lower() + num + '_pubproxy;\n'
     return result
 
-def implements(component, pool):
+def implements(component):
     result = ""
-    for impa in component.implements:
-        if type(impa) == str:
-            imp = impa
-        else:
-            imp = impa[0]
-        module = pool.moduleProviding(imp)
+    for iface in component.implements:
+        pool = component.idsl_pool
+        module = pool.moduleProviding(iface.name)
         for interface in module['interfaces']:
-            if interface['name'] == imp:
+            if interface['name'] == iface.name:
                 for mname in interface['methods']:
                     method = interface['methods'][mname]
                     paramStrA = ''
-                    if communication_is_ice(impa):
+                    if communication_is_ice(iface):
                         for p in method['params']:
                             # delim
                             if paramStrA == '':
@@ -381,28 +388,25 @@ def implements(component, pool):
                     else:
                         paramStrA = module['name'] + "ROS::" + method['name'] + "::Request &req, " + module[
                             'name'] + "ROS::" + method['name'] + "::Response &res"
-                        if imp in component.iceInterfaces:
+                        if iface.name in component.iceInterfaces:
                             result += "virtual bool ROS" + method['name'] + "(" + paramStrA + ") = 0;\n"
                         else:
                             result += "virtual bool " + method['name'] + "(" + paramStrA + ") = 0;\n"
     return result
 
-def subscribes(component, pool):
+def subscribes(component):
     result = ""
-    for impa in component.subscribesTo:
-        if type(impa) == str:
-            imp = impa
-        else:
-            imp = impa[0]
-        module = pool.moduleProviding(imp)
+    for iface in component.subscribesTo:
+        pool = component.idsl_pool
+        module = pool.moduleProviding(iface.name)
         if module == None:
-            raise ValueError('\nCan\'t find module providing %s \n' % imp)
+            raise ValueError('\nCan\'t find module providing %s \n' % iface.name)
         for interface in module['interfaces']:
-            if interface['name'] == imp:
+            if interface['name'] == iface.name:
                 for mname in interface['methods']:
                     method = interface['methods'][mname]
                     paramStrA = ''
-                    if communication_is_ice(impa):
+                    if communication_is_ice(iface):
                         for p in method['params']:
                             # delim
                             if paramStrA == '':
@@ -448,7 +452,7 @@ def subscribes(component, pool):
                                 p['type'] = module['name'] + "ROS::" + p['type']
                             # STR
                             paramStrA += delim + p['type'] + " " + p['name']
-                        if imp in component.iceInterfaces:
+                        if iface.name in component.iceInterfaces:
                             result += "virtual void ROS" + method['name'] + "(" + paramStrA + ") = 0;\n"
                         else:
                             result += "virtual void " + method['name'] + "(" + paramStrA + ") = 0;\n"
@@ -523,38 +527,34 @@ def statemachine_creation(sm, visual):
         result += "//-------------------------\n"
     return result
 
-def ros_subscribers_creation(component, pool):
+def ros_subscribers_creation(component):
     result = ""
-    for imp in component.subscribesTo:
-        nname = imp
-        while type(nname) != type(''):
-            nname = nname[0]
-        module = pool.moduleProviding(nname)
+    for iface in component.subscribesTo:
+        pool = component.idsl_pool
+        module = pool.moduleProviding(iface.name)
         if module == None:
-            raise ValueError('\nCan\'t find module providing %s\n' % nname)
-        if not communication_is_ice(imp):
+            raise ValueError('\nCan\'t find module providing %s\n' % iface.name)
+        if not communication_is_ice(iface):
             for interface in module['interfaces']:
-                if interface['name'] == nname:
+                if interface['name'] == iface.name:
                     for mname in interface['methods']:
                         method = interface['methods'][mname]
-                        result += "ros::Subscriber " + nname + "_" + mname + ";\n"
+                        result += "ros::Subscriber " + iface.name + "_" + mname + ";\n"
     return result
 
-def ros_implements_creation(component, pool):
+def ros_implements_creation(component):
     result = ""
-    for imp in component.implements:
-        nname = imp
-        while type(nname) != type(''):
-            nname = nname[0]
-        module = pool.moduleProviding(nname)
+    for iface in component.implements:
+        pool = component.pool
+        module = pool.moduleProviding(iface.name)
         if module == None:
-            raise ValueError('\nCan\'t find module providing %s \n' % nname)
-        if not communication_is_ice(imp):
+            raise ValueError('\nCan\'t find module providing %s \n' % iface.name)
+        if not communication_is_ice(iface):
             for interface in module['interfaces']:
-                if interface['name'] == nname:
+                if interface['name'] == iface.name:
                     for mname in interface['methods']:
                         method = interface['methods'][mname]
-                        result += "ros::ServiceServer " + nname + "_" + mname + ";\n"
+                        result += "ros::ServiceServer " + iface.name + "_" + mname + ";\n"
     return result
 
 def ros_publishes_creation(component):
@@ -586,13 +586,13 @@ def ros_requires_creation(component):
     return result
 
 AGM_ATTRIBUTES_STR = """
-<TABHERE>bool active;
-<TABHERE>AGMModel::SPtr worldModel;
-<TABHERE>BehaviorParameters p;
-<TABHERE>ParameterMap params;
-<TABHERE>int iter;
-<TABHERE>bool setParametersAndPossibleActivation(const RoboCompAGMCommonBehavior::ParameterMap &prs, bool &reactivated);
-<TABHERE>RoboCompPlanning::Action createAction(std::string s);
+bool active;
+AGMModel::SPtr worldModel;
+BehaviorParameters p;
+ParameterMap params;
+int iter;
+bool setParametersAndPossibleActivation(const RoboCompAGMCommonBehavior::ParameterMap &prs, bool &reactivated);
+RoboCompPlanning::Action createAction(std::string s);
 """
 
 def agm_attributes_creation(component):
@@ -650,3 +650,62 @@ def statemachine_signals(statemachine):
         result += codsignals + '\n'
         result += "//-------------------------\n"
     return result
+
+def constructor_proxies(component):
+    result = ""
+    if component.language.lower() == 'cpp':
+        result += "MapPrx& mprx"
+    else:
+        result += "TuplePrx tprx"
+    return result
+
+
+def ros_interfaces_creation(component):
+    result = ""
+    if component.usingROS:
+        result += "ros::NodeHandle node;\n"
+        result += ros_subscribers_creation(component)
+        result += ros_implements_creation(component)
+        result += ros_publishes_creation(component)
+        result += ros_requires_creation(component)
+    return result
+
+def virtual_compute(component):
+    result = ""
+    statemachine = component.statemachine
+    if (statemachine is not None and statemachine['machine']['default'] is True) or component.statemachine_path is None:
+        result += "virtual void compute() = 0;\n"
+    return result
+
+def inherited_object(component):
+    if component.gui:
+        return "public {gui_widget}, public Ui_guiDlg".format(gui_widget=component.gui.widget)
+    else:
+        return "public QObject"
+
+
+def get_template_dict(component):
+    return {
+        'year': str(datetime.date.today().year),
+        'gui_includes': gui_includes(component.gui),
+        'statemachine_includes': statemachine_includes(component.statemachine, component.statemachine_visual),
+        'interfaces_includes': interfaces_includes(component),
+        'agm_includes': agm_includes(component),
+        'namespaces': namespaces(component),
+        'ice_proxies_map': ice_proxies_map(component),
+        'agm_behaviour_parameter_struct': agm_behaviour_parameter_struct(component),
+        'ros_publishes_classes': ros_publishes_classes(component),
+        'ros_requires_classes': ros_requires_classes(component),
+        'inherited_object': inherited_object(component),
+        'constructor_proxies': constructor_proxies(component),
+        'agm_methods': agm_methods(component),
+        'create_proxies': create_proxies(component),
+        'implements': implements(component),
+        'subscribes': subscribes(component),
+        'statemachine_creation': statemachine_creation(component.statemachine, component.statemachine_visual),
+        'ros_interfaces_creation': ros_interfaces_creation(component),
+        'agm_attributes_creation': agm_attributes_creation(component),
+        'statemachine_slots': statemachine_slots(component.statemachine),
+        'virtual_compute': virtual_compute(component),
+        'statemachine_signals': statemachine_signals(component.statemachine)
+    }

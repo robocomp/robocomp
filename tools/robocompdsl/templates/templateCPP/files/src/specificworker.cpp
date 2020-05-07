@@ -1,44 +1,5 @@
 /*
-[[[cog
-
-import sys
-sys.path.append('/opt/robocomp/python')
-
-import cog
-def A():
-	cog.out('<@@<')
-def Z():
-	cog.out('>@@>')
-def TAB():
-	cog.out('<TABHERE>')
-
-from cogapp.whiteutils import reindentBlock
-import templateCPP.functions.src.specificworker_cpp as specificworker
-from dsl_parsers.dsl_factory import DSLFactory
-from dsl_parsers.parsing_utils import communication_is_ice, is_agm1_agent, is_agm2_agent, is_agm2_agent_ROS, IDSLPool
-includeDirectories = theIDSLPaths.split('#')
-component = DSLFactory().from_file(theCDSL, include_directories=includeDirectories)
-sm = DSLFactory().from_file(component.statemachine_path)
-if sm is None:
-    component.statemachine_path = None
-if component is None:
-    raise ValueError('specificworker.cpp: Can\'t locate %s' % theCDSL)
-
-
-
-pool = IDSLPool(theIDSLs, includeDirectories)
-rosTypes = pool.getRosTypes()
-]]]
-[[[end]]]
- *    Copyright (C)
-[[[cog
-A()
-import datetime
-cog.out(str(datetime.date.today().year))
-Z()
-]]]
-[[[end]]]
- by YOUR NAME HERE
+ *    Copyright (C) ${year} by YOUR NAME HERE
  *
  *    This file is part of RoboComp
  *
@@ -60,21 +21,11 @@ Z()
 /**
 * \brief Default constructor
 */
-[[[cog
-    if component.language.lower() == 'cpp':
-        cog.outl("SpecificWorker::SpecificWorker(MapPrx& mprx) : GenericWorker(mprx)")
-    else:
-        cog.outl("SpecificWorker::SpecificWorker(TuplePrx tprx) : GenericWorker(tprx)")
-]]]
-[[[end]]]
+SpecificWorker::SpecificWorker(${proxy_map_type} ${proxy_map_name}) : GenericWorker(${proxy_map_name})
 {
+	${innermodelviewer_code}
+	${agmagent_attributes}
 
-[[[cog
-cog.out(specificworker.innermodelviewer_code(component.innermodelviewer))
-cog.out(specificworker.agmagent_attributes(component))
-
-]]]
-[[[end]]]
 }
 
 /**
@@ -83,16 +34,12 @@ cog.out(specificworker.agmagent_attributes(component))
 SpecificWorker::~SpecificWorker()
 {
 	std::cout << "Destroying SpecificWorker" << std::endl;
-[[[cog
-if sm is not None and sm['machine']['default']:
-	cog.outl("<TABHERE>emit t_compute_to_finalize();")
-]]]
-[[[end]]]
+	${statemachine_finalize_emit}
 }
 
 bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
 {
-//       THE FOLLOWING IS JUST AN EXAMPLE
+//	THE FOLLOWING IS JUST AN EXAMPLE
 //	To use innerModelPath parameter you should uncomment specificmonitor.cpp readConfig method content
 //	try
 //	{
@@ -103,21 +50,11 @@ bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
 //	catch(const std::exception &e) { qFatal("Error reading config params"); }
 
 
-[[[cog
-cog.out(specificworker.innermodel_and_viewer_attribute_init(component.innermodelviewer))
-]]]
-[[[end]]]
+	${innermodel_and_viewer_attribute_init}
 
-[[[cog
-cog.out(specificworker.agm_innermodel_association(component))
-]]]
-[[[end]]]
+	${agm_innermodel_association}
 
-[[[cog
-if sm is not None:
-    cog.outl("<TABHERE>" + sm['machine']['name'] + ".start();")
-]]]
-[[[end]]]
+	${state_machine_start}
 	
 
 	return true;
@@ -128,33 +65,15 @@ void SpecificWorker::initialize(int period)
 	std::cout << "Initialize worker" << std::endl;
 	this->Period = period;
 	timer.start(Period);
-[[[cog
-if sm is not None and sm['machine']['default']:
-    cog.outl("<TABHERE>emit this->t_initialize_to_compute();")
-    ]]]
-[[[end]]]
+	${statemachine_initialize_to_compute}
 
 }
 
-[[[cog
-cog.out(specificworker.compute_method(component, sm))
-]]]
-[[[end]]]
+${compute_method}
 
-[[[cog
-cog.out(specificworker.statemachine_methods_creation(sm))
-]]]
-[[[end]]]
+${statemachine_methods_creation}
 
+${implements}
+${subscribes}
 
-
-[[[cog
-cog.out(specificworker.implements(component, pool))
-cog.out(specificworker.subscribes(component, pool))
-]]]
-[[[end]]]
-
-[[[cog
-cog.out(reindentBlock(specificworker.agm_specific_code(component)))
-]]]
-[[[end]]]
+${agm_specific_code}

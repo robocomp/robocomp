@@ -194,7 +194,7 @@ class ComponentGenerator:
             if template == 'python':
                 template_obj.template_to_file(FILES[template]['template_path'] + template_file, ofile)
             else:
-                if template_file in ['README.md', 'DoxyFile', 'CMakeLists.txt', 'src/specificworker.h']:
+                if template_file in ['README.md', 'DoxyFile', 'CMakeLists.txt', 'src/specificworker.h', 'src/specificworker.cpp', 'src/mainUI.ui', 'src/main.cpp', 'src/genericworker.h', 'src/genericworker.cpp']:
                     template_obj.template_to_file(FILES[template]['template_path'] + template_file, ofile)
                 else:
                     cog_command = robocompdslutils.generate_cog_command(params, ifile, ofile)

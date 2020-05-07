@@ -95,7 +95,7 @@ class TemplateCpp:
                 function_name = template.split('/')[-1].replace('.', '_').replace('-','_')
                 if hasattr(self,function_name):
                     function = getattr(self, function_name)
-                    template_dict = function(self.component)
+                    template_dict = function()
                 # Dynamically import functions needed for this template file
                 else:
                     functions_file = template[template.find("templateCPP/files")+len("templateCPP/files"):].replace('.', '_').replace('/','.')
@@ -113,7 +113,7 @@ class TemplateCpp:
                 function_name = template.split('/')[-1].replace('.', '_')
                 if hasattr(self,function_name):
                     function = getattr(self, function_name)
-                    template_dict = function(interface_name, self.component)
+                    template_dict = function(interface_name)
                 # Dynamically import functions needed for this template file
                 else:
                     functions_file = template.replace("templateCPP/functions/", "").replace('.', '_').replace('/','.')
@@ -125,38 +125,42 @@ class TemplateCpp:
                 with open(output_file, 'w') as ostream:
                     ostream.write(file_content)
 
-    def SERVANT_H(self, interface_name, component):
-        module = component.idsl_pool.moduleProviding(interface_name)
+    def SERVANT_H(self, interface_name):
+        module = self.component.idsl_pool.moduleProviding(interface_name)
         return {
             'year': str(datetime.date.today().year),
             'interface_name': interface_name,
             'interface_name_upper': interface_name.upper(),
             'filename_without_extension': module['filename'].split('/')[-1].split('.')[0],
             'module_name': module['name'],
-            'interface_methods_definition': servant.interface_methods_definition(component,
+            'interface_methods_definition': servant.interface_methods_definition(self.component,
                                                                                  module,
                                                                                  interface_name)
         }
 
-    def SERVANT_CPP(self, interface_name, component):
+    def SERVANT_CPP(self, interface_name):
         return {
             'year': str(datetime.date.today().year),
             'interface_name': interface_name,
             'interface_name_lower': interface_name.lower(),
-            'interface_methods_creation': servant.interface_methods_creation(component, interface_name)
+            'interface_methods_creation': servant.interface_methods_creation(self.component, interface_name)
         }
 
-    def README_md(self, component):
+    def README_md(self):
         return {
-            'component_name': component.name
+            'component_name': self.component.name
         }
 
-    def DoxyFile(self, component):
+    def DoxyFile(self):
         return {
-            'component_name': component.name
+            'component_name': self.component.name
         }
 
-    def CMakeLists_txt(self, component):
+    def CMakeLists_txt(self):
         return {
-            'component_name': component.name
+            'component_name': self.component.name
         }
+
+    def mainUI_ui(self):
+        return {'gui_type': self.component.gui.widget,
+                'component_name': self.component.name}

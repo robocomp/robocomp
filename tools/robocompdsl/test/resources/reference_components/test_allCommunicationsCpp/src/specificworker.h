@@ -1,5 +1,5 @@
 /*
- *    Copyright (C)2020 by YOUR NAME HERE
+ *    Copyright (C) 2020 by YOUR NAME HERE
  *
  *    This file is part of RoboComp
  *
@@ -18,8 +18,8 @@
  */
 
 /**
-       \brief
-       @author authorname
+	\brief
+	@author authorname
 */
 
 
@@ -41,18 +41,19 @@ public:
 	int HandDetection_addNewHand(const int expectedHands, const TRoi &roi);
 	Hands HandDetection_getHands();
 	int HandDetection_getHandsCount();
+
 	void AprilTags_newAprilTag(const tagsList &tags);
 	void AprilTags_newAprilTagAndPose(const tagsList &tags, const RoboCompGenericBase::TBaseState &bState, const RoboCompJointMotor::MotorStateMap &hState);
 
 public slots:
 	void compute();
 	void initialize(int period);
-//Specification slot methods State Machine
+	//Specification slot methods State Machine
 	void sm_compute();
 	void sm_initialize();
 	void sm_finalize();
 
-//--------------------
+	//--------------------
 private:
 	std::shared_ptr<InnerModel> innerModel;
 

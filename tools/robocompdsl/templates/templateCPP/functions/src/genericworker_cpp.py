@@ -1,3 +1,5 @@
+import datetime
+
 from dsl_parsers.parsing_utils import get_name_number, communication_is_ice
 
 
@@ -175,43 +177,38 @@ def require_and_publish_proxies_creation(component):
         cont = cont + 1
     return result
 
-def ros_nodes_creation(component, pool):
+def ros_nodes_creation(component):
     result = ""
     if component.usingROS == True:
         # INICIALIZANDO SUBSCRIBERS
-        for imp in component.subscribesTo:
-            nname = imp
-            while type(nname) != type(''):
-                nname = nname[0]
-            module = pool.moduleProviding(nname)
+        pool = component.idsl_pool
+        for iface in component.subscribesTo:
+            module = pool.moduleProviding(iface.name)
             if module == None:
-                raise ValueError('\nCan\'t find module providing %s \n' % nname)
-            if not communication_is_ice(imp):
+                raise ValueError('\nCan\'t find module providing %s \n' % iface.name)
+            if not communication_is_ice(iface):
                 for interface in module['interfaces']:
-                    if interface['name'] == nname:
+                    if interface['name'] == iface.name:
                         for mname in interface['methods']:
                             s = "\"" + mname + "\""
-                            if nname in component.iceInterfaces:
-                                result += nname + "_" + mname + " = node.subscribe(" + s + ", 1000, &GenericWorker::ROS" + mname + ", this);\n"
+                            if iface.name in component.iceInterfaces:
+                                result += iface.name + "_" + mname + " = node.subscribe(" + s + ", 1000, &GenericWorker::ROS" + mname + ", this);\n"
                             else:
-                                result += nname + "_" + mname + " = node.subscribe(" + s + ", 1000, &GenericWorker::" + mname + ", this);\n"
+                                result += iface.name + "_" + mname + " = node.subscribe(" + s + ", 1000, &GenericWorker::" + mname + ", this);\n"
         # INICIALIZANDO IMPLEMENTS
-        for imp in component.implements:
-            nname = imp
-            while type(nname) != type(''):
-                nname = nname[0]
-            module = pool.moduleProviding(nname)
+        for iface in component.implements:
+            module = pool.moduleProviding(iface.name)
             if module == None:
-                raise ('\nCan\'t find module providing %s\n' % nname)
-            if not communication_is_ice(imp):
+                raise ('\nCan\'t find module providing %s\n' % iface.name)
+            if not communication_is_ice(iface):
                 for interface in module['interfaces']:
-                    if interface['name'] == nname:
+                    if interface['name'] == iface.name:
                         for mname in interface['methods']:
                             s = "\"" + mname + "\""
-                            if nname in component.iceInterfaces:
-                                result += nname + "_" + mname + " = node.advertiseService(" + s + ", &GenericWorker::ROS" + mname + ", this);\n"
+                            if iface.name in component.iceInterfaces:
+                                result += iface.name + "_" + mname + " = node.advertiseService(" + s + ", &GenericWorker::ROS" + mname + ", this);\n"
                             else:
-                                result += nname + "_" + mname + " = node.advertiseService(" + s + ", &GenericWorker::" + mname + ", this);\n"
+                                result += iface.name + "_" + mname + " = node.advertiseService(" + s + ", &GenericWorker::" + mname + ", this);\n"
     return result
 
 def ros_proxies_creation(component):
@@ -369,3 +366,39 @@ def agm_methods(component):
         #TODO: fix it
         pass
     return result
+
+def constructor_proxies(component):
+    result = ""
+    if component.language.lower() == 'cpp':
+        result += "MapPrx& mprx"
+    else:
+        result += "TuplePrx tprx"
+    return result
+
+def inherited_constructor(component):
+    if component.gui:
+        return "Ui_guiDlg()"
+    else:
+        return "QObject()"
+
+def compute_connect(component):
+    result = ""
+    if component.statemachine_path is None:
+        result += "connect(&timer, SIGNAL(timeout()), this, SLOT(compute()));\n"
+    return result
+
+def get_template_dict(component):
+    return {
+        'year': str(datetime.date.today().year),
+        'constructor_proxies': constructor_proxies(component),
+        'inherited_constructor': inherited_constructor(component),
+        'statemachine_initialization': statemachine_initialization(component.statemachine, component.statemachine_visual),
+        'require_and_publish_proxies_creation': require_and_publish_proxies_creation(component),
+        'ros_nodes_creation': ros_nodes_creation(component),
+        'ros_proxies_creation': ros_proxies_creation(component),
+        'gui_setup': gui_setup(component.gui),
+        'compute_connect': compute_connect(component),
+        'agm_methods': agm_methods(component)
+
+
+    }
