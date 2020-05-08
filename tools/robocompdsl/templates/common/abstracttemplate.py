@@ -134,31 +134,6 @@ class AbstractTemplate(ABC):
                 return True
         return False
 
-    def get_template_dict(self, template, interface_name=None):
-        template_dict = {}
-        full_path = os.path.join(TEMPLATES_DIR, self.files['template_path'])
-        template_name = template.replace(full_path,"")
-        function_name = template_name.replace('/', '_').replace('-', '_').replace('.', '_')
-        if hasattr(self, function_name):
-            function = getattr(self, function_name)
-            if interface_name is not None:
-                template_dict = function(interface_name)
-            else:
-                template_dict = function()
-        # Dynamically import functions needed for this template file
-        else:
-            functions_file = template_name.replace('.','_').replace('/', '.')
-            try:
-                functions_dir = "templates."+template.replace(TEMPLATES_DIR, "").split('/')[0]+".functions."
-                functions = importlib.import_module(functions_dir + functions_file)
-                if interface_name is not None:
-                    template_dict = functions.get_template_dict(self.component, interface_name)
-                else:
-                    template_dict = functions.get_template_dict(self.component)
-            except ModuleNotFoundError:
-                pass
-        return template_dict
-
     def template_to_file(self, template, output_file, interface_name=None):
             with open(template, 'r') as istream:
                 content = istream.read()
@@ -171,3 +146,29 @@ class AbstractTemplate(ABC):
 
                 with open(output_file, 'w') as ostream:
                     ostream.write(file_content)
+
+    def get_template_dict(self, template, interface_name=None):
+        template_dict = {}
+        full_path = os.path.join(TEMPLATES_DIR, self.files['template_path'])
+        template_name = template.replace(full_path,"")
+        function_name = template_name.replace('/', '_').replace('-', '_').replace('.', '_')
+        # look for a method in the class with the name of the file
+        if hasattr(self, function_name):
+            function = getattr(self, function_name)
+            if interface_name is not None:
+                template_dict = function(interface_name)
+            else:
+                template_dict = function()
+        # Look for a function file with the name of the template file
+        else:
+            functions_file = template_name.replace('.','_').replace('/', '.')
+            try:
+                functions_dir = "templates."+template.replace(TEMPLATES_DIR, "").split('/')[0]+".functions."
+                functions = importlib.import_module(functions_dir + functions_file)
+                if interface_name is not None:
+                    template_dict = functions.get_template_dict(self.component, interface_name)
+                else:
+                    template_dict = functions.get_template_dict(self.component)
+            except ModuleNotFoundError:
+                pass
+        return template_dict
