@@ -20,7 +20,7 @@ RoboCompDSL's Developer Guide
 
 
 # Introduction
-If your are looking dor documentation about the usage of RobocompDSL as tool you can fint it in the main [README.md](./tools/robocompdsl/README.md) file
+If your are looking dor documentation about the usage of RobocompDSL as tool you can fint it in the main [README.md](./README.md) file
 # Main Concepts
 # DSLFactory
 ## CDSL Loading
