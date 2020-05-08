@@ -114,6 +114,3 @@ class RobocompdslTest(unittest.TestCase):
                         )
                     else:
                         self.fail("File %s found in reference is not in generated comp" % filename)
-
-# component = specific_parsers.DSLFactory().from_file("/home/robolab/robocomp/components/robocomp-robolab/components/hardware/camera/camerasimple/camerasimple.cdsl")
-# robocompdsl.generate_ROS_headers("CameraSimple.idsl", ".", component, ["/home/robolab/robocomp/interfaces/IDSLs/"])

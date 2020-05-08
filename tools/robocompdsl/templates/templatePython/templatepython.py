@@ -16,7 +16,7 @@ class TemplatePython(AbstractTemplate):
                     'src/specificworker.py', 'src/mainUI.ui', 'README.md', 'etc/config'
                 ],
                 'servant_files': ["SERVANT.PY"],
-                'template_path': "/home/robolab/robocomp/tools/robocompdsl/templates/templatePython/files/"
+                'template_path': "templatePython/files/"
         }
         super(TemplatePython, self).__init__(component)
 

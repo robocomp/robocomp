@@ -83,7 +83,7 @@ class CustomTemplate(Template):
                 identifiers.append(result[3])
         return identifiers
 
-TEMPLATES_DIR = '/home/robolab/robocomp/tools/robocompdsl/templates/'
+TEMPLATES_DIR = '/opt/robocomp/share/robocompdsl/templates/'
 class AbstractTemplate(ABC):
     def __init__(self, component):
         self.component = component
