@@ -28,7 +28,7 @@ The languages used to define components and their interfaces remain mostly the s
 If you still don't know what a component or interface is in Robocomp you should probably review the [tutorials](https://github.com/robocomp/robocomp/blob/stable/doc/README.md).
 This one is specific for [robocompdsl](https://github.com/robocomp/robocomp/blob/stable/doc/robocompdsl.md).
 
-<small><i>Note: If your a looking for Development documentation you can find it <a href='./robocompdsl/tools/DEVELOPER.md'>here</a>.</i></small>
+<small><i>Note: If your a looking for Development documentation you can find it <a href='./tools/robocompdsl/DEVELOPER.md'>here</a>.</i></small>
 
 
 ## Generating a CDSL template file
