@@ -6,14 +6,6 @@ from abc import ABC
 
 from dsl_parsers.parsing_utils import communication_is_ice
 
-LANG_TO_TEMPLATE = {
-    'cpp': 'cpp',
-    'cpp11': 'cpp',
-    'python': 'python',
-    'python3': 'python',
-    'python2': 'python'
-}
-
 class CustomTemplate(Template):
     delimiter = '$'
     pattern = r'''
@@ -133,6 +125,7 @@ class AbstractTemplate(ABC):
                     print('Generating %s (servant for %s)' % (ofile, interface.name))
                     ifile = os.path.join(TEMPLATES_DIR, self.files['template_path'], template_file)
                     self.template_to_file(ifile,  ofile, interface.name)
+        return new_existing_files
 
 
     def need_storm(self):
@@ -162,7 +155,7 @@ class AbstractTemplate(ABC):
                     template_dict = functions.get_template_dict(self.component, interface_name)
                 else:
                     template_dict = functions.get_template_dict(self.component)
-            except:
+            except ModuleNotFoundError:
                 pass
         return template_dict
 

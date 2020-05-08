@@ -39,9 +39,8 @@ def interfaces_includes(component):
         result += '#include <' + name + '.h>\n'
     if component.usingROS is True:
         result += '#include <ros/ros.h>\n'
-        for iface in sorted(IDSLPool.rosImports()):
-            name = iface.split('/')[-1].split('.')[0]
-            result += '#include <' + name + '.h>\n'
+        for iface in sorted(component.idsl_pool.rosImports()):
+            result += '#include <' + iface.name + '.h>\n'
         for iface in component.requires + component.implements:
             if type(iface) == str:
                 iface_name = iface

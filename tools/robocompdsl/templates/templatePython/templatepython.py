@@ -24,12 +24,6 @@ class TemplatePython(AbstractTemplate):
     def README_md(self):
         return {'component_name': self.component.name}
 
-    def DoxyFile(self):
-        return {}
-
-    def README_RCNODE_txt(self):
-        return {}
-
     def CMakeLists_txt(self):
         if self.component.gui is not None:
             wrap_python_ui="WRAP_PYTHON_UI( mainUI )"

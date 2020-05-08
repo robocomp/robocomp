@@ -1,6 +1,7 @@
 from collections import OrderedDict
 from functools import reduce
 
+import rcExceptions
 from dsl_parsers.parsing_utils import IDSLPool
 
 
@@ -198,6 +199,11 @@ class ComponentFacade:
         else:
             the_idsls = ''.join([imp + '#' for imp in self.imports])
             idsl_pool = IDSLPool(the_idsls, [])
+            interface_list = self.requires + self.implements + self.subscribesTo + \
+                             self.publishes
+            for interface_required in interface_list:
+                if not idsl_pool.moduleProviding(interface_required.name):
+                    raise rcExceptions.InterfaceNotFound(interface_required.name, idsl_pool.interfaces())
             self.__idsl_pool = idsl_pool
             return idsl_pool
 

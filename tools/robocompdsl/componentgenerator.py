@@ -13,38 +13,6 @@ from dsl_parsers import dsl_factory
 from dsl_parsers.parsing_utils import communication_is_ice, IDSLPool
 from templates.templatePython.templatepython import TemplatePython
 
-
-FILES = {
-    'python': {
-        'files': [
-            'CMakeLists.txt', 'DoxyFile', 'README-RCNODE.txt', 'README.md', 'etc/config', 'src/main.py',
-            'src/genericworker.py', 'src/specificworker.py', 'src/mainUI.ui'
-        ],
-        'avoid_overwrite': [
-            'src/specificworker.py', 'src/mainUI.ui', 'README.md', 'etc/config'
-        ],
-        'servant_files': ["SERVANT.PY"],
-        'template_path': "/opt/robocomp/share/robocompdsl/templates/templatePython/files/"
-    },
-    'cpp': {
-        'files': [
-            'CMakeLists.txt', 'DoxyFile', 'README-RCNODE.txt', 'README.md', 'etc/config', 'src/main.cpp',
-            'src/CMakeLists.txt', 'src/CMakeListsSpecific.txt', 'src/commonbehaviorI.h', 'src/commonbehaviorI.cpp',
-            'src/genericmonitor.h', 'src/genericmonitor.cpp', 'src/config.h', 'src/specificmonitor.h',
-            'src/specificmonitor.cpp', 'src/genericworker.h', 'src/genericworker.cpp', 'src/specificworker.h',
-            'src/specificworker.cpp', 'src/mainUI.ui'
-        ],
-        'avoid_overwrite': [
-            'src/specificworker.h', 'src/specificworker.cpp', 'src/CMakeListsSpecific.txt',
-            'src/mainUI.ui', 'src/specificmonitor.h', 'src/specificmonitor.cpp', 'README.md',
-            'etc/config'
-        ],
-        'servant_files': ["SERVANT.H", "SERVANT.CPP"],
-        'template_path': "/opt/robocomp/share/robocompdsl/templates/templateCPP/files/"
-    }
-
-}
-
 LANG_TO_TEMPLATE = {
     'cpp': 'cpp',
     'cpp11': 'cpp',
@@ -60,7 +28,6 @@ class ComponentGenerator:
         self.__include_dirs = None
         self.diff = None
         self.component = None
-        self.imports = None
 
     @property
     def cdsl_file(self):
@@ -95,41 +62,27 @@ class ComponentGenerator:
         self.output_path = output_path
         self.include_dirs = include_dirs
         self.diff = diff
-        self.load_component()
-        new_existing_files = self.create_files()
-        self.show_diff(new_existing_files)
+        self.__load_component()
+        new_existing_files = self.__create_files()
+        self.__show_diff(new_existing_files)
 
-    def load_component(self, diff=False):
+    def __load_component(self):
         self.component = dsl_factory.DSLFactory().from_file(self.cdsl_file, includeDirectories=self.include_dirs)
 
-        # TODO: '#'.join? and remane to imports_str
-        self.imports = ''.join([imp + '#' for imp in self.component.imports])
 
-        # verification
-        pool = IDSLPool(self.imports, self.include_dirs)
-        interface_list = self.component.requires + self.component.implements + self.component.subscribesTo + \
-                         self.component.publishes
-
-        for interface_required in interface_list:
-            interface_required = interface_required if isinstance(interface_required, str) else interface_required[0]
-            if not pool.moduleProviding(interface_required):
-                raise rcExceptions.InterfaceNotFound(interface_required, pool.interfaces())
-
-    def create_files(self):
+    def __create_files(self):
         # Check output directory
-        self.create_component_directories()
+        self.__create_component_directories()
 
         # Generate specific_component
-        new_existing_files = self.generate_component()
-
+        new_existing_files = self.__generate_component()
 
         if self.component.usingROS is True:
             for imp in self.component.imports:
                 self.generate_ROS_headers(imp)
-
         return new_existing_files
 
-    def show_diff(self, new_existing_files):
+    def __show_diff(self, new_existing_files):
         # Code to launch diff tool on .new files to be compared with their old version
         if self.diff is not None and len(new_existing_files) > 0:
             diff_tool, _ = robocompdslutils.get_diff_tool(prefered=self.diff)
@@ -152,95 +105,34 @@ class ComponentGenerator:
                 else:
                     print("Binary equal files %s and %s" % (o_file, n_file))
 
-    def generate_component(self):
+    def __generate_component(self):
         language = self.component.language.lower()
-        need_storm = False
-        for pub in self.component.publishes + self.component.subscribesTo:
-            if communication_is_ice(pub):
-                need_storm = True
-                break
 
-        #
-        # Generate regular files
-        #
-        new_existing_files = {}
         template = LANG_TO_TEMPLATE[language]
-        if language == 'python':
+        # TODO: Template objects could be moved to a TemplateFactory
+        if template == 'python':
             template_obj = TemplatePython(self.component)
         else:
             template_obj = TemplateCpp(self.component)
-        template_obj.generate_files(self.output_path)
-        # for template_file in FILES[template]['files']:
-        #     if template_file == 'src/mainUI.ui' and self.component.gui is None: continue
-        #     if language == 'python' and template_file == 'CMakeLists.txt' and self.component.gui is None: continue
-        #     if template_file == 'README-RCNODE.txt' and not need_storm: continue
-        #
-        #     if language == 'python' and template_file == 'src/main.py':
-        #         ofile = os.path.join(self.output_path, 'src', self.component.name + '.py')
-        #     else:
-        #         ofile = os.path.join(self.output_path, template_file)
-        #
-        #     if template_file in FILES[template]['avoid_overwrite'] and os.path.exists(ofile):
-        #         print('Not overwriting specific file "' + ofile + '", saving it to ' + ofile + '.new')
-        #         new_existing_files[os.path.abspath(ofile)] = os.path.abspath(ofile) + '.new'
-        #         ofile += '.new'
-        #
-        #     ifile = os.path.join(FILES[template]['template_path'], template_file)
-        #     print('Generating', ofile)
-        #     params = {
-        #         "theCDSL": self.cdsl_file,
-        #         "theIDSLs": self.imports,
-        #         "theIDSLPaths": '#'.join(self.include_dirs)
-        #     }
-        #     if template == 'python':
-        #         template_obj.template_to_file(FILES[template]['template_path'] + template_file, ofile)
-        #     else:
-        #         if template_file in ['README.md', 'DoxyFile', 'CMakeLists.txt', 'src/specificworker.h',
-        #                              'src/specificworker.cpp', 'src/mainUI.ui', 'src/main.cpp', 'src/genericworker.h',
-        #                              'src/genericworker.cpp', "src/config.h", 'src/commonbehaviorI.h', 'src/commonbehaviorI.cpp']:
-        #             template_obj.template_to_file(FILES[template]['template_path'] + template_file, ofile)
-        #         else:
-        #             cog_command = robocompdslutils.generate_cog_command(params, ifile, ofile)
-        #             robocompdslutils.run_cog_and_replace_tags(cog_command, ofile)
-        #     if language == 'python' and template_file == 'src/main.py':
-        #         os.chmod(ofile, os.stat(ofile).st_mode | 0o111)
-        #
-        # #
-        # # Generate interface-dependent files
-        # #
-        # for interface in self.component.implements + self.component.subscribesTo:
-        #     if isinstance(interface, (list, tuple)):
-        #         interface_name = interface[0]
-        #     else:
-        #         interface_name = interface
-        #     if communication_is_ice(interface):
-        #         for template_file in FILES[template]['servant_files']:
-        #             ofile = os.path.join(self.output_path, 'src', interface_name.lower() + 'I.' + template_file.split('.')[
-        #                 -1].lower())
-        #             print('Generating %s (servant for %s)' %    (ofile, interface_name))
-        #             # Call cog
-        #             params = {
-        #                 "theCDSL": self.cdsl_file,
-        #                 "theIDSLs": self.imports,
-        #                 "theIDSLPaths": '#'.join(self.include_dirs),
-        #                 "theInterface": interface_name
-        #             }
-        #             # TODO: remove after testing new templates
-        #             if template == 'python':
-        #                 template_obj.template_to_file_interface(interface_name, FILES[template]['template_path'] + template_file,
-        #                                               ofile)
-        #             else:
-        #                 if template_file in ['SERVANT.H', 'SERVANT.CPP']:
-        #                     template_obj.template_to_file_interface(interface_name, FILES[template]['template_path'] + template_file, ofile)
-        #                 else:
-        #                     cog_command = robocompdslutils.generate_cog_command(params,
-        #                                                                         FILES[template][
-        #                                                                             'template_path'] + template_file,
-        #                                                                         ofile)
-        #                     robocompdslutils.run_cog_and_replace_tags(cog_command, ofile)
+        new_existing_files = template_obj.generate_files(self.output_path)
 
         return new_existing_files
 
+
+    def __create_component_directories(self):
+        if not os.path.exists(self.output_path):
+            robocompdslutils.create_directory(self.output_path)
+        # Create directories within the output directory
+        new_dirs = ["bin", "src", "etc"]
+        for new_dir in new_dirs:
+            if self.component.language.lower() == "python" and new_dir == "bin": continue
+            try:
+                robocompdslutils.create_directory(os.path.join(self.output_path, new_dir))
+            except:
+                print('There was a problem creating a directory %s' % new_dir)
+                raise
+
+        # TODO: Probably deprecated. Check.
     def generate_ROS_headers(self, idsl_file):
         """
         :param idsl_file: is the IDSL file imported in the CDSL
@@ -273,8 +165,9 @@ class ComponentGenerator:
                             "structName": imp['name'],
                             "theIDSL": idslFile
                         }
-                        cog_command = robocompdslutils.generate_cog_command(params, "/opt/robocomp/share/robocompdsl/templateCPP/" + f,
-                                                           ofile)
+                        cog_command = robocompdslutils.generate_cog_command(params,
+                                                                            "/opt/robocomp/share/robocompdsl/templateCPP/" + f,
+                                                                            ofile)
                         robocompdslutils.run_cog_and_replace_tags(cog_command, ofile)
                         commandCPP = "/opt/ros/melodic/lib/gencpp/gen_cpp.py " + ofile + " -Istd_msgs:/opt/ros/melodic/share/std_msgs/msg -I" + \
                                      idsl['name'] + "ROS:" + self.output_path
@@ -308,7 +201,8 @@ class ComponentGenerator:
                             if 'params' in method:
                                 if len(method['params']) == 2:
                                     for f in ["SERVANT.SRV"]:
-                                        ofile = self.output_path + "/" + method['name'] + "." + f.split('.')[-1].lower()
+                                        ofile = self.output_path + "/" + method['name'] + "." + f.split('.')[
+                                            -1].lower()
                                         print('Generating', ofile, ' (servant for',
                                               idslFile.split('.')[0].lower() + ')')
                                         # Call cog
@@ -318,8 +212,8 @@ class ComponentGenerator:
                                             "theIDSL": idslFile
                                         }
                                         cog_command = robocompdslutils.generate_cog_command(params,
-                                                                           "/opt/robocomp/share/robocompdsl/templateCPP/" + f,
-                                                                           ofile)
+                                                                                            "/opt/robocomp/share/robocompdsl/templateCPP/" + f,
+                                                                                            ofile)
                                         robocompdslutils.run_cog_and_replace_tags(cog_command, ofile)
                                         commandCPP = "/opt/ros/melodic/lib/gencpp/gen_cpp.py " + ofile + " -Istd_msgs:/opt/ros/melodic/share/std_msgs/msg -Istd_srvs:/opt/ros/melodic/share/std_srv/cmake/../srv -I" + \
                                                      idsl['module']['name'] + "ROS:" + self.output_path
@@ -334,14 +228,16 @@ class ComponentGenerator:
                                             'name'] + "ROS -o " + self.output_path + "/" + idsl['module'][
                                                          'name'] + "ROS -e /opt/ros/melodic/share/gencpp/cmake/.."
                                         commandPY = commandPY + " -p " + idsl['module'][
-                                            'name'] + "ROS -o " + self.output_path + "/" + idsl['module']['name'] + "ROS/srv"
+                                            'name'] + "ROS -o " + self.output_path + "/" + idsl['module'][
+                                                        'name'] + "ROS/srv"
                                         if self.component.language.lower() == 'cpp':
                                             os.system(commandCPP)
                                         else:
                                             os.system(commandPY)
                                         try:
                                             fileInit = open(
-                                                self.output_path + "/" + idsl['module']['name'] + "ROS/srv/__init__.py", 'a')
+                                                self.output_path + "/" + idsl['module'][
+                                                    'name'] + "ROS/srv/__init__.py", 'a')
                                             fileInit.write("from ._" + method['name'] + " import *\n")
                                             fileInit.close()
                                         except:
@@ -367,17 +263,4 @@ class ComponentGenerator:
         generarH(idsl_file, imported)
         os.system("rm " + self.output_path + "/*.msg")
         os.system("rm " + self.output_path + "/*.srv")
-
-    def create_component_directories(self):
-        if not os.path.exists(self.output_path):
-            robocompdslutils.create_directory(self.output_path)
-        # Create directories within the output directory
-        new_dirs = ["bin", "src", "etc"]
-        for new_dir in new_dirs:
-            if self.component.language.lower() == "python" and new_dir == "bin": continue
-            try:
-                robocompdslutils.create_directory(os.path.join(self.output_path, new_dir))
-            except:
-                print('There was a problem creating a directory %s' % new_dir)
-                raise
 

@@ -1,10 +1,8 @@
 import datetime
-import importlib
-from collections import ChainMap
-from string import Template
 
-from ..common.abstracttemplate import CustomTemplate, AbstractTemplate
+from ..common.abstracttemplate import AbstractTemplate
 from ..templateCPP.functions import servant
+
 
 class TemplateCpp(AbstractTemplate):
     def __init__(self, component):
@@ -25,33 +23,6 @@ class TemplateCpp(AbstractTemplate):
             'template_path': "templateCPP/files/"
         }
         super(TemplateCpp, self).__init__(component)
-
-    # def template_to_file(self, template, output_file, interface_name=None):
-    #         with open(template, 'r') as istream:
-    #             content = istream.read()
-    #             template_dict = self.get_template_dict(template,interface_name)
-    #             template_object = CustomTemplate(content, trimlines=False)
-    #             file_content = template_object.substitute(**template_dict)
-    #             with open(output_file, 'w') as ostream:
-    #                 ostream.write(file_content)
-    #
-    # def template_to_file_interface(self, interface_name, template, output_file):
-    #         with open(template, 'r') as istream:
-    #             content = istream.read()
-    #             function_name = template.replace("templateCPP/functions/", "").replace('.', '_').replace('/', '.')
-    #             if hasattr(self,function_name):
-    #                 function = getattr(self, function_name)
-    #                 template_dict = function(interface_name)
-    #             # Dynamically import functions needed for this template file
-    #             else:
-    #                 functions_file = template.replace("templateCPP/functions/", "").replace('.', '_').replace('/','.')
-    #                 functions = importlib.import_module("templateCPP.functions." + functions_file)
-    #                 template_dict = functions.get_template_dict(self.component, interface_name)
-    #             template_object = CustomTemplate(content)
-    #             template_object.identifiers()
-    #             file_content = template_object.substitute(**template_dict)
-    #             with open(output_file, 'w') as ostream:
-    #                 ostream.write(file_content)
 
     def SERVANT_H(self, interface_name):
         module = self.component.idsl_pool.moduleProviding(interface_name)
@@ -127,25 +98,4 @@ class TemplateCpp(AbstractTemplate):
             'const': const,
             'ampersand': ampersand
         }
-
-    # def README_RCNODE_txt(self):
-    #     return {}
-    #
-    # def etc_config(self):
-    #     return {}
-    #
-    # def src_CMakeListsSpecific_txt(self):
-    #     return {}
-    #
-    # def src_genericmonitor_h(self):
-    #     return {}
-    #
-    # def src_genericmonitor_cpp(self):
-    #     return {}
-    #
-    # def src_specificmonitor_h(self):
-    #     return {}
-    #
-    # def src_specificmonitor_cpp(self):
-    #     return {}
 
