@@ -4,6 +4,7 @@ matrix:
   - env: SCRIPT="robocomp_compilation"
 branches:
   - development
+  - dev/*
 script:
   - cmake .
   - make
