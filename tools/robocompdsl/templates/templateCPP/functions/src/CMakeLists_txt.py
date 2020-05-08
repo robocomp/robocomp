@@ -101,3 +101,21 @@ def wrap_ice(component):
         pass
     result += ")"
     return result
+
+def wrap_ui(component):
+    result = ""
+    if component.gui is not None:
+        result += "QT_WRAP_UI( UI_HEADERS mainUI.ui )\n"
+    return result
+
+def get_template_dict(component):
+    return {
+        'component_name': component.name,
+        'interface_sources': interface_sources(component),
+        'statemachine_visual_sources': statemachine_visual_sources(component.statemachine_visual),
+        'ros_includes': ros_includes(component.usingROS),
+        'cpp11_ice_packages': cpp11_ice_packages(component.language),
+        'agm_includes': agm_includes(component),
+        'wrap_ice': wrap_ice(component),
+        'wrap_ui': wrap_ui(component),
+    }

@@ -1,6 +1,4 @@
 
-# This property is used by the clients to connect to IceStorm.
-TopicManager.Proxy=IceStorm/TopicManager:default -p 9999
 
 
 Ice.Warn.Connections=0

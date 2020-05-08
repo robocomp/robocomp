@@ -28,6 +28,7 @@ AGMCommonBehaviorI::~AGMCommonBehaviorI()
 {
 }
 
+
 bool AGMCommonBehaviorI::activateAgent(const ParameterMap  &prs, const Ice::Current&)
 {
 	return worker->AGMCommonBehavior_activateAgent(prs);

@@ -61,5 +61,6 @@ class IMUPubI(IMUPub):
     def __init__(self, worker):
         self.worker = worker
 
+
     def publish(self, imu, c):
         return self.worker.IMUPub_publish(imu)

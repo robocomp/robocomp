@@ -1,5 +1,5 @@
 /*
- *    Copyright (C) 2006-2010 by RoboLab - University of Extremadura
+ *    Copyright (C) 2020 by RoboLab - University of Extremadura
  *
  *    This file is part of RoboComp
  *
@@ -69,8 +69,8 @@ ParameterList CommonBehaviorI::getParameterList( const Ice::Current&)
 * \brief Change configurations parameters to worker
 * @param l Configuration parameters list
 */
-void CommonBehaviorI::setParameterList(const RoboCompCommonBehavior::ParameterList &l, const Ice::Current&) 
-{ 
+void CommonBehaviorI::setParameterList(const RoboCompCommonBehavior::ParameterList &l, const Ice::Current&)
+{
 	monitor->setParameterList(l);
 }
 void CommonBehaviorI::reloadConfig( const Ice::Current&)

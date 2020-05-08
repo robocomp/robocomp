@@ -32,9 +32,21 @@ def config_requires_proxies(component):
         result = '# Proxies for required interfaces\n' + result + '\n\n'
     return result
 
+STORM_TOPIC_MANAGER_STR = """\
+# This property is used by the clients to connect to IceStorm.
+TopicManager.Proxy=IceStorm/TopicManager:default -p 9999
+"""
+
+def storm_topic_manager(component):
+    result = ""
+    if len(component.publishes + component.subscribesTo) > 0:
+        result += STORM_TOPIC_MANAGER_STR
+    return result
+
 def get_template_dict(component):
     return {
         'config_implements_endpoints': config_implements_endpoints(component),
         'config_subscribes_endpoints': config_subscribes_endpoints(component),
-        'config_requires_proxies': config_requires_proxies(component)
+        'config_requires_proxies': config_requires_proxies(component),
+        'storm_topic_manager': storm_topic_manager(component)
     }

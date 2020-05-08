@@ -1,11 +1,10 @@
 CommonBehavior.Endpoints=tcp -p 10000
 
-
-# Endpoints for implemented interfaces
+# Endpoints for implements interfaces
 AGMCommonBehavior.Endpoints=tcp -p 0
 
 
-# Endpoints for subscriptions
+# Endpoints for subscriptions interfaces
 AGMExecutiveTopicTopic.Endpoints=tcp -p 0
 
 

@@ -1,38 +1,5 @@
-[[[cog
-import sys
-sys.path.append('/opt/robocomp/python')
-
-import cog
-
-includeDirectories = theIDSLPaths.split('#')
-
-
-
-
-
-
-
-def A():
-	cog.out('<@@<')
-def Z():
-	cog.out('>@@>')
-def TAB():
-	cog.out('<TABHERE>')
-def SPACE(i=0):
-	s = ''
-	if i>0:
-		s = str(i)
-	cog.out('<S'+s+'>')
-
-
-from dsl_parsers.dsl_factory import DSLFactory
-includeDirectories = theIDSLPaths.split('#')
-component = DSLFactory().from_file(theCDSL, include_directories=includeDirectories)
-
-]]]
-[[[end]]]
 /*
- *    Copyright (C) 2006-2010 by RoboLab - University of Extremadura
+ *    Copyright (C) ${year} by RoboLab - University of Extremadura
  *
  *    This file is part of RoboComp
  *
@@ -102,14 +69,8 @@ ParameterList CommonBehaviorI::getParameterList( const Ice::Current&)
 * \brief Change configurations parameters to worker
 * @param l Configuration parameters list
 */
-[[[cog
-	if component.language.lower() == 'cpp':
-		cog.outl("void CommonBehaviorI::setParameterList(const RoboCompCommonBehavior::ParameterList &l, const Ice::Current&) ")
-	else:
-		cog.outl("void CommonBehaviorI::setParameterList(RoboCompCommonBehavior::ParameterList l, const Ice::Current&) ")
-]]]
-[[[end]]]
-{ 
+void CommonBehaviorI::setParameterList(${const} RoboCompCommonBehavior::ParameterList ${ampersand}l, const Ice::Current&)
+{
 	monitor->setParameterList(l);
 }
 void CommonBehaviorI::reloadConfig( const Ice::Current&)

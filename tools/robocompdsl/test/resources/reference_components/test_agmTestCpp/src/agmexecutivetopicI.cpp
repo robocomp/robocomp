@@ -28,6 +28,7 @@ AGMExecutiveTopicI::~AGMExecutiveTopicI()
 {
 }
 
+
 void AGMExecutiveTopicI::edgeUpdated(const RoboCompAGMWorldModel::Edge  &modification, const Ice::Current&)
 {
 	worker->AGMExecutiveTopic_edgeUpdated(modification);

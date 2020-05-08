@@ -28,6 +28,7 @@ AprilTagsI::~AprilTagsI()
 {
 }
 
+
 void AprilTagsI::newAprilTag(const tagsList  &tags, const Ice::Current&)
 {
 	worker->AprilTags_newAprilTag(tags);

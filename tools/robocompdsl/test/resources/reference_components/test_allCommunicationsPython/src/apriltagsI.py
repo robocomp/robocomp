@@ -61,6 +61,7 @@ class AprilTagsI(AprilTags):
     def __init__(self, worker):
         self.worker = worker
 
+
     def newAprilTag(self, tags, c):
         return self.worker.AprilTags_newAprilTag(tags)
 

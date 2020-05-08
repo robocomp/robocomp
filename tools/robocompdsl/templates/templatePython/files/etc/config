@@ -2,8 +2,7 @@ ${config_implements_endpoints}
 ${config_subscribes_endpoints}
 ${config_requires_proxies}
 
-# This property is used by the clients to connect to IceStorm.
-TopicManager.Proxy=IceStorm/TopicManager:default -p 9999
+${storm_topic_manager}
 
 
 Ice.Warn.Connections=0

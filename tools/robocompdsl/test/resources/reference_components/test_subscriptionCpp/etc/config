@@ -1,7 +1,6 @@
 CommonBehavior.Endpoints=tcp -p 10000
 
-
-# Endpoints for subscriptions
+# Endpoints for subscriptions interfaces
 IMUPubTopic.Endpoints=tcp -p 0
 
 

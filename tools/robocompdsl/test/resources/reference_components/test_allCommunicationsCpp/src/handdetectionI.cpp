@@ -28,6 +28,7 @@ HandDetectionI::~HandDetectionI()
 {
 }
 
+
 int HandDetectionI::addNewHand(const int  expectedHands, const TRoi  &roi, const Ice::Current&)
 {
 	return worker->HandDetection_addNewHand(expectedHands, roi);

@@ -61,6 +61,7 @@ class HandDetectionI(HandDetection):
     def __init__(self, worker):
         self.worker = worker
 
+
     def addNewHand(self, expectedHands, roi, c):
         return self.worker.HandDetection_addNewHand(expectedHands, roi)
 
