@@ -219,7 +219,7 @@ Now start the component,
 For C++:
 
 ```bash
-bin/mycomponent --Ice.Config=etc/config
+bin/MyFirstComp --Ice.Config=etc/config
 ```
 
 For Python:
