@@ -74,7 +74,7 @@ Add these lines at the end:
 
     export ROBOCOMP=~/robocomp
     export PATH=$PATH:/opt/robocomp/bin
-   
+    export PYTHONPATH=/opt/robocomp/python:$PYTHONPATH   
 make bash process the modified file by typing: 
 
     source ~/.bashrc
