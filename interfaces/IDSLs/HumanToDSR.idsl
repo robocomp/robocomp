@@ -2,9 +2,12 @@ module RoboCompHumanToDSR
 {
     struct TJointData
     {
-        float x;
-        float y;
-        float z;
+        float wx;
+        float wy;
+        float wz;
+        float px;
+        float py;
+        float pz;
     };
     dictionary <string, TJointData> TJoints;
     struct Person
