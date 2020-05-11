@@ -9,8 +9,8 @@ RoboCompDSL's Developer Guide
 - [Main Concepts](#main-concepts)
 - [DSLFactory](#dslfactory)
   * [DSL Parsers](#dsl-parsers)
-    + [PyParsing](#pyparsing)
     + [Creating a new parser](#creating-a-new-parser)
+    + [PyParsing](#pyparsing)
       - [Pyparsing Parser Creation](#pyparsing-parser-creation)
 - [ComponentFacade: AST to Component Object](#componentfacade--ast-to-component-object)
   * [Adding and modifying Component Object attributes](#adding-and-modifying-component-object-attributes)
@@ -21,7 +21,7 @@ RoboCompDSL's Developer Guide
   * [How the Template variables code is generated?](#how-the-template-variables-code-is-generated-)
   * [Creating a new Template](#creating-a-new-template)
 
-<small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
+<small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small><small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
 
 
 
@@ -39,34 +39,47 @@ So we could summarize that the main function of robocompdsl would be this:
 .cdsl file ==> (SOMETHING) ==> Component (many files)
 ```
 
-The first step to achieve this goal is to be able to read a .cdsl file that has its own grammar and convert it to an AST (Abstract Syntaxt Tree) that we can use in python. This is what PyParsing is being used for.   
+The first step to achieve this goal is to be able to read a .cdsl file that has its own grammar and convert it to an AST (Abstract Syntax Tree) that we can use in python. This is what PyParsing is being used for.   
 
 Pyparsing generates its own structure, PyParsingResult, which can be accessed as an array, dictionary or class as needed.
 But it has been decided that for convenience and to control the access to the information of this structure, it should be converted to a specific class of robocompdsl: ComponentFacade. This class can be generated directly from what PyParsing returns and it allows us, through a small hierarchy of classes, to access in a comfortable and ordered way to the information that we will require from the component that we have just read.
 
-In robocompdsl you need parsers for several file types (.cdsl, .idsl, .smdsl). For this reason PyParsing has been encapsulated behind DSLFactory (we will talk about it later) which provides the necessary parsers for different file types.
+In robocompdsl you need parsers for several file types (.cdsl, .idsl, .smdsl). For this reason, 
+PyParsing has been encapsulated behind DSLFactory (we will talk about it later) which provides 
+the necessary parsers for different file types.
 
 So now we're in this situation:
 ```
 .cdsl file ==> Parser ==> AST ==> ComponentFacade ==> (SOMETHING) ==> Component (many files).
 ```
 
-Currently robocompdsl can generate components in c++ and python. The files needed to generate these components are found as Templates and these templates are designed to receive a ComponentFacade type object and from it generate the final files of the component.
+Currently, robocompdsl can generate components in c++ and python. The files needed to generate these components are found as Templates and these templates are designed to receive a ComponentFacade type object and from it generate the final files of the component.
 So finally we have that the process that is followed internally to pass from a .cdsl to a Component would be this one:
 ```
 .cdsl file ==> Parser ==> AST ==> ComponentFacade ==> Template ==> Component (many files).
 ```
 
 # DSLFactory
-As mentioned above, robocompdsl must be able to read several types of files, each with its own syntax. Currently you can read .cdsl (Component Domain Specific Language), .idsl (Interface Domain Specific Language) and .smdsl (State Machine Domain Specific Language) files.
-Each of these 3 file types requires a specific parser, but the operation is very similar. The content of the file is loaded, a parser is applied to it to check the syntax and obtain an AST ([Abstract Sintaxt Tree](https://en.wikipedia.org/wiki/Abstract_syntax_tree)).
+As mentioned above, robocompdsl must be able to read several types of files, each with its own syntax. 
+Currently, you can read .cdsl (Component Domain Specific Language), .idsl (Interface Domain Specific Language), 
+and .smdsl (State Machine Domain Specific Language) files.
+Each of these 3 file types requires a specific parser, but the operations are very similar.
+The content of the file is loaded, a parser is applied to it to check the syntax and obtain an 
+AST ([Abstract Sintaxt Tree](https://en.wikipedia.org/wiki/Abstract_syntax_tree)).
 
-DSLFactory ([dsl_parsers/dsl_factory.py](./dsl_parsers/dsl_factory.py)) was designed to perform this process. This class determines which type of files it is and calls the appropriate parser to finally return the AST corresponding to the dsl file read.
-The different parsers can be found in dsl_parsers/specific_parsers/.
+DSLFactory ([dsl_parsers/dsl_factory.py](./dsl_parsers/dsl_factory.py)) was designed to perform 
+these tasks. This class determines which type of file it is processing and calls the appropriate 
+parser to finally return the AST corresponding to the dsl file read.
+The different parsers can be found in [dsl_parsers/specific_parsers/](./dsl_parsers/specific_parsers/).
 
-In addition to facilitating the reading of all DSL files, DSLFactory was created to work as a [Singleton](https://en.wikipedia.org/wiki/Singleton_pattern), so in all the execution of robocompdsl, there can only be one instance of it and it will be shared by all the code points where it is used. If we add to these a rudimentary cache system that stores for each parsed file path the structure that is generated, we have that even if we need several times the content of a dsl file, it will only be parsed the first time it is required.
+In addition to facilitating the reading of all DSL files, DSLFactory was created to work as a 
+[Singleton](https://en.wikipedia.org/wiki/Singleton_pattern), so in the whole execution of 
+robocompdsl, there can only be one instance of it and it will be shared in all the code points where it is used.
+If we add to these a rudimentary cache system that stores the structure that is generated for each parsed file path, 
+we have that even if we need several times the content of a dsl file, it will only be parsed 
+the first time it is required.
 
-Thus the tasks of DSLFactory are fundamentally
+Thus the tasks of DSLFactory are fundamentally these:
 * Read the file
 * Create the appropriate parser
 * Using the parser to generate a structure
@@ -75,12 +88,18 @@ Thus the tasks of DSLFactory are fundamentally
 
 ## DSL Parsers
 
-DSL parsers are in charge of defining the grammar for one of the file types that robocompdsl can read and generate the [AST](https://en.wikipedia.org/wiki/Abstract_syntax_tree) from a string and that grammar.
+DSL parsers are in charge of defining the grammar for one of the file types that robocompdsl 
+can read and generate the [AST](https://en.wikipedia.org/wiki/Abstract_syntax_tree) from a 
+string and that grammar.
 
-To unify and simplify the implementation of new parsers the DSLParserTemplate abstract class was created ([dsl_parsers/dsl_parser_abstract.py](./dsl_parsers/dsl_parser_abstract.py)). This class implements some of the functionalities common to all parsers and forces the implementation of two needed methods.
+To unify and simplify the implementation of new parsers the DSLParserTemplate abstract class was 
+created ([dsl_parsers/dsl_parser_abstract.py](./dsl_parsers/dsl_parser_abstract.py)). This class 
+implements some of the functionalities common to all parsers and forces the implementation of 
+two needed methods.
 
 ### Creating a new parser
-As mentioned above, robocompdsl offers an abstract class from which you must inherit if you want to create a new parser: DSLParserTemplate.
+As mentioned above, robocompdsl offers an abstract class from which you must inherit if you want 
+to create a new parser: DSLParserTemplate.
 The methods that must be implemented for the parser to work properly are:
 ```
 create_parser(self)
@@ -194,5 +213,46 @@ and its corresponding function file in [templates/templateCPP/functions/src/spec
 Some template files do not have their corresponding function file. The reason for this is that they may not have variables in the template file or the functions to generate the code are very simple.
 
 ## How the Template variables code is generated?
+If we check the [string.Template](https://docs.python.org/3/library/string.html#string.Template.substitute) documentation we can see that one of the ways to give value 
+to the variables contained in the text is calling the *substitute* method with a dictionary as parameter. The keys will be the names of the variables to be filled and the values, the text by which it is going to be replaced. 
+Therefore, from the ComponentFacade and the variables to be filled, we can generate this dictionary. 
+If you look into the code of the [__get_template_dict()](./templates/common/abstracttemplate.py#L150) method of [AbstracTemplate](./templates/common/abstracttemplate.py#L87), 
+you can check that this process is done in 2 different ways:
+1. First it check if the class that has inherited from AbstractTemplate has any method that 
+is called the same as the name of the template but replacing the "/" and the "." with "_". 
+This way, if we have the file src/commonbehaviorI.h, a method called src_commonbehaviorI_h would be expected.
+This method has access through self.component to the corresponding ComponentFacade and it is expected to returns a dictionary
+to be used with the Template.
+Example: for the *src/mainUI.ui* file the method would be:
+    ```python
+    def src_mainUI_ui(self):
+        return {
+            'gui_type': self.component.gui.widget,
+            'component_name': self.component.name
+        }
+    ```
+
+2. If a method with that name is not found, the next thing that is done is to 
+look in the functions directory for a file with the same path and the same name as the 
+template but replacing the "." before the extension with a "_" and ending in this case in *.py*.
+So, for example, for the template file/src/specificworker.h, the corresponding 
+functions/src/specificworker_h.py will be searched.
+Inside this file there will be probably several functions defined, but in order to work with the 
+templates there must be a function called *get_template_dict* and that receives as parameter a 
+component (ComponentFacade). It is expected to return a suitable dictionary for the replacement of the variables in the template file.
+
+3. If none of the above conditions are met the __get_template_dict() method will return 
+an empty dictionary. This situation is suitable for those template files that do not contain 
+variables and that must simply be copied as they are to the component directory.
 
 ## Creating a new Template
+If you want to create a new template to, for example, support a new language for the components,
+what is expected is to replicate the same structure that can be found in 
+[templateCPP](./templates/templateCPP) or [templatePython](./templates/templateCPP). 
+This new directory should have at the same time files of the template with the variables in a 
+directory *files* and other directory *functions* with the corresponding files that could be necessary.
+Finally, the template as such can be implemented as a module with a class that should inherit from 
+AbstractTemplate. The necessary methods can be added to this new class as it has been described in the previous section for its use with the template.
+You can consult the examples of this classes in the Python and C++ implementation of the templates:
+* [templates/templateCPP/templatecpp.py](./templates/templateCPP/templatecpp.py)
+* [templates/templatePython/templatepython.py](./templates/templatePython/templatepython.py)
