@@ -3,23 +3,27 @@ RoboCompDSL's Developer Guide
 =============================
 
 # Table of Contents
+- [RoboCompDSL's Developer Guide](#robocompdsl-s-developer-guide)
+- [Table of Contents](#table-of-contents)
 - [Introduction](#introduction)
 - [Main Concepts](#main-concepts)
 - [DSLFactory](#dslfactory)
-  * [Creating a new parser](#creating-a-new-parser)
-  * [CDSL Loading](#cdsl-loading)
+  * [DSL Parsers](#dsl-parsers)
     + [PyParsing](#pyparsing)
-      - [Parser Creation](#parser-creation)
-      - [ComponentFacade: AST to Component Object](#componentfacade--ast-to-component-object)
-        * [Adding and modifiying Component Object attributes](#adding-and-modifiying-component-object-attributes)
-  * [The Template classes](#the-template-classes)
+    + [Creating a new parser](#creating-a-new-parser)
+      - [Pyparsing Parser Creation](#pyparsing-parser-creation)
+- [ComponentFacade: AST to Component Object](#componentfacade--ast-to-component-object)
+  * [Adding and modifying Component Object attributes](#adding-and-modifying-component-object-attributes)
+- [The Template classes](#the-template-classes)
   * [Usage of Python string.Template](#usage-of-python-stringtemplate)
-    + [AbstractTemplate class](#abstracttemplate-class)
-    + [files directory](#files-directory)
-    + [functions directory](#functions-directory)
-    + [Creating a new Template](#creating-a-new-template)
+  * [AbstractTemplate class](#abstracttemplate-class)
+  * [The *files* and *functions* directories](#the--files--and--functions--directories)
+  * [How the Template variables code is generated?](#how-the-template-variables-code-is-generated-)
+  * [Creating a new Template](#creating-a-new-template)
 
 <small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
+
+
 
 
 # Introduction
@@ -99,7 +103,7 @@ If you are going to create your own parser you can check the _create_parser() me
 
 You can also consult other less specific examples of the use of PyParsing in its own [repository](https://github.com/pyparsing/pyparsing/tree/master/examples).
 
-## ComponentFacade: AST to Component Object
+# ComponentFacade: AST to Component Object
 In the specific case of the cdsl, given the complexity of the structure generated and 
 the need to unify the way to access it, it was decided to create a class from the AST 
 returned by PyParsing and that would contain all the necessary information regarding 
@@ -137,7 +141,7 @@ The reason for converting both the AST and these values into instances of specif
 
 This solution was also thought to be able to adapt this representation of a Component even if the way it is represented internally is changed, thus maintaining the compatibility of the code.
 
-### Adding and modifying Component Object attributes
+## Adding and modifying Component Object attributes
 If you add new elements to the cdsl grammar or change the expected values of the existing ones this should be reflected in ComponentFacade. If a simple value is added to the component, it automatically becomes part of ComponentFacade as an attribute when it is created.
 For example, if we add "color" to the cdsl grammar and it is read and reflected in the AST, when creating the corresponding 
 ```python
@@ -157,24 +161,24 @@ This way, when ComponentFacade is generated, this new attribute will be of the t
 
 If no specific class is specified on the mapping, the attribute will keep the same type and structure it has at the AST (list, dictionary, string)
 
-## The Template classes
+# The Template classes
 The Templates in robocompdsl represent the types of files that can be generated.
 Specifically for a cdsl, you can generate code for a component in python or in c++. 
 The templates of these files needed by the component can be found in the directory [templates](./templates).
  
-### Usage of Python string.Template
+## Usage of Python string.Template
 To keep the template files clean in robocompdsl we have chosen to use the string.Template class of the standard library. You can find the specific documentation [here](https://docs.python.org/3/library/string.html#template-strings).
 
 These files have the content that will have the final code file (static code) and some variables defined as ${variable} and that will be replaced later by other code pieces.
 
-### AbstractTemplate class
+## AbstractTemplate class
 In robocompdsl the class in charge of reading those source files and 
 replacing the variables is located in [templates/common/abstracttemplate.py](./templates/common/abstracttemplate.py). 
 In this module is defined the *AbstractTemplate* class from which any robocompdsl template should inherit.
 The classes derived from this one must pass an instance of the ComponentFacade in the constructor.
  Finally, calling the generate_files method, the files corresponding to that component and template are generated.
 
-### The *files* and *functions* directories
+## The *files* and *functions* directories
 Given one of the two languages that can be generated, let's see for example for c++, the directory [templates/templateCPP](./templates/templateCPP/) contains several subdirectories:
 * files: contains the template files as such. They will be the source files of the new component. These contain a static part that does not change and some variables that will be replaced by other pieces of code generated in a dynamic way.
 * functions: The variables of the templates described above, must be filled with text/code generated according to the ComponentFacade that we are trying to convert into a component. 
@@ -185,6 +189,6 @@ and its corresponding function file in [templates/templateCPP/functions/src/spec
 
 Some template files do not have their corresponding function file. The reason for this is that they may not have variables in the template file or the functions to generate the code are very simple.
 
-### How the Template variables code is generated?
+## How the Template variables code is generated?
 
-### Creating a new Template
+## Creating a new Template
