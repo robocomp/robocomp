@@ -98,7 +98,7 @@ class AbstractTemplate(ABC):
         for template_file in self.files['regular']:
             if template_file == 'src/mainUI.ui' and self.component.gui is None: continue
             if language == 'python' and template_file == 'CMakeLists.txt' and self.component.gui is None: continue
-            if template_file == 'README-RCNODE.txt' and not self.need_storm(): continue
+            if template_file == 'README-RCNODE.txt' and not self.__need_storm(): continue
 
             if language == 'python' and template_file == 'src/main.py':
                 ofile = os.path.join(output_path, 'src', self.component.name + '.py')
@@ -112,7 +112,7 @@ class AbstractTemplate(ABC):
 
             ifile = os.path.join(TEMPLATES_DIR,self.files['template_path'], template_file)
             print('Generating', ofile)
-            self.template_to_file(ifile, ofile)
+            self.__template_to_file(ifile, ofile)
 
             if language == 'python' and template_file == 'src/main.py':
                 os.chmod(ofile, os.stat(ofile).st_mode | 0o111)
@@ -124,20 +124,20 @@ class AbstractTemplate(ABC):
                         -1].lower())
                     print('Generating %s (servant for %s)' % (ofile, interface.name))
                     ifile = os.path.join(TEMPLATES_DIR, self.files['template_path'], template_file)
-                    self.template_to_file(ifile,  ofile, interface.name)
+                    self.__template_to_file(ifile, ofile, interface.name)
         return new_existing_files
 
 
-    def need_storm(self):
+    def __need_storm(self):
         for pub in self.component.publishes + self.component.subscribesTo:
             if communication_is_ice(pub):
                 return True
         return False
 
-    def template_to_file(self, template, output_file, interface_name=None):
+    def __template_to_file(self, template, output_file, interface_name=None):
             with open(template, 'r') as istream:
                 content = istream.read()
-                template_dict = self.get_template_dict(template,interface_name)
+                template_dict = self.__get_template_dict(template, interface_name)
                 template_object = CustomTemplate(content, trimlines=False)
                 try:
                     file_content = template_object.substitute(**template_dict)
@@ -147,7 +147,7 @@ class AbstractTemplate(ABC):
                 with open(output_file, 'w') as ostream:
                     ostream.write(file_content)
 
-    def get_template_dict(self, template, interface_name=None):
+    def __get_template_dict(self, template, interface_name=None):
         template_dict = {}
         full_path = os.path.join(TEMPLATES_DIR, self.files['template_path'])
         template_name = template.replace(full_path,"")
