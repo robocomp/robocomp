@@ -77,15 +77,8 @@ Thus the tasks of DSLFactory are fundamentally
 
 DSL parsers are in charge of defining the grammar for one of the file types that robocompdsl can read and generate the [AST](https://en.wikipedia.org/wiki/Abstract_syntax_tree) from a string and that grammar.
 
-To unify and simplify the implementation of new parsers the DSLParserTemplate abstract class was created ([dsl_parsers/dsl_parser_abstract.py]((./dsl_parsers/dsl_parser_abstract.py))). This class implements some of the functionalities common to all parsers and forces the implementation of two needed methods.
+To unify and simplify the implementation of new parsers the DSLParserTemplate abstract class was created ([dsl_parsers/dsl_parser_abstract.py](./dsl_parsers/dsl_parser_abstract.py)). This class implements some of the functionalities common to all parsers and forces the implementation of two needed methods.
 
-### PyParsing
-PyParsing is a python module that allows you to create Parsing Expression Grammars ([PEGs](https://en.wikipedia.org/wiki/Parsing_expression_grammar)) and use them to parse files with that grammar.
-You can consult the PyParsing documentation [here](https://pyparsing-docs.readthedocs.io/en/latest/).
-
-Essentially PyParsing offers a series of classes and operators that allow us to generate the grammar and at the end what we have is a parser.
-
-This parser has a parseString method to obtain the AST from the text that is passed to it as a parameter. This AST comes in the form of PyParsingResult nested classes.
 ### Creating a new parser
 As mentioned above, robocompdsl offers an abstract class from which you must inherit if you want to create a new parser: DSLParserTemplate.
 The methods that must be implemented for the parser to work properly are:
@@ -97,6 +90,15 @@ In charge of defining and creating the Parser (currently with PyParsing) and:
 string_to_struct(self, string, **kwargs)
 ```
 In charge of converting the text string, applying the parser, into a convenient [AST](https://en.wikipedia.org/wiki/Abstract_syntax_tree) or structure.
+
+### PyParsing
+PyParsing is a python module that allows you to create Parsing Expression Grammars ([PEGs](https://en.wikipedia.org/wiki/Parsing_expression_grammar)) and use them to parse files with that grammar.
+You can consult the PyParsing documentation [here](https://pyparsing-docs.readthedocs.io/en/latest/).
+
+Essentially PyParsing offers a series of classes and operators that allow us to generate the grammar and at the end what we have is a parser.
+
+This parser has a parseString method to obtain the AST from the text that is passed to it as a parameter. This AST comes in the form of PyParsingResult nested classes.
+
 #### Pyparsing Parser Creation
 If you are going to create your own parser you can check the _create_parser() methods for 
 [cdsl](./dsl_parsers/specific_parsers/cdsl/cdsl_parser.py#L17), [idsl](./dsl_parsers/specific_parsers/idsl_parser.py#L15) and [smdsl](./dsl_parsers/specific_parsers/smdsl_parser.py#L14) in these links.
@@ -170,6 +172,8 @@ The templates of these files needed by the component can be found in the directo
 To keep the template files clean in robocompdsl we have chosen to use the string.Template class of the standard library. You can find the specific documentation [here](https://docs.python.org/3/library/string.html#template-strings).
 
 These files have the content that will have the final code file (static code) and some variables defined as ${variable} and that will be replaced later by other code pieces.
+
+TODO: Talk about CustomTemplate class and indentation.
 
 ## AbstractTemplate class
 In robocompdsl the class in charge of reading those source files and 
