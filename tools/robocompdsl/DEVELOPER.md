@@ -21,7 +21,7 @@ RoboCompDSL's Developer Guide
   * [How the Template variables code is generated?](#how-the-template-variables-code-is-generated-)
   * [Creating a new Template](#creating-a-new-template)
 
-<small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small><small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
+<small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
 
 
 
@@ -212,7 +212,7 @@ and its corresponding function file in [templates/templateCPP/functions/src/spec
 
 Some template files do not have their corresponding function file. The reason for this is that they may not have variables in the template file or the functions to generate the code are very simple.
 
-## How the Template variables code is generated?
+## How the Template variables code is generated
 If we check the [string.Template](https://docs.python.org/3/library/string.html#string.Template.substitute) documentation we can see that one of the ways to give value 
 to the variables contained in the text is calling the *substitute* method with a dictionary as parameter. The keys will be the names of the variables to be filled and the values, the text by which it is going to be replaced. 
 Therefore, from the ComponentFacade and the variables to be filled, we can generate this dictionary. 
@@ -248,7 +248,7 @@ variables and that must simply be copied as they are to the component directory.
 ## Creating a new Template
 If you want to create a new template to, for example, support a new language for the components,
 what is expected is to replicate the same structure that can be found in 
-[templateCPP](./templates/templateCPP) or [templatePython](./templates/templateCPP). 
+[templateCPP](./templates/templateCPP) or [templatePython](./templates/templatePython). 
 This new directory should have at the same time files of the template with the variables in a 
 directory *files* and other directory *functions* with the corresponding files that could be necessary.
 Finally, the template as such can be implemented as a module with a class that should inherit from 
