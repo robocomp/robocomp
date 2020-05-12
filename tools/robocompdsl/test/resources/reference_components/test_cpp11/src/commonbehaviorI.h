@@ -1,5 +1,5 @@
 /*
- *    Copyright (C) 2006-2010 by RoboLab - University of Extremadura
+ *    Copyright (C) 2020 by RoboLab - University of Extremadura
  *
  *    This file is part of RoboComp
  *
@@ -42,7 +42,7 @@ public:
 	int timeAwake( const Ice::Current & = Ice::Current());
 	void killYourSelf( const Ice::Current & = Ice::Current());
 	ParameterList getParameterList( const Ice::Current & = Ice::Current());
-	void setParameterList(RoboCompCommonBehavior::ParameterList l, const Ice::Current & = Ice::Current());
+	void setParameterList( RoboCompCommonBehavior::ParameterList l, const Ice::Current & = Ice::Current());
 	void reloadConfig( const Ice::Current& = Ice::Current());
 	RoboCompCommonBehavior::State getState(const Ice::Current& = Ice::Current());
 

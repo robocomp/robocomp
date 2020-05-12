@@ -1,5 +1,5 @@
 /*
- *    Copyright (C)2020 by YOUR NAME HERE
+ *    Copyright (C) 2020 by YOUR NAME HERE
  *
  *    This file is part of RoboComp
  *
@@ -53,8 +53,7 @@ struct BehaviorParameters
 	std::vector< std::vector <std::string> > plan;
 };
 
-class GenericWorker :
-public QObject
+class GenericWorker : public QObject
 {
 Q_OBJECT
 public:

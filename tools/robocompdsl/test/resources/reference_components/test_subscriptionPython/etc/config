@@ -1,4 +1,4 @@
-# Endpoints for subscriptions
+# Endpoints for subscriptions interfaces
 IMUPubTopic.Endpoints=tcp -p 0
 
 

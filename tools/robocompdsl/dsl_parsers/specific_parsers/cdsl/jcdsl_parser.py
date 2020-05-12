@@ -1,13 +1,10 @@
 import json
 import os
-from collections import OrderedDict
-
 
 from dsl_parsers.dsl_parser_abstract import DSLParserTemplate
-from dsl_parsers.parsing_utils import is_agm2_agent, is_agm2_agent_ROS, communication_is_ice, is_agm1_agent, \
-    generate_recursive_imports
+from dsl_parsers.parsing_utils import is_agm2_agent_ROS, communication_is_ice, generate_recursive_imports
 from dsl_parsers.specific_parsers.cdsl.componentinspections import ComponentInspections
-from dsl_parsers.specific_parsers.componentfacade import ComponentFacade
+from . import componentfacade
 
 
 class CDSLJsonParser(DSLParserTemplate):
@@ -15,11 +12,12 @@ class CDSLJsonParser(DSLParserTemplate):
         super(CDSLJsonParser, self).__init__()
         self._include_directories = include_directories
 
+
     def _create_parser(self):
         pass
 
     def string_to_struct(self, dsl_string, **kwargs):
-        component = ComponentFacade.from_nested_dict(json.loads(dsl_string))
+        component = componentfacade.ComponentFacade.from_nested_dict(json.loads(dsl_string))
         inspections = ComponentInspections()
         inspections.check_all_inspections(component)
 
@@ -34,9 +32,9 @@ class CDSLJsonParser(DSLParserTemplate):
             imprts = component.imports
         else:
             imprts = []
-        if is_agm1_agent(component):
+        if component.is_agm1_agent():
             imprts.extend(['AGMExecutive.idsl', 'AGMCommonBehavior.idsl', 'AGMWorldModel.idsl', 'AGMExecutiveTopic.idsl'])
-        if is_agm2_agent(component):
+        if component.is_agm2_agent():
             imprts.extend(['AGM2.idsl'])
         iD = self._include_directories + ['/opt/robocomp/interfaces/IDSLs/',
                                    os.path.expanduser('~/robocomp/interfaces/IDSLs/')]
@@ -69,7 +67,7 @@ class CDSLJsonParser(DSLParserTemplate):
                         component.rosInterfaces.append(interface)
                         component.usingROS = True
         # Handle options for communications
-        if is_agm1_agent(component):
+        if component.is_agm1_agent():
             component.iceInterfaces += ['AGMCommonBehavior', 'AGMExecutive', 'AGMExecutiveTopic', 'AGMWorldModel']
             if not 'AGMCommonBehavior' in component.implements:
                 component.implements = ['AGMCommonBehavior'] + component.implements
@@ -77,7 +75,7 @@ class CDSLJsonParser(DSLParserTemplate):
                 component.requires = ['AGMExecutive'] + component.requires
             if not 'AGMExecutiveTopic' in component.subscribesTo:
                 component.subscribesTo = ['AGMExecutiveTopic'] + component.subscribesTo
-        if is_agm2_agent(component):
+        if component.is_agm2_agent():
             if is_agm2_agent_ROS(component):
                 component.usingROS = True
                 agm2agent_requires = [['AGMDSRService', 'ros']]

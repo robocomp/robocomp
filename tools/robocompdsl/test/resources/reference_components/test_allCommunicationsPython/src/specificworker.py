@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2020 by YOUR NAME HERE
+#    Copyright (C) 2020 by YOUR NAME HERE
 #
 #    This file is part of RoboComp
 #
@@ -78,7 +78,7 @@ class SpecificWorker(GenericWorker):
         print("Entered state initialize")
         self.t_initialize_to_compute.emit()
         pass
-        
+    
 
     #
     # sm_compute
@@ -97,10 +97,10 @@ class SpecificWorker(GenericWorker):
     def sm_finalize(self):
         print("Entered state finalize")
         pass
-        
 
     # =================================================================
     # =================================================================
+
 
     #
     # SUBSCRIPTION to newAprilTag method from AprilTags interface
@@ -159,4 +159,5 @@ class SpecificWorker(GenericWorker):
 
     # ===================================================================
     # ===================================================================
+
 

@@ -34,10 +34,10 @@ class CDSLParser(DSLParserTemplate):
             imprts = component.imports
         else:
             imprts = []
-        if is_agm1_agent(component):
+        if component.is_agm1_agent():
             imprts.extend(
                 ['AGMExecutive.idsl', 'AGMCommonBehavior.idsl', 'AGMWorldModel.idsl', 'AGMExecutiveTopic.idsl'])
-        if is_agm2_agent(component):
+        if component.is_agm2_agent():
             imprts.extend(['AGM2.idsl'])
         iD = self._include_directories + ['/opt/robocomp/interfaces/IDSLs/',
                                           os.path.expanduser('~/robocomp/interfaces/IDSLs/')]
@@ -79,7 +79,7 @@ class CDSLParser(DSLParserTemplate):
                 component.requires = ['AGMExecutive'] + component.requires
             if not 'AGMExecutiveTopic' in component.subscribesTo:
                 component.subscribesTo = ['AGMExecutiveTopic'] + component.subscribesTo
-        if is_agm2_agent(component):
+        if component.is_agm2_agent():
             if is_agm2_agent_ROS(component):
                 component.usingROS = True
                 agm2agent_requires = [['AGMDSRService', 'ros']]

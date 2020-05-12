@@ -1,5 +1,5 @@
 /*
- *    Copyright (C)2020 by YOUR NAME HERE
+ *    Copyright (C) 2020 by YOUR NAME HERE
  *
  *    This file is part of RoboComp
  *
@@ -18,8 +18,8 @@
  */
 
 /**
-       \brief
-       @author authorname
+	\brief
+	@author authorname
 */
 
 
@@ -39,9 +39,10 @@ public:
 	bool setParams(RoboCompCommonBehavior::ParameterList params);
 
 
+
 public slots:
 	void initialize(int period);
-//Specification slot methods State Machine
+	//Specification slot methods State Machine
 	void sm_two();
 	void sm_three();
 	void sm_four();
@@ -57,7 +58,7 @@ public slots:
 	void sm_test4sub2();
 	void sm_test4sub1();
 
-//--------------------
+	//--------------------
 private:
 	std::shared_ptr<InnerModel> innerModel;
 

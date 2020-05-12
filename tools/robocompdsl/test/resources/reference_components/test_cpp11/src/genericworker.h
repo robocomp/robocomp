@@ -1,5 +1,5 @@
 /*
- *    Copyright (C)2020 by YOUR NAME HERE
+ *    Copyright (C) 2020 by YOUR NAME HERE
  *
  *    This file is part of RoboComp
  *
@@ -40,8 +40,7 @@ using namespace RoboCompOmniRobot;
 using TuplePrx = std::tuple<RoboCompOmniRobot::OmniRobotPrxPtr>;
 
 
-class GenericWorker :
-public QObject
+class GenericWorker : public QObject
 {
 Q_OBJECT
 public:

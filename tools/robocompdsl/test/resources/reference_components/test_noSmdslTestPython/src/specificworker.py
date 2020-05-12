@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2020 by YOUR NAME HERE
+#    Copyright (C) 2020 by YOUR NAME HERE
 #
 #    This file is part of RoboComp
 #
@@ -65,5 +65,7 @@ class SpecificWorker(GenericWorker):
         # print(r[0], r[1], r[2])
 
         return True
+
+
 
 

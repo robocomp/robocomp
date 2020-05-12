@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2020 by YOUR NAME HERE
+#    Copyright (C) 2020 by YOUR NAME HERE
 #
 #    This file is part of RoboComp
 #
@@ -57,7 +57,6 @@ class SpecificWorker(GenericWorker):
     def sm_one(self):
         print("Entered state one")
         pass
-        
 
     #
     # sm_four
@@ -66,7 +65,6 @@ class SpecificWorker(GenericWorker):
     def sm_four(self):
         print("Entered state four")
         pass
-        
 
     #
     # sm_three
@@ -75,7 +73,6 @@ class SpecificWorker(GenericWorker):
     def sm_three(self):
         print("Entered state three")
         pass
-        
 
     #
     # sm_two
@@ -84,7 +81,6 @@ class SpecificWorker(GenericWorker):
     def sm_two(self):
         print("Entered state two")
         pass
-        
 
     #
     # sm_five
@@ -93,7 +89,6 @@ class SpecificWorker(GenericWorker):
     def sm_five(self):
         print("Entered state five")
         pass
-        
 
     #
     # sm_test2sub1
@@ -102,7 +97,6 @@ class SpecificWorker(GenericWorker):
     def sm_test2sub1(self):
         print("Entered state test2sub1")
         pass
-        
 
     #
     # sm_test2sub2
@@ -111,7 +105,6 @@ class SpecificWorker(GenericWorker):
     def sm_test2sub2(self):
         print("Entered state test2sub2")
         pass
-        
 
     #
     # sm_test2sub21
@@ -120,7 +113,6 @@ class SpecificWorker(GenericWorker):
     def sm_test2sub21(self):
         print("Entered state test2sub21")
         pass
-        
 
     #
     # sm_test2sub22
@@ -129,7 +121,6 @@ class SpecificWorker(GenericWorker):
     def sm_test2sub22(self):
         print("Entered state test2sub22")
         pass
-        
 
     #
     # sm_test3sub1
@@ -138,7 +129,6 @@ class SpecificWorker(GenericWorker):
     def sm_test3sub1(self):
         print("Entered state test3sub1")
         pass
-        
 
     #
     # sm_test3sub2
@@ -147,7 +137,6 @@ class SpecificWorker(GenericWorker):
     def sm_test3sub2(self):
         print("Entered state test3sub2")
         pass
-        
 
     #
     # sm_test3sub3
@@ -156,7 +145,6 @@ class SpecificWorker(GenericWorker):
     def sm_test3sub3(self):
         print("Entered state test3sub3")
         pass
-        
 
     #
     # sm_test4sub1
@@ -165,7 +153,6 @@ class SpecificWorker(GenericWorker):
     def sm_test4sub1(self):
         print("Entered state test4sub1")
         pass
-        
 
     #
     # sm_test4sub2
@@ -174,8 +161,9 @@ class SpecificWorker(GenericWorker):
     def sm_test4sub2(self):
         print("Entered state test4sub2")
         pass
-        
 
     # =================================================================
     # =================================================================
+
+
 

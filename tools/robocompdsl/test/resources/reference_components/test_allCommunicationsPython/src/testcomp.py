@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 #
-# Copyright (C) 2020 by YOUR NAME HERE
+#    Copyright (C) 2020 by YOUR NAME HERE
 #
 #    This file is part of RoboComp
 #
@@ -169,7 +169,6 @@ if __name__ == '__main__':
     aprilbasedlocalizationTopic = AprilBasedLocalizationPrx.uncheckedCast(pub)
     mprx["AprilBasedLocalizationPub"] = aprilbasedlocalizationTopic
 
-
     if status == 0:
         worker = SpecificWorker(mprx)
         worker.setParams(parameters)
@@ -180,6 +179,7 @@ if __name__ == '__main__':
     adapter = ic.createObjectAdapter('HandDetection')
     adapter.add(HandDetectionI(worker), ic.stringToIdentity('handdetection'))
     adapter.activate()
+
 
     AprilTags_adapter = ic.createObjectAdapter("AprilTagsTopic")
     apriltagsI_ = AprilTagsI(worker)
@@ -202,7 +202,6 @@ if __name__ == '__main__':
     qos = {}
     apriltags_topic.subscribeAndGetPublisher(qos, apriltags_proxy)
     AprilTags_adapter.activate()
-
 
     signal.signal(signal.SIGINT, sigint_handler)
     app.exec_()

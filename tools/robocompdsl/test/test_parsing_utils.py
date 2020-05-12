@@ -3,6 +3,8 @@ import sys
 import unittest
 from unittest import TestCase
 
+from dsl_parsers.specific_parsers.cdsl.componentfacade import Interface
+
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 ROBOCOMPDSL_DIR = os.path.join(CURRENT_DIR, "..")
 RESOURCES_DIR = os.path.join(CURRENT_DIR, "resources")
@@ -77,15 +79,14 @@ class ParsingUtilsTest(unittest.TestCase):
     def test_is_agm1_agent(self):
         component = DSLFactory().from_file(
             os.path.join(CURRENT_DIR, "resources", "camerasimple.cdsl"))
-        self.assertFalse(parsing_utils.is_agm1_agent(component))
+        self.assertFalse(component.is_agm1_agent())
         component = DSLFactory().from_file(
             os.path.join(CURRENT_DIR, "resources", "humanAgent.cdsl"))
-        self.assertTrue(parsing_utils.is_agm1_agent(component))
-        self.assertRaises(AssertionError, parsing_utils.is_agm1_agent, "CameraSimple")
+        self.assertTrue(component.is_agm1_agent())
 
     # def test_is_agm2_agent(self):
     #     self.assertRaises(AssertionError, parsing_utils.is_agm2_agent, "CameraSimple")
-    #     # self.assertFalse(parsing_utils.is_agm2_agent(component))
+    #     # self.assertFalse(component.is_agm2_agent())
     #     self.fail("There's no component (cdsl) available to test this method option")
 
     def test_idsl_robocomp_path(self):
@@ -96,11 +97,11 @@ class ParsingUtilsTest(unittest.TestCase):
                          os.path.expanduser('~/robocomp/interfaces/IDSLs/CameraSimple.idsl')])
 
     def test_get_name_number(self):
-        self.assertCountEqual(parsing_utils.get_name_number([['AGMExecutiveTopic', 'ice'], ['HumanPose', 'ice']]),
+        self.assertCountEqual(parsing_utils.get_name_number([Interface(['AGMExecutiveTopic', 'ice']), Interface(['HumanPose', 'ice'])]),
                               [[('AGMExecutiveTopic', 'ice'), ''], [('HumanPose', 'ice'), '']])
-        self.assertCountEqual(parsing_utils.get_name_number([['AGMExecutiveTopic', 'ice'], ['HumanPose', 'ice'], ['HumanPose', 'ice']]),
+        self.assertCountEqual(parsing_utils.get_name_number([Interface(['AGMExecutiveTopic', 'ice']), Interface(['HumanPose', 'ice']), Interface(['HumanPose', 'ice'])]),
                               [[('AGMExecutiveTopic', 'ice'), ''], [('HumanPose', 'ice'), ''], [('HumanPose', 'ice'), '1']])
-        self.assertCountEqual(parsing_utils.get_name_number([['HumanPose', 'ice'], ['HumanPose', 'ice'], ['HumanPose', 'ice']]),
+        self.assertCountEqual(parsing_utils.get_name_number([Interface(['HumanPose', 'ice']), Interface(['HumanPose', 'ice']), Interface(['HumanPose', 'ice'])]),
                               [[('HumanPose', 'ice'), ''], [('HumanPose', 'ice'), '1'], [('HumanPose', 'ice'), '2']])
         self.assertRaises(AssertionError, parsing_utils.get_name_number, "lapatochada")
         self.assertRaises(AssertionError, parsing_utils.get_name_number, ["lapatochada", 8, 3.9])

@@ -1,0 +1,4 @@
+PySide2~=5.12.1
+pyparsing~=2.2.0
+termcolor~=1.1.0
+cogapp~=3.0.0

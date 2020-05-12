@@ -28,6 +28,7 @@ IMUPubI::~IMUPubI()
 {
 }
 
+
 void IMUPubI::publish(const RoboCompIMU::DataImu  &imu, const Ice::Current&)
 {
 	worker->IMUPub_publish(imu);

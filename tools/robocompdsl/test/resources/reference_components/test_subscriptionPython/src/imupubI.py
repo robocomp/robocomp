@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2020 by YOUR NAME HERE
+#    Copyright (C) 2020 by YOUR NAME HERE
 #
 #    This file is part of RoboComp
 #
@@ -54,11 +54,13 @@ for p in icePaths:
 if not ice_IMUPub:
     print('Couldn\'t load IMUPub')
     sys.exit(-1)
+
 from RoboCompIMUPub import *
 
 class IMUPubI(IMUPub):
     def __init__(self, worker):
         self.worker = worker
+
 
     def publish(self, imu, c):
         return self.worker.IMUPub_publish(imu)

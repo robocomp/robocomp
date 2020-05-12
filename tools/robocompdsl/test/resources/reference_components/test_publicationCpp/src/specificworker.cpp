@@ -1,5 +1,5 @@
 /*
- *    Copyright (C)2020 by YOUR NAME HERE
+ *    Copyright (C) 2020 by YOUR NAME HERE
  *
  *    This file is part of RoboComp
  *
@@ -37,7 +37,7 @@ SpecificWorker::~SpecificWorker()
 
 bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
 {
-//       THE FOLLOWING IS JUST AN EXAMPLE
+//	THE FOLLOWING IS JUST AN EXAMPLE
 //	To use innerModelPath parameter you should uncomment specificmonitor.cpp readConfig method content
 //	try
 //	{
@@ -67,18 +67,20 @@ void SpecificWorker::initialize(int period)
 
 void SpecificWorker::compute()
 {
-//computeCODE
-//QMutexLocker locker(mutex);
-//	try
-//	{
-//		camera_proxy->getYImage(0,img, cState, bState);
-//		memcpy(image_gray.data, &img[0], m_width*m_height*sizeof(uchar));
-//		searchTags(image_gray);
-//	}
-//	catch(const Ice::Exception &e)
-//	{
-//		std::cout << "Error reading from Camera" << e << std::endl;
-//	}
+	//computeCODE
+	//QMutexLocker locker(mutex);
+	//try
+	//{
+	//  camera_proxy->getYImage(0,img, cState, bState);
+	//  memcpy(image_gray.data, &img[0], m_width*m_height*sizeof(uchar));
+	//  searchTags(image_gray);
+	//}
+	//catch(const Ice::Exception &e)
+	//{
+	//  std::cout << "Error reading from Camera" << e << std::endl;
+	//}
+	
+	
 }
 
 
@@ -100,8 +102,6 @@ void SpecificWorker::sm_finalize()
 {
 	std::cout<<"Entered final state finalize"<<std::endl;
 }
-
-
 
 
 

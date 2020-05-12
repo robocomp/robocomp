@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2020 by YOUR NAME HERE
+#    Copyright (C) 2020 by YOUR NAME HERE
 #
 #    This file is part of RoboComp
 #
@@ -43,6 +43,7 @@ try:
 except:
     print('SLICE_PATH environment variable was not exported. Using only the default paths')
     pass
+
 
 ice_AprilBasedLocalization = False
 for p in icePaths:
@@ -160,10 +161,10 @@ class GenericWorker(QtWidgets.QDialog):
     def __init__(self, mprx):
         super(GenericWorker, self).__init__()
 
-
         self.camerasimple_proxy = mprx["CameraSimpleProxy"]
         self.rgbd_proxy = mprx["RGBDProxy"]
         self.aprilbasedlocalization_proxy = mprx["AprilBasedLocalizationPub"]
+
         self.ui = Ui_guiDlg()
         self.ui.setupUi(self)
         self.show()
