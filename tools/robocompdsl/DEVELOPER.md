@@ -3,8 +3,6 @@ RoboCompDSL's Developer Guide
 =============================
 
 # Table of Contents
-- [RoboCompDSL's Developer Guide](#robocompdsl-s-developer-guide)
-- [Table of Contents](#table-of-contents)
 - [Introduction](#introduction)
 - [Main Concepts](#main-concepts)
 - [DSLFactory](#dslfactory)
