@@ -4,8 +4,8 @@
 //  
 //  File name: InnerModelManager.ice
 //  Source: InnerModelManager.idsl
-//  
-//****************************************************************** 
+//
+//******************************************************************
 #ifndef ROBOCOMPINNERMODELMANAGER_ICE
 #define ROBOCOMPINNERMODELMANAGER_ICE
 module RoboCompInnerModelManager
@@ -13,91 +13,91 @@ module RoboCompInnerModelManager
 	enum NodeType {  Transform, Joint, DifferentialRobot, OmniRobot, Plane, Camera, RGBD, IMU, Laser, Mesh, PointCloud, TouchSensor, DisplayII  };
 	struct AttributeType
 	{
-		 string type;
-		 string value;
+		string type;
+		string value;
 	};
 	dictionary <string, AttributeType> AttributeMap;
 	struct NodeInformation
 	{
-		 string id;
-		 string parentId;
-		 NodeType nType;
-		 AttributeMap attributes;
+		string id;
+		string parentId;
+		NodeType nType;
+		AttributeMap attributes;
 	};
 	sequence <NodeInformation> NodeInformationSequence;
 	enum ErrorType {  NonExistingNode, NonExistingAttribute, NodeAlreadyExists, AttributeAlreadyExists, InvalidPath, InvalidEngine, InvalidValues, OperationInvalidNode, InternalError, Collision };
 	exception InnerModelManagerError{
-          ErrorType err;
-          string text;
-        };
+	          ErrorType err;
+	          string text;
+	        };
 	struct Colored3DPoint
 	{
-		 float x;
-		 float y;
-		 float z;
-		 byte r;
-		 byte g;
-		 byte b;
+		float x;
+		float y;
+		float z;
+		byte r;
+		byte g;
+		byte b;
 	};
 	sequence <Colored3DPoint> PointCloudVector;
 	struct Plane3D
 	{
-		 float px;
-		 float py;
-		 float pz;
-		 float nx;
-		 float ny;
-		 float nz;
-		 float width;
-		 float height;
-		 float thickness;
-		 string texture;
+		float px;
+		float py;
+		float pz;
+		float nx;
+		float ny;
+		float nz;
+		float width;
+		float height;
+		float thickness;
+		string texture;
 	};
 	struct coord3D
 	{
-		 float x;
-		 float y;
-		 float z;
+		float x;
+		float y;
+		float z;
 	};
 	struct Pose3D
 	{
-		 float x;
-		 float y;
-		 float z;
-		 float rx;
-		 float ry;
-		 float rz;
+		float x;
+		float y;
+		float z;
+		float rx;
+		float ry;
+		float rz;
 	};
 	struct jointType
 	{
-		 Pose3D pose;
-		 float lx;
-		 float ly;
-		 float lz;
-		 float hx;
-		 float hy;
-		 float hz;
-		 float mass;
-		 float min;
-		 float max;
-		 string axis;
-		 int port;
+		Pose3D pose;
+		float lx;
+		float ly;
+		float lz;
+		float hx;
+		float hy;
+		float hz;
+		float mass;
+		float min;
+		float max;
+		string axis;
+		int port;
 	};
 	struct meshType
 	{
-		 Pose3D pose;
-		 float scaleX;
-		 float scaleY;
-		 float scaleZ;
-		 int render;
-		 string meshPath;
+		Pose3D pose;
+		float scaleX;
+		float scaleY;
+		float scaleZ;
+		int render;
+		string meshPath;
 	};
 	sequence <float> FloatSeq;
 	struct Matrix
 	{
-		 int cols;
-		 int rows;
-		 FloatSeq data;
+		int cols;
+		int rows;
+		FloatSeq data;
 	};
 	interface InnerModelManager
 	{
