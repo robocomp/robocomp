@@ -1,11 +1,12 @@
 import importlib
+import os
 from collections import ChainMap
 from string import Template
 
-from ..common.abstracttemplate import CustomTemplate, AbstractTemplate
+from ..common.abstracttemplate import CustomTemplate, AbstractComponentTemplate
 
 
-class TemplatePython(AbstractTemplate):
+class TemplatePython(AbstractComponentTemplate):
     def __init__(self, component):
         self.files = {
                 'regular': [
@@ -19,6 +20,22 @@ class TemplatePython(AbstractTemplate):
                 'template_path': "templatePython/files/"
         }
         super(TemplatePython, self).__init__(component)
+
+
+    def _pre_generation_check(self, template_file):
+        if self.component.language.lower() == 'python' and template_file == 'CMakeLists.txt' and self.component.gui is None: return True
+        return False
+
+    def _output_file_rename(self, output_path, template_file):
+        if self.component.language.lower() == 'python' and template_file == 'src/main.py':
+            ofile = os.path.join(output_path, 'src', self.component.name + '.py')
+        else:
+            ofile = os.path.join(output_path, template_file)
+        return ofile
+
+    def _post_generation_action(self, template_file, ofile):
+        if template_file == 'src/main.py' and self.component.language.lower() == 'python':
+            os.chmod(ofile, os.stat(ofile).st_mode | 0o111)
 
 
     def README_md(self):

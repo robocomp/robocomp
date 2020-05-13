@@ -1,10 +1,11 @@
 import datetime
+import os
 
-from ..common.abstracttemplate import AbstractTemplate
+from ..common.abstracttemplate import AbstractComponentTemplate
 from ..templateCPP.functions import servant
 
 
-class TemplateCpp(AbstractTemplate):
+class TemplateCpp(AbstractComponentTemplate):
     def __init__(self, component):
         self.files = {
             'regular': [
