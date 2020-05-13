@@ -85,7 +85,7 @@ class CustomTemplate(Template):
 
 TEMPLATES_DIR = '/home/robolab/robocomp/tools/robocompdsl/templates/'
 
-class AbstractTemplate(ABC):
+class AbstractTemplatesManager(ABC):
     def __init__(self, ast):
         self.ast = ast
         super().__init__()
@@ -141,7 +141,7 @@ class AbstractTemplate(ABC):
                 pass
         return template_dict
 
-class AbstractComponentTemplate(AbstractTemplate):
+class ComponentTemplatesManager(AbstractTemplatesManager):
     def __init__(self, component):
         super().__init__(component)
 
@@ -191,7 +191,7 @@ class AbstractComponentTemplate(AbstractTemplate):
     def component(self):
         return self.ast
 
-class AbstractInterfaceTemplate(AbstractTemplate):
+class InterfaceTemplateManager(AbstractTemplatesManager):
     def __init__(self, interface):
         super().__init__(interface)
 

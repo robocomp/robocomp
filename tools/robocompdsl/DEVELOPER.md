@@ -14,7 +14,7 @@ RoboCompDSL's Developer Guide
   * [Adding and modifying Component Object attributes](#adding-and-modifying-component-object-attributes)
 - [The Template classes](#the-template-classes)
   * [Usage of Python string.Template](#usage-of-python-stringtemplate)
-  * [AbstractComponentTemplate class](#abstractcomponenttemplate-class)
+  * [ComponentTemplatesManager class](#componenttemplatesmanager-class)
   * [The *files* and *functions* directories](#the--files--and--functions--directories)
   * [How the Template variables code is generated](#how-the-template-variables-code-is-generated)
   * [Creating a new Template](#creating-a-new-template)
@@ -188,10 +188,10 @@ These files have the content that will have the final code file (static code) an
 
 TODO: Talk about CustomTemplate class and indentation.
 
-## AbstractComponentTemplate class
+## ComponentTemplatesManager class
 In robocompdsl the class in charge of reading those source files and 
-replacing the variables is located in [templates/common/abstracttemplate.py](./templates/common/abstracttemplate.py). 
-In this module is defined the *AbstractComponentTemplate* class from which any robocompdsl template should inherit.
+replacing the variables is located in [templates/common/abstracttemplatesmanager.py](./templates/common/abstracttemplatesmanager.py). 
+In this module is defined the *ComponentTemplatesManager* class from which any robocompdsl template should inherit.
 The classes derived from this one must pass an instance of the ComponentFacade in the constructor.
  Finally, calling the generate_files method, the files corresponding to that component and template are generated.
  
@@ -213,9 +213,9 @@ Some template files do not have their corresponding function file. The reason fo
 ## How the Template variables code is generated
 If we check the [string.Template](https://docs.python.org/3/library/string.html#string.Template.substitute) documentation we can see that one of the ways to set the variables contained in the text is calling the *substitute* method with a dictionary as parameter. The keys will be the names of the variables to be filled and the values, the text by which it is going to be replaced. 
 Therefore, from the ComponentFacade and the variables to be filled, we can generate this dictionary. 
-If you look into the code of the [\_\_get_template_dict()](./templates/common/abstracttemplate.py#L150) method of [AbstracTemplate](./templates/common/abstracttemplate.py#L87), 
+If you look into the code of the [\_\_get_template_dict()](./templates/common/abstracttemplatesmanager.py#L150) method of [AbstracTemplate](./templates/common/abstracttemplatesmanager.py#L87), 
 you can check that this process is done in 2 different ways:
-1. First it checks if the class that has inherited from AbstractComponentTemplate has any method that 
+1. First it checks if the class that has inherited from ComponentTemplatesManager has any method that 
 is called as the template but replacing the "/" and the "." with "\_". 
 This way, if we have the file src/commonbehaviorI.h, a method called src_commonbehaviorI_h would be expected.
 This method has access through self.component to the corresponding ComponentFacade and it is expected to returns a dictionary
@@ -249,7 +249,7 @@ what is expected is to replicate the same structure that can be found in
 This new directory should have at the same time files of the template with the variables in a 
 directory *files* and other directory *functions* with the corresponding files that could be necessary.
 Finally, the template as such can be implemented as a module with a class that should inherit from 
-AbstractComponentTemplate. The necessary methods can be added to this new class as it has been described in the previous section for its use with the template.
+ComponentTemplatesManager. The necessary methods can be added to this new class as it has been described in the previous section for its use with the template.
 You can consult the examples of this classes in the Python and C++ implementation of the templates:
 * [templates/templateCPP/templatecpp.py](./templates/templateCPP/templatecpp.py)
 * [templates/templatePython/templatepython.py](./templates/templatePython/templatepython.py)

@@ -1,7 +1,7 @@
-from ..common.abstracttemplate import CustomTemplate, AbstractInterfaceTemplate
+from ..common.abstracttemplatesmanager import InterfaceTemplateManager
 
 
-class TemplateIce(AbstractInterfaceTemplate):
+class TemplateManagerIce(InterfaceTemplateManager):
     def __init__(self, module):
         self.files = {
                 'regular': [

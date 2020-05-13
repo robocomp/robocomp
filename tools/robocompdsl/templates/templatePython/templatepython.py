@@ -1,12 +1,9 @@
-import importlib
 import os
-from collections import ChainMap
-from string import Template
 
-from ..common.abstracttemplate import CustomTemplate, AbstractComponentTemplate
+from ..common.abstracttemplatesmanager import ComponentTemplatesManager
 
 
-class TemplatePython(AbstractComponentTemplate):
+class TemplatesManagerPython(ComponentTemplatesManager):
     def __init__(self, component):
         self.files = {
                 'regular': [
@@ -19,7 +16,7 @@ class TemplatePython(AbstractComponentTemplate):
                 'servant_files': ["SERVANT.PY"],
                 'template_path': "templatePython/files/"
         }
-        super(TemplatePython, self).__init__(component)
+        super(TemplatesManagerPython, self).__init__(component)
 
 
     def _pre_generation_check(self, template_file):

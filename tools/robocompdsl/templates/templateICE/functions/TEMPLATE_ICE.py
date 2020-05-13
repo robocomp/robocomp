@@ -1,7 +1,7 @@
 import os
 from string import Template
 
-from ...common.abstracttemplate import CustomTemplate as CTemplate
+from ...common.abstracttemplatesmanager import CustomTemplate as CTemplate
 
 def ice_imports(module):
     result = ""

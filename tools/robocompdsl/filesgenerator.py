@@ -4,9 +4,9 @@ import subprocess
 import sys
 
 import robocompdslutils
-from templates.templateCPP.templatecpp import TemplateCpp
-from templates.templateICE.templateice import TemplateIce
-from templates.templatePython.templatepython import TemplatePython
+from templates.templateCPP.templatecpp import TemplatesManagerCpp
+from templates.templateICE.templateice import TemplateManagerIce
+from templates.templatePython.templatepython import TemplatesManagerPython
 
 sys.path.append("/opt/robocomp/python")
 from dsl_parsers import dsl_factory
@@ -113,17 +113,17 @@ class FilesGenerator:
         template = LANG_TO_TEMPLATE[language]
         # TODO: Template objects could be moved to a TemplateFactory
         if template == 'python':
-            template_obj = TemplatePython(self.ast)
+            template_obj = TemplatesManagerPython(self.ast)
         else:
-            template_obj = TemplateCpp(self.ast)
+            template_obj = TemplatesManagerCpp(self.ast)
         new_existing_files = template_obj.generate_files(self.output_path)
         for module in self.ast.idsl_pool.modulePool.values():
-            template_obj = TemplateIce(module)
+            template_obj = TemplateManagerIce(module)
             new_existing_files.update(template_obj.generate_files(self.output_path))
         return new_existing_files
 
     def __generate_interface(self):
-        template_obj = TemplateIce(self.ast)
+        template_obj = TemplateManagerIce(self.ast)
         new_existing_files = template_obj.generate_files(self.output_path)
         return new_existing_files
 

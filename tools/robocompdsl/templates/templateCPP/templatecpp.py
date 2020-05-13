@@ -1,11 +1,10 @@
 import datetime
-import os
 
-from ..common.abstracttemplate import AbstractComponentTemplate
+from ..common.abstracttemplatesmanager import ComponentTemplatesManager
 from ..templateCPP.functions import servant
 
 
-class TemplateCpp(AbstractComponentTemplate):
+class TemplatesManagerCpp(ComponentTemplatesManager):
     def __init__(self, component):
         self.files = {
             'regular': [
@@ -23,7 +22,7 @@ class TemplateCpp(AbstractComponentTemplate):
             'servant_files': ["SERVANT.H", "SERVANT.CPP"],
             'template_path': "templateCPP/files/"
         }
-        super(TemplateCpp, self).__init__(component)
+        super(TemplatesManagerCpp, self).__init__(component)
 
     def SERVANT_H(self, interface_name):
         module = self.component.idsl_pool.moduleProviding(interface_name)
