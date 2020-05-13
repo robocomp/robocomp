@@ -3,15 +3,14 @@ import os
 import subprocess
 import sys
 
-import rcExceptions
 import robocompdslutils
-from dsl_parsers.dsl_factory import DSLFactory
 from templates.templateCPP.templatecpp import TemplateCpp
+from templates.templateICE.templateice import TemplateIce
+from templates.templatePython.templatepython import TemplatePython
 
 sys.path.append("/opt/robocomp/python")
 from dsl_parsers import dsl_factory
-from dsl_parsers.parsing_utils import communication_is_ice, IDSLPool
-from templates.templatePython.templatepython import TemplatePython
+from dsl_parsers.parsing_utils import communication_is_ice
 
 LANG_TO_TEMPLATE = {
     'cpp': 'cpp',
@@ -21,23 +20,23 @@ LANG_TO_TEMPLATE = {
     'python2': 'python'
 }
 
-class ComponentGenerator:
+class FilesGenerator:
     def __init__(self):
-        self.__cdsl_file = None
+        self.__dsl_file = None
         self.__output_path = None
         self.__include_dirs = None
         self.diff = None
-        self.component = None
+        self.ast = None
 
     @property
-    def cdsl_file(self):
-        return self.__cdsl_file
+    def dsl_file(self):
+        return self.__dsl_file
 
-    @cdsl_file.setter
-    def cdsl_file(self, value):
-        assert isinstance(value, str), "cdsl_file must be a string not %s" % str(type(value))
+    @dsl_file.setter
+    def dsl_file(self, value):
+        assert isinstance(value, str), "dsl_file must be a string not %s" % str(type(value))
         assert os.path.exists(value), "%s cdsl file not found." % value
-        self.__cdsl_file = value
+        self.__dsl_file = value
 
     @property
     def output_path(self):
@@ -57,29 +56,32 @@ class ComponentGenerator:
         assert isinstance(value, list), "include_dirs must be a string not %s" % str(type(value))
         self.__include_dirs = value
 
-    def generate(self, cdsl_file, output_path, include_dirs, diff=None):
-        self.cdsl_file = cdsl_file
+    def generate(self, input_file, output_path, include_dirs, diff=None):
+        self.dsl_file = input_file
         self.output_path = output_path
         self.include_dirs = include_dirs
         self.diff = diff
-        self.__load_component()
+        self.__load_ast()
         new_existing_files = self.__create_files()
         self.__show_diff(new_existing_files)
 
-    def __load_component(self):
-        self.component = dsl_factory.DSLFactory().from_file(self.cdsl_file, includeDirectories=self.include_dirs)
 
+    def __load_ast(self):
+        self.ast = dsl_factory.DSLFactory().from_file(self.dsl_file, includeDirectories=self.include_dirs)
 
     def __create_files(self):
-        # Check output directory
-        self.__create_component_directories()
+        if self.dsl_file.endswith(".cdsl") or self.dsl_file.endswith(".jcdsl"):
+            # Check output directory
+            self.__create_component_directories()
 
-        # Generate specific_component
-        new_existing_files = self.__generate_component()
+            # Generate specific_component
+            new_existing_files = self.__generate_component()
 
-        if self.component.usingROS is True:
-            for imp in self.component.imports:
-                self.generate_ROS_headers(imp)
+            if self.ast.usingROS is True:
+                for imp in self.ast.imports:
+                    self.generate_ROS_headers(imp)
+        elif self.dsl_file.endswith(".idsl"):
+            new_existing_files = self.__generate_interface()
         return new_existing_files
 
     def __show_diff(self, new_existing_files):
@@ -106,26 +108,34 @@ class ComponentGenerator:
                     print("Binary equal files %s and %s" % (o_file, n_file))
 
     def __generate_component(self):
-        language = self.component.language.lower()
+        language = self.ast.language.lower()
 
         template = LANG_TO_TEMPLATE[language]
         # TODO: Template objects could be moved to a TemplateFactory
         if template == 'python':
-            template_obj = TemplatePython(self.component)
+            template_obj = TemplatePython(self.ast)
         else:
-            template_obj = TemplateCpp(self.component)
+            template_obj = TemplateCpp(self.ast)
         new_existing_files = template_obj.generate_files(self.output_path)
+        for module in self.ast.idsl_pool.modulePool.values():
+            template_obj = TemplateIce(module)
+            new_existing_files.update(template_obj.generate_files(self.output_path))
+        return new_existing_files
 
+    def __generate_interface(self):
+        template_obj = TemplateIce(self.ast)
+        new_existing_files = template_obj.generate_files(self.output_path)
         return new_existing_files
 
 
     def __create_component_directories(self):
         if not os.path.exists(self.output_path):
             robocompdslutils.create_directory(self.output_path)
+
         # Create directories within the output directory
         new_dirs = ["bin", "src", "etc"]
         for new_dir in new_dirs:
-            if self.component.language.lower() == "python" and new_dir == "bin": continue
+            if self.ast.language.lower() == "python" and new_dir == "bin": continue
             try:
                 robocompdslutils.create_directory(os.path.join(self.output_path, new_dir))
             except:
@@ -139,12 +149,12 @@ class ComponentGenerator:
         :return:
         """
         imported = []
-        idsl = DSLFactory().from_file(idsl_file, includeDirectories=self.include_dirs)
+        idsl = dsl_factory.DSLFactory().from_file(idsl_file, includeDirectories=self.include_dirs)
         if not os.path.exists(self.output_path):
             robocompdslutils.create_directory(self.output_path)
 
         def generarH(idslFile, imported):
-            idsl = DSLFactory().from_file(idslFile)
+            idsl = dsl_factory.DSLFactory().from_file(idslFile)
             try:
                 os.system("rm -f " + self.output_path + "/" + idsl['module']['name'] + "ROS/msg/__init__.py")
                 os.system("rm -f " + self.output_path + "/" + idsl['module']['name'] + "ROS/srv/__init__.py")
@@ -181,7 +191,7 @@ class ComponentGenerator:
                             'name'] + "ROS -e /opt/ros/melodic/share/gencpp"
                         commandPY = commandPY + " -p " + idsl['name'] + "ROS -o " + self.output_path + "/" + idsl[
                             'name'] + "ROS/msg"
-                        if self.component.language.lower() == 'cpp':
+                        if self.ast.language.lower() == 'cpp':
                             os.system(commandCPP)
                         else:
                             os.system(commandPY)
@@ -192,7 +202,7 @@ class ComponentGenerator:
                         except:
                             pass
             for imp in idsl['interfaces']:
-                for ima in [self.component.implements + self.component.requires]:
+                for ima in [self.ast.implements + self.ast.requires]:
                     im = ima
                     if type(im) != type(''):
                         im = im[0]
@@ -230,7 +240,7 @@ class ComponentGenerator:
                                         commandPY = commandPY + " -p " + idsl['module'][
                                             'name'] + "ROS -o " + self.output_path + "/" + idsl['module'][
                                                         'name'] + "ROS/srv"
-                                        if self.component.language.lower() == 'cpp':
+                                        if self.ast.language.lower() == 'cpp':
                                             os.system(commandCPP)
                                         else:
                                             os.system(commandPY)

@@ -8,7 +8,7 @@ import unittest
 import pyparsing
 
 import robocompdsl
-from componentgenerator import ComponentGenerator
+from filesgenerator import FilesGenerator
 
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 ROBOCOMPDSL_DIR = os.path.join(CURRENT_DIR, "..")
@@ -40,9 +40,12 @@ class RobocompdslTest(unittest.TestCase):
         input_file = os.path.join(RESOURCES_DIR, "InnerModelManager.idsl")
         output_file = os.path.join(RESOURCES_DIR, "InnerModelManager_generated.ice")
         truth_file = os.path.join(RESOURCES_DIR, "InnerModelManager.ice")
-        robocompdsl.generate_idsl_file(input_file, output_file, [])
-        self.assertFilesSame(output_file, truth_file)
-        os.remove(output_file)
+        try:
+            os.remove(output_file)
+        except FileNotFoundError:
+            pass
+        FilesGenerator().generate(input_file, output_file, [])
+        self.assertFilesSame(truth_file, output_file)
 
         # self.assertRaises(FileNotFoundError,robocompdsl.generate_idsl_file("NonExisting.idsl", "outputfile.ice", []))
         # os.remove("outputfile.ice")
@@ -78,7 +81,7 @@ class RobocompdslTest(unittest.TestCase):
             self.olddir = os.getcwd()
             os.chdir(self.tempdir)
             try:
-                ComponentGenerator().generate(cdsl, self.tempdir, [])
+                FilesGenerator().generate(cdsl, self.tempdir, [])
             except Exception as e:
                 self.fail(str(e))
             else:
@@ -90,7 +93,7 @@ class RobocompdslTest(unittest.TestCase):
     def test_invalid_language(self):
         self.renew_temp_dir("Invalid")
         cdsl = os.path.join(RESOURCES_DIR, "InvalidLanguage.cdsl")
-        self.assertRaises(ValueError, ComponentGenerator().generate, cdsl, self.tempdir, [])
+        self.assertRaises(ValueError, FilesGenerator().generate, cdsl, self.tempdir, [])
         shutil.rmtree(self.tempdir, ignore_errors=True)
 
 

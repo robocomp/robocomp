@@ -14,7 +14,7 @@ from termcolor import colored
 sys.path.append("/opt/robocomp/python")
 sys.path.append('/opt/robocomp/share/robocompdsl/')
 import rcExceptions
-from componentgenerator import ComponentGenerator
+from filesgenerator import FilesGenerator
 import robocompdslutils
 
 
@@ -168,12 +168,8 @@ def main():
     input_file = args.input_file
     output_path = args.output_path
 
-    if input_file.endswith(".cdsl") or input_file.endswith(".jcdsl"):
-        ComponentGenerator().generate(input_file, output_path, args.include_dirs, args.diff)
-
-    elif input_file.endswith(".idsl"):
-        generate_idsl_file(input_file, output_path, args.include_dirs)
-        
+    if input_file.endswith(".cdsl") or input_file.endswith(".jcdsl") or input_file.endswith(".idsl"):
+        FilesGenerator().generate(input_file, output_path, args.include_dirs, args.diff)
     else:
         print("Please check the Input file \n" + "Input File should be either .cdsl or .idsl")
         sys.exit(-1)
