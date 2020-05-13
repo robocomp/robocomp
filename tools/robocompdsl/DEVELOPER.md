@@ -16,12 +16,10 @@ RoboCompDSL's Developer Guide
   * [Usage of Python string.Template](#usage-of-python-stringtemplate)
   * [AbstractComponentTemplate class](#abstractcomponenttemplate-class)
   * [The *files* and *functions* directories](#the--files--and--functions--directories)
-  * [How the Template variables code is generated?](#how-the-template-variables-code-is-generated-)
+  * [How the Template variables code is generated](#how-the-template-variables-code-is-generated)
   * [Creating a new Template](#creating-a-new-template)
 
 <small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
-
-
 
 
 # Introduction
