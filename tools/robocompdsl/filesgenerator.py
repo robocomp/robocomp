@@ -117,9 +117,11 @@ class FilesGenerator:
         else:
             template_obj = TemplatesManagerCpp(self.ast)
         new_existing_files = template_obj.generate_files(self.output_path)
-        for module in self.ast.idsl_pool.modulePool.values():
-            template_obj = TemplateManagerIce(module)
-            new_existing_files.update(template_obj.generate_files(self.output_path))
+        # for module in self.ast.idsl_pool.modulePool.values():
+        #     template_obj = TemplateManagerIce(module)
+        #     ice_directory = os.path.join(self.output_path, "ice_files")
+        #     ice_new_existing_files = template_obj.generate_files(ice_directory)
+        #     new_existing_files.update(ice_new_existing_files)
         return new_existing_files
 
     def __generate_interface(self):

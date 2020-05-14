@@ -224,6 +224,7 @@ class IDSLPool:
     module is the python structure loaded from an idsl file
     interfaces are the names defined for the communication inside idsl files and loaded in the modules.
     """
+    mandatory_idsls = ["CommonBehavior.idsl"]
 
     rosTypes = (
     'int8', 'int16', 'int32', 'int64', 'float8', 'float16', 'float32', 'float64', 'byte', 'bool', 'string', 'time',
@@ -233,6 +234,7 @@ class IDSLPool:
         self.modulePool = OrderedDict()
         includeDirectories = iD + ['/opt/robocomp/interfaces/IDSLs/', os.path.expanduser('~/robocomp/interfaces/IDSLs/')]
         self.includeInPool(files, self.modulePool, includeDirectories)
+        self.includeInPool('#'.join(self.mandatory_idsls), self.modulePool, includeDirectories)
 
     @classmethod
     def getRosTypes(cls):

@@ -8,7 +8,7 @@ def ice_imports(module):
     if 'imports' in module and module["imports"] != '':
         for imp in module['imports'].split('#'):
             if imp != '':
-                result += "#include <" + os.path.basename(imp).split('.')[0] + ".ice>"
+                result += "#include <" + os.path.basename(imp).split('.')[0] + ".ice>\n"
     return result
 
 ICE_EXCEPTIOM_STR = """\

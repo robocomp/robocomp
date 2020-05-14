@@ -48,17 +48,18 @@ class ParsingUtilsTest(unittest.TestCase):
         self.assertEqual(idsl_module, '/opt/robocomp/interfaces/IDSLs/JointMotor.idsl')
 
         interfaces = pool.interfaces()
-        self.assertCountEqual(interfaces, ['GenericBase', 'JointMotor', 'JointMotorPublish', 'AprilTags'])
+        self.assertCountEqual(interfaces, ['GenericBase', 'JointMotor', 'JointMotorPublish', 'AprilTags', 'CommonBehavior'])
 
         ros_imports = pool.rosImports()
         self.assertCountEqual(ros_imports,
-                              ['RoboCompGenericBaseROS/TBaseState', 'std_msgs/Int32', 'std_msgs/Float32',
+                              ['RoboCompAprilTagsROS/tag', 'RoboCompAprilTagsROS/tagsList',
+                               'RoboCompGenericBaseROS/TBaseState', 'std_msgs/Int32', 'std_msgs/Float32',
                                'RoboCompJointMotorROS/MotorState', 'RoboCompJointMotorROS/MotorParams',
                                'RoboCompJointMotorROS/BusParams', 'RoboCompJointMotorROS/MotorGoalPosition',
                                'RoboCompJointMotorROS/MotorGoalVelocity', 'RoboCompJointMotorROS/MotorParamsList',
                                'RoboCompJointMotorROS/MotorGoalPositionList',
                                'RoboCompJointMotorROS/MotorGoalVelocityList', 'RoboCompJointMotorROS/MotorList',
-                               'std_msgs/String', 'RoboCompAprilTagsROS/tag', 'RoboCompAprilTagsROS/tagsList'])
+                               'std_msgs/String', 'RoboCompCommonBehaviorROS/Parameter', 'std_msgs/Int32'])
 
         ros_module_imports = pool.rosModulesImports()
         self.assertCountEqual(ros_module_imports, [{'strName': 'TBaseState', 'name': 'RoboCompGenericBase'},
@@ -74,7 +75,8 @@ class ParsingUtilsTest(unittest.TestCase):
                                                     'name': 'RoboCompJointMotor'},
                                                    {'strName': 'MotorList', 'name': 'RoboCompJointMotor'},
                                                    {'strName': 'tag', 'name': 'RoboCompAprilTags'},
-                                                   {'strName': 'tagsList', 'name': 'RoboCompAprilTags'}])
+                                                   {'strName': 'tagsList', 'name': 'RoboCompAprilTags'},
+                                                   {'name': 'RoboCompCommonBehavior', 'strName': 'Parameter'}])
 
     def test_is_agm1_agent(self):
         component = DSLFactory().from_file(

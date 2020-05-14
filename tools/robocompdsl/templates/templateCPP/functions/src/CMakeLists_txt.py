@@ -84,22 +84,24 @@ def agm_includes(component):
     return result
 
 def wrap_ice(component):
-    result = """ROBOCOMP_WRAP_ICE( CommonBehavior """
-
     iface_names = []
     for im in sorted(component.recursiveImports + component.ice_interfaces_names):
         name = im.split('/')[-1].split('.')[0]
         iface_names.append(name)
-    result += ' '.join(iface_names)
     try:
         options = [x.lower() for x in component.options]
         if 'agmagent' in options:
-            result +=  " AGMExecutive AGMExecutiveTopic "
+            iface_names +=  ["AGMExecutive"] ["AGMExecutiveTopic"]
         elif 'agm2agent' in options or 'agm2agentICE' in options or 'agm2agentROS' in options:
-            result +=  " AGM2 "
+            iface_names += ["AGM2"]
     except:
         pass
-    result += ")"
+    result = "ROBOCOMP_IDSL_TO_ICE( CommonBehavior "
+    result += ' '.join(iface_names)
+    result += ")\n"
+    result += "ROBOCOMP_ICE_TO_SRC( CommonBehavior "
+    result += ' '.join(iface_names)
+    result += ")\n"
     return result
 
 def wrap_ui(component):
