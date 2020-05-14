@@ -48,7 +48,7 @@ ENDMACRO( ROBOCOMP_LIBRARY )
 MACRO( ROBOCOMP_WRAP_ICE )
   # External Slice source paths
   SET (EXTERNAL_SLICE "")
-  SET (SLICE_PATH "$ENV{SLICE_PATH};$ENV{ROBOCOMP}/interfaces;/opt/robocomp/interfaces;")
+  SET (SLICE_PATH "$ENV{SLICE_PATH};$ENV{ROBOCOMP}/interfaces;/opt/robocomp/interfaces;./ice_files/;")
   SET (INC_ROBOCOMPSLICE_PATH "true" )
   SET (ADDITIONAL_SLICE_INCLUDE_PATH "")
   FOREACH (SPATH ${SLICE_PATH})
@@ -93,6 +93,42 @@ MACRO( ROBOCOMP_WRAP_ICE )
     ENDIF (${SLICE_FILE_FOUND} STREQUAL "false")
   ENDFOREACH( input_file )
 ENDMACRO( ROBOCOMP_WRAP_ICE )
+
+set(ALL_ICES "")
+MACRO( ROBOCOMP_IDSL_TO_ICE )
+  SET( SPATH /opt/robocomp/interfaces/IDSLs)
+  FOREACH( input_file ${ARGN} )
+      IF (EXISTS "${SPATH}/${input_file}.idsl")
+        MESSAGE(STATUS "Adding rule to generate ${input_file}.ice from ${SPATH}/${input_file}.idsl")
+        add_custom_command(
+          OUTPUT ${input_file}.ice
+          COMMAND robocompdsl ${SPATH}/${input_file}.idsl ${input_file}.ice
+          DEPENDS ${SPATH}/${input_file}.idsl
+          COMMENT "Generating ${input_file}.ice from ${SPATH}/${input_file}.idsl"
+        )
+        list(APPEND ALL_ICES ${input_file}.ice)
+      ELSE (EXISTS "${SPATH}/${input_file}.idsl")
+        MESSAGE(FATAL_ERROR "${input_file}.idsl not found in (${SPATH}).")
+      ENDIF (EXISTS "${SPATH}/${input_file}.idsl")
+  ENDFOREACH( input_file )
+ENDMACRO( ROBOCOMP_WRAP_IDSL )
+
+MACRO( ROBOCOMP_ICE_TO_SRC )
+  SET( SPATH /opt/robocomp/interfaces/IDSLs)
+  SET (SLICE_PATH "./src/;")
+  FOREACH( input_file ${ARGN} )
+    MESSAGE(STATUS "Adding rule to generate ${input_file}.h and ${input_file}.cpp from ${input_file}.ice")
+    add_custom_command(
+        OUTPUT ${input_file}.cpp ${input_file}.h
+        COMMAND slice2cpp ${input_file}.ice -I. --output-dir .
+        DEPENDS ${ALL_ICES}
+        COMMENT "Generating ${input_file}.h and ${input_file}.cpp from ${input_file}.ice"
+    )
+    SET ( SOURCES ${SOURCES} ./${input_file}.cpp )
+    SET_PROPERTY(SOURCE ${input_file}.cpp PROPERTY SKIP_AUTOGEN ON)
+  ENDFOREACH( input_file )
+ENDMACRO( ROBOCOMP_WRAP_IDSL )
+
 
 
 INCLUDE_DIRECTORIES (
