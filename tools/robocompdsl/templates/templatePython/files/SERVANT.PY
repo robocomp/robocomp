@@ -41,19 +41,8 @@ except:
     print('SLICE_PATH environment variable was not exported. Using only the default paths')
     pass
 
-ice_${iface_name} = False
-for p in icePaths:
-    print('Trying', p, 'to load ${iface_name}.ice')
-    if os.path.isfile(p+'/${iface_name}.ice'):
-        print('Using', p, 'to load ${iface_name}.ice')
-        preStr = "-I/opt/robocomp/interfaces/ -I"+ROBOCOMP+"/interfaces/ " + additionalPathStr + " --all "+p+'/'
-        wholeStr = preStr+"${iface_name}.ice"
-        Ice.loadSlice(wholeStr)
-        ice_${iface_name} = True
-        break
-if not ice_${iface_name}:
-    print('Couldn\'t load ${iface_name}')
-    sys.exit(-1)
+
+Ice.loadSlice("-I ./src/ --all ./src/${iface_name}.ice")
 
 from ${module_name} import *
 

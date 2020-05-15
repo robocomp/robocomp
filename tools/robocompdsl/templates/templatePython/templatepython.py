@@ -8,7 +8,7 @@ class TemplatesManagerPython(ComponentTemplatesManager):
         self.files = {
                 'regular': [
                     'CMakeLists.txt', 'DoxyFile', 'README-RCNODE.txt', 'README.md', 'etc/config', 'src/main.py',
-                    'src/genericworker.py', 'src/specificworker.py', 'src/mainUI.ui'
+                    'src/genericworker.py', 'src/specificworker.py', 'src/mainUI.ui', 'src/CMakeLists.txt'
                 ],
                 'avoid_overwrite': [
                     'src/specificworker.py', 'src/mainUI.ui', 'README.md', 'etc/config'
@@ -49,4 +49,20 @@ class TemplatesManagerPython(ComponentTemplatesManager):
 
     def src_mainUI_ui(self):
         return {'gui_type': self.component.gui.widget,
+                'component_name': self.component.name}
+
+    def src_CMakeLists_txt(self):
+        iface_names = []
+        for im in sorted(self.component.recursiveImports + self.component.ice_interfaces_names):
+            name = im.split('/')[-1].split('.')[0]
+            iface_names.append(name)
+        try:
+            options = [x.lower() for x in self.component.options]
+            if 'agmagent' in options:
+                iface_names += ["AGMExecutive"]["AGMExecutiveTopic"]
+            elif 'agm2agent' in options or 'agm2agentICE' in options or 'agm2agentROS' in options:
+                iface_names += ["AGM2"]
+        except:
+            pass
+        return {'ifaces_list': ' '.join(iface_names),
                 'component_name': self.component.name}

@@ -1,20 +1,8 @@
 import datetime
 from string import Template
 
-SLICE_LOAD_STR = """
-ice_${interface_name} = False
-for p in icePaths:
-    print(\'Trying\', p, \'to load ${interface_name}.ice\')
-    if os.path.isfile(p+\'/${interface_name}.ice\'):
-        print(\'Using\', p, \'to load ${interface_name}.ice\')
-        preStr = "-I/opt/robocomp/interfaces/ -I"+ROBOCOMP+"/interfaces/ " + additionalPathStr + " --all "+p+\'/\'
-        wholeStr = preStr+"${interface_name}.ice"
-        Ice.loadSlice(wholeStr)
-        ice_${interface_name} = True
-        break
-if not ice_${interface_name}:
-    print('Couldn\\\'t load ${interface_name}')
-    sys.exit(-1)
+SLICE_LOAD_STR = """\
+Ice.loadSlice("-I ./src/ --all ./src/${interface_name}.ice")
 """
 
 def slice_loading(interface_name):

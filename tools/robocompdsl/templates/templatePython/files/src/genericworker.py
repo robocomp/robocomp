@@ -28,8 +28,7 @@ except KeyError:
     print('$$ROBOCOMP environment variable not set, using the default value /opt/robocomp')
     ROBOCOMP = '/opt/robocomp'
 
-preStr = "-I/opt/robocomp/interfaces/ -I"+ROBOCOMP+"/interfaces/ --all /opt/robocomp/interfaces/"
-Ice.loadSlice(preStr+"CommonBehavior.ice")
+Ice.loadSlice("-I ./src/ --all ./src/CommonBehavior.ice")
 import RoboCompCommonBehavior
 
 additionalPathStr = ''

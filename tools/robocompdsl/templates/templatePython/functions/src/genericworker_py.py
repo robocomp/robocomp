@@ -4,18 +4,8 @@ from string import Template
 from dsl_parsers.dsl_factory import DSLFactory
 from dsl_parsers.parsing_utils import communication_is_ice, IDSLPool, get_name_number
 
-SLICE_LOAD_STR = """
-ice_${interface_name} = False
-for p in icePaths:
-    if os.path.isfile(p+\'/${interface_name}.ice\'):
-        preStr = "-I/opt/robocomp/interfaces/ -I"+ROBOCOMP+"/interfaces/ " + additionalPathStr + " --all "+p+\'/\'
-        wholeStr = preStr+"${interface_name}.ice"
-        Ice.loadSlice(wholeStr)
-        ice_${interface_name} = True
-        break
-if not ice_${interface_name}:
-    print('Couln\\\'t load ${interface_name}')
-    sys.exit(-1)
+SLICE_LOAD_STR = """\
+Ice.loadSlice("-I ./src/ --all ./src/${interface_name}.ice")
 """
 
 # TODO: Check if can be merged with SERVANT_PY.py slice_loading function

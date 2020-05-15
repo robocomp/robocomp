@@ -3,6 +3,7 @@ PROJECT(  ${component_name} )
 
 SET(RC_COMPONENT_PATH $${CMAKE_CURRENT_SOURCE_DIR} CACHE STRING "component base path")
 SET(RC_COMPONENT_DEVEL_PATH $${CMAKE_CURRENT_SOURCE_DIR} CACHE STRING "component binary path")
+SUBDIRS( src )
 
 MACRO( WRAP_PYTHON_UI )
   FOREACH( input_file $${ARGN} )
