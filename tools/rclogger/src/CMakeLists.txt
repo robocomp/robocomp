@@ -12,7 +12,7 @@ IF(NOT EXISTS ${CMAKE_SOURCE_DIR}/cmake)
   MESSAGE(FATAL_ERROR "Couldn't find RoboComp in ${CMAKE_SOURCE_DIR}! Exiting...")
 ENDIF(NOT EXISTS ${CMAKE_SOURCE_DIR}/cmake)
 
-INCLUDE( ${CMAKE_SOURCE_DIR}/cmake/robocomp.cmake )
+INCLUDE( ${CMAKE_SOURCE_DIR}/cmake/robocompLocal.cmake )
 INCLUDE ( CMakeListsSpecific.txt)
 
 # Sources set
@@ -33,7 +33,8 @@ SET ( SOURCES
 
 #ROBOCOMP
 ROBOCOMP_INITIALIZE( ${CMAKE_SOURCE_DIR}/ )
-ROBOCOMP_WRAP_ICE( CommonBehavior Logger )
+ROBOCOMP_IDSL_TO_ICE( CommonBehavior Logger )
+ROBOCOMP_ICE_TO_SRC( CommonBehavior Logger )
 SET (EXECUTABLE_OUTPUT_PATH ${RC_COMPONENT_DEVEL_PATH}/bin)
 
 # Qt
