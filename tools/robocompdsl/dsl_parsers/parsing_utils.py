@@ -216,6 +216,8 @@ def getTypeFromModule(vtype, module):
             return t['type']
     return None
 
+FILE_PATH_DIR = os.path.dirname(os.path.realpath(__file__))
+ALT_INTERFACES_DIR = os.path.join(FILE_PATH_DIR, "../../../interfaces/IDSLs/", )
 
 class IDSLPool:
     """
@@ -232,7 +234,9 @@ class IDSLPool:
 
     def __init__(self, files, iD):
         self.modulePool = OrderedDict()
-        includeDirectories = iD + ['/opt/robocomp/interfaces/IDSLs/', os.path.expanduser('~/robocomp/interfaces/IDSLs/')]
+        includeDirectories = iD + ['/opt/robocomp/interfaces/IDSLs/',
+                                   os.path.expanduser('~/robocomp/interfaces/IDSLs/'),
+                                   ALT_INTERFACES_DIR]
         self.includeInPool(files, self.modulePool, includeDirectories)
         self.includeInPool('#'.join(self.mandatory_idsls), self.modulePool, includeDirectories)
 
