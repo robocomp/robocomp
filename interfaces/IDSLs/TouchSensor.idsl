@@ -1,0 +1,16 @@
+module RoboCompTouchSensor
+{
+	struct SensorState
+	{
+		string name;
+		float value;
+	};
+	
+	dictionary<string, SensorState> SensorMap;
+
+
+	interface TouchSensor
+	{
+		SensorMap getValues();
+	};
+};
