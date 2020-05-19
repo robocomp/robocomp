@@ -41,19 +41,8 @@ except:
     print('SLICE_PATH environment variable was not exported. Using only the default paths')
     pass
 
-ice_AprilTags = False
-for p in icePaths:
-    print('Trying', p, 'to load AprilTags.ice')
-    if os.path.isfile(p+'/AprilTags.ice'):
-        print('Using', p, 'to load AprilTags.ice')
-        preStr = "-I/opt/robocomp/interfaces/ -I"+ROBOCOMP+"/interfaces/ " + additionalPathStr + " --all "+p+'/'
-        wholeStr = preStr+"AprilTags.ice"
-        Ice.loadSlice(wholeStr)
-        ice_AprilTags = True
-        break
-if not ice_AprilTags:
-    print('Couldn\'t load AprilTags')
-    sys.exit(-1)
+
+Ice.loadSlice("-I ./src/ --all ./src/AprilTags.ice")
 
 from RoboCompAprilTags import *
 

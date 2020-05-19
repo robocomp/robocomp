@@ -41,19 +41,8 @@ except:
     print('SLICE_PATH environment variable was not exported. Using only the default paths')
     pass
 
-ice_HandDetection = False
-for p in icePaths:
-    print('Trying', p, 'to load HandDetection.ice')
-    if os.path.isfile(p+'/HandDetection.ice'):
-        print('Using', p, 'to load HandDetection.ice')
-        preStr = "-I/opt/robocomp/interfaces/ -I"+ROBOCOMP+"/interfaces/ " + additionalPathStr + " --all "+p+'/'
-        wholeStr = preStr+"HandDetection.ice"
-        Ice.loadSlice(wholeStr)
-        ice_HandDetection = True
-        break
-if not ice_HandDetection:
-    print('Couldn\'t load HandDetection')
-    sys.exit(-1)
+
+Ice.loadSlice("-I ./src/ --all ./src/HandDetection.ice")
 
 from RoboCompHandDetection import *
 

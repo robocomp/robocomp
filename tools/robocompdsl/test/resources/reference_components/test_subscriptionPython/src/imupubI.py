@@ -41,19 +41,8 @@ except:
     print('SLICE_PATH environment variable was not exported. Using only the default paths')
     pass
 
-ice_IMUPub = False
-for p in icePaths:
-    print('Trying', p, 'to load IMUPub.ice')
-    if os.path.isfile(p+'/IMUPub.ice'):
-        print('Using', p, 'to load IMUPub.ice')
-        preStr = "-I/opt/robocomp/interfaces/ -I"+ROBOCOMP+"/interfaces/ " + additionalPathStr + " --all "+p+'/'
-        wholeStr = preStr+"IMUPub.ice"
-        Ice.loadSlice(wholeStr)
-        ice_IMUPub = True
-        break
-if not ice_IMUPub:
-    print('Couldn\'t load IMUPub')
-    sys.exit(-1)
+
+Ice.loadSlice("-I ./src/ --all ./src/IMUPub.ice")
 
 from RoboCompIMUPub import *
 
