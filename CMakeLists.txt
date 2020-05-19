@@ -89,7 +89,9 @@ if (TOOLS)
 		"tools/rcportchecker"
 		"tools/rcdeploymentchecker")
 endif(TOOLS)
-SUBDIRS(${compile_dirs})
+FOREACH(compile_dir ${compile_dirs})
+    ADD_SUBDIRECTORY(${compile_dir})
+ENDFOREACH(compile_dir)
 
 # Install rules necessary to allow compiling components without the robocomp's source code
 SET (LD_COMMAND "\"grep -q -F '/opt/robocomp/lib' /etc/ld.so.conf || echo '/opt/robocomp/lib' >> /etc/ld.so.conf && ldconfig\"")
