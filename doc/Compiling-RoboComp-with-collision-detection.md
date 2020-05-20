@@ -1,5 +1,13 @@
 ## Robocomp with FCL (The Flexible Collision Library) support
 
+- If you have any previous installation of fcl, make sure you uninstall it and to avoid problems with compilation, check that there are no fcl files in 
+  ```
+  ls /usr/local/lib/libfcl.*
+  ```
+  nor in
+  ```
+  ls /usr/local/include/fcl
+  ```
 - Install libfcl-dev from the Ubuntu repository
 
 ```bash
