@@ -137,11 +137,12 @@ class AbstractTemplatesManager(ABC):
             functions_file = template_name.replace('.','_').replace('/', '.')
             try:
                 functions_dir = "templates."+template.replace(TEMPLATES_DIR, "").split('/')[0]+".functions."
-                functions = importlib.import_module(functions_dir + functions_file)
+                module = importlib.import_module(functions_dir + functions_file)
+                TemplateDict = getattr(module, 'TemplateDict')
                 if interface_name is not None:
-                    template_dict = functions.get_template_dict(self.ast, interface_name)
+                    template_dict = TemplateDict(self.ast, interface_name)
                 else:
-                    template_dict = functions.get_template_dict(self.ast)
+                    template_dict = TemplateDict(self.ast)
             except ModuleNotFoundError:
                 pass
         return template_dict

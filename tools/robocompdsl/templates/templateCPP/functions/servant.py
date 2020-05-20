@@ -3,6 +3,13 @@ from string import Template
 from dsl_parsers.parsing_utils import decorator_and_type_to_const_ampersand
 
 
+INTERFACE_METHOD_STR = """
+${ret} ${interface_name}I::${method_name}(${input_params}const Ice::Current&)
+{
+	${to_return}worker->${interface_name}_${method_name}(${param_str});
+}
+"""
+
 def interface_methods_definition(component, module, theInterface):
     result = ""
     pool = component.idsl_pool
@@ -26,13 +33,6 @@ def interface_methods_definition(component, module, theInterface):
 
                 result += ret + ' ' + name + '(' + paramStr + 'const Ice::Current&);\n'
     return result
-
-INTERFACE_METHOD_STR = """
-${ret} ${interface_name}I::${method_name}(${input_params}const Ice::Current&)
-{
-	${to_return}worker->${interface_name}_${method_name}(${param_str});
-}
-"""
 
 def interface_methods_creation(component, interface_name):
     result = ""
