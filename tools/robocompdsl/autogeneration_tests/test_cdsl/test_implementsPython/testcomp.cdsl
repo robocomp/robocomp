@@ -7,7 +7,6 @@ Component testcomp
         implements HandDetection;
     };
 	language Python;
-	gui Qt(QWidget);
 	statemachine "statemachine.smdsl";
 };
 

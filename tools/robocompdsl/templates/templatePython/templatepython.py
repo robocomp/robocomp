@@ -19,10 +19,6 @@ class TemplatesManagerPython(ComponentTemplatesManager):
         super(TemplatesManagerPython, self).__init__(component)
 
 
-    def _pre_generation_check(self, template_file):
-        if self.component.language.lower() == 'python' and template_file == 'CMakeLists.txt' and self.component.gui is None: return True
-        return False
-
     def _output_file_rename(self, output_path, template_file):
         if self.component.language.lower() == 'python' and template_file == 'src/main.py':
             ofile = os.path.join(output_path, 'src', self.component.name + '.py')

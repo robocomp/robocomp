@@ -61,7 +61,6 @@ import sys, traceback, IceStorm, time, os, copy
 import signal
 
 from PySide2 import QtCore
-from PySide2 import QtWidgets
 
 from specificworker import *
 
@@ -94,7 +93,7 @@ def sigint_handler(*args):
     QtCore.QCoreApplication.quit()
     
 if __name__ == '__main__':
-    app = QtWidgets.QApplication(sys.argv)
+    app = QtCore.QCoreApplication(sys.argv)
     params = copy.deepcopy(sys.argv)
     if len(params) > 1:
         if not params[1].startswith('--Ice.Config='):
