@@ -221,10 +221,10 @@ class InterfaceTemplateManager(AbstractTemplatesManager):
                 raise ValueError("Invalid output path for the ice interface")
             ofile = self._output_file_rename(output_path, template_file)
 
-            if os.path.exists(ofile):
-                print('Not overwriting specific file "' + ofile + '", saving it to ' + ofile + '.new')
-                new_existing_files[os.path.abspath(ofile)] = os.path.abspath(ofile) + '.new'
-                ofile += '.new'
+            # if os.path.exists(ofile):
+            #     print('Not overwriting specific file "' + ofile + '", saving it to ' + ofile + '.new')
+            #     new_existing_files[os.path.abspath(ofile)] = os.path.abspath(ofile) + '.new'
+            #     ofile += '.new'
 
             ifile = os.path.join(TEMPLATES_DIR,self.files['template_path'], template_file)
             print('Generating', ofile)
