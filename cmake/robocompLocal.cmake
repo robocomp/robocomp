@@ -94,6 +94,42 @@ MACRO( ROBOCOMP_WRAP_ICE )
   ENDFOREACH( input_file )
 ENDMACRO( ROBOCOMP_WRAP_ICE )
 
+
+MACRO( ROBOCOMP_IDSL_TO_ICE )
+  STRING (REPLACE "/" "_" SPECIFIC_TARGET "${CMAKE_CURRENT_SOURCE_DIR}") 
+  ADD_CUSTOM_TARGET(ICES_${SPECIFIC_TARGET} ALL)
+  SET( SPATH ${RoboComp_INTERFACES_DIR}/IDSLs/)
+  FOREACH( input_file ${ARGN} )
+      IF (EXISTS "${SPATH}/${input_file}.idsl")
+        MESSAGE(STATUS "Adding rule to generate ${input_file}.ice from ${SPATH}/${input_file}.idsl")
+        add_custom_command(
+          COMMAND "${ROBOCOMP_ROOT}/tools/robocompdsl/robocompdsl.py" ${SPATH}/${input_file}.idsl ${input_file}.ice
+          DEPENDS ${SPATH}/${input_file}.idsl
+          COMMENT "Generating ${input_file}.ice from ${SPATH}/${input_file}.idsl"
+          TARGET ICES_${SPECIFIC_TARGET}
+        )
+      ELSE (EXISTS "${SPATH}/${input_file}.idsl")
+        MESSAGE(FATAL_ERROR "${input_file}.idsl not found in (${SPATH}).")
+      ENDIF (EXISTS "${SPATH}/${input_file}.idsl")
+  ENDFOREACH( input_file )
+ENDMACRO( ROBOCOMP_IDSL_TO_ICE )
+
+MACRO( ROBOCOMP_ICE_TO_SRC )
+  SET (SLICE_PATH "./src/;")
+  STRING (REPLACE "/" "_" SPECIFIC_TARGET "${CMAKE_CURRENT_SOURCE_DIR}") 
+  FOREACH( input_file ${ARGN} )
+    MESSAGE(STATUS "Adding rule to generate ${input_file}.h and ${input_file}.cpp from ${input_file}.ice")
+    add_custom_command(
+        OUTPUT ${input_file}.cpp ${input_file}.h
+        COMMAND slice2cpp ${input_file}.ice -I. --output-dir .
+        DEPENDS ICES_${SPECIFIC_TARGET}
+        COMMENT "Generating ${input_file}.h and ${input_file}.cpp from ${input_file}.ice"
+    )
+    SET ( SOURCES ${SOURCES} ./${input_file}.cpp )
+    SET_PROPERTY(SOURCE ${input_file}.cpp PROPERTY SKIP_AUTOGEN ON)
+  ENDFOREACH( input_file )
+ENDMACRO( ROBOCOMP_ICE_TO_SRC )
+
 INCLUDE_DIRECTORIES (
   ${CMAKE_CURRENT_BINARY_DIR}
   .

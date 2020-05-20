@@ -28,8 +28,7 @@ except KeyError:
     print('$ROBOCOMP environment variable not set, using the default value /opt/robocomp')
     ROBOCOMP = '/opt/robocomp'
 
-preStr = "-I/opt/robocomp/interfaces/ -I"+ROBOCOMP+"/interfaces/ --all /opt/robocomp/interfaces/"
-Ice.loadSlice(preStr+"CommonBehavior.ice")
+Ice.loadSlice("-I ./src/ --all ./src/CommonBehavior.ice")
 import RoboCompCommonBehavior
 
 additionalPathStr = ''
@@ -44,18 +43,7 @@ except:
     print('SLICE_PATH environment variable was not exported. Using only the default paths')
     pass
 
-
-ice_HandDetection = False
-for p in icePaths:
-    if os.path.isfile(p+'/HandDetection.ice'):
-        preStr = "-I/opt/robocomp/interfaces/ -I"+ROBOCOMP+"/interfaces/ " + additionalPathStr + " --all "+p+'/'
-        wholeStr = preStr+"HandDetection.ice"
-        Ice.loadSlice(wholeStr)
-        ice_HandDetection = True
-        break
-if not ice_HandDetection:
-    print('Couln\'t load HandDetection')
-    sys.exit(-1)
+Ice.loadSlice("-I ./src/ --all ./src/HandDetection.ice")
 from RoboCompHandDetection import *
 
 from handdetectionI import *

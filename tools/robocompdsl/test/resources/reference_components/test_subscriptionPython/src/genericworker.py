@@ -28,8 +28,7 @@ except KeyError:
     print('$ROBOCOMP environment variable not set, using the default value /opt/robocomp')
     ROBOCOMP = '/opt/robocomp'
 
-preStr = "-I/opt/robocomp/interfaces/ -I"+ROBOCOMP+"/interfaces/ --all /opt/robocomp/interfaces/"
-Ice.loadSlice(preStr+"CommonBehavior.ice")
+Ice.loadSlice("-I ./src/ --all ./src/CommonBehavior.ice")
 import RoboCompCommonBehavior
 
 additionalPathStr = ''
@@ -44,31 +43,9 @@ except:
     print('SLICE_PATH environment variable was not exported. Using only the default paths')
     pass
 
-
-ice_IMU = False
-for p in icePaths:
-    if os.path.isfile(p+'/IMU.ice'):
-        preStr = "-I/opt/robocomp/interfaces/ -I"+ROBOCOMP+"/interfaces/ " + additionalPathStr + " --all "+p+'/'
-        wholeStr = preStr+"IMU.ice"
-        Ice.loadSlice(wholeStr)
-        ice_IMU = True
-        break
-if not ice_IMU:
-    print('Couln\'t load IMU')
-    sys.exit(-1)
+Ice.loadSlice("-I ./src/ --all ./src/IMU.ice")
 from RoboCompIMU import *
-
-ice_IMUPub = False
-for p in icePaths:
-    if os.path.isfile(p+'/IMUPub.ice'):
-        preStr = "-I/opt/robocomp/interfaces/ -I"+ROBOCOMP+"/interfaces/ " + additionalPathStr + " --all "+p+'/'
-        wholeStr = preStr+"IMUPub.ice"
-        Ice.loadSlice(wholeStr)
-        ice_IMUPub = True
-        break
-if not ice_IMUPub:
-    print('Couln\'t load IMUPub')
-    sys.exit(-1)
+Ice.loadSlice("-I ./src/ --all ./src/IMUPub.ice")
 from RoboCompIMUPub import *
 
 from imupubI import *

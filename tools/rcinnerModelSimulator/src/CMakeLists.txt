@@ -38,7 +38,8 @@ SET(LIBS -L${CMAKE_BUILD_DIR} ${LIBS} )
 # RoboComp
 INCLUDE( ${CMAKE_SOURCE_DIR}/cmake/robocompLocal.cmake )
 ROBOCOMP_INITIALIZE( ${CMAKE_SOURCE_DIR}/ )
-ROBOCOMP_WRAP_ICE( Camera CommonBehavior CommonHead DifferentialRobot OmniRobot IMU InnerModelManager JointMotor Laser RGBD TouchSensor RCISMousePicker GenericBase Display)
+ROBOCOMP_IDSL_TO_ICE( Camera CommonBehavior CommonHead DifferentialRobot OmniRobot IMU InnerModelManager JointMotor Laser RGBD TouchSensor RCISMousePicker GenericBase Display)
+ROBOCOMP_ICE_TO_SRC( Camera CommonBehavior CommonHead DifferentialRobot OmniRobot IMU InnerModelManager JointMotor Laser RGBD TouchSensor RCISMousePicker GenericBase Display)
 SET(ROBOCOMP_LIBS ${ROBOCOMP_LIBS} -lrobocomp_qmat )
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR}/../../../libs/innermodel/include )

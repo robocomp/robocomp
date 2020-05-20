@@ -28,8 +28,7 @@ except KeyError:
     print('$ROBOCOMP environment variable not set, using the default value /opt/robocomp')
     ROBOCOMP = '/opt/robocomp'
 
-preStr = "-I/opt/robocomp/interfaces/ -I"+ROBOCOMP+"/interfaces/ --all /opt/robocomp/interfaces/"
-Ice.loadSlice(preStr+"CommonBehavior.ice")
+Ice.loadSlice("-I ./src/ --all ./src/CommonBehavior.ice")
 import RoboCompCommonBehavior
 
 additionalPathStr = ''
@@ -44,96 +43,19 @@ except:
     print('SLICE_PATH environment variable was not exported. Using only the default paths')
     pass
 
-
-ice_AprilBasedLocalization = False
-for p in icePaths:
-    if os.path.isfile(p+'/AprilBasedLocalization.ice'):
-        preStr = "-I/opt/robocomp/interfaces/ -I"+ROBOCOMP+"/interfaces/ " + additionalPathStr + " --all "+p+'/'
-        wholeStr = preStr+"AprilBasedLocalization.ice"
-        Ice.loadSlice(wholeStr)
-        ice_AprilBasedLocalization = True
-        break
-if not ice_AprilBasedLocalization:
-    print('Couln\'t load AprilBasedLocalization')
-    sys.exit(-1)
+Ice.loadSlice("-I ./src/ --all ./src/AprilBasedLocalization.ice")
 from RoboCompAprilBasedLocalization import *
-
-ice_AprilTags = False
-for p in icePaths:
-    if os.path.isfile(p+'/AprilTags.ice'):
-        preStr = "-I/opt/robocomp/interfaces/ -I"+ROBOCOMP+"/interfaces/ " + additionalPathStr + " --all "+p+'/'
-        wholeStr = preStr+"AprilTags.ice"
-        Ice.loadSlice(wholeStr)
-        ice_AprilTags = True
-        break
-if not ice_AprilTags:
-    print('Couln\'t load AprilTags')
-    sys.exit(-1)
+Ice.loadSlice("-I ./src/ --all ./src/AprilTags.ice")
 from RoboCompAprilTags import *
-
-ice_CameraSimple = False
-for p in icePaths:
-    if os.path.isfile(p+'/CameraSimple.ice'):
-        preStr = "-I/opt/robocomp/interfaces/ -I"+ROBOCOMP+"/interfaces/ " + additionalPathStr + " --all "+p+'/'
-        wholeStr = preStr+"CameraSimple.ice"
-        Ice.loadSlice(wholeStr)
-        ice_CameraSimple = True
-        break
-if not ice_CameraSimple:
-    print('Couln\'t load CameraSimple')
-    sys.exit(-1)
+Ice.loadSlice("-I ./src/ --all ./src/CameraSimple.ice")
 from RoboCompCameraSimple import *
-
-ice_GenericBase = False
-for p in icePaths:
-    if os.path.isfile(p+'/GenericBase.ice'):
-        preStr = "-I/opt/robocomp/interfaces/ -I"+ROBOCOMP+"/interfaces/ " + additionalPathStr + " --all "+p+'/'
-        wholeStr = preStr+"GenericBase.ice"
-        Ice.loadSlice(wholeStr)
-        ice_GenericBase = True
-        break
-if not ice_GenericBase:
-    print('Couln\'t load GenericBase')
-    sys.exit(-1)
+Ice.loadSlice("-I ./src/ --all ./src/GenericBase.ice")
 from RoboCompGenericBase import *
-
-ice_HandDetection = False
-for p in icePaths:
-    if os.path.isfile(p+'/HandDetection.ice'):
-        preStr = "-I/opt/robocomp/interfaces/ -I"+ROBOCOMP+"/interfaces/ " + additionalPathStr + " --all "+p+'/'
-        wholeStr = preStr+"HandDetection.ice"
-        Ice.loadSlice(wholeStr)
-        ice_HandDetection = True
-        break
-if not ice_HandDetection:
-    print('Couln\'t load HandDetection')
-    sys.exit(-1)
+Ice.loadSlice("-I ./src/ --all ./src/HandDetection.ice")
 from RoboCompHandDetection import *
-
-ice_JointMotor = False
-for p in icePaths:
-    if os.path.isfile(p+'/JointMotor.ice'):
-        preStr = "-I/opt/robocomp/interfaces/ -I"+ROBOCOMP+"/interfaces/ " + additionalPathStr + " --all "+p+'/'
-        wholeStr = preStr+"JointMotor.ice"
-        Ice.loadSlice(wholeStr)
-        ice_JointMotor = True
-        break
-if not ice_JointMotor:
-    print('Couln\'t load JointMotor')
-    sys.exit(-1)
+Ice.loadSlice("-I ./src/ --all ./src/JointMotor.ice")
 from RoboCompJointMotor import *
-
-ice_RGBD = False
-for p in icePaths:
-    if os.path.isfile(p+'/RGBD.ice'):
-        preStr = "-I/opt/robocomp/interfaces/ -I"+ROBOCOMP+"/interfaces/ " + additionalPathStr + " --all "+p+'/'
-        wholeStr = preStr+"RGBD.ice"
-        Ice.loadSlice(wholeStr)
-        ice_RGBD = True
-        break
-if not ice_RGBD:
-    print('Couln\'t load RGBD')
-    sys.exit(-1)
+Ice.loadSlice("-I ./src/ --all ./src/RGBD.ice")
 from RoboCompRGBD import *
 
 from handdetectionI import *

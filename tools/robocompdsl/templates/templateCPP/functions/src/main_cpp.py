@@ -5,33 +5,11 @@ from dsl_parsers.parsing_utils import communication_is_ice, get_name_number
 
 INCLUDE_STR = '#include <${iface_name}${suffix}.h>\n'
 
-def interface_includes(interfaces, suffix='', lower=False):
-    result = ""
-    for iface in sorted(interfaces):
-        if communication_is_ice(iface):
-            iface_name = iface
-            while not isinstance(iface_name, str):
-                iface_name = iface_name[0]
-            iface_name = iface_name.split('/')[-1].split('.')[0]
-            if lower:
-                iface_name = iface_name.lower()
-            result += Template(INCLUDE_STR).substitute(iface_name=iface_name, suffix=suffix)
-    return result
 
 PROXY_PTR_STR = """${name}Prx${ptr} ${lower}${num}_${prefix}proxy;\n"""
 
-def proxy_ptr(interfaces,language, prefix=''):
-    result = ""
-    for iface, num in get_name_number(interfaces):
-        if communication_is_ice(iface):
-            ptr = ""
-            if language.lower() != "cpp":
-                ptr = "Ptr"
-            name = iface[0]
-            result += Template(PROXY_PTR_STR).substitute(name=name, ptr=ptr, lower=name.lower(), num=num, prefix=prefix)
-    return result
 
-TOPIC_MANAGER_STR="""
+TOPIC_MANAGER_STR = """
 IceStorm::TopicManagerPrx${ptr} topicManager;
 try
 {
@@ -43,26 +21,6 @@ catch (const Ice::Exception &ex)
 	return EXIT_FAILURE;
 }
 """
-
-def topic_manager_creation(component):
-    result = ""
-    need_topic = False
-    for pub in component.publishes:
-        if communication_is_ice(pub):
-            need_topic = True
-    for pub in component.subscribesTo:
-        if communication_is_ice(pub):
-            need_topic = True
-    if need_topic:
-        if component.language.lower() == "cpp":
-            ptr = ""
-            type = "IceStorm::TopicManagerPrx::checkedCast"
-        else:
-            ptr = "Ptr"
-            type = "topicManager = Ice::checkedCast<IceStorm::TopicManagerPrx>"
-        result += Template(TOPIC_MANAGER_STR).substitute(ptr=ptr, type=type)
-    return result
-
 
 
 PUBLISHES_STR = """
@@ -93,28 +51,6 @@ while (!<LOWER>_topic)
 }
 
 """
-
-def publish(component):
-    result = ""
-    for pba in component.publishes:
-        if type(pba) == str:
-            pb = pba
-        else:
-            pb = pba[0]
-        if communication_is_ice(pba):
-            if component.language.lower() == "cpp":
-                result += "IceStorm::TopicPrx " + pb.lower() + "_topic;\n"
-            else:
-                result += "std::shared_ptr<IceStorm::TopicPrx> " + pb.lower() + "_topic;\n"
-            result += PUBLISHES_STR.replace("<NORMAL>", pb).replace("<LOWER>", pb.lower())
-            if component.language.lower() == "cpp":
-                result += "Ice::ObjectPrx " + pb.lower() + "_pub = " + pb.lower() + "_topic->getPublisher()->ice_oneway();\n"
-                result += "" + pb.lower() + "_pubproxy = " + pb + "Prx::uncheckedCast(" + pb.lower() + "_pub);\n"
-                result += "mprx[\"" + pb + "Pub\"] = (::IceProxy::Ice::Object*)(&" + pb.lower() + "_pubproxy);\n"
-            else:
-                result += "auto " + pb.lower() + "_pub = " + pb.lower() + "_topic->getPublisher()->ice_oneway();\n"
-                result += "" + pb.lower() + "_pubproxy = Ice::uncheckedCast<" + pb + "Prx>(" + pb.lower() + "_pub);\n"
-    return result
 
 SUBSCRIBESTO_STR = """
 // Server adapter creation and publication
@@ -165,31 +101,6 @@ catch(const IceStorm::NoSuchTopic&)
 
 """
 
-def subscribes_to(component):
-    result = ""
-    for name, num in get_name_number(component.subscribesTo):
-        nname = name
-        while type(nname) != type(''):
-            nname = name[0]
-        if communication_is_ice(name):
-            if component.language.lower() == "cpp":
-                change1 = "IceStorm::TopicPrx"
-                change2 = "Ice::ObjectPrx"
-                change3 = " new <NORMAL>I"
-                change4 = "Ice::ObjectPrx"
-            else:
-                change1 = "std::shared_ptr<IceStorm::TopicPrx>"
-                change2 = "Ice::ObjectPrxPtr"
-                change3 = " std::make_shared <<NORMAL>I>"
-                change4 = "auto"
-
-            result += SUBSCRIBESTO_STR.replace("<CHANGE1>", change1).replace("<CHANGE2>", change2).replace("<CHANGE3>",
-                                                                                                          change3).replace(
-                "<CHANGE4>", change4).replace("<NORMAL>", nname).replace("<LOWER>", nname.lower()).replace(
-                "<PROXYNAME>", nname.lower() + num).replace("<PROXYNUMBER>", num)
-    return result
-
-
 IMPLEMENTS_STR = """
 try
 {
@@ -210,21 +121,6 @@ catch (const IceStorm::TopicExists&){
 
 """
 
-def implements(component):
-    result = ""
-    for ima in component.implements:
-        if type(ima) == str:
-            im = ima
-        else:
-            im = ima[0]
-        if communication_is_ice(ima):
-            if component.language.lower() == "cpp":
-                cpp = "<NORMAL>I *<LOWER> = new <NORMAL>I(worker);"
-            else:
-                cpp = "auto <LOWER> = std::make_shared<<NORMAL>I>(worker);"
-            result += IMPLEMENTS_STR.replace("<C++_VERSION>", cpp).replace("<NORMAL>", im).replace("<LOWER>", im.lower())
-
-    return result
 
 REQUIRE_STR = """
 try
@@ -244,38 +140,6 @@ rInfo("<NORMAL>Proxy<PROXYNUMBER> initialized Ok!");
 
 """
 
-def requires(component):
-    result = ""
-    for iface, num in get_name_number(component.requires):
-        if communication_is_ice(iface):
-            if component.language.lower() == "cpp":
-                cpp = "<PROXYNAME>_proxy = <NORMAL>Prx::uncheckedCast( communicator()->stringToProxy( proxy ) );"
-            else:
-                cpp = "<PROXYNAME>_proxy = Ice::uncheckedCast<<NORMAL>Prx>( communicator()->stringToProxy( proxy ) );"
-            name = iface[0]
-            result += REQUIRE_STR.replace("<C++_VERSION>", cpp).replace("<NORMAL>", name).replace("<LOWER>",
-                                                                                                 name.lower()).replace(
-                "<PROXYNAME>", name.lower() + num).replace("<PROXYNUMBER>", num)
-        if component.language.lower() == "cpp":
-            result += "mprx[\"" + name + "Proxy" + num + "\"] = (::IceProxy::Ice::Object*)(&" + name.lower() + num + "_proxy);//Remote server proxy creation example\n"
-    return result
-
-
-def specificworker_creation(component):
-    result = ""
-    if component.language.lower() == "cpp":
-        var_name = 'm'
-    else:
-        var_name = 't'
-        proxy_list = [iface.name.lower() + num + "_proxy" for iface, num in get_name_number(component.requires)]
-        proxy_list += [iface.name.lower() + "_pubproxy" for iface in component.publishes]
-        if proxy_list:
-            result += "tprx = std::make_tuple(" + ",".join(proxy_list) + ");\n"
-        else:
-            result += "tprx = std::tuple<>();\n"
-    result += "SpecificWorker *worker = new SpecificWorker({}prx);\n".format(var_name)
-    return result
-
 UNSUBSCRIBE_STR = """
 try
 {
@@ -288,53 +152,195 @@ catch(const Ice::Exception& ex)
 }
 """
 
-def unsubscribe_code(component):
-    result = "\n"
-    for iface in component.subscribesTo:
-        if communication_is_ice(iface):
-            result = Template(UNSUBSCRIBE_STR).substitute(name=iface.name.lower())
-    return result
 
-def proxies_map_creation(component):
-    result = ""
-    if component.language.lower() == 'cpp':
-        result += "MapPrx mprx;\n"
-    else:
-        result += "TuplePrx tprx;\n"
-    return result
+class TemplateDict(dict):
+    def __init__(self, component):
+        super(TemplateDict, self).__init__()
+        self.component = component
+        self['year'] = str(datetime.date.today().year)
+        self['component_name'] = component.name
+        self['implements_interface_includes'] = self.interface_includes(self.component.implements, 'I', True)
+        self['subscribes_interface_includes'] = self.interface_includes(self.component.subscribesTo, 'I', True)
+        self['imports_interface_includes'] = self.interface_includes(self.component.recursiveImports)
+        self['interface_includes'] = self.interface_includes(self.component.recursiveImports)
+        self['proxies_map_creation'] = self.proxies_map_creation()
+        self['publishes_proxy_ptr'] = self.proxy_ptr(self.component.publishes, 'pub')
+        self['requires'] = self.requires()
+        self['requires_proxy_ptr'] = self.proxy_ptr(self.component.requires)
+        self['topic_manager_creation'] = self.topic_manager_creation()
+        self['publish'] = self.publish()
+        self['ros_init'] = self.ros_init()
+        self['specificworker_creation'] = self.specificworker_creation()
+        self['commonbehaviorI_creation'] = self.commonbehaviorI_creation()
+        self['implements'] = self.implements()
+        self['subscribes_to'] = self.subscribes_to()
+        self['unsubscribe_code'] = self.unsubscribe_code()
 
-def commonbehaviorI_creation(component):
-    result = ""
-    if component.language.lower() == "cpp":
-        result += "CommonBehaviorI *commonbehaviorI = new CommonBehaviorI(monitor);\n"
-    else:
-        result += "auto commonbehaviorI = std::make_shared<CommonBehaviorI>(monitor);\n"
-    return result
+    @staticmethod
+    def interface_includes(interfaces, suffix='', lower=False):
+        result = ""
+        for iface in sorted(interfaces):
+            if communication_is_ice(iface):
+                iface_name = iface
+                while not isinstance(iface_name, str):
+                    iface_name = iface_name[0]
+                iface_name = iface_name.split('/')[-1].split('.')[0]
+                if lower:
+                    iface_name = iface_name.lower()
+                result += Template(INCLUDE_STR).substitute(iface_name=iface_name, suffix=suffix)
+        return result
 
-def ros_init(component):
-    result = ""
-    if component.usingROS == True:
-        result += "ros::init(argc, argv, \"" + component.name + "\");\n"
-    return result
+    def proxy_ptr(self, interfaces, prefix=''):
+        result = ""
+        for iface, num in get_name_number(interfaces):
+            if communication_is_ice(iface):
+                ptr = ""
+                if self.component.language.lower() != "cpp":
+                    ptr = "Ptr"
+                name = iface[0]
+                result += Template(PROXY_PTR_STR).substitute(name=name, ptr=ptr, lower=name.lower(), num=num,
+                                                             prefix=prefix)
+        return result
 
-def get_template_dict(component):
-    return {
-        'year': str(datetime.date.today().year),
-        'component_name': component.name,
-        'implements_interface_includes': interface_includes(component.implements, 'I', True),
-        'subscribes_interface_includes': interface_includes(component.subscribesTo, 'I', True),
-        'imports_interface_includes': interface_includes(component.recursiveImports),
-        'interface_includes': interface_includes(component.recursiveImports),
-        'proxies_map_creation': proxies_map_creation(component),
-        'publishes_proxy_ptr': proxy_ptr(component.publishes, component.language, 'pub'),
-        'requires': requires(component),
-        'requires_proxy_ptr': proxy_ptr(component.requires, component.language),
-        'topic_manager_creation': topic_manager_creation(component),
-        'publish': publish(component),
-        'ros_init': ros_init(component),
-        'specificworker_creation': specificworker_creation(component),
-        'commonbehaviorI_creation': commonbehaviorI_creation(component),
-        'implements': implements(component),
-        'subscribes_to': subscribes_to(component),
-        'unsubscribe_code': unsubscribe_code(component)
-    }
+    def topic_manager_creation(self):
+        result = ""
+        need_topic = False
+        for pub in self.component.publishes:
+            if communication_is_ice(pub):
+                need_topic = True
+        for pub in self.component.subscribesTo:
+            if communication_is_ice(pub):
+                need_topic = True
+        if need_topic:
+            if self.component.language.lower() == "cpp":
+                ptr = ""
+                manager_type = "IceStorm::TopicManagerPrx::checkedCast"
+            else:
+                ptr = "Ptr"
+                manager_type = "topicManager = Ice::checkedCast<IceStorm::TopicManagerPrx>"
+            result += Template(TOPIC_MANAGER_STR).substitute(ptr=ptr, type=manager_type)
+        return result
+
+    def publish(self):
+        result = ""
+        for pba in self.component.publishes:
+            if type(pba) == str:
+                pb = pba
+            else:
+                pb = pba[0]
+            if communication_is_ice(pba):
+                if self.component.language.lower() == "cpp":
+                    result += "IceStorm::TopicPrx " + pb.lower() + "_topic;\n"
+                else:
+                    result += "std::shared_ptr<IceStorm::TopicPrx> " + pb.lower() + "_topic;\n"
+                result += PUBLISHES_STR.replace("<NORMAL>", pb).replace("<LOWER>", pb.lower())
+                if self.component.language.lower() == "cpp":
+                    result += "Ice::ObjectPrx " + pb.lower() + "_pub = " + pb.lower() + "_topic->getPublisher()->ice_oneway();\n"
+                    result += "" + pb.lower() + "_pubproxy = " + pb + "Prx::uncheckedCast(" + pb.lower() + "_pub);\n"
+                    result += "mprx[\"" + pb + "Pub\"] = (::IceProxy::Ice::Object*)(&" + pb.lower() + "_pubproxy);\n"
+                else:
+                    result += "auto " + pb.lower() + "_pub = " + pb.lower() + "_topic->getPublisher()->ice_oneway();\n"
+                    result += "" + pb.lower() + "_pubproxy = Ice::uncheckedCast<" + pb + "Prx>(" + pb.lower() + "_pub);\n"
+        return result
+
+    def subscribes_to(self):
+        result = ""
+        for name, num in get_name_number(self.component.subscribesTo):
+            nname = name
+            while type(nname) != type(''):
+                nname = name[0]
+            if communication_is_ice(name):
+                if self.component.language.lower() == "cpp":
+                    change1 = "IceStorm::TopicPrx"
+                    change2 = "Ice::ObjectPrx"
+                    change3 = " new <NORMAL>I"
+                    change4 = "Ice::ObjectPrx"
+                else:
+                    change1 = "std::shared_ptr<IceStorm::TopicPrx>"
+                    change2 = "Ice::ObjectPrxPtr"
+                    change3 = " std::make_shared <<NORMAL>I>"
+                    change4 = "auto"
+
+                result += SUBSCRIBESTO_STR.replace("<CHANGE1>", change1).replace("<CHANGE2>", change2).replace(
+                    "<CHANGE3>",
+                    change3).replace(
+                    "<CHANGE4>", change4).replace("<NORMAL>", nname).replace("<LOWER>", nname.lower()).replace(
+                    "<PROXYNAME>", nname.lower() + num).replace("<PROXYNUMBER>", num)
+        return result
+
+    def implements(self):
+        result = ""
+        for ima in self.component.implements:
+            if type(ima) == str:
+                im = ima
+            else:
+                im = ima[0]
+            if communication_is_ice(ima):
+                if self.component.language.lower() == "cpp":
+                    cpp = "<NORMAL>I *<LOWER> = new <NORMAL>I(worker);"
+                else:
+                    cpp = "auto <LOWER> = std::make_shared<<NORMAL>I>(worker);"
+                result += IMPLEMENTS_STR.replace("<C++_VERSION>", cpp).replace("<NORMAL>", im).replace("<LOWER>",
+                                                                                                       im.lower())
+
+        return result
+
+    def requires(self):
+        result = ""
+        for iface, num in get_name_number(self.component.requires):
+            name = iface[0]
+            if communication_is_ice(iface):
+                if self.component.language.lower() == "cpp":
+                    cpp = "<PROXYNAME>_proxy = <NORMAL>Prx::uncheckedCast( communicator()->stringToProxy( proxy ) );"
+                else:
+                    cpp = "<PROXYNAME>_proxy = Ice::uncheckedCast<<NORMAL>Prx>( communicator()->stringToProxy( proxy ) );"
+                result += REQUIRE_STR.replace("<C++_VERSION>", cpp).replace("<NORMAL>", name).replace("<LOWER>",
+                                                                                                      name.lower()).replace(
+                    "<PROXYNAME>", name.lower() + num).replace("<PROXYNUMBER>", num)
+            if self.component.language.lower() == "cpp":
+                result += "mprx[\"" + name + "Proxy" + num + "\"] = (::IceProxy::Ice::Object*)(&" + name.lower() + num + "_proxy);//Remote server proxy creation example\n"
+        return result
+
+    def specificworker_creation(self):
+        result = ""
+        if self.component.language.lower() == "cpp":
+            var_name = 'm'
+        else:
+            var_name = 't'
+            proxy_list = [iface.name.lower() + num + "_proxy" for iface, num in get_name_number(self.component.requires)]
+            proxy_list += [iface.name.lower() + "_pubproxy" for iface in self.component.publishes]
+            if proxy_list:
+                result += "tprx = std::make_tuple(" + ",".join(proxy_list) + ");\n"
+            else:
+                result += "tprx = std::tuple<>();\n"
+        result += "SpecificWorker *worker = new SpecificWorker({}prx);\n".format(var_name)
+        return result
+
+    def unsubscribe_code(self):
+        result = "\n"
+        for iface in self.component.subscribesTo:
+            if communication_is_ice(iface):
+                result = Template(UNSUBSCRIBE_STR).substitute(name=iface.name.lower())
+        return result
+
+    def proxies_map_creation(self):
+        result = ""
+        if self.component.language.lower() == 'cpp':
+            result += "MapPrx mprx;\n"
+        else:
+            result += "TuplePrx tprx;\n"
+        return result
+
+    def commonbehaviorI_creation(self):
+        result = ""
+        if self.component.language.lower() == "cpp":
+            result += "CommonBehaviorI *commonbehaviorI = new CommonBehaviorI(monitor);\n"
+        else:
+            result += "auto commonbehaviorI = std::make_shared<CommonBehaviorI>(monitor);\n"
+        return result
+
+    def ros_init(self):
+        result = ""
+        if self.component.usingROS is True:
+            result += "ros::init(argc, argv, \"" + self.component.name + "\");\n"
+        return result

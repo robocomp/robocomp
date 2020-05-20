@@ -84,6 +84,7 @@ class CustomTemplate(Template):
         return identifiers
 
 TEMPLATES_DIR = '/opt/robocomp/share/robocompdsl/templates/'
+ALT_TEMPLATES_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../')
 
 class AbstractTemplatesManager(ABC):
     def __init__(self, ast):
@@ -103,17 +104,21 @@ class AbstractTemplatesManager(ABC):
         pass
 
     def _template_to_file(self, template, output_file, interface_name=None):
-            with open(template, 'r') as istream:
-                content = istream.read()
-                template_dict = self._get_template_dict(template, interface_name)
-                template_object = CustomTemplate(content, trimlines=False)
-                try:
-                    file_content = template_object.substitute(**template_dict)
-                except KeyError as e:
-                    raise KeyError(str(e)+' In file %s' % template)
+        try:
+            istream = open(template, 'r')
+        except FileNotFoundError:
+            new_template_path = template.replace(TEMPLATES_DIR, ALT_TEMPLATES_DIR)
+            istream = open(new_template_path, 'r')
+        content = istream.read()
+        template_dict = self._get_template_dict(template, interface_name)
+        template_object = CustomTemplate(content, trimlines=False)
+        try:
+            file_content = template_object.substitute(**template_dict)
+        except KeyError as e:
+            raise KeyError(str(e)+' In file %s' % template)
 
-                with open(output_file, 'w') as ostream:
-                    ostream.write(file_content)
+        with open(output_file, 'w') as ostream:
+            ostream.write(file_content)
 
     def _get_template_dict(self, template, interface_name=None):
         template_dict = {}
@@ -132,11 +137,12 @@ class AbstractTemplatesManager(ABC):
             functions_file = template_name.replace('.','_').replace('/', '.')
             try:
                 functions_dir = "templates."+template.replace(TEMPLATES_DIR, "").split('/')[0]+".functions."
-                functions = importlib.import_module(functions_dir + functions_file)
+                module = importlib.import_module(functions_dir + functions_file)
+                TemplateDict = getattr(module, 'TemplateDict')
                 if interface_name is not None:
-                    template_dict = functions.get_template_dict(self.ast, interface_name)
+                    template_dict = TemplateDict(self.ast, interface_name)
                 else:
-                    template_dict = functions.get_template_dict(self.ast)
+                    template_dict = TemplateDict(self.ast)
             except ModuleNotFoundError:
                 pass
         return template_dict

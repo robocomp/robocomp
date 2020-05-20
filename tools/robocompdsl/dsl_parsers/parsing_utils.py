@@ -11,8 +11,7 @@ def generate_recursive_imports(initial_idsls, include_directories=[]):
     for idsl_path in initial_idsls:
         importedModule = None
         idsl_basename = os.path.basename(idsl_path)
-        iD = include_directories + ['/opt/robocomp/interfaces/IDSLs/',
-                                    os.path.expanduser('~/robocomp/interfaces/IDSLs/')]
+        include_directories = include_directories + IDSLPool.get_common_interface_dirs()
         # TODO: Replace by idsl_robocomp_path
         new_idsl_path = idsl_robocomp_path(idsl_basename, include_directories)
         from dsl_parsers.dsl_factory import DSLFactory
@@ -104,8 +103,7 @@ def idsl_robocomp_path(idsl_name, include_directories = None):
     pathList = []
     if include_directories != None:
         pathList += [x for x in include_directories]
-    pathList.append('/opt/robocomp/interfaces/IDSLs/')
-    pathList.append(os.path.expanduser('~/robocomp/interfaces/IDSLs/'))
+    pathList += IDSLPool.get_common_interface_dirs()
 
     for p in pathList:
         path = os.path.join(p , idsl_name)
@@ -216,6 +214,8 @@ def getTypeFromModule(vtype, module):
             return t['type']
     return None
 
+FILE_PATH_DIR = os.path.dirname(os.path.realpath(__file__))
+ALT_INTERFACES_DIR = os.path.join(FILE_PATH_DIR, "../../../interfaces/IDSLs/", )
 
 class IDSLPool:
     """
@@ -230,15 +230,23 @@ class IDSLPool:
     'int8', 'int16', 'int32', 'int64', 'float8', 'float16', 'float32', 'float64', 'byte', 'bool', 'string', 'time',
     'empty')
 
+    common_interface_dirs = ['/opt/robocomp/interfaces/IDSLs/',
+                                   os.path.expanduser('~/robocomp/interfaces/IDSLs/'),
+                                   ALT_INTERFACES_DIR]
+
     def __init__(self, files, iD):
         self.modulePool = OrderedDict()
-        includeDirectories = iD + ['/opt/robocomp/interfaces/IDSLs/', os.path.expanduser('~/robocomp/interfaces/IDSLs/')]
+        includeDirectories = iD + self.common_interface_dirs
         self.includeInPool(files, self.modulePool, includeDirectories)
         self.includeInPool('#'.join(self.mandatory_idsls), self.modulePool, includeDirectories)
 
     @classmethod
     def getRosTypes(cls):
         return cls.rosTypes
+
+    @classmethod
+    def get_common_interface_dirs(cls):
+        return cls.common_interface_dirs
 
     def includeInPool(self, files, modulePool, includeDirectories):
         """
