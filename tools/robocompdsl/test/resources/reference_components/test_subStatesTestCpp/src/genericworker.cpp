@@ -61,6 +61,14 @@ GenericWorker::GenericWorker(MapPrx& mprx) : Ui_guiDlg()
 	threeState->addTransition(this, SIGNAL(t_three_to_four()), fourState);
 	fourState->addTransition(this, SIGNAL(t_four_to_one()), oneState);
 	fourState->addTransition(this, SIGNAL(t_four_to_five()), fiveState);
+	test2sub1State->addTransition(this, SIGNAL(t_test2sub1_to_test2sub2()), test2sub2State);
+	test2sub2State->addTransition(this, SIGNAL(t_test2sub2_to_test2sub2()), test2sub2State);
+	test2sub21State->addTransition(this, SIGNAL(t_test2sub21_to_test2sub21()), test2sub21State);
+	test2sub21State->addTransition(this, SIGNAL(t_test2sub21_to_test2sub22()), test2sub22State);
+	test3sub1State->addTransition(this, SIGNAL(t_test3sub1_to_test3sub1()), test3sub1State);
+	test3sub2State->addTransition(this, SIGNAL(t_test3sub2_to_test3sub2()), test3sub2State);
+	test4sub1State->addTransition(this, SIGNAL(t_test4sub1_to_test4sub2()), test4sub2State);
+	test4sub2State->addTransition(this, SIGNAL(t_test4sub2_to_test4sub1()), test4sub1State);
 
 	QObject::connect(twoState, SIGNAL(entered()), this, SLOT(sm_two()));
 	QObject::connect(threeState, SIGNAL(entered()), this, SLOT(sm_three()));

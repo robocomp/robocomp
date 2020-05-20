@@ -63,6 +63,14 @@ class GenericWorker(QtWidgets.QWidget):
     t_three_to_four = QtCore.Signal()
     t_four_to_one = QtCore.Signal()
     t_four_to_five = QtCore.Signal()
+    t_test2sub1_to_test2sub1 = QtCore.Signal()
+    t_test2sub2_to_test2sub2 = QtCore.Signal()
+    t_test2sub21_to_test2sub21 = QtCore.Signal()
+    t_test2sub21_to_test2sub22 = QtCore.Signal()
+    t_test3sub1_to_test3sub1 = QtCore.Signal()
+    t_test3sub2_to_test3sub2 = QtCore.Signal()
+    t_test4sub1_to_test4sub2 = QtCore.Signal()
+    t_test4sub2_to_test4sub1 = QtCore.Signal()
 
     #-------------------------
 
@@ -120,6 +128,14 @@ class GenericWorker(QtWidgets.QWidget):
         self.three_state.addTransition(self.t_three_to_four, self.four_state)
         self.four_state.addTransition(self.t_four_to_one, self.one_state)
         self.four_state.addTransition(self.t_four_to_five, self.five_state)
+        self.test2sub1_state.addTransition(self.t_test2sub1_to_test2sub1, self.test2sub1_state)
+        self.test2sub2_state.addTransition(self.t_test2sub2_to_test2sub2, self.test2sub2_state)
+        self.test2sub21_state.addTransition(self.t_test2sub21_to_test2sub21, self.test2sub21_state)
+        self.test2sub21_state.addTransition(self.t_test2sub21_to_test2sub22, self.test2sub22_state)
+        self.test3sub1_state.addTransition(self.t_test3sub1_to_test3sub1, self.test3sub1_state)
+        self.test3sub2_state.addTransition(self.t_test3sub2_to_test3sub2, self.test3sub2_state)
+        self.test4sub1_state.addTransition(self.t_test4sub1_to_test4sub2, self.test4sub2_state)
+        self.test4sub2_state.addTransition(self.t_test4sub2_to_test4sub1, self.test4sub1_state)
 
 
         self.two_state.entered.connect(self.sm_two)

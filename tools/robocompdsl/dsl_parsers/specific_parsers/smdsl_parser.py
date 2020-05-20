@@ -1,5 +1,4 @@
 import copy
-import sys
 
 from pyparsing import CaselessKeyword, Suppress, Word, CaselessLiteral, alphas, alphanums, delimitedList, Group, \
     OneOrMore, ZeroOrMore, Optional, cppStyleComment
@@ -7,6 +6,7 @@ from pyparsing import CaselessKeyword, Suppress, Word, CaselessLiteral, alphas, 
 from dsl_parsers.dsl_parser_abstract import DSLParserTemplate
 
 
+# noinspection PyTypeChecker
 class SMDSLParser(DSLParserTemplate):
     def __init__(self):
         super(SMDSLParser, self).__init__()
@@ -61,7 +61,7 @@ class SMDSLParser(DSLParserTemplate):
         # Horrible hack to make robocompdsl work with pyparsing > 2.2
         try:
             result_dict['machine']['name'] = parsing_result['machine']['name']
-        except:
+        except KeyError:
             result_dict['machine']['name'] = parsing_result['name']
             parsing_result['machine'] = copy.deepcopy(parsing_result)
 
@@ -72,22 +72,20 @@ class SMDSLParser(DSLParserTemplate):
         result_dict['machine']['contents'] = {}
         try:
             result_dict['machine']['contents']['states'] = parsing_result['machine']['contents']['states'].asList()
-        except:
+        except KeyError:
             result_dict['machine']['contents']['states'] = None
         try:
             result_dict['machine']['contents']['finalstate'] = parsing_result['machine']['contents']['finalstate']
-        except:
+        except KeyError:
             result_dict['machine']['contents']['finalstate'] = None
         else:
             if result_dict['machine']['contents']['states'] is not None:
                 for state in result_dict['machine']['contents']['states']:
                     if result_dict['machine']['contents']['finalstate'] == state:
-                        print(
-                        ("Error: this final state " + result_dict['machine']['contents']['finalstate'] + " is in states"))
+                        print(("Error: this final state " + result_dict['machine']['contents']['finalstate'] + " is in states"))
         try:
-
             result_dict['machine']['contents']['initialstate'] = parsing_result['machine']['contents']['initialstate']
-        except:
+        except KeyError:
             print("Error: The state machine needs initial state")
         else:
             if result_dict['machine']['contents']['states'] is not None:
@@ -103,13 +101,12 @@ class SMDSLParser(DSLParserTemplate):
         result_dict['machine']['contents']['transitions'] = []
         try:
             for transition in parsing_result['machine']['contents']['transitions']:
-                 result_dict['machine']['contents']['transitions'].append(transition.asDict())
-        except:
+                result_dict['machine']['contents']['transitions'].append(transition.asDict())
+        except KeyError:
             result_dict['machine']['contents']['transitions'] = None
         try:
-            aux = parsing_result['machine']['substates']
             result_dict['substates'] = []
-        except:
+        except KeyError:
             result_dict['substates'] = None
         if result_dict['substates'] is not None:
             for sub in parsing_result['machine']['substates']:
@@ -117,11 +114,11 @@ class SMDSLParser(DSLParserTemplate):
                 # a['name'] = sub['name']
                 try:
                     a['parallel'] = sub['parallel']
-                except:
+                except KeyError:
                     a['parallel'] = False
                 try:
                     a['parent'] = sub['parent']
-                except:
+                except KeyError:
                     print("Error: substate missing parent")
                     # TODO: Raise exception. Don't Exit.
                     raise KeyError("Substate must have a parent %s" % str(sub))
@@ -129,27 +126,27 @@ class SMDSLParser(DSLParserTemplate):
                 if a['parallel']:
                     try:
                         a['contents']['states'] = sub['contents']['states']
-                    except:
+                    except KeyError:
                         print(("Error: substate " + a['parent'] + " missing states"))
                     try:
                         a['contents']['finalstate'] = sub['contents']['finalstate']
                         print(("Error substate " + a['parent'] + " can't have final state"))
-                    except:
+                    except KeyError:
                         a['contents']['finalstate'] = None
                     try:
                         a['contents']['initialstate'] = sub['contents']['initialstate']
                         print(("Error substate " + a['parent'] + " can't have initial state"))
-                    except:
+                    except KeyError:
                         a['contents']['initialstate'] = None
                 else:
                     try:
                         a['contents']['states'] = sub['contents']['states'].asList()
-                    except:
+                    except KeyError:
                         a['contents']['states'] = None
                     try:
                         a['contents']['finalstate'] = sub['contents']['finalstate']
 
-                    except:
+                    except KeyError:
                         a['contents']['finalstate'] = None
                     else:
                         if a['contents']['states'] is not None:
@@ -159,7 +156,7 @@ class SMDSLParser(DSLParserTemplate):
                                         'finalstate'] + " is in states"))
                     try:
                         a['contents']['initialstate'] = sub['contents']['initialstate']
-                    except:
+                    except KeyError:
                         print(("Error substate " + a['parent'] + " needs initial state"))
                     else:
                         if a['contents']['states'] is not None:
@@ -170,8 +167,10 @@ class SMDSLParser(DSLParserTemplate):
                         if a['contents']['initialstate'] == a['contents']['finalstate']:
                             print(("Error: " + a['parent'] + " initial state is equal final state"))
                 try:
-                    a['contents']['transitions'] = sub['contents']['transitions'].toDict()
-                except:
+                    a['contents']['transitions'] = []
+                    for transition in sub['contents']['transitions']:
+                        a['contents']['transitions'].append(transition.asDict())
+                except KeyError:
                     a['contents']['transitions'] = None
                 result_dict['substates'].append(a)
         self.struct = result_dict

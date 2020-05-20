@@ -113,6 +113,14 @@ signals:
 	void t_three_to_four();
 	void t_four_to_one();
 	void t_four_to_five();
+	void t_test2sub1_to_test2sub2();
+	void t_test2sub2_to_test2sub2();
+	void t_test2sub21_to_test2sub21();
+	void t_test2sub21_to_test2sub22();
+	void t_test3sub1_to_test3sub1();
+	void t_test3sub2_to_test3sub2();
+	void t_test4sub1_to_test4sub2();
+	void t_test4sub2_to_test4sub1();
 
 	//-------------------------
 };

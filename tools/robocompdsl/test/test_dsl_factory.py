@@ -97,7 +97,26 @@ class DSLFactoryTestCase(unittest.TestCase):
                             'session_end'],
                         'finalstate': None,
                         'initialstate': 'session_start_wait',
-                        'transitions': None
+                        'transitions': [
+                            {'src': 'session_start_wait', 'dests': ['session_init']},
+                            {'src': 'session_init', 'dests': ['game_start_wait']},
+                            {'src': 'game_start_wait', 'dests': ['game_start_wait']},
+                            {'src': 'game_start_wait', 'dests': ['game_init']},
+                            {'src': 'game_start_wait', 'dests': ['session_end']},
+                            {'src': 'session_end', 'dests': ['session_start_wait']},
+                            {'src': 'game_init', 'dests': ['game_loop']},
+                            {'src': 'game_loop', 'dests': ['game_loop', 'game_pause', 'game_won', 'game_lost', 'game_end']},
+                            {'src': 'game_pause', 'dests': ['game_loop']},
+                            {'src': 'game_pause', 'dests': ['game_reset']},
+                            {'src': 'game_pause', 'dests': ['game_resume']},
+                            {'src': 'game_pause', 'dests': ['game_end']},
+                            {'src': 'game_resume', 'dests': ['game_loop']},
+                            {'src': 'game_end', 'dests': ['game_lost']},
+                            {'src': 'game_end', 'dests': ['game_won']},
+                            {'src': 'game_lost', 'dests': ['game_start_wait']},
+                            {'src': 'game_won', 'dests': ['game_start_wait']},
+                            {'src': 'game_reset', 'dests': ['game_start_wait']}
+                        ]
                     }
                 },
                 {
@@ -108,7 +127,11 @@ class DSLFactoryTestCase(unittest.TestCase):
                             'player_acquisition_loop'],
                         'finalstate': 'player_acquisition_ended',
                         'initialstate': 'player_acquisition_init',
-                        'transitions': None
+                        'transitions': [
+                            {'src': 'player_acquisition_init', 'dests': ['player_acquisition_loop']},
+                            {'src': 'player_acquisition_loop', 'dests': ['player_acquisition_loop']},
+                            {'src': 'player_acquisition_loop', 'dests': ['player_acquisition_ended']}
+                        ]
                     }
                 }
             ],
