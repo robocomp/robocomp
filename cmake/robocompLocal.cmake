@@ -118,12 +118,12 @@ MACRO( ROBOCOMP_ICE_TO_SRC )
   SET (SLICE_PATH "./src/;")
   STRING (REPLACE "/" "_" SPECIFIC_TARGET "${CMAKE_CURRENT_SOURCE_DIR}") 
   FOREACH( input_file ${ARGN} )
-    MESSAGE(STATUS "Adding rule to generate ${input_file}.h and ${input_file}.cpp from ${input_file}.ice")
+    MESSAGE(STATUS "Adding rule to generate ${input_file}.h and ${input_file}.cpp from ${CMAKE_HOME_DIRECTORY}/interfaces/${input_file}.ice")
     add_custom_command(
         OUTPUT ${input_file}.cpp ${input_file}.h
-        COMMAND slice2cpp ${input_file}.ice -I. --output-dir .
+        COMMAND slice2cpp ${CMAKE_HOME_DIRECTORY}/interfaces/${input_file}.ice -I${CMAKE_HOME_DIRECTORY}/interfaces/ --output-dir .
         DEPENDS ICES_${SPECIFIC_TARGET}
-        COMMENT "Generating ${input_file}.h and ${input_file}.cpp from ${input_file}.ice"
+        COMMENT "Generating ${input_file}.h and ${input_file}.cpp from ${CMAKE_HOME_DIRECTORY}/interfaces/${input_file}.ice"
     )
     SET ( SOURCES ${SOURCES} ./${input_file}.cpp )
     SET_PROPERTY(SOURCE ${input_file}.cpp PROPERTY SKIP_AUTOGEN ON)
