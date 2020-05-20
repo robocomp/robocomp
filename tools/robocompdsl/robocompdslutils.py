@@ -1,7 +1,6 @@
 import os
 import sys
 from distutils import spawn
-from cogapp import Cog
 
 sys.path.append("/opt/robocomp/python")
 
@@ -36,19 +35,6 @@ def replaceTagsInFile(path):
     w = open(path, 'w')
     w.write(text)
     w.close()
-
-
-def generate_cog_command(params, template, output_file):
-    params_strings = ["-D %s=%s" % (key, value) for key, value in params.items()]
-    return "cog -z -d %s -o %s %s" % (" ".join(params_strings), output_file, template)
-
-
-def run_cog_and_replace_tags(cog_command, ofile):
-    run = cog_command.split(' ')
-    ret = Cog().main(run)
-    if ret != 0:
-        raise RuntimeError('ERROR (%d) executing cog %s' % (ret, cog_command))
-    replaceTagsInFile(ofile)
 
 
 def create_directory(directory):
