@@ -75,7 +75,7 @@ class IDSLParser(DSLParserTemplate):
         # Hack to make robocompdsl work with pyparsing > 2.2
         try:
             result_dict['name'] = parsing_result['module']['name']
-        except:
+        except KeyError:
             result_dict['name'] = parsing_result['name']
 
         result_dict['imports'] = ''
@@ -90,7 +90,7 @@ class IDSLParser(DSLParserTemplate):
         # Hack to make robocompdsl work with pyparsing > 2.2
         try:
             contents = parsing_result['module']['contents']
-        except:
+        except KeyError:
             contents = parsing_result['contents']
 
         for contentDef in contents:
@@ -102,7 +102,7 @@ class IDSLParser(DSLParserTemplate):
                     interface['methods'][method['name']]['name'] = method['name']
                     try:
                         interface['methods'][method['name']]['decorator'] = method['decorator']
-                    except:
+                    except KeyError:
                         interface['methods'][method['name']]['decorator'] = ''
 
                     interface['methods'][method['name']]['return'] = method['ret']
@@ -112,15 +112,15 @@ class IDSLParser(DSLParserTemplate):
                         for p in method['params']:
                             try:
                                 params.append({'decorator': p['decorator'], 'type': p['type'], 'name': p['name']})
-                            except:
+                            except KeyError:
                                 params.append({'decorator': 'none', 'type': p['type'], 'name': p['name']})
-                    except:
+                    except KeyError:
                         pass
                     interface['methods'][method['name']]['params'] = params
 
                     try:
                         interface['methods'][method['name']]['throws'] = method['raise'].asList()
-                    except:
+                    except KeyError:
                         interface['methods'][method['name']]['throws'] = 'nothing'
                 result_dict['interfaces'].append(interface)
         # TYPES DEFINED IN THE MODULE
@@ -147,21 +147,21 @@ class IDSLParser(DSLParserTemplate):
         result_dict['simpleSequences'] = []
         for contentDef in contents:
             if contentDef['type'] == 'sequence':
-                seqdef = {'name': result_dict['name'] + "/" + contentDef['name'], 'type': contentDef['type'], 'typeSequence': contentDef['typeSequence']}
-                simpleSeqdef = {'name': result_dict['name'], 'strName': contentDef['name']}
+                seq_def = {'name': result_dict['name'] + "/" + contentDef['name'], 'type': contentDef['type'], 'typeSequence': contentDef['typeSequence']}
+                simple_seq_def = {'name': result_dict['name'], 'strName': contentDef['name']}
                 # print structdef
-                result_dict['sequences'].append(seqdef)
-                result_dict['simpleSequences'].append(simpleSeqdef)
+                result_dict['sequences'].append(seq_def)
+                result_dict['simpleSequences'].append(simple_seq_def)
         # STRUCTS DEFINED IN THE MODULE
         result_dict['structs'] = []
         result_dict['simpleStructs'] = []
         for contentDef in contents:
             if contentDef['type'] == 'struct':
-                structdef = {'name': result_dict['name'] + "/" + contentDef['name'], 'type': contentDef['type'], 'structIdentifiers':contentDef['structIdentifiers'].asList()}
-                simpleStructdef = {'name': result_dict['name'], 'strName': contentDef['name']}
+                structdef = {'name': result_dict['name'] + "/" + contentDef['name'], 'type': contentDef['type'], 'structIdentifiers': contentDef['structIdentifiers'].asList()}
+                simple_struct_def = {'name': result_dict['name'], 'strName': contentDef['name']}
                 # print structdef
                 result_dict['structs'].append(structdef)
-                result_dict['simpleStructs'].append(simpleStructdef)
+                result_dict['simpleStructs'].append(simple_struct_def)
 
         self.struct = result_dict
         return result_dict
