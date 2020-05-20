@@ -10,8 +10,10 @@ from . import componentfacade
 
 
 class CDSLParser(DSLParserTemplate):
-    def __init__(self, include_directories = []):
+    def __init__(self, include_directories=None):
         super(CDSLParser, self).__init__()
+        if include_directories is None:
+            include_directories = []
         self._include_directories = include_directories
 
     def _create_parser(self):
@@ -67,7 +69,7 @@ class CDSLParser(DSLParserTemplate):
         valid_options = INNERMODELVIEWER | AGMAGENT
         options = Group(Optional(OPTIONS.suppress() - delimitedList(valid_options)) + SEMI)
         statemachine = Group(
-            Optional(STATEMACHINE.suppress() - QUOTE + CharsNotIn("\";").setResultsName('machine_path') + QUOTE + Optional(VISUAL.setResultsName('visual').setParseAction(lambda t: True))+ SEMI))
+            Optional(STATEMACHINE.suppress() - QUOTE + CharsNotIn("\";").setResultsName('machine_path') + QUOTE + Optional(VISUAL.setResultsName('visual').setParseAction(lambda t: True)) + SEMI))
 
         # Component definition
         componentContents = Group(
@@ -88,7 +90,7 @@ class CDSLParser(DSLParserTemplate):
             raise ValueError("There was some problem parsing the component file.")
         component = componentfacade.ComponentFacade()
         # print 'parseCDSL.component', includeDirectories
-        if self._include_directories == None:
+        if self._include_directories is None:
             self._include_directories = []
         if "include_directories" in kwargs:
             self._include_directories = kwargs["include_directories"]
@@ -97,8 +99,8 @@ class CDSLParser(DSLParserTemplate):
         try:
             for op in parsing_result['component']['content']['options']:
                 component.options.append(op.lower())
-        except:
-            component.options = []
+        except KeyError:
+            pass
 
         # Component name
         component.name = parsing_result['component']['name']
@@ -107,15 +109,13 @@ class CDSLParser(DSLParserTemplate):
         component.recursiveImports = []
         try:
             imprts = [path['idsl_path'] for path in parsing_result.asDict()["imports"]]
-        except:
+        except KeyError:
             parsing_result['imports'] = []
             imprts = []
         if component.is_agm1_agent():
             imprts.extend(['AGMExecutive.idsl', 'AGMCommonBehavior.idsl', 'AGMWorldModel.idsl', 'AGMExecutiveTopic.idsl'])
         if component.is_agm2_agent():
             imprts.extend(['AGM2.idsl'])
-        iD = self._include_directories + ['/opt/robocomp/interfaces/IDSLs/',
-                                   os.path.expanduser('~/robocomp/interfaces/IDSLs/')]
         component.imports.extend(list(map(os.path.basename, sorted(imprts))))
         component.recursiveImports = generate_recursive_imports(list(component.imports), self._include_directories)
         # Language
@@ -125,34 +125,30 @@ class CDSLParser(DSLParserTemplate):
         try:
             statemachine = parsing_result['component']['content']['statemachine']['machine_path']
             component.statemachine_path = statemachine
-        except:
+        except KeyError:
             pass
+
         try:
             statemachine_visual = parsing_result['component']['content']['statemachine']['visual']
-        except:
+        except KeyError:
             component.statemachine_visual = False
         else:
             component.statemachine_visual = statemachine_visual
 
         # innermodelviewer
         component.innermodelviewer = False
-        try:
-            component.innermodelviewer = 'innermodelviewer' in [x.lower() for x in component.options]
-            pass
-        except:
-            pass
+        component.innermodelviewer = 'innermodelviewer' in [x.lower() for x in component.options]
+
         # GUI
         component.gui = None
         try:
-            uiT = parsing_result['component']['content']['gui']['type']
-            uiI = parsing_result['component']['content']['gui']['gui_options']
-            if uiT.lower() == 'qt' and uiI in ['QWidget', 'QMainWindow', 'QDialog']:
-                component.gui = [uiT, uiI]
-                pass
+            ui_type = parsing_result['component']['content']['gui']['type']
+            ui_widget = parsing_result['component']['content']['gui']['gui_options']
+            if ui_type.lower() == 'qt' and ui_widget in ['QWidget', 'QMainWindow', 'QDialog']:
+                component.gui = [ui_type, ui_widget]
             else:
                 raise ValueError('Wrong UI specification %s' % parsing_result['properties']['gui'])
-        except:
-            # TODO: check exceptions and do something when accessing gui options fails.
+        except KeyError:
             pass
 
         # Communications
@@ -170,7 +166,7 @@ class CDSLParser(DSLParserTemplate):
             if comm_type in communications:
                 interfaces = sorted(communications[comm_type].asList(), key=itemgetter(0))
                 for interface in interfaces:
-                    getattr(component,comm_type).append(interface)
+                    getattr(component, comm_type).append(interface)
                     if communication_is_ice(interface):
                         component.iceInterfaces.append(interface)
                     else:
@@ -179,56 +175,56 @@ class CDSLParser(DSLParserTemplate):
         # Handle options for communications
         if component.is_agm1_agent():
             component.iceInterfaces += [['AGMCommonBehavior', 'ice'], ['AGMExecutive', 'ice'], ['AGMExecutiveTopic', 'ice'], ['AGMWorldModel', 'ice']]
-            if not 'AGMCommonBehavior' in component.implements:
+            if 'AGMCommonBehavior' not in component.implements:
                 component.implements = [['AGMCommonBehavior', 'ice']] + component.implements
-            if not 'AGMExecutive' in component.requires:
+            if 'AGMExecutive' not in component.requires:
                 component.requires = [['AGMExecutive', 'ice']] + component.requires
-            if not 'AGMExecutiveTopic' in component.subscribesTo:
+            if 'AGMExecutiveTopic' not in component.subscribesTo:
                 component.subscribesTo = [['AGMExecutiveTopic', 'ice']] + component.subscribesTo
         if component.is_agm2_agent():
             if is_agm2_agent_ROS(component):
                 component.usingROS = True
                 agm2agent_requires = [['AGMDSRService', 'ros']]
-                agm2agent_subscribesTo = [['AGMExecutiveTopic', 'ros'], ['AGMDSRTopic', 'ros']]
-                if not 'AGMDSRService' in component.rosInterfaces: component.rosInterfaces.append(['AGMDSRService','ros'])
-                if not 'AGMDSRTopic' in component.rosInterfaces: component.rosInterfaces.append(['AGMDSRTopic','ros'])
-                if not 'AGMExecutiveTopic' in component.rosInterfaces: component.rosInterfaces.append(['AGMExecutiveTopic','ros'])
+                agm2agent_subscribes_to = [['AGMExecutiveTopic', 'ros'], ['AGMDSRTopic', 'ros']]
+                if 'AGMDSRService' not in component.rosInterfaces: component.rosInterfaces.append(['AGMDSRService', 'ros'])
+                if 'AGMDSRTopic' not in component.rosInterfaces: component.rosInterfaces.append(['AGMDSRTopic', 'ros'])
+                if 'AGMExecutiveTopic' not in component.rosInterfaces: component.rosInterfaces.append(['AGMExecutiveTopic', 'ros'])
             else:
                 agm2agent_requires = [['AGMDSRService', 'ice']]
-                agm2agent_subscribesTo = [['AGMExecutiveTopic', 'ice'], ['AGMDSRTopic', 'ice']]
-                if not 'AGMDSRService' in component.iceInterfaces: component.iceInterfaces.append(['AGMDSRService', 'ice'])
-                if not 'AGMDSRTopic' in component.iceInterfaces: component.iceInterfaces.append(['AGMDSRTopic', 'ice'])
-                if not 'AGMExecutiveTopic' in component.iceInterfaces: component.iceInterfaces.append(['AGMExecutiveTopic', 'ice'])
+                agm2agent_subscribes_to = [['AGMExecutiveTopic', 'ice'], ['AGMDSRTopic', 'ice']]
+                if 'AGMDSRService' not in component.iceInterfaces: component.iceInterfaces.append(['AGMDSRService', 'ice'])
+                if 'AGMDSRTopic' not in component.iceInterfaces: component.iceInterfaces.append(['AGMDSRTopic', 'ice'])
+                if 'AGMExecutiveTopic' not in component.iceInterfaces: component.iceInterfaces.append(['AGMExecutiveTopic', 'ice'])
 
             # AGM2 agents REQUIRES
             for agm2agent_req in agm2agent_requires:
-                if not agm2agent_req in component.requires:
+                if agm2agent_req not in component.requires:
                     component.requires = [agm2agent_req] + component.requires
             # AGM2 agents SUBSCRIBES
-            for agm2agent_sub in agm2agent_subscribesTo:
-                if not agm2agent_sub in component.subscribesTo:
+            for agm2agent_sub in agm2agent_subscribes_to:
+                if agm2agent_sub not in component.subscribesTo:
                     component.subscribesTo = [agm2agent_sub] + component.subscribesTo
         # component = ComponentFacade.from_nested_dict(component)
         self.struct = component
         return component
 
     def __str__(self):
-        struct_str= ""
-        struct_str+= 'Component %s\n' % self.struct['name']
+        struct_str = ""
+        struct_str += 'Component %s\n' % self.struct['name']
 
-        struct_str+= '\tImports:\n'
+        struct_str += '\tImports:\n'
         for imp in self.struct['imports']:
-            struct_str+= '\t\t %s\n'% imp
+            struct_str += '\t\t %s\n' % imp
         # Language
-        struct_str+= '\tLanguage:'
-        struct_str+= '\t\t %s\n' %self.struct['language']
+        struct_str += '\tLanguage:'
+        struct_str += '\t\t %s\n' % self.struct['language']
         # GUI
-        struct_str+= '\tGUI:\n'
-        struct_str+= '\t\t %\n' % self.struct['gui']
+        struct_str += '\tGUI:\n'
+        struct_str += '\t\t %s\n' % self.struct['gui']
         # Communications
-        struct_str+= '\tCommunications:\n'
-        struct_str+= '\t\tImplements %s \n'% self.struct['implements']
-        struct_str+= '\t\tRequires %s\n'% self.struct['requires']
-        struct_str+= '\t\tPublishes %s\n'% self.struct['publishes']
-        struct_str+= '\t\tSubscribes %s\n'% self.struct['subscribesTo']
+        struct_str += '\tCommunications:\n'
+        struct_str += '\t\tImplements %s \n' % self.struct['implements']
+        struct_str += '\t\tRequires %s\n' % self.struct['requires']
+        struct_str += '\t\tPublishes %s\n' % self.struct['publishes']
+        struct_str += '\t\tSubscribes %s\n' % self.struct['subscribesTo']
         return struct_str
