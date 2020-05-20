@@ -1,6 +1,3 @@
-from collections import OrderedDict
-from functools import reduce
-
 import rcExceptions
 from dsl_parsers.parsing_utils import IDSLPool
 
@@ -118,6 +115,7 @@ from dsl_parsers.parsing_utils import IDSLPool
 
 class Interface(list):
     def __init__(self, params):
+        super(Interface, self).__init__()
         self.extend(params)
 
     @property
@@ -136,6 +134,7 @@ class Interface(list):
 
 class Interfaces(list):
     def __init__(self, params):
+        super(Interfaces, self).__init__()
         the_list = [Interface(x) for x in params]
         self.extend(the_list)
 
@@ -150,6 +149,7 @@ class Interfaces(list):
 
 class Gui(list):
     def __init__(self, params):
+        super(Gui, self).__init__()
         self.extend(params)
 
     @property
@@ -162,6 +162,7 @@ class Gui(list):
 
 class Options(list):
     def __init__(self, params):
+        super(Options, self).__init__()
         self.extend(params)
 
     def __getattr__(self, item):
