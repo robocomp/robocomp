@@ -22,7 +22,6 @@ class CustomTemplate(Template):
         super(CustomTemplate, self).__init__(template)
         self.trimlines = trimlines
 
-
     def substitute(*args, **kws):
         if not args:
             raise TypeError("descriptor 'substitute' of 'Template' object "
@@ -41,7 +40,7 @@ class CustomTemplate(Template):
             if previous.strip() == '':
                 out_lines = []
                 lines = string.splitlines()
-                if len(lines)>0:
+                if len(lines) > 0:
                     if self.trimlines:
                         if lines and lines[0].strip() == '':
                             del lines[0]
@@ -74,7 +73,7 @@ class CustomTemplate(Template):
                              self.pattern)
         substituted = self.pattern.sub(convert, self.template)
         # The only way to remove extra lines that template leaves.
-        return substituted.replace('<LINEREMOVE>\n','')
+        return substituted.replace('<LINEREMOVE>\n', '')
 
     def identifiers(self):
         identifiers = []
@@ -86,6 +85,7 @@ class CustomTemplate(Template):
 
 TEMPLATES_DIR = '/opt/robocomp/share/robocompdsl/templates/'
 ALT_TEMPLATES_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../')
+
 
 class AbstractTemplatesManager(ABC):
     def __init__(self, ast):
@@ -124,7 +124,7 @@ class AbstractTemplatesManager(ABC):
     def _get_template_dict(self, template, interface_name=None):
         template_dict = {}
         full_path = os.path.join(TEMPLATES_DIR, self.files['template_path'])
-        template_name = template.replace(full_path,"")
+        template_name = template.replace(full_path, "")
         function_name = template_name.replace('/', '_').replace('-', '_').replace('.', '_')
         # look for a method in the class with the name of the file
         if hasattr(self, function_name):
@@ -135,7 +135,7 @@ class AbstractTemplatesManager(ABC):
                 template_dict = function()
         # Look for a function file with the name of the template file
         else:
-            functions_file = template_name.replace('.','_').replace('/', '.')
+            functions_file = template_name.replace('.', '_').replace('/', '.')
             try:
                 functions_dir = "templates."+template.replace(TEMPLATES_DIR, "").split('/')[0]+".functions."
                 module = importlib.import_module(functions_dir + functions_file)
@@ -147,6 +147,7 @@ class AbstractTemplatesManager(ABC):
             except ModuleNotFoundError:
                 pass
         return template_dict
+
 
 class ComponentTemplatesManager(AbstractTemplatesManager):
     def __init__(self, component):
@@ -197,6 +198,7 @@ class ComponentTemplatesManager(AbstractTemplatesManager):
     @property
     def component(self):
         return self.ast
+
 
 class InterfaceTemplateManager(AbstractTemplatesManager):
     def __init__(self, interface):
