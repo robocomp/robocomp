@@ -11,18 +11,18 @@ from dsl_parsers.specific_parsers.cdsl.cdsl_parser import CDSLParser
 from dsl_parsers.specific_parsers.idsl_parser import IDSLParser
 from dsl_parsers.specific_parsers.smdsl_parser import SMDSLParser
 
+
 class Singleton(object):
     """
     Singleton implementation class with a cache dict
     """
     __instance = None
 
-    def __new__(classtype, *args, **kwargs):
-        if classtype != type(classtype.__instance):
-            classtype.__instance = object.__new__(classtype, *args, **kwargs)
-            classtype.__instance._cache = {}
-
-        return classtype.__instance
+    def __new__(class_, *args, **kwargs):
+        if not isinstance(class_.__instance, class_):
+            class_.__instance = object.__new__(class_, *args, **kwargs)
+            class_.__instance._cache = {}
+        return class_.__instance
 
 
 class DSLFactory(Singleton):
@@ -64,14 +64,14 @@ class DSLFactory(Singleton):
             from dsl_parsers.parsing_utils import idsl_robocomp_path
             new_file_path = idsl_robocomp_path(file_path)
             if new_file_path is None or not os.path.isfile(new_file_path):
-                print("DSLFactory. %s could not be found in Robocomp"%file_path)
+                print("DSLFactory. %s could not be found in Robocomp" % file_path)
                 raise IOError(errno.ENOENT, os.strerror(errno.ENOENT), file_path)
             else:
                 file_path = new_file_path
         else:
             file_path = os.path.abspath(file_path)
         # if update is false and file_path exists in the cache, it's returned
-        if file_path in self. _cache and update is False:
+        if file_path in self._cache and update is False:
             # print("______________________Cached %s______________" % file_path)
             result = self._cache[file_path]
         else:
@@ -86,29 +86,25 @@ class DSLFactory(Singleton):
             try:
                 with open(file_path, 'r') as reader:
                     string = reader.read()
-            except:
-                print("DSLFactory: Error reading input file %s"%file_path)
-                # TODO: Raise Exception
-                return None
+            except Exception:
+                print("DSLFactory: Error reading input file %s" % file_path)
+                raise
 
             # get the result from string
             try:
                 result, parser = self.from_string(string, dsl_type, **kwargs)
-            except:
+            except Exception:
                 cprint('Error parsing %s' % file_path, 'red')
                 traceback.print_exc()
                 raise
             else:
-                # TODO: Fix this. It's because of the different types returned by cdsl parser and smdsl and idsl.
-                try:
-                    result['filename'] = file_path
-                except:
-                    result.filename = file_path
+                result['filename'] = file_path
                 # store the parser with the result in the cache fo the factory
                 self._cache[file_path] = result
         return result
 
-    def create_parser(self, dsl_type):
+    @staticmethod
+    def create_parser(dsl_type):
         """
         Return the corresponding parser for a specific dsl type.
         :param dsl_type: type of the dsl to get the parser for
@@ -123,4 +119,4 @@ class DSLFactory(Singleton):
         elif dsl_type.lower() == 'jcdsl':
             return CDSLJsonParser()
         else:
-            raise ValueError("Invalid dsl type '%s'. No valid parser found for it."%dsl_type)
+            raise ValueError("Invalid dsl type '%s'. No valid parser found for it." % dsl_type)
