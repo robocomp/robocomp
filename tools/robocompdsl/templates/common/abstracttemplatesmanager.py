@@ -1,10 +1,11 @@
 import importlib
 import os
+from abc import ABC
 from collections import ChainMap
 from string import Template
-from abc import ABC, abstractmethod
 
 from dsl_parsers.parsing_utils import communication_is_ice
+
 
 class CustomTemplate(Template):
     delimiter = '$'
@@ -168,7 +169,7 @@ class ComponentTemplatesManager(AbstractTemplatesManager):
                 new_existing_files[os.path.abspath(ofile)] = os.path.abspath(ofile) + '.new'
                 ofile += '.new'
 
-            ifile = os.path.join(TEMPLATES_DIR,self.files['template_path'], template_file)
+            ifile = os.path.join(TEMPLATES_DIR, self.files['template_path'], template_file)
             print('Generating', ofile)
             self._template_to_file(ifile, ofile)
 
@@ -226,7 +227,7 @@ class InterfaceTemplateManager(AbstractTemplatesManager):
             #     new_existing_files[os.path.abspath(ofile)] = os.path.abspath(ofile) + '.new'
             #     ofile += '.new'
 
-            ifile = os.path.join(TEMPLATES_DIR,self.files['template_path'], template_file)
+            ifile = os.path.join(TEMPLATES_DIR, self.files['template_path'], template_file)
             print('Generating', ofile)
             self._template_to_file(ifile, ofile)
 
