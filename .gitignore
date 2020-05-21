@@ -79,3 +79,7 @@ ui_**.pyc
 *CMakeCache.txt
 
 *build/
+
+interfaces/*.ice
+
+tools/robocompdsl/test/resources/InnerModelManager_generated.ice
