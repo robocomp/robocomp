@@ -50,9 +50,17 @@ class DSLFactoryTestCase(unittest.TestCase):
         self.maxDiff = None
         self.factory = DSLFactory()
 
-    def assertNestedDictEqual(self, first, second, msg=None):
+    def assertNestedDictEqual(self, first, second, ignored_keys=None, msg=None):
+        if ignored_keys is not None:
+            for key in ignored_keys:
+                if key in first:
+                    del first[key]
+                if key in second:
+                    del second[key]
         j1 = json.dumps(first, sort_keys=True, indent=4)
         j2 = json.dumps(second, sort_keys=True, indent=4)
+
+
         self.maxDiff = None
         # with open('last_json1.txt', 'w') as outfile:
         #     json.dump(first, outfile, sort_keys=True, indent=4)
@@ -142,7 +150,7 @@ class DSLFactoryTestCase(unittest.TestCase):
         self.assertIs(a, b)
 
     def test_factory_idsl(self):
-        c = self.factory.from_file("/opt/robocomp/interfaces/IDSLs/JointMotor.idsl")
+        c = self.factory.from_file("JointMotor.idsl")
         ref = OrderedDict({
             'name': 'RoboCompJointMotor',
             'imports': '',
@@ -342,9 +350,9 @@ class DSLFactoryTestCase(unittest.TestCase):
             ],
             'filename': '/opt/robocomp/interfaces/IDSLs/JointMotor.idsl'
         })
-        self.assertNestedDictEqual(c, ref)
+        self.assertNestedDictEqual(c, ref, ignored_keys=['filename'])
         # test for cached query
-        d = self.factory.from_file("/opt/robocomp/interfaces/IDSLs/JointMotor.idsl")
+        d = self.factory.from_file("JointMotor.idsl")
         self.assertIs(c, d)
 
     def test_factory_cdsl(self):
@@ -441,7 +449,7 @@ class DSLFactoryTestCase(unittest.TestCase):
     def test_factory_special_cases(self):
         # valid idsl without path
         a = self.factory.from_file("JointMotor.idsl")
-        b = self.factory.from_file("/opt/robocomp/interfaces/IDSLs/JointMotor.idsl")
+        b = self.factory.from_file("JointMotor.idsl")
         self.assertEqual(a,b)
 
         # Not valid idsl without path
