@@ -153,7 +153,7 @@ class TemplateDict(dict):
                 iface_name = iface
             else:
                 iface_name = iface[0]
-            module = pool.moduleProviding(iface_name)
+            module = pool.module_providing_interface(iface_name)
             for interface in module['interfaces']:
                 if interface['name'] == iface_name:
                     for mname in interface['methods']:
@@ -215,7 +215,7 @@ class TemplateDict(dict):
                 else:
                     im = imp[0]
                 if not communication_is_ice(imp):
-                    module = pool.moduleProviding(im)
+                    module = pool.module_providing_interface(im)
                     for interface in module['interfaces']:
                         if interface['name'] == im:
                             for mname in interface['methods']:
@@ -227,7 +227,7 @@ class TemplateDict(dict):
                                 result += "    #\n"
                                 result += "    return " + method['name'] + "Response(ret)\n"
                 else:
-                    module = pool.moduleProviding(im)
+                    module = pool.module_providing_interface(im)
                     for interface in module['interfaces']:
                         if interface['name'] == im:
                             for mname in interface['methods']:

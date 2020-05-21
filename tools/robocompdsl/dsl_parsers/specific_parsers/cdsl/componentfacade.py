@@ -203,7 +203,7 @@ class ComponentFacade:
             interface_list = self.requires + self.implements + self.subscribesTo + \
                              self.publishes
             for interface_required in interface_list:
-                if not idsl_pool.moduleProviding(interface_required.name):
+                if not idsl_pool.module_providing_interface(interface_required.name):
                     raise rcExceptions.InterfaceNotFound(interface_required.name, idsl_pool.interfaces())
             self.__idsl_pool = idsl_pool
             return idsl_pool

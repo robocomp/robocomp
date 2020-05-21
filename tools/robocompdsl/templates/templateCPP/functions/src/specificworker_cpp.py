@@ -351,7 +351,7 @@ class TemplateDict(dict):
                 imp = impa
             else:
                 imp = impa[0]
-            module = pool.moduleProviding(imp)
+            module = pool.module_providing_interface(imp)
             for interface in module['interfaces']:
                 if interface['name'] == imp:
                     for mname in interface['methods']:
@@ -401,7 +401,7 @@ class TemplateDict(dict):
                 imp = impa
             else:
                 imp = impa[0]
-            module = pool.moduleProviding(imp)
+            module = pool.module_providing_interface(imp)
             if module is None:
                 raise ValueError('\nCan\'t find module providing %s\n' % imp)
             for interface in module['interfaces']:

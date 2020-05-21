@@ -37,7 +37,7 @@ def interface_methods_definition(component, module, theInterface):
 def interface_methods_creation(component, interface_name):
     result = ""
     pool = component.idsl_pool
-    module = pool.moduleProviding(interface_name)
+    module = pool.module_providing_interface(interface_name)
     if module is None:
         return result
     for interface in module['interfaces']:

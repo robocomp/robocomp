@@ -165,7 +165,7 @@ class TemplateDict(dict):
             nname = sub
             while type(nname) != type(''):
                 nname = nname[0]
-            module = pool.moduleProviding(nname)
+            module = pool.module_providing_interface(nname)
             if module is None:
                 raise ValueError('\nCan\'t find module providing %s\n' % nname)
             if not communication_is_ice(sub):
@@ -190,7 +190,7 @@ class TemplateDict(dict):
             nname = imp
             while type(nname) != type(''):
                 nname = nname[0]
-            module = pool.moduleProviding(nname)
+            module = pool.module_providing_interface(nname)
             if module is None:
                 print('\nCan\'t find module providing', nname, '\n')
                 sys.exit(-1)

@@ -316,7 +316,7 @@ class TemplateDict(dict):
             # INICIALIZANDO SUBSCRIBERS
             pool = self.component.idsl_pool
             for iface in self.component.subscribesTo:
-                module = pool.moduleProviding(iface.name)
+                module = pool.module_providing_interface(iface.name)
                 if module == None:
                     raise ValueError('\nCan\'t find module providing %s \n' % iface.name)
                 if not communication_is_ice(iface):
@@ -330,7 +330,7 @@ class TemplateDict(dict):
                                     result += iface.name + "_" + mname + " = node.subscribe(" + s + ", 1000, &GenericWorker::" + mname + ", this);\n"
             # INICIALIZANDO IMPLEMENTS
             for iface in self.component.implements:
-                module = pool.moduleProviding(iface.name)
+                module = pool.module_providing_interface(iface.name)
                 if module == None:
                     raise ('\nCan\'t find module providing %s\n' % iface.name)
                 if not communication_is_ice(iface):

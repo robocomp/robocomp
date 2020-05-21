@@ -25,7 +25,7 @@ class TemplatesManagerCpp(ComponentTemplatesManager):
         super(TemplatesManagerCpp, self).__init__(component)
 
     def SERVANT_H(self, interface_name):
-        module = self.component.idsl_pool.moduleProviding(interface_name)
+        module = self.component.idsl_pool.module_providing_interface(interface_name)
         return {
             'year': str(datetime.date.today().year),
             'interface_name': interface_name,

@@ -68,7 +68,7 @@ class TemplateDict(dict):
             interface_name = interface
         else:
             interface_name = interface[0]
-        idsl = pool.moduleProviding(interface_name)
+        idsl = pool.module_providing_interface(interface_name)
         for idsl_interface in idsl['interfaces']:
             if idsl_interface['name'] == interface_name:
                 for method_name, method in idsl_interface['methods'].items():
@@ -105,7 +105,7 @@ class TemplateDict(dict):
                 imp = impa
             else:
                 imp = impa[0]
-            module = pool.moduleProviding(imp)
+            module = pool.module_providing_interface(imp)
             for interface in module['interfaces']:
                 if interface['name'] == imp:
                     for mname in interface['methods']:

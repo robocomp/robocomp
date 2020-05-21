@@ -265,7 +265,7 @@ class TemplateDict(dict):
                 nname = imp
                 while type(nname) != type(''):
                     nname = nname[0]
-                module = pool.moduleProviding(nname)
+                module = pool.module_providing_interface(nname)
                 if module == None:
                     raise ValueError('\nCan\'t find module providing %s\n' % nname)
                 if not communication_is_ice(imp):
@@ -305,7 +305,7 @@ class TemplateDict(dict):
                 nname = imp
                 while type(nname) != type(''):
                     nname = nname[0]
-                module = pool.moduleProviding(nname)
+                module = pool.module_providing_interface(nname)
                 if module == None:
                     raise ValueError('\nCan\'t find module providing %s\n' % nname)
                 if not communication_is_ice(imp):
@@ -343,7 +343,7 @@ class TemplateDict(dict):
                 else:
                     iface_name = iface[0]
                 if not communication_is_ice(iface):
-                    module = pool.moduleProviding(iface_name)
+                    module = pool.module_providing_interface(iface_name)
                     for interface in module['interfaces']:
                         if interface['name'] == iface_name:
                             for mname in interface['methods']:
@@ -354,7 +354,7 @@ class TemplateDict(dict):
                 else:
                     iface_name = iface[0]
                 if not communication_is_ice(iface):
-                    module = pool.moduleProviding(iface_name)
+                    module = pool.module_providing_interface(iface_name)
                     for interface in module['interfaces']:
                         if interface['name'] == iface_name:
                             for mname in interface['methods']:

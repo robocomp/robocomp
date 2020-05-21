@@ -128,7 +128,7 @@ class TemplateDict(dict):
             result += '#include <' + name + '.h>\n'
         if self.component.usingROS is True:
             result += '#include <ros/ros.h>\n'
-            for iface in sorted(self.component.idsl_pool.rosImports()):
+            for iface in sorted(self.component.idsl_pool.ros_imports()):
                 result += '#include <' + iface.name + '.h>\n'
             for iface in self.component.requires + self.component.implements:
                 if type(iface) == str:
@@ -136,7 +136,7 @@ class TemplateDict(dict):
                 else:
                     iface_name = iface[0]
                 if not communication_is_ice(iface):
-                    module = pool.moduleProviding(iface_name)
+                    module = pool.module_providing_interface(iface_name)
                     for interface in module['interfaces']:
                         if interface['name'] == iface_name:
                             for method_name in interface['methods']:
@@ -331,7 +331,7 @@ class TemplateDict(dict):
                 iface_name = iface
                 while not isinstance(iface_name, str):
                     iface_name = iface_name[0]
-                module = pool.moduleProviding(iface_name)
+                module = pool.module_providing_interface(iface_name)
                 if module is None:
                     raise ValueError('\nCan\'t find module providing %s \n' % iface_name)
                 if not communication_is_ice(iface):
@@ -346,8 +346,8 @@ class TemplateDict(dict):
                 iface_name = iface
                 while type(iface_name) != type(''):
                     iface_name = iface_name[0]
-                module = pool.moduleProviding(iface_name)
-                theIdsl = pool.IDSLsModule(module)
+                module = pool.module_providing_interface(iface_name)
+                theIdsl = pool.IDSL_file_for_module(module)
                 idsl = DSLFactory().from_file(theIdsl)
                 if module == None:
                     raise ValueError('\nCan\'t find module providing %s\n' % iface_name)
@@ -389,7 +389,7 @@ class TemplateDict(dict):
         result = ""
         for iface in self.component.implements:
             pool = self.component.idsl_pool
-            module = pool.moduleProviding(iface.name)
+            module = pool.module_providing_interface(iface.name)
             for interface in module['interfaces']:
                 if interface['name'] == iface.name:
                     for mname in interface['methods']:
@@ -430,7 +430,7 @@ class TemplateDict(dict):
         result = ""
         for iface in self.component.subscribesTo:
             pool = self.component.idsl_pool
-            module = pool.moduleProviding(iface.name)
+            module = pool.module_providing_interface(iface.name)
             if module == None:
                 raise ValueError('\nCan\'t find module providing %s \n' % iface.name)
             for interface in module['interfaces']:
@@ -564,7 +564,7 @@ class TemplateDict(dict):
         result = ""
         for iface in self.component.subscribesTo:
             pool = self.component.idsl_pool
-            module = pool.moduleProviding(iface.name)
+            module = pool.module_providing_interface(iface.name)
             if module == None:
                 raise ValueError('\nCan\'t find module providing %s\n' % iface.name)
             if not communication_is_ice(iface):
@@ -579,7 +579,7 @@ class TemplateDict(dict):
         result = ""
         for iface in self.component.implements:
             pool = self.component.pool
-            module = pool.moduleProviding(iface.name)
+            module = pool.module_providing_interface(iface.name)
             if module == None:
                 raise ValueError('\nCan\'t find module providing %s \n' % iface.name)
             if not communication_is_ice(iface):

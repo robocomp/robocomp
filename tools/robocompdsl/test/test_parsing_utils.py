@@ -4,14 +4,13 @@ import unittest
 from unittest import TestCase
 
 from dsl_parsers.specific_parsers.cdsl.componentfacade import Interface
+from dsl_parsers import parsing_utils
+from dsl_parsers.dsl_factory import DSLFactory
 
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 ROBOCOMPDSL_DIR = os.path.join(CURRENT_DIR, "..")
 RESOURCES_DIR = os.path.join(CURRENT_DIR, "resources")
 sys.path.append(ROBOCOMPDSL_DIR)
-
-from dsl_parsers import parsing_utils
-from dsl_parsers.dsl_factory import DSLFactory
 
 
 # noinspection PyCompatibility
@@ -37,20 +36,20 @@ class ParsingUtilsTest(unittest.TestCase):
 
     def test_IDSLPool(self):
         pool = parsing_utils.IDSLPool("AprilTags.idsl", [])
-        self.assertIn("AprilTags", pool.modulePool)
-        self.assertIn("GenericBase", pool.modulePool)
-        self.assertIn("JointMotor", pool.modulePool)
+        self.assertIn("AprilTags", pool.module_pool)
+        self.assertIn("GenericBase", pool.module_pool)
+        self.assertIn("JointMotor", pool.module_pool)
 
-        module = pool.moduleProviding("JointMotor")
+        module = pool.module_providing_interface("JointMotor")
         self.assertEqual(module['name'], 'RoboCompJointMotor')
 
-        idsl_module = pool.IDSLsModule(module)
+        idsl_module = pool.IDSL_file_for_module(module)
         self.assertEqual(idsl_module, '/opt/robocomp/interfaces/IDSLs/JointMotor.idsl')
 
         interfaces = pool.interfaces()
         self.assertCountEqual(interfaces, ['GenericBase', 'JointMotor', 'JointMotorPublish', 'AprilTags', 'CommonBehavior'])
 
-        ros_imports = pool.rosImports()
+        ros_imports = pool.ros_imports()
         self.assertCountEqual(ros_imports,
                               ['RoboCompAprilTagsROS/tag', 'RoboCompAprilTagsROS/tagsList',
                                'RoboCompGenericBaseROS/TBaseState', 'std_msgs/Int32', 'std_msgs/Float32',
@@ -61,7 +60,7 @@ class ParsingUtilsTest(unittest.TestCase):
                                'RoboCompJointMotorROS/MotorGoalVelocityList', 'RoboCompJointMotorROS/MotorList',
                                'std_msgs/String', 'RoboCompCommonBehaviorROS/Parameter', 'std_msgs/Int32'])
 
-        ros_module_imports = pool.rosModulesImports()
+        ros_module_imports = pool.ros_modules_imports()
         self.assertCountEqual(ros_module_imports, [{'strName': 'TBaseState', 'name': 'RoboCompGenericBase'},
                                                    {'strName': 'MotorState', 'name': 'RoboCompJointMotor'},
                                                    {'strName': 'MotorParams', 'name': 'RoboCompJointMotor'},
@@ -109,74 +108,74 @@ class ParsingUtilsTest(unittest.TestCase):
         self.assertRaises(AssertionError, parsing_utils.get_name_number, ["lapatochada", 8, 3.9])
 
     def test_decorator_and_type_to_const_ampersand(self):
-        type1 = [ 'float', 'int', 'short', 'long', 'double' ]
+        type1 = ['float', 'int', 'short', 'long', 'double']
         for vtype in type1:
             self.assertEqual(
-                parsing_utils.decorator_and_type_to_const_ampersand(decorator=' ', vtype=vtype, modulePool=None, cpp11=False),
+                parsing_utils.decorator_and_type_to_const_ampersand(decorator=' ', vtype=vtype, module_pool=None, cpp11=False),
                 ('const ', ' '))
             self.assertEqual(
-                parsing_utils.decorator_and_type_to_const_ampersand(decorator='out', vtype=vtype, modulePool=None, cpp11=False),
+                parsing_utils.decorator_and_type_to_const_ampersand(decorator='out', vtype=vtype, module_pool=None, cpp11=False),
                 (' ', ' &'))
 
         # bool
         self.assertEqual(
-            parsing_utils.decorator_and_type_to_const_ampersand(decorator='out', vtype='bool', modulePool=None,
-                                                                    cpp11=False),
-                (' ', ' &'))
+            parsing_utils.decorator_and_type_to_const_ampersand(decorator='out', vtype='bool', module_pool=None,
+                                                                cpp11=False),
+            (' ', ' &'))
         self.assertEqual(
-            parsing_utils.decorator_and_type_to_const_ampersand(decorator=' ', vtype='bool', modulePool=None,
+            parsing_utils.decorator_and_type_to_const_ampersand(decorator=' ', vtype='bool', module_pool=None,
                                                                 cpp11=False),
             (' ', ' '))
 
         # string
         self.assertEqual(
-            parsing_utils.decorator_and_type_to_const_ampersand(decorator='out', vtype='string', modulePool=None,
+            parsing_utils.decorator_and_type_to_const_ampersand(decorator='out', vtype='string', module_pool=None,
                                                                 cpp11=False),
             (' ', ' &'))
         self.assertEqual(
-            parsing_utils.decorator_and_type_to_const_ampersand(decorator=' ', vtype='string', modulePool=None,
+            parsing_utils.decorator_and_type_to_const_ampersand(decorator=' ', vtype='string', module_pool=None,
                                                                 cpp11=False),
             ('const ', ' &'))
 
         # custom types
         the_idsls = parsing_utils.generate_recursive_imports(["AprilTags.idsl"], [])
         the_idsls.append('AprilTags.idsl')
-        modulePool = parsing_utils.IDSLPool('#'.join(the_idsls), [])
+        module_pool = parsing_utils.IDSLPool('#'.join(the_idsls), [])
         self.assertEqual(
-            parsing_utils.decorator_and_type_to_const_ampersand(decorator='out', vtype='MotorParams', modulePool=modulePool,
+            parsing_utils.decorator_and_type_to_const_ampersand(decorator='out', vtype='MotorParams', module_pool=module_pool,
                                                                 cpp11=False),
             (' ', ' &'))
         self.assertEqual(
             parsing_utils.decorator_and_type_to_const_ampersand(decorator=' ', vtype='MotorParams',
-                                                                modulePool=modulePool,
+                                                                module_pool=module_pool,
                                                                 cpp11=False),
             ('const ', ' &'))
 
         # cpp11 True
         self.assertEqual(
             parsing_utils.decorator_and_type_to_const_ampersand(decorator=' ', vtype='MotorParams',
-                                                                modulePool=modulePool,
+                                                                module_pool=module_pool,
                                                                 cpp11=True),
             ('', ''))
 
         # invalid vtype
         self.assertRaises(TypeError,
             parsing_utils.decorator_and_type_to_const_ampersand, decorator=' ', vtype='InvalidType',
-                                                                modulePool=modulePool,
+                                                                module_pool=module_pool,
                                                                 cpp11=True)
 
         the_idsls = parsing_utils.generate_recursive_imports(["TouchPoints.idsl"], [])
         the_idsls.append('TouchPoints.idsl')
-        modulePool = parsing_utils.IDSLPool('#'.join(the_idsls), [])
+        module_pool = parsing_utils.IDSLPool('#'.join(the_idsls), [])
         self.assertEqual(
             parsing_utils.decorator_and_type_to_const_ampersand(decorator='out', vtype='StateEnum',
-                                                                modulePool=modulePool,
+                                                                module_pool=module_pool,
                                                                 cpp11=False),
             (' ', ' &'))
 
         self.assertEqual(
             parsing_utils.decorator_and_type_to_const_ampersand(decorator=' ', vtype='StateEnum',
-                                                                modulePool=modulePool,
+                                                                module_pool=module_pool,
                                                                 cpp11=False),
             (' ', ' '))
 

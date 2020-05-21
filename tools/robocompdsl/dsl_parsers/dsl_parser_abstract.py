@@ -43,11 +43,10 @@ class DSLParserTemplate:
 
     @file.setter
     def file(self, file_path):
-        if file_path is None or file_path == "" or not os.path.isfile(file_path):
-            # TODO: Raise Exception
-            return None
-        else:
-            self.__file = file_path
+        assert file_path is not None, "Can't set None for dsl_parser file"
+        assert file_path != "", "Can't set empty strin \"\" for dsl_parser file"
+        assert os.path.isfile(file_path), "%s must be an existing file to be set in dsl_parser"
+        self.__file = file_path
 
     @property
     def struct(self):
