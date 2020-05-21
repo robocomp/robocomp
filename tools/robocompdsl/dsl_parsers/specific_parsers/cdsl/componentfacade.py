@@ -238,6 +238,16 @@ class ComponentFacade:
                 names.append(item)
         return names
 
+    def __setitem__(self, key, value):
+        """
+        For compatibility with the smdsl and idsl object format.
+        """
+        if key == 'filename':
+            setattr(self, key, value)
+        else:
+            raise TypeError('Invalid acces to ComponentFacade by item %s' % key)
+
+
     def __eq__(self, other):
         equal = True
         if not isinstance(other, ComponentFacade):
