@@ -111,6 +111,7 @@ class AbstractTemplatesManager(ABC):
             new_template_path = template.replace(TEMPLATES_DIR, ALT_TEMPLATES_DIR)
             istream = open(new_template_path, 'r')
         content = istream.read()
+        istream.close()
         template_dict = self._get_template_dict(template, interface_name)
         template_object = CustomTemplate(content, trimlines=False)
         try:
