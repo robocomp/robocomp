@@ -24,14 +24,14 @@ GenericWorker::GenericWorker(MapPrx& mprx) : Ui_guiDlg()
 {
 
 	//Initialization State machine
+	oneState = new QState(QState::ExclusiveStates);
+	myStateMachine.addState(oneState);
 	twoState = new QState(QState::ExclusiveStates);
 	myStateMachine.addState(twoState);
 	threeState = new QState(QState::ExclusiveStates);
 	myStateMachine.addState(threeState);
 	fourState = new QState(QState::ExclusiveStates);
 	myStateMachine.addState(fourState);
-	oneState = new QState(QState::ExclusiveStates);
-	myStateMachine.addState(oneState);
 	fiveState = new QFinalState();
 	myStateMachine.addState(fiveState);
 
@@ -43,10 +43,10 @@ GenericWorker::GenericWorker(MapPrx& mprx) : Ui_guiDlg()
 	fourState->addTransition(this, SIGNAL(t_four_to_one()), oneState);
 	fourState->addTransition(this, SIGNAL(t_four_to_five()), fiveState);
 
+	QObject::connect(oneState, SIGNAL(entered()), this, SLOT(sm_one()));
 	QObject::connect(twoState, SIGNAL(entered()), this, SLOT(sm_two()));
 	QObject::connect(threeState, SIGNAL(entered()), this, SLOT(sm_three()));
 	QObject::connect(fourState, SIGNAL(entered()), this, SLOT(sm_four()));
-	QObject::connect(oneState, SIGNAL(entered()), this, SLOT(sm_one()));
 	QObject::connect(fiveState, SIGNAL(entered()), this, SLOT(sm_five()));
 
 	//------------------

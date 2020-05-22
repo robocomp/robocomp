@@ -24,10 +24,10 @@ GenericWorker::GenericWorker(TuplePrx tprx) : QObject()
 {
 
 	//Initialization State machine
-	computeState = new QState(QState::ExclusiveStates);
-	defaultMachine.addState(computeState);
 	initializeState = new QState(QState::ExclusiveStates);
 	defaultMachine.addState(initializeState);
+	computeState = new QState(QState::ExclusiveStates);
+	defaultMachine.addState(computeState);
 	finalizeState = new QFinalState();
 	defaultMachine.addState(finalizeState);
 
@@ -37,8 +37,8 @@ GenericWorker::GenericWorker(TuplePrx tprx) : QObject()
 	computeState->addTransition(this, SIGNAL(t_compute_to_compute()), computeState);
 	computeState->addTransition(this, SIGNAL(t_compute_to_finalize()), finalizeState);
 
-	QObject::connect(computeState, SIGNAL(entered()), this, SLOT(sm_compute()));
 	QObject::connect(initializeState, SIGNAL(entered()), this, SLOT(sm_initialize()));
+	QObject::connect(computeState, SIGNAL(entered()), this, SLOT(sm_compute()));
 	QObject::connect(finalizeState, SIGNAL(entered()), this, SLOT(sm_finalize()));
 	QObject::connect(&timer, SIGNAL(timeout()), this, SIGNAL(t_compute_to_compute()));
 

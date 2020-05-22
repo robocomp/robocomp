@@ -1,5 +1,5 @@
 import datetime
-
+from string import Template
 from dsl_parsers.parsing_utils import get_name_number, communication_is_ice
 
 
@@ -119,6 +119,29 @@ bool GenericWorker::setParametersAndPossibleActivation(const ParameterMap &prs, 
 }
 """
 
+STATEMACHINE_STATE_CREATION = """\
+${state_name}State = new ${state_type}(${child_mode}${parent});
+"""
+
+STATEMACHINE_STATE_ADD = """\
+${statemachine_name}.addState(${state_name}State);
+"""
+
+VISUAL_STATEMACHINE_STATE_CREATION = """\
+${state_name}State = ${statemachine_name}.${add_state_method}("${state_name}",${child_mode}${parent});
+"""
+
+STATEMACHINE_TRANSITION_CREATION = """\
+${state_name}State = new ${state_type}(${child_mode});
+${statemachine_name}.addState(${state_name}State);
+"""
+
+VISUAL_STATEMACHINE_TRANSITION_CREATION = """\
+${state_name}State = new ${state_type}(${child_mode});
+${statemachine_name}.addState(${state_name}State);
+"""
+
+
 class TemplateDict(dict):
     def __init__(self, component):
         super(TemplateDict, self).__init__()
@@ -134,175 +157,176 @@ class TemplateDict(dict):
         self['compute_connect'] = self.compute_connect()
         self['agm_methods'] = self.agm_methods()
 
+    @staticmethod
+    def _statemachine_state_is_parallel(state, substates):
+        if substates is not None:
+            for substates in substates:
+                if state == substates['parent']:
+                    if substates['parallel'] is "parallel":
+                        return True
+        return False
+
+    @staticmethod
+    def _statemachine_state_creation(statemachine_name, state, parent="", visual=False, is_parallel=False, is_final=False):
+        states_str = ""
+        connects_str = ""
+        child_mode = "QState::ExclusiveStates"
+        if is_parallel:
+            child_mode = "QState::ParallelStates"
+        if is_final:
+            add_state_method = "addFinalState"
+            state_type = "QFinalState"
+            child_mode = ""
+            if parent:
+                parent = "%sState" % parent
+        else:
+            if parent:
+                parent = ", %sState" % parent
+            add_state_method = "addFinalState"
+            state_type = "QState"
+
+        if not visual:
+            states_str += Template(STATEMACHINE_STATE_CREATION).substitute(state_name=state,
+                                                                           child_mode=child_mode,
+                                                                           statemachine_name=statemachine_name,
+                                                                           state_type=state_type,
+                                                                           parent=parent)
+            if not parent:
+                states_str += Template(STATEMACHINE_STATE_ADD).substitute(state_name=state,
+                                                                          statemachine_name=statemachine_name)
+
+        else:
+            states_str += Template(VISUAL_STATEMACHINE_STATE_CREATION).substitute(state_name=state,
+                                                                                  child_mode=child_mode,
+                                                                                  statemachine_name=statemachine_name,
+                                                                                  add_state_method=add_state_method,
+                                                                                  parent=parent)
+        connects_str += "QObject::connect(" + state + "State, SIGNAL(entered()), this, SLOT(sm_" + state + "()));\n"
+        return states_str, connects_str
+
+    def _statemachine_states_creation(self, statemachine_name, machine, substates=None, visual=False, is_sub=False):
+        code_add_states = ""
+        code_connects = ""
+        code_set_initial_state = ""
+        contents = machine['contents']
+        parent = machine['parent'] if 'parent' in machine else ""
+
+        # Code for initial state
+        if contents['initialstate'] is not None:
+            state = contents['initialstate']
+            states_str, connects_str = self._statemachine_state_creation(statemachine_name,
+                                                                         state=state,
+                                                                         parent=parent,
+                                                                         visual=visual)
+
+            code_add_states += states_str
+            code_connects += connects_str
+            if not is_sub:
+                code_set_initial_state += statemachine_name + ".setInitialState(" + state + "State);\n"
+            else:
+                code_set_initial_state += machine['parent'] + "State->setInitialState(" + state + "State);\n"
+
+        # Code for states
+        if contents['states'] is not None:
+            for state in contents['states']:
+                is_parallel = self._statemachine_state_is_parallel(state, substates)
+                states_str, connects_str = self._statemachine_state_creation(statemachine_name,
+                                                                             state=state,
+                                                                             parent=parent,
+                                                                             visual=visual,
+                                                                             is_parallel=is_parallel)
+                code_add_states += states_str
+                code_connects += connects_str
+
+        # Code for final state
+        if contents['finalstate'] is not None:
+            state = contents['finalstate']
+            states_str, connects_str = self._statemachine_state_creation(statemachine_name,
+                                                                         state=state,
+                                                                         parent=parent,
+                                                                         visual=visual,
+                                                                         is_final=True)
+            code_add_states += states_str
+            code_connects += connects_str
+
+        return code_add_states, code_connects, code_set_initial_state
+
+    @staticmethod
+    def _statemachine_transitions_creation(statemachine_name, machine, visual):
+        code_add_transitions = ""
+        if machine['contents']['transitions'] is not None:
+            for transi in machine['contents']['transitions']:
+                for dest in transi['dests']:
+                    if not visual:
+                        code_add_transitions += transi['src'] + "State->addTransition(" + "this, SIGNAL(t_" + \
+                                            transi['src'] + "_to_" + dest + "()), " + dest + "State);\n"
+                    else:
+                        code_add_transitions += statemachine_name + ".addTransition(" + transi[
+                            'src'] + "State, this, SIGNAL(t_" + transi[
+                                                'src'] + "_to_" + dest + "()), " + dest + "State);\n"
+        return code_add_transitions
+
     def statemachine_initialization(self):
         result = ""
         statemachine = self.component.statemachine
         visual = self.component.statemachine_visual
         if statemachine is not None:
-            codaddTransition = ""
-            codaddState = ""
-            codConnect = ""
-            codsetInitialState = ""
-            states = ""
-
-            if statemachine['machine']['contents']['states'] is not None:
-                for state in statemachine['machine']['contents']['states']:
-                    childMode = "QState::ExclusiveStates"
-                    if statemachine['substates'] is not None:
-                        for substates in statemachine['substates']:
-                            if state == substates['parent']:
-                                if substates['parallel'] is "parallel":
-                                    childMode = "QState::ParallelStates"
-                                    break
-                    if not visual:
-                        codaddState += state + "State = new QState(" + childMode + ");\n"
-                        codaddState += statemachine['machine']['name'] + ".addState(" + state + "State);\n"
-                    else:
-                        codaddState += state + "State = " + statemachine['machine'][
-                            'name'] + ".addState(\"" + state + "\"," + childMode + ");\n"
-
-                    codConnect += "QObject::connect(" + state + "State, SIGNAL(entered()), this, SLOT(sm_" + state + "()));\n"
-                    states += state + ","
-
-            if statemachine['machine']['contents']['initialstate'] is not None:
-                state = statemachine['machine']['contents']['initialstate']
-                childMode = "QState::ExclusiveStates"
-                if statemachine['substates'] is not None:
-                    for substates in statemachine['substates']:
-                        if state == substates['parent']:
-                            if substates['parallel'] is "parallel":
-                                childMode = "QState::ParallelStates"
-                                break
-                if not visual:
-                    codaddState += state + "State = new QState(" + childMode + ");\n"
-                    codaddState += statemachine['machine']['name'] + ".addState(" + state + "State);\n"
-                else:
-                    codaddState += state + "State = " + statemachine['machine'][
-                        'name'] + ".addState(\"" + state + "\"," + childMode + ");\n"
-                codsetInitialState += statemachine['machine']['name'] + ".setInitialState(" + state + "State);\n"
-                codConnect += "QObject::connect(" + state + "State, SIGNAL(entered()), this, SLOT(sm_" + state + "()));\n"
-                states += state + ","
-
-            if statemachine['machine']['contents']['finalstate'] is not None:
-                state = statemachine['machine']['contents']['finalstate']
-                if not visual:
-                    codaddState += state + "State = new QFinalState();\n"
-                    codaddState += statemachine['machine']['name'] + ".addState(" + state + "State);\n"
-                else:
-                    codaddState += state + "State = " + statemachine['machine'][
-                        'name'] + ".addFinalState(\"" + state + "\");\n"
-                codConnect += "QObject::connect(" + state + "State, SIGNAL(entered()), this, SLOT(sm_" + state + "()));\n"
-                states += state + ","
+            code_add_states, code_connects, code_set_initial_states = self._statemachine_states_creation(
+                statemachine['machine']['name'],
+                statemachine['machine'],
+                statemachine['substates'],
+                visual)
 
             if statemachine['substates'] is not None:
-                for substates in statemachine['substates']:
-                    childMode = "QState::ExclusiveStates"
-                    if substates['contents']['states'] is not None:
-                        for state in substates['contents']['states']:
-                            for sub in statemachine['substates']:
-                                if state == sub['parent']:
-                                    if sub['parallel'] is "parallel":
-                                        childMode = "QState::ParallelStates"
-                                        break
-                            if not visual:
-                                codaddState += state + "State = new QState(" + childMode + ", " + substates[
-                                    'parent'] + "State);\n"
-                                codaddState += statemachine['machine']['name'] + ".addState(" + state + "State);\n"
-                            else:
-                                codaddState += state + "State = " + statemachine['machine'][
-                                    'name'] + ".addState(\"" + state + "\", " + childMode + ", " + substates[
-                                                   'parent'] + "State);\n"
+                for substate in statemachine['substates']:
+                    states, connects, initials = self._statemachine_states_creation(
+                        statemachine['machine']['name'],
+                        substate,
+                        None,
+                        visual,
+                        is_sub=True)
+                    code_add_states += states
+                    code_connects += connects
+                    code_set_initial_states += initials
 
-                    if substates['contents']['initialstate'] is not None:
-                        childMode = "QState::ExclusiveStates"
-                        for sub in statemachine['substates']:
-                            if substates['contents']['initialstate'] == sub['parent']:
-                                if sub['parallel'] is "parallel":
-                                    childMode = "QState::ParallelStates"
-                                    break
-                        if not visual:
-                            codaddState += substates['contents'][
-                                'initialstate'] + "State = new QState(" + childMode + ", " + substates[
-                                               'parent'] + "State);\n"
-                            codaddState += statemachine['machine']['name'] + ".addState(" + state + "State);\n"
-                        else:
-                            codaddState += substates['contents']['initialstate'] + "State = " + statemachine['machine'][
-                                'name'] + ".addState(\"" + state + "\", " + childMode + ", " + substates[
-                                               'parent'] + "State);\n"
-
-                    if substates['contents']['finalstate'] is not None:
-                        if not visual:
-                            codaddState += substates['contents']['finalstate'] + "State = new QFinalState(" + \
-                                           substates['parent'] + "State);\n"
-                        else:
-                            codaddState += substates['contents']['finalstate'] + "State = " + statemachine['machine'][
-                                'name'] + ".addFinalState(\"" + state + "\");\n"
-
+            code_add_transitions = ""
             if statemachine['machine']['contents']['transitions'] is not None:
-                for transi in statemachine['machine']['contents']['transitions']:
-                    for dest in transi['dests']:
-                        if not visual:
-                            codaddTransition += transi['src'] + "State->addTransition(" + "this, SIGNAL(t_" + \
-                                                transi['src'] + "_to_" + dest + "()), " + dest + "State);\n"
-                        else:
-                            codaddTransition += statemachine['machine']['name'] + ".addTransition(" + transi[
-                                'src'] + "State, this, SIGNAL(t_" + transi[
-                                                    'src'] + "_to_" + dest + "()), " + dest + "State);\n"
+                code_add_transitions = self._statemachine_transitions_creation(
+                    statemachine['machine']['name'],
+                    statemachine['machine'],
+                    visual)
             if statemachine['substates'] is not None:
-                for substates in statemachine['substates']:
-                    if substates['contents']['transitions'] is not None:
-                        for transi in substates['contents']['transitions']:
-                            for dest in transi['dests']:
-                                if not visual:
-                                    codaddTransition += transi[
-                                        'src'] + "State->addTransition(" + "this, SIGNAL(t_" + transi[
-                                                            'src'] + "_to_" + dest + "()), " + dest + "State);\n"
-                                else:
-                                    codaddTransition += statemachine['machine']['name'] + ".addTransition(" + transi[
-                                        'src'] + "State, this, SIGNAL(t_" + transi[
-                                                            'src'] + "_to_" + dest + "()), " + dest + "State);\n"
+                for substate in statemachine['substates']:
+                    code_add_transitions += self._statemachine_transitions_creation(
+                        statemachine['machine']['name'],
+                        substate,
+                        visual)
 
-            if statemachine['substates'] is not None:
-                for substates in statemachine['substates']:
-                    if substates['contents']['initialstate'] is not None:
-                        state = substates['contents']['initialstate']
-                        codsetInitialState += substates[
-                            'parent'] + "State->setInitialState(" + state + "State);\n"
-                        codConnect += "QObject::connect(" + state + "State, SIGNAL(entered()), this, SLOT(sm_" + state + "()));\n"
-                        states += state + ","
-                    if substates['contents']['finalstate'] is not None:
-                        state = substates['contents']['finalstate']
-                        codConnect += "QObject::connect(" + state + "State, SIGNAL(entered()), this, SLOT(sm_" + state + "()));\n"
-                        states += state + ","
-                    if substates['contents']['states'] is not None:
-                        for state in substates['contents']['states']:
-                            codConnect += "QObject::connect(" + state + "State, SIGNAL(entered()), this, SLOT(sm_" + state + "()));\n"
-                            states += state + ","
             if statemachine['machine']['default']:
-                codConnect += "QObject::connect(&timer, SIGNAL(timeout()), this, SIGNAL(t_compute_to_compute()));\n"
+                code_connects += "QObject::connect(&timer, SIGNAL(timeout()), this, SIGNAL(t_compute_to_compute()));\n"
             result += "//Initialization State machine\n"
-            result += codaddState + "\n"
-            result += codsetInitialState + "\n"
-            result += codaddTransition + "\n"
-            result += codConnect + "\n"
+            result += code_add_states + "\n"
+            result += code_set_initial_states + "\n"
+            result += code_add_transitions + "\n"
+            result += code_connects + "\n"
             result += "//------------------\n"
         return result
 
     def require_and_publish_proxies_creation(self):
         result = ""
         cont = 0
-        for iface, num in get_name_number(self.component.requires):
-            if communication_is_ice(iface):
-                name = iface[0]
+        for interface, num in get_name_number(self.component.requires):
+            if communication_is_ice(interface):
+                name = interface.name
                 if self.component.language.lower() == 'cpp':
                     result += name.lower() + num + "_proxy = (*(" + name + "Prx*)mprx[\"" + name + "Proxy" + num + "\"]);\n"
                 else:
                     result += name.lower() + num + "_proxy = std::get<" + str(cont) + ">(tprx);\n"
             cont = cont + 1
 
-        for iface, num in get_name_number(self.component.publishes):
-            if communication_is_ice(iface):
-                name = iface[0]
+        for interface, num in get_name_number(self.component.publishes):
+            if communication_is_ice(interface):
+                name = interface[0]
                 if self.component.language.lower() == 'cpp':
                     result += name.lower() + num + "_pubproxy = (*(" + name + "Prx*)mprx[\"" + name + "Pub" + num + "\"]);\n"
                 else:
@@ -312,12 +336,12 @@ class TemplateDict(dict):
 
     def ros_nodes_creation(self):
         result = ""
-        if self.component.usingROS == True:
-            # INICIALIZANDO SUBSCRIBERS
+        if self.component.usingROS:
+            # Subscribers initialization
             pool = self.component.idsl_pool
             for iface in self.component.subscribesTo:
                 module = pool.module_providing_interface(iface.name)
-                if module == None:
+                if module is None:
                     raise ValueError('\nCan\'t find module providing %s \n' % iface.name)
                 if not communication_is_ice(iface):
                     for interface in module['interfaces']:
@@ -328,10 +352,10 @@ class TemplateDict(dict):
                                     result += iface.name + "_" + mname + " = node.subscribe(" + s + ", 1000, &GenericWorker::ROS" + mname + ", this);\n"
                                 else:
                                     result += iface.name + "_" + mname + " = node.subscribe(" + s + ", 1000, &GenericWorker::" + mname + ", this);\n"
-            # INICIALIZANDO IMPLEMENTS
+            # Implements initialization
             for iface in self.component.implements:
                 module = pool.module_providing_interface(iface.name)
-                if module == None:
+                if module is None:
                     raise ('\nCan\'t find module providing %s\n' % iface.name)
                 if not communication_is_ice(iface):
                     for interface in module['interfaces']:
@@ -347,18 +371,14 @@ class TemplateDict(dict):
     def ros_proxies_creation(self):
         result = ""
         for publish in self.component.publishes:
-            pubs = publish
-            while type(pubs) != type(''):
-                pubs = pubs[0]
+            pubs = publish.name
             if not communication_is_ice(publish):
                 if pubs in self.component.iceInterfaces:
                     result += pubs.lower() + "_rosproxy = new Publisher" + pubs + "(&node);\n"
                 else:
                     result += pubs.lower() + "_proxy = new Publisher" + pubs + "(&node);\n"
         for require in self.component.requires:
-            req = require
-            while type(req) != type(''):
-                req = req[0]
+            req = require.name
             if not communication_is_ice(require):
                 if req in self.component.iceInterfaces:
                     result += req.lower() + "_rosproxy = new ServiceClient" + req + "(&node);\n"
@@ -374,16 +394,12 @@ class TemplateDict(dict):
 
     def agm_methods(self):
         result = ""
-        try:
-            # TODO: move to component method (self.component.is_agm())
-            if 'agmagent' in [x.lower() for x in self.component.options]:
-                result += AGM_CREATEACTION_STR
-                result += AGM_ACTIVATE
-                result += AGM_DEACTIVATE
-                result += AGM_SETPARAMETERSANDPOSSIBLEACTIVATION_STR
-        except:
-            #TODO: fix it
-            pass
+        # TODO: move to component method (self.component.is_agm())
+        if 'agmagent' in [x.lower() for x in self.component.options]:
+            result += AGM_CREATEACTION_STR
+            result += AGM_ACTIVATE
+            result += AGM_DEACTIVATE
+            result += AGM_SETPARAMETERSANDPOSSIBLEACTIVATION_STR
         return result
 
     def constructor_proxies(self):

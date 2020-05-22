@@ -24,6 +24,8 @@ GenericWorker::GenericWorker(MapPrx& mprx) : QObject()
 {
 
 	//Initialization State machine
+	initializeState = new QState(QState::ExclusiveStates);
+	customMachine.addState(initializeState);
 	publishState = new QState(QState::ExclusiveStates);
 	customMachine.addState(publishState);
 	pop_dataState = new QState(QState::ExclusiveStates);
@@ -36,8 +38,6 @@ GenericWorker::GenericWorker(MapPrx& mprx) : QObject()
 	customMachine.addState(read_aprilState);
 	compute_poseState = new QState(QState::ExclusiveStates);
 	customMachine.addState(compute_poseState);
-	initializeState = new QState(QState::ExclusiveStates);
-	customMachine.addState(initializeState);
 	finalizeState = new QFinalState();
 	customMachine.addState(finalizeState);
 
@@ -56,13 +56,13 @@ GenericWorker::GenericWorker(MapPrx& mprx) : QObject()
 	publishState->addTransition(this, SIGNAL(t_publish_to_pop_data()), pop_dataState);
 	pop_dataState->addTransition(this, SIGNAL(t_pop_data_to_finalize()), finalizeState);
 
+	QObject::connect(initializeState, SIGNAL(entered()), this, SLOT(sm_initialize()));
 	QObject::connect(publishState, SIGNAL(entered()), this, SLOT(sm_publish()));
 	QObject::connect(pop_dataState, SIGNAL(entered()), this, SLOT(sm_pop_data()));
 	QObject::connect(read_uwbState, SIGNAL(entered()), this, SLOT(sm_read_uwb()));
 	QObject::connect(read_rsState, SIGNAL(entered()), this, SLOT(sm_read_rs()));
 	QObject::connect(read_aprilState, SIGNAL(entered()), this, SLOT(sm_read_april()));
 	QObject::connect(compute_poseState, SIGNAL(entered()), this, SLOT(sm_compute_pose()));
-	QObject::connect(initializeState, SIGNAL(entered()), this, SLOT(sm_initialize()));
 	QObject::connect(finalizeState, SIGNAL(entered()), this, SLOT(sm_finalize()));
 
 	//------------------

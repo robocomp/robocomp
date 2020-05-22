@@ -24,33 +24,25 @@ GenericWorker::GenericWorker(MapPrx& mprx) : Ui_guiDlg()
 {
 
 	//Initialization State machine
+	oneState = new QState(QState::ExclusiveStates);
+	myStateMachine.addState(oneState);
 	twoState = new QState(QState::ExclusiveStates);
 	myStateMachine.addState(twoState);
 	threeState = new QState(QState::ExclusiveStates);
 	myStateMachine.addState(threeState);
 	fourState = new QState(QState::ExclusiveStates);
 	myStateMachine.addState(fourState);
-	oneState = new QState(QState::ExclusiveStates);
-	myStateMachine.addState(oneState);
 	fiveState = new QFinalState();
 	myStateMachine.addState(fiveState);
 	test2sub1State = new QState(QState::ExclusiveStates, twoState);
-	myStateMachine.addState(test2sub1State);
 	test2sub2State = new QState(QState::ExclusiveStates, twoState);
-	myStateMachine.addState(test2sub2State);
 	test2sub21State = new QState(QState::ExclusiveStates, test2sub2State);
-	myStateMachine.addState(test2sub2State);
 	test2sub22State = new QFinalState(test2sub2State);
 	test3sub1State = new QState(QState::ExclusiveStates, threeState);
-	myStateMachine.addState(test3sub1State);
 	test3sub2State = new QState(QState::ExclusiveStates, threeState);
-	myStateMachine.addState(test3sub2State);
 	test3sub3State = new QState(QState::ExclusiveStates, threeState);
-	myStateMachine.addState(test3sub3State);
-	test4sub2State = new QState(QState::ExclusiveStates, fourState);
-	myStateMachine.addState(test4sub2State);
 	test4sub1State = new QState(QState::ExclusiveStates, fourState);
-	myStateMachine.addState(test4sub2State);
+	test4sub2State = new QState(QState::ExclusiveStates, fourState);
 
 	myStateMachine.setInitialState(oneState);
 	test2sub2State->setInitialState(test2sub21State);
@@ -70,10 +62,10 @@ GenericWorker::GenericWorker(MapPrx& mprx) : Ui_guiDlg()
 	test4sub1State->addTransition(this, SIGNAL(t_test4sub1_to_test4sub2()), test4sub2State);
 	test4sub2State->addTransition(this, SIGNAL(t_test4sub2_to_test4sub1()), test4sub1State);
 
+	QObject::connect(oneState, SIGNAL(entered()), this, SLOT(sm_one()));
 	QObject::connect(twoState, SIGNAL(entered()), this, SLOT(sm_two()));
 	QObject::connect(threeState, SIGNAL(entered()), this, SLOT(sm_three()));
 	QObject::connect(fourState, SIGNAL(entered()), this, SLOT(sm_four()));
-	QObject::connect(oneState, SIGNAL(entered()), this, SLOT(sm_one()));
 	QObject::connect(fiveState, SIGNAL(entered()), this, SLOT(sm_five()));
 	QObject::connect(test2sub1State, SIGNAL(entered()), this, SLOT(sm_test2sub1()));
 	QObject::connect(test2sub2State, SIGNAL(entered()), this, SLOT(sm_test2sub2()));
