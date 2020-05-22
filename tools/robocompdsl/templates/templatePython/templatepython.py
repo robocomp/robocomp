@@ -48,17 +48,6 @@ class TemplatesManagerPython(ComponentTemplatesManager):
                 'component_name': self.component.name}
 
     def src_CMakeLists_txt(self):
-        iface_names = []
-        for im in sorted(self.component.recursiveImports + self.component.ice_interfaces_names):
-            name = im.split('/')[-1].split('.')[0]
-            iface_names.append(name)
-        try:
-            options = [x.lower() for x in self.component.options]
-            if 'agmagent' in options:
-                iface_names += ["AGMExecutive"]["AGMExecutiveTopic"]
-            elif 'agm2agent' in options or 'agm2agentICE' in options or 'agm2agentROS' in options:
-                iface_names += ["AGM2"]
-        except:
-            pass
-        return {'ifaces_list': ' '.join(iface_names),
+        interface_names = sorted(self.component.recursiveImports + self.component.ice_interfaces_names)
+        return {'ifaces_list': ' '.join(interface_names),
                 'component_name': self.component.name}
