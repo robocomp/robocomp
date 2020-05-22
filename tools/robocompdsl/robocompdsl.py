@@ -18,6 +18,8 @@ from filesgenerator import FilesGenerator
 import robocompdslutils
 
 
+
+
 DIFF_TOOLS = ["meld", "kdiff3", "diff"]
 
 DUMMY_CDSL_STRING = """import "import1.idsl";
@@ -80,8 +82,7 @@ name_machine{
 ------------------------------------------------------------------ */\n"""
 
 
-
-def generateDummyCDSL(path):
+def generate_dummy_CDSL(path):
     if os.path.exists(path):
         print("File", path, "already exists.\nExiting...")
     else:
@@ -92,7 +93,7 @@ def generateDummyCDSL(path):
         open(path, "w").write(string)
 
 
-def generateDummySMDSL(path):
+def generate_dummy_SMDSL(path):
     if os.path.exists(path):
         print("File", path, "already exists.\nExiting...")
     else:
@@ -141,24 +142,29 @@ def generate_idsl_file(input_file, output_file, include_dirs):
     robocompdslutils.run_cog_and_replace_tags(cog_command, output_file)
 
 
+DESCRIPTION_STR = """\
+This application create components files from cdsl files or .ice from idsl
+    a) to generate code from a CDSL file:\t{name}    INPUT_FILE.CDSL    OUTPUT_PATH
+    b) to generate a new CDSL file:\t\t{name}    NEW_COMPONENT_DESCRIPTOR.CDSL
+    c) to generate .ice from a IDSL file:\t{name}    INPUT_FILE.idsl    OUTPUT_FILE_PATH.ice
+"""
+
+
 def main():
-    parser = MyArgsParser(description='This application create components files from cdsl files or .ice from idsl\n'
-                                  '\ta) to generate code from a CDSL file:     ' + sys.argv[0].split('/')[-1]
-                                      + '   INPUT_FILE.CDSL   OUTPUT_PATH\n'
-                                      + '\tb) to generate a new CDSL file:           ' + sys.argv[0].split('/')[-1]
-                                      + '   NEW_COMPONENT_DESCRIPTOR.CDSL',
-                          formatter_class=argparse.RawTextHelpFormatter)
+    parser = MyArgsParser(prog='robcompdsl',
+                          description=DESCRIPTION_STR.format(name=sys.argv[0].split('/')[-1]),
+                          formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("-I", "--include_dirs", nargs='*', help="Include directories",
                         action=FullPaths, default=[])
     parser.add_argument("-d", '--diff', dest='diff', choices=DIFF_TOOLS, action='store')
     parser.add_argument("input_file", help="The input dsl file")
-    parser.add_argument("output_path", nargs='?', help="The path to put the files")
+    parser.add_argument("output_path", nargs='?', help="The path to put the generated files")
     args = parser.parse_args()
 
     if args.output_path is None:
         if args.input_file.endswith(".cdsl"):
-            generateDummyCDSL(args.input_file)
-            generateDummySMDSL("statemachine.smdsl")
+            generate_dummy_CDSL(args.input_file)
+            generate_dummy_SMDSL("statemachine.smdsl")
             sys.exit(0)
         else:
             print(args.output_path, args.input_file)
@@ -173,6 +179,7 @@ def main():
     else:
         print("Please check the Input file \n" + "Input File should be either .cdsl or .idsl")
         sys.exit(-1)
+
 
 if __name__ == '__main__':
     main()

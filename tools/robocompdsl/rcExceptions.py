@@ -1,23 +1,27 @@
-import difflib, sys, inspect
+import difflib
+import sys
+import inspect
+
 
 class RobocompDslException(Exception):
 	"""A base class for robocompdsl's exceptions."""
 
 
 class InterfaceNotFound(RobocompDslException):
-	"""Acessing an Interface which is not found.
-		:param interfaceName: missing Intreface
+	"""Accessing an Interface which is not found.
+		:param interfaceName: missing Interface
 		:param validNames: valid interfaces
 	"""
-	def __init__(self, interfaceName, validNames=None):
-		self.interfaceName = interfaceName
-		self.validNames = validNames
-		self.message = interfaceName
-		if validNames:
-			similar_list = difflib.get_close_matches(self.interfaceName, self.validNames, cutoff=0.4)
+	def __init__(self, interface_name, valid_names=None):
+		self.interface_name = interface_name
+		self.valid_names = valid_names
+		self.message = interface_name
+		if valid_names:
+			similar_list = difflib.get_close_matches(self.interface_name, self.valid_names, cutoff=0.4)
 			if len(similar_list) > 0:
 				self.message = self.message + ". Did you mean " + str(similar_list[0])
 		super(InterfaceNotFound, self).__init__(self.message)
+
 
 class ParseException(RobocompDslException):
 

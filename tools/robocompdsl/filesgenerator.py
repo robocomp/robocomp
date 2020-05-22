@@ -10,7 +10,6 @@ from templates.templatePython.templatepython import TemplatesManagerPython
 
 sys.path.append("/opt/robocomp/python")
 from dsl_parsers import dsl_factory
-from dsl_parsers.parsing_utils import communication_is_ice
 
 LANG_TO_TEMPLATE = {
     'cpp': 'cpp',
@@ -65,11 +64,11 @@ class FilesGenerator:
         new_existing_files = self.__create_files()
         self.__show_diff(new_existing_files)
 
-
     def __load_ast(self):
         self.ast = dsl_factory.DSLFactory().from_file(self.dsl_file, includeDirectories=self.include_dirs)
 
     def __create_files(self):
+        new_existing_files = {}
         if self.dsl_file.endswith(".cdsl") or self.dsl_file.endswith(".jcdsl"):
             # Check output directory
             self.__create_component_directories()
@@ -94,7 +93,7 @@ class FilesGenerator:
                     print([diff_tool, o_file, n_file])
                     try:
                         subprocess.call([diff_tool, o_file, n_file])
-                    except KeyboardInterrupt as e:
+                    except KeyboardInterrupt:
                         print("Comparision interrupted. All files have been generated. Check this .new files manually:")
                         for o_file2, n_file2 in new_existing_files.items():
                             if not filecmp.cmp(o_file2, n_file2):
@@ -129,7 +128,6 @@ class FilesGenerator:
         new_existing_files = template_obj.generate_files(self.output_path)
         return new_existing_files
 
-
     def __create_component_directories(self):
         if not os.path.exists(self.output_path):
             robocompdslutils.create_directory(self.output_path)
@@ -138,11 +136,7 @@ class FilesGenerator:
         new_dirs = ["bin", "src", "etc"]
         for new_dir in new_dirs:
             if self.ast.language.lower() == "python" and new_dir == "bin": continue
-            try:
-                robocompdslutils.create_directory(os.path.join(self.output_path, new_dir))
-            except:
-                print('There was a problem creating a directory %s' % new_dir)
-                raise
+            robocompdslutils.create_directory(os.path.join(self.output_path, new_dir))
 
         # TODO: Probably deprecated. Check.
     def generate_ROS_headers(self, idsl_file):

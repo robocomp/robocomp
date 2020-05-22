@@ -22,13 +22,14 @@ def get_diff_tool(prefered=None):
 def replaceTagsInFile(path):
     i = open(path, 'r', encoding='utf-8', errors='ignore')
     text = i.read()
-    reps = []
-    reps.append(["\n<@@<" ,""])
-    reps.append([">@@>\n" ,""])
-    reps.append(["<TABHERE>", '\t'])
-    reps.append(["<S1>", ' '])
-    reps.append(["<S2>", '  '])
-    reps.append(["<S4>", '    '])
+    reps = [
+        ["\n<@@<", ""],
+        [">@@>\n", ""],
+        ["<TABHERE>", '\t'],
+        ["<S1>", ' '],
+        ["<S2>", '  '],
+        ["<S4>", '    ']
+    ]
     for r in reps:
         text = text.replace(r[0], r[1])
     i.close()
@@ -42,7 +43,7 @@ def create_directory(directory):
         print('Creating', directory,)
         os.mkdir(directory)
         print('')
-    except:
+    except OSError:
         if os.path.isdir(directory):
             print('(already existed)')
             pass
