@@ -179,25 +179,23 @@ class TemplateDict(dict):
     @staticmethod
     def interface_includes(interfaces, suffix='', lower=False):
         result = ""
-        for iface in sorted(interfaces):
-            if communication_is_ice(iface):
-                iface_name = iface
-                while not isinstance(iface_name, str):
-                    iface_name = iface_name[0]
-                iface_name = iface_name.split('/')[-1].split('.')[0]
+        for interface in sorted(interfaces):
+            if communication_is_ice(interface):
+                name = interface if isinstance(interface, str) else interface.name
+                name = name.split('/')[-1].split('.')[0]
                 if lower:
-                    iface_name = iface_name.lower()
-                result += Template(INCLUDE_STR).substitute(iface_name=iface_name, suffix=suffix)
+                    name = name.lower()
+                result += Template(INCLUDE_STR).substitute(iface_name=name, suffix=suffix)
         return result
 
     def proxy_ptr(self, interfaces, prefix=''):
         result = ""
-        for iface, num in get_name_number(interfaces):
-            if communication_is_ice(iface):
+        for interface, num in get_name_number(interfaces):
+            if communication_is_ice(interface):
                 ptr = ""
                 if self.component.language.lower() != "cpp":
                     ptr = "Ptr"
-                name = iface[0]
+                name = interface.name
                 result += Template(PROXY_PTR_STR).substitute(name=name, ptr=ptr, lower=name.lower(), num=num,
                                                              prefix=prefix)
         return result
@@ -245,11 +243,9 @@ class TemplateDict(dict):
 
     def subscribes_to(self):
         result = ""
-        for name, num in get_name_number(self.component.subscribesTo):
-            nname = name
-            while type(nname) != type(''):
-                nname = name[0]
-            if communication_is_ice(name):
+        for interface, num in get_name_number(self.component.subscribesTo):
+            name = interface.name
+            if communication_is_ice(interface):
                 if self.component.language.lower() == "cpp":
                     change1 = "IceStorm::TopicPrx"
                     change2 = "Ice::ObjectPrx"
@@ -264,8 +260,8 @@ class TemplateDict(dict):
                 result += SUBSCRIBESTO_STR.replace("<CHANGE1>", change1).replace("<CHANGE2>", change2).replace(
                     "<CHANGE3>",
                     change3).replace(
-                    "<CHANGE4>", change4).replace("<NORMAL>", nname).replace("<LOWER>", nname.lower()).replace(
-                    "<PROXYNAME>", nname.lower() + num).replace("<PROXYNUMBER>", num)
+                    "<CHANGE4>", change4).replace("<NORMAL>", name).replace("<LOWER>", name.lower()).replace(
+                    "<PROXYNAME>", name.lower() + num).replace("<PROXYNUMBER>", num)
         return result
 
     def implements(self):
@@ -287,9 +283,9 @@ class TemplateDict(dict):
 
     def requires(self):
         result = ""
-        for iface, num in get_name_number(self.component.requires):
-            name = iface[0]
-            if communication_is_ice(iface):
+        for interface, num in get_name_number(self.component.requires):
+            name = interface.name
+            if communication_is_ice(interface):
                 if self.component.language.lower() == "cpp":
                     cpp = "<PROXYNAME>_proxy = <NORMAL>Prx::uncheckedCast( communicator()->stringToProxy( proxy ) );"
                 else:
@@ -307,8 +303,8 @@ class TemplateDict(dict):
             var_name = 'm'
         else:
             var_name = 't'
-            proxy_list = [iface.name.lower() + num + "_proxy" for iface, num in get_name_number(self.component.requires)]
-            proxy_list += [iface.name.lower() + "_pubproxy" for iface in self.component.publishes]
+            proxy_list = [interface.name.lower() + num + "_proxy" for interface, num in get_name_number(self.component.requires)]
+            proxy_list += [interface.name.lower() + "_pubproxy" for interface in self.component.publishes]
             if proxy_list:
                 result += "tprx = std::make_tuple(" + ",".join(proxy_list) + ");\n"
             else:
@@ -318,9 +314,9 @@ class TemplateDict(dict):
 
     def unsubscribe_code(self):
         result = "\n"
-        for iface in self.component.subscribesTo:
-            if communication_is_ice(iface):
-                result = Template(UNSUBSCRIBE_STR).substitute(name=iface.name.lower())
+        for interface in self.component.subscribesTo:
+            if communication_is_ice(interface):
+                result = Template(UNSUBSCRIBE_STR).substitute(name=interface.name.lower())
         return result
 
     def proxies_map_creation(self):
