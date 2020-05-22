@@ -98,4 +98,3 @@ class TemplatesManagerCpp(ComponentTemplatesManager):
             'const': const,
             'ampersand': ampersand
         }
-

@@ -255,14 +255,10 @@ class TemplateDict(dict):
 
     def agmagent_attributes(self):
         result = ""
-        try:
-            if self.component.is_agm1_agent() or self.component.is_agm2_agent():
-                result += "active = false;\n"
-                result += "worldModel = AGMModel::SPtr(new AGMModel());\n"
-                result += "worldModel->name = \"worldModel\";\n"
-
-        except:
-            pass
+        if self.component.is_agm1_agent() or self.component.is_agm2_agent():
+            result += "active = false;\n"
+            result += "worldModel = AGMModel::SPtr(new AGMModel());\n"
+            result += "worldModel->name = \"worldModel\";\n"
         return result
 
     def innermodel_and_viewer_attribute_init(self):
@@ -276,13 +272,12 @@ class TemplateDict(dict):
 
     def agm_innermodel_association(self):
         result = ""
-        try:
-            if self.component.is_agm1_agent():
-                result += AGM_INNERMODEL_ASSOCIATION_STR
-            elif self.component.is_agm2_agent():
-                result += "// TODO: Here we should ask the DSR for the current model for initialization purposes.\n"
-        except:
-            pass
+
+        if self.component.is_agm1_agent():
+            result += AGM_INNERMODEL_ASSOCIATION_STR
+        elif self.component.is_agm2_agent():
+            result += "// TODO: Here we should ask the DSR for the current model for initialization purposes.\n"
+
         return result
 
     def compute_method(self):

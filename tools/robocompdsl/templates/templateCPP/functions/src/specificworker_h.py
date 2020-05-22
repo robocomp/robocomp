@@ -36,11 +36,8 @@ class TemplateDict(dict):
 
     def agmagent_comment(self):
         result = ""
-        try:
-            if 'agmagent' in [x.lower() for x in self.component.options]:
-                result += "// THIS IS AN AGENT\n"
-        except:
-            pass
+        if 'agmagent' in [x.lower() for x in self.component.options]:
+            result += "// THIS IS AN AGENT\n"
         return result
 
     def generate_ice_method_params(self, param):
@@ -198,22 +195,19 @@ class TemplateDict(dict):
 
     def agm_attributes(self):
         result = ''
-        try:
-            if self.component.is_agm1_agent():
-                result += "std::string action;\n"
-                result += "ParameterMap params;\n"
-                result += "AGMModel::SPtr worldModel;\n"
-                result += "bool active;\n"
-                if 'innermodelviewer' in [x.lower() for x in self.component.options]:
-                    result += "void regenerateInnerModelViewer();\n"
-                result += "bool setParametersAndPossibleActivation(const ParameterMap &prs, bool &reactivated);\n"
-                result += "void sendModificationProposal(AGMModel::SPtr &worldModel, AGMModel::SPtr &newModel);\n"
-            elif self.component.is_agm2_agent():
-                result += "std::string action;\n"
-                result += "AGMModel::SPtr worldModel;\n"
-                result += "bool active;\n"
-        except:
-            pass
+        if self.component.is_agm1_agent():
+            result += "std::string action;\n"
+            result += "ParameterMap params;\n"
+            result += "AGMModel::SPtr worldModel;\n"
+            result += "bool active;\n"
+            if 'innermodelviewer' in [x.lower() for x in self.component.options]:
+                result += "void regenerateInnerModelViewer();\n"
+            result += "bool setParametersAndPossibleActivation(const ParameterMap &prs, bool &reactivated);\n"
+            result += "void sendModificationProposal(AGMModel::SPtr &worldModel, AGMModel::SPtr &newModel);\n"
+        elif self.component.is_agm2_agent():
+            result += "std::string action;\n"
+            result += "AGMModel::SPtr worldModel;\n"
+            result += "bool active;\n"
         return result
 
     def innermodelviewer_includes(self):
