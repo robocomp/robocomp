@@ -56,11 +56,9 @@ class TemplateDict(dict):
                 result += im.lower() + 'I.cpp\n'
 
         for subscribe in self.component.subscribesTo:
-            subs = subscribe
-            while type(subs) != type(''):
-                subs = subs[0]
+            interface_name = subscribe.name
             if communication_is_ice(subscribe):
-                result += subs.lower() + 'I.cpp\n'
+                result += interface_name.lower() + 'I.cpp\n'
         return result
 
     def statemachine_visual_sources(self):
@@ -85,35 +83,32 @@ class TemplateDict(dict):
         result = ""
         if 'agmagent' in [x.lower() for x in self.component.options]:
             result += AGM_INCLUDES_STR
-        try:
-            if self.component.is_agm1_agent():
-                result += 'SET(LIBS ${LIBS} -lagm)\n'
-                result += 'ADD_DEFINITIONS( -I/usr/include/libxml2/)\n'
-            if self.component.is_agm2_agent():
-                result += 'SET(LIBS ${LIBS} -lagm2)\n'
-                result += 'ADD_DEFINITIONS( -I/usr/include/libxml2/)\n'
-                result += 'include(/usr/local/share/cmake/FindAGM2.cmake)\n'
-        except:
-            print("Can't check if the component is an agent")
-            pass
+        if self.component.is_agm1_agent():
+            result += 'SET(LIBS ${LIBS} -lagm)\n'
+            result += 'ADD_DEFINITIONS( -I/usr/include/libxml2/)\n'
+        if self.component.is_agm2_agent():
+            result += 'SET(LIBS ${LIBS} -lagm2)\n'
+            result += 'ADD_DEFINITIONS( -I/usr/include/libxml2/)\n'
+            result += 'include(/usr/local/share/cmake/FindAGM2.cmake)\n'
+
         return result
 
     def wrap_ice(self):
-        iface_names = []
+        interface_names = []
         for im in sorted(self.component.recursiveImports + self.component.ice_interfaces_names):
             name = im.split('/')[-1].split('.')[0]
-            iface_names.append(name)
+            interface_names.append(name)
 
         options = [x.lower() for x in self.component.options]
 
         if 'agm2agent' in options or 'agm2agentICE' in options or 'agm2agentROS' in options:
-            iface_names += ["AGM2"]
+            interface_names += ["AGM2"]
 
         result = "ROBOCOMP_IDSL_TO_ICE( CommonBehavior "
-        result += ' '.join(iface_names)
+        result += ' '.join(interface_names)
         result += ")\n"
         result += "ROBOCOMP_ICE_TO_SRC( CommonBehavior "
-        result += ' '.join(iface_names)
+        result += ' '.join(interface_names)
         result += ")\n"
         return result
 
