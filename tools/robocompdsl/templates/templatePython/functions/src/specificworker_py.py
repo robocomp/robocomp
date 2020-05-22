@@ -148,16 +148,12 @@ class TemplateDict(dict):
     def subscription_methods(self):
         pool = self.component.idsl_pool
         result = ""
-        for iface in self.component.subscribesTo:
-            if type(iface) == str:
-                iface_name = iface
-            else:
-                iface_name = iface[0]
-            module = pool.module_providing_interface(iface_name)
-            for interface in module['interfaces']:
-                if interface['name'] == iface_name:
-                    for mname in interface['methods']:
-                        method = interface['methods'][mname]
+        for interface in self.component.subscribesTo:
+            module = pool.module_providing_interface(interface.name)
+            for module_interface in module['interfaces']:
+                if module_interface['name'] == interface.name:
+                    for mname in module_interface['methods']:
+                        method = module_interface['methods'][mname]
                         out_values = []
                         if method['return'] != 'void':
                             out_values.append([method['return'], 'ret'])
@@ -169,12 +165,12 @@ class TemplateDict(dict):
                                 param_str_a += ', ' + p['name']
                         result += '\n'
                         result += '#\n'
-                        result += '# ' + 'SUBSCRIPTION to ' + method['name'] + ' method from ' + interface['name'] + ' interface\n'
+                        result += '# ' + 'SUBSCRIPTION to ' + method['name'] + ' method from ' + module_interface['name'] + ' interface\n'
                         result += '#\n'
-                        if not communication_is_ice(iface):
-                            result += 'def ROS' + interface['name'] + "_" + method['name'] + '(self' + param_str_a + "):\n"
+                        if not communication_is_ice(interface):
+                            result += 'def ROS' + module_interface['name'] + "_" + method['name'] + '(self' + param_str_a + "):\n"
                         else:
-                            result += 'def ' + interface['name'] + "_" + method['name'] + '(self' + param_str_a + "):\n"
+                            result += 'def ' + module_interface['name'] + "_" + method['name'] + '(self' + param_str_a + "):\n"
                         if method['return'] != 'void': result += "    ret = " + method['return'] + '()\n'
                         result += "    #\n"
                         result += "    #subscribesToCODE\n"

@@ -109,18 +109,15 @@ class TemplateDict(dict):
 
     def storm_topic_manager_creation(self):
         result = ""
-        try:
-            need_storm = False
-            for pub in self.component.publishes:
-                if communication_is_ice(pub):
-                    need_storm = True
-            for sub in self.component.subscribesTo:
-                if communication_is_ice(sub):
-                    need_storm = True
-            if need_storm:
-                result += TOPIC_MANAGER_STR
-        except:
-            pass
+        need_storm = False
+        for pub in self.component.publishes:
+            if communication_is_ice(pub):
+                need_storm = True
+        for sub in self.component.subscribesTo:
+            if communication_is_ice(sub):
+                need_storm = True
+        if need_storm:
+            result += TOPIC_MANAGER_STR
         return result
 
     def require_proxy_creation(self):
@@ -162,9 +159,7 @@ class TemplateDict(dict):
         if self.component.usingROS:
             result += "<TABHERE>rospy.init_node(\"" + self.component.name + "\", anonymous=True)\n"
         for sub in self.component.subscribesTo:
-            nname = sub
-            while type(nname) != type(''):
-                nname = nname[0]
+            nname = sub.name
             module = pool.module_providing_interface(nname)
             if module is None:
                 raise ValueError('\nCan\'t find module providing %s\n' % nname)
@@ -187,9 +182,7 @@ class TemplateDict(dict):
                                     result += "<TABHERE>rospy.Subscriber(" + s + ", " + p['type'] + ", worker.ROS" + method['name'] + ")\n"
 
         for imp in self.component.implements:
-            nname = imp
-            while type(nname) != type(''):
-                nname = nname[0]
+            nname = imp.name
             module = pool.module_providing_interface(nname)
             if module is None:
                 print('\nCan\'t find module providing', nname, '\n')

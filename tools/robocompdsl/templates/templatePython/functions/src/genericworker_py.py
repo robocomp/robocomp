@@ -39,6 +39,7 @@ def sm_${state_name}(self):
 
 class TemplateDict(dict):
     def __init__(self, component):
+        super(TemplateDict, self).__init__()
         self.component = component
         self['year'] = str(datetime.date.today().year)
         self['load_slice_and_create_imports'] = self.load_slice_and_create_imports()
@@ -111,51 +112,50 @@ class TemplateDict(dict):
         result = ""
         statemachine = self.component.statemachine
         if statemachine is not None:
-            codStateMachine = ""
-            codQState = ""
-            codQStateParallel = ""
-            codQFinalState = ""
-            Machine = statemachine['machine']['name']
-            codStateMachine = "self." + Machine + "= QtCore.QStateMachine()"
+            machine = statemachine['machine']['name']
+            code_qstates = ""
+            code_parallel_qstate = ""
+            code_final_qstate = ""
+            code_state_machine = "self." + machine + "= QtCore.QStateMachine()"
 
             if statemachine['machine']['contents']['states'] is not None:
                 for state in statemachine['machine']['contents']['states']:
-                    aux = "self." + state + "_state = QtCore.QState(self." + Machine + ")\n"
+                    aux = "self." + state + "_state = QtCore.QState(self." + machine + ")\n"
                     if statemachine['substates'] is not None:
                         for substates in statemachine['substates']:
                             if state == substates['parent']:
                                 if substates['parallel'] is "parallel":
-                                    aux = "self." + state + "_state = QtCore.QState(QtCore.QState.ParallelStates, self." + Machine + ")\n"
+                                    aux = "self." + state + "_state = QtCore.QState(QtCore.QState.ParallelStates, self." + machine + ")\n"
                                     break
                     if "ParallelStates" in aux:
-                        codQStateParallel += aux
+                        code_parallel_qstate += aux
                     else:
-                        codQState += aux
+                        code_qstates += aux
             if statemachine['machine']['contents']['initialstate'] is not None:
                 state = statemachine['machine']['contents']['initialstate']
-                aux = "self." + state + "_state = QtCore.QState(self." + Machine + ")\n"
+                aux = "self." + state + "_state = QtCore.QState(self." + machine + ")\n"
                 if statemachine['substates'] is not None:
                     for substates in statemachine['substates']:
                         if state == substates['parent']:
                             if substates['parallel'] is "parallel":
-                                aux = "self." + state + "_state = QtCore.QState(QtCore.QState.ParallelStates,self." + Machine + ")\n"
+                                aux = "self." + state + "_state = QtCore.QState(QtCore.QState.ParallelStates,self." + machine + ")\n"
                                 break
                 if "ParallelStates" in aux:
-                    codQStateParallel += aux
+                    code_parallel_qstate += aux
                 else:
-                    codQState += aux
+                    code_qstates += aux
             if statemachine['machine']['contents']['finalstate'] is not None:
                 state = statemachine['machine']['contents']['finalstate']
-                codQFinalState += "self." + state + "_state = QtCore.QFinalState(self." + Machine + ")\n"
+                code_final_qstate += "self." + state + "_state = QtCore.QFinalState(self." + machine + ")\n"
             result += "#State Machine\n"
-            result += codStateMachine + '\n'
-            result += codQState + '\n'
-            result += codQFinalState + '\n'
-            result += codQStateParallel + '\n'
-            codStateMachine = ""
-            codQState = ""
-            codQStateParallel = ""
-            codQFinalState = ""
+            result += code_state_machine + '\n'
+            result += code_qstates + '\n'
+            result += code_final_qstate + '\n'
+            result += code_parallel_qstate + '\n'
+            code_state_machine = ""
+            code_qstates = ""
+            code_parallel_qstate = ""
+            code_final_qstate = ""
             if statemachine['substates'] is not None:
                 for substates in statemachine['substates']:
                     if substates['contents']['states'] is not None:
@@ -169,9 +169,9 @@ class TemplateDict(dict):
                                               substates['parent'] + "_state)\n"
                                         break
                             if "ParallelStates" in aux:
-                                codQStateParallel += aux
+                                code_parallel_qstate += aux
                             else:
-                                codQState += aux
+                                code_qstates += aux
                     if substates['contents']['initialstate'] is not None:
                         aux = "self." + substates['contents'][
                             'initialstate'] + "_state = QtCore.QState(self." + substates['parent'] + "_state)\n"
@@ -182,70 +182,70 @@ class TemplateDict(dict):
                                           substates['parent'] + "_state)\n"
                                     break
                         if "ParallelStates" in aux:
-                            codQStateParallel += aux
+                            code_parallel_qstate += aux
                         else:
-                            codQState += aux
+                            code_qstates += aux
                     if substates['contents']['finalstate'] is not None:
-                        codQFinalState += "self." + substates['contents'][
+                        code_final_qstate += "self." + substates['contents'][
                             'finalstate'] + "_state = QtCore.QFinalState(self." + substates['parent'] + "_state)\n"
-                    result += codStateMachine + '\n'
-                    result += codQState + '\n'
-                    result += codQFinalState + '\n'
-                    result += codQStateParallel + '\n'
-                    codStateMachine = ""
-                    codQState = ""
-                    codQStateParallel = ""
-                    codQFinalState = ""
+                    result += code_state_machine + '\n'
+                    result += code_qstates + '\n'
+                    result += code_final_qstate + '\n'
+                    result += code_parallel_qstate + '\n'
+                    code_state_machine = ""
+                    code_qstates = ""
+                    code_parallel_qstate = ""
+                    code_final_qstate = ""
             result += "#------------------\n"
 
-            codaddTransition = ""
-            codaddState = ""
-            codConnect = ""
-            codsetInitialState = ""
+            code_add_transition = ""
+            code_add_state = ""
+            code_connect = ""
+            code_set_initial_state = ""
             if statemachine['machine']['contents']['transitions'] is not None:
                 for transi in statemachine['machine']['contents']['transitions']:
                     for dest in transi['dests']:
-                        codaddTransition += "self." + transi['src'] + "_state.addTransition(self.t_" + \
+                        code_add_transition += "self." + transi['src'] + "_state.addTransition(self.t_" + \
                                             transi['src'] + "_to_" + dest + ", self." + dest + "_state)\n"
             if statemachine['substates'] is not None:
                 for substates in statemachine['substates']:
                     if substates['contents']['transitions'] is not None:
                         for transi in substates['contents']['transitions']:
                             for dest in transi['dests']:
-                                codaddTransition += "self." + transi[
+                                code_add_transition += "self." + transi[
                                     'src'] + "_state.addTransition(self.t_" + transi[
                                                         'src'] + "_to_" + dest + ", self." + dest + "_state)\n"
             if statemachine['machine']['contents']['states'] is not None:
                 for state in statemachine['machine']['contents']['states']:
-                    codConnect += "self." + state + "_state.entered.connect(self.sm_" + state + ")\n"
+                    code_connect += "self." + state + "_state.entered.connect(self.sm_" + state + ")\n"
             if statemachine['machine']['contents']['initialstate'] is not None:
                 state = statemachine['machine']['contents']['initialstate']
-                codsetInitialState += "self." + statemachine['machine'][
+                code_set_initial_state += "self." + statemachine['machine'][
                     'name'] + ".setInitialState(self." + state + "_state)\n"
-                codConnect += "self." + state + "_state.entered.connect(self.sm_" + state + ")\n"
+                code_connect += "self." + state + "_state.entered.connect(self.sm_" + state + ")\n"
             if statemachine['machine']['contents']['finalstate'] is not None:
                 state = statemachine['machine']['contents']['finalstate']
-                codConnect += "self." + state + "_state.entered.connect(self.sm_" + state + ")\n"
+                code_connect += "self." + state + "_state.entered.connect(self.sm_" + state + ")\n"
             if statemachine['substates'] is not None:
                 for substates in statemachine['substates']:
                     if substates['contents']['initialstate'] is not None:
                         state = substates['contents']['initialstate']
-                        codsetInitialState += "self." + substates[
+                        code_set_initial_state += "self." + substates[
                             'parent'] + "_state.setInitialState(self." + state + "_state)\n"
-                        codConnect += "self." + state + "_state.entered.connect(self.sm_" + state + ")\n"
+                        code_connect += "self." + state + "_state.entered.connect(self.sm_" + state + ")\n"
                     if substates['contents']['finalstate'] is not None:
                         state = substates['contents']['finalstate']
-                        codConnect += "self." + state + "_state.entered.connect(self.sm_" + state + ")\n"
+                        code_connect += "self." + state + "_state.entered.connect(self.sm_" + state + ")\n"
                     if substates['contents']['states'] is not None:
                         for state in substates['contents']['states']:
-                            codConnect += "self." + state + "_state.entered.connect(self.sm_" + state + ")\n"
+                            code_connect += "self." + state + "_state.entered.connect(self.sm_" + state + ")\n"
             if statemachine['machine']['default']:
-                codConnect += "self.timer.timeout.connect(self.t_compute_to_compute)\n"
+                code_connect += "self.timer.timeout.connect(self.t_compute_to_compute)\n"
             result += "#Initialization State machine\n"
-            result += codaddTransition + '\n'
-            result += codaddState + '\n'
-            result += codConnect + '\n'
-            result += codsetInitialState + '\n'
+            result += code_add_transition + '\n'
+            result += code_add_state + '\n'
+            result += code_connect + '\n'
+            result += code_set_initial_state + '\n'
             result += "#------------------\n"
         return result
 
@@ -259,14 +259,12 @@ class TemplateDict(dict):
     def ros_class_creation(self):
         result = ""
         pool = self.component.idsl_pool
-        if self.component.usingROS == True:
+        if self.component.usingROS:
             # CREANDO CLASES PARA LOS PUBLISHERS
             for imp in self.component.publishes:
-                nname = imp
-                while type(nname) != type(''):
-                    nname = nname[0]
+                nname = imp.name
                 module = pool.module_providing_interface(nname)
-                if module == None:
+                if module is None:
                     raise ValueError('\nCan\'t find module providing %s\n' % nname)
                 if not communication_is_ice(imp):
                     result += "#class for rosPublisher\n"
@@ -302,11 +300,9 @@ class TemplateDict(dict):
                                     result += "<TABHERE><TABHERE>self.pub_" + mname + ".publish(" + p['name'] + ")\n"
             # CREANDO CLASES PARA LOS REQUIRES
             for imp in self.component.requires:
-                nname = imp
-                while type(nname) != type(''):
-                    nname = nname[0]
+                nname = imp.name
                 module = pool.module_providing_interface(nname)
-                if module == None:
+                if module is None:
                     raise ValueError('\nCan\'t find module providing %s\n' % nname)
                 if not communication_is_ice(imp):
                     result += "#class for rosServiceClient\n"
@@ -322,19 +318,19 @@ class TemplateDict(dict):
                         if interface['name'] == nname:
                             for mname in interface['methods']:
                                 method = interface['methods'][mname]
-                                paramStrA = ''
+                                param_str_a = ''
                                 for p in method['params']:
                                     # delim
-                                    if paramStrA == '': paramStrA = p['name']
-                                result += "<TABHERE>def " + mname + "(self, " + paramStrA + "):\n"
-                                result += "<TABHERE><TABHERE>return self.srv_" + mname + "(" + paramStrA + ")\n"
+                                    if param_str_a == '': param_str_a = p['name']
+                                result += "<TABHERE>def " + mname + "(self, " + param_str_a + "):\n"
+                                result += "<TABHERE><TABHERE>return self.srv_" + mname + "(" + param_str_a + ")\n"
         return result
 
     # TODO: Refactor, too much repeated code.
     def ros_imports(self):
         result = ""
         pool = self.component.idsl_pool
-        if self.component.usingROS == True:
+        if self.component.usingROS:
             result += 'import rospy\n'
             result += 'from std_msgs.msg import *\n'
             for iface in self.component.publishes + self.component.subscribesTo:
