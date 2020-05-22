@@ -24,36 +24,36 @@ struct BehaviorParameters
 
 PUBLISHES_CLASS_STR = """
 //class for rosPublisher
-class Publisher${iface_name}
+class Publisher${interface_name}
 {
 public:
     ${publishers_creation}
-    Publisher${iface_name}(ros::NodeHandle *node)
+    Publisher${interface_name}(ros::NodeHandle *node)
     {
 ${publishers_init}
     }
-    ~Publisher${iface_name}(){}
+    ~Publisher${interface_name}(){}
 ${publishers_methods}
 };
 """
 
 REQUIRES_CLASS_STR = """
 //class for rosServiceClient
-class ServiceClient${iface_name}
+class ServiceClient${interface_name}
 {
 public:
     ${service_clients_creation}
-    ServiceClient${iface_name}(ros::NodeHandle *node)
+    ServiceClient${interface_name}(ros::NodeHandle *node)
     {
 ${service_clients_inits}
     }
-    ~ServiceClient${iface_name}(){}
+    ~ServiceClient${interface_name}(){}
     ${service_clients_methods}
 };   
 """
 
 ROS_ADVERTISE_STR = "<TABHERE><TABHERE>pub_${method_name} = node->advertise<${param_type}>(node->resolveName(\"${method_name}\"), 1000);"
-ROS_SERVICE_STR =   "<TABHERE><TABHERE>srv_${method_name} = node->serviceClient<${param_type}>(node->resolveName(\"${method_name}\"), 1000);"
+ROS_SERVICE_STR = "<TABHERE><TABHERE>srv_${method_name} = node->serviceClient<${param_type}>(node->resolveName(\"${method_name}\"), 1000);"
 
 
 ROS_PUBLISH_METHOD_STR = """
@@ -109,7 +109,6 @@ class TemplateDict(dict):
             result += GUI_INCLUDE_STR
         return result
 
-
     def statemachine_includes(self):
         result = ""
         if self.component.statemachine is not None:
@@ -118,7 +117,6 @@ class TemplateDict(dict):
             if self.component.statemachine_visual:
                 result += "#include \"statemachinewidget/qstateMachineWrapper.h\"\n"
         return result
-
 
     def interfaces_includes(self):
         result = ""
@@ -132,30 +130,25 @@ class TemplateDict(dict):
                 result += '#include <' + iface.name + '.h>\n'
             for iface in self.component.requires + self.component.implements:
                 if type(iface) == str:
-                    iface_name = iface
+                    interface_name = iface
                 else:
-                    iface_name = iface[0]
+                    interface_name = iface[0]
                 if not communication_is_ice(iface):
-                    module = pool.module_providing_interface(iface_name)
+                    module = pool.module_providing_interface(interface_name)
                     for interface in module['interfaces']:
-                        if interface['name'] == iface_name:
+                        if interface['name'] == interface_name:
                             for method_name in interface['methods']:
                                 result += '#include <' + module['name'] + 'ROS/' + method_name + '.h>\n'
         return result
 
-
     def agm_includes(self):
         result = ""
-        try:
-            if self.component.is_agm1_agent():
-                result += "#include <agm.h>\n"
-            if self.component.is_agm2_agent():
-                result += "#include <AGM2.h>\n"
-                result += "#include <agm2.h>\n"
-        except:
-            pass
+        if self.component.is_agm1_agent():
+            result += "#include <agm.h>\n"
+        if self.component.is_agm2_agent():
+            result += "#include <AGM2.h>\n"
+            result += "#include <agm2.h>\n"
         return result
-
 
     def namespaces(self):
         result = ""
@@ -163,7 +156,6 @@ class TemplateDict(dict):
             name = imp.split('/')[-1].split('.')[0]
             result += "using namespace RoboComp" + name + ";\n"
         return result
-
 
     def ice_proxies_map(self):
         result = ""
@@ -180,19 +172,16 @@ class TemplateDict(dict):
 
     def agm_behaviour_parameter_struct(self):
         result = ""
-        try:
-            if 'agmagent' in [x.lower() for x in self.component.options]:
-                result += AGM_BEHAVIOUR_STRUCT_STR
-        except:
-            pass
+        if 'agmagent' in [x.lower() for x in self.component.options]:
+            result += AGM_BEHAVIOUR_STRUCT_STR
         return result
 
-    def ros_create_publish_class(self, iface_name, module):
+    def ros_create_publish_class(self, interface_name, module):
         publishers = ""
         publishers_inits = ""
         publishers_methods = ""
         for interface in module['interfaces']:
-            if interface['name'] == iface_name:
+            if interface['name'] == interface_name:
                 for method_name in interface['methods']:
                     publishers += "<TABHERE>ros::Publisher pub_" + method_name + ";\n"
                     publishers_inits += self.ros_node_init(interface, method_name, module, publish=True)
@@ -201,22 +190,22 @@ class TemplateDict(dict):
                                                         publishers_init=publishers_inits,
                                                         publishers_methods=publishers_methods)
 
-    def ros_create_require_class(self, iface_name, module, idsl):
+    def ros_create_require_class(self, interface_name, module, idsl):
         service_clients = ""
         service_clients_inits = ""
         service_clients_methods = ""
         for interface in module['interfaces']:
-            if interface['name'] == iface_name:
+            if interface['name'] == interface_name:
                 for method_name in interface['methods']:
                     service_clients += "<TABHERE>ros::ServiceClient srv_" + method_name + ";"
                     service_clients_inits += self.ros_node_init(interface, method_name, module)
-                    service_clients_methods += self.ros_require_method(interface, method_name, module,idsl)
+                    service_clients_methods += self.ros_require_method(interface, method_name, module, idsl)
         return Template(REQUIRES_CLASS_STR).substitute(publishers_creation=service_clients,
-                                                        service_clients_inits=service_clients_inits,
-                                                        service_clients_methods=service_clients_methods)
+                                                       service_clients_inits=service_clients_inits,
+                                                       service_clients_methods=service_clients_methods)
 
-
-    def ros_param_type(self, p, module):
+    @staticmethod
+    def ros_param_type(p, module):
         if p['type'] in ('float', 'int'):
             param_type = p['type'].capitalize() + "32"
         elif p['type'] in ('uint8', 'uint16', 'uint32', 'uint64'):
@@ -252,118 +241,109 @@ class TemplateDict(dict):
                                                                   param_name=p['name'])
         return result
 
-    # TODO: reestructurate
-    def ros_require_method(self, interface, method_name, module, idsl):
+    # TODO: restructure
+    @staticmethod
+    def ros_require_method(interface, method_name, module, idsl):
         result = ""
         method = interface['methods'][method_name]
-        methodDef = "<TABHERE>bool " + method_name + "("
-        methodContent = "<TABHERE>{\n<TABHERE><TABHERE>" + module['name'] + "ROS::" + method_name + " srv;\n"
-        firstParam = True
+        method_def = "<TABHERE>bool " + method_name + "("
+        method_content = "<TABHERE>{\n<TABHERE><TABHERE>" + module['name'] + "ROS::" + method_name + " srv;\n"
+        first_param = True
         for p in method['params']:
             for im in idsl['module']['contents']:
                 # obtener todos los campos del struct y hacer la asignacion
-                if firstParam:
+                if first_param:
                     if im['name'] == p['type'] and im['type'] == 'struct':
                         for campos in im['structIdentifiers']:
-                            methodContent += "<TABHERE><TABHERE>srv.request." + p['name'] + "." + \
+                            method_content += "<TABHERE><TABHERE>srv.request." + p['name'] + "." + \
                                              campos['identifier'] + " = " + p['name'] + "." + campos[
                                                  'identifier'] + ";\n"
                 else:
                     if im['name'] == p['type'] and im['type'] == 'struct':
                         for campos in im['structIdentifiers']:
-                            methodContent += "<TABHERE><TABHERE><TABHERE>" + p['name'] + "." + campos[
+                            method_content += "<TABHERE><TABHERE><TABHERE>" + p['name'] + "." + campos[
                                 'identifier'] + " = srv.response." + p['name'] + "." + campos[
                                                  'identifier'] + ";\n"
-            if firstParam:
+            if first_param:
                 if p['type'] in ('float', 'int'):
-                    methodDef += "std_msgs::" + p['type'].capitalize() + "32 " + p['name'] + ", "
-                    methodContent += "<TABHERE><TABHERE>srv.request." + p['name'] + " = " + p[
+                    method_def += "std_msgs::" + p['type'].capitalize() + "32 " + p['name'] + ", "
+                    method_content += "<TABHERE><TABHERE>srv.request." + p['name'] + " = " + p[
                         'name'] + ".data;\n"
                 elif p['type'] in ('uint8', 'uint16', 'uint32', 'uint64'):
-                    methodDef += "std_msgs::UInt" + p['type'].split('t')[1] + " " + p['name'] + ", "
-                    methodContent += "<TABHERE><TABHERE>srv.request." + p['name'] + " = " + p[
+                    method_def += "std_msgs::UInt" + p['type'].split('t')[1] + " " + p['name'] + ", "
+                    method_content += "<TABHERE><TABHERE>srv.request." + p['name'] + " = " + p[
                         'name'] + ".data;\n"
                 elif p['type'] in IDSLPool.getRosTypes():
-                    methodDef += "std_msgs::" + p['type'].capitalize() + " " + p['name'] + ", "
-                    methodContent += "<TABHERE><TABHERE>srv.request." + p['name'] + " = " + p[
+                    method_def += "std_msgs::" + p['type'].capitalize() + " " + p['name'] + ", "
+                    method_content += "<TABHERE><TABHERE>srv.request." + p['name'] + " = " + p[
                         'name'] + ".data;\n"
                 elif '::' in p['type']:
-                    methodDef += p['type'].replace("::", "ROS::") + " " + p['name'] + ", "
-                    methodContent += "<TABHERE><TABHERE>srv.request." + p['name'] + " = " + p[
+                    method_def += p['type'].replace("::", "ROS::") + " " + p['name'] + ", "
+                    method_content += "<TABHERE><TABHERE>srv.request." + p['name'] + " = " + p[
                         'name'] + ";\n"
                 else:
-                    methodDef += module['name'] + "ROS::" + p['type'] + " " + p['name'] + ", "
-                methodContent += "<TABHERE><TABHERE>if(srv_" + method_name + ".call(srv))\n<TABHERE><TABHERE>{\n"
-                firstParam = False
+                    method_def += module['name'] + "ROS::" + p['type'] + " " + p['name'] + ", "
+                method_content += "<TABHERE><TABHERE>if(srv_" + method_name + ".call(srv))\n<TABHERE><TABHERE>{\n"
+                first_param = False
             else:
-                firstParam = True
+                first_param = True
                 if p['type'] in ('float', 'int'):
-                    methodDef += "std_msgs::" + p['type'].capitalize() + "32 &" + p['name'] + ") "
-                    methodContent += "<TABHERE><TABHERE><TABHERE>" + p[
+                    method_def += "std_msgs::" + p['type'].capitalize() + "32 &" + p['name'] + ") "
+                    method_content += "<TABHERE><TABHERE><TABHERE>" + p[
                         'name'] + ".data = srv.response." + p['name'] + ";\n"
                 elif p['type'] in ('uint8', 'uint16', 'uint32', 'uint64'):
-                    methodDef += "std_msgs::UInt" + p['type'].split('t')[1] + " &" + p['name'] + ") "
-                    methodContent += "<TABHERE><TABHERE><TABHERE>" + p[
+                    method_def += "std_msgs::UInt" + p['type'].split('t')[1] + " &" + p['name'] + ") "
+                    method_content += "<TABHERE><TABHERE><TABHERE>" + p[
                         'name'] + ".data = srv.response." + p['name'] + ";\n"
                 elif p['type'] in IDSLPool.getRosTypes():
-                    methodDef += "std_msgs::" + p['type'].capitalize() + " &" + p['name'] + ") "
-                    methodContent += "<TABHERE><TABHERE><TABHERE>" + p[
+                    method_def += "std_msgs::" + p['type'].capitalize() + " &" + p['name'] + ") "
+                    method_content += "<TABHERE><TABHERE><TABHERE>" + p[
                         'name'] + ".data = srv.response." + p['name'] + ";\n"
                 elif '::' in p['type']:
-                    methodDef += p['type'].replace("::", "ROS::") + " " & +p['name'] + ") "
-                    methodContent += "<TABHERE><TABHERE><TABHERE>" + p['name'] + " = srv.response." + p[
+                    method_def += p['type'].replace("::", "ROS::") + " " & +p['name'] + ") "
+                    method_content += "<TABHERE><TABHERE><TABHERE>" + p['name'] + " = srv.response." + p[
                         'name'] + ";\n"
                 else:
-                    methodDef += module['name'] + "ROS::" + p['type'] + " &" + p['name'] + ") "
-                methodContent += "<TABHERE><TABHERE><TABHERE>return true;\n<TABHERE><TABHERE>}\n<TABHERE><TABHERE>return false;"
-        result += methodDef+'\n'
-        result += methodContent+'\n'
+                    method_def += module['name'] + "ROS::" + p['type'] + " &" + p['name'] + ") "
+                method_content += "<TABHERE><TABHERE><TABHERE>return true;\n<TABHERE><TABHERE>}\n<TABHERE><TABHERE>return false;"
+        result += method_def+'\n'
+        result += method_content+'\n'
         result += "<TABHERE>}\n"
         return result
-
 
     def ros_publishes_classes(self):
         result = ""
         if self.component.usingROS:
             pool = self.component.idsl_pool
             # Creating ros publisher classes
-            for iface in self.component.publishes:
-                iface_name = iface
-                while not isinstance(iface_name, str):
-                    iface_name = iface_name[0]
-                module = pool.module_providing_interface(iface_name)
+            for interface in self.component.publishes:
+                module = pool.module_providing_interface(interface.name)
                 if module is None:
-                    raise ValueError('\nCan\'t find module providing %s \n' % iface_name)
-                if not communication_is_ice(iface):
-                    result += self.ros_create_publish_class(iface_name, module)
+                    raise ValueError('\nCan\'t find module providing %s \n' % interface.name)
+                if not communication_is_ice(interface):
+                    result += self.ros_create_publish_class(interface.name, module)
         return result
 
     def ros_requires_classes(self):
         result = ""
-        if self.component.usingROS == True:
+        if self.component.usingROS:
             pool = self.component.idsl_pool
-            for iface in self.component.requires:
-                iface_name = iface
-                while type(iface_name) != type(''):
-                    iface_name = iface_name[0]
-                module = pool.module_providing_interface(iface_name)
-                theIdsl = pool.IDSL_file_for_module(module)
-                idsl = DSLFactory().from_file(theIdsl)
-                if module == None:
-                    raise ValueError('\nCan\'t find module providing %s\n' % iface_name)
-                if not communication_is_ice(iface):
-                    result += self.ros_create_require_class(iface_name, module, idsl)
+            for interface in self.component.requires:
+                module = pool.module_providing_interface(interface.name)
+                idsl_path = pool.IDSL_file_for_module(module)
+                idsl = DSLFactory().from_file(idsl_path)
+                if module is None:
+                    raise ValueError('\nCan\'t find module providing %s\n' % interface.name)
+                if not communication_is_ice(interface):
+                    result += self.ros_create_require_class(interface.name, module, idsl)
         return result
 
     def agm_methods(self):
         result = ""
-        try:
-            if 'agmagent' in [x.lower() for x in self.component.options]:
-                result += "bool activate(const BehaviorParameters& parameters);\n"
-                result += "bool deactivate();\n"
-                result += "bool isActive() { return active; }\n"
-        except:
-            pass
+        if 'agmagent' in [x.lower() for x in self.component.options]:
+            result += "bool activate(const BehaviorParameters& parameters);\n"
+            result += "bool deactivate();\n"
+            result += "bool isActive() { return active; }\n"
         return result
 
     def create_proxies(self):
@@ -394,11 +374,11 @@ class TemplateDict(dict):
                 if interface['name'] == iface.name:
                     for mname in interface['methods']:
                         method = interface['methods'][mname]
-                        paramStrA = ''
+                        param_str_a = ''
                         if communication_is_ice(iface):
                             for p in method['params']:
                                 # delim
-                                if paramStrA == '':
+                                if param_str_a == '':
                                     delim = ''
                                 else:
                                     delim = ', '
@@ -415,15 +395,15 @@ class TemplateDict(dict):
                                     if p['type'].lower() in ['int', '::ice::int', 'float', '::ice::float']:
                                         ampersand = ''
                                 # STR
-                                paramStrA += delim + const + p['type'] + ' ' + ampersand + p['name']
-                            result += "virtual " + method['return'] + ' ' + interface['name'] + "_" + method['name'] + "(" + paramStrA + ") = 0;\n"
+                                param_str_a += delim + const + p['type'] + ' ' + ampersand + p['name']
+                            result += "virtual " + method['return'] + ' ' + interface['name'] + "_" + method['name'] + "(" + param_str_a + ") = 0;\n"
                         else:
-                            paramStrA = module['name'] + "ROS::" + method['name'] + "::Request &req, " + module[
+                            param_str_a = module['name'] + "ROS::" + method['name'] + "::Request &req, " + module[
                                 'name'] + "ROS::" + method['name'] + "::Response &res"
                             if iface.name in self.component.iceInterfaces:
-                                result += "virtual bool ROS" + method['name'] + "(" + paramStrA + ") = 0;\n"
+                                result += "virtual bool ROS" + method['name'] + "(" + param_str_a + ") = 0;\n"
                             else:
-                                result += "virtual bool " + method['name'] + "(" + paramStrA + ") = 0;\n"
+                                result += "virtual bool " + method['name'] + "(" + param_str_a + ") = 0;\n"
         return result
 
     def subscribes(self):
@@ -431,17 +411,17 @@ class TemplateDict(dict):
         for iface in self.component.subscribesTo:
             pool = self.component.idsl_pool
             module = pool.module_providing_interface(iface.name)
-            if module == None:
+            if module is None:
                 raise ValueError('\nCan\'t find module providing %s \n' % iface.name)
             for interface in module['interfaces']:
                 if interface['name'] == iface.name:
                     for mname in interface['methods']:
                         method = interface['methods'][mname]
-                        paramStrA = ''
+                        param_str_a = ''
                         if communication_is_ice(iface):
                             for p in method['params']:
                                 # delim
-                                if paramStrA == '':
+                                if param_str_a == '':
                                     delim = ''
                                 else:
                                     delim = ', '
@@ -458,12 +438,12 @@ class TemplateDict(dict):
                                     if p['type'].lower() in ['int', '::ice::int', 'float', '::ice::float']:
                                         ampersand = ''
                                 # STR
-                                paramStrA += delim + const + p['type'] + " " + ampersand + p['name']
-                            result += "virtual " + method['return'] + " " + interface['name'] + "_" + method['name'] + "(" + paramStrA + ") = 0;\n"
+                                param_str_a += delim + const + p['type'] + " " + ampersand + p['name']
+                            result += "virtual " + method['return'] + " " + interface['name'] + "_" + method['name'] + "(" + param_str_a + ") = 0;\n"
                         else:
                             for p in method['params']:
                                 # delim
-                                if paramStrA == '':
+                                if param_str_a == '':
                                     delim = ''
                                 else:
                                     delim = ', '
@@ -480,27 +460,26 @@ class TemplateDict(dict):
                                     p['type'] = "std_msgs::UInt" + p['type'].split('t')[1]
                                 elif p['type'] in IDSLPool.getRosTypes():
                                     p['type'] = "std_msgs::" + p['type'].capitalize()
-                                elif not '::' in p['type']:
+                                elif '::' not in p['type']:
                                     p['type'] = module['name'] + "ROS::" + p['type']
                                 # STR
-                                paramStrA += delim + p['type'] + " " + p['name']
+                                param_str_a += delim + p['type'] + " " + p['name']
                             if iface.name in self.component.iceInterfaces:
-                                result += "virtual void ROS" + method['name'] + "(" + paramStrA + ") = 0;\n"
+                                result += "virtual void ROS" + method['name'] + "(" + param_str_a + ") = 0;\n"
                             else:
-                                result += "virtual void " + method['name'] + "(" + paramStrA + ") = 0;\n"
+                                result += "virtual void " + method['name'] + "(" + param_str_a + ") = 0;\n"
         return result
 
     def statemachine_creation(self):
         result = ""
         statemachine = self.component.statemachine
         if statemachine is not None:
-            codQState = ""
-            codQStateMachine = ""
+            code_qstates = ""
             lsstates = ""
             if not self.component.statemachine_visual:
-                codQStateMachine = "QStateMachine " + statemachine['machine']['name'] + ";\n"
+                cod_qstate_machine = "QStateMachine " + statemachine['machine']['name'] + ";\n"
             else:
-                codQStateMachine = "QStateMachineWrapper " + statemachine['machine']['name'] + ";\n"
+                cod_qstate_machine = "QStateMachineWrapper " + statemachine['machine']['name'] + ";\n"
             if statemachine['machine']['contents']['states'] is not None:
                 for state in statemachine['machine']['contents']['states']:
                     aux = "QState *" + state + "State;\n"
@@ -511,7 +490,7 @@ class TemplateDict(dict):
                                 if substates['parallel'] is "parallel":
                                     aux = "QState *" + state + "State;\n"
                                     break
-                    codQState += aux
+                    code_qstates += aux
             if statemachine['machine']['contents']['initialstate'] is not None:
                 state = statemachine['machine']['contents']['initialstate']
                 aux = "QState *" + state + "State;\n"
@@ -522,11 +501,11 @@ class TemplateDict(dict):
                             if substates['parallel'] is "parallel":
                                 aux = "QState *" + state + "State;\n"
                                 break
-                codQState += aux
+                code_qstates += aux
 
             if statemachine['machine']['contents']['finalstate'] is not None:
                 state = statemachine['machine']['contents']['finalstate']
-                codQState += "QFinalState *" + state + "State;\n"
+                code_qstates += "QFinalState *" + state + "State;\n"
                 lsstates += state + ","
 
             if statemachine['substates'] is not None:
@@ -540,7 +519,7 @@ class TemplateDict(dict):
                                     if sub['parallel'] is "parallel":
                                         aux = "QState *" + state + "State;\n"
                                         break
-                            codQState += aux
+                            code_qstates += aux
                     if substates['contents']['initialstate'] is not None:
                         aux = "QState *" + substates['contents']['initialstate'] + "State;\n"
                         lsstates += state + ","
@@ -549,14 +528,14 @@ class TemplateDict(dict):
                                 if sub['parallel'] is "parallel":
                                     aux = "QState *" + state + "State;\n"
                                     break
-                        codQState += aux
+                        code_qstates += aux
                     if substates['contents']['finalstate'] is not None:
-                        codQState += "QFinalState *" + substates['contents']['finalstate'] + "State;\n"
+                        code_qstates += "QFinalState *" + substates['contents']['finalstate'] + "State;\n"
                         lsstates += state + ","
 
             result += "//State Machine\n"
-            result += codQStateMachine+"\n"
-            result += codQState+"\n"
+            result += cod_qstate_machine+"\n"
+            result += code_qstates+"\n"
             result += "//-------------------------\n"
         return result
 
@@ -565,13 +544,12 @@ class TemplateDict(dict):
         for iface in self.component.subscribesTo:
             pool = self.component.idsl_pool
             module = pool.module_providing_interface(iface.name)
-            if module == None:
+            if module is None:
                 raise ValueError('\nCan\'t find module providing %s\n' % iface.name)
             if not communication_is_ice(iface):
                 for interface in module['interfaces']:
                     if interface['name'] == iface.name:
                         for mname in interface['methods']:
-                            method = interface['methods'][mname]
                             result += "ros::Subscriber " + iface.name + "_" + mname + ";\n"
         return result
 
@@ -580,13 +558,12 @@ class TemplateDict(dict):
         for iface in self.component.implements:
             pool = self.component.pool
             module = pool.module_providing_interface(iface.name)
-            if module == None:
+            if module is None:
                 raise ValueError('\nCan\'t find module providing %s \n' % iface.name)
             if not communication_is_ice(iface):
                 for interface in module['interfaces']:
                     if interface['name'] == iface.name:
                         for mname in interface['methods']:
-                            method = interface['methods'][mname]
                             result += "ros::ServiceServer " + iface.name + "_" + mname + ";\n"
         return result
 
@@ -594,37 +571,28 @@ class TemplateDict(dict):
         result = ""
         if 'publishes' in self.component:
             for publish in self.component.publishes:
-                pubs = publish
-                while type(pubs) != type(''):
-                    pubs = pubs[0]
                 if not communication_is_ice(publish):
-                    if pubs in self.component.iceInterfaces:
-                        result += "Publisher" + pubs + " *" + pubs.lower() + "_rosproxy;\n"
+                    if publish.name in self.component.iceInterfaces:
+                        result += "Publisher" + publish.name + " *" + publish.name.lower() + "_rosproxy;\n"
                     else:
-                        result += "Publisher" + pubs + " *" + pubs.lower() + "_proxy;\n"
+                        result += "Publisher" + publish.name + " *" + publish.name.lower() + "_proxy;\n"
         return result
 
     def ros_requires_creation(self):
         result = ""
         if 'requires' in self.component:
             for require in self.component.requires:
-                req = require
-                while type(req) != type(''):
-                    req = req[0]
                 if not communication_is_ice(require):
-                    if req in self.component.iceInterfaces:
-                        result += "ServiceClient" + req + " *" + req.lower() + "_rosproxy;\n"
+                    if require.name in self.component.iceInterfaces:
+                        result += "ServiceClient" + require.name + " *" + require.name.lower() + "_rosproxy;\n"
                     else:
-                        result += "ServiceClient" + req + " *" + req.lower() + "_proxy;\n"
+                        result += "ServiceClient" + require.name + " *" + require.name.lower() + "_proxy;\n"
         return result
 
     def agm_attributes_creation(self):
         result = ""
-        try:
-            if 'agmagent' in [x.lower() for x in self.component.options]:
-                result += AGM_ATTRIBUTES_STR
-        except:
-            pass
+        if 'agmagent' in [x.lower() for x in self.component.options]:
+            result += AGM_ATTRIBUTES_STR
         return result
 
     # TODO: Refactor for submachines
@@ -683,7 +651,6 @@ class TemplateDict(dict):
         else:
             result += "TuplePrx tprx"
         return result
-
 
     def ros_interfaces_creation(self):
         result = ""

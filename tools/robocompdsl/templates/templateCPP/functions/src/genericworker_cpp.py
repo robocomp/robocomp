@@ -255,14 +255,14 @@ class TemplateDict(dict):
     def _statemachine_transitions_creation(statemachine_name, machine, visual):
         code_add_transitions = ""
         if machine['contents']['transitions'] is not None:
-            for transi in machine['contents']['transitions']:
-                for dest in transi['dests']:
+            for transition in machine['contents']['transitions']:
+                for dest in transition['dests']:
                     if not visual:
-                        code_add_transitions += transi['src'] + "State->addTransition(" + "this, SIGNAL(t_" + \
-                                            transi['src'] + "_to_" + dest + "()), " + dest + "State);\n"
+                        code_add_transitions += transition['src'] + "State->addTransition(" + "this, SIGNAL(t_" + \
+                                            transition['src'] + "_to_" + dest + "()), " + dest + "State);\n"
                     else:
-                        code_add_transitions += statemachine_name + ".addTransition(" + transi[
-                            'src'] + "State, this, SIGNAL(t_" + transi[
+                        code_add_transitions += statemachine_name + ".addTransition(" + transition[
+                            'src'] + "State, this, SIGNAL(t_" + transition[
                                                 'src'] + "_to_" + dest + "()), " + dest + "State);\n"
         return code_add_transitions
 
