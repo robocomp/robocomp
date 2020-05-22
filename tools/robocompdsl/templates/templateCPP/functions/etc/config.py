@@ -6,7 +6,6 @@ TopicManager.Proxy=IceStorm/TopicManager:default -p 9999
 """
 
 
-
 class TemplateDict(dict):
     def __init__(self, component):
         super(TemplateDict, self).__init__()
@@ -18,30 +17,30 @@ class TemplateDict(dict):
 
     def config_implements_endpoints(self):
         result = ""
-        for iface in self.component.implements:
-            if communication_is_ice(iface):
-                result += iface.name + ".Endpoints=tcp -p 0\n"
+        for interface in self.component.implements:
+            if communication_is_ice(interface):
+                result += interface.name + ".Endpoints=tcp -p 0\n"
         if result != "":
             result = '# Endpoints for implements interfaces\n' + result + '\n\n'
         return result
 
     def config_subscribes_endpoints(self):
         result = ""
-        for iface in self.component.subscribesTo:
-            if communication_is_ice(iface):
-                result += iface.name + "Topic.Endpoints=tcp -p 0\n"
+        for interface in self.component.subscribesTo:
+            if communication_is_ice(interface):
+                result += interface.name + "Topic.Endpoints=tcp -p 0\n"
         if result != "":
             result = '# Endpoints for subscriptions interfaces\n' + result + '\n\n'
         return result
 
     def config_requires_proxies(self):
         result = ""
-        for iface, num in get_name_number(self.component.requires):
-            if communication_is_ice(iface):
+        for interface, num in get_name_number(self.component.requires):
+            if communication_is_ice(interface):
                 port = 0
-                if iface.name == 'DifferentialRobot': port = 10004
-                if iface.name == 'Laser': port = 10003
-                result += iface.name + num + "Proxy = " + iface.name.lower() + ":tcp -h localhost -p " + str(
+                if interface.name == 'DifferentialRobot': port = 10004
+                if interface.name == 'Laser': port = 10003
+                result += interface.name + num + "Proxy = " + interface.name.lower() + ":tcp -h localhost -p " + str(
                     port) + "\n"
         if result != "":
             result = '# Proxies for required interfaces\n' + result + '\n\n'
