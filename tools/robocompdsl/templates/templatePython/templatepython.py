@@ -48,6 +48,9 @@ class TemplatesManagerPython(ComponentTemplatesManager):
                 'component_name': self.component.name}
 
     def src_CMakeLists_txt(self):
-        interface_names = sorted(self.component.recursiveImports + self.component.ice_interfaces_names)
+        interface_names = []
+        for im in sorted(self.component.recursiveImports + self.component.ice_interfaces_names):
+            name = im.split('/')[-1].split('.')[0]
+            interface_names.append(name)
         return {'ifaces_list': ' '.join(interface_names),
                 'component_name': self.component.name}
