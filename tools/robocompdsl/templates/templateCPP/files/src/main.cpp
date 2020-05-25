@@ -96,12 +96,12 @@ using namespace RoboCompCommonBehavior;
 class ${component_name} : public RoboComp::Application
 {
 public:
-	${component_name} (QString prfx, bool testing) { prefix = prfx.toStdString(); this->testing=testing; }
+	${component_name} (QString prfx, bool startup_check) { prefix = prfx.toStdString(); this->startup_check_flag=startup_check; }
 private:
 	void initialize();
 	std::string prefix;
 	${proxies_map_creation}
-	bool testing;
+	bool startup_check_flag;
 
 public:
 	virtual int run(int, char*[]);
@@ -229,7 +229,7 @@ int main(int argc, char* argv[])
 
 	// Set config file
 	QString configFile("etc/config");
-	bool testing_flag = false;
+	bool startup_check_flag = false;
 	QString prefix("");
 	if (argc > 1)
 	{
@@ -258,19 +258,19 @@ int main(int argc, char* argv[])
         }
 
         // Search in argument list for --test argument (if exist)
-        QString testing = QString("--test");
+        QString startup = QString("--startup-check");
 		for (int i = 0; i < argc; ++i)
 		{
 			arg = argv[i];
-			if (arg.find(testing.toStdString(), 0) == 0)
+			if (arg.find(startup.toStdString(), 0) == 0)
 			{
-				testing_flag = true;
-				cout << "Testing = True"<< endl;
+				startup_check_flag = true;
+				cout << "Startup check = True"<< endl;
 			}
 		}
 
 	}
-	::${component_name} app(prefix, testing_flag);
+	::${component_name} app(prefix, startup_check_flag);
 
 	return app.main(argc, argv, configFile.toLocal8Bit().data());
 }

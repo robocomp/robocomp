@@ -102,7 +102,7 @@ if __name__ == '__main__':
     ${app_creation}
     parser = argparse.ArgumentParser()
     parser.add_argument('iceconfigfile', nargs='?', type=str, default='etc/config')
-    parser.add_argument('-t', '--test', action='store_true', )
+    parser.add_argument('--startup-check', action='store_true')
 
     args = parser.parse_args()
 
@@ -117,7 +117,7 @@ if __name__ == '__main__':
     ${require_proxy_creation}
     ${publish_proxy_creation}
     if status == 0:
-        worker = SpecificWorker(mprx, args.test)
+        worker = SpecificWorker(mprx, args.startup_check)
         worker.setParams(parameters)
     else:
         print("Error getting required connections, check config file")

@@ -30,11 +30,11 @@ from genericworker import *
 # import librobocomp_innermodel
 
 class SpecificWorker(GenericWorker):
-    def __init__(self, proxy_map, testing=False):
+    def __init__(self, proxy_map, startup_check=False):
         super(SpecificWorker, self).__init__(proxy_map)
         self.Period = 2000
-        if testing:
-            self.testing()
+        if startup_check:
+            self.startup_check()
         else:
             ${timeout_compute_connect}
             self.timer.start(self.Period)
@@ -53,7 +53,7 @@ class SpecificWorker(GenericWorker):
 
     ${compute_creation}
 
-    def testing(self):
+    def startup_check(self):
         self.compute()
         QTimer.singleShot(2000, qApp.quit)
 
