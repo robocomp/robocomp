@@ -148,7 +148,7 @@ try
 }
 catch(const Ice::Exception& ex)
 {
-	std::cout << \"ERROR Unsubscribing topic: $name \" <<std::endl;
+	std::cout << \"ERROR Unsubscribing topic: $name \" << ex.what()<<std::endl;
 }
 """
 
@@ -309,7 +309,7 @@ class TemplateDict(dict):
                 result += "tprx = std::make_tuple(" + ",".join(proxy_list) + ");\n"
             else:
                 result += "tprx = std::tuple<>();\n"
-        result += "SpecificWorker *worker = new SpecificWorker({}prx);\n".format(var_name)
+        result += "SpecificWorker *worker = new SpecificWorker({}prx, testing);\n".format(var_name)
         return result
 
     def unsubscribe_code(self):

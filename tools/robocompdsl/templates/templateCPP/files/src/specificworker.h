@@ -36,7 +36,7 @@ class SpecificWorker : public GenericWorker
 {
 Q_OBJECT
 public:
-	SpecificWorker(${constructor_proxies});
+	SpecificWorker(${constructor_proxies}, bool testing);
 	~SpecificWorker();
 	bool setParams(RoboCompCommonBehavior::ParameterList params);
 
@@ -46,12 +46,14 @@ public:
 
 public slots:
 	${compute}
+	int testing();
 	void initialize(int period);
 	${statemachine_methods_definitions}
 private:
 	std::shared_ptr<InnerModel> innerModel;
 	${innermodelviewer_attributes}
 	${agm_attributes}
+	bool testing_flag;
 
 };
 

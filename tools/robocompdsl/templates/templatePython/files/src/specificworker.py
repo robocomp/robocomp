@@ -19,7 +19,9 @@
 #    along with RoboComp.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+from PySide2.QtCore import qApp, QTimer
 from genericworker import *
+
 
 # If RoboComp was compiled with Python bindings you can use InnerModel in Python
 # sys.path.append('/opt/robocomp/lib')
@@ -28,13 +30,15 @@ from genericworker import *
 # import librobocomp_innermodel
 
 class SpecificWorker(GenericWorker):
-    def __init__(self, proxy_map):
+    def __init__(self, proxy_map, testing=False):
         super(SpecificWorker, self).__init__(proxy_map)
-        ${timeout_compute_connect}
         self.Period = 2000
-        self.timer.start(self.Period)
-
-        ${statemachine_start_and_destroy}
+        if testing:
+            self.testing()
+        else:
+            ${timeout_compute_connect}
+            self.timer.start(self.Period)
+            ${statemachine_start_and_destroy}
 
     def __del__(self):
         print('SpecificWorker destructor')
@@ -48,6 +52,10 @@ class SpecificWorker(GenericWorker):
         return True
 
     ${compute_creation}
+
+    def testing(self):
+        self.compute()
+        QTimer.singleShot(2000, qApp.quit)
 
     ${statemachine_slots}
 

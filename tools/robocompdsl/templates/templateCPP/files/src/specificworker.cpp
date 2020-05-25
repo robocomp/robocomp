@@ -21,11 +21,11 @@
 /**
 * \brief Default constructor
 */
-SpecificWorker::SpecificWorker(${proxy_map_type} ${proxy_map_name}) : GenericWorker(${proxy_map_name})
+SpecificWorker::SpecificWorker(${proxy_map_type} ${proxy_map_name}, bool testing) : GenericWorker(${proxy_map_name})
 {
 	${innermodelviewer_code}
 	${agmagent_attributes}
-
+	this->testing_flag = testing;
 }
 
 /**
@@ -64,12 +64,27 @@ void SpecificWorker::initialize(int period)
 {
 	std::cout << "Initialize worker" << std::endl;
 	this->Period = period;
-	timer.start(Period);
-	${statemachine_initialize_to_compute}
+	if(this->testing_flag)
+	{
+		this->testing();
+	}
+	else
+	{
+        timer.start(Period);
+        ${statemachine_initialize_to_compute}
+    }
 
 }
 
 ${compute_method}
+
+int SpecificWorker::testing()
+{
+	std::cout << "Testing" << std::endl;
+    this->compute();
+	QTimer::singleShot(2000, qApp, SLOT(quit()));
+
+}
 
 ${statemachine_methods_creation}
 
