@@ -74,6 +74,8 @@ if (CORE)
 	SET(compile_dirs ${compile_dirs} "libs")
 endif(CORE)
 
+
+
 if (TOOLS)
 	SET(compile_dirs ${compile_dirs}
         "tools"
@@ -92,6 +94,9 @@ endif(TOOLS)
 FOREACH(compile_dir ${compile_dirs})
     ADD_SUBDIRECTORY(${compile_dir})
 ENDFOREACH(compile_dir)
+
+ROBOCOMP_IDSL_TO_ICE( AGMWorldModel AGMExecutive Planning AGMCommonBehavior AGMExecutiveTopic AGMExecutiveVisualizationTopic )
+
 
 # Install rules necessary to allow compiling components without the robocomp's source code
 SET (LD_COMMAND "\"grep -q -F '/opt/robocomp/lib' /etc/ld.so.conf || echo '/opt/robocomp/lib' >> /etc/ld.so.conf && ldconfig\"")
