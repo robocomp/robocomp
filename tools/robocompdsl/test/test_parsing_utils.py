@@ -36,9 +36,9 @@ class ParsingUtilsTest(unittest.TestCase):
 
     def test_IDSLPool(self):
         pool = parsing_utils.IDSLPool("AprilTags.idsl", [])
-        self.assertIn("AprilTags", pool.module_pool)
-        self.assertIn("GenericBase", pool.module_pool)
-        self.assertIn("JointMotor", pool.module_pool)
+        self.assertIn("AprilTags", pool)
+        self.assertIn("GenericBase", pool)
+        self.assertIn("JointMotor", pool)
 
         module = pool.module_providing_interface("JointMotor")
         self.assertEqual(module['name'], 'RoboCompJointMotor')

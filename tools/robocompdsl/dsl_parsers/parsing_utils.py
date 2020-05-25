@@ -197,19 +197,19 @@ def get_kind_from_pool(vtype, module_pool, debug=False):
         vtype = split[1]
         mname = split[0]
         if debug: print(('SPLIT (' + vtype+'), (' + mname + ')'))
-        if mname in module_pool.module_pool:
+        if mname in module_pool:
             if debug: print(('dentro SPLIT (' + vtype+'), (' + mname + ')'))
-            r = get_type_from_module(vtype, module_pool.module_pool[mname])
+            r = get_type_from_module(vtype, module_pool[mname])
             if r is not None: return r
         if mname.startswith("RoboComp"):
-            if mname[8:] in module_pool.module_pool:
-                r = get_type_from_module(vtype, module_pool.module_pool[mname[8:]])
+            if mname[8:] in module_pool:
+                r = get_type_from_module(vtype, module_pool[mname[8:]])
                 if r is not None: return r
     else:
         if debug: print('no split')
-        for module in module_pool.module_pool:
+        for module in module_pool:
             if debug: print(('  '+str(module)))
-            r = get_type_from_module(vtype, module_pool.module_pool[module])
+            r = get_type_from_module(vtype, module_pool[module])
             if r is not None: return r
 
 
@@ -224,7 +224,7 @@ FILE_PATH_DIR = os.path.dirname(os.path.realpath(__file__))
 ALT_INTERFACES_DIR = os.path.join(FILE_PATH_DIR, "../../../interfaces/IDSLs/", )
 
 
-class IDSLPool:
+class IDSLPool(OrderedDict):
     """
     This class is intended to load and store idsl modules from the corresponding files.
     idsl is the idsl filename or path
@@ -240,10 +240,10 @@ class IDSLPool:
                              ALT_INTERFACES_DIR]
 
     def __init__(self, files, include_directories):
-        self.module_pool = OrderedDict()
+        super(IDSLPool, self).__init__()
         include_directories = include_directories + self.common_interface_dirs
-        self.includeInPool(files, self.module_pool, include_directories)
-        self.includeInPool('#'.join(self.mandatory_idsls), self.module_pool, include_directories)
+        self.includeInPool(files, self, include_directories)
+        self.includeInPool('#'.join(self.mandatory_idsls), self, include_directories)
 
     @classmethod
     def getRosTypes(cls):
@@ -285,7 +285,7 @@ class IDSLPool:
                         break
                     except IOError:
                         pass
-                if filename not in self.module_pool:
+                if filename not in self:
                     raise ValueError('Couldn\'t locate %s ' % f)
 
     def IDSL_file_for_module(self, module):
@@ -294,8 +294,8 @@ class IDSLPool:
         :param module: module to query on the pool for the related idsl file path
         :return: idsl file path
         """
-        for filename in list(self.module_pool.keys()):
-            if self.module_pool[filename] == module:
+        for filename in list(self.keys()):
+            if self[filename] == module:
                 return '/opt/robocomp/interfaces/IDSLs/'+filename+'.idsl'
 
     def module_providing_interface(self, interface):
@@ -304,10 +304,10 @@ class IDSLPool:
         :param interface: an interface to query the pool
         :return: the module providing the queried interface
         """
-        for module in self.module_pool:
-            for m in self.module_pool[module]['interfaces']:
+        for module in self:
+            for m in self[module]['interfaces']:
                 if m['name'] == interface:
-                    return self.module_pool[module]
+                    return self[module]
         return None
 
     def interfaces(self):
@@ -315,18 +315,18 @@ class IDSLPool:
         :return: a list of all the interfaces defined inside the modules
         """
         interfaces = []
-        for module in self.module_pool:
-            for m in self.module_pool[module]['interfaces']:
+        for module in self:
+            for m in self[module]['interfaces']:
                 interfaces.append(m['name'])
         return interfaces
 
     def ros_imports(self):
         includes_list = []
-        for module in self.module_pool:
-            for m in self.module_pool[module]['structs']+self.module_pool[module]['sequences']:
+        for module in self:
+            for m in self[module]['structs']+self[module]['sequences']:
                 includes_list.append(m['name'].split('/')[0]+"ROS/"+m['name'].split('/')[1])
             std_includes = {}
-            for interface in self.module_pool[module]['interfaces']:
+            for interface in self[module]['interfaces']:
                 for mname in interface['methods']:
                     method = interface['methods'][mname]
                     for p in method['params']:
@@ -345,15 +345,15 @@ class IDSLPool:
 
     def ros_modules_imports(self):
         modules_list = []
-        for module in self.module_pool:
-            for m in self.module_pool[module]['simpleStructs']:
+        for module in self:
+            for m in self[module]['simpleStructs']:
                 modules_list.append(m)
-            for m in self.module_pool[module]['simpleSequences']:
+            for m in self[module]['simpleSequences']:
                 modules_list.append(m)
         return modules_list
 
 
 if __name__ == '__main__':
     pool = IDSLPool("AGMCommonBehavior.idsl", [])
-    print(pool.module_pool["AGMCommonBehavior"]["imports"])
+    print(pool["AGMCommonBehavior"]["imports"])
     pool = IDSLPool("AprilTags.idsl", [])
