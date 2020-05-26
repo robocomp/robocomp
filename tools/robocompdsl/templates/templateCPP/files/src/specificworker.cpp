@@ -81,7 +81,6 @@ ${compute_method}
 int SpecificWorker::startup_check()
 {
 	std::cout << "Startup check" << std::endl;
-    this->compute();
 	QTimer::singleShot(200, qApp, SLOT(quit()));
 	return 0;
 }

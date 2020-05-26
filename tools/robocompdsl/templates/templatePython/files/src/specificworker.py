@@ -54,8 +54,7 @@ class SpecificWorker(GenericWorker):
     ${compute_creation}
 
     def startup_check(self):
-        self.compute()
-        QTimer.singleShot(2000, qApp.quit)
+        QTimer.singleShot(200, qApp.quit)
 
     ${statemachine_slots}
 
