@@ -1,21 +1,47 @@
 #!/usr/bin/python
-
+import json
 import os
-import string
 import shutil
+import string
+from collections import defaultdict
+from copy import deepcopy
+from pprint import pprint
+
+from termcolor import colored
 
 ''' Basic module which defines the workspace class
 '''
 
+from prompt_toolkit import prompt
+from prompt_toolkit.completion import Completer, Completion, FuzzyCompleter
+
+
+class MyCustomCompleter(Completer):
+    def __init__(self, path):
+        super(MyCustomCompleter, self).__init__()
+        self.path = path
+    def get_completions(self, document, complete_event):
+        reference = document.current_line
+        if self.path.startswith(reference):
+            next_bar = self.path.find('/', len(reference)+1)
+            if next_bar != -1:
+                suggestion = self.path[len(reference):next_bar]
+            else:
+                suggestion = self.path[len(reference):]
+            yield Completion(suggestion, start_position=0)
+
+
 class Workspace:
     
     workspace_paths = []
+    components = []
     numOfws = 0
     robocomp_dir = ''
 
     ''' constructor'''
     def __init__(self):
-        self.update_pathlist()
+        self.workspace_paths = self.load_attr('workspace_paths')
+        self.components = self.load_attr('components')
     
     def update_pathlist(self):
         home = os.path.expanduser("~")
@@ -36,7 +62,7 @@ class Workspace:
             self.workspace_paths = config_file.readlines()
             self.workspace_paths = [ string.strip(x) for x in self.workspace_paths ]
             config_file.close()            
-        except Exception, e:
+        except FileNotFoundError:
             pass
     
     def register_workspace(self,workspacePath):
@@ -181,4 +207,130 @@ class Workspace:
                 components.append(os.path.join(srcpath, component))
         return components
 
-workspace = Workspace()
+
+    def get_components_in_dir(self, initial_path):
+        components_parents_dirs = defaultdict(list)
+        for subdir, dirs, files in os.walk(initial_path):
+            if 'CMakeLists.txt' in files and 'etc' in dirs \
+                    and not subdir.startswith('test_')\
+                    and '.local/share/Trash' not in subdir:
+                for file in files:
+                    if file.endswith(".cdsl"):
+                        filepath= os.path.join(subdir,file)
+                        components_parents_dirs[subdir].append(filepath)
+                        print(f'Found {filepath}')
+        return components_parents_dirs
+
+    def find_robocomp_workspaces(self, initial_path):
+        def common_prefix(path_list):
+            result = {}
+            to_ignore = ""
+            "Given a list of pathnames, returns the longest common leading component"
+
+            for path in sorted(path_list, reverse=True):
+                path_parts = path.split('/')
+                previous_counter = 0
+                previous_path = ""
+                for part_index in range(len(path_parts)):
+                    counter = 0
+                    last_path = '/'.join(path_parts[:len(path_parts)-part_index])
+                    last_path = last_path[len(to_ignore):]
+                    if last_path and to_ignore+last_path not in result:
+                        for second_path in path_list:
+                            if last_path in second_path:
+                                counter += 1
+                        if counter == previous_counter:
+                            del result[to_ignore + previous_path]
+                        previous_counter = counter
+                        previous_path = last_path
+                        if counter == len(path_list):
+                            to_ignore = to_ignore+last_path
+                        elif last_path and counter < len(path_list):
+                            result[to_ignore+last_path] = counter
+
+
+            return result
+        components_parents_dirs = self.get_components_in_dir(initial_path)
+
+        #
+        best_guess = common_prefix(list(components_parents_dirs.keys()))
+        new_workspaces = []
+        print(f"Found {len(best_guess)} possibles components in {colored(initial_path, 'green')}")
+        print(f"======")
+        ignored = []
+        for path in sorted(best_guess, key=lambda x:len(x.split('/'))*best_guess[x], reverse=True):
+            print(len(path.split('/'))*best_guess[path])
+            end = False
+            next = False
+            for parent in new_workspaces:
+                if path.startswith(parent):
+                    print(f"{colored(path, 'grey')} ignored because you already selected parent {colored(parent, 'grey')}")
+                    next = True
+                    break
+            for parent in ignored:
+                if path.startswith(parent):
+                    print(f"{colored(path, 'grey')} ignored because you decided to ignore subdirs of {colored(parent, 'grey')}")
+                    next = True
+                    break
+            if next:
+                continue
+            while not end:
+                print(f"Found {best_guess[path]} components in {colored(path, 'green')}")
+                response = input(f"Do you wanna add to workspace? {colored('Yes/No/Ignore/End', 'cyan')} ")
+                if "yes" in response.lower() or "y" in response.lower():
+                    new_workspaces.append(path)
+                    break
+                if "ignore" in response.lower() or "i" in response.lower():
+                    to_ignore = prompt('> ',
+                                  completer=FuzzyCompleter(MyCustomCompleter(path)),
+                                  complete_while_typing=True,
+                                  default=path)
+                    to_ignore = to_ignore.rstrip('/')
+                    if not to_ignore:
+                        to_ignore = path
+                    ignored.append(to_ignore)
+                    break
+                elif "no" in response.lower() or "n" in response.lower():
+                    break
+                elif "end" in response.lower() or "e" in response.lower():
+                    end = True
+                else:
+                    print('Invalid response (y/n/i/e)')
+            if end:
+                break
+        self.workspace_paths = new_workspaces
+        self.components = list(filter(lambda x: any(x.startswith(workspace)for workspace in self.workspace_paths), components_parents_dirs))
+
+        self.save_attr(self.workspace_paths, 'workspace_paths')
+        self.save_attr(self.components, 'components')
+
+    def save_attr(self, attr, filename):
+        home = os.path.expanduser("~")
+        config_file_path = os.path.join(home, f".config/RoboComp/rc_{filename}.json")
+        if not os.path.exists(os.path.join(home, ".config/RoboComp")):
+            os.makedirs(os.path.join(home, ".config/RoboComp"))
+
+        try:
+            config_file = open(config_file_path, "w")
+            json.dump(attr, config_file)
+            config_file.close()
+        except FileNotFoundError:
+            pass
+
+
+    def load_attr(self, filename):
+        home = os.path.expanduser("~")
+        config_file_path = os.path.join(home, f".config/RoboComp/rc_{filename}.json")
+
+        if not os.path.exists(os.path.join(home, ".config/RoboComp")):
+            os.makedirs(os.path.join(home, ".config/RoboComp"))
+
+        try:
+            config_file = open(config_file_path, "r")
+            attr = json.load(config_file)
+            attr = [x.strip() for x in attr]
+            config_file.close()
+            return attr
+        except FileNotFoundError:
+            pass
+

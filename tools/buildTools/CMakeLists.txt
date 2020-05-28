@@ -7,4 +7,7 @@ INSTALL(PROGRAMS "rcrun.py" DESTINATION /opt/robocomp/bin RENAME rcrun )
 INSTALL(PROGRAMS "rced.py" DESTINATION /opt/robocomp/bin RENAME rced )
 INSTALL(PROGRAMS "rcbuild.py" DESTINATION /opt/robocomp/bin RENAME rcbuild )
 INSTALL(PROGRAMS "rccomp.py" DESTINATION /opt/robocomp/bin RENAME rccomp )
-INSTALL(PROGRAMS "setup.sh" DESTINATION /opt/robocomp/share ) #source this in .bashrc
+INSTALL(PROGRAMS "rccd_utils.py" DESTINATION /opt/robocomp/bin RENAME rccd_utils )
+INSTALL(PROGRAMS "rccd.sh" DESTINATION /opt/robocomp/share ) #source this in .bashrc
+INSTALL(CODE "execute_process(COMMAND sh setup.sh)")
+

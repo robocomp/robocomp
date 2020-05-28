@@ -12,8 +12,14 @@ from workspace import workspace as WS
 
 def main():
     parser = argparse.ArgumentParser(description="Initialize a robocomp workspace")
+    parser.add_argument('-f', '--find', type=str, help='Find possible Robocomp workspaces')
     parser.add_argument('workspace', nargs='?', default='.', help='The path to an existing folder (default: .)')
     args = parser.parse_args()
+
+    if args.find:
+        WS.find_robocomp_workspaces(args.find)
+    return
+
 
     # verify that workspace folder exists
     workspace = os.path.abspath(args.workspace)
