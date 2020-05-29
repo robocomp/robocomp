@@ -7,14 +7,26 @@ from collections import defaultdict
 from copy import deepcopy
 from pprint import pprint
 
+from prompt_toolkit.shortcuts import confirm
+from prompt_toolkit.validation import Validator
 from termcolor import colored
 
 ''' Basic module which defines the workspace class
 '''
 
-from prompt_toolkit import prompt
-from prompt_toolkit.completion import Completer, Completion, FuzzyCompleter
+from prompt_toolkit import prompt, PromptSession
+from prompt_toolkit.completion import Completer, Completion, FuzzyCompleter, PathCompleter, WordCompleter
 
+
+def is_valid_dir(text):
+    return os.path.exists(text) and os.path.isdir(text)
+
+
+dir_validator = Validator.from_callable(
+    is_valid_dir,
+    error_message="Not a valid directory (doesn't exist or is not a dir).",
+    move_cursor_to_end=True,
+)
 
 class MyCustomCompleter(Completer):
     def __init__(self, path):
@@ -32,7 +44,7 @@ class MyCustomCompleter(Completer):
 
 
 class Workspace:
-    
+    #TODO: convert to an unique dict with workspaces as key and components as values.
     workspace_paths = []
     components = []
     numOfws = 0
@@ -42,6 +54,10 @@ class Workspace:
     def __init__(self):
         self.workspace_paths = self.load_attr('workspace_paths')
         self.components = self.load_attr('components')
+
+    def __del__(self):
+        self.save_attr(self.workspace_paths, 'workspace_paths')
+        self.save_attr(self.components, 'components')
     
     def update_pathlist(self):
         home = os.path.expanduser("~")
@@ -221,11 +237,81 @@ class Workspace:
                         print(f'Found {filepath}')
         return components_parents_dirs
 
-    def find_robocomp_workspaces(self, initial_path):
+    def add_workspace(self):
+        session = PromptSession(u"> ", completer=FuzzyCompleter(PathCompleter()))
+        response = session.prompt("Path to find new components\n> ",
+                                  complete_while_typing=True,
+                                  default=os.getcwd(),
+                                  pre_run=session.default_buffer.start_completion,
+                                  validator=dir_validator)
+        # Check the final '/' characters
+        if response in self.workspace_paths:
+            print(f"{response} already exist in workspaces")
+            return
+
+        new_components = self.get_components_in_dir(response)
+        print("%s\n%d components found in %s" % ( colored('\n'.join(new_components), 'green'),
+                                                 len(new_components),
+                                                 response))
+        if len(new_components) == 0:
+            print("No component found in {response}. Workspaces not updated.")
+            return
+
+        answer = confirm(f'Do you want to add {response} to workspaces?')
+        if answer:
+            print(f"{response} added to workspaces")
+            self.components += new_components
+            self.workspace_paths.append(response)
+        else:
+            print("Workspaces not updated.")
+
+    def update_components_in_workspaces(self):
+        old_components = set(self.components)
+        self.components = []
+        for workspace in self.workspace_paths:
+            self.components += self.get_components_in_dir(workspace)
+        new_components = list(set(self.components) - old_components)
+        print(f"Found {len(new_components):}")
+        print(colored('\n'.join(new_components), 'green'))
+
+
+    def delete_workspace(self, keyword):
+        session = PromptSession(u"> ", completer=FuzzyCompleter(WordCompleter(self.workspace_paths)))
+        if not keyword:
+            keyword = os.getcwd()
+        response = session.prompt("Path to delete\n> ",
+                                  complete_while_typing=True,
+                                  default=keyword,
+                                  pre_run=session.default_buffer.start_completion)
+        self.delete_components_in_workspace(response)
+        self.workspace_paths.remove(response)
+
+    def delete_components_in_workspace(self, workspace):
+        self.components = list(filter(lambda x: not x.startswith(workspace), self.components))
+
+    def clear_all(self):
+        print(f"You are about to remove {colored(len(self.components),'red')} from {colored(len(self.workspace_paths), 'red')} workspaces.")
+        print(f"This action only remove the references to this workspaces and components for rccommands.")
+        print(colored("NO actual folders nor files are going to be removed.", 'red'))
+        answer = confirm(f"Are you sure that you want to do this?")
+        if answer:
+            self.components = []
+            self.workspace_paths = []
+            print("All workspaces have been removed.")
+        else:
+            print("No workspaces have been deleted.")
+
+    def list_workspaces(self):
+        for workspace in self.workspace_paths:
+            print(f"Workspace {workspace}")
+            for component in self.components:
+                if component.startswith(workspace):
+                    print(f"\tComponent {component}")
+
+    def update_robocomp_workspaces(self, initial_path):
         def common_prefix(path_list):
             result = {}
             to_ignore = ""
-            "Given a list of pathnames, returns the longest common leading component"
 
             for path in sorted(path_list, reverse=True):
                 path_parts = path.split('/')
@@ -250,6 +336,8 @@ class Workspace:
 
 
             return result
+
+
         components_parents_dirs = self.get_components_in_dir(initial_path)
 
         #
@@ -258,18 +346,18 @@ class Workspace:
         print(f"Found {len(best_guess)} possibles components in {colored(initial_path, 'green')}")
         print(f"======")
         ignored = []
-        for path in sorted(best_guess, key=lambda x:len(x.split('/'))*best_guess[x], reverse=True):
+        for path in sorted(best_guess, key=lambda x: calculate_path_value(x, best_guess[x]), reverse=True):
             print(len(path.split('/'))*best_guess[path])
             end = False
             next = False
             for parent in new_workspaces:
                 if path.startswith(parent):
-                    print(f"{colored(path, 'grey')} ignored because you already selected parent {colored(parent, 'grey')}")
+                    print(f"{colored(path, 'green')} ignored because you already selected parent {colored(parent, 'green')}")
                     next = True
                     break
             for parent in ignored:
                 if path.startswith(parent):
-                    print(f"{colored(path, 'grey')} ignored because you decided to ignore subdirs of {colored(parent, 'grey')}")
+                    print(f"{colored(path, 'red')} ignored because you decided to ignore subdirs of {colored(parent, 'red')}")
                     next = True
                     break
             if next:
@@ -282,7 +370,7 @@ class Workspace:
                     break
                 if "ignore" in response.lower() or "i" in response.lower():
                     to_ignore = prompt('> ',
-                                  completer=FuzzyCompleter(MyCustomCompleter(path)),
+                                  completer=FuzzyCompleter(PathCompleter()),
                                   complete_while_typing=True,
                                   default=path)
                     to_ignore = to_ignore.rstrip('/')
@@ -293,6 +381,7 @@ class Workspace:
                 elif "no" in response.lower() or "n" in response.lower():
                     break
                 elif "end" in response.lower() or "e" in response.lower():
+                    print("Finishing initialization of workspaces")
                     end = True
                 else:
                     print('Invalid response (y/n/i/e)')
@@ -318,6 +407,7 @@ class Workspace:
             pass
 
 
+
     def load_attr(self, filename):
         home = os.path.expanduser("~")
         config_file_path = os.path.join(home, f".config/RoboComp/rc_{filename}.json")
@@ -333,4 +423,18 @@ class Workspace:
             return attr
         except FileNotFoundError:
             pass
+
+def folder_is_repository(path):
+    git_path = os.path.join(path, '.git')
+    if os.path.isdir(git_path):
+        head_file = os.path.join(git_path, 'HEAD')
+        if os.path.isfile(head_file):
+            return True
+    return False
+
+def calculate_path_value(path, initial_value):
+    new_value = len(path.split(os.sep))*initial_value
+    if folder_is_repository(path):
+        new_value *= 2
+    return new_value
 
