@@ -1,7 +1,8 @@
 rccd()
 {
-    rccd_utils $@ |& tee log.txt
-    directory=$(cat log.txt| tail -n3 | head -n1 | sed -e "s,[^\/]*\(\/[[:print:]]\+\),\1,g" | tr -cd '[:print:]' | grep '/')
+    rccd_utils $@
+    directory=$(cat /tmp/*_rccd.output | tr -cd '[:print:]' )
+    rm /tmp/*_rccd.output
     [ ! -z "$directory" ] && cd "$directory" || echo "No folder specified"
 }
 

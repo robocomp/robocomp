@@ -2,6 +2,7 @@
 import argparse
 import os
 import sys
+import tempfile
 
 from prompt_toolkit import prompt
 from prompt_toolkit.completion import PathCompleter
@@ -14,6 +15,12 @@ from workspace import Workspace
 
 def validate_in_range(value, valid_range):
     return value.isdigit() and int(value) in valid_range
+
+def save_output(output):
+    fd, path = tempfile.mkstemp("_rccd.output", text=True)
+    file = os.fdopen(fd, 'w')
+    file.write(output)
+    file.close()
 
 
 class rccd:
@@ -32,13 +39,13 @@ class rccd:
                     self.ws.update_robocomp_workspaces(new_path)
                     components = self.ws.components
             else:
-                print("")
+                save_output("")
                 return
         if components:
             options = list(filter(lambda x: searched_component.lower() in x.lower(), components))
 
             if len(options) == 1:
-                print(f"{options[0]}\n\n")
+                save_output(f"{options[0]}")
             elif len(options) > 1:
                 print(f"Options")
                 print(f"[0] .")
@@ -53,15 +60,15 @@ class rccd:
                     selected = prompt('> ',
                                       validator=validator)
                     if selected == "0":
-                        print(os.getcwd())
+                        save_output(os.getcwd())
                     else:
-                        print(options[int(selected) - 1])
+                        save_output(options[int(selected) - 1])
                 except KeyboardInterrupt:
-                    print("")
+                    save_output("")
             else:
-                print("")
+                save_output("")
         else:
-            print("\n")
+            save_output("")
 
 
 if __name__ == '__main__':
@@ -72,7 +79,7 @@ if __name__ == '__main__':
     try:
         rccd.print_filtered_component(args.name)
     except KeyboardInterrupt:
-        print("")
+        save_output("")
 
 
 

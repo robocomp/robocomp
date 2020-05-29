@@ -56,6 +56,9 @@ class Workspace:
         self.components = self.load_attr('components')
 
     def __del__(self):
+        pass
+
+    def save_workspace(self):
         self.save_attr(self.workspace_paths, 'workspace_paths')
         self.save_attr(self.components, 'components')
     
@@ -262,6 +265,7 @@ class Workspace:
             print(f"{response} added to workspaces")
             self.components += new_components
             self.workspace_paths.append(response)
+            self.save_workspace()
         else:
             print("Workspaces not updated.")
 
@@ -273,6 +277,7 @@ class Workspace:
         new_components = list(set(self.components) - old_components)
         print(f"Found {len(new_components):}")
         print(colored('\n'.join(new_components), 'green'))
+        self.save_workspace()
 
 
     def delete_workspace(self, keyword):
@@ -285,6 +290,7 @@ class Workspace:
                                   pre_run=session.default_buffer.start_completion)
         self.delete_components_in_workspace(response)
         self.workspace_paths.remove(response)
+        self.save_workspace()
 
     def delete_components_in_workspace(self, workspace):
         self.components = list(filter(lambda x: not x.startswith(workspace), self.components))
@@ -300,6 +306,7 @@ class Workspace:
             print("All workspaces have been removed.")
         else:
             print("No workspaces have been deleted.")
+        self.save_workspace()
 
     def list_workspaces(self):
         for workspace in self.workspace_paths:
@@ -390,8 +397,7 @@ class Workspace:
         self.workspace_paths = new_workspaces
         self.components = list(filter(lambda x: any(x.startswith(workspace)for workspace in self.workspace_paths), components_parents_dirs))
 
-        self.save_attr(self.workspace_paths, 'workspace_paths')
-        self.save_attr(self.components, 'components')
+        self.save_workspace()
 
     def save_attr(self, attr, filename):
         home = os.path.expanduser("~")
@@ -405,7 +411,6 @@ class Workspace:
             config_file.close()
         except FileNotFoundError:
             pass
-
 
 
     def load_attr(self, filename):
@@ -422,7 +427,7 @@ class Workspace:
             config_file.close()
             return attr
         except FileNotFoundError:
-            pass
+            return []
 
 def folder_is_repository(path):
     git_path = os.path.join(path, '.git')
