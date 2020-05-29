@@ -37,8 +37,8 @@ obj = ic.stringToProxy(proxy)
 try:
     topicManager = IceStorm.TopicManagerPrx.checkedCast(obj)
 except Ice.ConnectionRefusedException as e:
-    print('Cannot connect to IceStorm! ('+proxy+')')
-    status = 1
+    print(colored('Cannot connect to rcnode! This must be running to use pub/sub.', 'red'))
+    exit(1)
 """
 
 

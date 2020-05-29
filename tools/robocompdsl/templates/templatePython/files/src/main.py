@@ -56,6 +56,7 @@
 #
 
 import sys, traceback, IceStorm, time, os, copy
+from termcolor import colored
 
 # Ctrl+c handling
 import signal
