@@ -13,7 +13,7 @@ from workspace import Workspace
 def main():
     parser = argparse.ArgumentParser(description="Initialize a robocomp workspace")
     parser.add_argument('-i', '--initialize', type=str, help='Initialize workspaces searching in the given directory')
-    parser.add_argument('-a', '--add', action='store_true', help='Add workspaces searching in the given directory')
+    parser.add_argument('-a', '--add', type=str, nargs='?', const=os.getcwd(), help='Add workspaces searching in the given directory')
     parser.add_argument('-u', '--update', action='store_true', help='Update the components for the existing workspaces')
     parser.add_argument('-d', '--delete', type=str, help='Remove workspaces searching in the given directory')
     parser.add_argument('--clear-all', action='store_true', help='Clear all the information of the workspaces (requires confirmation)')
@@ -22,7 +22,7 @@ def main():
     ws = Workspace()
     if args.initialize:
         try:
-            ws.update_robocomp_workspaces(args.find)
+            ws.interactive_workspace_init(args.find)
         except KeyboardInterrupt:
             print("\nCanceled")
     if args.delete:
@@ -32,7 +32,7 @@ def main():
             print("\nCanceled")
     if args.add:
         try:
-            ws.add_workspace()
+            ws.add_workspace(args.add)
         except KeyboardInterrupt:
             print("\nCanceled")
     if args.update:
@@ -51,29 +51,6 @@ def main():
         except KeyboardInterrupt:
             print("\nCanceled")
     return
-
-
-    # verify that workspace folder exists
-    workspace = os.path.abspath(args.workspace)
-    if not os.path.isdir(workspace):
-        parser.error('Workspace "%s" does not exist' % workspace)
-
-    #verify that this is not an existing workspace
-    if os.path.exists(os.path.join(workspace,".rc_workspace")):
-        print('\nWorkspace "%s" is already a workspace' % workspace)
-        if WS.register_workspace(workspace):
-            print("Re-registered this workspace\n")
-        return
-
-    #try creating a workspace
-    try:
-        WS.init_ws(workspace)
-    except Exception as e:
-        sys.stderr.write(str(e))
-        sys.exit(2)
-    else:
-        sys.stdout.write("Sucessfully initialized robocomp workspace in %s \n" % (str(os.path.abspath(workspace))) )
-        sys.stdout.write("To remove this workspace delete the file .rc_workspace\n")
 
 if __name__ == '__main__':
     main()

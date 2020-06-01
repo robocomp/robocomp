@@ -1,7 +1,7 @@
 cmake_minimum_required( VERSION 2.6 )
 
 
-INSTALL(PROGRAMS "workspace.py" DESTINATION /opt/robocomp/python)
+INSTALL(FILES "workspace.py" DESTINATION /opt/robocomp/python)
 INSTALL(PROGRAMS "rcworkspace.py" DESTINATION /opt/robocomp/bin RENAME rcworkspace )
 INSTALL(PROGRAMS "rcrun.py" DESTINATION /opt/robocomp/bin RENAME rcrun )
 INSTALL(PROGRAMS "rced.py" DESTINATION /opt/robocomp/bin RENAME rced )
