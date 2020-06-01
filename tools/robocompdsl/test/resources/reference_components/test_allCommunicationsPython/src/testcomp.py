@@ -56,6 +56,7 @@
 #
 
 import sys, traceback, IceStorm, time, os, copy
+from termcolor import colored
 
 # Ctrl+c handling
 import signal
@@ -114,8 +115,8 @@ if __name__ == '__main__':
     try:
         topicManager = IceStorm.TopicManagerPrx.checkedCast(obj)
     except Ice.ConnectionRefusedException as e:
-        print('Cannot connect to IceStorm! ('+proxy+')')
-        status = 1
+        print(colored('Cannot connect to rcnode! This must be running to use pub/sub.', 'red'))
+        exit(1)
 
     # Remote object connection for CameraSimple
     try:
