@@ -13,7 +13,7 @@ def main():
     args = parser.parse_args()
 
     if args.argument=='list':
-        components = WS.list_packages(WS.workspace_paths)
+        components = WS.list_components_in_workspace(WS.workspace_paths)
         componentsname=[]
         for component in components:
             componentsname.append(component.split('/')[ len(component.split('/')) -1 ])

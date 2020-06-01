@@ -1,71 +1,80 @@
-#!/usr/bin/env python
+#!/usr/bin/python
 # PYTHON_ARGCOMPLETE_OK
 from __future__ import print_function
 import argparse, argcomplete
 import os
 import sys
-from workspace import workspace as WS
 
-def complete_components(prefix, parsed_args, **kwargs):
-    components = WS.list_packages(WS.workspace_paths)
+from termcolor import colored
+
+sys.path.append('/opt/robocomp/python')
+
+from workspace import Workspace
+
+
+def complete_components(self, prefix, parsed_args, **kwargs):
+    components = self.ws.list_components_in_workspace(self.ws.workspace_paths)
     componentsname=[]
     for component in components:
         componentsname.append(component.split('/')[ len(component.split('/')) -1 ])
     return (componentname for componentname in componentsname if componentname.startswith(prefix))
 
-def build_component(bcomponent,install):
-    paths = WS.find_component_src(bcomponent)
-    if not paths:
-        print("No such component exists")
-        return False
-    path = paths[0]
-    srcpath = WS.find_workspace(path) + '/src'
-    
-    #ignore other components
-    ignored_comps=[]
-    for component in os.listdir(srcpath):
-        if bcomponent == component or os.path.isdir(os.path.join(srcpath, component))==False or os.path.exists(os.path.join(srcpath,component,'IGNORE_COMP'))  :
-            continue
-        ignored_comps.append(component)
-        os.system("touch " + os.path.join(srcpath,component,'IGNORE_COMP') )
-    
-    #build
-    os.chdir(srcpath)
-    os.chdir("../build")
-    if install != 'notgiven' and install:
-        os.system("cmake ../src -DRC_COMPONENT_INSTALL_PATH='"+str(os.path.abspath(install)) + "'")
-    else:
-        os.system('cmake ../src')
+class RCBuild:
+    def __init__(self):
+        self.ws = Workspace()
 
-    if install == 'notgiven':
+
+
+    def build_component(self, bcomponent, install):
+        clean = False
+        path = self.ws.find_component(bcomponent)
+        if not path:
+            print(f"No such {bcomponent} component exists")
+            return False
+
+        #build
+        os.chdir(path)
+        build_path = os.path.join(path, 'build')
+        if not os.path.exists(build_path):
+            os.mkdir(build_path)
+        self._remove_undesired_files(path)
+        os.chdir(build_path)
+        if clean:
+            if os.path.exists('Makefile'):
+                os.system("make clean")
+            if os.path.exists('CMakeCache.txt'):
+                os.remove(os.path.join(build_path, 'CMakeCache.txt'))
+        print(f"Working on dir {os.getcwd()}")
+        os.system('cmake ..')
         os.system('make')
-    elif install == None:
-        os.system("sudo make install")
-    else:
-        os.system("make install ")
-    
-    #unignore other components
-    for comp in ignored_comps:
-        os.system("rm -f " + os.path.join(srcpath,comp,'IGNORE_COMP'))
 
-def build_docs(component,install=False,installpath='/opt/robocomp'):
-    paths = WS.find_component_src(component)
-    if not paths:
-        print("No such component exists")
-        return False
-    path = paths[0]
-    os.chdir(path)
-    if install == True:
-        try:
-            os.system('mkdir -p '+installpath+'/doc')
-            os.system(' sudo cp -R doc/html '+installpath+'/doc/'+string.lower(component))
-        except Exception, e:
-            raise RuntimeError("couldnt install doc files {0}".format(e))
-    else:
-        try:
-            os.system('doxygen Doxyfile')    
-        except Exception as e:
-            raise RuntimeError("couldnt generate doc files {0}".format(e))
+    def _remove_undesired_files(self, path):
+        if 'build' not in path:
+            if 'build' in os.listdir(path):
+                #CMakeCache out of build directory.
+                if os.path.exists(os.path.join(path,"CMakeCache.txt")):
+                    os.remove(os.path.join(path,"CMakeCache.txt"))
+
+
+
+    def build_docs(self, component, install=False,installpath='/opt/robocomp'):
+        paths = self.ws.find_component_src(component)
+        if not paths:
+            print("No such component exists")
+            return False
+        path = paths[0]
+        os.chdir(path)
+        if install == True:
+            try:
+                os.system('mkdir -p '+installpath+'/doc')
+                os.system(' sudo cp -R doc/html '+installpath+'/doc/'+component.lower())
+            except Exception as e:
+                raise RuntimeError("couldnt install doc files {0}".format(e))
+        else:
+            try:
+                os.system('doxygen Doxyfile')
+            except Exception as e:
+                raise RuntimeError("couldnt generate doc files {0}".format(e))
 
 def main():
     parser = argparse.ArgumentParser(description="configures and build components ")
@@ -77,47 +86,26 @@ def main():
     
     argcomplete.autocomplete(parser)
     args = parser.parse_args()
+    builder = RCBuild()
 
-    if not args.component:
-        cpath = os.path.abspath('.')
-        wspath = WS.find_workspace(cpath) #see if path consisits of an workspace 
+    if not args.component or args.component.strip() == '.':
+        component_path = os.getcwd()
         
-        if wspath:
-            #if we are inside a workspace
-            
-            rest = cpath[len(wspath):].split('/')
-            if len(rest) >= 3 and rest[1] =='src' :
-                #if we are inside a component source directory
-                if args.doc or args.installdoc:
-                    build_docs(rest[2],args.installdoc)
-                else:
-                    build_component(rest[2],args.install)
+        if builder.ws.path_is_component(component_path):
+            #if we are inside a component source directory
+            if args.doc or args.installdoc:
+                builder.build_docs(component_path, args.installdoc)
             else:
-                os.chdir(wspath+"/build")
-                
-                if args.install != 'notgiven' and args.install:
-                    os.system("cmake ../src -DRC_COMPONENT_INSTALL_PATH='"+str(os.path.abspath(args.install)) + "'")
-                else:
-                    os.system('cmake ../src')
-
-                if args.installdoc or args.doc:
-                    print("\nDocs can oly be generated for one component at a time")
-                else:
-                    if args.install == 'notgiven':
-                        os.system('make')
-                    elif args.install == None:
-                        os.system("sudo make install")
-                    else:
-                        os.system("make install ")
+                builder.build_component(component_path, args.install)
         else:
-            parser.error("This is not a valid robocomp workspace")
+            parser.error(colored(f"{component_path} is not a valid robocomp component directory.", 'red'))
     
     else:
         component = args.component
         if args.doc or args.installdoc:
-            build_docs(component,args.installdoc)
+            builder.build_docs(component, args.installdoc)
         else:
-            build_component(component,args.install)
+            builder.build_component(component, args.install)
 
 if __name__ == '__main__':
     main()
