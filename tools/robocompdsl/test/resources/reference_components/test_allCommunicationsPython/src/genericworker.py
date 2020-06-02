@@ -31,18 +31,6 @@ except KeyError:
 Ice.loadSlice("-I ./src/ --all ./src/CommonBehavior.ice")
 import RoboCompCommonBehavior
 
-additionalPathStr = ''
-icePaths = [ '/opt/robocomp/interfaces' ]
-try:
-    SLICE_PATH = os.environ['SLICE_PATH'].split(':')
-    for p in SLICE_PATH:
-        icePaths.append(p)
-        additionalPathStr += ' -I' + p + ' '
-    icePaths.append('/opt/robocomp/interfaces')
-except:
-    print('SLICE_PATH environment variable was not exported. Using only the default paths')
-    pass
-
 Ice.loadSlice("-I ./src/ --all ./src/AprilBasedLocalization.ice")
 from RoboCompAprilBasedLocalization import *
 Ice.loadSlice("-I ./src/ --all ./src/AprilTags.ice")
