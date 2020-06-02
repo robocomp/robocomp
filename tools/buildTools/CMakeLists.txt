@@ -11,4 +11,6 @@ INSTALL(PROGRAMS "rccd_utils.py" DESTINATION /opt/robocomp/bin RENAME rccd_utils
 INSTALL(PROGRAMS "rccd.sh" DESTINATION /opt/robocomp/share ) #source this in .bashrc
 INSTALL(CODE "message(STATUS \"Installing rccd in ~./bashrc\")
 execute_process(COMMAND sh \"${CMAKE_CURRENT_LIST_DIR}/setup.sh\")")
+INSTALL(CODE "message(STATUS \"Installing autocompletion in ~./bashrc\")
+execute_process(COMMAND activate-global-python-argcomplete)")
 

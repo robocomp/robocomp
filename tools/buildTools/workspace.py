@@ -135,6 +135,16 @@ class Workspace:
                 return ws
         return False
 
+    def list_components_names(self):
+        components_names = []
+        for component in self.components:
+            components_names.append(component.lstrip('/').split('/')[-1])
+        return components_names
+
+    def list_filtered_components_names(self, prefix):
+        names = self.list_components_names()
+        return (name for name in names if name.startswith(prefix))
+
     ''' return all components paths given workspaces'''
     def list_components_in_workspace(self, ws_paths):
         components = []
