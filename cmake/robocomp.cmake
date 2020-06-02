@@ -103,6 +103,7 @@ MACRO( ROBOCOMP_IDSL_TO_ICE )
       IF (EXISTS "${SPATH}/${input_file}.idsl")
         MESSAGE(STATUS "Adding rule to generate ${input_file}.ice from ${SPATH}/${input_file}.idsl")
         add_custom_command(
+          COMMAND robocompdsl ${SPATH}/${input_file}.idsl ${CMAKE_SOURCE_DIR}/src/${input_file}.ice
           COMMAND robocompdsl ${SPATH}/${input_file}.idsl ${input_file}.ice
           DEPENDS ${SPATH}/${input_file}.idsl
           COMMENT "Generating ${input_file}.ice from ${SPATH}/${input_file}.idsl"
@@ -115,7 +116,6 @@ MACRO( ROBOCOMP_IDSL_TO_ICE )
 ENDMACRO( ROBOCOMP_IDSL_TO_ICE )
 
 MACRO( ROBOCOMP_ICE_TO_SRC )
-  SET( SPATH /opt/robocomp/interfaces/IDSLs)
   SET (SLICE_PATH "./src/;")
   STRING (REPLACE "/" "_" SPECIFIC_TARGET "${CMAKE_CURRENT_SOURCE_DIR}") 
   FOREACH( input_file ${ARGN} )
