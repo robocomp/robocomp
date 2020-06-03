@@ -21,9 +21,9 @@
 /**
 * \brief Default constructor
 */
-SpecificWorker::SpecificWorker(MapPrx& mprx) : GenericWorker(mprx)
+SpecificWorker::SpecificWorker(MapPrx& mprx, bool startup_check) : GenericWorker(mprx)
 {
-
+	this->startup_check_flag = startup_check;
 }
 
 /**
@@ -58,7 +58,14 @@ void SpecificWorker::initialize(int period)
 {
 	std::cout << "Initialize worker" << std::endl;
 	this->Period = period;
-	timer.start(Period);
+	if(this->startup_check_flag)
+	{
+		this->startup_check();
+	}
+	else
+	{
+        timer.start(Period);
+    }
 
 }
 
@@ -78,6 +85,13 @@ void SpecificWorker::compute()
 	//}
 	
 	
+}
+
+int SpecificWorker::startup_check()
+{
+	std::cout << "Startup check" << std::endl;
+	QTimer::singleShot(200, qApp, SLOT(quit()));
+	return 0;
 }
 
 

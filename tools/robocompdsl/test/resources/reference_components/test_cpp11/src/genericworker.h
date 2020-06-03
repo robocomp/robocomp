@@ -33,9 +33,6 @@
 #define CHECK_PERIOD 5000
 #define BASIC_PERIOD 100
 
-using namespace std;
-using namespace RoboCompGenericBase;
-using namespace RoboCompOmniRobot;
 
 using TuplePrx = std::tuple<RoboCompOmniRobot::OmniRobotPrxPtr>;
 
@@ -53,7 +50,7 @@ public:
 	QMutex *mutex;
 
 
-	OmniRobotPrxPtr omnirobot_proxy;
+	RoboCompOmniRobot::OmniRobotPrxPtr omnirobot_proxy;
 
 
 protected:

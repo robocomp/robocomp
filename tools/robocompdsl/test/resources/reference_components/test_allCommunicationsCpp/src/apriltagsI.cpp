@@ -29,12 +29,12 @@ AprilTagsI::~AprilTagsI()
 }
 
 
-void AprilTagsI::newAprilTag(const tagsList  &tags, const Ice::Current&)
+void AprilTagsI::newAprilTag(const RoboCompAprilTags::tagsList &tags, const Ice::Current&)
 {
 	worker->AprilTags_newAprilTag(tags);
 }
 
-void AprilTagsI::newAprilTagAndPose(const tagsList  &tags, const RoboCompGenericBase::TBaseState  &bState, const RoboCompJointMotor::MotorStateMap  &hState, const Ice::Current&)
+void AprilTagsI::newAprilTagAndPose(const RoboCompAprilTags::tagsList &tags, const RoboCompGenericBase::TBaseState &bState, const RoboCompJointMotor::MotorStateMap &hState, const Ice::Current&)
 {
 	worker->AprilTags_newAprilTagAndPose(tags, bState, hState);
 }

@@ -26,7 +26,6 @@
 #include <config.h>
 #include "genericworker.h"
 
-using namespace RoboCompHandDetection;
 
 class HandDetectionI : public virtual RoboCompHandDetection::HandDetection
 {
@@ -34,8 +33,8 @@ public:
 	HandDetectionI(GenericWorker *_worker);
 	~HandDetectionI();
 
-	int addNewHand(const int  expectedHands, const TRoi  &roi, const Ice::Current&);
-	Hands getHands(const Ice::Current&);
+	int addNewHand(const int expectedHands, const RoboCompHandDetection::TRoi &roi, const Ice::Current&);
+	RoboCompHandDetection::Hands getHands(const Ice::Current&);
 	int getHandsCount(const Ice::Current&);
 
 private:

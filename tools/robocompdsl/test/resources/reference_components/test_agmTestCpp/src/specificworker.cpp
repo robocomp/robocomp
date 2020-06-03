@@ -21,12 +21,12 @@
 /**
 * \brief Default constructor
 */
-SpecificWorker::SpecificWorker(MapPrx& mprx) : GenericWorker(mprx)
+SpecificWorker::SpecificWorker(MapPrx& mprx, bool startup_check) : GenericWorker(mprx)
 {
 	active = false;
 	worldModel = AGMModel::SPtr(new AGMModel());
 	worldModel->name = "worldModel";
-
+	this->startup_check_flag = startup_check;
 }
 
 /**
@@ -72,10 +72,24 @@ void SpecificWorker::initialize(int period)
 {
 	std::cout << "Initialize worker" << std::endl;
 	this->Period = period;
-	timer.start(Period);
+	if(this->startup_check_flag)
+	{
+		this->startup_check();
+	}
+	else
+	{
+        timer.start(Period);
+    }
 
 }
 
+
+int SpecificWorker::startup_check()
+{
+	std::cout << "Startup check" << std::endl;
+	QTimer::singleShot(200, qApp, SLOT(quit()));
+	return 0;
+}
 
 
 
@@ -128,7 +142,7 @@ void SpecificWorker::sm_finalize()
 
 
 
-bool SpecificWorker::AGMCommonBehavior_activateAgent(const ParameterMap &prs)
+bool SpecificWorker::AGMCommonBehavior_activateAgent(const RoboCompAGMCommonBehavior::ParameterMap &prs)
 {
 //implementCODE
 	bool activated = false;
@@ -152,16 +166,16 @@ bool SpecificWorker::AGMCommonBehavior_deactivateAgent()
 	return deactivate();
 }
 
-ParameterMap SpecificWorker::AGMCommonBehavior_getAgentParameters()
+RoboCompAGMCommonBehavior::ParameterMap SpecificWorker::AGMCommonBehavior_getAgentParameters()
 {
 //implementCODE
 	return params;
 }
 
-StateStruct SpecificWorker::AGMCommonBehavior_getAgentState()
+RoboCompAGMCommonBehavior::StateStruct SpecificWorker::AGMCommonBehavior_getAgentState()
 {
 //implementCODE
-	StateStruct s;
+	RoboCompAGMCommonBehavior::StateStruct s;
 	if (isActive())
 	{
 		s.state = RoboCompAGMCommonBehavior::StateEnum::Running;
@@ -186,7 +200,7 @@ bool SpecificWorker::AGMCommonBehavior_reloadConfigAgent()
 	return true;
 }
 
-bool SpecificWorker::AGMCommonBehavior_setAgentParameters(const ParameterMap &prs)
+bool SpecificWorker::AGMCommonBehavior_setAgentParameters(const RoboCompAGMCommonBehavior::ParameterMap &prs)
 {
 //implementCODE
 	bool activated = false;
@@ -223,7 +237,7 @@ void SpecificWorker::AGMExecutiveTopic_edgesUpdated(const RoboCompAGMWorldModel:
 }
 
 //SUBSCRIPTION to selfEdgeAdded method from AGMExecutiveTopic interface
-void SpecificWorker::AGMExecutiveTopic_selfEdgeAdded(const int nodeid, const string &edgeType, const RoboCompAGMWorldModel::StringDictionary &attributes)
+void SpecificWorker::AGMExecutiveTopic_selfEdgeAdded(const int nodeid, const std::string &edgeType, const RoboCompAGMWorldModel::StringDictionary &attributes)
 {
 //subscribesToCODE
 	QMutexLocker lockIM(mutex);
@@ -233,7 +247,7 @@ void SpecificWorker::AGMExecutiveTopic_selfEdgeAdded(const int nodeid, const str
 }
 
 //SUBSCRIPTION to selfEdgeDeleted method from AGMExecutiveTopic interface
-void SpecificWorker::AGMExecutiveTopic_selfEdgeDeleted(const int nodeid, const string &edgeType)
+void SpecificWorker::AGMExecutiveTopic_selfEdgeDeleted(const int nodeid, const std::string &edgeType)
 {
 //subscribesToCODE
 	QMutexLocker lockIM(mutex);
@@ -273,7 +287,7 @@ void SpecificWorker::AGMExecutiveTopic_symbolsUpdated(const RoboCompAGMWorldMode
 
 
 
-bool SpecificWorker::setParametersAndPossibleActivation(const ParameterMap &prs, bool &reactivated)
+bool SpecificWorker::setParametersAndPossibleActivation(const RoboCompAGMCommonBehavior::ParameterMap &prs, bool &reactivated)
 {
 	printf("<<< setParametersAndPossibleActivation\n");
 	// We didn't reactivate the component
@@ -281,7 +295,7 @@ bool SpecificWorker::setParametersAndPossibleActivation(const ParameterMap &prs,
 
 	// Update parameters
 	params.clear();
-	for (ParameterMap::const_iterator it=prs.begin(); it!=prs.end(); it++)
+	for (RoboCompAGMCommonBehavior::ParameterMap::const_iterator it=prs.begin(); it!=prs.end(); it++)
 	{
 		params[it->first] = it->second;
 	}

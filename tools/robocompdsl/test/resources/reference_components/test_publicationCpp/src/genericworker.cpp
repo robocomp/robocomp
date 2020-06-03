@@ -43,7 +43,7 @@ GenericWorker::GenericWorker(MapPrx& mprx) : Ui_guiDlg()
 	QObject::connect(&timer, SIGNAL(timeout()), this, SIGNAL(t_compute_to_compute()));
 
 	//------------------
-	imupub_pubproxy = (*(IMUPubPrx*)mprx["IMUPubPub"]);
+	imupub_pubproxy = (*(RoboCompIMUPub::IMUPubPrx*)mprx["IMUPubPub"]);
 
 	mutex = new QMutex(QMutex::Recursive);
 

@@ -21,9 +21,9 @@
 /**
 * \brief Default constructor
 */
-SpecificWorker::SpecificWorker(MapPrx& mprx) : GenericWorker(mprx)
+SpecificWorker::SpecificWorker(MapPrx& mprx, bool startup_check) : GenericWorker(mprx)
 {
-
+	this->startup_check_flag = startup_check;
 }
 
 /**
@@ -60,8 +60,15 @@ void SpecificWorker::initialize(int period)
 {
 	std::cout << "Initialize worker" << std::endl;
 	this->Period = period;
-	timer.start(Period);
-	emit this->t_initialize_to_compute();
+	if(this->startup_check_flag)
+	{
+		this->startup_check();
+	}
+	else
+	{
+        timer.start(Period);
+        emit this->t_initialize_to_compute();
+    }
 
 }
 
@@ -81,6 +88,13 @@ void SpecificWorker::compute()
 	//}
 	
 	
+}
+
+int SpecificWorker::startup_check()
+{
+	std::cout << "Startup check" << std::endl;
+	QTimer::singleShot(200, qApp, SLOT(quit()));
+	return 0;
 }
 
 
@@ -105,13 +119,13 @@ void SpecificWorker::sm_finalize()
 
 
 
-int SpecificWorker::HandDetection_addNewHand(const int expectedHands, const TRoi &roi)
+int SpecificWorker::HandDetection_addNewHand(const int expectedHands, const RoboCompHandDetection::TRoi &roi)
 {
 //implementCODE
 
 }
 
-Hands SpecificWorker::HandDetection_getHands()
+RoboCompHandDetection::Hands SpecificWorker::HandDetection_getHands()
 {
 //implementCODE
 
@@ -124,14 +138,14 @@ int SpecificWorker::HandDetection_getHandsCount()
 }
 
 //SUBSCRIPTION to newAprilTag method from AprilTags interface
-void SpecificWorker::AprilTags_newAprilTag(const tagsList &tags)
+void SpecificWorker::AprilTags_newAprilTag(const RoboCompAprilTags::tagsList &tags)
 {
 //subscribesToCODE
 
 }
 
 //SUBSCRIPTION to newAprilTagAndPose method from AprilTags interface
-void SpecificWorker::AprilTags_newAprilTagAndPose(const tagsList &tags, const RoboCompGenericBase::TBaseState &bState, const RoboCompJointMotor::MotorStateMap &hState)
+void SpecificWorker::AprilTags_newAprilTagAndPose(const RoboCompAprilTags::tagsList &tags, const RoboCompGenericBase::TBaseState &bState, const RoboCompJointMotor::MotorStateMap &hState)
 {
 //subscribesToCODE
 

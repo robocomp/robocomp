@@ -34,7 +34,7 @@ class SpecificWorker : public GenericWorker
 {
 Q_OBJECT
 public:
-	SpecificWorker(MapPrx& mprx);
+	SpecificWorker(MapPrx& mprx, bool startup_check);
 	~SpecificWorker();
 	bool setParams(RoboCompCommonBehavior::ParameterList params);
 
@@ -42,6 +42,7 @@ public:
 
 public slots:
 	void compute();
+	int startup_check();
 	void initialize(int period);
 	//Specification slot methods State Machine
 	void sm_compute();
@@ -51,6 +52,7 @@ public slots:
 	//--------------------
 private:
 	std::shared_ptr<InnerModel> innerModel;
+	bool startup_check_flag;
 
 };
 

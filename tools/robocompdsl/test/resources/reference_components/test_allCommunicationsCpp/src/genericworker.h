@@ -45,14 +45,6 @@
 #define CHECK_PERIOD 5000
 #define BASIC_PERIOD 100
 
-using namespace std;
-using namespace RoboCompAprilBasedLocalization;
-using namespace RoboCompAprilTags;
-using namespace RoboCompCameraSimple;
-using namespace RoboCompGenericBase;
-using namespace RoboCompHandDetection;
-using namespace RoboCompJointMotor;
-using namespace RoboCompRGBD;
 
 typedef map <string,::IceProxy::Ice::Object*> MapPrx;
 
@@ -70,15 +62,15 @@ public:
 	QMutex *mutex;
 
 
-	CameraSimplePrx camerasimple_proxy;
-	RGBDPrx rgbd_proxy;
-	AprilBasedLocalizationPrx aprilbasedlocalization_pubproxy;
+	RoboCompCameraSimple::CameraSimplePrx camerasimple_proxy;
+	RoboCompRGBD::RGBDPrx rgbd_proxy;
+	RoboCompAprilBasedLocalization::AprilBasedLocalizationPrx aprilbasedlocalization_pubproxy;
 
-	virtual int HandDetection_addNewHand(const int expectedHands, const TRoi &roi) = 0;
-	virtual Hands HandDetection_getHands() = 0;
+	virtual int HandDetection_addNewHand(const int expectedHands, const RoboCompHandDetection::TRoi &roi) = 0;
+	virtual RoboCompHandDetection::Hands HandDetection_getHands() = 0;
 	virtual int HandDetection_getHandsCount() = 0;
-	virtual void AprilTags_newAprilTag(const tagsList &tags) = 0;
-	virtual void AprilTags_newAprilTagAndPose(const tagsList &tags, const RoboCompGenericBase::TBaseState &bState, const RoboCompJointMotor::MotorStateMap &hState) = 0;
+	virtual void AprilTags_newAprilTag (const RoboCompAprilTags::tagsList &tags) = 0;
+	virtual void AprilTags_newAprilTagAndPose (const RoboCompAprilTags::tagsList &tags, const RoboCompGenericBase::TBaseState &bState, const RoboCompJointMotor::MotorStateMap &hState) = 0;
 
 protected:
 	//State Machine

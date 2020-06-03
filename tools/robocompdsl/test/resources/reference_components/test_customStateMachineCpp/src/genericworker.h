@@ -38,7 +38,6 @@
 #define CHECK_PERIOD 5000
 #define BASIC_PERIOD 100
 
-using namespace std;
 
 typedef map <string,::IceProxy::Ice::Object*> MapPrx;
 

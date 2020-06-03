@@ -29,7 +29,7 @@ AGMCommonBehaviorI::~AGMCommonBehaviorI()
 }
 
 
-bool AGMCommonBehaviorI::activateAgent(const ParameterMap  &prs, const Ice::Current&)
+bool AGMCommonBehaviorI::activateAgent(const RoboCompAGMCommonBehavior::ParameterMap &prs, const Ice::Current&)
 {
 	return worker->AGMCommonBehavior_activateAgent(prs);
 }
@@ -39,12 +39,12 @@ bool AGMCommonBehaviorI::deactivateAgent(const Ice::Current&)
 	return worker->AGMCommonBehavior_deactivateAgent();
 }
 
-ParameterMap AGMCommonBehaviorI::getAgentParameters(const Ice::Current&)
+RoboCompAGMCommonBehavior::ParameterMap AGMCommonBehaviorI::getAgentParameters(const Ice::Current&)
 {
 	return worker->AGMCommonBehavior_getAgentParameters();
 }
 
-StateStruct AGMCommonBehaviorI::getAgentState(const Ice::Current&)
+RoboCompAGMCommonBehavior::StateStruct AGMCommonBehaviorI::getAgentState(const Ice::Current&)
 {
 	return worker->AGMCommonBehavior_getAgentState();
 }
@@ -59,7 +59,7 @@ bool AGMCommonBehaviorI::reloadConfigAgent(const Ice::Current&)
 	return worker->AGMCommonBehavior_reloadConfigAgent();
 }
 
-bool AGMCommonBehaviorI::setAgentParameters(const ParameterMap  &prs, const Ice::Current&)
+bool AGMCommonBehaviorI::setAgentParameters(const RoboCompAGMCommonBehavior::ParameterMap &prs, const Ice::Current&)
 {
 	return worker->AGMCommonBehavior_setAgentParameters(prs);
 }

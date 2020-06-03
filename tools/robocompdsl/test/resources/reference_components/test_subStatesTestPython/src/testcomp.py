@@ -55,9 +55,14 @@
 #
 #
 
-import sys, traceback, IceStorm, time, os, copy
+import sys
+import traceback
+import IceStorm
+import time
+import os
+import copy
+import argparse
 from termcolor import colored
-
 # Ctrl+c handling
 import signal
 
@@ -96,13 +101,13 @@ def sigint_handler(*args):
     
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
-    params = copy.deepcopy(sys.argv)
-    if len(params) > 1:
-        if not params[1].startswith('--Ice.Config='):
-            params[1] = '--Ice.Config=' + params[1]
-    elif len(params) == 1:
-        params.append('--Ice.Config=etc/config')
-    ic = Ice.initialize(params)
+    parser = argparse.ArgumentParser()
+    parser.add_argument('iceconfigfile', nargs='?', type=str, default='etc/config')
+    parser.add_argument('--startup-check', action='store_true')
+
+    args = parser.parse_args()
+
+    ic = Ice.initialize(args.iceconfigfile)
     status = 0
     mprx = {}
     parameters = {}
@@ -110,7 +115,7 @@ if __name__ == '__main__':
         parameters[str(i)] = str(ic.getProperties().getProperty(i))
 
     if status == 0:
-        worker = SpecificWorker(mprx)
+        worker = SpecificWorker(mprx, args.startup_check)
         worker.setParams(parameters)
     else:
         print("Error getting required connections, check config file")
@@ -120,8 +125,8 @@ if __name__ == '__main__':
     app.exec_()
 
     if ic:
-        try:
-            ic.destroy()
-        except:
-            traceback.print_exc()
-            status = 1
+        # try:
+        ic.destroy()
+        # except:
+        #     traceback.print_exc()
+        #     status = 1

@@ -29,12 +29,12 @@ HandDetectionI::~HandDetectionI()
 }
 
 
-int HandDetectionI::addNewHand(const int  expectedHands, const TRoi  &roi, const Ice::Current&)
+int HandDetectionI::addNewHand(const int expectedHands, const RoboCompHandDetection::TRoi &roi, const Ice::Current&)
 {
 	return worker->HandDetection_addNewHand(expectedHands, roi);
 }
 
-Hands HandDetectionI::getHands(const Ice::Current&)
+RoboCompHandDetection::Hands HandDetectionI::getHands(const Ice::Current&)
 {
 	return worker->HandDetection_getHands();
 }

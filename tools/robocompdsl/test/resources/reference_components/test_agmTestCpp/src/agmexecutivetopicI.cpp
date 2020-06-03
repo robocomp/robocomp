@@ -29,37 +29,37 @@ AGMExecutiveTopicI::~AGMExecutiveTopicI()
 }
 
 
-void AGMExecutiveTopicI::edgeUpdated(const RoboCompAGMWorldModel::Edge  &modification, const Ice::Current&)
+void AGMExecutiveTopicI::edgeUpdated(const RoboCompAGMWorldModel::Edge &modification, const Ice::Current&)
 {
 	worker->AGMExecutiveTopic_edgeUpdated(modification);
 }
 
-void AGMExecutiveTopicI::edgesUpdated(const RoboCompAGMWorldModel::EdgeSequence  &modifications, const Ice::Current&)
+void AGMExecutiveTopicI::edgesUpdated(const RoboCompAGMWorldModel::EdgeSequence &modifications, const Ice::Current&)
 {
 	worker->AGMExecutiveTopic_edgesUpdated(modifications);
 }
 
-void AGMExecutiveTopicI::selfEdgeAdded(const int  nodeid, const string  &edgeType, const RoboCompAGMWorldModel::StringDictionary  &attributes, const Ice::Current&)
+void AGMExecutiveTopicI::selfEdgeAdded(const int nodeid, const std::string &edgeType, const RoboCompAGMWorldModel::StringDictionary &attributes, const Ice::Current&)
 {
 	worker->AGMExecutiveTopic_selfEdgeAdded(nodeid, edgeType, attributes);
 }
 
-void AGMExecutiveTopicI::selfEdgeDeleted(const int  nodeid, const string  &edgeType, const Ice::Current&)
+void AGMExecutiveTopicI::selfEdgeDeleted(const int nodeid, const std::string &edgeType, const Ice::Current&)
 {
 	worker->AGMExecutiveTopic_selfEdgeDeleted(nodeid, edgeType);
 }
 
-void AGMExecutiveTopicI::structuralChange(const RoboCompAGMWorldModel::World  &w, const Ice::Current&)
+void AGMExecutiveTopicI::structuralChange(const RoboCompAGMWorldModel::World &w, const Ice::Current&)
 {
 	worker->AGMExecutiveTopic_structuralChange(w);
 }
 
-void AGMExecutiveTopicI::symbolUpdated(const RoboCompAGMWorldModel::Node  &modification, const Ice::Current&)
+void AGMExecutiveTopicI::symbolUpdated(const RoboCompAGMWorldModel::Node &modification, const Ice::Current&)
 {
 	worker->AGMExecutiveTopic_symbolUpdated(modification);
 }
 
-void AGMExecutiveTopicI::symbolsUpdated(const RoboCompAGMWorldModel::NodeSequence  &modifications, const Ice::Current&)
+void AGMExecutiveTopicI::symbolsUpdated(const RoboCompAGMWorldModel::NodeSequence &modifications, const Ice::Current&)
 {
 	worker->AGMExecutiveTopic_symbolsUpdated(modifications);
 }
