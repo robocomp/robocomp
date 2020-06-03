@@ -1,15 +1,16 @@
 from string import Template
 
 from dsl_parsers.parsing_utils import decorator_and_type_to_const_ampersand
-
+from . import function_utils as utils
 
 INTERFACE_METHOD_STR = """
-${ret} ${interface_name}I::${method_name}(${input_params}const Ice::Current&)
+${ret} ${interface_name}I::${method_name}(${input_params})
 {
 	${to_return}worker->${interface_name}_${method_name}(${param_str});
 }
 """
 
+CPP_TYPES = ['int', 'float', 'bool', 'void']
 
 def interface_methods_definition(component, module, interface_name):
     result = ""
@@ -19,20 +20,15 @@ def interface_methods_definition(component, module, interface_name):
             for mname in interface['methods']:
                 method = interface['methods'][mname]
 
-                ret = method['return']
+                ret = utils.get_type_string(method['return'], module['name'])
                 name = method['name']
 
-                param_str = ''
-                for p in method['params']:
-
-                    const, ampersand = decorator_and_type_to_const_ampersand(p['decorator'], p['type'], pool,
-                                                                             component.language.lower() == "cpp11")
-                    if p['type'] == 'long':
-                        param_str += const + 'Ice::Long' + ' ' + ampersand + p['name'] + ', '
-                    else:
-                        param_str += const + p['type'] + ' ' + ampersand + p['name'] + ', '
-
-                result += ret + ' ' + name + '(' + param_str + 'const Ice::Current&);\n'
+                param_str = utils.get_parameters_string(method, module['name'], component.language, True)
+                if param_str:
+                    param_str = f"{param_str}, const Ice::Current&"
+                else:
+                    param_str = "const Ice::Current&"
+                result += ret + ' ' + name + '(' + param_str + ');\n'
     return result
 
 
@@ -47,18 +43,14 @@ def interface_methods_creation(component, interface_name):
             for mname in interface['methods']:
                 method = interface['methods'][mname]
 
-                ret = method['return']
+                ret = utils.get_type_string(method['return'], module['name'])
                 name = method['name']
 
-                param_str_a = ''
-                for p in method['params']:
-                    const, ampersand = decorator_and_type_to_const_ampersand(p['decorator'], p['type'], pool,
-                                                                             component.language.lower() == "cpp11")
-                    if p['type'] == 'long':
-                        param_str_a += const + 'Ice::Long' + ' ' + ampersand + p['name'] + ', '
-                    else:
-                        param_str_a += const + p['type'] + ' ' + ampersand + p['name'] + ', '
-
+                param_str_a = utils.get_parameters_string(method,module['name'], component.language, True)
+                if param_str_a:
+                    param_str_a = f"{param_str_a}, const Ice::Current&"
+                else:
+                    param_str_a = "const Ice::Current&"
                 param_str_b = ''
                 for p in method['params']:
                     if param_str_b == '':

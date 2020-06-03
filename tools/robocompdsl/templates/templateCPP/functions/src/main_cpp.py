@@ -2,11 +2,12 @@ import datetime
 from string import Template
 
 from dsl_parsers.parsing_utils import communication_is_ice, get_name_number
+from .. import function_utils as utils
 
 INCLUDE_STR = '#include <${iface_name}${suffix}.h>\n'
 
 
-PROXY_PTR_STR = """${name}Prx${ptr} ${lower}${num}_${prefix}proxy;\n"""
+PROXY_PTR_STR = """${prx_type}Prx${ptr} ${lower}${num}_${prefix}proxy;\n"""
 
 
 TOPIC_MANAGER_STR = """
@@ -63,7 +64,7 @@ try
 		cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy <NORMAL>Proxy";
 	}
 	Ice::ObjectAdapterPtr <NORMAL>_adapter = communicator()->createObjectAdapterWithEndpoints("<LOWER>", tmp);
-	<NORMAL>Ptr <LOWER>I_ = <CHANGE3>(worker);
+	<PTR_TYPE>Ptr <LOWER>I_ = <CHANGE3>(worker);
 	<CHANGE4> <PROXYNAME> = <NORMAL>_adapter->addWithUUID(<LOWER>I_)->ice_oneway();
 	if(!<LOWER>_topic)
 	{
@@ -196,7 +197,9 @@ class TemplateDict(dict):
                 if self.component.language.lower() != "cpp":
                     ptr = "Ptr"
                 name = interface.name
-                result += Template(PROXY_PTR_STR).substitute(name=name, ptr=ptr, lower=name.lower(), num=num,
+                module = self.component.idsl_pool.module_providing_interface(name)
+                proxy_type = utils.get_type_string(name, module['name'])
+                result += Template(PROXY_PTR_STR).substitute(prx_type=proxy_type, ptr=ptr, lower=name.lower(), num=num,
                                                              prefix=prefix)
         return result
 
@@ -232,9 +235,11 @@ class TemplateDict(dict):
                 else:
                     result += "std::shared_ptr<IceStorm::TopicPrx> " + pb.lower() + "_topic;\n"
                 result += PUBLISHES_STR.replace("<NORMAL>", pb).replace("<LOWER>", pb.lower())
+                module = self.component.idsl_pool.module_providing_interface(pb)
+                proxy_type = utils.get_type_string(pb, module['name'])
                 if self.component.language.lower() == "cpp":
                     result += "Ice::ObjectPrx " + pb.lower() + "_pub = " + pb.lower() + "_topic->getPublisher()->ice_oneway();\n"
-                    result += "" + pb.lower() + "_pubproxy = " + pb + "Prx::uncheckedCast(" + pb.lower() + "_pub);\n"
+                    result += "" + pb.lower() + "_pubproxy = " + proxy_type + "Prx::uncheckedCast(" + pb.lower() + "_pub);\n"
                     result += "mprx[\"" + pb + "Pub\"] = (::IceProxy::Ice::Object*)(&" + pb.lower() + "_pubproxy);\n"
                 else:
                     result += "auto " + pb.lower() + "_pub = " + pb.lower() + "_topic->getPublisher()->ice_oneway();\n"
@@ -257,11 +262,13 @@ class TemplateDict(dict):
                     change3 = " std::make_shared <<NORMAL>I>"
                     change4 = "auto"
 
+                module = self.component.idsl_pool.module_providing_interface(name)
+                proxy_type = utils.get_type_string(name, module['name'])
                 result += SUBSCRIBESTO_STR.replace("<CHANGE1>", change1).replace("<CHANGE2>", change2).replace(
                     "<CHANGE3>",
                     change3).replace(
                     "<CHANGE4>", change4).replace("<NORMAL>", name).replace("<LOWER>", name.lower()).replace(
-                    "<PROXYNAME>", name.lower() + num).replace("<PROXYNUMBER>", num)
+                    "<PROXYNAME>", name.lower() + num).replace("<PROXYNUMBER>", num).replace("<PTR_TYPE>", proxy_type)
         return result
 
     def implements(self):
@@ -286,13 +293,15 @@ class TemplateDict(dict):
         for interface, num in get_name_number(self.component.requires):
             name = interface.name
             if communication_is_ice(interface):
+                module = self.component.idsl_pool.module_providing_interface(name)
+                proxy_type = utils.get_type_string(name, module['name'])
                 if self.component.language.lower() == "cpp":
-                    cpp = "<PROXYNAME>_proxy = <NORMAL>Prx::uncheckedCast( communicator()->stringToProxy( proxy ) );"
+                    cpp = "<PROXYNAME>_proxy = <PROXY_TYPE>Prx::uncheckedCast( communicator()->stringToProxy( proxy ) );"
                 else:
-                    cpp = "<PROXYNAME>_proxy = Ice::uncheckedCast<<NORMAL>Prx>( communicator()->stringToProxy( proxy ) );"
+                    cpp = "<PROXYNAME>_proxy = Ice::uncheckedCast<<PROXY_TYPE>Prx>( communicator()->stringToProxy( proxy ) );"
                 result += REQUIRE_STR.replace("<C++_VERSION>", cpp).replace("<NORMAL>", name).replace("<LOWER>",
                                                                                                       name.lower()).replace(
-                    "<PROXYNAME>", name.lower() + num).replace("<PROXYNUMBER>", num)
+                    "<PROXYNAME>", name.lower() + num).replace("<PROXYNUMBER>", num).replace('<PROXY_TYPE>', proxy_type)
             if self.component.language.lower() == "cpp":
                 result += "mprx[\"" + name + "Proxy" + num + "\"] = (::IceProxy::Ice::Object*)(&" + name.lower() + num + "_proxy);//Remote server proxy creation example\n"
         return result

@@ -1,7 +1,7 @@
 import datetime
 
 import dsl_parsers.parsing_utils as p_utils
-
+from .. import function_utils as utils
 
 INNERMODEL_ATTRIBUTES_STR = """\
 #ifdef USE_QTGUI
@@ -17,7 +17,6 @@ INNERMODELVIEWER_INCLUDES_STR = """\
 	#include <innermodel/innermodelviewer.h>
 #endif
 """
-
 
 class TemplateDict(dict):
     def __init__(self, component):
@@ -40,47 +39,24 @@ class TemplateDict(dict):
             result += "// THIS IS AN AGENT\n"
         return result
 
-    def generate_ice_method_params(self, param):
-        params_string = ''
-        # decorator
-        ampersand = '&'
-        if param['decorator'] == 'out':
-            const = ''
-        else:
-            if self.component.language.lower() == "cpp":
-                const = 'const '
-            else:
-                const = ''
-                ampersand = ''
-            if param['type'].lower() in ['int', '::ice::int', 'float', '::ice::float']:
-                ampersand = ''
-        # STR
-        params_string += const + param['type'] + ' ' + ampersand + param['name']
-        return params_string
-
     def generate_interface_method_definition(self, interface):
         result = ""
         pool = self.component.idsl_pool
         if type(interface) == str:
             interface_name = interface
         else:
-            interface_name = interface[0]
-        idsl = pool.module_providing_interface(interface_name)
-        for idsl_interface in idsl['interfaces']:
+            interface_name = interface.name
+        module = pool.module_providing_interface(interface_name)
+        for idsl_interface in module['interfaces']:
             if idsl_interface['name'] == interface_name:
                 for method_name, method in idsl_interface['methods'].items():
-                    params_string = ''
                     if p_utils.communication_is_ice(interface):
-                        delim = ''
-                        for index, param in enumerate(method['params']):
-                            if index != 0:
-                                delim = ', '
-                            params_string += delim + self.generate_ice_method_params(param)
-
-                        result += method['return'] + ' ' + idsl_interface['name'] + "_" + method[
+                        params_string = utils.get_parameters_string(method, module['name'], self.component.language)
+                        return_type = utils.get_type_string(method['return'], module['name'])
+                        result += return_type + ' ' + idsl_interface['name'] + "_" + method[
                             'name'] + '(' + params_string + ");\n"
                     else:
-                        params_string = idsl['name'] + "ROS::" + method['name'] + "::Request &req, " + idsl[
+                        params_string = module['name'] + "ROS::" + method['name'] + "::Request &req, " + module[
                             'name'] + "ROS::" + method['name'] + "::Response &res"
                         if interface_name in self.component.iceInterfaces:
                             result += "bool ROS" + method['name'] + '(' + params_string + ");\n"
@@ -101,7 +77,7 @@ class TemplateDict(dict):
             if type(impa) == str:
                 imp = impa
             else:
-                imp = impa[0]
+                imp = impa.name
             module = pool.module_providing_interface(imp)
             for interface in module['interfaces']:
                 if interface['name'] == imp:
@@ -109,27 +85,9 @@ class TemplateDict(dict):
                         method = interface['methods'][mname]
                         param_str_a = ''
                         if p_utils.communication_is_ice(impa):
-                            for p in method['params']:
-                                # delim
-                                if param_str_a == '':
-                                    delim = ''
-                                else:
-                                    delim = ', '
-                                # decorator
-                                ampersand = '&'
-                                if p['decorator'] == 'out':
-                                    const = ''
-                                else:
-                                    if self.component.language.lower() == "cpp":
-                                        const = 'const '
-                                    else:
-                                        const = ''
-                                        ampersand = ''
-                                    if p['type'].lower() in ['int', '::ice::int', 'float', '::ice::float']:
-                                        ampersand = ''
-                                # STR
-                                param_str_a += delim + const + p['type'] + ' ' + ampersand + p['name']
-                            result += method['return'] + ' ' + interface['name'] + "_" + method[
+                            param_str_a = utils.get_parameters_string(method, module['name'], self.component.language)
+                            return_type = utils.get_type_string(method['return'], module['name'])
+                            result += return_type + ' ' + interface['name'] + "_" + method[
                                 'name'] + '(' + param_str_a + ");\n"
                         else:
                             for p in method['params']:
@@ -154,7 +112,10 @@ class TemplateDict(dict):
                                 elif '::' not in p['type']:
                                     p['type'] = module['name'] + "ROS::" + p['type']
                                 # STR
-                                param_str_a += delim + p['type'] + ' ' + p['name']
+                                param_type = p['type']
+                                if param_type not in utils.CPP_TYPES and '::' not in param_type:
+                                    param_type = f"{module['name']}::{param_type}"
+                                param_str_a += delim + param_type + ' ' + p['name']
                             if imp in self.component.iceInterfaces:
                                 result += "void ROS" + method['name'] + '(' + param_str_a + ");\n"
                             else:
@@ -197,12 +158,12 @@ class TemplateDict(dict):
         result = ''
         if self.component.is_agm1_agent():
             result += "std::string action;\n"
-            result += "ParameterMap params;\n"
+            result += "RoboCompAGMCommonBehavior::ParameterMap params;\n"
             result += "AGMModel::SPtr worldModel;\n"
             result += "bool active;\n"
             if 'innermodelviewer' in [x.lower() for x in self.component.options]:
                 result += "void regenerateInnerModelViewer();\n"
-            result += "bool setParametersAndPossibleActivation(const ParameterMap &prs, bool &reactivated);\n"
+            result += "bool setParametersAndPossibleActivation(const RoboCompAGMCommonBehavior::ParameterMap &prs, bool &reactivated);\n"
             result += "void sendModificationProposal(AGMModel::SPtr &worldModel, AGMModel::SPtr &newModel);\n"
         elif self.component.is_agm2_agent():
             result += "std::string action;\n"

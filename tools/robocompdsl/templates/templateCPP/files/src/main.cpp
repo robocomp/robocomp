@@ -87,11 +87,6 @@ ${subscribes_interface_includes}
 ${imports_interface_includes}
 
 
-// User includes here
-
-// Namespaces
-using namespace std;
-using namespace RoboCompCommonBehavior;
 
 class ${component_name} : public RoboComp::Application
 {

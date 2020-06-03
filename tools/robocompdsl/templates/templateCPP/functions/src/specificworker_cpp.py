@@ -2,7 +2,7 @@ import datetime
 from string import Template
 
 import dsl_parsers.parsing_utils as p_utils
-
+from .. import function_utils as utils
 
 AGM_INNERMODEL_ASSOCIATION_STR = """\
 innerModel = std::make_shared<InnerModel>(new InnerModel());
@@ -77,7 +77,7 @@ void SpecificWorker::regenerateInnerModelViewer()
 """
 
 SET_PARAMETERS_AND_POSSIBLE_ACTIVATION = """
-bool SpecificWorker::setParametersAndPossibleActivation(const ParameterMap &prs, bool &reactivated)
+bool SpecificWorker::setParametersAndPossibleActivation(const RoboCompAGMCommonBehavior::ParameterMap &prs, bool &reactivated)
 {
 	printf("<<< setParametersAndPossibleActivation\\n");
 	// We didn't reactivate the component
@@ -85,7 +85,7 @@ bool SpecificWorker::setParametersAndPossibleActivation(const ParameterMap &prs,
 
 	// Update parameters
 	params.clear();
-	for (ParameterMap::const_iterator it=prs.begin(); it!=prs.end(); it++)
+	for (RoboCompAGMCommonBehavior::ParameterMap::const_iterator it=prs.begin(); it!=prs.end(); it++)
 	{
 		params[it->first] = it->second;
 	}
@@ -147,7 +147,6 @@ void SpecificWorker::sendModificationProposal(AGMModel::SPtr &worldModel, AGMMod
 }
 """
 
-
 class TemplateDict(dict):
     def __init__(self, component):
         super(TemplateDict, self).__init__()
@@ -203,7 +202,7 @@ class TemplateDict(dict):
             elif name == 'deactivateAgent':
                 body_code = "\treturn deactivate();"
             elif name == 'getAgentState':
-                body_code = "\tStateStruct s;\n\tif (isActive())\n\t{\n\t\ts.state = RoboCompAGMCommonBehavior::StateEnum::Running;\n\t}\n\telse\n\t{\n\t\ts.state = RoboCompAGMCommonBehavior::StateEnum::Stopped;\n\t}\n\ts.info = p.action.name;\n\treturn s;"
+                body_code = "\tRoboCompAGMCommonBehavior::StateStruct s;\n\tif (isActive())\n\t{\n\t\ts.state = RoboCompAGMCommonBehavior::StateEnum::Running;\n\t}\n\telse\n\t{\n\t\ts.state = RoboCompAGMCommonBehavior::StateEnum::Stopped;\n\t}\n\ts.info = p.action.name;\n\treturn s;"
             elif name == 'getAgentParameters':
                 body_code = "\treturn params;"
             elif name == 'setAgentParameters':
@@ -354,27 +353,9 @@ class TemplateDict(dict):
                         param_str_a = ''
                         body_code = self.body_code_from_name(method['name'])
                         if p_utils.communication_is_ice(impa):
-                            for p in method['params']:
-                                # delim
-                                if param_str_a == '':
-                                    delim = ''
-                                else:
-                                    delim = ', '
-                                # decorator
-                                ampersand = '&'
-                                if p['decorator'] == 'out':
-                                    const = ''
-                                else:
-                                    if self.component.language.lower() == "cpp":
-                                        const = 'const '
-                                    else:
-                                        const = ''
-                                        ampersand = ''
-                                    if p['type'].lower() in ['int', '::ice::int', 'float', '::ice::float']:
-                                        ampersand = ''
-                                # STR
-                                param_str_a += delim + const + p['type'] + ' ' + ampersand + p['name']
-                            result += method['return'] + ' SpecificWorker::' + interface['name'] + "_" + method[
+                            param_str_a = utils.get_parameters_string(method, module['name'], self.component.language)
+                            return_type = utils.get_type_string(method['return'], module['name'])
+                            result += return_type + ' SpecificWorker::' + interface['name'] + "_" + method[
                                 'name'] + '(' + param_str_a + ")\n{\n//implementCODE\n" + body_code + "\n}\n\n"
                         else:
                             param_str_a = module['name'] + "ROS::" + method['name'] + "::Request &req, " + module[
@@ -406,26 +387,7 @@ class TemplateDict(dict):
                         param_str_a = ''
                         body_code = self.body_code_from_name(method['name'])
                         if p_utils.communication_is_ice(impa):
-                            for p in method['params']:
-                                # delim
-                                if param_str_a == '':
-                                    delim = ''
-                                else:
-                                    delim = ', '
-                                # decorator
-                                ampersand = '&'
-                                if p['decorator'] == 'out':
-                                    const = ''
-                                else:
-                                    if self.component.language.lower() == "cpp":
-                                        const = 'const '
-                                    else:
-                                        const = ''
-                                        ampersand = ''
-                                    if p['type'].lower() in ['int', '::ice::int', 'float', '::ice::float']:
-                                        ampersand = ''
-                                # STR
-                                param_str_a += delim + const + p['type'] + ' ' + ampersand + p['name']
+                            param_str_a = utils.get_parameters_string(method, module['name'], self.component.language)
                             result += "//SUBSCRIPTION to " + method['name'] + " method from " + interface[
                                 'name'] + " interface\n"
                             result += method['return'] + ' SpecificWorker::' + interface['name'] + "_" + method[

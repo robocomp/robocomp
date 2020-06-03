@@ -33,8 +33,6 @@ ${agm_includes}
 #define CHECK_PERIOD 5000
 #define BASIC_PERIOD 100
 
-using namespace std;
-${namespaces}
 
 ${ice_proxies_map}
 
