@@ -120,3 +120,19 @@ void SpecificWorker::sm_finalize()
 
 
 
+
+/**************************************/
+// From the RoboCompOmniRobot you can call this methods:
+// this->omnirobot_proxy->correctOdometer(...)
+// this->omnirobot_proxy->getBasePose(...)
+// this->omnirobot_proxy->getBaseState(...)
+// this->omnirobot_proxy->resetOdometer(...)
+// this->omnirobot_proxy->setOdometer(...)
+// this->omnirobot_proxy->setOdometerPose(...)
+// this->omnirobot_proxy->setSpeedBase(...)
+// this->omnirobot_proxy->stopBase(...)
+
+/**************************************/
+// From the RoboCompOmniRobot you can use this types:
+// RoboCompOmniRobot::TMechParams
+

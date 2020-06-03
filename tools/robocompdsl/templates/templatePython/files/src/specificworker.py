@@ -62,3 +62,4 @@ class SpecificWorker(GenericWorker):
 
     ${implements_methods}
 
+    ${interface_specific_comment}

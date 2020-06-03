@@ -353,3 +353,28 @@ void SpecificWorker::sendModificationProposal(AGMModel::SPtr &worldModel, AGMMod
 		exit(1);
 	}
 }
+
+/**************************************/
+// From the RoboCompAGMExecutive you can call this methods:
+// this->agmexecutive_proxy->activate(...)
+// this->agmexecutive_proxy->addSelfEdge(...)
+// this->agmexecutive_proxy->broadcastModel(...)
+// this->agmexecutive_proxy->broadcastPlan(...)
+// this->agmexecutive_proxy->deactivate(...)
+// this->agmexecutive_proxy->delSelfEdge(...)
+// this->agmexecutive_proxy->edgeUpdate(...)
+// this->agmexecutive_proxy->edgesUpdate(...)
+// this->agmexecutive_proxy->getData(...)
+// this->agmexecutive_proxy->getEdge(...)
+// this->agmexecutive_proxy->getModel(...)
+// this->agmexecutive_proxy->getNode(...)
+// this->agmexecutive_proxy->setMission(...)
+// this->agmexecutive_proxy->structuralChangeProposal(...)
+// this->agmexecutive_proxy->symbolUpdate(...)
+// this->agmexecutive_proxy->symbolsUpdate(...)
+
+/**************************************/
+// From the RoboCompAGMCommonBehavior you can use this types:
+// RoboCompAGMCommonBehavior::StateStruct
+// RoboCompAGMCommonBehavior::Parameter
+

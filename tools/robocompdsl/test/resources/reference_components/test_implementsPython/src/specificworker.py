@@ -148,3 +148,9 @@ class SpecificWorker(GenericWorker):
     # ===================================================================
 
 
+    ######################
+    # From the RoboCompHandDetection you can use this types:
+    # RoboCompHandDetection.TImage
+    # RoboCompHandDetection.TRoi
+    # RoboCompHandDetection.Hand
+

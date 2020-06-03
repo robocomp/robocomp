@@ -110,3 +110,7 @@ class SpecificWorker(GenericWorker):
 
 
 
+    ######################
+    # From the RoboCompIMUPub you can publish calling this methods:
+    # self.imupub_proxy.publish(...)
+

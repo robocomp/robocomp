@@ -152,3 +152,46 @@ void SpecificWorker::AprilTags_newAprilTagAndPose(const RoboCompAprilTags::tagsL
 }
 
 
+
+/**************************************/
+// From the RoboCompCameraSimple you can call this methods:
+// this->camerasimple_proxy->getImage(...)
+
+/**************************************/
+// From the RoboCompCameraSimple you can use this types:
+// RoboCompCameraSimple::TImage
+
+/**************************************/
+// From the RoboCompRGBD you can call this methods:
+// this->rgbd_proxy->getData(...)
+// this->rgbd_proxy->getDepth(...)
+// this->rgbd_proxy->getDepthInIR(...)
+// this->rgbd_proxy->getImage(...)
+// this->rgbd_proxy->getRGB(...)
+// this->rgbd_proxy->getRGBDParams(...)
+// this->rgbd_proxy->getRegistration(...)
+// this->rgbd_proxy->getXYZ(...)
+// this->rgbd_proxy->getXYZByteStream(...)
+// this->rgbd_proxy->setRegistration(...)
+
+/**************************************/
+// From the RoboCompRGBD you can use this types:
+// RoboCompRGBD::ColorRGB
+// RoboCompRGBD::PointXYZ
+// RoboCompRGBD::CameraParameters
+// RoboCompRGBD::TRGBDParams
+
+/**************************************/
+// From the RoboCompAprilBasedLocalization you can publish calling this methods:
+// this->aprilbasedlocalization_pubproxy->newAprilBasedPose(...)
+
+/**************************************/
+// From the RoboCompHandDetection you can use this types:
+// RoboCompHandDetection::TImage
+// RoboCompHandDetection::TRoi
+// RoboCompHandDetection::Hand
+
+/**************************************/
+// From the RoboCompAprilTags you can use this types:
+// RoboCompAprilTags::tag
+

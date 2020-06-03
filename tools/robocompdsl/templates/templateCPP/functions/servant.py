@@ -23,7 +23,7 @@ def interface_methods_definition(component, module, interface_name):
                 ret = utils.get_type_string(method['return'], module['name'])
                 name = method['name']
 
-                param_str = utils.get_parameters_string(method, module['name'], component.language, True)
+                param_str = utils.get_parameters_string(method, module['name'], component.language)
                 if param_str:
                     param_str = f"{param_str}, const Ice::Current&"
                 else:
@@ -46,7 +46,7 @@ def interface_methods_creation(component, interface_name):
                 ret = utils.get_type_string(method['return'], module['name'])
                 name = method['name']
 
-                param_str_a = utils.get_parameters_string(method,module['name'], component.language, True)
+                param_str_a = utils.get_parameters_string(method,module['name'], component.language)
                 if param_str_a:
                     param_str_a = f"{param_str_a}, const Ice::Current&"
                 else:

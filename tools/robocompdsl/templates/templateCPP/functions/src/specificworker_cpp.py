@@ -147,6 +147,18 @@ void SpecificWorker::sendModificationProposal(AGMModel::SPtr &worldModel, AGMMod
 }
 """
 
+INTERFACE_TYPES_COMMENT_STR = """\
+/**************************************/
+// From the ${module_name} you can use this types:
+${types}
+"""
+
+PROXY_METHODS_COMMENT_STR = """\
+/**************************************/
+// From the ${module_name} you can ${action} this methods:
+${methods}
+"""
+
 class TemplateDict(dict):
     def __init__(self, component):
         super(TemplateDict, self).__init__()
@@ -166,6 +178,7 @@ class TemplateDict(dict):
         self['implements'] = self.implements()
         self['subscribes'] = self.subscribes()
         self['agm_specific_code'] = self.agm_specific_code()
+        self['interface_specific_comment'] = self.interface_specific_comment()
 
     # TODO: Extract pieces of code to strings and refactor
     def body_code_from_name(self, name):
@@ -471,4 +484,39 @@ class TemplateDict(dict):
         statemachine = self.component.statemachine
         if statemachine is not None and statemachine['machine']['default']:
             result += "emit this->t_initialize_to_compute();\n"
+        return result
+
+    def interface_specific_comment(self):
+        result = ""
+        interfaces_by_type = {
+            "requires": self.component.requires,
+            "publishes":  self.component.publishes,
+            "implements": self.component.implements,
+            "subscribesTo": self.component.subscribesTo
+        }
+        for interface_type, interfaces in interfaces_by_type.items():
+            for interface, num in p_utils.get_name_number(interfaces):
+                if p_utils.communication_is_ice(interface):
+                    proxy_methods_calls = ""
+                    module = self.component.idsl_pool.module_providing_interface(interface.name)
+                    if interface_type in ["publishes", "requires"]:
+                        if interface_type == 'publishes':
+                            action = "publish calling"
+                            pub = "pub"
+                        else:
+                            action = "call"
+                            pub = ""
+                        proxy_reference = "this->" + interface.name.lower() + num + f"_{pub}proxy->"
+                        for method in module['interfaces'][0]['methods']:
+                            proxy_methods_calls += f"// {proxy_reference}{method}(...)\n"
+                        if proxy_methods_calls:
+                            result += Template(PROXY_METHODS_COMMENT_STR).substitute(module_name=module['name'],
+                                                                                     methods=proxy_methods_calls,
+                                                                                     action=action)
+                    structs_str = ""
+                    for struct in module['structs']:
+                        structs_str += f"// {struct['name'].replace('/', '::')}\n"
+                    if structs_str:
+                        result += Template(INTERFACE_TYPES_COMMENT_STR).substitute(module_name=module['name'],
+                                                                                   types=structs_str)
         return result

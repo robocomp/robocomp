@@ -91,3 +91,5 @@ ${implements}
 ${subscribes}
 
 ${agm_specific_code}
+
+${interface_specific_comment}

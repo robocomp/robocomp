@@ -120,3 +120,8 @@ void SpecificWorker::sm_finalize()
 
 
 
+
+/**************************************/
+// From the RoboCompIMUPub you can publish calling this methods:
+// this->imupub_pubproxy->publish(...)
+
