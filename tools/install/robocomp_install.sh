@@ -26,7 +26,7 @@ cd robocomp
 mkdir build
 cd build
 cmake ..
-make
+make -j$(nproc)
 sudo make install
 sudo sh -c "echo '/opt/robocomp/lib/' >> /etc/ld.so.conf"
 sudo ldconfig

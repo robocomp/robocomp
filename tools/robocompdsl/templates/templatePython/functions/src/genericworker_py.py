@@ -366,7 +366,7 @@ class TemplateDict(dict):
             name = os.path.splitext(file_name)[0]
             result += Template(SLICE_LOAD_STR).substitute(interface_name=name)
             module = DSLFactory().from_file(file_name, includeDirectories=includeDirectories)
-            result += 'from ' + module['name'] + ' import *\n'
+            result += f"import {module['name']}\n"
         return result
 
     def statemachine_signals(self):

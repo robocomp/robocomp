@@ -48,7 +48,7 @@ try:
     proxyString = ic.getProperties().getProperty('${iface_name}${num}Proxy')
     try:
         basePrx = ic.stringToProxy(proxyString)
-        ${iface_name_lower}${num}_proxy = ${iface_name}Prx.uncheckedCast(basePrx)
+        ${iface_name_lower}${num}_proxy = ${module_name}.${iface_name}Prx.uncheckedCast(basePrx)
         mprx["${iface_name}Proxy${num}"] = ${iface_name_lower}${num}_proxy
     except Ice.Exception:
         print('Cannot connect to the remote object (${iface_name})', proxyString)
@@ -78,7 +78,7 @@ while not topic:
         except:
             print('Another client created the ${iface_name} topic? ...')
 pub = topic.getPublisher().ice_oneway()
-${iface_name_lower}Topic = ${iface_name}Prx.uncheckedCast(pub)
+${iface_name_lower}Topic = ${module_name}.${iface_name}Prx.uncheckedCast(pub)
 mprx["${iface_name}Pub"] = ${iface_name_lower}Topic
 
 """
@@ -124,16 +124,20 @@ class TemplateDict(dict):
         result = ""
         for iface, num in get_name_number(self.component.requires):
             if communication_is_ice(iface):
-                name = iface[0]
-                result += Template(REQUIRE_STR).substitute(iface_name=name, iface_name_lower=name.lower(), num=num)
+                name = iface.name
+                module = self.component.idsl_pool.module_providing_interface(iface.name)
+                result += Template(REQUIRE_STR).substitute(iface_name=name, module_name=module['name'], iface_name_lower=name.lower(), num=num)
         return result
 
     def publish_proxy_creation(self):
         result = ""
         for iface, num in get_name_number(self.component.publishes):
             if communication_is_ice(iface):
-                name = iface[0]
-                result += Template(PUBLISHES_STR).substitute(iface_name=name, iface_name_lower=name.lower())
+                name = iface.name
+                module = self.component.idsl_pool.module_providing_interface(iface.name)
+                result += Template(PUBLISHES_STR).substitute(iface_name=name,
+                                                             iface_name_lower=name.lower(),
+                                                             module_name=module['name'])
         return result
 
     def implements_adapters_creation(self):
