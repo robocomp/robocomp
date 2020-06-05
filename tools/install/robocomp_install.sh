@@ -21,7 +21,7 @@ echo "export ROBOCOMP=~/robocomp" >> ~/.bashrc
 echo "export PATH=$PATH:/opt/robocomp/bin" >> ~/.bashrc
 export ROBOCOMP=~/robocomp
 export PATH=$PATH:/opt/robocomp/bin
-sudo [ -d /opt/robocomp ] && rm -r /opt/robocomp
+sudo [ -d /opt/robocomp ] && sudo rm -r /opt/robocomp
 cd robocomp
 mkdir build
 cd build
@@ -30,4 +30,4 @@ make -j$(nproc)
 sudo make install
 sudo sh -c "echo '/opt/robocomp/lib/' >> /etc/ld.so.conf"
 sudo ldconfig
-rcportchecker ports
+rcnode& python3 /home/robolab/robocomp/tools/robocompdsl/autogeneration_tests/test_cdsl/test_component_generation.py --no-execution
