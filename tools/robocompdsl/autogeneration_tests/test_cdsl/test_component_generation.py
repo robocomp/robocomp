@@ -35,8 +35,10 @@ class ComponentGenerationChecker:
         self.valid = 0
         self.generated = 0
         self.compiled = 0
+        self.executed = 0
         self.comp_failed = 0
         self.gen_failed = 0
+        self.exec_failed = 0
         self.dry_run = False
 
     def generate_code(self, cdsl_file, log_file, dry_run=True):
@@ -169,7 +171,7 @@ class ComponentGenerationChecker:
                     else:
                         rmtree(file)
 
-    def check_components_generation(self, test_component_dir, dry_run, dirty, generate_only=False, filter="", ignore="",
+    def check_components_generation(self, test_component_dir, dry_run, dirty, generate_only=False, no_execution=False, filter="", ignore="",
                                     clean_only=False):
         """
         Main method of the class. Generate needed code, compile and show the results
@@ -222,12 +224,16 @@ class ComponentGenerationChecker:
                                 self.results[current_dir]['compilation'] = True
                                 self.compiled += 1
                                 cprint("%s compilation OK" % current_dir, 'green')
-                                if self.run_component(dry_run=False) == 0:
-                                    self.results[current_dir]['execution'] = True
-                                    cprint("%s execution OK" % current_dir, 'green')
-                                else:
-                                    self.results[current_dir]['execution'] = False
-                                    cprint("%s execution Failed" % current_dir, 'red')
+                                if not no_execution:
+                                    if self.run_component(dry_run=False) == 0:
+                                        self.results[current_dir]['execution'] = True
+                                        cprint("%s execution OK" % current_dir, 'green')
+                                        self.executed += 1
+                                    else:
+                                        self.results[current_dir]['execution'] = False
+                                        cprint("%s execution Failed" % current_dir, 'red')
+                                        global_result = False
+                                        self.exec_failed += 1
                             else:
                                 self.results[current_dir]['compilation'] = False
                                 self.comp_failed += 1
@@ -248,8 +254,9 @@ class ComponentGenerationChecker:
         if not clean_only:
 
             print("%d components found with cdsl" % self.valid)
-            print("%d components generated OK (%d failed)" % (self.generated, self.gen_failed))
-            print("%d components compiled OK (%d failed)" % (self.compiled, self.comp_failed))
+            print("%s components generated OK (%s failed)" % (colored(self.generated, 'green'), colored(self.gen_failed, 'red')))
+            print("%s components compiled OK (%s failed)" % (colored(self.compiled, 'green'), colored(self.comp_failed, 'red')))
+            print("%s components executed OK (%s failed)" % (colored(self.executed, 'green'), colored(self.exec_failed, 'red')))
 
             for current_dir, result in self.results.items():
                 cname = colored(current_dir, 'magenta')
@@ -275,6 +282,8 @@ class ComponentGenerationChecker:
                 max_characters_len = ()
                 if generate_only:
                     print("\t%s have been generated? %s" % (cname, gen_result))
+                elif no_execution:
+                    print("\t%s have been generated? %s compile %s? " % (cname, gen_result, comp_result))
                 else:
                     print("\t%s have been generated? %s compile? %s execution? %s" % (cname, gen_result, comp_result, exec_result))
         return global_result
@@ -288,6 +297,9 @@ if __name__ == '__main__':
                         help="Only the generation with robocompdsl is checked. No cmake or make is tested")
     parser.add_argument("-d", "--dirty",
                         help="No cleaning is done after execution. All source files and temp will be left on their dirs.",
+                        action="store_true")
+    parser.add_argument("--no-execution",
+                        help="No execution of the applications is checked",
                         action="store_true")
     parser.add_argument("-c", "--clean",
                         help="Just clean all source files and temp will be left on their dirs. .cdsl, .smdsl and .logs are kept on their dirs.",
@@ -304,18 +316,31 @@ if __name__ == '__main__':
     parser.add_argument("-i", "--ignore", type=str,
                         help="Execute the check only for directories containing this string.", default="")
     args = parser.parse_args()
-
+    result = False
     try:
         checker = ComponentGenerationChecker()
-        checker.check_components_generation(args.test_folder, args.dry_run, args.dirty, args.generate_only,
-                                            args.filter, args.ignore,
-                                            args.clean)
+
+        result= checker.check_components_generation(args.test_folder,
+                                                    args.dry_run,
+                                                    args.dirty,
+                                                    args.generate_only,
+                                                    args.no_execution,
+                                                    args.filter,
+                                                    args.ignore,
+                                                    args.clean)
+
     except (KeyboardInterrupt, SystemExit):
         cprint("\nExiting in the middle of the execution.", 'red')
         cprint("Some files will be left on the directories.", 'yellow')
         cprint("Use -c option to clean all the generated files.", 'yellow')
-        sys.exit()
+        sys.exit(-1)
     except Exception as e:
         cprint("Unexpected exception: %s"%e, 'red')
         traceback.print_stack()
+        sys.exit(-1)
+    finally:
+        if result:
+            sys.exit(0)
+        else:
+            sys.exit(-1)
 
