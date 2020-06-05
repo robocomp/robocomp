@@ -171,7 +171,7 @@ class ComponentGenerationChecker:
                     else:
                         rmtree(file)
 
-    def check_components_generation(self, test_component_dir, dry_run, dirty, generate_only=False, no_execution=False, filter="", ignore="",
+    def check_components_generation(self, test_component_dir, dry_run, dirty, generate_only=False, no_execution=False, filter="", avoid=None,
                                     clean_only=False):
         """
         Main method of the class. Generate needed code, compile and show the results
@@ -184,13 +184,18 @@ class ComponentGenerationChecker:
         :return: None
         """
         global_result = True
+        if avoid is None:
+            avoid = []
         self.dry_run = dry_run
         previous_dir = os.getcwd()
         os.chdir(os.path.expanduser(test_component_dir))
         list_dir = glob.glob("test_*")
         for item in list_dir:
-            if os.path.isdir(item) and filter in item and not item.lower() == ignore.lower():
+            if os.path.isdir(item) and filter in item:
                 current_dir = item
+                if any([avoid_item.lower() in current_dir.lower() for avoid_item in avoid]):
+                    cprint(f"Avoiding component {current_dir}", 'magenta')
+                    continue
                 cprint("Entering dir %s" % current_dir, 'magenta')
                 os.chdir(current_dir)
                 cdsl_file = None
@@ -310,10 +315,11 @@ if __name__ == '__main__':
     parser.add_argument("-t", "--test-folder", type=str,
                         help=".",
                         default=TESTS_DIR)
+    parser.add_argument('--avoid', nargs='*',
+                        help="List of components dir names to be avoided",
+                        type=str)
 
     parser.add_argument("-f", "--filter", type=str,
-                        help="Execute the check only for directories containing this string.", default="")
-    parser.add_argument("-i", "--ignore", type=str,
                         help="Execute the check only for directories containing this string.", default="")
     args = parser.parse_args()
     result = False
@@ -326,7 +332,7 @@ if __name__ == '__main__':
                                                     args.generate_only,
                                                     args.no_execution,
                                                     args.filter,
-                                                    args.ignore,
+                                                    args.avoid,
                                                     args.clean)
 
     except (KeyboardInterrupt, SystemExit):
