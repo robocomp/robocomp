@@ -3,6 +3,8 @@ cmake_minimum_required( VERSION 2.6 )
 
 INSTALL(FILES "workspace.py" DESTINATION /opt/robocomp/python)
 INSTALL(PROGRAMS "rcworkspace.py" DESTINATION /opt/robocomp/bin RENAME rcworkspace )
+INSTALL(PROGRAMS "rcbuildtest/rcbuildtest.py" DESTINATION /opt/robocomp/bin RENAME rcbuildtest )
+INSTALL( DIRECTORY "rcbuildtest/resources" DESTINATION /opt/robocomp/share/rcbuildtest )
 INSTALL(PROGRAMS "rcrun.py" DESTINATION /opt/robocomp/bin RENAME rcrun )
 INSTALL(PROGRAMS "rced.py" DESTINATION /opt/robocomp/bin RENAME rced )
 INSTALL(PROGRAMS "rcbuild.py" DESTINATION /opt/robocomp/bin RENAME rcbuild )
