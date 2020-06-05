@@ -15,10 +15,6 @@ INSTALLATION_PATH = "/opt/robocomp/share/rcbuildtest/"
 DEBUG = True
 pkg_name = "docker-ce"
 
-cache = apt.cache.Cache()
-
-pkg = cache[pkg_name]
-
 branches = ['development', 'stable']
 
 def ubuntu_images_completer(prefix, parsed_args, **kwargs):
@@ -115,10 +111,14 @@ if __name__ == '__main__':
     parser.add_argument('-v', '--version', type=str, default='20.04').completer = ubuntu_images_completer
     argcomplete.autocomplete(parser)
     args = parser.parse_args()
-
-    if pkg.is_installed:
-        cprint(f"{pkg_name} already installed", 'green')
-    else:
+    try:
+        cache = apt.cache.Cache()
+        pkg = cache[pkg_name]
+        if pkg.is_installed:
+            cprint(f"{pkg_name} already installed", 'green')
+        else:
+            output = docker_install()
+    except KeyError:
         output = docker_install()
 
     print(f"UBUNTU VERSION  = {args.version}")
