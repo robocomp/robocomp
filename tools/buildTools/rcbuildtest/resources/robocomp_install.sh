@@ -1,11 +1,4 @@
 cat /etc/issue
-if [ -z "$1" ] || [ "$1" != 'stable' ] && [ "$1" != 'development' ]
-then
-    echo "Currently you only can use stable or development as robocomp branches."
-    ROBOCOMP_BRANCH='stable'
-else
-    ROBOCOMP_BRANCH=$1
-fi
 
 sudo apt-get update -y
 sudo DEBIAN_FRONTEND=noninteractive apt-get install -y tzdata
