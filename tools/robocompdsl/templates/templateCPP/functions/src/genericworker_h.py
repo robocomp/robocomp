@@ -3,6 +3,7 @@ from string import Template
 
 from dsl_parsers.dsl_factory import DSLFactory
 from dsl_parsers.parsing_utils import communication_is_ice, IDSLPool, get_name_number
+from .. import function_utils as utils
 
 GUI_INCLUDE_STR = """
 #if Qt5_FOUND
@@ -69,14 +70,14 @@ AGM_ATTRIBUTES_STR = """
 bool active;
 AGMModel::SPtr worldModel;
 BehaviorParameters p;
-ParameterMap params;
+RoboCompAGMCommonBehavior::ParameterMap params;
 int iter;
 bool setParametersAndPossibleActivation(const RoboCompAGMCommonBehavior::ParameterMap &prs, bool &reactivated);
 RoboCompPlanning::Action createAction(std::string s);
 """
 
-
 class TemplateDict(dict):
+
     def __init__(self, component):
         super(TemplateDict, self).__init__()
         self.component = component
@@ -85,7 +86,7 @@ class TemplateDict(dict):
         self['statemachine_includes'] = self.statemachine_includes()
         self['interfaces_includes'] = self.interfaces_includes()
         self['agm_includes'] = self.agm_includes()
-        self['namespaces'] = self.namespaces()
+        # self['namespaces'] = self.namespaces()
         self['ice_proxies_map'] = self.ice_proxies_map()
         self['agm_behaviour_parameter_struct'] = self.agm_behaviour_parameter_struct()
         self['ros_publishes_classes'] = self.ros_publishes_classes()
@@ -150,12 +151,12 @@ class TemplateDict(dict):
             result += "#include <agm2.h>\n"
         return result
 
-    def namespaces(self):
-        result = ""
-        for imp in sorted(list(set(self.component.recursiveImports + self.component.ice_interfaces_names))):
-            name = imp.split('/')[-1].split('.')[0]
-            result += "using namespace RoboComp" + name + ";\n"
-        return result
+    # def namespaces(self):
+    #     result = ""
+    #     for imp in sorted(list(set(self.component.recursiveImports + self.component.ice_interfaces_names))):
+    #         name = imp.split('/')[-1].split('.')[0]
+    #         result += "using namespace RoboComp" + name + ";\n"
+    #     return result
 
     def ice_proxies_map(self):
         result = ""
@@ -350,21 +351,28 @@ class TemplateDict(dict):
         result = ""
         for iface, num in get_name_number(self.component.requires):
             if communication_is_ice(iface):
-                name = iface[0]
+                module = self.component.idsl_pool.module_providing_interface(iface.name)
+                proxy_type = iface.name
+                if module is not None:
+                    proxy_type = f"{module['name']}::{iface.name}"
                 if self.component.language.lower() == "cpp":
-                    result += name + 'Prx ' + name.lower() + num + '_proxy;\n'
+                    result += f"{proxy_type}Prx {iface.name.lower()}{num}_proxy;\n"
                 else:
-                    result += name + 'PrxPtr ' + name.lower() + num + '_proxy;\n'
+                    result += f"{proxy_type}PrxPtr {iface.name.lower()}{num}_proxy;\n"
 
         for iface, num in get_name_number(self.component.publishes):
             if communication_is_ice(iface):
-                name = iface[0]
+                module = self.component.idsl_pool.module_providing_interface(iface.name)
+                proxy_type = iface.name
+                if module is not None:
+                    proxy_type = f"{module['name']}::{iface.name}"
                 if self.component.language.lower() == "cpp":
-                    result += name + 'Prx ' + name.lower() + num + '_pubproxy;\n'
+                    result += f"{proxy_type}Prx {iface.name.lower()}{num}_pubproxy;\n"
                 else:
-                    result += name + 'PrxPtr ' + name.lower() + num + '_pubproxy;\n'
+                    result += f"{proxy_type}PrxPtr {iface.name.lower()}{num}_pubproxy;\n"
         return result
 
+    #TODO: check if it can be mixed with the subscribes methodd. Are too similar.
     def implements(self):
         result = ""
         for iface in self.component.implements:
@@ -376,27 +384,9 @@ class TemplateDict(dict):
                         method = interface['methods'][mname]
                         param_str_a = ''
                         if communication_is_ice(iface):
-                            for p in method['params']:
-                                # delim
-                                if param_str_a == '':
-                                    delim = ''
-                                else:
-                                    delim = ', '
-                                # decorator
-                                ampersand = '&'
-                                if p['decorator'] == 'out':
-                                    const = ''
-                                else:
-                                    if self.component.language.lower() == "cpp":
-                                        const = 'const '
-                                    else:
-                                        const = ''
-                                        ampersand = ''
-                                    if p['type'].lower() in ['int', '::ice::int', 'float', '::ice::float']:
-                                        ampersand = ''
-                                # STR
-                                param_str_a += delim + const + p['type'] + ' ' + ampersand + p['name']
-                            result += "virtual " + method['return'] + ' ' + interface['name'] + "_" + method['name'] + "(" + param_str_a + ") = 0;\n"
+                            param_str_a = utils.get_parameters_string(method, module['name'], self.component.language)
+                            return_type = utils.get_type_string(method['return'], module['name'])
+                            result += f"virtual {return_type} {interface['name']}_{method['name']}({param_str_a}) = 0;\n"
                         else:
                             param_str_a = module['name'] + "ROS::" + method['name'] + "::Request &req, " + module[
                                 'name'] + "ROS::" + method['name'] + "::Response &res"
@@ -419,27 +409,9 @@ class TemplateDict(dict):
                         method = interface['methods'][mname]
                         param_str_a = ''
                         if communication_is_ice(iface):
-                            for p in method['params']:
-                                # delim
-                                if param_str_a == '':
-                                    delim = ''
-                                else:
-                                    delim = ', '
-                                # decorator
-                                ampersand = '&'
-                                if p['decorator'] == 'out':
-                                    const = ''
-                                else:
-                                    if self.component.language.lower() == "cpp":
-                                        const = 'const '
-                                    else:
-                                        const = ''
-                                        ampersand = ''
-                                    if p['type'].lower() in ['int', '::ice::int', 'float', '::ice::float']:
-                                        ampersand = ''
-                                # STR
-                                param_str_a += delim + const + p['type'] + " " + ampersand + p['name']
-                            result += "virtual " + method['return'] + " " + interface['name'] + "_" + method['name'] + "(" + param_str_a + ") = 0;\n"
+                            param_str_a = utils.get_parameters_string(method, module['name'], self.component.language)
+                            return_type = utils.get_type_string(method['return'], module['name'])
+                            result += f"virtual {return_type} {interface['name']}_{method['name']} ({param_str_a}) = 0;\n"
                         else:
                             for p in method['params']:
                                 # delim

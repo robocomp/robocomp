@@ -73,13 +73,13 @@ bool GenericWorker::deactivate()
 """
 
 AGM_SETPARAMETERSANDPOSSIBLEACTIVATION_STR = """
-bool GenericWorker::setParametersAndPossibleActivation(const ParameterMap &prs, bool &reactivated)
+bool GenericWorker::setParametersAndPossibleActivation(const RoboCompAGMCommonBehavior::ParameterMap &prs, bool &reactivated)
 {
 	// We didn't reactivate the component
 	reactivated = false;
 
 	// Update parameters
-	for (ParameterMap::const_iterator it=prs.begin(); it!=prs.end(); it++)
+	for (RoboCompAGMCommonBehavior::ParameterMap::const_iterator it=prs.begin(); it!=prs.end(); it++)
 	{
 		params[it->first] = it->second;
 	}
@@ -141,6 +141,7 @@ ${state_name}State = new ${state_type}(${child_mode});
 ${statemachine_name}.addState(${state_name}State);
 """
 
+CPP_TYPES = ['int', 'float', 'bool', 'void']
 
 class TemplateDict(dict):
     def __init__(self, component):
@@ -319,16 +320,24 @@ class TemplateDict(dict):
             if communication_is_ice(interface):
                 name = interface.name
                 if self.component.language.lower() == 'cpp':
-                    result += name.lower() + num + "_proxy = (*(" + name + "Prx*)mprx[\"" + name + "Proxy" + num + "\"]);\n"
+                    prx_type = name
+                    if prx_type not in CPP_TYPES and '::' not in prx_type:
+                        module = self.component.idsl_pool.module_providing_interface(name)
+                        prx_type = f"{module['name']}::{prx_type}"
+                    result += name.lower() + num + "_proxy = (*(" + prx_type + "Prx*)mprx[\"" + name + "Proxy" + num + "\"]);\n"
                 else:
                     result += name.lower() + num + "_proxy = std::get<" + str(cont) + ">(tprx);\n"
             cont = cont + 1
 
         for interface, num in get_name_number(self.component.publishes):
             if communication_is_ice(interface):
-                name = interface[0]
+                name = interface.name
+                prx_type = name
+                if prx_type not in CPP_TYPES and '::' not in prx_type:
+                    module = self.component.idsl_pool.module_providing_interface(name)
+                    prx_type = f"{module['name']}::{prx_type}"
                 if self.component.language.lower() == 'cpp':
-                    result += name.lower() + num + "_pubproxy = (*(" + name + "Prx*)mprx[\"" + name + "Pub" + num + "\"]);\n"
+                    result += name.lower() + num + "_pubproxy = (*(" + prx_type + "Prx*)mprx[\"" + name + "Pub" + num + "\"]);\n"
                 else:
                     result += name.lower() + num + "_pubproxy = std::get<" + str(cont) + ">(tprx);\n"
             cont = cont + 1

@@ -61,7 +61,7 @@ void CommonBehaviorI::killYourSelf( const Ice::Current&)
 * \brief Return components parameters
 * @return  AttrList Configuration parameters list
 */
-ParameterList CommonBehaviorI::getParameterList( const Ice::Current&) 
+RoboCompCommonBehavior::ParameterList CommonBehaviorI::getParameterList( const Ice::Current&)
 { 
 	return monitor->getParameterList();
 }

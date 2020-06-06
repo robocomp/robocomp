@@ -66,7 +66,7 @@ GenericWorker::GenericWorker(MapPrx& mprx) : QObject()
 	QObject::connect(finalizeState, SIGNAL(entered()), this, SLOT(sm_finalize()));
 
 	//------------------
-	agmexecutive_proxy = (*(AGMExecutivePrx*)mprx["AGMExecutiveProxy"]);
+	agmexecutive_proxy = (*(RoboCompAGMExecutive::AGMExecutivePrx*)mprx["AGMExecutiveProxy"]);
 
 	mutex = new QMutex(QMutex::Recursive);
 
@@ -152,13 +152,13 @@ bool GenericWorker::deactivate()
 	return active;
 }
 
-bool GenericWorker::setParametersAndPossibleActivation(const ParameterMap &prs, bool &reactivated)
+bool GenericWorker::setParametersAndPossibleActivation(const RoboCompAGMCommonBehavior::ParameterMap &prs, bool &reactivated)
 {
 	// We didn't reactivate the component
 	reactivated = false;
 
 	// Update parameters
-	for (ParameterMap::const_iterator it=prs.begin(); it!=prs.end(); it++)
+	for (RoboCompAGMCommonBehavior::ParameterMap::const_iterator it=prs.begin(); it!=prs.end(); it++)
 	{
 		params[it->first] = it->second;
 	}

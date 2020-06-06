@@ -2,7 +2,7 @@ import datetime
 from string import Template
 
 import dsl_parsers.parsing_utils as p_utils
-
+from .. import function_utils as utils
 
 AGM_INNERMODEL_ASSOCIATION_STR = """\
 innerModel = std::make_shared<InnerModel>(new InnerModel());
@@ -77,7 +77,7 @@ void SpecificWorker::regenerateInnerModelViewer()
 """
 
 SET_PARAMETERS_AND_POSSIBLE_ACTIVATION = """
-bool SpecificWorker::setParametersAndPossibleActivation(const ParameterMap &prs, bool &reactivated)
+bool SpecificWorker::setParametersAndPossibleActivation(const RoboCompAGMCommonBehavior::ParameterMap &prs, bool &reactivated)
 {
 	printf("<<< setParametersAndPossibleActivation\\n");
 	// We didn't reactivate the component
@@ -85,7 +85,7 @@ bool SpecificWorker::setParametersAndPossibleActivation(const ParameterMap &prs,
 
 	// Update parameters
 	params.clear();
-	for (ParameterMap::const_iterator it=prs.begin(); it!=prs.end(); it++)
+	for (RoboCompAGMCommonBehavior::ParameterMap::const_iterator it=prs.begin(); it!=prs.end(); it++)
 	{
 		params[it->first] = it->second;
 	}
@@ -147,6 +147,17 @@ void SpecificWorker::sendModificationProposal(AGMModel::SPtr &worldModel, AGMMod
 }
 """
 
+INTERFACE_TYPES_COMMENT_STR = """\
+/**************************************/
+// From the ${module_name} you can use this types:
+${types}
+"""
+
+PROXY_METHODS_COMMENT_STR = """\
+/**************************************/
+// From the ${module_name} you can ${action} this methods:
+${methods}
+"""
 
 class TemplateDict(dict):
     def __init__(self, component):
@@ -167,6 +178,7 @@ class TemplateDict(dict):
         self['implements'] = self.implements()
         self['subscribes'] = self.subscribes()
         self['agm_specific_code'] = self.agm_specific_code()
+        self['interface_specific_comment'] = self.interface_specific_comment()
 
     # TODO: Extract pieces of code to strings and refactor
     def body_code_from_name(self, name):
@@ -203,7 +215,7 @@ class TemplateDict(dict):
             elif name == 'deactivateAgent':
                 body_code = "\treturn deactivate();"
             elif name == 'getAgentState':
-                body_code = "\tStateStruct s;\n\tif (isActive())\n\t{\n\t\ts.state = RoboCompAGMCommonBehavior::StateEnum::Running;\n\t}\n\telse\n\t{\n\t\ts.state = RoboCompAGMCommonBehavior::StateEnum::Stopped;\n\t}\n\ts.info = p.action.name;\n\treturn s;"
+                body_code = "\tRoboCompAGMCommonBehavior::StateStruct s;\n\tif (isActive())\n\t{\n\t\ts.state = RoboCompAGMCommonBehavior::StateEnum::Running;\n\t}\n\telse\n\t{\n\t\ts.state = RoboCompAGMCommonBehavior::StateEnum::Stopped;\n\t}\n\ts.info = p.action.name;\n\treturn s;"
             elif name == 'getAgentParameters':
                 body_code = "\treturn params;"
             elif name == 'setAgentParameters':
@@ -354,27 +366,9 @@ class TemplateDict(dict):
                         param_str_a = ''
                         body_code = self.body_code_from_name(method['name'])
                         if p_utils.communication_is_ice(impa):
-                            for p in method['params']:
-                                # delim
-                                if param_str_a == '':
-                                    delim = ''
-                                else:
-                                    delim = ', '
-                                # decorator
-                                ampersand = '&'
-                                if p['decorator'] == 'out':
-                                    const = ''
-                                else:
-                                    if self.component.language.lower() == "cpp":
-                                        const = 'const '
-                                    else:
-                                        const = ''
-                                        ampersand = ''
-                                    if p['type'].lower() in ['int', '::ice::int', 'float', '::ice::float']:
-                                        ampersand = ''
-                                # STR
-                                param_str_a += delim + const + p['type'] + ' ' + ampersand + p['name']
-                            result += method['return'] + ' SpecificWorker::' + interface['name'] + "_" + method[
+                            param_str_a = utils.get_parameters_string(method, module['name'], self.component.language)
+                            return_type = utils.get_type_string(method['return'], module['name'])
+                            result += return_type + ' SpecificWorker::' + interface['name'] + "_" + method[
                                 'name'] + '(' + param_str_a + ")\n{\n//implementCODE\n" + body_code + "\n}\n\n"
                         else:
                             param_str_a = module['name'] + "ROS::" + method['name'] + "::Request &req, " + module[
@@ -406,26 +400,7 @@ class TemplateDict(dict):
                         param_str_a = ''
                         body_code = self.body_code_from_name(method['name'])
                         if p_utils.communication_is_ice(impa):
-                            for p in method['params']:
-                                # delim
-                                if param_str_a == '':
-                                    delim = ''
-                                else:
-                                    delim = ', '
-                                # decorator
-                                ampersand = '&'
-                                if p['decorator'] == 'out':
-                                    const = ''
-                                else:
-                                    if self.component.language.lower() == "cpp":
-                                        const = 'const '
-                                    else:
-                                        const = ''
-                                        ampersand = ''
-                                    if p['type'].lower() in ['int', '::ice::int', 'float', '::ice::float']:
-                                        ampersand = ''
-                                # STR
-                                param_str_a += delim + const + p['type'] + ' ' + ampersand + p['name']
+                            param_str_a = utils.get_parameters_string(method, module['name'], self.component.language)
                             result += "//SUBSCRIPTION to " + method['name'] + " method from " + interface[
                                 'name'] + " interface\n"
                             result += method['return'] + ' SpecificWorker::' + interface['name'] + "_" + method[
@@ -509,4 +484,39 @@ class TemplateDict(dict):
         statemachine = self.component.statemachine
         if statemachine is not None and statemachine['machine']['default']:
             result += "emit this->t_initialize_to_compute();\n"
+        return result
+
+    def interface_specific_comment(self):
+        result = ""
+        interfaces_by_type = {
+            "requires": self.component.requires,
+            "publishes":  self.component.publishes,
+            "implements": self.component.implements,
+            "subscribesTo": self.component.subscribesTo
+        }
+        for interface_type, interfaces in interfaces_by_type.items():
+            for interface, num in p_utils.get_name_number(interfaces):
+                if p_utils.communication_is_ice(interface):
+                    proxy_methods_calls = ""
+                    module = self.component.idsl_pool.module_providing_interface(interface.name)
+                    if interface_type in ["publishes", "requires"]:
+                        if interface_type == 'publishes':
+                            action = "publish calling"
+                            pub = "pub"
+                        else:
+                            action = "call"
+                            pub = ""
+                        proxy_reference = "this->" + interface.name.lower() + num + f"_{pub}proxy->"
+                        for method in module['interfaces'][0]['methods']:
+                            proxy_methods_calls += f"// {proxy_reference}{method}(...)\n"
+                        if proxy_methods_calls:
+                            result += Template(PROXY_METHODS_COMMENT_STR).substitute(module_name=module['name'],
+                                                                                     methods=proxy_methods_calls,
+                                                                                     action=action)
+                    structs_str = ""
+                    for struct in module['structs']:
+                        structs_str += f"// {struct['name'].replace('/', '::')}\n"
+                    if structs_str:
+                        result += Template(INTERFACE_TYPES_COMMENT_STR).substitute(module_name=module['name'],
+                                                                                   types=structs_str)
         return result

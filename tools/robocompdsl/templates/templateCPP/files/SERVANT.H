@@ -26,7 +26,6 @@
 #include <config.h>
 #include "genericworker.h"
 
-using namespace ${module_name};
 
 class ${interface_name}I : public virtual ${module_name}::${interface_name}
 {

@@ -26,7 +26,6 @@
 #include <config.h>
 #include "genericworker.h"
 
-using namespace RoboCompIMUPub;
 
 class IMUPubI : public virtual RoboCompIMUPub::IMUPub
 {
@@ -34,7 +33,7 @@ public:
 	IMUPubI(GenericWorker *_worker);
 	~IMUPubI();
 
-	void publish(const RoboCompIMU::DataImu  &imu, const Ice::Current&);
+	void publish(const RoboCompIMU::DataImu &imu, const Ice::Current&);
 
 private:
 

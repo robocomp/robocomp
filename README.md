@@ -30,7 +30,7 @@ Remember to start a new bash session before continue using RoboComp: new variabl
 
 # Installation from source
 
-Tested in Ubuntu 18.04.  
+Tested in Ubuntu 18.04, 19.10, 20.04 and 20.10.  
 **Note:** RoboComp is not compatible with Ubuntu 16.04. RoboComp needs to be compiled using C++11. Ice libraries with C++11 support are only available for zeroc-ice 3.7 and the packages for this version are only available since Ubuntu 18.04.
 
 **Note:** If you have installed Anaconda in your system. [Then you need to change the python from anaconda to default](https://github.com/robocomp/robocomp/issues/248).
@@ -41,8 +41,8 @@ Make sure you have installed the following packages from the Ubuntu repository:
 
     sudo apt-get update
     sudo apt-get install --no-install-recommends git git-annex cmake make g++ libgsl-dev libopenscenegraph-dev cmake-qt-gui freeglut3-dev libboost-system-dev libboost-thread-dev qt5-default libqt5xmlpatterns5-dev libxt-dev libboost-test-dev libboost-filesystem-dev  libccd-dev  libqt5opengl5-dev libxml2-dev
-    sudo apt-get install --no-install-recommends libzeroc-ice3.7 libzeroc-icestorm3.7 python-zeroc-ice python3-zeroc-ice zeroc-glacier2 zeroc-ice-slice zeroc-ice-utils zeroc-icebox zeroc-icegrid zeroc-icepatch2 zeroc-icebridge libzeroc-ice-dev zeroc-ice-all-dev zeroc-ice-compilers
-    sudo apt-get install --no-install-recommends python3-pip python3-setuptools python3-pyparsing=2.2.0+dfsg1-2 python3-numpy python3-libxml2 python3-xmltodict
+    sudo apt-get install --no-install-recommends libzeroc-ice3.7 libzeroc-icestorm3.7 python3-zeroc-ice zeroc-glacier2 zeroc-ice-slice zeroc-ice-utils zeroc-icebox zeroc-icegrid zeroc-icepatch2 zeroc-icebridge libzeroc-ice-dev zeroc-ice-all-dev zeroc-ice-compilers
+    sudo apt-get install --no-install-recommends python3-pip python3-setuptools python3-pyparsing python3-numpy python3-libxml2 python3-xmltodict
     sudo pip3 install networkx pyside2 argcomplete termcolor cogapp
 
 It is recommendable to install the following packages::

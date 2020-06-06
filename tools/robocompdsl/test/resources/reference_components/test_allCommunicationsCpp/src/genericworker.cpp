@@ -43,9 +43,9 @@ GenericWorker::GenericWorker(MapPrx& mprx) : Ui_guiDlg()
 	QObject::connect(&timer, SIGNAL(timeout()), this, SIGNAL(t_compute_to_compute()));
 
 	//------------------
-	camerasimple_proxy = (*(CameraSimplePrx*)mprx["CameraSimpleProxy"]);
-	rgbd_proxy = (*(RGBDPrx*)mprx["RGBDProxy"]);
-	aprilbasedlocalization_pubproxy = (*(AprilBasedLocalizationPrx*)mprx["AprilBasedLocalizationPub"]);
+	camerasimple_proxy = (*(RoboCompCameraSimple::CameraSimplePrx*)mprx["CameraSimpleProxy"]);
+	rgbd_proxy = (*(RoboCompRGBD::RGBDPrx*)mprx["RGBDProxy"]);
+	aprilbasedlocalization_pubproxy = (*(RoboCompAprilBasedLocalization::AprilBasedLocalizationPrx*)mprx["AprilBasedLocalizationPub"]);
 
 	mutex = new QMutex(QMutex::Recursive);
 

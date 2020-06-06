@@ -26,7 +26,6 @@
 #include <config.h>
 #include "genericworker.h"
 
-using namespace RoboCompAprilTags;
 
 class AprilTagsI : public virtual RoboCompAprilTags::AprilTags
 {
@@ -34,8 +33,8 @@ public:
 	AprilTagsI(GenericWorker *_worker);
 	~AprilTagsI();
 
-	void newAprilTag(const tagsList  &tags, const Ice::Current&);
-	void newAprilTagAndPose(const tagsList  &tags, const RoboCompGenericBase::TBaseState  &bState, const RoboCompJointMotor::MotorStateMap  &hState, const Ice::Current&);
+	void newAprilTag(const RoboCompAprilTags::tagsList &tags, const Ice::Current&);
+	void newAprilTagAndPose(const RoboCompAprilTags::tagsList &tags, const RoboCompGenericBase::TBaseState &bState, const RoboCompJointMotor::MotorStateMap &hState, const Ice::Current&);
 
 private:
 

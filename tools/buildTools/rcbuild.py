@@ -12,12 +12,6 @@ sys.path.append('/opt/robocomp/python')
 from workspace import Workspace
 
 
-def complete_components(self, prefix, parsed_args, **kwargs):
-    components = self.ws.list_components_in_workspace(self.ws.workspace_paths)
-    componentsname=[]
-    for component in components:
-        componentsname.append(component.split('/')[ len(component.split('/')) -1 ])
-    return (componentname for componentname in componentsname if componentname.startswith(prefix))
 
 class RCBuild:
     def __init__(self):
@@ -25,8 +19,7 @@ class RCBuild:
 
 
 
-    def build_component(self, bcomponent, install):
-        clean = False
+    def build_component(self, bcomponent, clean):
         path = self.ws.find_component(bcomponent)
         if not path:
             print(f"No such {bcomponent} component exists")
@@ -76,27 +69,31 @@ class RCBuild:
             except Exception as e:
                 raise RuntimeError("couldnt generate doc files {0}".format(e))
 
+    def complete_components(self, prefix, parsed_args, **kwargs):
+        return self.ws.list_filtered_components_names(prefix)
+
 def main():
+    builder = RCBuild()
     parser = argparse.ArgumentParser(description="configures and build components ")
     group = parser.add_mutually_exclusive_group()
-    parser.add_argument('component', nargs='?', help='name of the component to build, if omitted curent workspace is build').completer = complete_components
-    group.add_argument('-i','--install',nargs='?' , default = 'notgiven' , help="install the component(s) to given path(relative from build space or abs), defaults to /opt/robocomp")
-    group.add_argument('--doc', action = 'store_true' , help="generate documentation")
-    group.add_argument('--installdoc', action = 'store_true' , help="install documentation")
+    parser.add_argument('component', nargs='?', help='name of the component to build, if omitted curent workspace is build').completer = builder.complete_components
+    group.add_argument('-c', '--clean', nargs='?', default='notgiven', help="Clean the compilation files (CMake and Make generated files).")
+    group.add_argument('--doc', action='store_true' , help="generate documentation")
+    group.add_argument('--installdoc', action='store_true', help="install documentation")
     
     argcomplete.autocomplete(parser)
     args = parser.parse_args()
-    builder = RCBuild()
+
 
     if not args.component or args.component.strip() == '.':
         component_path = os.getcwd()
         
         if builder.ws.path_is_component(component_path):
-            #if we are inside a component source directory
+            # if we are inside a component source directory
             if args.doc or args.installdoc:
                 builder.build_docs(component_path, args.installdoc)
             else:
-                builder.build_component(component_path, args.install)
+                builder.build_component(component_path, args.clean)
         else:
             parser.error(colored(f"{component_path} is not a valid robocomp component directory.", 'red'))
     
@@ -105,7 +102,8 @@ def main():
         if args.doc or args.installdoc:
             builder.build_docs(component, args.installdoc)
         else:
-            builder.build_component(component, args.install)
+            builder.build_component(component, args.clean)
+
 
 if __name__ == '__main__':
     main()

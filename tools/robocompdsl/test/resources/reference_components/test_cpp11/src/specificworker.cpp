@@ -21,9 +21,9 @@
 /**
 * \brief Default constructor
 */
-SpecificWorker::SpecificWorker(TuplePrx tprx) : GenericWorker(tprx)
+SpecificWorker::SpecificWorker(TuplePrx tprx, bool startup_check) : GenericWorker(tprx)
 {
-
+	this->startup_check_flag = startup_check;
 }
 
 /**
@@ -60,8 +60,15 @@ void SpecificWorker::initialize(int period)
 {
 	std::cout << "Initialize worker" << std::endl;
 	this->Period = period;
-	timer.start(Period);
-	emit this->t_initialize_to_compute();
+	if(this->startup_check_flag)
+	{
+		this->startup_check();
+	}
+	else
+	{
+        timer.start(Period);
+        emit this->t_initialize_to_compute();
+    }
 
 }
 
@@ -81,6 +88,13 @@ void SpecificWorker::compute()
 	//}
 	
 	
+}
+
+int SpecificWorker::startup_check()
+{
+	std::cout << "Startup check" << std::endl;
+	QTimer::singleShot(200, qApp, SLOT(quit()));
+	return 0;
 }
 
 
@@ -105,4 +119,20 @@ void SpecificWorker::sm_finalize()
 
 
 
+
+
+/**************************************/
+// From the RoboCompOmniRobot you can call this methods:
+// this->omnirobot_proxy->correctOdometer(...)
+// this->omnirobot_proxy->getBasePose(...)
+// this->omnirobot_proxy->getBaseState(...)
+// this->omnirobot_proxy->resetOdometer(...)
+// this->omnirobot_proxy->setOdometer(...)
+// this->omnirobot_proxy->setOdometerPose(...)
+// this->omnirobot_proxy->setSpeedBase(...)
+// this->omnirobot_proxy->stopBase(...)
+
+/**************************************/
+// From the RoboCompOmniRobot you can use this types:
+// RoboCompOmniRobot::TMechParams
 

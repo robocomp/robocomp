@@ -34,19 +34,20 @@ class SpecificWorker : public GenericWorker
 {
 Q_OBJECT
 public:
-	SpecificWorker(MapPrx& mprx);
+	SpecificWorker(MapPrx& mprx, bool startup_check);
 	~SpecificWorker();
 	bool setParams(RoboCompCommonBehavior::ParameterList params);
 
-	int HandDetection_addNewHand(const int expectedHands, const TRoi &roi);
-	Hands HandDetection_getHands();
+	int HandDetection_addNewHand(const int expectedHands, const RoboCompHandDetection::TRoi &roi);
+	RoboCompHandDetection::Hands HandDetection_getHands();
 	int HandDetection_getHandsCount();
 
-	void AprilTags_newAprilTag(const tagsList &tags);
-	void AprilTags_newAprilTagAndPose(const tagsList &tags, const RoboCompGenericBase::TBaseState &bState, const RoboCompJointMotor::MotorStateMap &hState);
+	void AprilTags_newAprilTag(const RoboCompAprilTags::tagsList &tags);
+	void AprilTags_newAprilTagAndPose(const RoboCompAprilTags::tagsList &tags, const RoboCompGenericBase::TBaseState &bState, const RoboCompJointMotor::MotorStateMap &hState);
 
 public slots:
 	void compute();
+	int startup_check();
 	void initialize(int period);
 	//Specification slot methods State Machine
 	void sm_compute();
@@ -56,6 +57,7 @@ public slots:
 	//--------------------
 private:
 	std::shared_ptr<InnerModel> innerModel;
+	bool startup_check_flag;
 
 };
 

@@ -35,8 +35,10 @@ class ComponentGenerationChecker:
         self.valid = 0
         self.generated = 0
         self.compiled = 0
+        self.executed = 0
         self.comp_failed = 0
         self.gen_failed = 0
+        self.exec_failed = 0
         self.dry_run = False
 
     def generate_code(self, cdsl_file, log_file, dry_run=True):
@@ -99,10 +101,47 @@ class ComponentGenerationChecker:
         :param dry_run: --dry-run is added as argument to the cmake command.
         :return: command return code
         """
-        command = "make"
+        command = "make -j $(nproc)"
         if dry_run:
             command += " --dry-run"
         with open("make_output.log", "wb") as log:
+            command_output = subprocess.Popen(command,
+                                              stdout=log,
+                                              stderr=log,
+                                              shell=True)
+            stdout, stderr = command_output.communicate()
+            if dry_run:
+                print(stdout)
+            # print(stderr)
+            return command_output.returncode
+
+    def run_component(self, dry_run=True):
+        """
+        Execute the make for the component. Output and error is saved to make_output.log.
+        :param dry_run: --dry-run is added as argument to the cmake command.
+        :return: command return code
+        """
+        command = ""
+        if os.path.exists("./bin"):
+            bin_files = os.listdir("./bin")
+            if len(bin_files) == 1:
+                command = "./bin/"+bin_files[-1]
+        else:
+            if os.path.exists("./src/testcomp.py"):
+                command = "./src/testcomp.py"
+            # for filename in os.listdir('./src/'):
+            #     print("Checking %s" % "./src/"+filename)
+            #     if os.path.isfile(filename) and os.access(filename, os.X_OK):
+            #         command = "./src/"+filename
+            #         print("Found executable %s" % command)
+        if not command:
+            return -1
+
+        if dry_run:
+            print("Executing %s (--dry-run)" % command)
+            return 0
+        command += " --startup-check"
+        with open("run_component.log", "wb") as log:
             command_output = subprocess.Popen(command,
                                               stdout=log,
                                               stderr=log,
@@ -132,7 +171,7 @@ class ComponentGenerationChecker:
                     else:
                         rmtree(file)
 
-    def check_components_generation(self, test_component_dir, dry_run, dirty, generate_only=False, filter="", ignore="",
+    def check_components_generation(self, test_component_dir, dry_run, dirty, generate_only=False, no_execution=False, filter="", avoid=None,
                                     clean_only=False):
         """
         Main method of the class. Generate needed code, compile and show the results
@@ -145,13 +184,18 @@ class ComponentGenerationChecker:
         :return: None
         """
         global_result = True
+        if avoid is None:
+            avoid = []
         self.dry_run = dry_run
         previous_dir = os.getcwd()
         os.chdir(os.path.expanduser(test_component_dir))
         list_dir = glob.glob("test_*")
         for item in list_dir:
-            if os.path.isdir(item) and filter in item and not item.lower() == ignore.lower():
+            if os.path.isdir(item) and filter in item:
                 current_dir = item
+                if any([avoid_item.lower() in current_dir.lower() for avoid_item in avoid]):
+                    cprint(f"Avoiding component {current_dir}", 'magenta')
+                    continue
                 cprint("Entering dir %s" % current_dir, 'magenta')
                 os.chdir(current_dir)
                 cdsl_file = None
@@ -166,8 +210,10 @@ class ComponentGenerationChecker:
                         os.chdir("..")
                         continue
                     self.valid += 1
-                    self.results[current_dir] = {"generation":False, "compilation": False}
+                    self.results[current_dir] = {"generation":False, "compilation": False, "execution": False}
+                    print("Generating code ... WAIT!")
                     if self.generate_code(cdsl_file, "generation_output.log", False) == 0:
+                        cprint("%s generation OK" % current_dir, 'green')
                         self.results[current_dir]['generation'] = True
                         self.generated += 1
                         if generate_only:
@@ -183,13 +229,23 @@ class ComponentGenerationChecker:
                                 self.results[current_dir]['compilation'] = True
                                 self.compiled += 1
                                 cprint("%s compilation OK" % current_dir, 'green')
+                                if not no_execution:
+                                    if self.run_component(dry_run=False) == 0:
+                                        self.results[current_dir]['execution'] = True
+                                        cprint("%s execution OK" % current_dir, 'green')
+                                        self.executed += 1
+                                    else:
+                                        self.results[current_dir]['execution'] = False
+                                        cprint("%s execution Failed" % current_dir, 'red')
+                                        global_result = False
+                                        self.exec_failed += 1
                             else:
                                 self.results[current_dir]['compilation'] = False
                                 self.comp_failed += 1
                                 cprint("%s compilation FAILED" % current_dir, 'red')
                                 global_result = False
                     else:
-                        cprint("%s generation FAILED"%os.path.join(current_dir,cdsl_file), 'red')
+                        cprint("%s generation FAILED" % os.path.join(current_dir, cdsl_file), 'red')
                         self.gen_failed += 1
                         self.results[current_dir]['generation'] = False
                         global_result = False
@@ -203,8 +259,9 @@ class ComponentGenerationChecker:
         if not clean_only:
 
             print("%d components found with cdsl" % self.valid)
-            print("%d components generated OK (%d failed)" % (self.generated, self.gen_failed))
-            print("%d components compiled OK (%d failed)" % (self.compiled, self.comp_failed))
+            print("%s components generated OK (%s failed)" % (colored(self.generated, 'green'), colored(self.gen_failed, 'red')))
+            print("%s components compiled OK (%s failed)" % (colored(self.compiled, 'green'), colored(self.comp_failed, 'red')))
+            print("%s components executed OK (%s failed)" % (colored(self.executed, 'green'), colored(self.exec_failed, 'red')))
 
             for current_dir, result in self.results.items():
                 cname = colored(current_dir, 'magenta')
@@ -221,10 +278,19 @@ class ComponentGenerationChecker:
                 else:
                     comp_result = colored("FALSE", 'red')
 
+                if result['execution']:
+                    exec_result = colored("TRUE", 'green')
+                else:
+                    exec_result = colored("FALSE", 'red')
+
+
+                max_characters_len = ()
                 if generate_only:
                     print("\t%s have been generated? %s" % (cname, gen_result))
+                elif no_execution:
+                    print("\t%s have been generated? %s compile %s? " % (cname, gen_result, comp_result))
                 else:
-                    print("\t%s have been generated? %s compile? %s" % (cname, gen_result, comp_result))
+                    print("\t%s have been generated? %s compile? %s execution? %s" % (cname, gen_result, comp_result, exec_result))
         return global_result
 
 
@@ -237,6 +303,9 @@ if __name__ == '__main__':
     parser.add_argument("-d", "--dirty",
                         help="No cleaning is done after execution. All source files and temp will be left on their dirs.",
                         action="store_true")
+    parser.add_argument("--no-execution",
+                        help="No execution of the applications is checked",
+                        action="store_true")
     parser.add_argument("-c", "--clean",
                         help="Just clean all source files and temp will be left on their dirs. .cdsl, .smdsl and .logs are kept on their dirs.",
                         action="store_true")
@@ -246,24 +315,38 @@ if __name__ == '__main__':
     parser.add_argument("-t", "--test-folder", type=str,
                         help=".",
                         default=TESTS_DIR)
+    parser.add_argument('--avoid', nargs='*',
+                        help="List of components dir names to be avoided",
+                        type=str)
 
     parser.add_argument("-f", "--filter", type=str,
                         help="Execute the check only for directories containing this string.", default="")
-    parser.add_argument("-i", "--ignore", type=str,
-                        help="Execute the check only for directories containing this string.", default="")
     args = parser.parse_args()
-
+    result = False
     try:
         checker = ComponentGenerationChecker()
-        checker.check_components_generation(args.test_folder, args.dry_run, args.dirty, args.generate_only,
-                                            args.filter, args.ignore,
-                                            args.clean)
+
+        result= checker.check_components_generation(args.test_folder,
+                                                    args.dry_run,
+                                                    args.dirty,
+                                                    args.generate_only,
+                                                    args.no_execution,
+                                                    args.filter,
+                                                    args.avoid,
+                                                    args.clean)
+
     except (KeyboardInterrupt, SystemExit):
         cprint("\nExiting in the middle of the execution.", 'red')
         cprint("Some files will be left on the directories.", 'yellow')
         cprint("Use -c option to clean all the generated files.", 'yellow')
-        sys.exit()
+        sys.exit(-1)
     except Exception as e:
         cprint("Unexpected exception: %s"%e, 'red')
         traceback.print_stack()
+        sys.exit(-1)
+    finally:
+        if result:
+            sys.exit(0)
+        else:
+            sys.exit(-1)
 

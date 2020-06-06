@@ -40,9 +40,6 @@
 #define CHECK_PERIOD 5000
 #define BASIC_PERIOD 100
 
-using namespace std;
-using namespace RoboCompIMU;
-using namespace RoboCompIMUPub;
 
 typedef map <string,::IceProxy::Ice::Object*> MapPrx;
 
@@ -60,7 +57,7 @@ public:
 	QMutex *mutex;
 
 
-	IMUPubPrx imupub_pubproxy;
+	RoboCompIMUPub::IMUPubPrx imupub_pubproxy;
 
 
 protected:
