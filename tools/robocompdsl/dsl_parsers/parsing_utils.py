@@ -18,7 +18,7 @@ def generate_recursive_imports(initial_idsls, include_directories=None):
             raise FileNotFoundError('generate_recursive_imports: Couldn\'t locate %s' % idsl_basename)
 
         # if importedModule['imports'] have a # at the end an emtpy '' is generated
-        idsl_imports = imported_module['imports'].split('#')
+        idsl_imports = imported_module['imports']
         # we remove all the '' ocurrences and existing imports
         aux_imports = []
         for i_import in idsl_imports:
@@ -243,7 +243,7 @@ class IDSLPool(OrderedDict):
         super(IDSLPool, self).__init__()
         include_directories = include_directories + self.common_interface_dirs
         self.includeInPool(files, self, include_directories)
-        self.includeInPool('#'.join(self.mandatory_idsls), self, include_directories)
+        self.includeInPool(self.mandatory_idsls, self, include_directories)
 
     @classmethod
     def getRosTypes(cls):
@@ -258,17 +258,9 @@ class IDSLPool(OrderedDict):
         Recursively add the loaded modules to the pool.
 
         """
-        file_list = []
-
-        # Extracting files names from string argument "-I filename.idsl#filename2.idsl"
-        for p in [f for f in files.split('#') if len(f) > 0]:
-            if p.startswith("-I"):
-                pass
-            else:
-                file_list.append(p)
 
         # look for the files in the includeDirectories
-        for f in file_list:
+        for f in files:
             filename = f.split('.')[0]
             if filename not in module_pool:
                 for p in include_directories:

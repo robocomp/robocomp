@@ -198,8 +198,7 @@ class ComponentFacade:
         if hasattr(self, '__idsl_pool'):
             return self.__idsl_pool
         else:
-            the_idsls = ''.join([imp + '#' for imp in self.imports])
-            idsl_pool = IDSLPool(the_idsls, [])
+            idsl_pool = IDSLPool(self.imports, [])
             interface_list = self.requires + self.implements + self.subscribesTo + \
                              self.publishes
             for interface_required in interface_list:

@@ -78,12 +78,12 @@ class IDSLParser(DSLParserTemplate):
         except KeyError:
             result_dict['name'] = parsing_result['name']
 
-        result_dict['imports'] = ''
-        result_dict['recursive_imports'] = ''
+        result_dict['imports'] = []
+        result_dict['recursive_imports'] = []
         if 'imports' in parsing_result:
             # print result_dict['name'], parsing_result['imports']
-            result_dict['imports'] = '#'.join(parsing_result['imports'])
-            result_dict['recursive_imports'] = '#'.join(generate_recursive_imports(list(parsing_result['imports'])))
+            result_dict['imports'] = parsing_result['imports'].asList()
+            result_dict['recursive_imports'] = generate_recursive_imports(list(parsing_result['imports']))
         # INTERFACES DEFINED IN THE MODULE
         result_dict['interfaces'] = []
 

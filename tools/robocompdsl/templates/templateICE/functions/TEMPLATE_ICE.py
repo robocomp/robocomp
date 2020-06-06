@@ -59,7 +59,7 @@ class TemplateDict(dict):
     def ice_imports(self):
         result = ""
         if 'imports' in self.module and self.module["imports"] != '':
-            for imp in self.module['imports'].split('#'):
+            for imp in self.module['imports']:
                 if imp != '':
                     result += "#include <" + os.path.basename(imp).split('.')[0] + ".ice>\n"
         return result

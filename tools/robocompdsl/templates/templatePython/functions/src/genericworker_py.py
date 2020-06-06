@@ -91,7 +91,7 @@ class TemplateDict(dict):
         result = ""
         for im in self.component.implements + self.component.subscribesTo:
             if communication_is_ice(im):
-                result += 'from ' + im.name.lower() + 'I import *\n'
+                result += 'import ' + im.name.lower() + 'I\n'
         return result
 
     def qt_class_type(self):

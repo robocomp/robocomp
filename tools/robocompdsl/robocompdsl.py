@@ -130,17 +130,6 @@ class FullPaths(argparse.Action):
             setattr(namespace, self.dest, dirnames)
 
 
-def generate_idsl_file(input_file, output_file, include_dirs):
-    # idsl = IDSLParsing.fromFileIDSL(inputFile)
-    print('Generating ICE file ', output_file)
-    # Call cog
-    params = {
-        "theIDSL": input_file,
-        "theIDSLPaths": '#'.join(include_dirs)
-    }
-    cog_command = robocompdslutils.generate_cog_command(params, "/opt/robocomp/share/robocompdsl/TEMPLATE.ICE", output_file)
-    robocompdslutils.run_cog_and_replace_tags(cog_command, output_file)
-
 
 DESCRIPTION_STR = """\
 This application create components files from cdsl files or .ice from idsl
