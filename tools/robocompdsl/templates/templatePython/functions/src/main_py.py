@@ -6,7 +6,7 @@ from dsl_parsers.parsing_utils import communication_is_ice, get_name_number, IDS
 
 SUBSCRIBESTO_STR = """
 ${iface_name}_adapter = ic.createObjectAdapter("${iface_name}Topic")
-${iface_name_lower}I_ = ${iface_name}I(worker)
+${iface_name_lower}I_ = ${iface_name_lower}I.${iface_name}I(worker)
 ${iface_name_lower}_proxy = ${iface_name}_adapter.addWithUUID(${iface_name_lower}I_).ice_oneway()
 
 subscribeDone = False
@@ -86,7 +86,7 @@ mprx["${iface_name}Pub"] = ${iface_name_lower}Topic
 
 IMPLEMENTS_STR = """\
 adapter = ic.createObjectAdapter('${iface_name}')
-adapter.add(${iface_name}I(worker), ic.stringToIdentity('${iface_name_lower}'))
+adapter.add(${iface_name_lower}I.${iface_name}I(worker), ic.stringToIdentity('${iface_name_lower}'))
 adapter.activate()
 
 """

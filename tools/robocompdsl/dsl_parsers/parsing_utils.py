@@ -241,6 +241,7 @@ class IDSLPool(OrderedDict):
 
     def __init__(self, files, include_directories):
         super(IDSLPool, self).__init__()
+        assert isinstance(files, list), "Files must be a list of strings"
         include_directories = include_directories + self.common_interface_dirs
         self.includeInPool(files, self, include_directories)
         self.includeInPool(self.mandatory_idsls, self, include_directories)

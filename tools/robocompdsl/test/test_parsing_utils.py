@@ -35,7 +35,8 @@ class ParsingUtilsTest(unittest.TestCase):
         self.assertTrue(parsing_utils.communication_is_ice(["CameraSimple"]))
 
     def test_IDSLPool(self):
-        pool = parsing_utils.IDSLPool("AprilTags.idsl", [])
+        self.assertRaises(AssertionError, parsing_utils.IDSLPool, "AprilTags.idsl", [])
+        pool = parsing_utils.IDSLPool(["AprilTags.idsl"], [])
         self.assertIn("AprilTags", pool)
         self.assertIn("GenericBase", pool)
         self.assertIn("JointMotor", pool)
@@ -140,7 +141,7 @@ class ParsingUtilsTest(unittest.TestCase):
         # custom types
         the_idsls = parsing_utils.generate_recursive_imports(["AprilTags.idsl"], [])
         the_idsls.append('AprilTags.idsl')
-        module_pool = parsing_utils.IDSLPool('#'.join(the_idsls), [])
+        module_pool = parsing_utils.IDSLPool(the_idsls, [])
         self.assertEqual(
             parsing_utils.decorator_and_type_to_const_ampersand(decorator='out', vtype='MotorParams', module_pool=module_pool,
                                                                 cpp11=False),
@@ -166,7 +167,7 @@ class ParsingUtilsTest(unittest.TestCase):
 
         the_idsls = parsing_utils.generate_recursive_imports(["TouchPoints.idsl"], [])
         the_idsls.append('TouchPoints.idsl')
-        module_pool = parsing_utils.IDSLPool('#'.join(the_idsls), [])
+        module_pool = parsing_utils.IDSLPool(the_idsls, [])
         self.assertEqual(
             parsing_utils.decorator_and_type_to_const_ampersand(decorator='out', vtype='StateEnum',
                                                                 module_pool=module_pool,

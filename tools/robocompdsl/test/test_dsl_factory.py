@@ -153,8 +153,8 @@ class DSLFactoryTestCase(unittest.TestCase):
         c = self.factory.from_file("JointMotor.idsl")
         ref = OrderedDict({
             'name': 'RoboCompJointMotor',
-            'imports': '',
-            'recursive_imports': '',
+            'imports': [],
+            'recursive_imports': [],
             'interfaces':[
                     {'name': 'JointMotor',
                      'methods':
