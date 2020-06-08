@@ -128,7 +128,7 @@ if __name__ == '__main__':
         proxyString = ic.getProperties().getProperty('CameraSimpleProxy')
         try:
             basePrx = ic.stringToProxy(proxyString)
-            camerasimple_proxy = CameraSimplePrx.uncheckedCast(basePrx)
+            camerasimple_proxy = RoboCompCameraSimple.CameraSimplePrx.uncheckedCast(basePrx)
             mprx["CameraSimpleProxy"] = camerasimple_proxy
         except Ice.Exception:
             print('Cannot connect to the remote object (CameraSimple)', proxyString)
@@ -145,7 +145,7 @@ if __name__ == '__main__':
         proxyString = ic.getProperties().getProperty('RGBDProxy')
         try:
             basePrx = ic.stringToProxy(proxyString)
-            rgbd_proxy = RGBDPrx.uncheckedCast(basePrx)
+            rgbd_proxy = RoboCompRGBD.RGBDPrx.uncheckedCast(basePrx)
             mprx["RGBDProxy"] = rgbd_proxy
         except Ice.Exception:
             print('Cannot connect to the remote object (RGBD)', proxyString)
@@ -172,7 +172,7 @@ if __name__ == '__main__':
             except:
                 print('Another client created the AprilBasedLocalization topic? ...')
     pub = topic.getPublisher().ice_oneway()
-    aprilbasedlocalizationTopic = AprilBasedLocalizationPrx.uncheckedCast(pub)
+    aprilbasedlocalizationTopic = RoboCompAprilBasedLocalization.AprilBasedLocalizationPrx.uncheckedCast(pub)
     mprx["AprilBasedLocalizationPub"] = aprilbasedlocalizationTopic
 
     if status == 0:
@@ -183,12 +183,12 @@ if __name__ == '__main__':
         sys.exit(-1)
 
     adapter = ic.createObjectAdapter('HandDetection')
-    adapter.add(HandDetectionI(worker), ic.stringToIdentity('handdetection'))
+    adapter.add(handdetectionI.HandDetectionI(worker), ic.stringToIdentity('handdetection'))
     adapter.activate()
 
 
     AprilTags_adapter = ic.createObjectAdapter("AprilTagsTopic")
-    apriltagsI_ = AprilTagsI(worker)
+    apriltagsI_ = apriltagsI.AprilTagsI(worker)
     apriltags_proxy = AprilTags_adapter.addWithUUID(apriltagsI_).ice_oneway()
 
     subscribeDone = False

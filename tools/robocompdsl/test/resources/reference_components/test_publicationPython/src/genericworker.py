@@ -32,9 +32,9 @@ Ice.loadSlice("-I ./src/ --all ./src/CommonBehavior.ice")
 import RoboCompCommonBehavior
 
 Ice.loadSlice("-I ./src/ --all ./src/IMU.ice")
-from RoboCompIMU import *
+import RoboCompIMU
 Ice.loadSlice("-I ./src/ --all ./src/IMUPub.ice")
-from RoboCompIMUPub import *
+import RoboCompIMUPub
 
 
 

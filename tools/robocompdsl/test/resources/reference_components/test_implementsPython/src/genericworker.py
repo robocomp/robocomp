@@ -32,9 +32,9 @@ Ice.loadSlice("-I ./src/ --all ./src/CommonBehavior.ice")
 import RoboCompCommonBehavior
 
 Ice.loadSlice("-I ./src/ --all ./src/HandDetection.ice")
-from RoboCompHandDetection import *
+import RoboCompHandDetection
 
-from handdetectionI import *
+import handdetectionI
 
 
 

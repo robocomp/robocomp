@@ -32,22 +32,22 @@ Ice.loadSlice("-I ./src/ --all ./src/CommonBehavior.ice")
 import RoboCompCommonBehavior
 
 Ice.loadSlice("-I ./src/ --all ./src/AprilBasedLocalization.ice")
-from RoboCompAprilBasedLocalization import *
+import RoboCompAprilBasedLocalization
 Ice.loadSlice("-I ./src/ --all ./src/AprilTags.ice")
-from RoboCompAprilTags import *
+import RoboCompAprilTags
 Ice.loadSlice("-I ./src/ --all ./src/CameraSimple.ice")
-from RoboCompCameraSimple import *
+import RoboCompCameraSimple
 Ice.loadSlice("-I ./src/ --all ./src/GenericBase.ice")
-from RoboCompGenericBase import *
+import RoboCompGenericBase
 Ice.loadSlice("-I ./src/ --all ./src/HandDetection.ice")
-from RoboCompHandDetection import *
+import RoboCompHandDetection
 Ice.loadSlice("-I ./src/ --all ./src/JointMotor.ice")
-from RoboCompJointMotor import *
+import RoboCompJointMotor
 Ice.loadSlice("-I ./src/ --all ./src/RGBD.ice")
-from RoboCompRGBD import *
+import RoboCompRGBD
 
-from handdetectionI import *
-from apriltagsI import *
+import handdetectionI
+import apriltagsI
 
 
 try:
