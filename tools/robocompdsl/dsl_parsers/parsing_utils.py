@@ -1,4 +1,6 @@
 import os
+import pyparsing
+from termcolor import colored
 from collections import Counter, OrderedDict
 
 
@@ -13,7 +15,12 @@ def generate_recursive_imports(initial_idsls, include_directories=None):
         # TODO: Replace by idsl_robocomp_path
         new_idsl_path = idsl_robocomp_path(idsl_basename, include_directories)
         from dsl_parsers.dsl_factory import DSLFactory
-        imported_module = DSLFactory().from_file(new_idsl_path)  # IDSLParsing.gimmeIDSL(attempt)
+        try:
+            imported_module = DSLFactory().from_file(new_idsl_path)  # IDSLParsing.gimmeIDSL(attempt)
+        except pyparsing.ParseException as e:
+            print(f"Parsing error in file {colored(new_idsl_path, 'red')} while generating recursive imports.")
+            print(f"Exception info: {colored(e.args[2], 'red')} in line {e.lineno} of:\n{colored(e.args[0].rstrip(),'magenta')}")
+            raise
         if imported_module is None:
             raise FileNotFoundError('generate_recursive_imports: Couldn\'t locate %s' % idsl_basename)
 
