@@ -3,9 +3,32 @@ from string import Template
 
 from dsl_parsers.dsl_factory import DSLFactory
 from dsl_parsers.parsing_utils import communication_is_ice, IDSLPool, get_name_number
+from .. import function_utils as utils
 
 SLICE_LOAD_STR = """\
 Ice.loadSlice("-I ./src/ --all ./src/${interface_name}.ice")
+"""
+
+LIST_CLASSES_STR = """\
+class ${list_type}(list):
+    def __init__(self, iterable=list()):
+        super(${list_type}, self).__init__(iterable)
+
+    def append(self, item):
+        assert isinstance(item, ${item_type})
+        super(${list_type}, self).append(item)
+
+    def extend(self, iterable):
+        for item in iterable:
+            assert isinstance(item, ${item_type})
+        super(${list_type}, self).extend(iterable)
+
+    def insert(self, index, item):
+        assert isinstance(item, ${item_type})
+        super(${list_type}, self).insert(index, item)
+
+setattr(${module_name}, "${list_type}", ${list_type})
+
 """
 
 ROS_MSG_IMPORT_STR = """
@@ -54,6 +77,7 @@ class TemplateDict(dict):
         self['gui_setup'] = self.gui_setup()
         self['statemachine_states_creation'] = self.statemachine_states_creation()
         self['statemachine_slots_creation'] = self.statemachine_slots_creation()
+        self['create_lists_classes'] = self.create_lists_classes()
 
     # TODO: refactor
     def statemachine_slots_creation(self):
@@ -368,6 +392,21 @@ class TemplateDict(dict):
             module = DSLFactory().from_file(file_name, includeDirectories=includeDirectories)
             result += f"import {module['name']}\n"
         return result
+
+
+
+    def create_lists_classes(self):
+        result = ""
+        for idsl in sorted(set(self.component.recursiveImports + self.component.imports)):
+            module = self.component.idsl_pool.module_providing_interface(idsl.split('.')[0])
+            for sequence in module['sequences']:
+                item_type = utils.get_type_string(sequence['typeSequence'], module['name'])
+                if item_type == 'bytes': continue
+                result += Template(LIST_CLASSES_STR).substitute(list_type=sequence['name'].split('/')[1],
+                                                                item_type=item_type,
+                                                                module_name=module['name'])
+        return result
+
 
     def statemachine_signals(self):
         result = ""

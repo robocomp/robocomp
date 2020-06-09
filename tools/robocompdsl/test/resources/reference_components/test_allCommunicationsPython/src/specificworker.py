@@ -108,13 +108,16 @@ class SpecificWorker(GenericWorker):
     # =================================================================
     # =================================================================
 
+    # =============== Methods for Component SubscribesTo ================
+    # ===================================================================
 
     #
     # SUBSCRIPTION to newAprilTag method from AprilTags interface
     #
     def AprilTags_newAprilTag(self, tags):
+    
         #
-        #subscribesToCODE
+        # write your CODE here
         #
         pass
 
@@ -123,47 +126,47 @@ class SpecificWorker(GenericWorker):
     # SUBSCRIPTION to newAprilTagAndPose method from AprilTags interface
     #
     def AprilTags_newAprilTagAndPose(self, tags, bState, hState):
+    
         #
-        #subscribesToCODE
+        # write your CODE here
         #
         pass
+
+
+    # ===================================================================
+    # ===================================================================
 
 
     # =============== Methods for Component Implements ==================
     # ===================================================================
 
     #
-    # addNewHand
+    # IMPLEMENTATION of addNewHand method from HandDetection interface
     #
     def HandDetection_addNewHand(self, expectedHands, roi):
         ret = int()
         #
-        # implementCODE
+        # write your CODE here
         #
         return ret
-
-
     #
-    # getHands
+    # IMPLEMENTATION of getHands method from HandDetection interface
     #
     def HandDetection_getHands(self):
-        ret = Hands()
+        ret = RoboCompHandDetection.Hands()
         #
-        # implementCODE
+        # write your CODE here
         #
         return ret
-
-
     #
-    # getHandsCount
+    # IMPLEMENTATION of getHandsCount method from HandDetection interface
     #
     def HandDetection_getHandsCount(self):
         ret = int()
         #
-        # implementCODE
+        # write your CODE here
         #
         return ret
-
     # ===================================================================
     # ===================================================================
 

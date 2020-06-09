@@ -2,6 +2,7 @@ import datetime
 from string import Template
 
 from dsl_parsers.parsing_utils import communication_is_ice, get_name_number
+from .. import function_utils as utils
 
 
 
@@ -71,6 +72,18 @@ PROXY_METHODS_COMMENT_STR = """\
 ######################
 # From the ${module_name} you can ${action} this methods:
 ${methods}
+"""
+
+METHOD_STR = """\
+#
+# ${method_str1} ${method_name} method from ${interface_name} interface
+#
+def ${ros}${interface_name}_${method_name}(self${param_str_a}):
+    ${return_creation}
+    #
+    # write your CODE here
+    #
+    ${return_str}
 """
 
 class TemplateDict(dict):
@@ -155,16 +168,13 @@ class TemplateDict(dict):
             result += "# =================================================================\n"
         return result
 
-    # TODO: Refactor to extract code snippets
-    # TODO: isinstance
-    # TODO: extract similar code from implements_methods
-    def subscription_methods(self):
-        pool = self.component.idsl_pool
+    def methods(self, interfaces, subscribe=False):
         result = ""
-        for interface in self.component.subscribesTo:
-            module = pool.module_providing_interface(interface.name)
+        for interface in interfaces:
+            module = self.component.idsl_pool.module_providing_interface(interface.name)
             for module_interface in module['interfaces']:
                 if module_interface['name'] == interface.name:
+                    ROS = not communication_is_ice(interface)
                     for mname in module_interface['methods']:
                         method = module_interface['methods'][mname]
                         out_values = []
@@ -176,109 +186,58 @@ class TemplateDict(dict):
                                 out_values.append([p['type'], p['name']])
                             else:
                                 param_str_a += ', ' + p['name']
-                        result += '\n'
-                        result += '#\n'
-                        result += '# ' + 'SUBSCRIPTION to ' + method['name'] + ' method from ' + module_interface['name'] + ' interface\n'
-                        result += '#\n'
-                        if not communication_is_ice(interface):
-                            result += 'def ROS' + module_interface['name'] + "_" + method['name'] + '(self' + param_str_a + "):\n"
+
+                        if method['return'] != 'void':
+                            return_creation = 'ret = ' + utils.get_type_string(method['return'], module['name']) + '()'
                         else:
-                            result += 'def ' + module_interface['name'] + "_" + method['name'] + '(self' + param_str_a + "):\n"
-                        if method['return'] != 'void': result += "    ret = " + method['return'] + '()\n'
-                        result += "    #\n"
-                        result += "    #subscribesToCODE\n"
-                        result += "    #\n"
-                        if len(out_values) == 0:
-                            result += "    pass\n\n"
-                        elif len(out_values) == 1:
+                            return_creation = ''
+
+                        return_str = "pass\n\n"
+                        if len(out_values) == 1:
                             if method['return'] != 'void':
-                                result += "    return ret\n\n"
+                                return_str = "return ret"
                             else:
-                                result += "    " + out_values[0][1] + " = " + self.replace_type_cpp_to_python(out_values[0][0]) + "()\n"
-                                result += "    return " + out_values[0][1] + "\n\n"
-                        else:
+                                return_str = out_values[0][1] + " = " + self.replace_type_cpp_to_python(out_values[0][0]) + "()\n"
+                                return_str += "    return " + out_values[0][1]
+                        elif len(out_values) > 1:
                             for v in out_values:
                                 if v[1] != 'ret':
-                                    result += "    " + v[1] + " = " + self.replace_type_cpp_to_python(v[0]) + "()\n"
-                            first = True
-                            result += "    return ["
-                            for v in out_values:
-                                if not first: result += ', '
-                                result += v[1]
-                                if first:
-                                    first = False
-                            result += "]\n\n"
+                                    return_str += "    " + v[1] + " = " + self.replace_type_cpp_to_python(v[0]) + "()\n"
+                            vector_str = ", ".join([v[1] for v in out_values])
+                            return_str = f"    return [{vector_str}]"
+                        if subscribe:
+                            method_str1 = "SUBSCRIPTION to"
+                        else:
+                            method_str1 = "IMPLEMENTATION of"
+                        if ROS:
+                            ros = "ROS "
+                        else:
+                            ros = ""
+                        result += Template(METHOD_STR).substitute(method_str1=method_str1,
+                                                                  method_name=method['name'],
+                                                                  interface_name=module_interface['name'],
+                                                                  ros=ros,
+                                                                  param_str_a=param_str_a,
+                                                                  return_creation=return_creation,
+                                                                  return_str=return_str)
         return result
 
-    # TODO: Refactor to extract code snippets
-    # TODO: isinstance
+    def subscription_methods(self):
+        result = ""
+        if self.component.subscribesTo:
+            result += "# =============== Methods for Component SubscribesTo ================\n"
+            result += "# ===================================================================\n\n"
+            result += self.methods(self.component.subscribesTo, subscribe=True)
+            result += "# ===================================================================\n"
+            result += "# ===================================================================\n\n"
+        return result
+
     def implements_methods(self):
-        pool = self.component.idsl_pool
         result = ""
         if self.component.implements:
             result += "# =============== Methods for Component Implements ==================\n"
-            result += "# ===================================================================\n"
-            for imp in sorted(self.component.implements):
-                if type(imp) == str:
-                    im = imp
-                else:
-                    im = imp[0]
-                if not communication_is_ice(imp):
-                    module = pool.module_providing_interface(im)
-                    for interface in module['interfaces']:
-                        if interface['name'] == im:
-                            for mname in interface['methods']:
-                                method = interface['methods'][mname]
-                                result += 'def ROS' + interface['name'] + "_" + method['name'] + "(self, req):\n"
-                                result += "    #\n"
-                                result += "    # implementCODE\n"
-                                result += "    # Example ret = req.a + req.b\n"
-                                result += "    #\n"
-                                result += "    return " + method['name'] + "Response(ret)\n"
-                else:
-                    module = pool.module_providing_interface(im)
-                    for interface in module['interfaces']:
-                        if interface['name'] == im:
-                            for mname in interface['methods']:
-                                method = interface['methods'][mname]
-                                out_values = []
-                                if method['return'] != 'void':
-                                    out_values.append([method['return'], 'ret'])
-                                param_str_a = ''
-                                for p in method['params']:
-                                    if p['decorator'] == 'out':
-                                        out_values.append([p['type'], p['name']])
-                                    else:
-                                        param_str_a += ', ' + p['name']
-                                result += '\n'
-                                result += '#\n'
-                                result += '# ' + method['name']+'\n'
-                                result += '#\n'
-                                result += 'def ' + interface['name'] + "_" + method['name'] + '(self' + param_str_a + "):\n"
-                                if method['return'] != 'void': result += '    ret = ' + method['return'] + '()\n'
-                                result += "    #\n"
-                                result += "    # implementCODE\n"
-                                result += "    #\n"
-                                if len(out_values) == 0:
-                                    result += "    pass\n\n"
-                                elif len(out_values) == 1:
-                                    if method['return'] != 'void':
-                                        result += "    return ret\n\n"
-                                    else:
-                                        result += "    " + out_values[0][1] + " = " + self.replace_type_cpp_to_python(out_values[0][0]) + "()\n"
-                                        result += "    return " + out_values[0][1] + "\n\n"
-                                else:
-                                    for v in out_values:
-                                        if v[1] != 'ret':
-                                            result += "    " + v[1] + " = " + self.replace_type_cpp_to_python(v[0]) + "()\n"
-                                    first = True
-                                    result += "    return ["
-                                    for v in out_values:
-                                        if not first: result += ', '
-                                        result += v[1]
-                                        if first:
-                                            first = False
-                                    result += "]\n\n"
+            result += "# ===================================================================\n\n"
+            result += self.methods(self.component.implements)
             result += "# ===================================================================\n"
             result += "# ===================================================================\n\n"
         return result

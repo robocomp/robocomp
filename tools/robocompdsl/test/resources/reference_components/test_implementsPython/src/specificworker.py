@@ -113,37 +113,32 @@ class SpecificWorker(GenericWorker):
     # ===================================================================
 
     #
-    # addNewHand
+    # IMPLEMENTATION of addNewHand method from HandDetection interface
     #
     def HandDetection_addNewHand(self, expectedHands, roi):
         ret = int()
         #
-        # implementCODE
+        # write your CODE here
         #
         return ret
-
-
     #
-    # getHands
+    # IMPLEMENTATION of getHands method from HandDetection interface
     #
     def HandDetection_getHands(self):
-        ret = Hands()
+        ret = RoboCompHandDetection.Hands()
         #
-        # implementCODE
+        # write your CODE here
         #
         return ret
-
-
     #
-    # getHandsCount
+    # IMPLEMENTATION of getHandsCount method from HandDetection interface
     #
     def HandDetection_getHandsCount(self):
         ret = int()
         #
-        # implementCODE
+        # write your CODE here
         #
         return ret
-
     # ===================================================================
     # ===================================================================
 
