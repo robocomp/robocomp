@@ -18,6 +18,27 @@ INNERMODELVIEWER_INCLUDES_STR = """\
 #endif
 """
 
+DSR_INCLUDES_STR = """\
+#include "/home/robocomp/robocomp/classes/graph-related-classes/CRDT.h"
+#include "/home/robocomp/robocomp/classes/graph-related-classes/CRDT_graphviewer.h"
+"""
+
+DSR_ATTRIBUTES = """\
+// DSR graph
+std::shared_ptr<CRDT::CRDTGraph> G;
+
+//DSR params
+std::string agent_name;
+int agent_id;
+bool read_dsr;
+std::string dsr_input_file;
+
+// DSR graph viewer
+std::unique_ptr<DSR::GraphViewer> graph_viewer;
+QHBoxLayout mainLayout;
+QWidget window;
+"""
+
 class TemplateDict(dict):
     def __init__(self, component):
         super(TemplateDict, self).__init__()
@@ -32,6 +53,8 @@ class TemplateDict(dict):
         self['statemachine_methods_definitions'] = self.statemachine_methods_definitions()
         self['innermodelviewer_attributes'] = self.innermodelviewer_attributes()
         self['agm_attributes'] = self.agm_attributes()
+        self['dsr_includes'] = self.dsr_includes()
+        self['dsr_attributes'] = self.dsr_attributes()
 
     def agmagent_comment(self):
         result = ""
@@ -177,6 +200,13 @@ class TemplateDict(dict):
             result += INNERMODELVIEWER_INCLUDES_STR
         return result
 
+    def dsr_includes(self):
+        result = ""
+        if self.component.dsr:
+            result = DSR_INCLUDES_STR
+        return result
+
+
     def constructor_proxies(self):
         result = ""
         if self.component.language.lower() == 'cpp':
@@ -191,3 +221,11 @@ class TemplateDict(dict):
         if (sm is not None and sm['machine']['default'] is True) or self.component.statemachine_path is None:
             result += "void compute();\n"
         return result
+
+    def dsr_attributes(self):
+        result=""
+        if self.component.dsr:
+            result = DSR_ATTRIBUTES
+        return result
+
+

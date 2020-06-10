@@ -31,6 +31,7 @@ ${agmagent_comment}
 #include <genericworker.h>
 #include <innermodel/innermodel.h>
 ${innermodelviewer_includes}
+${dsr_includes}
 
 class SpecificWorker : public GenericWorker
 {
@@ -53,6 +54,7 @@ private:
 	std::shared_ptr<InnerModel> innerModel;
 	${innermodelviewer_attributes}
 	${agm_attributes}
+	${dsr_attributes}
 	bool startup_check_flag;
 
 };

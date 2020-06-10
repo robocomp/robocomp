@@ -375,6 +375,7 @@ class DSLFactoryTestCase(unittest.TestCase):
             'publishes': [],
             'subscribesTo': [],
             'usingROS': False,
+            'dsr': False,
             'filename': os.path.join(RESOURCES_DIR, "customstatemachinecpp.cdsl")})
         self.assertEqual(g, ref)
         # test for cached query
@@ -407,6 +408,7 @@ class DSLFactoryTestCase(unittest.TestCase):
             'publishes': [],
             'subscribesTo': [['AGMExecutiveTopic', 'ice']],
             'usingROS': False,
+            'dsr': False,
             'filename': os.path.join(RESOURCES_DIR, "componentwithoptions.cdsl")})
         self.assertEqual(g, ref)
 
