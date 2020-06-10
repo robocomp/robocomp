@@ -1,4 +1,4 @@
-RoboComp Build Test
+rcbuildtest
 ===============================
 
 This script lets you test build of Robocomp uploaded code on github with different Ubuntu versions.
