@@ -550,7 +550,7 @@ class TemplateDict(dict):
     def dsr_destructor(self):
         result = ""
         if self.component.dsr:
-            result = "G->write_to_json_file(\"/home/robocomp/robocomp/components/dsr-graph/etc/\"+agent_name+\".json\");\nG.reset();\n"
+            result = "G->write_to_json_file(\"./\"+agent_name+\".json\");\nG.reset();\n"
         return result
 
     def dsr_set_params(self):
