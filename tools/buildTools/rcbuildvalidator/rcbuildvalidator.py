@@ -10,7 +10,7 @@ from termcolor import cprint, colored
 
 
 CURRENT_FILE_PATH = os.path.dirname(os.path.abspath(__file__))
-INSTALLATION_PATH = "/opt/robocomp/share/rcbuildtest/"
+INSTALLATION_PATH = "/opt/robocomp/share/rcbuildvalidator/"
 
 DEBUG = False
 pkg_name = "docker-ce"
@@ -111,7 +111,7 @@ def save_docker_log():
     command_output = get_command_output(command)
     if command_output != "ERROR":
         date = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
-        filename = f"/tmp/rcbuildtesting_{date}.txt"
+        filename = f"/tmp/rcbuildvalidator_{date}.txt"
         if DEBUG:
             print(f"Writtig log to {colored(filename, 'green')} ...")
         with open(filename, 'w') as output_file:
@@ -122,7 +122,7 @@ def save_docker_log():
 
 if __name__ == '__main__':
     import argparse
-    parser = argparse.ArgumentParser(description='rcbuildtesting')
+    parser = argparse.ArgumentParser(description='rcbuildvalidator makes easy to test the installation and build of the Robocomp core in many different Ubuntu versions.')
     parser.add_argument('-b', '--branch', type=str, default='development')
     parser.add_argument('-v', '--version', type=str, default='18.04').completer = ubuntu_images_completer
     parser.add_argument('--manual-mode', action='store_true')
