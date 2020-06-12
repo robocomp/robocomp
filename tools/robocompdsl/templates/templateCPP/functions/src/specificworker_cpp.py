@@ -411,21 +411,17 @@ class TemplateDict(dict):
         result = ""
         pool = self.component.idsl_pool
         ros_types = pool.getRosTypes()
-        for impa in self.component.subscribesTo:
-            if type(impa) == str:
-                imp = impa
-            else:
-                imp = impa[0]
-            module = pool.module_providing_interface(imp)
+        for subscribes in self.component.subscribesTo:
+            module = pool.module_providing_interface(subscribes.name)
             if module is None:
-                raise ValueError('\nCan\'t find module providing %s\n' % imp)
+                raise ValueError('\nCan\'t find module providing %s\n' % subscribes.name)
             for interface in module['interfaces']:
-                if interface['name'] == imp:
+                if interface['name'] == subscribes.name:
                     for mname in interface['methods']:
                         method = interface['methods'][mname]
                         param_str_a = ''
                         body_code = self.body_code_from_name(method['name'])
-                        if p_utils.communication_is_ice(impa):
+                        if p_utils.communication_is_ice(subscribes):
                             param_str_a = utils.get_parameters_string(method, module['name'], self.component.language)
                             result += "//SUBSCRIPTION to " + method['name'] + " method from " + interface[
                                 'name'] + " interface\n"
@@ -455,7 +451,7 @@ class TemplateDict(dict):
                                     p['type'] = module['name'] + "ROS::" + p['type']
                                 # STR
                                 param_str_a += delim + p['type'] + ' ' + p['name']
-                            if imp in self.component.iceInterfaces:
+                            if subscribes.name in self.component.iceInterfaces:
                                 result += 'void SpecificWorker::ROS' + method[
                                     'name'] + '(' + param_str_a + ")\n{\n//subscribesToCODE\n" + body_code + "\n}\n\n"
                             else:
