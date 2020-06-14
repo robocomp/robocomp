@@ -19,7 +19,8 @@
 #    along with RoboComp.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-from PySide2.QtCore import qApp, QTimer
+from PySide2.QtCore import QTimer
+from PySide2.QtWidgets import QApplication
 from genericworker import *
 
 
@@ -72,7 +73,7 @@ class SpecificWorker(GenericWorker):
         return True
 
     def startup_check(self):
-        QTimer.singleShot(200, qApp.quit)
+        QTimer.singleShot(200, QApplication.instance().quit)
 
     # =============== Slots methods for State Machine ===================
     # ===================================================================

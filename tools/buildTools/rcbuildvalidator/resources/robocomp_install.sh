@@ -32,4 +32,4 @@ sudo make install
 sudo sh -c "echo '/opt/robocomp/lib/' >> /etc/ld.so.conf"
 sudo ldconfig
 source ~/.bashrc
-/opt/robocomp/bin/rcnode& python3 /home/robolab/robocomp/tools/robocompdsl/autogeneration_tests/test_cdsl/test_component_generation.py --no-execution --avoid agm
+/opt/robocomp/bin/rcnode& python3 /home/robolab/robocomp/tools/robocompdsl/autogeneration_tests/test_cdsl/test_component_generation.py --avoid agm

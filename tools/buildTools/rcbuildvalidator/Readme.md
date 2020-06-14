@@ -25,11 +25,12 @@ rcbuildvalidator makes easy to test the installation and build of the Robocomp c
 in many different Ubuntu versions.
 
 optional arguments:
-  -h, --help show this help message and exit
+  -h, --help            show this help message and exit
   -b BRANCH, --branch BRANCH
   -v VERSION, --version VERSION
   --manual-mode
   -d, --debug
+  -m [MOUNT [MOUNT ...]], --mount [MOUNT [MOUNT ...]]
 ```
 
 If you run it without options, rcbuildvalidator tries the installation of Robocomp's "development" branch on an Ubuntu 18.04. The branch to be downloaded can be set with the *-b* or *--branch* option and the Ubuntu version can be set with *-v* or *--version*. This tool accepts auto-completion so you can type
@@ -38,9 +39,10 @@ rcbuildvalidator -v <TAB> <TAB>
 ```
 and you will be offered with the options currently available (obtained from the Ubuntu tags available at https://hub.docker.com/_/ubuntu?tab=tags).
 
-Perhaps one of the most interesting options is the *--manual-mode*. This option allows the user to launch an interactive terminal of the Ubuntu version specified with -v. In addition, in the home page of the terminal that will appear, you can find the robocomp installation script robocomp_install.sh that you can use if you want to debug this process.
+*--manual-mode* is perhaps one of the most interesting options . This allows the user to launch an interactive terminal of the Ubuntu version specified with -v. In addition, in the home page of the terminal that will appear, you can find the robocomp installation script robocomp_install.sh that you can use if you want to debug this process.
 
-## TO-DO
-* It is planned to be able to mount any directory on the main system on the image that is launched in the new terminal in --manual-mode. This way it will be possible to test any software we are developing at that moment inside a clean machine.
+*-m* or *--mount* option lets you use one of your machine (host) directories or files to be mounted in the home directory of the "virtualized" system. This way it is possible to test any software you are currently developing inside a clean machine. It also helps to remember the dependencies of libraries and packages that your new piece of software have.
+
+## TO-DO 
 * It is planned to implement the option of being able to save with a proper name an image after having carried out the operations that are desired in the same one (installation of packages, configurations, etc)
 * Check the available branches listed by github for Robocomp and been able to use any of those.

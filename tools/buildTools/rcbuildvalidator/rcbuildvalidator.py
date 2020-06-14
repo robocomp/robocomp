@@ -5,6 +5,7 @@ import os
 import shlex
 import subprocess
 import argcomplete
+from argcomplete.completers import DirectoriesCompleter
 import apt
 from termcolor import cprint, colored
 
@@ -72,15 +73,38 @@ def start_docker_container(ubuntu_version, branch):
     options = ""
     if DEBUG:
         options = "-l -x"
-    command = f"docker run --name robocomp_test -it -w /home/robolab/ --user robolab:robolab -v {INSTALLATION_PATH}/resources/robocomp_install.sh:/home/robolab/robocomp_install.sh robocomp/clean-testing:robocomp-ubuntu{ubuntu_version} bash {options} robocomp_install.sh {branch}"
+    command = f"docker run --name robocomp_test -it -w /home/robolab/ \
+    --user=robolab:robolab \
+    --env='DISPLAY' \
+    --volume='/etc/group:/etc/group:ro' \
+    --volume='/etc/passwd:/etc/passwd:ro' \
+    --volume='/etc/shadow:/etc/shadow:ro' \
+    --volume='/etc/sudoers.d:/etc/sudoers.d:ro' \
+    --volume='/tmp/.X11-unix:/tmp/.X11-unix:rw' \
+     -v {INSTALLATION_PATH}/resources/robocomp_install.sh:/home/robolab/robocomp_install.sh robocomp/clean-testing:robocomp-ubuntu{ubuntu_version} bash {options} robocomp_install.sh {branch}"
     return execute_command(command)
 
-def start_interactive_docker_container(ubuntu_version):
+def start_interactive_docker_container(ubuntu_version, mount_paths=None):
+    mount_options = []
+    for mount_path in mount_paths:
+        if mount_path:
+            mount_path = mount_path.rstrip(os.path.sep)
+            mount_options.append(f"-v {os.path.expanduser(mount_path)}:/home/robolab/{mount_path.split('/')[-1]}")
+    mount_options = " ".join(mount_options)
     stop_and_remove_container("robocomp_test")
     cprint(f"Starting Ubuntu {ubuntu_version} container.", 'green')
     cprint(f"You can find the robocomp installation script in /home/robolab/robocomp_install.sh", 'green')
     cprint(f"To end this session execute <exit> or use <Ctrl>+d in the current bash terminal.", 'green')
-    command = f"docker run --name robocomp_test -it -w /home/robolab/ --user robolab:robolab -v {INSTALLATION_PATH}/resources/robocomp_install.sh:/home/robolab/robocomp_install.sh robocomp/clean-testing:robocomp-ubuntu{ubuntu_version} bash"
+    command = f"docker run --name robocomp_test -it -w /home/robolab/  \
+    --user=robolab:robolab \
+    --env='DISPLAY' \
+    --volume='/etc/group:/etc/group:ro' \
+    --volume='/etc/passwd:/etc/passwd:ro' \
+    --volume='/etc/shadow:/etc/shadow:ro' \
+    --volume='/etc/sudoers.d:/etc/sudoers.d:ro' \
+    --volume='/tmp/.X11-unix:/tmp/.X11-unix:rw' \
+    --volume='{INSTALLATION_PATH}/resources/robocomp_install.sh:/home/robolab/robocomp_install.sh' \
+    robocomp/clean-testing:robocomp-ubuntu{ubuntu_version} bash"
     return execute_command(command)
 
 
@@ -123,10 +147,12 @@ def save_docker_log():
 if __name__ == '__main__':
     import argparse
     parser = argparse.ArgumentParser(description='rcbuildvalidator makes easy to test the installation and build of the Robocomp core in many different Ubuntu versions.')
-    parser.add_argument('-b', '--branch', type=str, default='development')
-    parser.add_argument('-v', '--version', type=str, default='18.04').completer = ubuntu_images_completer
-    parser.add_argument('--manual-mode', action='store_true')
-    parser.add_argument('-d', '--debug', action='store_true')
+    parser.add_argument('-b', '--branch', type=str, default='development', help="Set the Robocomp branch to be tested")
+    parser.add_argument('-v', '--version', type=str, default='18.04', help="Set the ubuntu version to be used").completer = ubuntu_images_completer
+    parser.add_argument('--manual-mode', action='store_true', help="Open an interactive terminal of ubuntu with the version set by -v")
+    parser.add_argument('-m', '--mount', nargs='*', type=str, action='append', help="Accept a list of paths to be mountes in the home directory of the launched machine").completer = DirectoriesCompleter()
+    parser.add_argument('-d', '--debug', action='store_true', help="Shows some debugging messages")
+
     argcomplete.autocomplete(parser)
     args = parser.parse_args()
     if args.debug:
@@ -148,7 +174,10 @@ if __name__ == '__main__':
         download_and_initialize_image(args.version)
 
     if args.manual_mode:
-        docker_exit_code = start_interactive_docker_container(args.version)
+        mount_paths = []
+        if args.mount:
+            mount_paths = [y for x in args.mount for y in x] # flatten list
+        docker_exit_code = start_interactive_docker_container(args.version, mount_paths)
         last_log_file = save_docker_log()
     else:
         docker_exit_code = start_docker_container(args.version, args.branch)

@@ -10,11 +10,11 @@ DIFF_TOOLS = ["meld", "kdiff3", "diff"]
 def get_diff_tool(prefered=None):
     if prefered in DIFF_TOOLS:
         tool_path = spawn.find_executable(prefered)
-        if tool_path is not "":
+        if tool_path != "":
             return prefered, tool_path
     for tool in DIFF_TOOLS:
         tool_path = spawn.find_executable(tool)
-        if tool_path is not "":
+        if tool_path != "":
             return tool, tool_path
     return None, None
 
