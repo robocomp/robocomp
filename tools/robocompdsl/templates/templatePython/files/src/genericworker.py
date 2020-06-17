@@ -33,6 +33,8 @@ import RoboCompCommonBehavior
 
 ${load_slice_and_create_imports}
 
+${create_lists_classes}
+
 ${implements_and_subscribes_imports}
 
 ${ros_imports}

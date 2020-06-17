@@ -29,19 +29,6 @@ if len(ROBOCOMP)<1:
     raise RuntimeError('ROBOCOMP environment variable not set! Exiting.')
 
 
-additionalPathStr = ''
-icePaths = []
-try:
-    icePaths.append('/opt/robocomp/interfaces')
-    SLICE_PATH = os.environ['SLICE_PATH'].split(':')
-    for p in SLICE_PATH:
-        icePaths.append(p)
-        additionalPathStr += ' -I' + p + ' '
-except:
-    print('SLICE_PATH environment variable was not exported. Using only the default paths')
-    pass
-
-
 Ice.loadSlice("-I ./src/ --all ./src/HandDetection.ice")
 
 from RoboCompHandDetection import *

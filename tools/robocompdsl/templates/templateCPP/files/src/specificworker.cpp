@@ -35,6 +35,7 @@ SpecificWorker::~SpecificWorker()
 {
 	std::cout << "Destroying SpecificWorker" << std::endl;
 	${statemachine_finalize_emit}
+	${dsr_destructor}
 }
 
 bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
@@ -55,7 +56,8 @@ bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
 	${agm_innermodel_association}
 
 	${state_machine_start}
-	
+
+	${dsr_set_params}
 
 	return true;
 }
@@ -70,9 +72,10 @@ void SpecificWorker::initialize(int period)
 	}
 	else
 	{
-        timer.start(Period);
-        ${statemachine_initialize_to_compute}
-    }
+		timer.start(Period);
+		${statemachine_initialize_to_compute}
+		${dsr_initialize}
+	}
 
 }
 

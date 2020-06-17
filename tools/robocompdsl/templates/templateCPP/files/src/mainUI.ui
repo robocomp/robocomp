@@ -13,6 +13,7 @@
   <property name="windowTitle">
    <string>${component_name}</string>
   </property>
+  ${dsr_widget}
  </widget>
  <resources/>
  <connections/>

@@ -16,6 +16,7 @@ module RoboCompHumanToDSR
         float x;
         float y;
         float z;
+        float ry;
         TJoints joints;
     };
     sequence<Person> People;

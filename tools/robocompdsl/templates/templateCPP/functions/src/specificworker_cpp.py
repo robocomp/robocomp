@@ -159,6 +159,29 @@ PROXY_METHODS_COMMENT_STR = """\
 ${methods}
 """
 
+DSR_SET_PARAMS = """\
+agent_name = params["agent_name"].value;
+agent_id = stoi(params["agent_id"].value);
+read_dsr = params["read_dsr"].value == "true";
+dsr_input_file = params["dsr_input_file"].value;
+"""
+
+DSR_INITIALIZE = """\
+// create graph
+G = std::make_shared<CRDT::CRDTGraph>(0, agent_name, agent_id); // Init nodes
+std::cout<< __FUNCTION__ << "Graph loaded" << std::endl;  
+
+// Graph viewer
+graph_viewer = std::make_unique<DSR::GraphViewer>(G);
+mainLayout.addWidget(graph_viewer.get());
+window.setLayout(&mainLayout);
+setCentralWidget(&window);
+setWindowTitle(QString::fromStdString(agent_name));
+
+this->Period = period;
+timer.start(Period);
+"""
+
 class TemplateDict(dict):
     def __init__(self, component):
         super(TemplateDict, self).__init__()
@@ -179,6 +202,9 @@ class TemplateDict(dict):
         self['subscribes'] = self.subscribes()
         self['agm_specific_code'] = self.agm_specific_code()
         self['interface_specific_comment'] = self.interface_specific_comment()
+        self['dsr_destructor'] = self.dsr_destructor()
+        self['dsr_set_params'] = self.dsr_set_params()
+        self['dsr_initialize'] = self.dsr_initialize()
 
     # TODO: Extract pieces of code to strings and refactor
     def body_code_from_name(self, name):
@@ -385,21 +411,17 @@ class TemplateDict(dict):
         result = ""
         pool = self.component.idsl_pool
         ros_types = pool.getRosTypes()
-        for impa in self.component.subscribesTo:
-            if type(impa) == str:
-                imp = impa
-            else:
-                imp = impa[0]
-            module = pool.module_providing_interface(imp)
+        for subscribes in self.component.subscribesTo:
+            module = pool.module_providing_interface(subscribes.name)
             if module is None:
-                raise ValueError('\nCan\'t find module providing %s\n' % imp)
+                raise ValueError('\nCan\'t find module providing %s\n' % subscribes.name)
             for interface in module['interfaces']:
-                if interface['name'] == imp:
+                if interface['name'] == subscribes.name:
                     for mname in interface['methods']:
                         method = interface['methods'][mname]
                         param_str_a = ''
                         body_code = self.body_code_from_name(method['name'])
-                        if p_utils.communication_is_ice(impa):
+                        if p_utils.communication_is_ice(subscribes):
                             param_str_a = utils.get_parameters_string(method, module['name'], self.component.language)
                             result += "//SUBSCRIPTION to " + method['name'] + " method from " + interface[
                                 'name'] + " interface\n"
@@ -429,7 +451,7 @@ class TemplateDict(dict):
                                     p['type'] = module['name'] + "ROS::" + p['type']
                                 # STR
                                 param_str_a += delim + p['type'] + ' ' + p['name']
-                            if imp in self.component.iceInterfaces:
+                            if subscribes.name in self.component.iceInterfaces:
                                 result += 'void SpecificWorker::ROS' + method[
                                     'name'] + '(' + param_str_a + ")\n{\n//subscribesToCODE\n" + body_code + "\n}\n\n"
                             else:
@@ -519,4 +541,22 @@ class TemplateDict(dict):
                     if structs_str:
                         result += Template(INTERFACE_TYPES_COMMENT_STR).substitute(module_name=module['name'],
                                                                                    types=structs_str)
+        return result
+
+    def dsr_destructor(self):
+        result = ""
+        if self.component.dsr:
+            result = "G->write_to_json_file(\"./\"+agent_name+\".json\");\nG.reset();\n"
+        return result
+
+    def dsr_set_params(self):
+        result = ""
+        if self.component.dsr:
+            result += DSR_SET_PARAMS
+        return result
+
+    def dsr_initialize(self):
+        result = ""
+        if self.component.dsr:
+            result += DSR_INITIALIZE
         return result

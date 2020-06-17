@@ -8,6 +8,7 @@
 import argparse
 import os
 import sys
+import pyparsing
 
 from termcolor import colored
 
@@ -164,7 +165,12 @@ def main():
     output_path = args.output_path
 
     if input_file.endswith(".cdsl") or input_file.endswith(".jcdsl") or input_file.endswith(".idsl"):
-        FilesGenerator().generate(input_file, output_path, args.include_dirs, args.diff)
+        try:
+            FilesGenerator().generate(input_file, output_path, args.include_dirs, args.diff)
+        except pyparsing.ParseException:
+            print(f"Error generating files for {colored(input_file, 'red')}")
+            exit(-1)
+
     else:
         print("Please check the Input file \n" + "Input File should be either .cdsl or .idsl")
         sys.exit(-1)

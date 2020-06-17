@@ -23,10 +23,10 @@ class CDSLParser(DSLParserTemplate):
         # keywords
         (IMPORT, COMMUNICATIONS, LANGUAGE, COMPONENT, CPP, CPP11, GUI, QWIDGET, QMAINWINDOW, QDIALOG, QT,
          PYTHON, REQUIRES, IMPLEMENTS, SUBSCRIBESTO, PUBLISHES, OPTIONS, TRUE, FALSE,
-         INNERMODELVIEWER, STATEMACHINE, VISUAL, AGMAGENT, AGM2AGENT, AGM2AGENTROS, AGM2AGENTICE, ICE, ROS) = list(map(CaselessKeyword, """
+         INNERMODELVIEWER, STATEMACHINE, VISUAL, AGMAGENT, AGM2AGENT, AGM2AGENTROS, AGM2AGENTICE, DSR, ICE, ROS) = list(map(CaselessKeyword, """
         import communications language component cpp cpp11 gui QWidget QMainWindow QDialog Qt 
         python requires implements subscribesTo publishes options true false
-        InnerModelViewer statemachine visual agmagent agm2agent agm2agentros agm2agentice ice ros""".split()))
+        InnerModelViewer statemachine visual agmagent agm2agent agm2agentros agm2agentice dsr ice ros""".split()))
 
         identifier = Word(alphas + "_", alphanums + "_")
         PATH = CharsNotIn("\";")
@@ -66,7 +66,7 @@ class CDSLParser(DSLParserTemplate):
         gui_options = QWIDGET | QMAINWINDOW | QDIALOG
         gui = Group(Optional(GUI.suppress() - QT('type') + OPAR - gui_options('gui_options') - CPAR + SEMI))
         # additional options
-        valid_options = INNERMODELVIEWER | AGMAGENT
+        valid_options = INNERMODELVIEWER | AGMAGENT | DSR
         options = Group(Optional(OPTIONS.suppress() - delimitedList(valid_options)) + SEMI)
         statemachine = Group(
             Optional(STATEMACHINE.suppress() - QUOTE + CharsNotIn("\";").setResultsName('machine_path') + QUOTE + Optional(VISUAL.setResultsName('visual').setParseAction(lambda t: True)) + SEMI))
@@ -138,6 +138,9 @@ class CDSLParser(DSLParserTemplate):
         # innermodelviewer
         component.innermodelviewer = False
         component.innermodelviewer = 'innermodelviewer' in [x.lower() for x in component.options]
+
+        component.dsr = False
+        component.dsr = 'dsr' in [x.lower() for x in component.options]
 
         # GUI
         component.gui = None

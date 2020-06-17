@@ -5,6 +5,7 @@ import argparse, argcomplete
 import os
 import sys
 
+from prompt_toolkit.shortcuts import confirm
 from termcolor import colored
 
 sys.path.append('/opt/robocomp/python')
@@ -76,7 +77,7 @@ def main():
     builder = RCBuild()
     parser = argparse.ArgumentParser(description="configures and build components ")
     group = parser.add_mutually_exclusive_group()
-    parser.add_argument('component', nargs='?', help='name of the component to build, if omitted curent workspace is build').completer = builder.complete_components
+    parser.add_argument('component', nargs='?', help='name of the component to build, if omitted current dir is used').completer = builder.complete_components
     group.add_argument('-c', '--clean', nargs='?', default='notgiven', help="Clean the compilation files (CMake and Make generated files).")
     group.add_argument('--doc', action='store_true' , help="generate documentation")
     group.add_argument('--installdoc', action='store_true', help="install documentation")
@@ -95,7 +96,8 @@ def main():
             else:
                 builder.build_component(component_path, args.clean)
         else:
-            parser.error(colored(f"{component_path} is not a valid robocomp component directory.", 'red'))
+            print(f"{colored(component_path, 'red')} is not in the Robocomp workspaces")
+            builder.ws.add_workspace(component_path)
     
     else:
         component = args.component
@@ -103,7 +105,6 @@ def main():
             builder.build_docs(component, args.installdoc)
         else:
             builder.build_component(component, args.clean)
-
 
 if __name__ == '__main__':
     main()

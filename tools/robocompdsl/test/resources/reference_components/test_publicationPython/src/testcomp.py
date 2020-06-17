@@ -138,7 +138,7 @@ if __name__ == '__main__':
             except:
                 print('Another client created the IMUPub topic? ...')
     pub = topic.getPublisher().ice_oneway()
-    imupubTopic = IMUPubPrx.uncheckedCast(pub)
+    imupubTopic = RoboCompIMUPub.IMUPubPrx.uncheckedCast(pub)
     mprx["IMUPubPub"] = imupubTopic
 
     if status == 0:
