@@ -1,8 +1,8 @@
-#To simulate a bot to move in square
+# To simulate a bot to move in square
 
 I would assume you have already learnt how to create a new component using robocompdsl if not you can learn about it [here](). Also, This tutorial requires an understanding of DifferentialRobot.idsl read about it [here]()
 
-##Getting started
+## Getting started
 Create a new folder, say squarecomp
 
 	mkdir squarecomp
@@ -13,7 +13,7 @@ First let us create a new component using command line tool, robocompdsl.
 	robocompdsl square.cdsl
 
 This should have created a dummy cdsl file now edit the cdsl file
-	
+
 	gedit square.cdsl
 
 The square.cdsl should import DifferntialRobot interface hence the cdsl file should look like this
@@ -29,7 +29,7 @@ The square.cdsl should import DifferntialRobot interface hence the cdsl file sho
 	};
 
 Now save and generate the code by
-	
+
 	robocompdsl square.cdsl build
 
 This should generate all the code in a new folder build. Now go to build and build the files
@@ -39,7 +39,7 @@ This should generate all the code in a new folder build. Now go to build and bui
 	make
 
 Not that you have successfully created the component let us start coding the component.
-	
+
 	cd src
 	gedit specificworker.cpp
 
@@ -60,21 +60,21 @@ If you have understood the above code and written the same in teh specificworker
 
 	void SpecificWorker::compute( )
 	{
-  
+
     	try
     	{
-   
-  		differentialrobot_proxy->setSpeedBase(200, 0); 
+
+  		differentialrobot_proxy->setSpeedBase(200, 0);
   		usleep(1000000);
-  		differentialrobot_proxy->setSpeedBase(10, 1.5707); 
+  		differentialrobot_proxy->setSpeedBase(10, 1.5707);
   		usleep(1000000);
-           	
+
     	}
     	catch(const Ice::Exception &ex)
     	{
         	std::cout << ex << std::endl;   //If there is any error/exception display the same.
     	}
-  
+
 	}
 
 Now we need to tell the component where to find the DifferentialRobot and the Laser interfaces.
@@ -83,8 +83,8 @@ Now we need to tell the component where to find the DifferentialRobot and the La
 cd etc/config .
 gedit config
 ```
- 
-Change in the editor the port numbers located after *-p* 
+
+Change in the editor the port numbers located after *-p*
 
 ```bash
 CommonBehavior.Endpoints=tcp -p 11000
@@ -124,12 +124,9 @@ Now that you have understood and executed the bot to move in square. We can modi
 
 For this, Change the parameters of the setSpeedBase to
 
-	differentialrobot_proxy->setSpeedBase(10, 0.4); 
-  	usleep(1000000); 
+	differentialrobot_proxy->setSpeedBase(10, 0.4);
+  	usleep(1000000);
 
 Save the file build it again and run it. And you will find it moving in circle. The code for the entire component can be found [here](https://github.com/parasKumarSahu/robocomp-coding-examples/tree/master/Cpp-examples/squarecomp)
 
 This is the simulation of a basic components in robocomp. We will explore much complex components by learning more interfaces along this tutorial series.
- 
-
-	
