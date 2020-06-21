@@ -1,4 +1,4 @@
-#Control the directions of the bot using Keyboard
+# Control the directions of the bot using Keyboard
 
 For this component. Import DifferentialRobot and build the component using robocompdsl. This has been explained in detail in the previous tutorials. Next write the algorithm in specificworker.cpp. The algorithm is as follows
 
@@ -7,6 +7,7 @@ For this component. Import DifferentialRobot and build the component using roboc
 
 We define a variable num and another character input which will store the entry from keyboard. istringstream is used to convert the string to the integer and store it in the variable num. Set the value of rot which is arbitrary here it is set to 0.3. In this example 1 is set as forward, 2 is set backward, 3 is left and 4 is right. The code is as follows,
 
+```
 void SpecificWorker::compute( )
 {
 	int num;
@@ -18,30 +19,30 @@ void SpecificWorker::compute( )
 
 	if (num == 1 )
 	{
-		differentialrobot_proxy->setSpeedBase(300, 0); 
+		differentialrobot_proxy->setSpeedBase(300, 0);
   		usleep(750000);
-		differentialrobot_proxy->setSpeedBase(0, 0); 
+		differentialrobot_proxy->setSpeedBase(0, 0);
   		usleep(500000);
 	}
 	if (num == 2)
 	{
-		differentialrobot_proxy->setSpeedBase(-300, 0); 
+		differentialrobot_proxy->setSpeedBase(-300, 0);
   		usleep(750000);
-		differentialrobot_proxy->setSpeedBase(0, 0); 
+		differentialrobot_proxy->setSpeedBase(0, 0);
   		usleep(500000);
 	}
 	if (num == 3)
 	{
-		differentialrobot_proxy->setSpeedBase(5, rot+0.8); 
+		differentialrobot_proxy->setSpeedBase(5, rot+0.8);
   		usleep(1000000);
-		differentialrobot_proxy->setSpeedBase(0, 0); 
+		differentialrobot_proxy->setSpeedBase(0, 0);
   		usleep(500000);
 	}
 	if (num == 4)
 	{
-		differentialrobot_proxy->setSpeedBase(5, rot+0.8); 
+		differentialrobot_proxy->setSpeedBase(5, rot+0.8);
   		usleep(1000000);
-		differentialrobot_proxy->setSpeedBase(0, 0); 
+		differentialrobot_proxy->setSpeedBase(0, 0);
   		usleep(500000);
 	}
 	else
@@ -56,6 +57,7 @@ bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
 	timer.start(Period);
 	return true;
 };
+```
 
 Save the code and build the component and simulate the innermodel simpleworld.xml and run the component by executing,
 

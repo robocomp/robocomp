@@ -1,4 +1,4 @@
-#How to contribute to robocomp Github repository
+# How to contribute to robocomp Github repository
 
 In brief, the steps involved will be:
 * Fork the robocomp repository
@@ -14,7 +14,7 @@ In brief, the steps involved will be:
 * Pull a request for the commit made
 * Start a discussion over the commits made
 
-In detail explanation: 
+In detail explanation:
 
 1) Forking the repository:
 
@@ -28,12 +28,12 @@ Click on the fork option as shown below:
 The indication that the repo is forked can be observed as follows:
 
 ![](https://github.com/abhi-kumar/robocomp/blob/how-to-contribute/forked.jpg)
- 
+
 
 2) Cloning the repository:
 
-Open a terminal and move to home directory and type: 
-    
+Open a terminal and move to home directory and type:
+
     git clone <link to the forked repository>
 
 ![](https://github.com/abhi-kumar/robocomp/blob/how-to-contribute/cloned.jpg)
