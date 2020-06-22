@@ -28,10 +28,16 @@ module RoboCompCameraRGBDSimple
     DepthType depth;
   };
  
+  struct TRGBD
+  {
+    TImage image;
+    TDepth depth;
+  };
+
   interface CameraRGBDSimple
   {
-    void getImage(out TImage im)  throws HardwareFailedException;;
-    void getDepth(out TDepth dep)  throws HardwareFailedException;;
-    void getAll(out TImage im, out TDepth dep)  throws HardwareFailedException;;
+    TImage getImage(string camera)  throws HardwareFailedException;
+    TDepth getDepth(string camera)  throws HardwareFailedException;
+    TRGBD getAll(string camera)  throws HardwareFailedException;
   };
 };
