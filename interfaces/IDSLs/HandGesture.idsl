@@ -1,0 +1,10 @@
+module RoboCompHandGesture
+{
+    sequence<int> KeyPoint;
+    sequence<KeyPoint> KeypointType;
+
+    interface HandGesture
+    {
+        idempotent void getHandGesture(KeypointType keypoints, out string gesture);  
+    };
+};

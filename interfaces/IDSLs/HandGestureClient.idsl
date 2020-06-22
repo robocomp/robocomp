@@ -8,14 +8,8 @@ module RoboCompHandGestureClient
         int depth;
         ImgType image;
     };
-    struct HandBBox
-    {
-        int x;
-        int y;
-        int w;
-        int h;
-    };
-    sequence<int> KeyPoint;
+    sequence<float> HandBBox;
+    sequence<float> KeyPoint;
     sequence<KeyPoint> KeypointType;
 
     struct HandType
