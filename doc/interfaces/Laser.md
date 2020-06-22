@@ -1,4 +1,4 @@
-#Laser.idsl
+# Laser.idsl
 
 Laser.idsl provides a simple interface to access laser devices:
 
@@ -35,7 +35,7 @@ Laser.idsl provides a simple interface to access laser devices:
            LaserConfData getLaserConfData();
        };
     };
- 
+
 
 If you happen to be a hobbyist and built actual hobby robots then you would have come across or used proximity sensor for your bot. Laser interface is similar to this sensor. It is mainly used to calculate the distance between the nearest obstacle or an object.
 
@@ -46,7 +46,7 @@ To use the interface Laser first we define a vector to any variable, In this exa
         float angle;
         float dist;
     };
-    
+
 And getLaserData() is the function that does the actual task of getting the distance measurements hence laser_proxy->getLaserData() in c++;
 Thus the code in the specificworker of the calling component will be
 
@@ -55,6 +55,6 @@ Thus the code in the specificworker of the calling component will be
 
 This stores the data that is generated using getLaserData into the vector ldata.
 
-	
+
 
 

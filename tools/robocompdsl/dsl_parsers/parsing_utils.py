@@ -1,4 +1,6 @@
 import os
+import pyparsing
+from termcolor import colored
 from collections import Counter, OrderedDict
 
 
@@ -13,12 +15,17 @@ def generate_recursive_imports(initial_idsls, include_directories=None):
         # TODO: Replace by idsl_robocomp_path
         new_idsl_path = idsl_robocomp_path(idsl_basename, include_directories)
         from dsl_parsers.dsl_factory import DSLFactory
-        imported_module = DSLFactory().from_file(new_idsl_path)  # IDSLParsing.gimmeIDSL(attempt)
+        try:
+            imported_module = DSLFactory().from_file(new_idsl_path)  # IDSLParsing.gimmeIDSL(attempt)
+        except pyparsing.ParseException as e:
+            print(f"Parsing error in file {colored(new_idsl_path, 'red')} while generating recursive imports.")
+            print(f"Exception info: {colored(e.args[2], 'red')} in line {e.lineno} of:\n{colored(e.args[0].rstrip(),'magenta')}")
+            raise
         if imported_module is None:
             raise FileNotFoundError('generate_recursive_imports: Couldn\'t locate %s' % idsl_basename)
 
         # if importedModule['imports'] have a # at the end an emtpy '' is generated
-        idsl_imports = imported_module['imports'].split('#')
+        idsl_imports = imported_module['imports']
         # we remove all the '' ocurrences and existing imports
         aux_imports = []
         for i_import in idsl_imports:
@@ -241,9 +248,10 @@ class IDSLPool(OrderedDict):
 
     def __init__(self, files, include_directories):
         super(IDSLPool, self).__init__()
+        assert isinstance(files, list), "Files must be a list of strings"
         include_directories = include_directories + self.common_interface_dirs
         self.includeInPool(files, self, include_directories)
-        self.includeInPool('#'.join(self.mandatory_idsls), self, include_directories)
+        self.includeInPool(self.mandatory_idsls, self, include_directories)
 
     @classmethod
     def getRosTypes(cls):
@@ -258,17 +266,9 @@ class IDSLPool(OrderedDict):
         Recursively add the loaded modules to the pool.
 
         """
-        file_list = []
-
-        # Extracting files names from string argument "-I filename.idsl#filename2.idsl"
-        for p in [f for f in files.split('#') if len(f) > 0]:
-            if p.startswith("-I"):
-                pass
-            else:
-                file_list.append(p)
 
         # look for the files in the includeDirectories
-        for f in file_list:
+        for f in files:
             filename = f.split('.')[0]
             if filename not in module_pool:
                 for p in include_directories:

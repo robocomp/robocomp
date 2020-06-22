@@ -34,15 +34,15 @@ class Workspace:
 
     ''' constructor'''
     def __init__(self):
-        self.workspace_paths = self.load_attr('workspace_paths')
-        self.components = self.load_attr('components')
+        self.workspace_paths = self._load_attr('workspace_paths')
+        self.components = self._load_attr('components')
 
     def __del__(self):
         pass
 
     def save_workspace(self):
-        self.save_attr(self.workspace_paths, 'workspace_paths')
-        self.save_attr(self.components, 'components')
+        self._save_attr(self.workspace_paths, 'workspace_paths')
+        self._save_attr(self.components, 'components')
 
     def find_components(self, searched_component):
         if not self.components:
@@ -197,36 +197,49 @@ class Workspace:
         except KeyboardInterrupt:
             return None
 
+    def search_parent_in_workspaces(self, path):
+        for workspace_path in self.workspace_paths:
+            common_path = os.path.commonpath([path,workspace_path])
+            if len(common_path) == len(workspace_path):
+                return workspace_path
+        return ""
+
     def add_workspace(self, initial=None):
         if initial is None:
             initial = os.getcwd()
-        session = PromptSession(u"> ", completer=FuzzyCompleter(PathCompleter()))
-        response = session.prompt("Path to find new components\n> ",
-                                  complete_while_typing=True,
-                                  default=initial,
-                                  pre_run=session.default_buffer.start_completion,
-                                  validator=dir_validator)
-        # Check the final '/' characters
-        if response in self.workspace_paths:
-            print(f"{response} already exist in workspaces")
-            return
+        existing_workspace =self.search_parent_in_workspaces(initial)
+        if not existing_workspace:
+            session = PromptSession(u"> ", completer=FuzzyCompleter(PathCompleter()))
+            response = session.prompt("Path to find new components\n> ",
+                                      complete_while_typing=True,
+                                      default=initial,
+                                      pre_run=session.default_buffer.start_completion,
+                                      validator=dir_validator)
+            # Check the final '/' characters
+            if response in self.workspace_paths:
+                print(f"{response} already exist in workspaces")
+                return
 
-        new_components = self.get_recursive_components_in_dir(response)
-        print("%s\n%d components found in %s" % ( colored('\n'.join(new_components), 'green'),
-                                                 len(new_components),
-                                                 response))
-        if len(new_components) == 0:
-            print(f"No component found in {response}. Workspaces not updated.")
-            return
+            new_components = self.get_recursive_components_in_dir(response)
 
-        answer = confirm(f'Do you want to add {response} to workspaces?')
-        if answer:
-            print(f"{response} added to workspaces")
-            self.components += new_components
-            self.workspace_paths.append(response)
-            self.save_workspace()
+            print("%s\n%d components found in %s" % ( colored('\n'.join(new_components), 'green'),
+                                                     len(new_components),
+                                                     response))
+            if len(new_components) == 0:
+                print(f"No component found in {response}. Workspaces not updated.")
+                return
+
+            answer = confirm(f'Do you want to add {response} to workspaces?')
+            if answer:
+                print(f"{response} added to workspaces")
+                self.components += new_components
+                self.workspace_paths.append(response)
+                self.save_workspace()
+            else:
+                print("Workspaces not updated.")
         else:
-            print("Workspaces not updated.")
+            print(f"{initial} is already a component of {existing_workspace} workspace.")
+            self.update_components_in_workspaces()
 
     def update_components_in_workspaces(self):
         old_components = set(self.components)
@@ -358,7 +371,7 @@ class Workspace:
 
         self.save_workspace()
 
-    def save_attr(self, attr, filename):
+    def _save_attr(self, attr, filename):
         home = os.path.expanduser("~")
         config_file_path = os.path.join(home, f".config/RoboComp/rc_{filename}.json")
         if not os.path.exists(os.path.join(home, ".config/RoboComp")):
@@ -372,7 +385,7 @@ class Workspace:
             pass
 
 
-    def load_attr(self, filename):
+    def _load_attr(self, filename):
         home = os.path.expanduser("~")
         config_file_path = os.path.join(home, f".config/RoboComp/rc_{filename}.json")
 

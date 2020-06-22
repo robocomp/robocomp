@@ -1,10 +1,11 @@
+#!/bin/bash
 cat /etc/issue
-if [ -z "$1" ] || [ "$1" != 'stable' ] && [ "$1" != 'development' ]
-then
-    echo "Currently you only can use stable or development as robocomp branches."
-    ROBOCOMP_BRANCH='stable'
-else
-    ROBOCOMP_BRANCH=$1
+
+if [ $# -eq 0 ]
+  then
+    ROBOCOMP_BRANCH='development'
+  else
+    ROBOCOMP_BRANCH="$1"
 fi
 
 sudo apt-get update -y
@@ -30,4 +31,5 @@ make -j$(nproc)
 sudo make install
 sudo sh -c "echo '/opt/robocomp/lib/' >> /etc/ld.so.conf"
 sudo ldconfig
-rcnode& python3 /home/robolab/robocomp/tools/robocompdsl/autogeneration_tests/test_cdsl/test_component_generation.py --no-execution --avoid agm
+source ~/.bashrc
+/opt/robocomp/bin/rcnode& python3 /home/robolab/robocomp/tools/robocompdsl/autogeneration_tests/test_cdsl/test_component_generation.py --avoid agm

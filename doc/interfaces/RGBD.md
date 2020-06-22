@@ -1,4 +1,4 @@
-#RGBD.idsl
+# RGBD.idsl
 
 ```
 import "JointMotor.idsl";
@@ -30,7 +30,7 @@ module RoboCompRGBD
   sequence<float> DepthSeq;
   sequence<ColorRGB> ColorSeq;
   sequence<PointXYZ> PointSeq;
-  
+
   struct CameraParameters
   {
     int focal;
@@ -102,12 +102,11 @@ module RoboCompRGBD
         out RoboCompDifferentialRobot::TBaseState bState) throws HardwareFailedException;
   };
 };
-
 ```
 
-Here in this interface one can calculate the depth, Get an image and display it and also can get various parameters pertaining to an image. 
+Here in this interface one can calculate the depth, Get an image and display it and also can get various parameters pertaining to an image.
 
-##getData, getDepthinIR
+## getData, getDepthinIR
 
 This is used to get the RGB image matrix and it's depth. In RGBD.idsl this can be done by the following code,
 
@@ -116,11 +115,11 @@ This is used to get the RGB image matrix and it's depth. In RGBD.idsl this can b
 	RoboCompRGBD::imgType rgbMatrix;
 	RoboCompRGBD::depthType distanceMatrix;
 	rgbd_proxy->getData(rgbMatrix,distanceMatrix, hState, bState)
-	rgbd_proxy->getDepthInIR(distanceMatrix, hState, bState) 
+	rgbd_proxy->getDepthInIR(distanceMatrix, hState, bState)
 
 What the above code does the first two lines defines the bot and gets the state of the simulated bot. The next two lines defines a matrix, rgbMatrix and another matrix, distanceMatrix which would contain the depth. The final line calls the function getData which takes all the above as parameters. If you are interested in only getting the distance then getDepthinIR can be used.
 
-##getImage, getDepth, getXYZ, getRGB
+## getImage, getDepth, getXYZ, getRGB
 
 This is used to get the depth, color of each points(co-ordinates) of an image. This can be achieved with the following
 
@@ -135,31 +134,3 @@ This is used to get the depth, color of each points(co-ordinates) of an image. T
 	rgbd_proxy->getDepth(depth, hState, bState)
 
 To get the color or the RGB values of each point/pixel in a image getRGB is used. To get all the points and it's co-ordinates getXYZ is used and to get the depth or distance of these points getDepth is used. To get the all the three parameters getImage is used.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

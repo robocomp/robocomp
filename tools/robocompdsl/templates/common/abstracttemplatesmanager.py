@@ -173,8 +173,10 @@ class ComponentTemplatesManager(AbstractTemplatesManager):
 
             ifile = os.path.join(TEMPLATES_DIR, self.files['template_path'], template_file)
             print('Generating', ofile)
-            self._template_to_file(ifile, ofile)
-
+            try:
+                self._template_to_file(ifile, ofile)
+            except ValueError as e:
+                cprint(e)
             self._post_generation_action(template_file, ofile)
 
         for interface in self.ast.implements + self.ast.subscribesTo:

@@ -1,11 +1,11 @@
-#aprilTagsComp : Tutorial to simulate virtual apriltags
+# aprilTagsComp : Tutorial to simulate virtual apriltags
 
 If you haven't already, Then do read about aprilTagsComp [here](code-examples/apriltags.md ) for better understanding. In this tutorial you will learn the actual functionality of apriltags.
 
 First make sure you have installed apriltags. Please follow the steps that is given in *INSTALL_APRILTAGS_LIB.TXT*. Then move to the apriltagscomp folder
 
 	cd ~/robocomp/components/robocomp-robolab/components/apriltagsComp
-    
+
 Compile by executing
 
 	cmake.
@@ -43,8 +43,8 @@ InnerModelPath /home/robocomp/robocomp/files/innermodel/simpleworld.xml
 RoboCompAprilTagsComp::AprilTagsComp started
 InnerModelReader: reading /home/robocomp/robocomp/files/innermodel/simpleworld.xml
 InnerModelRGBD: 0.000000 {10096}
-"/home/robocomp/robocomp/files/innermodel/simpleworld.xml"   "rgbd" 
-FOCAL LENGHT: 480 
+"/home/robocomp/robocomp/files/innermodel/simpleworld.xml"   "rgbd"
+FOCAL LENGHT: 480
   6.45862 fps
   7.17213 fps
   7.09036 fps
@@ -61,6 +61,3 @@ FOCAL LENGHT: 480
   6.92038 fps
   7.03233 fps
 ```
-
-
-

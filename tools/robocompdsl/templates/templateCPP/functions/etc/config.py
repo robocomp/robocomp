@@ -1,3 +1,5 @@
+from string import Template
+
 from dsl_parsers.parsing_utils import communication_is_ice, get_name_number
 
 STORM_TOPIC_MANAGER_STR = """\
@@ -5,6 +7,11 @@ STORM_TOPIC_MANAGER_STR = """\
 TopicManager.Proxy=IceStorm/TopicManager:default -p 9999
 """
 
+DSR_CONFIG_STR = """\
+agent_id = 0 # Change id
+agent_name = ${name}
+dsr_input_file = "/path/to/json/input/file.json"
+"""
 
 class TemplateDict(dict):
     def __init__(self, component):
@@ -14,6 +21,7 @@ class TemplateDict(dict):
         self['config_subscribes_endpoints'] = self.config_subscribes_endpoints()
         self['config_requires_proxies'] = self.config_requires_proxies()
         self['storm_topic_manager'] = self.storm_topic_manager()
+        self['dsr_config'] = self.dsr_config()
 
     def config_implements_endpoints(self):
         result = ""
@@ -51,3 +59,10 @@ class TemplateDict(dict):
         if len(self.component.publishes + self.component.subscribesTo) > 0:
             result += STORM_TOPIC_MANAGER_STR
         return result
+
+    def dsr_config(self):
+        result = ""
+        if self.component.dsr:
+            result += Template(DSR_CONFIG_STR).substitute(name=self.component.name)
+        return result
+

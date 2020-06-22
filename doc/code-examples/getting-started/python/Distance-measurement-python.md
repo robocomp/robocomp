@@ -1,4 +1,4 @@
-#Getting Distance and Angle Measurements
+# Getting Distance and Angle Measurements
 
 First we create a component, Refer previous tutorials where it is explained in detail.
 
@@ -20,31 +20,31 @@ Now you can edit the compute function in the file according to the problem state
 
 The algorithm is as follows we move the bot randomly first and then collect the laser data and store it in a defined vector say ldata. We then sort the distance data and take the first data of the vector list ldata. THe code is as below
 
-		ldata = []
-		d= []
-		a =[]
-		self.differentialrobot_proxy.setSpeedBase(0, 0.8)
-		time.sleep(1)
-		self.differentialrobot_proxy.setSpeedBase(50, 0)
-		time.sleep(1)		
-		ldata = self.laser_proxy.getLaserData();
-		for i in range(0,len(ldata)):
-			dis = ldata[i]
-			x = dis.angle			
-			y = dis.dist
-			d.append(y)
-			a.append(x)
-		d.sort()
-		a.sort()
-		distance = d[0]
-		angle = a[0]
-		print(distance)
-		print(angle)
-		time.sleep(3)
+	ldata = []
+	d= []
+	a =[]
+	self.differentialrobot_proxy.setSpeedBase(0, 0.8)
+	time.sleep(1)
+	self.differentialrobot_proxy.setSpeedBase(50, 0)
+	time.sleep(1)
+	ldata = self.laser_proxy.getLaserData();
+	for i in range(0,len(ldata)):
+		dis = ldata[i]
+		x = dis.angle
+		y = dis.dist
+		d.append(y)
+		a.append(x)
+	d.sort()
+	a.sort()
+	distance = d[0]
+	angle = a[0]
+	print(distance)
+	print(angle)
+	time.sleep(3)
 
 As told in the algorithm we first define the ldata, Start moving the bot randomly and collect the laser data, sort the distance only by appending it to a new list. Take the first element for the new list and output the same on the command window. Your final compute function will look something like this
 
-		def compute(self):
+	def compute(self):
 		print('SpecificWorker.compute...')
 		try:
 			ldata = []
@@ -53,7 +53,7 @@ As told in the algorithm we first define the ldata, Start moving the bot randoml
 			self.differentialrobot_proxy.setSpeedBase(0, 0.8)
 			time.sleep(1)
 			self.differentialrobot_proxy.setSpeedBase(50, 0)
-			time.sleep(1)		
+			time.sleep(1)
 			ldata = self.laser_proxy.getLaserData();
 			for i in range(0,len(ldata)):
 				dis = ldata[i]

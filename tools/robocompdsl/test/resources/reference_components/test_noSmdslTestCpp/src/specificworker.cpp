@@ -49,7 +49,7 @@ bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
 
 
 
-	
+
 
 	return true;
 }
@@ -64,8 +64,8 @@ void SpecificWorker::initialize(int period)
 	}
 	else
 	{
-        timer.start(Period);
-    }
+		timer.start(Period);
+	}
 
 }
 

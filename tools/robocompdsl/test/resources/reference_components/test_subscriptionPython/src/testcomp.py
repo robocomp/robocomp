@@ -131,7 +131,7 @@ if __name__ == '__main__':
 
 
     IMUPub_adapter = ic.createObjectAdapter("IMUPubTopic")
-    imupubI_ = IMUPubI(worker)
+    imupubI_ = imupubI.IMUPubI(worker)
     imupub_proxy = IMUPub_adapter.addWithUUID(imupubI_).ice_oneway()
 
     subscribeDone = False

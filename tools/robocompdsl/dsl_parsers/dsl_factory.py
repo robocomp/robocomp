@@ -2,7 +2,7 @@ import errno
 import os
 import traceback
 from os import path
-
+import pyparsing
 from termcolor import cprint
 
 from dsl_parsers.specific_parsers.cdsl.jcdsl_parser import CDSLJsonParser
@@ -93,9 +93,8 @@ class DSLFactory(Singleton):
             # get the result from string
             try:
                 result, parser = self.from_string(string, dsl_type, **kwargs)
-            except Exception:
-                cprint('Error parsing %s' % file_path, 'red')
-                traceback.print_exc()
+            except pyparsing.ParseException as e:
+                e.filepath = file_path
                 raise
             else:
                 result['filename'] = file_path

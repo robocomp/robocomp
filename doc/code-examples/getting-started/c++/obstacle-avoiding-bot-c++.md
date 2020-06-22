@@ -1,8 +1,8 @@
-#Obstacle Avoiding Bot
+# Obstacle Avoiding Bot
 
 In this tutorial you will learn how to build a bot which avoids the obstacle moving in random.
 
-###Component Generation
+### Component Generation
 I will just run through the steps without much explanation as in detail explanation can be found in the previous tutorials.
 
 	mkdir obstacle
@@ -22,20 +22,20 @@ Editing your cdsl file, Importing DifferentialRobot and Laser.idsl
 	};
 
 Generating and Building the component
-	
+
 	robocompdsl obstacle.cdsl build
 	cd build
 	cmake .
 	make
 
 To program the component
-	
+
 	cd src
 	gedit specificworker.cpp
 
 Here we will be using both the interfaces we have learnt so far. The entire algorithm is as follows
 
-1. set a treshold value for distance at which the bot should avoid the obstacle and angle to rotate 
+1. set a treshold value for distance at which the bot should avoid the obstacle and angle to rotate
 2. get laser data and store it in ldata
 3. sort the data in ldata
 4. if the distance is less than the set treshold data then move right
@@ -51,21 +51,21 @@ void SpecificWorker::compute( )
 {
 
     const float threshold = 200;
-    float rot = 1.5707;	
-	
-    
+    float rot = 1.5707;
+
+
 
     try
     {
         RoboCompLaser::TLaserData ldata = laser_proxy->getLaserData();
         std::sort( ldata.begin(), ldata.end(), [](RoboCompLaser::TData a, RoboCompLaser::TData b){ return     a.dist < b.dist; }) ;
-        
-	
+
+
 	 if( ldata.front().dist < threshold)
 	{
  	differentialrobot_proxy->setSpeedBase(5, rot);
 	usleep(1250000);
-	std::cout << ldata.front().dist << std::endl;	
+	std::cout << ldata.front().dist << std::endl;
 	differentialrobot_proxy->setSpeedBase(200, 0);
 	usleep(500000);
 	rot = rot + 0.12;
@@ -74,15 +74,15 @@ void SpecificWorker::compute( )
 	 rot = 1.5707;
 	}
 	}
-	
+
 	else
 	{
-	differentialrobot_proxy->setSpeedBase(200, 0); 
+	differentialrobot_proxy->setSpeedBase(200, 0);
   	usleep(500000);
 	std::cout << ldata.front().dist << std::endl;
   	}
 
-       	
+
     }
     catch(const Ice::Exception &ex)
     {
@@ -102,8 +102,8 @@ Now we need to tell the component where to find the DifferentialRobot and the La
 cd etc/config .
 gedit config
 ```
- 
-Change in the editor the port numbers located after *-p* 
+
+Change in the editor the port numbers located after *-p*
 
 ```bash
 CommonBehavior.Endpoints=tcp -p 11000

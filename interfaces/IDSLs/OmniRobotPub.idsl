@@ -5,7 +5,7 @@ module RoboCompOmniRobotPub
   interface OmniRobotPub
   {
     void pushBaseState(RoboCompGenericBase::TBaseState state);
-  }
+  };
 };
 
 

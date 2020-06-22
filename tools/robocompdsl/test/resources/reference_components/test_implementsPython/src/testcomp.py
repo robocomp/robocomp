@@ -121,7 +121,7 @@ if __name__ == '__main__':
         sys.exit(-1)
 
     adapter = ic.createObjectAdapter('HandDetection')
-    adapter.add(HandDetectionI(worker), ic.stringToIdentity('handdetection'))
+    adapter.add(handdetectionI.HandDetectionI(worker), ic.stringToIdentity('handdetection'))
     adapter.activate()
 
     signal.signal(signal.SIGINT, sigint_handler)
