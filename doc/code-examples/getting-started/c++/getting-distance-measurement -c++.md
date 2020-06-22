@@ -1,6 +1,6 @@
-#Getting the distance measurement and displaying it in command window
+# Getting the distance measurement and displaying it in command window
 
-###Component Generation
+### Component Generation
 I will just run through the steps without much explanation as in detail explanation can be found in the previous tutorials.
 
 	mkdir dist
@@ -20,14 +20,14 @@ Editing your cdsl file, Importing DifferentialRobot and Laser.idsl
 	};
 
 Generating and Building the component
-	
+
 	robocompdsl dist.cdsl build
 	cd build
 	cmake .
 	make
 
 To program the component
-	
+
 	cd src
 	gedit specificworker.cpp
 
@@ -46,7 +46,7 @@ This code would sort and store the code in the first position or ldata.front(). 
 	std::cout << ldata.front().dist << std::endl;
 
 
-Now the entire code for this is 
+Now the entire code for this is
 
 ```
 void SpecificWorker::compute( )
@@ -57,15 +57,15 @@ void SpecificWorker::compute( )
     {
         RoboCompLaser::TLaserData ldata = laser_proxy->getLaserData();
         std::sort( ldata.begin(), ldata.end(), [](RoboCompLaser::TData a, RoboCompLaser::TData b){ return     a.dist < b.dist; }) ;
-        
-	
-	differentialrobot_proxy->setSpeedBase(500, 0); 
+
+
+	differentialrobot_proxy->setSpeedBase(500, 0);
   	usleep(1500000);
 	std::cout << ldata.front().dist << std::endl;
-  	differentialrobot_proxy->setSpeedBase(10, 1.5707);  
+  	differentialrobot_proxy->setSpeedBase(10, 1.5707);
   	usleep(1000000);
 	std::cout << ldata.front().dist << std::endl;
-       	
+
     }
     catch(const Ice::Exception &ex)
     {
@@ -85,8 +85,8 @@ Now we need to tell the component where to find the DifferentialRobot and the La
 cd etc/config .
 gedit config
 ```
- 
-Change in the editor the port numbers located after *-p* 
+
+Change in the editor the port numbers located after *-p*
 
 ```bash
 CommonBehavior.Endpoints=tcp -p 11000

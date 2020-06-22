@@ -1,4 +1,4 @@
-#To move a bot in square and circle
+# To move a bot in square and circle
 
 I will just post the important steps that is to be followed in detail steps of python component generation can be found in [here]().
 
@@ -35,7 +35,7 @@ Here you will find the folders etc and src. etc contains the config file which i
 
 	cd src
 	gedit specificworker.py
-	
+
 Here in the compute() function you will write the desired algorithm for simulation of the bot. To move it in a square we use DifferentialRobot's setSpeedBase function.
 
 	self.differentialrobot_proxy.setSpeedBase(100, 0)
@@ -49,7 +49,7 @@ This will set the speed of the bot to 100 and 0 radians per second. So to move i
 
 In the above code 1.5705 is ntn but 90 degrees written in radians per second and a 1 second delay is introduced or each setSpeedBase will execute for a second. Now you compute function should look like this
 
-		def compute(self):
+	def compute(self):
 		print('SpecificWorker.compute...')
 		try:
 			self.differentialrobot_proxy.setSpeedBase(100, 0)
@@ -69,13 +69,13 @@ To simulate the code we need a scenario or a innermodel for this we open a new t
 	rcis simpleworld.xml
 
 now come back to build folder or the previous tab and execute
-	
+
 	python src/pysquare.py --Ice.Config=etc/config
 
 this should run the component and you will be able to see the bot moving in a square.
 
 Now that you have understood and created a basic python component you can now extend this code and make it move in a circle. The algorithm is as follows
-	
+
 	self.differentialrobot_proxy.setSpeedBase(10, 0.87)
 	time.sleep(0.5)
 
