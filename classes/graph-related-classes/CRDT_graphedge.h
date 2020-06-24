@@ -115,7 +115,7 @@ class DoRTStuff : public  QTableWidget
                 if(this->item(5,i) == nullptr)
                   this->setItem(5,i, new QTableWidgetItem(ts[i]));
                 else
-                    this->item(5,i)->setText(QString::number(trans[i]));
+                    this->item(5,i)->setText(ts[i]);
                 if(this->item(6,i) == nullptr)
                   this->setItem(6,i, new QTableWidgetItem(QString::number(trans[i])));
                 else
@@ -123,11 +123,11 @@ class DoRTStuff : public  QTableWidget
                 if(this->item(7,i) == nullptr)
                   this->setItem(7,i, new QTableWidgetItem(rs[i]));
                 else
-                  this->item(7,i)->setText(QString::number(trans[i]));
+                  this->item(7,i)->setText(rs[i]);
                 if(this->item(8,i) == 0)
                   this->setItem(8,i, new QTableWidgetItem(QString::number(rot[i])));
                 else
-                    this->item(8,i)->setText(QString::number(trans[i]));
+                    this->item(8,i)->setText(QString::number(rot[i]));
               }
           }
         }
