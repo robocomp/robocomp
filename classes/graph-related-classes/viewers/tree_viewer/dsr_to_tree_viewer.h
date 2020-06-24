@@ -21,7 +21,12 @@
 #include <QWidget>
 #include <QTreeWidget>
 #include <QMouseEvent>
-#include "CRDT.h"
+#include <QCheckBox>
+#include <QLineEdit>
+#include <QComboBox>
+#include <QSpinBox>
+#include <QHBoxLayout>
+#include "../../CRDT.h"
 
 class GraphNode;
 class GraphEdge;
@@ -32,21 +37,26 @@ namespace DSR
     {
         Q_OBJECT
         public:
-            DSRtoTreeViewer(std::shared_ptr<CRDT::CRDTGraph> G_, QTreeWidget *parent=0);
+            DSRtoTreeViewer(std::shared_ptr<CRDT::CRDTGraph> G_, QWidget *parent=0);
             std::shared_ptr<CRDT::CRDTGraph> getGraph()  			  	{return G;};
 		     
         public slots:   // From G
-            void add_or_assign_node_SLOT(const std::int32_t id, const std::string &type);
+            void add_or_assign_node_SLOT(const std::int32_t id, const std::string &type, const std::string &name = "");
+			void add_or_assign_node_SLOT(const std::int32_t id, Node node);
             void add_or_assign_edge_SLOT(const std::int32_t from, const std::int32_t to, const std::string& type);
 			void del_edge_SLOT(const std::int32_t from, const std::int32_t to,  const std::string &edge_tag);
 			void del_node_SLOT(int id);
-            
-        protected:  
-            virtual void wheelEvent(QWheelEvent* event);
-            virtual void resizeEvent(QResizeEvent* event);
+			void node_change_SLOT(int value,  int id, const std::string &type, QTreeWidgetItem* parent= nullptr);
+			void category_change_SLOT(int value,  QTreeWidgetItem* parent= nullptr);
+
         private:
             std::shared_ptr<CRDT::CRDTGraph> G;
             void createGraph();
+            std::map<std::string, QTreeWidgetItem*> types_map;
+			std::map<int, QTreeWidgetItem*> tree_map;
+        
+		signals:
+			void node_check_state_changed(int newValue, int id, const std::string &type,  QTreeWidgetItem * item);
     };
 };
 #endif

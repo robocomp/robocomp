@@ -21,19 +21,42 @@
 #include <QGLViewer/qglviewer.h>
 #include <QApplication>
 #include <QTableWidget>
+#include <QStringList>
 #include "CRDT_graphnode.h"
 #include "CRDT_graphedge.h"
 #include "specificworker.h"
+#include <unistd.h>
 
 using namespace DSR;
 
-GraphViewer::GraphViewer(std::shared_ptr<CRDT::CRDTGraph> G_, std::list<View> options) :QMainWindow()
+std::string get_self_path()
+{
+	std::vector<char> buf(400);
+	ssize_t len;
+
+	do
+	{
+		buf.resize(buf.size() + 100);
+		len = ::readlink("/proc/self/exe", &(buf[0]), buf.size());
+	} while (buf.size() == len);
+
+	if (len > 0)
+	{
+		buf[len] = '\0';
+		return (std::string(&(buf[0])));
+	}
+	/* handle error */
+	return "";
+}
+
+GraphViewer::GraphViewer(QMainWindow * widget, std::shared_ptr<CRDT::CRDTGraph> G_, int options, view main) : QObject()
 {
 	G = G_;
     qRegisterMetaType<std::int32_t>("std::int32_t");
     qRegisterMetaType<std::string>("std::string");
  	QRect availableGeometry(QApplication::desktop()->availableGeometry());
- 	this->move((availableGeometry.width() - width()) / 2, (availableGeometry.height() - height()) / 2);
+ 	this->window = widget;
+ 	window->move((availableGeometry.width() - window->width()) / 2, (availableGeometry.height() - window->height()) / 2);
 	
 	// QSettings settings("RoboComp", "DSR");
     // settings.beginGroup("MainWindow");
@@ -44,71 +67,167 @@ GraphViewer::GraphViewer(std::shared_ptr<CRDT::CRDTGraph> G_, std::list<View> op
 	// 	graphicsView->setTransform(settings.value("matrix", QTransform()).value<QTransform>());
 	// settings.endGroup();
 
-
 	//MenuBar
-    QMenu *viewMenu = this->menuBar()->addMenu(tr("&View"));
+    viewMenu = window->menuBar()->addMenu(window->tr("&View"));
+	auto actionsMenu = window->menuBar()->addMenu(window->tr("&Actions"));
+	auto restart_action = actionsMenu->addAction("Restart");
 
-	//Create docks view
-	//graph
-	dsr_to_graph_viewer = std::make_unique<DSR::DSRtoGraphViewer>(G);	
-	this->setCentralWidget(dsr_to_graph_viewer.get());
-
-	//3D
-	QDockWidget *osg_widget = new QDockWidget("3D");
-	dsr_to_osg_viewer = std::make_unique<DSR::DSRtoOSGViewer>(G, 1, 1);
-	osg_widget->setWidget(dsr_to_osg_viewer.get());
-	this->addDockWidget(Qt::RightDockWidgetArea, osg_widget);
-	QAction *action3D = viewMenu->addAction("&3D");
-    action3D->setCheckable(true);
-    action3D->setChecked(true);
-	connect(action3D, SIGNAL(triggered(bool)), osg_widget, SLOT(setVisible(bool)));
-
-	//Tree
-	QDockWidget *tree_widget = new QDockWidget("Tree");
-	dsr_to_tree_viewer = std::make_unique<DSR::DSRtoTreeViewer>(G);
-	tree_widget->setWidget(dsr_to_tree_viewer.get());
-	this->addDockWidget(Qt::RightDockWidgetArea, tree_widget);
-	this->tabifyDockWidget(tree_widget, osg_widget);
-	QAction *actionTree = viewMenu->addAction("&Tree");
-    actionTree->setCheckable(true);
-    actionTree->setChecked(true);
-	connect(actionTree, SIGNAL(triggered(bool)), tree_widget, SLOT(setVisible(bool)));
-
-	//2D
-	QDockWidget *scene_widget = new QDockWidget("2D");
-	dsr_to_graphicscene_viewer = std::make_unique<DSR::DSRtoGraphicsceneViewer>(G, 1, 1);
-	scene_widget->setWidget(dsr_to_graphicscene_viewer.get());
-	this->addDockWidget(Qt::RightDockWidgetArea, scene_widget);
-	this->tabifyDockWidget(tree_widget, scene_widget);
-	QAction *action2D = viewMenu->addAction("&2D");
-    action2D->setCheckable(true);
-    action2D->setChecked(true);
-	connect(action2D, SIGNAL(triggered(bool)), scene_widget, SLOT(setVisible(bool)));
-
-
-
-/*	for(auto option: options)
+	connect(restart_action, &QAction::triggered, this, [=] (bool)
 	{
-		if(option == View::Scene)
-		 	dsr_to_graph_viewer = std::make_unique<DSR::DSRtoGraphViewer>(G, graphicsView);
+		qDebug()<<"TO RESTART";
+		auto current_path = get_self_path();
+		auto command = ("sleep 4 && "+current_path+"&");
+		std::system(command.c_str());
+//		QProcess a;
+//		a.startDetached(command);
+		qDebug()<<"TO RESTART2: "<<command.c_str();
+		QTimer::singleShot(1000,QApplication::quit);
+//		restart_app(true);
+	});
 
-		// //dsr_to_tree_viewer = std::make_unique<DSR::DSRtoTreeViewer>(G, treeWidget);
-		if(option == View::OSG)
-		 	dsr_to_osg_viewer = std::make_unique<DSR::DSRtoOSGViewer>(G, 1, 1, openGLWidget);
-		// if(option == View::Graph)
-		// 	dsr_to_graphicscene_viewer = std::make_unique<DSR::DSRtoGraphicsceneViewer>(G, 1, 1, graphicsView_2D);
-	}*/
 
+	initialize_views(options, main);
 }
+
 
 GraphViewer::~GraphViewer()
 {
 	QSettings settings("RoboComp", "DSR");
     settings.beginGroup("MainWindow");
-		settings.setValue("size", size());
-		settings.setValue("pos", pos());
+		settings.setValue("size", window->size());
+		settings.setValue("pos", window->pos());
     settings.endGroup();
 }
+
+
+void GraphViewer::restart_app(bool)
+{
+//	qDebug()<<"TO RESTART";
+//	auto executable_path = get_self_path();
+//	std::system("/usr/bin/xclock&");
+//	qDebug()<<command.c_str();
+//
+//
+//	process->setWorkingDirectory("/home/robolab");
+//	process->setProcessEnvironment(QProcessEnvironment::systemEnvironment());
+//
+//	process->start(command.c_str());
+//	qDebug()<<process->readAllStandardOutput();
+//	QTimer::singleShot(3000, QApplication::quit);
+//	int pid = fork();
+//	if (pid == 0)
+//	{
+//
+//		auto command = std::string("sleep 1;/usr/bin/xclock");
+//		qDebug()<<"TO RESTART"<<command.c_str();
+//		// We are in the child process, execute the command
+//		execl(command.c_str(), command.c_str(), nullptr);
+//
+//		// If execl returns, there was an error
+//		std::cout << "Exec error: " << errno << ", " << strerror(errno) << '\n';
+//
+//		// Exit child process
+//		exit(1);
+//	}
+//	else if (pid > 0)
+//	{
+//		// The parent process, do whatever is needed
+//		// The parent process can even exit while the child process is running, since it's independent
+//		QTimer::singleShot(3000, QApplication::quit);
+//	}
+//	else
+//	{
+//		// Error forking, still in parent process (there are no child process at this point)
+//		std::cout << "Fork error: " << errno << ", " << strerror(errno) << '\n';
+//	}
+}
+
+void GraphViewer::initialize_views(int options, view central){
+	//Create docks view and main widget
+	std::map<view,QString> valid_options{{view::graph,"Graph"}, {view::tree,"Tree"}, {view::osg,"3D"}, {view::scene, "2D"}};
+
+	// creation of docks and mainwidget
+	for (auto option: valid_options) {
+		if(option.first == central)
+		{
+			auto viewer = create_widget(option.first);
+			window->setCentralWidget(viewer);
+			this->main_widget = viewer;
+		}
+		else if(options & option.first ) {
+			auto viewer = create_widget(option.first);
+			create_dock_and_menu(QString(option.second), viewer);
+		}
+	}
+
+//	Tabification of curren docks
+	QDockWidget * previous = nullptr;
+	for(auto dock: docks) {
+		if (previous)
+			window->tabifyDockWidget(previous, dock.second);
+		previous = dock.second;
+	}
+
+//	connection of tree to graph signals
+	if(docks.count(QString("Tree"))==1)
+	{
+		auto graph_widget = qobject_cast<DSRtoGraphViewer*>(this->main_widget);
+		if(graph_widget)
+		{
+			DSRtoTreeViewer * tree_widget= qobject_cast<DSRtoTreeViewer*>(docks["Tree"]->widget());
+			GraphViewer::connect(
+					tree_widget,
+					&DSRtoTreeViewer::node_check_state_changed,
+					graph_widget,
+					[=] (int value, int id, const std::string &type, QTreeWidgetItem*) {graph_widget->hide_show_node_SLOT(id, value==2);});
+		}
+
+	}
+
+}
+
+
+QWidget* GraphViewer::create_widget(view type){
+
+	QWidget * widget_view = nullptr;
+	switch(type) {
+//		graph
+		case view::graph:
+			widget_view = new DSR::DSRtoGraphViewer(G);
+			break;
+//		3D
+		case view::osg:
+			widget_view = new DSR::DSRtoOSGViewer(G, 1, 1);
+			break;
+//		Tree
+		case view::tree:
+			widget_view = new DSR::DSRtoTreeViewer(G);
+			break;
+//		2D
+		case view::scene:
+			widget_view = new DSR::DSRtoGraphicsceneViewer(G);
+			break;
+	}
+	return widget_view;
+}
+
+void GraphViewer::create_dock_and_menu(QString name, QWidget* view){
+//	TODO: Check if name exists in docks
+	QDockWidget* dock_widget;
+	if(this->docks.count(name)) {
+		dock_widget = this->docks[name];
+		window->removeDockWidget(dock_widget);
+	}
+	else{
+		dock_widget = new QDockWidget(name);
+		viewMenu->addAction(dock_widget->toggleViewAction());
+		this->docks[name] = dock_widget;
+	}
+	dock_widget->setWidget(view);
+	window->addDockWidget(Qt::RightDockWidgetArea, dock_widget);
+}
+
+
 
 ////////////////////////////////////////
 /// UI slots
@@ -118,46 +237,14 @@ void GraphViewer::saveGraphSLOT()
 	emit saveGraphSIGNAL(); 
 }
 
-void GraphViewer::toggleSimulationSLOT()
-{
-	this->do_simulate = !do_simulate;
-	if(do_simulate)
-	   timerId = startTimer(1000 / 25);
-}
+//void GraphViewer::toggleSimulationSLOT()
+//{
+//	this->do_simulate = !do_simulate;
+//	if(do_simulate)
+//	   timerId = window->startTimer(1000 / 25);
+//}
 
-///////////////////////////////////////
 
-void GraphViewer::itemMoved()
-{
-	//std::cout << "timerId " << timerId << std::endl;
-	//if(do_simulate and timerId == 0)
-    //if (timerId == 0)
-    //   timerId = startTimer(1000 / 25);
-}
-
-void GraphViewer::timerEvent(QTimerEvent *event)
-{
-    // Q_UNUSED(event)
-
-	// for( auto &[k,node] : gmap)
-	// {
-	// 	(void)k;
-	//     node->calculateForces();
-	// }
-	// bool itemsMoved = false;
-	
-	// for( auto &[k,node] : gmap)
-	// {
-	// 	(void)k;
-    //     if (node->advancePosition())
-    //         itemsMoved = true;
-    // }
-	// if (!itemsMoved) 
-	// {
-    //     killTimer(timerId);
-    //     timerId = 0;
-    // }
-}
 
 /////////////////////////
 ///// Qt Events

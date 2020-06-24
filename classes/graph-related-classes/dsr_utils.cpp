@@ -15,7 +15,7 @@ using namespace CRDT;
 Utilities::Utilities(CRDT::CRDTGraph *G_)
 { G = G_; }
 
-void Utilities::read_from_json_file(const std::string &json_file_path)
+void Utilities::read_from_json_file(const std::string &json_file_path,  std::function<std::optional<int>(const Node&)> insert_node)
 {
     std::cout << __FUNCTION__ << " Reading json file: " << json_file_path << std::endl;
 
@@ -116,7 +116,7 @@ void Utilities::read_from_json_file(const std::string &json_file_path)
             }
         }
         //n.attrs(attrs);
-        G->insert_node(n);
+            insert_node(n);
         // get links
         QJsonArray nodeLinksArray = sym_obj.value("links").toArray();
         std::copy(nodeLinksArray.begin(), nodeLinksArray.end(), std::back_inserter(linksArray));

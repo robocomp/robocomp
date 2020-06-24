@@ -16,62 +16,48 @@ DSRtoOSGViewer::DSRtoOSGViewer(std::shared_ptr<CRDT::CRDTGraph> G_, float scaleX
 {
     G = G_;
     this->setMinimumSize(400, 400);
-    osg::Camera* camera = new osg::Camera;
+    osg::ref_ptr<osg::Camera> camera = new osg::Camera;
     camera->setViewport( 0, 0, this->width(), this->height() );
     camera->setClearColor( osg::Vec4( 0.9f, 0.9f, 1.f, 1.f ) );
     float aspectRatio = this->width()/this->height();
     camera->setProjectionMatrixAsPerspective(55.0f, aspectRatio, 0.000001, 100000.0);
     camera->setGraphicsContext( _mGraphicsWindow );
     _mViewer->setCamera(camera);
-    manipulator = new osgGA::TrackballManipulator;
-    //manipulator->setAllowThrow( false );
-    //this->setMouseTracking(true);
-    osg::Vec3d eye(osg::Vec3(4000.,4000.,1000.));
-    osg::Vec3d center(osg::Vec3(0.,0.,-0.));
+	manipulator = new osgGA::TrackballManipulator;
+//    manipulator->setAllowThrow( false );
+//    this->setMouseTracking(true);
+    osg::Vec3d eye(osg::Vec3(1000.,7000.,4000.));
+    osg::Vec3d center(osg::Vec3(3000.,0., 0.));
     osg::Vec3d up(osg::Vec3(0.,1.,0.));
-    manipulator->setHomePosition(eye, center, up, true);
+    manipulator->setHomePosition(eye, center, up, false);
     manipulator->setByMatrix(osg::Matrixf::lookAt(eye,center,up));
     _mViewer->setCameraManipulator(manipulator);
     _mViewer->setThreadingModel(osgViewer::Viewer::SingleThreaded);
-    //_mViewer->addEventHandler(new osgGA::GUIEventHandler());
- 	
-     //global stateset
-	osg::StateSet *globalStateSet = new osg::StateSet;
-	globalStateSet->setGlobalDefaults();
-	globalStateSet->setMode(GL_DEPTH_TEST, osg::StateAttribute::ON);
+//    _mViewer->addEventHandler(new osgGA::GUIEventHandler());
 
-	// enable lighting
-	globalStateSet->setMode(GL_LIGHTING, osg::StateAttribute::ON);
-	osg::Light* light = _mViewer->getLight();
-	_mViewer->getLight()->setPosition(osg::Vec4(1,-1, 1, 0)); // make 4th coord 1 for point
-	_mViewer->getLight()->setAmbient(osg::Vec4(0.2, 0.2, 0.2, 1.0));
-	_mViewer->getLight()->setSpecular(osg::Vec4(1.0, 1.0, 1.0, 1.0));
 
-    osg::ref_ptr<osg::LightSource> lightSource = new osg::LightSource;
-	lightSource->setLight(light);
-	lightSource->setLocalStateSetModes(osg::StateAttribute::ON);
-	lightSource->setStateSetModes(*globalStateSet,osg::StateAttribute::ON);
 
 	root = createGraph();
-    root->addChild(lightSource.get() );
 
-    analyse_osg_graph(root.get());
-    qDebug()<< "End analyse";
+	analyse_osg_graph(root.get());
+	qDebug()<< "End analyse";
 
-    _mViewer->setSceneData( root.get());
-	
+	analyse_osg_graph(root.get());
+
+	_mViewer->setSceneData(root.get());
+
     connect(G.get(), &CRDT::CRDTGraph::update_node_signal, [this](auto id, auto type)
         { try
-          { 
-            auto node = G->get_node(id); 
-            if (node.has_value()) 
+          {
+            auto node = G->get_node(id);
+            if (node.has_value())
                 add_or_assign_node_slot(node.value());
           }
           catch(const std::exception &e){ std::cout << e.what() << std::endl; throw e;};
         });
-	connect(G.get(), &CRDT::CRDTGraph::update_edge_signal, 
-        [this](auto from, auto to, auto type){ 
-                                                auto parent = G->get_node(from); 
+	connect(G.get(), &CRDT::CRDTGraph::update_edge_signal,
+        [this](auto from, auto to, auto type){
+                                                auto parent = G->get_node(from);
                                                 auto node = G->get_node(to);
                                                 if(parent.has_value() and node.has_value())
                                                     add_or_assign_edge_slot(parent.value(), node.value());
@@ -80,8 +66,37 @@ DSRtoOSGViewer::DSRtoOSGViewer(std::shared_ptr<CRDT::CRDTGraph> G_, float scaleX
 	//connect(G.get(), &CRDT::CRDTGraph::del_node_signal, this, &DSRtoOSGViewer::delNodeSLOT);
 
     _mViewer->realize();
-    setMainCamera(manipulator, TOP_POV);
+//    setMainCamera(manipulator, TOP_POV);
    
+}
+
+DSRtoOSGViewer::~DSRtoOSGViewer()
+{
+	root->removeChildren(0, root->getNumChildren());
+	root->dirtyBound();
+	root = NULL;
+}
+
+void DSRtoOSGViewer::initializeGL(){
+
+    osg::ref_ptr<osg::StateSet> stateSet = root->getOrCreateStateSet();
+    osg::ref_ptr<osg::Material> material = new osg::Material;
+    material->setColorMode( osg::Material::AMBIENT_AND_DIFFUSE );
+    stateSet->setAttributeAndModes( material, osg::StateAttribute::ON );
+    stateSet->setMode( GL_DEPTH_TEST, osg::StateAttribute::ON );
+
+	// enable lighting
+	stateSet->setMode(GL_LIGHTING, osg::StateAttribute::ON);
+	osg::Light* light = _mViewer->getLight();
+	_mViewer->getLight()->setPosition(osg::Vec4(1,-1, 1, 0)); // make 4th coord 1 for point
+	_mViewer->getLight()->setAmbient(osg::Vec4(0.2, 0.2, 0.2, 1.0));
+	_mViewer->getLight()->setSpecular(osg::Vec4(1.0, 1.0, 1.0, 1.0));
+
+	osg::ref_ptr<osg::LightSource> lightSource = new osg::LightSource;
+	lightSource->setLight(light);
+	lightSource->setLocalStateSetModes(osg::StateAttribute::ON);
+	lightSource->setStateSetModes(*stateSet,osg::StateAttribute::ON);
+	root->addChild(lightSource.get());
 }
 
 // We need to go down the tree breadth first
@@ -106,7 +121,8 @@ osg::ref_ptr<osg::Group> DSRtoOSGViewer::createGraph()
 {
     qDebug() << __FUNCTION__ << "Reading graph in OSG Viewer";
     try
-    {   std::optional<Node> g_root = G->get_node_root().value();  //HAS TO BE TRANSFORM
+    {
+    	std::optional<Node> g_root = G->get_node_root().value();  //HAS TO BE TRANSFORM
         root = new osg::Group();
         osg_map.insert_or_assign(std::make_tuple(g_root.value().id(), g_root.value().id()), root);
 
@@ -163,7 +179,7 @@ void DSRtoOSGViewer::add_or_assign_node_slot(const Node &node)
     {
         if(node.id() == G->get_node_root().value().id())
             return;
-        auto parent_id = G->get_node_parent(node);
+        auto parent_id = G->get_parent_id(node);
         if (not parent_id.has_value())
             throw std::runtime_error("Node cannot be inserted without a parent");
         auto parent = G->get_node(parent_id.value());
@@ -206,7 +222,7 @@ void DSRtoOSGViewer::add_or_assign_edge_slot(const Node &from, const Node& to)
                 else
                     throw std::runtime_error("Exception: dynamic_cast to MatrixTransform failed");
             } else {
-                osg::MatrixTransform *transform = new osg::MatrixTransform(mat);
+                osg::ref_ptr<osg::MatrixTransform> transform = new osg::MatrixTransform(mat);
                 (*res).second->addChild(transform);
                 osg_map.insert_or_assign(std::make_tuple(from.id(), to.id()), transform);
             }
@@ -228,7 +244,7 @@ void DSRtoOSGViewer::add_or_assign_transform(const Node &node, const Node& paren
     {
         if( auto anterior = osg_map.find(std::make_tuple(node.id(), node.id())); anterior == osg_map.end())
         {
-            osg::MatrixTransform* transform = new osg::MatrixTransform();
+            osg::ref_ptr<osg::MatrixTransform> transform = new osg::MatrixTransform();
             transform->setName(std::to_string(node.id())+"-"+std::to_string(node.id()));
             (*res).second->addChild(transform);
             osg_map.insert_or_assign(std::make_tuple(node.id(), node.id()), transform);
@@ -261,10 +277,10 @@ void DSRtoOSGViewer::add_or_assign_box(const Node &node, const Node& parent)
 
         // Create object
         osg::ref_ptr<osg::Box> box = new osg::Box(QVecToOSGVec(QVec::vec3(0,0,0)), width.value(), height.value(), depth.value());
-        auto plane_drawable = new osg::ShapeDrawable(box);
-        osg::Geode* geode = new osg::Geode;
+		osg::ref_ptr<osg::ShapeDrawable> plane_drawable = new osg::ShapeDrawable(box);
+		osg::ref_ptr<osg::Geode> geode = new osg::Geode;
         geode->addDrawable(plane_drawable);
-        osg::Group *group = new osg::Group;
+		osg::ref_ptr<osg::Group> group = new osg::Group;
         group->setName(std::to_string(node.id())+"-"+std::to_string(node.id()));
         group->addChild(geode);
         
@@ -289,12 +305,12 @@ void DSRtoOSGViewer::add_or_assign_box(const Node &node, const Node& parent)
         else
         {
             // image
-            osg::Image *image;
+			  osg::ref_ptr<osg::Image> image;
             if (textu.size()>0 and not constantColor)
                 if( image = osgDB::readImageFile(textu), image == nullptr)
                     throw std::runtime_error("Couldn't load texture from file: " + texture.value());
             // texture
-            auto texture = new osg::Texture2D;
+            osg::ref_ptr<osg::Texture2D>texture = new osg::Texture2D;
             texture->setWrap(osg::Texture::WRAP_S, osg::Texture::REPEAT);
             texture->setWrap(osg::Texture::WRAP_R, osg::Texture::REPEAT);
             texture->setWrap(osg::Texture::WRAP_T, osg::Texture::REPEAT);
@@ -313,7 +329,7 @@ void DSRtoOSGViewer::add_or_assign_box(const Node &node, const Node& parent)
             //material->setTransparency( osg::Material::FRONT_AND_BACK, 0);
             material->setEmission(osg::Material::FRONT, osg::Vec4(0.8, 0.8, 0.8, 0.5));
             // Assign the material and texture to the plane
-            osg::StateSet *sphereStateSet = geode->getOrCreateStateSet();
+            osg::ref_ptr<osg::StateSet> sphereStateSet = geode->getOrCreateStateSet();
             sphereStateSet->ref();
             sphereStateSet->setAttribute(material);
             sphereStateSet->setTextureMode(0, GL_TEXTURE_GEN_R, osg::StateAttribute::ON);

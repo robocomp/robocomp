@@ -17,7 +17,7 @@
 #ifndef GRAPHNODE_H
 #define GRAPHNODE_H
 
-#include <QGraphicsItem>
+#include <QGraphicsEllipseItem>
 #include <QTableWidget>
 #include <QGraphicsScene>
 #include <QGraphicsSceneMouseEvent>
@@ -233,9 +233,10 @@ class DoTableStuff : public  QTableWidget
     std::int32_t node_id;
 };
 
-class GraphNode : public QObject, public QGraphicsItem
+class GraphNode : public QObject, public QGraphicsEllipseItem
 {
-  Q_OBJECT
+    Q_OBJECT
+    Q_PROPERTY(QColor node_color READ _node_color WRITE set_node_color)
 	public:
     GraphNode(std::shared_ptr<DSR::DSRtoGraphViewer> graph_viewer_);
 
@@ -247,7 +248,7 @@ class GraphNode : public QObject, public QGraphicsItem
     QList<GraphEdge *> edges() const;
     void calculateForces();
     bool advancePosition();
-		void setTag(const std::string &tag_);
+    void setTag(const std::string &tag_);
     std::string getTag() const { return tag->text().toStdString();};
     std::string getColor() const { return plain_color.toStdString(); };
     void setType(const std::string &type_);
@@ -257,6 +258,9 @@ class GraphNode : public QObject, public QGraphicsItem
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
     void setColor(const std::string &plain);
     std::shared_ptr<DSR::DSRtoGraphViewer> getGraphViewer() const { return dsr_to_graph_viewer;};
+    void set_node_color(const QColor& c);
+    QColor _node_color();
+    void change_detected();
     
 	protected:
     QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
@@ -271,9 +275,11 @@ class GraphNode : public QObject, public QGraphicsItem
 	private:
     QPointF newPos;
     QGraphicsSimpleTextItem *tag;
-    QString dark_color = "darkyello", plain_color = "yellow";
+    QString dark_color = "darkyellow", plain_color = "yellow";
     std::string type;
     std::shared_ptr<DSR::DSRtoGraphViewer> dsr_to_graph_viewer;
+    QBrush node_brush;
+	QPropertyAnimation* animation;
 };
 
 #endif // GRAPHNODE_H

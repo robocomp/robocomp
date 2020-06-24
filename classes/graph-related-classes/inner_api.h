@@ -11,7 +11,7 @@ namespace CRDT
 
     class InnerAPI
     {
-        using VEdgePtr = std::shared_ptr<VEdge>;
+        //using VEdgePtr = std::shared_ptr<VEdge>;
         using Lists = std::tuple<std::list<RMat::RTMat>, std::list<RMat::RTMat> >; 
         public:
             InnerAPI(CRDTGraph *G_);

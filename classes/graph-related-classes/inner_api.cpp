@@ -26,8 +26,8 @@ std::optional<InnerAPI::Lists> InnerAPI::setLists(const std::string &destId, con
 		return {};
 	while (G->get_node_level(a).value_or(-1) >= minLevel)
 	{
-        qDebug() << "listaA" << a.id() << G->get_node_level(a).value() << G->get_node_parent(a).value();
-		auto p_node = G->get_node(G->get_node_parent(a).value_or(-1));
+        qDebug() << "listaA" << a.id() << G->get_node_level(a).value() << G->get_parent_id(a).value();
+		auto p_node = G->get_parent_node(a);
       	if( not p_node.has_value())
 			break;
 		auto edge_rt = G->get_edge_RT(p_node.value(), a.id());
@@ -37,8 +37,8 @@ std::optional<InnerAPI::Lists> InnerAPI::setLists(const std::string &destId, con
 	}
 	while (G->get_node_level(b).value_or(-1) >= minLevel)
 	{
-        qDebug() << "listaB" << b.id() << G->get_node_level(b).value() << G->get_node_parent(b).value();
-		auto p_node = G->get_node(G->get_node_parent(b).value_or(-1));
+        qDebug() << "listaB" << b.id() << G->get_node_level(b).value() << G->get_parent_id(b).value();
+		auto p_node = G->get_parent_node(b);
 		if(not p_node.has_value())
 			break;
 		auto edge_rt = G->get_edge_RT(p_node.value(), b.id());
@@ -48,8 +48,8 @@ std::optional<InnerAPI::Lists> InnerAPI::setLists(const std::string &destId, con
 	}	
 	while (a.id() != b.id())  
 	{
-		auto p = G->get_node(G->get_node_parent(a).value_or(-1));
-		auto q = G->get_node(G->get_node_parent(b).value_or(-1));
+		auto p = G->get_node(G->get_parent_id(a).value_or(-1));
+		auto q = G->get_node(G->get_parent_id(b).value_or(-1));
 		if(p.has_value() and q.has_value())
 		{  
 			qDebug() << "listas A&B" << p.value().id() << q.value().id();

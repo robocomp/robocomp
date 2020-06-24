@@ -22,13 +22,14 @@
 #include <QGraphicsScene>
 #include <QGraphicsView>
 #include <QListView>
+#include <QMenuBar>
 #include "CRDT.h"
 #include <typeinfo>
 #include <QDockWidget>
-#include "graph-related-classes/dsr_to_osg_viewer.h"
-#include "graph-related-classes/dsr_to_graphicscene_viewer.h"
-#include "graph-related-classes/dsr_to_graph_viewer.h"
-#include "graph-related-classes/dsr_to_tree_viewer.h"
+#include "viewers/osg_viewer/dsr_to_osg_viewer.h"
+#include "viewers/scene_viewer/dsr_to_graphicscene_viewer.h"
+#include "viewers/graph_viewer/dsr_to_graph_viewer.h"
+#include "viewers/tree_viewer/dsr_to_tree_viewer.h"
 
 
 namespace DSR
@@ -37,36 +38,48 @@ namespace DSR
 	/// Drawing controller to display the graph in real-time using RTPS 
 	//////////////////////////////////////////////////////////////////////////////////////////////77
 	
-	class GraphViewer : public QMainWindow
+	class GraphViewer : public QObject
 	{
 		Q_OBJECT
 		public:
-			enum class View {Graph, OSG, Scene, Tree};	
-			GraphViewer(std::shared_ptr<CRDT::CRDTGraph> G, std::list<View> options=std::list<View>());
+			enum view
+			{
+				graph = (1 << 0),
+				osg = (1 << 1),
+				scene = (1 << 2),
+				tree = (1 << 3),
+			};
+			GraphViewer(QMainWindow *window, std::shared_ptr<CRDT::CRDTGraph> G, int options, view main = view::graph);
 			~GraphViewer();
 			void itemMoved();
 			void createGraph();
 			
 		protected:
 			virtual void keyPressEvent(QKeyEvent *event);
-			virtual void timerEvent(QTimerEvent *event);
 		
 		private:
 			std::shared_ptr<CRDT::CRDTGraph> G;
-			int timerId = 0;
-			bool do_simulate = false;
+			QMainWindow *window;
+			QMenu *viewMenu;
 			std::unique_ptr<DSR::DSRtoOSGViewer> dsr_to_osg_viewer;
 			std::unique_ptr<DSR::DSRtoGraphicsceneViewer> dsr_to_graphicscene_viewer;
 			std::unique_ptr<DSR::DSRtoGraphViewer> dsr_to_graph_viewer;
 			std::unique_ptr<DSR::DSRtoTreeViewer> dsr_to_tree_viewer;
+			std::map<QString, QDockWidget *> docks;
+			QWidget * main_widget;
 
 		public slots:
 			void saveGraphSLOT();		
-			void toggleSimulationSLOT();
+//			void toggleSimulationSLOT();
+			void restart_app(bool);
 
 		signals:
 			void saveGraphSIGNAL();
 			void closeWindowSIGNAL();
+		private:
+			void create_dock_and_menu(QString name,  QWidget *view);
+			void initialize_views(int options, view main);
+			QWidget * create_widget(view type);
 	};
 }
 

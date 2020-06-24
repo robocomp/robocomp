@@ -39,7 +39,7 @@
 #include <osgViewer/GraphicsWindow>
 #include <QOpenGLWidget>
 #include <QResizeEvent>
-#include "CRDT.h"
+#include "../../CRDT.h"
 
 using namespace std::chrono_literals;
 
@@ -50,6 +50,7 @@ namespace DSR
     {
         public:
             DSRtoOSGViewer(std::shared_ptr<CRDT::CRDTGraph> G_, float scaleX, float scaleY, QWidget *parent=0);
+			~DSRtoOSGViewer();
         
         protected:  
             virtual void resizeEvent(QResizeEvent *e); 
@@ -61,6 +62,7 @@ namespace DSR
             void mouseReleaseEvent(QMouseEvent* event) override;
             void wheelEvent(QWheelEvent* event) override;
             bool event(QEvent* event) override;
+            void initializeGL() override;
 
         private:
             std::shared_ptr<CRDT::CRDTGraph> G;

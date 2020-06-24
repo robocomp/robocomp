@@ -17,7 +17,7 @@
 #include "CRDT_graphnode.h"
 
 
-GraphNode::GraphNode(std::shared_ptr<DSR::DSRtoGraphViewer> dsr_to_graph_viewer_) : dsr_to_graph_viewer(dsr_to_graph_viewer_)
+GraphNode::GraphNode(std::shared_ptr<DSR::DSRtoGraphViewer> graph_viewer_): QGraphicsEllipseItem(0,0,30,30), dsr_to_graph_viewer(graph_viewer_)
 {
     setFlag(ItemIsMovable);
     setFlag(ItemSendsGeometryChanges);
@@ -25,6 +25,12 @@ GraphNode::GraphNode(std::shared_ptr<DSR::DSRtoGraphViewer> dsr_to_graph_viewer_
     setCacheMode(DeviceCoordinateCache);
     setAcceptHoverEvents(true);
     setZValue(-1);
+    node_brush.setStyle(Qt::SolidPattern);
+	animation = new QPropertyAnimation(this, "node_color");
+	animation->setDuration(200);
+	animation->setStartValue(plain_color);
+	animation->setEndValue(dark_color);
+	animation->setLoopCount(3);
 }
 
 void GraphNode::setTag(const std::string &tag_)
@@ -45,6 +51,10 @@ void GraphNode::setColor(const std::string &plain)
     QString c = QString::fromStdString(plain);
 	plain_color = c;
 	dark_color = "dark" + c;
+    animation->setStartValue(QColor("green").lighter());
+    animation->setEndValue(QColor(c));
+    node_brush.setColor(QColor(c));
+
 }
 
 void GraphNode::addEdge(GraphEdge *edge)
@@ -146,16 +156,16 @@ void GraphNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
     painter->drawEllipse(-7, -7, 20, 20);
 
     QRadialGradient gradient(-3, -3, 10);
-    if (option->state & QStyle::State_Sunken) 
+    if (option->state & QStyle::State_Sunken)
 		{
         gradient.setCenter(3, 3);
         gradient.setFocalPoint(3, 3);
         gradient.setColorAt(1, QColor(Qt::lightGray).light(120));
         gradient.setColorAt(0, QColor(Qt::gray).light(120));
-    } else 
+    } else
 		{
-        gradient.setColorAt(0, QColor(plain_color));
-        gradient.setColorAt(1, QColor(dark_color));
+        gradient.setColorAt(0, QColor(node_brush.color()));
+        gradient.setColorAt(1, QColor(node_brush.color().dark(200)));
     }
     painter->setBrush(gradient);
     painter->setPen(QPen(Qt::black, 0));
@@ -169,7 +179,7 @@ QVariant GraphNode::itemChange(GraphicsItemChange change, const QVariant &value)
         case ItemPositionChange:
         {
             foreach (GraphEdge *edge, edgeList)
-                 edge->adjust();
+                 edge->adjust(this, value.toPointF());
             break;
         }
 
@@ -182,6 +192,7 @@ QVariant GraphNode::itemChange(GraphicsItemChange change, const QVariant &value)
 void GraphNode::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     //if (tag->text() != "") return; // Explota sin esto
+    animation->start();
     std::cout << __FILE__ <<":"<<__FUNCTION__<< "-> node: " << tag->text().toStdString() << std::endl;
     const auto graph = dsr_to_graph_viewer->getGraph();
     if( event->button()== Qt::RightButton)
@@ -199,6 +210,11 @@ void GraphNode::mousePressEvent(QGraphicsSceneMouseEvent *event)
     QGraphicsItem::mousePressEvent(event);
 }
 
+void GraphNode::change_detected()
+{
+    animation->start();
+}
+
 void GraphNode::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
      if( event->button()== Qt::LeftButton)
@@ -207,12 +223,15 @@ void GraphNode::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
         std::cout << __FILE__ <<":"<<__FUNCTION__<< " node id in graphnode: " << id_in_graph << std::endl;
         std::optional<Node> n = g->get_node(id_in_graph);
         if (n.has_value()) {
-            bool r = g->modify_attrib(n.value(), "pos_x", (float) event->scenePos().x());
-            if (!r) r = g->add_attrib(n.value(), "pos_x", (float) event->scenePos().x());
-            r = g->modify_attrib(n.value(), "pos_y", (float) event->scenePos().y());
-            if (!r) r = g->add_attrib(n.value(), "pos_y", (float) event->scenePos().y());
+//            qDebug()<<"ScenePos X"<<(float) event->scenePos().x()<<" Width "<<(this->rect())<<" this "<<this->pos().x();
+//            qDebug()<<"ScenePos Y"<<(float) event->scenePos().y()<<" Height "<<(this->rect())<<" this "<<this->pos().y();
+            bool r = g->modify_attrib(n.value(), "pos_x", (float) this->pos().x());
+            if (!r) r = g->add_attrib(n.value(), "pos_x", (float) this->pos().x());
+            r = g->modify_attrib(n.value(), "pos_y", (float) this->pos().y());
+            if (!r) r = g->add_attrib(n.value(), "pos_y", (float) this->pos().y());
             g->update_node(n.value());
         }
+//        this->dsr_to_graph_viewer->itemMoved();
     }
 
     QGraphicsItem::mouseReleaseEvent(event);
@@ -230,6 +249,16 @@ void GraphNode::keyPressEvent(QKeyEvent *event)
     //     }
     // }
     QGraphicsItem::keyPressEvent(event);
+}
+
+QColor GraphNode::_node_color()
+{
+    return this->brush().color();
+}
+void GraphNode::set_node_color(const QColor& c)
+{
+    node_brush.setColor(c);
+    this->setBrush( node_brush );
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////7

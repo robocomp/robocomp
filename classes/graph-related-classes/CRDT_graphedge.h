@@ -148,7 +148,7 @@ class GraphEdge : public QGraphicsItem, public std::enable_shared_from_this<Grap
     GraphEdge(GraphNode *sourceNode, GraphNode *destNode, const QString &edge_name);
     GraphNode *sourceNode() const;
     GraphNode *destNode() const;
-    void adjust();
+    void adjust(GraphNode* node= nullptr, QPointF pos=QPointF());
     int type() const override { return Type; }
     QString getTag() const { return tag;};
 

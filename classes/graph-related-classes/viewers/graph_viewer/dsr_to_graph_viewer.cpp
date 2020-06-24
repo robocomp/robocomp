@@ -1,38 +1,49 @@
-#include "CRDT_graphviewer.h"
+#include "../../CRDT_graphviewer.h"
 #include <cppitertools/range.hpp>
 #include <qmat/QMatAll>
 #include <QTableWidget>
-#include "CRDT_graphnode.h"
-#include "CRDT_graphedge.h"
+#include <QApplication>
+#include "../../CRDT_graphnode.h"
+#include "../../CRDT_graphedge.h"
 #include "dsr_to_graph_viewer.h"
 
 using namespace DSR ;
 
-DSRtoGraphViewer::DSRtoGraphViewer(std::shared_ptr<CRDT::CRDTGraph> G_, QWidget *parent) :  QGraphicsView(parent)
+DSRtoGraphViewer::DSRtoGraphViewer(std::shared_ptr<CRDT::CRDTGraph> G_, QWidget *parent) :  AbstractGraphicViewer(parent)
 {
     qRegisterMetaType<std::int32_t>("std::int32_t");
     qRegisterMetaType<std::string>("std::string");
     G = G_;
-    scene.setItemIndexMethod(QGraphicsScene::NoIndex);
-	scene.setSceneRect(-200, -200, 400, 400);
-	this->setScene(&scene);
-    this->setCacheMode(QGraphicsView::CacheBackground);
-	this->setViewport(new QGLWidget(QGLFormat(QGL::SampleBuffers)));
-	this->setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
-	this->setRenderHint(QPainter::Antialiasing);
-	this->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
-	this->setMinimumSize(400, 400);
-	this->fitInView(scene.sceneRect(), Qt::KeepAspectRatio );
-	this->adjustSize();
- 	setMouseTracking(true);
-    this->viewport()->setMouseTracking(true);
+	own = shared_ptr<DSRtoGraphViewer>(this);
 
     createGraph();
 
+	this->scene.setSceneRect(scene.itemsBoundingRect());
+
+	this->fitInView(scene.itemsBoundingRect(), Qt::KeepAspectRatio );
+
     connect(G.get(), &CRDT::CRDTGraph::update_node_signal, this, &DSRtoGraphViewer::add_or_assign_node_SLOT);
-	//connect(G.get(), &CRDT::CRDTGraph::update_edge_signal, this, &DSRtoGraphViewer::addEdgeSLOT);
+	central_point = new QGraphicsEllipseItem(0,0,0,0);
+	scene.addItem(central_point);
+	connect(G.get(), &CRDT::CRDTGraph::update_edge_signal, this, &DSRtoGraphViewer::add_or_assign_edge_SLOT);
 	//connect(G.get(), &CRDT::CRDTGraph::del_edge_signal, this, &DSRtoGraphViewer::delEdgeSLOT);
-	//connect(G.get(), &CRDT::CRDTGraph::del_node_signal, this, &DSRtoGraphViewer::delNodeSLOT);
+	connect(G.get(), &CRDT::CRDTGraph::del_node_signal, this, &DSRtoGraphViewer::del_node_SLOT);
+}
+
+DSRtoGraphViewer::~DSRtoGraphViewer()
+{
+	gmap.clear();
+	gmap_edges.clear();
+	qDebug() << __FUNCTION__ << "Destroy";
+	QList<QGraphicsItem*> allGraphicsItems = scene.items();
+	for(int i = 0; i < allGraphicsItems.size(); i++)
+	{
+		QGraphicsItem *graphicItem = allGraphicsItems[i];
+		if(graphicItem->scene() == &scene)
+			scene.removeItem(graphicItem);
+
+	}
+	scene.clear();
 }
 
 void DSRtoGraphViewer::createGraph()
@@ -50,6 +61,41 @@ void DSRtoGraphViewer::createGraph()
 	catch(const std::exception &e) { std::cout << e.what() << " Error accessing "<< __FUNCTION__<<":"<<__LINE__<< std::endl;}
 }
 
+
+///////////////////////////////////////
+
+void DSRtoGraphViewer::itemMoved()
+{
+	do_simulate = true;
+	std::cout << "timerId " << timerId << std::endl;
+	if(do_simulate and timerId == 0)
+	if (timerId == 0)
+	   timerId = startTimer(1000 / 25);
+}
+
+void DSRtoGraphViewer::timerEvent(QTimerEvent *event)
+{
+	// Q_UNUSED(event)
+
+	for( auto &[k,node] : gmap)
+	{
+		(void)k;
+		node->calculateForces();
+	}
+	bool itemsMoved = false;
+
+	for( auto &[k,node] : gmap)
+	{
+		(void)k;
+		if (node->advancePosition())
+			itemsMoved = true;
+	}
+	if (!itemsMoved)
+	{
+		killTimer(timerId);
+		timerId = 0;
+	}
+}
 //////////////////////////////////////////////////////////////////////////////////////
 ///// SLOTS
 //////////////////////////////////////////////////////////////////////////////////////
@@ -64,7 +110,8 @@ void DSRtoGraphViewer::add_or_assign_node_SLOT(int id, const std::string &type)
     if (n.has_value()) {
         if (gmap.count(id) == 0)    // if node does not exist, create it
         {
-            gnode = new GraphNode(std::shared_ptr<DSRtoGraphViewer>(this));  
+            qDebug()<<__FUNCTION__<<"##### New node";
+        	gnode = new GraphNode(own);
             gnode->id_in_graph = id;
             gnode->setType(type);
 			gnode->setTag(n.value().name() + " [" + std::to_string(n.value().id()) + "]");
@@ -122,7 +169,11 @@ void DSRtoGraphViewer::add_or_assign_node_SLOT(int id, const std::string &type)
 			else if(type == "imu") color = "LightSalmon";
 			gnode->setColor(color);
         } else
+		{
+			qDebug()<<__FUNCTION__<<"##### Updated node";
             gnode = gmap.at(id);
+        	gnode->change_detected();
+		}
 
         float posx = 10;
         float posy = 10;
@@ -136,8 +187,10 @@ void DSRtoGraphViewer::add_or_assign_node_SLOT(int id, const std::string &type)
             posx = rd.x();
             posy = rd.y();
         }
-        if (posx != gnode->x() or posy != gnode->y())
-            gnode->setPos(posx, posy);
+        if (posx != gnode->x() or posy != gnode->y()) {
+			qDebug()<<__FUNCTION__<<"##### posx "<<posx<<" != gnode->x() "<<gnode->x()<<" or posy "<<posy<<" != gnode->y() "<<gnode->y();
+			gnode->setPos(posx, posy);
+		}
 
         emit G->update_attrs_signal(id, n.value().attrs());
     }
@@ -202,13 +255,23 @@ void DSRtoGraphViewer::del_node_SLOT(int id)
     std::cout<<__FUNCTION__<<":"<<__LINE__<< std::endl;
     try {
         while (gmap.count(id) > 0) {
-            scene.removeItem(gmap.at(id));
+        	auto item = gmap.at(id);
+            scene.removeItem(item);
+            delete item;
             gmap.erase(id);
         }
     } catch(const std::exception &e) { std::cout << e.what() <<" Error  "<<__FUNCTION__<<":"<<__LINE__<< std::endl;}
 
 }
 
+
+void DSRtoGraphViewer::hide_show_node_SLOT(int id, bool visible)
+{
+	auto item = gmap[id];
+	item->setVisible(visible);
+	for (const auto &gedge: item->edgeList)
+		gedge->setVisible(visible);
+}
 
 //  void GraphViewer::NodeAttrsChangedSLOT(const std::int32_t &id, const DSR::Attribs &attribs)
 //  {
@@ -223,37 +286,3 @@ void DSRtoGraphViewer::del_node_SLOT(int id)
 // 	}
 // 	catch(const std::exception &e){ std::cout << "Exception: " << e.what() << " pos_x and pos_y attribs not found in node "  << id << std::endl;};
 //  }
-
-
-
-//////////////////////////////////////////////////////////////////////////////////////
-///// EVENTS
-//////////////////////////////////////////////////////////////////////////////////////
-
-void DSRtoGraphViewer::wheelEvent(QWheelEvent* event)
-{
-    const QGraphicsView::ViewportAnchor anchor = transformationAnchor();
-	setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
-	int angle = event->angleDelta().y();
-	qreal factor;
-	if (angle > 0) 
-	{
-		factor = 1.1;
-		QRectF r = scene.sceneRect();
-		scene.setSceneRect(r);
-	}
-	else
-	{
-		factor = 0.9;
-		QRectF r = scene.sceneRect();
-		scene.setSceneRect(r);
-	}
-	this->scale(factor, factor);
-	this->setTransformationAnchor(anchor);
-}
-
-void DSRtoGraphViewer::resizeEvent(QResizeEvent *e)
-{  
-//	qDebug() << "resize_graph_view" << x() << y()<<e->size(); 
-	this->resize(e->size());
-} 

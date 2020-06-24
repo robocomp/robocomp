@@ -47,25 +47,40 @@ GraphNode *GraphEdge::destNode() const
     return dest;
 }
 
-void GraphEdge::adjust()
+void GraphEdge::adjust(GraphNode* node, QPointF pos)
 {
-    if (!source || !dest)
-        return;
+    if(!source || !dest)
+		return;
 
-    QLineF line(mapFromItem(source, 0, 0), mapFromItem(dest, 0, 0));
-    qreal length = line.length();
+	QLineF *line;
+    if(node) {
+		if (node==source) {
+			line = new QLineF(pos, mapFromItem(dest, 0, 0));
+		}
+		else {
+			line = new QLineF(mapFromItem(source, 0, 0), pos);
+		}
+	}
+	else
+	{
+		line = new QLineF(mapFromItem(source, 0, 0), mapFromItem(dest, 0, 0));
+	}
+
+
+    qreal length = line->length();
 
     prepareGeometryChange();
 
     if (length > qreal(20.)) 
 		{
-        QPointF edgeOffset((line.dx() * 10) / length, (line.dy() * 10) / length);
-        sourcePoint = line.p1() + edgeOffset;
-        destPoint = line.p2() - edgeOffset;
+        QPointF edgeOffset((line->dx() * 10) / length, (line->dy() * 10) / length);
+        sourcePoint = line->p1() + edgeOffset;
+        destPoint = line->p2() - edgeOffset;
     } else 
 		{
-        sourcePoint = destPoint = line.p1();
+        sourcePoint = destPoint = line->p1();
     }
+    delete line;
 }
 
 QRectF GraphEdge::boundingRect() const
@@ -128,11 +143,11 @@ void GraphEdge::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 			painter->drawText(rectangle.center(), tag);
 				
 			// Draw the arrows
-			QPointF destArrowP1 = QPointF(-line.length()*0.5,0) + QPointF(sin(M_PI / 2) * arrowSize, cos(M_PI / 2) * arrowSize);
-			QPointF destArrowP2 = QPointF(-line.length()*0.5,0) + QPointF(sin(M_PI / 4) * arrowSize, cos(M_PI / 4) * arrowSize);
+			QPointF destArrowP1 = QPointF(line.length()*0.5,0) - QPointF(sin(M_PI / 2) * arrowSize, cos(M_PI / 2) * arrowSize);
+			QPointF destArrowP2 = QPointF(line.length()*0.5,0) - QPointF(sin(M_PI / 4) * arrowSize, cos(M_PI / 4) * arrowSize);
 			painter->setBrush(Qt::black);
 			painter->setPen(Qt::black);
-			painter->drawPolygon(QPolygonF() << QPointF(-line.length()*0.5,0) << destArrowP1 << destArrowP2 );
+			painter->drawPolygon(QPolygonF() << QPointF(line.length()*0.5,0) << destArrowP1 << destArrowP2 );
 			painter->restore();
 		}
 	
