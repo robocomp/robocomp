@@ -174,16 +174,7 @@ class DoTableStuff : public  QTableWidget
               i++;
           }
           horizontalHeader()->setStretchLastSection(true);
-          resizeRowsToContents();
-          resizeColumnsToContents();
-          int width = (this->model()->columnCount() - 1) + this->verticalHeader()->width();
-          int height = (this->model()->rowCount() - 1) + this->horizontalHeader()->height();
-          for(int column = 0; column < this->model()->columnCount(); column++)
-            width = width + this->columnWidth(column);
-          for(int row = 0; row < this->model()->rowCount(); row++)
-            height = height + this->rowHeight(row);
-          this->setMinimumWidth(width);
-          this->setMinimumHeight(height);
+          resize_widget();
           QObject::connect(graph.get(), &CRDT::CRDTGraph::update_attrs_signal, this, &DoTableStuff::drawSLOT);
         
           show();
@@ -219,18 +210,32 @@ class DoTableStuff : public  QTableWidget
                 i++;
             }
         }
+        resize_widget();
     }
     
     void resizeEvent(QResizeEvent* event)
     {
       const auto &columns = columnCount();
       for(auto &&index : iter::range(columns))
-          setColumnWidth(index, width()/columns);
+          setColumnWidth(index, (width()-verticalHeader()->width()-4)/columns);
     }
 
   private:
     std::shared_ptr<CRDT::CRDTGraph> graph;
     std::int32_t node_id;
+    void resize_widget()
+    {
+        resizeRowsToContents();
+        resizeColumnsToContents();
+        int width = (this->model()->columnCount() - 1) + this->verticalHeader()->width() + 4;
+        int height = (this->model()->rowCount() - 1) + this->horizontalHeader()->height() ;
+        for(int column = 0; column < this->model()->columnCount(); column++)
+            width = width + this->columnWidth(column);
+        for(int row = 0; row < this->model()->rowCount(); row++)
+            height = height + this->rowHeight(row);
+        this->setMinimumWidth(width);
+        this->setMinimumHeight(height);
+    }
 };
 
 class GraphNode : public QObject, public QGraphicsEllipseItem

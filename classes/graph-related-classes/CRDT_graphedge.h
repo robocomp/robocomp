@@ -66,6 +66,7 @@ class DoRTStuff : public  QTableWidget
           drawSLOT(from, to);
           show();
           std::cout << __FILE__ << " " << __FUNCTION__ << " End ofDoRTStuff Constructor " << std::endl;
+		  resize_widget();
       }
     };
   
@@ -79,7 +80,7 @@ class DoRTStuff : public  QTableWidget
   {
     const auto &columns = columnCount();
     for(auto &&index : iter::range(columns))
-        setColumnWidth(index, width()/columns);
+        setColumnWidth(index, (width()-verticalHeader()->width()-4)/columns);
   }
 
   public slots:
@@ -133,11 +134,25 @@ class DoRTStuff : public  QTableWidget
         }
         catch (const std::exception &e)
         { std::cout << "Exception: " << e.what() << " Cannot find attribute named RT in edge going " << from << " to " << to << std::endl;}
+        this->resize_widget();
     }
   private:
     std::shared_ptr<CRDT::CRDTGraph> graph;
     int from, to;
     std::string label;
+    void resize_widget()
+    {
+        resizeRowsToContents();
+        resizeColumnsToContents();
+        int width = (this->model()->columnCount() - 1) + this->verticalHeader()->width() + 4;
+        int height = (this->model()->rowCount() - 1) + this->horizontalHeader()->height() ;
+        for(int column = 0; column < this->model()->columnCount(); column++)
+            width = width + this->columnWidth(column);
+        for(int row = 0; row < this->model()->rowCount(); row++)
+            height = height + this->rowHeight(row);
+        this->setMinimumWidth(width);
+        this->setMinimumHeight(height);
+    }
 };
 
 
