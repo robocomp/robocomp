@@ -32,7 +32,7 @@ using namespace DSR;
 std::string get_self_path()
 {
 	std::vector<char> buf(400);
-	ssize_t len;
+	std::vector<char>::size_type len;
 
 	do
 	{
