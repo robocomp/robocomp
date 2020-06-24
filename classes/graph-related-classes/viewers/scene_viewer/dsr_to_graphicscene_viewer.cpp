@@ -37,12 +37,6 @@ DSRtoGraphicsceneViewer::DSRtoGraphicsceneViewer(std::shared_ptr<CRDT::CRDTGraph
 
 	connect(G.get(), &CRDT::CRDTGraph::del_edge_signal, this, &DSRtoGraphicsceneViewer::del_edge_slot);
 	connect(G.get(), &CRDT::CRDTGraph::del_node_signal, this, &DSRtoGraphicsceneViewer::del_node_slot);
-
-
-for (auto item :edge_map)
-{
-std::cout<<item.first<<item.second<<std::endl;    
-}
 }
 
 void DSRtoGraphicsceneViewer::create_graph()
@@ -67,9 +61,8 @@ void DSRtoGraphicsceneViewer::create_graph()
 
 void DSRtoGraphicsceneViewer::add_or_assign_node_slot(const std::int32_t id, const std::string &type)
 {
-qDebug()<<"****SIGNAL => update_node_signal";
-qDebug() << __FUNCTION__ ;
 qDebug()<<"*************************";
+qDebug() << __FUNCTION__ ;
     
     auto node = G->get_node(id);
 std::cout << node.value().name() << " " << node.value().id() << std::endl;
@@ -97,7 +90,6 @@ std::cout << node.value().name() << " " << node.value().id() << std::endl;
 }
 void DSRtoGraphicsceneViewer::add_or_assign_edge_slot(const std::int32_t from, const std::int32_t to, const std::string& type)
 {
-qDebug()<<"****SIGNAL => update_edge_signal"<<from<<to;    
     std::string edge_key = std::to_string(from) + "_" + std::to_string(to);
     for (int node_id : edge_map[edge_key])
     {
@@ -240,11 +232,7 @@ qDebug() << __FUNCTION__ ;
     int scaley = G->get_attrib_by_name<std::int32_t>(node, "scaley").value_or(0);
     int scalez = G->get_attrib_by_name<std::int32_t>(node, "scalez").value_or(0);
 
-    qDebug()<<"Draw mesh"<<QString::fromStdString(node.name())<<"("<<scalex<<","<<scaley<<","<<scalez<<")";
-
-
-
-
+qDebug()<<"Draw mesh"<<QString::fromStdString(node.name())<<"("<<scalex<<","<<scaley<<","<<scalez<<")";
 }
 
 void  DSRtoGraphicsceneViewer::add_or_assign_person(Node &node)
@@ -258,7 +246,7 @@ qDebug() << __FUNCTION__ ;
     }catch(...){}
     if (pose.has_value())
     {
-pose.value().print(QString::fromStdString(node.name()));
+//pose.value().print(QString::fromStdString(node.name()));
 
         //check if person already exists
         QGraphicsPixmapItem * scenePixmap;
@@ -276,7 +264,7 @@ pose.value().print(QString::fromStdString(node.name()));
             scenePixmap = (QGraphicsPixmapItem*) scene_map[node.id()];
 
         }
-qDebug()<<"angle"<<pose.value().ry()<<qRadiansToDegrees(pose.value().ry());        
+//qDebug()<<"angle"<<pose.value().ry()<<qRadiansToDegrees(pose.value().ry());        
         scenePixmap->setPos(pose.value().x() - 300, pose.value().z() - 150);
         scenePixmap->setRotation(qRadiansToDegrees(pose.value().ry())+180);    
     }
@@ -388,7 +376,7 @@ std::cout << "*************UPDATE NODE ******" << node_id<<std::endl;
         try
         {
             pose = innermodel->transformS6D("world", node.value().name());
-pose.value().print(QString::fromStdString(node.value().name()));
+//pose.value().print(QString::fromStdString(node.value().name()));
         }catch(...){};
         if (pose.has_value())
         {
@@ -440,7 +428,7 @@ qDebug() << __FUNCTION__ ;
 std::cout << "******Delete EDGE "<<edge_key<<std::endl;
     if (edge_map.find(edge_key) != edge_map.end())
     {
-//        edge_map.erase(edge_key);
+        edge_map.erase(edge_key);
     }
 
 //TODO: removed until signals detection workds properly

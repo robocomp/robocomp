@@ -17,8 +17,8 @@
 #ifndef DSR_TO_GRAPHCISCENE_VIEWER_H
 #define DSR_TO_GRAPHCISCENE_VIEWER_H
 
-#include "../../CRDT.h"
-#include "../_abstract_graphic_view.h"
+#include "graph-related-classes/CRDT.h"
+#include "graph-related-classes/viewers/_abstract_graphic_view.h"
 
 #include <math.h>
 #include <filesystem>
