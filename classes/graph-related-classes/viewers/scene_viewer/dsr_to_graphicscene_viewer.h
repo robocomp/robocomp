@@ -43,7 +43,7 @@ namespace DSR
         private:
             const float ROBOT_LENGTH = 400;
             std::vector<std::vector<float>> cube_positions = {{0.5,0.5,0.5}, {0.5, 0.5,-0.5}, {0.5, -0.5,0.5}, {0.5, -0.5, -0.5}, {-0.5, 0.5, 0.5}, {-0.5, 0.5, -0.5}, {-0.5, -0.5, 0.5}, {-0.5, -0.5, -0.5} };        
-            std::list<std::string> no_drawable_childs = {"omniRobot", "differentialRobot", "person"};
+            std::list<std::string> no_drawable_childs = {"omnirobot", "differentialrobot", "person"};
             std::shared_ptr<CRDT::CRDTGraph> G;
             std::unique_ptr<CRDT::InnerAPI> innermodel;
 
@@ -73,6 +73,7 @@ namespace DSR
             void add_or_assign_mesh(Node &node);     
             void add_or_assign_robot(Node &node);
 
+            void add_or_assign_rect(Node &node, std::string color, std::string texture, int width, int height, int depth);
             
             void update_scene_object_pose(std::int32_t node_id);
     };

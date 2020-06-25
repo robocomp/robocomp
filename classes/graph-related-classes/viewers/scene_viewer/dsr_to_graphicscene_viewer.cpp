@@ -123,6 +123,49 @@ void DSRtoGraphicsceneViewer::get_2d_projection(std::string node_name, std::vect
 } 
 
 
+void DSRtoGraphicsceneViewer::add_or_assign_rect(Node &node, std::string color, std::string texture, int width, int height, int depth)
+{
+
+    //Calculate polygon
+    QPolygon polygon;
+    int zvalue;
+    get_2d_projection(node.name(), {width, height, depth}, polygon, zvalue);
+    QRect rect = QPolygon(polygon).boundingRect();
+
+    //minimum size
+    if(rect.width() < 100)
+        rect.setWidth(100);
+    if(rect.height() < 100)
+        rect.setHeight(100);
+qDebug()<<"rect"<<rect;
+    //texture
+    QBrush brush = QBrush(QColor(QString::fromStdString(color)));
+    if (texture != "")
+    {
+        if(std::filesystem::exists(texture))
+            brush = QBrush(QImage(QString::fromStdString(texture)));
+        else
+            brush = QBrush(QColor(QString::fromStdString(texture)));
+    }
+   
+    QGraphicsRectItem * sceneRect;
+    if (scene_map.find(node.id()) == scene_map.end())
+    {
+        sceneRect = scene.addRect(rect, QPen(QString::fromStdString(color)), brush);
+        scene_map[node.id()] = (QGraphicsItem*) sceneRect;
+        std::list<int> parent_list = get_parent_list(node.id());
+        update_edge_chain(parent_list);  
+    }
+    else
+    {
+        sceneRect = (QGraphicsRectItem*) scene_map[node.id()];
+        sceneRect->setRect(rect);
+    }
+    sceneRect->setZValue(zvalue);
+qDebug()<<"zvalue"<<zvalue;
+}
+
+
 void DSRtoGraphicsceneViewer::add_or_assign_plane(Node &node)
 {
 qDebug() << "********************************";
@@ -143,42 +186,8 @@ qDebug() << __FUNCTION__ ;
     int depth = G->get_attrib_by_name<std::int32_t>(node, "depth").value_or(0);
 
     qDebug()<<"Draw plane"<<QString::fromStdString(node.name())<<"("<<width<<","<<height<<","<<depth<<")";
-    
-    QPolygon polygon;
-    int zvalue;
-    get_2d_projection(node.name(), {width, height, depth}, polygon, zvalue);
-    QRect rect = QPolygon(polygon).boundingRect();
-
-    //minimum size
-    if(rect.width() < 100)
-        rect.setWidth(100);
-    if(rect.height() < 100)
-        rect.setHeight(100);
-
-    //texture
-    QBrush brush = QBrush(QColor(QString::fromStdString(color)));
-    if (texture != "")
-    {
-        if(std::filesystem::exists(texture))
-            brush = QBrush(QImage(QString::fromStdString(texture)));
-        else
-            brush = QBrush(QColor(QString::fromStdString(texture)));
-    }
-    
-    QGraphicsRectItem * sceneRect;
-    if (scene_map.find(node.id()) == scene_map.end())
-    {
-        sceneRect = scene.addRect(rect, QPen(QString::fromStdString(color)), brush);
-        scene_map[node.id()] = (QGraphicsItem*) sceneRect;
-        update_edge_chain(parent_list);  
-    }
-    else
-    {
-        sceneRect = (QGraphicsRectItem*) scene_map[node.id()];
-        sceneRect->setRect(rect);
-    }
-    sceneRect->setZValue(zvalue);
-
+     
+    add_or_assign_rect(node, color, texture, width, height, depth);
 }
 
 bool DSRtoGraphicsceneViewer::is_drawable(std::list<int> parent_list)
@@ -227,12 +236,14 @@ qDebug() << __FUNCTION__ ;
     }
 
     std::string color = G->get_attrib_by_name<std::string>(node, "color").value_or("orange");
-    std::string filename = G->get_attrib_by_name<std::string>(node, "path").value_or("");
-    int scalex = G->get_attrib_by_name<std::int32_t>(node, "scalex").value_or(0);
-    int scaley = G->get_attrib_by_name<std::int32_t>(node, "scaley").value_or(0);
-    int scalez = G->get_attrib_by_name<std::int32_t>(node, "scalez").value_or(0);
+    int width = G->get_attrib_by_name<std::int32_t>(node, "scalex").value_or(0);
+    int height = G->get_attrib_by_name<std::int32_t>(node, "scaley").value_or(0);
+    int depth = G->get_attrib_by_name<std::int32_t>(node, "scalez").value_or(0);
 
-qDebug()<<"Draw mesh"<<QString::fromStdString(node.name())<<"("<<scalex<<","<<scaley<<","<<scalez<<")";
+qDebug()<<"Draw mesh"<<QString::fromStdString(node.name())<<"("<<width<<","<<height<<","<<depth<<")"<<"color"<<QString::fromStdString(color);
+
+    add_or_assign_rect(node, color, "", width, height, depth);
+
 }
 
 void  DSRtoGraphicsceneViewer::add_or_assign_person(Node &node)
@@ -310,7 +321,7 @@ void DSRtoGraphicsceneViewer::add_or_assign_robot(Node &node)
             scenePolygon = (QGraphicsPolygonItem*) scene_map[node.id()];      
         }
         scenePolygon->setPos(pose.value().x() - scenePolygon->boundingRect().center().x(), pose.value().z() - scenePolygon->boundingRect().center().y());
-        scenePolygon->setRotation(qRadiansToDegrees(pose.value().ry())+180);   
+        scenePolygon->setRotation(qRadiansToDegrees(-pose.value().ry())+180);   
     }
     else
     {
@@ -381,7 +392,7 @@ std::cout << "*************UPDATE NODE ******" << node_id<<std::endl;
         if (pose.has_value())
         {
             item->setPos(pose.value().x() - item->boundingRect().center().x(), pose.value().z() - item->boundingRect().center().y());
-            item->setRotation(qRadiansToDegrees(pose.value().ry())+180);
+            item->setRotation(qRadiansToDegrees(-pose.value().ry())+180);
         }
         else   
         {
