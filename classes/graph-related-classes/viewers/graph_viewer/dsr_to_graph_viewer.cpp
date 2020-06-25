@@ -187,7 +187,7 @@ void DSRtoGraphViewer::add_or_assign_node_SLOT(int id, const std::string &type)
             posx = rd.x();
             posy = rd.y();
         }
-        if (posx != gnode->x() or posy != gnode->y()) {
+        if (posx != gnode->x() or posy != gnode->y() and gnode != scene.mouseGrabberItem()) {
 			qDebug()<<__FUNCTION__<<"##### posx "<<posx<<" != gnode->x() "<<gnode->x()<<" or posy "<<posy<<" != gnode->y() "<<gnode->y();
 			gnode->setPos(posx, posy);
 		}
