@@ -2,7 +2,7 @@ import json
 import os
 
 from dsl_parsers.dsl_parser_abstract import DSLParserTemplate
-from dsl_parsers.parsing_utils import is_agm2_agent_ROS, communication_is_ice, generate_recursive_imports
+from dsl_parsers.parsing_utils import communication_is_ice, generate_recursive_imports
 from dsl_parsers.specific_parsers.cdsl.componentinspections import ComponentInspections
 from . import componentfacade
 

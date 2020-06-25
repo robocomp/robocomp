@@ -76,9 +76,6 @@ class FilesGenerator:
             # Generate specific_component
             new_existing_files = self.__generate_component()
 
-            if self.ast.usingROS is True:
-                for imp in self.ast.imports:
-                    self.generate_ROS_headers(imp)
         elif self.dsl_file.endswith(".idsl"):
             new_existing_files = self.__generate_interface()
         return new_existing_files

@@ -5,7 +5,7 @@ from pyparsing import Suppress, Word, CaselessKeyword, alphas, alphanums, CharsN
     delimitedList, cppStyleComment, ParseSyntaxException
 
 from dsl_parsers.dsl_parser_abstract import DSLParserTemplate
-from dsl_parsers.parsing_utils import is_agm2_agent_ROS, communication_is_ice, generate_recursive_imports
+from dsl_parsers.parsing_utils import communication_is_ice, generate_recursive_imports
 from . import componentfacade
 
 
@@ -23,10 +23,10 @@ class CDSLParser(DSLParserTemplate):
         # keywords
         (IMPORT, COMMUNICATIONS, LANGUAGE, COMPONENT, CPP, CPP11, GUI, QWIDGET, QMAINWINDOW, QDIALOG, QT,
          PYTHON, REQUIRES, IMPLEMENTS, SUBSCRIBESTO, PUBLISHES, OPTIONS, TRUE, FALSE,
-         INNERMODELVIEWER, STATEMACHINE, VISUAL, AGMAGENT, AGM2AGENT, AGM2AGENTROS, AGM2AGENTICE, DSR, ICE, ROS) = list(map(CaselessKeyword, """
+         INNERMODELVIEWER, STATEMACHINE, VISUAL, AGMAGENT, AGM2AGENT, AGM2AGENTICE, DSR, ICE, ROS) = list(map(CaselessKeyword, """
         import communications language component cpp cpp11 gui QWidget QMainWindow QDialog Qt 
         python requires implements subscribesTo publishes options true false
-        InnerModelViewer statemachine visual agmagent agm2agent agm2agentros agm2agentice dsr ice ros""".split()))
+        InnerModelViewer statemachine visual agmagent agm2agent agm2agentice dsr ice ros""".split()))
 
         identifier = Word(alphas + "_", alphanums + "_")
         PATH = CharsNotIn("\";")
@@ -185,19 +185,11 @@ class CDSLParser(DSLParserTemplate):
             if 'AGMExecutiveTopic' not in component.subscribesTo:
                 component.subscribesTo = [['AGMExecutiveTopic', 'ice']] + component.subscribesTo
         if component.is_agm2_agent():
-            if is_agm2_agent_ROS(component):
-                component.usingROS = True
-                agm2agent_requires = [['AGMDSRService', 'ros']]
-                agm2agent_subscribes_to = [['AGMExecutiveTopic', 'ros'], ['AGMDSRTopic', 'ros']]
-                if 'AGMDSRService' not in component.rosInterfaces: component.rosInterfaces.append(['AGMDSRService', 'ros'])
-                if 'AGMDSRTopic' not in component.rosInterfaces: component.rosInterfaces.append(['AGMDSRTopic', 'ros'])
-                if 'AGMExecutiveTopic' not in component.rosInterfaces: component.rosInterfaces.append(['AGMExecutiveTopic', 'ros'])
-            else:
-                agm2agent_requires = [['AGMDSRService', 'ice']]
-                agm2agent_subscribes_to = [['AGMExecutiveTopic', 'ice'], ['AGMDSRTopic', 'ice']]
-                if 'AGMDSRService' not in component.iceInterfaces: component.iceInterfaces.append(['AGMDSRService', 'ice'])
-                if 'AGMDSRTopic' not in component.iceInterfaces: component.iceInterfaces.append(['AGMDSRTopic', 'ice'])
-                if 'AGMExecutiveTopic' not in component.iceInterfaces: component.iceInterfaces.append(['AGMExecutiveTopic', 'ice'])
+            agm2agent_requires = [['AGMDSRService', 'ice']]
+            agm2agent_subscribes_to = [['AGMExecutiveTopic', 'ice'], ['AGMDSRTopic', 'ice']]
+            if 'AGMDSRService' not in component.iceInterfaces: component.iceInterfaces.append(['AGMDSRService', 'ice'])
+            if 'AGMDSRTopic' not in component.iceInterfaces: component.iceInterfaces.append(['AGMDSRTopic', 'ice'])
+            if 'AGMExecutiveTopic' not in component.iceInterfaces: component.iceInterfaces.append(['AGMExecutiveTopic', 'ice'])
 
             # AGM2 agents REQUIRES
             for agm2agent_req in agm2agent_requires:

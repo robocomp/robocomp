@@ -85,18 +85,7 @@ def is_agm1_agent(component):
 def is_agm2_agent(component):
     assert isinstance(component, (dict, OrderedDict)), \
         "Component parameter is expected to be a dict or OrderedDict but %s" % str(type(component))
-    valid = ['agm2agent', 'agm2agentros', 'agm2agentice']
-    options = component.options
-    for v in valid:
-        if v.lower() in options:
-            return True
-    return False
-
-
-def is_agm2_agent_ROS(component):
-    assert isinstance(component, (dict, OrderedDict)), \
-        "Component parameter is expected to be a dict or OrderedDict but %s" % str(type(component))
-    valid = ['agm2agentROS']
+    valid = ['agm2agent', 'agm2agentice']
     options = component.options
     for v in valid:
         if v.lower() in options:
@@ -240,8 +229,6 @@ class IDSLPool(OrderedDict):
     """
     mandatory_idsls = ["CommonBehavior.idsl"]
 
-    rosTypes = ('int8', 'int16', 'int32', 'int64', 'float8', 'float16', 'float32', 'float64', 'byte', 'bool', 'string', 'time', 'empty')
-
     common_interface_dirs = ['/opt/robocomp/interfaces/IDSLs/',
                              os.path.expanduser('~/robocomp/interfaces/IDSLs/'),
                              ALT_INTERFACES_DIR]
@@ -252,10 +239,6 @@ class IDSLPool(OrderedDict):
         include_directories = include_directories + self.common_interface_dirs
         self.includeInPool(files, self, include_directories)
         self.includeInPool(self.mandatory_idsls, self, include_directories)
-
-    @classmethod
-    def getRosTypes(cls):
-        return cls.rosTypes
 
     @classmethod
     def get_common_interface_dirs(cls):
@@ -320,37 +303,6 @@ class IDSLPool(OrderedDict):
                 interfaces.append(m['name'])
         return interfaces
 
-    def ros_imports(self):
-        includes_list = []
-        for module in self:
-            for m in self[module]['structs']+self[module]['sequences']:
-                includes_list.append(m['name'].split('/')[0]+"ROS/"+m['name'].split('/')[1])
-            std_includes = {}
-            for interface in self[module]['interfaces']:
-                for mname in interface['methods']:
-                    method = interface['methods'][mname]
-                    for p in method['params']:
-                        m = None
-                        if p['type'] in ('int', 'float'):
-                            m = "std_msgs/"+p['type'].capitalize()+"32"
-                        elif p['type'] in ('uint8', 'uint16', 'uint32', 'uint64'):
-                            m = "std_msgs/UInt"+p['type'].split('t')[1]
-                        elif p['type'] in self.rosTypes:
-                            m = "std_msgs/"+p['type'].capitalize()
-                        if m is not None:
-                            std_includes[p['type']] = m
-            for std in list(std_includes.values()):
-                includes_list.append(std)
-        return includes_list
-
-    def ros_modules_imports(self):
-        modules_list = []
-        for module in self:
-            for m in self[module]['simpleStructs']:
-                modules_list.append(m)
-            for m in self[module]['simpleSequences']:
-                modules_list.append(m)
-        return modules_list
 
 
 if __name__ == '__main__':
