@@ -172,9 +172,8 @@ void DSRtoGraphViewer::add_or_assign_node_SLOT(int id, const std::string &type)
 		{
 			qDebug()<<__FUNCTION__<<"##### Updated node";
             gnode = gmap.at(id);
-        	gnode->change_detected();
 		}
-
+		gnode->change_detected();
         float posx = 10;
         float posy = 10;
         try 

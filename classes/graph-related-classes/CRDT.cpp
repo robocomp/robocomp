@@ -122,9 +122,9 @@ bool CRDTGraph::insert_or_assign_node(const N &node)
 std::pair<bool, std::optional<AworSet>> CRDTGraph::insert_or_assign_node_(const N &node)
 {
     if (deleted.find(node.id()) == deleted.end()) {
-        if (!nodes[node.id()].dots().ds.empty() and nodes[node.id()].dots().ds.rbegin()->second == node) {
-            return {true, {} };
-        }
+//        if (!nodes[node.id()].dots().ds.empty() and nodes[node.id()].dots().ds.rbegin()->second == node) {
+//            return {true, {} };
+//        }
         aworset<Node, int> delta = nodes[node.id()].add(node, node.id());
         update_maps_node_insert(node.id(), node);
 
@@ -795,29 +795,28 @@ void CRDTGraph::join_delta_node(AworSet aworSet)
         if (signal) {
 
             //check what change is joined
-            if (nd.attrs() != nodes[aworSet.id()].dots().ds.rbegin()->second.attrs()) {
-                emit update_node_signal(aworSet.id(), nodes[aworSet.id()].dots().ds.rbegin()->second.type());
-                if (nd.type().empty()) {
-                    for (auto &[k,v] : nodes[aworSet.id()].dots().ds.rbegin()->second.fano()) {
-                        emit update_edge_signal(aworSet.id(), k.to(), k.type());
-                    }
-                }
-            } else {
-                auto iter =  nodes[aworSet.id()].dots().ds.rbegin()->second.fano();
-                for (const auto &[k,v] : nd.fano()) {
-                    if (iter.find(k) == iter.end()) {
-                        std::cout << "DELETE EDGE: " << aworSet.id() << "  -  "<< k <<std::endl;
-                        emit del_edge_signal(aworSet.id(), k.to(), k.type());
-                    }
-                }
-                for (const auto &[k,v] : iter) {
-                    if (nd.fano().find(k) == nd.fano().end() or nd.fano()[k] != v) {
-                        std::cout << "INSERT/UPDATE EDGE: " << aworSet.id() << "  -  "<< k <<std::endl;
-                        emit update_edge_signal(aworSet.id(), k.to(), k.type());
-                    }
-                }
 
-            }
+			emit update_node_signal(aworSet.id(), nodes[aworSet.id()].dots().ds.rbegin()->second.type());
+			if (nd.type().empty()) {
+				for (auto &[k,v] : nodes[aworSet.id()].dots().ds.rbegin()->second.fano()) {
+					emit update_edge_signal(aworSet.id(), k.to(), k.type());
+				}
+			}
+
+			auto iter =  nodes[aworSet.id()].dots().ds.rbegin()->second.fano();
+			for (const auto &[k,v] : nd.fano()) {
+				if (iter.find(k) == iter.end()) {
+					std::cout << "DELETE EDGE: " << aworSet.id() << "  -  "<< k <<std::endl;
+					emit del_edge_signal(aworSet.id(), k.to(), k.type());
+				}
+			}
+			for (const auto &[k,v] : iter) {
+				if (nd.fano().find(k) == nd.fano().end() or nd.fano()[k] != v) {
+					std::cout << "INSERT/UPDATE EDGE: " << aworSet.id() << "  -  "<< k <<std::endl;
+					emit update_edge_signal(aworSet.id(), k.to(), k.type());
+				}
+			}
+
 
         }
         else {
