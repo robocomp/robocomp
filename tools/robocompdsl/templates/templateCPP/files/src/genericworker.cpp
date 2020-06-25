@@ -28,8 +28,6 @@ GenericWorker::GenericWorker(${constructor_proxies}) : ${inherited_constructor}
 
 	mutex = new QMutex(QMutex::Recursive);
 
-	${ros_nodes_creation}
-	${ros_proxies_creation}
 	${gui_setup}
 	Period = BASIC_PERIOD;
 	${compute_connect}

@@ -105,7 +105,6 @@ class TemplateDict(dict):
         self['publish_proxy_creation'] = self.publish_proxy_creation()
         self['implements_adapters_creation'] = self.implements_adapters_creation()
         self['subscribes_adapters_creation'] = self.subscribes_adapters_creation()
-        self['ros_service_and_subscribe_creation'] = self.ros_service_and_subscribe_creation()
 
     def storm_topic_manager_creation(self):
         result = ""
@@ -154,50 +153,6 @@ class TemplateDict(dict):
             if communication_is_ice(sut):
                 name = sut[0]
                 result += Template(SUBSCRIBESTO_STR).substitute(iface_name=name, iface_name_lower=name.lower())
-        return result
-
-    # TODO: refactor. Check ros type conversions in cpp template
-    def ros_service_and_subscribe_creation(self):
-        pool = self.component.idsl_pool
-        result = ""
-        if self.component.usingROS:
-            result += "<TABHERE>rospy.init_node(\"" + self.component.name + "\", anonymous=True)\n"
-        for sub in self.component.subscribesTo:
-            nname = sub.name
-            module = pool.module_providing_interface(nname)
-            if module is None:
-                raise ValueError('\nCan\'t find module providing %s\n' % nname)
-            if not communication_is_ice(sub):
-                for interface in module['interfaces']:
-                    if interface['name'] == nname:
-                        for mname in interface['methods']:
-                            method = interface['methods'][mname]
-                            for p in method['params']:
-                                s = "\"" + mname + "\""
-                                if p['type'] in ('float', 'int'):
-                                    result += "<TABHERE>rospy.Subscriber(" + s + ", " + p['type'].capitalize() + "32, worker.ROS" + method['name'] + ")\n"
-                                elif p['type'] in ('uint8', 'uint16', 'uint32', 'uint64'):
-                                    result += "<TABHERE>rospy.Subscriber(" + s + ", UInt" + p['type'].split('t')[1] + ", worker.ROS" + method['name'] + ")\n"
-                                elif p['type'] in IDSLPool.getRosTypes():
-                                    result += "<TABHERE>rospy.Subscriber(" + s + ", " + p['type'].capitalize() + ", worker.ROS" + method['name'] + ")\n"
-                                elif '::' in p['type']:
-                                    result += "<TABHERE>rospy.Subscriber(" + s + ", " + p['type'].split('::')[1] + ", worker.ROS" + method['name'] + ")\n"
-                                else:
-                                    result += "<TABHERE>rospy.Subscriber(" + s + ", " + p['type'] + ", worker.ROS" + method['name'] + ")\n"
-
-        for imp in self.component.implements:
-            nname = imp.name
-            module = pool.module_providing_interface(nname)
-            if module is None:
-                print('\nCan\'t find module providing', nname, '\n')
-                sys.exit(-1)
-            if not communication_is_ice(imp):
-                for interface in module['interfaces']:
-                    if interface['name'] == nname:
-                        for mname in interface['methods']:
-                            method = interface['methods'][mname]
-                            s = "\"" + mname + "\""
-                            result += "<TABHERE>rospy.Service(" + s + ", " + mname + ", worker.ROS" + method['name'] + ")\n"
         return result
 
     def import_qtwidgets(self):

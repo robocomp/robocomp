@@ -170,7 +170,6 @@ class TemplateDict(dict):
         self['requires_proxy_ptr'] = self.proxy_ptr(self.component.requires)
         self['topic_manager_creation'] = self.topic_manager_creation()
         self['publish'] = self.publish()
-        self['ros_init'] = self.ros_init()
         self['specificworker_creation'] = self.specificworker_creation()
         self['commonbehaviorI_creation'] = self.commonbehaviorI_creation()
         self['implements'] = self.implements()
@@ -342,10 +341,4 @@ class TemplateDict(dict):
             result += "CommonBehaviorI *commonbehaviorI = new CommonBehaviorI(monitor);\n"
         else:
             result += "auto commonbehaviorI = std::make_shared<CommonBehaviorI>(monitor);\n"
-        return result
-
-    def ros_init(self):
-        result = ""
-        if self.component.usingROS is True:
-            result += "ros::init(argc, argv, \"" + self.component.name + "\");\n"
         return result

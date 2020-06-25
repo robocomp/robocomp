@@ -79,12 +79,7 @@ class TemplateDict(dict):
                         result += return_type + ' ' + idsl_interface['name'] + "_" + method[
                             'name'] + '(' + params_string + ");\n"
                     else:
-                        params_string = module['name'] + "ROS::" + method['name'] + "::Request &req, " + module[
-                            'name'] + "ROS::" + method['name'] + "::Response &res"
-                        if interface_name in self.component.iceInterfaces:
-                            result += "bool ROS" + method['name'] + '(' + params_string + ");\n"
-                        else:
-                            result += "bool " + method['name'] + '(' + params_string + ");\n"
+                        pass
         return result
 
     def implements_method_definitions(self):
@@ -113,36 +108,7 @@ class TemplateDict(dict):
                             result += return_type + ' ' + interface['name'] + "_" + method[
                                 'name'] + '(' + param_str_a + ");\n"
                         else:
-                            for p in method['params']:
-                                # delim
-                                if param_str_a == '':
-                                    delim = ''
-                                else:
-                                    delim = ', '
-                                # decorator
-                                ampersand = '&'
-                                if p['decorator'] == 'out':
-                                    const = ''
-                                else:
-                                    const = 'const '
-                                    ampersand = ''
-                                if p['type'] in ('float', 'int'):
-                                    p['type'] = "std_msgs::" + p['type'].capitalize() + "32"
-                                elif p['type'] in ('uint8', 'uint16', 'uint32', 'uint64'):
-                                    p['type'] = "std_msgs::UInt" + p['type'].split('t')[1]
-                                elif p['type'] in pool.getRosTypes():
-                                    p['type'] = "std_msgs::" + p['type'].capitalize()
-                                elif '::' not in p['type']:
-                                    p['type'] = module['name'] + "ROS::" + p['type']
-                                # STR
-                                param_type = p['type']
-                                if param_type not in utils.CPP_TYPES and '::' not in param_type:
-                                    param_type = f"{module['name']}::{param_type}"
-                                param_str_a += delim + param_type + ' ' + p['name']
-                            if imp in self.component.iceInterfaces:
-                                result += "void ROS" + method['name'] + '(' + param_str_a + ");\n"
-                            else:
-                                result += "void " + method['name'] + '(' + param_str_a + ");\n"
+                            pass
         return result
 
     @staticmethod

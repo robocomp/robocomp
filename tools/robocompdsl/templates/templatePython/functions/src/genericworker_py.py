@@ -31,12 +31,7 @@ setattr(${module_name}, "${list_type}", ${list_type})
 
 """
 
-ROS_MSG_IMPORT_STR = """
-try:
-    from ${module_name}ROS.msg import *
-except:
-    print(\"Couldn\'t load msg\")
-"""
+
 
 GUI_IMPORT_STR = """
 try:
@@ -67,9 +62,7 @@ class TemplateDict(dict):
         self['year'] = str(datetime.date.today().year)
         self['load_slice_and_create_imports'] = self.load_slice_and_create_imports()
         self['implements_and_subscribes_imports'] = self.implements_and_subscribes_imports()
-        self['ros_imports'] = self.ros_imports()
         self['ui_import'] = self.ui_import()
-        self['ros_class_creation'] = self.ros_class_creation()
         self['qt_class_type'] = self.qt_class_type()
         self['statemachine_signals'] = self.statemachine_signals()
         self['requires_proxies'] = self.requires_proxies()
@@ -279,107 +272,6 @@ class TemplateDict(dict):
             result += GUI_IMPORT_STR
         return result
 
-    # TODO: extract code strings and refactor
-    def ros_class_creation(self):
-        result = ""
-        pool = self.component.idsl_pool
-        if self.component.usingROS:
-            # CREANDO CLASES PARA LOS PUBLISHERS
-            for imp in self.component.publishes:
-                nname = imp.name
-                module = pool.module_providing_interface(nname)
-                if module is None:
-                    raise ValueError('\nCan\'t find module providing %s\n' % nname)
-                if not communication_is_ice(imp):
-                    result += "#class for rosPublisher\n"
-                    result += "class Publisher" + nname + "():\n"
-                    result += "<TABHERE>def __init__(self):\n"
-                    for interface in module['interfaces']:
-                        if interface['name'] == nname:
-                            for mname in interface['methods']:
-                                method = interface['methods'][mname]
-                                for p in method['params']:
-                                    s = "\"" + mname + "\""
-                                    if p['type'] in ('float', 'int'):
-                                        result += "<TABHERE><TABHERE>self.pub_" + mname + " = rospy.Publisher(" + s + ", " + \
-                                                  p['type'].capitalize() + "32, queue_size=1000)\n"
-                                    elif p['type'] in ('uint8', 'uint16', 'uint32', 'uint64'):
-                                        result += "<TABHERE><TABHERE>self.pub_" + mname + " = rospy.Publisher(" + s + ", UInt" + \
-                                                  p['type'].split('t')[1] + ", queue_size=1000)\n"
-                                    elif p['type'] in IDSLPool.getRosTypes():
-                                        result += "<TABHERE><TABHERE>self.pub_" + mname + " = rospy.Publisher(" + s + ", " + \
-                                                  p['type'].capitalize() + ", queue_size=1000)\n"
-                                    elif '::' in p['type']:
-                                        result += "<TABHERE><TABHERE>self.pub_" + mname + " = rospy.Publisher(" + s + ", " + \
-                                                  p['type'].split('::')[1] + ", queue_size=1000)\n"
-                                    else:
-                                        result += "<TABHERE><TABHERE>self.pub_" + mname + " = rospy.Publisher(" + s + ", " + \
-                                                  p['type'] + ", queue_size=1000)\n"
-                    for interface in module['interfaces']:
-                        if interface['name'] == nname:
-                            for mname in interface['methods']:
-                                method = interface['methods'][mname]
-                                for p in method['params']:
-                                    result += "<TABHERE>def " + mname + "(self, " + p['name'] + "):\n"
-                                    result += "<TABHERE><TABHERE>self.pub_" + mname + ".publish(" + p['name'] + ")\n"
-            # CREANDO CLASES PARA LOS REQUIRES
-            for imp in self.component.requires:
-                nname = imp.name
-                module = pool.module_providing_interface(nname)
-                if module is None:
-                    raise ValueError('\nCan\'t find module providing %s\n' % nname)
-                if not communication_is_ice(imp):
-                    result += "#class for rosServiceClient\n"
-                    result += "class ServiceClient" + nname + "():\n"
-                    result += "<TABHERE>def __init__(self):\n"
-                    for interface in module['interfaces']:
-                        if interface['name'] == nname:
-                            for mname in interface['methods']:
-                                method = interface['methods'][mname]  # for p in method['params']:
-                                s = "\"" + mname + "\""
-                                result += "<TABHERE><TABHERE>self.srv_" + mname + " = rospy.ServiceProxy(" + s + ", " + mname + ")\n"
-                    for interface in module['interfaces']:
-                        if interface['name'] == nname:
-                            for mname in interface['methods']:
-                                method = interface['methods'][mname]
-                                param_str_a = ''
-                                for p in method['params']:
-                                    # delim
-                                    if param_str_a == '': param_str_a = p['name']
-                                result += "<TABHERE>def " + mname + "(self, " + param_str_a + "):\n"
-                                result += "<TABHERE><TABHERE>return self.srv_" + mname + "(" + param_str_a + ")\n"
-        return result
-
-    # TODO: Refactor, too much repeated code.
-    def ros_imports(self):
-        result = ""
-        pool = self.component.idsl_pool
-        if self.component.usingROS:
-            result += 'import rospy\n'
-            result += 'from std_msgs.msg import *\n'
-            for iface in self.component.publishes + self.component.subscribesTo:
-                if type(iface) == str:
-                    iface_name = iface
-                else:
-                    iface_name = iface[0]
-                if not communication_is_ice(iface):
-                    module = pool.module_providing_interface(iface_name)
-                    for interface in module['interfaces']:
-                        if interface['name'] == iface_name:
-                            for mname in interface['methods']:
-                                result += Template(ROS_MSG_IMPORT_STR).substitute(module_name=module['name'])
-            for iface in self.component.requires + self.component.implements:
-                if type(iface) == str:
-                    iface_name = iface
-                else:
-                    iface_name = iface[0]
-                if not communication_is_ice(iface):
-                    module = pool.module_providing_interface(iface_name)
-                    for interface in module['interfaces']:
-                        if interface['name'] == iface_name:
-                            for mname in interface['methods']:
-                                result += 'from ' + module['name'] + 'ROS.srv import *'
-        return result
 
     # TODO: Check if can be merged with SERVANT_PY.py slice_loading function
     def load_slice_and_create_imports(self, includeDirectories=None):
@@ -439,10 +331,7 @@ class TemplateDict(dict):
             if communication_is_ice(req):
                 result += "self." + rq.lower() + num + "_proxy = mprx[\"" + rq + "Proxy" + num + "\"]\n"
             else:
-                if rq in self.component.iceInterfaces:
-                    result += "self." + rq.lower() + "_rosproxy = ServiceClient" + rq + "()\n"
-                else:
-                    result += "self." + rq.lower() + "_proxy = ServiceClient" + rq + "()\n"
+                result += "self." + rq.lower() + "_proxy = ServiceClient" + rq + "()\n"
         return result
 
     def publishes_proxies(self):
@@ -455,8 +344,5 @@ class TemplateDict(dict):
             if communication_is_ice(pb):
                 result += "self." + pub.lower() + num + "_proxy = mprx[\"" + pub + "Pub" + num + "\"]\n"
             else:
-                if pub in self.component.iceInterfaces:
-                    result += "self." + pub.lower() + "_rosproxy = Publisher" + pub + "()\n"
-                else:
-                    result += "self." + pub.lower() + "_proxy = Publisher" + pub + "()\n"
+                result += "self." + pub.lower() + "_proxy = Publisher" + pub + "()\n"
         return result

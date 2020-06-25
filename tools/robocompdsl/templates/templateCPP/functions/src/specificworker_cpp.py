@@ -32,8 +32,8 @@ void SpecificWorker::compute()
 	//{
 	//  std::cout << "Error reading from Camera" << e << std::endl;
 	//}
-	${compute_ros}
 	${compute_innermodelviewer}
+	
 }
 """
 
@@ -253,17 +253,11 @@ class TemplateDict(dict):
 
         elif self.component.is_agm2_agent():
             mdlw = 'Ice'
-            if p_utils.is_agm2_agent_ROS(self.component):
-                mdlw = 'ROS'
-            elif name == 'symbolsUpdated':
+            if name == 'symbolsUpdated':
                 body_code = "\tQMutexLocker locker(mutex);\n\tfor (auto n : modification"
-                if mdlw == 'ROS':
-                    body_code += ".NodeSequence"
                 body_code += ")\n\t\tAGMModelConverter::include" + mdlw + "ModificationInInternalModel(n, worldModel);\n"
             elif name == 'edgesUpdated':
                 body_code = "\tQMutexLocker locker(mutex);\n\tfor (auto e : modification"
-                if mdlw == 'ROS':
-                    body_code += ".EdgeSequence"
                 body_code += ")\n\t{\n\t\tAGMModelConverter::include" + mdlw + "ModificationInInternalModel(e, worldModel);\n\t\tAGMInner::updateImNodeFromEdge(worldModel, e, innerModelViewer->innerModel.get());\n\t}\n"
             elif name == 'structuralChange':
                 body_code = "\tQMutexLocker locker(mutex);\n\tAGMModelConverter::from" + mdlw + "ToInternal(w, worldModel);\n\t\n\tInnerModel *newIM = AGMInner::extractInnerModel(worldModel);\n"
@@ -322,15 +316,9 @@ class TemplateDict(dict):
         result = ""
         statemachine = self.component.statemachine
         if (statemachine is not None and statemachine['machine']['default'] is True) or self.component.statemachine_path is None:
-            result += Template(COMPUTE_METHOD_STR).substitute(compute_ros=self.compute_ros(),
-                                                              compute_innermodelviewer=self.compute_innermodelviewer())
+            result += Template(COMPUTE_METHOD_STR).substitute(compute_innermodelviewer=self.compute_innermodelviewer())
         return result
 
-    def compute_ros(self):
-        if self.component.usingROS:
-            return "ros::spinOnce();"
-        else:
-            return ""
 
     def compute_innermodelviewer(self):
         result = ""
@@ -397,20 +385,12 @@ class TemplateDict(dict):
                             result += return_type + ' SpecificWorker::' + interface['name'] + "_" + method[
                                 'name'] + '(' + param_str_a + ")\n{\n//implementCODE\n" + body_code + "\n}\n\n"
                         else:
-                            param_str_a = module['name'] + "ROS::" + method['name'] + "::Request &req, " + module[
-                                'name'] + "ROS::" + method['name'] + "::Response &res"
-                            if imp in self.component.iceInterfaces:
-                                result += 'bool SpecificWorker::ROS' + method[
-                                    'name'] + '(' + param_str_a + ")\n{\n//implementCODE\n" + body_code + "\n}\n\n"
-                            else:
-                                result += 'bool SpecificWorker::' + method[
-                                    'name'] + '(' + param_str_a + ")\n{\n//implementCODE\n" + body_code + "\n}\n\n"
+                            pass
         return result
 
     def subscribes(self):
         result = ""
         pool = self.component.idsl_pool
-        ros_types = pool.getRosTypes()
         for subscribes in self.component.subscribesTo:
             module = pool.module_providing_interface(subscribes.name)
             if module is None:
@@ -428,35 +408,7 @@ class TemplateDict(dict):
                             result += method['return'] + ' SpecificWorker::' + interface['name'] + "_" + method[
                                 'name'] + '(' + param_str_a + ")\n{\n//subscribesToCODE\n" + body_code + "\n}\n\n"
                         else:
-                            for p in method['params']:
-                                # delim
-                                if param_str_a == '':
-                                    delim = ''
-                                else:
-                                    delim = ', '
-                                # decorator
-                                ampersand = '&'
-                                if p['decorator'] == 'out':
-                                    const = ''
-                                else:
-                                    const = 'const '
-                                    ampersand = ''
-                                if p['type'] in ('float', 'int'):
-                                    p['type'] = "std_msgs::" + p['type'].capitalize() + "32"
-                                elif p['type'] in ('uint8', 'uint16', 'uint32', 'uint64'):
-                                    p['type'] = "std_msgs::UInt" + p['type'].split('t')[1]
-                                elif p['type'] in ros_types:
-                                    p['type'] = "std_msgs::" + p['type'].capitalize()
-                                elif '::' not in p['type']:
-                                    p['type'] = module['name'] + "ROS::" + p['type']
-                                # STR
-                                param_str_a += delim + p['type'] + ' ' + p['name']
-                            if subscribes.name in self.component.iceInterfaces:
-                                result += 'void SpecificWorker::ROS' + method[
-                                    'name'] + '(' + param_str_a + ")\n{\n//subscribesToCODE\n" + body_code + "\n}\n\n"
-                            else:
-                                result += 'void SpecificWorker::' + method[
-                                    'name'] + '(' + param_str_a + ")\n{\n//subscribesToCODE\n" + body_code + "\n}\n\n"
+                            pass
         return result
 
     def agm_specific_code(self):

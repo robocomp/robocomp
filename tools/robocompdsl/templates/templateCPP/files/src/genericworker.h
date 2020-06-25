@@ -38,8 +38,6 @@ ${ice_proxies_map}
 
 ${agm_behaviour_parameter_struct}
 
-${ros_publishes_classes}
-${ros_requires_classes}
 class GenericWorker : ${inherited_object}
 {
 Q_OBJECT
@@ -64,7 +62,6 @@ protected:
 
 	QTimer timer;
 	int Period;
-	${ros_interfaces_creation}
 	${agm_attributes_creation}
 
 private:

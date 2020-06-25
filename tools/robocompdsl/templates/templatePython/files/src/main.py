@@ -126,7 +126,6 @@ if __name__ == '__main__':
 
     ${implements_adapters_creation}
     ${subscribes_adapters_creation}
-    ${ros_service_and_subscribe_creation}
     signal.signal(signal.SIGINT, sigint_handler)
     app.exec_()
 

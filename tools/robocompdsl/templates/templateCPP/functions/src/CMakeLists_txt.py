@@ -8,14 +8,6 @@ $ENV{ROBOCOMP}/classes/statemachinewidget/qstateMachineWrapper.cpp
 """
 
 
-ROS_INCLUDES_STR = """
-#ROS
-find_package(catkin REQUIRED)
-include_directories(  ${catkin_INCLUDE_DIRS} )
-include_directories(  "/opt/ros/melodic/include" )
-SET ( LIBS ${LIBS} ${catkin_LIBRARIES} -L/opt/ros/melodic/lib -lroscpp -lrosconsole -lroscpp_serialization -lrostime -lxmlrpcpp -lcpp_common -lrosconsole_log4cxx -lrosconsole_backend_interface)
-"""
-
 
 CPP11_ICE_STR = """
 ADD_DEFINITIONS ("-DICE_CPP11_MAPPING")
@@ -38,7 +30,6 @@ class TemplateDict(dict):
         self['component_name'] = self.component.name
         self['interface_sources'] = self.interface_sources()
         self['statemachine_visual_sources'] = self.statemachine_visual_sources()
-        self['ros_includes'] = self.ros_includes()
         self['cpp11_ice_packages'] = self.cpp11_ice_packages()
         self['agm_includes'] = self.agm_includes()
         self['wrap_ice'] = self.wrap_ice()
@@ -67,11 +58,6 @@ class TemplateDict(dict):
             result += STATEMACHINE_VISUAL_SOURCES_STR
         return result
 
-    def ros_includes(self):
-        result = ""
-        if self.component.usingROS is True:
-            result += ROS_INCLUDES_STR
-        return result
 
     def cpp11_ice_packages(self):
         result = ""
@@ -101,7 +87,7 @@ class TemplateDict(dict):
 
         options = [x.lower() for x in self.component.options]
 
-        if 'agm2agent' in options or 'agm2agentICE' in options or 'agm2agentROS' in options:
+        if 'agm2agent' in options or 'agm2agentICE' in options:
             interface_names += ["AGM2"]
 
         result = "ROBOCOMP_IDSL_TO_ICE( CommonBehavior "
