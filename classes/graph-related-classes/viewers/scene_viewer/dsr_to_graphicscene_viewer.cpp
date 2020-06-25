@@ -81,7 +81,7 @@ std::cout << node.value().name() << " " << node.value().id() << std::endl;
             add_or_assign_mesh(node.value());
         if( type == "person")
             add_or_assign_person(node.value());
-        if( type == "differentialRobot" or type == "omniRobot")
+        if( type == "differentialrobot" or type == "omnirobot")
             add_or_assign_robot(node.value());
         else //node does not have visual representation
             ignore_nodes.insert(id);
