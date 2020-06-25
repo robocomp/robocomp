@@ -232,9 +232,11 @@ void DSRtoGraphViewer::add_or_assign_edge_SLOT(std::int32_t from, std::int32_t t
 			// tableWidgetEdges->resizeColumnsToContents();
 			// tableWidgetEdges->show();
 		}
+		gmap_edges[key]->change_detected();
 	}
 	catch(const std::exception &e) {
 		std::cout << e.what() <<" Error  "<<__FUNCTION__<<":"<<__LINE__<<" "<<e.what()<< std::endl;}
+
 }
 
 void DSRtoGraphViewer::del_edge_SLOT(const std::int32_t from, const std::int32_t to, const std::string &edge_tag)

@@ -25,7 +25,7 @@
 #include <iostream>
 #include <cppitertools/range.hpp>
 
-GraphEdge::GraphEdge(GraphNode *sourceNode, GraphNode *destNode, const QString &edge_name) : arrowSize(10)
+GraphEdge::GraphEdge(GraphNode *sourceNode, GraphNode *destNode, const QString &edge_name) : QGraphicsLineItem(), arrowSize(10)
 {
     setFlags(QGraphicsItem::ItemIsSelectable);
 	setFlag(QGraphicsItem::ItemIsFocusable);
@@ -34,6 +34,11 @@ GraphEdge::GraphEdge(GraphNode *sourceNode, GraphNode *destNode, const QString &
     source->addEdge(this);
     dest->addEdge(this);
 	tag = edge_name;
+	animation = new QPropertyAnimation(this, "edge_pen");
+	animation->setDuration(200);
+	animation->setStartValue(4);
+	animation->setEndValue(2);
+	animation->setLoopCount(3);
 	adjust();
 }
 
@@ -111,7 +116,7 @@ void GraphEdge::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
     if (qFuzzyCompare(line.length(), qreal(0.)))
 		{
 				// Draw the line itself
-				painter->setPen(QPen(Qt::black, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+				painter->setPen(QPen(Qt::black, edge_width, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
 				QRectF rectangle(sourcePoint.x()-20, sourcePoint.y()-20, 20.0, 20.0);
 				int startAngle = 35;
 				int spanAngle = 270 * 16;
@@ -121,7 +126,7 @@ void GraphEdge::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 				double alpha = 0;
 				double r = 20/2.f;
 				painter->setBrush(Qt::black);
-				painter->setPen(Qt::black);
+				painter->setPen(QPen(Qt::black, edge_width));
 				painter->drawPolygon(QPolygonF() << QPointF(r*cos(alpha) + rectangle.center().x(), r*sin(alpha) + rectangle.center().y())
 																				 << QPointF(r*cos(alpha) + rectangle.center().x()-3, r*sin(alpha) + rectangle.center().y()-2) 
 																				 << QPointF(r*cos(alpha) + rectangle.center().x()+2, r*sin(alpha) + rectangle.center().y()-2));
@@ -131,7 +136,7 @@ void GraphEdge::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 			//check if there is another parallel edge 
 			// Draw the line itself
 			painter->save();
-			painter->setPen(QPen(Qt::black, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+			painter->setPen(QPen(Qt::black, edge_width, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
 			double angle = std::atan2(-line.dy(), line.dx());
 			painter->translate(line.center().x(), line.center().y());
 			painter->rotate(-angle*180/M_PI);
@@ -163,6 +168,7 @@ void GraphEdge::mousePressEvent(QGraphicsSceneMouseEvent *event)
         if(tag == "RT")
             do_stuff = std::make_unique<DoRTStuff>(graph, source->id_in_graph, dest->id_in_graph, tag.toStdString());
     }
+    animation->start();
 	update();
     QGraphicsItem::mousePressEvent(event);
 }
@@ -182,4 +188,21 @@ void GraphEdge::keyPressEvent(QKeyEvent *event)
             label = nullptr;
         }
     }
+}
+
+void GraphEdge::change_detected()
+{
+	animation->start();
+}
+
+
+int GraphEdge::_edge_pen()
+{
+	return this->edge_width;
+}
+
+void GraphEdge::set_edge_pen(const int p)
+{
+	this->edge_width = p;
+	this->setPen(QPen(Qt::black, edge_width, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
 }

@@ -21,6 +21,7 @@
 #include <QContextMenuEvent>
 #include <QTableWidget>
 #include <memory>
+#include <QPen>
 #include <cppitertools/zip.hpp>
 #include <QLabel>
 #include "CRDT_graphviewer.h"
@@ -86,54 +87,55 @@ class DoRTStuff : public  QTableWidget
   public slots:
     void drawSLOT(const std::int32_t &from_, const std::int32_t &to_)
     {
-      std::cout << __FILE__ << " " << __FUNCTION__ << std::endl;
-      if( from == from_ and to == to_)     //ADD LABEL
-        try
+        std::cout << __FILE__ << " " << __FUNCTION__ << std::endl;
+        if (from==from_ and to==to_)     //ADD LABEL
         {
-          std::optional<Node> node = graph->get_node(from);
-          if (node.has_value()) 
-          {
-              auto mat = graph->get_edge_RT_as_RTMat(graph->get_edge_RT(node.value(), to));
-              // draw RT values
-              for (auto i : iter::range(mat.nRows()))
-                  for (auto j : iter::range(mat.nCols()))
-                      if (item(i, j) == 0)
-                          this->setItem(i, j, new QTableWidgetItem(QString::number(mat(i, j))));
-                      else
-                          this->item(i, j)->setText(QString::number(mat(i, j)));
-              // draw translation values
-              auto trans = mat.getTr();
-              std::vector<QString> ts{"tx","ty","tz"};
-              std::vector<QString> rs{"rx","ry","rz"};
-              std::vector<float> rot{mat.getRxValue(), mat.getRyValue(), mat.getRzValue()};
-              for(auto i: iter::range(3))
-              {
-                if(this->item(4,i) == 0)
-                {
-                  auto green = new QTableWidgetItem(); green->setBackground(QBrush(QColor("lightGreen")));
-                  this->setItem(4,i, green);
+            try {
+                std::optional<Node> node = graph->get_node(from);
+                if (node.has_value()) {
+                    auto mat = graph->get_edge_RT_as_RTMat(graph->get_edge_RT(node.value(), to));
+                    // draw RT values
+                    for (auto i : iter::range(mat.nRows()))
+                        for (auto j : iter::range(mat.nCols()))
+                            if (item(i, j)==0)
+                                this->setItem(i, j, new QTableWidgetItem(QString::number(mat(i, j))));
+                            else
+                                this->item(i, j)->setText(QString::number(mat(i, j)));
+                    // draw translation values
+                    auto trans = mat.getTr();
+                    std::vector<QString> ts{"tx", "ty", "tz"};
+                    std::vector<QString> rs{"rx", "ry", "rz"};
+                    std::vector<float> rot{mat.getRxValue(), mat.getRyValue(), mat.getRzValue()};
+                    for (auto i: iter::range(3)) {
+                        if (this->item(4, i)==0) {
+                            auto green = new QTableWidgetItem();
+                            green->setBackground(QBrush(QColor("lightGreen")));
+                            this->setItem(4, i, green);
+                        }
+                        if (this->item(5, i)==nullptr)
+                            this->setItem(5, i, new QTableWidgetItem(ts[i]));
+                        else
+                            this->item(5, i)->setText(ts[i]);
+                        if (this->item(6, i)==nullptr)
+                            this->setItem(6, i, new QTableWidgetItem(QString::number(trans[i])));
+                        else
+                            this->item(6, i)->setText(QString::number(trans[i]));
+                        if (this->item(7, i)==nullptr)
+                            this->setItem(7, i, new QTableWidgetItem(rs[i]));
+                        else
+                            this->item(7, i)->setText(rs[i]);
+                        if (this->item(8, i)==0)
+                            this->setItem(8, i, new QTableWidgetItem(QString::number(rot[i])));
+                        else
+                            this->item(8, i)->setText(QString::number(rot[i]));
+                    }
                 }
-                if(this->item(5,i) == nullptr)
-                  this->setItem(5,i, new QTableWidgetItem(ts[i]));
-                else
-                    this->item(5,i)->setText(ts[i]);
-                if(this->item(6,i) == nullptr)
-                  this->setItem(6,i, new QTableWidgetItem(QString::number(trans[i])));
-                else
-                    this->item(6,i)->setText(QString::number(trans[i]));
-                if(this->item(7,i) == nullptr)
-                  this->setItem(7,i, new QTableWidgetItem(rs[i]));
-                else
-                  this->item(7,i)->setText(rs[i]);
-                if(this->item(8,i) == 0)
-                  this->setItem(8,i, new QTableWidgetItem(QString::number(rot[i])));
-                else
-                    this->item(8,i)->setText(QString::number(rot[i]));
-              }
-          }
+            }
+            catch (const std::exception& e) {
+                std::cout << "Exception: " << e.what() << " Cannot find attribute named RT in edge going " << from
+                          << " to " << to << std::endl;
+            }
         }
-        catch (const std::exception &e)
-        { std::cout << "Exception: " << e.what() << " Cannot find attribute named RT in edge going " << from << " to " << to << std::endl;}
         this->resize_widget();
     }
   private:
@@ -157,8 +159,10 @@ class DoRTStuff : public  QTableWidget
 
 
 
-class GraphEdge : public QGraphicsItem, public std::enable_shared_from_this<GraphEdge>
+class GraphEdge : public QObject, public QGraphicsLineItem, public std::enable_shared_from_this<GraphEdge>
 {
+	Q_OBJECT
+	Q_PROPERTY(int edge_pen READ _edge_pen WRITE set_edge_pen)
 	public:
     GraphEdge(GraphNode *sourceNode, GraphNode *destNode, const QString &edge_name);
     GraphNode *sourceNode() const;
@@ -166,6 +170,9 @@ class GraphEdge : public QGraphicsItem, public std::enable_shared_from_this<Grap
     void adjust(GraphNode* node= nullptr, QPointF pos=QPointF());
     int type() const override { return Type; }
     QString getTag() const { return tag;};
+    int _edge_pen();
+	void set_edge_pen(const int with);
+	void change_detected();
 
 	protected:
     QPainterPath shape() const override;
@@ -183,6 +190,9 @@ class GraphEdge : public QGraphicsItem, public std::enable_shared_from_this<Grap
 		QString tag;
 		QGraphicsTextItem *rt_values = nullptr;
     QTableWidget *label = nullptr;
+    int edge_width;
+	QPropertyAnimation* animation;
+
 };
 
 
