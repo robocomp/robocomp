@@ -491,7 +491,7 @@ void DSRtoOSGViewer::mouseReleaseEvent(QMouseEvent* event)
 void DSRtoOSGViewer::wheelEvent(QWheelEvent* event)
 {
     int delta = event->delta();
-    osgGA::GUIEventAdapter::ScrollingMotion motion = delta > 0 ?
+    osgGA::GUIEventAdapter::ScrollingMotion motion = delta < 0 ?
                 osgGA::GUIEventAdapter::SCROLL_UP : osgGA::GUIEventAdapter::SCROLL_DOWN;
     this->getEventQueue()->mouseScroll(motion);
 }
