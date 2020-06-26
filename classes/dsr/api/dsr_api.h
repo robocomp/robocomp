@@ -23,9 +23,9 @@
 #include <type_traits>
 
 #include "../core/crdt/delta-crdts.cc"
-#include "../core/fast_rtps/dsrparticipant.h"
-#include "../core/fast_rtps/dsrpublisher.h"
-#include "../core/fast_rtps/dsrsubscriber.h"
+#include "../core/rtps/dsrparticipant.h"
+#include "../core/rtps/dsrpublisher.h"
+#include "../core/rtps/dsrsubscriber.h"
 #include "../core/topics/DSRGraphPubSubTypes.h"
 //#include "vertex.h"
 #include "dsr_inner_api.h"
