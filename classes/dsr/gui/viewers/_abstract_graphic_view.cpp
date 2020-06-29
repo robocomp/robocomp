@@ -15,7 +15,7 @@ AbstractGraphicViewer::AbstractGraphicViewer(QWidget* parent) :  QGraphicsView(p
 	scene.setSceneRect(-2000,-2000, 4000, 4000);
 	this->setScene(&scene);
 	this->setCacheMode(QGraphicsView::CacheBackground);
-	this->setViewport(new QGLWidget(QGLFormat(QGL::SampleBuffers)));
+//	this->setViewport(new QGLWidget(QGLFormat(QGL::SampleBuffers)));
 	this->setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
 	this->setRenderHint(QPainter::Antialiasing);
 	this->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);

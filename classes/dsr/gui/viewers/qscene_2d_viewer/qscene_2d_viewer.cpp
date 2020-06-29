@@ -13,12 +13,12 @@ DSRtoGraphicsceneViewer::DSRtoGraphicsceneViewer(std::shared_ptr<CRDT::CRDTGraph
 	this->scale(1, -1);
     this->setScene(&scene);
     this->setCacheMode(QGraphicsView::CacheBackground);
-	this->setViewport(new QGLWidget(QGLFormat(QGL::SampleBuffers)));
+//	this->setViewport(new QGLWidget(QGLFormat(QGL::SampleBuffers)));
 	this->setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
 	this->setRenderHint(QPainter::Antialiasing);
 	this->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
 	this->fitInView(scene.sceneRect(), Qt::KeepAspectRatio );
-	
+
  	setMouseTracking(true);
     this->viewport()->setMouseTracking(true);
 //REMOVE WHEN NOT NEEDED
