@@ -44,12 +44,10 @@ class DoLaserStuff : public QGraphicsView
     DoLaserStuff(std::shared_ptr<CRDT::CRDTGraph> graph_, std::int32_t node_id_) : graph(graph_), node_id(node_id_)
     {
       std::cout << __FUNCTION__ << std::endl;
-      //setWindowFlags(Qt::Widget | Qt::FramelessWindowHint);
       resize(400,400);
       setWindowTitle("Laser");
-      scene.setSceneRect(-5000, -100, 10000, 5000);
+      scene.setSceneRect(-5000, -5000, 10000, 10000);
       setScene(&scene);
-      //setViewport(new QGLWidget(QGLFormat(QGL::SampleBuffers)));
       setRenderHint(QPainter::Antialiasing);
       fitInView(scene.sceneRect(), Qt::KeepAspectRatio );
       scale(1, -1);
@@ -90,10 +88,9 @@ class DoLaserStuff : public QGraphicsView
                 polig << QPointF(0,150);
                 scene.clear();
                 QPolygonF robot;
-                robot << QPointF(-200, 0) << QPointF(-100, 150) << QPointF(0, 200) << QPointF(100, 150)
-                      << QPointF(200, 0);
-                scene.addPolygon(robot, QPen(Qt::blue, 8), QBrush(Qt::blue));
+                robot << QPointF(-200, 200) << QPointF(-200, -200) << QPointF(200, -200) << QPointF(200, 200) << QPointF(0, 260);
                 scene.addPolygon(polig, QPen(QColor("LightPink"), 8), QBrush(QColor("LightPink")));
+                scene.addPolygon(robot, QPen(QColor("DarkGreen"), 8), QBrush(QColor("DarkGreen")));
             }
         }
       }
