@@ -60,7 +60,7 @@ void AbstractGraphicViewer::resizeEvent(QResizeEvent *e)
 
 void AbstractGraphicViewer::mousePressEvent(QMouseEvent *event)
 {
-	if (event->button() == Qt::RightButton)
+	if (event->button() == Qt::LeftButton)
 	{
 		_pan = true;
 		_panStartX = event->x();
@@ -74,12 +74,11 @@ void AbstractGraphicViewer::mousePressEvent(QMouseEvent *event)
 
 void AbstractGraphicViewer::mouseReleaseEvent(QMouseEvent *event)
 {
-	if (event->button() == Qt::RightButton)
+	if (event->button() == Qt::LeftButton)
 	{
 		_pan = false;
 		setCursor(Qt::ArrowCursor);
 		event->accept();
-		return;
 	}
 	QGraphicsView::mouseReleaseEvent(event);
 }
@@ -93,7 +92,7 @@ void AbstractGraphicViewer::mouseMoveEvent(QMouseEvent *event)
 		_panStartX = event->x();
 		_panStartY = event->y();
 		event->accept();
-		return;
+
 	}
 	QGraphicsView::mouseMoveEvent(event);
 }

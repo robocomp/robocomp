@@ -21,13 +21,14 @@ namespace DSR
 		Q_OBJECT
 		private:
 			qreal m_scaleX, m_scaleY;
-			bool _pan = false;
-			int _panStartX, _panStartY;
+
 		public:
 			AbstractGraphicViewer(QWidget* parent = 0);
 			QGraphicsScene scene;
 
 		protected:
+			bool _pan = false;
+			int _panStartX, _panStartY;
 			virtual void wheelEvent(QWheelEvent* event);
 			virtual void resizeEvent(QResizeEvent* e);
 			virtual void mouseMoveEvent(QMouseEvent *event);

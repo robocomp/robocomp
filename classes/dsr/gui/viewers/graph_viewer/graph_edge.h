@@ -81,7 +81,7 @@ class DoRTStuff : public  QTableWidget
   {
     const auto &columns = columnCount();
     for(auto &&index : iter::range(columns))
-        setColumnWidth(index, (width()-verticalHeader()->width()-4)/columns);
+        setColumnWidth(index, ((width()-verticalHeader()->width())/columns)-2);
   }
 
   public slots:
@@ -154,6 +154,7 @@ class DoRTStuff : public  QTableWidget
             height = height + this->rowHeight(row);
         this->setMinimumWidth(width);
         this->setMinimumHeight(height);
+        this->resize(width, height);
     }
 };
 
@@ -178,9 +179,8 @@ class GraphEdge : public QObject, public QGraphicsLineItem, public std::enable_s
     QPainterPath shape() const override;
     QRectF boundingRect() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
-		void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
-    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;  
     void keyPressEvent(QKeyEvent *event) override;
+	void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event) override;
 	
 	private:
 		GraphNode *source, *dest;  //CAMBIAR A FROM TO
@@ -192,6 +192,7 @@ class GraphEdge : public QObject, public QGraphicsLineItem, public std::enable_s
     QTableWidget *label = nullptr;
     int edge_width;
 	QPropertyAnimation* animation;
+	QPolygonF tag_polygon;
 
 };
 

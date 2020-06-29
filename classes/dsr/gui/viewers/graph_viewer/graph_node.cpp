@@ -189,7 +189,8 @@ QVariant GraphNode::itemChange(GraphicsItemChange change, const QVariant &value)
     return QGraphicsItem::itemChange(change, value);
 }
 
-void GraphNode::mousePressEvent(QGraphicsSceneMouseEvent *event)
+
+void GraphNode::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event)
 {
     //if (tag->text() != "") return; // Explota sin esto
 //    animation->start();
@@ -205,9 +206,8 @@ void GraphNode::mousePressEvent(QGraphicsSceneMouseEvent *event)
         else
             do_stuff = std::make_unique<DoTableStuff>(graph, id_in_graph);
     }
-    
     update();
-    QGraphicsItem::mousePressEvent(event);
+    QGraphicsEllipseItem::mouseDoubleClickEvent(event);
 }
 
 void GraphNode::change_detected()
@@ -237,19 +237,6 @@ void GraphNode::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
     QGraphicsItem::mouseReleaseEvent(event);
 }
 
-void GraphNode::keyPressEvent(QKeyEvent *event) 
-{
-    // if (event->key() == Qt::Key_Escape)
-    // {
-    //     if(label != nullptr)
-    //     {
-    //         label->close();
-    //         delete label; 
-    //         label = nullptr;
-    //     }
-    // }
-    QGraphicsItem::keyPressEvent(event);
-}
 
 QColor GraphNode::_node_color()
 {

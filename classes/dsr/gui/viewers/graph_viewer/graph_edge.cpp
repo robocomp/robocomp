@@ -81,10 +81,9 @@ void GraphEdge::adjust(GraphNode* node, QPointF pos)
         QPointF edgeOffset((line->dx() * 10) / length, (line->dy() * 10) / length);
         sourcePoint = line->p1() + edgeOffset;
         destPoint = line->p2() - edgeOffset;
-    } else 
-		{
-        sourcePoint = destPoint = line->p1();
-    }
+    } else {
+		sourcePoint = destPoint = line->p1();
+	}
     delete line;
 }
 
@@ -98,9 +97,7 @@ QRectF GraphEdge::boundingRect() const
 QPainterPath GraphEdge::shape() const
 {
     QPainterPath path;
-	qreal adjust = 10;
-	QLineF p(sourcePoint, destPoint);
-    path.addEllipse( p.center().x() - adjust, p.center().y() - adjust, 20, 20);
+    path.addPolygon(tag_polygon);
     return path;
 }
 
@@ -135,17 +132,25 @@ void GraphEdge::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 		{
 			//check if there is another parallel edge 
 			// Draw the line itself
+
 			painter->save();
 			painter->setPen(QPen(Qt::black, edge_width, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
 			double angle = std::atan2(-line.dy(), line.dx());
 			painter->translate(line.center().x(), line.center().y());
 			painter->rotate(-angle*180/M_PI);
-			
 			QRectF rectangle(-line.length()*0.5, -10, line.length(), 20);
 			painter->drawArc(rectangle, 0, 180*16);
-			
+
+
 			painter->setPen(QColor("coral"));
 			painter->drawText(rectangle.center(), tag);
+			auto fm = QFontMetrics(painter->font());
+			auto tag_rect = QRectF(-5,(-fm.height()-10)*0.5, fm.width(tag)+10, fm.height()+10);
+			tag_polygon = QTransform()
+					.translate(line.center().x(), line.center().y())
+					.rotate(-angle*180/M_PI)
+					.map(QPolygonF(tag_rect));
+
 				
 			// Draw the arrows
 			QPointF destArrowP1 = QPointF(line.length()*0.5,0) - QPointF(sin(M_PI / 2) * arrowSize, cos(M_PI / 2) * arrowSize);
@@ -153,29 +158,43 @@ void GraphEdge::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 			painter->setBrush(Qt::black);
 			painter->setPen(Qt::black);
 			painter->drawPolygon(QPolygonF() << QPointF(line.length()*0.5,0) << destArrowP1 << destArrowP2 );
+			painter->setPen(pen());
+
 			painter->restore();
+//			// DEBUG
+//			painter->setBrush(QBrush(Qt::red));
+//			painter->drawEllipse(line.p1(), 5, 5);
+//			painter->drawEllipse(line.p2(), 5, 5);
+//			painter->drawPolygon(tag_polygon);
+//			painter->setBrush(QBrush(Qt::black));
+//			if (true) {
+//				painter->setBrush(QBrush(QColor(128, 128, 255, 128)));
+//				painter->setPen(QPen(Qt::black, 2, Qt::DashLine));
+//				painter->drawPath(this->shape());
+//			}
 		}
 	
 }
 
-void GraphEdge::mousePressEvent(QGraphicsSceneMouseEvent *event)
+
+void GraphEdge::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event)
 {
 	std::cout << __FILE__ << " " << __FUNCTION__ << "Edge from " << source->id_in_graph << " to " << dest->id_in_graph <<" tag: " << tag.toStdString() << std::endl;
- 	static std::unique_ptr<QWidget> do_stuff;
-    const auto graph = source->getGraphViewer()->getGraph();
-    if( event->button()== Qt::RightButton)
-    {
-        if(tag == "RT")
-            do_stuff = std::make_unique<DoRTStuff>(graph, source->id_in_graph, dest->id_in_graph, tag.toStdString());
-    }
-    animation->start();
+	static std::unique_ptr<QWidget> do_stuff;
+	const auto graph = source->getGraphViewer()->getGraph();
+	if( event->button()== Qt::RightButton)
+	{
+		if(tag == "RT")
+			do_stuff = std::make_unique<DoRTStuff>(graph, source->id_in_graph, dest->id_in_graph, tag.toStdString());
+	}
+	animation->start();
 	update();
-    QGraphicsItem::mousePressEvent(event);
+	QGraphicsLineItem::mouseDoubleClickEvent(event);
 }
 
-void GraphEdge::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
-{
-}
+
+
+
 
 void GraphEdge::keyPressEvent(QKeyEvent *event) 
 {

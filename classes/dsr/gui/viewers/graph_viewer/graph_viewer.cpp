@@ -274,16 +274,14 @@ void DSRtoGraphViewer::hide_show_node_SLOT(int id, bool visible)
 		gedge->setVisible(visible);
 }
 
-//  void GraphViewer::NodeAttrsChangedSLOT(const std::int32_t &id, const DSR::Attribs &attribs)
-//  {
-// 	try 
-// 	{
-// 		std::cout << __FUNCTION__ << id << std::endl;
-// 		float posx = std::get<float>(attribs.at("pos_x"));
-// 		float posy = std::get<float>(attribs.at("pos_y"));
-// 		auto &gnode = gmap.at(id);
-// 		if(posx != gnode->x() or posy != gnode->y())
-// 			gnode->setPos(posx, posy);
-// 	}
-// 	catch(const std::exception &e){ std::cout << "Exception: " << e.what() << " pos_x and pos_y attribs not found in node "  << id << std::endl;};
-//  }
+void DSRtoGraphViewer::mousePressEvent(QMouseEvent *event)
+{
+	auto item = this->scene.itemAt(mapToScene(event->pos()), QTransform());
+	if(item) {
+		QGraphicsView::mousePressEvent(event);
+	}
+	else {
+		AbstractGraphicViewer::mousePressEvent(event);
+	}
+}
+

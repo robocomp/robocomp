@@ -68,7 +68,8 @@ namespace DSR
 
     	protected:
 			virtual void timerEvent(QTimerEvent *event);
-//			virtual void mouseReleaseEvent(QMouseEvent *event);
+			virtual void mousePressEvent(QMouseEvent *event);
+
 
     };
 };
