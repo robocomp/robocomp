@@ -51,9 +51,13 @@ namespace DSR
 
         private:
             std::shared_ptr<CRDT::CRDTGraph> G;
-            void createGraph();
             std::map<std::string, QTreeWidgetItem*> types_map;
 			std::map<int, QTreeWidgetItem*> tree_map;
+			std::map<int, std::map<QString, QTreeWidgetItem*>> attributes_map;
+			void createGraph();
+			void create_attribute_widgets(QTreeWidgetItem* parent, Node* node);
+			void update_attribute_widgets(Node* node);
+
         
 		signals:
 			void node_check_state_changed(int newValue, int id, const std::string &type,  QTreeWidgetItem * item);
