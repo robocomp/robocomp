@@ -12,6 +12,7 @@
 #include <QResizeEvent>
 #include <QGLWidget>
 #include <QScrollBar>
+#include <QApplication>
 
 
 namespace DSR
@@ -34,6 +35,7 @@ namespace DSR
 			virtual void mouseMoveEvent(QMouseEvent *event);
 			virtual void mousePressEvent(QMouseEvent *event);
 			virtual void mouseReleaseEvent(QMouseEvent *event);
+			virtual void showEvent(QShowEvent *event);
 	};
 };
 

@@ -96,3 +96,17 @@ void AbstractGraphicViewer::mouseMoveEvent(QMouseEvent *event)
 	}
 	QGraphicsView::mouseMoveEvent(event);
 }
+
+void AbstractGraphicViewer::showEvent(QShowEvent* event)
+{
+	QGraphicsView::showEvent(event);
+	auto adjusted = scene.itemsBoundingRect().adjusted(-100,-100,100,100);
+	scene.setSceneRect(adjusted);
+	// FitInView is called two times because of this bug: https://bugreports.qt.io/browse/QTBUG-1047
+	bool updateState = updatesEnabled();
+	setUpdatesEnabled(false);
+	fitInView(adjusted, Qt::KeepAspectRatio);
+	QApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
+	fitInView(adjusted, Qt::KeepAspectRatio);
+	setUpdatesEnabled(updateState);
+}
