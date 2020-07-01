@@ -180,7 +180,7 @@ namespace CRDT
         std::vector<Node> get_nodes_by_type(const std::string& type);
         std::optional<std::string> get_name_from_id(std::int32_t id);  // caché
         std::optional<int> get_id_from_name(const std::string &name);  // caché
-        std::optional<std::int32_t> get_node_level(Node& n);
+        std::optional<std::int32_t> get_node_level(const Node& n);
         [[deprecated ("You should be using \"get_parent_id\" or  \"get_parent_node\"")]]
         std::optional<std::int32_t> get_node_parent(const Node& n);
         std::optional<std::int32_t> get_parent_id(const Node& n);

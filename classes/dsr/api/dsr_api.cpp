@@ -654,7 +654,7 @@ std::optional<Node> CRDTGraph::get_(int id) {
     return {};
 }
 
-std::optional<std::int32_t> CRDTGraph::get_node_level(Node& n)
+std::optional<std::int32_t> CRDTGraph::get_node_level(const Node& n)
 {
     return get_attrib_by_name<std::int32_t>(n, "level");
 }

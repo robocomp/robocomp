@@ -35,17 +35,10 @@ DSRtoOSGViewer::DSRtoOSGViewer(std::shared_ptr<CRDT::CRDTGraph> G_, float scaleX
     _mViewer->setThreadingModel(osgViewer::Viewer::SingleThreaded);
 //    _mViewer->addEventHandler(new osgGA::GUIEventHandler());
 
-
-
 	root = createGraph();
-
 	analyse_osg_graph(root.get());
-	qDebug()<< "End analyse";
-
-	analyse_osg_graph(root.get());
-
+	qDebug() << __FUNCTION__ << "End analyse";
 	_mViewer->setSceneData(root.get());
-
     connect(G.get(), &CRDT::CRDTGraph::update_node_signal, [this](auto id, auto type)
         { try
           {
@@ -104,7 +97,7 @@ void DSRtoOSGViewer::traverse_RT_tree(const Node& node)
 {
     for(auto &edge: G->get_edges_by_type(node, "RT"))
 	{
-        std::cout << __FUNCTION__ << " edges " << edge.from() << " " << edge.to() << " " << edge.type() << std::endl;
+        //std::cout << __FUNCTION__ << " edges " << edge.from() << " " << edge.to() << " " << edge.type() << std::endl;
         auto child = G->get_node(edge.to());
         if(child.has_value())
         {
@@ -186,7 +179,7 @@ void DSRtoOSGViewer::add_or_assign_node_slot(const Node &node)
         if (not parent.has_value())
             throw std::runtime_error("Non existing node: " + std::to_string(parent_id.value()));
         auto type = node.type();
-        std::cout << "      " << node.name() << " " << node.id() << " " << node.type() << std::endl;
+        std::cout << __FUNCTION__ << "      " << node.name() << " " << node.id() << " " << node.type() << std::endl;
         if( type == "plane" )
             add_or_assign_box(node, parent.value());
         else if( type == "mesh")
@@ -205,13 +198,13 @@ void DSRtoOSGViewer::add_or_assign_node_slot(const Node &node)
 
 void DSRtoOSGViewer::add_or_assign_edge_slot(const Node &from, const Node& to)
 {
-    std::cout << __FUNCTION__ << "from " << from.id() << " to " << to.id() << std::endl;
+    std::cout << __FUNCTION__ << " from " << from.id() << " to " << to.id() << std::endl;
     auto edge = G->get_edge(from.id(), to.id(), "RT");
     if (edge.has_value())
     {
         //auto edge = G->get_edge_RT(from, to.id());
         auto rtmat = G->get_edge_RT_as_RTMat(edge.value());
-        rtmat.print("rtmat");
+        rtmat.print("add_or_assign_edge_slot -> rtmat");
         auto mat = QMatToOSGMat4(rtmat);
 
         // Insert
@@ -226,7 +219,7 @@ void DSRtoOSGViewer::add_or_assign_edge_slot(const Node &from, const Node& to)
                 (*res).second->addChild(transform);
                 osg_map.insert_or_assign(std::make_tuple(from.id(), to.id()), transform);
             }
-            qDebug() << __FUNCTION__ << "Added transform, node " << to.id() << "parent " << from.id();
+            qDebug() << __FUNCTION__ << " Added transform, node " << to.id() << "parent " << from.id();
         } else
             throw std::runtime_error("Exception: parent " + from.name() + " not found for node " + to.name());
     }
@@ -261,13 +254,13 @@ void DSRtoOSGViewer::add_or_assign_box(const Node &node, const Node& parent)
     try
     {
         auto texture = G->get_attrib_by_name<std::string>(node, "texture");
-        if(texture.has_value()) std::cout << texture.value() << std::endl;
+        //if(texture.has_value()) std::cout << texture.value() << std::endl;
         auto height = G->get_attrib_by_name<std::int32_t>(node, "height");
-        if(height.has_value()) std::cout << height.value() << std::endl;
+        //if(height.has_value()) std::cout << height.value() << std::endl;
         auto width = G->get_attrib_by_name<std::int32_t>(node, "width");
-        if(width.has_value()) std::cout << height.value() << std::endl;
+        //if(width.has_value()) std::cout << height.value() << std::endl;
         auto depth = G->get_attrib_by_name<std::int32_t>(node, "depth");
-        if(depth.has_value()) std::cout << depth.value() << std::endl;
+        //if(depth.has_value()) std::cout << depth.value() << std::endl;
    
         // Check valid ranges
         auto textu = texture.value_or("#000000");
@@ -342,17 +335,17 @@ void DSRtoOSGViewer::add_or_assign_box(const Node &node, const Node& parent)
 
 void  DSRtoOSGViewer::add_or_assign_mesh(const Node &node, const Node& parent)
 {   
-    std::cout << __FUNCTION__ << "node " << node.id() << parent.id() << std::endl;
+    std::cout << __FUNCTION__ << " node " << node.id() << parent.id() << std::endl;
     auto color = G->get_attrib_by_name<std::string>(node, "color");
-    if(color.has_value()) std::cout << color.value() << std::endl;
+    //if(color.has_value()) std::cout << color.value() << std::endl;
     auto filename = G->get_attrib_by_name<std::string>(node, "path");
-    if(filename.has_value()) std::cout << filename.value() << std::endl;
+    //if(filename.has_value()) std::cout << filename.value() << std::endl;
     auto scalex = G->get_attrib_by_name<std::int32_t>(node, "scalex");
-    if(scalex.has_value()) std::cout << scalex.value() << std::endl;
+    //if(scalex.has_value()) std::cout << scalex.value() << std::endl;
     auto scaley = G->get_attrib_by_name<std::int32_t>(node, "scaley");
-    if(scaley.has_value()) std::cout << scaley.value() << std::endl;
+    //if(scaley.has_value()) std::cout << scaley.value() << std::endl;
     auto scalez = G->get_attrib_by_name<std::int32_t>(node, "scalez");
-    if(scalez.has_value()) std::cout << scalez.value() << std::endl;
+    //if(scalez.has_value()) std::cout << scalez.value() << std::endl;
     
     // Check valid ranges
     
@@ -517,7 +510,7 @@ void DSRtoOSGViewer::analyse_osg_graph(osg::Node *nd)
     osg::Geode *geode = dynamic_cast<osg::Geode *> (nd);
 	if (geode) 
     { // analyse the geode. If it isnt a geode the dynamic cast gives NULL.
-        osg::notify(osg::WARN) << " Geode "<<  geode->getName() <<std::endl;
+        //osg::notify(osg::WARN) << " Geode "<<  geode->getName() <<std::endl;
 	    for (unsigned int i=0; i<geode->getNumDrawables(); i++) 
         {
 		    // osg::Drawable *drawable=geode->getDrawable(i);
@@ -535,7 +528,7 @@ void DSRtoOSGViewer::analyse_osg_graph(osg::Node *nd)
 		osg::Group *gp = dynamic_cast<osg::Group *> (nd);
 		if (gp) 
         {
-			osg::notify(osg::WARN) << "Group "<<  gp->getName() <<std::endl;
+			//osg::notify(osg::WARN) << "Group "<<  gp->getName() <<std::endl;
 			for (unsigned int ic=0; ic<gp->getNumChildren(); ic++) {
 				analyse_osg_graph(gp->getChild(ic));
 			}
