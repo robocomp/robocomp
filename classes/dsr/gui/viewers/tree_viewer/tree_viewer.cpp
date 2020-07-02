@@ -8,7 +8,7 @@
 
 using namespace DSR ;
 
-DSRtoTreeViewer::DSRtoTreeViewer(std::shared_ptr<CRDT::CRDTGraph> G_, QWidget *parent) :  QTreeWidget(parent)
+DSRtoTreeViewer::DSRtoTreeViewer(std::shared_ptr<DSR::DSRGraph> G_, QWidget *parent) :  QTreeWidget(parent)
 {
     qRegisterMetaType<std::int32_t>("std::int32_t");
     qRegisterMetaType<std::string>("std::string");
@@ -20,7 +20,7 @@ DSRtoTreeViewer::DSRtoTreeViewer(std::shared_ptr<CRDT::CRDTGraph> G_, QWidget *p
 //	setHeaderHidden(true);
     createGraph();
 
-    connect(G.get(), &CRDT::CRDTGraph::update_node_signal, this,
+    connect(G.get(), &DSR::DSRGraph::update_node_signal, this,
 			[=]( std::int32_t id, std::string type ) {DSRtoTreeViewer::add_or_assign_node_SLOT(id, type);});
     setColumnCount(2);
 	QStringList horzHeaders;
@@ -28,9 +28,9 @@ DSRtoTreeViewer::DSRtoTreeViewer(std::shared_ptr<CRDT::CRDTGraph> G_, QWidget *p
 
 	this->setHeaderLabels( horzHeaders );
 	this->header()->setDefaultSectionSize(250);
-	//connect(G.get(), &CRDT::CRDTGraph::update_edge_signal, this, &DSRtoGraphViewer::addEdgeSLOT);
-//	connect(G.get(), &CRDT::CRDTGraph::del_edge_signal, this, &DSRtoTreeViewer::);
-	connect(G.get(), &CRDT::CRDTGraph::del_node_signal, this, &DSRtoTreeViewer::del_node_SLOT);
+	//connect(G.get(), &DSR::DSRGraph::update_edge_signal, this, &DSRtoGraphViewer::addEdgeSLOT);
+//	connect(G.get(), &DSR::DSRGraph::del_edge_signal, this, &DSRtoTreeViewer::);
+	connect(G.get(), &DSR::DSRGraph::del_node_signal, this, &DSRtoTreeViewer::del_node_SLOT);
 }
 
 void DSRtoTreeViewer::createGraph()

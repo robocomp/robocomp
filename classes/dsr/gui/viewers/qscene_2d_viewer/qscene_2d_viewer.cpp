@@ -2,7 +2,7 @@
 
 using namespace DSR ;
 
-DSRtoGraphicsceneViewer::DSRtoGraphicsceneViewer(std::shared_ptr<CRDT::CRDTGraph> G_, QWidget *parent) : AbstractGraphicViewer(parent)
+DSRtoGraphicsceneViewer::DSRtoGraphicsceneViewer(std::shared_ptr<DSR::DSRGraph> G_, QWidget *parent) : AbstractGraphicViewer(parent)
 {
     qDebug()<<"***************INIT DSRtoGraphicsceneViewer********************";
     G = G_;
@@ -24,11 +24,11 @@ DSRtoGraphicsceneViewer::DSRtoGraphicsceneViewer(std::shared_ptr<CRDT::CRDTGraph
     create_graph();
 
     //update signals
-    connect(G.get(), &CRDT::CRDTGraph::update_node_signal, this, &DSRtoGraphicsceneViewer::add_or_assign_node_slot);
-	connect(G.get(), &CRDT::CRDTGraph::update_edge_signal, this, &DSRtoGraphicsceneViewer::add_or_assign_edge_slot);
+    connect(G.get(), &DSR::DSRGraph::update_node_signal, this, &DSRtoGraphicsceneViewer::add_or_assign_node_slot);
+	connect(G.get(), &DSR::DSRGraph::update_edge_signal, this, &DSRtoGraphicsceneViewer::add_or_assign_edge_slot);
 
-	connect(G.get(), &CRDT::CRDTGraph::del_edge_signal, this, &DSRtoGraphicsceneViewer::del_edge_slot);
-	connect(G.get(), &CRDT::CRDTGraph::del_node_signal, this, &DSRtoGraphicsceneViewer::del_node_slot);
+	connect(G.get(), &DSR::DSRGraph::del_edge_signal, this, &DSRtoGraphicsceneViewer::del_edge_slot);
+	connect(G.get(), &DSR::DSRGraph::del_node_signal, this, &DSRtoGraphicsceneViewer::del_node_slot);
 }
 
 void DSRtoGraphicsceneViewer::create_graph()

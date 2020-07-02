@@ -2,10 +2,10 @@
 #include "dsr_inner_api.h"
 #include "dsr_api.h"
 
-using namespace CRDT;
+using namespace DSR;
 
-//InnerAPI::InnerAPI(std::shared_ptr<CRDT::CRDTGraph> _G)
-InnerAPI::InnerAPI(CRDT::CRDTGraph *G_)
+//InnerAPI::InnerAPI(std::shared_ptr<DSR::DSRGraph> _G)
+InnerAPI::InnerAPI(DSR::DSRGraph *G_)
 {
     G = G_;
 }
