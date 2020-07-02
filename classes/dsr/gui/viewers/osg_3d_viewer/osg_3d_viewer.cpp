@@ -376,9 +376,39 @@ void  DSRtoOSGViewer::add_or_assign_mesh(const Node &node, const Node& parent)
     }
     else
         throw std::runtime_error("Transform: OSG parent not found for " + node.name() + "-" +std::to_string(node.id()));
-
 }
 
+void DSRtoOSGViewer::add_or_assign_person(const Node& n, const Node& parent)
+{	
+	// Geometric part
+	std::map<std::string, std::string> edgeRTAtrs;
+	edgeRTAtrs["tx"] = std::to_string(pose.x);
+	edgeRTAtrs["ty"] = "0";
+	edgeRTAtrs["tz"] = std::to_string(pose.z);
+	edgeRTAtrs["rx"] = "0";
+	edgeRTAtrs["ry"] = std::to_string(pose.ry);
+	edgeRTAtrs["rz"] = "0";
+	newModel->addEdgeByIdentifiers(100, person->identifier, "RT", edgeRTAtrs);
+
+	printf("personMesh %d\n", personMesh->identifier);
+	personMesh->setAttribute("collidable", "false");
+	personMesh->setAttribute("imName", imName + "_Mesh");
+	personMesh->setAttribute("imType", "mesh");
+	std::string meshPath = "/home/robocomp/robocomp/components/robocomp-viriato/files/osgModels/" + mesh ;
+	personMesh->setAttribute("path", meshPath);
+	personMesh->setAttribute("render", "NormalRendering");
+	personMesh->setAttribute("scalex", scale);
+	personMesh->setAttribute("scaley", scale);
+	personMesh->setAttribute("scalez", scale);
+
+	edgeRTAtrs["tx"] = "0";
+	edgeRTAtrs["ty"] = translationy;
+	edgeRTAtrs["tz"] = "0";
+	edgeRTAtrs["rx"] = "1.570796326794";
+	edgeRTAtrs["ry"] = "0";
+	edgeRTAtrs["rz"] = rotationz;
+	newModel->addEdge(person, personMesh, "RT", edgeRTAtrs);
+}
 /////////////////////////////////////////////////////////////
 //////// Auxiliary methods
 /////////////////////////////////////////////////////////////

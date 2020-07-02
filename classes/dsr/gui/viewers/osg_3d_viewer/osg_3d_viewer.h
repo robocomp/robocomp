@@ -94,6 +94,7 @@ namespace DSR
             void add_or_assign_box(const Node &node, const Node& parent);
             void add_or_assign_mesh(const Node &node, const Node& parent);
             void add_or_assign_transform(const Node &from, const Node& to);
+            void add_or_assign_person(const Node& n, const Node& parent);
 
             void traverse_RT_tree(const Node& node);
             void analyse_osg_graph(osg::Node *nd);
