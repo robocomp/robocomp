@@ -39,12 +39,8 @@ DSRtoOSGViewer::DSRtoOSGViewer(std::shared_ptr<DSR::DSRGraph> G_, float scaleX, 
 	analyse_osg_graph(root.get());
 	qDebug() << __FUNCTION__ << "End analyse";
 	_mViewer->setSceneData(root.get());
-<<<<<<< HEAD
-    connect(G.get(), &CRDT::CRDTGraph::update_node_signal, [this](auto id, auto type)
-=======
 
     connect(G.get(), &DSR::DSRGraph::update_node_signal, [this](auto id, auto type)
->>>>>>> 17cdf25dd963e6a51109714ea2c510342fb446dd
         { try
           {
             auto node = G->get_node(id);
