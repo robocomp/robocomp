@@ -41,7 +41,7 @@ class DoLaserStuff : public QGraphicsView
 {
   Q_OBJECT
   public:
-    DoLaserStuff(std::shared_ptr<CRDT::CRDTGraph> graph_, std::int32_t node_id_) : graph(graph_), node_id(node_id_)
+    DoLaserStuff(std::shared_ptr<DSR::DSRGraph> graph_, std::int32_t node_id_) : graph(graph_), node_id(node_id_)
     {
       std::cout << __FUNCTION__ << std::endl;
       resize(400,400);
@@ -52,8 +52,8 @@ class DoLaserStuff : public QGraphicsView
       fitInView(scene.sceneRect(), Qt::KeepAspectRatio );
       scale(1, -1);
       //drawLaserSLOT(node_id_, );
-      //QObject::connect(graph.get(), &CRDT::CRDTGraph::update_attrs_signal, this, &DoLaserStuff::drawLaserSLOT);
-      QObject::connect(graph.get(), &CRDT::CRDTGraph::update_node_signal, this, &DoLaserStuff::drawLaserSLOT);
+      //QObject::connect(graph.get(), &DSR::DSRGraph::update_attrs_signal, this, &DoLaserStuff::drawLaserSLOT);
+      QObject::connect(graph.get(), &DSR::DSRGraph::update_node_signal, this, &DoLaserStuff::drawLaserSLOT);
       show();
     };
 
@@ -98,14 +98,14 @@ class DoLaserStuff : public QGraphicsView
     };
   private:
     QGraphicsScene scene;
-    std::shared_ptr<CRDT::CRDTGraph> graph;
+    std::shared_ptr<DSR::DSRGraph> graph;
     std::int32_t node_id;
 };
 
 class DoRGBDStuff : public  QLabel
 {
   public:
-    DoRGBDStuff(std::shared_ptr<CRDT::CRDTGraph> graph, CRDT::IDType node_id_)
+    DoRGBDStuff(std::shared_ptr<DSR::DSRGraph> graph, DSR::IDType node_id_)
     {
       auto node_id = node_id_;
       //setWindowFlags(Qt::Widget | Qt::FramelessWindowHint);
@@ -113,7 +113,7 @@ class DoRGBDStuff : public  QLabel
       resize(640,480);
       setWindowTitle("RGBD");
       setParent(this);
-      QObject::connect(graph.get(), &CRDT::CRDTGraph::update_attrs_signal, [&](const std::int32_t &id, const std::map<string,Attrib> &attrs){
+      QObject::connect(graph.get(), &DSR::DSRGraph::update_attrs_signal, [&](const std::int32_t &id, const std::map<string,Attrib> &attrs){
                         std::optional<Node> n = graph->get_node(node_id);
                         //Esto no hace nada
                         if (n.has_value())
@@ -130,7 +130,7 @@ class DoTableStuff : public  QTableWidget
 {
   Q_OBJECT
   public:
-    DoTableStuff(std::shared_ptr<CRDT::CRDTGraph> graph_, CRDT::IDType node_id_) : graph(graph_), node_id(node_id_)
+    DoTableStuff(std::shared_ptr<DSR::DSRGraph> graph_, DSR::IDType node_id_) : graph(graph_), node_id(node_id_)
     {
       qRegisterMetaType<std::int32_t>("std::int32_t");
       qRegisterMetaType<std::string>("std::string");
@@ -172,7 +172,7 @@ class DoTableStuff : public  QTableWidget
           }
           horizontalHeader()->setStretchLastSection(true);
           resize_widget();
-          QObject::connect(graph.get(), &CRDT::CRDTGraph::update_attrs_signal, this, &DoTableStuff::drawSLOT);
+          QObject::connect(graph.get(), &DSR::DSRGraph::update_attrs_signal, this, &DoTableStuff::drawSLOT);
         
           show();
       }
@@ -218,7 +218,7 @@ class DoTableStuff : public  QTableWidget
     }
 
   private:
-    std::shared_ptr<CRDT::CRDTGraph> graph;
+    std::shared_ptr<DSR::DSRGraph> graph;
     std::int32_t node_id;
     void resize_widget()
     {

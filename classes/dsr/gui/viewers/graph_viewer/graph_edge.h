@@ -34,11 +34,11 @@ class DoRTStuff : public  QTableWidget
 {
   Q_OBJECT
   public:
-    DoRTStuff(std::shared_ptr<CRDT::CRDTGraph> graph_, const CRDT::IDType &from_, const CRDT::IDType &to_, const std::string &label_) :
+    DoRTStuff(std::shared_ptr<DSR::DSRGraph> graph_, const DSR::IDType &from_, const DSR::IDType &to_, const std::string &label_) :
         graph(graph_), from(from_), to(to_), label(label_)
     {
-      qRegisterMetaType<CRDT::IDType>("DSR::IDType");
-//      qRegisterMetaType<CRDT::AttribsMap>("DSR::Attribs");
+      qRegisterMetaType<DSR::IDType>("DSR::IDType");
+//      qRegisterMetaType<DSR::AttribsMap>("DSR::Attribs");
 
       std::optional<Node> n = graph->get_node(from);
       std::optional<Node> n2 = graph->get_node(to);
@@ -63,7 +63,7 @@ class DoRTStuff : public  QTableWidget
             height = height + this->rowHeight(row);
           this->setMinimumWidth(width);
           this->setMinimumHeight(height);
-          QObject::connect(graph.get(), &CRDT::CRDTGraph::update_edge_signal, this, &DoRTStuff::drawSLOT);
+          QObject::connect(graph.get(), &DSR::DSRGraph::update_edge_signal, this, &DoRTStuff::drawSLOT);
           drawSLOT(from, to);
           show();
           std::cout << __FILE__ << " " << __FUNCTION__ << " End ofDoRTStuff Constructor " << std::endl;
@@ -139,7 +139,7 @@ class DoRTStuff : public  QTableWidget
         this->resize_widget();
     }
   private:
-    std::shared_ptr<CRDT::CRDTGraph> graph;
+    std::shared_ptr<DSR::DSRGraph> graph;
     int from, to;
     std::string label;
     void resize_widget()

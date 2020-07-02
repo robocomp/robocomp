@@ -44,14 +44,14 @@ namespace DSR
             const float ROBOT_LENGTH = 400;
             std::vector<std::vector<float>> cube_positions = {{0.5,0.5,0.5}, {0.5, 0.5,-0.5}, {0.5, -0.5,0.5}, {0.5, -0.5, -0.5}, {-0.5, 0.5, 0.5}, {-0.5, 0.5, -0.5}, {-0.5, -0.5, 0.5}, {-0.5, -0.5, -0.5} };        
             std::list<std::string> no_drawable_childs = {"omnirobot", "differentialrobot", "person"};
-            std::shared_ptr<CRDT::CRDTGraph> G;
-            std::unique_ptr<CRDT::InnerAPI> innermodel;
+            std::shared_ptr<DSR::DSRGraph> G;
+            std::unique_ptr<DSR::InnerAPI> innermodel;
 
             std::map<int, QGraphicsItem*> scene_map;
             std::map<std::string,std::vector<int>> edge_map;
             std::set<int> ignore_nodes;
         public:
-            DSRtoGraphicsceneViewer(std::shared_ptr<CRDT::CRDTGraph> G_, QWidget *parent=0);
+            DSRtoGraphicsceneViewer(std::shared_ptr<DSR::DSRGraph> G_, QWidget *parent=0);
 
 
         public slots:   // From G

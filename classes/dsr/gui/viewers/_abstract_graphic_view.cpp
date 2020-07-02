@@ -15,7 +15,7 @@ AbstractGraphicViewer::AbstractGraphicViewer(QWidget* parent) :  QGraphicsView(p
 	scene.setSceneRect(-2000,-2000, 4000, 4000);
 	this->setScene(&scene);
 	this->setCacheMode(QGraphicsView::CacheBackground);
-	this->setViewport(new QGLWidget(QGLFormat(QGL::SampleBuffers)));
+//	this->setViewport(new QGLWidget(QGLFormat(QGL::SampleBuffers)));
 	this->setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
 	this->setRenderHint(QPainter::Antialiasing);
 	this->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
@@ -95,4 +95,18 @@ void AbstractGraphicViewer::mouseMoveEvent(QMouseEvent *event)
 
 	}
 	QGraphicsView::mouseMoveEvent(event);
+}
+
+void AbstractGraphicViewer::showEvent(QShowEvent* event)
+{
+	QGraphicsView::showEvent(event);
+	auto adjusted = scene.itemsBoundingRect().adjusted(-100,-100,100,100);
+	scene.setSceneRect(adjusted);
+	// FitInView is called two times because of this bug: https://bugreports.qt.io/browse/QTBUG-1047
+	bool updateState = updatesEnabled();
+	setUpdatesEnabled(false);
+	fitInView(adjusted, Qt::KeepAspectRatio);
+	QApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
+	fitInView(adjusted, Qt::KeepAspectRatio);
+	setUpdatesEnabled(updateState);
 }

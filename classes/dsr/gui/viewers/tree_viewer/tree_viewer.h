@@ -37,8 +37,8 @@ namespace DSR
     {
         Q_OBJECT
         public:
-            DSRtoTreeViewer(std::shared_ptr<CRDT::CRDTGraph> G_, QWidget *parent=0);
-            std::shared_ptr<CRDT::CRDTGraph> getGraph()  			  	{return G;};
+            DSRtoTreeViewer(std::shared_ptr<DSR::DSRGraph> G_, QWidget *parent=0);
+            std::shared_ptr<DSR::DSRGraph> getGraph()  			  	{return G;};
 		     
         public slots:   // From G
             void add_or_assign_node_SLOT(const std::int32_t id, const std::string &type, const std::string &name = "");
@@ -50,10 +50,14 @@ namespace DSR
 			void category_change_SLOT(int value,  QTreeWidgetItem* parent= nullptr);
 
         private:
-            std::shared_ptr<CRDT::CRDTGraph> G;
-            void createGraph();
+            std::shared_ptr<DSR::DSRGraph> G;
             std::map<std::string, QTreeWidgetItem*> types_map;
 			std::map<int, QTreeWidgetItem*> tree_map;
+			std::map<int, std::map<QString, QTreeWidgetItem*>> attributes_map;
+			void createGraph();
+			void create_attribute_widgets(QTreeWidgetItem* parent, Node* node);
+			void update_attribute_widgets(Node* node);
+
         
 		signals:
 			void node_check_state_changed(int newValue, int id, const std::string &type,  QTreeWidgetItem * item);

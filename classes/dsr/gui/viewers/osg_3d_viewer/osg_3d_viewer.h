@@ -49,7 +49,7 @@ namespace DSR
     class DSRtoOSGViewer : public QOpenGLWidget
     {
         public:
-            DSRtoOSGViewer(std::shared_ptr<CRDT::CRDTGraph> G_, float scaleX, float scaleY, QWidget *parent=0);
+            DSRtoOSGViewer(std::shared_ptr<DSR::DSRGraph> G_, float scaleX, float scaleY, QWidget *parent=0);
 			~DSRtoOSGViewer();
         
         protected:  
@@ -65,7 +65,7 @@ namespace DSR
             void initializeGL() override;
 
         private:
-            std::shared_ptr<CRDT::CRDTGraph> G;
+            std::shared_ptr<DSR::DSRGraph> G;
             osgGA::EventQueue* getEventQueue() const ;
             osg::ref_ptr<osgViewer::GraphicsWindowEmbedded> _mGraphicsWindow;
             osg::ref_ptr<osgViewer::Viewer> _mViewer;

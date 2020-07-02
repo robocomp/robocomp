@@ -9,7 +9,7 @@
  
 using namespace DSR;
 
-DSRtoOSGViewer::DSRtoOSGViewer(std::shared_ptr<CRDT::CRDTGraph> G_, float scaleX, float scaleY, QWidget *parent) : 
+DSRtoOSGViewer::DSRtoOSGViewer(std::shared_ptr<DSR::DSRGraph> G_, float scaleX, float scaleY, QWidget *parent) :
                         QOpenGLWidget(parent), 
                         _mGraphicsWindow(new osgViewer::GraphicsWindowEmbedded(this->x(), this->y(), this->width(), this->height())), 
                         _mViewer(new osgViewer::Viewer), m_scaleX(scaleX), m_scaleY(scaleY)
@@ -39,7 +39,12 @@ DSRtoOSGViewer::DSRtoOSGViewer(std::shared_ptr<CRDT::CRDTGraph> G_, float scaleX
 	analyse_osg_graph(root.get());
 	qDebug() << __FUNCTION__ << "End analyse";
 	_mViewer->setSceneData(root.get());
+<<<<<<< HEAD
     connect(G.get(), &CRDT::CRDTGraph::update_node_signal, [this](auto id, auto type)
+=======
+
+    connect(G.get(), &DSR::DSRGraph::update_node_signal, [this](auto id, auto type)
+>>>>>>> 17cdf25dd963e6a51109714ea2c510342fb446dd
         { try
           {
             auto node = G->get_node(id);
@@ -48,15 +53,15 @@ DSRtoOSGViewer::DSRtoOSGViewer(std::shared_ptr<CRDT::CRDTGraph> G_, float scaleX
           }
           catch(const std::exception &e){ std::cout << e.what() << std::endl; throw e;};
         });
-	connect(G.get(), &CRDT::CRDTGraph::update_edge_signal,
+	connect(G.get(), &DSR::DSRGraph::update_edge_signal,
         [this](auto from, auto to, auto type){
                                                 auto parent = G->get_node(from);
                                                 auto node = G->get_node(to);
                                                 if(parent.has_value() and node.has_value())
                                                     add_or_assign_edge_slot(parent.value(), node.value());
                                                 });
-	//connect(G.get(), &CRDT::CRDTGraph::del_edge_signal, this, &DSRtoOSGViewer::delEdgeSLOT);
-	//connect(G.get(), &CRDT::CRDTGraph::del_node_signal, this, &DSRtoOSGViewer::delNodeSLOT);
+	//connect(G.get(), &DSR::DSRGraph::del_edge_signal, this, &DSRtoOSGViewer::delEdgeSLOT);
+	//connect(G.get(), &DSR::DSRGraph::del_node_signal, this, &DSRtoOSGViewer::delNodeSLOT);
 
     _mViewer->realize();
 //    setMainCamera(manipulator, TOP_POV);
@@ -95,7 +100,7 @@ void DSRtoOSGViewer::initializeGL(){
 // We need to go down the tree breadth first
 void DSRtoOSGViewer::traverse_RT_tree(const Node& node)
 {
-    for(auto &edge: G->get_edges_by_type(node, "RT"))
+    for(auto &edge: G->get_node_edges_by_type(node, "RT"))
 	{
         //std::cout << __FUNCTION__ << " edges " << edge.from() << " " << edge.to() << " " << edge.type() << std::endl;
         auto child = G->get_node(edge.to());

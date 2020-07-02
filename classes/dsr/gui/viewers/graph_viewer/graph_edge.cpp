@@ -89,9 +89,10 @@ void GraphEdge::adjust(GraphNode* node, QPointF pos)
 
 QRectF GraphEdge::boundingRect() const
 {
-    qreal adjust = 10;
-	QLineF p(sourcePoint, destPoint);
-    return QRectF( p.center().x() - adjust, p.center().y() - adjust, 20 , 20);
+	QLineF line(sourcePoint, destPoint);
+
+	return QRectF(sourcePoint, destPoint).normalized().adjusted(-10,-10, +10, +10);
+
 }
 
 QPainterPath GraphEdge::shape() const
@@ -163,6 +164,7 @@ void GraphEdge::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 			painter->restore();
 //			// DEBUG
 //			painter->setBrush(QBrush(Qt::red));
+//			painter->drawRect(boundingRect());
 //			painter->drawEllipse(line.p1(), 5, 5);
 //			painter->drawEllipse(line.p2(), 5, 5);
 //			painter->drawPolygon(tag_polygon);

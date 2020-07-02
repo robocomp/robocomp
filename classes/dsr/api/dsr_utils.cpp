@@ -10,9 +10,9 @@
 #include "dsr_utils.h"
 #include "dsr_api.h"
 
-using namespace CRDT;
+using namespace DSR;
 
-Utilities::Utilities(CRDT::CRDTGraph *G_)
+Utilities::Utilities(DSR::DSRGraph *G_)
 { G = G_; }
 
 void Utilities::read_from_json_file(const std::string &json_file_path,  std::function<std::optional<int>(const Node&)> insert_node)
@@ -90,29 +90,29 @@ void Utilities::read_from_json_file(const std::string &json_file_path,  std::fun
 
             switch (attr_type) {
                 case 0:
-                    G->add_attrib(n, attr_key, attr_value.toString().toStdString());
+                    G->add_attrib_local(n, attr_key, attr_value.toString().toStdString());
                     break;
                 case 1:
-                    G->add_attrib(n, attr_key, attr_value.toInt());
+                    G->add_attrib_local(n, attr_key, attr_value.toInt());
                     break;
                 case 2:
-                    G->add_attrib(n, attr_key, attr_value.toFloat());
+                    G->add_attrib_local(n, attr_key, attr_value.toFloat());
                     break;
                 case 3: 
                 {
                     std::vector<float> v;
                     foreach (const QVariant& value, attr_value.toList())
                         v.push_back(value.toFloat());    
-                    G->add_attrib(n, attr_key, v);
+                    G->add_attrib_local(n, attr_key, v);
                     break;
                 }
                 case 4: 
                 {
-                    G->add_attrib(n, attr_key, attr_value.toBool());
+                    G->add_attrib_local(n, attr_key, attr_value.toBool());
                     break;
                 }
                 default:
-                   G->add_attrib(n, attr_key, attr_value.toString().toStdString());
+                   G->add_attrib_local(n, attr_key, attr_value.toString().toStdString());
             }
         }
         //n.attrs(attrs);
@@ -150,17 +150,17 @@ void Utilities::read_from_json_file(const std::string &json_file_path,  std::fun
             {
                 case 0:
                 {
-                    G->add_attrib(edge, attr_key, attr_value.toString().toStdString());
+                    G->add_attrib_local(edge, attr_key, attr_value.toString().toStdString());
                     break;
                 }
                 case 1:
                 {
-                    G->add_attrib(edge, attr_key, attr_value.toInt());
+                    G->add_attrib_local(edge, attr_key, attr_value.toInt());
                     break;
                 }
                 case 2:
                 {
-                    G->add_attrib(edge, attr_key, attr_value.toString().replace(",", ".").toFloat());
+                    G->add_attrib_local(edge, attr_key, attr_value.toString().replace(",", ".").toFloat());
                     break;
                 }
                 case 3: 
@@ -168,12 +168,12 @@ void Utilities::read_from_json_file(const std::string &json_file_path,  std::fun
                     std::vector<float> v;
                     foreach (const QVariant& value, attr_value.toList())
                         v.push_back(value.toFloat());    
-                    G->add_attrib(edge, attr_key, v);
+                    G->add_attrib_local(edge, attr_key, v);
                     break;
                 }
                 case 4: 
                 {
-                    G->add_attrib(edge, attr_key, attr_value.toBool());
+                    G->add_attrib_local(edge, attr_key, attr_value.toBool());
                     break;
                 }
             }
@@ -357,7 +357,7 @@ void Utilities::print_RT(const std::int32_t id)
 
 void Utilities::print_RT(const Node& node)
 {   
-    for(auto &edge: G->get_edges_by_type(node, "RT"))
+    for(auto &edge: G->get_node_edges_by_type(node, "RT"))
 	{
         auto child = G->get_node(edge.to());
         if(child.has_value())

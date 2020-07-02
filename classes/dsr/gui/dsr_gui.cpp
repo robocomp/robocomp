@@ -49,7 +49,7 @@ std::string get_self_path()
 	return "";
 }
 
-GraphViewer::GraphViewer(QMainWindow * widget, std::shared_ptr<CRDT::CRDTGraph> G_, int options, view main) : QObject()
+GraphViewer::GraphViewer(QMainWindow * widget, std::shared_ptr<DSR::DSRGraph> G_, int options, view main) : QObject()
 {
 	G = G_;
     qRegisterMetaType<std::int32_t>("std::int32_t");

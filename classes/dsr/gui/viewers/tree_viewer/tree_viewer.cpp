@@ -8,7 +8,7 @@
 
 using namespace DSR ;
 
-DSRtoTreeViewer::DSRtoTreeViewer(std::shared_ptr<CRDT::CRDTGraph> G_, QWidget *parent) :  QTreeWidget(parent)
+DSRtoTreeViewer::DSRtoTreeViewer(std::shared_ptr<DSR::DSRGraph> G_, QWidget *parent) :  QTreeWidget(parent)
 {
     qRegisterMetaType<std::int32_t>("std::int32_t");
     qRegisterMetaType<std::string>("std::string");
@@ -20,7 +20,7 @@ DSRtoTreeViewer::DSRtoTreeViewer(std::shared_ptr<CRDT::CRDTGraph> G_, QWidget *p
 //	setHeaderHidden(true);
     createGraph();
 
-    connect(G.get(), &CRDT::CRDTGraph::update_node_signal, this,
+    connect(G.get(), &DSR::DSRGraph::update_node_signal, this,
 			[=]( std::int32_t id, std::string type ) {DSRtoTreeViewer::add_or_assign_node_SLOT(id, type);});
     setColumnCount(2);
 	QStringList horzHeaders;
@@ -28,9 +28,9 @@ DSRtoTreeViewer::DSRtoTreeViewer(std::shared_ptr<CRDT::CRDTGraph> G_, QWidget *p
 
 	this->setHeaderLabels( horzHeaders );
 	this->header()->setDefaultSectionSize(250);
-	//connect(G.get(), &CRDT::CRDTGraph::update_edge_signal, this, &DSRtoGraphViewer::addEdgeSLOT);
-//	connect(G.get(), &CRDT::CRDTGraph::del_edge_signal, this, &DSRtoTreeViewer::);
-	connect(G.get(), &CRDT::CRDTGraph::del_node_signal, this, &DSRtoTreeViewer::del_node_SLOT);
+	//connect(G.get(), &DSR::DSRGraph::update_edge_signal, this, &DSRtoGraphViewer::addEdgeSLOT);
+//	connect(G.get(), &DSR::DSRGraph::del_edge_signal, this, &DSRtoTreeViewer::);
+	connect(G.get(), &DSR::DSRGraph::del_node_signal, this, &DSRtoTreeViewer::del_node_SLOT);
 }
 
 void DSRtoTreeViewer::createGraph()
@@ -53,6 +53,7 @@ void DSRtoTreeViewer::add_or_assign_node_SLOT(int id, const std::string &type,  
 {
 	QTreeWidgetItem* item;
 	try {
+		auto node = G->get_node(id);
 		if (tree_map.count(id)==0)
 		{
 			QTreeWidgetItem* symbol_widget = nullptr;
@@ -72,74 +73,16 @@ void DSRtoTreeViewer::add_or_assign_node_SLOT(int id, const std::string &type,  
 
 			item = new QTreeWidgetItem(symbol_widget);
 			tree_map[id] = item;
+			create_attribute_widgets(item, &node.value());
 		}
 		else
 		{
 			item = tree_map[id];
 			// TODO: Look for a better way than removing and adding all the attributes
-			foreach(auto i, item->takeChildren()) delete i;
+			update_attribute_widgets(&node.value());
 		}
-		auto node = G->get_node(id);
-		for (auto[key, value] : node->attrs()) {
-			QTreeWidgetItem* q_attr = new QTreeWidgetItem(item);
-			q_attr->setText(0, QString::fromStdString(key));
-			switch (value.value()._d()) {
-			case 0: {
-				QLineEdit* ledit = new QLineEdit(QString::fromStdString(value.value().str()));
-				ledit->setReadOnly(true);
-				this->setItemWidget(q_attr, 1, ledit);
-			}
-				break;
-			case 1: {
-				QSpinBox* spin = new QSpinBox();
-				spin->setReadOnly(true);
-				spin->setMinimum(-10000);
-				spin->setMaximum(10000);
-				spin->setValue(value.value().dec());
-				this->setItemWidget(q_attr, 1, spin);
 
-			}
-				break;
-			case 2: {
-				QDoubleSpinBox* spin = new QDoubleSpinBox();
-				spin->setReadOnly(true);
-				spin->setMinimum(-10000);
-				spin->setMaximum(10000);
-				spin->setValue(std::round(static_cast<double>(value.value().fl())*1000000)/1000000);
-				this->setItemWidget(q_attr, 1, spin);
-			}
-				break;
-			case 3: {
-				QWidget* widget = new QWidget();
-				QHBoxLayout* layout = new QHBoxLayout;
-				widget->setLayout(layout);
-				if (!value.value().float_vec().empty()) {
-					for (std::size_t i = 0; i<value.value().float_vec().size(); ++i) {
-						QDoubleSpinBox* spin = new QDoubleSpinBox();
-						spin->setReadOnly(true);
-						spin->setMinimum(-10000);
-						spin->setMaximum(10000);
-						spin->setValue(value.value().float_vec()[i]);
-						layout->addWidget(spin);
-					}
-					this->setItemWidget(q_attr, 1, widget);
-				}
-			}
-				break;
-			case 4: {
-				QComboBox* combo = new QComboBox();
-				combo->setEnabled(false);
-				combo->addItem("true");
-				combo->addItem("false");
-				if (value.value().bl())
-					combo->setCurrentText("true");
-				else
-					combo->setCurrentText("false");
-				this->setItemWidget(q_attr, 1, combo);
-			}
-				break;
-			}
-		}
+
 		QCheckBox* check_box = new QCheckBox(
 				QString("Node "+QString::fromUtf8(name.c_str())+" ["+QString::number(id))+"]");
 		check_box->setChecked(true);
@@ -201,5 +144,114 @@ void DSRtoTreeViewer::node_change_SLOT(int value, int id, const std::string &typ
 	{
 		qDebug()<<"Emitting signal for "<<value<< qobject_cast<QCheckBox*>(this->itemWidget(parent,0))->text();
 		emit node_check_state_changed(value, id, type, parent);
+	}
+}
+
+
+void DSRtoTreeViewer::create_attribute_widgets(QTreeWidgetItem* parent, Node* node)
+{
+	for (auto[key, value] : node->attrs()) {
+		QTreeWidgetItem* q_attr = new QTreeWidgetItem(parent);
+		attributes_map[node->id()][QString::fromStdString(key)] = q_attr;
+		q_attr->setText(0, QString::fromStdString(key));
+		switch (value.value()._d()) {
+		case 0: {
+			QLineEdit* ledit = new QLineEdit(QString::fromStdString(value.value().str()));
+			ledit->setReadOnly(true);
+			this->setItemWidget(q_attr, 1, ledit);
+		}
+			break;
+		case 1: {
+			QSpinBox* spin = new QSpinBox();
+			spin->setReadOnly(true);
+			spin->setMinimum(-10000);
+			spin->setMaximum(10000);
+			spin->setValue(value.value().dec());
+			this->setItemWidget(q_attr, 1, spin);
+
+		}
+			break;
+		case 2: {
+			QDoubleSpinBox* spin = new QDoubleSpinBox();
+			spin->setReadOnly(true);
+			spin->setMinimum(-10000);
+			spin->setMaximum(10000);
+			spin->setValue(std::round(static_cast<double>(value.value().fl())*1000000)/1000000);
+			this->setItemWidget(q_attr, 1, spin);
+		}
+			break;
+		case 3: {
+			QWidget* widget = new QWidget();
+			QHBoxLayout* layout = new QHBoxLayout;
+			widget->setLayout(layout);
+			if (!value.value().float_vec().empty()) {
+				for (std::size_t i = 0; i<value.value().float_vec().size(); ++i) {
+					QDoubleSpinBox* spin = new QDoubleSpinBox();
+					spin->setReadOnly(true);
+					spin->setMinimum(-10000);
+					spin->setMaximum(10000);
+					spin->setValue(value.value().float_vec()[i]);
+					layout->addWidget(spin);
+				}
+				this->setItemWidget(q_attr, 1, widget);
+			}
+		}
+			break;
+		case 4: {
+			QComboBox* combo = new QComboBox();
+			combo->setEnabled(false);
+			combo->addItem("true");
+			combo->addItem("false");
+			if (value.value().bl())
+				combo->setCurrentText("true");
+			else
+				combo->setCurrentText("false");
+			this->setItemWidget(q_attr, 1, combo);
+		}
+			break;
+		}
+	}
+
+}
+void DSRtoTreeViewer::update_attribute_widgets(Node* node)
+{
+	for (auto[key, value] : node->attrs()) {
+		QTreeWidgetItem* q_attr = attributes_map[node->id()][QString::fromStdString(key)];
+		switch (value.value()._d()) {
+		case 0: {
+
+			QLineEdit* ledit = qobject_cast<QLineEdit*>(this->itemWidget(q_attr, 1));
+			ledit->setText(QString::fromStdString(value.value().str()));
+
+		}
+			break;
+		case 1: {
+			QSpinBox* spin = qobject_cast<QSpinBox*>(this->itemWidget(q_attr, 1));
+			spin->setValue(value.value().dec());
+		}
+			break;
+		case 2: {
+			QDoubleSpinBox* spin =  qobject_cast<QDoubleSpinBox*>(this->itemWidget(q_attr, 1));
+			spin->setValue(std::round(static_cast<double>(value.value().fl())*1000000)/1000000);
+		}
+			break;
+		case 3: {
+			QWidget* widget = qobject_cast<QWidget*>(this->itemWidget(q_attr, 1));
+			int count=0;
+			for (auto spin : widget->findChildren<QDoubleSpinBox*>()) {
+				spin->setValue(value.value().float_vec()[count]);
+				count++;
+			}
+		}
+			break;
+		case 4: {
+			QComboBox* combo = qobject_cast<QComboBox*>(this->itemWidget(q_attr, 1));
+			if (value.value().bl())
+				combo->setCurrentText("true");
+			else
+				combo->setCurrentText("false");
+		}
+			break;
+		}
 	}
 }

@@ -9,7 +9,7 @@
 
 using namespace DSR ;
 
-DSRtoGraphViewer::DSRtoGraphViewer(std::shared_ptr<CRDT::CRDTGraph> G_, QWidget *parent) :  AbstractGraphicViewer(parent)
+DSRtoGraphViewer::DSRtoGraphViewer(std::shared_ptr<DSR::DSRGraph> G_, QWidget *parent) :  AbstractGraphicViewer(parent)
 {
     qRegisterMetaType<std::int32_t>("std::int32_t");
     qRegisterMetaType<std::string>("std::string");
@@ -22,12 +22,12 @@ DSRtoGraphViewer::DSRtoGraphViewer(std::shared_ptr<CRDT::CRDTGraph> G_, QWidget 
 
 	this->fitInView(scene.itemsBoundingRect(), Qt::KeepAspectRatio );
 
-    connect(G.get(), &CRDT::CRDTGraph::update_node_signal, this, &DSRtoGraphViewer::add_or_assign_node_SLOT);
+    connect(G.get(), &DSR::DSRGraph::update_node_signal, this, &DSRtoGraphViewer::add_or_assign_node_SLOT);
 	central_point = new QGraphicsEllipseItem(0,0,0,0);
 	scene.addItem(central_point);
-	connect(G.get(), &CRDT::CRDTGraph::update_edge_signal, this, &DSRtoGraphViewer::add_or_assign_edge_SLOT);
-	//connect(G.get(), &CRDT::CRDTGraph::del_edge_signal, this, &DSRtoGraphViewer::delEdgeSLOT);
-	connect(G.get(), &CRDT::CRDTGraph::del_node_signal, this, &DSRtoGraphViewer::del_node_SLOT);
+	connect(G.get(), &DSR::DSRGraph::update_edge_signal, this, &DSRtoGraphViewer::add_or_assign_edge_SLOT);
+	//connect(G.get(), &DSR::DSRGraph::del_edge_signal, this, &DSRtoGraphViewer::delEdgeSLOT);
+	connect(G.get(), &DSR::DSRGraph::del_node_signal, this, &DSRtoGraphViewer::del_node_SLOT);
 }
 
 DSRtoGraphViewer::~DSRtoGraphViewer()

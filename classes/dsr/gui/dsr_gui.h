@@ -49,7 +49,7 @@ namespace DSR
 				scene = (1 << 2),
 				tree = (1 << 3),
 			};
-			GraphViewer(QMainWindow *window, std::shared_ptr<CRDT::CRDTGraph> G, int options, view main = view::graph);
+			GraphViewer(QMainWindow *window, std::shared_ptr<DSR::DSRGraph> G, int options, view main = view::graph);
 			~GraphViewer();
 			void itemMoved();
 			void createGraph();
@@ -58,7 +58,7 @@ namespace DSR
 			virtual void keyPressEvent(QKeyEvent *event);
 		
 		private:
-			std::shared_ptr<CRDT::CRDTGraph> G;
+			std::shared_ptr<DSR::DSRGraph> G;
 			QMainWindow *window;
 			QMenu *viewMenu;
 			std::unique_ptr<DSR::DSRtoOSGViewer> dsr_to_osg_viewer;
@@ -85,6 +85,6 @@ namespace DSR
 
 Q_DECLARE_METATYPE(std::int32_t);
 Q_DECLARE_METATYPE(std::string);
-//Q_DECLARE_METATYPE(CRDT::AttribsMap);
+//Q_DECLARE_METATYPE(DSR::AttribsMap);
 
 #endif // GRAPHVIEWER_H

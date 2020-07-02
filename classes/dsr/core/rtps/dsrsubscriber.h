@@ -29,10 +29,10 @@
 #include <functional>
 
 /*
-namespace CRDT {
-	class CRDTGraph;
+namespace DSR {
+	class DSRGraph;
 }
-#include <../../../dsr/CRDT.h>
+#include <../../../dsr/DSR.h>
 */
 
 class DSRSubscriber

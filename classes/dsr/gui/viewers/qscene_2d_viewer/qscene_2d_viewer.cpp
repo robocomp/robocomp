@@ -2,25 +2,17 @@
 
 using namespace DSR ;
 
-DSRtoGraphicsceneViewer::DSRtoGraphicsceneViewer(std::shared_ptr<CRDT::CRDTGraph> G_, QWidget *parent) : AbstractGraphicViewer(parent)
+DSRtoGraphicsceneViewer::DSRtoGraphicsceneViewer(std::shared_ptr<DSR::DSRGraph> G_, QWidget *parent) : AbstractGraphicViewer(parent)
 {
     qDebug()<<"***************INIT DSRtoGraphicsceneViewer********************";
     G = G_;
     this->setMinimumSize(400,400);
 
     scene.setItemIndexMethod(QGraphicsScene::NoIndex);
-    scene.setSceneRect(-5000, -5000, 10000, 10000);
+
 	this->scale(1, -1);
-    this->setScene(&scene);
-    this->setCacheMode(QGraphicsView::CacheBackground);
-	this->setViewport(new QGLWidget(QGLFormat(QGL::SampleBuffers)));
-	this->setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
-	this->setRenderHint(QPainter::Antialiasing);
-	this->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
-	this->fitInView(scene.sceneRect(), Qt::KeepAspectRatio );
-	
- 	setMouseTracking(true);
-    this->viewport()->setMouseTracking(true);
+
+
 //REMOVE WHEN NOT NEEDED
     //center position
     scene.addRect(-100, -100, 200, 200, QPen(QColor("black")),QBrush(QColor("black")));
@@ -32,11 +24,11 @@ DSRtoGraphicsceneViewer::DSRtoGraphicsceneViewer(std::shared_ptr<CRDT::CRDTGraph
     create_graph();
 
     //update signals
-    connect(G.get(), &CRDT::CRDTGraph::update_node_signal, this, &DSRtoGraphicsceneViewer::add_or_assign_node_slot);
-	connect(G.get(), &CRDT::CRDTGraph::update_edge_signal, this, &DSRtoGraphicsceneViewer::add_or_assign_edge_slot);
+    connect(G.get(), &DSR::DSRGraph::update_node_signal, this, &DSRtoGraphicsceneViewer::add_or_assign_node_slot);
+	connect(G.get(), &DSR::DSRGraph::update_edge_signal, this, &DSRtoGraphicsceneViewer::add_or_assign_edge_slot);
 
-	connect(G.get(), &CRDT::CRDTGraph::del_edge_signal, this, &DSRtoGraphicsceneViewer::del_edge_slot);
-	connect(G.get(), &CRDT::CRDTGraph::del_node_signal, this, &DSRtoGraphicsceneViewer::del_node_slot);
+	connect(G.get(), &DSR::DSRGraph::del_edge_signal, this, &DSRtoGraphicsceneViewer::del_edge_slot);
+	connect(G.get(), &DSR::DSRGraph::del_node_signal, this, &DSRtoGraphicsceneViewer::del_node_slot);
 }
 
 void DSRtoGraphicsceneViewer::create_graph()
