@@ -53,7 +53,8 @@ namespace DSR
 			~GraphViewer();
 			void itemMoved();
 			void createGraph();
-			
+			QWidget* get_widget(view type);
+
 		protected:
 			virtual void keyPressEvent(QKeyEvent *event);
 		
@@ -61,11 +62,12 @@ namespace DSR
 			std::shared_ptr<DSR::DSRGraph> G;
 			QMainWindow *window;
 			QMenu *viewMenu;
-			std::unique_ptr<DSR::DSRtoOSGViewer> dsr_to_osg_viewer;
-			std::unique_ptr<DSR::DSRtoGraphicsceneViewer> dsr_to_graphicscene_viewer;
-			std::unique_ptr<DSR::DSRtoGraphViewer> dsr_to_graph_viewer;
-			std::unique_ptr<DSR::DSRtoTreeViewer> dsr_to_tree_viewer;
+//			std::shared_ptr<DSR::DSRtoOSGViewer> dsr_to_osg_viewer;
+//			std::shared_ptr<DSR::DSRtoGraphicsceneViewer> dsr_to_graphicscene_viewer;
+//			std::shared_ptr<DSR::DSRtoGraphViewer> dsr_to_graph_viewer;
+//			std::shared_ptr<DSR::DSRtoTreeViewer> dsr_to_tree_viewer;
 			std::map<QString, QDockWidget *> docks;
+			std::map<view, QWidget *> widgets;
 			QWidget * main_widget;
 
 		public slots:

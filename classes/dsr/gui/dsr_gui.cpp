@@ -187,6 +187,13 @@ void GraphViewer::initialize_views(int options, view central){
 }
 
 
+QWidget* GraphViewer::get_widget(view type)
+{
+	if(widgets.count(type)!=0)
+		return widgets[type];
+	return nullptr;
+}
+
 QWidget* GraphViewer::create_widget(view type){
 
 	QWidget * widget_view = nullptr;
@@ -208,6 +215,7 @@ QWidget* GraphViewer::create_widget(view type){
 			widget_view = new DSR::DSRtoGraphicsceneViewer(G);
 			break;
 	}
+	widgets[type] = widget_view;
 	return widget_view;
 }
 
