@@ -167,6 +167,10 @@ class DoTableStuff : public  QTableWidget
                   case 4:
                       setItem(i, 1, new QTableWidgetItem(QString(v.value().bl() ? "true" : "false")));
                       break;
+                  case 5:
+                      setItem(i, 1, new QTableWidgetItem(QString::fromStdString(
+                              std::get<1>(graph_->nativetype_to_string(v.value().byte_vec())))));
+                      break;
               }
               i++;
           }
@@ -202,6 +206,9 @@ class DoTableStuff : public  QTableWidget
                         break;
                     case 4:
                         setItem(i, 1, new QTableWidgetItem(QString(v.value().bl() ? "true" : "false")));
+                        break;
+                    case 5:
+                        setItem(i, 1, new QTableWidgetItem(QString::fromStdString(std::get<1>(graph->nativetype_to_string(v.value().byte_vec())))));
                         break;
                 }
                 i++;
