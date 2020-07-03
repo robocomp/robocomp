@@ -341,14 +341,10 @@ namespace DSR
             elem.attrs().erase(att_name);
             return true;
         }
-        /**LOCAL ATTRIBUTES MODIFICATION METHODS (for nodes and edges)**/
 
-
-
-
-        /**
-         * DISTRIBUTED ATTRIBUTE MODIFICATION METHODS (for nodes and edges)
-         **/
+        // ******************************************************************
+        //  DISTRIBUTED ATTRIBUTE MODIFICATION METHODS (for nodes and edges)
+        // ******************************************************************
         template <typename Type, typename = std::enable_if_t<node_or_edge<Type>>,
                 typename Va, typename = std::enable_if_t<allowed_types<Va>>>
         void insert_or_assign_attrib_by_name(Type& elem, const std::string &att_name, const Va &new_val)
@@ -479,9 +475,6 @@ namespace DSR
                     throw std::runtime_error("Node " + std::to_string(elem.from()) + " not found in remove_attrib_by_name()");
             }
         }
-        /**DISTRIBUTED ATTRIBUTE MODIFICATION METHODS (for nodes and edges)**/
-
-
 
         /////////////////////////////////////////////////
         /// AUXILIARY RT SUB-API

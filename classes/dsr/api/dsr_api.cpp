@@ -133,7 +133,8 @@ std::pair<bool, std::optional<AworSet>> DSRGraph::insert_or_assign_node_(const N
     return {false, {} };
 }
 
-std::optional<uint32_t> DSRGraph::insert_node(Node& node) {
+std::optional<uint32_t> DSRGraph::insert_node(Node& node) 
+{
 //    if (node.id() == -1) return {};
     std::optional<AworSet> aw;
     bool r = false;
@@ -154,12 +155,14 @@ std::optional<uint32_t> DSRGraph::insert_node(Node& node) {
 //TODO    
     {
         std::unique_lock<std::shared_mutex> lock(_mutex);
-        if (id_map.find(node.id()) == id_map.end() and name_map.find(node.name())  == name_map.end()) {
+        if (id_map.find(node.id()) == id_map.end() and name_map.find(node.name())  == name_map.end()) 
             std::tie(r, aw) = insert_or_assign_node_(node);
-        } else throw std::runtime_error((std::string("Cannot insert node in G, a node with the same id already exists ")
+        else 
+            throw std::runtime_error((std::string("Cannot insert node in G, a node with the same id already exists ")
                                          + __FILE__ + " " + __FUNCTION__ + " " + std::to_string(__LINE__)).data());
     }
-    if (r) {
+    if (r) 
+    {
         if (aw.has_value())
             dsrpub.write(&aw.value());
 
@@ -169,7 +172,7 @@ std::optional<uint32_t> DSRGraph::insert_node(Node& node) {
 
         return node.id();
     }
-    return {};
+    return {};  // AQUI NO CREA EL NODO PERO NO DA INFORMACION DE POR QUE
 }
 
 
