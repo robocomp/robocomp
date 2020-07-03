@@ -31,24 +31,25 @@ namespace { char dummy; }
 using namespace eprosima::fastcdr::exception;
 
 #include <utility>
-#include <iostream>
-#include <string>
 
 static constexpr std::array<std::string_view, 5> TYPENAMES_IDL_UNION = { "STRING", "INT", "FLOAT", "FLOAT_VEC", "BOOL" };
+
 
 Val::Val()
 {
     m__d = 0;
-    // m_str com.eprosima.idl.parser.typecode.StringTypeCode@306279ee
+    // m_str com.eprosima.idl.parser.typecode.StringTypeCode@4cf4d528
     m_str ="";
-    // m_dec com.eprosima.idl.parser.typecode.PrimitiveTypeCode@545997b1
+    // m_dec com.eprosima.idl.parser.typecode.PrimitiveTypeCode@77846d2c
     m_dec = 0;
-    // m_fl com.eprosima.idl.parser.typecode.PrimitiveTypeCode@4cf4d528
+    // m_fl com.eprosima.idl.parser.typecode.PrimitiveTypeCode@548ad73b
     m_fl = 0.0;
-    // m_float_vec com.eprosima.idl.parser.typecode.SequenceTypeCode@77846d2c
+    // m_float_vec com.eprosima.idl.parser.typecode.SequenceTypeCode@4c762604
 
-    // m_bl com.eprosima.idl.parser.typecode.PrimitiveTypeCode@548ad73b
+    // m_bl com.eprosima.idl.parser.typecode.PrimitiveTypeCode@2641e737
     m_bl = false;
+    // m_byte_vec com.eprosima.idl.parser.typecode.SequenceTypeCode@727803de
+
 }
 
 Val::~Val()
@@ -76,6 +77,9 @@ Val::Val(const Val &x)
         case 4:
         m_bl = x.m_bl;
         break;
+        case 5:
+        m_byte_vec = x.m_byte_vec;
+        break;
         default:
         break;
     }
@@ -102,6 +106,9 @@ Val::Val(Val &&x)
         case 4:
         m_bl = x.m_bl;
         break;
+        case 5:
+        m_byte_vec = std::move(x.m_byte_vec);
+        break;
         default:
         break;
     }
@@ -127,6 +134,9 @@ Val& Val::operator=(const Val &x)
         break;
         case 4:
         m_bl = x.m_bl;
+        break;
+        case 5:
+        m_byte_vec = x.m_byte_vec;
         break;
         default:
         break;
@@ -155,6 +165,9 @@ Val& Val::operator=(Val &&x)
         break;
         case 4:
         m_bl = x.m_bl;
+        break;
+        case 5:
+        m_byte_vec = std::move(x.m_byte_vec);
         break;
         default:
         break;
@@ -213,6 +226,16 @@ void Val::_d(int32_t __d)
         switch(__d)
         {
             case 4:
+            b = true;
+            break;
+            default:
+            break;
+        }
+        break;
+        case 5:
+        switch(__d)
+        {
+            case 5:
             b = true;
             break;
             default:
@@ -285,7 +308,7 @@ std::string& Val::str()
     }
     if(!b)
     {
-        throw BadParamException(("STRING is not selected, selected is " + std::string(TYPENAMES_IDL_UNION[m__d])).data());
+        throw BadParamException( ("STRING is not selected, selected is " + std::string(TYPENAMES_IDL_UNION[m__d])).data());
     }
 
     return m_str;
@@ -431,7 +454,6 @@ std::vector<float>& Val::float_vec()
 
     return m_float_vec;
 }
-
 void Val::bl(bool _bl)
 {
     m_bl = _bl;
@@ -476,6 +498,57 @@ bool& Val::bl()
     }
 
     return m_bl;
+}
+void Val::byte_vec(const std::vector<uint8_t> &_byte_vec)
+{
+    m_byte_vec = _byte_vec;
+    m__d = 5;
+}
+
+void Val::byte_vec(std::vector<uint8_t> &&_byte_vec)
+{
+    m_byte_vec = std::move(_byte_vec);
+    m__d = 5;
+}
+
+const std::vector<uint8_t>& Val::byte_vec() const
+{
+    bool b = false;
+
+    switch(m__d)
+    {
+        case 5:
+        b = true;
+        break;
+        default:
+        break;
+    }
+    if(!b)
+    {
+        throw BadParamException(("BYTE_VECTOR is not selected, selected is " + std::string(TYPENAMES_IDL_UNION[m__d])).data());
+    }
+
+    return m_byte_vec;
+}
+
+std::vector<uint8_t>& Val::byte_vec()
+{
+    bool b = false;
+
+    switch(m__d)
+    {
+        case 5:
+        b = true;
+        break;
+        default:
+        break;
+    }
+    if(!b)
+    {
+        throw BadParamException(("BYTE_VECTOR is not selected, selected is " + std::string(TYPENAMES_IDL_UNION[m__d])).data());
+    }
+
+    return m_byte_vec;
 }
 
 size_t Val::getMaxCdrSerializedSize(size_t current_alignment)
@@ -534,6 +607,18 @@ size_t Val::getMaxCdrSerializedSize(size_t current_alignment)
             union_max_size_serialized = reset_alignment;
 
         
+        reset_alignment = current_alignment;
+
+        reset_alignment += 4 + eprosima::fastcdr::Cdr::alignment(reset_alignment, 4);
+
+        reset_alignment += (100 * 1) + eprosima::fastcdr::Cdr::alignment(reset_alignment, 1);
+
+
+
+        if(union_max_size_serialized < reset_alignment)
+            union_max_size_serialized = reset_alignment;
+
+        
 
     return union_max_size_serialized - initial_alignment;
 }
@@ -570,6 +655,13 @@ size_t Val::getCdrSerializedSize(const Val& data, size_t current_alignment)
         current_alignment += 1 + eprosima::fastcdr::Cdr::alignment(current_alignment, 1);
 
         break;
+        case 5:
+        current_alignment += 4 + eprosima::fastcdr::Cdr::alignment(current_alignment, 4);
+
+        current_alignment += (data.byte_vec().size() * 1) + eprosima::fastcdr::Cdr::alignment(current_alignment, 1);
+
+
+        break;
         default:
         break;
     }
@@ -597,6 +689,8 @@ void Val::serialize(eprosima::fastcdr::Cdr &scdr) const
         case 4:
         scdr << m_bl;
         break;
+        case 5:
+        scdr << m_byte_vec;break;
         default:
         break;
     }
@@ -622,6 +716,8 @@ void Val::deserialize(eprosima::fastcdr::Cdr &dcdr)
         case 4:
         dcdr >> m_bl;
         break;
+        case 5:
+        dcdr >> m_byte_vec;break;
         default:
         break;
     }
@@ -631,9 +727,9 @@ void Val::deserialize(eprosima::fastcdr::Cdr &dcdr)
 
 Attrib::Attrib()
 {
-    // m_type com.eprosima.idl.parser.typecode.PrimitiveTypeCode@15d9bc04
+    // m_type com.eprosima.idl.parser.typecode.PrimitiveTypeCode@6b1274d2
     m_type = 0;
-    // m_value com.eprosima.idl.parser.typecode.UnionTypeCode@3c0a50da
+    // m_value com.eprosima.idl.parser.typecode.UnionTypeCode@7bc1a03d
 
 
 }
@@ -803,13 +899,13 @@ void Attrib::serializeKey(eprosima::fastcdr::Cdr &scdr) const
 
 Edge::Edge()
 {
-    // m_to com.eprosima.idl.parser.typecode.PrimitiveTypeCode@ba8d91c
+    // m_to com.eprosima.idl.parser.typecode.PrimitiveTypeCode@525b461a
     m_to = 0;
-    // m_type com.eprosima.idl.parser.typecode.StringTypeCode@7364985f
+    // m_type com.eprosima.idl.parser.typecode.StringTypeCode@58c1c010
     m_type ="";
-    // m_from com.eprosima.idl.parser.typecode.PrimitiveTypeCode@5d20e46
+    // m_from com.eprosima.idl.parser.typecode.PrimitiveTypeCode@b7f23d9
     m_from = 0;
-    // m_attrs com.eprosima.idl.parser.typecode.MapTypeCode@709ba3fb
+    // m_attrs com.eprosima.idl.parser.typecode.MapTypeCode@3f200884
 
 
 }
@@ -1088,9 +1184,9 @@ void Edge::serializeKey(eprosima::fastcdr::Cdr &scdr) const
 
 EdgeKey::EdgeKey()
 {
-    // m_to com.eprosima.idl.parser.typecode.PrimitiveTypeCode@f0f2775
+    // m_to com.eprosima.idl.parser.typecode.PrimitiveTypeCode@58134517
     m_to = 0;
-    // m_type com.eprosima.idl.parser.typecode.StringTypeCode@5a4aa2f2
+    // m_type com.eprosima.idl.parser.typecode.StringTypeCode@4450d156
     m_type ="";
 
 }
@@ -1262,17 +1358,17 @@ void EdgeKey::serializeKey(eprosima::fastcdr::Cdr &scdr) const
 
 Node::Node()
 {
-    // m_type com.eprosima.idl.parser.typecode.StringTypeCode@4450d156
+    // m_type com.eprosima.idl.parser.typecode.StringTypeCode@731f8236
     m_type ="";
-    // m_name com.eprosima.idl.parser.typecode.StringTypeCode@4461c7e3
+    // m_name com.eprosima.idl.parser.typecode.StringTypeCode@255b53dc
     m_name ="";
-    // m_id com.eprosima.idl.parser.typecode.PrimitiveTypeCode@351d0846
+    // m_id com.eprosima.idl.parser.typecode.PrimitiveTypeCode@1dd92fe2
     m_id = 0;
-    // m_agent_id com.eprosima.idl.parser.typecode.PrimitiveTypeCode@77e4c80f
+    // m_agent_id com.eprosima.idl.parser.typecode.PrimitiveTypeCode@6b53e23f
     m_agent_id = 0;
-    // m_attrs com.eprosima.idl.parser.typecode.MapTypeCode@35fc6dc4
+    // m_attrs com.eprosima.idl.parser.typecode.MapTypeCode@64d2d351
 
-    // m_fano com.eprosima.idl.parser.typecode.MapTypeCode@7fe8ea47
+    // m_fano com.eprosima.idl.parser.typecode.MapTypeCode@1b68b9a4
 
 
 }
@@ -1663,7 +1759,7 @@ void Node::serializeKey(eprosima::fastcdr::Cdr &scdr) const
 
 GraphRequest::GraphRequest()
 {
-    // m_from com.eprosima.idl.parser.typecode.StringTypeCode@176d53b2
+    // m_from com.eprosima.idl.parser.typecode.StringTypeCode@51b7e5df
     m_from ="";
 
 }
@@ -1789,9 +1885,9 @@ void GraphRequest::serializeKey(eprosima::fastcdr::Cdr &scdr) const
 
 PairInt::PairInt()
 {
-    // m_first com.eprosima.idl.parser.typecode.PrimitiveTypeCode@2b4a2ec7
+    // m_first com.eprosima.idl.parser.typecode.PrimitiveTypeCode@c8e4bb0
     m_first = 0;
-    // m_second com.eprosima.idl.parser.typecode.PrimitiveTypeCode@18a70f16
+    // m_second com.eprosima.idl.parser.typecode.PrimitiveTypeCode@29ba4338
     m_second = 0;
 
 }
@@ -1957,9 +2053,9 @@ void PairInt::serializeKey(eprosima::fastcdr::Cdr &scdr) const
 
 DotContext::DotContext()
 {
-    // m_cc com.eprosima.idl.parser.typecode.MapTypeCode@6279cee3
+    // m_cc com.eprosima.idl.parser.typecode.MapTypeCode@c540f5a
 
-    // m_dc com.eprosima.idl.parser.typecode.SequenceTypeCode@4206a205
+    // m_dc com.eprosima.idl.parser.typecode.SequenceTypeCode@770c2e6b
 
 
 }
@@ -2171,9 +2267,9 @@ void DotContext::serializeKey(eprosima::fastcdr::Cdr &scdr) const
 
 DotKernel::DotKernel()
 {
-    // m_ds com.eprosima.idl.parser.typecode.MapTypeCode@77e9807f
+    // m_ds com.eprosima.idl.parser.typecode.MapTypeCode@7f9fcf7f
 
-    // m_cbase com.eprosima.fastrtps.idl.parser.typecode.StructTypeCode@448ff1a8
+    // m_cbase com.eprosima.fastrtps.idl.parser.typecode.StructTypeCode@2357d90a
 
 
 }
@@ -2365,9 +2461,9 @@ void DotKernel::serializeKey(eprosima::fastcdr::Cdr &scdr) const
 
 AworSet::AworSet()
 {
-    // m_id com.eprosima.idl.parser.typecode.PrimitiveTypeCode@44a664f2
+    // m_id com.eprosima.idl.parser.typecode.PrimitiveTypeCode@15bb6bea
     m_id = 0;
-    // m_dk com.eprosima.fastrtps.idl.parser.typecode.StructTypeCode@7f9fcf7f
+    // m_dk com.eprosima.fastrtps.idl.parser.typecode.StructTypeCode@8b96fde
 
 
 }
@@ -2537,11 +2633,11 @@ void AworSet::serializeKey(eprosima::fastcdr::Cdr &scdr) const
 
 OrMap::OrMap()
 {
-    // m_id com.eprosima.idl.parser.typecode.PrimitiveTypeCode@145eaa29
+    // m_id com.eprosima.idl.parser.typecode.PrimitiveTypeCode@2ea6137
     m_id = 0;
-    // m_m com.eprosima.idl.parser.typecode.MapTypeCode@15bb6bea
+    // m_m com.eprosima.idl.parser.typecode.MapTypeCode@41ee392b
 
-    // m_cbase com.eprosima.fastrtps.idl.parser.typecode.StructTypeCode@448ff1a8
+    // m_cbase com.eprosima.fastrtps.idl.parser.typecode.StructTypeCode@2357d90a
 
 
 }

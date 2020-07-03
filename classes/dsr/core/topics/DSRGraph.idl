@@ -12,6 +12,8 @@
       // sequence<float> rtmat;
       case 4:
         boolean bl;
+      case 5:
+	sequence<octet> byte_vec;
     };
 
     enum Types
@@ -20,7 +22,8 @@
         _INT,
         _FLOAT,
         _FLOAT_VEC,
-        _BOOL
+        _BOOL,
+	_BYTE_VEC
        // _RT_MAT
     };
 
@@ -32,9 +35,9 @@
 
     struct Edge {
         long to; //key1
-		string type; //key2
-		long from; // Se mantiene para trabajar más fácilmente con los Edges.
-		map<string, Attrib>    attrs;
+	string type; //key2
+	long from; // Se mantiene para trabajar más fácilmente con los Edges.
+	map<string, Attrib>    attrs;
 	};
 
     struct EdgeKey {
@@ -47,8 +50,8 @@
         string name;
         long id;
         long agent_id;
-		map<string, Attrib>   attrs;
-		map<EdgeKey, Edge> fano;
+	map<string, Attrib>   attrs;
+	map<EdgeKey, Edge> fano;
     };
 
     struct GraphRequest

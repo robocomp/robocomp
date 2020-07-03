@@ -65,6 +65,7 @@ namespace DSR
                                           std::is_same<std::float_t, Va>::value ||
                                           std::is_same<std::double_t , Va>::value ||
                                           std::is_same<std::vector<float_t>, Va>::value ||
+                                          std::is_same<std::vector<uint8_t>, Va>::value ||
                                           std::is_same<bool, Va>::value;
     template <typename Va>
     static bool constexpr node_or_edge = std::is_same<Node, Va>::value ||
@@ -72,12 +73,13 @@ namespace DSR
 
     template <typename Va>
     static bool constexpr allowed_return_types = std::is_same<std::int32_t, Va>::value ||
-                                          std::is_same<std::string, Va>::value ||
-                                          std::is_same<std::float_t, Va>::value ||
-                                          std::is_same<std::vector<float_t>, Va>::value ||
-                                          std::is_same<bool, Va>::value ||
-                                          std::is_same<QVec, Va>::value ||
-                                          std::is_same<QMat, Va>::value;
+                                                 std::is_same<std::string, Va>::value ||
+                                                 std::is_same<std::float_t, Va>::value ||
+                                                 std::is_same<std::vector<float_t>, Va>::value ||
+                                                 std::is_same<std::vector<uint8_t>, Va>::value ||
+                                                 std::is_same<bool, Va>::value ||
+                                                 std::is_same<QVec, Va>::value ||
+                                                 std::is_same<QMat, Va>::value;
 
     /////////////////////////////////////////////////////////////////
     /// DSR API
@@ -129,19 +131,25 @@ namespace DSR
         //[[deprecated]] std::tuple<std::string, std::string, int> nativetype_to_string(const MTypes &t); //Used by viewer
         template <typename Ta, typename = std::enable_if_t<allowed_types<Ta>>>
         std::tuple<std::string, std::string, int> nativetype_to_string(const Ta& t) {
-            if constexpr (std::is_same<Ta, std::string>::value)
+            if constexpr (std::is_same<std::remove_cv_t<std::remove_reference_t<Ta>>, std::string>::value)
             {
                 return  make_tuple("string", t,1);
             }
-            if constexpr (std::is_same<Ta, std::vector<float>>::value)
+            else if constexpr (std::is_same<std::remove_cv_t<std::remove_reference_t<Ta>>, std::vector<float>>::value)
             {
                 std::string str;
                 for(auto &f : t)
                     str += std::to_string(f) + " ";
                 return make_tuple("vector<float>",  str += "\n",t.size());
             }
+            else if constexpr (std::is_same<std::remove_cv_t<std::remove_reference_t<Ta>>, std::vector<uint8_t>>::value)
+            {
+                std::string str;
+                for(auto &f : t)
+                    str += std::to_string(f) + " ";
+                return make_tuple("vector<uint8_t>",  str += "\n",t.size());
+            }
             else return  make_tuple(typeid(Ta).name(), std::to_string(t),1);
-
         }; //Used by viewer
 
         std::map<long, Node> getCopy() const;   
@@ -230,11 +238,15 @@ namespace DSR
             {
                 return av.value().value().bl();
             }
+            if constexpr (std::is_same<Ta, std::vector<uint8_t>>::value)
+            {
+                return av->value().byte_vec();
+            }
             if constexpr (std::is_same<Ta, QVec>::value)
             {
                 const auto &val = av.value().value().float_vec();
                 if ((key == "translation" or key == "rotation_euler_xyz")
-                        and (val.size() == 3 or val.size() == 6))
+                    and (val.size() == 3 or val.size() == 6))
                     return QVec{val};
                 throw std::runtime_error("vec size must be 3 or 6 in get_attrib_by_name<QVec>()");
             }
@@ -299,10 +311,13 @@ namespace DSR
                 at.type(BOOL);
                 value.bl(att_value);
             }
-
+            else if constexpr (std::is_same<std::vector<uint8_t>,  Ta>::value)
+            {
+                at.type(BYTE_VEC);
+                value.byte_vec(att_value);
+            }
             at.value( value);
             elem.attrs()[att_name] = at;
-
         }
 
         template <typename Type, typename = std::enable_if_t<node_or_edge<Type>>, typename Ta , typename = std::enable_if_t<allowed_types<Ta>>>

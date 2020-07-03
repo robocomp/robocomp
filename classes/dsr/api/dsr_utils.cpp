@@ -111,6 +111,14 @@ void Utilities::read_from_json_file(const std::string &json_file_path,  std::fun
                     G->add_attrib_local(n, attr_key, attr_value.toBool());
                     break;
                 }
+                case 5:
+                {
+                    std::vector<uint8_t> v;
+                            foreach (const QVariant& value, attr_value.toList())
+                            v.push_back(static_cast<uint8_t>(value.toUInt()));
+                    G->add_attrib_local(n, attr_key, v);
+                    break;
+                }
                 default:
                    G->add_attrib_local(n, attr_key, attr_value.toString().toStdString());
             }
@@ -176,6 +184,14 @@ void Utilities::read_from_json_file(const std::string &json_file_path,  std::fun
                     G->add_attrib_local(edge, attr_key, attr_value.toBool());
                     break;
                 }
+                case 5:
+                {
+                    std::vector<uint8_t> v;
+                            foreach (const QVariant& value, attr_value.toList())
+                            v.push_back(static_cast<uint8_t>(value.toUInt()));
+                    G->add_attrib_local(edge, attr_key, v);
+                    break;
+                }
             }
         }
         std::cout << __FILE__ << " " << __FUNCTION__ << "Edge from " << std::to_string(srcn) << " to " << std::to_string(dstn) << " label "  << edgeName <<  std::endl;
@@ -219,12 +235,21 @@ void Utilities::write_to_json_file(const std::string &json_file_path)
                 case 4:
                     val = value.value().bl();
                     break;
-                case 3:
+                case 3: {
                     QJsonArray array;
                     for(const float &value : value.value().float_vec())
                         array.push_back(value);
                     val = array;                
                     break;
+                }
+                case 5:
+                {
+                    QJsonArray array;
+                    for (const float &value : value.value().byte_vec())
+                        array.push_back(value);
+                    val = array;
+                    break;
+                }
             }
             content["type"] = value.value()._d();
             content["value"] = val;
@@ -257,12 +282,21 @@ void Utilities::write_to_json_file(const std::string &json_file_path)
                     case 4:
                         val = value.value().bl();
                         break;
-                    case 3:
+                    case 3: {
                         QJsonArray array;
-                        for(const float &value : value.value().float_vec())
+                        for (const float &value : value.value().float_vec())
                             array.push_back(value);
-                        val = array;                        
+                        val = array;
                         break;
+                    }
+                    case 5:
+                    {
+                        QJsonArray array;
+                        for (const float &value : value.value().byte_vec())
+                            array.push_back(value);
+                        val = array;
+                        break;
+                    }
                 }
                 content["type"] = value.value()._d();
                 content["value"] = val;

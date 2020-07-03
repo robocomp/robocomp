@@ -73,8 +73,6 @@ class Val
 {
 public:
 
-
-
     bool operator<(const Val &rhs) const {
 
         if (m__d != rhs.m__d) return false;
@@ -90,6 +88,8 @@ public:
                 return m_float_vec < rhs.m_float_vec;
             case 4:
                 return m_bl < rhs.m_bl;
+            case 5:
+                return m_byte_vec < rhs.m_byte_vec;
             default:
                 return false;
         }
@@ -122,6 +122,8 @@ public:
                 return m_float_vec == rhs.m_float_vec;
             case 4:
                 return m_bl == rhs.m_bl;
+            case 5:
+                return m_byte_vec == rhs.m_byte_vec;
             default:
                 return false;
         }
@@ -152,6 +154,12 @@ public:
                 break;
             case 4:
                 os << "bool: " << (type.m_bl ? " TRUE" : " FALSE");
+                break;
+            case 5:
+                os << " float_vec: [ ";
+                for (auto &k: type.m_byte_vec)
+                    os << static_cast<unsigned char>(k) << ", ";
+                os << "] ";
                 break;
             default:
                 os << "OTRO TIPO";
@@ -322,6 +330,31 @@ public:
      */
     eProsima_user_DllExport bool& bl();
 
+    /*!
+     * @brief This function copies the value in member byte_vec
+     * @param _byte_vec New value to be copied in member byte_vec
+     */
+    eProsima_user_DllExport void byte_vec(const std::vector<uint8_t> &_byte_vec);
+
+    /*!
+     * @brief This function moves the value in member byte_vec
+     * @param _byte_vec New value to be moved in member byte_vec
+     */
+    eProsima_user_DllExport void byte_vec(std::vector<uint8_t> &&_byte_vec);
+
+    /*!
+     * @brief This function returns a constant reference to member byte_vec
+     * @return Constant reference to member byte_vec
+     * @exception eprosima::fastcdr::BadParamException This exception is thrown if the requested union member is not the current selection.
+     */
+    eProsima_user_DllExport const std::vector<uint8_t>& byte_vec() const;
+
+    /*!
+     * @brief This function returns a reference to member byte_vec
+     * @return Reference to member byte_vec
+     * @exception eprosima::fastcdr::BadParamException This exception is thrown if the requested union member is not the current selection.
+     */
+    eProsima_user_DllExport std::vector<uint8_t>& byte_vec();
 
     /*!
      * @brief This function returns the maximum serialized size of an object
@@ -363,6 +396,7 @@ private:
     float m_fl;
     std::vector<float> m_float_vec;
     bool m_bl;
+    std::vector<uint8_t> m_byte_vec;
 };
 /*!
  * @brief This class represents the enumeration Types defined by the user in the IDL file.
@@ -374,7 +408,8 @@ enum Types : uint32_t
     INT,
     FLOAT,
     FLOAT_VEC,
-    BOOL
+    BOOL,
+    BYTE_VEC
 };
 /*!
  * @brief This class represents the structure Attrib defined by the user in the IDL file.
