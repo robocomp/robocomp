@@ -82,9 +82,13 @@ void DSRtoOSGViewer::initializeGL(){
 	// enable lighting
 	stateSet->setMode(GL_LIGHTING, osg::StateAttribute::ON);
 	osg::Light* light = _mViewer->getLight();
-	_mViewer->getLight()->setPosition(osg::Vec4(1,-1, 1, 0)); // make 4th coord 1 for point
-	_mViewer->getLight()->setAmbient(osg::Vec4(0.2, 0.2, 0.2, 1.0));
-	_mViewer->getLight()->setSpecular(osg::Vec4(1.0, 1.0, 1.0, 1.0));
+//	light->setPosition(osg::Vec4(1,-1, 1, 0)); // make 4th coord 1 for point
+//	light->setAmbient(osg::Vec4(0.2, 0.2, 0.2, 1.0));
+//	light->setSpecular(osg::Vec4(1.0, 1.0, 1.0, 1.0));
+	light->setAmbient(osg::Vec4(0.7, 0.7, 0.7, 0.0));
+	light->setDiffuse(osg::Vec4(0.8, 0.8, 0.8, 0.0));
+	light->setSpecular(osg::Vec4(1.0, 1.0, 1.0, 1.0));
+	
 
 	osg::ref_ptr<osg::LightSource> lightSource = new osg::LightSource;
     light->setPosition(osg::Vec4(0, 1000, 0, 0));
