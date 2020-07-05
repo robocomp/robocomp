@@ -27,7 +27,6 @@
 #include <QDialog>
 #include <QHeaderView>
 #include <QLabel>
-
 #include <cppitertools/zip.hpp>
 
 #include "../../../api/dsr_api.h"
@@ -57,16 +56,15 @@ class DoLaserStuff : public QGraphicsView
       show();
     };
 
-  void closeEvent (QCloseEvent *event) override 
-  {
-    disconnect(graph.get(), 0, this, 0);
-  };
+    void closeEvent (QCloseEvent *event) override 
+    {
+      disconnect(graph.get(), 0, this, 0);
+    };
 
   public slots:
-    //void drawLaserSLOT(const std::int32_t &id, const Attribs &attribs)
     void drawLaserSLOT( int id, const std::string &type )
     {
-      if( type != "laser")
+      if( id != node_id )
         return;
       try
       {
@@ -102,29 +100,58 @@ class DoLaserStuff : public QGraphicsView
     std::int32_t node_id;
 };
 
-class DoRGBDStuff : public  QLabel
+class DoRGBDStuff : public QLabel
 {
+  Q_OBJECT
   public:
-    DoRGBDStuff(std::shared_ptr<DSR::DSRGraph> graph, DSR::IDType node_id_)
+    DoRGBDStuff(std::shared_ptr<DSR::DSRGraph> graph_, DSR::IDType node_id_) : graph(graph_), node_id(node_id_)
     {
-      auto node_id = node_id_;
-      //setWindowFlags(Qt::Widget | Qt::FramelessWindowHint);
-      //setViewport(new QGLWidget(QGLFormat(QGL::SampleBuffers)));
-      resize(640,480);
-      setWindowTitle("RGBD");
-      setParent(this);
-      QObject::connect(graph.get(), &DSR::DSRGraph::update_attrs_signal, [&](const std::int32_t &id, const std::map<string,Attrib> &attrs){
-                        std::optional<Node> n = graph->get_node(node_id);
-                        //Esto no hace nada
-                        if (n.has_value())
-                            const auto &lDists = graph->get_attrib_by_name<std::vector<float>>(n.value(), "rgbd_data");
-                            //label.setPixmap(QImage());                          
-                          });
+      setWindowTitle(QString::fromStdString(graph->get_agent_name()) + "-RGBD");
+      QObject::connect(graph.get(), &DSR::DSRGraph::update_node_signal, this, &DoRGBDStuff::drawRGBDSLOT);
       show();
     };
+
+    void closeEvent (QCloseEvent *event)
+    {
+      disconnect(graph.get(), 0, this, 0);
+    };
+
+  public slots:
+    void drawRGBDSLOT( int id, const std::string &type )
+    {
+      if( id != node_id) return;
+
+      std::optional<Node> n = graph->get_node(id);
+      if (n.has_value())
+      {
+        const auto rgb_data = graph->get_attrib_by_name<vector<uint8_t>>(n.value(),"rgb");
+        const auto width = graph->get_attrib_by_name<int32_t>(n.value(),"width");
+        const auto height = graph->get_attrib_by_name<int32_t>(n.value(),"height");
+        // if depth == 3
+        //image_rgb.create(height.value(), width.value(), CV_8UC3);
+        //QImage image((const unsigned char*)pixels, width, height, QImage::Format_RGB32);
+        //memcpy(image_rgb.data, &rgb_data.value()[0], width.value()*height.value()*sizeof(std::uint8_t)*3);   
+        //imshow("RGB", image_rgb);
+        //cv::waitKey(1);
+        //label.setPixmap(QImage());     
+       
+        //QImage image((const unsigned char*)&rgb_data.value()[0], width.value(), height.value(), QImage::Format_RGB888);
+        //QImage image(width.value(), height.value(), QImage::Format_RGB888);
+        //memcpy(image.data, &rgb_data.value()[0], width.value()*height.value()*sizeof(std::uint8_t)*3);   
+      
+        auto pix = QPixmap::fromImage(QImage(&rgb_data.value()[0], width.value(), height.value(), QImage::Format_RGB888));
+        resize(width.value(), height.value());
+        setPixmap(pix);
+        show();                     
+        qDebug() << "hola";
+      }
+    };
+
   private:
     QLabel label;
-};
+    std::shared_ptr<DSR::DSRGraph> graph;
+    DSR::IDType node_id;
+};      
 
 class DoTableStuff : public  QTableWidget
 {

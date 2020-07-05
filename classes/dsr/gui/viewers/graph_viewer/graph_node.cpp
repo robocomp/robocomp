@@ -194,14 +194,14 @@ void GraphNode::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event)
 {
     //if (tag->text() != "") return; // Explota sin esto
 //    animation->start();
-    std::cout << __FILE__ <<":"<<__FUNCTION__<< "-> node: " << tag->text().toStdString() << std::endl;
+    std::cout << __FILE__ <<":"<<__FUNCTION__<< "-> node: " << tag->text().toStdString() << " Type: " << type << std::endl;
     const auto graph = dsr_to_graph_viewer->getGraph();
     if( event->button()== Qt::RightButton)
     {
         static std::unique_ptr<QWidget> do_stuff;
         if(type=="laser")
             do_stuff = std::make_unique<DoLaserStuff>(graph, id_in_graph);
-        else if(tag->text().contains("rgdb"))
+        else if(type=="rgbd")
             do_stuff = std::make_unique<DoRGBDStuff>(graph, id_in_graph);
         else
             do_stuff = std::make_unique<DoTableStuff>(graph, id_in_graph);

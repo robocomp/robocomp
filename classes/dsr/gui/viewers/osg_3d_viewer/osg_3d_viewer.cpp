@@ -194,7 +194,6 @@ void DSRtoOSGViewer::add_or_assign_node_slot(const Node &node)
         auto parent = G->get_parent_node(node);
         if( not parent.has_value())
             throw std::runtime_error("Node cannot be inserted without a parent");
-        auto parent_id = parent.value().id();
         auto type = node.type();
         if( type == "plane" )
             add_or_assign_box(node, parent.value());
