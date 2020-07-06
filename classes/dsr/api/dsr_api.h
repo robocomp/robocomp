@@ -195,7 +195,7 @@ namespace DSR
          * CONVENIENCE METHODS
          **/
         // Nodes
-        std::optional<Node> get_node_root()  { return get_node(100); };  //CHANGE THIS
+        std::optional<Node> get_node_root()  { return get_node("world"); };  //CHANGE THIS
         std::vector<Node> get_nodes_by_type(const std::string& type);
         std::optional<std::string> get_name_from_id(std::int32_t id);  // caché
         std::optional<int> get_id_from_name(const std::string &name);  // caché
