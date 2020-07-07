@@ -230,9 +230,9 @@ void DSRtoOSGViewer::add_or_assign_edge_slot(const Node &from, const Node& to)
         if (auto osg_parent = osg_map.find(std::make_tuple(from.id(), from.id())); osg_parent != osg_map.end()) 
         {
             // Check if transform already exists
-            if (auto osg_child = osg_map.find(std::make_tuple(from.id(), to.id())); osg_child != osg_map.end()) 
+            if (auto osg_parent_to_child = osg_map.find(std::make_tuple(from.id(), to.id())); osg_parent_to_child != osg_map.end()) 
             {
-                if (auto existing_transform = dynamic_cast<osg::MatrixTransform *>((*osg_parent).second); existing_transform != nullptr)
+                if (auto existing_transform = dynamic_cast<osg::MatrixTransform *>((*osg_parent_to_child).second); existing_transform != nullptr)
                     existing_transform->setMatrix(mat);
                 else
                     throw std::runtime_error("Exception: dynamic_cast to MatrixTransform failed");
@@ -241,15 +241,20 @@ void DSRtoOSGViewer::add_or_assign_edge_slot(const Node &from, const Node& to)
             else //create
             {
                 qDebug() << __FUNCTION__ << "creating" << from.id() << to.id();
-                osg::ref_ptr<osg::MatrixTransform> transform = new osg::MatrixTransform(mat);
+                osg::MatrixTransform *transform = new osg::MatrixTransform(mat);
                 (*osg_parent).second->addChild(transform);
                 osg_map.insert_or_assign(std::make_tuple(from.id(), to.id()), transform);
                 // hang the child if it exits
-                if (auto child = osg_map.find(std::make_tuple(to.id(), to.id())); child != osg_map.end()) 
-                    transform->addChild((*child).second);
+                if (auto child = osg_map.find(std::make_tuple(to.id(), to.id())); child != osg_map.end())
+                { 
+                    auto res = transform->addChild((*child).second);
+                    //qDebug() << __FUNCTION__ << res << "caca";
+                }
+               
+                qDebug() << __FUNCTION__ << " Added osg edge-transform, node " << to.id() << "parent " << from.id();
             }
-            qDebug() << __FUNCTION__ << " Added osg edge-transform, node " << to.id() << "parent " << from.id();
-        } else
+        } 
+        else
             throw std::runtime_error("Exception: parent " + from.name() + " not found for node " + to.name());
     }
 }
@@ -262,11 +267,12 @@ void DSRtoOSGViewer::add_or_assign_transform(const Node &node, const Node& paren
 {
     std::cout << __FUNCTION__  << " node " << node.id() << " parent "  << parent.id() << std::endl;
    
-    // check if transform already exists
+    // check if transform does not exist
+    osg::MatrixTransform *transform = new osg::MatrixTransform();
+    transform->setName(std::to_string(node.id())+"-"+std::to_string(node.id()));
     if( auto osg_node = osg_map.find(std::make_tuple(node.id(), node.id())); osg_node == osg_map.end())
     {
-        osg::ref_ptr<osg::MatrixTransform> transform = new osg::MatrixTransform();
-        transform->setName(std::to_string(node.id())+"-"+std::to_string(node.id()));
+       
         osg_map.insert_or_assign(std::make_tuple(node.id(), node.id()), transform);
         if( auto osg_parent_to_child = osg_map.find(std::make_tuple(parent.id(), node.id())); osg_parent_to_child != osg_map.end())   
             (*osg_parent_to_child).second->addChild(transform);
@@ -274,7 +280,12 @@ void DSRtoOSGViewer::add_or_assign_transform(const Node &node, const Node& paren
         qDebug() << __FUNCTION__ << "Added new transform, node " << node.id() << "parent "  << parent.id();
     }
     else
-        qDebug() << __FUNCTION__ << "Transform already exists";
+    {
+        // if( auto osg_parent_to_child = osg_map.find(std::make_tuple(parent.id(), node.id())); osg_parent_to_child != osg_map.end())   
+        //     if( (*osg_parent_to_child).second->getNumChildren() == 0)
+        //         (*osg_parent_to_child).second->addChild(transform);
+        qDebug() << __FUNCTION__ << " Transform already exists";
+    }
 }
 
 void DSRtoOSGViewer::add_or_assign_box(const Node &node, const Node& parent)
@@ -300,11 +311,11 @@ void DSRtoOSGViewer::add_or_assign_box(const Node &node, const Node& parent)
         // Create object
         if( auto anterior = osg_map.find(std::make_tuple(node.id(), node.id())); anterior == osg_map.end())
         {
-            osg::ref_ptr<osg::Box> box = new osg::Box(QVecToOSGVec(QVec::vec3(0,0,0)), width.value(), height.value(), depth.value());
-            osg::ref_ptr<osg::ShapeDrawable> plane_drawable = new osg::ShapeDrawable(box);
-            osg::ref_ptr<osg::Geode> geode = new osg::Geode;
+            osg::Box *box = new osg::Box(QVecToOSGVec(QVec::vec3(0,0,0)), width.value(), height.value(), depth.value());
+            osg::ShapeDrawable *plane_drawable = new osg::ShapeDrawable(box);
+            osg::Geode *geode = new osg::Geode;
             geode->addDrawable(plane_drawable);
-            osg::ref_ptr<osg::Group> group = new osg::Group;
+            osg::Group *group = new osg::Group;
             group->setName(std::to_string(node.id())+"-"+std::to_string(node.id()));
             group->addChild(geode);
 
@@ -313,12 +324,12 @@ void DSRtoOSGViewer::add_or_assign_box(const Node &node, const Node& parent)
             else
             {
                 // image
-                osg::ref_ptr<osg::Image> image;
+                osg::Image *image;
                 if (textu.size()>0 and not constantColor)
                     if( image = osgDB::readImageFile(textu), image == nullptr)
                         throw std::runtime_error("Couldn't load texture from file: " + texture.value());
                 // texture
-                osg::ref_ptr<osg::Texture2D>texture = new osg::Texture2D;
+                osg::Texture2D *texture = new osg::Texture2D;
                 texture->setWrap(osg::Texture::WRAP_S, osg::Texture::REPEAT);
                 texture->setWrap(osg::Texture::WRAP_R, osg::Texture::REPEAT);
                 texture->setWrap(osg::Texture::WRAP_T, osg::Texture::REPEAT);
@@ -333,11 +344,11 @@ void DSRtoOSGViewer::add_or_assign_box(const Node &node, const Node& parent)
                 texture->setTextureHeight(1);
                 texture->setResizeNonPowerOfTwoHint(false);
                 // Material
-                osg::ref_ptr<osg::Material> material = new osg::Material();
+                osg::Material *material = new osg::Material();
                 //material->setTransparency( osg::Material::FRONT_AND_BACK, 0);
                 material->setEmission(osg::Material::FRONT, osg::Vec4(0.8, 0.8, 0.8, 0.5));
                 // Assign the material and texture to the plane
-                osg::ref_ptr<osg::StateSet> sphereStateSet = geode->getOrCreateStateSet();
+                osg::StateSet *sphereStateSet = geode->getOrCreateStateSet();
                 sphereStateSet->ref();
                 sphereStateSet->setAttribute(material);
                 sphereStateSet->setTextureMode(0, GL_TEXTURE_GEN_R, osg::StateAttribute::ON);
@@ -374,13 +385,13 @@ void  DSRtoOSGViewer::add_or_assign_mesh(const Node &node, const Node& parent)
     if( auto osg_node = osg_map.find(std::make_tuple(node.id(), node.id())); osg_node == osg_map.end())
     {
         qDebug() << __FUNCTION__ << "create mesh";
-        osg::ref_ptr<osg::MatrixTransform> scale_transform = new osg::MatrixTransform; 			
+        osg::MatrixTransform *scale_transform = new osg::MatrixTransform; 			
         scale_transform->setMatrix(osg::Matrix::scale(scalex.value(), scaley.value(), scalez.value()));
-        osg::ref_ptr<osg::MatrixTransform> mt = new osg::MatrixTransform;
-        osg::ref_ptr<osg::Node> osg_mesh = osgDB::readNodeFile(filename.value());
+        //osg::MatrixTransform *mt = new osg::MatrixTransform;
+        osg::Node *osg_mesh = osgDB::readNodeFile(filename.value());
         if (!osg_mesh)
             throw  std::runtime_error("Could not find nesh file " + filename.value());
-        osg::ref_ptr<osg::PolygonMode> polygonMode = new osg::PolygonMode();
+        osg::PolygonMode *polygonMode = new osg::PolygonMode();
         polygonMode->setMode(osg::PolygonMode::FRONT_AND_BACK, osg::PolygonMode::FILL);
         osg_mesh->getOrCreateStateSet()->setAttributeAndModes(polygonMode, osg::StateAttribute::OVERRIDE | osg::StateAttribute::ON);
         osg_mesh->getOrCreateStateSet()->setMode( GL_RESCALE_NORMAL, osg::StateAttribute::ON );
@@ -397,7 +408,6 @@ void  DSRtoOSGViewer::add_or_assign_mesh(const Node &node, const Node& parent)
       // Check if some attribute has changed
       qDebug() << __FUNCTION__ << "mesh already exits";
     }
-    print_RT_subtree(G->get_node("world").value());
 }
 
 /////////////////////////////////////////////////////////////
