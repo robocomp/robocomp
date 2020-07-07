@@ -6,13 +6,11 @@ module RoboCompObjectPoseEstimation
 
     struct TImage
     {
-        int cameraID;
         int width;
         int height;
         int depth;
         int focalx;
         int focaly;
-        int alivetime;
         ImgType image;
     };
 
