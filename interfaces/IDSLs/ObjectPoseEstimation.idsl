@@ -1,0 +1,34 @@
+module RoboCompObjectPoseEstimation
+{
+    exception HardwareFailedException { string what; };
+
+    sequence<byte> ImgType;
+
+    struct TImage
+    {
+        int width;
+        int height;
+        int depth;
+        int focalx;
+        int focaly;
+        ImgType image;
+    };
+
+    struct ObjectPose
+    {
+        string objectname;
+        float x;
+        float y;
+        float z;
+        float rx;
+        float ry;
+        float rz;
+    };
+
+    sequence<ObjectPose> PoseType;
+
+    interface ObjectPoseEstimation
+    {
+        PoseType getObjectPose(TImage img) throws HardwareFailedException;
+    };
+};
