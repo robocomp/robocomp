@@ -1,9 +1,9 @@
-import "ObjectPoseEstimation.idsl";
+import "ObjectPoseEstimationRGB.idsl";
 
 module RoboCompObjectPoseEstimationPub
 {
   interface ObjectPoseEstimationPub
   {
-    idempotent void pushObjectPose(RoboCompObjectPoseEstimation::PoseType poses);
+    idempotent void pushObjectPose(RoboCompObjectPoseEstimationRGB::PoseType poses);
   };
 };

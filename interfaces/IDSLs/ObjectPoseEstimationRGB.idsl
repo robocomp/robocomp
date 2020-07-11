@@ -1,4 +1,4 @@
-module RoboCompObjectPoseEstimation
+module RoboCompObjectPoseEstimationRGB
 {
     exception HardwareFailedException { string what; };
 
@@ -20,14 +20,15 @@ module RoboCompObjectPoseEstimation
         float x;
         float y;
         float z;
-        float rx;
-        float ry;
-        float rz;
+        float qx;
+        float qy;
+        float qz;
+        float qw;
     };
 
     sequence<ObjectPose> PoseType;
 
-    interface ObjectPoseEstimation
+    interface ObjectPoseEstimationRGB
     {
         PoseType getObjectPose(TImage img) throws HardwareFailedException;
     };
