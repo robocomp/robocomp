@@ -1,0 +1,20 @@
+import "ObjectPoseEstimationRGB.idsl";
+
+module RoboCompObjectPoseEstimationRGBD
+{
+    exception HardwareFailedException { string what; };
+
+    sequence<byte> DepthType;
+
+    struct TDepth
+    {
+        int width;
+        int height;
+        DepthType depth;
+    };
+
+    interface ObjectPoseEstimationRGBD
+    {
+        RoboCompObjectPoseEstimationRGB::PoseType getObjectPose(RoboCompObjectPoseEstimationRGB::TImage image, TDepth depth) throws HardwareFailedException;
+    };
+};
