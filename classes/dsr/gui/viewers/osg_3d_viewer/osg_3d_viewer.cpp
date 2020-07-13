@@ -248,6 +248,11 @@ void DSRtoOSGViewer::add_or_assign_edge_slot(const Node &from, const Node& to)
                 if (auto child = osg_map.find(std::make_tuple(to.id(), to.id())); child != osg_map.end())
                 { 
                     auto res = transform->addChild((*child).second);
+                    if(not res)
+                    {
+                        std::cout << __FUNCTION__ << __LINE__ << "Abort: child corresponding to node " << to.id() << " could not be added to transform " << std::endl;
+                        std::terminate();
+                    }
                     //qDebug() << __FUNCTION__ << res << "caca";
                 }
                
