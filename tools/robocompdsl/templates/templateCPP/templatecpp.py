@@ -114,39 +114,37 @@ configGetString( "","agent_id", aux.value,"false");
 params["agent_id"] = aux;
 configGetString( "","read_dsr", aux.value,"true");
 params["read_dsr"] = aux;
-configGetString( "","dsr_input_file", aux.value, "");
+configGetString( "","dsr_input_file", aux.value, "none");
 params["dsr_input_file"] = aux;
 """
 
 DSR_SOURCES_STR = """\
-$ENV{ROBOCOMP}/classes/graph-related-classes/CRDT.cpp
-$ENV{ROBOCOMP}/classes/graph-related-classes/CRDT_graphviewer.cpp
-$ENV{ROBOCOMP}/classes/graph-related-classes/CRDT_graphnode.cpp
-$ENV{ROBOCOMP}/classes/graph-related-classes/CRDT_graphedge.cpp
-$ENV{ROBOCOMP}/classes/graph-related-classes/fast_rtps/dsrpublisher.cpp
-$ENV{ROBOCOMP}/classes/graph-related-classes/fast_rtps/dsrsubscriber.cpp
-$ENV{ROBOCOMP}/classes/graph-related-classes/fast_rtps/dsrparticipant.cpp
-$ENV{ROBOCOMP}/classes/graph-related-classes/topics/DSRGraphPubSubTypes.cxx
-$ENV{ROBOCOMP}/classes/graph-related-classes/topics/DSRGraph.cxx
-$ENV{ROBOCOMP}/classes/graph-related-classes/inner_api.cpp
-$ENV{ROBOCOMP}/classes/graph-related-classes/dsr_utils.cpp
-$ENV{ROBOCOMP}/classes/graph-related-classes/dsr_to_osg_viewer.cpp
-$ENV{ROBOCOMP}/classes/graph-related-classes/dsr_to_graphicscene_viewer.cpp
-$ENV{ROBOCOMP}/classes/graph-related-classes/dsr_to_graph_viewer.cpp
-$ENV{ROBOCOMP}/classes/graph-related-classes/dsr_to_tree_viewer.cpp
+$ENV{ROBOCOMP}/classes/dsr/core/rtps/dsrpublisher.cpp
+$ENV{ROBOCOMP}/classes/dsr/core/rtps/dsrsubscriber.cpp
+$ENV{ROBOCOMP}/classes/dsr/core/rtps/dsrparticipant.cpp
+$ENV{ROBOCOMP}/classes/dsr/core/topics/DSRGraphPubSubTypes.cxx
+$ENV{ROBOCOMP}/classes/dsr/core/topics/DSRGraph.cxx
+$ENV{ROBOCOMP}/classes/dsr/api/dsr_api.cpp
+$ENV{ROBOCOMP}/classes/dsr/api/dsr_inner_api.cpp
+$ENV{ROBOCOMP}/classes/dsr/api/dsr_utils.cpp
+$ENV{ROBOCOMP}/classes/dsr/gui/dsr_gui.cpp
+$ENV{ROBOCOMP}/classes/dsr/gui/viewers/osg_3d_viewer/osg_3d_viewer.cpp
+$ENV{ROBOCOMP}/classes/dsr/gui/viewers/qscene_2d_viewer/qscene_2d_viewer.cpp
+$ENV{ROBOCOMP}/classes/dsr/gui/viewers/graph_viewer/graph_viewer.cpp
+$ENV{ROBOCOMP}/classes/dsr/gui/viewers/graph_viewer/graph_node.cpp
+$ENV{ROBOCOMP}/classes/dsr/gui/viewers/graph_viewer/graph_edge.cpp
+$ENV{ROBOCOMP}/classes/dsr/gui/viewers/tree_viewer/tree_viewer.cpp
+$ENV{ROBOCOMP}/classes/dsr/gui/viewers/_abstract_graphic_view.cpp
 """
 
 DSR_HEADERS_STR = """\
-$ENV{ROBOCOMP}/classes/graph-related-classes/CRDT.h
-$ENV{ROBOCOMP}/classes/graph-related-classes/CRDT_graphviewer.h
-$ENV{ROBOCOMP}/classes/graph-related-classes/CRDT_graph.h
-$ENV{ROBOCOMP}/classes/graph-related-classes/CRDT_graphnode.h
-$ENV{ROBOCOMP}/classes/graph-related-classes/CRDT_graphedge.h
+$ENV{ROBOCOMP}/classes/dsr/api/dsr_api.h
+$ENV{ROBOCOMP}/classes/dsr/gui/dsr_gui.h
 """
 
 DSR_DEDINITIONS = """\
-add_definitions(-O3  -fmax-errors=1 -std=c++2a )
-SET(SPECIFIC_LIBS OpenThreads fastcdr fastrtps osgDB)
+SET(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-fmax-errors=5" )
+add_definitions(-g  -fmax-errors=1 -std=c++2a )
 """
 
 class TemplatesManagerCpp(ComponentTemplatesManager):

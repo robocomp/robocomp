@@ -168,15 +168,14 @@ dsr_input_file = params["dsr_input_file"].value;
 
 DSR_INITIALIZE = """\
 // create graph
-G = std::make_shared<CRDT::CRDTGraph>(0, agent_name, agent_id); // Init nodes
+G = std::make_shared<DSR::DSRGraph>(0, agent_name, agent_id); // Init nodes
 std::cout<< __FUNCTION__ << "Graph loaded" << std::endl;  
 
 // Graph viewer
-graph_viewer = std::make_unique<DSR::GraphViewer>(G);
-mainLayout.addWidget(graph_viewer.get());
-window.setLayout(&mainLayout);
+using opts = DSR::GraphViewer::view;
+graph_viewer = std::make_unique<DSR::GraphViewer>(this, G, opts::scene);
 setCentralWidget(&window);
-setWindowTitle(QString::fromStdString(agent_name));
+setWindowTitle(QString::fromStdString(agent_name + "-" + dsr_input_file));
 
 this->Period = period;
 timer.start(Period);

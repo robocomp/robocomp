@@ -19,13 +19,13 @@ INNERMODELVIEWER_INCLUDES_STR = """\
 """
 
 DSR_INCLUDES_STR = """\
-#include "/home/robocomp/robocomp/classes/graph-related-classes/CRDT.h"
-#include "/home/robocomp/robocomp/classes/graph-related-classes/CRDT_graphviewer.h"
+#include "dsr/api/dsr_api.h"
+#include "dsr/gui/dsr_gui.h"
 """
 
 DSR_ATTRIBUTES = """\
 // DSR graph
-std::shared_ptr<CRDT::CRDTGraph> G;
+std::shared_ptr<DSR::DSRGraph> G;
 
 //DSR params
 std::string agent_name;

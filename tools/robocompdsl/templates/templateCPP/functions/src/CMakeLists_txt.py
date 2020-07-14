@@ -89,6 +89,8 @@ class TemplateDict(dict):
 
         if 'agm2agent' in options or 'agm2agentICE' in options:
             interface_names += ["AGM2"]
+        if 'dsr' in options:
+            interface_names += ["DSRGetID"]
 
         result = "ROBOCOMP_IDSL_TO_ICE( CommonBehavior "
         result += ' '.join(interface_names)
