@@ -143,9 +143,10 @@ $ENV{ROBOCOMP}/classes/dsr/gui/dsr_gui.h
 """
 
 DSR_DEDINITIONS = """\
-SET(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-fmax-errors=5" )
 add_definitions(-g  -fmax-errors=1 -std=c++2a )
 """
+
+DSR_LIBS = " fastcdr fastrtps osgDB"
 
 class TemplatesManagerCpp(ComponentTemplatesManager):
     def __init__(self, component):
@@ -260,11 +261,14 @@ class TemplatesManagerCpp(ComponentTemplatesManager):
         dsr_sources = ""
         dsr_headers = ""
         dsr_definitions = ""
+        dsr_libs = ""
         if self.component.dsr:
             dsr_sources = DSR_SOURCES_STR
             dsr_headers = DSR_HEADERS_STR
             dsr_definitions = DSR_DEDINITIONS
+            dsr_libs = DSR_LIBS
         return {'dsr_sources': dsr_sources,
                 'dsr_headers': dsr_headers,
-                'dsr_definitions': dsr_definitions}
+                'dsr_definitions': dsr_definitions,
+                'dsr_libs': dsr_libs}
 
