@@ -11,6 +11,7 @@ DSR_CONFIG_STR = """\
 agent_id = 0 # Change id
 agent_name = ${name}
 dsr_input_file = "/path/to/json/input/file.json"
+#Ice.MessageSizeMax=20004800
 """
 
 class TemplateDict(dict):
