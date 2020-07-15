@@ -85,7 +85,7 @@ GraphViewer::GraphViewer(QMainWindow * widget, std::shared_ptr<DSR::DSRGraph> G_
 //		restart_app(true);
 	});
 
-
+	main_widget = nullptr;
 	initialize_views(options, main);
 }
 
@@ -148,7 +148,7 @@ void GraphViewer::initialize_views(int options, view central){
 
 	// creation of docks and mainwidget
 	for (auto option: valid_options) {
-		if(option.first == central)
+		if(option.first == central and central != view::none)
 		{
 			auto viewer = create_widget(option.first);
 			window->setCentralWidget(viewer);
@@ -169,19 +169,26 @@ void GraphViewer::initialize_views(int options, view central){
 	}
 
 //	connection of tree to graph signals
-	if(docks.count(QString("Tree"))==1)
-	{
-		auto graph_widget = qobject_cast<DSRtoGraphViewer*>(this->main_widget);
-		if(graph_widget)
-		{
-			DSRtoTreeViewer * tree_widget= qobject_cast<DSRtoTreeViewer*>(docks["Tree"]->widget());
-			GraphViewer::connect(
-					tree_widget,
-					&DSRtoTreeViewer::node_check_state_changed,
-					graph_widget,
-					[=] (int value, int id, const std::string &type, QTreeWidgetItem*) {graph_widget->hide_show_node_SLOT(id, value==2);});
+	if(docks.count(QString("Tree"))==1) {
+		if (this->main_widget) {
+			auto graph_widget = qobject_cast<DSRtoGraphViewer*>(this->main_widget);
+			if (graph_widget) {
+				DSRtoTreeViewer* tree_widget = qobject_cast<DSRtoTreeViewer*>(docks["Tree"]->widget());
+				GraphViewer::connect(
+						tree_widget,
+						&DSRtoTreeViewer::node_check_state_changed,
+						graph_widget,
+						[=](int value, int id, const std::string& type, QTreeWidgetItem*) {
+							graph_widget->hide_show_node_SLOT(id, value==2); });
+			}
 		}
-
+	}
+	if((docks.size())>0 or central!=none)
+	{
+		window->show();
+	}
+	else {
+		window->showMinimized();
 	}
 
 }
@@ -213,6 +220,8 @@ QWidget* GraphViewer::create_widget(view type){
 //		2D
 		case view::scene:
 			widget_view = new DSR::DSRtoGraphicsceneViewer(G);
+			break;
+		case view::none:
 			break;
 	}
 	widgets[type] = widget_view;

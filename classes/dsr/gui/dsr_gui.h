@@ -44,12 +44,13 @@ namespace DSR
 		public:
 			enum view
 			{
+				none = -1,
 				graph = (1 << 0),
 				osg = (1 << 1),
 				scene = (1 << 2),
 				tree = (1 << 3),
 			};
-			GraphViewer(QMainWindow *window, std::shared_ptr<DSR::DSRGraph> G, int options, view main = view::graph);
+			GraphViewer(QMainWindow *window, std::shared_ptr<DSR::DSRGraph> G, int options, view main = view::none);
 			~GraphViewer();
 			void itemMoved();
 			void createGraph();
