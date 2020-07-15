@@ -23,8 +23,9 @@ qdbus org.kde.yakuake /yakuake/tabs_by_name org.kde.yakuake.setTabTitle $sess0 "
 """
 
 def get_command_return(command):
-    proc = subprocess.Popen(shlex.split(command), stderr=subprocess.PIPE,
-                            stdout=subprocess.PIPE, shell=False)
+    proc = subprocess.Popen(command, stderr=subprocess.PIPE,
+                            stdout=subprocess.PIPE, shell=True, executable='/bin/bash')
+    proc.wait()
     (result, error) = proc.communicate()
     return result, error
 
@@ -93,35 +94,14 @@ class Yaku:
             foreground_pid = konsole_session.foregroundProcessId()
             session_pid = konsole_session.processId()
             # Not executing the command
+            child_pid = get_last_child(foreground_pid)
+            pwdx_command = "pwdx %s" % child_pid
+            pwd, error = get_command_return(pwdx_command)
+            pwd = pwd.split()[1].strip()
+            yakuake_tab.current_directory = pwd.decode("utf-8")
             if foreground_pid == session_pid:
-                yakuake_tab.tmp_path = "/tmp/yaku_commands_%d.txt" % session_id
-                self.sessions.runCommandInTerminal(int(yakuake_tab.terminal_id),
-                                              "pwd > %s" % yakuake_tab.tmp_path)
-                self.sessions.runCommandInTerminal(int(yakuake_tab.terminal_id),
-                                              "history 3 | head -1 | cut -d' ' -f4- >> %s" % yakuake_tab.tmp_path)
-                sleep(0.1)
-
-                for retrie in range(5):
-                    try:
-                        with open(yakuake_tab.tmp_path) as command_file:
-                            file_lines = command_file.read().splitlines()
-                            if len(file_lines) > 0:
-                                yakuake_tab.current_directory = file_lines[0]
-                            if len(file_lines) > 1 and "history 3" not in file_lines[1]:
-                                yakuake_tab.last_command = file_lines[1]
-
-                            # print("Tab name: %s \n\tId: %d \n\tLast Command: %s \n\tCurrent dir:%s\n" % (yakuake_tab.name,yakuake_tab.session_id, yakuake_tab.last_command, yakuake_tab.current_directory))
-                            break
-                    except:
-                        if retrie == 4:
-                            print(
-                                "Could not get command from \"%s\" tab. Check that you finished the process that tab." % yakuake_tab.name)
+               yakuake_tab.last_command = self.get_last_executed_command(yakuake_tab, session_id)
             else:
-                child_pid = get_last_child(foreground_pid)
-                pwdx_command = "pwdx %s" % child_pid
-                pwd, error = get_command_return(pwdx_command)
-                pwd = pwd.split()[1].strip()
-                yakuake_tab.current_directory = pwd.decode("utf-8")
                 ps_command = "ps -p %s -o cmd h" % child_pid
                 command, error = get_command_return(ps_command)
                 command = command.strip()
@@ -138,7 +118,7 @@ class Yaku:
             tabs_to_restore = self.tabs_by_name
         shell_script_content = ""
         for tab in tabs_to_restore.values():
-            if (tab.last_command != "" or tab.current_directory != "") and tab.name != "Shell":
+            if (tab.last_command != "" or tab.current_directory != "") and ("Shell" not in tab.name and "Consola" not in tab.name):
                 shell_script_content += SHELL_CODE % (tab.name, tab.current_directory, tab.last_command, tab.name)
         with open("./new_deplyment.sh", "w") as f:
             f.write(shell_script_content)
@@ -148,7 +128,26 @@ class Yaku:
         for tab_id in self.tabs_by_id.keys():
             self.rename_tab(name, append, tab_id)
 
+    def get_last_executed_command(self, yakuake_tab, session_id):
 
+        yakuake_tab.tmp_path = "/tmp/yaku_commands_%d.txt" % session_id
+        self.sessions.runCommandInTerminal(int(yakuake_tab.terminal_id),
+                                           " history 3 | head -1 | cut -d' ' -f4- > %s" % yakuake_tab.tmp_path)
+        sleep(0.1)
+
+        for retrie in range(5):
+            try:
+                with open(yakuake_tab.tmp_path) as command_file:
+                    file_lines = command_file.read().splitlines()
+                    if len(file_lines) > 0 and "history 3" not in file_lines[0]:
+                        return file_lines[0]
+                    # print("Tab name: %s \n\tId: %d \n\tLast Command: %s \n\tCurrent dir:%s\n" % (yakuake_tab.name,yakuake_tab.session_id, yakuake_tab.last_command, yakuake_tab.current_directory))
+                    break
+            except:
+                if retrie == 4:
+                    print(
+                        "Could not get command from \"%s\" tab. Check that you finished the process that tab." % yakuake_tab.name)
+        return ""
 
 if __name__ == '__main__':
     yaku = Yaku()
