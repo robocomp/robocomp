@@ -5,104 +5,61 @@ from ..templateCPP.functions import servant
 
 DSR_UI_STR = """\
   <widget class="QWidget" name="centralwidget">
-  <layout class="QVBoxLayout" name="verticalLayout">
-  <item>
-   <widget class="QSplitter" name="splitter_1">
-    <property name="orientation">
-     <enum>Qt::Horizontal</enum>
-    </property>
-    <widget class="QSplitter" name="splitter_2">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <widget class="QTableWidget" name="tableWidgetNodes">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <widget class="QSplitter" name="splitter_1">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
       </property>
+      <widget class="QSplitter" name="splitter_2">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+      </widget>
      </widget>
-     <widget class="QTableWidget" name="tableWidgetEdges">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-     </widget>
-    </widget>
-    <widget class="QScrollArea" name="scrollArea">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Maximum" vsizetype="Expanding">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="minimumSize">
-      <size>
-       <width>500</width>
-       <height>0</height>
-      </size>
-     </property>
-     <property name="widgetResizable">
-      <bool>true</bool>
-     </property>
-     <widget class="QWidget" name="scrollAreaWidgetContents">
-      <property name="geometry">
-       <rect>
-        <x>0</x>
-        <y>0</y>
-        <width>498</width>
-        <height>443</height>
-       </rect>
-      </property>
-     </widget>
-    </widget>
-   </widget>
-  </item>
-  </layout>
+    </item>
+   </layout>
   </widget>
   <widget class="QMenuBar" name="menubar">
-  <property name="geometry">
-  <rect>
-   <x>0</x>
-   <y>0</y>
-   <width>780</width>
-   <height>25</height>
-  </rect>
-  </property>
-  <widget class="QMenu" name="menuFile">
-  <property name="title">
-   <string>File</string>
-  </property>
-  <addaction name="actionSave"/>
-  </widget>
-  <widget class="QMenu" name="menuSimulation">
-  <property name="title">
-   <string>Simulation</string>
-  </property>
-  <addaction name="actionStart_Stop"/>
-  </widget>
-  <addaction name="menuFile"/>
-  <addaction name="menuSimulation"/>
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>780</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionSave"/>
+   </widget>
+   <widget class="QMenu" name="menuSimulation">
+    <property name="title">
+     <string>Simulation</string>
+    </property>
+    <addaction name="actionStart_Stop"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuSimulation"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionSave">
-  <property name="text">
-  <string>Save</string>
-  </property>
+   <property name="text">
+    <string>Save</string>
+   </property>
   </action>
   <action name="actionStart_Stop">
-  <property name="text">
-  <string>Start/Stop</string>
-  </property>
+   <property name="text">
+    <string>Start/Stop</string>
+   </property>
   </action>
 """
 
@@ -116,6 +73,15 @@ configGetString( "","read_dsr", aux.value,"true");
 params["read_dsr"] = aux;
 configGetString( "","dsr_input_file", aux.value, "none");
 params["dsr_input_file"] = aux;
+
+configGetString( "","tree_view", aux.value, "none");
+params["tree_view"] = aux;
+configGetString( "","graph_view", aux.value, "none");
+params["graph_view"] = aux;
+configGetString( "","2d_view", aux.value, "none");
+params["2d_view"] = aux;
+configGetString( "","3d_view", aux.value, "none");
+params["3d_view"] = aux;
 """
 
 DSR_SOURCES_STR = """\

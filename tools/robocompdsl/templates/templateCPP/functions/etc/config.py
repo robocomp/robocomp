@@ -11,6 +11,10 @@ DSR_CONFIG_STR = """\
 agent_id = 0 # Change id
 agent_name = ${name}
 dsr_input_file = "/path/to/json/input/file.json"
+tree_view = true
+graph_view = true
+2d_view = true
+3d_view = true
 #Ice.MessageSizeMax=20004800
 """
 
