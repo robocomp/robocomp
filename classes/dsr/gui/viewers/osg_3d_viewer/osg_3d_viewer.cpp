@@ -135,14 +135,14 @@ osg::ref_ptr<osg::Group> DSRtoOSGViewer::createGraph()
 
 void DSRtoOSGViewer::print_RT_subtree(const Node& node)
 {
-    //std::cout << "Node " << node.name() << std::endl;
+    //qDebug() << "Node " << node.name() ;
     for(auto &edge: G->get_node_edges_by_type(node, "RT"))
 	{
-        std::cout <<  "Edge " << edge.from() << "-" << edge.to() << ". Type: " << edge.type() << std::endl;
+        qDebug() <<  "Edge " << edge.from() << "-" << edge.to() << ". Type: " << QString::fromStdString(edge.type()) ;
         auto child = G->get_node(edge.to());
         if(child.has_value())
         {
-            std::cout << "Node " <<  child.value().name() + "-" + std::to_string(child.value().id()) << std::endl;
+            qDebug() << "Node " <<  QString::fromStdString(child.value().name() + "-" + std::to_string(child.value().id()));
             print_RT_subtree(child.value());
         }
         else
@@ -190,7 +190,7 @@ void  DSRtoOSGViewer::setMainCamera(osgGA::TrackballManipulator *manipulator, Ca
 
 void DSRtoOSGViewer::add_or_assign_node_slot(const Node &node)
 {
-    std::cout << __FUNCTION__  << " " << node.name() << " " << node.id() << " " << node.type() << std::endl;
+    qDebug() << __FUNCTION__  << " " << QString::fromStdString(node.name()) << " " << node.id() << " " << QString::fromStdString(node.type()) ;
     try
     {
         if(node.id() == G->get_node_root().value().id())
@@ -218,7 +218,7 @@ void DSRtoOSGViewer::add_or_assign_node_slot(const Node &node)
 void DSRtoOSGViewer::add_or_assign_edge_slot(const Node &from, const Node& to)
 {
     
-    std::cout << __FUNCTION__ << " from " << from.id() << " to " << to.id() << std::endl;
+    qDebug() << __FUNCTION__ << " from " << from.id() << " to " << to.id() ;
     auto edge = G->get_edge(from.id(), to.id(), "RT");
     if (edge.has_value())
     {
@@ -270,7 +270,7 @@ void DSRtoOSGViewer::add_or_assign_edge_slot(const Node &from, const Node& to)
 
 void DSRtoOSGViewer::add_or_assign_transform(const Node &node, const Node& parent)
 {
-    std::cout << __FUNCTION__  << " node " << node.id() << " parent "  << parent.id() << std::endl;
+    qDebug() << __FUNCTION__  << " node " << node.id() << " parent "  << parent.id() ;
    
     // check if transform does not exist
     osg::MatrixTransform *transform = new osg::MatrixTransform();
@@ -295,17 +295,17 @@ void DSRtoOSGViewer::add_or_assign_transform(const Node &node, const Node& paren
 
 void DSRtoOSGViewer::add_or_assign_box(const Node &node, const Node& parent)
 {
-    std::cout << __FUNCTION__ << ": node " <<  node.name() << "-" << node.id()<< " Parent: " << parent.id() << std::endl;
+    qDebug() << __FUNCTION__ << ": node " <<  QString::fromStdString(node.name()) << "-" << node.id()<< " Parent: " << parent.id() ;
     try
     {
         auto texture = G->get_attrib_by_name<std::string>(node, "texture");
-        //if(texture.has_value()) std::cout << texture.value() << std::endl;
+        //if(texture.has_value()) qDebug() << texture.value() ;
         auto height = G->get_attrib_by_name<std::int32_t>(node, "height");
-        //if(height.has_value()) std::cout << height.value() << std::endl;
+        //if(height.has_value()) qDebug() << height.value() ;
         auto width = G->get_attrib_by_name<std::int32_t>(node, "width");
-        //if(width.has_value()) std::cout << height.value() << std::endl;
+        //if(width.has_value()) qDebug() << height.value() ;
         auto depth = G->get_attrib_by_name<std::int32_t>(node, "depth");
-        //if(depth.has_value()) std::cout << depth.value() << std::endl;
+        //if(depth.has_value()) qDebug() << depth.value() ;
    
         // Check valid ranges
         auto textu = texture.value_or("#000000");
@@ -373,17 +373,17 @@ void DSRtoOSGViewer::add_or_assign_box(const Node &node, const Node& parent)
 
 void  DSRtoOSGViewer::add_or_assign_mesh(const Node &node, const Node& parent)
 {   
-    std::cout << __FUNCTION__ << " node " << node.id() << " parent " << parent.id() << std::endl;
+    qDebug() << __FUNCTION__ << " node " << node.id() << " parent " << parent.id() ;
     auto color = G->get_attrib_by_name<std::string>(node, "color");
-    if(color.has_value()) std::cout << color.value() << std::endl;
+    if(color.has_value()) qDebug() << QString::fromStdString(color.value());
     auto filename = G->get_attrib_by_name<std::string>(node, "path");
-    if(filename.has_value()) std::cout << filename.value() << std::endl;
+    if(filename.has_value()) qDebug() << QString::fromStdString(filename.value()) ;
     auto scalex = G->get_attrib_by_name<std::int32_t>(node, "scalex");
-    if(scalex.has_value()) std::cout << scalex.value() << std::endl;
+    if(scalex.has_value()) qDebug() << scalex.value() ;
     auto scaley = G->get_attrib_by_name<std::int32_t>(node, "scaley");
-    if(scaley.has_value()) std::cout << scaley.value() << std::endl;
+    if(scaley.has_value()) qDebug() << scaley.value() ;
     auto scalez = G->get_attrib_by_name<std::int32_t>(node, "scalez");
-    if(scalez.has_value()) std::cout << scalez.value() << std::endl;
+    if(scalez.has_value()) qDebug() << scalez.value() ;
     // Check valid ranges
     
     // if node does not exist

@@ -194,7 +194,7 @@ void GraphNode::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event)
 {
     //if (tag->text() != "") return; // Explota sin esto
 //    animation->start();
-    std::cout << __FILE__ <<":"<<__FUNCTION__<< "-> node: " << tag->text().toStdString() << " Type: " << type << std::endl;
+    qDebug() << __FILE__ <<":"<<__FUNCTION__<< "-> node: " << tag->text() << " Type: " << QString::fromStdString(type) ;
     const auto graph = dsr_to_graph_viewer->getGraph();
     if( event->button()== Qt::RightButton)
     {
@@ -220,7 +220,7 @@ void GraphNode::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
      if( event->button()== Qt::LeftButton)
     {
         auto g = dsr_to_graph_viewer->getGraph();
-        std::cout << __FILE__ <<":"<<__FUNCTION__<< " node id in graphnode: " << id_in_graph << std::endl;
+        qDebug() << __FILE__ <<":"<<__FUNCTION__<< " node id in graphnode: " << id_in_graph ;
         std::optional<Node> n = g->get_node(id_in_graph);
         if (n.has_value()) {
 //            qDebug()<<"ScenePos X"<<(float) event->scenePos().x()<<" Width "<<(this->rect())<<" this "<<this->pos().x();

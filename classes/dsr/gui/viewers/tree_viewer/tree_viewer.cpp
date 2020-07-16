@@ -110,14 +110,14 @@ void DSRtoTreeViewer::add_or_assign_edge_SLOT(std::int32_t from, std::int32_t to
 
 void DSRtoTreeViewer::del_edge_SLOT(const std::int32_t from, const std::int32_t to, const std::string &edge_tag)
 {
-    std::cout<<__FUNCTION__<<":"<<__LINE__<< std::endl;
+    qDebug()<<__FUNCTION__<<":"<<__LINE__;
 
 }
 
 void DSRtoTreeViewer::del_node_SLOT(int id)
 {
 
-    std::cout<<__FUNCTION__<<":"<<__LINE__<< std::endl;
+    qDebug()<<__FUNCTION__<<":"<<__LINE__;
 	while (tree_map.count(id) > 0) {
 		auto item = tree_map[id];
 		this->invisibleRootItem()->removeChild(item);

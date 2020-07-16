@@ -67,7 +67,7 @@ void DSRtoGraphViewer::createGraph()
 void DSRtoGraphViewer::itemMoved()
 {
 	do_simulate = true;
-	std::cout << "timerId " << timerId << std::endl;
+	qDebug() << "timerId " << timerId ;
 	if(do_simulate and timerId == 0)
 	if (timerId == 0)
 	   timerId = startTimer(1000 / 25);
@@ -143,7 +143,7 @@ void DSRtoGraphViewer::add_or_assign_node_SLOT(int id, const std::string &type)
             // connect(tableWidgetNodes, &QTableWidget::itemClicked, this, [this](const auto &item) 
 			// {
             //     static bool visible = true;
-            //     std::cout << __FILE__ << " " << __FUNCTION__ << "hide or show all nodes of type " << item->text().toStdString() << std::endl;
+            //     qDebug() << __FILE__ << " " << __FUNCTION__ << "hide or show all nodes of type " << item->text().toStdString() ;
             //     for (auto &[k, v] : gmap)
             //         if (item->text().toStdString() == v->getType()) {
             //             v->setVisible(!v->isVisible());
@@ -240,7 +240,7 @@ void DSRtoGraphViewer::add_or_assign_edge_SLOT(std::int32_t from, std::int32_t t
 
 void DSRtoGraphViewer::del_edge_SLOT(const std::int32_t from, const std::int32_t to, const std::string &edge_tag)
 {
-    std::cout<<__FUNCTION__<<":"<<__LINE__<< std::endl;
+    qDebug()<<__FUNCTION__<<":"<<__LINE__;
 	try {
 		std::tuple<std::int32_t, std::int32_t, std::string> key = std::make_tuple(from, to, edge_tag);
 		while (gmap_edges.count(key) > 0) {
@@ -253,7 +253,7 @@ void DSRtoGraphViewer::del_edge_SLOT(const std::int32_t from, const std::int32_t
 
 void DSRtoGraphViewer::del_node_SLOT(int id)
 {
-    std::cout<<__FUNCTION__<<":"<<__LINE__<< std::endl;
+    qDebug()<<__FUNCTION__<<":"<<__LINE__;
     try {
         while (gmap.count(id) > 0) {
         	auto item = gmap.at(id);
