@@ -53,9 +53,10 @@ namespace DSR
             std::shared_ptr<DSR::DSRGraph> G;
             std::map<std::string, QTreeWidgetItem*> types_map;
 			std::map<int, QTreeWidgetItem*> tree_map;
-			std::map<int, std::map<QString, QTreeWidgetItem*>> attributes_map;
+			std::map<int, std::map<std::string, QTreeWidgetItem*>> attributes_map;
 			void createGraph();
 			void create_attribute_widgets(QTreeWidgetItem* parent, Node* node);
+			void create_attribute_widget(QTreeWidgetItem* parent, Node* node, std::string key, Val value);
 			void update_attribute_widgets(Node* node);
 
         

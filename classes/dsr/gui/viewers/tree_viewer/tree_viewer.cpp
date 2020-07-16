@@ -151,72 +151,87 @@ void DSRtoTreeViewer::node_change_SLOT(int value, int id, const std::string &typ
 void DSRtoTreeViewer::create_attribute_widgets(QTreeWidgetItem* parent, Node* node)
 {
 	for (auto[key, value] : node->attrs()) {
-		QTreeWidgetItem* q_attr = new QTreeWidgetItem(parent);
-		attributes_map[node->id()][QString::fromStdString(key)] = q_attr;
-		q_attr->setText(0, QString::fromStdString(key));
-		switch (value.value()._d()) {
-		case 0: {
-			QLineEdit* ledit = new QLineEdit(QString::fromStdString(value.value().str()));
-			ledit->setReadOnly(true);
-			this->setItemWidget(q_attr, 1, ledit);
-		}
-			break;
-		case 1: {
-			QSpinBox* spin = new QSpinBox();
-			spin->setReadOnly(true);
-			spin->setMinimum(-10000);
-			spin->setMaximum(10000);
-			spin->setValue(value.value().dec());
-			this->setItemWidget(q_attr, 1, spin);
-
-		}
-			break;
-		case 2: {
-			QDoubleSpinBox* spin = new QDoubleSpinBox();
-			spin->setReadOnly(true);
-			spin->setMinimum(-10000);
-			spin->setMaximum(10000);
-			spin->setValue(std::round(static_cast<double>(value.value().fl())*1000000)/1000000);
-			this->setItemWidget(q_attr, 1, spin);
-		}
-			break;
-		case 3: {
-			QWidget* widget = new QWidget();
-			QHBoxLayout* layout = new QHBoxLayout;
-			widget->setLayout(layout);
-			if (!value.value().float_vec().empty()) {
-				for (std::size_t i = 0; i<value.value().float_vec().size(); ++i) {
-					QDoubleSpinBox* spin = new QDoubleSpinBox();
-					spin->setReadOnly(true);
-					spin->setMinimum(-10000);
-					spin->setMaximum(10000);
-					spin->setValue(value.value().float_vec()[i]);
-					layout->addWidget(spin);
-				}
-				this->setItemWidget(q_attr, 1, widget);
-			}
-		}
-			break;
-		case 4: {
-			QComboBox* combo = new QComboBox();
-			combo->setEnabled(false);
-			combo->addItem("true");
-			combo->addItem("false");
-			if (value.value().bl())
-				combo->setCurrentText("true");
-			else
-				combo->setCurrentText("false");
-			this->setItemWidget(q_attr, 1, combo);
-		}
-			break;
-		}
+		// check if attribute widget already exists
+		if(attributes_map.count(node->id()) > 0 and attributes_map[node->id()].count(key) > 0)
+			continue;
+		create_attribute_widget(parent, node, key, value.value());
 	}
 
 }
+
+void DSRtoTreeViewer::create_attribute_widget(QTreeWidgetItem* parent, Node* node, std::string key, Val value)
+{
+	QTreeWidgetItem* q_attr = new QTreeWidgetItem(parent);
+	attributes_map[node->id()][key] = q_attr;
+	q_attr->setText(0, QString::fromStdString(key));
+	switch (value._d()) {
+	case 0: {
+		QLineEdit* ledit = new QLineEdit(QString::fromStdString(value.str()));
+		ledit->setReadOnly(true);
+		this->setItemWidget(q_attr, 1, ledit);
+	}
+		break;
+	case 1: {
+		QSpinBox* spin = new QSpinBox();
+		spin->setReadOnly(true);
+		spin->setMinimum(-10000);
+		spin->setMaximum(10000);
+		spin->setValue(value.dec());
+		this->setItemWidget(q_attr, 1, spin);
+
+	}
+		break;
+	case 2: {
+		QDoubleSpinBox* spin = new QDoubleSpinBox();
+		spin->setReadOnly(true);
+		spin->setMinimum(-10000);
+		spin->setMaximum(10000);
+		spin->setValue(std::round(static_cast<double>(value.fl())*1000000)/1000000);
+		this->setItemWidget(q_attr, 1, spin);
+	}
+		break;
+	case 3: {
+		QWidget* widget = new QWidget();
+		QHBoxLayout* layout = new QHBoxLayout;
+		widget->setLayout(layout);
+		if (!value.float_vec().empty()) {
+			for (std::size_t i = 0; i<value.float_vec().size(); ++i) {
+				QDoubleSpinBox* spin = new QDoubleSpinBox();
+				spin->setReadOnly(true);
+				spin->setMinimum(-10000);
+				spin->setMaximum(10000);
+				spin->setValue(value.float_vec()[i]);
+				layout->addWidget(spin);
+			}
+			this->setItemWidget(q_attr, 1, widget);
+		}
+	}
+		break;
+	case 4: {
+		QComboBox* combo = new QComboBox();
+		combo->setEnabled(false);
+		combo->addItem("true");
+		combo->addItem("false");
+		if (value.bl())
+			combo->setCurrentText("true");
+		else
+			combo->setCurrentText("false");
+		this->setItemWidget(q_attr, 1, combo);
+	}
+		break;
+	}
+}
+
 void DSRtoTreeViewer::update_attribute_widgets(Node* node)
 {
 	for (auto[key, value] : node->attrs()) {
-		QTreeWidgetItem* q_attr = attributes_map[node->id()][QString::fromStdString(key)];
+		QTreeWidgetItem* q_attr = attributes_map[node->id()][key];
+		if(not q_attr) {
+			create_attribute_widget(tree_map[node->id()], node, key, value.value());
+			q_attr = attributes_map[node->id()][key];
+			if(not q_attr)
+				throw std::runtime_error("Problem creating tree widget for node" +node->name()+" attribute "+key);
+		}
 		switch (value.value()._d()) {
 		case 0: {
 
