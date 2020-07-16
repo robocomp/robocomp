@@ -4,7 +4,7 @@
 
 #include <string>
 #include <optional>
-#include "../core/topics/DSRGraphPubSubTypes.h"
+#include "../core/topics/IDLGraphPubSubTypes.h"
 #include "dsr_exceptions.h"
 
 namespace DSR

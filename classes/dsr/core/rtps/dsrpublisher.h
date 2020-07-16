@@ -25,7 +25,7 @@
 
 #include <fastrtps/fastrtps_fwd.h>
 #include <fastrtps/publisher/PublisherListener.h>
-#include "../topics/DSRGraphPubSubTypes.h"
+#include "../topics/IDLGraphPubSubTypes.h"
 
 class DSRPublisher
 {

@@ -26,7 +26,7 @@
 #include "../core/rtps/dsrparticipant.h"
 #include "../core/rtps/dsrpublisher.h"
 #include "../core/rtps/dsrsubscriber.h"
-#include "../core/topics/DSRGraphPubSubTypes.h"
+#include "../core/topics/IDLGraphPubSubTypes.h"
 //#include "vertex.h"
 #include "dsr_inner_api.h"
 #include "dsr_utils.h"

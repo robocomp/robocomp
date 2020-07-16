@@ -23,7 +23,7 @@
 #include <fastcdr/FastBuffer.h>
 #include <fastcdr/Cdr.h>
 
-#include "DSRGraphPubSubTypes.h"
+#include "IDLGraphPubSubTypes.h"
 
 using namespace eprosima::fastrtps;
 using namespace eprosima::fastrtps::rtps;
