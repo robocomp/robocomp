@@ -160,7 +160,7 @@ def main():
 
     
     print("executing : "+command)
-    Yaku.rename_current_tab(name=component)
+    Yaku().rename_current_tab(name=component)
     os.system(command)
 
 if __name__ == '__main__':
