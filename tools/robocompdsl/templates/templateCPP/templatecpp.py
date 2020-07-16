@@ -69,10 +69,6 @@ configGetString( "","agent_name", aux.value,"");
 params["agent_name"] = aux;
 configGetString( "","agent_id", aux.value,"false");
 params["agent_id"] = aux;
-configGetString( "","read_dsr", aux.value,"true");
-params["read_dsr"] = aux;
-configGetString( "","dsr_input_file", aux.value, "none");
-params["dsr_input_file"] = aux;
 
 configGetString( "","tree_view", aux.value, "none");
 params["tree_view"] = aux;

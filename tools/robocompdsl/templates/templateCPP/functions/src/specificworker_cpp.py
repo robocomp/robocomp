@@ -162,8 +162,6 @@ ${methods}
 DSR_SET_PARAMS = """\
 agent_name = params["agent_name"].value;
 agent_id = stoi(params["agent_id"].value);
-read_dsr = params["read_dsr"].value == "true";
-dsr_input_file = params["dsr_input_file"].value;
 
 tree_view = params["tree_view"].value == "true";
 graph_view = params["graph_view"].value == "true";
@@ -198,7 +196,7 @@ if(osg_3d_view)
     current_opts = current_opts | opts::osg;
 }
 graph_viewer = std::make_unique<DSR::GraphViewer>(this, G, current_opts, main);
-setWindowTitle(QString::fromStdString(agent_name + "-" + dsr_input_file));
+setWindowTitle(QString::fromStdString(agent_name + "-" + agent_id));
 
 this->Period = period;
 timer.start(Period);

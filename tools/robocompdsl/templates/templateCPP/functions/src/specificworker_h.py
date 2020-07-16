@@ -30,8 +30,6 @@ std::shared_ptr<DSR::DSRGraph> G;
 //DSR params
 std::string agent_name;
 int agent_id;
-bool read_dsr;
-std::string dsr_input_file;
 
 bool tree_view;
 bool graph_view;
