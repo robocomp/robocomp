@@ -61,7 +61,7 @@ qDebug() << __FUNCTION__ ;
     
     if(node.has_value())
     { 
-        if (ignore_nodes.find(node.value().id()) != ignore_nodes.end()) //
+        if (ignore_nodes.find(node.value().id()) != ignore_nodes.end())
             return;
 
         if( not check_RT_required_attributes(node.value()))
@@ -82,6 +82,16 @@ qDebug() << __FUNCTION__ ;
 }
 void DSRtoGraphicsceneViewer::add_or_assign_edge_slot(const std::int32_t from, const std::int32_t to, const std::string& type)
 {
+qDebug()<<__FUNCTION__;
+    //check if new edge connected any orphan nodes
+    std::map<int, std::string>::iterator it = orphand_nodes.find(to);
+
+    if(it != orphand_nodes.end())
+    {
+qDebug()<<"ORPHAND NODE FOUND"<<to;
+        orphand_nodes.erase(it);
+        add_or_assign_node_slot(it->first, it->second);
+    }
     std::string edge_key = std::to_string(from) + "_" + std::to_string(to);
     for (int node_id : edge_map[edge_key])
     {
@@ -129,7 +139,7 @@ void DSRtoGraphicsceneViewer::add_or_assign_rect(Node &node, std::string color, 
         rect.setWidth(100);
     if(rect.height() < 100)
         rect.setHeight(100);
-qDebug()<<"rect"<<rect;
+
     //texture
     QBrush brush = QBrush(QColor(QString::fromStdString(color)));
     if (texture != "")
@@ -154,7 +164,7 @@ qDebug()<<"rect"<<rect;
         sceneRect->setRect(rect);
     }
     sceneRect->setZValue(zvalue);
-qDebug()<<"zvalue"<<zvalue;
+
 }
 
 
@@ -207,10 +217,14 @@ bool DSRtoGraphicsceneViewer::check_RT_required_attributes(Node node)
     try{
         std::optional<int> level = G->get_node_level(node);
         std::optional<int> parent = G->get_parent_id(node);
-        if(level.has_value() and parent.has_value())
+        std::optional<QVec> pose = innermodel->transformS6D("world", node.name());
+
+        if(level.has_value() and parent.has_value() and pose.has_value())
             return true;
     }
-    catch(...){ }
+    catch(...){    }
+    orphand_nodes[node.id()] = node.type();
+qDebug()<<"ORPHAN NODE"<<node.id()<<QString::fromStdString(node.type());
     return false;
 }
 

@@ -50,6 +50,7 @@ namespace DSR
             std::map<int, QGraphicsItem*> scene_map;
             std::map<std::string,std::vector<int>> edge_map;
             std::set<int> ignore_nodes;
+            std::map<int, std::string> orphand_nodes; //nodes without RT edge must be revisited
         public:
             DSRtoGraphicsceneViewer(std::shared_ptr<DSR::DSRGraph> G_, QWidget *parent=0);
 
