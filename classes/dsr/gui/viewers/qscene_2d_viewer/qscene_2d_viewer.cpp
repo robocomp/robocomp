@@ -57,7 +57,7 @@ qDebug()<<"*************************";
 qDebug() << __FUNCTION__ ;
     
     auto node = G->get_node(id);
-std::cout << node.value().name() << " " << node.value().id() << std::endl;
+    qDebug() << QString::fromStdString(node.value().name()) << " " << node.value().id() ;
     
     if(node.has_value())
     { 
@@ -85,7 +85,7 @@ void DSRtoGraphicsceneViewer::add_or_assign_edge_slot(const std::int32_t from, c
     std::string edge_key = std::to_string(from) + "_" + std::to_string(to);
     for (int node_id : edge_map[edge_key])
     {
-std::cout << "******UPDATE EDGE "<<from << " " << to <<" update node " << node_id<<std::endl;
+qDebug() << "******UPDATE EDGE "<<from << " " << to <<" update node " << node_id;
         update_scene_object_pose(node_id);
     }
 }
@@ -348,17 +348,17 @@ void DSRtoGraphicsceneViewer::update_edge_chain(std::list<int> parent_list)
 {
     if (parent_list.size()< 2)
         return;
-/*    std::cout<<"PARENT_LIST: ";
+/*    qDebug()<<"PARENT_LIST: ";
     for(auto item : parent_list)
-        std::cout<<item<<" ";
-    std::cout<<std::endl;*/
+        qDebug()<<item<<" ";
+    qDebug();*/
     std::list<int>::iterator first_id = parent_list.begin();
     std::list<int>::iterator second_id = parent_list.begin();
     second_id++;
     do
     {     
         std::string edge_name = std::to_string(*first_id) + "_" + std::to_string(*second_id);
-//std::cout<<edge_name<<" ";
+//qDebug()<<edge_name<<" ";
         edge_map[edge_name].push_back(parent_list.back());
         
         first_id++;
@@ -370,7 +370,7 @@ void DSRtoGraphicsceneViewer::update_edge_chain(std::list<int> parent_list)
 //update pose on edge changes
 void DSRtoGraphicsceneViewer::update_scene_object_pose(std::int32_t node_id)
 {
-std::cout << "*************UPDATE NODE ******" << node_id<<std::endl;
+qDebug() << "*************UPDATE NODE ******" << node_id;
     auto node = G->get_node(node_id);
     if (node.has_value())
     {
@@ -424,11 +424,11 @@ qDebug() << __FUNCTION__ ;
 
 void DSRtoGraphicsceneViewer::del_edge_slot(const std::int32_t from, const std::int32_t to, const std::string &edge_tag)
 {
-qDebug() << "********************************";
-qDebug() << __FUNCTION__ ;
+    qDebug() << "********************************";
+    qDebug() << __FUNCTION__ ;
     
     std::string edge_key = std::to_string(from) + "_" + std::to_string(to);
-std::cout << "******Delete EDGE "<<edge_key<<std::endl;
+    qDebug() << "******Delete EDGE "<<QString::fromStdString(edge_key);
     if (edge_map.find(edge_key) != edge_map.end())
     {
         edge_map.erase(edge_key);

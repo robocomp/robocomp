@@ -181,7 +181,7 @@ void GraphEdge::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 
 void GraphEdge::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event)
 {
-	std::cout << __FILE__ << " " << __FUNCTION__ << "Edge from " << source->id_in_graph << " to " << dest->id_in_graph <<" tag: " << tag.toStdString() << std::endl;
+	qDebug() << __FILE__ << " " << __FUNCTION__ << "Edge from " << source->id_in_graph << " to " << dest->id_in_graph <<" tag: " << tag ;
 	static std::unique_ptr<QWidget> do_stuff;
 	const auto graph = source->getGraphViewer()->getGraph();
 	if( event->button()== Qt::RightButton)

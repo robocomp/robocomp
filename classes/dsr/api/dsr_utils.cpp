@@ -17,7 +17,7 @@ Utilities::Utilities(DSR::DSRGraph *G_)
 
 void Utilities::read_from_json_file(const std::string &json_file_path,  std::function<std::optional<int>(const Node&)> insert_node)
 {
-    std::cout << __FUNCTION__ << " Reading json file: " << json_file_path << std::endl;
+    qDebug() << __FUNCTION__ << " Reading json file: " << QString::fromStdString(json_file_path);
 
     // Open file and make initial checks
     QFile file;
@@ -47,7 +47,7 @@ void Utilities::read_from_json_file(const std::string &json_file_path,  std::fun
             std::cout << __FILE__ << " " << __FUNCTION__ << " Invalid ID Node: " << std::to_string(id);
             continue;
         }
-        std::cout << __FILE__ << " " << __FUNCTION__ << ", Node: " << std::to_string(id) << " " <<  type << std::endl;
+        qDebug() << __FILE__ << " " << __FUNCTION__ << ", Node: " << id << " " <<  QString::fromStdString(type);
         Node n;
         n.type(type);
         n.id(id);
@@ -194,7 +194,7 @@ void Utilities::read_from_json_file(const std::string &json_file_path,  std::fun
                 }
             }
         }
-        std::cout << __FILE__ << " " << __FUNCTION__ << "Edge from " << std::to_string(srcn) << " to " << std::to_string(dstn) << " label "  << edgeName <<  std::endl;
+        qDebug() << __FILE__ << " " << __FUNCTION__ << "Edge from " << srcn << " to " << dstn << " label "  << QString::fromStdString(edgeName);
         //edge.attrs(attrs);
         G->insert_or_assign_edge(edge);
 
@@ -319,8 +319,7 @@ void Utilities::write_to_json_file(const std::string &json_file_path)
     jsonFile.write(jsonDoc.toJson());
     jsonFile.close();
     auto now_c = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-    std::cout << __FILE__ << " " << __FUNCTION__ << "File: " << json_file_path << " written to disk at " << now_c
-              << std::endl;
+    qDebug() << __FILE__ << " " << __FUNCTION__ << "File: " << QString::fromStdString(json_file_path)<< " written to disk at " << now_c;
 }
 
 void Utilities::print() 

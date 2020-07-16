@@ -23,7 +23,7 @@ DSRGraph::DSRGraph(int root, std::string name, int id, std::string dsr_input_fil
     graph_root = root;
     nodes = Nodes(graph_root);
     utils = std::make_unique<Utilities>(this);
-    std::cout << "Agent name: " << agent_name << std::endl;
+    qDebug() << "Agent name: " << QString::fromStdString(agent_name);
     work = true;
 
     // RTPS Create participant 
@@ -263,7 +263,7 @@ std::tuple<bool, vector<tuple<int, int, std::string>>, vector<AworSet>> DSRGraph
     auto node = get_(id);
     if (!node.has_value()) return make_tuple(false, edges_, aw);
     for (const auto &v : node.value().fano()) { // Delete all edges from this node.
-        std::cout << id << " -> " << v.first.to() << " " << v.first.type() << std::endl;
+        qDebug() << id << " -> " << v.first.to() << " " << QString::fromStdString(v.first.type()) ;
          edges_.emplace_back(make_tuple(id, v.first.to(), v.first.type()));
     }
     // Get remove delta.
@@ -782,11 +782,11 @@ void DSRGraph::join_delta_node(AworSet aworSet)
 
                 nodes[aworSet.id()].join_replace(d);
                 if (nodes[aworSet.id()].dots().ds.size() == 0 or aworSet.dk().ds().size() == 0) {
-                    std::cout << "JOIN REMOVE" << std::endl;
+                    qDebug() << "JOIN REMOVE" ;
                     update_maps_node_delete(aworSet.id(), nd);
                 } 
                 else {
-                    std::cout << "JOIN INSERT/UPDATE" << std::endl;
+                    qDebug() << "JOIN INSERT/UPDATE" ;
                     signal = true;
                     //newnd = *nodes[aworSet.id()].dots().ds.rbegin();
                     newnd = nodes[aworSet.id()].dots().ds.rbegin()->second;
@@ -809,13 +809,13 @@ void DSRGraph::join_delta_node(AworSet aworSet)
 			auto iter =  nodes[aworSet.id()].dots().ds.rbegin()->second.fano();
 			for (const auto &[k,v] : nd.fano()) {
 				if (iter.find(k) == iter.end()) {
-					std::cout << "DELETE EDGE: " << aworSet.id() << "  -  "<< k <<std::endl;
+					qDebug() << "DELETE EDGE: " << aworSet.id() ;
 					emit del_edge_signal(aworSet.id(), k.to(), k.type());
 				}
 			}
 			for (const auto &[k,v] : iter) {
 				if (nd.fano().find(k) == nd.fano().end() or nd.fano()[k] != v) {
-					std::cout << "INSERT/UPDATE EDGE: " << aworSet.id() << "  -  "<< k <<std::endl;
+					qDebug() << "INSERT/UPDATE EDGE: " << aworSet.id();
 					emit update_edge_signal(aworSet.id(), k.to(), k.type());
 				}
 			}
@@ -1016,12 +1016,12 @@ void DSRGraph::subscription_thread(bool showReceived)
     };
     dsrpub_call = NewMessageFunctor(this, &work, lambda_general_topic);
 	auto res = dsrsub.init(dsrparticipant.getParticipant(), "DSR", dsrparticipant.getDSRTopicName(), dsrpub_call);
-    std::cout << (res == true ? "Ok" : "Error") << std::endl;
+    qDebug() << (res == true ? "Ok" : "Error") ;
 }
 
 void DSRGraph::fullgraph_server_thread()
 {
-    std::cout << __FUNCTION__ << "->Entering thread to attend full graph requests" << std::endl;
+    qDebug() << __FUNCTION__ << "->Entering thread to attend full graph requests" ;
     // Request Topic
     auto lambda_graph_request = [&] (eprosima::fastrtps::Subscriber* sub, bool* work, DSR::DSRGraph *graph) {
 
@@ -1031,20 +1031,22 @@ void DSRGraph::fullgraph_server_thread()
         if (sub->takeNextData(&sample, &m_info)) { // Get sample
             if(m_info.sampleKind == eprosima::fastrtps::rtps::ALIVE) {
                 if( m_info.sample_identity.writer_guid().is_on_same_process_as(sub->getGuid()) == false) {
-                    std::cout << " Received Full Graph request: from " << m_info.sample_identity.writer_guid()
-                              << std::endl;
+                    qDebug() << " Received Full Graph request";
                     *work = false;
                     OrMap mp;
                     mp.id(graph->id());
                     mp.m(graph->Map());
                     mp.cbase(graph->context());
-                    std::cout << "nodos enviados: " << mp.m().size()  << std::endl;
+                    qDebug() << "nodos enviados: " << mp.m().size()  ;
 
                     dsrpub_request_answer.write(&mp);
 
-                    for (auto &[k, v] : Map())
-                        std::cout << k << "," << v.dk() << std::endl;
-                    std::cout << "Full graph written" << std::endl;
+                    for (auto &[k, v] : Map()) {
+                        std::stringstream ss;
+                        ss << v.dk();
+                        qDebug() << k << "," << ss.str().c_str();
+                    }
+                    qDebug() << "Full graph written";
                     *work = true;
                 }
             }
