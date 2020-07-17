@@ -271,7 +271,13 @@ void DSRtoGraphViewer::hide_show_node_SLOT(int id, bool visible)
 	auto item = gmap[id];
 	item->setVisible(visible);
 	for (const auto &gedge: item->edgeList)
-		gedge->setVisible(visible);
+	{
+		if((visible and gedge->destNode()->isVisible() and gedge->sourceNode()->isVisible()) or !visible)
+		{
+			gedge->setVisible(visible);
+		}
+	}
+
 }
 
 void DSRtoGraphViewer::mousePressEvent(QMouseEvent *event)
