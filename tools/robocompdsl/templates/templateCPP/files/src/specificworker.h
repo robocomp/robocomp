@@ -29,7 +29,7 @@ ${agmagent_comment}
 #define SPECIFICWORKER_H
 
 #include <genericworker.h>
-#include <innermodel/innermodel.h>
+${innermodel_includes}
 ${innermodelviewer_includes}
 ${dsr_includes}
 

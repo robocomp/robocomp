@@ -11,6 +11,10 @@ INNERMODEL_ATTRIBUTES_STR = """\
 """
 
 
+INNERMODEL_INCLUDE_STR = """\
+#include <innermodel/innermodel.h>
+"""
+
 INNERMODELVIEWER_INCLUDES_STR = """\
 #ifdef USE_QTGUI
 	#include <osgviewer/osgview.h>
@@ -47,6 +51,7 @@ class TemplateDict(dict):
         self.component = component
         self['year'] = str(datetime.date.today().year)
         self['agmagent_comment'] = self.agmagent_comment()
+        self['innermodel_include'] = self.innermodel_include()
         self['innermodelviewer_includes'] = self.innermodelviewer_includes()
         self['constructor_proxies'] = self.constructor_proxies()
         self['implements_method_definitions'] = self.implements_method_definitions()
@@ -163,6 +168,12 @@ class TemplateDict(dict):
         return result
 
     def innermodelviewer_includes(self):
+        result = ""
+        if "dsr" not in self.component.options:
+            result += INNERMODEL_INCLUDE_STR
+        return result
+
+    def innermodel_include(self):
         result = ""
         if self.component.innermodelviewer:
             result += INNERMODELVIEWER_INCLUDES_STR

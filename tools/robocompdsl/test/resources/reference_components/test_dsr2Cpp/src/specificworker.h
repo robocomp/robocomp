@@ -28,7 +28,6 @@
 #define SPECIFICWORKER_H
 
 #include <genericworker.h>
-#include <innermodel/innermodel.h>
 #include "dsr/api/dsr_api.h"
 #include "dsr/gui/dsr_gui.h"
 
@@ -54,8 +53,6 @@ private:
 	//DSR params
 	std::string agent_name;
 	int agent_id;
-	bool read_dsr;
-	std::string dsr_input_file;
 
 	bool tree_view;
 	bool graph_view;
