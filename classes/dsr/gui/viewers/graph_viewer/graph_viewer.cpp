@@ -22,11 +22,12 @@ DSRtoGraphViewer::DSRtoGraphViewer(std::shared_ptr<DSR::DSRGraph> G_, QWidget *p
 
 	this->fitInView(scene.itemsBoundingRect(), Qt::KeepAspectRatio );
 
-    connect(G.get(), &DSR::DSRGraph::update_node_signal, this, &DSRtoGraphViewer::add_or_assign_node_SLOT);
 	central_point = new QGraphicsEllipseItem(0,0,0,0);
 	scene.addItem(central_point);
+
+	connect(G.get(), &DSR::DSRGraph::update_node_signal, this, &DSRtoGraphViewer::add_or_assign_node_SLOT);
 	connect(G.get(), &DSR::DSRGraph::update_edge_signal, this, &DSRtoGraphViewer::add_or_assign_edge_SLOT);
-	//connect(G.get(), &DSR::DSRGraph::del_edge_signal, this, &DSRtoGraphViewer::delEdgeSLOT);
+	connect(G.get(), &DSR::DSRGraph::del_edge_signal, this, &DSRtoGraphViewer::del_edge_SLOT);
 	connect(G.get(), &DSR::DSRGraph::del_node_signal, this, &DSRtoGraphViewer::del_node_SLOT);
 }
 
@@ -251,6 +252,7 @@ void DSRtoGraphViewer::del_edge_SLOT(const std::int32_t from, const std::int32_t
 
 }
 
+
 void DSRtoGraphViewer::del_node_SLOT(int id)
 {
     qDebug()<<__FUNCTION__<<":"<<__LINE__;
@@ -260,6 +262,7 @@ void DSRtoGraphViewer::del_node_SLOT(int id)
             scene.removeItem(item);
             delete item;
             gmap.erase(id);
+
         }
     } catch(const std::exception &e) { std::cout << e.what() <<" Error  "<<__FUNCTION__<<":"<<__LINE__<< std::endl;}
 
