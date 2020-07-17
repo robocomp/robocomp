@@ -28,7 +28,6 @@ SET ( SOURCES
   ${statemachine_visual_sources}
 )
 
-${ros_includes}
 
 ${cpp11_ice_packages}
 

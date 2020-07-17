@@ -78,7 +78,7 @@ METHOD_STR = """\
 #
 # ${method_str1} ${method_name} method from ${interface_name} interface
 #
-def ${ros}${interface_name}_${method_name}(self${param_str_a}):
+def ${interface_name}_${method_name}(self${param_str_a}):
     ${return_creation}
     #
     # write your CODE here
@@ -174,7 +174,6 @@ class TemplateDict(dict):
             module = self.component.idsl_pool.module_providing_interface(interface.name)
             for module_interface in module['interfaces']:
                 if module_interface['name'] == interface.name:
-                    ROS = not communication_is_ice(interface)
                     for mname in module_interface['methods']:
                         method = module_interface['methods'][mname]
                         out_values = []
@@ -209,14 +208,9 @@ class TemplateDict(dict):
                             method_str1 = "SUBSCRIPTION to"
                         else:
                             method_str1 = "IMPLEMENTATION of"
-                        if ROS:
-                            ros = "ROS "
-                        else:
-                            ros = ""
                         result += Template(METHOD_STR).substitute(method_str1=method_str1,
                                                                   method_name=method['name'],
                                                                   interface_name=module_interface['name'],
-                                                                  ros=ros,
                                                                   param_str_a=param_str_a,
                                                                   return_creation=return_creation,
                                                                   return_str=return_str)

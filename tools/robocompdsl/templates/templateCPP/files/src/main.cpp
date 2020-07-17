@@ -140,7 +140,6 @@ int ::${component_name}::run(int argc, char* argv[])
 	${requires}
 	${topic_manager_creation}
 	${publish}
-	${ros_init}
 
 	${specificworker_creation}
 	//Monitor thread

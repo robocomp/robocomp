@@ -68,7 +68,8 @@ class RobocompdslTest(unittest.TestCase):
             "test_publicationPython",
             "test_subscriptionPython",
             "test_subStatesTestCpp",
-            "test_subStatesTestPython"
+            "test_subStatesTestPython",
+            "test_dsr2Cpp"
         ]
         for python_component in python_components:
             component_path = os.path.join(REF_COMPONENTS_PATH, python_component)

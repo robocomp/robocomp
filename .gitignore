@@ -11,9 +11,7 @@ CommonBehavior.cpp
 CommonBehavior.h
 CommonHead.cpp
 CommonHead.h
-core
 CXX.*
-*.cxx
 DifferentialRobot.cpp
 DifferentialRobot.h
 Dummy.cpp

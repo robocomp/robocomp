@@ -37,10 +37,8 @@ ${create_lists_classes}
 
 ${implements_and_subscribes_imports}
 
-${ros_imports}
 ${ui_import}
 
-${ros_class_creation}
 
 
 class GenericWorker(${qt_class_type}):

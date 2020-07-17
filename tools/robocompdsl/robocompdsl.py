@@ -37,7 +37,7 @@ Component <CHANGETHECOMPONENTNAME>
     };
     language Cpp//Cpp11//python;
     gui Qt(QWidget//QDialog//QMainWindow);
-    //options agmagent, InnerModelViewer;
+    //options dsr, agmagent, InnerModelViewer;
     statemachine "statemachine.smdsl";
 };\n\n"""
 

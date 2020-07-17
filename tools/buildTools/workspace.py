@@ -73,30 +73,61 @@ class Workspace:
             return component_dir
 
     ''' find the directory containing component executable'''
-    def find_component_exec(self, component):
-        componentPath = ''
-        for path in self.workspace_paths:
-            #path = string.strip(path) + '/devel'  for now we are not shifting the executables
-            path = string.strip(path) + '/src'
-            for file in os.listdir(path):
-                if string.lower(str(file)) == string.lower(component) and os.path.isdir(os.path.join(path,component)):
-                    if os.path.exists(os.path.join(path,component,'bin',string.lower(component)) ):
-                        componentPath = os.path.join(path,component,'bin')
-        if componentPath != '':
-            return componentPath
+    def find_component_exec_file(self, component):
+        if os.path.exists(component):
+            component_dir = component
+            component = component.split(os.path.sep)[-1]
         else:
-            return False
+            component_dir = self.find_component(component)
+
+        if component_dir:
+            src_path = os.path.join(component_dir.strip(),'src')
+            bin_path = os.path.join(component_dir.strip(),'bin')
+            if os.path.isdir(bin_path):
+                bin_file_path = os.path.join(bin_path, component)
+                if os.access(bin_file_path, os.X_OK):
+                    return bin_file_path
+            elif os.path.isdir(src_path):
+                python_main_path = os.path.join(src_path, component+".py")
+                if os.path.exists(python_main_path):
+                    return python_main_path
+        return ""
+
+    def find_component_bin_path(self, component):
+        if os.path.exists(component):
+            bin_path = component
+        else:
+            bin_path = self.find_component(component)
+        if bin_path:
+            bin_path = os.path.join(bin_path, 'bin')
+            if os.path.exists(bin_path) and os.path.isdir(bin_path):
+                return bin_path
+        return None
 
     ''' find component source directory
         component - component name
         return    - the component directory in src
     '''
-    def find_component_src(self, component):
-        src_dir = self.find_component(component)
-        if src_dir:
-            src_dir = os.path.join(src_dir, 'src')
-            if os.path.exists(src_dir) and os.path.isdir(src_dir):
-                return src_dir
+    def find_component_src_path(self, component):
+        if os.path.exists(component):
+            src_path = component
+        else:
+            src_path = self.find_component(component)
+        if src_path:
+            src_path = os.path.join(src_path, 'src')
+            if os.path.exists(src_path) and os.path.isdir(src_path):
+                return src_path
+        return None
+
+    def find_component_etc_path(self, component):
+        if os.path.exists(component):
+            etc_path = component
+        else:
+            etc_path = self.find_component(component)
+        if etc_path:
+            etc_path = os.path.join(etc_path, 'etc')
+            if os.path.exists(etc_path) and os.path.isdir(etc_path):
+                return etc_path
         return None
 
 

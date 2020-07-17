@@ -152,8 +152,6 @@ class TemplateDict(dict):
         self['inherited_constructor'] = self.inherited_constructor()
         self['statemachine_initialization'] = self.statemachine_initialization()
         self['require_and_publish_proxies_creation'] = self.require_and_publish_proxies_creation()
-        self['ros_nodes_creation'] = self.ros_nodes_creation()
-        self['ros_proxies_creation'] = self.ros_proxies_creation()
         self['gui_setup'] = self.gui_setup()
         self['compute_connect'] = self.compute_connect()
         self['agm_methods'] = self.agm_methods()
@@ -343,57 +341,6 @@ class TemplateDict(dict):
             cont = cont + 1
         return result
 
-    def ros_nodes_creation(self):
-        result = ""
-        if self.component.usingROS:
-            # Subscribers initialization
-            pool = self.component.idsl_pool
-            for iface in self.component.subscribesTo:
-                module = pool.module_providing_interface(iface.name)
-                if module is None:
-                    raise ValueError('\nCan\'t find module providing %s \n' % iface.name)
-                if not communication_is_ice(iface):
-                    for interface in module['interfaces']:
-                        if interface['name'] == iface.name:
-                            for mname in interface['methods']:
-                                s = "\"" + mname + "\""
-                                if iface.name in self.component.iceInterfaces:
-                                    result += iface.name + "_" + mname + " = node.subscribe(" + s + ", 1000, &GenericWorker::ROS" + mname + ", this);\n"
-                                else:
-                                    result += iface.name + "_" + mname + " = node.subscribe(" + s + ", 1000, &GenericWorker::" + mname + ", this);\n"
-            # Implements initialization
-            for iface in self.component.implements:
-                module = pool.module_providing_interface(iface.name)
-                if module is None:
-                    raise ('\nCan\'t find module providing %s\n' % iface.name)
-                if not communication_is_ice(iface):
-                    for interface in module['interfaces']:
-                        if interface['name'] == iface.name:
-                            for mname in interface['methods']:
-                                s = "\"" + mname + "\""
-                                if iface.name in self.component.iceInterfaces:
-                                    result += iface.name + "_" + mname + " = node.advertiseService(" + s + ", &GenericWorker::ROS" + mname + ", this);\n"
-                                else:
-                                    result += iface.name + "_" + mname + " = node.advertiseService(" + s + ", &GenericWorker::" + mname + ", this);\n"
-        return result
-
-    def ros_proxies_creation(self):
-        result = ""
-        for publish in self.component.publishes:
-            pubs = publish.name
-            if not communication_is_ice(publish):
-                if pubs in self.component.iceInterfaces:
-                    result += pubs.lower() + "_rosproxy = new Publisher" + pubs + "(&node);\n"
-                else:
-                    result += pubs.lower() + "_proxy = new Publisher" + pubs + "(&node);\n"
-        for require in self.component.requires:
-            req = require.name
-            if not communication_is_ice(require):
-                if req in self.component.iceInterfaces:
-                    result += req.lower() + "_rosproxy = new ServiceClient" + req + "(&node);\n"
-                else:
-                    result += req.lower() + "_proxy = new ServiceClient" + req + "(&node);\n"
-        return result
 
     def gui_setup(self):
         result = ""

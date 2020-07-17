@@ -50,34 +50,6 @@ class ParsingUtilsTest(unittest.TestCase):
         interfaces = pool.interfaces()
         self.assertCountEqual(interfaces, ['GenericBase', 'JointMotor', 'JointMotorPublish', 'AprilTags', 'CommonBehavior'])
 
-        ros_imports = pool.ros_imports()
-        self.assertCountEqual(ros_imports,
-                              ['RoboCompAprilTagsROS/tag', 'RoboCompAprilTagsROS/tagsList',
-                               'RoboCompGenericBaseROS/TBaseState', 'std_msgs/Int32', 'std_msgs/Float32',
-                               'RoboCompJointMotorROS/MotorState', 'RoboCompJointMotorROS/MotorParams',
-                               'RoboCompJointMotorROS/BusParams', 'RoboCompJointMotorROS/MotorGoalPosition',
-                               'RoboCompJointMotorROS/MotorGoalVelocity', 'RoboCompJointMotorROS/MotorParamsList',
-                               'RoboCompJointMotorROS/MotorGoalPositionList',
-                               'RoboCompJointMotorROS/MotorGoalVelocityList', 'RoboCompJointMotorROS/MotorList',
-                               'std_msgs/String', 'RoboCompCommonBehaviorROS/Parameter', 'std_msgs/Int32'])
-
-        ros_module_imports = pool.ros_modules_imports()
-        self.assertCountEqual(ros_module_imports, [{'strName': 'TBaseState', 'name': 'RoboCompGenericBase'},
-                                                   {'strName': 'MotorState', 'name': 'RoboCompJointMotor'},
-                                                   {'strName': 'MotorParams', 'name': 'RoboCompJointMotor'},
-                                                   {'strName': 'BusParams', 'name': 'RoboCompJointMotor'},
-                                                   {'strName': 'MotorGoalPosition', 'name': 'RoboCompJointMotor'},
-                                                   {'strName': 'MotorGoalVelocity', 'name': 'RoboCompJointMotor'},
-                                                   {'strName': 'MotorParamsList', 'name': 'RoboCompJointMotor'},
-                                                   {'strName': 'MotorGoalPositionList',
-                                                    'name': 'RoboCompJointMotor'},
-                                                   {'strName': 'MotorGoalVelocityList',
-                                                    'name': 'RoboCompJointMotor'},
-                                                   {'strName': 'MotorList', 'name': 'RoboCompJointMotor'},
-                                                   {'strName': 'tag', 'name': 'RoboCompAprilTags'},
-                                                   {'strName': 'tagsList', 'name': 'RoboCompAprilTags'},
-                                                   {'name': 'RoboCompCommonBehavior', 'strName': 'Parameter'}])
-
     def test_is_agm1_agent(self):
         component = DSLFactory().from_file(
             os.path.join(CURRENT_DIR, "resources", "camerasimple.cdsl"))

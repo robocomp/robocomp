@@ -218,14 +218,11 @@ class ComponentFacade:
         return self.options.agmagent
 
     def is_agm2_agent(self):
-        valid = ['agm2agent', 'agm2agentros', 'agm2agentice']
+        valid = ['agm2agent', 'agm2agentice']
         for v in valid:
             if getattr(self.options, v):
                 return True
         return False
-
-    def is_agm2_agent_ROS(self):
-        return self.options.agm2agentROS
 
     @property
     def ice_interfaces_names(self):
@@ -257,32 +254,3 @@ class ComponentFacade:
             else:
                 return False
         return equal
-
-
-# if __name__ == '__main__':
-#     the_dict = {
-#             'options': ['agmagent', 'innermodelviewer'],
-#             'name': 'testcomp',
-#             'imports': ['AGMCommonBehavior.idsl',
-#                         'AGMExecutive.idsl',
-#                         'AGMExecutiveTopic.idsl',
-#                         'AGMWorldModel.idsl'],
-#             'recursiveImports': ['Planning.idsl'],
-#             'language': 'cpp',
-#             'statemachine': None,
-#             'statemachine_visual': False,
-#             'innermodelviewer': True,
-#             'gui': ['Qt', 'QWidget'],
-#             'rosInterfaces': [],
-#             'iceInterfaces': [['AGMCommonBehavior', 'ice'],
-#                               ['AGMExecutive', 'ice'],
-#                               ['AGMExecutiveTopic', 'ice'],
-#                               ['AGMWorldModel', 'ice']],
-#             'implements': [['AGMCommonBehavior','ice']],
-#             'requires': [['AGMExecutive', 'ice']],
-#             'publishes': [],
-#             'subscribesTo': [['AGMExecutiveTopic', 'ice']],
-#             'usingROS': False,
-#             'filename': "componentwithoptions.cdsl"}
-#     component = ComponentFacade(the_dict)
-#     print(component.idsl_pool)

@@ -11,6 +11,10 @@ INNERMODEL_ATTRIBUTES_STR = """\
 """
 
 
+INNERMODEL_INCLUDE_STR = """\
+#include <innermodel/innermodel.h>
+"""
+
 INNERMODELVIEWER_INCLUDES_STR = """\
 #ifdef USE_QTGUI
 	#include <osgviewer/osgview.h>
@@ -19,24 +23,26 @@ INNERMODELVIEWER_INCLUDES_STR = """\
 """
 
 DSR_INCLUDES_STR = """\
-#include "/home/robocomp/robocomp/classes/graph-related-classes/CRDT.h"
-#include "/home/robocomp/robocomp/classes/graph-related-classes/CRDT_graphviewer.h"
+#include "dsr/api/dsr_api.h"
+#include "dsr/gui/dsr_gui.h"
 """
 
 DSR_ATTRIBUTES = """\
 // DSR graph
-std::shared_ptr<CRDT::CRDTGraph> G;
+std::shared_ptr<DSR::DSRGraph> G;
 
 //DSR params
 std::string agent_name;
 int agent_id;
-bool read_dsr;
-std::string dsr_input_file;
+
+bool tree_view;
+bool graph_view;
+bool qscene_2d_view;
+bool osg_3d_view;
 
 // DSR graph viewer
 std::unique_ptr<DSR::GraphViewer> graph_viewer;
 QHBoxLayout mainLayout;
-QWidget window;
 """
 
 class TemplateDict(dict):
@@ -45,6 +51,7 @@ class TemplateDict(dict):
         self.component = component
         self['year'] = str(datetime.date.today().year)
         self['agmagent_comment'] = self.agmagent_comment()
+        self['innermodel_include'] = self.innermodel_include()
         self['innermodelviewer_includes'] = self.innermodelviewer_includes()
         self['constructor_proxies'] = self.constructor_proxies()
         self['implements_method_definitions'] = self.implements_method_definitions()
@@ -79,12 +86,7 @@ class TemplateDict(dict):
                         result += return_type + ' ' + idsl_interface['name'] + "_" + method[
                             'name'] + '(' + params_string + ");\n"
                     else:
-                        params_string = module['name'] + "ROS::" + method['name'] + "::Request &req, " + module[
-                            'name'] + "ROS::" + method['name'] + "::Response &res"
-                        if interface_name in self.component.iceInterfaces:
-                            result += "bool ROS" + method['name'] + '(' + params_string + ");\n"
-                        else:
-                            result += "bool " + method['name'] + '(' + params_string + ");\n"
+                        pass
         return result
 
     def implements_method_definitions(self):
@@ -113,36 +115,7 @@ class TemplateDict(dict):
                             result += return_type + ' ' + interface['name'] + "_" + method[
                                 'name'] + '(' + param_str_a + ");\n"
                         else:
-                            for p in method['params']:
-                                # delim
-                                if param_str_a == '':
-                                    delim = ''
-                                else:
-                                    delim = ', '
-                                # decorator
-                                ampersand = '&'
-                                if p['decorator'] == 'out':
-                                    const = ''
-                                else:
-                                    const = 'const '
-                                    ampersand = ''
-                                if p['type'] in ('float', 'int'):
-                                    p['type'] = "std_msgs::" + p['type'].capitalize() + "32"
-                                elif p['type'] in ('uint8', 'uint16', 'uint32', 'uint64'):
-                                    p['type'] = "std_msgs::UInt" + p['type'].split('t')[1]
-                                elif p['type'] in pool.getRosTypes():
-                                    p['type'] = "std_msgs::" + p['type'].capitalize()
-                                elif '::' not in p['type']:
-                                    p['type'] = module['name'] + "ROS::" + p['type']
-                                # STR
-                                param_type = p['type']
-                                if param_type not in utils.CPP_TYPES and '::' not in param_type:
-                                    param_type = f"{module['name']}::{param_type}"
-                                param_str_a += delim + param_type + ' ' + p['name']
-                            if imp in self.component.iceInterfaces:
-                                result += "void ROS" + method['name'] + '(' + param_str_a + ");\n"
-                            else:
-                                result += "void " + method['name'] + '(' + param_str_a + ");\n"
+                            pass
         return result
 
     @staticmethod
@@ -195,6 +168,12 @@ class TemplateDict(dict):
         return result
 
     def innermodelviewer_includes(self):
+        result = ""
+        if "dsr" not in self.component.options:
+            result += INNERMODEL_INCLUDE_STR
+        return result
+
+    def innermodel_include(self):
         result = ""
         if self.component.innermodelviewer:
             result += INNERMODELVIEWER_INCLUDES_STR
