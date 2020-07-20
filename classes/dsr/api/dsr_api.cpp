@@ -11,6 +11,10 @@
 #include <fastrtps/transport/UDPv4TransportDescriptor.h>
 #include <fastrtps/Domain.h>
 
+
+#include <QtCore/qlogging.h>
+#include <QtCore/qdebug.h>
+
 using namespace DSR;
 
 /////////////////////////////////////////////////
@@ -1005,7 +1009,7 @@ void DSRGraph::subscription_thread(bool showReceived)
                 if (sub->takeNextData(&sample, &m_info)) { // Get sample
                     if(m_info.sampleKind == eprosima::fastrtps::rtps::ALIVE) {
                         if( m_info.sample_identity.writer_guid().is_on_same_process_as(sub->getGuid()) == false) {
-                            if (showReceived)  std::cout << " Received:" << sample.id() << " node from: " << m_info.sample_identity.writer_guid() << std::endl;
+                            if (showReceived)  qDebug() << " Received:" << sample.id() << " node from: " << m_info.sample_identity.writer_guid().entityId.value;
                             graph->join_delta_node(sample);
                         }
                     }
@@ -1068,9 +1072,9 @@ bool DSRGraph::fullgraph_request_thread()
         if (sub->takeNextData(&sample, &m_info)) { // Get sample
             if(m_info.sampleKind == eprosima::fastrtps::rtps::ALIVE) {
                 if( m_info.sample_identity.writer_guid().is_on_same_process_as(sub->getGuid()) == false) {
-                    std::cout << " Received Full Graph from " << m_info.sample_identity.writer_guid() << " whith " << sample.m().size() << " elements" << std::endl;
+                    qDebug()  << " Received Full Graph from " << m_info.sample_identity.writer_guid().entityId.value << " whith " << sample.m().size() << " elements" ;
                     graph->join_full_graph(sample);
-                    std::cout << "Synchronized." <<std::endl;
+                    qDebug()  << "Synchronized." ;
                     sync = true;
                 }
             }
@@ -1082,7 +1086,7 @@ bool DSRGraph::fullgraph_request_thread()
 
     std::this_thread::sleep_for(300ms);   // NEEDED ?
 
-    std::cout << " Requesting the complete graph " << std::endl;
+    qDebug()  << " Requesting the complete graph " ;
     GraphRequest gr;
     gr.from(agent_name);
     dsrpub_graph_request.write(&gr);

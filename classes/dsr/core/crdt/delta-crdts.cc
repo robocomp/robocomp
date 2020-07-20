@@ -26,6 +26,8 @@
 //
 //
 //-------------------------------------------------------------------
+#ifndef DELTA_CRDT
+#define DELTA_CRDT
 
 #include <set>
 #include <unordered_set>
@@ -2388,3 +2390,5 @@ public:
     }
 
 };
+
+#endif

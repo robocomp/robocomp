@@ -30,6 +30,9 @@
 
 #include "dsrpublisher.h"
 
+
+#include <QDebug>
+
 using namespace eprosima::fastrtps;
 using namespace eprosima::fastrtps::rtps;
 
@@ -72,7 +75,7 @@ bool DSRPublisher::init(eprosima::fastrtps::Participant *mp_participant_, const 
     mp_publisher = eprosima::fastrtps::Domain::createPublisher(mp_participant,Wparam,static_cast<eprosima::fastrtps::PublisherListener*>(&m_listener));
     if(mp_publisher == nullptr)
         return false;
-    std::cout << "Publisher created, waiting for Subscribers." << std::endl;
+    qDebug() << "Publisher created, waiting for Subscribers." ;
     return true;
 }
 
@@ -103,12 +106,12 @@ void DSRPublisher::PubListener::onPublicationMatched(eprosima::fastrtps::Publish
     if (info.status == eprosima::fastrtps::rtps::MATCHED_MATCHING)
     {
         n_matched++;
-        std::cout << "Publisher matched "<< info.remoteEndpointGuid << std::endl;
+        qDebug() << "Publisher matched "<< info.remoteEndpointGuid.entityId.value ;
     }
     else
     {
         n_matched--;
-        std::cout << "Publisher unmatched" << info.remoteEndpointGuid <<  std::endl;
+        qDebug() << "Publisher unmatched" << info.remoteEndpointGuid.entityId.value ;
     }
 }
 /*

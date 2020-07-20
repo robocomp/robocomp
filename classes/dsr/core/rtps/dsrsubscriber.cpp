@@ -26,6 +26,8 @@
 
 #include "dsrsubscriber.h"
 
+#include <QDebug>
+
 using namespace eprosima::fastrtps;
 using namespace eprosima::fastrtps::rtps;
 
@@ -87,12 +89,12 @@ void DSRSubscriber::SubListener::onSubscriptionMatched(Subscriber* sub, Matching
     if (info.status == eprosima::fastrtps::rtps::MATCHED_MATCHING)
     {
         n_matched++;
-        std::cout << "Publisher matched "<< info.remoteEndpointGuid << std::endl;
+        qDebug() << "Publisher matched "<< info.remoteEndpointGuid.entityId.value ;
     }
     else
     {
         n_matched--;
-        std::cout << "Publisher unmatched" << info.remoteEndpointGuid <<  std::endl;
+        qDebug() << "Publisher unmatched" << info.remoteEndpointGuid.entityId.value ;
     }
 }
 
@@ -103,7 +105,6 @@ void DSRSubscriber::SubListener::onNewDataMessage(Subscriber* sub)
 
 void DSRSubscriber::run()
 {
-    std::cout << "Waiting for Data, press Enter to stop the Subscriber. "<<std::endl;
    while (true);
 }
 
