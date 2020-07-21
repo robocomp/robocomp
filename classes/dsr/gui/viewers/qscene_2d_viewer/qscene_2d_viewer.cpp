@@ -145,7 +145,11 @@ void DSRtoGraphicsceneViewer::add_or_assign_rect(Node &node, std::string color, 
     if (texture != "")
     {
         if(std::filesystem::exists(texture))
-            brush = QBrush(QImage(QString::fromStdString(texture)));
+        {
+            QPixmap pixmap(QString::fromStdString(texture));
+            brush = QBrush(pixmap.scaled(QSize(rect.width(), rect.height()), Qt::KeepAspectRatioByExpanding));
+            
+        }
         else
             brush = QBrush(QColor(QString::fromStdString(texture)));
     }
