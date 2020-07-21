@@ -102,13 +102,14 @@ namespace DSR
                                                  + __FILE__ + " " + __FUNCTION__ + " " + std::to_string(__LINE__)).data());
             }
             if (r) {
-                if (aw.has_value())
-                    dsrpub.write(&aw.value());
+                if (!copy) {
+                    if (aw.has_value())
+                        dsrpub.write(&aw.value());
 
-                emit update_node_signal(node.id(), node.type());
-                for (const auto &[k,v]: node.fano())
-                        emit update_edge_signal(node.id(), k.to(), v.type());
-
+                    emit update_node_signal(node.id(), node.type());
+                    for (const auto &[k, v]: node.fano())
+                            emit update_edge_signal(node.id(), k.to(), v.type());
+                }
                 return node.id();
             }
             return {};
@@ -399,7 +400,7 @@ namespace DSR
             //if (elem.attrs().find(new_name) != elem.attrs().end()) return false;
             //throw DSRException(("Cannot update attribute. Attribute: " + elem + " does not exist. " + __FUNCTION__).data());
 
-            bool res = add_attrib(elem, att_name, new_val);
+            bool res = add_attrib_local(elem, att_name, new_val);
             if (!res) return false;
             // insert in node
             if constexpr (std::is_same<Node,  Type>::value)
@@ -517,9 +518,19 @@ namespace DSR
         void read_from_json_file(const std::string &file) const { utils->read_from_json_file(file, insert_node_read_file); };
         /**AUXILIARY IO SUB-API**/
 
+        //////////////////////////////////////////////////
+        ///// PRIVATE COPY
+        /////////////////////////////////////////////////
+        DSRGraph G_copy();
+        bool is_copy();
 
     private:
+
+        DSRGraph(const DSRGraph& G);
+
+
         Nodes nodes;
+
 
         int graph_root;
         bool work;
@@ -529,6 +540,7 @@ namespace DSR
         std::string agent_name;
         std::unique_ptr<Utilities> utils;
         RoboCompDSRGetID::DSRGetIDPrxPtr dsr_getid_proxy; // proxy to obtain unique node ids
+        const bool copy;
 
         //////////////////////////////////////////////////////////////////////////
         // Cache maps

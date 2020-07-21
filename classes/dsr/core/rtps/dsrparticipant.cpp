@@ -28,11 +28,12 @@
 //using namespace eprosima::fastrtps;
 //using namespace eprosima::fastrtps::rtps;
 
-DSRParticipant::DSRParticipant() : mp_publisher(nullptr), mp_subscriber(nullptr) {}
+DSRParticipant::DSRParticipant() : mp_participant(nullptr), mp_publisher(nullptr), mp_subscriber(nullptr) {}
 
 DSRParticipant::~DSRParticipant() 
-{ 
-    eprosima::fastrtps::Domain::removeParticipant(mp_participant);
+{
+    if (mp_participant != nullptr)
+        eprosima::fastrtps::Domain::removeParticipant(mp_participant);
 }
 
 std::tuple<bool, eprosima::fastrtps::Participant *> DSRParticipant::init()

@@ -21,7 +21,7 @@ using namespace DSR;
 ///// PUBLIC METHODS
 /////////////////////////////////////////////////
 
-DSRGraph::DSRGraph(int root, std::string name, int id, std::string dsr_input_file, RoboCompDSRGetID::DSRGetIDPrxPtr dsr_getid_proxy_) : agent_id(id) , agent_name(name)
+DSRGraph::DSRGraph(int root, std::string name, int id, std::string dsr_input_file, RoboCompDSRGetID::DSRGetIDPrxPtr dsr_getid_proxy_) : agent_id(id) , agent_name(name), copy(false)
 {
     dsr_getid_proxy = dsr_getid_proxy_;
     graph_root = root;
@@ -69,10 +69,14 @@ DSRGraph::DSRGraph(int root, std::string name, int id, std::string dsr_input_fil
 
 DSRGraph::~DSRGraph()
 {
-    qDebug() << "Removing rtps participant";
-    eprosima::fastrtps::Domain::removeParticipant(dsrparticipant.getParticipant()); // Remove a Participant and all associated publishers and subscribers.
-    fullgraph_thread.join();
-    delta_thread.join();
+
+    if (!copy) {
+        qDebug() << "Removing rtps participant";
+        eprosima::fastrtps::Domain::removeParticipant(
+                dsrparticipant.getParticipant()); // Remove a Participant and all associated publishers and subscribers.
+        fullgraph_thread.join();
+        delta_thread.join();
+    }
 }
 
 //////////////////////////////////////
@@ -111,7 +115,10 @@ bool DSRGraph::insert_or_assign_node(const N &node)
             throw std::runtime_error((std::string("Cannot insert node in G, id mut be unique ") + __FILE__ + " " + __FUNCTION__ + " " + std::to_string(__LINE__)).data());
         std::tie(r, aw) = insert_or_assign_node_(node);
     }
-    if (r) {
+
+
+
+    if (r and !copy) {
         if (aw.has_value())
                 dsrpub.write(&aw.value());
 
@@ -167,13 +174,14 @@ std::optional<uint32_t> DSRGraph::insert_node(Node& node)
     }
     if (r) 
     {
-        if (aw.has_value())
-            dsrpub.write(&aw.value());
+        if (!copy) {
+            if (aw.has_value())
+                dsrpub.write(&aw.value());
 
-        emit update_node_signal(node.id(), node.type());
-        for (const auto &[k,v]: node.fano())
-                emit update_edge_signal(node.id(), k.to(), v.type());
-
+            emit update_node_signal(node.id(), node.type());
+            for (const auto &[k, v]: node.fano())
+                    emit update_edge_signal(node.id(), k.to(), v.type());
+        }
         return node.id();
     }
     return {};  // AQUI NO CREA EL NODO PERO NO DA INFORMACION DE POR QUE
@@ -193,7 +201,7 @@ bool DSRGraph::update_node(const N &node)
             throw std::runtime_error((std::string("Cannot update node in G, id and name must be unique")  + __FILE__ + " " + __FUNCTION__ + " " + std::to_string(__LINE__)).data());
         std::tie(r, aw) = insert_or_assign_node_(node);
     }
-    if (r) {
+    if (r and !copy) {
         if (aw.has_value())
             dsrpub.write(&aw.value());
 
@@ -221,14 +229,16 @@ bool DSRGraph::delete_node(const std::string& name)
     }
 
     if (result) {
-        emit del_node_signal(id.value());
+        if (!copy) {
+            emit del_node_signal(id.value());
 
-        for (auto &a  : aw_)
-            dsrpub.write(&a);
+            for (auto &a  : aw_)
+                dsrpub.write(&a);
 
-        for (auto &[id0, id1, label] : edges_)
-                emit del_edge_signal(id0, id1, label);
-        return true;
+            for (auto &[id0, id1, label] : edges_)
+                    emit del_edge_signal(id0, id1, label);
+            return true;
+        }
     }
     return false;
 }
@@ -246,13 +256,14 @@ bool DSRGraph::delete_node(int id)
     }
 
     if (result) {
-        emit del_node_signal(id);
+        if (!copy) {
+            emit del_node_signal(id);
 
-        for (auto &a  : aw_)
-            dsrpub.write(&a);
-        for (auto &[id0, id1, label] : edges_)
-            emit del_edge_signal(id0, id1, label);
-
+            for (auto &a  : aw_)
+                dsrpub.write(&a);
+            for (auto &[id0, id1, label] : edges_)
+                    emit del_edge_signal(id0, id1, label);
+        }
         return true;
     }
     return false;
@@ -371,11 +382,12 @@ bool DSRGraph::insert_or_assign_edge(const Edge& attrs)
             return false;
         }
     }
-    if (r)
-        emit update_edge_signal( attrs.from(),  attrs.to(), attrs.type());
-    if (aw.has_value())
-        dsrpub.write(&aw.value());
-
+    if (!copy) {
+        if (r)
+                emit update_edge_signal(attrs.from(), attrs.to(), attrs.type());
+        if (aw.has_value())
+            dsrpub.write(&aw.value());
+    }
     return true;
 }
 
@@ -417,13 +429,14 @@ void DSRGraph::insert_or_assign_edge_RT(Node& n, int to, std::vector<float>&& tr
         } else
             throw std::runtime_error("Destination node " + std::to_string(n.id()) + " not found in G in insert_or_assign_edge_RT() "  +  __FILE__ + " " + __FUNCTION__ + " " + std::to_string(__LINE__));
     }
-    if (r) {
-        emit update_edge_signal(n.id(), to, "RT");
-        emit update_node_signal(to_n.value().id(), to_n.value().type());
+    if (!copy) {
+        if (r) {
+            emit update_edge_signal(n.id(), to, "RT");
+            emit update_node_signal(to_n.value().id(), to_n.value().type());
+        }
+        if (awor1.has_value()) { dsrpub.write(&awor1.value()); }
+        if (awor2.has_value()) { dsrpub.write(&awor2.value()); }
     }
-    if (awor1.has_value()) {  dsrpub.write(&awor1.value()); }
-    if (awor2.has_value()) {  dsrpub.write(&awor2.value()); }
-
 }
 
 void DSRGraph::insert_or_assign_edge_RT(Node& n, int to, const std::vector<float>& trans, const std::vector<float>& rot_euler)
@@ -465,13 +478,14 @@ void DSRGraph::insert_or_assign_edge_RT(Node& n, int to, const std::vector<float
         } else
             throw std::runtime_error("Destination node " + std::to_string(n.id()) + " not found in G in insert_or_assign_edge_RT() " +  __FILE__ + " " + __FUNCTION__ + " " + std::to_string(__LINE__));
     }
-    if (r) {
-        emit update_edge_signal(n.id(), to, "RT");
-        emit update_node_signal(to_n.value().id(), to_n.value().type());
+    if (!copy) {
+        if (r) {
+            emit update_edge_signal(n.id(), to, "RT");
+            emit update_node_signal(to_n.value().id(), to_n.value().type());
+        }
+        if (awor1.has_value()) { dsrpub.write(&awor1.value()); }
+        if (awor2.has_value()) { dsrpub.write(&awor2.value()); }
     }
-    if (awor1.has_value()) {  dsrpub.write(&awor1.value()); }
-    if (awor2.has_value()) {  dsrpub.write(&awor2.value()); }
-
 }
 
 bool DSRGraph::delete_edge(int from, int to, const std::string& key)
@@ -483,11 +497,12 @@ bool DSRGraph::delete_edge(int from, int to, const std::string& key)
         if (!in(from) || !in(to)) return false;
         std::tie(result, aw) = delete_edge_(from, to, key);
     }
-    if (result)
-            emit del_edge_signal(from, to, key);
-    if (aw.has_value())
-        dsrpub.write(&aw.value());
-
+    if (!copy) {
+        if (result)
+                emit del_edge_signal(from, to, key);
+        if (aw.has_value())
+            dsrpub.write(&aw.value());
+    }
 
     return result;
 }
@@ -508,11 +523,12 @@ bool DSRGraph::delete_edge(const std::string& from, const std::string& to, const
         }
     }
 
-    if (result)
-        emit del_edge_signal(id_from.value(), id_to.value(), key);
-    if (aw.has_value())
-        dsrpub.write(&aw.value());
-
+    if (!copy) {
+        if (result)
+                emit del_edge_signal(id_from.value(), id_to.value(), key);
+        if (aw.has_value())
+            dsrpub.write(&aw.value());
+    }
 
     return result;
 }
@@ -1149,3 +1165,29 @@ aworset<N, int> DSRGraph::translateAwIDLtoDSR(AworSet &data)
     aw.dots().set(ds_aux);
     return aw;
 }
+
+
+//////////////////////////////////////////////////
+///// PRIVATE COPY
+/////////////////////////////////////////////////
+
+DSRGraph::DSRGraph(const DSRGraph& G) : agent_id(G.agent_id), copy(true)
+{
+    nodes = G.nodes;
+    graph_root = G.graph_root;
+    utils = std::make_unique<Utilities>(this);
+    id_map = G.id_map;
+    deleted = G.deleted;
+    name_map = G.name_map;
+    edges = G.edges;
+    edgeType = G.edgeType;
+    nodeType = G.nodeType;
+}
+
+DSRGraph DSRGraph::G_copy() {
+    return DSRGraph(*this);
+};
+
+bool DSRGraph::is_copy() {
+    return copy;
+};
