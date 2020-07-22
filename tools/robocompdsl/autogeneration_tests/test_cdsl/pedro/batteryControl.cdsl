@@ -1,0 +1,12 @@
+import "BatteryLevel.idsl";
+
+Component batteryControl
+{
+    Communications
+    {      
+        publishes BatteryLevel;
+    };
+    language python;
+    options ent;
+};
+

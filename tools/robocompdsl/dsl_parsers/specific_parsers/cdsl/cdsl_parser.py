@@ -86,8 +86,8 @@ class CDSLParser(DSLParserTemplate):
     def string_to_struct(self, string, **kwargs):
         try:
             parsing_result = self.parse_string(string)
-        except ParseSyntaxException:
-            raise ValueError("There was some problem parsing the component file.")
+        except ParseSyntaxException as e:
+            raise ValueError("There was some problem parsing the component file.", e.args[1], e.args[2])
         component = componentfacade.ComponentFacade()
         # print 'parseCDSL.component', includeDirectories
         if self._include_directories is None:
