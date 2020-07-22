@@ -63,6 +63,7 @@ namespace DSR
 			std::shared_ptr<DSR::DSRGraph> G;
 			QMainWindow *window;
 			QMenu *viewMenu;
+			QMenu *forcesMenu;
 //			std::shared_ptr<DSR::DSRtoOSGViewer> dsr_to_osg_viewer;
 //			std::shared_ptr<DSR::DSRtoGraphicsceneViewer> dsr_to_graphicscene_viewer;
 //			std::shared_ptr<DSR::DSRtoGraphViewer> dsr_to_graph_viewer;
@@ -75,10 +76,12 @@ namespace DSR
 			void saveGraphSLOT();		
 //			void toggleSimulationSLOT();
 			void restart_app(bool);
+			void switch_view(bool state, QDockWidget* dock);
 
 		signals:
 			void saveGraphSIGNAL();
 			void closeWindowSIGNAL();
+
 		private:
 			void create_dock_and_menu(QString name,  QWidget *view);
 			void initialize_views(int options, view main);

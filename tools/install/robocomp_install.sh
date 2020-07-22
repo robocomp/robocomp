@@ -6,7 +6,7 @@ sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends g
 sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends libzeroc-ice3.7 libzeroc-icestorm3.7 python3-zeroc-ice zeroc-glacier2 zeroc-ice-slice zeroc-ice-utils zeroc-icebox zeroc-icegrid zeroc-icepatch2 zeroc-icebridge libzeroc-ice-dev zeroc-ice-all-dev zeroc-ice-compilers
 sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends python3-pip python3-setuptools python3-pyparsing python3-numpy python3-libxml2 python3-xmltodict
 
-sudo pip3 install networkx pyside2 argcomplete termcolor cogapp
+sudo pip3 install networkx pyside2 argcomplete termcolor cogapp prompt_toolkit
 
 git clone -b $ROBOCOMP_BRANCH https://github.com/robocomp/robocomp.git
 sudo ln -s ~ /home/robocomp

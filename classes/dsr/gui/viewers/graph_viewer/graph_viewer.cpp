@@ -65,31 +65,34 @@ void DSRtoGraphViewer::createGraph()
 
 ///////////////////////////////////////
 
-void DSRtoGraphViewer::itemMoved()
+void DSRtoGraphViewer::toggle_animation(bool animate)
 {
-	do_simulate = true;
 	qDebug() << "timerId " << timerId ;
-	if(do_simulate and timerId == 0)
-	if (timerId == 0)
-	   timerId = startTimer(1000 / 25);
+	if(animate)
+	{
+		if(timerId == 0)
+	   		timerId = startTimer(1000 / 25);
+	}
+	else
+	{
+		killTimer(timerId);
+		timerId = 0;
+	}
 }
 
 void DSRtoGraphViewer::timerEvent(QTimerEvent *event)
 {
 	// Q_UNUSED(event)
 
-	for( auto &[k,node] : gmap)
+	for( auto &[_,node] : gmap)
 	{
-		(void)k;
 		node->calculateForces();
 	}
 	bool itemsMoved = false;
 
-	for( auto &[k,node] : gmap)
+	for( auto &[_,node] : gmap)
 	{
-		(void)k;
-		if (node->advancePosition())
-			itemsMoved = true;
+		itemsMoved = node->advancePosition() or itemsMoved;
 	}
 	if (!itemsMoved)
 	{
@@ -293,4 +296,5 @@ void DSRtoGraphViewer::mousePressEvent(QMouseEvent *event)
 		AbstractGraphicViewer::mousePressEvent(event);
 	}
 }
+
 

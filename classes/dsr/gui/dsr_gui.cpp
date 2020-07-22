@@ -69,6 +69,7 @@ GraphViewer::GraphViewer(QMainWindow * widget, std::shared_ptr<DSR::DSRGraph> G_
 
 	//MenuBar
     viewMenu = window->menuBar()->addMenu(window->tr("&View"));
+	forcesMenu = window->menuBar()->addMenu(window->tr("&Forces"));
 	auto actionsMenu = window->menuBar()->addMenu(window->tr("&Actions"));
 	auto restart_action = actionsMenu->addAction("Restart");
 
@@ -160,6 +161,19 @@ void GraphViewer::initialize_views(int options, view central){
 		}
 	}
 
+	if(widgets.count(view::graph))
+	{
+		QAction *new_action = new QAction("Animation", this);
+		new_action->setStatusTip(tr("Toggle animation"));
+		new_action->setCheckable(true);
+		new_action->setChecked(false);
+		forcesMenu->addAction(new_action);
+		connect(new_action, &QAction::triggered, this, [this](bool state)
+		{
+			qobject_cast<DSRtoGraphViewer*>(widgets[view::graph])->toggle_animation(state==true);
+		});
+	}
+
 //	Tabification of curren docks
 	QDockWidget * previous = nullptr;
 	for(auto dock: docks) {
@@ -237,10 +251,18 @@ void GraphViewer::create_dock_and_menu(QString name, QWidget* view){
 	}
 	else{
 		dock_widget = new QDockWidget(name);
-		viewMenu->addAction(dock_widget->toggleViewAction());
+		QAction *new_action = new QAction(name, this);
+		new_action->setStatusTip(tr("Create a new file"));
+		new_action->setCheckable(true);
+		new_action->setChecked(true);
+		connect(new_action, &QAction::triggered, this, [this, dock_widget](bool state) {
+			switch_view(state, dock_widget);
+		});
+		viewMenu->addAction(new_action);
 		this->docks[name] = dock_widget;
 	}
 	dock_widget->setWidget(view);
+	dock_widget->setAllowedAreas(Qt::AllDockWidgetAreas);
 	window->addDockWidget(Qt::RightDockWidgetArea, dock_widget);
 }
 
@@ -253,6 +275,22 @@ void GraphViewer::saveGraphSLOT()
 { 
 	emit saveGraphSIGNAL(); 
 }
+
+void GraphViewer::switch_view(bool state, QDockWidget* dock)
+{
+	QWidget * widget = dock->widget();
+	if(!state)
+	{
+		widget->blockSignals(true);
+		dock->hide();
+	}
+	else{
+		widget->blockSignals(false);
+		dock->show();
+	}
+}
+
+
 
 //void GraphViewer::toggleSimulationSLOT()
 //{
