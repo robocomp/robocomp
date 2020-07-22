@@ -53,8 +53,8 @@ void DSRtoGraphicsceneViewer::create_graph()
 
 void DSRtoGraphicsceneViewer::add_or_assign_node_slot(const std::int32_t id, const std::string &type)
 {
-qDebug()<<"*************************";
-qDebug() << __FUNCTION__ ;
+    qDebug()<<"*************************";
+    qDebug() << __FUNCTION__ ;
     
     auto node = G->get_node(id);
     qDebug() << QString::fromStdString(node.value().name()) << " " << node.value().id() ;
@@ -82,20 +82,20 @@ qDebug() << __FUNCTION__ ;
 }
 void DSRtoGraphicsceneViewer::add_or_assign_edge_slot(const std::int32_t from, const std::int32_t to, const std::string& type)
 {
-qDebug()<<__FUNCTION__;
+    qDebug()<<__FUNCTION__;
     //check if new edge connected any orphan nodes
     std::map<int, std::string>::iterator it = orphand_nodes.find(to);
 
     if(it != orphand_nodes.end())
     {
-qDebug()<<"ORPHAND NODE FOUND"<<to;
+        qDebug()<<"ORPHAND NODE FOUND"<<to;
         orphand_nodes.erase(it);
         add_or_assign_node_slot(it->first, it->second);
     }
     std::string edge_key = std::to_string(from) + "_" + std::to_string(to);
     for (int node_id : edge_map[edge_key])
     {
-qDebug() << "******UPDATE EDGE "<<from << " " << to <<" update node " << node_id;
+        qDebug() << "******UPDATE EDGE "<<from << " " << to <<" update node " << node_id;
         update_scene_object_pose(node_id);
     }
 }
