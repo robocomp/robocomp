@@ -26,7 +26,7 @@ class rccd:
     def __init__(self):
         self.ws = Workspace()
 
-    def print_filtered_component(self, searched_component):
+    def save_filtered_component(self, searched_component):
         options = self.ws.find_components(searched_component)
         if options is not None:
             if len(options) == 1:
@@ -49,7 +49,7 @@ if __name__ == '__main__':
     parser.add_argument("name")
     args = parser.parse_args()
     try:
-        rccd.print_filtered_component(args.name)
+        rccd.save_filtered_component(args.name)
     except KeyboardInterrupt:
         save_output("")
 

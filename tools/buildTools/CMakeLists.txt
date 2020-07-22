@@ -15,4 +15,6 @@ INSTALL(CODE "message(STATUS \"Installing rccd in ~./bashrc\")
 execute_process(COMMAND sh \"${CMAKE_CURRENT_LIST_DIR}/setup.sh\")")
 INSTALL(CODE "message(STATUS \"Installing autocompletion in ~./bashrc\")
 execute_process(COMMAND activate-global-python-argcomplete)")
+INSTALL(CODE "message(STATUS \"First execution of rcworkspace\")
+execute_process(COMMAND /opt/robocomp/bin/rcworkspace ${RoboComp_SOURCE_DIR}/components/ --accept-all) ")
 

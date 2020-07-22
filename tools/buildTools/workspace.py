@@ -195,7 +195,7 @@ class Workspace:
             return any([component.lstrip('/').startswith(path.lstrip('/')) for component in self.components])
         return False
 
-    def get_recursive_components_in_dir(self, initial_path):
+    def get_recursive_components_in_dir(self, initial_path, print_path=False):
         components_parents_dirs = defaultdict(list)
         for subdir, dirs, files in os.walk(initial_path):
             if 'CMakeLists.txt' in files and 'etc' in dirs \
@@ -205,7 +205,8 @@ class Workspace:
                     if file.endswith(".cdsl"):
                         filepath= os.path.join(subdir,file)
                         components_parents_dirs[subdir].append(filepath)
-                        print(f'Found {filepath}')
+                        if print_path:
+                            print(f'Found {filepath}')
         return components_parents_dirs
 
     def ask_for_path_selection(self, components_dir_list):
@@ -229,23 +230,29 @@ class Workspace:
             return None
 
     def search_parent_in_workspaces(self, path):
+        path = os.path.abspath(path)
         for workspace_path in self.workspace_paths:
             common_path = os.path.commonpath([path,workspace_path])
             if len(common_path) == len(workspace_path):
                 return workspace_path
         return ""
 
-    def add_workspace(self, initial=None):
+    def add_workspace(self, initial=None, accept_all=False):
         if initial is None:
             initial = os.getcwd()
-        existing_workspace =self.search_parent_in_workspaces(initial)
+        else:
+            initial = os.path.abspath(initial)
+        existing_workspace = self.search_parent_in_workspaces(initial)
         if not existing_workspace:
-            session = PromptSession(u"> ", completer=FuzzyCompleter(PathCompleter()))
-            response = session.prompt("Path to find new components\n> ",
-                                      complete_while_typing=True,
-                                      default=initial,
-                                      pre_run=session.default_buffer.start_completion,
-                                      validator=dir_validator)
+            if accept_all:
+                response = initial
+            else:
+                session = PromptSession(u"> ", completer=FuzzyCompleter(PathCompleter()))
+                response = session.prompt("Path to find new components\n> ",
+                                          complete_while_typing=True,
+                                          default=initial,
+                                          pre_run=session.default_buffer.start_completion,
+                                          validator=dir_validator)
             # Check the final '/' characters
             if response in self.workspace_paths:
                 print(f"{response} already exist in workspaces")
@@ -260,7 +267,11 @@ class Workspace:
                 print(f"No component found in {response}. Workspaces not updated.")
                 return
 
-            answer = confirm(f'Do you want to add {response} to workspaces?')
+            if accept_all:
+                answer = True
+            else:
+                answer = confirm(f'Do you want to add {response} to workspaces?')
+
             if answer:
                 print(f"{response} added to workspaces")
                 self.components += new_components
@@ -269,16 +280,21 @@ class Workspace:
             else:
                 print("Workspaces not updated.")
         else:
-            print(f"{initial} is already a component of {existing_workspace} workspace.")
-            self.update_components_in_workspaces()
+            print(f"{initial} is already part of an existing workspace ({existing_workspace})")
+            self.update_components_in_workspaces(existing_workspace)
 
-    def update_components_in_workspaces(self):
+    def update_components_in_workspaces(self, workspace=None):
         old_components = set(self.components)
         self.components = []
-        for workspace in self.workspace_paths:
+        if workspace is None:
+            for workspace in self.workspace_paths:
+                self.components += self.get_recursive_components_in_dir(workspace)
+            print(f"Updating workspaces")
+        else:
             self.components += self.get_recursive_components_in_dir(workspace)
+            print(f"Updating workspaces {workspace}")
         new_components = list(set(self.components) - old_components)
-        print(f"Found {len(new_components):}")
+        print(f"Found {colored(len(new_components), 'green')} new components")
         print(colored('\n'.join(new_components), 'green'))
         self.save_workspace()
 
@@ -287,13 +303,16 @@ class Workspace:
         session = PromptSession(u"> ", completer=FuzzyCompleter(WordCompleter(self.workspace_paths)))
         if not keyword:
             keyword = os.getcwd()
+        else:
+            keyword = os.path.abspath(keyword)
         response = session.prompt("Path to delete\n> ",
                                   complete_while_typing=True,
                                   default=keyword,
                                   pre_run=session.default_buffer.start_completion)
-        self._delete_components_in_workspace(response)
-        self.workspace_paths.remove(response)
-        self.save_workspace()
+        if response in self.workspace_paths:
+            self._delete_components_in_workspace(response)
+            self.workspace_paths.remove(response)
+            self.save_workspace()
 
     def _delete_components_in_workspace(self, workspace):
         self.components = list(filter(lambda x: not x.startswith(workspace), self.components))

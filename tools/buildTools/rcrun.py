@@ -16,7 +16,7 @@ class rcrun:
             workspace = Workspace()
         self.ws = workspace
 
-    def complete_components(self, prefix):
+    def complete_components(self, prefix, parsed_args, **kwargs):
         components = self.ws.list_filtered_components_names(prefix)
         componentsname=[]
         for component in components:
