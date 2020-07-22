@@ -843,7 +843,23 @@ void DSRGraph::join_delta_node(AworSet aworSet)
 
         }
         else {
+            qDebug() << "DELETE NODE: " << aworSet.id();
             emit del_node_signal(aworSet.id());
+            for (const auto &[k,v] : nd.fano()) {
+                qDebug() << "DELETE EDGE FROM: " << aworSet.id() << " TO: "<< k.to();
+                emit del_edge_signal(aworSet.id(), k.to(), k.type());
+            }
+
+            for (const auto &[key, types] : edges)
+            {
+                auto [from, to] = key;
+                if (to == nd.id()) {
+                    for (const std::string& type : types) {
+                        qDebug() << "DELETE EDGE FROM: " << from << " TO: "<< to;
+                        emit del_edge_signal(from, to, type);
+                    }
+                }
+            }
         }
 
     } catch(const std::exception &e){
