@@ -819,7 +819,9 @@ void DSRGraph::join_delta_node(AworSet aworSet)
 
             //check what change is joined
 
-			emit update_node_signal(aworSet.id(), nodes[aworSet.id()].dots().ds.rbegin()->second.type());
+            if (!(nd.fano() != nodes[aworSet.id()].dots().ds.rbegin()->second.fano() &&
+                nd.attrs() == nodes[aworSet.id()].dots().ds.rbegin()->second.attrs()))
+			    emit update_node_signal(aworSet.id(), nodes[aworSet.id()].dots().ds.rbegin()->second.type());
 			if (nd.type().empty()) {
 				for (auto &[k,v] : nodes[aworSet.id()].dots().ds.rbegin()->second.fano()) {
 					emit update_edge_signal(aworSet.id(), k.to(), k.type());
