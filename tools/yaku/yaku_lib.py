@@ -55,7 +55,6 @@ class Yaku:
         self.active_session = self.sessions.activeSessionId()
         self.tabs_by_name = OrderedDict()
         self.tabs_by_id = OrderedDict()
-        self.load_open_tabs_info()
 
     def rename_tab(self, name=None, append=False, session_id=None):
         if session_id is None:
@@ -73,7 +72,8 @@ class Yaku:
                                                                                                final_name)
 
     def rename_current_tab(self, name=None, append=False):
-        self.rename_tab(name,append)
+        self.load_tab_info()
+        self.rename_tab(name, append)
 
 
     # @staticmethod
@@ -81,35 +81,40 @@ class Yaku:
 
     def load_open_tabs_info(self):
         session_ids_text = self.sessions.sessionIdList()
-        open_tabs = self.bus.get_object('org.kde.yakuake', '/yakuake/tabs')
         session_ids = map(int, session_ids_text.split(','))
         for session_id in sorted(session_ids):
-            yakuake_tab = YakuakeTab()
-            yakuake_tab.session_id = session_id
-            yakuake_tab.name = open_tabs.tabTitle(session_id)
-            yakuake_tab.terminal_id = self.sessions.terminalIdsForSessionId(session_id)
-
-            konsole_session = self.bus.get_object('org.kde.yakuake', '/Sessions/%s' % (session_id + 1),
-                                             'org.kde.konsole.Session')
-            foreground_pid = konsole_session.foregroundProcessId()
-            session_pid = konsole_session.processId()
-            # Not executing the command
-            child_pid = get_last_child(foreground_pid)
-            pwdx_command = "pwdx %s" % child_pid
-            pwd, error = get_command_return(pwdx_command)
-            pwd = pwd.split()[1].strip()
-            yakuake_tab.current_directory = pwd.decode("utf-8")
-            if foreground_pid == session_pid:
-               yakuake_tab.last_command = self.get_last_executed_command(yakuake_tab, session_id)
-            else:
-                ps_command = "ps -p %s -o cmd h" % child_pid
-                command, error = get_command_return(ps_command)
-                command = command.strip()
-                yakuake_tab.last_command = command.decode("utf-8")
-
-            self.tabs_by_name[yakuake_tab.name] = yakuake_tab
-            self.tabs_by_id[yakuake_tab.session_id] = yakuake_tab
+            self.load_tab_info(session_id)
             # finishing writting temp files
+
+    def load_tab_info(self, session_id=None):
+        if session_id is None:
+            session_id = self.active_session
+        open_tabs = self.bus.get_object('org.kde.yakuake', '/yakuake/tabs')
+        yakuake_tab = YakuakeTab()
+        yakuake_tab.session_id = session_id
+        yakuake_tab.name = open_tabs.tabTitle(session_id)
+        yakuake_tab.terminal_id = self.sessions.terminalIdsForSessionId(session_id)
+
+        konsole_session = self.bus.get_object('org.kde.yakuake', '/Sessions/%s' % (session_id + 1),
+                                              'org.kde.konsole.Session')
+        foreground_pid = konsole_session.foregroundProcessId()
+        session_pid = konsole_session.processId()
+        # Not executing the command
+        child_pid = get_last_child(foreground_pid)
+        pwdx_command = "pwdx %s" % child_pid
+        pwd, error = get_command_return(pwdx_command)
+        pwd = pwd.split()[1].strip()
+        yakuake_tab.current_directory = pwd.decode("utf-8")
+        if foreground_pid == session_pid:
+            yakuake_tab.last_command = self.get_last_executed_command(yakuake_tab, session_id)
+        else:
+            ps_command = "ps -p %s -o cmd h" % child_pid
+            command, error = get_command_return(ps_command)
+            command = command.strip()
+            yakuake_tab.last_command = command.decode("utf-8")
+
+        self.tabs_by_name[yakuake_tab.name] = yakuake_tab
+        self.tabs_by_id[yakuake_tab.session_id] = yakuake_tab
 
     def create_yakuake_start_shell_script(self, tabs_to_restore=None):
         if tabs_to_restore is None:
@@ -125,6 +130,7 @@ class Yaku:
         print("Script saved in ./new_deployment.sh")
 
     def rename_all_tabs(self, name=None, append=False):
+        self.load_open_tabs_info()
         for tab_id in self.tabs_by_id.keys():
             self.rename_tab(name, append, tab_id)
 
@@ -151,6 +157,6 @@ class Yaku:
 
 if __name__ == '__main__':
     yaku = Yaku()
-    yaku.rename_current_tab()
+    yaku.rename_all_tabs()
     # print(yaku.tabs_by_name)
 
