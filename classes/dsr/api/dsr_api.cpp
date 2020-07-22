@@ -394,7 +394,7 @@ bool DSRGraph::insert_or_assign_edge(const Edge& attrs)
 void DSRGraph::insert_or_assign_edge_RT(Node& n, int to, std::vector<float>&& trans, std::vector<float>&& rot_euler)
 {
     bool r = false;
-
+    bool no_send = true;
     std::optional<AworSet> awor1;
     std::optional<AworSet> awor2;
     std::optional<Node> to_n;
@@ -402,7 +402,7 @@ void DSRGraph::insert_or_assign_edge_RT(Node& n, int to, std::vector<float>&& tr
         std::unique_lock<std::shared_mutex> lock(_mutex);
         if (in(to))
         {
-            EdgeKey ek; ek.to(to); ek.type("RT");   
+            EdgeKey ek; ek.to(to); ek.type("RT");
             Edge e; e.to(to); e.from(n.id()); e.type("RT");
             Attrib tr; tr.type(3); tr.value().float_vec(trans);
             Attrib rot; rot.type(3); rot.value().float_vec(rot_euler);
@@ -411,10 +411,18 @@ void DSRGraph::insert_or_assign_edge_RT(Node& n, int to, std::vector<float>&& tr
             n.fano().insert_or_assign(ek, e);
             n.agent_id(agent_id);
             to_n = get_(to);
-            bool res1 = modify_attrib_local(to_n.value(), "parent", n.id());
-            if (!res1) (void) add_attrib_local(to_n.value(), "parent", n.id());
-            bool res2 = modify_attrib_local(to_n.value(), "level",  get_node_level(n).value() + 1 );
-            if (!res2) (void) add_attrib_local(to_n.value(), "level",  get_node_level(n).value() + 1 );
+
+            if (auto x = get_attrib_by_name<int>(to_n.value(), "parent"); x.has_value() and x.value() != n.id()) {
+                bool res1 = modify_attrib_local(to_n.value(), "parent", n.id());
+                if (!res1) (void) add_attrib_local(to_n.value(), "parent", n.id());
+                no_send = false;
+            }
+            if (auto x = get_attrib_by_name<int>(to_n.value(), "level"); x.has_value() and x.value() != get_node_level(n).value() + 1) {
+                bool res2 = modify_attrib_local(to_n.value(), "level",  get_node_level(n).value() + 1 );
+                if (!res2) (void) add_attrib_local(to_n.value(), "level",  get_node_level(n).value() + 1 );
+                no_send = false;
+            }
+
 
             auto [r1, aw1] = insert_or_assign_node_(n);
             auto [r2, aw2] = insert_or_assign_node_(to_n.value());
@@ -432,26 +440,25 @@ void DSRGraph::insert_or_assign_edge_RT(Node& n, int to, std::vector<float>&& tr
     if (!copy) {
         if (r) {
             emit update_edge_signal(n.id(), to, "RT");
-            emit update_node_signal(to_n.value().id(), to_n.value().type());
+            if (!no_send) emit update_node_signal(to_n.value().id(), to_n.value().type());
         }
         if (awor1.has_value()) { dsrpub.write(&awor1.value()); }
-        if (awor2.has_value()) { dsrpub.write(&awor2.value()); }
+        if (awor2.has_value() and !no_send) { dsrpub.write(&awor2.value()); }
     }
 }
 
 void DSRGraph::insert_or_assign_edge_RT(Node& n, int to, const std::vector<float>& trans, const std::vector<float>& rot_euler)
 {
     bool r = false;
-
+    bool no_send = true;
     std::optional<AworSet> awor1;
     std::optional<AworSet> awor2;
     std::optional<Node> to_n;
-
     {
         std::unique_lock<std::shared_mutex> lock(_mutex);
         if (in(to))
         {
-            EdgeKey ek; ek.to(to); ek.type("RT");   // PONER EN UNA TABLA
+            EdgeKey ek; ek.to(to); ek.type("RT");
             Edge e; e.to(to); e.from(n.id()); e.type("RT");
             Attrib tr; tr.type(3); tr.value().float_vec(trans);
             Attrib rot; rot.type(3); rot.value().float_vec(rot_euler);
@@ -460,10 +467,18 @@ void DSRGraph::insert_or_assign_edge_RT(Node& n, int to, const std::vector<float
             n.fano().insert_or_assign(ek, e);
             n.agent_id(agent_id);
             to_n = get_(to);
-            bool res1 = modify_attrib_local(to_n.value(), "parent", n.id());
-            if (!res1) (void) add_attrib_local(to_n.value(), "parent", n.id());
-            bool res2 = modify_attrib_local(to_n.value(), "level",  get_node_level(n).value() + 1 );
-            if (!res2) (void) add_attrib_local(to_n.value(), "level",  get_node_level(n).value() + 1 );
+
+            if (auto x = get_attrib_by_name<int>(to_n.value(), "parent"); x.has_value() and x.value() != n.id()) {
+                bool res1 = modify_attrib_local(to_n.value(), "parent", n.id());
+                if (!res1) (void) add_attrib_local(to_n.value(), "parent", n.id());
+                no_send = false;
+            }
+            if (auto x = get_attrib_by_name<int>(to_n.value(), "level"); x.has_value() and x.value() != get_node_level(n).value() + 1) {
+                bool res2 = modify_attrib_local(to_n.value(), "level",  get_node_level(n).value() + 1 );
+                if (!res2) (void) add_attrib_local(to_n.value(), "level",  get_node_level(n).value() + 1 );
+                no_send = false;
+            }
+
 
             auto [r1, aw1] = insert_or_assign_node_(n);
             auto [r2, aw2] = insert_or_assign_node_(to_n.value());
@@ -474,17 +489,17 @@ void DSRGraph::insert_or_assign_edge_RT(Node& n, int to, const std::vector<float
                 awor2 = std::move(aw2);
             }
             else
-                throw std::runtime_error("Could not insert node " + std::to_string(n.id()) + " in G in insert_or_assign_edge_RT() "  +  __FILE__ + " " + __FUNCTION__ + " " + std::to_string(__LINE__));
+                throw std::runtime_error("Could not insert Node " + std::to_string(n.id()) + " in G in insert_or_assign_edge_RT() " +  __FILE__ + " " + __FUNCTION__ + " " + std::to_string(__LINE__));
         } else
-            throw std::runtime_error("Destination node " + std::to_string(n.id()) + " not found in G in insert_or_assign_edge_RT() " +  __FILE__ + " " + __FUNCTION__ + " " + std::to_string(__LINE__));
+            throw std::runtime_error("Destination node " + std::to_string(n.id()) + " not found in G in insert_or_assign_edge_RT() "  +  __FILE__ + " " + __FUNCTION__ + " " + std::to_string(__LINE__));
     }
     if (!copy) {
         if (r) {
             emit update_edge_signal(n.id(), to, "RT");
-            emit update_node_signal(to_n.value().id(), to_n.value().type());
+            if (!no_send) emit update_node_signal(to_n.value().id(), to_n.value().type());
         }
         if (awor1.has_value()) { dsrpub.write(&awor1.value()); }
-        if (awor2.has_value()) { dsrpub.write(&awor2.value()); }
+        if (awor2.has_value() and !no_send) { dsrpub.write(&awor2.value()); }
     }
 }
 
