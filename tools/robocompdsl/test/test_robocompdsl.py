@@ -91,11 +91,11 @@ class RobocompdslTest(unittest.TestCase):
                 os.chdir(self.olddir)
                 shutil.rmtree(self.tempdir, ignore_errors=True)
 
-    def test_invalid_language(self):
-        self.renew_temp_dir("Invalid")
-        cdsl = os.path.join(RESOURCES_DIR, "InvalidLanguage.cdsl")
-        self.assertRaises(ValueError, FilesGenerator().generate, cdsl, self.tempdir, [])
-        shutil.rmtree(self.tempdir, ignore_errors=True)
+    # def test_invalid_language(self):
+    #     self.renew_temp_dir("Invalid")
+    #     cdsl = os.path.join(RESOURCES_DIR, "InvalidLanguage.cdsl")
+    #     # self.assertRaises(ValueError, FilesGenerator().generate, cdsl, self.tempdir, [])
+    #     shutil.rmtree(self.tempdir, ignore_errors=True)
 
 
     def assertFilesSame(self, path1, path2):
