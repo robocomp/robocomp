@@ -77,6 +77,10 @@ namespace DSR
             void add_or_assign_rect(Node &node, std::string color, std::string texture, int width, int height, int depth);
             
             void update_scene_object_pose(std::int32_t node_id);
+        signals:
+            void mouse_right_click(int pos_x, int pos_y, int node_id);
+        protected:
+            virtual void mousePressEvent(QMouseEvent *event);
     };
 };
 #endif

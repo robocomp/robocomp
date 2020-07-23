@@ -440,19 +440,29 @@ qDebug() << __FUNCTION__ ;
     //TODO: check what happens with rt edges
 }
 
-void DSRtoGraphicsceneViewer::del_edge_slot(const std::int32_t from, const std::int32_t to, const std::string &edge_tag)
-{
+void DSRtoGraphicsceneViewer::del_edge_slot(const std::int32_t from, const std::int32_t to, const std::string &edge_tag) {
     qDebug() << "********************************";
-    qDebug() << __FUNCTION__ ;
-    
+    qDebug() << __FUNCTION__;
+
     std::string edge_key = std::to_string(from) + "_" + std::to_string(to);
-    qDebug() << "******Delete EDGE "<<QString::fromStdString(edge_key);
-    if (edge_map.find(edge_key) != edge_map.end())
-    {
+    qDebug() << "******Delete EDGE " << QString::fromStdString(edge_key);
+    if (edge_map.find(edge_key) != edge_map.end()) {
         edge_map.erase(edge_key);
     }
-
-//TODO: removed until signals detection workds properly
-
 }
 
+void DSRtoGraphicsceneViewer::mousePressEvent(QMouseEvent *event){
+    AbstractGraphicViewer::mousePressEvent(event);
+    int node_id = -1;
+    if (event->button() == Qt::RightButton){
+        QPointF scene_point = this->mapToScene(this->mapFromGlobal(QCursor::pos()));
+        QGraphicsItem *item = scene.itemAt(scene_point, QTransform());
+        auto it = std::find_if(scene_map.begin(), scene_map.end(),
+                [&item](const std::pair<int, QGraphicsItem*> &p) { return p.second == item;});
+        if (it != scene_map.end())
+            node_id = it->first;
+
+        std::cout<<"Mouse click: "<<scene_point<<" Node id: "<<node_id<<std::endl;
+        emit mouse_right_click(scene_point.x(), scene_point.y(), node_id);
+    }
+}
