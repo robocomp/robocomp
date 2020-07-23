@@ -341,6 +341,21 @@ std::optional<Edge> DSRGraph::get_edge(int from, int to, const std::string &key)
     return get_edge_(from, to, key);
 }
 
+std::optional<Edge> DSRGraph::get_edge(const Node& n, const std::string& to, const std::string& key)
+{
+    std::optional<int> id_to = get_id_from_name(to);
+    if (id_to.has_value()) {
+        EdgeKey ek; ek.to(id_to.value()); ek.type(key);
+        return (n.fano().find(ek) != n.fano().end()) ?  std::make_optional(n.fano().find(ek)->second) : std::nullopt;
+    }
+    return {};
+}
+
+std::optional<Edge> DSRGraph::get_edge(const Node &n, int to, const std::string& key)
+{
+    EdgeKey ek; ek.to(to); ek.type(key);
+    return (n.fano().find(ek) != n.fano().end()) ?  std::make_optional(n.fano().find(ek)->second) : std::nullopt;
+};
 std::optional<Edge> DSRGraph::get_edge_(int from, int  to, const std::string& key)
 {
     std::shared_lock<std::shared_mutex>  lock(_mutex);

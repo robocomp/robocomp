@@ -182,10 +182,8 @@ namespace DSR
         bool insert_or_assign_edge(const Edge& attrs);
         std::optional<Edge> get_edge(const std::string& from, const std::string& to, const std::string& key);
         std::optional<Edge> get_edge(int from, int to, const std::string& key);
-        std::optional<Edge> get_edge(const Node &n, int to, const std::string& key) {
-            EdgeKey ek; ek.to(to); ek.type(key);
-            return (n.fano().find(ek) != n.fano().end()) ?  std::make_optional(n.fano().find(ek)->second) : std::nullopt;
-        };
+        std::optional<Edge> get_edge(const Node& n, const std::string& to, const std::string& key);
+        std::optional<Edge> get_edge(const Node& n, int to, const std::string& key);
         bool delete_edge(const std::string& from, const std::string& t, const std::string& key);
         bool delete_edge(int from, int t, const std::string& key);
         /**CORE END**/
