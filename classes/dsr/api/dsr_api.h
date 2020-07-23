@@ -261,6 +261,8 @@ namespace DSR
             //throw std::runtime_error("Illegal return type in get_attrib_by_name()");
         }
 
+        const std::vector<uint8_t>& get_image(const Node &n) const;
+
         // Mixed
         void reset() {
             nodes.reset();
@@ -576,7 +578,6 @@ namespace DSR
         int id();
         DotContext context();
         std::map<int, AworSet> Map();
-
 
 
         template <typename T, typename = std::enable_if_t<node_or_edge<T>>>

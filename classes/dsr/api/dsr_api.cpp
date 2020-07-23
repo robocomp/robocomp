@@ -742,6 +742,14 @@ std::string DSRGraph::get_node_type(Node& n)
     //return "error";
 }
 
+
+const std::vector<uint8_t>& DSRGraph::get_image(const Node &n) const {
+    auto& attrs = n.attrs();
+    if (auto value  = attrs.find("rgbd"); value != attrs.end())
+        return value->second.value().byte_vec();
+    else throw std::runtime_error((std::string("Attribute rgbd does not exist in node: " + std::to_string(n.id()) + ". ") + __FILE__ + " " + __FUNCTION__ + " " + std::to_string(__LINE__)).data());
+}
+
 inline void DSRGraph::update_maps_node_delete(int id, const Node& n)
 {
     nodes.erase(id);
@@ -1239,3 +1247,5 @@ DSRGraph DSRGraph::G_copy() {
 bool DSRGraph::is_copy() {
     return copy;
 };
+
+
