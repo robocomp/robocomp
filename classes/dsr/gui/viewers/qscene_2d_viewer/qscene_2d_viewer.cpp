@@ -321,6 +321,7 @@ void DSRtoGraphicsceneViewer::add_or_assign_robot(Node &node)
             brush.setStyle(Qt::SolidPattern);
             scenePolygon = scene.addPolygon(poly2, QPen(QColor("DarkRed")), brush); 
             scenePolygon->setZValue(pose.value().y());
+            robot = (QGraphicsItem*) scenePolygon;
             scene_map[node.id()] = (QGraphicsItem*) scenePolygon;
             std::list<int> parent_list = get_parent_list(node.id());
             update_edge_chain(parent_list);  

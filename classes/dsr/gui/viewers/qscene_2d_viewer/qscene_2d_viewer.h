@@ -38,7 +38,8 @@ namespace DSR
     class DSRtoGraphicsceneViewer : public AbstractGraphicViewer
     {
         Q_OBJECT
-
+        public:
+            QGraphicsItem *robot = nullptr;
         private:
             const float ROBOT_LENGTH = 400;
             std::vector<std::vector<float>> cube_positions = {{0.5,0.5,0.5}, {0.5, 0.5,-0.5}, {0.5, -0.5,0.5}, {0.5, -0.5, -0.5}, {-0.5, 0.5, 0.5}, {-0.5, 0.5, -0.5}, {-0.5, -0.5, 0.5}, {-0.5, -0.5, -0.5} };        
