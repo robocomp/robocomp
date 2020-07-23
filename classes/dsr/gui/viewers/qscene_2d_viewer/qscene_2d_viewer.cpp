@@ -455,17 +455,20 @@ void DSRtoGraphicsceneViewer::del_edge_slot(const std::int32_t from, const std::
 void DSRtoGraphicsceneViewer::mousePressEvent(QMouseEvent *event){
     AbstractGraphicViewer::mousePressEvent(event);
 
-    if (event->button() == Qt::RightButton){
+    if (event->button() == Qt::RightButton or event->button() == Qt::MiddleButton){
         QPointF scene_point = this->mapToScene(this->mapFromGlobal(QCursor::pos()));
         QGraphicsItem *item = scene.itemAt(scene_point, QTransform());
         auto it = std::find_if(scene_map.begin(), scene_map.end(),
                 [&item](const std::pair<int, QGraphicsItem*> &p) { return p.second == item;});
         if (it != scene_map.end()) {
-//            std::cout<<"Mouse click: "<<scene_point<<" Node id: "<<it->first<<std::endl;
-            emit mouse_right_click(scene_point.x(), scene_point.y(), it->first);
-
-            static std::unique_ptr<QWidget> do_stuff;
-            do_stuff = std::make_unique<DoTableStuff>(G, it->first);
+            if (event->button() == Qt::RightButton){
+                std::cout<<"Mouse click: "<<scene_point<<" Node id: "<<it->first<<std::endl;
+                emit mouse_right_click(scene_point.x(), scene_point.y(), it->first);
+            }
+            if (event->button() == Qt::MiddleButton){
+                static std::unique_ptr<QWidget> do_stuff;
+                do_stuff = std::make_unique<DoTableStuff>(G, it->first);
+            }
         }
     }
 }
