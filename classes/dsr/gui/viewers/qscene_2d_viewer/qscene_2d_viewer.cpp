@@ -1,5 +1,5 @@
 #include "qscene_2d_viewer.h"
-
+#include "dsr/gui/viewers/graph_viewer/graph_node.h"
 using namespace DSR ;
 
 DSRtoGraphicsceneViewer::DSRtoGraphicsceneViewer(std::shared_ptr<DSR::DSRGraph> G_, QWidget *parent) : AbstractGraphicViewer(parent)
@@ -119,7 +119,7 @@ void DSRtoGraphicsceneViewer::get_2d_projection(std::string node_name, std::vect
     }
     else
     {
-        qDebug()<<"Error gettting transformation matrix for node:"<<QString::fromStdString(node_name);   
+        qDebug()<<"Error getting transformation matrix for node:"<<QString::fromStdString(node_name);
     }
     polygon = QPolygon(polygon_vec);
 } 
@@ -453,16 +453,18 @@ void DSRtoGraphicsceneViewer::del_edge_slot(const std::int32_t from, const std::
 
 void DSRtoGraphicsceneViewer::mousePressEvent(QMouseEvent *event){
     AbstractGraphicViewer::mousePressEvent(event);
-    int node_id = -1;
+
     if (event->button() == Qt::RightButton){
         QPointF scene_point = this->mapToScene(this->mapFromGlobal(QCursor::pos()));
         QGraphicsItem *item = scene.itemAt(scene_point, QTransform());
         auto it = std::find_if(scene_map.begin(), scene_map.end(),
                 [&item](const std::pair<int, QGraphicsItem*> &p) { return p.second == item;});
-        if (it != scene_map.end())
-            node_id = it->first;
+        if (it != scene_map.end()) {
+//            std::cout<<"Mouse click: "<<scene_point<<" Node id: "<<it->first<<std::endl;
+            emit mouse_right_click(scene_point.x(), scene_point.y(), it->first);
 
-        std::cout<<"Mouse click: "<<scene_point<<" Node id: "<<node_id<<std::endl;
-        emit mouse_right_click(scene_point.x(), scene_point.y(), node_id);
+            static std::unique_ptr<QWidget> do_stuff;
+            do_stuff = std::make_unique<DoTableStuff>(G, it->first);
+        }
     }
 }

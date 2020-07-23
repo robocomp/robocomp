@@ -19,7 +19,6 @@
 
 #include "dsr/api/dsr_api.h"
 #include "dsr/gui/viewers/_abstract_graphic_view.h"
-
 #include <math.h>
 #include <filesystem>
 		
@@ -30,7 +29,7 @@
 #include <QMouseEvent>
 #include <QGLWidget>
 #include <QScrollBar>
-
+#include <QGraphicsSceneHoverEvent>
 
 
 namespace DSR
