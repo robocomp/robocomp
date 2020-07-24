@@ -75,6 +75,8 @@ void DSRtoGraphicsceneViewer::add_or_assign_node_slot(const std::int32_t id, con
             add_or_assign_person(node.value());
         if( type == "differentialrobot" or type == "omnirobot")
             add_or_assign_robot(node.value());
+        if( type == "laser")
+            draw_laser();
         else //node does not have visual representation
             ignore_nodes.insert(id);
 
@@ -493,5 +495,41 @@ void DSRtoGraphicsceneViewer::mousePressEvent(QMouseEvent *event){
                 }
             }
         }              
+    }
+}
+
+
+void DSRtoGraphicsceneViewer::set_draw_laser(bool draw)
+{
+    this->drawLaser = draw;
+}
+
+void DSRtoGraphicsceneViewer::draw_laser()
+{
+    if(not this->drawLaser)
+        return;
+    
+    if(robot == nullptr) //robot is required to draw laser
+        return;
+    
+    if (laser_polygon != nullptr)
+            scene.removeItem(laser_polygon);
+
+    auto laser_node = G->get_node("laser");
+    if(laser_node.has_value())
+    {
+        const auto lAngles = G->get_attrib_by_name<vector<float>>(laser_node.value(), "angles");
+        const auto lDists = G->get_attrib_by_name<vector<float>>(laser_node.value(), "dists");
+        if (lAngles.has_value() and lDists.has_value()) 
+        {
+            QPolygonF poly;
+            for( auto &&[angle, dist] : iter::zip(lAngles.value(), lDists.value()))
+                poly << robot->mapToScene(QPointF(dist * sin(angle), dist * cos(angle)));
+
+            QColor color("Pink");
+            color.setAlpha(150);
+            laser_polygon = scene.addPolygon(poly, QPen(color), QBrush(color));
+            laser_polygon->setZValue(-1);
+        }
     }
 }

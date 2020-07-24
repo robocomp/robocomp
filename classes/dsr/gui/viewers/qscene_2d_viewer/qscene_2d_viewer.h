@@ -38,9 +38,10 @@ namespace DSR
     class DSRtoGraphicsceneViewer : public AbstractGraphicViewer
     {
         Q_OBJECT
-        public:
-            QGraphicsItem *robot = nullptr;
         private:
+            QGraphicsItem *robot = nullptr;
+            QGraphicsItem *laser_polygon = nullptr;
+            bool drawLaser = false;
             const float ROBOT_LENGTH = 400;
             std::vector<std::vector<float>> cube_positions = {{0.5,0.5,0.5}, {0.5, 0.5,-0.5}, {0.5, -0.5,0.5}, {0.5, -0.5, -0.5}, {-0.5, 0.5, 0.5}, {-0.5, 0.5, -0.5}, {-0.5, -0.5, 0.5}, {-0.5, -0.5, -0.5} };        
             std::list<std::string> no_drawable_childs = {"omnirobot", "differentialrobot", "person"};
@@ -53,7 +54,7 @@ namespace DSR
             std::map<int, std::string> orphand_nodes; //nodes without RT edge must be revisited
         public:
             DSRtoGraphicsceneViewer(std::shared_ptr<DSR::DSRGraph> G_, QWidget *parent=0);
-
+            void set_draw_laser(bool draw);
 
         public slots:   // From G
             void add_or_assign_node_slot(const std::int32_t id, const std::string &type);
@@ -77,8 +78,12 @@ namespace DSR
             void add_or_assign_rect(Node &node, std::string color, std::string texture, int width, int height, int depth);
             
             void update_scene_object_pose(std::int32_t node_id);
+            
+            void draw_laser();
+            
         signals:
             void mouse_right_click(int pos_x, int pos_y, int node_id);
+            
         protected:
             virtual void mousePressEvent(QMouseEvent *event);
     };
