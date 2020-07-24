@@ -30,7 +30,7 @@
 #include <QGLWidget>
 #include <QScrollBar>
 #include <QGraphicsSceneHoverEvent>
-
+#include <QInputDialog>
 
 namespace DSR
 {

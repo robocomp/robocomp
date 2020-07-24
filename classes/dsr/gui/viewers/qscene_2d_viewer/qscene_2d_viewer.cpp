@@ -454,21 +454,44 @@ void DSRtoGraphicsceneViewer::del_edge_slot(const std::int32_t from, const std::
 
 void DSRtoGraphicsceneViewer::mousePressEvent(QMouseEvent *event){
     AbstractGraphicViewer::mousePressEvent(event);
-
-    if (event->button() == Qt::RightButton or event->button() == Qt::MiddleButton){
+    QMap<QString, int> nodes;
+    if (event->button() == Qt::RightButton or event->button() == Qt::MiddleButton)
+    {
         QPointF scene_point = this->mapToScene(this->mapFromGlobal(QCursor::pos()));
-        QGraphicsItem *item = scene.itemAt(scene_point, QTransform());
-        auto it = std::find_if(scene_map.begin(), scene_map.end(),
+        QList<QGraphicsItem*> item_list = scene.items(scene_point);
+        for (QGraphicsItem* item : item_list)
+        {
+            auto it = std::find_if(scene_map.begin(), scene_map.end(),
                 [&item](const std::pair<int, QGraphicsItem*> &p) { return p.second == item;});
-        if (it != scene_map.end()) {
-            if (event->button() == Qt::RightButton){
-                std::cout<<"Mouse click: "<<scene_point<<" Node id: "<<it->first<<std::endl;
-                emit mouse_right_click(scene_point.x(), scene_point.y(), it->first);
-            }
-            if (event->button() == Qt::MiddleButton){
-                static std::unique_ptr<QWidget> do_stuff;
-                do_stuff = std::make_unique<DoTableStuff>(G, it->first);
+            if (it != scene_map.end()) {
+                std::optional<Node> node = G->get_node(it->first);
+                if(node.has_value())
+                    nodes[QString::fromStdString(node.value().name())] = it->first;
             }
         }
+        if(not nodes.isEmpty())
+        {
+            if (event->button() == Qt::RightButton){
+                std::cout<<"Mouse click: "<<scene_point<<" Node name: "<<nodes.size()<<std::endl;
+                emit mouse_right_click(scene_point.x(), scene_point.y(), 0);
+            }
+            if (event->button() == Qt::MiddleButton){
+                if(nodes.size() == 1)
+                {
+                    static std::unique_ptr<QWidget> do_stuff;
+                    do_stuff = std::make_unique<DoTableStuff>(G, nodes.first());
+                }
+                else
+                {
+                    bool ok;
+                    QString node_name = QInputDialog::getItem(this, tr("Show node content"), tr("Node:"), nodes.keys(), 0, false, &ok);
+                    if(ok)
+                    {
+                        static std::unique_ptr<QWidget> do_stuff;
+                        do_stuff = std::make_unique<DoTableStuff>(G, nodes[node_name]);
+                    }
+                }
+            }
+        }              
     }
 }
