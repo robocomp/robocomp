@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 # PYTHON_ARGCOMPLETE_OK
 from __future__ import print_function
 import argparse, argcomplete
