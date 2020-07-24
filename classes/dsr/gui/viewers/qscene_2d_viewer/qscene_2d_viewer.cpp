@@ -457,6 +457,7 @@ void DSRtoGraphicsceneViewer::del_edge_slot(const std::int32_t from, const std::
 void DSRtoGraphicsceneViewer::mousePressEvent(QMouseEvent *event){
     AbstractGraphicViewer::mousePressEvent(event);
     QMap<QString, int> nodes;
+    QMap<int, QString> z_order;
     if (event->button() == Qt::RightButton or event->button() == Qt::MiddleButton)
     {
         QPointF scene_point = this->mapToScene(this->mapFromGlobal(QCursor::pos()));
@@ -465,17 +466,20 @@ void DSRtoGraphicsceneViewer::mousePressEvent(QMouseEvent *event){
         {
             auto it = std::find_if(scene_map.begin(), scene_map.end(),
                 [&item](const std::pair<int, QGraphicsItem*> &p) { return p.second == item;});
-            if (it != scene_map.end()) {
+            if (it != scene_map.end() and it->second != laser_polygon) {
                 std::optional<Node> node = G->get_node(it->first);
                 if(node.has_value())
+                {
                     nodes[QString::fromStdString(node.value().name())] = it->first;
+                    z_order[-(it->second->zValue())] = QString::fromStdString(node.value().name());
+                }
             }
         }
         if(not nodes.isEmpty())
         {
             if (event->button() == Qt::RightButton){
-                std::cout<<"Mouse click: "<<scene_point<<" Node name: "<<nodes.size()<<std::endl;
-                emit mouse_right_click(scene_point.x(), scene_point.y(), 0);
+                std::cout<<"Mouse click: "<<scene_point<<" Node id: "<<nodes[z_order.first()]<<std::endl;
+                emit mouse_right_click(scene_point.x(), scene_point.y(), nodes[z_order.first()]);
             }
             if (event->button() == Qt::MiddleButton){
                 if(nodes.size() == 1)
@@ -486,7 +490,7 @@ void DSRtoGraphicsceneViewer::mousePressEvent(QMouseEvent *event){
                 else
                 {
                     bool ok;
-                    QString node_name = QInputDialog::getItem(this, tr("Show node content"), tr("Node:"), nodes.keys(), 0, false, &ok);
+                    QString node_name = QInputDialog::getItem(this, tr("Show node content"), tr("Node:"), z_order.values(), 0, false, &ok);
                     if(ok)
                     {
                         static std::unique_ptr<QWidget> do_stuff;
