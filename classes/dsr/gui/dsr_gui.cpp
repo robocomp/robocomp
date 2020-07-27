@@ -148,20 +148,31 @@ void GraphViewer::initialize_views(int options, view central){
 	std::map<view,QString> valid_options{{view::graph,"Graph"}, {view::tree,"Tree"}, {view::osg,"3D"}, {view::scene, "2D"}};
 
 	// creation of docks and mainwidget
-	for (auto option: valid_options) {
-		if(option.first == central and central != view::none)
+	for (auto const& [type, name] : valid_options) {
+		if(type == central and central != view::none)
 		{
-			auto viewer = create_widget(option.first);
+			auto viewer = create_widget(type);
 			window->setCentralWidget(viewer);
+			WidgetContainer * widget_c = new WidgetContainer();
+			widget_c->widget = viewer;
+			widget_c->name = name;
+			widget_c->type = type;
+			widgets[name] = widget_c;
+			widgets_by_type[type]= widget_c;
 			this->main_widget = viewer;
 		}
-		else if(options & option.first ) {
-			auto viewer = create_widget(option.first);
-			create_dock_and_menu(QString(option.second), viewer);
+		else if(options & type ) {
+			auto viewer = create_widget(type);
+			WidgetContainer * widget_c = new WidgetContainer();
+			widget_c->widget = viewer;
+			widget_c->name = name;
+			widget_c->type = type;
+			widgets[name] = widget_c;
+			widgets_by_type[type]= widget_c;
+			create_dock_and_menu(QString(name), viewer);
 		}
 	}
-
-	if(widgets.count(view::graph))
+	if(widgets_by_type.count(view::graph))
 	{
 		QAction *new_action = new QAction("Animation", this);
 		new_action->setStatusTip(tr("Toggle animation"));
@@ -170,7 +181,7 @@ void GraphViewer::initialize_views(int options, view central){
 		forcesMenu->addAction(new_action);
 		connect(new_action, &QAction::triggered, this, [this](bool state)
 		{
-			qobject_cast<DSRtoGraphViewer*>(widgets[view::graph])->toggle_animation(state==true);
+			qobject_cast<DSRtoGraphViewer*>(widgets_by_type[view::graph]->widget)->toggle_animation(state==true);
 		});
 	}
 
@@ -204,14 +215,20 @@ void GraphViewer::initialize_views(int options, view central){
 	else {
 		window->showMinimized();
 	}
-
 }
 
 
 QWidget* GraphViewer::get_widget(view type)
 {
-	if(widgets.count(type)!=0)
-		return widgets[type];
+	if(widgets_by_type.count(type)!=0)
+		return widgets_by_type[type]->widget;
+	return nullptr;
+}
+
+QWidget* GraphViewer::get_widget(QString name)
+{
+	if(widgets.count(name)!=0)
+		return widgets[name]->widget;
 	return nullptr;
 }
 
@@ -238,7 +255,7 @@ QWidget* GraphViewer::create_widget(view type){
 		case view::none:
 			break;
 	}
-	widgets[type] = widget_view;
+	connect(this, SIGNAL(resetViewer(QWidget*)), widget_view, SLOT(reload(QWidget*)));
 	return widget_view;
 }
 
@@ -255,17 +272,27 @@ void GraphViewer::create_dock_and_menu(QString name, QWidget* view){
 		new_action->setStatusTip(tr("Create a new file"));
 		new_action->setCheckable(true);
 		new_action->setChecked(true);
-		connect(new_action, &QAction::triggered, this, [this, dock_widget](bool state) {
-			switch_view(state, dock_widget);
+		connect(new_action, &QAction::triggered, this, [this, name](bool state) {
+			switch_view(state, widgets[name]);
 		});
 		viewMenu->addAction(new_action);
 		this->docks[name] = dock_widget;
+		widgets[name]->dock = dock_widget;
 	}
 	dock_widget->setWidget(view);
 	dock_widget->setAllowedAreas(Qt::AllDockWidgetAreas);
 	window->addDockWidget(Qt::RightDockWidgetArea, dock_widget);
+	dock_widget->raise();
 }
 
+void GraphViewer::add_custom_widget_to_dock(QString name, QWidget* custom_view){
+	WidgetContainer * widget_c = new WidgetContainer();
+	widget_c->name = name;
+	widget_c->type = view::none;
+	widget_c->widget = custom_view;
+	widgets[name] = widget_c;
+	create_dock_and_menu(name, custom_view);
+}
 
 
 ////////////////////////////////////////
@@ -276,9 +303,10 @@ void GraphViewer::saveGraphSLOT()
 	emit saveGraphSIGNAL(); 
 }
 
-void GraphViewer::switch_view(bool state, QDockWidget* dock)
+void GraphViewer::switch_view(bool state, WidgetContainer* container)
 {
-	QWidget * widget = dock->widget();
+	QWidget * widget = container->widget;
+	QDockWidget * dock = container->dock;
 	if(!state)
 	{
 		widget->blockSignals(true);
@@ -286,7 +314,9 @@ void GraphViewer::switch_view(bool state, QDockWidget* dock)
 	}
 	else{
 		widget->blockSignals(false);
+		emit resetViewer(widget);
 		dock->show();
+		dock->raise();
 	}
 }
 

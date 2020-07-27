@@ -36,6 +36,9 @@ DSRtoTreeViewer::DSRtoTreeViewer(std::shared_ptr<DSR::DSRGraph> G_, QWidget *par
 void DSRtoTreeViewer::createGraph()
 {
 	this->clear();
+	tree_map.clear();
+	types_map.clear();
+	attributes_map.clear();
 	qDebug() << __FUNCTION__ << "Reading graph in Tree Viewer";
     try
     {
@@ -44,6 +47,15 @@ void DSRtoTreeViewer::createGraph()
 		       add_or_assign_node_SLOT(k,  node);
     }
 	catch(const std::exception &e) { std::cout << e.what() << " Error accessing "<< __FUNCTION__<<":"<<__LINE__<< std::endl;}
+}
+
+void DSRtoTreeViewer::reload(QWidget* widget) {
+
+	if(qobject_cast<DSRtoTreeViewer*>(widget) != nullptr)
+	{
+		cout<<"Reloading Tree viewer"<<endl;
+		createGraph();
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////////////////

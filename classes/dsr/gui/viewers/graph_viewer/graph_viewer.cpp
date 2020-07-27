@@ -49,6 +49,9 @@ DSRtoGraphViewer::~DSRtoGraphViewer()
 
 void DSRtoGraphViewer::createGraph()
 {
+	gmap.clear();
+	gmap_edges.clear();
+	this->scene.clear();
 	qDebug() << __FUNCTION__ << "Reading graph in Graph Viewer";
     try
     {
@@ -297,4 +300,11 @@ void DSRtoGraphViewer::mousePressEvent(QMouseEvent *event)
 	}
 }
 
+void DSRtoGraphViewer::reload(QWidget * widget)
+{
+	if(qobject_cast<DSRtoGraphViewer*>(widget) != nullptr)
+	{
+		createGraph();
+	}
+}
 

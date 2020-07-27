@@ -61,6 +61,7 @@ namespace DSR
             void add_or_assign_edge_slot(const std::int32_t from, const std::int32_t to, const std::string& type);
             void del_node_slot(const std::int32_t id);
             void del_edge_slot(const std::int32_t from, const std::int32_t to, const std::string &edge_tag);
+            void reload(QWidget* widget);
 
         private:
             void create_graph();

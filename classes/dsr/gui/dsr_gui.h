@@ -41,20 +41,30 @@ namespace DSR
 	class GraphViewer : public QObject
 	{
 		Q_OBJECT
-		public:
-			enum view
-			{
-				none = -1,
-				graph = (1 << 0),
-				osg = (1 << 1),
-				scene = (1 << 2),
-				tree = (1 << 3),
-			};
+	public:
+		enum view
+		{
+			none = -1,
+			graph = (1 << 0),
+			osg = (1 << 1),
+			scene = (1 << 2),
+			tree = (1 << 3),
+		};
+		struct WidgetContainer
+		{
+			QString name;
+			view type;
+			QWidget * widget;
+			QDockWidget* dock;
+		};
+
 			GraphViewer(QMainWindow *window, std::shared_ptr<DSR::DSRGraph> G, int options, view main = view::none);
 			~GraphViewer();
 			void itemMoved();
 			void createGraph();
 			QWidget* get_widget(view type);
+			QWidget* get_widget(QString  name);
+			void add_custom_widget_to_dock(QString name, QWidget* view);
 
 		protected:
 			virtual void keyPressEvent(QKeyEvent *event);
@@ -69,25 +79,29 @@ namespace DSR
 //			std::shared_ptr<DSR::DSRtoGraphViewer> dsr_to_graph_viewer;
 //			std::shared_ptr<DSR::DSRtoTreeViewer> dsr_to_tree_viewer;
 			std::map<QString, QDockWidget *> docks;
-			std::map<view, QWidget *> widgets;
+			std::map<QString, WidgetContainer *> widgets;
+			std::map<view, WidgetContainer *> widgets_by_type;
 			QWidget * main_widget;
 
 		public slots:
 			void saveGraphSLOT();		
 //			void toggleSimulationSLOT();
 			void restart_app(bool);
-			void switch_view(bool state, QDockWidget* dock);
+			void switch_view(bool state, WidgetContainer* container);
 
 		signals:
 			void saveGraphSIGNAL();
 			void closeWindowSIGNAL();
+			void resetViewer(QWidget* widget);
 
 		private:
 			void create_dock_and_menu(QString name,  QWidget *view);
 			void initialize_views(int options, view main);
 			QWidget * create_widget(view type);
 	};
-}
+
+
+};
 
 Q_DECLARE_METATYPE(std::int32_t);
 Q_DECLARE_METATYPE(std::string);

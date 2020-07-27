@@ -48,6 +48,7 @@ namespace DSR
 			void del_node_SLOT(int id);
 			void node_change_SLOT(int value,  int id, const std::string &type, QTreeWidgetItem* parent= nullptr);
 			void category_change_SLOT(int value,  QTreeWidgetItem* parent= nullptr);
+			void reload(QWidget *widget);
 
         private:
             std::shared_ptr<DSR::DSRGraph> G;

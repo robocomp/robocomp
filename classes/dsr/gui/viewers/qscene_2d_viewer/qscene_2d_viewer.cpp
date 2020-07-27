@@ -454,6 +454,15 @@ void DSRtoGraphicsceneViewer::del_edge_slot(const std::int32_t from, const std::
     }
 }
 
+void DSRtoGraphicsceneViewer::reload(QWidget* widget) {
+
+    if(qobject_cast<DSRtoGraphicsceneViewer*>(widget) == this)
+    {
+        cout<<"Reloading 2D viewer"<<endl;
+        create_graph();
+    }
+}
+
 void DSRtoGraphicsceneViewer::mousePressEvent(QMouseEvent *event){
     AbstractGraphicViewer::mousePressEvent(event);
     QMap<QString, int> nodes;

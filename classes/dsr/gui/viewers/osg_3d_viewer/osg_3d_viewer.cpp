@@ -452,7 +452,7 @@ osg::Matrix  DSRtoOSGViewer::QMatToOSGMat4(const RTMat &nodeB)
 /////  Painting events
 ///////////////////////////////////////////////////////////////
 
-inline void DSRtoOSGViewer::paintGL() 
+void DSRtoOSGViewer::paintGL()
 {
     _mViewer->frame();
 }
@@ -535,6 +535,15 @@ osgGA::EventQueue* DSRtoOSGViewer::getEventQueue() const
 {
     osgGA::EventQueue* eventQueue = _mGraphicsWindow->getEventQueue();
     return eventQueue;
+}
+
+void DSRtoOSGViewer::reload(QWidget* widget) {
+
+	if(qobject_cast<DSRtoOSGViewer*>(widget) == this)
+	{
+	    cout<<"Reloading 3D viewer"<<endl;
+		createGraph();
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////////

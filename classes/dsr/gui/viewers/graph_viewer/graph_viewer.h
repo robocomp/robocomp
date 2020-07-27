@@ -53,6 +53,7 @@ namespace DSR
 			void hide_show_node_SLOT(int id, bool visible);
 			// Others
 			void toggle_animation(bool state);
+			void reload(QWidget * widget);
 
 
 
