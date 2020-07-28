@@ -1,4 +1,4 @@
-module RoboCompObjectPoseEstimation
+module RoboCompObjectPoseEstimationRGBD
 {
     exception HardwareFailedException { string what; };
 
@@ -14,21 +14,32 @@ module RoboCompObjectPoseEstimation
         ImgType image;
     };
 
+    sequence<byte> DepthType;
+
+    struct TDepth
+    {
+        int width;
+        int height;
+        float depthFactor;
+        DepthType depth;
+    };
+
     struct ObjectPose
     {
         string objectname;
         float x;
         float y;
         float z;
-        float rx;
-        float ry;
-        float rz;
+        float qx;
+        float qy;
+        float qz;
+        float qw;
     };
 
     sequence<ObjectPose> PoseType;
 
-    interface ObjectPoseEstimation
+    interface ObjectPoseEstimationRGBD
     {
-        PoseType getObjectPose(TImage img) throws HardwareFailedException;
+        PoseType getObjectPose(TImage image, TDepth depth) throws HardwareFailedException;
     };
 };
