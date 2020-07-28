@@ -289,7 +289,7 @@ qDebug() << __FUNCTION__ ;
         }
 //qDebug()<<"angle"<<pose.value().ry()<<qRadiansToDegrees(pose.value().ry());        
         scenePixmap->setPos(pose.value().x() - 300, pose.value().z() - 150);
-        scenePixmap->setRotation(qRadiansToDegrees(pose.value().ry())+180);    
+        scenePixmap->setRotation(qRadiansToDegrees(pose.value().ry()));    
     }
     else
     {
@@ -334,7 +334,7 @@ void QScene2dViewer::add_or_assign_robot(Node &node)
             scenePolygon = (QGraphicsPolygonItem*) scene_map[node.id()];      
         }
         scenePolygon->setPos(pose.value().x() - scenePolygon->boundingRect().center().x(), pose.value().z() - scenePolygon->boundingRect().center().y());
-        scenePolygon->setRotation(qRadiansToDegrees(-pose.value().ry())+180);   
+        scenePolygon->setRotation(qRadiansToDegrees(-pose.value().ry()));   
     }
     else
     {
@@ -405,7 +405,7 @@ qDebug() << "*************UPDATE NODE ******" << node_id;
         if (pose.has_value())
         {
             item->setPos(pose.value().x() - item->boundingRect().center().x(), pose.value().z() - item->boundingRect().center().y());
-            item->setRotation(qRadiansToDegrees(-pose.value().ry())+180);
+            item->setRotation(qRadiansToDegrees(-pose.value().ry()));
         }
         else   
         {
