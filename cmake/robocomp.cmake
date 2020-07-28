@@ -107,7 +107,7 @@ MACRO( ROBOCOMP_IDSL_TO_ICE )
         IF (EXISTS "${SPATH}/${input_file}.idsl")
         MESSAGE(STATUS "Adding rule to generate ${input_file}.ice from ${SPATH}/${input_file}.idsl")
         add_custom_command(
-            COMMAND robocompdsl ${SPATH}/${input_file}.idsl ${CMAKE_SOURCE_DIR}/src/${input_file}.ice
+            COMMAND robocompdsl ${SPATH}/${input_file}.idsl ${CMAKE_CURRENT_SOURCE_DIR}/${input_file}.ice
             COMMAND robocompdsl ${SPATH}/${input_file}.idsl ${input_file}.ice
             DEPENDS ${SPATH}/${input_file}.idsl
             COMMENT "Generating ${input_file}.ice from ${SPATH}/${input_file}.idsl"
