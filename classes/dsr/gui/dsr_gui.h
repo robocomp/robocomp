@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef GRAPHVIEWER_H
-#define GRAPHVIEWER_H
+#ifndef DSRVIEWER_H
+#define DSRVIEWER_H
 
 #include <memory>
 #include <QMainWindow>
@@ -34,11 +34,11 @@
 
 namespace DSR
 {
-	//////////////////////////////////////////////////////////////////////////////////////////////77
+	//////////////////////////////////////////////////////////////////////////////////////////////
 	/// Drawing controller to display the graph in real-time using RTPS 
-	//////////////////////////////////////////////////////////////////////////////////////////////77
+	//////////////////////////////////////////////////////////////////////////////////////////////
 	
-	class GraphViewer : public QObject
+	class DSRViewer : public QObject
 	{
 		Q_OBJECT
 	public:
@@ -58,8 +58,8 @@ namespace DSR
 			QDockWidget* dock;
 		};
 
-			GraphViewer(QMainWindow *window, std::shared_ptr<DSR::DSRGraph> G, int options, view main = view::none);
-			~GraphViewer();
+			DSRViewer(QMainWindow *window, std::shared_ptr<DSR::DSRGraph> G, int options, view main = view::none);
+			~DSRViewer();
 			void itemMoved();
 			void createGraph();
 			QWidget* get_widget(view type);
@@ -107,4 +107,4 @@ Q_DECLARE_METATYPE(std::int32_t);
 Q_DECLARE_METATYPE(std::string);
 //Q_DECLARE_METATYPE(DSR::AttribsMap);
 
-#endif // GRAPHVIEWER_H
+#endif // DSRVIEWER_H

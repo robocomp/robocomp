@@ -49,7 +49,7 @@ std::string get_self_path()
 	return "";
 }
 
-GraphViewer::GraphViewer(QMainWindow * widget, std::shared_ptr<DSR::DSRGraph> G_, int options, view main) : QObject()
+DSRViewer::DSRViewer(QMainWindow * widget, std::shared_ptr<DSR::DSRGraph> G_, int options, view main) : QObject()
 {
 	G = G_;
     qRegisterMetaType<std::int32_t>("std::int32_t");
@@ -91,7 +91,7 @@ GraphViewer::GraphViewer(QMainWindow * widget, std::shared_ptr<DSR::DSRGraph> G_
 }
 
 
-GraphViewer::~GraphViewer()
+DSRViewer::~DSRViewer()
 {
 	QSettings settings("RoboComp", "DSR");
     settings.beginGroup("MainWindow");
@@ -101,7 +101,7 @@ GraphViewer::~GraphViewer()
 }
 
 
-void GraphViewer::restart_app(bool)
+void DSRViewer::restart_app(bool)
 {
 //	qDebug()<<"TO RESTART";
 //	auto executable_path = get_self_path();
@@ -143,7 +143,7 @@ void GraphViewer::restart_app(bool)
 //	}
 }
 
-void GraphViewer::initialize_views(int options, view central){
+void DSRViewer::initialize_views(int options, view central){
 	//Create docks view and main widget
 	std::map<view,QString> valid_options{{view::graph,"Graph"}, {view::tree,"Tree"}, {view::osg,"3D"}, {view::scene, "2D"}};
 
@@ -199,7 +199,7 @@ void GraphViewer::initialize_views(int options, view central){
 			auto graph_widget = qobject_cast<DSRtoGraphViewer*>(this->main_widget);
 			if (graph_widget) {
 				DSRtoTreeViewer* tree_widget = qobject_cast<DSRtoTreeViewer*>(docks["Tree"]->widget());
-				GraphViewer::connect(
+				DSRViewer::connect(
 						tree_widget,
 						&DSRtoTreeViewer::node_check_state_changed,
 						graph_widget,
@@ -218,21 +218,21 @@ void GraphViewer::initialize_views(int options, view central){
 }
 
 
-QWidget* GraphViewer::get_widget(view type)
+QWidget* DSRViewer::get_widget(view type)
 {
 	if(widgets_by_type.count(type)!=0)
 		return widgets_by_type[type]->widget;
 	return nullptr;
 }
 
-QWidget* GraphViewer::get_widget(QString name)
+QWidget* DSRViewer::get_widget(QString name)
 {
 	if(widgets.count(name)!=0)
 		return widgets[name]->widget;
 	return nullptr;
 }
 
-QWidget* GraphViewer::create_widget(view type){
+QWidget* DSRViewer::create_widget(view type){
 
 	QWidget * widget_view = nullptr;
 	switch(type) {
@@ -259,7 +259,7 @@ QWidget* GraphViewer::create_widget(view type){
 	return widget_view;
 }
 
-void GraphViewer::create_dock_and_menu(QString name, QWidget* view){
+void DSRViewer::create_dock_and_menu(QString name, QWidget* view){
 //	TODO: Check if name exists in docks
 	QDockWidget* dock_widget;
 	if(this->docks.count(name)) {
@@ -285,7 +285,7 @@ void GraphViewer::create_dock_and_menu(QString name, QWidget* view){
 	dock_widget->raise();
 }
 
-void GraphViewer::add_custom_widget_to_dock(QString name, QWidget* custom_view){
+void DSRViewer::add_custom_widget_to_dock(QString name, QWidget* custom_view){
 	WidgetContainer * widget_c = new WidgetContainer();
 	widget_c->name = name;
 	widget_c->type = view::none;
@@ -298,12 +298,12 @@ void GraphViewer::add_custom_widget_to_dock(QString name, QWidget* custom_view){
 ////////////////////////////////////////
 /// UI slots
 ////////////////////////////////////////
-void GraphViewer::saveGraphSLOT()
+void DSRViewer::saveGraphSLOT()
 { 
 	emit saveGraphSIGNAL(); 
 }
 
-void GraphViewer::switch_view(bool state, WidgetContainer* container)
+void DSRViewer::switch_view(bool state, WidgetContainer* container)
 {
 	QWidget * widget = container->widget;
 	QDockWidget * dock = container->dock;
@@ -322,7 +322,7 @@ void GraphViewer::switch_view(bool state, WidgetContainer* container)
 
 
 
-//void GraphViewer::toggleSimulationSLOT()
+//void DSRViewer::toggleSimulationSLOT()
 //{
 //	this->do_simulate = !do_simulate;
 //	if(do_simulate)
@@ -335,7 +335,7 @@ void GraphViewer::switch_view(bool state, WidgetContainer* container)
 ///// Qt Events
 /////////////////////////
 
-void GraphViewer::keyPressEvent(QKeyEvent* event) 
+void DSRViewer::keyPressEvent(QKeyEvent* event)
 {
 	if (event->key() == Qt::Key_Escape)
 		emit closeWindowSIGNAL();
