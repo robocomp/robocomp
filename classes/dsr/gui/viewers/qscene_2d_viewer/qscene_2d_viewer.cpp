@@ -2,9 +2,9 @@
 #include "dsr/gui/viewers/graph_viewer/graph_node.h"
 using namespace DSR ;
 
-DSRtoGraphicsceneViewer::DSRtoGraphicsceneViewer(std::shared_ptr<DSR::DSRGraph> G_, QWidget *parent) : AbstractGraphicViewer(parent)
+QScene2dViewer::QScene2dViewer(std::shared_ptr<DSR::DSRGraph> G_, QWidget *parent) : AbstractGraphicViewer(parent)
 {
-    qDebug()<<"***************INIT DSRtoGraphicsceneViewer********************";
+    qDebug()<<"***************INIT QScene2dViewer********************";
     G = G_;
     this->setMinimumSize(400,400);
 
@@ -24,14 +24,14 @@ DSRtoGraphicsceneViewer::DSRtoGraphicsceneViewer(std::shared_ptr<DSR::DSRGraph> 
     create_graph();
 
     //update signals
-    connect(G.get(), &DSR::DSRGraph::update_node_signal, this, &DSRtoGraphicsceneViewer::add_or_assign_node_slot);
-	connect(G.get(), &DSR::DSRGraph::update_edge_signal, this, &DSRtoGraphicsceneViewer::add_or_assign_edge_slot);
+    connect(G.get(), &DSR::DSRGraph::update_node_signal, this, &QScene2dViewer::add_or_assign_node_slot);
+	connect(G.get(), &DSR::DSRGraph::update_edge_signal, this, &QScene2dViewer::add_or_assign_edge_slot);
 
-	connect(G.get(), &DSR::DSRGraph::del_edge_signal, this, &DSRtoGraphicsceneViewer::del_edge_slot);
-	connect(G.get(), &DSR::DSRGraph::del_node_signal, this, &DSRtoGraphicsceneViewer::del_node_slot);
+	connect(G.get(), &DSR::DSRGraph::del_edge_signal, this, &QScene2dViewer::del_edge_slot);
+	connect(G.get(), &DSR::DSRGraph::del_node_signal, this, &QScene2dViewer::del_node_slot);
 }
 
-void DSRtoGraphicsceneViewer::create_graph()
+void QScene2dViewer::create_graph()
 {
     innermodel = G->get_inner_api();
     try
@@ -51,7 +51,7 @@ void DSRtoGraphicsceneViewer::create_graph()
 ///// SLOTS
 //////////////////////////////////////////////////////////////////////////////////////
 
-void DSRtoGraphicsceneViewer::add_or_assign_node_slot(const std::int32_t id, const std::string &type)
+void QScene2dViewer::add_or_assign_node_slot(const std::int32_t id, const std::string &type)
 {
     qDebug()<<"*************************";
     qDebug() << __FUNCTION__ ;
@@ -82,7 +82,7 @@ void DSRtoGraphicsceneViewer::add_or_assign_node_slot(const std::int32_t id, con
 
     }
 }
-void DSRtoGraphicsceneViewer::add_or_assign_edge_slot(const std::int32_t from, const std::int32_t to, const std::string& type)
+void QScene2dViewer::add_or_assign_edge_slot(const std::int32_t from, const std::int32_t to, const std::string& type)
 {
     qDebug()<<__FUNCTION__;
     //check if new edge connected any orphan nodes
@@ -103,7 +103,7 @@ void DSRtoGraphicsceneViewer::add_or_assign_edge_slot(const std::int32_t from, c
 }
 
 //Compute 2d projection and zvalue
-void DSRtoGraphicsceneViewer::get_2d_projection(std::string node_name, std::vector<int> size, QPolygon &polygon, int &zvalue)
+void QScene2dViewer::get_2d_projection(std::string node_name, std::vector<int> size, QPolygon &polygon, int &zvalue)
 {
     QVector<QPoint> polygon_vec;
     zvalue = -99999;
@@ -127,7 +127,7 @@ void DSRtoGraphicsceneViewer::get_2d_projection(std::string node_name, std::vect
 } 
 
 
-void DSRtoGraphicsceneViewer::add_or_assign_rect(Node &node, std::string color, std::string texture, int width, int height, int depth)
+void QScene2dViewer::add_or_assign_rect(Node &node, std::string color, std::string texture, int width, int height, int depth)
 {
 
     //Calculate polygon
@@ -174,7 +174,7 @@ void DSRtoGraphicsceneViewer::add_or_assign_rect(Node &node, std::string color, 
 }
 
 
-void DSRtoGraphicsceneViewer::add_or_assign_plane(Node &node)
+void QScene2dViewer::add_or_assign_plane(Node &node)
 {
 qDebug() << "********************************";
 qDebug() << __FUNCTION__ ;
@@ -198,7 +198,7 @@ qDebug() << __FUNCTION__ ;
     add_or_assign_rect(node, color, texture, width, height, depth);
 }
 
-bool DSRtoGraphicsceneViewer::is_drawable(std::list<int> parent_list)
+bool QScene2dViewer::is_drawable(std::list<int> parent_list)
 {
     bool drawable = true;
     for(std::list<int>::iterator it = parent_list.end(); it != parent_list.begin(); --it)
@@ -218,7 +218,7 @@ bool DSRtoGraphicsceneViewer::is_drawable(std::list<int> parent_list)
     return drawable;
 }
 
-bool DSRtoGraphicsceneViewer::check_RT_required_attributes(Node node)
+bool QScene2dViewer::check_RT_required_attributes(Node node)
 {
     try{
         std::optional<int> level = G->get_node_level(node);
@@ -234,7 +234,7 @@ qDebug()<<"ORPHAN NODE"<<node.id()<<QString::fromStdString(node.type());
     return false;
 }
 
-void  DSRtoGraphicsceneViewer::add_or_assign_mesh(Node &node)
+void  QScene2dViewer::add_or_assign_mesh(Node &node)
 {   
 qDebug() << "********************************";
 qDebug() << __FUNCTION__ ;
@@ -258,7 +258,7 @@ qDebug()<<"Draw mesh"<<QString::fromStdString(node.name())<<"("<<width<<","<<hei
 
 }
 
-void  DSRtoGraphicsceneViewer::add_or_assign_person(Node &node)
+void  QScene2dViewer::add_or_assign_person(Node &node)
 {   
 qDebug() << "********************************";
 qDebug() << __FUNCTION__ ;
@@ -297,7 +297,7 @@ qDebug() << __FUNCTION__ ;
     }
 }
 
-void DSRtoGraphicsceneViewer::add_or_assign_robot(Node &node)
+void QScene2dViewer::add_or_assign_robot(Node &node)
 {
     std::optional<QVec> pose;
     try
@@ -342,7 +342,7 @@ void DSRtoGraphicsceneViewer::add_or_assign_robot(Node &node)
     }
 }
 
-std::list<int> DSRtoGraphicsceneViewer::get_parent_list(std::int32_t node_id)
+std::list<int> QScene2dViewer::get_parent_list(std::int32_t node_id)
 {
     std::list<int> parent_list;
     parent_list.push_back(node_id);
@@ -365,7 +365,7 @@ std::list<int> DSRtoGraphicsceneViewer::get_parent_list(std::int32_t node_id)
 }
 
 //get all edges involve on node->world transformation chain
-void DSRtoGraphicsceneViewer::update_edge_chain(std::list<int> parent_list)
+void QScene2dViewer::update_edge_chain(std::list<int> parent_list)
 {
     if (parent_list.size()< 2)
         return;
@@ -389,7 +389,7 @@ void DSRtoGraphicsceneViewer::update_edge_chain(std::list<int> parent_list)
 
 
 //update pose on edge changes
-void DSRtoGraphicsceneViewer::update_scene_object_pose(std::int32_t node_id)
+void QScene2dViewer::update_scene_object_pose(std::int32_t node_id)
 {
 qDebug() << "*************UPDATE NODE ******" << node_id;
     auto node = G->get_node(node_id);
@@ -415,7 +415,7 @@ qDebug() << "*************UPDATE NODE ******" << node_id;
     }
 }
 
-void DSRtoGraphicsceneViewer::del_node_slot(const std::int32_t id)
+void QScene2dViewer::del_node_slot(const std::int32_t id)
 {
 qDebug() << "********************************";
 qDebug() << __FUNCTION__ ; 
@@ -443,7 +443,7 @@ qDebug() << __FUNCTION__ ;
     //TODO: check what happens with rt edges
 }
 
-void DSRtoGraphicsceneViewer::del_edge_slot(const std::int32_t from, const std::int32_t to, const std::string &edge_tag) {
+void QScene2dViewer::del_edge_slot(const std::int32_t from, const std::int32_t to, const std::string &edge_tag) {
     qDebug() << "********************************";
     qDebug() << __FUNCTION__;
 
@@ -454,16 +454,16 @@ void DSRtoGraphicsceneViewer::del_edge_slot(const std::int32_t from, const std::
     }
 }
 
-void DSRtoGraphicsceneViewer::reload(QWidget* widget) {
+void QScene2dViewer::reload(QWidget* widget) {
 
-    if(qobject_cast<DSRtoGraphicsceneViewer*>(widget) == this)
+    if(qobject_cast<QScene2dViewer*>(widget) == this)
     {
         cout<<"Reloading 2D viewer"<<endl;
         create_graph();
     }
 }
 
-void DSRtoGraphicsceneViewer::mousePressEvent(QMouseEvent *event){
+void QScene2dViewer::mousePressEvent(QMouseEvent *event){
     AbstractGraphicViewer::mousePressEvent(event);
     QMap<QString, int> nodes;
     QMap<int, QString> z_order;
@@ -512,12 +512,12 @@ void DSRtoGraphicsceneViewer::mousePressEvent(QMouseEvent *event){
 }
 
 
-void DSRtoGraphicsceneViewer::set_draw_laser(bool draw)
+void QScene2dViewer::set_draw_laser(bool draw)
 {
     this->drawLaser = draw;
 }
 
-void DSRtoGraphicsceneViewer::draw_laser()
+void QScene2dViewer::draw_laser()
 {
     if(not this->drawLaser)
         return;

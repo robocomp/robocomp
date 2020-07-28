@@ -35,7 +35,7 @@
 namespace DSR
 {
 
-    class DSRtoGraphicsceneViewer : public AbstractGraphicViewer
+    class QScene2dViewer : public AbstractGraphicViewer
     {
         Q_OBJECT
         private:
@@ -53,7 +53,7 @@ namespace DSR
             std::set<int> ignore_nodes;
             std::map<int, std::string> orphand_nodes; //nodes without RT edge must be revisited
         public:
-            DSRtoGraphicsceneViewer(std::shared_ptr<DSR::DSRGraph> G_, QWidget *parent=0);
+            QScene2dViewer(std::shared_ptr<DSR::DSRGraph> G_, QWidget *parent=0);
             void set_draw_laser(bool draw);
 
         public slots:   // From G

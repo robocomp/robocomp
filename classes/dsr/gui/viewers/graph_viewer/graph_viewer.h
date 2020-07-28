@@ -33,12 +33,12 @@ class GraphEdge;
 
 namespace DSR
 {
-    class DSRtoGraphViewer : public AbstractGraphicViewer
+    class GraphViewer : public AbstractGraphicViewer
     {
         Q_OBJECT
         public:
-            DSRtoGraphViewer(std::shared_ptr<DSR::DSRGraph> G_, QWidget *parent=0);
-			~DSRtoGraphViewer();
+            GraphViewer(std::shared_ptr<DSR::DSRGraph> G_, QWidget *parent=0);
+			~GraphViewer();
             std::shared_ptr<DSR::DSRGraph> getGraph()  			  	{return G;};
 			std::map<std::int32_t, GraphNode*> getGMap() const 			{return gmap;};
             QGraphicsEllipseItem* getCentralPoint() const 				{return central_point;};
@@ -59,7 +59,7 @@ namespace DSR
 
 
         private:
-			std::shared_ptr<DSRtoGraphViewer> own;
+			std::shared_ptr<GraphViewer> own;
             std::shared_ptr<DSR::DSRGraph> G;
             std::map<std::int32_t, GraphNode*> gmap;
 			std::map<std::tuple<std::int32_t, std::int32_t, std::string>, GraphEdge*> gmap_edges;

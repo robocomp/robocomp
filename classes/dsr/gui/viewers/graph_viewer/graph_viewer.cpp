@@ -9,12 +9,12 @@
 
 using namespace DSR ;
 
-DSRtoGraphViewer::DSRtoGraphViewer(std::shared_ptr<DSR::DSRGraph> G_, QWidget *parent) :  AbstractGraphicViewer(parent)
+GraphViewer::GraphViewer(std::shared_ptr<DSR::DSRGraph> G_, QWidget *parent) :  AbstractGraphicViewer(parent)
 {
     qRegisterMetaType<std::int32_t>("std::int32_t");
     qRegisterMetaType<std::string>("std::string");
     G = G_;
-	own = shared_ptr<DSRtoGraphViewer>(this);
+	own = shared_ptr<GraphViewer>(this);
 
     createGraph();
 
@@ -25,13 +25,13 @@ DSRtoGraphViewer::DSRtoGraphViewer(std::shared_ptr<DSR::DSRGraph> G_, QWidget *p
 	central_point = new QGraphicsEllipseItem(0,0,0,0);
 	scene.addItem(central_point);
 
-	connect(G.get(), &DSR::DSRGraph::update_node_signal, this, &DSRtoGraphViewer::add_or_assign_node_SLOT);
-	connect(G.get(), &DSR::DSRGraph::update_edge_signal, this, &DSRtoGraphViewer::add_or_assign_edge_SLOT);
-	connect(G.get(), &DSR::DSRGraph::del_edge_signal, this, &DSRtoGraphViewer::del_edge_SLOT);
-	connect(G.get(), &DSR::DSRGraph::del_node_signal, this, &DSRtoGraphViewer::del_node_SLOT);
+	connect(G.get(), &DSR::DSRGraph::update_node_signal, this, &GraphViewer::add_or_assign_node_SLOT);
+	connect(G.get(), &DSR::DSRGraph::update_edge_signal, this, &GraphViewer::add_or_assign_edge_SLOT);
+	connect(G.get(), &DSR::DSRGraph::del_edge_signal, this, &GraphViewer::del_edge_SLOT);
+	connect(G.get(), &DSR::DSRGraph::del_node_signal, this, &GraphViewer::del_node_SLOT);
 }
 
-DSRtoGraphViewer::~DSRtoGraphViewer()
+GraphViewer::~GraphViewer()
 {
 	gmap.clear();
 	gmap_edges.clear();
@@ -47,7 +47,7 @@ DSRtoGraphViewer::~DSRtoGraphViewer()
 	scene.clear();
 }
 
-void DSRtoGraphViewer::createGraph()
+void GraphViewer::createGraph()
 {
 	gmap.clear();
 	gmap_edges.clear();
@@ -68,7 +68,7 @@ void DSRtoGraphViewer::createGraph()
 
 ///////////////////////////////////////
 
-void DSRtoGraphViewer::toggle_animation(bool animate)
+void GraphViewer::toggle_animation(bool animate)
 {
 	qDebug() << "timerId " << timerId ;
 	if(animate)
@@ -83,7 +83,7 @@ void DSRtoGraphViewer::toggle_animation(bool animate)
 	}
 }
 
-void DSRtoGraphViewer::timerEvent(QTimerEvent *event)
+void GraphViewer::timerEvent(QTimerEvent *event)
 {
 	// Q_UNUSED(event)
 
@@ -106,7 +106,7 @@ void DSRtoGraphViewer::timerEvent(QTimerEvent *event)
 //////////////////////////////////////////////////////////////////////////////////////
 ///// SLOTS
 //////////////////////////////////////////////////////////////////////////////////////
-void DSRtoGraphViewer::add_or_assign_node_SLOT(int id, const std::string &type)
+void GraphViewer::add_or_assign_node_SLOT(int id, const std::string &type)
 {	
 	//qDebug() << __FUNCTION__ << "node id " << id<<", type "<<QString::fromUtf8(type.c_str());
 	GraphNode *gnode;														// CAMBIAR a sharer_ptr
@@ -202,7 +202,7 @@ void DSRtoGraphViewer::add_or_assign_node_SLOT(int id, const std::string &type)
     }
 }
 
-void DSRtoGraphViewer::add_or_assign_edge_SLOT(std::int32_t from, std::int32_t to, const std::string &edge_tag)
+void GraphViewer::add_or_assign_edge_SLOT(std::int32_t from, std::int32_t to, const std::string &edge_tag)
 {
 	try 
     {
@@ -245,7 +245,7 @@ void DSRtoGraphViewer::add_or_assign_edge_SLOT(std::int32_t from, std::int32_t t
 
 }
 
-void DSRtoGraphViewer::del_edge_SLOT(const std::int32_t from, const std::int32_t to, const std::string &edge_tag)
+void GraphViewer::del_edge_SLOT(const std::int32_t from, const std::int32_t to, const std::string &edge_tag)
 {
     qDebug()<<__FUNCTION__<<":"<<__LINE__;
 	try {
@@ -259,7 +259,7 @@ void DSRtoGraphViewer::del_edge_SLOT(const std::int32_t from, const std::int32_t
 }
 
 
-void DSRtoGraphViewer::del_node_SLOT(int id)
+void GraphViewer::del_node_SLOT(int id)
 {
     qDebug()<<__FUNCTION__<<":"<<__LINE__;
     try {
@@ -275,7 +275,7 @@ void DSRtoGraphViewer::del_node_SLOT(int id)
 }
 
 
-void DSRtoGraphViewer::hide_show_node_SLOT(int id, bool visible)
+void GraphViewer::hide_show_node_SLOT(int id, bool visible)
 {
 	auto item = gmap[id];
 	item->setVisible(visible);
@@ -289,7 +289,7 @@ void DSRtoGraphViewer::hide_show_node_SLOT(int id, bool visible)
 
 }
 
-void DSRtoGraphViewer::mousePressEvent(QMouseEvent *event)
+void GraphViewer::mousePressEvent(QMouseEvent *event)
 {
 	auto item = this->scene.itemAt(mapToScene(event->pos()), QTransform());
 	if(item) {
@@ -300,9 +300,9 @@ void DSRtoGraphViewer::mousePressEvent(QMouseEvent *event)
 	}
 }
 
-void DSRtoGraphViewer::reload(QWidget * widget)
+void GraphViewer::reload(QWidget * widget)
 {
-	if(qobject_cast<DSRtoGraphViewer*>(widget) != nullptr)
+	if(qobject_cast<GraphViewer*>(widget) != nullptr)
 	{
 		createGraph();
 	}

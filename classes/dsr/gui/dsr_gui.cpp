@@ -181,7 +181,7 @@ void DSRViewer::initialize_views(int options, view central){
 		forcesMenu->addAction(new_action);
 		connect(new_action, &QAction::triggered, this, [this](bool state)
 		{
-			qobject_cast<DSRtoGraphViewer*>(widgets_by_type[view::graph]->widget)->toggle_animation(state==true);
+			qobject_cast<GraphViewer*>(widgets_by_type[view::graph]->widget)->toggle_animation(state==true);
 		});
 	}
 
@@ -196,12 +196,12 @@ void DSRViewer::initialize_views(int options, view central){
 //	connection of tree to graph signals
 	if(docks.count(QString("Tree"))==1) {
 		if (this->main_widget) {
-			auto graph_widget = qobject_cast<DSRtoGraphViewer*>(this->main_widget);
+			auto graph_widget = qobject_cast<GraphViewer*>(this->main_widget);
 			if (graph_widget) {
-				DSRtoTreeViewer* tree_widget = qobject_cast<DSRtoTreeViewer*>(docks["Tree"]->widget());
+				TreeViewer* tree_widget = qobject_cast<TreeViewer*>(docks["Tree"]->widget());
 				DSRViewer::connect(
 						tree_widget,
-						&DSRtoTreeViewer::node_check_state_changed,
+						&TreeViewer::node_check_state_changed,
 						graph_widget,
 						[=](int value, int id, const std::string& type, QTreeWidgetItem*) {
 							graph_widget->hide_show_node_SLOT(id, value==2); });
@@ -238,19 +238,19 @@ QWidget* DSRViewer::create_widget(view type){
 	switch(type) {
 //		graph
 		case view::graph:
-			widget_view = new DSR::DSRtoGraphViewer(G);
+			widget_view = new DSR::GraphViewer(G);
 			break;
 //		3D
 		case view::osg:
-			widget_view = new DSR::DSRtoOSGViewer(G, 1, 1);
+			widget_view = new DSR::OSG3dViewer(G, 1, 1);
 			break;
 //		Tree
 		case view::tree:
-			widget_view = new DSR::DSRtoTreeViewer(G);
+			widget_view = new DSR::TreeViewer(G);
 			break;
 //		2D
 		case view::scene:
-			widget_view = new DSR::DSRtoGraphicsceneViewer(G);
+			widget_view = new DSR::QScene2dViewer(G);
 			break;
 		case view::none:
 			break;

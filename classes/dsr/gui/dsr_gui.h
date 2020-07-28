@@ -74,9 +74,9 @@ namespace DSR
 			QMainWindow *window;
 			QMenu *viewMenu;
 			QMenu *forcesMenu;
-//			std::shared_ptr<DSR::DSRtoOSGViewer> dsr_to_osg_viewer;
-//			std::shared_ptr<DSR::DSRtoGraphicsceneViewer> dsr_to_graphicscene_viewer;
-//			std::shared_ptr<DSR::DSRtoGraphViewer> dsr_to_graph_viewer;
+//			std::shared_ptr<DSR::OSG3dViewer> dsr_to_osg_viewer;
+//			std::shared_ptr<DSR::QScene2dViewer> dsr_to_graphicscene_viewer;
+//			std::shared_ptr<DSR::GraphViewer> dsr_to_graph_viewer;
 //			std::shared_ptr<DSR::DSRtoTreeViewer> dsr_to_tree_viewer;
 			std::map<QString, QDockWidget *> docks;
 			std::map<QString, WidgetContainer *> widgets;

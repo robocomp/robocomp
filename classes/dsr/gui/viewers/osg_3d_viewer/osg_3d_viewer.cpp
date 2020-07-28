@@ -9,7 +9,7 @@
  
 using namespace DSR;
 
-DSRtoOSGViewer::DSRtoOSGViewer(std::shared_ptr<DSR::DSRGraph> G_, float scaleX, float scaleY, QWidget *parent) :
+OSG3dViewer::OSG3dViewer(std::shared_ptr<DSR::DSRGraph> G_, float scaleX, float scaleY, QWidget *parent) :
                         QOpenGLWidget(parent), 
                         _mGraphicsWindow(new osgViewer::GraphicsWindowEmbedded(this->x(), this->y(), this->width(), this->height())), 
                         _mViewer(new osgViewer::Viewer), m_scaleX(scaleX), m_scaleY(scaleY)
@@ -56,22 +56,22 @@ DSRtoOSGViewer::DSRtoOSGViewer(std::shared_ptr<DSR::DSRGraph> G_, float scaleX, 
                                                 if(parent.has_value() and node.has_value())
                                                     add_or_assign_edge_slot(parent.value(), node.value());
                                              });
-	//connect(G.get(), &DSR::DSRGraph::del_edge_signal, this, &DSRtoOSGViewer::delEdgeSLOT);
-	//connect(G.get(), &DSR::DSRGraph::del_node_signal, this, &DSRtoOSGViewer::delNodeSLOT);
+	//connect(G.get(), &DSR::DSRGraph::del_edge_signal, this, &OSG3dViewer::delEdgeSLOT);
+	//connect(G.get(), &DSR::DSRGraph::del_node_signal, this, &OSG3dViewer::delNodeSLOT);
 
     _mViewer->realize();
     //    setMainCamera(manipulator, TOP_POV);
    
 }
 
-DSRtoOSGViewer::~DSRtoOSGViewer()
+OSG3dViewer::~OSG3dViewer()
 {
 	root->removeChildren(0, root->getNumChildren());
 	root->dirtyBound();
 	root = NULL;
 }
 
-void DSRtoOSGViewer::initializeGL(){
+void OSG3dViewer::initializeGL(){
 
     osg::ref_ptr<osg::StateSet> stateSet = root->getOrCreateStateSet();
     osg::ref_ptr<osg::Material> material = new osg::Material;
@@ -99,7 +99,7 @@ void DSRtoOSGViewer::initializeGL(){
 }
 
 // We need to go down the tree breadth first
-void DSRtoOSGViewer::traverse_RT_tree(const Node& node)
+void OSG3dViewer::traverse_RT_tree(const Node& node)
 {
     for(auto &edge: G->get_node_edges_by_type(node, "RT"))
 	{
@@ -116,7 +116,7 @@ void DSRtoOSGViewer::traverse_RT_tree(const Node& node)
 	}
 }
 
-osg::ref_ptr<osg::Group> DSRtoOSGViewer::createGraph()
+osg::ref_ptr<osg::Group> OSG3dViewer::createGraph()
 {
     qDebug() << __FUNCTION__ << "Reading graph in OSG Viewer";
     try
@@ -133,7 +133,7 @@ osg::ref_ptr<osg::Group> DSRtoOSGViewer::createGraph()
     return osg::ref_ptr<osg::Group>();
 }
 
-void DSRtoOSGViewer::print_RT_subtree(const Node& node)
+void OSG3dViewer::print_RT_subtree(const Node& node)
 {
     //qDebug() << "Node " << node.name() ;
     for(auto &edge: G->get_node_edges_by_type(node, "RT"))
@@ -152,7 +152,7 @@ void DSRtoOSGViewer::print_RT_subtree(const Node& node)
 ///////////////////////////////////////////////////////////////////////////////////
 
 
-void  DSRtoOSGViewer::setMainCamera(osgGA::TrackballManipulator *manipulator, CameraView pov) const
+void  OSG3dViewer::setMainCamera(osgGA::TrackballManipulator *manipulator, CameraView pov) const
 {
 	osg::Quat mRot;
 
@@ -188,7 +188,7 @@ void  DSRtoOSGViewer::setMainCamera(osgGA::TrackballManipulator *manipulator, Ca
 // Transforms are created form RT edges.
 
 
-void DSRtoOSGViewer::add_or_assign_node_slot(const Node &node)
+void OSG3dViewer::add_or_assign_node_slot(const Node &node)
 {
     qDebug() << __FUNCTION__  << " " << QString::fromStdString(node.name()) << " " << node.id() << " " << QString::fromStdString(node.type()) ;
     try
@@ -215,7 +215,7 @@ void DSRtoOSGViewer::add_or_assign_node_slot(const Node &node)
     }
 }
 
-void DSRtoOSGViewer::add_or_assign_edge_slot(const Node &from, const Node& to)
+void OSG3dViewer::add_or_assign_edge_slot(const Node &from, const Node& to)
 {
     
     qDebug() << __FUNCTION__ << " from " << from.id() << " to " << to.id() ;
@@ -268,7 +268,7 @@ void DSRtoOSGViewer::add_or_assign_edge_slot(const Node &from, const Node& to)
 /// Node modifications
 ////////////////////////////////////////////////////////////////
 
-void DSRtoOSGViewer::add_or_assign_transform(const Node &node, const Node& parent)
+void OSG3dViewer::add_or_assign_transform(const Node &node, const Node& parent)
 {
     qDebug() << __FUNCTION__  << " node " << node.id() << " parent "  << parent.id() ;
    
@@ -293,7 +293,7 @@ void DSRtoOSGViewer::add_or_assign_transform(const Node &node, const Node& paren
     }
 }
 
-void DSRtoOSGViewer::add_or_assign_box(const Node &node, const Node& parent)
+void OSG3dViewer::add_or_assign_box(const Node &node, const Node& parent)
 {
     qDebug() << __FUNCTION__ << ": node " <<  QString::fromStdString(node.name()) << "-" << node.id()<< " Parent: " << parent.id() ;
     try
@@ -371,7 +371,7 @@ void DSRtoOSGViewer::add_or_assign_box(const Node &node, const Node& parent)
     { std::cout << "Exception at insert_or_assign_box " << e.what() <<  std::endl; throw e; }
 }
 
-void  DSRtoOSGViewer::add_or_assign_mesh(const Node &node, const Node& parent)
+void  OSG3dViewer::add_or_assign_mesh(const Node &node, const Node& parent)
 {   
     qDebug() << __FUNCTION__ << " node " << node.id() << " parent " << parent.id() ;
     auto color = G->get_attrib_by_name<std::string>(node, "color");
@@ -419,12 +419,12 @@ void  DSRtoOSGViewer::add_or_assign_mesh(const Node &node, const Node& parent)
 //////// Auxiliary methods
 /////////////////////////////////////////////////////////////
 
-osg::Vec3 DSRtoOSGViewer::QVecToOSGVec(const QVec &vec) const 
+osg::Vec3 OSG3dViewer::QVecToOSGVec(const QVec &vec) const
 {
 	return osg::Vec3(vec(0), vec(1), -vec(2));
 }
 
-osg::Vec4 DSRtoOSGViewer::htmlStringToOsgVec4(const std::string &color)
+osg::Vec4 OSG3dViewer::htmlStringToOsgVec4(const std::string &color)
 {
 	QString red   = QString("00");
 	QString green = QString("00");
@@ -436,7 +436,7 @@ osg::Vec4 DSRtoOSGViewer::htmlStringToOsgVec4(const std::string &color)
 	return osg::Vec4(float(red.toInt(&ok, 16))/255., float(green.toInt(&ok, 16))/255., float(blue.toInt(&ok, 16))/255., 0.f);
 }
 
-osg::Matrix  DSRtoOSGViewer::QMatToOSGMat4(const RTMat &nodeB)
+osg::Matrix  OSG3dViewer::QMatToOSGMat4(const RTMat &nodeB)
 {
 	QVec angles = nodeB.extractAnglesR();
 	QVec t = nodeB.getTr();
@@ -452,12 +452,12 @@ osg::Matrix  DSRtoOSGViewer::QMatToOSGMat4(const RTMat &nodeB)
 /////  Painting events
 ///////////////////////////////////////////////////////////////
 
-void DSRtoOSGViewer::paintGL()
+void OSG3dViewer::paintGL()
 {
     _mViewer->frame();
 }
 
-void DSRtoOSGViewer::resizeGL( int width, int height ) 
+void OSG3dViewer::resizeGL( int width, int height )
 {
     this->getEventQueue()->windowResize(this->x()*m_scaleX, this->y() * m_scaleY, width*m_scaleX, height*m_scaleY);
     _mGraphicsWindow->resized(this->x()*m_scaleX, this->y() * m_scaleY, width*m_scaleX, height*m_scaleY);
@@ -467,18 +467,18 @@ void DSRtoOSGViewer::resizeGL( int width, int height )
     camera->setViewport(0, 0, this->width()*m_scaleX, this->height()* m_scaleY);
 }
 
-void DSRtoOSGViewer::resizeEvent(QResizeEvent *e)
+void OSG3dViewer::resizeEvent(QResizeEvent *e)
 {  
 //    qDebug() << "OSG => SCALE" << x() << y(); 
     this->resize(e->size());
 } 
 
-void DSRtoOSGViewer::mouseMoveEvent(QMouseEvent* event)
+void OSG3dViewer::mouseMoveEvent(QMouseEvent* event)
 {
     this->getEventQueue()->mouseMotion(event->x()*m_scaleX, event->y()*m_scaleY);
 }
 
-void DSRtoOSGViewer::mousePressEvent(QMouseEvent* event)
+void OSG3dViewer::mousePressEvent(QMouseEvent* event)
 {
     unsigned int button = 0;
     switch (event->button()){
@@ -497,7 +497,7 @@ void DSRtoOSGViewer::mousePressEvent(QMouseEvent* event)
     this->getEventQueue()->mouseButtonPress(event->x()*m_scaleX, event->y()*m_scaleY, button);
 }
 
-void DSRtoOSGViewer::mouseReleaseEvent(QMouseEvent* event)
+void OSG3dViewer::mouseReleaseEvent(QMouseEvent* event)
 {
     unsigned int button = 0;
     switch (event->button()){
@@ -516,7 +516,7 @@ void DSRtoOSGViewer::mouseReleaseEvent(QMouseEvent* event)
     this->getEventQueue()->mouseButtonRelease(event->x()*m_scaleX, event->y()*m_scaleY, button);
 }
 
-void DSRtoOSGViewer::wheelEvent(QWheelEvent* event)
+void OSG3dViewer::wheelEvent(QWheelEvent* event)
 {
     int delta = event->delta();
     osgGA::GUIEventAdapter::ScrollingMotion motion = delta < 0 ?
@@ -524,22 +524,22 @@ void DSRtoOSGViewer::wheelEvent(QWheelEvent* event)
     this->getEventQueue()->mouseScroll(motion);
 }
 
-bool DSRtoOSGViewer::event(QEvent* event)
+bool OSG3dViewer::event(QEvent* event)
 {
     bool handled = QOpenGLWidget::event(event);
     this->update();
     return handled;
 }
 
-osgGA::EventQueue* DSRtoOSGViewer::getEventQueue() const 
+osgGA::EventQueue* OSG3dViewer::getEventQueue() const
 {
     osgGA::EventQueue* eventQueue = _mGraphicsWindow->getEventQueue();
     return eventQueue;
 }
 
-void DSRtoOSGViewer::reload(QWidget* widget) {
+void OSG3dViewer::reload(QWidget* widget) {
 
-	if(qobject_cast<DSRtoOSGViewer*>(widget) == this)
+	if(qobject_cast<OSG3dViewer*>(widget) == this)
 	{
 	    cout<<"Reloading 3D viewer"<<endl;
 		createGraph();
@@ -548,7 +548,7 @@ void DSRtoOSGViewer::reload(QWidget* widget) {
 
 //////////////////////////////////////////////////////////////////////////////
 
-void DSRtoOSGViewer::analyse_osg_graph(osg::Node *nd) 
+void OSG3dViewer::analyse_osg_graph(osg::Node *nd)
 {
 	/// here you have found a group.
     osg::Geode *geode = dynamic_cast<osg::Geode *> (nd);
