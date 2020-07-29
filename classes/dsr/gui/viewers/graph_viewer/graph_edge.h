@@ -32,59 +32,61 @@
 
 class DoRTStuff : public  QTableWidget
 {
-  Q_OBJECT
-  public:
+Q_OBJECT
+public:
     DoRTStuff(std::shared_ptr<DSR::DSRGraph> graph_, const DSR::IDType &from_, const DSR::IDType &to_, const std::string &label_) :
-        graph(graph_), from(from_), to(to_), label(label_)
+            graph(graph_), from(from_), to(to_), label(label_)
     {
-      qRegisterMetaType<DSR::IDType>("DSR::IDType");
+        qRegisterMetaType<DSR::IDType>("DSR::IDType");
 //      qRegisterMetaType<DSR::AttribsMap>("DSR::Attribs");
 
-      std::optional<Node> n = graph->get_node(from);
-      std::optional<Node> n2 = graph->get_node(to);
+        std::optional<Node> n = graph->get_node(from);
+        std::optional<Node> n2 = graph->get_node(to);
+        this->horizontalHeader()->hide();
+        this->verticalHeader()->hide();
 
-      if (n.has_value() &&  n2.has_value()) 
-      {
-          //TODO: Comprobar esto
-          //setWindowModality(Qt::ApplicationModal);
-          setWindowTitle("RT: " + QString::fromStdString(n.value().name()) + "(" + QString::fromStdString(n.value().type()) + ") to " + QString::fromStdString(n2.value().name()) + "(" + QString::fromStdString(n2.value().type()) + ")");
-          setColumnCount(4);
-          setRowCount(9);
-          setHorizontalHeaderLabels(QStringList{"a", "b", "c", "d", "", "T", "", "R"});
-          setVerticalHeaderLabels(QStringList{"a", "b", "c", "d"});
-          horizontalHeader()->setStretchLastSection(true);
-          resizeRowsToContents();
-          resizeColumnsToContents();
-          int width = (this->model()->columnCount() - 1) + this->verticalHeader()->width();
-          int height = (this->model()->rowCount() - 1) + this->horizontalHeader()->height();
-          for(int column = 0; column < this->model()->columnCount(); column++)
-            width = width + this->columnWidth(column);
-          for(int row = 0; row < this->model()->rowCount(); row++)
-            height = height + this->rowHeight(row);
-          this->setMinimumWidth(width);
-          this->setMinimumHeight(height);
-          QObject::connect(graph.get(), &DSR::DSRGraph::update_edge_signal, this, &DoRTStuff::drawSLOT);
-          drawSLOT(from, to);
-          show();
-          std::cout << __FILE__ << " " << __FUNCTION__ << " End ofDoRTStuff Constructor " << std::endl;
-		  resize_widget();
-      }
+        if (n.has_value() &&  n2.has_value())
+        {
+            //TODO: Comprobar esto
+            //setWindowModality(Qt::ApplicationModal);
+            setWindowTitle("RT: " + QString::fromStdString(n.value().name()) + "(" + QString::fromStdString(n.value().type()) + ") to " + QString::fromStdString(n2.value().name()) + "(" + QString::fromStdString(n2.value().type()) + ")");
+            setColumnCount(4);
+            setRowCount(9);
+            setHorizontalHeaderLabels(QStringList{"a", "b", "c", "d", "", "T", "", "R"});
+            setVerticalHeaderLabels(QStringList{"a", "b", "c", "d"});
+            horizontalHeader()->setStretchLastSection(true);
+            resizeRowsToContents();
+            resizeColumnsToContents();
+            int width = (this->model()->columnCount() - 1) + this->verticalHeader()->width();
+            int height = (this->model()->rowCount() - 1) + this->horizontalHeader()->height();
+            for(int column = 0; column < this->model()->columnCount(); column++)
+                width = width + this->columnWidth(column);
+            for(int row = 0; row < this->model()->rowCount(); row++)
+                height = height + this->rowHeight(row);
+            this->setMinimumWidth(width);
+            this->setMinimumHeight(height);
+            QObject::connect(graph.get(), &DSR::DSRGraph::update_edge_signal, this, &DoRTStuff::drawSLOT);
+            drawSLOT(from, to);
+            show();
+            std::cout << __FILE__ << " " << __FUNCTION__ << " End ofDoRTStuff Constructor " << std::endl;
+            resize_widget();
+        }
     };
-  
-  void closeEvent (QCloseEvent *event) override 
-  {
-    disconnect(graph.get(), 0, this, 0);
-    QTableWidget::closeEvent(event);
-  };
 
-  void resizeEvent(QResizeEvent* event)
-  {
-    const auto &columns = columnCount();
-    for(auto &&index : iter::range(columns))
-        setColumnWidth(index, ((width()-verticalHeader()->width())/columns)-2);
-  }
+    void closeEvent (QCloseEvent *event) override
+    {
+        disconnect(graph.get(), 0, this, 0);
+        QTableWidget::closeEvent(event);
+    };
 
-  public slots:
+    void resizeEvent(QResizeEvent* event)
+    {
+        const auto &columns = columnCount();
+        for(auto &&index : iter::range(columns))
+            setColumnWidth(index, ((width()-verticalHeader()->width())/columns)-2);
+    }
+
+public slots:
     void drawSLOT(const std::int32_t &from_, const std::int32_t &to_)
     {
         std::cout << __FILE__ << " " << __FUNCTION__ << std::endl;
@@ -98,9 +100,9 @@ class DoRTStuff : public  QTableWidget
                     for (auto i : iter::range(mat.nRows()))
                         for (auto j : iter::range(mat.nCols()))
                             if (item(i, j)==0)
-                                this->setItem(i, j, new QTableWidgetItem(QString::number(mat(i, j))));
+                                this->setItem(i, j, new QTableWidgetItem(QString::number(mat(i, j), 'f', 5)));
                             else
-                                this->item(i, j)->setText(QString::number(mat(i, j)));
+                                this->item(i, j)->setText(QString::number(mat(i, j), 'f', 5));
                     // draw translation values
                     auto trans = mat.getTr();
                     std::vector<QString> ts{"tx", "ty", "tz"};
@@ -117,17 +119,17 @@ class DoRTStuff : public  QTableWidget
                         else
                             this->item(5, i)->setText(ts[i]);
                         if (this->item(6, i)==nullptr)
-                            this->setItem(6, i, new QTableWidgetItem(QString::number(trans[i])));
+                            this->setItem(6, i, new QTableWidgetItem(QString::number(trans[i], 'f', 5)));
                         else
-                            this->item(6, i)->setText(QString::number(trans[i]));
+                            this->item(6, i)->setText(QString::number(trans[i], 'f', 5));
                         if (this->item(7, i)==nullptr)
                             this->setItem(7, i, new QTableWidgetItem(rs[i]));
                         else
                             this->item(7, i)->setText(rs[i]);
                         if (this->item(8, i)==0)
-                            this->setItem(8, i, new QTableWidgetItem(QString::number(rot[i])));
+                            this->setItem(8, i, new QTableWidgetItem(QString::number(rot[i], 'f', 5)));
                         else
-                            this->item(8, i)->setText(QString::number(rot[i]));
+                            this->item(8, i)->setText(QString::number(rot[i], 'f', 5));
                     }
                 }
             }
@@ -138,7 +140,7 @@ class DoRTStuff : public  QTableWidget
         }
         this->resize_widget();
     }
-  private:
+private:
     std::shared_ptr<DSR::DSRGraph> graph;
     int from, to;
     std::string label;
@@ -149,12 +151,12 @@ class DoRTStuff : public  QTableWidget
         int width = (this->model()->columnCount() - 1) + this->verticalHeader()->width() + 4;
         int height = (this->model()->rowCount() - 1) + this->horizontalHeader()->height() ;
         for(int column = 0; column < this->model()->columnCount(); column++)
-            width = width + this->columnWidth(column);
+            width = width + this->columnWidth(column) + 2;
         for(int row = 0; row < this->model()->rowCount(); row++)
-            height = height + this->rowHeight(row);
-        this->setMinimumWidth(width);
-        this->setMinimumHeight(height);
-        this->resize(width, height);
+            height = height + this->rowHeight(row) ;
+        if(abs(width-this->width())>1 or abs(height-this->height())>1) {
+            this->setFixedSize(QSize(width, height));
+        }
     }
 };
 
@@ -162,9 +164,9 @@ class DoRTStuff : public  QTableWidget
 
 class GraphEdge : public QObject, public QGraphicsLineItem, public std::enable_shared_from_this<GraphEdge>
 {
-	Q_OBJECT
-	Q_PROPERTY(int edge_pen READ _edge_pen WRITE set_edge_pen)
-	public:
+Q_OBJECT
+    Q_PROPERTY(int edge_pen READ _edge_pen WRITE set_edge_pen)
+public:
     GraphEdge(GraphNode *sourceNode, GraphNode *destNode, const QString &edge_name);
     GraphNode *sourceNode() const;
     GraphNode *destNode() const;
@@ -172,27 +174,27 @@ class GraphEdge : public QObject, public QGraphicsLineItem, public std::enable_s
     int type() const override { return Type; }
     QString getTag() const { return tag;};
     int _edge_pen();
-	void set_edge_pen(const int with);
-	void change_detected();
+    void set_edge_pen(const int with);
+    void change_detected();
 
-	protected:
+protected:
     QPainterPath shape() const override;
     QRectF boundingRect() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
     void keyPressEvent(QKeyEvent *event) override;
-	void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event) override;
-	
-	private:
-		GraphNode *source, *dest;  //CAMBIAR A FROM TO
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event) override;
+
+private:
+    GraphNode *source, *dest;  //CAMBIAR A FROM TO
     qreal arrowSize;
     QPointF sourcePoint;
     QPointF destPoint;
-		QString tag;
-		QGraphicsTextItem *rt_values = nullptr;
+    QString tag;
+    QGraphicsTextItem *rt_values = nullptr;
     QTableWidget *label = nullptr;
     int edge_width;
-	QPropertyAnimation* animation;
-	QPolygonF tag_polygon;
+    QPropertyAnimation* animation;
+    QPolygonF tag_polygon;
 
 };
 
