@@ -51,7 +51,7 @@ public slots:
 	void initialize(int period);
 	${statemachine_methods_definitions}
 private:
-	std::shared_ptr<InnerModel> innerModel;
+	${innermodel_attribute}
 	${innermodelviewer_attributes}
 	${agm_attributes}
 	${dsr_attributes}

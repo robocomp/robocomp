@@ -84,8 +84,8 @@ DSR_SOURCES_STR = """\
 $ENV{ROBOCOMP}/classes/dsr/core/rtps/dsrpublisher.cpp
 $ENV{ROBOCOMP}/classes/dsr/core/rtps/dsrsubscriber.cpp
 $ENV{ROBOCOMP}/classes/dsr/core/rtps/dsrparticipant.cpp
-$ENV{ROBOCOMP}/classes/dsr/core/topics/DSRGraphPubSubTypes.cxx
-$ENV{ROBOCOMP}/classes/dsr/core/topics/DSRGraph.cxx
+$ENV{ROBOCOMP}/classes/dsr/core/topics/IDLGraphPubSubTypes.cxx
+$ENV{ROBOCOMP}/classes/dsr/core/topics/IDLGraph.cxx
 $ENV{ROBOCOMP}/classes/dsr/api/dsr_api.cpp
 $ENV{ROBOCOMP}/classes/dsr/api/dsr_inner_api.cpp
 $ENV{ROBOCOMP}/classes/dsr/api/dsr_utils.cpp

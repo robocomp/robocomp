@@ -3,11 +3,15 @@ import datetime
 import dsl_parsers.parsing_utils as p_utils
 from .. import function_utils as utils
 
-INNERMODEL_ATTRIBUTES_STR = """\
+INNERMODELVIEWER_ATTRIBUTES_STR = """\
 #ifdef USE_QTGUI
 	OsgView *osgView;
 	InnerModelViewer *innerModelViewer;
 #endif
+"""
+
+INNERMODEL_ATTRIBUTE_STR = """\
+std::shared_ptr < InnerModel > innerModel;
 """
 
 
@@ -41,7 +45,7 @@ bool qscene_2d_view;
 bool osg_3d_view;
 
 // DSR graph viewer
-std::unique_ptr<DSR::GraphViewer> graph_viewer;
+std::unique_ptr<DSR::DSRViewer> graph_viewer;
 QHBoxLayout mainLayout;
 """
 
@@ -58,6 +62,7 @@ class TemplateDict(dict):
         self['subscribes_method_definitions'] = self.subscribes_method_definitions()
         self['compute'] = self.compute()
         self['statemachine_methods_definitions'] = self.statemachine_methods_definitions()
+        self['innermodel_attribute'] = self.innermodel_attribute()
         self['innermodelviewer_attributes'] = self.innermodelviewer_attributes()
         self['agm_attributes'] = self.agm_attributes()
         self['dsr_includes'] = self.dsr_includes()
@@ -144,10 +149,17 @@ class TemplateDict(dict):
             result += "//--------------------\n"
         return result
 
+
+    def innermodel_attribute(self):
+        result = ""
+        if "dsr" not in self.component.options:
+            result += INNERMODEL_ATTRIBUTE_STR
+        return result
+
     def innermodelviewer_attributes(self):
         result = ""
         if self.component.innermodelviewer:
-            result += INNERMODEL_ATTRIBUTES_STR
+            result += INNERMODELVIEWER_ATTRIBUTES_STR
         return result
 
     def agm_attributes(self):
