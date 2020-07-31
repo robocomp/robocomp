@@ -15,20 +15,27 @@ using namespace DSR;
 Utilities::Utilities(DSR::DSRGraph *G_)
 { G = G_; }
 
+
+QJsonDocument Utilities::file_to_QJsonDocument(const std::string &json_file_path)
+{
+	// Open file and make initial checks
+	QFile file;
+	file.setFileName(QString::fromStdString(json_file_path));
+	if (not file.open(QIODevice::ReadOnly | QIODevice::Text))
+		throw std::runtime_error("File " + json_file_path + " not found. Cannot continue.");
+
+	QString val = file.readAll();
+	file.close();
+
+	QJsonDocument doc = QJsonDocument::fromJson(val.toUtf8());
+	return doc;
+}
+
 void Utilities::read_from_json_file(const std::string &json_file_path,  std::function<std::optional<int>(const Node&)> insert_node)
 {
     qDebug() << __FUNCTION__ << " Reading json file: " << QString::fromStdString(json_file_path);
 
-    // Open file and make initial checks
-    QFile file;
-    file.setFileName(QString::fromStdString(json_file_path));
-    if (not file.open(QIODevice::ReadOnly | QIODevice::Text))
-        throw std::runtime_error("File " + json_file_path + " not found. Cannot continue.");
-    
-    QString val = file.readAll();
-    file.close();
-
-    QJsonDocument doc = QJsonDocument::fromJson(val.toUtf8());
+	QJsonDocument doc = Utilities::file_to_QJsonDocument(json_file_path);
     QJsonObject jObject = doc.object();
 
     QJsonObject dsrobject = jObject.value("DSRModel").toObject();
@@ -201,122 +208,140 @@ void Utilities::read_from_json_file(const std::string &json_file_path,  std::fun
     } //foreach(links)
 }
 
+QJsonObject Utilities::Edge_to_QObject(const Edge edge)
+{
+	QJsonObject link;
+	link["src"] = edge.from();
+	link["dst"] = edge.to();
+	link["label"] = QString::fromStdString(edge.type());
+	// link attribute
+	QJsonObject lattrsObject;
+	for (const auto &[key, value]: edge.attrs()) {
+		QJsonObject attr, content;
+		QJsonValue val;
+		switch (value.value()._d())
+		{
+		case 0:
+			val = QString::fromStdString(value.value().str());
+			break;
+		case 1:
+			val = value.value().dec();
+			break;
+		case 2:
+			val = std::round(static_cast<double>(value.value().fl()) *1000000)/ 1000000 ;
+			break;
+		case 4:
+			val = value.value().bl();
+			break;
+		case 3: {
+			QJsonArray array;
+			for (const float &value : value.value().float_vec())
+				array.push_back(value);
+			val = array;
+			break;
+		}
+		case 5:
+		{
+			QJsonArray array;
+			for (const float &value : value.value().byte_vec())
+				array.push_back(value);
+			val = array;
+			break;
+		}
+		}
+		content["type"] = value.value()._d();
+		content["value"] = val;
+		lattrsObject[QString::fromStdString(key)] = content;
+	}
+	link["linkAttribute"] = lattrsObject;
+	return link;
+}
+
+QJsonObject Utilities::Node_to_QObject(const Node node)
+{
+	QJsonObject symbol;
+	symbol["id"] = node.id();
+	symbol["type"] = QString::fromStdString(node.type());
+	symbol["name"] = QString::fromStdString(node.name());
+	// symbol attribute
+	QJsonObject attrsObject;
+	for (const auto &[key, value]: node.attrs())
+	{
+		QJsonObject content;
+		QJsonValue val;
+		switch (value.value()._d())
+		{
+		case 0:
+			val = QString::fromStdString(value.value().str());
+			break;
+		case 1:
+			val = value.value().dec();
+			break;
+		case 2:
+			val = std::round(static_cast<double>(value.value().fl()) *1000000)/ 1000000;
+			break;
+		case 4:
+			val = value.value().bl();
+			break;
+		case 3: {
+			QJsonArray array;
+			for(const float &value : value.value().float_vec())
+				array.push_back(value);
+			val = array;
+			break;
+		}
+		case 5:
+		{
+			QJsonArray array;
+			for (const float &value : value.value().byte_vec())
+				array.push_back(value);
+			val = array;
+			break;
+		}
+		}
+		content["type"] = value.value()._d();
+		content["value"] = val;
+		attrsObject[QString::fromStdString(key)] = content;
+	}
+	symbol["attribute"] = attrsObject;
+	//link
+	QJsonArray nodeLinksArray;
+	for (const auto &[key, value]: node.fano()) {
+		QJsonObject link = Edge_to_QObject(value);
+		nodeLinksArray.push_back(link);
+	}
+	symbol["links"] = nodeLinksArray;
+	return symbol;
+}
+
+QJsonDocument Utilities::DSRGraph_to_QJsonDocument(DSR::DSRGraph *G_)
+{
+	std::setlocale(LC_NUMERIC, "en_US.UTF-8");
+	//create json object
+	QJsonObject dsrObject;
+	QJsonArray linksArray;
+	QJsonObject symbolsMap;
+	for (auto kv : G_->getCopy()) {
+		Node node = kv.second;
+		// symbol data
+		QJsonObject symbol = Node_to_QObject(node);
+		symbolsMap[QString::number(node.id())] = symbol;
+	}
+	dsrObject["symbols"] = symbolsMap;
+
+	QJsonObject jsonObject;
+	jsonObject["DSRModel"] = dsrObject;
+	//write to file
+	QJsonDocument jsonDoc(jsonObject);
+	return jsonDoc;
+}
+
 void Utilities::write_to_json_file(const std::string &json_file_path)
 {
-    std::setlocale(LC_NUMERIC, "en_US.UTF-8");
-    //create json object
-    QJsonObject dsrObject;
-    QJsonArray linksArray;
-    QJsonObject symbolsMap;
-    for (auto kv : G->getCopy()) {
-        Node node = kv.second;
-        // symbol data
-        QJsonObject symbol;
-        symbol["id"] = node.id();
-        symbol["type"] = QString::fromStdString(node.type());
-        symbol["name"] = QString::fromStdString(node.name());
-        // symbol attribute
-        QJsonObject attrsObject;
-        for (const auto &[key, value]: node.attrs())
-        {
-            QJsonObject content;
-            QJsonValue val;
-            switch (value.value()._d()) 
-            {
-                case 0:
-                    val = QString::fromStdString(value.value().str());
-                    break;
-                case 1:
-                    val = value.value().dec();
-                    break;
-                case 2:
-                    val = std::round(static_cast<double>(value.value().fl()) *1000000)/ 1000000;
-                    break;
-                case 4:
-                    val = value.value().bl();
-                    break;
-                case 3: {
-                    QJsonArray array;
-                    for(const float &value : value.value().float_vec())
-                        array.push_back(value);
-                    val = array;                
-                    break;
-                }
-                case 5:
-                {
-                    QJsonArray array;
-                    for (const float &value : value.value().byte_vec())
-                        array.push_back(value);
-                    val = array;
-                    break;
-                }
-            }
-            content["type"] = value.value()._d();
-            content["value"] = val;
-            attrsObject[QString::fromStdString(key)] = content;
-        }
-        symbol["attribute"] = attrsObject;
-        //link
-        QJsonArray nodeLinksArray;
-        for (const auto &[key, value]: node.fano()) {
-            QJsonObject link;
-            link["src"] = value.from();
-            link["dst"] = value.to();
-            link["label"] = QString::fromStdString(value.type());
-            // link attribute
-            QJsonObject lattrsObject;
-            for (const auto &[key, value]: value.attrs()) {
-                QJsonObject attr, content;
-                QJsonValue val;
-                switch (value.value()._d()) 
-                {
-                    case 0:
-                        val = QString::fromStdString(value.value().str());
-                        break;
-                    case 1:
-                        val = value.value().dec();
-                        break;
-                    case 2:
-                        val = std::round(static_cast<double>(value.value().fl()) *1000000)/ 1000000 ;
-                        break;
-                    case 4:
-                        val = value.value().bl();
-                        break;
-                    case 3: {
-                        QJsonArray array;
-                        for (const float &value : value.value().float_vec())
-                            array.push_back(value);
-                        val = array;
-                        break;
-                    }
-                    case 5:
-                    {
-                        QJsonArray array;
-                        for (const float &value : value.value().byte_vec())
-                            array.push_back(value);
-                        val = array;
-                        break;
-                    }
-                }
-                content["type"] = value.value()._d();
-                content["value"] = val;
-                lattrsObject[QString::fromStdString(key)] = content;
-            }
-            link["linkAttribute"] = lattrsObject;
-            nodeLinksArray.push_back(link);
-        }
-        symbol["links"] = nodeLinksArray;
-        symbolsMap[QString::number(node.id())] = symbol;
-    }
-    dsrObject["symbols"] = symbolsMap;
-
-    QJsonObject jsonObject;
-    jsonObject["DSRModel"] = dsrObject;
-    //write to file
-    QJsonDocument jsonDoc(jsonObject);
+	QJsonDocument jsonDoc = DSRGraph_to_QJsonDocument(G);
     QFile jsonFile(QString::fromStdString(json_file_path));
     jsonFile.open(QFile::WriteOnly);
-    jsonFile.write(jsonDoc.toJson());
+    jsonFile.write(qCompress(jsonDoc.toJson()));
     jsonFile.close();
     auto now_c = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
     qDebug() << __FILE__ << " " << __FUNCTION__ << "File: " << QString::fromStdString(json_file_path)<< " written to disk at " << now_c;
