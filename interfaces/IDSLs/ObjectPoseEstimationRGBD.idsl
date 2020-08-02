@@ -1,29 +1,6 @@
+import "CameraRGBDSimple.idsl";
 module RoboCompObjectPoseEstimationRGBD
 {
-    exception HardwareFailedException { string what; };
-
-    sequence<byte> ImgType;
-
-    struct TImage
-    {
-        int width;
-        int height;
-        int depth;
-        int focalx;
-        int focaly;
-        ImgType image;
-    };
-
-    sequence<byte> DepthType;
-
-    struct TDepth
-    {
-        int width;
-        int height;
-        float depthFactor;
-        DepthType depth;
-    };
-
     struct ObjectPose
     {
         string objectname;
@@ -37,9 +14,8 @@ module RoboCompObjectPoseEstimationRGBD
     };
 
     sequence<ObjectPose> PoseType;
-
     interface ObjectPoseEstimationRGBD
     {
-        PoseType getObjectPose(TImage image, TDepth depth) throws HardwareFailedException;
+        PoseType getObjectPose(RoboCompCameraRGBDSimple::TImage image, RoboCompCameraRGBDSimple::TDepth depth);
     };
 };

@@ -25,6 +25,7 @@ module RoboCompCameraRGBDSimple
     int focalx;
     int focaly;
     int alivetime;
+    float depthFactor;
     DepthType depth;
   };
  
