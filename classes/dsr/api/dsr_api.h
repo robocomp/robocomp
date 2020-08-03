@@ -532,7 +532,7 @@ namespace DSR
     private:
 
         DSRGraph(const DSRGraph& G);
-        Nodes nodes
+        Nodes nodes;
         int graph_root;
         bool work;
         mutable std::shared_mutex _mutex;
