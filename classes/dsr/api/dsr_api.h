@@ -261,7 +261,6 @@ namespace DSR
             //throw std::runtime_error("Illegal return type in get_attrib_by_name()");
         }
 
-        const std::vector<uint8_t>& get_image(const Node &n) const;
 
         // Mixed
         void reset() {
@@ -493,6 +492,13 @@ namespace DSR
         }
 
         /////////////////////////////////////////////////
+        /// AUXILIARY IMAGES SUB-API
+        /////////////////////////////////////////////////
+        const std::vector<uint8_t>& get_rgb_image(const Node &n) const;
+        const std::vector<float>& get_depth_image(const Node &n) const;
+        /**AUXILIARY Images SUB-API**/
+
+        /////////////////////////////////////////////////
         /// AUXILIARY RT SUB-API
         /////////////////////////////////////////////////
         void insert_or_assign_edge_RT(Node& n, int to, const std::vector<float>& trans, const std::vector<float>& rot_euler);
@@ -504,7 +510,6 @@ namespace DSR
         //void insert_or_assign_edge_RT(int from, int to, std::vector<float>&& trans, std::vector<float>&& rot_euler);
         //void insert_or_assign_edge_RT(std::string from, std::string to, std::vector<float>&& trans, std::vector<float>&& rot_euler);
         /**AUXILIARY RT SUB-API**/
-
 
         /////////////////////////////////////////////////
         /// AUXILIARY IO SUB-API
@@ -527,11 +532,7 @@ namespace DSR
     private:
 
         DSRGraph(const DSRGraph& G);
-
-
-        Nodes nodes;
-
-
+        Nodes nodes
         int graph_root;
         bool work;
         mutable std::shared_mutex _mutex;
@@ -557,9 +558,6 @@ namespace DSR
         void update_maps_node_insert(int id, const Node& n);
         void update_maps_edge_delete(int from, int to, const std::string& key);
 
-
-
-
         //////////////////////////////////////////////////////////////////////////
         // Non-blocking graph operations
         //////////////////////////////////////////////////////////////////////////
@@ -570,7 +568,6 @@ namespace DSR
         std::tuple<bool, vector<tuple<int, int, std::string>>, std::vector<AworSet>> delete_node_(int id);
         std::pair<bool, std::optional<AworSet>> delete_edge_(int from, int t, const std::string& key);
         std::optional<Edge> get_edge_(int from, int to, const std::string& key);
-
 
         //////////////////////////////////////////////////////////////////////////
         // Other methods

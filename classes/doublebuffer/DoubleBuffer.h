@@ -1,5 +1,10 @@
 //
 // Created by robolab on 24/07/18.
+// This class is a generic container for a thread safe doublebuffer used to transfer data between threads.
+// For example, between the main thread of a component and the (threaded) middleware stubs
+// Example of DoubleBuffer creation with default converters between input and output types:
+//      DoubleBuffer<RoboCompLaser::TLaserData, RoboCompLaser::TLaserData> laser_buffer;
+// Example of DoubleBuffer creation with user-defined converter from input to output types
 //
 
 #include <shared_mutex>
