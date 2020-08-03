@@ -3,9 +3,12 @@
 // This class is a generic container for a thread safe doublebuffer used to transfer data between threads.
 // For example, between the main thread of a component and the (threaded) middleware stubs
 // Example of DoubleBuffer creation with default converters between input and output types:
-//      DoubleBuffer<RoboCompLaser::TLaserData, RoboCompLaser::TLaserData> laser_buffer;
+//      decl: DoubleBuffer<RoboCompLaser::TLaserData, RoboCompLaser::TLaserData> laser_buffer;
+//      use: laser_buffer.put(std::move(laserData));
+//      use: auto ldata = laser_buffer.get();
 // Example of DoubleBuffer creation with user-defined converter from input to output types
-//
+//      decl: DoubleBuffer<RoboCompLaser::TLaserData, RoboCompLaser::TLaserData> laser_buffer;
+//      use:  laser_buffer.put(std::move(laserData), [](auto &I, auto &T){ for(auto &&i , I){ T.append(i/2);}});
 
 #include <shared_mutex>
 #include <mutex>
