@@ -14,6 +14,7 @@ module RoboCompObjectPoseEstimationRGBD
     };
 
     sequence<ObjectPose> PoseType;
+
     interface ObjectPoseEstimationRGBD
     {
         PoseType getObjectPose(RoboCompCameraRGBDSimple::TImage image, RoboCompCameraRGBDSimple::TDepth depth);
