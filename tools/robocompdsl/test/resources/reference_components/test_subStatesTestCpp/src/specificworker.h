@@ -61,7 +61,7 @@ public slots:
 
 	//--------------------
 private:
-	std::shared_ptr<InnerModel> innerModel;
+	std::shared_ptr < InnerModel > innerModel;
 	bool startup_check_flag;
 
 };

@@ -16,53 +16,59 @@
  *    You should have received a copy of the GNU General Public License
  *    along with RoboComp.  If not, see <http://www.gnu.org/licenses/>.
  */
+#ifndef GENERICWORKER_H
+#define GENERICWORKER_H
 
-/**
-	\brief
-	@author authorname
-*/
+#include "config.h"
+#include <stdint.h>
+#include <qlog/qlog.h>
+
+#if Qt5_FOUND
+	#include <QtWidgets>
+#else
+	#include <QtGui>
+#endif
+#include <ui_mainUI.h>
+#include <CommonBehavior.h>
 
 
 
-#ifndef SPECIFICWORKER_H
-#define SPECIFICWORKER_H
+#define CHECK_PERIOD 5000
+#define BASIC_PERIOD 100
 
-#include <genericworker.h>
-#include "dsr/api/dsr_api.h"
-#include "dsr/gui/dsr_gui.h"
 
-class SpecificWorker : public GenericWorker
+using TuplePrx = std::tuple<>;
+
+
+class GenericWorker : public QMainWindow, public Ui_guiDlg
 {
 Q_OBJECT
 public:
-	SpecificWorker(TuplePrx tprx, bool startup_check);
-	~SpecificWorker();
-	bool setParams(RoboCompCommonBehavior::ParameterList params);
+	GenericWorker(TuplePrx tprx);
+	virtual ~GenericWorker();
+	virtual void killYourSelf();
+	virtual void setPeriod(int p);
 
+	virtual bool setParams(RoboCompCommonBehavior::ParameterList params) = 0;
+	QMutex *mutex;
+
+
+
+
+protected:
+
+	QTimer timer;
+	int Period;
+
+private:
 
 
 public slots:
-	void compute();
-	int startup_check();
-	void initialize(int period);
-private:
-	// DSR graph
-	std::shared_ptr<DSR::DSRGraph> G;
-
-	//DSR params
-	std::string agent_name;
-	int agent_id;
-
-	bool tree_view;
-	bool graph_view;
-	bool qscene_2d_view;
-	bool osg_3d_view;
-
-	// DSR graph viewer
-	std::unique_ptr<DSR::DSRViewer> graph_viewer;
-	QHBoxLayout mainLayout;
-	bool startup_check_flag;
-
+	virtual void compute() = 0;
+	virtual void initialize(int period) = 0;
+	
+signals:
+	void kill();
 };
 
 #endif

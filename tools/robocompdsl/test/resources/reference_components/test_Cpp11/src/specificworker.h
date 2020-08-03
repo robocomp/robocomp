@@ -34,16 +34,11 @@ class SpecificWorker : public GenericWorker
 {
 Q_OBJECT
 public:
-	SpecificWorker(MapPrx& mprx, bool startup_check);
+	SpecificWorker(TuplePrx tprx, bool startup_check);
 	~SpecificWorker();
 	bool setParams(RoboCompCommonBehavior::ParameterList params);
 
-	int HandDetection_addNewHand(const int expectedHands, const RoboCompHandDetection::TRoi &roi);
-	RoboCompHandDetection::Hands HandDetection_getHands();
-	int HandDetection_getHandsCount();
 
-	void AprilTags_newAprilTag(const RoboCompAprilTags::tagsList &tags);
-	void AprilTags_newAprilTagAndPose(const RoboCompAprilTags::tagsList &tags, const RoboCompGenericBase::TBaseState &bState, const RoboCompJointMotor::MotorStateMap &hState);
 
 public slots:
 	void compute();

@@ -71,7 +71,7 @@ public slots:
 
 	//--------------------
 private:
-	std::shared_ptr<InnerModel> innerModel;
+	std::shared_ptr < InnerModel > innerModel;
 	std::string action;
 	RoboCompAGMCommonBehavior::ParameterMap params;
 	AGMModel::SPtr worldModel;

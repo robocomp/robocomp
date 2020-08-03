@@ -55,7 +55,7 @@ class RobocompdslTest(unittest.TestCase):
             "test_agmTestCpp",
             "test_allCommunicationsCpp",
             "test_allCommunicationsPython",
-            "test_cpp11",
+            "test_Cpp11",
             "test_customStateMachineCpp",
             "test_customStateMachinePython",
             "test_defaultStateMachineCpp",

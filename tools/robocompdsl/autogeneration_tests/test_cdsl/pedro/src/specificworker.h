@@ -28,35 +28,40 @@
 #define SPECIFICWORKER_H
 
 #include <genericworker.h>
-#include <innermodel/innermodel.h>
+#include "dsr/api/dsr_api.h"
+#include "dsr/gui/dsr_gui.h"
 
 class SpecificWorker : public GenericWorker
 {
 Q_OBJECT
 public:
-	SpecificWorker(MapPrx& mprx, bool startup_check);
+	SpecificWorker(TuplePrx tprx, bool startup_check);
 	~SpecificWorker();
 	bool setParams(RoboCompCommonBehavior::ParameterList params);
 
-	int HandDetection_addNewHand(const int expectedHands, const RoboCompHandDetection::TRoi &roi);
-	RoboCompHandDetection::Hands HandDetection_getHands();
-	int HandDetection_getHandsCount();
 
-	void AprilTags_newAprilTag(const RoboCompAprilTags::tagsList &tags);
-	void AprilTags_newAprilTagAndPose(const RoboCompAprilTags::tagsList &tags, const RoboCompGenericBase::TBaseState &bState, const RoboCompJointMotor::MotorStateMap &hState);
 
 public slots:
 	void compute();
 	int startup_check();
 	void initialize(int period);
-	//Specification slot methods State Machine
-	void sm_compute();
-	void sm_initialize();
-	void sm_finalize();
-
-	//--------------------
 private:
-	std::shared_ptr < InnerModel > innerModel;
+	std::shared_ptr<InnerModel> innerModel;
+	// DSR graph
+	std::shared_ptr<DSR::DSRGraph> G;
+
+	//DSR params
+	std::string agent_name;
+	int agent_id;
+
+	bool tree_view;
+	bool graph_view;
+	bool qscene_2d_view;
+	bool osg_3d_view;
+
+	// DSR graph viewer
+	std::unique_ptr<DSR::GraphViewer> graph_viewer;
+	QHBoxLayout mainLayout;
 	bool startup_check_flag;
 
 };

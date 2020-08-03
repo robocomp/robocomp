@@ -1,5 +1,5 @@
 /*
- *    Copyright (C) 2020 by YOUR NAME HERE
+ *    Copyright (C) 2010 by RoboLab - University of Extremadura
  *
  *    This file is part of RoboComp
  *
@@ -16,45 +16,31 @@
  *    You should have received a copy of the GNU General Public License
  *    along with RoboComp.  If not, see <http://www.gnu.org/licenses/>.
  */
+#ifndef SPECIFICMONITOR_H
+#define SPECIFICMONITOR_H
+
+#include "genericmonitor.h"
 
 /**
-	\brief
-	@author authorname
+       \brief
+       @author authorname
 */
-
-
-
-#ifndef SPECIFICWORKER_H
-#define SPECIFICWORKER_H
-
-#include <genericworker.h>
-#include <innermodel/innermodel.h>
-
-class SpecificWorker : public GenericWorker
+class SpecificMonitor : public GenericMonitor
 {
-Q_OBJECT
-public:
-	SpecificWorker(MapPrx& mprx, bool startup_check);
-	~SpecificWorker();
-	bool setParams(RoboCompCommonBehavior::ParameterList params);
-
-
-
-public slots:
-	int startup_check();
-	void initialize(int period);
-	//Specification slot methods State Machine
-	void sm_two();
-	void sm_three();
-	void sm_four();
-	void sm_one();
-	void sm_five();
-
-	//--------------------
-private:
-	std::shared_ptr < InnerModel > innerModel;
-	bool startup_check_flag;
-
+  Q_OBJECT
+  
+  public:
+	SpecificMonitor(GenericWorker *_worker, Ice::CommunicatorPtr _communicator);
+	~SpecificMonitor();
+	
+	void readConfig(RoboCompCommonBehavior::ParameterList &params );
+	void run();
+	void initialize();
+    
+	bool sendParamsToWorker(RoboCompCommonBehavior::ParameterList params);
+	bool checkParams(RoboCompCommonBehavior::ParameterList l);
+	
+	bool ready;
 };
 
-#endif
+#endif // GENERICMONITOR_H

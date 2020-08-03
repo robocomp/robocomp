@@ -16,44 +16,45 @@
  *    You should have received a copy of the GNU General Public License
  *    along with RoboComp.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include "genericworker.h"
+/**
+* \brief Default constructor
+*/
+GenericWorker::GenericWorker(TuplePrx tprx) : Ui_guiDlg()
+{
+
+
+	mutex = new QMutex(QMutex::Recursive);
+
+
+	#ifdef USE_QTGUI
+		setupUi(this);
+		show();
+	#endif
+	Period = BASIC_PERIOD;
+	connect(&timer, SIGNAL(timeout()), this, SLOT(compute()));
+
+}
 
 /**
-	\brief
-	@author authorname
+* \brief Default destructor
 */
-
-
-
-#ifndef SPECIFICWORKER_H
-#define SPECIFICWORKER_H
-
-#include <genericworker.h>
-#include <innermodel/innermodel.h>
-
-class SpecificWorker : public GenericWorker
+GenericWorker::~GenericWorker()
 {
-Q_OBJECT
-public:
-	SpecificWorker(TuplePrx tprx, bool startup_check);
-	~SpecificWorker();
-	bool setParams(RoboCompCommonBehavior::ParameterList params);
 
-
-
-public slots:
-	void compute();
-	int startup_check();
-	void initialize(int period);
-	//Specification slot methods State Machine
-	void sm_compute();
-	void sm_initialize();
-	void sm_finalize();
-
-	//--------------------
-private:
-	std::shared_ptr<InnerModel> innerModel;
-	bool startup_check_flag;
-
-};
-
-#endif
+}
+void GenericWorker::killYourSelf()
+{
+	rDebug("Killing myself");
+	emit kill();
+}
+/**
+* \brief Change compute period
+* @param per Period in ms
+*/
+void GenericWorker::setPeriod(int p)
+{
+	rDebug("Period changed"+QString::number(p));
+	Period = p;
+	timer.start(Period);
+}
