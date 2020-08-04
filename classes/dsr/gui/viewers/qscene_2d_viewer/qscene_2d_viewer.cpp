@@ -487,7 +487,7 @@ void QScene2dViewer::mousePressEvent(QMouseEvent *event){
         if(not nodes.isEmpty())
         {
             if (event->button() == Qt::RightButton){
-                std::cout<<"Mouse click: "<<scene_point<<" Node id: "<<nodes[z_order.first()]<<std::endl;
+                //std::cout<<"Mouse click: "<<scene_point<<" Node id: "<<nodes[z_order.first()]<<std::endl;
                 emit mouse_right_click(scene_point.x(), scene_point.y(), nodes[z_order.first()]);
             }
             if (event->button() == Qt::MiddleButton){
