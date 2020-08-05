@@ -41,7 +41,7 @@ std::optional<Node> get_node(const std::string& name);
 ```c++
 std::optional<Node> get_node(int id);
 ```
-:   Returns a node if it exists in G. id is one of the main properties of Node
+:  Returns a node if it exists in G. id is one of the main properties of Node
   
 ```c++
 bool update_node(const Node& node);
@@ -239,6 +239,6 @@ These structures are compiled into C++ code that is included in the agent, formi
 
 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTExODk0Nzg1MCwtMTU3NDE1NjQxMCw2OT
+eyJoaXN0b3J5IjpbMTgzMDA4MDQ0MCwtMTU3NDE1NjQxMCw2OT
 U4NTA3Ml19
 -->
