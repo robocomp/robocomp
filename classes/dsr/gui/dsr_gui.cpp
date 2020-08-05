@@ -185,7 +185,7 @@ void DSRViewer::initialize_views(int options, view central){
 		});
 	}
 
-//	Tabification of curren docks
+//	Tabification of current docks
 	QDockWidget * previous = nullptr;
 	for(auto dock: docks) {
 		if (previous)
@@ -292,6 +292,16 @@ void DSRViewer::add_custom_widget_to_dock(QString name, QWidget* custom_view){
 	widget_c->widget = custom_view;
 	widgets[name] = widget_c;
 	create_dock_and_menu(name, custom_view);
+//	Tabification of current docks
+	QDockWidget * previous = nullptr;
+	for(auto& [dock_name, dock]: docks) {
+		if (previous and previous!=dock) {
+			window->tabifyDockWidget(previous, docks[name]);
+			break;
+		}
+		previous = dock;
+	}
+
 }
 
 
