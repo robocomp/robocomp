@@ -218,31 +218,31 @@ These methods provide specialized access to RT edges.
 The api has to be instantiated with: auto rt = G->get_rt_api();
 
   
-
+```c++
 void insert_or_assign_edge_RT(Node& n, int to, const std::vector<float>& trans, const std::vector<float>& rot_euler);
 
 Inserts or replaces an edge of type RT going from node n to node with id to. The translation vector is passed as a vector of floats. The three euler angles are passed as a vector of floats.
 
   
-
+```c++
 void insert_or_assign_edge_RT(Node& n, int to, std::vector<float>&& trans, std::vector<float>&& rot_euler);
 
 Overloaded method using move semantics.
 
   
-
+```c++
 Edge get_edge_RT(const Node &n, int to);
-
+```
 Returns an edge of type RT going from node n to node with id to
-
+```c++
 RTMat get_edge_RT_as_RTMat(const Edge &edge);
-
+```
 Returns the rotation and translation attributes of edge converted to an RTMat.
 
   
-
+```c++
 RTMat get_edge_RT_as_RTMat(Edge &&edge);
-
+```
 Overloaded method with move semantics.
 
   
@@ -254,28 +254,34 @@ These methods provide serialization to and from a disk file and display printing
 The api has to be instantiated with: auto io = G->get_io_api();
 
   
-
+```c++
 void print();
-
+```
+```c++
 void print_edge(const Edge &edge) ;
-
+```
+```c++
 void print_node(const Node &node);
-
+```
+```c++
 void print_node(int id);
-
+```
+```c++
 void print_RT(std::int32_t root) const;
-
+```
+```c++
 void write_to_json_file(const std::string &file) const;
-
+```
+```c++
 void read_from_json_file(const std::string &file) const;
-
+```
   
 
 ### Innermodel sub-API
 
 These methods compute transformation matrices between distant nodes in the so-called RT- tree that is embedded in G. The transformation matrix responds to the following question: how is a point defined in A’s reference frame, seen from B’s reference frame? It also provides backwards compatibility with RobComp’s InnerModel system.
 
-The api has to be instantiated with: auto inner = G->get_inner_api();
+The api has to be instantiated with: `auto inner = G->get_inner_api();`
 
   
 ```c++
@@ -379,7 +385,7 @@ These structures are compiled into C++ code that is included in the agent, formi
 
 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbNTY4NDc1MTMsLTIwNzQzNzUyNzIsMTExOD
-kxNDczNiw5OTAxODczNTEsMTgzMDA4MDQ0MCwtMTU3NDE1NjQx
-MCw2OTU4NTA3Ml19
+eyJoaXN0b3J5IjpbMjAzNjM1ODQ1NSwtMjA3NDM3NTI3MiwxMT
+E4OTE0NzM2LDk5MDE4NzM1MSwxODMwMDgwNDQwLC0xNTc0MTU2
+NDEwLDY5NTg1MDcyXX0=
 -->
