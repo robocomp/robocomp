@@ -215,29 +215,31 @@ std::optional<std::map<EdgeKey, Edge>> get_edges(int id);
 
 These methods provide specialized access to RT edges.
 
-The api has to be instantiated with: auto rt = G->get_rt_api();
+The api has to be instantiated with: `auto rt = G->get_rt_api()`;
 
-  
+&nbsp;
 ```c++
 void insert_or_assign_edge_RT(Node& n, int to, const std::vector<float>& trans, const std::vector<float>& rot_euler);
+```
+ - Inserts or replaces an edge of type RT going from node n to node with id to. The translation vector is passed as a vector of floats. The three euler angles are passed as a vector of floats.
 
-Inserts or replaces an edge of type RT going from node n to node with id to. The translation vector is passed as a vector of floats. The three euler angles are passed as a vector of floats.
-
-  
+&nbsp;
 ```c++
 void insert_or_assign_edge_RT(Node& n, int to, std::vector<float>&& trans, std::vector<float>&& rot_euler);
+```
 
-Overloaded method using move semantics.
-
-  
+&nbsp;
+#### Overloaded method using move semantics.
 ```c++
 Edge get_edge_RT(const Node &n, int to);
 ```
-Returns an edge of type RT going from node n to node with id to
+- Returns an edge of type RT going from node n to node with id to
 ```c++
 RTMat get_edge_RT_as_RTMat(const Edge &edge);
 ```
 Returns the rotation and translation attributes of edge converted to an RTMat.
+
+&nbsp;
 
   
 ```c++
@@ -245,6 +247,7 @@ RTMat get_edge_RT_as_RTMat(Edge &&edge);
 ```
 Overloaded method with move semantics.
 
+&nbsp;
   
 
 ### IO sub-API
@@ -385,7 +388,7 @@ These structures are compiled into C++ code that is included in the agent, formi
 
 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMjAzNjM1ODQ1NSwtMjA3NDM3NTI3MiwxMT
-E4OTE0NzM2LDk5MDE4NzM1MSwxODMwMDgwNDQwLC0xNTc0MTU2
-NDEwLDY5NTg1MDcyXX0=
+eyJoaXN0b3J5IjpbLTEzOTQxMTc3MzksLTIwNzQzNzUyNzIsMT
+ExODkxNDczNiw5OTAxODczNTEsMTgzMDA4MDQ0MCwtMTU3NDE1
+NjQxMCw2OTU4NTA3Ml19
 -->
