@@ -29,17 +29,6 @@ The most important features of the G-API are:
 
 -   G can be serialized to a JSON file from any agent but it is better to do it only from the idserver agent, to avoid the spreading of copies of the graph in different states.
 
-```mermaid
-sequenceDiagram
-Alice ->> Bob: Hello Bol, how are you?
-Bob-->>John: How about you John?
-Bob--x Alice: I am good thanks!
-Bob-x John: I am good thanks!
-Note right of John: Bob thinks a long<br/>long time, so long<br/>that the text does<br/>not fit on a row.
-
-Bob-->Alice: Checking with John...
-Alice->John: Yes... John, how are you?
-```
 
 ## CORE
 
@@ -250,6 +239,6 @@ These structures are compiled into C++ code that is included in the agent, formi
 
 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbOTkwMTg3MzUxLDE4MzAwODA0NDAsLTE1Nz
-QxNTY0MTAsNjk1ODUwNzJdfQ==
+eyJoaXN0b3J5IjpbMjAwMTU3NzQ0MCw5OTAxODczNTEsMTgzMD
+A4MDQ0MCwtMTU3NDE1NjQxMCw2OTU4NTA3Ml19
 -->
