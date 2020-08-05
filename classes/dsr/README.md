@@ -24,8 +24,8 @@ The most important features of the G-API are:
 -   To create a new node, a unique identifier is needed. To guarantee this requirement, the node creation method places a RPC call to the special agent idserver, using standard RoboComp communication methods. Idserver returns a unique id that can be safely added to the new node.
     
 
-- G can be serialized to a JSON file from any agent but it is better to do it only from the idserver agent, to avoid the spreading of copies of the graph in different states.
+-   G can be serialized to a JSON file from any agent but it is better to do it only from the idserver agent, to avoid the spreading of copies of the graph in different states.
 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTE4NTI5OTkzM119
+eyJoaXN0b3J5IjpbMjg0NDY4NzY1XX0=
 -->
