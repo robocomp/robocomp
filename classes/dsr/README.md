@@ -1,4 +1,7 @@
 # DSR (Deep State Representation)
+
+
+
 CORTEX is a long term effort to build a series of architectural designs around the simple idea 
 of a group of agents that share a distributed, dynamic representation acting as a working memory. 
 This data structure is called **Deep State Representation (DSR)** due to the hybrid nature 
@@ -33,31 +36,19 @@ G is defined at the middleware level as a struct with four fields and two maps. 
   
 
     struct Node {
-    
-    string type;
-    
-    string name;
-    
-    long id;
-    
-    long agent_id;
-    
-    map<string, Attrib> attrs;
-    
-    map<EdgeKey, Edge> fano;
-    
+	    string type;
+	    string name;
+	    long id;
+	    long agent_id;
+	    map<string, Attrib> attrs;
+	    map<EdgeKey, Edge> fano;
     };
-
-  
-
-    Edges are indexed with a compound key:
+ 
+ Edges are indexed with a compound key:
     
     struct EdgeKey {
-    
-    long to;
-    
-    string type;
-    
+	    long to;
+	    string type;
     };
 
   
@@ -129,5 +120,5 @@ Val is defined as a union of types, including string, int, float, vector of floa
 These structures are compiled into C++ code that is included in the agent, forming the deeper layer of G. On top of it, another layer called CRDT is added to provide eventual consistency while agents communicate using asynchronous updates.
 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTY0OTI1NTU5MV19
+eyJoaXN0b3J5IjpbLTExNjc1NDk4OV19
 -->
