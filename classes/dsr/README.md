@@ -414,16 +414,18 @@ union Val switch(long) {
 		sequence<float> float_vec;
 	case 4:
 		boolean bl;
+	case 5:  
+		sequence<octet> byte_vec;
 };
 ```
-  
+ 
 
 These structures are compiled into C++ code that is included in the agent, forming the deeper layer of G. On top of it, another layer called CRDT is added to provide eventual consistency while agents communicate using asynchronous updates.
 
 
 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTkyNDkyODM4NCwtMTE3MjM1MTA5MiwtMj
-A3NDM3NTI3MiwxMTE4OTE0NzM2LDk5MDE4NzM1MSwxODMwMDgw
-NDQwLC0xNTc0MTU2NDEwLDY5NTg1MDcyXX0=
+eyJoaXN0b3J5IjpbODMyNzA2MzkzLC05MjQ5MjgzODQsLTExNz
+IzNTEwOTIsLTIwNzQzNzUyNzIsMTExODkxNDczNiw5OTAxODcz
+NTEsMTgzMDA4MDQ0MCwtMTU3NDE1NjQxMCw2OTU4NTA3Ml19
 -->
