@@ -1,0 +1,19 @@
+module RoboCompCoppeliaUtils
+        {
+                struct PoseType
+                {
+                    float x;
+                    float y;
+                    float z;
+                    float rx;
+                    float ry;
+                    float rz;
+                };
+
+                interface CoppeliaUtils
+                {
+                    void addOrModifyDummy(string name, PoseType pose);
+                };
+        };
+
+
