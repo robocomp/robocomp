@@ -35,13 +35,13 @@ The most important features of the G-API are:
 ```c++
 std::optional<Node> get_node(const std::string& name);
 ```
-Returns a node if it exists in G. *name* is one of the properties of Node.
-
-  
+Returns a node if it exists in G. *name* is one of the properties of Node.  
+&nbsp;
+       
 ```c++
 std::optional<Node> get_node(int id);
 ```
-:  Returns a node if it exists in G. id is one of the main properties of Node
+Returns a node if it exists in G. id is one of the main properties of Node
   
 ```c++
 bool update_node(const Node& node);
@@ -239,6 +239,6 @@ These structures are compiled into C++ code that is included in the agent, formi
 
 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMjAwMTU3NzQ0MCw5OTAxODczNTEsMTgzMD
-A4MDQ0MCwtMTU3NDE1NjQxMCw2OTU4NTA3Ml19
+eyJoaXN0b3J5IjpbLTE2MTQxOTYxODAsOTkwMTg3MzUxLDE4Mz
+AwODA0NDAsLTE1NzQxNTY0MTAsNjk1ODUwNzJdfQ==
 -->
