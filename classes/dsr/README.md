@@ -17,4 +17,7 @@ It always works on a copy a node. The obtention of the copy is done by a core me
 There are a group of methods, that include the word local in their name, created to  change the attributes of a node.  These methods do not reinsert the node back into G and the user is left with this responsibility. 
 DSRGraph has been created as a QObject to emit signals whenever a node is created, deleted or modified. Using this functionality, a set of graphic classes have been created to show in real-time the state of G. These classes can be connected at run-time to the signals. There is an abstract class from which all of them inherit that can be used to create more user-defined observers of G.
 To create a new node, a unique identifier is needed. To guarantee this requirement, the node creation method places a RPC call to the special agent idserver, using standard RoboComp communication methods. Idserver returns a unique id that can be safely added to the new node.
-G can be serialized to a JSON file from any agent but it is better to do it only from the idserver agent, to avoid the spreading of copies of the graph in different states.
+G can be serialized to a JSON file from any agent but it is better to do it only from the idserver agent, to avoid the spreading of copies of the graph in different states.# Classes to be included in proto-agents
+<!--stackedit_data:
+eyJoaXN0b3J5IjpbMTc4OTU5Mjk5M119
+-->
