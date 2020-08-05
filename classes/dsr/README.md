@@ -260,24 +260,38 @@ The api has to be instantiated with: auto io = G->get_io_api();
 ```c++
 void print();
 ```
+
+&nbsp;
 ```c++
 void print_edge(const Edge &edge) ;
 ```
+
+&nbsp;
 ```c++
 void print_node(const Node &node);
 ```
+
+&nbsp;
 ```c++
 void print_node(int id);
 ```
+
+&nbsp;
 ```c++
 void print_RT(std::int32_t root) const;
 ```
+
+&nbsp;
 ```c++
 void write_to_json_file(const std::string &file) const;
 ```
+
+&nbsp;
 ```c++
 void read_from_json_file(const std::string &file) const;
 ```
+
+&nbsp;
   
 
 ### Innermodel sub-API
@@ -286,23 +300,27 @@ These methods compute transformation matrices between distant nodes in the so-ca
 
 The api has to be instantiated with: `auto inner = G->get_inner_api();`
 
-  
+&nbsp;
 ```c++
 void transformS(std::string to, std::string from);
 ```
+
+&nbsp;
 ```c++
 void transformS(const std::string &to, const QVec &point, const std::string &from);
 ```
+
+&nbsp;
 ```c++
 void transform(QString to, QString from);
 ```
+
+&nbsp;
 ```c++
 void transform(QString to, const QVec &point, QString from);
 ```
-  
-  
-  
-  
+
+&nbsp;
 
 ## CRDT- API
 
@@ -310,16 +328,23 @@ void transform(QString to, const QVec &point, QString from);
 void reset()
 ```
 
+&nbsp;
 ```c++
 void update_maps_node_delete(int id, const Node& n);
 ```
 
+&nbsp;
 ```c++
 void update_maps_node_insert(int id, const Node& n);
 ```
+
+&nbsp;
 ```c++
 void update_maps_edge_delete(int from, int to, const std::string& key);
 ```
+
+&nbsp;
+
 ## Node struct
 
 G is defined at the middleware level as a struct with four fields and two maps. The first map holds a dictionary of attributes and the second one a dictionary of edges. Names of attributes (keys) and their types must belong to a predefined set, listed in XXX.  
@@ -334,6 +359,8 @@ struct Node {
 	map<EdgeKey, Edge> fano;
 };
 ```
+
+&nbsp;
  
  Edges are indexed with a compound key:
 ```c++
@@ -342,9 +369,6 @@ struct EdgeKey {
 	string type;
 };
 ```
-
-  
-
 formed by the id of the destination node and the type of the node. Possible types must belong to a predefined set listed in XXX. Each edge has three fields and a map.
 ```c++
 struct Edge {
@@ -388,7 +412,7 @@ These structures are compiled into C++ code that is included in the agent, formi
 
 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTEzOTQxMTc3MzksLTIwNzQzNzUyNzIsMT
+eyJoaXN0b3J5IjpbLTE5ODExMzc4NTEsLTIwNzQzNzUyNzIsMT
 ExODkxNDczNiw5OTAxODczNTEsMTgzMDA4MDQ0MCwtMTU3NDE1
 NjQxMCw2OTU4NTA3Ml19
 -->
