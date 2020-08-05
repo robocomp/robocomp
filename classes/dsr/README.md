@@ -209,7 +209,108 @@ std::optional<std::map<EdgeKey, Edge>> get_edges(int id);
 
 &nbsp;
 
+## Auxiliary sub-APIs
 
+### RT sub-API
+
+These methods provide specialized access to RT edges.
+
+The api has to be instantiated with: auto rt = G->get_rt_api();
+
+  
+
+void insert_or_assign_edge_RT(Node& n, int to, const std::vector<float>& trans, const std::vector<float>& rot_euler);
+
+Inserts or replaces an edge of type RT going from node n to node with id to. The translation vector is passed as a vector of floats. The three euler angles are passed as a vector of floats.
+
+  
+
+void insert_or_assign_edge_RT(Node& n, int to, std::vector<float>&& trans, std::vector<float>&& rot_euler);
+
+Overloaded method using move semantics.
+
+  
+
+Edge get_edge_RT(const Node &n, int to);
+
+Returns an edge of type RT going from node n to node with id to
+
+RTMat get_edge_RT_as_RTMat(const Edge &edge);
+
+Returns the rotation and translation attributes of edge converted to an RTMat.
+
+  
+
+RTMat get_edge_RT_as_RTMat(Edge &&edge);
+
+Overloaded method with move semantics.
+
+  
+
+### IO sub-API
+
+These methods provide serialization to and from a disk file and display printing services.
+
+The api has to be instantiated with: auto io = G->get_io_api();
+
+  
+
+void print();
+
+void print_edge(const Edge &edge) ;
+
+void print_node(const Node &node);
+
+void print_node(int id);
+
+void print_RT(std::int32_t root) const;
+
+void write_to_json_file(const std::string &file) const;
+
+void read_from_json_file(const std::string &file) const;
+
+  
+
+### Innermodel sub-API
+
+These methods compute transformation matrices between distant nodes in the so-called RT- tree that is embedded in G. The transformation matrix responds to the following question: how is a point defined in A’s reference frame, seen from B’s reference frame? It also provides backwards compatibility with RobComp’s InnerModel system.
+
+The api has to be instantiated with: auto inner = G->get_inner_api();
+
+  
+```c++
+void transformS(std::string to, std::string from);
+```
+```c++
+void transformS(const std::string &to, const QVec &point, const std::string &from);
+```
+```c++
+void transform(QString to, QString from);
+```
+```c++
+void transform(QString to, const QVec &point, QString from);
+```
+  
+  
+  
+  
+
+## CRDT- API
+
+```c++
+void reset()
+```
+
+```c++
+void update_maps_node_delete(int id, const Node& n);
+```
+
+```c++
+void update_maps_node_insert(int id, const Node& n);
+```
+```c++
+void update_maps_edge_delete(int from, int to, const std::string& key);
+```
 ## Node struct
 
 G is defined at the middleware level as a struct with four fields and two maps. The first map holds a dictionary of attributes and the second one a dictionary of edges. Names of attributes (keys) and their types must belong to a predefined set, listed in XXX.  
@@ -278,7 +379,7 @@ These structures are compiled into C++ code that is included in the agent, formi
 
 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTIwNzQzNzUyNzIsMTExODkxNDczNiw5OT
-AxODczNTEsMTgzMDA4MDQ0MCwtMTU3NDE1NjQxMCw2OTU4NTA3
-Ml19
+eyJoaXN0b3J5IjpbNTY4NDc1MTMsLTIwNzQzNzUyNzIsMTExOD
+kxNDczNiw5OTAxODczNTEsMTgzMDA4MDQ0MCwtMTU3NDE1NjQx
+MCw2OTU4NTA3Ml19
 -->
