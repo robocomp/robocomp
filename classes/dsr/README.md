@@ -95,6 +95,155 @@ union Val switch(long) {
 
 These structures are compiled into C++ code that is included in the agent, forming the deeper layer of G. On top of it, another layer called CRDT is added to provide eventual consistency while agents communicate using asynchronous updates.
 
+## CORE
+
+```c++
+std::optional<Node> get_node(const std::string& name);
+```
+
+Returns a node if it exists in G. name is one of the properties of Node,
+
+  
+```c++
+std::optional<Node> get_node(int id);
+
+Returns a node if it exists in G. id is one of the main properties of Node
+
+  
+```c++
+bool update_node(const Node& node);
+
+Updates the attributes of a node with the content of the one given by parameter.
+
+Returns true if the node is updated, returns false if node doesn’t exist or fails updating.
+
+  
+
+bool delete_node(const std::string &name);
+
+Deletes the node with the name given by parameter.
+
+Returns true if the node is deleted, returns false if node doesn’t exist or fails updating.
+
+  
+
+bool delete_node(int id);
+
+Deletes the node with the name given by parameter.
+
+Returns true if the node is deleted, returns false if node doesn’t exist or fails updating.
+
+  
+
+std::optional<uint32_t> insert_node(Node& node);
+
+Inserts in the Graph the Node given by parameter.
+
+Return optional with the id of the Node if success, otherwise returns a void optional.
+
+  
+
+std::optional<Edge> get_edge(const std::string& from, const std::string& to, const std::string& key);
+
+Returns an optional with the Edge going from node named from to node named to and key ??
+
+  
+
+std::optional<Edge> get_edge(int from, int to, const std::string& key);
+
+Returns an optional with the Edge that goes from node id to node id from and key ??
+
+  
+
+std::optional<Edge> get_edge(const Node &n, int to, const std::string& key)
+
+Returns an optional with the Edge that goes from current node to node id from and key ??.
+
+  
+
+bool insert_or_assign_edge(const Edge& attrs);
+
+  
+
+bool delete_edge(const std::string& from, const std::string& to , const std::string& key);
+
+Deletes the edge going from node named from to node named to and key ??.
+
+Returns true if the operation completes successfully
+
+  
+
+bool delete_edge(int from, int t, const std::string& key);
+
+Deletes edge going from node id from to node id to and with key key.
+
+Returns true if the operation completes successfully
+
+  
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+  
+
+std::optional<Node> get_node_root();
+
+Returns the root node as defined in idserver or void if not defined
+
+  
+
+std::vector<Node> get_nodes_by_type(const std::string& type);
+
+Returns a vector of nodes whose type is type
+
+  
+
+std::optional<std::string> get_name_from_id(std::int32_t id);
+
+Returns an optional string with the name of node defined by its id
+
+  
+
+std::optional<int> get_id_from_name(const std::string &name);
+
+Returns an optional string with the id (int) of node defined by its name
+
+  
+
+std::optional<std::int32_t> get_node_level(Node& n);
+
+Returns an optional int with the value of the attribute level of node n
+
+  
+
+std::optional<std::int32_t> get_parent_id(const Node& n);
+
+Returns an optional int with the value of the attribute parent of node n
+
+  
+
+std::optional<Node> get_parent_node(const Node& n);
+
+Returns an optional Node with the value of the attribute parent of node n
+
+If node does not exist
+
+If parent attribute does no exist
+
+  
+```c++
+std::string get_node_type(Node& n);
+
+Returns a string the node’s type
+
+  
+```c++
+std::vector<Edge> get_edges_by_type(const std::string& type);
+```c++
+std::vector<Edge> get_edges_by_type(const Node& node, const std::string& type);
+```c++
+std::vector<Edge> get_edges_to_id(int id);
+```c++
+std::optional<std::map<EdgeKey, Edge>> get_edges(int id);
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbNjk1ODUwNzJdfQ==
+eyJoaXN0b3J5IjpbLTU0NzE3Njc1LDY5NTg1MDcyXX0=
 -->
