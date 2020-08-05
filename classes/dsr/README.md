@@ -30,77 +30,11 @@ The most important features of the G-API are:
 -   G can be serialized to a JSON file from any agent but it is better to do it only from the idserver agent, to avoid the spreading of copies of the graph in different states.
 
 
-## Node struct
-
-G is defined at the middleware level as a struct with four fields and two maps. The first map holds a dictionary of attributes and the second one a dictionary of edges. Names of attributes (keys) and their types must belong to a predefined set, listed in XXX.  
-  
-```c++
-struct Node {
-	string type;
-	string name;
-	long id;
-	long agent_id;
-	map<string, Attrib> attrs;
-	map<EdgeKey, Edge> fano;
-};
-```
- 
- Edges are indexed with a compound key:
-```c++
-struct EdgeKey {
-	long to;
-	string type;
-};
-```
-
-  
-
-formed by the id of the destination node and the type of the node. Possible types must belong to a predefined set listed in XXX. Each edge has three fields and a map.
-```c++
-struct Edge {
-	long to; //key1
-	string type; //key2
-	long from;
-	map<string, Attrib> attrs;
-};
-```
-
-The destination node and the type, which both form part of the key, the id of the current node, to facilitate edge management, and a map of attributes.
-
-Attributes are defined as a struct with a type and a value of type Val (a timestamp with the last modification will be added shortly)
-```c++
-struct _Attrib {
-	long type;
-	Val value;
-};
-```
-
-Val is defined as a union of types, including string, int, float, vector of float and boolean (vector of byte will be added shortly).
-
-```c++
-union Val switch(long) {
-	case 0:
-		string str;
-	case 1:
-		long dec;
-	case 2:
-		float fl;
-	case 3:
-		sequence<float> float_vec;
-	case 4:
-		boolean bl;
-};
-```
-  
-
-These structures are compiled into C++ code that is included in the agent, forming the deeper layer of G. On top of it, another layer called CRDT is added to provide eventual consistency while agents communicate using asynchronous updates.
-
 ## CORE
 
 ```c++
 std::optional<Node> get_node(const std::string& name);
 ```
-
 Returns a node if it exists in G. name is one of the properties of Node,
 
   
@@ -114,7 +48,6 @@ Returns a node if it exists in G. id is one of the main properties of Node
 bool update_node(const Node& node);
 ```
 Updates the attributes of a node with the content of the one given by parameter.
-
 Returns true if the node is updated, returns false if node doesn’t exist or fails updating.
 
   
@@ -122,7 +55,6 @@ Returns true if the node is updated, returns false if node doesn’t exist or fa
 bool delete_node(const std::string &name);
 ```
 Deletes the node with the name given by parameter.
-
 Returns true if the node is deleted, returns false if node doesn’t exist or fails updating.
 
   
@@ -130,7 +62,6 @@ Returns true if the node is deleted, returns false if node doesn’t exist or fa
 bool delete_node(int id);
 ```
 Deletes the node with the name given by parameter.
-
 Returns true if the node is deleted, returns false if node doesn’t exist or fails updating.
 
   
@@ -138,8 +69,7 @@ Returns true if the node is deleted, returns false if node doesn’t exist or fa
 std::optional<uint32_t> insert_node(Node& node);
 ```
 Inserts in the Graph the Node given by parameter.
-
-Return optional with the id of the Node if success, otherwise returns a void optional.
+Returns optional with the id of the Node if success, otherwise returns a void optional.
 
   
 ```c++
@@ -160,9 +90,9 @@ std::optional<Edge> get_edge(const Node &n, int to, const std::string& key)
 Returns an optional with the Edge that goes from current node to node id from and key ??.
 
   
-
+```c++
 bool insert_or_assign_edge(const Edge& attrs);
-
+```
   
 ```c++
 bool delete_edge(const std::string& from, const std::string& to , const std::string& key);
@@ -240,6 +170,75 @@ std::vector<Edge> get_edges_to_id(int id);
 ```c++
 std::optional<std::map<EdgeKey, Edge>> get_edges(int id);
 ```
+
+
+## Node struct
+
+G is defined at the middleware level as a struct with four fields and two maps. The first map holds a dictionary of attributes and the second one a dictionary of edges. Names of attributes (keys) and their types must belong to a predefined set, listed in XXX.  
+  
+```c++
+struct Node {
+	string type;
+	string name;
+	long id;
+	long agent_id;
+	map<string, Attrib> attrs;
+	map<EdgeKey, Edge> fano;
+};
+```
+ 
+ Edges are indexed with a compound key:
+```c++
+struct EdgeKey {
+	long to;
+	string type;
+};
+```
+
+  
+
+formed by the id of the destination node and the type of the node. Possible types must belong to a predefined set listed in XXX. Each edge has three fields and a map.
+```c++
+struct Edge {
+	long to; //key1
+	string type; //key2
+	long from;
+	map<string, Attrib> attrs;
+};
+```
+
+The destination node and the type, which both form part of the key, the id of the current node, to facilitate edge management, and a map of attributes.
+
+Attributes are defined as a struct with a type and a value of type Val (a timestamp with the last modification will be added shortly)
+```c++
+struct _Attrib {
+	long type;
+	Val value;
+};
+```
+
+Val is defined as a union of types, including string, int, float, vector of float and boolean (vector of byte will be added shortly).
+
+```c++
+union Val switch(long) {
+	case 0:
+		string str;
+	case 1:
+		long dec;
+	case 2:
+		float fl;
+	case 3:
+		sequence<float> float_vec;
+	case 4:
+		boolean bl;
+};
+```
+  
+
+These structures are compiled into C++ code that is included in the agent, forming the deeper layer of G. On top of it, another layer called CRDT is added to provide eventual consistency while agents communicate using asynchronous updates.
+
+
+
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTI4NjA0ODk0OCw2OTU4NTA3Ml19
+eyJoaXN0b3J5IjpbLTMyNzc3NTQ4Niw2OTU4NTA3Ml19
 -->
