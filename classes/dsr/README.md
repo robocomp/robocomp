@@ -167,7 +167,7 @@ std::optional<std::int32_t> get_node_level(Node& n);
 ```c++
 std::optional<std::int32_t> get_parent_id(const Node& n);
 ```
-Returns an optional int with the value of the attribute parent of node n
+- Returns an optional int with the value of the attribute parent of node n
 
 &nbsp;
 
@@ -175,7 +175,7 @@ Returns an optional int with the value of the attribute parent of node n
 ```c++
 std::optional<Node> get_parent_node(const Node& n);
 ```
-Returns an optional Node with the value of the attribute parent of node n
+- Returns an optional Node with the value of the attribute parent of node n
 If node does not exist
 If parent attribute does no exist
 
@@ -184,7 +184,7 @@ If parent attribute does no exist
 ```c++
 std::string get_node_type(Node& n);
 ```
-Returns a string the node’s type
+- Returns a string the node’s type
 
 &nbsp;
 
@@ -237,7 +237,7 @@ Edge get_edge_RT(const Node &n, int to);
 ```c++
 RTMat get_edge_RT_as_RTMat(const Edge &edge);
 ```
-Returns the rotation and translation attributes of edge converted to an RTMat.
+- Returns the rotation and translation attributes of edge converted to an RTMat.
 
 &nbsp;
 
@@ -245,7 +245,7 @@ Returns the rotation and translation attributes of edge converted to an RTMat.
 ```c++
 RTMat get_edge_RT_as_RTMat(Edge &&edge);
 ```
-Overloaded method with move semantics.
+- Overloaded method with move semantics.
 
 &nbsp;
   
@@ -412,7 +412,7 @@ These structures are compiled into C++ code that is included in the agent, formi
 
 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTQ4MzgwMTAzMywtMjA3NDM3NTI3MiwxMT
+eyJoaXN0b3J5IjpbMTY0MDkxODE2MCwtMjA3NDM3NTI3MiwxMT
 E4OTE0NzM2LDk5MDE4NzM1MSwxODMwMDgwNDQwLC0xNTc0MTU2
 NDEwLDY5NTg1MDcyXX0=
 -->
