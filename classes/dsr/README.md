@@ -1,6 +1,6 @@
 # DSR (Deep State Representation)
 
-
+[TOC]
 
 CORTEX is a long term effort to build a series of architectural designs around the simple idea 
 of a group of agents that share a distributed, dynamic representation acting as a working memory. 
@@ -412,7 +412,7 @@ These structures are compiled into C++ code that is included in the agent, formi
 
 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTY0MDkxODE2MCwtMjA3NDM3NTI3MiwxMT
+eyJoaXN0b3J5IjpbMTYyMTAxNDI2NiwtMjA3NDM3NTI3MiwxMT
 E4OTE0NzM2LDk5MDE4NzM1MSwxODMwMDgwNDQwLC0xNTc0MTU2
 NDEwLDY5NTg1MDcyXX0=
 -->
