@@ -34,15 +34,16 @@ The most important features of the G-API are:
 
 G is defined at the middleware level as a struct with four fields and two maps. The first map holds a dictionary of attributes and the second one a dictionary of edges. Names of attributes (keys) and their types must belong to a predefined set, listed in XXX.  
   
-
-    struct Node {
-	    string type;
-	    string name;
-	    long id;
-	    long agent_id;
-	    map<string, Attrib> attrs;
-	    map<EdgeKey, Edge> fano;
-    };
+```c++
+struct Node {
+	string type;
+	string name;
+	long id;
+	long agent_id;
+	map<string, Attrib> attrs;
+	map<EdgeKey, Edge> fano;
+};
+```
  
  Edges are indexed with a compound key:
     
@@ -120,5 +121,5 @@ Val is defined as a union of types, including string, int, float, vector of floa
 These structures are compiled into C++ code that is included in the agent, forming the deeper layer of G. On top of it, another layer called CRDT is added to provide eventual consistency while agents communicate using asynchronous updates.
 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTExNjc1NDk4OV19
+eyJoaXN0b3J5IjpbLTE5MzQ3MzY5OTRdfQ==
 -->
