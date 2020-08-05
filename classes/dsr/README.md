@@ -1,6 +1,15 @@
 # DSR (Deep State Representation)
+  * [DSR-API (aka G-API)](#dsr-api--aka-g-api-)
+  * [CORE](#core)
+  * [Auxiliary sub-APIs](#auxiliary-sub-apis)
+    + [RT sub-API](#rt-sub-api)
+    + [IO sub-API](#io-sub-api)
+    + [Innermodel sub-API](#innermodel-sub-api)
+  * [CRDT- API](#crdt--api)
+  * [Node struct](#node-struct)
 
-[TOC]
+<small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
+
 
 CORTEX is a long term effort to build a series of architectural designs around the simple idea 
 of a group of agents that share a distributed, dynamic representation acting as a working memory. 
@@ -412,7 +421,7 @@ These structures are compiled into C++ code that is included in the agent, formi
 
 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTYyMTAxNDI2NiwtMjA3NDM3NTI3MiwxMT
-E4OTE0NzM2LDk5MDE4NzM1MSwxODMwMDgwNDQwLC0xNTc0MTU2
-NDEwLDY5NTg1MDcyXX0=
+eyJoaXN0b3J5IjpbLTExNzIzNTEwOTIsLTIwNzQzNzUyNzIsMT
+ExODkxNDczNiw5OTAxODczNTEsMTgzMDA4MDQ0MCwtMTU3NDE1
+NjQxMCw2OTU4NTA3Ml19
 -->
