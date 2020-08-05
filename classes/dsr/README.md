@@ -18,7 +18,7 @@ of the managed elements, geometric and symbolic, and concrete (laser data) and a
 
 ![dsr-graph](https://user-images.githubusercontent.com/5784096/89400000-88576200-d713-11ea-8ac2-d2980568c2dc.png)
 
-<sup>*The illustration shows a possible instance of the CORTEX architecture. Thecentral part of the ring contains the DSR graph that is shared by all agents, from whoma reference implementation is presented here. Coloured boxes represent agents provid-ing different functionalities to the whole. The purple box is an agent that can connectto the real robot or to a realistic simulation of it, providing the basic infrastructure toexplore prediction and anticipation capabilities*</sup>
+<sup>*The illustration shows a possible instance of the CORTEX architecture. The central part of the ring contains the **DSR graph** that is shared by all agents, from whom a reference implementation is presented here. Coloured boxes represent agents providing different functionalities to the whole. The purple box is an agent that can connect to the real robot or to a realistic simulation of it, providing the basic infrastructure to explore prediction and anticipation capabilities*</sup>
 
 Conceptually, the DSR represents a network of entities and relations among them. Relations can be unary or binary predicates, while the entities may have complex numeric properties such as pose transformation matrices that represent the kinematic relations of objects in the world and the robot’s parts. Mathematically, the DSR is internalized as a directed graph with attributed edges. As a hybrid representation that stores information at both geometric and symbolic levels, the nodes of the DSR store concepts that can be symbolic, geometric or a combination of both. Metric concepts describe numeric quantities of objects in the world, which can be structures such as a three-dimensional mesh, scalars such as the mass of a link, or lists such as revision dates. Edges represent relationships between nodes. Two nodes may have several kinds of relationships but only one of them can be geometric. The geometric relationship is expressed with a fixed label called *RT*. This label stores the transformation matrix (expressed as a rotation-translation) between them.
 
@@ -422,7 +422,7 @@ These structures are compiled into C++ code that is included in the agent, formi
 
 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMjI1MzgyODg2LC0xMTcyMzUxMDkyLC0yMD
-c0Mzc1MjcyLDExMTg5MTQ3MzYsOTkwMTg3MzUxLDE4MzAwODA0
-NDAsLTE1NzQxNTY0MTAsNjk1ODUwNzJdfQ==
+eyJoaXN0b3J5IjpbLTEwMDk2MTMwNzEsLTExNzIzNTEwOTIsLT
+IwNzQzNzUyNzIsMTExODkxNDczNiw5OTAxODczNTEsMTgzMDA4
+MDQ0MCwtMTU3NDE1NjQxMCw2OTU4NTA3Ml19
 -->
