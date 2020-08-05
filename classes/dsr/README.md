@@ -26,6 +26,108 @@ The most important features of the G-API are:
 
 -   G can be serialized to a JSON file from any agent but it is better to do it only from the idserver agent, to avoid the spreading of copies of the graph in different states.
 
+
+## Node struct
+
+G is defined at the middleware level as a struct with four fields and two maps. The first map holds a dictionary of attributes and the second one a dictionary of edges. Names of attributes (keys) and their types must belong to a predefined set, listed in XXX.  
+  
+
+    struct Node {
+    
+    string type;
+    
+    string name;
+    
+    long id;
+    
+    long agent_id;
+    
+    map<string, Attrib> attrs;
+    
+    map<EdgeKey, Edge> fano;
+    
+    };
+
+  
+
+    Edges are indexed with a compound key:
+    
+    struct EdgeKey {
+    
+    long to;
+    
+    string type;
+    
+    };
+
+  
+
+formed by the id of the destination node and the type of the node. Possible types must belong to a predefined set listed in XXX. Each edge has three fields and a map.
+
+    struct Edge {
+    
+    long to; //key1
+    
+    string type; //key2
+    
+    long from;
+    
+    map<string, Attrib> attrs;
+    
+    };
+
+The destination node and the type, which both form part of the key, the id of the current node, to facilitate edge management, and a map of attributes.
+
+  
+
+Attributes are defined as a struct with a type and a value of type Val (a timestamp with the last modification will be added shortly)
+
+    struct _Attrib
+    
+    {
+    
+    long type;
+    
+    Val value;
+    
+    };
+
+  
+
+Val is defined as a union of types, including string, int, float, vector of float and boolean (vector of byte will be added shortly).
+
+    union Val switch(long) {
+    
+    case 0:
+    
+    string str;
+    
+    case 1:
+    
+    long dec;
+    
+    case 2:
+    
+    float fl;
+    
+    case 3:
+    
+    sequence<float> float_vec;
+    
+    //case 4:
+    
+    // sequence<float> rtmat;
+    
+    case 4:
+    
+    boolean bl;
+    
+    };
+
+  
+
+These structures are compiled into C++ code that is included in the agent, forming the deeper layer of G. On top of it, another layer called CRDT is added to provide eventual consistency while agents communicate using asynchronous updates.
+
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMjg0NDY4NzY1XX0=
+eyJoaXN0b3J5IjpbLTY0OTI1NTU5MV19
 -->
