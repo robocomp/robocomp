@@ -168,7 +168,6 @@ bool insert_or_assign_edge(const Edge& attrs);
 bool delete_edge(const std::string& from, const std::string& to , const std::string& key);
 ```
 Deletes the edge going from node named from to node named to and key ??.
-
 Returns true if the operation completes successfully
 
   
@@ -176,7 +175,6 @@ Returns true if the operation completes successfully
 bool delete_edge(int from, int t, const std::string& key);
 ```
 Deletes edge going from node id from to node id to and with key key.
-
 Returns true if the operation completes successfully
 
   
@@ -222,26 +220,26 @@ Returns an optional int with the value of the attribute parent of node n
 std::optional<Node> get_parent_node(const Node& n);
 ```
 Returns an optional Node with the value of the attribute parent of node n
-
 If node does not exist
-
 If parent attribute does no exist
-
   
 ```c++
 std::string get_node_type(Node& n);
-
+```
 Returns a string the node’s type
 
-  
 ```c++
 std::vector<Edge> get_edges_by_type(const std::string& type);
+```
 ```c++
 std::vector<Edge> get_edges_by_type(const Node& node, const std::string& type);
+```
 ```c++
 std::vector<Edge> get_edges_to_id(int id);
+```
 ```c++
 std::optional<std::map<EdgeKey, Edge>> get_edges(int id);
+```
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbNDg4NjkyNTE2LDY5NTg1MDcyXX0=
+eyJoaXN0b3J5IjpbLTI4NjA0ODk0OCw2OTU4NTA3Ml19
 -->
