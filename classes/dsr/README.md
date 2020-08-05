@@ -32,12 +32,13 @@ The most important features of the G-API are:
 
 ## CORE
 
-<span style="color:red">
+<p style="background-color:red">
+
 ```c++
 std::optional<Node> get_node(const std::string& name);
 ```
-Returns a node if it exists in G. name is one of the properties of Node,
-</span>
+Returns a node if it exists in G. *name* is one of the properties of Node.
+</p>
 
   
 ```c++
@@ -242,5 +243,5 @@ These structures are compiled into C++ code that is included in the agent, formi
 
 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTExMjEwMDAwMDksNjk1ODUwNzJdfQ==
+eyJoaXN0b3J5IjpbLTE1NzQxNTY0MTAsNjk1ODUwNzJdfQ==
 -->
