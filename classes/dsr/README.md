@@ -21,7 +21,7 @@ of the managed elements, geometric and symbolic, and concrete (laser data) and a
 
 Conceptually, the DSR represents a network of entities and relations among them. Relations can be unary or binary predicates, while the entities may have complex numeric properties such as pose transformation matrices that represent the kinematic relations of objects in the world and the robot’s parts. Mathematically, the DSR is internalized as a directed graph with attributed edges. As a hybrid representation that stores information at both geometric and symbolic levels, the nodes of the DSR store concepts that can be symbolic, geometric or a combination of both. Metric concepts describe numeric quantities of objects in the world, which can be structures such as a three-dimensional mesh, scalars such as the mass of a link, or lists such as revision dates. Edges represent relationships between nodes. Two nodes may have several kinds of relationships but only one of them can be geometric. The geometric relationship is expressed with a fixed label called *RT*. This label stores the transformation matrix (expressed as a rotation-translation) between them.
 
-> This documentation describes the classes that allow the creation of agents that use this Deep State Representation.
+> This documentation describes the classes that allow the creation of agents to use this Deep State Representation.
 
 ## DSR-API (aka G-API)
 G-API is the user-level access layer to G. It is composed by a set of core methods that access the underlying CRDT and RTPS APIs, and an extendable  set of auxiliary methods added to simplify the user coding tasks. 
@@ -421,7 +421,7 @@ These structures are compiled into C++ code that is included in the agent, formi
 
 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTExNzIzNTEwOTIsLTIwNzQzNzUyNzIsMT
-ExODkxNDczNiw5OTAxODczNTEsMTgzMDA4MDQ0MCwtMTU3NDE1
-NjQxMCw2OTU4NTA3Ml19
+eyJoaXN0b3J5IjpbMTg0MDU2MjA0MCwtMTE3MjM1MTA5MiwtMj
+A3NDM3NTI3MiwxMTE4OTE0NzM2LDk5MDE4NzM1MSwxODMwMDgw
+NDQwLC0xNTc0MTU2NDEwLDY5NTg1MDcyXX0=
 -->
