@@ -3,7 +3,8 @@ from string import Template
 
 from dsl_parsers.dsl_factory import DSLFactory
 from dsl_parsers.parsing_utils import communication_is_ice, IDSLPool, get_name_number
-from .. import function_utils as utils
+from templates.templateCPP.plugins.base.functions import function_utils as utils
+from templates.common.templatedict import TemplateDict
 
 GUI_INCLUDE_STR = """
 #if Qt5_FOUND
@@ -33,10 +34,10 @@ bool setParametersAndPossibleActivation(const RoboCompAGMCommonBehavior::Paramet
 RoboCompPlanning::Action createAction(std::string s);
 """
 
-class TemplateDict(dict):
+class genericworker_h(TemplateDict):
 
     def __init__(self, component):
-        super(TemplateDict, self).__init__()
+        super().__init__()
         self.component = component
         self['year'] = str(datetime.date.today().year)
         self['gui_includes'] = self.gui_includes()

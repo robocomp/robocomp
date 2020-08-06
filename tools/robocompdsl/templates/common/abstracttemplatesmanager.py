@@ -83,13 +83,15 @@ class CustomTemplate(Template):
                 identifiers.append(result[3])
         return identifiers
 
+
 TEMPLATES_DIR = '/opt/robocomp/share/robocompdsl/templates/'
 ALT_TEMPLATES_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../')
 
 
 class AbstractTemplatesManager(ABC):
-    def __init__(self, ast):
+    def __init__(self, ast, plugins):
         self.ast = ast
+        self.plugins = plugins
         super().__init__()
 
     def generate_files(self, output_path):
@@ -117,7 +119,7 @@ class AbstractTemplatesManager(ABC):
         try:
             file_content = template_object.substitute(**template_dict)
         except KeyError as e:
-            raise KeyError(str(e)+' In file %s' % template)
+            raise KeyError(f"Template keyword {str(e)} not found for Template file {template}")
 
         with open(output_file, 'w') as ostream:
             ostream.write(file_content)
@@ -126,33 +128,20 @@ class AbstractTemplatesManager(ABC):
         template_dict = {}
         full_path = os.path.join(TEMPLATES_DIR, self.files['template_path'])
         template_name = template.replace(full_path, "")
-        function_name = template_name.replace('/', '_').replace('-', '_').replace('.', '_')
         # look for a method in the class with the name of the file
-        if hasattr(self, function_name):
-            function = getattr(self, function_name)
-            if interface_name is not None:
-                template_dict = function(interface_name)
-            else:
-                template_dict = function()
-        # Look for a function file with the name of the template file
-        else:
-            functions_file = template_name.replace('.', '_').replace('/', '.')
-            try:
-                functions_dir = "templates."+template.replace(TEMPLATES_DIR, "").split('/')[0]+".functions."
-                module = importlib.import_module(functions_dir + functions_file)
-                TemplateDict = getattr(module, 'TemplateDict')
-                if interface_name is not None:
-                    template_dict = TemplateDict(self.ast, interface_name)
+        for plugin in self.plugins:
+            new_template_dict = plugin.get_template_dict(template_name, self.ast, interface_name)
+            for entry, value in new_template_dict.items():
+                if entry in template_dict:
+                    template_dict[entry] += new_template_dict[entry]
                 else:
-                    template_dict = TemplateDict(self.ast)
-            except ModuleNotFoundError:
-                pass
+                    template_dict[entry] = new_template_dict[entry]
         return template_dict
 
 
 class ComponentTemplatesManager(AbstractTemplatesManager):
-    def __init__(self, component):
-        super().__init__(component)
+    def __init__(self, component, plugins):
+        super().__init__(component, plugins)
 
     def generate_files(self, output_path):
         #
@@ -204,8 +193,8 @@ class ComponentTemplatesManager(AbstractTemplatesManager):
 
 
 class InterfaceTemplateManager(AbstractTemplatesManager):
-    def __init__(self, interface):
-        super().__init__(interface)
+    def __init__(self, interface, plugins):
+        super().__init__(interface, plugins)
 
     def generate_files(self, output_path):
         #

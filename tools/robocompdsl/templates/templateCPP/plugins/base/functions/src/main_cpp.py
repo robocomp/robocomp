@@ -2,7 +2,8 @@ import datetime
 from string import Template
 
 from dsl_parsers.parsing_utils import communication_is_ice, get_name_number
-from .. import function_utils as utils
+from templates.templateCPP.plugins.base.functions import function_utils as utils
+from templates.common.templatedict import TemplateDict
 
 INCLUDE_STR = '#include <${iface_name}${suffix}.h>\n'
 
@@ -154,9 +155,9 @@ catch(const Ice::Exception& ex)
 """
 
 
-class TemplateDict(dict):
+class src_main_cpp(TemplateDict):
     def __init__(self, component):
-        super(TemplateDict, self).__init__()
+        super().__init__()
         self.component = component
         self['year'] = str(datetime.date.today().year)
         self['component_name'] = component.name

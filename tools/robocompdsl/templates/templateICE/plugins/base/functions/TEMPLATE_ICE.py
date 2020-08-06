@@ -1,7 +1,7 @@
 import os
 from string import Template
-
-from ...common.abstracttemplatesmanager import CustomTemplate as CTemplate
+from templates.common.templatedict import TemplateDict
+from templates.common.abstracttemplatesmanager import CustomTemplate as CTemplate
 
 
 ICE_EXCEPTION_STR = """\
@@ -44,9 +44,9 @@ ${method_decorator}${method_return} ${method_name} (${params_str_a})${exception}
 """
 
 
-class TemplateDict(dict):
+class TEMPLATE_ICE(TemplateDict):
     def __init__(self, module):
-        super(TemplateDict, self).__init__()
+        super().__init__()
         self.module = module
         self['module_name'] = module['name']
         self['module_filename'] = os.path.basename(module['filename']).split('.')[0]
