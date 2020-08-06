@@ -1,7 +1,7 @@
 import datetime
 from string import Template
 from dsl_parsers.parsing_utils import get_name_number, communication_is_ice
-
+from templates.common.templatedict import TemplateDict
 
 GUI_SETUP_STR = """
 #ifdef USE_QTGUI
@@ -143,9 +143,9 @@ ${statemachine_name}.addState(${state_name}State);
 
 CPP_TYPES = ['int', 'float', 'bool', 'void']
 
-class TemplateDict(dict):
+class genericworker_cpp(TemplateDict):
     def __init__(self, component):
-        super(TemplateDict, self).__init__()
+        super(genericworker_cpp, self).__init__()
         self.component = component
         self['year'] = str(datetime.date.today().year)
         self['constructor_proxies'] = self.constructor_proxies()

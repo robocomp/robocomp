@@ -1,4 +1,5 @@
 from dsl_parsers.parsing_utils import communication_is_ice
+from templates.common.templatedict import TemplateDict
 
 STATEMACHINE_VISUAL_SOURCES_STR = """
 $ENV{ROBOCOMP}/classes/statemachinewidget/edge.cpp
@@ -23,9 +24,9 @@ include_directories(/usr/include/libxml2/)
 """
 
 
-class TemplateDict(dict):
+class src_CMakeLists_txt(TemplateDict):
     def __init__(self, component):
-        super(TemplateDict, self).__init__()
+        super().__init__()
         self.component = component
         self['component_name'] = self.component.name
         self['interface_sources'] = self.interface_sources()
