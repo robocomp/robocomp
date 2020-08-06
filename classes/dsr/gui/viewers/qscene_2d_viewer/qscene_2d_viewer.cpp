@@ -29,6 +29,7 @@ QScene2dViewer::QScene2dViewer(std::shared_ptr<DSR::DSRGraph> G_, QWidget *paren
 
 	connect(G.get(), &DSR::DSRGraph::del_edge_signal, this, &QScene2dViewer::del_edge_slot);
 	connect(G.get(), &DSR::DSRGraph::del_node_signal, this, &QScene2dViewer::del_node_slot);
+    qDebug()<<"***************END QScene2dViewer********************";
 }
 
 void QScene2dViewer::create_graph()
@@ -53,11 +54,11 @@ void QScene2dViewer::create_graph()
 
 void QScene2dViewer::add_or_assign_node_slot(const std::int32_t id, const std::string &type)
 {
-    qDebug()<<"*************************";
-    qDebug() << __FUNCTION__ ;
+//    qDebug()<<"*************************";
+//    qDebug() << __FUNCTION__ ;
     
     auto node = G->get_node(id);
-    qDebug() << QString::fromStdString(node.value().name()) << " " << node.value().id() ;
+//    qDebug() << QString::fromStdString(node.value().name()) << " " << node.value().id() ;
     
     if(node.has_value())
     { 
@@ -84,20 +85,20 @@ void QScene2dViewer::add_or_assign_node_slot(const std::int32_t id, const std::s
 }
 void QScene2dViewer::add_or_assign_edge_slot(const std::int32_t from, const std::int32_t to, const std::string& type)
 {
-    qDebug()<<__FUNCTION__;
+//    qDebug()<<__FUNCTION__;
     //check if new edge connected any orphan nodes
     std::map<int, std::string>::iterator it = orphand_nodes.find(to);
 
     if(it != orphand_nodes.end())
     {
-        qDebug()<<"ORPHAND NODE FOUND"<<to;
+//        qDebug()<<"ORPHAND NODE FOUND"<<to;
         orphand_nodes.erase(it);
         add_or_assign_node_slot(it->first, it->second);
     }
     std::string edge_key = std::to_string(from) + "_" + std::to_string(to);
     for (int node_id : edge_map[edge_key])
     {
-        qDebug() << "******UPDATE EDGE "<<from << " " << to <<" update node " << node_id;
+//        qDebug() << "******UPDATE EDGE "<<from << " " << to <<" update node " << node_id;
         update_scene_object_pose(node_id);
     }
 }
@@ -176,8 +177,8 @@ void QScene2dViewer::add_or_assign_rect(Node &node, std::string color, std::stri
 
 void QScene2dViewer::add_or_assign_plane(Node &node)
 {
-qDebug() << "********************************";
-qDebug() << __FUNCTION__ ;
+//qDebug() << "********************************";
+//qDebug() << __FUNCTION__ ;
     std::list<int> parent_list = get_parent_list(node.id());
     //check if this node should be painted
     if(not is_drawable(parent_list))
@@ -193,7 +194,7 @@ qDebug() << __FUNCTION__ ;
     int height = G->get_attrib_by_name<std::int32_t>(node, "height").value_or(0);
     int depth = G->get_attrib_by_name<std::int32_t>(node, "depth").value_or(0);
 
-    qDebug()<<"Draw plane"<<QString::fromStdString(node.name())<<"("<<width<<","<<height<<","<<depth<<")";
+//    qDebug()<<"Draw plane"<<QString::fromStdString(node.name())<<"("<<width<<","<<height<<","<<depth<<")";
      
     add_or_assign_rect(node, color, texture, width, height, depth);
 }
@@ -230,14 +231,14 @@ bool QScene2dViewer::check_RT_required_attributes(Node node)
     }
     catch(...){    }
     orphand_nodes[node.id()] = node.type();
-qDebug()<<"ORPHAN NODE"<<node.id()<<QString::fromStdString(node.type());
+//qDebug()<<"ORPHAN NODE"<<node.id()<<QString::fromStdString(node.type());
     return false;
 }
 
 void  QScene2dViewer::add_or_assign_mesh(Node &node)
 {   
-qDebug() << "********************************";
-qDebug() << __FUNCTION__ ;
+//qDebug() << "********************************";
+//qDebug() << __FUNCTION__ ;
     std::list<int> parent_list = get_parent_list(node.id());
     //check if this node should be painted
     if(not is_drawable(parent_list))
@@ -252,15 +253,15 @@ qDebug() << __FUNCTION__ ;
     int height = G->get_attrib_by_name<std::int32_t>(node, "scaley").value_or(0);
     int depth = G->get_attrib_by_name<std::int32_t>(node, "scalez").value_or(0);
 
-qDebug()<<"Draw mesh"<<QString::fromStdString(node.name())<<"("<<width<<","<<height<<","<<depth<<")"<<"color"<<QString::fromStdString(color);
+//qDebug()<<"Draw mesh"<<QString::fromStdString(node.name())<<"("<<width<<","<<height<<","<<depth<<")"<<"color"<<QString::fromStdString(color);
 
     add_or_assign_rect(node, color, "", width, height, depth);
 
 }
 
 void  QScene2dViewer::add_or_assign_person(Node &node){
-qDebug() << "********************************";
-qDebug() << __FUNCTION__ ;
+//qDebug() << "********************************";
+//qDebug() << __FUNCTION__ ;
     std::optional<QVec> pose;
     try{
         pose = innermodel->transformS6D("world", node.name());
@@ -390,7 +391,7 @@ void QScene2dViewer::update_edge_chain(std::list<int> parent_list)
 //update pose on edge changes
 void QScene2dViewer::update_scene_object_pose(std::int32_t node_id)
 {
-qDebug() << "*************UPDATE NODE ******" << node_id;
+//qDebug() << "*************UPDATE NODE ******" << node_id;
     auto node = G->get_node(node_id);
     if (node.has_value())
     {
@@ -408,16 +409,15 @@ qDebug() << "*************UPDATE NODE ******" << node_id;
         }
         else   
         {
-            qDebug()<<"Error gettion tranformation from person"<<QString::fromStdString(node.value().name())<<"to world";
+            qDebug()<<"Error getting transformation from person"<<QString::fromStdString(node.value().name())<<"to world";
         }
-
     }
 }
 
 void QScene2dViewer::del_node_slot(const std::int32_t id)
 {
-qDebug() << "********************************";
-qDebug() << __FUNCTION__ ; 
+//qDebug() << "********************************";
+//qDebug() << __FUNCTION__ ;
     //check if node has graphical representation
     if (scene_map.count(id) != 0)
     {
@@ -443,11 +443,11 @@ qDebug() << __FUNCTION__ ;
 }
 
 void QScene2dViewer::del_edge_slot(const std::int32_t from, const std::int32_t to, const std::string &edge_tag) {
-    qDebug() << "********************************";
-    qDebug() << __FUNCTION__;
+//    qDebug() << "********************************";
+//    qDebug() << __FUNCTION__;
 
     std::string edge_key = std::to_string(from) + "_" + std::to_string(to);
-    qDebug() << "******Delete EDGE " << QString::fromStdString(edge_key);
+//    qDebug() << "******Delete EDGE " << QString::fromStdString(edge_key);
     if (edge_map.find(edge_key) != edge_map.end()) {
         edge_map.erase(edge_key);
     }
