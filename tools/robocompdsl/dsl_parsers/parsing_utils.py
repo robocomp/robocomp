@@ -234,7 +234,7 @@ class IDSLPool(OrderedDict):
                              ALT_INTERFACES_DIR]
 
     def __init__(self, files, include_directories):
-        super(IDSLPool, self).__init__()
+        super().__init__()
         assert isinstance(files, list), "Files must be a list of strings"
         include_directories = include_directories + self.common_interface_dirs
         self.includeInPool(files, self, include_directories)

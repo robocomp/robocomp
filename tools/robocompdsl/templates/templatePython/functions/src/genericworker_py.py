@@ -57,7 +57,7 @@ def sm_${state_name}(self):
 
 class TemplateDict(dict):
     def __init__(self, component):
-        super(TemplateDict, self).__init__()
+        super().__init__()
         self.component = component
         self['year'] = str(datetime.date.today().year)
         self['load_slice_and_create_imports'] = self.load_slice_and_create_imports()

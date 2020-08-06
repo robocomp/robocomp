@@ -9,7 +9,7 @@ from . import componentfacade
 
 class CDSLJsonParser(DSLParserTemplate):
     def __init__(self, include_directories=[]):
-        super(CDSLJsonParser, self).__init__()
+        super().__init__()
         self._include_directories = include_directories
 
 

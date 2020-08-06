@@ -94,7 +94,7 @@ adapter.activate()
 
 class TemplateDict(dict):
     def __init__(self, component):
-        super(TemplateDict, self).__init__()
+        super().__init__()
         self.component = component
         self['year'] = str(datetime.date.today().year)
         self['import_qtwidgets'] = self.import_qtwidgets()
