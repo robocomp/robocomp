@@ -50,30 +50,39 @@ class RobocompdslTest(unittest.TestCase):
         # self.assertRaises(FileNotFoundError,robocompdsl.generate_idsl_file("NonExisting.idsl", "outputfile.ice", []))
         # os.remove("outputfile.ice")
 
-    def test_python_component_creation(self):
-        python_components = [
-            "test_agmTestCpp",
-            "test_allCommunicationsCpp",
-            "test_allCommunicationsPython",
-            "test_Cpp11",
-            "test_customStateMachineCpp",
-            "test_customStateMachinePython",
-            "test_defaultStateMachineCpp",
-            "test_defaultStateMachinePython",
-            "test_implementsPython",
-            "test_noSmdslTestCpp",
-            "test_noSmdslTestPython",
-            "test_publicationCpp",
-            "test_subscriptionCpp",
-            "test_publicationPython",
-            "test_subscriptionPython",
-            "test_subStatesTestCpp",
-            "test_subStatesTestPython",
-            "test_dsr2Cpp"
+
+    def test_python_components_creation(self):
+        testing_components = testing_components = [
+                "test_allCommunicationsPython",
+                "test_customStateMachinePython",
+                "test_defaultStateMachinePython",
+                "test_implementsPython",
+                "test_noSmdslTestPython",
+                "test_publicationPython",
+                "test_subscriptionPython",
+                "test_subStatesTestPython"
         ]
-        for python_component in python_components:
-            component_path = os.path.join(REF_COMPONENTS_PATH, python_component)
-            self.renew_temp_dir(python_component)
+        self.component_creation(testing_components)
+
+    def test_cpp_components_creation(self):
+        testing_components = [
+                "test_agmTestCpp",
+                "test_allCommunicationsCpp",
+                "test_Cpp11",
+                "test_customStateMachineCpp",
+                "test_defaultStateMachineCpp",
+                "test_noSmdslTestCpp",
+                "test_publicationCpp",
+                "test_subscriptionCpp",
+                "test_subStatesTestCpp",
+                "test_dsr2Cpp"
+        ]
+        self.component_creation(testing_components)
+
+    def component_creation(self, component_list):
+        for current_component in component_list:
+            component_path = os.path.join(REF_COMPONENTS_PATH, current_component)
+            self.renew_temp_dir(current_component)
             cdsl = os.path.join(component_path, 'testcomp.cdsl')
             cdsl = shutil.copy(cdsl, self.tempdir)
             smdsl = os.path.join(component_path, 'statemachine.smdsl')
