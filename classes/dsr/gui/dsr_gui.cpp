@@ -301,7 +301,7 @@ void DSRViewer::add_custom_widget_to_dock(QString name, QWidget* custom_view){
 		}
 		previous = dock;
 	}
-
+	docks[name]->raise();
 }
 
 
