@@ -2,7 +2,6 @@ import datetime
 import os
 
 from ..common.abstracttemplatesmanager import ComponentTemplatesManager
-from ..templateCPP.functions import servant
 from ..common.plugin_collection import PluginCollection
 from . import plugins
 

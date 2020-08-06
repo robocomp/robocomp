@@ -1,7 +1,7 @@
 import datetime
 
 from templates.common.templatedict import TemplateDict
-import templates.templateCPP.functions.function_utils as utils
+import templates.templateCPP.plugins.base.functions.function_utils as utils
 
 
 INTERFACE_METHOD_STR = """
