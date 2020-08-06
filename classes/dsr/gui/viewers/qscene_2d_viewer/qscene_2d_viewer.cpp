@@ -29,6 +29,7 @@ QScene2dViewer::QScene2dViewer(std::shared_ptr<DSR::DSRGraph> G_, QWidget *paren
 
 	connect(G.get(), &DSR::DSRGraph::del_edge_signal, this, &QScene2dViewer::del_edge_slot);
 	connect(G.get(), &DSR::DSRGraph::del_node_signal, this, &QScene2dViewer::del_node_slot);
+    qDebug()<<"***************END QScene2dViewer********************";
 }
 
 void QScene2dViewer::create_graph()
@@ -53,11 +54,11 @@ void QScene2dViewer::create_graph()
 
 void QScene2dViewer::add_or_assign_node_slot(const std::int32_t id, const std::string &type)
 {
-    qDebug()<<"*************************";
-    qDebug() << __FUNCTION__ ;
+//    qDebug()<<"*************************";
+//    qDebug() << __FUNCTION__ ;
     
     auto node = G->get_node(id);
-    qDebug() << QString::fromStdString(node.value().name()) << " " << node.value().id() ;
+//    qDebug() << QString::fromStdString(node.value().name()) << " " << node.value().id() ;
     
     if(node.has_value())
     { 
@@ -69,13 +70,13 @@ void QScene2dViewer::add_or_assign_node_slot(const std::int32_t id, const std::s
 
         if( type == "plane" )
             add_or_assign_plane(node.value());
-        if( type == "mesh")
+        else if( type == "mesh")
             add_or_assign_mesh(node.value());
-        if( type == "person")
+        else if( type == "person")
             add_or_assign_person(node.value());
-        if( type == "differentialrobot" or type == "omnirobot")
+        else if( type == "differentialrobot" or type == "omnirobot")
             add_or_assign_robot(node.value());
-        if( type == "laser")
+        else if( type == "laser")
             draw_laser();
         else //node does not have visual representation
             ignore_nodes.insert(id);
@@ -84,20 +85,20 @@ void QScene2dViewer::add_or_assign_node_slot(const std::int32_t id, const std::s
 }
 void QScene2dViewer::add_or_assign_edge_slot(const std::int32_t from, const std::int32_t to, const std::string& type)
 {
-    qDebug()<<__FUNCTION__;
+//    qDebug()<<__FUNCTION__;
     //check if new edge connected any orphan nodes
     std::map<int, std::string>::iterator it = orphand_nodes.find(to);
 
     if(it != orphand_nodes.end())
     {
-        qDebug()<<"ORPHAND NODE FOUND"<<to;
+//        qDebug()<<"ORPHAND NODE FOUND"<<to;
         orphand_nodes.erase(it);
         add_or_assign_node_slot(it->first, it->second);
     }
     std::string edge_key = std::to_string(from) + "_" + std::to_string(to);
     for (int node_id : edge_map[edge_key])
     {
-        qDebug() << "******UPDATE EDGE "<<from << " " << to <<" update node " << node_id;
+//        qDebug() << "******UPDATE EDGE "<<from << " " << to <<" update node " << node_id;
         update_scene_object_pose(node_id);
     }
 }
@@ -176,8 +177,8 @@ void QScene2dViewer::add_or_assign_rect(Node &node, std::string color, std::stri
 
 void QScene2dViewer::add_or_assign_plane(Node &node)
 {
-qDebug() << "********************************";
-qDebug() << __FUNCTION__ ;
+//qDebug() << "********************************";
+//qDebug() << __FUNCTION__ ;
     std::list<int> parent_list = get_parent_list(node.id());
     //check if this node should be painted
     if(not is_drawable(parent_list))
@@ -193,7 +194,7 @@ qDebug() << __FUNCTION__ ;
     int height = G->get_attrib_by_name<std::int32_t>(node, "height").value_or(0);
     int depth = G->get_attrib_by_name<std::int32_t>(node, "depth").value_or(0);
 
-    qDebug()<<"Draw plane"<<QString::fromStdString(node.name())<<"("<<width<<","<<height<<","<<depth<<")";
+//    qDebug()<<"Draw plane"<<QString::fromStdString(node.name())<<"("<<width<<","<<height<<","<<depth<<")";
      
     add_or_assign_rect(node, color, texture, width, height, depth);
 }
@@ -230,14 +231,14 @@ bool QScene2dViewer::check_RT_required_attributes(Node node)
     }
     catch(...){    }
     orphand_nodes[node.id()] = node.type();
-qDebug()<<"ORPHAN NODE"<<node.id()<<QString::fromStdString(node.type());
+//qDebug()<<"ORPHAN NODE"<<node.id()<<QString::fromStdString(node.type());
     return false;
 }
 
 void  QScene2dViewer::add_or_assign_mesh(Node &node)
 {   
-qDebug() << "********************************";
-qDebug() << __FUNCTION__ ;
+//qDebug() << "********************************";
+//qDebug() << __FUNCTION__ ;
     std::list<int> parent_list = get_parent_list(node.id());
     //check if this node should be painted
     if(not is_drawable(parent_list))
@@ -252,47 +253,46 @@ qDebug() << __FUNCTION__ ;
     int height = G->get_attrib_by_name<std::int32_t>(node, "scaley").value_or(0);
     int depth = G->get_attrib_by_name<std::int32_t>(node, "scalez").value_or(0);
 
-qDebug()<<"Draw mesh"<<QString::fromStdString(node.name())<<"("<<width<<","<<height<<","<<depth<<")"<<"color"<<QString::fromStdString(color);
+//qDebug()<<"Draw mesh"<<QString::fromStdString(node.name())<<"("<<width<<","<<height<<","<<depth<<")"<<"color"<<QString::fromStdString(color);
 
     add_or_assign_rect(node, color, "", width, height, depth);
 
 }
 
-void  QScene2dViewer::add_or_assign_person(Node &node)
-{   
-qDebug() << "********************************";
-qDebug() << __FUNCTION__ ;
+void  QScene2dViewer::add_or_assign_person(Node &node){
+//qDebug() << "********************************";
+//qDebug() << __FUNCTION__ ;
     std::optional<QVec> pose;
-    try
-    {
+    try{
         pose = innermodel->transformS6D("world", node.name());
     }catch(...){}
-    if (pose.has_value())
-    {
+    if (pose.has_value()){
 //pose.value().print(QString::fromStdString(node.name()));
 
         //check if person already exists
         QGraphicsPixmapItem * scenePixmap;
-        if (scene_map.find(node.id()) == scene_map.end())
-        {
+        if (scene_map.find(node.id()) == scene_map.end()){
             QPixmap pixmap = QPixmap::fromImage(QImage("/home/robocomp/robocomp/components/dsr-graph/etc/person.png")).scaled(600,300);
+            pixmap = pixmap.transformed(QTransform().scale(1, -1));
             scenePixmap = scene.addPixmap(pixmap);
+            scenePixmap->setTransformOriginPoint(scenePixmap->boundingRect().center());
             scenePixmap->setZValue(pose.value().y());
             scene_map[node.id()] = (QGraphicsItem*) scenePixmap;
             std::list<int> parent_list = get_parent_list(node.id());
             update_edge_chain(parent_list);  
         }
-        else
-        {
+        else{
             scenePixmap = (QGraphicsPixmapItem*) scene_map[node.id()];
-
         }
 //qDebug()<<"angle"<<pose.value().ry()<<qRadiansToDegrees(pose.value().ry());        
-        scenePixmap->setPos(pose.value().x() - 300, pose.value().z() - 150);
-        scenePixmap->setRotation(qRadiansToDegrees(pose.value().ry()));    
+        scenePixmap->setPos(pose.value().x() - scenePixmap->boundingRect().center().x(), pose.value().z() - scenePixmap->boundingRect().center().y());
+        scenePixmap->setRotation(-qRadiansToDegrees(pose.value().ry()));
+        //update person spaces
+        if(drawpeople_space) {
+            draw_person_space((QGraphicsItem *) scenePixmap, node);
+        }
     }
-    else
-    {
+    else{
         qDebug()<<"Error getting transformation from person"<<QString::fromStdString(node.name())<<"to world";
     }
 }
@@ -391,7 +391,7 @@ void QScene2dViewer::update_edge_chain(std::list<int> parent_list)
 //update pose on edge changes
 void QScene2dViewer::update_scene_object_pose(std::int32_t node_id)
 {
-qDebug() << "*************UPDATE NODE ******" << node_id;
+//qDebug() << "*************UPDATE NODE ******" << node_id;
     auto node = G->get_node(node_id);
     if (node.has_value())
     {
@@ -409,16 +409,15 @@ qDebug() << "*************UPDATE NODE ******" << node_id;
         }
         else   
         {
-            qDebug()<<"Error gettion tranformation from person"<<QString::fromStdString(node.value().name())<<"to world";
+            qDebug()<<"Error getting transformation from person"<<QString::fromStdString(node.value().name())<<"to world";
         }
-
     }
 }
 
 void QScene2dViewer::del_node_slot(const std::int32_t id)
 {
-qDebug() << "********************************";
-qDebug() << __FUNCTION__ ; 
+//qDebug() << "********************************";
+//qDebug() << __FUNCTION__ ;
     //check if node has graphical representation
     if (scene_map.count(id) != 0)
     {
@@ -444,11 +443,11 @@ qDebug() << __FUNCTION__ ;
 }
 
 void QScene2dViewer::del_edge_slot(const std::int32_t from, const std::int32_t to, const std::string &edge_tag) {
-    qDebug() << "********************************";
-    qDebug() << __FUNCTION__;
+//    qDebug() << "********************************";
+//    qDebug() << __FUNCTION__;
 
     std::string edge_key = std::to_string(from) + "_" + std::to_string(to);
-    qDebug() << "******Delete EDGE " << QString::fromStdString(edge_key);
+//    qDebug() << "******Delete EDGE " << QString::fromStdString(edge_key);
     if (edge_map.find(edge_key) != edge_map.end()) {
         edge_map.erase(edge_key);
     }
@@ -514,12 +513,15 @@ void QScene2dViewer::mousePressEvent(QMouseEvent *event){
 
 void QScene2dViewer::set_draw_laser(bool draw)
 {
-    this->drawLaser = draw;
+    this->drawlaser = draw;
 }
-
+void QScene2dViewer::set_draw_people_spaces(bool draw)
+{
+    this->drawpeople_space = draw;
+}
 void QScene2dViewer::draw_laser()
 {
-    if(not this->drawLaser)
+    if(not this->drawlaser)
         return;
     
     if(robot == nullptr) //robot is required to draw laser
@@ -542,7 +544,38 @@ void QScene2dViewer::draw_laser()
             QColor color("LightGreen");
             color.setAlpha(80);
             laser_polygon = scene.addPolygon(poly, QPen(color), QBrush(color));
-            laser_polygon->setZValue(-1);
+            laser_polygon->setZValue(-10);
         }
+    }
+}
+
+void QScene2dViewer::draw_person_space(QGraphicsItem *sceneItem,Node &node){
+
+    //remove previous spaces
+    for(auto child: sceneItem->childItems())
+    {
+        if((QGraphicsPolygonItem *)child != nullptr)
+            scene.removeItem(child);
+    }
+    draw_space("social", "Blue", -7, node,  sceneItem);
+    draw_space("personal", "Green", -6, node,  sceneItem);
+    draw_space("intimate", "Orange", -5, node,  sceneItem);
+}
+
+void QScene2dViewer::draw_space(std::string name, std::string color_, int zvalue, Node &node, QGraphicsItem* parent){
+    const auto x_pos = G->get_attrib_by_name<vector<float>>(node, name+"_x_pos");
+    const auto y_pos = G->get_attrib_by_name<vector<float>>(node, name+"_y_pos");
+    if (x_pos.has_value() and y_pos.has_value()) {
+        QPolygonF poly;
+        for (auto &&[x, y] : iter::zip(x_pos.value(), y_pos.value()))
+            poly << parent->mapFromScene(QPointF(x, y));
+
+        QColor color(color_.c_str());
+        color.setAlpha(75);
+
+        QGraphicsPolygonItem *space = new QGraphicsPolygonItem(poly, parent);
+        space->setBrush(QBrush(color));
+        space->setPen(QPen(color));
+        space->setZValue(zvalue);
     }
 }
