@@ -157,6 +157,11 @@ std::optional<uint32_t> DSRGraph::insert_node(Node& node)
             node.id(new_node_id);
             node.name(node.type() + "_" + std::to_string(new_node_id));
         }
+        else
+        {
+            qWarning() << __FILE__ << __FUNCTION__ << "Cannot connect to idserver. Aborting";
+            std::terminate();
+        }
     }
     catch(const std::exception& e)
     {

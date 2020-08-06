@@ -586,12 +586,13 @@ namespace DSR
                 return value->second;
             else
             {
-                if constexpr (std::is_same<Node,  T>::value)
-                    std::cout << "ERROR: " <<  __FUNCTION__ << ":" << __LINE__ << " "
-                              << "Attribute " << key << " not found in node  -> " << n.id() << std::endl;
-                if constexpr (std::is_same<Edge,  T>::value)
-                    std::cout << "ERROR: " <<  __FUNCTION__ << ":" << __LINE__ << " "
-                              << "Atribute " << key << " not found in edge -> " << n.to() << std::endl;
+//  COMENTADO POR PABLO PROVISIONALMENTE
+//                if constexpr (std::is_same<Node,  T>::value)
+//                    std::cout << "ERROR: " <<  __FUNCTION__ << ":" << __LINE__ << " "
+//                              << "Attribute " << key << " not found in node  -> " << n.id() << std::endl;
+//                if constexpr (std::is_same<Edge,  T>::value)
+//                    std::cout << "ERROR: " <<  __FUNCTION__ << ":" << __LINE__ << " "
+//                              << "Atribute " << key << " not found in edge -> " << n.to() << std::endl;
             }
             return {};
         }

@@ -539,8 +539,8 @@ void QScene2dViewer::draw_laser()
             for( auto &&[angle, dist] : iter::zip(lAngles.value(), lDists.value()))
                 poly << robot->mapToScene(QPointF(dist * sin(angle), dist * cos(angle)));
 
-            QColor color("Pink");
-            color.setAlpha(150);
+            QColor color("LightGreen");
+            color.setAlpha(80);
             laser_polygon = scene.addPolygon(poly, QPen(color), QBrush(color));
             laser_polygon->setZValue(-1);
         }
