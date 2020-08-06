@@ -69,13 +69,13 @@ void QScene2dViewer::add_or_assign_node_slot(const std::int32_t id, const std::s
 
         if( type == "plane" )
             add_or_assign_plane(node.value());
-        if( type == "mesh")
+        else if( type == "mesh")
             add_or_assign_mesh(node.value());
-        if( type == "person")
+        else if( type == "person")
             add_or_assign_person(node.value());
-        if( type == "differentialrobot" or type == "omnirobot")
+        else if( type == "differentialrobot" or type == "omnirobot")
             add_or_assign_robot(node.value());
-        if( type == "laser")
+        else if( type == "laser")
             draw_laser();
         else //node does not have visual representation
             ignore_nodes.insert(id);
@@ -258,41 +258,40 @@ qDebug()<<"Draw mesh"<<QString::fromStdString(node.name())<<"("<<width<<","<<hei
 
 }
 
-void  QScene2dViewer::add_or_assign_person(Node &node)
-{   
+void  QScene2dViewer::add_or_assign_person(Node &node){
 qDebug() << "********************************";
 qDebug() << __FUNCTION__ ;
     std::optional<QVec> pose;
-    try
-    {
+    try{
         pose = innermodel->transformS6D("world", node.name());
     }catch(...){}
-    if (pose.has_value())
-    {
+    if (pose.has_value()){
 //pose.value().print(QString::fromStdString(node.name()));
 
         //check if person already exists
         QGraphicsPixmapItem * scenePixmap;
-        if (scene_map.find(node.id()) == scene_map.end())
-        {
+        if (scene_map.find(node.id()) == scene_map.end()){
             QPixmap pixmap = QPixmap::fromImage(QImage("/home/robocomp/robocomp/components/dsr-graph/etc/person.png")).scaled(600,300);
+            pixmap = pixmap.transformed(QTransform().scale(1, -1));
             scenePixmap = scene.addPixmap(pixmap);
+            scenePixmap->setTransformOriginPoint(scenePixmap->boundingRect().center());
             scenePixmap->setZValue(pose.value().y());
             scene_map[node.id()] = (QGraphicsItem*) scenePixmap;
             std::list<int> parent_list = get_parent_list(node.id());
             update_edge_chain(parent_list);  
         }
-        else
-        {
+        else{
             scenePixmap = (QGraphicsPixmapItem*) scene_map[node.id()];
-
         }
 //qDebug()<<"angle"<<pose.value().ry()<<qRadiansToDegrees(pose.value().ry());        
-        scenePixmap->setPos(pose.value().x() - 300, pose.value().z() - 150);
-        scenePixmap->setRotation(qRadiansToDegrees(pose.value().ry()));    
+        scenePixmap->setPos(pose.value().x() - scenePixmap->boundingRect().center().x(), pose.value().z() - scenePixmap->boundingRect().center().y());
+        scenePixmap->setRotation(-qRadiansToDegrees(pose.value().ry()));
+        //update person spaces
+        if(drawpeople_space) {
+            draw_person_space((QGraphicsItem *) scenePixmap, node);
+        }
     }
-    else
-    {
+    else{
         qDebug()<<"Error getting transformation from person"<<QString::fromStdString(node.name())<<"to world";
     }
 }
@@ -514,12 +513,15 @@ void QScene2dViewer::mousePressEvent(QMouseEvent *event){
 
 void QScene2dViewer::set_draw_laser(bool draw)
 {
-    this->drawLaser = draw;
+    this->drawlaser = draw;
 }
-
+void QScene2dViewer::set_draw_people_spaces(bool draw)
+{
+    this->drawpeople_space = draw;
+}
 void QScene2dViewer::draw_laser()
 {
-    if(not this->drawLaser)
+    if(not this->drawlaser)
         return;
     
     if(robot == nullptr) //robot is required to draw laser
@@ -542,7 +544,38 @@ void QScene2dViewer::draw_laser()
             QColor color("Pink");
             color.setAlpha(150);
             laser_polygon = scene.addPolygon(poly, QPen(color), QBrush(color));
-            laser_polygon->setZValue(-1);
+            laser_polygon->setZValue(-10);
         }
+    }
+}
+
+void QScene2dViewer::draw_person_space(QGraphicsItem *sceneItem,Node &node){
+
+    //remove previous spaces
+    for(auto child: sceneItem->childItems())
+    {
+        if((QGraphicsPolygonItem *)child != nullptr)
+            scene.removeItem(child);
+    }
+    draw_space("social", "Blue", -7, node,  sceneItem);
+    draw_space("personal", "Green", -6, node,  sceneItem);
+    draw_space("intimate", "Orange", -5, node,  sceneItem);
+}
+
+void QScene2dViewer::draw_space(std::string name, std::string color_, int zvalue, Node &node, QGraphicsItem* parent){
+    const auto x_pos = G->get_attrib_by_name<vector<float>>(node, name+"_x_pos");
+    const auto y_pos = G->get_attrib_by_name<vector<float>>(node, name+"_y_pos");
+    if (x_pos.has_value() and y_pos.has_value()) {
+        QPolygonF poly;
+        for (auto &&[x, y] : iter::zip(x_pos.value(), y_pos.value()))
+            poly << parent->mapFromScene(QPointF(x, y));
+
+        QColor color(color_.c_str());
+        color.setAlpha(75);
+
+        QGraphicsPolygonItem *space = new QGraphicsPolygonItem(poly, parent);
+        space->setBrush(QBrush(color));
+        space->setPen(QPen(color));
+        space->setZValue(zvalue);
     }
 }
