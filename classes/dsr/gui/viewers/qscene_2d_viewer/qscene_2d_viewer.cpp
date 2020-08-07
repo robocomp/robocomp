@@ -322,7 +322,8 @@ void QScene2dViewer::add_or_assign_robot(Node &node)
             brush.setColor(QColor("DarkRed"));
             brush.setStyle(Qt::SolidPattern);
             scenePolygon = scene.addPolygon(poly2, QPen(QColor("DarkRed")), brush); 
-            scenePolygon->setZValue(pose.value().y());
+            //scenePolygon->setZValue(pose.value().y());
+            scenePolygon->setZValue(5);
             robot = (QGraphicsItem*) scenePolygon;
             scene_map[node.id()] = (QGraphicsItem*) scenePolygon;
             std::list<int> parent_list = get_parent_list(node.id());
@@ -542,9 +543,9 @@ void QScene2dViewer::draw_laser()
                 poly << robot->mapToScene(QPointF(dist * sin(angle), dist * cos(angle)));
 
             QColor color("LightGreen");
-            color.setAlpha(80);
+            color.setAlpha(60);
             laser_polygon = scene.addPolygon(poly, QPen(color), QBrush(color));
-            laser_polygon->setZValue(-10);
+            laser_polygon->setZValue(3);
         }
     }
 }
