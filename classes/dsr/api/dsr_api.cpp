@@ -432,14 +432,22 @@ void DSRGraph::insert_or_assign_edge_RT(Node& n, int to, std::vector<float>&& tr
             n.agent_id(agent_id);
             to_n = get_(to);
 
-            if (auto x = get_attrib_by_name<int>(to_n.value(), "parent"); x.has_value() and x.value() != n.id()) {
-                bool res1 = modify_attrib_local(to_n.value(), "parent", n.id());
-                if (!res1) (void) add_attrib_local(to_n.value(), "parent", n.id());
+            if (auto x = get_attrib_by_name<int>(to_n.value(), "parent"); x.has_value()) {
+                if (x.value() != n.id()) {
+                    modify_attrib_local(to_n.value(), "parent", n.id());
+                    no_send = false;
+                }
+            } else {
+                add_attrib_local(to_n.value(), "parent", n.id());
                 no_send = false;
             }
-            if (auto x = get_attrib_by_name<int>(to_n.value(), "level"); x.has_value() and x.value() != get_node_level(n).value() + 1) {
-                bool res2 = modify_attrib_local(to_n.value(), "level",  get_node_level(n).value() + 1 );
-                if (!res2) (void) add_attrib_local(to_n.value(), "level",  get_node_level(n).value() + 1 );
+            if (auto x = get_attrib_by_name<int>(to_n.value(), "level"); x.has_value()) {
+                if(x.value() != get_node_level(n).value() + 1) {
+                    modify_attrib_local(to_n.value(), "level", get_node_level(n).value() + 1);
+                    no_send = false;
+                }
+            } else {
+                add_attrib_local(to_n.value(), "level",  get_node_level(n).value() + 1 );
                 no_send = false;
             }
 
@@ -497,14 +505,22 @@ void DSRGraph::insert_or_assign_edge_RT(Node& n, int to, const std::vector<float
             n.agent_id(agent_id);
             to_n = get_(to);
 
-            if (auto x = get_attrib_by_name<int>(to_n.value(), "parent"); x.has_value() and x.value() != n.id()) {
-                bool res1 = modify_attrib_local(to_n.value(), "parent", n.id());
-                if (!res1) (void) add_attrib_local(to_n.value(), "parent", n.id());
+            if (auto x = get_attrib_by_name<int>(to_n.value(), "parent"); x.has_value()) {
+                if (x.value() != n.id()) {
+                    modify_attrib_local(to_n.value(), "parent", n.id());
+                    no_send = false;
+                }
+            } else {
+                add_attrib_local(to_n.value(), "parent", n.id());
                 no_send = false;
             }
-            if (auto x = get_attrib_by_name<int>(to_n.value(), "level"); x.has_value() and x.value() != get_node_level(n).value() + 1) {
-                bool res2 = modify_attrib_local(to_n.value(), "level",  get_node_level(n).value() + 1 );
-                if (!res2) (void) add_attrib_local(to_n.value(), "level",  get_node_level(n).value() + 1 );
+            if (auto x = get_attrib_by_name<int>(to_n.value(), "level"); x.has_value()) {
+                if(x.value() != get_node_level(n).value() + 1) {
+                    modify_attrib_local(to_n.value(), "level", get_node_level(n).value() + 1);
+                    no_send = false;
+                }
+            } else {
+                add_attrib_local(to_n.value(), "level",  get_node_level(n).value() + 1 );
                 no_send = false;
             }
 
