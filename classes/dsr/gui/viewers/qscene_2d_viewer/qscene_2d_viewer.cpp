@@ -229,7 +229,7 @@ bool QScene2dViewer::check_RT_required_attributes(Node node)
         if(level.has_value() and parent.has_value() and pose.has_value())
             return true;
     }
-    catch(const std::exception &e){  std::cout << e.what() << std::endl; }
+    catch(...){ }
     orphand_nodes[node.id()] = node.type();
 //qDebug()<<"ORPHAN NODE"<<node.id()<<QString::fromStdString(node.type());
     return false;
