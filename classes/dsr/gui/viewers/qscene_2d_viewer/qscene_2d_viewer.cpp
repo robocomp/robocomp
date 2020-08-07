@@ -92,8 +92,8 @@ void QScene2dViewer::add_or_assign_edge_slot(const std::int32_t from, const std:
     if(it != orphand_nodes.end())
     {
 //        qDebug()<<"ORPHAND NODE FOUND"<<to;
-        orphand_nodes.erase(it);
         add_or_assign_node_slot(it->first, it->second);
+        it = orphand_nodes.erase(it);
     }
     std::string edge_key = std::to_string(from) + "_" + std::to_string(to);
     for (int node_id : edge_map[edge_key])
@@ -229,7 +229,7 @@ bool QScene2dViewer::check_RT_required_attributes(Node node)
         if(level.has_value() and parent.has_value() and pose.has_value())
             return true;
     }
-    catch(...){    }
+    catch(...){ }
     orphand_nodes[node.id()] = node.type();
 //qDebug()<<"ORPHAN NODE"<<node.id()<<QString::fromStdString(node.type());
     return false;

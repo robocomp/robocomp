@@ -432,28 +432,45 @@ void DSRGraph::insert_or_assign_edge_RT(Node& n, int to, std::vector<float>&& tr
             n.agent_id(agent_id);
             to_n = get_(to);
 
-            if (auto x = get_attrib_by_name<int>(to_n.value(), "parent"); x.has_value() and x.value() != n.id()) {
-                bool res1 = modify_attrib_local(to_n.value(), "parent", n.id());
-                if (!res1) (void) add_attrib_local(to_n.value(), "parent", n.id());
+            if (auto x = get_attrib_by_name<int>(to_n.value(), "parent"); x.has_value()) {
+                if (x.value() != n.id()) {
+                    modify_attrib_local(to_n.value(), "parent", n.id());
+                    no_send = false;
+                }
+            } else {
+                add_attrib_local(to_n.value(), "parent", n.id());
                 no_send = false;
             }
-            if (auto x = get_attrib_by_name<int>(to_n.value(), "level"); x.has_value() and x.value() != get_node_level(n).value() + 1) {
-                bool res2 = modify_attrib_local(to_n.value(), "level",  get_node_level(n).value() + 1 );
-                if (!res2) (void) add_attrib_local(to_n.value(), "level",  get_node_level(n).value() + 1 );
+            if (auto x = get_attrib_by_name<int>(to_n.value(), "level"); x.has_value()) {
+                if(x.value() != get_node_level(n).value() + 1) {
+                    modify_attrib_local(to_n.value(), "level", get_node_level(n).value() + 1);
+                    no_send = false;
+                }
+            } else {
+                add_attrib_local(to_n.value(), "level",  get_node_level(n).value() + 1 );
                 no_send = false;
             }
 
 
             auto [r1, aw1] = insert_or_assign_node_(n);
-            auto [r2, aw2] = insert_or_assign_node_(to_n.value());
-
-            if(r1 and r2) {
-                r = true;
+            if (r1) {
                 awor1 = std::move(aw1);
-                awor2 = std::move(aw2);
+                r = true;
+            } else {
+                throw std::runtime_error(
+                        "Could not insert Node " + std::to_string(n.id()) + " in G in insert_or_assign_edge_RT() " +
+                        __FILE__ + " " + __FUNCTION__ + " " + std::to_string(__LINE__));
             }
-            else
-                throw std::runtime_error("Could not insert Node " + std::to_string(n.id()) + " in G in insert_or_assign_edge_RT() " +  __FILE__ + " " + __FUNCTION__ + " " + std::to_string(__LINE__));
+
+            if(!no_send) {
+                auto[r2, aw2] = insert_or_assign_node_(to_n.value());
+                if (r2)  { awor2 = std::move(aw2); }
+                else {
+                    throw std::runtime_error("Could not insert Node " + std::to_string(to_n.value().id()) +
+                                             " in G in insert_or_assign_edge_RT() " + __FILE__ + " " + __FUNCTION__ +
+                                             " " + std::to_string(__LINE__));
+                }
+            }
         } else
             throw std::runtime_error("Destination node " + std::to_string(n.id()) + " not found in G in insert_or_assign_edge_RT() "  +  __FILE__ + " " + __FUNCTION__ + " " + std::to_string(__LINE__));
     }
@@ -488,28 +505,45 @@ void DSRGraph::insert_or_assign_edge_RT(Node& n, int to, const std::vector<float
             n.agent_id(agent_id);
             to_n = get_(to);
 
-            if (auto x = get_attrib_by_name<int>(to_n.value(), "parent"); x.has_value() and x.value() != n.id()) {
-                bool res1 = modify_attrib_local(to_n.value(), "parent", n.id());
-                if (!res1) (void) add_attrib_local(to_n.value(), "parent", n.id());
+            if (auto x = get_attrib_by_name<int>(to_n.value(), "parent"); x.has_value()) {
+                if (x.value() != n.id()) {
+                    modify_attrib_local(to_n.value(), "parent", n.id());
+                    no_send = false;
+                }
+            } else {
+                add_attrib_local(to_n.value(), "parent", n.id());
                 no_send = false;
             }
-            if (auto x = get_attrib_by_name<int>(to_n.value(), "level"); x.has_value() and x.value() != get_node_level(n).value() + 1) {
-                bool res2 = modify_attrib_local(to_n.value(), "level",  get_node_level(n).value() + 1 );
-                if (!res2) (void) add_attrib_local(to_n.value(), "level",  get_node_level(n).value() + 1 );
+            if (auto x = get_attrib_by_name<int>(to_n.value(), "level"); x.has_value()) {
+                if(x.value() != get_node_level(n).value() + 1) {
+                    modify_attrib_local(to_n.value(), "level", get_node_level(n).value() + 1);
+                    no_send = false;
+                }
+            } else {
+                add_attrib_local(to_n.value(), "level",  get_node_level(n).value() + 1 );
                 no_send = false;
             }
 
 
             auto [r1, aw1] = insert_or_assign_node_(n);
-            auto [r2, aw2] = insert_or_assign_node_(to_n.value());
-
-            if(r1 and r2) {
-                r = true;
+            if (r1) {
                 awor1 = std::move(aw1);
-                awor2 = std::move(aw2);
+                r = true;
+            } else {
+                throw std::runtime_error(
+                        "Could not insert Node " + std::to_string(n.id()) + " in G in insert_or_assign_edge_RT() " +
+                        __FILE__ + " " + __FUNCTION__ + " " + std::to_string(__LINE__));
             }
-            else
-                throw std::runtime_error("Could not insert Node " + std::to_string(n.id()) + " in G in insert_or_assign_edge_RT() " +  __FILE__ + " " + __FUNCTION__ + " " + std::to_string(__LINE__));
+
+            if(!no_send) {
+                auto[r2, aw2] = insert_or_assign_node_(to_n.value());
+                if (r2)  { awor2 = std::move(aw2); }
+                else {
+                    throw std::runtime_error("Could not insert Node " + std::to_string(to_n.value().id()) +
+                                             " in G in insert_or_assign_edge_RT() " + __FILE__ + " " + __FUNCTION__ +
+                                             " " + std::to_string(__LINE__));
+                }
+            }
         } else
             throw std::runtime_error("Destination node " + std::to_string(n.id()) + " not found in G in insert_or_assign_edge_RT() "  +  __FILE__ + " " + __FUNCTION__ + " " + std::to_string(__LINE__));
     }
@@ -1177,7 +1211,7 @@ bool DSRGraph::fullgraph_request_thread()
 
     std::this_thread::sleep_for(300ms);   // NEEDED ?
 
-    qDebug()  << " Requesting the complete graph " ;
+    std::cout  << " Requesting the complete graph " << std::endl;
     GraphRequest gr;
     gr.from(agent_name);
     dsrpub_graph_request.write(&gr);
@@ -1186,9 +1220,11 @@ bool DSRGraph::fullgraph_request_thread()
     std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
     while (!sync and !timeout) 
     {
+
         std::this_thread::sleep_for(500ms);
         std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
         timeout = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() > TIMEOUT*3;
+        std::cout  << " Waiting for the graph ... seconds to timeout [" << std::ceil(std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count()/10)/100.0  << "/"<< TIMEOUT/1000*3<<"] " << std::endl;
     }
     eprosima::fastrtps::Domain::removeSubscriber(dsrsub_request_answer.getSubscriber());
     return sync;
