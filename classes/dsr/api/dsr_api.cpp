@@ -445,15 +445,24 @@ void DSRGraph::insert_or_assign_edge_RT(Node& n, int to, std::vector<float>&& tr
 
 
             auto [r1, aw1] = insert_or_assign_node_(n);
-            auto [r2, aw2] = insert_or_assign_node_(to_n.value());
-
-            if(r1 and r2) {
-                r = true;
+            if (r1) {
                 awor1 = std::move(aw1);
-                awor2 = std::move(aw2);
+                r = true;
+            } else {
+                throw std::runtime_error(
+                        "Could not insert Node " + std::to_string(n.id()) + " in G in insert_or_assign_edge_RT() " +
+                        __FILE__ + " " + __FUNCTION__ + " " + std::to_string(__LINE__));
             }
-            else
-                throw std::runtime_error("Could not insert Node " + std::to_string(n.id()) + " in G in insert_or_assign_edge_RT() " +  __FILE__ + " " + __FUNCTION__ + " " + std::to_string(__LINE__));
+
+            if(!no_send) {
+                auto[r2, aw2] = insert_or_assign_node_(to_n.value());
+                if (r2)  { awor2 = std::move(aw2); }
+                else {
+                    throw std::runtime_error("Could not insert Node " + std::to_string(to_n.value().id()) +
+                                             " in G in insert_or_assign_edge_RT() " + __FILE__ + " " + __FUNCTION__ +
+                                             " " + std::to_string(__LINE__));
+                }
+            }
         } else
             throw std::runtime_error("Destination node " + std::to_string(n.id()) + " not found in G in insert_or_assign_edge_RT() "  +  __FILE__ + " " + __FUNCTION__ + " " + std::to_string(__LINE__));
     }
@@ -501,15 +510,24 @@ void DSRGraph::insert_or_assign_edge_RT(Node& n, int to, const std::vector<float
 
 
             auto [r1, aw1] = insert_or_assign_node_(n);
-            auto [r2, aw2] = insert_or_assign_node_(to_n.value());
-
-            if(r1 and r2) {
-                r = true;
+            if (r1) {
                 awor1 = std::move(aw1);
-                awor2 = std::move(aw2);
+                r = true;
+            } else {
+                throw std::runtime_error(
+                        "Could not insert Node " + std::to_string(n.id()) + " in G in insert_or_assign_edge_RT() " +
+                        __FILE__ + " " + __FUNCTION__ + " " + std::to_string(__LINE__));
             }
-            else
-                throw std::runtime_error("Could not insert Node " + std::to_string(n.id()) + " in G in insert_or_assign_edge_RT() " +  __FILE__ + " " + __FUNCTION__ + " " + std::to_string(__LINE__));
+
+            if(!no_send) {
+                auto[r2, aw2] = insert_or_assign_node_(to_n.value());
+                if (r2)  { awor2 = std::move(aw2); }
+                else {
+                    throw std::runtime_error("Could not insert Node " + std::to_string(to_n.value().id()) +
+                                             " in G in insert_or_assign_edge_RT() " + __FILE__ + " " + __FUNCTION__ +
+                                             " " + std::to_string(__LINE__));
+                }
+            }
         } else
             throw std::runtime_error("Destination node " + std::to_string(n.id()) + " not found in G in insert_or_assign_edge_RT() "  +  __FILE__ + " " + __FUNCTION__ + " " + std::to_string(__LINE__));
     }
