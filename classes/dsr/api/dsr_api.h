@@ -27,7 +27,6 @@
 #include "../core/rtps/dsrpublisher.h"
 #include "../core/rtps/dsrsubscriber.h"
 #include "../core/topics/IDLGraphPubSubTypes.h"
-//#include "vertex.h"
 #include "dsr_inner_api.h"
 #include "dsr_utils.h"
 
@@ -36,18 +35,13 @@
 #define NO_PARENT -1
 #define TIMEOUT 5000
 
-// Overload pattern used inprintVisitor
-//template<class... Ts> struct overload : Ts... { using Ts::operator()...; };
-//template<class... Ts> overload(Ts...) -> overload<Ts...>;
 
 namespace DSR
 {
     using N = Node;
     using Nodes = ormap<int, aworset<N,  int >, int>;
-    //using MTypes = std::variant<std::string, std::int32_t, float , std::vector<float>, bool, RMat::RTMat>;
     using IDType = std::int32_t;
-    //using AttribsMap = std::unordered_map<std::string, MTypes>;
-    //using VertexPtr = std::shared_ptr<Vertex>;
+
     struct pair_hash
     {
         template <class T1, class T2>
@@ -127,9 +121,7 @@ namespace DSR
         //////////////////////////////////////////////////////
 
         // Utils
-        //void read_from_file(const std::string &xml_file_path);
         bool empty(const int &id);
-        //[[deprecated]] std::tuple<std::string, std::string, int> nativetype_to_string(const MTypes &t); //Used by viewer
         template <typename Ta, typename = std::enable_if_t<allowed_types<Ta>>>
         std::tuple<std::string, std::string, int> nativetype_to_string(const Ta& t) {
             if constexpr (std::is_same<std::remove_cv_t<std::remove_reference_t<Ta>>, std::string>::value)
