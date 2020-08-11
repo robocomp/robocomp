@@ -700,7 +700,22 @@ std::optional<RTMat> DSRGraph::get_edge_RT_as_RTMat(Edge &&edge)
         //throw std::runtime_error("Could not find required attributes in node " + edge.type() + " " + std::to_string(edge.to()) + " in get_edge_RT as_RTMat() "  +  __FILE__ + " " + __FUNCTION__ + " " + std::to_string(__LINE__));
         return {};
  }
-     
+
+std::optional<QMat> DSRGraph::get_RT_pose_from_parent(const Node &n) {
+    auto p = get_parent_node(n);
+    if (p.has_value()) { ;
+        auto edges = p->fano();
+        EdgeKey key;  key.to(n.id());  key.type("RT");
+        auto res = edges.find(key);
+        if (res != edges.end()) {
+            auto pose = get_attrib_by_name<std::vector<float>>(res->second, "pose");
+            if (pose.has_value()) {
+                QMat{pose.value()};
+            }
+        }
+    }
+    return {};
+}
 
 /////////////////////////////////////////////////
 ///// Utils
