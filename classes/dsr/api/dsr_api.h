@@ -495,9 +495,9 @@ namespace DSR
         /////////////////////////////////////////////////
         void insert_or_assign_edge_RT(Node& n, int to, const std::vector<float>& trans, const std::vector<float>& rot_euler);
         void insert_or_assign_edge_RT(Node& n, int to, std::vector<float>&& trans, std::vector<float>&& rot_euler);
-        Edge get_edge_RT(const Node &n, int to);
-        RTMat get_edge_RT_as_RTMat(const Edge &edge);
-        RTMat get_edge_RT_as_RTMat(Edge &&edge);
+        std::optional<Edge> get_edge_RT(const Node &n, int to);
+        std::optional<RTMat> get_edge_RT_as_RTMat(const Edge &edge);
+        std::optional<RTMat> get_edge_RT_as_RTMat(Edge &&edge);
         //bool insert_or_assign_edge(Node& n, const Edge& e);
         //void insert_or_assign_edge_RT(int from, int to, std::vector<float>&& trans, std::vector<float>&& rot_euler);
         //void insert_or_assign_edge_RT(std::string from, std::string to, std::vector<float>&& trans, std::vector<float>&& rot_euler);

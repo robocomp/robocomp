@@ -30,8 +30,8 @@ std::optional<InnerAPI::Lists> InnerAPI::setLists(const std::string &destId, con
 		auto p_node = G->get_parent_node(a);
       	if( not p_node.has_value())
 			break;
-		auto edge_rt = G->get_edge_RT(p_node.value(), a.id());
-		auto rtmat = G->get_edge_RT_as_RTMat(edge_rt);
+		auto edge_rt = G->get_edge_RT(p_node.value(), a.id()).value();
+		auto rtmat = G->get_edge_RT_as_RTMat(edge_rt).value();
 		listA.emplace_back(std::move(rtmat));   // the downwards RT link from parent to a
         a = p_node.value();
 	}
@@ -41,8 +41,8 @@ std::optional<InnerAPI::Lists> InnerAPI::setLists(const std::string &destId, con
 		auto p_node = G->get_parent_node(b);
 		if(not p_node.has_value())
 			break;
-		auto edge_rt = G->get_edge_RT(p_node.value(), b.id());
-		auto rtmat = G->get_edge_RT_as_RTMat(edge_rt);
+		auto edge_rt = G->get_edge_RT(p_node.value(), b.id()).value();
+		auto rtmat = G->get_edge_RT_as_RTMat(edge_rt).value();
         listB.emplace_front(std::move(rtmat));
 		b = p_node.value();
 	}	
@@ -53,8 +53,8 @@ std::optional<InnerAPI::Lists> InnerAPI::setLists(const std::string &destId, con
 		if(p.has_value() and q.has_value())
 		{  
 //qDebug() << "listas A&B" << p.value().id() << q.value().id();
-	  		listA.push_back(G->get_edge_RT_as_RTMat(G->get_edge_RT(p.value(), a.id())));
-	  		listB.push_front(G->get_edge_RT_as_RTMat(G->get_edge_RT(p.value(), b.id())));
+	  		listA.push_back(G->get_edge_RT_as_RTMat(G->get_edge_RT(p.value(), a.id()).value()).value());
+	  		listB.push_front(G->get_edge_RT_as_RTMat(G->get_edge_RT(p.value(), b.id()).value()).value());
 			a = p.value();
 			b = q.value();
 		}

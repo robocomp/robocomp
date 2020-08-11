@@ -667,7 +667,7 @@ std::optional<std::map<EdgeKey, Edge>> DSRGraph::get_edges(int id)
     return n.has_value() ?  std::optional<std::map<EdgeKey, Edge>>(n.value().fano()) : std::nullopt;
 };
 
-Edge DSRGraph::get_edge_RT(const Node &n, int to)
+std::optional<Edge> DSRGraph::get_edge_RT(const Node &n, int to)
 {
     auto edges = n.fano();
     EdgeKey key; key.to(to); key.type("RT");
@@ -675,30 +675,31 @@ Edge DSRGraph::get_edge_RT(const Node &n, int to)
     if (res != edges.end())
         return res->second;
     else
-        throw std::runtime_error("Could not find edge " + std::to_string(key.to()) + " in node " + std::to_string(n.id()) + " in edge_to_RTMat() " +  __FILE__ + " " + __FUNCTION__ + " " + std::to_string(__LINE__));
-    
+        //throw std::runtime_error("Could not find edge " + std::to_string(key.to()) + " in node " + std::to_string(n.id()) + " in edge_to_RTMat() " +  __FILE__ + " " + __FUNCTION__ + " " + std::to_string(__LINE__));
+        return {};
 }
 
-RTMat DSRGraph::get_edge_RT_as_RTMat(const Edge &edge)
+std::optional<RTMat> DSRGraph::get_edge_RT_as_RTMat(const Edge &edge)
 {
     auto r = get_attrib_by_name<std::vector<float>>(edge, "rotation_euler_xyz");
     auto t = get_attrib_by_name<std::vector<float>>(edge, "translation");
     if( r.has_value() and t.has_value() )
         return RTMat { r.value()[0], r.value()[1], r.value()[2], t.value()[0], t.value()[1], t.value()[2] } ;
     else
-        throw std::runtime_error("Could not find required attributes in node " + edge.type() + " " + std::to_string(edge.to()) + " in get_edge_RT as_RTMat() " +  __FILE__ + " " + __FUNCTION__ + " " + std::to_string(__LINE__));
-   
+        //throw std::runtime_error("Could not find required attributes in node " + edge.type() + " " + std::to_string(edge.to()) + " in get_edge_RT as_RTMat() " +  __FILE__ + " " + __FUNCTION__ + " " + std::to_string(__LINE__));
+        return {};
 }
 
- RTMat DSRGraph::get_edge_RT_as_RTMat(Edge &&edge)
+std::optional<RTMat> DSRGraph::get_edge_RT_as_RTMat(Edge &&edge)
  {
     auto r = get_attrib_by_name<std::vector<float>>(edge, "rotation_euler_xyz");
     auto t = get_attrib_by_name<std::vector<float>>(edge, "translation");
     if( r.has_value() and t.has_value() )
         return RTMat { r.value()[0], r.value()[1], r.value()[2], t.value()[0], t.value()[1], t.value()[2] } ;
     else
-        throw std::runtime_error("Could not find required attributes in node " + edge.type() + " " + std::to_string(edge.to()) + " in get_edge_RT as_RTMat() "  +  __FILE__ + " " + __FUNCTION__ + " " + std::to_string(__LINE__));
- } 
+        //throw std::runtime_error("Could not find required attributes in node " + edge.type() + " " + std::to_string(edge.to()) + " in get_edge_RT as_RTMat() "  +  __FILE__ + " " + __FUNCTION__ + " " + std::to_string(__LINE__));
+        return {};
+ }
      
 
 /////////////////////////////////////////////////
