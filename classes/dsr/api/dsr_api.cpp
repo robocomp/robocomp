@@ -1222,12 +1222,14 @@ bool DSRGraph::fullgraph_request_thread()
     while (!sync and !timeout) 
     {
 
-        std::this_thread::sleep_for(500ms);
+        std::this_thread::sleep_for(1000ms);
         std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
         timeout = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() > TIMEOUT*3;
         std::cout  << " Waiting for the graph ... seconds to timeout [" << std::ceil(std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count()/10)/100.0  << "/"<< TIMEOUT/1000*3<<"] " << std::endl;
+        dsrpub_graph_request.write(&gr);
     }
     eprosima::fastrtps::Domain::removeSubscriber(dsrsub_request_answer.getSubscriber());
+
     return sync;
 }
 

@@ -95,7 +95,7 @@ public slots:
             try {
                 std::optional<Node> node = graph->get_node(from);
                 if (node.has_value()) {
-                    auto mat = graph->get_edge_RT_as_RTMat(graph->get_edge_RT(node.value(), to));
+                    auto mat = graph->get_edge_RT_as_RTMat(graph->get_edge_RT(node.value(), to).value()).value();
                     // draw RT values
                     for (auto i : iter::range(mat.nRows()))
                         for (auto j : iter::range(mat.nCols()))

@@ -224,7 +224,7 @@ void OSG3dViewer::add_or_assign_edge_slot(const Node &from, const Node& to)
     {
         auto rtmat = G->get_edge_RT_as_RTMat(edge.value());
         // rtmat.print("add_or_assign_edge_slot -> rtmat");
-        auto mat = QMatToOSGMat4(rtmat);
+        auto mat = QMatToOSGMat4(rtmat.value());
 
         // Check if parent exists in osg map
         if (auto osg_parent = osg_map.find(std::make_tuple(from.id(), from.id())); osg_parent != osg_map.end()) 
