@@ -701,17 +701,18 @@ std::optional<RTMat> DSRGraph::get_edge_RT_as_RTMat(Edge &&edge)
         return {};
  }
 
-std::optional<QMat> DSRGraph::get_RT_pose_from_parent(const Node &n) {
+std::optional<RTMat> DSRGraph::get_RT_pose_from_parent(const Node &n) {
     auto p = get_parent_node(n);
-    if (p.has_value()) { ;
+    if (p.has_value()) { 
         auto edges = p->fano();
         EdgeKey key;  key.to(n.id());  key.type("RT");
         auto res = edges.find(key);
         if (res != edges.end()) {
-            auto pose = get_attrib_by_name<std::vector<float>>(res->second, "pose");
-            if (pose.has_value()) {
-                QMat{pose.value()};
-            }
+            auto translation = get_attrib_by_name<std::vector<float>>(res->second, "translation");
+	    auto rotation = get_attrib_by_name<std::vector<float>>(res->second, "rotation_euler_xyz");
+            if (translation.has_value() && rotation.has_value() ) {
+ 		return RTMat { rotation.value()[0], rotation.value()[1], rotation.value()[2], translation.value()[0], translation.value()[1], translation.value()[2] } ;
+	    }
         }
     }
     return {};
