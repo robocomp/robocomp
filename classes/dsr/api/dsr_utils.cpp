@@ -340,7 +340,7 @@ void Utilities::write_to_json_file(const std::string &json_file_path)
 {
 	QJsonDocument jsonDoc = DSRGraph_to_QJsonDocument(G);
     QFile jsonFile(QString::fromStdString(json_file_path));
-    jsonFile.open(QFile::WriteOnly);
+    jsonFile.open(QFile::WriteOnly | QFile::Text);
     jsonFile.write(/*qCompress(*/jsonDoc.toJson())/*)*/;
     jsonFile.close();
     auto now_c = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
