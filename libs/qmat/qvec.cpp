@@ -46,15 +46,14 @@ RMat::QVec::QVec(const RMat::QMat & matrix) : QVector<float>(matrix.nCols() * ma
  * @param vector
  * @return true if both are equal, false if not
  */
-bool RMat::QVec::equals(const QVec & vector ) const
+bool RMat::QVec::equals(const QVec & vector, float epsilon ) const
 {
 	if (size() != vector.size())
 		return false;
 
 	for (int i = 0; i < size(); i++)
-		if (at(i) != vector[i])
-			return false;
-
+		if (fabs(at(i) - vector[i]) > epsilon)
+			return true;
 	return true;
 }
 

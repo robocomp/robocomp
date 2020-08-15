@@ -108,7 +108,7 @@ namespace RMat
 		QVec pointProduct(const QVec &vector) const;
 		QVec normalize() const                                   { return operator/(norm2()); }
 		QVec crossProduct(const QVec &vector) const;
-		bool equals(const QVec &vector) const;
+		bool equals(const QVec &vector, float epsilon=1) const;
 		QVec toHomogeneousCoordinates() const;
 		QVec fromHomogeneousCoordinates() const;
 
