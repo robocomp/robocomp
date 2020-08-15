@@ -53,7 +53,7 @@ bool RMat::QVec::equals(const QVec & vector, float epsilon ) const
 
 	for (int i = 0; i < size(); i++)
 		if (fabs(at(i) - vector[i]) > epsilon)
-			return true;
+			return false;
 	return true;
 }
 
