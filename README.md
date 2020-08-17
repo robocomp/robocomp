@@ -41,7 +41,7 @@ Make sure you have installed the following packages from the Ubuntu repository:
 
     sudo apt-get update
     sudo apt-get install --no-install-recommends git git-annex cmake make g++ libgsl-dev libopenscenegraph-dev cmake-qt-gui freeglut3-dev libboost-system-dev libboost-thread-dev qt5-default libqt5xmlpatterns5-dev libxt-dev libboost-test-dev libboost-filesystem-dev  libccd-dev  libqt5opengl5-dev libxml2-dev
-    sudo apt-get install --no-install-recommends libzeroc-ice3.7 libzeroc-icestorm3.7 python3-zeroc-ice zeroc-glacier2 zeroc-ice-slice zeroc-ice-utils zeroc-icebox zeroc-icegrid zeroc-icepatch2 zeroc-icebridge libzeroc-ice-dev zeroc-ice-all-dev zeroc-ice-compilers
+    sudo apt-get install --no-install-recommends libzeroc-ice3.7 libzeroc-icestorm3.7 python3-dbus python3-zeroc-ice zeroc-glacier2 zeroc-ice-slice zeroc-ice-utils zeroc-icebox zeroc-icegrid zeroc-icepatch2 zeroc-icebridge libzeroc-ice-dev zeroc-ice-all-dev zeroc-ice-compilers
     sudo apt-get install --no-install-recommends python3-pip python3-setuptools python3-pyparsing python3-numpy python3-libxml2 python3-xmltodict
     sudo pip3 install networkx pyside2 argcomplete termcolor cogapp prompt_toolkit
 
