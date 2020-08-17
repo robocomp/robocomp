@@ -281,6 +281,7 @@ class GraphNode : public QObject, public QGraphicsEllipseItem
     QList<GraphEdge *> edgeList;
     
     void addEdge(GraphEdge *edge);
+    void deleteEdge(GraphEdge *edge);
     QList<GraphEdge *> edges() const;
     void calculateForces();
     bool advancePosition();

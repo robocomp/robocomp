@@ -251,8 +251,14 @@ void GraphViewer::del_edge_SLOT(const std::int32_t from, const std::int32_t to, 
 	try {
 		std::tuple<std::int32_t, std::int32_t, std::string> key = std::make_tuple(from, to, edge_tag);
 		while (gmap_edges.count(key) > 0) {
-            scene.removeItem(gmap_edges.at(key));
+		    GraphEdge *edge = gmap_edges.at(key);
+            scene.removeItem(edge);
+            if (gmap.find(from) != gmap.end())
+                gmap.at(from)->deleteEdge(edge);
+            if (gmap.find(to) != gmap.end())
+                gmap.at(to)->deleteEdge(edge);
 		    gmap_edges.erase(key);
+            delete edge;
 		}
 	} catch(const std::exception &e) { std::cout << e.what() <<" Error  "<<__FUNCTION__<<":"<<__LINE__<< std::endl;}
 

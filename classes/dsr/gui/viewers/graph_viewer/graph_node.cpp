@@ -63,6 +63,11 @@ void GraphNode::addEdge(GraphEdge *edge)
     edge->adjust();
 }
 
+void GraphNode::deleteEdge(GraphEdge *edge)
+{
+    edgeList.removeOne(edge);
+}
+
 QList<GraphEdge *> GraphNode::edges() const
 {
     return edgeList;
