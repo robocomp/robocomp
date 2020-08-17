@@ -17,7 +17,7 @@ of a group of agents that share a distributed, dynamic representation acting as 
 This data structure is called **Deep State Representation (DSR)** due to the hybrid nature 
 of the managed elements, geometric and symbolic, and concrete (laser data) and abstract (logical predicates).
 
-![dsr-graph](https://user-images.githubusercontent.com/5784096/89400000-88576200-d713-11ea-8ac2-d2980568c2dc.png)
+![dsr-graph](https://user-images.githubusercontent.com/5784096/90373871-e3257d80-e072-11ea-9933-0392ea9ae7f1.png)
 
 <sup>*The illustration shows a possible instance of the CORTEX architecture. The central part of the ring contains the **DSR graph** that is shared by all agents, from whom a reference implementation is presented here. Coloured boxes represent agents providing different functionalities to the whole. The purple box is an agent that can connect to the real robot or to a realistic simulation of it, providing the basic infrastructure to explore prediction and anticipation capabilities*</sup>
 
