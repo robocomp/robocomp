@@ -116,6 +116,12 @@ class CDSLParser(DSLParserTemplate):
             imprts.extend(['AGMExecutive.idsl', 'AGMCommonBehavior.idsl', 'AGMWorldModel.idsl', 'AGMExecutiveTopic.idsl'])
         if component.is_agm2_agent():
             imprts.extend(['AGM2.idsl'])
+
+        component.dsr = False
+        component.dsr = 'dsr' in [x.lower() for x in component.options]
+        if component.dsr:
+            imprts.extend(['DSRGetID.idsl'])
+
         component.imports.extend(list(map(os.path.basename, sorted(imprts))))
         component.recursiveImports = generate_recursive_imports(list(component.imports), self._include_directories)
         # Language
@@ -139,8 +145,6 @@ class CDSLParser(DSLParserTemplate):
         component.innermodelviewer = False
         component.innermodelviewer = 'innermodelviewer' in [x.lower() for x in component.options]
 
-        component.dsr = False
-        component.dsr = 'dsr' in [x.lower() for x in component.options]
 
         # GUI
         component.gui = None
@@ -199,6 +203,10 @@ class CDSLParser(DSLParserTemplate):
             for agm2agent_sub in agm2agent_subscribes_to:
                 if agm2agent_sub not in component.subscribesTo:
                     component.subscribesTo = [agm2agent_sub] + component.subscribesTo
+        if component.dsr:
+            component.requires = [["DSRGetID", 'ice']] + component.requires
+            if 'DSRGetID' not in component.iceInterfaces:
+                component.iceInterfaces.append(['DSRGetID', 'ice'])
         # component = ComponentFacade.from_nested_dict(component)
         self.struct = component
         return component

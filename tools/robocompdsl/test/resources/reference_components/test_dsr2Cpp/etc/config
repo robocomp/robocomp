@@ -1,5 +1,9 @@
 CommonBehavior.Endpoints=tcp -p 10000
 
+# Proxies for required interfaces
+DSRGetIDProxy = dsrgetid:tcp -h localhost -p 0
+
+
 agent_id = 0 # Change id
 agent_name = testcomp
 tree_view = true
