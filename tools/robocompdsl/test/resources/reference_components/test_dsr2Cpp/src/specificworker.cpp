@@ -136,3 +136,7 @@ int SpecificWorker::startup_check()
 
 
 
+/**************************************/
+// From the RoboCompDSRGetID you can call this methods:
+// this->dsrgetid_proxy->getID(...)
+

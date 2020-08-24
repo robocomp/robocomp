@@ -31,13 +31,14 @@
 #include <ui_mainUI.h>
 #include <CommonBehavior.h>
 
+#include <DSRGetID.h>
 
 
 #define CHECK_PERIOD 5000
 #define BASIC_PERIOD 100
 
 
-using TuplePrx = std::tuple<>;
+using TuplePrx = std::tuple<RoboCompDSRGetID::DSRGetIDPrxPtr>;
 
 
 class GenericWorker : public QMainWindow, public Ui_guiDlg
@@ -53,6 +54,7 @@ public:
 	QMutex *mutex;
 
 
+	RoboCompDSRGetID::DSRGetIDPrxPtr dsrgetid_proxy;
 
 
 protected:
