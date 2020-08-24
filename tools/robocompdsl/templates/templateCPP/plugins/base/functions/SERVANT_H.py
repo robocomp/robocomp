@@ -13,7 +13,7 @@ ${ret} ${interface_name}I::${method_name}(${input_params})
 
 class SERVANT_H(TemplateDict):
     def __init__(self, component, interface_name):
-        super().__init__()
+        super(SERVANT_H, self).__init__()
         self.component = component
         module = self.component.idsl_pool.module_providing_interface(interface_name)
         self['year'] = str(datetime.date.today().year)

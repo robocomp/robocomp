@@ -20,7 +20,7 @@ class InterfaceNotFound(RobocompDslException):
 			similar_list = difflib.get_close_matches(self.interface_name, self.valid_names, cutoff=0.4)
 			if len(similar_list) > 0:
 				self.message = self.message + ". Did you mean " + str(similar_list[0])
-		super().__init__(self.message)
+		super(RobocompDslException, self).__init__(self.message)
 
 
 class ParseException(RobocompDslException):
@@ -28,4 +28,4 @@ class ParseException(RobocompDslException):
 	def __init__(self, msg, line, column):
 		info = line + '\n' + " "*(column-1) + "^"
 		self.message = msg + '\n' + info
-		super().__init__(self.message)
+		super(ParseException, self).__init__(self.message)

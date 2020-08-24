@@ -2,7 +2,8 @@ import datetime
 from string import Template
 
 from dsl_parsers.parsing_utils import communication_is_ice, get_name_number
-from .. import function_utils as utils
+from templates.templatePython.plugins.base.functions import function_utils as utils
+from templates.common.templatedict import TemplateDict
 
 
 
@@ -86,7 +87,7 @@ def ${interface_name}_${method_name}(self${param_str_a}):
     ${return_str}
 """
 
-class TemplateDict(dict):
+class src_specificworker_py(TemplateDict):
     def __init__(self, component):
         super(TemplateDict, self).__init__()
         self.component = component

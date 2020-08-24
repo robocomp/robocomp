@@ -1,4 +1,5 @@
 from dsl_parsers.parsing_utils import communication_is_ice, get_name_number
+from templates.common.templatedict import TemplateDict
 
 STORM_TOPIC_MANAGER_STR = """\
 # This property is used by the clients to connect to IceStorm.
@@ -6,7 +7,7 @@ TopicManager.Proxy=IceStorm/TopicManager:default -p 9999
 """
 
 
-class TemplateDict(dict):
+class etc_config(TemplateDict):
     def __init__(self, component):
         super(TemplateDict, self).__init__()
         self.component = component

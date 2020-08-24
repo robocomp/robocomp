@@ -92,7 +92,7 @@ class AbstractTemplatesManager(ABC):
     def __init__(self, ast, plugins):
         self.ast = ast
         self.plugins = plugins
-        super().__init__()
+        super(AbstractTemplatesManager, self).__init__()
 
     def generate_files(self, output_path):
         pass
@@ -141,7 +141,7 @@ class AbstractTemplatesManager(ABC):
 
 class ComponentTemplatesManager(AbstractTemplatesManager):
     def __init__(self, component, plugins):
-        super().__init__(component, plugins)
+        super(ComponentTemplatesManager, self).__init__(component, plugins)
 
     def generate_files(self, output_path):
         #
@@ -194,7 +194,7 @@ class ComponentTemplatesManager(AbstractTemplatesManager):
 
 class InterfaceTemplateManager(AbstractTemplatesManager):
     def __init__(self, interface, plugins):
-        super().__init__(interface, plugins)
+        super(InterfaceTemplateManager, self).__init__(interface, plugins)
 
     def generate_files(self, output_path):
         #

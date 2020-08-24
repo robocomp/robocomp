@@ -3,7 +3,8 @@ from string import Template
 
 from dsl_parsers.dsl_factory import DSLFactory
 from dsl_parsers.parsing_utils import communication_is_ice, IDSLPool, get_name_number
-from .. import function_utils as utils
+from templates.common.templatedict import TemplateDict
+from templates.templatePython.plugins.base.functions import function_utils as utils
 
 SLICE_LOAD_STR = """\
 Ice.loadSlice("-I ./src/ --all ./src/${interface_name}.ice")
@@ -55,7 +56,7 @@ def sm_${state_name}(self):
 """
 
 
-class TemplateDict(dict):
+class src_genericworker_py(TemplateDict):
     def __init__(self, component):
         super().__init__()
         self.component = component

@@ -34,7 +34,7 @@ class DSLFactory(Singleton):
     method.
     """
     def __init__(self):
-        super().__init__()
+        super(DSLFactory, self).__init__()
 
     def from_string(self, string, dsl_type, **kwargs):
         """

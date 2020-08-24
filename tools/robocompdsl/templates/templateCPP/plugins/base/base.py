@@ -5,7 +5,7 @@ from templates.common.plugin_collection import Plugin
 
 class Base(Plugin):
     def __init__(self):
-        super().__init__()
+        super(Base, self).__init__()
         self.abs_path = os.path.abspath(os.path.dirname(__file__))
         self.path = os.path.relpath(os.path.dirname(__file__))
         self.classes = {}

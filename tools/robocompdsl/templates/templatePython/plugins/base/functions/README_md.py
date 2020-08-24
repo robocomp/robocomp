@@ -1,9 +1,9 @@
 from templates.common.templatedict import TemplateDict
 
 
-class CMakeLists_txt(TemplateDict):
+class README_md(TemplateDict):
     def __init__(self, component):
-        super(CMakeLists_txt, self).__init__()
+        super().__init__()
         self.component = component
         self['component_name'] = self.component.name
 

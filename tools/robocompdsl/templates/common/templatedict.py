@@ -2,7 +2,7 @@
 
 class TemplateDict(dict):
     def __init__(self):
-        super().__init__()
+        super(TemplateDict, self).__init__()
 
 class CustomString(str):
 

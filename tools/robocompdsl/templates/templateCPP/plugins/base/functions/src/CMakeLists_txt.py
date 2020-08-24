@@ -16,14 +16,6 @@ FIND_PACKAGE( Ice REQUIRED COMPONENTS Ice++11 IceStorm++11)
 """
 
 
-AGM_INCLUDES_STR = """
-# AGM Agent\'s requirements
-find_package(LibXml2 REQUIRED)
-include_directories(LIBXML2_INCLUDE_DIRS)
-include_directories(/usr/include/libxml2/)
-"""
-
-
 class src_CMakeLists_txt(TemplateDict):
     def __init__(self, component):
         super().__init__()
@@ -32,7 +24,6 @@ class src_CMakeLists_txt(TemplateDict):
         self['interface_sources'] = self.interface_sources()
         self['statemachine_visual_sources'] = self.statemachine_visual_sources()
         self['cpp11_ice_packages'] = self.cpp11_ice_packages()
-        self['agm_includes'] = self.agm_includes()
         self['wrap_ice'] = self.wrap_ice()
         self['wrap_ui'] = self.wrap_ui()
 
@@ -66,32 +57,11 @@ class src_CMakeLists_txt(TemplateDict):
             result += CPP11_ICE_STR
         return result
 
-    def agm_includes(self):
-        result = ""
-        if 'agmagent' in [x.lower() for x in self.component.options]:
-            result += AGM_INCLUDES_STR
-        if self.component.is_agm1_agent():
-            result += 'SET(LIBS ${LIBS} -lagm)\n'
-            result += 'ADD_DEFINITIONS( -I/usr/include/libxml2/)\n'
-        if self.component.is_agm2_agent():
-            result += 'SET(LIBS ${LIBS} -lagm2)\n'
-            result += 'ADD_DEFINITIONS( -I/usr/include/libxml2/)\n'
-            result += 'include(/usr/local/share/cmake/FindAGM2.cmake)\n'
-
-        return result
-
     def wrap_ice(self):
         interface_names = []
         for im in sorted(self.component.recursiveImports + self.component.ice_interfaces_names):
             name = im.split('/')[-1].split('.')[0]
             interface_names.append(name)
-
-        options = [x.lower() for x in self.component.options]
-
-        if 'agm2agent' in options or 'agm2agentICE' in options:
-            interface_names += ["AGM2"]
-        if 'dsr' in options:
-            interface_names += ["DSRGetID"]
 
         result = "ROBOCOMP_IDSL_TO_ICE( CommonBehavior "
         result += ' '.join(interface_names)

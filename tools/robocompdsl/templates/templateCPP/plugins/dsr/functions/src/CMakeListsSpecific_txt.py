@@ -34,7 +34,7 @@ DSR_LIBS = " fastcdr fastrtps osgDB"
 
 class src_CMakeListsSpecific_txt(TemplateDict):
     def __init__(self, component):
-        super().__init__()
+        super(src_CMakeListsSpecific_txt, self).__init__()
         dsr_sources = ""
         dsr_headers = ""
         dsr_definitions = ""

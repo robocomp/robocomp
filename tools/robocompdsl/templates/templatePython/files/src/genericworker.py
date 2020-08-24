@@ -47,7 +47,7 @@ class GenericWorker(${qt_class_type}):
     ${statemachine_signals}
 
     def __init__(self, mprx):
-        super().__init__()
+        super(GenericWorker, self).__init__()
 
         ${requires_proxies}
         ${publishes_proxies}

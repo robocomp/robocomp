@@ -10,7 +10,7 @@ from dsl_parsers.parsing_utils import generate_recursive_imports
 
 class IDSLParser(DSLParserTemplate):
     def __init__(self):
-        super().__init__()
+        super(IDSLParser, self).__init__()
 
     def _create_parser(self):
 

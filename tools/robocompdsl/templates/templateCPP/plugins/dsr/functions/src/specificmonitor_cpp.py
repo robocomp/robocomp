@@ -24,7 +24,7 @@ params["3d_view"] = aux;
 
 class src_specificmonitor_cpp(TemplateDict):
     def __init__(self, component):
-        super().__init__()
+        super(src_specificmonitor_cpp, self).__init__()
         self.component = component
         dsr_read_config = ""
         if self.component.dsr:

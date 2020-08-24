@@ -16,7 +16,7 @@ graph_view = true
 
 class etc_config(TemplateDict):
     def __init__(self, component):
-        super().__init__()
+        super(etc_config, self).__init__()
         self.component = component
         self['dsr_config'] = self.dsr_config()
 

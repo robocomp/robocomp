@@ -1,6 +1,6 @@
 import datetime
 from string import Template
-
+from templates.common.templatedict import TemplateDict
 SLICE_LOAD_STR = """\
 Ice.loadSlice("-I ./src/ --all ./src/${interface_name}.ice")
 """
@@ -12,7 +12,7 @@ def ${method_name}(self, ${params_str_a}c):
 """
 
 
-class TemplateDict(dict):
+class SERVANT_PY(TemplateDict):
     def __init__(self, component, interface_name):
         super().__init__()
         self.component = component

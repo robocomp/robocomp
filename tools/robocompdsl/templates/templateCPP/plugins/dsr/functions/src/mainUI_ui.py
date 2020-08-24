@@ -62,7 +62,7 @@ DSR_UI_STR = """\
 """
 class src_CMakeLists_txt(TemplateDict):
     def __init__(self, component):
-        super().__init__()
+        super(src_CMakeLists_txt, self).__init__()
         self.component = component
         if self.component.dsr:
             dsr_widget = DSR_UI_STR

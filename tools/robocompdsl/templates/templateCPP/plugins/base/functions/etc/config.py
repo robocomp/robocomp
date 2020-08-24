@@ -10,7 +10,7 @@ TopicManager.Proxy=IceStorm/TopicManager:default -p 9999
 
 class etc_config(TemplateDict):
     def __init__(self, component):
-        super().__init__()
+        super(etc_config, self).__init__()
         self.component = component
         self['config_implements_endpoints'] = self.config_implements_endpoints()
         self['config_subscribes_endpoints'] = self.config_subscribes_endpoints()

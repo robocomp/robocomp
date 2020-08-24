@@ -23,14 +23,15 @@ class Plugin(object):
                 relative_path = os.path.join(relative_path, file)
                 if relative_path not in self.classes:
                     try:
-                        module = importlib.machinery.SourceFileLoader(file.split('/')[-1].split('.')[0],
+                        module_name = self.__class__.__name__+"_"+relative_path.replace('/','_').split('.')[0]
+                        module = importlib.machinery.SourceFileLoader(module_name,
                                                                       os.path.join(root, file)).load_module()
                     except AssertionError as e:
                         pass
                     except ValueError as e:
                         pass
                     for _, the_class in inspect.getmembers(module, lambda x: inspect.isclass(x) and issubclass(x, TemplateDict) and x.__name__!="TemplateDict"):
-                        print(f"Loading plugin: {file}")
+                        print(f"Loading plugin: {relative_path}")
                         self.classes[relative_path] = the_class
 
     def get_template_dict(self, file, ast, interface_name=None):

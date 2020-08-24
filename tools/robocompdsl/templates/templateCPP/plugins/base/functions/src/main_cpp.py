@@ -157,7 +157,7 @@ catch(const Ice::Exception& ex)
 
 class src_main_cpp(TemplateDict):
     def __init__(self, component):
-        super().__init__()
+        super(src_main_cpp, self).__init__()
         self.component = component
         self['year'] = str(datetime.date.today().year)
         self['component_name'] = component.name

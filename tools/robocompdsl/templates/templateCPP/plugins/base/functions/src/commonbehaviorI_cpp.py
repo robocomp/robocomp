@@ -5,7 +5,7 @@ import datetime
 
 class src_commonbehaviorI_cpp(TemplateDict):
     def __init__(self, component):
-        super().__init__()
+        super(src_commonbehaviorI_cpp, self).__init__()
         self.component = component
         if self.component.language.lower() == 'cpp':
             const = "const"

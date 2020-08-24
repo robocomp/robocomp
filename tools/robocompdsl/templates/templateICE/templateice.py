@@ -12,4 +12,4 @@ class TemplateManagerIce(InterfaceTemplateManager):
                 'template_path': "templateICE/files/"
         }
         current_plugins = PluginCollection(plugins.__name__)
-        super().__init__(module, current_plugins)
+        super(TemplateManagerIce, self).__init__(module, current_plugins)

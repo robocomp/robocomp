@@ -27,7 +27,7 @@ class TemplatesManagerCpp(ComponentTemplatesManager):
             'template_path': "templateCPP/files/"
         }
         current_plugins = PluginCollection(plugins.__name__)
-        super().__init__(component, current_plugins)
+        super(TemplatesManagerCpp, self).__init__(component, current_plugins)
 
 
 

@@ -46,7 +46,7 @@ ${method_decorator}${method_return} ${method_name} (${params_str_a})${exception}
 
 class TEMPLATE_ICE(TemplateDict):
     def __init__(self, module):
-        super().__init__()
+        super(TEMPLATE_ICE, self).__init__()
         self.module = module
         self['module_name'] = module['name']
         self['module_filename'] = os.path.basename(module['filename']).split('.')[0]

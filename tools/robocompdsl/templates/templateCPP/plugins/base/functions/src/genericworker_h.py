@@ -15,46 +15,24 @@ GUI_INCLUDE_STR = """
 #include <ui_mainUI.h>
 """
 
-AGM_BEHAVIOUR_STRUCT_STR = """
-struct BehaviorParameters
-{
-	RoboCompPlanning::Action action;
-	std::vector< std::vector <std::string> > plan;
-};
-"""
-
-
-AGM_ATTRIBUTES_STR = """
-bool active;
-AGMModel::SPtr worldModel;
-BehaviorParameters p;
-RoboCompAGMCommonBehavior::ParameterMap params;
-int iter;
-bool setParametersAndPossibleActivation(const RoboCompAGMCommonBehavior::ParameterMap &prs, bool &reactivated);
-RoboCompPlanning::Action createAction(std::string s);
-"""
 
 class genericworker_h(TemplateDict):
 
     def __init__(self, component):
-        super().__init__()
+        super(genericworker_h, self).__init__()
         self.component = component
         self['year'] = str(datetime.date.today().year)
         self['gui_includes'] = self.gui_includes()
         self['statemachine_includes'] = self.statemachine_includes()
         self['interfaces_includes'] = self.interfaces_includes()
-        self['agm_includes'] = self.agm_includes()
         # self['namespaces'] = self.namespaces()
         self['ice_proxies_map'] = self.ice_proxies_map()
-        self['agm_behaviour_parameter_struct'] = self.agm_behaviour_parameter_struct()
         self['inherited_object'] = self.inherited_object()
         self['constructor_proxies'] = self.constructor_proxies()
-        self['agm_methods'] = self.agm_methods()
         self['create_proxies'] = self.create_proxies()
         self['implements'] = self.implements()
         self['subscribes'] = self.subscribes()
         self['statemachine_creation'] = self.statemachine_creation()
-        self['agm_attributes_creation'] = self.agm_attributes_creation()
         self['statemachine_slots'] = self.statemachine_slots()
         self['virtual_compute'] = self.virtual_compute()
         self['statemachine_signals'] = self.statemachine_signals()
@@ -82,15 +60,6 @@ class genericworker_h(TemplateDict):
             result += '#include <' + name + '.h>\n'
         return result
 
-    def agm_includes(self):
-        result = ""
-        if self.component.is_agm1_agent():
-            result += "#include <agm.h>\n"
-        if self.component.is_agm2_agent():
-            result += "#include <AGM2.h>\n"
-            result += "#include <agm2.h>\n"
-        return result
-
     # def namespaces(self):
     #     result = ""
     #     for imp in sorted(list(set(self.component.recursiveImports + self.component.ice_interfaces_names))):
@@ -111,20 +80,6 @@ class genericworker_h(TemplateDict):
             result += "using TuplePrx = std::tuple<" + ",".join(proxy_list) + ">;\n"
         return result
 
-    def agm_behaviour_parameter_struct(self):
-        result = ""
-        if 'agmagent' in [x.lower() for x in self.component.options]:
-            result += AGM_BEHAVIOUR_STRUCT_STR
-        return result
-
-
-    def agm_methods(self):
-        result = ""
-        if 'agmagent' in [x.lower() for x in self.component.options]:
-            result += "bool activate(const BehaviorParameters& parameters);\n"
-            result += "bool deactivate();\n"
-            result += "bool isActive() { return active; }\n"
-        return result
 
     def create_proxies(self):
         result = ""
@@ -257,12 +212,6 @@ class genericworker_h(TemplateDict):
             result += cod_qstate_machine+"\n"
             result += code_qstates+"\n"
             result += "//-------------------------\n"
-        return result
-
-    def agm_attributes_creation(self):
-        result = ""
-        if 'agmagent' in [x.lower() for x in self.component.options]:
-            result += AGM_ATTRIBUTES_STR
         return result
 
     # TODO: Refactor for submachines

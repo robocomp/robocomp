@@ -5,19 +5,6 @@ import dsl_parsers.parsing_utils as p_utils
 from templates.templateCPP.plugins.base.functions import function_utils as utils
 from templates.common.templatedict import TemplateDict
 
-AGM_INNERMODEL_ASSOCIATION_STR = """\
-innerModel = std::make_shared<InnerModel>(new InnerModel());
-try
-{
-	RoboCompAGMWorldModel::World w = agmexecutive_proxy->getModel();
-	AGMExecutiveTopic_structuralChange(w);
-}
-catch(...)
-{
-	printf("The executive is probably not running, waiting for first AGM model publication...");
-}
-"""
-
 COMPUTE_METHOD_STR = """\
 void SpecificWorker::compute()
 {
@@ -77,77 +64,6 @@ void SpecificWorker::regenerateInnerModelViewer()
     
 """
 
-SET_PARAMETERS_AND_POSSIBLE_ACTIVATION = """
-bool SpecificWorker::setParametersAndPossibleActivation(const RoboCompAGMCommonBehavior::ParameterMap &prs, bool &reactivated)
-{
-	printf("<<< setParametersAndPossibleActivation\\n");
-	// We didn't reactivate the component
-	reactivated = false;
-
-	// Update parameters
-	params.clear();
-	for (RoboCompAGMCommonBehavior::ParameterMap::const_iterator it=prs.begin(); it!=prs.end(); it++)
-	{
-		params[it->first] = it->second;
-	}
-
-	try
-	{
-		action = params["action"].value;
-		std::transform(action.begin(), action.end(), action.begin(), ::tolower);
-		//TYPE YOUR ACTION NAME
-		if (action == "actionname")
-		{
-			active = true;
-		}
-		else
-		{
-			active = true;
-		}
-	}
-	catch (...)
-	{
-		printf("exception in setParametersAndPossibleActivation %d\\n", __LINE__);
-		return false;
-	}
-
-	// Check if we should reactivate the component
-	if (active)
-	{
-		active = true;
-		reactivated = true;
-	}
-
-	printf("setParametersAndPossibleActivation >>>\\n");
-
-	return true;
-}
-"""
-
-SEND_MODIFICATION_PROPOSAL = """
-void SpecificWorker::sendModificationProposal(AGMModel::SPtr &worldModel, AGMModel::SPtr &newModel)
-{
-	try
-	{
-		AGMMisc::publishModification(newModel, ${proxy}, \"${agent_name}Agent\");
-	}
-/*	catch(const RoboCompAGMExecutive::Locked &e)
-	{
-	}
-	catch(const RoboCompAGMExecutive::OldModel &e)
-	{
-	}
-	catch(const RoboCompAGMExecutive::InvalidChange &e)
-	{
-	}
-*/
-	catch(const Ice::Exception& e)
-	{
-		exit(1);
-	}
-}
-"""
-
 INTERFACE_TYPES_COMMENT_STR = """\
 /**************************************/
 // From the ${module_name} you can use this types:
@@ -162,24 +78,22 @@ ${methods}
 
 class specificworker_cpp(TemplateDict):
     def __init__(self, component):
-        super().__init__()
+        super(specificworker_cpp, self).__init__()
         self.component = component
         self['year'] = str(datetime.date.today().year)
         self['proxy_map_type'] = self.proxy_map_type()
         self['proxy_map_name'] = self.proxy_map_name()
         self['innermodelviewer_code'] = self.innermodelviewer_code()
-        self['agmagent_attributes'] = self.agmagent_attributes()
         self['statemachine_finalize_emit'] = self.statemachine_finalize_emit()
         self['innermodel_and_viewer_attribute_init'] = self.innermodel_and_viewer_attribute_init()
-        self['agm_innermodel_association'] = self.agm_innermodel_association()
         self['state_machine_start'] = self.state_machine_start()
         self['statemachine_initialize_to_compute'] = self.statemachine_initialize_to_compute()
         self['compute_method'] = self.compute_method()
         self['statemachine_methods_creation'] = self.statemachine_methods_creation()
         self['implements'] = self.implements()
         self['subscribes'] = self.subscribes()
-        self['agm_specific_code'] = self.agm_specific_code()
         self['interface_specific_comment'] = self.interface_specific_comment()
+
 
     # TODO: Extract pieces of code to strings and refactor
     def body_code_from_name(self, name):
@@ -260,13 +174,6 @@ class specificworker_cpp(TemplateDict):
             result += "#endif\n"
         return result
 
-    def agmagent_attributes(self):
-        result = ""
-        if self.component.is_agm1_agent() or self.component.is_agm2_agent():
-            result += "active = false;\n"
-            result += "worldModel = AGMModel::SPtr(new AGMModel());\n"
-            result += "worldModel->name = \"worldModel\";\n"
-        return result
 
     def innermodel_and_viewer_attribute_init(self):
         result = ""
@@ -277,15 +184,6 @@ class specificworker_cpp(TemplateDict):
             result += "#endif\n"
         return result
 
-    def agm_innermodel_association(self):
-        result = ""
-
-        if self.component.is_agm1_agent():
-            result += AGM_INNERMODEL_ASSOCIATION_STR
-        elif self.component.is_agm2_agent():
-            result += "// TODO: Here we should ask the DSR for the current model for initialization purposes.\n"
-
-        return result
 
     def compute_method(self):
         result = ""
@@ -386,21 +284,6 @@ class specificworker_cpp(TemplateDict):
                             pass
         return result
 
-    def agm_specific_code(self):
-        result = ""
-        if ('agmagent' in [x.lower() for x in self.component.options]) and (
-                'innermodelviewer' in [x.lower() for x in self.component.options]):
-            result += REGENERATE_INNERMODEL
-
-        if 'agmagent' in [x.lower() for x in self.component.options]:
-            result += SET_PARAMETERS_AND_POSSIBLE_ACTIVATION
-            agent_name = self.component.name
-            if self.component.language.lower() == "cpp":
-                proxy = "agmexecutive_proxy"
-            else:
-                proxy = "*agmexecutive_proxy.get()"
-            result += Template(SEND_MODIFICATION_PROPOSAL).substitute(proxy=proxy, agent_name=agent_name)
-        return result
 
     def proxy_map_type(self):
         if self.component.language.lower() == 'cpp':

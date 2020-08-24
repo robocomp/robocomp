@@ -3,6 +3,7 @@ import sys
 from string import Template
 
 from dsl_parsers.parsing_utils import communication_is_ice, get_name_number, IDSLPool
+from templates.common.templatedict import TemplateDict
 
 SUBSCRIBESTO_STR = """
 ${iface_name}_adapter = ic.createObjectAdapter("${iface_name}Topic")
@@ -92,7 +93,7 @@ adapter.activate()
 """
 
 
-class TemplateDict(dict):
+class src_main_py(TemplateDict):
     def __init__(self, component):
         super().__init__()
         self.component = component

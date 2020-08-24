@@ -32,7 +32,7 @@ from genericworker import *
 
 class SpecificWorker(GenericWorker):
     def __init__(self, proxy_map, startup_check=False):
-        super().__init__(proxy_map)
+        super(SpecificWorker, self).__init__(proxy_map)
         self.Period = 2000
         if startup_check:
             self.startup_check()
