@@ -155,7 +155,8 @@ std::optional<uint32_t> DSRGraph::insert_node(Node& node)
         {
             int new_node_id = dsr_getid_proxy->getID();    
             node.id(new_node_id);
-            node.name(node.type() + "_" + std::to_string(new_node_id));
+            if (node.name().empty() or name_map.find(node.name()) != name_map.end())
+                node.name(node.type() + "_" + std::to_string(new_node_id));
         }
         else
         {
