@@ -99,7 +99,7 @@ class RobocompdslTest(unittest.TestCase):
 
 
     def assertFilesSame(self, path1, path2):
-        print("Cheking file %s" % os.path.basename(path1))
+        print("Checking file %s" % os.path.basename(path1))
         with open(path1, 'r', encoding='utf-8', errors='ignore') as f1, open(path2, 'r', encoding='utf-8', errors='ignore') as f2:
             text1 = f1.readlines()
             text2 = f2.readlines()
