@@ -1,0 +1,37 @@
+# innermodel-python3
+
+Python3 APIs for C++ innermodel lib in robocomp
+
+------------------------
+
+Dependency: NumPy, SciPy, PyBullet
+
+------------------------
+
+Installation of depedencies:
+
+$ pip3 install pybullet numpy scipy --user
+
+------------------------
+
+Installation of innermodel-python3
+
+$ git clone https://github.com/ksakash/innermodel-python3
+$ cd innermodel-python3
+$ python3 setup.py install --user
+
+------------------------
+
+Verification:
+
+$ python3
+>>> import innermodel_python3
+>>>
+
+If there is import error then something went wrong
+
+------------------------
+
+Examples:
+
+$ python3 test/innermodelviewer_misc.py
