@@ -1,3 +1,6 @@
+import sys
+sys.path.append ('.')
+
 import setuptools
 from distutils.core import setup
 
