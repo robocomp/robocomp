@@ -165,15 +165,17 @@ void GraphViewer::add_or_assign_node_SLOT(int id, const std::string &type)
             //         tableWidgetNodes->item(item->row(), 0)->setIcon(
             //                 QPixmap::fromImage(QImage("../../dsr/redBall.png")));
             // }, Qt::UniqueConnection);
-        
-			std::string color = "coral";
+
+//color is read from node attribute            
+			std::string color = G->get_attrib_by_name<std::string>(n.value(), "color").value_or("coral");
+/*            
 			if(type == "world") color = "SeaGreen";
 			else if(type == "transform") color = "SteelBlue";
 			else if(type == "plane") color = "Khaki";
 			else if(type == "differentialrobot") color = "GoldenRod";
 			else if(type == "laser") color = "GreenYellow";
 			else if(type == "mesh") color = "LightBlue";
-			else if(type == "imu") color = "LightSalmon";
+			else if(type == "imu") color = "LightSalmon";*/
 			gnode->setColor(color);
         } else
 		{
