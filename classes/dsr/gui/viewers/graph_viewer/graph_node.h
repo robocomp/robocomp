@@ -32,6 +32,7 @@
 #include "../../../api/dsr_api.h"
 #include "graph_edge.h"
 #include "../../dsr_gui.h"
+#include <algorithm>
 
 class GraphEdge;
 class QGraphicsSceneMouseEvent;
@@ -100,14 +101,36 @@ class DoLaserStuff : public QGraphicsView
     std::int32_t node_id;
 };
 
-class DoRGBDStuff : public QLabel
+class DoRGBDStuff : public QWidget
 {
   Q_OBJECT
+  QLabel rgbd_label, depth_label;
+  QMenuBar *mainMenu;
+  QAction *show_rgb;
+  QAction *show_depth;
+  
   public:
     DoRGBDStuff(std::shared_ptr<DSR::DSRGraph> graph_, DSR::IDType node_id_) : graph(graph_), node_id(node_id_)
     {
       setWindowTitle(QString::fromStdString(graph->get_agent_name()) + "-RGBD");
       QObject::connect(graph.get(), &DSR::DSRGraph::update_node_signal, this, &DoRGBDStuff::drawRGBDSLOT);
+      QHBoxLayout *layout = new QHBoxLayout();
+      layout->addWidget(&rgbd_label);
+      layout->addWidget(&depth_label);
+      setLayout(layout);
+      //MenuBar
+      mainMenu = new QMenuBar(this);
+      QMenu *viewMenu = mainMenu->addMenu(this->tr("&View"));
+      show_rgb = new QAction("RGB", this);
+      show_rgb->setStatusTip(tr("Show RGB image"));
+      show_rgb->setCheckable(true);
+      show_rgb->setChecked(true);
+      viewMenu->addAction(show_rgb);
+      show_depth = new QAction("Depth", this);
+      show_depth->setStatusTip(tr("Show DEPTH image"));
+      show_depth->setCheckable(true);
+      show_depth->setChecked(true);
+      viewMenu->addAction(show_depth);
       show();
     };
 
@@ -124,26 +147,51 @@ class DoRGBDStuff : public QLabel
       std::optional<Node> n = graph->get_node(id);
       if (n.has_value())
       {
-        const auto rgb_data = graph->get_attrib_by_name<vector<uint8_t>>(n.value(),"rgb");
-        const auto width = graph->get_attrib_by_name<int32_t>(n.value(),"width");
-        const auto height = graph->get_attrib_by_name<int32_t>(n.value(),"height");
-        // if depth == 3
-        //image_rgb.create(height.value(), width.value(), CV_8UC3);
-        //QImage image((const unsigned char*)pixels, width, height, QImage::Format_RGB32);
-        //memcpy(image_rgb.data, &rgb_data.value()[0], width.value()*height.value()*sizeof(std::uint8_t)*3);   
-        //imshow("RGB", image_rgb);
-        //cv::waitKey(1);
-        //label.setPixmap(QImage());     
-       
-        //QImage image((const unsigned char*)&rgb_data.value()[0], width.value(), height.value(), QImage::Format_RGB888);
-        //QImage image(width.value(), height.value(), QImage::Format_RGB888);
-        //memcpy(image.data, &rgb_data.value()[0], width.value()*height.value()*sizeof(std::uint8_t)*3);   
-      
-        auto pix = QPixmap::fromImage(QImage(&rgb_data.value()[0], width.value(), height.value(), QImage::Format_RGB888));
-        resize(width.value(), height.value());
-        setPixmap(pix);
+        //rgb
+        if(show_rgb->isChecked())
+        {
+            const auto rgb_data = graph->get_attrib_by_name<vector<uint8_t>>(n.value(),"rgb");
+            const auto rgb_width = graph->get_attrib_by_name<int32_t>(n.value(),"rgb_width");
+            const auto rgb_height = graph->get_attrib_by_name<int32_t>(n.value(),"rgb_height");
+            
+            // if depth == 3
+            //image_rgb.create(height.value(), width.value(), CV_8UC3);
+            //QImage image((const unsigned char*)pixels, width, height, QImage::Format_RGB32);
+            //memcpy(image_rgb.data, &rgb_data.value()[0], width.value()*height.value()*sizeof(std::uint8_t)*3);   
+            //imshow("RGB", image_rgb);
+            //cv::waitKey(1);
+            //label.setPixmap(QImage());     
+        
+            //QImage image((const unsigned char*)&rgb_data.value()[0], width.value(), height.value(), QImage::Format_RGB888);
+            //QImage image(width.value(), height.value(), QImage::Format_RGB888);
+            //memcpy(image.data, &rgb_data.value()[0], width.value()*height.value()*sizeof(std::uint8_t)*3);   
+        
+            auto pix = QPixmap::fromImage(QImage(&rgb_data.value()[0], rgb_width.value(), rgb_height.value(), QImage::Format_RGB888));
+            rgbd_label.setPixmap(pix);
+        }
+        else
+            rgbd_label.clear();
+        if(show_depth->isChecked())
+        {
+            //depth
+            std::optional<std::vector<float>> depth_data = graph->get_depth_image(n.value());
+            std::vector<uint8_t> gray_scale;
+            const auto depth_width = graph->get_attrib_by_name<int32_t>(n.value(),"depth_width");
+            const auto depth_height = graph->get_attrib_by_name<int32_t>(n.value(),"depth_height");
+std::cout<<"before"<<depth_data.value()[0]<<std::endl;
+            //convert image to grayscale
+            const auto [min, max] = std::minmax_element(std::begin(depth_data.value()), std::end(depth_data.value()));
+            const int range = *max - *min;
+std::cout<<"values "<<*max<<" "<<*min<<" "<<range<<std::endl;            
+            std::transform(std::begin(depth_data.value()), std::end(depth_data.value()), std::back_inserter(gray_scale), [min, range](auto value){ return (uint8_t) (((value - *min)/range))*255; });
+//std::cout<<"vector"<<depth_data.value()<<std::endl;
+            auto pix2 = QPixmap::fromImage(QImage(&gray_scale[0], depth_width.value(), depth_height.value(), QImage::Format_Indexed8));
+            depth_label.setPixmap(pix2);
+        }
+        else
+            depth_label.clear();
+        this->adjustSize();
         show();                     
-        qDebug() << "hola";
       }
     };
 
