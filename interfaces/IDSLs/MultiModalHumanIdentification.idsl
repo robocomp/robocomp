@@ -1,0 +1,35 @@
+// This IDSL file is defined for Robocomp Compoenet robocomp-aston/detection/humanIdentificaton/MultiModalHumanIdentification, given an image list, looks up the database and returns the name of the persons from the database   
+module RoboCompMultiModalHumanIdentification 
+{
+
+  sequence<byte> ImgType; // Defining image as a sequence of bytes
+
+  // Define class to store an image
+  struct TImage
+  {
+    int width;
+    int height;
+    int depth;
+    ImgType image;
+  };
+
+  // Defining bounding box as a list of int values
+  sequence<int> BoundingBox;
+  sequence<BoundingBox> BoundingBoxList;
+  sequence<string> LabelList;
+
+  // Define the struct storing the people detected from the component 
+  struct RecognisedHumans
+  {
+    int numhumans; 
+    BoundingBoxList boundingboxes; 
+    LabelList labellist;
+  };  
+
+  interface MultiModalHumanIdentification
+  {
+    idempotent int addLabel(string trackingId, string label); // Add person to database, given the tracking id we will update the name of the person 
+    idempotent void getLabel(TImage im, out RecognisedHumans recognisedHumans); // For an image, return labels for every person present 
+    idempotent int deleteLabel(string label); // Delete person from database 
+  };
+};

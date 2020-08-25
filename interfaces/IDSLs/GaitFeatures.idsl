@@ -1,0 +1,28 @@
+// This IDSL file is defined for Robocomp Compoenet detection/humanIdentificaton/GaitFeature, given an image list the component returns extractes the feature extracted from GaitSet   
+module RoboCompGaitFeatures 
+{
+
+  sequence<byte> ImgType; // Defining image as a sequence of bytes
+
+  // Defining face feautres as a list of float values
+  sequence<float> Feature;  
+  sequence<Feature> FeatureList;  
+
+  struct TImage
+  {
+
+    int width;
+    int height;
+    int depth;
+    ImgType image;
+  };
+  sequence<TImage> TImages;
+  sequence<int> TrackingIdList;  
+
+
+  interface GaitFeatures
+  {
+    idempotent void storeGaitFeature(TImages imlist, TrackingIdList trackingIdList); 
+    idempotent void getGaitFeature(TrackingIdList trackingIdList, out FeatureList gatifeatures); 
+  };
+};

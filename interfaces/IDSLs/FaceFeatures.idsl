@@ -1,0 +1,39 @@
+// This IDSL file is defined for Robocomp Compoenet robocomp-aston/detection/humanIdentificaton/FaceFeatures, given an image the component detects all the faces and returns their features based on for recognition
+module RoboCompFaceFeatures 
+{
+
+  sequence<byte> ImgType; // Defining image as a sequence of bytes
+
+  // Define class to store an image
+  struct TImage
+  {
+
+    int width;
+    int height;
+    int depth;
+    ImgType image;
+  };
+
+  // Defining bounding box as a list of int values
+  sequence<int> BoundingBox;
+  sequence<BoundingBox> BoundingBoxList;
+
+  sequence<TImage> AlignedFaceList;
+
+  struct DetectedFaces
+  {
+    int numfaces; 
+    BoundingBoxList boundingboxes;
+    AlignedFaceList alignedfaces;
+  };
+
+  sequence<float> Feature;
+  sequence<Feature> FeatureList;
+
+
+  interface FaceFeatures
+  {
+    idempotent void detectFace(TImage im, out DetectedFaces detectedFaces); // For an image, detect all the faces present 
+    idempotent void getFaceFeature(AlignedFaceList alignedimlist, out FeatureList faceFeatureList); // For all aligned face images, return their features
+  };
+};

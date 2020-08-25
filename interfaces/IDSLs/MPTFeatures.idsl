@@ -1,0 +1,42 @@
+// This IDSL file is defined for Multi person tracking component in robocomp-aston/detection/humanIdentificaton/MPTFeatures, given an image the component tracks all the humans and returns their Re-id feature based on their apperance   
+module RoboCompMPTFeatures 
+{
+
+  sequence<byte> ImgType; // Defining image as a sequence of bytes
+
+  // Define class to store an image
+  struct TImage
+  {
+
+    int width;
+    int height;
+    int depth;
+    ImgType image;
+  };
+
+  // Defining bounding box as a list of int values
+  sequence<int> BoundingBox;
+  sequence<BoundingBox> BoundingBoxList;
+  sequence<int> TrackingIdList;
+
+  // Define the struct storing the people detected from the component 
+  struct DetectedHumans
+  {
+    int numhumans; 
+    BoundingBoxList boundingboxes; 
+    TrackingIdList trackingidlist;
+  };
+
+
+  // Defining reid feautres as a list of float values
+  sequence<float> Feature;  
+  sequence<Feature> Features;   
+  sequence<TImage> TImageList;
+
+
+  interface MPTFeatures
+  {
+    idempotent void detectHumans(TImage im, out DetectedHumans detectedHumans); // For an image, track all the humans(depends on previous frames for tracking)
+    idempotent void getReidFeature(TImageList imlist, out Features reidFeatures); // For all single person images, return their features based on apperance
+  };
+};
