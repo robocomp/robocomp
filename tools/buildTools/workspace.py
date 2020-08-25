@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 import json
 import os
 import string
@@ -73,30 +73,61 @@ class Workspace:
             return component_dir
 
     ''' find the directory containing component executable'''
-    def find_component_exec(self, component):
-        componentPath = ''
-        for path in self.workspace_paths:
-            #path = string.strip(path) + '/devel'  for now we are not shifting the executables
-            path = string.strip(path) + '/src'
-            for file in os.listdir(path):
-                if string.lower(str(file)) == string.lower(component) and os.path.isdir(os.path.join(path,component)):
-                    if os.path.exists(os.path.join(path,component,'bin',string.lower(component)) ):
-                        componentPath = os.path.join(path,component,'bin')
-        if componentPath != '':
-            return componentPath
+    def find_component_exec_file(self, component):
+        if os.path.exists(component):
+            component_dir = component
+            component = component.split(os.path.sep)[-1]
         else:
-            return False
+            component_dir = self.find_component(component)
+
+        if component_dir:
+            src_path = os.path.join(component_dir.strip(),'src')
+            bin_path = os.path.join(component_dir.strip(),'bin')
+            if os.path.isdir(bin_path):
+                bin_file_path = os.path.join(bin_path, component)
+                if os.access(bin_file_path, os.X_OK):
+                    return bin_file_path
+            elif os.path.isdir(src_path):
+                python_main_path = os.path.join(src_path, component+".py")
+                if os.path.exists(python_main_path):
+                    return python_main_path
+        return ""
+
+    def find_component_bin_path(self, component):
+        if os.path.exists(component):
+            bin_path = component
+        else:
+            bin_path = self.find_component(component)
+        if bin_path:
+            bin_path = os.path.join(bin_path, 'bin')
+            if os.path.exists(bin_path) and os.path.isdir(bin_path):
+                return bin_path
+        return None
 
     ''' find component source directory
         component - component name
         return    - the component directory in src
     '''
-    def find_component_src(self, component):
-        src_dir = self.find_component(component)
-        if src_dir:
-            src_dir = os.path.join(src_dir, 'src')
-            if os.path.exists(src_dir) and os.path.isdir(src_dir):
-                return src_dir
+    def find_component_src_path(self, component):
+        if os.path.exists(component):
+            src_path = component
+        else:
+            src_path = self.find_component(component)
+        if src_path:
+            src_path = os.path.join(src_path, 'src')
+            if os.path.exists(src_path) and os.path.isdir(src_path):
+                return src_path
+        return None
+
+    def find_component_etc_path(self, component):
+        if os.path.exists(component):
+            etc_path = component
+        else:
+            etc_path = self.find_component(component)
+        if etc_path:
+            etc_path = os.path.join(etc_path, 'etc')
+            if os.path.exists(etc_path) and os.path.isdir(etc_path):
+                return etc_path
         return None
 
 
@@ -164,7 +195,7 @@ class Workspace:
             return any([component.lstrip('/').startswith(path.lstrip('/')) for component in self.components])
         return False
 
-    def get_recursive_components_in_dir(self, initial_path):
+    def get_recursive_components_in_dir(self, initial_path, print_path=False):
         components_parents_dirs = defaultdict(list)
         for subdir, dirs, files in os.walk(initial_path):
             if 'CMakeLists.txt' in files and 'etc' in dirs \
@@ -174,7 +205,8 @@ class Workspace:
                     if file.endswith(".cdsl"):
                         filepath= os.path.join(subdir,file)
                         components_parents_dirs[subdir].append(filepath)
-                        print(f'Found {filepath}')
+                        if print_path:
+                            print(f'Found {filepath}')
         return components_parents_dirs
 
     def ask_for_path_selection(self, components_dir_list):
@@ -198,23 +230,29 @@ class Workspace:
             return None
 
     def search_parent_in_workspaces(self, path):
+        path = os.path.abspath(path)
         for workspace_path in self.workspace_paths:
             common_path = os.path.commonpath([path,workspace_path])
             if len(common_path) == len(workspace_path):
                 return workspace_path
         return ""
 
-    def add_workspace(self, initial=None):
+    def add_workspace(self, initial=None, accept_all=False):
         if initial is None:
             initial = os.getcwd()
-        existing_workspace =self.search_parent_in_workspaces(initial)
+        else:
+            initial = os.path.abspath(initial)
+        existing_workspace = self.search_parent_in_workspaces(initial)
         if not existing_workspace:
-            session = PromptSession(u"> ", completer=FuzzyCompleter(PathCompleter()))
-            response = session.prompt("Path to find new components\n> ",
-                                      complete_while_typing=True,
-                                      default=initial,
-                                      pre_run=session.default_buffer.start_completion,
-                                      validator=dir_validator)
+            if accept_all:
+                response = initial
+            else:
+                session = PromptSession(u"> ", completer=FuzzyCompleter(PathCompleter()))
+                response = session.prompt("Path to find new components\n> ",
+                                          complete_while_typing=True,
+                                          default=initial,
+                                          pre_run=session.default_buffer.start_completion,
+                                          validator=dir_validator)
             # Check the final '/' characters
             if response in self.workspace_paths:
                 print(f"{response} already exist in workspaces")
@@ -229,7 +267,11 @@ class Workspace:
                 print(f"No component found in {response}. Workspaces not updated.")
                 return
 
-            answer = confirm(f'Do you want to add {response} to workspaces?')
+            if accept_all:
+                answer = True
+            else:
+                answer = confirm(f'Do you want to add {response} to workspaces?')
+
             if answer:
                 print(f"{response} added to workspaces")
                 self.components += new_components
@@ -238,16 +280,21 @@ class Workspace:
             else:
                 print("Workspaces not updated.")
         else:
-            print(f"{initial} is already a component of {existing_workspace} workspace.")
-            self.update_components_in_workspaces()
+            print(f"{initial} is already part of an existing workspace ({existing_workspace})")
+            self.update_components_in_workspaces(existing_workspace)
 
-    def update_components_in_workspaces(self):
+    def update_components_in_workspaces(self, workspace=None):
         old_components = set(self.components)
         self.components = []
-        for workspace in self.workspace_paths:
+        if workspace is None:
+            for workspace in self.workspace_paths:
+                self.components += self.get_recursive_components_in_dir(workspace)
+            print(f"Updating workspaces")
+        else:
             self.components += self.get_recursive_components_in_dir(workspace)
+            print(f"Updating workspaces {workspace}")
         new_components = list(set(self.components) - old_components)
-        print(f"Found {len(new_components):}")
+        print(f"Found {colored(len(new_components), 'green')} new components")
         print(colored('\n'.join(new_components), 'green'))
         self.save_workspace()
 
@@ -256,13 +303,16 @@ class Workspace:
         session = PromptSession(u"> ", completer=FuzzyCompleter(WordCompleter(self.workspace_paths)))
         if not keyword:
             keyword = os.getcwd()
+        else:
+            keyword = os.path.abspath(keyword)
         response = session.prompt("Path to delete\n> ",
                                   complete_while_typing=True,
                                   default=keyword,
                                   pre_run=session.default_buffer.start_completion)
-        self._delete_components_in_workspace(response)
-        self.workspace_paths.remove(response)
-        self.save_workspace()
+        if response in self.workspace_paths:
+            self._delete_components_in_workspace(response)
+            self.workspace_paths.remove(response)
+            self.save_workspace()
 
     def _delete_components_in_workspace(self, workspace):
         self.components = list(filter(lambda x: not x.startswith(workspace), self.components))

@@ -291,12 +291,13 @@ class TemplateDict(dict):
         result = ""
         for idsl in sorted(set(self.component.recursiveImports + self.component.imports)):
             module = self.component.idsl_pool.module_providing_interface(idsl.split('.')[0])
-            for sequence in module['sequences']:
-                item_type = utils.get_type_string(sequence['typeSequence'], module['name'])
-                if item_type == 'bytes': continue
-                result += Template(LIST_CLASSES_STR).substitute(list_type=sequence['name'].split('/')[1],
-                                                                item_type=item_type,
-                                                                module_name=module['name'])
+            if module is not None:  # For modules without interface
+                for sequence in module['sequences']:
+                    item_type = utils.get_type_string(sequence['typeSequence'], module['name'])
+                    if item_type == 'bytes': continue
+                    result += Template(LIST_CLASSES_STR).substitute(list_type=sequence['name'].split('/')[1],
+                                                                    item_type=item_type,
+                                                                    module_name=module['name'])
         return result
 
 

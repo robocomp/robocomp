@@ -5,104 +5,61 @@ from ..templateCPP.functions import servant
 
 DSR_UI_STR = """\
   <widget class="QWidget" name="centralwidget">
-  <layout class="QVBoxLayout" name="verticalLayout">
-  <item>
-   <widget class="QSplitter" name="splitter_1">
-    <property name="orientation">
-     <enum>Qt::Horizontal</enum>
-    </property>
-    <widget class="QSplitter" name="splitter_2">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <widget class="QTableWidget" name="tableWidgetNodes">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <widget class="QSplitter" name="splitter_1">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
       </property>
+      <widget class="QSplitter" name="splitter_2">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+      </widget>
      </widget>
-     <widget class="QTableWidget" name="tableWidgetEdges">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-     </widget>
-    </widget>
-    <widget class="QScrollArea" name="scrollArea">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Maximum" vsizetype="Expanding">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="minimumSize">
-      <size>
-       <width>500</width>
-       <height>0</height>
-      </size>
-     </property>
-     <property name="widgetResizable">
-      <bool>true</bool>
-     </property>
-     <widget class="QWidget" name="scrollAreaWidgetContents">
-      <property name="geometry">
-       <rect>
-        <x>0</x>
-        <y>0</y>
-        <width>498</width>
-        <height>443</height>
-       </rect>
-      </property>
-     </widget>
-    </widget>
-   </widget>
-  </item>
-  </layout>
+    </item>
+   </layout>
   </widget>
   <widget class="QMenuBar" name="menubar">
-  <property name="geometry">
-  <rect>
-   <x>0</x>
-   <y>0</y>
-   <width>780</width>
-   <height>25</height>
-  </rect>
-  </property>
-  <widget class="QMenu" name="menuFile">
-  <property name="title">
-   <string>File</string>
-  </property>
-  <addaction name="actionSave"/>
-  </widget>
-  <widget class="QMenu" name="menuSimulation">
-  <property name="title">
-   <string>Simulation</string>
-  </property>
-  <addaction name="actionStart_Stop"/>
-  </widget>
-  <addaction name="menuFile"/>
-  <addaction name="menuSimulation"/>
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>780</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionSave"/>
+   </widget>
+   <widget class="QMenu" name="menuSimulation">
+    <property name="title">
+     <string>Simulation</string>
+    </property>
+    <addaction name="actionStart_Stop"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuSimulation"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionSave">
-  <property name="text">
-  <string>Save</string>
-  </property>
+   <property name="text">
+    <string>Save</string>
+   </property>
   </action>
   <action name="actionStart_Stop">
-  <property name="text">
-  <string>Start/Stop</string>
-  </property>
+   <property name="text">
+    <string>Start/Stop</string>
+   </property>
   </action>
 """
 
@@ -112,42 +69,46 @@ configGetString( "","agent_name", aux.value,"");
 params["agent_name"] = aux;
 configGetString( "","agent_id", aux.value,"false");
 params["agent_id"] = aux;
-configGetString( "","read_dsr", aux.value,"true");
-params["read_dsr"] = aux;
-configGetString( "","dsr_input_file", aux.value, "");
-params["dsr_input_file"] = aux;
+
+configGetString( "","tree_view", aux.value, "none");
+params["tree_view"] = aux;
+configGetString( "","graph_view", aux.value, "none");
+params["graph_view"] = aux;
+configGetString( "","2d_view", aux.value, "none");
+params["2d_view"] = aux;
+configGetString( "","3d_view", aux.value, "none");
+params["3d_view"] = aux;
 """
 
 DSR_SOURCES_STR = """\
-$ENV{ROBOCOMP}/classes/graph-related-classes/CRDT.cpp
-$ENV{ROBOCOMP}/classes/graph-related-classes/CRDT_graphviewer.cpp
-$ENV{ROBOCOMP}/classes/graph-related-classes/CRDT_graphnode.cpp
-$ENV{ROBOCOMP}/classes/graph-related-classes/CRDT_graphedge.cpp
-$ENV{ROBOCOMP}/classes/graph-related-classes/fast_rtps/dsrpublisher.cpp
-$ENV{ROBOCOMP}/classes/graph-related-classes/fast_rtps/dsrsubscriber.cpp
-$ENV{ROBOCOMP}/classes/graph-related-classes/fast_rtps/dsrparticipant.cpp
-$ENV{ROBOCOMP}/classes/graph-related-classes/topics/DSRGraphPubSubTypes.cxx
-$ENV{ROBOCOMP}/classes/graph-related-classes/topics/DSRGraph.cxx
-$ENV{ROBOCOMP}/classes/graph-related-classes/inner_api.cpp
-$ENV{ROBOCOMP}/classes/graph-related-classes/dsr_utils.cpp
-$ENV{ROBOCOMP}/classes/graph-related-classes/dsr_to_osg_viewer.cpp
-$ENV{ROBOCOMP}/classes/graph-related-classes/dsr_to_graphicscene_viewer.cpp
-$ENV{ROBOCOMP}/classes/graph-related-classes/dsr_to_graph_viewer.cpp
-$ENV{ROBOCOMP}/classes/graph-related-classes/dsr_to_tree_viewer.cpp
+$ENV{ROBOCOMP}/classes/dsr/core/rtps/dsrpublisher.cpp
+$ENV{ROBOCOMP}/classes/dsr/core/rtps/dsrsubscriber.cpp
+$ENV{ROBOCOMP}/classes/dsr/core/rtps/dsrparticipant.cpp
+$ENV{ROBOCOMP}/classes/dsr/core/topics/IDLGraphPubSubTypes.cxx
+$ENV{ROBOCOMP}/classes/dsr/core/topics/IDLGraph.cxx
+$ENV{ROBOCOMP}/classes/dsr/api/dsr_api.cpp
+$ENV{ROBOCOMP}/classes/dsr/api/dsr_inner_api.cpp
+$ENV{ROBOCOMP}/classes/dsr/api/dsr_utils.cpp
+$ENV{ROBOCOMP}/classes/dsr/gui/dsr_gui.cpp
+$ENV{ROBOCOMP}/classes/dsr/gui/viewers/osg_3d_viewer/osg_3d_viewer.cpp
+$ENV{ROBOCOMP}/classes/dsr/gui/viewers/qscene_2d_viewer/qscene_2d_viewer.cpp
+$ENV{ROBOCOMP}/classes/dsr/gui/viewers/graph_viewer/graph_viewer.cpp
+$ENV{ROBOCOMP}/classes/dsr/gui/viewers/graph_viewer/graph_node.cpp
+$ENV{ROBOCOMP}/classes/dsr/gui/viewers/graph_viewer/graph_edge.cpp
+$ENV{ROBOCOMP}/classes/dsr/gui/viewers/tree_viewer/tree_viewer.cpp
+$ENV{ROBOCOMP}/classes/dsr/gui/viewers/_abstract_graphic_view.cpp
 """
 
 DSR_HEADERS_STR = """\
-$ENV{ROBOCOMP}/classes/graph-related-classes/CRDT.h
-$ENV{ROBOCOMP}/classes/graph-related-classes/CRDT_graphviewer.h
-$ENV{ROBOCOMP}/classes/graph-related-classes/CRDT_graph.h
-$ENV{ROBOCOMP}/classes/graph-related-classes/CRDT_graphnode.h
-$ENV{ROBOCOMP}/classes/graph-related-classes/CRDT_graphedge.h
+$ENV{ROBOCOMP}/classes/dsr/api/dsr_api.h
+$ENV{ROBOCOMP}/classes/dsr/gui/dsr_gui.h
 """
 
 DSR_DEDINITIONS = """\
-add_definitions(-O3  -fmax-errors=1 -std=c++2a )
-SET(SPECIFIC_LIBS OpenThreads fastcdr fastrtps osgDB)
+add_definitions(-g  -fmax-errors=1 -std=c++2a )
 """
+
+DSR_LIBS = " fastcdr fastrtps osgDB"
 
 class TemplatesManagerCpp(ComponentTemplatesManager):
     def __init__(self, component):
@@ -262,11 +223,14 @@ class TemplatesManagerCpp(ComponentTemplatesManager):
         dsr_sources = ""
         dsr_headers = ""
         dsr_definitions = ""
+        dsr_libs = ""
         if self.component.dsr:
             dsr_sources = DSR_SOURCES_STR
             dsr_headers = DSR_HEADERS_STR
             dsr_definitions = DSR_DEDINITIONS
+            dsr_libs = DSR_LIBS
         return {'dsr_sources': dsr_sources,
                 'dsr_headers': dsr_headers,
-                'dsr_definitions': dsr_definitions}
+                'dsr_definitions': dsr_definitions,
+                'dsr_libs': dsr_libs}
 

@@ -1,0 +1,21 @@
+module RoboCompCoppeliaUtils
+        {
+                struct PoseType
+                {
+                    float x;
+                    float y;
+                    float z;
+                    float rx;
+                    float ry;
+                    float rz;
+                };
+
+                enum TargetTypes { Info, Hand, HeadCamera };
+
+                interface CoppeliaUtils
+                {
+                    void addOrModifyDummy(TargetTypes type, string name, PoseType pose);
+                };
+        };
+
+

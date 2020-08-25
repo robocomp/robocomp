@@ -93,9 +93,10 @@ class DSLFactory(Singleton):
             # get the result from string
             try:
                 result, parser = self.from_string(string, dsl_type, **kwargs)
-            except pyparsing.ParseException as e:
+            except (pyparsing.ParseException, ValueError) as e:
                 e.filepath = file_path
                 raise
+
             else:
                 result['filename'] = file_path
                 # store the parser with the result in the cache fo the factory

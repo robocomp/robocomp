@@ -3,13 +3,21 @@ import datetime
 import dsl_parsers.parsing_utils as p_utils
 from .. import function_utils as utils
 
-INNERMODEL_ATTRIBUTES_STR = """\
+INNERMODELVIEWER_ATTRIBUTES_STR = """\
 #ifdef USE_QTGUI
 	OsgView *osgView;
 	InnerModelViewer *innerModelViewer;
 #endif
 """
 
+INNERMODEL_ATTRIBUTE_STR = """\
+std::shared_ptr < InnerModel > innerModel;
+"""
+
+
+INNERMODEL_INCLUDE_STR = """\
+#include <innermodel/innermodel.h>
+"""
 
 INNERMODELVIEWER_INCLUDES_STR = """\
 #ifdef USE_QTGUI
@@ -19,24 +27,26 @@ INNERMODELVIEWER_INCLUDES_STR = """\
 """
 
 DSR_INCLUDES_STR = """\
-#include "/home/robocomp/robocomp/classes/graph-related-classes/CRDT.h"
-#include "/home/robocomp/robocomp/classes/graph-related-classes/CRDT_graphviewer.h"
+#include "dsr/api/dsr_api.h"
+#include "dsr/gui/dsr_gui.h"
 """
 
 DSR_ATTRIBUTES = """\
 // DSR graph
-std::shared_ptr<CRDT::CRDTGraph> G;
+std::shared_ptr<DSR::DSRGraph> G;
 
 //DSR params
 std::string agent_name;
 int agent_id;
-bool read_dsr;
-std::string dsr_input_file;
+
+bool tree_view;
+bool graph_view;
+bool qscene_2d_view;
+bool osg_3d_view;
 
 // DSR graph viewer
-std::unique_ptr<DSR::GraphViewer> graph_viewer;
+std::unique_ptr<DSR::DSRViewer> graph_viewer;
 QHBoxLayout mainLayout;
-QWidget window;
 """
 
 class TemplateDict(dict):
@@ -45,12 +55,14 @@ class TemplateDict(dict):
         self.component = component
         self['year'] = str(datetime.date.today().year)
         self['agmagent_comment'] = self.agmagent_comment()
+        self['innermodel_include'] = self.innermodel_include()
         self['innermodelviewer_includes'] = self.innermodelviewer_includes()
         self['constructor_proxies'] = self.constructor_proxies()
         self['implements_method_definitions'] = self.implements_method_definitions()
         self['subscribes_method_definitions'] = self.subscribes_method_definitions()
         self['compute'] = self.compute()
         self['statemachine_methods_definitions'] = self.statemachine_methods_definitions()
+        self['innermodel_attribute'] = self.innermodel_attribute()
         self['innermodelviewer_attributes'] = self.innermodelviewer_attributes()
         self['agm_attributes'] = self.agm_attributes()
         self['dsr_includes'] = self.dsr_includes()
@@ -137,10 +149,17 @@ class TemplateDict(dict):
             result += "//--------------------\n"
         return result
 
+
+    def innermodel_attribute(self):
+        result = ""
+        if "dsr" not in self.component.options:
+            result += INNERMODEL_ATTRIBUTE_STR
+        return result
+
     def innermodelviewer_attributes(self):
         result = ""
         if self.component.innermodelviewer:
-            result += INNERMODEL_ATTRIBUTES_STR
+            result += INNERMODELVIEWER_ATTRIBUTES_STR
         return result
 
     def agm_attributes(self):
@@ -161,6 +180,12 @@ class TemplateDict(dict):
         return result
 
     def innermodelviewer_includes(self):
+        result = ""
+        if "dsr" not in self.component.options:
+            result += INNERMODEL_INCLUDE_STR
+        return result
+
+    def innermodel_include(self):
         result = ""
         if self.component.innermodelviewer:
             result += INNERMODELVIEWER_INCLUDES_STR

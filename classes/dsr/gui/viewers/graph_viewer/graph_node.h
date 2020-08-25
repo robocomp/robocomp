@@ -274,13 +274,14 @@ class GraphNode : public QObject, public QGraphicsEllipseItem
     Q_OBJECT
     Q_PROPERTY(QColor node_color READ _node_color WRITE set_node_color)
 	public:
-    GraphNode(std::shared_ptr<DSR::DSRtoGraphViewer> graph_viewer_);
+    GraphNode(std::shared_ptr<DSR::GraphViewer> graph_viewer_);
 
     //std::string name_in_graph;
     std::int32_t id_in_graph;
     QList<GraphEdge *> edgeList;
     
     void addEdge(GraphEdge *edge);
+    void deleteEdge(GraphEdge *edge);
     QList<GraphEdge *> edges() const;
     void calculateForces();
     bool advancePosition();
@@ -293,7 +294,7 @@ class GraphNode : public QObject, public QGraphicsEllipseItem
     QPainterPath shape() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
     void setColor(const std::string &plain);
-    std::shared_ptr<DSR::DSRtoGraphViewer> getGraphViewer() const { return dsr_to_graph_viewer;};
+    std::shared_ptr<DSR::GraphViewer> getGraphViewer() const { return dsr_to_graph_viewer;};
     void set_node_color(const QColor& c);
     QColor _node_color();
     void change_detected();
@@ -312,7 +313,7 @@ class GraphNode : public QObject, public QGraphicsEllipseItem
     QGraphicsSimpleTextItem *tag;
     QString dark_color = "darkyellow", plain_color = "yellow";
     std::string type;
-    std::shared_ptr<DSR::DSRtoGraphViewer> dsr_to_graph_viewer;
+    std::shared_ptr<DSR::GraphViewer> dsr_to_graph_viewer;
     QBrush node_brush;
 	QPropertyAnimation* animation;
 };

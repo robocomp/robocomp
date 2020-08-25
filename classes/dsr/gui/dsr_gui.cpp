@@ -49,7 +49,7 @@ std::string get_self_path()
 	return "";
 }
 
-GraphViewer::GraphViewer(QMainWindow * widget, std::shared_ptr<DSR::DSRGraph> G_, int options, view main) : QObject()
+DSRViewer::DSRViewer(QMainWindow * widget, std::shared_ptr<DSR::DSRGraph> G_, int options, view main) : QObject()
 {
 	G = G_;
     qRegisterMetaType<std::int32_t>("std::int32_t");
@@ -69,6 +69,7 @@ GraphViewer::GraphViewer(QMainWindow * widget, std::shared_ptr<DSR::DSRGraph> G_
 
 	//MenuBar
     viewMenu = window->menuBar()->addMenu(window->tr("&View"));
+	forcesMenu = window->menuBar()->addMenu(window->tr("&Forces"));
 	auto actionsMenu = window->menuBar()->addMenu(window->tr("&Actions"));
 	auto restart_action = actionsMenu->addAction("Restart");
 
@@ -85,12 +86,12 @@ GraphViewer::GraphViewer(QMainWindow * widget, std::shared_ptr<DSR::DSRGraph> G_
 //		restart_app(true);
 	});
 
-
+	main_widget = nullptr;
 	initialize_views(options, main);
 }
 
 
-GraphViewer::~GraphViewer()
+DSRViewer::~DSRViewer()
 {
 	QSettings settings("RoboComp", "DSR");
     settings.beginGroup("MainWindow");
@@ -100,7 +101,7 @@ GraphViewer::~GraphViewer()
 }
 
 
-void GraphViewer::restart_app(bool)
+void DSRViewer::restart_app(bool)
 {
 //	qDebug()<<"TO RESTART";
 //	auto executable_path = get_self_path();
@@ -142,25 +143,49 @@ void GraphViewer::restart_app(bool)
 //	}
 }
 
-void GraphViewer::initialize_views(int options, view central){
+void DSRViewer::initialize_views(int options, view central){
 	//Create docks view and main widget
 	std::map<view,QString> valid_options{{view::graph,"Graph"}, {view::tree,"Tree"}, {view::osg,"3D"}, {view::scene, "2D"}};
 
 	// creation of docks and mainwidget
-	for (auto option: valid_options) {
-		if(option.first == central)
+	for (auto const& [type, name] : valid_options) {
+		if(type == central and central != view::none)
 		{
-			auto viewer = create_widget(option.first);
+			auto viewer = create_widget(type);
 			window->setCentralWidget(viewer);
+			WidgetContainer * widget_c = new WidgetContainer();
+			widget_c->widget = viewer;
+			widget_c->name = name;
+			widget_c->type = type;
+			widgets[name] = widget_c;
+			widgets_by_type[type]= widget_c;
 			this->main_widget = viewer;
 		}
-		else if(options & option.first ) {
-			auto viewer = create_widget(option.first);
-			create_dock_and_menu(QString(option.second), viewer);
+		else if(options & type ) {
+			auto viewer = create_widget(type);
+			WidgetContainer * widget_c = new WidgetContainer();
+			widget_c->widget = viewer;
+			widget_c->name = name;
+			widget_c->type = type;
+			widgets[name] = widget_c;
+			widgets_by_type[type]= widget_c;
+			create_dock_and_menu(QString(name), viewer);
 		}
 	}
+	if(widgets_by_type.count(view::graph))
+	{
+		QAction *new_action = new QAction("Animation", this);
+		new_action->setStatusTip(tr("Toggle animation"));
+		new_action->setCheckable(true);
+		new_action->setChecked(false);
+		forcesMenu->addAction(new_action);
+		connect(new_action, &QAction::triggered, this, [this](bool state)
+		{
+			qobject_cast<GraphViewer*>(widgets_by_type[view::graph]->widget)->toggle_animation(state==true);
+		});
+	}
 
-//	Tabification of curren docks
+//	Tabification of current docks
 	QDockWidget * previous = nullptr;
 	for(auto dock: docks) {
 		if (previous)
@@ -169,57 +194,72 @@ void GraphViewer::initialize_views(int options, view central){
 	}
 
 //	connection of tree to graph signals
-	if(docks.count(QString("Tree"))==1)
-	{
-		auto graph_widget = qobject_cast<DSRtoGraphViewer*>(this->main_widget);
-		if(graph_widget)
-		{
-			DSRtoTreeViewer * tree_widget= qobject_cast<DSRtoTreeViewer*>(docks["Tree"]->widget());
-			GraphViewer::connect(
-					tree_widget,
-					&DSRtoTreeViewer::node_check_state_changed,
-					graph_widget,
-					[=] (int value, int id, const std::string &type, QTreeWidgetItem*) {graph_widget->hide_show_node_SLOT(id, value==2);});
+	if(docks.count(QString("Tree"))==1) {
+		if (this->main_widget) {
+			auto graph_widget = qobject_cast<GraphViewer*>(this->main_widget);
+			if (graph_widget) {
+				TreeViewer* tree_widget = qobject_cast<TreeViewer*>(docks["Tree"]->widget());
+				DSRViewer::connect(
+						tree_widget,
+						&TreeViewer::node_check_state_changed,
+						graph_widget,
+						[=](int value, int id, const std::string& type, QTreeWidgetItem*) {
+							graph_widget->hide_show_node_SLOT(id, value==2); });
+			}
 		}
-
 	}
-
+	if((docks.size())>0 or central!=none)
+	{
+		window->show();
+	}
+	else {
+		window->showMinimized();
+	}
 }
 
 
-QWidget* GraphViewer::get_widget(view type)
+QWidget* DSRViewer::get_widget(view type)
 {
-	if(widgets.count(type)!=0)
-		return widgets[type];
+	if(widgets_by_type.count(type)!=0)
+		return widgets_by_type[type]->widget;
 	return nullptr;
 }
 
-QWidget* GraphViewer::create_widget(view type){
+QWidget* DSRViewer::get_widget(QString name)
+{
+	if(widgets.count(name)!=0)
+		return widgets[name]->widget;
+	return nullptr;
+}
+
+QWidget* DSRViewer::create_widget(view type){
 
 	QWidget * widget_view = nullptr;
 	switch(type) {
 //		graph
 		case view::graph:
-			widget_view = new DSR::DSRtoGraphViewer(G);
+			widget_view = new DSR::GraphViewer(G);
 			break;
 //		3D
 		case view::osg:
-			widget_view = new DSR::DSRtoOSGViewer(G, 1, 1);
+			widget_view = new DSR::OSG3dViewer(G, 1, 1);
 			break;
 //		Tree
 		case view::tree:
-			widget_view = new DSR::DSRtoTreeViewer(G);
+			widget_view = new DSR::TreeViewer(G);
 			break;
 //		2D
 		case view::scene:
-			widget_view = new DSR::DSRtoGraphicsceneViewer(G);
+			widget_view = new DSR::QScene2dViewer(G);
+			break;
+		case view::none:
 			break;
 	}
-	widgets[type] = widget_view;
+	connect(this, SIGNAL(resetViewer(QWidget*)), widget_view, SLOT(reload(QWidget*)));
 	return widget_view;
 }
 
-void GraphViewer::create_dock_and_menu(QString name, QWidget* view){
+void DSRViewer::create_dock_and_menu(QString name, QWidget* view){
 //	TODO: Check if name exists in docks
 	QDockWidget* dock_widget;
 	if(this->docks.count(name)) {
@@ -228,24 +268,71 @@ void GraphViewer::create_dock_and_menu(QString name, QWidget* view){
 	}
 	else{
 		dock_widget = new QDockWidget(name);
-		viewMenu->addAction(dock_widget->toggleViewAction());
+		QAction *new_action = new QAction(name, this);
+		new_action->setStatusTip(tr("Create a new file"));
+		new_action->setCheckable(true);
+		new_action->setChecked(true);
+		connect(new_action, &QAction::triggered, this, [this, name](bool state) {
+			switch_view(state, widgets[name]);
+		});
+		viewMenu->addAction(new_action);
 		this->docks[name] = dock_widget;
+		widgets[name]->dock = dock_widget;
 	}
 	dock_widget->setWidget(view);
+	dock_widget->setAllowedAreas(Qt::AllDockWidgetAreas);
 	window->addDockWidget(Qt::RightDockWidgetArea, dock_widget);
+	dock_widget->raise();
 }
 
+void DSRViewer::add_custom_widget_to_dock(QString name, QWidget* custom_view){
+	WidgetContainer * widget_c = new WidgetContainer();
+	widget_c->name = name;
+	widget_c->type = view::none;
+	widget_c->widget = custom_view;
+	widgets[name] = widget_c;
+	create_dock_and_menu(name, custom_view);
+//	Tabification of current docks
+	QDockWidget * previous = nullptr;
+	for(auto& [dock_name, dock]: docks) {
+		if (previous and previous!=dock) {
+			window->tabifyDockWidget(previous, docks[name]);
+			break;
+		}
+		previous = dock;
+	}
+	docks[name]->raise();
+}
 
 
 ////////////////////////////////////////
 /// UI slots
 ////////////////////////////////////////
-void GraphViewer::saveGraphSLOT()
+void DSRViewer::saveGraphSLOT()
 { 
 	emit saveGraphSIGNAL(); 
 }
 
-//void GraphViewer::toggleSimulationSLOT()
+void DSRViewer::switch_view(bool state, WidgetContainer* container)
+{
+	QWidget * widget = container->widget;
+	QDockWidget * dock = container->dock;
+	if(!state)
+	{
+		widget->blockSignals(true);
+		dock->hide();
+	}
+	else{
+		widget->blockSignals(false);
+		emit resetViewer(widget);
+		dock->show();
+		dock->raise();
+	}
+}
+
+
+
+//void DSRViewer::toggleSimulationSLOT()
 //{
 //	this->do_simulate = !do_simulate;
 //	if(do_simulate)
@@ -258,7 +345,7 @@ void GraphViewer::saveGraphSLOT()
 ///// Qt Events
 /////////////////////////
 
-void GraphViewer::keyPressEvent(QKeyEvent* event) 
+void DSRViewer::keyPressEvent(QKeyEvent* event)
 {
 	if (event->key() == Qt::Key_Escape)
 		emit closeWindowSIGNAL();

@@ -2,6 +2,7 @@ import filecmp
 import os
 import subprocess
 import sys
+from termcolor import colored
 
 import robocompdslutils
 from templates.templateCPP.templatecpp import TemplatesManagerCpp
@@ -65,7 +66,13 @@ class FilesGenerator:
         self.__show_diff(new_existing_files)
 
     def __load_ast(self):
-        self.ast = dsl_factory.DSLFactory().from_file(self.dsl_file, includeDirectories=self.include_dirs)
+        try:
+            self.ast = dsl_factory.DSLFactory().from_file(self.dsl_file, includeDirectories=self.include_dirs)
+        except (ValueError) as e:
+            print(f"Parsing error in file {colored(self.dsl_file, 'red')} while generating AST.")
+            print(f"Exception info: {colored(e.args[0], 'red')} in line {e.args[1]} of:\n{colored(e.args[2].rstrip(), 'magenta')}")
+            exit(1)
+
 
     def __create_files(self):
         new_existing_files = {}

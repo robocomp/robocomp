@@ -26,7 +26,7 @@
 #include <fastrtps/config.h>
 #include <fastrtps/TopicDataType.h>
 
-#include "DSRGraph.h"
+#include "IDLGraph.h"
 
 #if !defined(GEN_API_VER) || (GEN_API_VER != 1)
 #error Generated DSRGraph is not compatible with current installed Fast-RTPS. Please, regenerate it with fastrtpsgen.

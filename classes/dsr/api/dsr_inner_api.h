@@ -2,7 +2,7 @@
 #define INNER_API
 
 #include <qmat/QMatAll>
-#include "../core/topics/DSRGraphPubSubTypes.h"
+#include "../core/topics/IDLGraphPubSubTypes.h"
 
 namespace DSR
 {

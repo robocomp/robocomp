@@ -162,21 +162,41 @@ ${methods}
 DSR_SET_PARAMS = """\
 agent_name = params["agent_name"].value;
 agent_id = stoi(params["agent_id"].value);
-read_dsr = params["read_dsr"].value == "true";
-dsr_input_file = params["dsr_input_file"].value;
+
+tree_view = params["tree_view"].value == "true";
+graph_view = params["graph_view"].value == "true";
+qscene_2d_view = params["2d_view"].value == "true";
+osg_3d_view = params["3d_view"].value == "true";
 """
 
 DSR_INITIALIZE = """\
 // create graph
-G = std::make_shared<CRDT::CRDTGraph>(0, agent_name, agent_id); // Init nodes
+G = std::make_shared<DSR::DSRGraph>(0, agent_name, agent_id, "", dsrgetid_proxy); // Init nodes
 std::cout<< __FUNCTION__ << "Graph loaded" << std::endl;  
 
 // Graph viewer
-graph_viewer = std::make_unique<DSR::GraphViewer>(G);
-mainLayout.addWidget(graph_viewer.get());
-window.setLayout(&mainLayout);
-setCentralWidget(&window);
-setWindowTitle(QString::fromStdString(agent_name));
+using opts = DSR::DSRViewer::view;
+int current_opts = 0;
+opts main = opts::none;
+if(tree_view)
+{
+    current_opts = current_opts | opts::tree;
+}
+if(graph_view)
+{
+    current_opts = current_opts | opts::graph;
+    main = opts::graph;
+}
+if(qscene_2d_view)
+{
+    current_opts = current_opts | opts::scene;
+}
+if(osg_3d_view)
+{
+    current_opts = current_opts | opts::osg;
+}
+graph_viewer = std::make_unique<DSR::DSRViewer>(this, G, current_opts, main);
+setWindowTitle(QString::fromStdString(agent_name + "-") + QString::number(agent_id));
 
 this->Period = period;
 timer.start(Period);

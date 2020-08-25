@@ -11,19 +11,23 @@
 #include <fastrtps/transport/UDPv4TransportDescriptor.h>
 #include <fastrtps/Domain.h>
 
+
+#include <QtCore/qlogging.h>
+#include <QtCore/qdebug.h>
+
 using namespace DSR;
 
 /////////////////////////////////////////////////
 ///// PUBLIC METHODS
 /////////////////////////////////////////////////
 
-DSRGraph::DSRGraph(int root, std::string name, int id, std::string dsr_input_file, RoboCompDSRGetID::DSRGetIDPrxPtr dsr_getid_proxy_) : agent_id(id) , agent_name(name)
+DSRGraph::DSRGraph(int root, std::string name, int id, std::string dsr_input_file, RoboCompDSRGetID::DSRGetIDPrxPtr dsr_getid_proxy_) : agent_id(id) , agent_name(name), copy(false)
 {
     dsr_getid_proxy = dsr_getid_proxy_;
     graph_root = root;
     nodes = Nodes(graph_root);
     utils = std::make_unique<Utilities>(this);
-    std::cout << "Agent name: " << agent_name << std::endl;
+    qDebug() << "Agent name: " << QString::fromStdString(agent_name);
     work = true;
 
     // RTPS Create participant 
@@ -65,10 +69,14 @@ DSRGraph::DSRGraph(int root, std::string name, int id, std::string dsr_input_fil
 
 DSRGraph::~DSRGraph()
 {
-    qDebug() << "Removing rtps participant";
-    eprosima::fastrtps::Domain::removeParticipant(dsrparticipant.getParticipant()); // Remove a Participant and all associated publishers and subscribers.
-    fullgraph_thread.join();
-    delta_thread.join();
+
+    if (!copy) {
+        qDebug() << "Removing rtps participant";
+        eprosima::fastrtps::Domain::removeParticipant(
+                dsrparticipant.getParticipant()); // Remove a Participant and all associated publishers and subscribers.
+        fullgraph_thread.join();
+        delta_thread.join();
+    }
 }
 
 //////////////////////////////////////
@@ -107,7 +115,10 @@ bool DSRGraph::insert_or_assign_node(const N &node)
             throw std::runtime_error((std::string("Cannot insert node in G, id mut be unique ") + __FILE__ + " " + __FUNCTION__ + " " + std::to_string(__LINE__)).data());
         std::tie(r, aw) = insert_or_assign_node_(node);
     }
-    if (r) {
+
+
+
+    if (r and !copy) {
         if (aw.has_value())
                 dsrpub.write(&aw.value());
 
@@ -144,7 +155,13 @@ std::optional<uint32_t> DSRGraph::insert_node(Node& node)
         {
             int new_node_id = dsr_getid_proxy->getID();    
             node.id(new_node_id);
-            node.name(node.type() + "_" + std::to_string(new_node_id));
+            if (node.name().empty() or name_map.find(node.name()) != name_map.end())
+                node.name(node.type() + "_" + std::to_string(new_node_id));
+        }
+        else
+        {
+            qWarning() << __FILE__ << __FUNCTION__ << "Cannot connect to idserver. Aborting";
+            std::terminate();
         }
     }
     catch(const std::exception& e)
@@ -163,13 +180,14 @@ std::optional<uint32_t> DSRGraph::insert_node(Node& node)
     }
     if (r) 
     {
-        if (aw.has_value())
-            dsrpub.write(&aw.value());
+        if (!copy) {
+            if (aw.has_value())
+                dsrpub.write(&aw.value());
 
-        emit update_node_signal(node.id(), node.type());
-        for (const auto &[k,v]: node.fano())
-                emit update_edge_signal(node.id(), k.to(), v.type());
-
+            emit update_node_signal(node.id(), node.type());
+            for (const auto &[k, v]: node.fano())
+                    emit update_edge_signal(node.id(), k.to(), v.type());
+        }
         return node.id();
     }
     return {};  // AQUI NO CREA EL NODO PERO NO DA INFORMACION DE POR QUE
@@ -189,7 +207,7 @@ bool DSRGraph::update_node(const N &node)
             throw std::runtime_error((std::string("Cannot update node in G, id and name must be unique")  + __FILE__ + " " + __FUNCTION__ + " " + std::to_string(__LINE__)).data());
         std::tie(r, aw) = insert_or_assign_node_(node);
     }
-    if (r) {
+    if (r and !copy) {
         if (aw.has_value())
             dsrpub.write(&aw.value());
 
@@ -217,14 +235,16 @@ bool DSRGraph::delete_node(const std::string& name)
     }
 
     if (result) {
-        emit del_node_signal(id.value());
+        if (!copy) {
+            emit del_node_signal(id.value());
 
-        for (auto &a  : aw_)
-            dsrpub.write(&a);
+            for (auto &a  : aw_)
+                dsrpub.write(&a);
 
-        for (auto &[id0, id1, label] : edges_)
-                emit del_edge_signal(id0, id1, label);
-        return true;
+            for (auto &[id0, id1, label] : edges_)
+                    emit del_edge_signal(id0, id1, label);
+            return true;
+        }
     }
     return false;
 }
@@ -242,13 +262,14 @@ bool DSRGraph::delete_node(int id)
     }
 
     if (result) {
-        emit del_node_signal(id);
+        if (!copy) {
+            emit del_node_signal(id);
 
-        for (auto &a  : aw_)
-            dsrpub.write(&a);
-        for (auto &[id0, id1, label] : edges_)
-            emit del_edge_signal(id0, id1, label);
-
+            for (auto &a  : aw_)
+                dsrpub.write(&a);
+            for (auto &[id0, id1, label] : edges_)
+                    emit del_edge_signal(id0, id1, label);
+        }
         return true;
     }
     return false;
@@ -263,7 +284,7 @@ std::tuple<bool, vector<tuple<int, int, std::string>>, vector<AworSet>> DSRGraph
     auto node = get_(id);
     if (!node.has_value()) return make_tuple(false, edges_, aw);
     for (const auto &v : node.value().fano()) { // Delete all edges from this node.
-        std::cout << id << " -> " << v.first.to() << " " << v.first.type() << std::endl;
+        qDebug() << id << " -> " << v.first.to() << " " << QString::fromStdString(v.first.type()) ;
          edges_.emplace_back(make_tuple(id, v.first.to(), v.first.type()));
     }
     // Get remove delta.
@@ -326,6 +347,21 @@ std::optional<Edge> DSRGraph::get_edge(int from, int to, const std::string &key)
     return get_edge_(from, to, key);
 }
 
+std::optional<Edge> DSRGraph::get_edge(const Node& n, const std::string& to, const std::string& key)
+{
+    std::optional<int> id_to = get_id_from_name(to);
+    if (id_to.has_value()) {
+        EdgeKey ek; ek.to(id_to.value()); ek.type(key);
+        return (n.fano().find(ek) != n.fano().end()) ?  std::make_optional(n.fano().find(ek)->second) : std::nullopt;
+    }
+    return {};
+}
+
+std::optional<Edge> DSRGraph::get_edge(const Node &n, int to, const std::string& key)
+{
+    EdgeKey ek; ek.to(to); ek.type(key);
+    return (n.fano().find(ek) != n.fano().end()) ?  std::make_optional(n.fano().find(ek)->second) : std::nullopt;
+};
 std::optional<Edge> DSRGraph::get_edge_(int from, int  to, const std::string& key)
 {
     std::shared_lock<std::shared_mutex>  lock(_mutex);
@@ -367,18 +403,19 @@ bool DSRGraph::insert_or_assign_edge(const Edge& attrs)
             return false;
         }
     }
-    if (r)
-        emit update_edge_signal( attrs.from(),  attrs.to(), attrs.type());
-    if (aw.has_value())
-        dsrpub.write(&aw.value());
-
+    if (!copy) {
+        if (r)
+                emit update_edge_signal(attrs.from(), attrs.to(), attrs.type());
+        if (aw.has_value())
+            dsrpub.write(&aw.value());
+    }
     return true;
 }
 
 void DSRGraph::insert_or_assign_edge_RT(Node& n, int to, std::vector<float>&& trans, std::vector<float>&& rot_euler)
 {
     bool r = false;
-
+    bool no_send = true;
     std::optional<AworSet> awor1;
     std::optional<AworSet> awor2;
     std::optional<Node> to_n;
@@ -386,7 +423,7 @@ void DSRGraph::insert_or_assign_edge_RT(Node& n, int to, std::vector<float>&& tr
         std::unique_lock<std::shared_mutex> lock(_mutex);
         if (in(to))
         {
-            EdgeKey ek; ek.to(to); ek.type("RT");   
+            EdgeKey ek; ek.to(to); ek.type("RT");
             Edge e; e.to(to); e.from(n.id()); e.type("RT");
             Attrib tr; tr.type(3); tr.value().float_vec(trans);
             Attrib rot; rot.type(3); rot.value().float_vec(rot_euler);
@@ -395,46 +432,71 @@ void DSRGraph::insert_or_assign_edge_RT(Node& n, int to, std::vector<float>&& tr
             n.fano().insert_or_assign(ek, e);
             n.agent_id(agent_id);
             to_n = get_(to);
-            bool res1 = modify_attrib_local(to_n.value(), "parent", n.id());
-            if (!res1) (void) add_attrib_local(to_n.value(), "parent", n.id());
-            bool res2 = modify_attrib_local(to_n.value(), "level",  get_node_level(n).value() + 1 );
-            if (!res2) (void) add_attrib_local(to_n.value(), "level",  get_node_level(n).value() + 1 );
+
+            if (auto x = get_attrib_by_name<int>(to_n.value(), "parent"); x.has_value()) {
+                if (x.value() != n.id()) {
+                    modify_attrib_local(to_n.value(), "parent", n.id());
+                    no_send = false;
+                }
+            } else {
+                add_attrib_local(to_n.value(), "parent", n.id());
+                no_send = false;
+            }
+            if (auto x = get_attrib_by_name<int>(to_n.value(), "level"); x.has_value()) {
+                if(x.value() != get_node_level(n).value() + 1) {
+                    modify_attrib_local(to_n.value(), "level", get_node_level(n).value() + 1);
+                    no_send = false;
+                }
+            } else {
+                add_attrib_local(to_n.value(), "level",  get_node_level(n).value() + 1 );
+                no_send = false;
+            }
+
 
             auto [r1, aw1] = insert_or_assign_node_(n);
-            auto [r2, aw2] = insert_or_assign_node_(to_n.value());
-
-            if(r1 and r2) {
-                r = true;
+            if (r1) {
                 awor1 = std::move(aw1);
-                awor2 = std::move(aw2);
+                r = true;
+            } else {
+                throw std::runtime_error(
+                        "Could not insert Node " + std::to_string(n.id()) + " in G in insert_or_assign_edge_RT() " +
+                        __FILE__ + " " + __FUNCTION__ + " " + std::to_string(__LINE__));
             }
-            else
-                throw std::runtime_error("Could not insert Node " + std::to_string(n.id()) + " in G in insert_or_assign_edge_RT() " +  __FILE__ + " " + __FUNCTION__ + " " + std::to_string(__LINE__));
+
+            if(!no_send) {
+                auto[r2, aw2] = insert_or_assign_node_(to_n.value());
+                if (r2)  { awor2 = std::move(aw2); }
+                else {
+                    throw std::runtime_error("Could not insert Node " + std::to_string(to_n.value().id()) +
+                                             " in G in insert_or_assign_edge_RT() " + __FILE__ + " " + __FUNCTION__ +
+                                             " " + std::to_string(__LINE__));
+                }
+            }
         } else
             throw std::runtime_error("Destination node " + std::to_string(n.id()) + " not found in G in insert_or_assign_edge_RT() "  +  __FILE__ + " " + __FUNCTION__ + " " + std::to_string(__LINE__));
     }
-    if (r) {
-        emit update_edge_signal(n.id(), to, "RT");
-        emit update_node_signal(to_n.value().id(), to_n.value().type());
+    if (!copy) {
+        if (r) {
+            emit update_edge_signal(n.id(), to, "RT");
+            if (!no_send) emit update_node_signal(to_n.value().id(), to_n.value().type());
+        }
+        if (awor1.has_value()) { dsrpub.write(&awor1.value()); }
+        if (awor2.has_value() and !no_send) { dsrpub.write(&awor2.value()); }
     }
-    if (awor1.has_value()) {  dsrpub.write(&awor1.value()); }
-    if (awor2.has_value()) {  dsrpub.write(&awor2.value()); }
-
 }
 
 void DSRGraph::insert_or_assign_edge_RT(Node& n, int to, const std::vector<float>& trans, const std::vector<float>& rot_euler)
 {
     bool r = false;
-
+    bool no_send = true;
     std::optional<AworSet> awor1;
     std::optional<AworSet> awor2;
     std::optional<Node> to_n;
-
     {
         std::unique_lock<std::shared_mutex> lock(_mutex);
         if (in(to))
         {
-            EdgeKey ek; ek.to(to); ek.type("RT");   // PONER EN UNA TABLA
+            EdgeKey ek; ek.to(to); ek.type("RT");
             Edge e; e.to(to); e.from(n.id()); e.type("RT");
             Attrib tr; tr.type(3); tr.value().float_vec(trans);
             Attrib rot; rot.type(3); rot.value().float_vec(rot_euler);
@@ -443,31 +505,57 @@ void DSRGraph::insert_or_assign_edge_RT(Node& n, int to, const std::vector<float
             n.fano().insert_or_assign(ek, e);
             n.agent_id(agent_id);
             to_n = get_(to);
-            bool res1 = modify_attrib_local(to_n.value(), "parent", n.id());
-            if (!res1) (void) add_attrib_local(to_n.value(), "parent", n.id());
-            bool res2 = modify_attrib_local(to_n.value(), "level",  get_node_level(n).value() + 1 );
-            if (!res2) (void) add_attrib_local(to_n.value(), "level",  get_node_level(n).value() + 1 );
+
+            if (auto x = get_attrib_by_name<int>(to_n.value(), "parent"); x.has_value()) {
+                if (x.value() != n.id()) {
+                    modify_attrib_local(to_n.value(), "parent", n.id());
+                    no_send = false;
+                }
+            } else {
+                add_attrib_local(to_n.value(), "parent", n.id());
+                no_send = false;
+            }
+            if (auto x = get_attrib_by_name<int>(to_n.value(), "level"); x.has_value()) {
+                if(x.value() != get_node_level(n).value() + 1) {
+                    modify_attrib_local(to_n.value(), "level", get_node_level(n).value() + 1);
+                    no_send = false;
+                }
+            } else {
+                add_attrib_local(to_n.value(), "level",  get_node_level(n).value() + 1 );
+                no_send = false;
+            }
+
 
             auto [r1, aw1] = insert_or_assign_node_(n);
-            auto [r2, aw2] = insert_or_assign_node_(to_n.value());
-
-            if(r1 and r2) {
-                r = true;
+            if (r1) {
                 awor1 = std::move(aw1);
-                awor2 = std::move(aw2);
+                r = true;
+            } else {
+                throw std::runtime_error(
+                        "Could not insert Node " + std::to_string(n.id()) + " in G in insert_or_assign_edge_RT() " +
+                        __FILE__ + " " + __FUNCTION__ + " " + std::to_string(__LINE__));
             }
-            else
-                throw std::runtime_error("Could not insert node " + std::to_string(n.id()) + " in G in insert_or_assign_edge_RT() "  +  __FILE__ + " " + __FUNCTION__ + " " + std::to_string(__LINE__));
-        } else
-            throw std::runtime_error("Destination node " + std::to_string(n.id()) + " not found in G in insert_or_assign_edge_RT() " +  __FILE__ + " " + __FUNCTION__ + " " + std::to_string(__LINE__));
-    }
-    if (r) {
-        emit update_edge_signal(n.id(), to, "RT");
-        emit update_node_signal(to_n.value().id(), to_n.value().type());
-    }
-    if (awor1.has_value()) {  dsrpub.write(&awor1.value()); }
-    if (awor2.has_value()) {  dsrpub.write(&awor2.value()); }
 
+            if(!no_send) {
+                auto[r2, aw2] = insert_or_assign_node_(to_n.value());
+                if (r2)  { awor2 = std::move(aw2); }
+                else {
+                    throw std::runtime_error("Could not insert Node " + std::to_string(to_n.value().id()) +
+                                             " in G in insert_or_assign_edge_RT() " + __FILE__ + " " + __FUNCTION__ +
+                                             " " + std::to_string(__LINE__));
+                }
+            }
+        } else
+            throw std::runtime_error("Destination node " + std::to_string(n.id()) + " not found in G in insert_or_assign_edge_RT() "  +  __FILE__ + " " + __FUNCTION__ + " " + std::to_string(__LINE__));
+    }
+    if (!copy) {
+        if (r) {
+            emit update_edge_signal(n.id(), to, "RT");
+            if (!no_send) emit update_node_signal(to_n.value().id(), to_n.value().type());
+        }
+        if (awor1.has_value()) { dsrpub.write(&awor1.value()); }
+        if (awor2.has_value() and !no_send) { dsrpub.write(&awor2.value()); }
+    }
 }
 
 bool DSRGraph::delete_edge(int from, int to, const std::string& key)
@@ -479,11 +567,12 @@ bool DSRGraph::delete_edge(int from, int to, const std::string& key)
         if (!in(from) || !in(to)) return false;
         std::tie(result, aw) = delete_edge_(from, to, key);
     }
-    if (result)
-            emit del_edge_signal(from, to, key);
-    if (aw.has_value())
-        dsrpub.write(&aw.value());
-
+    if (!copy) {
+        if (result)
+                emit del_edge_signal(from, to, key);
+        if (aw.has_value())
+            dsrpub.write(&aw.value());
+    }
 
     return result;
 }
@@ -504,11 +593,12 @@ bool DSRGraph::delete_edge(const std::string& from, const std::string& to, const
         }
     }
 
-    if (result)
-        emit del_edge_signal(id_from.value(), id_to.value(), key);
-    if (aw.has_value())
-        dsrpub.write(&aw.value());
-
+    if (!copy) {
+        if (result)
+                emit del_edge_signal(id_from.value(), id_to.value(), key);
+        if (aw.has_value())
+            dsrpub.write(&aw.value());
+    }
 
     return result;
 }
@@ -578,7 +668,7 @@ std::optional<std::map<EdgeKey, Edge>> DSRGraph::get_edges(int id)
     return n.has_value() ?  std::optional<std::map<EdgeKey, Edge>>(n.value().fano()) : std::nullopt;
 };
 
-Edge DSRGraph::get_edge_RT(const Node &n, int to)
+std::optional<Edge> DSRGraph::get_edge_RT(const Node &n, int to)
 {
     auto edges = n.fano();
     EdgeKey key; key.to(to); key.type("RT");
@@ -586,31 +676,48 @@ Edge DSRGraph::get_edge_RT(const Node &n, int to)
     if (res != edges.end())
         return res->second;
     else
-        throw std::runtime_error("Could not find edge " + std::to_string(key.to()) + " in node " + std::to_string(n.id()) + " in edge_to_RTMat() " +  __FILE__ + " " + __FUNCTION__ + " " + std::to_string(__LINE__));
-    
+        //throw std::runtime_error("Could not find edge " + std::to_string(key.to()) + " in node " + std::to_string(n.id()) + " in edge_to_RTMat() " +  __FILE__ + " " + __FUNCTION__ + " " + std::to_string(__LINE__));
+        return {};
 }
 
-RTMat DSRGraph::get_edge_RT_as_RTMat(const Edge &edge)
+std::optional<RTMat> DSRGraph::get_edge_RT_as_RTMat(const Edge &edge)
 {
     auto r = get_attrib_by_name<std::vector<float>>(edge, "rotation_euler_xyz");
     auto t = get_attrib_by_name<std::vector<float>>(edge, "translation");
     if( r.has_value() and t.has_value() )
         return RTMat { r.value()[0], r.value()[1], r.value()[2], t.value()[0], t.value()[1], t.value()[2] } ;
     else
-        throw std::runtime_error("Could not find required attributes in node " + edge.type() + " " + std::to_string(edge.to()) + " in get_edge_RT as_RTMat() " +  __FILE__ + " " + __FUNCTION__ + " " + std::to_string(__LINE__));
-   
+        //throw std::runtime_error("Could not find required attributes in node " + edge.type() + " " + std::to_string(edge.to()) + " in get_edge_RT as_RTMat() " +  __FILE__ + " " + __FUNCTION__ + " " + std::to_string(__LINE__));
+        return {};
 }
 
- RTMat DSRGraph::get_edge_RT_as_RTMat(Edge &&edge)
+std::optional<RTMat> DSRGraph::get_edge_RT_as_RTMat(Edge &&edge)
  {
     auto r = get_attrib_by_name<std::vector<float>>(edge, "rotation_euler_xyz");
     auto t = get_attrib_by_name<std::vector<float>>(edge, "translation");
     if( r.has_value() and t.has_value() )
         return RTMat { r.value()[0], r.value()[1], r.value()[2], t.value()[0], t.value()[1], t.value()[2] } ;
     else
-        throw std::runtime_error("Could not find required attributes in node " + edge.type() + " " + std::to_string(edge.to()) + " in get_edge_RT as_RTMat() "  +  __FILE__ + " " + __FUNCTION__ + " " + std::to_string(__LINE__));
- } 
-     
+        //throw std::runtime_error("Could not find required attributes in node " + edge.type() + " " + std::to_string(edge.to()) + " in get_edge_RT as_RTMat() "  +  __FILE__ + " " + __FUNCTION__ + " " + std::to_string(__LINE__));
+        return {};
+ }
+
+std::optional<RTMat> DSRGraph::get_RT_pose_from_parent(const Node &n) {
+    auto p = get_parent_node(n);
+    if (p.has_value()) { 
+        auto edges = p->fano();
+        EdgeKey key;  key.to(n.id());  key.type("RT");
+        auto res = edges.find(key);
+        if (res != edges.end()) {
+            auto translation = get_attrib_by_name<std::vector<float>>(res->second, "translation");
+	    auto rotation = get_attrib_by_name<std::vector<float>>(res->second, "rotation_euler_xyz");
+            if (translation.has_value() && rotation.has_value() ) {
+ 		return RTMat { rotation.value()[0], rotation.value()[1], rotation.value()[2], translation.value()[0], translation.value()[1], translation.value()[2] } ;
+	    }
+        }
+    }
+    return {};
+}
 
 /////////////////////////////////////////////////
 ///// Utils
@@ -691,6 +798,39 @@ std::string DSRGraph::get_node_type(Node& n)
     //    std::cout <<"EXCEPTION: "<<__FILE__ << " " << __FUNCTION__ <<":"<<__LINE__<< " "<< e.what() << std::endl;};
     //return "error";
 }
+
+////////////////////////////////////////////////////////////////////////////
+/// Image subAPI
+////////////////////////////////////////////////////////////////////////////
+
+std::optional<std::reference_wrapper<const std::vector<uint8_t>>> DSRGraph::get_rgb_image(const Node &n) const
+{
+    auto& attrs = n.attrs();
+    if (auto value  = attrs.find("rgb"); value != attrs.end())
+        return value->second.value().byte_vec();
+    else return {};
+}
+
+std::optional<std::vector<float>> DSRGraph::get_depth_image(const Node &n)
+{
+    auto& attrs = n.attrs();
+    if (auto value  = attrs.find("depth"); value != attrs.end()) {
+        const auto &tmp = value->second.value().byte_vec();
+        return std::vector<float>(tmp.begin(), tmp.end());
+    }
+    else return {};
+}
+
+std::optional<std::reference_wrapper<const std::vector<uint8_t>>> DSRGraph::get_depth_image(const Node &n) const
+{
+    auto& attrs = n.attrs();
+    if (auto value  = attrs.find("depth"); value != attrs.end()) {
+        return value->second.value().byte_vec();
+    }
+    else return {};
+}
+
+///////////////////////////////////////////////////////////////////////////
 
 inline void DSRGraph::update_maps_node_delete(int id, const Node& n)
 {
@@ -782,11 +922,11 @@ void DSRGraph::join_delta_node(AworSet aworSet)
 
                 nodes[aworSet.id()].join_replace(d);
                 if (nodes[aworSet.id()].dots().ds.size() == 0 or aworSet.dk().ds().size() == 0) {
-                    std::cout << "JOIN REMOVE" << std::endl;
+                    qDebug() << "JOIN REMOVE" ;
                     update_maps_node_delete(aworSet.id(), nd);
                 } 
                 else {
-                    std::cout << "JOIN INSERT/UPDATE" << std::endl;
+                    qDebug() << "JOIN INSERT/UPDATE" ;
                     signal = true;
                     //newnd = *nodes[aworSet.id()].dots().ds.rbegin();
                     newnd = nodes[aworSet.id()].dots().ds.rbegin()->second;
@@ -799,7 +939,9 @@ void DSRGraph::join_delta_node(AworSet aworSet)
 
             //check what change is joined
 
-			emit update_node_signal(aworSet.id(), nodes[aworSet.id()].dots().ds.rbegin()->second.type());
+            if (!(nd.fano() != nodes[aworSet.id()].dots().ds.rbegin()->second.fano() &&
+                nd.attrs() == nodes[aworSet.id()].dots().ds.rbegin()->second.attrs()))
+			    emit update_node_signal(aworSet.id(), nodes[aworSet.id()].dots().ds.rbegin()->second.type());
 			if (nd.type().empty()) {
 				for (auto &[k,v] : nodes[aworSet.id()].dots().ds.rbegin()->second.fano()) {
 					emit update_edge_signal(aworSet.id(), k.to(), k.type());
@@ -809,13 +951,13 @@ void DSRGraph::join_delta_node(AworSet aworSet)
 			auto iter =  nodes[aworSet.id()].dots().ds.rbegin()->second.fano();
 			for (const auto &[k,v] : nd.fano()) {
 				if (iter.find(k) == iter.end()) {
-					std::cout << "DELETE EDGE: " << aworSet.id() << "  -  "<< k <<std::endl;
+					qDebug() << "DELETE EDGE: " << aworSet.id() ;
 					emit del_edge_signal(aworSet.id(), k.to(), k.type());
 				}
 			}
 			for (const auto &[k,v] : iter) {
 				if (nd.fano().find(k) == nd.fano().end() or nd.fano()[k] != v) {
-					std::cout << "INSERT/UPDATE EDGE: " << aworSet.id() << "  -  "<< k <<std::endl;
+					qDebug() << "INSERT/UPDATE EDGE: " << aworSet.id();
 					emit update_edge_signal(aworSet.id(), k.to(), k.type());
 				}
 			}
@@ -823,7 +965,23 @@ void DSRGraph::join_delta_node(AworSet aworSet)
 
         }
         else {
+            qDebug() << "DELETE NODE: " << aworSet.id();
             emit del_node_signal(aworSet.id());
+            for (const auto &[k,v] : nd.fano()) {
+                qDebug() << "DELETE EDGE FROM: " << aworSet.id() << " TO: "<< k.to();
+                emit del_edge_signal(aworSet.id(), k.to(), k.type());
+            }
+
+            for (const auto &[key, types] : edges)
+            {
+                auto [from, to] = key;
+                if (to == nd.id()) {
+                    for (const std::string& type : types) {
+                        qDebug() << "DELETE EDGE FROM: " << from << " TO: "<< to;
+                        emit del_edge_signal(from, to, type);
+                    }
+                }
+            }
         }
 
     } catch(const std::exception &e){
@@ -1005,7 +1163,7 @@ void DSRGraph::subscription_thread(bool showReceived)
                 if (sub->takeNextData(&sample, &m_info)) { // Get sample
                     if(m_info.sampleKind == eprosima::fastrtps::rtps::ALIVE) {
                         if( m_info.sample_identity.writer_guid().is_on_same_process_as(sub->getGuid()) == false) {
-                            if (showReceived)  std::cout << " Received:" << sample.id() << " node from: " << m_info.sample_identity.writer_guid() << std::endl;
+                            if (showReceived)  qDebug() << " Received:" << sample.id() << " node from: " << m_info.sample_identity.writer_guid().entityId.value;
                             graph->join_delta_node(sample);
                         }
                     }
@@ -1016,12 +1174,12 @@ void DSRGraph::subscription_thread(bool showReceived)
     };
     dsrpub_call = NewMessageFunctor(this, &work, lambda_general_topic);
 	auto res = dsrsub.init(dsrparticipant.getParticipant(), "DSR", dsrparticipant.getDSRTopicName(), dsrpub_call);
-    std::cout << (res == true ? "Ok" : "Error") << std::endl;
+    qDebug() << (res == true ? "Ok" : "Error") ;
 }
 
 void DSRGraph::fullgraph_server_thread()
 {
-    std::cout << __FUNCTION__ << "->Entering thread to attend full graph requests" << std::endl;
+    qDebug() << __FUNCTION__ << "->Entering thread to attend full graph requests" ;
     // Request Topic
     auto lambda_graph_request = [&] (eprosima::fastrtps::Subscriber* sub, bool* work, DSR::DSRGraph *graph) {
 
@@ -1031,20 +1189,22 @@ void DSRGraph::fullgraph_server_thread()
         if (sub->takeNextData(&sample, &m_info)) { // Get sample
             if(m_info.sampleKind == eprosima::fastrtps::rtps::ALIVE) {
                 if( m_info.sample_identity.writer_guid().is_on_same_process_as(sub->getGuid()) == false) {
-                    std::cout << " Received Full Graph request: from " << m_info.sample_identity.writer_guid()
-                              << std::endl;
+                    qDebug() << " Received Full Graph request";
                     *work = false;
                     OrMap mp;
                     mp.id(graph->id());
                     mp.m(graph->Map());
                     mp.cbase(graph->context());
-                    std::cout << "nodos enviados: " << mp.m().size()  << std::endl;
+                    qDebug() << "nodos enviados: " << mp.m().size()  ;
 
                     dsrpub_request_answer.write(&mp);
 
-                    for (auto &[k, v] : Map())
-                        std::cout << k << "," << v.dk() << std::endl;
-                    std::cout << "Full graph written" << std::endl;
+                    for (auto &[k, v] : Map()) {
+                        std::stringstream ss;
+                        ss << v.dk();
+                        qDebug() << k << "," << ss.str().c_str();
+                    }
+                    qDebug() << "Full graph written";
                     *work = true;
                 }
             }
@@ -1066,9 +1226,9 @@ bool DSRGraph::fullgraph_request_thread()
         if (sub->takeNextData(&sample, &m_info)) { // Get sample
             if(m_info.sampleKind == eprosima::fastrtps::rtps::ALIVE) {
                 if( m_info.sample_identity.writer_guid().is_on_same_process_as(sub->getGuid()) == false) {
-                    std::cout << " Received Full Graph from " << m_info.sample_identity.writer_guid() << " whith " << sample.m().size() << " elements" << std::endl;
+                    qDebug()  << " Received Full Graph from " << m_info.sample_identity.writer_guid().entityId.value << " whith " << sample.m().size() << " elements" ;
                     graph->join_full_graph(sample);
-                    std::cout << "Synchronized." <<std::endl;
+                    qDebug()  << "Synchronized." ;
                     sync = true;
                 }
             }
@@ -1080,7 +1240,7 @@ bool DSRGraph::fullgraph_request_thread()
 
     std::this_thread::sleep_for(300ms);   // NEEDED ?
 
-    std::cout << " Requesting the complete graph " << std::endl;
+    std::cout  << " Requesting the complete graph " << std::endl;
     GraphRequest gr;
     gr.from(agent_name);
     dsrpub_graph_request.write(&gr);
@@ -1089,11 +1249,15 @@ bool DSRGraph::fullgraph_request_thread()
     std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
     while (!sync and !timeout) 
     {
-        std::this_thread::sleep_for(500ms);
+
+        std::this_thread::sleep_for(1000ms);
         std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
         timeout = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() > TIMEOUT*3;
+        std::cout  << " Waiting for the graph ... seconds to timeout [" << std::ceil(std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count()/10)/100.0  << "/"<< TIMEOUT/1000*3<<"] " << std::endl;
+        dsrpub_graph_request.write(&gr);
     }
     eprosima::fastrtps::Domain::removeSubscriber(dsrsub_request_answer.getSubscriber());
+
     return sync;
 }
 
@@ -1143,3 +1307,31 @@ aworset<N, int> DSRGraph::translateAwIDLtoDSR(AworSet &data)
     aw.dots().set(ds_aux);
     return aw;
 }
+
+
+//////////////////////////////////////////////////
+///// PRIVATE COPY
+/////////////////////////////////////////////////
+
+DSRGraph::DSRGraph(const DSRGraph& G) : agent_id(G.agent_id), copy(true)
+{
+    nodes = G.nodes;
+    graph_root = G.graph_root;
+    utils = std::make_unique<Utilities>(this);
+    id_map = G.id_map;
+    deleted = G.deleted;
+    name_map = G.name_map;
+    edges = G.edges;
+    edgeType = G.edgeType;
+    nodeType = G.nodeType;
+}
+
+DSRGraph DSRGraph::G_copy() {
+    return DSRGraph(*this);
+};
+
+bool DSRGraph::is_copy() {
+    return copy;
+};
+
+

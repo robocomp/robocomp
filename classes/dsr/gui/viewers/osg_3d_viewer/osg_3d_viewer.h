@@ -46,15 +46,16 @@ using namespace std::chrono_literals;
 namespace DSR
 {
     enum CameraView { BACK_POV, FRONT_POV, LEFT_POV, RIGHT_POV, TOP_POV };
-    class DSRtoOSGViewer : public QOpenGLWidget
+    class OSG3dViewer : public QOpenGLWidget
     {
+        Q_OBJECT
         public:
-            DSRtoOSGViewer(std::shared_ptr<DSR::DSRGraph> G_, float scaleX, float scaleY, QWidget *parent=0);
-			~DSRtoOSGViewer();
+            OSG3dViewer(std::shared_ptr<DSR::DSRGraph> G_, float scaleX, float scaleY, QWidget *parent=0);
+			~OSG3dViewer();
         
         protected:  
-            virtual void resizeEvent(QResizeEvent *e); 
-            inline void paintGL() override;
+            virtual void resizeEvent(QResizeEvent *e);
+            void paintGL();
             virtual void resizeGL( int width, int height );
             // virtual void initializeGL();
             void mouseMoveEvent(QMouseEvent* event) override;        
@@ -99,6 +100,8 @@ namespace DSR
             void traverse_RT_tree(const Node& node);
             void print_RT_subtree(const Node& node);
             void analyse_osg_graph(osg::Node *nd);
+        public slots:
+            void reload(QWidget* widget);
     };
 };
 #endif

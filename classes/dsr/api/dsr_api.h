@@ -26,8 +26,7 @@
 #include "../core/rtps/dsrparticipant.h"
 #include "../core/rtps/dsrpublisher.h"
 #include "../core/rtps/dsrsubscriber.h"
-#include "../core/topics/DSRGraphPubSubTypes.h"
-//#include "vertex.h"
+#include "../core/topics/IDLGraphPubSubTypes.h"
 #include "dsr_inner_api.h"
 #include "dsr_utils.h"
 
@@ -36,18 +35,13 @@
 #define NO_PARENT -1
 #define TIMEOUT 5000
 
-// Overload pattern used inprintVisitor
-//template<class... Ts> struct overload : Ts... { using Ts::operator()...; };
-//template<class... Ts> overload(Ts...) -> overload<Ts...>;
 
 namespace DSR
 {
     using N = Node;
     using Nodes = ormap<int, aworset<N,  int >, int>;
-    //using MTypes = std::variant<std::string, std::int32_t, float , std::vector<float>, bool, RMat::RTMat>;
     using IDType = std::int32_t;
-    //using AttribsMap = std::unordered_map<std::string, MTypes>;
-    //using VertexPtr = std::shared_ptr<Vertex>;
+
     struct pair_hash
     {
         template <class T1, class T2>
@@ -102,13 +96,14 @@ namespace DSR
                                                  + __FILE__ + " " + __FUNCTION__ + " " + std::to_string(__LINE__)).data());
             }
             if (r) {
-                if (aw.has_value())
-                    dsrpub.write(&aw.value());
+                if (!copy) {
+                    if (aw.has_value())
+                        dsrpub.write(&aw.value());
 
-                emit update_node_signal(node.id(), node.type());
-                for (const auto &[k,v]: node.fano())
-                        emit update_edge_signal(node.id(), k.to(), v.type());
-
+                    emit update_node_signal(node.id(), node.type());
+                    for (const auto &[k, v]: node.fano())
+                            emit update_edge_signal(node.id(), k.to(), v.type());
+                }
                 return node.id();
             }
             return {};
@@ -126,9 +121,7 @@ namespace DSR
         //////////////////////////////////////////////////////
 
         // Utils
-        //void read_from_file(const std::string &xml_file_path);
         bool empty(const int &id);
-        //[[deprecated]] std::tuple<std::string, std::string, int> nativetype_to_string(const MTypes &t); //Used by viewer
         template <typename Ta, typename = std::enable_if_t<allowed_types<Ta>>>
         std::tuple<std::string, std::string, int> nativetype_to_string(const Ta& t) {
             if constexpr (std::is_same<std::remove_cv_t<std::remove_reference_t<Ta>>, std::string>::value)
@@ -181,10 +174,8 @@ namespace DSR
         bool insert_or_assign_edge(const Edge& attrs);
         std::optional<Edge> get_edge(const std::string& from, const std::string& to, const std::string& key);
         std::optional<Edge> get_edge(int from, int to, const std::string& key);
-        std::optional<Edge> get_edge(const Node &n, int to, const std::string& key) {
-            EdgeKey ek; ek.to(to); ek.type(key);
-            return (n.fano().find(ek) != n.fano().end()) ?  std::make_optional(n.fano().find(ek)->second) : std::nullopt;
-        };
+        std::optional<Edge> get_edge(const Node& n, const std::string& to, const std::string& key);
+        std::optional<Edge> get_edge(const Node& n, int to, const std::string& key);
         bool delete_edge(const std::string& from, const std::string& t, const std::string& key);
         bool delete_edge(int from, int t, const std::string& key);
         /**CORE END**/
@@ -195,7 +186,7 @@ namespace DSR
          * CONVENIENCE METHODS
          **/
         // Nodes
-        std::optional<Node> get_node_root()  { return get_node("world"); };  //CHANGE THIS
+        std::optional<Node> get_node_root() { return get_node("world"); };  //CHANGE THIS
         std::vector<Node> get_nodes_by_type(const std::string& type);
         std::optional<std::string> get_name_from_id(std::int32_t id);  // caché
         std::optional<int> get_id_from_name(const std::string &name);  // caché
@@ -261,6 +252,7 @@ namespace DSR
             }  //else
             //throw std::runtime_error("Illegal return type in get_attrib_by_name()");
         }
+
 
         // Mixed
         void reset() {
@@ -399,7 +391,7 @@ namespace DSR
             //if (elem.attrs().find(new_name) != elem.attrs().end()) return false;
             //throw DSRException(("Cannot update attribute. Attribute: " + elem + " does not exist. " + __FUNCTION__).data());
 
-            bool res = add_attrib(elem, att_name, new_val);
+            bool res = add_attrib_local(elem, att_name, new_val);
             if (!res) return false;
             // insert in node
             if constexpr (std::is_same<Node,  Type>::value)
@@ -492,18 +484,27 @@ namespace DSR
         }
 
         /////////////////////////////////////////////////
+        /// AUXILIARY IMAGES SUB-API
+        /////////////////////////////////////////////////
+        std::optional<std::reference_wrapper<const std::vector<uint8_t>>> get_rgb_image(const Node &n) const;
+        std::optional<std::vector<float>> get_depth_image(const Node &n); //return a copy
+        std::optional<std::reference_wrapper<const std::vector<uint8_t>>> get_depth_image(const Node &n) const;
+
+        /**AUXILIARY Images SUB-API**/
+
+        /////////////////////////////////////////////////
         /// AUXILIARY RT SUB-API
         /////////////////////////////////////////////////
         void insert_or_assign_edge_RT(Node& n, int to, const std::vector<float>& trans, const std::vector<float>& rot_euler);
         void insert_or_assign_edge_RT(Node& n, int to, std::vector<float>&& trans, std::vector<float>&& rot_euler);
-        Edge get_edge_RT(const Node &n, int to);
-        RTMat get_edge_RT_as_RTMat(const Edge &edge);
-        RTMat get_edge_RT_as_RTMat(Edge &&edge);
+        std::optional<Edge> get_edge_RT(const Node &n, int to);
+        std::optional<RTMat> get_edge_RT_as_RTMat(const Edge &edge);
+        std::optional<RTMat> get_edge_RT_as_RTMat(Edge &&edge);
+        std::optional<RTMat> get_RT_pose_from_parent(const Node &n);
         //bool insert_or_assign_edge(Node& n, const Edge& e);
         //void insert_or_assign_edge_RT(int from, int to, std::vector<float>&& trans, std::vector<float>&& rot_euler);
         //void insert_or_assign_edge_RT(std::string from, std::string to, std::vector<float>&& trans, std::vector<float>&& rot_euler);
         /**AUXILIARY RT SUB-API**/
-
 
         /////////////////////////////////////////////////
         /// AUXILIARY IO SUB-API
@@ -517,10 +518,16 @@ namespace DSR
         void read_from_json_file(const std::string &file) const { utils->read_from_json_file(file, insert_node_read_file); };
         /**AUXILIARY IO SUB-API**/
 
+        //////////////////////////////////////////////////
+        ///// PRIVATE COPY
+        /////////////////////////////////////////////////
+        DSRGraph G_copy();
+        bool is_copy();
 
     private:
-        Nodes nodes;
 
+        DSRGraph(const DSRGraph& G);
+        Nodes nodes;
         int graph_root;
         bool work;
         mutable std::shared_mutex _mutex;
@@ -529,6 +536,7 @@ namespace DSR
         std::string agent_name;
         std::unique_ptr<Utilities> utils;
         RoboCompDSRGetID::DSRGetIDPrxPtr dsr_getid_proxy; // proxy to obtain unique node ids
+        const bool copy;
 
         //////////////////////////////////////////////////////////////////////////
         // Cache maps
@@ -545,9 +553,6 @@ namespace DSR
         void update_maps_node_insert(int id, const Node& n);
         void update_maps_edge_delete(int from, int to, const std::string& key);
 
-
-
-
         //////////////////////////////////////////////////////////////////////////
         // Non-blocking graph operations
         //////////////////////////////////////////////////////////////////////////
@@ -559,14 +564,12 @@ namespace DSR
         std::pair<bool, std::optional<AworSet>> delete_edge_(int from, int t, const std::string& key);
         std::optional<Edge> get_edge_(int from, int to, const std::string& key);
 
-
         //////////////////////////////////////////////////////////////////////////
         // Other methods
         //////////////////////////////////////////////////////////////////////////
         int id();
         DotContext context();
         std::map<int, AworSet> Map();
-
 
 
         template <typename T, typename = std::enable_if_t<node_or_edge<T>>>
@@ -578,12 +581,13 @@ namespace DSR
                 return value->second;
             else
             {
-                if constexpr (std::is_same<Node,  T>::value)
-                    std::cout << "ERROR: " <<  __FUNCTION__ << ":" << __LINE__ << " "
-                              << "Attribute " << key << " not found in node  -> " << n.id() << std::endl;
-                if constexpr (std::is_same<Edge,  T>::value)
-                    std::cout << "ERROR: " <<  __FUNCTION__ << ":" << __LINE__ << " "
-                              << "Atribute " << key << " not found in edge -> " << n.to() << std::endl;
+//  COMENTADO POR PABLO PROVISIONALMENTE
+//                if constexpr (std::is_same<Node,  T>::value)
+//                    std::cout << "ERROR: " <<  __FUNCTION__ << ":" << __LINE__ << " "
+//                              << "Attribute " << key << " not found in node  -> " << n.id() << std::endl;
+//                if constexpr (std::is_same<Edge,  T>::value)
+//                    std::cout << "ERROR: " <<  __FUNCTION__ << ":" << __LINE__ << " "
+//                              << "Atribute " << key << " not found in edge -> " << n.to() << std::endl;
             }
             return {};
         }

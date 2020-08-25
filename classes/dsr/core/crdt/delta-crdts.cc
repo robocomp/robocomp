@@ -26,6 +26,8 @@
 //
 //
 //-------------------------------------------------------------------
+#ifndef DELTA_CRDT
+#define DELTA_CRDT
 
 #include <set>
 #include <unordered_set>
@@ -36,7 +38,7 @@
 #include <string>
 #include <iostream>
 #include <type_traits>
-#include "../topics/DSRGraph.h"
+#include "../topics/IDLGraph.h"
 
 using namespace std;
 
@@ -2388,3 +2390,5 @@ public:
     }
 
 };
+
+#endif

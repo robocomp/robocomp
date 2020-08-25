@@ -1,6 +1,7 @@
 module RoboCompHandKeypoint
 {
     sequence<byte> ImgType;
+    sequence<float> BBoxType;
 
     struct TImage
     {
@@ -10,11 +11,12 @@ module RoboCompHandKeypoint
         ImgType image;
     };
 
-    sequence<int> KeyPoint;
-    sequence<KeyPoint> KeypointType;
+
+    sequence<float> Keypoint;
+    sequence<Keypoint> KeypointType;
 
     interface HandKeypoint
     {
-        idempotent void getKeypoints(TImage handImg, out KeypointType keypoints);
+        idempotent void getKeypoints(TImage HandImage, BBoxType box, out KeypointType keypoints);
     };
 };

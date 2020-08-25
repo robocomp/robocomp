@@ -9,8 +9,7 @@ module RoboCompHandGestureClient
         ImgType image;
     };
     sequence<float> HandBBox;
-    sequence<float> KeyPoint;
-    sequence<KeyPoint> KeypointType;
+    sequence<float> KeypointType;
 
     struct HandType
     {

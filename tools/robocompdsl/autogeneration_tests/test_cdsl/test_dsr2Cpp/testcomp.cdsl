@@ -1,0 +1,12 @@
+Component testcomp
+{
+    Communications
+    {
+    };
+	language Cpp11;
+	gui Qt(QMainWindow);
+	options dsr;
+	//options agmagent;
+	//options InnerModelViewer;
+};
+

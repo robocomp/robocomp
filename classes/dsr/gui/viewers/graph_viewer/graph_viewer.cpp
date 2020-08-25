@@ -9,12 +9,12 @@
 
 using namespace DSR ;
 
-DSRtoGraphViewer::DSRtoGraphViewer(std::shared_ptr<DSR::DSRGraph> G_, QWidget *parent) :  AbstractGraphicViewer(parent)
+GraphViewer::GraphViewer(std::shared_ptr<DSR::DSRGraph> G_, QWidget *parent) :  AbstractGraphicViewer(parent)
 {
     qRegisterMetaType<std::int32_t>("std::int32_t");
     qRegisterMetaType<std::string>("std::string");
     G = G_;
-	own = shared_ptr<DSRtoGraphViewer>(this);
+	own = shared_ptr<GraphViewer>(this);
 
     createGraph();
 
@@ -22,15 +22,16 @@ DSRtoGraphViewer::DSRtoGraphViewer(std::shared_ptr<DSR::DSRGraph> G_, QWidget *p
 
 	this->fitInView(scene.itemsBoundingRect(), Qt::KeepAspectRatio );
 
-    connect(G.get(), &DSR::DSRGraph::update_node_signal, this, &DSRtoGraphViewer::add_or_assign_node_SLOT);
 	central_point = new QGraphicsEllipseItem(0,0,0,0);
 	scene.addItem(central_point);
-	connect(G.get(), &DSR::DSRGraph::update_edge_signal, this, &DSRtoGraphViewer::add_or_assign_edge_SLOT);
-	//connect(G.get(), &DSR::DSRGraph::del_edge_signal, this, &DSRtoGraphViewer::delEdgeSLOT);
-	connect(G.get(), &DSR::DSRGraph::del_node_signal, this, &DSRtoGraphViewer::del_node_SLOT);
+
+	connect(G.get(), &DSR::DSRGraph::update_node_signal, this, &GraphViewer::add_or_assign_node_SLOT);
+	connect(G.get(), &DSR::DSRGraph::update_edge_signal, this, &GraphViewer::add_or_assign_edge_SLOT);
+	connect(G.get(), &DSR::DSRGraph::del_edge_signal, this, &GraphViewer::del_edge_SLOT);
+	connect(G.get(), &DSR::DSRGraph::del_node_signal, this, &GraphViewer::del_node_SLOT);
 }
 
-DSRtoGraphViewer::~DSRtoGraphViewer()
+GraphViewer::~GraphViewer()
 {
 	gmap.clear();
 	gmap_edges.clear();
@@ -46,8 +47,11 @@ DSRtoGraphViewer::~DSRtoGraphViewer()
 	scene.clear();
 }
 
-void DSRtoGraphViewer::createGraph()
+void GraphViewer::createGraph()
 {
+	gmap.clear();
+	gmap_edges.clear();
+	this->scene.clear();
 	qDebug() << __FUNCTION__ << "Reading graph in Graph Viewer";
     try
     {
@@ -64,31 +68,34 @@ void DSRtoGraphViewer::createGraph()
 
 ///////////////////////////////////////
 
-void DSRtoGraphViewer::itemMoved()
+void GraphViewer::toggle_animation(bool animate)
 {
-	do_simulate = true;
-	std::cout << "timerId " << timerId << std::endl;
-	if(do_simulate and timerId == 0)
-	if (timerId == 0)
-	   timerId = startTimer(1000 / 25);
+	qDebug() << "timerId " << timerId ;
+	if(animate)
+	{
+		if(timerId == 0)
+	   		timerId = startTimer(1000 / 25);
+	}
+	else
+	{
+		killTimer(timerId);
+		timerId = 0;
+	}
 }
 
-void DSRtoGraphViewer::timerEvent(QTimerEvent *event)
+void GraphViewer::timerEvent(QTimerEvent *event)
 {
 	// Q_UNUSED(event)
 
-	for( auto &[k,node] : gmap)
+	for( auto &[_,node] : gmap)
 	{
-		(void)k;
 		node->calculateForces();
 	}
 	bool itemsMoved = false;
 
-	for( auto &[k,node] : gmap)
+	for( auto &[_,node] : gmap)
 	{
-		(void)k;
-		if (node->advancePosition())
-			itemsMoved = true;
+		itemsMoved = node->advancePosition() or itemsMoved;
 	}
 	if (!itemsMoved)
 	{
@@ -99,7 +106,7 @@ void DSRtoGraphViewer::timerEvent(QTimerEvent *event)
 //////////////////////////////////////////////////////////////////////////////////////
 ///// SLOTS
 //////////////////////////////////////////////////////////////////////////////////////
-void DSRtoGraphViewer::add_or_assign_node_SLOT(int id, const std::string &type)
+void GraphViewer::add_or_assign_node_SLOT(int id, const std::string &type)
 {	
 	//qDebug() << __FUNCTION__ << "node id " << id<<", type "<<QString::fromUtf8(type.c_str());
 	GraphNode *gnode;														// CAMBIAR a sharer_ptr
@@ -143,7 +150,7 @@ void DSRtoGraphViewer::add_or_assign_node_SLOT(int id, const std::string &type)
             // connect(tableWidgetNodes, &QTableWidget::itemClicked, this, [this](const auto &item) 
 			// {
             //     static bool visible = true;
-            //     std::cout << __FILE__ << " " << __FUNCTION__ << "hide or show all nodes of type " << item->text().toStdString() << std::endl;
+            //     qDebug() << __FILE__ << " " << __FUNCTION__ << "hide or show all nodes of type " << item->text().toStdString() ;
             //     for (auto &[k, v] : gmap)
             //         if (item->text().toStdString() == v->getType()) {
             //             v->setVisible(!v->isVisible());
@@ -195,7 +202,7 @@ void DSRtoGraphViewer::add_or_assign_node_SLOT(int id, const std::string &type)
     }
 }
 
-void DSRtoGraphViewer::add_or_assign_edge_SLOT(std::int32_t from, std::int32_t to, const std::string &edge_tag)
+void GraphViewer::add_or_assign_edge_SLOT(std::int32_t from, std::int32_t to, const std::string &edge_tag)
 {
 	try 
     {
@@ -238,43 +245,57 @@ void DSRtoGraphViewer::add_or_assign_edge_SLOT(std::int32_t from, std::int32_t t
 
 }
 
-void DSRtoGraphViewer::del_edge_SLOT(const std::int32_t from, const std::int32_t to, const std::string &edge_tag)
+void GraphViewer::del_edge_SLOT(const std::int32_t from, const std::int32_t to, const std::string &edge_tag)
 {
-    std::cout<<__FUNCTION__<<":"<<__LINE__<< std::endl;
+    qDebug()<<__FUNCTION__<<":"<<__LINE__;
 	try {
 		std::tuple<std::int32_t, std::int32_t, std::string> key = std::make_tuple(from, to, edge_tag);
 		while (gmap_edges.count(key) > 0) {
-            scene.removeItem(gmap_edges.at(key));
+		    GraphEdge *edge = gmap_edges.at(key);
+            scene.removeItem(edge);
+            if (gmap.find(from) != gmap.end())
+                gmap.at(from)->deleteEdge(edge);
+            if (gmap.find(to) != gmap.end())
+                gmap.at(to)->deleteEdge(edge);
 		    gmap_edges.erase(key);
+            delete edge;
 		}
 	} catch(const std::exception &e) { std::cout << e.what() <<" Error  "<<__FUNCTION__<<":"<<__LINE__<< std::endl;}
 
 }
 
-void DSRtoGraphViewer::del_node_SLOT(int id)
+
+void GraphViewer::del_node_SLOT(int id)
 {
-    std::cout<<__FUNCTION__<<":"<<__LINE__<< std::endl;
+    qDebug()<<__FUNCTION__<<":"<<__LINE__;
     try {
         while (gmap.count(id) > 0) {
         	auto item = gmap.at(id);
             scene.removeItem(item);
             delete item;
             gmap.erase(id);
+
         }
     } catch(const std::exception &e) { std::cout << e.what() <<" Error  "<<__FUNCTION__<<":"<<__LINE__<< std::endl;}
 
 }
 
 
-void DSRtoGraphViewer::hide_show_node_SLOT(int id, bool visible)
+void GraphViewer::hide_show_node_SLOT(int id, bool visible)
 {
 	auto item = gmap[id];
 	item->setVisible(visible);
 	for (const auto &gedge: item->edgeList)
-		gedge->setVisible(visible);
+	{
+		if((visible and gedge->destNode()->isVisible() and gedge->sourceNode()->isVisible()) or !visible)
+		{
+			gedge->setVisible(visible);
+		}
+	}
+
 }
 
-void DSRtoGraphViewer::mousePressEvent(QMouseEvent *event)
+void GraphViewer::mousePressEvent(QMouseEvent *event)
 {
 	auto item = this->scene.itemAt(mapToScene(event->pos()), QTransform());
 	if(item) {
@@ -282,6 +303,14 @@ void DSRtoGraphViewer::mousePressEvent(QMouseEvent *event)
 	}
 	else {
 		AbstractGraphicViewer::mousePressEvent(event);
+	}
+}
+
+void GraphViewer::reload(QWidget * widget)
+{
+	if(qobject_cast<GraphViewer*>(widget) != nullptr)
+	{
+		createGraph();
 	}
 }
 

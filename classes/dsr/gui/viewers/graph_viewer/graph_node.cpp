@@ -17,7 +17,7 @@
 #include "graph_node.h"
 
 
-GraphNode::GraphNode(std::shared_ptr<DSR::DSRtoGraphViewer> graph_viewer_): QGraphicsEllipseItem(0,0,30,30), dsr_to_graph_viewer(graph_viewer_)
+GraphNode::GraphNode(std::shared_ptr<DSR::GraphViewer> graph_viewer_): QGraphicsEllipseItem(0,0,30,30), dsr_to_graph_viewer(graph_viewer_)
 {
     setFlag(ItemIsMovable);
     setFlag(ItemSendsGeometryChanges);
@@ -61,6 +61,11 @@ void GraphNode::addEdge(GraphEdge *edge)
 {
     edgeList << edge;
     edge->adjust();
+}
+
+void GraphNode::deleteEdge(GraphEdge *edge)
+{
+    edgeList.removeOne(edge);
 }
 
 QList<GraphEdge *> GraphNode::edges() const
@@ -194,7 +199,7 @@ void GraphNode::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event)
 {
     //if (tag->text() != "") return; // Explota sin esto
 //    animation->start();
-    std::cout << __FILE__ <<":"<<__FUNCTION__<< "-> node: " << tag->text().toStdString() << " Type: " << type << std::endl;
+    qDebug() << __FILE__ <<":"<<__FUNCTION__<< "-> node: " << tag->text() << " Type: " << QString::fromStdString(type) ;
     const auto graph = dsr_to_graph_viewer->getGraph();
     if( event->button()== Qt::RightButton)
     {
@@ -220,7 +225,7 @@ void GraphNode::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
      if( event->button()== Qt::LeftButton)
     {
         auto g = dsr_to_graph_viewer->getGraph();
-        std::cout << __FILE__ <<":"<<__FUNCTION__<< " node id in graphnode: " << id_in_graph << std::endl;
+        qDebug() << __FILE__ <<":"<<__FUNCTION__<< " node id in graphnode: " << id_in_graph ;
         std::optional<Node> n = g->get_node(id_in_graph);
         if (n.has_value()) {
 //            qDebug()<<"ScenePos X"<<(float) event->scenePos().x()<<" Width "<<(this->rect())<<" this "<<this->pos().x();
@@ -231,7 +236,6 @@ void GraphNode::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
             if (!r) r = g->add_attrib_local(n.value(), "pos_y", (float) this->pos().y());
             g->update_node(n.value());
         }
-//        this->dsr_to_graph_viewer->itemMoved();
     }
 
     QGraphicsItem::mouseReleaseEvent(event);

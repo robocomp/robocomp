@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef GRAPHVIEWER_H
-#define GRAPHVIEWER_H
+#ifndef DSRVIEWER_H
+#define DSRVIEWER_H
 
 #include <memory>
 #include <QMainWindow>
@@ -34,26 +34,37 @@
 
 namespace DSR
 {
-	//////////////////////////////////////////////////////////////////////////////////////////////77
+	//////////////////////////////////////////////////////////////////////////////////////////////
 	/// Drawing controller to display the graph in real-time using RTPS 
-	//////////////////////////////////////////////////////////////////////////////////////////////77
+	//////////////////////////////////////////////////////////////////////////////////////////////
 	
-	class GraphViewer : public QObject
+	class DSRViewer : public QObject
 	{
 		Q_OBJECT
-		public:
-			enum view
-			{
-				graph = (1 << 0),
-				osg = (1 << 1),
-				scene = (1 << 2),
-				tree = (1 << 3),
-			};
-			GraphViewer(QMainWindow *window, std::shared_ptr<DSR::DSRGraph> G, int options, view main = view::graph);
-			~GraphViewer();
+	public:
+		enum view
+		{
+			none = -1,
+			graph = (1 << 0),
+			osg = (1 << 1),
+			scene = (1 << 2),
+			tree = (1 << 3),
+		};
+		struct WidgetContainer
+		{
+			QString name;
+			view type;
+			QWidget * widget;
+			QDockWidget* dock;
+		};
+
+			DSRViewer(QMainWindow *window, std::shared_ptr<DSR::DSRGraph> G, int options, view main = view::none);
+			~DSRViewer();
 			void itemMoved();
 			void createGraph();
 			QWidget* get_widget(view type);
+			QWidget* get_widget(QString  name);
+			void add_custom_widget_to_dock(QString name, QWidget* view);
 
 		protected:
 			virtual void keyPressEvent(QKeyEvent *event);
@@ -62,31 +73,38 @@ namespace DSR
 			std::shared_ptr<DSR::DSRGraph> G;
 			QMainWindow *window;
 			QMenu *viewMenu;
-//			std::shared_ptr<DSR::DSRtoOSGViewer> dsr_to_osg_viewer;
-//			std::shared_ptr<DSR::DSRtoGraphicsceneViewer> dsr_to_graphicscene_viewer;
-//			std::shared_ptr<DSR::DSRtoGraphViewer> dsr_to_graph_viewer;
+			QMenu *forcesMenu;
+//			std::shared_ptr<DSR::OSG3dViewer> dsr_to_osg_viewer;
+//			std::shared_ptr<DSR::QScene2dViewer> dsr_to_graphicscene_viewer;
+//			std::shared_ptr<DSR::GraphViewer> dsr_to_graph_viewer;
 //			std::shared_ptr<DSR::DSRtoTreeViewer> dsr_to_tree_viewer;
 			std::map<QString, QDockWidget *> docks;
-			std::map<view, QWidget *> widgets;
+			std::map<QString, WidgetContainer *> widgets;
+			std::map<view, WidgetContainer *> widgets_by_type;
 			QWidget * main_widget;
 
 		public slots:
 			void saveGraphSLOT();		
 //			void toggleSimulationSLOT();
 			void restart_app(bool);
+			void switch_view(bool state, WidgetContainer* container);
 
 		signals:
 			void saveGraphSIGNAL();
 			void closeWindowSIGNAL();
+			void resetViewer(QWidget* widget);
+
 		private:
 			void create_dock_and_menu(QString name,  QWidget *view);
 			void initialize_views(int options, view main);
 			QWidget * create_widget(view type);
 	};
-}
+
+
+};
 
 Q_DECLARE_METATYPE(std::int32_t);
 Q_DECLARE_METATYPE(std::string);
 //Q_DECLARE_METATYPE(DSR::AttribsMap);
 
-#endif // GRAPHVIEWER_H
+#endif // DSRVIEWER_H
