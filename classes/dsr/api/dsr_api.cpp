@@ -803,31 +803,31 @@ std::string DSRGraph::get_node_type(Node& n)
 /// Image subAPI
 ////////////////////////////////////////////////////////////////////////////
 
-const std::vector<uint8_t>& DSRGraph::get_rgb_image(const Node &n) const
+std::optional<std::reference_wrapper<const std::vector<uint8_t>>> DSRGraph::get_rgb_image(const Node &n) const
 {
     auto& attrs = n.attrs();
     if (auto value  = attrs.find("rgb"); value != attrs.end())
         return value->second.value().byte_vec();
-    else throw std::runtime_error((std::string("Attribute rgb does not exist in node: " + std::to_string(n.id()) + ". ") + __FILE__ + " " + __FUNCTION__ + " " + std::to_string(__LINE__)).data());
+    else return {};
 }
 
-std::vector<float> DSRGraph::get_depth_image(const Node &n)
+std::optional<std::vector<float>> DSRGraph::get_depth_image(const Node &n)
 {
     auto& attrs = n.attrs();
     if (auto value  = attrs.find("depth"); value != attrs.end()) {
         const auto &tmp = value->second.value().byte_vec();
         return std::vector<float>(tmp.begin(), tmp.end());
     }
-    else throw std::runtime_error((std::string("Attribute depth does not exist in node: " + std::to_string(n.id()) + ". ") + __FILE__ + " " + __FUNCTION__ + " " + std::to_string(__LINE__)).data());
+    else return {};
 }
 
-const std::vector<uint8_t>& DSRGraph::get_depth_image(const Node &n) const
+std::optional<std::reference_wrapper<const std::vector<uint8_t>>> DSRGraph::get_depth_image(const Node &n) const
 {
     auto& attrs = n.attrs();
     if (auto value  = attrs.find("depth"); value != attrs.end()) {
         return value->second.value().byte_vec();
     }
-    else throw std::runtime_error((std::string("Attribute depth does not exist in node: " + std::to_string(n.id()) + ". ") + __FILE__ + " " + __FUNCTION__ + " " + std::to_string(__LINE__)).data());
+    else return {};
 }
 
 ///////////////////////////////////////////////////////////////////////////
