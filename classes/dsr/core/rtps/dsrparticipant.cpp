@@ -25,27 +25,24 @@
 #include <thread>
 #include "dsrparticipant.h"
 
-//using namespace eprosima::fastrtps;
-//using namespace eprosima::fastrtps::rtps;
 
-DSRParticipant::DSRParticipant() : mp_participant(nullptr), mp_publisher(nullptr), mp_subscriber(nullptr) {}
+DSRParticipant::DSRParticipant() : mp_participant(nullptr) {}
 
-DSRParticipant::~DSRParticipant() 
+DSRParticipant::~DSRParticipant()
 {
     if (mp_participant != nullptr)
         eprosima::fastrtps::Domain::removeParticipant(mp_participant);
 }
 
-std::tuple<bool, eprosima::fastrtps::Participant *> DSRParticipant::init()
-{
+std::tuple<bool, eprosima::fastrtps::Participant *> DSRParticipant::init(int32_t agent_id) {
     // Create RTPSParticipant     
     eprosima::fastrtps::ParticipantAttributes PParam;
-    PParam.rtps.setName("Participant_Participant");  //You can put here the name you want
-    
+    PParam.rtps.setName(("Participant_" + std::to_string(agent_id)).data());  //You can put here the name you want
+
     //Create a descriptor for the new transport.
     auto custom_transport = std::make_shared<eprosima::fastrtps::rtps::UDPv4TransportDescriptor>();
-    custom_transport->sendBufferSize = 12582912; //33554432;
-    custom_transport->receiveBufferSize = 12582912; //33554432;
+    custom_transport->sendBufferSize = 33554432;
+    custom_transport->receiveBufferSize = 33554432;
     custom_transport->maxMessageSize = 65000;
     custom_transport->interfaceWhiteList.emplace_back("127.0.0.1");
     //custom_transport->interfaceWhiteList.emplace_back("192.168.1.253");
@@ -56,6 +53,8 @@ std::tuple<bool, eprosima::fastrtps::Participant *> DSRParticipant::init()
 
     //Link the Transport Layer to the Participant.
     PParam.rtps.userTransports.push_back(custom_transport);
+    PParam.rtps.sendSocketBufferSize = 33554432;
+    PParam.rtps.listenSocketBufferSize = 33554432;
 
     mp_participant = eprosima::fastrtps::Domain::createParticipant(PParam);
 
@@ -65,34 +64,53 @@ std::tuple<bool, eprosima::fastrtps::Participant *> DSRParticipant::init()
     }
 
     //Register the type
-    eprosima::fastrtps::Domain::registerType(mp_participant, static_cast<eprosima::fastrtps::TopicDataType*>(&dsrgraphType));
-    eprosima::fastrtps::Domain::registerType(mp_participant, static_cast<eprosima::fastrtps::TopicDataType*>(&graphrequestType));
-    eprosima::fastrtps::Domain::registerType(mp_participant, static_cast<eprosima::fastrtps::TopicDataType*>(&graphRequestAnswerType));
+    eprosima::fastrtps::Domain::registerType(mp_participant, static_cast<eprosima::fastrtps::TopicDataType *>(&dsrgraphType));
+    eprosima::fastrtps::Domain::registerType(mp_participant, static_cast<eprosima::fastrtps::TopicDataType *>(&graphrequestType));
+    eprosima::fastrtps::Domain::registerType(mp_participant, static_cast<eprosima::fastrtps::TopicDataType *>(&graphRequestAnswerType));
+    eprosima::fastrtps::Domain::registerType(mp_participant, static_cast<eprosima::fastrtps::TopicDataType *>(&dsrEdgeType));
+    eprosima::fastrtps::Domain::registerType(mp_participant, static_cast<eprosima::fastrtps::TopicDataType *>(&dsrNodeAttrType));
+    eprosima::fastrtps::Domain::registerType(mp_participant, static_cast<eprosima::fastrtps::TopicDataType *>(&dsrEdgeAttrType));
 
     return std::make_tuple(true, mp_participant);
 }
 
-eprosima::fastrtps::Participant* DSRParticipant::getParticipant() 
+eprosima::fastrtps::Participant *DSRParticipant::getParticipant()
 {
     return mp_participant;
 }
 
 eprosima::fastrtps::rtps::GUID_t DSRParticipant::getID() const
-{   
+{
     return mp_participant->getGuid();
 }
 
-const char * DSRParticipant::getDSRTopicName() const
-{   
+const char *DSRParticipant::getNodeTopicName() const
+{
     return dsrgraphType.getName();
 }
 
-const char * DSRParticipant::getRequestTopicName() const
-{   
+const char *DSRParticipant::getEdgeTopicName() const
+{
+    return dsrEdgeType.getName();
+}
+
+const char *DSRParticipant::getNodeAttrTopicName() const
+{
+    return dsrNodeAttrType.getName();
+}
+
+const char *DSRParticipant::getEdgeAttrTopicName() const
+{
+    return dsrEdgeAttrType.getName();
+}
+
+
+const char *DSRParticipant::getRequestTopicName() const
+{
     return graphrequestType.getName();
 }
 
-const char * DSRParticipant::getAnswerTopicName() const
-{   
+const char *DSRParticipant::getAnswerTopicName() const
+{
     return graphRequestAnswerType.getName();
 }

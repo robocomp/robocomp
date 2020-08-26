@@ -27,7 +27,7 @@
 #include <QSpinBox>
 #include <QHBoxLayout>
 #include "../../../api/dsr_api.h"
-
+#include "../../../core/types/user_types.h"
 class GraphNode;
 class GraphEdge;
 
@@ -57,7 +57,7 @@ namespace DSR
 			std::map<int, std::map<std::string, QTreeWidgetItem*>> attributes_map;
 			void createGraph();
 			void create_attribute_widgets(QTreeWidgetItem* parent, Node* node);
-			void create_attribute_widget(QTreeWidgetItem* parent, Node* node, std::string key, Val value);
+			void create_attribute_widget(QTreeWidgetItem* parent, Node* node, std::string key, Attribute value);
 			void update_attribute_widgets(Node* node);
 
         

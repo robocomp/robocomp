@@ -11,11 +11,10 @@ namespace DSR
 
     class InnerAPI
     {
-        //using VEdgePtr = std::shared_ptr<VEdge>;
-        using Lists = std::tuple<std::list<RMat::RTMat>, std::list<RMat::RTMat> >; 
+        using Lists = std::tuple<std::list<RMat::RTMat>, std::list<RMat::RTMat> >;
         public:
-            InnerAPI(DSRGraph *G_);
-            
+            explicit InnerAPI(DSRGraph *G_);
+
             /////////////////////////////////////////////////
             /// Kinematic transformation methods
             ////////////////////////////////////////////////
@@ -23,11 +22,11 @@ namespace DSR
             std::optional<QVec> transform( const QString &destId, const QString & origId);
             std::optional<QVec> transformS( const std::string &destId, const QVec &origVec, const std::string & origId);
             std::optional<QVec> transformS( const std::string &destId, const std::string &origId);
-            std::optional<QVec> transform6D(const QString &destId, const QVec &origVec, const QString & origId); 
+            std::optional<QVec> transform6D(const QString &destId, const QVec &origVec, const QString & origId);
             std::optional<QVec> transform6D(const QString &destId, const QString & origId);
             std::optional<QVec> transformS6D(const std::string &destId, const std::string & origId);
             std::optional<QVec> transformS6D(const std::string &destId, const QVec &origVec, const std::string & origId);
-                
+
             ////////////////////////////////////////////////
             /// Transformation matrix retrieval methods
             ////////////////////////////////////////////////
@@ -36,7 +35,7 @@ namespace DSR
             QMat getRotationMatrixTo(const QString &to, const QString &from);
             QVec getTranslationVectorTo(const QString &to, const QString &from);
             QVec rotationAngles(const QString & destId, const QString & origId);
-        
+
             ////////////////////////////////////////////////
             /// Update transform methods
             ////////////////////////////////////////////////
@@ -50,8 +49,8 @@ namespace DSR
         private:
             DSR::DSRGraph *G;
             std::optional<InnerAPI::Lists> setLists(const std::string &origId, const std::string &destId);
-        
+
     };
-};
+}
 
 #endif

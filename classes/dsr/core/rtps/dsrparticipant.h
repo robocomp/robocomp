@@ -18,42 +18,38 @@
  */
 
 
-#ifndef _CADENA_PARTICIPANT_H_
-#define _CADENA_PARTICIPANT_H_
+#ifndef _PARTICIPANT_H_
+#define _PARTICIPANT_H_
 
 #include <fastrtps/fastrtps_fwd.h>
 #include "../topics/IDLGraphPubSubTypes.h"
-#include "dsrpublisher.h"
-#include "dsrsubscriber.h"
+#include "./dsrpublisher.h"
+#include "./dsrsubscriber.h"
 
 class DSRParticipant
 {
 public:
-	DSRParticipant();
-	virtual ~DSRParticipant();
-	std::tuple<bool, eprosima::fastrtps::Participant *> init();
-	void run();
-	eprosima::fastrtps::rtps::GUID_t getID() const ;
-	const char* getDSRTopicName() const;
-	const char* getRequestTopicName() const;
-	const char* getAnswerTopicName() const;
-
-	eprosima::fastrtps::Participant* getParticipant();
+    DSRParticipant();
+    virtual ~DSRParticipant();
+    std::tuple<bool, eprosima::fastrtps::Participant *> init(int32_t agent_id);
+    [[nodiscard]] eprosima::fastrtps::rtps::GUID_t getID() const;
+    [[nodiscard]] const char *getNodeTopicName() const;
+    [[nodiscard]] const char *getRequestTopicName() const;
+    [[nodiscard]] const char *getAnswerTopicName() const;
+    [[nodiscard]] const char *getEdgeTopicName() const;
+    [[nodiscard]] const char *getNodeAttrTopicName() const;
+    [[nodiscard]] const char *getEdgeAttrTopicName() const;
+    eprosima::fastrtps::Participant *getParticipant();
 
 private:
-	eprosima::fastrtps::Participant *mp_participant; 
-    eprosima::fastrtps::Publisher *mp_publisher; //"DSR"
-	eprosima::fastrtps::Subscriber *mp_subscriber; //"DSR"
- 	AworSetPubSubType dsrgraphType;
-
-	eprosima::fastrtps::Subscriber *mp_subscriber_graph_request; // "DSR_GRAPH_REQUEST"
-	GraphRequestPubSubType graphrequestType;
-    
-	eprosima::fastrtps::Publisher *mp_publisher_topic_answer; //"DSR_GRAPH_ANSWER"
-	eprosima::fastrtps::Subscriber *mp_subscriber_topic_answer; ///"DSR_GRAPH_ANSWER"
-	OrMapPubSubType graphRequestAnswerType;
-
+    eprosima::fastrtps::Participant *mp_participant{};
+    MvregPubSubType dsrgraphType;
+    GraphRequestPubSubType graphrequestType;
+    OrMapPubSubType graphRequestAnswerType;
+    MvregEdgePubSubType dsrEdgeType;
+    MvregNodeAttrPubSubType dsrNodeAttrType;
+    MvregEdgeAttrPubSubType dsrEdgeAttrType;
 
 };
 
-#endif // _CADENA_Participant_H_
+#endif // _Participant_H_

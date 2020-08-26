@@ -105,6 +105,5 @@ namespace DSR
 
 Q_DECLARE_METATYPE(std::int32_t);
 Q_DECLARE_METATYPE(std::string);
-//Q_DECLARE_METATYPE(DSR::AttribsMap);
 
 #endif // DSRVIEWER_H

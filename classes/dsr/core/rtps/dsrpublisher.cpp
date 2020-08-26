@@ -23,10 +23,6 @@
 #include <fastrtps/publisher/Publisher.h>
 #include <fastrtps/attributes/PublisherAttributes.h>
 #include <fastrtps/Domain.h>
-#include <fastrtps/transport/UDPv4TransportDescriptor.h>
-
-#include <thread>
-#include <chrono>
 
 #include "dsrpublisher.h"
 
@@ -38,96 +34,108 @@ using namespace eprosima::fastrtps::rtps;
 
 DSRPublisher::DSRPublisher() : mp_participant(nullptr), mp_publisher(nullptr) {}
 
-DSRPublisher::~DSRPublisher() 
-{ 
-    //eprosima::fastrtps::Domain::removeParticipant(mp_participant);
-}
+DSRPublisher::~DSRPublisher()= default;
 
 bool DSRPublisher::init(eprosima::fastrtps::Participant *mp_participant_, const char* topicName, const char* topicDataType)
 {
     mp_participant = mp_participant_;
-    
+
     // Create Publisher
     eprosima::fastrtps::PublisherAttributes Wparam;
     Wparam.topic.topicKind = eprosima::fastrtps::rtps::NO_KEY;
     Wparam.topic.topicDataType = topicDataType;  //This type MUST be registered
     Wparam.topic.topicName = topicName;
     eprosima::fastrtps::rtps::Locator_t locator;
-    eprosima::fastrtps::rtps::IPLocator::setIPv4(locator, 239, 255, 0 , 1);
+    eprosima::fastrtps::rtps::IPLocator::setIPv4(locator, 239, 255, 0, 1);
     locator.port = 7900;
     Wparam.multicastLocatorList.push_back(locator);
     Wparam.qos.m_reliability.kind = eprosima::fastrtps::RELIABLE_RELIABILITY_QOS;
     Wparam.qos.m_publishMode.kind = eprosima::fastrtps::ASYNCHRONOUS_PUBLISH_MODE;
+    Wparam.qos.m_durability.kind = eprosima::fastrtps::VOLATILE_DURABILITY_QOS;
 
 
-    if (std::string_view(topicName) == "DSR") {
-        // This would be better, but we sent a lots of messages to use it.
-        //Wparam.topic.historyQos.kind = KEEP_ALL_HISTORY_QOS;
-        Wparam.topic.historyQos.kind = KEEP_LAST_HISTORY_QOS;
-        Wparam.topic.historyQos.depth = 50; // Adjust this value if we are losing  messages
-        Wparam.topic.resourceLimitsQos.max_samples = 200;
+    Wparam.topic.historyQos.kind = KEEP_ALL_HISTORY_QOS;
+    //Wparam.topic.historyQos.kind = KEEP_LAST_HISTORY_QOS;
+    //Wparam.topic.historyQos.depth = 20; // Adjust this value if we are losing  messages
+
         // Check ACK for sended messages.
-        Wparam.times.heartbeatPeriod.seconds = 0;
-        Wparam.times.heartbeatPeriod.nanosec = 300000000; //300 ms
+    Wparam.times.heartbeatPeriod.seconds = 0;
+    Wparam.times.heartbeatPeriod.nanosec = 150000000; //150 ms
 
-    }
-    Wparam.historyMemoryPolicy = DYNAMIC_REUSABLE_MEMORY_MODE;
-    mp_publisher = eprosima::fastrtps::Domain::createPublisher(mp_participant,Wparam,static_cast<eprosima::fastrtps::PublisherListener*>(&m_listener));
-    if(mp_publisher == nullptr)
+    Wparam.topic.resourceLimitsQos.max_samples = 200;
+    //}
+    Wparam.historyMemoryPolicy = DYNAMIC_RESERVE_MEMORY_MODE; //PREALLOCATED_WITH_REALLOC_MEMORY_MODE;
+    mp_publisher = eprosima::fastrtps::Domain::createPublisher(mp_participant, Wparam,
+                                                               static_cast<eprosima::fastrtps::PublisherListener *>(&m_listener));
+
+    if (mp_publisher == nullptr)
         return false;
     qDebug() << "Publisher created, waiting for Subscribers." ;
     return true;
 }
 
 eprosima::fastrtps::rtps::GUID_t DSRPublisher::getParticipantID() const
-{   
+{
     return mp_participant->getGuid();
 }
 
-bool DSRPublisher::write(OrMap *object) {
-    return mp_publisher->write(object);
-}
 
-bool DSRPublisher::write(GraphRequest *object) {
-    return mp_publisher->write(object);
-}
-
-
-bool DSRPublisher::write(AworSet *object) {
-    while(true){
+bool DSRPublisher::write(IDL::Mvreg *object)
+{
+    while (true) {
         if (mp_publisher->write(object)) break;
     }
     return true;
-}
+};
 
-void DSRPublisher::PubListener::onPublicationMatched(eprosima::fastrtps::Publisher* pub, eprosima::fastrtps::rtps::MatchingInfo& info)
+bool DSRPublisher::write(IDL::MvregNodeAttr *object)
 {
-    (void)pub;
-    if (info.status == eprosima::fastrtps::rtps::MATCHED_MATCHING)
-    {
+    while (true) {
+        if (mp_publisher->write(object)) break;
+    }
+    return true;
+};
+
+bool DSRPublisher::write(IDL::MvregEdge *object)
+{
+    while (true) {
+        if (mp_publisher->write(object)) break;
+    }
+    return true;
+};
+
+bool DSRPublisher::write(IDL::MvregEdgeAttr *object)
+{
+    while (true) {
+        if (mp_publisher->write(object)) break;
+    }
+    return true;
+};
+
+bool DSRPublisher::write(IDL::OrMap *object)
+{
+    while (true) {
+        if (mp_publisher->write(object)) break;
+    }
+    return true;
+};
+
+bool DSRPublisher::write(IDL::GraphRequest *object)
+{
+    while (true) {
+        if (mp_publisher->write(object)) break;
+    }
+    return true;
+};
+
+void DSRPublisher::PubListener::onPublicationMatched(eprosima::fastrtps::Publisher *pub,
+                                                     eprosima::fastrtps::rtps::MatchingInfo &info)
+{
+    if (info.status == eprosima::fastrtps::rtps::MATCHED_MATCHING) {
         n_matched++;
-        qDebug() << "Publisher matched "<< info.remoteEndpointGuid.entityId.value ;
-    }
-    else
-    {
+        qDebug() << "Publisher [" << pub->getAttributes().topic.getTopicName() <<"] matched " << info.remoteEndpointGuid.entityId.value;
+    } else {
         n_matched--;
-        qDebug() << "Publisher unmatched" << info.remoteEndpointGuid.entityId.value ;
+        qDebug() << "Publisher [" << pub->getAttributes().topic.getTopicName() <<"] unmatched" << info.remoteEndpointGuid.entityId.value;
     }
 }
-/*
-void DSRPublisher::run()
-{
-    while(m_listener.n_matched == 0)
-    {
-        std::this_thread::sleep_for(std::chrono::milliseconds(250)); // Sleep 250 ms
-    }
-
-
-    do
-    {
-    //     mp_publisher->write(&st);  
-    //     ++msgsent;
-    //     std::cout << "Sending sample, count=" << msgsent << " " << st.load().size() * 4 << std::endl;
-    //     std::this_thread::sleep_for(std::chrono::microseconds(1000000)); // Sleep 250 ms
-    } while(true);
-}*/

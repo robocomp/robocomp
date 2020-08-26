@@ -32,7 +32,6 @@
 #include "../../../api/dsr_api.h"
 #include "graph_edge.h"
 #include "../../dsr_gui.h"
-#include <algorithm>
 
 class GraphEdge;
 class QGraphicsSceneMouseEvent;
@@ -73,13 +72,13 @@ class DoLaserStuff : public QGraphicsView
         std::optional<Node> n = graph->get_node(id);
         if (n.has_value()) 
         {
-            const auto lAngles = graph->get_attrib_by_name<vector<float>>(n.value(),"angles");
-            const auto lDists = graph->get_attrib_by_name<vector<float>>(n.value(), "dists");
+            const auto lAngles = graph->get_attrib_by_name<angles_att>(n.value());
+            const auto lDists = graph->get_attrib_by_name<dists_att>(n.value());
             if (lAngles.has_value() and lDists.has_value()) 
             {
                 QPolygonF polig;
                 polig << QPointF(0,150);
-                for (const auto &[dist, angle] : iter::zip(lDists.value(), lAngles.value())) 
+                for (const auto &[dist, angle] : iter::zip(lDists.value().get(), lAngles.value().get()))
                 {
                     //std::cout << dist << "," << angle << std::endl;
                     polig << QPointF(dist * sin(angle), dist * cos(angle));
@@ -142,56 +141,60 @@ class DoRGBDStuff : public QWidget
   public slots:
     void drawRGBDSLOT( int id, const std::string &type )
     {
-      if( id != node_id) return;
+      if( static_cast<uint32_t>(id) != node_id) return;
 
       std::optional<Node> n = graph->get_node(id);
-      if (n.has_value())
-      {
-        //rgb
-        if(show_rgb->isChecked())
-        {
-            const auto rgb_data = graph->get_attrib_by_name<vector<uint8_t>>(n.value(),"rgb");
-            const auto rgb_width = graph->get_attrib_by_name<int32_t>(n.value(),"rgb_width");
-            const auto rgb_height = graph->get_attrib_by_name<int32_t>(n.value(),"rgb_height");
-            
-            // if depth == 3
-            //image_rgb.create(height.value(), width.value(), CV_8UC3);
-            //QImage image((const unsigned char*)pixels, width, height, QImage::Format_RGB32);
-            //memcpy(image_rgb.data, &rgb_data.value()[0], width.value()*height.value()*sizeof(std::uint8_t)*3);   
-            //imshow("RGB", image_rgb);
-            //cv::waitKey(1);
-            //label.setPixmap(QImage());     
-        
-            //QImage image((const unsigned char*)&rgb_data.value()[0], width.value(), height.value(), QImage::Format_RGB888);
-            //QImage image(width.value(), height.value(), QImage::Format_RGB888);
-            //memcpy(image.data, &rgb_data.value()[0], width.value()*height.value()*sizeof(std::uint8_t)*3);   
-        
-            auto pix = QPixmap::fromImage(QImage(&rgb_data.value()[0], rgb_width.value(), rgb_height.value(), QImage::Format_RGB888));
-            rgbd_label.setPixmap(pix);
-        }
-        else
-            rgbd_label.clear();
-        if(show_depth->isChecked())
-        {
-            //depth
-            std::optional<std::vector<float>> depth_data = graph->get_depth_image(n.value());
-            std::vector<uint8_t> gray_scale;
-            const auto depth_width = graph->get_attrib_by_name<int32_t>(n.value(),"depth_width");
-            const auto depth_height = graph->get_attrib_by_name<int32_t>(n.value(),"depth_height");
-std::cout<<"before"<<depth_data.value()[0]<<std::endl;
-            //convert image to grayscale
-            const auto [min, max] = std::minmax_element(std::begin(depth_data.value()), std::end(depth_data.value()));
-            const int range = *max - *min;
-std::cout<<"values "<<*max<<" "<<*min<<" "<<range<<std::endl;            
-            std::transform(std::begin(depth_data.value()), std::end(depth_data.value()), std::back_inserter(gray_scale), [min, range](auto value){ return (uint8_t) (((value - *min)/range))*255; });
+      if (n.has_value()) {
+          //rgb
+          if (show_rgb->isChecked()) {
+              Node node = n.value();
+              const auto rgb_data = graph->get_attrib_by_name<rgb_att>(node);
+              const auto rgb_width = graph->get_attrib_by_name<width_att>(node);
+              const auto rgb_height = graph->get_attrib_by_name<height_att>(node);
+
+              if (rgb_data.has_value() and rgb_width.has_value() and rgb_height.has_value()) {
+                  // if depth == 3
+                  //image_rgb.create(height.value(), width.value(), CV_8UC3);
+                  //QImage image((const unsigned char*)pixels, width, height, QImage::Format_RGB32);
+                  //memcpy(image_rgb.data, &rgb_data.value()[0], width.value()*height.value()*sizeof(std::uint8_t)*3);
+                  //imshow("RGB", image_rgb);
+                  //cv::waitKey(1);
+                  //label.setPixmap(QImage());
+
+                  //QImage image((const unsigned char*)&rgb_data.value()[0], width.value(), height.value(), QImage::Format_RGB888);
+                  //QImage image(width.value(), height.value(), QImage::Format_RGB888);
+                  //memcpy(image.data, &rgb_data.value()[0], width.value()*height.value()*sizeof(std::uint8_t)*3);
+
+                  const std::vector<uint8_t> &img = rgb_data.value();
+                  auto pix = QPixmap::fromImage(
+                          QImage(&img[0], rgb_width.value(), rgb_height.value(), QImage::Format_RGB888));
+                  rgbd_label.setPixmap(pix);
+              } else
+                  rgbd_label.clear();
+              if (show_depth->isChecked()) {
+                  //depth
+                  std::optional<std::vector<float>> depth_data = graph->get_depth_image(n.value());
+                  std::vector<uint8_t> gray_scale;
+                  const auto depth_width = graph->get_attrib_by_name<depth_width_att>(n.value());
+                  const auto depth_height = graph->get_attrib_by_name<depth_height_att>(n.value());
+                  std::cout << "before" << depth_data.value()[0] << std::endl;
+                  //convert image to grayscale
+                  const auto [min, max] = std::minmax_element(std::begin(depth_data.value()),
+                                                             std::end(depth_data.value()));
+                  const int range = *max - *min;
+                  std::cout << "values " << *max << " " << *min << " " << range << std::endl;
+                  std::transform(std::begin(depth_data.value()), std::end(depth_data.value()),
+                                 std::back_inserter(gray_scale),
+                                 [min = *min, range](auto value) { return (uint8_t) (((value - min) / range)) * 255; });
 //std::cout<<"vector"<<depth_data.value()<<std::endl;
-            auto pix2 = QPixmap::fromImage(QImage(&gray_scale[0], depth_width.value(), depth_height.value(), QImage::Format_Indexed8));
-            depth_label.setPixmap(pix2);
-        }
-        else
-            depth_label.clear();
-        this->adjustSize();
-        show();                     
+                  auto pix2 = QPixmap::fromImage(
+                          QImage(&gray_scale[0], depth_width.value(), depth_height.value(), QImage::Format_Indexed8));
+                  depth_label.setPixmap(pix2);
+              } else
+                  depth_label.clear();
+              this->adjustSize();
+              show();
+          }
       }
     };
 
@@ -208,8 +211,9 @@ class DoTableStuff : public  QTableWidget
     DoTableStuff(std::shared_ptr<DSR::DSRGraph> graph_, DSR::IDType node_id_) : graph(graph_), node_id(node_id_)
     {
       qRegisterMetaType<std::int32_t>("std::int32_t");
+      qRegisterMetaType<std::uint32_t>("std::uint32_t");
       qRegisterMetaType<std::string>("std::string");
-      qRegisterMetaType<map<string, Attrib>>("Attribs");
+      qRegisterMetaType<map<string, Attribute>>("Attribs");
 
       //setWindowFlags(Qt::Widget | Qt::FramelessWindowHint);
       std::optional<Node> n = graph->get_node(node_id_);
@@ -223,73 +227,88 @@ class DoTableStuff : public  QTableWidget
           for (auto &[k, v] : n.value().attrs()) 
           {
               setItem(i, 0, new QTableWidgetItem(QString::fromStdString(k)));
-              switch (v.value()._d()) {
+              switch (v.selected()) {
                   case 0:
-                      setItem(i, 1, new QTableWidgetItem(QString::fromStdString(v.value().str())));
+                      setItem(i, 1, new QTableWidgetItem(QString::fromStdString(v.str())));
                       break;
                   case 1:
                       setItem(i, 1, new QTableWidgetItem(
-                              QString::fromStdString(std::get<1>(graph_->nativetype_to_string(v.value().dec())))));
+                              QString::fromStdString(std::get<1>(graph_->nativetype_to_string(v.dec())))));
                       break;
                   case 2:
                       setItem(i, 1, new QTableWidgetItem(
-                              QString::fromStdString(std::get<1>(graph_->nativetype_to_string(v.value().fl())))));
+                              QString::fromStdString(std::get<1>(graph_->nativetype_to_string(v.fl())))));
                       break;
                   case 3:
                       setItem(i, 1, new QTableWidgetItem(QString::fromStdString(
-                              std::get<1>(graph_->nativetype_to_string(v.value().float_vec())))));
+                              std::get<1>(graph_->nativetype_to_string(v.float_vec())))));
                       break;
                   case 4:
-                      setItem(i, 1, new QTableWidgetItem(QString(v.value().bl() ? "true" : "false")));
+                      setItem(i, 1, new QTableWidgetItem(QString(v.bl() ? "true" : "false")));
                       break;
                   case 5:
                       setItem(i, 1, new QTableWidgetItem(QString::fromStdString(
-                              std::get<1>(graph_->nativetype_to_string(v.value().byte_vec())))));
+                              std::get<1>(graph_->nativetype_to_string(v.byte_vec())))));
+                      break;
+                  case 6:
+                      setItem(i, 1, new QTableWidgetItem(
+                              QString::fromStdString(std::get<1>(graph_->nativetype_to_string(v.uint())))));
                       break;
               }
               i++;
           }
           horizontalHeader()->setStretchLastSection(true);
           resize_widget();
-          QObject::connect(graph.get(), &DSR::DSRGraph::update_attrs_signal, this, &DoTableStuff::drawSLOT);
+          //TODO: comprobar QObject::connect(graph.get(), &DSR::DSRGraph::update_attrs_signal, this, &DoTableStuff::drawSLOT);
         
           show();
       }
     };
 
   public slots:
-    void drawSLOT(const std::int32_t &id, const std::map<string,Attrib> &attribs) 
+    void drawSLOT(const std::int32_t &id, const std::map<string,Attribute> &attribs)
     {
-        //std::cout << " Window " << this->window()->windowTitle().toStdString() << " id " << QString::number(id).toStdString() << " contains? " << this->window()->windowTitle().contains(QString::number(id)) << std::endl;
-        if (this->window()->windowTitle().contains(QString::number(id))) {
-        int i = 0;
-            for (auto &[k,v] : attribs) 
-            {
-                setItem(i, 0, new QTableWidgetItem(QString::fromStdString(k)));   
-                switch (v.value()._d()) {
-                    case 0:
-                        setItem(i, 1, new QTableWidgetItem(QString::fromStdString(v.value().str())));
-                        break;
-                    case 1:
-                        setItem(i, 1, new QTableWidgetItem(QString::fromStdString(std::get<1>(graph->nativetype_to_string(v.value().dec())))));
-                        break;
-                    case 2:
-                        setItem(i, 1, new QTableWidgetItem(QString::fromStdString(std::get<1>(graph->nativetype_to_string(v.value().fl())))));
-                        break;
-                    case 3:
-                        setItem(i, 1, new QTableWidgetItem(QString::fromStdString(std::get<1>(graph->nativetype_to_string(v.value().float_vec())))));
-                        break;
-                    case 4:
-                        setItem(i, 1, new QTableWidgetItem(QString(v.value().bl() ? "true" : "false")));
-                        break;
-                    case 5:
-                        setItem(i, 1, new QTableWidgetItem(QString::fromStdString(std::get<1>(graph->nativetype_to_string(v.value().byte_vec())))));
-                        break;
-                }
-                i++;
-            }
-        }
-        resize_widget();
+     // try {
+          //std::cout << " Window " << this->window()->windowTitle().toStdString() << " id " << QString::number(id).toStdString() << " contains? " << this->window()->windowTitle().contains(QString::number(id)) << std::endl;
+          if (this->window()->windowTitle().contains(QString::number(id))) {
+              int i = 0;
+              for (auto &[k, v] : attribs) {
+                  setItem(i, 0, new QTableWidgetItem(QString::fromStdString(k)));
+                  switch (v.selected()) {
+                      case 0:
+                          setItem(i, 1, new QTableWidgetItem(QString::fromStdString(v.str())));
+                          break;
+                      case 1:
+                          setItem(i, 1, new QTableWidgetItem(
+                                  QString::fromStdString(std::get<1>(graph->nativetype_to_string(v.dec())))));
+                          break;
+                      case 2:
+                          setItem(i, 1, new QTableWidgetItem(
+                                  QString::fromStdString(std::get<1>(graph->nativetype_to_string(v.fl())))));
+                          break;
+                      case 3:
+                          setItem(i, 1, new QTableWidgetItem(
+                                  QString::fromStdString(std::get<1>(graph->nativetype_to_string(v.float_vec())))));
+                          break;
+                      case 4:
+                          setItem(i, 1, new QTableWidgetItem(QString(v.bl() ? "true" : "false")));
+                          break;
+                      case 5:
+                          setItem(i, 1, new QTableWidgetItem(
+                                  QString::fromStdString(std::get<1>(graph->nativetype_to_string(v.byte_vec())))));
+                          break;
+                      case 6:
+                          setItem(i, 1, new QTableWidgetItem(
+                                  QString::fromStdString(std::get<1>(graph->nativetype_to_string(v.uint())))));
+                          break;
+                  }
+                  i++;
+              }
+          }
+          resize_widget();
+      //} catch (const std::exception &e) {
+     //     std::cout << e.what() <<" Error  "<<__FUNCTION__<<":"<<__LINE__<<" "<<e.what()<< std::endl;
+     // }
     }
     
     void resizeEvent(QResizeEvent* event)
@@ -330,6 +349,7 @@ class GraphNode : public QObject, public QGraphicsEllipseItem
     
     void addEdge(GraphEdge *edge);
     void deleteEdge(GraphEdge *edge);
+
     QList<GraphEdge *> edges() const;
     void calculateForces();
     bool advancePosition();
