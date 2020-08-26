@@ -1,5 +1,7 @@
 #include "qscene_2d_viewer.h"
-#include "dsr/gui/viewers/graph_viewer/graph_node.h"
+#include "../../viewers/graph_viewer/graph_node.h"
+#include "dsr/core/types/type_checking/dsr_attr_name.h"
+
 using namespace DSR ;
 
 QScene2dViewer::QScene2dViewer(std::shared_ptr<DSR::DSRGraph> G_, QWidget *parent) : AbstractGraphicViewer(parent)
@@ -188,11 +190,13 @@ void QScene2dViewer::add_or_assign_plane(Node &node)
         return;
     }
 
-    std::string color = G->get_attrib_by_name<std::string>(node, "color").value_or("orange");
-    std::string texture = G->get_attrib_by_name<std::string>(node, "texture").value_or("");
-    int width = G->get_attrib_by_name<std::int32_t>(node, "width").value_or(0);
-    int height = G->get_attrib_by_name<std::int32_t>(node, "height").value_or(0);
-    int depth = G->get_attrib_by_name<std::int32_t>(node, "depth").value_or(0);
+    std::string color = "orange";
+    color = G->get_attrib_by_name<color_att>(node).value_or(color);
+    std::string texture;
+    texture = G->get_attrib_by_name<texture_att>(node).value_or(texture);
+    int width = G->get_attrib_by_name<width_att>(node).value_or(0);
+    int height = G->get_attrib_by_name<height_att>(node).value_or(0);
+    int depth = G->get_attrib_by_name<depth_att>(node).value_or(0);
 
 //    qDebug()<<"Draw plane"<<QString::fromStdString(node.name())<<"("<<width<<","<<height<<","<<depth<<")";
      
@@ -248,10 +252,12 @@ void  QScene2dViewer::add_or_assign_mesh(Node &node)
         return;
     }
 
-    std::string color = G->get_attrib_by_name<std::string>(node, "color").value_or("orange");
-    int width = G->get_attrib_by_name<std::int32_t>(node, "scalex").value_or(0);
-    int height = G->get_attrib_by_name<std::int32_t>(node, "scaley").value_or(0);
-    int depth = G->get_attrib_by_name<std::int32_t>(node, "scalez").value_or(0);
+    std::string color = "orange";
+    color = G->get_attrib_by_name<color_att>(node).value_or(color);
+    int width = G->get_attrib_by_name<scalex_att>(node).value_or(0);
+    int height = G->get_attrib_by_name<scaley_att>(node).value_or(0);
+    int depth = G->get_attrib_by_name<scalez_att>(node).value_or(0);
+
 
 //qDebug()<<"Draw mesh"<<QString::fromStdString(node.name())<<"("<<width<<","<<height<<","<<depth<<")"<<"color"<<QString::fromStdString(color);
 
@@ -534,12 +540,12 @@ void QScene2dViewer::draw_laser()
     auto laser_node = G->get_node("laser");
     if(laser_node.has_value())
     {
-        const auto lAngles = G->get_attrib_by_name<vector<float>>(laser_node.value(), "angles");
-        const auto lDists = G->get_attrib_by_name<vector<float>>(laser_node.value(), "dists");
+        const auto lAngles = G->get_attrib_by_name<angles_att>(laser_node.value());
+        const auto lDists = G->get_attrib_by_name<dists_att>(laser_node.value());
         if (lAngles.has_value() and lDists.has_value()) 
         {
             QPolygonF poly;
-            for( auto &&[angle, dist] : iter::zip(lAngles.value(), lDists.value()))
+            for( auto &&[angle, dist] : iter::zip(lAngles.value().get(), lDists.value().get()))
                 poly << robot->mapToScene(QPointF(dist * sin(angle), dist * cos(angle)));
 
             QColor color("LightGreen");
@@ -564,11 +570,11 @@ void QScene2dViewer::draw_person_space(QGraphicsItem *sceneItem,Node &node){
 }
 
 void QScene2dViewer::draw_space(std::string name, std::string color_, int zvalue, Node &node, QGraphicsItem* parent){
-    const auto x_pos = G->get_attrib_by_name<vector<float>>(node, name+"_x_pos");
-    const auto y_pos = G->get_attrib_by_name<vector<float>>(node, name+"_y_pos");
-    if (x_pos.has_value() and y_pos.has_value()) {
+    if (node.attrs().find( name+"_x_pos") != node.attrs().end() and node.attrs().find( name+"_y_pos") != node.attrs().end()) {
+        const auto x_pos = node.attrs().at(name+"_x_pos").float_vec();
+        const auto y_pos = node.attrs().at(name+"_y_pos").float_vec();;
         QPolygonF poly;
-        for (auto &&[x, y] : iter::zip(x_pos.value(), y_pos.value()))
+        for (auto &&[x, y] : iter::zip(x_pos, y_pos))
             poly << parent->mapFromScene(QPointF(x, y));
 
         QColor color(color_.c_str());

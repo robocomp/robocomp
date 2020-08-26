@@ -16,13 +16,13 @@ std::optional<InnerAPI::Lists> InnerAPI::setLists(const std::string &destId, con
     std::list<RMat::RTMat> listA, listB;
 
   	auto an = G->get_node(origId);
-	auto bn = G->get_node(destId);  
+	auto bn = G->get_node(destId);
     if ( not an.has_value() or  not bn.has_value())
 		return {};
 	auto a = an.value(); auto b = bn.value();
-    
+
 	int minLevel = std::min(G->get_node_level(a).value_or(-1), G->get_node_level(b).value_or(-1));
-	if (minLevel == -1) 
+	if (minLevel == -1)
 		return {};
 	while (G->get_node_level(a).value_or(-1) >= minLevel)
 	{
@@ -45,13 +45,13 @@ std::optional<InnerAPI::Lists> InnerAPI::setLists(const std::string &destId, con
 		auto rtmat = G->get_edge_RT_as_RTMat(edge_rt).value();
         listB.emplace_front(std::move(rtmat));
 		b = p_node.value();
-	}	
-	while (a.id() != b.id())  
+	}
+	while (a.id() != b.id())
 	{
 		auto p = G->get_node(G->get_parent_id(a).value_or(-1));
 		auto q = G->get_node(G->get_parent_id(b).value_or(-1));
 		if(p.has_value() and q.has_value())
-		{  
+		{
 //qDebug() << "listas A&B" << p.value().id() << q.value().id();
 	  		listA.push_back(G->get_edge_RT_as_RTMat(G->get_edge_RT(p.value(), a.id()).value()).value());
 	  		listB.push_front(G->get_edge_RT_as_RTMat(G->get_edge_RT(p.value(), b.id()).value()).value());
@@ -60,7 +60,7 @@ std::optional<InnerAPI::Lists> InnerAPI::setLists(const std::string &destId, con
 		}
 		else
 			return {};
-	}	
+	}
     return std::make_tuple(listA, listB);
 }
 
@@ -82,7 +82,7 @@ std::optional<RTMat> InnerAPI::getTransformationMatrixS(const std::string &dest,
 	if(!lists.has_value())
 		return {};
 	auto &[listA, listB] = lists.value();
-    
+
     for(auto &a: listA )
     {
 	    ret = a*ret;
@@ -140,7 +140,7 @@ std::optional<QVec> InnerAPI::transformS(const std::string &destId, const QVec &
 	}
 	else
 		return {};
-};
+}
 
  std::optional<QVec> InnerAPI::transformS( const std::string &destId, const std::string &origId)
  {
@@ -164,13 +164,13 @@ std::optional<QVec> InnerAPI::transform6D( const QString &destId, const QString 
 
 std::optional<QVec> InnerAPI::transform6D( const QString &destId, const QVec &origVec, const QString & origId)
  {
-	Q_ASSERT(origVec.size() == 6); 
+	Q_ASSERT(origVec.size() == 6);
 	return transformS(destId.toStdString(), origVec, origId.toStdString());
  }
 
  std::optional<QVec> InnerAPI::transformS6D( const std::string &destId, const QVec &origVec, const std::string& origId)
  {
-	Q_ASSERT(origVec.size() == 6); 
+	Q_ASSERT(origVec.size() == 6);
 	return transformS(destId, origVec, origId);
  }
 

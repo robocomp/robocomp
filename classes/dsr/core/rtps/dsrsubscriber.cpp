@@ -33,37 +33,31 @@ using namespace eprosima::fastrtps::rtps;
 
 DSRSubscriber::DSRSubscriber() : mp_participant(nullptr), mp_subscriber(nullptr) {}
 
-DSRSubscriber::~DSRSubscriber() 
-{
-    	//Domain::removeParticipant(mp_participant);
-}
+DSRSubscriber::~DSRSubscriber() = default;
 
-bool DSRSubscriber::init(eprosima::fastrtps::Participant *mp_participant_, 
-                        const char* topicName, const char* topicDataType, 
+bool DSRSubscriber::init(eprosima::fastrtps::Participant *mp_participant_,
+                        const char* topicName, const char* topicDataType,
                         std::function<void(Subscriber* sub)>  f_)
 {
     mp_participant = mp_participant_;
-    
+
     // Create Subscriber
     SubscriberAttributes Rparam;
     Rparam.topic.topicKind = NO_KEY;
     Rparam.topic.topicDataType = topicDataType; //Must be registered before the creation of the subscriber
     Rparam.topic.topicName = topicName;
     eprosima::fastrtps::rtps::Locator_t locator;
-    IPLocator::setIPv4(locator, 239, 255, 0 , 1);
+    IPLocator::setIPv4(locator, 239, 255, 0, 1);
     locator.port = 7900;
     Rparam.multicastLocatorList.push_back(locator);
     Rparam.qos.m_reliability.kind = eprosima::fastrtps::RELIABLE_RELIABILITY_QOS;
-    Rparam.historyMemoryPolicy = eprosima::fastrtps::rtps::PREALLOCATED_WITH_REALLOC_MEMORY_MODE;
+    Rparam.historyMemoryPolicy = eprosima::fastrtps::rtps::DYNAMIC_RESERVE_MEMORY_MODE; //PREALLOCATED_WITH_REALLOC_MEMORY_MODE;
 
-    /*
-    if (std::string_view(topicName) == "DSR") {
-        // This would be better, but we sent a lots of messages to use it.
-        //Wparam.topic.historyQos.kind = KEEP_ALL_HISTORY_QOS;
-        Rparam.topic.historyQos.kind = KEEP_LAST_HISTORY_QOS;
-        Rparam.topic.historyQos.depth = 50; // Adjust this value if we are losing  messages
-    }
-     */
+    Rparam.topic.historyQos.kind = KEEP_ALL_HISTORY_QOS;
+    //Rparam.topic.historyQos.kind = KEEP_LAST_HISTORY_QOS;
+    //Rparam.topic.historyQos.depth = 20; // Adjust this value if we are losing  messages
+
+    Rparam.topic.resourceLimitsQos.max_samples = 200;
     m_listener.participant_ID = mp_participant->getGuid();
     m_listener.f = f_;
 
@@ -85,16 +79,13 @@ eprosima::fastrtps::Subscriber * DSRSubscriber::getSubscriber(){
 
 void DSRSubscriber::SubListener::onSubscriptionMatched(Subscriber* sub, MatchingInfo& info)
 {
-    (void)sub;
     if (info.status == eprosima::fastrtps::rtps::MATCHED_MATCHING)
     {
         n_matched++;
-        qDebug() << "Publisher matched "<< info.remoteEndpointGuid.entityId.value ;
-    }
-    else
-    {
+        qDebug() << "Publisher[" << sub->getAttributes().topic.getTopicName() <<"] matched " << info.remoteEndpointGuid.entityId.value;
+    } else {
         n_matched--;
-        qDebug() << "Publisher unmatched" << info.remoteEndpointGuid.entityId.value ;
+        qDebug() << "Publisher[" << sub->getAttributes().topic.getTopicName() <<"] unmatched "  << info.remoteEndpointGuid.entityId.value;
     }
 }
 
