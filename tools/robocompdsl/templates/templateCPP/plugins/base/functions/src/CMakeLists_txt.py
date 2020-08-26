@@ -1,19 +1,6 @@
 from dsl_parsers.parsing_utils import communication_is_ice
 from templates.common.templatedict import TemplateDict
 
-STATEMACHINE_VISUAL_SOURCES_STR = """
-$ENV{ROBOCOMP}/classes/statemachinewidget/edge.cpp
-$ENV{ROBOCOMP}/classes/statemachinewidget/node.cpp
-$ENV{ROBOCOMP}/classes/statemachinewidget/graphwidget.cpp
-$ENV{ROBOCOMP}/classes/statemachinewidget/qstateMachineWrapper.cpp
-"""
-
-
-
-CPP11_ICE_STR = """
-ADD_DEFINITIONS ("-DICE_CPP11_MAPPING")
-FIND_PACKAGE( Ice REQUIRED COMPONENTS Ice++11 IceStorm++11)
-"""
 
 
 class src_CMakeLists_txt(TemplateDict):
@@ -22,10 +9,7 @@ class src_CMakeLists_txt(TemplateDict):
         self.component = component
         self['component_name'] = self.component.name
         self['interface_sources'] = self.interface_sources()
-        self['statemachine_visual_sources'] = self.statemachine_visual_sources()
-        self['cpp11_ice_packages'] = self.cpp11_ice_packages()
         self['wrap_ice'] = self.wrap_ice()
-        self['wrap_ui'] = self.wrap_ui()
 
     def interface_sources(self):
         result = ""
@@ -44,18 +28,6 @@ class src_CMakeLists_txt(TemplateDict):
                 result += interface_name.lower() + 'I.cpp\n'
         return result
 
-    def statemachine_visual_sources(self):
-        result = ""
-        if self.component.statemachine_visual:
-            result += STATEMACHINE_VISUAL_SOURCES_STR
-        return result
-
-
-    def cpp11_ice_packages(self):
-        result = ""
-        if self.component.language.lower() == "cpp11":
-            result += CPP11_ICE_STR
-        return result
 
     def wrap_ice(self):
         interface_names = []
@@ -71,8 +43,3 @@ class src_CMakeLists_txt(TemplateDict):
         result += ")\n"
         return result
 
-    def wrap_ui(self):
-        result = ""
-        if self.component.gui is not None:
-            result += "QT_WRAP_UI( UI_HEADERS mainUI.ui )\n"
-        return result

@@ -5,6 +5,13 @@ import dsl_parsers.parsing_utils as p_utils
 from templates.templateCPP.plugins.base.functions import function_utils as utils
 from templates.common.templatedict import TemplateDict
 
+INNERMODEL_COMPUTE_STR = """\
+#ifdef USE_QTGUI
+    if (innerModelViewer) innerModelViewer->update();
+    osgView->frame();
+#endif
+"""
+
 COMPUTE_METHOD_STR = """\
 void SpecificWorker::compute()
 {
@@ -23,45 +30,6 @@ void SpecificWorker::compute()
 	${compute_innermodelviewer}
 	
 }
-"""
-
-
-INNERMODEL_COMPUTE_STR = """\
-#ifdef USE_QTGUI
-    if (innerModelViewer) innerModelViewer->update();
-    osgView->frame();
-#endif
-"""
-
-
-STATEMACHINE_WITH_COMPUTE_METHOD = """
-void SpecificWorker::sm_${state}()
-{
-	std::cout<<\"Entered state ${state}\"<<std::endl;
-	compute();
-}
-
-"""
-
-STATEMACHINE_METHOD = """
-void SpecificWorker::sm_${state}()
-{
-	std::cout<<\"Entered ${type}state ${state}\"<<std::endl;
-}
-
-"""
-
-REGENERATE_INNERMODEL = """
-void SpecificWorker::regenerateInnerModelViewer()
-{
-    if (innerModelViewer)
-    {
-        osgView->getRootGroup()->removeChild(innerModelViewer);
-    }
-
-    innerModelViewer = new InnerModelViewer(innerModel, "root", osgView->getRootGroup(), true);
-}   
-    
 """
 
 INTERFACE_TYPES_COMMENT_STR = """\
@@ -83,13 +51,7 @@ class specificworker_cpp(TemplateDict):
         self['year'] = str(datetime.date.today().year)
         self['proxy_map_type'] = self.proxy_map_type()
         self['proxy_map_name'] = self.proxy_map_name()
-        self['innermodelviewer_code'] = self.innermodelviewer_code()
-        self['statemachine_finalize_emit'] = self.statemachine_finalize_emit()
-        self['innermodel_and_viewer_attribute_init'] = self.innermodel_and_viewer_attribute_init()
-        self['state_machine_start'] = self.state_machine_start()
-        self['statemachine_initialize_to_compute'] = self.statemachine_initialize_to_compute()
         self['compute_method'] = self.compute_method()
-        self['statemachine_methods_creation'] = self.statemachine_methods_creation()
         self['implements'] = self.implements()
         self['subscribes'] = self.subscribes()
         self['interface_specific_comment'] = self.interface_specific_comment()
@@ -158,31 +120,6 @@ class specificworker_cpp(TemplateDict):
 
         return body_code
 
-    def innermodelviewer_code(self):
-        result = ""
-        if self.component.innermodelviewer:
-            result += "#ifdef USE_QTGUI\n"
-            result += "<TABHERE>innerModelViewer = NULL;\n"
-            result += "<TABHERE>osgView = new OsgView(this);\n"
-            result += "<TABHERE>osgGA::TrackballManipulator *tb = new osgGA::TrackballManipulator;\n"
-            result += "<TABHERE>osg::Vec3d eye(osg::Vec3(4000.,4000.,-1000.));\n"
-            result += "<TABHERE>osg::Vec3d center(osg::Vec3(0.,0.,-0.));\n"
-            result += "<TABHERE>osg::Vec3d up(osg::Vec3(0.,1.,0.));\n"
-            result += "<TABHERE>tb->setHomePosition(eye, center, up, true);\n"
-            result += "<TABHERE>tb->setByMatrix(osg::Matrixf::lookAt(eye,center,up));\n"
-            result += "<TABHERE>osgView->setCameraManipulator(tb);\n"
-            result += "#endif\n"
-        return result
-
-
-    def innermodel_and_viewer_attribute_init(self):
-        result = ""
-        if self.component.innermodelviewer:
-            result += "#ifdef USE_QTGUI\n"
-            result += "<TABHERE>innerModel = std::make_shared<InnerModel>(); //InnerModel creation example\n"
-            result += "<TABHERE>innerModelViewer = new InnerModelViewer (innerModel, \"root\", osgView->getRootGroup(), true);\n"
-            result += "#endif\n"
-        return result
 
 
     def compute_method(self):
@@ -192,50 +129,12 @@ class specificworker_cpp(TemplateDict):
             result += Template(COMPUTE_METHOD_STR).substitute(compute_innermodelviewer=self.compute_innermodelviewer())
         return result
 
-
     def compute_innermodelviewer(self):
         result = ""
         if self.component.innermodelviewer:
             result += INNERMODEL_COMPUTE_STR
         return result
 
-    def statemachine_methods_creation(self):
-        sm_implementation = ""
-        statemachine = self.component.statemachine
-        if statemachine is not None:
-            sm_implementation = "\n"
-            state_type = ""
-            if statemachine['machine']['contents']['states'] is not None:
-                for state in statemachine['machine']['contents']['states']:
-                    if statemachine['machine']['default'] and state == 'compute':
-                        sm_implementation += Template(STATEMACHINE_WITH_COMPUTE_METHOD).substitute(state=state, type=state_type)
-                    else:
-                        sm_implementation += Template(STATEMACHINE_METHOD).substitute(state=state, type=state_type)
-            if statemachine['machine']['contents']['initialstate'] is not None:
-                state_type = "initial "
-                state = statemachine['machine']['contents']['initialstate']
-                sm_implementation += Template(STATEMACHINE_METHOD).substitute(state=state, type=state_type)
-            if statemachine['machine']['contents']['finalstate'] is not None:
-                state_type = "final "
-                state = statemachine['machine']['contents'][
-                    'finalstate']
-                sm_implementation += Template(STATEMACHINE_METHOD).substitute(state=state, type=state_type)
-            if statemachine['substates'] is not None:
-                for substates in statemachine['substates']:
-                    if substates['contents']['states'] is not None:
-                        state_type = "sub"
-                        for state in substates['contents']['states']:
-                            sm_implementation += Template(STATEMACHINE_METHOD).substitute(state=state, type=state_type)
-                    if substates['contents']['initialstate'] is not None:
-                        state_type = "initial sub"
-                        state = substates['contents']['initialstate']
-                        sm_implementation += Template(STATEMACHINE_METHOD).substitute(state=state, type=state_type)
-                    if substates['contents']['finalstate'] is not None:
-                        state_type = "final sub"
-                        state = substates['contents']['finalstate']
-                        sm_implementation += Template(STATEMACHINE_METHOD).substitute(state=state, type=state_type)
-            sm_implementation += '\n'
-        return sm_implementation
 
     def implements(self):
         result = ""
@@ -296,27 +195,6 @@ class specificworker_cpp(TemplateDict):
             return "mprx"
         else:
             return "tprx"
-
-    def statemachine_finalize_emit(self):
-        result = ""
-        statemachine = self.component.statemachine
-        if statemachine is not None and statemachine['machine']['default']:
-            result += "emit t_compute_to_finalize();\n"
-        return result
-
-    def state_machine_start(self):
-        result = ""
-        statemachine = self.component.statemachine
-        if statemachine is not None:
-            result += statemachine['machine']['name'] + ".start();\n"
-        return result
-
-    def statemachine_initialize_to_compute(self):
-        result = ""
-        statemachine = self.component.statemachine
-        if statemachine is not None and statemachine['machine']['default']:
-            result += "emit this->t_initialize_to_compute();\n"
-        return result
 
     def interface_specific_comment(self):
         result = ""
