@@ -169,32 +169,42 @@ class DoRGBDStuff : public QWidget
                   auto pix = QPixmap::fromImage(
                           QImage(&img[0], rgb_width.value(), rgb_height.value(), QImage::Format_RGB888));
                   rgbd_label.setPixmap(pix);
-              } else
-                  rgbd_label.clear();
-              if (show_depth->isChecked()) {
-                  //depth
-                  std::optional<std::vector<float>> depth_data = graph->get_depth_image(n.value());
-                  std::vector<uint8_t> gray_scale;
-                  const auto depth_width = graph->get_attrib_by_name<depth_width_att>(n.value());
-                  const auto depth_height = graph->get_attrib_by_name<depth_height_att>(n.value());
-                  std::cout << "before" << depth_data.value()[0] << std::endl;
-                  //convert image to grayscale
-                  const auto [min, max] = std::minmax_element(std::begin(depth_data.value()),
-                                                             std::end(depth_data.value()));
-                  const int range = *max - *min;
-                  std::cout << "values " << *max << " " << *min << " " << range << std::endl;
-                  std::transform(std::begin(depth_data.value()), std::end(depth_data.value()),
-                                 std::back_inserter(gray_scale),
-                                 [min = *min, range](auto value) { return (uint8_t) (((value - min) / range)) * 255; });
-//std::cout<<"vector"<<depth_data.value()<<std::endl;
-                  auto pix2 = QPixmap::fromImage(
-                          QImage(&gray_scale[0], depth_width.value(), depth_height.value(), QImage::Format_Indexed8));
-                  depth_label.setPixmap(pix2);
-              } else
-                  depth_label.clear();
-              this->adjustSize();
-              show();
+              }
+          } else
+                rgbd_label.clear();
+          //depth              
+          if (show_depth->isChecked()) {
+            const float factor = 255.f/4000.f; //define 4000 as max distance on grayscale conversion (255 value)
+            const auto depth_width = graph->get_attrib_by_name<depth_width_att>(n.value());
+            const auto depth_height = graph->get_attrib_by_name<depth_height_att>(n.value());
+            const std::optional<std::vector<uint8_t>> depth_data = graph->get_attrib_by_name<img_depth_att>(n.value());
+            if (depth_data.has_value() and depth_width.has_value() and depth_height.has_value()) {
+                std::vector<uint8_t> gray_scale(depth_data.value().size()/4);
+                float aux = 0.f;
+                for (std::size_t i = 0; i < depth_data.value().size(); i+=4) {
+                    //convert byte to float
+                    if constexpr (__BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__)
+                    {
+                        aux = depth_data.value().at(i) << 24u | depth_data.value().at(i+1) << 16u | depth_data.value().at(i+2) << 8u | depth_data.value().at(i+3);
+                        
+                    } else if constexpr(__BYTE_ORDER__ == __ORDER_BIG_ENDIAN__)
+                    {
+                        aux = depth_data.value().at(i+3) << 24u | depth_data.value().at(i+2) << 16u | depth_data.value().at(i+1) << 8u | depth_data.value().at(i);
+                    }
+                    //convert float to grayscale => [(value - min(0)) / (max - min)] * 255
+                    aux = aux * factor;
+                    *(unsigned int*)&gray_scale.at(i/4) = *(unsigned int*)&aux;
+                }
+                auto pix2 = QPixmap::fromImage(
+                        QImage(&gray_scale[0], depth_width.value(), depth_height.value(), QImage::Format_Indexed8));
+                depth_label.setPixmap(pix2);
+            }
           }
+          else{
+            depth_label.clear();
+          }
+          this->adjustSize();
+          show();
       }
     };
 
