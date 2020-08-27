@@ -1,0 +1,47 @@
+<innerModel>
+	<transform id="world">
+		<transform id="floor" >
+
+		    <plane id="ddG" nz="1" px="0" py="0" pz="0" size="600,600,10" texture="/home/robocomp/robocomp/files/osgModels/textures/wood.jpg" />
+
+			<plane id="ddR" nx="-1" px="295" py="0" pz="25" size="600,40,10" texture="#eeeeee" />
+			<plane id="ddL" nx="1" px="-295" py="0" pz="25" size="600,40,10" texture="#eeeeee" />
+
+			<plane id="ddF" ny="-1" py="295" pz="25" px="0" size="600,40,10" texture="#555555" />
+			<plane id="ddB" ny="1" py="-295" pz="25" px="0" size="600,40,10" texture="#555555" />
+
+		</transform>
+
+		<!--OBSTACLES-->
+		<transform id="caja1" tx="150" ty="150" tz="35">
+			<plane id="cajaMesh1" nz="1" size="60,60,60" texture="/home/robocomp/robocomp/files/osgModels/textures/Metal.jpg" />
+		</transform>
+
+		<transform id="caja2" tx="-150" tz="35" ty="-150" >
+			<plane id="cajaMesh2" nz="1" size="60,60,60" texture="/home/robocomp/robocomp/files/osgModels/textures/Metal.jpg" />
+		</transform>
+
+		<differentialrobot id="base"  tx="0" ty="0" tz="10" port="10004">
+			<mesh id="base_robex" rx="1.57" rz="-1.57" file="/home/robocomp/.local/lib/python3.6/site-packages/pybullet_data/duck.obj" scale="0.5" />
+			<transform id="palo2" ty="0.10">
+				<transform id="pre_jointCodo" ry="1.5707963267948966" >
+					<joint id="r4" port="10067" >
+						<transform id="post_jointCodo" ry="-1.5707963267948966" >
+							<transform id="palo3" ty="0.11">
+								<plane id="mesh_3" nz="1" size="20,20,20" />
+							</transform>
+						</transform>
+					</joint>
+				</transform>
+			</transform>
+			<translation id="laserPose" tx="-20" ty="40" tz="70">
+				<laser id="laser" port="10003" measures="100" min="100" max="1000" angle="3" ifconfig="10000" />
+				<plane id="sensorL" size="10,10,10" texture="#000000" />
+			</translation>
+			<transform id="camera" tx="0" ty="40" tz="70">
+				<rgbd id="rgbd" focal="490" width="640" height="480" port="10096" noise="0.00" ifconfig="40000,50000" />
+				<plane id="rgbd_mesh1" size="10,10,10" texture="#550055" />
+			</transform>
+		</differentialrobot>
+	</transform>
+</innerModel>
