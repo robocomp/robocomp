@@ -140,10 +140,10 @@ void QScene2dViewer::add_or_assign_rect(Node &node, std::string color, std::stri
     QRect rect = QPolygon(polygon).boundingRect();
 
     //minimum size
-    if(rect.width() < 100)
-        rect.setWidth(100);
-    if(rect.height() < 100)
-        rect.setHeight(100);
+    if(rect.width() < 10)
+        rect.setWidth(10);
+    if(rect.height() < 10)
+        rect.setHeight(10);
 
     //texture
     QBrush brush = QBrush(QColor(QString::fromStdString(color)));
@@ -206,7 +206,7 @@ void QScene2dViewer::add_or_assign_plane(Node &node)
 bool QScene2dViewer::is_drawable(std::list<int> parent_list)
 {
     bool drawable = true;
-    for(std::list<int>::iterator it = parent_list.end(); it != parent_list.begin(); --it)
+    for(std::list<int>::reverse_iterator it = parent_list.rbegin(); it != parent_list.rend(); ++it)
     {
         std::optional<Node> node = G->get_node(*it);
         if (node.has_value())
