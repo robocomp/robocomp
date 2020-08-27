@@ -12,6 +12,7 @@ using namespace DSR ;
 GraphViewer::GraphViewer(std::shared_ptr<DSR::DSRGraph> G_, QWidget *parent) :  AbstractGraphicViewer(parent)
 {
     qRegisterMetaType<std::int32_t>("std::int32_t");
+    qRegisterMetaType<std::uint32_t>("std::uint32_t");
     qRegisterMetaType<std::string>("std::string");
     G = G_;
 	own = shared_ptr<GraphViewer>(this);
@@ -107,7 +108,7 @@ void GraphViewer::timerEvent(QTimerEvent *event)
 ///// SLOTS
 //////////////////////////////////////////////////////////////////////////////////////
 void GraphViewer::add_or_assign_node_SLOT(int id, const std::string &type)
-{	
+{
 	//qDebug() << __FUNCTION__ << "node id " << id<<", type "<<QString::fromUtf8(type.c_str());
 	GraphNode *gnode;														// CAMBIAR a sharer_ptr
 
@@ -134,7 +135,7 @@ void GraphViewer::add_or_assign_node_SLOT(int id, const std::string &type)
             // int i = 0;
             // tableWidgetNodes->clearContents();
             // tableWidgetNodes->setRowCount(nodes_types_list.size());
-            // for (auto &s : nodes_types_list) 
+            // for (auto &s : nodes_types_list)
 			// {
             //     tableWidgetNodes->setItem(i, 0, new QTableWidgetItem(s));
             //     tableWidgetNodes->item(i, 0)->setIcon(QPixmap::fromImage(QImage("../../dsr/greenBall.png")));
@@ -147,8 +148,8 @@ void GraphViewer::add_or_assign_node_SLOT(int id, const std::string &type)
 
             // connect QTableWidget itemClicked to hide/show nodes of selected type and nodes fanning into it
             // disconnect(tableWidgetNodes, &QTableWidget::itemClicked, nullptr, nullptr);
-            // connect(tableWidgetNodes, &QTableWidget::itemClicked, this, [this](const auto &item) 
-			// {
+            // connect(tableWidgetNodes, &QTableWidget::itemClicked, this, [this](const auto &item)
+            // {
             //     static bool visible = true;
             //     qDebug() << __FILE__ << " " << __FUNCTION__ << "hide or show all nodes of type " << item->text().toStdString() ;
             //     for (auto &[k, v] : gmap)
@@ -165,7 +166,11 @@ void GraphViewer::add_or_assign_node_SLOT(int id, const std::string &type)
             //         tableWidgetNodes->item(item->row(), 0)->setIcon(
             //                 QPixmap::fromImage(QImage("../../dsr/redBall.png")));
             // }, Qt::UniqueConnection);
-        
+		
+            //color is read from node attribute
+            std::string color("coral");
+            color = G->get_attrib_by_name<color_att>(n.value()).value_or(color);
+/* 
 			std::string color = "coral";
 			if(type == "world") color = "SeaGreen";
 			else if(type == "transform") color = "SteelBlue";
@@ -173,7 +178,7 @@ void GraphViewer::add_or_assign_node_SLOT(int id, const std::string &type)
 			else if(type == "differentialrobot") color = "GoldenRod";
 			else if(type == "laser") color = "GreenYellow";
 			else if(type == "mesh") color = "LightBlue";
-			else if(type == "imu") color = "LightSalmon";
+			else if(type == "imu") color = "LightSalmon";*/
 			gnode->setColor(color);
         } else
 		{
@@ -183,10 +188,10 @@ void GraphViewer::add_or_assign_node_SLOT(int id, const std::string &type)
 		gnode->change_detected();
         float posx = 10;
         float posy = 10;
-        try 
-		{
-            posx = G->get_attrib_by_name<float>(n.value(), "pos_x").value_or(10);
-            posy = G->get_attrib_by_name<float>(n.value(), "pos_y").value_or(10);
+        try
+        {
+            posx = G->get_attrib_by_name<pos_x_att>(n.value()).value_or(10);
+            posy = G->get_attrib_by_name<pos_y_att>(n.value()).value_or(10);
         }
         catch (const std::exception &e) {
             auto rd = QVec::uniformVector(2, -200, 200);
@@ -204,7 +209,7 @@ void GraphViewer::add_or_assign_node_SLOT(int id, const std::string &type)
 
 void GraphViewer::add_or_assign_edge_SLOT(std::int32_t from, std::int32_t to, const std::string &edge_tag)
 {
-	try 
+	try
     {
  		//qDebug() << __FUNCTION__ << "edge id " << QString::fromStdString(edge_tag) << from << to;
 		std::tuple<std::int32_t, std::int32_t, std::string> key = std::make_tuple(from, to, edge_tag);
@@ -251,13 +256,13 @@ void GraphViewer::del_edge_SLOT(const std::int32_t from, const std::int32_t to, 
 	try {
 		std::tuple<std::int32_t, std::int32_t, std::string> key = std::make_tuple(from, to, edge_tag);
 		while (gmap_edges.count(key) > 0) {
-		    GraphEdge *edge = gmap_edges.at(key);
+            GraphEdge *edge = gmap_edges.at(key);
             scene.removeItem(edge);
             if (gmap.find(from) != gmap.end())
                 gmap.at(from)->deleteEdge(edge);
             if (gmap.find(to) != gmap.end())
                 gmap.at(to)->deleteEdge(edge);
-		    gmap_edges.erase(key);
+            gmap_edges.erase(key);
             delete edge;
 		}
 	} catch(const std::exception &e) { std::cout << e.what() <<" Error  "<<__FUNCTION__<<":"<<__LINE__<< std::endl;}

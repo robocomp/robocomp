@@ -28,20 +28,14 @@
 #include <fastrtps/subscriber/SampleInfo.h>
 #include <functional>
 
-/*
-namespace DSR {
-	class DSRGraph;
-}
-#include <../../../dsr/DSR.h>
-*/
 
 class DSRSubscriber
 {
 public:
 	DSRSubscriber();
 	virtual ~DSRSubscriber();
-	bool init(eprosima::fastrtps::Participant *mp_participant_, 
-				const char* topicName, const char* topicDataType, 
+	bool init(eprosima::fastrtps::Participant *mp_participant_,
+				const char* topicName, const char* topicDataType,
 				std::function<void(eprosima::fastrtps::Subscriber* sub)>  f_);
 	void run();
     eprosima::fastrtps::Subscriber * getSubscriber();
@@ -54,9 +48,9 @@ private:
 	{
 	public:
 		SubListener() : n_matched(0),n_msg(0),participant_ID(eprosima::fastrtps::rtps::GUID_t()){};
-		~SubListener(){};
-		void onSubscriptionMatched(eprosima::fastrtps::Subscriber* sub,eprosima::fastrtps::rtps::MatchingInfo& info);
-		void onNewDataMessage(eprosima::fastrtps::Subscriber* sub);
+		~SubListener() override= default;;
+		void onSubscriptionMatched(eprosima::fastrtps::Subscriber* sub,eprosima::fastrtps::rtps::MatchingInfo& info) override;
+		void onNewDataMessage(eprosima::fastrtps::Subscriber* sub) override;
 		eprosima::fastrtps::SampleInfo_t m_info;
 		int n_matched;
 		int n_msg;
@@ -65,7 +59,7 @@ private:
 		std::function<void(eprosima::fastrtps::Subscriber* sub)>  f;
 
 	} m_listener;
-	
+
 };
 
 #endif // _CADENA_SUBSCRIBER_H_

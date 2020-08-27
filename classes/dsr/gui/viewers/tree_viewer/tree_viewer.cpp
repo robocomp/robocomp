@@ -11,6 +11,7 @@ using namespace DSR ;
 TreeViewer::TreeViewer(std::shared_ptr<DSR::DSRGraph> G_, QWidget *parent) :  QTreeWidget(parent)
 {
     qRegisterMetaType<std::int32_t>("std::int32_t");
+    qRegisterMetaType<std::uint32_t>("std::uint32_t");
     qRegisterMetaType<std::string>("std::string");
     G = G_;
     this->setMinimumSize(400, 400);
@@ -166,17 +167,17 @@ void TreeViewer::create_attribute_widgets(QTreeWidgetItem* parent, Node* node)
 		// check if attribute widget already exists
 		if(attributes_map.count(node->id()) > 0 and attributes_map[node->id()].count(key) > 0)
 			continue;
-		create_attribute_widget(parent, node, key, value.value());
+		create_attribute_widget(parent, node, key, value);
 	}
 
 }
 
-void TreeViewer::create_attribute_widget(QTreeWidgetItem* parent, Node* node, std::string key, Val value)
+void TreeViewer::create_attribute_widget(QTreeWidgetItem* parent, Node* node, std::string key, Attribute value)
 {
 	QTreeWidgetItem* q_attr = new QTreeWidgetItem(parent);
 	attributes_map[node->id()][key] = q_attr;
 	q_attr->setText(0, QString::fromStdString(key));
-	switch (value._d()) {
+	switch (value.selected()) {
 	case 0: {
 		QLineEdit* ledit = new QLineEdit(QString::fromStdString(value.str()));
 		ledit->setReadOnly(true);
@@ -231,7 +232,18 @@ void TreeViewer::create_attribute_widget(QTreeWidgetItem* parent, Node* node, st
 		this->setItemWidget(q_attr, 1, combo);
 	}
 		break;
+	case 6: {
+            QSpinBox* spin = new QSpinBox();
+            spin->setReadOnly(true);
+            spin->setMinimum(-10000);
+            spin->setMaximum(10000);
+            spin->setValue(value.uint());
+            this->setItemWidget(q_attr, 1, spin);
+
+        }
+            break;
 	}
+
 }
 
 void TreeViewer::update_attribute_widgets(Node* node)
@@ -239,46 +251,52 @@ void TreeViewer::update_attribute_widgets(Node* node)
 	for (auto[key, value] : node->attrs()) {
 		QTreeWidgetItem* q_attr = attributes_map[node->id()][key];
 		if(not q_attr) {
-			create_attribute_widget(tree_map[node->id()], node, key, value.value());
+			create_attribute_widget(tree_map[node->id()], node, key, value);
 			q_attr = attributes_map[node->id()][key];
 			if(not q_attr)
 				throw std::runtime_error("Problem creating tree widget for node" +node->name()+" attribute "+key);
 		}
-		switch (value.value()._d()) {
-		case 0: {
+		switch (value.selected()) {
+            case 0: {
 
-			QLineEdit* ledit = qobject_cast<QLineEdit*>(this->itemWidget(q_attr, 1));
-			ledit->setText(QString::fromStdString(value.value().str()));
+                QLineEdit *ledit = qobject_cast<QLineEdit *>(this->itemWidget(q_attr, 1));
+                ledit->setText(QString::fromStdString(value.str()));
 
-		}
-			break;
-		case 1: {
-			QSpinBox* spin = qobject_cast<QSpinBox*>(this->itemWidget(q_attr, 1));
-			spin->setValue(value.value().dec());
-		}
-			break;
-		case 2: {
-			QDoubleSpinBox* spin =  qobject_cast<QDoubleSpinBox*>(this->itemWidget(q_attr, 1));
-			spin->setValue(std::round(static_cast<double>(value.value().fl())*1000000)/1000000);
-		}
-			break;
-		case 3: {
-			QWidget* widget = qobject_cast<QWidget*>(this->itemWidget(q_attr, 1));
-			int count=0;
-			for (auto spin : widget->findChildren<QDoubleSpinBox*>()) {
-				spin->setValue(value.value().float_vec()[count]);
-				count++;
-			}
-		}
-			break;
-		case 4: {
-			QComboBox* combo = qobject_cast<QComboBox*>(this->itemWidget(q_attr, 1));
-			if (value.value().bl())
-				combo->setCurrentText("true");
-			else
-				combo->setCurrentText("false");
-		}
-			break;
-		}
+            }
+                break;
+            case 1: {
+                QSpinBox *spin = qobject_cast<QSpinBox *>(this->itemWidget(q_attr, 1));
+                spin->setValue(value.dec());
+            }
+                break;
+            case 2: {
+                QDoubleSpinBox *spin = qobject_cast<QDoubleSpinBox *>(this->itemWidget(q_attr, 1));
+                spin->setValue(std::round(static_cast<double>(value.fl()) * 1000000) / 1000000);
+            }
+                break;
+            case 3: {
+                QWidget *widget = qobject_cast<QWidget *>(this->itemWidget(q_attr, 1));
+                int count = 0;
+                for (auto spin : widget->findChildren<QDoubleSpinBox *>()) {
+                    spin->setValue(value.float_vec()[count]);
+                    count++;
+                }
+            }
+                break;
+            case 4: {
+                QComboBox *combo = qobject_cast<QComboBox *>(this->itemWidget(q_attr, 1));
+                if (value.bl())
+                    combo->setCurrentText("true");
+                else
+                    combo->setCurrentText("false");
+            }
+                break;
+
+            case 6: {
+                QSpinBox *spin = qobject_cast<QSpinBox *>(this->itemWidget(q_attr, 1));
+                spin->setValue(value.uint());
+            }
+                break;
+        }
 	}
 }

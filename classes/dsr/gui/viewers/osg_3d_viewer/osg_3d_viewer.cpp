@@ -298,17 +298,19 @@ void OSG3dViewer::add_or_assign_box(const Node &node, const Node& parent)
     qDebug() << __FUNCTION__ << ": node " <<  QString::fromStdString(node.name()) << "-" << node.id()<< " Parent: " << parent.id() ;
     try
     {
-        auto texture = G->get_attrib_by_name<std::string>(node, "texture");
+
+        auto texture = G->get_attrib_by_name<texture_att>(node);
         //if(texture.has_value()) qDebug() << texture.value() ;
-        auto height = G->get_attrib_by_name<std::int32_t>(node, "height");
+        auto height = G->get_attrib_by_name<height_att>(node);
         //if(height.has_value()) qDebug() << height.value() ;
-        auto width = G->get_attrib_by_name<std::int32_t>(node, "width");
+        auto width = G->get_attrib_by_name<width_att>(node);
         //if(width.has_value()) qDebug() << height.value() ;
-        auto depth = G->get_attrib_by_name<std::int32_t>(node, "depth");
+        auto depth = G->get_attrib_by_name<depth_att>(node);
         //if(depth.has_value()) qDebug() << depth.value() ;
    
         // Check valid ranges
-        auto textu = texture.value_or("#000000");
+        std::string default_texture = "#000000";
+        std::string textu = texture.value_or(default_texture);
         bool constantColor = false;
         if (textu.size() == 7 and textu[0] == '#')
                 constantColor = true;
@@ -332,7 +334,7 @@ void OSG3dViewer::add_or_assign_box(const Node &node, const Node& parent)
                 osg::Image *image;
                 if (textu.size()>0 and not constantColor)
                     if( image = osgDB::readImageFile(textu), image == nullptr)
-                        throw std::runtime_error("Couldn't load texture from file: " + texture.value());
+                        throw std::runtime_error("Couldn't load texture from file: " + texture.value().get());
                 // texture
                 osg::Texture2D *texture = new osg::Texture2D;
                 texture->setWrap(osg::Texture::WRAP_S, osg::Texture::REPEAT);
@@ -374,15 +376,15 @@ void OSG3dViewer::add_or_assign_box(const Node &node, const Node& parent)
 void  OSG3dViewer::add_or_assign_mesh(const Node &node, const Node& parent)
 {   
     qDebug() << __FUNCTION__ << " node " << node.id() << " parent " << parent.id() ;
-    auto color = G->get_attrib_by_name<std::string>(node, "color");
+    auto color = G->get_attrib_by_name<color_att>(node);
     if(color.has_value()) qDebug() << QString::fromStdString(color.value());
-    auto filename = G->get_attrib_by_name<std::string>(node, "path");
+    auto filename = G->get_attrib_by_name<path_att>(node);
     if(filename.has_value()) qDebug() << QString::fromStdString(filename.value()) ;
-    auto scalex = G->get_attrib_by_name<std::int32_t>(node, "scalex");
+    auto scalex = G->get_attrib_by_name<scalex_att>(node);
     if(scalex.has_value()) qDebug() << scalex.value() ;
-    auto scaley = G->get_attrib_by_name<std::int32_t>(node, "scaley");
+    auto scaley = G->get_attrib_by_name<scaley_att>(node);
     if(scaley.has_value()) qDebug() << scaley.value() ;
-    auto scalez = G->get_attrib_by_name<std::int32_t>(node, "scalez");
+    auto scalez = G->get_attrib_by_name<scalez_att>(node);
     if(scalez.has_value()) qDebug() << scalez.value() ;
     // Check valid ranges
     
@@ -395,7 +397,7 @@ void  OSG3dViewer::add_or_assign_mesh(const Node &node, const Node& parent)
         //osg::MatrixTransform *mt = new osg::MatrixTransform;
         osg::Node *osg_mesh = osgDB::readNodeFile(filename.value());
         if (!osg_mesh)
-            throw  std::runtime_error("Could not find nesh file " + filename.value());
+            throw  std::runtime_error("Could not find nesh file " + filename.value().get());
         osg::PolygonMode *polygonMode = new osg::PolygonMode();
         polygonMode->setMode(osg::PolygonMode::FRONT_AND_BACK, osg::PolygonMode::FILL);
         osg_mesh->getOrCreateStateSet()->setAttributeAndModes(polygonMode, osg::StateAttribute::OVERRIDE | osg::StateAttribute::ON);

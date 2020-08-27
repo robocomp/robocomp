@@ -29,6 +29,7 @@
 #include <QHeaderView>
 #include <cppitertools/range.hpp>
 
+using namespace DSR;
 
 class DoRTStuff : public  QTableWidget
 {
