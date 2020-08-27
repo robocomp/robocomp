@@ -7,6 +7,7 @@
 #include <unistd.h>
 #include <algorithm>
 #include <utility>
+#include <bit>
 
 #include <fastrtps/subscriber/Subscriber.h>
 #include <fastrtps/transport/UDPv4TransportDescriptor.h>
@@ -1056,8 +1057,16 @@ std::optional<std::vector<float>> DSRGraph::get_depth_image(const Node &n)
 {
     auto& attrs = n.attrs();
     if (auto value  = attrs.find("depth"); value != attrs.end()) {
-        const auto &tmp = value->second.byte_vec();
-        return std::vector<float>(tmp.begin(), tmp.end());
+        const std::vector<uint8_t> &tmp = value->second.byte_vec();
+        std::vector<float> res(tmp.size()/4);
+        for (std::size_t i = 0; i < tmp.size(); i+=4) {
+            if constexpr (__BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__){
+                *(unsigned int*)&res.at(i) = tmp.at(i) << 24u | tmp.at(i+1) << 16u | tmp.at(i+2) << 8u | tmp.at(i+3);
+            } else if constexpr(__BYTE_ORDER__ == __ORDER_BIG_ENDIAN__){
+                *(unsigned int*)&res.at(i) = tmp.at(i+3) << 24u | tmp.at(i+2) << 16u | tmp.at(i+1) << 8u | tmp.at(i);
+            }
+        }
+        return res;
     }
     else return {};
 }
