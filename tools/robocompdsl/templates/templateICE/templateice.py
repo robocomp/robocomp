@@ -1,4 +1,6 @@
 from ..common.abstracttemplatesmanager import InterfaceTemplateManager
+from ..common.plugin_collection import PluginCollection
+from . import plugins
 
 
 class TemplateManagerIce(InterfaceTemplateManager):
@@ -9,4 +11,5 @@ class TemplateManagerIce(InterfaceTemplateManager):
                 ],
                 'template_path': "templateICE/files/"
         }
-        super().__init__(module)
+        current_plugins = PluginCollection(plugins.__name__)
+        super(TemplateManagerIce, self).__init__(module, current_plugins)

@@ -20,7 +20,7 @@ class InterfaceNotFound(RobocompDslException):
 			similar_list = difflib.get_close_matches(self.interface_name, self.valid_names, cutoff=0.4)
 			if len(similar_list) > 0:
 				self.message = self.message + ". Did you mean " + str(similar_list[0])
-		super(InterfaceNotFound, self).__init__(self.message)
+		super(RobocompDslException, self).__init__(self.message)
 
 
 class ParseException(RobocompDslException):

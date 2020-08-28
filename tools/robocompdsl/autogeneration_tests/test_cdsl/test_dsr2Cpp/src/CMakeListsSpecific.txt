@@ -1,0 +1,37 @@
+
+# Sources set
+SET ( SOURCES
+  specificworker.cpp
+  specificmonitor.cpp
+  $ENV{ROBOCOMP}/classes/dsr/core/rtps/dsrpublisher.cpp
+  $ENV{ROBOCOMP}/classes/dsr/core/rtps/dsrsubscriber.cpp
+  $ENV{ROBOCOMP}/classes/dsr/core/rtps/dsrparticipant.cpp
+  $ENV{ROBOCOMP}/classes/dsr/core/topics/IDLGraphPubSubTypes.cxx
+  $ENV{ROBOCOMP}/classes/dsr/core/topics/IDLGraph.cxx
+  $ENV{ROBOCOMP}/classes/dsr/api/dsr_api.cpp
+  $ENV{ROBOCOMP}/classes/dsr/api/dsr_inner_api.cpp
+  $ENV{ROBOCOMP}/classes/dsr/api/dsr_utils.cpp
+  $ENV{ROBOCOMP}/classes/dsr/gui/dsr_gui.cpp
+  $ENV{ROBOCOMP}/classes/dsr/gui/viewers/osg_3d_viewer/osg_3d_viewer.cpp
+  $ENV{ROBOCOMP}/classes/dsr/gui/viewers/qscene_2d_viewer/qscene_2d_viewer.cpp
+  $ENV{ROBOCOMP}/classes/dsr/gui/viewers/graph_viewer/graph_viewer.cpp
+  $ENV{ROBOCOMP}/classes/dsr/gui/viewers/graph_viewer/graph_node.cpp
+  $ENV{ROBOCOMP}/classes/dsr/gui/viewers/graph_viewer/graph_edge.cpp
+  $ENV{ROBOCOMP}/classes/dsr/gui/viewers/tree_viewer/tree_viewer.cpp
+  $ENV{ROBOCOMP}/classes/dsr/gui/viewers/_abstract_graphic_view.cpp
+)
+
+# Headers set
+SET ( HEADERS
+  specificworker.h
+  specificmonitor.h
+  $ENV{ROBOCOMP}/classes/dsr/api/dsr_api.h
+  $ENV{ROBOCOMP}/classes/dsr/gui/dsr_gui.h
+)
+
+set(CMAKE_CXX_STANDARD 17)
+
+add_definitions(-g  -fmax-errors=1 -std=c++2a )
+SET (LIBS ${LIBS}   fastcdr fastrtps osgDB)
+
+

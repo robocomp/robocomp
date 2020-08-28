@@ -1,6 +1,8 @@
 import os
 
 from ..common.abstracttemplatesmanager import ComponentTemplatesManager
+from templates.common.plugin_collection import PluginCollection
+from . import plugins
 
 
 class TemplatesManagerPython(ComponentTemplatesManager):
@@ -16,7 +18,8 @@ class TemplatesManagerPython(ComponentTemplatesManager):
                 'servant_files': ["SERVANT.PY"],
                 'template_path': "templatePython/files/"
         }
-        super(TemplatesManagerPython, self).__init__(component)
+        current_plugins = PluginCollection(plugins.__name__)
+        super(TemplatesManagerPython, self).__init__(component, current_plugins)
 
 
     def _output_file_rename(self, output_path, template_file):
@@ -34,23 +37,6 @@ class TemplatesManagerPython(ComponentTemplatesManager):
     def README_md(self):
         return {'component_name': self.component.name}
 
-    def CMakeLists_txt(self):
-        if self.component.gui is not None:
-            wrap_python_ui="WRAP_PYTHON_UI( mainUI )"
-        else:
-            wrap_python_ui = ""
 
-        return {'wrap_python_ui': wrap_python_ui,
-                'component_name': self.component.name}
 
-    def src_mainUI_ui(self):
-        return {'gui_type': self.component.gui.widget,
-                'component_name': self.component.name}
 
-    def src_CMakeLists_txt(self):
-        interface_names = []
-        for im in sorted(self.component.recursiveImports + self.component.ice_interfaces_names):
-            name = im.split('/')[-1].split('.')[0]
-            interface_names.append(name)
-        return {'ifaces_list': ' '.join(interface_names),
-                'component_name': self.component.name}

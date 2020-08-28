@@ -111,6 +111,7 @@ class FilesGenerator:
                     print("Binary equal files %s and %s" % (o_file, n_file))
 
     def __generate_component(self):
+        new_existing_files = {}
         language = self.ast.language.lower()
 
         template = LANG_TO_TEMPLATE[language]
@@ -119,8 +120,14 @@ class FilesGenerator:
             template_obj = TemplatesManagerPython(self.ast)
         else:
             template_obj = TemplatesManagerCpp(self.ast)
-        new_existing_files = template_obj.generate_files(self.output_path)
-        # for module in self.ast.idsl_pool.modulePool.values():
+
+        try:
+            new_existing_files = template_obj.generate_files(self.output_path)
+        except KeyError as e:
+            print(e)
+            raise
+
+    # for module in self.ast.idsl_pool.modulePool.values():
         #     template_obj = TemplateManagerIce(module)
         #     ice_directory = os.path.join(self.output_path, "ice_files")
         #     ice_new_existing_files = template_obj.generate_files(ice_directory)
