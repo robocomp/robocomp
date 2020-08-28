@@ -7,6 +7,7 @@
 #define DSR_EXCEPTIONS
 
 #include <exception>
+#include <utility>
 
 /////////////////////////////////////////////////////////////////
 /// DSR Exceptions
@@ -16,10 +17,10 @@ namespace DSR
     class DSRException : public std::exception
     {
         public:
-            explicit DSRException(const std::string &message): msg_(message){};
+            explicit DSRException(std::string message): msg_(std::move(message)){};
             explicit DSRException(const char *message): msg_(message){};
-            virtual ~DSRException() throw (){}
-            virtual const char* what() const throw (){
+            ~DSRException() noexcept override= default;
+            [[nodiscard]] const char* what() const noexcept override{
                 return msg_.c_str();
             }
         protected:

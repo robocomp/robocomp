@@ -78,7 +78,7 @@ DSRViewer::DSRViewer(QMainWindow * widget, std::shared_ptr<DSR::DSRGraph> G_, in
 		qDebug()<<"TO RESTART";
 		auto current_path = get_self_path();
 		auto command = ("sleep 4 && "+current_path+"&");
-		std::system(command.c_str());
+		[[maybe_unused]] auto _ = std::system(command.c_str());
 //		QProcess a;
 //		a.startDetached(command);
 		qDebug()<<"TO RESTART2: "<<command.c_str();
