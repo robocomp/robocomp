@@ -14,7 +14,7 @@ def ${method_name}(self, ${params_str_a}c):
 
 class SERVANT_PY(TemplateDict):
     def __init__(self, component, interface_name):
-        super().__init__()
+        super(SERVANT_PY, self).__init__()
         self.component = component
         module = self.component.idsl_pool.module_providing_interface(interface_name)
         if module is None:

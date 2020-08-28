@@ -95,12 +95,10 @@ adapter.activate()
 
 class src_main_py(TemplateDict):
     def __init__(self, component):
-        super().__init__()
+        super(src_main_py, self).__init__()
         self.component = component
         self['year'] = str(datetime.date.today().year)
-        self['import_qtwidgets'] = self.import_qtwidgets()
         self['component_name'] = self.component.name
-        self['app_creation'] = self.app_creation()
         self['storm_topic_manager_creation'] = self.storm_topic_manager_creation()
         self['require_proxy_creation'] = self.require_proxy_creation()
         self['publish_proxy_creation'] = self.publish_proxy_creation()
@@ -156,16 +154,3 @@ class src_main_py(TemplateDict):
                 result += Template(SUBSCRIBESTO_STR).substitute(iface_name=name, iface_name_lower=name.lower())
         return result
 
-    def import_qtwidgets(self):
-        result = ""
-        if self.component.gui is not None:
-            result += 'from PySide2 import QtWidgets\n'
-        return result
-
-    def app_creation(self):
-        result = ""
-        if self.component.gui is not None:
-            result += 'app = QtWidgets.QApplication(sys.argv)\n'
-        else:
-            result += 'app = QtCore.QCoreApplication(sys.argv)\n'
-        return result
