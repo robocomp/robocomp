@@ -1,0 +1,10 @@
+<innerModel>
+
+    <transform id="world">
+
+        <transform id="robot">
+            <mesh id="the_mesh" rx="1.57" rz="-1.57" file="/home/robocomp/.local/lib/python3.6/site-packages/pybullet_data/duck.obj" scale="0.5" />
+        </transform>
+    </transform>
+
+</innerModel>

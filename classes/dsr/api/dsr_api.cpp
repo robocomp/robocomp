@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <utility>
 
+
 #include <fastrtps/subscriber/Subscriber.h>
 #include <fastrtps/transport/UDPv4TransportDescriptor.h>
 #include <fastrtps/Domain.h>
@@ -1044,7 +1045,7 @@ std::string DSRGraph::get_node_type(Node &n)
 /// Image subAPI
 ////////////////////////////////////////////////////////////////////////////
 
-const std::vector<uint8_t>& DSRGraph::get_rgb_image(const Node &n) const
+std::optional<std::reference_wrapper<const std::vector<uint8_t>>> DSRGraph::get_rgb_image(const Node &n) const
 {
     auto& attrs = n.attrs();
     if (auto value  = attrs.find("rgb"); value != attrs.end())
@@ -1052,23 +1053,31 @@ const std::vector<uint8_t>& DSRGraph::get_rgb_image(const Node &n) const
     else return {};
 }
 
-std::vector<float> DSRGraph::get_depth_image(const Node &n)
+std::optional<std::vector<float>> DSRGraph::get_depth_image(const Node &n)
 {
     auto& attrs = n.attrs();
     if (auto value  = attrs.find("depth"); value != attrs.end()) {
-        const auto &tmp = value->second.byte_vec();
-        return std::vector<float>(tmp.begin(), tmp.end());
+        const std::vector<uint8_t> &tmp = value->second.byte_vec();
+        std::vector<float> res(tmp.size()/4);
+        for (std::size_t i = 0; i < tmp.size(); i+=4) {
+            if constexpr (__BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__){
+                *(unsigned int*)&res.at(i/4) = tmp.at(i+3) << 24u | tmp.at(i+2) << 16u | tmp.at(i+1) << 8u | tmp.at(i);
+            } else if constexpr(__BYTE_ORDER__ == __ORDER_BIG_ENDIAN__){
+                *(unsigned int*)&res.at(i/4) = tmp.at(i) << 24u | tmp.at(i+1) << 16u | tmp.at(i+2) << 8u | tmp.at(i+3);
+            }
+        }
+        return res;
     }
-    else throw std::runtime_error((std::string("Attribute depth does not exist in node: " + std::to_string(n.id()) + ". ") + __FILE__ + " " + __FUNCTION__ + " " + std::to_string(__LINE__)).data());
+    else return {};
 }
 
-const std::vector<uint8_t>& DSRGraph::get_depth_image(const Node &n) const
+std::optional<std::reference_wrapper<const std::vector<uint8_t>>> DSRGraph::get_depth_image(const Node &n) const
 {
     auto& attrs = n.attrs();
     if (auto value  = attrs.find("depth"); value != attrs.end()) {
         return value->second.byte_vec();
     }
-    else throw std::runtime_error((std::string("Attribute depth does not exist in node: " + std::to_string(n.id()) + ". ") + __FILE__ + " " + __FUNCTION__ + " " + std::to_string(__LINE__)).data());
+    else return {};
 }
 
 inline void DSRGraph::update_maps_node_delete(uint32_t id, const CRDTNode &n)

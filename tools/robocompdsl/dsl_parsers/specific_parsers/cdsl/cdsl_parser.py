@@ -144,6 +144,7 @@ class CDSLParser(DSLParserTemplate):
         component.innermodelviewer = False
         component.innermodelviewer = 'innermodelviewer' in [x.lower() for x in component.options]
 
+
         # GUI
         component.gui = None
         try:
@@ -203,9 +204,10 @@ class CDSLParser(DSLParserTemplate):
                 if agm2agent_sub not in component.subscribesTo:
                     component.subscribesTo = [agm2agent_sub] + component.subscribesTo
         if component.dsr:
+            component.requires = [["DSRGetID", 'ice']] + component.requires
             if 'DSRGetID' not in component.iceInterfaces:
                 component.iceInterfaces.append(['DSRGetID', 'ice'])
-                component.requires = [['DSRGetID', 'ice']] + component.requires
+        # component = ComponentFacade.from_nested_dict(component)
         self.struct = component
         return component
 
