@@ -185,15 +185,13 @@ class DoRGBDStuff : public QWidget
                     //convert byte to float
                     if constexpr (__BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__)
                     {
-                        aux = depth_data.value().at(i) << 24u | depth_data.value().at(i+1) << 16u | depth_data.value().at(i+2) << 8u | depth_data.value().at(i+3);
-                        
+                        *(unsigned int*)&aux = depth_data.value().at(i+3) << 24u | depth_data.value().at(i+2) << 16u | depth_data.value().at(i+1) << 8u | depth_data.value().at(i);
                     } else if constexpr(__BYTE_ORDER__ == __ORDER_BIG_ENDIAN__)
                     {
-                        aux = depth_data.value().at(i+3) << 24u | depth_data.value().at(i+2) << 16u | depth_data.value().at(i+1) << 8u | depth_data.value().at(i);
+                        *(unsigned int*)&aux = depth_data.value().at(i) << 24u | depth_data.value().at(i+1) << 16u | depth_data.value().at(i+2) << 8u | depth_data.value().at(i+3);
                     }
                     //convert float to grayscale => [(value - min(0)) / (max - min)] * 255
-                    aux = aux * factor;
-                    *(unsigned int*)&gray_scale.at(i/4) = *(unsigned int*)&aux;
+                    gray_scale.at(i/4) = aux * 255;
                 }
                 auto pix2 = QPixmap::fromImage(
                         QImage(&gray_scale[0], depth_width.value(), depth_height.value(), QImage::Format_Indexed8));
