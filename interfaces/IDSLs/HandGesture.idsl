@@ -1,10 +1,11 @@
 module RoboCompHandGesture
 {
-    sequence<int> KeyPoint;
+    sequence<float> KeyPoint;
     sequence<KeyPoint> KeypointType;
-
+    sequence<string> labels;
     interface HandGesture
     {
-        idempotent void getHandGesture(KeypointType keypoints, out string gesture);  
+        idempotent void getHandGesture(KeypointType keypoints, out string gesture);
+        idempotent void setClasses(labels classes); 
     };
 };
