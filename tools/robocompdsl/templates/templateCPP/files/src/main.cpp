@@ -96,7 +96,7 @@ private:
 	void initialize();
 	std::string prefix;
 	${proxies_map_creation}
-	bool startup_check_flag;
+	bool startup_check_flag = false;
 
 public:
 	virtual int run(int, char*[]);
