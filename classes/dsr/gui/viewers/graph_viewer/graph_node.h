@@ -174,7 +174,7 @@ class DoRGBDStuff : public QWidget
                 rgbd_label.clear();
           //depth              
           if (show_depth->isChecked()) {
-            const float factor = 255.f/4000.f; //define 4000 as max distance on grayscale conversion (255 value)
+//            const float factor = 255.f/4000.f; //define 4000 as max distance on grayscale conversion (255 value)
             const auto depth_width = graph->get_attrib_by_name<depth_width_att>(n.value());
             const auto depth_height = graph->get_attrib_by_name<depth_height_att>(n.value());
             const std::optional<std::vector<uint8_t>> depth_data = graph->get_attrib_by_name<img_depth_att>(n.value());
