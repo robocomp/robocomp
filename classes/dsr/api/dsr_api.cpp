@@ -1521,9 +1521,10 @@ void DSRGraph::node_subscription_thread(bool showReceived)
                         //if( m_info.sample_identity.writer_guid().is_on_same_process_as(sub->getGuid()) == false) {
                         if (sample.agent_id() != agent_id)
                         {
-                            if (showReceived)
-                                //std::cout << name << " Received:" << sample.id() << " node from: "
-                                //          << m_info.sample_identity.writer_guid() << std::endl;
+                            if (showReceived) {
+                                std::cout << name << " Received:" << sample.id() << " node from: "
+                                          << m_info.sample_identity.writer_guid() << std::endl;
+                            }
                             graph->join_delta_node(sample);
                         }
                     }
@@ -1555,9 +1556,10 @@ void DSRGraph::edge_subscription_thread(bool showReceived)
                         //if( m_info.sample_identity.writer_guid().is_on_same_process_as(sub->getGuid()) == false) {
                         if (sample.agent_id() != agent_id)
                         {
-                            if (showReceived)
-                                //std::cout << name << " Received:" << sample.id() << " node from: "
-                                //          << m_info.sample_identity.writer_guid() << std::endl;
+                            if (showReceived) {
+                                std::cout << name << " Received:" << sample.id() << " node from: "
+                                          << m_info.sample_identity.writer_guid() << std::endl;
+                            }
                             graph->join_delta_edge(sample);
                         }
                     }
@@ -1590,9 +1592,10 @@ void DSRGraph::edge_attrs_subscription_thread(bool showReceived)
                         if (sample.agent_id() != agent_id
                             and  graph->ignored_attributes.find(sample.attr_name().data()) == ignored_attributes.end())
                         {
-                            if (showReceived)
-                                //std::cout << name << " Received:" << sample.id() << " node from: "
-                                //          << m_info.sample_identity.writer_guid() << std::endl;
+                            if (showReceived) {
+                                std::cout << name << " Received:" << sample.id() << " node from: "
+                                          << m_info.sample_identity.writer_guid() << std::endl;
+                            }
                             graph->join_delta_edge_attr(sample);
                         }
                     }
@@ -1626,9 +1629,10 @@ void DSRGraph::node_attrs_subscription_thread(bool showReceived)
                         if (sample.agent_id() != agent_id
                             and  graph->ignored_attributes.find(sample.attr_name().data()) == ignored_attributes.end())
                         {
-                            if (showReceived)
-                                //std::cout << name << " Received:" << sample.id() << " node from: "
-                                //          << m_info.sample_identity.writer_guid() << std::endl;
+                            if (showReceived) {
+                                std::cout << name << " Received:" << sample.id() << " node from: "
+                                          << m_info.sample_identity.writer_guid() << std::endl;
+                            }
                             graph->join_delta_node_attr(sample);
                         }
                     }
