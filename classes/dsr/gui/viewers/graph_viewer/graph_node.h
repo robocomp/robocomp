@@ -148,24 +148,13 @@ class DoRGBDStuff : public QWidget
           //rgb
           if (show_rgb->isChecked()) {
               Node node = n.value();
-              const auto rgb_data = graph->get_attrib_by_name<rgb_att>(node);
+              const auto rgb_data = graph->get_rgb_image(node);
               const auto rgb_width = graph->get_attrib_by_name<width_att>(node);
               const auto rgb_height = graph->get_attrib_by_name<height_att>(node);
 
-              if (rgb_data.has_value() and rgb_width.has_value() and rgb_height.has_value()) {
-                  // if depth == 3
-                  //image_rgb.create(height.value(), width.value(), CV_8UC3);
-                  //QImage image((const unsigned char*)pixels, width, height, QImage::Format_RGB32);
-                  //memcpy(image_rgb.data, &rgb_data.value()[0], width.value()*height.value()*sizeof(std::uint8_t)*3);
-                  //imshow("RGB", image_rgb);
-                  //cv::waitKey(1);
-                  //label.setPixmap(QImage());
-
-                  //QImage image((const unsigned char*)&rgb_data.value()[0], width.value(), height.value(), QImage::Format_RGB888);
-                  //QImage image(width.value(), height.value(), QImage::Format_RGB888);
-                  //memcpy(image.data, &rgb_data.value()[0], width.value()*height.value()*sizeof(std::uint8_t)*3);
-
-                  const std::vector<uint8_t> &img = rgb_data.value();
+              if (rgb_data.has_value() and rgb_width.has_value() and rgb_height.has_value())
+              {
+                  const std::vector<uint8_t> &img = rgb_data.value().get();
                   auto pix = QPixmap::fromImage(
                           QImage(&img[0], rgb_width.value(), rgb_height.value(), QImage::Format_RGB888));
                   rgbd_label.setPixmap(pix);
@@ -177,21 +166,24 @@ class DoRGBDStuff : public QWidget
 //            const float factor = 255.f/4000.f; //define 4000 as max distance on grayscale conversion (255 value)
             const auto depth_width = graph->get_attrib_by_name<depth_width_att>(n.value());
             const auto depth_height = graph->get_attrib_by_name<depth_height_att>(n.value());
+            //std::optional<std::reference_wrapper<const std::vector<uint8_t>>> depth_data = graph->get_depth_image(n.value());
             const std::optional<std::vector<uint8_t>> depth_data = graph->get_attrib_by_name<img_depth_att>(n.value());
             if (depth_data.has_value() and depth_width.has_value() and depth_height.has_value()) {
-                std::vector<uint8_t> gray_scale(depth_data.value().size()/4);
+                const auto my_depth_data = depth_data.value();
+                std::vector<uint8_t> gray_scale(my_depth_data.size()/4);
                 float aux = 0.f;
-                for (std::size_t i = 0; i < depth_data.value().size(); i+=4) {
+                for (std::size_t i = 0; i < my_depth_data.size(); i+=4) {
                     //convert byte to float
                     if constexpr (__BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__)
                     {
-                        *(unsigned int*)&aux = depth_data.value().at(i+3) << 24u | depth_data.value().at(i+2) << 16u | depth_data.value().at(i+1) << 8u | depth_data.value().at(i);
+                        *(unsigned int*)&aux = my_depth_data.at(i+3) << 24u | my_depth_data.at(i+2) << 16u | my_depth_data.at(i+1) << 8u | my_depth_data.at(i);
                     } else if constexpr(__BYTE_ORDER__ == __ORDER_BIG_ENDIAN__)
                     {
-                        *(unsigned int*)&aux = depth_data.value().at(i) << 24u | depth_data.value().at(i+1) << 16u | depth_data.value().at(i+2) << 8u | depth_data.value().at(i+3);
+                        *(unsigned int*)&aux = my_depth_data.at(i) << 24u | my_depth_data.at(i+1) << 16u | my_depth_data.at(i+2) << 8u | my_depth_data.at(i+3);
                     }
                     //convert float to grayscale => [(value - min(0)) / (max - min)] * 255
                     gray_scale.at(i/4) = aux * 255;
+                    // asignar aquí el valor al pixel de QImage
                 }
                 auto pix2 = QPixmap::fromImage(
                         QImage(&gray_scale[0], depth_width.value(), depth_height.value(), QImage::Format_Indexed8));
