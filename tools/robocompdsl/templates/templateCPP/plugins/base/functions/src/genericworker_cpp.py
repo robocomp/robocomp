@@ -20,31 +20,33 @@ class genericworker_cpp(TemplateDict):
         result = ""
         cont = 0
         for interface, num in get_name_number(self.component.requires):
-            if communication_is_ice(interface):
-                name = interface.name
-                if self.component.language.lower() == 'cpp':
-                    prx_type = name
-                    if prx_type not in CPP_TYPES and '::' not in prx_type:
-                        module = self.component.idsl_pool.module_providing_interface(name)
-                        prx_type = f"{module['name']}::{prx_type}"
-                    result += name.lower() + num + "_proxy = (*(" + prx_type + "Prx*)mprx[\"" + name + "Proxy" + num + "\"]);\n"
-                else:
-                    result += name.lower() + num + "_proxy = std::get<" + str(cont) + ">(tprx);\n"
+            result += self.get_proxy_string(interface, num, cont, is_publication=False)
             cont = cont + 1
-
         for interface, num in get_name_number(self.component.publishes):
-            if communication_is_ice(interface):
-                name = interface.name
-                prx_type = name
+            result += self.get_proxy_string(interface, num, cont, is_publication=True)
+            cont = cont + 1
+        return result
+
+    def get_proxy_string(self, interface, num, cont, is_publication):
+        result = ""
+        if communication_is_ice(interface):
+            name = interface.name
+            prx_type = name
+            if is_publication:
+                proxy_suffix = "_pubproxy"
+                name_suffix = "Pub"
+            else:
+                proxy_suffix = "_proxy"
+                name_suffix = "Proxy"
+            if self.component.language.lower() == 'cpp':
                 if prx_type not in CPP_TYPES and '::' not in prx_type:
                     module = self.component.idsl_pool.module_providing_interface(name)
                     prx_type = f"{module['name']}::{prx_type}"
-                if self.component.language.lower() == 'cpp':
-                    result += name.lower() + num + "_pubproxy = (*(" + prx_type + "Prx*)mprx[\"" + name + "Pub" + num + "\"]);\n"
-                else:
-                    result += name.lower() + num + "_pubproxy = std::get<" + str(cont) + ">(tprx);\n"
-            cont = cont + 1
+                result += name.lower() + num + proxy_suffix + " = (*(" + prx_type + "Prx*)mprx[\"" + name + name_suffix + num + "\"]);\n"
+            else:
+                result += name.lower() + num + proxy_suffix + " = std::get<" + str(cont) + ">(tprx);\n"
         return result
+
 
     def constructor_proxies(self):
         result = ""

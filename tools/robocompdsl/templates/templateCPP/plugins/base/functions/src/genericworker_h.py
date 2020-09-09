@@ -45,7 +45,7 @@ class genericworker_h(TemplateDict):
             result += "typedef map <string,::IceProxy::Ice::Object*> MapPrx;\n"
         else:
             proxy_list = []
-            for name in self.component.requires + self.component.publishes:
+            for name in sorted(self.component.requires) + sorted(self.component.publishes):
                 while not isinstance(name, str):
                     name = name[0]
                 proxy_list.append("RoboComp{name}::{name}PrxPtr".format(name=name))
