@@ -6,6 +6,8 @@ SET ( SOURCES
   $ENV{ROBOCOMP}/classes/dsr/core/rtps/dsrpublisher.cpp
   $ENV{ROBOCOMP}/classes/dsr/core/rtps/dsrsubscriber.cpp
   $ENV{ROBOCOMP}/classes/dsr/core/rtps/dsrparticipant.cpp
+  $ENV{ROBOCOMP}/classes/dsr/core/types/crdt_types.cpp
+  $ENV{ROBOCOMP}/classes/dsr/core/types/user_types.cpp
   $ENV{ROBOCOMP}/classes/dsr/core/topics/IDLGraphPubSubTypes.cxx
   $ENV{ROBOCOMP}/classes/dsr/core/topics/IDLGraph.cxx
   $ENV{ROBOCOMP}/classes/dsr/api/dsr_api.cpp

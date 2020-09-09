@@ -96,7 +96,7 @@ private:
 	void initialize();
 	std::string prefix;
 	MapPrx mprx;
-	bool startup_check_flag;
+	bool startup_check_flag = false;
 
 public:
 	virtual int run(int, char*[]);
