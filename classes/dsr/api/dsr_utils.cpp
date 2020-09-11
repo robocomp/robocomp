@@ -264,7 +264,7 @@ QJsonObject Utilities::Edge_to_QObject(const Edge& edge)
     return link;
 }
 
-QJsonObject Utilities::Node_to_QObject(const Node& node)
+QJsonObject Utilities::Node_to_QObject(const Node& node, bool skip_content)
 {
     QJsonObject symbol;
     symbol["id"] = static_cast<qint64>(node.id());
@@ -291,15 +291,19 @@ QJsonObject Utilities::Node_to_QObject(const Node& node)
                 break;
             case 3: {
                 QJsonArray array;
-                for (const float &value : get<std::vector<float>>(value.value()))
-                    array.push_back(value);
+                if(not skip_content) {
+                    for (const float &value : get<std::vector<float>>(value.value()))
+                        array.push_back(value);
+                }
                 val = array;
                 break;
             }
             case 5: {
                 QJsonArray array;
-                for (const uint8_t &value : get<std::vector<uint8_t>>(value.value()))
-                    array.push_back(static_cast<qint64>(value));
+                if(not skip_content) {
+                    for (const uint8_t &value : get<std::vector<uint8_t>>(value.value()))
+                        array.push_back(static_cast<qint64>(value));
+                }
                 val = array;
                 break;
             }
@@ -323,8 +327,8 @@ QJsonObject Utilities::Node_to_QObject(const Node& node)
     return symbol;
 }
 
-
-QJsonDocument Utilities::DSRGraph_to_QJsonDocument(DSR::DSRGraph *G_)
+//skip_node_content => Avoid node types storing data on json file
+QJsonDocument Utilities::DSRGraph_to_QJsonDocument(DSR::DSRGraph *G_, const std::vector<std::string> &skip_node_content)
 {
     std::setlocale(LC_NUMERIC, "en_US.UTF-8");
     //create json object
@@ -334,7 +338,8 @@ QJsonDocument Utilities::DSRGraph_to_QJsonDocument(DSR::DSRGraph *G_)
     for (const auto& kv : G_->getCopy()) {
         Node node = kv.second;
         // symbol data
-        QJsonObject symbol = Node_to_QObject(node);
+        bool store_content = bool(std::find(skip_node_content.begin(), skip_node_content.end(), node.type()) != skip_node_content.end());
+        QJsonObject symbol = Node_to_QObject(node, store_content);
         symbolsMap[QString::number(node.id())] = symbol;
     }
     dsrObject["symbols"] = symbolsMap;
@@ -346,9 +351,9 @@ QJsonDocument Utilities::DSRGraph_to_QJsonDocument(DSR::DSRGraph *G_)
     return jsonDoc;
 }
 
-void Utilities::write_to_json_file(const std::string &json_file_path)
+void Utilities::write_to_json_file(const std::string &json_file_path, const std::vector<std::string> &skip_node_content)
 {
-	QJsonDocument jsonDoc = DSRGraph_to_QJsonDocument(G);
+	QJsonDocument jsonDoc = DSRGraph_to_QJsonDocument(G, skip_node_content);
     QFile jsonFile(QString::fromStdString(json_file_path));
     jsonFile.open(QFile::WriteOnly | QFile::Text);
     jsonFile.write(/*qCompress(*/jsonDoc.toJson())/*)*/;

@@ -68,11 +68,13 @@ DSRViewer::DSRViewer(QMainWindow * widget, std::shared_ptr<DSR::DSRGraph> G_, in
 	// settings.endGroup();
 
 	//MenuBar
+    initialize_file_menu();
     viewMenu = window->menuBar()->addMenu(window->tr("&View"));
 	forcesMenu = window->menuBar()->addMenu(window->tr("&Forces"));
 	auto actionsMenu = window->menuBar()->addMenu(window->tr("&Actions"));
 	auto restart_action = actionsMenu->addAction("Restart");
 
+	//restart_action
 	connect(restart_action, &QAction::triggered, this, [=] (bool)
 	{
 		qDebug()<<"TO RESTART";
@@ -90,6 +92,35 @@ DSRViewer::DSRViewer(QMainWindow * widget, std::shared_ptr<DSR::DSRGraph> G_, in
 	initialize_views(options, main);
 }
 
+void DSRViewer::initialize_file_menu()
+{
+    fileMenu = window->menuBar()->addMenu(window->tr("&File"));
+    QMenu *file_submenu = fileMenu->addMenu("Save");
+    QAction *save_action = new QAction("Save", this);
+    file_submenu->addAction(save_action);
+    QAction *rgbd = new QAction("RGBD", this);
+    rgbd->setCheckable(true);
+    rgbd->setChecked(false);
+    file_submenu->addAction(rgbd);
+    QAction *laser = new QAction("Laser", this);
+    laser->setCheckable(true);
+    laser->setChecked(false);
+    file_submenu->addAction(laser);
+	//save_action
+    connect(save_action, &QAction::triggered, [this, rgbd, laser]() {
+        auto file_name = QFileDialog::getSaveFileName(nullptr, tr("Save file"),
+                                                      "/home/robocomp/robocomp/components/dsr-graph/etc",
+                                                      tr("JSON Files (*.json)"), nullptr,
+                                                      QFileDialog::Option::DontUseNativeDialog);
+
+        std::vector<std::string> skip_content;
+        if(not rgbd->isChecked()) skip_content.push_back("rgbd");
+        if(not laser->isChecked()) skip_content.push_back("laser");
+        G->write_to_json_file(file_name.toStdString(), skip_content);
+        qDebug()<<"File saved";
+    });
+
+}
 
 DSRViewer::~DSRViewer()
 {

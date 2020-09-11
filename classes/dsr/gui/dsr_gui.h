@@ -73,6 +73,7 @@ namespace DSR
 			std::shared_ptr<DSR::DSRGraph> G;
 			QMainWindow *window;
 			QMenu *viewMenu;
+			QMenu *fileMenu;
 			QMenu *forcesMenu;
 //			std::shared_ptr<DSR::OSG3dViewer> dsr_to_osg_viewer;
 //			std::shared_ptr<DSR::QScene2dViewer> dsr_to_graphicscene_viewer;
@@ -97,6 +98,7 @@ namespace DSR
 		private:
 			void create_dock_and_menu(QString name,  QWidget *view);
 			void initialize_views(int options, view main);
+			void initialize_file_menu();
 			QWidget * create_widget(view type);
 	};
 

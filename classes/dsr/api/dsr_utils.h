@@ -17,11 +17,11 @@ namespace DSR
         public:
             explicit Utilities(DSRGraph *G_);
             void read_from_json_file(const std::string &json_file_path, const std::function<std::optional<int>(const Node&)>& insert_node);
-			void write_to_json_file(const std::string &json_file_path);
-			static QJsonObject Node_to_QObject(const Node& node);
+			void write_to_json_file(const std::string &json_file_path, const std::vector<std::string> &skip_node_content);
+			static QJsonObject Node_to_QObject(const Node& node, bool skip_content);
 			static QJsonObject Edge_to_QObject(const Edge& edge);
 			static QJsonDocument file_to_QJsonDocument(const std::string &json_file_path);
-			static QJsonDocument DSRGraph_to_QJsonDocument(DSR::DSRGraph *G_);
+			static QJsonDocument DSRGraph_to_QJsonDocument(DSR::DSRGraph *G_, const std::vector<std::string> &skip_node_content);
 
 
             void print();

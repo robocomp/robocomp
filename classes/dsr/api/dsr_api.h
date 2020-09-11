@@ -36,6 +36,7 @@
 #include "../core/utils.h"
 
 #include <DSRGetID.h>
+#include <QFileDialog>
 
 #define TIMEOUT 5000
 
@@ -486,7 +487,8 @@ namespace DSR
         void print_node(const Node &node)                       { utils->print_node(node); };
         void print_node(uint32_t id)                            { utils->print_node(id); };
         void print_RT(uint32_t root)                      const { utils->print_RT(root); };
-        void write_to_json_file(const std::string &file)  const { utils->write_to_json_file(file); };
+        void write_to_json_file(const std::string &file, const std::vector<std::string> &skip_node_content = {})  const {
+            utils->write_to_json_file(file, skip_node_content); };
         void read_from_json_file(const std::string &file) const { utils->read_from_json_file(file, insert_node_read_file); };
         /**AUXILIARY IO SUB-API**/
 
