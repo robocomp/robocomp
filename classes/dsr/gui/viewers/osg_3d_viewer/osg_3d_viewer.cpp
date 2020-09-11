@@ -205,7 +205,7 @@ void OSG3dViewer::add_or_assign_node_slot(const Node &node)
             add_or_assign_mesh(node, parent.value());
         else if( type == "transform")
             add_or_assign_transform(node, parent.value());
-        else if( type == "differentialrobot" or type == "laser" or type == "rgbd" or type == "omnirobot" or type == "person")
+        else if( type == "differentialrobot" or type == "laser" or type == "rgbd" or type == "omnirobot" or type == "person" or type == "glass")
             add_or_assign_transform(node, parent.value());
     }
     catch(const std::exception& e)
