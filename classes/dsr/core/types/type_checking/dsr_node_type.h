@@ -61,7 +61,8 @@ constexpr auto node_type_names = std::experimental::make_array(
         "shelve"sv,
         "dish"sv,
         "spoon"sv,
-        "testtype"sv
+        "testtype"sv,
+        "glass"sv
 );
 
 #endif //DSR_NODE_TYPE_H
