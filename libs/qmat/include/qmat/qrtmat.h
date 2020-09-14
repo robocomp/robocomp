@@ -26,17 +26,11 @@
 	* Inherits from generic matrix class QMat and adds specific methods to initialize, update and transform points en 3D space.
 	@author Robolab
 */
-// class InnerModel;
-// namespace InnerModel2 {
-// 	class InnerModel;
-// }
 
 namespace RMat
 {
 	class RTMat : public QMat
 	{
-// 	friend class InnerModel;
-// 	friend class InnerModel2::InnerModel;
 	public:
 		RTMat(bool XCW=true, bool YCW=true,bool ZCW=true);
 		RTMat( const RTMat & ex, bool XCW, bool YCW, bool ZCW);

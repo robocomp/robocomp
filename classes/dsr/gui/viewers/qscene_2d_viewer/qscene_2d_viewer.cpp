@@ -149,6 +149,7 @@ void QScene2dViewer::add_or_assign_rect(Node &node, std::string color, std::stri
     QBrush brush = QBrush(QColor(QString::fromStdString(color)));
     if (texture != "")
     {
+        // GCC > 8
         if(std::filesystem::exists(texture))
         {
             QPixmap pixmap(QString::fromStdString(texture));

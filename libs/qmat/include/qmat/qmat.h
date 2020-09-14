@@ -63,7 +63,7 @@ static std::vector<int> to_std_vector_Index(const boost::python::tuple &ns)
 
 namespace RMat
 {
-	typedef float T;
+	typedef double T;
 	class QVec;
 	class DataBuffer: public QSharedData
 	{
