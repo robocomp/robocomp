@@ -380,20 +380,25 @@ void  OSG3dViewer::add_or_assign_mesh(const Node &node, const Node& parent)
     if(color.has_value()) qDebug() << QString::fromStdString(color.value());
     auto filename = G->get_attrib_by_name<path_att>(node);
     if(filename.has_value()) qDebug() << QString::fromStdString(filename.value()) ;
-    auto scalex = G->get_attrib_by_name<scalex_att>(node);
-    if(scalex.has_value()) qDebug() << scalex.value() ;
-    auto scaley = G->get_attrib_by_name<scaley_att>(node);
-    if(scaley.has_value()) qDebug() << scaley.value() ;
-    auto scalez = G->get_attrib_by_name<scalez_att>(node);
-    if(scalez.has_value()) qDebug() << scalez.value() ;
-    // Check valid ranges
+    
+	int width = G->get_attrib_by_name<scalex_att>(node).value_or(0);
+	if(width == 0)
+		width = G->get_attrib_by_name<width_att>(node).value_or(0);
+    
+	int height = G->get_attrib_by_name<scaley_att>(node).value_or(0); 
+	if(height == 0)
+		height = G->get_attrib_by_name<height_att>(node).value_or(0);
+    
+	int depth = G->get_attrib_by_name<scalez_att>(node).value_or(0);
+    if (depth == 0)
+		depth = G->get_attrib_by_name<depth_att>(node).value_or(0);
     
     // if node does not exist
     if( auto osg_node = osg_map.find(std::make_tuple(node.id(), node.id())); osg_node == osg_map.end())
     {
         qDebug() << __FUNCTION__ << "create mesh";
         osg::MatrixTransform *scale_transform = new osg::MatrixTransform; 			
-        scale_transform->setMatrix(osg::Matrix::scale(scalex.value(), scaley.value(), scalez.value()));
+        scale_transform->setMatrix(osg::Matrix::scale(width, height, depth));
         //osg::MatrixTransform *mt = new osg::MatrixTransform;
         osg::Node *osg_mesh = osgDB::readNodeFile(filename.value());
         if (!osg_mesh)

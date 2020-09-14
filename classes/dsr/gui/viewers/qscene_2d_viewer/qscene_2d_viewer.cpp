@@ -255,10 +255,18 @@ void  QScene2dViewer::add_or_assign_mesh(Node &node)
 
     std::string color = "orange";
     color = G->get_attrib_by_name<color_att>(node).value_or(color);
-    int width = G->get_attrib_by_name<scalex_att>(node).value_or(0);
-    int height = G->get_attrib_by_name<scaley_att>(node).value_or(0);
-    int depth = G->get_attrib_by_name<scalez_att>(node).value_or(0);
 
+	int width = G->get_attrib_by_name<width_att>(node).value_or(0);
+	if(width == 0)
+		width = G->get_attrib_by_name<scalex_att>(node).value_or(0);
+    
+	int height = G->get_attrib_by_name<height_att>(node).value_or(0); 
+	if(height == 0)
+		height = G->get_attrib_by_name<scaley_att>(node).value_or(0);
+    
+	int depth = G->get_attrib_by_name<depth_att>(node).value_or(0);
+    if (depth == 0)
+		depth = G->get_attrib_by_name<scalez_att>(node).value_or(0);
 
 //qDebug()<<"Draw mesh"<<QString::fromStdString(node.name())<<"("<<width<<","<<height<<","<<depth<<")"<<"color"<<QString::fromStdString(color);
 
