@@ -438,7 +438,7 @@ osg::Matrix  OSG3dViewer::QMatToOSGMat4(const RTMat &nodeB)
 	QVec angles = nodeB.extractAnglesR();
 	QVec t = nodeB.getTr();
 	//RTMat node = RTMat(-angles(0), -angles(1), angles(2), QVec::vec3(t(0), t(1), -t(2)));
-    RTMat node = RTMat(-angles(0), -angles(1), angles(2), QVec::vec3(t(0), -t(1), -t(2)));
+    RTMat node = RTMat(angles(0), -angles(1), angles(2), QVec::vec3(t(0), -t(1), -t(2)));
 
     return osg::Matrixd( node(0,0), node(1,0), node(2,0), node(3,0),
 	                     node(0,1), node(1,1), node(2,1), node(3,1),
