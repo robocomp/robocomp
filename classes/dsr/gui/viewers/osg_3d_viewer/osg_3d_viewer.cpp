@@ -36,6 +36,7 @@ OSG3dViewer::OSG3dViewer(std::shared_ptr<DSR::DSRGraph> G_, float scaleX, float 
 //    _mViewer->addEventHandler(new osgGA::GUIEventHandler());
 
 	root = createGraph();
+	draw_axis();
 	analyse_osg_graph(root.get());
 	qDebug() << __FUNCTION__ << "End analyse";
 	_mViewer->setSceneData(root.get());
@@ -149,9 +150,8 @@ void OSG3dViewer::print_RT_subtree(const Node& node)
             throw std::runtime_error("Unable to traverse the tree at node: " + std::to_string(edge.to()));
 	}
 }
+
 ///////////////////////////////////////////////////////////////////////////////////
-
-
 void  OSG3dViewer::setMainCamera(osgGA::TrackballManipulator *manipulator, CameraView pov) const
 {
 	osg::Quat mRot;
@@ -327,7 +327,7 @@ void OSG3dViewer::add_or_assign_box(const Node &node, const Node& parent)
             group->addChild(geode);
 
             if (constantColor)
-            plane_drawable->setColor(htmlStringToOsgVec4(textu));
+                plane_drawable->setColor(htmlStringToOsgVec4(textu));
             else
             {
                 // image
@@ -428,31 +428,56 @@ void  OSG3dViewer::add_or_assign_mesh(const Node &node, const Node& parent)
 
 osg::Vec3 OSG3dViewer::QVecToOSGVec(const QVec &vec) const
 {
-	return osg::Vec3(vec(0), vec(1), -vec(2));
-}
+	//return osg::Vec3(vec(0), vec(1), -vec(2));
+    return osg::Vec3(vec(0), -vec(1), -vec(2));
 
-osg::Vec4 OSG3dViewer::htmlStringToOsgVec4(const std::string &color)
-{
-	QString red   = QString("00");
-	QString green = QString("00");
-	QString blue  = QString("00");
-	bool ok;
-	red[0]   = color[1]; red[1]   = color[2];
-	green[0] = color[3]; green[1] = color[4];
-	blue[0]  = color[5]; blue[1]  = color[6];
-	return osg::Vec4(float(red.toInt(&ok, 16))/255., float(green.toInt(&ok, 16))/255., float(blue.toInt(&ok, 16))/255., 0.f);
 }
 
 osg::Matrix  OSG3dViewer::QMatToOSGMat4(const RTMat &nodeB)
 {
 	QVec angles = nodeB.extractAnglesR();
 	QVec t = nodeB.getTr();
-	RTMat node = RTMat(-angles(0), -angles(1), angles(2), QVec::vec3(t(0), t(1), -t(2)));
+	//RTMat node = RTMat(-angles(0), -angles(1), angles(2), QVec::vec3(t(0), t(1), -t(2)));
+    RTMat node = RTMat(-angles(0), -angles(1), angles(2), QVec::vec3(t(0), -t(1), -t(2)));
 
-	return osg::Matrixd( node(0,0), node(1,0), node(2,0), node(3,0),
+    return osg::Matrixd( node(0,0), node(1,0), node(2,0), node(3,0),
 	                     node(0,1), node(1,1), node(2,1), node(3,1),
 	                     node(0,2), node(1,2), node(2,2), node(3,2),
 	                     node(0,3), node(1,3), node(2,3), node(3,3) );
+}
+
+osg::Vec4 OSG3dViewer::htmlStringToOsgVec4(const std::string &color)
+{
+    QString red   = QString("00");
+    QString green = QString("00");
+    QString blue  = QString("00");
+    bool ok;
+    red[0]   = color[1]; red[1]   = color[2];
+    green[0] = color[3]; green[1] = color[4];
+    blue[0]  = color[5]; blue[1]  = color[6];
+    return osg::Vec4(float(red.toInt(&ok, 16))/255., float(green.toInt(&ok, 16))/255., float(blue.toInt(&ok, 16))/255., 0.f);
+}
+
+void OSG3dViewer::draw_axis()
+{
+    osg::Box *box = new osg::Box(QVecToOSGVec(QVec::vec3(500,0,0)), 1000, 10, 10);
+    osg::ShapeDrawable *plane_drawable = new osg::ShapeDrawable(box);
+    osg::Geode *geode = new osg::Geode;
+    geode->addDrawable(plane_drawable);
+    plane_drawable->setColor(htmlStringToOsgVec4("#FF0000"));
+    root->addChild(geode);
+    box = new osg::Box(QVecToOSGVec(QVec::vec3(0,500,0)), 10, 1000, 10);
+    plane_drawable = new osg::ShapeDrawable(box);
+    geode = new osg::Geode;
+    geode->addDrawable(plane_drawable);
+    plane_drawable->setColor(htmlStringToOsgVec4("#00FF00"));
+    root->addChild(geode);
+    box = new osg::Box(QVecToOSGVec(QVec::vec3(0,0,500)), 10, 10, 1000);
+    plane_drawable = new osg::ShapeDrawable(box);
+    geode = new osg::Geode;
+    geode->addDrawable(plane_drawable);
+    plane_drawable->setColor(htmlStringToOsgVec4("#0000FF"));
+    root->addChild(geode);
 }
 
 ////////////////////////////////////////////////////////////////
@@ -589,6 +614,8 @@ void OSG3dViewer::analyse_osg_graph(osg::Node *nd)
 		}
 	}
 }
+
+
 
 // void OsgView::keyReleaseEvent( QKeyEvent* event )
 // {

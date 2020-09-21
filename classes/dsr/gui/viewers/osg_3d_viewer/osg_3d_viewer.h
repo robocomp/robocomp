@@ -100,6 +100,8 @@ namespace DSR
             void traverse_RT_tree(const Node& node);
             void print_RT_subtree(const Node& node);
             void analyse_osg_graph(osg::Node *nd);
+            void draw_axis();
+
         public slots:
             void reload(QWidget* widget);
     };
