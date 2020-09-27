@@ -108,7 +108,7 @@ public slots:
                     auto trans = mat.getTr();
                     std::vector<QString> ts{"tx", "ty", "tz"};
                     std::vector<QString> rs{"rx", "ry", "rz"};
-                    std::vector<float> rot{mat.getRxValue(), mat.getRyValue(), mat.getRzValue()};
+                    std::vector<RMat::T> rot{mat.getRxValue(), mat.getRyValue(), mat.getRzValue()};
                     for (auto i: iter::range(3)) {
                         if (this->item(4, i)==0) {
                             auto green = new QTableWidgetItem();

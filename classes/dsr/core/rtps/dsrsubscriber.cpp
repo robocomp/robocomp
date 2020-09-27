@@ -82,10 +82,10 @@ void DSRSubscriber::SubListener::onSubscriptionMatched(Subscriber* sub, Matching
     if (info.status == eprosima::fastrtps::rtps::MATCHED_MATCHING)
     {
         n_matched++;
-        qDebug() << "Publisher[" << sub->getAttributes().topic.getTopicName() <<"] matched " << info.remoteEndpointGuid.entityId.value;
+        qInfo() << "Publisher[" << sub->getAttributes().topic.getTopicName() <<"] matched " << info.remoteEndpointGuid.entityId.value;
     } else {
         n_matched--;
-        qDebug() << "Publisher[" << sub->getAttributes().topic.getTopicName() <<"] unmatched "  << info.remoteEndpointGuid.entityId.value;
+        qInfo() << "Publisher[" << sub->getAttributes().topic.getTopicName() <<"] unmatched "  << info.remoteEndpointGuid.entityId.value;
     }
 }
 
