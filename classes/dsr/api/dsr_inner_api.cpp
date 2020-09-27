@@ -8,12 +8,18 @@ using namespace DSR;
 InnerAPI::InnerAPI(DSR::DSRGraph *G_)
 {
     G = G_;
+    //update signals
+    connect(G, &DSR::DSRGraph::update_node_signal, this, &InnerAPI::add_or_assign_node_slot);
+    connect(G, &DSR::DSRGraph::update_edge_signal, this, &InnerAPI::add_or_assign_edge_slot);
+
+    connect(G, &DSR::DSRGraph::del_edge_signal, this, &InnerAPI::del_edge_slot);
+    connect(G, &DSR::DSRGraph::del_node_signal, this, &InnerAPI::del_node_slot);
 }
 
 /// Computation of resultant RTMat going from A to common ancestor and from common ancestor to B (inverted)
 std::optional<InnerAPI::Lists> InnerAPI::setLists(const std::string &destId, const std::string &origId)
 {
-    std::list<RMat::RTMat> listA, listB;
+    std::list<node_matrix> listA, listB;
 
   	auto an = G->get_node(origId);
 	auto bn = G->get_node(destId);
@@ -32,7 +38,7 @@ std::optional<InnerAPI::Lists> InnerAPI::setLists(const std::string &destId, con
 			break;
 		auto edge_rt = G->get_edge_RT(p_node.value(), a.id()).value();
 		auto rtmat = G->get_edge_RT_as_RTMat(edge_rt).value();
-		listA.emplace_back(std::move(rtmat));   // the downwards RT link from parent to a
+		listA.emplace_back(std::make_tuple(p_node.value().id(), std::move(rtmat)));   // the downwards RT link from parent to a
         a = p_node.value();
 	}
 	while (G->get_node_level(b).value_or(-1) >= minLevel)
@@ -43,7 +49,7 @@ std::optional<InnerAPI::Lists> InnerAPI::setLists(const std::string &destId, con
 			break;
 		auto edge_rt = G->get_edge_RT(p_node.value(), b.id()).value();
 		auto rtmat = G->get_edge_RT_as_RTMat(edge_rt).value();
-        listB.emplace_front(std::move(rtmat));
+        listB.emplace_front(std::make_tuple(p_node.value().id(), std::move(rtmat)));
 		b = p_node.value();
 	}
 	while (a.id() != b.id())
@@ -53,8 +59,8 @@ std::optional<InnerAPI::Lists> InnerAPI::setLists(const std::string &destId, con
 		if(p.has_value() and q.has_value())
 		{
 //qDebug() << "listas A&B" << p.value().id() << q.value().id();
-	  		listA.push_back(G->get_edge_RT_as_RTMat(G->get_edge_RT(p.value(), a.id()).value()).value());
-	  		listB.push_front(G->get_edge_RT_as_RTMat(G->get_edge_RT(p.value(), b.id()).value()).value());
+	  		listA.push_back(std::make_tuple(p.value().id(), G->get_edge_RT_as_RTMat(G->get_edge_RT(p.value(), a.id()).value()).value()));
+	  		listB.push_front(std::make_tuple(q.value().id(), G->get_edge_RT_as_RTMat(G->get_edge_RT(p.value(), b.id()).value()).value()));
 			a = p.value();
 			b = q.value();
 		}
@@ -65,36 +71,43 @@ std::optional<InnerAPI::Lists> InnerAPI::setLists(const std::string &destId, con
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////
-////// TRNASFORMATION MATRIX
+////// TRANSFORMATION MATRIX
 ////////////////////////////////////////////////////////////////////////////////////////
 
 std::optional<RTMat> InnerAPI::getTransformationMatrixS(const std::string &dest, const std::string &orig)
 {
 	RTMat ret;
-	// if (localHashTr.contains(QPair<QString, QString>(to, from)))
-	// {
-	// 	ret = localHashTr[QPair<QString, QString>(to, from)];
-	// }
-	// else
-	// {
-
-    auto lists = setLists(dest, orig);
-	if(!lists.has_value())
-		return {};
-	auto &[listA, listB] = lists.value();
-
-    for(auto &a: listA )
+    key_transform key = std::make_tuple(dest, orig);
+    transform_cache::iterator it = cache.find(key);
+    if (it != cache.end())
     {
-	    ret = a*ret;
-        //ret.print("ListA");
+        ret = it->second;
     }
-    for(auto &b: listB )
-    {
-        ret = b.invert() * ret;
-        //ret.print("ListB");
+    else
+	{
+        auto lists = setLists(dest, orig);
+        if(!lists.has_value())
+            return {};
+        auto &[listA, listB] = lists.value();
+
+        for(auto &[id, mat]: listA )
+        {
+            ret = mat*ret;
+            node_map[id].push_back(key); // update node cache reference
+        }
+        for(auto &[id, mat]: listB )
+        {
+            ret = mat.invert() * ret;
+            node_map[id].push_back(key); // update node cache reference
+        }
+        // update node cache reference
+        int32_t dst_id = G->get_node(dest).value().id();
+        node_map[dst_id].push_back(key);
+        int32_t orig_id = G->get_node(orig).value().id();
+        node_map[orig_id].push_back(key);
+        // update cache
+        cache[key] = ret;
     }
-    //	localHashTr[QPair<QString, QString>(to, from)] = ret;
-    //}
 	return ret;
 }
 
@@ -104,7 +117,7 @@ std::optional<RTMat> InnerAPI::getTransformationMatrix(const QString &dest, cons
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////
-////// TRNASFORM
+////// TRANSFORM
 ////////////////////////////////////////////////////////////////////////////////////////
 std::optional<QVec> InnerAPI::transformS(const std::string &destId, const QVec &initVec, const std::string &origId)
 {
@@ -178,3 +191,41 @@ std::optional<QVec> InnerAPI::transform6D( const QString &destId, const QVec &or
  {
 	return transformS(destId, QVec::vec6(0,0,0,0,0,0), origId);
  }
+
+// SLOTS ==> used to remove cached transforms when node/edge changes
+void InnerAPI::add_or_assign_node_slot(const std::int32_t id, const std::string &type)
+{
+
+}
+void InnerAPI::add_or_assign_edge_slot(const std::int32_t from, const std::int32_t to, const std::string& edge_type)
+{
+    if(edge_type == "RT")
+    {
+        remove_cache_entry(from);
+        remove_cache_entry(to);
+    }
+}
+void InnerAPI::del_node_slot(const std::int32_t id)
+{
+    remove_cache_entry(id);
+}
+void InnerAPI::del_edge_slot(const std::int32_t from, const std::int32_t to, const std::string &edge_type)
+{
+    if(edge_type == "RT")
+    {
+        remove_cache_entry(from);
+        remove_cache_entry(to);
+    }
+}
+void InnerAPI::remove_cache_entry(const std::int32_t id)
+{
+    node_reference::iterator it = node_map.find(id);
+    if(it != node_map.end())
+    {
+        for(key_transform key: it->second)
+        {
+            cache.erase(key);
+        }
+    }
+    node_map.erase(id);
+}

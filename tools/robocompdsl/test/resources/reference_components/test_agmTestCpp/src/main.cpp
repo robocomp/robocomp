@@ -331,6 +331,10 @@ int main(int argc, char* argv[])
             {
                 configFile = QString::fromStdString(arg).remove(0, initIC.size());
             }
+            else
+            {
+                configFile = QString::fromStdString(argv[1]);
+            }
         }
 
         // Search in argument list for --prefix= argument (if exist)
