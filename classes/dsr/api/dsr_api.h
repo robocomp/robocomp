@@ -121,8 +121,11 @@ namespace DSR
         // Innermodel API
         std::unique_ptr<InnerAPI> get_inner_api()            { return std::make_unique<InnerAPI>(this); };
 
-        // Innermodel API
+        // Innermodel EigenAPI
         std::unique_ptr<InnerEigenAPI> get_inner_eigen_api() { return std::make_unique<InnerEigenAPI>(this); };
+
+        // Innermodel CameraAPI
+        std::unique_ptr<CameraAPI> get_camera_api(const DSR::Node & camera_node) { return std::make_unique<CameraAPI>(this, camera_node); };
 
         /**
          * CORE
