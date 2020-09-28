@@ -60,7 +60,7 @@ std::optional<InnerAPI::Lists> InnerAPI::setLists(const std::string &destId, con
 		{
 //qDebug() << "listas A&B" << p.value().id() << q.value().id();
 	  		listA.push_back(std::make_tuple(p.value().id(), G->get_edge_RT_as_RTMat(G->get_edge_RT(p.value(), a.id()).value()).value()));
-	  		listB.push_front(std::make_tuple(q.value().id(), G->get_edge_RT_as_RTMat(G->get_edge_RT(p.value(), b.id()).value()).value()));
+	  		listB.push_front(std::make_tuple(q.value().id(), G->get_edge_RT_as_RTMat(G->get_edge_RT(q.value(), b.id()).value()).value()));
 			a = p.value();
 			b = q.value();
 		}
