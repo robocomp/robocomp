@@ -932,15 +932,21 @@ std::optional<RTMat>  DSRGraph::get_edge_RT_as_RTMat(const Edge &edge)
         return {};
 }
 
-std::optional<RTMat>  DSRGraph::get_edge_RT_as_RTMat(Edge &&edge)
+std::optional<Mat::RTMat>  DSRGraph::get_edge_RT_as_rtmat(const Edge &edge)
 {
     auto r = get_attrib_by_name<rotation_euler_xyz>(edge);
     auto t =  get_attrib_by_name<translation>(edge);
     if (r.has_value() and t.has_value())
-        return RTMat{r->get()[0], r->get()[1], r->get()[2], t->get()[0], t->get()[1], t->get()[2]};
+    {
+       Mat::RTMat rt(Eigen::Translation3d(t->get()[0], t->get()[1], t->get()[2]) *
+                     Eigen::AngleAxisd(r->get()[0], Eigen::Vector3d::UnitX()) *
+                     Eigen::AngleAxisd(r->get()[1], Eigen::Vector3d::UnitY()) *
+                     Eigen::AngleAxisd(r->get()[2], Eigen::Vector3d::UnitZ()));
+       return rt;
+    }
     else
         return {};
- }
+}
 
 std::optional<RTMat> DSRGraph::get_RT_pose_from_parent(const Node &n)
 {

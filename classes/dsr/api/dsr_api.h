@@ -31,6 +31,8 @@
 #include "../core/types/user_types.h"
 #include "../core/types/translator.h"
 #include "dsr_inner_api.h"
+#include "dsr_inner_eigen_api.h"
+#include "dsr_camera_api.h"
 #include "dsr_utils.h"
 #include "../core/types/type_checking/dsr_attr_name.h"
 #include "../core/utils.h"
@@ -39,10 +41,17 @@
 #include <QFileDialog>
 
 #define TIMEOUT 5000
-
+#include <Eigen/Geometry>
 
 namespace DSR
 {
+    namespace Mat
+    {
+        using RTMat = Eigen::Transform<double, 3, Eigen::Affine>;
+        using Rot3D = Eigen::Matrix3d;
+        using Vector6d = Eigen::Matrix<double, 6, 1>;
+    };
+
     using Nodes = ormap<uint32_t , mvreg<CRDTNode, uint32_t>, uint32_t>;
     using IDType = std::uint32_t;
 
@@ -110,7 +119,10 @@ namespace DSR
         std::vector<uint32_t> getKeys() const;
 
         // Innermodel API
-        std::unique_ptr<InnerAPI> get_inner_api() { return std::make_unique<InnerAPI>(this); };
+        std::unique_ptr<InnerAPI> get_inner_api()            { return std::make_unique<InnerAPI>(this); };
+
+        // Innermodel API
+        std::unique_ptr<InnerEigenAPI> get_inner_eigen_api() { return std::make_unique<InnerEigenAPI>(this); };
 
         /**
          * CORE
@@ -474,8 +486,8 @@ namespace DSR
         void insert_or_assign_edge_RT(Node &n, uint32_t to, std::vector<float> &&trans, std::vector<float> &&rot_euler);
         static std::optional<Edge> get_edge_RT(const Node &n, uint32_t to);
         std::optional<RTMat> get_edge_RT_as_RTMat(const Edge &edge);
-        std::optional<RTMat> get_edge_RT_as_RTMat(Edge &&edge);
         std::optional<RTMat> get_RT_pose_from_parent(const Node &n);
+        std::optional<Mat::RTMat> get_edge_RT_as_rtmat(const Edge &edge);
         /**AUXILIARY RT SUB-API**/
 
 

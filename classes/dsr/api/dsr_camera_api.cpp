@@ -7,4 +7,5 @@ using namespace DSR;
 CameraAPI::CameraAPI(DSR::DSRGraph *G_, const DSR::Node &node)
 {
     G = G_;
+
 }

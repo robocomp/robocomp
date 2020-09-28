@@ -12,8 +12,9 @@ namespace DSR
     {
         public:
             explicit CameraAPI(DSRGraph *G_, const DSR::Node &n);
-            explicit CameraAPI(DSRGraph *G_, const std::uint32_t id);
-            explicit CameraAPI(DSRGraph *G_, const std::string &name);
+            //explicit CameraAPI(DSRGraph *G_, const std::uint32_t id);
+            //explicit CameraAPI(DSRGraph *G_, const std::string &name);
+            bool reload_camera(const DSR::Node &n);
             QVec get_angles( const QVec & p) const;
             QVec get_angles_homogeneous( const QVec & p) const;
             float get_focal() const;
