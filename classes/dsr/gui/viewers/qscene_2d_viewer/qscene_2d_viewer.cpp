@@ -111,7 +111,7 @@ void QScene2dViewer::get_2d_projection(std::string node_name, std::vector<int> s
     QVector<QPoint> polygon_vec;
     zvalue = -99999;
     //transform cube points
-    std::optional<RTMat> rt = innermodel->getTransformationMatrixS("world", node_name);
+    std::optional<RTMat> rt = innermodel->get_transformation_matrix("world", node_name);
     if (rt.has_value())
     {
         for (unsigned int i=0;i< cube_positions.size();i++)
@@ -229,7 +229,7 @@ bool QScene2dViewer::check_RT_required_attributes(Node node)
     try{
         std::optional<int> level = G->get_node_level(node);
         std::optional<int> parent = G->get_parent_id(node);
-        std::optional<QVec> pose = innermodel->transformS6D("world", node.name());
+        std::optional<QVec> pose = innermodel->transform_axis("world", node.name());
 
         if(level.has_value() and parent.has_value() and pose.has_value())
             return true;
@@ -279,7 +279,7 @@ void  QScene2dViewer::add_or_assign_person(Node &node){
 //qDebug() << __FUNCTION__ ;
     std::optional<QVec> pose;
     try{
-        pose = innermodel->transformS6D("world", node.name());
+        pose = innermodel->transform_axis("world", node.name());
     }catch(...){}
     if (pose.has_value()){
 //pose.value().print(QString::fromStdString(node.name()));
@@ -317,7 +317,7 @@ void QScene2dViewer::add_or_assign_robot(Node &node)
     std::optional<QVec> pose;
     try
     {
-        pose = innermodel->transformS6D("world", node.name());
+        pose = innermodel->transform_axis("world", node.name());
     }catch(...){}
     if (pose.has_value())
     {
@@ -415,7 +415,7 @@ void QScene2dViewer::update_scene_object_pose(std::int32_t node_id)
         std::optional<QVec> pose;
         try
         {
-            pose = innermodel->transformS6D("world", node.value().name());
+            pose = innermodel->transform_axis("world", node.value().name());
 //pose.value().print(QString::fromStdString(node.value().name()));
         }catch(...){};
         if (pose.has_value())
