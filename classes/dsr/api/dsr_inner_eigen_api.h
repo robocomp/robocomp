@@ -30,19 +30,19 @@ namespace DSR
             /////////////////////////////////////////////////
             /// Kinematic transformation methods
             ////////////////////////////////////////////////
-            //std::optional<QVec> transform(const QString & destId, const QVec &origVec, const QString & origId);
-            //std::optional<QVec> transform( const QString &destId, const QString & origId);
+            std::optional<Eigen::VectorXd> transform(const QString & destId, const Eigen::VectorXd &origVec, const QString & origId);
+            std::optional<Eigen::VectorXd> transform( const QString &destId, const QString & origId);
             std::optional<Eigen::VectorXd> transformS( const std::string &destId, const Eigen::VectorXd &origVec, const std::string & origId);
-            //std::optional<QVec> transformS( const std::string &destId, const std::string &origId);
-            //std::optional<QVec> transform6D(const QString &destId, const QVec &origVec, const QString & origId);
-            //std::optional<QVec> transform6D(const QString &destId, const QString & origId);
-            //std::optional<QVec> transformS6D(const std::string &destId, const std::string & origId);
-            //std::optional<QVec> transformS6D(const std::string &destId, const QVec &origVec, const std::string & origId);
+            std::optional<Eigen::VectorXd> transformS( const std::string &destId, const std::string &origId);
+            std::optional<Eigen::VectorXd> transform6D(const QString &destId, const Mat::Vector6d &origVec, const QString & origId);
+            std::optional<Eigen::VectorXd> transform6D(const QString &destId, const QString & origId);
+            std::optional<Eigen::VectorXd> transformS6D(const std::string &destId, const std::string & origId);
+            std::optional<Eigen::VectorXd> transformS6D(const std::string &destId, const Mat::Vector6d &origVec, const std::string & origId);
 
             ////////////////////////////////////////////////
             /// Transformation matrix retrieval methods
             ////////////////////////////////////////////////
-            //std::optional<RTMat> getTransformationMatrix(const QString &destId, const QString &origId);
+            std::optional<Mat::RTMat> getTransformationMatrix(const QString &destId, const QString &origId);
             std::optional<Mat::RTMat> getTransformationMatrixS(const std::string &destId, const std::string &origId);
             //QMat getRotationMatrixTo(const QString &to, const QString &from);
             //QVec getTranslationVectorTo(const QString &to, const QString &from);

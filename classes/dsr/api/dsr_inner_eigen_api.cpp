@@ -109,10 +109,10 @@ std::optional<Mat::RTMat> InnerEigenAPI::getTransformationMatrixS(const std::str
 	return ret;
 }
 
-//std::optional<RTMat> InnerEigenAPI::getTransformationMatrix(const QString &dest, const QString &orig)
-//{
-//	return getTransformationMatrixS(dest.toStdString(), orig.toStdString());
-//}
+std::optional<Mat::RTMat> InnerEigenAPI::getTransformationMatrix(const QString &dest, const QString &orig)
+{
+	return getTransformationMatrixS(dest.toStdString(), orig.toStdString());
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////
 ////// TRANSFORM
@@ -155,43 +155,44 @@ std::optional<Eigen::VectorXd> InnerEigenAPI::transformS(const std::string &dest
 		return {};
 }
 
-// std::optional<QVec> InnerEigenAPI::transformS( const std::string &destId, const std::string &origId)
-// {
-//	return transformS(destId, QVec::vec3(0.,0.,0.), origId);
-// }
-//
-// std::optional<QVec> InnerEigenAPI::transform(const QString & destId, const QVec &origVec, const QString & origId)
-// {
-//	return transformS(destId.toStdString(), origVec, origId.toStdString());
-// }
-//
-// std::optional<QVec> InnerEigenAPI::transform( const QString &destId, const QString & origId)
-// {
-// 	return transformS(destId.toStdString(), QVec::vec3(0.,0.,0.), origId.toStdString());
-// }
-//
-//std::optional<QVec> InnerEigenAPI::transform6D( const QString &destId, const QString & origId)
-// {
-//	return transformS(destId.toStdString(), QVec::vec6(0,0,0,0,0,0), origId.toStdString());
-// }
-//
-//std::optional<QVec> InnerEigenAPI::transform6D( const QString &destId, const QVec &origVec, const QString & origId)
-// {
-//	Q_ASSERT(origVec.size() == 6);
-//	return transformS(destId.toStdString(), origVec, origId.toStdString());
-// }
-//
-// std::optional<QVec> InnerEigenAPI::transformS6D( const std::string &destId, const QVec &origVec, const std::string& origId)
-// {
-//	Q_ASSERT(origVec.size() == 6);
-//	return transformS(destId, origVec, origId);
-// }
-//
-// std::optional<QVec> InnerEigenAPI::transformS6D( const std::string &destId, const std::string & origId)
-// {
-//	return transformS(destId, QVec::vec6(0,0,0,0,0,0), origId);
-// }
-//
+ std::optional<Eigen::VectorXd> InnerEigenAPI::transformS( const std::string &destId, const std::string &origId)
+ {
+	return transformS(destId, Eigen::Vector3d(0.,0.,0.), origId);
+ }
+
+ std::optional<Eigen::VectorXd> InnerEigenAPI::transform(const QString & destId, const Eigen::VectorXd &origVec, const QString & origId)
+ {
+	return transformS(destId.toStdString(), origVec, origId.toStdString());
+ }
+
+ std::optional<Eigen::VectorXd> InnerEigenAPI::transform( const QString &destId, const QString & origId)
+ {
+ 	return transformS(destId.toStdString(), Eigen::Vector3d(0.,0.,0.), origId.toStdString());
+ }
+
+std::optional<Eigen::VectorXd> InnerEigenAPI::transform6D( const QString &destId, const QString & origId)
+ {
+    Mat::Vector6d v;
+	return transformS(destId.toStdString(), v.Zero(), origId.toStdString());
+ }
+
+std::optional<Eigen::VectorXd> InnerEigenAPI::transform6D( const QString &destId, const Mat::Vector6d &origVec, const QString & origId)
+ {
+	return transformS(destId.toStdString(), origVec, origId.toStdString());
+ }
+
+ std::optional<Eigen::VectorXd> InnerEigenAPI::transformS6D( const std::string &destId, const Mat::Vector6d &origVec, const std::string& origId)
+ {
+	Q_ASSERT(origVec.size() == 6);
+	return transformS(destId, origVec, origId);
+ }
+
+ std::optional<Eigen::VectorXd> InnerEigenAPI::transformS6D( const std::string &destId, const std::string & origId)
+ {
+     Mat::Vector6d v;
+     return transformS(destId, v.Zero(), origId);
+ }
+
 ////////////////////////////////////////////////////////////////////////
 /// SLOTS ==> used to remove cached transforms when node/edge changes
 ///////////////////////////////////////////////////////////////////////
