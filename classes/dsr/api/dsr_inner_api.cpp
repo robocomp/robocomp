@@ -9,15 +9,13 @@ InnerAPI::InnerAPI(DSR::DSRGraph *G_)
 {
     G = G_;
     //update signals
-    connect(G, &DSR::DSRGraph::update_node_signal, this, &InnerAPI::add_or_assign_node_slot);
     connect(G, &DSR::DSRGraph::update_edge_signal, this, &InnerAPI::add_or_assign_edge_slot);
-
     connect(G, &DSR::DSRGraph::del_edge_signal, this, &InnerAPI::del_edge_slot);
     connect(G, &DSR::DSRGraph::del_node_signal, this, &InnerAPI::del_node_slot);
 }
 
 /// Computation of resultant RTMat going from A to common ancestor and from common ancestor to B (inverted)
-std::optional<InnerAPI::Lists> InnerAPI::setLists(const std::string &destId, const std::string &origId)
+std::optional<InnerAPI::Lists> InnerAPI::set_lists(const std::string &destId, const std::string &origId)
 {
     std::list<node_matrix> listA, listB;
 
@@ -74,9 +72,9 @@ std::optional<InnerAPI::Lists> InnerAPI::setLists(const std::string &destId, con
 ////// TRANSFORMATION MATRIX
 ////////////////////////////////////////////////////////////////////////////////////////
 
-std::optional<RTMat> InnerAPI::getTransformationMatrixS(const std::string &dest, const std::string &orig)
+std::optional<RTMat> InnerAPI::get_transformation_matrix(const std::string &dest, const std::string &orig)
 {
-	RTMat ret;
+    RTMat ret;
     key_transform key = std::make_tuple(dest, orig);
     transform_cache::iterator it = cache.find(key);
     if (it != cache.end())
@@ -84,8 +82,8 @@ std::optional<RTMat> InnerAPI::getTransformationMatrixS(const std::string &dest,
         ret = it->second;
     }
     else
-	{
-        auto lists = setLists(dest, orig);
+    {
+        auto lists = set_lists(dest, orig);
         if(!lists.has_value())
             return {};
         auto &[listA, listB] = lists.value();
@@ -111,92 +109,57 @@ std::optional<RTMat> InnerAPI::getTransformationMatrixS(const std::string &dest,
 	return ret;
 }
 
-std::optional<RTMat> InnerAPI::getTransformationMatrix(const QString &dest, const QString &orig)
-{
-	return getTransformationMatrixS(dest.toStdString(), orig.toStdString());
-}
-
 ////////////////////////////////////////////////////////////////////////////////////////
 ////// TRANSFORM
 ////////////////////////////////////////////////////////////////////////////////////////
-std::optional<QVec> InnerAPI::transformS(const std::string &destId, const QVec &initVec, const std::string &origId)
+std::optional<QVec> InnerAPI::transform(const std::string &destId, const QVec &origVec, const std::string &origId)
 {
-	if (initVec.size()==3)
-	{
-		auto tm = getTransformationMatrixS(destId, origId);
-		if(tm.has_value())
-			return (tm.value() * initVec.toHomogeneousCoordinates()).fromHomogeneousCoordinates();
-		else
-			return {};
-	}
-	else if (initVec.size()==6)
-	{
-		auto tm = getTransformationMatrixS(destId, origId);
-		if(tm.has_value())
-		{
-			const QMat M = tm.value();
-			const QVec a = (M * initVec.subVector(0,2).toHomogeneousCoordinates()).fromHomogeneousCoordinates();
-			const Rot3D R(initVec(3), initVec(4), initVec(5));
-
-			const QVec b = (M.getSubmatrix(0,2,0,2)*R).extractAnglesR_min();
-			QVec ret(6);
-			ret(0) = a(0);
-			ret(1) = a(1);
-			ret(2) = a(2);
-			ret(3) = b(0);
-			ret(4) = b(1);
-			ret(5) = b(2);
-			return ret;
-		}
-		else
-		return {};
-	}
-	else
-		return {};
+    assert(origVec.size() == 3);
+    auto tm = get_transformation_matrix(destId, origId);
+    if(tm.has_value())
+        return (tm.value() * origVec.toHomogeneousCoordinates()).fromHomogeneousCoordinates();
+    else
+        return {};
 }
 
- std::optional<QVec> InnerAPI::transformS( const std::string &destId, const std::string &origId)
- {
-	return transformS(destId, QVec::vec3(0.,0.,0.), origId);
- }
-
- std::optional<QVec> InnerAPI::transform(const QString & destId, const QVec &origVec, const QString & origId)
- {
-	return transformS(destId.toStdString(), origVec, origId.toStdString());
- }
-
- std::optional<QVec> InnerAPI::transform( const QString &destId, const QString & origId)
- {
- 	return transformS(destId.toStdString(), QVec::vec3(0.,0.,0.), origId.toStdString());
- }
-
-std::optional<QVec> InnerAPI::transform6D( const QString &destId, const QString & origId)
- {
-	return transformS(destId.toStdString(), QVec::vec6(0,0,0,0,0,0), origId.toStdString());
- }
-
-std::optional<QVec> InnerAPI::transform6D( const QString &destId, const QVec &origVec, const QString & origId)
- {
-	Q_ASSERT(origVec.size() == 6);
-	return transformS(destId.toStdString(), origVec, origId.toStdString());
- }
-
- std::optional<QVec> InnerAPI::transformS6D( const std::string &destId, const QVec &origVec, const std::string& origId)
- {
-	Q_ASSERT(origVec.size() == 6);
-	return transformS(destId, origVec, origId);
- }
-
- std::optional<QVec> InnerAPI::transformS6D( const std::string &destId, const std::string & origId)
- {
-	return transformS(destId, QVec::vec6(0,0,0,0,0,0), origId);
- }
-
-// SLOTS ==> used to remove cached transforms when node/edge changes
-void InnerAPI::add_or_assign_node_slot(const std::int32_t id, const std::string &type)
+std::optional<QVec> InnerAPI::transform( const std::string &destId, const std::string &origId)
 {
-
+    return transform(destId, QVec::vec3(0.f, 0.f, 0.f), origId);
 }
+
+std::optional<QVec> InnerAPI::transform_axis(const std::string &destId, const QVec &origVec, const std::string & origId)
+{
+    assert(origVec.size() == 6);
+    auto tm = get_transformation_matrix(destId, origId);
+    if(tm.has_value())
+    {
+        const QMat M = tm.value();
+        const QVec a = (M * origVec.subVector(0,2).toHomogeneousCoordinates()).fromHomogeneousCoordinates();
+        const Rot3D R(origVec(3), origVec(4), origVec(5));
+
+        const QVec b = (M.getSubmatrix(0,2,0,2)*R).extractAnglesR_min();
+        QVec ret(6);
+        ret(0) = a(0);
+        ret(1) = a(1);
+        ret(2) = a(2);
+        ret(3) = b(0);
+        ret(4) = b(1);
+        ret(5) = b(2);
+        return ret;
+    }
+    else
+        return {};
+}
+
+std::optional<QVec> InnerAPI::transform_axis(const std::string &destId, const std::string & origId)
+{
+    return transform_axis(destId, QVec::vec6(0.f, 0.f, 0.f, 0.f, 0.f, 0.f), origId);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////
+////// SLOTS
+////// used to remove cached transforms when node/edge changes
+////////////////////////////////////////////////////////////////////////////////////////
 void InnerAPI::add_or_assign_edge_slot(const std::int32_t from, const std::int32_t to, const std::string& edge_type)
 {
     if(edge_type == "RT")
