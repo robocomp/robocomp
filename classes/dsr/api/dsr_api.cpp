@@ -736,7 +736,7 @@ void DSRGraph::insert_or_assign_edge_RT(Node &n, uint32_t to, const std::vector<
             }
             else
             {
-                no_send = add_attrib_local<level>(to_n.value(),  get_node_level(n).value() + 1 );
+                no_send = !add_attrib_local<level>(to_n.value(),  get_node_level(n).value() + 1 );
             }
 
             //Check if RT edge exist.
