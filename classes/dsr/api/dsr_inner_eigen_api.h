@@ -30,25 +30,26 @@ namespace DSR
             /////////////////////////////////////////////////
             /// Kinematic transformation methods
             ////////////////////////////////////////////////
-            std::optional<Eigen::VectorXd> transform(const QString & destId, const Eigen::VectorXd &origVec, const QString & origId);
-            std::optional<Eigen::VectorXd> transform( const QString &destId, const QString & origId);
-            std::optional<Eigen::VectorXd> transformS( const std::string &destId, const Eigen::VectorXd &origVec, const std::string & origId);
-            std::optional<Eigen::VectorXd> transformS( const std::string &destId, const std::string &origId);
-            std::optional<Eigen::VectorXd> transform6D(const QString &destId, const Mat::Vector6d &origVec, const QString & origId);
-            std::optional<Eigen::VectorXd> transform6D(const QString &destId, const QString & origId);
-            std::optional<Eigen::VectorXd> transformS6D(const std::string &destId, const std::string & origId);
-            std::optional<Eigen::VectorXd> transformS6D(const std::string &destId, const Mat::Vector6d &origVec, const std::string & origId);
+            std::optional<Eigen::Vector3d> transform( const std::string &dest, const std::string &orig);
+            std::optional<Eigen::Vector3d> transform( const std::string &dest, const Eigen::Vector3d &vector, const std::string &orig);
+            std::optional<Mat::Vector6d> transform_axis(const std::string &dest, const std::string & orig);
+            std::optional<Mat::Vector6d> transform_axis(const std::string &dest, const Mat::Vector6d &vector, const std::string &orig);
 
             ////////////////////////////////////////////////
             /// Transformation matrix retrieval methods
             ////////////////////////////////////////////////
-            std::optional<Mat::RTMat> getTransformationMatrix(const QString &destId, const QString &origId);
-            std::optional<Mat::RTMat> getTransformationMatrixS(const std::string &destId, const std::string &origId);
+            //std::optional<Mat::RTMat> getTransformationMatrix(const QString &dest, const QString &orig);
+            //std::optional<Mat::RTMat> getTransformationMatrixS(const std::string &dest, const std::string &orig);
             //QMat getRotationMatrixTo(const QString &to, const QString &from);
             //QVec getTranslationVectorTo(const QString &to, const QString &from);
-            //QVec rotationAngles(const QString & destId, const QString & origId);
+            //QVec rotationAngles(const QString & dest, const QString & orig);
+            std::optional<Mat::RTMat> get_transformation_matrix(const std::string &dest, const std::string &orig);
+            std::optional<Mat::RTMat> get_rotation_matrix(const std::string &dest, const std::string &orig){ return{};};
+            std::optional<Mat::RTMat> get_translation_vector(const std::string &dest, const std::string &orig){return{};};
+            std::optional<Mat::RTMat> get_euler_xyz_angles(const std::string &dest, const std::string &orig){return{};};
 
-            ////////////////////////////////////////////////
+
+        ////////////////////////////////////////////////
             /// Update transform methods
             ////////////////////////////////////////////////
 //            void updateTransformValues(QString transformId, float tx, float ty, float tz, float rx, float ry, float rz, QString parentId="");
@@ -68,7 +69,7 @@ namespace DSR
             DSR::DSRGraph *G;
             transform_cache cache;
             node_reference node_map;
-            std::optional<InnerEigenAPI::Lists> setLists(const std::string &origId, const std::string &destId);
+            std::optional<InnerEigenAPI::Lists> setLists(const std::string &orig, const std::string &dest);
             void remove_cache_entry(const std::int32_t id);
     };
 }

@@ -73,7 +73,7 @@ std::optional<InnerEigenAPI::Lists> InnerEigenAPI::setLists(const std::string &d
 ////// TRANSFORMATION MATRIX
 ////////////////////////////////////////////////////////////////////////////////////////
 
-std::optional<Mat::RTMat> InnerEigenAPI::getTransformationMatrixS(const std::string &dest, const std::string &orig)
+std::optional<Mat::RTMat> InnerEigenAPI::get_transformation_matrix(const std::string &dest, const std::string &orig)
 {
 	Mat::RTMat ret(Mat::RTMat::Identity());
     key_transform key = std::make_tuple(dest, orig);
@@ -109,88 +109,51 @@ std::optional<Mat::RTMat> InnerEigenAPI::getTransformationMatrixS(const std::str
 	return ret;
 }
 
-std::optional<Mat::RTMat> InnerEigenAPI::getTransformationMatrix(const QString &dest, const QString &orig)
-{
-	return getTransformationMatrixS(dest.toStdString(), orig.toStdString());
-}
-
 ////////////////////////////////////////////////////////////////////////////////////////
 ////// TRANSFORM
 ////////////////////////////////////////////////////////////////////////////////////////
-std::optional<Eigen::VectorXd> InnerEigenAPI::transformS(const std::string &destId, const Eigen::VectorXd &initVec, const std::string &origId)
+std::optional<Eigen::Vector3d> InnerEigenAPI::transform(const std::string &dest, const Eigen::Vector3d &vector, const std::string &orig)
 {
-
     //std::cout <<__FUNCTION__ << " " << initVec << std::endl;
-	if (initVec.size()==3)
-	{
-		auto tm = getTransformationMatrixS(destId, origId);
-        //std::cout << __FUNCTION__ << " " << tm.value().matrix().format(CleanFmt) << std::endl;
-		if(tm.has_value())
-        {
-            //qInfo() << __FUNCTION__ << " " << tm.value().matrix().size() << initVec.homogeneous().size();
-            return (tm.value() * initVec.homogeneous());
-        }
-		else
-			return {};
-	}
-	else if (initVec.size()==6)
-	{
-		auto tm = getTransformationMatrixS(destId, origId);
-		if(tm.has_value())
-		{
-			const Mat::RTMat rtmat = tm.value();
-			const Eigen::Vector3d a = rtmat * (initVec.head(3).homogeneous());
-			const Mat::Rot3D R(Eigen::AngleAxisd(initVec(3), Eigen::Vector3d::UnitX()) *
-			                   Eigen::AngleAxisd(initVec(4), Eigen::Vector3d::UnitY()) *
-			                   Eigen::AngleAxisd(initVec(5), Eigen::Vector3d::UnitZ()));
-	         const Eigen::Vector3d b = ( rtmat.rotation() * R).eulerAngles(0,1,2);
-            Mat::Vector6d ret;
-			ret << a(0),  a(1), a(2), b(0), b(1), b(2);
-			return ret;
-		}
-		else
-		return {};
-	}
-	else
-		return {};
+    auto tm = get_transformation_matrix(dest, orig);
+    //std::cout << __FUNCTION__ << " " << tm.value().matrix().format(CleanFmt) << std::endl;
+    if(tm.has_value())
+    {
+        //qInfo() << __FUNCTION__ << " " << tm.value().matrix().size() << initVec.homogeneous().size();
+        return (tm.value() * vector.homogeneous());
+    }
+    else
+        return {};
 }
 
- std::optional<Eigen::VectorXd> InnerEigenAPI::transformS( const std::string &destId, const std::string &origId)
+std::optional<Eigen::Vector3d> InnerEigenAPI::transform( const std::string &dest, const std::string & orig)
  {
-	return transformS(destId, Eigen::Vector3d(0.,0.,0.), origId);
+ 	return transform(dest, Eigen::Vector3d(0.,0.,0.), orig);
  }
 
- std::optional<Eigen::VectorXd> InnerEigenAPI::transform(const QString & destId, const Eigen::VectorXd &origVec, const QString & origId)
- {
-	return transformS(destId.toStdString(), origVec, origId.toStdString());
+std::optional<Mat::Vector6d> InnerEigenAPI::transform_axis(const std::string &dest, const Mat::Vector6d &vector, const std::string &orig)
+{
+    auto tm = get_transformation_matrix(dest, orig);
+    if(tm.has_value())
+    {
+        const Mat::RTMat rtmat = tm.value();
+        const Eigen::Vector3d a = rtmat * (vector.head(3).homogeneous());
+        const Mat::Rot3D R(Eigen::AngleAxisd(vector(3), Eigen::Vector3d::UnitX()) *
+                           Eigen::AngleAxisd(vector(4), Eigen::Vector3d::UnitY()) *
+                           Eigen::AngleAxisd(vector(5), Eigen::Vector3d::UnitZ()));
+        const Eigen::Vector3d b = ( rtmat.rotation() * R).eulerAngles(0,1,2);
+        Mat::Vector6d ret;
+        ret << a(0),  a(1), a(2), b(0), b(1), b(2);
+        return ret;
+    }
+    else
+        return {};
  }
 
- std::optional<Eigen::VectorXd> InnerEigenAPI::transform( const QString &destId, const QString & origId)
- {
- 	return transformS(destId.toStdString(), Eigen::Vector3d(0.,0.,0.), origId.toStdString());
- }
-
-std::optional<Eigen::VectorXd> InnerEigenAPI::transform6D( const QString &destId, const QString & origId)
+std::optional<Mat::Vector6d> InnerEigenAPI::transform_axis( const std::string &dest,  const std::string & orig)
  {
     Mat::Vector6d v;
-	return transformS(destId.toStdString(), v.Zero(), origId.toStdString());
- }
-
-std::optional<Eigen::VectorXd> InnerEigenAPI::transform6D( const QString &destId, const Mat::Vector6d &origVec, const QString & origId)
- {
-	return transformS(destId.toStdString(), origVec, origId.toStdString());
- }
-
- std::optional<Eigen::VectorXd> InnerEigenAPI::transformS6D( const std::string &destId, const Mat::Vector6d &origVec, const std::string& origId)
- {
-	Q_ASSERT(origVec.size() == 6);
-	return transformS(destId, origVec, origId);
- }
-
- std::optional<Eigen::VectorXd> InnerEigenAPI::transformS6D( const std::string &destId, const std::string & origId)
- {
-     Mat::Vector6d v;
-     return transformS(destId, v.Zero(), origId);
+	return transform_axis(dest, v.Zero(), orig);
  }
 
 ////////////////////////////////////////////////////////////////////////
