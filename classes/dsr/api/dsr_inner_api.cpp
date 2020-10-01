@@ -30,7 +30,7 @@ std::optional<InnerAPI::Lists> InnerAPI::set_lists(const std::string &destId, co
 		return {};
 	while (G->get_node_level(a).value_or(-1) >= minLevel)
 	{
-        qDebug() << "listaA" << a.id() << G->get_node_level(a).value() << G->get_parent_id(a).value();
+        //qDebug() << "listaA" << a.id() << G->get_node_level(a).value() << G->get_parent_id(a).value();
 		auto p_node = G->get_parent_node(a);
       	if( not p_node.has_value())
 			break;
@@ -41,7 +41,7 @@ std::optional<InnerAPI::Lists> InnerAPI::set_lists(const std::string &destId, co
 	}
 	while (G->get_node_level(b).value_or(-1) >= minLevel)
 	{
-        qDebug() << "listaB" << b.id() << G->get_node_level(b).value() << G->get_parent_id(b).value();
+        //qDebug() << "listaB" << b.id() << G->get_node_level(b).value() << G->get_parent_id(b).value();
 		auto p_node = G->get_parent_node(b);
 		if(not p_node.has_value())
 			break;
@@ -56,7 +56,7 @@ std::optional<InnerAPI::Lists> InnerAPI::set_lists(const std::string &destId, co
 		auto q = G->get_node(G->get_parent_id(b).value_or(-1));
 		if(p.has_value() and q.has_value())
 		{
-            qDebug() << "listas A&B" << p.value().id() << q.value().id();
+            //qDebug() << "listas A&B" << p.value().id() << q.value().id();
 	  		listA.push_back(std::make_tuple(p.value().id(), G->get_edge_RT_as_RTMat(G->get_edge_RT(p.value(), a.id()).value()).value()));
 	  		listB.push_front(std::make_tuple(q.value().id(), G->get_edge_RT_as_RTMat(G->get_edge_RT(q.value(), b.id()).value()).value()));
 			a = p.value();
@@ -79,6 +79,7 @@ std::optional<RTMat> InnerAPI::get_transformation_matrix(const std::string &dest
     transform_cache::iterator it = cache.find(key);
     if (it != cache.end())
     {
+        qInfo() << "cache hit QMAT";
         ret = it->second;
     }
     else
