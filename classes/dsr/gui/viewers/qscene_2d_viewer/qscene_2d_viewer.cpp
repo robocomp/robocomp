@@ -300,7 +300,7 @@ void  QScene2dViewer::add_or_assign_person(Node &node){
             scenePixmap = (QGraphicsPixmapItem*) scene_map[node.id()];
         }
 //qDebug()<<"angle"<<pose.value().ry()<<qRadiansToDegrees(pose.value().ry());        
-        scenePixmap->setPos(pose.value().x() - scenePixmap->boundingRect().center().x(), pose.value().z() - scenePixmap->boundingRect().center().y());
+        scenePixmap->setPos(pose.value().x() - scenePixmap->boundingRect().center().x(), pose.value().y() - scenePixmap->boundingRect().center().y());
         scenePixmap->setRotation(-qRadiansToDegrees(pose.value().ry()));
         //update person spaces
         if(drawpeople_space) {
@@ -349,8 +349,8 @@ void QScene2dViewer::add_or_assign_robot(Node &node)
         {
             scenePolygon = (QGraphicsPolygonItem*) scene_map[node.id()];      
         }
-        scenePolygon->setPos(pose.value().x() - scenePolygon->boundingRect().center().x(), pose.value().z() - scenePolygon->boundingRect().center().y());
-        scenePolygon->setRotation(qRadiansToDegrees(-pose.value().ry()));   
+        scenePolygon->setPos(pose.value().x() - scenePolygon->boundingRect().center().x(), pose.value().y() - scenePolygon->boundingRect().center().y());
+        scenePolygon->setRotation(qRadiansToDegrees(pose.value().rz()));   
     }
     else
     {
@@ -420,8 +420,8 @@ void QScene2dViewer::update_scene_object_pose(std::int32_t node_id)
         }catch(...){};
         if (pose.has_value())
         {
-            item->setPos(pose.value().x() - item->boundingRect().center().x(), pose.value().z() - item->boundingRect().center().y());
-            item->setRotation(qRadiansToDegrees(-pose.value().ry()));
+            item->setPos(pose.value().x() - item->boundingRect().center().x(), pose.value().y() - item->boundingRect().center().y());
+            item->setRotation(qRadiansToDegrees(pose.value().rz()));
         }
         else   
         {
