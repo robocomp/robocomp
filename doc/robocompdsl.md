@@ -219,13 +219,13 @@ Now start the component,
 For C++:
 
 ```bash
-bin/MyFirstComp --Ice.Config=etc/config
+bin/MyFirstComp etc/config
 ```
 
 For Python:
 
 ```bash
-python src/MyFirstComp.py --Ice.Config=etc/config
+python src/MyFirstComp.py etc/config
 ```
 and watch the robot avoiding obstacles! 
 Change the code to improve this simple behavior of the robot. Stop the component by closing its UI window, then modify, recompile and execute again.
