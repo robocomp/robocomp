@@ -78,10 +78,7 @@ std::optional<RTMat> InnerAPI::get_transformation_matrix(const std::string &dest
     key_transform key = std::make_tuple(dest, orig);
     transform_cache::iterator it = cache.find(key);
     if (it != cache.end())
-    {
-        qInfo() << "cache hit QMAT";
         ret = it->second;
-    }
     else
     {
         auto lists = set_lists(dest, orig);

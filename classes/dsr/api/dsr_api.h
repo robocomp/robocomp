@@ -21,7 +21,7 @@
 #include <typeinfo>
 #include <optional>
 #include <type_traits>
-
+#include "dsr_eigen_defs.h"
 #include "../core/crdt/delta-crdts.cc"
 #include "../core/rtps/dsrparticipant.h"
 #include "../core/rtps/dsrpublisher.h"
@@ -33,6 +33,7 @@
 #include "dsr_inner_api.h"
 #include "dsr_inner_eigen_api.h"
 #include "dsr_camera_api.h"
+#include "dsr_rt_api.h"
 #include "dsr_utils.h"
 #include "../core/types/type_checking/dsr_attr_name.h"
 #include "../core/utils.h"
@@ -41,26 +42,18 @@
 #include <QFileDialog>
 
 #define TIMEOUT 5000
-#include <Eigen/Geometry>
 
 namespace DSR
 {
-    namespace Mat
-    {
-        using RTMat = Eigen::Transform<double, 3, Eigen::Affine>;
-        using Rot3D = Eigen::Matrix3d;
-        using Vector6d = Eigen::Matrix<double, 6, 1>;
-    };
-
     using Nodes = ormap<uint32_t , mvreg<CRDTNode, uint32_t>, uint32_t>;
     using IDType = std::uint32_t;
 
     /////////////////////////////////////////////////////////////////
     /// CRDT API
     /////////////////////////////////////////////////////////////////
-
     class DSRGraph : public QObject
     {
+        friend RT_API;
         Q_OBJECT
 
         private:
