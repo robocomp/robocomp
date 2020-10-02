@@ -23,6 +23,7 @@
 #include <fastrtps/transport/UDPv4TransportDescriptor.h>
 
 #include <thread>
+#include <QDebug>
 #include "dsrparticipant.h"
 
 
@@ -56,11 +57,18 @@ std::tuple<bool, eprosima::fastrtps::Participant *> DSRParticipant::init(int32_t
     PParam.rtps.sendSocketBufferSize = 33554432;
     PParam.rtps.listenSocketBufferSize = 33554432;
 
-    mp_participant = eprosima::fastrtps::Domain::createParticipant(PParam);
+    int retry = 0;
+    while (retry < 5) {
+        mp_participant = eprosima::fastrtps::Domain::createParticipant(PParam);
+        if(mp_participant != nullptr) break;
+        retry++;
+        qDebug() << "Error creating participant, retrying. [" << retry <<"/5]";
+    }
 
     if(mp_participant == nullptr)
     {
-        return std::make_tuple(false, nullptr);
+        qFatal("Could not create particpant after 5 attemps");
+        //return std::make_tuple(false, nullptr);
     }
 
     //Register the type
