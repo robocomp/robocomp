@@ -27,6 +27,7 @@
 #include "dsrsubscriber.h"
 
 #include <QDebug>
+#include <utility>
 
 using namespace eprosima::fastrtps;
 using namespace eprosima::fastrtps::rtps;
@@ -59,12 +60,21 @@ bool DSRSubscriber::init(eprosima::fastrtps::Participant *mp_participant_,
 
     Rparam.topic.resourceLimitsQos.max_samples = 200;
     m_listener.participant_ID = mp_participant->getGuid();
-    m_listener.f = f_;
+    m_listener.f = std::move(f_);
 
-    mp_subscriber = Domain::createSubscriber(mp_participant, Rparam, static_cast<SubscriberListener*>(&m_listener));
-    if(mp_subscriber == nullptr)
-        return false;
-    return true;
+    int retry = 0;
+    while (retry < 5) {
+        mp_subscriber = Domain::createSubscriber(mp_participant, Rparam, static_cast<SubscriberListener*>(&m_listener));
+        if (mp_subscriber != nullptr) {
+            qDebug() << "Subscriber created, waiting for Publishers." ;
+            return true;
+        }
+        retry++;
+        qDebug() << "Error creating Subscriber, retrying. [" << retry <<"/5]"  ;
+    }
+
+    qFatal("%s", std::string_view("Could not create subscriber " + std::string(topicName) + " after 5 attempts").data());
+
 }
 
 
@@ -82,10 +92,10 @@ void DSRSubscriber::SubListener::onSubscriptionMatched(Subscriber* sub, Matching
     if (info.status == eprosima::fastrtps::rtps::MATCHED_MATCHING)
     {
         n_matched++;
-        qInfo() << "Publisher[" << sub->getAttributes().topic.getTopicName() <<"] matched " << info.remoteEndpointGuid.entityId.value;
+        qInfo() << "Publisher[" << sub->getAttributes().topic.getTopicName() <<"] matched " << info.remoteEndpointGuid.entityId.value << " self: " << info.remoteEndpointGuid.is_on_same_process_as(sub->getGuid());
     } else {
         n_matched--;
-        qInfo() << "Publisher[" << sub->getAttributes().topic.getTopicName() <<"] unmatched "  << info.remoteEndpointGuid.entityId.value;
+        qInfo() << "Publisher[" << sub->getAttributes().topic.getTopicName() <<"] unmatched "  << info.remoteEndpointGuid.entityId.value<< " self: " << info.remoteEndpointGuid.is_on_same_process_as(sub->getGuid());
     }
 }
 

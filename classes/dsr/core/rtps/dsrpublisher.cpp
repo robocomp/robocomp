@@ -58,20 +58,29 @@ bool DSRPublisher::init(eprosima::fastrtps::Participant *mp_participant_, const 
     //Wparam.topic.historyQos.kind = KEEP_LAST_HISTORY_QOS;
     //Wparam.topic.historyQos.depth = 20; // Adjust this value if we are losing  messages
 
-        // Check ACK for sended messages.
+    // Check ACK for sended messages.
     Wparam.times.heartbeatPeriod.seconds = 0;
     Wparam.times.heartbeatPeriod.nanosec = 150000000; //150 ms
 
     Wparam.topic.resourceLimitsQos.max_samples = 200;
-    //}
-    Wparam.historyMemoryPolicy = DYNAMIC_RESERVE_MEMORY_MODE; //PREALLOCATED_WITH_REALLOC_MEMORY_MODE;
-    mp_publisher = eprosima::fastrtps::Domain::createPublisher(mp_participant, Wparam,
-                                                               static_cast<eprosima::fastrtps::PublisherListener *>(&m_listener));
 
-    if (mp_publisher == nullptr)
-        return false;
-    qDebug() << "Publisher created, waiting for Subscribers." ;
-    return true;
+    Wparam.historyMemoryPolicy = DYNAMIC_RESERVE_MEMORY_MODE; //PREALLOCATED_WITH_REALLOC_MEMORY_MODE;
+
+    int retry = 0;
+    while (retry < 5) {
+        mp_publisher = eprosima::fastrtps::Domain::createPublisher(mp_participant, Wparam,
+                                                                   static_cast<eprosima::fastrtps::PublisherListener *>(&m_listener));
+        if(mp_publisher != nullptr) {
+            qDebug() << "Publisher created, waiting for Subscribers." ;
+            return true;
+        }
+        retry++;
+        qDebug() << "Error creating publisher, retrying. [" << retry <<"/5]"  ;
+
+    }
+
+    qFatal("%s", std::string_view("Could not create publisher " + std::string(topicName) + " after 5 attempts").data());
+
 }
 
 eprosima::fastrtps::rtps::GUID_t DSRPublisher::getParticipantID() const
@@ -84,6 +93,8 @@ bool DSRPublisher::write(IDL::Mvreg *object)
 {
     while (true) {
         if (mp_publisher->write(object)) break;
+        qDebug() << "Error writing NODE retrying." ;
+
     }
     return true;
 };
@@ -92,6 +103,8 @@ bool DSRPublisher::write(IDL::MvregNodeAttr *object)
 {
     while (true) {
         if (mp_publisher->write(object)) break;
+        qDebug() << "Error writing NODE ATTRIBUTE retrying." ;
+
     }
     return true;
 };
@@ -100,6 +113,8 @@ bool DSRPublisher::write(IDL::MvregEdge *object)
 {
     while (true) {
         if (mp_publisher->write(object)) break;
+        qDebug() << "Error writing EDGE retrying." ;
+
     }
     return true;
 };
@@ -108,6 +123,8 @@ bool DSRPublisher::write(IDL::MvregEdgeAttr *object)
 {
     while (true) {
         if (mp_publisher->write(object)) break;
+        qDebug() << "Error writing EDGE ATTRIBUTE retrying." ;
+
     }
     return true;
 };
@@ -116,6 +133,8 @@ bool DSRPublisher::write(IDL::OrMap *object)
 {
     while (true) {
         if (mp_publisher->write(object)) break;
+        qDebug() << "Error writing GRAPH retrying." ;
+
     }
     return true;
 };
@@ -124,6 +143,8 @@ bool DSRPublisher::write(IDL::GraphRequest *object)
 {
     while (true) {
         if (mp_publisher->write(object)) break;
+        qDebug() << "Error writing GRAPH REQUEST retrying." ;
+
     }
     return true;
 };
@@ -133,9 +154,9 @@ void DSRPublisher::PubListener::onPublicationMatched(eprosima::fastrtps::Publish
 {
     if (info.status == eprosima::fastrtps::rtps::MATCHED_MATCHING) {
         n_matched++;
-        qDebug() << "Publisher [" << pub->getAttributes().topic.getTopicName() <<"] matched " << info.remoteEndpointGuid.entityId.value;
+        qInfo() << "Subscriber [" << pub->getAttributes().topic.getTopicName() <<"] matched " << info.remoteEndpointGuid.entityId.value << " self: " << info.remoteEndpointGuid.is_on_same_process_as(pub->getGuid());
     } else {
         n_matched--;
-        qDebug() << "Publisher [" << pub->getAttributes().topic.getTopicName() <<"] unmatched" << info.remoteEndpointGuid.entityId.value;
+        qInfo() << "Subscriber [" << pub->getAttributes().topic.getTopicName() <<"] unmatched" << info.remoteEndpointGuid.entityId.value<< " self: " <<info.remoteEndpointGuid.is_on_same_process_as(pub->getGuid());
     }
 }
