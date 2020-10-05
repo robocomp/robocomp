@@ -77,7 +77,6 @@ static constexpr auto reg_fn = []() -> auto
 inline std::unordered_map<std::string_view, std::function<bool(const std::any&)>> ATTRIBUTE_TYPES::map_fn_;
 inline std::unordered_map<std::string_view, bool> ATTRIBUTE_TYPES::stream_type_;
 
-inline std::unordered_map<std::string_view, std::function<bool(const std::any&)>> ATTRIBUTE_TYPES::map_fn_;
 
 REGISTER_TYPE(pos_x, float, false)
 REGISTER_TYPE(pos_y, float, false)
@@ -137,9 +136,9 @@ REGISTER_TYPE(viriato_head_pan_tilt_nose_target, std::reference_wrapper<const st
 REGISTER_TYPE(mass, int, false)
 REGISTER_TYPE(plan, std::reference_wrapper<const std::string>, false)
 // mental objects: path_to_target
-REGISTER_TYPE(path_x_values, std::reference_wrapper<const std::vector<float>>)
-REGISTER_TYPE(path_y_values, std::reference_wrapper<const std::vector<float>>)
-REGISTER_TYPE(path_target_x, float)
-REGISTER_TYPE(path_target_y, float)
+REGISTER_TYPE(path_x_values, std::reference_wrapper<const std::vector<float>>, false)
+REGISTER_TYPE(path_y_values, std::reference_wrapper<const std::vector<float>>, false)
+REGISTER_TYPE(path_target_x, float, false)
+REGISTER_TYPE(path_target_y, float, false)
 
 #endif //DSR_ATTR_NAME_H
