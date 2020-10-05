@@ -514,7 +514,6 @@ namespace DSR
         DSRGraph(const DSRGraph& G);
         Nodes nodes;
         int graph_root;
-        bool work;
         mutable std::shared_mutex _mutex;
         std::string filter;
         const uint32_t agent_id;
@@ -646,16 +645,15 @@ namespace DSR
         class NewMessageFunctor {
         public:
             DSRGraph *graph{};
-            bool *work{};
-            std::function<void(eprosima::fastrtps::Subscriber *sub, bool *work, DSR::DSRGraph *graph)> f;
+            std::function<void(eprosima::fastrtps::Subscriber *sub, DSR::DSRGraph *graph)> f;
 
-            NewMessageFunctor(DSRGraph *graph_, bool *work_,
-                              std::function<void(eprosima::fastrtps::Subscriber *sub, bool *work,  DSR::DSRGraph *graph)> f_)
-                    : graph(graph_), work(work_), f(std::move(f_)) {}
+            NewMessageFunctor(DSRGraph *graph_,
+                              std::function<void(eprosima::fastrtps::Subscriber *sub,  DSR::DSRGraph *graph)> f_)
+                    : graph(graph_), f(std::move(f_)) {}
 
             NewMessageFunctor() = default;
 
-            void operator()(eprosima::fastrtps::Subscriber *sub) const { f(sub, work, graph); };
+            void operator()(eprosima::fastrtps::Subscriber *sub) const { f(sub, graph); };
         };
 
 
@@ -688,10 +686,14 @@ namespace DSR
 
         DSRPublisher dsrpub_node_attrs;
         DSRSubscriber dsrsub_node_attrs;
+        DSRPublisher dsrpub_node_attrs_stream;
+        DSRSubscriber dsrsub_node_attrs_stream;
         NewMessageFunctor dsrpub_call_node_attrs;
 
         DSRPublisher dsrpub_edge_attrs;
         DSRSubscriber dsrsub_edge_attrs;
+        DSRPublisher dsrpub_edge_attrs_stream;
+        DSRSubscriber dsrsub_edge_attrs_stream;
         NewMessageFunctor dsrpub_call_edge_attrs;
 
         DSRSubscriber dsrsub_graph_request;

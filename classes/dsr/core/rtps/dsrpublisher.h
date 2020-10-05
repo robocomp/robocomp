@@ -32,7 +32,7 @@ class DSRPublisher
 public:
     DSRPublisher();
     virtual ~DSRPublisher();
-    bool init(eprosima::fastrtps::Participant *mp_participant_, const char *topicName, const char *topicDataType);
+    bool init(eprosima::fastrtps::Participant *mp_participant_, const char *topicName, const char *topicDataType, bool isStreamData = false);
     [[nodiscard]] eprosima::fastrtps::rtps::GUID_t getParticipantID() const;
     bool write(IDL::GraphRequest *object);
     bool write(IDL::Mvreg *object);

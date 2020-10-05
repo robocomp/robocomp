@@ -34,11 +34,17 @@ using namespace eprosima::fastrtps::rtps;
 
 DSRSubscriber::DSRSubscriber() : mp_participant(nullptr), mp_subscriber(nullptr) {}
 
-DSRSubscriber::~DSRSubscriber() = default;
+DSRSubscriber::~DSRSubscriber()
+{
+    if (mp_subscriber != nullptr) {
+        eprosima::fastrtps::Domain::removeSubscriber(mp_subscriber);
+    }
+}
 
 bool DSRSubscriber::init(eprosima::fastrtps::Participant *mp_participant_,
                         const char* topicName, const char* topicDataType,
-                        std::function<void(Subscriber* sub)>  f_)
+                        std::function<void(Subscriber* sub)>  f_,
+                        bool isStreamData)
 {
     mp_participant = mp_participant_;
 
@@ -54,9 +60,13 @@ bool DSRSubscriber::init(eprosima::fastrtps::Participant *mp_participant_,
     Rparam.qos.m_reliability.kind = eprosima::fastrtps::RELIABLE_RELIABILITY_QOS;
     Rparam.historyMemoryPolicy = eprosima::fastrtps::rtps::DYNAMIC_RESERVE_MEMORY_MODE; //PREALLOCATED_WITH_REALLOC_MEMORY_MODE;
 
-    Rparam.topic.historyQos.kind = KEEP_ALL_HISTORY_QOS;
-    //Rparam.topic.historyQos.kind = KEEP_LAST_HISTORY_QOS;
-    //Rparam.topic.historyQos.depth = 20; // Adjust this value if we are losing  messages
+
+    if (!isStreamData) {
+        Rparam.topic.historyQos.kind = KEEP_ALL_HISTORY_QOS;
+    } else {
+        Rparam.topic.historyQos.kind = KEEP_LAST_HISTORY_QOS;
+        Rparam.topic.historyQos.depth = 20; // Adjust this value if we are losing  messages
+    }
 
     Rparam.topic.resourceLimitsQos.max_samples = 200;
     m_listener.participant_ID = mp_participant->getGuid();
@@ -104,8 +114,9 @@ void DSRSubscriber::SubListener::onNewDataMessage(Subscriber* sub)
     f(sub);
 }
 
+/*
 void DSRSubscriber::run()
 {
    while (true);
 }
-
+*/

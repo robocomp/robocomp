@@ -48,7 +48,6 @@ std::tuple<bool, eprosima::fastrtps::Participant *> DSRParticipant::init(int32_t
     custom_transport->interfaceWhiteList.emplace_back("127.0.0.1");
     //custom_transport->interfaceWhiteList.emplace_back("192.168.1.253");
 
-
     //Disable the built-in Transport Layer.
     PParam.rtps.useBuiltinTransports = false;
 
@@ -56,6 +55,8 @@ std::tuple<bool, eprosima::fastrtps::Participant *> DSRParticipant::init(int32_t
     PParam.rtps.userTransports.push_back(custom_transport);
     PParam.rtps.sendSocketBufferSize = 33554432;
     PParam.rtps.listenSocketBufferSize = 33554432;
+
+    logger.SetVerbosity(eprosima::fastdds::dds::Log::Warning);
 
     int retry = 0;
     while (retry < 5) {
@@ -70,6 +71,7 @@ std::tuple<bool, eprosima::fastrtps::Participant *> DSRParticipant::init(int32_t
         qFatal("Could not create particpant after 5 attemps");
         //return std::make_tuple(false, nullptr);
     }
+
 
     //Register the type
     eprosima::fastrtps::Domain::registerType(mp_participant, static_cast<eprosima::fastrtps::TopicDataType *>(&dsrgraphType));

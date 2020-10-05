@@ -22,6 +22,8 @@
 #define _PARTICIPANT_H_
 
 #include <fastrtps/fastrtps_fwd.h>
+#include <fastrtps/log/Log.h>
+
 #include "../topics/IDLGraphPubSubTypes.h"
 #include "./dsrpublisher.h"
 #include "./dsrsubscriber.h"
@@ -49,6 +51,7 @@ private:
     MvregEdgePubSubType dsrEdgeType;
     MvregNodeAttrPubSubType dsrNodeAttrType;
     MvregEdgeAttrPubSubType dsrEdgeAttrType;
+    eprosima::fastrtps::Log logger;
 
 };
 
