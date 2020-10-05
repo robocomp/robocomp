@@ -29,7 +29,8 @@ constexpr auto edge_type_names = std::experimental::make_array(
         "affordanceBlock"sv,
         "Interacting"sv,
         "Interactive"sv,
-        "testtype"sv
+        "testtype"sv,
+        "thinks"sv
 );
 
 #endif //DSR_EDGE_TYPE_H

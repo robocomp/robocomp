@@ -82,7 +82,6 @@ public:
     void put(const I &d, std::function<void(const I &, O &)> t = empty_fn)
     {
         thread_local O temp;
-
         if (ItoO(d, temp, t))
         {
             std::unique_lock lock(bufferMutex);

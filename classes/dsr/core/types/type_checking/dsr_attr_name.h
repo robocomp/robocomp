@@ -5,7 +5,6 @@
 #ifndef DSR_ATTR_NAME_H
 #define DSR_ATTR_NAME_H
 
-
 #include <typeindex>
 #include <tuple>
 #include <cstdint>
@@ -131,4 +130,10 @@ REGISTER_TYPE(target_node_id, int)
 REGISTER_TYPE(viriato_head_pan_tilt_nose_target, std::reference_wrapper<const std::vector<float>>)
 REGISTER_TYPE(mass, int)
 REGISTER_TYPE(plan, std::reference_wrapper<const std::string>)
+// mental objects: path_to_target
+REGISTER_TYPE(path_x_values, std::reference_wrapper<const std::vector<float>>)
+REGISTER_TYPE(path_y_values, std::reference_wrapper<const std::vector<float>>)
+REGISTER_TYPE(path_target_x, float)
+REGISTER_TYPE(path_target_y, float)
+
 #endif //DSR_ATTR_NAME_H
