@@ -251,6 +251,9 @@ namespace DSR {
 
     void Edge::type(const string &mType)
     {
+        if(!EDGE_TYPES::find(m_type)) {
+            throw std::runtime_error("Error, " + m_type + " is not a valid edge type");
+        }
         m_type = mType;
     }
 
@@ -325,6 +328,9 @@ namespace DSR {
 
     void Node::type (const string &mType)
     {
+        if(!NODE_TYPES::find(m_type)) {
+            throw std::runtime_error("Error, " + m_type + " is not a valid node type");
+        }
         m_type = mType;
     }
 
