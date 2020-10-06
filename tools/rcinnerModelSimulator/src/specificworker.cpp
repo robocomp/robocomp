@@ -111,7 +111,7 @@ SpecificWorker::SpecificWorker(MapPrx& _mprx, Ice::CommunicatorPtr _communicator
 
 void SpecificWorker::compute()
 {
-	auto elapsed = fps.print();
+	auto elapsed = fps.print("");
 	
 	guard gl(innerModel->mutex);
 	
