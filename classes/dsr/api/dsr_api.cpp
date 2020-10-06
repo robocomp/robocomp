@@ -262,10 +262,11 @@ bool DSRGraph::update_node(Node &node)
         {
             if (vec_node_attr.has_value())
             {
-                for (auto &v: vec_node_attr.value())
+                dsrpub_node_attrs.write(&vec_node_attr.value());
+                /*for (auto &v: vec_node_attr.value())
                 {
                     ATTRIBUTE_TYPES::IS_STREAM_TYPE(v.attr_name()) ? dsrpub_node_attrs_stream.write(&v) : dsrpub_node_attrs.write(&v);
-                }
+                }*/
                 emit update_node_signal(node.id(), node.type());
             }
         }
@@ -580,10 +581,12 @@ bool DSRGraph::insert_or_assign_edge(const Edge &attrs) {
             }
             if (delta_attrs.has_value())
             { //Update
+                dsrpub_edge_attrs.write(&delta_attrs.value());
+                /*
                 for (auto &d : delta_attrs.value())
                 {
                     ATTRIBUTE_TYPES::IS_STREAM_TYPE(d.attr_name()) ? dsrpub_edge_attrs_stream.write(&d) : dsrpub_edge_attrs.write(&d);
-                }
+                }*/
             }
             emit update_edge_signal(attrs.from(), attrs.to(), attrs.type());
         }
@@ -680,13 +683,13 @@ void DSRGraph::insert_or_assign_edge_RT(Node &n, uint32_t to, std::vector<float>
         {
             dsrpub_edge.write(&node1_insert.value());
         }
-        if (node1_update.has_value())
-            for (auto &d : node1_update.value())
-                ATTRIBUTE_TYPES::IS_STREAM_TYPE(d.attr_name()) ? dsrpub_edge_attrs_stream.write(&d) : dsrpub_edge_attrs.write(&d);
-        if (!no_send and node2.has_value())
-                for (auto &d : node2.value())
+        if (node1_update.has_value()) dsrpub_edge_attrs.write(&node1_update.value());
+            /*for (auto &d : node1_update.value())
+                ATTRIBUTE_TYPES::IS_STREAM_TYPE(d.attr_name()) ? dsrpub_edge_attrs_stream.write(&d) : dsrpub_edge_attrs.write(&d);*/
+        if (!no_send and node2.has_value()) dsrpub_node_attrs.write(&node2.value());
+                /*for (auto &d : node2.value())
                     ATTRIBUTE_TYPES::IS_STREAM_TYPE(d.attr_name()) ? dsrpub_node_attrs_stream.write(&d) : dsrpub_node_attrs.write(&d);
-
+                */
         emit update_edge_signal(n.id(), to, "RT");
         if (!no_send) emit update_node_signal(to_n->id(), to_n->type());
     }
@@ -779,13 +782,13 @@ void DSRGraph::insert_or_assign_edge_RT(Node &n, uint32_t to, const std::vector<
 
         if (node1_insert.has_value())
             dsrpub_edge.write(&node1_insert.value());
-        if (node1_update.has_value())
-            for (auto &d : node1_update.value())
-                ATTRIBUTE_TYPES::IS_STREAM_TYPE(d.attr_name()) ? dsrpub_edge_attrs_stream.write(&d) : dsrpub_edge_attrs.write(&d);
-        if (!no_send and node2.has_value())
-            for (auto &d : node2.value())
-                ATTRIBUTE_TYPES::IS_STREAM_TYPE(d.attr_name()) ? dsrpub_node_attrs_stream.write(&d) : dsrpub_node_attrs.write(&d);
-
+        if (node1_update.has_value()) dsrpub_edge_attrs.write(&node1_update.value());
+        /*for (auto &d : node1_update.value())
+            ATTRIBUTE_TYPES::IS_STREAM_TYPE(d.attr_name()) ? dsrpub_edge_attrs_stream.write(&d) : dsrpub_edge_attrs.write(&d);*/
+        if (!no_send and node2.has_value()) dsrpub_node_attrs.write(&node2.value());
+        /*for (auto &d : node2.value())
+            ATTRIBUTE_TYPES::IS_STREAM_TYPE(d.attr_name()) ? dsrpub_node_attrs_stream.write(&d) : dsrpub_node_attrs.write(&d);
+        */
         emit update_edge_signal(n.id(), to, "RT");
         if (!no_send) emit update_node_signal(to_n->id(), to_n->type());
     }
@@ -1588,20 +1591,23 @@ void DSRGraph::edge_attrs_subscription_thread(bool showReceived)
             try
             {
                 eprosima::fastrtps::SampleInfo_t m_info;
-                IDL::MvregEdgeAttr sample;
-                if (sub->takeNextData(&sample, &m_info))
+                IDL::MvregEdgeAttrVec samples;
+                //IDL::MvregEdgeAttr sample;
+                if (sub->takeNextData(&samples, &m_info))
                 { // Get sample
                     if (m_info.sampleKind == eprosima::fastrtps::rtps::ALIVE)
                     {
                         //if( m_info.sample_identity.writer_guid().is_on_same_process_as(sub->getGuid()) == false) {
-                        if (sample.agent_id() != agent_id
-                            and  graph->ignored_attributes.find(sample.attr_name().data()) == ignored_attributes.end())
-                        {
+
                             if (showReceived) {
-                                qDebug() << name << " Received:" << sample.id() << " node from: "
+                                qDebug() << name << " Received:" << samples.vec().size() << " edge attr from: "
                                         << m_info.sample_identity.writer_guid().entityId.value ;
                             }
-                            graph->join_delta_edge_attr(sample);
+                            for (auto& sample: samples.vec()){
+                                if (sample.agent_id() != agent_id
+                                    and  graph->ignored_attributes.find(sample.attr_name().data()) == ignored_attributes.end()) {
+                                    graph->join_delta_edge_attr(sample);
+                                }
                         }
                     }
                 }
@@ -1626,20 +1632,22 @@ void DSRGraph::node_attrs_subscription_thread(bool showReceived)
             try
             {
                 eprosima::fastrtps::SampleInfo_t m_info;
-                IDL::MvregNodeAttr sample;
-                if (sub->takeNextData(&sample, &m_info))
+                IDL::MvregNodeAttrVec samples;
+                if (sub->takeNextData(&samples, &m_info))
                 { // Get sample
                     if (m_info.sampleKind == eprosima::fastrtps::rtps::ALIVE)
                     {
                         //if( m_info.sample_identity.writer_guid().is_on_same_process_as(sub->getGuid()) == false) {
-                        if (sample.agent_id() != agent_id
-                            and  graph->ignored_attributes.find(sample.attr_name().data()) == ignored_attributes.end())
-                        {
                             if (showReceived) {
-                                qDebug() << name << " Received:" << sample.id() << " node from: "
+                                qDebug() << name << " Received:" << samples.vec().size() << " node attrs from: "
                                         << m_info.sample_identity.writer_guid().entityId.value ;
                             }
-                            graph->join_delta_node_attr(sample);
+                            for(auto &s: samples.vec()) {
+                                if (s.agent_id() != agent_id
+                                    and  graph->ignored_attributes.find(s.attr_name().data()) == ignored_attributes.end())
+                                {
+                                    graph->join_delta_node_attr(s);
+                                }
                         }
                     }
                 }

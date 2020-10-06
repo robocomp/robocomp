@@ -49,8 +49,8 @@ private:
     GraphRequestPubSubType graphrequestType;
     OrMapPubSubType graphRequestAnswerType;
     MvregEdgePubSubType dsrEdgeType;
-    MvregNodeAttrPubSubType dsrNodeAttrType;
-    MvregEdgeAttrPubSubType dsrEdgeAttrType;
+    MvregNodeAttrVecPubSubType dsrNodeAttrType;
+    MvregEdgeAttrVecPubSubType dsrEdgeAttrType;
     eprosima::fastrtps::Log logger;
 
 };

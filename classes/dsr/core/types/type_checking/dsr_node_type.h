@@ -13,6 +13,7 @@ using namespace std::literals;
 
 constexpr auto node_type_names = std::experimental::make_array(
         "world"sv,
+        "transform"sv,
         "room"sv,
         "differentialrobot"sv,
         "omnirobot"sv,
@@ -63,7 +64,8 @@ constexpr auto node_type_names = std::experimental::make_array(
         "spoon"sv,
         "testtype"sv,
         "glass"sv,
-        "path_to_target"sv
+        "path_to_target"sv,
+        "rgbd"sv
 
 );
 

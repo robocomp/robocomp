@@ -144,12 +144,12 @@ void RT_API::insert_or_assign_edge_RT(Node &n, uint32_t to, const std::vector<fl
         {
             G->dsrpub_edge.write(&node1_insert.value());
         }
-        if (node1_update.has_value())
-            for (auto &d : node1_update.value())
-                G->dsrpub_edge_attrs.write(&d);
-        if (!no_send and node2.has_value())
-            for (auto &d : node2.value())
-                G->dsrpub_node_attrs.write(&d);
+        if (node1_update.has_value()) G->dsrpub_edge_attrs.write(&node1_update.value());
+            /*for (auto &d : node1_update.value())
+                G->dsrpub_edge_attrs.write(&d);*/
+        if (!no_send and node2.has_value()) G->dsrpub_node_attrs.write(&node2.value());
+            /*for (auto &d : node2.value())
+                G->dsrpub_node_attrs.write(&d);*/
 
         emit G->update_edge_signal(n.id(), to, "RT");
         if (!no_send) emit G->update_node_signal(to_n->id(), to_n->type());
@@ -242,12 +242,13 @@ void RT_API::insert_or_assign_edge_RT(Node &n, uint32_t to, std::vector<float> &
         {
             G->dsrpub_edge.write(&node1_insert.value());
         }
-        if (node1_update.has_value())
-            for (auto &d : node1_update.value())
-                G->dsrpub_edge_attrs.write(&d);
-        if (!no_send and node2.has_value())
-            for (auto &d : node2.value())
-                G->dsrpub_node_attrs.write(&d);
+        if (node1_update.has_value()) G->dsrpub_edge_attrs.write(&node1_update.value());
+        /*for (auto &d : node1_update.value())
+            G->dsrpub_edge_attrs.write(&d);*/
+        if (!no_send and node2.has_value()) G->dsrpub_node_attrs.write(&node2.value());
+        /*for (auto &d : node2.value())
+            G->dsrpub_node_attrs.write(&d);*/
+
 
         emit G->update_edge_signal(n.id(), to, "RT");
         if (!no_send) emit G->update_node_signal(to_n->id(), to_n->type());
