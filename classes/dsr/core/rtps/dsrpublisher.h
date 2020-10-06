@@ -37,9 +37,11 @@ public:
     bool write(IDL::GraphRequest *object);
     bool write(IDL::Mvreg *object);
     bool write(IDL::OrMap *object);
-    bool write(IDL::MvregNodeAttr *object);
+    //bool write(IDL::MvregNodeAttr *object);
     bool write(IDL::MvregEdge *object);
-    bool write(IDL::MvregEdgeAttr *object);
+    //bool write(IDL::MvregEdgeAttr *object);
+    bool write(std::vector<IDL::MvregEdgeAttr> *object);
+    bool write(std::vector<IDL::MvregNodeAttr> *object);
 
 private:
 	eprosima::fastrtps::Participant *mp_participant;

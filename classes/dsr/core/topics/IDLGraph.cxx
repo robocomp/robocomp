@@ -4011,4 +4011,271 @@ namespace IDL {
 
     }
 
+MvregEdgeAttrVec::MvregEdgeAttrVec()
+{
+    // m_vec com.eprosima.idl.parser.typecode.SequenceTypeCode@75c072cb
+
+
+}
+
+MvregEdgeAttrVec::~MvregEdgeAttrVec()
+{
+}
+
+MvregEdgeAttrVec::MvregEdgeAttrVec(const MvregEdgeAttrVec &x)
+{
+    m_vec = x.m_vec;
+}
+
+MvregEdgeAttrVec::MvregEdgeAttrVec(MvregEdgeAttrVec &&x)
+{
+    m_vec = std::move(x.m_vec);
+}
+
+MvregEdgeAttrVec& MvregEdgeAttrVec::operator=(const MvregEdgeAttrVec &x)
+{
+
+    m_vec = x.m_vec;
+
+    return *this;
+}
+
+MvregEdgeAttrVec& MvregEdgeAttrVec::operator=(MvregEdgeAttrVec &&x)
+{
+
+    m_vec = std::move(x.m_vec);
+
+    return *this;
+}
+
+size_t MvregEdgeAttrVec::getMaxCdrSerializedSize(size_t current_alignment)
+{
+    size_t initial_alignment = current_alignment;
+
+
+    current_alignment += 4 + eprosima::fastcdr::Cdr::alignment(current_alignment, 4);
+
+
+    for(size_t a = 0; a < 100; ++a)
+    {
+        current_alignment += MvregEdgeAttr::getMaxCdrSerializedSize(current_alignment);}
+
+    return current_alignment - initial_alignment;
+}
+
+size_t MvregEdgeAttrVec::getCdrSerializedSize(const MvregEdgeAttrVec& data, size_t current_alignment)
+{
+    (void)data;
+    size_t initial_alignment = current_alignment;
+
+
+    current_alignment += 4 + eprosima::fastcdr::Cdr::alignment(current_alignment, 4);
+
+
+    for(size_t a = 0; a < data.vec().size(); ++a)
+    {
+        current_alignment += MvregEdgeAttr::getCdrSerializedSize(data.vec().at(a), current_alignment);}
+
+    return current_alignment - initial_alignment;
+}
+
+void MvregEdgeAttrVec::serialize(eprosima::fastcdr::Cdr &scdr) const
+{
+
+    scdr << m_vec;}
+
+void MvregEdgeAttrVec::deserialize(eprosima::fastcdr::Cdr &dcdr)
+{
+
+    dcdr >> m_vec;}
+
+/*!
+ * @brief This function copies the value in member vec
+ * @param _vec New value to be copied in member vec
+ */
+void MvregEdgeAttrVec::vec(const std::vector<MvregEdgeAttr> &_vec)
+{
+m_vec = _vec;
+}
+
+/*!
+ * @brief This function moves the value in member vec
+ * @param _vec New value to be moved in member vec
+ */
+void MvregEdgeAttrVec::vec(std::vector<MvregEdgeAttr> &&_vec)
+{
+m_vec = std::move(_vec);
+}
+
+/*!
+ * @brief This function returns a constant reference to member vec
+ * @return Constant reference to member vec
+ */
+const std::vector<MvregEdgeAttr>& MvregEdgeAttrVec::vec() const
+{
+    return m_vec;
+}
+
+/*!
+ * @brief This function returns a reference to member vec
+ * @return Reference to member vec
+ */
+std::vector<MvregEdgeAttr>& MvregEdgeAttrVec::vec()
+{
+    return m_vec;
+}
+
+size_t MvregEdgeAttrVec::getKeyMaxCdrSerializedSize(size_t current_alignment)
+{
+    size_t current_align = current_alignment;
+
+
+
+    return current_align;
+}
+
+bool MvregEdgeAttrVec::isKeyDefined()
+{
+   return false;
+}
+
+void MvregEdgeAttrVec::serializeKey(eprosima::fastcdr::Cdr &scdr) const
+{
+    (void) scdr;
+     
+}
+
+MvregNodeAttrVec::MvregNodeAttrVec()
+{
+    // m_vec com.eprosima.idl.parser.typecode.SequenceTypeCode@2893de87
+
+
+}
+
+MvregNodeAttrVec::~MvregNodeAttrVec()
+{
+}
+
+MvregNodeAttrVec::MvregNodeAttrVec(const MvregNodeAttrVec &x)
+{
+    m_vec = x.m_vec;
+}
+
+MvregNodeAttrVec::MvregNodeAttrVec(MvregNodeAttrVec &&x)
+{
+    m_vec = std::move(x.m_vec);
+}
+
+MvregNodeAttrVec& MvregNodeAttrVec::operator=(const MvregNodeAttrVec &x)
+{
+
+    m_vec = x.m_vec;
+
+    return *this;
+}
+
+MvregNodeAttrVec& MvregNodeAttrVec::operator=(MvregNodeAttrVec &&x)
+{
+
+    m_vec = std::move(x.m_vec);
+
+    return *this;
+}
+
+size_t MvregNodeAttrVec::getMaxCdrSerializedSize(size_t current_alignment)
+{
+    size_t initial_alignment = current_alignment;
+
+
+    current_alignment += 4 + eprosima::fastcdr::Cdr::alignment(current_alignment, 4);
+
+
+    for(size_t a = 0; a < 100; ++a)
+    {
+        current_alignment += MvregNodeAttr::getMaxCdrSerializedSize(current_alignment);}
+
+    return current_alignment - initial_alignment;
+}
+
+size_t MvregNodeAttrVec::getCdrSerializedSize(const MvregNodeAttrVec& data, size_t current_alignment)
+{
+    (void)data;
+    size_t initial_alignment = current_alignment;
+
+
+    current_alignment += 4 + eprosima::fastcdr::Cdr::alignment(current_alignment, 4);
+
+
+    for(size_t a = 0; a < data.vec().size(); ++a)
+    {
+        current_alignment += MvregNodeAttr::getCdrSerializedSize(data.vec().at(a), current_alignment);}
+
+    return current_alignment - initial_alignment;
+}
+
+void MvregNodeAttrVec::serialize(eprosima::fastcdr::Cdr &scdr) const
+{
+
+    scdr << m_vec;}
+
+void MvregNodeAttrVec::deserialize(eprosima::fastcdr::Cdr &dcdr)
+{
+
+    dcdr >> m_vec;}
+
+/*!
+ * @brief This function copies the value in member vec
+ * @param _vec New value to be copied in member vec
+ */
+void MvregNodeAttrVec::vec(const std::vector<MvregNodeAttr> &_vec)
+{
+m_vec = _vec;
+}
+
+/*!
+ * @brief This function moves the value in member vec
+ * @param _vec New value to be moved in member vec
+ */
+void MvregNodeAttrVec::vec(std::vector<MvregNodeAttr> &&_vec)
+{
+m_vec = std::move(_vec);
+}
+
+/*!
+ * @brief This function returns a constant reference to member vec
+ * @return Constant reference to member vec
+ */
+const std::vector<MvregNodeAttr>& MvregNodeAttrVec::vec() const
+{
+    return m_vec;
+}
+
+/*!
+ * @brief This function returns a reference to member vec
+ * @return Reference to member vec
+ */
+std::vector<MvregNodeAttr>& MvregNodeAttrVec::vec()
+{
+    return m_vec;
+}
+
+size_t MvregNodeAttrVec::getKeyMaxCdrSerializedSize(size_t current_alignment)
+{
+    size_t current_align = current_alignment;
+
+
+
+    return current_align;
+}
+
+bool MvregNodeAttrVec::isKeyDefined()
+{
+   return false;
+}
+
+void MvregNodeAttrVec::serializeKey(eprosima::fastcdr::Cdr &scdr) const
+{
+    (void) scdr;
+     
+}
 }
