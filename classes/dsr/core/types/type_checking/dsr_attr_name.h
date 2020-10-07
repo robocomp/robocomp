@@ -67,8 +67,7 @@ static constexpr auto reg_fn = []() -> auto
 
 #define REGISTER_TYPE(x, ot, stream) \
                             static constexpr auto    x ##_str = std::string_view(#x ); \
-                            using x = Attr< x##_str, ot>;                        \
-                            typedef x  x ##_att;                                          \
+                            using x##_att = Attr< x##_str, ot>;                        \
                             REGISTER_FN(x, ot, stream) \
                             \
 
@@ -77,29 +76,72 @@ static constexpr auto reg_fn = []() -> auto
 inline std::unordered_map<std::string_view, std::function<bool(const std::any&)>> ATTRIBUTE_TYPES::map_fn_;
 inline std::unordered_map<std::string_view, bool> ATTRIBUTE_TYPES::stream_type_;
 
-
+/*
+ * Generic
+ * */
+REGISTER_TYPE(level, int, false)
 REGISTER_TYPE(pos_x, float, false)
 REGISTER_TYPE(pos_y, float, false)
-REGISTER_TYPE(level, int, false)
-REGISTER_TYPE(name, std::reference_wrapper<const std::string>, false)
 REGISTER_TYPE(parent, std::uint32_t, false)
+REGISTER_TYPE(name, std::reference_wrapper<const std::string>, false)
 REGISTER_TYPE(rotation_euler_xyz, std::reference_wrapper<const std::vector<float>>, true)
 REGISTER_TYPE(translation, std::reference_wrapper<const std::vector<float>>, true)
 REGISTER_TYPE(color, std::reference_wrapper<const std::string>, false)
 REGISTER_TYPE(texture, std::reference_wrapper<const std::string>, false)
 REGISTER_TYPE(width, int, false)
 REGISTER_TYPE(height, int, false)
+REGISTER_TYPE(depth, int, false)
+REGISTER_TYPE(mass, int, false)
 REGISTER_TYPE(scalex, int, false)
 REGISTER_TYPE(scaley, int, false)
 REGISTER_TYPE(scalez, int, false)
 REGISTER_TYPE(path, std::reference_wrapper<const std::string>, false)
-REGISTER_TYPE(angles, std::reference_wrapper<const std::vector<float>>, true)
-REGISTER_TYPE(dists, std::reference_wrapper<const std::vector<float>>, true)
-REGISTER_TYPE(rgb, std::reference_wrapper<const std::vector<uint8_t>>, true)
-REGISTER_TYPE(cameraID, int, false)
-REGISTER_TYPE(focalx, int, false)
-REGISTER_TYPE(focaly, int, false)
-REGISTER_TYPE(alivetime, int, false)
+/*
+ * Laser
+ * */
+REGISTER_TYPE(laser_angles, std::reference_wrapper<const std::vector<float>>, true)
+REGISTER_TYPE(laser_dists, std::reference_wrapper<const std::vector<float>>, true)
+/*
+ * Person
+ * */
+REGISTER_TYPE(person_social_x_pos, std::reference_wrapper<const std::vector<float>>, true)
+REGISTER_TYPE(person_social_y_pos, std::reference_wrapper<const std::vector<float>>, true)
+REGISTER_TYPE(person_personal_x_pos, std::reference_wrapper<const std::vector<float>>,true )
+REGISTER_TYPE(person_personal_y_pos, std::reference_wrapper<const std::vector<float>>,true)
+REGISTER_TYPE(person_sharedWidth, std::reference_wrapper<const std::vector<float>>,true)
+REGISTER_TYPE(person_intimate_x_pos, std::reference_wrapper<const std::vector<float>>,true)
+REGISTER_TYPE(person_intimate_y_pos, std::reference_wrapper<const std::vector<float>>,true)
+/*
+ * camera
+ * */
+REGISTER_TYPE(cam_rgb, std::reference_wrapper<const std::vector<uint8_t>>, true)
+REGISTER_TYPE(cam_depth_focalx, int, false)
+REGISTER_TYPE(cam_depth_focaly, int, false)
+REGISTER_TYPE(cam_depth_alivetime, int, false)
+REGISTER_TYPE(cam_rgb_cameraID, int, false)
+REGISTER_TYPE(cam_rgb_focalx, int, false)
+REGISTER_TYPE(cam_rgb_focaly, int, false)
+REGISTER_TYPE(cam_rgb_alivetime, int, true)
+REGISTER_TYPE(cam_rgb_width, int, false)
+REGISTER_TYPE(cam_rgb_height, int, false)
+REGISTER_TYPE(cam_rgb_depth, int, true)
+REGISTER_TYPE(cam_depth, std::reference_wrapper<const std::vector<uint8_t>>, true)
+REGISTER_TYPE(cam_depth_cameraID, int, false)
+REGISTER_TYPE(cam_depthFactor, float, false)
+REGISTER_TYPE(cam_depth_height, int, false)
+REGISTER_TYPE(cam_depth_width, int, false)
+//TODO: No se don van estos
+/*
+ *
+ * */
+REGISTER_TYPE(OuterRegionLeft, int, false)
+REGISTER_TYPE(OuterRegionRight, int, false)
+REGISTER_TYPE(OuterRegionBottom, int, false)
+REGISTER_TYPE(OuterRegionTop, int, false)
+/*
+ * Robot
+ * */
+REGISTER_TYPE(viriato_head_pan_tilt_nose_target, std::reference_wrapper<const std::vector<float>>, true)
 REGISTER_TYPE(linear_speed, std::reference_wrapper<const std::vector<float>>, true)
 REGISTER_TYPE(angular_speed, std::reference_wrapper<const std::vector<float>>, true)
 REGISTER_TYPE(ref_adv_speed, float, true)
@@ -107,34 +149,11 @@ REGISTER_TYPE(ref_rot_speed, float, true)
 REGISTER_TYPE(ref_side_speed, float, true)
 REGISTER_TYPE(base_target_x, float, true)
 REGISTER_TYPE(base_target_y, float, true)
-REGISTER_TYPE(social_x_pos, std::reference_wrapper<const std::vector<float>>, true)
-REGISTER_TYPE(social_y_pos, std::reference_wrapper<const std::vector<float>>, true)
-REGISTER_TYPE(personal_x_pos, std::reference_wrapper<const std::vector<float>>,true )
-REGISTER_TYPE(personal_y_pos, std::reference_wrapper<const std::vector<float>>,true)
-REGISTER_TYPE(sharedWidth, std::reference_wrapper<const std::vector<float>>,true)
-REGISTER_TYPE(intimate_x_pos, std::reference_wrapper<const std::vector<float>>,true)
-REGISTER_TYPE(intimate_y_pos, std::reference_wrapper<const std::vector<float>>,true)
-REGISTER_TYPE(rgb_cameraID, int, false)
-REGISTER_TYPE(rgb_focalx, int, false)
-REGISTER_TYPE(rgb_focaly, int, false)
-REGISTER_TYPE(rgb_alivetime, int, true)
-REGISTER_TYPE(rgb_width, int, false)
-REGISTER_TYPE(rgb_height, int, false)
-REGISTER_TYPE(rgb_depth, int, true)
-REGISTER_TYPE(depth, int, false)
-REGISTER_TYPE(img_depth, std::reference_wrapper<const std::vector<uint8_t>>, true)
-REGISTER_TYPE(depth_cameraID, int, false)
-REGISTER_TYPE(depthFactor, float, false)
-REGISTER_TYPE(depth_height, int, false)
-REGISTER_TYPE(depth_width, int, false)
-REGISTER_TYPE(OuterRegionLeft, int, false)
-REGISTER_TYPE(OuterRegionRight, int, false)
-REGISTER_TYPE(OuterRegionBottom, int, false)
-REGISTER_TYPE(OuterRegionTop, int, false)
-REGISTER_TYPE(target_node_id, int, false)
-REGISTER_TYPE(viriato_head_pan_tilt_nose_target, std::reference_wrapper<const std::vector<float>>, true)
-REGISTER_TYPE(mass, int, false)
+/*
+ * Plan
+ * */
 REGISTER_TYPE(plan, std::reference_wrapper<const std::string>, false)
+REGISTER_TYPE(plan_target_node_id, int, false)
 // mental objects: path_to_target
 REGISTER_TYPE(path_x_values, std::reference_wrapper<const std::vector<float>>, false)
 REGISTER_TYPE(path_y_values, std::reference_wrapper<const std::vector<float>>, false)

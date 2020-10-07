@@ -72,8 +72,8 @@ class DoLaserStuff : public QGraphicsView
         std::optional<Node> n = graph->get_node(id);
         if (n.has_value()) 
         {
-            const auto lAngles = graph->get_attrib_by_name<angles_att>(n.value());
-            const auto lDists = graph->get_attrib_by_name<dists_att>(n.value());
+            const auto lAngles = graph->get_attrib_by_name<laser_angles_att>(n.value());
+            const auto lDists = graph->get_attrib_by_name<laser_dists_att>(n.value());
             if (lAngles.has_value() and lDists.has_value()) 
             {
                 QPolygonF polig;
@@ -164,10 +164,10 @@ class DoRGBDStuff : public QWidget
           //depth              
           if (show_depth->isChecked()) {
 //            const float factor = 255.f/4000.f; //define 4000 as max distance on grayscale conversion (255 value)
-            const auto depth_width = graph->get_attrib_by_name<depth_width_att>(n.value());
-            const auto depth_height = graph->get_attrib_by_name<depth_height_att>(n.value());
+            const auto depth_width = graph->get_attrib_by_name<cam_depth_width_att>(n.value());
+            const auto depth_height = graph->get_attrib_by_name<cam_depth_height_att>(n.value());
             //std::optional<std::reference_wrapper<const std::vector<uint8_t>>> depth_data = graph->get_depth_image(n.value());
-            const std::optional<std::vector<uint8_t>> depth_data = graph->get_attrib_by_name<img_depth_att>(n.value());
+            const std::optional<std::vector<uint8_t>> depth_data = graph->get_attrib_by_name<cam_depth_att>(n.value());
             if (depth_data.has_value() and depth_width.has_value() and depth_height.has_value()) {
                 const auto my_depth_data = depth_data.value();
                 std::vector<uint8_t> gray_scale(my_depth_data.size()/4);

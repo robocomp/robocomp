@@ -632,16 +632,16 @@ void DSRGraph::insert_or_assign_edge_RT(Node &n, uint32_t to, std::vector<float>
                 no_send = !add_attrib_local<parent_att>(to_n.value(), n.id());
             }
 
-            if (auto x = get_crdt_attrib_by_name<level>(to_n.value()); x.has_value())
+            if (auto x = get_crdt_attrib_by_name<level_att>(to_n.value()); x.has_value())
             {
                 if (x.value() != get_node_level(n).value() + 1)
                 {
-                    no_send = !modify_attrib_local<level>(to_n.value(),  get_node_level(n).value() + 1 );
+                    no_send = !modify_attrib_local<level_att>(to_n.value(),  get_node_level(n).value() + 1 );
                 }
             }
             else
             {
-                no_send = add_attrib_local<level>(to_n.value(),  get_node_level(n).value() + 1 );
+                no_send = add_attrib_local<level_att>(to_n.value(),  get_node_level(n).value() + 1 );
             }
 
             //Check if RT edge exist.
@@ -732,16 +732,16 @@ void DSRGraph::insert_or_assign_edge_RT(Node &n, uint32_t to, const std::vector<
                 no_send = !add_attrib_local<parent_att>(to_n.value(), n.id());
             }
 
-            if (auto x = get_crdt_attrib_by_name<level>(to_n.value()); x.has_value())
+            if (auto x = get_crdt_attrib_by_name<level_att>(to_n.value()); x.has_value())
             {
                 if (x.value() != get_node_level(n).value() + 1)
                 {
-                    no_send = !modify_attrib_local<level>(to_n.value(),  get_node_level(n).value() + 1 );
+                    no_send = !modify_attrib_local<level_att>(to_n.value(),  get_node_level(n).value() + 1 );
                 }
             }
             else
             {
-                no_send = !add_attrib_local<level>(to_n.value(),  get_node_level(n).value() + 1 );
+                no_send = !add_attrib_local<level_att>(to_n.value(),  get_node_level(n).value() + 1 );
             }
 
             //Check if RT edge exist.
@@ -929,8 +929,8 @@ std::optional<Edge> DSRGraph::get_edge_RT(const Node &n, uint32_t to)
 
 std::optional<RTMat>  DSRGraph::get_edge_RT_as_RTMat(const Edge &edge)
 {
-    auto r = get_attrib_by_name<rotation_euler_xyz>(edge);
-    auto t =  get_attrib_by_name<translation>(edge);
+    auto r = get_attrib_by_name<rotation_euler_xyz_att>(edge);
+    auto t =  get_attrib_by_name<translation_att>(edge);
     if (r.has_value() and t.has_value())
         return RTMat{r->get()[0], r->get()[1], r->get()[2], t->get()[0], t->get()[1], t->get()[2]};
     else
@@ -939,8 +939,8 @@ std::optional<RTMat>  DSRGraph::get_edge_RT_as_RTMat(const Edge &edge)
 
 std::optional<Mat::RTMat>  DSRGraph::get_edge_RT_as_rtmat(const Edge &edge)
 {
-    auto r = get_attrib_by_name<rotation_euler_xyz>(edge);
-    auto t =  get_attrib_by_name<translation>(edge);
+    auto r = get_attrib_by_name<rotation_euler_xyz_att>(edge);
+    auto t =  get_attrib_by_name<translation_att>(edge);
     if (r.has_value() and t.has_value())
     {
        Mat::RTMat rt(Eigen::Translation3d(t->get()[0], t->get()[1], t->get()[2]) *
@@ -962,8 +962,8 @@ std::optional<RTMat> DSRGraph::get_RT_pose_from_parent(const Node &n)
         auto res = edges_.find({n.id(),"RT"});
         if (res != edges_.end())
         {
-            auto r = get_attrib_by_name<rotation_euler_xyz>(res->second);
-            auto t =  get_attrib_by_name<translation>(res->second);
+            auto r = get_attrib_by_name<rotation_euler_xyz_att>(res->second);
+            auto t =  get_attrib_by_name<translation_att>(res->second);
             if (r.has_value() && t.has_value() )
             {
  		        return RTMat { r.value().get()[0], r.value().get()[1], r.value().get()[2], t.value().get()[0], t.value().get()[1], t.value().get()[2] } ;
@@ -1025,7 +1025,7 @@ std::optional<CRDTNode> DSRGraph::get_(uint32_t id)
 
 std::optional<std::int32_t> DSRGraph::get_node_level(const Node &n)
 {
-    return get_attrib_by_name<level>(n);
+    return get_attrib_by_name<level_att>(n);
 }
 
 std::optional<std::uint32_t> DSRGraph::get_parent_id(const Node &n)
@@ -1059,7 +1059,7 @@ std::string DSRGraph::get_node_type(Node &n)
 std::optional<std::reference_wrapper<const std::vector<uint8_t>>> DSRGraph::get_rgb_image(const Node &n) const
 {
     auto& attrs = n.attrs();
-    if (auto value  = attrs.find("rgb"); value != attrs.end())
+    if (auto value  = attrs.find("cam_rgb"); value != attrs.end())
         return value->second.byte_vec();
     else return {};
 }
@@ -1067,7 +1067,7 @@ std::optional<std::reference_wrapper<const std::vector<uint8_t>>> DSRGraph::get_
 std::optional<std::vector<float>> DSRGraph::get_depth_image(const Node &n)
 {
     auto& attrs = n.attrs();
-    if (auto value  = attrs.find("depth"); value != attrs.end()) {
+    if (auto value  = attrs.find("cam_depth"); value != attrs.end()) {
         const std::vector<uint8_t> &tmp = value->second.byte_vec();
         std::vector<float> res(tmp.size()/4);
         for (std::size_t i = 0; i < tmp.size(); i+=4) {
@@ -1085,7 +1085,7 @@ std::optional<std::vector<float>> DSRGraph::get_depth_image(const Node &n)
 std::optional<std::reference_wrapper<const std::vector<uint8_t>>> DSRGraph::get_depth_image(const Node &n) const
 {
     auto& attrs = n.attrs();
-    if (auto value  = attrs.find("depth"); value != attrs.end()) {
+    if (auto value  = attrs.find("cam_depth"); value != attrs.end()) {
         return value->second.byte_vec();
     }
     else return {};

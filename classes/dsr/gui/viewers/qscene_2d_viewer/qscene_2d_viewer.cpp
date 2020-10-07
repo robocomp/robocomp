@@ -549,8 +549,8 @@ void QScene2dViewer::draw_laser()
     auto laser_node = G->get_node("laser");
     if(laser_node.has_value())
     {
-        const auto lAngles = G->get_attrib_by_name<angles_att>(laser_node.value());
-        const auto lDists = G->get_attrib_by_name<dists_att>(laser_node.value());
+        const auto lAngles = G->get_attrib_by_name<laser_angles_att>(laser_node.value());
+        const auto lDists = G->get_attrib_by_name<laser_dists_att>(laser_node.value());
         if (lAngles.has_value() and lDists.has_value()) 
         {
             QPolygonF poly;

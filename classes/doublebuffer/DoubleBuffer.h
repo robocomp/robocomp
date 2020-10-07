@@ -92,7 +92,7 @@ public:
         }
     }
 
-    void put(const I &&d, std::function<void(const I &, O &)> t = empty_fn)
+    void put(I &&d, std::function<void(const I &, O &)> t = empty_fn)
     {
         thread_local O temp;
 

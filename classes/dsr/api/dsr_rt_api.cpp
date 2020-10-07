@@ -27,8 +27,8 @@ std::optional<Mat::RTMat> RT_API::get_RT_pose_from_parent(const Node &n)
         auto res = edges_.find({n.id(),"RT"});
         if (res != edges_.end())
         {
-            auto r = G->get_attrib_by_name<rotation_euler_xyz>(res->second);
-            auto t = G->get_attrib_by_name<translation>(res->second);
+            auto r = G->get_attrib_by_name<rotation_euler_xyz_att>(res->second);
+            auto t = G->get_attrib_by_name<translation_att>(res->second);
             if (r.has_value() && t.has_value() )
             {
                 Mat::RTMat rt(Eigen::Translation3d(t->get()[0], t->get()[1], t->get()[2]) *
@@ -44,8 +44,8 @@ std::optional<Mat::RTMat> RT_API::get_RT_pose_from_parent(const Node &n)
 
 std::optional<Mat::RTMat>  RT_API::get_edge_RT_as_rtmat(const Edge &edge)
 {
-    auto r = G->get_attrib_by_name<rotation_euler_xyz>(edge);
-    auto t =  G->get_attrib_by_name<translation>(edge);
+    auto r = G->get_attrib_by_name<rotation_euler_xyz_att>(edge);
+    auto t =  G->get_attrib_by_name<translation_att>(edge);
     if (r.has_value() and t.has_value())
     {
         Mat::RTMat rt(Eigen::Translation3d(t->get()[0], t->get()[1], t->get()[2]) *
@@ -94,16 +94,16 @@ void RT_API::insert_or_assign_edge_RT(Node &n, uint32_t to, const std::vector<fl
                 no_send = !G->add_attrib_local<parent_att>(to_n.value(), n.id());
             }
 
-            if (auto x = G->get_crdt_attrib_by_name<level>(to_n.value()); x.has_value())
+            if (auto x = G->get_crdt_attrib_by_name<level_att>(to_n.value()); x.has_value())
             {
                 if (x.value() != G->get_node_level(n).value() + 1)
                 {
-                    no_send = !G->modify_attrib_local<level>(to_n.value(),  G->get_node_level(n).value() + 1 );
+                    no_send = !G->modify_attrib_local<level_att>(to_n.value(),  G->get_node_level(n).value() + 1 );
                 }
             }
             else
             {
-                no_send = G->add_attrib_local<level>(to_n.value(),  G->get_node_level(n).value() + 1 );
+                no_send = G->add_attrib_local<level_att>(to_n.value(),  G->get_node_level(n).value() + 1 );
             }
 
             //Check if RT edge exist.
@@ -192,16 +192,16 @@ void RT_API::insert_or_assign_edge_RT(Node &n, uint32_t to, std::vector<float> &
                 no_send = !G->add_attrib_local<parent_att>(to_n.value(), n.id());
             }
 
-            if (auto x = G->get_crdt_attrib_by_name<level>(to_n.value()); x.has_value())
+            if (auto x = G->get_crdt_attrib_by_name<level_att>(to_n.value()); x.has_value())
             {
                 if (x.value() != G->get_node_level(n).value() + 1)
                 {
-                    no_send = !G->modify_attrib_local<level>(to_n.value(),  G->get_node_level(n).value() + 1 );
+                    no_send = !G->modify_attrib_local<level_att>(to_n.value(),  G->get_node_level(n).value() + 1 );
                 }
             }
             else
             {
-                no_send = G->add_attrib_local<level>(to_n.value(),  G->get_node_level(n).value() + 1 );
+                no_send = G->add_attrib_local<level_att>(to_n.value(),  G->get_node_level(n).value() + 1 );
             }
 
             //Check if RT edge exist.
