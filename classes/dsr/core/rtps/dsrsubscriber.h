@@ -36,8 +36,9 @@ public:
 	virtual ~DSRSubscriber();
 	bool init(eprosima::fastrtps::Participant *mp_participant_,
 				const char* topicName, const char* topicDataType,
-				std::function<void(eprosima::fastrtps::Subscriber* sub)>  f_);
-	void run();
+				std::function<void(eprosima::fastrtps::Subscriber* sub)>  f_,
+                bool isStreamData = false);
+	//void run();
     eprosima::fastrtps::Subscriber * getSubscriber();
 
 private:
@@ -48,7 +49,7 @@ private:
 	{
 	public:
 		SubListener() : n_matched(0),n_msg(0),participant_ID(eprosima::fastrtps::rtps::GUID_t()){};
-		~SubListener() override= default;;
+		~SubListener() override= default;
 		void onSubscriptionMatched(eprosima::fastrtps::Subscriber* sub,eprosima::fastrtps::rtps::MatchingInfo& info) override;
 		void onNewDataMessage(eprosima::fastrtps::Subscriber* sub) override;
 		eprosima::fastrtps::SampleInfo_t m_info;

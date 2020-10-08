@@ -332,7 +332,7 @@ namespace DSR {
             if (this == &av_) {
                 return true;
             }
-            if (type() != av_.type() || val() != av_.val() || timestamp() != av_.timestamp()) {
+            if (type() != av_.type() || val() != av_.val() /*|| timestamp() != av_.timestamp()*/) {
                 return false;
             }
             return true;

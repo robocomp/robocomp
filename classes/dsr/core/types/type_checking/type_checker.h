@@ -18,13 +18,15 @@ class ATTRIBUTE_TYPES
 {
 public:
     static std::unordered_map<std::string_view, std::function<bool(const std::any&)>> map_fn_;
+    static std::unordered_map<std::string_view, bool> stream_type_;
 
-    static bool REGISTER(std::string_view s, const std::any& type )
+    static bool REGISTER(std::string_view s, const std::any& type , bool stream_type = false)
     {
         map_fn_.emplace(std::make_pair(s, [/*s,*/ t = std::type_index(type.type()) ](const std::any &el) -> bool {
             //std::cout << t.name() <<  "  " <<  std::type_index(el.type()).name() << std::endl;
             return t == std::type_index(el.type());
         }));
+        stream_type_.emplace(std::make_pair(s, stream_type));
         return true;
     }
 
@@ -37,6 +39,14 @@ public:
             return map_fn_.at(s)(val);
         }
     }
+
+    static bool IS_STREAM_TYPE(std::string_view s) {
+        if (stream_type_.find(s) != stream_type_.end()) {
+            return stream_type_.at(s);
+        }
+        return false;
+    }
+
 };
 
 class NODE_TYPES

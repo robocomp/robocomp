@@ -83,7 +83,7 @@
 
 
     struct DotKernelEdge {
-        map<PairInt, Edge> ds;
+        map<PairInt, IDLEdge> ds;
         DotContext cbase;
     };
 
@@ -95,6 +95,7 @@
         DotKernelEdge dk;
         unsigned long agent_id; // to skip messages from the same agent in multithread.
     };
+
 
     struct IDLNode {
         string type;
@@ -111,7 +112,7 @@
     };
 
     struct DotKernel {
-        map<PairInt, Node> ds;
+        map<PairInt, IDLNode> ds;
         DotContext cbase;
     };
 
@@ -127,5 +128,13 @@
         DotContext cbase;
     };
 
+
+    struct MvregEdgeAttrVec {
+    	sequence<MvregEdgeAttr> vec;
+    };
+    
+    struct MvregNodeAttrVec {
+    	sequence<MvregNodeAttr> vec;
+    };
 
 

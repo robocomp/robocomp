@@ -3185,5 +3185,245 @@ namespace IDL {
         DotContext m_cbase;
     };
 
+
+
+/*!
+ * @brief This class represents the structure MvregEdgeAttrVec defined by the user in the IDL file.
+ * @ingroup IDLGRAPH
+ */
+class MvregEdgeAttrVec
+{
+public:
+
+    /*!
+     * @brief Default constructor.
+     */
+    eProsima_user_DllExport MvregEdgeAttrVec();
+
+    /*!
+     * @brief Default destructor.
+     */
+    eProsima_user_DllExport ~MvregEdgeAttrVec();
+
+    /*!
+     * @brief Copy constructor.
+     * @param x Reference to the object MvregEdgeAttrVec that will be copied.
+     */
+    eProsima_user_DllExport MvregEdgeAttrVec(const MvregEdgeAttrVec &x);
+
+    /*!
+     * @brief Move constructor.
+     * @param x Reference to the object MvregEdgeAttrVec that will be copied.
+     */
+    eProsima_user_DllExport MvregEdgeAttrVec(MvregEdgeAttrVec &&x);
+
+    /*!
+     * @brief Copy assignment.
+     * @param x Reference to the object MvregEdgeAttrVec that will be copied.
+     */
+    eProsima_user_DllExport MvregEdgeAttrVec& operator=(const MvregEdgeAttrVec &x);
+
+    /*!
+     * @brief Move assignment.
+     * @param x Reference to the object MvregEdgeAttrVec that will be copied.
+     */
+    eProsima_user_DllExport MvregEdgeAttrVec& operator=(MvregEdgeAttrVec &&x);
+
+    /*!
+     * @brief This function copies the value in member vec
+     * @param _vec New value to be copied in member vec
+     */
+    eProsima_user_DllExport void vec(const std::vector<MvregEdgeAttr> &_vec);
+
+    /*!
+     * @brief This function moves the value in member vec
+     * @param _vec New value to be moved in member vec
+     */
+    eProsima_user_DllExport void vec(std::vector<MvregEdgeAttr> &&_vec);
+
+    /*!
+     * @brief This function returns a constant reference to member vec
+     * @return Constant reference to member vec
+     */
+    eProsima_user_DllExport const std::vector<MvregEdgeAttr>& vec() const;
+
+    /*!
+     * @brief This function returns a reference to member vec
+     * @return Reference to member vec
+     */
+    eProsima_user_DllExport std::vector<MvregEdgeAttr>& vec();
+
+    /*!
+     * @brief This function returns the maximum serialized size of an object
+     * depending on the buffer alignment.
+     * @param current_alignment Buffer alignment.
+     * @return Maximum serialized size.
+     */
+    eProsima_user_DllExport static size_t getMaxCdrSerializedSize(size_t current_alignment = 0);
+
+    /*!
+     * @brief This function returns the serialized size of a data depending on the buffer alignment.
+     * @param data Data which is calculated its serialized size.
+     * @param current_alignment Buffer alignment.
+     * @return Serialized size.
+     */
+    eProsima_user_DllExport static size_t getCdrSerializedSize(const MvregEdgeAttrVec& data, size_t current_alignment = 0);
+
+
+    /*!
+     * @brief This function serializes an object using CDR serialization.
+     * @param cdr CDR serialization object.
+     */
+    eProsima_user_DllExport void serialize(eprosima::fastcdr::Cdr &cdr) const;
+
+    /*!
+     * @brief This function deserializes an object using CDR serialization.
+     * @param cdr CDR serialization object.
+     */
+    eProsima_user_DllExport void deserialize(eprosima::fastcdr::Cdr &cdr);
+
+
+
+    /*!
+     * @brief This function returns the maximum serialized size of the Key of an object
+     * depending on the buffer alignment.
+     * @param current_alignment Buffer alignment.
+     * @return Maximum serialized size.
+     */
+    eProsima_user_DllExport static size_t getKeyMaxCdrSerializedSize(size_t current_alignment = 0);
+
+    /*!
+     * @brief This function tells you if the Key has been defined for this type
+     */
+    eProsima_user_DllExport static bool isKeyDefined();
+
+    /*!
+     * @brief This function serializes the key members of an object using CDR serialization.
+     * @param cdr CDR serialization object.
+     */
+    eProsima_user_DllExport void serializeKey(eprosima::fastcdr::Cdr &cdr) const;
+
+private:
+    std::vector<MvregEdgeAttr> m_vec;
+};
+/*!
+ * @brief This class represents the structure MvregNodeAttrVec defined by the user in the IDL file.
+ * @ingroup IDLGRAPH
+ */
+class MvregNodeAttrVec
+{
+public:
+
+    /*!
+     * @brief Default constructor.
+     */
+    eProsima_user_DllExport MvregNodeAttrVec();
+
+    /*!
+     * @brief Default destructor.
+     */
+    eProsima_user_DllExport ~MvregNodeAttrVec();
+
+    /*!
+     * @brief Copy constructor.
+     * @param x Reference to the object MvregNodeAttrVec that will be copied.
+     */
+    eProsima_user_DllExport MvregNodeAttrVec(const MvregNodeAttrVec &x);
+
+    /*!
+     * @brief Move constructor.
+     * @param x Reference to the object MvregNodeAttrVec that will be copied.
+     */
+    eProsima_user_DllExport MvregNodeAttrVec(MvregNodeAttrVec &&x);
+
+    /*!
+     * @brief Copy assignment.
+     * @param x Reference to the object MvregNodeAttrVec that will be copied.
+     */
+    eProsima_user_DllExport MvregNodeAttrVec& operator=(const MvregNodeAttrVec &x);
+
+    /*!
+     * @brief Move assignment.
+     * @param x Reference to the object MvregNodeAttrVec that will be copied.
+     */
+    eProsima_user_DllExport MvregNodeAttrVec& operator=(MvregNodeAttrVec &&x);
+
+    /*!
+     * @brief This function copies the value in member vec
+     * @param _vec New value to be copied in member vec
+     */
+    eProsima_user_DllExport void vec(const std::vector<MvregNodeAttr> &_vec);
+
+    /*!
+     * @brief This function moves the value in member vec
+     * @param _vec New value to be moved in member vec
+     */
+    eProsima_user_DllExport void vec(std::vector<MvregNodeAttr> &&_vec);
+
+    /*!
+     * @brief This function returns a constant reference to member vec
+     * @return Constant reference to member vec
+     */
+    eProsima_user_DllExport const std::vector<MvregNodeAttr>& vec() const;
+
+    /*!
+     * @brief This function returns a reference to member vec
+     * @return Reference to member vec
+     */
+    eProsima_user_DllExport std::vector<MvregNodeAttr>& vec();
+
+    /*!
+     * @brief This function returns the maximum serialized size of an object
+     * depending on the buffer alignment.
+     * @param current_alignment Buffer alignment.
+     * @return Maximum serialized size.
+     */
+    eProsima_user_DllExport static size_t getMaxCdrSerializedSize(size_t current_alignment = 0);
+
+    /*!
+     * @brief This function returns the serialized size of a data depending on the buffer alignment.
+     * @param data Data which is calculated its serialized size.
+     * @param current_alignment Buffer alignment.
+     * @return Serialized size.
+     */
+    eProsima_user_DllExport static size_t getCdrSerializedSize(const MvregNodeAttrVec& data, size_t current_alignment = 0);
+
+
+    /*!
+     * @brief This function serializes an object using CDR serialization.
+     * @param cdr CDR serialization object.
+     */
+    eProsima_user_DllExport void serialize(eprosima::fastcdr::Cdr &cdr) const;
+
+    /*!
+     * @brief This function deserializes an object using CDR serialization.
+     * @param cdr CDR serialization object.
+     */
+    eProsima_user_DllExport void deserialize(eprosima::fastcdr::Cdr &cdr);
+
+
+
+    /*!
+     * @brief This function returns the maximum serialized size of the Key of an object
+     * depending on the buffer alignment.
+     * @param current_alignment Buffer alignment.
+     * @return Maximum serialized size.
+     */
+    eProsima_user_DllExport static size_t getKeyMaxCdrSerializedSize(size_t current_alignment = 0);
+
+    /*!
+     * @brief This function tells you if the Key has been defined for this type
+     */
+    eProsima_user_DllExport static bool isKeyDefined();
+
+    /*!
+     * @brief This function serializes the key members of an object using CDR serialization.
+     * @param cdr CDR serialization object.
+     */
+    eProsima_user_DllExport void serializeKey(eprosima::fastcdr::Cdr &cdr) const;
+
+private:
+    std::vector<MvregNodeAttr> m_vec;
+};
 }
 #endif // _DSRGRAPH_H_

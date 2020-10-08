@@ -34,9 +34,14 @@ using namespace eprosima::fastrtps::rtps;
 
 DSRPublisher::DSRPublisher() : mp_participant(nullptr), mp_publisher(nullptr) {}
 
-DSRPublisher::~DSRPublisher()= default;
+DSRPublisher::~DSRPublisher()
+{
+    if (mp_publisher != nullptr) {
+        eprosima::fastrtps::Domain::removePublisher(mp_publisher);
+    }
+};
 
-bool DSRPublisher::init(eprosima::fastrtps::Participant *mp_participant_, const char* topicName, const char* topicDataType)
+bool DSRPublisher::init(eprosima::fastrtps::Participant *mp_participant_, const char* topicName, const char* topicDataType, bool isStreamData )
 {
     mp_participant = mp_participant_;
 
@@ -54,24 +59,37 @@ bool DSRPublisher::init(eprosima::fastrtps::Participant *mp_participant_, const 
     Wparam.qos.m_durability.kind = eprosima::fastrtps::VOLATILE_DURABILITY_QOS;
 
 
-    Wparam.topic.historyQos.kind = KEEP_ALL_HISTORY_QOS;
-    //Wparam.topic.historyQos.kind = KEEP_LAST_HISTORY_QOS;
-    //Wparam.topic.historyQos.depth = 20; // Adjust this value if we are losing  messages
 
-        // Check ACK for sended messages.
+    if (!isStreamData) {
+        Wparam.topic.historyQos.kind = KEEP_ALL_HISTORY_QOS;
+    } else {
+        Wparam.topic.historyQos.kind = KEEP_LAST_HISTORY_QOS;
+        Wparam.topic.historyQos.depth = 20; // Adjust this value if we are losing  messages
+    }
+
+    // Check ACK for sended messages.
     Wparam.times.heartbeatPeriod.seconds = 0;
-    Wparam.times.heartbeatPeriod.nanosec = 150000000; //150 ms
+    Wparam.times.heartbeatPeriod.nanosec = 15000000; //15 ms. This value should be more or less close to the sending frequency.
 
     Wparam.topic.resourceLimitsQos.max_samples = 200;
-    //}
     Wparam.historyMemoryPolicy = DYNAMIC_RESERVE_MEMORY_MODE; //PREALLOCATED_WITH_REALLOC_MEMORY_MODE;
-    mp_publisher = eprosima::fastrtps::Domain::createPublisher(mp_participant, Wparam,
-                                                               static_cast<eprosima::fastrtps::PublisherListener *>(&m_listener));
 
-    if (mp_publisher == nullptr)
-        return false;
-    qDebug() << "Publisher created, waiting for Subscribers." ;
-    return true;
+
+    int retry = 0;
+    while (retry < 5) {
+        mp_publisher = eprosima::fastrtps::Domain::createPublisher(mp_participant, Wparam,
+                                                                   static_cast<eprosima::fastrtps::PublisherListener *>(&m_listener));
+        if(mp_publisher != nullptr) {
+            qDebug() << "Publisher created, waiting for Subscribers." ;
+            return true;
+        }
+        retry++;
+        qDebug() << "Error creating publisher, retrying. [" << retry <<"/5]"  ;
+
+    }
+
+    qFatal("%s", std::string_view("Could not create publisher " + std::string(topicName) + " after 5 attempts").data());
+
 }
 
 eprosima::fastrtps::rtps::GUID_t DSRPublisher::getParticipantID() const
@@ -82,50 +100,70 @@ eprosima::fastrtps::rtps::GUID_t DSRPublisher::getParticipantID() const
 
 bool DSRPublisher::write(IDL::Mvreg *object)
 {
-    while (true) {
-        if (mp_publisher->write(object)) break;
+    int retry = 0;
+    while (retry < 5) {
+        if (mp_publisher->write(object)) return true;
+        retry++;
     }
-    return true;
+    qInfo() << "Error writing NODE " << object->id() << " after 5 attempts";
+    return false;
 };
 
-bool DSRPublisher::write(IDL::MvregNodeAttr *object)
-{
-    while (true) {
-        if (mp_publisher->write(object)) break;
-    }
-    return true;
-};
 
 bool DSRPublisher::write(IDL::MvregEdge *object)
 {
-    while (true) {
-        if (mp_publisher->write(object)) break;
+    int retry = 0;
+    while (retry < 5) {
+        if (mp_publisher->write(object)) return true;;
+        retry++;
     }
-    return true;
+    qInfo() << "Error writing EDGE " << object->from() << " " << object->to() << " " << object->type().data() << " after 5 attempts";
+    return false;
 };
 
-bool DSRPublisher::write(IDL::MvregEdgeAttr *object)
-{
-    while (true) {
-        if (mp_publisher->write(object)) break;
-    }
-    return true;
-};
 
 bool DSRPublisher::write(IDL::OrMap *object)
 {
-    while (true) {
-        if (mp_publisher->write(object)) break;
+    int retry = 0;
+    while (retry < 5) {
+        if (mp_publisher->write(object)) return true;;
+        retry++;
     }
-    return true;
+    qInfo() << "Error writing GRAPH " << object->m().size() << " after 5 attempts";
+    return false;
 };
 
 bool DSRPublisher::write(IDL::GraphRequest *object)
 {
-    while (true) {
-        if (mp_publisher->write(object)) break;
+    int retry = 0;
+    while (retry < 5) {
+        if (mp_publisher->write(object)) return true;;
+        retry++;
     }
-    return true;
+    qInfo() << "Error writing GRAPH REQUEST after 5 attempts." ;
+    return false;
+};
+
+bool DSRPublisher::write(std::vector<IDL::MvregEdgeAttr> *object)
+{
+    int retry = 0;
+    while (retry < 5) {
+        if (mp_publisher->write(object)) return true;;
+        retry++;
+    }
+    qInfo() << "Error writing EDGE ATTRIBUTE VECTOR  after 5 attempts";
+    return false;
+};
+
+bool DSRPublisher::write(std::vector<IDL::MvregNodeAttr> *object)
+{
+    int retry = 0;
+    while (retry < 5) {
+        if (mp_publisher->write(object)) return true;;
+        retry++;
+    }
+    qInfo() << "Error writing EDGE ATTRIBUTE VECTOR after 5 attempts";
+    return false;
 };
 
 void DSRPublisher::PubListener::onPublicationMatched(eprosima::fastrtps::Publisher *pub,
@@ -133,9 +171,9 @@ void DSRPublisher::PubListener::onPublicationMatched(eprosima::fastrtps::Publish
 {
     if (info.status == eprosima::fastrtps::rtps::MATCHED_MATCHING) {
         n_matched++;
-        qDebug() << "Publisher [" << pub->getAttributes().topic.getTopicName() <<"] matched " << info.remoteEndpointGuid.entityId.value;
+        qInfo() << "Subscriber [" << pub->getAttributes().topic.getTopicName() <<"] matched " << info.remoteEndpointGuid.entityId.value << " self: " << info.remoteEndpointGuid.is_on_same_process_as(pub->getGuid());
     } else {
         n_matched--;
-        qDebug() << "Publisher [" << pub->getAttributes().topic.getTopicName() <<"] unmatched" << info.remoteEndpointGuid.entityId.value;
+        qInfo() << "Subscriber [" << pub->getAttributes().topic.getTopicName() <<"] unmatched" << info.remoteEndpointGuid.entityId.value<< " self: " <<info.remoteEndpointGuid.is_on_same_process_as(pub->getGuid());
     }
 }

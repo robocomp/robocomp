@@ -189,6 +189,7 @@ QVec RMat::Cam::project ( const QVec &p ) const
 #ifdef DEBUG
 	print("cam");
 #endif
+
 	QVec loc =  operator*(p);
 
 	QVec res ( 3 );

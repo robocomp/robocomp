@@ -21,7 +21,7 @@
 #include <typeinfo>
 #include <optional>
 #include <type_traits>
-
+#include "dsr_eigen_defs.h"
 #include "../core/crdt/delta-crdts.cc"
 #include "../core/rtps/dsrparticipant.h"
 #include "../core/rtps/dsrpublisher.h"
@@ -31,6 +31,9 @@
 #include "../core/types/user_types.h"
 #include "../core/types/translator.h"
 #include "dsr_inner_api.h"
+#include "dsr_inner_eigen_api.h"
+#include "dsr_camera_api.h"
+#include "dsr_rt_api.h"
 #include "dsr_utils.h"
 #include "../core/types/type_checking/dsr_attr_name.h"
 #include "../core/utils.h"
@@ -40,7 +43,6 @@
 
 #define TIMEOUT 5000
 
-
 namespace DSR
 {
     using Nodes = ormap<uint32_t , mvreg<CRDTNode, uint32_t>, uint32_t>;
@@ -49,9 +51,9 @@ namespace DSR
     /////////////////////////////////////////////////////////////////
     /// CRDT API
     /////////////////////////////////////////////////////////////////
-
     class DSRGraph : public QObject
     {
+        friend RT_API;
         Q_OBJECT
 
         private:
@@ -110,7 +112,16 @@ namespace DSR
         std::vector<uint32_t> getKeys() const;
 
         // Innermodel API
-        std::unique_ptr<InnerAPI> get_inner_api() { return std::make_unique<InnerAPI>(this); };
+        std::unique_ptr<InnerAPI> get_inner_api()            { return std::make_unique<InnerAPI>(this); };
+
+        // Innermodel EigenAPI
+        std::unique_ptr<InnerEigenAPI> get_inner_eigen_api() { return std::make_unique<InnerEigenAPI>(this); };
+
+        // Innermodel RT_API
+        std::unique_ptr<RT_API> get_rt_api() { return std::make_unique<RT_API>(this); };
+
+        // Innermodel CameraAPI
+        std::unique_ptr<CameraAPI> get_camera_api(const DSR::Node & camera_node) { return std::make_unique<CameraAPI>(this, camera_node); };
 
         /**
          * CORE
@@ -474,8 +485,8 @@ namespace DSR
         void insert_or_assign_edge_RT(Node &n, uint32_t to, std::vector<float> &&trans, std::vector<float> &&rot_euler);
         static std::optional<Edge> get_edge_RT(const Node &n, uint32_t to);
         std::optional<RTMat> get_edge_RT_as_RTMat(const Edge &edge);
-        std::optional<RTMat> get_edge_RT_as_RTMat(Edge &&edge);
         std::optional<RTMat> get_RT_pose_from_parent(const Node &n);
+        std::optional<Mat::RTMat> get_edge_RT_as_rtmat(const Edge &edge);
         /**AUXILIARY RT SUB-API**/
 
 
@@ -503,7 +514,6 @@ namespace DSR
         DSRGraph(const DSRGraph& G);
         Nodes nodes;
         int graph_root;
-        bool work;
         mutable std::shared_mutex _mutex;
         std::string filter;
         const uint32_t agent_id;
@@ -635,16 +645,15 @@ namespace DSR
         class NewMessageFunctor {
         public:
             DSRGraph *graph{};
-            bool *work{};
-            std::function<void(eprosima::fastrtps::Subscriber *sub, bool *work, DSR::DSRGraph *graph)> f;
+            std::function<void(eprosima::fastrtps::Subscriber *sub, DSR::DSRGraph *graph)> f;
 
-            NewMessageFunctor(DSRGraph *graph_, bool *work_,
-                              std::function<void(eprosima::fastrtps::Subscriber *sub, bool *work,  DSR::DSRGraph *graph)> f_)
-                    : graph(graph_), work(work_), f(std::move(f_)) {}
+            NewMessageFunctor(DSRGraph *graph_,
+                              std::function<void(eprosima::fastrtps::Subscriber *sub,  DSR::DSRGraph *graph)> f_)
+                    : graph(graph_), f(std::move(f_)) {}
 
             NewMessageFunctor() = default;
 
-            void operator()(eprosima::fastrtps::Subscriber *sub) const { f(sub, work, graph); };
+            void operator()(eprosima::fastrtps::Subscriber *sub) const { f(sub, graph); };
         };
 
 
@@ -677,10 +686,14 @@ namespace DSR
 
         DSRPublisher dsrpub_node_attrs;
         DSRSubscriber dsrsub_node_attrs;
+        DSRPublisher dsrpub_node_attrs_stream;
+        DSRSubscriber dsrsub_node_attrs_stream;
         NewMessageFunctor dsrpub_call_node_attrs;
 
         DSRPublisher dsrpub_edge_attrs;
         DSRSubscriber dsrsub_edge_attrs;
+        DSRPublisher dsrpub_edge_attrs_stream;
+        DSRSubscriber dsrsub_edge_attrs_stream;
         NewMessageFunctor dsrpub_call_edge_attrs;
 
         DSRSubscriber dsrsub_graph_request;

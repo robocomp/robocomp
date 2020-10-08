@@ -32,14 +32,16 @@ class DSRPublisher
 public:
     DSRPublisher();
     virtual ~DSRPublisher();
-    bool init(eprosima::fastrtps::Participant *mp_participant_, const char *topicName, const char *topicDataType);
+    bool init(eprosima::fastrtps::Participant *mp_participant_, const char *topicName, const char *topicDataType, bool isStreamData = false);
     [[nodiscard]] eprosima::fastrtps::rtps::GUID_t getParticipantID() const;
     bool write(IDL::GraphRequest *object);
     bool write(IDL::Mvreg *object);
     bool write(IDL::OrMap *object);
-    bool write(IDL::MvregNodeAttr *object);
+    //bool write(IDL::MvregNodeAttr *object);
     bool write(IDL::MvregEdge *object);
-    bool write(IDL::MvregEdgeAttr *object);
+    //bool write(IDL::MvregEdgeAttr *object);
+    bool write(std::vector<IDL::MvregEdgeAttr> *object);
+    bool write(std::vector<IDL::MvregNodeAttr> *object);
 
 private:
 	eprosima::fastrtps::Participant *mp_participant;

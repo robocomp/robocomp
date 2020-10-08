@@ -111,15 +111,15 @@ void QScene2dViewer::get_2d_projection(std::string node_name, std::vector<int> s
     QVector<QPoint> polygon_vec;
     zvalue = -99999;
     //transform cube points
-    std::optional<RTMat> rt = innermodel->getTransformationMatrixS("world", node_name);
+    std::optional<RTMat> rt = innermodel->get_transformation_matrix("world", node_name);
     if (rt.has_value())
     {
         for (unsigned int i=0;i< cube_positions.size();i++)
         {
             QVec vec = rt.value() * QVec::vec4(size[0]*cube_positions[i][0], size[1]*cube_positions[i][1], size[2]*cube_positions[i][2], 1.0 );
-            polygon_vec.append(QPoint(vec[0], vec[2]));
-            if (zvalue < vec[1])
-                zvalue = vec[1];
+            polygon_vec.append(QPoint(vec[0], vec[1]));
+            if (zvalue < vec[2])
+                zvalue = vec[2];
         }
     }
     else
@@ -229,7 +229,7 @@ bool QScene2dViewer::check_RT_required_attributes(Node node)
     try{
         std::optional<int> level = G->get_node_level(node);
         std::optional<int> parent = G->get_parent_id(node);
-        std::optional<QVec> pose = innermodel->transformS6D("world", node.name());
+        std::optional<QVec> pose = innermodel->transform_axis("world", node.name());
 
         if(level.has_value() and parent.has_value() and pose.has_value())
             return true;
@@ -279,7 +279,7 @@ void  QScene2dViewer::add_or_assign_person(Node &node){
 //qDebug() << __FUNCTION__ ;
     std::optional<QVec> pose;
     try{
-        pose = innermodel->transformS6D("world", node.name());
+        pose = innermodel->transform_axis("world", node.name());
     }catch(...){}
     if (pose.has_value()){
 //pose.value().print(QString::fromStdString(node.name()));
@@ -300,7 +300,7 @@ void  QScene2dViewer::add_or_assign_person(Node &node){
             scenePixmap = (QGraphicsPixmapItem*) scene_map[node.id()];
         }
 //qDebug()<<"angle"<<pose.value().ry()<<qRadiansToDegrees(pose.value().ry());        
-        scenePixmap->setPos(pose.value().x() - scenePixmap->boundingRect().center().x(), pose.value().z() - scenePixmap->boundingRect().center().y());
+        scenePixmap->setPos(pose.value().x() - scenePixmap->boundingRect().center().x(), pose.value().y() - scenePixmap->boundingRect().center().y());
         scenePixmap->setRotation(-qRadiansToDegrees(pose.value().ry()));
         //update person spaces
         if(drawpeople_space) {
@@ -317,7 +317,7 @@ void QScene2dViewer::add_or_assign_robot(Node &node)
     std::optional<QVec> pose;
     try
     {
-        pose = innermodel->transformS6D("world", node.name());
+        pose = innermodel->transform_axis("world", node.name());
     }catch(...){}
     if (pose.has_value())
     {
@@ -349,8 +349,8 @@ void QScene2dViewer::add_or_assign_robot(Node &node)
         {
             scenePolygon = (QGraphicsPolygonItem*) scene_map[node.id()];      
         }
-        scenePolygon->setPos(pose.value().x() - scenePolygon->boundingRect().center().x(), pose.value().z() - scenePolygon->boundingRect().center().y());
-        scenePolygon->setRotation(qRadiansToDegrees(-pose.value().ry()));   
+        scenePolygon->setPos(pose.value().x() - scenePolygon->boundingRect().center().x(), pose.value().y() - scenePolygon->boundingRect().center().y());
+        scenePolygon->setRotation(qRadiansToDegrees(pose.value().rz()));   
     }
     else
     {
@@ -415,13 +415,13 @@ void QScene2dViewer::update_scene_object_pose(std::int32_t node_id)
         std::optional<QVec> pose;
         try
         {
-            pose = innermodel->transformS6D("world", node.value().name());
+            pose = innermodel->transform_axis("world", node.value().name());
 //pose.value().print(QString::fromStdString(node.value().name()));
         }catch(...){};
         if (pose.has_value())
         {
-            item->setPos(pose.value().x() - item->boundingRect().center().x(), pose.value().z() - item->boundingRect().center().y());
-            item->setRotation(qRadiansToDegrees(-pose.value().ry()));
+            item->setPos(pose.value().x() - item->boundingRect().center().x(), pose.value().y() - item->boundingRect().center().y());
+            item->setRotation(qRadiansToDegrees(pose.value().rz()));
         }
         else   
         {
@@ -549,8 +549,8 @@ void QScene2dViewer::draw_laser()
     auto laser_node = G->get_node("laser");
     if(laser_node.has_value())
     {
-        const auto lAngles = G->get_attrib_by_name<angles_att>(laser_node.value());
-        const auto lDists = G->get_attrib_by_name<dists_att>(laser_node.value());
+        const auto lAngles = G->get_attrib_by_name<laser_angles_att>(laser_node.value());
+        const auto lDists = G->get_attrib_by_name<laser_dists_att>(laser_node.value());
         if (lAngles.has_value() and lDists.has_value()) 
         {
             QPolygonF poly;
