@@ -43,7 +43,7 @@ DSRGraph::DSRGraph(int root, std::string name, int id, const std::string& dsr_in
 
     dsrpub_edge.init(participant_handle, "DSR_EDGE", dsrparticipant.getEdgeTopicName());
     dsrpub_edge_attrs.init(participant_handle, "DSR_EDGE_ATTRS", dsrparticipant.getEdgeAttrTopicName());
-    dsrpub_edge_attrs_stream.init(participant_handle, "DSR_EDGE_ATTRS_STREAM", dsrparticipant.getEdgeAttrTopicName());
+    dsrpub_edge_attrs_stream.init(participant_handle, "DSR_EDGE_ATTRS_STREAM", dsrparticipant.getEdgeAttrTopicName(), true);
 
     dsrpub_graph_request.init(participant_handle, "DSR_GRAPH_REQUEST", dsrparticipant.getRequestTopicName());
     dsrpub_request_answer.init(participant_handle, "DSR_GRAPH_ANSWER", dsrparticipant.getAnswerTopicName());
@@ -613,9 +613,9 @@ void DSRGraph::insert_or_assign_edge_RT(Node &n, uint32_t to, std::vector<float>
             CRDTEdge e; e.to(to);  e.from(n.id()); e.type("RT"); e.agent_id(agent_id);
             CRDTAttribute tr; tr.type(3); tr.val(CRDTValue(std::move(trans))); tr.timestamp(get_unix_timestamp());
             CRDTAttribute rot; rot.type(3); rot.val(CRDTValue(std::move(rot_euler))); rot.timestamp(get_unix_timestamp());
-            auto [it, new_el] = e.attrs().emplace("rotation_euler_xyz", mvreg<CRDTAttribute, uint32_t> ());
+            auto [it, new_el] = e.attrs().emplace("rt_rotation_euler_xyz", mvreg<CRDTAttribute, uint32_t> ());
             it->second.write(rot);
-            auto [it2, new_el2] = e.attrs().emplace("translation", mvreg<CRDTAttribute, uint32_t> ());
+            auto [it2, new_el2] = e.attrs().emplace("rt_translation", mvreg<CRDTAttribute, uint32_t> ());
             it2->second.write(tr);
 
 
@@ -713,9 +713,9 @@ void DSRGraph::insert_or_assign_edge_RT(Node &n, uint32_t to, const std::vector<
             CRDTEdge e; e.to(to);  e.from(n.id()); e.type("RT"); e.agent_id(agent_id);
             CRDTAttribute tr; tr.type(3); tr.val(CRDTValue(trans)); tr.timestamp(get_unix_timestamp());
             CRDTAttribute rot; rot.type(3); rot.val(CRDTValue(rot_euler)); rot.timestamp(get_unix_timestamp());
-            auto [it, new_el] = e.attrs().emplace("rotation_euler_xyz", mvreg<CRDTAttribute, uint32_t> ());
+            auto [it, new_el] = e.attrs().emplace("rt_rotation_euler_xyz", mvreg<CRDTAttribute, uint32_t> ());
             it->second.write(rot);
-            auto [it2, new_el2] = e.attrs().emplace("translation", mvreg<CRDTAttribute, uint32_t> ());
+            auto [it2, new_el2] = e.attrs().emplace("rt_translation", mvreg<CRDTAttribute, uint32_t> ());
             it2->second.write(tr);
 
 
@@ -929,8 +929,8 @@ std::optional<Edge> DSRGraph::get_edge_RT(const Node &n, uint32_t to)
 
 std::optional<RTMat>  DSRGraph::get_edge_RT_as_RTMat(const Edge &edge)
 {
-    auto r = get_attrib_by_name<rotation_euler_xyz_att>(edge);
-    auto t =  get_attrib_by_name<translation_att>(edge);
+    auto r = get_attrib_by_name<rt_rotation_euler_xyz_att>(edge);
+    auto t =  get_attrib_by_name<rt_translation_att>(edge);
     if (r.has_value() and t.has_value())
         return RTMat{r->get()[0], r->get()[1], r->get()[2], t->get()[0], t->get()[1], t->get()[2]};
     else
@@ -939,8 +939,8 @@ std::optional<RTMat>  DSRGraph::get_edge_RT_as_RTMat(const Edge &edge)
 
 std::optional<Mat::RTMat>  DSRGraph::get_edge_RT_as_rtmat(const Edge &edge)
 {
-    auto r = get_attrib_by_name<rotation_euler_xyz_att>(edge);
-    auto t =  get_attrib_by_name<translation_att>(edge);
+    auto r = get_attrib_by_name<rt_rotation_euler_xyz_att>(edge);
+    auto t =  get_attrib_by_name<rt_translation_att>(edge);
     if (r.has_value() and t.has_value())
     {
        Mat::RTMat rt(Eigen::Translation3d(t->get()[0], t->get()[1], t->get()[2]) *
@@ -962,8 +962,8 @@ std::optional<RTMat> DSRGraph::get_RT_pose_from_parent(const Node &n)
         auto res = edges_.find({n.id(),"RT"});
         if (res != edges_.end())
         {
-            auto r = get_attrib_by_name<rotation_euler_xyz_att>(res->second);
-            auto t =  get_attrib_by_name<translation_att>(res->second);
+            auto r = get_attrib_by_name<rt_rotation_euler_xyz_att>(res->second);
+            auto t =  get_attrib_by_name<rt_translation_att>(res->second);
             if (r.has_value() && t.has_value() )
             {
  		        return RTMat { r.value().get()[0], r.value().get()[1], r.value().get()[2], t.value().get()[0], t.value().get()[1], t.value().get()[2] } ;

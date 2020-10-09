@@ -83,9 +83,6 @@ REGISTER_TYPE(level, int, false)
 REGISTER_TYPE(pos_x, float, false)
 REGISTER_TYPE(pos_y, float, false)
 REGISTER_TYPE(parent, std::uint32_t, false)
-REGISTER_TYPE(name, std::reference_wrapper<const std::string>, false)
-REGISTER_TYPE(rotation_euler_xyz, std::reference_wrapper<const std::vector<float>>, true)
-REGISTER_TYPE(translation, std::reference_wrapper<const std::vector<float>>, true)
 REGISTER_TYPE(color, std::reference_wrapper<const std::string>, false)
 REGISTER_TYPE(texture, std::reference_wrapper<const std::string>, false)
 REGISTER_TYPE(width, int, false)
@@ -96,6 +93,14 @@ REGISTER_TYPE(scalex, int, false)
 REGISTER_TYPE(scaley, int, false)
 REGISTER_TYPE(scalez, int, false)
 REGISTER_TYPE(path, std::reference_wrapper<const std::string>, false)
+REGISTER_TYPE(name, std::reference_wrapper<const std::string>, false)
+
+/*
+ * RT
+ * */
+REGISTER_TYPE(rt_rotation_euler_xyz, std::reference_wrapper<const std::vector<float>>, true)
+REGISTER_TYPE(rt_translation, std::reference_wrapper<const std::vector<float>>, true)
+REGISTER_TYPE(rt_quaternion, std::reference_wrapper<const std::vector<float>>, true)
 /*
  * Laser
  * */
@@ -111,6 +116,23 @@ REGISTER_TYPE(person_personal_y_pos, std::reference_wrapper<const std::vector<fl
 REGISTER_TYPE(person_sharedWidth, std::reference_wrapper<const std::vector<float>>,true)
 REGISTER_TYPE(person_intimate_x_pos, std::reference_wrapper<const std::vector<float>>,true)
 REGISTER_TYPE(person_intimate_y_pos, std::reference_wrapper<const std::vector<float>>,true)
+
+/*
+ * Personal Space
+ * */
+REGISTER_TYPE(ps_social_x_pos, std::reference_wrapper<const std::vector<float>>, true)
+REGISTER_TYPE(ps_social_y_pos, std::reference_wrapper<const std::vector<float>>, true)
+REGISTER_TYPE(ps_personal_x_pos, std::reference_wrapper<const std::vector<float>>,true )
+REGISTER_TYPE(ps_personal_y_pos, std::reference_wrapper<const std::vector<float>>,true)
+REGISTER_TYPE(ps_intimate_x_pos, std::reference_wrapper<const std::vector<float>>,true)
+REGISTER_TYPE(ps_intimate_y_pos, std::reference_wrapper<const std::vector<float>>,true)
+
+/*
+ * Object
+ * */
+REGISTER_TYPE(obj_width, int, false)
+REGISTER_TYPE(obj_height, int, false)
+REGISTER_TYPE(obj_depth, int, false)
 /*
  * camera
  * */
@@ -130,34 +152,48 @@ REGISTER_TYPE(cam_depth_cameraID, int, false)
 REGISTER_TYPE(cam_depthFactor, float, false)
 REGISTER_TYPE(cam_depth_height, int, false)
 REGISTER_TYPE(cam_depth_width, int, false)
-//TODO: No se don van estos
-/*
- *
- * */
-REGISTER_TYPE(OuterRegionLeft, int, false)
-REGISTER_TYPE(OuterRegionRight, int, false)
-REGISTER_TYPE(OuterRegionBottom, int, false)
-REGISTER_TYPE(OuterRegionTop, int, false)
+
 /*
  * Robot
  * */
+
 REGISTER_TYPE(viriato_head_pan_tilt_nose_target, std::reference_wrapper<const std::vector<float>>, true)
-REGISTER_TYPE(linear_speed, std::reference_wrapper<const std::vector<float>>, true)
-REGISTER_TYPE(angular_speed, std::reference_wrapper<const std::vector<float>>, true)
-REGISTER_TYPE(ref_adv_speed, float, true)
-REGISTER_TYPE(ref_rot_speed, float, true)
-REGISTER_TYPE(ref_side_speed, float, true)
-REGISTER_TYPE(base_target_x, float, true)
-REGISTER_TYPE(base_target_y, float, true)
+REGISTER_TYPE(robot_current_advance_speed, std::reference_wrapper<const std::vector<float>>, true)
+REGISTER_TYPE(robot_current_angular_speed, std::reference_wrapper<const std::vector<float>>, true)
+REGISTER_TYPE(robot_current_side_speed, std::reference_wrapper<const std::vector<float>>, true)
+REGISTER_TYPE(robot_current_linear_speed, std::reference_wrapper<const std::vector<float>>, true) //deprecated
+REGISTER_TYPE(robot_ref_adv_speed, float, true)
+REGISTER_TYPE(robot_ref_rot_speed, float, true)
+REGISTER_TYPE(robot_ref_side_speed, float, true)
+REGISTER_TYPE(base_target_x, float, true) //deprecated
+REGISTER_TYPE(base_target_y, float, true) //deprecated
 /*
  * Plan
  * */
 REGISTER_TYPE(plan, std::reference_wrapper<const std::string>, false)
 REGISTER_TYPE(plan_target_node_id, int, false)
-// mental objects: path_to_target
+
+/*
+ * World
+ * */
+REGISTER_TYPE(OuterRegionLeft, int, false)
+REGISTER_TYPE(OuterRegionRight, int, false)
+REGISTER_TYPE(OuterRegionBottom, int, false)
+REGISTER_TYPE(OuterRegionTop, int, false)
+REGISTER_TYPE(world_outline_x, std::reference_wrapper<const std::vector<float>>, false)
+REGISTER_TYPE(world_outline_y, std::reference_wrapper<const std::vector<float>>, false)
+
+/*
+ * Path to target
+ * */
 REGISTER_TYPE(path_x_values, std::reference_wrapper<const std::vector<float>>, false)
 REGISTER_TYPE(path_y_values, std::reference_wrapper<const std::vector<float>>, false)
 REGISTER_TYPE(path_target_x, float, false)
 REGISTER_TYPE(path_target_y, float, false)
+
+/*
+ * Battery
+ * */
+REGISTER_TYPE(battery_load, int, false);
 
 #endif //DSR_ATTR_NAME_H

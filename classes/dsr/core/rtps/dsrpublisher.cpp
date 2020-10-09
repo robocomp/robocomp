@@ -57,8 +57,8 @@ bool DSRPublisher::init(eprosima::fastrtps::Participant *mp_participant_, const 
     Wparam.qos.m_reliability.kind = eprosima::fastrtps::RELIABLE_RELIABILITY_QOS;
     Wparam.qos.m_publishMode.kind = eprosima::fastrtps::ASYNCHRONOUS_PUBLISH_MODE;
     Wparam.qos.m_durability.kind = eprosima::fastrtps::VOLATILE_DURABILITY_QOS;
-
-
+    //Invalidate data after 1 second. If we dont receive it after this time we probably won't get it.
+    Wparam.qos.m_lifespan.duration = 1;
 
     if (!isStreamData) {
         Wparam.topic.historyQos.kind = KEEP_ALL_HISTORY_QOS;

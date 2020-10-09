@@ -68,7 +68,7 @@ bool DSRSubscriber::init(eprosima::fastrtps::Participant *mp_participant_,
         Rparam.topic.historyQos.depth = 20; // Adjust this value if we are losing  messages
     }
 
-    Rparam.topic.resourceLimitsQos.max_samples = 200;
+    Rparam.topic.resourceLimitsQos.max_samples = 400;
     m_listener.participant_ID = mp_participant->getGuid();
     m_listener.f = std::move(f_);
 

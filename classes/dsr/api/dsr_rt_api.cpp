@@ -27,8 +27,8 @@ std::optional<Mat::RTMat> RT_API::get_RT_pose_from_parent(const Node &n)
         auto res = edges_.find({n.id(),"RT"});
         if (res != edges_.end())
         {
-            auto r = G->get_attrib_by_name<rotation_euler_xyz_att>(res->second);
-            auto t = G->get_attrib_by_name<translation_att>(res->second);
+            auto r = G->get_attrib_by_name<rt_rotation_euler_xyz_att>(res->second);
+            auto t = G->get_attrib_by_name<rt_translation_att>(res->second);
             if (r.has_value() && t.has_value() )
             {
                 Mat::RTMat rt(Eigen::Translation3d(t->get()[0], t->get()[1], t->get()[2]) *
@@ -44,8 +44,8 @@ std::optional<Mat::RTMat> RT_API::get_RT_pose_from_parent(const Node &n)
 
 std::optional<Mat::RTMat>  RT_API::get_edge_RT_as_rtmat(const Edge &edge)
 {
-    auto r = G->get_attrib_by_name<rotation_euler_xyz_att>(edge);
-    auto t =  G->get_attrib_by_name<translation_att>(edge);
+    auto r = G->get_attrib_by_name<rt_rotation_euler_xyz_att>(edge);
+    auto t =  G->get_attrib_by_name<rt_translation_att>(edge);
     if (r.has_value() and t.has_value())
     {
         Mat::RTMat rt(Eigen::Translation3d(t->get()[0], t->get()[1], t->get()[2]) *
@@ -75,9 +75,9 @@ void RT_API::insert_or_assign_edge_RT(Node &n, uint32_t to, const std::vector<fl
             CRDTEdge e; e.to(to);  e.from(n.id()); e.type("RT"); e.agent_id(G->agent_id);
             CRDTAttribute tr; tr.type(3); tr.val(CRDTValue(trans)); tr.timestamp(get_unix_timestamp());
             CRDTAttribute rot; rot.type(3); rot.val(CRDTValue(rot_euler)); rot.timestamp(get_unix_timestamp());
-            auto [it, new_el] = e.attrs().emplace("rotation_euler_xyz", mvreg<CRDTAttribute, uint32_t> ());
+            auto [it, new_el] = e.attrs().emplace("rt_rotation_euler_xyz", mvreg<CRDTAttribute, uint32_t> ());
             it->second.write(rot);
-            auto [it2, new_el2] = e.attrs().emplace("translation", mvreg<CRDTAttribute, uint32_t> ());
+            auto [it2, new_el2] = e.attrs().emplace("rt_translation", mvreg<CRDTAttribute, uint32_t> ());
             it2->second.write(tr);
 
 
@@ -173,9 +173,9 @@ void RT_API::insert_or_assign_edge_RT(Node &n, uint32_t to, std::vector<float> &
             CRDTEdge e; e.to(to);  e.from(n.id()); e.type("RT"); e.agent_id(G->agent_id);
             CRDTAttribute tr; tr.type(3); tr.val(CRDTValue(std::move(trans))); tr.timestamp(get_unix_timestamp());
             CRDTAttribute rot; rot.type(3); rot.val(CRDTValue(std::move(rot_euler))); rot.timestamp(get_unix_timestamp());
-            auto [it, new_el] = e.attrs().emplace("rotation_euler_xyz", mvreg<CRDTAttribute, uint32_t> ());
+            auto [it, new_el] = e.attrs().emplace("rt_rotation_euler_xyz", mvreg<CRDTAttribute, uint32_t> ());
             it->second.write(rot);
-            auto [it2, new_el2] = e.attrs().emplace("translation", mvreg<CRDTAttribute, uint32_t> ());
+            auto [it2, new_el2] = e.attrs().emplace("rt_translation", mvreg<CRDTAttribute, uint32_t> ());
             it2->second.write(tr);
 
 
