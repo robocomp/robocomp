@@ -1091,6 +1091,52 @@ std::optional<std::reference_wrapper<const std::vector<uint8_t>>> DSRGraph::get_
     else return {};
 }
 
+std::optional<std::vector<std::tuple<float,float,float>>> DSRGraph::get_pointcloud(const Node &n, const std::string target_frame_node, unsigned short subsampling)
+{
+    auto& attrs = n.attrs();
+    if (auto value  = attrs.find("cam_depth"); value != attrs.end())
+    {
+        if (auto width  = attrs.find("cam_depth_width"); width != attrs.end())
+        {
+            if (auto focal  = attrs.find("cam_depth_focal_x"); focal != attrs.end())
+            {
+                const std::vector<uint8_t> &tmp = value->second.byte_vec();
+                float *depth_array = (float *)tmp.data();
+                const int WIDTH = width->second.dec();
+                const int FOCAL = focal->second.dec();
+                int STEP = sizeof(float)*(subsampling+1);
+                std::vector<std::tuple<float,float,float>> result(tmp.size()/STEP);
+                float depth;
+                int cols, rows;
+                std::unique_ptr<InnerEigenAPI> inner_eigen;
+                if(target_frame_node != "")
+                {
+                    inner_eigen = get_inner_eigen_api();
+                    for (std::size_t i = 0; i < tmp.size() / sizeof(float); i++)
+                    {
+                        depth = depth_array[i];
+                        cols = i % WIDTH / FOCAL;
+                        rows = i / WIDTH / FOCAL;
+                        auto r = inner_eigen->transform(target_frame_node, Mat::Vector3d(cols * depth, rows * depth, depth), n.name()).value();
+                        result[i] = std::make_tuple(r[0], r[1], r[2]);
+                    }
+                }
+                else
+                    for (std::size_t i = 0; i < tmp.size() / sizeof(float); i++)
+                    {
+                        depth = depth_array[i];
+                        cols = i % WIDTH / FOCAL;
+                        rows = i / WIDTH / FOCAL;
+                        result[i] = std::make_tuple(cols * depth, rows * depth, depth);
+                    }
+                return result;
+            }
+        }
+    }
+    return {};
+}
+
+
 inline void DSRGraph::update_maps_node_delete(uint32_t id, const CRDTNode &n)
 {
     nodes.erase(id);
