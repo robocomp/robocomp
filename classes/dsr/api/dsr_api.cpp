@@ -1098,10 +1098,10 @@ std::optional<std::vector<std::tuple<float,float,float>>> DSRGraph::get_pointclo
     {
         if (auto width  = attrs.find("cam_depth_width"); width != attrs.end())
         {
-            if (auto focal  = attrs.find("cam_depth_focal_x"); focal != attrs.end())
+            if (auto focal  = attrs.find("cam_depth_focalx"); focal != attrs.end())
             {
                 const std::vector<uint8_t> &tmp = value->second.byte_vec();
-                float *depth_array = (float *)tmp.data();
+                float *depth_array = (float *)value->second.byte_vec().data();
                 const int WIDTH = width->second.dec();
                 const int FOCAL = focal->second.dec();
                 int STEP = sizeof(float)*(subsampling+1);
@@ -1112,7 +1112,7 @@ std::optional<std::vector<std::tuple<float,float,float>>> DSRGraph::get_pointclo
                 if(target_frame_node != "")
                 {
                     inner_eigen = get_inner_eigen_api();
-                    for (std::size_t i = 0; i < tmp.size() / sizeof(float); i++)
+                    for (std::size_t i = 0; i < tmp.size() / STEP; i++)
                     {
                         depth = depth_array[i];
                         cols = i % WIDTH / FOCAL;
@@ -1122,7 +1122,7 @@ std::optional<std::vector<std::tuple<float,float,float>>> DSRGraph::get_pointclo
                     }
                 }
                 else
-                    for (std::size_t i = 0; i < tmp.size() / sizeof(float); i++)
+                    for (std::size_t i = 0; i < tmp.size() / STEP; i++)
                     {
                         depth = depth_array[i];
                         cols = i % WIDTH / FOCAL;
