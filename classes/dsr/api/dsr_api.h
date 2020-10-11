@@ -477,6 +477,7 @@ namespace DSR
         std::optional<std::reference_wrapper<const std::vector<uint8_t>>> get_depth_image(const Node &n) const;
         //subsampling: 0,1,2,.. means all, one of two, one of three...
         std::optional<std::vector<std::tuple<float,float,float>>>  get_pointcloud(const Node &n, const std::string target_frame_node = "", unsigned short subsampling=0);
+        std::optional<std::vector<uint8_t>> get_depth_as_gray_image(const Node &n) const;
         /**AUXILIARY Images SUB-API**/
 
         /////////////////////////////////////////////////

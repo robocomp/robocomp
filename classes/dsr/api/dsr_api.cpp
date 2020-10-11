@@ -7,7 +7,7 @@
 #include <unistd.h>
 #include <algorithm>
 #include <utility>
-
+#include <math.h>
 
 #include <fastrtps/subscriber/Subscriber.h>
 #include <fastrtps/transport/UDPv4TransportDescriptor.h>
@@ -1094,7 +1094,7 @@ std::optional<std::reference_wrapper<const std::vector<uint8_t>>> DSRGraph::get_
 std::optional<std::vector<std::tuple<float,float,float>>> DSRGraph::get_pointcloud(const Node &n, const std::string target_frame_node, unsigned short subsampling)
 {
     auto& attrs = n.attrs();
-    if (auto value  = attrs.find("cam_depth"); value != attrs.end())
+    if (auto value  = attrs.find("cam_depth"); value != attrs.end())  //in metres
     {
         if (auto width  = attrs.find("cam_depth_width"); width != attrs.end())
         {
@@ -1103,7 +1103,8 @@ std::optional<std::vector<std::tuple<float,float,float>>> DSRGraph::get_pointclo
                 const std::vector<uint8_t> &tmp = value->second.byte_vec();
                 float *depth_array = (float *)value->second.byte_vec().data();
                 const int WIDTH = width->second.dec();
-                const int FOCAL = focal->second.dec();
+                int FOCAL = focal->second.dec();
+                FOCAL = (int)((WIDTH/2) / atan(0.52));  // ÑAPA QUITAR
                 int STEP = sizeof(float)*(subsampling+1);
                 std::vector<std::tuple<float,float,float>> result(tmp.size()/STEP);
                 float depth;
@@ -1114,20 +1115,20 @@ std::optional<std::vector<std::tuple<float,float,float>>> DSRGraph::get_pointclo
                     inner_eigen = get_inner_eigen_api();
                     for (std::size_t i = 0; i < tmp.size() / STEP; i++)
                     {
-                        depth = depth_array[i];
-                        cols = i % WIDTH / FOCAL;
-                        rows = i / WIDTH / FOCAL;
-                        auto r = inner_eigen->transform(target_frame_node, Mat::Vector3d(cols * depth, rows * depth, depth), n.name()).value();
-                        result[i] = std::make_tuple(r[0], r[1], r[2]);
+                        depth = depth_array[i] * 1000;
+                        cols = i % WIDTH + depth / FOCAL;
+                        rows = i / WIDTH * depth / FOCAL;
+                        auto r = inner_eigen->transform(target_frame_node, Mat::Vector3d(cols , rows , depth), n.name()).value();
+                        result[i] = std::make_tuple(r[0]/1000, r[1]/1000, r[2]/1000);
                     }
                 }
                 else
                     for (std::size_t i = 0; i < tmp.size() / STEP; i++)
                     {
-                        depth = depth_array[i];
-                        cols = i % WIDTH / FOCAL;
-                        rows = i / WIDTH / FOCAL;
-                        result[i] = std::make_tuple(cols * depth, rows * depth, depth);
+                        depth = depth_array[i] * 1000;  //to mmm
+                        cols = i % WIDTH * depth / FOCAL;
+                        rows = i / WIDTH * depth / FOCAL;
+                        result[i] = std::make_tuple(cols/1000, rows/1000, depth/1000);
                     }
                 return result;
             }
@@ -1136,6 +1137,21 @@ std::optional<std::vector<std::tuple<float,float,float>>> DSRGraph::get_pointclo
     return {};
 }
 
+std::optional<std::vector<uint8_t>> DSRGraph::get_depth_as_gray_image(const Node &n) const
+{
+    auto& attrs = n.attrs();
+    if (auto value  = attrs.find("cam_depth"); value != attrs.end())
+    {
+        const std::vector<uint8_t> &tmp = value->second.byte_vec();
+        float *depth_array = (float *)value->second.byte_vec().data();
+        const auto STEP = sizeof(float);
+        std::vector<std::uint8_t> gray_image(tmp.size()/STEP);
+        for(std::size_t i=0; i < tmp.size()/STEP; i++)
+            gray_image[i] = (int)(depth_array[i]*255);
+        return gray_image;
+    }
+    else return {};
+}
 
 inline void DSRGraph::update_maps_node_delete(uint32_t id, const CRDTNode &n)
 {

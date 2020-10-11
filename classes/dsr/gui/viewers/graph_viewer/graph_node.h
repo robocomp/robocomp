@@ -162,33 +162,13 @@ class DoRGBDStuff : public QWidget
           } else
                 rgbd_label.clear();
           //depth              
-          if (show_depth->isChecked()) {
-//            const float factor = 255.f/4000.f; //define 4000 as max distance on grayscale conversion (255 value)
+          if (show_depth->isChecked())
+          {
             const auto depth_width = graph->get_attrib_by_name<cam_depth_width_att>(n.value());
             const auto depth_height = graph->get_attrib_by_name<cam_depth_height_att>(n.value());
-            //std::optional<std::reference_wrapper<const std::vector<uint8_t>>> depth_data = graph->get_depth_image(n.value());
-            const std::optional<std::vector<uint8_t>> depth_data = graph->get_attrib_by_name<cam_depth_att>(n.value());
-            if (depth_data.has_value() and depth_width.has_value() and depth_height.has_value()) {
-                const auto my_depth_data = depth_data.value();
-                std::vector<uint8_t> gray_scale(my_depth_data.size()/4);
-                float aux = 0.f;
-                for (std::size_t i = 0; i < my_depth_data.size(); i+=4) {
-                    //convert byte to float
-                    if constexpr (__BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__)
-                    {
-                        *(unsigned int*)&aux = my_depth_data.at(i+3) << 24u | my_depth_data.at(i+2) << 16u | my_depth_data.at(i+1) << 8u | my_depth_data.at(i);
-                    } else if constexpr(__BYTE_ORDER__ == __ORDER_BIG_ENDIAN__)
-                    {
-                        *(unsigned int*)&aux = my_depth_data.at(i) << 24u | my_depth_data.at(i+1) << 16u | my_depth_data.at(i+2) << 8u | my_depth_data.at(i+3);
-                    }
-                    //convert float to grayscale => [(value - min(0)) / (max - min)] * 255
-                    gray_scale.at(i/4) = aux * 255;
-                    // asignar aquí el valor al pixel de QImage
-                }
-                auto pix2 = QPixmap::fromImage(
-                        QImage(&gray_scale[0], depth_width.value(), depth_height.value(), QImage::Format_Indexed8));
-                depth_label.setPixmap(pix2);
-            }
+            const std::optional<std::vector<std::uint8_t>> gray_scale = graph->get_depth_as_gray_image(n.value());
+            if (gray_scale.has_value() and depth_width.has_value() and depth_height.has_value())
+                depth_label.setPixmap(QPixmap::fromImage(QImage(&gray_scale.value()[0], depth_width.value(), depth_height.value(), QImage::Format_Indexed8)));
           }
           else{
             depth_label.clear();
