@@ -1061,7 +1061,11 @@ std::optional<std::reference_wrapper<const std::vector<uint8_t>>> DSRGraph::get_
     auto& attrs = n.attrs();
     if (auto value  = attrs.find("cam_rgb"); value != attrs.end())
         return value->second.byte_vec();
-    else return {};
+    else
+    {
+        qWarning() << __FUNCTION__ << "No rgb attribute found in node " << QString::fromStdString(n.name())  << ". Returning empty";
+        return {};
+    }
 }
 
 std::optional<std::vector<float>> DSRGraph::get_depth_image(const Node &n)
@@ -1070,7 +1074,8 @@ std::optional<std::vector<float>> DSRGraph::get_depth_image(const Node &n)
     if (auto value  = attrs.find("cam_depth"); value != attrs.end()) {
         const std::vector<uint8_t> &tmp = value->second.byte_vec();
         std::vector<float> res(tmp.size()/4);
-        for (std::size_t i = 0; i < tmp.size(); i+=4) {
+        for (std::size_t i = 0; i < tmp.size(); i+=4)
+        {
             if constexpr (__BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__){
                 *(unsigned int*)&res.at(i/4) = tmp.at(i+3) << 24u | tmp.at(i+2) << 16u | tmp.at(i+1) << 8u | tmp.at(i);
             } else if constexpr(__BYTE_ORDER__ == __ORDER_BIG_ENDIAN__){
@@ -1079,7 +1084,11 @@ std::optional<std::vector<float>> DSRGraph::get_depth_image(const Node &n)
         }
         return res;
     }
-    else return {};
+    else
+    {
+        qWarning() << __FUNCTION__ << "No depth attribute found in node " << QString::fromStdString(n.name())  << ". Returning empty";
+        return {};
+    };
 }
 
 std::optional<std::reference_wrapper<const std::vector<uint8_t>>> DSRGraph::get_depth_image(const Node &n) const
@@ -1088,7 +1097,11 @@ std::optional<std::reference_wrapper<const std::vector<uint8_t>>> DSRGraph::get_
     if (auto value  = attrs.find("cam_depth"); value != attrs.end()) {
         return value->second.byte_vec();
     }
-    else return {};
+    else
+    {
+        qWarning() << __FUNCTION__ << "No depth attribute found in node " << QString::fromStdString(n.name())  << ". Returning empty";
+        return {};
+    };
 }
 
 std::optional<std::vector<std::tuple<float,float,float>>> DSRGraph::get_pointcloud(const Node &n, const std::string target_frame_node, unsigned short subsampling)
@@ -1098,43 +1111,83 @@ std::optional<std::vector<std::tuple<float,float,float>>> DSRGraph::get_pointclo
     {
         if (auto width  = attrs.find("cam_depth_width"); width != attrs.end())
         {
-            if (auto focal  = attrs.find("cam_depth_focalx"); focal != attrs.end())
+            if (auto height = attrs.find("cam_depth_height"); height != attrs.end())
             {
-                const std::vector<uint8_t> &tmp = value->second.byte_vec();
-                float *depth_array = (float *)value->second.byte_vec().data();
-                const int WIDTH = width->second.dec();
-                int FOCAL = focal->second.dec();
-                FOCAL = (int)((WIDTH/2) / atan(0.52));  // ÑAPA QUITAR
-                int STEP = sizeof(float)*(subsampling+1);
-                std::vector<std::tuple<float,float,float>> result(tmp.size()/STEP);
-                float depth;
-                int cols, rows;
-                std::unique_ptr<InnerEigenAPI> inner_eigen;
-                if(target_frame_node != "")
+                if (auto focal = attrs.find("cam_depth_focalx"); focal != attrs.end())
                 {
-                    inner_eigen = get_inner_eigen_api();
-                    for (std::size_t i = 0; i < tmp.size() / STEP; i++)
+                    const std::vector<uint8_t> &tmp = value->second.byte_vec();
+                    if (subsampling == 0 or subsampling > tmp.size())
                     {
-                        depth = depth_array[i] * 1000;
-                        cols = i % WIDTH + depth / FOCAL;
-                        rows = i / WIDTH * depth / FOCAL;
-                        auto r = inner_eigen->transform(target_frame_node, Mat::Vector3d(cols , rows , depth), n.name()).value();
-                        result[i] = std::make_tuple(r[0]/1000, r[1]/1000, r[2]/1000);
+                        qWarning("DSRGraph::get_pointcloud: subsampling parameter < 1 or > than depth size");
+                        return {};
                     }
+                    // cast to float
+                    float *depth_array = (float *) value->second.byte_vec().data();
+                    const int WIDTH = width->second.dec();
+                    const int HEIGHT = width->second.dec();
+                    int FOCAL = focal->second.dec();
+                    FOCAL = (int) ((WIDTH / 2) / atan(0.52));  // ÑAPA QUITAR
+                    int STEP = subsampling;
+                    float depth; int cols, rows;
+                    std::size_t SIZE = tmp.size() / sizeof(float);
+                    std::vector<std::tuple<float, float, float>> result(SIZE);
+                    std::unique_ptr<InnerEigenAPI> inner_eigen;
+                    std::unique_ptr<InnerAPI> inner_model;
+                    if (target_frame_node != "")  // do the change of coordinate system
+                    {
+                        inner_eigen = get_inner_eigen_api();
+                        inner_model = get_inner_api();
+                        for (std::size_t i = 0; i < SIZE; i += STEP)
+                        {
+                            depth = depth_array[i];
+                            cols = (i % WIDTH) - 320;
+                            rows = 240 - (i / WIDTH);
+                            // we transform measurements to millimeters
+//                            if(abs(cols) == 0)
+//                                qInfo() << cols << rows << depth*1000 << cols * depth / FOCAL * 1000 << rows * depth / FOCAL * 1000;
+                            auto r = inner_eigen->transform(target_frame_node,
+                                                            Mat::Vector3d(cols * depth / FOCAL * 1000,
+                                                                          rows * depth / FOCAL * 1000, depth * 1000),
+                                                            n.name()).value();
+                            if(abs(cols) == 0)
+                                qInfo() << cols << rows << depth*1000 << r[0] << r[1] << r[2];
+                            result[i] = std::make_tuple(r[0], r[1], r[2]);
+                        }
+                    } else
+                        for (std::size_t i = 0; i < tmp.size() / STEP; i++)
+                        {
+                            depth = depth_array[i];
+                            cols = (i % WIDTH) - 320;
+                            rows = 240 - (i / WIDTH);
+                            // we transform measurements to millimeters
+                            result[i] = std::make_tuple(cols * depth / FOCAL * 1000, rows * depth / FOCAL * 1000,
+                                                        depth * 1000);
+                        }
+                    return result;
+                } else
+                {
+                    qWarning() << __FUNCTION__ << "No focal attribute found in node "
+                               << QString::fromStdString(n.name()) << ". Returning empty";
+                    return {};
                 }
-                else
-                    for (std::size_t i = 0; i < tmp.size() / STEP; i++)
-                    {
-                        depth = depth_array[i] * 1000;  //to mmm
-                        cols = i % WIDTH * depth / FOCAL;
-                        rows = i / WIDTH * depth / FOCAL;
-                        result[i] = std::make_tuple(cols/1000, rows/1000, depth/1000);
-                    }
-                return result;
+            } else
+            {
+                qWarning() << __FUNCTION__ << "No HEIGHT attribute found in node " << QString::fromStdString(n.name())
+                           << ". Returning empty";
+                return {};
             }
         }
+        else
+        {
+            qWarning() << __FUNCTION__ << "No WIDTH attribute found in node " << QString::fromStdString(n.name())  << ". Returning empty";
+            return{};
+        }
     }
-    return {};
+    else
+    {
+        qWarning() << __FUNCTION__ << "No depth attribute found found in node " << QString::fromStdString(n.name())  << ". Returning empty";
+        return {};
+    }
 }
 
 std::optional<std::vector<uint8_t>> DSRGraph::get_depth_as_gray_image(const Node &n) const
@@ -1147,11 +1200,17 @@ std::optional<std::vector<uint8_t>> DSRGraph::get_depth_as_gray_image(const Node
         const auto STEP = sizeof(float);
         std::vector<std::uint8_t> gray_image(tmp.size()/STEP);
         for(std::size_t i=0; i < tmp.size()/STEP; i++)
-            gray_image[i] = (int)(depth_array[i]*255);
+            gray_image[i] = (int)(depth_array[i]*255);  // ONLY VALID FOR SHORT RANGE, INDOOR SCENES
         return gray_image;
     }
-    else return {};
+    else
+    {
+        qWarning() << __FUNCTION__ << "No depth attribute found in node " << QString::fromStdString(n.name())  << ". Returning empty";
+        return {};
+    };
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////////7
 
 inline void DSRGraph::update_maps_node_delete(uint32_t id, const CRDTNode &n)
 {
