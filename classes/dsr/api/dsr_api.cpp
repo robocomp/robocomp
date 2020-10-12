@@ -1128,27 +1128,23 @@ std::optional<std::vector<std::tuple<float,float,float>>> DSRGraph::get_pointclo
                     int FOCAL = focal->second.dec();
                     FOCAL = (int) ((WIDTH / 2) / atan(0.52));  // ÑAPA QUITAR
                     int STEP = subsampling;
-                    float depth; int cols, rows;
+                    float depth, X, Y, Z; int cols, rows;
                     std::size_t SIZE = tmp.size() / sizeof(float);
                     std::vector<std::tuple<float, float, float>> result(SIZE);
                     std::unique_ptr<InnerEigenAPI> inner_eigen;
-                    std::unique_ptr<InnerAPI> inner_model;
                     if (target_frame_node != "")  // do the change of coordinate system
                     {
                         inner_eigen = get_inner_eigen_api();
-                        inner_model = get_inner_api();
                         for (std::size_t i = 0; i < SIZE; i += STEP)
                         {
                             depth = depth_array[i];
-                            cols = (i % WIDTH) - 320;
-                            rows = 240 - (i / WIDTH);
-                            // we transform measurements to millimeters
-                          auto r = inner_eigen->transform(target_frame_node,Mat::Vector3d(cols * depth / FOCAL * 1000, depth * 1000,
-                                                        rows * depth / FOCAL * 1000 ), n.name()).value();
-//                          //auto r = inner_eigen->transform(target_frame_node, Mat::Vector3d(), n.name()).value());
-//                          auto cam = Mat::Vector3d(cols * depth / FOCAL * 1000, rows * depth / FOCAL * 1000, depth * 1000);//                         if(abs(cols) == 0)
-//                                qInfo() << cols << rows << depth*1000 << " [ " << r[0] << r[1] << r[2] << " ]";
-//                              qInfo() << cols << rows << depth*1000 << " [ " << cam[0] << cam[1] << cam[2] << " ]";
+                            cols = (i % WIDTH) - (WIDTH/2);
+                            rows = (HEIGHT/2) - (i / WIDTH);
+                            // compute axis coordinates according to the camera's coordinate system (Y outwards and Z up)
+                            X = cols * depth / FOCAL * 1000;
+                            Y = depth * 1000;
+                            Z = rows * depth / FOCAL * 1000;
+                            auto r = inner_eigen->transform(target_frame_node,Mat::Vector3d(X, Y, Z), n.name()).value();
                             result[i] = std::make_tuple(r[0], r[1], r[2]);
                         }
                     } else
@@ -1157,9 +1153,11 @@ std::optional<std::vector<std::tuple<float,float,float>>> DSRGraph::get_pointclo
                             depth = depth_array[i];
                             cols = (i % WIDTH) - 320;
                             rows = 240 - (i / WIDTH);
+                            X = cols * depth / FOCAL * 1000;
+                            Y = depth * 1000;
+                            Z = rows * depth / FOCAL * 1000;
                             // we transform measurements to millimeters
-                            result[i] = std::make_tuple(cols * depth / FOCAL * 1000, rows * depth / FOCAL * 1000,
-                                                        depth * 1000);
+                            result[i] = std::make_tuple(X, Y, Z);
                         }
                     return result;
                 } else
@@ -1198,7 +1196,7 @@ std::optional<std::vector<uint8_t>> DSRGraph::get_depth_as_gray_image(const Node
         const auto STEP = sizeof(float);
         std::vector<std::uint8_t> gray_image(tmp.size()/STEP);
         for(std::size_t i=0; i < tmp.size()/STEP; i++)
-            gray_image[i] = (int)(depth_array[i]*255);  // ONLY VALID FOR SHORT RANGE, INDOOR SCENES
+            gray_image[i] = (int)(depth_array[i]*15);  // ONLY VALID FOR SHORT RANGE, INDOOR SCENES
         return gray_image;
     }
     else
