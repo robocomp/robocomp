@@ -1143,14 +1143,12 @@ std::optional<std::vector<std::tuple<float,float,float>>> DSRGraph::get_pointclo
                             cols = (i % WIDTH) - 320;
                             rows = 240 - (i / WIDTH);
                             // we transform measurements to millimeters
-//                            if(abs(cols) == 0)
-//                                qInfo() << cols << rows << depth*1000 << cols * depth / FOCAL * 1000 << rows * depth / FOCAL * 1000;
-                            auto r = inner_eigen->transform(target_frame_node,
-                                                            Mat::Vector3d(cols * depth / FOCAL * 1000,
-                                                                          rows * depth / FOCAL * 1000, depth * 1000),
-                                                            n.name()).value();
-                            if(abs(cols) == 0)
-                                qInfo() << cols << rows << depth*1000 << r[0] << r[1] << r[2];
+                          auto r = inner_eigen->transform(target_frame_node,Mat::Vector3d(cols * depth / FOCAL * 1000, depth * 1000,
+                                                        rows * depth / FOCAL * 1000 ), n.name()).value();
+//                          //auto r = inner_eigen->transform(target_frame_node, Mat::Vector3d(), n.name()).value());
+//                          auto cam = Mat::Vector3d(cols * depth / FOCAL * 1000, rows * depth / FOCAL * 1000, depth * 1000);//                         if(abs(cols) == 0)
+//                                qInfo() << cols << rows << depth*1000 << " [ " << r[0] << r[1] << r[2] << " ]";
+//                              qInfo() << cols << rows << depth*1000 << " [ " << cam[0] << cam[1] << cam[2] << " ]";
                             result[i] = std::make_tuple(r[0], r[1], r[2]);
                         }
                     } else
