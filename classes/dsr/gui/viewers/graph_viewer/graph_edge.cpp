@@ -187,7 +187,7 @@ void GraphEdge::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event)
 	if( event->button()== Qt::RightButton)
 	{
 		if(tag == "RT")
-			do_stuff = std::make_unique<DoRTStuff>(graph, source->id_in_graph, dest->id_in_graph, tag.toStdString());
+			do_stuff = std::make_unique<DoRTStuff2>(graph, source->id_in_graph, dest->id_in_graph, tag.toStdString());
 	}
 	animation->start();
 	update();
