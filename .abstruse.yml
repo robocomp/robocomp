@@ -1,5 +1,5 @@
 image:
-  ubuntu_18_robocomp_dependences
+  robocomp_dependences_18.04
 matrix:
   - env: SCRIPT="robocomp_compilation"
 branches:
