@@ -541,7 +541,7 @@ namespace DSR
         std::unordered_map<std::string, std::unordered_set<pair<uint32_t, uint32_t>, hash_tuple>> edgeType;  // collection with all edge types.
         std::unordered_map<std::string, std::unordered_set<uint32_t>> nodeType;  // collection with all node types.
 
-        void update_maps_node_delete(uint32_t id, const CRDTNode &n);
+        void update_maps_node_delete(uint32_t id, const std::optional<CRDTNode>& n);
         void update_maps_node_insert(uint32_t id, const CRDTNode &n);
         void update_maps_edge_delete(uint32_t from, uint32_t to, const std::string &key = "");
         void update_maps_edge_insert(uint32_t from, uint32_t to, const std::string &key);
@@ -638,11 +638,11 @@ namespace DSR
         //////////////////////////////////////////////////////////////////////////
         // CRDT join operations
         ///////////////////////////////////////////////////////////////////////////
-        void join_delta_node(IDL::Mvreg &mvreg);
-        void join_delta_edge(IDL::MvregEdge &mvreg);
-        void join_delta_node_attr(IDL::MvregNodeAttr &mvreg);
-        void join_delta_edge_attr(IDL::MvregEdgeAttr &mvreg);
-        void join_full_graph(IDL::OrMap &full_graph);
+        void join_delta_node(IDL::Mvreg &&mvreg);
+        void join_delta_edge(IDL::MvregEdge &&mvreg);
+        void join_delta_node_attr(IDL::MvregNodeAttr &&mvreg);
+        void join_delta_edge_attr(IDL::MvregEdgeAttr &&mvreg);
+        void join_full_graph(IDL::OrMap &&full_graph);
 
         //Custom function for each rtps topic
         class NewMessageFunctor {

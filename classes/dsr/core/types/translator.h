@@ -34,6 +34,7 @@ namespace DSR {
         return delta_crdt;
     }
 
+    /*
     inline static mvreg<CRDTNode, uint32_t> translate_node_mvIDL_to_CRDT(IDL::Mvreg &data)
     {
         // Context
@@ -49,6 +50,26 @@ namespace DSR {
         std::map<pair<uint32_t, int>, CRDTNode> ds_aux;
         for (auto &[k, v] : data.dk().ds())
             ds_aux[pair<uint32_t, int>(k.first(), k.second())] = CRDTNode(v);
+        // Join
+        mvreg<CRDTNode, uint32_t> aw;
+        aw.dk.c = dotcontext_aux;
+        aw.dk.set(ds_aux);
+        return aw;
+    }
+    */
+    inline static mvreg<CRDTNode, uint32_t> translate_node_mvIDL_to_CRDT(IDL::Mvreg &&data)
+    {
+        // Context
+        dotcontext<uint32_t> dotcontext_aux;
+        std::map<uint32_t, int> m = std::move(data.dk().cbase().cc());
+        std::set<pair<uint32_t, int>> s;
+        for (auto &v : data.dk().cbase().dc())
+            s.insert(std::make_pair(v.first(), v.second()));
+        dotcontext_aux.setContext(m, s);
+        // Dots
+        std::map<pair<uint32_t, int>, CRDTNode> ds_aux;
+        for (auto &[k, v] : data.dk().ds())
+            ds_aux[pair<uint32_t, int>(k.first(), k.second())] = CRDTNode(std::move(v));
         // Join
         mvreg<CRDTNode, uint32_t> aw;
         aw.dk.c = dotcontext_aux;
@@ -88,13 +109,13 @@ namespace DSR {
 
     }
 
-    inline static mvreg<CRDTAttribute, uint32_t> translate_edge_attr_mvIDL_to_CRDT(IDL::MvregEdgeAttr &data)
+    inline static mvreg<CRDTAttribute, uint32_t> translate_edge_attr_mvIDL_to_CRDT(IDL::MvregEdgeAttr &&data)
     {
         // Context
         dotcontext<uint32_t> dotcontext_aux;
-        std::map<uint32_t, int> m;
-        for (auto &v : data.dk().cbase().cc())
-            m.insert(std::make_pair(v.first, v.second));
+        std::map<uint32_t, int> m = std::move(data.dk().cbase().cc());
+        //for (auto &v : data.dk().cbase().cc())
+        //    m.insert(std::make_pair(v.first, v.second));
         std::set<pair<uint32_t, int>> s;
         for (auto &v : data.dk().cbase().dc())
             s.insert(std::make_pair(v.first(), v.second()));
@@ -140,13 +161,13 @@ namespace DSR {
         return delta_crdt;
     }
 
-    inline static mvreg<CRDTAttribute, uint32_t> translate_node_attr_mvIDL_to_CRDT(IDL::MvregNodeAttr &data)
+    inline static mvreg<CRDTAttribute, uint32_t> translate_node_attr_mvIDL_to_CRDT(IDL::MvregNodeAttr &&data)
     {
         // Context
         dotcontext<uint32_t> dotcontext_aux;
-        std::map<uint32_t, int> m;
-        for (auto &v : data.dk().cbase().cc())
-            m.insert(std::make_pair(v.first, v.second));
+        std::map<uint32_t, int> m = std::move(data.dk().cbase().cc());
+        //for (auto &v : data.dk().cbase().cc())
+        //    m.insert(std::make_pair(v.first, v.second));
         std::set<pair<uint32_t, int>> s;
         for (auto &v : data.dk().cbase().dc())
             s.insert(std::make_pair(v.first(), v.second()));
@@ -162,13 +183,13 @@ namespace DSR {
         return aw;
     }
 
-    inline static mvreg<CRDTEdge, uint32_t> translate_edge_mvIDL_to_CRDT(IDL::MvregEdge &data)
+    inline static mvreg<CRDTEdge, uint32_t> translate_edge_mvIDL_to_CRDT(IDL::MvregEdge &&data)
     {
         // Context
         dotcontext<uint32_t> dotcontext_aux;
-        std::map<uint32_t, int> m;
-        for (auto &v : data.dk().cbase().cc())
-            m.insert(std::make_pair(v.first, v.second));
+        std::map<uint32_t, int> m = std::move(data.dk().cbase().cc());
+        //for (auto &v : data.dk().cbase().cc())
+        //    m.insert(std::make_pair(v.first, v.second));
         std::set<pair<uint32_t, int>> s;
         for (auto &v : data.dk().cbase().dc())
             s.insert(std::make_pair(v.first(), v.second()));

@@ -267,7 +267,7 @@ namespace DSR {
         m_from = x.from();
         if (!x.attrs().empty()) {
             for (auto&[k, v] : x.attrs()) {
-                m_attrs[k] = translate_edge_attr_mvIDL_to_CRDT(v);
+                m_attrs[k] = translate_edge_attr_mvIDL_to_CRDT(std::move(v));
             }
         }
         m_agent_id = x.agent_id();
@@ -386,10 +386,10 @@ namespace DSR {
         m_id = x.id();
         m_agent_id = x.agent_id();
         for (auto&[k, v] : x.attrs()) {
-            m_attrs[k] = translate_node_attr_mvIDL_to_CRDT(v);
+            m_attrs[k] = translate_node_attr_mvIDL_to_CRDT(std::move(v));
         }
         for (auto&[k, v] : x.fano()) {
-            m_fano[make_pair(k.to(), k.type())] = translate_edge_mvIDL_to_CRDT(v);
+            m_fano[make_pair(k.to(), k.type())] = translate_edge_mvIDL_to_CRDT(std::move(v));
         }
     }
 
@@ -400,10 +400,10 @@ namespace DSR {
         m_id = x.id();
         m_agent_id = x.agent_id();
         for (auto&[k, v] : x.attrs()) {
-            m_attrs[k] = translate_node_attr_mvIDL_to_CRDT(v);
+            m_attrs[k] = translate_node_attr_mvIDL_to_CRDT(std::move(v));
         }
         for (auto&[k, v] : x.fano()) {
-            m_fano[make_pair(k.to(), k.type())] = translate_edge_mvIDL_to_CRDT(v);
+            m_fano[make_pair(k.to(), k.type())] = translate_edge_mvIDL_to_CRDT(std::move(v));
         }
     }
 
