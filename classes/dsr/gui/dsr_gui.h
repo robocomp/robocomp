@@ -70,6 +70,8 @@ namespace DSR
 			virtual void keyPressEvent(QKeyEvent *event);
 		
 		private:
+			QTimer *timer;
+            QElapsedTimer alive_timer;            
 			std::shared_ptr<DSR::DSRGraph> G;
 			QMainWindow *window;
 			QMenu *viewMenu;
@@ -89,7 +91,7 @@ namespace DSR
 //			void toggleSimulationSLOT();
 			void restart_app(bool);
 			void switch_view(bool state, WidgetContainer* container);
-
+            void compute();
 		signals:
 			void saveGraphSIGNAL();
 			void closeWindowSIGNAL();
