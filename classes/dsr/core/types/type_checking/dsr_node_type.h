@@ -49,6 +49,8 @@ constexpr auto node_type_names = std::experimental::make_array(
         "right_elbow"sv,
         "left_wrist"sv,
         "right_wrist"sv,
+        "left_hand"sv,
+        "right_hand"sv
         "left_hip"sv,
         "right_hip"sv,
         "left_leg"sv,

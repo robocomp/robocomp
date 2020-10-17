@@ -168,6 +168,10 @@ REGISTER_TYPE(robot_ref_side_speed, float, true)
 REGISTER_TYPE(base_target_x, float, true) //deprecated
 REGISTER_TYPE(base_target_y, float, true) //deprecated
 /*
+ * Arm
+ * */
+REGISTER_TYPE(viriato_arm_tip_target, std::reference_wrapper<const std::vector<float>>,  false)
+/*
  * Plan
  * */
 REGISTER_TYPE(plan, std::reference_wrapper<const std::string>, false)
