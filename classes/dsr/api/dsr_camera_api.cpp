@@ -65,7 +65,9 @@ Eigen::Vector2d CameraAPI::project(const Eigen::Vector3d & p, int cx, int  cy) c
     Eigen::Vector2d proj;
     if(cx==-1) cx=centre_x;
     if(cy==-1) cy=centre_y;
-    proj << focal_x * p.x() / p.y() + cx, focal_y * p.z() / p.y() + cy;
+    //    proj << focal_x * p.x() / p.y() + cx, -focal_y * p.z() / p.y() + cy;
+    proj << focal_x * /*(608/640) */ p.x() / p.y() + cx, -focal_y * (608/480) * p.z() / p.y() + cy;
+
     return proj;
 }
 
