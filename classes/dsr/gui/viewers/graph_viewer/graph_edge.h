@@ -257,6 +257,12 @@ public slots:
                 const double &value = transform.value()[pos];
                 attrib_widgets[pos]->setText(QString::number(value));
             }
+            //convert degress
+            for(unsigned int pos = 3;pos < 6;pos++)
+            {
+                const double &value = transform.value()[pos] * 180 / M_PI;
+                attrib_widgets[3 + pos]->setText(QString::number(value));
+            }
         }
         else
             std::cout<<"Error retriving RT data"<<std::endl;
@@ -286,7 +292,7 @@ private:
     std::string to_string;
     std::string reference;
     std::map<int, QLineEdit*> attrib_widgets;
-    std::vector<std::vector<std::string>> attrib_names = {{" X", " Y", " Z"}, {"RX", "RY", "RZ"} }; 
+    std::vector<std::vector<std::string>> attrib_names = {{"X", "Y", "Z"}, {"RX (rad)", "RY (rad)", "RZ (rad)"}, {"RX (deg)", "RY (deg)", "RZ (deg)"} };
     std::set<std::string> transform_set;
 };
 
