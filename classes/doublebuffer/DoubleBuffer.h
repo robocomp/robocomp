@@ -17,11 +17,14 @@
 #include <string>
 #include <functional>
 #include <atomic>
+#include <future>
+//#include <benchmark/benchmark.h>
 
 using namespace std::chrono_literals;
 
 //Función utilizada como argumento por defecto.
 constexpr auto empty_fn = [](auto &I, auto &T) {};
+constexpr auto empty_fn_move = [](auto &&I, auto &T) {};
 
 template <typename T, typename = void>
 struct is_iterable : std::false_type
@@ -70,40 +73,44 @@ public:
 
     std::optional<O> try_get()
     {
-        if (empty.load())
+        if (empty.load()){
+            std::cout << "No hay nada"<< std::endl;
             return {};
+        }
 
         std::shared_lock lock(bufferMutex);
         empty.store( true);
         return readBuffer;
-
     }
 
     void put(const I &d, std::function<void(const I &, O &)> t = empty_fn)
     {
-        thread_local O temp;
-        if (ItoO(d, temp, t))
-        {
-            std::unique_lock lock(bufferMutex);
-            writeBuffer = std::move(temp);
-            std::swap(writeBuffer, readBuffer);
-            empty.store(false);
-            cv.notify_all();
-        }
+        auto fut = std::async(std::launch::async, [&]{
+            O temp;
+            if (ItoO(d, temp, t))
+            {
+                std::unique_lock lock(bufferMutex);
+                writeBuffer = std::move(temp);
+                std::swap(writeBuffer, readBuffer);
+                empty.store(false);
+                cv.notify_all();
+            }
+        });
     }
 
-    void put(I &&d, std::function<void(const I &, O &)> t = empty_fn)
+    void put(I &&d, std::function<void( I &&, O &)> t = empty_fn_move)
     {
-        thread_local O temp;
-
-        if (ItoO(std::move(d), temp, t))
-        {
-            std::unique_lock lock(bufferMutex);
-            writeBuffer = std::move(temp);
-            std::swap(writeBuffer, readBuffer);
-            empty.store(false);
-            cv.notify_all();
-        }
+        auto fut = std::async(std::launch::async, [&]{
+            O temp;
+            if (ItoO(std::move(d), temp, t))
+            {
+                std::unique_lock lock(bufferMutex);
+                writeBuffer = std::move(temp);
+                std::swap(writeBuffer, readBuffer);
+                empty.store(false);
+                cv.notify_all();
+            }
+        });
     }
 
 private:
@@ -145,7 +152,7 @@ private:
         return true;
     };
 
-    bool ItoO(const I &&iTypeData, O &oTypeData, std::function<void(const I &, O &)> t = empty_fn)
+    bool ItoO(I &&iTypeData, O &oTypeData, std::function<void( I &&, O &)> t = empty_fn_move)
     {
         //Si es el mismo tipo o es convertible de I a O
         if constexpr (std::is_same<I, O>::value || std::is_convertible<I, O>::value)
@@ -163,22 +170,24 @@ private:
             if constexpr (std::is_convertible<I_T, O_T>::value)
             {
                 // No funciona con copy;
-                oTypeData = O(iTypeData.begin(), iTypeData.end());
+                oTypeData.reserve(iTypeData.size());
+                std::move(iTypeData.begin(), iTypeData.end(), std::back_inserter(oTypeData));
+                //oTypeData = O(iTypeData.begin(), iTypeData.end());
             }
             else
             {
                 //Si no es convertible necesitamos una función para convertir de I a O.
                 //Comprobamos que el tipo de la función t es distinto del tipo de empty_fn (Las lambdas tienen tipos únicos).
-                static_assert(!std::is_same<decltype(t), decltype(empty_fn)>::value, "A function needs to be implemented to transform ItoO");
+                static_assert(!std::is_same<decltype(t), decltype(empty_fn_move)>::value, "A function needs to be implemented to transform ItoO");
                 //Llamamos a la función
-                t(iTypeData, oTypeData);
+                t(std::move(iTypeData), oTypeData);
             }
         }
         else
         {
             //Lo mismo que antes.
-            static_assert(!std::is_same<decltype(t), decltype(empty_fn)>::value, "A function needs to be implemented to transform ItoO");
-            t(iTypeData, oTypeData);
+            static_assert(!std::is_same<decltype(t), decltype(empty_fn_move)>::value, "A function needs to be implemented to transform ItoO");
+            t(std::move(iTypeData), oTypeData);
         }
         return true;
     };
