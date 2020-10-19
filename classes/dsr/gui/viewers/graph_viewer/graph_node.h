@@ -201,10 +201,16 @@ class DoTableStuff : public  QTableWidget
       {
           setWindowTitle("Node " + QString::fromStdString(n.value().type()) + " [" + QString::number(node_id) + "]");
           setColumnCount(2);
-          setRowCount(n.value().attrs().size());
+          std::map<std::string, DSR::Attribute> attribs;
+          attribs = n.value().attrs();
+          // show id type and name as attributes
+          attribs["ID"] = Attribute(ValType(node_id), 0, 0);
+          attribs["type"] = Attribute(ValType(n.value().type()), 0, 0);
+          attribs["name"] = Attribute(ValType(n.value().name()), 0, 0);
+          setRowCount(attribs.size());
           setHorizontalHeaderLabels(QStringList{"Key", "Value"});
           int i = 0;
-          for (auto &[k, v] : n.value().attrs()) 
+          for (auto &[k, v] : attribs)
           {
               setItem(i, 0, new QTableWidgetItem(QString::fromStdString(k)));
               switch (v.selected()) {
