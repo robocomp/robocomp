@@ -7,31 +7,65 @@ using namespace DSR;
 CameraAPI::CameraAPI(DSR::DSRGraph *G_, const DSR::Node &camera)
 {
     G = G_;
-    id = camera.agent_id();
+    id = camera.id();
     if( auto o_focal_x = G->get_attrib_by_name<cam_rgb_focalx_att>(camera); o_focal_x.has_value())
         focal_x = o_focal_x.value();
+    else qFatal("CameraAPI constructor: aborting since no focal_x attr found in camera");
     if( auto o_focal_y = G->get_attrib_by_name<cam_rgb_focalx_att>(camera); o_focal_y.has_value())
-        focal_x = o_focal_y.value();
+        focal_y = o_focal_y.value();
+    else qFatal("CameraAPI constructor: aborting since no focal_y attr found in camera");
     if( auto o_width = G->get_attrib_by_name<cam_rgb_width_att>(camera); o_width.has_value())
     {
         width = o_width.value();
         centre_x = width / 2;
     }
+    else qFatal("CameraAPI constructor: aborting since no width attr found in camera");
     if( auto o_height = G->get_attrib_by_name<cam_rgb_height_att>(camera); o_height.has_value())
     {
         height = o_height.value();
         centre_y = height/2;
     }
+    else qFatal("CameraAPI constructor: aborting since no height attr found in camera");
     if( auto o_depth = G->get_attrib_by_name<cam_rgb_depth_att>(camera); o_depth.has_value())
         depth = o_depth.value();
+    else qFatal("CameraAPI constructor: aborting since no depth attr found in camera");
     if( auto o_id = G->get_attrib_by_name<cam_rgb_cameraID_att>(camera); o_id.has_value())
-        depth = o_id.value();
+        cameraID = o_id.value();
 }
 
-Eigen::Vector2d CameraAPI::project( const Eigen::Vector3d & p) const
+void CameraAPI::set_focal( float f)
+{
+  focal = f;  focal_x = f; focal_y = f;
+}
+
+void CameraAPI::set_focal_x( float fx)
+{
+    focal_x = fx;
+}
+
+void CameraAPI::set_focal_y( float fy)
+{
+    focal_y = fy;
+}
+
+void CameraAPI::set_width( std::uint32_t w)
+{
+    width = w;
+    centre_x = w/2;
+}
+
+void CameraAPI::set_height( std::uint32_t h)
+{
+    height = h;
+    centre_y = h/2;
+}
+
+Eigen::Vector2d CameraAPI::project(const Eigen::Vector3d & p, int cx, int  cy) const
 {
     Eigen::Vector2d proj;
-    proj << focal_x * p.y() / p.x() + centre_x, focal_y * p.z() / p.x() + centre_y;
+    if(cx==-1) cx=centre_x;
+    if(cy==-1) cy=centre_y;
+    proj << focal_x * p.x() / p.y() + cx, focal_y * p.z() / p.y() + cy;
     return proj;
 }
 
