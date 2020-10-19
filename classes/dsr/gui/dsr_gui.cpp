@@ -84,17 +84,17 @@ static int numProcessors;
 void init(){
     FILE* file;
     struct tms timeSample;
-    char line[128];
+//    char line[128];
 
     lastCPU = times(&timeSample);
     lastSysCPU = timeSample.tms_stime;
     lastUserCPU = timeSample.tms_utime;
 
     file = fopen("/proc/cpuinfo", "r");
-    numProcessors = 0;
-    while(fgets(line, 128, file) != NULL){
-        if (strncmp(line, "processor", 9) == 0) numProcessors++;
-    }
+    numProcessors = 1;
+//    while(fgets(line, 128, file) != NULL){
+//        if (strncmp(line, "processor", 9) == 0) numProcessors++;
+//    }
     fclose(file);
 }
 
@@ -456,10 +456,12 @@ void DSRViewer::switch_view(bool state, WidgetContainer* container)
 ////////////////////////
 void DSRViewer::compute()
 {
-    int memory = get_memory_usage();
     std::stringstream cpu_usage;
     cpu_usage << std::fixed << std::setprecision(2) << get_cpu_usage();
-    std::string status = "ALIVE TIME: " + std::to_string(alive_timer.elapsed()/1000) + "s CPU: " + cpu_usage.str() + " Memory: " + std::to_string(memory) + "KB ";
+
+    std::stringstream memory_usage;
+    memory_usage << std::fixed << std::setprecision(2) << get_memory_usage()/1024.f;
+    std::string status = "ALIVE TIME: " + std::to_string(alive_timer.elapsed()/1000) + "s CPU: " + cpu_usage.str() + " Memory: " + memory_usage.str() + "MB ";
     this->window->statusBar()->showMessage(QString::fromStdString(status)); 
 }
 
