@@ -74,7 +74,6 @@ public:
     std::optional<O> try_get()
     {
         if (empty.load()){
-            std::cout << "No hay nada"<< std::endl;
             return {};
         }
 
