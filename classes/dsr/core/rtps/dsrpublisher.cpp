@@ -72,7 +72,7 @@ bool DSRPublisher::init(eprosima::fastrtps::Participant *mp_participant_, const 
     Wparam.times.heartbeatPeriod.nanosec = 15000000; //15 ms. This value should be more or less close to the sending frequency.
 
     Wparam.topic.resourceLimitsQos.max_samples = 200;
-    Wparam.historyMemoryPolicy = DYNAMIC_RESERVE_MEMORY_MODE; //PREALLOCATED_WITH_REALLOC_MEMORY_MODE;
+    Wparam.historyMemoryPolicy =  DYNAMIC_REUSABLE_MEMORY_MODE;// DYNAMIC_RESERVE_MEMORY_MODE; //PREALLOCATED_WITH_REALLOC_MEMORY_MODE;
 
 
     int retry = 0;

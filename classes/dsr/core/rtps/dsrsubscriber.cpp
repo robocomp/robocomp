@@ -58,7 +58,7 @@ bool DSRSubscriber::init(eprosima::fastrtps::Participant *mp_participant_,
     locator.port = 7900;
     Rparam.multicastLocatorList.push_back(locator);
     Rparam.qos.m_reliability.kind = eprosima::fastrtps::RELIABLE_RELIABILITY_QOS;
-    Rparam.historyMemoryPolicy = eprosima::fastrtps::rtps::DYNAMIC_RESERVE_MEMORY_MODE; //PREALLOCATED_WITH_REALLOC_MEMORY_MODE;
+    Rparam.historyMemoryPolicy = eprosima::fastrtps::rtps::DYNAMIC_REUSABLE_MEMORY_MODE; //PREALLOCATED_WITH_REALLOC_MEMORY_MODE;
 
 
     if (!isStreamData) {
