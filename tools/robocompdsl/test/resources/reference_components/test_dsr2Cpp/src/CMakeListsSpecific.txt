@@ -11,7 +11,10 @@ SET ( SOURCES
   $ENV{ROBOCOMP}/classes/dsr/core/topics/IDLGraphPubSubTypes.cxx
   $ENV{ROBOCOMP}/classes/dsr/core/topics/IDLGraph.cxx
   $ENV{ROBOCOMP}/classes/dsr/api/dsr_api.cpp
+  $ENV{ROBOCOMP}/classes/dsr/api/dsr_camera_api.cpp
   $ENV{ROBOCOMP}/classes/dsr/api/dsr_inner_api.cpp
+  $ENV{ROBOCOMP}/classes/dsr/api/dsr_inner_eigen_api.cpp
+  $ENV{ROBOCOMP}/classes/dsr/api/dsr_rt_api.cpp
   $ENV{ROBOCOMP}/classes/dsr/api/dsr_utils.cpp
   $ENV{ROBOCOMP}/classes/dsr/gui/dsr_gui.cpp
   $ENV{ROBOCOMP}/classes/dsr/gui/viewers/osg_3d_viewer/osg_3d_viewer.cpp
@@ -34,6 +37,6 @@ SET ( HEADERS
 set(CMAKE_CXX_STANDARD 17)
 
 add_definitions(-g  -fmax-errors=1 -std=c++2a )
-SET (LIBS ${LIBS}   fastcdr fastrtps osgDB)
+SET (LIBS ${LIBS}   fastcdr fastrtps osgDB OpenThreads)
 
 
