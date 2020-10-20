@@ -149,8 +149,8 @@ class DoRGBDStuff : public QWidget
           if (show_rgb->isChecked()) {
               Node node = n.value();
               const auto rgb_data = graph->get_rgb_image(node);
-              const auto rgb_width = graph->get_attrib_by_name<width_att>(node);
-              const auto rgb_height = graph->get_attrib_by_name<height_att>(node);
+              const auto rgb_width = graph->get_attrib_by_name<cam_rgb_width_att>(node);
+              const auto rgb_height = graph->get_attrib_by_name<cam_rgb_height_att>(node);
 
               if (rgb_data.has_value() and rgb_width.has_value() and rgb_height.has_value())
               {
