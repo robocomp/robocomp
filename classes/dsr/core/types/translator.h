@@ -34,29 +34,6 @@ namespace DSR {
         return delta_crdt;
     }
 
-    /*
-    inline static mvreg<CRDTNode, uint32_t> translate_node_mvIDL_to_CRDT(IDL::Mvreg &data)
-    {
-        // Context
-        dotcontext<uint32_t> dotcontext_aux;
-        std::map<uint32_t, int> m;
-        for (auto &v : data.dk().cbase().cc())
-            m.insert(std::make_pair(v.first, v.second));
-        std::set<pair<uint32_t, int>> s;
-        for (auto &v : data.dk().cbase().dc())
-            s.insert(std::make_pair(v.first(), v.second()));
-        dotcontext_aux.setContext(m, s);
-        // Dots
-        std::map<pair<uint32_t, int>, CRDTNode> ds_aux;
-        for (auto &[k, v] : data.dk().ds())
-            ds_aux[pair<uint32_t, int>(k.first(), k.second())] = CRDTNode(v);
-        // Join
-        mvreg<CRDTNode, uint32_t> aw;
-        aw.dk.c = dotcontext_aux;
-        aw.dk.set(ds_aux);
-        return aw;
-    }
-    */
     inline static mvreg<CRDTNode, uint32_t> translate_node_mvIDL_to_CRDT(IDL::Mvreg &&data)
     {
         // Context
@@ -65,7 +42,7 @@ namespace DSR {
         std::set<pair<uint32_t, int>> s;
         for (auto &v : data.dk().cbase().dc())
             s.insert(std::make_pair(v.first(), v.second()));
-        dotcontext_aux.setContext(m, s);
+        dotcontext_aux.setContext(std::move(m), std::move(s));
         // Dots
         std::map<pair<uint32_t, int>, CRDTNode> ds_aux;
         for (auto &[k, v] : data.dk().ds())
@@ -114,12 +91,11 @@ namespace DSR {
         // Context
         dotcontext<uint32_t> dotcontext_aux;
         std::map<uint32_t, int> m = std::move(data.dk().cbase().cc());
-        //for (auto &v : data.dk().cbase().cc())
-        //    m.insert(std::make_pair(v.first, v.second));
+
         std::set<pair<uint32_t, int>> s;
         for (auto &v : data.dk().cbase().dc())
             s.insert(std::make_pair(v.first(), v.second()));
-        dotcontext_aux.setContext(m, s);
+        dotcontext_aux.setContext(std::move(m), std::move(s));
         // Dots
         std::map<pair<uint32_t, int>, CRDTAttribute> ds_aux;
         for (auto &[k, v] : data.dk().ds())
@@ -166,12 +142,11 @@ namespace DSR {
         // Context
         dotcontext<uint32_t> dotcontext_aux;
         std::map<uint32_t, int> m = std::move(data.dk().cbase().cc());
-        //for (auto &v : data.dk().cbase().cc())
-        //    m.insert(std::make_pair(v.first, v.second));
+
         std::set<pair<uint32_t, int>> s;
         for (auto &v : data.dk().cbase().dc())
             s.insert(std::make_pair(v.first(), v.second()));
-        dotcontext_aux.setContext(m, s);
+        dotcontext_aux.setContext(std::move(m), std::move(s));
         // Dots
         std::map<pair<uint32_t, int>, CRDTAttribute> ds_aux;
         for (auto &[k, v] : data.dk().ds())
@@ -193,7 +168,7 @@ namespace DSR {
         std::set<pair<uint32_t, int>> s;
         for (auto &v : data.dk().cbase().dc())
             s.insert(std::make_pair(v.first(), v.second()));
-        dotcontext_aux.setContext(m, s);
+        dotcontext_aux.setContext(std::move(m), std::move(s));
         // Dots
         std::map<pair<uint32_t, int>, CRDTEdge> ds_aux;
         for (auto &[k, v] : data.dk().ds())
