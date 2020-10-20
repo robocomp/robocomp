@@ -237,6 +237,11 @@ public:
         dc = dc_;
     }
 
+    void setContext(map<K, int> &&cc_, set<pair<K, int> > &&dc_) {
+        cc = std::move(cc_);
+        dc = std::move(dc_);
+    }
+
     bool dotin(const pair<K, int> &d) const {
         const auto itm = cc.find(d.first);
         if (itm != cc.end() && d.second <= itm->second) return true;
@@ -1294,6 +1299,10 @@ public:
         r.join(a);
         return r;
 
+    }
+
+    bool empty() {
+        return dk.ds.empty();
     }
 
     set<V> read() {
