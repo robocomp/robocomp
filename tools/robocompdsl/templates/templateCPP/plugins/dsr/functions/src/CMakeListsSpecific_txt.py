@@ -10,7 +10,10 @@ $ENV{ROBOCOMP}/classes/dsr/core/types/user_types.cpp
 $ENV{ROBOCOMP}/classes/dsr/core/topics/IDLGraphPubSubTypes.cxx
 $ENV{ROBOCOMP}/classes/dsr/core/topics/IDLGraph.cxx
 $ENV{ROBOCOMP}/classes/dsr/api/dsr_api.cpp
+$ENV{ROBOCOMP}/classes/dsr/api/dsr_camera_api.cpp
 $ENV{ROBOCOMP}/classes/dsr/api/dsr_inner_api.cpp
+$ENV{ROBOCOMP}/classes/dsr/api/dsr_inner_eigen_api.cpp
+$ENV{ROBOCOMP}/classes/dsr/api/dsr_rt_api.cpp
 $ENV{ROBOCOMP}/classes/dsr/api/dsr_utils.cpp
 $ENV{ROBOCOMP}/classes/dsr/gui/dsr_gui.cpp
 $ENV{ROBOCOMP}/classes/dsr/gui/viewers/osg_3d_viewer/osg_3d_viewer.cpp
@@ -31,7 +34,7 @@ DSR_DEDINITIONS = """\
 add_definitions(-g  -fmax-errors=1 -std=c++2a )
 """
 
-DSR_LIBS = " fastcdr fastrtps osgDB"
+DSR_LIBS = " fastcdr fastrtps osgDB OpenThreads"
 
 
 class src_CMakeListsSpecific_txt(TemplateDict):
