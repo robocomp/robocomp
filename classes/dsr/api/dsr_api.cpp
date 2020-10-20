@@ -7,7 +7,7 @@
 #include <unistd.h>
 #include <algorithm>
 #include <utility>
-#include <math.h>
+#include <cmath>
 
 #include <fastrtps/subscriber/Subscriber.h>
 #include <fastrtps/transport/UDPv4TransportDescriptor.h>
@@ -25,7 +25,7 @@ using namespace DSR;
 /////////////////////////////////////////////////
 
 DSRGraph::DSRGraph(int root, std::string name, int id, const std::string& dsr_input_file, RoboCompDSRGetID::DSRGetIDPrxPtr dsr_getid_proxy_)
-                   : agent_id(id) , agent_name(std::move(name)), copy(false)
+                   : agent_id(id) , agent_name(std::move(name)), copy(false), tp(5)
 {
     dsr_getid_proxy = std::move(dsr_getid_proxy_);
     graph_root = root;
@@ -119,7 +119,7 @@ std::tuple<bool, std::optional<IDL::Mvreg>> DSRGraph::insert_node_(const CRDTNod
 {
     if (deleted.find(node.id()) == deleted.end())
     {
-        if (!nodes[node.id()].read().empty() and *nodes[node.id()].read().begin() == node)
+        if (!nodes[node.id()].empty() and nodes[node.id()].read_reg() == node)
         {
             return {true, {}};
         }
@@ -186,7 +186,7 @@ std::tuple<bool, std::optional<std::vector<IDL::MvregNodeAttr>>> DSRGraph::updat
 
     if (deleted.find(node.id()) == deleted.end())
     {
-        if (!nodes[node.id()].read().empty())
+        if (!nodes[node.id()].empty())
         {
 
             vector<IDL::MvregNodeAttr> atts_deltas;
@@ -199,7 +199,7 @@ std::tuple<bool, std::optional<std::vector<IDL::MvregNodeAttr>>> DSRGraph::updat
                     mvreg<CRDTAttribute, uint32_t> mv;
                     iter.insert(make_pair(k, mv));
                 }
-                if (iter[k].read().empty() or *att.read().begin() != *iter.at(k).read().begin())
+                if (iter[k].empty() or *att.read().begin() != *iter.at(k).read().begin())
                 {
                     auto delta = iter[k].write(*att.read().begin());
                     atts_deltas.emplace_back(translate_node_attr_mvCRDT_to_IDL(agent_id, node.id(), node.id(), k, delta));
@@ -512,9 +512,9 @@ DSRGraph::insert_or_assign_edge_(const CRDTEdge &attrs, uint32_t from, uint32_t 
                         mvreg<CRDTAttribute, uint32_t> mv;
                         iter_edge.insert({k, mv});
                     }
-                    if (iter_edge[k].read().empty() or
-                        *att.read().begin() !=
-                        *iter_edge.at(k).read().begin())
+                    if (iter_edge[k].empty() or
+                        att.read_reg() !=
+                        iter_edge.at(k).read_reg())
                     {
                         auto delta = iter_edge.at(k).write(att.read_reg());//*iter_edge.at(k).read().begin());
                         atts_deltas.emplace_back(
@@ -1015,7 +1015,7 @@ std::optional<CRDTNode> DSRGraph::get_(uint32_t id)
 
     if (in(id))
     {
-        if (!nodes[id].read().empty())
+        if (!nodes[id].empty())
         {
             return make_optional(*nodes[id].read().begin());
         }
@@ -1305,7 +1305,7 @@ bool DSRGraph::empty(const uint32_t &id)
 {
     if (nodes.in(id))
     {
-        return nodes[id].read().empty();
+        return nodes[id].empty();
     } else
         return false;
 }
@@ -1326,11 +1326,11 @@ void DSRGraph::join_delta_node(IDL::Mvreg &&mvreg)
             {
                 ok = true;
                 nodes[id].join(d);
-                if (nodes[id].read().empty() or d.dk.ds.empty())
+                if (nodes[id].empty() or d.empty())
                 {
                     nodes.erase(id);
                     //Update Maps
-                    nd = (nodes[id].read().empty()) ?
+                    nd = (nodes[id].empty()) ?
                               std::nullopt : std::make_optional(*nodes[id].read().begin());
                     update_maps_node_delete(id, nd);
                 } else
@@ -1398,7 +1398,7 @@ void DSRGraph::join_delta_edge(IDL::MvregEdge &&mvreg)
                 n.fano()[{to, type}].join(d);
 
                 //Check if we are inserting or deleting.
-                if (d.dk.ds.empty() or n.fano().find({to, type}) == n.fano().end())
+                if (d.empty() or n.fano().find({to, type}) == n.fano().end())
                 { //Remove
                     n.fano().erase({to,type});
                     //Update maps
@@ -1461,7 +1461,7 @@ void DSRGraph::join_delta_node_attr(IDL::MvregNodeAttr &&mvreg)
                 n.attrs()[att_name].join(d);
 
                 //Check if we are inserting or deleting.
-                if (d.dk.ds.empty() or n.attrs().find(att_name) == n.attrs().end())
+                if (d.empty() or n.attrs().find(att_name) == n.attrs().end())
                 { //Remove
                     n.attrs().erase(att_name);
                 }
@@ -1470,7 +1470,7 @@ void DSRGraph::join_delta_node_attr(IDL::MvregNodeAttr &&mvreg)
 
         if (ok)
         {
-            emit update_node_signal(id, nodes[id].read().begin()->type());
+            emit update_node_signal(id, nodes[id].read_reg().type());
         }
 
     } catch (const std::exception &e)
@@ -1506,7 +1506,7 @@ void DSRGraph::join_delta_edge_attr(IDL::MvregEdgeAttr &&mvreg)
                 n.attrs()[att_name].join(d);
 
                 //Check if we are inserting or deleting.
-                if (d.dk.ds.empty() or n.attrs().find(att_name) == n.attrs().end())
+                if (d.empty() or n.attrs().find(att_name) == n.attrs().end())
                 { //Remove
                     n.attrs().erase(att_name);
                 }
@@ -1536,12 +1536,12 @@ void DSRGraph::join_full_graph(IDL::OrMap &&full_graph)
 
         for (auto &[k, val] : full_graph.m()) {
             auto mv = translate_node_mvIDL_to_CRDT(std::move(val));
-            std::optional<CRDTNode> nd = (nodes[k].read().empty()) ? std::nullopt : std::make_optional(*nodes[k].read().begin());
+            std::optional<CRDTNode> nd = (nodes[k].empty()) ? std::nullopt : std::make_optional(*nodes[k].read().begin());
 
             if (deleted.find(k) == deleted.end())
             {
                 nodes[k].join(mv);
-                if (mv.read().empty() or nodes[k].read().empty())
+                if (mv.empty() or nodes[k].empty())
                 {
                     update_maps_node_delete(k, nd);
                     updates.emplace_back(make_tuple(false, k, "", std::nullopt));
@@ -1660,7 +1660,8 @@ void DSRGraph::node_subscription_thread(bool showReceived)
                             qDebug() << name << " Received:" << sample.id() << " node from: "
                                       << m_info.sample_identity.writer_guid().entityId.value ;
                         }
-                        graph->join_delta_node(std::move(sample));
+                        tp.spawn_task(&DSRGraph::join_delta_node, this, std::move(sample));
+                        //graph->join_delta_node(std::move(sample));
                     }
                 }
             }
@@ -1694,7 +1695,8 @@ void DSRGraph::edge_subscription_thread(bool showReceived)
                                 qDebug() << name << " Received:" << sample.id() << " node from: "
                                         << m_info.sample_identity.writer_guid().entityId.value ;
                             }
-                            graph->join_delta_edge(std::move(sample));
+                            tp.spawn_task(&DSRGraph::join_delta_edge, this, std::move(sample));
+                            //graph->join_delta_edge(std::move(sample));
                         }
                     }
                 }
@@ -1731,7 +1733,8 @@ void DSRGraph::edge_attrs_subscription_thread(bool showReceived)
                             for (auto &&sample: samples.vec()){
                                 if (sample.agent_id() != agent_id
                                     and  graph->ignored_attributes.find(sample.attr_name().data()) == ignored_attributes.end()) {
-                                    graph->join_delta_edge_attr(std::move(sample));
+                                    tp.spawn_task(&DSRGraph::join_delta_edge_attr, this, std::move(sample));
+                                    //graph->join_delta_edge_attr(std::move(sample));
                                 }
                         }
                     }
@@ -1771,7 +1774,8 @@ void DSRGraph::node_attrs_subscription_thread(bool showReceived)
                                 if (s.agent_id() != agent_id
                                     and  graph->ignored_attributes.find(s.attr_name().data()) == ignored_attributes.end())
                                 {
-                                    graph->join_delta_node_attr(std::move(s));
+                                    tp.spawn_task(&DSRGraph::join_delta_node_attr, this, std::move(s));
+                                    //graph->join_delta_node_attr(std::move(s));
                                 }
                         }
                     }
@@ -1824,7 +1828,7 @@ bool DSRGraph::fullgraph_request_thread()
 {
     bool sync = false;
     // Answer Topic
-    auto lambda_request_answer = [&sync](eprosima::fastrtps::Subscriber *sub,  DSR::DSRGraph *graph) {
+    auto lambda_request_answer = [&](eprosima::fastrtps::Subscriber *sub,  DSR::DSRGraph *graph) {
 
         eprosima::fastrtps::SampleInfo_t m_info;
         IDL::OrMap sample;
@@ -1836,7 +1840,8 @@ bool DSRGraph::fullgraph_request_thread()
                 {
                     qDebug() << " Received Full Graph from " << m_info.sample_identity.writer_guid().entityId.value << " whith "
                               << sample.m().size() << " elements";
-                    graph->join_full_graph(std::move(sample));
+                    tp.spawn_task(&DSRGraph::join_full_graph, this, std::move(sample));
+                    //graph->join_full_graph(std::move(sample));
                     qDebug() << "Synchronized.";
                     sync = true;
                 }
@@ -1874,7 +1879,7 @@ bool DSRGraph::fullgraph_request_thread()
 ///// PRIVATE COPY
 /////////////////////////////////////////////////
 
-DSRGraph::DSRGraph(const DSRGraph& G) : agent_id(G.agent_id), copy(true)
+DSRGraph::DSRGraph(const DSRGraph& G) : agent_id(G.agent_id), copy(true), tp(1)
 {
     nodes = G.nodes;
     graph_root = G.graph_root;

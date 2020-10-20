@@ -37,6 +37,8 @@
 #include "dsr_utils.h"
 #include "../core/types/type_checking/dsr_attr_name.h"
 #include "../core/utils.h"
+#include "../core/threadpool.h"
+
 
 #include <DSRGetID.h>
 #include <QFileDialog>
@@ -525,7 +527,7 @@ namespace DSR
         RoboCompDSRGetID::DSRGetIDPrxPtr dsr_getid_proxy; // proxy to obtain unique node ids
         const bool copy;
         std::unordered_set<string_view> ignored_attributes;
-
+        ThreadPool tp;
         //////////////////////////////////////////////////////////////////////////
         // Cache maps
         ///////////////////////////////////////////////////////////////////////////
