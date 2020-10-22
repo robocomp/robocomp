@@ -44,6 +44,17 @@ void GraphNode::setTag(const std::string &tag_)
 void GraphNode::setType(const std::string &type_)
 {
     type = type_;
+    if(type == "laser" or type == "rgbd")
+    {
+        contextMenu = new QMenu();
+        QAction *table_action = new QAction("View table");
+        contextMenu->addAction(table_action);
+        connect(table_action, &QAction::triggered, this, [this](){ this->show_stuff_widget("table");});
+        QAction *stuff_action = new QAction("View data");
+        contextMenu->addAction(stuff_action);
+        connect(stuff_action, &QAction::triggered, this, [this, type_](){ this->show_stuff_widget(type_);});
+    }
+    
 }
 
 void GraphNode::setColor(const std::string &plain)
@@ -199,20 +210,27 @@ void GraphNode::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event)
 {
     //if (tag->text() != "") return; // Explota sin esto
 //    animation->start();
-    qDebug() << __FILE__ <<":"<<__FUNCTION__<< "-> node: " << tag->text() << " Type: " << QString::fromStdString(type) ;
-    const auto graph = dsr_to_graph_viewer->getGraph();
     if( event->button()== Qt::RightButton)
     {
-        static std::unique_ptr<QWidget> do_stuff;
-        if(type=="laser")
-            do_stuff = std::make_unique<DoLaserStuff>(graph, id_in_graph);
-        else if(type=="rgbd")
-            do_stuff = std::make_unique<DoRGBDStuff>(graph, id_in_graph);
+        if (contextMenu != nullptr)
+            contextMenu->exec(event->screenPos());
         else
-            do_stuff = std::make_unique<DoTableStuff>(graph, id_in_graph);
+            show_stuff_widget("table");
     }
-    update();
+//    update();
     QGraphicsEllipseItem::mouseDoubleClickEvent(event);
+}
+
+void GraphNode::show_stuff_widget(const std::string &show_type)
+{
+    static std::unique_ptr<QWidget> do_stuff;
+    const auto graph = dsr_to_graph_viewer->getGraph();
+    if(show_type=="laser")
+        do_stuff = std::make_unique<DoLaserStuff>(graph, id_in_graph);
+    else if(show_type=="rgbd")
+        do_stuff = std::make_unique<DoRGBDStuff>(graph, id_in_graph);
+    else
+        do_stuff = std::make_unique<DoTableStuff>(graph, id_in_graph);
 }
 
 void GraphNode::change_detected()

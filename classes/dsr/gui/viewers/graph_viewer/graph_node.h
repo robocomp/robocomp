@@ -369,7 +369,8 @@ class GraphNode : public QObject, public QGraphicsEllipseItem
 
   public slots:
     //void NodeAttrsChangedSLOT(const DSR::IDType &node, const DSR::Attribs&);
-
+    void show_stuff_widget(const std::string &show_type="table");
+      
 	private:
     QPointF newPos;
     QGraphicsSimpleTextItem *tag;
@@ -378,6 +379,8 @@ class GraphNode : public QObject, public QGraphicsEllipseItem
     std::shared_ptr<DSR::GraphViewer> dsr_to_graph_viewer;
     QBrush node_brush;
 	QPropertyAnimation* animation;
+    QMenu *contextMenu = nullptr;
+    
 };
 
 #endif // GRAPHNODE_H
