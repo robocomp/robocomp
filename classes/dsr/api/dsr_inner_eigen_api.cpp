@@ -7,6 +7,7 @@ using namespace DSR;
 InnerEigenAPI::InnerEigenAPI(DSR::DSRGraph *G_)
 {
     G = G_;
+    rt = G->get_rt_api();
     //update signals
     connect(G, &DSR::DSRGraph::update_edge_signal, this, &InnerEigenAPI::add_or_assign_edge_slot);
     connect(G, &DSR::DSRGraph::del_edge_signal, this, &InnerEigenAPI::del_edge_slot);
@@ -47,8 +48,8 @@ std::optional<Mat::RTMat> InnerEigenAPI::get_transformation_matrix(const std::st
             auto p_node = G->get_parent_node(a);
             if( not p_node.has_value())
                 break;
-            auto edge_rt = G->get_edge_RT(p_node.value(), a.id()).value();
-            auto rtmat = G->get_edge_RT_as_rtmat(edge_rt).value();
+            auto edge_rt = rt->get_edge_RT(p_node.value(), a.id()).value();
+            auto rtmat = rt->get_edge_RT_as_rtmat(edge_rt).value();
             atotal = rtmat * atotal;
             node_map[p_node.value().id()].push_back(key); // update node cache reference
             a = p_node.value();
@@ -59,8 +60,8 @@ std::optional<Mat::RTMat> InnerEigenAPI::get_transformation_matrix(const std::st
             auto p_node = G->get_parent_node(b);
             if(not p_node.has_value())
                 break;
-            auto edge_rt = G->get_edge_RT(p_node.value(), b.id()).value();
-            auto rtmat = G->get_edge_RT_as_rtmat(edge_rt).value();
+            auto edge_rt = rt->get_edge_RT(p_node.value(), b.id()).value();
+            auto rtmat = rt->get_edge_RT_as_rtmat(edge_rt).value();
             btotal = rtmat * btotal;
             node_map[p_node.value().id()].push_back(key); // update node cache reference
             b = p_node.value();
@@ -73,10 +74,10 @@ std::optional<Mat::RTMat> InnerEigenAPI::get_transformation_matrix(const std::st
             if(p_node.has_value() and q_node.has_value())
             {
                 //qDebug() << "listas A&B" << p_node.value().id() << q_node.value().id();
-                auto a_edge_rt = G->get_edge_RT(p_node.value(), a.id()).value();
-                auto b_edge_rt = G->get_edge_RT(q_node.value(), b.id()).value();
-                auto a_rtmat = G->get_edge_RT_as_rtmat(a_edge_rt).value();
-                auto b_rtmat = G->get_edge_RT_as_rtmat(b_edge_rt).value();
+                auto a_edge_rt = rt->get_edge_RT(p_node.value(), a.id()).value();
+                auto b_edge_rt = rt->get_edge_RT(q_node.value(), b.id()).value();
+                auto a_rtmat = rt->get_edge_RT_as_rtmat(a_edge_rt).value();
+                auto b_rtmat = rt->get_edge_RT_as_rtmat(b_edge_rt).value();
                 atotal = a_rtmat * atotal;
                 btotal = b_rtmat * btotal;
                 node_map[p_node.value().id()].push_back(key); // update node cache reference

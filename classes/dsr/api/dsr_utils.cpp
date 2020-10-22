@@ -146,7 +146,7 @@ void Utilities::read_from_json_file(const std::string &json_file_path,  const st
             int srcn = link_obj.value("src").toInt();
             int dstn = link_obj.value("dst").toInt();
             std::string edgeName = link_obj.value("label").toString().toStdString();
-            std::map<string, CRDTAttribute> attrs;
+            std::map<std::string, CRDTAttribute> attrs;
 
             Edge edge(dstn, srcn, edgeName, {}, G->get_agent_id());
 //            Edge edge;
@@ -227,33 +227,33 @@ QJsonObject Utilities::Edge_to_QObject(const Edge& edge)
         QJsonValue val;
         switch (value.value().index()) {
             case 0:
-                val = QString::fromStdString(get<std::string>(value.value()));
+                val = QString::fromStdString(std::get<std::string>(value.value()));
                 break;
             case 1:
-                val = get<std::int32_t>(value.value());
+                val = std::get<std::int32_t>(value.value());
                 break;
             case 2:
-                val = std::round(static_cast<double>(get<float>(value.value())) * 1000000) / 1000000;
+                val = std::round(static_cast<double>(std::get<float>(value.value())) * 1000000) / 1000000;
                 break;
             case 4:
-                val = get<bool>(value.value());
+                val = std::get<bool>(value.value());
                 break;
             case 3: {
                 QJsonArray array;
-                for (const float &value : get<std::vector<float>>(value.value()))
+                for (const float &value : std::get<std::vector<float>>(value.value()))
                     array.push_back(value);
                 val = array;
                 break;
             }
             case 5: {
                 QJsonArray array;
-                for (const uint8_t &value : get<std::vector<uint8_t>>(value.value()))
+                for (const uint8_t &value : std::get<std::vector<uint8_t>>(value.value()))
                     array.push_back(static_cast<qint64>(value));
                 val = array;
                 break;
             }
             case 6:
-                val = static_cast<std::int32_t>(get<std::uint32_t>(value.value()));
+                val = static_cast<std::int32_t>(std::get<std::uint32_t>(value.value()));
                 break;
         }
         content["type"] = static_cast<qint64>(value.value().index());
@@ -278,21 +278,21 @@ QJsonObject Utilities::Node_to_QObject(const Node& node, bool skip_content)
         QJsonValue val;
         switch (value.value().index()) {
             case 0:
-                val = QString::fromStdString(get<std::string>(value.value()));
+                val = QString::fromStdString(std::get<std::string>(value.value()));
                 break;
             case 1:
-                val = get<std::int32_t>(value.value());
+                val = std::get<std::int32_t>(value.value());
                 break;
             case 2:
-                val = std::round(static_cast<double>(get<float>(value.value())) * 1000000) / 1000000;
+                val = std::round(static_cast<double>(std::get<float>(value.value())) * 1000000) / 1000000;
                 break;
             case 4:
-                val = get<bool>(value.value());
+                val = std::get<bool>(value.value());
                 break;
             case 3: {
                 QJsonArray array;
                 if(not skip_content) {
-                    for (const float &value : get<std::vector<float>>(value.value()))
+                    for (const float &value : std::get<std::vector<float>>(value.value()))
                         array.push_back(value);
                 }
                 val = array;
@@ -301,14 +301,14 @@ QJsonObject Utilities::Node_to_QObject(const Node& node, bool skip_content)
             case 5: {
                 QJsonArray array;
                 if(not skip_content) {
-                    for (const uint8_t &value : get<std::vector<uint8_t>>(value.value()))
+                    for (const uint8_t &value : std::get<std::vector<uint8_t>>(value.value()))
                         array.push_back(static_cast<qint64>(value));
                 }
                 val = array;
                 break;
             }
             case 6:
-                val = static_cast<std::int32_t>(get<std::uint32_t>(value.value()));
+                val = static_cast<std::int32_t>(std::get<std::uint32_t>(value.value()));
                 break;
 
         }

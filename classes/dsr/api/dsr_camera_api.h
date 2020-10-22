@@ -26,7 +26,7 @@ namespace DSR
             std::optional<std::vector<float>> get_existing_depth_image();
             std::optional<std::reference_wrapper<const std::vector<uint8_t>>> get_existing_depth_image() const;
             std::optional<std::reference_wrapper<const std::vector<uint8_t>>> get_depth_image() const;
-            std::optional<std::vector<std::tuple<float,float,float>>>  get_pointcloud(const std::string target_frame_node = "", unsigned short subsampling=1);
+            std::optional<std::vector<std::tuple<float,float,float>>>  get_pointcloud(const std::string& target_frame_node = "", unsigned short subsampling=1);
             std::optional<std::vector<uint8_t>> get_depth_as_gray_image() const;
             std::optional<std::tuple<float,float,float>> get_existing_roi_depth(const Eigen::AlignedBox<float, 2> &roi);
             std::optional<std::vector<std::tuple<float,float,float>>>  get_existing_pointcloud(const std::string target_frame_node, unsigned short subsampling);

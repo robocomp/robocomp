@@ -54,7 +54,7 @@ void TreeViewer::reload(QWidget* widget) {
 
 	if(qobject_cast<TreeViewer*>(widget) != nullptr)
 	{
-		cout<<"Reloading Tree viewer"<<endl;
+        std::cout<<"Reloading Tree viewer"<<std::endl;
 		createGraph();
 	}
 }

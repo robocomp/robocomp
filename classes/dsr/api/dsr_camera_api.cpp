@@ -200,7 +200,6 @@ std::optional<std::reference_wrapper<const std::vector<uint8_t>>> CameraAPI::get
         return {};
     }
 }
-
 std::optional<std::reference_wrapper<const std::vector<uint8_t>>> CameraAPI::get_existing_depth_image() const
 {
     auto &attrs = node.attrs();
@@ -217,7 +216,7 @@ std::optional<std::reference_wrapper<const std::vector<uint8_t>>> CameraAPI::get
 ///
 /// Computes the point clound [X,Y,X] in the target_frame_node coordinate system. Subsampling: 1,2,3.. means all, one of two, one of three, etc
 ///
-std::optional<std::vector<std::tuple<float,float,float>>>  CameraAPI::get_pointcloud(const std::string target_frame_node, unsigned short subsampling)
+std::optional<std::vector<std::tuple<float,float,float>>>  CameraAPI::get_pointcloud(const std::string& target_frame_node, unsigned short subsampling)
 {
     if( const auto n = G->get_node(id); n.has_value())
     {
@@ -248,7 +247,7 @@ std::optional<std::vector<std::tuple<float,float,float>>>  CameraAPI::get_pointc
                         std::size_t SIZE = tmp.size() / sizeof(float);
                         std::vector<std::tuple<float, float, float>> result(SIZE);
                         std::unique_ptr<InnerEigenAPI> inner_eigen;
-                        if (target_frame_node != "")  // do the change of coordinate system
+                        if (!target_frame_node.empty())  // do the change of coordinate system
                         {
                             inner_eigen = G->get_inner_eigen_api();
                             for (std::size_t i = 0; i < SIZE; i += STEP)

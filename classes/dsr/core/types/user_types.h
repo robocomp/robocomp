@@ -41,6 +41,7 @@ namespace DSR {
             return *this;
         }
 
+
         [[nodiscard]] const ValType &value() const;
 
         ValType& value();
@@ -102,31 +103,31 @@ namespace DSR {
 
             switch (type.m_value.index()) {
                 case 0:
-                    os << " str: " << get<string>(type.m_value);
+                    os << " str: " << std::get<std::string>(type.m_value);
                     break;
                 case 1:
-                    os << " dec: " << get<int32_t>(type.m_value);
+                    os << " dec: " << std::get<int32_t>(type.m_value);
                     break;
                 case 2:
-                    os << " float: " << get<float>(type.m_value);
+                    os << " float: " << std::get<float>(type.m_value);
                     break;
                 case 3:
                     os << " float_vec: [ ";
-                    for (const auto &k: get<vector<float>>(type.m_value))
+                    for (const auto &k: std::get<std::vector<float>>(type.m_value))
                         os << k << ", ";
                     os << "] ";
                     break;
                 case 4:
-                    os << "bool: " << (get<bool>(type.m_value) ? " TRUE" : " FALSE");
+                    os << "bool: " << (std::get<bool>(type.m_value) ? " TRUE" : " FALSE");
                     break;
                 case 5:
                     os << " byte_vec: [ ";
-                    for (const auto &k: get<vector<uint8_t>>(type.m_value))
+                    for (const auto &k: std::get<std::vector<uint8_t>>(type.m_value))
                         os << k << ", ";
                     os << "] ";
                     break;
                 case 6:
-                    os << " uint: " << get<uint32_t>(type.m_value);
+                    os << " uint: " << std::get<uint32_t>(type.m_value);
                     break;
                 default:
                     os << "INVALID TYPE";
@@ -186,7 +187,7 @@ namespace DSR {
             static_assert(EDGE_TYPES::find(type), TYPE_ASSERT_ERROR(type, edge));
         }*/
 
-        Edge(uint32_t mTo, uint32_t mFrom, string mType, uint32_t mAgentId) : m_to(mTo), m_from(mFrom), m_type(std::move(mType)), m_attrs{},
+        Edge(uint32_t mTo, uint32_t mFrom, std::string mType, uint32_t mAgentId) : m_to(mTo), m_from(mFrom), m_type(std::move(mType)), m_attrs{},
                                   m_agent_id(mAgentId)
         {
             if(!EDGE_TYPES::find(m_type)) {
@@ -194,8 +195,8 @@ namespace DSR {
             }
         }
 
-        Edge(uint32_t mTo, uint32_t mFrom, string mType,
-                   const  map<std::string, Attribute> &mAttrs,
+        Edge(uint32_t mTo, uint32_t mFrom, std::string mType,
+                   const  std::map<std::string, Attribute> &mAttrs,
                    uint32_t mAgentId) : m_to(mTo), m_from(mFrom), m_type(std::move(mType)), m_attrs{mAttrs},
                                         m_agent_id(mAgentId)
         {
@@ -212,7 +213,7 @@ namespace DSR {
             m_to = edge.to();
             m_type = edge.type();
             for (const auto &[k,v] : edge.attrs()) {
-                m_attrs[k] = *v.read().begin();
+                m_attrs[k] = v.dk.ds.begin()->second;
             }
 
         }
@@ -226,7 +227,7 @@ namespace DSR {
             m_to = attr.to();
             m_type = attr.type();
             for (const auto &[k,v] : attr.attrs()) {
-                m_attrs[k] = *v.read().begin();
+                m_attrs[k] = v.dk.ds.begin()->second;
             }
             return *this;
         }
@@ -235,13 +236,13 @@ namespace DSR {
 
         [[nodiscard]] uint32_t from() const;
 
-        [[nodiscard]] const string &type() const;
+        [[nodiscard]] const std::string &type() const;
 
-        [[nodiscard]] string &type();
+        [[nodiscard]] std::string &type();
 
-        [[nodiscard]] const map<std::string, Attribute> &attrs() const;
+        [[nodiscard]] const std::map<std::string, Attribute> &attrs() const;
 
-        [[nodiscard]] map<std::string, Attribute> &attrs();
+        [[nodiscard]] std::map<std::string, Attribute> &attrs();
 
         [[nodiscard]] uint32_t agent_id() const;
 
@@ -249,9 +250,9 @@ namespace DSR {
 
         void from(uint32_t mFrom);
 
-        void type(const string &mType);
+        void type(const std::string &mType);
 
-        void attrs(const map<std::string, Attribute> &mAttrs);
+        void attrs(const std::map<std::string, Attribute> &mAttrs);
 
         void agent_id(uint32_t mAgentId);
 
@@ -313,16 +314,16 @@ namespace DSR {
 
         Node() = default;
 
-        Node(uint32_t mAgentId, string mType) : m_id(0), m_type(std::move(mType)), m_attrs{}, m_fano{}, m_agent_id(mAgentId)
+        Node(uint32_t mAgentId, std::string mType) : m_id(0), m_type(std::move(mType)), m_attrs{}, m_fano{}, m_agent_id(mAgentId)
         {
             if (!NODE_TYPES::find(m_type)) {
                 throw std::runtime_error("Error, " + m_type + " is not a valid node type");
             }
         }
 
-        Node(string mType, uint32_t mAgentId,
-                   const  map<std::string, Attribute> &mAttrs,
-                   const  map<std::pair<uint32_t, std::string>, Edge > &mFano)
+        Node(std::string mType, uint32_t mAgentId,
+                   const  std::map<std::string, Attribute> &mAttrs,
+                   const  std::map<std::pair<uint32_t, std::string>, Edge > &mFano)
                 : m_id(0), m_type(std::move(mType)), m_attrs{mAttrs}, m_fano{mFano}, m_agent_id(mAgentId)
         {
             if (!NODE_TYPES::find(m_type)) {
@@ -349,10 +350,10 @@ namespace DSR {
             m_name = node.name();
             m_type = node.type();
             for (const auto &[k,v] : node.attrs()) {
-                m_attrs[k] = *v.read().begin();
+                m_attrs[k] = v.dk.ds.begin()->second;
             }
             for (const auto &[k,v] : node.fano()) {
-                m_fano[k] = *v.read().begin();
+                m_fano[k] = v.dk.ds.begin()->second;
             }
         }
 
@@ -366,10 +367,10 @@ namespace DSR {
             m_name = node.name();
             m_type = node.type();
             for (const auto &[k,v] : node.attrs()) {
-                m_attrs[k] = *v.read().begin();
+                m_attrs[k] = v.dk.ds.begin()->second;
             }
             for (const auto &[k,v] : node.fano()) {
-                m_fano[k] = *v.read().begin();
+                m_fano[k] = v.dk.ds.begin()->second;
             }
 
             return *this;
@@ -377,33 +378,33 @@ namespace DSR {
 
         [[nodiscard]] uint32_t id() const;
 
-        [[nodiscard]] const string &type() const;
+        [[nodiscard]] const std::string &type() const;
 
-        [[nodiscard]] string &type();
+        [[nodiscard]] std::string &type();
 
-        [[nodiscard]] const string &name() const;
+        [[nodiscard]] const std::string &name() const;
 
-        [[nodiscard]] string &name();
+        [[nodiscard]] std::string &name();
 
-        [[nodiscard]] const map<std::string, Attribute> &attrs() const;
+        [[nodiscard]] const std::map<std::string, Attribute> &attrs() const;
 
-        [[nodiscard]] map<std::string, Attribute> &attrs();
+        [[nodiscard]] std::map<std::string, Attribute> &attrs();
 
-        [[nodiscard]] const map<std::pair<uint32_t, std::string>, Edge > &fano() const;
+        [[nodiscard]] const std::map<std::pair<uint32_t, std::string>, Edge > &fano() const;
 
-        [[nodiscard]] map<std::pair<uint32_t, std::string>, Edge > &fano();
+        [[nodiscard]] std::map<std::pair<uint32_t, std::string>, Edge > &fano();
 
         [[nodiscard]] uint32_t agent_id() const;
 
         void id(uint32_t mId);
 
-        void type(const string &mType);
+        void type(const std::string &mType);
 
-        void name(const string &mName);
+        void name(const std::string &mName);
 
-        void attrs(const map<std::string, Attribute> &mAttrs);
+        void attrs(const std::map<std::string, Attribute> &mAttrs);
 
-        void fano(const map<std::pair<uint32_t, std::string>, Edge > &mFano);
+        void fano(const std::map<std::pair<uint32_t, std::string>, Edge > &mFano);
 
         void agent_id(uint32_t mAgentId);
 

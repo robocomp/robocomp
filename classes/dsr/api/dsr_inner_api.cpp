@@ -8,6 +8,7 @@ using namespace DSR;
 InnerAPI::InnerAPI(DSR::DSRGraph *G_)
 {
     G = G_;
+    rt = G->get_rt_api();
     //update signals
     connect(G, &DSR::DSRGraph::update_edge_signal, this, &InnerAPI::add_or_assign_edge_slot);
     connect(G, &DSR::DSRGraph::del_edge_signal, this, &InnerAPI::del_edge_slot);
@@ -34,8 +35,8 @@ std::optional<InnerAPI::Lists> InnerAPI::set_lists(const std::string &destId, co
 		auto p_node = G->get_parent_node(a);
       	if( not p_node.has_value())
 			break;
-		auto edge_rt = G->get_edge_RT(p_node.value(), a.id()).value();
-		auto rtmat = G->get_edge_RT_as_RTMat(edge_rt).value();
+		auto edge_rt = rt->get_edge_RT(p_node.value(), a.id()).value();
+		auto rtmat = rt->get_edge_RT_as_RTMat(edge_rt).value();
 		listA.emplace_back(std::make_tuple(p_node.value().id(), std::move(rtmat)));   // the downwards RT link from parent to a
         a = p_node.value();
 	}
@@ -45,8 +46,8 @@ std::optional<InnerAPI::Lists> InnerAPI::set_lists(const std::string &destId, co
 		auto p_node = G->get_parent_node(b);
 		if(not p_node.has_value())
 			break;
-		auto edge_rt = G->get_edge_RT(p_node.value(), b.id()).value();
-		auto rtmat = G->get_edge_RT_as_RTMat(edge_rt).value();
+		auto edge_rt = rt->get_edge_RT(p_node.value(), b.id()).value();
+		auto rtmat = rt->get_edge_RT_as_rtmat(edge_rt).value();
         listB.emplace_front(std::make_tuple(p_node.value().id(), std::move(rtmat)));
 		b = p_node.value();
 	}
@@ -57,8 +58,8 @@ std::optional<InnerAPI::Lists> InnerAPI::set_lists(const std::string &destId, co
 		if(p.has_value() and q.has_value())
 		{
             //qDebug() << "listas A&B" << p.value().id() << q.value().id();
-	  		listA.push_back(std::make_tuple(p.value().id(), G->get_edge_RT_as_RTMat(G->get_edge_RT(p.value(), a.id()).value()).value()));
-	  		listB.push_front(std::make_tuple(q.value().id(), G->get_edge_RT_as_RTMat(G->get_edge_RT(q.value(), b.id()).value()).value()));
+	  		listA.push_back(std::make_tuple(p.value().id(), rt->get_edge_RT_as_rtmat(rt->get_edge_RT(p.value(), a.id()).value()).value()));
+	  		listB.push_front(std::make_tuple(q.value().id(), rt->get_edge_RT_as_rtmat(rt->get_edge_RT(q.value(), b.id()).value()).value()));
 			a = p.value();
 			b = q.value();
 		}

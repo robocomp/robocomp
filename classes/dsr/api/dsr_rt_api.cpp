@@ -65,8 +65,8 @@ void RT_API::insert_or_assign_edge_RT(Node &n, uint32_t to, const std::vector<fl
     bool no_send = true;
 
     std::optional<IDL::MvregEdge> node1_insert;
-    std::optional<vector<IDL::MvregEdgeAttr>> node1_update;
-    std::optional<vector<IDL::MvregNodeAttr>> node2;
+    std::optional<std::vector<IDL::MvregEdgeAttr>> node1_update;
+    std::optional<std::vector<IDL::MvregNodeAttr>> node2;
     std::optional<CRDTNode> to_n;
     {
         std::unique_lock<std::shared_mutex> lock(G->_mutex);
@@ -75,10 +75,10 @@ void RT_API::insert_or_assign_edge_RT(Node &n, uint32_t to, const std::vector<fl
             CRDTEdge e; e.to(to);  e.from(n.id()); e.type("RT"); e.agent_id(G->agent_id);
             CRDTAttribute tr; tr.type(3); tr.val(CRDTValue(trans)); tr.timestamp(get_unix_timestamp());
             CRDTAttribute rot; rot.type(3); rot.val(CRDTValue(rot_euler)); rot.timestamp(get_unix_timestamp());
-            auto [it, new_el] = e.attrs().emplace("rt_rotation_euler_xyz", mvreg<CRDTAttribute, uint32_t> ());
-            it->second.write(rot);
-            auto [it2, new_el2] = e.attrs().emplace("rt_translation", mvreg<CRDTAttribute, uint32_t> ());
-            it2->second.write(tr);
+            auto [it, new_el] = e.attrs().emplace("rt_rotation_euler_xyz", mvreg<CRDTAttribute> ());
+            it->second.write(std::move(rot));
+            auto [it2, new_el2] = e.attrs().emplace("rt_translation", mvreg<CRDTAttribute> ());
+            it2->second.write(std::move(tr));
 
 
             to_n = G->get_(to).value();
@@ -145,11 +145,8 @@ void RT_API::insert_or_assign_edge_RT(Node &n, uint32_t to, const std::vector<fl
             G->dsrpub_edge.write(&node1_insert.value());
         }
         if (node1_update.has_value()) G->dsrpub_edge_attrs.write(&node1_update.value());
-            /*for (auto &d : node1_update.value())
-                G->dsrpub_edge_attrs.write(&d);*/
+
         if (!no_send and node2.has_value()) G->dsrpub_node_attrs.write(&node2.value());
-            /*for (auto &d : node2.value())
-                G->dsrpub_node_attrs.write(&d);*/
 
         emit G->update_edge_signal(n.id(), to, "RT");
         if (!no_send) emit G->update_node_signal(to_n->id(), to_n->type());
@@ -163,8 +160,8 @@ void RT_API::insert_or_assign_edge_RT(Node &n, uint32_t to, std::vector<float> &
     bool no_send = true;
 
     std::optional<IDL::MvregEdge> node1_insert;
-    std::optional<vector<IDL::MvregEdgeAttr>> node1_update;
-    std::optional<vector<IDL::MvregNodeAttr>> node2;
+    std::optional<std::vector<IDL::MvregEdgeAttr>> node1_update;
+    std::optional<std::vector<IDL::MvregNodeAttr>> node2;
     std::optional<CRDTNode> to_n;
     {
         std::unique_lock<std::shared_mutex> lock(G->_mutex);
@@ -173,10 +170,10 @@ void RT_API::insert_or_assign_edge_RT(Node &n, uint32_t to, std::vector<float> &
             CRDTEdge e; e.to(to);  e.from(n.id()); e.type("RT"); e.agent_id(G->agent_id);
             CRDTAttribute tr; tr.type(3); tr.val(CRDTValue(std::move(trans))); tr.timestamp(get_unix_timestamp());
             CRDTAttribute rot; rot.type(3); rot.val(CRDTValue(std::move(rot_euler))); rot.timestamp(get_unix_timestamp());
-            auto [it, new_el] = e.attrs().emplace("rt_rotation_euler_xyz", mvreg<CRDTAttribute, uint32_t> ());
-            it->second.write(rot);
-            auto [it2, new_el2] = e.attrs().emplace("rt_translation", mvreg<CRDTAttribute, uint32_t> ());
-            it2->second.write(tr);
+            auto [it, new_el] = e.attrs().emplace("rt_rotation_euler_xyz", mvreg<CRDTAttribute> ());
+            it->second.write(std::move(rot));
+            auto [it2, new_el2] = e.attrs().emplace("rt_translation", mvreg<CRDTAttribute> ());
+            it2->second.write(std::move(tr));
 
 
             to_n = G->get_(to).value();
@@ -243,12 +240,8 @@ void RT_API::insert_or_assign_edge_RT(Node &n, uint32_t to, std::vector<float> &
             G->dsrpub_edge.write(&node1_insert.value());
         }
         if (node1_update.has_value()) G->dsrpub_edge_attrs.write(&node1_update.value());
-        /*for (auto &d : node1_update.value())
-            G->dsrpub_edge_attrs.write(&d);*/
-        if (!no_send and node2.has_value()) G->dsrpub_node_attrs.write(&node2.value());
-        /*for (auto &d : node2.value())
-            G->dsrpub_node_attrs.write(&d);*/
 
+        if (!no_send and node2.has_value()) G->dsrpub_node_attrs.write(&node2.value());
 
         emit G->update_edge_signal(n.id(), to, "RT");
         if (!no_send) emit G->update_node_signal(to_n->id(), to_n->type());

@@ -395,6 +395,7 @@ public:
 
 
     void set(map<pair<K, int>, T> &ds_) { ds = ds_; }
+    void set(map<pair<K, int>, T> &&ds_) { ds = std::move(ds_); }
 
     dotkernel<T, K> &operator=(const dotkernel<T, K> &adk) {
         if (&adk == this) return *this;

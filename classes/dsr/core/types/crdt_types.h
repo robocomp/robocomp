@@ -5,7 +5,9 @@
 #ifndef DSR_CRDT_TYPES_H
 #define DSR_CRDT_TYPES_H
 
-#include "../crdt/delta-crdts.cc"
+//#include "../crdt/delta-crdts.cc"
+#include "../crdt/delta_crdt.h"
+#include "../topics/IDLGraph.h"
 #include <iostream>
 #include "unordered_map"
 #include "variant"
@@ -415,13 +417,13 @@ namespace DSR {
 
         [[nodiscard]] uint32_t from() const;
 
-        void attrs(const std::map<std::string, mvreg<CRDTAttribute, uint32_t>> &_attrs);
+        void attrs(const std::map<std::string, mvreg<CRDTAttribute>> &_attrs);
 
-        void attrs(std::map<std::string, mvreg<CRDTAttribute, uint32_t>> &&_attrs);
+        void attrs(std::map<std::string, mvreg<CRDTAttribute>> &&_attrs);
 
-        [[nodiscard]] const std::map<std::string, mvreg<CRDTAttribute, uint32_t>> &attrs() const;
+        [[nodiscard]] const std::map<std::string, mvreg<CRDTAttribute>> &attrs() const;
 
-        [[nodiscard]] std::map<std::string, mvreg<CRDTAttribute, uint32_t>> &attrs();
+        [[nodiscard]] std::map<std::string, mvreg<CRDTAttribute>> &attrs();
 
         void agent_id(uint32_t _agent_id);
 
@@ -488,7 +490,7 @@ namespace DSR {
         uint32_t m_to;
         std::string m_type;
         uint32_t m_from;
-        std::map<std::string, mvreg<CRDTAttribute, uint32_t>> m_attrs;
+        std::map<std::string, mvreg<CRDTAttribute>> m_attrs;
         uint32_t m_agent_id{};
     };
 
@@ -539,21 +541,21 @@ namespace DSR {
 
         [[nodiscard]] uint32_t agent_id() const;
 
-        void attrs(const std::map<std::string, mvreg<CRDTAttribute, uint32_t>> &_attrs);
+        void attrs(const std::map<std::string, mvreg<CRDTAttribute>> &_attrs);
 
-        void attrs(std::map<std::string, mvreg<CRDTAttribute, uint32_t>> &&_attrs);
+        void attrs(std::map<std::string, mvreg<CRDTAttribute>> &&_attrs);
 
-        [[nodiscard]] std::map<std::string, mvreg<CRDTAttribute, uint32_t>> &attrs() &;
+        [[nodiscard]] std::map<std::string, mvreg<CRDTAttribute>> &attrs() &;
 
-        [[nodiscard]] const std::map<std::string, mvreg<CRDTAttribute, uint32_t>> &attrs() const &;
+        [[nodiscard]] const std::map<std::string, mvreg<CRDTAttribute>> &attrs() const &;
 
-        void fano(const std::map<std::pair<uint32_t, std::string>, mvreg<CRDTEdge, uint32_t>> &_fano);
+        void fano(const std::map<std::pair<uint32_t, std::string>, mvreg<CRDTEdge>> &_fano);
 
-        void fano(std::map<std::pair<uint32_t, std::string>, mvreg<CRDTEdge, uint32_t>> &&_fano);
+        void fano(std::map<std::pair<uint32_t, std::string>, mvreg<CRDTEdge>> &&_fano);
 
-        [[nodiscard]] std::map<std::pair<uint32_t, std::string>, mvreg<CRDTEdge, uint32_t>> &fano();
+        [[nodiscard]] std::map<std::pair<uint32_t, std::string>, mvreg<CRDTEdge>> &fano();
 
-        [[nodiscard]] const std::map<std::pair<uint32_t, std::string>, mvreg<CRDTEdge, uint32_t>> &fano() const;
+        [[nodiscard]] const std::map<std::pair<uint32_t, std::string>, mvreg<CRDTEdge>> &fano() const;
 
         [[nodiscard]] IDL::IDLNode toIDLNode(uint32_t id);
 
@@ -617,8 +619,8 @@ namespace DSR {
         std::string m_name;
         uint32_t m_id{};
         uint32_t m_agent_id{};
-        std::map<std::string, mvreg<CRDTAttribute, uint32_t>> m_attrs;
-        std::map<std::pair<uint32_t, std::string>, mvreg<CRDTEdge, uint32_t>> m_fano;
+        std::map<std::string, mvreg<CRDTAttribute>> m_attrs;
+        std::map<std::pair<uint32_t, std::string>, mvreg<CRDTEdge>> m_fano;
     };
 
 

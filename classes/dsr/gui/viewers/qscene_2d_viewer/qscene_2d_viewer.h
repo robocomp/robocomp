@@ -47,7 +47,7 @@ namespace DSR
             std::vector<std::vector<float>> cube_positions = {{0.5,0.5,0.5}, {0.5, 0.5,-0.5}, {0.5, -0.5,0.5}, {0.5, -0.5, -0.5}, {-0.5, 0.5, 0.5}, {-0.5, 0.5, -0.5}, {-0.5, -0.5, 0.5}, {-0.5, -0.5, -0.5} };        
             std::list<std::string> no_drawable_childs = {"omnirobot", "differentialrobot", "person"};
             std::shared_ptr<DSR::DSRGraph> G;
-            std::unique_ptr<DSR::InnerAPI> innermodel;
+            std::unique_ptr<DSR::InnerEigenAPI> innermodel;
 
             std::map<int, QGraphicsItem*> scene_map;
             std::map<std::string,std::vector<int>> edge_map;
