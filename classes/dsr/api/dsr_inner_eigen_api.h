@@ -4,6 +4,7 @@
 #include <QObject>
 #include "../core/topics/IDLGraphPubSubTypes.h"
 #include "dsr_eigen_defs.h"
+#include "dsr_rt_api.h"
 
 namespace DSR
 {
@@ -43,6 +44,7 @@ namespace DSR
 
         private:
             DSR::DSRGraph *G;
+            std::unique_ptr<DSR::RT_API> rt;
             TransformCache cache;
             NodeReference node_map;
             void remove_cache_entry(const std::int32_t id);

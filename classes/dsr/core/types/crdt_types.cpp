@@ -100,7 +100,7 @@ namespace DSR {
 
     const std::vector<float> &CRDTValue::float_vec() const 
     {
-        if (auto pval = std::get_if<vector<float>>(&val)) {
+        if (auto pval = std::get_if<std::vector<float>>(&val)) {
             return *pval;
         }
         throw std::runtime_error(
@@ -110,7 +110,7 @@ namespace DSR {
     std::vector<float> &CRDTValue::float_vec() 
     {
 
-        if (auto pval = std::get_if<vector<float>>(&val)) {
+        if (auto pval = std::get_if<std::vector<float>>(&val)) {
             return *pval;
         }
         throw std::runtime_error(
@@ -144,7 +144,7 @@ namespace DSR {
 
     const std::vector<uint8_t> &CRDTValue::byte_vec() const 
     {
-        if (auto pval = std::get_if<vector<uint8_t>>(&val)) {
+        if (auto pval = std::get_if<std::vector<uint8_t>>(&val)) {
             return *pval;
         }
         throw std::runtime_error(
@@ -154,7 +154,7 @@ namespace DSR {
     std::vector<uint8_t> &CRDTValue::byte_vec() 
     {
 
-        if (auto pval = std::get_if<vector<uint8_t >>(&val)) {
+        if (auto pval = std::get_if<std::vector<uint8_t >>(&val)) {
             return *pval;
         }
         throw std::runtime_error(
@@ -317,22 +317,22 @@ namespace DSR {
         return m_from;
     }
 
-    void CRDTEdge::attrs(const std::map<std::string, mvreg<CRDTAttribute, uint32_t>> &_attrs)
+    void CRDTEdge::attrs(const std::map<std::string, mvreg<CRDTAttribute>> &_attrs)
     {
         m_attrs = _attrs;
     }
 
-    void CRDTEdge::attrs(std::map<std::string, mvreg<CRDTAttribute, uint32_t>> &&_attrs)
+    void CRDTEdge::attrs(std::map<std::string, mvreg<CRDTAttribute>> &&_attrs)
     {
         m_attrs = std::move(_attrs);
     }
 
-    const std::map<std::string, mvreg<CRDTAttribute, uint32_t>> &CRDTEdge::attrs() const
+    const std::map<std::string, mvreg<CRDTAttribute>> &CRDTEdge::attrs() const
     {
         return m_attrs;
     }
 
-    std::map<std::string, mvreg<CRDTAttribute, uint32_t>> &CRDTEdge::attrs()
+    std::map<std::string, mvreg<CRDTAttribute>> &CRDTEdge::attrs()
     {
         return m_attrs;
     }
@@ -362,7 +362,7 @@ namespace DSR {
                 pi.first(kv_dots.first.first);
                 pi.second(kv_dots.first.second);
 
-                edgeAttr.dk().ds().emplace(make_pair(pi, kv_dots.second.toIDLAttrib()));
+                edgeAttr.dk().ds().emplace(std::make_pair(pi, kv_dots.second.toIDLAttrib()));
                 edgeAttr.dk().cbase().cc().emplace(kv_dots.first);
 
             }
@@ -467,42 +467,42 @@ namespace DSR {
         return m_agent_id;
     }
 
-    void CRDTNode::attrs(const std::map<std::string, mvreg<CRDTAttribute, uint32_t>> &_attrs)
+    void CRDTNode::attrs(const std::map<std::string, mvreg<CRDTAttribute>> &_attrs)
     {
         m_attrs = _attrs;
     }
 
-    void CRDTNode::attrs(std::map<std::string, mvreg<CRDTAttribute, uint32_t>> &&_attrs)
+    void CRDTNode::attrs(std::map<std::string, mvreg<CRDTAttribute>> &&_attrs)
     {
         m_attrs = std::move(_attrs);
     }
 
-    std::map<std::string, mvreg<CRDTAttribute, uint32_t>> &CRDTNode::attrs() &
+    std::map<std::string, mvreg<CRDTAttribute>> &CRDTNode::attrs() &
     {
         return m_attrs;
     }
 
-    const std::map<std::string, mvreg<CRDTAttribute, uint32_t>> &CRDTNode::attrs() const &
+    const std::map<std::string, mvreg<CRDTAttribute>> &CRDTNode::attrs() const &
     {
         return m_attrs;
     }
 
-    void CRDTNode::fano(const std::map<std::pair<uint32_t, std::string>, mvreg<CRDTEdge, uint32_t>> &_fano)
+    void CRDTNode::fano(const std::map<std::pair<uint32_t, std::string>, mvreg<CRDTEdge>> &_fano)
     {
         m_fano = _fano;
     }
 
-    void CRDTNode::fano(std::map<std::pair<uint32_t, std::string>, mvreg<CRDTEdge, uint32_t>> &&_fano)
+    void CRDTNode::fano(std::map<std::pair<uint32_t, std::string>, mvreg<CRDTEdge>> &&_fano)
     {
         m_fano = std::move(_fano);
     }
 
-    std::map<std::pair<uint32_t, std::string>, mvreg<CRDTEdge, uint32_t>> &CRDTNode::fano()
+    std::map<std::pair<uint32_t, std::string>, mvreg<CRDTEdge>> &CRDTNode::fano()
     {
         return m_fano;
     }
 
-    const std::map<std::pair<uint32_t, std::string>, mvreg<CRDTEdge, uint32_t>> &CRDTNode::fano() const
+    const std::map<std::pair<uint32_t, std::string>, mvreg<CRDTEdge>> &CRDTNode::fano() const
     {
         return m_fano;
     }
@@ -522,13 +522,13 @@ namespace DSR {
                 pi.first(kv_dots.first.first);
                 pi.second(kv_dots.first.second);
 
-                nodeAttr.dk().ds().emplace(make_pair(pi, kv_dots.second.toIDLAttrib()));
+                nodeAttr.dk().ds().emplace(std::make_pair(pi, kv_dots.second.toIDLAttrib()));
                 nodeAttr.dk().cbase().cc().emplace(kv_dots.first);
             }
 
             nodeAttr.id(id);
             nodeAttr.attr_name(k);
-            nodeAttr.agent_id(v.read().begin()->agent_id());
+            nodeAttr.agent_id(v.read_reg().agent_id());
             node.attrs()[k] = nodeAttr;
         }
 
@@ -539,15 +539,15 @@ namespace DSR {
                 pi.first(kv_dots.first.first);
                 pi.second(kv_dots.first.second);
 
-                mvregCRDTEdge.dk().ds().emplace(make_pair(pi, kv_dots.second.toIDLEdge(id)));
+                mvregCRDTEdge.dk().ds().emplace(std::make_pair(pi, kv_dots.second.toIDLEdge(id)));
                 mvregCRDTEdge.dk().cbase().cc().emplace(kv_dots.first);
 
             }
 
             mvregCRDTEdge.id(id);
-            mvregCRDTEdge.agent_id(v.read().begin()->agent_id());
+            mvregCRDTEdge.agent_id(v.read_reg().agent_id());
             mvregCRDTEdge.to(k.first);
-            mvregCRDTEdge.from(v.read().begin()->from());
+            mvregCRDTEdge.from(v.read_reg().from());
             mvregCRDTEdge.type(k.second);
             IDL::EdgeKey ek;
             ek.to(k.first);

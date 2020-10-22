@@ -111,6 +111,8 @@ class DoRGBDStuff : public QWidget
   public:
     DoRGBDStuff(std::shared_ptr<DSR::DSRGraph> graph_, DSR::IDType node_id_) : graph(graph_), node_id(node_id_)
     {
+      //cam = graph->get_camera_api(graph->get_nodes_by_type("rgbd").at(0));
+
       setWindowTitle(QString::fromStdString(graph->get_agent_name()) + "-RGBD");
       QObject::connect(graph.get(), &DSR::DSRGraph::update_node_signal, this, &DoRGBDStuff::drawRGBDSLOT);
       QHBoxLayout *layout = new QHBoxLayout();
@@ -145,10 +147,15 @@ class DoRGBDStuff : public QWidget
 
       std::optional<Node> n = graph->get_node(id);
       if (n.has_value()) {
+          Node node = n.value();
+          if(cam == nullptr) {
+              if(graph->get_attrib_by_name<cam_rgb_focalx_att>(node).has_value())
+                cam = graph->get_camera_api(node);
+              else return;
+          }
           //rgb
           if (show_rgb->isChecked()) {
-              Node node = n.value();
-              const auto rgb_data = graph->get_rgb_image(node);
+              const auto rgb_data = cam->get_rgb_image();
               const auto rgb_width = graph->get_attrib_by_name<cam_rgb_width_att>(node);
               const auto rgb_height = graph->get_attrib_by_name<cam_rgb_height_att>(node);
 
@@ -166,7 +173,7 @@ class DoRGBDStuff : public QWidget
           {
             const auto depth_width = graph->get_attrib_by_name<cam_depth_width_att>(n.value());
             const auto depth_height = graph->get_attrib_by_name<cam_depth_height_att>(n.value());
-            const std::optional<std::vector<std::uint8_t>> gray_scale = graph->get_depth_as_gray_image(n.value());
+            const std::optional<std::vector<std::uint8_t>> gray_scale = cam->get_depth_as_gray_image();
             if (gray_scale.has_value() and depth_width.has_value() and depth_height.has_value())
                 depth_label.setPixmap(QPixmap::fromImage(QImage(&gray_scale.value()[0], depth_width.value(), depth_height.value(), QImage::Format_Indexed8)));
           }
@@ -181,6 +188,7 @@ class DoRGBDStuff : public QWidget
   private:
     QLabel label;
     std::shared_ptr<DSR::DSRGraph> graph;
+    std::unique_ptr<CameraAPI> cam;
     DSR::IDType node_id;
 };      
 
@@ -193,7 +201,7 @@ class DoTableStuff : public  QTableWidget
       qRegisterMetaType<std::int32_t>("std::int32_t");
       qRegisterMetaType<std::uint32_t>("std::uint32_t");
       qRegisterMetaType<std::string>("std::string");
-      qRegisterMetaType<map<string, Attribute>>("Attribs");
+      qRegisterMetaType<std::map<std::string, Attribute>>("Attribs");
 
       //setWindowFlags(Qt::Widget | Qt::FramelessWindowHint);
       std::optional<Node> n = graph->get_node(node_id_);
@@ -252,7 +260,7 @@ class DoTableStuff : public  QTableWidget
     };
 
   public slots:
-    void drawSLOT(const std::int32_t &id, const std::map<string,Attribute> &attribs)
+    void drawSLOT(const std::int32_t &id, const std::map<std::string,Attribute> &attribs)
     {
      // try {
           //std::cout << " Window " << this->window()->windowTitle().toStdString() << " id " << QString::number(id).toStdString() << " contains? " << this->window()->windowTitle().contains(QString::number(id)) << std::endl;

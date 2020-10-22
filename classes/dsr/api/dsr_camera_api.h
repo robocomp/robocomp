@@ -21,7 +21,7 @@ namespace DSR
             std::optional<std::vector<float>> get_depth_image(); //return a copy
             std::optional<std::reference_wrapper<const std::vector<uint8_t>>> get_depth_image() const;
             // computes the point clound [X,Y,X] in the target_frame_node coordinate system. Subsampling: 1,2,3.. means all, one of two, one of three, etc
-            std::optional<std::vector<std::tuple<float,float,float>>>  get_pointcloud(const std::string target_frame_node = "", unsigned short subsampling=1);
+            std::optional<std::vector<std::tuple<float,float,float>>>  get_pointcloud(const std::string& target_frame_node = "", unsigned short subsampling=1);
             std::optional<std::vector<uint8_t>> get_depth_as_gray_image() const;
 
             bool reload_camera(const DSR::Node &n);

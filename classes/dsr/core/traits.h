@@ -59,9 +59,9 @@ struct is_attr_name<T, std::void_t<decltype(T::attr_type), decltype(T::attr_name
 
 
 template<typename T>
-struct is_reference_wrapper : false_type {};
+struct is_reference_wrapper : std::false_type {};
 template<typename T>
-struct is_reference_wrapper<reference_wrapper<T>> : true_type{};
+struct is_reference_wrapper<std::reference_wrapper<T>> : std::true_type{};
 
 
 

@@ -139,7 +139,7 @@ namespace DSR {
 
     const std::vector<float> &Attribute::float_vec() const
     {
-        if (auto pval = std::get_if<vector<float>>(&m_value)) {
+        if (auto pval = std::get_if<std::vector<float>>(&m_value)) {
             return *pval;
         }
         throw std::runtime_error(
@@ -149,7 +149,7 @@ namespace DSR {
     std::vector<float> &Attribute::float_vec()
     {
 
-        if (auto pval = std::get_if<vector<float>>(&m_value)) {
+        if (auto pval = std::get_if<std::vector<float>>(&m_value)) {
             return *pval;
         }
         throw std::runtime_error(
@@ -183,7 +183,7 @@ namespace DSR {
 
     [[nodiscard]] const std::vector<uint8_t> &Attribute::byte_vec() const
     {
-        if (auto pval = std::get_if<vector<uint8_t>>(&m_value)) {
+        if (auto pval = std::get_if<std::vector<uint8_t>>(&m_value)) {
             return *pval;
         }
         throw std::runtime_error(
@@ -193,7 +193,7 @@ namespace DSR {
     std::vector<uint8_t> &Attribute::byte_vec()
     {
 
-        if (auto pval = std::get_if<vector<uint8_t >>(&m_value)) {
+        if (auto pval = std::get_if<std::vector<uint8_t >>(&m_value)) {
             return *pval;
         }
         throw std::runtime_error(
@@ -214,22 +214,22 @@ namespace DSR {
         return m_from;
     }
 
-    const string &Edge::type() const
+    const std::string &Edge::type() const
     {
         return m_type;
     }
 
-    string &Edge::type()
+    std::string &Edge::type()
     {
         return m_type;
     }
 
-    const  map<std::string, Attribute> &Edge::attrs() const
+    const  std::map<std::string, Attribute> &Edge::attrs() const
     {
         return m_attrs;
     }
 
-     map<std::string, Attribute> &Edge::attrs()
+    std::map<std::string, Attribute> &Edge::attrs()
      {
         return m_attrs;
     }
@@ -249,7 +249,7 @@ namespace DSR {
         m_from = mFrom;
     }
 
-    void Edge::type(const string &mType)
+    void Edge::type(const std::string &mType)
     {
         if(!EDGE_TYPES::find(mType)) {
             throw std::runtime_error("Error, " + mType + " is not a valid edge type");
@@ -257,7 +257,7 @@ namespace DSR {
         m_type = mType;
     }
 
-    void Edge::attrs(const  map<std::string, Attribute> &mAttrs)
+    void Edge::attrs(const  std::map<std::string, Attribute> &mAttrs)
     {
         m_attrs = mAttrs;
     }
@@ -276,43 +276,43 @@ namespace DSR {
         return m_id;
     }
 
-    const string &Node::type() const
+    const std::string &Node::type() const
     {
         return m_type;
     }
 
-    string &Node::type()
+    std::string &Node::type()
     {
         return m_type;
     }
 
-    const string &Node::name() const
+    const std::string &Node::name() const
     {
         return m_name;
     }
 
-    string &Node::name()
+    std::string &Node::name()
     {
         return m_name;
     }
 
-    const  map<std::string, Attribute> &Node::attrs() const
+    const  std::map<std::string, Attribute> &Node::attrs() const
     {
         return m_attrs;
     }
 
-     map<std::string, Attribute>& Node::attrs()
+    std::map<std::string, Attribute>& Node::attrs()
      {
         return m_attrs;
     }
 
-    const  map<std::pair<uint32_t, std::string>, Edge > &Node::fano() const
+    const  std::map<std::pair<uint32_t, std::string>, Edge > &Node::fano() const
     {
         return m_fano;
     }
 
-      map<std::pair<uint32_t, std::string>, Edge > &Node::fano()
-      {
+    std::map<std::pair<uint32_t, std::string>, Edge > &Node::fano()
+    {
         return m_fano;
     }
 
@@ -326,7 +326,7 @@ namespace DSR {
         m_id = mId;
     }
 
-    void Node::type (const string &mType)
+    void Node::type (const std::string &mType)
     {
         if(!NODE_TYPES::find(mType)) {
             throw std::runtime_error("Error, " + mType + " is not a valid node type");
@@ -334,17 +334,17 @@ namespace DSR {
         m_type = mType;
     }
 
-    void Node::name(const string &mName)
+    void Node::name(const std::string &mName)
     {
         m_name = mName;
     }
 
-    void Node::attrs(const  map<std::string, Attribute> &mAttrs)
+    void Node::attrs(const  std::map<std::string, Attribute> &mAttrs)
     {
         m_attrs = mAttrs;
     }
 
-    void Node::fano(const  map<std::pair<uint32_t, std::string>, Edge > &mFano)
+    void Node::fano(const  std::map<std::pair<uint32_t, std::string>, Edge > &mFano)
     {
         m_fano = mFano;
     }

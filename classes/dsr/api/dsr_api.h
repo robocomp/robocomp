@@ -22,7 +22,7 @@
 #include <optional>
 #include <type_traits>
 #include "dsr_eigen_defs.h"
-#include "../core/crdt/delta-crdts.cc"
+#include "../core/crdt/delta_crdt.h"
 #include "../core/rtps/dsrparticipant.h"
 #include "../core/rtps/dsrpublisher.h"
 #include "../core/rtps/dsrsubscriber.h"
@@ -47,7 +47,7 @@
 
 namespace DSR
 {
-    using Nodes = ormap<uint32_t , mvreg<CRDTNode, uint32_t>, uint32_t>;
+    using Nodes = std::unordered_map<uint32_t , mvreg<CRDTNode>>;
     using IDType = std::uint32_t;
 
     /////////////////////////////////////////////////////////////////
@@ -57,23 +57,6 @@ namespace DSR
     {
         friend RT_API;
         Q_OBJECT
-
-        private:
-            std::function<std::optional<uint8_t>(const Node&)> insert_node_read_file = [&] (const Node& node) -> std::optional<int> {
-                bool r = false;
-                {
-                    std::unique_lock<std::shared_mutex> lock(_mutex);
-                    if (id_map.find(node.id()) == id_map.end() and name_map.find(node.name())  == name_map.end()) {
-                        std::tie(r, std::ignore) = insert_node_(user_node_to_crdt(node));
-                    } else throw std::runtime_error((std::string("Cannot insert node in G, a node with the same id already exists ")
-                                                     + __FILE__ + " " + " " + std::to_string(__LINE__)).data());
-                }
-                if (r) {
-                    return node.id();
-                }
-                return {};
-            };
-
 
         public:
         size_t size();
@@ -219,7 +202,7 @@ namespace DSR
                     CRDTAttribute at;
                     CRDTValue value;
                     if constexpr (std::is_same<std::string, Ta>::value ||
-                                  std::is_same<const string &, Ta>::value) {
+                                  std::is_same<const std::string &, Ta>::value) {
                         at.type(STRING);
                         value.str(att_value);
                     } else if constexpr (std::is_same<std::int32_t, Ta>::value) {
@@ -245,7 +228,7 @@ namespace DSR
                     at.val(std::move(value));
                     at.timestamp(get_unix_timestamp());
                     if (elem.attrs().find(name::attr_name.data()) == elem.attrs().end()) {
-                        mvreg<CRDTAttribute, uint32_t> mv;
+                        mvreg<CRDTAttribute> mv;
                         elem.attrs().insert(make_pair(name::attr_name, mv));
                     }
                     elem.attrs()[name::attr_name.data()].write(at);
@@ -270,7 +253,7 @@ namespace DSR
                 CRDTAttribute at;
                 CRDTValue value;
                 if constexpr (std::is_same<std::string, Ta>::value ||
-                              std::is_same<const string &, Ta>::value) {
+                              std::is_same<const std::string &, Ta>::value) {
                     at.type(STRING);
                     value.str(att_value);
                 } else if constexpr (std::is_same<std::int32_t, Ta>::value) {
@@ -296,7 +279,7 @@ namespace DSR
                 at.val(std::move(value));
                 at.timestamp(get_unix_timestamp());
                 if (elem.attrs().find(att_name) == elem.attrs().end()) {
-                    mvreg<CRDTAttribute, uint32_t> mv;
+                    mvreg<CRDTAttribute> mv;
                     elem.attrs().insert(make_pair(att_name, mv));
                 }
                 elem.attrs()[att_name].write(at);
@@ -440,7 +423,7 @@ namespace DSR
         }
 
         template<typename Type, typename = std::enable_if_t<node_or_edge<Type>>>
-        bool remove_attrib_by_name(Type &elem, const string& att_name) {
+        bool remove_attrib_by_name(Type &elem, const std::string& att_name) {
             if (elem.attrs().find(att_name) == elem.attrs().end()) return false;
             elem.attrs().erase(att_name);
 
@@ -451,7 +434,7 @@ namespace DSR
         inline uint32_t get_agent_id() const { return agent_id; };
         inline std::string get_agent_name() const { return agent_name; };
         void reset() {
-            nodes.reset();
+            nodes.clear();
             deleted.clear();
             name_map.clear();
             id_map.clear();
@@ -474,24 +457,24 @@ namespace DSR
         /////////////////////////////////////////////////
         /// AUXILIARY IMAGES SUB-API
         /////////////////////////////////////////////////
-        std::optional<std::reference_wrapper<const std::vector<uint8_t>>> get_rgb_image(const Node &n) const;
-        std::optional<std::vector<float>> get_depth_image(const Node &n); //return a copy
-        std::optional<std::reference_wrapper<const std::vector<uint8_t>>> get_depth_image(const Node &n) const;
+        //std::optional<std::reference_wrapper<const std::vector<uint8_t>>> get_rgb_image(const Node &n) const;
+        //std::optional<std::vector<float>> get_depth_image(const Node &n); //return a copy
+        //std::optional<std::reference_wrapper<const std::vector<uint8_t>>> get_depth_image(const Node &n) const;
         //subsampling: 0,1,2,.. means all, one of two, one of three...
-        std::optional<std::vector<std::tuple<float,float,float>>>  get_pointcloud(const Node &n, const std::string target_frame_node = "", unsigned short subsampling=1);
-        std::optional<std::vector<uint8_t>> get_depth_as_gray_image(const Node &n) const;
+        //std::optional<std::vector<std::tuple<float,float,float>>>  get_pointcloud(const Node &n, const std::string target_frame_node = "", unsigned short subsampling=1);
+        //std::optional<std::vector<uint8_t>> get_depth_as_gray_image(const Node &n) const;
         /**AUXILIARY Images SUB-API**/
 
         /////////////////////////////////////////////////
         /// AUXILIARY RT SUB-API
         /////////////////////////////////////////////////
 
-        void insert_or_assign_edge_RT(Node &n, uint32_t to, const std::vector<float> &trans, const std::vector<float> &rot_euler);
-        void insert_or_assign_edge_RT(Node &n, uint32_t to, std::vector<float> &&trans, std::vector<float> &&rot_euler);
-        static std::optional<Edge> get_edge_RT(const Node &n, uint32_t to);
-        std::optional<RTMat> get_edge_RT_as_RTMat(const Edge &edge);
-        std::optional<RTMat> get_RT_pose_from_parent(const Node &n);
-        std::optional<Mat::RTMat> get_edge_RT_as_rtmat(const Edge &edge);
+        //void insert_or_assign_edge_RT(Node &n, uint32_t to, const std::vector<float> &trans, const std::vector<float> &rot_euler);
+        //void insert_or_assign_edge_RT(Node &n, uint32_t to, std::vector<float> &&trans, std::vector<float> &&rot_euler);
+        //static std::optional<Edge> get_edge_RT(const Node &n, uint32_t to);
+        //std::optional<RTMat> get_edge_RT_as_RTMat(const Edge &edge);
+        //std::optional<RTMat> get_RT_pose_from_parent(const Node &n);
+        //std::optional<Mat::RTMat> get_edge_RT_as_rtmat(const Edge &edge);
         /**AUXILIARY RT SUB-API**/
 
 
@@ -505,7 +488,21 @@ namespace DSR
         void print_RT(uint32_t root)                      const { utils->print_RT(root); };
         void write_to_json_file(const std::string &file, const std::vector<std::string> &skip_node_content = {})  const {
             utils->write_to_json_file(file, skip_node_content); };
-        void read_from_json_file(const std::string &file) const { utils->read_from_json_file(file, insert_node_read_file); };
+        void read_from_json_file(const std::string &file) {
+            utils->read_from_json_file(file, [&] (const Node& node) -> std::optional<int> {
+                bool r = false;
+                {
+                    std::unique_lock<std::shared_mutex> lock(_mutex);
+                    if (id_map.find(node.id()) == id_map.end() and name_map.find(node.name())  == name_map.end()) {
+                        std::tie(r, std::ignore) = insert_node_(user_node_to_crdt(node));
+                    } else throw std::runtime_error((std::string("Cannot insert node in G, a node with the same id already exists ")
+                                                     + __FILE__ + " " + " " + std::to_string(__LINE__)).data());
+                }
+                if (r) {
+                    return node.id();
+                }
+                return {};
+            }); };
         /**AUXILIARY IO SUB-API**/
 
         //////////////////////////////////////////////////
@@ -526,8 +523,10 @@ namespace DSR
         std::unique_ptr<Utilities> utils;
         RoboCompDSRGetID::DSRGetIDPrxPtr dsr_getid_proxy; // proxy to obtain unique node ids
         const bool copy;
-        std::unordered_set<string_view> ignored_attributes;
+        std::unordered_set<std::string_view> ignored_attributes;
         ThreadPool tp;
+
+
         //////////////////////////////////////////////////////////////////////////
         // Cache maps
         ///////////////////////////////////////////////////////////////////////////
@@ -536,11 +535,11 @@ namespace DSR
         //std::unordered_map<int, std::unordered_map<std::tuple<uint32_t, uint32_t, std::string>, mvreg<CRDTEdge, uint32_t>, hash_tuple>> temp_edge; //temporal storage for attributes to solve problems with unsorted messages.
 
         std::unordered_set<uint32_t> deleted;     // deleted nodes, used to avoid insertion after remove.
-        std::unordered_map<string, uint32_t> name_map;     // mapping between name and id of nodes.
-        std::unordered_map<uint32_t, string> id_map;       // mapping between id and name of nodes.
-        std::unordered_map<pair<uint32_t, uint32_t>, std::unordered_set<std::string>, hash_tuple> edges;      // collection with all graph edges. ((from, to), key)
-        std::unordered_map<uint32_t , std::unordered_set<pair<uint32_t, std::string>,hash_tuple>> to_edges;      // collection with all graph edges. (to, (from, key))
-        std::unordered_map<std::string, std::unordered_set<pair<uint32_t, uint32_t>, hash_tuple>> edgeType;  // collection with all edge types.
+        std::unordered_map<std::string, uint32_t> name_map;     // mapping between name and id of nodes.
+        std::unordered_map<uint32_t, std::string> id_map;       // mapping between id and name of nodes.
+        std::unordered_map<std::pair<uint32_t, uint32_t>, std::unordered_set<std::string>, hash_tuple> edges;      // collection with all graph edges. ((from, to), key)
+        std::unordered_map<uint32_t , std::unordered_set<std::pair<uint32_t, std::string>,hash_tuple>> to_edges;      // collection with all graph edges. (to, (from, key))
+        std::unordered_map<std::string, std::unordered_set<std::pair<uint32_t, uint32_t>, hash_tuple>> edgeType;  // collection with all edge types.
         std::unordered_map<std::string, std::unordered_set<uint32_t>> nodeType;  // collection with all node types.
 
         void update_maps_node_delete(uint32_t id, const std::optional<CRDTNode>& n);
@@ -558,15 +557,13 @@ namespace DSR
         std::optional<CRDTEdge> get_edge_(uint32_t from, uint32_t to, const std::string &key);
         std::tuple<bool, std::optional<IDL::Mvreg>> insert_node_(const CRDTNode &node);
         std::tuple<bool, std::optional<std::vector<IDL::MvregNodeAttr>>> update_node_(const CRDTNode &node);
-        std::tuple<bool, vector<tuple<uint32_t, uint32_t, std::string>>, std::optional<IDL::Mvreg>, vector<IDL::MvregEdge>> delete_node_(uint32_t id);
+        std::tuple<bool, std::vector<std::tuple<uint32_t, uint32_t, std::string>>, std::optional<IDL::Mvreg>, std::vector<IDL::MvregEdge>> delete_node_(uint32_t id);
         std::optional<IDL::MvregEdge> delete_edge_(uint32_t from, uint32_t t, const std::string &key);
         std::tuple<bool, std::optional<IDL::MvregEdge>, std::optional<std::vector<IDL::MvregEdgeAttr>>> insert_or_assign_edge_(const CRDTEdge &attrs, uint32_t from, uint32_t to);
 
         //////////////////////////////////////////////////////////////////////////
         // Other methods
         //////////////////////////////////////////////////////////////////////////
-        uint32_t id();
-        IDL::DotContext context();
         std::map<uint32_t, IDL::Mvreg> Map();
 
 
@@ -597,7 +594,7 @@ namespace DSR
             } else {
                 using ret_type = std::optional<name_type>;
                 if (value == attrs.end()) return ret_type();
-                auto av = *value->second.read().begin();
+                auto av = value->second.read_reg();
 
                 if constexpr (std::is_same_v< name_type, float>)
                     return ret_type(av.val().fl());
@@ -697,8 +694,8 @@ namespace DSR
 
         DSRPublisher dsrpub_edge_attrs;
         DSRSubscriber dsrsub_edge_attrs;
-        DSRPublisher dsrpub_edge_attrs_stream;
-        DSRSubscriber dsrsub_edge_attrs_stream;
+        //DSRPublisher dsrpub_edge_attrs_stream;
+        //DSRSubscriber dsrsub_edge_attrs_stream;
         NewMessageFunctor dsrpub_call_edge_attrs;
 
         DSRSubscriber dsrsub_graph_request;
@@ -712,7 +709,7 @@ namespace DSR
     signals:                                                                  // for graphics update
         void update_node_signal(std::uint32_t, const std::string &type); // REMOVE type
 
-        void update_attrs_signal(std::uint32_t id, const std::map<string, Attribute> &attribs); //Signal to show node attribs.
+        void update_attrs_signal(std::uint32_t id, const std::map<std::string, Attribute> &attribs); //Signal to show node attribs.
         void update_edge_signal(std::uint32_t from, std::uint32_t to,  const std::string &type);                   // Signal to show edge attribs.
 
         void del_edge_signal(std::uint32_t from, std::uint32_t to, const std::string &edge_tag); // Signal to del edge.

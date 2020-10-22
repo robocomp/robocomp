@@ -4,6 +4,7 @@
 #include <cassert>
 #include <qmat/QMatAll>
 #include "../core/topics/IDLGraphPubSubTypes.h"
+#include "dsr_rt_api.h"
 
 namespace DSR
 {
@@ -43,6 +44,7 @@ namespace DSR
             void del_edge_slot(const std::int32_t from, const std::int32_t to, const std::string &edge_type);
         private:
             DSR::DSRGraph *G;
+            std::unique_ptr<RT_API> rt;
             transform_cache cache;
             node_reference node_map;
             std::optional<InnerAPI::Lists> set_lists(const std::string &origId, const std::string &destId);

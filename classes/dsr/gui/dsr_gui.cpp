@@ -22,6 +22,7 @@
 #include <QApplication>
 #include <QTableWidget>
 #include <QStringList>
+#include <utility>
 #include "viewers/graph_viewer/graph_node.h"
 #include "viewers/graph_viewer/graph_edge.h"
 #include "specificworker.h"
@@ -126,7 +127,7 @@ double get_cpu_usage(){
 
 DSRViewer::DSRViewer(QMainWindow * widget, std::shared_ptr<DSR::DSRGraph> G_, int options, view main) : QObject()
 {
-	G = G_;
+	G = std::move(G_);
     qRegisterMetaType<std::int32_t>("std::int32_t");
     qRegisterMetaType<std::string>("std::string");
  	QRect availableGeometry(QApplication::desktop()->availableGeometry());

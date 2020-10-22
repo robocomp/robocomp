@@ -15,7 +15,7 @@ GraphViewer::GraphViewer(std::shared_ptr<DSR::DSRGraph> G_, QWidget *parent) :  
     qRegisterMetaType<std::uint32_t>("std::uint32_t");
     qRegisterMetaType<std::string>("std::string");
     G = G_;
-	own = shared_ptr<GraphViewer>(this);
+	own = std::shared_ptr<GraphViewer>(this);
 
     createGraph();
 

@@ -6,7 +6,8 @@
 #include <osgGA/EventQueue>
 #include <osgGA/TrackballManipulator>
 #include <QMouseEvent>
- 
+#include <utility>
+
 using namespace DSR;
 
 OSG3dViewer::OSG3dViewer(std::shared_ptr<DSR::DSRGraph> G_, float scaleX, float scaleY, QWidget *parent) :
@@ -14,7 +15,8 @@ OSG3dViewer::OSG3dViewer(std::shared_ptr<DSR::DSRGraph> G_, float scaleX, float 
                         _mGraphicsWindow(new osgViewer::GraphicsWindowEmbedded(this->x(), this->y(), this->width(), this->height())), 
                         _mViewer(new osgViewer::Viewer), m_scaleX(scaleX), m_scaleY(scaleY)
 {
-    G = G_;
+    G = std::move(G_);
+    rt = G->get_rt_api();
     this->setMinimumSize(400, 400);
     osg::ref_ptr<osg::Camera> camera = new osg::Camera;
     camera->setViewport( 0, 0, this->width(), this->height() );
@@ -48,7 +50,7 @@ OSG3dViewer::OSG3dViewer(std::shared_ptr<DSR::DSRGraph> G_, float scaleX, float 
             if (node.has_value())
                 add_or_assign_node_slot(node.value());
           }
-          catch(const std::exception &e){ std::cout << e.what() << std::endl; throw e;};
+          catch(const std::exception &e){ std::cout << e.what() << std::endl; throw e;}
         });
 	connect(G.get(), &DSR::DSRGraph::update_edge_signal,
         [this](auto from, auto to, auto type){
@@ -69,7 +71,7 @@ OSG3dViewer::~OSG3dViewer()
 {
 	root->removeChildren(0, root->getNumChildren());
 	root->dirtyBound();
-	root = NULL;
+	root = nullptr;
 }
 
 void OSG3dViewer::initializeGL(){
@@ -222,7 +224,7 @@ void OSG3dViewer::add_or_assign_edge_slot(const Node &from, const Node& to)
     auto edge = G->get_edge(from.id(), to.id(), "RT");
     if (edge.has_value())
     {
-        auto rtmat = G->get_edge_RT_as_RTMat(edge.value());
+        auto rtmat = rt->get_edge_RT_as_rtmat(edge.value());
         // rtmat.print("add_or_assign_edge_slot -> rtmat");
         auto mat = QMatToOSGMat4(rtmat.value());
 
@@ -433,12 +435,19 @@ osg::Vec3 OSG3dViewer::QVecToOSGVec(const QVec &vec) const
 
 }
 
-osg::Matrix  OSG3dViewer::QMatToOSGMat4(const RTMat &nodeB)
+osg::Matrix  OSG3dViewer::QMatToOSGMat4(const Mat::RTMat &nodeB)
 {
-	QVec angles = nodeB.extractAnglesR();
-	QVec t = nodeB.getTr();
+	//QVec angles = nodeB.extractAnglesR();
+	Mat::Rot3D angles = nodeB.rotation();
+	//QVec t = nodeB.getTr();
+	auto t = nodeB.translation();
 	//RTMat node = RTMat(-angles(0), -angles(1), angles(2), QVec::vec3(t(0), t(1), -t(2)));
-    RTMat node = RTMat(angles(0), -angles(1), -angles(2), QVec::vec3(t(0), -t(1), -t(2)));
+    Mat::RTMat node(Eigen::Translation3d(t(0), -t(1), -t(2))*
+                    Eigen::AngleAxisd(angles(0), Eigen::Vector3d::UnitX()) *
+                    Eigen::AngleAxisd(-angles(1), Eigen::Vector3d::UnitY()) *
+                    Eigen::AngleAxisd(-angles(2), Eigen::Vector3d::UnitZ()));
+
+    //RTMat node =RTMat(angles(0), -angles(1), -angles(2), QVec::vec3(t(0), -t(1), -t(2)));
 
     return osg::Matrixd( node(0,0), node(1,0), node(2,0), node(3,0),
 	                     node(0,1), node(1,1), node(2,1), node(3,1),
@@ -573,7 +582,7 @@ void OSG3dViewer::reload(QWidget* widget) {
 
 	if(qobject_cast<OSG3dViewer*>(widget) == this)
 	{
-	    cout<<"Reloading 3D viewer"<<endl;
+        std::cout<<"Reloading 3D viewer"<<std::endl;
 		createGraph();
 	}
 }

@@ -135,7 +135,7 @@ std::optional<std::reference_wrapper<const std::vector<uint8_t>>> CameraAPI::get
         return {};
     }
 }
-std::optional<std::vector<std::tuple<float,float,float>>>  CameraAPI::get_pointcloud(const std::string target_frame_node, unsigned short subsampling)
+std::optional<std::vector<std::tuple<float,float,float>>>  CameraAPI::get_pointcloud(const std::string& target_frame_node, unsigned short subsampling)
 {
     if( const auto n = G->get_node(id); n.has_value())
     {
@@ -166,7 +166,7 @@ std::optional<std::vector<std::tuple<float,float,float>>>  CameraAPI::get_pointc
                         std::size_t SIZE = tmp.size() / sizeof(float);
                         std::vector<std::tuple<float, float, float>> result(SIZE);
                         std::unique_ptr<InnerEigenAPI> inner_eigen;
-                        if (target_frame_node != "")  // do the change of coordinate system
+                        if (!target_frame_node.empty())  // do the change of coordinate system
                         {
                             inner_eigen = G->get_inner_eigen_api();
                             for (std::size_t i = 0; i < SIZE; i += STEP)

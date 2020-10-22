@@ -36,7 +36,7 @@ class DoRTStuff : public  QTableWidget
 Q_OBJECT
 public:
     DoRTStuff(std::shared_ptr<DSR::DSRGraph> graph_, const DSR::IDType &from_, const DSR::IDType &to_, const std::string &label_) :
-            graph(graph_), from(from_), to(to_), label(label_)
+            graph(graph_), rt(graph->get_rt_api()), from(from_), to(to_), label(label_)
     {
         qRegisterMetaType<DSR::IDType>("DSR::IDType");
 //      qRegisterMetaType<DSR::AttribsMap>("DSR::Attribs");
@@ -96,19 +96,19 @@ public slots:
             try {
                 std::optional<Node> node = graph->get_node(from);
                 if (node.has_value()) {
-                    auto mat = graph->get_edge_RT_as_RTMat(graph->get_edge_RT(node.value(), to).value()).value();
+                    auto mat = rt->get_edge_RT_as_rtmat(rt->get_edge_RT(node.value(), to).value()).value();
                     // draw RT values
-                    for (auto i : iter::range(mat.nRows()))
-                        for (auto j : iter::range(mat.nCols()))
+                    for (auto i : iter::range(mat.rows()))
+                        for (auto j : iter::range(mat.cols()))
                             if (item(i, j)==0)
                                 this->setItem(i, j, new QTableWidgetItem(QString::number(mat(i, j), 'f', 5)));
                             else
                                 this->item(i, j)->setText(QString::number(mat(i, j), 'f', 5));
                     // draw translation values
-                    auto trans = mat.getTr();
+                    auto trans = mat.translation();
                     std::vector<QString> ts{"tx", "ty", "tz"};
                     std::vector<QString> rs{"rx", "ry", "rz"};
-                    std::vector<RMat::T> rot{mat.getRxValue(), mat.getRyValue(), mat.getRzValue()};
+                    std::vector<double> rot(mat.rotation().data(), mat.rotation().data() + mat.rotation().size() );
                     for (auto i: iter::range(3)) {
                         if (this->item(4, i)==0) {
                             auto green = new QTableWidgetItem();
@@ -143,6 +143,7 @@ public slots:
     }
 private:
     std::shared_ptr<DSR::DSRGraph> graph;
+    std::unique_ptr<RT_API> rt;
     int from, to;
     std::string label;
     void resize_widget()
