@@ -330,8 +330,10 @@ void GraphViewer::mousePressEvent(QMouseEvent *event)
 		QGraphicsView::mousePressEvent(event);
 	}
 	else {
-        showContextMenu(event);
-		AbstractGraphicViewer::mousePressEvent(event);
+        if (event->button() == Qt::RightButton)
+            showContextMenu(event);
+		else
+            AbstractGraphicViewer::mousePressEvent(event);
 	}
 }
 
