@@ -17,6 +17,9 @@ GraphViewer::GraphViewer(std::shared_ptr<DSR::DSRGraph> G_, QWidget *parent) :  
     G = G_;
 	own = std::shared_ptr<GraphViewer>(this);
 
+    contextMenu = new QMenu(this);
+    showMenu = contextMenu->addMenu(tr("&Show:"));
+
     createGraph();
 
 	this->scene.setSceneRect(scene.itemsBoundingRect());
@@ -34,9 +37,10 @@ GraphViewer::GraphViewer(std::shared_ptr<DSR::DSRGraph> G_, QWidget *parent) :  
 
 GraphViewer::~GraphViewer()
 {
-	gmap.clear();
+    qDebug() << __FUNCTION__ << "Destroy";
+    gmap.clear();
 	gmap_edges.clear();
-	qDebug() << __FUNCTION__ << "Destroy";
+    type_id_map.clear();
 	QList<QGraphicsItem*> allGraphicsItems = scene.items();
 	for(int i = 0; i < allGraphicsItems.size(); i++)
 	{
@@ -52,13 +56,32 @@ void GraphViewer::createGraph()
 {
 	gmap.clear();
 	gmap_edges.clear();
+    type_id_map.clear();
 	this->scene.clear();
 	qDebug() << __FUNCTION__ << "Reading graph in Graph Viewer";
     try
     {
+        std::set<std::string> type_list;
         auto map = G->getCopy();
-		for(const auto &[k, node] : map)
-		       add_or_assign_node_SLOT(k,  node.type());
+		for(const auto &[k, node] : map) {
+            add_or_assign_node_SLOT(k, node.type());
+            //context menu
+            if (type_list.find(node.type()) == type_list.end()) {
+                QAction *action = new QAction(QString::fromStdString(node.type()));
+                action->setCheckable(true);
+                action->setChecked(true);
+                showMenu->addAction(action);
+                std::string type = node.type();
+                connect(action, &QAction::toggled, this, [this, type](bool visible){
+                    std::cout<<"hide/show";
+                    for(auto id : type_id_map[type])
+                        hide_show_node_SLOT(id, visible);
+                });
+                type_list.insert(node.type());
+                type_id_map.insert(std::pair<std::string, std::set<std::uint32_t>>(node.type(), {node.id()}));
+            } else
+                type_id_map[node.type()].insert(node.id());
+        }
 		for(auto node : map) // Aworset
            	for(const auto &[k, edges] : node.second.fano())
 			   add_or_assign_edge_SLOT(edges.from(), edges.to(), edges.type());
@@ -180,7 +203,8 @@ void GraphViewer::add_or_assign_node_SLOT(int id, const std::string &type)
 			else if(type == "mesh") color = "LightBlue";
 			else if(type == "imu") color = "LightSalmon";*/
 			gnode->setColor(color);
-        } else
+        }
+        else
 		{
 			qDebug()<<__FUNCTION__<<"##### Updated node";
             gnode = gmap.at(id);
@@ -285,7 +309,6 @@ void GraphViewer::del_node_SLOT(int id)
 
 }
 
-
 void GraphViewer::hide_show_node_SLOT(int id, bool visible)
 {
 	auto item = gmap[id];
@@ -307,6 +330,7 @@ void GraphViewer::mousePressEvent(QMouseEvent *event)
 		QGraphicsView::mousePressEvent(event);
 	}
 	else {
+        showContextMenu(event);
 		AbstractGraphicViewer::mousePressEvent(event);
 	}
 }
@@ -319,3 +343,7 @@ void GraphViewer::reload(QWidget * widget)
 	}
 }
 
+void GraphViewer::showContextMenu(QMouseEvent *event)
+{
+    contextMenu->exec(event->globalPos());
+}
