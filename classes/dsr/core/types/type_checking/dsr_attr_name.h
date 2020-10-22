@@ -102,6 +102,12 @@ REGISTER_TYPE(rt_rotation_euler_xyz, std::reference_wrapper<const std::vector<fl
 REGISTER_TYPE(rt_translation, std::reference_wrapper<const std::vector<float>>, true)
 REGISTER_TYPE(rt_quaternion, std::reference_wrapper<const std::vector<float>>, true)
 /*
+ * looking-at
+ * */
+REGISTER_TYPE(looking_at_rotation_euler_xyz, std::reference_wrapper<const std::vector<float>>, true)
+REGISTER_TYPE(looking_at_translation, std::reference_wrapper<const std::vector<float>>, true)
+REGISTER_TYPE(looking_at_quaternion, std::reference_wrapper<const std::vector<float>>, true)
+/*
  * Laser
  * */
 REGISTER_TYPE(laser_angles, std::reference_wrapper<const std::vector<float>>, true)
