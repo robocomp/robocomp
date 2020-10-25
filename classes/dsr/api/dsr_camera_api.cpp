@@ -152,17 +152,21 @@ std::optional<std::tuple<float,float,float>> CameraAPI::get_existing_roi_depth(c
     {
         auto left = (int)roi.min().x(); auto bot = (int)roi.min().y();
         auto right = (int)roi.max().x(); auto top = (int)roi.max().y();  // botom has higher numeric value. rows start in 0 up
-        if(left<right and top<bot)
+        if(left<right and bot>top)
         {
             float *depth_array = (float *) value->second.byte_vec().data();
             auto size = (right - left) * (bot - top);
-            float sum = 0.f;
+            std::vector<float> values(size);
+            std::size_t k = 0;
             for (int i = left; i < right; i++)
-                for (int j = top; i < bot; i++)
-                    sum += depth_array[i * this->width + j];
-            auto Y = sum / size * 1000;
-            auto X = (right - left) / 2 * Y / this->focal;
-            auto Z = (bot - top) / 2 * Y / this->focal;
+                for (int j = top; j < bot; j++)
+                    values[k++] = depth_array[i * this->width + j];
+
+            auto mv = std::min(values.begin(), values.end());
+            auto Y = *mv * 1000;
+            auto X = (right - left) / 2 * Y / this->focal_x;
+            auto Z = (bot - top) / 2 * Y / this->focal_y;
+            qInfo() << size << X << Y << Z;
             return std::make_tuple(X, Y, Z);
         }
         else

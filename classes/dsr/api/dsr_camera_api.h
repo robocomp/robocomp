@@ -30,14 +30,13 @@ namespace DSR
             std::optional<std::vector<uint8_t>> get_depth_as_gray_image() const;
             std::optional<std::tuple<float,float,float>> get_existing_roi_depth(const Eigen::AlignedBox<float, 2> &roi);
             std::optional<std::vector<std::tuple<float,float,float>>>  get_existing_pointcloud(const std::string target_frame_node, unsigned short subsampling);
-
-        bool reload_camera(const DSR::Node &n);
+            bool reload_camera(const DSR::Node &n);
             inline std::uint32_t  get_id() const { return id;};
             Eigen::Vector3d get_angles( const Eigen::Vector3d & p) const;
             Eigen::Vector3d get_angles_homogeneous( const Eigen::Vector3d & p) const;
             float get_focal() const;
-            float get_focal_x() const;
-            float get_focal_y() const;
+            float get_focal_x() const { return focal_x;};
+            float get_focal_y() const { return focal_y;};
             inline std::uint32_t get_height() const {return height;};
             int get_size_in_bytes() const;
             int get_depth() const;

@@ -58,6 +58,31 @@ std::optional<Mat::RTMat>  RT_API::get_edge_RT_as_rtmat(const Edge &edge)
         return {};
 }
 
+std::optional<Eigen::Vector3d> RT_API::get_translation(const Node &n, uint32_t to)
+{
+    if( auto edge = get_edge_RT(n, to); edge.has_value())
+        if( auto tt =  G->get_attrib_by_name<rt_translation_att>(edge.value()); tt.has_value())
+        {
+            const auto &t = tt.value().get();
+            if (t.size() == 3)
+                return Eigen::Vector3d(t[0], t[1], t[2]);
+            else
+                return {};
+        }
+        else
+            return {};
+    else
+        return {};
+}
+
+std::optional<Eigen::Vector3d> RT_API::get_translation(std::uint32_t node_id, uint32_t to)
+{
+    if( const auto node = G->get_node(node_id); node.has_value())
+        return get_translation(node.value(), to);
+    else
+        return {};
+}
+
 void RT_API::insert_or_assign_edge_RT(Node &n, uint32_t to, const std::vector<float> &trans, const std::vector<float> &rot_euler)
 {
     bool r1 = false;
