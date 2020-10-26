@@ -8,7 +8,7 @@ sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends p
 
 sudo pip3 install networkx pyside2 argcomplete termcolor cogapp prompt_toolkit
 
-${ROBOCOMP_BRANCH:-development}
+ROBOCOMP_BRANCH="${ROBOCOMP_BRANCH:-development}"
 git clone -b $ROBOCOMP_BRANCH https://github.com/robocomp/robocomp.git
 sudo ln -s ~ /home/robocomp
 echo "export ROBOCOMP=~/robocomp" >> ~/.bashrc
@@ -24,4 +24,4 @@ make -j$(nproc)
 sudo make install
 sudo sh -c "echo '/opt/robocomp/lib/' >> /etc/ld.so.conf"
 sudo ldconfig
-rcnode& python3 /home/robolab/robocomp/tools/robocompdsl/autogeneration_tests/test_cdsl/test_component_generation.py --avoid agm
+rcnode& python3 /home/robocomp/robocomp/tools/robocompdsl/autogeneration_tests/test_cdsl/test_component_generation.py --avoid agm
