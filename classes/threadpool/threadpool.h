@@ -58,9 +58,14 @@ public:
         }
     }
 
-
     ~ThreadPool()
     {
+
+        std::unique_lock<std::mutex> lock(tp_mutex);
+        std::queue<std::unique_ptr<function_wrapper_base>> tmp;
+        std::swap(tasks, tmp);
+        lock.unlock();
+
         done = true;
         cv.notify_all();
 
@@ -71,8 +76,12 @@ public:
         }
     }
 
+    uint32_t remaining_tasks() {
+        return tasks.size();
+    }
+
     template <typename Function, typename... Arguments,
-              typename = std::enable_if_t<std::is_invocable<Function &&, Arguments &&...>::value /*&& std::is_same<std::result_of_t<Function(Arguments...)>, void>::value*/>>
+            typename = std::enable_if_t<std::is_invocable<Function &&, Arguments &&...>::value /*&& std::is_same<std::result_of_t<Function(Arguments...)>, void>::value*/>>
     void spawn_task(Function &&fn, Arguments &&... args)
     {
         std::unique_lock<std::mutex> task_queue_lock(tp_mutex, std::defer_lock);
@@ -84,7 +93,7 @@ public:
     }
 
     template <typename Function, typename... Arguments,
-              typename = std::enable_if_t<std::is_invocable<Function &&, Arguments &&...>::value>>
+            typename = std::enable_if_t<std::is_invocable<Function &&, Arguments &&...>::value>>
     auto spawn_task_waitable(Function &&fn, Arguments &&... args)
     {
         std::unique_lock<std::mutex> task_queue_lock(tp_mutex, std::defer_lock);
@@ -120,24 +129,22 @@ private:
 
             cv.wait(task_queue_lock,
                     [&]() -> bool { return !tasks.empty() || done; });
+
             if (done) {
                 task_queue_lock.unlock();
                 cv.notify_all();
                 break;
             }
-            // Esto creo que no sería necesario
-            //if (tasks.empty()) {
-            //    task_queue_lock.unlock();
-            //    continue;
-            //}
+
             std::unique_ptr<function_wrapper_base> t = std::move(tasks.front());
             tasks.pop();
-
             task_queue_lock.unlock();
+
             if (t != nullptr)
             {
                 (*t)();
             }
+
         }
         //std::cout << "Terminando thread " << thread_index << std::endl;
     }
@@ -152,4 +159,3 @@ private:
 
 
 #endif
-

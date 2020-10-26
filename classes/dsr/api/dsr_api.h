@@ -37,7 +37,7 @@
 #include "dsr_utils.h"
 #include "../core/types/type_checking/dsr_attr_name.h"
 #include "../core/utils.h"
-#include "../core/threadpool.h"
+#include "threadpool/threadpool.h"
 
 
 #include <DSRGetID.h>

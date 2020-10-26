@@ -8,7 +8,7 @@
 //      use: auto ldata = laser_buffer.get();
 // Example of DoubleBuffer creation with user-defined converter from input to output types
 //      decl: DoubleBuffer<RoboCompLaser::TLaserData, RoboCompLaser::TLaserData> laser_buffer;
-//      use:  laser_buffer.put(std::move(laserData), [](auto &I, auto &T){ for(auto &&i , I){ T.append(i/2);}});
+//      use:  laser_buffer.put(std::move(laserData), [](auto &&I, auto &T){ for(auto &&i , I){ T.append(i/2);}});
 
 #include <shared_mutex>
 #include <mutex>
@@ -18,6 +18,7 @@
 #include <functional>
 #include <atomic>
 #include <future>
+#include "threadpool/threadpool.h"
 //#include <benchmark/benchmark.h>
 
 using namespace std::chrono_literals;
@@ -43,15 +44,26 @@ private:
     mutable std::shared_mutex bufferMutex;
     std::condition_variable_any cv;
 
+    std::chrono::microseconds write_freq;
+    std::chrono::time_point<std::chrono::steady_clock>  last_write;
+
     O bufferA;
     O bufferB;
     O &readBuffer;// = bufferA;
     O &writeBuffer;// = bufferB;
-    //bool to_clear = false;
     std::atomic_bool empty;// = true;
+    ThreadPool worker;
 
 public:
-    DoubleBuffer() : readBuffer(bufferA), writeBuffer(bufferB), empty(true) {};
+    DoubleBuffer() : write_freq(0us), readBuffer(bufferA), writeBuffer(bufferB), empty(true), worker(1) {};
+    explicit DoubleBuffer(std::chrono::milliseconds t) : write_freq(std::chrono::duration_cast<std::chrono::microseconds>(t)),
+                                                         readBuffer(bufferA), writeBuffer(bufferB), empty(true),
+                                                         worker(1) {};
+
+
+    ~DoubleBuffer() {
+        //std::cout << "Destroy" << std::endl;
+    }
 
     void init() {}
     void clear() {}
@@ -78,41 +90,65 @@ public:
         }
 
         std::shared_lock lock(bufferMutex);
-        empty.store( true);
+        empty.store(true);
         return readBuffer;
     }
 
-    void put(const I &d, std::function<void(const I &, O &)> t = empty_fn)
+
+    bool put(const I &d, std::function<void(const I &, O &)> t = empty_fn)
     {
-        auto fut = std::async(std::launch::async, [&]{
-            O temp;
-            if (ItoO(d, temp, t))
-            {
-                std::unique_lock lock(bufferMutex);
-                writeBuffer = std::move(temp);
-                std::swap(writeBuffer, readBuffer);
-                empty.store(false);
-                cv.notify_all();
-            }
-        });
+        auto now = std::chrono::steady_clock::now();
+        if (std::chrono::duration_cast<std::chrono::microseconds>(now - last_write)  > write_freq) {
+
+            last_write = now;
+            worker.spawn_task([&, this, d = d, t = t](){
+                O temp;
+                if (this->ItoO(d, temp, t))
+                {
+                    std::unique_lock lock(this->bufferMutex);
+                    this->writeBuffer = std::move(temp);
+                    std::swap(this->writeBuffer, this->readBuffer);
+                    this->empty.store(false);
+                    this->cv.notify_all();
+
+                }
+            });
+
+            return true;
+        } else {
+            return false;
+        };
     }
 
-    void put(I &&d, std::function<void( I &&, O &)> t = empty_fn_move)
+    bool put(I &&d, std::function<void( I &&, O &)> t = empty_fn_move)
     {
-        auto fut = std::async(std::launch::async, [&]{
-            O temp;
-            if (ItoO(std::move(d), temp, t))
-            {
-                std::unique_lock lock(bufferMutex);
-                writeBuffer = std::move(temp);
-                std::swap(writeBuffer, readBuffer);
-                empty.store(false);
-                cv.notify_all();
-            }
-        });
+        auto now = std::chrono::steady_clock::now();
+        if (std::chrono::duration_cast<std::chrono::microseconds>(now - last_write)  > write_freq) {
+
+            last_write = now;
+            worker.spawn_task([&, this, d = std::move(d), t = t]() mutable {
+                O temp;
+                if (this->ItoO(std::move(d), temp, t))
+                {
+                    std::unique_lock lock(this->bufferMutex);
+                    this->writeBuffer = std::move(temp);
+                    std::swap(writeBuffer, readBuffer);
+                    empty.store(false);
+                    cv.notify_all();
+                }
+            });
+
+            return true;
+        } else  {
+            return false;
+        };
     }
 
 private:
+
+
+
+
     bool ItoO(const I &iTypeData, O &oTypeData, std::function<void(const I &, O &)> t = empty_fn)
     {
         //Si es el mismo tipo o es convertible de I a O
@@ -130,7 +166,6 @@ private:
             //Comprobamos si se puede convertir el I_T a O_T
             if constexpr (std::is_convertible<I_T, O_T>::value)
             {
-                // No funciona con copy;
                 oTypeData = O(iTypeData.begin(), iTypeData.end());
             }
             else
@@ -168,10 +203,7 @@ private:
             //Comprobamos si se puede convertir el I_T a O_T
             if constexpr (std::is_convertible<I_T, O_T>::value)
             {
-                // No funciona con copy;
-                oTypeData.reserve(iTypeData.size());
-                std::move(iTypeData.begin(), iTypeData.end(), std::back_inserter(oTypeData));
-                //oTypeData = O(iTypeData.begin(), iTypeData.end());
+                oTypeData = O(std::make_move_iterator(iTypeData.begin()), std::make_move_iterator(iTypeData.end()));
             }
             else
             {
