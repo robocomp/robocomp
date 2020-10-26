@@ -8,6 +8,7 @@ sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends p
 
 sudo pip3 install networkx pyside2 argcomplete termcolor cogapp prompt_toolkit
 
+${ROBOCOMP_BRANCH:-development}
 git clone -b $ROBOCOMP_BRANCH https://github.com/robocomp/robocomp.git
 sudo ln -s ~ /home/robocomp
 echo "export ROBOCOMP=~/robocomp" >> ~/.bashrc
