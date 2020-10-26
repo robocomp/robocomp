@@ -186,7 +186,7 @@ void GraphEdge::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event)
 	const auto graph = source->getGraphViewer()->getGraph();
 	if( event->button()== Qt::RightButton)
 	{
-		if(tag == "RT")
+		if(tag == "RT" or tag == "looking-at")
 			do_stuff = std::make_unique<DoRTStuff2>(graph, source->id_in_graph, dest->id_in_graph, tag.toStdString());
 	}
 	animation->start();
