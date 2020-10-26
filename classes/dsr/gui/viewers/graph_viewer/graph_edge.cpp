@@ -34,6 +34,12 @@ GraphEdge::GraphEdge(GraphNode *sourceNode, GraphNode *destNode, const QString &
     source->addEdge(this);
     dest->addEdge(this);
 	tag = edge_name;
+	if (edge_name == "RT") {
+        color = "black";
+    }
+    else {
+        color = "red";
+    }
 	animation = new QPropertyAnimation(this, "edge_pen");
 	animation->setDuration(200);
 	animation->setStartValue(4);
@@ -114,7 +120,7 @@ void GraphEdge::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
     if (qFuzzyCompare(line.length(), qreal(0.)))
 		{
 				// Draw the line itself
-				painter->setPen(QPen(Qt::black, edge_width, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+				painter->setPen(QPen(color, edge_width, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
 				QRectF rectangle(sourcePoint.x()-20, sourcePoint.y()-20, 20.0, 20.0);
 				int startAngle = 35;
 				int spanAngle = 270 * 16;
@@ -123,8 +129,8 @@ void GraphEdge::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 				painter->drawText(rectangle.center(), tag);
 				double alpha = 0;
 				double r = 20/2.f;
-				painter->setBrush(Qt::black);
-				painter->setPen(QPen(Qt::black, edge_width));
+				painter->setBrush(color);
+				painter->setPen(QPen(color, edge_width));
 				painter->drawPolygon(QPolygonF() << QPointF(r*cos(alpha) + rectangle.center().x(), r*sin(alpha) + rectangle.center().y())
 																				 << QPointF(r*cos(alpha) + rectangle.center().x()-3, r*sin(alpha) + rectangle.center().y()-2) 
 																				 << QPointF(r*cos(alpha) + rectangle.center().x()+2, r*sin(alpha) + rectangle.center().y()-2));
@@ -135,7 +141,7 @@ void GraphEdge::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 			// Draw the line itself
 
 			painter->save();
-			painter->setPen(QPen(Qt::black, edge_width, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+			painter->setPen(QPen(color, edge_width, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
 			double angle = std::atan2(-line.dy(), line.dx());
 			painter->translate(line.center().x(), line.center().y());
 			painter->rotate(-angle*180/M_PI);
@@ -156,8 +162,8 @@ void GraphEdge::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 			// Draw the arrows
 			QPointF destArrowP1 = QPointF(line.length()*0.5,0) - QPointF(sin(M_PI / 2) * arrowSize, cos(M_PI / 2) * arrowSize);
 			QPointF destArrowP2 = QPointF(line.length()*0.5,0) - QPointF(sin(M_PI / 4) * arrowSize, cos(M_PI / 4) * arrowSize);
-			painter->setBrush(Qt::black);
-			painter->setPen(Qt::black);
+			painter->setBrush(color);
+			painter->setPen(QPen(color, edge_width));
 			painter->drawPolygon(QPolygonF() << QPointF(line.length()*0.5,0) << destArrowP1 << destArrowP2 );
 			painter->setPen(pen());
 
@@ -186,7 +192,7 @@ void GraphEdge::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event)
 	const auto graph = source->getGraphViewer()->getGraph();
 	if( event->button()== Qt::RightButton)
 	{
-		if(tag == "RT")
+		if(tag == "RT" or tag == "looking-at")
 			do_stuff = std::make_unique<DoRTStuff2>(graph, source->id_in_graph, dest->id_in_graph, tag.toStdString());
 	}
 	animation->start();

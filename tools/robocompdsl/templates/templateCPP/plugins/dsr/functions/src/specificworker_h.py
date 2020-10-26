@@ -28,13 +28,22 @@ std::unique_ptr<DSR::DSRViewer> graph_viewer;
 QHBoxLayout mainLayout;
 """
 
+DSR_SLOTS = """\
+void add_or_assign_node_slot(std::uint32_t, const std::string &type){};
+void add_or_assign_attrs_slot(std::uint32_t id, const std::map<std::string, DSR::Attribute> &attribs){};
+void add_or_assign_edge_slot(std::uint32_t from, std::uint32_t to,  const std::string &type){};
+
+void del_edge_slot(std::uint32_t from, std::uint32_t to, const std::string &edge_tag){};
+void del_node_slot(std::uint32_t from){};     
+"""
+
 class specificworker_h(TemplateDict):
     def __init__(self, component):
         super(specificworker_h, self).__init__()
         self.component = component
         self['dsr_includes'] = self.dsr_includes()
         self['dsr_attributes'] = self.dsr_attributes()
-
+        self['dsr_slots'] = self.dsr_slots()
 
 
     def dsr_includes(self):
@@ -44,9 +53,14 @@ class specificworker_h(TemplateDict):
         return result
 
     def dsr_attributes(self):
-        result=""
+        result = ""
         if self.component.dsr:
             result = DSR_ATTRIBUTES
         return result
 
+    def dsr_slots(self):
+        result = ""
+        if self.component.dsr:
+            result = DSR_SLOTS
+        return result
 

@@ -325,12 +325,12 @@ private:
     QPointF sourcePoint;
     QPointF destPoint;
     QString tag;
+    QColor color;
     QGraphicsTextItem *rt_values = nullptr;
     QTableWidget *label = nullptr;
     int edge_width;
     QPropertyAnimation* animation;
     QPolygonF tag_polygon;
-
 };
 
 
