@@ -1,5 +1,6 @@
 # DSR (Deep State Representation)
 - [Description](#description)
+- [Definitions](#definitions)
 - [Dependencies and Installation](#dependencies-and-installation)
   * [Installing agents](#installing-agents)
 - [Developer Documentation](#developer-documentation)
@@ -16,6 +17,7 @@
 <small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
 
 
+
 # Description
 
 CORTEX is a long term effort to build a series of architectural designs around the simple idea 
@@ -29,6 +31,27 @@ This software is the new infrastructure that will help in the creation of CORTEX
 <sup>*The illustration shows a possible instance of the CORTEX architecture. The central part of the ring contains the **DSR graph** that is shared by all agents, from whom a reference implementation is presented here. Coloured boxes represent agents providing different functionalities to the whole. The purple box is an agent that can connect to the real robot or to a realistic simulation of it, providing the basic infrastructure to explore prediction and anticipation capabilities*</sup>
 
 Conceptually, the DSR represents a network of entities and relations among them. Relations can be unary or binary predicates, while the entities may have complex numeric properties such as pose transformation matrices that represent the kinematic relations of objects in the world and the robot’s parts. Mathematically, the DSR is internalized as a directed graph with attributed edges. As a hybrid representation that stores information at both geometric and symbolic levels, the nodes of the DSR store concepts that can be symbolic, geometric or a combination of both. Metric concepts describe numeric quantities of objects in the world, which can be structures such as a three-dimensional mesh, scalars such as the mass of a link, or lists such as revision dates. Edges represent relationships between nodes. Two nodes may have several kinds of relationships but only one of them can be geometric. The geometric relationship is expressed with a fixed label called *RT*. This label stores the transformation matrix (expressed as a rotation-translation) between them.
+
+# Definitions
+- CORTEX, a Robotics Cognitive Architecture based on the idea of a set of software modules sharing a common representation or working memory. 
+- G, a distributed graph used as the CORTEX working memory. It exists as the set of local copies held by all the participating components in a CORTEX configuration
+- DSR Agent (DA), is a C++ RoboComp component extended with the functionality to edit the distributed graph G.
+- Node, a vertex of the graph G.
+- Edge, a directional edge connecting to nodes. Edges can have attributes.
+- All nodes and edges have type. The list of possible types is shown below.
+- Attribute, a property of a node or an edge. Attributes can be of any of these types
+  1. string
+  2. int (signed 32)
+  3. float
+  4. vector<float>
+  5. bool
+  6. in V1.1 vector<byte>
+  All attributes have a name and in V1.1 will hava a timestamp with the last modification time
+  
+- Attributes' names must be taken from a predefined list of tokens with types, for example ('name', string)('pos_x', float). A complete lists is provided below.
+- _RT edges_ are edges of type _RT_ that code a geometric relation between two nodes. RT edges have two atributes _rotation_euler_xyz_ and _translation_ that hold    the euler angles and translation coordinates of the R|t 4x4 matrix that represents a rotation followed by a translation pose of the child with respect to the parent's reference frame. There are methods in the G-API to directly recover the Rt matrix from the edge as a RoboComp RTMat.
+- There is a singular node in G named, "world", that representes the origin of the current reference frame for the robot. This node is the root of a kinematic tree       linked by RT edges. This tree is embedded in G and represent the set of physical elements believed to exist in the world. This tree is called _innermodel_ and can be automatically drawn in 3D using OpenSceneGraph and in 2D using Qt. Both representation are included in the UI off all generated agents.
+- An agent generated with _robocompdsl_ includes the object _G_ that can be accessed using its public API
 
 > This documentation describes the classes that allow the creation of agents to use this Deep State Representation.
 
