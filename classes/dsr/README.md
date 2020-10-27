@@ -1,9 +1,13 @@
 # DSR (Deep State Representation)
-  * [Description](#Description)
+- [Description](#description)
+- [Dependencies and Installation](#dependencies-and-installation)
+  * [Installing agents](#installing-agents)
+- [Developer Documentation](#developer-documentation)
   * [DSR-API (aka G-API)](#dsr-api--aka-g-api-)
   * [CORE](#core)
   * [Auxiliary sub-APIs](#auxiliary-sub-apis)
     + [RT sub-API](#rt-sub-api)
+      - [Overloaded method using move semantics.](#overloaded-method-using-move-semantics)
     + [IO sub-API](#io-sub-api)
     + [Innermodel sub-API](#innermodel-sub-api)
   * [CRDT- API](#crdt--api)
@@ -11,11 +15,14 @@
 
 <small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
 
+
 # Description
+
 CORTEX is a long term effort to build a series of architectural designs around the simple idea 
 of a group of agents that share a distributed, dynamic representation acting as a working memory. 
 This data structure is called **Deep State Representation (DSR)** due to the hybrid nature 
 of the managed elements, geometric and symbolic, and concrete (laser data) and abstract (logical predicates).
+This software is the new infrastructure that will help in the creation of CORTEX instances. A CORTEX instance is a set of software components, called _agents_, that share a distributed data structured called (_G_)raph playing the role of a working memory. Agents are C++ programs that can be generated using RoboComp's code generator, _robocompdsl_.  Agents are created with an instance of the FastRTPS middleware (by eProsima) configured in reliable multicast mode. A standard graph data structure is defined using FastRTPS's IDL and converted into a C++ class that is part of the agent's core. This class is extended using the _delta mutators_ CRDT code kindly provided by Carlos Baquero. With this added functionality, all the copies of G held by the participating agents acquire the property of _eventual consistency_. This property entails that all copies, being different at any given moment, will converge to the exact same state in a finite amount of time, after all agents stop editing the graph. With _delta mutators_, modifications made to G by an agent are propagated to all others and integrated in their respective copies. This occurs even if the network cannot guarantee that each packet is delivered exactly once, _causal broadcast_. Note that if operations on the graph were transmitted instead of changes in state, then _exactly once_ semantics would be needed.  Finally, the resulting local graph _G_ is used by the developer through a carefully designed thread safe API, _G_API_.
 
 <img src="https://user-images.githubusercontent.com/5784096/90373871-e3257d80-e072-11ea-9933-0392ea9ae7f1.png" width="800">
 
@@ -25,6 +32,69 @@ Conceptually, the DSR represents a network of entities and relations among them.
 
 > This documentation describes the classes that allow the creation of agents to use this Deep State Representation.
 
+# Dependencies and Installation
+
+It's assumed that you have already installed ![robocomp](https://github.com/robocomp/robocomp/blob/development/README.md#installation-from-source).
+To be able to use the DSR/CORTEX infraestructure you need to follow the next steps:
+From ubuntu repositories you need:
+```sh
+sudo apt install libasio-dev
+sudo apt install libtinyxml2-dev 
+sudo apt install libopencv-dev
+sudo apt install libqglviewer-dev-qt5
+```
+
+You need the following third-party software:
+
+- CoppeliaSim. Follow the instructions in their site: https://www.coppeliarobotics.com/ and make sure you choose the latest EDU version
+
+- cppitertools
+```sh
+      sudo git clone https://github.com/ryanhaining/cppitertools /usr/local/include/cppitertools
+```
+- gcc >= 9
+```sh
+      sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+      sudo apt update
+      sudo apt install gcc-9
+ ```
+ (you might want to update the default version: https://stackoverflow.com/questions/7832892/how-to-change-the-default-gcc-compiler-in-ubuntu)
+      
+- Fast-RTPS (aka Fast-DDS) from https://www.eprosima.com/. Follow these steps:
+```sh
+      mkdir software
+      cd software
+      git clone https://github.com/eProsima/Fast-CDR.git
+      mkdir Fast-CDR/build 
+      cd Fast-CDR/build
+      export MAKEFLAGS=-j$(($(grep -c ^processor /proc/cpuinfo) - 0))
+      cmake ..
+      cmake --build . 
+      sudo make install 
+      cd ~/software
+      git clone https://github.com/eProsima/foonathan_memory_vendor.git
+      cd foonathan_memory_vendor
+      mkdir build 
+      cd build
+      cmake ..
+      cmake --build . 
+      sudo make install 
+      cd ~/software
+      git clone https://github.com/eProsima/Fast-DDS.git
+      mkdir Fast-DDS/build 
+      cd Fast-DDS/build
+      cmake ..
+      cmake --build . 
+      sudo make install
+      sudo ldconfig
+```
+
+
+## Installing agents
+If you want to install the existing agents you can clone the [dsr-graph](https://github.com/robocomp/dsr-graph) repository and read the related documentation.
+
+
+# Developer Documentation
 ## DSR-API (aka G-API)
 G-API is the user-level access layer to G. It is composed by a set of core methods that access the underlying CRDT and RTPS APIs, and an extendable  set of auxiliary methods added to simplify the user coding tasks. 
 
