@@ -1,6 +1,6 @@
 //
 // Created by robolab on 24/07/18.
-// This class is a generic container for a thread safe doublebuffer used to transfer data between threads.
+// This class is a generic container for a thread-safe, timed, threaded doublebuffer used to transfer data between threads.
 // For example, between the main thread of a component and the (threaded) middleware stubs
 // Example of DoubleBuffer creation with default converters between input and output types:
 //      decl: DoubleBuffer<RoboCompLaser::TLaserData, RoboCompLaser::TLaserData> laser_buffer;
@@ -9,6 +9,7 @@
 // Example of DoubleBuffer creation with user-defined converter from input to output types
 //      decl: DoubleBuffer<RoboCompLaser::TLaserData, RoboCompLaser::TLaserData> laser_buffer;
 //      use:  laser_buffer.put(std::move(laserData), [](auto &&I, auto &T){ for(auto &&i , I){ T.append(i/2);}});
+//      decl: auto rgb_buffer = new DoubleBuffer<std::vector<std::uint8_t>, cv:::Mat>(std::chrono::milliseconds(100));
 
 #include <shared_mutex>
 #include <mutex>
@@ -43,7 +44,6 @@ class DoubleBuffer
 private:
     mutable std::shared_mutex bufferMutex;
     std::condition_variable_any cv;
-
     std::chrono::microseconds write_freq;
     std::chrono::time_point<std::chrono::steady_clock>  last_write;
 
@@ -60,14 +60,10 @@ public:
                                                          readBuffer(bufferA), writeBuffer(bufferB), empty(true),
                                                          worker(1) {};
 
-
-    ~DoubleBuffer() {
-        //std::cout << "Destroy" << std::endl;
-    }
-
+    ~DoubleBuffer() {};
     void init() {}
     void clear() {}
-
+    void set_write_freq(const std::chrono::milliseconds &freq) { write_freq = std::chrono::duration_cast<std::chrono::microseconds>(freq);};
 
     O get(std::chrono::milliseconds t = 200ms ) {
         std::shared_lock lock(bufferMutex);
@@ -93,7 +89,6 @@ public:
         empty.store(true);
         return readBuffer;
     }
-
 
     bool put(const I &d, std::function<void(const I &, O &)> t = empty_fn)
     {
@@ -145,10 +140,6 @@ public:
     }
 
 private:
-
-
-
-
     bool ItoO(const I &iTypeData, O &oTypeData, std::function<void(const I &, O &)> t = empty_fn)
     {
         //Si es el mismo tipo o es convertible de I a O

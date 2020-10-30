@@ -18,19 +18,20 @@ namespace DSR
             //explicit CameraAPI(DSRGraph *G_, const std::string &name);
 
             // binds reference to local node variable, to be used in x_existing_x  methods
-            void bind_node(DSR::Node &&n_) { node = std::move(n_);};
+            //void bind_node(DSR::Node &&n_) { node = std::move(n_);};
 
             std::optional<std::reference_wrapper<const std::vector<uint8_t>>> get_rgb_image() const;
-            std::optional<std::reference_wrapper<const std::vector<uint8_t>>> get_existing_rgb_image() const;
             std::optional<std::vector<float>> get_depth_image(); //returns a copy
-            std::optional<std::vector<float>> get_existing_depth_image();
-            std::optional<std::reference_wrapper<const std::vector<uint8_t>>> get_existing_depth_image() const;
             std::optional<std::reference_wrapper<const std::vector<uint8_t>>> get_depth_image() const;
             std::optional<std::vector<std::tuple<float,float,float>>>  get_pointcloud(const std::string& target_frame_node = "", unsigned short subsampling=1);
             std::optional<std::vector<uint8_t>> get_depth_as_gray_image() const;
-            std::optional<std::tuple<float,float,float>> get_existing_roi_depth(const Eigen::AlignedBox<float, 2> &roi);
-            std::optional<std::vector<std::tuple<float,float,float>>>  get_existing_pointcloud(const std::string target_frame_node, unsigned short subsampling);
-            bool reload_camera(const DSR::Node &n);
+            std::optional<std::tuple<float,float,float>> get_roi_depth(const std::vector<float> &depth, const Eigen::AlignedBox<float, 2> &roi);
+            //std::optional<std::vector<std::tuple<float,float,float>>>  get_existing_pointcloud(const std::string target_frame_node, unsigned short subsampling);
+            //std::optional<std::reference_wrapper<const std::vector<uint8_t>>> get_existing_depth_image() const;
+            //std::optional<std::vector<float>> get_existing_depth_image();
+            //std::optional<std::reference_wrapper<const std::vector<uint8_t>>> get_existing_rgb_image() const;
+
+        bool reload_camera(const DSR::Node &n);
             inline std::uint32_t  get_id() const { return id;};
             Eigen::Vector3d get_angles( const Eigen::Vector3d & p) const;
             Eigen::Vector3d get_angles_homogeneous( const Eigen::Vector3d & p) const;
