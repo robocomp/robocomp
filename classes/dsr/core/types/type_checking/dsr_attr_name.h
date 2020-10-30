@@ -171,8 +171,10 @@ REGISTER_TYPE(robot_current_linear_speed, std::reference_wrapper<const std::vect
 REGISTER_TYPE(robot_ref_adv_speed, float, true)
 REGISTER_TYPE(robot_ref_rot_speed, float, true)
 REGISTER_TYPE(robot_ref_side_speed, float, true)
-REGISTER_TYPE(base_target_x, float, true) //deprecated
-REGISTER_TYPE(base_target_y, float, true) //deprecated
+REGISTER_TYPE(robot_target_x, float, true)
+REGISTER_TYPE(robot_target_y, float, true)
+REGISTER_TYPE(robot_target_angle, float, true)
+
 /*
  * Arm
  * */
