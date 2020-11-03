@@ -167,7 +167,7 @@ class DoRTStuff2 : public  QWidget
 Q_OBJECT
 public:
     DoRTStuff2(std::shared_ptr<DSR::DSRGraph> graph_, const DSR::IDType &from_, const DSR::IDType &to_, const std::string &label_) :
-            graph(graph_), from(from_), to(to_)
+            graph(graph_), from(from_), to(to_), edge_type(label_)
     {
         qRegisterMetaType<DSR::IDType>("DSR::IDType");
         
@@ -213,6 +213,30 @@ public:
                 }
                 vbox->addLayout(hlayout);
             }
+//TODO: temporary added to check yolo pose estimation
+            if (label_ == "looking-at")
+            {
+                QHBoxLayout* looking_layout = new QHBoxLayout();
+                looking_layout->addWidget(new QLabel("Pose estimation:"));
+                vbox->addLayout(looking_layout);
+                //Add attribs to show
+                int pos=9;
+                for(std::vector<std::string> row : attrib_names)
+                {
+                    QHBoxLayout *hlayout = new QHBoxLayout();
+                    for(std::string name : row)
+                    {
+                        hlayout->addWidget(new QLabel(QString::fromStdString(name)));
+                        QLineEdit *ledit = new QLineEdit();
+                        ledit->setReadOnly(true);
+                        hlayout->addWidget(ledit);
+                        attrib_widgets[pos] = ledit;
+                        pos++;
+                    }
+                    vbox->addLayout(hlayout);
+                }
+                std::cout<<"size"<<pos<<std::endl;
+            }
             update_combo(references_cb->currentText());
             show();
         }
@@ -246,7 +270,7 @@ public slots:
         if (combo_text == "world")
             this->reference = graph->get_node_root().value().name();
         generate_node_transform_list(this->reference, this->from_string);
-        update_values();
+        add_or_assign_edge_slot(from, to, edge_type);
     };
     void update_values()
     {
@@ -270,7 +294,8 @@ public slots:
     };
     void add_or_assign_edge_slot(const std::int32_t from, const std::int32_t to, const std::string& edge_type)
     {
-        if(edge_type == "RT")
+        std::cout<<"edge-"<<edge_type<<std::endl;
+        if(edge_type == "RT" or edge_type == "looking-at")
         {
             std::optional<Node> from_node = graph->get_node(from);
             std::optional<Node> to_node = graph->get_node(to);
@@ -283,12 +308,39 @@ public slots:
                     update_values();
             }
         }
+        if(edge_type == "looking-at")
+        {
+            std::optional<DSR::Edge> edge = graph->get_edge(from, to, edge_type);
+            if(edge.has_value())
+            {
+                std::optional<const std::vector<float>>rotation = graph->get_attrib_by_name<looking_at_rotation_euler_xyz_att>(edge.value());
+                std::optional<const std::vector<float>>translation = graph->get_attrib_by_name<looking_at_translation_att>(edge.value());
+                if(rotation.has_value() and translation.has_value())
+                {
+                    for(unsigned int pos = 9;pos < 12;pos++)
+                    {
+                        const double &value = translation.value()[pos-9];
+                        attrib_widgets[pos]->setText(QString::number(value));
+                    }
+                    for(unsigned int pos = 12;pos < 15;pos++)
+                    {
+                        const double &value = rotation.value()[pos-12];
+                        attrib_widgets[pos]->setText(QString::number(value));
+                        //convert degress
+                        const double &value_d = value * 180 / M_PI;
+                        attrib_widgets[3 + pos]->setText(QString::number(value_d));
+                    }
+                    std::cout<<"print values"<<rotation.value()<<translation.value()<<std::endl;
+                }
+            }
+        }
     };
     
 private:
     std::shared_ptr<DSR::DSRGraph> graph;
     std::shared_ptr<DSR::InnerEigenAPI> inner_eigen;
     int from, to;
+    std::string edge_type;
     std::string from_string;
     std::string to_string;
     std::string reference;
