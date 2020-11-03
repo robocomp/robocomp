@@ -1,6 +1,84 @@
 //
 // Created by juancarlos on 15/10/20.
+// This class is a simple threadpool with a thread-safe interface.
+// The interface offers methods to execute either asynchronous tasks from which
+// no result is expected using the spawn_task method, or asynchronous tasks from
+// which a result is expected, which return a future object (https://en.cppreference.com/w/cpp/thread/future)
+// with the method spawn_task_waitable.
+// It can be used as a set of worker threads for executing tasks sent by a thread that read periodically
+// from the network (Used in dsr).
+// It is also used to launch tasks that the user does not need to wait for to complete (Used in doublebuffer).
+// Another use would be to spawn multiple tasks that can be executed in parallel and wait for all of them to
+// be completed after that.
+//Example 1:
+//    void print_a(int a) {
+//        std::cout << a << std::endl;
+//    }
+//   ...
+//   ThreadPool worker(1); //Creates a threadpool with one worker thread.
+//    wroker.spawn task(print_a, 24); //Add task to the work queue.
 //
+//Example 2: when using a lambda is important to capture by this, move or copy the values
+//that are going to be used to avoid problems with objets lifetimes.
+// ...
+//void do_something(const std::vector<int> &vec) {
+//    this is ok.
+//    worker.spawn_task([vec = vec](){
+//        auto x = 0;
+//        for (auto &e : vec) {
+//            x+=e;
+//        }
+//    });
+//
+//    //this is not ok. The tasks can be executed when vec is no longer valid.
+//    worker.spawn_task([](){
+//        auto x = 0;
+//        for (auto &e : vec) {
+//            x+=e;
+//        }
+//    });
+//
+//    //this is not ok. The tasks can be executed when vec is no longer valid.
+//    worker.spawn_task([](const std::vector<int> &vec){
+//        auto x = 0;
+//        for (auto &e : vec) {
+//            x+=e;
+//        }
+//    }, vec);
+//}
+//...
+//Example 3: Whe should move values when possible. We change the ownership of the objects so they not are destroyed.
+//BifObject bo;
+//  worker.spawn_task([std::move(bo)]() mutable {
+//      ...;
+//  });
+//or
+//  worker.spawn_task([](BigObject &&bo) {
+//     ...;
+//  }, std::move(bo));
+//
+//Example 4: waitable tasks.
+//ThreadPool tp();
+//   std::vector<std::future<int>> futs;
+//   for (int i = 0; i < 10; i++ ) {
+//     futs.push_back(tp.spawn_task_waitable([]() -> int {
+//      ...
+//     }));
+//   }
+//
+//   Wait until all tasks return.
+//   for (auto &f : futs) {
+//      f.get();
+//   }
+//
+//Example 5: When we want to execute a member function of an object we have to do it like this.
+//   std::string s = "aaa";
+//   auto f = tp.spawn_task_waitable(empty, s);
+//or if need to use this.
+//   tp.spawn_task(DSRGraph::join_delta_node_att, this, ...);
+//and in a lambda:
+//   tp.spawn_task([this]() { ... });
+
 
 #ifndef SIMPLE_THREADPOOL
 #define SIMPLE_THREADPOOL
@@ -15,8 +93,8 @@
 #include <type_traits>
 #include <vector>
 
-//using namespace std::chrono_literals;
 
+//Base Virtual Object to store any kind of callable objects and its arguments.
 class function_wrapper_base
 {
 public:
@@ -24,6 +102,7 @@ public:
     virtual void operator()() {};
 };
 
+//Specialization
 template <typename Function, typename... Arguments>
 class function_wrapper : public function_wrapper_base
 {
@@ -45,6 +124,7 @@ class ThreadPool
 {
 public:
 
+    //The threadpool can't be copied.
     ThreadPool(const ThreadPool &tp) = delete;
     ThreadPool(ThreadPool &tp) = delete;
     ThreadPool &operator=(const ThreadPool &tp) = delete;
@@ -146,7 +226,6 @@ private:
             }
 
         }
-        //std::cout << "Terminando thread " << thread_index << std::endl;
     }
 
     std::vector<std::thread> threads;
