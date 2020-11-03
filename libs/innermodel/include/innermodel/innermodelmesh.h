@@ -56,7 +56,7 @@ struct IncludeTrianglesInFCL_functor
 		vertices->clear();
 		triangles->clear();
 	}
-	void operator() (const osg::Vec3& v1, const osg::Vec3& v2, const osg::Vec3& v3, bool /* treatVertexDataAsTemporary */)
+	void operator() (const osg::Vec3& v1, const osg::Vec3& v2, const osg::Vec3& v3)
 	{
 		if (vertices == NULL or triangles == NULL)
 		{
