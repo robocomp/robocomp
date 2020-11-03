@@ -1,5 +1,5 @@
 #Download base image ubuntu 20.04
-FROM robocomp:focal
+FROM ubuntu:focal
 
 # LABEL about the custom image
 LABEL maintainer="emartinena@unex.es"
