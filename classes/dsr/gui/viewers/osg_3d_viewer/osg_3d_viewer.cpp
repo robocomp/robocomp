@@ -199,7 +199,8 @@ void OSG3dViewer::add_or_assign_node_slot(const Node &node)
             return;
         auto parent = G->get_parent_node(node);
         if( not parent.has_value())
-            throw std::runtime_error("Node cannot be inserted without a parent");
+            return;
+        //    throw std::runtime_error("Node cannot be inserted without a parent");
         auto type = node.type();
         if( type == "plane" )
             add_or_assign_box(node, parent.value());
@@ -207,7 +208,7 @@ void OSG3dViewer::add_or_assign_node_slot(const Node &node)
             add_or_assign_mesh(node, parent.value());
         else if( type == "transform")
             add_or_assign_transform(node, parent.value());
-        else if( type == "differentialrobot" or type == "laser" or type == "rgbd" or type == "omnirobot" or type == "person" or type == "glass")
+        else /*if( type == "differentialrobot" or type == "laser" or type == "rgbd" or type == "omnirobot" or type == "person" or type == "glass")*/
             add_or_assign_transform(node, parent.value());
     }
     catch(const std::exception& e)
@@ -229,10 +230,10 @@ void OSG3dViewer::add_or_assign_edge_slot(const Node &from, const Node& to)
         auto mat = QMatToOSGMat4(rtmat.value());
 
         // Check if parent exists in osg map
-        if (auto osg_parent = osg_map.find(std::make_tuple(from.id(), from.id())); osg_parent != osg_map.end()) 
+        if (auto osg_parent = osg_map.find(std::make_tuple(from.id(), from.id())); osg_parent != osg_map.end())
         {
             // Check if transform already exists
-            if (auto osg_parent_to_child = osg_map.find(std::make_tuple(from.id(), to.id())); osg_parent_to_child != osg_map.end()) 
+            if (auto osg_parent_to_child = osg_map.find(std::make_tuple(from.id(), to.id())); osg_parent_to_child != osg_map.end())
             {
                 if (auto existing_transform = dynamic_cast<osg::MatrixTransform *>((*osg_parent_to_child).second); existing_transform != nullptr)
                     existing_transform->setMatrix(mat);
@@ -248,7 +249,7 @@ void OSG3dViewer::add_or_assign_edge_slot(const Node &from, const Node& to)
                 osg_map.insert_or_assign(std::make_tuple(from.id(), to.id()), transform);
                 // hang the child if it exits
                 if (auto child = osg_map.find(std::make_tuple(to.id(), to.id())); child != osg_map.end())
-                { 
+                {
                     auto res = transform->addChild((*child).second);
                     if(not res)
                     {
@@ -257,10 +258,10 @@ void OSG3dViewer::add_or_assign_edge_slot(const Node &from, const Node& to)
                     }
                     //qDebug() << __FUNCTION__ << res << "caca";
                 }
-               
+
                 qDebug() << __FUNCTION__ << " Added osg edge-transform, node " << to.id() << "parent " << from.id();
             }
-        } 
+        }
         else
             throw std::runtime_error("Exception: parent " + from.name() + " not found for node " + to.name());
     }
@@ -438,14 +439,14 @@ osg::Vec3 OSG3dViewer::QVecToOSGVec(const QVec &vec) const
 osg::Matrix  OSG3dViewer::QMatToOSGMat4(const Mat::RTMat &nodeB)
 {
 	//QVec angles = nodeB.extractAnglesR();
-	Mat::Rot3D angles = nodeB.rotation();
+	//Mat::Rot3D angles = nodeB.rotation();
 	//QVec t = nodeB.getTr();
-	auto t = nodeB.translation();
+	//auto t = nodeB.translation();
 	//RTMat node = RTMat(-angles(0), -angles(1), angles(2), QVec::vec3(t(0), t(1), -t(2)));
-    Mat::RTMat node(Eigen::Translation3d(t(0), -t(1), -t(2))*
+    Mat::RTMat node(nodeB); /*node(Eigen::Translation3d(t(0), -t(1), -t(2))*
                     Eigen::AngleAxisd(angles(0), Eigen::Vector3d::UnitX()) *
                     Eigen::AngleAxisd(-angles(1), Eigen::Vector3d::UnitY()) *
-                    Eigen::AngleAxisd(-angles(2), Eigen::Vector3d::UnitZ()));
+                    Eigen::AngleAxisd(-angles(2), Eigen::Vector3d::UnitZ()));*/
 
     //RTMat node =RTMat(angles(0), -angles(1), -angles(2), QVec::vec3(t(0), -t(1), -t(2)));
 
