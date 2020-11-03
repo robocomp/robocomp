@@ -335,7 +335,6 @@ class YakuakeTabStack:
                     final_name = name
             if len(tab.terminals)>1:
                 final_name += "_+"+str(len(tab.terminals)-1)
-            final_name = '\"%s\"'%final_name
             YakuakeDBus().tabs.setTabTitle(tab.yakuake_session_id, final_name)
 
 
