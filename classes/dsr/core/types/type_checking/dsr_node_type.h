@@ -58,6 +58,7 @@ constexpr auto node_type_names = std::experimental::make_array(
         "left_knee"sv,
         "right_knee"sv,
         "mug"sv,
+        "cup"sv,
         "noodles"sv,
         "table"sv,
         "chair"sv,
