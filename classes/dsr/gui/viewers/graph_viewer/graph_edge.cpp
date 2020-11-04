@@ -20,7 +20,6 @@
 #include <QPainter>
 #include <QDebug>
 #include "../../dsr_gui.h"
-#include "specificworker.h"
 #include <QGraphicsSceneMouseEvent>
 #include <iostream>
 #include <cppitertools/range.hpp>

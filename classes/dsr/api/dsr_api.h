@@ -41,7 +41,6 @@
 
 
 #include <DSRGetID.h>
-#include <QFileDialog>
 
 #define TIMEOUT 5000
 

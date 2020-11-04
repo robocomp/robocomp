@@ -22,10 +22,10 @@
 #include <QApplication>
 #include <QTableWidget>
 #include <QStringList>
+#include <QStatusBar>
 #include <utility>
 #include "viewers/graph_viewer/graph_node.h"
 #include "viewers/graph_viewer/graph_edge.h"
-#include "specificworker.h"
 #include <unistd.h>
 #include "stdlib.h"
 #include "stdio.h"

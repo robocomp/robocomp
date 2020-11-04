@@ -31,6 +31,8 @@
 #include "viewers/graph_viewer/graph_viewer.h"
 #include "viewers/tree_viewer/tree_viewer.h"
 
+#include <QFileDialog>
+
 
 namespace DSR
 {
