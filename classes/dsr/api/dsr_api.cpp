@@ -175,57 +175,6 @@ std::optional<uint32_t> DSRGraph::insert_node(Node &node)
     return {};
 }
 
-/*
-std::tuple<bool, std::optional<std::vector<IDL::MvregNodeAttr>>> DSRGraph::update_node_(const Node &node)
-{
-
-    if (deleted.find(node.id()) == deleted.end())
-    {
-        if (!nodes[node.id()].empty())
-        {
-
-            std::vector<IDL::MvregNodeAttr> atts_deltas;
-            auto &iter = nodes[node.id()].read_reg().attrs();
-            //New attributes and updates.
-            for (auto &[k, att]: node.attrs())
-            {
-                mvreg<CRDTAttribute> mv;
-                CRDTAttribute att_tmp = user_attribute_to_crdt(att);
-                if (iter[k].empty() or att_tmp != iter.at(k).read_reg())
-                {
-                    auto delta = iter[k].write(std::move(att_tmp));
-                    atts_deltas.emplace_back(translate_node_attr_mvCRDT_to_IDL(agent_id, node.id(), node.id(), k, delta));
-                }
-            }
-            //Remove old attributes.
-            auto it_a = iter.begin();
-            while (it_a != iter.end())
-            {
-                const std::string &k = it_a->first;
-                if (ignored_attributes.find(k) != ignored_attributes.end())
-                {
-                    it_a = iter.erase(it_a);
-                }
-                else if (node.attrs().find(k) == node.attrs().end())
-                {
-                    auto delta = iter[k].reset();
-                    it_a = iter.erase(it_a);
-                    atts_deltas.emplace_back(
-                            translate_node_attr_mvCRDT_to_IDL(node.agent_id(), node.id(), node.id(), k, delta));
-                }
-                else
-                {
-                    it_a++;
-                }
-            }
-
-            return {true, atts_deltas};
-        }
-    }
-
-    return {false, {}};
-}*/
-
 std::tuple<bool, std::optional<std::vector<IDL::MvregNodeAttr>>> DSRGraph::update_node_(const CRDTNode &node)
 {
 
@@ -308,11 +257,14 @@ bool DSRGraph::update_node(Node &node)
             if (vec_node_attr.has_value())
             {
                 dsrpub_node_attrs.write(&vec_node_attr.value());
-                /*for (auto &v: vec_node_attr.value())
-                {
-                    ATTRIBUTE_TYPES::IS_STREAM_TYPE(v.attr_name()) ? dsrpub_node_attrs_stream.write(&v) : dsrpub_node_attrs.write(&v);
-                }*/
                 emit update_node_signal(node.id(), node.type());
+                std::vector<std::string> atts_names(vec_node_attr->size());
+                std::transform(std::make_move_iterator(vec_node_attr->begin()),
+                               std::make_move_iterator(vec_node_attr->end()),
+                               atts_names.begin(),
+                               [](auto &&x){ return x.attr_name();});
+                emit update_node_attr_signal(node.id(), atts_names);
+
             }
         }
     }
@@ -620,6 +572,8 @@ bool DSRGraph::insert_or_assign_edge(const Edge &attrs) {
         if (!copy)
         {
 
+            emit update_edge_signal(attrs.from(), attrs.to(), attrs.type());
+
             if (delta_edge.has_value())
             { //Insert
                 dsrpub_edge.write(&delta_edge.value());
@@ -627,13 +581,15 @@ bool DSRGraph::insert_or_assign_edge(const Edge &attrs) {
             if (delta_attrs.has_value())
             { //Update
                 dsrpub_edge_attrs.write(&delta_attrs.value());
-                /*
-                for (auto &d : delta_attrs.value())
-                {
-                    ATTRIBUTE_TYPES::IS_STREAM_TYPE(d.attr_name()) ? dsrpub_edge_attrs_stream.write(&d) : dsrpub_edge_attrs.write(&d);
-                }*/
+                std::vector<std::string> atts_names(delta_attrs->size());
+                std::transform(std::make_move_iterator(delta_attrs->begin()),
+                               std::make_move_iterator(delta_attrs->end()),
+                               atts_names.begin(),
+                               [](auto &&x){ return x.attr_name();});
+
+                emit update_edge_attr_signal(attrs.from(), attrs.to(), atts_names);
+
             }
-            emit update_edge_signal(attrs.from(), attrs.to(), attrs.type());
         }
     }
     return true;
@@ -959,7 +915,6 @@ void DSRGraph::join_delta_node(IDL::Mvreg &&mvreg)
             if (deleted.find(id) == deleted.end())
             {
                 ok = true;
-                ok = true;
                 nodes[id].join(std::move(d));
                 if (nodes[id].empty() or d_empty)
                 {
@@ -1108,6 +1063,7 @@ void DSRGraph::join_delta_node_attr(IDL::MvregNodeAttr &&mvreg)
         if (ok)
         {
             emit update_node_signal(id, nodes[id].read_reg().type());
+            emit update_node_attr_signal(id, {att_name});
         }
 
     } catch (const std::exception &e)
@@ -1154,6 +1110,7 @@ void DSRGraph::join_delta_edge_attr(IDL::MvregEdgeAttr &&mvreg)
         if (ok)
         {
             emit update_edge_signal(from,  to, type);
+            emit update_edge_attr_signal(from, to, {att_name});
         }
 
     } catch (const std::exception &e)
@@ -1377,6 +1334,7 @@ void DSRGraph::node_attrs_subscription_thread(bool showReceived)
                             qDebug() << name << " Received:" << samples.vec().size() << " node attrs from: "
                                      << m_info.sample_identity.writer_guid().entityId.value;
                         }
+
                         for (auto &&s: samples.vec()) {
                             if (s.agent_id() != agent_id and
                                 graph->ignored_attributes.find(s.attr_name().data()) == ignored_attributes.end())
@@ -1393,8 +1351,8 @@ void DSRGraph::node_attrs_subscription_thread(bool showReceived)
     dsrpub_call_node_attrs = NewMessageFunctor(this,  lambda_general_topic);
     dsrsub_node_attrs.init(dsrparticipant.getParticipant(), "DSR_NODE_ATTRS", dsrparticipant.getNodeAttrTopicName(),
                            dsrpub_call_node_attrs);
-    dsrsub_node_attrs_stream.init(dsrparticipant.getParticipant(), "DSR_NODE_ATTRS_STREAM", dsrparticipant.getNodeAttrTopicName(),
-                           dsrpub_call_node_attrs, true);
+   // dsrsub_node_attrs_stream.init(dsrparticipant.getParticipant(), "DSR_NODE_ATTRS_STREAM", dsrparticipant.getNodeAttrTopicName(),
+   //                        dsrpub_call_node_attrs, true);
 }
 
 void DSRGraph::fullgraph_server_thread()

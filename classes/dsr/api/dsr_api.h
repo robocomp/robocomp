@@ -710,8 +710,11 @@ namespace DSR
     signals:                                                                  // for graphics update
         void update_node_signal(std::uint32_t, const std::string &type); // REMOVE type
 
-        void update_attrs_signal(std::uint32_t id, const std::map<std::string, Attribute> &attribs); //Signal to show node attribs.
+        void update_attrs_signal(std::uint32_t id, const std::map<std::string, Attribute> &attribs);//DEPRECATED //Signal to show node attribs.
+        void update_node_attr_signal(std::uint32_t id ,const std::vector<std::string>& att_names);
+
         void update_edge_signal(std::uint32_t from, std::uint32_t to,  const std::string &type);                   // Signal to show edge attribs.
+        void update_edge_attr_signal(std::uint32_t from, std::uint32_t to, const std::vector<std::string>& att_name);
 
         void del_edge_signal(std::uint32_t from, std::uint32_t to, const std::string &edge_tag); // Signal to del edge.
         void del_node_signal(std::uint32_t from);                                                     // Signal to del node.
