@@ -223,17 +223,37 @@ class DoTableStuff : public  QTableWidget
           horizontalHeader()->setStretchLastSection(true);
           resize_widget();
           //TODO: comprobar QObject::connect(graph.get(), &DSR::DSRGraph::update_attrs_signal, this, &DoTableStuff::drawSLOT);
-          QObject::connect(graph.get(), &DSR::DSRGraph::update_node_signal, this, &DoTableStuff::update_node_slot);
+          //QObject::connect(graph.get(), &DSR::DSRGraph::update_node_signal, this, &DoTableStuff::update_node_slot);
+          //QObject::connect(graph.get(), &DSR::DSRGraph::update_node_signal, this, &DoTableStuff::update_node_slot);
+          QObject::connect(graph.get(), &DSR::DSRGraph::update_node_attr_signal, this, &DoTableStuff::update_node_attr_slot);
           show();
       }
     };
 
   public slots:
-    //TODO: this signal does not work yet
-    void update_atributtes_slot(const std::int32_t &id, const std::map<std::string,Attribute> &attribs)
+    void update_node_attr_slot(std::uint32_t node_id, const std::vector<std::string> &type)
     {
+      std::cout<<"UPDATE ATTR"<<std::endl;
+        if (node_id != this->node_id)
+            return;
+        std::optional<Node> n = graph->get_node(node_id);
+        if (n.has_value()) {
+            auto &attrs = n.value().attrs();
+            for (const std::string &attrib_name :type )
+            {
+                auto value = attrs.find(attrib_name);
+                if (value != attrs.end()) {
+                    const auto &av = value->second;
+                    if (widget_map.count(attrib_name)) {
+                        update_attribute_value(attrib_name, av);
+                    } else {
+                        insert_attribute(attrib_name, av);
+                    }
 
-    };
+                }
+            }
+        }
+    }
     void update_node_slot(std::uint32_t node_id, const std::string &type)
     {
         if (node_id != this->node_id)
