@@ -168,13 +168,19 @@ void RT_API::insert_or_assign_edge_RT(Node &n, uint32_t to, const std::vector<fl
         if (node1_insert.has_value())
         {
             G->dsrpub_edge.write(&node1_insert.value());
+
         }
         if (node1_update.has_value()) G->dsrpub_edge_attrs.write(&node1_update.value());
 
         if (!no_send and node2.has_value()) G->dsrpub_node_attrs.write(&node2.value());
 
+        emit G->update_edge_attr_signal(n.id(), to,{"rt_rotation_euler_xyz", "rt_translation"});
         emit G->update_edge_signal(n.id(), to, "RT");
-        if (!no_send) emit G->update_node_signal(to_n->id(), to_n->type());
+        if (!no_send)
+        {
+            emit G->update_node_signal(to_n->id(), to_n->type());
+            emit G->update_node_attr_signal(to_n->id(), {"level", "parent"});
+        }
     }
 }
 
@@ -268,7 +274,12 @@ void RT_API::insert_or_assign_edge_RT(Node &n, uint32_t to, std::vector<float> &
 
         if (!no_send and node2.has_value()) G->dsrpub_node_attrs.write(&node2.value());
 
+        emit G->update_edge_attr_signal(n.id(), to,{"rt_rotation_euler_xyz", "rt_translation"});
         emit G->update_edge_signal(n.id(), to, "RT");
-        if (!no_send) emit G->update_node_signal(to_n->id(), to_n->type());
+        if (!no_send)
+        {
+            emit G->update_node_signal(to_n->id(), to_n->type());
+            emit G->update_node_attr_signal(to_n->id(), {"level", "parent"});
+        }
     }
 }
