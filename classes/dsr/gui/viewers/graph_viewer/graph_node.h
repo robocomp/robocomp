@@ -233,7 +233,6 @@ class DoTableStuff : public  QTableWidget
   public slots:
     void update_node_attr_slot(std::uint32_t node_id, const std::vector<std::string> &type)
     {
-      std::cout<<"UPDATE ATTR"<<std::endl;
         if (node_id != this->node_id)
             return;
         std::optional<Node> n = graph->get_node(node_id);
@@ -271,7 +270,10 @@ class DoTableStuff : public  QTableWidget
             }
         }
     };
-
+    void save_attribute_slot(const std::string &attrib_name)
+    {
+        std::cout<<"SAVE"<<attrib_name<<std::endl;
+    }
     void resizeEvent(QResizeEvent* event)
     {
       const auto &columns = columnCount();
@@ -298,7 +300,7 @@ class DoTableStuff : public  QTableWidget
     }
     void update_attribute_value(std::string k, DSR::Attribute v)
     {
-//TODO: disconnect update graph signal before changing attribute value
+        widget_map[k]->blockSignals(true);
         switch (v.selected()) {
             case 0: {
                 qobject_cast<QLineEdit *>(widget_map[k])->setText(QString::fromStdString(v.str()));
@@ -335,6 +337,7 @@ class DoTableStuff : public  QTableWidget
                 break;
             }
         }
+        widget_map[k]->blockSignals(false);
     }
     void insert_attribute(std::string k, DSR::Attribute v)
     {
@@ -347,6 +350,10 @@ class DoTableStuff : public  QTableWidget
                 QLineEdit *ledit = new QLineEdit(QString::fromStdString(v.str()));
                 setCellWidget(rowCount() - 1, 1, ledit);
                 widget_map[k] = ledit;
+                connect(ledit, &QLineEdit::textChanged, this, [this, k](QString text){
+                    std::optional<Node> n = graph->get_node(node_id);
+                    graph->runtime_checked_update_attrib_by_name(n.value(), k, text.toStdString());
+                });
                 break;
             }
             case 1:
@@ -357,6 +364,10 @@ class DoTableStuff : public  QTableWidget
                 spin->setValue(v.dec());
                 setCellWidget(rowCount() - 1, 1, spin);
                 widget_map[k] = spin;
+                connect(spin, QOverload<int>::of(&QSpinBox::valueChanged), this, [this, k](int value){
+                    std::optional<Node> n = graph->get_node(node_id);
+                    graph->runtime_checked_update_attrib_by_name(n.value(), k, value);
+                });
                 break;
             }
             case 2: {
@@ -366,6 +377,10 @@ class DoTableStuff : public  QTableWidget
                 spin->setValue(std::round(static_cast<double>(v.fl()) * 1000000) / 1000000);
                 setCellWidget(rowCount() - 1, 1, spin);
                 widget_map[k] = spin;
+                connect(spin, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, [this, k](double value){
+                     std::optional<Node> n = graph->get_node(node_id);
+                     graph->runtime_checked_update_attrib_by_name(n.value(), k, (float)value);
+                });
                 break;
             }
             case 3: {
@@ -392,11 +407,17 @@ class DoTableStuff : public  QTableWidget
                 combo->setCurrentText(v.bl() ? "true" : "false");
                 setCellWidget(rowCount() - 1, 1, combo);
                 widget_map[k] = combo;
+                connect(combo, &QComboBox::currentTextChanged, this, [this, k](QString value){
+                    std::optional<Node> n = graph->get_node(node_id);
+                    bool val = ( value == "true");
+                    graph->runtime_checked_update_attrib_by_name(n.value(), k, val);
+                });
                 break;
             }
             case 5:
             {
-                std::ostringstream oss;
+//TODO: binary data must not be shown
+/*                std::ostringstream oss;
                 if(!v.byte_vec().empty()) {
                     std::copy(v.byte_vec().begin(), v.byte_vec().end() - 1, std::ostream_iterator<uint8_t>(oss, ","));
                     oss << v.byte_vec().back();
@@ -404,6 +425,7 @@ class DoTableStuff : public  QTableWidget
                 QLineEdit *ledit = new QLineEdit(QString::fromStdString(oss.str()));
                 setCellWidget(rowCount() - 1, 1, ledit);
                 widget_map[k] = ledit;
+                */
                 break;
             }
             case 6:
@@ -414,6 +436,10 @@ class DoTableStuff : public  QTableWidget
                 spin->setValue(v.uint());
                 setCellWidget(rowCount() - 1, 1, spin);
                 widget_map[k] = spin;
+                connect(spin, QOverload<int>::of(&QSpinBox::valueChanged), this, [this, k](int value){
+                    std::optional<Node> n = graph->get_node(node_id);
+                    graph->runtime_checked_update_attrib_by_name(n.value(), k, (unsigned int)value);
+                });
                 break;
             }
         }
