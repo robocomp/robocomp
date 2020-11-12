@@ -195,7 +195,10 @@ int main(int argc, char* argv[])
 	robotSimulatorComp app;
 
 	if (argc < 2)
-		qFatal("Usage: %s InnerModelFile.xml [-p INNERMODEL_MANAGER_PORT] [-f MSECS]", argv[0]);
+    {
+		qCritical("Usage: %s InnerModelFile.xml [-p INNERMODEL_MANAGER_PORT] [-f MSECS]", argv[0]);
+        return -1;
+    }
 
 	//  0 program_name
 	//  1 innermodel
