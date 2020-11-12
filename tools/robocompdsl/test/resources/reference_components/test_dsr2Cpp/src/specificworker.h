@@ -46,12 +46,6 @@ public slots:
 	void compute();
 	int startup_check();
 	void initialize(int period);
-	void add_or_assign_node_slot(std::uint32_t, const std::string &type){};
-	void add_or_assign_attrs_slot(std::uint32_t id, const std::map<std::string, DSR::Attribute> &attribs){};
-	void add_or_assign_edge_slot(std::uint32_t from, std::uint32_t to,  const std::string &type){};
-
-	void del_edge_slot(std::uint32_t from, std::uint32_t to, const std::string &edge_tag){};
-	void del_node_slot(std::uint32_t from){};     
 private:
 	// DSR graph
 	std::shared_ptr<DSR::DSRGraph> G;
