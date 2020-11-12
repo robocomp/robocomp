@@ -31,6 +31,7 @@ GraphNode::GraphNode(std::shared_ptr<DSR::GraphViewer> graph_viewer_): QGraphics
 	animation->setStartValue(plain_color);
 	animation->setEndValue(dark_color);
 	animation->setLoopCount(3);
+    QObject::connect(graph_viewer_->getGraph().get(), &DSR::DSRGraph::update_node_attr_signal, this, &GraphNode::update_node_attr_slot);
 }
 
 void GraphNode::setTag(const std::string &tag_)
@@ -272,6 +273,22 @@ void GraphNode::set_node_color(const QColor& c)
 /////////////////////////////////////////////////////////////////////////////////////////7
 ////
 /////////////////////////////////////////////////////////////////////////////////////////
+void GraphNode::update_node_attr_slot(std::uint32_t node_id, const std::vector<std::string> &type)
+{
+    if (node_id != this->id_in_graph)
+        return;
+    if(std::find(type.begin(), type.end(), "color") != type.end())
+    {
+        std::optional<Node> n = dsr_to_graph_viewer->getGraph()->get_node(node_id);
+        if (n.has_value()) {
+            auto &attrs = n.value().attrs();
+            auto value = attrs.find("color");
+            if (value != attrs.end()) {
+                this->setColor(value->second.str());
+            }
+        }
+    }
+}
 /* void GraphNode::NodeAttrsChangedSLOT(const DSR::IDType &node, const DSR::Attribs &attr)
  {
 	 std::cout << "do cool stuff" << std::endl;
