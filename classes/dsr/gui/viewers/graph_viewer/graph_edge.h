@@ -370,7 +370,9 @@ protected:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
     void keyPressEvent(QKeyEvent *event) override;
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event) override;
+    void update_edge_attr_slot(std::uint32_t from, std::uint32_t to, const std::vector<std::string>& att_name);
 
+    
 private:
     GraphNode *source, *dest;  //CAMBIAR A FROM TO
     qreal arrowSize;
