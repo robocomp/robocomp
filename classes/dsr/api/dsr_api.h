@@ -59,7 +59,7 @@ namespace DSR
 
         public:
         size_t size();
-        DSRGraph(int root, std::string name, int id, const std::string& dsr_input_file = std::string(), RoboCompDSRGetID::DSRGetIDPrxPtr dsrgetid_proxy = nullptr);
+        DSRGraph(int root, std::string name, int id, const std::string& dsr_input_file = std::string(), RoboCompDSRGetID::DSRGetIDPrxPtr dsrgetid_proxy = nullptr, bool all_same_host = true);
         ~DSRGraph();
 
 
@@ -183,7 +183,6 @@ namespace DSR
                 throw std::logic_error("Unreachable");
             }
         }
-
 
         /**
          * LOCAL ATTRIBUTES MODIFICATION METHODS (for nodes and edges)
@@ -526,7 +525,7 @@ namespace DSR
         const bool copy;
         std::unordered_set<std::string_view> ignored_attributes;
         ThreadPool tp;
-
+        bool same_host;
 
         //////////////////////////////////////////////////////////////////////////
         // Cache maps
@@ -648,15 +647,15 @@ namespace DSR
         class NewMessageFunctor {
         public:
             DSRGraph *graph{};
-            std::function<void(eprosima::fastrtps::Subscriber *sub, DSR::DSRGraph *graph)> f;
+            std::function<void(eprosima::fastdds::dds::DataReader* reader, DSR::DSRGraph *graph)> f;
 
             NewMessageFunctor(DSRGraph *graph_,
-                              std::function<void(eprosima::fastrtps::Subscriber *sub,  DSR::DSRGraph *graph)> f_)
+                              std::function<void(eprosima::fastdds::dds::DataReader* reader,  DSR::DSRGraph *graph)> f_)
                     : graph(graph_), f(std::move(f_)) {}
 
             NewMessageFunctor() = default;
 
-            void operator()(eprosima::fastrtps::Subscriber *sub) const { f(sub, graph); };
+            void operator()(eprosima::fastdds::dds::DataReader* reader) const { f(reader, graph); };
         };
 
 
