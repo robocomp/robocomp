@@ -1,7 +1,7 @@
 <innerModel>
 	<transform id="world">
 		<transform id="floor">
-		    <plane id="floor_plane" ny="1"  px="-0" py="0" pz="0" size="5000,5000,10" texture="/home/robocomp/robocomp/files/osgModels/textures/wood.jpg" /> 
+		    <plane id="ddG" ny="1"  px="-0" py="0" pz="0" size="5000,5000,10" texture="/home/robocomp/robocomp/files/osgModels/textures/wood.jpg" /> 
 	
 			<plane id="ddR" nx="1"  px="2500" py="200" pz="0" size="5000,500,10" texture="#eeeeee" />
 			<plane id="ddL" nx="1" px="-2500" py="200" pz="0" size="5000,500,10" texture="#eeeeee" />
@@ -30,44 +30,31 @@
 		</transform>
 
 		<!--OBSTACLES-->
-<!--		<transform id="valla1" tx="0" tz="1100" ty="0" >-->
-<!--			<plane id="cajaMesh1" nz="1" nx="-1.3" size="50,400,3800"  texture="/home/robocomp/robocomp/files/osgModels/textures/Metal.jpg" />-->
-<!--		</transform>-->
+		<transform id="caja1" tx="1400" tz="800" ty="0" >
+			<plane id="cajaMesh1" nx="1" size="400, 400,2000"  texture="/home/robocomp/robocomp/files/osgModels/textures/Metal.jpg" collide="1"/>
+		</transform>
 
-<!--		<transform id="valla2" tx="2000" tz="900" ty="0" >-->
-<!--			<plane id="cajaMesh2" nx="1" size="50,400,900"  texture="/home/robocomp/robocomp/files/osgModels/textures/Metal.jpg" />-->
-<!--		</transform>-->
-
-<!--		<transform id="valla3" tx="1500" tz="1300" ty="0" >-->
-<!--			<plane id="cajaMesh13" nz="1" size="50,400,700"  texture="/home/robocomp/robocomp/files/osgModels/textures/Metal.jpg" />-->
-<!--		</transform>-->
-<!--		-->
-<!--		<transform id="caja3" tx="-1300" tz="-1200" ty="0" >-->
-<!--			<plane id="cajaMesh3" nx="1" size="400,400,400"  texture="/home/robocomp/robocomp/files/osgModels/textures/Metal.jpg" />-->
-<!--		</transform>&ndash;&gt;-->
-<!--		-->
-<!--		<transform id="caja4" tx="1300" tz="-1200" ty="0" >-->
-<!--			<plane id="cajaMesh4" nx="1" size="400,400,400"  texture="/home/robocomp/robocomp/files/osgModels/textures/Metal.jpg" />-->
-<!--		</transform>-->
-<!--		-->
-<!--		<transform id="caja5" tx="0" tz="-1500" ty="0" >-->
-<!--			<plane id="cajaMesh5" nx="1" size="400,400,400"  texture="/home/robocomp/robocomp/files/osgModels/textures/Metal.jpg" />-->
-<!--		</transform>-->
-<!--		-->
-			<omnirobot id="robot" port="10004">
-				<mesh id="base_robex" file="/home/robocomp/robocomp/files/osgModels/robex/robexnew/con_pegatina/robex.ive"  tx="0" ty="0" tz="0" rx="1.5707963" scale="3" />
-				<translation id="laserPose" tx="0" ty="110" tz="30">
+		<transform id="caja2" tx="-1400" tz="800" ty="0" >
+			<plane id="cajaMesh2" nx="1" size="400,400,2000"  texture="/home/robocomp/robocomp/files/osgModels/textures/Metal.jpg" collide="1"/>
+		</transform>-->
+		
+			
+		<!-- <axes id="axis" length="1000"/>
+		 -->
+		<differentialrobot id="base" port="10004">
+			<mesh id="base_robex" file="/home/robocomp/robocomp/files/osgModels/robex/robex.ive"  tx="0" ty="0" tz="0" scale="1000" collide="1"/>
+				<translation id="laserPose" tx="0" ty="140" tz="200">
 					<laser id="laser" port="10003" measures="100" min="100" max="30000" angle="3" ifconfig="10000" />
-						<plane id="sensorL" nz="1" pz="-20" size="100,50,10" repeat="1" texture="#ff0000" /> 
+						<plane id="sensorL" nz="1" pz="-200" size="100" repeat="1" texture="#ff0000" /> 
 				</translation>	
-				<transform id="camera" ty="210" tz="180">
+				<!--<transform id="camera" ty="210" tz="200">
 						<imu id="imu" port="10010"/>
-						<rgbd id="rgbd" focal="480" width="640" height="480" port="10096" noise="0.00" ifconfig="40000,50000" />
-<!--						<plane id="rgbd_mesh1" nz="1" pz="-200" size="200,50,10" repeat="1" texture="#550000" />-->
-				</transform>
+						<rgbd id="rgbd" focal="490" width="640" height="480" port="10096" noise="0.00" ifconfig="10068,10004" />
+						<plane id="rgbd_mesh1" nz="1" pz="-200" size="200,50,10" repeat="1" texture="#550000" />
+				</transform>-->
 				<translation id="robotGeometricCenter" tx="0" ty="0" tz="50">
 				</translation>
-			</omnirobot>
+			</differentialrobot>
 	</transform>
 
 <!--
