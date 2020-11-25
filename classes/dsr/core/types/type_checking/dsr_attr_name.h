@@ -74,7 +74,7 @@ static constexpr auto reg_fn = []() -> auto
 
 
 inline std::unordered_map<std::string_view, std::function<bool(const std::any&)>> ATTRIBUTE_TYPES::map_fn_;
-inline std::unordered_map<std::string_view, bool> ATTRIBUTE_TYPES::stream_type_;
+//inline std::unordered_map<std::string_view, bool> ATTRIBUTE_TYPES::stream_type_;
 
 /*
  * Generic

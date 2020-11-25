@@ -1,66 +1,98 @@
-// Copyright 2016 Proyectos y Sistemas de Mantenimiento SL (eProsima).
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+#include <fastdds/dds/domain/DomainParticipantFactory.hpp>
+#include <fastdds/rtps/transport/UDPv4TransportDescriptor.h>
+#include <fastdds/rtps/transport/shared_mem/SharedMemTransportDescriptor.h>
 
-/*!
- * @file cadenaParticipant.cpp
- * This file contains the implementation of the participant functions.
- */
-
-#include <fastrtps/participant/Participant.h>
-#include <fastrtps/attributes/ParticipantAttributes.h>
-#include <fastrtps/Domain.h>
-#include <fastrtps/transport/UDPv4TransportDescriptor.h>
+#include <fastrtps/utils/IPFinder.h>
 
 #include <thread>
 #include <QDebug>
 #include "dsrparticipant.h"
 
+using namespace eprosima::fastdds::dds;
+using namespace eprosima::fastdds::rtps;
 
-DSRParticipant::DSRParticipant() : mp_participant(nullptr) {}
+DSRParticipant::DSRParticipant() : mp_participant(nullptr),
+                                   dsrgraphType(new MvregPubSubType()),
+                                   graphrequestType(new GraphRequestPubSubType()),
+                                   graphRequestAnswerType(new OrMapPubSubType()),
+                                   dsrEdgeType(new MvregEdgePubSubType()),
+                                   dsrNodeAttrType(new MvregNodeAttrVecPubSubType()),
+                                   dsrEdgeAttrType(new MvregEdgeAttrVecPubSubType())
+
+{}
 
 DSRParticipant::~DSRParticipant()
 {
+    if (topic_node)
+        mp_participant->delete_topic(topic_node);
+    if (topic_edge)
+        mp_participant->delete_topic(topic_edge);
+    if (topic_graph)
+        mp_participant->delete_topic(topic_graph);
+    if (topic_graph_request)
+        mp_participant->delete_topic(topic_graph_request);
+    if (topic_node_att)
+        mp_participant->delete_topic(topic_node_att);
+    if (topic_edge_att)
+        mp_participant->delete_topic(topic_edge_att);
     if (mp_participant != nullptr)
-        eprosima::fastrtps::Domain::removeParticipant(mp_participant);
+        eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->delete_participant(mp_participant);
+
 }
 
-std::tuple<bool, eprosima::fastrtps::Participant *> DSRParticipant::init(int32_t agent_id) {
+std::tuple<bool, eprosima::fastdds::dds::DomainParticipant*> DSRParticipant::init(int32_t agent_id, int localhost) {
     // Create RTPSParticipant     
-    eprosima::fastrtps::ParticipantAttributes PParam;
-    PParam.rtps.setName(("Participant_" + std::to_string(agent_id)).data());  //You can put here the name you want
+    DomainParticipantQos PParam;
+    PParam.name(("Participant_" + std::to_string(agent_id)).data());  //You can put here the name you want
+
+
+    //Disable the built-in Transport Layer.
+    PParam.transport().use_builtin_transports = false;
 
     //Create a descriptor for the new transport.
-    auto custom_transport = std::make_shared<eprosima::fastrtps::rtps::UDPv4TransportDescriptor>();
+    auto custom_transport = std::make_shared<UDPv4TransportDescriptor>();
     custom_transport->sendBufferSize = 33554432;
     custom_transport->receiveBufferSize = 33554432;
     custom_transport->maxMessageSize = 65000;
-    custom_transport->interfaceWhiteList.emplace_back("127.0.0.1");
-    //custom_transport->interfaceWhiteList.emplace_back("192.168.1.253");
+    PParam.transport().user_transports.push_back(custom_transport);
 
-    //Disable the built-in Transport Layer.
-    PParam.rtps.useBuiltinTransports = false;
+    if (not localhost)
+    {
 
-    //Link the Transport Layer to the Participant.
-    PParam.rtps.userTransports.push_back(custom_transport);
-    PParam.rtps.sendSocketBufferSize = 33554432;
-    PParam.rtps.listenSocketBufferSize = 33554432;
+        std::vector<eprosima::fastrtps::rtps::IPFinder::info_IP> ips;
+        eprosima::fastrtps::rtps::IPFinder::getIPs(&ips, false);
 
-    logger.SetVerbosity(eprosima::fastdds::dds::Log::Warning);
+        for (auto &ip : ips) {
+            if (ip.type == eprosima::fastrtps::rtps::IPFinder::IP4 ) {
+                custom_transport->interfaceWhiteList.emplace_back(ip.name);
+            }
+        }
+
+    } else {
+        // Create a descriptor for same device agents.
+        auto shm_transport = std::make_shared<SharedMemTransportDescriptor>();
+        shm_transport->segment_size(2 * 1024 * 1024);
+
+        PParam.transport().user_transports.push_back(shm_transport);
+    }
+    PParam.transport().send_socket_buffer_size = 33554432;
+    PParam.transport().listen_socket_buffer_size = 33554432;
+
+
+    //Discovery
+    PParam.wire_protocol().builtin.discovery_config.ignoreParticipantFlags =
+            static_cast<eprosima::fastrtps::rtps::ParticipantFilteringFlags_t>(
+            eprosima::fastrtps::rtps::ParticipantFilteringFlags_t::FILTER_SAME_PROCESS);
+
+    PParam.wire_protocol().builtin.discovery_config.leaseDuration = eprosima::fastrtps::c_TimeInfinite;
+    PParam.wire_protocol().builtin.discovery_config.leaseDuration_announcementperiod =
+            eprosima::fastrtps::Duration_t(3, 0);
+
+    eprosima::fastrtps::Log::SetVerbosity(eprosima::fastdds::dds::Log::Info);
 
     int retry = 0;
     while (retry < 5) {
-        mp_participant = eprosima::fastrtps::Domain::createParticipant(PParam);
+        mp_participant = DomainParticipantFactory::get_instance()->create_participant(0, PParam);
         if(mp_participant != nullptr) break;
         retry++;
         qDebug() << "Error creating participant, retrying. [" << retry <<"/5]";
@@ -69,58 +101,48 @@ std::tuple<bool, eprosima::fastrtps::Participant *> DSRParticipant::init(int32_t
     if(mp_participant == nullptr)
     {
         qFatal("Could not create particpant after 5 attemps");
-        //return std::make_tuple(false, nullptr);
     }
 
 
-    //Register the type
-    eprosima::fastrtps::Domain::registerType(mp_participant, static_cast<eprosima::fastrtps::TopicDataType *>(&dsrgraphType));
-    eprosima::fastrtps::Domain::registerType(mp_participant, static_cast<eprosima::fastrtps::TopicDataType *>(&graphrequestType));
-    eprosima::fastrtps::Domain::registerType(mp_participant, static_cast<eprosima::fastrtps::TopicDataType *>(&graphRequestAnswerType));
-    eprosima::fastrtps::Domain::registerType(mp_participant, static_cast<eprosima::fastrtps::TopicDataType *>(&dsrEdgeType));
-    eprosima::fastrtps::Domain::registerType(mp_participant, static_cast<eprosima::fastrtps::TopicDataType *>(&dsrNodeAttrType));
-    eprosima::fastrtps::Domain::registerType(mp_participant, static_cast<eprosima::fastrtps::TopicDataType *>(&dsrEdgeAttrType));
+    //Register types
+    dsrgraphType.register_type(mp_participant);
+    dsrgraphType.register_type(mp_participant);
+    graphrequestType.register_type(mp_participant);
+    graphRequestAnswerType.register_type(mp_participant);
+    dsrEdgeType.register_type(mp_participant);
+    dsrNodeAttrType.register_type(mp_participant);
+    dsrEdgeAttrType.register_type(mp_participant);
+
+    //Create topics
+    /* Hay que meter esto?
+    eprosima::fastrtps::PublisherAttributes Wparam;
+    Wparam.topic.topicKind = eprosima::fastrtps::rtps::NO_KEY;
+    Wparam.topic.topicDataType = topicDataType;  //This type MUST be registered
+    Wparam.topic.topicName = topicName;
+    */
+    topic_node = mp_participant->create_topic("DSR_NODE", dsrgraphType.get_type_name(), eprosima::fastdds::dds::TOPIC_QOS_DEFAULT);
+    topic_edge = mp_participant->create_topic("DSR_EDGE", dsrEdgeType.get_type_name(), eprosima::fastdds::dds::TOPIC_QOS_DEFAULT);
+    topic_node_att = mp_participant->create_topic("DSR_NODE_ATTS", dsrNodeAttrType.get_type_name(), eprosima::fastdds::dds::TOPIC_QOS_DEFAULT);
+    topic_edge_att = mp_participant->create_topic("DSR_EDGE_ATTS", dsrEdgeAttrType.get_type_name(), eprosima::fastdds::dds::TOPIC_QOS_DEFAULT);
+    topic_graph_request = mp_participant->create_topic("DSR_GRAPH_REQUEST", graphrequestType.get_type_name(), eprosima::fastdds::dds::TOPIC_QOS_DEFAULT);
+    topic_graph = mp_participant->create_topic("DSR_GRAPH_ANSWER", graphRequestAnswerType.get_type_name(), eprosima::fastdds::dds::TOPIC_QOS_DEFAULT);
 
     return std::make_tuple(true, mp_participant);
 }
 
-eprosima::fastrtps::Participant *DSRParticipant::getParticipant()
+eprosima::fastdds::dds::DomainParticipant *DSRParticipant::getParticipant()
 {
     return mp_participant;
 }
 
-eprosima::fastrtps::rtps::GUID_t DSRParticipant::getID() const
+void DSRParticipant::remove_participant()
 {
-    return mp_participant->getGuid();
+    if (mp_participant != nullptr)
+        eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->delete_participant(mp_participant);
 }
 
-const char *DSRParticipant::getNodeTopicName() const
+const eprosima::fastrtps::rtps::GUID_t& DSRParticipant::getID() const
 {
-    return dsrgraphType.getName();
+    return mp_participant->guid();
 }
 
-const char *DSRParticipant::getEdgeTopicName() const
-{
-    return dsrEdgeType.getName();
-}
-
-const char *DSRParticipant::getNodeAttrTopicName() const
-{
-    return dsrNodeAttrType.getName();
-}
-
-const char *DSRParticipant::getEdgeAttrTopicName() const
-{
-    return dsrEdgeAttrType.getName();
-}
-
-
-const char *DSRParticipant::getRequestTopicName() const
-{
-    return graphrequestType.getName();
-}
-
-const char *DSRParticipant::getAnswerTopicName() const
-{
-    return graphRequestAnswerType.getName();
-}

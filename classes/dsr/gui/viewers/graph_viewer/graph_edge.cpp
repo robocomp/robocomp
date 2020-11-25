@@ -45,6 +45,7 @@ GraphEdge::GraphEdge(GraphNode *sourceNode, GraphNode *destNode, const QString &
 	animation->setEndValue(2);
 	animation->setLoopCount(3);
 	adjust();
+    QObject::connect(source->getGraphViewer()->getGraph().get(), &DSR::DSRGraph::update_edge_attr_signal, this, &GraphEdge::update_edge_attr_slot);
 }
 
 GraphNode *GraphEdge::sourceNode() const
@@ -231,4 +232,22 @@ void GraphEdge::set_edge_pen(const int p)
 {
 	this->edge_width = p;
 	this->setPen(QPen(Qt::black, edge_width, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+}
+
+
+void GraphEdge::update_edge_attr_slot(std::uint32_t from, std::uint32_t to, const std::vector<std::string>& att_name)
+{
+    if ((from != this->source->id_in_graph) or (to != this->dest->id_in_graph))
+        return;
+    if(std::find(att_name.begin(), att_name.end(), "color") != att_name.end())
+    {
+        std::optional<Edge> edge = source->getGraphViewer()->getGraph()->get_edge(from, to, tag.toStdString());
+        if (edge.has_value()) {
+            auto &attrs = edge.value().attrs();
+            auto value = attrs.find("color");
+            if (value != attrs.end()) {
+                this->color = QColor(QString::fromStdString(value->second.str()));
+            }
+        }
+    }
 }

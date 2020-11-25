@@ -253,3 +253,46 @@ ComponentTemplatesManager. The necessary methods can be added to this new class 
 You can consult the examples of this classes in the Python and C++ implementation of the templates:
 * [templates/templateCPP/templatecpp.py](./templates/templateCPP/templatecpp.py)
 * [templates/templatePython/templatepython.py](./templates/templatePython/templatepython.py)
+
+
+# Testing
+In robocompdsl two types of tests can be distinguished. Automatic tests that are executed to check that everything is still working when changes are made, and tests that can be performed manually to check that code generation works as expected.
+
+## Automatic tests
+The automatic tests are executed with python unittest and the code can be found in the test folder of robocompdsl.
+
+Among the automatic tests, there are some in particular that compare the recently generated code for some components that are used as reference with the code that previously was expected to be generated. This type of test is especially useful when you want to make changes in the operation of robocompdsl but it is expected that the generated code remains the same.
+On the other hand, this has the disadvantage that when new features are added to robocompdsl these already generated files that are used as reference must be updated, once it is clear that the new generation works correctly.
+
+In test/resources/reference_components you can find the code of the components against which the new generation of code is compared.
+
+The automatic tests are also executed as part of robocomp's Continuous Integration (CI) process and their results can be seen here: http://robocomp-ci.unex.es
+
+The manual part of the robocompdsl tests is found in autogeneration_tests/test_cdsl.
+In this directory you can find a script called test_component_generation.py and a series of subdirectories with .cdsl and .smdsl files. The idea is that through test_component_generation.py you can trigger the generation, compilation and startup test of the components defined in all subdirectories. Once this process is finished, a summary of how it went is shown.
+
+Lo más habitual es que el resultado de la ejecución de este script pueda ser utilizado como componentes de referencia en los tests automáticos.
+Si ejecuta el script de la siguiente manera:
+python3 test_component_generation.py -dg
+
+Se generarán los ficheros de cada componente y no se borrarán para que pueda copiarlos o comparar con los de referencia. 
+Puede por ejemplo usar meld para ver que cambios ha habido entre la nueva generación y los de referencia:
+python3 test_component_generation.py -dgf dsr
+
+Most often the results of the execution of this script can be used as reference components in the automatic tests.
+If you run the script in the following way:
+```shell script
+python3 test_component_generation.py -dg
+```
+the files for each component will be generated and will not be deleted so you can copy them or compare them with the reference ones. 
+You can for example use meld to see what changes have occurred between the new generation and the reference ones:
+```shell script
+meld . ../../test/resources/reference_components/
+```
+This way you can correct whatever is necessary from the generation or update the reference components.
+
+It is recommended that once you are done with the manual tests you make sure to run them:
+```shell script
+python3 test_component_generation.py -c
+```
+to delete temporary files and not upload them to the repository.

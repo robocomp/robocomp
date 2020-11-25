@@ -454,7 +454,7 @@ class GraphNode : public QObject, public QGraphicsEllipseItem
     GraphNode(std::shared_ptr<DSR::GraphViewer> graph_viewer_);
 
     //std::string name_in_graph;
-    std::int32_t id_in_graph;
+    std::uint32_t id_in_graph;
     QList<GraphEdge *> edgeList;
     
     void addEdge(GraphEdge *edge);
@@ -486,8 +486,9 @@ class GraphNode : public QObject, public QGraphicsEllipseItem
   public slots:
     //void NodeAttrsChangedSLOT(const DSR::IDType &node, const DSR::Attribs&);
     void show_stuff_widget(const std::string &show_type="table");
+    void update_node_attr_slot(std::uint32_t node_id, const std::vector<std::string> &type);
       
-	private:
+  private:
     QPointF newPos;
     QGraphicsSimpleTextItem *tag;
     QString dark_color = "darkyellow", plain_color = "yellow";
