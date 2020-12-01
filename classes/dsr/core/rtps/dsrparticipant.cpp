@@ -23,21 +23,24 @@ DSRParticipant::DSRParticipant() : mp_participant(nullptr),
 
 DSRParticipant::~DSRParticipant()
 {
-    if (topic_node)
-        mp_participant->delete_topic(topic_node);
-    if (topic_edge)
-        mp_participant->delete_topic(topic_edge);
-    if (topic_graph)
-        mp_participant->delete_topic(topic_graph);
-    if (topic_graph_request)
-        mp_participant->delete_topic(topic_graph_request);
-    if (topic_node_att)
-        mp_participant->delete_topic(topic_node_att);
-    if (topic_edge_att)
-        mp_participant->delete_topic(topic_edge_att);
+	
     if (mp_participant != nullptr)
-        eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->delete_participant(mp_participant);
+    {
+        if (topic_node)
+            mp_participant->delete_topic(topic_node);
+        if (topic_edge)
+            mp_participant->delete_topic(topic_edge);
+        if (topic_graph)
+            mp_participant->delete_topic(topic_graph);
+        if (topic_graph_request)
+            mp_participant->delete_topic(topic_graph_request);
+        if (topic_node_att)
+            mp_participant->delete_topic(topic_node_att);
+        if (topic_edge_att)
+            mp_participant->delete_topic(topic_edge_att);
 
+        eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->delete_participant(mp_participant);
+    }
 }
 
 std::tuple<bool, eprosima::fastdds::dds::DomainParticipant*> DSRParticipant::init(int32_t agent_id, int localhost) {

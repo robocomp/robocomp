@@ -18,8 +18,9 @@ DSRPublisher::DSRPublisher() : mp_participant(nullptr), mp_publisher(nullptr), m
 
 DSRPublisher::~DSRPublisher()
 {
+
     if (mp_participant != nullptr) {
-        if (mp_writer != nullptr)
+        if (mp_writer != nullptr && mp_publisher != nullptr)
         {
             mp_publisher->delete_datawriter(mp_writer);
         }

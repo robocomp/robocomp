@@ -20,6 +20,9 @@ static bool constexpr allowed_types =   std::is_same<std::int32_t, Va>::value ||
                                         std::is_same<std::vector<float_t>, Va>::value ||
                                         std::is_same<std::vector<uint8_t>, Va>::value ||
                                         std::is_same<bool, Va>::value;
+
+
+
 template<typename Va>
 static bool constexpr any_node_or_edge = std::is_same<DSR::CRDTNode, Va>::value ||
                                          std::is_same<DSR::CRDTEdge, Va>::value ||

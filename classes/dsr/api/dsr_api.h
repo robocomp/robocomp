@@ -35,6 +35,7 @@
 #include "dsr_camera_api.h"
 #include "dsr_rt_api.h"
 #include "dsr_utils.h"
+#include "dsr_python_api_functions.h"
 #include "../core/types/type_checking/dsr_attr_name.h"
 #include "../core/utils.h"
 #include "threadpool/threadpool.h"
@@ -55,6 +56,7 @@ namespace DSR
     class DSRGraph : public QObject
     {
         friend RT_API;
+        friend PY_INSERT_API;
         Q_OBJECT
 
         public:
