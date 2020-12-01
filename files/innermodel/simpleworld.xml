@@ -38,21 +38,6 @@
 			<plane id="cajaMesh2" nx="1" size="400,400,400"  texture="/home/robocomp/robocomp/files/osgModels/textures/Metal.jpg" collide="1"/>
 		</transform>-->
 
-		<transform id="caja3" tx="-1300" tz="-1200" ty="0" >
-			<plane id="cajaMesh3" nx="1" size="400,400,400"  texture="/home/robocomp/robocomp/files/osgModels/textures/Metal.jpg" collide="1"/>
-		</transform>-->
-		
-		<transform id="caja4" tx="1300" tz="-1200" ty="0" >
-			<plane id="cajaMesh4" nx="1" size="400,400,400"  texture="/home/robocomp/robocomp/files/osgModels/textures/Metal.jpg" collide="1"/>
-		</transform>
-		
-		<transform id="caja5" tx="0" tz="-1500" ty="0" >
-			<plane id="cajaMesh5" nx="1" size="400,400,400"  texture="/home/robocomp/robocomp/files/osgModels/textures/Metal.jpg" collide="1"/>
-		</transform>
-		
-		<transform id="caja6" tx="-1300" tz="1200" ty="0" >
-			<plane id="cajaMesh6" nx="1" size="400,400,400"  texture="/home/robocomp/robocomp/files/osgModels/textures/Metal.jpg" collide="1"/>
-		</transform>
 			
 		<!-- <axes id="axis" length="1000"/>
 		 -->
