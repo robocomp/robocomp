@@ -9,13 +9,25 @@ QScene2dViewer::QScene2dViewer(std::shared_ptr<DSR::DSRGraph> G_, QWidget *paren
     qDebug()<<"***************INIT QScene2dViewer********************";
     G = G_;
     this->setMinimumSize(400,400);
-
     scene.setItemIndexMethod(QGraphicsScene::NoIndex);
+    this->scale(1, -1);
 
-	this->scale(1, -1);
+    //context menu
+    contextMenu = new QMenu(this);
+    showMenu = contextMenu->addMenu(tr("&Show:"));
+    QAction *action = new QAction("Laser");
+    action->setCheckable(true);
+    action->setChecked(false);
+    showMenu->addAction(action);
+    connect(action, &QAction::toggled, this, [this](bool checked){
+        this->set_draw_laser(checked);
+        this->draw_laser();
+    });
+
 
 
 //REMOVE WHEN NOT NEEDED
+//TODO: move to method
     //center position
     scene.addRect(-100, -100, 200, 200, QPen(QColor("black")),QBrush(QColor("black")));
     //edge => x red, z (y) blue
@@ -487,43 +499,47 @@ void QScene2dViewer::mousePressEvent(QMouseEvent *event){
     {
         QPointF scene_point = this->mapToScene(this->mapFromGlobal(QCursor::pos()));
         QList<QGraphicsItem*> item_list = scene.items(scene_point);
-        for (QGraphicsItem* item : item_list)
+        if (item_list.size() == 0) //empty space show context menu
         {
-            auto it = std::find_if(scene_map.begin(), scene_map.end(),
-                [&item](const std::pair<int, QGraphicsItem*> &p) { return p.second == item;});
-            if (it != scene_map.end() and it->second != laser_polygon) {
-                std::optional<Node> node = G->get_node(it->first);
-                if(node.has_value())
-                {
-                    nodes[QString::fromStdString(node.value().name())] = it->first;
-                    z_order[-(it->second->zValue())] = QString::fromStdString(node.value().name());
-                }
-            }
+            showContextMenu(event);
         }
-        if(not nodes.isEmpty())
+        else //object interaction
         {
-            if (event->button() == Qt::RightButton){
-                //std::cout<<"Mouse click: "<<scene_point<<" Node id: "<<nodes[z_order.first()]<<std::endl;
-                emit mouse_right_click(scene_point.x(), scene_point.y(), nodes[z_order.first()]);
-            }
-            if (event->button() == Qt::MiddleButton){
-                if(nodes.size() == 1)
-                {
-                    static std::unique_ptr<QWidget> do_stuff;
-                    do_stuff = std::make_unique<DoTableStuff>(G, nodes.first());
-                }
-                else
-                {
-                    bool ok;
-                    QString node_name = QInputDialog::getItem(this, tr("Show node content"), tr("Node:"), z_order.values(), 0, false, &ok);
-                    if(ok)
+            for (QGraphicsItem* item : item_list)
+            {
+                auto it = std::find_if(scene_map.begin(), scene_map.end(),
+                    [&item](const std::pair<int, QGraphicsItem*> &p) { return p.second == item;});
+                if (it != scene_map.end() and it->second != laser_polygon) {
+                    std::optional<Node> node = G->get_node(it->first);
+                    if(node.has_value())
                     {
-                        static std::unique_ptr<QWidget> do_stuff;
-                        do_stuff = std::make_unique<DoTableStuff>(G, nodes[node_name]);
+                        nodes[QString::fromStdString(node.value().name())] = it->first;
+                        z_order[-(it->second->zValue())] = QString::fromStdString(node.value().name());
                     }
                 }
             }
-        }              
+            if(not nodes.isEmpty()) {
+                if (event->button() == Qt::RightButton) {
+                    //std::cout<<"Mouse click: "<<scene_point<<" Node id: "<<nodes[z_order.first()]<<std::endl;
+                    emit mouse_right_click(scene_point.x(), scene_point.y(), nodes[z_order.first()]);
+                }
+                if (event->button() == Qt::MiddleButton) {
+                    if (nodes.size() == 1) {
+                        static std::unique_ptr<QWidget> do_stuff;
+                        do_stuff = std::make_unique<DoTableStuff>(G, nodes.first());
+                    } else {
+                        bool ok;
+                        QString node_name = QInputDialog::getItem(this, tr("Show node content"), tr("Node:"),
+                                                                  z_order.values(), 0, false, &ok);
+                        if (ok) {
+                            static std::unique_ptr<QWidget> do_stuff;
+                            do_stuff = std::make_unique<DoTableStuff>(G, nodes[node_name]);
+                        }
+                    }
+                }
+
+            }
+        }
     }
 }
 
@@ -538,14 +554,14 @@ void QScene2dViewer::set_draw_people_spaces(bool draw)
 }
 void QScene2dViewer::draw_laser()
 {
+    if (laser_polygon != nullptr)
+        scene.removeItem(laser_polygon);
+
     if(not this->drawlaser)
         return;
     
     if(robot == nullptr) //robot is required to draw laser
         return;
-    
-    if (laser_polygon != nullptr)
-            scene.removeItem(laser_polygon);
 
     auto laser_node = G->get_node("laser");
     if(laser_node.has_value())
@@ -595,4 +611,8 @@ void QScene2dViewer::draw_space(std::string name, std::string color_, int zvalue
         space->setPen(QPen(color));
         space->setZValue(zvalue);
     }
+}
+void QScene2dViewer::showContextMenu(QMouseEvent *event)
+{
+    contextMenu->exec(event->globalPos());
 }

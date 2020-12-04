@@ -41,6 +41,7 @@ namespace DSR
         private:
             QGraphicsItem *robot = nullptr;
             QGraphicsItem *laser_polygon = nullptr;
+            QMenu *contextMenu, *showMenu;
             bool drawlaser = false;
             bool drawpeople_space = false;
             const float ROBOT_LENGTH = 400;
@@ -64,7 +65,6 @@ namespace DSR
             void del_node_slot(const std::int32_t id);
             void del_edge_slot(const std::int32_t from, const std::int32_t to, const std::string &edge_tag);
             void reload(QWidget* widget);
-
         private:
             void create_graph();
             std::list<int> get_parent_list(std::int32_t node_id);
@@ -85,6 +85,7 @@ namespace DSR
             void draw_laser();
             void draw_person_space(QGraphicsItem *sceneItem,Node &node);
             void draw_space(std::string name, std::string color_, int zvalue, Node &node, QGraphicsItem* parent);
+            void showContextMenu(QMouseEvent *event);
         signals:
             void mouse_right_click(int pos_x, int pos_y, int node_id);
 
