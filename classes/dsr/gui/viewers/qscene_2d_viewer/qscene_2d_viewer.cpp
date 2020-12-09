@@ -23,17 +23,36 @@ QScene2dViewer::QScene2dViewer(std::shared_ptr<DSR::DSRGraph> G_, QWidget *paren
         this->set_draw_laser(checked);
         this->draw_laser();
     });
-
-
-
-//REMOVE WHEN NOT NEEDED
-//TODO: move to method
+    QAction *action2 = new QAction("Person polyline");
+    action2->setCheckable(true);
+    action2->setChecked(false);
+    showMenu->addAction(action2);
+    connect(action2, &QAction::toggled, this, [this](bool checked){
+        this->set_draw_people_spaces(checked);
+    });
+    QAction *action3 = new QAction("Axis");
+    action3->setCheckable(true);
+    action3->setChecked(false);
+    showMenu->addAction(action3);
+    connect(action3, &QAction::toggled, this, [this](bool checked){
+        this->set_draw_axis(checked);
+        this->draw_axis();
+    });
+    //AXIS
     //center position
-    scene.addRect(-100, -100, 200, 200, QPen(QColor("black")),QBrush(QColor("black")));
+    axis_center = new QGraphicsRectItem(-100, -100, 200, 200);
+    axis_center->setPen(QPen(QColor("black")));
+    axis_center->setBrush(QBrush(QColor("black")));
+    axis_center->setZValue(5000);
     //edge => x red, z (y) blue
-    scene.addRect(-5000, -5000, 1000, 30, QPen(QColor("red")),QBrush(QColor("red")));
-    scene.addRect(-5000, -5000, 30, 1000, QPen(QColor("blue")),QBrush(QColor("blue")));
-
+    axis_x = new QGraphicsRectItem(0, 0, 1000, 30);
+    axis_x->setPen(QPen(QColor("red")));
+    axis_x->setBrush(QBrush(QColor("red")));
+    axis_x->setZValue(5000);
+    axis_y = new QGraphicsRectItem(0, 0, 30, 1000);
+    axis_y->setPen(QPen(QColor("blue")));
+    axis_y->setBrush(QBrush(QColor("blue")));
+    axis_y->setZValue(5000);
     //initial graph
     create_graph();
 
@@ -610,6 +629,24 @@ void QScene2dViewer::draw_space(std::string name, std::string color_, int zvalue
         space->setBrush(QBrush(color));
         space->setPen(QPen(color));
         space->setZValue(zvalue);
+    }
+}
+
+void QScene2dViewer::set_draw_axis(bool visible)
+{
+    this->drawaxis = visible;
+}
+void QScene2dViewer::draw_axis()
+{
+    if(this->drawaxis) {
+        scene.addItem(axis_center);
+        scene.addItem(axis_x);
+        scene.addItem(axis_y);
+    }
+    else{
+        scene.removeItem(axis_center);
+        scene.removeItem(axis_x);
+        scene.removeItem(axis_y);
     }
 }
 void QScene2dViewer::showContextMenu(QMouseEvent *event)

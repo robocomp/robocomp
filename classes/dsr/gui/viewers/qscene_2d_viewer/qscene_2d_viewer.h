@@ -41,9 +41,11 @@ namespace DSR
         private:
             QGraphicsItem *robot = nullptr;
             QGraphicsItem *laser_polygon = nullptr;
+            QGraphicsRectItem *axis_center = nullptr, *axis_x = nullptr, *axis_y = nullptr;
             QMenu *contextMenu, *showMenu;
             bool drawlaser = false;
             bool drawpeople_space = false;
+            bool drawaxis = false;
             const float ROBOT_LENGTH = 400;
             std::vector<std::vector<float>> cube_positions = {{0.5,0.5,0.5}, {0.5, 0.5,-0.5}, {0.5, -0.5,0.5}, {0.5, -0.5, -0.5}, {-0.5, 0.5, 0.5}, {-0.5, 0.5, -0.5}, {-0.5, -0.5, 0.5}, {-0.5, -0.5, -0.5} };        
             std::list<std::string> no_drawable_childs = {"omnirobot", "differentialrobot", "person"};
@@ -58,7 +60,7 @@ namespace DSR
             QScene2dViewer(std::shared_ptr<DSR::DSRGraph> G_, QWidget *parent=0);
             void set_draw_laser(bool draw);
             void set_draw_people_spaces(bool draw);
-
+            void set_draw_axis(bool draw);
         public slots:   // From G
             void add_or_assign_node_slot(const std::int32_t id, const std::string &type);
             void add_or_assign_edge_slot(const std::int32_t from, const std::int32_t to, const std::string& type);
@@ -83,6 +85,7 @@ namespace DSR
             void update_scene_object_pose(std::int32_t node_id);
 
             void draw_laser();
+            void draw_axis();
             void draw_person_space(QGraphicsItem *sceneItem,Node &node);
             void draw_space(std::string name, std::string color_, int zvalue, Node &node, QGraphicsItem* parent);
             void showContextMenu(QMouseEvent *event);
