@@ -6,11 +6,14 @@
 
 using namespace DSR;
 
+#pragma push_macro("slots")
+#undef slots
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include <pybind11/iostream.h>
 #include <pybind11/eigen.h>
 #include <pybind11/stl_bind.h>
+#pragma pop_macro("slots")
 #include <utility>
 
 #include <memory>

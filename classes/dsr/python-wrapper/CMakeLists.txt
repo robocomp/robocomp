@@ -34,18 +34,20 @@ ROBOCOMP_ICE_TO_SRC(DSRGetID)
 
 #message(STATUS  "Qt libs ${QT_LIBRARIES}")
 #message(STATUS "ICe libs ${Ice_LIBRARIES}")
+set(Python_ADDITIONAL_VERSIONS 3.7)
+find_package(PythonLibs REQUIRED)
+include_directories(${PYTHON_INCLUDE_DIRS})
 
 FIND_PACKAGE(pybind11)
-
 
 set(CMAKE_CXX_STANDARD 20)
 add_definitions(-g -std=c++2a -L /opt/robocomp/lib )
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-
+include_directories(/usr/include/eigen3) 
 pybind11_add_module(pydsr python_api.cpp ${SOURCES} ${MOC_SOURCES} ${RC_SOURCES} ${UI_HEADERS} ${HEADERS})
 set_target_properties(pydsr PROPERTIES LINKER_LANGUAGE CXX)
 
-target_link_libraries(pydsr PRIVATE pthread   /opt/robocomp/lib/libdsr_api.so /opt/robocomp/lib/libdsr_core.so /opt/robocomp/lib/libdsr_gui.so ${SPECIFIC_LIBS} ${QT_LIBRARIES})
+target_link_libraries(pydsr PRIVATE pthread   /opt/robocomp/lib/libdsr_api.so /opt/robocomp/lib/libdsr_core.so /opt/robocomp/lib/libdsr_gui.so ${SPECIFIC_LIBS} ${QT_LIBRARIES} ${PYTHON_LIBRARIES})
 install(TARGETS pydsr
         DESTINATION /opt/robocomp/lib/)
