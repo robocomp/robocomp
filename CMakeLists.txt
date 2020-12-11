@@ -99,8 +99,7 @@ ROBOCOMP_IDSL_TO_ICE( AGMWorldModel AGMExecutive Planning AGMCommonBehavior AGME
 
 
 # Install rules necessary to allow compiling components without the robocomp's source code
-SET (LD_COMMAND "\"grep -q -F '/opt/robocomp/lib' /etc/ld.so.conf || echo '/opt/robocomp/lib' >> /etc/ld.so.conf && ldconfig\"")
-INSTALL (CODE "execute_process(COMMAND bash -c ${LD_COMMAND})")
+INSTALL(FILES "files/robocomp.conf" DESTINATION /etc/ld.so.conf.d/)
 INSTALL(DIRECTORY "interfaces" DESTINATION /opt/robocomp/ )
 INSTALL(DIRECTORY "cmake" DESTINATION /opt/robocomp/ )
 #INSTALL(DIRECTORY "files" DESTINATION /opt/robocomp/ )
