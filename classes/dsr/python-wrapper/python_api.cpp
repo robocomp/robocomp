@@ -166,9 +166,11 @@ PYBIND11_MODULE(pydsr, m) {
                 if (!proxy)  throw std::runtime_error("Proxy cannot be None");
                 PyObject *fn = PyObject_GetAttrString(proxy->ptr(), "getID");
                 if (!fn)     throw std::runtime_error("Proxy does not have method getID");
-                PyObject *result = PyObject_CallMethod(proxy->ptr(), "getID", nullptr);
+                PyObject *result = PyObject_CallMethod(proxy->ptr(), "getID", /*"|", "current", Py_None,*/ nullptr);
                 if (!result) throw std::runtime_error("Cannot get new id from idserver, check config file");
                 tmp->id(py::cast<std::uint32_t>(result));
+                /*Py_DECREF(result);
+                Py_DECREF(fn);*/
 
                 return tmp;
             }), "agent_id"_a, "type"_a, "dsr_idproxy"_a, "name"_a = "")

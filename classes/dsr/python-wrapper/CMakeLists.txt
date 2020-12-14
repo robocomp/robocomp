@@ -26,15 +26,8 @@ ROBOCOMP_INITIALIZE($ENV{ROBOCOMP}/)
 ROBOCOMP_IDSL_TO_ICE(DSRGetID)
 ROBOCOMP_ICE_TO_SRC(DSRGetID)
 
-##Find Eigen
-#find_package(Eigen3 3.3 REQUIRED NO_MODULE)
 
-
-#SET(SPECIFIC_LIBS fastcdr fastrtps osgDB OpenThreads Eigen3::Eigen)
-
-#message(STATUS  "Qt libs ${QT_LIBRARIES}")
-#message(STATUS "ICe libs ${Ice_LIBRARIES}")
-set(Python_ADDITIONAL_VERSIONS 3.7)
+set(Python_ADDITIONAL_VERSIONS 3.8)
 find_package(PythonLibs REQUIRED)
 include_directories(${PYTHON_INCLUDE_DIRS})
 
@@ -44,7 +37,7 @@ set(CMAKE_CXX_STANDARD 20)
 add_definitions(-g -std=c++2a -L /opt/robocomp/lib )
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-include_directories(/usr/include/eigen3) 
+include_directories(/usr/include/eigen3)
 pybind11_add_module(pydsr python_api.cpp ${SOURCES} ${MOC_SOURCES} ${RC_SOURCES} ${UI_HEADERS} ${HEADERS})
 set_target_properties(pydsr PROPERTIES LINKER_LANGUAGE CXX)
 

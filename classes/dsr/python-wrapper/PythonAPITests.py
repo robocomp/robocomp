@@ -1,12 +1,29 @@
 import unittest
+import subprocess
 
-import sys
+import sys, time
 sys.path.append("/opt/robocomp/lib")
-
 from pydsr import *
 
+import Ice
+
+
+Ice.loadSlice("-I ./src/ --all ./DSRGetID.ice")
+import RoboCompDSRGetID
+
+
+
+
+
+
+
 class TestAttribute(unittest.TestCase):
-    
+
+    @classmethod
+    def tearDownClass(cls):
+        #time.sleep(0.5)
+        pass
+
     def test_create_attribute(self):
         tmp = Attribute(10.4, 0, 12)
         self.assertIsNotNone(tmp)
@@ -34,7 +51,12 @@ class TestAttribute(unittest.TestCase):
     
 
 class TestEdge(unittest.TestCase):
-    
+
+    @classmethod
+    def tearDownClass(cls):
+        #time.sleep(0.5)
+        pass
+
     def test_create_edge(self):
         tmp = Edge(10,11, "RT", 0)
         self.assertIsNotNone(tmp)
@@ -77,39 +99,44 @@ class TestEdge(unittest.TestCase):
 
 
 class TestNode(unittest.TestCase):
-    
+
+    @classmethod
+    def tearDownClass(cls):
+        #time.sleep(0.5)
+        pass
+
     def test_create_node(self):
-        tmp = Node(1, "world")
+        tmp = Node(1, "world", proxy().dsrgetid_proxy)
         self.assertIsNotNone(tmp)
         with self.assertRaises(RuntimeError):
-            tmp = Node(1, "test")
+            tmp = Node(1, "test", proxy().dsrgetid_proxy)
         
     def test_name(self):
-        tmp = Node(1, "world", "name")
+        tmp = Node(1, "world", proxy().dsrgetid_proxy, "name")
         self.assertEqual(tmp.name, "name")
         with self.assertRaises(AttributeError):
             tmp.name = "newname"
 
     def test_id(self):
-        tmp = Node(1, "world", "name")
-        self.assertEqual(tmp.id, 0)
+        tmp = Node(1, "world",  proxy().dsrgetid_proxy,"name")
+        self.assertEqual(tmp.id, 6)
         with self.assertRaises(AttributeError):
             tmp.id = 1
 
     def test_type(self):
-        tmp = Node(1, "world", "name")
+        tmp = Node(1, "world", proxy().dsrgetid_proxy,"name")
         self.assertEqual(tmp.type, "world")
         with self.assertRaises(AttributeError):
             tmp.id = "newtype"
 
     def test_agent_id(self):
-        tmp = Node(1, "world", "name")
+        tmp = Node(1, "world",  proxy().dsrgetid_proxy, "name")
         self.assertEqual(tmp.agent_id, 1)
         tmp.agent_id = 2
         self.assertEqual(tmp.agent_id, 2)
 
     def test_attrs(self):
-        tmp = Node(1, "world", "name")
+        tmp = Node(1, "world", proxy().dsrgetid_proxy, "name")
         self.assertEqual(len(tmp.attrs), 0)
         tmp.attrs["test"] = Attribute(10.4, 0, 12)
         self.assertEqual(len(tmp.attrs), 1)
@@ -119,7 +146,7 @@ class TestNode(unittest.TestCase):
             tmp.attrs["test"]
 
     def test_edge(self):
-        tmp = Node(1, "world", "name")
+        tmp = Node(1, "world", proxy().dsrgetid_proxy, "name")
         self.assertEqual(len(tmp.edges), 0)
         tmp.edges[(11,"RT")] = Edge(10,11, "RT", 0)
         self.assertEqual(len(tmp.edges), 1)
@@ -132,13 +159,17 @@ class TestNode(unittest.TestCase):
 
 class TestDSRGraph(unittest.TestCase):
 
+    @classmethod
+    def tearDownClass(cls):
+        #time.sleep(0.5)
+        pass
 
     def test_create_graph(self):
-        a = DSRGraph(int(0), "Prueba", int(12), "../etc/autonomyLab_complete.simscene.json", True)
+        a = DSRGraph(int(0), "Prueba", int(12), "./etc/autonomyLab_complete.simscene.json", True)
         self.assertIsNotNone(a)
 
     def test_get_node(self):
-        g = DSRGraph(int(0), "Prueba", int(12), "../etc/autonomyLab_complete.simscene.json", True)
+        g = DSRGraph(int(0), "Prueba", int(12), "./etc/autonomyLab_complete.simscene.json", True)
         node = g.get_node(1)
         self.assertIsNotNone(node)
         node = g.get_node("world")
@@ -149,7 +180,7 @@ class TestDSRGraph(unittest.TestCase):
         self.assertIsNone(node)
 
     def test_delete_node(self):
-        g = DSRGraph(int(0), "Prueba", int(12), "../etc/autonomyLab_complete.simscene.json", True)
+        g = DSRGraph(int(0), "Prueba", int(12), "./etc/autonomyLab_complete.simscene.json", True)
         node = g.get_node(1)
         self.assertIsNotNone(node)
         res = g.delete_node(1)
@@ -159,7 +190,7 @@ class TestDSRGraph(unittest.TestCase):
 
     
     def test_update_node(self):
-        g = DSRGraph(int(0), "Prueba", int(12), "../etc/autonomyLab_complete.simscene.json", True)
+        g = DSRGraph(int(0), "Prueba", int(12), "./etc/autonomyLab_complete.simscene.json", True)
         world = g.get_node("world")
         world.attrs["color"].value = "red"
         result = g.update_node(world)
@@ -169,7 +200,7 @@ class TestDSRGraph(unittest.TestCase):
         
 
     def test_get_edge(self):
-        g = DSRGraph(int(0), "Prueba", int(12), "../etc/autonomyLab_complete.simscene.json", True)
+        g = DSRGraph(int(0), "Prueba", int(12), "./etc/autonomyLab_complete.simscene.json", True)
 
         edge = g.get_edge(1, 2, "RT")
         self.assertIsNotNone(edge)
@@ -182,7 +213,7 @@ class TestDSRGraph(unittest.TestCase):
 
         
     def test_insert_or_asssign_edge(self):
-        g = DSRGraph(int(0), "Prueba", int(12), "../etc/autonomyLab_complete.simscene.json", True)
+        g = DSRGraph(int(0), "Prueba", int(12), "./etc/autonomyLab_complete.simscene.json", True)
         edge = g.get_edge(1, 2, "RT")
         edge.attrs["color"] = Attribute("red", 0, 12)
         g.insert_or_assign_edge(edge)
@@ -195,7 +226,7 @@ class TestDSRGraph(unittest.TestCase):
 
 
     def test_delete_edge(self):
-        g = DSRGraph(int(0), "Prueba", int(12), "../etc/autonomyLab_complete.simscene.json", True)
+        g = DSRGraph(int(0), "Prueba", int(12), "./etc/autonomyLab_complete.simscene.json", True)
         edge = g.get_edge(1, 2, "RT")
         self.assertIsNotNone(edge)
         result = g.delete_edge(1, 2, "RT")
@@ -206,7 +237,7 @@ class TestDSRGraph(unittest.TestCase):
         self.assertEqual(result, False)
 
     def test_get_node_root(self):
-        g = DSRGraph(int(0), "Prueba", int(12), "../etc/autonomyLab_complete.simscene.json", True)
+        g = DSRGraph(int(0), "Prueba", int(12), "./etc/autonomyLab_complete.simscene.json", True)
 
         node = g.get_node_root()
         self.assertIsNotNone(node)
@@ -214,14 +245,14 @@ class TestDSRGraph(unittest.TestCase):
         self.assertEqual(node.name, "world")
 
     def test_get_nodes_by_type(self):
-        g = DSRGraph(int(0), "Prueba", int(12), "../etc/autonomyLab_complete.simscene.json", True)
+        g = DSRGraph(int(0), "Prueba", int(12), "./etc/autonomyLab_complete.simscene.json", True)
         nodes = g.get_nodes_by_type("rgbd")
         self.assertEqual(len(nodes), 1)
         nodes = g.get_nodes_by_type("invalidtype")
         self.assertEqual(len(nodes), 0)
 
     def test_get_name_from_id(self):
-        g = DSRGraph(int(0), "Prueba", int(12), "../etc/autonomyLab_complete.simscene.json", True)
+        g = DSRGraph(int(0), "Prueba", int(12), "./etc/autonomyLab_complete.simscene.json", True)
         name = g.get_name_from_id(1)
         self.assertIsNotNone(name)
         self.assertEqual(name, "world")
@@ -229,7 +260,7 @@ class TestDSRGraph(unittest.TestCase):
         self.assertIsNone(name)
 
     def test_get_id_from_name(self):
-        g = DSRGraph(int(0), "Prueba", int(12), "../etc/autonomyLab_complete.simscene.json", True)
+        g = DSRGraph(int(0), "Prueba", int(12), "./etc/autonomyLab_complete.simscene.json", True)
         id = g.get_id_from_name("world")
         self.assertIsNotNone(id)
         self.assertEqual(id, 1)
@@ -237,7 +268,7 @@ class TestDSRGraph(unittest.TestCase):
         self.assertIsNone(id)
 
     def test_get_edges_by_type(self):
-        g = DSRGraph(int(0), "Prueba", int(12), "../etc/autonomyLab_complete.simscene.json", True)
+        g = DSRGraph(int(0), "Prueba", int(12), "./etc/autonomyLab_complete.simscene.json", True)
         edges = g.get_edges_by_type("RT")
         self.assertGreater(len(edges), 0)
         edges = g.get_edges_by_type("invalidtype")
@@ -245,29 +276,17 @@ class TestDSRGraph(unittest.TestCase):
         
 
     def test_get_edges_to_id(self):
-        g = DSRGraph(int(0), "Prueba", int(12), "../etc/autonomyLab_complete.simscene.json", True)
+        g = DSRGraph(int(0), "Prueba", int(12), "./etc/autonomyLab_complete.simscene.json", True)
         edges = g.get_edges_to_id(2)
         self.assertGreater(len(edges), 0)
         edges = g.get_edges_to_id(1)
         self.assertEqual(len(edges), 0)
 
 
-
-    """
     def test_insert_node(self):
-        import subprocess
-        import os
-        import time
 
-        current = os.getcwd()
-        os.chdir("../components/idserver/")
-        process = subprocess.Popen(['bin/idserver', 'etc/config'])
-
-        time.sleep(1)
-
-        g = DSRGraph(int(0), "Prueba", int(12))
-        node = Node(12, "mesh", "newmesh")
-        time.sleep(5)
+        g = DSRGraph(int(0), "Prueba", 12, "./etc/autonomyLab_complete.simscene.json" )
+        node = Node(12, "mesh", proxy().dsrgetid_proxy, "newmesh")
 
         id = g.insert_node(node)
         self.assertIsNotNone(id)
@@ -276,20 +295,23 @@ class TestDSRGraph(unittest.TestCase):
         self.assertEqual(id, node.id)
 
 
-        process.kill()
-        process.communicate()
-        os.chdir(current)
-    """
+    
 
 class TestRTAPI(unittest.TestCase):
     
+
+    @classmethod
+    def tearDownClass(cls):
+        #time.sleep(0.5)
+        pass
+
     def test_create_rtapi(self):
-        g = DSRGraph(int(0), "Prueba", int(12), "../etc/autonomyLab_complete.simscene.json", True)
+        g = DSRGraph(int(0), "Prueba", int(12), "./etc/autonomyLab_complete.simscene.json", True)
         rt = rt_api(g)
         self.assertIsNotNone(rt_api)
     
     def test_insert_or_assign_edge_RT(self):
-        g = DSRGraph(int(0), "Prueba", int(12), "../etc/autonomyLab_complete.simscene.json", True)
+        g = DSRGraph(int(0), "Prueba", int(12), "./etc/autonomyLab_complete.simscene.json", True)
         rt = rt_api(g)
         world = g.get_node("world")
         rt.insert_or_assign_edge_RT(world, 203, [0.0, 1.2, 0.0], [1.1, 0.0, 2.2])
@@ -297,7 +319,7 @@ class TestRTAPI(unittest.TestCase):
         self.assertIsNotNone(world.edges[(203, "RT")])
 
     def test_get_edge_RT(self):
-        g = DSRGraph(int(0), "Prueba", int(12), "../etc/autonomyLab_complete.simscene.json", True)
+        g = DSRGraph(int(0), "Prueba", int(12), "./etc/autonomyLab_complete.simscene.json", True)
         rt = rt_api(g)
         edge = rt.get_edge_RT(g.get_node("world"),2)
         self.assertIsNotNone(edge)
@@ -305,34 +327,39 @@ class TestRTAPI(unittest.TestCase):
 
 
     def test_get_RT_pose_from_parent(self):
-        g = DSRGraph(int(0), "Prueba", int(12), "../etc/autonomyLab_complete.simscene.json", True)
+        g = DSRGraph(int(0), "Prueba", int(12), "./etc/autonomyLab_complete.simscene.json", True)
         rt = rt_api(g)
         pose = rt.get_RT_pose_from_parent(g.get_node(2))
         self.assertIsNotNone(pose)
 
 
     def test_get_edge_RT_as_rtmat(self):
-        g = DSRGraph(int(0), "Prueba", int(12), "../etc/autonomyLab_complete.simscene.json", True)
+        g = DSRGraph(int(0), "Prueba", int(12), "./etc/autonomyLab_complete.simscene.json", True)
         rt = rt_api(g)
         edge = rt.get_edge_RT(g.get_node("world"),2)
         rtmat = rt.get_edge_RT_as_rtmat(edge)
         self.assertIsNotNone(rtmat)
 
     def test_get_translation(self):
-        g = DSRGraph(int(0), "Prueba", int(12), "../etc/autonomyLab_complete.simscene.json", True)
+        g = DSRGraph(int(0), "Prueba", int(12), "./etc/autonomyLab_complete.simscene.json", True)
         rt = rt_api(g)
         trans = rt.get_translation(1, 2)
         self.assertIsNotNone(trans)
 
 class TestInnerAPI(unittest.TestCase):
-    
+
+    @classmethod
+    def tearDownClass(cls):
+        #time.sleep(0.5)
+        pass
+
     def test_create_innerapi(self):
-        g = DSRGraph(int(0), "Prueba", int(12), "../etc/autonomyLab_complete.simscene.json", True)
+        g = DSRGraph(int(0), "Prueba", int(12), "./etc/autonomyLab_complete.simscene.json", True)
         inner = inner_api(g)
         self.assertIsNotNone(inner)
 
     def test_transform(self):
-        g = DSRGraph(int(0), "Prueba", int(12), "../etc/autonomyLab_complete.simscene.json", True)
+        g = DSRGraph(int(0), "Prueba", int(12), "./etc/autonomyLab_complete.simscene.json", True)
         inner = inner_api(g)
         tr = inner.transform("world", "laser")
         self.assertIsNotNone(tr)
@@ -340,7 +367,7 @@ class TestInnerAPI(unittest.TestCase):
         self.assertIsNotNone(tr)
 
     def test_transform_axis(self):
-        g = DSRGraph(int(0), "Prueba", int(12), "../etc/autonomyLab_complete.simscene.json", True)
+        g = DSRGraph(int(0), "Prueba", int(12), "./etc/autonomyLab_complete.simscene.json", True)
         inner = inner_api(g)
         tr = inner.transform_axis("world", "laser")
         self.assertIsNotNone(tr)
@@ -348,28 +375,53 @@ class TestInnerAPI(unittest.TestCase):
         self.assertIsNotNone(tr)
 
     def test_get_transformation_matrix(self):
-        g = DSRGraph(int(0), "Prueba", int(12), "../etc/autonomyLab_complete.simscene.json", True)
+        g = DSRGraph(int(0), "Prueba", int(12), "./etc/autonomyLab_complete.simscene.json", True)
         inner = inner_api(g)
         tr_matrix = inner.transform_axis("world", "laser")
         self.assertIsNotNone(tr_matrix)
 
     def test_get_rotation_matrix(self):
-        g = DSRGraph(int(0), "Prueba", int(12), "../etc/autonomyLab_complete.simscene.json", True)
+        g = DSRGraph(int(0), "Prueba", int(12), "./etc/autonomyLab_complete.simscene.json", True)
         inner = inner_api(g)
         rot = inner.get_rotation_matrix("world", "laser")
         self.assertIsNotNone(rot)
 
     def test_get_translation_vector(self):
-        g = DSRGraph(int(0), "Prueba", int(12), "../etc/autonomyLab_complete.simscene.json", True)
+        g = DSRGraph(int(0), "Prueba", int(12), "./etc/autonomyLab_complete.simscene.json", True)
         inner = inner_api(g)
         trans = inner.get_translation_vector("world", "laser")
         self.assertIsNotNone(trans)
 
     def test_get_euler_xyz_angles(self):
-        g = DSRGraph(int(0), "Prueba", int(12), "../etc/autonomyLab_complete.simscene.json", True)
+        g = DSRGraph(int(0), "Prueba", int(12), "./etc/autonomyLab_complete.simscene.json", True)
         inner = inner_api(g)
         angles = inner.get_euler_xyz_angles("world", "laser")
         self.assertIsNotNone(angles)
+
+
+class Singleton(type):
+    _instances = {}
+    def __call__(cls, *args, **kwargs):
+        if cls not in cls._instances:
+            cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
+        return cls._instances[cls]
+
+
+class proxy(metaclass=Singleton):
+
+    def __init__(self):
+        #self._process = subprocess.Popen(['python',  'DSRGetID.py'])
+
+        time.sleep(1)
+        self.ic = Ice.initialize(sys.argv)
+        basePrx = self.ic.stringToProxy("dsrgetid:tcp -h localhost -p 11000")
+        self.dsrgetid_proxy = RoboCompDSRGetID.DSRGetIDPrx.uncheckedCast(basePrx)
+        if not self.dsrgetid_proxy:
+            raise RuntimeError("Invalid proxy")
+
+    def __del__(self):
+        self.ic.destroy()
+
 
 if __name__ == '__main__':
     unittest.main()

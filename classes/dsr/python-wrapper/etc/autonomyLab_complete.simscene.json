@@ -1,0 +1,4596 @@
+{
+    "DSRModel": {
+        "symbols": {
+            "1": {
+                "attribute": {
+                    "OuterRegionBottom": {
+                        "type": 1,
+                        "value": -7500
+                    },
+                    "OuterRegionLeft": {
+                        "type": 1,
+                        "value": -7500
+                    },
+                    "OuterRegionRight": {
+                        "type": 1,
+                        "value": 7500
+                    },
+                    "OuterRegionTop": {
+                        "type": 1,
+                        "value": 7500
+                    },
+                    "color": {
+                        "type": 0,
+                        "value": "SeaGreen"
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 0
+                    },
+                    "parent": {
+                        "type": 6,
+                        "value": 0
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": -72.585045
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": 15.46989
+                    }
+                },
+                "id": 1,
+                "links": [
+                    {
+                        "dst": 2,
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    -4.886917963631277e-07,
+                                    -5.235983167040104e-07,
+                                    -1.5707937479019165
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    -3206.950927734375,
+                                    2274.864990234375,
+                                    1225.4749755859375
+                                ]
+                            }
+                        },
+                        "src": 1
+                    },
+                    {
+                        "dst": 3,
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    -4.886917963631277e-07,
+                                    -5.235983167040104e-07,
+                                    -1.5707929134368896
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    267.2820129394531,
+                                    2348.886962890625,
+                                    1225.47802734375
+                                ]
+                            }
+                        },
+                        "src": 1
+                    },
+                    {
+                        "dst": 4,
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    -4.886917963631277e-07,
+                                    -5.235983167040104e-07,
+                                    -1.5708205699920654
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    -1930.70703125,
+                                    -1746.10595703125,
+                                    1225.47900390625
+                                ]
+                            }
+                        },
+                        "src": 1
+                    },
+                    {
+                        "dst": 5,
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    -4.886917963631277e-07,
+                                    -5.235983167040104e-07,
+                                    -1.5707929134368896
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    -3206.926025390625,
+                                    -6050.05615234375,
+                                    1225.47900390625
+                                ]
+                            }
+                        },
+                        "src": 1
+                    },
+                    {
+                        "dst": 6,
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    -4.886917963631277e-07,
+                                    -5.235983167040104e-07,
+                                    -1.5707929134368896
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    267.30499267578125,
+                                    -6126.04296875,
+                                    1225.4820556640625
+                                ]
+                            }
+                        },
+                        "src": 1
+                    },
+                    {
+                        "dst": 7,
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    -4.886917963631277e-07,
+                                    -5.235983167040104e-07,
+                                    2.740164518399979e-06
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    3188.298095703125,
+                                    -4453.037109375,
+                                    1225.48095703125
+                                ]
+                            }
+                        },
+                        "src": 1
+                    },
+                    {
+                        "dst": 8,
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    -4.886917963631277e-07,
+                                    -5.235983167040104e-07,
+                                    -1.5707929134368896
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    4233.298828125,
+                                    -3584.0400390625,
+                                    1225.48095703125
+                                ]
+                            }
+                        },
+                        "src": 1
+                    },
+                    {
+                        "dst": 9,
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    -4.886917963631277e-07,
+                                    -5.235983167040104e-07,
+                                    2.740164518399979e-06
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    5279.83203125,
+                                    -2631.5029296875,
+                                    1228.449951171875
+                                ]
+                            }
+                        },
+                        "src": 1
+                    },
+                    {
+                        "dst": 10,
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    -4.886917963631277e-07,
+                                    -5.235983167040104e-07,
+                                    2.740164518399979e-06
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    3188.281982421875,
+                                    1046.89501953125,
+                                    1225.47900390625
+                                ]
+                            }
+                        },
+                        "src": 1
+                    },
+                    {
+                        "dst": 11,
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    -4.886917963631277e-07,
+                                    -5.235983167040104e-07,
+                                    2.740164518399979e-06
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    5329.8310546875,
+                                    -331.5119934082031,
+                                    1228.449951171875
+                                ]
+                            }
+                        },
+                        "src": 1
+                    },
+                    {
+                        "dst": 12,
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    -4.886917963631277e-07,
+                                    -5.235983167040104e-07,
+                                    -1.5707929134368896
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    4258.2861328125,
+                                    240.89700317382812,
+                                    1225.47998046875
+                                ]
+                            }
+                        },
+                        "src": 1
+                    },
+                    {
+                        "dst": 13,
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    -4.886917963631277e-07,
+                                    -5.235983167040104e-07,
+                                    2.740164518399979e-06
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    -3925.93310546875,
+                                    -4425.05712890625,
+                                    1225.47705078125
+                                ]
+                            }
+                        },
+                        "src": 1
+                    },
+                    {
+                        "dst": 14,
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    -4.886917963631277e-07,
+                                    -5.235983167040104e-07,
+                                    2.740164518399979e-06
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    -3925.946044921875,
+                                    674.8770141601562,
+                                    1225.4759521484375
+                                ]
+                            }
+                        },
+                        "src": 1
+                    },
+                    {
+                        "dst": 15,
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    -1.5707955360412598,
+                                    -2.8623376238101628e-06,
+                                    -1.5707969665527344
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    -3299.93896484375,
+                                    -798.1160278320312,
+                                    1227.4759521484375
+                                ]
+                            }
+                        },
+                        "src": 1
+                    },
+                    {
+                        "dst": 16,
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    1.5707950592041016,
+                                    3.141589403152466
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    -2817.7080078125,
+                                    -1301.1319580078125,
+                                    1227.47802734375
+                                ]
+                            }
+                        },
+                        "src": 1
+                    },
+                    {
+                        "dst": 17,
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    -1.5707955360412598,
+                                    -2.80997778645542e-06,
+                                    -1.570797085762024
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    -3299.93505859375,
+                                    -2923.095947265625,
+                                    1227.4759521484375
+                                ]
+                            }
+                        },
+                        "src": 1
+                    },
+                    {
+                        "dst": 18,
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    1.5707950592041016,
+                                    3.141589403152466
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    -2817.7060546875,
+                                    -2426.10498046875,
+                                    1227.47802734375
+                                ]
+                            }
+                        },
+                        "src": 1
+                    },
+                    {
+                        "dst": 19,
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    -4.886917963631277e-07,
+                                    -5.235983167040104e-07,
+                                    -1.5708205699920654
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    3269.29296875,
+                                    -1746.10595703125,
+                                    1225.47900390625
+                                ]
+                            }
+                        },
+                        "src": 1
+                    },
+                    {
+                        "dst": 20,
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    0
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    25,
+                                    -60
+                                ]
+                            }
+                        },
+                        "src": 1
+                    },
+                    {
+                        "dst": 23,
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    0
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    0
+                                ]
+                            }
+                        },
+                        "src": 1
+                    },
+                    {
+                        "dst": 60,
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    0
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    0
+                                ]
+                            }
+                        },
+                        "src": 1
+                    },
+                    {
+                        "dst": 200,
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    0
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    0
+                                ]
+                            }
+                        },
+                        "src": 1
+                    },
+                    {
+                        "dst": 300,
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    0
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    2624,
+                                    629,
+                                    961
+                                ]
+                            }
+                        },
+                        "src": 1
+                    },
+                    {
+                        "dst": 302,
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    0
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    1050,
+                                    1804,
+                                    962
+                                ]
+                            }
+                        },
+                        "src": 1
+                    },
+                    {
+                        "dst": 304,
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    0
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    -1700,
+                                    1979,
+                                    786
+                                ]
+                            }
+                        },
+                        "src": 1
+                    },
+                    {
+                        "dst": 310,
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    0
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    2718,
+                                    1365,
+                                    950
+                                ]
+                            }
+                        },
+                        "src": 1
+                    }
+                ],
+                "name": "world",
+                "type": "world"
+            },
+            "10": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "Khaki"
+                    },
+                    "depth": {
+                        "type": 1,
+                        "value": 2400
+                    },
+                    "height": {
+                        "type": 1,
+                        "value": 2490
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 1
+                    },
+                    "parent": {
+                        "type": 6,
+                        "value": 1
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": 5.740937
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": -102.818985
+                    },
+                    "texture": {
+                        "type": 0,
+                        "value": "#ddf7e3"
+                    },
+                    "width": {
+                        "type": 1,
+                        "value": 120
+                    }
+                },
+                "id": 10,
+                "links": [
+                ],
+                "name": "Wall2",
+                "type": "plane"
+            },
+            "11": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "Khaki"
+                    },
+                    "depth": {
+                        "type": 1,
+                        "value": 2464
+                    },
+                    "height": {
+                        "type": 1,
+                        "value": 1030
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 1
+                    },
+                    "parent": {
+                        "type": 6,
+                        "value": 1
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": -221.634644
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": 89.141434
+                    },
+                    "texture": {
+                        "type": 0,
+                        "value": "#d8d8d8"
+                    },
+                    "width": {
+                        "type": 1,
+                        "value": 123
+                    }
+                },
+                "id": 11,
+                "links": [
+                ],
+                "name": "Wall5",
+                "type": "plane"
+            },
+            "12": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "Khaki"
+                    },
+                    "depth": {
+                        "type": 1,
+                        "value": 2400
+                    },
+                    "height": {
+                        "type": 1,
+                        "value": 2009
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 1
+                    },
+                    "parent": {
+                        "type": 6,
+                        "value": 1
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": 157.06398
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": -68.482971
+                    },
+                    "texture": {
+                        "type": 0,
+                        "value": "#dbdbdb"
+                    },
+                    "width": {
+                        "type": 1,
+                        "value": 120
+                    }
+                },
+                "id": 12,
+                "links": [
+                ],
+                "name": "Wall4",
+                "type": "plane"
+            },
+            "13": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "Khaki"
+                    },
+                    "depth": {
+                        "type": 1,
+                        "value": 2400
+                    },
+                    "height": {
+                        "type": 1,
+                        "value": 2940
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 1
+                    },
+                    "parent": {
+                        "type": 6,
+                        "value": 1
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": 148.661774
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": -98.364243
+                    },
+                    "texture": {
+                        "type": 0,
+                        "value": "#f7dddd"
+                    },
+                    "width": {
+                        "type": 1,
+                        "value": 270
+                    }
+                },
+                "id": 13,
+                "links": [
+                ],
+                "name": "Wall7",
+                "type": "plane"
+            },
+            "14": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "Khaki"
+                    },
+                    "depth": {
+                        "type": 1,
+                        "value": 2400
+                    },
+                    "height": {
+                        "type": 1,
+                        "value": 2940
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 1
+                    },
+                    "parent": {
+                        "type": 6,
+                        "value": 1
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": 98.010239
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": 136.64711
+                    },
+                    "texture": {
+                        "type": 0,
+                        "value": "#ddefdd"
+                    },
+                    "width": {
+                        "type": 1,
+                        "value": 270
+                    }
+                },
+                "id": 14,
+                "links": [
+                ],
+                "name": "Wall16",
+                "type": "plane"
+            },
+            "15": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "Khaki"
+                    },
+                    "depth": {
+                        "type": 1,
+                        "value": 0
+                    },
+                    "height": {
+                        "type": 1,
+                        "value": 970
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 1
+                    },
+                    "parent": {
+                        "type": 6,
+                        "value": 1
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": 103.311096
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": -105.506783
+                    },
+                    "texture": {
+                        "type": 0,
+                        "value": "#ffffff"
+                    },
+                    "width": {
+                        "type": 1,
+                        "value": 2400
+                    }
+                },
+                "id": 15,
+                "links": [
+                ],
+                "name": "Wall8",
+                "type": "plane"
+            },
+            "16": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "Khaki"
+                    },
+                    "depth": {
+                        "type": 1,
+                        "value": 0
+                    },
+                    "height": {
+                        "type": 1,
+                        "value": 1000
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 1
+                    },
+                    "parent": {
+                        "type": 6,
+                        "value": 1
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": -134.153885
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": -27.209248
+                    },
+                    "texture": {
+                        "type": 0,
+                        "value": "#ffffff"
+                    },
+                    "width": {
+                        "type": 1,
+                        "value": 2400
+                    }
+                },
+                "id": 16,
+                "links": [
+                ],
+                "name": "Wall9",
+                "type": "plane"
+            },
+            "17": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "Khaki"
+                    },
+                    "depth": {
+                        "type": 1,
+                        "value": 0
+                    },
+                    "height": {
+                        "type": 1,
+                        "value": 970
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 1
+                    },
+                    "parent": {
+                        "type": 6,
+                        "value": 1
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": 73.582611
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": 162.3349
+                    },
+                    "texture": {
+                        "type": 0,
+                        "value": "#ffffff"
+                    },
+                    "width": {
+                        "type": 1,
+                        "value": 2400
+                    }
+                },
+                "id": 17,
+                "links": [
+                ],
+                "name": "Wall17",
+                "type": "plane"
+            },
+            "18": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "Khaki"
+                    },
+                    "depth": {
+                        "type": 1,
+                        "value": 0
+                    },
+                    "height": {
+                        "type": 1,
+                        "value": 1000
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 1
+                    },
+                    "parent": {
+                        "type": 6,
+                        "value": 1
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": -171.456177
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": 133.270798
+                    },
+                    "texture": {
+                        "type": 0,
+                        "value": "#ffffff"
+                    },
+                    "width": {
+                        "type": 1,
+                        "value": 2400
+                    }
+                },
+                "id": 18,
+                "links": [
+                ],
+                "name": "Wall18",
+                "type": "plane"
+            },
+            "19": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "Khaki"
+                    },
+                    "depth": {
+                        "type": 1,
+                        "value": 2400
+                    },
+                    "height": {
+                        "type": 1,
+                        "value": 4047
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 1
+                    },
+                    "parent": {
+                        "type": 6,
+                        "value": 1
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": 150.4254
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": 123.412949
+                    },
+                    "texture": {
+                        "type": 0,
+                        "value": "#ed7a00"
+                    },
+                    "width": {
+                        "type": 1,
+                        "value": 120
+                    }
+                },
+                "id": 19,
+                "links": [
+                ],
+                "name": "Wall6",
+                "type": "plane"
+            },
+            "2": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "Khaki"
+                    },
+                    "depth": {
+                        "type": 1,
+                        "value": 2400
+                    },
+                    "height": {
+                        "type": 1,
+                        "value": 1180
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 1
+                    },
+                    "parent": {
+                        "type": 6,
+                        "value": 1
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": 114
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": 18
+                    },
+                    "texture": {
+                        "type": 0,
+                        "value": "#dbf4db"
+                    },
+                    "width": {
+                        "type": 1,
+                        "value": 270
+                    }
+                },
+                "id": 2,
+                "links": [
+                ],
+                "name": "Wall0",
+                "type": "plane"
+            },
+            "20": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "Khaki"
+                    },
+                    "depth": {
+                        "type": 1,
+                        "value": 120
+                    },
+                    "height": {
+                        "type": 1,
+                        "value": 15000
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 1
+                    },
+                    "parent": {
+                        "type": 6,
+                        "value": 1
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": -174.960419
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": 101.661774
+                    },
+                    "texture": {
+                        "type": 0,
+                        "value": "#BBBBBB"
+                    },
+                    "width": {
+                        "type": 1,
+                        "value": 15000
+                    }
+                },
+                "id": 20,
+                "links": [
+                ],
+                "name": "infiniteFloor",
+                "type": "plane"
+            },
+            "200": {
+                "attribute": {
+                    "base_target_x": {
+                        "type": 2,
+                        "value": 3600
+                    },
+                    "base_target_y": {
+                        "type": 2,
+                        "value": 1550
+                    },
+                    "color": {
+                        "type": 0,
+                        "value": "Blue"
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 1
+                    },
+                    "parent": {
+                        "type": 6,
+                        "value": 1
+                    },
+                    "port": {
+                        "type": 1,
+                        "value": 12238
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": -101.473473
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": -300.738739
+                    },
+                    "robot_ref_adv_speed": {
+                        "type": 2,
+                        "value": 0
+                    },
+                    "robot_ref_rot_speed": {
+                        "type": 2,
+                        "value": 0
+                    },
+                    "robot_ref_side_speed": {
+                        "type": 2,
+                        "value": 0
+                    }
+                },
+                "id": 200,
+                "links": [
+                    {
+                        "dst": 201,
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    3.140000104904175,
+                                    0,
+                                    0
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    200
+                                ]
+                            }
+                        },
+                        "src": 200
+                    },
+                    {
+                        "dst": 202,
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    0
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    400,
+                                    0
+                                ]
+                            }
+                        },
+                        "src": 200
+                    },
+                    {
+                        "dst": 206,
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    0
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    57,
+                                    1368
+                                ]
+                            }
+                        },
+                        "src": 200
+                    },
+                    {
+                        "dst": 220,
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    0
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    0
+                                ]
+                            }
+                        },
+                        "src": 200
+                    }
+                ],
+                "name": "omnirobot",
+                "type": "omnirobot"
+            },
+            "201": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "LightBlue"
+                    },
+                    "depth": {
+                        "type": 1,
+                        "value": 1
+                    },
+                    "height": {
+                        "type": 1,
+                        "value": 1
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 2
+                    },
+                    "parent": {
+                        "type": 6,
+                        "value": 200
+                    },
+                    "path": {
+                        "type": 0,
+                        "value": "../../etc/viriato_base_concept_3/viriato_mesh.ive"
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": -279.904114
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": -298.670929
+                    },
+                    "width": {
+                        "type": 1,
+                        "value": 1
+                    }
+                },
+                "id": 201,
+                "links": [
+                ],
+                "name": "viriato_mesh",
+                "type": "mesh"
+            },
+            "202": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "SteelBlue"
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 2
+                    },
+                    "parent": {
+                        "type": 6,
+                        "value": 200
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": -48.646378
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": -248.4133
+                    }
+                },
+                "id": 202,
+                "links": [
+                    {
+                        "dst": 203,
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    0
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    0
+                                ]
+                            }
+                        },
+                        "src": 202
+                    },
+                    {
+                        "dst": 204,
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    0
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    100,
+                                    0,
+                                    100
+                                ]
+                            }
+                        },
+                        "src": 202
+                    },
+                    {
+                        "dst": 205,
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    0
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    -100,
+                                    0,
+                                    -100
+                                ]
+                            }
+                        },
+                        "src": 202
+                    }
+                ],
+                "name": "laser_pose",
+                "type": "transform"
+            },
+            "203": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "GreenYellow"
+                    },
+                    "laser_angles": {
+                        "type": 3,
+                        "value": [
+                        ]
+                    },
+                    "laser_dists": {
+                        "type": 3,
+                        "value": [
+                        ]
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 3
+                    },
+                    "parent": {
+                        "type": 6,
+                        "value": 202
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": 56.066166
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": -253.351563
+                    }
+                },
+                "id": 203,
+                "links": [
+                ],
+                "name": "laser",
+                "type": "laser"
+            },
+            "204": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "LightBlue"
+                    },
+                    "depth": {
+                        "type": 1,
+                        "value": 1
+                    },
+                    "height": {
+                        "type": 1,
+                        "value": 1
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 3
+                    },
+                    "parent": {
+                        "type": 6,
+                        "value": 202
+                    },
+                    "path": {
+                        "type": 0,
+                        "value": "/home/robocomp/robocomp/files/osgModels/basics/cube.3ds"
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": -40.584343
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": -161.594437
+                    },
+                    "width": {
+                        "type": 1,
+                        "value": 1
+                    }
+                },
+                "id": 204,
+                "links": [
+                ],
+                "name": "laser1",
+                "type": "mesh"
+            },
+            "205": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "LightBlue"
+                    },
+                    "depth": {
+                        "type": 1,
+                        "value": 1
+                    },
+                    "height": {
+                        "type": 1,
+                        "value": 1
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 3
+                    },
+                    "parent": {
+                        "type": 6,
+                        "value": 202
+                    },
+                    "path": {
+                        "type": 0,
+                        "value": "/home/robocomp/robocomp/files/osgModels/basics/cube.3ds"
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": 19.227972
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": -201.698074
+                    },
+                    "width": {
+                        "type": 1,
+                        "value": 1
+                    }
+                },
+                "id": 205,
+                "links": [
+                ],
+                "name": "laser2",
+                "type": "mesh"
+            },
+            "206": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "SteelBlue"
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 2
+                    },
+                    "mass": {
+                        "type": 1,
+                        "value": 0
+                    },
+                    "parent": {
+                        "type": 6,
+                        "value": 200
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": -357.970642
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": -231.077576
+                    },
+                    "viriato_head_pan_tilt_nose_target": {
+                        "type": 3,
+                        "value": [
+                            1680.46435546875,
+                            1393.8310546875,
+                            8.14342212677002
+                        ]
+                    }
+                },
+                "id": 206,
+                "links": [
+                    {
+                        "dst": 207,
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    0
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    0
+                                ]
+                            }
+                        },
+                        "src": 206
+                    }
+                ],
+                "name": "viriato_head_camera_pan_tilt",
+                "type": "pan_tilt"
+            },
+            "207": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "SteelBlue"
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 3
+                    },
+                    "parent": {
+                        "type": 6,
+                        "value": 206
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": -373.471283
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": -162.293488
+                    }
+                },
+                "id": 207,
+                "links": [
+                    {
+                        "dst": 208,
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    0
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    0
+                                ]
+                            }
+                        },
+                        "src": 207
+                    }
+                ],
+                "name": "viriato_head_camera_pan_joint",
+                "type": "transform"
+            },
+            "208": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "SteelBlue"
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 4
+                    },
+                    "mass": {
+                        "type": 1,
+                        "value": 0
+                    },
+                    "parent": {
+                        "type": 6,
+                        "value": 207
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": -386.632111
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": -107.49485
+                    }
+                },
+                "id": 208,
+                "links": [
+                    {
+                        "dst": 209,
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    0
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    0
+                                ]
+                            }
+                        },
+                        "src": 208
+                    }
+                ],
+                "name": "viriato_head_camera_tilt_joint",
+                "type": "transform"
+            },
+            "209": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "SteelBlue"
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 5
+                    },
+                    "parent": {
+                        "type": 6,
+                        "value": 208
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": -403.429169
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": -52.065125
+                    }
+                },
+                "id": 209,
+                "links": [
+                    {
+                        "dst": 210,
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    0
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    0
+                                ]
+                            }
+                        },
+                        "src": 209
+                    }
+                ],
+                "name": "camera_pose",
+                "type": "transform"
+            },
+            "210": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "Blue"
+                    },
+                    "height": {
+                        "type": 1,
+                        "value": 480
+                    },
+                    "ifconfig": {
+                        "type": 0,
+                        "value": "40000,50000"
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 6
+                    },
+                    "parent": {
+                        "type": 6,
+                        "value": 209
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": -437.235199
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": 14.53627
+                    },
+                    "width": {
+                        "type": 1,
+                        "value": 640
+                    }
+                },
+                "id": 210,
+                "links": [
+                ],
+                "name": "viriato_head_camera_sensor",
+                "type": "rgbd"
+            },
+            "220": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "Orange"
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 2
+                    },
+                    "mass": {
+                        "type": 1,
+                        "value": 0
+                    },
+                    "parent": {
+                        "type": 6,
+                        "value": 200
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": 85.580048
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": -417.54364
+                    },
+                    "viriato_left_arm_target": {
+                        "type": 3,
+                        "value": [
+                            -237,
+                            312,
+                            516,
+                            2.799999952316284,
+                            0,
+                            1.6820000410079956
+                        ]
+                    }
+                },
+                "id": 220,
+                "links": [
+                ],
+                "name": "viriato_left_arm_tip",
+                "type": "left_hand"
+            },
+            "23": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "SteelBlue"
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 1
+                    },
+                    "parent": {
+                        "type": 6,
+                        "value": 1
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": 303.433136
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": -295.190399
+                    }
+                },
+                "id": 23,
+                "links": [
+                    {
+                        "dst": 24,
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    -0.05000000074505806,
+                                    0
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    1400,
+                                    -5200,
+                                    0
+                                ]
+                            }
+                        },
+                        "src": 23
+                    },
+                    {
+                        "dst": 28,
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    -0.05000000074505806,
+                                    0
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    -500,
+                                    -5700,
+                                    0
+                                ]
+                            }
+                        },
+                        "src": 23
+                    },
+                    {
+                        "dst": 34,
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    0
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    -2800,
+                                    -5000,
+                                    0
+                                ]
+                            }
+                        },
+                        "src": 23
+                    },
+                    {
+                        "dst": 38,
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    1.5700000524520874
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    -2000,
+                                    -2200,
+                                    0
+                                ]
+                            }
+                        },
+                        "src": 23
+                    }
+                ],
+                "name": "room_3_furniture",
+                "type": "transform"
+            },
+            "24": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "SteelBlue"
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 2
+                    },
+                    "parent": {
+                        "type": 6,
+                        "value": 23
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": 675.500854
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": -397.065887
+                    }
+                },
+                "id": 24,
+                "links": [
+                    {
+                        "dst": 25,
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    0
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    760
+                                ]
+                            }
+                        },
+                        "src": 24
+                    },
+                    {
+                        "dst": 26,
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    -0.013075608760118484,
+                                    0
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    6,
+                                    900,
+                                    377
+                                ]
+                            }
+                        },
+                        "src": 24
+                    },
+                    {
+                        "dst": 27,
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    3.1415927410125732,
+                                    -1.5337157249450684,
+                                    3.1415927410125732
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    -150,
+                                    10,
+                                    377
+                                ]
+                            }
+                        },
+                        "src": 24
+                    }
+                ],
+                "name": "tableA",
+                "type": "transform"
+            },
+            "25": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "LightBlue"
+                    },
+                    "depth": {
+                        "type": 1,
+                        "value": 20
+                    },
+                    "height": {
+                        "type": 1,
+                        "value": 1820
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 3
+                    },
+                    "parent": {
+                        "type": 6,
+                        "value": 24
+                    },
+                    "path": {
+                        "type": 0,
+                        "value": "/home/robocomp/robocomp/files/osgModels/basics/cube2.3ds"
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": 780.947693
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": -382.368866
+                    },
+                    "width": {
+                        "type": 1,
+                        "value": 800
+                    }
+                },
+                "id": 25,
+                "links": [
+                ],
+                "name": "tableA_tabletop",
+                "type": "mesh"
+            },
+            "26": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "Khaki"
+                    },
+                    "depth": {
+                        "type": 1,
+                        "value": 754
+                    },
+                    "height": {
+                        "type": 1,
+                        "value": 9
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 3
+                    },
+                    "parent": {
+                        "type": 6,
+                        "value": 24
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": 766.51355
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": -459.082306
+                    },
+                    "texture": {
+                        "type": 0,
+                        "value": "#118899"
+                    },
+                    "width": {
+                        "type": 1,
+                        "value": 800
+                    }
+                },
+                "id": 26,
+                "links": [
+                ],
+                "name": "tableA_side_panel",
+                "type": "plane"
+            },
+            "27": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "Khaki"
+                    },
+                    "depth": {
+                        "type": 1,
+                        "value": 9
+                    },
+                    "height": {
+                        "type": 1,
+                        "value": 1810
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 3
+                    },
+                    "parent": {
+                        "type": 6,
+                        "value": 24
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": 777.594666
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": -425.420044
+                    },
+                    "texture": {
+                        "type": 0,
+                        "value": "#118899"
+                    },
+                    "width": {
+                        "type": 1,
+                        "value": 754
+                    }
+                },
+                "id": 27,
+                "links": [
+                ],
+                "name": "tableA_front_panel",
+                "type": "plane"
+            },
+            "28": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "SteelBlue"
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 2
+                    },
+                    "parent": {
+                        "type": 6,
+                        "value": 23
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": 641.852966
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": -301.284515
+                    }
+                },
+                "id": 28,
+                "links": [
+                    {
+                        "dst": 29,
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    0
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    740
+                                ]
+                            }
+                        },
+                        "src": 28
+                    },
+                    {
+                        "dst": 30,
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    1.5707999467849731
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    -520,
+                                    -310,
+                                    370
+                                ]
+                            }
+                        },
+                        "src": 28
+                    },
+                    {
+                        "dst": 31,
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    1.5707999467849731
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    -520,
+                                    310,
+                                    370
+                                ]
+                            }
+                        },
+                        "src": 28
+                    },
+                    {
+                        "dst": 32,
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    1.5707999467849731
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    520,
+                                    -310,
+                                    370
+                                ]
+                            }
+                        },
+                        "src": 28
+                    },
+                    {
+                        "dst": 33,
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    1.5707999467849731
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    520,
+                                    310,
+                                    370
+                                ]
+                            }
+                        },
+                        "src": 28
+                    }
+                ],
+                "name": "tableB",
+                "type": "transform"
+            },
+            "29": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "LightBlue"
+                    },
+                    "depth": {
+                        "type": 1,
+                        "value": 20
+                    },
+                    "height": {
+                        "type": 1,
+                        "value": 800
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 3
+                    },
+                    "parent": {
+                        "type": 6,
+                        "value": 28
+                    },
+                    "path": {
+                        "type": 0,
+                        "value": "/home/robocomp/robocomp/files/osgModels/basics/cube2.3ds"
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": 822.891113
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": -214.923019
+                    },
+                    "width": {
+                        "type": 1,
+                        "value": 1200
+                    }
+                },
+                "id": 29,
+                "links": [
+                ],
+                "name": "tableB_tabletop",
+                "type": "mesh"
+            },
+            "3": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "Khaki"
+                    },
+                    "depth": {
+                        "type": 1,
+                        "value": 2400
+                    },
+                    "height": {
+                        "type": 1,
+                        "value": 5770
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 1
+                    },
+                    "parent": {
+                        "type": 6,
+                        "value": 1
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": -3.77213
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": 136.897171
+                    },
+                    "texture": {
+                        "type": 0,
+                        "value": "#ddf7dd"
+                    },
+                    "width": {
+                        "type": 1,
+                        "value": 120
+                    }
+                },
+                "id": 3,
+                "links": [
+                ],
+                "name": "Wall1",
+                "type": "plane"
+            },
+            "30": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "LightBlue"
+                    },
+                    "depth": {
+                        "type": 1,
+                        "value": 370
+                    },
+                    "height": {
+                        "type": 1,
+                        "value": 25
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 3
+                    },
+                    "parent": {
+                        "type": 6,
+                        "value": 28
+                    },
+                    "path": {
+                        "type": 0,
+                        "value": "/home/robocomp/robocomp/files/osgModels/basics/cylinder.3ds"
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": 813.179932
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": -316.227783
+                    },
+                    "width": {
+                        "type": 1,
+                        "value": 25
+                    }
+                },
+                "id": 30,
+                "links": [
+                ],
+                "name": "tableB_fl_leg",
+                "type": "mesh"
+            },
+            "300": {
+                "attribute": {
+                    "collidable": {
+                        "type": 4,
+                        "value": true
+                    },
+                    "color": {
+                        "type": 0,
+                        "value": "DarkRed"
+                    },
+                    "engine": {
+                        "type": 0,
+                        "value": "static"
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 1
+                    },
+                    "parent": {
+                        "type": 6,
+                        "value": 1
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": -186.418213
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": 220.376266
+                    }
+                },
+                "id": 300,
+                "links": [
+                    {
+                        "dst": 301,
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    0
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    0
+                                ]
+                            }
+                        },
+                        "src": 300
+                    }
+                ],
+                "name": "glass_1",
+                "type": "glass"
+            },
+            "301": {
+                "attribute": {
+                    "collidable": {
+                        "type": 4,
+                        "value": true
+                    },
+                    "color": {
+                        "type": 0,
+                        "value": "LightBlue"
+                    },
+                    "depth": {
+                        "type": 1,
+                        "value": 100
+                    },
+                    "height": {
+                        "type": 1,
+                        "value": 100
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 2
+                    },
+                    "mass": {
+                        "type": 1,
+                        "value": 0
+                    },
+                    "parent": {
+                        "type": 6,
+                        "value": 300
+                    },
+                    "path": {
+                        "type": 0,
+                        "value": "/home/robocomp/robocomp/components/dsr-graph/etc/alab/objects/mug.ive"
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": -290.91098
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": 263.703125
+                    },
+                    "scalex": {
+                        "type": 1,
+                        "value": 1000
+                    },
+                    "scaley": {
+                        "type": 1,
+                        "value": 1000
+                    },
+                    "scalez": {
+                        "type": 1,
+                        "value": 1000
+                    },
+                    "width": {
+                        "type": 1,
+                        "value": 100
+                    }
+                },
+                "id": 301,
+                "links": [
+                ],
+                "name": "glass_1_mesh",
+                "type": "mesh"
+            },
+            "302": {
+                "attribute": {
+                    "collidable": {
+                        "type": 4,
+                        "value": true
+                    },
+                    "color": {
+                        "type": 0,
+                        "value": "DarkRed"
+                    },
+                    "engine": {
+                        "type": 0,
+                        "value": "static"
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 1
+                    },
+                    "parent": {
+                        "type": 6,
+                        "value": 1
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": -98.543983
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": 263.001007
+                    }
+                },
+                "id": 302,
+                "links": [
+                    {
+                        "dst": 303,
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    0
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    0
+                                ]
+                            }
+                        },
+                        "src": 302
+                    }
+                ],
+                "name": "glass_2",
+                "type": "glass"
+            },
+            "303": {
+                "attribute": {
+                    "collidable": {
+                        "type": 4,
+                        "value": true
+                    },
+                    "color": {
+                        "type": 0,
+                        "value": "LightBlue"
+                    },
+                    "depth": {
+                        "type": 1,
+                        "value": 100
+                    },
+                    "height": {
+                        "type": 1,
+                        "value": 100
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 2
+                    },
+                    "mass": {
+                        "type": 1,
+                        "value": 0
+                    },
+                    "parent": {
+                        "type": 6,
+                        "value": 302
+                    },
+                    "path": {
+                        "type": 0,
+                        "value": "/home/robocomp/robocomp/components/dsr-graph/etc/alab/objects/mug.ive"
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": -159.84407
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": 369.520569
+                    },
+                    "scalex": {
+                        "type": 1,
+                        "value": 1000
+                    },
+                    "scaley": {
+                        "type": 1,
+                        "value": 1000
+                    },
+                    "scalez": {
+                        "type": 1,
+                        "value": 1000
+                    },
+                    "width": {
+                        "type": 1,
+                        "value": 100
+                    }
+                },
+                "id": 303,
+                "links": [
+                ],
+                "name": "glass_2_mesh",
+                "type": "mesh"
+            },
+            "304": {
+                "attribute": {
+                    "collidable": {
+                        "type": 4,
+                        "value": true
+                    },
+                    "color": {
+                        "type": 0,
+                        "value": "DarkRed"
+                    },
+                    "engine": {
+                        "type": 0,
+                        "value": "static"
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 1
+                    },
+                    "parent": {
+                        "type": 6,
+                        "value": 1
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": -157.339111
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": 272.717041
+                    }
+                },
+                "id": 304,
+                "links": [
+                    {
+                        "dst": 305,
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    0
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    0
+                                ]
+                            }
+                        },
+                        "src": 304
+                    }
+                ],
+                "name": "glass_3",
+                "type": "glass"
+            },
+            "305": {
+                "attribute": {
+                    "collidable": {
+                        "type": 4,
+                        "value": true
+                    },
+                    "color": {
+                        "type": 0,
+                        "value": "LightBlue"
+                    },
+                    "depth": {
+                        "type": 1,
+                        "value": 100
+                    },
+                    "height": {
+                        "type": 1,
+                        "value": 100
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 2
+                    },
+                    "mass": {
+                        "type": 1,
+                        "value": 0
+                    },
+                    "parent": {
+                        "type": 6,
+                        "value": 304
+                    },
+                    "path": {
+                        "type": 0,
+                        "value": "/home/robocomp/robocomp/components/dsr-graph/etc/alab/objects/mug.ive"
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": -236.229462
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": 328.952606
+                    },
+                    "scalex": {
+                        "type": 1,
+                        "value": 1000
+                    },
+                    "scaley": {
+                        "type": 1,
+                        "value": 1000
+                    },
+                    "scalez": {
+                        "type": 1,
+                        "value": 1000
+                    },
+                    "width": {
+                        "type": 1,
+                        "value": 100
+                    }
+                },
+                "id": 305,
+                "links": [
+                ],
+                "name": "glass_3_mesh",
+                "type": "mesh"
+            },
+            "31": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "LightBlue"
+                    },
+                    "depth": {
+                        "type": 1,
+                        "value": 370
+                    },
+                    "height": {
+                        "type": 1,
+                        "value": 25
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 3
+                    },
+                    "parent": {
+                        "type": 6,
+                        "value": 28
+                    },
+                    "path": {
+                        "type": 0,
+                        "value": "/home/robocomp/robocomp/files/osgModels/basics/cylinder.3ds"
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": 820.56488
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": -282.006287
+                    },
+                    "width": {
+                        "type": 1,
+                        "value": 25
+                    }
+                },
+                "id": 31,
+                "links": [
+                ],
+                "name": "tableB_rl_leg",
+                "type": "mesh"
+            },
+            "310": {
+                "attribute": {
+                    "collidable": {
+                        "type": 4,
+                        "value": true
+                    },
+                    "color": {
+                        "type": 0,
+                        "value": "DarkRed"
+                    },
+                    "engine": {
+                        "type": 0,
+                        "value": "static"
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 1
+                    },
+                    "parent": {
+                        "type": 6,
+                        "value": 1
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": -44.871361
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": 271.00293
+                    }
+                },
+                "id": 310,
+                "links": [
+                    {
+                        "dst": 311,
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    0
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    0
+                                ]
+                            }
+                        },
+                        "src": 310
+                    }
+                ],
+                "name": "cup_1",
+                "type": "cup"
+            },
+            "311": {
+                "attribute": {
+                    "collidable": {
+                        "type": 4,
+                        "value": true
+                    },
+                    "color": {
+                        "type": 0,
+                        "value": "LightBlue"
+                    },
+                    "depth": {
+                        "type": 1,
+                        "value": 100
+                    },
+                    "height": {
+                        "type": 1,
+                        "value": 100
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 2
+                    },
+                    "mass": {
+                        "type": 1,
+                        "value": 0
+                    },
+                    "parent": {
+                        "type": 6,
+                        "value": 310
+                    },
+                    "path": {
+                        "type": 0,
+                        "value": "/home/robocomp/robocomp/components/dsr-graph/etc/alab/objects/mug.ive"
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": -72.209732
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": 388.514832
+                    },
+                    "scalex": {
+                        "type": 1,
+                        "value": 1000
+                    },
+                    "scaley": {
+                        "type": 1,
+                        "value": 1000
+                    },
+                    "scalez": {
+                        "type": 1,
+                        "value": 1000
+                    },
+                    "width": {
+                        "type": 1,
+                        "value": 100
+                    }
+                },
+                "id": 311,
+                "links": [
+                ],
+                "name": "cup_1_mesh",
+                "type": "mesh"
+            },
+            "32": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "LightBlue"
+                    },
+                    "depth": {
+                        "type": 1,
+                        "value": 370
+                    },
+                    "height": {
+                        "type": 1,
+                        "value": 25
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 3
+                    },
+                    "parent": {
+                        "type": 6,
+                        "value": 28
+                    },
+                    "path": {
+                        "type": 0,
+                        "value": "/home/robocomp/robocomp/files/osgModels/basics/cylinder.3ds"
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": 835.87677
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": -243.917404
+                    },
+                    "width": {
+                        "type": 1,
+                        "value": 25
+                    }
+                },
+                "id": 32,
+                "links": [
+                ],
+                "name": "tableB_fr_leg",
+                "type": "mesh"
+            },
+            "33": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "LightBlue"
+                    },
+                    "depth": {
+                        "type": 1,
+                        "value": 370
+                    },
+                    "height": {
+                        "type": 1,
+                        "value": 25
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 3
+                    },
+                    "parent": {
+                        "type": 6,
+                        "value": 28
+                    },
+                    "path": {
+                        "type": 0,
+                        "value": "/home/robocomp/robocomp/files/osgModels/basics/cylinder.3ds"
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": 813.467224
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": -187.493393
+                    },
+                    "width": {
+                        "type": 1,
+                        "value": 25
+                    }
+                },
+                "id": 33,
+                "links": [
+                ],
+                "name": "tableB_rr_leg",
+                "type": "mesh"
+            },
+            "34": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "SteelBlue"
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 2
+                    },
+                    "parent": {
+                        "type": 6,
+                        "value": 23
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": 652.856567
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": -156.720688
+                    }
+                },
+                "id": 34,
+                "links": [
+                    {
+                        "dst": 35,
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    0
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    760
+                                ]
+                            }
+                        },
+                        "src": 34
+                    },
+                    {
+                        "dst": 36,
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    1.505387544631958
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    240,
+                                    -6,
+                                    380
+                                ]
+                            }
+                        },
+                        "src": 34
+                    },
+                    {
+                        "dst": 37,
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    -0.0012499993899837136,
+                                    0
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    910,
+                                    380
+                                ]
+                            }
+                        },
+                        "src": 34
+                    }
+                ],
+                "name": "tableC",
+                "type": "transform"
+            },
+            "35": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "LightBlue"
+                    },
+                    "depth": {
+                        "type": 1,
+                        "value": 20
+                    },
+                    "height": {
+                        "type": 1,
+                        "value": 1820
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 3
+                    },
+                    "parent": {
+                        "type": 6,
+                        "value": 34
+                    },
+                    "path": {
+                        "type": 0,
+                        "value": "/home/robocomp/robocomp/files/osgModels/basics/cube2.3ds"
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": 764.732056
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": -95.855293
+                    },
+                    "width": {
+                        "type": 1,
+                        "value": 800
+                    }
+                },
+                "id": 35,
+                "links": [
+                ],
+                "name": "tableC_tabletop",
+                "type": "mesh"
+            },
+            "36": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "Khaki"
+                    },
+                    "depth": {
+                        "type": 1,
+                        "value": 760
+                    },
+                    "height": {
+                        "type": 1,
+                        "value": 9
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 3
+                    },
+                    "parent": {
+                        "type": 6,
+                        "value": 34
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": 748.018616
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": -16.777113
+                    },
+                    "texture": {
+                        "type": 0,
+                        "value": "#998811"
+                    },
+                    "width": {
+                        "type": 1,
+                        "value": 1820
+                    }
+                },
+                "id": 36,
+                "links": [
+                ],
+                "name": "tableC_front_panel",
+                "type": "plane"
+            },
+            "37": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "Khaki"
+                    },
+                    "depth": {
+                        "type": 1,
+                        "value": 760
+                    },
+                    "height": {
+                        "type": 1,
+                        "value": 9
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 3
+                    },
+                    "parent": {
+                        "type": 6,
+                        "value": 34
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": 763.276184
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": -48.166454
+                    },
+                    "texture": {
+                        "type": 0,
+                        "value": "#998811"
+                    },
+                    "width": {
+                        "type": 1,
+                        "value": 789
+                    }
+                },
+                "id": 37,
+                "links": [
+                ],
+                "name": "tableC_side_panel",
+                "type": "plane"
+            },
+            "38": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "SteelBlue"
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 2
+                    },
+                    "parent": {
+                        "type": 6,
+                        "value": 23
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": 447.904175
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": -138.874298
+                    }
+                },
+                "id": 38,
+                "links": [
+                    {
+                        "dst": 39,
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    0
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    740
+                                ]
+                            }
+                        },
+                        "src": 38
+                    },
+                    {
+                        "dst": 40,
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    1.5707999467849731
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    -375,
+                                    585,
+                                    370
+                                ]
+                            }
+                        },
+                        "src": 38
+                    },
+                    {
+                        "dst": 41,
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    1.5707999467849731
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    -375,
+                                    -585,
+                                    370
+                                ]
+                            }
+                        },
+                        "src": 38
+                    },
+                    {
+                        "dst": 42,
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    1.5707999467849731
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    375,
+                                    585,
+                                    370
+                                ]
+                            }
+                        },
+                        "src": 38
+                    },
+                    {
+                        "dst": 43,
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    1.5707999467849731
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    375,
+                                    -585,
+                                    370
+                                ]
+                            }
+                        },
+                        "src": 38
+                    }
+                ],
+                "name": "tableE",
+                "type": "transform"
+            },
+            "39": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "LightBlue"
+                    },
+                    "depth": {
+                        "type": 1,
+                        "value": 20
+                    },
+                    "height": {
+                        "type": 1,
+                        "value": 1320
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 3
+                    },
+                    "parent": {
+                        "type": 6,
+                        "value": 38
+                    },
+                    "path": {
+                        "type": 0,
+                        "value": "/home/robocomp/robocomp/files/osgModels/basics/cube2.3ds"
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": 541.14624
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": -81.507401
+                    },
+                    "width": {
+                        "type": 1,
+                        "value": 800
+                    }
+                },
+                "id": 39,
+                "links": [
+                ],
+                "name": "tableE_countertop",
+                "type": "mesh"
+            },
+            "4": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "Khaki"
+                    },
+                    "depth": {
+                        "type": 1,
+                        "value": 2400
+                    },
+                    "height": {
+                        "type": 1,
+                        "value": 1700
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 1
+                    },
+                    "parent": {
+                        "type": 6,
+                        "value": 1
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": 196
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": -18
+                    },
+                    "texture": {
+                        "type": 0,
+                        "value": "#ed7a00"
+                    },
+                    "width": {
+                        "type": 1,
+                        "value": 120
+                    }
+                },
+                "id": 4,
+                "links": [
+                ],
+                "name": "Wall10",
+                "type": "plane"
+            },
+            "40": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "LightBlue"
+                    },
+                    "depth": {
+                        "type": 1,
+                        "value": 370
+                    },
+                    "height": {
+                        "type": 1,
+                        "value": 25
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 3
+                    },
+                    "parent": {
+                        "type": 6,
+                        "value": 38
+                    },
+                    "path": {
+                        "type": 0,
+                        "value": "/home/robocomp/robocomp/files/osgModels/basics/cylinder.3ds"
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": 540.385498
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": -125.336243
+                    },
+                    "width": {
+                        "type": 1,
+                        "value": 25
+                    }
+                },
+                "id": 40,
+                "links": [
+                ],
+                "name": "tableE_fl_leg",
+                "type": "mesh"
+            },
+            "41": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "LightBlue"
+                    },
+                    "depth": {
+                        "type": 1,
+                        "value": 370
+                    },
+                    "height": {
+                        "type": 1,
+                        "value": 25
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 3
+                    },
+                    "parent": {
+                        "type": 6,
+                        "value": 38
+                    },
+                    "path": {
+                        "type": 0,
+                        "value": "/home/robocomp/robocomp/files/osgModels/basics/cylinder.3ds"
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": 540.151428
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": 61.455627
+                    },
+                    "width": {
+                        "type": 1,
+                        "value": 25
+                    }
+                },
+                "id": 41,
+                "links": [
+                ],
+                "name": "tableE_rl_leg",
+                "type": "mesh"
+            },
+            "42": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "LightBlue"
+                    },
+                    "depth": {
+                        "type": 1,
+                        "value": 370
+                    },
+                    "height": {
+                        "type": 1,
+                        "value": 25
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 3
+                    },
+                    "parent": {
+                        "type": 6,
+                        "value": 38
+                    },
+                    "path": {
+                        "type": 0,
+                        "value": "/home/robocomp/robocomp/files/osgModels/basics/cylinder.3ds"
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": 541.673035
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": -37.517498
+                    },
+                    "width": {
+                        "type": 1,
+                        "value": 25
+                    }
+                },
+                "id": 42,
+                "links": [
+                ],
+                "name": "tableE_fr_leg",
+                "type": "mesh"
+            },
+            "43": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "LightBlue"
+                    },
+                    "depth": {
+                        "type": 1,
+                        "value": 370
+                    },
+                    "height": {
+                        "type": 1,
+                        "value": 25
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 3
+                    },
+                    "parent": {
+                        "type": 6,
+                        "value": 38
+                    },
+                    "path": {
+                        "type": 0,
+                        "value": "/home/robocomp/robocomp/files/osgModels/basics/cylinder.3ds"
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": 541.275146
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": 10.26487
+                    },
+                    "width": {
+                        "type": 1,
+                        "value": 25
+                    }
+                },
+                "id": 43,
+                "links": [
+                ],
+                "name": "tableE_rr_leg",
+                "type": "mesh"
+            },
+            "5": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "Khaki"
+                    },
+                    "depth": {
+                        "type": 1,
+                        "value": 2400
+                    },
+                    "height": {
+                        "type": 1,
+                        "value": 1180
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 1
+                    },
+                    "parent": {
+                        "type": 6,
+                        "value": 1
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": -162.075836
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": 1.037362
+                    },
+                    "texture": {
+                        "type": 0,
+                        "value": "#f4dddd"
+                    },
+                    "width": {
+                        "type": 1,
+                        "value": 270
+                    }
+                },
+                "id": 5,
+                "links": [
+                ],
+                "name": "Wall11",
+                "type": "plane"
+            },
+            "6": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "Khaki"
+                    },
+                    "depth": {
+                        "type": 1,
+                        "value": 2400
+                    },
+                    "height": {
+                        "type": 1,
+                        "value": 5770
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 1
+                    },
+                    "parent": {
+                        "type": 6,
+                        "value": 1
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": -24.520346
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": 193.698029
+                    },
+                    "texture": {
+                        "type": 0,
+                        "value": "#f7dbdb"
+                    },
+                    "width": {
+                        "type": 1,
+                        "value": 120
+                    }
+                },
+                "id": 6,
+                "links": [
+                ],
+                "name": "Wall12",
+                "type": "plane"
+            },
+            "60": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "SteelBlue"
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 1
+                    },
+                    "parent": {
+                        "type": 6,
+                        "value": 1
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": 386.346527
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": 34.541214
+                    }
+                },
+                "id": 60,
+                "links": [
+                    {
+                        "dst": 64,
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    0
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    2900,
+                                    1100,
+                                    0
+                                ]
+                            }
+                        },
+                        "src": 60
+                    },
+                    {
+                        "dst": 68,
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    0
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    1500,
+                                    1950,
+                                    0
+                                ]
+                            }
+                        },
+                        "src": 60
+                    },
+                    {
+                        "dst": 71,
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    0
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    -100,
+                                    1970,
+                                    925
+                                ]
+                            }
+                        },
+                        "src": 60
+                    }
+                ],
+                "name": "room_5_furniture",
+                "type": "transform"
+            },
+            "64": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "SteelBlue"
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 2
+                    },
+                    "parent": {
+                        "type": 6,
+                        "value": 60
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": 379.55423
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": 177.428406
+                    }
+                },
+                "id": 64,
+                "links": [
+                    {
+                        "dst": 65,
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    0
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    -50,
+                                    0,
+                                    890
+                                ]
+                            }
+                        },
+                        "src": 64
+                    },
+                    {
+                        "dst": 66,
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    0
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    -100,
+                                    -1200,
+                                    450
+                                ]
+                            }
+                        },
+                        "src": 64
+                    },
+                    {
+                        "dst": 67,
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    0
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    -400,
+                                    100,
+                                    450
+                                ]
+                            }
+                        },
+                        "src": 64
+                    }
+                ],
+                "name": "tableF",
+                "type": "transform"
+            },
+            "65": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "LightBlue"
+                    },
+                    "depth": {
+                        "type": 1,
+                        "value": 20
+                    },
+                    "height": {
+                        "type": 1,
+                        "value": 2500
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 3
+                    },
+                    "parent": {
+                        "type": 6,
+                        "value": 64
+                    },
+                    "path": {
+                        "type": 0,
+                        "value": "/home/robocomp/robocomp/files/osgModels/basics/cube2.3ds"
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": 440.627289
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": 225.838226
+                    },
+                    "width": {
+                        "type": 1,
+                        "value": 750
+                    }
+                },
+                "id": 65,
+                "links": [
+                ],
+                "name": "tableF_countertop",
+                "type": "mesh"
+            },
+            "66": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "Khaki"
+                    },
+                    "depth": {
+                        "type": 1,
+                        "value": 890
+                    },
+                    "height": {
+                        "type": 1,
+                        "value": 9
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 3
+                    },
+                    "parent": {
+                        "type": 6,
+                        "value": 64
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": 397.972168
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": 237.859909
+                    },
+                    "texture": {
+                        "type": 0,
+                        "value": "#008888"
+                    },
+                    "width": {
+                        "type": 1,
+                        "value": 650
+                    }
+                },
+                "id": 66,
+                "links": [
+                ],
+                "name": "tableF_side_panel",
+                "type": "plane"
+            },
+            "67": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "Khaki"
+                    },
+                    "depth": {
+                        "type": 1,
+                        "value": 890
+                    },
+                    "height": {
+                        "type": 1,
+                        "value": 2490
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 3
+                    },
+                    "parent": {
+                        "type": 6,
+                        "value": 64
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": 311.187531
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": 230.220154
+                    },
+                    "texture": {
+                        "type": 0,
+                        "value": "#008888"
+                    },
+                    "width": {
+                        "type": 1,
+                        "value": 9
+                    }
+                },
+                "id": 67,
+                "links": [
+                ],
+                "name": "tableF_front_panel",
+                "type": "plane"
+            },
+            "68": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "SteelBlue"
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 2
+                    },
+                    "parent": {
+                        "type": 6,
+                        "value": 60
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": 419.806763
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": 122.133148
+                    }
+                },
+                "id": 68,
+                "links": [
+                    {
+                        "dst": 69,
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    0,
+                                    0
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    -50,
+                                    890
+                                ]
+                            }
+                        },
+                        "src": 68
+                    },
+                    {
+                        "dst": 70,
+                        "label": "RT",
+                        "linkAttribute": {
+                            "rt_rotation_euler_xyz": {
+                                "type": 3,
+                                "value": [
+                                    3.1415927410125732,
+                                    0.0003792187781073153,
+                                    3.1415927410125732
+                                ]
+                            },
+                            "rt_translation": {
+                                "type": 3,
+                                "value": [
+                                    0,
+                                    -400,
+                                    450
+                                ]
+                            }
+                        },
+                        "src": 68
+                    }
+                ],
+                "name": "tableG",
+                "type": "transform"
+            },
+            "69": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "LightBlue"
+                    },
+                    "depth": {
+                        "type": 1,
+                        "value": 20
+                    },
+                    "height": {
+                        "type": 1,
+                        "value": 720
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 3
+                    },
+                    "parent": {
+                        "type": 6,
+                        "value": 68
+                    },
+                    "path": {
+                        "type": 0,
+                        "value": "/home/robocomp/robocomp/files/osgModels/basics/cube2.3ds"
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": 523.284973
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": 182.41069
+                    },
+                    "width": {
+                        "type": 1,
+                        "value": 2110
+                    }
+                },
+                "id": 69,
+                "links": [
+                ],
+                "name": "tableG_countertop",
+                "type": "mesh"
+            },
+            "7": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "Khaki"
+                    },
+                    "depth": {
+                        "type": 1,
+                        "value": 2400
+                    },
+                    "height": {
+                        "type": 1,
+                        "value": 3501
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 1
+                    },
+                    "parent": {
+                        "type": 6,
+                        "value": 1
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": 105
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": 63
+                    },
+                    "texture": {
+                        "type": 0,
+                        "value": "#f7dbd8"
+                    },
+                    "width": {
+                        "type": 1,
+                        "value": 120
+                    }
+                },
+                "id": 7,
+                "links": [
+                ],
+                "name": "Wall13",
+                "type": "plane"
+            },
+            "70": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "Khaki"
+                    },
+                    "depth": {
+                        "type": 1,
+                        "value": 890
+                    },
+                    "height": {
+                        "type": 1,
+                        "value": 9
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 3
+                    },
+                    "parent": {
+                        "type": 6,
+                        "value": 68
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": 550.341614
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": 155.625839
+                    },
+                    "texture": {
+                        "type": 0,
+                        "value": "#888800"
+                    },
+                    "width": {
+                        "type": 1,
+                        "value": 2110
+                    }
+                },
+                "id": 70,
+                "links": [
+                ],
+                "name": "tableG_front",
+                "type": "plane"
+            },
+            "71": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "LightBlue"
+                    },
+                    "depth": {
+                        "type": 1,
+                        "value": 1850
+                    },
+                    "height": {
+                        "type": 1,
+                        "value": 600
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 2
+                    },
+                    "parent": {
+                        "type": 6,
+                        "value": 60
+                    },
+                    "path": {
+                        "type": 0,
+                        "value": "/home/robocomp/robocomp/files/osgModels/basics/cube2.3ds"
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": 451.858551
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": 84.924995
+                    },
+                    "width": {
+                        "type": 1,
+                        "value": 600
+                    }
+                },
+                "id": 71,
+                "links": [
+                ],
+                "name": "fridge_mesh",
+                "type": "mesh"
+            },
+            "8": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "Khaki"
+                    },
+                    "depth": {
+                        "type": 1,
+                        "value": 2400
+                    },
+                    "height": {
+                        "type": 1,
+                        "value": 2009
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 1
+                    },
+                    "parent": {
+                        "type": 6,
+                        "value": 1
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": 168.63826
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": -49.275345
+                    },
+                    "texture": {
+                        "type": 0,
+                        "value": "#f7dddd"
+                    },
+                    "width": {
+                        "type": 1,
+                        "value": 120
+                    }
+                },
+                "id": 8,
+                "links": [
+                ],
+                "name": "Wall14",
+                "type": "plane"
+            },
+            "9": {
+                "attribute": {
+                    "color": {
+                        "type": 0,
+                        "value": "Khaki"
+                    },
+                    "depth": {
+                        "type": 1,
+                        "value": 2464
+                    },
+                    "height": {
+                        "type": 1,
+                        "value": 1625
+                    },
+                    "level": {
+                        "type": 1,
+                        "value": 1
+                    },
+                    "parent": {
+                        "type": 6,
+                        "value": 1
+                    },
+                    "pos_x": {
+                        "type": 2,
+                        "value": -70.234367
+                    },
+                    "pos_y": {
+                        "type": 2,
+                        "value": 128.477127
+                    },
+                    "texture": {
+                        "type": 0,
+                        "value": "#f7dddd"
+                    },
+                    "width": {
+                        "type": 1,
+                        "value": 123
+                    }
+                },
+                "id": 9,
+                "links": [
+                ],
+                "name": "Wall15",
+                "type": "plane"
+            }
+        }
+    }
+}
