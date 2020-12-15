@@ -299,8 +299,8 @@ DSRGraph::delete_node_(uint32_t id)
         for (const auto &key : edges[{k, id}])
         {
 
-            auto delta_fano = visited_node.fano()[{k, key}].reset();
-            aw.emplace_back(translate_edge_mvCRDT_to_IDL(agent_id, visited_node.id(), k, key, delta_fano));
+            auto delta_fano = visited_node.fano().at({id, key}).reset();
+            aw.emplace_back(translate_edge_mvCRDT_to_IDL(agent_id, k, id, key, delta_fano));
             visited_node.fano().erase({k, key});
             edges_.emplace_back(make_tuple(visited_node.id(), id, key));
 
