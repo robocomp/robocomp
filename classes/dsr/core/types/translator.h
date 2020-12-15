@@ -29,6 +29,9 @@ namespace DSR {
 
             delta_crdt.dk().cbase().dc().push_back(pi);
         }
+
+        delta_crdt.dk().cbase().cc(data.dk.c.cc);
+
         delta_crdt.id(id);
         delta_crdt.agent_id(agent_id);
         return delta_crdt;
@@ -77,6 +80,9 @@ namespace DSR {
 
             delta_crdt.dk().cbase().dc().push_back(pi);
         }
+
+        delta_crdt.dk().cbase().cc(data.dk.c.cc);
+
         delta_crdt.type(type);
         delta_crdt.id(id);
         delta_crdt.attr_name(attr);
@@ -129,6 +135,9 @@ namespace DSR {
 
             delta_crdt.dk().cbase().dc().push_back(pi);
         }
+
+        delta_crdt.dk().cbase().cc(data.dk.c.cc);
+
 
         delta_crdt.id(id);
         delta_crdt.attr_name(attr);
@@ -203,6 +212,9 @@ namespace DSR {
 
             delta_crdt.dk().cbase().dc().push_back(pi);
         }
+
+        delta_crdt.dk().cbase().cc(data.dk.c.cc);
+
         delta_crdt.from(from);
         delta_crdt.to(to);
         delta_crdt.type(type);
