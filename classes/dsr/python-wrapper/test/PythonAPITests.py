@@ -424,4 +424,8 @@ class proxy(metaclass=Singleton):
 
 
 if __name__ == '__main__':
-    unittest.main()
+    import psutil
+    if psutil.Process(os.getpid()).parent().name() == 'sh':
+        unittest.main()
+    else:
+        print("You probably want to execute test with the runTest.sh script.")
