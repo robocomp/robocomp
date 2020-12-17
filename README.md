@@ -16,18 +16,6 @@ If you already have RoboComp installed, jump to [tutorials](doc/README.md) to st
 -
 
 
-# Installation in Ubuntu from PPA
-
-Coming soon...
-<!--If you are not planning on modifying RoboComp itself (its libraries or tools), there's no need to go through all the compilation process. In this case, Ubuntu users of versions from 14.10 to 15.04 can install a packaged version of RoboComp. Just run the following commands:
-
-    sudo add-apt-repository  ppa:imnmfotmal/robocomp
-    sudo apt-get update
-    sudo apt-get install robocomp
-
-Remember to start a new bash session before continue using RoboComp: new variables included must be included in your shell environment.
--->
-
 # Installation from source
 
 Tested in Ubuntu 18.04, 19.10, 20.04 and 20.10.  
@@ -92,18 +80,6 @@ Done! Now let's compile and install the whole thing:
 If you want to compile Robocomp with support for FCL, follow the instructions in the [Robocomp with FCL](doc/Compiling-RoboComp-with-collision-detection.md) tutorial.
 
 The RoboComp's core libraries and simulator should now be compiled and installed in `/opt/robocomp`.
-
-Let's now tell Linux where to find RoboComp's libraries:
-
-    sudo nano /etc/ld.so.conf
-
-and add the following line:
-
-    /opt/robocomp/lib/
-   
-save the file and type:
-
-    sudo ldconfig
 
 Done! Now let's have some fun.
 
