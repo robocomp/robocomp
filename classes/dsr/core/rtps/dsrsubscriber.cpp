@@ -18,16 +18,14 @@ DSRSubscriber::DSRSubscriber() : mp_participant(nullptr), mp_subscriber(nullptr)
 
 DSRSubscriber::~DSRSubscriber()
 {
-    if (mp_participant != nullptr) {
-        if (mp_reader != nullptr && mp_subscriber != nullptr)
-        {
-            mp_subscriber->delete_datareader(mp_reader);
-        }
+    if (mp_reader != nullptr && mp_subscriber != nullptr)
+    {
+        mp_subscriber->delete_datareader(mp_reader);
+    }
 
-        if (mp_subscriber != nullptr)
-        {
-            mp_participant->delete_subscriber(mp_subscriber);
-        }
+    if (mp_participant != nullptr && mp_subscriber != nullptr)
+    {
+        mp_participant->delete_subscriber(mp_subscriber);
     }
 }
 
