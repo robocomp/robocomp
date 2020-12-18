@@ -8,50 +8,36 @@ using namespace DSR;
 
 #pragma push_macro("slots")
 #undef slots
+
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include <pybind11/iostream.h>
 #include <pybind11/eigen.h>
 #include <pybind11/stl_bind.h>
+#include <pybind11/functional.h>
+
 #pragma pop_macro("slots")
+
 #include <utility>
 
 #include <memory>
 #include <functional>
 
-
-
+#include "silent_output.h"
+#include "signal_function_caster.h"
 
 namespace py = pybind11;
 
 using namespace py::literals;
 using namespace RoboCompDSRGetID;
 
-class scoped_ostream_discard
-{
-protected:
-    std::streambuf *old;
-    std::ostream &costream;
-
-public:
-    explicit scoped_ostream_discard(
-            std::ostream &costream = std::cout)
-            : costream(costream) {
-        old = costream.rdbuf(nullptr);
-    }
-
-    ~scoped_ostream_discard() {
-        costream.rdbuf(old);
-    }
-
-    scoped_ostream_discard(const scoped_ostream_discard &) = delete;
-
-    scoped_ostream_discard(scoped_ostream_discard &&other) = default;
-
-    scoped_ostream_discard &operator=(const scoped_ostream_discard &) = delete;
-
-    scoped_ostream_discard &operator=(scoped_ostream_discard &&) = delete;
-};
+using callback_types = std::variant<
+        std::function<void(std::uint32_t, const std::string &)>,
+        std::function<void(std::uint32_t, const std::vector<std::string> &)>,
+        std::function<void(std::uint32_t, std::uint32_t, const std::string &)>,
+        std::function<void(std::uint32_t, std::uint32_t, const std::vector<std::string> &)>,
+        std::function<void(std::uint32_t)>
+>;
 
 PYBIND11_MAKE_OPAQUE(std::map<std::pair<uint32_t, std::string>, Edge>)
 PYBIND11_MAKE_OPAQUE(std::map<std::string, Attribute>)
@@ -61,18 +47,133 @@ PYBIND11_MODULE(pydsr, m) {
     py::bind_map<std::map<std::pair<uint32_t, std::string>, Edge>>(m, "MapStringEdge");
     py::bind_map<std::map<std::string, Attribute>>(m, "MapStringAttribute");
 
-    m.doc() = "Documentation here";
-
+    m.doc() = "DSR Api for python";
 
     uint32_t local_agent_id = -1;
 
 
     //Disable messages from Qt.
-    qInstallMessageHandler([](QtMsgType type, const QMessageLogContext &context, const QString &msg) {});
+    qInstallMessageHandler([](QtMsgType type, const QMessageLogContext &context, const QString &msg) {
+        if (type == QtCriticalMsg || type == QtFatalMsg) {
+            fprintf(stderr, "%s", msg.toStdString().c_str());
+        }
+    });
 
     //Disable cout
     m.attr("redirect_output") = py::capsule(new scoped_ostream_discard(),
                                             [](void *sor) { delete static_cast<scoped_ostream_discard *>(sor); });
+
+
+    auto sig = m.def_submodule("signals",
+    R""""(
+    Connect functions to DSR signals. The types of the signals are defined in the "signal_type enum.
+
+    In order to connect the signals you must annotate the types of function parameters to match those of the signals.
+    The function signatures are the following:
+
+    UPDATE_NODE: [[int, str], None]
+
+    UPDATE_NODE_ATTR: [[int, [str]], None]
+
+    UPDATE_EDGE: [[int, int, str], None]
+
+    UPDATE_EDGE_ATTR: [[int, int, [str]], None]
+
+    DELETE_EDGE: [[int, int, str], None]
+
+    DELETE_NODE: [[int], None]
+
+
+    ")"""");
+
+    enum signal_type
+    {
+        UPDATE_NODE,
+        UPDATE_NODE_ATTR,
+        UPDATE_EDGE,
+        UPDATE_EDGE_ATTR,
+        DELETE_EDGE,
+        DELETE_NODE
+    };
+
+
+    py::enum_<signal_type>(sig, "signal_type")
+            .value("UPDATE_NODE", UPDATE_NODE)
+            .value("UPDATE_NODE_ATTR", UPDATE_NODE_ATTR)
+            .value("UPDATE_EDGE", UPDATE_EDGE)
+            .value("UPDATE_EDGE_ATTR", UPDATE_EDGE_ATTR)
+            .value("DELETE_EDGE", DELETE_EDGE)
+            .value("DELETE_NODE", DELETE_NODE)
+            .export_values();
+
+
+    sig.def("connect", [](DSRGraph *G, signal_type type, callback_types fn_callback) {
+
+        switch (type) {
+            case UPDATE_NODE:
+                try {
+                    QObject::connect(G, &DSR::DSRGraph::update_node_signal,
+                                     std::get<std::function<void(std::uint32_t, const std::string &)>>(fn_callback));
+
+                } catch (std::exception &e) {
+                    std::cout << "Update Node Callback must be (int, str)\n "  << std::endl;
+                    throw e;
+                }
+                break;
+            case UPDATE_NODE_ATTR:
+                try {
+                    QObject::connect(G, &DSR::DSRGraph::update_node_attr_signal,
+                                     std::get<std::function<void(std::uint32_t, const std::vector<std::string> &)>>(
+                                                 fn_callback));
+
+                } catch (std::exception &e) {
+                    std::cout << "Update Node Attribute Callback must be (int, [str])\n "  << std::endl;
+                    throw e;
+                }
+                break;
+            case UPDATE_EDGE:
+                try {
+                    QObject::connect(G, &DSR::DSRGraph::update_edge_signal,
+                                     std::get<std::function<void(std::uint32_t, std::uint32_t, const std::string &)>>(
+                                             fn_callback));
+                } catch (std::exception &e) {
+                    std::cout << "Update Edge Callback must be (int, int, str)\n "  << std::endl;
+                    throw e;
+                }
+                break;
+            case UPDATE_EDGE_ATTR:
+                try {
+                    QObject::connect(G, &DSR::DSRGraph::update_edge_attr_signal,
+                                     std::get<std::function<void(std::uint32_t, std::uint32_t,
+                                                                 const std::vector<std::string> &)>>(fn_callback));
+                } catch (std::exception &e) {
+                    std::cout << "Update Edge Attribute Callback must be (int, int, [str])\n " << std::endl;
+                    throw e;
+                }
+                break;
+            case DELETE_EDGE:
+                try {
+                    QObject::connect(G, &DSR::DSRGraph::del_edge_signal,
+                                     std::get<std::function<void(std::uint32_t, std::uint32_t, const std::string &)>>(
+                                             fn_callback));
+                } catch (std::exception &e) {
+                    std::cout << "Delete Edge Callback must be (int, int, str)\n "  << std::endl;
+                    throw e;
+                }
+                break;
+            case DELETE_NODE:
+                try {
+                    QObject::connect(G, &DSR::DSRGraph::del_node_signal,
+                                     std::get<std::function<void(std::uint32_t)>>(fn_callback));
+                } catch (std::exception &e) {
+                    std::cout << "Delete Node Callback must be (int)\n "  << std::endl;
+                    throw e;
+                }
+                break;
+            default:
+                throw std::logic_error("Invalid signal type");
+        }
+    });
 
     //DSR Attribute class
     py::class_<Attribute>(m, "Attribute")
@@ -163,9 +264,9 @@ PYBIND11_MODULE(pydsr, m) {
                              const std::string &name = "") -> std::unique_ptr<Node> {
                 auto tmp = std::make_unique<Node>(agent_id, type);
                 tmp->name(name);
-                if (!proxy)  throw std::runtime_error("Proxy cannot be None");
+                if (!proxy) throw std::runtime_error("Proxy cannot be None");
                 PyObject *fn = PyObject_GetAttrString(proxy->ptr(), "getID");
-                if (!fn)     throw std::runtime_error("Proxy does not have method getID");
+                if (!fn) throw std::runtime_error("Proxy does not have method getID");
                 PyObject *result = PyObject_CallMethod(proxy->ptr(), "getID", /*"|", "current", Py_None,*/ nullptr);
                 if (!result) throw std::runtime_error("Cannot get new id from idserver, check config file");
                 tmp->id(py::cast<std::uint32_t>(result));
@@ -225,14 +326,18 @@ PYBIND11_MODULE(pydsr, m) {
                               const std::string &dsr_input_file = "",
                               bool all_same_host = true) -> std::unique_ptr<DSRGraph> {
 
-                     py::gil_scoped_release release;
+                     //py::gil_scoped_release release;
                      local_agent_id = id;
 
                      auto g = std::make_unique<DSRGraph>(root, name, id, dsr_input_file, nullptr, all_same_host);
 
                      return g;
                  }), "root"_a, "name"_a, "id"_a, "dsr_input_file"_a = "",
-                 "all_same_host"_a = true )
+                 "all_same_host"_a = true, py::call_guard<py::gil_scoped_release>())
+                    /* .def("__exit__", [](DSRGraph *self) -> bool {
+                            delete self;
+                            return false;
+                     })*/
             .def("get_node", [](DSRGraph &self, uint32_t id) -> std::optional<Node> {
                 return self.get_node(id);
             }, "id"_a, "return the node with the id passed as parameter. Returns None if the node does not exist.")
@@ -244,9 +349,9 @@ PYBIND11_MODULE(pydsr, m) {
             .def("delete_node",
                  static_cast<bool (DSRGraph::*)(const std::basic_string<char> &)>(&DSRGraph::delete_node), "name"_a,
                  "delete the node with the given name. Returns a bool with the result o the operation.")
-            .def("insert_node", [](DSRGraph &g, Node&n) {
+            .def("insert_node", [](DSRGraph &g, Node &n) {
                      return PY_INSERT_API().insert_node_python(g, n);
-                }, "node"_a,
+                 }, "node"_a,
                  "Insert in the graph the new node passed as parameter. Returns the id of the node or None if the Node alredy exist in the map.")
             .def("update_node", &DSRGraph::update_node, "node"_a, "Update the node in the graph. Returns a bool.")
             .def("get_edge", [](DSRGraph &self, const std::string &from, const std::string &to,
