@@ -141,9 +141,7 @@ class Workspace:
         filedict = []
         allfiledict = []
         #aa = [('testcomp1.cdsl', '/home/nithin/tmp/rc/rc_ws/src/testcomp1/testcomp1.cdsl'), ('README.md', '/home/nithin/tmp/rc/rc_ws/src/testcomp1/README.md')]
-        path = self.find_component_src(component)
-        #return aa
-        componentPath = path[0]
+        componentPath = self.find_component_src_path(component)
 
         for sfile in sfiles:
             for root, dirs, files in os.walk(componentPath):                
