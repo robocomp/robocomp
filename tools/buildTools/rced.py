@@ -4,21 +4,28 @@ from __future__ import print_function
 import argparse, argcomplete
 import os
 import string
-from workspace import workspace as WS
+import sys
+
+sys.path.append('/opt/robocomp/python')
+
+from workspace import Workspace
 
 ''' edit files of robocomp compoent '''
 
+ws = Workspace()
 
 def complete_components(prefix, **kwargs):
-    components = WS.list_components_in_workspace(WS.workspace_paths)
+    components = ws.components #WS.list_components_in_workspace(WS.workspace_paths)
     componentsname=[]
     for component in components:
         componentsname.append(component.split('/')[ len(component.split('/')) -1 ])
     return (componentname for componentname in componentsname if componentname.startswith(prefix))
 
 def complete_files(prefix, parsed_args  , **kwargs):
-    filelist = WS.search_for_file(parsed_args.component[0] , ['*'])
+    print("parsed_args.component[0]")
+    filelist = ws.search_for_file(parsed_args.component[0] , ['*'])
     return ( filename[0] for filename in filelist if filename[0].startswith(prefix))
+    # return 
     
 
 def main():
@@ -32,9 +39,9 @@ def main():
     sfile = args.file[0]
     component = args.component[0]
 
-    filelist = WS.search_for_file(component,[str(sfile)])
+    filelist = ws.search_for_file(component,[str(sfile)])
     if len(filelist) == 0:
-        parser.error("couldnt find the file {0} in {1} source ".format(sfile,component))
+         parser.error("couldnt find the file {0} in {1} source ".format(sfile,component))
     
     editor = os.environ.get('EDITOR')
     if not editor:
