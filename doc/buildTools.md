@@ -1,6 +1,6 @@
 # Build tools
 
-Note: This documentation explains some commands that can be used for the development of components in robocomp. These commands are not intended to compile Robocomp itself. To follow the necessary steps to install and compile Robocomp, you can follow the instructions in this [document](https://github.com/robocomp/robocomp#installation-from-source).
+Note: This documentation explains some commands that can be used for the development of components in Robocomp. These commands are not intended to compile Robocomp itself. To follow the necessary steps to install and compile Robocomp, you can follow the instructions in this [document](https://github.com/robocomp/robocomp#installation-from-source).
 
 Following are a list of commands and explanations for Robocomp build tools.
 ## rc_init_ws
