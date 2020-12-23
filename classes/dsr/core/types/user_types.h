@@ -174,35 +174,48 @@ namespace DSR {
 
     class Edge
     {
+
+    private:
+
+        Edge(uint32_t from, uint32_t to, const std::string& type, uint32_t agent_id, const  std::map<std::string, Attribute> &attrs)
+            : m_to(to),  m_from(from), m_type(type),  m_attrs(attrs), m_agent_id(agent_id)
+        {
+
+        }
     public:
 
         Edge() = default;
 
-        /* template constructor doesnt work
-        template <std::string_view& type>
-        Edge(uint32_t mTo, uint32_t mFrom,  uint32_t mAgentId) :  m_to(mTo), m_from(mFrom), m_type(type), m_attrs{},
+        [[deprecated("Use Edge::create<example_edge_type>(...)")]] Edge(uint32_t mTo, uint32_t mFrom, std::string mType, uint32_t mAgentId) : m_to(mTo), m_from(mFrom), m_type(std::move(mType)), m_attrs{},
                                   m_agent_id(mAgentId)
         {
-
-            static_assert(EDGE_TYPES::find(type), TYPE_ASSERT_ERROR(type, edge));
-        }*/
-
-        Edge(uint32_t mTo, uint32_t mFrom, std::string mType, uint32_t mAgentId) : m_to(mTo), m_from(mFrom), m_type(std::move(mType)), m_attrs{},
-                                  m_agent_id(mAgentId)
-        {
-            if(!EDGE_TYPES::find(m_type)) {
+            if(!edge_types::check_type(m_type)) {
                 throw std::runtime_error("Error, " + m_type + " is not a valid edge type");
             }
         }
 
-        Edge(uint32_t mTo, uint32_t mFrom, std::string mType,
+        [[deprecated("Use Edge::create<example_edge_type>(...)")]] Edge(uint32_t mTo, uint32_t mFrom, std::string mType,
                    const  std::map<std::string, Attribute> &mAttrs,
                    uint32_t mAgentId) : m_to(mTo), m_from(mFrom), m_type(std::move(mType)), m_attrs{mAttrs},
                                         m_agent_id(mAgentId)
         {
-            if(!EDGE_TYPES::find(m_type)) {
+            if(!edge_types::check_type(m_type)) {
                 throw std::runtime_error("Error, " + m_type + " is not a valid edge type");
             }
+        }
+
+        template <typename edge_type>
+        static Edge create(uint32_t to, uint32_t from, std::string type, uint32_t agent_id)
+        {
+            static_assert(edge_type::edge_type, "Invalid Edge type.");
+            return Edge(from, to, edge_type::value, agent_id, {});
+        }
+
+        template <typename edge_type>
+        static Edge create(uint32_t to, uint32_t from, std::string type, const  std::map<std::string, Attribute> &attrs, uint32_t agent_id)
+        {
+            static_assert(edge_type::edge_type, "Invalid Edge type.");
+            return Edge(from, to, edge_type::value, agent_id, attrs);
         }
 
 
@@ -310,38 +323,54 @@ namespace DSR {
     };
 
     class Node {
+    private:
+
+        Node(const std::string& type, uint32_t agent_id,
+             const  std::map<std::string, Attribute> &attrs,
+             const  std::map<std::pair<uint32_t, std::string>, Edge > &fano, const std::string& name = "")
+            : m_id(0), m_type(type), m_name(name), m_attrs{attrs}, m_fano{fano},  m_agent_id(agent_id)
+        {
+
+        }
     public:
 
         Node() = default;
 
-        Node(uint32_t mAgentId, std::string mType) : m_id(0), m_type(std::move(mType)), m_attrs{}, m_fano{}, m_agent_id(mAgentId)
+        [[deprecated("Use Node::create<example_node_type>(...)")]] Node(uint32_t mAgentId, std::string mType) : m_id(0), m_type(std::move(mType)), m_attrs{}, m_fano{}, m_agent_id(mAgentId)
         {
-            if (!NODE_TYPES::find(m_type)) {
+            if (!node_types::check_type(m_type)) {
                 throw std::runtime_error("Error, " + m_type + " is not a valid node type");
             }
         }
 
-        Node(std::string mType, uint32_t mAgentId,
+        [[deprecated("Use Node::createg<example_node_type>(...)")]] Node(std::string mType, uint32_t mAgentId,
                    const  std::map<std::string, Attribute> &mAttrs,
                    const  std::map<std::pair<uint32_t, std::string>, Edge > &mFano)
                 : m_id(0), m_type(std::move(mType)), m_attrs{mAttrs}, m_fano{mFano}, m_agent_id(mAgentId)
         {
-            if (!NODE_TYPES::find(m_type)) {
+            if (!node_types::check_type(m_type)) {
                 throw std::runtime_error("Error, " + m_type + " is not a valid node type");
             }
         }
 
-        /*
-        template <std::string_view& type>
-        static Node make_node(uint32_t mAgentId)
+        template <typename node_type>
+        static Node create(uint32_t agent_id)
         {
-            static_assert(NODE_TYPES::find(type), TYPE_ASSERT_ERROR(type, node));
-            Node n;
-            n.m_type = type;
-            n.m_agent_id = mAgentId;
-            return n;
+            static_assert(node_type::node_type, "Invalid Node type.");
+            return Node(node_type::value, agent_id, {}, {}, "");
         }
-         */
+
+        template <typename node_type>
+        static Node create(uint32_t agent_id,
+                           const  std::map<std::string, Attribute> &attrs,
+                           const  std::map<std::pair<uint32_t, std::string>, Edge > &fano,
+                           const  std::string& name = "")
+        {
+            static_assert(node_type::node_type, "Invalid Node type.");
+            return Node(node_type::value, agent_id, attrs, fano, name);
+        }
+
+
 
         explicit Node (const CRDTNode& node)
         {

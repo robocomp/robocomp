@@ -10,72 +10,69 @@
 #include<functional>
 #include<any>
 #include<typeindex>
-#include "dsr_node_type.h"
-#include "dsr_edge_type.h"
+//#include "dsr_node_type.h"
+//#include "dsr_edge_type.h"
 
 
-class ATTRIBUTE_TYPES
+class attribute_types
 {
 public:
     static std::unordered_map<std::string_view, std::function<bool(const std::any&)>> map_fn_;
-    //static std::unordered_map<std::string_view, bool> stream_type_;
 
-    static bool REGISTER(std::string_view s, const std::any& type , bool stream_type = false)
+    static bool register_type(std::string_view s, const std::any& type , bool stream_type = false)
     {
-        map_fn_.emplace(std::make_pair(s, [/*s,*/ t = std::type_index(type.type()) ](const std::any &el) -> bool {
-            //std::cout << t.name() <<  "  " <<  std::type_index(el.type()).name() << std::endl;
+        map_fn_.emplace(std::make_pair(s, [t = std::type_index(type.type()) ](const std::any &el) -> bool {
             return t == std::type_index(el.type());
         }));
-        //stream_type_.emplace(std::make_pair(s, stream_type));
         return true;
     }
 
-    static bool CHECKTYPE(std::string_view s, const std::any& val)
+    static bool check_type(std::string_view s, const std::any& val)
     {
         if (map_fn_.find(s) != map_fn_.end()) {
             return map_fn_.at(s)(val);
         } else  {
-            REGISTER(s, val);
+            register_type(s, val);
             return map_fn_.at(s)(val);
         }
     }
 
-    /*
-    static bool REGISTERED(std::string_view s) {
-        return map_fn_.find(s) != map_fn_.end();
-    }*/
 
 };
 
-class NODE_TYPES
+class node_types
 {
-    template<std::size_t... I>
-    inline static constexpr bool valid_name(std::string_view s, std::index_sequence<I...>)
-    {
-        return ((s == node_type_names[I]) || ...);
-    }
+    static std::unordered_set<std::string_view> set_type_;
 
 public:
 
-    static constexpr bool find(std::string_view v)
+    static bool register_type(std::string_view s)
     {
-        return valid_name(v, std::make_integer_sequence<std::size_t, node_type_names.size()>{});
+        set_type_.emplace(s);
+        return true;
+    }
+
+    static bool check_type(std::string_view v)
+    {
+        return set_type_.contains(v);
     }
 };
 
-class EDGE_TYPES
+class edge_types
 {
+    static std::unordered_set<std::string_view> set_type_;
 
-    template<std::size_t... I>
-    inline static constexpr bool valid_name(std::string_view s, std::index_sequence<I...>)
-    {
-        return ((s == edge_type_names[I]) || ...);
-    }
 public:
 
-    static constexpr bool find(std::string_view v)
+    static bool register_type(std::string_view s)
     {
-        return valid_name(v, std::make_integer_sequence<std::size_t, edge_type_names.size()>{});
+        set_type_.emplace(s);
+        return true;
+    }
+
+    static bool check_type(std::string_view v)
+    {
+        return set_type_.contains(v);
     }
 };
 

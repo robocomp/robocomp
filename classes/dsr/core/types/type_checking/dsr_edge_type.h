@@ -8,31 +8,48 @@
 #include <string_view>
 #include <array>
 #include <experimental/array>
-
+#include "type_checker.h"
 using namespace std::literals;
 
-constexpr auto edge_type_names = std::experimental::make_array(
-        "RT"sv,
-        "reachable"sv,
-        "in"sv,
-        "knows"sv,
-        "transitable"sv,
-        "accessible"sv,
-        "graspable"sv,
-        "talking"sv,
-        "looking-at"sv,
-        "sitting"sv,
-        "standing"sv,
-        "close-to"sv,
-        "has"sv,
-        "blocked"sv,
-        "is_blocking"sv,
-        "is_near"sv,
-        "front"sv,
-        "interacting"sv,
-        "interactive"sv,
-        "testtype"sv,
-        "thinks"sv
-);
+
+
+template<const std::string_view& n>
+struct EdgeType {
+    static constexpr bool edge_type = true;
+    static constexpr std::string_view attr_name = std::string_view(n);
+};
+
+
+#define REGISTER_EDGE_TYPE(x) \
+                                static constexpr auto    x ##_edge_type_str = std::string_view(#x ); \
+                                [[maybe_unused]] inline bool x ##__b =  edge_types::register_type( x##_edge_type_str);     \
+                                using x##_edge_type = EdgeType< x##_edge_type_str >;                      \
+                                \
+
+
+inline std::unordered_set<std::string_view> edge_types::set_type_;
+
+REGISTER_EDGE_TYPE(RT)
+REGISTER_EDGE_TYPE(reachable)
+REGISTER_EDGE_TYPE(in)
+REGISTER_EDGE_TYPE(knows)
+REGISTER_EDGE_TYPE(transitable)
+REGISTER_EDGE_TYPE(accessible)
+REGISTER_EDGE_TYPE(graspable)
+REGISTER_EDGE_TYPE(talking)
+REGISTER_EDGE_TYPE(looking-at)
+REGISTER_EDGE_TYPE(sitting)
+REGISTER_EDGE_TYPE(standing)
+REGISTER_EDGE_TYPE(close-to)
+REGISTER_EDGE_TYPE(has)
+REGISTER_EDGE_TYPE(blocked)
+REGISTER_EDGE_TYPE(is_blocking)
+REGISTER_EDGE_TYPE(is_near)
+REGISTER_EDGE_TYPE(front)
+REGISTER_EDGE_TYPE(interacting)
+REGISTER_EDGE_TYPE(interactive)
+REGISTER_EDGE_TYPE(testtype)
+REGISTER_EDGE_TYPE(thinks)
+
 
 #endif //DSR_EDGE_TYPE_H

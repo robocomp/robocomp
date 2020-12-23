@@ -52,7 +52,7 @@ static constexpr auto reg_fn = []() -> auto
                     using tp_c = std::remove_const_t<typename tp::type>;
                     return tp_c();
                 } else {
-                    static_assert(std::is_constructible_v<tp>, "tp is not constructible without arguments, register your type mmanually");
+                    static_assert(std::is_constructible_v<tp>, "tp is not constructible without arguments, register your type manually");
                     return tp();
                 }
             };
@@ -61,7 +61,7 @@ static constexpr auto reg_fn = []() -> auto
 
 
 #define REGISTER_FN(x, it, stream)  \
-                            [[maybe_unused]] inline bool x ##_b =  ATTRIBUTE_TYPES::REGISTER( x##_str, reg_fn<it>(), stream);     \
+                            [[maybe_unused]] inline bool x ##_b =  attribute_types::register_type( x##_str, reg_fn<it>(), stream);     \
                             \
 
 
@@ -73,8 +73,7 @@ static constexpr auto reg_fn = []() -> auto
 
 
 
-inline std::unordered_map<std::string_view, std::function<bool(const std::any&)>> ATTRIBUTE_TYPES::map_fn_;
-//inline std::unordered_map<std::string_view, bool> ATTRIBUTE_TYPES::stream_type_;
+inline std::unordered_map<std::string_view, std::function<bool(const std::any&)>> attribute_types::map_fn_;
 
 /*
  * Generic
