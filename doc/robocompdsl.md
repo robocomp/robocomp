@@ -77,21 +77,21 @@ robocompdsl myComponent.cdsl .
 
 These commands will generate the C++ (or Python) code in the specified directory.
 
-NOTE 1:The current version for python 2.7 of the pyparsing module when installed from pip is 2.3 and it makes robocompcdsl to fail when generating the component.
+NOTE 1:The current version for python 3.x of the pyparsing module when installed from pip is 2.4 and it makes robocompcdsl to fail when generating the component.
 
 NOTE 2: If you face errors in 'robocompdsl myComponent.cdsl .' command due to pyparsing version, Then follow 2 steps given below:
-1. Current workaround is to uninstall the 2.3 version with pip :
+1. Current workaround is to uninstall the 2.4 version with pip :
 ```bash
-sudo pip2 uninstall pyparsing
+sudo pip3 uninstall pyparsing
 ```
 
 2. Install the 2.2 version from Ubuntu package (18.04) with :
 ```bash
-sudo apt-get install pypy-pyparsing
+sudo apt install python3-pyparsing
 ```
-NOTE 3: If installing pypy-parsing does not work and produces an error like :no module named pyparsing then run the following command : 
+NOTE 3: If installing python3-parsing does not work and produces an error like no module named pyparsing then run the following command : 
 ```bash
-sudo pip2 install pyparsing==2.2
+sudo pip3 install pyparsing==2.2
 ```
 ## Modifying the component to write a simple controller for the robot
 
