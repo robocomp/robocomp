@@ -54,13 +54,16 @@ class SMDSLParser(DSLParserTemplate):
 
         return SMDSL
 
-    # TODO: Make tests for this
     def string_to_struct(self, string, **kwargs):
         parsing_result = self.parse_string(string)
         result_dict = {'machine': {}}
 
-        result_dict['machine']['name'] = parsing_result['name']
-        parsing_result['machine'] = copy.deepcopy(parsing_result)
+        # Horrible hack to make robocompdsl work with pyparsing > 2.2
+        try:
+            result_dict['machine']['name'] = parsing_result['machine']['name']
+        except KeyError:
+            result_dict['machine']['name'] = parsing_result['name']
+            parsing_result['machine'] = copy.deepcopy(parsing_result)
 
         if result_dict['machine']['name'] == "defaultMachine":
             result_dict['machine']['default'] = True

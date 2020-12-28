@@ -72,7 +72,11 @@ class IDSLParser(DSLParserTemplate):
         parsing_result = self.parse_string(string)
         result_dict = OrderedDict()
 
-        result_dict['name'] = parsing_result['name']
+        # Hack to make robocompdsl work with pyparsing > 2.2
+        try:
+            result_dict['name'] = parsing_result['module']['name']
+        except KeyError:
+            result_dict['name'] = parsing_result['name']
 
         result_dict['imports'] = []
         result_dict['recursive_imports'] = []
@@ -83,8 +87,11 @@ class IDSLParser(DSLParserTemplate):
         # INTERFACES DEFINED IN THE MODULE
         result_dict['interfaces'] = []
 
-
-        contents = parsing_result['contents']
+        # Hack to make robocompdsl work with pyparsing > 2.2
+        try:
+            contents = parsing_result['module']['contents']
+        except KeyError:
+            contents = parsing_result['contents']
 
         for contentDef in contents:
             if contentDef[0] == 'interface':
