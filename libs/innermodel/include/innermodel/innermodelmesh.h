@@ -71,6 +71,12 @@ struct IncludeTrianglesInFCL_functor
 		vertices->push_back(fcl::Vec3f(v3p.x(), v3p.y(), v3p.z()));
 		triangles->push_back(fcl::Triangle(vertices->size()-3, vertices->size()-2, vertices->size()-1));
 	}
+	
+	// TODO: Remove when support for FCL in ubuntu 18.04 is not needed anymore.
+	void operator() (const osg::Vec3& v1, const osg::Vec3& v2, const osg::Vec3& v3, bool /* treatVertexDataAsTemporary */)
+	{
+		operator()(v1, v2, v3);
+	}
 };
 
 class CalculateTriangles : public osg::NodeVisitor
