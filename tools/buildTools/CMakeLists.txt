@@ -1,6 +1,6 @@
 cmake_minimum_required( VERSION 2.6 )
 
-
+INSTALL(FILES "robocomp.pth" DESTINATION ~/.local/lib/python3.6/site-packages)
 INSTALL(FILES "workspace.py" DESTINATION /opt/robocomp/python)
 INSTALL(PROGRAMS "rcworkspace.py" DESTINATION /opt/robocomp/bin RENAME rcworkspace )
 INSTALL(PROGRAMS "rcbuildvalidator/rcbuildvalidator.py" DESTINATION /opt/robocomp/bin RENAME rcbuildvalidator )
