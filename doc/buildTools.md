@@ -9,14 +9,10 @@ This tool helps in managing robocomp workspaces.
 
 ####To register a new workspace
 
-```bash
-mkdir -p ~/test_ws/src
-```
-Then add a component in the **src** directory follow [Creating my first component using robocompdsl](robocompdsl.md).
+Move to a directory that contains robocomp components
 
-Use the -a flag to register the workspace and begin component searching within it,
+Use the -a flag to register the workspace and begin component searching within it.
 ```bash
-cd  ~/test_ws/
 rcworkspace -a 
 ```
 
@@ -27,7 +23,7 @@ rcworkspace [-h] [-i INITIALIZE] [-a [ADD]] [--accept-all] [-u]
                    [-d [DELETE]] [--clear-all] [-l]
                    [directory]
 ```
-For  more uses of rcworkspace use the -h flag
+For  more uses of rcworkspace use the -h flag.
 ## rcbuild
 
 When invoked from a workspace, without any arguments, if not inside the source path, it will build all the non-ignored components inside the workspace. 
