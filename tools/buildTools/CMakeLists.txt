@@ -1,6 +1,6 @@
 cmake_minimum_required( VERSION 2.6 )
 execute_process(COMMAND python3 -c 'import sysconfig; print(sysconfig.get_paths()["purelib"])' PYTHON_SITE_PATH OUTPUT_STRIP_TRAILING_WHITESPACE)
-INSTALL(FILES "robocomp.pth" DESTINATION ~/.local/lib/python3.6/site-packages)
+INSTALL(FILES "robocomp.pth" DESTINATION ${PYTHON_SITE_PATH} )
 INSTALL(FILES "workspace.py" DESTINATION /opt/robocomp/python)
 INSTALL(PROGRAMS "rcworkspace.py" DESTINATION /opt/robocomp/bin RENAME rcworkspace )
 INSTALL(PROGRAMS "rcbuildvalidator/rcbuildvalidator.py" DESTINATION /opt/robocomp/bin RENAME rcbuildvalidator )
