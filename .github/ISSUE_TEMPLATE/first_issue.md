@@ -1,9 +1,17 @@
+---
+name: Newcomer Issue
+about: Create a report for changes that any newcomer can resolve.
+title: "[Newcomers issue] "
+labels: first-timer-only
+assignees: ''
+
+---
 ### Describe the bug
 
 A clear and concise description of what the bug is.
 
 ### Instructions
-This is a ``first-timer-ony`` issue. **So the people who have not contributed to robocomp's codebase before, or people who have not contributed to open source before can take this up.**
+This is a ``first-timer-only`` issue. **So the people who have not contributed to robocomp's codebase before, or people who have not contributed to open source before can take this up.**
 
 If you have contributed before, **consider leaving this PR for someone new** :)
 
