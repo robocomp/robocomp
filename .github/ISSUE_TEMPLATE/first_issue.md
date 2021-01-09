@@ -2,7 +2,7 @@
 name: Newcomer Issue
 about: Create a report for changes that any newcomer can resolve.
 title: "[Newcomers issue] "
-labels: first-timer-only
+labels: newcomers-only
 assignees: ''
 
 ---
