@@ -54,7 +54,7 @@ public:
 
     static bool check_type(std::string_view v)
     {
-        return set_type_.contains(v);
+        return set_type_.find(v) != set_type_.end();
     }
 };
 
@@ -72,7 +72,7 @@ public:
 
     static bool check_type(std::string_view v)
     {
-        return set_type_.contains(v);
+        return set_type_.find(v) != set_type_.end();
     }
 };
 
