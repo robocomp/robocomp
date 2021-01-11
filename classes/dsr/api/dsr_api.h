@@ -37,6 +37,8 @@
 #include "dsr_utils.h"
 #include "dsr_python_api_functions.h"
 #include "../core/types/type_checking/dsr_attr_name.h"
+#include "../core/types/type_checking/dsr_node_type.h"
+#include "../core/types/type_checking/dsr_edge_type.h"
 #include "../core/utils.h"
 #include "threadpool/threadpool.h"
 
@@ -44,6 +46,8 @@
 #include <DSRGetID.h>
 
 #define TIMEOUT 5000
+
+
 
 namespace DSR
 {
