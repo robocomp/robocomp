@@ -1,0 +1,13 @@
+
+
+Component testCarla
+{
+    Communications
+    {
+       
+    };
+    language python;
+    
+    statemachine "statemachine.smdsl";
+};
+
