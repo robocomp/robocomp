@@ -343,7 +343,7 @@ namespace DSR {
             }
         }
 
-        [[deprecated("Use Node::createg<example_node_type>(...)")]] Node(std::string mType, uint32_t mAgentId,
+        [[deprecated("Use Node::create<example_node_type>(...)")]] Node(std::string mType, uint32_t mAgentId,
                    const  std::map<std::string, Attribute> &mAttrs,
                    const  std::map<std::pair<uint32_t, std::string>, Edge > &mFano)
                 : m_id(0), m_type(std::move(mType)), m_attrs{mAttrs}, m_fano{mFano}, m_agent_id(mAgentId)

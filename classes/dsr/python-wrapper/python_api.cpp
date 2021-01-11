@@ -106,6 +106,15 @@ PYBIND11_MODULE(pydsr, m) {
             .value("DELETE_NODE", DELETE_NODE)
             .export_values();
 
+    /*
+    sig.def("slot", [](uint32_t , const std::string&){});
+    sig.def("slot", [](uint32_t , const std::vector<std::string>&){});
+    sig.def("slot", [](uint32_t , uint32_t, const std::string&){});
+    sig.def("slot", [](uint32_t , uint32_t, const std::vector<std::string>&){});
+    sig.def("slot", [](uint32_t){});
+
+    sig.attr("signal") =
+     */
 
     sig.def("connect", [](DSRGraph *G, signal_type type, callback_types fn_callback) {
 
