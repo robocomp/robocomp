@@ -7,7 +7,7 @@ import string
 import sys
 sys.path.append('/opt/robocomp/python')
 from workspace import Workspace
-from yaku_lib import Yaku
+from pyaku.yaku_lib import Yaku
 
 
 class rcrun:

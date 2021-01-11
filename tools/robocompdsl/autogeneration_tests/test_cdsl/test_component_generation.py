@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import argparse
 import glob
@@ -8,11 +8,12 @@ import subprocess
 import sys
 import traceback
 from shutil import rmtree
-
-from termcolor import cprint, colored
+from rich.console import Console
+from rich.text import Text
 
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 TESTS_DIR = os.path.join(CURRENT_DIR)
+console = Console()
 
 class MyParser(argparse.ArgumentParser):
     """
@@ -20,7 +21,7 @@ class MyParser(argparse.ArgumentParser):
     """
 
     def error(self, message):
-        cprint('error: %s' % message, 'red')
+        console.print('error: %s' % message, style="red")
         self.print_help()
         sys.exit(2)
 
@@ -51,10 +52,13 @@ class ComponentGenerationChecker:
         """
         robocompdsl_exe = shutil.which("robocompdsl")
         if not robocompdsl_exe:
-            if os.path.isfile("/opt/robocomp/bin/robocompdsl") and os.access("/opt/robocomp/bin/robocompdsl",                                                                                 os.X_OK):
+            if os.path.isfile("/opt/robocomp/bin/robocompdsl") and os.access("/opt/robocomp/bin/robocompdsl", os.X_OK):
                 robocompdsl_exe = "/opt/robocomp/bin/robocompdsl"
-            elif os.path.isfile("~/robocomp/tools/robocompdsl/robocompdsl.py"):
+            elif os.path.isfile(os.path.expanduser("~/robocomp/tools/robocompdsl/robocompdsl.py")):
                 robocompdsl_exe = "python " + os.path.expanduser("~/robocomp/tools/robocompdsl/robocompdsl.py")
+        if robocompdsl_exe is None:
+            console.log("[red]No robocompdsl installation have been found. Have you installed it?[/red]")
+            exit(-1)
         if dry_run:
             print(robocompdsl_exe+' %file > /dev/null 2>&1' % cdsl_file)
             print(robocompdsl_exe+' %cdsl_file . > %log_file 2>&1' % (cdsl_file, log_file))
@@ -194,9 +198,9 @@ class ComponentGenerationChecker:
             if os.path.isdir(item) and filter in item:
                 current_dir = item
                 if any([avoid_item.lower() in current_dir.lower() for avoid_item in avoid]):
-                    cprint(f"Avoiding component {current_dir}", 'magenta')
+                    console.log(f"Avoiding component {current_dir}", style='magenta')
                     continue
-                cprint("Entering dir %s" % current_dir, 'magenta')
+                console.log("Entering dir %s" % current_dir, style='magenta')
                 os.chdir(current_dir)
                 cdsl_file = None
                 for file in glob.glob("*.cdsl")+glob.glob("*.jcdsl"):
@@ -206,46 +210,46 @@ class ComponentGenerationChecker:
                     # With the remove inside the cdsl_check we avoid cleaning dirs that don't have .cdsl files. Potentialy wrong directories.
                     self.remove_genetared_files(".", self.dry_run)
                     if clean_only:
-                        cprint("\tCleaned", 'green')
+                        console.log("\tCleaned", 'green')
                         os.chdir("..")
                         continue
                     self.valid += 1
                     self.results[current_dir] = {"generation":False, "compilation": False, "execution": False}
-                    print("Generating code ... WAIT!")
+                    console.log("Generating code ... [yellow]WAIT![/yellow]")
                     if self.generate_code(cdsl_file, "generation_output.log", False) == 0:
-                        cprint("%s generation OK" % current_dir, 'green')
+                        console.log("%s generation [green]OK[/green]" % current_dir)
                         self.results[current_dir]['generation'] = True
                         self.generated += 1
                         if generate_only:
                             self.results[current_dir]['compilation'] = False
-                            print("%s not compiled (-g option)" % current_dir)
+                            console.log("%s not compiled (-g option)" % current_dir)
                         else:
-                            print("Executing cmake for %s ... WAIT!" % (current_dir))
+                            console.log("Executing cmake for %s ... [yellow]WAIT!" % (current_dir))
                             self.cmake_component()
-                            print("Executing make for %s ... WAIT!" % (current_dir))
+                            console.log("Executing make for %s ... [yellow]WAIT![/yellow]" % (current_dir))
                             make_result = self.make_component(self.dry_run)
 
                             if make_result == 0 or (make_result == 2 and self.dry_run):
                                 self.results[current_dir]['compilation'] = True
                                 self.compiled += 1
-                                cprint("%s compilation OK" % current_dir, 'green')
+                                console.log("%s compilation OK" % current_dir, style="green")
                                 if not no_execution:
                                     if self.run_component(dry_run=False) == 0:
                                         self.results[current_dir]['execution'] = True
-                                        cprint("%s execution OK" % current_dir, 'green')
+                                        console.log("%s execution OK" % current_dir, style="green")
                                         self.executed += 1
                                     else:
                                         self.results[current_dir]['execution'] = False
-                                        cprint("%s execution Failed" % current_dir, 'red')
+                                        console.log("%s execution Failed" % current_dir, style="red")
                                         global_result = False
                                         self.exec_failed += 1
                             else:
                                 self.results[current_dir]['compilation'] = False
                                 self.comp_failed += 1
-                                cprint("%s compilation FAILED" % current_dir, 'red')
+                                console.log("%s compilation [red]FAILED[/red]" % current_dir)
                                 global_result = False
                     else:
-                        cprint("%s generation FAILED" % os.path.join(current_dir, cdsl_file), 'red')
+                        console.log("%s generation [red]FAILED[/red]" % os.path.join(current_dir, cdsl_file))
                         self.gen_failed += 1
                         self.results[current_dir]['generation'] = False
                         global_result = False
@@ -258,45 +262,48 @@ class ComponentGenerationChecker:
         # Command final output
         if not clean_only:
 
-            print("%d components found with cdsl" % self.valid)
-            print("%s components generated OK (%s failed)" % (colored(self.generated, 'green'), colored(self.gen_failed, 'red')))
-            print("%s components compiled OK (%s failed)" % (colored(self.compiled, 'green'), colored(self.comp_failed, 'red')))
-            print("%s components executed OK (%s failed)" % (colored(self.executed, 'green'), colored(self.exec_failed, 'red')))
+            console.log(f"{self.valid} components found with cdsl")
+            console.log(f"[green]{self.generated}[/green] components generated OK ([red]{self.gen_failed}[/red] failed)")
+            console.log(f"[green]{self.compiled}[/green] components compiled OK ([red]{self.comp_failed}[/red] failed)")
+            console.log(f"[green]{self.executed}[/green] components executed OK ([red]{self.exec_failed}[/red] failed)")
 
+
+            true_string = "[green]TRUE[/green]"
+            false_string = "[red]FALSE[/red]"
             for current_dir, result in self.results.items():
-                cname = colored(current_dir, 'magenta')
+                cname = Text(current_dir, style='magenta')
 
                 # Printing results for generation
                 if result['generation']:
-                    gen_result = colored("TRUE", 'green')
+                    gen_result = true_string
                 else:
-                    gen_result = colored("FALSE", 'red')
+                    gen_result = false_string
 
                 # Printing results for compilation
                 if result['compilation']:
-                    comp_result = colored("TRUE", 'green')
+                    comp_result = true_string
                 else:
-                    comp_result = colored("FALSE", 'red')
+                    comp_result = false_string
 
                 if result['execution']:
-                    exec_result = colored("TRUE", 'green')
+                    exec_result = true_string
                 else:
-                    exec_result = colored("FALSE", 'red')
+                    exec_result = false_string
 
 
                 max_characters_len = ()
                 if generate_only:
-                    print("\t%s have been generated? %s" % (cname, gen_result))
+                    console.print(f"[blue]{cname}[/blue] have been generated? {gen_result}")
                 elif no_execution:
-                    print("\t%s have been generated? %s compile %s? " % (cname, gen_result, comp_result))
+                    console.print(f"[blue]{cname}[/blue] have been generated? {gen_result} compile {comp_result}?")
                 else:
-                    print("\t%s have been generated? %s compile? %s execution? %s" % (cname, gen_result, comp_result, exec_result))
+                    console.print(f"[blue]{cname}[/blue] have been generated? {gen_result} compile? {comp_result} execution? {exec_result}")
         return global_result
 
 
 if __name__ == '__main__':
-    parser = MyParser(description=colored(
-        'This application generate components from cdsl files to check component generation/compilation\n', 'magenta'),
+    parser = MyParser(description=
+        'This application generate components from cdsl files to check component generation/compilation\n',
         formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument("-g", "--generate-only", action="store_true",
                         help="Only the generation with robocompdsl is checked. No cmake or make is tested")
@@ -326,7 +333,7 @@ if __name__ == '__main__':
     try:
         checker = ComponentGenerationChecker()
 
-        result= checker.check_components_generation(args.test_folder,
+        result = checker.check_components_generation(args.test_folder,
                                                     args.dry_run,
                                                     args.dirty,
                                                     args.generate_only,
@@ -336,13 +343,13 @@ if __name__ == '__main__':
                                                     args.clean)
 
     except (KeyboardInterrupt, SystemExit):
-        cprint("\nExiting in the middle of the execution.", 'red')
-        cprint("Some files will be left on the directories.", 'yellow')
-        cprint("Use -c option to clean all the generated files.", 'yellow')
+        console.log("\nExiting in the middle of the execution.", style="red")
+        console.log("Some files will be left on the directories.", style="yellow")
+        console.log("Use -c option to clean all the generated files.", style="yellow")
         sys.exit(-1)
     except Exception as e:
-        cprint("Unexpected exception: %s"%e, 'red')
-        traceback.print_stack()
+        console.log("Unexpected exception: %s"%e, style="red")
+        console.print_exception(show_locals=True)
         sys.exit(-1)
     finally:
         if result:

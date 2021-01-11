@@ -1,6 +1,6 @@
 cmake_minimum_required( VERSION 2.6 )
-
-
+execute_process(COMMAND python3 -c "from distutils.sysconfig import get_python_lib; print (get_python_lib())" OUTPUT_VARIABLE PYTHON_SITE_PATH OUTPUT_STRIP_TRAILING_WHITESPACE)
+INSTALL(FILES "robocomp.pth" DESTINATION ${PYTHON_SITE_PATH} )
 INSTALL(FILES "workspace.py" DESTINATION /opt/robocomp/python)
 INSTALL(PROGRAMS "rcworkspace.py" DESTINATION /opt/robocomp/bin RENAME rcworkspace )
 INSTALL(PROGRAMS "rcbuildvalidator/rcbuildvalidator.py" DESTINATION /opt/robocomp/bin RENAME rcbuildvalidator )
@@ -17,4 +17,3 @@ INSTALL(CODE "message(STATUS \"Installing autocompletion in ~./bashrc\")
 execute_process(COMMAND activate-global-python-argcomplete)")
 INSTALL(CODE "message(STATUS \"First execution of rcworkspace\")
 execute_process(COMMAND /opt/robocomp/bin/rcworkspace ${RoboComp_SOURCE_DIR}/components/ --accept-all) ")
-

@@ -131,10 +131,77 @@ The most important features of the G-API are:
 -   DSRGraph has been created as a QObject to emit signals whenever a node is created, deleted or modified. Using this functionality, a set of graphic classes have been created to show in real-time the state of G. These classes can be connected at run-time to the signals. There is an abstract class from which all of them inherit that can be used to create more user-defined observers of G.
     
 -   To create a new node, a unique identifier is needed. To guarantee this requirement, the node creation method places a RPC call to the special agent idserver, using standard RoboComp communication methods. Idserver returns a unique id that can be safely added to the new node.
-    
 
 -   G can be serialized to a JSON file from any agent but it is better to do it only from the idserver agent, to avoid the spreading of copies of the graph in different states.
 
+
+## Common examples
+Before we start with the detailed description of the DSR API methods, some examples of common usage are shown:
+```c++
+// We create a shared pointer and get the DSRGraph
+auto G = std::make_shared<DSR::DSRGraph>(0, agent_name, agent_id, "", dsrgetid_proxy); // Init nodes
+
+
+
+/*========================================================*/
+/*======== Getting a node and updating attributes ========*/
+
+// Some calculations are done
+zVel = (adv_conv * QVec::vec2(zVel,1.0))[0];  
+rotVel = (rot_conv * QVec::vec2(rotVel,1.0))[0];  
+xVel = (side_conv * QVec::vec2(xVel, 1.0))[0];
+
+// Get the graph node of the robot
+auto robot_node = G->get_node(robot_name);  
+
+// Modify the robot node attributes locally
+G->add_or_modify_attrib_local<ref_adv_speed>(robot_node.value(), (float)xVel);  
+G->add_or_modify_attrib_local<ref_rot_speed>(robot_node.value(), (float)rotVel);  
+G->add_or_modify_attrib_local<ref_side_speed>(robot_node.value(), (float)zVel);  
+
+// Update the node in the graph to set the modified attributes available
+G->update_node(robot_node.value());
+
+
+
+/*==================================================================*/
+/*======== Using RT API, getting edge, modifying attributes ========*/
+
+// Get a pointer to th rt API
+auto rt = G->get_rt_api();
+
+// Use it to get an RT Edge from the graph
+auto edge = rt->get_edge_RT(parent.value(), robot->id()).value();  
+
+// Modify the attributes locally
+G->modify_attrib_local<rt_rotation_euler_xyz_att>(edge, std::vector<float>{0., 0, bState.alpha});  
+G->modify_attrib_local<rt_translation_att>(edge, std::vector<float>{bState.x, bState.z, 0.0});  
+G->modify_attrib_local<robot_current_linear_speed_att>(edge, std::vector<float>{bState.advVx, 0, bState.advVz});
+G->modify_attrib_local<robot_current_angular_speed_att>(edge, std::vector<float>{0, 0, bState.rotV});
+
+// Update the edge in the graph to set the modified attributes available
+G->insert_or_assign_edge(edge);
+
+
+
+/*=================================================*/
+/*======== Other usefull methods available ========*/
+
+// Save the current state of the graph in a json file.
+G->write_to_json_file("./"+agent_name+".json");  
+
+//Reset the graph
+G.reset();
+```
+
+## Predefined names and types
+To avoid the creation or modification of attributes by mistake, a predefined and expandable list of attributes that can be used in nodes and links has been created. You can see the definition of all these attributes and their type in the file:
+[core/types/type_checking/dsr_attr_name.h](https://github.com/robocomp/robocomp/blob/development/classes/dsr/core/types/type_checking/dsr_attr_name.h#L80).
+
+In the same way you can see the predefined types of nodes and links in the following files:
+[core/types/type_checking/dsr_node_type.h](https://github.com/robocomp/robocomp/blob/development/classes/dsr/core/types/type_checking/dsr_node_type.h#L15)
+and
+[core/types/type_checking/dsr_edge_type.h](https://github.com/robocomp/robocomp/blob/development/classes/dsr/core/types/type_checking/dsr_edge_type.h#L15).
 
 ## CORE
 
