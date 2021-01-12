@@ -247,7 +247,7 @@ namespace DSR
         template<typename Type, typename = std::enable_if_t<any_node_or_edge<Type>>, class Ta, typename = std::enable_if_t<allowed_types<Ta>>>
         inline void runtime_checked_add_or_modify_attrib_local(Type &elem, const std::string &att_name, const Ta &att_value) {
 
-            if (!ATTRIBUTE_TYPES::CHECKTYPE(att_name.data(), att_value)) {
+            if (!attribute_types::check_type(att_name.data(), att_value)) {
                 throw std::runtime_error(std::string("Invalid type in attribute ") + att_name + " - " + typeid(att_value).name() + " in: " + __FILE__  " "
                     + __FUNCTION__ + " " + std::to_string(__LINE__));
             }
