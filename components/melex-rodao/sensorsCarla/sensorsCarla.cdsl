@@ -1,13 +1,12 @@
 
 
-Component testCarla
+Component sensorsCarla
 {
     Communications
     {
-       
+
     };
     language python;
-    
     statemachine "statemachine.smdsl";
 };
 

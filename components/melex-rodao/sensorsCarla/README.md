@@ -1,9 +1,9 @@
-# testCarla
+# sensorsCarla
 Intro to component here
 
 
 ## Configuration parameters
-As any other component, *testCarla* needs a configuration file to start. In
+As any other component, *sensorsCarla* needs a configuration file to start. In
 ```
 etc/config
 ```
@@ -16,7 +16,7 @@ EXAMPLE HERE
 To avoid changing the *config* file in the repository, we can copy it to the component's home directory, so changes will remain untouched by future git pulls:
 
 ```
-cd <testCarla's path> 
+cd <sensorsCarla's path> 
 ```
 ```
 cp etc/config config
@@ -25,5 +25,5 @@ cp etc/config config
 After editing the new config file we can run the component:
 
 ```
-bin/testCarla config
+bin/sensorsCarla config
 ```
