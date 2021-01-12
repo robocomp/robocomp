@@ -145,7 +145,6 @@ You can find more tutorials on RoboComp in [tutorials](doc/README.md)
 
 Drop comments and ask questions in:
 
-- https://groups.google.com/forum/?hl=en#!forum/robocomp-dev
 - https://gitter.im/robocomp
 
 Please, report any bugs with the github issue system: [Robocomp Issues](https://github.com/robocomp/robocomp/issues)
