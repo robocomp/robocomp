@@ -66,6 +66,7 @@ vehicle.set_autopilot(True)
 class GnssSensor(object):
     def __init__(self, parent_actor):
         self.sensor = None
+        self.gnss_queue = Queue()
         self._parent = parent_actor
         self.lat = 0.0
         self.lon = 0.0
@@ -75,15 +76,18 @@ class GnssSensor(object):
         # We need to pass the lambda a weak reference to self to avoid circular
         # reference.
         weak_self = weakref.ref(self)
-        self.sensor.listen(lambda event: GnssSensor._on_gnss_event(weak_self, event))
+        self.sensor.listen(lambda event: GnssSensor._GNSS_callback(weak_self, event))
 
     @staticmethod
-    def _on_gnss_event(weak_self, event):
+    def _GNSS_callback(weak_self, sensor_data):
         self = weak_self()
         if not self:
             return
-        self.lat = event.latitude
-        self.lon = event.longitude
+        self.lat = sensor_data.latitude
+        self.lon = sensor_data.longitude
+        self.frame = sensor_data.frame
+        self.timestamp = sensor_data.timestamp
+        self.gnss_queue.put((self.timestamp, self.frame, self.lat, self.lon))
 
         # print('------------- GNSS -------------')
         # print('Latitud:', self.lat)
@@ -98,6 +102,7 @@ class GnssSensor(object):
 
 class IMUSensor(object):
     def __init__(self, parent_actor):
+        self.imu_queue = Queue()
         self.sensor = None
         self._parent = parent_actor
         self.accelerometer = (0.0, 0.0, 0.0)
@@ -128,12 +133,9 @@ class IMUSensor(object):
             max(limits[0], min(limits[1], math.degrees(sensor_data.gyroscope.y))),
             max(limits[0], min(limits[1], math.degrees(sensor_data.gyroscope.z))))
         self.compass = math.degrees(sensor_data.compass)
-
-        # print('------------- IMU -------------')
-        # print('Accelerometer:', self.accelerometer)
-        # print('Gyroscope:', self.gyroscope)
-        # print('Compass:', self.compass)
-        # print('\n')
+        self.frame = sensor_data.frame
+        self.timestamp = sensor_data.timestamp
+        self.imu_queue.put((self.timestamp, self.frame, self.accelerometer, self.gyroscope, self.compass))
 
 
 # # ==============================================================================
@@ -141,97 +143,96 @@ class IMUSensor(object):
 # # ==============================================================================
 #
 #
-# class CameraManager(object):
-#     def __init__(self, parent_actor, width, height):
-#         self.sensor = None
-#         self.width = width
-#         self.height = height
-#         self._parent = parent_actor
-#         self.sensor_list = []
-#         self.sensor_queue = Queue()
-#
-#         lmanager = self.world.get_lightmanager()
-#         mylights = lmanager.get_all_lights()
-#
-#         self.sensors = [
-#             ['sensor.camera.rgb', cc.Raw, 'Camera RGB 01', carla.Transform(
-#             carla.Location(x=mylights[16].location.x, z=mylights[16].location.z + 5, y=mylights[16].location.y),
-#             carla.Rotation(pitch=-15, yaw=-90)), {}, None],
-#             ['sensor.camera.rgb', cc.Raw, 'Camera RGB 02',  carla.Transform(
-#             carla.Location(x=mylights[21].location.x, z=mylights[21].location.z + 5, y=mylights[21].location.y),
-#             carla.Rotation(pitch=-15, yaw=90)), {}, None],
-#             ['sensor.camera.rgb', cc.Raw, 'Camera RGB 03', carla.Transform(
-#             carla.Location(x=mylights[5].location.x, z=mylights[5].location.z + 5, y=mylights[5].location.y),
-#             carla.Rotation(pitch=-15, yaw=-90)) , {}, None],
-#             ['sensor.camera.rgb', cc.Raw, 'Camera RGB 04', carla.Transform(carla.Location(x=2.5, z=0.7)), {}, parent_actor],
-#             # ['sensor.camera.depth', cc.Raw, 'Camera Depth (Raw)', {}],
-#             # ['sensor.camera.depth', cc.Depth, 'Camera Depth (Gray Scale)', {}],
-#             # ['sensor.camera.depth', cc.LogarithmicDepth, 'Camera Depth (Logarithmic Gray Scale)', {}],
-#             # ['sensor.lidar.ray_cast', None, 'Lidar (Ray-Cast)', {'range': '50'}]
-#         ]
-#
-#         world = self._parent.get_world()
-#         bp_library = world.get_blueprint_library()
-#         for item in self.sensors:
-#             bp_name, color_converter, sensor_name, sp, attrs, attach = item
-#             bp = bp_library.find(bp_name)
-#             if bp_name.startswith('sensor.camera'):
-#                 bp.set_attribute('image_size_x', f'{self.width}')
-#                 bp.set_attribute('image_size_y', f'{self.height}')
-#                 bp.set_attribute('fov', '110')
-#                 bp.set_attribute('sensor_tick', '1.0')
-#                 # if bp.has_attribute('gamma'):
-#                 #     bp.set_attribute('gamma', str(gamma_correction))
-#                 for attr_name, attr_value in attrs.items():
-#                     bp.set_attribute(attr_name, attr_value)
-#             elif bp_name.startswith('sensor.lidar'):
-#                 self.lidar_range = 50
-#                 for attr_name, attr_value in attrs.items():
-#                     bp.set_attribute(attr_name, attr_value)
-#                     if attr_name == 'range':
-#                         self.lidar_range = float(attr_value)
-#
-#             sensor = world.spawn_actor(bp, sp, attach_to=attach)
-#             sensor.listen(lambda data: self.sensor_callback(data, self.sensor_queue, sensor_name))
-#             self.sensor_list.append(sensor)
-#             # item.append(bp)
-#
-#     @staticmethod
-#     def _parse_image(weak_self, image):
-#         self = weak_self()
-#         if not self:
-#             return
-#         if self.sensors[self.index][0].startswith('sensor.lidar'):
-#             points = np.frombuffer(image.raw_data, dtype=np.dtype('f4'))
-#             points = np.reshape(points, (int(points.shape[0] / 4), 4))
-#             lidar_data = np.array(points[:, :2])
-#             lidar_data *= min(self.width,self.height) / (2.0 * self.lidar_range)
-#             lidar_data += (0.5 * self.width, 0.5 * self.height)
-#             lidar_data = np.fabs(lidar_data)  # pylint: disable=E1111
-#             lidar_data = lidar_data.astype(np.int32)
-#             lidar_data = np.reshape(lidar_data, (-1, 2))
-#             lidar_img_size = (self.hud.dim[0], self.hud.dim[1], 3)
-#             lidar_img = np.zeros((lidar_img_size), dtype=np.uint8)
-#             lidar_img[tuple(lidar_data.T)] = (255, 255, 255)
-#
-#             self.sensor_queue.put((image.frame, sensor_name, i3))
-#
-#         else:
-#             image.convert(self.sensors[self.index][1])
-#             array = np.frombuffer(image.raw_data, dtype=np.dtype("uint8"))
-#             array = np.reshape(array, (image.height, image.width, 4))
-#             array = array[:, :, :3]
-#             array = array[:, :, ::-1]
-#             self.sensor_queue.put((image.frame, sensor_name, array))
-#
+class CameraManager(object):
+    def __init__(self, bp_library, parent_actor, width, height):
+        self.sensor = None
+        self.blueprint_library = bp_library
+        self.img_width = width
+        self.img_height = height
+        self._parent = parent_actor
+        self.sensor_list = []
+        self.cm_queue = Queue()
+        world = self._parent.get_world()
+        weak_self = weakref.ref(self)
 
+        cam_bp = self.blueprint_library.find('sensor.camera.rgb')
+        cam_bp.set_attribute('image_size_x', f'{self.img_width}')
+        cam_bp.set_attribute('image_size_y', f'{self.img_height}')
+        cam_bp.set_attribute('fov', '110')
+        cam_bp.set_attribute('sensor_tick', '1.0')
+
+        lmanager = world.get_lightmanager()
+        mylights = lmanager.get_all_lights()
+
+        spawn_point_16 = carla.Transform(
+            carla.Location(x=mylights[16].location.x, z=mylights[16].location.z + 5, y=mylights[16].location.y),
+            carla.Rotation(pitch=-15, yaw=-90))
+        cam01 = world.spawn_actor(cam_bp, spawn_point_16, attach_to=None)
+        cam01.listen(lambda data: self.sensor_callback(weak_self, data, "camera RGB 01"))
+        self.sensor_list.append(cam01)
+
+        spawn_point_21 = carla.Transform(
+            carla.Location(x=mylights[21].location.x, z=mylights[21].location.z + 5, y=mylights[21].location.y),
+            carla.Rotation(pitch=-15, yaw=90))
+        cam02 = world.spawn_actor(cam_bp, spawn_point_21, attach_to=None)
+        cam02.listen(lambda data: self.sensor_callback(weak_self, data, "camera RGB 02"))
+        self.sensor_list.append(cam02)
+
+        spawn_point_5 = carla.Transform(
+            carla.Location(x=mylights[5].location.x, z=mylights[5].location.z + 5, y=mylights[5].location.y),
+            carla.Rotation(pitch=-15, yaw=-90))
+        cam03 = world.spawn_actor(cam_bp, spawn_point_5, attach_to=None)
+        cam03.listen(lambda data: self.sensor_callback(weak_self, data, "camera RGB 03"))
+        self.sensor_list.append(cam03)
+
+        spawn_point = carla.Transform(carla.Location(x=2.5, z=0.7))
+        cam04 = world.spawn_actor(cam_bp, spawn_point, attach_to=parent_actor)
+        cam04.listen(lambda data: self.sensor_callback(weak_self, data, "camera RGB 04"))
+        self.sensor_list.append(cam04)
+
+
+
+    @staticmethod
+    def sensor_callback(weak_self, img, sensor_name):
+        self = weak_self()
+        self.frame = img.frame
+        self.timestamp = img.timestamp
+
+        if not self:
+            return
+        if 'lidar' in sensor_name:
+            points = np.frombuffer(img.raw_data, dtype=np.dtype('f4'))
+            points = np.reshape(points, (int(points.shape[0] / 4), 4))
+            lidar_data = np.array(points[:, :2])
+            lidar_data *= min(self.width,self.height) / (2.0 * self.lidar_range)
+            lidar_data += (0.5 * self.width, 0.5 * self.height)
+            lidar_data = np.fabs(lidar_data)  # pylint: disable=E1111
+            lidar_data = lidar_data.astype(np.int32)
+            lidar_data = np.reshape(lidar_data, (-1, 2))
+            lidar_img_size = (self.hud.dim[0], self.hud.dim[1], 3)
+            lidar_img = np.zeros((lidar_img_size), dtype=np.uint8)
+            lidar_img[tuple(lidar_data.T)] = (255, 255, 255)
+
+            self.cm_queue.put((img.frame, sensor_name, lidar_img))
+
+        else:
+            img.convert(cc.Raw)
+            array = np.frombuffer(img.raw_data, dtype=np.dtype("uint8"))
+            array = np.reshape(array, (img.height, img.width, 4))
+            array = array[:, :, :3]
+            # array = array[:, :, ::-1]
+            self.cm_queue.put((self.timestamp, self.frame, sensor_name, array))
+
+    def show_img(self, image, name):
+        cv2.imshow(name, image)
+        cv2.waitKey(1)
 
 class SpecificWorker(GenericWorker):
     def __init__(self, proxy_map, startup_check=False):
         super(SpecificWorker, self).__init__(proxy_map)
         global world, carla_map, blueprint_library, vehicle
 
-        self.Period = 0
+        self.Period = 100
         self.img_width = 480
         self.img_height = 360
 
@@ -241,11 +242,7 @@ class SpecificWorker(GenericWorker):
 
         self.gnss_sensor = GnssSensor(self.vehicle)
         self.imu_sensor = IMUSensor(self.vehicle)
-        # self.camera_manager = CameraManager(self.vehicle, self.img_width, self.img_height)
-
-        self.sensor_list = []
-        self.sensor_queue = Queue()
-        self.initializeSensors()
+        self.camera_manager = CameraManager(self.blueprint_library, self.vehicle, self.img_width, self.img_height)
 
         if startup_check:
             self.startup_check()
@@ -253,50 +250,6 @@ class SpecificWorker(GenericWorker):
             self.timer.start(self.Period)
             self.defaultMachine.start()
             self.destroyed.connect(self.t_compute_to_finalize)
-
-    # def get_random_vehicle(self, carla_map):
-    #     blueprint = random.choice(self.blueprint_library.filter('vehicle.*'))
-    #     spawn_points = carla_map.get_spawn_points()
-    #     spawn_point = random.choice(spawn_points)
-    #     self.vehicle = self.world.spawn_actor(blueprint, spawn_point)
-    #     self.vehicle.set_autopilot(True)
-
-    def initializeSensors(self):
-        cam_bp = self.blueprint_library.find('sensor.camera.rgb')
-        cam_bp.set_attribute('image_size_x', f'{self.img_width}')
-        cam_bp.set_attribute('image_size_y', f'{self.img_height}')
-        cam_bp.set_attribute('fov', '110')
-        cam_bp.set_attribute('sensor_tick', '1.0')
-
-        lmanager = self.world.get_lightmanager()
-        mylights = lmanager.get_all_lights()
-
-        spawn_point_16 = carla.Transform(
-            carla.Location(x=mylights[16].location.x, z=mylights[16].location.z + 5, y=mylights[16].location.y),
-            carla.Rotation(pitch=-15, yaw=-90))
-        cam01 = self.world.spawn_actor(cam_bp, spawn_point_16, attach_to=None)
-        self.sensor_list.append(cam01)
-
-        spawn_point_21 = carla.Transform(
-            carla.Location(x=mylights[21].location.x, z=mylights[21].location.z + 5, y=mylights[21].location.y),
-            carla.Rotation(pitch=-15, yaw=90))
-        cam02 = self.world.spawn_actor(cam_bp, spawn_point_21, attach_to=None)
-        self.sensor_list.append(cam02)
-
-        spawn_point_5 = carla.Transform(
-            carla.Location(x=mylights[5].location.x, z=mylights[5].location.z + 5, y=mylights[5].location.y),
-            carla.Rotation(pitch=-15, yaw=-90))
-        cam03 = self.world.spawn_actor(cam_bp, spawn_point_5, attach_to=None)
-        self.sensor_list.append(cam03)
-
-        spawn_point = carla.Transform(carla.Location(x=2.5, z=0.7))
-        cam04 = self.world.spawn_actor(cam_bp, spawn_point, attach_to=self.vehicle)
-        self.sensor_list.append(cam04)
-
-        cam01.listen(lambda data: self.sensor_callback(data, self.sensor_queue, "camera01"))
-        cam02.listen(lambda data: self.sensor_callback(data, self.sensor_queue, "camera02"))
-        cam03.listen(lambda data: self.sensor_callback(data, self.sensor_queue, "camera03"))
-        cam04.listen(lambda data: self.sensor_callback(data, self.sensor_queue, "camera04"))
 
     def __del__(self):
         print('SpecificWorker destructor')
@@ -307,25 +260,25 @@ class SpecificWorker(GenericWorker):
     def setParams(self, params):
         return True
 
-    def sensor_callback(self, image, sensor_queue, sensor_name):
-        print('sensor_callback',sensor_name)
-        i = np.array(image.raw_data)
-        i2 = i.reshape((self.img_height, self.img_width, 4))
-        i3 = i2[:, :, :3]
-        sensor_queue.put((image.frame, sensor_name, i3))
-
-    def process_img(self, image, name):
-        cv2.imshow(name, image)
-        cv2.waitKey(1)
 
     @QtCore.Slot()
     def compute(self):
         # print('SpecificWorker.compute...')
         try:
-            for i in range(0, len(self.sensor_list)):
-                sensor_frame, sensor_name, sensor_data = self.sensor_queue.get(True, 1.0)
-                print(f'Frame: {sensor_frame}   Sensor: {sensor_name}     Shape:{sensor_data.shape}')
-                self.process_img(sensor_data, sensor_name)
+            for i in range(0, len(self.camera_manager.sensor_list)):
+                print('------------- RGB -------------')
+                cm_timestamp, cm_frame, cm_sensor_name, cm_sensor_data = self.camera_manager.cm_queue.get(True, 1.0)
+                self.camera_manager.show_img(cm_sensor_data, cm_sensor_name)
+                print(f'TimeStamp: {cm_timestamp}   Frame: {cm_frame}   Sensor: {cm_sensor_name}     Shape:{cm_sensor_data.shape}')
+                print('------------- GNSS -------------')
+                gnss_timestamp, gnss_frame,  gnss_lat, gnss_lon = self.gnss_sensor.gnss_queue.get(True, 1.0)
+                print(f'TimeStamp: {gnss_timestamp}   Frame: {gnss_frame}  Latitud: {gnss_lat} Longitud: {gnss_lon}' )
+                print('------------- IMU -------------')
+                imu_timestamp, imu_frame,  imu_accelerometer, imu_gyroscope, imu_compass = self.imu_sensor.imu_queue.get(True, 1.0)
+                print(f'TimeStamp: {imu_timestamp}   Frame:{imu_frame}  Accelerometer: {imu_accelerometer}   ' 
+                      f'Gyroscope:{imu_gyroscope} Compass: {imu_compass} ')
+
+                print('\n')
 
         except Empty:
             print('No data found')
