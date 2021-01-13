@@ -9,6 +9,7 @@
 #include <utility>
 #include "crdt_types.h"
 #include "type_checking/type_checker.h"
+#include "../utils.h"
 
 #define TYPE_ASSERT_ERROR(x, y) "Error, " #x "is not a valid" #y "type"
 
@@ -336,7 +337,7 @@ namespace DSR {
 
         Node() = default;
 
-        [[deprecated("Use Node::create<example_node_type>(...)")]] Node(uint32_t mAgentId, std::string mType) : m_id(0), m_type(std::move(mType)), m_attrs{}, m_fano{}, m_agent_id(mAgentId)
+        [[deprecated("Use Node::create<example_node_type>(...)")]] Node(uint128_t mAgentId, std::string mType) : m_id(0), m_type(std::move(mType)), m_attrs{}, m_fano{}, m_agent_id(mAgentId)
         {
             if (!node_types::check_type(m_type)) {
                 throw std::runtime_error("Error, " + m_type + " is not a valid node type");
@@ -405,7 +406,7 @@ namespace DSR {
             return *this;
         }
 
-        [[nodiscard]] uint32_t id() const;
+        [[nodiscard]] uint128_t id() const;
 
         [[nodiscard]] const std::string &type() const;
 
@@ -425,7 +426,7 @@ namespace DSR {
 
         [[nodiscard]] uint32_t agent_id() const;
 
-        void id(uint32_t mId);
+        void id(uint128_t mId);
 
         void type(const std::string &mType);
 

@@ -13,6 +13,9 @@
                         fprintf(stdout, "%s att: %s", type  , std::string(std::to_string(x.count()/1000000.0) + "ms\n").data() );\
                         }
 
+typedef unsigned __int128 uint128_t;
+
+
 class hash_tuple {
 
     template<class T>

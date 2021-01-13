@@ -447,12 +447,12 @@ namespace DSR {
         return m_name;
     }
 
-    void CRDTNode::id(uint32_t _id)
+    void CRDTNode::id(uint128_t _id)
     {
         m_id = _id;
     }
 
-    uint32_t CRDTNode::id() const
+    uint128_t CRDTNode::id() const
     {
         return m_id;
     }
@@ -508,7 +508,7 @@ namespace DSR {
     }
 
 
-    IDL::IDLNode CRDTNode::toIDLNode(uint32_t id)
+    IDL::IDLNode CRDTNode::toIDLNode(uint128_t id)
     {
         IDL::IDLNode node;
         node.id(m_id);

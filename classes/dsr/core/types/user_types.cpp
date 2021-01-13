@@ -271,7 +271,7 @@ namespace DSR {
     /// Node
     ////////////////////////////////////////////////////
 
-    uint32_t Node::id() const
+    uint128_t Node::id() const
     {
         return m_id;
     }
@@ -321,7 +321,7 @@ namespace DSR {
         return m_agent_id;
     }
 
-    void Node::id(uint32_t mId)
+    void Node::id(uint128_t mId)
     {
         m_id = mId;
     }

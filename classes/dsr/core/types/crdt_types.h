@@ -5,13 +5,14 @@
 #ifndef DSR_CRDT_TYPES_H
 #define DSR_CRDT_TYPES_H
 
-//#include "../crdt/delta-crdts.cc"
+#include <uuid/uuid.h>
 #include "../crdt/delta_crdt.h"
 #include "../topics/IDLGraph.h"
 #include <iostream>
 #include "unordered_map"
 #include "variant"
 #include "map"
+#include "../utils.h"
 
 namespace DSR {
 
@@ -533,9 +534,9 @@ namespace DSR {
 
         [[nodiscard]] std::string &name();
 
-        void id(uint32_t _id);
+        void id(uint128_t _id);
 
-        [[nodiscard]] uint32_t id() const;
+        [[nodiscard]] uint128_t id() const;
 
         void agent_id(uint32_t _agent_id);
 
@@ -557,7 +558,7 @@ namespace DSR {
 
         [[nodiscard]] const std::map<std::pair<uint32_t, std::string>, mvreg<CRDTEdge>> &fano() const;
 
-        [[nodiscard]] IDL::IDLNode toIDLNode(uint32_t id);
+        [[nodiscard]] IDL::IDLNode toIDLNode(uint128_t id);
 
         bool operator==(const CRDTNode &n_) const
         {
@@ -617,7 +618,7 @@ namespace DSR {
     private:
         std::string m_type;
         std::string m_name;
-        uint32_t m_id{};
+        uint128_t m_id{};
         uint32_t m_agent_id{};
         std::map<std::string, mvreg<CRDTAttribute>> m_attrs;
         std::map<std::pair<uint32_t, std::string>, mvreg<CRDTEdge>> m_fano;
