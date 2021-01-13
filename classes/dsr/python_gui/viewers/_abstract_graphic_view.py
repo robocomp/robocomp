@@ -79,7 +79,7 @@ class AbstractGraphicViewer(QGraphicsView, TcWidget):
 
     def showEvent(self, event):
         super(AbstractGraphicViewer, self).showEvent(event)
-        adjusted = self.scene.itemsBoundingRect().adjuste(-100, -100, 100, 100)
+        adjusted = self.scene.itemsBoundingRect().adjusted(-100, -100, 100, 100)
         self.scene.setSceneRect(adjusted)
         # FitInView is called two times because of this bug: https://bugreports.qt.io/browse/QTBUG-1047
         update_state = self.updatesEnabled()
