@@ -401,10 +401,9 @@ namespace DSR {
 
         CRDTEdge &operator=(IDL::IDLEdge &&x);
 
-        void to(uint32_t _to);
+        void to(uint128_t  _to);
 
-        [[nodiscard]] uint32_t to() const;
-
+        [[nodiscard]] uint128_t  to() const;
 
         void type(const std::string &_type);
 
@@ -414,9 +413,9 @@ namespace DSR {
 
         [[nodiscard]] std::string &type();
 
-        void from(uint32_t _from);
+        void from(uint128_t  _from);
 
-        [[nodiscard]] uint32_t from() const;
+        [[nodiscard]] uint128_t from() const;
 
         void attrs(const std::map<std::string, mvreg<CRDTAttribute>> &_attrs);
 
@@ -430,7 +429,7 @@ namespace DSR {
 
         [[nodiscard]] uint32_t agent_id() const;
 
-        [[nodiscard]] IDL::IDLEdge toIDLEdge(uint32_t id);
+        [[nodiscard]] IDL::IDLEdge toIDLEdge(uint128_t id);
 
 
         bool operator==(const CRDTEdge &eA_) const
@@ -479,7 +478,7 @@ namespace DSR {
 
         friend std::ostream &operator<<(std::ostream &output, const CRDTEdge &ea_)
         {
-            output << "IDL::EdgeAttribs[" << ea_.m_type << ", from:" << ea_.from() << "-> to:" << ea_.to()
+            output << "IDL::EdgeAttribs[" << ea_.m_type << ", from:" << std::to_string(ea_.from()) << "-> to:" << std::to_string(ea_.to())
                    << " Attribs:[";
             for (const auto &v : ea_.attrs())
                 output << v.first << ":" << v.second << " - ";
@@ -488,9 +487,9 @@ namespace DSR {
         };
 
     private:
-        uint32_t m_to;
+        uint128_t m_to;
         std::string m_type;
-        uint32_t m_from;
+        uint128_t  m_from;
         std::map<std::string, mvreg<CRDTAttribute>> m_attrs;
         uint32_t m_agent_id{};
     };
@@ -550,13 +549,13 @@ namespace DSR {
 
         [[nodiscard]] const std::map<std::string, mvreg<CRDTAttribute>> &attrs() const &;
 
-        void fano(const std::map<std::pair<uint32_t, std::string>, mvreg<CRDTEdge>> &_fano);
+        void fano(const std::map<std::pair<uint128_t, std::string>, mvreg<CRDTEdge>> &_fano);
 
-        void fano(std::map<std::pair<uint32_t, std::string>, mvreg<CRDTEdge>> &&_fano);
+        void fano(std::map<std::pair<uint128_t, std::string>, mvreg<CRDTEdge>> &&_fano);
 
-        [[nodiscard]] std::map<std::pair<uint32_t, std::string>, mvreg<CRDTEdge>> &fano();
+        [[nodiscard]] std::map<std::pair<uint128_t, std::string>, mvreg<CRDTEdge>> &fano();
 
-        [[nodiscard]] const std::map<std::pair<uint32_t, std::string>, mvreg<CRDTEdge>> &fano() const;
+        [[nodiscard]] const std::map<std::pair<uint128_t, std::string>, mvreg<CRDTEdge>> &fano() const;
 
         [[nodiscard]] IDL::IDLNode toIDLNode(uint128_t id);
 
@@ -606,12 +605,12 @@ namespace DSR {
 
         friend std::ostream &operator<<(std::ostream &output, CRDTNode &n_)
         {
-            output << "IDL::Node:[" << n_.id() << "," << n_.name() << "," << n_.type() << "], Attribs:[";
+            output << "IDL::Node:[" << std::to_string(n_.id()) << "," << n_.name() << "," << n_.type() << "], Attribs:[";
             for (const auto &v : n_.attrs())
                 output << v.first << ":(" << v.second << ");";
             output << "], FanOut:[";
             for (auto &v : n_.fano())
-                output << "[ " << v.first.first << " " << v.first.second << "] " << ":(" << v.second << ");";
+                output << "[ " << std::to_string(v.first.first) << " " << v.first.second << "] " << ":(" << v.second << ");";
             output << "]";
             return output;
         }
@@ -621,7 +620,7 @@ namespace DSR {
         uint128_t m_id{};
         uint32_t m_agent_id{};
         std::map<std::string, mvreg<CRDTAttribute>> m_attrs;
-        std::map<std::pair<uint32_t, std::string>, mvreg<CRDTEdge>> m_fano;
+        std::map<std::pair<uint128_t, std::string>, mvreg<CRDTEdge>> m_fano;
     };
 
 

@@ -67,7 +67,7 @@
     struct IDLEdge {
         Uuid to; //key1
 		string type; //key2
-		unsigned long from; // Se mantiene para trabajar más fácilmente con los Edges.
+		Uuid from; // Se mantiene para trabajar más fácilmente con los Edges.
 		map<string, MvregEdgeAttr>    attrs;
 		unsigned long agent_id;
 
@@ -121,7 +121,7 @@
         DotContext cbase;
     };
 
-    struct Mvreg {
+    struct MvregNode {
         Uuid id;
         DotKernel dk;
         unsigned long agent_id; // to skip messages from the same agent in multithread.

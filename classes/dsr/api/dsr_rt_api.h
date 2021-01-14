@@ -18,8 +18,8 @@ namespace DSR
         public:
             explicit RT_API(DSRGraph *G_);
 
-            void insert_or_assign_edge_RT(Node &n, uint32_t to, const std::vector<float> &trans, const std::vector<float> &rot_euler);
-            void insert_or_assign_edge_RT(Node &n, uint32_t to, std::vector<float> &&trans, std::vector<float> &&rot_euler);
+            void insert_or_assign_edge_RT(Node &n, uint128_t to, const std::vector<float> &trans, const std::vector<float> &rot_euler);
+            void insert_or_assign_edge_RT(Node &n, uint128_t to, std::vector<float> &&trans, std::vector<float> &&rot_euler);
             std::optional<Edge> get_edge_RT(const Node &n, uint32_t to);
             std::optional<Mat::RTMat> get_RT_pose_from_parent(const Node &n);
             std::optional<Mat::RTMat> get_edge_RT_as_rtmat(const Edge &edge);

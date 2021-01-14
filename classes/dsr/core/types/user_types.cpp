@@ -204,12 +204,12 @@ namespace DSR {
     /// Edge
     ////////////////////////////////////////////////////
 
-    uint32_t Edge::to() const
+    uint128_t Edge::to() const
     {
         return m_to;
     }
 
-    uint32_t Edge::from() const
+    uint128_t Edge::from() const
     {
         return m_from;
     }
@@ -239,12 +239,12 @@ namespace DSR {
         return m_agent_id;
     }
 
-    void Edge::to(uint32_t mTo)
+    void Edge::to(uint128_t mTo)
     {
         m_to = mTo;
     }
 
-    void Edge::from(uint32_t mFrom)
+    void Edge::from(uint128_t mFrom)
     {
         m_from = mFrom;
     }
@@ -306,12 +306,12 @@ namespace DSR {
         return m_attrs;
     }
 
-    const  std::map<std::pair<uint32_t, std::string>, Edge > &Node::fano() const
+    const  std::map<std::pair<uint128_t, std::string>, Edge > &Node::fano() const
     {
         return m_fano;
     }
 
-    std::map<std::pair<uint32_t, std::string>, Edge > &Node::fano()
+    std::map<std::pair<uint128_t, std::string>, Edge > &Node::fano()
     {
         return m_fano;
     }
@@ -344,7 +344,7 @@ namespace DSR {
         m_attrs = mAttrs;
     }
 
-    void Node::fano(const  std::map<std::pair<uint32_t, std::string>, Edge > &mFano)
+    void Node::fano(const  std::map<std::pair<uint128_t, std::string>, Edge > &mFano)
     {
         m_fano = mFano;
     }

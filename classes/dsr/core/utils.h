@@ -56,4 +56,21 @@ static uint64_t get_unix_timestamp() { //Move to utilities?
     return millis;
 }
 
+namespace std {
+    inline string
+    to_string(uint128_t __val) {
+        char *c = new char[17];
+        uuid_unparse((unsigned char *)&__val, c);
+        return std::string(c);
+    }
+
+    inline string
+    to_string(Uuid __val) {
+        char *c = new char[17];
+        uuid_unparse((unsigned char *)&__val, c);
+        return std::string(c);
+    }
+}
+
+
 #endif //UTILS_H
