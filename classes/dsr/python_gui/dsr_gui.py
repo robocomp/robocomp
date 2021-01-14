@@ -2,8 +2,9 @@ import sys
 
 from PySide2.QtCore import QObject, QTimer, QElapsedTimer, Signal, QSettings
 from PySide2.QtGui import Qt
-from PySide2.QtWidgets import QWidget, QMenu, QMainWindow, QApplication, QAction, QDockWidget
+from PySide2.QtWidgets import QWidget, QMenu, QMainWindow, QApplication, QAction, QDockWidget, QFileDialog, QPushButton
 
+from viewers.qscene_2d_viewer.qscene_2d_viewer import QScene2dViewer
 from viewers.tree_viewer.tree_viewer import TreeViewer
 
 
@@ -32,7 +33,7 @@ class DSRViewer(QObject):
         super().__init__()
         self.timer = QTimer()
         self.alive_timer = QElapsedTimer()
-        self.G = G
+        self.g = G
         self.window = window
         self.view_menu = QMenu()
         self.file_menu = QMenu()
@@ -64,12 +65,6 @@ class DSRViewer(QObject):
         settings.setValue("pos", self.window.pos())
         settings.endGroup()
 
-    def item_moved(self):
-        pass
-
-    def create_graph(self):
-        pass
-
     def get_widget_by_type(self, widget_type) -> QWidget:
         if widget_type in self.widgets_by_type:
             return self.widgets_by_type[widget_type].widget
@@ -90,7 +85,7 @@ class DSRViewer(QObject):
         # Tabification of current docks
         previous = None
         for dock_name, dock in self.docks.items():
-            if previous and previous!=dock:
+            if previous and previous != dock:
                 self.window.tabifyDockWidget(previous, self.docks[name])
                 break
             previous = dock
@@ -102,7 +97,7 @@ class DSRViewer(QObject):
 
     # SLOTS
     def save_graph_slot(self, state):
-        self.save_graph_signal.emit() 
+        self.save_graph_signal.emit()
 
     def restart_app(self, state):
         pass
@@ -133,9 +128,7 @@ class DSRViewer(QObject):
             new_action.setStatusTip("Create a new file")
             new_action.setCheckable(True)
             new_action.setChecked(True)
-            # connect(new_action, &QAction::triggered, self, [self, name](bool state) {
-            #     switch_view(state, widgets[name])
-            # })
+            new_action.triggered.connect(lambda state: self.switch_view(state, self.widgets[name]))
             self.view_menu.addAction(new_action)
             self.docks[name] = dock_widget
             self.widgets[name].dock = dock_widget
@@ -175,10 +168,7 @@ class DSRViewer(QObject):
             new_action.setCheckable(True)
             new_action.setChecked(False)
             self.forces_menu.addAction(new_action)
-            # connect(new_action, &QAction::triggered, self, [self](bool state)
-            # {
-            #     qobject_cast<GraphViewer*>(widgets_by_type[view::graph].widget).toggle_animation(state==True)
-            # })
+            new_action.triggered.connect(lambda: self.widgets_by_type[View.graph].widget.toggle_animation(True))
 
         # Tabification of current docks
         previous = None
@@ -193,12 +183,9 @@ class DSRViewer(QObject):
                 graph_widget = self.main_widget
                 if graph_widget:
                     tree_widget = self.docks["Tree"].widget()
-                    # DSRViewer::connect(
-                    #         tree_widget,
-                    #         &TreeViewer::node_check_state_changed,
-                    #         graph_widget,
-                    #         [=](int value, int id, const std::string& type, QTreeWidgetItem*) {
-                    #             graph_widget.hide_show_node_SLOT(id, value==2) })
+                    tree_widget.node_check_state_changed_signal.connect(
+                        lambda node_id: graph_widget.hide_show_node_SLOT(node_id, 2)
+                    )
         if len(self.docks) > 0 or central != None:
             self.window.show()
         else:
@@ -218,32 +205,35 @@ class DSRViewer(QObject):
         laser.setChecked(False)
         file_submenu.addAction(laser)
         # save_action
-        # connect(save_action, &QAction::triggered, [self, rgbd, laser]() {
-        #     file_name = QFileDialog::getSaveFileName(nullptr, tr("Save file"),
-        #                                                   "/home/robocomp/robocomp/components/dsr-graph/etc",
-        #                                                   tr("JSON Files (*.json)"), nullptr,
-        #                                                   QFileDialog::Option::DontUseNativeDialog)
-        #
-        #     std::vector<std::string> skip_content
-        #     if(not rgbd.isChecked()) skip_content.push_back("rgbd")
-        #     if(not laser.isChecked()) skip_content.push_back("laser")
-        #     G.write_to_json_file(file_name.toStdString(), skip_content)
-        #     qDebug()<<"File saved"
-        # })
+        save_action.triggered.connect(lambda: self.__save_json_file(rgbd, laser))
+
+    def __save_json_file(self, rgbd, laser):
+        file_name = QFileDialog.getSaveFileName(None, "Save file",
+                                                "/home/robocomp/robocomp/components/dsr-graph/etc",
+                                                "JSON Files (*.json)",
+                                                None,
+                                                QFileDialog.Option.DontUseNativeDialog)
+        skip_content = []
+        if not rgbd.isChecked():
+            skip_content.push_back("rgbd")
+        if not laser.isChecked():
+            skip_content.push_back("laser")
+        self.g.write_to_json_file(file_name.toStdString(), skip_content)
+        print("File saved")
 
     def __create_widget(self, widget_type):
         widget_view = None
         if widget_type == View.graph:
-            widget_view = GraphViewer(self.G)
+            widget_view = GraphViewer(self.g)
         elif widget_type == View.osg:
-            widget_view = OSG3dViewer(self.G, 1, 1)
+            widget_view = OSG3dViewer(self.g, 1, 1)
         elif widget_type == View.tree:
-            widget_view = TreeViewer(self.G)
+            widget_view = TreeViewer(self.g)
         elif widget_type == View.scene:
-            widget_view = QScene2dViewer(self.G)
+            widget_view = QScene2dViewer(self.g)
         elif widget_type == View.none:
             widget_view = None
-        # connect(this, SIGNAL(resetViewer(QWidget*)), widget_view, SLOT(reload(QWidget*)))
+        # self.reset_viewer.connect(self.reload)
         return widget_view
 
 
@@ -258,21 +248,8 @@ if __name__ == '__main__':
     print(node)
     current_opts = View.tree
     ui = DSRViewer(main_window, g, current_opts)
+    custom_widget = QPushButton("Custom Widget")
+    ui.add_custom_widget_to_dock("Custom", custom_widget)
     print("Setup")
     main_window.show()
     app.exec_()
-#       G = std::make_shared<DSR::DSRGraph>(0, agent_name, agent_id, dsr_input_file)
-#         std::cout << __FUNCTION__ << "Graph loaded" << std::endl
-#         //check RT tree
-#         check_rt_tree(G.get_node_root().value())
-#
-#         // Graph viewer
-#         using opts = DSR::DSRViewer::view
-# 		int current_opts = tree_view | graph_view | qscene_2d_view | osg_3d_view
-#         opts main = opts::none
-#         if (graph_view)
-# 		{
-#         	main = opts::graph
-# 		}
-# 		dsr_viewer = std::make_unique<DSR::DSRViewer>(self, G, current_opts, main)
-# 		setWindowTitle(QString::fromStdString(agent_name + "-" + dsr_input_file))
