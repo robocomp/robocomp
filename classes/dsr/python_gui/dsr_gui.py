@@ -71,26 +71,53 @@ class DSRViewer(QObject):
         pass
 
     def get_widget_by_type(self, widget_type) -> QWidget:
-        return QWidget()
+        if widget_type in self.widgets_by_type:
+            return self.widgets_by_type[widget_type].widget
+        return None
 
     def get_widget_by_name(self, name) -> QWidget:
-        return QWidget()
+        if name in self.widgets:
+            return self.widgets[name].widget
+        return None
 
-    def add_custom_widget_to_dock(self, name, view):
-        pass
+    def add_custom_widget_to_dock(self, name, custom_view):
+        widget_c = WidgetContainer()
+        widget_c.name = name
+        widget_c.type = View.none
+        widget_c.widget = custom_view
+        self.widgets[name] = widget_c
+        self.__create_dock_and_menu(name, custom_view)
+        # Tabification of current docks
+        previous = None
+        for dock_name, dock in self.docks.items():
+            if previous and previous!=dock:
+                self.window.tabifyDockWidget(previous, self.docks[name])
+                break
+            previous = dock
+        self.docks[name].raise_()
 
     def keyPressEvent(self, event):
-        pass
+        if event.key() == Qt.Key_Escape:
+            self.close_window_signal.emit()
 
     # SLOTS
-    def saveGraphSLOT(self, state):
-        pass
+    def save_graph_slot(self, state):
+        self.save_graph_signal.emit() 
 
     def restart_app(self, state):
         pass
 
     def switch_view(self, state, container):
-        pass
+        widget = container.widget
+        dock = container.dock
+        if state:
+            widget.blockSignals(True)
+            dock.hide()
+        else:
+            widget.blockSignals(False)
+            self.reset_viewer.emit(widget)
+            dock.show()
+            dock.raise_()
 
     def compute(self):
         pass
@@ -205,6 +232,7 @@ class DSRViewer(QObject):
         # })
 
     def __create_widget(self, widget_type):
+        widget_view = None
         if widget_type == View.graph:
             widget_view = GraphViewer(self.G)
         elif widget_type == View.osg:
@@ -215,7 +243,7 @@ class DSRViewer(QObject):
             widget_view = QScene2dViewer(self.G)
         elif widget_type == View.none:
             widget_view = None
-        # connect(this, SIGNAL(resetViewer(QWidget*)), widget_view, SLOT(reload(QWidget*)));
+        # connect(this, SIGNAL(resetViewer(QWidget*)), widget_view, SLOT(reload(QWidget*)))
         return widget_view
 
 
