@@ -67,6 +67,8 @@ sudo apt install libasio-dev
 sudo apt install libtinyxml2-dev 
 sudo apt install libopencv-dev
 sudo apt install libqglviewer-dev-qt5
+sudo apt install libeigen3-dev
+
 ```
 
 You need the following third-party software:
