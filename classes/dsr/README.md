@@ -55,7 +55,9 @@ Conceptually, the DSR represents a network of entities and relations among them.
 
 > This documentation describes the classes that allow the creation of agents to use this Deep State Representation.
 
-# Dependencies and Installation
+# Installation
+
+## Dependencies
 
 It's assumed that you have already installed ![robocomp](https://github.com/robocomp/robocomp/blob/development/README.md#installation-from-source).
 To be able to use the DSR/CORTEX infraestructure you need to follow the next steps:
@@ -112,6 +114,17 @@ You need the following third-party software:
       sudo ldconfig
 ```
 
+## Installation
+Next step is to compile and install the DSR libs. You need to go to ~/robocomp/classes/dsr/
+and execute this:
+```bash
+mkdir build
+cd build
+cmake ..
+make -j$(nproc)
+sudo make install
+sudo ldconfig
+``` 
 
 ## Installing agents
 If you want to install the existing agents you can clone the [dsr-graph](https://github.com/robocomp/dsr-graph) repository and read the related documentation.
