@@ -68,9 +68,19 @@ namespace pybind11::detail {
             int res = PyCallable_Check(ptr);
             if (not res) return false; //If it is not callable we return false.
 
-            PyObject *annotations  = PyFunction_GetAnnotations(ptr);
-            if (not annotations) return false; //We need to know attribute parameters
+            PyObject *annotations;
+            if (PyMethod_Check(ptr))
+            {
+                PyObject * fn = PyMethod_Function(ptr);
+                if (not fn) return false; //This shouldn't return null, but we check it anyway.
+                annotations = PyFunction_GetAnnotations(fn);
 
+            } else
+            {
+                annotations = PyFunction_GetAnnotations(ptr);
+            }
+
+            if (not annotations) return false; //We need to know attribute parameters
             auto dict = reinterpret_borrow<py::dict>(py::handle(annotations));
 
             if (dict.size() == 1) {
