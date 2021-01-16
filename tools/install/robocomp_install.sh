@@ -24,4 +24,3 @@ make -j$(nproc)
 sudo env "PATH=$PATH" make install
 sudo sh -c "echo '/opt/robocomp/lib/' >> /etc/ld.so.conf"
 sudo ldconfig
-rcnode& python3 ~/robocomp/tools/robocompdsl/autogeneration_tests/test_cdsl/test_component_generation.py --avoid agm
