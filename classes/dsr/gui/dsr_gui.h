@@ -62,8 +62,6 @@ namespace DSR
 
 			DSRViewer(QMainWindow *window, std::shared_ptr<DSR::DSRGraph> G, int options, view main = view::none);
 			~DSRViewer();
-			void itemMoved();
-			void createGraph();
 			QWidget* get_widget(view type);
 			QWidget* get_widget(QString  name);
 			void add_custom_widget_to_dock(QString name, QWidget* view);
