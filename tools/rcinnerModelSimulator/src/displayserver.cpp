@@ -50,7 +50,7 @@ void DisplayServer::shutdown()
 	{
 		adapter->remove(Ice::stringToIdentity("display"));
 	}
-	catch(Ice::ObjectAdapterDeactivatedException e)
+	catch(const Ice::ObjectAdapterDeactivatedException &e)
 	{
 	}
 

@@ -73,7 +73,7 @@ void JointMotorServer::shutdown()
 	{
 		adapter->remove(Ice::stringToIdentity("jointmotor"));
 	}
-	catch(Ice::ObjectAdapterDeactivatedException e)
+	catch(const Ice::ObjectAdapterDeactivatedException &e)
 	{
 	}
 

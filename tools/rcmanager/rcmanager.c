@@ -19,8 +19,8 @@ int main(int argc, char **argv) {
 	str = (char *)malloc(length*sizeof(char));
 	ptr_str = str;
 
-	sprintf(ptr_str, "%s ", BASE);
 	ptr_str += strlen(BASE) + 1;
+	printf("%s ", BASE);
 
 	for (i = 1; i < argc; i++) {
 		sprintf(ptr_str, "%s ", argv[i]);

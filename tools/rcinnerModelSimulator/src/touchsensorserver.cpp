@@ -59,7 +59,7 @@ void TouchSensorServer::shutdown()
 	{
 		adapter->remove(Ice::stringToIdentity("touchsensor"));
 	}
-	catch(Ice::ObjectAdapterDeactivatedException e)
+	catch(const Ice::ObjectAdapterDeactivatedException &e)
 	{
 	}
 	adapter->destroy();
