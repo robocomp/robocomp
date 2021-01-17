@@ -40,9 +40,9 @@ Communications
 language Cpp//Cpp11//Python;
 ```
 - #### Graphical interface support. (Optional)
-       - [QWidget](https://doc.qt.io/qt-5/qwidget.html)
-       - [QDialog](https://doc.qt.io/qt-5/qdialog.html)
-       - [QMainWindow](https://doc.qt.io/qt-5/qmainwindow.html)
+	- [QWidget](https://doc.qt.io/qt-5/qwidget.html)
+	- [QDialog](https://doc.qt.io/qt-5/qdialog.html)
+	- [QMainWindow](https://doc.qt.io/qt-5/qmainwindow.html)
 ```
 gui Qt(QWidget//QDialog//QMainWindow);
 ```
