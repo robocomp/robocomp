@@ -6,18 +6,22 @@ CDSL permits comments in C and C++ style, starting with //
 
 Every CDSL file contains the following properties:
 
-#### Interfaces and data types defined in external IDSL files.
+- #### Interfaces and data types defined in external IDSL files.
 ```
 import "import1.idsl";
 import "import2.idsl";
 ```
-#### Component name.
+- #### Component name.
 ```
 Component myComponent
 ```
-#### Communication model: 
-- Required and provided interfaces.
-- Topics that the component will publish or subscribe to.
+- #### Communication model: 
+	- Required and provided interfaces.
+	- Topics that the component will publish or subscribe to.
+   		- implements: Create RPC server.
+   		- requires: Create a proxy to RPC server.
+		- publishes: Create publication proxy a specific topic.
+		- subscribesTo: Subscribe a specific topic.
 ```
 Communications
         {
@@ -28,17 +32,25 @@ Communications
         }
 ```
 
-#### Programming language of the component.
+- #### Programming language of the component.
+	- CPP: Implement component using C++
+	- CPP11: Implement component using C++ 11 to allow use of [new Ice implementation.](https://doc.zeroc.com/ice/3.7/language-mappings/c++11-mapping)
+    - Python: Implement component using python 3.x.
 ```
 language Cpp//Cpp11//Python;
 ```
-#### Graphical interface support.
+- #### Graphical interface support. (Optional)
+       - [QWidget](https://doc.qt.io/qt-5/qwidget.html)
+       - [QDialog](https://doc.qt.io/qt-5/qdialog.html)
+       - [QMainWindow](https://doc.qt.io/qt-5/qmainwindow.html)
 ```
 gui Qt(QWidget//QDialog//QMainWindow);
 ```
-#### Dependences with external classes and libraries.
+- #### Dependences with external classes and libraries. (Optional)
+	- agmagent: Include Cortex-Agent communication patterns.
+	- InnerModelViewer: Include [InnerModelViewer](https://github.com/robocomp/robocomp/tree/stable/libs/innermodel) resources.
 ```
-options agmagent;
+options agmagent; 
 options InnerModelViewer;
 ```
 ## 
