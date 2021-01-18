@@ -81,7 +81,6 @@ DSRGraph::~DSRGraph()
 {
     if (!copy) {
         qDebug() << "Removing rtps participant";
-        dsrparticipant.remove_participant(); // Remove a Participant and all associated publishers and subscribers.
     }
 }
 

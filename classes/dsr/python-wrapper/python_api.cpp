@@ -60,8 +60,8 @@ PYBIND11_MODULE(pydsr, m) {
     });
 
     //Disable cout
-    m.attr("redirect_output") = py::capsule(new scoped_ostream_discard(),
-                                            [](void *sor) { delete static_cast<scoped_ostream_discard *>(sor); });
+    //m.attr("redirect_output") = py::capsule(new scoped_ostream_discard(),
+    //                                        [](void *sor) { delete static_cast<scoped_ostream_discard *>(sor); });
 
 
     auto sig = m.def_submodule("signals",
@@ -334,10 +334,7 @@ PYBIND11_MODULE(pydsr, m) {
                      return g;
                  }), "root"_a, "name"_a, "id"_a, "dsr_input_file"_a = "",
                  "all_same_host"_a = true, py::call_guard<py::gil_scoped_release>())
-                    /* .def("__exit__", [](DSRGraph *self) -> bool {
-                            delete self;
-                            return false;
-                     })*/
+            //.def("__del__", [](DSRGraph &self){ puts("Eliminando G.");self.reset(); })
             .def("get_node", [](DSRGraph &self, uint32_t id) -> std::optional<Node> {
                 return self.get_node(id);
             }, "id"_a, "return the node with the id passed as parameter. Returns None if the node does not exist.")
