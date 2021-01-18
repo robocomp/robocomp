@@ -3,16 +3,27 @@
 Note: This documentation explains some commands that can be used for the development of components in Robocomp. These commands are not intended to compile Robocomp itself. To follow the necessary steps to install and compile Robocomp, you can follow the instructions in this [document](https://github.com/robocomp/robocomp#installation-from-source).
 
 Following are a list of commands and explanations for Robocomp build tools.
-## rc_init_ws
+## rcworkspace
 
-This will initialize a Robocomp workspace in the current/specified directory. If there is already a workspace (has a .rc_workspace file), then it will register it as a workspace on your computer. To de-register a workspace just delete the .rc_workspace file. 
+This tool helps in managing robocomp workspaces. 
+
+####To register a new workspace
+
+Move to a directory that contains robocomp components
+
+Use the -a flag to register the workspace and begin component searching within it.
+```bash
+rcworkspace -a 
+```
 
 **The build tools will find only those workspaces which are registered on your computer**.
     
 ```bash
-rc_init_ws [path]
+rcworkspace [-h] [-i INITIALIZE] [-a [ADD]] [--accept-all] [-u]
+                   [-d [DELETE]] [--clear-all] [-l]
+                   [directory]
 ```
-
+For  more uses of rcworkspace use the -h flag.
 ## rcbuild
 
 When invoked from a workspace, without any arguments, if not inside the source path, it will build all the non-ignored components inside the workspace. 

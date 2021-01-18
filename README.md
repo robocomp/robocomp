@@ -75,7 +75,7 @@ Done! Now let's compile and install the whole thing:
     cd build
     cmake ..
     make
-    sudo make install
+    sudo env "PATH=$PATH" make install
 
 If you want to compile Robocomp with support for FCL, follow the instructions in the [Robocomp with FCL](doc/Compiling-RoboComp-with-collision-detection.md) tutorial.
 
