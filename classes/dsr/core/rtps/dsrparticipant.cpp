@@ -26,6 +26,7 @@ DSRParticipant::~DSRParticipant()
 	
     if (mp_participant != nullptr)
     {
+
         if (topic_node)
             mp_participant->delete_topic(topic_node);
         if (topic_edge)
@@ -72,11 +73,15 @@ std::tuple<bool, eprosima::fastdds::dds::DomainParticipant*> DSRParticipant::ini
         }
 
     } else {
+
+        custom_transport->interfaceWhiteList.emplace_back("127.0.0.1");
+
+        /*
         // Create a descriptor for same device agents.
         auto shm_transport = std::make_shared<SharedMemTransportDescriptor>();
         shm_transport->segment_size(2 * 1024 * 1024);
 
-        PParam.transport().user_transports.push_back(shm_transport);
+        PParam.transport().user_transports.push_back(shm_transport);*/
     }
     PParam.transport().send_socket_buffer_size = 33554432;
     PParam.transport().listen_socket_buffer_size = 33554432;
