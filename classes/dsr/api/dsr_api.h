@@ -42,7 +42,6 @@
 #include "../core/utils.h"
 #include "../core/id_generator.h"
 #include "threadpool/threadpool.h"
-#include "../core/logger.h"
 
 //#include <DSRGetID.h>
 

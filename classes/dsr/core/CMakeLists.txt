@@ -58,9 +58,9 @@ ROBOCOMP_INITIALIZE( $ENV{ROBOCOMP}/ )
 ROBOCOMP_IDSL_TO_ICE( DSRGetID)
 ROBOCOMP_ICE_TO_SRC( DSRGetID)
 
-set(CMAKE_PREFIX_PATH "CMAKE_PREFIX_PATH;${CMAKE_PREFIX_PATH}")
-find_package(libmongocxx REQUIRED)
-find_package(libbsoncxx  REQUIRED)
+#set(CMAKE_PREFIX_PATH "CMAKE_PREFIX_PATH;${CMAKE_PREFIX_PATH}")
+#find_package(libmongocxx REQUIRED)
+#find_package(libbsoncxx  REQUIRED)
 #include_directories(${LIBMONGOCXX_INCLUDE_DIR})
 #include_directories(${LIBBSONCXX_INCLUDE_DIR})
 
@@ -72,7 +72,7 @@ find_package(libbsoncxx  REQUIRED)
 # Specify construction and link process
 ADD_LIBRARY( dsr_core SHARED ${SOURCES})
 # ${Ice_LIBRARIES}
-TARGET_LINK_LIBRARIES( dsr_core ${LIBS} ${STATIC_LIBS} ${SPECIFIC_LIBS} ${QT_LIBRARIES} ${Ice_LIBRARIES}     ${LIBBSONCXX_LIBRARIES}  ${LIBMONGOCXX_LIBRARIES})
+TARGET_LINK_LIBRARIES( dsr_core ${LIBS} ${STATIC_LIBS} ${SPECIFIC_LIBS} ${QT_LIBRARIES} ${Ice_LIBRARIES} ) # ${LIBBSONCXX_LIBRARIES}  ${LIBMONGOCXX_LIBRARIES}
 install(TARGETS dsr_core
         LIBRARY DESTINATION /opt/robocomp/lib/
         )

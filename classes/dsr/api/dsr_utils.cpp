@@ -130,6 +130,10 @@ void Utilities::read_from_json_file(const std::string &json_file_path,  const st
                         G->runtime_checked_add_attrib_local(n,  attr_key,  static_cast<std::uint32_t>(attr_value.toUInt()));
                         break;
                     }
+                    case 7: {
+                        G->runtime_checked_add_attrib_local(n,  attr_key,  static_cast<std::uint64_t>(attr_value.toUInt()));
+                        break;
+                    }
                     default:
                         G->runtime_checked_add_attrib_local(n,  attr_key,  attr_value.toString().toStdString());
                 }
@@ -204,6 +208,11 @@ void Utilities::read_from_json_file(const std::string &json_file_path,  const st
                         G->runtime_checked_add_attrib_local(edge,  attr_key,   static_cast<std::uint32_t>(attr_value.toUInt()));
                         break;
                     }
+
+                    case 7: {
+                        G->runtime_checked_add_attrib_local(edge,  attr_key,  static_cast<std::uint64_t>(attr_value.toUInt()));
+                        break;
+                    }
                     default:
                         G->runtime_checked_add_attrib_local(edge,   attr_key, attr_value.toString().toStdString());
                 }
@@ -255,6 +264,9 @@ QJsonObject Utilities::Edge_to_QObject(const Edge& edge)
             }
             case 6:
                 val = static_cast<std::int32_t>(std::get<std::uint32_t>(value.value()));
+                break;
+            case 7:
+                val = static_cast<qint64>(std::get<std::uint64_t>(value.value())); //This should be quint64 but QJsonValue not allow it.
                 break;
         }
         content["type"] = static_cast<qint64>(value.value().index());
@@ -310,6 +322,9 @@ QJsonObject Utilities::Node_to_QObject(const Node& node, bool skip_content)
             }
             case 6:
                 val = static_cast<std::int32_t>(std::get<std::uint32_t>(value.value()));
+                break;
+            case 7:
+                val = static_cast<qint64>(std::get<std::uint64_t>(value.value()));
                 break;
 
         }

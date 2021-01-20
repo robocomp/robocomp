@@ -144,13 +144,13 @@ std::optional<uint64_t> DSRGraph::insert_node(Node &node) {
         std::tie(r, aw) = insert_node_(user_node_to_crdt(node));
         auto p = aw.value().dk().ds().begin()->first;
         auto t = get_unix_timestamp();
-        Logger::get_logger()->Log(agent_id, t, "INSERT_NODE", agent_id, false,
+        /*Logger::get_logger()->Log(agent_id, t, "INSERT_NODE", agent_id, false,
                                   {{"node_id",   std::to_string(node.id())},
                                    {"node_type", node.type()},
                                    {"timestamp", std::to_string(t)},
                                    {"pair_first", std::to_string(p.first())},
                                    {"pair_second", std::to_string(p.second())}
-                                  });
+                                  });*/
     }
     if (r) {
         if (!copy) {
@@ -186,17 +186,7 @@ std::tuple<bool, std::optional<std::vector<IDL::MvregNodeAttr>>> DSRGraph::updat
                     auto delta = iter[k].write(att.read_reg());
                     atts_deltas.emplace_back(
                             translate_node_attr_mvCRDT_to_IDL(agent_id, node.id(), node.id(), k, delta));
-                    auto t = get_unix_timestamp();
-                    auto p = atts_deltas.rbegin()->dk().ds().begin()->first;
-                    Logger::get_logger()->Log(agent_id, t, "UPDATE_ATTRIBUTE_NODE", agent_id, false,
-                                              {{"node_id",   std::to_string(node.id())},
-                                               {"node_type", node.type()},
-                                               {"timestamp", std::to_string(t)},
-                                               {"operation", op},
-                                               {"attribute", k},
-                                               {"pair_first", std::to_string(p.first())},
-                                               {"pair_second", std::to_string(p.second())}
-                                              });
+
                 }
             }
             //Remove old attributes.
@@ -211,17 +201,7 @@ std::tuple<bool, std::optional<std::vector<IDL::MvregNodeAttr>>> DSRGraph::updat
                     it_a = iter.erase(it_a);
                     atts_deltas.emplace_back(
                             translate_node_attr_mvCRDT_to_IDL(node.agent_id(), node.id(), node.id(), k, delta));
-                    auto t = get_unix_timestamp();
-                    auto p = atts_deltas.rbegin()->dk().cbase().cc().rbegin();
-                    Logger::get_logger()->Log(agent_id, t, "UPDATE_ATTRIBUTE_NODE", agent_id, false,
-                                              {{"node_id",   std::to_string(node.id())},
-                                               {"node_type", node.type()},
-                                               {"timestamp", std::to_string(t)},
-                                               {"operation", "remove"},
-                                               {"attribute", type},
-                                               {"pair_first", std::to_string(p->first)},
-                                               {"pair_second", std::to_string(p->second)}
-                                              });
+
                 } else {
                     it_a++;
                 }
@@ -291,15 +271,7 @@ DSRGraph::delete_node_(uint64_t id) {
     IDL::MvregNode delta_remove = translate_node_mvCRDT_to_IDL(agent_id, id, delta);
     update_maps_node_delete(id, node.value());
 
-    auto t = get_unix_timestamp();
-    auto p = delta_remove.dk().cbase().cc().rbegin();
-    Logger::get_logger()->Log(agent_id, t, "REMOVE_NODE", agent_id, false,
-                              {{"node_id",   std::to_string(id)},
-                               {"node_type", ""},
-                               {"timestamp", std::to_string(t)},
-                               {"pair_first", std::to_string(p->first)},
-                               {"pair_second", std::to_string(p->second)}
-                              });
+
     //2. search and remove edges.
     //For each node check if there is an edge to remove.
     for (auto &[k, v] : nodes) {
@@ -315,16 +287,7 @@ DSRGraph::delete_node_(uint64_t id) {
             aw.emplace_back(translate_edge_mvCRDT_to_IDL(agent_id, k, id, key, delta_fano));
             visited_node.fano().erase({id, key});
             edges_.emplace_back(make_tuple(visited_node.id(), id, key));
-            auto t = get_unix_timestamp();
-            auto p = aw.rbegin()->dk().cbase().cc().rbegin();
-            Logger::get_logger()->Log(agent_id, t, "REMOVE_EDGE", agent_id, false,
-                                      {{"from_id",   std::to_string(visited_node.id())},
-                                       {"to_id",   std::to_string(k)},
-                                       {"edge_type", key},
-                                       {"timestamp", std::to_string(t)},
-                                       {"pair_first", std::to_string(p->first)},
-                                       {"pair_second", std::to_string(p->second)}
-                                      });
+
         }
 
 
@@ -507,18 +470,7 @@ DSRGraph::insert_or_assign_edge_(const CRDTEdge &attrs, uint64_t from, uint64_t 
                         auto delta = iter_edge.at(k).write(att.read_reg());//*iter_edge.at(k).read().begin());
                         atts_deltas.emplace_back(
                                 translate_edge_attr_mvCRDT_to_IDL(agent_id, from, from, to, attrs.type(), k, delta));
-                        auto t = get_unix_timestamp();
-                        auto p = atts_deltas.rbegin()->dk().ds().rbegin()->first;
-                        Logger::get_logger()->Log(agent_id, t, "UPDATE_ATTRIBIBUTE_EDGE", agent_id, false,
-                                                  {{"from_id",   std::to_string(from)},
-                                                   {"to_id",   std::to_string(to)},
-                                                   {"edge_type", attrs.type()},
-                                                   {"timestamp", std::to_string(t)},
-                                                   {"attribute", k},
-                                                   {"operation", op},
-                                                  {"pair_first", std::to_string(p.first())},
-                                                  {"pair_second", std::to_string(p.second())}
-                                                  });
+
                     }
                 }
                 auto it = iter_edge.begin();
@@ -529,18 +481,7 @@ DSRGraph::insert_or_assign_edge_(const CRDTEdge &attrs, uint64_t from, uint64_t 
                         it = iter_edge.erase(it);
                         atts_deltas.emplace_back(
                                 translate_edge_attr_mvCRDT_to_IDL(agent_id, from, from, to, attrs.type(), att, delta));
-                        auto t = get_unix_timestamp();
-                        auto p = atts_deltas.rbegin()->dk().cbase().cc().rbegin();
-                        Logger::get_logger()->Log(agent_id, t, "UPDATE_ATTRIBIBUTE_EDGE", agent_id, false,
-                                                  {{"from_id",   std::to_string(from)},
-                                                   {"to_id",   std::to_string(to)},
-                                                   {"edge_type", attrs.type()},
-                                                   {"timestamp", std::to_string(t)},
-                                                   {"attribute", att},
-                                                   {"operation", "remove"},
-                                                   {"pair_first", std::to_string(p->first)},
-                                                   {"pair_second", std::to_string(p->second)}
-                                                  });
+
                     } else {
                         it++;
                     }
@@ -553,16 +494,7 @@ DSRGraph::insert_or_assign_edge_(const CRDTEdge &attrs, uint64_t from, uint64_t 
             node.fano().insert({{to, attrs.type()}, mv});
             auto delta = node.fano()[{to, attrs.type()}].write(attrs);
             update_maps_edge_insert(from, to, attrs.type());
-            auto t = get_unix_timestamp();
-            auto p = delta.dk.ds.rbegin()->first;
-            Logger::get_logger()->Log(agent_id, t, "INSERT_EDGE", agent_id, false,
-                                      {{"from_id",   std::to_string(from)},
-                                       {"to_id",   std::to_string(to)},
-                                       {"edge_type", attrs.type()},
-                                       {"timestamp", std::to_string(t)},
-                                      {"pair_first", std::to_string(p.first)},
-                                      {"pair_second", std::to_string(p.second)}
-                                      });
+
             return {true, translate_edge_mvCRDT_to_IDL(agent_id, from, to, attrs.type(), delta), {}};
         }
     }
@@ -632,16 +564,7 @@ bool DSRGraph::delete_edge(uint64_t from, uint64_t to, const std::string &key) {
         std::unique_lock<std::shared_mutex> lock(_mutex);
         if (!in(from) || !in(to)) return false;
         delta = delete_edge_(from, to, key);
-        auto t = get_unix_timestamp();
-        auto p = delta->dk().cbase().cc().rbegin();
-        Logger::get_logger()->Log(agent_id, t, "REMOVE_EDGE", agent_id, false,
-                                  {{"from_id",   std::to_string(from)},
-                                   {"to_id",   std::to_string(to)},
-                                   {"edge_type", key},
-                                   {"timestamp", std::to_string(t)},
-                                   {"pair_first", std::to_string(p->first)},
-                                   {"pair_second", std::to_string(p->second)}
-                                  });
+
     }
     if (delta.has_value()) {
         if (!copy) {
@@ -666,16 +589,7 @@ bool DSRGraph::delete_edge(const std::string &from, const std::string &to, const
 
         if (id_from.has_value() && id_to.has_value()) {
             delta = delete_edge_(id_from.value(), id_to.value(), key);
-            auto t = get_unix_timestamp();
-            auto p = delta->dk().cbase().cc().rbegin();
-            Logger::get_logger()->Log(agent_id, t, "REMOVE_EDGE", agent_id, false,
-                                      {{"from_id",   std::to_string(id_from.value())},
-                                       {"to_id",   std::to_string(id_to.value())},
-                                       {"edge_type", key},
-                                       {"timestamp", std::to_string(t)},
-                                       {"pair_first", std::to_string(p->first)},
-                                       {"pair_second", std::to_string(p->second)}
-                                      });
+
         }
     }
 
@@ -915,24 +829,10 @@ void DSRGraph::join_delta_node(IDL::MvregNode &&mvreg) {
                     //Update Maps
                     nd = (nodes[id].empty()) ?
                          std::nullopt : std::make_optional(nodes[id].read_reg());
-                    auto t = get_unix_timestamp();
-                    Logger::get_logger()->Log(agent_id, t, "REMOVE_NODE", delta_agent_id, true,
-                                              {{"node_id",   std::to_string(id)},
-                                               {"node_type", ""},
-                                               {"timestamp", "0"},
-                                              {"pair_first", std::to_string(p.first)},
-                                              {"pair_second", std::to_string(p.second)}
-                                              });
+
                     update_maps_node_delete(id, nd);
                 } else {
-                    auto t = get_unix_timestamp();
-                    Logger::get_logger()->Log(agent_id, t, "INSERT_NODE", delta_agent_id, true,
-                                              {{"node_id",   std::to_string(id)},
-                                               {"node_type", nodes[id].read_reg().type()},
-                                               {"timestamp", "0"},
-                                               {"pair_first", std::to_string(p.first)},
-                                               {"pair_second", std::to_string(p.second)}
-                                              });
+
                     signal = true;
                     update_maps_node_insert(id, nodes[id].read_reg());
                 }
@@ -995,26 +895,10 @@ void DSRGraph::join_delta_edge(IDL::MvregEdge &&mvreg) {
                 if (d_empty or n.fano().find({to, type}) == n.fano().end()) { //Remove
                     n.fano().erase({to, type});
                     //Update maps
-                    auto t = get_unix_timestamp();
-                    Logger::get_logger()->Log(agent_id, t, "REMOVE_EDGE", delta_agent_id, true,
-                                              {{"from_id",   std::to_string(from)},
-                                               {"to_id",   std::to_string(to)},
-                                               {"edge_type", type},
-                                               {"timestamp", "0"},
-                                               {"pair_first", std::to_string(p.first)},
-                                               {"pair_second", std::to_string(p.second)}
-                                              });
+
                     update_maps_edge_delete(from, to, type);
                 } else { //Insert
-                    auto t = get_unix_timestamp();
-                    Logger::get_logger()->Log(agent_id, t, "INSERT_EDGE", delta_agent_id, true,
-                                              {{"from_id",   std::to_string(from)},
-                                               {"to_id",   std::to_string(to)},
-                                               {"edge_type", type},
-                                               {"timestamp", "0"},
-                                               {"pair_first", std::to_string(p.first)},
-                                               {"pair_second", std::to_string(p.second)}
-                                              });
+
                     signal = true;
                     //Update maps
                     update_maps_edge_insert(from, to, type);
@@ -1074,16 +958,7 @@ void DSRGraph::join_delta_node_attr(IDL::MvregNodeAttr &&mvreg) {
                     op = "remove";
                 }
 
-                auto t = get_unix_timestamp();
-                Logger::get_logger()->Log(agent_id, t, "UPDATE_ATTRIBUTE_NODE", delta_agent_id, true,
-                                          {{"node_id",   std::to_string(id)},
-                                           {"node_type", ""},
-                                           {"timestamp", "0"},
-                                           {"operation", op},
-                                           {"attribute", att_name},
-                                           {"pair_first", std::to_string(p.first)},
-                                           {"pair_second", std::to_string(p.second)}
-                                          });
+
             }
         }
 
@@ -1137,17 +1012,7 @@ void DSRGraph::join_delta_edge_attr(IDL::MvregEdgeAttr &&mvreg) {
                     op = "remove";
                 }
 
-                auto t = get_unix_timestamp();
-                Logger::get_logger()->Log(agent_id, t, "UPDATE_ATTRIBIBUTE_EDGE", delta_agent_id, true,
-                                          {{"from_id",   std::to_string(from)},
-                                           {"to_id",   std::to_string(to)},
-                                           {"edge_type", type},
-                                           {"timestamp", "0"},
-                                           {"attribute", att_name},
-                                           {"operation", op},
-                                           {"pair_first", std::to_string(p.first)},
-                                           {"pair_second", std::to_string(p.second)}
-                                          });
+
             }
         }
 
@@ -1187,10 +1052,7 @@ void DSRGraph::join_full_graph(IDL::OrMap &&full_graph) {
             }
         }
 
-        auto t = get_unix_timestamp();
-        Logger::get_logger()->Log(agent_id, t, "FULL_GRAPH", full_graph.id(), true,
-                                  {{"size",   std::to_string(full_graph.m().size())},
-                                   {"timestamp", "0"} });
+
 
     }
     for (auto &[signal, id, type, nd] : updates)
@@ -1380,10 +1242,7 @@ void DSRGraph::fullgraph_server_thread() {
                     mp.id(graph->get_agent_id());
                     mp.m(graph->Map());
                     dsrpub_request_answer.write(&mp);
-                    auto t = get_unix_timestamp();
-                    Logger::get_logger()->Log(agent_id, t, "FULL_GRAPH", agent_id, false,
-                                              {{"size",   std::to_string(mp.m().size())},
-                                               {"timestamp", std::to_string(t)} });
+
                     qDebug() << "Full graph written";
                 }
             }

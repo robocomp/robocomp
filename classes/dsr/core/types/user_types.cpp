@@ -112,7 +112,7 @@ namespace DSR {
 
     }
 
-    void Attribute::uint(uint64_t _uint)
+    void Attribute::uint64(uint64_t _uint)
     {
         m_value = _uint;
     }

@@ -37,14 +37,14 @@ set(CMAKE_CXX_STANDARD 20)
 add_definitions(-g -std=c++2a -L /opt/robocomp/lib )
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-set(CMAKE_PREFIX_PATH "CMAKE_PREFIX_PATH;${CMAKE_PREFIX_PATH}")
-find_package(libmongocxx REQUIRED)
-find_package(libbsoncxx  REQUIRED)
+#set(CMAKE_PREFIX_PATH "CMAKE_PREFIX_PATH;${CMAKE_PREFIX_PATH}")
+#find_package(libmongocxx REQUIRED)
+#find_package(libbsoncxx  REQUIRED)
 
 include_directories(/usr/include/eigen3)
 pybind11_add_module(pydsr python_api.cpp ${SOURCES} ${MOC_SOURCES} ${RC_SOURCES} ${UI_HEADERS} ${HEADERS})
 set_target_properties(pydsr PROPERTIES LINKER_LANGUAGE CXX)
 
-target_link_libraries(pydsr PRIVATE pthread   /opt/robocomp/lib/libdsr_api.so /opt/robocomp/lib/libdsr_core.so /opt/robocomp/lib/libdsr_gui.so ${SPECIFIC_LIBS} ${QT_LIBRARIES} ${PYTHON_LIBRARIES}  ${LIBBSONCXX_LIBRARIES}  ${LIBMONGOCXX_LIBRARIES})
+target_link_libraries(pydsr PRIVATE pthread   /opt/robocomp/lib/libdsr_api.so /opt/robocomp/lib/libdsr_core.so /opt/robocomp/lib/libdsr_gui.so ${SPECIFIC_LIBS} ${QT_LIBRARIES} ${PYTHON_LIBRARIES} ) #${LIBBSONCXX_LIBRARIES}  ${LIBMONGOCXX_LIBRARIES}
 install(TARGETS pydsr
         DESTINATION /opt/robocomp/lib/)
