@@ -72,6 +72,12 @@ class Workspace:
         if component_dir and os.path.exists(component_dir) and os.path.isdir(component_dir):
             return component_dir
 
+    def find_only_component(self, searched_component):
+        # print(self.components)
+        if searched_component in self.list_components_names():
+            selected = self.find_component(searched_component)
+            return selected
+    
     ''' find the directory containing component executable'''
     def find_component_exec_file(self, component):
         if os.path.exists(component):
