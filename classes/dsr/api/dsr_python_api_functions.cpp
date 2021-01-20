@@ -5,9 +5,9 @@
 using namespace DSR;
 
 
-std::optional<std::uint32_t> PY_INSERT_API::insert_node_python(DSR::DSRGraph &g,  Node &node)
+std::optional<std::uint64_t> PY_INSERT_API::insert_node_python(DSR::DSRGraph &g,  Node &node)
 {
-    std::optional<IDL::Mvreg> aw;
+    std::optional<IDL::MvregNode> aw;
     bool r = false;
     {
         std::unique_lock<std::shared_mutex> lock(g._mutex);

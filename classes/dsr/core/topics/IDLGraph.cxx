@@ -31,26 +31,26 @@ namespace { char dummy; }
 using namespace eprosima::fastcdr::exception;
 
 #include <utility>
-
 namespace IDL {
-
 
     Val::Val() {
         m__d = 0;
-        // m_str com.eprosima.idl.parser.typecode.StringTypeCode@16f7c8c1
+        // m_str com.eprosima.idl.parser.typecode.StringTypeCode@2f0a87b3
         m_str = "";
-        // m_dec com.eprosima.idl.parser.typecode.PrimitiveTypeCode@2f0a87b3
+        // m_dec com.eprosima.idl.parser.typecode.PrimitiveTypeCode@319b92f3
         m_dec = 0;
-        // m_fl com.eprosima.idl.parser.typecode.PrimitiveTypeCode@319b92f3
+        // m_fl com.eprosima.idl.parser.typecode.PrimitiveTypeCode@fcd6521
         m_fl = 0.0;
-        // m_float_vec com.eprosima.idl.parser.typecode.SequenceTypeCode@fcd6521
+        // m_float_vec com.eprosima.idl.parser.typecode.SequenceTypeCode@27d415d9
 
-        // m_bl com.eprosima.idl.parser.typecode.PrimitiveTypeCode@27d415d9
+        // m_bl com.eprosima.idl.parser.typecode.PrimitiveTypeCode@5c18298f
         m_bl = false;
-        // m_byte_vec com.eprosima.idl.parser.typecode.SequenceTypeCode@5c18298f
+        // m_byte_vec com.eprosima.idl.parser.typecode.SequenceTypeCode@31f924f5
 
-        // m_uint com.eprosima.idl.parser.typecode.PrimitiveTypeCode@31f924f5
+        // m_uint com.eprosima.idl.parser.typecode.PrimitiveTypeCode@5579bb86
         m_uint = 0;
+        // m_u64 com.eprosima.idl.parser.typecode.PrimitiveTypeCode@376b4233
+        m_u64 = 0;
     }
 
     Val::~Val() {
@@ -80,6 +80,9 @@ namespace IDL {
                 break;
             case 6:
                 m_uint = x.m_uint;
+                break;
+            case 7:
+                m_u64 = x.m_u64;
                 break;
             default:
                 break;
@@ -111,6 +114,9 @@ namespace IDL {
             case 6:
                 m_uint = x.m_uint;
                 break;
+            case 7:
+                m_u64 = x.m_u64;
+                break;
             default:
                 break;
         }
@@ -140,6 +146,9 @@ namespace IDL {
                 break;
             case 6:
                 m_uint = x.m_uint;
+                break;
+            case 7:
+                m_u64 = x.m_u64;
                 break;
             default:
                 break;
@@ -172,6 +181,9 @@ namespace IDL {
                 break;
             case 6:
                 m_uint = x.m_uint;
+                break;
+            case 7:
+                m_u64 = x.m_u64;
                 break;
             default:
                 break;
@@ -240,7 +252,16 @@ namespace IDL {
                 break;
             case 6:
                 switch (__d) {
-                    case 1:
+                    case 6:
+                        b = true;
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            case 7:
+                switch (__d) {
+                    case 7:
                         b = true;
                         break;
                     default:
@@ -522,7 +543,7 @@ namespace IDL {
         bool b = false;
 
         switch (m__d) {
-            case 1:
+            case 6:
                 b = true;
                 break;
             default:
@@ -539,7 +560,7 @@ namespace IDL {
         bool b = false;
 
         switch (m__d) {
-            case 1:
+            case 6:
                 b = true;
                 break;
             default:
@@ -550,6 +571,45 @@ namespace IDL {
         }
 
         return m_uint;
+    }
+
+    void Val::u64(uint64_t _u64) {
+        m_u64 = _u64;
+        m__d = 7;
+    }
+
+    uint64_t Val::u64() const {
+        bool b = false;
+
+        switch (m__d) {
+            case 7:
+                b = true;
+                break;
+            default:
+                break;
+        }
+        if (!b) {
+            throw BadParamException("This member is not been selected");
+        }
+
+        return m_u64;
+    }
+
+    uint64_t &Val::u64() {
+        bool b = false;
+
+        switch (m__d) {
+            case 7:
+                b = true;
+                break;
+            default:
+                break;
+        }
+        if (!b) {
+            throw BadParamException("This member is not been selected");
+        }
+
+        return m_u64;
     }
 
     size_t Val::getMaxCdrSerializedSize(size_t current_alignment) {
@@ -626,6 +686,15 @@ namespace IDL {
             union_max_size_serialized = reset_alignment;
 
 
+        reset_alignment = current_alignment;
+
+        reset_alignment += 8 + eprosima::fastcdr::Cdr::alignment(reset_alignment, 8);
+
+
+        if (union_max_size_serialized < reset_alignment)
+            union_max_size_serialized = reset_alignment;
+
+
         return union_max_size_serialized - initial_alignment;
     }
 
@@ -673,6 +742,10 @@ namespace IDL {
                 current_alignment += 4 + eprosima::fastcdr::Cdr::alignment(current_alignment, 4);
 
                 break;
+            case 7:
+                current_alignment += 8 + eprosima::fastcdr::Cdr::alignment(current_alignment, 8);
+
+                break;
             default:
                 break;
         }
@@ -705,6 +778,9 @@ namespace IDL {
             case 6:
                 scdr << m_uint;
                 break;
+            case 7:
+                scdr << m_u64;
+                break;
             default:
                 break;
         }
@@ -735,164 +811,23 @@ namespace IDL {
             case 6:
                 dcdr >> m_uint;
                 break;
+            case 7:
+                dcdr >> m_u64;
+                break;
             default:
                 break;
         }
     }
 
 
-    Uuid::Uuid() {
-        // m_first com.eprosima.idl.parser.typecode.PrimitiveTypeCode@80169cf
-        m_first = 0;
-        // m_second com.eprosima.idl.parser.typecode.PrimitiveTypeCode@5427c60c
-        m_second = 0;
-
-    }
-
-    Uuid::~Uuid() {
-
-
-    }
-
-    Uuid::Uuid(const Uuid &x) {
-        m_first = x.m_first;
-        m_second = x.m_second;
-    }
-
-    Uuid::Uuid(Uuid &&x) {
-        m_first = x.m_first;
-        m_second = x.m_second;
-    }
-
-    Uuid &Uuid::operator=(const Uuid &x) {
-
-        m_first = x.m_first;
-        m_second = x.m_second;
-
-        return *this;
-    }
-
-    Uuid &Uuid::operator=(Uuid &&x) {
-
-        m_first = x.m_first;
-        m_second = x.m_second;
-
-        return *this;
-    }
-
-    size_t Uuid::getMaxCdrSerializedSize(size_t current_alignment) {
-        size_t initial_alignment = current_alignment;
-
-
-        current_alignment += 8 + eprosima::fastcdr::Cdr::alignment(current_alignment, 8);
-
-
-        current_alignment += 8 + eprosima::fastcdr::Cdr::alignment(current_alignment, 8);
-
-
-        return current_alignment - initial_alignment;
-    }
-
-    size_t Uuid::getCdrSerializedSize(const Uuid &data, size_t current_alignment) {
-        (void) data;
-        size_t initial_alignment = current_alignment;
-
-
-        current_alignment += 8 + eprosima::fastcdr::Cdr::alignment(current_alignment, 8);
-
-
-        current_alignment += 8 + eprosima::fastcdr::Cdr::alignment(current_alignment, 8);
-
-
-        return current_alignment - initial_alignment;
-    }
-
-    void Uuid::serialize(eprosima::fastcdr::Cdr &scdr) const {
-
-        scdr << m_first;
-        scdr << m_second;
-    }
-
-    void Uuid::deserialize(eprosima::fastcdr::Cdr &dcdr) {
-
-        dcdr >> m_first;
-        dcdr >> m_second;
-    }
-
-/*!
- * @brief This function sets a value in member first
- * @param _first New value for member first
- */
-    void Uuid::first(uint64_t _first) {
-        m_first = _first;
-    }
-
-/*!
- * @brief This function returns the value of member first
- * @return Value of member first
- */
-    uint64_t Uuid::first() const {
-        return m_first;
-    }
-
-/*!
- * @brief This function returns a reference to member first
- * @return Reference to member first
- */
-    uint64_t &Uuid::first() {
-        return m_first;
-    }
-
-/*!
- * @brief This function sets a value in member second
- * @param _second New value for member second
- */
-    void Uuid::second(uint64_t _second) {
-        m_second = _second;
-    }
-
-/*!
- * @brief This function returns the value of member second
- * @return Value of member second
- */
-    uint64_t Uuid::second() const {
-        return m_second;
-    }
-
-/*!
- * @brief This function returns a reference to member second
- * @return Reference to member second
- */
-    uint64_t &Uuid::second() {
-        return m_second;
-    }
-
-
-    size_t Uuid::getKeyMaxCdrSerializedSize(size_t current_alignment) {
-        size_t current_align = current_alignment;
-
-
-        return current_align;
-    }
-
-    bool Uuid::isKeyDefined() {
-        return false;
-    }
-
-    void Uuid::serializeKey(eprosima::fastcdr::Cdr &scdr) const {
-        (void) scdr;
-
-
-    }
-
     Attrib::Attrib() {
-        // m_type com.eprosima.idl.parser.typecode.PrimitiveTypeCode@6591f517
+        // m_type com.eprosima.idl.parser.typecode.PrimitiveTypeCode@4d339552
         m_type = 0;
-        // m_value com.eprosima.idl.parser.typecode.UnionTypeCode@345965f2
+        // m_value com.eprosima.idl.parser.typecode.UnionTypeCode@f0f2775
 
-        // m_timestamp com.eprosima.idl.parser.typecode.PrimitiveTypeCode@279ad2e3
+        // m_timestamp com.eprosima.idl.parser.typecode.PrimitiveTypeCode@5a4aa2f2
         m_timestamp = 0;
-        // m_agent_id com.eprosima.idl.parser.typecode.PrimitiveTypeCode@58134517
+        // m_agent_id com.eprosima.idl.parser.typecode.PrimitiveTypeCode@429bd883
         m_agent_id = 0;
 
     }
@@ -1110,9 +1045,9 @@ namespace IDL {
     }
 
     PairInt::PairInt() {
-        // m_first com.eprosima.fastrtps.idl.parser.typecode.StructTypeCode@226a82c4
-
-        // m_second com.eprosima.idl.parser.typecode.PrimitiveTypeCode@731f8236
+        // m_first com.eprosima.idl.parser.typecode.PrimitiveTypeCode@731f8236
+        m_first = 0;
+        // m_second com.eprosima.idl.parser.typecode.PrimitiveTypeCode@255b53dc
         m_second = 0;
 
     }
@@ -1128,7 +1063,7 @@ namespace IDL {
     }
 
     PairInt::PairInt(PairInt &&x) {
-        m_first = std::move(x.m_first);
+        m_first = x.m_first;
         m_second = x.m_second;
     }
 
@@ -1142,7 +1077,7 @@ namespace IDL {
 
     PairInt &PairInt::operator=(PairInt &&x) {
 
-        m_first = std::move(x.m_first);
+        m_first = x.m_first;
         m_second = x.m_second;
 
         return *this;
@@ -1152,7 +1087,9 @@ namespace IDL {
         size_t initial_alignment = current_alignment;
 
 
-        current_alignment += Uuid::getMaxCdrSerializedSize(current_alignment);
+        current_alignment += 8 + eprosima::fastcdr::Cdr::alignment(current_alignment, 8);
+
+
         current_alignment += 4 + eprosima::fastcdr::Cdr::alignment(current_alignment, 4);
 
 
@@ -1164,7 +1101,9 @@ namespace IDL {
         size_t initial_alignment = current_alignment;
 
 
-        current_alignment += Uuid::getCdrSerializedSize(data.first(), current_alignment);
+        current_alignment += 8 + eprosima::fastcdr::Cdr::alignment(current_alignment, 8);
+
+
         current_alignment += 4 + eprosima::fastcdr::Cdr::alignment(current_alignment, 4);
 
 
@@ -1184,26 +1123,18 @@ namespace IDL {
     }
 
 /*!
- * @brief This function copies the value in member first
- * @param _first New value to be copied in member first
+ * @brief This function sets a value in member first
+ * @param _first New value for member first
  */
-    void PairInt::first(const Uuid &_first) {
+    void PairInt::first(uint64_t _first) {
         m_first = _first;
     }
 
 /*!
- * @brief This function moves the value in member first
- * @param _first New value to be moved in member first
+ * @brief This function returns the value of member first
+ * @return Value of member first
  */
-    void PairInt::first(Uuid &&_first) {
-        m_first = std::move(_first);
-    }
-
-/*!
- * @brief This function returns a constant reference to member first
- * @return Constant reference to member first
- */
-    const Uuid &PairInt::first() const {
+    uint64_t PairInt::first() const {
         return m_first;
     }
 
@@ -1211,7 +1142,7 @@ namespace IDL {
  * @brief This function returns a reference to member first
  * @return Reference to member first
  */
-    Uuid &PairInt::first() {
+    uint64_t &PairInt::first() {
         return m_first;
     }
 
@@ -1258,9 +1189,9 @@ namespace IDL {
     }
 
     DotContext::DotContext() {
-        // m_cc com.eprosima.idl.parser.typecode.MapTypeCode@3b2c72c2
+        // m_cc com.eprosima.idl.parser.typecode.MapTypeCode@4f9a3314
 
-        // m_dc com.eprosima.idl.parser.typecode.SequenceTypeCode@491666ad
+        // m_dc com.eprosima.idl.parser.typecode.SequenceTypeCode@3b2c72c2
 
 
     }
@@ -1303,7 +1234,7 @@ namespace IDL {
         current_alignment += 4 + eprosima::fastcdr::Cdr::alignment(current_alignment, 4);
 
         for (size_t a = 0; a < 100; ++a) {
-            current_alignment += 0 + eprosima::fastcdr::Cdr::alignment(current_alignment, 0);
+            current_alignment += 8 + eprosima::fastcdr::Cdr::alignment(current_alignment, 8);
 
             current_alignment += 4 + eprosima::fastcdr::Cdr::alignment(current_alignment, 4);
 
@@ -1330,7 +1261,9 @@ namespace IDL {
 
         for (auto a : data.cc()) {
             (void) a;
-            current_alignment += Uuid::getCdrSerializedSize((a.first), current_alignment);
+            current_alignment += 8 + eprosima::fastcdr::Cdr::alignment(current_alignment, 8);
+
+
             current_alignment += 4 + eprosima::fastcdr::Cdr::alignment(current_alignment, 4);
 
 
@@ -1364,7 +1297,7 @@ namespace IDL {
  * @brief This function copies the value in member cc
  * @param _cc New value to be copied in member cc
  */
-    void DotContext::cc(const std::map<Uuid, int32_t> &_cc) {
+    void DotContext::cc(const std::map<uint64_t, int32_t> &_cc) {
         m_cc = _cc;
     }
 
@@ -1372,7 +1305,7 @@ namespace IDL {
  * @brief This function moves the value in member cc
  * @param _cc New value to be moved in member cc
  */
-    void DotContext::cc(std::map<Uuid, int32_t> &&_cc) {
+    void DotContext::cc(std::map<uint64_t, int32_t> &&_cc) {
         m_cc = std::move(_cc);
     }
 
@@ -1380,7 +1313,7 @@ namespace IDL {
  * @brief This function returns a constant reference to member cc
  * @return Constant reference to member cc
  */
-    const std::map<Uuid, int32_t> &DotContext::cc() const {
+    const std::map<uint64_t, int32_t> &DotContext::cc() const {
         return m_cc;
     }
 
@@ -1388,7 +1321,7 @@ namespace IDL {
  * @brief This function returns a reference to member cc
  * @return Reference to member cc
  */
-    std::map<Uuid, int32_t> &DotContext::cc() {
+    std::map<uint64_t, int32_t> &DotContext::cc() {
         return m_cc;
     }
 
@@ -1442,9 +1375,9 @@ namespace IDL {
     }
 
     DotKernelAttr::DotKernelAttr() {
-        // m_ds com.eprosima.idl.parser.typecode.MapTypeCode@176d53b2
+        // m_ds com.eprosima.idl.parser.typecode.MapTypeCode@971d0d8
 
-        // m_cbase com.eprosima.fastrtps.idl.parser.typecode.StructTypeCode@971d0d8
+        // m_cbase com.eprosima.fastrtps.idl.parser.typecode.StructTypeCode@51931956
 
 
     }
@@ -1611,19 +1544,19 @@ namespace IDL {
     }
 
     MvregEdgeAttr::MvregEdgeAttr() {
-        // m_id com.eprosima.fastrtps.idl.parser.typecode.StructTypeCode@226a82c4
-
-        // m_from com.eprosima.fastrtps.idl.parser.typecode.StructTypeCode@226a82c4
-
-        // m_to com.eprosima.fastrtps.idl.parser.typecode.StructTypeCode@226a82c4
-
-        // m_type com.eprosima.idl.parser.typecode.StringTypeCode@7f77e91b
+        // m_id com.eprosima.idl.parser.typecode.PrimitiveTypeCode@7bb58ca3
+        m_id = 0;
+        // m_from com.eprosima.idl.parser.typecode.PrimitiveTypeCode@c540f5a
+        m_from = 0;
+        // m_to com.eprosima.idl.parser.typecode.PrimitiveTypeCode@770c2e6b
+        m_to = 0;
+        // m_type com.eprosima.idl.parser.typecode.StringTypeCode@1a052a00
         m_type = "";
-        // m_attr_name com.eprosima.idl.parser.typecode.StringTypeCode@44a664f2
+        // m_attr_name com.eprosima.idl.parser.typecode.StringTypeCode@4d826d77
         m_attr_name = "";
-        // m_dk com.eprosima.fastrtps.idl.parser.typecode.StructTypeCode@7f9fcf7f
+        // m_dk com.eprosima.fastrtps.idl.parser.typecode.StructTypeCode@448ff1a8
 
-        // m_agent_id com.eprosima.idl.parser.typecode.PrimitiveTypeCode@2357d90a
+        // m_agent_id com.eprosima.idl.parser.typecode.PrimitiveTypeCode@1a38c59b
         m_agent_id = 0;
 
     }
@@ -1644,9 +1577,9 @@ namespace IDL {
     }
 
     MvregEdgeAttr::MvregEdgeAttr(MvregEdgeAttr &&x) {
-        m_id = std::move(x.m_id);
-        m_from = std::move(x.m_from);
-        m_to = std::move(x.m_to);
+        m_id = x.m_id;
+        m_from = x.m_from;
+        m_to = x.m_to;
         m_type = std::move(x.m_type);
         m_attr_name = std::move(x.m_attr_name);
         m_dk = std::move(x.m_dk);
@@ -1668,9 +1601,9 @@ namespace IDL {
 
     MvregEdgeAttr &MvregEdgeAttr::operator=(MvregEdgeAttr &&x) {
 
-        m_id = std::move(x.m_id);
-        m_from = std::move(x.m_from);
-        m_to = std::move(x.m_to);
+        m_id = x.m_id;
+        m_from = x.m_from;
+        m_to = x.m_to;
         m_type = std::move(x.m_type);
         m_attr_name = std::move(x.m_attr_name);
         m_dk = std::move(x.m_dk);
@@ -1683,9 +1616,15 @@ namespace IDL {
         size_t initial_alignment = current_alignment;
 
 
-        current_alignment += Uuid::getMaxCdrSerializedSize(current_alignment);
-        current_alignment += Uuid::getMaxCdrSerializedSize(current_alignment);
-        current_alignment += Uuid::getMaxCdrSerializedSize(current_alignment);
+        current_alignment += 8 + eprosima::fastcdr::Cdr::alignment(current_alignment, 8);
+
+
+        current_alignment += 8 + eprosima::fastcdr::Cdr::alignment(current_alignment, 8);
+
+
+        current_alignment += 8 + eprosima::fastcdr::Cdr::alignment(current_alignment, 8);
+
+
         current_alignment += 4 + eprosima::fastcdr::Cdr::alignment(current_alignment, 4) + 255 + 1;
 
         current_alignment += 4 + eprosima::fastcdr::Cdr::alignment(current_alignment, 4) + 255 + 1;
@@ -1702,9 +1641,15 @@ namespace IDL {
         size_t initial_alignment = current_alignment;
 
 
-        current_alignment += Uuid::getCdrSerializedSize(data.id(), current_alignment);
-        current_alignment += Uuid::getCdrSerializedSize(data.from(), current_alignment);
-        current_alignment += Uuid::getCdrSerializedSize(data.to(), current_alignment);
+        current_alignment += 8 + eprosima::fastcdr::Cdr::alignment(current_alignment, 8);
+
+
+        current_alignment += 8 + eprosima::fastcdr::Cdr::alignment(current_alignment, 8);
+
+
+        current_alignment += 8 + eprosima::fastcdr::Cdr::alignment(current_alignment, 8);
+
+
         current_alignment += 4 + eprosima::fastcdr::Cdr::alignment(current_alignment, 4) + data.type().size() + 1;
 
         current_alignment += 4 + eprosima::fastcdr::Cdr::alignment(current_alignment, 4) + data.attr_name().size() + 1;
@@ -1739,26 +1684,18 @@ namespace IDL {
     }
 
 /*!
- * @brief This function copies the value in member id
- * @param _id New value to be copied in member id
+ * @brief This function sets a value in member id
+ * @param _id New value for member id
  */
-    void MvregEdgeAttr::id(const Uuid &_id) {
+    void MvregEdgeAttr::id(uint64_t _id) {
         m_id = _id;
     }
 
 /*!
- * @brief This function moves the value in member id
- * @param _id New value to be moved in member id
+ * @brief This function returns the value of member id
+ * @return Value of member id
  */
-    void MvregEdgeAttr::id(Uuid &&_id) {
-        m_id = std::move(_id);
-    }
-
-/*!
- * @brief This function returns a constant reference to member id
- * @return Constant reference to member id
- */
-    const Uuid &MvregEdgeAttr::id() const {
+    uint64_t MvregEdgeAttr::id() const {
         return m_id;
     }
 
@@ -1766,31 +1703,23 @@ namespace IDL {
  * @brief This function returns a reference to member id
  * @return Reference to member id
  */
-    Uuid &MvregEdgeAttr::id() {
+    uint64_t &MvregEdgeAttr::id() {
         return m_id;
     }
 
 /*!
- * @brief This function copies the value in member from
- * @param _from New value to be copied in member from
+ * @brief This function sets a value in member from
+ * @param _from New value for member from
  */
-    void MvregEdgeAttr::from(const Uuid &_from) {
+    void MvregEdgeAttr::from(uint64_t _from) {
         m_from = _from;
     }
 
 /*!
- * @brief This function moves the value in member from
- * @param _from New value to be moved in member from
+ * @brief This function returns the value of member from
+ * @return Value of member from
  */
-    void MvregEdgeAttr::from(Uuid &&_from) {
-        m_from = std::move(_from);
-    }
-
-/*!
- * @brief This function returns a constant reference to member from
- * @return Constant reference to member from
- */
-    const Uuid &MvregEdgeAttr::from() const {
+    uint64_t MvregEdgeAttr::from() const {
         return m_from;
     }
 
@@ -1798,31 +1727,23 @@ namespace IDL {
  * @brief This function returns a reference to member from
  * @return Reference to member from
  */
-    Uuid &MvregEdgeAttr::from() {
+    uint64_t &MvregEdgeAttr::from() {
         return m_from;
     }
 
 /*!
- * @brief This function copies the value in member to
- * @param _to New value to be copied in member to
+ * @brief This function sets a value in member to
+ * @param _to New value for member to
  */
-    void MvregEdgeAttr::to(const Uuid &_to) {
+    void MvregEdgeAttr::to(uint64_t _to) {
         m_to = _to;
     }
 
 /*!
- * @brief This function moves the value in member to
- * @param _to New value to be moved in member to
+ * @brief This function returns the value of member to
+ * @return Value of member to
  */
-    void MvregEdgeAttr::to(Uuid &&_to) {
-        m_to = std::move(_to);
-    }
-
-/*!
- * @brief This function returns a constant reference to member to
- * @return Constant reference to member to
- */
-    const Uuid &MvregEdgeAttr::to() const {
+    uint64_t MvregEdgeAttr::to() const {
         return m_to;
     }
 
@@ -1830,7 +1751,7 @@ namespace IDL {
  * @brief This function returns a reference to member to
  * @return Reference to member to
  */
-    Uuid &MvregEdgeAttr::to() {
+    uint64_t &MvregEdgeAttr::to() {
         return m_to;
     }
 
@@ -1973,15 +1894,15 @@ namespace IDL {
     }
 
     IDLEdge::IDLEdge() {
-        // m_to com.eprosima.fastrtps.idl.parser.typecode.StructTypeCode@226a82c4
-
-        // m_type com.eprosima.idl.parser.typecode.StringTypeCode@15bb6bea
+        // m_to com.eprosima.idl.parser.typecode.PrimitiveTypeCode@15bb6bea
+        m_to = 0;
+        // m_type com.eprosima.idl.parser.typecode.StringTypeCode@8b96fde
         m_type = "";
-        // m_from com.eprosima.idl.parser.typecode.PrimitiveTypeCode@8b96fde
+        // m_from com.eprosima.idl.parser.typecode.PrimitiveTypeCode@2d2e5f00
+        m_from = 0;
+        // m_attrs com.eprosima.idl.parser.typecode.MapTypeCode@41ee392b
 
-        // m_attrs com.eprosima.idl.parser.typecode.MapTypeCode@2ea6137
-
-        // m_agent_id com.eprosima.idl.parser.typecode.PrimitiveTypeCode@41ee392b
+        // m_agent_id com.eprosima.idl.parser.typecode.PrimitiveTypeCode@1e67a849
         m_agent_id = 0;
 
     }
@@ -2000,7 +1921,7 @@ namespace IDL {
     }
 
     IDLEdge::IDLEdge(IDLEdge &&x) {
-        m_to = std::move(x.m_to);
+        m_to = x.m_to;
         m_type = std::move(x.m_type);
         m_from = x.m_from;
         m_attrs = std::move(x.m_attrs);
@@ -2020,7 +1941,7 @@ namespace IDL {
 
     IDLEdge &IDLEdge::operator=(IDLEdge &&x) {
 
-        m_to = std::move(x.m_to);
+        m_to = x.m_to;
         m_type = std::move(x.m_type);
         m_from = x.m_from;
         m_attrs = std::move(x.m_attrs);
@@ -2033,10 +1954,12 @@ namespace IDL {
         size_t initial_alignment = current_alignment;
 
 
-        current_alignment += Uuid::getMaxCdrSerializedSize(current_alignment);
+        current_alignment += 8 + eprosima::fastcdr::Cdr::alignment(current_alignment, 8);
+
+
         current_alignment += 4 + eprosima::fastcdr::Cdr::alignment(current_alignment, 4) + 255 + 1;
 
-        current_alignment += Uuid::getMaxCdrSerializedSize(current_alignment);
+        current_alignment += 8 + eprosima::fastcdr::Cdr::alignment(current_alignment, 8);
 
 
         current_alignment += 4 + eprosima::fastcdr::Cdr::alignment(current_alignment, 4);
@@ -2058,10 +1981,12 @@ namespace IDL {
         size_t initial_alignment = current_alignment;
 
 
-        current_alignment += Uuid::getCdrSerializedSize(data.to(), current_alignment);
+        current_alignment += 8 + eprosima::fastcdr::Cdr::alignment(current_alignment, 8);
+
+
         current_alignment += 4 + eprosima::fastcdr::Cdr::alignment(current_alignment, 4) + data.type().size() + 1;
 
-        current_alignment += Uuid::getCdrSerializedSize(data.from(), current_alignment);
+        current_alignment += 8 + eprosima::fastcdr::Cdr::alignment(current_alignment, 8);
 
 
         current_alignment += 4 + eprosima::fastcdr::Cdr::alignment(current_alignment, 4);
@@ -2099,26 +2024,18 @@ namespace IDL {
     }
 
 /*!
- * @brief This function copies the value in member to
- * @param _to New value to be copied in member to
+ * @brief This function sets a value in member to
+ * @param _to New value for member to
  */
-    void IDLEdge::to(const Uuid &_to) {
+    void IDLEdge::to(uint64_t _to) {
         m_to = _to;
     }
 
 /*!
- * @brief This function moves the value in member to
- * @param _to New value to be moved in member to
+ * @brief This function returns the value of member to
+ * @return Value of member to
  */
-    void IDLEdge::to(Uuid &&_to) {
-        m_to = std::move(_to);
-    }
-
-/*!
- * @brief This function returns a constant reference to member to
- * @return Constant reference to member to
- */
-    const Uuid &IDLEdge::to() const {
+    uint64_t IDLEdge::to() const {
         return m_to;
     }
 
@@ -2126,7 +2043,7 @@ namespace IDL {
  * @brief This function returns a reference to member to
  * @return Reference to member to
  */
-    Uuid &IDLEdge::to() {
+    uint64_t &IDLEdge::to() {
         return m_to;
     }
 
@@ -2163,36 +2080,29 @@ namespace IDL {
     }
 
 /*!
- * @brief This function copies the value in member to
- * @param _to New value to be copied in member to
+ * @brief This function sets a value in member from
+ * @param _from New value for member from
  */
-    void IDLEdge::from(const Uuid &_from) {
+    void IDLEdge::from(uint64_t _from) {
         m_from = _from;
     }
 
 /*!
- * @brief This function moves the value in member to
- * @param _to New value to be moved in member to
+ * @brief This function returns the value of member from
+ * @return Value of member from
  */
-    void IDLEdge::from(Uuid &&_from) {
-        m_from = std::move(_from);
-    }
-
-/*!
- * @brief This function returns a constant reference to member to
- * @return Constant reference to member to
- */
-    const Uuid &IDLEdge::from() const {
+    uint64_t IDLEdge::from() const {
         return m_from;
     }
 
 /*!
- * @brief This function returns a reference to member to
- * @return Reference to member to
+ * @brief This function returns a reference to member from
+ * @return Reference to member from
  */
-    Uuid &IDLEdge::from() {
+    uint64_t &IDLEdge::from() {
         return m_from;
     }
+
 /*!
  * @brief This function copies the value in member attrs
  * @param _attrs New value to be copied in member attrs
@@ -2268,9 +2178,9 @@ namespace IDL {
     }
 
     EdgeKey::EdgeKey() {
-        // m_to com.eprosima.idl.parser.typecode.PrimitiveTypeCode@157632c9
+        // m_to com.eprosima.idl.parser.typecode.PrimitiveTypeCode@6ee12bac
         m_to = 0;
-        // m_type com.eprosima.idl.parser.typecode.StringTypeCode@6ee12bac
+        // m_type com.eprosima.idl.parser.typecode.StringTypeCode@55040f2f
         m_type = "";
 
     }
@@ -2419,15 +2329,15 @@ namespace IDL {
     }
 
     MvregNodeAttr::MvregNodeAttr() {
-        // m_id com.eprosima.fastrtps.idl.parser.typecode.StructTypeCode@226a82c4
-
-        // m_node com.eprosima.fastrtps.idl.parser.typecode.StructTypeCode@226a82c4
-
-        // m_attr_name com.eprosima.idl.parser.typecode.StringTypeCode@55040f2f
+        // m_id com.eprosima.idl.parser.typecode.PrimitiveTypeCode@75f9eccc
+        m_id = 0;
+        // m_node com.eprosima.idl.parser.typecode.PrimitiveTypeCode@52aa2946
+        m_node = 0;
+        // m_attr_name com.eprosima.idl.parser.typecode.StringTypeCode@4de5031f
         m_attr_name = "";
-        // m_dk com.eprosima.fastrtps.idl.parser.typecode.StructTypeCode@7f9fcf7f
+        // m_dk com.eprosima.fastrtps.idl.parser.typecode.StructTypeCode@448ff1a8
 
-        // m_agent_id com.eprosima.idl.parser.typecode.PrimitiveTypeCode@64c87930
+        // m_agent_id com.eprosima.idl.parser.typecode.PrimitiveTypeCode@5ea434c8
         m_agent_id = 0;
 
     }
@@ -2446,8 +2356,8 @@ namespace IDL {
     }
 
     MvregNodeAttr::MvregNodeAttr(MvregNodeAttr &&x) {
-        m_id = std::move(x.m_id);
-        m_node = std::move(x.m_node);
+        m_id = x.m_id;
+        m_node = x.m_node;
         m_attr_name = std::move(x.m_attr_name);
         m_dk = std::move(x.m_dk);
         m_agent_id = x.m_agent_id;
@@ -2466,8 +2376,8 @@ namespace IDL {
 
     MvregNodeAttr &MvregNodeAttr::operator=(MvregNodeAttr &&x) {
 
-        m_id = std::move(x.m_id);
-        m_node = std::move(x.m_node);
+        m_id = x.m_id;
+        m_node = x.m_node;
         m_attr_name = std::move(x.m_attr_name);
         m_dk = std::move(x.m_dk);
         m_agent_id = x.m_agent_id;
@@ -2479,8 +2389,12 @@ namespace IDL {
         size_t initial_alignment = current_alignment;
 
 
-        current_alignment += Uuid::getMaxCdrSerializedSize(current_alignment);
-        current_alignment += Uuid::getMaxCdrSerializedSize(current_alignment);
+        current_alignment += 8 + eprosima::fastcdr::Cdr::alignment(current_alignment, 8);
+
+
+        current_alignment += 8 + eprosima::fastcdr::Cdr::alignment(current_alignment, 8);
+
+
         current_alignment += 4 + eprosima::fastcdr::Cdr::alignment(current_alignment, 4) + 255 + 1;
 
         current_alignment += DotKernelAttr::getMaxCdrSerializedSize(current_alignment);
@@ -2495,8 +2409,12 @@ namespace IDL {
         size_t initial_alignment = current_alignment;
 
 
-        current_alignment += Uuid::getCdrSerializedSize(data.id(), current_alignment);
-        current_alignment += Uuid::getCdrSerializedSize(data.node(), current_alignment);
+        current_alignment += 8 + eprosima::fastcdr::Cdr::alignment(current_alignment, 8);
+
+
+        current_alignment += 8 + eprosima::fastcdr::Cdr::alignment(current_alignment, 8);
+
+
         current_alignment += 4 + eprosima::fastcdr::Cdr::alignment(current_alignment, 4) + data.attr_name().size() + 1;
 
         current_alignment += DotKernelAttr::getCdrSerializedSize(data.dk(), current_alignment);
@@ -2525,26 +2443,18 @@ namespace IDL {
     }
 
 /*!
- * @brief This function copies the value in member id
- * @param _id New value to be copied in member id
+ * @brief This function sets a value in member id
+ * @param _id New value for member id
  */
-    void MvregNodeAttr::id(const Uuid &_id) {
+    void MvregNodeAttr::id(uint64_t _id) {
         m_id = _id;
     }
 
 /*!
- * @brief This function moves the value in member id
- * @param _id New value to be moved in member id
+ * @brief This function returns the value of member id
+ * @return Value of member id
  */
-    void MvregNodeAttr::id(Uuid &&_id) {
-        m_id = std::move(_id);
-    }
-
-/*!
- * @brief This function returns a constant reference to member id
- * @return Constant reference to member id
- */
-    const Uuid &MvregNodeAttr::id() const {
+    uint64_t MvregNodeAttr::id() const {
         return m_id;
     }
 
@@ -2552,31 +2462,23 @@ namespace IDL {
  * @brief This function returns a reference to member id
  * @return Reference to member id
  */
-    Uuid &MvregNodeAttr::id() {
+    uint64_t &MvregNodeAttr::id() {
         return m_id;
     }
 
 /*!
- * @brief This function copies the value in member node
- * @param _node New value to be copied in member node
+ * @brief This function sets a value in member node
+ * @param _node New value for member node
  */
-    void MvregNodeAttr::node(const Uuid &_node) {
+    void MvregNodeAttr::node(uint64_t _node) {
         m_node = _node;
     }
 
 /*!
- * @brief This function moves the value in member node
- * @param _node New value to be moved in member node
+ * @brief This function returns the value of member node
+ * @return Value of member node
  */
-    void MvregNodeAttr::node(Uuid &&_node) {
-        m_node = std::move(_node);
-    }
-
-/*!
- * @brief This function returns a constant reference to member node
- * @return Constant reference to member node
- */
-    const Uuid &MvregNodeAttr::node() const {
+    uint64_t MvregNodeAttr::node() const {
         return m_node;
     }
 
@@ -2584,7 +2486,7 @@ namespace IDL {
  * @brief This function returns a reference to member node
  * @return Reference to member node
  */
-    Uuid &MvregNodeAttr::node() {
+    uint64_t &MvregNodeAttr::node() {
         return m_node;
     }
 
@@ -2695,9 +2597,9 @@ namespace IDL {
     }
 
     DotKernelEdge::DotKernelEdge() {
-        // m_ds com.eprosima.idl.parser.typecode.MapTypeCode@400cff1a
+        // m_ds com.eprosima.idl.parser.typecode.MapTypeCode@3bbc39f8
 
-        // m_cbase com.eprosima.fastrtps.idl.parser.typecode.StructTypeCode@971d0d8
+        // m_cbase com.eprosima.fastrtps.idl.parser.typecode.StructTypeCode@51931956
 
 
     }
@@ -2864,17 +2766,17 @@ namespace IDL {
     }
 
     MvregEdge::MvregEdge() {
-        // m_id com.eprosima.fastrtps.idl.parser.typecode.StructTypeCode@226a82c4
-
-        // m_from com.eprosima.fastrtps.idl.parser.typecode.StructTypeCode@226a82c4
-
-        // m_to com.eprosima.fastrtps.idl.parser.typecode.StructTypeCode@226a82c4
-
-        // m_type com.eprosima.idl.parser.typecode.StringTypeCode@275710fc
+        // m_id com.eprosima.idl.parser.typecode.PrimitiveTypeCode@4ae3c1cd
+        m_id = 0;
+        // m_from com.eprosima.idl.parser.typecode.PrimitiveTypeCode@29f69090
+        m_from = 0;
+        // m_to com.eprosima.idl.parser.typecode.PrimitiveTypeCode@568bf312
+        m_to = 0;
+        // m_type com.eprosima.idl.parser.typecode.StringTypeCode@ca263c2
         m_type = "";
-        // m_dk com.eprosima.fastrtps.idl.parser.typecode.StructTypeCode@525f1e4e
+        // m_dk com.eprosima.fastrtps.idl.parser.typecode.StructTypeCode@589b3632
 
-        // m_agent_id com.eprosima.idl.parser.typecode.PrimitiveTypeCode@75f9eccc
+        // m_agent_id com.eprosima.idl.parser.typecode.PrimitiveTypeCode@45f45fa1
         m_agent_id = 0;
 
     }
@@ -2894,9 +2796,9 @@ namespace IDL {
     }
 
     MvregEdge::MvregEdge(MvregEdge &&x) {
-        m_id = std::move(x.m_id);
-        m_from = std::move(x.m_from);
-        m_to = std::move(x.m_to);
+        m_id = x.m_id;
+        m_from = x.m_from;
+        m_to = x.m_to;
         m_type = std::move(x.m_type);
         m_dk = std::move(x.m_dk);
         m_agent_id = x.m_agent_id;
@@ -2916,9 +2818,9 @@ namespace IDL {
 
     MvregEdge &MvregEdge::operator=(MvregEdge &&x) {
 
-        m_id = std::move(x.m_id);
-        m_from = std::move(x.m_from);
-        m_to = std::move(x.m_to);
+        m_id = x.m_id;
+        m_from = x.m_from;
+        m_to = x.m_to;
         m_type = std::move(x.m_type);
         m_dk = std::move(x.m_dk);
         m_agent_id = x.m_agent_id;
@@ -2930,9 +2832,15 @@ namespace IDL {
         size_t initial_alignment = current_alignment;
 
 
-        current_alignment += Uuid::getMaxCdrSerializedSize(current_alignment);
-        current_alignment += Uuid::getMaxCdrSerializedSize(current_alignment);
-        current_alignment += Uuid::getMaxCdrSerializedSize(current_alignment);
+        current_alignment += 8 + eprosima::fastcdr::Cdr::alignment(current_alignment, 8);
+
+
+        current_alignment += 8 + eprosima::fastcdr::Cdr::alignment(current_alignment, 8);
+
+
+        current_alignment += 8 + eprosima::fastcdr::Cdr::alignment(current_alignment, 8);
+
+
         current_alignment += 4 + eprosima::fastcdr::Cdr::alignment(current_alignment, 4) + 255 + 1;
 
         current_alignment += DotKernelEdge::getMaxCdrSerializedSize(current_alignment);
@@ -2947,9 +2855,15 @@ namespace IDL {
         size_t initial_alignment = current_alignment;
 
 
-        current_alignment += Uuid::getCdrSerializedSize(data.id(), current_alignment);
-        current_alignment += Uuid::getCdrSerializedSize(data.from(), current_alignment);
-        current_alignment += Uuid::getCdrSerializedSize(data.to(), current_alignment);
+        current_alignment += 8 + eprosima::fastcdr::Cdr::alignment(current_alignment, 8);
+
+
+        current_alignment += 8 + eprosima::fastcdr::Cdr::alignment(current_alignment, 8);
+
+
+        current_alignment += 8 + eprosima::fastcdr::Cdr::alignment(current_alignment, 8);
+
+
         current_alignment += 4 + eprosima::fastcdr::Cdr::alignment(current_alignment, 4) + data.type().size() + 1;
 
         current_alignment += DotKernelEdge::getCdrSerializedSize(data.dk(), current_alignment);
@@ -2980,26 +2894,18 @@ namespace IDL {
     }
 
 /*!
- * @brief This function copies the value in member id
- * @param _id New value to be copied in member id
+ * @brief This function sets a value in member id
+ * @param _id New value for member id
  */
-    void MvregEdge::id(const Uuid &_id) {
+    void MvregEdge::id(uint64_t _id) {
         m_id = _id;
     }
 
 /*!
- * @brief This function moves the value in member id
- * @param _id New value to be moved in member id
+ * @brief This function returns the value of member id
+ * @return Value of member id
  */
-    void MvregEdge::id(Uuid &&_id) {
-        m_id = std::move(_id);
-    }
-
-/*!
- * @brief This function returns a constant reference to member id
- * @return Constant reference to member id
- */
-    const Uuid &MvregEdge::id() const {
+    uint64_t MvregEdge::id() const {
         return m_id;
     }
 
@@ -3007,31 +2913,23 @@ namespace IDL {
  * @brief This function returns a reference to member id
  * @return Reference to member id
  */
-    Uuid &MvregEdge::id() {
+    uint64_t &MvregEdge::id() {
         return m_id;
     }
 
 /*!
- * @brief This function copies the value in member from
- * @param _from New value to be copied in member from
+ * @brief This function sets a value in member from
+ * @param _from New value for member from
  */
-    void MvregEdge::from(const Uuid &_from) {
+    void MvregEdge::from(uint64_t _from) {
         m_from = _from;
     }
 
 /*!
- * @brief This function moves the value in member from
- * @param _from New value to be moved in member from
+ * @brief This function returns the value of member from
+ * @return Value of member from
  */
-    void MvregEdge::from(Uuid &&_from) {
-        m_from = std::move(_from);
-    }
-
-/*!
- * @brief This function returns a constant reference to member from
- * @return Constant reference to member from
- */
-    const Uuid &MvregEdge::from() const {
+    uint64_t MvregEdge::from() const {
         return m_from;
     }
 
@@ -3039,31 +2937,23 @@ namespace IDL {
  * @brief This function returns a reference to member from
  * @return Reference to member from
  */
-    Uuid &MvregEdge::from() {
+    uint64_t &MvregEdge::from() {
         return m_from;
     }
 
 /*!
- * @brief This function copies the value in member to
- * @param _to New value to be copied in member to
+ * @brief This function sets a value in member to
+ * @param _to New value for member to
  */
-    void MvregEdge::to(const Uuid &_to) {
+    void MvregEdge::to(uint64_t _to) {
         m_to = _to;
     }
 
 /*!
- * @brief This function moves the value in member to
- * @param _to New value to be moved in member to
+ * @brief This function returns the value of member to
+ * @return Value of member to
  */
-    void MvregEdge::to(Uuid &&_to) {
-        m_to = std::move(_to);
-    }
-
-/*!
- * @brief This function returns a constant reference to member to
- * @return Constant reference to member to
- */
-    const Uuid &MvregEdge::to() const {
+    uint64_t MvregEdge::to() const {
         return m_to;
     }
 
@@ -3071,7 +2961,7 @@ namespace IDL {
  * @brief This function returns a reference to member to
  * @return Reference to member to
  */
-    Uuid &MvregEdge::to() {
+    uint64_t &MvregEdge::to() {
         return m_to;
     }
 
@@ -3182,17 +3072,17 @@ namespace IDL {
     }
 
     IDLNode::IDLNode() {
-        // m_type com.eprosima.idl.parser.typecode.StringTypeCode@67e2d983
+        // m_type com.eprosima.idl.parser.typecode.StringTypeCode@4c6e276e
         m_type = "";
-        // m_name com.eprosima.idl.parser.typecode.StringTypeCode@5d47c63f
+        // m_name com.eprosima.idl.parser.typecode.StringTypeCode@534df152
         m_name = "";
-        // m_id com.eprosima.fastrtps.idl.parser.typecode.StructTypeCode@226a82c4
-
-        // m_agent_id com.eprosima.idl.parser.typecode.PrimitiveTypeCode@5ea434c8
+        // m_id com.eprosima.idl.parser.typecode.PrimitiveTypeCode@52e677af
+        m_id = 0;
+        // m_agent_id com.eprosima.idl.parser.typecode.PrimitiveTypeCode@35083305
         m_agent_id = 0;
-        // m_attrs com.eprosima.idl.parser.typecode.MapTypeCode@3bbc39f8
+        // m_attrs com.eprosima.idl.parser.typecode.MapTypeCode@8e0379d
 
-        // m_fano com.eprosima.idl.parser.typecode.MapTypeCode@4ae3c1cd
+        // m_fano com.eprosima.idl.parser.typecode.MapTypeCode@341b80b2
 
 
     }
@@ -3214,7 +3104,7 @@ namespace IDL {
     IDLNode::IDLNode(IDLNode &&x) {
         m_type = std::move(x.m_type);
         m_name = std::move(x.m_name);
-        m_id = std::move(x.m_id);
+        m_id = x.m_id;
         m_agent_id = x.m_agent_id;
         m_attrs = std::move(x.m_attrs);
         m_fano = std::move(x.m_fano);
@@ -3236,7 +3126,7 @@ namespace IDL {
 
         m_type = std::move(x.m_type);
         m_name = std::move(x.m_name);
-        m_id = std::move(x.m_id);
+        m_id = x.m_id;
         m_agent_id = x.m_agent_id;
         m_attrs = std::move(x.m_attrs);
         m_fano = std::move(x.m_fano);
@@ -3252,7 +3142,9 @@ namespace IDL {
 
         current_alignment += 4 + eprosima::fastcdr::Cdr::alignment(current_alignment, 4) + 255 + 1;
 
-        current_alignment += Uuid::getMaxCdrSerializedSize(current_alignment);
+        current_alignment += 8 + eprosima::fastcdr::Cdr::alignment(current_alignment, 8);
+
+
         current_alignment += 4 + eprosima::fastcdr::Cdr::alignment(current_alignment, 4);
 
 
@@ -3285,7 +3177,9 @@ namespace IDL {
 
         current_alignment += 4 + eprosima::fastcdr::Cdr::alignment(current_alignment, 4) + data.name().size() + 1;
 
-        current_alignment += Uuid::getCdrSerializedSize(data.id(), current_alignment);
+        current_alignment += 8 + eprosima::fastcdr::Cdr::alignment(current_alignment, 8);
+
+
         current_alignment += 4 + eprosima::fastcdr::Cdr::alignment(current_alignment, 4);
 
 
@@ -3397,26 +3291,18 @@ namespace IDL {
     }
 
 /*!
- * @brief This function copies the value in member id
- * @param _id New value to be copied in member id
+ * @brief This function sets a value in member id
+ * @param _id New value for member id
  */
-    void IDLNode::id(const Uuid &_id) {
+    void IDLNode::id(uint64_t _id) {
         m_id = _id;
     }
 
 /*!
- * @brief This function moves the value in member id
- * @param _id New value to be moved in member id
+ * @brief This function returns the value of member id
+ * @return Value of member id
  */
-    void IDLNode::id(Uuid &&_id) {
-        m_id = std::move(_id);
-    }
-
-/*!
- * @brief This function returns a constant reference to member id
- * @return Constant reference to member id
- */
-    const Uuid &IDLNode::id() const {
+    uint64_t IDLNode::id() const {
         return m_id;
     }
 
@@ -3424,7 +3310,7 @@ namespace IDL {
  * @brief This function returns a reference to member id
  * @return Reference to member id
  */
-    Uuid &IDLNode::id() {
+    uint64_t &IDLNode::id() {
         return m_id;
     }
 
@@ -3534,25 +3420,32 @@ namespace IDL {
     }
 
     GraphRequest::GraphRequest() {
-        // m_from com.eprosima.idl.parser.typecode.StringTypeCode@45f45fa1
+        // m_from com.eprosima.idl.parser.typecode.StringTypeCode@1b083826
         m_from = "";
+        // m_id com.eprosima.idl.parser.typecode.PrimitiveTypeCode@105fece7
+        m_id = 0;
 
     }
 
     GraphRequest::~GraphRequest() {
+
+
     }
 
     GraphRequest::GraphRequest(const GraphRequest &x) {
         m_from = x.m_from;
+        m_id = x.m_id;
     }
 
     GraphRequest::GraphRequest(GraphRequest &&x) {
         m_from = std::move(x.m_from);
+        m_id = x.m_id;
     }
 
     GraphRequest &GraphRequest::operator=(const GraphRequest &x) {
 
         m_from = x.m_from;
+        m_id = x.m_id;
 
         return *this;
     }
@@ -3560,6 +3453,7 @@ namespace IDL {
     GraphRequest &GraphRequest::operator=(GraphRequest &&x) {
 
         m_from = std::move(x.m_from);
+        m_id = x.m_id;
 
         return *this;
     }
@@ -3569,6 +3463,9 @@ namespace IDL {
 
 
         current_alignment += 4 + eprosima::fastcdr::Cdr::alignment(current_alignment, 4) + 255 + 1;
+
+        current_alignment += 4 + eprosima::fastcdr::Cdr::alignment(current_alignment, 4);
+
 
         return current_alignment - initial_alignment;
     }
@@ -3580,17 +3477,22 @@ namespace IDL {
 
         current_alignment += 4 + eprosima::fastcdr::Cdr::alignment(current_alignment, 4) + data.from().size() + 1;
 
+        current_alignment += 4 + eprosima::fastcdr::Cdr::alignment(current_alignment, 4);
+
+
         return current_alignment - initial_alignment;
     }
 
     void GraphRequest::serialize(eprosima::fastcdr::Cdr &scdr) const {
 
         scdr << m_from;
+        scdr << m_id;
     }
 
     void GraphRequest::deserialize(eprosima::fastcdr::Cdr &dcdr) {
 
         dcdr >> m_from;
+        dcdr >> m_id;
     }
 
 /*!
@@ -3625,6 +3527,31 @@ namespace IDL {
         return m_from;
     }
 
+/*!
+ * @brief This function sets a value in member id
+ * @param _id New value for member id
+ */
+    void GraphRequest::id(int32_t _id) {
+        m_id = _id;
+    }
+
+/*!
+ * @brief This function returns the value of member id
+ * @return Value of member id
+ */
+    int32_t GraphRequest::id() const {
+        return m_id;
+    }
+
+/*!
+ * @brief This function returns a reference to member id
+ * @return Reference to member id
+ */
+    int32_t &GraphRequest::id() {
+        return m_id;
+    }
+
+
     size_t GraphRequest::getKeyMaxCdrSerializedSize(size_t current_alignment) {
         size_t current_align = current_alignment;
 
@@ -3639,12 +3566,13 @@ namespace IDL {
     void GraphRequest::serializeKey(eprosima::fastcdr::Cdr &scdr) const {
         (void) scdr;
 
+
     }
 
     DotKernel::DotKernel() {
-        // m_ds com.eprosima.idl.parser.typecode.MapTypeCode@4c6e276e
+        // m_ds com.eprosima.idl.parser.typecode.MapTypeCode@3ec300f1
 
-        // m_cbase com.eprosima.fastrtps.idl.parser.typecode.StructTypeCode@971d0d8
+        // m_cbase com.eprosima.fastrtps.idl.parser.typecode.StructTypeCode@51931956
 
 
     }
@@ -3810,34 +3738,34 @@ namespace IDL {
 
     }
 
-    Mvreg::Mvreg() {
-        // m_id com.eprosima.fastrtps.idl.parser.typecode.StructTypeCode@226a82c4
+    MvregNode::MvregNode() {
+        // m_id com.eprosima.idl.parser.typecode.PrimitiveTypeCode@482cd91f
+        m_id = 0;
+        // m_dk com.eprosima.fastrtps.idl.parser.typecode.StructTypeCode@123f1134
 
-        // m_dk com.eprosima.fastrtps.idl.parser.typecode.StructTypeCode@534df152
-
-        // m_agent_id com.eprosima.idl.parser.typecode.PrimitiveTypeCode@52e677af
+        // m_agent_id com.eprosima.idl.parser.typecode.PrimitiveTypeCode@7d68ef40
         m_agent_id = 0;
 
     }
 
-    Mvreg::~Mvreg() {
+    MvregNode::~MvregNode() {
 
 
     }
 
-    Mvreg::Mvreg(const Mvreg &x) {
+    MvregNode::MvregNode(const MvregNode &x) {
         m_id = x.m_id;
         m_dk = x.m_dk;
         m_agent_id = x.m_agent_id;
     }
 
-    Mvreg::Mvreg(Mvreg &&x) {
-        m_id = std::move(x.m_id);
+    MvregNode::MvregNode(MvregNode &&x) {
+        m_id = x.m_id;
         m_dk = std::move(x.m_dk);
         m_agent_id = x.m_agent_id;
     }
 
-    Mvreg &Mvreg::operator=(const Mvreg &x) {
+    MvregNode &MvregNode::operator=(const MvregNode &x) {
 
         m_id = x.m_id;
         m_dk = x.m_dk;
@@ -3846,20 +3774,22 @@ namespace IDL {
         return *this;
     }
 
-    Mvreg &Mvreg::operator=(Mvreg &&x) {
+    MvregNode &MvregNode::operator=(MvregNode &&x) {
 
-        m_id = std::move(x.m_id);
+        m_id = x.m_id;
         m_dk = std::move(x.m_dk);
         m_agent_id = x.m_agent_id;
 
         return *this;
     }
 
-    size_t Mvreg::getMaxCdrSerializedSize(size_t current_alignment) {
+    size_t MvregNode::getMaxCdrSerializedSize(size_t current_alignment) {
         size_t initial_alignment = current_alignment;
 
 
-        current_alignment += Uuid::getMaxCdrSerializedSize(current_alignment);
+        current_alignment += 8 + eprosima::fastcdr::Cdr::alignment(current_alignment, 8);
+
+
         current_alignment += DotKernel::getMaxCdrSerializedSize(current_alignment);
         current_alignment += 4 + eprosima::fastcdr::Cdr::alignment(current_alignment, 4);
 
@@ -3867,12 +3797,14 @@ namespace IDL {
         return current_alignment - initial_alignment;
     }
 
-    size_t Mvreg::getCdrSerializedSize(const Mvreg &data, size_t current_alignment) {
+    size_t MvregNode::getCdrSerializedSize(const MvregNode &data, size_t current_alignment) {
         (void) data;
         size_t initial_alignment = current_alignment;
 
 
-        current_alignment += Uuid::getCdrSerializedSize(data.id(), current_alignment);
+        current_alignment += 8 + eprosima::fastcdr::Cdr::alignment(current_alignment, 8);
+
+
         current_alignment += DotKernel::getCdrSerializedSize(data.dk(), current_alignment);
         current_alignment += 4 + eprosima::fastcdr::Cdr::alignment(current_alignment, 4);
 
@@ -3880,14 +3812,14 @@ namespace IDL {
         return current_alignment - initial_alignment;
     }
 
-    void Mvreg::serialize(eprosima::fastcdr::Cdr &scdr) const {
+    void MvregNode::serialize(eprosima::fastcdr::Cdr &scdr) const {
 
         scdr << m_id;
         scdr << m_dk;
         scdr << m_agent_id;
     }
 
-    void Mvreg::deserialize(eprosima::fastcdr::Cdr &dcdr) {
+    void MvregNode::deserialize(eprosima::fastcdr::Cdr &dcdr) {
 
         dcdr >> m_id;
         dcdr >> m_dk;
@@ -3895,26 +3827,18 @@ namespace IDL {
     }
 
 /*!
- * @brief This function copies the value in member id
- * @param _id New value to be copied in member id
+ * @brief This function sets a value in member id
+ * @param _id New value for member id
  */
-    void Mvreg::id(const Uuid &_id) {
+    void MvregNode::id(uint64_t _id) {
         m_id = _id;
     }
 
 /*!
- * @brief This function moves the value in member id
- * @param _id New value to be moved in member id
+ * @brief This function returns the value of member id
+ * @return Value of member id
  */
-    void Mvreg::id(Uuid &&_id) {
-        m_id = std::move(_id);
-    }
-
-/*!
- * @brief This function returns a constant reference to member id
- * @return Constant reference to member id
- */
-    const Uuid &Mvreg::id() const {
+    uint64_t MvregNode::id() const {
         return m_id;
     }
 
@@ -3922,7 +3846,7 @@ namespace IDL {
  * @brief This function returns a reference to member id
  * @return Reference to member id
  */
-    Uuid &Mvreg::id() {
+    uint64_t &MvregNode::id() {
         return m_id;
     }
 
@@ -3930,7 +3854,7 @@ namespace IDL {
  * @brief This function copies the value in member dk
  * @param _dk New value to be copied in member dk
  */
-    void Mvreg::dk(const DotKernel &_dk) {
+    void MvregNode::dk(const DotKernel &_dk) {
         m_dk = _dk;
     }
 
@@ -3938,7 +3862,7 @@ namespace IDL {
  * @brief This function moves the value in member dk
  * @param _dk New value to be moved in member dk
  */
-    void Mvreg::dk(DotKernel &&_dk) {
+    void MvregNode::dk(DotKernel &&_dk) {
         m_dk = std::move(_dk);
     }
 
@@ -3946,7 +3870,7 @@ namespace IDL {
  * @brief This function returns a constant reference to member dk
  * @return Constant reference to member dk
  */
-    const DotKernel &Mvreg::dk() const {
+    const DotKernel &MvregNode::dk() const {
         return m_dk;
     }
 
@@ -3954,7 +3878,7 @@ namespace IDL {
  * @brief This function returns a reference to member dk
  * @return Reference to member dk
  */
-    DotKernel &Mvreg::dk() {
+    DotKernel &MvregNode::dk() {
         return m_dk;
     }
 
@@ -3962,7 +3886,7 @@ namespace IDL {
  * @brief This function sets a value in member agent_id
  * @param _agent_id New value for member agent_id
  */
-    void Mvreg::agent_id(uint32_t _agent_id) {
+    void MvregNode::agent_id(uint32_t _agent_id) {
         m_agent_id = _agent_id;
     }
 
@@ -3970,7 +3894,7 @@ namespace IDL {
  * @brief This function returns the value of member agent_id
  * @return Value of member agent_id
  */
-    uint32_t Mvreg::agent_id() const {
+    uint32_t MvregNode::agent_id() const {
         return m_agent_id;
     }
 
@@ -3978,34 +3902,34 @@ namespace IDL {
  * @brief This function returns a reference to member agent_id
  * @return Reference to member agent_id
  */
-    uint32_t &Mvreg::agent_id() {
+    uint32_t &MvregNode::agent_id() {
         return m_agent_id;
     }
 
 
-    size_t Mvreg::getKeyMaxCdrSerializedSize(size_t current_alignment) {
+    size_t MvregNode::getKeyMaxCdrSerializedSize(size_t current_alignment) {
         size_t current_align = current_alignment;
 
 
         return current_align;
     }
 
-    bool Mvreg::isKeyDefined() {
+    bool MvregNode::isKeyDefined() {
         return false;
     }
 
-    void Mvreg::serializeKey(eprosima::fastcdr::Cdr &scdr) const {
+    void MvregNode::serializeKey(eprosima::fastcdr::Cdr &scdr) const {
         (void) scdr;
 
 
     }
 
     OrMap::OrMap() {
-        // m_id com.eprosima.idl.parser.typecode.PrimitiveTypeCode@35083305
+        // m_id com.eprosima.idl.parser.typecode.PrimitiveTypeCode@5b0abc94
         m_id = 0;
-        // m_m com.eprosima.idl.parser.typecode.MapTypeCode@8e0379d
+        // m_m com.eprosima.idl.parser.typecode.MapTypeCode@75c072cb
 
-        // m_cbase com.eprosima.fastrtps.idl.parser.typecode.StructTypeCode@971d0d8
+        // m_cbase com.eprosima.fastrtps.idl.parser.typecode.StructTypeCode@51931956
 
 
     }
@@ -4055,9 +3979,9 @@ namespace IDL {
         current_alignment += 4 + eprosima::fastcdr::Cdr::alignment(current_alignment, 4);
 
         for (size_t a = 0; a < 100; ++a) {
-            current_alignment += 0 + eprosima::fastcdr::Cdr::alignment(current_alignment, 0);
+            current_alignment += 8 + eprosima::fastcdr::Cdr::alignment(current_alignment, 8);
 
-            current_alignment += Mvreg::getMaxCdrSerializedSize(current_alignment);
+            current_alignment += MvregNode::getMaxCdrSerializedSize(current_alignment);
         }
 
         current_alignment += DotContext::getMaxCdrSerializedSize(current_alignment);
@@ -4077,8 +4001,10 @@ namespace IDL {
 
         for (auto a : data.m()) {
             (void) a;
-            current_alignment += Uuid::getCdrSerializedSize((a.first), current_alignment);
-            current_alignment += Mvreg::getCdrSerializedSize((a.second), current_alignment);
+            current_alignment += 8 + eprosima::fastcdr::Cdr::alignment(current_alignment, 8);
+
+
+            current_alignment += MvregNode::getCdrSerializedSize((a.second), current_alignment);
 
         }
 
@@ -4130,7 +4056,7 @@ namespace IDL {
  * @brief This function copies the value in member m
  * @param _m New value to be copied in member m
  */
-    void OrMap::m(const std::map<Uuid, Mvreg> &_m) {
+    void OrMap::m(const std::map<uint64_t, MvregNode> &_m) {
         m_m = _m;
     }
 
@@ -4138,7 +4064,7 @@ namespace IDL {
  * @brief This function moves the value in member m
  * @param _m New value to be moved in member m
  */
-    void OrMap::m(std::map<Uuid, Mvreg> &&_m) {
+    void OrMap::m(std::map<uint64_t, MvregNode> &&_m) {
         m_m = std::move(_m);
     }
 
@@ -4146,7 +4072,7 @@ namespace IDL {
  * @brief This function returns a constant reference to member m
  * @return Constant reference to member m
  */
-    const std::map<Uuid, Mvreg> &OrMap::m() const {
+    const std::map<uint64_t, MvregNode> &OrMap::m() const {
         return m_m;
     }
 
@@ -4154,7 +4080,7 @@ namespace IDL {
  * @brief This function returns a reference to member m
  * @return Reference to member m
  */
-    std::map<Uuid, Mvreg> &OrMap::m() {
+    std::map<uint64_t, MvregNode> &OrMap::m() {
         return m_m;
     }
 
@@ -4208,7 +4134,7 @@ namespace IDL {
     }
 
     MvregEdgeAttrVec::MvregEdgeAttrVec() {
-        // m_vec com.eprosima.idl.parser.typecode.SequenceTypeCode@482cd91f
+        // m_vec com.eprosima.idl.parser.typecode.SequenceTypeCode@214b199c
 
 
     }
@@ -4326,7 +4252,7 @@ namespace IDL {
     }
 
     MvregNodeAttrVec::MvregNodeAttrVec() {
-        // m_vec com.eprosima.idl.parser.typecode.SequenceTypeCode@5b0abc94
+        // m_vec com.eprosima.idl.parser.typecode.SequenceTypeCode@25a65b77
 
 
     }

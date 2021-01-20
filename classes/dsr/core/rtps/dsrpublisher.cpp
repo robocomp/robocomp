@@ -108,7 +108,7 @@ eprosima::fastrtps::rtps::GUID_t DSRPublisher::getParticipantID() const
 }
 
 
-bool DSRPublisher::write(IDL::Mvreg *object)
+bool DSRPublisher::write(IDL::MvregNode *object)
 {
     int retry = 0;
     while (retry < 5) {

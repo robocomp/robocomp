@@ -22,7 +22,7 @@ public:
     bool init(eprosima::fastdds::dds::DomainParticipant *mp_participant_, eprosima::fastdds::dds::Topic *topic,  bool isStreamData = false);
     [[nodiscard]] eprosima::fastrtps::rtps::GUID_t getParticipantID() const;
     bool write(IDL::GraphRequest *object);
-    bool write(IDL::Mvreg *object);
+    bool write(IDL::MvregNode *object);
     bool write(IDL::OrMap *object);
     //bool write(IDL::MvregNodeAttr *object);
     bool write(IDL::MvregEdge *object);

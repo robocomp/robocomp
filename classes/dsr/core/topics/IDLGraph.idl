@@ -12,8 +12,10 @@
         boolean bl;
       case 5:
         sequence<octet> byte_vec;
-      case 1:
+      case 6:
         unsigned long uint;
+      case 7:
+        unsigned long long u64;
     };
 
     enum Types
@@ -23,13 +25,11 @@
         _FLOAT,
         _FLOAT_VEC,
         _BOOL,
-        _BYTE_VEC
+        _BYTE_VEC,
+        _UINT,
+        _UINT64
     };
 
-    struct Uuid {
-        unsigned long long first;
-        unsigned long long second;
-    };
 
     struct _Attrib
     {
@@ -40,12 +40,12 @@
     };
 
     struct PairInt {
-        Uuid first;
+        unsigned long long first;
         long second;
     };
 
     struct DotContext {
-        map<Uuid, long> cc;
+        map<unsigned long long, long> cc;
         sequence<PairInt> dc;
     };
 
@@ -55,22 +55,21 @@
     };
 
     struct MvregEdgeAttr {
-        Uuid id;
-        Uuid from;
-        Uuid to;
+        unsigned long long id;
+        unsigned long long from;
+        unsigned long long to;
         string type;
         string attr_name; // We need it for remove deltas.
         DotKernelAttr dk;
-        unsigned long agent_id; // to skip messages from the same agent in multithread.
+        unsigned long agent_id; // to skip messages from the same agent in multithreading.
     };
 
     struct IDLEdge {
-        Uuid to; //key1
+        unsigned long long to; //key1
 		string type; //key2
-		Uuid from; // Se mantiene para trabajar más fácilmente con los Edges.
+		unsigned long long from; // Se mantiene para trabajar más fácilmente con los Edges.
 		map<string, MvregEdgeAttr>    attrs;
 		unsigned long agent_id;
-
 	};
 
     struct EdgeKey {
@@ -79,11 +78,11 @@
     };
 
     struct MvregNodeAttr {
-        Uuid id;
-        Uuid node;
+        unsigned long long id;
+        unsigned long long node;
         string attr_name; // We need it for remove deltas.
         DotKernelAttr dk;
-        unsigned long agent_id; // to skip messages from the same agent in multithread.
+        unsigned long agent_id; // to skip messages from the same agent in multithreading.
     };
 
 
@@ -93,9 +92,9 @@
     };
 
     struct MvregEdge {
-        Uuid id;
-        Uuid from;
-        Uuid to;
+        unsigned long long id;
+        unsigned long long from;
+        unsigned long long to;
         string type;
         DotKernelEdge dk;
         unsigned long agent_id; // to skip messages from the same agent in multithread.
@@ -105,7 +104,7 @@
     struct IDLNode {
         string type;
         string name;
-        Uuid id;
+        unsigned long long id;
         unsigned long agent_id;
 		map<string, MvregNodeAttr>   attrs;
 		map<EdgeKey, MvregEdge> fano;
@@ -114,6 +113,7 @@
     struct GraphRequest
     {
         string from;
+        long id;
     };
 
     struct DotKernel {
@@ -122,14 +122,14 @@
     };
 
     struct MvregNode {
-        Uuid id;
+        unsigned long long id;
         DotKernel dk;
-        unsigned long agent_id; // to skip messages from the same agent in multithread.
+        unsigned long agent_id; // to skip messages from the same agent in multithreading.
     };
 
     struct OrMap {
         unsigned long id;
-        map<Uuid, Mvreg> m;
+        map<unsigned long long, MvregNode> m;
         DotContext cbase;
     };
 

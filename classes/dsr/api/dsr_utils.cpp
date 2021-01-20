@@ -32,7 +32,7 @@ QJsonDocument Utilities::file_to_QJsonDocument(const std::string &json_file_path
 	return doc;
 }
 
-void Utilities::read_from_json_file(const std::string &json_file_path,  const std::function<std::optional<uint128_t >(const Node&)>& insert_node)
+void Utilities::read_from_json_file(const std::string &json_file_path,  const std::function<std::optional<uint64_t >(const Node&)>& insert_node)
 {
     qDebug() << __FUNCTION__ << " Reading json file: " << QString::fromStdString(json_file_path);
 
@@ -345,7 +345,7 @@ QJsonDocument Utilities::DSRGraph_to_QJsonDocument(DSR::DSRGraph *G_, const std:
         QJsonObject symbol = Node_to_QObject(node, store_content);
         auto id = node.id();
         uuid_unparse((unsigned  char *)&id, uuid);
-        symbolsMap[/*QString::number(node.id())*/ QString{uuid} ] = symbol;
+        symbolsMap[QString::number(node.id()) ] = symbol;
 
     }
     dsrObject["symbols"] = symbolsMap;
@@ -413,14 +413,14 @@ void Utilities::print_node(const Node &node) {
     }
 }
 
-void Utilities::print_node(const uint128_t id)
+void Utilities::print_node(const uint64_t id)
 {
     auto node = G->get_node(id);
     if(node.has_value())
         print_node(node.value());
 }
 
-void Utilities::print_RT(const uint128_t  id)
+void Utilities::print_RT(const uint64_t  id)
 {
     std::cout << "-------------- Printing RT tree ------------------" << std::endl;
     auto node = G->get_node(id);

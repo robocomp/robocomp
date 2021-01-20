@@ -188,7 +188,7 @@ std::optional<Mat::Vector6d> InnerEigenAPI::transform_axis(const std::string &de
 ////////////////////////////////////////////////////////////////////////
 /// SLOTS ==> used to remove cached transforms when node/edge changes
 ///////////////////////////////////////////////////////////////////////
-void InnerEigenAPI::add_or_assign_edge_slot(const std::int32_t from, const std::int32_t to, const std::string& edge_type)
+void InnerEigenAPI::add_or_assign_edge_slot(const uint64_t from, const uint64_t to, const std::string& edge_type)
 {
     if(edge_type == "RT")
     {
@@ -196,11 +196,11 @@ void InnerEigenAPI::add_or_assign_edge_slot(const std::int32_t from, const std::
         remove_cache_entry(to);
     }
 }
-void InnerEigenAPI::del_node_slot(const std::int32_t id)
+void InnerEigenAPI::del_node_slot(const uint64_t id)
 {
     remove_cache_entry(id);
 }
-void InnerEigenAPI::del_edge_slot(const std::int32_t from, const std::int32_t to, const std::string &edge_type)
+void InnerEigenAPI::del_edge_slot(const uint64_t from, const uint64_t to, const std::string &edge_type)
 {
     if(edge_type == "RT")
     {
@@ -208,7 +208,7 @@ void InnerEigenAPI::del_edge_slot(const std::int32_t from, const std::int32_t to
         remove_cache_entry(to);
     }
 }
-void InnerEigenAPI::remove_cache_entry(const std::int32_t id)
+void InnerEigenAPI::remove_cache_entry(const uint64_t id)
 {
     NodeReference::iterator it = node_map.find(id);
     if(it != node_map.end())

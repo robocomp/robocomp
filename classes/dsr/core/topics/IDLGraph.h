@@ -64,7 +64,6 @@ namespace eprosima
 }
 
 namespace IDL {
-
 /*!
  * @brief This class represents the union Val defined by the user in the IDL file.
  * @ingroup IDLGRAPH
@@ -281,6 +280,26 @@ namespace IDL {
          */
         eProsima_user_DllExport uint32_t &uint();
 
+        /*!
+         * @brief This function sets a value in member u64
+         * @param _u64 New value for member u64
+         */
+        eProsima_user_DllExport void u64(uint64_t _u64);
+
+        /*!
+         * @brief This function returns the value of member u64
+         * @return Value of member u64
+         * @exception eprosima::fastcdr::BadParamException This exception is thrown if the requested union member is not the current selection.
+         */
+        eProsima_user_DllExport uint64_t u64() const;
+
+        /*!
+         * @brief This function returns a reference to member u64
+         * @return Reference to member u64
+         * @exception eprosima::fastcdr::BadParamException This exception is thrown if the requested union member is not the current selection.
+         */
+        eProsima_user_DllExport uint64_t &u64();
+
 
         /*!
          * @brief This function returns the maximum serialized size of an object
@@ -322,6 +341,7 @@ namespace IDL {
         bool m_bl;
         std::vector<uint8_t> m_byte_vec;
         uint32_t m_uint;
+        uint64_t m_u64;
     };
 
 /*!
@@ -335,169 +355,9 @@ namespace IDL {
         FLOAT,
         FLOAT_VEC,
         BOOL,
-        BYTE_VEC
-    };
-
-/*!
- * @brief This class represents the structure Uuid defined by the user in the IDL file.
- * @ingroup IDLGRAPH
- */
-    class Uuid
-    {
-    public:
-
-        bool operator<(const Uuid &rhs) const {
-            if (m_first < rhs.m_first)
-                return true;
-            if (rhs.m_first < m_first)
-                return false;
-            return m_second < rhs.m_second;
-        }
-
-        bool operator>(const Uuid &rhs) const {
-            return rhs < *this;
-        }
-
-        bool operator<=(const Uuid &rhs) const {
-            return !(rhs < *this);
-        }
-
-        bool operator>=(const Uuid &rhs) const {
-            return !(*this < rhs);
-        }
-
-        bool operator==(const Uuid &rhs) const {
-            return m_first == rhs.m_first &&
-                   m_second == rhs.m_second;
-        }
-
-        bool operator!=(const Uuid &rhs) const {
-            return !(rhs == *this);
-        }
-        /*!
-         * @brief Default constructor.
-         */
-        eProsima_user_DllExport Uuid();
-
-        /*!
-         * @brief Default destructor.
-         */
-        eProsima_user_DllExport ~Uuid();
-
-        /*!
-         * @brief Copy constructor.
-         * @param x Reference to the object Uuid that will be copied.
-         */
-        eProsima_user_DllExport Uuid(const Uuid &x);
-
-        /*!
-         * @brief Move constructor.
-         * @param x Reference to the object Uuid that will be copied.
-         */
-        eProsima_user_DllExport Uuid(Uuid &&x);
-
-        /*!
-         * @brief Copy assignment.
-         * @param x Reference to the object Uuid that will be copied.
-         */
-        eProsima_user_DllExport Uuid &operator=(const Uuid &x);
-
-        /*!
-         * @brief Move assignment.
-         * @param x Reference to the object Uuid that will be copied.
-         */
-        eProsima_user_DllExport Uuid &operator=(Uuid &&x);
-
-        /*!
-         * @brief This function sets a value in member first
-         * @param _first New value for member first
-         */
-        eProsima_user_DllExport void first(uint64_t _first);
-
-        /*!
-         * @brief This function returns the value of member first
-         * @return Value of member first
-         */
-        eProsima_user_DllExport uint64_t first() const;
-
-        /*!
-         * @brief This function returns a reference to member first
-         * @return Reference to member first
-         */
-        eProsima_user_DllExport uint64_t &first();
-
-        /*!
-         * @brief This function sets a value in member second
-         * @param _second New value for member second
-         */
-        eProsima_user_DllExport void second(uint64_t _second);
-
-        /*!
-         * @brief This function returns the value of member second
-         * @return Value of member second
-         */
-        eProsima_user_DllExport uint64_t second() const;
-
-        /*!
-         * @brief This function returns a reference to member second
-         * @return Reference to member second
-         */
-        eProsima_user_DllExport uint64_t &second();
-
-
-        /*!
-         * @brief This function returns the maximum serialized size of an object
-         * depending on the buffer alignment.
-         * @param current_alignment Buffer alignment.
-         * @return Maximum serialized size.
-         */
-        eProsima_user_DllExport static size_t getMaxCdrSerializedSize(size_t current_alignment = 0);
-
-        /*!
-         * @brief This function returns the serialized size of a data depending on the buffer alignment.
-         * @param data Data which is calculated its serialized size.
-         * @param current_alignment Buffer alignment.
-         * @return Serialized size.
-         */
-        eProsima_user_DllExport static size_t getCdrSerializedSize(const Uuid &data, size_t current_alignment = 0);
-
-
-        /*!
-         * @brief This function serializes an object using CDR serialization.
-         * @param cdr CDR serialization object.
-         */
-        eProsima_user_DllExport void serialize(eprosima::fastcdr::Cdr &cdr) const;
-
-        /*!
-         * @brief This function deserializes an object using CDR serialization.
-         * @param cdr CDR serialization object.
-         */
-        eProsima_user_DllExport void deserialize(eprosima::fastcdr::Cdr &cdr);
-
-
-
-        /*!
-         * @brief This function returns the maximum serialized size of the Key of an object
-         * depending on the buffer alignment.
-         * @param current_alignment Buffer alignment.
-         * @return Maximum serialized size.
-         */
-        eProsima_user_DllExport static size_t getKeyMaxCdrSerializedSize(size_t current_alignment = 0);
-
-        /*!
-         * @brief This function tells you if the Key has been defined for this type
-         */
-        eProsima_user_DllExport static bool isKeyDefined();
-
-        /*!
-         * @brief This function serializes the key members of an object using CDR serialization.
-         * @param cdr CDR serialization object.
-         */
-        eProsima_user_DllExport void serializeKey(eprosima::fastcdr::Cdr &cdr) const;
-
-    private:
-        uint64_t m_first;
-        uint64_t m_second;
+        BYTE_VEC,
+        UINT,
+        UINT64
     };
 
 /*!
@@ -685,6 +545,15 @@ namespace IDL {
     {
     public:
 
+        bool operator==(const PairInt &rhs) const {
+            return m_first == rhs.m_first &&
+                   m_second == rhs.m_second;
+        }
+
+        bool operator!=(const PairInt &rhs) const {
+            return !(rhs == *this);
+        }
+
         bool operator<(const PairInt &rhs) const {
             if (m_first < rhs.m_first)
                 return true;
@@ -703,15 +572,6 @@ namespace IDL {
 
         bool operator>=(const PairInt &rhs) const {
             return !(*this < rhs);
-        }
-
-        bool operator==(const PairInt &rhs) const {
-            return m_first == rhs.m_first &&
-                   m_second == rhs.m_second;
-        }
-
-        bool operator!=(const PairInt &rhs) const {
-            return !(rhs == *this);
         }
 
         /*!
@@ -749,28 +609,23 @@ namespace IDL {
         eProsima_user_DllExport PairInt &operator=(PairInt &&x);
 
         /*!
-         * @brief This function copies the value in member first
-         * @param _first New value to be copied in member first
+         * @brief This function sets a value in member first
+         * @param _first New value for member first
          */
-        eProsima_user_DllExport void first(const Uuid &_first);
+        eProsima_user_DllExport void first(uint64_t _first);
 
         /*!
-         * @brief This function moves the value in member first
-         * @param _first New value to be moved in member first
+         * @brief This function returns the value of member first
+         * @return Value of member first
          */
-        eProsima_user_DllExport void first(Uuid &&_first);
-
-        /*!
-         * @brief This function returns a constant reference to member first
-         * @return Constant reference to member first
-         */
-        eProsima_user_DllExport const Uuid &first() const;
+        eProsima_user_DllExport uint64_t first() const;
 
         /*!
          * @brief This function returns a reference to member first
          * @return Reference to member first
          */
-        eProsima_user_DllExport Uuid &first();
+        eProsima_user_DllExport uint64_t &first();
+
         /*!
          * @brief This function sets a value in member second
          * @param _second New value for member second
@@ -841,7 +696,7 @@ namespace IDL {
         eProsima_user_DllExport void serializeKey(eprosima::fastcdr::Cdr &cdr) const;
 
     private:
-        Uuid m_first;
+        uint64_t m_first;
         int32_t m_second;
     };
 
@@ -891,25 +746,25 @@ namespace IDL {
          * @brief This function copies the value in member cc
          * @param _cc New value to be copied in member cc
          */
-        eProsima_user_DllExport void cc(const std::map<Uuid, int32_t> &_cc);
+        eProsima_user_DllExport void cc(const std::map<uint64_t, int32_t> &_cc);
 
         /*!
          * @brief This function moves the value in member cc
          * @param _cc New value to be moved in member cc
          */
-        eProsima_user_DllExport void cc(std::map<Uuid, int32_t> &&_cc);
+        eProsima_user_DllExport void cc(std::map<uint64_t, int32_t> &&_cc);
 
         /*!
          * @brief This function returns a constant reference to member cc
          * @return Constant reference to member cc
          */
-        eProsima_user_DllExport const std::map<Uuid, int32_t> &cc() const;
+        eProsima_user_DllExport const std::map<uint64_t, int32_t> &cc() const;
 
         /*!
          * @brief This function returns a reference to member cc
          * @return Reference to member cc
          */
-        eProsima_user_DllExport std::map<Uuid, int32_t> &cc();
+        eProsima_user_DllExport std::map<uint64_t, int32_t> &cc();
         /*!
          * @brief This function copies the value in member dc
          * @param _dc New value to be copied in member dc
@@ -986,7 +841,7 @@ namespace IDL {
         eProsima_user_DllExport void serializeKey(eprosima::fastcdr::Cdr &cdr) const;
 
     private:
-        std::map<Uuid, int32_t> m_cc;
+        std::map<uint64_t, int32_t> m_cc;
         std::vector<PairInt> m_dc;
     };
 
@@ -1178,74 +1033,59 @@ namespace IDL {
         eProsima_user_DllExport MvregEdgeAttr &operator=(MvregEdgeAttr &&x);
 
         /*!
-         * @brief This function copies the value in member id
-         * @param _id New value to be copied in member id
+         * @brief This function sets a value in member id
+         * @param _id New value for member id
          */
-        eProsima_user_DllExport void id(const Uuid &_id);
+        eProsima_user_DllExport void id(uint64_t _id);
 
         /*!
-         * @brief This function moves the value in member id
-         * @param _id New value to be moved in member id
+         * @brief This function returns the value of member id
+         * @return Value of member id
          */
-        eProsima_user_DllExport void id(Uuid &&_id);
-
-        /*!
-         * @brief This function returns a constant reference to member id
-         * @return Constant reference to member id
-         */
-        eProsima_user_DllExport const Uuid &id() const;
+        eProsima_user_DllExport uint64_t id() const;
 
         /*!
          * @brief This function returns a reference to member id
          * @return Reference to member id
          */
-        eProsima_user_DllExport Uuid &id();
-        /*!
-         * @brief This function copies the value in member from
-         * @param _from New value to be copied in member from
-         */
-        eProsima_user_DllExport void from(const Uuid &_from);
+        eProsima_user_DllExport uint64_t &id();
 
         /*!
-         * @brief This function moves the value in member from
-         * @param _from New value to be moved in member from
+         * @brief This function sets a value in member from
+         * @param _from New value for member from
          */
-        eProsima_user_DllExport void from(Uuid &&_from);
+        eProsima_user_DllExport void from(uint64_t _from);
 
         /*!
-         * @brief This function returns a constant reference to member from
-         * @return Constant reference to member from
+         * @brief This function returns the value of member from
+         * @return Value of member from
          */
-        eProsima_user_DllExport const Uuid &from() const;
+        eProsima_user_DllExport uint64_t from() const;
 
         /*!
          * @brief This function returns a reference to member from
          * @return Reference to member from
          */
-        eProsima_user_DllExport Uuid &from();
-        /*!
-         * @brief This function copies the value in member to
-         * @param _to New value to be copied in member to
-         */
-        eProsima_user_DllExport void to(const Uuid &_to);
+        eProsima_user_DllExport uint64_t &from();
 
         /*!
-         * @brief This function moves the value in member to
-         * @param _to New value to be moved in member to
+         * @brief This function sets a value in member to
+         * @param _to New value for member to
          */
-        eProsima_user_DllExport void to(Uuid &&_to);
+        eProsima_user_DllExport void to(uint64_t _to);
 
         /*!
-         * @brief This function returns a constant reference to member to
-         * @return Constant reference to member to
+         * @brief This function returns the value of member to
+         * @return Value of member to
          */
-        eProsima_user_DllExport const Uuid &to() const;
+        eProsima_user_DllExport uint64_t to() const;
 
         /*!
          * @brief This function returns a reference to member to
          * @return Reference to member to
          */
-        eProsima_user_DllExport Uuid &to();
+        eProsima_user_DllExport uint64_t &to();
+
         /*!
          * @brief This function copies the value in member type
          * @param _type New value to be copied in member type
@@ -1386,9 +1226,9 @@ namespace IDL {
         eProsima_user_DllExport void serializeKey(eprosima::fastcdr::Cdr &cdr) const;
 
     private:
-        Uuid m_id;
-        Uuid m_from;
-        Uuid m_to;
+        uint64_t m_id;
+        uint64_t m_from;
+        uint64_t m_to;
         std::string m_type;
         std::string m_attr_name;
         DotKernelAttr m_dk;
@@ -1438,28 +1278,23 @@ namespace IDL {
         eProsima_user_DllExport IDLEdge &operator=(IDLEdge &&x);
 
         /*!
-         * @brief This function copies the value in member to
-         * @param _to New value to be copied in member to
+         * @brief This function sets a value in member to
+         * @param _to New value for member to
          */
-        eProsima_user_DllExport void to(const Uuid &_to);
+        eProsima_user_DllExport void to(uint64_t _to);
 
         /*!
-         * @brief This function moves the value in member to
-         * @param _to New value to be moved in member to
+         * @brief This function returns the value of member to
+         * @return Value of member to
          */
-        eProsima_user_DllExport void to(Uuid &&_to);
-
-        /*!
-         * @brief This function returns a constant reference to member to
-         * @return Constant reference to member to
-         */
-        eProsima_user_DllExport const Uuid &to() const;
+        eProsima_user_DllExport uint64_t to() const;
 
         /*!
          * @brief This function returns a reference to member to
          * @return Reference to member to
          */
-        eProsima_user_DllExport Uuid &to();
+        eProsima_user_DllExport uint64_t &to();
+
         /*!
          * @brief This function copies the value in member type
          * @param _type New value to be copied in member type
@@ -1484,28 +1319,22 @@ namespace IDL {
          */
         eProsima_user_DllExport std::string &type();
         /*!
-         * @brief This function copies the value in member to
-         * @param _to New value to be copied in member to
+         * @brief This function sets a value in member from
+         * @param _from New value for member from
          */
-        eProsima_user_DllExport void from(const Uuid &_to);
+        eProsima_user_DllExport void from(uint64_t _from);
 
         /*!
-         * @brief This function moves the value in member to
-         * @param _to New value to be moved in member to
+         * @brief This function returns the value of member from
+         * @return Value of member from
          */
-        eProsima_user_DllExport void from(Uuid &&_to);
+        eProsima_user_DllExport uint64_t from() const;
 
         /*!
-         * @brief This function returns a constant reference to member to
-         * @return Constant reference to member to
+         * @brief This function returns a reference to member from
+         * @return Reference to member from
          */
-        eProsima_user_DllExport const Uuid &from() const;
-
-        /*!
-         * @brief This function returns a reference to member to
-         * @return Reference to member to
-         */
-        eProsima_user_DllExport Uuid &from();
+        eProsima_user_DllExport uint64_t &from();
 
         /*!
          * @brief This function copies the value in member attrs
@@ -1600,9 +1429,9 @@ namespace IDL {
         eProsima_user_DllExport void serializeKey(eprosima::fastcdr::Cdr &cdr) const;
 
     private:
-        Uuid m_to;
+        uint64_t m_to;
         std::string m_type;
-        Uuid m_from;
+        uint64_t m_from;
         std::map<std::string, MvregEdgeAttr> m_attrs;
         uint32_t m_agent_id;
     };
@@ -1615,6 +1444,34 @@ namespace IDL {
     {
     public:
 
+        bool operator==(const EdgeKey &rhs) const {
+            return m_to == rhs.m_to &&
+                   m_type == rhs.m_type;
+        }
+
+        bool operator!=(const EdgeKey &rhs) const {
+            return !(rhs == *this);
+        }
+
+        bool operator<(const EdgeKey &rhs) const {
+            if (m_to < rhs.m_to)
+                return true;
+            if (rhs.m_to < m_to)
+                return false;
+            return m_type < rhs.m_type;
+        }
+
+        bool operator>(const EdgeKey &rhs) const {
+            return rhs < *this;
+        }
+
+        bool operator<=(const EdgeKey &rhs) const {
+            return !(rhs < *this);
+        }
+
+        bool operator>=(const EdgeKey &rhs) const {
+            return !(*this < rhs);
+        }
         /*!
          * @brief Default constructor.
          */
@@ -1741,35 +1598,6 @@ namespace IDL {
          */
         eProsima_user_DllExport void serializeKey(eprosima::fastcdr::Cdr &cdr) const;
 
-        bool operator<(const EdgeKey &rhs) const {
-            if (m_to < rhs.m_to)
-                return true;
-            if (rhs.m_to < m_to)
-                return false;
-            return m_type < rhs.m_type;
-        }
-
-        bool operator>(const EdgeKey &rhs) const {
-            return rhs < *this;
-        }
-
-        bool operator<=(const EdgeKey &rhs) const {
-            return !(rhs < *this);
-        }
-
-        bool operator>=(const EdgeKey &rhs) const {
-            return !(*this < rhs);
-        }
-
-        bool operator==(const EdgeKey &rhs) const {
-            return m_to == rhs.m_to &&
-                   m_type == rhs.m_type;
-        }
-
-        bool operator!=(const EdgeKey &rhs) const {
-            return !(rhs == *this);
-        }
-
     private:
         uint32_t m_to;
         std::string m_type;
@@ -1818,51 +1646,41 @@ namespace IDL {
         eProsima_user_DllExport MvregNodeAttr &operator=(MvregNodeAttr &&x);
 
         /*!
-         * @brief This function copies the value in member id
-         * @param _id New value to be copied in member id
+         * @brief This function sets a value in member id
+         * @param _id New value for member id
          */
-        eProsima_user_DllExport void id(const Uuid &_id);
+        eProsima_user_DllExport void id(uint64_t _id);
 
         /*!
-         * @brief This function moves the value in member id
-         * @param _id New value to be moved in member id
+         * @brief This function returns the value of member id
+         * @return Value of member id
          */
-        eProsima_user_DllExport void id(Uuid &&_id);
-
-        /*!
-         * @brief This function returns a constant reference to member id
-         * @return Constant reference to member id
-         */
-        eProsima_user_DllExport const Uuid &id() const;
+        eProsima_user_DllExport uint64_t id() const;
 
         /*!
          * @brief This function returns a reference to member id
          * @return Reference to member id
          */
-        eProsima_user_DllExport Uuid &id();
-        /*!
-         * @brief This function copies the value in member node
-         * @param _node New value to be copied in member node
-         */
-        eProsima_user_DllExport void node(const Uuid &_node);
+        eProsima_user_DllExport uint64_t &id();
 
         /*!
-         * @brief This function moves the value in member node
-         * @param _node New value to be moved in member node
+         * @brief This function sets a value in member node
+         * @param _node New value for member node
          */
-        eProsima_user_DllExport void node(Uuid &&_node);
+        eProsima_user_DllExport void node(uint64_t _node);
 
         /*!
-         * @brief This function returns a constant reference to member node
-         * @return Constant reference to member node
+         * @brief This function returns the value of member node
+         * @return Value of member node
          */
-        eProsima_user_DllExport const Uuid &node() const;
+        eProsima_user_DllExport uint64_t node() const;
 
         /*!
          * @brief This function returns a reference to member node
          * @return Reference to member node
          */
-        eProsima_user_DllExport Uuid &node();
+        eProsima_user_DllExport uint64_t &node();
+
         /*!
          * @brief This function copies the value in member attr_name
          * @param _attr_name New value to be copied in member attr_name
@@ -1980,8 +1798,8 @@ namespace IDL {
         eProsima_user_DllExport void serializeKey(eprosima::fastcdr::Cdr &cdr) const;
 
     private:
-        Uuid m_id;
-        Uuid m_node;
+        uint64_t m_id;
+        uint64_t m_node;
         std::string m_attr_name;
         DotKernelAttr m_dk;
         uint32_t m_agent_id;
@@ -2175,74 +1993,59 @@ namespace IDL {
         eProsima_user_DllExport MvregEdge &operator=(MvregEdge &&x);
 
         /*!
-         * @brief This function copies the value in member id
-         * @param _id New value to be copied in member id
+         * @brief This function sets a value in member id
+         * @param _id New value for member id
          */
-        eProsima_user_DllExport void id(const Uuid &_id);
+        eProsima_user_DllExport void id(uint64_t _id);
 
         /*!
-         * @brief This function moves the value in member id
-         * @param _id New value to be moved in member id
+         * @brief This function returns the value of member id
+         * @return Value of member id
          */
-        eProsima_user_DllExport void id(Uuid &&_id);
-
-        /*!
-         * @brief This function returns a constant reference to member id
-         * @return Constant reference to member id
-         */
-        eProsima_user_DllExport const Uuid &id() const;
+        eProsima_user_DllExport uint64_t id() const;
 
         /*!
          * @brief This function returns a reference to member id
          * @return Reference to member id
          */
-        eProsima_user_DllExport Uuid &id();
-        /*!
-         * @brief This function copies the value in member from
-         * @param _from New value to be copied in member from
-         */
-        eProsima_user_DllExport void from(const Uuid &_from);
+        eProsima_user_DllExport uint64_t &id();
 
         /*!
-         * @brief This function moves the value in member from
-         * @param _from New value to be moved in member from
+         * @brief This function sets a value in member from
+         * @param _from New value for member from
          */
-        eProsima_user_DllExport void from(Uuid &&_from);
+        eProsima_user_DllExport void from(uint64_t _from);
 
         /*!
-         * @brief This function returns a constant reference to member from
-         * @return Constant reference to member from
+         * @brief This function returns the value of member from
+         * @return Value of member from
          */
-        eProsima_user_DllExport const Uuid &from() const;
+        eProsima_user_DllExport uint64_t from() const;
 
         /*!
          * @brief This function returns a reference to member from
          * @return Reference to member from
          */
-        eProsima_user_DllExport Uuid &from();
-        /*!
-         * @brief This function copies the value in member to
-         * @param _to New value to be copied in member to
-         */
-        eProsima_user_DllExport void to(const Uuid &_to);
+        eProsima_user_DllExport uint64_t &from();
 
         /*!
-         * @brief This function moves the value in member to
-         * @param _to New value to be moved in member to
+         * @brief This function sets a value in member to
+         * @param _to New value for member to
          */
-        eProsima_user_DllExport void to(Uuid &&_to);
+        eProsima_user_DllExport void to(uint64_t _to);
 
         /*!
-         * @brief This function returns a constant reference to member to
-         * @return Constant reference to member to
+         * @brief This function returns the value of member to
+         * @return Value of member to
          */
-        eProsima_user_DllExport const Uuid &to() const;
+        eProsima_user_DllExport uint64_t to() const;
 
         /*!
          * @brief This function returns a reference to member to
          * @return Reference to member to
          */
-        eProsima_user_DllExport Uuid &to();
+        eProsima_user_DllExport uint64_t &to();
+
         /*!
          * @brief This function copies the value in member type
          * @param _type New value to be copied in member type
@@ -2359,9 +2162,9 @@ namespace IDL {
         eProsima_user_DllExport void serializeKey(eprosima::fastcdr::Cdr &cdr) const;
 
     private:
-        Uuid m_id;
-        Uuid m_from;
-        Uuid m_to;
+        uint64_t m_id;
+        uint64_t m_from;
+        uint64_t m_to;
         std::string m_type;
         DotKernelEdge m_dk;
         uint32_t m_agent_id;
@@ -2456,28 +2259,23 @@ namespace IDL {
          */
         eProsima_user_DllExport std::string &name();
         /*!
-         * @brief This function copies the value in member id
-         * @param _id New value to be copied in member id
+         * @brief This function sets a value in member id
+         * @param _id New value for member id
          */
-        eProsima_user_DllExport void id(const Uuid &_id);
+        eProsima_user_DllExport void id(uint64_t _id);
 
         /*!
-         * @brief This function moves the value in member id
-         * @param _id New value to be moved in member id
+         * @brief This function returns the value of member id
+         * @return Value of member id
          */
-        eProsima_user_DllExport void id(Uuid &&_id);
-
-        /*!
-         * @brief This function returns a constant reference to member id
-         * @return Constant reference to member id
-         */
-        eProsima_user_DllExport const Uuid &id() const;
+        eProsima_user_DllExport uint64_t id() const;
 
         /*!
          * @brief This function returns a reference to member id
          * @return Reference to member id
          */
-        eProsima_user_DllExport Uuid &id();
+        eProsima_user_DllExport uint64_t &id();
+
         /*!
          * @brief This function sets a value in member agent_id
          * @param _agent_id New value for member agent_id
@@ -2596,7 +2394,7 @@ namespace IDL {
     private:
         std::string m_type;
         std::string m_name;
-        Uuid m_id;
+        uint64_t m_id;
         uint32_t m_agent_id;
         std::map<std::string, MvregNodeAttr> m_attrs;
         std::map<EdgeKey, MvregEdge> m_fano;
@@ -2667,6 +2465,24 @@ namespace IDL {
          * @return Reference to member from
          */
         eProsima_user_DllExport std::string &from();
+        /*!
+         * @brief This function sets a value in member id
+         * @param _id New value for member id
+         */
+        eProsima_user_DllExport void id(int32_t _id);
+
+        /*!
+         * @brief This function returns the value of member id
+         * @return Value of member id
+         */
+        eProsima_user_DllExport int32_t id() const;
+
+        /*!
+         * @brief This function returns a reference to member id
+         * @return Reference to member id
+         */
+        eProsima_user_DllExport int32_t &id();
+
 
         /*!
          * @brief This function returns the maximum serialized size of an object
@@ -2721,6 +2537,7 @@ namespace IDL {
 
     private:
         std::string m_from;
+        int32_t m_id;
     };
 
 /*!
@@ -2868,70 +2685,65 @@ namespace IDL {
     };
 
 /*!
- * @brief This class represents the structure Mvreg defined by the user in the IDL file.
+ * @brief This class represents the structure MvregNode defined by the user in the IDL file.
  * @ingroup IDLGRAPH
  */
-    class Mvreg
+    class MvregNode
     {
     public:
 
         /*!
          * @brief Default constructor.
          */
-        eProsima_user_DllExport Mvreg();
+        eProsima_user_DllExport MvregNode();
 
         /*!
          * @brief Default destructor.
          */
-        eProsima_user_DllExport ~Mvreg();
+        eProsima_user_DllExport ~MvregNode();
 
         /*!
          * @brief Copy constructor.
-         * @param x Reference to the object Mvreg that will be copied.
+         * @param x Reference to the object MvregNode that will be copied.
          */
-        eProsima_user_DllExport Mvreg(const Mvreg &x);
+        eProsima_user_DllExport MvregNode(const MvregNode &x);
 
         /*!
          * @brief Move constructor.
-         * @param x Reference to the object Mvreg that will be copied.
+         * @param x Reference to the object MvregNode that will be copied.
          */
-        eProsima_user_DllExport Mvreg(Mvreg &&x);
+        eProsima_user_DllExport MvregNode(MvregNode &&x);
 
         /*!
          * @brief Copy assignment.
-         * @param x Reference to the object Mvreg that will be copied.
+         * @param x Reference to the object MvregNode that will be copied.
          */
-        eProsima_user_DllExport Mvreg &operator=(const Mvreg &x);
+        eProsima_user_DllExport MvregNode &operator=(const MvregNode &x);
 
         /*!
          * @brief Move assignment.
-         * @param x Reference to the object Mvreg that will be copied.
+         * @param x Reference to the object MvregNode that will be copied.
          */
-        eProsima_user_DllExport Mvreg &operator=(Mvreg &&x);
+        eProsima_user_DllExport MvregNode &operator=(MvregNode &&x);
 
         /*!
-         * @brief This function copies the value in member id
-         * @param _id New value to be copied in member id
+         * @brief This function sets a value in member id
+         * @param _id New value for member id
          */
-        eProsima_user_DllExport void id(const Uuid &_id);
+        eProsima_user_DllExport void id(uint64_t _id);
 
         /*!
-         * @brief This function moves the value in member id
-         * @param _id New value to be moved in member id
+         * @brief This function returns the value of member id
+         * @return Value of member id
          */
-        eProsima_user_DllExport void id(Uuid &&_id);
-
-        /*!
-         * @brief This function returns a constant reference to member id
-         * @return Constant reference to member id
-         */
-        eProsima_user_DllExport const Uuid &id() const;
+        eProsima_user_DllExport uint64_t id() const;
 
         /*!
          * @brief This function returns a reference to member id
          * @return Reference to member id
          */
-        eProsima_user_DllExport Uuid &id();
+        eProsima_user_DllExport uint64_t &id();
+
         /*!
          * @brief This function copies the value in member dk
          * @param _dk New value to be copied in member dk
@@ -2988,7 +2800,7 @@ namespace IDL {
          * @param current_alignment Buffer alignment.
          * @return Serialized size.
          */
-        eProsima_user_DllExport static size_t getCdrSerializedSize(const Mvreg &data, size_t current_alignment = 0);
+        eProsima_user_DllExport static size_t getCdrSerializedSize(const MvregNode &data, size_t current_alignment = 0);
 
 
         /*!
@@ -3025,7 +2837,7 @@ namespace IDL {
         eProsima_user_DllExport void serializeKey(eprosima::fastcdr::Cdr &cdr) const;
 
     private:
-        Uuid m_id;
+        uint64_t m_id;
         DotKernel m_dk;
         uint32_t m_agent_id;
     };
@@ -3094,25 +2906,25 @@ namespace IDL {
          * @brief This function copies the value in member m
          * @param _m New value to be copied in member m
          */
-        eProsima_user_DllExport void m(const std::map<Uuid, Mvreg> &_m);
+        eProsima_user_DllExport void m(const std::map<uint64_t, MvregNode> &_m);
 
         /*!
          * @brief This function moves the value in member m
          * @param _m New value to be moved in member m
          */
-        eProsima_user_DllExport void m(std::map<Uuid, Mvreg> &&_m);
+        eProsima_user_DllExport void m(std::map<uint64_t, MvregNode> &&_m);
 
         /*!
          * @brief This function returns a constant reference to member m
          * @return Constant reference to member m
          */
-        eProsima_user_DllExport const std::map<Uuid, Mvreg> &m() const;
+        eProsima_user_DllExport const std::map<uint64_t, MvregNode> &m() const;
 
         /*!
          * @brief This function returns a reference to member m
          * @return Reference to member m
          */
-        eProsima_user_DllExport std::map<Uuid, Mvreg> &m();
+        eProsima_user_DllExport std::map<uint64_t, MvregNode> &m();
         /*!
          * @brief This function copies the value in member cbase
          * @param _cbase New value to be copied in member cbase
@@ -3189,7 +3001,7 @@ namespace IDL {
 
     private:
         uint32_t m_id;
-        std::map<Uuid, Mvreg> m_m;
+        std::map<uint64_t, MvregNode> m_m;
         DotContext m_cbase;
     };
 
@@ -3434,5 +3246,6 @@ namespace IDL {
     private:
         std::vector<MvregNodeAttr> m_vec;
     };
+
 }
 #endif // _IDLGRAPH_H_

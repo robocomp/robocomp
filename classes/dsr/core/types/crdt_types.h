@@ -18,9 +18,9 @@ namespace DSR {
 
 
     static constexpr std::array<std::string_view, 8> TYPENAMES_UNION = { "STRING", "INT", "FLOAT",
-                                                                        "FLOAT_VEC", "BOOL", "BYTE_VEC", "UINT",};
+                                                                        "FLOAT_VEC", "BOOL", "BYTE_VEC", "UINT", "UINT64"};
 
-    using ValType = std::variant<std::string, int32_t, float, std::vector<float>, bool, std::vector<uint8_t>, uint32_t>;
+    using ValType = std::variant<std::string, int32_t, float, std::vector<float>, bool, std::vector<uint8_t>, uint32_t, uint64_t>;
 
     enum Types : uint32_t {
         STRING,
@@ -30,6 +30,7 @@ namespace DSR {
         BOOL,
         BYTE_VEC,
         UINT,
+        UINT64
     };
 
 
@@ -67,6 +68,10 @@ namespace DSR {
                 }
                 case 6: {
                     val = x.uint();
+                    break;
+                }
+                case 7: {
+                    val = x.u64();
                     break;
                 }
                 default:
@@ -128,9 +133,13 @@ namespace DSR {
 
         [[nodiscard]] int32_t dec() const;
 
-        void uint(uint32_t _udec);
+        void uint(uint32_t _uint64);
 
         [[nodiscard]] uint32_t uint() const;
+
+        void uint64(uint64_t _uint64);
+
+        [[nodiscard]] uint64_t uint64() const;
 
         void fl(float _fl);
 
@@ -180,6 +189,9 @@ namespace DSR {
                     return byte_vec() < rhs.byte_vec();
                 case 6: {
                     return uint() < rhs.uint();
+                }
+                case 7: {
+                    return uint64() < rhs.uint64();
                 }
                 default:
                     return false;
@@ -244,6 +256,9 @@ namespace DSR {
                     break;
                 case 6:
                     os << " uint: " << type.uint();
+                    break;
+                case 7:
+                    os << " uint64: " << type.uint64();
                     break;
                 default:
                     os << "INVALID TYPE";
@@ -401,9 +416,9 @@ namespace DSR {
 
         CRDTEdge &operator=(IDL::IDLEdge &&x);
 
-        void to(uint128_t  _to);
+        void to(uint64_t  _to);
 
-        [[nodiscard]] uint128_t  to() const;
+        [[nodiscard]] uint64_t  to() const;
 
         void type(const std::string &_type);
 
@@ -413,9 +428,9 @@ namespace DSR {
 
         [[nodiscard]] std::string &type();
 
-        void from(uint128_t  _from);
+        void from(uint64_t  _from);
 
-        [[nodiscard]] uint128_t from() const;
+        [[nodiscard]] uint64_t from() const;
 
         void attrs(const std::map<std::string, mvreg<CRDTAttribute>> &_attrs);
 
@@ -429,7 +444,7 @@ namespace DSR {
 
         [[nodiscard]] uint32_t agent_id() const;
 
-        [[nodiscard]] IDL::IDLEdge toIDLEdge(uint128_t id);
+        [[nodiscard]] IDL::IDLEdge toIDLEdge(uint64_t id);
 
 
         bool operator==(const CRDTEdge &eA_) const
@@ -487,9 +502,9 @@ namespace DSR {
         };
 
     private:
-        uint128_t m_to;
+        uint64_t m_to;
         std::string m_type;
-        uint128_t  m_from;
+        uint64_t  m_from;
         std::map<std::string, mvreg<CRDTAttribute>> m_attrs;
         uint32_t m_agent_id{};
     };
@@ -533,9 +548,9 @@ namespace DSR {
 
         [[nodiscard]] std::string &name();
 
-        void id(uint128_t _id);
+        void id(uint64_t _id);
 
-        [[nodiscard]] uint128_t id() const;
+        [[nodiscard]] uint64_t id() const;
 
         void agent_id(uint32_t _agent_id);
 
@@ -549,15 +564,15 @@ namespace DSR {
 
         [[nodiscard]] const std::map<std::string, mvreg<CRDTAttribute>> &attrs() const &;
 
-        void fano(const std::map<std::pair<uint128_t, std::string>, mvreg<CRDTEdge>> &_fano);
+        void fano(const std::map<std::pair<uint64_t, std::string>, mvreg<CRDTEdge>> &_fano);
 
-        void fano(std::map<std::pair<uint128_t, std::string>, mvreg<CRDTEdge>> &&_fano);
+        void fano(std::map<std::pair<uint64_t, std::string>, mvreg<CRDTEdge>> &&_fano);
 
-        [[nodiscard]] std::map<std::pair<uint128_t, std::string>, mvreg<CRDTEdge>> &fano();
+        [[nodiscard]] std::map<std::pair<uint64_t, std::string>, mvreg<CRDTEdge>> &fano();
 
-        [[nodiscard]] const std::map<std::pair<uint128_t, std::string>, mvreg<CRDTEdge>> &fano() const;
+        [[nodiscard]] const std::map<std::pair<uint64_t, std::string>, mvreg<CRDTEdge>> &fano() const;
 
-        [[nodiscard]] IDL::IDLNode toIDLNode(uint128_t id);
+        [[nodiscard]] IDL::IDLNode toIDLNode(uint64_t id);
 
         bool operator==(const CRDTNode &n_) const
         {
@@ -617,10 +632,10 @@ namespace DSR {
     private:
         std::string m_type;
         std::string m_name;
-        uint128_t m_id{};
+        uint64_t m_id{};
         uint32_t m_agent_id{};
         std::map<std::string, mvreg<CRDTAttribute>> m_attrs;
-        std::map<std::pair<uint128_t, std::string>, mvreg<CRDTEdge>> m_fano;
+        std::map<std::pair<uint64_t, std::string>, mvreg<CRDTEdge>> m_fano;
     };
 
 

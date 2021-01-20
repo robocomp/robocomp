@@ -131,6 +131,7 @@ DSRViewer::DSRViewer(QMainWindow * widget, std::shared_ptr<DSR::DSRGraph> G_, in
     qRegisterMetaType<std::int32_t>("std::int32_t");
     qRegisterMetaType<std::string>("std::string");
     qRegisterMetaType<std::uint32_t>("std::uint32_t");
+    qRegisterMetaType<std::uint64_t>("std::uint64_t");
     qRegisterMetaType<std::vector<std::string>>("std::vector<std::string>");
 
     QRect availableGeometry(QApplication::desktop()->availableGeometry());

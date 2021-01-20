@@ -39,6 +39,8 @@ SET ( SOURCES
         $ENV{ROBOCOMP}/classes/dsr/core/rtps/dsrparticipant.cpp
         $ENV{ROBOCOMP}/classes/dsr/core/topics/IDLGraphPubSubTypes.cxx
         $ENV{ROBOCOMP}/classes/dsr/core/topics/IDLGraph.cxx
+        $ENV{ROBOCOMP}/classes/dsr/core/id_generator.cpp
+
         )
 
 

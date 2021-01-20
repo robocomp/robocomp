@@ -12,6 +12,7 @@ TreeViewer::TreeViewer(std::shared_ptr<DSR::DSRGraph> G_, QWidget *parent) :  QT
 {
     qRegisterMetaType<std::int32_t>("std::int32_t");
     qRegisterMetaType<std::uint32_t>("std::uint32_t");
+    qRegisterMetaType<std::uint64_t>("std::uint64_t");
     qRegisterMetaType<std::string>("std::string");
     G = G_;
     this->setMinimumSize(400, 400);
@@ -22,7 +23,7 @@ TreeViewer::TreeViewer(std::shared_ptr<DSR::DSRGraph> G_, QWidget *parent) :  QT
     createGraph();
 
     connect(G.get(), &DSR::DSRGraph::update_node_signal, this,
-			[=]( std::int32_t id, std::string type ) {TreeViewer::add_or_assign_node_SLOT(id, type);});
+			[=]( std::uint64_t id, std::string type ) {TreeViewer::add_or_assign_node_SLOT(id, type);});
     setColumnCount(2);
 	QStringList horzHeaders;
 	horzHeaders <<"Attribute"<< "Value";
@@ -62,7 +63,7 @@ void TreeViewer::reload(QWidget* widget) {
 //////////////////////////////////////////////////////////////////////////////////////
 ///// SLOTS
 //////////////////////////////////////////////////////////////////////////////////////
-void TreeViewer::add_or_assign_node_SLOT(int id, const std::string &type,  const std::string &name)
+void TreeViewer::add_or_assign_node_SLOT(uint64_t id, const std::string &type,  const std::string &name)
 {
 	QTreeWidgetItem* item;
 	try {
@@ -109,25 +110,25 @@ void TreeViewer::add_or_assign_node_SLOT(int id, const std::string &type,  const
 
 }
 
-void TreeViewer::add_or_assign_node_SLOT(int id, Node node)
+void TreeViewer::add_or_assign_node_SLOT(uint64_t id, Node node)
 {
 	auto type = node.type();
 	add_or_assign_node_SLOT(id, type, node.name());
 
 }
 
-void TreeViewer::add_or_assign_edge_SLOT(std::int32_t from, std::int32_t to, const std::string &edge_tag)
+void TreeViewer::add_or_assign_edge_SLOT(std::uint64_t from, std::uint64_t to, const std::string &edge_tag)
 {
 	
 }
 
-void TreeViewer::del_edge_SLOT(const std::int32_t from, const std::int32_t to, const std::string &edge_tag)
+void TreeViewer::del_edge_SLOT(const std::uint64_t from, const std::uint64_t to, const std::string &edge_tag)
 {
     qDebug()<<__FUNCTION__<<":"<<__LINE__;
 
 }
 
-void TreeViewer::del_node_SLOT(int id)
+void TreeViewer::del_node_SLOT(uint64_t id)
 {
 
     qDebug()<<__FUNCTION__<<":"<<__LINE__;
@@ -150,7 +151,7 @@ void TreeViewer::category_change_SLOT(int value, QTreeWidgetItem* parent)
 	}
 }
 
-void TreeViewer::node_change_SLOT(int value, int id, const std::string &type,  QTreeWidgetItem* parent)
+void TreeViewer::node_change_SLOT(int value, uint64_t id, const std::string &type,  QTreeWidgetItem* parent)
 {
 	QCheckBox* sender = qobject_cast<QCheckBox*>(this->sender());
 	if(sender)

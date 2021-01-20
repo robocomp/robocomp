@@ -10,46 +10,46 @@
 namespace DSR {
 
     // Translators
-    inline static IDL::Mvreg translate_node_mvCRDT_to_IDL(uint32_t agent_id, uint128_t id, mvreg<CRDTNode> &data)
+    inline static IDL::MvregNode translate_node_mvCRDT_to_IDL(uint32_t agent_id, uint64_t id, mvreg<CRDTNode> &data)
     {
-        IDL::Mvreg delta_crdt;
+        IDL::MvregNode delta_crdt;
         for (auto &kv_dots : data.dk.ds) {
             IDL::PairInt pi;
-            pi.first(*(IDL::Uuid*)&kv_dots.first.first);
+            pi.first(kv_dots.first.first);
             pi.second(kv_dots.first.second);
 
             delta_crdt.dk().ds().emplace(std::make_pair(pi, kv_dots.second.toIDLNode(id)));
-            delta_crdt.dk().cbase().cc().emplace(*(std::pair<IDL::Uuid, int32_t>*)&kv_dots.first);
+            delta_crdt.dk().cbase().cc().emplace(kv_dots.first);
         }
 
         for (auto &kv_dc : data.dk.c.dc) {
             IDL::PairInt pi;
-            pi.first(*(IDL::Uuid*)&kv_dc.first);
+            pi.first(kv_dc.first);
             pi.second(kv_dc.second);
 
             delta_crdt.dk().cbase().dc().push_back(pi);
         }
 
-        delta_crdt.dk().cbase().cc(*(std::map<IDL::Uuid, int32_t>*)&data.dk.c.cc);
+        delta_crdt.dk().cbase().cc(data.dk.c.cc);
 
-        delta_crdt.id(*(IDL::Uuid*)&id);
+        delta_crdt.id(id);
         delta_crdt.agent_id(agent_id);
         return delta_crdt;
     }
 
-    inline static mvreg<CRDTNode> translate_node_mvIDL_to_CRDT(IDL::Mvreg &&data)
+    inline static mvreg<CRDTNode> translate_node_mvIDL_to_CRDT(IDL::MvregNode &&data)
     {
         // Context
         dot_context dotcontext_aux;
-        std::map<IDL::Uuid, int> m = std::move(data.dk().cbase().cc());
-        std::set<std::pair<uint128_t , int>> s;
+        std::map<uint64_t , int> m = std::move(data.dk().cbase().cc());
+        std::set<std::pair<uint64_t , int>> s;
         for (auto &v : data.dk().cbase().dc())
-            s.insert(std::make_pair(*(uint128_t*)&v.first(), v.second()));
-        dotcontext_aux.setContext(std::move(*(std::map<uint128_t , int32_t>*)&m), std::move(s));
+            s.insert(std::make_pair(*(uint64_t*)&v.first(), v.second()));
+        dotcontext_aux.setContext(std::move(m), std::move(s));
         // Dots
-        std::map<std::pair<uint128_t , int>, CRDTNode> ds_aux;
+        std::map<std::pair<uint64_t , int>, CRDTNode> ds_aux;
         for (auto &&val : std::move(data.dk().ds()))
-            ds_aux[std::pair<uint128_t , int>(*(uint128_t*)&val.first.first(), val.first.second())] = CRDTNode(std::move(val.second));
+            ds_aux[std::pair<uint64_t , int>(val.first.first(), val.first.second())] = CRDTNode(std::move(val.second));
 
         // Join
         mvreg<CRDTNode> aw;
@@ -59,35 +59,35 @@ namespace DSR {
     }
 
     inline static IDL::MvregEdgeAttr
-    translate_edge_attr_mvCRDT_to_IDL(uint32_t agent_id, uint128_t id, uint128_t from, uint128_t to, const std::string &type,
+    translate_edge_attr_mvCRDT_to_IDL(uint32_t agent_id, uint64_t id, uint64_t from, uint64_t to, const std::string &type,
                                       const std::string &attr, mvreg<CRDTAttribute> &data)
     {
         IDL::MvregEdgeAttr delta_crdt;
 
         for (auto &kv_dots : data.dk.ds) {
             IDL::PairInt pi;
-            pi.first(*(IDL::Uuid*)&kv_dots.first.first);
+            pi.first(kv_dots.first.first);
             pi.second(kv_dots.first.second);
 
             delta_crdt.dk().ds().emplace(std::make_pair(pi, kv_dots.second.toIDLAttrib()));
-            delta_crdt.dk().cbase().cc().emplace(*(std::pair<IDL::Uuid, int32_t>*)&kv_dots.first);
+            delta_crdt.dk().cbase().cc().emplace(kv_dots.first);
         }
 
         for (auto &kv_dc : data.context().dc) {
             IDL::PairInt pi;
-            pi.first(*(IDL::Uuid*)&kv_dc.first);
+            pi.first(kv_dc.first);
             pi.second(kv_dc.second);
 
             delta_crdt.dk().cbase().dc().push_back(pi);
         }
 
-        delta_crdt.dk().cbase().cc(*(std::map<IDL::Uuid, int32_t>*)&data.dk.c.cc);
+        delta_crdt.dk().cbase().cc(data.dk.c.cc);
 
         delta_crdt.type(type);
-        delta_crdt.id(*(IDL::Uuid*)&id);
+        delta_crdt.id(id);
         delta_crdt.attr_name(attr);
-        delta_crdt.from(*(IDL::Uuid*)&from);
-        delta_crdt.to(*(IDL::Uuid*)&to);
+        delta_crdt.from(from);
+        delta_crdt.to(to);
         delta_crdt.agent_id(agent_id);
         return delta_crdt;
 
@@ -97,16 +97,16 @@ namespace DSR {
     {
         // Context
         dot_context dotcontext_aux;
-        std::map<uint128_t, int> m = std::move(*(std::map<uint128_t, int32_t>*)&data.dk().cbase().cc());
+        std::map<uint64_t, int> m = std::move(data.dk().cbase().cc());
 
-        std::set<std::pair<uint128_t, int>> s;
+        std::set<std::pair<uint64_t, int>> s;
         for (auto &v : data.dk().cbase().dc())
-            s.insert(std::make_pair(*(uint128_t*)&v.first(), v.second()));
+            s.insert(std::make_pair(v.first(), v.second()));
         dotcontext_aux.setContext(std::move(m), std::move(s));
         // Dots
-        std::map<std::pair<uint128_t, int>, CRDTAttribute> ds_aux;
+        std::map<std::pair<uint64_t, int>, CRDTAttribute> ds_aux;
         for (auto &&val : std::move(data.dk().ds()))
-            ds_aux[std::pair<uint128_t, int>(*(uint128_t*)&val.first.first(), val.first.second())] = std::move(val.second);
+            ds_aux[std::pair<uint64_t, int>(val.first.first(), val.first.second())] = std::move(val.second);
                // Join
         mvreg<CRDTAttribute> aw;
         aw.dk.c = std::move(dotcontext_aux);
@@ -115,33 +115,33 @@ namespace DSR {
     }
 
     inline static IDL::MvregNodeAttr
-    translate_node_attr_mvCRDT_to_IDL(uint32_t agent_id, uint128_t id, uint128_t node, const std::string &attr, mvreg<CRDTAttribute> &data)
+    translate_node_attr_mvCRDT_to_IDL(uint32_t agent_id, uint64_t id, uint64_t node, const std::string &attr, mvreg<CRDTAttribute> &data)
     {
         IDL::MvregNodeAttr delta_crdt;
 
         for (auto &kv_dots : data.dk.ds) {
             IDL::PairInt pi;
-            pi.first(*(IDL::Uuid*)&kv_dots.first.first);
+            pi.first(kv_dots.first.first);
             pi.second(kv_dots.first.second);
 
             delta_crdt.dk().ds().emplace(std::make_pair(pi, kv_dots.second.toIDLAttrib()));
-            delta_crdt.dk().cbase().cc().emplace(*(std::pair<IDL::Uuid, int32_t>*)&kv_dots.first);
+            delta_crdt.dk().cbase().cc().emplace(kv_dots.first);
         }
 
         for (auto &kv_dc : data.context().dc) {
             IDL::PairInt pi;
-            pi.first(*(IDL::Uuid*)&kv_dc.first);
+            pi.first(kv_dc.first);
             pi.second(kv_dc.second);
 
             delta_crdt.dk().cbase().dc().push_back(pi);
         }
 
-        delta_crdt.dk().cbase().cc(*(std::map<IDL::Uuid, int32_t>*)&data.dk.c.cc);
+        delta_crdt.dk().cbase().cc(data.dk.c.cc);
 
 
-        delta_crdt.id(*(IDL::Uuid*)&id);
+        delta_crdt.id(id);
         delta_crdt.attr_name(attr);
-        delta_crdt.node(*(IDL::Uuid*)&node);
+        delta_crdt.node(node);
         delta_crdt.agent_id(agent_id);
 
         return delta_crdt;
@@ -151,17 +151,17 @@ namespace DSR {
     {
         // Context
         dot_context dotcontext_aux;
-        std::map<uint128_t, int> m = std::move(*(std::map<uint128_t, int32_t>*)&data.dk().cbase().cc());
+        std::map<uint64_t, int> m = std::move(*(std::map<uint64_t, int32_t>*)&data.dk().cbase().cc());
 
-        std::set<std::pair<uint128_t, int>> s;
+        std::set<std::pair<uint64_t, int>> s;
 
         for (auto &v : data.dk().cbase().dc())
-            s.insert(std::make_pair(*(uint128_t*)&v.first(), v.second()));
+            s.insert(std::make_pair(v.first(), v.second()));
         dotcontext_aux.setContext(std::move(m), std::move(s));
         // Dots
-        std::map<std::pair<uint128_t, int>, CRDTAttribute> ds_aux;
+        std::map<std::pair<uint64_t, int>, CRDTAttribute> ds_aux;
         for (auto &&val : std::move(data.dk().ds()))
-            ds_aux[std::pair<uint128_t, int>(*(uint128_t*)&val.first.first(), val.first.second())] = std::move(val.second);
+            ds_aux[std::pair<uint64_t, int>(val.first.first(), val.first.second())] = std::move(val.second);
         // Join
         mvreg<CRDTAttribute> aw;
         aw.dk.c = std::move(dotcontext_aux);
@@ -173,52 +173,52 @@ namespace DSR {
     {
         // Context
         dot_context dotcontext_aux;
-        std::map<uint128_t, int> m = std::move(*(std::map<uint128_t, int32_t>*)&data.dk().cbase().cc());
+        std::map<uint64_t, int> m = std::move(*(std::map<uint64_t, int32_t>*)&data.dk().cbase().cc());
         //for (auto &v : data.dk().cbase().cc())
         //    m.insert(std::make_pair(v.first, v.second));
-        std::set<std::pair<uint128_t, int>> s;
+        std::set<std::pair<uint64_t, int>> s;
         for (auto &v : data.dk().cbase().dc())
-            s.insert(std::make_pair(*(uint128_t*)&v.first(), v.second()));
+            s.insert(std::make_pair(v.first(), v.second()));
         dotcontext_aux.setContext(std::move(m), std::move(s));
         // Dots
-        std::map<std::pair<uint128_t, int>, CRDTEdge> ds_aux;
+        std::map<std::pair<uint64_t, int>, CRDTEdge> ds_aux;
         for (auto &&val : std::move(data.dk().ds()))
-            ds_aux[std::pair<uint128_t, int>(*(uint128_t*)&val.first.first(), val.first.second())] = std::move(val.second);
+            ds_aux[std::pair<uint64_t, int>(val.first.first(), val.first.second())] = std::move(val.second);
         mvreg<CRDTEdge> aw;
         aw.dk.c = std::move(dotcontext_aux);
         aw.dk.dot_map(std::move(ds_aux));
         return aw;
     }
 
-    inline static IDL::MvregEdge translate_edge_mvCRDT_to_IDL(uint32_t agent_id, uint128_t from, uint128_t to, const std::string& type , mvreg<CRDTEdge> &data)
+    inline static IDL::MvregEdge translate_edge_mvCRDT_to_IDL(uint32_t agent_id, uint64_t from, uint64_t to, const std::string& type , mvreg<CRDTEdge> &data)
     {
         IDL::MvregEdge delta_crdt;
 
         for (auto &kv_dots : data.dk.ds) {
             IDL::PairInt pi;
-            pi.first(*(IDL::Uuid*)&kv_dots.first.first);
+            pi.first(kv_dots.first.first);
             pi.second(kv_dots.first.second);
 
             auto edge = kv_dots.second.toIDLEdge(from);
             delta_crdt.dk().ds().emplace(std::make_pair(pi, edge));
-            delta_crdt.dk().cbase().cc().emplace(*(std::pair<IDL::Uuid, int32_t>*)&kv_dots.first);
+            delta_crdt.dk().cbase().cc().emplace(kv_dots.first);
 
         }
 
         for (auto &kv_dc : data.context().dc) {
             IDL::PairInt pi;
-            pi.first(*(IDL::Uuid*)&kv_dc.first);
+            pi.first(kv_dc.first);
             pi.second(kv_dc.second);
 
             delta_crdt.dk().cbase().dc().push_back(pi);
         }
 
-        delta_crdt.dk().cbase().cc(*(std::map<IDL::Uuid, int32_t>*)&data.dk.c.cc);
+        delta_crdt.dk().cbase().cc(data.dk.c.cc);
 
-        delta_crdt.from(*(IDL::Uuid*)&from);
-        delta_crdt.to(*(IDL::Uuid*)&to);
+        delta_crdt.from(from);
+        delta_crdt.to(to);
         delta_crdt.type(type);
-        delta_crdt.id(*(IDL::Uuid*)&from);
+        delta_crdt.id(from);
         delta_crdt.agent_id(agent_id);
         return delta_crdt;
     }

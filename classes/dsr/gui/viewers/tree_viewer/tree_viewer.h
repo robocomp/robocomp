@@ -41,20 +41,20 @@ namespace DSR
             std::shared_ptr<DSR::DSRGraph> getGraph()  			  	{return G;};
 		     
         public slots:   // From G
-            void add_or_assign_node_SLOT(const std::int32_t id, const std::string &type, const std::string &name = "");
-			void add_or_assign_node_SLOT(const std::int32_t id, Node node);
-            void add_or_assign_edge_SLOT(const std::int32_t from, const std::int32_t to, const std::string& type);
-			void del_edge_SLOT(const std::int32_t from, const std::int32_t to,  const std::string &edge_tag);
-			void del_node_SLOT(int id);
-			void node_change_SLOT(int value,  int id, const std::string &type, QTreeWidgetItem* parent= nullptr);
+            void add_or_assign_node_SLOT(const std::uint64_t id, const std::string &type, const std::string &name = "");
+			void add_or_assign_node_SLOT(const std::uint64_t id, Node node);
+            void add_or_assign_edge_SLOT(const std::uint64_t from, const std::uint64_t to, const std::string& type);
+			void del_edge_SLOT(const std::uint64_t from, const std::uint64_t to,  const std::string &edge_tag);
+			void del_node_SLOT(uint64_t id);
+			void node_change_SLOT(int value,  uint64_t id, const std::string &type, QTreeWidgetItem* parent= nullptr);
 			void category_change_SLOT(int value,  QTreeWidgetItem* parent= nullptr);
 			void reload(QWidget *widget);
 
         private:
             std::shared_ptr<DSR::DSRGraph> G;
             std::map<std::string, QTreeWidgetItem*> types_map;
-			std::map<int, QTreeWidgetItem*> tree_map;
-			std::map<int, std::map<std::string, QTreeWidgetItem*>> attributes_map;
+			std::map<uint64_t, QTreeWidgetItem*> tree_map;
+			std::map<uint64_t, std::map<std::string, QTreeWidgetItem*>> attributes_map;
 			void createGraph();
 			void create_attribute_widgets(QTreeWidgetItem* parent, Node* node);
 			void create_attribute_widget(QTreeWidgetItem* parent, Node* node, std::string key, Attribute value);
@@ -62,7 +62,7 @@ namespace DSR
 
         
 		signals:
-			void node_check_state_changed(int newValue, int id, const std::string &type,  QTreeWidgetItem * item);
+			void node_check_state_changed(int newValue, uint64_t id, const std::string &type,  QTreeWidgetItem * item);
     };
 };
 #endif

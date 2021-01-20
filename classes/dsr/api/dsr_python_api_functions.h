@@ -22,7 +22,7 @@ namespace DSR
         /*
         When a Node is created in the python api we get the id from idserver, so we don't need to do that here.
         */
-        std::optional<std::uint32_t> insert_node_python(DSR::DSRGraph &g, Node &n);
+        std::optional<uint64_t> insert_node_python(DSR::DSRGraph &g, Node &n);
 
     };
 

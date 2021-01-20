@@ -5,6 +5,8 @@
 #ifndef UTILS_H
 #define UTILS_H
 
+#include <chrono>
+
 #define PRINT_TIME(type, s)    {                 \
                         auto now = get_unix_timestamp(); \
                         std::chrono::nanoseconds now_ms(now);\
@@ -52,25 +54,10 @@ struct hash_pair
 static uint64_t get_unix_timestamp() { //Move to utilities?
     auto now = std::chrono::system_clock::now();
     std::chrono::time_point pt_ms = std::chrono::time_point_cast<std::chrono::nanoseconds>(now);
-    uint64_t millis = pt_ms.time_since_epoch().count();
-    return millis;
+    uint64_t nanos = pt_ms.time_since_epoch().count();
+    return nanos;
 }
 
-namespace std {
-    inline string
-    to_string(uint128_t __val) {
-        char *c = new char[17];
-        uuid_unparse((unsigned char *)&__val, c);
-        return std::string(c);
-    }
-
-    inline string
-    to_string(Uuid __val) {
-        char *c = new char[17];
-        uuid_unparse((unsigned char *)&__val, c);
-        return std::string(c);
-    }
-}
 
 
 #endif //UTILS_H

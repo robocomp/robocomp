@@ -73,6 +73,21 @@ namespace DSR {
 
     }
 
+    void CRDTValue::uint64(uint64_t _uint64)
+    {
+        val = _uint64;
+    }
+
+    uint64_t CRDTValue::uint64() const
+    {
+        if (auto pval = std::get_if<uint64_t>(&val)) {
+            return *pval;
+        }
+        throw std::runtime_error(
+                ("UINT64 is not selected, selected is " + std::string(TYPENAMES_UNION[val.index()])).data());
+
+    }
+    
     void CRDTValue::fl(float _fl) 
     {
         val = _fl;
@@ -187,6 +202,9 @@ namespace DSR {
             case 6:
                 value.uint(std::get<std::uint32_t>(val));
                 break;
+            case 7:
+                value.u64(std::get<std::uint64_t>(val));
+                break;
             default:
                 throw std::runtime_error(
                         ("Error converting CRDT::CRDTAttribute to IDL::Attrib. The CRDTAttribute is uninitialized. " +
@@ -262,9 +280,9 @@ namespace DSR {
     CRDTEdge &CRDTEdge::operator=(IDL::IDLEdge &&x) 
     {
 
-        m_to = *(uint128_t*)&x.to();
+        m_to = *(uint64_t*)&x.to();
         m_type = std::move(x.type());
-        m_from = *(uint128_t *)&x.from();
+        m_from = *(uint64_t *)&x.from();
         if (!x.attrs().empty()) {
             for (auto&[k, v] : x.attrs()) {
                 m_attrs[k] = translate_edge_attr_mvIDL_to_CRDT(std::move(v));
@@ -276,12 +294,12 @@ namespace DSR {
     }
 
 
-    void CRDTEdge::to(uint128_t  _to)
+    void CRDTEdge::to(uint64_t  _to)
     {
         m_to = _to;
     }
 
-    uint128_t  CRDTEdge::to() const
+    uint64_t  CRDTEdge::to() const
     {
         return m_to;
     }
@@ -307,12 +325,12 @@ namespace DSR {
         return m_type;
     }
 
-    void CRDTEdge::from(uint128_t  _from)
+    void CRDTEdge::from(uint64_t  _from)
     {
         m_from = _from;
     }
 
-    uint128_t  CRDTEdge::from() const
+    uint64_t  CRDTEdge::from() const
     {
         return m_from;
     }
@@ -347,11 +365,11 @@ namespace DSR {
         return m_agent_id;
     }
 
-    IDL::IDLEdge CRDTEdge::toIDLEdge(uint128_t id)
+    IDL::IDLEdge CRDTEdge::toIDLEdge(uint64_t id)
     {
         IDL::IDLEdge edge;
-        edge.from(*(IDL::Uuid*)&m_from);
-        edge.to(*(IDL::Uuid*)&m_to);
+        edge.from(m_from);
+        edge.to(m_to);
         edge.type(m_type);
         edge.agent_id(m_agent_id);
         for (auto &[k, v] : m_attrs) {
@@ -359,19 +377,19 @@ namespace DSR {
             IDL::MvregEdgeAttr edgeAttr;
             for (auto &kv_dots : v.dk.ds) {
                 IDL::PairInt pi;
-                pi.first(*(IDL::Uuid*)&kv_dots.first.first);
+                pi.first(kv_dots.first.first);
                 pi.second(kv_dots.first.second);
 
                 edgeAttr.dk().ds().emplace(std::make_pair(pi, kv_dots.second.toIDLAttrib()));
-                edgeAttr.dk().cbase().cc().emplace(*(std::pair<IDL::Uuid, int32_t>*)&kv_dots.first);
+                edgeAttr.dk().cbase().cc().emplace(kv_dots.first);
 
             }
 
-            edgeAttr.from(*(IDL::Uuid*)&m_from);
-            edgeAttr.to(*(IDL::Uuid*)&m_to);
+            edgeAttr.from(m_from);
+            edgeAttr.to(m_to);
             edgeAttr.type(m_type);
             edgeAttr.agent_id(v.read_reg().agent_id());
-            edgeAttr.id(*(IDL::Uuid*)&id);
+            edgeAttr.id(id);
 
             edge.attrs()[k] = edgeAttr;
         }
@@ -383,7 +401,7 @@ namespace DSR {
     {
         m_type = std::move(x.type());
         m_name = std::move(x.name());
-        m_id = *(uint128_t *)&x.id();
+        m_id = *(uint64_t *)&x.id();
         m_agent_id = x.agent_id();
         for (auto&[k, v] : x.attrs()) {
             m_attrs[k] = translate_node_attr_mvIDL_to_CRDT(std::move(v));
@@ -397,7 +415,7 @@ namespace DSR {
     {
         m_type = x.type();
         m_name = x.name();
-        m_id = *(uint128_t *)&x.id();
+        m_id = *(uint64_t *)&x.id();
         m_agent_id = x.agent_id();
         for (auto&[k, v] : x.attrs()) {
             m_attrs[k] = translate_node_attr_mvIDL_to_CRDT(std::move(v));
@@ -447,12 +465,12 @@ namespace DSR {
         return m_name;
     }
 
-    void CRDTNode::id(uint128_t _id)
+    void CRDTNode::id(uint64_t _id)
     {
         m_id = _id;
     }
 
-    uint128_t CRDTNode::id() const
+    uint64_t CRDTNode::id() const
     {
         return m_id;
     }
@@ -487,31 +505,31 @@ namespace DSR {
         return m_attrs;
     }
 
-    void CRDTNode::fano(const std::map<std::pair<uint128_t , std::string>, mvreg<CRDTEdge>> &_fano)
+    void CRDTNode::fano(const std::map<std::pair<uint64_t , std::string>, mvreg<CRDTEdge>> &_fano)
     {
         m_fano = _fano;
     }
 
-    void CRDTNode::fano(std::map<std::pair<uint128_t, std::string>, mvreg<CRDTEdge>> &&_fano)
+    void CRDTNode::fano(std::map<std::pair<uint64_t, std::string>, mvreg<CRDTEdge>> &&_fano)
     {
         m_fano = std::move(_fano);
     }
 
-    std::map<std::pair<uint128_t, std::string>, mvreg<CRDTEdge>> &CRDTNode::fano()
+    std::map<std::pair<uint64_t, std::string>, mvreg<CRDTEdge>> &CRDTNode::fano()
     {
         return m_fano;
     }
 
-    const std::map<std::pair<uint128_t, std::string>, mvreg<CRDTEdge>> &CRDTNode::fano() const
+    const std::map<std::pair<uint64_t, std::string>, mvreg<CRDTEdge>> &CRDTNode::fano() const
     {
         return m_fano;
     }
 
 
-    IDL::IDLNode CRDTNode::toIDLNode(uint128_t id)
+    IDL::IDLNode CRDTNode::toIDLNode(uint64_t id)
     {
         IDL::IDLNode node;
-        node.id(*(IDL::Uuid*)&m_id);
+        node.id(m_id);
         node.name(m_name);
         node.type(m_type);
         node.agent_id(m_agent_id);
@@ -519,14 +537,14 @@ namespace DSR {
             IDL::MvregNodeAttr nodeAttr;
             for (auto &kv_dots : v.dk.ds) {
                 IDL::PairInt pi;
-                pi.first(*(IDL::Uuid*)&kv_dots.first.first);
+                pi.first(kv_dots.first.first);
                 pi.second(kv_dots.first.second);
 
                 nodeAttr.dk().ds().emplace(std::make_pair(pi, kv_dots.second.toIDLAttrib()));
-                nodeAttr.dk().cbase().cc().emplace(*(std::pair<IDL::Uuid, int32_t>*)&kv_dots.first);
+                nodeAttr.dk().cbase().cc().emplace(kv_dots.first);
             }
 
-            nodeAttr.id(*(IDL::Uuid*)&id);
+            nodeAttr.id(id);
             nodeAttr.attr_name(k);
             nodeAttr.agent_id(v.read_reg().agent_id());
             node.attrs()[k] = nodeAttr;
@@ -536,18 +554,18 @@ namespace DSR {
             IDL::MvregEdge mvregCRDTEdge;
             for (auto &kv_dots : v.dk.ds) {
                 IDL::PairInt pi;
-                pi.first(*(IDL::Uuid*)&kv_dots.first.first);
+                pi.first(kv_dots.first.first);
                 pi.second(kv_dots.first.second);
 
                 mvregCRDTEdge.dk().ds().emplace(std::make_pair(pi, kv_dots.second.toIDLEdge(id)));
-                mvregCRDTEdge.dk().cbase().cc().emplace(*(std::pair<IDL::Uuid, int32_t>*)&kv_dots.first);
+                mvregCRDTEdge.dk().cbase().cc().emplace(kv_dots.first);
 
             }
 
-            mvregCRDTEdge.id(*(IDL::Uuid*)&id);
+            mvregCRDTEdge.id(id);
             mvregCRDTEdge.agent_id(v.read_reg().agent_id());
-            mvregCRDTEdge.to(*(IDL::Uuid*)&k.first);
-            mvregCRDTEdge.from(*(IDL::Uuid*)v.read_reg().from());
+            mvregCRDTEdge.to(k.first);
+            mvregCRDTEdge.from(v.read_reg().from());
             mvregCRDTEdge.type(k.second);
             IDL::EdgeKey ek;
             ek.to(k.first);

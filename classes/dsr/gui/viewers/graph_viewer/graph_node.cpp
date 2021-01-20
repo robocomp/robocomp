@@ -202,7 +202,7 @@ QVariant GraphNode::itemChange(GraphicsItemChange change, const QVariant &value)
 
         default:
             break;
-    };
+    }
     return QGraphicsItem::itemChange(change, value);
 }
 
@@ -273,7 +273,7 @@ void GraphNode::set_node_color(const QColor& c)
 /////////////////////////////////////////////////////////////////////////////////////////7
 ////
 /////////////////////////////////////////////////////////////////////////////////////////
-void GraphNode::update_node_attr_slot(std::uint32_t node_id, const std::vector<std::string> &type)
+void GraphNode::update_node_attr_slot(std::uint64_t node_id, const std::vector<std::string> &type)
 {
     if (node_id != this->id_in_graph)
         return;

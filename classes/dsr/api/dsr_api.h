@@ -40,10 +40,11 @@
 #include "../core/types/type_checking/dsr_node_type.h"
 #include "../core/types/type_checking/dsr_edge_type.h"
 #include "../core/utils.h"
+#include "../core/id_generator.h"
 #include "threadpool/threadpool.h"
 #include "../core/logger.h"
 
-#include <DSRGetID.h>
+//#include <DSRGetID.h>
 
 #define TIMEOUT 5000
 
@@ -51,8 +52,8 @@
 
 namespace DSR
 {
-    using Nodes = std::unordered_map<uint128_t , mvreg<CRDTNode>>;
-    using IDType = uint128_t;
+    using Nodes = std::unordered_map<uint64_t , mvreg<CRDTNode>>;
+    using IDType = uint64_t;
 
     /////////////////////////////////////////////////////////////////
     /// CRDT API
@@ -65,7 +66,7 @@ namespace DSR
 
         public:
         size_t size();
-        DSRGraph(uint128_t root, std::string name, int id, const std::string& dsr_input_file = std::string(), RoboCompDSRGetID::DSRGetIDPrxPtr dsrgetid_proxy = nullptr, bool all_same_host = true);
+        DSRGraph(uint64_t root, std::string name, int id, const std::string& dsr_input_file = std::string(), bool all_same_host = true);
         ~DSRGraph();
 
 
@@ -74,7 +75,7 @@ namespace DSR
         //////////////////////////////////////////////////////
 
         // Utils
-        bool empty(const uint128_t &id);
+        bool empty(const uint64_t &id);
         template <typename Ta, typename = std::enable_if_t<allowed_types<Ta>>>
         std::tuple<std::string, std::string, int> nativetype_to_string(const Ta& t) {
             if constexpr (std::is_same<std::remove_cv_t<std::remove_reference_t<Ta>>, std::string>::value)
@@ -98,8 +99,8 @@ namespace DSR
 
         }; //Used by viewer
 
-        std::map<uint128_t, Node> getCopy() const;
-        std::vector<uint128_t> getKeys() const;
+        std::map<uint64_t, Node> getCopy() const;
+        std::vector<uint64_t> getKeys() const;
 
         // Innermodel API
         std::unique_ptr<InnerAPI> get_inner_api()            { return std::make_unique<InnerAPI>(this); };
@@ -120,20 +121,20 @@ namespace DSR
          **/
         // Nodes
         std::optional<Node> get_node(const std::string &name);
-        std::optional<Node> get_node(uint128_t id);
-        std::optional<uint128_t> insert_node(Node &node);
+        std::optional<Node> get_node(uint64_t id);
+        std::optional<uint64_t> insert_node(Node &node);
         bool update_node(Node &node);
         bool delete_node(const std::string &name);
-        bool delete_node(uint128_t id);
+        bool delete_node(uint64_t id);
 
         // Edges
         bool insert_or_assign_edge(const Edge& attrs);
         std::optional<Edge> get_edge(const std::string& from, const std::string& to, const std::string& key);
-        std::optional<Edge> get_edge(uint128_t from, uint128_t to, const std::string& key);
+        std::optional<Edge> get_edge(uint64_t from, uint64_t to, const std::string& key);
         std::optional<Edge> get_edge(const Node& n, const std::string& to, const std::string& key);
-        static std::optional<Edge> get_edge(const Node& n, uint128_t to, const std::string& key);
+        static std::optional<Edge> get_edge(const Node& n, uint64_t to, const std::string& key);
         bool delete_edge(const std::string& from, const std::string& t, const std::string& key);
-        bool delete_edge(uint128_t from, uint128_t t, const std::string& key);
+        bool delete_edge(uint64_t from, uint64_t t, const std::string& key);
         /**CORE END**/
 
 
@@ -143,18 +144,18 @@ namespace DSR
         // Nodes
         std::optional<Node> get_node_root() { return get_node("world"); };
         std::vector<Node> get_nodes_by_type(const std::string &type);
-        std::optional<std::string> get_name_from_id(uint128_t id);  // caché
-        std::optional<uint128_t> get_id_from_name(const std::string &name);  // caché
+        std::optional<std::string> get_name_from_id(uint64_t id);  // caché
+        std::optional<uint64_t> get_id_from_name(const std::string &name);  // caché
         std::optional<std::int32_t> get_node_level(const Node &n);
-        std::optional<uint128_t> get_parent_id(const Node &n);
+        std::optional<uint64_t> get_parent_id(const Node &n);
         std::optional<Node> get_parent_node(const Node &n);
         static std::string get_node_type(Node &n);
 
         // Edges
         std::vector<Edge> get_edges_by_type(const std::string &type);
         static std::vector<Edge> get_node_edges_by_type(const Node &node, const std::string &type);
-        std::vector<Edge> get_edges_to_id(uint128_t id);
-        std::optional<std::map<std::pair<uint128_t, std::string>, Edge>> get_edges(uint128_t id);
+        std::vector<Edge> get_edges_to_id(uint64_t id);
+        std::optional<std::map<std::pair<uint64_t, std::string>, Edge>> get_edges(uint64_t id);
 
 
 
@@ -179,6 +180,8 @@ namespace DSR
                 return av.dec();
             else if constexpr (std::is_same_v< name_type, std::uint32_t>)
                 return av.uint();
+            else if constexpr (std::is_same_v< name_type, std::uint64_t>)
+                return av.uint64();
             else if constexpr (std::is_same_v< name_type, bool>)
                 return av.bl();
             else if constexpr (std::is_same_v< name_type,  std::reference_wrapper<const std::vector<float>>>)
@@ -229,6 +232,9 @@ namespace DSR
                     } else if constexpr (std::is_same<std::uint32_t, Ta>::value) {
                         at.type(UINT);
                         value.uint(att_value);
+                    } else if constexpr (std::is_same<std::uint64_t , Ta>::value) {
+                        at.type(UINT64);
+                        value.uint64(att_value);
                     }
 
                     at.val(std::move(value));
@@ -280,6 +286,9 @@ namespace DSR
                 } else if constexpr (std::is_same<std::uint32_t, Ta>::value) {
                     at.type(UINT);
                     value.uint(att_value);
+                } else if constexpr (std::is_same<std::uint64_t , Ta>::value) {
+                    at.type(UINT64);
+                    value.uint64(att_value);
                 }
 
                 at.val(std::move(value));
@@ -437,7 +446,7 @@ namespace DSR
         }
 
         // Mixed
-        inline uint128_t get_agent_id() const { return agent_id; };
+        inline uint64_t get_agent_id() const { return agent_id; };
         inline std::string get_agent_name() const { return agent_name; };
         void reset() {
             nodes.clear();
@@ -490,8 +499,8 @@ namespace DSR
         void print()                                            { utils->print(); };
         void print_edge(const Edge &edge)                       { utils->print_edge(edge); };
         void print_node(const Node &node)                       { utils->print_node(node); };
-        void print_node(uint128_t id)                            { utils->print_node(id); };
-        void print_RT(uint128_t root)                      const { utils->print_RT(root); };
+        void print_node(uint64_t id)                            { utils->print_node(id); };
+        void print_RT(uint64_t root)                      const { utils->print_RT(root); };
         void write_to_json_file(const std::string &file, const std::vector<std::string> &skip_node_content = {})  const {
             utils->write_to_json_file(file, skip_node_content); };
         void read_from_json_file(const std::string &file) {
@@ -527,11 +536,12 @@ namespace DSR
         const uint32_t agent_id;
         std::string agent_name;
         std::unique_ptr<Utilities> utils;
-        RoboCompDSRGetID::DSRGetIDPrxPtr dsr_getid_proxy; // proxy to obtain unique node ids
+        //RoboCompDSRGetID::DSRGetIDPrxPtr dsr_getid_proxy; // proxy to obtain unique node ids
         const bool copy;
         std::unordered_set<std::string_view> ignored_attributes;
         ThreadPool tp;
         bool same_host;
+        id_generator generator;
 
         //////////////////////////////////////////////////////////////////////////
         // Cache maps
@@ -540,37 +550,37 @@ namespace DSR
         //std::unordered_map<std::tuple<uint32_t, uint32_t, std::string>, std::unordered_map<std::string, mvreg<CRDTAttribute, uint32_t>>, hash_tuple> temp_edge_attr; //temporal storage for attributes to solve problems with unsorted messages.
         //std::unordered_map<int, std::unordered_map<std::tuple<uint32_t, uint32_t, std::string>, mvreg<CRDTEdge, uint32_t>, hash_tuple>> temp_edge; //temporal storage for attributes to solve problems with unsorted messages.
 
-        std::unordered_set<uint128_t> deleted;     // deleted nodes, used to avoid insertion after remove.
-        std::unordered_map<std::string, uint128_t> name_map;     // mapping between name and id of nodes.
-        std::unordered_map<uint128_t, std::string> id_map;       // mapping between id and name of nodes.
-        std::unordered_map<std::pair<uint128_t, uint128_t>, std::unordered_set<std::string>, hash_tuple> edges;      // collection with all graph edges. ((from, to), key)
-        std::unordered_map<uint128_t , std::unordered_set<std::pair<uint128_t, std::string>,hash_tuple>> to_edges;      // collection with all graph edges. (to, (from, key))
-        std::unordered_map<std::string, std::unordered_set<std::pair<uint128_t, uint128_t>, hash_tuple>> edgeType;  // collection with all edge types.
-        std::unordered_map<std::string, std::unordered_set<uint128_t>> nodeType;  // collection with all node types.
+        std::unordered_set<uint64_t> deleted;     // deleted nodes, used to avoid insertion after remove.
+        std::unordered_map<std::string, uint64_t> name_map;     // mapping between name and id of nodes.
+        std::unordered_map<uint64_t, std::string> id_map;       // mapping between id and name of nodes.
+        std::unordered_map<std::pair<uint64_t, uint64_t>, std::unordered_set<std::string>, hash_tuple> edges;      // collection with all graph edges. ((from, to), key)
+        std::unordered_map<uint64_t , std::unordered_set<std::pair<uint64_t, std::string>,hash_tuple>> to_edges;      // collection with all graph edges. (to, (from, key))
+        std::unordered_map<std::string, std::unordered_set<std::pair<uint64_t, uint64_t>, hash_tuple>> edgeType;  // collection with all edge types.
+        std::unordered_map<std::string, std::unordered_set<uint64_t>> nodeType;  // collection with all node types.
 
-        void update_maps_node_delete(uint128_t id, const std::optional<CRDTNode>& n);
-        void update_maps_node_insert(uint128_t id, const CRDTNode &n);
-        void update_maps_edge_delete(uint128_t from, uint128_t to, const std::string &key = "");
-        void update_maps_edge_insert(uint128_t from, uint128_t to, const std::string &key);
+        void update_maps_node_delete(uint64_t id, const std::optional<CRDTNode>& n);
+        void update_maps_node_insert(uint64_t id, const CRDTNode &n);
+        void update_maps_edge_delete(uint64_t from, uint64_t to, const std::string &key = "");
+        void update_maps_edge_insert(uint64_t from, uint64_t to, const std::string &key);
 
 
         //////////////////////////////////////////////////////////////////////////
         // Non-blocking graph operations
         //////////////////////////////////////////////////////////////////////////
-        std::optional<CRDTNode> get(uint128_t id);
-        bool in(uint128_t id) const;
-        std::optional<CRDTNode> get_(uint128_t id);
-        std::optional<CRDTEdge> get_edge_(uint128_t from, uint128_t to, const std::string &key);
-        std::tuple<bool, std::optional<IDL::Mvreg>> insert_node_(const CRDTNode &node);
+        std::optional<CRDTNode> get(uint64_t id);
+        bool in(uint64_t id) const;
+        std::optional<CRDTNode> get_(uint64_t id);
+        std::optional<CRDTEdge> get_edge_(uint64_t from, uint64_t to, const std::string &key);
+        std::tuple<bool, std::optional<IDL::MvregNode>> insert_node_(const CRDTNode &node);
         std::tuple<bool, std::optional<std::vector<IDL::MvregNodeAttr>>> update_node_(const CRDTNode &node);
-        std::tuple<bool, std::vector<std::tuple<uint128_t, uint128_t, std::string>>, std::optional<IDL::Mvreg>, std::vector<IDL::MvregEdge>> delete_node_(uint128_t id);
-        std::optional<IDL::MvregEdge> delete_edge_(uint128_t from, uint128_t t, const std::string &key);
-        std::tuple<bool, std::optional<IDL::MvregEdge>, std::optional<std::vector<IDL::MvregEdgeAttr>>> insert_or_assign_edge_(const CRDTEdge &attrs, uint128_t from, uint128_t to);
+        std::tuple<bool, std::vector<std::tuple<uint64_t, uint64_t, std::string>>, std::optional<IDL::MvregNode>, std::vector<IDL::MvregEdge>> delete_node_(uint64_t id);
+        std::optional<IDL::MvregEdge> delete_edge_(uint64_t from, uint64_t t, const std::string &key);
+        std::tuple<bool, std::optional<IDL::MvregEdge>, std::optional<std::vector<IDL::MvregEdgeAttr>>> insert_or_assign_edge_(const CRDTEdge &attrs, uint64_t from, uint64_t to);
 
         //////////////////////////////////////////////////////////////////////////
         // Other methods
         //////////////////////////////////////////////////////////////////////////
-        std::map<IDL::Uuid, IDL::Mvreg> Map();
+        std::map<uint64_t , IDL::MvregNode> Map();
 
 
 
@@ -608,6 +618,8 @@ namespace DSR
                     return ret_type(av.val().dec());
                 else if constexpr (std::is_same_v< name_type, std::uint32_t>)
                     return ret_type(av.val().uint());
+                else if constexpr (std::is_same_v< name_type, std::uint64_t>)
+                    return ret_type(av.val().uint64());
                 else if constexpr (std::is_same_v< name_type, bool>)
                     return ret_type(av.val().bl());
                 else {
@@ -617,11 +629,9 @@ namespace DSR
 
         }
 
-
-
         template<typename Type>
         inline constexpr bool reinsert_element(Type elem, const std::string &s) {
-            // insert in node
+            // insert node
             if constexpr (std::is_same<Node, Type>::value) {
                 if (update_node(elem))
                     return true;
@@ -629,7 +639,7 @@ namespace DSR
                     throw std::runtime_error(
                             "Could not insert Node " + std::to_string(elem.id()) + " in G in " + s);
             }
-                // insert in edge
+            // insert edge
             else if constexpr (std::is_same<Edge, Type>::value) {
                 if (insert_or_assign_edge(elem))
                     return true;
@@ -643,7 +653,7 @@ namespace DSR
         //////////////////////////////////////////////////////////////////////////
         // CRDT join operations
         ///////////////////////////////////////////////////////////////////////////
-        void join_delta_node(IDL::Mvreg &&mvreg);
+        void join_delta_node(IDL::MvregNode &&mvreg);
         void join_delta_edge(IDL::MvregEdge &&mvreg);
         void join_delta_node_attr(IDL::MvregNodeAttr &&mvreg);
         void join_delta_edge_attr(IDL::MvregEdgeAttr &&mvreg);
@@ -713,16 +723,16 @@ namespace DSR
         NewMessageFunctor dsrpub_request_answer_call;
 
     signals:                                                                  // for graphics update
-        void update_node_signal(uint128_t, const std::string &type); // REMOVE type
+        void update_node_signal(uint64_t, const std::string &type); // REMOVE type
 
-        void update_attrs_signal(uint128_t id, const std::map<std::string, Attribute> &attribs);//DEPRECATED //Signal to show node attribs.
-        void update_node_attr_signal(uint128_t id ,const std::vector<std::string>& att_names);
+        void update_attrs_signal(uint64_t id, const std::map<std::string, Attribute> &attribs);//DEPRECATED //Signal to show node attribs.
+        void update_node_attr_signal(uint64_t id ,const std::vector<std::string>& att_names);
 
-        void update_edge_signal(uint128_t from, uint128_t to,  const std::string &type);                   // Signal to show edge attribs.
-        void update_edge_attr_signal(uint128_t from, uint128_t to, const std::vector<std::string>& att_name);
+        void update_edge_signal(uint64_t from, uint64_t to,  const std::string &type);                   // Signal to show edge attribs.
+        void update_edge_attr_signal(uint64_t from, uint64_t to, const std::vector<std::string>& att_name);
 
-        void del_edge_signal(uint128_t from, uint128_t to, const std::string &edge_tag); // Signal to del edge.
-        void del_node_signal(uint128_t from);                                                     // Signal to del node.
+        void del_edge_signal(uint64_t from, uint64_t to, const std::string &edge_tag); // Signal to del edge.
+        void del_node_signal(uint64_t from);                                                     // Signal to del node.
 
     };
 } // namespace CRDT

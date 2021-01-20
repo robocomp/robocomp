@@ -14,9 +14,9 @@ namespace DSR
     {
         Q_OBJECT
         using KeyTransform = std::tuple<std::string, std::string>;
-        using NodeReference = std::map<uint32_t, std::list<KeyTransform>>;
+        using NodeReference = std::map<uint64_t , std::list<KeyTransform>>;
         using TransformCache = std::map<KeyTransform, Mat::RTMat>;
-        using NodeMatrix = std::tuple<uint32_t, Mat::RTMat>;
+        using NodeMatrix = std::tuple<uint64_t , Mat::RTMat>;
 
         public:
             explicit InnerEigenAPI(DSRGraph *G_);
@@ -38,16 +38,16 @@ namespace DSR
             std::optional<Mat::Vector3d> get_euler_xyz_angles(const std::string &dest, const std::string &orig);
 
         public slots:
-            void add_or_assign_edge_slot(const std::int32_t from, const std::int32_t to, const std::string& edge_type);
-            void del_node_slot(const std::int32_t id);
-            void del_edge_slot(const std::int32_t from, const std::int32_t to, const std::string &edge_type);
+            void add_or_assign_edge_slot(const uint64_t from, const uint64_t to, const std::string& edge_type);
+            void del_node_slot(const uint64_t id);
+            void del_edge_slot(const uint64_t from, const uint64_t to, const std::string &edge_type);
 
         private:
             DSR::DSRGraph *G;
             std::unique_ptr<DSR::RT_API> rt;
             TransformCache cache;
             NodeReference node_map;
-            void remove_cache_entry(const std::int32_t id);
+            void remove_cache_entry(const uint64_t id);
     };
 }
 
