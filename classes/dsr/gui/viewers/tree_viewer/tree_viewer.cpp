@@ -23,7 +23,7 @@ TreeViewer::TreeViewer(std::shared_ptr<DSR::DSRGraph> G_, QWidget *parent) :  QT
     createGraph();
 
     connect(G.get(), &DSR::DSRGraph::update_node_signal, this,
-			[=]( std::uint64_t id, std::string type ) {TreeViewer::add_or_assign_node_SLOT(id, type);});
+			[=, this]( std::uint64_t id, const std::string& type ) {TreeViewer::add_or_assign_node_SLOT(id, type);});
     setColumnCount(2);
 	QStringList horzHeaders;
 	horzHeaders <<"Attribute"<< "Value";
@@ -79,7 +79,7 @@ void TreeViewer::add_or_assign_node_SLOT(uint64_t id, const std::string &type,  
 				QCheckBox* check_box = new QCheckBox(QString("Node type: "+QString::fromUtf8(type.c_str())));
 				check_box->setChecked(true);
 				connect(check_box, &QCheckBox::stateChanged, this,
-						[=](int value) { TreeViewer::category_change_SLOT(value, symbol_widget); });
+						[=, this](int value) { TreeViewer::category_change_SLOT(value, symbol_widget); });
 				this->setItemWidget(symbol_widget, 0, check_box);
 				types_map[type] = symbol_widget;
 
@@ -101,7 +101,7 @@ void TreeViewer::add_or_assign_node_SLOT(uint64_t id, const std::string &type,  
 				QString("Node "+QString::fromUtf8(name.c_str())+" ["+QString::number(id))+"]");
 		check_box->setChecked(true);
 		connect(check_box, &QCheckBox::stateChanged, this,
-				[=](int value) { TreeViewer::node_change_SLOT(value, id, type, item); });
+				[=, this](int value) { TreeViewer::node_change_SLOT(value, id, type, item); });
 		this->setItemWidget(item, 0, check_box);
 //		symbol_widget->addChild(item);
 
