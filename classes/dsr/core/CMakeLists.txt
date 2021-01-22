@@ -50,29 +50,14 @@ add_definitions(-g -fmax-errors=1 -std=c++2a )
 SET(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-fmax-errors=5" )
 SET(SPECIFIC_LIBS  fastcdr fastrtps osgDB OpenThreads Eigen3::Eigen)
 
-ADD_DEFINITIONS ("-DICE_CPP11_MAPPING")
-FIND_PACKAGE( Ice REQUIRED COMPONENTS Ice++11 IceStorm++11)
 
 #ROBOCOMP
 ROBOCOMP_INITIALIZE( $ENV{ROBOCOMP}/ )
-ROBOCOMP_IDSL_TO_ICE( DSRGetID)
-ROBOCOMP_ICE_TO_SRC( DSRGetID)
-
-#set(CMAKE_PREFIX_PATH "CMAKE_PREFIX_PATH;${CMAKE_PREFIX_PATH}")
-#find_package(libmongocxx REQUIRED)
-#find_package(libbsoncxx  REQUIRED)
-#include_directories(${LIBMONGOCXX_INCLUDE_DIR})
-#include_directories(${LIBBSONCXX_INCLUDE_DIR})
-
-#include_directories("/usr/local/include/mongocxx/")
-#include_directories("/usr/local/include/bsoncxx/")
-#include_directories("/usr/local/include/libmongoc-1.0")
-#include_directories("/usr/local/include/libbson-1.0")
 
 # Specify construction and link process
 ADD_LIBRARY( dsr_core SHARED ${SOURCES})
 # ${Ice_LIBRARIES}
-TARGET_LINK_LIBRARIES( dsr_core ${LIBS} ${STATIC_LIBS} ${SPECIFIC_LIBS} ${QT_LIBRARIES} ${Ice_LIBRARIES} ) # ${LIBBSONCXX_LIBRARIES}  ${LIBMONGOCXX_LIBRARIES}
+TARGET_LINK_LIBRARIES( dsr_core ${LIBS} ${STATIC_LIBS} ${SPECIFIC_LIBS} ${QT_LIBRARIES} ${Ice_LIBRARIES} )
 install(TARGETS dsr_core
         LIBRARY DESTINATION /opt/robocomp/lib/
         )

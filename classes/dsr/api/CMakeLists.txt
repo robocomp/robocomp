@@ -47,27 +47,18 @@ SET ( HEADERS
         $ENV{ROBOCOMP}/classes/dsr/api/dsr_utils.h
         )
 
-#set_property(SOURCE DSRGetID.h PROPERTY SKIP_AUTOGEN ON)
 set(CMAKE_CXX_STANDARD 20)
 add_definitions(-g  -fmax-errors=1 -std=c++2a )
 SET(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-fmax-errors=5" )
 SET(SPECIFIC_LIBS  fastcdr fastrtps osgDB OpenThreads Eigen3::Eigen)
 
-ADD_DEFINITIONS ("-DICE_CPP11_MAPPING")
-FIND_PACKAGE( Ice REQUIRED COMPONENTS Ice++11 IceStorm++11)
-
 #ROBOCOMP
 ROBOCOMP_INITIALIZE( $ENV{ROBOCOMP}/ )
-ROBOCOMP_IDSL_TO_ICE( DSRGetID)
-ROBOCOMP_ICE_TO_SRC( DSRGetID)
-
-
-
 
 
 # Specify construction and link process
 ADD_LIBRARY( dsr_api SHARED ${SOURCES})
-TARGET_LINK_LIBRARIES( dsr_api ${LIBS} ${STATIC_LIBS} ${SPECIFIC_LIBS} ${QT_LIBRARIES} ${Ice_LIBRARIES})
+TARGET_LINK_LIBRARIES( dsr_api ${LIBS} ${STATIC_LIBS} ${SPECIFIC_LIBS} ${QT_LIBRARIES})
 install(TARGETS dsr_api
         LIBRARY DESTINATION /opt/robocomp/lib/
         )
