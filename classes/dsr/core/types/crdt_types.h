@@ -5,7 +5,6 @@
 #ifndef DSR_CRDT_TYPES_H
 #define DSR_CRDT_TYPES_H
 
-#include <uuid/uuid.h>
 #include "../crdt/delta_crdt.h"
 #include "../topics/IDLGraph.h"
 #include <iostream>

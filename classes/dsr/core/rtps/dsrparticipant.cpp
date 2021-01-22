@@ -17,7 +17,8 @@ DSRParticipant::DSRParticipant() : mp_participant(nullptr),
                                    graphRequestAnswerType(new OrMapPubSubType()),
                                    dsrEdgeType(new MvregEdgePubSubType()),
                                    dsrNodeAttrType(new MvregNodeAttrVecPubSubType()),
-                                   dsrEdgeAttrType(new MvregEdgeAttrVecPubSubType())
+                                   dsrEdgeAttrType(new MvregEdgeAttrVecPubSubType()),
+                                   m_listener(nullptr)
 
 {}
 
@@ -43,7 +44,7 @@ DSRParticipant::~DSRParticipant()
     }
 }
 
-std::tuple<bool, eprosima::fastdds::dds::DomainParticipant*> DSRParticipant::init(int32_t agent_id, int localhost) {
+std::tuple<bool, eprosima::fastdds::dds::DomainParticipant*> DSRParticipant::init(int32_t agent_id, int localhost, std::function<void(eprosima::fastrtps::rtps::ParticipantDiscoveryInfo&&)> fn) {
     // Create RTPSParticipant     
     DomainParticipantQos PParam;
     PParam.name(("Participant_" + std::to_string(agent_id)).data());  //You can put here the name you want
@@ -72,11 +73,15 @@ std::tuple<bool, eprosima::fastdds::dds::DomainParticipant*> DSRParticipant::ini
         }
 
     } else {
+
+        custom_transport->interfaceWhiteList.emplace_back("127.0.0.1");
+
+        /*
         // Create a descriptor for same device agents.
         auto shm_transport = std::make_shared<SharedMemTransportDescriptor>();
         shm_transport->segment_size(2 * 1024 * 1024);
 
-        PParam.transport().user_transports.push_back(shm_transport);
+        PParam.transport().user_transports.push_back(shm_transport)*/
     }
     PParam.transport().send_socket_buffer_size = 33554432;
     PParam.transport().listen_socket_buffer_size = 33554432;
@@ -93,9 +98,11 @@ std::tuple<bool, eprosima::fastdds::dds::DomainParticipant*> DSRParticipant::ini
 
     eprosima::fastrtps::Log::SetVerbosity(eprosima::fastdds::dds::Log::Info);
 
+    m_listener = std::make_unique<ParticpantListener>(std::move(fn));
+
     int retry = 0;
     while (retry < 5) {
-        mp_participant = DomainParticipantFactory::get_instance()->create_participant(0, PParam);
+        mp_participant = DomainParticipantFactory::get_instance()->create_participant(0, PParam, m_listener.get(), StatusMask::none());
         if(mp_participant != nullptr) break;
         retry++;
         qDebug() << "Error creating participant, retrying. [" << retry <<"/5]";
@@ -140,8 +147,10 @@ eprosima::fastdds::dds::DomainParticipant *DSRParticipant::getParticipant()
 
 void DSRParticipant::remove_participant()
 {
-    if (mp_participant != nullptr)
+    if (mp_participant != nullptr) {
         eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->delete_participant(mp_participant);
+        mp_participant = nullptr;
+    }
 }
 
 const eprosima::fastrtps::rtps::GUID_t& DSRParticipant::getID() const

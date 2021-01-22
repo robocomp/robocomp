@@ -673,9 +673,25 @@ namespace DSR
             void operator()(eprosima::fastdds::dds::DataReader* reader) const { f(reader, graph); };
         };
 
+        //Custom function for each rtps topic
+        class ParticipantChangeFunctor {
+        public:
+            DSRGraph *graph{};
+            std::function<void(DSRGraph *graph_,eprosima::fastrtps::rtps::ParticipantDiscoveryInfo&&)> f;
 
+            ParticipantChangeFunctor(DSRGraph *graph_,
+                                     std::function<void(DSRGraph *graph_, eprosima::fastrtps::rtps::ParticipantDiscoveryInfo&&)> f_)
+                    : graph(graph_), f(std::move(f_)) {}
+
+            ParticipantChangeFunctor() = default;
+
+            void operator()(eprosima::fastrtps::rtps::ParticipantDiscoveryInfo&& info) const
+            {
+                f(graph, std::forward<eprosima::fastrtps::rtps::ParticipantDiscoveryInfo&&>(info));
+            };
+        };
         //Threads
-        bool start_fullgraph_request_thread();
+        std::pair<bool, bool> start_fullgraph_request_thread();
         void start_fullgraph_server_thread();
         void start_subscription_threads(bool showReceived);
 
@@ -687,11 +703,13 @@ namespace DSR
         void node_attrs_subscription_thread(bool showReceived);
         void edge_attrs_subscription_thread(bool showReceived);
         void fullgraph_server_thread();
-        bool fullgraph_request_thread();
+        std::pair<bool, bool> fullgraph_request_thread();
 
 
         // RTSP participant
         DSRParticipant dsrparticipant;
+        mutable std::mutex participant_set_mutex;
+        std::unordered_set<std::string> participant_set;
         DSRPublisher dsrpub_node;
         DSRSubscriber dsrsub_node;
         NewMessageFunctor dsrpub_call_node;
@@ -703,14 +721,10 @@ namespace DSR
 
         DSRPublisher dsrpub_node_attrs;
         DSRSubscriber dsrsub_node_attrs;
-        DSRPublisher dsrpub_node_attrs_stream;
-        DSRSubscriber dsrsub_node_attrs_stream;
         NewMessageFunctor dsrpub_call_node_attrs;
 
         DSRPublisher dsrpub_edge_attrs;
         DSRSubscriber dsrsub_edge_attrs;
-        //DSRPublisher dsrpub_edge_attrs_stream;
-        //DSRSubscriber dsrsub_edge_attrs_stream;
         NewMessageFunctor dsrpub_call_edge_attrs;
 
         DSRSubscriber dsrsub_graph_request;

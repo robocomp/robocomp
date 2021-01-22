@@ -352,14 +352,11 @@ QJsonDocument Utilities::DSRGraph_to_QJsonDocument(DSR::DSRGraph *G_, const std:
     QJsonArray linksArray;
     QJsonObject symbolsMap;
 
-    char uuid[100];
     for (const auto& kv : G_->getCopy()) {
         Node node = kv.second;
         // symbol data
         bool store_content = bool(std::find(skip_node_content.begin(), skip_node_content.end(), node.type()) != skip_node_content.end());
         QJsonObject symbol = Node_to_QObject(node, store_content);
-        auto id = node.id();
-        uuid_unparse((unsigned  char *)&id, uuid);
         symbolsMap[QString::number(node.id()) ] = symbol;
 
     }

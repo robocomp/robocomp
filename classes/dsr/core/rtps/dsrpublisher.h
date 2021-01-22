@@ -38,8 +38,8 @@ private:
 	class PubListener : public eprosima::fastdds::dds::DataWriterListener
 	{
 	public:
-		PubListener() : n_matched(0){};
-		~PubListener() override = default;
+        PubListener() : n_matched(0){};
+        ~PubListener() override = default;
 		void on_publication_matched(eprosima::fastdds::dds::DataWriter* writer,
                                     const eprosima::fastdds::dds::PublicationMatchedStatus& info) override;
 		int n_matched;

@@ -7,6 +7,7 @@
 #include <fastdds/dds/domain/DomainParticipantFactory.hpp>
 #include <fastdds/dds/topic/TypeSupport.hpp>
 #include <fastdds/dds/domain/DomainParticipant.hpp>
+#include <fastdds/dds/domain/DomainParticipantListener.hpp>
 
 #include "../topics/IDLGraphPubSubTypes.h"
 #include "./dsrpublisher.h"
@@ -17,7 +18,7 @@ class DSRParticipant
 public:
     DSRParticipant();
     virtual ~DSRParticipant();
-    std::tuple<bool, eprosima::fastdds::dds::DomainParticipant *> init(int32_t agent_id, int localhost);
+    std::tuple<bool, eprosima::fastdds::dds::DomainParticipant *> init(int32_t agent_id, int localhost, std::function<void(eprosima::fastrtps::rtps::ParticipantDiscoveryInfo&&)> fn);
     [[nodiscard]] const eprosima::fastrtps::rtps::GUID_t& getID() const;
     [[nodiscard]] const char *getNodeTopicName()     const { return dsrgraphType->getName();}
     [[nodiscard]] const char *getRequestTopicName()  const { return graphrequestType->getName();}
@@ -52,6 +53,34 @@ private:
     eprosima::fastdds::dds::TypeSupport dsrEdgeAttrType{};
 
 
+    class ParticpantListener : public eprosima::fastdds::dds::DomainParticipantListener
+    {
+    public:
+        ParticpantListener(std::function<void(eprosima::fastrtps::rtps::ParticipantDiscoveryInfo&&)>&& fn)
+            : eprosima::fastdds::dds::DomainParticipantListener(), f(std::move(fn)), n_matched(0){};
+        ~ParticpantListener() override = default;
+
+        virtual void on_participant_discovery  (
+                eprosima::fastdds::dds::DomainParticipant* participant,
+                eprosima::fastrtps::rtps::ParticipantDiscoveryInfo&& info) override
+        {
+            if (info.status == eprosima::fastrtps::rtps::ParticipantDiscoveryInfo::DISCOVERED_PARTICIPANT)
+            {
+                //Nothing to do here at the moment.
+            }
+            else if (info.status == eprosima::fastrtps::rtps::ParticipantDiscoveryInfo::REMOVED_PARTICIPANT ||
+                     info.status == eprosima::fastrtps::rtps::ParticipantDiscoveryInfo::DROPPED_PARTICIPANT)
+            {
+                //Callback to remove
+                f(std::forward<eprosima::fastrtps::rtps::ParticipantDiscoveryInfo&&>(info));
+            }
+        }
+
+
+        std::function<void(eprosima::fastrtps::rtps::ParticipantDiscoveryInfo&&)> f;
+        int n_matched;
+    };
+    std::unique_ptr<ParticpantListener> m_listener;
 };
 
 #endif // _Participant_H_
