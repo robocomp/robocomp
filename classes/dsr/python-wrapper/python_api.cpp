@@ -340,7 +340,7 @@ PYBIND11_MODULE(pydsr, m) {
                  static_cast<bool (DSRGraph::*)(const std::basic_string<char> &)>(&DSRGraph::delete_node), "name"_a,
                  "delete the node with the given name. Returns a bool with the result o the operation.")
             .def("insert_node", [](DSRGraph &g, Node &n) {
-                     return PY_INSERT_API().insert_node_python(g, n);
+                     return g.insert_node(n);
                  }, "node"_a,
                  "Insert in the graph the new node passed as parameter. Returns the id of the node or None if the Node alredy exist in the map.")
             .def("update_node", &DSRGraph::update_node, "node"_a, "Update the node in the graph. Returns a bool.")

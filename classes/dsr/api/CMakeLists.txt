@@ -36,7 +36,6 @@ SET ( SOURCES
         $ENV{ROBOCOMP}/classes/dsr/api/dsr_inner_eigen_api.cpp
         $ENV{ROBOCOMP}/classes/dsr/api/dsr_rt_api.cpp
         $ENV{ROBOCOMP}/classes/dsr/api/dsr_utils.cpp
-        $ENV{ROBOCOMP}/classes/dsr/api/dsr_python_api_functions.cpp
         )
 
 # Headers set
@@ -46,7 +45,6 @@ SET ( HEADERS
         $ENV{ROBOCOMP}/classes/dsr/api/dsr_inner_eigen_api.h
         $ENV{ROBOCOMP}/classes/dsr/api/dsr_rt_api.h
         $ENV{ROBOCOMP}/classes/dsr/api/dsr_utils.h
-        $ENV{ROBOCOMP}/classes/dsr/api/dsr_python_api_functions.h
         )
 
 #set_property(SOURCE DSRGetID.h PROPERTY SKIP_AUTOGEN ON)
