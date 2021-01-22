@@ -262,12 +262,12 @@ PYBIND11_MODULE(pydsr, m) {
 
     //DSR Node class
     py::class_<Node>(m, "Node")
-            .def(py::init([](uint32_t agent_id, const std::string &type, py::object *proxy,
+            .def(py::init([](uint32_t agent_id, const std::string &type,
                              const std::string &name = "") -> std::unique_ptr<Node> {
                 auto tmp = std::make_unique<Node>(agent_id, type);
                 tmp->name(name);
                 return tmp;
-            }), "agent_id"_a, "type"_a, "dsr_idproxy"_a, "name"_a = "")
+            }), "agent_id"_a, "type"_a, "name"_a = "")
             .def("__repr__", [](Node const &self) {
                 std::stringstream out;
 

@@ -5,17 +5,8 @@ import sys, time, os
 sys.path.append("/opt/robocomp/lib")
 from pydsr import *
 
-import Ice
-
-
-Ice.loadSlice("-I ./src/ --all ../DSRGetID.ice")
-import RoboCompDSRGetID
-
-
 
 ETC_DIR = "../etc/"
-
-
 
 class TestAttribute(unittest.TestCase):
 
@@ -106,37 +97,31 @@ class TestNode(unittest.TestCase):
         pass
 
     def test_create_node(self):
-        tmp = Node(1, "world", proxy().dsrgetid_proxy)
+        tmp = Node(1, "world")
         self.assertIsNotNone(tmp)
         with self.assertRaises(RuntimeError):
-            tmp = Node(1, "test", proxy().dsrgetid_proxy)
+            tmp = Node(1, "test")
         
     def test_name(self):
-        tmp = Node(1, "world", proxy().dsrgetid_proxy, "name")
+        tmp = Node(1, "world", "name")
         self.assertEqual(tmp.name, "name")
         with self.assertRaises(AttributeError):
             tmp.name = "newname"
 
-    def test_id(self):
-        tmp = Node(1, "world",  proxy().dsrgetid_proxy,"name")
-        self.assertEqual(tmp.id, 6)
-        with self.assertRaises(AttributeError):
-            tmp.id = 1
-
     def test_type(self):
-        tmp = Node(1, "world", proxy().dsrgetid_proxy,"name")
+        tmp = Node(1, "world","name")
         self.assertEqual(tmp.type, "world")
         with self.assertRaises(AttributeError):
             tmp.id = "newtype"
 
     def test_agent_id(self):
-        tmp = Node(1, "world",  proxy().dsrgetid_proxy, "name")
+        tmp = Node(1, "world", "name")
         self.assertEqual(tmp.agent_id, 1)
         tmp.agent_id = 2
         self.assertEqual(tmp.agent_id, 2)
 
     def test_attrs(self):
-        tmp = Node(1, "world", proxy().dsrgetid_proxy, "name")
+        tmp = Node(1, "world", "name")
         self.assertEqual(len(tmp.attrs), 0)
         tmp.attrs["test"] = Attribute(10.4, 0, 12)
         self.assertEqual(len(tmp.attrs), 1)
@@ -146,7 +131,7 @@ class TestNode(unittest.TestCase):
             tmp.attrs["test"]
 
     def test_edge(self):
-        tmp = Node(1, "world", proxy().dsrgetid_proxy, "name")
+        tmp = Node(1, "world", "name")
         self.assertEqual(len(tmp.edges), 0)
         tmp.edges[(11,"RT")] = Edge(10,11, "RT", 0)
         self.assertEqual(len(tmp.edges), 1)
@@ -286,7 +271,7 @@ class TestDSRGraph(unittest.TestCase):
     def test_insert_node(self):
 
         g = DSRGraph(int(0), "Prueba", 12, os.path.join(ETC_DIR, "autonomyLab_complete.simscene.json") )
-        node = Node(12, "mesh", proxy().dsrgetid_proxy, "newmesh")
+        node = Node(12, "mesh", "newmesh")
 
         id = g.insert_node(node)
         self.assertIsNotNone(id)
@@ -407,25 +392,11 @@ class Singleton(type):
         return cls._instances[cls]
 
 
-class proxy(metaclass=Singleton):
-
-    def __init__(self):
-        #self._process = subprocess.Popen(['python',  'DSRGetID.py'])
-
-        time.sleep(1)
-        self.ic = Ice.initialize(sys.argv)
-        basePrx = self.ic.stringToProxy("dsrgetid:tcp -h localhost -p 11000")
-        self.dsrgetid_proxy = RoboCompDSRGetID.DSRGetIDPrx.uncheckedCast(basePrx)
-        if not self.dsrgetid_proxy:
-            raise RuntimeError("Invalid proxy")
-
-    def __del__(self):
-        self.ic.destroy()
-
 
 if __name__ == '__main__':
-    import psutil
-    if psutil.Process(os.getpid()).parent().name() == 'sh':
-        unittest.main()
-    else:
-        print("You probably want to execute test with the runTest.sh script.")
+    #import psutil
+    #if psutil.Process(os.getpid()).parent().name() == 'sh':
+    #    unittest.main()
+    #else:
+    #    print("You probably want to execute test with the runTest.sh script.")
+    unittest.main()
