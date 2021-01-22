@@ -43,7 +43,6 @@
 #include "../core/id_generator.h"
 #include "threadpool/threadpool.h"
 
-//#include <DSRGetID.h>
 
 #define TIMEOUT 5000
 
@@ -529,7 +528,7 @@ namespace DSR
 
         DSRGraph(const DSRGraph& G);
         Nodes nodes;
-        int graph_root;
+        uint64_t graph_root;
         mutable std::shared_mutex _mutex;
         std::string filter;
         const uint32_t agent_id;
@@ -545,10 +544,6 @@ namespace DSR
         //////////////////////////////////////////////////////////////////////////
         // Cache maps
         ///////////////////////////////////////////////////////////////////////////
-        //std::unordered_map<uint32_t, std::unordered_map<std::string, mvreg<CRDTAttribute, uint32_t>>> temp_node_attr; //temporal storage for attributes to solve problems with unsorted messages.
-        //std::unordered_map<std::tuple<uint32_t, uint32_t, std::string>, std::unordered_map<std::string, mvreg<CRDTAttribute, uint32_t>>, hash_tuple> temp_edge_attr; //temporal storage for attributes to solve problems with unsorted messages.
-        //std::unordered_map<int, std::unordered_map<std::tuple<uint32_t, uint32_t, std::string>, mvreg<CRDTEdge, uint32_t>, hash_tuple>> temp_edge; //temporal storage for attributes to solve problems with unsorted messages.
-
         std::unordered_set<uint64_t> deleted;     // deleted nodes, used to avoid insertion after remove.
         std::unordered_map<std::string, uint64_t> name_map;     // mapping between name and id of nodes.
         std::unordered_map<uint64_t, std::string> id_map;       // mapping between id and name of nodes.
