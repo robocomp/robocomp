@@ -85,7 +85,7 @@ void QScene2dViewer::create_graph()
 ///// SLOTS
 //////////////////////////////////////////////////////////////////////////////////////
 
-void QScene2dViewer::add_or_assign_node_slot(const std::int32_t id, const std::string &type)
+void QScene2dViewer::add_or_assign_node_slot(const std::uint64_t  id, const std::string &type)
 {
 //    qDebug()<<"*************************";
 //    qDebug() << __FUNCTION__ ;
@@ -116,11 +116,11 @@ void QScene2dViewer::add_or_assign_node_slot(const std::int32_t id, const std::s
 
     }
 }
-void QScene2dViewer::add_or_assign_edge_slot(const std::int32_t from, const std::int32_t to, const std::string& type)
+void QScene2dViewer::add_or_assign_edge_slot(const std::uint64_t  from, const std::uint64_t  to, const std::string& type)
 {
 //    qDebug()<<__FUNCTION__;
     //check if new edge connected any orphan nodes
-    std::map<int, std::string>::iterator it = orphand_nodes.find(to);
+    std::map<uint64_t , std::string>::iterator it = orphand_nodes.find(to);
 
     if(it != orphand_nodes.end())
     {
@@ -197,7 +197,7 @@ void QScene2dViewer::add_or_assign_rect(Node &node, std::string color, std::stri
     {
         sceneRect = scene.addRect(rect, QPen(QString::fromStdString(color)), brush);
         scene_map[node.id()] = (QGraphicsItem*) sceneRect;
-        std::list<int> parent_list = get_parent_list(node.id());
+        std::list<uint64_t > parent_list = get_parent_list(node.id());
         update_edge_chain(parent_list);  
     }
     else
@@ -214,7 +214,7 @@ void QScene2dViewer::add_or_assign_plane(Node &node)
 {
 //qDebug() << "********************************";
 //qDebug() << __FUNCTION__ ;
-    std::list<int> parent_list = get_parent_list(node.id());
+    std::list<uint64_t > parent_list = get_parent_list(node.id());
     //check if this node should be painted
     if(not is_drawable(parent_list))
     {
@@ -236,10 +236,10 @@ void QScene2dViewer::add_or_assign_plane(Node &node)
     add_or_assign_rect(node, color, texture, width, height, depth);
 }
 
-bool QScene2dViewer::is_drawable(std::list<int> parent_list)
+bool QScene2dViewer::is_drawable(std::list<uint64_t > parent_list)
 {
     bool drawable = true;
-    for(std::list<int>::reverse_iterator it = parent_list.rbegin(); it != parent_list.rend(); ++it)
+    for(std::list<uint64_t >::reverse_iterator it = parent_list.rbegin(); it != parent_list.rend(); ++it)
     {
         std::optional<Node> node = G->get_node(*it);
         if (node.has_value())
@@ -260,7 +260,7 @@ bool QScene2dViewer::check_RT_required_attributes(Node node)
 {
     try{
         std::optional<int> level = G->get_node_level(node);
-        std::optional<int> parent = G->get_parent_id(node);
+        std::optional<uint64_t> parent = G->get_parent_id(node);
         std::optional<Mat::Vector6d> pose = innermodel->transform_axis("world", node.name());
 
         if(level.has_value() and parent.has_value() and pose.has_value())
@@ -276,7 +276,7 @@ void  QScene2dViewer::add_or_assign_mesh(Node &node)
 {   
 //qDebug() << "********************************";
 //qDebug() << __FUNCTION__ ;
-    std::list<int> parent_list = get_parent_list(node.id());
+    std::list<uint64_t > parent_list = get_parent_list(node.id());
     //check if this node should be painted
     if(not is_drawable(parent_list))
     {
@@ -325,7 +325,7 @@ void  QScene2dViewer::add_or_assign_person(Node &node){
             scenePixmap->setTransformOriginPoint(scenePixmap->boundingRect().center());
             scenePixmap->setZValue(pose.value().y());
             scene_map[node.id()] = (QGraphicsItem*) scenePixmap;
-            std::list<int> parent_list = get_parent_list(node.id());
+            std::list<uint64_t> parent_list = get_parent_list(node.id());
             update_edge_chain(parent_list);  
         }
         else{
@@ -373,7 +373,7 @@ void QScene2dViewer::add_or_assign_robot(Node &node)
             scenePolygon->setZValue(5);
             robot = (QGraphicsItem*) scenePolygon;
             scene_map[node.id()] = (QGraphicsItem*) scenePolygon;
-            std::list<int> parent_list = get_parent_list(node.id());
+            std::list<uint64_t> parent_list = get_parent_list(node.id());
             update_edge_chain(parent_list);  
 
         }
@@ -390,13 +390,13 @@ void QScene2dViewer::add_or_assign_robot(Node &node)
     }
 }
 
-std::list<int> QScene2dViewer::get_parent_list(std::int32_t node_id)
+std::list<uint64_t> QScene2dViewer::get_parent_list(std::uint64_t  node_id)
 {
-    std::list<int> parent_list;
+    std::list<uint64_t> parent_list;
     parent_list.push_back(node_id);
     auto node = G->get_node(node_id);
     try{
-        std::optional<int> parent_id;
+        std::optional<uint64_t> parent_id;
         do
         {
             parent_id = G->get_parent_id(node.value());
@@ -406,14 +406,14 @@ std::list<int> QScene2dViewer::get_parent_list(std::int32_t node_id)
                 node = G->get_node(parent_id.value());
             }
             else
-                return std::list<int>();
+                return std::list<uint64_t>();
         }while(node.value().type() != "world");
     }catch(...){}
     return parent_list;
 }
 
 //get all edges involve on node->world transformation chain
-void QScene2dViewer::update_edge_chain(std::list<int> parent_list)
+void QScene2dViewer::update_edge_chain(std::list<uint64_t> parent_list)
 {
     if (parent_list.size()< 2)
         return;
@@ -421,8 +421,8 @@ void QScene2dViewer::update_edge_chain(std::list<int> parent_list)
     for(auto item : parent_list)
         qDebug()<<item<<" ";
     qDebug();*/
-    std::list<int>::iterator first_id = parent_list.begin();
-    std::list<int>::iterator second_id = parent_list.begin();
+    std::list<uint64_t>::iterator first_id = parent_list.begin();
+    std::list<uint64_t>::iterator second_id = parent_list.begin();
     second_id++;
     do
     {     
@@ -437,7 +437,7 @@ void QScene2dViewer::update_edge_chain(std::list<int> parent_list)
 
 
 //update pose on edge changes
-void QScene2dViewer::update_scene_object_pose(std::int32_t node_id)
+void QScene2dViewer::update_scene_object_pose(std::uint64_t  node_id)
 {
 //qDebug() << "*************UPDATE NODE ******" << node_id;
     auto node = G->get_node(node_id);
@@ -462,7 +462,7 @@ void QScene2dViewer::update_scene_object_pose(std::int32_t node_id)
     }
 }
 
-void QScene2dViewer::del_node_slot(const std::int32_t id)
+void QScene2dViewer::del_node_slot(const std::uint64_t  id)
 {
 //qDebug() << "********************************";
 //qDebug() << __FUNCTION__ ;
@@ -473,9 +473,9 @@ void QScene2dViewer::del_node_slot(const std::int32_t id)
         delete item;
         scene_map.erase(id);
         //clear edge update chain
-        for (std::map<std::string,std::vector<int>>::iterator it = edge_map.begin(); it != edge_map.end();it++)
+        for (std::map<std::string,std::vector<uint64_t >>::iterator it = edge_map.begin(); it != edge_map.end();it++)
 	    {
-            std::vector<int>::iterator pos = std::find(it->second.begin(), it->second.end(), id);
+            std::vector<uint64_t >::iterator pos = std::find(it->second.begin(), it->second.end(), id);
             if(pos != it->second.end())
                 it->second.erase(pos);
         }
@@ -490,7 +490,7 @@ void QScene2dViewer::del_node_slot(const std::int32_t id)
     //TODO: check what happens with rt edges
 }
 
-void QScene2dViewer::del_edge_slot(const std::int32_t from, const std::int32_t to, const std::string &edge_tag) {
+void QScene2dViewer::del_edge_slot(const std::uint64_t  from, const std::uint64_t  to, const std::string &edge_tag) {
 //    qDebug() << "********************************";
 //    qDebug() << __FUNCTION__;
 

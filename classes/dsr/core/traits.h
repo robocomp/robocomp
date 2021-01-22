@@ -11,6 +11,7 @@
 template<typename Va>
 static bool constexpr allowed_types =   std::is_same<std::int32_t, Va>::value ||
                                         std::is_same<std::uint32_t, Va>::value ||
+                                        std::is_same<std::uint64_t, Va>::value ||
                                         std::is_same<std::string, Va>::value ||
                                         std::is_same<std::reference_wrapper<const std::string>, Va>::value ||
                                         std::is_same<std::reference_wrapper<const std::vector<float_t>>, Va>::value ||
@@ -44,6 +45,7 @@ static bool constexpr crdt_node_or_edge = std::is_same<DSR::CRDTNode, Va>::value
 template<typename Va>
 static bool constexpr allowed_return_types = std::is_same<std::int32_t, Va>::value ||
                                              std::is_same<std::uint32_t, Va>::value ||
+                                             std::is_same<std::uint64_t, Va>::value ||
                                              std::is_same<std::string, Va>::value ||
                                              std::is_same<std::float_t, Va>::value ||
                                              std::is_same<std::vector<float_t>, Va>::value ||

@@ -16,7 +16,7 @@ Reinplementation from https://github.com/CBaquero/delta-enabled-crdts
 #include <type_traits>
 
 
-using key_type = uint32_t;
+using key_type = uint64_t;
 
 
 // Autonomous causal context, for context sharing in maps

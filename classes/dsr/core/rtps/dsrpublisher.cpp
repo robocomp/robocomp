@@ -108,7 +108,7 @@ eprosima::fastrtps::rtps::GUID_t DSRPublisher::getParticipantID() const
 }
 
 
-bool DSRPublisher::write(IDL::Mvreg *object)
+bool DSRPublisher::write(IDL::MvregNode *object)
 {
     int retry = 0;
     while (retry < 5) {
@@ -182,14 +182,17 @@ void DSRPublisher::remove_publisher()
         if (mp_writer != nullptr)
         {
             mp_publisher->delete_datawriter(mp_writer);
+            mp_writer = nullptr;
         }
 
         if (mp_publisher != nullptr)
         {
             mp_participant->delete_publisher(mp_publisher);
+            mp_publisher = nullptr;
         }
     }
 }
+
 
 void DSRPublisher::PubListener::on_publication_matched(eprosima::fastdds::dds::DataWriter* writer,
                                                        const eprosima::fastdds::dds::PublicationMatchedStatus& info)

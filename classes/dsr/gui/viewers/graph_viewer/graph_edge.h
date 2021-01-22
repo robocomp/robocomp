@@ -22,6 +22,7 @@
 #include <QTableWidget>
 #include <memory>
 #include <QPen>
+#include <utility>
 #include <cppitertools/zip.hpp>
 #include <QLabel>
 #include "../../dsr_gui.h"
@@ -35,8 +36,8 @@ class DoRTStuff : public  QTableWidget
 {
 Q_OBJECT
 public:
-    DoRTStuff(std::shared_ptr<DSR::DSRGraph> graph_, const DSR::IDType &from_, const DSR::IDType &to_, const std::string &label_) :
-            graph(graph_), rt(graph->get_rt_api()), from(from_), to(to_), label(label_)
+    DoRTStuff(std::shared_ptr<DSR::DSRGraph> graph_, const DSR::IDType &from_, const DSR::IDType &to_, std::string label_) :
+            graph(std::move(graph_)), rt(graph->get_rt_api()), from(from_), to(to_), label(std::move(label_))
     {
         qRegisterMetaType<DSR::IDType>("DSR::IDType");
 //      qRegisterMetaType<DSR::AttribsMap>("DSR::Attribs");
@@ -167,7 +168,7 @@ class DoRTStuff2 : public  QWidget
 Q_OBJECT
 public:
     DoRTStuff2(std::shared_ptr<DSR::DSRGraph> graph_, const DSR::IDType &from_, const DSR::IDType &to_, const std::string &label_) :
-            graph(graph_), from(from_), to(to_), edge_type(label_)
+            graph(std::move(graph_)), from(from_), to(to_), edge_type(label_)
     {
         qRegisterMetaType<DSR::IDType>("DSR::IDType");
         
@@ -241,7 +242,7 @@ public:
             show();
         }
     };
-    void generate_node_transform_list(std::string to, std::string from)
+    void generate_node_transform_list(const std::string& to, const std::string& from)
     {
         transform_set.clear();
         transform_set.insert(from);
@@ -264,7 +265,7 @@ public:
         disconnect(graph.get(), 0, this, 0);
     };
 public slots:
-    void update_combo(QString combo_text)
+    void update_combo(const QString& combo_text)
     {
         this->reference = to_string;
         if (combo_text == "world")
@@ -370,7 +371,7 @@ protected:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
     void keyPressEvent(QKeyEvent *event) override;
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event) override;
-    void update_edge_attr_slot(std::uint32_t from, std::uint32_t to, const std::vector<std::string>& att_name);
+    void update_edge_attr_slot(std::uint64_t from, std::uint64_t to, const std::vector<std::string>& att_name);
 
     
 private:

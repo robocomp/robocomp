@@ -112,6 +112,21 @@ namespace DSR {
 
     }
 
+    void Attribute::uint64(uint64_t _uint)
+    {
+        m_value = _uint;
+    }
+
+    [[nodiscard]] uint64_t Attribute::uint64() const
+    {
+        if (auto pval = std::get_if<uint64_t>(&m_value)) {
+            return *pval;
+        }
+        throw std::runtime_error(
+                ("UINT64 is not selected, selected is " + std::string(TYPENAMES_UNION[m_value.index()])).data());
+
+    }
+
     void Attribute::fl(float _fl)
     {
         m_value = _fl;
@@ -204,12 +219,12 @@ namespace DSR {
     /// Edge
     ////////////////////////////////////////////////////
 
-    uint32_t Edge::to() const
+    uint64_t Edge::to() const
     {
         return m_to;
     }
 
-    uint32_t Edge::from() const
+    uint64_t Edge::from() const
     {
         return m_from;
     }
@@ -239,12 +254,12 @@ namespace DSR {
         return m_agent_id;
     }
 
-    void Edge::to(uint32_t mTo)
+    void Edge::to(uint64_t mTo)
     {
         m_to = mTo;
     }
 
-    void Edge::from(uint32_t mFrom)
+    void Edge::from(uint64_t mFrom)
     {
         m_from = mFrom;
     }
@@ -271,7 +286,7 @@ namespace DSR {
     /// Node
     ////////////////////////////////////////////////////
 
-    uint32_t Node::id() const
+    uint64_t Node::id() const
     {
         return m_id;
     }
@@ -306,12 +321,12 @@ namespace DSR {
         return m_attrs;
     }
 
-    const  std::map<std::pair<uint32_t, std::string>, Edge > &Node::fano() const
+    const  std::map<std::pair<uint64_t, std::string>, Edge > &Node::fano() const
     {
         return m_fano;
     }
 
-    std::map<std::pair<uint32_t, std::string>, Edge > &Node::fano()
+    std::map<std::pair<uint64_t, std::string>, Edge > &Node::fano()
     {
         return m_fano;
     }
@@ -321,7 +336,7 @@ namespace DSR {
         return m_agent_id;
     }
 
-    void Node::id(uint32_t mId)
+    void Node::id(uint64_t mId)
     {
         m_id = mId;
     }
@@ -344,7 +359,7 @@ namespace DSR {
         m_attrs = mAttrs;
     }
 
-    void Node::fano(const  std::map<std::pair<uint32_t, std::string>, Edge > &mFano)
+    void Node::fano(const  std::map<std::pair<uint64_t, std::string>, Edge > &mFano)
     {
         m_fano = mFano;
     }

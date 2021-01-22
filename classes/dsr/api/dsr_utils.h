@@ -16,7 +16,7 @@ namespace DSR
     {
         public:
             explicit Utilities(DSRGraph *G_);
-            void read_from_json_file(const std::string &json_file_path, const std::function<std::optional<int>(const Node&)>& insert_node);
+            void read_from_json_file(const std::string &json_file_path, const std::function<std::optional<uint64_t>(const Node&)>& insert_node);
 			void write_to_json_file(const std::string &json_file_path, const std::vector<std::string> &skip_node_content);
 			static QJsonObject Node_to_QObject(const Node& node, bool skip_content);
 			static QJsonObject Edge_to_QObject(const Edge& edge);
@@ -27,8 +27,8 @@ namespace DSR
             void print();
             static void print_edge(const Edge &edge);
             static void print_node(const Node &node);
-            void print_node(int id);
-            void print_RT(std::int32_t root);
+            void print_node(uint64_t id);
+            void print_RT(uint64_t root);
 
         private:
             DSR::DSRGraph *G;
