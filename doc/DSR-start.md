@@ -11,7 +11,7 @@ To have a minimal set of agents acting as the running brain of a (simulated) rob
 
 __NOTE :__ Refer to these [common issues](https://github.com/robocomp/grasping/blob/master/DSR-INTEGRATION.md#common-issues) for solutions to previously-known issues while installing and running DSR agents.
 
-## Deploying DSR "Hello World"
+## DSR's "Hello World"
 Here we will describe the steps required to start all four elements. With the addition of a joystick or a XBox pad, you can move the robot around and see all the nice tools included in G and the G viewers that all agents inherit.
 
 Once you have completed the installation of robocomp, robocomp-robolab (hardware robot drivers) and  [robocomp-dsr](https://github.com/robocomp/dsr-graph "robocomp-dsr"), follow these steps: 
@@ -40,6 +40,11 @@ _(we are assuming that your robocomp repo is in ~/robocomp/ and that you have cl
    * Move the mouse dragging the robot around and see how all G views are refreshed.
    
    
+  ## Creating a brand new agent in 30 seconds with RoboComp's code generator
+  
+  ## A first autonomous driver for the robot
+  
+  ## Locating objects and people with YOLO, and inserting them in G
   
   
   
