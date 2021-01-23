@@ -13,7 +13,7 @@ To have a minimal set of agents acting as the running brain of a (simulated) rob
 ## Deploying DSR "Hello World"
 Here we will describe the steps required to start all four elements. With the addition of a joystick or a XBox pad, you can move the robot around and see all the nice tools included in G and the G viewers that all agents inherit.
 
-Once you have completed the installation of robocomp and  [robocomp-dsr](https://github.com/robocomp/dsr-graph "robocomp-dsr"), follow these steps: 
+Once you have completed the installation of robocomp, robocomp-robolab (hardware robot drivers) and  [robocomp-dsr](https://github.com/robocomp/dsr-graph "robocomp-dsr"), follow these steps: 
 
 _(we are assuming that your robocomp repo is in ~/robocomp/ and that you have clones robocomp-robolab and dsr-graph below ~/robocomp/components)_
 
@@ -27,7 +27,18 @@ _(we are assuming that your robocomp repo is in ~/robocomp/ and that you have cl
   * Build it and execute with _bin/viriatoDSR etc/config_
   * On startup, the agent will request a copy of G and upon reception it will show it in its own window. All views of G will be equal since they are copies of a synchronized replicated data structure (similar to a GDoc)
   
+ Now we have the simplest DSRc runnning and connected to the simulated world that CoppeliaSim brings to life. Yo need now to get familiarized with the agents' UI and with G. To see how things change when there is movement in the world we have two ways:
  
+ 1. using a joystick or XBox pad.
+   * in a new terminal goto ~/robocomp/components/robocomp-robolab/hardware/external_control/joystickpub
+   * build the component and start it with _bin/joystickpub etc/config_
+   * move the stick and you will see the robot moving in CoppeliaSim and in ALL G views.
+ 2. from the CoppeliaSim UI. 
+   * click on the Coppelia window and click on the robot (check in the tree view on the left that you have selected the topmost element of the tree -Viriato)
+   * click on the button in the upper panel of CoppeliaSim with a little cube in the middle and four arrows around. 
+   * Move the mouse dragging the robot around and see how all G views are refreshed.
+   
+   
   
   
   
