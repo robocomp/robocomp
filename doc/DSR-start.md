@@ -9,4 +9,5 @@ This tutorial will guide you through the process of deploying and extending DSR 
 
 
 ## Deploying DSR "Hello World"
+Here we will describe the steps required to start all four elements. With the addition of a joystick or a XBox pad, you can move the robot around and see all the nice tools included in G and the G viewers that all agents inherit.
 
