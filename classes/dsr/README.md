@@ -116,6 +116,20 @@ You need the following third-party software:
       sudo ldconfig
 ```
 
+- pybind11 (used in DSR python wrapper) from https://github.com/pybind/pybind11 through the following steps :
+```sh
+      git clone https://github.com/pybind/pybind11
+      cd pybind11
+      mkdir build
+      cd build
+      cmake ..
+      make check -j 4
+```
+__NOTE :__ If you are using `python` with `Anaconda`, `cmake` might not be able to find pybind11 installation. So, you have to install it using `conda-forge` as well :
+```sh
+      conda install -c conda-forge pybind11
+```
+
 ## Installation
 Next step is to compile and install the DSR libs. You need to go to ~/robocomp/classes/dsr/
 and execute this:
