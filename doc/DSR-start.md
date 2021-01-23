@@ -16,8 +16,11 @@ Here we will describe the steps required to start all four elements. With the ad
 Once you have completed the installation of robocomp and  [robocomp-dsr](https://github.com/robocomp/dsr-graph "robocomp-dsr"), follow these steps:
 
 1. In a new terminal type "rcnode" to start ZeroC's publish-subscribe broker
-2. In a new terminal goto ~/robocomp/components/dsr-graph/components 
+2. In a new terminal goto ~/robocomp/components/dsr-graph/robots_pyrep/viriatoPyrep
+ * Build it with cmake and run it using the provided "run.sh" script. 
 3. In a new terminal goto ~/robocomp/components/dsr-graph/components/idserver. 
   * Build it and execute: bin/ideserver etc/config. 
   * You should see a Qt window showing the graph G. There are also other tabs that "project" G as a 2D and 3D scene. Also, there is a tree view of G.
+  
+  
   
