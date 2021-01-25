@@ -118,12 +118,14 @@ You need the following third-party software:
 
 - pybind11 (used in DSR python wrapper) from https://github.com/pybind/pybind11 through the following steps :
 ```sh
+      make sure you have installed pytest with pip3
       git clone https://github.com/pybind/pybind11
       cd pybind11
       mkdir build
       cd build
       cmake ..
       make check -j 4
+      sudo make install
 ```
 __NOTE :__ If you are using `python` with `Anaconda`, `cmake` might not be able to find pybind11 installation. So, you have to install it using `conda-forge` as well :
 ```sh
