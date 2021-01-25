@@ -118,7 +118,7 @@ You need the following third-party software:
 
 - pybind11 (used in DSR python wrapper) from https://github.com/pybind/pybind11 through the following steps :
 ```sh
-      make sure you have installed pytest with pip3
+      make sure you have installed pytest with sudo apt install python3-pytest
       git clone https://github.com/pybind/pybind11
       cd pybind11
       mkdir build
