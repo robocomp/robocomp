@@ -55,6 +55,7 @@ private:
 	${innermodelviewer_attributes}
 	${agm_attributes}
 	${dsr_attributes}
+	${dsr_slots}
 	bool startup_check_flag;
 
 };

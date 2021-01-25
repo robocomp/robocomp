@@ -1,55 +1,27 @@
 from dsl_parsers.parsing_utils import communication_is_ice
 from templates.common.templatedict import TemplateDict
 
-DSR_SOURCES_STR = """\
-$ENV{ROBOCOMP}/classes/dsr/core/rtps/dsrpublisher.cpp
-$ENV{ROBOCOMP}/classes/dsr/core/rtps/dsrsubscriber.cpp
-$ENV{ROBOCOMP}/classes/dsr/core/rtps/dsrparticipant.cpp
-$ENV{ROBOCOMP}/classes/dsr/core/types/crdt_types.cpp
-$ENV{ROBOCOMP}/classes/dsr/core/types/user_types.cpp
-$ENV{ROBOCOMP}/classes/dsr/core/topics/IDLGraphPubSubTypes.cxx
-$ENV{ROBOCOMP}/classes/dsr/core/topics/IDLGraph.cxx
-$ENV{ROBOCOMP}/classes/dsr/api/dsr_api.cpp
-$ENV{ROBOCOMP}/classes/dsr/api/dsr_camera_api.cpp
-$ENV{ROBOCOMP}/classes/dsr/api/dsr_inner_api.cpp
-$ENV{ROBOCOMP}/classes/dsr/api/dsr_inner_eigen_api.cpp
-$ENV{ROBOCOMP}/classes/dsr/api/dsr_rt_api.cpp
-$ENV{ROBOCOMP}/classes/dsr/api/dsr_utils.cpp
-$ENV{ROBOCOMP}/classes/dsr/gui/dsr_gui.cpp
-$ENV{ROBOCOMP}/classes/dsr/gui/viewers/osg_3d_viewer/osg_3d_viewer.cpp
-$ENV{ROBOCOMP}/classes/dsr/gui/viewers/qscene_2d_viewer/qscene_2d_viewer.cpp
-$ENV{ROBOCOMP}/classes/dsr/gui/viewers/graph_viewer/graph_viewer.cpp
-$ENV{ROBOCOMP}/classes/dsr/gui/viewers/graph_viewer/graph_node.cpp
-$ENV{ROBOCOMP}/classes/dsr/gui/viewers/graph_viewer/graph_edge.cpp
-$ENV{ROBOCOMP}/classes/dsr/gui/viewers/tree_viewer/tree_viewer.cpp
-$ENV{ROBOCOMP}/classes/dsr/gui/viewers/_abstract_graphic_view.cpp
-"""
-
-DSR_HEADERS_STR = """\
-$ENV{ROBOCOMP}/classes/dsr/api/dsr_api.h
-$ENV{ROBOCOMP}/classes/dsr/gui/dsr_gui.h
+DSR_FIND_EIGEN = """\
+find_package (Eigen3 3.3 REQUIRED NO_MODULE)
 """
 
 DSR_DEDINITIONS = """\
 add_definitions(-g  -fmax-errors=1 -std=c++2a )
 """
 
-DSR_LIBS = " fastcdr fastrtps osgDB OpenThreads"
+DSR_LIBS = " dsr_core dsr_gui dsr_api fastcdr fastrtps osgDB OpenThreads Eigen3::Eigen"
 
 
 class src_CMakeListsSpecific_txt(TemplateDict):
     def __init__(self, component):
         super(src_CMakeListsSpecific_txt, self).__init__()
-        dsr_sources = ""
-        dsr_headers = ""
+        dsr_find_eigen = ""
         dsr_definitions = ""
         dsr_libs = ""
         if component.dsr:
-            dsr_sources = DSR_SOURCES_STR
-            dsr_headers = DSR_HEADERS_STR
+            dsr_find_eigen = DSR_FIND_EIGEN
             dsr_definitions = DSR_DEDINITIONS
             dsr_libs = DSR_LIBS
-        self['dsr_sources'] = dsr_sources
-        self['dsr_headers'] = dsr_headers
+        self['dsr_find_eigen'] = dsr_find_eigen
         self['dsr_definitions'] = dsr_definitions
         self['dsr_libs'] = dsr_libs
