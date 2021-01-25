@@ -32,7 +32,6 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 include_directories(/usr/include/eigen3)
 pybind11_add_module(pydsr python_api.cpp ${SOURCES} ${MOC_SOURCES} ${RC_SOURCES} ${UI_HEADERS} ${HEADERS})
 set_target_properties(pydsr PROPERTIES LINKER_LANGUAGE CXX)
-message("aaaa", ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(pydsr PRIVATE pthread  ${CMAKE_CURRENT_BINARY_DIR}/../api/libdsr_api.so ${CMAKE_CURRENT_BINARY_DIR}/../core/libdsr_core.so ${CMAKE_CURRENT_BINARY_DIR}/../gui/libdsr_gui.so ${SPECIFIC_LIBS} ${QT_LIBRARIES} ${PYTHON_LIBRARIES} )
 install(TARGETS pydsr
         DESTINATION /opt/robocomp/lib/)
