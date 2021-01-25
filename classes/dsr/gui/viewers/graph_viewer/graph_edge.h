@@ -40,6 +40,8 @@ public:
             graph(std::move(graph_)), rt(graph->get_rt_api()), from(from_), to(to_), label(std::move(label_))
     {
         qRegisterMetaType<DSR::IDType>("DSR::IDType");
+        qRegisterMetaType<uint64_t>("uint64_t");
+
 //      qRegisterMetaType<DSR::AttribsMap>("DSR::Attribs");
 
         std::optional<Node> n = graph->get_node(from);
