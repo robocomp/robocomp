@@ -1,4 +1,4 @@
-# Tutorial to start creating DSR configurations
+# Tutorial to start with DSR configurations
 
 This tutorial will guide you through the process of deploying and extending DSR configurations (DSRc). DSRc are sets of agents (a kind of RoboComp component) that share a distributed graph (aka G) data structure. See [robocomp-dsr](https://github.com/robocomp/dsr-graph "robocomp-dsr") for a detailed description, the theory behind DSR and the installation instructions. 
 
