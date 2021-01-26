@@ -26,20 +26,53 @@ from genericworker import *
 
 # If RoboComp was compiled with Python bindings you can use InnerModel in Python
 sys.path.append('/opt/robocomp/lib')
+from pydsr import *
+
 # import librobocomp_qmat
 # import librobocomp_osgviewer
 # import librobocomp_innermodel
+
+def update_node_att(id: int, attribute_names: [str]):
+    print("UPDATE NODE ATT: ", id, " ", attribute_names)
+
+def update_node(id: int, type: str):
+    print("UPDATE NODE: ", id," ",  type)
+
+def delete_node(id: int):
+    print("DELETE NODE: ", id)
+
+def update_edge(fr: int, to: int, type : str):
+    print("UPDATE EDGE: ", fr," ", to," ", type)
+
+def update_edge_att(fr: int, to: int, attribute_names : [str]):
+    print("UPDATE EDGE ATT: ", fr," ", to," ", attribute_names)
+
+def delete_edge(fr: int, to: int, type : str):
+    print("DELETE EDGE: ", fr," ", to," ", type)
 
 class SpecificWorker(GenericWorker):
     def __init__(self, proxy_map, startup_check=False):
         super(SpecificWorker, self).__init__(proxy_map)
         self.Period = 2000
+
+        self.g = DSRGraph(0, "pythonAgent", 111)
+
+        try:
+            signals.connect(self.g, signals.UPDATE_NODE_ATTR, update_node_att)
+            signals.connect(self.g, signals.UPDATE_NODE, update_node)
+            signals.connect(self.g, signals.DELETE_NODE, delete_node)
+            signals.connect(self.g, signals.UPDATE_EDGE, update_edge)
+            signals.connect(self.g, signals.UPDATE_EDGE_ATTR, update_edge_att)
+            signals.connect(self.g, signals.DELETE_EDGE, delete_edge)
+            print("signals connected")
+        except RuntimeError as e:
+            print(e)
+
         if startup_check:
             self.startup_check()
         else:
+            self.timer.timeout.connect(self.compute)
             self.timer.start(self.Period)
-            self.defaultMachine.start()
-            self.destroyed.connect(self.t_compute_to_finalize)
 
     def __del__(self):
         print('SpecificWorker destructor')
@@ -75,39 +108,6 @@ class SpecificWorker(GenericWorker):
     def startup_check(self):
         QTimer.singleShot(200, QApplication.instance().quit)
 
-    # =============== Slots methods for State Machine ===================
-    # ===================================================================
-
-    #
-    # sm_initialize
-    #
-    @QtCore.Slot()
-    def sm_initialize(self):
-        print("Entered state initialize")
-        self.t_initialize_to_compute.emit()
-        pass
-    
-
-    #
-    # sm_compute
-    #
-    @QtCore.Slot()
-    def sm_compute(self):
-        print("Entered state compute")
-        self.compute()
-        pass
-
-
-    #
-    # sm_finalize
-    #
-    @QtCore.Slot()
-    def sm_finalize(self):
-        print("Entered state finalize")
-        pass
-
-    # =================================================================
-    # =================================================================
 
 
 

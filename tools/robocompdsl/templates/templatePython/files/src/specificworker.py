@@ -25,15 +25,18 @@ from genericworker import *
 
 
 # If RoboComp was compiled with Python bindings you can use InnerModel in Python
-# sys.path.append('/opt/robocomp/lib')
+sys.path.append('/opt/robocomp/lib')
+${dsr_import}
 # import librobocomp_qmat
 # import librobocomp_osgviewer
 # import librobocomp_innermodel
+${dsr_slots}
 
 class SpecificWorker(GenericWorker):
     def __init__(self, proxy_map, startup_check=False):
         super(SpecificWorker, self).__init__(proxy_map)
         self.Period = 2000
+        ${dsr_init}
         if startup_check:
             self.startup_check()
         else:
