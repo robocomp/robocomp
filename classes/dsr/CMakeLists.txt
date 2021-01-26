@@ -26,8 +26,9 @@ ENDIF(NOT EXISTS $ENV{ROBOCOMP}/cmake)
 INCLUDE( $ENV{ROBOCOMP}/cmake/robocomp.cmake )
 INCLUDE( $ENV{ROBOCOMP}/cmake/modules/qt.cmake )
 
-
 add_subdirectory(api)
 add_subdirectory(core)
 add_subdirectory(gui)
 add_subdirectory(python-wrapper)
+
+add_dependencies(pydsr dsr_api dsr_core dsr_gui)

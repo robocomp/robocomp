@@ -28,7 +28,7 @@ namespace DSR
             std::optional<std::tuple<float,float,float>> get_roi_depth(const std::vector<float> &depth, const Eigen::AlignedBox<float, 2> &roi);
 
             bool reload_camera(const DSR::Node &n);
-            inline std::uint32_t  get_id() const { return id;};
+            inline std::uint64_t  get_id() const { return id;};
             Eigen::Vector3d get_angles( const Eigen::Vector3d & p) const;
             Eigen::Vector3d get_angles_homogeneous( const Eigen::Vector3d & p) const;
             float get_focal() const;
@@ -53,7 +53,7 @@ namespace DSR
         private:
             DSR::Node node;
             DSR::DSRGraph *G;
-            std::uint32_t id;
+            std::uint64_t id;
             float focal_x;		        //!< Horizontal focus
             float focal_y;		        //!< Vertical focus
             float focal;
