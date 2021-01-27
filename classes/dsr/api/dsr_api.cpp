@@ -311,7 +311,7 @@ bool DSRGraph::delete_node(const std::string &name) {
     std::optional<IDL::MvregNode> deleted_node;
     std::vector<IDL::MvregEdge> aw_;
 
-    std::optional<int> id = {};
+    std::optional<uint64_t> id = {};
     {
         std::unique_lock<std::shared_mutex> lock(_mutex);
         id = get_id_from_name(name);
@@ -580,8 +580,8 @@ bool DSRGraph::delete_edge(uint64_t from, uint64_t to, const std::string &key) {
 
 bool DSRGraph::delete_edge(const std::string &from, const std::string &to, const std::string &key) {
 
-    std::optional<int> id_from = {};
-    std::optional<int> id_to = {};
+    std::optional<uint64_t> id_from = {};
+    std::optional<uint64_t> id_to = {};
     std::optional<IDL::MvregEdge> delta;
     {
         std::unique_lock<std::shared_mutex> lock(_mutex);

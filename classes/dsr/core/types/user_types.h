@@ -213,14 +213,14 @@ namespace DSR {
         static Edge create(uint64_t to, uint64_t from, std::string type, uint32_t agent_id)
         {
             static_assert(edge_type::edge_type, "Invalid Edge type.");
-            return Edge(from, to, edge_type::value, agent_id, {});
+            return Edge(from, to,  std::string(edge_type::attr_name.data()), agent_id, {});
         }
 
         template <typename edge_type>
         static Edge create(uint64_t to, uint64_t from, std::string type, const  std::map<std::string, Attribute> &attrs, uint32_t agent_id)
         {
             static_assert(edge_type::edge_type, "Invalid Edge type.");
-            return Edge(from, to, edge_type::value, agent_id, attrs);
+            return Edge(from, to, std::string(edge_type::attr_name.data()), agent_id, attrs);
         }
 
 
@@ -362,7 +362,7 @@ namespace DSR {
         static Node create(uint32_t agent_id)
         {
             static_assert(node_type::node_type, "Invalid Node type.");
-            return Node(node_type::value, agent_id, {}, {}, "");
+            return Node( std::string(node_type::attr_name.data()), agent_id, {}, {}, "");
         }
 
         template <typename node_type>
@@ -372,7 +372,7 @@ namespace DSR {
                            const  std::string& name = "")
         {
             static_assert(node_type::node_type, "Invalid Node type.");
-            return Node(node_type::value, agent_id, attrs, fano, name);
+            return Node( std::string(node_type::attr_name.data()), agent_id, attrs, fano, name);
         }
 
 
