@@ -17,6 +17,7 @@ Here we will describe the steps required to start all four elements. With the ad
 Once you have completed the installation of robocomp, robocomp-robolab (hardware robot drivers) and  [robocomp-dsr](https://github.com/robocomp/dsr-graph "robocomp-dsr"), follow these steps: 
 
 _(we are assuming that your robocomp repo is in ~/robocomp/ and that you have clones robocomp-robolab and dsr-graph below ~/robocomp/components)_
+#### Attention: it is crucial that you uninstall with pip3 the package _python3-opencv_ and install the _python3-opencv-headless_ version
 
 1. In a new terminal type "rcnode" to start ZeroC's publish-subscribe broker
 2. In a new terminal goto ~/robocomp/components/dsr-graph/robots_pyrep/viriatoPyrep
