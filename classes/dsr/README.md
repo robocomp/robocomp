@@ -61,6 +61,8 @@ Conceptually, the DSR represents a network of entities and relations among them.
 
 It's assumed that you have already installed ![robocomp](https://github.com/robocomp/robocomp/blob/development/README.md#installation-from-source).
 To be able to use the DSR/CORTEX infraestructure you need to follow the next steps:
+
+### Step 1
 From ubuntu repositories you need:
 ```sh
 sudo apt install libasio-dev
@@ -70,11 +72,21 @@ sudo apt install libqglviewer-dev-qt5
 sudo apt install libeigen3-dev
 sudo apt install python3-pybind11
 ```
-__NOTE :__ If you are using `python` with `Anaconda`, `cmake` might not be able to find pybind11 installation. So, you have to install it using `conda-forge` as well :
-```sh
-      conda install -c conda-forge pybind11
-```
+> __NOTE__: You will also need a `cmake` version >= 3.12. It's the default version installed in ubuntu 20.04.
+> If your are working in Ubuntu 18.04 you can try this to update cmake version:
+> ```bash
+> wget -qO - https://apt.kitware.com/keys/kitware-archive-latest.asc | sudo apt-key add -
+> sudo apt-add-repository 'deb https://apt.kitware.com/ubuntu/ bionic main'
+> sudo apt --only-upgrade install cmake
+> ```
 
+
+> __NOTE :__ If you are using `python` with `Anaconda`, `cmake` might not be able to find pybind11 installation. So, you have to install it using `conda-forge` as well :
+> ```bash
+> conda install -c conda-forge pybind11
+> ```
+
+### Step 2
 You need the following third-party software:
 
 - CoppeliaSim. Follow the instructions in their site: https://www.coppeliarobotics.com/ and make sure you choose the latest EDU version
