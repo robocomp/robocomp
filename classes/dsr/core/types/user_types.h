@@ -11,7 +11,6 @@
 #include "type_checking/type_checker.h"
 #include "../utils.h"
 
-#define TYPE_ASSERT_ERROR(x, y) "Error, " #x "is not a valid" #y "type"
 
 namespace DSR {
 
@@ -182,8 +181,8 @@ namespace DSR {
 
     private:
 
-        Edge(uint64_t from, uint64_t to, const std::string& type, uint32_t agent_id, const  std::map<std::string, Attribute> &attrs)
-            : m_to(to),  m_from(from), m_type(type),  m_attrs(attrs), m_agent_id(agent_id)
+        Edge(uint64_t from, uint64_t to, std::string  type, uint32_t agent_id, std::map<std::string, Attribute> attrs)
+            : m_to(to),  m_from(from), m_type(std::move(type)),  m_attrs(std::move(attrs)), m_agent_id(agent_id)
         {
 
         }
@@ -200,8 +199,8 @@ namespace DSR {
         }
 
         [[deprecated("Use Edge::create<example_edge_type>(...)")]] Edge(uint64_t mTo, uint64_t mFrom, std::string mType,
-                   const  std::map<std::string, Attribute> &mAttrs,
-                   uint32_t mAgentId) : m_to(mTo), m_from(mFrom), m_type(std::move(mType)), m_attrs{mAttrs},
+                   std::map<std::string, Attribute> mAttrs,
+                   uint32_t mAgentId) : m_to(mTo), m_from(mFrom), m_type(std::move(mType)), m_attrs{std::move(mAttrs)},
                                         m_agent_id(mAgentId)
         {
             if(!edge_types::check_type(m_type)) {
@@ -330,10 +329,10 @@ namespace DSR {
     class Node {
     private:
 
-        Node(const std::string& type, uint32_t agent_id,
-             const  std::map<std::string, Attribute> &attrs,
-             const  std::map<std::pair<uint64_t, std::string>, Edge > &fano, const std::string& name = "")
-            : m_id(0), m_type(type), m_name(name), m_attrs{attrs}, m_fano{fano},  m_agent_id(agent_id)
+        Node(std::string  type, uint32_t agent_id,
+             std::map<std::string, Attribute> attrs,
+             std::map<std::pair<uint64_t, std::string>, Edge > fano, std::string  name = "")
+            : m_id(0), m_type(std::move(type)), m_name(std::move(name)), m_attrs{std::move(attrs)}, m_fano{std::move(fano)},  m_agent_id(agent_id)
         {
 
         }
@@ -349,9 +348,9 @@ namespace DSR {
         }
 
         [[deprecated("Use Node::create<example_node_type>(...)")]] Node(std::string mType, uint32_t mAgentId,
-                   const  std::map<std::string, Attribute> &mAttrs,
-                   const  std::map<std::pair<uint64_t, std::string>, Edge > &mFano)
-                : m_id(0), m_type(std::move(mType)), m_attrs{mAttrs}, m_fano{mFano}, m_agent_id(mAgentId)
+                   std::map<std::string, Attribute> mAttrs,
+                   std::map<std::pair<uint64_t, std::string>, Edge > mFano)
+                : m_id(0), m_type(std::move(mType)), m_attrs{std::move(mAttrs)}, m_fano{std::move(mFano)}, m_agent_id(mAgentId)
         {
             if (!node_types::check_type(m_type)) {
                 throw std::runtime_error("Error, " + m_type + " is not a valid node type");

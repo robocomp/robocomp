@@ -9,7 +9,6 @@
 #include <fstream>
 #include "dsr_utils.h"
 #include "dsr_api.h"
-#include "../core/utils.h"
 
 using namespace DSR;
 
@@ -154,6 +153,7 @@ void Utilities::read_from_json_file(const std::string &json_file_path,  const st
             std::map<std::string, CRDTAttribute> attrs;
 
             Edge edge(dstn, srcn, edgeName, {}, G->get_agent_id());
+
 //            Edge edge;
 //            edge.from(srcn);
 //            edge.to(dstn);
@@ -448,7 +448,7 @@ void Utilities::print_RT(const uint64_t  id)
 
 void Utilities::print_RT(const Node& node)
 {
-    for(auto &edge: G->get_node_edges_by_type(node, "RT"))
+    for(auto &edge: DSR::DSRGraph::get_node_edges_by_type(node, "RT"))
 	{
         auto child = G->get_node(edge.to());
         if(child.has_value())

@@ -1,5 +1,5 @@
 /*
-Reinplementation from https://github.com/CBaquero/delta-enabled-crdts
+Reimplementation from https://github.com/CBaquero/delta-enabled-crdts
 */
 
 #ifndef DELTA_CRDT

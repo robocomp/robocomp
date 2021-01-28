@@ -56,11 +56,11 @@ private:
     class ParticpantListener : public eprosima::fastdds::dds::DomainParticipantListener
     {
     public:
-        ParticpantListener(std::function<void(eprosima::fastrtps::rtps::ParticipantDiscoveryInfo&&)>&& fn)
-            : eprosima::fastdds::dds::DomainParticipantListener(), f(std::move(fn)), n_matched(0){};
+        explicit ParticpantListener(std::function<void(eprosima::fastrtps::rtps::ParticipantDiscoveryInfo&&)>&& fn)
+            : eprosima::fastdds::dds::DomainParticipantListener(), f(std::move(fn)){};
         ~ParticpantListener() override = default;
 
-        virtual void on_participant_discovery  (
+         void on_participant_discovery  (
                 eprosima::fastdds::dds::DomainParticipant* participant,
                 eprosima::fastrtps::rtps::ParticipantDiscoveryInfo&& info) override
         {
@@ -78,7 +78,7 @@ private:
 
 
         std::function<void(eprosima::fastrtps::rtps::ParticipantDiscoveryInfo&&)> f;
-        int n_matched;
+        //int n_matched;
     };
     std::unique_ptr<ParticpantListener> m_listener;
 };

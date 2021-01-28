@@ -168,7 +168,6 @@ bool DSRPublisher::write(std::vector<IDL::MvregEdgeAttr> *object)
 bool DSRPublisher::write(std::vector<IDL::MvregNodeAttr> *object) {
     int retry = 0;
     while (retry < 5) {
-        //std::cout << "ESCRIBIENDO" << std::endl;
         if (mp_writer->write(object)) return true;
         retry++;
     }

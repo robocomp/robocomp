@@ -31,13 +31,13 @@ DSRSubscriber::~DSRSubscriber()
 
 bool DSRSubscriber::init(eprosima::fastdds::dds::DomainParticipant *mp_participant_,
                          eprosima::fastdds::dds::Topic *topic,
-                        const std::function<void(eprosima::fastdds::dds::DataReader* sub)>&  f_,
+                        const std::function<void(eprosima::fastdds::dds::DataReader*)>&  f_,
                         bool isStreamData)
 {
     mp_participant = mp_participant_;
 
 
-    m_listener.participant_ID = mp_participant->guid();
+    //m_listener.participant_ID = mp_participant->guid();
     m_listener.f = f_;
 
 
@@ -137,10 +137,10 @@ void DSRSubscriber::SubListener::on_subscription_matched(eprosima::fastdds::dds:
 {
     if (info.current_count_change == eprosima::fastrtps::rtps::MATCHED_MATCHING)
     {
-        n_matched++;
+        //n_matched++;
         qInfo() << "Publisher[" << reader->get_topicdescription()->get_name().data() <<"] matched " << info.last_publication_handle.value;// << " self: " << info..is_on_same_process_as(sub->getGuid());
     } else {
-        n_matched--;
+        //n_matched--;
         qInfo() << "Publisher[" << reader->get_topicdescription()->get_name().data() <<"] unmatched "  << info.last_publication_handle.value;//<< " self: " << info.remoteEndpointGuid.is_on_same_process_as(sub->getGuid());
     }
 }

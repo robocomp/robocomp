@@ -294,7 +294,7 @@ namespace DSR {
 
             m_type = x.type();
             m_timestamp = x.timestamp();
-            m_Value = std::move(CRDTValue(std::move(x.value())));
+            m_Value = CRDTValue(std::move(x.value()));
             m_agent_id = x.agent_id();
             return *this;
         }

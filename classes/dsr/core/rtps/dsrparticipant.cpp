@@ -45,7 +45,8 @@ DSRParticipant::~DSRParticipant()
     }
 }
 
-std::tuple<bool, eprosima::fastdds::dds::DomainParticipant*> DSRParticipant::init(int32_t agent_id, int localhost, std::function<void(eprosima::fastrtps::rtps::ParticipantDiscoveryInfo&&)> fn) {
+std::tuple<bool, eprosima::fastdds::dds::DomainParticipant*> DSRParticipant::init(int32_t agent_id, int localhost, std::function<void(eprosima::fastrtps::rtps::ParticipantDiscoveryInfo&&)> fn)
+{
     // Create RTPSParticipant     
     DomainParticipantQos PParam;
     PParam.name(("Participant_" + std::to_string(agent_id)).data());  //You can put here the name you want
@@ -119,12 +120,6 @@ std::tuple<bool, eprosima::fastdds::dds::DomainParticipant*> DSRParticipant::ini
     dsrEdgeAttrType.register_type(mp_participant);
 
     //Create topics
-    /* Hay que meter esto?
-    eprosima::fastrtps::PublisherAttributes Wparam;
-    Wparam.topic.topicKind = eprosima::fastrtps::rtps::NO_KEY;
-    Wparam.topic.topicDataType = topicDataType;  //This type MUST be registered
-    Wparam.topic.topicName = topicName;
-    */
     topic_node = mp_participant->create_topic("DSR_NODE", dsrgraphType.get_type_name(), eprosima::fastdds::dds::TOPIC_QOS_DEFAULT);
     topic_edge = mp_participant->create_topic("DSR_EDGE", dsrEdgeType.get_type_name(), eprosima::fastdds::dds::TOPIC_QOS_DEFAULT);
     topic_node_att = mp_participant->create_topic("DSR_NODE_ATTS", dsrNodeAttrType.get_type_name(), eprosima::fastdds::dds::TOPIC_QOS_DEFAULT);
