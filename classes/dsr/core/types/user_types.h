@@ -210,17 +210,17 @@ namespace DSR {
         }
 
         template <typename edge_type>
-        static Edge create(uint64_t to, uint64_t from, std::string type, uint32_t agent_id)
+        static Edge create(uint64_t from, uint64_t to)
         {
             static_assert(edge_type::edge_type, "Invalid Edge type.");
-            return Edge(from, to,  std::string(edge_type::attr_name.data()), agent_id, {});
+            return Edge(from, to,  std::string(edge_type::attr_name.data()), 0, {});
         }
 
         template <typename edge_type>
-        static Edge create(uint64_t to, uint64_t from, std::string type, const  std::map<std::string, Attribute> &attrs, uint32_t agent_id)
+        static Edge create(uint64_t from, uint64_t to,  const  std::map<std::string, Attribute> &attrs)
         {
             static_assert(edge_type::edge_type, "Invalid Edge type.");
-            return Edge(from, to, std::string(edge_type::attr_name.data()), agent_id, attrs);
+            return Edge(from, to, std::string(edge_type::attr_name.data()), 0, attrs);
         }
 
 
@@ -359,20 +359,21 @@ namespace DSR {
         }
 
         template <typename node_type>
-        static Node create(uint32_t agent_id)
+        static Node create(/*uint32_t agent_id,*/ const std::string& name = "")
         {
             static_assert(node_type::node_type, "Invalid Node type.");
-            return Node( std::string(node_type::attr_name.data()), agent_id, {}, {}, "");
+            return Node( std::string(node_type::attr_name.data()), 0, {}, {}, name);
         }
 
+
         template <typename node_type>
-        static Node create(uint32_t agent_id,
+        static Node create(/*uint32_t agent_id,*/
                            const  std::map<std::string, Attribute> &attrs,
                            const  std::map<std::pair<uint64_t, std::string>, Edge > &fano,
                            const  std::string& name = "")
         {
             static_assert(node_type::node_type, "Invalid Node type.");
-            return Node( std::string(node_type::attr_name.data()), agent_id, attrs, fano, name);
+            return Node( std::string(node_type::attr_name.data()), 0, attrs, fano, name);
         }
 
 
