@@ -72,6 +72,15 @@ sudo apt install libqglviewer-dev-qt5
 sudo apt install libeigen3-dev
 sudo apt install python3-pybind11
 ```
+
+- gcc >= 9
+```sh
+      sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+      sudo apt update
+      sudo apt install gcc-9
+ ```
+ (you might want to update the default version: https://stackoverflow.com/questions/7832892/how-to-change-the-default-gcc-compiler-in-ubuntu)
+
 > __NOTE__: You will also need a `cmake` version >= 3.12. It's the default version installed in ubuntu 20.04.
 > If your are working in Ubuntu 18.04 you can try this to update cmake version:
 > ```bash
@@ -95,14 +104,7 @@ You need the following third-party software:
 ```sh
       sudo git clone https://github.com/ryanhaining/cppitertools /usr/local/include/cppitertools
 ```
-- gcc >= 9
-```sh
-      sudo add-apt-repository ppa:ubuntu-toolchain-r/test
-      sudo apt update
-      sudo apt install gcc-9
- ```
- (you might want to update the default version: https://stackoverflow.com/questions/7832892/how-to-change-the-default-gcc-compiler-in-ubuntu)
-      
+
 - Fast-RTPS (aka Fast-DDS) from https://www.eprosima.com/. Follow these steps:
 ```sh
       mkdir software
