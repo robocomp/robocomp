@@ -14,7 +14,7 @@ __NOTE :__ Refer to these [common issues](https://github.com/robocomp/grasping/b
 ## DSR's "Hello World"
 Here we will describe the steps required to start all four elements. With the addition of a joystick or a XBox pad, you can move the robot around and see all the nice tools included in G and the G viewers that all agents inherit.
 
-Once you have completed the installation of robocomp, robocomp-robolab (hardware robot drivers) and  [robocomp-dsr](https://github.com/robocomp/dsr-graph "robocomp-dsr"), follow these steps: 
+Once you have completed the installation of robocomp, robocomp-robolab (hardware robot drivers) and  [robocomp-dsr](https://github.com/robocomp/dsr-graph), follow these steps: 
 
 _(we are assuming that your robocomp repo is in ~/robocomp/ and that you have clones robocomp-robolab and dsr-graph below ~/robocomp/components)_
 #### Attention: it is crucial that you uninstall with pip3 the package _python3-opencv_ and install the _python3-opencv-headless_ version
