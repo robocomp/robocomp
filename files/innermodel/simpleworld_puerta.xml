@@ -1,8 +1,8 @@
 <innerModel>
 	<transform id="world">
 		<transform id="floor">
-		    <plane id="ddG" ny="1"  px="-0" py="0" pz="0" size="5000,5000,10" texture="/home/robocomp/robocomp/files/osgModels/textures/wood.jpg" /> 
-	
+		    <plane id="ddG" ny="1"  px="-0" py="0" pz="0" size="5000,5000,10" texture="/home/robocomp/robocomp/files/osgModels/textures/wood.jpg" />
+
 			<plane id="ddR" nx="1"  px="2500" py="200" pz="0" size="5000,500,10" texture="#eeeeee" />
 			<plane id="ddL" nx="1" px="-2500" py="200" pz="0" size="5000,500,10" texture="#eeeeee" />
 			
@@ -37,16 +37,16 @@
 		<transform id="caja2" tx="-1400" tz="800" ty="0" >
 			<plane id="cajaMesh2" nx="1" size="400,400,2000"  texture="/home/robocomp/robocomp/files/osgModels/textures/Metal.jpg" collide="1"/>
 		</transform>-->
-		
+
 			
 		<!-- <axes id="axis" length="1000"/>
 		 -->
-		<differentialrobot id="base" port="10004">
+		<differentialrobot id="robot" port="10004">
 			<mesh id="base_robex" file="/home/robocomp/robocomp/files/osgModels/robex/robex.ive"  tx="0" ty="0" tz="0" scale="1000" collide="1"/>
 				<translation id="laserPose" tx="0" ty="140" tz="200">
 					<laser id="laser" port="10003" measures="100" min="100" max="30000" angle="3" ifconfig="10000" />
-						<plane id="sensorL" nz="1" pz="-200" size="100" repeat="1" texture="#ff0000" /> 
-				</translation>	
+						<plane id="sensorL" nz="1" pz="-200" size="100" repeat="1" texture="#ff0000" />
+				</translation>
 				<!--<transform id="camera" ty="210" tz="200">
 						<imu id="imu" port="10010"/>
 						<rgbd id="rgbd" focal="490" width="640" height="480" port="10096" noise="0.00" ifconfig="10068,10004" />
