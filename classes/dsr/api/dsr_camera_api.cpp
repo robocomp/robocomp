@@ -84,7 +84,28 @@ Eigen::Vector2d CameraAPI::project(const Eigen::Vector3d & p, int cx, int  cy) c
 //    }
 //}
 
+/*
 std::optional<std::reference_wrapper<const std::vector<uint8_t>>> CameraAPI::get_rgb_image() const
+{
+    if( const auto n = G->get_node(id); n.has_value())
+    {
+        auto &attrs = n.value().attrs();
+        if (auto value = attrs.find("cam_rgb"); value != attrs.end())
+            return value->second.byte_vec();
+        else
+        {
+            qWarning() << __FUNCTION__ << "No rgb attribute found in node " << QString::fromStdString(n.value().name()) << ". Returning empty";
+            return {};
+        }
+    }
+    else
+    {
+        qWarning() << __FUNCTION__ << "No camera node found in G. Returning empty";
+        return {};
+    }
+}*/
+
+std::optional<std::vector<uint8_t>> CameraAPI::get_rgb_image()
 {
     if( const auto n = G->get_node(id); n.has_value())
     {
@@ -183,7 +204,7 @@ std::optional<std::vector<float>> CameraAPI::get_depth_image()
 //    }
 //}
 //
-
+/*
 std::optional<std::reference_wrapper<const std::vector<uint8_t>>> CameraAPI::get_depth_image() const
 {
     if( const auto n = G->get_node(id); n.has_value())
@@ -204,7 +225,7 @@ std::optional<std::reference_wrapper<const std::vector<uint8_t>>> CameraAPI::get
         qWarning() << __FUNCTION__ << "No camera node found in G. Returning empty";
         return {};
     }
-}
+}*/
 //std::optional<std::reference_wrapper<const std::vector<uint8_t>>> CameraAPI::get_existing_depth_image() const
 //{
 //    auto &attrs = node.attrs();

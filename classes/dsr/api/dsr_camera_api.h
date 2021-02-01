@@ -18,9 +18,10 @@ namespace DSR
             //explicit CameraAPI(DSRGraph *G_, const std::string &name);
 
             /// methods that get a fresh copy of the camera node
-            std::optional<std::reference_wrapper<const std::vector<uint8_t>>> get_rgb_image() const;
+            //std::optional<std::reference_wrapper<const std::vector<uint8_t>>> get_rgb_image() const;
+            std::optional<std::vector<uint8_t>> get_rgb_image() ;
             std::optional<std::vector<float>> get_depth_image(); //returns a copy
-            std::optional<std::reference_wrapper<const std::vector<uint8_t>>> get_depth_image() const;
+            //std::optional<std::reference_wrapper<const std::vector<uint8_t>>> get_depth_image() const;
             std::optional<std::vector<std::tuple<float,float,float>>>  get_pointcloud(const std::string& target_frame_node = "", unsigned short subsampling=1);
             std::optional<std::vector<uint8_t>> get_depth_as_gray_image() const;
 

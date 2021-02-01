@@ -161,7 +161,7 @@ class DoRGBDStuff : public QWidget
 
               if (rgb_data.has_value() and rgb_width.has_value() and rgb_height.has_value())
               {
-                  const std::vector<uint8_t> &img = rgb_data.value().get();
+                  const std::vector<uint8_t> &img = rgb_data.value();//.get();
                   auto pix = QPixmap::fromImage(
                           QImage(&img[0], rgb_width.value(), rgb_height.value(), QImage::Format_RGB888));
                   rgbd_label.setPixmap(pix);

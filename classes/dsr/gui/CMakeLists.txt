@@ -53,7 +53,7 @@ SET ( HEADERS
 
 #set_property(SOURCE DSRGetID.h PROPERTY SKIP_AUTOGEN ON)
 set(CMAKE_CXX_STANDARD 20)
-add_definitions(-O3  -fmax-errors=1 -std=c++2a )
+add_definitions(-g  -fmax-errors=1 -std=c++2a )
 SET(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-fmax-errors=5" )
 SET(SPECIFIC_LIBS  fastcdr fastrtps osgDB OpenThreads Eigen3::Eigen)
 
