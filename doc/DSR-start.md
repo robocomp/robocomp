@@ -38,8 +38,36 @@ _(we are assuming that your robocomp repo is in ~/robocomp/ and that you have cl
    * click on the button in the upper panel of CoppeliaSim with a little cube in the middle and four arrows around. 
    * Move the mouse dragging the robot around and see how all G views are refreshed.
    
+In the graph view of the agents, right-click in the laser (203) or camera (210) nodes and select data to open a graphic representation of the sensors. Also, right  clicking on the edges you can see the frame coordinates of the node with respect to its parent or to the world.
    
   ## Creating a brand new agent in 30 seconds with RoboComp's code generator
+Now we can move on and create a brand new agent to control de robot. From the situation described before:
+
+ * open a new terminal
+ * move to ~/robocomp/components/dsr-graph/components/ and create a new folder "my-agents". 
+ * move into "my-agents" and create "my-first-agent". cd into it.
+ * execute: robocompdsl my-first-agent.cdsl. A new file will be created with that name
+ * open it in your favourite editor and replace the existing code with:
+         Component my_first_agent
+         {
+             Communications
+             {
+             };
+             language Cpp11;
+             gui Qt(QMainWindow);
+             options dsr;
+         };
+* execute: robocompdsl my-first-agent.cdsl .
+* a lot of code will be generated and places into several folders
+* build the agent: cmake . ; make; 
+* edit the etc/config file and give an id-number to the agent, i.e. 30
+* execute it: bin/my-first-agent etc/config
+
+Now you should see a new window with the "good-old" graph view of G. The same G that you can see in the other two agents. It has been copied at start and now the local copy is kept synchronized under the hood by some agent's internal threads.
+
+Now let's write some control code for our Viriato robot. 
+ 
+  
   
   ## A first autonomous driver for the robot
   
