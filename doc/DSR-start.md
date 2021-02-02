@@ -9,8 +9,6 @@ To have a minimal set of agents acting as the running brain of a (simulated) rob
 3. A mandatory and already existing agent "idserver" that reads a JSON description of the simulated world into G and makes it available to all other agents that get onboard (C++)
 4. A special agent (C++) that connects to the Python adapter through RoboComp interfaces and injects all sensor data into G and also sends all commands to robot.
 
-__NOTE :__ Refer to these [common issues](https://github.com/robocomp/grasping/blob/master/DSR-INTEGRATION.md#common-issues) for solutions to previously-known issues while installing and running DSR agents.
-
 ## DSR's "Hello World"
 Here we will describe the steps required to start all four elements. With the addition of a joystick or a XBox pad, you can move the robot around and see all the nice tools included in G and the G viewers that all agents inherit.
 
