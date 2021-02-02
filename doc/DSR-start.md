@@ -57,7 +57,7 @@ Now we can move on and create a brand new agent to control de robot. From the si
          gui Qt(QMainWindow);
          options dsr;
        }; 
-       ```
+       
 * execute: robocompdsl my-first-agent.cdsl .
 * a lot of code will be generated and places into several folders
 * build the agent: cmake . ; make; 
