@@ -48,8 +48,9 @@ Now we can move on and create a brand new agent to control de robot. From the si
  * move into "my-agents" and create "my-first-agent". cd into it.
  * execute: robocompdsl my-first-agent.cdsl. A new file will be created with that name
  * open it in your favourite editor and replace the existing code with:
-       ``` Component my_first_agent
 
+       ``` 
+       Component my_first_agent
        { Communications
          {
          };
