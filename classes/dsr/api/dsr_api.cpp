@@ -77,13 +77,13 @@ DSRGraph::DSRGraph(uint64_t root, std::string name, int id, const std::string &d
         {
             dsrparticipant.remove_participant(); // Remove a Participant and all associated publishers and subscribers.
 
-            if (repeated)
-            {
-                qFatal("%s", (std::string("There is already an agent connected with the id: ") + std::to_string(agent_id)).c_str());
-            }
-            else {
+            //if (repeated)
+            //{
+            //    qFatal("%s", (std::string("There is already an agent connected with the id: ") + std::to_string(agent_id)).c_str());
+            //}
+            //else {
                 qFatal("DSRGraph aborting: could not get DSR from the network after timeout");  //JC ¿se pueden limpiar aquí cosas antes de salir?
-            }
+            //}
         }
     }
     qDebug() << __FUNCTION__ << "Constructor finished OK";
@@ -1212,7 +1212,7 @@ void DSRGraph::fullgraph_server_thread() {
         while (reader->take_next_sample(&sample, &m_info) == ReturnCode_t::RETCODE_OK) {
             if (m_info.instance_state == eprosima::fastdds::dds::ALIVE) {
                 std::unique_lock<std::mutex> lck(participant_set_mutex);
-                if (static_cast<uint32_t>(sample.id()) != agent_id && participant_set.find(("Participant_" + std::to_string(sample.id()))) == participant_set.end()) {
+                if (static_cast<uint32_t>(sample.id()) != agent_id /*&& participant_set.find(("Participant_" + std::to_string(sample.id()))) == participant_set.end()*/) {
 
                     qDebug() << " Received Full Graph request: from "
                              << m_info.sample_identity.writer_guid().entityId.value;
@@ -1225,13 +1225,13 @@ void DSRGraph::fullgraph_server_thread() {
 
                     qDebug() << "Full graph written";
 
-                } else {
+                } /*else {
                     lck.unlock();
 
                     IDL::OrMap mp;
                     mp.id(-1);
                     dsrpub_request_answer.write(&mp);
-                }
+                }*/
             }
         }
     };

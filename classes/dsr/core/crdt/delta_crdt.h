@@ -61,8 +61,8 @@ public:
     }
 
     bool dotin(const std::pair<key_type, int> &d) const {
-        //const auto itm = cc.find(d.first);
-        //if (itm != cc.end() && d.second <= itm->second) return true;
+        const auto itm = cc.find(d.first);
+        if (itm != cc.end() && d.second <= itm->second) return true;
         if (not dc.empty() and d.second < dc.rbegin()->second) return true;
         if (dc.count(d) != 0) return true;
         return false;
