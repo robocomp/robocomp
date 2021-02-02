@@ -224,7 +224,7 @@ void GraphNode::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event)
 
 void GraphNode::show_stuff_widget(const std::string &show_type)
 {
-    static std::unique_ptr<QWidget> do_stuff;
+    //static std::unique_ptr<QWidget> do_stuff;
     const auto graph = dsr_to_graph_viewer->getGraph();
     if(show_type=="laser")
         do_stuff = std::make_unique<DoLaserStuff>(graph, id_in_graph);
@@ -232,6 +232,7 @@ void GraphNode::show_stuff_widget(const std::string &show_type)
         do_stuff = std::make_unique<DoRGBDStuff>(graph, id_in_graph);
     else
         do_stuff = std::make_unique<DoTableStuff>(graph, id_in_graph);
+
 }
 
 void GraphNode::change_detected()

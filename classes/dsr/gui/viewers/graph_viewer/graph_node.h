@@ -56,9 +56,11 @@ class DoLaserStuff : public QGraphicsView
       show();
     };
 
+
     void closeEvent (QCloseEvent *event) override 
     {
       disconnect(graph.get(), 0, this, 0);
+      graph.reset();
     };
 
   public slots:
@@ -137,7 +139,9 @@ class DoRGBDStuff : public QWidget
 
     void closeEvent (QCloseEvent *event)
     {
-      disconnect(graph.get(), 0, this, 0);
+        disconnect(graph.get(), 0, this, 0);
+        graph.reset();
+        cam.reset();
     };
 
   public slots:
@@ -283,6 +287,11 @@ class DoTableStuff : public  QTableWidget
           setColumnWidth(index, (width()-verticalHeader()->width()-4)/columns);
     }
 
+    void closeEvent (QCloseEvent *event)
+    {
+        disconnect(graph.get(), 0, this, 0);
+        graph.reset();
+    };
   private:
     std::shared_ptr<DSR::DSRGraph> graph;
     std::uint64_t node_id;
@@ -478,7 +487,7 @@ class GraphNode : public QObject, public QGraphicsEllipseItem
     void set_node_color(const QColor& c);
     QColor _node_color();
     void change_detected();
-    
+
 	protected:
     QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
@@ -499,7 +508,7 @@ class GraphNode : public QObject, public QGraphicsEllipseItem
     QBrush node_brush;
 	QPropertyAnimation* animation;
     QMenu *contextMenu = nullptr;
-    
+    std::unique_ptr<QWidget> do_stuff;
 };
 
 #endif // GRAPHNODE_H
