@@ -49,14 +49,15 @@ Now we can move on and create a brand new agent to control de robot. From the si
  * execute: robocompdsl my-first-agent.cdsl. A new file will be created with that name
  * open it in your favourite editor and replace the existing code with:
        ``` Component my_first_agent
+
+       { Communications
          {
-             Communications
-             {
-             };
-             language Cpp11;
-             gui Qt(QMainWindow);
-             options dsr;
-         };```
+         };
+         language Cpp11;
+         gui Qt(QMainWindow);
+         options dsr;
+       }; 
+       ```
 * execute: robocompdsl my-first-agent.cdsl .
 * a lot of code will be generated and places into several folders
 * build the agent: cmake . ; make; 
