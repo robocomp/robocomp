@@ -16,7 +16,7 @@
 
 <small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
 
-
+__IMPORTANT__: DSR is only supported in Ubuntu 20.04. We can't help with the issues of other distros or versions.
 
 # Description
 
