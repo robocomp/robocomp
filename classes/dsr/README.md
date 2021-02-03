@@ -65,41 +65,31 @@ To be able to use the DSR/CORTEX infraestructure you need to follow the next ste
 
 ### Step 1
 From ubuntu repositories you need:
-```sh
+```bash
 sudo apt install libasio-dev
 sudo apt install libtinyxml2-dev 
 sudo apt install libopencv-dev
 sudo apt install libqglviewer-dev-qt5
 sudo apt install libeigen3-dev
-sudo apt install python3-pybind11
+sudo apt install python3-dev python3-pybind11
+sudo apt install cmake gcc-10 g++-10
 ```
-
-- gcc >= 9
-```sh
-      sudo add-apt-repository ppa:ubuntu-toolchain-r/test
-      sudo apt update
-      sudo apt install gcc-9
- ```
- (you might want to update the default version: https://stackoverflow.com/questions/7832892/how-to-change-the-default-gcc-compiler-in-ubuntu)
-
-> __NOTE__: You will also need a `cmake` version >= 3.12. It's the default version installed in ubuntu 20.04.
-> If your are working in Ubuntu 18.04 you can try this to update cmake version:
-> ```bash
-> wget -qO - https://apt.kitware.com/keys/kitware-archive-latest.asc | sudo apt-key add -
-> sudo apt-add-repository 'deb https://apt.kitware.com/ubuntu/ bionic main'
-> sudo apt --only-upgrade install cmake
-> ```
-
 
 > __NOTE :__ If you are using `python` with `Anaconda`, `cmake` might not be able to find pybind11 installation. So, you have to install it using `conda-forge` as well :
 > ```bash
 > conda install -c conda-forge pybind11
 > ```
 
+
+You need to update the alternatives for g++ and gcc:
+```bash
+sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 1
+sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-10 1
+```
+
+
 ### Step 2
 You need the following third-party software:
-
-- CoppeliaSim. Follow the instructions in their site: https://www.coppeliarobotics.com/ and make sure you choose the latest EDU version
 
 - cppitertools
 ```sh
@@ -135,7 +125,6 @@ You need the following third-party software:
       sudo ldconfig
 ```
 
-
 ## Installation
 Next step is to compile and install the DSR libs. You need to go to ~/robocomp/classes/dsr/
 and execute this:
@@ -170,17 +159,6 @@ sudo ldconfig
         ```bash
         sudo update-alternatives --config gcc
         sudo update-alternatives --config g++
-        ```
-
-2)  __"NotImplementedError: Must be overridden" exception in pyrep/objects/object.py, when running viriatoPyrep :__
-    -   Comment out the following lines in `/home/xxxyour-userxxx/.local/lib/python3.6/site-packages/pyrep/objects/object.py` :
-        ```python
-        assert_type = self._get_requested_type()
-        actual = ObjectType(sim.simGetObjectType(self._handle))
-        if actual != assert_type:
-            raise WrongObjectTypeError(
-                'You requested object of type %s, but the actual type was '
-                '%s' % (assert_type.name, actual.name))
         ```
 
 3)  __This application failed to start because no Qt platform plugin could be initialized :__
