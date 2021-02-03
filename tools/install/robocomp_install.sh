@@ -1,6 +1,6 @@
 cat /etc/issue
 
-source robocomp_prerequisites_install.sh
+source <(curl -sL https://raw.githubusercontent.com/robocomp/robocomp/development/tools/install/resources/robocomp_prerequisites_install.sh)
 
 ROBOCOMP_BRANCH="${ROBOCOMP_BRANCH:-development}"
 git clone -b $ROBOCOMP_BRANCH https://github.com/robocomp/robocomp.git
