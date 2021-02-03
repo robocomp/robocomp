@@ -62,7 +62,7 @@ Now we can move on and create a brand new agent to control de robot. From the si
 * execute: robocompdsl my-first-agent.cdsl .
 * a lot of code will be generated and places into several folders
 * build the agent: cmake . ; make; 
-* edit the etc/config file and give an id-number to the agent, i.e. 30
+* edit the etc/config file and give an id-number to the agent, i.e. 30. *Also set to FALSE the 3d_view flag for now*
 * execute it: bin/my-first-agent etc/config
 
 Now you should see a new window with the "good-old" graph view of G. The same G that you can see in the other two agents. It has been copied at start and now the local copy is kept synchronized under the hood by some agent's internal threads.
