@@ -1,7 +1,7 @@
 cat /etc/issue
 
 sudo apt-get update -y
-sudo apt-get DEBIAN_FRONTEND=noninteractive install -y tzdata
+sudo DEBIAN_FRONTEND=noninteractive apt-get install -y tzdata
 sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends git git-annex cmake make g++ libgsl-dev libopenscenegraph-dev cmake-qt-gui freeglut3-dev libboost-system-dev libboost-thread-dev qt5-default libqt5xmlpatterns5-dev libxt-dev libboost-test-dev libboost-filesystem-dev  libccd-dev  libqt5opengl5-dev
 sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends libzeroc-ice3.7 libzeroc-icestorm3.7 python3-pybind11 python3-zeroc-ice zeroc-glacier2 zeroc-ice-slice zeroc-ice-utils zeroc-icebox zeroc-icegrid zeroc-icepatch2 zeroc-icebridge libzeroc-ice-dev zeroc-ice-all-dev zeroc-ice-compilers
 sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends python3-pip python3-setuptools python3-pyparsing python3-numpy python3-libxml2 python3-xmltodict
