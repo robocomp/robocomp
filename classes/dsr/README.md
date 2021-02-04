@@ -58,7 +58,8 @@ Conceptually, the DSR represents a network of entities and relations among them.
 
 ## Dependencies
 
-It's assumed that you have already installed ![robocomp](https://github.com/robocomp/robocomp/blob/development/README.md#installation-from-source).  
+It's assumed that you have already installed [robocomp](https://github.com/robocomp/robocomp/blob/development/README.md#installation-from-source).    
+
 __IMPORTANT__: DSR is only supported in Ubuntu 20.04. We can't help with the issues of other distros or versions.  
 
 To be able to use the DSR/CORTEX infraestructure you need to follow the next steps:
@@ -144,7 +145,7 @@ sudo ldconfig
     -   Install multiple C and C++ compiler versions :
         ```bash
         sudo apt install build-essential
-        sudo apt -y install gcc-7 g++-7 gcc-8 g++-8 gcc-9 g++-9
+        sudo apt -y install gcc-7 g++-7 gcc-8 g++-8 gcc-9 g++-9 g++-10 gcc-10
         ```
     -   Use the `update-alternatives` tool to create list of multiple GCC and G++ compiler alternatives :
         ```bash
@@ -154,6 +155,8 @@ sudo ldconfig
         sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-8 8
         sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 9
         sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-9 9
+        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 1
+        sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-10 1
         ```
     -   Check the available C and C++ compilers list on your system and select desired version by entering relevant selection number :
         ```bash
