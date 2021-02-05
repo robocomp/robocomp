@@ -24,10 +24,12 @@ DSRParticipant::DSRParticipant() : mp_participant(nullptr),
 
 DSRParticipant::~DSRParticipant()
 {
-	
+
     if (mp_participant != nullptr)
     {
 
+
+        mp_participant->close();
         if (topic_node)
             mp_participant->delete_topic(topic_node);
         if (topic_edge)
@@ -42,7 +44,11 @@ DSRParticipant::~DSRParticipant()
             mp_participant->delete_topic(topic_edge_att);
 
         eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->delete_participant(mp_participant);
+
     }
+
+    qDebug()  << "Removing DSRParticipant" ;
+
 }
 
 std::tuple<bool, eprosima::fastdds::dds::DomainParticipant*> DSRParticipant::init(int32_t agent_id, int localhost, std::function<void(eprosima::fastrtps::rtps::ParticipantDiscoveryInfo&&)> fn)

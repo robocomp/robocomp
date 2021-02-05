@@ -40,6 +40,8 @@ GraphViewer::GraphViewer(std::shared_ptr<DSR::DSRGraph> G_, QWidget *parent) :  
 GraphViewer::~GraphViewer()
 {
     qDebug() << __FUNCTION__ << "Destroy";
+    qDebug()  << "GraphViewer: " << G.use_count();
+    G.reset();
     gmap.clear();
 	gmap_edges.clear();
     type_id_map.clear();

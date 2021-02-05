@@ -18,6 +18,7 @@ DSRSubscriber::DSRSubscriber() : mp_participant(nullptr), mp_subscriber(nullptr)
 
 DSRSubscriber::~DSRSubscriber()
 {
+
     if (mp_reader != nullptr && mp_subscriber != nullptr)
     {
         mp_subscriber->delete_datareader(mp_reader);
@@ -27,6 +28,9 @@ DSRSubscriber::~DSRSubscriber()
     {
         mp_participant->delete_subscriber(mp_subscriber);
     }
+
+    qDebug()  << "Removing DSRSubscriber "  ;
+
 }
 
 bool DSRSubscriber::init(eprosima::fastdds::dds::DomainParticipant *mp_participant_,
@@ -56,7 +60,7 @@ bool DSRSubscriber::init(eprosima::fastdds::dds::DomainParticipant *mp_participa
     bool local = std::find_if(mp_participant_->get_qos().transport().user_transports.begin(),
                               mp_participant_->get_qos().transport().user_transports.end(),
                               [&](auto &transport) {
-                                  return dynamic_cast<eprosima::fastdds::rtps::SharedMemTransportDescriptor*>(transport.get()) != nullptr;
+                                  return transport != nullptr && dynamic_cast<eprosima::fastdds::rtps::SharedMemTransportDescriptor*>(transport.get()) != nullptr;
                               }) != mp_participant_->get_qos().transport().user_transports.end();
 
     if (not local) {

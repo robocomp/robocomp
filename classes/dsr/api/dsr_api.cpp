@@ -91,6 +91,7 @@ DSRGraph::DSRGraph(uint64_t root, std::string name, int id, const std::string &d
 
 DSRGraph::~DSRGraph()
 {
+    qDebug() << "Removing DSRGraph";
     if (!copy) {
         qDebug() << "Removing rtps participant";
     }
