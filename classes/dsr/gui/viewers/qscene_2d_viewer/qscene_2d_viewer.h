@@ -58,6 +58,10 @@ namespace DSR
             std::map<uint64_t , std::string> orphand_nodes; //nodes without RT edge must be revisited
         public:
             QScene2dViewer(std::shared_ptr<DSR::DSRGraph> G_, QWidget *parent=0);
+            ~QScene2dViewer() {
+                qDebug() << "QScene2dViewer: " << G.use_count() ;
+                G.reset();
+            }
             void set_draw_laser(bool draw);
             void set_draw_people_spaces(bool draw);
             void set_draw_axis(bool draw);

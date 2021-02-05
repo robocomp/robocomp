@@ -28,6 +28,9 @@ DSRPublisher::~DSRPublisher()
     {
         mp_participant->delete_publisher(mp_publisher);
     }
+
+    qDebug()  << "Removing DSRPublisher";
+
 }
 
 bool DSRPublisher::init(eprosima::fastdds::dds::DomainParticipant *mp_participant_, eprosima::fastdds::dds::Topic *topic, bool isStreamData )
@@ -48,8 +51,9 @@ bool DSRPublisher::init(eprosima::fastdds::dds::DomainParticipant *mp_participan
     bool local = std::find_if(mp_participant_->get_qos().transport().user_transports.begin(),
                               mp_participant_->get_qos().transport().user_transports.end(),
                               [&](auto &transport) {
-                                    return dynamic_cast<eprosima::fastdds::rtps::SharedMemTransportDescriptor*>(transport.get()) != nullptr;
+                                    return transport != nullptr && dynamic_cast<eprosima::fastdds::rtps::SharedMemTransportDescriptor*>(transport.get()) != nullptr;
                                }) != mp_participant_->get_qos().transport().user_transports.end();
+
 
     if (not local) {
         eprosima::fastrtps::rtps::Locator_t locator;
