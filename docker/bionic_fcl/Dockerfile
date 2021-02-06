@@ -4,7 +4,7 @@ FROM ubuntu:bionic
 # LABEL about the custom image
 LABEL maintainer="emartinena@unex.es"
 LABEL version="0.1"
-LABEL description="This is custom Docker Image for Robocomp in Ubuntu Focal"
+LABEL description="This is custom Docker Image for Robocomp in Ubuntu Bionic"
 
 # Disable Prompt During Packages Installation
 ARG DEBIAN_FRONTEND=noninteractive
