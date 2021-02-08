@@ -1,9 +1,32 @@
+#!/bin/bash
 cat /etc/issue
 
-sudo apt-get update -y
-sudo DEBIAN_FRONTEND=noninteractive apt-get install -y tzdata
-sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends git git-annex cmake make g++ libgsl-dev libopenscenegraph-dev cmake-qt-gui freeglut3-dev libboost-system-dev libboost-thread-dev qt5-default libqt5xmlpatterns5-dev libxt-dev libboost-test-dev libboost-filesystem-dev  libccd-dev  libqt5opengl5-dev
-sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends libzeroc-ice3.7 libzeroc-icestorm3.7 python3-pybind11 python3-zeroc-ice zeroc-glacier2 zeroc-ice-slice zeroc-ice-utils zeroc-icebox zeroc-icegrid zeroc-icepatch2 zeroc-icebridge libzeroc-ice-dev zeroc-ice-all-dev zeroc-ice-compilers
-sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends python3-pip python3-setuptools python3-pyparsing python3-numpy python3-libxml2 python3-xmltodict
+sudo DEBIAN_FRONTEND=noninteractive apt-get update && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends  \
+    ca-certificates \
+    cmake \
+    curl \
+    freeglut3-dev \
+    g++ \
+    gcc-multilib \
+    git \
+    git-annex \
+    libboost-dev \
+    libboost-system-dev \
+    libboost-thread-dev \
+    libgsl-dev \
+    libopenscenegraph-dev \
+    libqt5xmlpatterns5-dev \
+    libqt5opengl5-dev \
+    make \
+    python3 \
+    python3-pip \
+    python3-distutils \
+    python3-prompt-toolkit \
+    python3-pyparsing \
+    python3-setuptools \
+    python3-termcolor \
+    sudo \
+    zeroc-ice-all-dev \
+    && rm -rf /var/lib/apt/lists/*
 
-sudo pip3 install networkx pyside2 argcomplete termcolor cogapp prompt_toolkit rich
+sudo pip3 pyside2
