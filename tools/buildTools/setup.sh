@@ -1,17 +1,23 @@
 #!/usr/bin/bash
-
-bashrc_code="
+set -e
+rccd_code="
 if [ -f /opt/robocomp/share/rccd.sh ]; then
-    . /opt/robocomp/share/rccd.sh
-fi"
+    source /opt/robocomp/share/rccd.sh
+fi
+"
 
-if [ -f ~/.bashrc ]; then
-    exist=$(cat ~/.bashrc | grep "/opt/robocomp/share/rccd.sh")
-    if [ -z "$exist" ]; then
-      echo "rccd code instaled in ~/.bashrc"
-      echo "$bashrc_code" >> ~/.bashrc
+source_file="/etc/profile.d/robocomp.sh"
+if [ ! -f $source_file ]; then
+	echo "###" >> $source_file
+fi
+if [ -f $source_file ]; then
+    exist=$(cat $source_file | grep "/opt/robocomp/share/rccd.sh" || echo "")
+    echo "Contenido $exist"
+    if [ -z $exist ]; then
+      echo "rccd code instaled in $source_file"
+      echo "$rccd_code" >> $source_file
     else
-      echo "Installation of rccd already exist in ~/.bashrc"
+      echo "Installation of rccd already exist in $source_file"
     fi
 fi
 

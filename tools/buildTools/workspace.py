@@ -290,7 +290,7 @@ class Workspace:
             print(f"Updating workspaces")
         else:
             self.components += self.get_recursive_components_in_dir(workspace)
-            print(f"Updating workspaces {workspace}")
+            print(f"Updating workspace {workspace}")
         new_components = list(set(self.components) - old_components)
         print(f"Found {colored(len(new_components), 'green')} new components")
         print(colored('\n'.join(new_components), 'green'))
