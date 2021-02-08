@@ -60,7 +60,8 @@ Now we can move on and create a brand new agent to control de robot. From the si
        }; 
        
 * execute: robocompdsl my-first-agent.cdsl .
-* a lot of code will be generated and places into several folders
+* a lot of code will be generated and placed into several folders.
+* this is the moment to add the new my-frist-agent folder to your git repo. After we go with cmake, a lot of _garbage_ will be created that you don't want to upload.
 * build the agent: cmake . ; make; 
 * edit the etc/config file and give an id-number to the agent, i.e. 30. *Also set to FALSE the 3d_view flag for now*
 * execute it: bin/my-first-agent etc/config
@@ -68,12 +69,79 @@ Now we can move on and create a brand new agent to control de robot. From the si
 Now you should see a new window with the "good-old" graph view of G. The same G that you can see in the other two agents. It has been copied at start and now the local copy is kept synchronized under the hood by some agent's internal threads.
 
 Now let's write some control code for our Viriato robot. 
+We will add code to SpecificWorker.h and cpp, so let's start with the first one.
+
+Add these two lines to the _include_ section
+
+  ``` 
+  #include  "../../../etc/viriato_graph_names.h"
+  #include <random>
+
+  ``` 
+Now in SpecificWorler.cpp. In the class constructor add this line:
  
+ ```
+   QLoggingCategory::setFilterRules("*.debug=false\n");
+ ```  
+ 
+ and replace the compute() method there with this one. Laser data in Viriato comes from the composition of two 180º LIDARS placed in opposite corners. A 360º representation is built and inserted in G as two float arrays, one with the scanning angles in radians and starting with -M_PI, and another one of the same size with the distances in millimeters. We seek a frontal cone starting in -PI/6 and ending in PI/6, given that the robot's front is 0º.
+ 
+   ```
+   void SpecificWorker::compute()
+ {
+     // Random initialization code
+     static std::random_device rd;
+     static std::mt19937 mt(rd());
+     static std::uniform_real_distribution<double> random_dist(0, 10.0);
+     
+     const float MIN_DIST = 800.;  // min distance allowed to obstacles
+
+     // Here we acces data in G. Since G is a distributed data structure shared with other agents, there is no guarante 
+     // that the selected nodes will be there. This is why the API returns std::optional<> types.
+     // In this case we trust others and directly access its value with value().
+     
+     // Safely get a local copy of the complete laser_node. It is being updated by the viriatoDSR agent with data from CoppeliaSim. 
+     auto laser_node = G->get_node(laser_name).value();
+     
+     // Define a const reference to the laser_node attribute: _laser_angles_att_ and avoid copying the data.
+     const auto &angles = G->get_attrib_by_name<laser_angles_att>(laser_node).value().get();  // from -PI to PI
+     
+     // Find the index of the first element in angles that is greater than -PI/6
+     auto left_limit = std::distance(angles.begin(), std::find_if(angles.begin(),angles.end(), [](auto &a){ return a > -M_PI/6;}));
+     
+     // Find the index of the first element in angles that is greater than PI/6
+     auto right_limit = std::distance(angles.begin(), std::find_if(angles.begin(),angles.end(), [](auto &a){ return a > M_PI/6;}));
+     
+     // Define a const reference to the laser_node attribute: _laser_dists_att_ and avoid copying the data. 
+     const auto &dists = G->get_attrib_by_name<laser_dists_att>(laser_node).value().get();
+     
+     // Compute the minimum of the dists vector between the computed limits
+     auto min_dist = std::min(dists.begin() + left_limit, dists.begin() + right_limit);
+     
+     // Define the three target speeds for the robot
+     float adv = 0; float rot = 0; float side= 0;
+
+     // The final simple logic
+     if(*min_dist < MIN_DIST)
+     {
+         adv = 0; side = 0; rot = MAX_ROT;
+     }
+     else
+     {
+         adv = MAX_ADV; side = 0; rot = 0;
+     }
+
+     // Write in the robot_node's attributes the desired target speeds for the robot
+     G->add_or_modify_attrib_local<robot_ref_adv_speed_att>(robot_node.value(), adv);
+     G->add_or_modify_attrib_local<robot_ref_rot_speed_att>(robot_node.value(), rot);
+     G->add_or_modify_attrib_local<robot_ref_side_speed_att>(robot_node.value(), side);
+     
+     // Write back the node to G so _viriatoDSR_ notices and sends the commands down to the simulator.
+     G->update_node(robot_node.value());
+ }
+ ```
   
-  
-  ## A first autonomous driver for the robot
-  
-  ## Locating objects and people with YOLO, and inserting them in G
+
   
   
   
