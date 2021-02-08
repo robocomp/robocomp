@@ -68,7 +68,8 @@ Now we can move on and create a brand new agent to control de robot. From the si
 
 Now you should see a new window with the "good-old" graph view of G. The same G that you can see in the other two agents. It has been copied at start and now the local copy is kept synchronized under the hood by some agent's internal threads.
 
-Now let's write some control code for our Viriato robot. 
+The thirty seconds end here! Now let's write some control code for our Viriato robot. 
+
 We will add code to SpecificWorker.h and cpp, so let's start with the first one.
 
 Add these two lines to the _include_ section
