@@ -19,6 +19,7 @@ DSRSubscriber::DSRSubscriber() : mp_participant(nullptr), mp_subscriber(nullptr)
 DSRSubscriber::~DSRSubscriber()
 {
 
+    /*
     if (mp_reader != nullptr && mp_subscriber != nullptr)
     {
         mp_subscriber->delete_datareader(mp_reader);
@@ -30,10 +31,11 @@ DSRSubscriber::~DSRSubscriber()
     }
 
     qDebug()  << "Removing DSRSubscriber "  ;
-
+    */
 }
 
-bool DSRSubscriber::init(eprosima::fastdds::dds::DomainParticipant *mp_participant_,
+std::tuple<bool, eprosima::fastdds::dds::Subscriber*, eprosima::fastdds::dds::DataReader*>
+        DSRSubscriber::init(eprosima::fastdds::dds::DomainParticipant *mp_participant_,
                          eprosima::fastdds::dds::Topic *topic,
                         const std::function<void(eprosima::fastdds::dds::DataReader*)>&  f_,
                         bool isStreamData)
@@ -91,7 +93,7 @@ bool DSRSubscriber::init(eprosima::fastdds::dds::DomainParticipant *mp_participa
         //mp_subscriber = Domain::createSubscriber(mp_participant, Rparam, static_cast<SubscriberListener*>(&m_listener));
         if (mp_subscriber != nullptr && mp_reader != nullptr) {
             qDebug() << "Subscriber created, waiting for Publishers." ;
-            return true;
+            return { true, mp_subscriber, mp_reader };
         }
         retry++;
         qDebug() << "Error creating Subscriber, retrying. [" << retry <<"/5]"  ;
@@ -110,7 +112,7 @@ eprosima::fastdds::dds::DataReader * DSRSubscriber::getDataReader() {
     return mp_reader;
 }
 
-
+/*
 void DSRSubscriber::remove_subscriber() {
 
 
@@ -131,7 +133,7 @@ void DSRSubscriber::remove_subscriber() {
     }
 
 
-}
+}*/
 ///////////////////////////////////////////
 /// Callbacks
 ///////////////////////////////////////////

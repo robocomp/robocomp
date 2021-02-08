@@ -19,17 +19,17 @@ class DSRPublisher
 public:
     DSRPublisher();
     virtual ~DSRPublisher();
-    bool init(eprosima::fastdds::dds::DomainParticipant *mp_participant_, eprosima::fastdds::dds::Topic *topic,  bool isStreamData = false);
+    [[nodiscard]] std::tuple<bool, eprosima::fastdds::dds::Publisher*, eprosima::fastdds::dds::DataWriter*> init(eprosima::fastdds::dds::DomainParticipant *mp_participant_, eprosima::fastdds::dds::Topic *topic,  bool isStreamData = false);
     [[nodiscard]] eprosima::fastrtps::rtps::GUID_t getParticipantID() const;
     bool write(IDL::GraphRequest *object);
     bool write(IDL::MvregNode *object);
     bool write(IDL::OrMap *object);
-    //bool write(IDL::MvregNodeAttr *object);
     bool write(IDL::MvregEdge *object);
-    //bool write(IDL::MvregEdgeAttr *object);
     bool write(std::vector<IDL::MvregEdgeAttr> *object);
     bool write(std::vector<IDL::MvregNodeAttr> *object);
-    void remove_publisher();
+    //bool write(IDL::MvregNodeAttr *object);
+    //bool write(IDL::MvregEdgeAttr *object);
+    //void remove_publisher();
 private:
     eprosima::fastdds::dds::DomainParticipant *mp_participant;
     eprosima::fastdds::dds::Publisher *mp_publisher;

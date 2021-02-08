@@ -27,23 +27,91 @@ DSRParticipant::~DSRParticipant()
 
     if (mp_participant != nullptr)
     {
+        {
+            std::unique_lock<std::mutex> lck (sub_mtx);
+            auto it = subscribers.begin();
+            while (it != subscribers.end()) {
+                auto[sub, reader] = it->second;
+                if (mp_participant != nullptr) {
+                    if (reader != nullptr && sub != nullptr) {
+                        [[maybe_unused]] auto res = sub->delete_datareader(reader);
+                    }
+                    if (sub != nullptr) {
+                        [[maybe_unused]] auto res = mp_participant->delete_subscriber(sub);
+                    }
+                }
+                it = subscribers.erase(it);
+            }
+        }
+        {
+            std::unique_lock<std::mutex> lck (pub_mtx);
+            auto it2 = publishers.begin();
+            while (it2 != publishers.end()) {
+                auto[pub, writer] = it2->second;
+                if (mp_participant != nullptr) {
+                    if (writer != nullptr && pub != nullptr) {
+                        [[maybe_unused]] auto res = pub->delete_datawriter(writer);
+                    }
+                    if (pub != nullptr) {
+                        [[maybe_unused]] auto res = mp_participant->delete_publisher(pub);
+                    }
+                }
+                it2 = publishers.erase(it2);
+            }
+        }
 
-
-        mp_participant->close();
         if (topic_node)
-            mp_participant->delete_topic(topic_node);
+        {
+            if(mp_participant->delete_topic(topic_node) == ReturnCode_t::RETCODE_PRECONDITION_NOT_MET)
+            {
+                std::cout << " Remove topic error " << topic_node->get_name() << std::endl;
+            }
+        }
         if (topic_edge)
-            mp_participant->delete_topic(topic_edge);
+        {
+            if(mp_participant->delete_topic(topic_edge) == ReturnCode_t::RETCODE_PRECONDITION_NOT_MET)
+            {
+                std::cout << " Remove topic error " << topic_edge->get_name() << std::endl;
+            }
+        }
         if (topic_graph)
-            mp_participant->delete_topic(topic_graph);
+        {
+            topic_graph->close();
+            if(mp_participant->delete_topic(topic_graph) == ReturnCode_t::RETCODE_PRECONDITION_NOT_MET)
+            {
+                std::cout << " Remove topic error " << topic_graph->get_name() << std::endl;
+            }
+        }
         if (topic_graph_request)
-            mp_participant->delete_topic(topic_graph_request);
+        {
+            topic_graph_request->close();
+            if(mp_participant->delete_topic(topic_graph_request) == ReturnCode_t::RETCODE_PRECONDITION_NOT_MET)
+            {
+                std::cout << " Remove topic error " << topic_graph_request->get_name() << std::endl;
+            }
+        }
         if (topic_node_att)
-            mp_participant->delete_topic(topic_node_att);
+        {
+            topic_node_att->close();
+            if(mp_participant->delete_topic(topic_node_att) == ReturnCode_t::RETCODE_PRECONDITION_NOT_MET)
+            {
+                std::cout << " Remove topic error " << topic_node_att->get_name() << std::endl;
+            }
+        }
         if (topic_edge_att)
-            mp_participant->delete_topic(topic_edge_att);
+        {
+            topic_edge_att->close();
+            if(mp_participant->delete_topic(topic_edge_att) == ReturnCode_t::RETCODE_PRECONDITION_NOT_MET)
+            {
+                std::cout << " Remove topic error " << topic_edge_att->get_name() << std::endl;
+            }
 
-        eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->delete_participant(mp_participant);
+        }
+
+        auto res = eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->delete_participant(mp_participant);
+        if (res == ReturnCode_t::RETCODE_PRECONDITION_NOT_MET) {
+            std::cout << "Error removing participant. There are entities in use." <<std::endl;
+        }
 
     }
 
@@ -130,8 +198,8 @@ std::tuple<bool, eprosima::fastdds::dds::DomainParticipant*> DSRParticipant::ini
     topic_edge = mp_participant->create_topic("DSR_EDGE", dsrEdgeType.get_type_name(), eprosima::fastdds::dds::TOPIC_QOS_DEFAULT);
     topic_node_att = mp_participant->create_topic("DSR_NODE_ATTS", dsrNodeAttrType.get_type_name(), eprosima::fastdds::dds::TOPIC_QOS_DEFAULT);
     topic_edge_att = mp_participant->create_topic("DSR_EDGE_ATTS", dsrEdgeAttrType.get_type_name(), eprosima::fastdds::dds::TOPIC_QOS_DEFAULT);
-    topic_graph_request = mp_participant->create_topic("DSR_GRAPH_REQUEST", graphrequestType.get_type_name(), eprosima::fastdds::dds::TOPIC_QOS_DEFAULT);
-    topic_graph = mp_participant->create_topic("DSR_GRAPH_ANSWER", graphRequestAnswerType.get_type_name(), eprosima::fastdds::dds::TOPIC_QOS_DEFAULT);
+    topic_graph_request = mp_participant->create_topic("GRAPH_REQUEST", graphrequestType.get_type_name(), eprosima::fastdds::dds::TOPIC_QOS_DEFAULT);
+    topic_graph = mp_participant->create_topic("GRAPH_ANSWER", graphRequestAnswerType.get_type_name(), eprosima::fastdds::dds::TOPIC_QOS_DEFAULT);
 
     return std::make_tuple(true, mp_participant);
 }
@@ -154,3 +222,70 @@ const eprosima::fastrtps::rtps::GUID_t& DSRParticipant::getID() const
     return mp_participant->guid();
 }
 
+void DSRParticipant::add_subscriber(const std::string& id, std::pair<eprosima::fastdds::dds::Subscriber*, eprosima::fastdds::dds::DataReader*> val)
+{
+    std::unique_lock<std::mutex> lck (sub_mtx);
+    subscribers.emplace(id, val);
+}
+void DSRParticipant::add_publisher(const std::string& id, std::pair<eprosima::fastdds::dds::Publisher*, eprosima::fastdds::dds::DataWriter*> val)
+{
+    std::unique_lock<std::mutex> lck (pub_mtx);
+    publishers.emplace(id, val);
+}
+
+void DSRParticipant::disable_subscriber(const std::string& id)
+{
+    std::unique_lock<std::mutex> lck (sub_mtx);
+    try {
+        auto[sub, reader] = subscribers.at(id);
+        if (mp_participant != nullptr)
+        {
+            if (reader != nullptr && sub != nullptr)
+            {
+                //reader->close();
+                [[maybe_unused]] auto res = sub->delete_datareader(reader);
+                //std::cout << " Remove reader " << id << " " << res() << std::endl;
+
+            }
+
+            if (sub != nullptr)
+            {
+                //sub->close();
+                [[maybe_unused]] auto res = mp_participant->delete_subscriber(sub);
+                //std::cout << " Remove sub " << id << " " << res() << std::endl;
+
+            }
+        }
+        subscribers.erase(id);
+    } catch (...) {
+        std::cout << "delete sub error: " << id << std::endl;
+    }
+}
+
+void DSRParticipant::disable_publisher(const std::string& id)
+{
+    std::unique_lock<std::mutex> lck (pub_mtx);
+    try {
+        auto[pub, writer] = publishers.at(id);
+        if (mp_participant != nullptr)
+        {
+            if (writer != nullptr && pub != nullptr)
+            {
+                //writer->close();
+                [[maybe_unused]] auto res = pub->delete_datawriter(writer);
+                //std::cout << " Remove writer " << id << " " << res() << std::endl;
+
+            }
+
+            if (pub != nullptr)
+            {
+                //pub->close();
+                [[maybe_unused]] auto res = mp_participant->delete_publisher(pub);
+                //std::cout << " Remove pub " << id << " " << res() << std::endl;
+            }
+        }
+        publishers.erase(id);
+    } catch (...) {
+        std::cout << "delete pub error: " << id << std::endl;
+    }
+}

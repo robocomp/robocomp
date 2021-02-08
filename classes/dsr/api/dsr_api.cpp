@@ -43,14 +43,21 @@ DSRGraph::DSRGraph(uint64_t root, std::string name, int id, const std::string &d
                                                                 }));
 
     // RTPS Initialize publisher with general topic
-    dsrpub_node.init(participant_handle, dsrparticipant.getNodeTopic());
-    dsrpub_node_attrs.init(participant_handle, dsrparticipant.getAttNodeTopic());
+    auto [res, pub, writer] = dsrpub_node.init(participant_handle, dsrparticipant.getNodeTopic());
+    auto [res2, pub2, writer2] = dsrpub_node_attrs.init(participant_handle, dsrparticipant.getAttNodeTopic());
 
-    dsrpub_edge.init(participant_handle, dsrparticipant.getEdgeTopic());
-    dsrpub_edge_attrs.init(participant_handle, dsrparticipant.getAttEdgeTopic());
+    auto [res3, pub3, writer3] = dsrpub_edge.init(participant_handle, dsrparticipant.getEdgeTopic());
+    auto [res4, pub4, writer4] = dsrpub_edge_attrs.init(participant_handle, dsrparticipant.getAttEdgeTopic());
 
-    dsrpub_graph_request.init(participant_handle, dsrparticipant.getGraphRequestTopic());
-    dsrpub_request_answer.init(participant_handle, dsrparticipant.getGraphTopic());
+    auto [res5, pub5, writer5] = dsrpub_graph_request.init(participant_handle, dsrparticipant.getGraphRequestTopic());
+    auto [res6, pub6, writer6] = dsrpub_request_answer.init(participant_handle, dsrparticipant.getGraphTopic());
+
+    dsrparticipant.add_publisher(dsrparticipant.getNodeTopic()->get_name(), {pub, writer});
+    dsrparticipant.add_publisher(dsrparticipant.getAttNodeTopic()->get_name(), {pub2, writer2});
+    dsrparticipant.add_publisher(dsrparticipant.getEdgeTopic()->get_name(), {pub3, writer3});
+    dsrparticipant.add_publisher(dsrparticipant.getAttEdgeTopic()->get_name(), {pub4, writer4});
+    dsrparticipant.add_publisher(dsrparticipant.getGraphRequestTopic()->get_name(), {pub5, writer5});
+    dsrparticipant.add_publisher(dsrparticipant.getGraphTopic()->get_name(), {pub6, writer6});
 
     // RTPS Initialize comms threads
     if (!dsr_input_file.empty())
@@ -1095,7 +1102,7 @@ void DSRGraph::node_subscription_thread(bool showReceived) {
             eprosima::fastdds::dds::SampleInfo m_info;
             IDL::MvregNode sample;
             while (reader->take_next_sample(&sample, &m_info) == ReturnCode_t::RETCODE_OK) {
-                if (m_info.instance_state == eprosima::fastdds::dds::ALIVE) {
+                if (m_info.instance_state == eprosima::fastdds::dds::ALIVE_INSTANCE_STATE) {
                     if (sample.agent_id() != agent_id) {
                         if (showReceived) {
                             qDebug() << name << " Received:" << std::to_string(sample.id()).c_str() << " node from: "
@@ -1110,7 +1117,8 @@ void DSRGraph::node_subscription_thread(bool showReceived) {
 
     };
     dsrpub_call_node = NewMessageFunctor(this, lambda_general_topic);
-    dsrsub_node.init(dsrparticipant.getParticipant(), dsrparticipant.getNodeTopic(), dsrpub_call_node);
+    auto [res, sub, reader] = dsrsub_node.init(dsrparticipant.getParticipant(), dsrparticipant.getNodeTopic(), dsrpub_call_node);
+    dsrparticipant.add_subscriber(dsrparticipant.getNodeTopic()->get_name(), {sub, reader});
 }
 
 void DSRGraph::edge_subscription_thread(bool showReceived) {
@@ -1121,7 +1129,7 @@ void DSRGraph::edge_subscription_thread(bool showReceived) {
             eprosima::fastdds::dds::SampleInfo m_info;
             IDL::MvregEdge sample;
             while (reader->take_next_sample(&sample, &m_info) == ReturnCode_t::RETCODE_OK) {
-                if (m_info.instance_state == eprosima::fastdds::dds::ALIVE) {
+                if (m_info.instance_state == eprosima::fastdds::dds::ALIVE_INSTANCE_STATE) {
                     if (sample.agent_id() != agent_id) {
                         if (showReceived) {
                             qDebug() << name << " Received:" << std::to_string(sample.id()).c_str() << " node from: "
@@ -1135,7 +1143,9 @@ void DSRGraph::edge_subscription_thread(bool showReceived) {
         catch (const std::exception &ex) { std::cerr << ex.what() << std::endl; }
     };
     dsrpub_call_edge = NewMessageFunctor(this, lambda_general_topic);
-    dsrsub_edge.init(dsrparticipant.getParticipant(), dsrparticipant.getEdgeTopic(), dsrpub_call_edge);
+    auto [res, sub, reader]  = dsrsub_edge.init(dsrparticipant.getParticipant(), dsrparticipant.getEdgeTopic(), dsrpub_call_edge);
+    dsrparticipant.add_subscriber(dsrparticipant.getEdgeTopic()->get_name(), {sub, reader});
+
 }
 
 void DSRGraph::edge_attrs_subscription_thread(bool showReceived) {
@@ -1147,7 +1157,7 @@ void DSRGraph::edge_attrs_subscription_thread(bool showReceived) {
             eprosima::fastdds::dds::SampleInfo m_info;
             IDL::MvregEdgeAttrVec samples;
             while (reader->take_next_sample(&samples, &m_info) == ReturnCode_t::RETCODE_OK) {
-                if (m_info.instance_state == eprosima::fastdds::dds::ALIVE) {
+                if (m_info.instance_state == eprosima::fastdds::dds::ALIVE_INSTANCE_STATE) {
                     if (showReceived) {
                         qDebug() << name << " Received:" << samples.vec().size() << " edge attr from: "
                                  << m_info.sample_identity.writer_guid().entityId.value;
@@ -1166,8 +1176,10 @@ void DSRGraph::edge_attrs_subscription_thread(bool showReceived) {
 
     };
     dsrpub_call_edge_attrs = NewMessageFunctor(this, lambda_general_topic);
-    dsrsub_edge_attrs.init(dsrparticipant.getParticipant(), dsrparticipant.getAttEdgeTopic(),
+    auto [res, sub, reader] = dsrsub_edge_attrs.init(dsrparticipant.getParticipant(), dsrparticipant.getAttEdgeTopic(),
                            dsrpub_call_edge_attrs);
+    dsrparticipant.add_subscriber(dsrparticipant.getAttEdgeTopic()->get_name(), {sub, reader});
+
     //dsrsub_edge_attrs_stream.init(dsrparticipant.getParticipant(), "DSR_EDGE_ATTRS_STREAM", dsrparticipant.getEdgeAttrTopicName(),
     //                       dsrpub_call_edge_attrs, true);
 }
@@ -1181,7 +1193,7 @@ void DSRGraph::node_attrs_subscription_thread(bool showReceived) {
             eprosima::fastdds::dds::SampleInfo m_info;
             IDL::MvregNodeAttrVec samples;
             while (reader->take_next_sample(&samples, &m_info) == ReturnCode_t::RETCODE_OK) {
-                if (m_info.instance_state == eprosima::fastdds::dds::ALIVE) {
+                if (m_info.instance_state == eprosima::fastdds::dds::ALIVE_INSTANCE_STATE) {
                     if (showReceived) {
                         qDebug() << name << " Received:" << samples.vec().size() << " node attrs from: "
                                  << m_info.sample_identity.writer_guid().entityId.value;
@@ -1200,8 +1212,10 @@ void DSRGraph::node_attrs_subscription_thread(bool showReceived) {
 
     };
     dsrpub_call_node_attrs = NewMessageFunctor(this, lambda_general_topic);
-    dsrsub_node_attrs.init(dsrparticipant.getParticipant(), dsrparticipant.getAttNodeTopic(),
+    auto [res, sub, reader] = dsrsub_node_attrs.init(dsrparticipant.getParticipant(), dsrparticipant.getAttNodeTopic(),
                            dsrpub_call_node_attrs);
+    dsrparticipant.add_subscriber(dsrparticipant.getAttNodeTopic()->get_name(), {sub, reader});
+
 }
 
 void DSRGraph::fullgraph_server_thread() {
@@ -1211,7 +1225,7 @@ void DSRGraph::fullgraph_server_thread() {
         IDL::GraphRequest sample;
 
         while (reader->take_next_sample(&sample, &m_info) == ReturnCode_t::RETCODE_OK) {
-            if (m_info.instance_state == eprosima::fastdds::dds::ALIVE) {
+            if (m_info.instance_state == eprosima::fastdds::dds::ALIVE_INSTANCE_STATE) {
                 std::unique_lock<std::mutex> lck(participant_set_mutex);
                 if (static_cast<uint32_t>(sample.id()) != agent_id /*&& participant_set.find(("Participant_" + std::to_string(sample.id()))) == participant_set.end()*/) {
 
@@ -1237,8 +1251,10 @@ void DSRGraph::fullgraph_server_thread() {
         }
     };
     dsrpub_graph_request_call = NewMessageFunctor(this, lambda_graph_request);
-    dsrsub_graph_request.init(dsrparticipant.getParticipant(), dsrparticipant.getGraphRequestTopic(),
+    auto [res, sub, reader] = dsrsub_graph_request.init(dsrparticipant.getParticipant(), dsrparticipant.getGraphRequestTopic(),
                               dsrpub_graph_request_call);
+    dsrparticipant.add_subscriber(dsrparticipant.getGraphRequestTopic()->get_name(), {sub, reader});
+
 }
 
 std::pair<bool, bool> DSRGraph::fullgraph_request_thread() {
@@ -1250,7 +1266,7 @@ std::pair<bool, bool> DSRGraph::fullgraph_request_thread() {
         IDL::OrMap sample;
 
         while (reader->take_next_sample(&sample, &m_info) == ReturnCode_t::RETCODE_OK) {
-            if (m_info.instance_state == eprosima::fastdds::dds::ALIVE) {
+            if (m_info.instance_state == eprosima::fastdds::dds::ALIVE_INSTANCE_STATE) {
                 if (sample.id() != graph->get_agent_id()) {
                     if (sample.id() != static_cast<uint32_t>(-1)) {
                         qDebug() << " Received Full Graph from " << m_info.sample_identity.writer_guid().entityId.value
@@ -1271,8 +1287,9 @@ std::pair<bool, bool> DSRGraph::fullgraph_request_thread() {
     };
 
     dsrpub_request_answer_call = NewMessageFunctor(this, lambda_request_answer);
-    dsrsub_request_answer.init(dsrparticipant.getParticipant(), dsrparticipant.getGraphTopic(),
+    auto [res, sub, reader] = dsrsub_request_answer.init(dsrparticipant.getParticipant(), dsrparticipant.getGraphTopic(),
                                dsrpub_request_answer_call);
+    dsrparticipant.add_subscriber(dsrparticipant.getGraphTopic()->get_name(), {sub, reader});
 
     std::this_thread::sleep_for(300ms);   // NEEDED ?
 
@@ -1296,8 +1313,11 @@ std::pair<bool, bool> DSRGraph::fullgraph_request_thread() {
         dsrpub_graph_request.write(&gr);
     }
 
-    dsrpub_graph_request.remove_publisher();
-    dsrsub_request_answer.remove_subscriber();
+    dsrparticipant.disable_publisher(dsrparticipant.getGraphRequestTopic()->get_name());
+    dsrparticipant.disable_subscriber(dsrparticipant.getGraphTopic()->get_name());
+
+    //dsrpub_graph_request.remove_publisher();
+    //dsrsub_request_answer.remove_subscriber();
 
     return { sync, repeated };
 }

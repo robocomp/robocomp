@@ -18,7 +18,7 @@ DSRPublisher::DSRPublisher() : mp_participant(nullptr), mp_publisher(nullptr), m
 
 DSRPublisher::~DSRPublisher()
 {
-
+    /*
     if (mp_writer != nullptr && mp_publisher != nullptr)
     {
         mp_publisher->delete_datawriter(mp_writer);
@@ -30,10 +30,11 @@ DSRPublisher::~DSRPublisher()
     }
 
     qDebug()  << "Removing DSRPublisher";
-
+    */
 }
 
-bool DSRPublisher::init(eprosima::fastdds::dds::DomainParticipant *mp_participant_, eprosima::fastdds::dds::Topic *topic, bool isStreamData )
+std::tuple<bool, eprosima::fastdds::dds::Publisher*, eprosima::fastdds::dds::DataWriter*>
+        DSRPublisher::init(eprosima::fastdds::dds::DomainParticipant *mp_participant_, eprosima::fastdds::dds::Topic *topic, bool isStreamData )
 {
     mp_participant = mp_participant_;
 
@@ -63,6 +64,7 @@ bool DSRPublisher::init(eprosima::fastdds::dds::DomainParticipant *mp_participan
         dataWriterQos.endpoint().multicast_locator_list.push_back(locator);
 
     }
+
 
 
     ThroughputControllerDescriptor PublisherThroughputController{30000000, 1000};
@@ -95,7 +97,7 @@ bool DSRPublisher::init(eprosima::fastdds::dds::DomainParticipant *mp_participan
 
         if(mp_publisher != nullptr && mp_writer != nullptr) {
             qDebug() << "Publisher created, waiting for Subscribers." ;
-            return true;
+            return { true, mp_publisher, mp_writer };
         }
         retry++;
         qDebug() << "Error creating publisher, retrying. [" << retry <<"/5]"  ;
@@ -178,7 +180,7 @@ bool DSRPublisher::write(std::vector<IDL::MvregNodeAttr> *object) {
     qInfo() << "Error writing EDGE ATTRIBUTE VECTOR after 5 attempts";
     return false;
 }
-
+/*
 void DSRPublisher::remove_publisher()
 {
     if (mp_participant != nullptr) {
@@ -195,7 +197,7 @@ void DSRPublisher::remove_publisher()
         }
     }
 }
-
+*/
 
 void DSRPublisher::PubListener::on_publication_matched(eprosima::fastdds::dds::DataWriter* writer,
                                                        const eprosima::fastdds::dds::PublicationMatchedStatus& info)

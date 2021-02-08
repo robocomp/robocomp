@@ -18,7 +18,7 @@ class DSRParticipant
 public:
     DSRParticipant();
     virtual ~DSRParticipant();
-    std::tuple<bool, eprosima::fastdds::dds::DomainParticipant *> init(int32_t agent_id, int localhost, std::function<void(eprosima::fastrtps::rtps::ParticipantDiscoveryInfo&&)> fn);
+    [[nodiscard]] std::tuple<bool, eprosima::fastdds::dds::DomainParticipant *> init(int32_t agent_id, int localhost, std::function<void(eprosima::fastrtps::rtps::ParticipantDiscoveryInfo&&)> fn);
     [[nodiscard]] const eprosima::fastrtps::rtps::GUID_t& getID() const;
     [[nodiscard]] const char *getNodeTopicName()     const { return dsrgraphType->getName();}
     [[nodiscard]] const char *getRequestTopicName()  const { return graphrequestType->getName();}
@@ -34,6 +34,12 @@ public:
     [[nodiscard]] eprosima::fastdds::dds::Topic*  getAttNodeTopic()       { return topic_node_att;}
     [[nodiscard]] eprosima::fastdds::dds::Topic*  getAttEdgeTopic()       { return topic_edge_att;}
     [[nodiscard]] eprosima::fastdds::dds::DomainParticipant *getParticipant();
+
+    void add_subscriber(const std::string& id, std::pair<eprosima::fastdds::dds::Subscriber*, eprosima::fastdds::dds::DataReader*>);
+    void add_publisher(const std::string& id, std::pair<eprosima::fastdds::dds::Publisher*, eprosima::fastdds::dds::DataWriter*>);
+    void disable_subscriber(const std::string& id);
+    void disable_publisher(const std::string& id);
+
     void remove_participant();
 private:
     eprosima::fastdds::dds::DomainParticipant* mp_participant{};
@@ -52,6 +58,10 @@ private:
     eprosima::fastdds::dds::TypeSupport dsrNodeAttrType{};
     eprosima::fastdds::dds::TypeSupport dsrEdgeAttrType{};
 
+    std::map<std::string, std::pair<eprosima::fastdds::dds::Subscriber*, eprosima::fastdds::dds::DataReader*>> subscribers;
+    std::map<std::string, std::pair<eprosima::fastdds::dds::Publisher*, eprosima::fastdds::dds::DataWriter*>> publishers;
+    std::mutex pub_mtx;
+    std::mutex sub_mtx;
 
     class ParticpantListener : public eprosima::fastdds::dds::DomainParticipantListener
     {

@@ -15,19 +15,20 @@ class DSRSubscriber
 public:
 	DSRSubscriber();
 	virtual ~DSRSubscriber();
-	bool init(eprosima::fastdds::dds::DomainParticipant *mp_participant_,
-              eprosima::fastdds::dds::Topic *topic,
-				const std::function<void(eprosima::fastdds::dds::DataReader*)>&  f_,
-                bool isStreamData = false);
+    [[nodiscard]] std::tuple<bool, eprosima::fastdds::dds::Subscriber*, eprosima::fastdds::dds::DataReader*>
+	          init(eprosima::fastdds::dds::DomainParticipant *mp_participant_,
+                   eprosima::fastdds::dds::Topic *topic,
+				   const std::function<void(eprosima::fastdds::dds::DataReader*)>&  f_,
+                   bool isStreamData = false);
 	//void run();
     eprosima::fastdds::dds::Subscriber *getSubscriber();
     eprosima::fastdds::dds::DataReader *getDataReader();
-    void remove_subscriber();
+    //void remove_subscriber();
 
 private:
     eprosima::fastdds::dds::DomainParticipant *mp_participant;
     eprosima::fastdds::dds::Subscriber *mp_subscriber;
-    eprosima::fastdds::dds::DataReader* mp_reader{};
+    eprosima::fastdds::dds::DataReader *mp_reader{};
 
 	class SubListener : public eprosima::fastdds::dds::DataReaderListener
 	{
