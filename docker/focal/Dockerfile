@@ -9,9 +9,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   libopenscenegraph-dev \
   libqt5opengl5-dev \
   libzeroc-ice3.7 \
+  libzeroc-icestorm3.7 \
   python3-prompt-toolkit \
   python3-termcolor \
   sudo \
+  zeroc-icebox \
   && rm -rf /var/lib/apt/lists/*
 RUN export uid=1000 gid=1000 && \
     mkdir -p /home/robolab && \
