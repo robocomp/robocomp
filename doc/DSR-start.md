@@ -141,7 +141,7 @@ Now in SpecificWorler.cpp. In the class constructor add this line:
  }
  ```
   
-
+Now you can compile again the agent with _make_ and give it a run. It is far from perfect but should give an idea of how a basic agent is constructed.
   
   
   
