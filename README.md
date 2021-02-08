@@ -28,7 +28,8 @@ Tested in Ubuntu 18.04, 19.10, 20.04 and 20.10.
 Make sure you have installed the following packages from the Ubuntu repository:
 
 ```bash
-    sudo DEBIAN_FRONTEND=noninteractive apt-get update && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends  \
+    sudo DEBIAN_FRONTEND=noninteractive apt-get update \
+    && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends  \
         ca-certificates \
         cmake \
         curl \
@@ -54,7 +55,6 @@ Make sure you have installed the following packages from the Ubuntu repository:
         python3-termcolor \
         sudo \
         zeroc-ice-all-dev \
-    && rm -rf /var/lib/apt/lists/*
 
     sudo pip3 pyside2
 ```
