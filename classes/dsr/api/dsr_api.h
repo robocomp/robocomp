@@ -445,6 +445,8 @@ namespace DSR
         inline uint64_t get_agent_id() const { return agent_id; };
         inline std::string get_agent_name() const { return agent_name; };
         void reset() {
+            dsrparticipant.remove_participant_and_entities();
+
             nodes.clear();
             deleted.clear();
             name_map.clear();
@@ -453,6 +455,7 @@ namespace DSR
             edgeType.clear();
             nodeType.clear();
             to_edges.clear();
+
         }
 
 

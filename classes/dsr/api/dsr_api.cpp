@@ -82,7 +82,7 @@ DSRGraph::DSRGraph(uint64_t root, std::string name, int id, const std::string &d
 
         if(!response)
         {
-            dsrparticipant.remove_participant(); // Remove a Participant and all associated publishers and subscribers.
+            dsrparticipant.remove_participant_and_entities(); // Remove a Participant and all associated publishers and subscribers.
 
             //if (repeated)
             //{
@@ -1313,8 +1313,8 @@ std::pair<bool, bool> DSRGraph::fullgraph_request_thread() {
         dsrpub_graph_request.write(&gr);
     }
 
-    dsrparticipant.disable_publisher(dsrparticipant.getGraphRequestTopic()->get_name());
-    dsrparticipant.disable_subscriber(dsrparticipant.getGraphTopic()->get_name());
+    dsrparticipant.delete_publisher(dsrparticipant.getGraphRequestTopic()->get_name());
+    dsrparticipant.delete_subscriber(dsrparticipant.getGraphTopic()->get_name());
 
     //dsrpub_graph_request.remove_publisher();
     //dsrsub_request_answer.remove_subscriber();

@@ -37,10 +37,11 @@ public:
 
     void add_subscriber(const std::string& id, std::pair<eprosima::fastdds::dds::Subscriber*, eprosima::fastdds::dds::DataReader*>);
     void add_publisher(const std::string& id, std::pair<eprosima::fastdds::dds::Publisher*, eprosima::fastdds::dds::DataWriter*>);
-    void disable_subscriber(const std::string& id);
-    void disable_publisher(const std::string& id);
+    void delete_subscriber(const std::string& id);
+    void delete_publisher(const std::string& id);
 
-    void remove_participant();
+    void remove_participant_and_entities();
+
 private:
     eprosima::fastdds::dds::DomainParticipant* mp_participant{};
 
@@ -60,8 +61,8 @@ private:
 
     std::map<std::string, std::pair<eprosima::fastdds::dds::Subscriber*, eprosima::fastdds::dds::DataReader*>> subscribers;
     std::map<std::string, std::pair<eprosima::fastdds::dds::Publisher*, eprosima::fastdds::dds::DataWriter*>> publishers;
-    std::mutex pub_mtx;
-    std::mutex sub_mtx;
+    std::recursive_mutex pub_mtx;
+    std::recursive_mutex sub_mtx;
 
     class ParticpantListener : public eprosima::fastdds::dds::DomainParticipantListener
     {
