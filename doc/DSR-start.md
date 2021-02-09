@@ -26,6 +26,34 @@ _(we are assuming that your robocomp repo is in ~/robocomp/ and that you have cl
 4. In a new terminal goto ~/robocomp/components/dsr-graph/components/viriatoDSR and
   * Build it and execute with _bin/viriatoDSR etc/config_
   * On startup, the agent will request a copy of G and upon reception it will show it in its own window. All views of G will be equal since they are copies of a synchronized replicated data structure (similar to a GDoc)
+ 
+ Terminal 1
+ ```bash
+ rcnode
+ ```
+ Terminal 2
+ ```bash
+ cd ~/robocomp/components/dsr-graph/robots_pyrep/viriatoPyrep
+ cmake .
+ bash run.sh
+ ```
+ 
+ Terminal 3
+ ```bash
+ cd ~/robocomp/components/dsr-graph/components/idserver
+ cmake .
+ make
+ ./bin/idserver etc/config
+ ```
+ 
+ Terminal 4
+ ```bash
+ cd ~/robocomp/components/dsr-graph/components/viriatoDSR
+ cmake .
+ make .
+ ./bin/viriatoDSR etc/config
+ ```
+ 
   
  Now we have the simplest DSRc runnning and connected to the simulated world that CoppeliaSim brings to life. Yo need now to get familiarized with the agents' UI and with G. To see how things change when there is movement in the world we have two ways:
  
@@ -40,7 +68,7 @@ _(we are assuming that your robocomp repo is in ~/robocomp/ and that you have cl
    
 In the graph view of the agents, right-click in the laser (203) or camera (210) nodes and select data to open a graphic representation of the sensors. Also, right  clicking on the edges you can see the frame coordinates of the node with respect to its parent or to the world.
    
-  ## Creating a brand new agent in 30 seconds with RoboComp's code generator
+## Creating a brand new agent in 30 seconds with RoboComp's code generator
 Now we can move on and create a brand new agent to control de robot. From the situation described before:
 
  * open a new terminal
@@ -49,7 +77,7 @@ Now we can move on and create a brand new agent to control de robot. From the si
  * execute: robocompdsl my-first-agent.cdsl. A new file will be created with that name
  * open it in your favourite editor and replace the existing code with:
 
-       ``` 
+       ```
        Component my_first_agent
        { Communications
          {
@@ -57,7 +85,8 @@ Now we can move on and create a brand new agent to control de robot. From the si
          language Cpp11;
          gui Qt(QMainWindow);
          options dsr;
-       }; 
+       };
+      ```
        
 * execute: robocompdsl my-first-agent.cdsl .
 * a lot of code will be generated and placed into several folders.
@@ -69,6 +98,38 @@ Now we can move on and create a brand new agent to control de robot. From the si
 Now you should see a new window with the "good-old" graph view of G. The same G that you can see in the other two agents. It has been copied at start and now the local copy is kept synchronized under the hood by some agent's internal threads.
 
 The thirty seconds end here! Now let's write some control code for our Viriato robot. 
+
+_NOTE_: If you don't understand the next script, don't copy an paste it in your terminal. It's only a reference script with the previous steps. 
+```bash
+cd ~/robocomp/components/dsr-graph/components/
+mkdir my-agents
+cd my-agents
+mkdir my-first-agent
+cd my-first-agent
+robocompdsl my-first-agent.cdsl
+echo "\
+Component my_first_agent
+{
+  Communications
+  {
+  };
+  language Cpp11;
+  gui Qt(QMainWindow);
+  options dsr;
+};" >  my-first-agent.cdsl
+git add .
+mkdir build
+cd build
+cmake .
+make
+sed -i 's/agent_id = 0/agent_id = 30/g' etc/config
+sed -i 's/3d_view = true/3d_view = false/g' etc/config
+./bin/my-first-agent etc/config
+```
+
+
+
+## Modifying your brand new agent
 
 We will add code to SpecificWorker.h and cpp, so let's start with the first one.
 
@@ -97,7 +158,7 @@ Now in SpecificWorler.cpp. In the class constructor add this line:
      
      const float MIN_DIST = 800.;  // min distance allowed to obstacles
 
-     // Here we acces data in G. Since G is a distributed data structure shared with other agents, there is no guarante 
+     // Here we retrieve data in G. Since G is a distributed data structure shared with other agents, there is no guarante 
      // that the selected nodes will be there. This is why the API returns std::optional<> types.
      // In this case we trust others and directly access its value with value().
      
