@@ -73,8 +73,8 @@ Now we can move on and create a brand new agent to control de robot. From the si
 
  * open a new terminal
  * move to ~/robocomp/components/dsr-graph/components/ and create a new folder "my-agents". 
- * move into "my-agents" and create "my-first-agent". cd into it.
- * execute: robocompdsl my-first-agent.cdsl. A new file will be created with that name
+ * move into "my-agents" and create "my_first_agent". cd into it.
+ * execute: robocompdsl my_first_agent.cdsl. A new file will be created with that name
  * open it in your favourite editor and replace the existing code with:
 
        ```
@@ -88,12 +88,12 @@ Now we can move on and create a brand new agent to control de robot. From the si
        };
       ```
        
-* execute: robocompdsl my-first-agent.cdsl .
+* execute: robocompdsl my_first_agent.cdsl .
 * a lot of code will be generated and placed into several folders.
 * this is the moment to add the new my-frist-agent folder to your git repo. After we go with cmake, a lot of _garbage_ will be created that you don't want to upload.
 * build the agent: cmake . ; make; 
 * edit the etc/config file and give an id-number to the agent, i.e. 30. *Also set to FALSE the 3d_view flag for now*
-* execute it: bin/my-first-agent etc/config
+* execute it: bin/my_first_agent etc/config
 
 Now you should see a new window with the "good-old" graph view of G. The same G that you can see in the other two agents. It has been copied at start and now the local copy is kept synchronized under the hood by some agent's internal threads.
 
@@ -104,9 +104,9 @@ _NOTE_: If you don't understand the next script, don't copy an paste it in your 
 cd ~/robocomp/components/dsr-graph/components/
 mkdir my-agents
 cd my-agents
-mkdir my-first-agent
-cd my-first-agent
-robocompdsl my-first-agent.cdsl
+mkdir my_first-agent
+cd my_first_agent
+robocompdsl my_first_agent.cdsl
 echo "\
 Component my_first_agent
 {
@@ -116,15 +116,17 @@ Component my_first_agent
   language Cpp11;
   gui Qt(QMainWindow);
   options dsr;
-};" >  my-first-agent.cdsl
+};" >  my_first_agent.cdsl
+robocompdsl my_first_agent.cdsl .
 git add .
 mkdir build
 cd build
-cmake .
-make
+cmake ..
+make -j$(nproc)
+cd ..
 sed -i 's/agent_id = 0/agent_id = 30/g' etc/config
 sed -i 's/3d_view = true/3d_view = false/g' etc/config
-./bin/my-first-agent etc/config
+./bin/my_first_agent etc/config
 ```
 
 
