@@ -20,10 +20,10 @@ _(we are assuming that your robocomp repo is in ~/robocomp/ and that you have cl
 1. In a new terminal type "rcnode" to start ZeroC's publish-subscribe broker
 2. In a new terminal goto ~/robocomp/components/dsr-graph/robots_pyrep/viriatoPyrep
  * Build it with cmake and run it using the provided "run.sh" script. 
-3. In a new terminal goto ~/robocomp/components/dsr-graph/components/idserver. 
+3. In a new terminal goto ~/robocomp/components/dsr-graph/components/idserver. This agent will read a stored graph from a file.
   * Build it and execute with _bin/idserver etc/config_ 
   * You should see a Qt window showing the graph G. There are also other tabs that "project" G as a 2D and 3D scene. Also, there is a tree view of G.
-4. In a new terminal goto ~/robocomp/components/dsr-graph/components/viriatoDSR and
+4. In a new terminal goto ~/robocomp/components/dsr-graph/components/viriatoDSR. This agent is the connection between viriatoPyrep (simulator or real robot) and G
   * Build it and execute with _bin/viriatoDSR etc/config_
   * On startup, the agent will request a copy of G and upon reception it will show it in its own window. All views of G will be equal since they are copies of a synchronized replicated data structure (similar to a GDoc)
  
