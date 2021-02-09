@@ -97,7 +97,7 @@ Now we can move on and create a brand new agent to control de robot. From the si
 
 Now you should see a new window with the "good-old" graph view of G. The same G that you can see in the other two agents. It has been copied at start and now the local copy is kept synchronized under the hood by some agent's internal threads.
 
-The thirty seconds end here! Now let's write some control code for our Viriato robot. 
+**The thirty seconds end here!** Now let's write some control code for our Viriato robot. 
 
 _NOTE_: If you don't understand the next script, don't copy an paste it in your terminal. It's only a reference script with the previous steps. 
 ```bash
@@ -150,13 +150,10 @@ Now in SpecificWorler.cpp. In the class constructor add this line:
  
    ```
    void SpecificWorker::compute()
- {
-     // Random initialization code
-     static std::random_device rd;
-     static std::mt19937 mt(rd());
-     static std::uniform_real_distribution<double> random_dist(0, 10.0);
-     
+ { 
      const float MIN_DIST = 800.;  // min distance allowed to obstacles
+     const float MAX_ROT = 1; // rad/sg
+     const FLOAT MAX_ADV = 500;  // mm/sg
 
      // Here we retrieve data in G. Since G is a distributed data structure shared with other agents, there is no guarante 
      // that the selected nodes will be there. This is why the API returns std::optional<> types.
