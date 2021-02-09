@@ -69,7 +69,7 @@ _(we are assuming that your robocomp repo is in ~/robocomp/ and that you have cl
 In the graph view of the agents, right-click in the laser (203) or camera (210) nodes and select data to open a graphic representation of the sensors. Also, right  clicking on the edges you can see the frame coordinates of the node with respect to its parent or to the world.
    
 ## Creating a brand new agent in 30 seconds with RoboComp's code generator
-Now we can move on and create a brand new agent to control de robot. From the situation described before:
+Now we can move on and create a brand new agent to control de robot. Remember that viriatoPyrep, idserver and viriatoDSR must be running to proceed with this.
 
  * open a new terminal
  * move to ~/robocomp/components/dsr-graph/components/ and create a new folder "my-agents". 
