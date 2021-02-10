@@ -700,7 +700,7 @@ namespace DSR
         void edge_attrs_subscription_thread(bool showReceived);
         void fullgraph_server_thread();
         std::pair<bool, bool> fullgraph_request_thread();
-
+        mutable std::mutex mtx_entity_creation;
 
         // RTSP participant
         DSRParticipant dsrparticipant;

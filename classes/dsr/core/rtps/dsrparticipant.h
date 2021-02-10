@@ -61,8 +61,8 @@ private:
 
     std::map<std::string, std::pair<eprosima::fastdds::dds::Subscriber*, eprosima::fastdds::dds::DataReader*>> subscribers;
     std::map<std::string, std::pair<eprosima::fastdds::dds::Publisher*, eprosima::fastdds::dds::DataWriter*>> publishers;
-    std::recursive_mutex pub_mtx;
-    std::recursive_mutex sub_mtx;
+    mutable std::mutex pub_mtx;
+    mutable std::mutex sub_mtx;
 
     class ParticpantListener : public eprosima::fastdds::dds::DomainParticipantListener
     {

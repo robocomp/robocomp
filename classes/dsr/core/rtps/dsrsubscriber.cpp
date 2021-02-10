@@ -38,6 +38,7 @@ std::tuple<bool, eprosima::fastdds::dds::Subscriber*, eprosima::fastdds::dds::Da
         DSRSubscriber::init(eprosima::fastdds::dds::DomainParticipant *mp_participant_,
                          eprosima::fastdds::dds::Topic *topic,
                         const std::function<void(eprosima::fastdds::dds::DataReader*)>&  f_,
+                        std::mutex& mtx,
                         bool isStreamData)
 {
     mp_participant = mp_participant_;
@@ -86,10 +87,12 @@ std::tuple<bool, eprosima::fastdds::dds::Subscriber*, eprosima::fastdds::dds::Da
 
 
     int retry = 0;
+    std::unique_lock<std::mutex> lck (mtx, std::defer_lock);
     while (retry < 5) {
+        lck.lock();
         mp_subscriber = mp_participant->create_subscriber(Rparam);
         mp_reader = mp_subscriber->create_datareader(topic, dataReaderQos , &m_listener);
-
+        lck.unlock();
         //mp_subscriber = Domain::createSubscriber(mp_participant, Rparam, static_cast<SubscriberListener*>(&m_listener));
         if (mp_subscriber != nullptr && mp_reader != nullptr) {
             qDebug() << "Subscriber created, waiting for Publishers." ;

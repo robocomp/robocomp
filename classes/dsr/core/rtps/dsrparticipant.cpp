@@ -247,18 +247,18 @@ const eprosima::fastrtps::rtps::GUID_t& DSRParticipant::getID() const
 
 void DSRParticipant::add_subscriber(const std::string& id, std::pair<eprosima::fastdds::dds::Subscriber*, eprosima::fastdds::dds::DataReader*> val)
 {
-    std::unique_lock<std::recursive_mutex> lck (sub_mtx);
+    std::unique_lock<std::mutex> lck (sub_mtx);
     subscribers.emplace(id, val);
 }
 void DSRParticipant::add_publisher(const std::string& id, std::pair<eprosima::fastdds::dds::Publisher*, eprosima::fastdds::dds::DataWriter*> val)
 {
-    std::unique_lock<std::recursive_mutex> lck (pub_mtx);
+    std::unique_lock<std::mutex> lck (pub_mtx);
     publishers.emplace(id, val);
 }
 
 void DSRParticipant::delete_subscriber(const std::string& id)
 {
-    std::unique_lock<std::recursive_mutex> lck (sub_mtx);
+    std::unique_lock<std::mutex> lck (sub_mtx);
     try {
         auto[sub, reader] = subscribers.at(id);
         if (mp_participant != nullptr)
@@ -291,7 +291,7 @@ void DSRParticipant::delete_subscriber(const std::string& id)
 
 void DSRParticipant::delete_publisher(const std::string& id)
 {
-    std::unique_lock<std::recursive_mutex> lck (pub_mtx);
+    std::unique_lock<std::mutex> lck (pub_mtx);
     try {
         auto[pub, writer] = publishers.at(id);
         if (mp_participant != nullptr)

@@ -19,7 +19,8 @@ public:
 	          init(eprosima::fastdds::dds::DomainParticipant *mp_participant_,
                    eprosima::fastdds::dds::Topic *topic,
 				   const std::function<void(eprosima::fastdds::dds::DataReader*)>&  f_,
-                   bool isStreamData = false);
+				   std::mutex& mtx,
+				   bool isStreamData = false);
 	//void run();
     eprosima::fastdds::dds::Subscriber *getSubscriber();
     eprosima::fastdds::dds::DataReader *getDataReader();
