@@ -54,9 +54,9 @@ Make sure you have installed the following packages from the Ubuntu repository:
         python3-setuptools \
         python3-termcolor \
         sudo \
-        zeroc-ice-all-dev \
+        zeroc-ice-all-dev
 
-    sudo pip3 pyside2
+    sudo pip3 intsall pyside2
 ```
 
 It is recommendable to install the following packages::
