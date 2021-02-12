@@ -95,6 +95,11 @@ You need the following third-party software:
 - cppitertools
 ```sh
       sudo git clone https://github.com/ryanhaining/cppitertools /usr/local/include/cppitertools
+      cd /usr/local/include/cppitertools
+      sudo mkdir build
+      cd build
+      sudo cmake ..
+      sudo make install
 ```
 
 - Fast-RTPS (aka Fast-DDS) from https://www.eprosima.com/. Follow these steps:
