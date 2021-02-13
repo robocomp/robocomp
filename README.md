@@ -56,7 +56,7 @@ Make sure you have installed the following packages from the Ubuntu repository:
         sudo \
         zeroc-ice-all-dev
 
-    sudo pip3 intsall pyside2
+    sudo pip3 install pyside2
 ```
 
 It is recommendable to install the following packages::
