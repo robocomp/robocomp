@@ -25,7 +25,7 @@ Tested in Ubuntu 18.04, 19.10, 20.04 and 20.10.
 
 
 ## Requirements
-Make sure you have installed the following packages from the Ubuntu repository:
+Make sure you have installed the following packages from the Ubuntu repository (to copy and paste in a terminal use zash):
 
 ```bash
     sudo DEBIAN_FRONTEND=noninteractive apt-get update \
