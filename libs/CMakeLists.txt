@@ -1,13 +1,10 @@
-cmake_minimum_required( VERSION 2.6 )
+cmake_minimum_required( VERSION 3.12 )
+project(robocomp_libs)
 
-collect_library_directory_names(${RoboComp_LIBS_DIR} "CMakeLists.txt" RoboComp_MODULES_NAMES RoboComp_MODULES_DIRS doc)
+add_subdirectory(qmat)
 
-set(RoboComp_MODULES_NAMES_UNSORTED ${RoboComp_MODULES_NAMES})
+add_subdirectory(osgviewer)
 
-topological_sort(RoboComp_MODULES_NAMES RoboComp_ _DEPENDS)
+add_subdirectory(innermodel)
 
-sort_relative(RoboComp_MODULES_NAMES_UNSORTED RoboComp_MODULES_NAMES RoboComp_MODULES_DIRS)
-
-foreach(subdir ${RoboComp_MODULES_DIRS})
-  add_subdirectory(${RoboComp_LIBS_DIR}/${subdir})
-endforeach(subdir)
+#add_subdirectory(innermodel-python3)

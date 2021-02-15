@@ -3,7 +3,7 @@ import sys
 from distutils import spawn
 from rich.console import Console
 
-sys.path.append("/opt/robocomp/python")
+sys.path.append("/opt/robocomp/python/robocompdsl")
 
 DIFF_TOOLS = ["meld", "kdiff3", "diff"]
 

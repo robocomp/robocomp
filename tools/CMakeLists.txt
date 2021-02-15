@@ -1,4 +1,14 @@
-cmake_minimum_required( VERSION 2.8)
+cmake_minimum_required( VERSION 3.12 )
 
 add_subdirectory(yaku)
-
+add_subdirectory(robocompdsl)
+add_subdirectory(rcinnerModelSimulator)
+add_subdirectory(rcmanager)
+#add_subdirectory(rcmanagerSimple)
+#add_subdirectory(rclogger)
+#add_subdirectory(rcmonitor)
+#add_subdirectory(rcremote)
+#add_subdirectory(rcnode)
+#add_subdirectory(buildTools)
+#add_subdirectory(rcportchecker)
+#add_subdirectory(rcdeploymentchecker)

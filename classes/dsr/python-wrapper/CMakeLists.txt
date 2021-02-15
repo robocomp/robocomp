@@ -1,37 +1,37 @@
-cmake_minimum_required(VERSION 2.8.11)
-project(python_wrapper)
+cmake_minimum_required( VERSION 3.0 )
+project(python_wrapper
+        VERSION 1.0.0
+        DESCRIPTION "Robocomp dsr python wrapper library"
+        LANGUAGES CXX )
 
-##Find robocomp
+IF ( "$ENV{ROBOCOMP}" STREQUAL "")
+    MESSAGE(STATUS "ROBOCOMP variable not set. Using the default value: /opt/robocomp")
+    SET (ENV{ROBOCOMP} "/opt/robocomp/")
+ENDIF ( "$ENV{ROBOCOMP}" STREQUAL "")
 
-IF ("$ENV{ROBOCOMP}" STREQUAL "")
-    MESSAGE(WARNING "ROBOCOMP variable not set. Using the default value: /opt/robocomp")
-    SET(ENV{ROBOCOMP} "/opt/robocomp/")
-ENDIF ("$ENV{ROBOCOMP}" STREQUAL "")
-
-IF (NOT EXISTS $ENV{ROBOCOMP}/cmake)
+IF(NOT EXISTS $ENV{ROBOCOMP}/cmake)
     MESSAGE(FATAL_ERROR "Couldn't find RoboComp in $ENV{ROBOCOMP}! Exiting...")
-ENDIF (NOT EXISTS $ENV{ROBOCOMP}/cmake)
-
-INCLUDE($ENV{ROBOCOMP}/cmake/robocomp.cmake)
-INCLUDE($ENV{ROBOCOMP}/cmake/modules/qt.cmake)
+ENDIF(NOT EXISTS $ENV{ROBOCOMP}/cmake)
 
 
-##Initialize robocomp
-ROBOCOMP_INITIALIZE($ENV{ROBOCOMP}/)
-
-set(Python_ADDITIONAL_VERSIONS 3.8)
+find_package(Qt5 COMPONENTS Core REQUIRED)
+find_package(Eigen3 3.3 REQUIRED NO_MODULE)
 find_package(PythonLibs REQUIRED)
-include_directories(${PYTHON_INCLUDE_DIRS})
 
-FIND_PACKAGE(pybind11)
+add_library(pydsr SHARED
+        python_api.cpp
+        )
 
-set(CMAKE_CXX_STANDARD 20)
-add_definitions(-g -std=c++2a -L /opt/robocomp/lib )
-set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-include_directories(/usr/include/eigen3)
-pybind11_add_module(pydsr python_api.cpp ${SOURCES} ${MOC_SOURCES} ${RC_SOURCES} ${UI_HEADERS} ${HEADERS})
-set_target_properties(pydsr PROPERTIES LINKER_LANGUAGE CXX)
-target_link_libraries(pydsr PRIVATE pthread  ${CMAKE_CURRENT_BINARY_DIR}/../api/libdsr_api.so ${CMAKE_CURRENT_BINARY_DIR}/../core/libdsr_core.so ${CMAKE_CURRENT_BINARY_DIR}/../gui/libdsr_gui.so ${SPECIFIC_LIBS} ${QT_LIBRARIES} ${PYTHON_LIBRARIES} )
-install(TARGETS pydsr
-        DESTINATION /opt/robocomp/lib/)
+target_link_libraries(pydsr PRIVATE Qt5::Core Eigen3::Eigen dsr_api dsr_core dsr_gui ${PYTHON_LIBRARIES})
+target_include_directories(pydsr PRIVATE $ENV{ROBOCOMP}/classes/   $ENV{ROBOCOMP}/include/ ${PYTHON_INCLUDE_DIRS} )
+target_link_directories(pydsr PRIVATE  $ENV{ROBOCOMP}/lib)
+set_target_properties(pydsr PROPERTIES
+        CMAKE_CXX_STANDARD 20
+        CXX_STANDARD_REQUIRED ON
+        CXX_EXTENSIONS ON
+        Python_ADDITIONAL_VERSIONS 3.8)
+
+target_compile_options( pydsr PRIVATE -g -fmax-errors=5 -std=c++20 )
+install( TARGETS pydsr
+        DESTINATION /opt/robocomp/lib/ )

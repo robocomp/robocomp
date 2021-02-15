@@ -15,7 +15,7 @@
  * 
  */
 
-#include "innermodeldifferentialrobot.h"
+#include "innermodel/innermodeldifferentialrobot.h"
 
 InnerModelDifferentialRobot::InnerModelDifferentialRobot(QString id_, float tx_, float ty_, float tz_, float rx_, float ry_, float rz_, uint32_t port_, float noise_, bool collide_, InnerModelTransform *parent_) : InnerModelTransform(id_,QString("static"),tx_,ty_,tz_,rx_,ry_,rz_, 0, parent_)
 {

@@ -1,30 +1,16 @@
 cmake_minimum_required( VERSION 2.6 )
+project(rcmanager)
 
-MACRO( ROBOCOMP_WRAP_PYTHON_UI )
-  FOREACH( input_file ${ARGN} )
-    MESSAGE( STATUS "Adding rule to generate ui_${input_file}.py from ${input_file}.ui" )
-    ADD_CUSTOM_COMMAND (
-      OUTPUT ui_${input_file}.py
-      COMMAND pyside2-uic ${CMAKE_CURRENT_SOURCE_DIR}/${input_file}.ui -o ui_${input_file}.py
-      DEPENDS        ${CMAKE_CURRENT_SOURCE_DIR}/${input_file}.ui
-      COMMENT "Generating ui_${input_file}.py from ${input_file}.ui"
-    )
-    ADD_CUSTOM_TARGET( ui_${input_file} ALL DEPENDS ui_${input_file}.py )
-  ENDFOREACH( input_file )
-ENDMACRO( ROBOCOMP_WRAP_PYTHON_UI )
 
-MESSAGE( STATUS "Adding rule to generate the rcmanager executable" )
+MESSAGE( STATUS "Adding rule to generate the ${PROJECT_NAME} executable." )
 
-# Program destination directory
-SET( DEST_DIR "/opt/robocomp/bin/" )
+INCLUDE( ${CMAKE_SOURCE_DIR}/cmake/robocompLocal.cmake)
+robocomp_wrap_python_ui( formManager editorForm )
+add_custom_target(rcmanager ALL
+        DEPENDS ui_formManager.py ui_editorForm.py )
+install(PROGRAMS main.py DESTINATION /opt/robocomp/bin/ RENAME rcmanager )
+install( FILES controller.py logger.py model.py rcmanagerSignals.py viewer.py xmlreader.py yakuake_support.py ${CMAKE_CURRENT_BINARY_DIR}/ui_formManager.py ${CMAKE_CURRENT_BINARY_DIR}/ui_editorForm.py DESTINATION  /opt/robocomp/python/${PROJECT_NAME} PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE )
 
-ROBOCOMP_WRAP_PYTHON_UI( formManager editorForm )
-ADD_EXECUTABLE( rcmanager rcmanager.c )
-ADD_CUSTOM_TARGET( exec_rcmanager ALL DEPENDS rcmanager )
+install( DIRECTORY "share/rcmanager" DESTINATION /opt/robocomp/share )
 
-INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/rcmanager DESTINATION ${DEST_DIR} PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE )
-INSTALL( FILES formManager.ui controller.py logger.py main.py model.py rcmanagerSignals.py viewer.py xmlreader.py yakuake_support.py ${CMAKE_CURRENT_BINARY_DIR}/ui_formManager.py ${CMAKE_CURRENT_BINARY_DIR}/ui_editorForm.py DESTINATION ${DEST_DIR} PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE )
-
-INSTALL( DIRECTORY "share/rcmanager" DESTINATION /opt/robocomp/share )
-
-INSTALL( DIRECTORY "widgets/" DESTINATION /opt/robocomp/bin/widgets )
+install( DIRECTORY "widgets/" DESTINATION /opt/robocomp/python/${PROJECT_NAME}/widgets )

@@ -76,24 +76,27 @@ endif(CORE)
 
 
 
-if (TOOLS)
-	SET(compile_dirs ${compile_dirs}
-        "tools"
-		"tools/robocompdsl"
-		"tools/rcinnerModelSimulator"
-		"tools/rcmanager"
-		"tools/rcmanagerSimple"
-		"tools/rclogger"
-		"tools/rcmonitor"
-		"tools/rcremote"
-		"tools/rcnode"
-		"tools/buildTools"
-		"tools/rcportchecker"
-		"tools/rcdeploymentchecker")
-endif(TOOLS)
-FOREACH(compile_dir ${compile_dirs})
-    ADD_SUBDIRECTORY(${compile_dir})
-ENDFOREACH(compile_dir)
+#if (TOOLS)
+#	SET(compile_dirs ${compile_dirs}
+#        "tools"
+##		"tools/robocompdsl"
+##		"tools/rcinnerModelSimulator"
+##		"tools/rcmanager"
+##		"tools/rcmanagerSimple"
+##		"tools/rclogger"
+##		"tools/rcmonitor"
+##		"tools/rcremote"
+##		"tools/rcnode"
+##		"tools/buildTools"
+##		"tools/rcportchecker"
+##		"tools/rcdeploymentchecker"
+#            )
+#endif(TOOLS)
+#FOREACH(compile_dir ${compile_dirs})
+#    ADD_SUBDIRECTORY(${compile_dir})
+#ENDFOREACH(compile_dir)
+add_subdirectory(libs)
+add_subdirectory(tools)
 
 ROBOCOMP_IDSL_TO_ICE( AGMWorldModel AGMExecutive Planning AGMCommonBehavior AGMExecutiveTopic AGMExecutiveVisualizationTopic )
 

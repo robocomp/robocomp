@@ -15,7 +15,7 @@
  * 
  */
 
-#include "innermodelcamera.h"
+#include "innermodel/innermodelcamera.h"
 #include <innermodel/innermodel.h>
 
 InnerModelCamera::InnerModelCamera(QString id_, float width_, float height_, float focal_, InnerModel *innermodel_, InnerModelNode *parent_) 
