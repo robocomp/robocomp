@@ -68,7 +68,7 @@ Note: One of the main tools of Robocomp, robocompdsl is using pyparsing and the 
     python3 -c "import pyparsing; print(pyparsing.__version__)"
     
 
-## Installation itself
+## Installation
 
 *cd* to your home directory (you are probably in it already) and type:
 
@@ -171,6 +171,13 @@ We are now moving to more advanced robotics simulators that can reduce the gap b
 
 To connect RoboComp and CoppeliaSim we use *bridges* that are Python components that include PyRep and implement/publish the required RoboComp interfaces. So far we have implemented three bridges that are located in this [repo](https://github.com/robocomp/dsr-graph/tree/development/robots_pyrep). These bridges interface scenes with Viriato, a simpler world using Viriato's omni base and an empty world with a Pioneer 2AT differential robot. The corresponding Coppelia .ttt files can be found [here](https://github.com/robocomp/dsr-graph/tree/development/etc).
 
+To test RoboComp with Coppelia you need to:
+
+- Install Coppelia Robotics and Pyrep. There are detailed instructions [here](https://github.com/robocomp/robocomp/blob/development/doc/DSR-start.md)
+- Run the bridge, i.e. omniPyrep.py and see that Coppelia starts Ok.
+- Connect your new component to the ports offered in omniPyrep.py or
+- Connect a joystick or XBox pad to omniRep.py using [this component](https://github.com/robocomp/robocomp-robolab/tree/master/components/hardware/external_control/joystickpublish)
+    
 
 ---------------------------------------------------------------------
 You can find more tutorials on RoboComp in [tutorials](doc/README.md) 
