@@ -71,7 +71,9 @@ OSG3dViewer::~OSG3dViewer()
 {
 	root->removeChildren(0, root->getNumChildren());
 	root->dirtyBound();
-	root = nullptr;
+    qDebug() << "OSG3dViewer: " << G.use_count();
+    G.reset();
+    root = nullptr;
 }
 
 void OSG3dViewer::initializeGL(){

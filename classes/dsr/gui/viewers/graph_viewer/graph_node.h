@@ -40,7 +40,7 @@ class DoLaserStuff : public QGraphicsView
 {
   Q_OBJECT
   public:
-    DoLaserStuff(std::shared_ptr<DSR::DSRGraph> graph_, std::int32_t node_id_) : graph(graph_), node_id(node_id_)
+    DoLaserStuff(std::shared_ptr<DSR::DSRGraph> graph_, std::uint64_t node_id_) : graph(std::move(graph_)), node_id(node_id_)
     {
       std::cout << __FUNCTION__ << std::endl;
       resize(400,400);
@@ -56,9 +56,11 @@ class DoLaserStuff : public QGraphicsView
       show();
     };
 
+
     void closeEvent (QCloseEvent *event) override 
     {
       disconnect(graph.get(), 0, this, 0);
+      graph.reset();
     };
 
   public slots:
@@ -137,13 +139,15 @@ class DoRGBDStuff : public QWidget
 
     void closeEvent (QCloseEvent *event)
     {
-      disconnect(graph.get(), 0, this, 0);
+        disconnect(graph.get(), 0, this, 0);
+        graph.reset();
+        cam.reset();
     };
 
   public slots:
-    void drawRGBDSLOT( int id, const std::string &type )
+    void drawRGBDSLOT( uint64_t id, const std::string &type )
     {
-      if( static_cast<uint32_t>(id) != node_id) return;
+      if( static_cast<uint64_t>(id) != node_id) return;
 
       std::optional<Node> n = graph->get_node(id);
       if (n.has_value()) {
@@ -161,7 +165,7 @@ class DoRGBDStuff : public QWidget
 
               if (rgb_data.has_value() and rgb_width.has_value() and rgb_height.has_value())
               {
-                  const std::vector<uint8_t> &img = rgb_data.value().get();
+                  const std::vector<uint8_t> &img = rgb_data.value();//.get();
                   auto pix = QPixmap::fromImage(
                           QImage(&img[0], rgb_width.value(), rgb_height.value(), QImage::Format_RGB888));
                   rgbd_label.setPixmap(pix);
@@ -196,10 +200,12 @@ class DoTableStuff : public  QTableWidget
 {
   Q_OBJECT
   public:
-    DoTableStuff(std::shared_ptr<DSR::DSRGraph> graph_, DSR::IDType node_id_) : graph(graph_), node_id(node_id_)
+    DoTableStuff(std::shared_ptr<DSR::DSRGraph> graph_, DSR::IDType node_id_) : graph(std::move(graph_)), node_id(node_id_)
     {
       qRegisterMetaType<std::int32_t>("std::int32_t");
       qRegisterMetaType<std::uint32_t>("std::uint32_t");
+      qRegisterMetaType<std::uint64_t>("std::uint64_t");
+      qRegisterMetaType<uint64_t>("uint64_t");
       qRegisterMetaType<std::string>("std::string");
       qRegisterMetaType<std::map<std::string, Attribute>>("Attribs");
 
@@ -231,7 +237,7 @@ class DoTableStuff : public  QTableWidget
     };
 
   public slots:
-    void update_node_attr_slot(std::uint32_t node_id, const std::vector<std::string> &type)
+    void update_node_attr_slot(std::uint64_t node_id, const std::vector<std::string> &type)
     {
         if (node_id != this->node_id)
             return;
@@ -253,7 +259,7 @@ class DoTableStuff : public  QTableWidget
             }
         }
     }
-    void update_node_slot(std::uint32_t node_id, const std::string &type)
+    void update_node_slot(std::uint64_t node_id, const std::string &type)
     {
         if (node_id != this->node_id)
             return;
@@ -281,9 +287,14 @@ class DoTableStuff : public  QTableWidget
           setColumnWidth(index, (width()-verticalHeader()->width()-4)/columns);
     }
 
+    void closeEvent (QCloseEvent *event)
+    {
+        disconnect(graph.get(), 0, this, 0);
+        graph.reset();
+    };
   private:
     std::shared_ptr<DSR::DSRGraph> graph;
-    std::uint32_t node_id;
+    std::uint64_t node_id;
     std::map<std::string, QWidget*> widget_map;
     void resize_widget()
     {
@@ -454,7 +465,7 @@ class GraphNode : public QObject, public QGraphicsEllipseItem
     GraphNode(std::shared_ptr<DSR::GraphViewer> graph_viewer_);
 
     //std::string name_in_graph;
-    std::uint32_t id_in_graph;
+    std::uint64_t id_in_graph;
     QList<GraphEdge *> edgeList;
     
     void addEdge(GraphEdge *edge);
@@ -476,7 +487,7 @@ class GraphNode : public QObject, public QGraphicsEllipseItem
     void set_node_color(const QColor& c);
     QColor _node_color();
     void change_detected();
-    
+
 	protected:
     QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
@@ -486,7 +497,7 @@ class GraphNode : public QObject, public QGraphicsEllipseItem
   public slots:
     //void NodeAttrsChangedSLOT(const DSR::IDType &node, const DSR::Attribs&);
     void show_stuff_widget(const std::string &show_type="table");
-    void update_node_attr_slot(std::uint32_t node_id, const std::vector<std::string> &type);
+    void update_node_attr_slot(std::uint64_t node_id, const std::vector<std::string> &type);
       
   private:
     QPointF newPos;
@@ -497,7 +508,7 @@ class GraphNode : public QObject, public QGraphicsEllipseItem
     QBrush node_brush;
 	QPropertyAnimation* animation;
     QMenu *contextMenu = nullptr;
-    
+    std::unique_ptr<QWidget> do_stuff;
 };
 
 #endif // GRAPHNODE_H

@@ -15,17 +15,9 @@ ENDIF (NOT EXISTS $ENV{ROBOCOMP}/cmake)
 INCLUDE($ENV{ROBOCOMP}/cmake/robocomp.cmake)
 INCLUDE($ENV{ROBOCOMP}/cmake/modules/qt.cmake)
 
-##Initialize Ice
-
-ADD_DEFINITIONS("-DICE_CPP11_MAPPING")
-FIND_PACKAGE(Ice REQUIRED COMPONENTS Ice++11)
-
 
 ##Initialize robocomp
 ROBOCOMP_INITIALIZE($ENV{ROBOCOMP}/)
-ROBOCOMP_IDSL_TO_ICE(DSRGetID)
-ROBOCOMP_ICE_TO_SRC(DSRGetID)
-
 
 set(Python_ADDITIONAL_VERSIONS 3.8)
 find_package(PythonLibs REQUIRED)
@@ -40,7 +32,6 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 include_directories(/usr/include/eigen3)
 pybind11_add_module(pydsr python_api.cpp ${SOURCES} ${MOC_SOURCES} ${RC_SOURCES} ${UI_HEADERS} ${HEADERS})
 set_target_properties(pydsr PROPERTIES LINKER_LANGUAGE CXX)
-
-target_link_libraries(pydsr PRIVATE pthread /opt/robocomp/lib/libdsr_api.so /opt/robocomp/lib/libdsr_core.so /opt/robocomp/lib/libdsr_gui.so ${SPECIFIC_LIBS} ${QT_LIBRARIES} ${PYTHON_LIBRARIES})
+target_link_libraries(pydsr PRIVATE pthread  ${CMAKE_CURRENT_BINARY_DIR}/../api/libdsr_api.so ${CMAKE_CURRENT_BINARY_DIR}/../core/libdsr_core.so ${CMAKE_CURRENT_BINARY_DIR}/../gui/libdsr_gui.so ${SPECIFIC_LIBS} ${QT_LIBRARIES} ${PYTHON_LIBRARIES} )
 install(TARGETS pydsr
         DESTINATION /opt/robocomp/lib/)

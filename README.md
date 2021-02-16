@@ -25,13 +25,39 @@ Tested in Ubuntu 18.04, 19.10, 20.04 and 20.10.
 
 
 ## Requirements
-Make sure you have installed the following packages from the Ubuntu repository:
+Make sure you have installed the following packages from the Ubuntu repository (to copy and paste in a terminal use zash):
 
-    sudo apt-get update
-    sudo apt-get install --no-install-recommends git git-annex cmake make g++ libgsl-dev libopenscenegraph-dev cmake-qt-gui freeglut3-dev libboost-system-dev libboost-thread-dev qt5-default libqt5xmlpatterns5-dev libxt-dev libboost-test-dev libboost-filesystem-dev  libccd-dev  libqt5opengl5-dev libxml2-dev
-    sudo apt-get install --no-install-recommends libzeroc-ice3.7 libzeroc-icestorm3.7 python3-dbus python3-pybind11 python3-zeroc-ice zeroc-glacier2 zeroc-ice-slice zeroc-ice-utils zeroc-icebox zeroc-icegrid zeroc-icepatch2 zeroc-icebridge libzeroc-ice-dev zeroc-ice-all-dev zeroc-ice-compilers
-    sudo apt-get install --no-install-recommends python3-pip python3-setuptools python3-pyparsing python3-numpy python3-libxml2 python3-xmltodict
-    sudo pip3 install networkx pyside2 argcomplete termcolor cogapp prompt_toolkit rich
+```bash
+    sudo DEBIAN_FRONTEND=noninteractive apt-get update \
+    && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends  \
+        ca-certificates \
+        cmake \
+        curl \
+        freeglut3-dev \
+        g++ \
+        gcc-multilib \
+        git \
+        git-annex \
+        libboost-dev \
+        libboost-system-dev \
+        libboost-thread-dev \
+        libgsl-dev \
+        libopenscenegraph-dev \
+        libqt5xmlpatterns5-dev \
+        libqt5opengl5-dev \
+        make \
+        python3 \
+        python3-pip \
+        python3-distutils \
+        python3-prompt-toolkit \
+        python3-pyparsing \
+        python3-setuptools \
+        python3-termcolor \
+        sudo \
+        zeroc-ice-all-dev
+
+    sudo pip3 install pyside2
+```
 
 It is recommendable to install the following packages::
 
@@ -42,7 +68,7 @@ Note: One of the main tools of Robocomp, robocompdsl is using pyparsing and the 
     python3 -c "import pyparsing; print(pyparsing.__version__)"
     
 
-## Installation itself
+## Installation
 
 *cd* to your home directory (you are probably in it already) and type:
 
@@ -139,6 +165,19 @@ and use the arrow keys to navigate the robot, the space bar to stop it and 'q' t
 Note 1: You must have your simulator running in a terminal and only then you can run a component in another terminal. You will get an error message if you run the above component without having RCIS already running.
 
 Note 2: If you have anaconda installed (for python 3), It is recommended to uninstall anaconda first and then install robocomp. (It is only applicable if you have faced errors while running above commands.)
+
+# Testing the installation using the [Coppelia Simulator](https://www.coppeliarobotics.com/) 
+We are now moving to more advanced robotics simulators that can reduce the gap between simulation and deployment. Our first choice now is CoppeliaSim because it offers a scene editor that can be used during a running simulation, you can "hang" and modify Lua code from the scene nodes in no time, you can choose among 4 physics engines and, thanks to the [PyRep](https://github.com/stepjam/PyRep) library, we have a fast access to almost eveything running in the simulator.
+
+To connect RoboComp and CoppeliaSim we use *bridges* that are Python components that include PyRep and implement/publish the required RoboComp interfaces. So far we have implemented three bridges that are located in this [repo](https://github.com/robocomp/dsr-graph/tree/development/robots_pyrep). These bridges interface scenes with Viriato, a simpler world using Viriato's omni base and an empty world with a Pioneer 2AT differential robot. The corresponding Coppelia .ttt files can be found [here](https://github.com/robocomp/dsr-graph/tree/development/etc).
+
+To test RoboComp with Coppelia you need to:
+
+- Install Coppelia Robotics and Pyrep. There are detailed instructions [here](https://github.com/robocomp/robocomp/blob/development/doc/DSR-start.md)
+- Run the bridge, i.e. omniPyrep.py and see that Coppelia starts Ok.
+- Connect your new component to the ports offered in omniPyrep.py or
+- Connect a joystick or XBox pad to omniRep.py using [this component](https://github.com/robocomp/robocomp-robolab/tree/master/components/hardware/external_control/joystickpublish)
+    
 
 ---------------------------------------------------------------------
 You can find more tutorials on RoboComp in [tutorials](doc/README.md) 

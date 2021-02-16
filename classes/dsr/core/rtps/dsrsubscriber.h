@@ -15,34 +15,31 @@ class DSRSubscriber
 public:
 	DSRSubscriber();
 	virtual ~DSRSubscriber();
-	bool init(eprosima::fastdds::dds::DomainParticipant *mp_participant_,
-              eprosima::fastdds::dds::Topic *topic,
-				const std::function<void(eprosima::fastdds::dds::DataReader* sub)>&  f_,
-                bool isStreamData = false);
+    [[nodiscard]] std::tuple<bool, eprosima::fastdds::dds::Subscriber*, eprosima::fastdds::dds::DataReader*>
+	          init(eprosima::fastdds::dds::DomainParticipant *mp_participant_,
+                   eprosima::fastdds::dds::Topic *topic,
+				   const std::function<void(eprosima::fastdds::dds::DataReader*)>&  f_,
+				   std::mutex& mtx,
+				   bool isStreamData = false);
 	//void run();
     eprosima::fastdds::dds::Subscriber *getSubscriber();
     eprosima::fastdds::dds::DataReader *getDataReader();
-    void remove_subscriber();
+    //void remove_subscriber();
 
 private:
     eprosima::fastdds::dds::DomainParticipant *mp_participant;
     eprosima::fastdds::dds::Subscriber *mp_subscriber;
-    eprosima::fastdds::dds::DataReader* mp_reader{};
+    eprosima::fastdds::dds::DataReader *mp_reader{};
 
 	class SubListener : public eprosima::fastdds::dds::DataReaderListener
 	{
 	public:
-		SubListener() : n_matched(0),n_msg(0),participant_ID(eprosima::fastrtps::rtps::GUID_t()){};
+		SubListener() = default;
 		~SubListener() override= default;
 		void on_subscription_matched(eprosima::fastdds::dds::DataReader* reader,
                                      const eprosima::fastdds::dds::SubscriptionMatchedStatus& info) override;
         void on_data_available(
                 eprosima::fastdds::dds::DataReader* reader) override;
-
-		eprosima::fastdds::dds::SampleInfo m_info;
-		int n_matched;
-		int n_msg;
-		eprosima::fastrtps::rtps::GUID_t participant_ID;
 
 		std::function<void(eprosima::fastdds::dds::DataReader* sub)>  f;
 

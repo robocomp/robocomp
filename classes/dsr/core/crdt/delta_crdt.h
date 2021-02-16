@@ -1,5 +1,5 @@
 /*
-Reinplementation from https://github.com/CBaquero/delta-enabled-crdts
+Reimplementation from https://github.com/CBaquero/delta-enabled-crdts
 */
 
 #ifndef DELTA_CRDT
@@ -16,7 +16,7 @@ Reinplementation from https://github.com/CBaquero/delta-enabled-crdts
 #include <type_traits>
 
 
-using key_type = uint32_t;
+using key_type = uint64_t;
 
 
 // Autonomous causal context, for context sharing in maps
@@ -63,6 +63,7 @@ public:
     bool dotin(const std::pair<key_type, int> &d) const {
         const auto itm = cc.find(d.first);
         if (itm != cc.end() && d.second <= itm->second) return true;
+        if (not dc.empty() and d.second < dc.rbegin()->second) return true;
         if (dc.count(d) != 0) return true;
         return false;
     }

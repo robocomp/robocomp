@@ -235,7 +235,7 @@ void GraphEdge::set_edge_pen(const int p)
 }
 
 
-void GraphEdge::update_edge_attr_slot(std::uint32_t from, std::uint32_t to, const std::vector<std::string>& att_name)
+void GraphEdge::update_edge_attr_slot(std::uint64_t from, std::uint64_t to, const std::vector<std::string>& att_name)
 {
     if ((from != this->source->id_in_graph) or (to != this->dest->id_in_graph))
         return;

@@ -296,7 +296,7 @@ class Workspace:
             print(f"Updating workspaces")
         else:
             self.components += self.get_recursive_components_in_dir(workspace)
-            print(f"Updating workspaces {workspace}")
+            print(f"Updating workspace {workspace}")
         new_components = list(set(self.components) - old_components)
         print(f"Found {colored(len(new_components), 'green')} new components")
         print(colored('\n'.join(new_components), 'green'))
@@ -429,8 +429,9 @@ class Workspace:
         home = os.path.expanduser("~")
         config_file_path = os.path.join(home, f".config/RoboComp/rc_{filename}.json")
         if not os.path.exists(os.path.join(home, ".config/RoboComp")):
-            os.makedirs(os.path.join(home, ".config/RoboComp"))
-
+            config_path = os.path.join(home, ".config/RoboComp")
+            os.makedirs(config_path)
+            os.chmod(config_path, 0o777)
         try:
             config_file = open(config_file_path, "w")
             json.dump(attr, config_file)
@@ -444,8 +445,9 @@ class Workspace:
         config_file_path = os.path.join(home, f".config/RoboComp/rc_{filename}.json")
 
         if not os.path.exists(os.path.join(home, ".config/RoboComp")):
-            os.makedirs(os.path.join(home, ".config/RoboComp"))
-
+            config_path = os.path.join(home, ".config/RoboComp")
+            os.makedirs(config_path)
+            os.chmod(config_path, 0o777)
         try:
             config_file = open(config_file_path, "r")
             attr = json.load(config_file)

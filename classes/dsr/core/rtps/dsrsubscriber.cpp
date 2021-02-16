@@ -18,6 +18,8 @@ DSRSubscriber::DSRSubscriber() : mp_participant(nullptr), mp_subscriber(nullptr)
 
 DSRSubscriber::~DSRSubscriber()
 {
+
+    /*
     if (mp_reader != nullptr && mp_subscriber != nullptr)
     {
         mp_subscriber->delete_datareader(mp_reader);
@@ -27,17 +29,22 @@ DSRSubscriber::~DSRSubscriber()
     {
         mp_participant->delete_subscriber(mp_subscriber);
     }
+
+    qDebug()  << "Removing DSRSubscriber "  ;
+    */
 }
 
-bool DSRSubscriber::init(eprosima::fastdds::dds::DomainParticipant *mp_participant_,
+std::tuple<bool, eprosima::fastdds::dds::Subscriber*, eprosima::fastdds::dds::DataReader*>
+        DSRSubscriber::init(eprosima::fastdds::dds::DomainParticipant *mp_participant_,
                          eprosima::fastdds::dds::Topic *topic,
-                        const std::function<void(eprosima::fastdds::dds::DataReader* sub)>&  f_,
+                        const std::function<void(eprosima::fastdds::dds::DataReader*)>&  f_,
+                        std::mutex& mtx,
                         bool isStreamData)
 {
     mp_participant = mp_participant_;
 
 
-    m_listener.participant_ID = mp_participant->guid();
+    //m_listener.participant_ID = mp_participant->guid();
     m_listener.f = f_;
 
 
@@ -56,7 +63,7 @@ bool DSRSubscriber::init(eprosima::fastdds::dds::DomainParticipant *mp_participa
     bool local = std::find_if(mp_participant_->get_qos().transport().user_transports.begin(),
                               mp_participant_->get_qos().transport().user_transports.end(),
                               [&](auto &transport) {
-                                  return dynamic_cast<eprosima::fastdds::rtps::SharedMemTransportDescriptor*>(transport.get()) != nullptr;
+                                  return transport != nullptr && dynamic_cast<eprosima::fastdds::rtps::SharedMemTransportDescriptor*>(transport.get()) != nullptr;
                               }) != mp_participant_->get_qos().transport().user_transports.end();
 
     if (not local) {
@@ -80,14 +87,16 @@ bool DSRSubscriber::init(eprosima::fastdds::dds::DomainParticipant *mp_participa
 
 
     int retry = 0;
+    std::unique_lock<std::mutex> lck (mtx, std::defer_lock);
     while (retry < 5) {
+        lck.lock();
         mp_subscriber = mp_participant->create_subscriber(Rparam);
         mp_reader = mp_subscriber->create_datareader(topic, dataReaderQos , &m_listener);
-
+        lck.unlock();
         //mp_subscriber = Domain::createSubscriber(mp_participant, Rparam, static_cast<SubscriberListener*>(&m_listener));
         if (mp_subscriber != nullptr && mp_reader != nullptr) {
             qDebug() << "Subscriber created, waiting for Publishers." ;
-            return true;
+            return { true, mp_subscriber, mp_reader };
         }
         retry++;
         qDebug() << "Error creating Subscriber, retrying. [" << retry <<"/5]"  ;
@@ -106,20 +115,28 @@ eprosima::fastdds::dds::DataReader * DSRSubscriber::getDataReader() {
     return mp_reader;
 }
 
-
+/*
 void DSRSubscriber::remove_subscriber() {
+
+
     if (mp_participant != nullptr) {
         if (mp_reader != nullptr && mp_subscriber != nullptr)
         {
             mp_subscriber->delete_datareader(mp_reader);
+            mp_reader = nullptr;
+
         }
 
         if (mp_subscriber != nullptr)
         {
             mp_participant->delete_subscriber(mp_subscriber);
+            mp_subscriber = nullptr;
+
         }
     }
-}
+
+
+}*/
 ///////////////////////////////////////////
 /// Callbacks
 ///////////////////////////////////////////
@@ -129,10 +146,10 @@ void DSRSubscriber::SubListener::on_subscription_matched(eprosima::fastdds::dds:
 {
     if (info.current_count_change == eprosima::fastrtps::rtps::MATCHED_MATCHING)
     {
-        n_matched++;
+        //n_matched++;
         qInfo() << "Publisher[" << reader->get_topicdescription()->get_name().data() <<"] matched " << info.last_publication_handle.value;// << " self: " << info..is_on_same_process_as(sub->getGuid());
     } else {
-        n_matched--;
+        //n_matched--;
         qInfo() << "Publisher[" << reader->get_topicdescription()->get_name().data() <<"] unmatched "  << info.last_publication_handle.value;//<< " self: " << info.remoteEndpointGuid.is_on_same_process_as(sub->getGuid());
     }
 }
@@ -142,9 +159,3 @@ void DSRSubscriber::SubListener::on_data_available(eprosima::fastdds::dds::DataR
     f(sub);
 }
 
-/*
-void DSRSubscriber::run()
-{
-   while (true);
-}
-*/

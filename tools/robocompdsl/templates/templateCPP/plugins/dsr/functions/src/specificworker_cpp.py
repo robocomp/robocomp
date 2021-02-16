@@ -17,7 +17,7 @@ osg_3d_view = params["3d_view"].value == "true";
 
 DSR_INITIALIZE = """\
 // create graph
-G = std::make_shared<DSR::DSRGraph>(0, agent_name, agent_id, "", dsrgetid_proxy); // Init nodes
+G = std::make_shared<DSR::DSRGraph>(0, agent_name, agent_id, ""); // Init nodes
 std::cout<< __FUNCTION__ << "Graph loaded" << std::endl;  
 
 //dsr update signals

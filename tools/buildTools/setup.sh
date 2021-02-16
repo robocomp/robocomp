@@ -2,8 +2,9 @@
 
 bashrc_code="
 if [ -f /opt/robocomp/share/rccd.sh ]; then
-    . /opt/robocomp/share/rccd.sh
-fi"
+    source /opt/robocomp/share/rccd.sh
+fi
+"
 
 bashrc_code_rbcd="
 if [ -f /opt/robocomp/share/rbcd.sh ]; then
@@ -21,7 +22,7 @@ if [ -f ~/.bashrc ]; then
       echo "rccd code installed in ~/.bashrc"
       echo "$bashrc_code" >> ~/.bashrc
     else
-      echo "Installation of rccd already exist in ~/.bashrc"
+      echo "Installation of rccd already exist in $source_file"
     fi
 
     exist_rbcd=$(cat ~/.bashrc | grep "/opt/robocomp/share/rbcd.sh")

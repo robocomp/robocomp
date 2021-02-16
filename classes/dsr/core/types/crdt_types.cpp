@@ -73,6 +73,21 @@ namespace DSR {
 
     }
 
+    void CRDTValue::uint64(uint64_t _uint64)
+    {
+        val = _uint64;
+    }
+
+    uint64_t CRDTValue::uint64() const
+    {
+        if (auto pval = std::get_if<uint64_t>(&val)) {
+            return *pval;
+        }
+        throw std::runtime_error(
+                ("UINT64 is not selected, selected is " + std::string(TYPENAMES_UNION[val.index()])).data());
+
+    }
+    
     void CRDTValue::fl(float _fl) 
     {
         val = _fl;
@@ -187,6 +202,9 @@ namespace DSR {
             case 6:
                 value.uint(std::get<std::uint32_t>(val));
                 break;
+            case 7:
+                value.u64(std::get<std::uint64_t>(val));
+                break;
             default:
                 throw std::runtime_error(
                         ("Error converting CRDT::CRDTAttribute to IDL::Attrib. The CRDTAttribute is uninitialized. " +
@@ -262,9 +280,9 @@ namespace DSR {
     CRDTEdge &CRDTEdge::operator=(IDL::IDLEdge &&x) 
     {
 
-        m_to = x.to();
+        m_to = *(uint64_t*)&x.to();
         m_type = std::move(x.type());
-        m_from = x.from();
+        m_from = *(uint64_t *)&x.from();
         if (!x.attrs().empty()) {
             for (auto&[k, v] : x.attrs()) {
                 m_attrs[k] = translate_edge_attr_mvIDL_to_CRDT(std::move(v));
@@ -276,12 +294,12 @@ namespace DSR {
     }
 
 
-    void CRDTEdge::to(uint32_t _to) 
+    void CRDTEdge::to(uint64_t  _to)
     {
         m_to = _to;
     }
-    
-    uint32_t CRDTEdge::to() const 
+
+    uint64_t  CRDTEdge::to() const
     {
         return m_to;
     }
@@ -307,12 +325,12 @@ namespace DSR {
         return m_type;
     }
 
-    void CRDTEdge::from(uint32_t _from)
+    void CRDTEdge::from(uint64_t  _from)
     {
         m_from = _from;
     }
 
-    uint32_t CRDTEdge::from() const
+    uint64_t  CRDTEdge::from() const
     {
         return m_from;
     }
@@ -347,7 +365,7 @@ namespace DSR {
         return m_agent_id;
     }
 
-    IDL::IDLEdge CRDTEdge::toIDLEdge(uint32_t id)
+    IDL::IDLEdge CRDTEdge::toIDLEdge(uint64_t id)
     {
         IDL::IDLEdge edge;
         edge.from(m_from);
@@ -383,7 +401,7 @@ namespace DSR {
     {
         m_type = std::move(x.type());
         m_name = std::move(x.name());
-        m_id = x.id();
+        m_id = *(uint64_t *)&x.id();
         m_agent_id = x.agent_id();
         for (auto&[k, v] : x.attrs()) {
             m_attrs[k] = translate_node_attr_mvIDL_to_CRDT(std::move(v));
@@ -397,7 +415,7 @@ namespace DSR {
     {
         m_type = x.type();
         m_name = x.name();
-        m_id = x.id();
+        m_id = *(uint64_t *)&x.id();
         m_agent_id = x.agent_id();
         for (auto&[k, v] : x.attrs()) {
             m_attrs[k] = translate_node_attr_mvIDL_to_CRDT(std::move(v));
@@ -447,12 +465,12 @@ namespace DSR {
         return m_name;
     }
 
-    void CRDTNode::id(uint32_t _id)
+    void CRDTNode::id(uint64_t _id)
     {
         m_id = _id;
     }
 
-    uint32_t CRDTNode::id() const
+    uint64_t CRDTNode::id() const
     {
         return m_id;
     }
@@ -487,28 +505,28 @@ namespace DSR {
         return m_attrs;
     }
 
-    void CRDTNode::fano(const std::map<std::pair<uint32_t, std::string>, mvreg<CRDTEdge>> &_fano)
+    void CRDTNode::fano(const std::map<std::pair<uint64_t , std::string>, mvreg<CRDTEdge>> &_fano)
     {
         m_fano = _fano;
     }
 
-    void CRDTNode::fano(std::map<std::pair<uint32_t, std::string>, mvreg<CRDTEdge>> &&_fano)
+    void CRDTNode::fano(std::map<std::pair<uint64_t, std::string>, mvreg<CRDTEdge>> &&_fano)
     {
         m_fano = std::move(_fano);
     }
 
-    std::map<std::pair<uint32_t, std::string>, mvreg<CRDTEdge>> &CRDTNode::fano()
+    std::map<std::pair<uint64_t, std::string>, mvreg<CRDTEdge>> &CRDTNode::fano()
     {
         return m_fano;
     }
 
-    const std::map<std::pair<uint32_t, std::string>, mvreg<CRDTEdge>> &CRDTNode::fano() const
+    const std::map<std::pair<uint64_t, std::string>, mvreg<CRDTEdge>> &CRDTNode::fano() const
     {
         return m_fano;
     }
 
 
-    IDL::IDLNode CRDTNode::toIDLNode(uint32_t id)
+    IDL::IDLNode CRDTNode::toIDLNode(uint64_t id)
     {
         IDL::IDLNode node;
         node.id(m_id);

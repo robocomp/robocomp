@@ -1,0 +1,10 @@
+Component pythonAgent
+{
+    Communications
+    {
+    };
+    language python;
+    options dsr;
+};
+
+

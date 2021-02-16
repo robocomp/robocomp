@@ -1,0 +1,23 @@
+module RoboCompNavigationOptimizer
+{
+    struct Range
+    {
+        float min;
+        float max;
+        string type;
+    };
+    dictionary<string, Range> Params;
+
+    struct State
+    {
+       float distToGo;
+    };
+
+    interface NavigationOptimizer
+    {
+		bool gotoNewRandomPoint(Params params);
+		State getState();
+		void abort();
+		Params getParams();
+	};
+};

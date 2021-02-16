@@ -18,7 +18,7 @@ DSRPublisher::DSRPublisher() : mp_participant(nullptr), mp_publisher(nullptr), m
 
 DSRPublisher::~DSRPublisher()
 {
-
+    /*
     if (mp_writer != nullptr && mp_publisher != nullptr)
     {
         mp_publisher->delete_datawriter(mp_writer);
@@ -28,9 +28,13 @@ DSRPublisher::~DSRPublisher()
     {
         mp_participant->delete_publisher(mp_publisher);
     }
+
+    qDebug()  << "Removing DSRPublisher";
+    */
 }
 
-bool DSRPublisher::init(eprosima::fastdds::dds::DomainParticipant *mp_participant_, eprosima::fastdds::dds::Topic *topic, bool isStreamData )
+std::tuple<bool, eprosima::fastdds::dds::Publisher*, eprosima::fastdds::dds::DataWriter*>
+        DSRPublisher::init(eprosima::fastdds::dds::DomainParticipant *mp_participant_, eprosima::fastdds::dds::Topic *topic, bool isStreamData )
 {
     mp_participant = mp_participant_;
 
@@ -48,8 +52,9 @@ bool DSRPublisher::init(eprosima::fastdds::dds::DomainParticipant *mp_participan
     bool local = std::find_if(mp_participant_->get_qos().transport().user_transports.begin(),
                               mp_participant_->get_qos().transport().user_transports.end(),
                               [&](auto &transport) {
-                                    return dynamic_cast<eprosima::fastdds::rtps::SharedMemTransportDescriptor*>(transport.get()) != nullptr;
+                                    return transport != nullptr && dynamic_cast<eprosima::fastdds::rtps::SharedMemTransportDescriptor*>(transport.get()) != nullptr;
                                }) != mp_participant_->get_qos().transport().user_transports.end();
+
 
     if (not local) {
         eprosima::fastrtps::rtps::Locator_t locator;
@@ -59,6 +64,7 @@ bool DSRPublisher::init(eprosima::fastdds::dds::DomainParticipant *mp_participan
         dataWriterQos.endpoint().multicast_locator_list.push_back(locator);
 
     }
+
 
 
     ThroughputControllerDescriptor PublisherThroughputController{30000000, 1000};
@@ -91,7 +97,7 @@ bool DSRPublisher::init(eprosima::fastdds::dds::DomainParticipant *mp_participan
 
         if(mp_publisher != nullptr && mp_writer != nullptr) {
             qDebug() << "Publisher created, waiting for Subscribers." ;
-            return true;
+            return { true, mp_publisher, mp_writer };
         }
         retry++;
         qDebug() << "Error creating publisher, retrying. [" << retry <<"/5]"  ;
@@ -108,7 +114,7 @@ eprosima::fastrtps::rtps::GUID_t DSRPublisher::getParticipantID() const
 }
 
 
-bool DSRPublisher::write(IDL::Mvreg *object)
+bool DSRPublisher::write(IDL::MvregNode *object)
 {
     int retry = 0;
     while (retry < 5) {
@@ -168,28 +174,30 @@ bool DSRPublisher::write(std::vector<IDL::MvregEdgeAttr> *object)
 bool DSRPublisher::write(std::vector<IDL::MvregNodeAttr> *object) {
     int retry = 0;
     while (retry < 5) {
-        //std::cout << "ESCRIBIENDO" << std::endl;
         if (mp_writer->write(object)) return true;
         retry++;
     }
     qInfo() << "Error writing EDGE ATTRIBUTE VECTOR after 5 attempts";
     return false;
 }
-
+/*
 void DSRPublisher::remove_publisher()
 {
     if (mp_participant != nullptr) {
         if (mp_writer != nullptr)
         {
             mp_publisher->delete_datawriter(mp_writer);
+            mp_writer = nullptr;
         }
 
         if (mp_publisher != nullptr)
         {
             mp_participant->delete_publisher(mp_publisher);
+            mp_publisher = nullptr;
         }
     }
 }
+*/
 
 void DSRPublisher::PubListener::on_publication_matched(eprosima::fastdds::dds::DataWriter* writer,
                                                        const eprosima::fastdds::dds::PublicationMatchedStatus& info)

@@ -60,7 +60,8 @@ class RobocompdslTest(unittest.TestCase):
                 "test_noSmdslTestPython",
                 "test_publicationPython",
                 "test_subscriptionPython",
-                "test_subStatesTestPython"
+                "test_subStatesTestPython",
+                "test_dsr2Python"
         ]
         self.component_creation(testing_components)
 

@@ -78,7 +78,7 @@ namespace DSR
             //Hashes
             //using OsgTypes = std::variant<osg::, osg::MatrixTransform*>;
             // //std::map<std::int32_t, osg::Group*> osg_map;
-            std::map<std::tuple<std::int32_t, std::int32_t>, osg::Group*> osg_map;
+            std::map<std::tuple<std::uint64_t, std::uint64_t>, osg::Group*> osg_map;
             //std::map<std::int32_t, std::int32_t>, osg::Group*> osg_transform;
             
             

@@ -1,16 +1,14 @@
-
+${dsr_find_eigen}
 # Sources set
 SET ( SOURCES
   specificworker.cpp
   specificmonitor.cpp
-  ${dsr_sources}
 )
 
 # Headers set
 SET ( HEADERS
   specificworker.h
   specificmonitor.h
-  ${dsr_headers}
 )
 
 set(CMAKE_CXX_STANDARD 17)

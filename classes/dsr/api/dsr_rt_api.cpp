@@ -8,7 +8,7 @@ RT_API::RT_API(DSR::DSRGraph *G_)
     G = G_;
 }
 
-std::optional<Edge> RT_API::get_edge_RT(const Node &n, uint32_t to)
+std::optional<Edge> RT_API::get_edge_RT(const Node &n, uint64_t to)
 {
     auto edges_ = n.fano();
     auto res = edges_.find({to, "RT"});
@@ -58,7 +58,7 @@ std::optional<Mat::RTMat>  RT_API::get_edge_RT_as_rtmat(const Edge &edge)
         return {};
 }
 
-std::optional<Eigen::Vector3d> RT_API::get_translation(const Node &n, uint32_t to)
+std::optional<Eigen::Vector3d> RT_API::get_translation(const Node &n, uint64_t to)
 {
     if( auto edge = get_edge_RT(n, to); edge.has_value())
         if( auto tt =  G->get_attrib_by_name<rt_translation_att>(edge.value()); tt.has_value())
@@ -75,7 +75,7 @@ std::optional<Eigen::Vector3d> RT_API::get_translation(const Node &n, uint32_t t
         return {};
 }
 
-std::optional<Eigen::Vector3d> RT_API::get_translation(std::uint32_t node_id, uint32_t to)
+std::optional<Eigen::Vector3d> RT_API::get_translation(uint64_t node_id, uint64_t to)
 {
     if( const auto node = G->get_node(node_id); node.has_value())
         return get_translation(node.value(), to);
@@ -83,7 +83,7 @@ std::optional<Eigen::Vector3d> RT_API::get_translation(std::uint32_t node_id, ui
         return {};
 }
 
-void RT_API::insert_or_assign_edge_RT(Node &n, uint32_t to, const std::vector<float> &trans, const std::vector<float> &rot_euler)
+void RT_API::insert_or_assign_edge_RT(Node &n, uint64_t to, const std::vector<float> &trans, const std::vector<float> &rot_euler)
 {
     bool r1 = false;
     bool r2 = false;
@@ -184,7 +184,7 @@ void RT_API::insert_or_assign_edge_RT(Node &n, uint32_t to, const std::vector<fl
     }
 }
 
-void RT_API::insert_or_assign_edge_RT(Node &n, uint32_t to, std::vector<float> &&trans, std::vector<float> &&rot_euler)
+void RT_API::insert_or_assign_edge_RT(Node &n, uint64_t to, std::vector<float> &&trans, std::vector<float> &&rot_euler)
 {
     bool r1 = false;
     bool r2 = false;

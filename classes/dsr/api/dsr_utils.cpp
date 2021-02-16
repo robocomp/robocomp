@@ -31,7 +31,7 @@ QJsonDocument Utilities::file_to_QJsonDocument(const std::string &json_file_path
 	return doc;
 }
 
-void Utilities::read_from_json_file(const std::string &json_file_path,  const std::function<std::optional<int>(const Node&)>& insert_node)
+void Utilities::read_from_json_file(const std::string &json_file_path,  const std::function<std::optional<uint64_t >(const Node&)>& insert_node)
 {
     qDebug() << __FUNCTION__ << " Reading json file: " << QString::fromStdString(json_file_path);
 
@@ -129,6 +129,10 @@ void Utilities::read_from_json_file(const std::string &json_file_path,  const st
                         G->runtime_checked_add_attrib_local(n,  attr_key,  static_cast<std::uint32_t>(attr_value.toUInt()));
                         break;
                     }
+                    case 7: {
+                        G->runtime_checked_add_attrib_local(n,  attr_key,  static_cast<std::uint64_t>(attr_value.toUInt()));
+                        break;
+                    }
                     default:
                         G->runtime_checked_add_attrib_local(n,  attr_key,  attr_value.toString().toStdString());
                 }
@@ -149,6 +153,7 @@ void Utilities::read_from_json_file(const std::string &json_file_path,  const st
             std::map<std::string, CRDTAttribute> attrs;
 
             Edge edge(dstn, srcn, edgeName, {}, G->get_agent_id());
+
 //            Edge edge;
 //            edge.from(srcn);
 //            edge.to(dstn);
@@ -203,6 +208,11 @@ void Utilities::read_from_json_file(const std::string &json_file_path,  const st
                         G->runtime_checked_add_attrib_local(edge,  attr_key,   static_cast<std::uint32_t>(attr_value.toUInt()));
                         break;
                     }
+
+                    case 7: {
+                        G->runtime_checked_add_attrib_local(edge,  attr_key,  static_cast<std::uint64_t>(attr_value.toUInt()));
+                        break;
+                    }
                     default:
                         G->runtime_checked_add_attrib_local(edge,   attr_key, attr_value.toString().toStdString());
                 }
@@ -254,6 +264,9 @@ QJsonObject Utilities::Edge_to_QObject(const Edge& edge)
             }
             case 6:
                 val = static_cast<std::int32_t>(std::get<std::uint32_t>(value.value()));
+                break;
+            case 7:
+                val = static_cast<qint64>(std::get<std::uint64_t>(value.value())); //This should be quint64 but QJsonValue not allow it.
                 break;
         }
         content["type"] = static_cast<qint64>(value.value().index());
@@ -310,6 +323,9 @@ QJsonObject Utilities::Node_to_QObject(const Node& node, bool skip_content)
             case 6:
                 val = static_cast<std::int32_t>(std::get<std::uint32_t>(value.value()));
                 break;
+            case 7:
+                val = static_cast<qint64>(std::get<std::uint64_t>(value.value()));
+                break;
 
         }
         content["type"] = static_cast<qint64>(value.value().index());
@@ -335,12 +351,14 @@ QJsonDocument Utilities::DSRGraph_to_QJsonDocument(DSR::DSRGraph *G_, const std:
     QJsonObject dsrObject;
     QJsonArray linksArray;
     QJsonObject symbolsMap;
+
     for (const auto& kv : G_->getCopy()) {
         Node node = kv.second;
         // symbol data
         bool store_content = bool(std::find(skip_node_content.begin(), skip_node_content.end(), node.type()) != skip_node_content.end());
         QJsonObject symbol = Node_to_QObject(node, store_content);
-        symbolsMap[QString::number(node.id())] = symbol;
+        symbolsMap[QString::number(node.id()) ] = symbol;
+
     }
     dsrObject["symbols"] = symbolsMap;
 
@@ -367,7 +385,7 @@ void Utilities::print()
     for (const auto &[_,v] : G->getCopy())
     {
         Node node = v;
-        std::cout << "Node: " << node.id() << std::endl;
+        std::cout << "Node: " << std::to_string(node.id()) << std::endl;
         std::cout << "  Type:" << node.type() << std::endl;
         std::cout << "  Name:" << node.name() << std::endl;
         std::cout << "  Agent_id:" << node.agent_id() << std::endl;
@@ -375,7 +393,7 @@ void Utilities::print()
             std::cout << "      [ " << key << ", " << DSR::TYPENAMES_UNION[val.value().index()] << ", " << val << " ]"<< std::endl;
         for (auto &[key, val] : node.fano())
         {
-            std::cout << "          Edge-type->" << val.type() << " from:" << val.from() << " to:"<< val.to() << std::endl;
+            std::cout << "          Edge-type->" << val.type() << " from:" << std::to_string(val.from()) << " to:"<< std::to_string(val.to()) << std::endl;
             for (auto[k, v] : val.attrs())
                 std::cout << "              Key->" << k << " Type->" << DSR::TYPENAMES_UNION[v.value().index()] << " Value->"<< v << std::endl;
         }
@@ -385,7 +403,7 @@ void Utilities::print()
 
 void Utilities::print_edge(const Edge &edge) {
     std::cout << "------------------------------------" << std::endl;
-    std::cout << "Edge-type->" << edge.type() << " from->" << edge.from() << " to->" << edge.to() << std::endl;
+    std::cout << "Edge-type->" << edge.type() << " from->" << std::to_string(edge.from()) << " to->" << std::to_string(edge.to()) << std::endl;
     for (auto[k, v] : edge.attrs())
         std::cout << "              Key->" << k << " Type->" << DSR::TYPENAMES_UNION[v.value().index()] << " Value->" << v<< std::endl;
     std::cout << "------------------------------------" << std::endl;
@@ -393,7 +411,7 @@ void Utilities::print_edge(const Edge &edge) {
 
 void Utilities::print_node(const Node &node) {
     std::cout << "------------------------------------" << std::endl;
-    std::cout << "Node-> " << node.id() << std::endl;
+    std::cout << "Node-> " << std::to_string(node.id()) << std::endl;
     std::cout << "  Type->" << node.type() << std::endl;
     std::cout << "  Name->" << node.name() << std::endl;
     std::cout << "  Agent_id->" << node.agent_id() << std::endl;
@@ -401,20 +419,20 @@ void Utilities::print_node(const Node &node) {
         std::cout << "      Key->" << key << " Type->" << DSR::TYPENAMES_UNION[val.value().index()] << " Value->" << val << std::endl;
     for (auto [key, val] : node.fano())
     {
-        std::cout << "          Edge-type->" << val.type() << " from->" << val.from() << " to->" << val.to() << std::endl;
+        std::cout << "          Edge-type->" << val.type() << " from->" << std::to_string(val.from()) << " to->" << std::to_string(val.to()) << std::endl;
         for (auto [k, v] : val.attrs())
             std::cout << "              Key->" << k << " Type->" << DSR::TYPENAMES_UNION[v.value().index()] << " Value->" << v << std::endl;
     }
 }
 
-void Utilities::print_node(const std::int32_t id)
+void Utilities::print_node(const uint64_t id)
 {
     auto node = G->get_node(id);
     if(node.has_value())
         print_node(node.value());
 }
 
-void Utilities::print_RT(const std::int32_t id)
+void Utilities::print_RT(const uint64_t  id)
 {
     std::cout << "-------------- Printing RT tree ------------------" << std::endl;
     auto node = G->get_node(id);
@@ -430,7 +448,7 @@ void Utilities::print_RT(const std::int32_t id)
 
 void Utilities::print_RT(const Node& node)
 {
-    for(auto &edge: G->get_node_edges_by_type(node, "RT"))
+    for(auto &edge: DSR::DSRGraph::get_node_edges_by_type(node, "RT"))
 	{
         auto child = G->get_node(edge.to());
         if(child.has_value())

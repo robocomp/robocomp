@@ -81,7 +81,7 @@ inline std::unordered_map<std::string_view, std::function<bool(const std::any&)>
 REGISTER_TYPE(level, int, false)
 REGISTER_TYPE(pos_x, float, false)
 REGISTER_TYPE(pos_y, float, false)
-REGISTER_TYPE(parent, std::uint32_t, false)
+REGISTER_TYPE(parent, std::uint64_t, false)
 REGISTER_TYPE(color, std::reference_wrapper<const std::string>, false)
 REGISTER_TYPE(texture, std::reference_wrapper<const std::string>, false)
 REGISTER_TYPE(width, int, false)

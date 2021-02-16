@@ -17,7 +17,6 @@
 <small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
 
 
-
 # Description
 
 CORTEX is a long term effort to build a series of architectural designs around the simple idea 
@@ -59,34 +58,50 @@ Conceptually, the DSR represents a network of entities and relations among them.
 
 ## Dependencies
 
-It's assumed that you have already installed ![robocomp](https://github.com/robocomp/robocomp/blob/development/README.md#installation-from-source).
+It's assumed that you have already installed [robocomp](https://github.com/robocomp/robocomp/blob/development/README.md#installation-from-source).    
+
+__IMPORTANT__: DSR is only supported in Ubuntu 20.04. We can't help with the issues of other distros or versions.  
+
 To be able to use the DSR/CORTEX infraestructure you need to follow the next steps:
+
+### Step 1
 From ubuntu repositories you need:
-```sh
+```bash
 sudo apt install libasio-dev
 sudo apt install libtinyxml2-dev 
 sudo apt install libopencv-dev
 sudo apt install libqglviewer-dev-qt5
 sudo apt install libeigen3-dev
-
+sudo apt install python3-dev python3-pybind11
+sudo apt install cmake gcc-10 g++-10
 ```
 
-You need the following third-party software:
+> __NOTE :__ If you are using `python` with `Anaconda`, `cmake` might not be able to find pybind11 installation. So, you have to install it using `conda-forge` as well :
+> ```bash
+> conda install -c conda-forge pybind11
+> ```
 
-- CoppeliaSim. Follow the instructions in their site: https://www.coppeliarobotics.com/ and make sure you choose the latest EDU version
+
+You need to update the alternatives for g++ and gcc:
+```bash
+sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 1
+sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-10 1
+```
+
+
+### Step 2
+You need the following third-party software:
 
 - cppitertools
 ```sh
       sudo git clone https://github.com/ryanhaining/cppitertools /usr/local/include/cppitertools
+      cd /usr/local/include/cppitertools
+      sudo mkdir build
+      cd build
+      sudo cmake ..
+      sudo make install
 ```
-- gcc >= 9
-```sh
-      sudo add-apt-repository ppa:ubuntu-toolchain-r/test
-      sudo apt update
-      sudo apt install gcc-9
- ```
- (you might want to update the default version: https://stackoverflow.com/questions/7832892/how-to-change-the-default-gcc-compiler-in-ubuntu)
-      
+
 - Fast-RTPS (aka Fast-DDS) from https://www.eprosima.com/. Follow these steps:
 ```sh
       mkdir software
@@ -127,6 +142,41 @@ make -j$(nproc)
 sudo make install
 sudo ldconfig
 ``` 
+
+
+## Common Issues
+
+1)  __DSR compilation requires GCC 9+, while other components might require GCC 8 or older (Ubuntu 20.04) :__
+    -   Install multiple C and C++ compiler versions :
+        ```bash
+        sudo apt install build-essential
+        sudo apt -y install gcc-7 g++-7 gcc-8 g++-8 gcc-9 g++-9 g++-10 gcc-10
+        ```
+    -   Use the `update-alternatives` tool to create list of multiple GCC and G++ compiler alternatives :
+        ```bash
+        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 7
+        sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-7 7
+        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 8
+        sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-8 8
+        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 9
+        sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-9 9
+        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 1
+        sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-10 1
+        ```
+    -   Check the available C and C++ compilers list on your system and select desired version by entering relevant selection number :
+        ```bash
+        sudo update-alternatives --config gcc
+        sudo update-alternatives --config g++
+        ```
+
+3)  __This application failed to start because no Qt platform plugin could be initialized :__
+    -   This problem can appear when trying to start `viriatoPyrep`, due to compatibility issues with _Qt_ version in _OpenCV_ and _VREP_.
+
+    -   This problem is solved by installing `opencv-python-headless` :
+        ```bash
+        pip install opencv-python-headless
+        ```
+
 
 ## Installing agents
 If you want to install the existing agents you can clone the [dsr-graph](https://github.com/robocomp/dsr-graph) repository and read the related documentation.

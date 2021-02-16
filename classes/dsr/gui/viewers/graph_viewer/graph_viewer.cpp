@@ -13,8 +13,10 @@ GraphViewer::GraphViewer(std::shared_ptr<DSR::DSRGraph> G_, QWidget *parent) :  
 {
     qRegisterMetaType<std::int32_t>("std::int32_t");
     qRegisterMetaType<std::uint32_t>("std::uint32_t");
+    qRegisterMetaType<std::uint64_t>("std::uint64_t");
+    qRegisterMetaType<uint64_t>("uint64_t");
     qRegisterMetaType<std::string>("std::string");
-    G = G_;
+    G = std::move(G_);
 	own = std::shared_ptr<GraphViewer>(this);
 
     contextMenu = new QMenu(this);
@@ -38,6 +40,8 @@ GraphViewer::GraphViewer(std::shared_ptr<DSR::DSRGraph> G_, QWidget *parent) :  
 GraphViewer::~GraphViewer()
 {
     qDebug() << __FUNCTION__ << "Destroy";
+    qDebug()  << "GraphViewer: " << G.use_count();
+    G.reset();
     gmap.clear();
 	gmap_edges.clear();
     type_id_map.clear();
@@ -78,7 +82,7 @@ void GraphViewer::createGraph()
                         hide_show_node_SLOT(id, visible);
                 });
                 type_list.insert(node.type());
-                type_id_map.insert(std::pair<std::string, std::set<std::uint32_t>>(node.type(), {node.id()}));
+                type_id_map.insert(std::pair<std::string, std::set<std::uint64_t>>(node.type(), {node.id()}));
             } else
                 type_id_map[node.type()].insert(node.id());
         }
@@ -130,7 +134,7 @@ void GraphViewer::timerEvent(QTimerEvent *event)
 //////////////////////////////////////////////////////////////////////////////////////
 ///// SLOTS
 //////////////////////////////////////////////////////////////////////////////////////
-void GraphViewer::add_or_assign_node_SLOT(int id, const std::string &type)
+void GraphViewer::add_or_assign_node_SLOT(uint64_t id, const std::string &type)
 {
 	//qDebug() << __FUNCTION__ << "node id " << id<<", type "<<QString::fromUtf8(type.c_str());
 	GraphNode *gnode;														// CAMBIAR a sharer_ptr
@@ -231,12 +235,12 @@ void GraphViewer::add_or_assign_node_SLOT(int id, const std::string &type)
     }
 }
 
-void GraphViewer::add_or_assign_edge_SLOT(std::int32_t from, std::int32_t to, const std::string &edge_tag)
+void GraphViewer::add_or_assign_edge_SLOT(std::uint64_t from, std::uint64_t to, const std::string &edge_tag)
 {
 	try
     {
  		//qDebug() << __FUNCTION__ << "edge id " << QString::fromStdString(edge_tag) << from << to;
-		std::tuple<std::int32_t, std::int32_t, std::string> key = std::make_tuple(from, to, edge_tag);
+		std::tuple<std::uint64_t, std::uint64_t, std::string> key = std::make_tuple(from, to, edge_tag);
 
 		if(gmap_edges.count(key) == 0) 
 		{ 		
@@ -274,11 +278,11 @@ void GraphViewer::add_or_assign_edge_SLOT(std::int32_t from, std::int32_t to, co
 
 }
 
-void GraphViewer::del_edge_SLOT(const std::int32_t from, const std::int32_t to, const std::string &edge_tag)
+void GraphViewer::del_edge_SLOT(const std::uint64_t from, const std::uint64_t to, const std::string &edge_tag)
 {
     qDebug()<<__FUNCTION__<<":"<<__LINE__;
 	try {
-		std::tuple<std::int32_t, std::int32_t, std::string> key = std::make_tuple(from, to, edge_tag);
+		std::tuple<std::uint64_t, std::uint64_t, std::string> key = std::make_tuple(from, to, edge_tag);
 		while (gmap_edges.count(key) > 0) {
             GraphEdge *edge = gmap_edges.at(key);
             scene.removeItem(edge);

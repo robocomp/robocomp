@@ -21,11 +21,11 @@
 namespace py = pybind11;
 
 using callback_types = std::variant<
-        std::function<void(std::uint32_t, const std::string &)>,
-        std::function<void(std::uint32_t, const std::vector<std::string> &)>,
-        std::function<void(std::uint32_t, std::uint32_t, const std::string &)>,
-        std::function<void(std::uint32_t, std::uint32_t, const std::vector<std::string> &)>,
-        std::function<void(std::uint32_t)>
+        std::function<void(std::uint64_t, const std::string &)>,
+        std::function<void(std::uint64_t, const std::vector<std::string> &)>,
+        std::function<void(std::uint64_t, std::uint64_t, const std::string &)>,
+        std::function<void(std::uint64_t, std::uint64_t, const std::vector<std::string> &)>,
+        std::function<void(std::uint64_t)>
 >;
 
 
@@ -37,14 +37,14 @@ namespace pybind11::detail {
         using Type = callback_types;
         PYBIND11_TYPE_CASTER(Type, _("Union[") +
         detail::concat(
-                make_caster<std::function<void(std::uint32_t, const std::string &)>>::name,
-        make_caster<std::function<void(std::uint32_t,
+                make_caster<std::function<void(std::uint64_t, const std::string &)>>::name,
+        make_caster<std::function<void(std::uint64_t,
         const std::vector<std::string> &)>>::name,
-        make_caster<std::function<void(std::uint32_t, std::uint32_t,
+        make_caster<std::function<void(std::uint64_t, std::uint64_t,
         const std::string &)>>::name,
-        make_caster<std::function<void(std::uint32_t, std::uint32_t,
+        make_caster<std::function<void(std::uint64_t, std::uint64_t,
         const std::vector<std::string> &)>>::name,
-        make_caster<std::function<void(std::uint32_t)>>::name) + _("]"));
+        make_caster<std::function<void(std::uint64_t)>>::name) + _("]"));
 
 
         template<typename U>

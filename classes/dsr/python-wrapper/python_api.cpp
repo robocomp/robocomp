@@ -29,27 +29,27 @@ using namespace DSR;
 namespace py = pybind11;
 
 using namespace py::literals;
-using namespace RoboCompDSRGetID;
+//using namespace RoboCompDSRGetID;
 
 using callback_types = std::variant<
-        std::function<void(std::uint32_t, const std::string &)>,
-        std::function<void(std::uint32_t, const std::vector<std::string> &)>,
-        std::function<void(std::uint32_t, std::uint32_t, const std::string &)>,
-        std::function<void(std::uint32_t, std::uint32_t, const std::vector<std::string> &)>,
-        std::function<void(std::uint32_t)>
+        std::function<void(std::uint64_t, const std::string &)>,
+        std::function<void(std::uint64_t, const std::vector<std::string> &)>,
+        std::function<void(std::uint64_t, std::uint64_t, const std::string &)>,
+        std::function<void(std::uint64_t, std::uint64_t, const std::vector<std::string> &)>,
+        std::function<void(std::uint64_t)>
 >;
 
-PYBIND11_MAKE_OPAQUE(std::map<std::pair<uint32_t, std::string>, Edge>)
+PYBIND11_MAKE_OPAQUE(std::map<std::pair<uint64_t, std::string>, Edge>)
 PYBIND11_MAKE_OPAQUE(std::map<std::string, Attribute>)
 
 PYBIND11_MODULE(pydsr, m) {
 
-    py::bind_map<std::map<std::pair<uint32_t, std::string>, Edge>>(m, "MapStringEdge");
+    py::bind_map<std::map<std::pair<uint64_t, std::string>, Edge>>(m, "MapStringEdge");
     py::bind_map<std::map<std::string, Attribute>>(m, "MapStringAttribute");
 
     m.doc() = "DSR Api for python";
 
-    uint32_t local_agent_id = -1;
+    uint64_t local_agent_id = -1;
 
 
     //Disable messages from Qt.
@@ -113,7 +113,7 @@ PYBIND11_MODULE(pydsr, m) {
             case UPDATE_NODE:
                 try {
                     QObject::connect(G, &DSR::DSRGraph::update_node_signal,
-                                     std::get<std::function<void(std::uint32_t, const std::string &)>>(fn_callback));
+                                     std::get<std::function<void(std::uint64_t, const std::string &)>>(fn_callback));
 
                 } catch (std::exception &e) {
                     std::cout << "Update Node Callback must be (int, str)\n "  << std::endl;
@@ -123,7 +123,7 @@ PYBIND11_MODULE(pydsr, m) {
             case UPDATE_NODE_ATTR:
                 try {
                     QObject::connect(G, &DSR::DSRGraph::update_node_attr_signal,
-                                     std::get<std::function<void(std::uint32_t, const std::vector<std::string> &)>>(
+                                     std::get<std::function<void(std::uint64_t, const std::vector<std::string> &)>>(
                                                  fn_callback));
 
                 } catch (std::exception &e) {
@@ -134,7 +134,7 @@ PYBIND11_MODULE(pydsr, m) {
             case UPDATE_EDGE:
                 try {
                     QObject::connect(G, &DSR::DSRGraph::update_edge_signal,
-                                     std::get<std::function<void(std::uint32_t, std::uint32_t, const std::string &)>>(
+                                     std::get<std::function<void(std::uint64_t, std::uint64_t, const std::string &)>>(
                                              fn_callback));
                 } catch (std::exception &e) {
                     std::cout << "Update Edge Callback must be (int, int, str)\n "  << std::endl;
@@ -144,7 +144,7 @@ PYBIND11_MODULE(pydsr, m) {
             case UPDATE_EDGE_ATTR:
                 try {
                     QObject::connect(G, &DSR::DSRGraph::update_edge_attr_signal,
-                                     std::get<std::function<void(std::uint32_t, std::uint32_t,
+                                     std::get<std::function<void(std::uint64_t, std::uint64_t,
                                                                  const std::vector<std::string> &)>>(fn_callback));
                 } catch (std::exception &e) {
                     std::cout << "Update Edge Attribute Callback must be (int, int, [str])\n " << std::endl;
@@ -154,7 +154,7 @@ PYBIND11_MODULE(pydsr, m) {
             case DELETE_EDGE:
                 try {
                     QObject::connect(G, &DSR::DSRGraph::del_edge_signal,
-                                     std::get<std::function<void(std::uint32_t, std::uint32_t, const std::string &)>>(
+                                     std::get<std::function<void(std::uint64_t, std::uint64_t, const std::string &)>>(
                                              fn_callback));
                 } catch (std::exception &e) {
                     std::cout << "Delete Edge Callback must be (int, int, str)\n "  << std::endl;
@@ -164,7 +164,7 @@ PYBIND11_MODULE(pydsr, m) {
             case DELETE_NODE:
                 try {
                     QObject::connect(G, &DSR::DSRGraph::del_node_signal,
-                                     std::get<std::function<void(std::uint32_t)>>(fn_callback));
+                                     std::get<std::function<void(std::uint64_t)>>(fn_callback));
                 } catch (std::exception &e) {
                     std::cout << "Delete Node Callback must be (int)\n "  << std::endl;
                     throw e;
@@ -210,6 +210,8 @@ PYBIND11_MODULE(pydsr, m) {
                         break;
                     case 6:
                         out << std::to_string(std::get<uint32_t>(self.value()));
+                    case 7:
+                        out << std::to_string(std::get<uint64_t>(self.value()));
                         break;
                 }
                 out << " >";
@@ -233,7 +235,7 @@ PYBIND11_MODULE(pydsr, m) {
 
     //DSR Edge class
     py::class_<Edge>(m, "Edge")
-            .def(py::init<uint32_t, uint32_t, std::string, uint32_t>(),
+            .def(py::init<uint64_t, uint64_t, std::string, uint32_t>(),
                  "to"_a, "from"_a, "type"_a, "agent_id"_a)
             .def("__repr__", [](Edge const &self) {
                 std::stringstream out;
@@ -260,21 +262,12 @@ PYBIND11_MODULE(pydsr, m) {
 
     //DSR Node class
     py::class_<Node>(m, "Node")
-            .def(py::init([](uint32_t agent_id, const std::string &type, py::object *proxy,
+            .def(py::init([](uint32_t agent_id, const std::string &type,
                              const std::string &name = "") -> std::unique_ptr<Node> {
                 auto tmp = std::make_unique<Node>(agent_id, type);
                 tmp->name(name);
-                if (!proxy) throw std::runtime_error("Proxy cannot be None");
-                PyObject *fn = PyObject_GetAttrString(proxy->ptr(), "getID");
-                if (!fn) throw std::runtime_error("Proxy does not have method getID");
-                PyObject *result = PyObject_CallMethod(proxy->ptr(), "getID", /*"|", "current", Py_None,*/ nullptr);
-                if (!result) throw std::runtime_error("Cannot get new id from idserver, check config file");
-                tmp->id(py::cast<std::uint32_t>(result));
-                /*Py_DECREF(result);
-                Py_DECREF(fn);*/
-
                 return tmp;
-            }), "agent_id"_a, "type"_a, "dsr_idproxy"_a, "name"_a = "")
+            }), "agent_id"_a, "type"_a, "name"_a = "")
             .def("__repr__", [](Node const &self) {
                 std::stringstream out;
 
@@ -312,8 +305,8 @@ PYBIND11_MODULE(pydsr, m) {
                           [](Node &self, const std::map<std::string, Attribute> &at) { self.attrs(at); },
                           py::return_value_policy::reference, "read or write in the attribute map of the node.")
             .def_property("edges",
-                          [](Node &self) -> std::map<std::pair<uint32_t, std::string>, Edge> & { return self.fano(); },
-                          [](Node &self, const std::map<std::pair<uint32_t, std::string>, Edge> &edges) {
+                          [](Node &self) -> std::map<std::pair<uint64_t, std::string>, Edge> & { return self.fano(); },
+                          [](Node &self, const std::map<std::pair<uint64_t, std::string>, Edge> &edges) {
                               return self.fano(edges);
                           },
                           py::return_value_policy::reference, "read or write in the edge map of the node.");
@@ -329,25 +322,25 @@ PYBIND11_MODULE(pydsr, m) {
                      //py::gil_scoped_release release;
                      local_agent_id = id;
 
-                     auto g = std::make_unique<DSRGraph>(root, name, id, dsr_input_file, nullptr, all_same_host);
+                     auto g = std::make_unique<DSRGraph>(root, name, id, dsr_input_file, all_same_host);
 
                      return g;
                  }), "root"_a, "name"_a, "id"_a, "dsr_input_file"_a = "",
                  "all_same_host"_a = true, py::call_guard<py::gil_scoped_release>())
-            //.def("__del__", [](DSRGraph &self){ puts("Eliminando G.");self.reset(); })
-            .def("get_node", [](DSRGraph &self, uint32_t id) -> std::optional<Node> {
+
+            .def("get_node", [](DSRGraph &self, uint64_t id) -> std::optional<Node> {
                 return self.get_node(id);
             }, "id"_a, "return the node with the id passed as parameter. Returns None if the node does not exist.")
             .def("get_node", [](DSRGraph &self, const std::string &name) -> std::optional<Node> {
                 return self.get_node(name);
             }, "name"_a, "return the node with the name passed as parameter. Returns None if the node does not exist.")
-            .def("delete_node", static_cast<bool (DSRGraph::*)(uint32_t)>(&DSRGraph::delete_node), "id"_a,
+            .def("delete_node", static_cast<bool (DSRGraph::*)(uint64_t)>(&DSRGraph::delete_node), "id"_a,
                  "delete the node with the given id. Returns a bool with the result o the operation.")
             .def("delete_node",
                  static_cast<bool (DSRGraph::*)(const std::basic_string<char> &)>(&DSRGraph::delete_node), "name"_a,
                  "delete the node with the given name. Returns a bool with the result o the operation.")
             .def("insert_node", [](DSRGraph &g, Node &n) {
-                     return PY_INSERT_API().insert_node_python(g, n);
+                     return g.insert_node(n);
                  }, "node"_a,
                  "Insert in the graph the new node passed as parameter. Returns the id of the node or None if the Node alredy exist in the map.")
             .def("update_node", &DSRGraph::update_node, "node"_a, "Update the node in the graph. Returns a bool.")
@@ -357,13 +350,13 @@ PYBIND11_MODULE(pydsr, m) {
                  }, "from"_a, "to"_a, "type"_a,
                  "Return the edge with the parameters from, to, and type passed as parameter. If the edge does not exist it return None")
             .def("get_edge",
-                 [](DSRGraph &self, uint32_t from, uint32_t to, const std::string &key) -> std::optional<Edge> {
+                 [](DSRGraph &self, uint64_t from, uint64_t to, const std::string &key) -> std::optional<Edge> {
                      return self.get_edge(from, to, key);
                  }, "from"_a, "to"_a, "type"_a,
                  "Return the edge with the parameters from, to, and type passed as parameter.  If the edge does not exist it return None")
             .def("insert_or_assign_edge", &DSRGraph::insert_or_assign_edge, "edge"_a,
                  "Insert or updates and edge. returns a bool")
-            .def("delete_edge", static_cast<bool (DSRGraph::*)(uint32_t, uint32_t,
+            .def("delete_edge", static_cast<bool (DSRGraph::*)(uint64_t, uint64_t,
                                                                const std::basic_string<char> &)>(&DSRGraph::delete_edge),
                  "from"_a, "to"_a, "type"_a, "Removes the edge and returns a bool")
             .def("delete_edge",
@@ -382,7 +375,7 @@ PYBIND11_MODULE(pydsr, m) {
             .def(py::init([](DSRGraph &g) -> std::unique_ptr<RT_API> {
                 return g.get_rt_api();
             }))
-            .def("insert_or_assign_edge_RT", [](RT_API &self, Node &n, uint32_t to,
+            .def("insert_or_assign_edge_RT", [](RT_API &self, Node &n, uint64_t to,
                                                 const std::vector<float> &translation,
                                                 const std::vector<float> &rotation_euler
             ) {
@@ -413,8 +406,8 @@ PYBIND11_MODULE(pydsr, m) {
                     return std::nullopt;
                 }
             }, "edge"_a)
-            .def("get_translation", static_cast<std::optional<Eigen::Vector3d> (RT_API::*)(std::uint32_t,
-                                                                                           std::uint32_t)>(&RT_API::get_translation),
+            .def("get_translation", static_cast<std::optional<Eigen::Vector3d> (RT_API::*)(std::uint64_t,
+                                                                                           std::uint64_t)>(&RT_API::get_translation),
                  "node_id"_a, "to"_a);
 
     py::class_<InnerEigenAPI>(m, "inner_api")
