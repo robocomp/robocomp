@@ -96,9 +96,11 @@ target_sources(rcis
 		)
 target_link_libraries( rcis PRIVATE Robocomp::innermodel  Robocomp::qmat Robocomp::osgviewer glut OpenThreads osgGA osgDB osgUtil osgText ${LIBS} ${STATIC_LIBS} ${QT_LIBRARIES} -lboost_system -lboost_thread ${Ice_LIBRARIES})
 target_include_directories(rcis PUBLIC
+		${CMAKE_CURRENT_BINARY_DIR}
 		${PYTHON_INCLUDE_DIRS}
 		${Boost_INCLUDE_DIRS}
 		${CMAKE_SOURCE_DIR}/libs/innermodel/include
 		${CMAKE_SOURCE_DIR}/libs/osgviewer/include
-		${CMAKE_SOURCE_DIR}/libs/qmat/include)
+		${CMAKE_SOURCE_DIR}/libs/qmat/include
+		)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/rcis DESTINATION /opt/robocomp/bin/ PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE )

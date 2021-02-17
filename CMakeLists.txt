@@ -1,17 +1,20 @@
 # RoboComp global CMake
-cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.0)
+project(robocomp
+        VERSION 2021.2.1
+        DESCRIPTION "Robocomp framework"
+        LANGUAGES CXX )
 
-ADD_DEFINITIONS(-O3  -std=c++17 -std=gnu++17)
-set(CMAKE_CXX_STANDARD 17)
+#variable_watch(Ice_LIBRARIES)
+#variable_watch(CMAKE_SOURCE_DIR)
 
-cmake_policy(SET CMP0048 OLD)
-project(RoboComp)
+
 string(TOLOWER ${PROJECT_NAME} PROJECT_NAME_LOWER)
 
 #Set RoboComp directories
-set(RoboComp_LIBS_DIR ${RoboComp_SOURCE_DIR}/libs)
-set(RoboComp_CLASSES_DIR ${RoboComp_SOURCE_DIR}/classes)
-set(RoboComp_INTERFACES_DIR ${RoboComp_SOURCE_DIR}/interfaces)
+set(RoboComp_LIBS_DIR ${CMAKE_SOURCE_DIR}/libs)
+set(RoboComp_CLASSES_DIR ${CMAKE_SOURCE_DIR}/classes)
+set(RoboComp_INTERFACES_DIR ${CMAKE_SOURCE_DIR}/interfaces)
 # Find universal dependencies
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules/" ${CMAKE_MODULE_PATH})
 
@@ -25,30 +28,29 @@ SET(CMAKE_BUILD_TYPE "${CMAKE_BUILD_TYPE}" CACHE STRING
     "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel Maintainer."
     FORCE)
 
-include(${RoboComp_SOURCE_DIR}/cmake/robocomp_targets.cmake)
+include(${CMAKE_SOURCE_DIR}/cmake/robocomp_targets.cmake)
 
-include(${RoboComp_SOURCE_DIR}/cmake/robocomp_utils.cmake)
-set(RoboComp_VERSION 1.01 CACHE STRING "RoboComp version")
-SET_INSTALL_DIRS()
+include(${CMAKE_SOURCE_DIR}/cmake/robocomp_utils.cmake)
+set(RoboComp_VERSION 2021.02.01 CACHE STRING "RoboComp version")
 
-include(${RoboComp_SOURCE_DIR}/cmake/modules/qt.cmake)
+include(${CMAKE_SOURCE_DIR}/cmake/modules/qt.cmake)
 
 
 # Add an "uninstall" target
-configure_file("${RoboComp_SOURCE_DIR}/cmake/uninstall_target.cmake.in"
-               "${RoboComp_BINARY_DIR}/uninstall_target.cmake" IMMEDIATE @ONLY)
+configure_file("${CMAKE_SOURCE_DIR}/cmake/uninstall_target.cmake.in"
+               "${CMAKE_SOURCE_DIR}/uninstall_target.cmake" IMMEDIATE @ONLY)
 add_custom_target(uninstall "${CMAKE_COMMAND}" -P
-                  "${RoboComp_BINARY_DIR}/uninstall_target.cmake")
+                  "${CMAKE_SOURCE_DIR}/uninstall_target.cmake")
 
 # RoboComp global dependencies
-find_package(OpenMP REQUIRED) ## search OpenMP libs
-if(OPENMP_FOUND)
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
-  message (STATUS "Found OpenMP")
-else(OPENMP_FOUND)
-  message (STATUS "Not found OpenMP")
-endif()
+#find_package(OpenMP REQUIRED) ## search OpenMP libs
+#if(OPENMP_FOUND)
+#  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+#  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+#  message (STATUS "Found OpenMP")
+#else(OPENMP_FOUND)
+#  message (STATUS "Not found OpenMP")
+#endif()
 
 
 # Python binding
@@ -74,31 +76,10 @@ if (CORE)
 	SET(compile_dirs ${compile_dirs} "libs")
 endif(CORE)
 
-
-
-#if (TOOLS)
-#	SET(compile_dirs ${compile_dirs}
-#        "tools"
-##		"tools/robocompdsl"
-##		"tools/rcinnerModelSimulator"
-##		"tools/rcmanager"
-##		"tools/rcmanagerSimple"
-##		"tools/rclogger"
-##		"tools/rcmonitor"
-##		"tools/rcremote"
-##		"tools/rcnode"
-##		"tools/buildTools"
-##		"tools/rcportchecker"
-##		"tools/rcdeploymentchecker"
-#            )
-#endif(TOOLS)
-#FOREACH(compile_dir ${compile_dirs})
-#    ADD_SUBDIRECTORY(${compile_dir})
-#ENDFOREACH(compile_dir)
 add_subdirectory(libs)
 add_subdirectory(tools)
 
-ROBOCOMP_IDSL_TO_ICE( AGMWorldModel AGMExecutive Planning AGMCommonBehavior AGMExecutiveTopic AGMExecutiveVisualizationTopic )
+#ROBOCOMP_IDSL_TO_ICE( AGMWorldModel AGMExecutive Planning AGMCommonBehavior AGMExecutiveTopic AGMExecutiveVisualizationTopic )
 
 
 # Install rules necessary to allow compiling components without the robocomp's source code
@@ -119,9 +100,7 @@ add_custom_target(mrproper
    COMMAND find $ENV{ROBOCOMP} -name Makefile -exec rm {} "\\;"
 )
 
-#For packaging
-#include(${RoboComp_SOURCE_DIR}/cmake/package_details.cmake)
-#CONFIGURE_FILE("${RoboComp_SOURCE_DIR}/debian/fixup_deb.sh.in" "${CMAKE_CURRENT_BINARY_DIR}/fixup_deb.sh" @ONLY IMMEDIATE)
+
 
 # "make spackage for ppa"
 #add_custom_target(spackage
@@ -132,6 +111,8 @@ add_custom_target(mrproper
 #              -P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/source_package.cmake
 #            )
 
-#packaging
-#include(CPack)
+#For packaging
+include(${CMAKE_SOURCE_DIR}/cmake/package_details.cmake)
+CONFIGURE_FILE("${CMAKE_SOURCE_DIR}/debian/fixup_deb.sh.in" "${CMAKE_CURRENT_BINARY_DIR}/fixup_deb.sh" @ONLY IMMEDIATE)
+include(CPack)
 #add_custom_command(TARGET package POST_BUILD COMMAND bash fixup_deb.sh; WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} )
