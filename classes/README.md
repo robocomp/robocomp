@@ -5,7 +5,7 @@ that are of common use among the components and tools that compose it.
 In this directory you can find these classes defined.
 
 
-## [DoubleBuffer](./DoubleBuffer)
+## [DoubleBuffer](https://github.com/robocomp/robocomp/tree/development/classes/doublebuffer)
 This class is a generic container for a thread-safe, timed, threaded doublebuffer used to transfer data between threads.
 For example, between the main thread of a component and the (threaded) middleware stubs.  
 
@@ -19,7 +19,7 @@ Example of DoubleBuffer creation with user-defined converter from input to outpu
 · use:  `laser_buffer.put(std::move(laserData), [](auto &&I, auto &T){ for(auto &&i , I){ T.append(i/2);}});`  
 · decl: `auto rgb_buffer = new DoubleBuffer<std::vector<std::uint8_t>, cv:::Mat>(std::chrono::milliseconds(100));`
 
-## [threadpool](./threadpool)
+## [threadpool](https://github.com/robocomp/robocomp/tree/development/classes/threadpool)
 This class is a simple threadpool with a thread-safe interface.
 The interface offers methods to execute either asynchronous tasks from which
 no result is expected using the spawn_task method, or asynchronous tasks from
