@@ -1,4 +1,4 @@
-cmake_minimum_required( VERSION 3.0 )
+cmake_minimum_required( VERSION 3.10 )
 project( dsr_core
         VERSION 1.0.0
         DESCRIPTION "Robocomp DSR core library"

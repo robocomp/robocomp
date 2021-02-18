@@ -1,5 +1,8 @@
-cmake_minimum_required(VERSION 2.6)
-PROJECT( rcremote )
+cmake_minimum_required(VERSION 2.10)
+project( rcremote
+        VERSION 2021.2.1
+        DESCRIPTION "RoboComp rcremote tool"
+        LANGUAGES CXX )
 
 INCLUDE( ${CMAKE_SOURCE_DIR}/cmake/robocompLocal.cmake )
 ROBOCOMP_IDSL_TO_ICE( CommonBehavior IMU IMUPub RCRemote )

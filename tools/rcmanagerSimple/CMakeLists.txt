@@ -1,5 +1,8 @@
-cmake_minimum_required( VERSION 2.6 )
-project(rcmanagersimple)
+cmake_minimum_required( VERSION 3.10 )
+project(rcmanagersimple
+        VERSION 2021.2.1
+        DESCRIPTION "RoboComp RCManagerSimple tool"
+        LANGUAGES CXX )
 
 
 MESSAGE( STATUS "Adding rule to generate the ${PROJECT_NAME} executable." )

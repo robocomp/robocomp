@@ -1,4 +1,4 @@
-cmake_minimum_required( VERSION 3.0 )
+cmake_minimum_required( VERSION 3.10 )
 project(python_wrapper
         VERSION 1.0.0
         DESCRIPTION "Robocomp dsr python wrapper library"

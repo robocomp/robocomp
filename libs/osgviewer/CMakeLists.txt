@@ -1,5 +1,8 @@
 cmake_minimum_required( VERSION 3.12 )
-project(osgviewer)
+project(osgviewer
+		VERSION 2021.2.1
+		DESCRIPTION "RoboComp OsgViewer library"
+		LANGUAGES CXX )
 
 find_package(Qt5 COMPONENTS Gui REQUIRED)
 

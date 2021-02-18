@@ -1,6 +1,8 @@
 cmake_minimum_required( VERSION 3.12 )
-project(innermodel)
-set(LIB_DESC "RoboComp InnerModel library")
+project(innermodel
+		VERSION 2021.2.1
+		DESCRIPTION "RoboComp InnerModel library"
+		LANGUAGES CXX )
 
 
 find_package(Qt5 COMPONENTS Core Gui REQUIRED)

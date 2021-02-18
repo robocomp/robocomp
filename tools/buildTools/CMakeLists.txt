@@ -1,4 +1,4 @@
-cmake_minimum_required( VERSION 2.6 )
+cmake_minimum_required( VERSION 3.10 )
 execute_process(COMMAND python3 -c "from distutils.sysconfig import get_python_lib; print (get_python_lib())" OUTPUT_VARIABLE PYTHON_SITE_PATH OUTPUT_STRIP_TRAILING_WHITESPACE)
 INSTALL(FILES "robocomp.pth" DESTINATION ${PYTHON_SITE_PATH} )
 INSTALL(FILES "workspace.py" DESTINATION /opt/robocomp/python)

@@ -1,7 +1,8 @@
 cmake_minimum_required( VERSION 3.12 )
-project(qmat)
-#set(LIB_NAME qmat)
-#set(LIB_DESC "RoboComp qmat library")
+project(qmat
+        VERSION 2021.2.1
+        DESCRIPTION "RoboComp qmat library"
+        LANGUAGES CXX )
 
 
 find_package(Qt5 COMPONENTS Core REQUIRED)

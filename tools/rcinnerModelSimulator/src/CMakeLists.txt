@@ -1,5 +1,8 @@
 cmake_minimum_required(VERSION 2.6)
-PROJECT( rcis )
+PROJECT( rcis
+		VERSION 2021.2.1
+		DESCRIPTION "RoboComp RCInnerModelSimulator tool"
+		LANGUAGES CXX )
 
 INCLUDE( CMakeListsSpecific.txt )
 
