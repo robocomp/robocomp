@@ -14,7 +14,7 @@ Example of DoubleBuffer creation with default converters between input and outpu
 · use: `laser_buffer.put(std::move(laserData));`  
 · use: `auto ldata = laser_buffer.get();`  
 
-Example of DoubleBuffer creation with user-defined converter from input to output types
+Example of DoubleBuffer creation with user-defined converter from input to output types:  
 · decl: `DoubleBuffer<RoboCompLaser::TLaserData, RoboCompLaser::TLaserData> laser_buffer;`  
 · use:  `laser_buffer.put(std::move(laserData), [](auto &&I, auto &T){ for(auto &&i , I){ T.append(i/2);}});`  
 · decl: `auto rgb_buffer = new DoubleBuffer<std::vector<std::uint8_t>, cv:::Mat>(std::chrono::milliseconds(100));`
