@@ -10,9 +10,9 @@ by [RoboLab (Universidad de Extremadura)](http://robolab.unex.es), [Aston Univer
 RoboComp is an open-source Robotics framework providing the tools to create and modify software components that communicate through public interfaces. Components may *require*, *subscribe*, *implement* or *publish*
 interfaces in a seamless way. Building new components is done using two domain-specific languages, IDSL and CDSL. With IDSL you define an interface and with CDSL you specify how the component will communicate with the world. With this information, a code generator creates C++ and/or Python sources, based on CMake, that compile and execute flawlessly. When some of these features have to be changed, the component can be easily regenerated and all the user-specific code is preserved thanks to a simple inheritance mechanism.
 
-If you already have RoboComp installed, jump to [tutorials](doc/README.md) to start coding! 
+**If you already have RoboComp installed, jump to [tutorials](doc/README.md) to start coding!**
 
-:warning: If you want to contribute with something new to Robocomp, please do it on the [development branch](https://github.com/robocomp/robocomp/tree/development). If you fix something on the stable branch, please check if it's also relevant for the development branch and try to [cherrypick](https://git-scm.com/docs/git-cherry-pick) your commit.  
+:warning: If you want to contribute with something new to Robocomp, please do it on the [development branch](https://github.com/robocomp/robocomp/tree/development).
 
 :question: If you have a question please look for it in the [FAQ](doc/FAQ.md). 
 -
@@ -194,7 +194,6 @@ To test RoboComp with Coppelia you need to:
 - Connect a joystick or XBox pad to omniRep.py using [this component](https://github.com/robocomp/robocomp-robolab/tree/master/components/hardware/external_control/joystickpublish)
     
 
----------------------------------------------------------------------
 
 # Next steps
 
