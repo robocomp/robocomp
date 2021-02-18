@@ -87,7 +87,14 @@ INSTALL(FILES "files/robocomp.conf" DESTINATION /etc/ld.so.conf.d/)
 INSTALL(DIRECTORY "interfaces" DESTINATION /opt/robocomp/ )
 INSTALL(DIRECTORY "cmake" DESTINATION /opt/robocomp/ )
 #INSTALL(DIRECTORY "files" DESTINATION /opt/robocomp/ )
-INSTALL(DIRECTORY "classes" DESTINATION /opt/robocomp/ )
+INSTALL(DIRECTORY "classes" DESTINATION /opt/robocomp/
+		PATTERN "*_autogen" EXCLUDE
+		PATTERN "CMakeFiles" EXCLUDE
+		PATTERN "build" EXCLUDE
+		PATTERN "cmake-build" EXCLUDE
+		PATTERN ".idea" EXCLUDE
+		)
+
 
 add_custom_target(mrproper
   COMMAND ${CMAKE_MAKE_PROGRAM} clean
