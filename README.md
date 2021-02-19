@@ -1,6 +1,8 @@
 [RoboComp](http://robocomp.org)
 ===============================
 
+
+
 [![Join the chat at https://gitter.im/robocomp/robocomp](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/robocomp/robocomp?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 by [RoboLab (Universidad de Extremadura)](http://robolab.unex.es), [Aston University](https://www2.aston.ac.uk/eas), [ISIS (Universidad de Málaga)](http://www.grupoisis.uma.es/index.php?option=com_jresearch&view=staff&Itemid=3&lang=es) and many other collaborators from the Google Summer of Code program.
@@ -8,12 +10,25 @@ by [RoboLab (Universidad de Extremadura)](http://robolab.unex.es), [Aston Univer
 RoboComp is an open-source Robotics framework providing the tools to create and modify software components that communicate through public interfaces. Components may *require*, *subscribe*, *implement* or *publish*
 interfaces in a seamless way. Building new components is done using two domain-specific languages, IDSL and CDSL. With IDSL you define an interface and with CDSL you specify how the component will communicate with the world. With this information, a code generator creates C++ and/or Python sources, based on CMake, that compile and execute flawlessly. When some of these features have to be changed, the component can be easily regenerated and all the user-specific code is preserved thanks to a simple inheritance mechanism.
 
-If you already have RoboComp installed, jump to [tutorials](doc/README.md) to start coding! 
+**If you already have RoboComp installed, jump to [tutorials](doc/README.md) to start coding!**
 
-:warning: If you want to contribute with something new to Robocomp, please do it on the [development branch](https://github.com/robocomp/robocomp/tree/development). If you fix something on the stable branch, please check if it's also relevant for the development branch and try to [cherrypick](https://git-scm.com/docs/git-cherry-pick) your commit.  
+:warning: If you want to contribute with something new to Robocomp, please do it on the [development branch](https://github.com/robocomp/robocomp/tree/development).
 
 :question: If you have a question please look for it in the [FAQ](doc/FAQ.md). 
 -
+
+- [Installation from source](#installation-from-source)
+  * [Requirements](#requirements)
+  * [Installation](#installation)
+- [Testing the installation using the RCIS robotics simulator](#testing-the-installation-using-the-rcis-robotics-simulator)
+  * [Installing some RoboLab's components from GitHub](#installing-some-robolab-s-components-from-github)
+  * [Connecting a JoyStick (if no JoyStick available skip to the next section)](#connecting-a-joystick--if-no-joystick-available-skip-to-the-next-section-)
+  * [Using the keyboard as a JoyStick](#using-the-keyboard-as-a-joystick)
+- [Testing the installation using the Coppelia Simulator](#testing-the-installation-using-the--coppelia-simulator--https---wwwcoppeliaroboticscom--)
+- [Next steps](#next-steps)
+
+<small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
+
 
 
 # Installation from source
@@ -166,7 +181,7 @@ Note 1: You must have your simulator running in a terminal and only then you can
 
 Note 2: If you have anaconda installed (for python 3), It is recommended to uninstall anaconda first and then install robocomp. (It is only applicable if you have faced errors while running above commands.)
 
-# Testing the installation using the [Coppelia Simulator](https://www.coppeliarobotics.com/) 
+## Testing the installation using the [Coppelia Simulator](https://www.coppeliarobotics.com/) 
 We are now moving to more advanced robotics simulators that can reduce the gap between simulation and deployment. Our first choice now is CoppeliaSim because it offers a scene editor that can be used during a running simulation, you can "hang" and modify Lua code from the scene nodes in no time, you can choose among 4 physics engines and, thanks to the [PyRep](https://github.com/stepjam/PyRep) library, we have a fast access to almost eveything running in the simulator.
 
 To connect RoboComp and CoppeliaSim we use *bridges* that are Python components that include PyRep and implement/publish the required RoboComp interfaces. So far we have implemented three bridges that are located in this [repo](https://github.com/robocomp/dsr-graph/tree/development/robots_pyrep). These bridges interface scenes with Viriato, a simpler world using Viriato's omni base and an empty world with a Pioneer 2AT differential robot. The corresponding Coppelia .ttt files can be found [here](https://github.com/robocomp/dsr-graph/tree/development/etc).
@@ -179,7 +194,9 @@ To test RoboComp with Coppelia you need to:
 - Connect a joystick or XBox pad to omniRep.py using [this component](https://github.com/robocomp/robocomp-robolab/tree/master/components/hardware/external_control/joystickpublish)
     
 
----------------------------------------------------------------------
+
+# Next steps
+
 You can find more tutorials on RoboComp in [tutorials](doc/README.md) 
 
 Drop comments and ask questions in:
