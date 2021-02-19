@@ -1,0 +1,13 @@
+module RoboCompBatteryStatus
+{
+  exception HardwareFailedException { string what; };
+  struct TBattery
+  {
+    float percentage;
+  };
+
+  interface BatteryStatus
+  {
+    TBattery getBatteryState() throws HardwareFailedException;
+  };
+};
