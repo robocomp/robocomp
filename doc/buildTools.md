@@ -1,3 +1,4 @@
+
 # Build tools
 
 Note: This documentation explains some commands that can be used for the development of components in Robocomp. These commands are not intended to compile Robocomp itself. To follow the necessary steps to install and compile Robocomp, you can follow the instructions in this [document](https://github.com/robocomp/robocomp#installation-from-source).
@@ -7,7 +8,7 @@ Following are a list of commands and explanations for Robocomp build tools.
 
 This tool helps in managing robocomp workspaces. 
 
-####To register a new workspace
+#### To register a new workspace
 
 Move to a directory that contains robocomp components
 
@@ -74,15 +75,16 @@ If the debug flag is set, it will search for a config file that ends with *.debu
 rcrun [-h] [-s START |-st STOP | -fst FSTOP] [-d | -cf CFILE | -c CONFIG] [-is] [component]
 ```
 
-## rccd
+## rbcd
 
 Using this you can cd into the component directory given the component name.
 
 ```bash
-rccd component
+rbcd component
 ```
 
 ## Notes
 
 * The build tools don't support python components yet.
-* Auto-completion is enabled all the components except `rccd` so that you don't need to remember the exact component name. It works by pressing tab when you have written enough letters, so the auto-completion knows what words you are about to write.
+* Auto-completion is enabled all the components. It works by pressing tab when you have written enough letters, so the auto-completion knows what words you are about to write.
+* In case you run into issues running any build tool, kindly report it.
