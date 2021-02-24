@@ -239,6 +239,7 @@ class IDSLPool(OrderedDict):
         include_directories = include_directories + self.common_interface_dirs
         self.includeInPool(files, self, include_directories)
         self.includeInPool(self.mandatory_idsls, self, include_directories)
+        self.module_inteface_check()
 
     @classmethod
     def get_common_interface_dirs(cls):
@@ -292,6 +293,20 @@ class IDSLPool(OrderedDict):
                 if m['name'] == interface:
                     return self[module]
         return None
+
+    def module_inteface_check(self):
+        for module in self:
+            problem_found = True
+            for m in self[module]['interfaces']:
+                if m['name'] in self[module]['filename']:
+                    problem_found = False
+                    break
+            if problem_found:
+                interface_names = []
+                for m in self[module]['interfaces']:
+                    interface_names.append()
+                print(f"WARNING: It's expected to find at least on inteface {', '.join(interface_names)} \
+                 with the name of the file {self[module]['filename']} ")
 
     def interfaces(self):
         """
