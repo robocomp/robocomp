@@ -167,8 +167,11 @@ def main():
     if input_file.endswith(".cdsl") or input_file.endswith(".jcdsl") or input_file.endswith(".idsl"):
         try:
             FilesGenerator().generate(input_file, output_path, args.include_dirs, args.diff)
-        except pyparsing.ParseException:
+        except pyparsing.ParseException as pe:
             print(f"Error generating files for {colored(input_file, 'red')}")
+            print(pe.line)
+            print(' ' * (pe.col - 1) + '^')
+            print(pe)
             exit(-1)
 
     else:
