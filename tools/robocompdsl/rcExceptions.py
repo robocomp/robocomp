@@ -12,15 +12,15 @@ class InterfaceNotFound(RobocompDslException):
 		:param interfaceName: missing Interface
 		:param validNames: valid interfaces
 	"""
-	def __init__(self, interface_name, valid_names=None):
-		self.interface_name = interface_name
-		self.valid_names = valid_names
-		self.message = interface_name
-		if valid_names:
-			similar_list = difflib.get_close_matches(self.interface_name, self.valid_names, cutoff=0.4)
+	def __init__(self, interfaceName, validNames=None):
+		self.interfaceName = interfaceName
+		self.validNames = validNames
+		self.message = f"EXCEPTION: InterfaceNotFound: {self.interfaceName}."
+		if validNames:
+			similar_list = difflib.get_close_matches(self.interfaceName, self.validNames, cutoff=0.4)
 			if len(similar_list) > 0:
-				self.message = self.message + ". Did you mean " + str(similar_list[0])
-		super(RobocompDslException, self).__init__(self.message)
+				self.message += f" Did you mean {str(similar_list)}?"
+		super(InterfaceNotFound, self).__init__(self.message)
 
 
 class ParseException(RobocompDslException):

@@ -298,15 +298,16 @@ class IDSLPool(OrderedDict):
         for module in self:
             problem_found = True
             for m in self[module]['interfaces']:
-                if m['name'] in self[module]['filename']:
+                if m['name'] == os.path.splitext(os.path.basename(self[module]['filename']))[0]:
                     problem_found = False
                     break
             if problem_found:
                 interface_names = []
                 for m in self[module]['interfaces']:
-                    interface_names.append()
-                print(f"WARNING: It's expected to find at least on inteface {', '.join(interface_names)} \
-                 with the name of the file {self[module]['filename']} ")
+                    interface_names.append(m['name'])
+                print(f"WARNING: It's expected to find at least one interface with the name of the file."
+                      f"\n\tExpected interface name <{os.path.splitext(os.path.basename(self[module]['filename']))[0]}> but only found "
+                      f"<{', '.join(interface_names)}> in {self[module]['filename']}")
 
     def interfaces(self):
         """

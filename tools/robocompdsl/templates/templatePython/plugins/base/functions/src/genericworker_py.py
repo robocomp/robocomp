@@ -68,7 +68,12 @@ class src_genericworker_py(TemplateDict):
     def create_lists_classes(self):
         result = ""
         for idsl in sorted(set(self.component.recursiveImports + self.component.imports)):
-            module = self.component.idsl_pool.module_providing_interface(idsl.split('.')[0])
+            try:
+                module = self.component.idsl_pool.module_providing_interface(idsl.split('.')[0])
+            except Exception as e:
+                print(e.message)
+                exit(-1)
+
             if module is not None:  # For modules without interface
                 for sequence in module['sequences']:
                     item_type = utils.get_type_string(sequence['typeSequence'], module['name'])
