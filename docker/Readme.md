@@ -33,7 +33,18 @@ docker run -v<local_path_to_component>:<destination_path_in_container> -it roboc
 And with that you get a bash shell inside the docker running container and you can just cd to the <destination_tah_in_container> to run or test your component.
 
 ### Tools based in Docker
-We have also developed a tool on top of docker that wyou could be interested in: [rcbuildvalidator](https://github.com/robocomp/robocomp/tree/development/tools/buildTools/rcbuildvalidator).
+We have also developed a tool on top of docker that you could be interested in: [rcbuildvalidator](https://github.com/robocomp/robocomp/tree/development/tools/buildTools/rcbuildvalidator).
+
+
+### Other Dockerfiles related with Robocomp
+This other Dockerfiles, dockercompose files and related images in docker hub could be of your interest if you are working with these projects.
+#### AGM
+https://github.com/ljmanso/AGM/tree/current/docker/bionic
+
+#### DSR
+https://github.com/robocomp/dsr-graph/tree/development/docker/focal
+
+
 <!--stackedit_data:
 eyJoaXN0b3J5IjpbLTEzODI0NTUxNTksNDI5OTg2OTEwXX0=
 -->
