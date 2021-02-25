@@ -4,6 +4,21 @@
 
 <details markdown="1">
   <summary>Table of Contents</summary>
+
+- [Robocomp Python Style Guide](#robocomp-python-style-guide)
+- [Robocomp C++ Style Guide](#robocomp-c---style-guide)
+  * [Layout](#layout)
+    + [Indentation](#indentation)
+    + [Added spaces](#added-spaces)
+    + [The #define Guard](#the--define-guard)
+  * [Naming Conventions](#naming-conventions)
+    + [Variables](#variables)
+    + [Functions](#functions)
+    + [Classes](#classes)
+    + [Methods](#methods)
+    + [Curly Braces](#curly-braces)
+    + [Always use namespaces](#always-use-namespaces)
+    
 </details>
 
 
