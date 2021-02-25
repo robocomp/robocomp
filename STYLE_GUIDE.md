@@ -1,4 +1,4 @@
-#Robocomp Style Guide
+# Robocomp Style Guide
 
 <!-- markdown="1" is required for GitHub Pages to render the TOC properly. -->
 
