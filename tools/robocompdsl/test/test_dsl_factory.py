@@ -5,6 +5,7 @@ import unittest
 from collections import OrderedDict
 
 from pyparsing import ParseException
+import copy
 sys.path.append("/opt/robocomp/python")
 sys.path.append('/opt/robocomp/share/robocompdsl/')
 import dsl_parsers.specific_parsers.cdsl.componentfacade as cf
@@ -52,6 +53,8 @@ class DSLFactoryTestCase(unittest.TestCase):
 
     def assertNestedDictEqual(self, first, second, ignored_keys=None, msg=None):
         if ignored_keys is not None:
+            first = copy.deepcopy(first)
+            second = copy.deepcopy(second)
             for key in ignored_keys:
                 if key in first:
                     del first[key]
