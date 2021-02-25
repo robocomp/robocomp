@@ -35,6 +35,7 @@ _(we are assuming that your robocomp repo is in ~/robocomp/ and that you have cl
  ```bash
  cd ~/robocomp/components/dsr-graph/robots_pyrep/viriatoPyrep
  cmake .
+ make
  bash run.sh
  ```
  
@@ -50,7 +51,7 @@ _(we are assuming that your robocomp repo is in ~/robocomp/ and that you have cl
  ```bash
  cd ~/robocomp/components/dsr-graph/components/viriatoDSR
  cmake .
- make .
+ make
  ./bin/viriatoDSR etc/config
  ```
  
@@ -58,8 +59,9 @@ _(we are assuming that your robocomp repo is in ~/robocomp/ and that you have cl
  Now we have the simplest DSRc runnning and connected to the simulated world that CoppeliaSim brings to life. Yo need now to get familiarized with the agents' UI and with G. To see how things change when there is movement in the world we have two ways:
  
  1. using a joystick or XBox pad.
-   * in a new terminal goto ~/robocomp/components/robocomp-robolab/hardware/external_control/joystickpub
-   * build the component and start it with _bin/joystickpub etc/config_
+   * in a new terminal go to :
+   * ~/robocomp/components/robocomp-robolab/components/hardware/external_control/joystickpublish
+   * build the component and start it with _bin/JoystickPublish etc/config_
    * move the stick and you will see the robot moving in CoppeliaSim and in ALL G views.
  2. from the CoppeliaSim UI. 
    * click on the Coppelia window and click on the robot (check in the tree view on the left that you have selected the topmost element of the tree -Viriato)
@@ -77,23 +79,24 @@ Now we can move on and create a brand new agent to control de robot. Remember th
  * execute: robocompdsl my_first_agent.cdsl. A new file will be created with that name
  * open it in your favourite editor and replace the existing code with:
 
-       ```
-       Component my_first_agent
-       { Communications
-         {
-         };
-         language Cpp11;
-         gui Qt(QMainWindow);
-         options dsr;
-       };
-      ```
+```
+Component my_first_agent
+{ Communications
+  {
+  };
+  language Cpp11;
+  gui Qt(QMainWindow);
+  options dsr;
+};
+ ```
        
 * execute: robocompdsl my_first_agent.cdsl .
 * a lot of code will be generated and placed into several folders.
 * this is the moment to add the new my-frist-agent folder to your git repo. After we go with cmake, a lot of _garbage_ will be created that you don't want to upload.
 * build the agent: cmake . ; make; 
-* edit the etc/config file and give an id-number to the agent, i.e. 30. *Also set to FALSE the 3d_view flag for now*
+* edit the etc/config file and give an id-number to the agent, i.e. 30. *Also set the 3d_view flag as _false_ for now*
 * execute it: bin/my_first_agent etc/config
+* 
 
 Now you should see a new window with the "good-old" graph view of G. The same G that you can see in the other two agents. It has been copied at start and now the local copy is kept synchronized under the hood by some agent's internal threads.
 
@@ -137,16 +140,15 @@ We will add code to SpecificWorker.h and cpp, so let's start with the first one.
 
 Add these two lines to the _include_ section
 
-  ``` 
-  #include  "../../../etc/viriato_graph_names.h"
-  #include <random>
-
-  ``` 
+``` 
+#include  "../../../etc/viriato_graph_names.h"
+#include <random>
+``` 
 Now in SpecificWorler.cpp. In the class constructor add this line:
  
- ```
-   QLoggingCategory::setFilterRules("*.debug=false\n");
- ```  
+```
+QLoggingCategory::setFilterRules("*.debug=false\n");
+```  
  
  and replace the compute() method there with this one. Laser data in Viriato comes from the composition of two 180º LIDARS placed in opposite corners. A 360º representation is built and inserted in G as two float arrays, one with the scanning angles in radians and starting with -M_PI, and another one of the same size with the distances in millimeters. We seek a frontal cone starting in -PI/6 and ending in PI/6, given that the robot's front is 0º.
  
@@ -155,7 +157,7 @@ Now in SpecificWorler.cpp. In the class constructor add this line:
  { 
      const float MIN_DIST = 800.;  // min distance allowed to obstacles
      const float MAX_ROT = 1; // rad/sg
-     const FLOAT MAX_ADV = 500;  // mm/sg
+     const float MAX_ADV = 500;  // mm/sg
 
      // Here we retrieve data in G. Since G is a distributed data structure shared with other agents, there is no guarante 
      // that the selected nodes will be there. This is why the API returns std::optional<> types.
@@ -191,7 +193,9 @@ Now in SpecificWorler.cpp. In the class constructor add this line:
      {
          adv = MAX_ADV; side = 0; rot = 0;
      }
-
+     
+     // Get robot_node from robot's name 
+	 auto robot_node = G->get_node(robot_name);
      // Write in the robot_node's attributes the desired target speeds for the robot
      G->add_or_modify_attrib_local<robot_ref_adv_speed_att>(robot_node.value(), adv);
      G->add_or_modify_attrib_local<robot_ref_rot_speed_att>(robot_node.value(), rot);
@@ -203,6 +207,3 @@ Now in SpecificWorler.cpp. In the class constructor add this line:
  ```
   
 Now you can compile again the agent with _make_ and give it a run. It is far from perfect but should give an idea of how a basic agent is built. Now we can improve it and add new agents to keep on building the robot's brain.
-  
-  
-  
