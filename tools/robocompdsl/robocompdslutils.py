@@ -1,10 +1,13 @@
 import os
 import sys
 from distutils import spawn
+from rich.console import Console
 
 sys.path.append("/opt/robocomp/python")
 
 DIFF_TOOLS = ["meld", "kdiff3", "diff"]
+
+console = Console()
 
 
 def get_diff_tool(prefered=None):
@@ -40,12 +43,12 @@ def replaceTagsInFile(path):
 
 def create_directory(directory):
     try:
-        print('Creating', directory,)
+        console.print(f"Creating {directory}")
         os.mkdir(directory)
-        print('')
+        console.print('')
     except OSError:
         if os.path.isdir(directory):
-            print('(already existed)')
+            console.print('(already existed)', style='yellow')
             pass
         else:
             raise RuntimeError('\nCOULDN\'T CREATE %s' % directory)

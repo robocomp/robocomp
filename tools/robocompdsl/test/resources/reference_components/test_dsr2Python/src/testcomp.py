@@ -119,10 +119,6 @@ if __name__ == '__main__':
         print("Error getting required connections, check config file")
         sys.exit(-1)
 
-    adapter = ic.createObjectAdapter('HandDetection')
-    adapter.add(handdetectionI.HandDetectionI(worker), ic.stringToIdentity('handdetection'))
-    adapter.activate()
-
     signal.signal(signal.SIGINT, sigint_handler)
     app.exec_()
 

@@ -62,7 +62,6 @@ import time
 import os
 import copy
 import argparse
-from termcolor import colored
 # Ctrl+c handling
 import signal
 

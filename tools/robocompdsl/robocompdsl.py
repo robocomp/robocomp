@@ -9,8 +9,8 @@ import argparse
 import os
 import sys
 import pyparsing
+import rich
 
-from termcolor import colored
 
 sys.path.append("/opt/robocomp/python")
 sys.path.append('/opt/robocomp/share/robocompdsl/')
@@ -19,7 +19,7 @@ from filesgenerator import FilesGenerator
 import robocompdslutils
 
 
-
+console = rich.console.Console()
 
 DIFF_TOOLS = ["meld", "kdiff3", "diff"]
 
@@ -85,9 +85,9 @@ name_machine{
 
 def generate_dummy_CDSL(path):
     if os.path.exists(path):
-        print("File", path, "already exists.\nExiting...")
+        console.print(f"File {path} already exists.\nNot overwritting.", style='yellow')
     else:
-        print("Generating dummy CDSL file:", path)
+        console.print(f"Generating dummy CDSL file: {path}")
 
         name = path.split('/')[-1].split('.')[0]
         string = DUMMY_CDSL_STRING.replace('<CHANGETHECOMPONENTNAME>', name)
@@ -96,19 +96,19 @@ def generate_dummy_CDSL(path):
 
 def generate_dummy_SMDSL(path):
     if os.path.exists(path):
-        print("File", path, "already exists.\nExiting...")
+        console.print(f"File {path} already exists.\nNot overwritting.", style='yellow')
     else:
-        print("Generating dummy SMDSL file:", path)
+        console.print(f"Generating dummy SMDSL file: {path}", style='green')
 
         open(path, "w").write(DUMMY_SMDSL_STRING)
 
 
 class MyArgsParser(argparse.ArgumentParser):
     """
-    Class to print(colored error message on argparse
+    Class to print colored error message on argparse
     """
     def error(self, message):
-        sys.stderr.write(colored('error: %s\n' % message, 'red'))
+        console.log(rich.Text('error: %s\n' % message, style='red'))
         self.print_help()
         sys.exit(2)
 
@@ -168,14 +168,14 @@ def main():
         try:
             FilesGenerator().generate(input_file, output_path, args.include_dirs, args.diff)
         except pyparsing.ParseException as pe:
-            print(f"Error generating files for {colored(input_file, 'red')}")
-            print(pe.line)
-            print(' ' * (pe.col - 1) + '^')
-            print(pe)
+            console.log(f"Error generating files for {rich.Text(input_file, style='red')}")
+            console.log(pe.line)
+            console.log(' ' * (pe.col - 1) + '^')
+            console.log(pe)
             exit(-1)
 
     else:
-        print("Please check the Input file \n" + "Input File should be either .cdsl or .idsl")
+        console.print("Please check the Input file \n" + "Input File should be either .cdsl or .idsl")
         sys.exit(-1)
 
 
