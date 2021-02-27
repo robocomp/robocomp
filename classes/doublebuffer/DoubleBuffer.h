@@ -11,6 +11,10 @@
 //      use:  laser_buffer.put(std::move(laserData), [](auto &&I, auto &T){ for(auto &&i , I){ T.append(i/2);}});
 //      decl: auto rgb_buffer = new DoubleBuffer<std::vector<std::uint8_t>, cv:::Mat>(std::chrono::milliseconds(100));
 
+
+#ifndef DOUBLEBUFFER_H
+#define DOUBLEBUFFER_H
+
 #include <shared_mutex>
 #include <mutex>
 #include <vector>
@@ -214,3 +218,5 @@ private:
         return true;
     };
 };
+
+#endif

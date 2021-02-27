@@ -264,7 +264,7 @@ std::optional<std::vector<std::tuple<float,float,float>>>  CameraAPI::get_pointc
                         // cast to float
                         float *depth_array = (float *) value->second.byte_vec().data();
                         const int WIDTH = width->second.dec();
-                        const int HEIGHT = width->second.dec();
+                        const int HEIGHT = height->second.dec();
                         int FOCAL = focal->second.dec();
                         FOCAL = (int) ((WIDTH / 2) / atan(0.52));  // ÑAPA QUITAR
                         int STEP = subsampling;
@@ -292,12 +292,12 @@ std::optional<std::vector<std::tuple<float,float,float>>>  CameraAPI::get_pointc
                         } else
                             for (std::size_t i = 0; i < tmp.size() / STEP; i++)
                             {
-                                depth = depth_array[i];
-                                cols = (i % WIDTH) - 320;
-                                rows = 240 - (i / WIDTH);
-                                X = cols * depth / FOCAL * 1000;
-                                Y = depth * 1000;
-                                Z = rows * depth / FOCAL * 1000;
+                                cols = (i % WIDTH) - (WIDTH / 2);
+                                rows = (HEIGHT / 2) - (i / WIDTH);
+                                // compute axis coordinates according to the camera's coordinate system (Y outwards and Z up)
+                                Y = depth_array[i] * 1000;
+                                X = cols * Y / FOCAL;
+                                Z = rows * Y / FOCAL;
                                 // we transform measurements to millimeters
                                 result[i] = std::make_tuple(X, Y, Z);
                             }
