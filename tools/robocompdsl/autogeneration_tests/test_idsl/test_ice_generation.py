@@ -9,9 +9,9 @@ import sys
 import traceback
 from difflib import SequenceMatcher
 from shutil import rmtree
+from rich.console import Console, Text
 
-
-from termcolor import cprint, colored
+console = Console()
 
 
 class MyParser(argparse.ArgumentParser):
@@ -20,7 +20,7 @@ class MyParser(argparse.ArgumentParser):
     """
 
     def error(self, message):
-        cprint('error: %s' % message, 'red')
+        console.print('error: %s' % message, style='red')
         self.print_help()
         sys.exit(2)
 
@@ -208,7 +208,7 @@ class ComponentGenerationChecker:
                 self.results[idsl_path] = {'generation': False, 'comparation': False }
                 code, ice_path = self.generate_code(idsl_path, output_dir, self.dry_run)
                 if code == 0:
-                    cprint("%s generation OK" % ice_path, 'green')
+                    console.print("%s generation OK" % ice_path, style='green')
                     self.results[idsl_path]['new_ice_path'] = ice_path
                     self.results[idsl_path]['generation'] = True
                     self.generated += 1
@@ -233,15 +233,15 @@ class ComponentGenerationChecker:
                         if n_diff_lines == 0 or self.dry_run:
                             self.results[idsl_path]['comparation'] = True
                             self.compared += 1
-                            cprint("%s comparation OK" % idsl_path, 'green')
+                            console.print("%s comparation OK" % idsl_path, style='green')
                         else:
                             self.results[idsl_path]['comparation'] = False
                             self.comp_failed += 1
-                            cprint("%s comparation FAILED" % idsl_path, 'red')
+                            console.print("%s comparation FAILED" % idsl_path, 'red')
 
 
                 else:
-                    cprint("%s generation FAILED"%idsl_path, 'red')
+                    console.print("%s generation FAILED"%idsl_path, 'red')
                     self.gen_failed += 1
                     self.results[idsl_path]['generation'] = False
 
@@ -251,26 +251,26 @@ class ComponentGenerationChecker:
         print("%d are identical (%d are different)" % (self.compared, self.comp_failed))
 
         for file, result in self.results.items():
-            cname = colored(result['new_ice_path'], 'magenta')
+            cname = Text(result['new_ice_path'], 'magenta')
 
             # Printing results for generation
             if result['generation']:
-                gen_result = colored("TRUE", 'green')
+                gen_result = Text("TRUE", style='green')
             else:
-                gen_result = colored("FALSE", 'red')
+                gen_result = Text("FALSE", 'red')
 
             # Printing results for compilation
             if result['comparation']:
-                comp_result = colored("TRUE", 'green')
+                comp_result = Text("TRUE", style='green')
             else:
-                comp_result = colored("FALSE", 'red')
+                comp_result = Text("FALSE", 'red')
 
             if generate_only:
                 print("\t%s have been generated? %s" % (cname, gen_result))
             else:
                 print("\t%s have been generated? %s Are equal? %s %s different lines" % (cname, gen_result, comp_result, result['n_diff_lines']), end='')
                 if result['deprecated']:
-                    cprint("*", "magenta", attrs=['bold'])
+                    console.print("*", "magenta", attrs=['bold'])
                 else:
                     print('')
 
@@ -292,11 +292,11 @@ class ComponentGenerationChecker:
             self.remove_genetared_files(output_dir, self.dry_run)
         print("")
         os.chdir(previous_dir)
-        cprint("The * indictate that the old file is probably deprecated and generated with an old version of .ice generation.", "magenta", attrs=['bold'])
+        console.print("The * indictate that the old file is probably deprecated and generated with an old version of .ice generation.", "magenta", attrs=['bold'])
 
 
 if __name__ == '__main__':
-    parser = MyParser(description=colored(
+    parser = MyParser(description=Text(
         'This application generate .ice files from idsl files to check generation and comparation  to old verions  \n', 'magenta'),
         formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument('indir', type=str, help='Input dir for idsl files')
@@ -327,7 +327,7 @@ if __name__ == '__main__':
         if not os.path.isdir(args.outdir):
             outdir = os.path.abspath(args.outdir)
             if not os.path.isdir(outdir):
-                cprint("Output dir not found: %s" % args.outdir, 'red')
+                console.print("Output dir not found: %s" % args.outdir, 'red')
                 exit(1)
 
     try:
@@ -335,11 +335,11 @@ if __name__ == '__main__':
         checker.check_ice_generation(args.indir, args.dry_run, args.dirty, outdir, args.generate_only,
                                      args.filter, args.visual)
     except (KeyboardInterrupt, SystemExit):
-        cprint("\nExiting in the middle of the execution.", 'red')
-        cprint("Some files will be left on the directories.", 'yellow')
-        cprint("Use -c option to clean all the generated files.", 'yellow')
+        console.print("\nExiting in the middle of the execution.", 'red')
+        console.print("Some files will be left on the directories.", 'yellow')
+        console.print("Use -c option to clean all the generated files.", 'yellow')
         sys.exit()
     except Exception as e:
-        cprint("Unexpected exception: %s"%e.message, 'red')
+        console.print("Unexpected exception: %s"%e.message, 'red')
         traceback.print_exc()
 

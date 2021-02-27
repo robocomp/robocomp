@@ -1,9 +1,11 @@
 import os
 import pyparsing
-from termcolor import colored
 from collections import Counter, OrderedDict
+from rich.console import Console
+from rich.text import Text
 
 
+console = Console()
 def generate_recursive_imports(initial_idsls, include_directories=None):
     assert isinstance(initial_idsls, list), "initial_idsl, parameter must be a list, not %s" % str(type(initial_idsls))
     if include_directories is None:
@@ -18,8 +20,8 @@ def generate_recursive_imports(initial_idsls, include_directories=None):
         try:
             imported_module = DSLFactory().from_file(new_idsl_path)  # IDSLParsing.gimmeIDSL(attempt)
         except pyparsing.ParseException as e:
-            print(f"Parsing error in file {colored(new_idsl_path, 'red')} while generating recursive imports.")
-            print(f"Exception info: {colored(e.args[2], 'red')} in line {e.lineno} of:\n{colored(e.args[0].rstrip(),'magenta')}")
+            console.log(f"Parsing error in file {Text(new_idsl_path, style='red')} while generating recursive imports.")
+            console.log(f"Exception info: {Text(e.args[2], style='red')} in line {e.lineno} of:\n{Text(e.args[0].rstrip(), styled='magenta')}")
             raise
         if imported_module is None:
             raise FileNotFoundError('generate_recursive_imports: Couldn\'t locate %s' % idsl_basename)
@@ -48,7 +50,7 @@ def communication_is_ice(sb):
             if sb[1] == 'ros'.lower():
                 is_ice = False
             elif sb[1] != 'ice'.lower():
-                print('Only ICE and ROS are supported')
+                console.log('Only ICE and ROS are supported', style='yellow')
                 raise ValueError("Communication not ros and not ice, but %s" % sb[1])
     else:
         raise ValueError("Parameter %s of invalid type %s" % (str(sb), str(type(sb))))
@@ -108,7 +110,7 @@ def idsl_robocomp_path(idsl_name, include_directories=None):
         path = os.path.join(p, idsl_name)
         if os.path.isfile(path):
             return path
-    print(('Couldn\'t locate ', idsl_name))
+    console.log(f"Couldn\'t locate {idsl_name}", style="yellow")
     return None
 
 
@@ -186,15 +188,15 @@ def decorator_and_type_to_const_ampersand(decorator, vtype, module_pool, cpp11=F
 
 
 def get_kind_from_pool(vtype, module_pool, debug=False):
-    if debug: print(vtype)
+    if debug: console.log(vtype)
     split = vtype.split("::")
     if debug: print(split)
     if len(split) > 1:
         vtype = split[1]
         mname = split[0]
-        if debug: print(('SPLIT (' + vtype+'), (' + mname + ')'))
+        if debug: console.log(('SPLIT (' + vtype+'), (' + mname + ')'))
         if mname in module_pool:
-            if debug: print(('dentro SPLIT (' + vtype+'), (' + mname + ')'))
+            if debug: console.log(('dentro SPLIT (' + vtype+'), (' + mname + ')'))
             r = get_type_from_module(vtype, module_pool[mname])
             if r is not None: return r
         if mname.startswith("RoboComp"):
@@ -202,9 +204,9 @@ def get_kind_from_pool(vtype, module_pool, debug=False):
                 r = get_type_from_module(vtype, module_pool[mname[8:]])
                 if r is not None: return r
     else:
-        if debug: print('no split')
+        if debug: console.log('no split')
         for module in module_pool:
-            if debug: print(('  '+str(module)))
+            if debug: console.log(('  '+str(module)))
             r = get_type_from_module(vtype, module_pool[module])
             if r is not None: return r
 
@@ -305,9 +307,9 @@ class IDSLPool(OrderedDict):
                 interface_names = []
                 for m in self[module]['interfaces']:
                     interface_names.append(m['name'])
-                print(f"WARNING: It's expected to find at least one interface with the name of the file."
+                console.log(f"WARNING: It's expected to find at least one interface with the name of the file."
                       f"\n\tExpected interface name <{os.path.splitext(os.path.basename(self[module]['filename']))[0]}> but only found "
-                      f"<{', '.join(interface_names)}> in {self[module]['filename']}")
+                      f"<{', '.join(interface_names)}> in {self[module]['filename']}", style='red')
 
     def interfaces(self):
         """

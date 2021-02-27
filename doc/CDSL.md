@@ -1,3 +1,4 @@
+
 # CDSL
 CDSL is Component Description Specific Language and is used to create and maintain their component descriptions from a textual model. CDSL files contain the basic definition of the structure of the component and information about communication parameters such as proxies, the programming language of the component, interfaces and topics used by the components, the optional support of Qt graphical interfaces.
 
@@ -49,9 +50,8 @@ gui Qt(QWidget//QDialog//QMainWindow);
 - #### Dependences with external classes and libraries. (Optional)
 	- agmagent: Include Cortex-Agent communication patterns.
 	- InnerModelViewer: Include [InnerModelViewer](https://github.com/robocomp/robocomp/tree/stable/libs/innermodel) resources.
+	- dsr: Include [dsr](https://github.com/robocomp/robocomp/tree/development/classes/dsr) resources.
 ```
-options agmagent; 
-options InnerModelViewer;
+options dsr, agmagent, InnerModelViewer;
 ```
-## 
-
+##

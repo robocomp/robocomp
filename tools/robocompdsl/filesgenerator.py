@@ -2,7 +2,6 @@ import filecmp
 import os
 import subprocess
 import sys
-from termcolor import colored
 
 import robocompdslutils
 from templates.templateCPP.templatecpp import TemplatesManagerCpp
@@ -19,6 +18,7 @@ LANG_TO_TEMPLATE = {
     'python3': 'python',
     'python2': 'python'
 }
+
 
 class FilesGenerator:
     def __init__(self):
@@ -68,11 +68,10 @@ class FilesGenerator:
     def __load_ast(self):
         try:
             self.ast = dsl_factory.DSLFactory().from_file(self.dsl_file, includeDirectories=self.include_dirs)
-        except (ValueError) as e:
-            print(f"Parsing error in file {colored(self.dsl_file, 'red')} while generating AST.")
-            print(f"Exception info: {colored(e.args[0], 'red')} in line {e.args[1]} of:\n{colored(e.args[2].rstrip(), 'magenta')}")
+        except ValueError as e:
+            print(f"Parsing error in file {rich.Text(self.dsl_file, style='red')} while generating AST.")
+            print(f"Exception info: {rich.Text(e.args[0], style='red')} in line {e.args[1]} of:\n{rich.Text(e.args[2].rstrip(), style='magenta')}")
             exit(1)
-
 
     def __create_files(self):
         new_existing_files = {}
@@ -111,7 +110,6 @@ class FilesGenerator:
                     print("Binary equal files %s and %s" % (o_file, n_file))
 
     def __generate_component(self):
-        new_existing_files = {}
         language = self.ast.language.lower()
 
         template = LANG_TO_TEMPLATE[language]
@@ -146,6 +144,6 @@ class FilesGenerator:
         # Create directories within the output directory
         new_dirs = ["bin", "src", "etc"]
         for new_dir in new_dirs:
-            if self.ast.language.lower() == "python" and new_dir == "bin": continue
+            if self.ast.language.lower() == "python" and new_dir == "bin":
+                continue
             robocompdslutils.create_directory(os.path.join(self.output_path, new_dir))
-

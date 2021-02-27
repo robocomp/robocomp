@@ -5,7 +5,9 @@ from collections import ChainMap
 from string import Template
 
 from dsl_parsers.parsing_utils import communication_is_ice
+import rich
 
+console = rich.console.Console()
 
 class CustomTemplate(Template):
     delimiter = '$'
@@ -156,16 +158,16 @@ class ComponentTemplatesManager(AbstractTemplatesManager):
             ofile = self._output_file_rename(output_path, template_file)
 
             if template_file in self.files['avoid_overwrite'] and os.path.exists(ofile):
-                print('Not overwriting specific file "' + ofile + '", saving it to ' + ofile + '.new')
+                console.print(':eye:  Not overwriting specific file "' + ofile + '", saving it to ' + ofile + '.new', style='yellow')
                 new_existing_files[os.path.abspath(ofile)] = os.path.abspath(ofile) + '.new'
                 ofile += '.new'
 
             ifile = os.path.join(TEMPLATES_DIR, self.files['template_path'], template_file)
-            print('Generating', ofile)
+            console.print(f":thumbs_up: Generating {ofile}", style='green')
             try:
                 self._template_to_file(ifile, ofile)
             except ValueError as e:
-                cprint(e)
+                console.print(e)
             self._post_generation_action(template_file, ofile)
 
         for interface in self.ast.implements + self.ast.subscribesTo:
@@ -173,7 +175,7 @@ class ComponentTemplatesManager(AbstractTemplatesManager):
                 for template_file in self.files['servant_files']:
                     ofile = os.path.join(output_path, 'src', interface.name.lower() + 'I.' + template_file.split('.')[
                         -1].lower())
-                    print('Generating %s (servant for %s)' % (ofile, interface.name))
+                    console.print(':thumbs_up: Generating %s (servant for %s)' % (ofile, interface.name), style='green')
                     ifile = os.path.join(TEMPLATES_DIR, self.files['template_path'], template_file)
                     self._template_to_file(ifile, ofile, interface.name)
         return new_existing_files
@@ -222,7 +224,7 @@ class InterfaceTemplateManager(AbstractTemplatesManager):
             #     ofile += '.new'
 
             ifile = os.path.join(TEMPLATES_DIR, self.files['template_path'], template_file)
-            print('Generating', ofile)
+            console.print(f":thumbs_up: Generating {ofile}", style='green')
             self._template_to_file(ifile, ofile)
 
             self._post_generation_action(template_file, ofile)
