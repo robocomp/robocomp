@@ -25,8 +25,6 @@ You do not need to know anything prior to taking up this issue! Welcome to opens
 
 - [ ] **Clone the newly forked repository** on your local machine.
 
-- [ ] **Update** the file README.md by removing the broken link.
-
 - [ ] **Commit and push** your changes.
 
 - [ ] **Make a Pull Request** by going to your fork of robocomp.
