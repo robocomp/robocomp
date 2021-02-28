@@ -56,6 +56,7 @@ RUN sudo sh -c "echo '/opt/robocomp/lib/' >> /etc/ld.so.conf"
 RUN sudo ldconfig
 WORKDIR robocomp
 ENV PATH=$PATH:/opt/robocomp/bin/
+ENV ROBOCOMP=~/robocomp
 RUN git annex get \
   files/innermodel/simpleworld.xml \
   files/osgModels/textures/wood.jpg \ 

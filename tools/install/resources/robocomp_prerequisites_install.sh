@@ -29,6 +29,6 @@ sudo DEBIAN_FRONTEND=noninteractive apt-get update && sudo DEBIAN_FRONTEND=nonin
       sudo \
       zeroc-ice-all-dev \
       zeroc-icebox \
-    && rm -rf /var/lib/apt/lists/*
+    && sudo rm -rf /var/lib/apt/lists/*
 
-sudo pip3 pyside2 rich
+sudo pip3 install pyside2 rich
