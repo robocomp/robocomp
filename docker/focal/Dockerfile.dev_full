@@ -6,34 +6,36 @@ ARG DEBIAN_FRONTEND=noninteractive
 
 # Update Ubuntu Software repository
 RUN apt-get update && apt-get install -y --no-install-recommends \
-  ca-certificates \
-  cmake \
-  curl \
-  freeglut3-dev \
-  g++ \
-  gcc-multilib \
-  git \
-  git-annex \
-  libboost-dev \
-  libboost-system-dev \
-  libboost-thread-dev \
-  libgsl-dev \
-  libopenscenegraph-dev \
-  libqt5xmlpatterns5-dev \
-  libqt5opengl5-dev \
-  make \
-  python3 \
-  python3-pip \
-  python3-distutils \
-  python3-prompt-toolkit \
-  python3-pyparsing \
-  python3-setuptools \
-  python3-termcolor \
-  sudo \
-  zeroc-ice-all-dev \
+      ca-certificates \
+      cmake \
+      curl \
+      freeglut3-dev \
+      g++ \
+      gcc-multilib \
+      git \
+      git-annex \
+      libboost-dev \
+      libboost-system-dev \
+      libboost-thread-dev \
+      libgsl-dev \
+      libopenscenegraph-dev \
+      libqt5xmlpatterns5-dev \
+      libqt5opengl5-dev \
+      libzeroc-icestorm3.7 \
+      make \
+      python3 \
+      python3-pip \
+      python3-distutils \
+      python3-prompt-toolkit \
+      python3-pyparsing \
+      python3-setuptools \
+      python3-termcolor \
+      sudo \
+      zeroc-ice-all-dev \
+      zeroc-icebox \
   && rm -rf /var/lib/apt/lists/*
 
-RUN sudo pip3 install pyside2
+RUN sudo pip3 install pyside2 rich
 
 RUN export uid=1000 gid=1000 && \
     mkdir -p /home/robolab && \
@@ -53,6 +55,7 @@ RUN cd robocomp && mkdir build && cd build && cmake .. && make -j$(nproc) && sud
 RUN sudo sh -c "echo '/opt/robocomp/lib/' >> /etc/ld.so.conf"
 RUN sudo ldconfig
 WORKDIR robocomp
+ENV PATH=$PATH:/opt/robocomp/bin/
 RUN git annex get \
   files/innermodel/simpleworld.xml \
   files/osgModels/textures/wood.jpg \ 

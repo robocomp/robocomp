@@ -11,19 +11,21 @@
 
 [CDSL: RoboComp's domain specific language for *components* definition](CDSL.md)
 
+[RoboComp's  build tools ](buildTools.md)
+
+[Starting with DSR](DSR-start.md)
+
 [List of RoboComp Interfaces](interfaces/README.md)
 
 [Introduction to InnerModel: RoboComp's internal representation of the world and itself](innermodel.md)
 
 [Maintaining your own repository of components](using_github.md)
 
-[RoboComp's  build tools ](buildTools.md)
-
 [How to contribute to RoboComp using the GitHub branching mechanism](contribute/contribute.md)
 
 [Coding examples](https://github.com/robocomp/robocomp-examples/blob/master/README.md)
 
-[Packaging Robocomp ](packaging/packaging.md)
+[Packaging Robocomp](packaging/packaging.md)
 
 [List of **robocomp-robolab** components](robocomp-robolab-components.md)
 
@@ -31,6 +33,6 @@
 
 [RoboComp Component & Ros Node chatter](RobocompRosChatter.md)
 
-[Starting with DSR](DSR-start.md)
+
 
 
