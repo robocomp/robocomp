@@ -2,7 +2,7 @@
 name: Newcomer Issue
 about: Create a report for changes that any newcomer can resolve.
 title: "[Newcomers issue] "
-labels: newcomers-only
+labels: good first issue
 assignees: ''
 
 ---
@@ -24,8 +24,6 @@ You do not need to know anything prior to taking up this issue! Welcome to opens
 - [ ]  **Fork the robocomp/robocomp repository** using the fork button on the topright corner.
 
 - [ ] **Clone the newly forked repository** on your local machine.
-
-- [ ] **Update** the file README.md by removing the broken link.
 
 - [ ] **Commit and push** your changes.
 
