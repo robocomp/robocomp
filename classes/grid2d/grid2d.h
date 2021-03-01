@@ -66,7 +66,7 @@ class Grid
                 };
                 bool operator==(const Key &other) const
                 {
-                    return x == other.x && z == other.z;
+                    return x == other.x and z == other.z;
                 };
                 void save(std::ostream &os) const   { os << x << " " << z << " "; }; //method to save the keys
                 void read(std::istream &is)         { is >> x >> z; };					   //method to read the keys
