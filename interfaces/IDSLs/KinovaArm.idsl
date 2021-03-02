@@ -1,0 +1,30 @@
+module RoboCompKinovaArm
+{
+    enum ArmJoints { shoulderOne, shoulderTwo, elbowOne, elbowTwo, wristOne, wristTwo };
+
+	struct TPose
+	{
+		float x;
+		float y;
+		float z;
+		float rx;
+		float ry;
+		float rz;
+		float qta;
+		float qtb;
+		float qtc;
+		float qtd;
+		string parent;
+	};
+
+	interface KinovaArm
+	{
+		TPose = getCenterOfTool(string referencedTo);
+		void setCenterOfTool(TPose pose, string referencedTo);
+		void setGripper(int pos);
+		void openGripper();
+		void closeGripper();
+	};
+};
+
+
