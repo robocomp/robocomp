@@ -1,6 +1,6 @@
 module RoboCompKinovaArm
 {
-    enum ArmJoints { shoulderOne, shoulderTwo, elbowOne, elbowTwo, wristOne, wristTwo };
+    	enum ArmJoints { base, shoulderOne, shoulderTwo, elbowOne, elbowTwo, wristOne, wristTwo };
 
 	struct TPose
 	{
@@ -19,8 +19,8 @@ module RoboCompKinovaArm
 
 	interface KinovaArm
 	{
-		TPose = getCenterOfTool(string referencedTo);
-		void setCenterOfTool(TPose pose, string referencedTo);
+		TPose getCenterOfTool(ArmJoints referencedTo);
+		void setCenterOfTool(TPose pose, ArmJoints referencedTo);
 		void setGripper(int pos);
 		void openGripper();
 		void closeGripper();
