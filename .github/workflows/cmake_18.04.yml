@@ -1,6 +1,11 @@
 name: Compile ubuntu-18.04
 
-on: [push]
+on:
+  push:
+    paths:
+    - '!doc'
+    - '!docker'
+    - '!docs'
 
 
 jobs:
