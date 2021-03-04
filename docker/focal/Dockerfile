@@ -25,9 +25,9 @@ RUN export uid=1000 gid=1000 && \
     chown ${uid}:${gid} -R /home/robolab 
 COPY --from=robocomp/robocomp:focal_dev /opt/robocomp /opt/robocomp/
 COPY --from=robocomp/robocomp:focal_dev /etc/ld.so.conf /etc/ld.so.conf
-COPY --from=robocomp/robocomp:focal_dev /etc/bash_completion.d/python-argcomplete /etc/bash_completion.d/python-argcomplete
 COPY --from=robocomp/robocomp:focal_dev /home/robolab/files/ /home/robocomp/robocomp/files/
 RUN ldconfig
+RUN activate-global-python-argcomplete3
 ENV PATH=$PATH:/opt/robocomp/bin
 USER robolab
 
