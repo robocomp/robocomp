@@ -1,7 +1,11 @@
 name: Compile ubuntu-20.04
 
-on: [push]
-
+on:
+  push:
+    paths:
+    - '!doc'
+    - '!docker'
+    - '!docs'
 
 jobs:
   build:
