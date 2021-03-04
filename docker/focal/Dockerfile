@@ -27,7 +27,7 @@ COPY --from=robocomp/robocomp:focal_dev /opt/robocomp /opt/robocomp/
 COPY --from=robocomp/robocomp:focal_dev /etc/ld.so.conf /etc/ld.so.conf
 COPY --from=robocomp/robocomp:focal_dev /home/robolab/files/ /home/robocomp/robocomp/files/
 RUN ldconfig
-RUN activate-global-python-argcomplete3
+RUN activate-global-python-argcomplete3 --dest /etc/profile.d/
 ENV PATH=$PATH:/opt/robocomp/bin
 USER robolab
 
