@@ -10,6 +10,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   libqt5opengl5-dev \
   libzeroc-ice3.7 \
   libzeroc-icestorm3.7 \
+  python3-argcomplete \
   python3-prompt-toolkit \
   python3-termcolor \
   sudo \
