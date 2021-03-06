@@ -14,8 +14,6 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
           repository: ${{ github.repository }}
           dockerfile: docker/focal/Dockerfile.dev
-          tag_with_ref: true
-          tag_with_sha: true
           tags: focal_dev
       - name: Push to Docker Hub
         uses: docker/build-push-action@v1
@@ -24,6 +22,4 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
           repository: ${{ github.repository }}
           dockerfile: docker/focal/Dockerfile
-          tag_with_ref: true
-          tag_with_sha: true
           tags: focal
