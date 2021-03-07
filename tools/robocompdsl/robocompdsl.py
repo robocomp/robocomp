@@ -10,6 +10,7 @@ import os
 import sys
 import pyparsing
 import rich
+from rich.text import Text
 
 
 sys.path.append("/opt/robocomp/python")
@@ -108,7 +109,7 @@ class MyArgsParser(argparse.ArgumentParser):
     Class to print colored error message on argparse
     """
     def error(self, message):
-        console.log(rich.Text('error: %s\n' % message, style='red'))
+        console.log(Text('error: %s\n' % message, style='red'))
         self.print_help()
         sys.exit(2)
 
