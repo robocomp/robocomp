@@ -4,6 +4,6 @@ module RoboCompFullPoseEstimationPub
 {
     interface FullPoseEstimationPub
     {
-        void newFullPose(RoboCompFullPoseEstimation::FullPose pose);
+        void newFullPose(RoboCompFullPoseEstimation::FullPoseEuler pose);
     };
 };
