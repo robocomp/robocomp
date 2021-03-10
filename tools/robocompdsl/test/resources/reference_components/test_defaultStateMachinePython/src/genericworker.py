@@ -32,9 +32,6 @@ Ice.loadSlice("-I ./src/ --all ./src/CommonBehavior.ice")
 import RoboCompCommonBehavior
 
 
-
-
-
 try:
     from ui_mainUI import *
 except:

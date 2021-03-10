@@ -55,48 +55,22 @@
 #
 #
 
-import sys
-import traceback
-import IceStorm
-import time
-import os
-import copy
 import argparse
 # Ctrl+c handling
 import signal
 
+from rich.console import Console
+console = Console()
+
 from PySide2 import QtCore
-
+import interfaces
 from specificworker import *
-
-
-class CommonBehaviorI(RoboCompCommonBehavior.CommonBehavior):
-    def __init__(self, _handler):
-        self.handler = _handler
-    def getFreq(self, current = None):
-        self.handler.getFreq()
-    def setFreq(self, freq, current = None):
-        self.handler.setFreq()
-    def timeAwake(self, current = None):
-        try:
-            return self.handler.timeAwake()
-        except:
-            print('Problem getting timeAwake')
-    def killYourSelf(self, current = None):
-        self.handler.killYourSelf()
-    def getAttrList(self, current = None):
-        try:
-            return self.handler.getAttrList()
-        except:
-            print('Problem getting getAttrList')
-            traceback.print_exc()
-            status = 1
-            return
 
 #SIGNALS handler
 def sigint_handler(*args):
     QtCore.QCoreApplication.quit()
-    
+
+
 if __name__ == '__main__':
     app = QtCore.QCoreApplication(sys.argv)
     parser = argparse.ArgumentParser()
@@ -104,27 +78,16 @@ if __name__ == '__main__':
     parser.add_argument('--startup-check', action='store_true')
 
     args = parser.parse_args()
+    interface_manager = interfaces.InterfaceManager(args.iceconfigfile)
 
-    ic = Ice.initialize(args.iceconfigfile)
-    status = 0
-    mprx = {}
-    parameters = {}
-    for i in ic.getProperties():
-        parameters[str(i)] = str(ic.getProperties().getProperty(i))
-
-    if status == 0:
-        worker = SpecificWorker(mprx, args.startup_check)
-        worker.setParams(parameters)
+    if interface_manager.status == 0:
+        worker = SpecificWorker(interface_manager.get_proxies_map(), args.startup_check)
+        worker.setParams(interface_manager.parameters)
     else:
         print("Error getting required connections, check config file")
         sys.exit(-1)
 
+    interface_manager.set_default_hanlder(worker)
     signal.signal(signal.SIGINT, sigint_handler)
     app.exec_()
-
-    if ic:
-        # try:
-        ic.destroy()
-        # except:
-        #     traceback.print_exc()
-        #     status = 1
+    interface_manager.destroy()
