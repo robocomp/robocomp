@@ -31,12 +31,6 @@ except KeyError:
 Ice.loadSlice("-I ./src/ --all ./src/CommonBehavior.ice")
 import RoboCompCommonBehavior
 
-${load_slice_and_create_imports}
-
-${create_lists_classes}
-
-${implements_and_subscribes_imports}
-
 ${ui_import}
 
 
