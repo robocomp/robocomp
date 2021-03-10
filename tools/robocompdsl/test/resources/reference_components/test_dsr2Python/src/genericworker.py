@@ -34,9 +34,6 @@ import RoboCompCommonBehavior
 
 
 
-
-
-
 class GenericWorker(QtCore.QObject):
 
     kill = QtCore.Signal()

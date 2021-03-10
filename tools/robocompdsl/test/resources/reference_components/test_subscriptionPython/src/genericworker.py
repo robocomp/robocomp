@@ -31,14 +31,6 @@ except KeyError:
 Ice.loadSlice("-I ./src/ --all ./src/CommonBehavior.ice")
 import RoboCompCommonBehavior
 
-Ice.loadSlice("-I ./src/ --all ./src/IMU.ice")
-import RoboCompIMU
-Ice.loadSlice("-I ./src/ --all ./src/IMUPub.ice")
-import RoboCompIMUPub
-
-
-import imupubI
-
 
 try:
     from ui_mainUI import *
