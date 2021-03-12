@@ -131,12 +131,19 @@ class RCPortChecker:
                             print("\t\t%s" % (path))
 
     def search_interface_port_by_name(self, interface_name):
+        ports = self.search_interface_ports_by_name(interface_name)
+        if ports is not None:
+            port_key = ports.keys[0]
+            return port_key, ports[port_key]
+        else:
+            return None
+
+    def search_interface_ports_by_name(self, interface_name):
         for interface, ports in sorted(self.interfaces_ports.items()):
             if interface_name is not None and interface_name.lower() != interface.lower():
                 continue
-            port_key = list(ports.keys())[0]
-            return (port_key, ports[port_key])
-        return None, None
+            return ports
+        return None
 
     def search_interface_by_port(self, port):
         if port in self.ports_for_interfaces.keys():
