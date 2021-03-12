@@ -64,7 +64,6 @@ sudo DEBIAN_FRONTEND=noninteractive apt-get update && sudo DEBIAN_FRONTEND=nonin
       python3 \
       python3-pip \
       python3-distutils \
-      python3-prompt-toolkit \
       python3-pyparsing \
       python3-setuptools \
       python3-termcolor \
@@ -72,7 +71,7 @@ sudo DEBIAN_FRONTEND=noninteractive apt-get update && sudo DEBIAN_FRONTEND=nonin
       zeroc-ice-all-dev \
       zeroc-icebox 
 
-sudo pip3 install pyside2 rich
+sudo pip3 install pyside2 rich prompt_toolkit
 ```
 
 It is recommendable to install the following packages::
