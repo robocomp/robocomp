@@ -56,13 +56,13 @@ class FilesGenerator:
         assert isinstance(value, list), "include_dirs must be a string not %s" % str(type(value))
         self.__include_dirs = value
 
-    def generate(self, input_file, output_path, include_dirs, diff=None):
+    def generate(self, input_file, output_path, include_dirs, diff=None, test=False):
         self.dsl_file = input_file
         self.output_path = output_path
         self.include_dirs = include_dirs
         self.diff = diff
         self.__load_ast()
-        new_existing_files = self.__create_files()
+        new_existing_files = self.__create_files(test)
         self.__show_diff(new_existing_files)
 
     def __load_ast(self):
@@ -73,14 +73,14 @@ class FilesGenerator:
             print(f"Exception info: {rich.Text(e.args[0], style='red')} in line {e.args[1]} of:\n{rich.Text(e.args[2].rstrip(), style='magenta')}")
             exit(1)
 
-    def __create_files(self):
+    def __create_files(self, test=False):
         new_existing_files = {}
         if self.dsl_file.endswith(".cdsl") or self.dsl_file.endswith(".jcdsl"):
             # Check output directory
-            self.__create_component_directories()
+            self.__create_component_directories(test)
 
             # Generate specific_component
-            new_existing_files = self.__generate_component()
+            new_existing_files = self.__generate_component(test)
 
         elif self.dsl_file.endswith(".idsl"):
             new_existing_files = self.__generate_interface()
@@ -109,7 +109,7 @@ class FilesGenerator:
                 else:
                     print("Binary equal files %s and %s" % (o_file, n_file))
 
-    def __generate_component(self):
+    def __generate_component(self, test):
         language = self.ast.language.lower()
 
         template = LANG_TO_TEMPLATE[language]
@@ -121,6 +121,11 @@ class FilesGenerator:
 
         try:
             new_existing_files = template_obj.generate_files(self.output_path)
+            if template == 'python' and test:
+                self.ast.requires, self.ast.implements = self.ast.implements, self.ast.requires
+                self.ast.publishes, self.ast.subscribesTo = self.ast.subscribesTo, self.ast.publishes
+                test_template_object = TemplatesManagerPython(self.ast)
+                test_template_object.generate_files(self.output_path+"/test")
         except KeyError as e:
             print(e)
             raise
@@ -137,7 +142,7 @@ class FilesGenerator:
         new_existing_files = template_obj.generate_files(self.output_path)
         return new_existing_files
 
-    def __create_component_directories(self):
+    def __create_component_directories(self, test=False):
         if not os.path.exists(self.output_path):
             robocompdslutils.create_directory(self.output_path)
 
@@ -147,3 +152,10 @@ class FilesGenerator:
             if self.ast.language.lower() == "python" and new_dir == "bin":
                 continue
             robocompdslutils.create_directory(os.path.join(self.output_path, new_dir))
+        if test:
+            test_output_path = os.path.join(self.output_path, "test")
+            robocompdslutils.create_directory(test_output_path)
+            for new_dir in new_dirs:
+                if self.ast.language.lower() == "python" and new_dir == "bin":
+                    continue
+                robocompdslutils.create_directory(os.path.join(test_output_path, new_dir))
