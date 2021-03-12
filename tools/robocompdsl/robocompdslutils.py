@@ -52,3 +52,25 @@ def create_directory(directory):
             pass
         else:
             raise RuntimeError('\nCOULDN\'T CREATE %s' % directory)
+
+
+def get_random_available_port(host="localhost"):
+    import random
+    while(True):
+        new_port = random.randrange(10000, 20000)
+        if check_port_availability(host, new_port):
+            return new_port
+
+def check_port_availability(host, port):
+    import socket
+    from contextlib import closing
+    with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as sock:
+        if sock.connect_ex((host, port)) == 0:
+            return False
+        else:
+            return True
+
+# if __name__ == '__main__':
+#     a = get_random_available_port()
+#     print(a)
+#     print(check_port_availability("localhost", 43107))
