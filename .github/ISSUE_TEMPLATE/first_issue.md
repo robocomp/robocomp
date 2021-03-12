@@ -33,7 +33,7 @@ You do not need to know anything prior to taking up this issue! Welcome to opens
 
 If you are not familiar with GitHub or how to create a pull request, [here is a guide you can follow on how GitHub works.](https://guides.github.com/activities/hello-world/)
 
-If you are familiar with the terminal or would like to learn to use it, [here is a great tutorial on how to send a pull request using the terminal.](https://egghead.io/series/how-to-contribute-to-an-open-source-project-on-github)
+If you are familiar with the terminal or would like to learn to use it, [here is a great tutorial on how to send a pull request using the terminal.](https://www.youtube.com/watch?v=rgbCcBNZcdQ&t=8s)
 
 ### Questions?
 Don’t hesitate to ask questions or to get help if you feel like you are getting stuck. For example leave a comment below or ask in the [gitter channel](https://gitter.im/robocomp).
