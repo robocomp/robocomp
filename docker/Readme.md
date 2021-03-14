@@ -14,19 +14,19 @@ To create the Docker images, you can enter the corresponding subdirectory and ru
 docker build -t <image_name> .
 ```
 ## Images in Docker HUB
-It is not absolutly necessary to build these images from the Dockerfiles since we have versions of the same ones uploaded to Docker Hub. The available robocomp images can be found [here](https://hub.docker.com/r/robocomp/robocomp/tags?page=1&ordering=last_updated).
+It is not absolutely necessary to build these images from the Dockerfiles since we have versions of the same ones uploaded to Docker Hub. The available robocomp images can be found [here](https://hub.docker.com/r/robocomp/robocomp/tags?page=1&ordering=last_updated).
 
 ## Use cases
 The uses of these images can be very varied.
 
 ### Local testing
-Sometimes we use these to make local compilation tests of the last commits of Robocomp in the different versions of Ubuntu. It's like some kind of local CI, but with the continous part. If the previously shown build command shown above ends correctly we can assume that the Robocomp installation is still working. 
+Sometimes we use these to make local compilation tests of the last commits of Robocomp in the different versions of Ubuntu. It's like some kind of local CI, but with the continuous part. If the previously shown build command shown above ends correctly we can assume that the Robocomp installation is still working. 
 
 ### Check installation process 
-We can also modify the Dockerfiles  before doing the build to test the current installation process and see if there are any missing or spare packages, versions, etc. Sometimes to look into the Dockerfile is easy than reading any installation instructions.
+We can also modify the Dockerfiles before doing the build to test the current installation process and see if there are any missing or spare packages, versions, etc. Sometimes to look into the Dockerfile is easy than reading any installation instructions.
 
 ### Developing within a Container
-You can use a Docker Image as a clean enviroment to test your development. With the `-v` option of docker you can mount any folder in your host machine (your current operting system) into the image you are going to run. So, if you have new component that you can test on one the Robocomp images you can just run the image with that option:
+You can use a Docker Image as a clean environment to test your development. With the `-v` option of docker, you can mount any folder in your host machine (your current operating system) into the image you are going to run. So, if you have new component that you can test on one of the Robocomp images you can just run the image with that option:
 ```docker
 docker run -v<local_path_to_component>:<destination_path_in_container> -it robocomp:focal bash
 ```
@@ -37,7 +37,7 @@ We have also developed a tool on top of docker that you could be interested in: 
 
 
 ### Other Dockerfiles related with Robocomp
-This other Dockerfiles, dockercompose files and related images in docker hub could be of your interest if you are working with these projects.
+These other Dockerfiles, docker-compose files,and related images in the docker hub could be of your interest if you are working with these projects.
 #### AGM
 https://github.com/ljmanso/AGM/tree/current/docker/bionic
 
