@@ -38,7 +38,7 @@ sudo make install
 
 echo "Installing third-party software Fast-RTPS"
 
-mkdir ~/software
+mkdir -p ~/software
 cd ~/software
 git clone https://github.com/eProsima/Fast-CDR.git
 mkdir Fast-CDR/build 
