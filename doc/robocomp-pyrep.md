@@ -3,7 +3,7 @@
 In many situations, a more robust simulator than _RCIS_ is required to leverege the power of _RoboComp_ in more physically complex scenes.
 Consequently, _RoboComp_ needs to be integrated to more complex simulators and physics engines. The current choice for _RoboComp_ is [CoppeliaSim](https://www.coppeliarobotics.com/), previously known as __V-REP__. 
 
-The standard remote _python_ API of __CoppeliaSim__ is very slow, so we opt for [PyRep](https://github.com/stepjam/PyRep) which contains a fast and flexible API to connect with __CoppeliaSim__.
+The standard remote _python_ API of __CoppeliaSim__ is very slow, so we opt for [PyRep](https://github.com/stepjam/PyRep) which includes a fast and flexible API to connect with __CoppeliaSim__.
 
 In this tutorial, we walk you through the setup procedure of __CoppeliaSim__ and __PyRep__, along with some examples to try with _RoboComp_.
 
@@ -27,14 +27,14 @@ source ~/.bashrc
 
 ## PyRep Installation
 
--   First, pull _master_ branch of __PyRep__ repo :
+-   First, clone _master_ branch of __PyRep__ repo :
 ```bash
 git clone https://github.com/stepjam/PyRep.git
-cd PyRep
 ```
 
 -   Install __PyRep__ dependencies and library :
 ```bash
+cd PyRep
 pip3 install -r requirements.txt
 pip3 install .
 ```
@@ -61,7 +61,6 @@ pip3 install .
 
 -   __This application failed to start because no Qt platform plugin could be initialized :__
     -   This problem can appear when trying to start the component, due to compatibility issues with _Qt_ version in _OpenCV_ and _VREP_.
-
     -   This problem is solved by installing `opencv-python-headless` :
         ```bash
         pip install opencv-python-headless

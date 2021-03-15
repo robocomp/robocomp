@@ -33,6 +33,4 @@
 
 [RoboComp Component & Ros Node chatter](RobocompRosChatter.md)
 
-
-
-
+[RoboComp Integration with CoppeliaSim Using PyRep](robocomp-pyrep.md)
