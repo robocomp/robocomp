@@ -37,7 +37,7 @@ We have also developed a tool on top of docker that you could be interested in: 
 
 
 ### Other Dockerfiles related with Robocomp
-These other Dockerfiles, docker-compose files,and related images in the docker hub could be of your interest if you are working with these projects.
+These other Dockerfiles, docker-compose files, and related images in the docker hub could be of your interest if you are working with these projects.
 #### AGM
 https://github.com/ljmanso/AGM/tree/current/docker/bionic
 
