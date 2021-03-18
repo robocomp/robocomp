@@ -73,7 +73,7 @@ sudo DEBIAN_FRONTEND=noninteractive apt-get update && sudo DEBIAN_FRONTEND=nonin
       zeroc-ice-all-dev \
       zeroc-icebox 
 
-sudo pip3 install pyside2 rich
+sudo pip3 install pyside2 rich argcomplete
 ```
 
 It is recommendable to install the following packages::
