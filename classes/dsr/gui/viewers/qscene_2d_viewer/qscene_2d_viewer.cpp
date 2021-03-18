@@ -382,7 +382,7 @@ void QScene2dViewer::add_or_assign_robot(Node &node)
             scenePolygon = (QGraphicsPolygonItem*) scene_map[node.id()];      
         }
         scenePolygon->setPos(pose.value().x() - scenePolygon->boundingRect().center().x(), pose.value().y() - scenePolygon->boundingRect().center().y());
-        scenePolygon->setRotation(qRadiansToDegrees(pose.value().z()));
+        scenePolygon->setRotation(qRadiansToDegrees(pose.value()[5]));
     }
     else
     {
@@ -453,7 +453,7 @@ void QScene2dViewer::update_scene_object_pose(std::uint64_t  node_id)
         if (pose.has_value())
         {
             item->setPos(pose.value().x() - item->boundingRect().center().x(), pose.value().y() - item->boundingRect().center().y());
-            item->setRotation(qRadiansToDegrees(pose.value().z()));
+            item->setRotation(qRadiansToDegrees(pose.value()[5]));
         }
         else   
         {
