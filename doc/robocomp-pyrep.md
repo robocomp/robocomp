@@ -27,6 +27,7 @@ source ~/.bashrc
 
 ## PyRep Installation
 
+-   Check that you have installed *libpython3-dev* using apt
 -   First, clone _master_ branch of __PyRep__ repo :
 ```bash
 git clone https://github.com/stepjam/PyRep.git
