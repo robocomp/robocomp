@@ -33,7 +33,7 @@ source ~/.bashrc
 git clone https://github.com/stepjam/PyRep.git
 ```
 
--   Install __PyRep__ dependencies and library :
+-   Install __PyRep__ dependencies and library __LOCALLY (without sudo)__:
 ```bash
 cd PyRep
 pip3 install -r requirements.txt
@@ -78,7 +78,7 @@ pip3 install .
                 '%s' % (assert_type.name, actual.name))
         ```
  
- -  __Error when installing Pyrep :__
+ -  __Error when installing Pyrep. This error might occur if you do a global installation (with sudo) since PyRep won't find COPPELIASIM_ROOT:__
      ```bash
      
      ERROR: Command errored out with exit status 1:
