@@ -78,10 +78,11 @@ pip3 install .
                 '%s' % (assert_type.name, actual.name))
         ```
  
- -  __Error when installing Pyrep__
-        ```bash
+ -  __Error when installing Pyrep :__
+     ```bash
+     
      ERROR: Command errored out with exit status 1:
-     command: /usr/bin/python3 -c 'import sys, setuptools, tokenize; sys.argv[0] = '"'"'/tmp/pip-req-build-m9qd50yj/setup.py'"'"'; __file__='"'"'/tmp/pip-req-build-m9qd50yj/setup.py'"'"';f=getattr(tokenize, '"'"'open'"'"', open)(__file__);code=f.read().replace('"'"'\r\n'"'"', '"'"'\n'"'"');f.close();exec(compile(code, __file__, '"'"'exec'"'"'))' egg_info --egg-base /tmp/pip-pip-egg-info-w48qqfxo
+     command: /usr/bin/python3 -c 'import sys, setuptools, tokenize; sys.argv[0] = '"'"'/tmp/pip-req-build-m9qd50yj/setup.py'"'"'; __file__='"'"'/tmp/pip-req-      build-m9qd50yj/setup.py'"'"';f=getattr(tokenize, '"'"'open'"'"', open)(__file__);code=f.read().replace('"'"'\r\n'"'"', '"'"'\n'"'"');f.close();exec(compile(code, __file__, '"'"'exec'"'"'))' egg_info --egg-base /tmp/pip-pip-egg-info-w48qqfxo
          cwd: /tmp/pip-req-build-m9qd50yj/
     Complete output (7 lines):
     Traceback (most recent call last):
@@ -94,5 +95,4 @@ pip3 install .
     ----------------------------------------
     WARNING: Discarding file:///home/robolab/software/PyRep. Command errored out with exit status 1: python setup.py egg_info Check the logs for full command output.
     ERROR: Command errored out with exit status 1: python setup.py egg_info Check the logs for full command output.
-
    ```
