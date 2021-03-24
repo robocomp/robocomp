@@ -31,13 +31,6 @@ except KeyError:
 Ice.loadSlice("-I ./src/ --all ./src/CommonBehavior.ice")
 import RoboCompCommonBehavior
 
-Ice.loadSlice("-I ./src/ --all ./src/IMU.ice")
-import RoboCompIMU
-Ice.loadSlice("-I ./src/ --all ./src/IMUPub.ice")
-import RoboCompIMUPub
-
-
-
 
 try:
     from ui_mainUI import *
@@ -60,7 +53,7 @@ class GenericWorker(QtWidgets.QWidget):
     def __init__(self, mprx):
         super(GenericWorker, self).__init__()
 
-        self.imupub_proxy = mprx["IMUPubPub"]
+        self.imupub_proxy = mprx["IMUPub"]
 
         self.ui = Ui_guiDlg()
         self.ui.setupUi(self)

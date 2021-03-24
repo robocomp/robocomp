@@ -148,6 +148,7 @@ def main():
     parser.add_argument("-I", "--include_dirs", nargs='*', help="Include directories",
                         action=FullPaths, default=[])
     parser.add_argument("-d", '--diff', dest='diff', choices=DIFF_TOOLS, action='store')
+    parser.add_argument("-t", '--test', dest='test', action='store_true')
     parser.add_argument("input_file", help="The input dsl file")
     parser.add_argument("output_path", nargs='?', help="The path to put the generated files")
     args = parser.parse_args()
@@ -167,7 +168,7 @@ def main():
 
     if input_file.endswith(".cdsl") or input_file.endswith(".jcdsl") or input_file.endswith(".idsl"):
         try:
-            FilesGenerator().generate(input_file, output_path, args.include_dirs, args.diff)
+            FilesGenerator().generate(input_file, output_path, args.include_dirs, args.diff, args.test)
         except pyparsing.ParseException as pe:
             console.log(f"Error generating files for {rich.Text(input_file, style='red')}")
             console.log(pe.line)
