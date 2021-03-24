@@ -1,6 +1,23 @@
 import unittest
+import context
+import yaku_lib
 
-from pyaku.yaku_lib import YakuakeDBus
+
+class test_functions(unittest.TestCase):
+    def test_get_command_return(self):
+        command = 'echo "catpat is black"'
+        self.assertEqual(
+            (b"catpat is black\n", b""), yaku_lib.get_command_return(command)
+        )
+
+    # TODO: Think in a way to test it
+    # def test_get_last_child(self):
+    #     self.assertEqual(0, yaku_lib.get_last_child(0))
+
+
+class TestKonsoleSession(unittest.TestCase):
+    def setUp(self) -> None:
+        self.konsole_session = yaku_lib.KonsoleSession()
 
 
 class TestYakuakeDBus(unittest.TestCase):
@@ -8,14 +25,14 @@ class TestYakuakeDBus(unittest.TestCase):
     #     self.func = YakuakeDBus()
 
     def test_bus_objects(self):
-        self.assertIsNotNone(YakuakeDBus().sessions)
-        self.assertIsNotNone(YakuakeDBus().tabs)
+        self.assertIsNotNone(yaku_lib.YakuakeDBus().sessions)
+        self.assertIsNotNone(yaku_lib.YakuakeDBus().tabs)
 
     def test_bus_singleton(self):
-        self.assertEqual(YakuakeDBus(), YakuakeDBus)
+        self.assertEqual(yaku_lib.YakuakeDBus(), yaku_lib.YakuakeDBus())
 
     def test_session_method(self):
-        self.assertIsNotNone(YakuakeDBus().session(0))
+        self.assertIsNotNone(yaku_lib.YakuakeDBus().session(0))
 
 
 class Yaku(unittest.TestCase):
@@ -31,6 +48,5 @@ class Yaku(unittest.TestCase):
     #     self.assertEqual(YakuakeDBus(), YakuakeDBus)
 
 
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
