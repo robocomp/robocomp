@@ -30,7 +30,11 @@ import argparse
 import os
 import re
 import sys
+from collections import defaultdict
 
+from rich.console import Console
+console = Console()
+MIN_ROBOCOMP_PORT = 10000
 
 class BColors:
     HEADER = '\033[95m'
@@ -153,6 +157,13 @@ class RCPortChecker:
         else:
             return None, None
 
+    def search_interfaces_by_port(self, port):
+        if port in self.ports_for_interfaces.keys():
+            interfaces = self.ports_for_interfaces[port]
+            return interfaces
+        else:
+            return None
+
     def find_and_parse_config_files(self, paths=None):
         for root, dirs, files in os.walk(self.robocomp_path, topdown=False):
             for name in files:
@@ -166,6 +177,8 @@ class RCPortChecker:
     def parse_config_file(self, fullpath):
         with open(fullpath, 'r') as fin:
             for line in fin:
+                if line.lstrip().startswith('#'):
+                    continue
                 if ".Endpoints" in line and "cog.outl" not in line:
                     if self.debug:
                         print("Looking into file %s" % (fullpath))
@@ -209,6 +222,137 @@ class RCPortChecker:
         else:
             print((BColors.OKBLUE + "Port \'%d\' not found" + BColors.ENDC) % (port))
 
+    def fix_not_matching_ports(self):
+        to_pop = []
+        to_fix = []
+        ports_assigned = {"": 0}
+        for port, interfaces in sorted(self.ports_for_interfaces.items()):
+            if len(interfaces) > 1 or port == 0:
+                console.print(f"Collision of {len(interfaces)} interfaces in port {port} {interfaces.keys()}", style="yellow")
+                for interface_name in interfaces:
+                    fixed = False
+                    suggested_port = self.suggest_port_for_interface(interface_name, ports_assigned)
+                    for file_to_fix in interfaces[interface_name]:
+                        if port not in self.ports_for_interfaces[suggested_port] or file_to_fix not in self.ports_for_interfaces[suggested_port][interface_name]:
+                            to_fix.append((port, suggested_port, interface_name, file_to_fix))
+                            fixed = True
+                    if port != suggested_port and fixed:
+                        to_pop.append((port, interface_name))
+                        ports_assigned[interface_name] = suggested_port
+        for old_port, new_port, interface_name, file_to_fix in to_fix:
+            self.replace_port_in_file(file_to_fix, interface_name, old_port, new_port)
+
+
+    def replace_port_in_file(self, fullpath, interface_name, new_port, old_port = None):
+        console.log(f"In file {fullpath}")
+        with open(fullpath, 'r') as fin:
+            for line in fin:
+                if line.lstrip().startswith('#'):
+                    continue
+                if ".Endpoints" in line and "cog.outl" not in line:
+                    if self.debug:
+                        print("Looking into file %s" % (fullpath))
+                    if interface_name in line:
+                        if old_port is not None:
+                            if (old_port) in line:
+                                console.log(f"would replace\t {line.rstrip()}")
+                                new_line = line.replace(str(old_port), str(new_port))
+                                console.log(f"with\t\t {new_line.rstrip()}")
+                            else:
+                                console.log(f"would replace\t {line.rstrip()}")
+                                new_line = re.sub(f'({interface_name}.* -p\s?)\d+ ',  f'\1{new_port}',    line)
+                                console.log(f"with\t\t {new_line.rstrip()}")
+
+    def suggest_port_for_interface(self, interface_name, already_assigned):
+        if interface_name in already_assigned:
+            console.log(f"Previously assigned port {already_assigned[interface_name]} suggested for {interface_name}.")
+            return already_assigned[interface_name]
+        ports_for_interface = self.search_interface_ports_by_name(interface_name)
+        # Check how many different ports are used for the interface and how many times
+        times_interface_in_port = {key: len(value) for key, value in ports_for_interface.items()}
+        # For each used port ordered by the number of times it's used (best candidate)
+        for suggested_port, times_repeated in sorted(times_interface_in_port.items(), key=lambda x: x[1], reverse=True):
+            if suggested_port in already_assigned or suggested_port < MIN_ROBOCOMP_PORT:
+                continue
+            # It's checked if other interface is using that port
+            interfaces_in_port = self.search_interfaces_by_port(suggested_port)
+            # Exclude current interface
+            interfaces_in_port = {x: interfaces_in_port[x] for x in interfaces_in_port if x != interface_name}
+            # if not used by any other, suggest
+            if interfaces_in_port is None or len(interfaces_in_port) == 0:
+                console.log(f"Not collisional port {suggested_port} suggested for {interface_name}.")
+                return suggested_port
+            # If it's used by other but less times than for this interface, suggest
+            elif times_repeated > max((len(v), k) for k, v in interfaces_in_port.items())[0]:
+                console.log(f"Because it's repeated {times_repeated} time, port {suggested_port} suggested for {interface_name}.")
+                return suggested_port
+            else:
+                times_repeated_2, interface = max((len(v), k) for k, v in interfaces_in_port.items())
+                console.log(f"REJECTED: Port {suggested_port} not suggested because {interface} use it {times_repeated_2} times")
+        # get sequential port
+        # get interfaces in that port
+        # if no collision suggest
+        return self.next_secuential_port(interface_name, already_assigned.values())
+
+    def next_secuential_port(self, interface_name, already_assigned_ports):
+        for suggested_port in sorted(list(self.ports_for_interfaces.keys())+list(already_assigned_ports)):
+            if suggested_port >= MIN_ROBOCOMP_PORT and \
+                    suggested_port + 1 not in already_assigned_ports:
+                    # suggested_port + 1 not in self.ports_for_interfaces and\
+                console.log(f"New sequential port {suggested_port+1} suggested for {interface_name}.")
+                return suggested_port + 1
+        return -1
+
+    def other(self, to_classify = None, filled_ports = None):
+        # console.log(sorted(self.ports_for_interfaces))
+        # console.log(self.interfaces_ports)
+        if filled_ports is None:
+            new_ports_list = {}
+        else:
+            new_ports_list = filled_ports
+        unclassified = []
+        if to_classify is None:
+            to_classify = self.interfaces_ports.items()
+        for interface,_ in to_classify:
+            ports = self.interfaces_ports[interface]
+            sorted_ports = sorted(ports.items(), key=lambda x: len(x[1]), reverse=True)
+            assigned = False
+            occupied = []
+            for port, files in sorted_ports:
+                if port < MIN_ROBOCOMP_PORT:
+                    continue
+                if port not in new_ports_list:
+                    new_ports_list[port] = (interface, len(files))
+                    assigned = True
+                    break
+                elif len(files) > new_ports_list[port][1]:
+                    unclassified.append(new_ports_list[port])
+                    new_ports_list[port] = (interface, len(files))
+                    assigned = True
+                    break
+                else:
+                    occupied.append((port, new_ports_list[port]))
+            if not assigned:
+                console.log(f"Need new port {interface} {list(ports.keys())}")
+                if occupied:
+                    console.log(f"\tOcuppied by {occupied}")
+                suggested_port = self.next_secuential_port(interface, new_ports_list.keys())
+                new_ports_list[suggested_port] = (interface, len(files))
+
+
+        if len(unclassified) > 0:
+            return self.other(unclassified,new_ports_list)
+        else:
+            console.log(sorted(new_ports_list.items()))
+            all_interface_names = [x[0] for x in new_ports_list.values()]
+            for interface in self.interfaces_ports:
+                if interface not in all_interface_names:
+                    console.log(f"{interface} is in initial but not in last", style='red')
+            inverted_dict = {v[0]: k for k, v in new_ports_list.items()}
+            return inverted_dict
+
+
+
 
 def main():
     parser = MyParser(description='Application to look for existing configured interfaces ports on components')
@@ -227,26 +371,30 @@ def main():
     parser.add_argument("-i", "--interface",
                         help="List only interfaces that contains this string",
                         type=str)
-    parser.add_argument('action', choices=('ports', 'interfaces'), help="Show the interfaces by name or by port")
+    parser.add_argument('action', choices=('ports', 'interfaces', 'fix'), help="Show the interfaces by name or by port")
     parser.add_argument('path', nargs='?',
                         help="path to look for components config files recursively (default=\"~/robocomp/\")")
     args = parser.parse_args()
 
-    if args.interface is not None and args.action == "ports":
-        print(
-                BColors.WARNING + "[!] Wrong parameters combination: Filtering an interface by name (-i) while listing ports is not available." + BColors.ENDC)
-        parser.print_help()
-        sys.exit()
-
     rcportchecker = RCPortChecker(args.verbose, args.path)
 
-    if args.action == "ports":
-        if args.port is not None:
-            rcportchecker.print_port_info(args.port, args.all, args.lower, args.interface)
-        else:
-            rcportchecker.print_port_listing(args.all, args.lower, args.interface)
-    elif args.action == "interfaces":
-        rcportchecker.print_interface_listing(args.all, args.lower, args.interface)
+    if args.action == "fix":
+        rcportchecker.other()
+    else:
+        if args.interface is not None and args.action == "ports":
+            print(
+                BColors.WARNING + "[!] Wrong parameters combination: Filtering an interface by name (-i) while listing ports is not available." + BColors.ENDC)
+            parser.print_help()
+            sys.exit()
+        if args.action == "ports":
+            if args.port is not None:
+                rcportchecker.print_port_info(args.port, args.all, args.lower, args.interface)
+            else:
+                rcportchecker.print_port_listing(args.all, args.lower, args.interface)
+        elif args.action == "interfaces":
+            rcportchecker.print_interface_listing(args.all, args.lower, args.interface)
+
+
 
 
 if __name__ == '__main__':
