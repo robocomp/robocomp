@@ -20,7 +20,6 @@
 #include <qmat/qfundamental.h>
 
 //Derived and auxiliary classes
-#include <innermodel/innermodelconfig.h>
 #include <innermodel/innermodelexception.h>
 #include <innermodel/innermodeltransform.h>
 #include <innermodel/innermodelnode.h>
@@ -231,7 +230,7 @@ public:
 	bool collide(const QString &a, const QString &b);
 	float distance(const QString &a, const QString &b);
 
-#if FCL_SUPPORT==1
+#ifdef FCL_SUPPORT
 	bool collide(const QString &a, const fcl::CollisionObject *obj);
 #endif
 

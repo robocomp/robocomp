@@ -1,5 +1,5 @@
 # Sources set
-LIST ( APPEND SOURCES
+SET( SPECIFIC_SOURCES
 	specificworker.cpp
 	specificmonitor.cpp
 	pickhandler.cpp

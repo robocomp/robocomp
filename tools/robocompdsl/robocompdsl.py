@@ -13,8 +13,7 @@ import rich
 from rich.text import Text
 
 
-sys.path.append("/opt/robocomp/python")
-sys.path.append('/opt/robocomp/share/robocompdsl/')
+sys.path.append('/opt/robocomp/python/robocompdsl/')
 import rcExceptions
 from filesgenerator import FilesGenerator
 import robocompdslutils

@@ -1,18 +1,9 @@
 
 # Sources set
-SET ( SOURCES
+SET ( SPECIFIC_SOURCES
   specificworker.cpp
   specificmonitor.cpp
   exportCSVWidget.cpp
 )
 
-# Headers set
-SET ( HEADERS
-  specificworker.h
-  specificmonitor.h
-  exportCSVWidget.h
-)
-
-ADD_DEFINITIONS( -std=c++17 )
-
-INSTALL(DIRECTORY "../icons" DESTINATION /opt/robocomp/share/rclogger )
+install(DIRECTORY "../icons" DESTINATION /opt/robocomp/share/rclogger )

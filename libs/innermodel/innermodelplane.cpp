@@ -15,7 +15,7 @@
  * 
  */
 
-#include "innermodelplane.h"
+#include "innermodel/innermodelplane.h"
 
 InnerModelPlane::InnerModelPlane(QString id_, QString texture_, float width_, float height_,float depth_, int repeat_, float nx_, float ny_, float nz_, float px_, float py_, float pz_, bool collidable_, InnerModelNode *parent_) : InnerModelNode(id_, parent_)
 {

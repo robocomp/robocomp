@@ -8,7 +8,7 @@ from templates.templateCPP.templatecpp import TemplatesManagerCpp
 from templates.templateICE.templateice import TemplateManagerIce
 from templates.templatePython.templatepython import TemplatesManagerPython
 
-sys.path.append("/opt/robocomp/python")
+sys.path.append("/opt/robocomp/python/robocompdsl")
 from dsl_parsers import dsl_factory
 
 LANG_TO_TEMPLATE = {

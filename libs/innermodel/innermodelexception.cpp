@@ -15,7 +15,7 @@
  * 
  */
 
-#include "innermodelexception.h"
+#include "innermodel/innermodelexception.h"
 
 InnerModelException::InnerModelException(const std::string &arg) : runtime_error(std::string("InnerModelException: ") + arg)
 {

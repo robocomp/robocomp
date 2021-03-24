@@ -20,9 +20,8 @@
 
 // RoboComp includes
 #include <qmat/QMatAll>
-#include <innermodel/innermodelconfig.h>
 
-#if FCL_SUPPORT==1
+#ifdef FCL_SUPPORT
 #include <fcl/collision.h>
 #include <fcl/distance.h>
 #include <fcl/narrowphase/narrowphase.h>
@@ -77,7 +76,7 @@ class InnerModelNode : public RTMat
 
 		// FCLModel
 		bool collidable;
-		#if FCL_SUPPORT==1
+        #ifdef FCL_SUPPORT
 			FCLModelPtr fclMesh;
 			fcl::CollisionObject *collisionObject;
 		#endif
