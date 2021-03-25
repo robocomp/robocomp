@@ -79,6 +79,7 @@ target_sources(rcis
 		PRIVATE
 		${SPECIFIC_SOURCES}
 		${ICES_SOURCES}
+		${SOURCES}
 		robotsimulatorcomp.cpp
 		genericworker.cpp
 		genericmonitor.cpp
