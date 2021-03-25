@@ -30,7 +30,7 @@ add_library(dsr_gui SHARED
         )
 
 
-target_link_libraries(dsr_gui Qt5::Widgets Qt5::OpenGL Qt5::Xml fastcdr fastrtps osgDB OpenThreads Eigen3::Eigen )
+target_link_libraries(dsr_gui Qt5::Widgets Qt5::OpenGL Qt5::Xml fastcdr fastrtps osgDB OpenThreads Eigen3::Eigen qmat )
 target_include_directories(dsr_gui PRIVATE $ENV{ROBOCOMP}/classes/ $ENV{ROBOCOMP}/include/ )
 
 set_target_properties(dsr_gui PROPERTIES
