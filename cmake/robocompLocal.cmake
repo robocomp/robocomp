@@ -96,7 +96,6 @@ ENDMACRO( ROBOCOMP_WRAP_ICE )
 
 
 MACRO( ROBOCOMP_IDSL_TO_ICE )
-  set(ROBOCOMP_ICE_TMP_PATH /tmp/)
   STRING (REPLACE "/" "_" SPECIFIC_TARGET "${CMAKE_CURRENT_SOURCE_DIR}") 
   ADD_CUSTOM_TARGET(ICES_${SPECIFIC_TARGET} ALL)
   SET( SPATH ${RoboComp_INTERFACES_DIR}/IDSLs/)
@@ -104,7 +103,7 @@ MACRO( ROBOCOMP_IDSL_TO_ICE )
       IF (EXISTS "${SPATH}/${input_file}.idsl")
         MESSAGE(STATUS "idsl=>ice: Adding rule to generate ${CMAKE_HOME_DIRECTORY}/interfaces/${input_file}.ice from ${SPATH}/${input_file}.idsl")
         add_custom_command(
-          COMMAND "${CMAKE_HOME_DIRECTORY}/tools/robocompdsl/robocompdsl.py" ${SPATH}/${input_file}.idsl ${ROBOCOMP_ICE_TMP_PATH}/${input_file}.ice
+          COMMAND "${CMAKE_HOME_DIRECTORY}/tools/robocompdsl/robocompdsl.py" ${SPATH}/${input_file}.idsl ${CMAKE_HOME_DIRECTORY}/interfaces/${input_file}.ice
           DEPENDS ${SPATH}/${input_file}.idsl
           COMMENT "idsl=>ice: Generating ${CMAKE_HOME_DIRECTORY}/interfaces/${input_file}.ice from ${SPATH}/${input_file}.idsl"
           TARGET ICES_${SPECIFIC_TARGET}
@@ -122,7 +121,7 @@ MACRO( ROBOCOMP_ICE_TO_SRC )
     MESSAGE(STATUS "ice=>h/cpp: Adding rule to generate ${input_file}.h and ${input_file}.cpp from ${CMAKE_HOME_DIRECTORY}/interfaces/${input_file}.ice")
     add_custom_command(
         OUTPUT ${input_file}.cpp ${input_file}.h
-        COMMAND slice2cpp ${ROBOCOMP_ICE_TMP_PATH}/${input_file}.ice -I${CMAKE_HOME_DIRECTORY}/interfaces/ --output-dir .
+        COMMAND slice2cpp ${CMAKE_HOME_DIRECTORY}/interfaces/${input_file}.ice -I${CMAKE_HOME_DIRECTORY}/interfaces/ --output-dir .
         DEPENDS ICES_${SPECIFIC_TARGET}
         COMMENT "ice=>h/cpp: Generating ${input_file}.h and ${input_file}.cpp from ${CMAKE_HOME_DIRECTORY}/interfaces/${input_file}.ice"
     )
