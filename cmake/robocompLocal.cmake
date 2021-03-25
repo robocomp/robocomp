@@ -100,6 +100,7 @@ MACRO( ROBOCOMP_IDSL_TO_ICE )
   ADD_CUSTOM_TARGET(ICES_${SPECIFIC_TARGET} ALL)
   SET( SPATH ${RoboComp_INTERFACES_DIR}/IDSLs/)
   FOREACH( input_file ${ARGN} )
+      MESSAGE("Checking if file ${SPATH}/${input_file}.idsl exists")
       IF (EXISTS "${SPATH}/${input_file}.idsl")
         MESSAGE(STATUS "idsl=>ice: Adding rule to generate ${CMAKE_HOME_DIRECTORY}/interfaces/${input_file}.ice from ${SPATH}/${input_file}.idsl")
         add_custom_command(
