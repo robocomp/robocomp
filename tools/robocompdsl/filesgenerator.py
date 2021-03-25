@@ -2,6 +2,8 @@ import filecmp
 import os
 import subprocess
 import sys
+from rich import text
+from rich.console import Console
 
 import robocompdslutils
 from templates.templateCPP.templatecpp import TemplatesManagerCpp
@@ -19,6 +21,7 @@ LANG_TO_TEMPLATE = {
     'python2': 'python'
 }
 
+console = Console()
 
 class FilesGenerator:
     def __init__(self):
@@ -69,8 +72,8 @@ class FilesGenerator:
         try:
             self.ast = dsl_factory.DSLFactory().from_file(self.dsl_file, includeDirectories=self.include_dirs)
         except ValueError as e:
-            print(f"Parsing error in file {rich.Text(self.dsl_file, style='red')} while generating AST.")
-            print(f"Exception info: {rich.Text(e.args[0], style='red')} in line {e.args[1]} of:\n{rich.Text(e.args[2].rstrip(), style='magenta')}")
+            console.log(f"Parsing error in file {text.Text(self.dsl_file, style='red')} while generating AST.")
+            console.log(f"Exception info: {text.Text(e.args[0], style='red')} in line {e.args[1]} of:\n{text.Text(e.args[2].rstrip(), style='magenta')}")
             exit(1)
 
     def __create_files(self, test=False):
@@ -90,24 +93,24 @@ class FilesGenerator:
         # Code to launch diff tool on .new files to be compared with their old version
         if self.diff is not None and len(new_existing_files) > 0:
             diff_tool, _ = robocompdslutils.get_diff_tool(prefered=self.diff)
-            print("Executing diff tool for existing files. Close if no change is needed.")
+            console.log("Executing diff tool for existing files. Close if no change is needed.")
             for o_file, n_file in new_existing_files.items():
                 if not filecmp.cmp(o_file, n_file):
-                    print([diff_tool, o_file, n_file])
+                    console.log([diff_tool, o_file, n_file])
                     try:
                         subprocess.call([diff_tool, o_file, n_file])
                     except KeyboardInterrupt:
-                        print("Comparision interrupted. All files have been generated. Check this .new files manually:")
+                        console.log("Comparision interrupted. All files have been generated. Check this .new files manually:")
                         for o_file2, n_file2 in new_existing_files.items():
                             if not filecmp.cmp(o_file2, n_file2):
-                                print("%s %s" % (o_file2, n_file2))
+                                console.log("%s %s" % (o_file2, n_file2))
                         break
                     except Exception as e:
-                        print("Exception trying to execute %s" % diff_tool)
-                        print(e.message)
+                        console.log("Exception trying to execute %s" % diff_tool)
+                        console.log(e.message)
 
                 else:
-                    print("Binary equal files %s and %s" % (o_file, n_file))
+                    console.log("Binary equal files %s and %s" % (o_file, n_file))
 
     def __generate_component(self, test):
         language = self.ast.language.lower()
@@ -127,7 +130,7 @@ class FilesGenerator:
                 test_template_object = TemplatesManagerPython(self.ast)
                 test_template_object.generate_files(self.output_path+"/test")
         except KeyError as e:
-            print(e)
+            console.log(e)
             raise
 
     # for module in self.ast.idsl_pool.modulePool.values():
