@@ -119,7 +119,25 @@ Done! Now let's compile and install the whole thing:
     cmake ..
     make
     sudo env "PATH=$PATH" make install
-
+#### Note
+if the above code is not running in your local machine than you should run this command first:
+``` 
+cmake --version
+```
+If it is less than 3.12 than you have Update the cmake below is command to update cmake
+If you’ve already installed CMake using the Ubuntu package manager, you’ll want to remove it by running the following commands:
+``` 
+sudo apt remove --purge cmake
+hash -r
+```
+Using the Snappy package manager is the easiest way to install it and can be done by running the following command:
+``` 
+sudo snap install cmake --classic
+cmake --version
+```
+Now it will updated in latest version
+Than again you should have to run the above compile and install the whole thing command
+Now it will work
 If you want to compile Robocomp with support for FCL, follow the instructions in the [Robocomp with FCL](doc/Compiling-RoboComp-with-collision-detection.md) tutorial.
 
 The RoboComp's core libraries and simulator should now be compiled and installed in `/opt/robocomp`.
