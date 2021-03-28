@@ -15,7 +15,7 @@
  * 
  */
 
-#include "innermodeltouchsensor.h"
+#include "innermodel/innermodeltouchsensor.h"
 
 InnerModelTouchSensor::InnerModelTouchSensor(QString id_, QString stype_, float nx_, float ny_, float nz_, float min_, float max_, uint32_t port_, InnerModelNode *parent_) : InnerModelNode(id_, parent_)
 {

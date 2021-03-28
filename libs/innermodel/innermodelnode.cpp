@@ -15,7 +15,7 @@
  * 
  */
 
-#include "innermodelnode.h"
+#include "innermodel/innermodelnode.h"
 
 InnerModelNode::InnerModelNode(QString id_, InnerModelNode *parent_) : RTMat()
 {

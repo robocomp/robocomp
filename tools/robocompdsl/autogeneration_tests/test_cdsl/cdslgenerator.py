@@ -33,7 +33,7 @@ import sys
 
 from dsl_parsers.dsl_factory import DSLFactory
 
-sys.path.append('/opt/robocomp/python')
+sys.path.append('/opt/robocomp/python/robocompdsl')
 
 from dsl_parsers.specific_parsers.cdsl.cdsl_parser import CDSLParser
 

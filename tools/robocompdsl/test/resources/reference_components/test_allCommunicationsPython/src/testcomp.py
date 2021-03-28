@@ -55,49 +55,23 @@
 #
 #
 
-import sys
-import traceback
-import IceStorm
-import time
-import os
-import copy
 import argparse
 # Ctrl+c handling
 import signal
 
+from rich.console import Console
+console = Console()
+
 from PySide2 import QtCore
 from PySide2 import QtWidgets
-
+import interfaces
 from specificworker import *
-
-
-class CommonBehaviorI(RoboCompCommonBehavior.CommonBehavior):
-    def __init__(self, _handler):
-        self.handler = _handler
-    def getFreq(self, current = None):
-        self.handler.getFreq()
-    def setFreq(self, freq, current = None):
-        self.handler.setFreq()
-    def timeAwake(self, current = None):
-        try:
-            return self.handler.timeAwake()
-        except:
-            print('Problem getting timeAwake')
-    def killYourSelf(self, current = None):
-        self.handler.killYourSelf()
-    def getAttrList(self, current = None):
-        try:
-            return self.handler.getAttrList()
-        except:
-            print('Problem getting getAttrList')
-            traceback.print_exc()
-            status = 1
-            return
 
 #SIGNALS handler
 def sigint_handler(*args):
     QtCore.QCoreApplication.quit()
-    
+
+
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
     parser = argparse.ArgumentParser()
@@ -105,115 +79,16 @@ if __name__ == '__main__':
     parser.add_argument('--startup-check', action='store_true')
 
     args = parser.parse_args()
+    interface_manager = interfaces.InterfaceManager(args.iceconfigfile)
 
-    ic = Ice.initialize(args.iceconfigfile)
-    status = 0
-    mprx = {}
-    parameters = {}
-    for i in ic.getProperties():
-        parameters[str(i)] = str(ic.getProperties().getProperty(i))
-
-    # Topic Manager
-    proxy = ic.getProperties().getProperty("TopicManager.Proxy")
-    obj = ic.stringToProxy(proxy)
-    try:
-        topicManager = IceStorm.TopicManagerPrx.checkedCast(obj)
-    except Ice.ConnectionRefusedException as e:
-        print(colored('Cannot connect to rcnode! This must be running to use pub/sub.', 'red'))
-        exit(1)
-
-    # Remote object connection for CameraSimple
-    try:
-        proxyString = ic.getProperties().getProperty('CameraSimpleProxy')
-        try:
-            basePrx = ic.stringToProxy(proxyString)
-            camerasimple_proxy = RoboCompCameraSimple.CameraSimplePrx.uncheckedCast(basePrx)
-            mprx["CameraSimpleProxy"] = camerasimple_proxy
-        except Ice.Exception:
-            print('Cannot connect to the remote object (CameraSimple)', proxyString)
-            #traceback.print_exc()
-            status = 1
-    except Ice.Exception as e:
-        print(e)
-        print('Cannot get CameraSimpleProxy property.')
-        status = 1
-
-
-    # Remote object connection for RGBD
-    try:
-        proxyString = ic.getProperties().getProperty('RGBDProxy')
-        try:
-            basePrx = ic.stringToProxy(proxyString)
-            rgbd_proxy = RoboCompRGBD.RGBDPrx.uncheckedCast(basePrx)
-            mprx["RGBDProxy"] = rgbd_proxy
-        except Ice.Exception:
-            print('Cannot connect to the remote object (RGBD)', proxyString)
-            #traceback.print_exc()
-            status = 1
-    except Ice.Exception as e:
-        print(e)
-        print('Cannot get RGBDProxy property.')
-        status = 1
-
-
-    # Create a proxy to publish a AprilBasedLocalization topic
-    topic = False
-    try:
-        topic = topicManager.retrieve("AprilBasedLocalization")
-    except:
-        pass
-    while not topic:
-        try:
-            topic = topicManager.retrieve("AprilBasedLocalization")
-        except IceStorm.NoSuchTopic:
-            try:
-                topic = topicManager.create("AprilBasedLocalization")
-            except:
-                print('Another client created the AprilBasedLocalization topic? ...')
-    pub = topic.getPublisher().ice_oneway()
-    aprilbasedlocalizationTopic = RoboCompAprilBasedLocalization.AprilBasedLocalizationPrx.uncheckedCast(pub)
-    mprx["AprilBasedLocalizationPub"] = aprilbasedlocalizationTopic
-
-    if status == 0:
-        worker = SpecificWorker(mprx, args.startup_check)
-        worker.setParams(parameters)
+    if interface_manager.status == 0:
+        worker = SpecificWorker(interface_manager.get_proxies_map(), args.startup_check)
+        worker.setParams(interface_manager.parameters)
     else:
         print("Error getting required connections, check config file")
         sys.exit(-1)
 
-    adapter = ic.createObjectAdapter('HandDetection')
-    adapter.add(handdetectionI.HandDetectionI(worker), ic.stringToIdentity('handdetection'))
-    adapter.activate()
-
-
-    AprilTags_adapter = ic.createObjectAdapter("AprilTagsTopic")
-    apriltagsI_ = apriltagsI.AprilTagsI(worker)
-    apriltags_proxy = AprilTags_adapter.addWithUUID(apriltagsI_).ice_oneway()
-
-    subscribeDone = False
-    while not subscribeDone:
-        try:
-            apriltags_topic = topicManager.retrieve("AprilTags")
-            subscribeDone = True
-        except Ice.Exception as e:
-            print("Error. Topic does not exist (creating)")
-            time.sleep(1)
-            try:
-                apriltags_topic = topicManager.create("AprilTags")
-                subscribeDone = True
-            except:
-                print("Error. Topic could not be created. Exiting")
-                status = 0
-    qos = {}
-    apriltags_topic.subscribeAndGetPublisher(qos, apriltags_proxy)
-    AprilTags_adapter.activate()
-
+    interface_manager.set_default_hanlder(worker)
     signal.signal(signal.SIGINT, sigint_handler)
     app.exec_()
-
-    if ic:
-        # try:
-        ic.destroy()
-        # except:
-        #     traceback.print_exc()
-        #     status = 1
+    interface_manager.destroy()

@@ -19,7 +19,8 @@ RUN export uid=1000 gid=1000 && \
 USER robolab
 WORKDIR /home/robolab/
 # Install Robocomp
-CMD echo $FORCE
+# With this ADD the image is regenerated for every change on git
+ADD https://api.github.com/repos/robocomp/melex-rodao/git/refs/heads/development version.json
 RUN curl -sL https://raw.githubusercontent.com/robocomp/robocomp/development/tools/install/robocomp_install.sh | bash -
 WORKDIR /home/robolab/robocomp/
 RUN git annex get \
@@ -31,4 +32,4 @@ RUN git annex get \
 RUN cp -r -L files /home/robolab/files 2>/dev/null || :
 
 # docker build -f Dockerfile.dev -t robocomp/robocomp:focal_dev .
-# docker run -v /tmp/.X11-unix:/tmp/.X11-unix --env="DISPLAY=$DISPLAY" -it robocomp:focal_dev bash
+# docker run -v /tmp/.X11-unix:/tmp/.X11-unix --env="DISPLAY=$DISPLAY" -it robocomp/robocomp:focal_dev bash

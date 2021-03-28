@@ -6,6 +6,11 @@ on:
     - '!doc'
     - '!docker'
     - '!docs'
+  pull_request:
+    paths:
+    - '!doc'
+    - '!docker'
+    - '!docs'
 
 jobs:
   build:

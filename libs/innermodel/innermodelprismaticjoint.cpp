@@ -15,7 +15,7 @@
  * 
  */
 
-#include "innermodelprismaticjoint.h"
+#include "innermodel/innermodelprismaticjoint.h"
 
 InnerModelPrismaticJoint::InnerModelPrismaticJoint(QString id_, float min_, float max_, float val_, float offset_, uint32_t port_, std::string axis_, float home_, InnerModelTransform *parent_) : InnerModelTransform(id_,QString("static"),0,0,0,0,0,0, 0, parent_)
 {

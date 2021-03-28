@@ -32,8 +32,8 @@ macro(RoboComp_ADD_INCLUDES component subdir)
 endmacro(RoboComp_ADD_INCLUDES)
 
 ##############################################################################
-# Collect subdirectories from dirname that contains filename and store them in
-#  varname.
+    # Collect subdirectories from dirname that contains filename and store them in
+    #  varname.
 # WARNING If extra arguments are given then they are considered as exception 
 # list and varname will contain subdirectories of dirname that contains 
 # fielename but doesn't belong to exception list.

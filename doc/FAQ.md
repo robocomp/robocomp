@@ -4,7 +4,7 @@
 
 Robocomp is an Open-Source Robotics Framework, where you can simulate, model and program your own robots, in a C.O.P (Component Oriented Programming) enviroment. You can create components and share them with the community. Components communicate with each other via Ice [[1](https://doc.zeroc.com/ice/3.7/introduction)], a framework for building distributed applications. Simulation is done with RCIS, the built-in simulator.
 
-Robocomp was presented with the publication of the paper: "Robocomp: A Tool-Based Robotics Framework" [[2](https://www.researchgate.net/publication/262179907_RoboComp_A_ToolBased_Robotics_Framework_Lecture_Notes_in_Computer_Science)]. You can see more projects from Robolab, the investigation team from Universidad de Extremadura that created and currently maintains Robocomp [here](robolab.unex.es) (some of the information is in Spanish).
+Robocomp was presented with the publication of the paper: "Robocomp: A Tool-Based Robotics Framework" [[2](https://www.researchgate.net/publication/262179907_RoboComp_A_ToolBased_Robotics_Framework_Lecture_Notes_in_Computer_Science)]. You can see more projects from Robolab, the investigation team from Universidad de Extremadura that created and currently maintains Robocomp [here](https://robolab.unex.es) (some of the information is in Spanish).
 
 ## What to do if you are new to the project and want to help?
 
