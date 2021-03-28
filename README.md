@@ -72,7 +72,8 @@ sudo DEBIAN_FRONTEND=noninteractive apt-get update && sudo DEBIAN_FRONTEND=nonin
       zeroc-ice-all-dev \
       zeroc-icebox 
 
-sudo pip3 install pyside2 rich prompt_toolkit
+sudo pip3 install pyside2 rich argcomplete prompt_toolkit
+
 ```
 
 It is recommendable to install the following packages::
