@@ -54,7 +54,7 @@ function(ice_to_src RETURN_SOURCES ICE_PATH IFACE_NAME)
     add_custom_command(
             OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${IFACE_NAME}.cpp
             COMMAND slice2cpp ${ICE_PATH}/${IFACE_NAME}.ice -I${ICE_PATH}/ --output-dir ${CMAKE_CURRENT_BINARY_DIR}
-            DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${IFACE_NAME}.ice
+            DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${IFACE_NAME}.ice
             COMMENT "BU ice=>h/cpp: Generating ${IFACE_NAME}.h and ${IFACE_NAME}.cpp from ${CMAKE_CURRENT_BINARY_DIR}/${IFACE_NAME}.ice"
     )
     SET (${RETURN_SOURCES} ${CMAKE_CURRENT_BINARY_DIR}/${IFACE_NAME}.cpp PARENT_SCOPE)
