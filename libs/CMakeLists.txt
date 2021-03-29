@@ -4,6 +4,8 @@ project(robocomp_libs
         DESCRIPTION "Robocomp libs"
         LANGUAGES CXX )
 
+include(GNUInstallDirs)
+
 add_subdirectory(qmat)
 
 add_subdirectory(osgviewer)

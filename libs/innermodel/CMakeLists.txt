@@ -7,7 +7,7 @@ project(innermodel
 
 find_package(Qt5 COMPONENTS Core Gui REQUIRED)
 
-add_library(innermodel)
+add_library(innermodel SHARED)
 target_sources(innermodel
 		PRIVATE innermodel.cpp
 		innermodelreader.cpp
@@ -28,15 +28,12 @@ target_sources(innermodel
 		innermodelpointcloud.cpp
 		innermodelmesh.cpp
 		innermodeltouchsensor.cpp
-		innermodeldisplay.cpp
-		PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include/innermodel/innermodel.h)
+		innermodeldisplay.cpp)
 target_link_libraries(innermodel
 		PUBLIC Qt5::Core Qt5::Gui
 		PUBLIC qmat
 		PUBLIC osgviewer)
-target_include_directories(innermodel
-		PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include/
-)
+
 
 ## FCL
 #SET(FCL_SUPPORT ON CACHE BOOL "Build FCL shared library" FORCE)
@@ -52,4 +49,24 @@ else (FCL_SUPPORT)
 	MESSAGE( STATUS "COMPILING WITHOUT FCL SUPPORT=0" )
 endif (FCL_SUPPORT)
 
-add_library(Robocomp::innermodel ALIAS innermodel)
+# Define headers for this library. PUBLIC headers are used for
+# compiling the library, and will be added to consumers' build
+# paths.
+target_include_directories(innermodel PUBLIC
+		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+		$<INSTALL_INTERFACE:include>)
+
+# 'make install' to the correct locations (provided by GNUInstallDirs).
+install(TARGETS innermodel EXPORT innermodelConfig
+		ARCHIVE  DESTINATION ${CMAKE_INSTALL_LIBDIR}
+		LIBRARY  DESTINATION ${CMAKE_INSTALL_LIBDIR})
+
+install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+
+# This makes the project importable from the install directory
+# Put config file in per-project dir (name MUST match), can also
+# just go into 'cmake'.
+install(EXPORT innermodelConfig DESTINATION share/robocomp/cmake)
+
+# This makes the project importable from the build directory
+export(TARGETS innermodel FILE innermodelConfig.cmake)
