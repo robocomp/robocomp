@@ -1,8 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-PROJECT( rcis
-		VERSION 2021.2.1
-		DESCRIPTION "RoboComp RCInnerModelSimulator tool"
-		LANGUAGES CXX )
+
 
 INCLUDE( CMakeListsSpecific.txt )
 
@@ -28,22 +25,24 @@ INCLUDE( CMakeListsSpecific.txt )
 #)
 
 # # # Header files
-SET ( HEADERS
-	${HEADERS}
-	genericworker.h
-	genericbaseI.h
-	genericmonitor.h
-)
+#SET ( HEADERS
+#	${HEADERS}
+#	genericworker.h
+#	genericbaseI.h
+#	genericmonitor.h
+#)
+#
+#SET(LIBS -L${CMAKE_BUILD_DIR} ${LIBS} )
 
-SET(LIBS -L${CMAKE_BUILD_DIR} ${LIBS} )
 
-
-# RoboComp
-INCLUDE( ${CMAKE_SOURCE_DIR}/cmake/robocompLocal.cmake )
-ROBOCOMP_INITIALIZE( ${CMAKE_SOURCE_DIR}/ )
-ROBOCOMP_IDSL_TO_ICE( Camera CommonBehavior CommonHead DifferentialRobot OmniRobot IMU InnerModelManager JointMotor Laser RGBD TouchSensor RCISMousePicker GenericBase Display)
-ROBOCOMP_ICE_TO_SRC( Camera CommonBehavior CommonHead DifferentialRobot OmniRobot IMU InnerModelManager JointMotor Laser RGBD TouchSensor RCISMousePicker GenericBase Display)
-SET(ROBOCOMP_LIBS ${ROBOCOMP_LIBS} -lrobocomp_qmat )
+## RoboComp
+INCLUDE( ${CMAKE_SOURCE_DIR}/cmake/robocomp_build.cmake )
+#ROBOCOMP_INITIALIZE( ${CMAKE_SOURCE_DIR}/ )
+robocomp_idsl_to_src(IDSL_SOURCES Camera CommonBehavior CommonHead DifferentialRobot OmniRobot IMU InnerModelManager JointMotor Laser RGBD TouchSensor RCISMousePicker GenericBase Display )
+MESSAGE(STATUS "New files ${IDSL_SOURCES}")
+#ROBOCOMP_IDSL_TO_ICE( Camera CommonBehavior CommonHead DifferentialRobot OmniRobot IMU InnerModelManager JointMotor Laser RGBD TouchSensor RCISMousePicker GenericBase Display)
+#ROBOCOMP_ICE_TO_SRC( Camera CommonBehavior CommonHead DifferentialRobot OmniRobot IMU InnerModelManager JointMotor Laser RGBD TouchSensor RCISMousePicker GenericBase Display)
+#SET(ROBOCOMP_LIBS ${ROBOCOMP_LIBS} -lrobocomp_qmat )
 
 #include_directories(${CMAKE_CURRENT_BINARY_DIR}/../../../libs/innermodel/include )
 #include_directories(${CMAKE_SOURCE_DIR}/libs/innermodel/include)
@@ -53,23 +52,29 @@ SET(ROBOCOMP_LIBS ${ROBOCOMP_LIBS} -lrobocomp_qmat )
 
 
 # OPENSG
-INCLUDE (${CMAKE_SOURCE_DIR}/cmake/modules/opensg.cmake )
+find_package(OpenSceneGraph 2.0.0 REQUIRED osgDB osgUtil)
+add_library(osg INTERFACE IMPORTED)
+set_property(TARGET osg PROPERTY
+		INTERFACE_INCLUDE_DIRECTORIES ${OpenSceneGraph_INCLUDE_DIR})
 
 # Qt
-INCLUDE (${CMAKE_SOURCE_DIR}/cmake/modules/qt.cmake )
+find_package(Qt5 COMPONENTS Widgets OpenGL Core REQUIRED)
+add_library(qt5_req INTERFACE IMPORTED)
+set_property(TARGET qt5_req PROPERTY
+		INTERFACE_INCLUDE_DIRECTORIES ${Qt5_INCLUDE_DIR})
 
 # Python bindings
 set(Boost_USE_STATIC_LIBS   OFF)
 set(Boost_USE_MULTITHREADED ON)
-if (PYTHON_BINDINGS_SUPPORT)
-	# Add bindings source code file
-	SET(srcs ${srcs} innermodel_python.cpp)
-	find_package(Boost COMPONENTS system thread python REQUIRED)
-	find_package(PythonLibs REQUIRED)
-	MESSAGE(STATUS "im PYTHON BINDINGS: DIRS ${PYTHON_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS}")
-	MESSAGE(STATUS "im PYTHON BINDINGS: LIBS ${PYTHON_LIBRARIES} ${Boost_LIBRARY_DIRS_DIRS}")
-	link_directories(${PYTHON_LIBRARIES} ${Boost_LIBRARY_DIRS_DIRS})
-endif (PYTHON_BINDINGS_SUPPORT)
+#if (PYTHON_BINDINGS_SUPPORT)
+#	# Add bindings source code file
+#	SET(srcs ${srcs} innermodel_python.cpp)
+#	find_package(Boost COMPONENTS system thread python REQUIRED)
+#	find_package(PythonLibs REQUIRED)
+#	MESSAGE(STATUS "im PYTHON BINDINGS: DIRS ${PYTHON_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS}")
+#	MESSAGE(STATUS "im PYTHON BINDINGS: LIBS ${PYTHON_LIBRARIES} ${Boost_LIBRARY_DIRS_DIRS}")
+#	link_directories(${PYTHON_LIBRARIES} ${Boost_LIBRARY_DIRS_DIRS})
+#endif (PYTHON_BINDINGS_SUPPORT)
 
 
 # Specify construction and link process
@@ -78,8 +83,9 @@ add_executable( rcis  )
 target_sources(rcis
 		PRIVATE
 		${SPECIFIC_SOURCES}
-		${ICES_SOURCES}
-		${SOURCES}
+		${IDSL_SOURCES}
+#		${ICES_SOURCES}
+#		${SOURCES}
 		robotsimulatorcomp.cpp
 		genericworker.cpp
 		genericmonitor.cpp
@@ -94,17 +100,25 @@ target_sources(rcis
 		rgbdI.cpp
 		displayI.cpp
 		touchsensorI.cpp
-		${CMAKE_SOURCE_DIR}/classes/rapplication/rapplication.cpp
-		${CMAKE_SOURCE_DIR}/classes/qlog/qlog.cpp
-		${MOC_SOURCES} ${RC_SOURCES} ${UI_HEADERS}
+#		${CMAKE_SOURCE_DIR}/classes/rapplication/rapplication.cpp
+#		${CMAKE_SOURCE_DIR}/classes/qlog/qlog.cpp
+#		${MOC_SOURCES} ${RC_SOURCES} ${UI_HEADERS}
 		)
-target_link_libraries( rcis PRIVATE Robocomp::innermodel  Robocomp::qmat Robocomp::osgviewer glut OpenThreads osgGA osgDB osgUtil osgText ${LIBS} ${STATIC_LIBS} ${QT_LIBRARIES} -lboost_system -lboost_thread ${Ice_LIBRARIES})
-target_include_directories(rcis PUBLIC
+target_link_libraries( rcis
+		PRIVATE
+		Qt5::Core
+		Qt5::Widgets
+		)
+#		PRIVATE Robocomp::innermodel  Robocomp::qmat Robocomp::osgviewer glut OpenThreads osgGA osgDB osgUtil osgText ${LIBS} ${STATIC_LIBS} ${QT_LIBRARIES} -lboost_system -lboost_thread ${Ice_LIBRARIES})
+target_include_directories(rcis
+		PRIVATE
 		${CMAKE_CURRENT_BINARY_DIR}
-		${PYTHON_INCLUDE_DIRS}
-		${Boost_INCLUDE_DIRS}
-		${CMAKE_SOURCE_DIR}/libs/innermodel/include
-		${CMAKE_SOURCE_DIR}/libs/osgviewer/include
-		${CMAKE_SOURCE_DIR}/libs/qmat/include
-		)
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/rcis DESTINATION /opt/robocomp/bin/ PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE )
+		.)
+#		${CMAKE_CURRENT_BINARY_DIR}
+#		${PYTHON_INCLUDE_DIRS}
+#		${Boost_INCLUDE_DIRS}
+#		${CMAKE_SOURCE_DIR}/libs/innermodel/include
+#		${CMAKE_SOURCE_DIR}/libs/osgviewer/include
+#		${CMAKE_SOURCE_DIR}/libs/qmat/include
+#		)
+#install(FILES ${CMAKE_CURRENT_BINARY_DIR}/rcis DESTINATION /opt/robocomp/bin/ PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE )
