@@ -49,13 +49,14 @@ MESSAGE(STATUS "New files ${IDSL_SOURCES}")
 #include_directories(${CMAKE_SOURCE_DIR}/libs/qmat/include)
 #include_directories(${CMAKE_SOURCE_DIR}/libs/osgviewer/include)
 
-
+add_library(qlog INTERFACE)
+target_include_directories(qlog INTERFACE ${CMAKE_SOURCE_DIR}/classes/ )
 
 # OPENSG
 find_package(OpenSceneGraph 2.0.0 REQUIRED osgDB osgUtil)
 add_library(osg INTERFACE IMPORTED)
 set_property(TARGET osg PROPERTY
-		INTERFACE_INCLUDE_DIRECTORIES ${OpenSceneGraph_INCLUDE_DIR})
+		INTERFACE_INCLUDE_DIRECTORIES ${OPENSCENEGRAPH_INCLUDE_DIRS})
 
 # Qt
 find_package(Qt5 COMPONENTS Widgets OpenGL Core REQUIRED)
@@ -63,6 +64,7 @@ add_library(qt5_req INTERFACE IMPORTED)
 set_property(TARGET qt5_req PROPERTY
 		INTERFACE_INCLUDE_DIRECTORIES ${Qt5_INCLUDE_DIR})
 
+find_package(osgviewer)
 # Python bindings
 set(Boost_USE_STATIC_LIBS   OFF)
 set(Boost_USE_MULTITHREADED ON)
@@ -108,8 +110,9 @@ target_link_libraries( rcis
 		PRIVATE
 		Qt5::Core
 		Qt5::Widgets
-		)
-#		PRIVATE Robocomp::innermodel  Robocomp::qmat Robocomp::osgviewer glut OpenThreads osgGA osgDB osgUtil osgText ${LIBS} ${STATIC_LIBS} ${QT_LIBRARIES} -lboost_system -lboost_thread ${Ice_LIBRARIES})
+		PUBLIC
+		qlog
+		PRIVATE innermodel  qmat osgviewer ${OPENSCENEGRAPH_LIBRARIES} glut OpenThreads osgGA osgDB osgUtil osgText ${LIBS} ${STATIC_LIBS} ${QT_LIBRARIES} -lboost_system -lboost_thread ${Ice_LIBRARIES})
 target_include_directories(rcis
 		PRIVATE
 		${CMAKE_CURRENT_BINARY_DIR}

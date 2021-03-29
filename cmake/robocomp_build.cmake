@@ -58,7 +58,6 @@ function(ice_to_src RETURN_SOURCES ICE_PATH IFACE_NAME)
             COMMENT "BU ice=>h/cpp: Generating ${IFACE_NAME}.h and ${IFACE_NAME}.cpp from ${CMAKE_CURRENT_BINARY_DIR}/${IFACE_NAME}.ice"
     )
     SET (${RETURN_SOURCES} ${CMAKE_CURRENT_BINARY_DIR}/${IFACE_NAME}.cpp PARENT_SCOPE)
-#    SET_PROPERTY(SOURCE ${IFACE_NAME}.cpp PROPERTY SKIP_AUTOGEN ON)
 endfunction(ice_to_src)
 
 function(robocomp_idsl_to_src IDSL_SRCS)
