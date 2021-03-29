@@ -27,7 +27,7 @@
 #include <innermodel/innermodel.h>
 
 // Simulator includes
-#include <config.h>
+#include "config.h"
 
 class SpecificWorker;
 

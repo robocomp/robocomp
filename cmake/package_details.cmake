@@ -1,14 +1,14 @@
 message(STATUS "CONFIGURING PACKAGE")
 
 if(NOT SRC_DIR OR NOT MY_VERSION)
-    set(SRC_DIR ${RoboComp_SOURCE_DIR})
+    set(SRC_DIR ${CMAKE_SOURCE_DIR})
     set(MY_VERSION ${RoboComp_VERSION})
 endif(NOT SRC_DIR OR NOT MY_VERSION)
 
 message(STATUS "SRC_DIR is = ${SRC_DIR}")
 message(STATUS "Version  = " ${MY_VERSION})
 
-set(CPACK_GENERATOR "DEB" CACHE string "generator" )
+set(CPACK_GENERATOR "DEB" CACHE STRING "generator" )
 set(CPACK_PACKAGE_CONTACT "Luis J. Manso <lmanso@unex.es>" CACHE STRING "email")
 set(CPACK_PACKAGE_NAME "robocomp" CACHE STRING "name")
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Robotics Framework" CACHE STRING "descr")
@@ -38,8 +38,19 @@ message(STATUS "architecture is: ${DEB_ARCHITECTURE}")
 set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE ${DEB_ARCHITECTURE} CACHE STRING "cpack arch")
 
 #find and set dependencies (build and package)
-set(DEBSRC_BUILD_DEPENDS debhelper cmake libgsl0-dev libopenscenegraph-dev cmake-qt-gui freeglut3-dev libboost-system-dev libboost-thread-dev openjdk-7-jre libxt-dev pyqt4-dev-tools qt4-designer qt4-dev-tools zeroc-ice35 yakuake python-pip python-pyparsing python-numpy python-pyside pyside-tools libqt4-dev qt4-qmake libqt4-opengl-dev CACHE STRINGS "build-dep")
-set(DEBSRC_PACKAGE_DEPENDS g++ libgsl0-dev libopenscenegraph-dev cmake-qt-gui zeroc-ice35 freeglut3-dev libboost-system-dev libboost-thread-dev qt4-dev-tools yakuake openjdk-7-jre python-pip  python-pyparsing python-numpy python-pyside pyside-tools libxt-dev pyqt4-dev-tools qt4-designer python-argcomplete CACHE STRING "name")
+set(DEBSRC_BUILD_DEPENDS debhelper cmake libgsl0-dev libopenscenegraph-dev cmake-qt-gui freeglut3-dev libboost-system-dev libboost-thread-dev openjdk-7-jre libxt-dev pyqt4-dev-tools qt4-designer qt4-dev-tools zeroc-ice35 yakuake python-pip python-pyparsing python-numpy python-pyside pyside-tools libqt4-dev qt4-qmake libqt4-opengl-dev CACHE STRING "build-dep")
+set(DEBSRC_PACKAGE_DEPENDS
+    libgsl23
+    libopenscenegraph-dev
+    libqt5opengl5-dev
+    libzeroc-ice3.7
+    libzeroc-icestorm3.7
+    python3-prompt-toolkit
+    python3-termcolor
+    sudo
+    zeroc-icebox
+    CACHE STRING "name"
+        )
 
 #As CPack wants dependencies as a single comma separated string
 set(CPACK_DEBIAN_PACKAGE_DEPENDS)
@@ -62,4 +73,4 @@ endforeach(DEP ${DEBSRC_BUILD_DEPENDS})
 
 #generate changelog
 
-message(STATUS "CONFIGURING DONE")
+message(STATUS "PACKAGE CONFIGURATION DONE")

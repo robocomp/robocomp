@@ -28,12 +28,12 @@ source ~/.bashrc
 ## PyRep Installation
 
 -   Check that you have installed __libpython3-dev__ using apt
--   First, clone _master_ branch of __PyRep__ repo :
+-   First, clone _master_ branch of __PyRep__ repo :958236
 ```bash
 git clone https://github.com/stepjam/PyRep.git
 ```
 
--   Install __PyRep__ dependencies and library :
+-   Install __PyRep__ dependencies and library __LOCALLY (without sudo)__:
 ```bash
 cd PyRep
 pip3 install -r requirements.txt
@@ -77,3 +77,22 @@ pip3 install .
                 'You requested object of type %s, but the actual type was '
                 '%s' % (assert_type.name, actual.name))
         ```
+ 
+ -  __Error when installing Pyrep. This error might occur if you do a global installation (with sudo) since PyRep won't find COPPELIASIM_ROOT:__
+     ```bash
+     
+     ERROR: Command errored out with exit status 1:
+     command: /usr/bin/python3 -c 'import sys, setuptools, tokenize; sys.argv[0] = '"'"'/tmp/pip-req-build-m9qd50yj/setup.py'"'"'; __file__='"'"'/tmp/pip-req-      build-m9qd50yj/setup.py'"'"';f=getattr(tokenize, '"'"'open'"'"', open)(__file__);code=f.read().replace('"'"'\r\n'"'"', '"'"'\n'"'"');f.close();exec(compile(code, __file__, '"'"'exec'"'"'))' egg_info --egg-base /tmp/pip-pip-egg-info-w48qqfxo
+         cwd: /tmp/pip-req-build-m9qd50yj/
+    Complete output (7 lines):
+    Traceback (most recent call last):
+      File "<string>", line 1, in <module>
+      File "/tmp/pip-req-build-m9qd50yj/setup.py", line 7, in <module>
+        import cffi_build.cffi_build as cffi_build
+      File "/tmp/pip-req-build-m9qd50yj/cffi_build/cffi_build.py", line 9, in <module>
+        raise RuntimeError('COPPELIASIM_ROOT not defined.')
+    RuntimeError: COPPELIASIM_ROOT not defined.
+    ----------------------------------------
+    WARNING: Discarding file:///home/robolab/software/PyRep. Command errored out with exit status 1: python setup.py egg_info Check the logs for full command output.
+    ERROR: Command errored out with exit status 1: python setup.py egg_info Check the logs for full command output.
+   ```

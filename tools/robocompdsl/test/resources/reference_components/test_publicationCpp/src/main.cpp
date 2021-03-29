@@ -139,6 +139,12 @@ int ::testcomp::run(int argc, char* argv[])
 	try
 	{
 		topicManager = IceStorm::TopicManagerPrx::checkedCast(communicator()->propertyToProxy("TopicManager.Proxy"));
+		if (topicManager == nullptr)
+		{
+		    cout << "[" << PROGRAM_NAME << "]: TopicManager.Proxy not defined in config file."<<endl;
+		    cout << "	 Config line example: TopicManager.Proxy=IceStorm/TopicManager:default -p 9999"<<endl;
+	        return EXIT_FAILURE;
+		}
 	}
 	catch (const Ice::Exception &ex)
 	{

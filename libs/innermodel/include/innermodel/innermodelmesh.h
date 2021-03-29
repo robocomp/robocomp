@@ -27,7 +27,7 @@
 #include <osg/MatrixTransform>
 
 
-#if FCL_SUPPORT==1
+#ifdef FCL_SUPPORT
 struct IncludeTrianglesInFCL_functor
 {
 	IncludeTrianglesInFCL_functor()

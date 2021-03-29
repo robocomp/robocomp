@@ -3,9 +3,9 @@ rcmanager
 
 [![Join the chat at https://gitter.im/robocomp/robocomp](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/robocomp/robocomp?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-##What the rcmanager does?
+## What the rcmanager does?
 
-The `rcmanager` is a very useful tool for controlling the components that we have running within ROBOCOMP. `rcmanager` is basically an user interface that shows you a graph that relates Robocomp components with which you are working (nodes of the graph) and relationships or dependencies between them (arrows of the graph).
+The `rcmanager` is a very useful tool for controlling the components that we have running within ROBOCOMP. The `rcmanager` is basically a user interface that shows you a graph that relates the RoboComp components with nodes (of the graph) and relationships/dependencies between them (arrows of the graph).
 
 Let's see the following image:
 
@@ -16,7 +16,7 @@ As we can see in it, there are our components that are working (red and green no
 1. NODES: nodes (components) have two possible states:
     > DOWN: when the nodes are red. This means that the component is not being executed. If we want to run the component, we must click on the node with the right mouse button and select the UP option.
     > UP: when the nodes are green. This means that the component is being executed. If we want to stop the component, we have to click on the node with the right mouse button and select the DOWN option.
-2. ARROWS: they are the dependencies between nodes. The sense of dependence is equal to the direction of the arrow. For example, in the first image we can see that the commonjoint component (which is responsible for handling all robot motors) depends on two other components: the dynamixel component (which is responsible for handling the head motors) and the faulhaber component (which is responsible for handling the arm motors).
+2. ARROWS: they are the dependencies between nodes. The direction of the arrow represents what depends on what. For example, in the first image, we can see that the commonjoint component (which is responsible for handling all robot motors) depends on two other components: the dynamixel component (which is responsible for handling the head motors) and the Faulhaber component (which is responsible for handling the arm motors).
 
 Another view offered by this program is what we see in the picture below:
 
@@ -77,4 +77,3 @@ Normally we need to be running the `rcremoteserver` and the `rcremote` tools fir
     </rcmanager>  
     
 Now, to execute the rcmanager, we only put in the command line `rcmanagersimple manager.xml` and that's it!!
-

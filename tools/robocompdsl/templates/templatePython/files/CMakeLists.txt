@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 3.10)
 PROJECT(  ${component_name} )
 
 SET(RC_COMPONENT_PATH $${CMAKE_CURRENT_SOURCE_DIR} CACHE STRING "component base path")

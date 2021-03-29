@@ -123,6 +123,7 @@ You need the following third-party software:
       sudo make install 
       cd ~/software
       git clone https://github.com/eProsima/Fast-DDS.git
+      git checkout tags/v2.2.0
       mkdir Fast-DDS/build 
       cd Fast-DDS/build
       cmake ..

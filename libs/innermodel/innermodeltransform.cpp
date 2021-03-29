@@ -15,7 +15,7 @@
  * 
  */
 
-#include "innermodeltransform.h"
+#include "innermodel/innermodeltransform.h"
 
 InnerModelTransform::InnerModelTransform(QString id_, QString engine_, float tx_, float ty_, float tz_, float rx_, float ry_, float rz_, float mass_, InnerModelNode *parent_) : InnerModelNode(id_, parent_)
 {

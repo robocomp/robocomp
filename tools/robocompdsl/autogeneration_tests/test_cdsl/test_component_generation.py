@@ -194,69 +194,71 @@ class ComponentGenerationChecker:
         previous_dir = os.getcwd()
         os.chdir(os.path.expanduser(test_component_dir))
         list_dir = glob.glob("test_*")
-        for item in list_dir:
-            if os.path.isdir(item) and filter in item:
-                current_dir = item
-                if any([avoid_item.lower() in current_dir.lower() for avoid_item in avoid]):
-                    console.log(f"Avoiding component {current_dir}", style='magenta')
-                    continue
-                console.log("Entering dir %s" % current_dir, style='magenta')
-                os.chdir(current_dir)
-                cdsl_file = None
-                for file in glob.glob("*.cdsl")+glob.glob("*.jcdsl"):
-                    cdsl_file = file
-                    break
-                if cdsl_file:
-                    # With the remove inside the cdsl_check we avoid cleaning dirs that don't have .cdsl files. Potentialy wrong directories.
-                    self.remove_genetared_files(".", self.dry_run)
-                    if clean_only:
-                        console.log("\tCleaned", 'green')
-                        os.chdir("..")
-                        continue
-                    self.valid += 1
-                    self.results[current_dir] = {"generation":False, "compilation": False, "execution": False}
-                    console.log("Generating code ... [yellow]WAIT![/yellow]")
-                    if self.generate_code(cdsl_file, "generation_output.log", False) == 0:
-                        console.log("%s generation [green]OK[/green]" % current_dir)
-                        self.results[current_dir]['generation'] = True
-                        self.generated += 1
-                        if generate_only:
-                            self.results[current_dir]['compilation'] = False
-                            console.log("%s not compiled (-g option)" % current_dir)
-                        else:
-                            console.log("Executing cmake for %s ... [yellow]WAIT!" % (current_dir))
-                            self.cmake_component()
-                            console.log("Executing make for %s ... [yellow]WAIT![/yellow]" % (current_dir))
-                            make_result = self.make_component(self.dry_run)
 
-                            if make_result == 0 or (make_result == 2 and self.dry_run):
-                                self.results[current_dir]['compilation'] = True
-                                self.compiled += 1
-                                console.log("%s compilation OK" % current_dir, style="green")
-                                if not no_execution:
-                                    if self.run_component(dry_run=False) == 0:
-                                        self.results[current_dir]['execution'] = True
-                                        console.log("%s execution OK" % current_dir, style="green")
-                                        self.executed += 1
-                                    else:
-                                        self.results[current_dir]['execution'] = False
-                                        console.log("%s execution Failed" % current_dir, style="red")
-                                        global_result = False
-                                        self.exec_failed += 1
-                            else:
-                                self.results[current_dir]['compilation'] = False
-                                self.comp_failed += 1
-                                console.log("%s compilation [red]FAILED[/red]" % current_dir)
-                                global_result = False
-                    else:
-                        console.log("%s generation [red]FAILED[/red]" % os.path.join(current_dir, cdsl_file))
-                        self.gen_failed += 1
-                        self.results[current_dir]['generation'] = False
-                        global_result = False
-                    if not dirty:
+        with console.status("[bold green]Working on tasks...") as status:
+            for item in list_dir:
+                if os.path.isdir(item) and filter in item:
+                    current_dir = item
+                    if any([avoid_item.lower() in current_dir.lower() for avoid_item in avoid]):
+                        console.log(f"Avoiding component {current_dir}", style='magenta')
+                        continue
+                    console.log("Entering dir %s" % current_dir, style='magenta')
+                    os.chdir(current_dir)
+                    cdsl_file = None
+                    for file in glob.glob("*.cdsl")+glob.glob("*.jcdsl"):
+                        cdsl_file = file
+                        break
+                    if cdsl_file:
+                        # With the remove inside the cdsl_check we avoid cleaning dirs that don't have .cdsl files. Potentialy wrong directories.
                         self.remove_genetared_files(".", self.dry_run)
-                print("")
-                os.chdir("..")
+                        if clean_only:
+                            console.log("\tCleaned", 'green')
+                            os.chdir("..")
+                            continue
+                        self.valid += 1
+                        self.results[current_dir] = {"generation":False, "compilation": False, "execution": False}
+                        console.log("Generating code ... [yellow]WAIT![/yellow]")
+                        if self.generate_code(cdsl_file, "generation_output.log", False) == 0:
+                            console.log("%s generation [green]OK[/green]" % current_dir)
+                            self.results[current_dir]['generation'] = True
+                            self.generated += 1
+                            if generate_only:
+                                self.results[current_dir]['compilation'] = False
+                                console.log("%s not compiled (-g option)" % current_dir)
+                            else:
+                                console.log("Executing cmake for %s ... [yellow]WAIT!" % (current_dir))
+                                self.cmake_component()
+                                console.log("Executing make for %s ... [yellow]WAIT![/yellow]" % (current_dir))
+                                make_result = self.make_component(self.dry_run)
+
+                                if make_result == 0 or (make_result == 2 and self.dry_run):
+                                    self.results[current_dir]['compilation'] = True
+                                    self.compiled += 1
+                                    console.log("%s compilation OK" % current_dir, style="green")
+                                    if not no_execution:
+                                        if self.run_component(dry_run=False) == 0:
+                                            self.results[current_dir]['execution'] = True
+                                            console.log("%s execution OK" % current_dir, style="green")
+                                            self.executed += 1
+                                        else:
+                                            self.results[current_dir]['execution'] = False
+                                            console.log("%s execution Failed" % current_dir, style="red")
+                                            global_result = False
+                                            self.exec_failed += 1
+                                else:
+                                    self.results[current_dir]['compilation'] = False
+                                    self.comp_failed += 1
+                                    console.log("%s compilation [red]FAILED[/red]" % current_dir)
+                                    global_result = False
+                        else:
+                            console.log("%s generation [red]FAILED[/red]" % os.path.join(current_dir, cdsl_file))
+                            self.gen_failed += 1
+                            self.results[current_dir]['generation'] = False
+                            global_result = False
+                        if not dirty:
+                            self.remove_genetared_files(".", self.dry_run)
+                    print("")
+                    os.chdir("..")
         os.chdir(previous_dir)
 
         # Command final output

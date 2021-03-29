@@ -86,7 +86,7 @@ class CustomTemplate(Template):
         return identifiers
 
 
-TEMPLATES_DIR = '/opt/robocomp/share/robocompdsl/templates/'
+TEMPLATES_DIR = '/opt/robocomp/python/robocompdsl/templates/'
 ALT_TEMPLATES_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../')
 
 

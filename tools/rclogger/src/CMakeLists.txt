@@ -1,35 +1,7 @@
+cmake_minimum_required(VERSION 3.10)
 
-cmake_minimum_required(VERSION 2.6)
-PROJECT(  rclogger )
-
- 
-IF ( "${CMAKE_SOURCE_DIR}" STREQUAL "")
-  MESSAGE(WARNING "ROBOCOMP variable not set. Using the default value: /opt/robocomp")
-  SET (ENV{ROBOCOMP} "/opt/robocomp/")
-ENDIF ( "${CMAKE_SOURCE_DIR}" STREQUAL "")
-
-IF(NOT EXISTS ${CMAKE_SOURCE_DIR}/cmake)
-  MESSAGE(FATAL_ERROR "Couldn't find RoboComp in ${CMAKE_SOURCE_DIR}! Exiting...")
-ENDIF(NOT EXISTS ${CMAKE_SOURCE_DIR}/cmake)
-
-INCLUDE( ${CMAKE_SOURCE_DIR}/cmake/robocompLocal.cmake )
-INCLUDE ( CMakeListsSpecific.txt)
-
-# Sources set
-SET ( SOURCES
-  ${SOURCES}
-  ${CMAKE_SOURCE_DIR}/classes/rapplication/rapplication.cpp
-  ${CMAKE_SOURCE_DIR}/classes/qlog/qlog.cpp
-  main.cpp
-  genericmonitor.cpp
-  specificmonitor.cpp
-  commonbehaviorI.cpp
-  genericworker.cpp
-  specificworker.cpp
-  loggerI.cpp
-)
-
-
+include( ${CMAKE_SOURCE_DIR}/cmake/robocompLocal.cmake )
+include( CMakeListsSpecific.txt)
 
 #ROBOCOMP
 ROBOCOMP_INITIALIZE( ${CMAKE_SOURCE_DIR}/ )
@@ -38,10 +10,31 @@ ROBOCOMP_ICE_TO_SRC( CommonBehavior Logger )
 SET (EXECUTABLE_OUTPUT_PATH ${RC_COMPONENT_DEVEL_PATH}/bin)
 
 # Qt
-include(${RoboComp_SOURCE_DIR}/cmake/modules/qt.cmake)
+include(${CMAKE_SOURCE_DIR}/cmake/modules/qt.cmake)
 
+find_package(OpenMP REQUIRED)
 
-# Specify construction and link process
-ADD_EXECUTABLE( rclogger ${SOURCES} ${MOC_SOURCES} ${RC_SOURCES} ${UI_HEADERS} )
-TARGET_LINK_LIBRARIES( rclogger ${QT_LIBRARIES} ${LIBS} ${STATIC_LIBS} ${SPECIFIC_LIBS} ${Ice_LIBRARIES})
-INSTALL(FILES ${EXECUTABLE_OUTPUT_PATH}/rclogger DESTINATION ${RC_COMPONENT_INSTALL_PATH}/bin/ PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE )
+# Specify build and link process
+add_executable( rclogger ${SOURCES} )
+target_sources( rclogger
+        PRIVATE
+        ${CMAKE_SOURCE_DIR}/classes/rapplication/rapplication.cpp
+        ${CMAKE_SOURCE_DIR}/classes/qlog/qlog.cpp
+        main.cpp
+        genericmonitor.cpp
+        specificmonitor.cpp
+        commonbehaviorI.cpp
+        genericworker.cpp
+        specificworker.cpp
+        loggerI.cpp
+        ${SPECIFIC_SOURCES})
+
+target_link_libraries( rclogger PRIVATE ${QT_LIBRARIES} ${Ice_LIBRARIES} PUBLIC OpenMP::OpenMP_CXX)
+target_include_directories(rclogger PRIVATE
+          ${CMAKE_CURRENT_BINARY_DIR}
+        )
+#target_compile_features(
+#        ${OpenMP_C_FLAGS}
+#        ${OpenMP_CXX_FLAGS}
+#)
+install(FILES ${EXECUTABLE_OUTPUT_PATH}/rclogger DESTINATION ${RC_COMPONENT_INSTALL_PATH}/bin/ PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE )
