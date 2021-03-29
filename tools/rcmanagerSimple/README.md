@@ -5,7 +5,7 @@ rcmanager
 
 ## What the rcmanager does?
 
-The `rcmanager` is a very useful tool for controlling the components that we have running within ROBOCOMP. The `rcmanager` is basically a user interface that shows you a graph that relates the components of the RoboComp with nodes (of the graph) and relationships/dependencies between them (arrows of the graph).
+The `rcmanager` is a very useful tool for controlling the components that we have running within ROBOCOMP. The `rcmanager` is basically a user interface that shows you a graph that relates the RoboComp components with nodes (of the graph) and relationships/dependencies between them (arrows of the graph).
 
 Let's see the following image:
 
@@ -77,4 +77,3 @@ Normally we need to be running the `rcremoteserver` and the `rcremote` tools fir
     </rcmanager>  
     
 Now, to execute the rcmanager, we only put in the command line `rcmanagersimple manager.xml` and that's it!!
-
