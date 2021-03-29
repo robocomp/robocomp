@@ -16,7 +16,7 @@ As we can see in it, there are our components that are working (red and green no
 1. NODES: nodes (components) have two possible states:
     > DOWN: when the nodes are red. This means that the component is not being executed. If we want to run the component, we must click on the node with the right mouse button and select the UP option.
     > UP: when the nodes are green. This means that the component is being executed. If we want to stop the component, we have to click on the node with the right mouse button and select the DOWN option.
-2. ARROWS: they are the dependencies between nodes. The sense of dependability is equal to the direction of the arrow. For example, in the first image we can see that the commonjoint component (which is responsible for handling all robot motors) depends on two other components: the dynamixel component (which is responsible for handling the head motors) and the faulhaber component (which is responsible for handling the arm motors).
+2. ARROWS: they are the dependencies between nodes. The direction of the arrow represents what depends on what. For example, in the first image, we can see that the commonjoint component (which is responsible for handling all robot motors) depends on two other components: the dynamixel component (which is responsible for handling the head motors) and the Faulhaber component (which is responsible for handling the arm motors).
 
 Another view offered by this program is what we see in the picture below:
 
