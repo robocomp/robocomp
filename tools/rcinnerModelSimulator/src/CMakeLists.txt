@@ -71,7 +71,7 @@ include_directories (${Ice_INCLUDE_DIRS})
 
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_BINARY_DIR}/libs/osgviewer/")
-find_package(osgviewer REQUIRED PATHS "${CMAKE_BINARY_DIR}/libs/osgviewer/")
+#find_package(osgviewer REQUIRED PATHS "${CMAKE_BINARY_DIR}/libs/osgviewer/")
 # Python bindings
 set(Boost_USE_STATIC_LIBS   OFF)
 set(Boost_USE_MULTITHREADED ON)

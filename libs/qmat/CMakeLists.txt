@@ -7,8 +7,10 @@ project(qmat
 find_package(Qt5 COMPONENTS Core REQUIRED)
 
 add_library(qmat SHARED)
+
 target_sources(qmat
-        PRIVATE qfundamental.cpp
+        PRIVATE
+        qfundamental.cpp
         qessential.cpp
         qcamera.cpp
         qextrinsics.cpp
@@ -19,8 +21,8 @@ target_sources(qmat
         qrtmat.cpp
         qhomo.cpp
         qline2d.cpp
-        quaternion.cpp)
-
+        quaternion.cpp
+        )
 target_link_libraries(qmat
         PUBLIC
         Qt5::Core

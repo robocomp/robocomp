@@ -18,4 +18,4 @@ target_sources(testlibs
         PRIVATE
         test.cpp
         )
-target_link_libraries(testlibs innermodel)
+target_link_libraries(testlibs innermodel osgviewer)
