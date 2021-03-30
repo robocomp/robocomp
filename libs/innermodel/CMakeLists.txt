@@ -32,7 +32,7 @@ target_sources(innermodel
 target_link_libraries(innermodel
 		PUBLIC Qt5::Core Qt5::Gui
 		PUBLIC qmat
-		PUBLIC osgviewer)
+		PUBLIC rcosgviewer)
 
 
 ## FCL

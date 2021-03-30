@@ -13,3 +13,9 @@ add_subdirectory(osgviewer)
 add_subdirectory(innermodel)
 
 #add_subdirectory(innermodel-python3)
+add_executable(testlibs)
+target_sources(testlibs
+        PRIVATE
+        test.cpp
+        )
+target_link_libraries(testlibs innermodel)

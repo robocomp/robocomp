@@ -53,7 +53,7 @@ add_library(qlog INTERFACE)
 target_include_directories(qlog INTERFACE ${CMAKE_SOURCE_DIR}/classes/ )
 
 # OPENSG
-find_package(OpenSceneGraph 2.0.0 REQUIRED osgDB osgUtil)
+find_package(OpenSceneGraph 2.0.0 REQUIRED osgDB osgUtil )
 add_library(osg INTERFACE IMPORTED)
 set_property(TARGET osg PROPERTY
 		INTERFACE_INCLUDE_DIRECTORIES ${OPENSCENEGRAPH_INCLUDE_DIRS})
@@ -67,6 +67,11 @@ set_property(TARGET qt5_req PROPERTY
 # ICE
 FIND_PACKAGE( Ice REQUIRED COMPONENTS Ice IceStorm OPTIONAL_COMPONENTS IceUtil )
 include_directories (${Ice_INCLUDE_DIRS})
+
+
+
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_BINARY_DIR}/libs/osgviewer/")
+find_package(osgviewer REQUIRED PATHS "${CMAKE_BINARY_DIR}/libs/osgviewer/")
 # Python bindings
 set(Boost_USE_STATIC_LIBS   OFF)
 set(Boost_USE_MULTITHREADED ON)
@@ -112,7 +117,6 @@ target_link_libraries( rcis
 		PUBLIC
 		qlog
 		PRIVATE
-		Qt5::Core
 		Qt5::Widgets
 		${Ice_LIBRARIES}
 		${OPENSCENEGRAPH_LIBRARIES}
