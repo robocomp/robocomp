@@ -26,7 +26,7 @@ Another view offered by this program is what we see in the picture below:
 *   Next, if we select one component (like the commonjoint) we can down the execution of the component (and we can see where the component is being executed, in this case the commonjoint component is being executed inside the nuc1 of the robot Ursus). Also, we can see what is its configuration file and the port where it is being executed.
 *   In the last box we have a log with the history of actions taken. 
 
-##How can we execute the rcmanager tool?
+## How can we execute the rcmanager tool?
 
 Normally we need to be running the `rcremoteserver` and the `rcremote` tools first. Then we have to create an .xml file that indicates the components that we want to appear in the rcmanager. Let see the next example:
 
