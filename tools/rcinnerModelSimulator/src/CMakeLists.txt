@@ -64,7 +64,9 @@ add_library(qt5_req INTERFACE IMPORTED)
 set_property(TARGET qt5_req PROPERTY
 		INTERFACE_INCLUDE_DIRECTORIES ${Qt5_INCLUDE_DIR})
 
-find_package(osgviewer)
+# ICE
+FIND_PACKAGE( Ice REQUIRED COMPONENTS Ice IceStorm OPTIONAL_COMPONENTS IceUtil )
+include_directories (${Ice_INCLUDE_DIRS})
 # Python bindings
 set(Boost_USE_STATIC_LIBS   OFF)
 set(Boost_USE_MULTITHREADED ON)
@@ -107,12 +109,16 @@ target_sources(rcis
 #		${MOC_SOURCES} ${RC_SOURCES} ${UI_HEADERS}
 		)
 target_link_libraries( rcis
+		PUBLIC
+		qlog
 		PRIVATE
 		Qt5::Core
 		Qt5::Widgets
-		PUBLIC
-		qlog
-		PRIVATE innermodel  qmat osgviewer ${OPENSCENEGRAPH_LIBRARIES} glut OpenThreads osgGA osgDB osgUtil osgText ${LIBS} ${STATIC_LIBS} ${QT_LIBRARIES} -lboost_system -lboost_thread ${Ice_LIBRARIES})
+		${Ice_LIBRARIES}
+		${OPENSCENEGRAPH_LIBRARIES}
+		qmat
+		innermodel
+		)
 target_include_directories(rcis
 		PRIVATE
 		${CMAKE_CURRENT_BINARY_DIR}
