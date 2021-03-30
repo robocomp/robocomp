@@ -152,12 +152,11 @@ void Utilities::read_from_json_file(const std::string &json_file_path,  const st
             std::string edgeName = link_obj.value("label").toString().toStdString();
             std::map<std::string, CRDTAttribute> attrs;
 
-            Edge edge(dstn, srcn, edgeName, {}, G->get_agent_id());
-
-//            Edge edge;
-//            edge.from(srcn);
-//            edge.to(dstn);
-//            edge.type(edgeName);
+            Edge edge;
+            edge.to(dstn);
+            edge.from(srcn);
+            edge.type(edgeName);
+            edge.agent_id(G->get_agent_id());
 
             // link atributes
             QVariantMap linkAttributesMap = link_obj.value("linkAttribute").toObject().toVariantMap();
