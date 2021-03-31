@@ -31,7 +31,6 @@ target_sources(osgviewer
 		viewerqt.cpp
 		${headers_to_moc})
 
-variable_watch(OPENSCENEGRAPH_LIBRARIES)
 target_link_libraries(osgviewer
 		PRIVATE Robocomp::qmat
 		PRIVATE Qt5::Xml Qt5::Core
