@@ -8,6 +8,7 @@ project(innermodel
 find_package(Qt5 COMPONENTS Gui Core Xml REQUIRED)
 
 add_library(innermodel SHARED)
+add_library(Robocomp::innermodel ALIAS innermodel)
 
 target_sources(innermodel
 		PRIVATE
@@ -34,7 +35,7 @@ target_sources(innermodel
 target_link_libraries(innermodel
 		PRIVATE
 		Qt5::Gui Qt5::Xml
-		osgviewer
+		Robocomp::osgviewer
 		PUBLIC
 		Qt5::Core
 		qmat)

@@ -1,6 +1,6 @@
 cmake_minimum_required( VERSION 3.10 )
 project(osgviewer
-		VERSION 2021.2.1
+		VERSION 2021.3.1
 		DESCRIPTION "RoboComp OsgViewer library"
 		LANGUAGES CXX
 		)
@@ -12,6 +12,7 @@ find_package(Qt5 COMPONENTS Gui Xml OpenGL Core REQUIRED)
 find_package(OpenSceneGraph REQUIRED COMPONENTS osg osgDB osgGA osgUtil osgViewer osgText)
 
 add_library(osgviewer SHARED )
+add_library(Robocomp::osgviewer ALIAS osgviewer )
 
 set_property(TARGET osgviewer PROPERTY AUTOMOC ON)
 set_property(TARGET osgviewer PROPERTY AUTOUIC ON)
@@ -30,13 +31,12 @@ target_sources(osgviewer
 		viewerqt.cpp
 		${headers_to_moc})
 
-variable_watch(QT_LIBRARIES)
+variable_watch(OPENSCENEGRAPH_LIBRARIES)
 target_link_libraries(osgviewer
-		PRIVATE ${OPENSCENEGRAPH_LIBRARIES}
-		PRIVATE qmat
-		PRIVATE Qt5::Xml Qt5::OpenGL Qt5::Core
-		PUBLIC  Qt5::Gui Qt5::Widgets
-
+		PRIVATE Robocomp::qmat
+		PRIVATE Qt5::Xml Qt5::Core
+		PUBLIC  Qt5::Gui Qt5::Widgets Qt5::OpenGL
+		PUBLIC ${OPENSCENEGRAPH_LIBRARIES}
 		)
 
 target_include_directories(osgviewer
