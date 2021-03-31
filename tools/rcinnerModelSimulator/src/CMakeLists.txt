@@ -38,7 +38,7 @@ INCLUDE( CMakeListsSpecific.txt )
 ## RoboComp
 INCLUDE( ${CMAKE_SOURCE_DIR}/cmake/robocomp_build.cmake )
 #ROBOCOMP_INITIALIZE( ${CMAKE_SOURCE_DIR}/ )
-robocomp_idsl_to_src(IDSL_SOURCES Camera CommonBehavior CommonHead DifferentialRobot OmniRobot IMU InnerModelManager JointMotor Laser RGBD TouchSensor RCISMousePicker GenericBase Display )
+robocomp_idsl_to_src(IDSL_SOURCES Camera CommonBehavior CommonHead DifferentialRobot GenericBase OmniRobot IMU InnerModelManager JointMotor Laser RGBD TouchSensor RCISMousePicker GenericBase Display )
 MESSAGE(STATUS "New files ${IDSL_SOURCES}")
 
 
@@ -118,4 +118,4 @@ target_include_directories(rcis
 		PRIVATE
 		${Ice_INCLUDE_DIRS})
 
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/rcis DESTINATION ${Robocomp PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE )
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/rcis DESTINATION /opt/robocomp/bin/ PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE )
