@@ -1340,8 +1340,8 @@ DSRGraph::DSRGraph(const DSRGraph &G) : agent_id(G.agent_id), copy(true), tp(1),
     same_host = G.same_host;
 }
 
-DSRGraph DSRGraph::G_copy() {
-    return DSRGraph(*this);
+std::unique_ptr<DSRGraph> DSRGraph::G_copy() {
+    return std::unique_ptr<DSRGraph>(new DSRGraph(*this));
 }
 
 bool DSRGraph::is_copy() const {

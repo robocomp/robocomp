@@ -522,7 +522,7 @@ namespace DSR
         //////////////////////////////////////////////////
         ///// PRIVATE COPY
         /////////////////////////////////////////////////
-        DSRGraph G_copy();
+        std::unique_ptr<DSRGraph> G_copy();
         bool is_copy() const;
 
     private:
