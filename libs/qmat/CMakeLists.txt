@@ -25,17 +25,19 @@ target_sources(qmat
         )
 target_link_libraries(qmat
         PUBLIC
-        Qt5::Core
         gsl
+        Qt5::Core
         )
 
 # Define headers for this library. PUBLIC headers are used for
 # compiling the library, and will be added to consumers' build
 # paths.
-target_include_directories(qmat PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-        $<INSTALL_INTERFACE:include>
-        PRIVATE src)
+target_include_directories(qmat
+        PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/>
+        $<INSTALL_INTERFACE:include/>
+        PRIVATE
+        src)
 
 # 'make install' to the correct locations (provided by GNUInstallDirs).
 install(TARGETS qmat EXPORT qmatConfig

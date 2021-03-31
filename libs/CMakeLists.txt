@@ -6,6 +6,9 @@ project(robocomp_libs
 
 include(GNUInstallDirs)
 
+SET( CMAKE_AUTOMOC ON )
+SET( CMAKE_AUTOUIC ON )
+
 add_subdirectory(qmat)
 
 add_subdirectory(osgviewer)
@@ -18,4 +21,7 @@ target_sources(testlibs
         PRIVATE
         test.cpp
         )
-target_link_libraries(testlibs innermodel osgviewer)
+target_link_libraries(testlibs
+        PRIVATE
+        innermodel
+        osgviewer)

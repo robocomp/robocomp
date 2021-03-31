@@ -1,15 +1,17 @@
 cmake_minimum_required( VERSION 3.10 )
 project(innermodel
-		VERSION 2021.2.1
+		VERSION 2021.3.1
 		DESCRIPTION "RoboComp InnerModel library"
 		LANGUAGES CXX )
 
 
-find_package(Qt5 COMPONENTS Core Gui REQUIRED)
+find_package(Qt5 COMPONENTS Gui Core Xml REQUIRED)
 
 add_library(innermodel SHARED)
+
 target_sources(innermodel
-		PRIVATE innermodel.cpp
+		PRIVATE
+		innermodel.cpp
 		innermodelreader.cpp
 		innermodelviewer.cpp
 		innermodeldraw.cpp
@@ -30,9 +32,12 @@ target_sources(innermodel
 		innermodeltouchsensor.cpp
 		innermodeldisplay.cpp)
 target_link_libraries(innermodel
-		PUBLIC Qt5::Core Qt5::Gui
-		PUBLIC qmat
-		PUBLIC osgviewer)
+		PRIVATE
+		Qt5::Gui Qt5::Xml
+		osgviewer
+		PUBLIC
+		Qt5::Core
+		qmat)
 
 
 ## FCL
@@ -52,9 +57,11 @@ endif (FCL_SUPPORT)
 # Define headers for this library. PUBLIC headers are used for
 # compiling the library, and will be added to consumers' build
 # paths.
-target_include_directories(innermodel PUBLIC
-		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-		$<INSTALL_INTERFACE:include>)
+target_include_directories(innermodel
+		PUBLIC
+		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/>
+		$<INSTALL_INTERFACE:include/>
+		)
 
 # 'make install' to the correct locations (provided by GNUInstallDirs).
 install(TARGETS innermodel EXPORT innermodelConfig
