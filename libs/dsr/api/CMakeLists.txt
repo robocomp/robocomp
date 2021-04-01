@@ -32,7 +32,6 @@ target_link_libraries(dsr_api
         Qt5::Core
         )
 
-MESSAGE(STATUS "###############${CMAKE_SOURCE_DIR}/classes/")
 target_include_directories(dsr_api
         PUBLIC
         # TODO: Don't like, try to fix
@@ -56,7 +55,12 @@ install(TARGETS dsr_api EXPORT dsr_apiConfig
         LIBRARY  DESTINATION ${CMAKE_INSTALL_LIBDIR}
         )
 
-install(FILES dsr_api.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/dsr/api/)
+install(FILES
+        dsr_api.h
+        dsr_eigen_defs.h
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/dsr/api/
+        )
+
 
 # This makes the project importable from the install directory
 # Put config file in per-project dir (name MUST match), can also

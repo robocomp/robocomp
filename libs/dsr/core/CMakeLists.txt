@@ -48,6 +48,47 @@ install(TARGETS dsr_core EXPORT dsr_coreConfig
         LIBRARY  DESTINATION ${CMAKE_INSTALL_LIBDIR}
         )
 
+install(FILES
+        utils.h
+        id_generator.h
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/dsr/core/
+        )
+
+install(FILES
+        crdt/delta_crdt.h
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/dsr/core/crdt/
+        )
+
+install(FILES
+        rtps/dsrparticipant.h
+        rtps/dsrparticipant.h
+        rtps/dsrpublisher.h
+        rtps/dsrsubscriber.h
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/dsr/core/rtps/
+        )
+
+install(FILES
+        types/crdt_types.h
+        types/user_types.h
+        types/translator.h
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/dsr/core/types/
+)
+
+install(FILES
+        types/type_checking/dsr_attr_name.h
+        types/type_checking/dsr_node_type.h
+        types/type_checking/dsr_edge_type.h
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/types/type_checking/
+)
+
+install(FILES
+        topics/IDLGraphPubSubTypes.h
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/dsr/core/topics/
+        )
+
+
+
+
 
 # This makes the project importable from the install directory
 # Put config file in per-project dir (name MUST match), can also

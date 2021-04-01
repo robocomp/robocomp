@@ -35,8 +35,11 @@ target_sources(dsr_gui
 
 target_link_libraries(dsr_gui
         PUBLIC Qt5::Widgets Qt5::OpenGL Qt5::Xml
+        PUBLIC Eigen3::Eigen
         PRIVATE fastcdr fastrtps
-        PRIVATE osgDB OpenThreads Eigen3::Eigen qmat )
+        PRIVATE osgDB OpenThreads
+        PRIVATE qmat
+        )
 
 target_include_directories(dsr_gui
         PUBLIC

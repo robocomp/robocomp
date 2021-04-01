@@ -26,6 +26,15 @@ install(TARGETS dsr EXPORT dsrConfig
         LIBRARY  DESTINATION ${CMAKE_INSTALL_LIBDIR}
         )
 
+install(FILES
+        dsr_inner_api.h
+        dsr_inner_eigen_api.h
+        dsr_camera_api.h
+        dsr_rt_api.h
+        dsr_utils.h
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/dsr/)
+
+
 # This makes the project importable from the install directory
 # Put config file in per-project dir (name MUST match), can also
 # just go into 'cmake'.
