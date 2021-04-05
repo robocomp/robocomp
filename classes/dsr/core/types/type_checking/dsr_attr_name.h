@@ -100,6 +100,8 @@ REGISTER_TYPE(name, std::reference_wrapper<const std::string>, false)
 REGISTER_TYPE(rt_rotation_euler_xyz, std::reference_wrapper<const std::vector<float>>, true)
 REGISTER_TYPE(rt_translation, std::reference_wrapper<const std::vector<float>>, true)
 REGISTER_TYPE(rt_quaternion, std::reference_wrapper<const std::vector<float>>, true)
+REGISTER_TYPE(rt_translation_velocity, std::reference_wrapper<const std::vector<float>>, true)
+REGISTER_TYPE(rt_rotation_euler_xyz_velocity, std::reference_wrapper<const std::vector<float>>, true)
 /*
  * looking-at
  * */
@@ -163,10 +165,11 @@ REGISTER_TYPE(cam_depth_width, int, false)
  * */
 
 REGISTER_TYPE(viriato_head_pan_tilt_nose_target, std::reference_wrapper<const std::vector<float>>, true)
-REGISTER_TYPE(robot_current_advance_speed, std::reference_wrapper<const std::vector<float>>, true)
-REGISTER_TYPE(robot_current_angular_speed, std::reference_wrapper<const std::vector<float>>, true)
-REGISTER_TYPE(robot_current_side_speed, std::reference_wrapper<const std::vector<float>>, true)
-REGISTER_TYPE(robot_current_linear_speed, std::reference_wrapper<const std::vector<float>>, true) //deprecated
+//REGISTER_TYPE(robot_current_advance_speed, std::reference_wrapper<const std::vector<float>>, true)
+//REGISTER_TYPE(robot_current_angular_speed, std::reference_wrapper<const std::vector<float>>, true)
+//REGISTER_TYPE(robot_current_side_speed, std::reference_wrapper<const std::vector<float>>, true)
+REGISTER_TYPE(robot_local_linear_velocity, std::reference_wrapper<const std::vector<float>>, true)
+REGISTER_TYPE(robot_local_angular_velocity, std::reference_wrapper<const std::vector<float>>, true)
 REGISTER_TYPE(robot_ref_adv_speed, float, true)
 REGISTER_TYPE(robot_ref_rot_speed, float, true)
 REGISTER_TYPE(robot_ref_side_speed, float, true)
