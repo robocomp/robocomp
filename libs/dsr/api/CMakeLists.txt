@@ -10,8 +10,16 @@ find_package(Qt5 COMPONENTS Core REQUIRED)
 find_package(Eigen3 3.3 REQUIRED NO_MODULE)
 find_package(cppitertools)
 
+
+set(headers_to_moc
+        include/dsr/api/dsr_api.h
+        include/dsr/api/dsr_inner_eigen_api.h
+        )
+
 add_library(dsr_api SHARED )
 add_library(Robocomp::dsr_api ALIAS dsr_api )
+
+
 
 target_sources(dsr_api
         PRIVATE
@@ -20,6 +28,7 @@ target_sources(dsr_api
         dsr_inner_eigen_api.cpp
         dsr_rt_api.cpp
         dsr_utils.cpp
+        ${headers_to_moc}
         )
 
 
@@ -62,7 +71,7 @@ install(DIRECTORY include/dsr DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 # This makes the project importable from the install directory
 # Put config file in per-project dir (name MUST match), can also
 # just go into 'cmake'.
-install(EXPORT dsr_apiConfig DESTINATION share/robocomp/cmake)
+install(EXPORT dsr_apiConfig DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/dsr_api/  NAMESPACE Robocomp::)
 
 # This makes the project importable from the build directory
 export(TARGETS dsr_api FILE dsr_apiConfig.cmake)

@@ -54,7 +54,8 @@ install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 # Put config file in per-project dir (name MUST match), can also
 # just go into 'cmake'.
 install(EXPORT qmatConfig
-        DESTINATION share/robocomp/cmake
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/qmat
+        NAMESPACE Robocomp::
         )
 
 # This makes the project importable from the build directory

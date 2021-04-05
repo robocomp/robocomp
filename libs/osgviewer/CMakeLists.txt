@@ -66,7 +66,9 @@ install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 # This makes the project importable from the install directory
 # Put config file in per-project dir (name MUST match), can also
 # just go into 'cmake'.
-install(EXPORT osgviewerConfig DESTINATION share/robocomp/cmake)
+install(EXPORT osgviewerConfig DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/osgviewer NAMESPACE Robocomp::)
+
+
 
 # This makes the project importable from the build directory
 export(TARGETS osgviewer FILE osgviewerConfig.cmake)

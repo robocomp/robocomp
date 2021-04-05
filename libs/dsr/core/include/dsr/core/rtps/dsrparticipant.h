@@ -9,9 +9,9 @@
 #include <fastdds/dds/domain/DomainParticipant.hpp>
 #include <fastdds/dds/domain/DomainParticipantListener.hpp>
 
-#include "../topics/IDLGraphPubSubTypes.h"
-#include "./dsrpublisher.h"
-#include "./dsrsubscriber.h"
+#include <dsr/core/topics/IDLGraphPubSubTypes.h>
+#include <dsr/core/rtps/dsrpublisher.h>
+#include <dsr/core/rtps/dsrsubscriber.h>
 
 class DSRParticipant
 {

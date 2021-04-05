@@ -2,7 +2,7 @@
 // Created by robolab on 12/06/20.
 //
 
-#include "_abstract_graphic_view.h"
+#include <dsr/gui/viewers/_abstract_graphic_view.h>
 
 
 using namespace DSR ;

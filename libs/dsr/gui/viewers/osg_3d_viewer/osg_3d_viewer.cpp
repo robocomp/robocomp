@@ -1,4 +1,4 @@
-#include "osg_3d_viewer.h"
+#include <dsr/gui/viewers/osg_3d_viewer/osg_3d_viewer.h>
 #include <osg/Camera>
 #include <osg/ShapeDrawable>
 #include <osg/StateSet>

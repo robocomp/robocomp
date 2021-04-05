@@ -21,7 +21,7 @@
 #include <typeinfo>
 #include <optional>
 #include <type_traits>
-#include "dsr_eigen_defs.h"
+#include <dsr/api/dsr_eigen_defs.h>
 #include <dsr/core/crdt/delta_crdt.h>
 #include <dsr/core/rtps/dsrparticipant.h>
 #include <dsr/core/rtps/dsrpublisher.h>
