@@ -36,7 +36,8 @@ target_include_directories(dsr_api
         PUBLIC
         # TODO: Don't like, try to fix
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../../../classes/>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../../>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../core/include/>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/>
         $<INSTALL_INTERFACE:>
         )
 
@@ -55,11 +56,7 @@ install(TARGETS dsr_api EXPORT dsr_apiConfig
         LIBRARY  DESTINATION ${CMAKE_INSTALL_LIBDIR}
         )
 
-install(FILES
-        dsr_api.h
-        dsr_eigen_defs.h
-        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/dsr/api/
-        )
+install(DIRECTORY include/dsr DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
 
 # This makes the project importable from the install directory

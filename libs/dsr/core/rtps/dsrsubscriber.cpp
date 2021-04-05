@@ -5,7 +5,7 @@
 #include <fastdds/rtps/transport/shared_mem/SharedMemTransportDescriptor.h>
 #include <fastrtps/utils/IPFinder.h>
 
-#include "dsrsubscriber.h"
+#include <dsr/core/rtps/dsrsubscriber.h>
 
 #include <QDebug>
 

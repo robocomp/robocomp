@@ -16,9 +16,9 @@
 #include <any>
 #include <cmath>
 #include <memory>
-#include "../../traits.h"
-#include "../crdt_types.h"
-#include "../user_types.h"
+#include <dsr/core/traits.h>
+#include <dsr/core/types/crdt_types.h>
+#include <dsr/core/types/user_types.h>
 #include "type_checker.h"
 #include <qmat/QMatAll>
 

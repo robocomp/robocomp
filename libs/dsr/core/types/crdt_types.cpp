@@ -3,8 +3,8 @@
 //
 
 
-#include "crdt_types.h"
-#include "translator.h"
+#include <dsr/core/types/crdt_types.h>
+#include <dsr/core/types/translator.h>
 
 namespace DSR {
     

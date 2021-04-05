@@ -24,7 +24,7 @@
 namespace { char dummy; }
 #endif
 
-#include "IDLGraph.h"
+#include <dsr/core/topics/IDLGraph.h>
 #include <fastcdr/Cdr.h>
 
 #include <fastcdr/exceptions/BadParamException.h>

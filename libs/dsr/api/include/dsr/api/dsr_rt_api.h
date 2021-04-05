@@ -4,10 +4,10 @@
 #include <cassert>
 #include <QObject>
 #include <qmat/QMatAll>
-#include "../core/topics/IDLGraphPubSubTypes.h"
-#include "../core/types/user_types.h"
-#include "../core/types/type_checking/dsr_attr_name.h"
-#include "dsr_eigen_defs.h"
+#include <dsr/core/topics/IDLGraphPubSubTypes.h>
+#include <dsr/core/types/user_types.h>
+#include <dsr/core/types/type_checking/dsr_attr_name.h>
+#include <dsr/api/dsr_eigen_defs.h>
 
 namespace DSR
 {

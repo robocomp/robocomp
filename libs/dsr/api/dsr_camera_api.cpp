@@ -1,6 +1,6 @@
 
-#include "dsr_camera_api.h"
-#include "dsr_api.h"
+#include <dsr/api/dsr_camera_api.h>
+#include <dsr/api/dsr_api.h>
 
 using namespace DSR;
 

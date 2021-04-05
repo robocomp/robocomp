@@ -11,34 +11,3 @@ add_subdirectory(core)
 add_subdirectory(gui)
 #add_subdirectory(python-wrapper)
 
-add_library(dsr SHARED)
-add_library(Robocomp::dsr ALIAS dsr)
-target_link_libraries(dsr
-        PUBLIC
-        Robocomp::dsr_api
-        Robocomp::dsr_gui
-        Robocomp::dsr_core
-        )
-
-# 'make install' to the correct locations (provided by GNUInstallDirs).
-install(TARGETS dsr EXPORT dsrConfig
-        ARCHIVE  DESTINATION ${CMAKE_INSTALL_LIBDIR}
-        LIBRARY  DESTINATION ${CMAKE_INSTALL_LIBDIR}
-        )
-
-install(FILES
-        dsr_inner_api.h
-        dsr_inner_eigen_api.h
-        dsr_camera_api.h
-        dsr_rt_api.h
-        dsr_utils.h
-        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/dsr/)
-
-
-# This makes the project importable from the install directory
-# Put config file in per-project dir (name MUST match), can also
-# just go into 'cmake'.
-install(EXPORT dsrConfig DESTINATION share/robocomp/cmake)
-
-# This makes the project importable from the build directory
-export(TARGETS dsr FILE dsrConfig.cmake)

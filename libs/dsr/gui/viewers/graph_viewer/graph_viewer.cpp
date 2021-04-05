@@ -1,11 +1,11 @@
-#include "../../dsr_gui.h"
+#include <dsr/gui/dsr_gui.h>
 #include <cppitertools/range.hpp>
 #include <qmat/QMatAll>
 #include <QTableWidget>
 #include <QApplication>
-#include "graph_node.h"
-#include "graph_edge.h"
-#include "graph_viewer.h"
+#include <dsr/gui/viewers/graph_viewer/graph_node.h>
+#include <dsr/gui/viewers/graph_viewer/graph_edge.h>
+#include <dsr/gui/viewers/graph_viewer/graph_viewer.h>
 
 using namespace DSR ;
 

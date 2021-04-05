@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-#include "graph_edge.h"
-#include "graph_node.h"
+#include <dsr/gui/viewers/graph_viewer/graph_edge.h>
+#include <dsr/gui/viewers/graph_viewer/graph_node.h>
 #include <qmath.h>
 #include <QPainter>
 #include <QDebug>
-#include "../../dsr_gui.h"
+#include <dsr/gui/dsr_gui.h>
 #include <QGraphicsSceneMouseEvent>
 #include <iostream>
 #include <cppitertools/range.hpp>

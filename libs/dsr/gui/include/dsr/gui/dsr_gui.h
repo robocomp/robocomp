@@ -23,13 +23,13 @@
 #include <QGraphicsView>
 #include <QListView>
 #include <QMenuBar>
-#include "../api/dsr_api.h"
+#include <dsr/api/dsr_api.h>
 #include <typeinfo>
 #include <QDockWidget>
-#include "viewers/osg_3d_viewer/osg_3d_viewer.h"
-#include "viewers/qscene_2d_viewer/qscene_2d_viewer.h"
-#include "viewers/graph_viewer/graph_viewer.h"
-#include "viewers/tree_viewer/tree_viewer.h"
+#include <dsr/gui/viewers/osg_3d_viewer/osg_3d_viewer.h>
+#include <dsr/gui/viewers/qscene_2d_viewer/qscene_2d_viewer.h>
+#include <dsr/gui/viewers/graph_viewer/graph_viewer.h>
+#include <dsr/gui/viewers/tree_viewer/tree_viewer.h>
 
 #include <QFileDialog>
 

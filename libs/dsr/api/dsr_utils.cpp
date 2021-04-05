@@ -7,8 +7,8 @@
 #include <QJsonObject>
 #include <QJsonArray>
 #include <fstream>
-#include "dsr_utils.h"
-#include "dsr_api.h"
+#include <dsr/api/dsr_utils.h>
+#include <dsr/api/dsr_api.h>
 
 using namespace DSR;
 

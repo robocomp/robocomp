@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include "graph_node.h"
+#include <dsr/gui/viewers/graph_viewer/graph_node.h>
 
 
 GraphNode::GraphNode(std::shared_ptr<DSR::GraphViewer> graph_viewer_): QGraphicsEllipseItem(0,0,30,30), dsr_to_graph_viewer(graph_viewer_)

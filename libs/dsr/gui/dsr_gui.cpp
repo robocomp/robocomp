@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include "dsr_gui.h"
+#include <dsr/gui/dsr_gui.h>
 #include <cppitertools/range.hpp>
 #include <qmat/QMatAll>
 #include <QDesktopWidget>
@@ -24,8 +24,8 @@
 #include <QStringList>
 #include <QStatusBar>
 #include <utility>
-#include "viewers/graph_viewer/graph_node.h"
-#include "viewers/graph_viewer/graph_edge.h"
+#include <dsr/gui/viewers/graph_viewer/graph_node.h>
+#include <dsr/gui/viewers/graph_viewer/graph_edge.h>
 #include <unistd.h>
 #include "stdlib.h"
 #include "stdio.h"

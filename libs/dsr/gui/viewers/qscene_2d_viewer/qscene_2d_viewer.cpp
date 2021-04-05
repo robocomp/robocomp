@@ -1,6 +1,6 @@
 #include "qscene_2d_viewer.h"
-#include "../../viewers/graph_viewer/graph_node.h"
-#include "dsr/core/types/type_checking/dsr_attr_name.h"
+#include <dsr/gui/viewers/graph_viewer/graph_node.h>
+#include <dsr/core/types/type_checking/dsr_attr_name.h>
 
 using namespace DSR ;
 

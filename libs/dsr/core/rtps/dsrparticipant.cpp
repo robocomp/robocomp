@@ -6,7 +6,7 @@
 
 #include <thread>
 #include <QDebug>
-#include "dsrparticipant.h"
+#include <dsr/core/rtps/dsrparticipant.h>
 
 using namespace eprosima::fastdds::dds;
 using namespace eprosima::fastdds::rtps;

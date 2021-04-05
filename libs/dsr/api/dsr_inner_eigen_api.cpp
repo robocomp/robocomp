@@ -1,5 +1,5 @@
-#include "dsr_inner_eigen_api.h"
-#include "dsr_api.h"
+#include <dsr/api/dsr_inner_eigen_api.h>
+#include <dsr/api/dsr_api.h>
 
 using namespace DSR;
 

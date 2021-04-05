@@ -26,8 +26,8 @@
 #include <QComboBox>
 #include <QSpinBox>
 #include <QHBoxLayout>
-#include "../../../api/dsr_api.h"
-#include "../../../core/types/user_types.h"
+#include <dsr/api/dsr_api.h>
+#include <dsr/core/types/user_types.h>
 class GraphNode;
 class GraphEdge;
 

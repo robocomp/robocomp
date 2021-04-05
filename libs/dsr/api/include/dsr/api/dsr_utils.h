@@ -4,10 +4,10 @@
 
 #include <string>
 #include <optional>
-#include "../core/topics/IDLGraphPubSubTypes.h"
-#include "../core/types/crdt_types.h"
-#include "../core/types/user_types.h"
-#include "dsr_exceptions.h"
+#include <dsr/core/topics/IDLGraphPubSubTypes.h>
+#include <dsr/core/types/crdt_types.h>
+#include <dsr/core/types/user_types.h>
+#include <dsr/api/dsr_exceptions.h>
 
 namespace DSR
 {

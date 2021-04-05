@@ -25,7 +25,7 @@
 #include <utility>
 #include <cppitertools/zip.hpp>
 #include <QLabel>
-#include "../../dsr_gui.h"
+#include <dsr/gui/dsr_gui.h>
 #include <qmat/QMatAll>
 #include <QHeaderView>
 #include <cppitertools/range.hpp>

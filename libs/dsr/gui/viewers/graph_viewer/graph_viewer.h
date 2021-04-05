@@ -17,8 +17,8 @@
 #ifndef DSR_TO_GRAPH_VIEWER_H
 #define DSR_TO_GRAPH_VIEWER_H
 
-#include "../../../api/dsr_api.h"
-#include "../_abstract_graphic_view.h"
+#include <dsr/api/dsr_api.h>
+#include <dsr/gui/viewers/_abstract_graphic_view.h>
 
 #include <chrono>
 #include <QWidget>
@@ -26,6 +26,7 @@
 #include <QMouseEvent>
 #include <QGLWidget>
 #include <QResizeEvent>
+#include <QMenu>
 
 
 class GraphNode;

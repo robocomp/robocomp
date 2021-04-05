@@ -29,9 +29,9 @@
 #include <QLabel>
 #include <cppitertools/zip.hpp>
 
-#include "../../../api/dsr_api.h"
+#include <dsr/api/dsr_api.h>
 #include "graph_edge.h"
-#include "../../dsr_gui.h"
+#include <dsr/gui/dsr_gui.h>
 
 class GraphEdge;
 class QGraphicsSceneMouseEvent;

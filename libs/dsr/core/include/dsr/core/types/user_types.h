@@ -9,7 +9,7 @@
 #include <utility>
 #include "crdt_types.h"
 #include "type_checking/type_checker.h"
-#include "../utils.h"
+#include <dsr/core/utils.h>
 
 
 namespace DSR {

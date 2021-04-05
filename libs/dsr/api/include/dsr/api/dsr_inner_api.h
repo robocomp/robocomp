@@ -3,8 +3,8 @@
 
 #include <cassert>
 #include <qmat/QMatAll>
-#include "../core/topics/IDLGraphPubSubTypes.h"
-#include "dsr_rt_api.h"
+#include <dsr/core/topics/IDLGraphPubSubTypes.h>
+#include <dsr/api/dsr_rt_api.h>
 
 namespace DSR
 {

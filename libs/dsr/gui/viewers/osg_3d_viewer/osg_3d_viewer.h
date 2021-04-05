@@ -39,7 +39,7 @@
 #include <osgViewer/GraphicsWindow>
 #include <QOpenGLWidget>
 #include <QResizeEvent>
-#include "../../../api/dsr_api.h"
+#include <dsr/api/dsr_api.h>
 
 using namespace std::chrono_literals;
 

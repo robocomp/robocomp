@@ -46,7 +46,11 @@ target_include_directories(dsr_gui
         # TODO: Don't like, try to fix
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../../../classes/>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../../>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../core/include/>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../api/include/>
         $<INSTALL_INTERFACE:>
+
         )
 
 set_target_properties(dsr_gui
@@ -63,7 +67,7 @@ install(TARGETS dsr_gui EXPORT dsr_guiConfig
         LIBRARY  DESTINATION ${CMAKE_INSTALL_LIBDIR}
         )
 
-install(FILES dsr_gui.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/dsr/gui/)
+install(DIRECTORY include/dsr DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
 # This makes the project importable from the install directory
 # Put config file in per-project dir (name MUST match), can also

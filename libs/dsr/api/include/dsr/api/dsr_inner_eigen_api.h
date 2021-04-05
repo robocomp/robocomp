@@ -2,9 +2,9 @@
 #define INNER_EIGEN_API
 
 #include <QObject>
-#include "../core/topics/IDLGraphPubSubTypes.h"
-#include "dsr_eigen_defs.h"
-#include "dsr_rt_api.h"
+#include <dsr/core/topics/IDLGraphPubSubTypes.h>
+#include <dsr/api/dsr_eigen_defs.h>
+#include <dsr/api/dsr_rt_api.h>
 
 namespace DSR
 {
