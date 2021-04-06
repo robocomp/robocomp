@@ -40,21 +40,24 @@ endfunction(search_idsl)
 
 function(idsl_to_iceE RETURN_ICE_PATH IDSL_PATH IFACE_NAME )
     MESSAGE(STATUS "BU Adding_ rule to generate ${CMAKE_CURRENT_BINARY_DIR}/${IFACE_NAME}.ice from ${IDSL_PATH}/${IFACE_NAME}.idsl")
+    STRING (REPLACE "/" "_" SPECIFIC_TARGET "${CMAKE_CURRENT_SOURCE_DIR}")
     add_custom_command(
-            OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${IFACE_NAME}.ice
             COMMAND "${CMAKE_HOME_DIRECTORY}/tools/robocompdsl/robocompdsl.py" ${IDSL_PATH}/${IFACE_NAME}.idsl ${CMAKE_CURRENT_BINARY_DIR}/${IFACE_NAME}.ice
             DEPENDS ${IDSL_PATH}/${IFACE_NAME}.idsl
             COMMENT "BU robocompdsl ${IDSL_PATH}/${IFACE_NAME}.idsl ${CMAKE_CURRENT_BINARY_DIR}/${IFACE_NAME}.ice"
+            TARGET ICES_${SPECIFIC_TARGET}
     )
     set("${RETURN_ICE_PATH}" ${CMAKE_CURRENT_BINARY_DIR} PARENT_SCOPE)
 endfunction(idsl_to_iceE)
 
 function(ice_to_src RETURN_SOURCES ICE_PATH IFACE_NAME)
+    # Making the new .ice depend on the PREVIOUS_ICE force it to keep the creation order
     MESSAGE(STATUS "BU ice=>h/cpp: Adding rule to generate ${CMAKE_CURRENT_BINARY_DIR}/${IFACE_NAME}.[h-cpp] from ${ICE_PATH}/${IFACE_NAME}.ice")
+    STRING (REPLACE "/" "_" SPECIFIC_TARGET "${CMAKE_CURRENT_SOURCE_DIR}")
     add_custom_command(
             OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${IFACE_NAME}.cpp
             COMMAND slice2cpp ${ICE_PATH}/${IFACE_NAME}.ice -I${ICE_PATH}/ --output-dir ${CMAKE_CURRENT_BINARY_DIR}
-            DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${IFACE_NAME}.ice
+            DEPENDS ICES_${SPECIFIC_TARGET}
             COMMENT "BU ice=>h/cpp: Generating ${IFACE_NAME}.h and ${IFACE_NAME}.cpp from ${CMAKE_CURRENT_BINARY_DIR}/${IFACE_NAME}.ice"
     )
 
@@ -74,7 +77,7 @@ function(robocomp_idsl_to_src IDSL_SRCS)
         message(STATUS "FOUND in ${IDSL_PATH}")
         idsl_to_iceE(ICE_PATH ${IDSL_PATH} ${IFACE_NAME} )
         message(STATUS "ICE path will be ${ICE_PATH}")
-        ice_to_src(SRC_FILES ${ICE_PATH} ${IFACE_NAME} )
+        ice_to_src(SRC_FILES "${ICE_PATH}" "${IFACE_NAME}")
         set(NEW_SRCS ${NEW_SRCS} ${SRC_FILES})
     ENDFOREACH( IFACE_NAME )
     set(${IDSL_SRCS} ${NEW_SRCS} PARENT_SCOPE)
