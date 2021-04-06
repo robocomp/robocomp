@@ -42,10 +42,9 @@ target_link_libraries(dsr_api
         )
 
 target_include_directories(dsr_api
-        PRIVATE
+        PUBLIC
         # Headers of DSR Core
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../core/include/>
-        PUBLIC
         # TODO: Don't like, try to fix
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../../../classes/>
         # Own include
