@@ -133,16 +133,16 @@ You need the following third-party software:
 ```
 
 ## Installation
-Next step is to compile and install the DSR libs. You need to go to ~/robocomp/classes/dsr/
+Next step is to compile and install the DSR libs. You need to go to ~/robocomp/
 and execute this:
 ```bash
 mkdir build
 cd build
-cmake ..
+cmake -DDSR=TRUE ..
 make -j$(nproc)
 sudo make install
 sudo ldconfig
-``` 
+```
 
 
 ## Common Issues
@@ -262,12 +262,12 @@ G.reset();
 
 ## Predefined names and types
 To avoid the creation or modification of attributes by mistake, a predefined and expandable list of attributes that can be used in nodes and links has been created. You can see the definition of all these attributes and their type in the file:
-[core/types/type_checking/dsr_attr_name.h](https://github.com/robocomp/robocomp/blob/development/classes/dsr/core/types/type_checking/dsr_attr_name.h#L80).
+[core/types/type_checking/dsr_attr_name.h](https://github.com/robocomp/robocomp/blob/development/libs/dsr/core/include/dsr/core/types/type_checking/dsr_attr_name.h#L80).
 
 In the same way you can see the predefined types of nodes and links in the following files:
-[core/types/type_checking/dsr_node_type.h](https://github.com/robocomp/robocomp/blob/development/classes/dsr/core/types/type_checking/dsr_node_type.h#L15)
+[core/types/type_checking/dsr_node_type.h](https://github.com/robocomp/robocomp/blob/development/libs/dsr/core/include/dsr/core/types/type_checking/dsr_node_type.h#L15)
 and
-[core/types/type_checking/dsr_edge_type.h](https://github.com/robocomp/robocomp/blob/development/classes/dsr/core/types/type_checking/dsr_edge_type.h#L15).
+[core/types/type_checking/dsr_edge_type.h](https://github.com/robocomp/robocomp/blob/development/libs/dsr/core/include/dsr/core/types/type_checking/dsr_edge_type.h#L15).
 
 ## CORE
 
