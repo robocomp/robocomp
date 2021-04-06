@@ -36,17 +36,18 @@ target_link_libraries(dsr_api
         PRIVATE
         fastcdr fastrtps
         osgDB OpenThreads
-        Eigen3::Eigen
         Qt5::Core
+        PUBLIC
+        Eigen3::Eigen
         )
 
 target_include_directories(dsr_api
         PRIVATE
-        # TODO: Don't like, try to fix
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../../../classes/>
         # Headers of DSR Core
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../core/include/>
         PUBLIC
+        # TODO: Don't like, try to fix
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../../../classes/>
         # Own include
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/>
         $<INSTALL_INTERFACE:>

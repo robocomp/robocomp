@@ -12,11 +12,6 @@ add_subdirectory(osgviewer)
 
 add_subdirectory(innermodel)
 
-add_subdirectory(dsr)
-
-#add_subdirectory(innermodel-python3)
-
-
 # TEST app for the libs
 add_executable(testlibs EXCLUDE_FROM_ALL)
 target_sources(testlibs
@@ -30,16 +25,26 @@ target_link_libraries(testlibs
         Robocomp::osgviewer
         )
 
-find_package(Qt5 COMPONENTS Widgets REQUIRED)
-add_executable(testdsr EXCLUDE_FROM_ALL)
-target_sources(testdsr
-        PRIVATE
-        test_dsr.cpp
-        )
+IF(DSR)
+    add_subdirectory(dsr)
+    find_package(Qt5 COMPONENTS Widgets REQUIRED)
+    add_executable(testdsr)
+    target_sources(testdsr
+            PRIVATE
+            test_dsr.cpp
+            )
 
-target_link_libraries(testdsr
-        PRIVATE
-        Robocomp::dsr_api
-        Robocomp::dsr_gui
-        Qt5::Widgets
-        )
+    target_link_libraries(testdsr
+            PRIVATE
+            Robocomp::dsr_api
+            Robocomp::dsr_gui
+            Qt5::Widgets
+            )
+ENDIF(DSR)
+
+#add_subdirectory(innermodel-python3)
+
+
+
+
+

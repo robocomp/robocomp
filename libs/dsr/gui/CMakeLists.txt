@@ -44,11 +44,14 @@ target_sources(dsr_gui
 
 target_link_libraries(dsr_gui
         PRIVATE
-        Qt5::Widgets Qt5::OpenGL Qt5::Xml
+        Qt5::Widgets Qt5::Xml
         Eigen3::Eigen
-        fastcdr fastrtps
+        fastcdr
         osgDB osgGA OpenThreads
         Robocomp::qmat Robocomp::osgviewer Robocomp::dsr_core
+        PUBLIC
+        Qt5::OpenGL
+        fastrtps
         )
 
 target_include_directories(dsr_gui
