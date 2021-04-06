@@ -181,11 +181,17 @@ REGISTER_TYPE(robot_target_angle, float, true)
  * Arm
  * */
 REGISTER_TYPE(viriato_arm_tip_target, std::reference_wrapper<const std::vector<float>>,  false)
+
 /*
  * Plan
  * */
 REGISTER_TYPE(plan, std::reference_wrapper<const std::string>, false)
 REGISTER_TYPE(plan_target_node_id, int, false)
+
+/*
+ * Intention
+ * */
+REGISTER_TYPE(current_intention, std::reference_wrapper<const std::string>, false)
 
 /*
  * World
