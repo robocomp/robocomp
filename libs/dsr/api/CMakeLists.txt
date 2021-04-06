@@ -5,11 +5,12 @@ project(dsr_api
         LANGUAGES CXX )
 
 
+SET(CMAKE_AUTOMOC ON)
+SET(CMAKE_AUTOUIC ON)
 
 find_package(Qt5 COMPONENTS Core REQUIRED)
 find_package(Eigen3 3.3 REQUIRED NO_MODULE)
 find_package(cppitertools)
-
 
 set(headers_to_moc
         include/dsr/api/dsr_api.h
@@ -18,7 +19,6 @@ set(headers_to_moc
 
 add_library(dsr_api SHARED )
 add_library(Robocomp::dsr_api ALIAS dsr_api )
-
 
 
 target_sources(dsr_api
@@ -34,18 +34,20 @@ target_sources(dsr_api
 
 target_link_libraries(dsr_api
         PRIVATE
-        fastcdr osgDB OpenThreads
-        PUBLIC
+        fastcdr fastrtps
+        osgDB OpenThreads
         Eigen3::Eigen
-        fastrtps
         Qt5::Core
         )
 
 target_include_directories(dsr_api
-        PUBLIC
+        PRIVATE
         # TODO: Don't like, try to fix
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../../../classes/>
+        # Headers of DSR Core
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../core/include/>
+        PUBLIC
+        # Own include
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/>
         $<INSTALL_INTERFACE:>
         )

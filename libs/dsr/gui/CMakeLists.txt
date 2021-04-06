@@ -7,6 +7,7 @@ project(dsr_gui
 
 find_package(Qt5 COMPONENTS Widgets OpenGL Xml REQUIRED)
 find_package(Eigen3 3.3 REQUIRED NO_MODULE)
+find_package(OpenSceneGraph REQUIRED COMPONENTS osg osgDB osgGA)
 find_package(cppitertools)
 
 SET(CMAKE_AUTOMOC ON)
@@ -42,24 +43,23 @@ target_sources(dsr_gui
 
 
 target_link_libraries(dsr_gui
-        PUBLIC Qt5::Widgets Qt5::OpenGL Qt5::Xml
-        PUBLIC Eigen3::Eigen
-        PRIVATE fastcdr fastrtps
-        PRIVATE osgDB OpenThreads
-        PRIVATE qmat osgviewer
-        PRIVATE Robocomp::dsr_core
+        PRIVATE
+        Qt5::Widgets Qt5::OpenGL Qt5::Xml
+        Eigen3::Eigen
+        fastcdr fastrtps
+        osgDB osgGA OpenThreads
+        Robocomp::qmat Robocomp::osgviewer Robocomp::dsr_core
         )
 
 target_include_directories(dsr_gui
-        PUBLIC
-        # TODO: Don't like, try to fix
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../../../classes/>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../../>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/>
+        PRIVATE
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../core/include/>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../api/include/>
+        # TODO: Don't like, try to fix
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../../../classes/>
+        PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/>
         $<INSTALL_INTERFACE:>
-
         )
 
 set_target_properties(dsr_gui

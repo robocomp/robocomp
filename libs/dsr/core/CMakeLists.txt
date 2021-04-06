@@ -25,16 +25,16 @@ target_sources(dsr_core
 
 
 target_link_libraries(dsr_core
-        PUBLIC
-        Qt5::Core fastcdr fastrtps osgDB OpenThreads Eigen3::Eigen
-        )
+        PRIVATE
+        Qt5::Core fastcdr fastrtps osgDB OpenThreads Eigen3::Eigen)
 
 
 target_include_directories(dsr_core
-        PUBLIC
+        PRIVATE
         # TODO: Don't like, try to fix
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../../../classes/>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../../>
+        PUBLIC
+        # Own headers
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/>
         $<INSTALL_INTERFACE:>
         )
@@ -58,7 +58,10 @@ install(DIRECTORY include/dsr DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 # This makes the project importable from the install directory
 # Put config file in per-project dir (name MUST match), can also
 # just go into 'cmake'.
-install(EXPORT dsr_coreConfig DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/dsr_core/  NAMESPACE Robocomp::)
+install(EXPORT dsr_coreConfig
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/dsr_core/
+        NAMESPACE Robocomp::
+        )
 
 # This makes the project importable from the build directory
 export(TARGETS dsr_core FILE dsr_coreConfig.cmake)
