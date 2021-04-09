@@ -67,13 +67,7 @@ To be able to use the DSR/CORTEX infraestructure you need to follow the next ste
 ### Step 1
 From ubuntu repositories you need:
 ```bash
-sudo apt install libasio-dev
-sudo apt install libtinyxml2-dev 
-sudo apt install libopencv-dev
-sudo apt install libqglviewer-dev-qt5
-sudo apt install libeigen3-dev
-sudo apt install python3-dev python3-pybind11
-sudo apt install cmake gcc-10 g++-10
+sudo apt install libasio-dev libtinyxml2-dev libopencv-dev libqglviewer-dev-qt5 libeigen3-dev python3-dev python3-pybind11 cmake gcc-10 g++-10
 ```
 
 > __NOTE :__ If you are using `python` with `Anaconda`, `cmake` might not be able to find pybind11 installation. So, you have to install it using `conda-forge` as well :
@@ -87,6 +81,11 @@ You need to update the alternatives for g++ and gcc:
 sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 1
 sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-10 1
 ```
+then
+```bash
+sudo update-alternatives --config gcc
+```
+and select version 10. Do the same for g++.
 
 
 ### Step 2
@@ -113,6 +112,7 @@ You need the following third-party software:
       cmake ..
       cmake --build . 
       sudo make install 
+      
       cd ~/software
       git clone https://github.com/eProsima/foonathan_memory_vendor.git
       cd foonathan_memory_vendor
@@ -122,14 +122,20 @@ You need the following third-party software:
       cmake --build . 
       sudo make install 
       cd ~/software
+      
       git clone https://github.com/eProsima/Fast-DDS.git
-      git checkout tags/v2.2.0
-      mkdir Fast-DDS/build 
-      cd Fast-DDS/build
+      cd Fast-DDS
+      mkdir build 
+      cd build
       cmake ..
       cmake --build . 
       sudo make install
-      sudo ldconfig
+```
+
+Update the system cache of dynamic libraries with 
+
+```sh
+sudo ldconfig
 ```
 
 ## Installation
