@@ -128,7 +128,7 @@ void RT_API::insert_or_assign_edge_RT(Node &n, uint64_t to, const std::vector<fl
             }
             else
             {
-                no_send = G->add_attrib_local<level_att>(to_n.value(),  G->get_node_level(n).value() + 1 );
+                no_send = !G->add_attrib_local<level_att>(to_n.value(),  G->get_node_level(n).value() + 1 );
             }
 
             //Check if RT edge exist.
@@ -229,7 +229,7 @@ void RT_API::insert_or_assign_edge_RT(Node &n, uint64_t to, std::vector<float> &
             }
             else
             {
-                no_send = G->add_attrib_local<level_att>(to_n.value(),  G->get_node_level(n).value() + 1 );
+                no_send = !G->add_attrib_local<level_att>(to_n.value(),  G->get_node_level(n).value() + 1 );
             }
 
             //Check if RT edge exist.
