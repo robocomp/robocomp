@@ -23,8 +23,8 @@ using namespace DSR;
 #include <memory>
 #include <functional>
 
-#include "silent_output.h"
-#include "signal_function_caster.h"
+#include "include/silent_output.h"
+#include "include/signal_function_caster.h"
 
 namespace py = pybind11;
 
@@ -179,6 +179,9 @@ PYBIND11_MODULE(pydsr, m) {
     py::class_<Attribute>(m, "Attribute")
             .def(py::init<ValType, uint64_t, uint32_t>(),
                  "value"_a, "timestamp"_a, "agent_id"_a)
+            .def(py::init([&](ValType const& v , uint32_t agent_id) {
+                return Attribute(v, get_unix_timestamp(), agent_id);
+            }),"value"_a, "agent_id"_a)
             .def("__repr__", [](Attribute const &self) {
 
                 std::stringstream out;

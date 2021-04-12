@@ -4,34 +4,60 @@ project(python_wrapper
         DESCRIPTION "Robocomp dsr python wrapper library"
         LANGUAGES CXX )
 
-IF ( "$ENV{ROBOCOMP}" STREQUAL "")
-    MESSAGE(STATUS "ROBOCOMP variable not set. Using the default value: /opt/robocomp")
-    SET (ENV{ROBOCOMP} "/opt/robocomp/")
-ENDIF ( "$ENV{ROBOCOMP}" STREQUAL "")
-
-IF(NOT EXISTS $ENV{ROBOCOMP}/cmake)
-    MESSAGE(FATAL_ERROR "Couldn't find RoboComp in $ENV{ROBOCOMP}! Exiting...")
-ENDIF(NOT EXISTS $ENV{ROBOCOMP}/cmake)
-
-
 find_package(Qt5 COMPONENTS Core REQUIRED)
 find_package(Eigen3 3.3 REQUIRED NO_MODULE)
 find_package(PythonLibs REQUIRED)
+find_package(Python3)
+find_package(pybind11 CONFIG REQUIRED)
 
-add_library(pydsr SHARED
+set(
+    include/signal_function_caster.h
+    include/silen_output.h
+    )
+
+add_library(pydsr MODULE)
+
+target_sources(pydsr
+        PRIVATE
         python_api.cpp
         )
 
 
-target_link_libraries(pydsr PRIVATE Qt5::Core Eigen3::Eigen dsr_api dsr_core dsr_gui ${PYTHON_LIBRARIES})
-target_include_directories(pydsr PRIVATE $ENV{ROBOCOMP}/classes/   $ENV{ROBOCOMP}/include/ ${PYTHON_INCLUDE_DIRS} )
-target_link_directories(pydsr PRIVATE  $ENV{ROBOCOMP}/lib)
+target_link_libraries(pydsr
+        PRIVATE
+        Qt5::Core
+        Eigen3::Eigen
+        Robocomp::dsr_api
+        Robocomp::dsr_core
+        ${PYTHON_LIBRARIES}
+        pybind11::module
+        )
+
+target_include_directories(pydsr
+        PUBLIC
+        # Headers of DSR Api and Core
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../core/include/>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../api/include/>
+        # Own include
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/>
+        PRIVATE
+        ${PYTHON_INCLUDE_DIRS}
+        )
+
+
 set_target_properties(pydsr PROPERTIES
         CMAKE_CXX_STANDARD 20
         CXX_STANDARD_REQUIRED ON
         CXX_EXTENSIONS ON
         Python_ADDITIONAL_VERSIONS 3.8)
 
-target_compile_options( pydsr PRIVATE -g -fmax-errors=5 -std=c++20 )
-install( TARGETS pydsr
-        DESTINATION /opt/robocomp/lib/ )
+target_compile_options(pydsr PRIVATE -g -fmax-errors=5 -std=c++20 )
+set_target_properties(pydsr PROPERTIES PREFIX "")
+
+
+
+# 'make install' to the correct locations (provided by GNUInstallDirs).
+set(pydsr_INSTALL_PYTHONDIR "${Python3_SITEARCH}")
+message(STATUS ${Python3_SITEARCH})
+install(TARGETS pydsr DESTINATION ${pydsr_INSTALL_PYTHONDIR} COMPONENT module)
+

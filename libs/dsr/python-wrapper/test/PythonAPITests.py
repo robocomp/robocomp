@@ -2,7 +2,6 @@ import unittest
 import subprocess
 
 import sys, time, os
-sys.path.append("/opt/robocomp/lib")
 from pydsr import *
 
 
@@ -17,6 +16,11 @@ class TestAttribute(unittest.TestCase):
 
     def test_create_attribute(self):
         tmp = Attribute(10.4, 0, 12)
+        self.assertIsNotNone(tmp)
+        self.assertAlmostEqual(tmp.value, 10.4, 5)
+        with self.assertRaises(RuntimeError):
+            tmp.value = True
+        tmp = Attribute(10.4, 12)
         self.assertIsNotNone(tmp)
         self.assertAlmostEqual(tmp.value, 10.4, 5)
         with self.assertRaises(RuntimeError):
