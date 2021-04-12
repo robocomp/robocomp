@@ -10,11 +10,6 @@ find_package(PythonLibs REQUIRED)
 find_package(Python3)
 find_package(pybind11 CONFIG REQUIRED)
 
-set(
-    include/signal_function_caster.h
-    include/silen_output.h
-    )
-
 add_library(pydsr MODULE)
 
 target_sources(pydsr
