@@ -216,4 +216,69 @@ REGISTER_TYPE(path_target_y, float, false)
  * */
 REGISTER_TYPE(battery_load, int, false);
 
+/* * * * * * * * * * *  
+ * MELEX-RODAO ATTR  *
+ * * * * * * * * * * */
+
+
+/*
+ * Road
+ * */
+
+REGISTER_TYPE(road_name, std::reference_wrapper<const std::string>, false)
+
+/*
+ * Building
+ * */
+
+REGISTER_TYPE(building_name, std::reference_wrapper<const std::string>, false)
+
+/*
+ * Vehicle
+ * */
+
+REGISTER_TYPE(vehicle_id, int, false)
+REGISTER_TYPE(vehicle_occupancy, bool, false)
+REGISTER_TYPE(vehicle_throttle, float, false)
+REGISTER_TYPE(vehicle_steer, float, false)
+REGISTER_TYPE(vehicle_brake, float, false)
+REGISTER_TYPE(vehicle_gear, int, false)
+REGISTER_TYPE(vehicle_manual_gear, bool, false)
+REGISTER_TYPE(vehicle_handbrake, bool, false)
+REGISTER_TYPE(vehicle_reverse, bool, false)
+
+/*
+ * Camera
+ * */
+REGISTER_TYPE(cam_id, int, false)
+REGISTER_TYPE(cam_name, std::reference_wrapper<const std::string>, false)
+REGISTER_TYPE(cam_image, std::reference_wrapper<const std::vector<uint8_t>>, true)
+REGISTER_TYPE(cam_width, int, false)
+REGISTER_TYPE(cam_height, int, false)
+REGISTER_TYPE(cam_is_on, bool, false)
+REGISTER_TYPE(cam_time_stamp, float, false)
+REGISTER_TYPE(cam_sensor_tick, float, false)
+REGISTER_TYPE(cam_fov, float, false)
+
+/*
+ * GPS
+ * */
+REGISTER_TYPE(gps_id, int, false)
+REGISTER_TYPE(gps_latitude, float, false)
+REGISTER_TYPE(gps_longitude, float, false)
+REGISTER_TYPE(gps_altitude, float, false)
+REGISTER_TYPE(gps_time_stamp, float, false)
+REGISTER_TYPE(gps_sensor_tick, float, false)
+
+/*
+ * IMU
+ * */
+
+REGISTER_TYPE(imu_id, int, false)
+REGISTER_TYPE(imu_accelerometer, std::reference_wrapper<const std::vector<float>>, false)
+REGISTER_TYPE(imu_gyroscope, std::reference_wrapper<const std::vector<float>>, false)
+REGISTER_TYPE(imu_compass, float, false)
+REGISTER_TYPE(imu_time_stamp, float, false)
+REGISTER_TYPE(imu_sensor_tick, float, false)
+
 #endif //DSR_ATTR_NAME_H

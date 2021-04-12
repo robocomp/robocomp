@@ -90,6 +90,10 @@ REGISTER_NODE_TYPE(intention)
 REGISTER_NODE_TYPE(rgbd)
 REGISTER_NODE_TYPE(pan_tilt)
 
-
+//melex-rodao types
+REGISTER_NODE_TYPE(road)
+REGISTER_NODE_TYPE(building)
+REGISTER_NODE_TYPE(vehicle)
+REGISTER_NODE_TYPE(gps)
 
 #endif //DSR_NODE_TYPE_H
