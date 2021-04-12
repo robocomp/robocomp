@@ -16,10 +16,10 @@
 namespace DSR {
 
 
-    static constexpr std::array<std::string_view, 8> TYPENAMES_UNION = { "STRING", "INT", "FLOAT",
-                                                                        "FLOAT_VEC", "BOOL", "BYTE_VEC", "UINT", "UINT64"};
+    static constexpr std::array<std::string_view, 9> TYPENAMES_UNION = { "STRING", "INT", "FLOAT",
+                                                                        "FLOAT_VEC", "BOOL", "BYTE_VEC", "UINT", "UINT64", "DOUBLE"};
 
-    using ValType = std::variant<std::string, int32_t, float, std::vector<float>, bool, std::vector<uint8_t>, uint32_t, uint64_t>;
+    using ValType = std::variant<std::string, int32_t, float, std::vector<float>, bool, std::vector<uint8_t>, uint32_t, uint64_t, double>;
 
     enum Types : uint32_t {
         STRING,
@@ -29,7 +29,8 @@ namespace DSR {
         BOOL,
         BYTE_VEC,
         UINT,
-        UINT64
+        UINT64,
+        DOUBLE
     };
 
 
@@ -71,6 +72,10 @@ namespace DSR {
                 }
                 case 7: {
                     val = x.u64();
+                    break;
+                }
+                case 8: {
+                    val = x.dob();
                     break;
                 }
                 default:
@@ -144,6 +149,10 @@ namespace DSR {
 
         [[nodiscard]] float fl() const;
 
+        void dob(double _dob);
+
+        [[nodiscard]] double dob() const;
+
         void float_vec(const std::vector<float> &_float_vec);
 
         void float_vec(std::vector<float> &&_float_vec);
@@ -191,6 +200,9 @@ namespace DSR {
                 }
                 case 7: {
                     return uint64() < rhs.uint64();
+                }
+                case 8: {
+                    return dob() < rhs.dob();
                 }
                 default:
                     return false;
@@ -258,6 +270,9 @@ namespace DSR {
                     break;
                 case 7:
                     os << " uint64: " << type.uint64();
+                    break;
+                case 8:
+                    os << " double: " << type.dob();
                     break;
                 default:
                     os << "INVALID TYPE";

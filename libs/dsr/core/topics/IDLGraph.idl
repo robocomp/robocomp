@@ -16,6 +16,8 @@
         unsigned long uint;
       case 7:
         unsigned long long u64;
+      case 7:
+        double dob;
     };
 
     enum Types
@@ -27,7 +29,8 @@
         _BOOL,
         _BYTE_VEC,
         _UINT,
-        _UINT64
+        _UINT64.
+        _DOUBLE
     };
 
 

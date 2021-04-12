@@ -41,7 +41,7 @@ struct hash_pair
     }
 };*/
 
-static uint64_t get_unix_timestamp() { //Move to utilities?
+static uint64_t get_unix_timestamp() {
     auto now = std::chrono::system_clock::now();
     std::chrono::time_point pt_ms = std::chrono::time_point_cast<std::chrono::nanoseconds>(now);
     uint64_t nanos = pt_ms.time_since_epoch().count();

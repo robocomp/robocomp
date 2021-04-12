@@ -48,6 +48,7 @@ static bool constexpr allowed_return_types = std::is_same<std::int32_t, Va>::val
                                              std::is_same<std::uint64_t, Va>::value ||
                                              std::is_same<std::string, Va>::value ||
                                              std::is_same<std::float_t, Va>::value ||
+                                             std::is_same<std::double_t, Va>::value ||
                                              std::is_same<std::vector<float_t>, Va>::value ||
                                              std::is_same<std::vector<uint8_t>, Va>::value ||
                                              std::is_same<bool, Va>::value ||

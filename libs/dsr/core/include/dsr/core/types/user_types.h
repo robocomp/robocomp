@@ -82,6 +82,10 @@ namespace DSR {
 
         [[nodiscard]] float fl() const;
 
+        void dob(double _dob);
+
+        [[nodiscard]] double dob() const;
+
         void float_vec(const std::vector<float> &_float_vec);
 
         void float_vec(std::vector<float> &&_float_vec);
@@ -132,6 +136,12 @@ namespace DSR {
                     break;
                 case 6:
                     os << " uint: " << std::get<uint32_t>(type.m_value);
+                    break;
+                case 7:
+                    os << " uint64: " << std::get<uint64_t>(type.m_value);
+                    break;
+                case 8:
+                    os << " double: " << std::get<double>(type.m_value);
                     break;
                 default:
                     os << "INVALID TYPE";

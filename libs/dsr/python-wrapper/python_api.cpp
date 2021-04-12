@@ -6,6 +6,10 @@
 
 using namespace DSR;
 
+#include "include/silent_output.h"
+#include "include/signal_function_caster.h"
+#include "include/custom_bind_map.h"
+
 #pragma push_macro("slots")
 #undef slots
 
@@ -23,8 +27,7 @@ using namespace DSR;
 #include <memory>
 #include <functional>
 
-#include "include/silent_output.h"
-#include "include/signal_function_caster.h"
+
 
 namespace py = pybind11;
 
@@ -213,8 +216,12 @@ PYBIND11_MODULE(pydsr, m) {
                         break;
                     case 6:
                         out << std::to_string(std::get<uint32_t>(self.value()));
+                        break;
                     case 7:
                         out << std::to_string(std::get<uint64_t>(self.value()));
+                        break;
+                    case 8:
+                        out << std::to_string(std::get<double>(self.value()));
                         break;
                 }
                 out << " >";
@@ -262,6 +269,8 @@ PYBIND11_MODULE(pydsr, m) {
             .def_property("attrs", [](Edge &self) -> std::map<std::string, Attribute> & { return self.attrs(); },
                           [](Edge &self, const std::map<std::string, Attribute> &at) { self.attrs(at); },
                           py::return_value_policy::reference, "read or write in the attribute map of the edge.");
+
+
 
     //DSR Node class
     py::class_<Node>(m, "Node")

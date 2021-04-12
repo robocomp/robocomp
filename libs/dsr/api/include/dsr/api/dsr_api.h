@@ -170,6 +170,8 @@ namespace DSR
             const auto &av = value->second;
             if constexpr (std::is_same_v< name_type, float>)
                 return av.fl();
+            else if constexpr (std::is_same_v< name_type,  double>)
+                return av.dob();
             else if constexpr (std::is_same_v< name_type,  std::reference_wrapper<const std::string>>)
                 return av.str();
             else if constexpr (std::is_same_v< name_type,  std::int32_t>)
@@ -213,7 +215,7 @@ namespace DSR
                     } else if constexpr (std::is_same<std::int32_t, Ta>::value) {
                         at.type(INT);
                         value.dec(att_value);
-                    } else if constexpr (std::is_same<float, Ta>::value || std::is_same<double, Ta>::value) {
+                    } else if constexpr (std::is_same<float, Ta>::value) {
                         at.type(FLOAT);
                         value.fl(att_value);
                     } else if constexpr (std::is_same<std::vector<float_t>, Ta>::value) {
@@ -231,6 +233,9 @@ namespace DSR
                     } else if constexpr (std::is_same<std::uint64_t , Ta>::value) {
                         at.type(UINT64);
                         value.uint64(att_value);
+                    } else if constexpr (std::is_same<double , Ta>::value) {
+                        at.type(DOUBLE);
+                        value.dob(att_value);
                     }
 
                     at.val(std::move(value));
@@ -267,7 +272,7 @@ namespace DSR
                 } else if constexpr (std::is_same<std::int32_t, Ta>::value) {
                     at.type(INT);
                     value.dec(att_value);
-                } else if constexpr (std::is_same<float, Ta>::value || std::is_same<double, Ta>::value) {
+                } else if constexpr (std::is_same<float, Ta>::value) {
                     at.type(FLOAT);
                     value.fl(att_value);
                 } else if constexpr (std::is_same<std::vector<float_t>, Ta>::value) {
@@ -285,6 +290,9 @@ namespace DSR
                 } else if constexpr (std::is_same<std::uint64_t , Ta>::value) {
                     at.type(UINT64);
                     value.uint64(att_value);
+                } else if constexpr (std::is_same<double , Ta>::value) {
+                    at.type(DOUBLE);
+                    value.dob(att_value);
                 }
 
                 at.val(std::move(value));

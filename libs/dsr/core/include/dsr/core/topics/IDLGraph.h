@@ -300,6 +300,20 @@ namespace IDL {
          */
         eProsima_user_DllExport uint64_t &u64();
 
+        /*!
+         * @brief This function sets a value in member dob
+         * @param _dob New value for member dob
+         */
+        eProsima_user_DllExport void dob(double _dob);
+
+        /*!
+         * @brief This function returns the value of member fl
+         * @return Value of member fl
+         * @exception eprosima::fastcdr::BadParamException This exception is thrown if the requested union member is not the current selection.
+         */
+        eProsima_user_DllExport double dob() const;
+
+        eProsima_user_DllExport double &dob();
 
         /*!
          * @brief This function returns the maximum serialized size of an object
@@ -342,6 +356,7 @@ namespace IDL {
         std::vector<uint8_t> m_byte_vec;
         uint32_t m_uint;
         uint64_t m_u64;
+        double m_dob;
     };
 
 /*!
@@ -357,7 +372,8 @@ namespace IDL {
         BOOL,
         BYTE_VEC,
         UINT,
-        UINT64
+        UINT64,
+        DOUBLE
     };
 
 /*!

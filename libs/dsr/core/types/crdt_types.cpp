@@ -103,6 +103,21 @@ namespace DSR {
                 ("FLOAT is not selected, selected is " + std::string(TYPENAMES_UNION[val.index()])).data());
     }
 
+    void CRDTValue::dob(double _dob)
+    {
+        val = _dob;
+    }
+
+    double CRDTValue::dob() const
+    {
+        if (auto pval = std::get_if<double>(&val)) {
+            return *pval;
+        }
+
+        throw std::runtime_error(
+                ("DOUBLE is not selected, selected is " + std::string(TYPENAMES_UNION[val.index()])).data());
+    }
+
     void CRDTValue::float_vec(const std::vector<float> &_float_vec) 
     {
         val = _float_vec;
@@ -204,6 +219,9 @@ namespace DSR {
                 break;
             case 7:
                 value.u64(std::get<std::uint64_t>(val));
+                break;
+            case 8:
+                value.dob(std::get<double>(val));
                 break;
             default:
                 throw std::runtime_error(

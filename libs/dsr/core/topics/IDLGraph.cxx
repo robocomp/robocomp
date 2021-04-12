@@ -51,6 +51,8 @@ namespace IDL {
         m_uint = 0;
         // m_u64 com.eprosima.idl.parser.typecode.PrimitiveTypeCode@376b4233
         m_u64 = 0;
+
+        m_dob = 0.0;
     }
 
     Val::~Val() {
@@ -83,6 +85,9 @@ namespace IDL {
                 break;
             case 7:
                 m_u64 = x.m_u64;
+                break;
+            case 8:
+                m_dob = x.m_dob;
                 break;
             default:
                 break;
@@ -117,6 +122,9 @@ namespace IDL {
             case 7:
                 m_u64 = x.m_u64;
                 break;
+            case 8:
+                m_dob = x.m_dob;
+                break;
             default:
                 break;
         }
@@ -149,6 +157,9 @@ namespace IDL {
                 break;
             case 7:
                 m_u64 = x.m_u64;
+                break;
+            case 8:
+                m_dob = x.m_dob;
                 break;
             default:
                 break;
@@ -184,6 +195,9 @@ namespace IDL {
                 break;
             case 7:
                 m_u64 = x.m_u64;
+                break;
+            case 8:
+                m_dob = x.m_dob;
                 break;
             default:
                 break;
@@ -262,6 +276,14 @@ namespace IDL {
             case 7:
                 switch (__d) {
                     case 7:
+                        b = true;
+                        break;
+                    default:
+                        break;
+                }
+            case 8:
+                switch (__d) {
+                    case 8:
                         b = true;
                         break;
                     default:
@@ -612,6 +634,46 @@ namespace IDL {
         return m_u64;
     }
 
+
+    void Val::dob(double _dob) {
+        m_dob = _dob;
+        m__d = 8;
+    }
+
+    double Val::dob() const {
+        bool b = false;
+
+        switch (m__d) {
+            case 8:
+                b = true;
+                break;
+            default:
+                break;
+        }
+        if (!b) {
+            throw BadParamException("This member is not been selected");
+        }
+
+        return m_dob;
+    }
+
+    double &Val::dob() {
+        bool b = false;
+
+        switch (m__d) {
+            case 8:
+                b = true;
+                break;
+            default:
+                break;
+        }
+        if (!b) {
+            throw BadParamException("This member is not been selected");
+        }
+
+        return m_dob;
+    }
+
     size_t Val::getMaxCdrSerializedSize(size_t current_alignment) {
         size_t initial_alignment = current_alignment;
         size_t reset_alignment = 0;
@@ -694,6 +756,13 @@ namespace IDL {
         if (union_max_size_serialized < reset_alignment)
             union_max_size_serialized = reset_alignment;
 
+        reset_alignment = current_alignment;
+
+        reset_alignment += 8 + eprosima::fastcdr::Cdr::alignment(reset_alignment, 8);
+
+
+        if (union_max_size_serialized < reset_alignment)
+            union_max_size_serialized = reset_alignment;
 
         return union_max_size_serialized - initial_alignment;
     }
@@ -746,6 +815,11 @@ namespace IDL {
                 current_alignment += 8 + eprosima::fastcdr::Cdr::alignment(current_alignment, 8);
 
                 break;
+
+            case 8:
+                current_alignment += 8 + eprosima::fastcdr::Cdr::alignment(current_alignment, 8);
+
+                break;
             default:
                 break;
         }
@@ -781,6 +855,9 @@ namespace IDL {
             case 7:
                 scdr << m_u64;
                 break;
+            case 8:
+                scdr << m_dob;
+                break;
             default:
                 break;
         }
@@ -813,6 +890,9 @@ namespace IDL {
                 break;
             case 7:
                 dcdr >> m_u64;
+                break;
+            case 8:
+                dcdr >> m_dob;
                 break;
             default:
                 break;

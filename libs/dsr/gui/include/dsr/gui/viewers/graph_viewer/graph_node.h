@@ -347,6 +347,14 @@ class DoTableStuff : public  QTableWidget
                 qobject_cast<QSpinBox *>(widget_map[k])->setValue(v.uint());
                 break;
             }
+            case 7:{
+                qobject_cast<QSpinBox *>(widget_map[k])->setValue(v.uint64());
+                break;
+            }
+            case 8:{
+                qobject_cast<QSpinBox *>(widget_map[k])->setValue(std::round(static_cast<double>(v.fl()) * 1e14) / 1e14);
+                break;
+            }
         }
         widget_map[k]->blockSignals(false);
     }
@@ -450,6 +458,34 @@ class DoTableStuff : public  QTableWidget
                 connect(spin, QOverload<int>::of(&QSpinBox::valueChanged), this, [this, k](int value){
                     std::optional<Node> n = graph->get_node(node_id);
                     graph->runtime_checked_update_attrib_by_name(n.value(), k, (unsigned int)value);
+                });
+                break;
+            }
+            case 7:
+            {
+                QDoubleSpinBox *spin = new QDoubleSpinBox();
+                spin->setMinimum(0);
+                spin->setMaximum(10000);
+                spin->setValue(v.uint());
+                setCellWidget(rowCount() - 1, 1, spin);
+                widget_map[k] = spin;
+                connect(spin, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, [this, k](double value){
+                    std::optional<Node> n = graph->get_node(node_id);
+                    graph->runtime_checked_update_attrib_by_name(n.value(), k, (uint64_t)value);
+                });
+                break;
+            }
+            case 8:
+            {
+                QDoubleSpinBox *spin = new QDoubleSpinBox();
+                spin->setMinimum(-10000);
+                spin->setMaximum(10000);
+                spin->setValue(std::round(static_cast<double>(v.fl()) * 1000000) / 1000000);
+                setCellWidget(rowCount() - 1, 1, spin);
+                widget_map[k] = spin;
+                connect(spin, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, [this, k](double value){
+                    std::optional<Node> n = graph->get_node(node_id);
+                    graph->runtime_checked_update_attrib_by_name(n.value(), k, (double)value);
                 });
                 break;
             }

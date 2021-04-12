@@ -142,6 +142,21 @@ namespace DSR {
                 ("FLOAT is not selected, selected is " + std::string(TYPENAMES_UNION[m_value.index()])).data());
     }
 
+    void Attribute::dob(double _dob)
+    {
+        m_value = _dob;
+    }
+
+    [[nodiscard]] double Attribute::dob() const
+    {
+        if (auto pval = std::get_if<double>(&m_value)) {
+            return *pval;
+        }
+
+        throw std::runtime_error(
+                ("DOUBLE is not selected, selected is " + std::string(TYPENAMES_UNION[m_value.index()])).data());
+    }
+
     void Attribute::float_vec(const std::vector<float> &_float_vec)
     {
         m_value = _float_vec;
