@@ -42,6 +42,15 @@ namespace pybind11 {
         // Register stream insertion operator (if possible)
         detail::map_if_insertion_operator<Map, Class_>(cl, name);
 
+        cl.def("__repr__",
+               [](const Map &m) {
+                   std::stringstream out;
+                   for (const auto& [k, v] : m)
+                       out << "      [" << k << "] -- " << v << std::endl;
+                   return out.str();
+                }
+        );
+
         cl.def("__bool__",
                [](const Map &m) -> bool { return !m.empty(); },
                "Check whether the map is nonempty"
