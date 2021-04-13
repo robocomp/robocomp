@@ -42,13 +42,61 @@ using callback_types = std::variant<
         std::function<void(std::uint64_t)>
 >;
 
+
+using attribute_type = std::variant<std::string,
+                                    bool,
+                                    std::vector<uint8_t>,
+                                    std::vector<float>,
+                                    uint64_t,
+                                    double,
+                                    float,
+                                    int32_t,
+                                    uint32_t>;
+
+template<typename T>
+ValType convert_variant_fn(const attribute_type & e)
+{
+    return ValType(std::get<T>(e));
+};
+
+
+ValType convert_variant(const attribute_type & e)
+{
+    typedef ValType (*conver_fn) (const attribute_type &);
+    //using t = DSR::Types;
+
+    /*constexpr std::array<uint8_t, 9> idx_ValType = {t::STRING,
+                                                               t::BOOL,
+                                                               t::BYTE_VEC,
+                                                               t::FLOAT_VEC,
+                                                               t::UINT64,
+                                                               t::DOUBLE,
+                                                               t::FLOAT,
+                                                               t::INT,
+                                                               t::UINT };
+    */
+    constexpr std::array<conver_fn, 9> cast = {  convert_variant_fn<std::string>,
+                                                 convert_variant_fn<bool>,
+                                                 convert_variant_fn<std::vector<uint8_t>>,
+                                                 convert_variant_fn<std::vector<float>>,
+                                                 convert_variant_fn<uint64_t>,
+                                                 convert_variant_fn<double>,
+                                                 convert_variant_fn<float>,
+                                                 convert_variant_fn<int32_t>,
+                                                 convert_variant_fn<uint32_t>
+                                             };
+
+    const auto idx = e.index(); //idx_ValType.at(e.index());
+    return cast[idx](e);
+}
+
 PYBIND11_MAKE_OPAQUE(std::map<std::pair<uint64_t, std::string>, Edge>)
 PYBIND11_MAKE_OPAQUE(std::map<std::string, Attribute>)
 
 PYBIND11_MODULE(pydsr, m) {
 
     py::bind_map<std::map<std::pair<uint64_t, std::string>, Edge>>(m, "MapStringEdge");
-    py::bind_map<std::map<std::string, Attribute>>(m, "MapStringAttribute");
+    py::bind_dsr_map<std::map<std::string, Attribute>>(m, "MapStringAttribute");
 
     m.doc() = "DSR Api for python";
 
@@ -180,10 +228,15 @@ PYBIND11_MODULE(pydsr, m) {
 
     //DSR Attribute class
     py::class_<Attribute>(m, "Attribute")
-            .def(py::init<ValType, uint64_t, uint32_t>(),
+            .def(py::init([&](attribute_type const& v, uint64_t t, uint32_t agent_id){
+                    //Use another variant type to avoid problems with implicit conversions.
+                    return Attribute(convert_variant(v), t, agent_id);
+                }),
                  "value"_a, "timestamp"_a, "agent_id"_a)
-            .def(py::init([&](ValType const& v , uint32_t agent_id) {
-                return Attribute(v, get_unix_timestamp(), agent_id);
+            .def(py::init([&](attribute_type const& v , uint32_t agent_id) {
+                //Comprobar tipos en ValType. Como se convien los arrays de numpy, las listas, los doubles, etc.
+
+                return Attribute(convert_variant(v), get_unix_timestamp(), agent_id);
             }),"value"_a, "agent_id"_a)
             .def("__repr__", [](Attribute const &self) {
 
@@ -210,8 +263,8 @@ PYBIND11_MODULE(pydsr, m) {
                         break;
                     case 5:
                         out << "[ ";
-                        for (const auto &k: std::get<std::vector<uint8_t>>(self.value()))
-                            out << std::to_string(k) + ", ";
+                        for (const uint8_t k: std::get<std::vector<uint8_t>>(self.value()))
+                            out << std::to_string(static_cast<uint32_t>(k)) + ", ";
                         out << "] ";
                         break;
                     case 6:
@@ -251,7 +304,7 @@ PYBIND11_MODULE(pydsr, m) {
                 std::stringstream out;
                 out << "------------------------------------" << std::endl;
                 out << "Type: " << self.type() << " from: " << self.from() << " to: " << self.to() << std::endl;
-                for (auto[k, v] : self.attrs())
+                for (auto& [k, v] : self.attrs())
                     out << "      [" << k << "] -- " << v << std::endl;
                 out << "------------------------------------" << std::endl;
                 return out.str();
@@ -288,15 +341,15 @@ PYBIND11_MODULE(pydsr, m) {
                 out << "  Type: " << self.type() << std::endl;
                 out << "  Name: " << self.name() << std::endl;
                 out << "  Agent id: " << self.agent_id() << std::endl;
-                out << "  ATTRIBUTES: [";
-                for (auto[key, val] : self.attrs())
+                out << "  ATTRIBUTES: [\n";
+                for (auto& [key, val] : self.attrs())
                     out << "      [" << key << "] -- " << val << std::endl;
                 out << "   ]" << std::endl;
                 out << "  EDGES: [" << std::endl;
-                for (auto[key, val] : self.fano()) {
+                for (auto& [key, val] : self.fano()) {
                     out << "          Edge type: " << val.type() << " from: " << val.from() << " to: " << val.to()
                         << std::endl;
-                    for (auto[k, v] : val.attrs())
+                    for (auto& [k, v] : val.attrs())
                         out << "              [" << k << "] -- " << v << std::endl;
                 }
                 out << "          ]" << std::endl;

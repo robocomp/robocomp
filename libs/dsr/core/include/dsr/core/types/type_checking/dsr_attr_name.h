@@ -281,4 +281,10 @@ REGISTER_TYPE(imu_compass, float, false)
 REGISTER_TYPE(imu_time_stamp, float, false)
 REGISTER_TYPE(imu_sensor_tick, float, false)
 
+
+
+
+REGISTER_TYPE(test_double_type, double, false) //remove
+REGISTER_TYPE(test_uint32_type, uint32_t , false) //remove
+
 #endif //DSR_ATTR_NAME_H

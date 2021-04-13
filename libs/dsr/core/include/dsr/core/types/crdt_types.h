@@ -22,15 +22,15 @@ namespace DSR {
     using ValType = std::variant<std::string, int32_t, float, std::vector<float>, bool, std::vector<uint8_t>, uint32_t, uint64_t, double>;
 
     enum Types : uint32_t {
-        STRING,
-        INT,
-        FLOAT,
-        FLOAT_VEC,
-        BOOL,
-        BYTE_VEC,
-        UINT,
-        UINT64,
-        DOUBLE
+        STRING = 0,
+        INT = 1,
+        FLOAT = 2,
+        FLOAT_VEC = 3,
+        BOOL = 4,
+        BYTE_VEC = 5,
+        UINT = 6,
+        UINT64 = 7,
+        DOUBLE = 8
     };
 
 

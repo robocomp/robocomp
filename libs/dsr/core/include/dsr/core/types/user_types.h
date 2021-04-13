@@ -130,8 +130,8 @@ namespace DSR {
                     break;
                 case 5:
                     os << " byte_vec: [ ";
-                    for (const auto &k: std::get<std::vector<uint8_t>>(type.m_value))
-                        os << k << ", ";
+                    for (const uint8_t k: std::get<std::vector<uint8_t>>(type.m_value))
+                        os << std::to_string(k) << ", ";
                     os << "] ";
                     break;
                 case 6:
