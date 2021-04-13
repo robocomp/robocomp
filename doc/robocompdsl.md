@@ -96,7 +96,7 @@ sudo pip3 install pyparsing==2.2
 ```
 ## Modifying the component to write a simple controller for the robot
 
-Check that the *rcis simulator* is up and running. You should have two open windows, one with a camara looking at the world and another with the subjective camera of the robot. In not, in a new terminal type,
+Check that the *rcis simulator* is up and running. You should have two open windows, one with a camera looking at the world and another with the subjective camera of the robot. If not, in a new terminal type,
 
 ```bash
 cd ~/robocomp/files/innermodel
