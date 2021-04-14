@@ -25,7 +25,6 @@ target_link_libraries(pydsr
         Robocomp::dsr_api
         Robocomp::dsr_core
         ${PYTHON_LIBRARIES}
-        pybind11::module
         )
 
 target_include_directories(pydsr
