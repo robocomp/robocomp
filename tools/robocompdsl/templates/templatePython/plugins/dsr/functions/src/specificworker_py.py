@@ -32,7 +32,8 @@ from pydsr import *
 
 DSR_INIT_STR = """\
 
-self.g = DSRGraph(0, "pythonAgent", 111)
+# YOU MUST SET AN UNIQUE ID FOR THIS AGENT IN YOUR DEPLOYMENT. "_CHANGE_THIS_ID_" for a valid unique integer
+self.g = DSRGraph(0, "pythonAgent", "_CHANGE_THIS_ID_")
 
 try:
     signals.connect(self.g, signals.UPDATE_NODE_ATTR, update_node_att)
