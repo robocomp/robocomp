@@ -466,7 +466,7 @@ class DoTableStuff : public  QTableWidget
                 QDoubleSpinBox *spin = new QDoubleSpinBox();
                 spin->setMinimum(0);
                 spin->setMaximum(10000);
-                spin->setValue(v.uint());
+                spin->setValue(v.uint64());
                 setCellWidget(rowCount() - 1, 1, spin);
                 widget_map[k] = spin;
                 connect(spin, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, [this, k](double value){
