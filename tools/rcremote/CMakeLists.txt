@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.10)
+cmake_minimum_required(VERSION 3.10)
 project( rcremote
         VERSION 2021.2.1
         DESCRIPTION "RoboComp rcremote tool"

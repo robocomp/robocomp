@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 3.10)
 PROJECT( rcdeploymentchecker
         VERSION 2021.2.1
         DESCRIPTION "RoboComp rcdeploymentchecker tool"
