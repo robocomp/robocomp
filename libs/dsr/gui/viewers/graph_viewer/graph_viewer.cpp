@@ -37,6 +37,7 @@ GraphViewer::GraphViewer(std::shared_ptr<DSR::DSRGraph> G_, QWidget *parent) :  
 	connect(G.get(), &DSR::DSRGraph::del_node_signal, this, &GraphViewer::del_node_SLOT);
 }
 
+
 GraphViewer::~GraphViewer()
 {
     qDebug() << __FUNCTION__ << "Destroy";
@@ -137,8 +138,8 @@ void GraphViewer::timerEvent(QTimerEvent *event)
 void GraphViewer::add_or_assign_node_SLOT(uint64_t id, const std::string &type)
 {
 	//qDebug() << __FUNCTION__ << "node id " << id<<", type "<<QString::fromUtf8(type.c_str());
-	GraphNode *gnode;														// CAMBIAR a sharer_ptr
-
+															// CAMBIAR a sharer_ptr
+    GraphNode *gnode;
     auto name_op = G->get_name_from_id(id);
     auto name = name_op.value_or("No_name");
 	std::optional<Node> n = G->get_node(id);
@@ -146,11 +147,7 @@ void GraphViewer::add_or_assign_node_SLOT(uint64_t id, const std::string &type)
         if (gmap.count(id) == 0)    // if node does not exist, create it
         {
             qDebug()<<__FUNCTION__<<"##### New node";
-        	gnode = new GraphNode(own);
-            gnode->id_in_graph = id;
-            gnode->setType(type);
-			gnode->setTag(n.value().name() + " [" + std::to_string(n.value().id()) + "]");
-            scene.addItem(gnode);
+            gnode = this->new_visual_node(id, type, name, false);
             gmap.insert(std::pair(id, gnode));
             // //left table filling only if it is new
             // tableWidgetNodes->setColumnCount(1);
@@ -226,6 +223,7 @@ void GraphViewer::add_or_assign_node_SLOT(uint64_t id, const std::string &type)
             posx = rd.x();
             posy = rd.y();
         }
+        // Avoid to move if it's in the same position or if the node is grabbed
         if ((posx != gnode->x() or posy != gnode->y()) and gnode != scene.mouseGrabberItem()) {
 			qDebug()<<__FUNCTION__<<"##### posx "<<posx<<" != gnode->x() "<<gnode->x()<<" or posy "<<posy<<" != gnode->y() "<<gnode->y();
 			gnode->setPos(posx, posy);
@@ -233,6 +231,18 @@ void GraphViewer::add_or_assign_node_SLOT(uint64_t id, const std::string &type)
 
         emit G->update_attrs_signal(id, n.value().attrs());
     }
+}
+
+GraphNode* GraphViewer::new_visual_node(uint64_t id, const std::string &type, const std::string &name, bool debug)
+{
+    GraphNode *gnode = new GraphNode(own);
+    gnode->id_in_graph = id;
+    gnode->setType(type);
+    std::string tag = name;
+    tag += debug?" [" + std::to_string(id) + "]":"";
+    gnode->setTag(tag);
+    scene.addItem(gnode);
+    return gnode;
 }
 
 void GraphViewer::add_or_assign_edge_SLOT(std::uint64_t from, std::uint64_t to, const std::string &edge_tag)
@@ -244,38 +254,31 @@ void GraphViewer::add_or_assign_edge_SLOT(std::uint64_t from, std::uint64_t to, 
 
 		if(gmap_edges.count(key) == 0) 
 		{ 		
-			//check if edge already exists
-			auto node_origen = gmap.at(from);
-			auto node_dest = gmap.at(to);
-			auto item = new GraphEdge(node_origen, node_dest, edge_tag.c_str());
-			scene.addItem(item);
+
+			auto item = this->new_visual_edge(from, to, edge_tag.c_str());
 			gmap_edges.insert(std::make_pair(key, item));
-			// //side table filling
-			// tableWidgetEdges->setColumnCount(1);
-			// tableWidgetEdges->setHorizontalHeaderLabels(QStringList{"label"});
-			// tableWidgetNodes->verticalHeader()->setVisible(false);
-			// tableWidgetNodes->setShowGrid(false);
-			// edges_types_list << QString::fromStdString(edge_tag);
-			// edges_types_list.removeDuplicates();
-			// int i = 0;
-			// tableWidgetEdges->clearContents();
-			// tableWidgetEdges->setRowCount(edges_types_list.size());
-			// for (auto &s : edges_types_list) {
-			// 	tableWidgetEdges->setItem(i, 0, new QTableWidgetItem(s));
-			// 	tableWidgetEdges->item(i, 0)->setIcon(
-			// 			QPixmap::fromImage(QImage("../../dsr/greenBall.png")));
-			// 	i++;
-			// }
-			// tableWidgetEdges->horizontalHeader()->setStretchLastSection(true);
-			// tableWidgetEdges->resizeRowsToContents();
-			// tableWidgetEdges->resizeColumnsToContents();
-			// tableWidgetEdges->show();
 		}
 		gmap_edges[key]->change_detected();
 	}
 	catch(const std::exception &e) {
 		std::cout << e.what() <<" Error  "<<__FUNCTION__<<":"<<__LINE__<<" "<<e.what()<< std::endl;}
 
+}
+
+GraphEdge* GraphViewer::new_visual_edge(GraphNode *sourceNode, GraphNode *destNode, const QString &edge_name)
+{
+    auto gedge = new GraphEdge(sourceNode, destNode, edge_name);
+    scene.addItem(gedge);
+    return gedge;
+}
+
+GraphEdge* GraphViewer::new_visual_edge(std::uint64_t from, std::uint64_t to, const std::string &edge_tag)
+{
+    auto sourceNode = gmap.at(from);
+    auto destNode = gmap.at(to);
+    auto gedge = new GraphEdge(sourceNode, destNode, edge_tag.c_str());
+    scene.addItem(gedge);
+    return gedge;
 }
 
 void GraphViewer::del_edge_SLOT(const std::uint64_t from, const std::uint64_t to, const std::string &edge_tag)

@@ -56,9 +56,15 @@ namespace DSR
 			void toggle_animation(bool state);
 			void reload(QWidget * widget);
 
+
+        protected:
+            std::shared_ptr<DSR::DSRGraph> G;
+            GraphNode* new_visual_node(uint64_t id, const std::string &type, const std::string &name, bool debug = false);
+            GraphEdge* new_visual_edge(GraphNode *sourceNode, GraphNode *destNode, const QString &edge_name);
+            GraphEdge* new_visual_edge(std::uint64_t from, std::uint64_t to, const std::string &edge_tag);
         private:
 			std::shared_ptr<GraphViewer> own;
-            std::shared_ptr<DSR::DSRGraph> G;
+
             std::map<std::uint64_t, GraphNode*> gmap;
 			std::map<std::tuple<std::uint64_t, std::uint64_t, std::string>, GraphEdge*> gmap_edges;
 			QGraphicsEllipseItem *central_point;
@@ -67,6 +73,7 @@ namespace DSR
 			int timerId = 0;
             void createGraph();
             void showContextMenu(QMouseEvent *event);
+
 
     	protected:
 			virtual void timerEvent(QTimerEvent *event);
