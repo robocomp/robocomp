@@ -60,85 +60,59 @@ void Utilities::read_from_json_file(const std::string &json_file_path,  const st
         n.id(id);
         n.agent_id(G->get_agent_id());
         n.name(name);
-        //G->name_map[name] = id;
-        //G->id_map[id] = name;
 
-            //std::map<string, Attrib> attrs;
-/*
- * THIS INFORMATION MUST BE ON JSON FILE 
-        G->insert_or_assign_attrib_by_name(n, "level", std::int32_t(0));
-        G->insert_or_assign_attrib_by_name(n, "parent", std::int32_t(0));
-        
+        // node atributes
+        QVariantMap attributesMap = sym_obj.value("attribute").toObject().toVariantMap();
+        for (QVariantMap::const_iterator iter = attributesMap.begin(); iter != attributesMap.end(); ++iter) {
+            std::string attr_key = iter.key().toStdString();
+            QVariant attr_value = iter.value().toMap()["value"];
+            int attr_type = iter.value().toMap()["type"].toInt();
 
- *        std::string full_name = type + " [" + std::to_string(id) + "]";
-        G->insert_or_assign_attrib_by_name(n, "name", full_name);
-        // G->add_attrib(attrs, "name",full_name);
-
-        // color selection
-        std::string color = "coral";
-        if(type == "world") color = "SeaGreen";
-        else if(type == "transform") color = "SteelBlue";
-        else if(type == "plane") color = "Khaki";
-        else if(type == "differentialrobot") color = "GoldenRod";
-        else if(type == "laser") color = "GreenYellow";
-        else if(type == "mesh") color = "LightBlue";
-        else if(type == "imu") color = "LightSalmon";
-
-        //G->add_attrib(attrs, "color", color);
-        G->insert_or_assign_attrib_by_name(n, "color", color);
-*/
-            // node atributes
-            QVariantMap attributesMap = sym_obj.value("attribute").toObject().toVariantMap();
-            for (QVariantMap::const_iterator iter = attributesMap.begin(); iter != attributesMap.end(); ++iter) {
-                std::string attr_key = iter.key().toStdString();
-                QVariant attr_value = iter.value().toMap()["value"];
-                int attr_type = iter.value().toMap()["type"].toInt();
-
-                switch (attr_type) {
-                    case 0: {
-                        G->runtime_checked_add_attrib_local(n,  attr_key, attr_value.toString().toStdString());
-                        break;
-                    }
-                    case 1: {
-                        G->runtime_checked_add_attrib_local(n, attr_key,  attr_value.toInt());
-                        break;
-                    }
-                    case 2: {
-                        G->runtime_checked_add_attrib_local(n,  attr_key,  attr_value.toString().replace(",", ".").toFloat());
-                        break;
-                    }
-                    case 3: {
-                        std::vector<float> v;
-                        for (const QVariant &value : attr_value.toList())
-                            v.push_back(value.toFloat());
-                        G->runtime_checked_add_attrib_local(n,  attr_key,  v);
-                        break;
-                    }
-                    case 4: {
-                        G->runtime_checked_add_attrib_local(n, attr_key,   attr_value.toBool());
-                        break;
-                    }
-                    case 5: {
-                        std::vector<uint8_t> v;
-                        for (const QVariant &value : attr_value.toList())
-                            v.push_back(static_cast<uint8_t>(value.toUInt()));
-                        G->runtime_checked_add_attrib_local(n,  attr_key,  v);
-                        break;
-                    }
-                    case 6: {
-                        G->runtime_checked_add_attrib_local(n,  attr_key,  static_cast<std::uint32_t>(attr_value.toUInt()));
-                        break;
-                    }
-                    case 7: {
-                        G->runtime_checked_add_attrib_local(n,  attr_key,  static_cast<std::uint64_t>(attr_value.toUInt()));
-                        break;
-                    }
-                    default:
-                        G->runtime_checked_add_attrib_local(n,  attr_key,  attr_value.toString().toStdString());
+            switch (attr_type) {
+                case 0: {
+                    G->runtime_checked_add_attrib_local(n,  attr_key, attr_value.toString().toStdString());
+                    break;
                 }
+                case 1: {
+                    G->runtime_checked_add_attrib_local(n, attr_key,  attr_value.toInt());
+                    break;
+                }
+                case 2: {
+                    G->runtime_checked_add_attrib_local(n,  attr_key,  attr_value.toString().replace(",", ".").toFloat());
+                    break;
+                }
+                case 3: {
+                    std::vector<float> v;
+                    for (const QVariant &value : attr_value.toList())
+                        v.push_back(value.toFloat());
+                    G->runtime_checked_add_attrib_local(n,  attr_key,  v);
+                    break;
+                }
+                case 4: {
+                    G->runtime_checked_add_attrib_local(n, attr_key,   attr_value.toBool());
+                    break;
+                }
+                case 5: {
+                    std::vector<uint8_t> v;
+                    for (const QVariant &value : attr_value.toList())
+                        v.push_back(static_cast<uint8_t>(value.toUInt()));
+                    G->runtime_checked_add_attrib_local(n,  attr_key,  v);
+                    break;
+                }
+                case 6: {
+                    G->runtime_checked_add_attrib_local(n,  attr_key,  static_cast<std::uint32_t>(attr_value.toUInt()));
+                    break;
+                }
+                case 7: {
+                    G->runtime_checked_add_attrib_local(n,  attr_key,  static_cast<std::uint64_t>(attr_value.toUInt()));
+                    break;
+                }
+                default:
+                    G->runtime_checked_add_attrib_local(n,  attr_key,  attr_value.toString().toStdString());
             }
-            //n.attrs(attrs);
-            insert_node(n);
+        }
+
+        insert_node(n);
         // get links
         QJsonArray nodeLinksArray = sym_obj.value("links").toArray();
         std::copy(nodeLinksArray.begin(), nodeLinksArray.end(), std::back_inserter(linksArray));

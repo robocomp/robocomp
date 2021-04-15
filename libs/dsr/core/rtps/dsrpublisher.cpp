@@ -18,19 +18,6 @@ DSRPublisher::DSRPublisher() : mp_participant(nullptr), mp_publisher(nullptr), m
 
 DSRPublisher::~DSRPublisher()
 {
-    /*
-    if (mp_writer != nullptr && mp_publisher != nullptr)
-    {
-        mp_publisher->delete_datawriter(mp_writer);
-    }
-
-    if (mp_participant != nullptr && mp_publisher != nullptr)
-    {
-        mp_participant->delete_publisher(mp_publisher);
-    }
-
-    qDebug()  << "Removing DSRPublisher";
-    */
 }
 
 std::tuple<bool, eprosima::fastdds::dds::Publisher*, eprosima::fastdds::dds::DataWriter*>
@@ -180,24 +167,7 @@ bool DSRPublisher::write(std::vector<IDL::MvregNodeAttr> *object) {
     qInfo() << "Error writing EDGE ATTRIBUTE VECTOR after 5 attempts";
     return false;
 }
-/*
-void DSRPublisher::remove_publisher()
-{
-    if (mp_participant != nullptr) {
-        if (mp_writer != nullptr)
-        {
-            mp_publisher->delete_datawriter(mp_writer);
-            mp_writer = nullptr;
-        }
 
-        if (mp_publisher != nullptr)
-        {
-            mp_participant->delete_publisher(mp_publisher);
-            mp_publisher = nullptr;
-        }
-    }
-}
-*/
 
 void DSRPublisher::PubListener::on_publication_matched(eprosima::fastdds::dds::DataWriter* writer,
                                                        const eprosima::fastdds::dds::PublicationMatchedStatus& info)

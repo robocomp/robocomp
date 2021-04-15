@@ -511,7 +511,7 @@ namespace DSR
         void write_to_json_file(const std::string &file, const std::vector<std::string> &skip_node_content = {})  const {
             utils->write_to_json_file(file, skip_node_content); };
         void read_from_json_file(const std::string &file) {
-            utils->read_from_json_file(file, [&] (const Node& node) -> std::optional<int> {
+            utils->read_from_json_file(file, [&] (const Node& node) -> std::optional<uint64_t> {
                 bool r = false;
                 {
                     std::unique_lock<std::shared_mutex> lock(_mutex);

@@ -18,20 +18,6 @@ DSRSubscriber::DSRSubscriber() : mp_participant(nullptr), mp_subscriber(nullptr)
 
 DSRSubscriber::~DSRSubscriber()
 {
-
-    /*
-    if (mp_reader != nullptr && mp_subscriber != nullptr)
-    {
-        mp_subscriber->delete_datareader(mp_reader);
-    }
-
-    if (mp_participant != nullptr && mp_subscriber != nullptr)
-    {
-        mp_participant->delete_subscriber(mp_subscriber);
-    }
-
-    qDebug()  << "Removing DSRSubscriber "  ;
-    */
 }
 
 std::tuple<bool, eprosima::fastdds::dds::Subscriber*, eprosima::fastdds::dds::DataReader*>
@@ -115,28 +101,6 @@ eprosima::fastdds::dds::DataReader * DSRSubscriber::getDataReader() {
     return mp_reader;
 }
 
-/*
-void DSRSubscriber::remove_subscriber() {
-
-
-    if (mp_participant != nullptr) {
-        if (mp_reader != nullptr && mp_subscriber != nullptr)
-        {
-            mp_subscriber->delete_datareader(mp_reader);
-            mp_reader = nullptr;
-
-        }
-
-        if (mp_subscriber != nullptr)
-        {
-            mp_participant->delete_subscriber(mp_subscriber);
-            mp_subscriber = nullptr;
-
-        }
-    }
-
-
-}*/
 ///////////////////////////////////////////
 /// Callbacks
 ///////////////////////////////////////////
