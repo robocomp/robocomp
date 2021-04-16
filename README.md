@@ -93,7 +93,7 @@ Note: One of the main tools of Robocomp, robocompdsl is using pyparsing and the 
 
 Now we will create a symbolic link so RoboComp can find everything. You will have to enter your password:
 
-    sudo ln -s ~ /home/robocomp
+    sudo ln -sf ~ /home/robocomp
     
 (the ~ is in Alt-4)
     
