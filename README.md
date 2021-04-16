@@ -120,11 +120,24 @@ qmake --version
 
 If qmake uses a Qt5 version less than v5.15, you might want to manually install Qt5.15 or higher from [qt.io](https://www.qt.io/download-open-source) and configure qmake to use this version instead.
 
-* To configure qmake, open the config file `/usr/share/qtchooser/default.conf` in your favourite text editor, edit the file as follows and save the configuration. (Run as root if needed)
+* To configure qmake, open the config file `/usr/share/qtchooser/default.conf` in your favourite text editor, add the following lines and save the configuration. (Run as root if needed)
 
 ```
 <QT5-INSTALLATION-DIRECTORY>/bin
 <QT5-INSTALLATION-DIRECTORY>/lib
+```
+
+* Update your `~/.bashrc`
+
+```bash
+gedit ~/.bashrc
+```
+
+* Add the following lines
+
+```bash
+export PATH=$PATH:<QT5-INSTALLATION-DIRECTORY>/bin
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:<QT5-INSTALLATION-DIRECTORY>/lib
 ```
 
 Done! Now let's compile and install the whole thing:
