@@ -87,3 +87,5 @@ components/melex-rodao/
 *.cbp
 
 *cmake-build-default/
+
+*cmake-build-debug/
