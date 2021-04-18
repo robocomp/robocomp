@@ -85,7 +85,7 @@ With a few basic geometric shapes it's possible to create a lot of more complica
 
 Please see our ['Contributing'](../CONTRIBUTING.md) file for more information.
 
-### If you don't see an answer to your question here, please file an Issue or tell us at robocomp.team@gmail.com.
+### If you don't see an answer to your question here, please file an Issue or tell us at [Gitter](https://gitter.im/robocomp/robocomp).
 
 
 
