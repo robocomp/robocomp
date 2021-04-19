@@ -53,6 +53,11 @@ using attribute_type = std::variant<std::string,
                                     int32_t,
                                     uint32_t>;
 
+static constexpr std::array<std::string_view, 9> attribute_type_TYPENAMES_UNION = { "STRING", "BOOL", "BYTE_VEC",
+                                                                     "FLOAT_VEC", "UINT64", "DOUBLE", "FLOAT",
+                                                                     "INT", "UINT"};
+
+
 template<typename T>
 ValType convert_variant_fn(const attribute_type & e)
 {
@@ -285,13 +290,47 @@ PYBIND11_MODULE(pydsr, m) {
             .def_property_readonly("timestamp", [](Attribute &self) { return self.timestamp(); },
                                    "read the timestamp (ns) attribute. This property is readonly and it is updated when a change is made in the value property.")
             .def_property("value", [](Attribute &self) -> ValType { return self.value(); },
-                          [&](Attribute &self, const ValType &val) {
-                              if (val.index() == static_cast<std::size_t>(self.selected())) {
-                                  self.value(val);
-                                  self.timestamp(get_unix_timestamp());
-                                  self.agent_id(local_agent_id);
-                              } else {
-                                  throw std::runtime_error("Attributes cannot change type.");
+                          [&](Attribute &self, const attribute_type &val) {
+                              try {
+                                  //std::cout << "val idx: " << std::string{attribute_type_TYPENAMES_UNION[val.index()]} << " selected: " << std::string{DSR::TYPENAMES_UNION[self.selected()]} << std::endl;
+                                  switch (self.selected()) {
+                                      case 0:
+                                          self.str();
+                                          break;
+                                      case 1:
+                                          self.dec(std::get<uint64_t>(val));
+                                          break;
+                                      case 2:
+                                          self.fl(std::get<double>(val));
+                                          break;
+                                      case 3:
+                                          self.float_vec(std::get<std::vector<float>>(val));
+                                          break;
+                                      case 4:
+                                          self.bl(std::get<bool>(val));
+                                          break;
+                                      case 5:
+                                          self.byte_vec(std::get<std::vector<uint8_t>>(val));
+                                          break;
+                                      case 6:
+                                          self.uint(std::get<uint64_t>(val));
+                                          break;
+                                      case 7:
+                                          self.uint64(std::get<uint64_t>(val));
+                                          break;
+                                      case 8:
+                                          self.dob(std::get<double>(val));
+                                          break;
+                                      default:
+                                          throw std::runtime_error("Attributes cannot change type. Selected type is " +
+                                                                   std::string{DSR::TYPENAMES_UNION[self.selected()]} +
+                                                                   " and used type is " + std::string{
+                                                  attribute_type_TYPENAMES_UNION[val.index()]});
+                                      };
+                                      self.timestamp(get_unix_timestamp());
+                                      self.agent_id(local_agent_id);
+                              } catch (...) {
+                                  throw std::runtime_error("Attributes cannot change type. Selected type is " + std::string{DSR::TYPENAMES_UNION[self.selected()]} + " and used type is " + std::string{attribute_type_TYPENAMES_UNION[val.index()]});
                               }
                           },
                           py::return_value_policy::copy, "read or assign a new value to the Attribute object.");

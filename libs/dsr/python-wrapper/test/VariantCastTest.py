@@ -9,6 +9,7 @@ class Test(unittest.TestCase):
 
         #int
         a.attrs["vehicle_id"] = Attribute(10, 1)
+        a.attrs["vehicle_id"].value = 11
         with self.assertRaises(RuntimeError):
             a.attrs["vehicle_id"] = Attribute(10.0, 1)
             a.attrs["vehicle_id"] = Attribute("10.0", 1)
@@ -21,6 +22,7 @@ class Test(unittest.TestCase):
 
         #bool
         a.attrs["vehicle_occupancy"] = Attribute(True, 1)
+        a.attrs["vehicle_occupancy"].value = False
         with self.assertRaises(RuntimeError):
             a.attrs["vehicle_occupancy"] = Attribute(10.0, 1)
             a.attrs["vehicle_occupancy"] = Attribute("10.0", 1)
@@ -35,6 +37,8 @@ class Test(unittest.TestCase):
 
         #float
         a.attrs["vehicle_steer"] = Attribute(1.0, 1)
+        a.attrs["vehicle_steer"].value = 1.0
+
         with self.assertRaises(RuntimeError):
             a.attrs["vehicle_steer"] = Attribute(True, 1)
             a.attrs["vehicle_steer"] = Attribute("10.0", 1)
@@ -50,6 +54,8 @@ class Test(unittest.TestCase):
         #double
         a.attrs["test_double_type"] = Attribute(1.0, 1)
         a.attrs["test_double_type"] = Attribute(1.132432543543645646703, 1)
+        a.attrs["test_double_type"].value = 1.0
+        a.attrs["test_double_type"].value = 1.132432543543645646703
         with self.assertRaises(RuntimeError):
             a.attrs["test_double_type"] = Attribute(True, 1)
             a.attrs["test_double_type"] = Attribute("10.0", 1)
@@ -65,6 +71,7 @@ class Test(unittest.TestCase):
 
         #string
         a.attrs["name"] = Attribute("Prueba", 1)
+        a.attrs["name"].value = "Prueba"
         with self.assertRaises(RuntimeError):
             a.attrs["name"] = Attribute(True, 1)
             a.attrs["name"] = Attribute(10.0, 1)
@@ -83,6 +90,8 @@ class Test(unittest.TestCase):
         a.attrs["rt_translation"] = Attribute([10.0], 1)
         a.attrs["rt_translation"] = Attribute([10.0, 11.2], 1)
         a.attrs["rt_translation"] = Attribute(np.array([1.2, 4.4], dtype=np.float), 1)
+        a.attrs["rt_translation"].value = [10.0, 11.2]
+        a.attrs["rt_translation"].value = np.array([1.2, 4.4], dtype=np.float)
         with self.assertRaises(RuntimeError):
             a.attrs["rt_translation"] = Attribute(True, 1)
             a.attrs["rt_translation"] = Attribute(10.0, 1)
@@ -99,6 +108,8 @@ class Test(unittest.TestCase):
         a.attrs["cam_image"] = Attribute([100], 1)
         a.attrs["cam_image"] = Attribute([100, 112], 1)
         a.attrs["cam_image"] = Attribute(np.array([12, 44], dtype=np.uint8), 1)
+        a.attrs["cam_image"].value = [100, 112]
+        a.attrs["cam_image"].value = np.array([12, 44], dtype=np.uint8)
         with self.assertRaises(RuntimeError):
             a.attrs["cam_image"] = Attribute(True, 1)
             a.attrs["cam_image"] = Attribute(10.0, 1)
@@ -113,6 +124,7 @@ class Test(unittest.TestCase):
 
         #uint32
         a.attrs["test_uint32_type"] = Attribute(100, 1)
+        a.attrs["test_uint32_type"].value = 100
         with self.assertRaises(RuntimeError):
             a.attrs["test_uint32_type"] = Attribute(True, 1)
             a.attrs["test_uint32_type"] = Attribute(10.0, 1)
@@ -131,6 +143,8 @@ class Test(unittest.TestCase):
         #uint64
         a.attrs["parent"] = Attribute(100, 1)
         a.attrs["parent"] = Attribute(3689348814741910323, 1)
+        a.attrs["parent"].value = 100
+        a.attrs["parent"].value = 3689348814741910323
         with self.assertRaises(RuntimeError):
             a.attrs["parent"] = Attribute(True, 1)
             a.attrs["parent"] = Attribute(10.0, 1)
