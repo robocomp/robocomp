@@ -97,6 +97,9 @@ ValType convert_variant(const attribute_type & e)
 
 PYBIND11_MAKE_OPAQUE(std::map<std::pair<uint64_t, std::string>, Edge>)
 PYBIND11_MAKE_OPAQUE(std::map<std::string, Attribute>)
+//PYBIND11_MAKE_OPAQUE(std::vector<uint8_t>)
+//PYBIND11_MAKE_OPAQUE(std::vector<float>)
+
 
 PYBIND11_MODULE(pydsr, m) {
 
@@ -298,10 +301,12 @@ PYBIND11_MODULE(pydsr, m) {
                                           self.str();
                                           break;
                                       case 1:
-                                          self.dec(std::get<uint64_t>(val));
+                                          if (val.index() == 4) self.dec(std::get<uint64_t>(val));
+                                          else self.dec(std::get<int32_t>(val));
                                           break;
                                       case 2:
-                                          self.fl(std::get<double>(val));
+                                          if (val.index() == 5) self.fl(std::get<double>(val));
+                                          else self.fl(std::get<float>(val));
                                           break;
                                       case 3:
                                           self.float_vec(std::get<std::vector<float>>(val));
@@ -313,7 +318,8 @@ PYBIND11_MODULE(pydsr, m) {
                                           self.byte_vec(std::get<std::vector<uint8_t>>(val));
                                           break;
                                       case 6:
-                                          self.uint(std::get<uint64_t>(val));
+                                          if (val.index() == 4) self.uint(std::get<uint64_t>(val));
+                                          else self.uint(std::get<uint32_t>(val));
                                           break;
                                       case 7:
                                           self.uint64(std::get<uint64_t>(val));
@@ -333,7 +339,7 @@ PYBIND11_MODULE(pydsr, m) {
                                   throw std::runtime_error("Attributes cannot change type. Selected type is " + std::string{DSR::TYPENAMES_UNION[self.selected()]} + " and used type is " + std::string{attribute_type_TYPENAMES_UNION[val.index()]});
                               }
                           },
-                          py::return_value_policy::copy, "read or assign a new value to the Attribute object.");
+                          py::return_value_policy::reference, "read or assign a new value to the Attribute object.");
 
     //DSR Edge class
     py::class_<Edge>(m, "Edge")
