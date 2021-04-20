@@ -65,6 +65,7 @@ namespace DSR
             void set_draw_laser(bool draw);
             void set_draw_people_spaces(bool draw);
             void set_draw_axis(bool draw);
+            QGraphicsItem* get_robot_polygon() const { return robot;};
         public slots:   // From G
             void add_or_assign_node_slot(const std::uint64_t  id, const std::string &type);
             void add_or_assign_edge_slot(const std::uint64_t  from, const std::uint64_t  to, const std::string& type);
