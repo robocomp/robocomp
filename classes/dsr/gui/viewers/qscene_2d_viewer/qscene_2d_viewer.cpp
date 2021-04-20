@@ -573,8 +573,12 @@ void QScene2dViewer::set_draw_people_spaces(bool draw)
 }
 void QScene2dViewer::draw_laser()
 {
+    static std::vector<QGraphicsEllipseItem*> points;
     if (laser_polygon != nullptr)
         scene.removeItem(laser_polygon);
+    for(auto p : points)
+        scene.removeItem(p);
+    points.clear();
 
     if(not this->drawlaser)
         return;
@@ -590,9 +594,18 @@ void QScene2dViewer::draw_laser()
         if (lAngles.has_value() and lDists.has_value()) 
         {
             QPolygonF poly;
-            for( auto &&[angle, dist] : iter::zip(lAngles.value().get(), lDists.value().get()))
-                poly << robot->mapToScene(QPointF(dist * sin(angle), dist * cos(angle)));
-
+            QPen pen(QColor("DarkGreen")); QBrush brush(QColor("DarkGreen"));
+            auto angs = lAngles.value().get();
+            auto dists = lDists.value().get();
+            points.reserve(dists.size());
+            for( auto &&[angle, dist] : iter::zip(angs, dists))
+            {
+                QPointF p = robot->mapToScene(QPointF(dist * sin(angle), dist * cos(angle)));
+                poly << p;
+                auto e = scene.addEllipse(QRectF(0,0,50,50), pen, brush);
+                e->setPos(p); e->setZValue(3000);
+                points.push_back(e);
+            }
             QColor color("LightGreen");
             color.setAlpha(60);
             laser_polygon = scene.addPolygon(poly, QPen(color), QBrush(color));
