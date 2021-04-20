@@ -105,6 +105,7 @@ class Test(unittest.TestCase):
             a.attrs["rt_translation"] = Attribute(22222222222222222222222222222222222222222222222, 1)
 
         #vec bytes
+
         a.attrs["cam_image"] = Attribute([100], 1)
         a.attrs["cam_image"] = Attribute([100, 112], 1)
         a.attrs["cam_image"] = Attribute(np.array([12, 44], dtype=np.uint8), 1)

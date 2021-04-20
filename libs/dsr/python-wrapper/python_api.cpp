@@ -9,6 +9,7 @@ using namespace DSR;
 #include "include/silent_output.h"
 #include "include/signal_function_caster.h"
 #include "include/custom_bind_map.h"
+//#include "include/vector_caster.h"
 
 #pragma push_macro("slots")
 #undef slots
@@ -19,6 +20,7 @@ using namespace DSR;
 #include <pybind11/eigen.h>
 #include <pybind11/stl_bind.h>
 #include <pybind11/functional.h>
+#include <pybind11/numpy.h>
 
 #pragma pop_macro("slots")
 
@@ -45,7 +47,9 @@ using callback_types = std::variant<
 
 using attribute_type = std::variant<std::string,
                                     bool,
+                                    py::array_t<uint8_t>,
                                     std::vector<uint8_t>,
+                                    py::array_t<float>,
                                     std::vector<float>,
                                     uint64_t,
                                     double,
@@ -53,16 +57,34 @@ using attribute_type = std::variant<std::string,
                                     int32_t,
                                     uint32_t>;
 
-static constexpr std::array<std::string_view, 9> attribute_type_TYPENAMES_UNION = { "STRING", "BOOL", "BYTE_VEC",
-                                                                     "FLOAT_VEC", "UINT64", "DOUBLE", "FLOAT",
+static constexpr std::array<std::string_view, 11> attribute_type_TYPENAMES_UNION = { "STRING", "BOOL", "NUMPY_BYTE_VEC", "BYTE_VEC",
+                                                                                    "NUMPY_FLOAT_VEC", "FLOAT_VEC", "UINT64", "DOUBLE", "FLOAT",
                                                                      "INT", "UINT"};
 
 
 template<typename T>
 ValType convert_variant_fn(const attribute_type & e)
 {
-    return ValType(std::get<T>(e));
+    if constexpr (std::is_same_v<T, py::array_t<uint8_t>>)
+    {
+        auto tmp = std::get<py::array_t<uint8_t>>(e);
+        const auto size = tmp.size();
+        py::buffer_info x = tmp.request();
+        return ValType(std::vector<uint8_t>{static_cast<uint8_t *>(x.ptr), static_cast<uint8_t *>(x.ptr) + size});
+    } else if constexpr (std::is_same_v<T, py::array_t<float>>)
+    {
+        auto tmp = std::get<py::array_t<float>>(e);
+        const auto size = tmp.size();
+        py::buffer_info x = tmp.request();
+        return ValType(std::vector<float>{static_cast<float *>(x.ptr), static_cast<float *>(x.ptr) + size});
+    }
+    else
+    {
+        auto x = std::get<T>(e);
+        return ValType(x);
+    }
 };
+
 
 
 ValType convert_variant(const attribute_type & e)
@@ -80,9 +102,11 @@ ValType convert_variant(const attribute_type & e)
                                                                t::INT,
                                                                t::UINT };
     */
-    constexpr std::array<conver_fn, 9> cast = {  convert_variant_fn<std::string>,
+    constexpr std::array<conver_fn, 11> cast = { convert_variant_fn<std::string>,
                                                  convert_variant_fn<bool>,
+                                                 convert_variant_fn<py::array_t<uint8_t>>,
                                                  convert_variant_fn<std::vector<uint8_t>>,
+                                                 convert_variant_fn<py::array_t<float>>,
                                                  convert_variant_fn<std::vector<float>>,
                                                  convert_variant_fn<uint64_t>,
                                                  convert_variant_fn<double>,
@@ -97,7 +121,7 @@ ValType convert_variant(const attribute_type & e)
 
 PYBIND11_MAKE_OPAQUE(std::map<std::pair<uint64_t, std::string>, Edge>)
 PYBIND11_MAKE_OPAQUE(std::map<std::string, Attribute>)
-//PYBIND11_MAKE_OPAQUE(std::vector<uint8_t>)
+//(std::vector<uint8_t>)
 //PYBIND11_MAKE_OPAQUE(std::vector<float>)
 
 
@@ -105,6 +129,7 @@ PYBIND11_MODULE(pydsr, m) {
 
     py::bind_map<std::map<std::pair<uint64_t, std::string>, Edge>>(m, "MapStringEdge");
     py::bind_dsr_map<std::map<std::string, Attribute>>(m, "MapStringAttribute");
+    //py::bind_vector<std::vector<uint8_t>>(m, "ByteVec");
 
     m.doc() = "DSR Api for python";
 
@@ -301,24 +326,36 @@ PYBIND11_MODULE(pydsr, m) {
                                           self.str();
                                           break;
                                       case 1:
-                                          if (val.index() == 4) self.dec(std::get<uint64_t>(val));
+                                          if (val.index() == 6) self.dec(std::get<uint64_t>(val));
                                           else self.dec(std::get<int32_t>(val));
                                           break;
                                       case 2:
-                                          if (val.index() == 5) self.fl(std::get<double>(val));
+                                          if (val.index() == 7) self.fl(std::get<double>(val));
                                           else self.fl(std::get<float>(val));
                                           break;
                                       case 3:
-                                          self.float_vec(std::get<std::vector<float>>(val));
+                                          if (val.index() == 4) {
+                                              auto tmp = std::get<py::array_t<float>>(val);
+                                              const auto size = tmp.size();
+                                              py::buffer_info x = tmp.request();
+                                              self.float_vec(std::vector<float>{static_cast<float *>(x.ptr), static_cast<float *>(x.ptr) + size});
+                                          }
+                                          else self.float_vec(std::get<std::vector<float>>(val));
                                           break;
                                       case 4:
                                           self.bl(std::get<bool>(val));
                                           break;
                                       case 5:
-                                          self.byte_vec(std::get<std::vector<uint8_t>>(val));
+                                          if (val.index() == 2) {
+                                              auto tmp = std::get<py::array_t<uint8_t>>(val);
+                                              const auto size = tmp.size();
+                                              py::buffer_info x = tmp.request();
+                                              self.byte_vec(std::vector<uint8_t>{static_cast<uint8_t *>(x.ptr), static_cast<uint8_t *>(x.ptr) + size});
+                                          }
+                                          else self.byte_vec(std::get<std::vector<uint8_t>>(val));
                                           break;
                                       case 6:
-                                          if (val.index() == 4) self.uint(std::get<uint64_t>(val));
+                                          if (val.index() == 6) self.uint(std::get<uint64_t>(val));
                                           else self.uint(std::get<uint32_t>(val));
                                           break;
                                       case 7:
