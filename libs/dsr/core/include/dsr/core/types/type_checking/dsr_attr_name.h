@@ -189,9 +189,10 @@ REGISTER_TYPE(plan, std::reference_wrapper<const std::string>, false)
 REGISTER_TYPE(plan_target_node_id, int, false)
 
 /*
- * Intention
+ * Mind
  * */
 REGISTER_TYPE(current_intention, std::reference_wrapper<const std::string>, false)
+REGISTER_TYPE(grid_as_string, std::reference_wrapper<const std::string>, false)
 
 /*
  * World
