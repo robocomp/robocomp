@@ -317,13 +317,38 @@ PYBIND11_MODULE(pydsr, m) {
                                    "read the agent_id attribute. This property is readonly ans it is updated when a change is made in the value property.")
             .def_property_readonly("timestamp", [](Attribute &self) { return self.timestamp(); },
                                    "read the timestamp (ns) attribute. This property is readonly and it is updated when a change is made in the value property.")
-            .def_property("value", [](Attribute &self) -> ValType { return self.value(); },
+            .def_property("value", [](Attribute &self) -> attribute_type {
+
+                              switch (self.selected()) {
+                                  case 0:
+                                      return self.str();
+                                  case 1:
+                                      return self.dec();
+                                  case 2:
+                                      return self.fl();
+                                  case 3:
+                                      return py::array_t<float> { static_cast<ssize_t>(self.float_vec().size()), self.float_vec().data()};
+                                  case 4:
+                                      return self.bl();
+                                  case 5:
+                                      return py::array_t<uint8_t> {static_cast<ssize_t>(self.byte_vec().size()), self.byte_vec().data()};
+                                  case 6:
+                                      return self.uint();
+                                  case 7:
+                                      return self.uint64();
+                                  case 8:
+                                      return self.dob();
+                                  default:
+                                      throw std::runtime_error("Unreachable");
+                              }
+
+                },
                           [&](Attribute &self, const attribute_type &val) {
                               try {
                                   //std::cout << "val idx: " << std::string{attribute_type_TYPENAMES_UNION[val.index()]} << " selected: " << std::string{DSR::TYPENAMES_UNION[self.selected()]} << std::endl;
                                   switch (self.selected()) {
                                       case 0:
-                                          self.str();
+                                          self.str(std::get<std::string>(val));
                                           break;
                                       case 1:
                                           if (val.index() == 6) self.dec(std::get<uint64_t>(val));
