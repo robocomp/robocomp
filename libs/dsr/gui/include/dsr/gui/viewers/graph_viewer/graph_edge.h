@@ -375,7 +375,7 @@ class GraphEdge : public QObject, public QGraphicsLineItem, public std::enable_s
 Q_OBJECT
 Q_PROPERTY(int edge_pen READ _edge_pen WRITE set_edge_pen)
 private:
-    GraphNode *source, *dest;  
+    GraphNode *source, *dest;
     qreal arrowSize;
     QGraphicsSimpleTextItem *tag;
     QColor color;

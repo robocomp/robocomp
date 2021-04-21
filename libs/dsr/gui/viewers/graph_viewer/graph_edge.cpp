@@ -310,8 +310,8 @@ void GraphEdge::paint(QPainter* painter, const QStyleOptionGraphicsItem* option,
     QPointF destArrowP2 = line().p2() + QPointF(sin(angle - M_PI + M_PI / 3) * arrowSize,
             cos(angle - M_PI + M_PI / 3) * arrowSize);
 
-    painter->setBrush(Qt::black);
-    painter->drawPolygon(QPolygonF() << line().p1() << sourceArrowP1 << sourceArrowP2);
+    painter->setBrush(color);
+//    painter->drawPolygon(QPolygonF() << line().p1() << sourceArrowP1 << sourceArrowP2);
     painter->drawPolygon(QPolygonF() << line().p2() << destArrowP1 << destArrowP2);
 //    if (!source || !dest)
 //        return;
