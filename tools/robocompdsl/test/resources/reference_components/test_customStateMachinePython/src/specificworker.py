@@ -21,14 +21,18 @@
 
 from PySide2.QtCore import QTimer
 from PySide2.QtWidgets import QApplication
+from rich.console import Console
 from genericworker import *
+
+sys.path.append('/opt/robocomp/lib')
+console = Console(highlight=False)
 
 
 # If RoboComp was compiled with Python bindings you can use InnerModel in Python
-sys.path.append('/opt/robocomp/lib')
 # import librobocomp_qmat
 # import librobocomp_osgviewer
 # import librobocomp_innermodel
+
 
 class SpecificWorker(GenericWorker):
     def __init__(self, proxy_map, startup_check=False):
@@ -41,12 +45,12 @@ class SpecificWorker(GenericWorker):
             self.myStateMachine.start()
 
     def __del__(self):
-        print('SpecificWorker destructor')
+        console.print('SpecificWorker destructor')
 
     def setParams(self, params):
-        #try:
+        # try:
         #	self.innermodel = InnerModel(params["InnerModelPath"])
-        #except:
+        # except:
         #	traceback.print_exc()
         #	print("Error reading config params")
         return True
@@ -100,6 +104,7 @@ class SpecificWorker(GenericWorker):
 
     # =================================================================
     # =================================================================
+
 
 
 
