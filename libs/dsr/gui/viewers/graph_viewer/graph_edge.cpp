@@ -31,7 +31,7 @@ GraphEdge::GraphEdge(GraphNode* sourceNode, GraphNode* destNode, const QString& 
     source = dest = NULL;
     setZValue(-1);
     // non-movable but selectable
-    auto flags = ItemIsSelectable | ItemSendsGeometryChanges | ItemIsMovable | ItemUsesExtendedStyleOption;
+    auto flags = ItemIsSelectable | ItemSendsGeometryChanges | ItemUsesExtendedStyleOption;
     setFlags(flags);
     tag = new QGraphicsSimpleTextItem(edge_name, this);
     tag->setFlags(0);
