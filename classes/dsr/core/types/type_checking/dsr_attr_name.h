@@ -222,4 +222,10 @@ REGISTER_TYPE(battery_load, int, false);
  * */
 REGISTER_TYPE(wifi_signal, int, false);
 
+/*
+ * Room
+ * */
+REGISTER_TYPE(delimiting_polygon_x, std::reference_wrapper<const std::vector<float>>, false);
+REGISTER_TYPE(delimiting_polygon_y, std::reference_wrapper<const std::vector<float>>, false);
+
 #endif //DSR_ATTR_NAME_H
