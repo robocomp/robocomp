@@ -5,23 +5,27 @@ from templates.common.templatedict import TemplateDict
 
 DSR_SLOTS_STR = """\
 
-def update_node_att(id: int, attribute_names: [str]):
-    print("UPDATE NODE ATT: ", id, " ", attribute_names)
+# =============== DSR SLOTS  ================
+# =============================================
 
-def update_node(id: int, type: str):
-    print("UPDATE NODE: ", id," ",  type)
+def update_node_att(self, id: int, attribute_names: [str]):
+    console.print(f"UPDATE NODE ATT: {id} {attribute_names}", style='green')
 
-def delete_node(id: int):
-    print("DELETE NODE: ", id)
+def update_node(self, id: int, type: str):
+    console.print(f"UPDATE NODE: {id} {type}", style='green')
 
-def update_edge(fr: int, to: int, type : str):
-    print("UPDATE EDGE: ", fr," ", to," ", type)
+def delete_node(self, id: int):
+    console.print(f"DELETE NODE:: {id} ", style='green')
 
-def update_edge_att(fr: int, to: int, attribute_names : [str]):
-    print("UPDATE EDGE ATT: ", fr," ", to," ", attribute_names)
+def update_edge(self, fr: int, to: int, type: str):
 
-def delete_edge(fr: int, to: int, type : str):
-    print("DELETE EDGE: ", fr," ", to," ", type)
+    console.print(f"UPDATE EDGE: {fr} to {type}", type, style='green')
+
+def update_edge_att(self, fr: int, to: int, attribute_names: [str]):
+    console.print(f"UPDATE EDGE ATT: {fr} to {type} {attribute_names}", style='green')
+
+def delete_edge(self, fr: int, to: int, type: str):
+    console.print(f"DELETE EDGE: {fr} to {type} {type}", style='green')
 """
 
 
@@ -33,16 +37,17 @@ from pydsr import *
 DSR_INIT_STR = """\
 
 # YOU MUST SET AN UNIQUE ID FOR THIS AGENT IN YOUR DEPLOYMENT. "_CHANGE_THIS_ID_" for a valid unique integer
-self.g = DSRGraph(0, "pythonAgent", "_CHANGE_THIS_ID_")
+self.agent_id = "_CHANGE_THIS_ID_"
+self.g = DSRGraph(0, "pythonAgent", self.agent_id)
 
 try:
-    signals.connect(self.g, signals.UPDATE_NODE_ATTR, update_node_att)
-    signals.connect(self.g, signals.UPDATE_NODE, update_node)
-    signals.connect(self.g, signals.DELETE_NODE, delete_node)
-    signals.connect(self.g, signals.UPDATE_EDGE, update_edge)
-    signals.connect(self.g, signals.UPDATE_EDGE_ATTR, update_edge_att)
-    signals.connect(self.g, signals.DELETE_EDGE, delete_edge)
-    print("signals connected")
+    signals.connect(self.g, signals.UPDATE_NODE_ATTR, self.update_node_att)
+    signals.connect(self.g, signals.UPDATE_NODE, self.update_node)
+    signals.connect(self.g, signals.DELETE_NODE, self.delete_node)
+    signals.connect(self.g, signals.UPDATE_EDGE, self.update_edge)
+    signals.connect(self.g, signals.UPDATE_EDGE_ATTR, self.update_edge_att)
+    signals.connect(self.g, signals.DELETE_EDGE, self.delete_edge)
+    console.print("signals connected")
 except RuntimeError as e:
     print(e)
 
