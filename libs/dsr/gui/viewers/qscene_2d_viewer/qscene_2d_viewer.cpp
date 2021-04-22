@@ -602,9 +602,9 @@ void QScene2dViewer::draw_laser()
             {
                 QPointF p = robot->mapToScene(QPointF(dist * sin(angle), dist * cos(angle)));
                 poly << p;
-                auto e = scene.addEllipse(QRectF(0,0,50,50), pen, brush);
-                e->setPos(p); e->setZValue(3000);
-                points.push_back(e);
+//                auto e = scene.addEllipse(QRectF(0,0,50,50), pen, brush);
+//                e->setPos(p); e->setZValue(3000);
+//                points.push_back(e);
             }
             QColor color("LightGreen");
             color.setAlpha(60);
