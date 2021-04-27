@@ -116,7 +116,9 @@ class InterfaceManager:
         # TODO: Make ice connector singleton
         self.ice_config_file = ice_config_file
         self.ice_connector = Ice.initialize(self.ice_config_file)
-        self.topic_manager = self.init_topic_manager()
+        needs_rcnode = False
+        self.topic_manager = self.init_topic_manager() if needs_rcnode else None
+
         self.status = 0
         self.parameters = {}
         for i in self.ice_connector.getProperties():

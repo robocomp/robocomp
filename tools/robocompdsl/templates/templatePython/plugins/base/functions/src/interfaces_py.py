@@ -59,6 +59,7 @@ class src_interfaces_py(TemplateDict):
         self['publish_proxy_creation'] = self.publish_proxy_creation()
         self['implements_adapters_creation'] = self.implements_adapters_creation()
         self['subscribes_adapters_creation'] = self.subscribes_adapters_creation()
+        self['needs_rcnode'] = self.needs_rcnode()
 
     # TODO: Check if can be merged with SERVANT_PY.py slice_loading function
     def load_slice_and_create_imports(self, includeDirectories=None):
@@ -103,7 +104,8 @@ class src_interfaces_py(TemplateDict):
             if communication_is_ice(iface):
                 name = iface.name
                 module = self.component.idsl_pool.module_providing_interface(iface.name)
-                result += Template(REQUIRE_STR).substitute(iface_name=name, module_name=module['name'], iface_name_lower=name.lower(), num=num)
+                result += Template(REQUIRE_STR).substitute(iface_name=name, module_name=module['name'],
+                                                           iface_name_lower=name.lower(), num=num)
         return result
 
     def publish_proxy_creation(self):
@@ -132,3 +134,6 @@ class src_interfaces_py(TemplateDict):
                 name = sut[0]
                 result += Template(SUBSCRIBESTO_STR).substitute(iface_name=name, iface_name_lower=name.lower())
         return result
+
+    def needs_rcnode(self):
+        return str((len(self.component.subscribesTo) > 0 or len(self.component.publishes) > 0))

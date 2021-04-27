@@ -29,6 +29,9 @@ module RoboCompHumanCameraBody
         float z;
         int i;
         int j;
+        float xw;
+        float yw;
+        float zw;
         float score;
         DescFloatList floatdesclist;;
         DescByteList bytedesclist;

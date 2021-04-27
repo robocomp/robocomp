@@ -1,5 +1,9 @@
 from dsl_parsers.parsing_utils import communication_is_ice, get_name_number
-from rcportchecker import RCPortChecker
+try:
+    from rcportchecker import RCPortChecker
+    RCPORTCHECKER_IMPORTED = True
+except:
+    RCPORTCHECKER_IMPORTED = False
 from templates.common.templatedict import TemplateDict
 
 STORM_TOPIC_MANAGER_STR = """\
@@ -33,8 +37,10 @@ class etc_config(TemplateDict):
                 port = 0
                 if interface.name == 'DifferentialRobot': port = 10004
                 elif interface.name == 'Laser': port = 10003
-                else:
+                elif RCPortChecker:
                     port = get_existing_port(interface.name)
+                else:
+                    port = random.randint(10001, 19000)
                 result += interface.name + num + "Proxy = " + interface.name.lower() + ":tcp -h localhost -p " + str(
                     port) + "\n"
         if result != "":
@@ -51,7 +57,10 @@ class etc_config(TemplateDict):
         result = ""
         for interface in self.component.implements:
             if communication_is_ice(interface):
-                port = get_existing_port(interface.name)
+                if RCPortChecker:
+                    port = get_existing_port(interface.name)
+                else:
+                    port = random.randint(10001, 19000)
                 result += interface.name + f".Endpoints=tcp -p {port}\n"
         if result != "":
             result = '# Endpoints for implements interfaces\n' + result + '\n\n'
@@ -61,7 +70,10 @@ class etc_config(TemplateDict):
         result = ""
         for interface in self.component.subscribesTo:
             if communication_is_ice(interface):
-                port = get_existing_port(interface.name)
+                if RCPortChecker:
+                    port = get_existing_port(interface.name)
+                else:
+                    port = random.randint(10001, 19000)
                 result += interface.name + f"Topic.Endpoints=tcp -p {port}\n"
         if result != "":
             result = '# Endpoints for subscriptions interfaces\n' + result + '\n\n'

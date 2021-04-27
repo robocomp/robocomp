@@ -7,7 +7,7 @@ from collections import OrderedDict
 from pyparsing import ParseException
 import copy
 sys.path.append("/opt/robocomp/python")
-sys.path.append('/opt/robocomp/share/robocompdsl/')
+sys.path.append('/opt/robocomp/python/robocompdsl/')
 import dsl_parsers.specific_parsers.cdsl.componentfacade as cf
 
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))

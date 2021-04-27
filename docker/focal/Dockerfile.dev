@@ -4,6 +4,7 @@ FROM ubuntu:focal
 
 # Disable Prompt During Packages Installation
 ARG DEBIAN_FRONTEND=noninteractive
+ARG ROBOCOMP_BRANCH=development
 
 # Update Ubuntu Software repository
 RUN apt update && apt install -y curl sudo
@@ -20,8 +21,8 @@ USER robolab
 WORKDIR /home/robolab/
 # Install Robocomp
 # With this ADD the image is regenerated for every change on git
-ADD https://api.github.com/repos/robocomp/melex-rodao/git/refs/heads/development version.json
-RUN curl -sL https://raw.githubusercontent.com/robocomp/robocomp/development/tools/install/robocomp_install.sh | bash -
+ADD https://api.github.com/repos/robocomp/robocomp/git/refs/heads/$ROBOCOMP_BRANCH version.json
+RUN curl -sL https://raw.githubusercontent.com/robocomp/robocomp/development/tools/install/robocomp_install.sh | bash -s $ROBOCOMP_BRANCH
 WORKDIR /home/robolab/robocomp/
 RUN git annex get \
   files/innermodel/simpleworld.xml \
