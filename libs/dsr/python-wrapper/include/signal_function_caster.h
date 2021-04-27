@@ -94,18 +94,18 @@ namespace pybind11::detail {
                 itr++;
                 if ("[<class 'str'>]" == py::str(itr->second).cast<std::string>())
                 {
-                    return load_alternative<std::function<void(std::uint32_t, const std::vector<std::string> &)>>(src, convert);
+                    return load_alternative<std::function<void(std::uint64_t, const std::vector<std::string> &)>>(src, convert);
                 } else if ("<class 'str'>" == py::str(itr->second).cast<std::string>())
                 {
-                    return load_alternative<std::function<void(std::uint32_t, const std::string &)>>(src, convert);
+                    return load_alternative<std::function<void(std::uint64_t, const std::string &)>>(src, convert);
                 } else if ("<class 'int'>" == py::str(itr->second).cast<std::string>()) {
                     itr++;
                     if ("[<class 'str'>]" == py::str(itr->second).cast<std::string>())
                     {
-                        return load_alternative<std::function<void(std::uint32_t, std::uint32_t, const std::vector<std::string> &)>>(src, convert);
+                        return load_alternative<std::function<void(std::uint64_t, std::uint64_t, const std::vector<std::string> &)>>(src, convert);
                     } else if ("<class 'str'>" == py::str(itr->second).cast<std::string>())
                     {
-                        return load_alternative<std::function<void(std::uint32_t, std::uint32_t, const std::string &)>>(src, convert);
+                        return load_alternative<std::function<void(std::uint64_t, std::uint64_t, const std::string &)>>(src, convert);
                     }
                 }
                 return false;
