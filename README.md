@@ -213,7 +213,4 @@ If you have any suggestions to improve the repository, like features or tutorial
 
     
     
-    
-
-
 
