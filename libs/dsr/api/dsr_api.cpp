@@ -1095,7 +1095,7 @@ std::map<uint64_t , IDL::MvregNode> DSRGraph::Map() {
 
 void DSRGraph::node_subscription_thread(bool showReceived) {
     auto name = __FUNCTION__;
-    auto lambda_general_topic = [&, name = name](eprosima::fastdds::dds::DataReader *reader,
+    auto lambda_general_topic = [&, name = name, showReceived = showReceived](eprosima::fastdds::dds::DataReader *reader,
                                                  DSR::DSRGraph *graph) {
 
         try {
@@ -1123,7 +1123,7 @@ void DSRGraph::node_subscription_thread(bool showReceived) {
 
 void DSRGraph::edge_subscription_thread(bool showReceived) {
     auto name = __FUNCTION__;
-    auto lambda_general_topic = [&, name = name](eprosima::fastdds::dds::DataReader *reader,
+    auto lambda_general_topic = [&, name = name, showReceived = showReceived](eprosima::fastdds::dds::DataReader *reader,
                                                  DSR::DSRGraph *graph) {
         try {
             eprosima::fastdds::dds::SampleInfo m_info;
@@ -1150,7 +1150,7 @@ void DSRGraph::edge_subscription_thread(bool showReceived) {
 
 void DSRGraph::edge_attrs_subscription_thread(bool showReceived) {
     auto name = __FUNCTION__;
-    auto lambda_general_topic = [&, name = name](eprosima::fastdds::dds::DataReader *reader,
+    auto lambda_general_topic = [&, name = name, showReceived = showReceived](eprosima::fastdds::dds::DataReader *reader,
                                                  DSR::DSRGraph *graph) {
 
         try {
@@ -1186,7 +1186,7 @@ void DSRGraph::edge_attrs_subscription_thread(bool showReceived) {
 
 void DSRGraph::node_attrs_subscription_thread(bool showReceived) {
     auto name = __FUNCTION__;
-    auto lambda_general_topic = [&, name = name](eprosima::fastdds::dds::DataReader *reader,
+    auto lambda_general_topic = [&, name = name, showReceived = showReceived](eprosima::fastdds::dds::DataReader *reader,
                                                  DSR::DSRGraph *graph) {
 
         try {
