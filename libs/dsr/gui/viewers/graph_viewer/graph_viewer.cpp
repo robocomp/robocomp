@@ -255,7 +255,7 @@ void GraphViewer::add_or_assign_edge_SLOT(std::uint64_t from, std::uint64_t to, 
 		if(gmap_edges.count(key) == 0) 
 		{ 		
 
-			auto item = this->new_visual_edge(from, to, edge_tag.c_str());
+			auto item = this->new_visual_edge(from, to, edge_tag);
 			gmap_edges.insert(std::make_pair(key, item));
 		}
 		gmap_edges[key]->change_detected();
@@ -301,7 +301,7 @@ void GraphViewer::del_edge_SLOT(const std::uint64_t from, const std::uint64_t to
 }
 
 
-void GraphViewer::del_node_SLOT(int id)
+void GraphViewer::del_node_SLOT(uint64_t id)
 {
     qDebug()<<__FUNCTION__<<":"<<__LINE__;
     try {
@@ -316,7 +316,7 @@ void GraphViewer::del_node_SLOT(int id)
 
 }
 
-void GraphViewer::hide_show_node_SLOT(int id, bool visible)
+void GraphViewer::hide_show_node_SLOT(uint64_t id, bool visible)
 {
 	auto item = gmap[id];
 	item->setVisible(visible);
@@ -336,12 +336,12 @@ void GraphViewer::mousePressEvent(QMouseEvent *event)
 	if(item) {
 		QGraphicsView::mousePressEvent(event);
 	}
+	else if (event->button() == Qt::RightButton) {
+        showContextMenu(event);
+    }
 	else {
-        if (event->button() == Qt::RightButton)
-            showContextMenu(event);
-		else
-            AbstractGraphicViewer::mousePressEvent(event);
-	}
+        AbstractGraphicViewer::mousePressEvent(event);
+    }
 }
 
 void GraphViewer::reload(QWidget * widget)

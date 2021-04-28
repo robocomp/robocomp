@@ -27,6 +27,7 @@
 #include <QDialog>
 #include <QHeaderView>
 #include <QLabel>
+#include <utility>
 #include <cppitertools/zip.hpp>
 
 #include <dsr/api/dsr_api.h>
@@ -59,7 +60,7 @@ class DoLaserStuff : public QGraphicsView
 
     void closeEvent (QCloseEvent *event) override 
     {
-      disconnect(graph.get(), 0, this, 0);
+      disconnect(graph.get(), nullptr, this, nullptr);
       graph.reset();
     };
 
@@ -94,7 +95,7 @@ class DoLaserStuff : public QGraphicsView
             }
         }
       }
-      catch(const std::exception &e){ std::cout << "Node " << node_id << " problem. " << e.what() << std::endl;};
+      catch(const std::exception &e){ std::cout << "Node " << node_id << " problem. " << e.what() << std::endl;}
     };
   private:
     QGraphicsScene scene;
@@ -111,7 +112,7 @@ class DoRGBDStuff : public QWidget
   QAction *show_depth;
   
   public:
-    DoRGBDStuff(std::shared_ptr<DSR::DSRGraph> graph_, DSR::IDType node_id_) : graph(graph_), node_id(node_id_)
+    DoRGBDStuff(std::shared_ptr<DSR::DSRGraph> graph_, DSR::IDType node_id_) : graph(std::move(graph_)), node_id(node_id_)
     {
       //cam = graph->get_camera_api(graph->get_nodes_by_type("rgbd").at(0));
 
@@ -123,7 +124,7 @@ class DoRGBDStuff : public QWidget
       setLayout(layout);
       //MenuBar
       mainMenu = new QMenuBar(this);
-      QMenu *viewMenu = mainMenu->addMenu(this->tr("&View"));
+      QMenu *viewMenu = mainMenu->addMenu(DoRGBDStuff::tr("&View"));
       show_rgb = new QAction("RGB", this);
       show_rgb->setStatusTip(tr("Show RGB image"));
       show_rgb->setCheckable(true);
@@ -137,9 +138,9 @@ class DoRGBDStuff : public QWidget
       show();
     };
 
-    void closeEvent (QCloseEvent *event)
+    void closeEvent (QCloseEvent *event) override
     {
-        disconnect(graph.get(), 0, this, 0);
+        disconnect(graph.get(), nullptr, this, nullptr);
         graph.reset();
         cam.reset();
     };
@@ -215,16 +216,15 @@ class DoTableStuff : public  QTableWidget
       {
           setWindowTitle("Node " + QString::fromStdString(n.value().type()) + " [" + QString::number(node_id) + "]");
           setColumnCount(2);
-          std::map<std::string, DSR::Attribute> attribs;
-          attribs = n.value().attrs();
+          std::map<std::string, DSR::Attribute>& attribs = n.value().attrs();
           // show id type and name as attributes
           attribs["ID"] = Attribute(ValType(node_id), 0, 0);
           attribs["type"] = Attribute(ValType(n.value().type()), 0, 0);
           attribs["name"] = Attribute(ValType(n.value().name()), 0, 0);
           setHorizontalHeaderLabels(QStringList{"Key", "Value"});
-          for (auto &[k, v] : attribs) {
-//TODO: check value range and attributes that could be editable
-                insert_attribute(k, v);
+          for (auto &&[k, v] : attribs) {
+                //TODO: check value range and attributes that could be editable
+                insert_attribute(k, std::move(v));
           }
           horizontalHeader()->setStretchLastSection(true);
           resize_widget();
@@ -248,11 +248,11 @@ class DoTableStuff : public  QTableWidget
             {
                 auto value = attrs.find(attrib_name);
                 if (value != attrs.end()) {
-                    const auto &av = value->second;
+                    auto &av = value->second;
                     if (widget_map.count(attrib_name)) {
-                        update_attribute_value(attrib_name, av);
+                        update_attribute_value(attrib_name, std::move(av));
                     } else {
-                        insert_attribute(attrib_name, av);
+                        insert_attribute(attrib_name, std::move(av));
                     }
 
                 }
@@ -268,10 +268,10 @@ class DoTableStuff : public  QTableWidget
         {
             for (auto &[k, v] : n.value().attrs()) {
                 if(widget_map.count( k )) {
-                    update_attribute_value(k, v);
+                    update_attribute_value(k, std::move(v));
                 }
                 else{
-                    insert_attribute(k, v);
+                    insert_attribute(k, std::move(v));
                 }
             }
         }
@@ -280,16 +280,16 @@ class DoTableStuff : public  QTableWidget
     {
         std::cout<<"SAVE"<<attrib_name<<std::endl;
     }
-    void resizeEvent(QResizeEvent* event)
+    void resizeEvent(QResizeEvent* event) override
     {
       const auto &columns = columnCount();
       for(auto &&index : iter::range(columns))
           setColumnWidth(index, (width()-verticalHeader()->width()-4)/columns);
     }
 
-    void closeEvent (QCloseEvent *event)
+    void closeEvent (QCloseEvent *event) override
     {
-        disconnect(graph.get(), 0, this, 0);
+        disconnect(graph.get(), nullptr, this, nullptr);
         graph.reset();
     };
   private:
@@ -309,7 +309,7 @@ class DoTableStuff : public  QTableWidget
         this->setMinimumWidth(width);
         this->setMinimumHeight(height);
     }
-    void update_attribute_value(std::string k, DSR::Attribute v)
+    void update_attribute_value(const std::string& k, DSR::Attribute&& v)
     {
         widget_map[k]->blockSignals(true);
         switch (v.selected()) {
@@ -326,7 +326,14 @@ class DoTableStuff : public  QTableWidget
                 break;
             }
             case 3: {
-//TODO:
+                auto * widget = qobject_cast<QWidget*>(widget_map[k]);
+                auto * layout = widget->layout();
+                //Esto no esta bien. No se controlan nuevos elementos, ni borrados, etc.
+                /*if (!v.float_vec().empty() and v.float_vec().size() <= 10) {
+                    for (size_t i = 0 ; i < v.float_vec().size(); ++i) {
+                        qobject_cast<QDoubleSpinBox *>(layout->itemAt(i)->widget())->setValue(v.float_vec()[i]);
+                    }
+                }*/
                 break;
             }
             case 4: {
@@ -334,42 +341,44 @@ class DoTableStuff : public  QTableWidget
                 break;
             }
             case 5: {
-//TODO: binary data must not be shown
-     /*           std::ostringstream oss;
-                if (!v.byte_vec().empty()) {
-                    std::copy(v.byte_vec().begin(), v.byte_vec().end() - 1, std::ostream_iterator<uint8_t>(oss, ","));
-                    oss << v.byte_vec().back();
-                }
-                qobject_cast<QLineEdit *>(widget_map[k])->setText(QString::fromStdString(oss.str()));*/
+                auto * widget = qobject_cast<QWidget*>(widget_map[k]);
+                auto * layout = widget->layout();
+                //Esto no esta bien. No se controlan nuevos elementos, ni borrados, etc.
+                /*if (!v.byte_vec().empty() and v.byte_vec().size() <= 10) {
+                    for (size_t i = 0 ; i < v.byte_vec().size(); ++i) {
+                        qobject_cast<QSpinBox *>(layout->itemAt(i)->widget())->setValue(v.byte_vec()[i]);
+                    }
+                }*/
                 break;
             }
             case 6:{
-                qobject_cast<QSpinBox *>(widget_map[k])->setValue(v.uint());
+                qobject_cast<QSpinBox *>(widget_map[k])->setValue((int)v.uint());
                 break;
             }
             case 7:{
-                qobject_cast<QSpinBox *>(widget_map[k])->setValue(v.uint64());
+                qobject_cast<QLineEdit *>(widget_map[k])->setText(QString::fromStdString(std::to_string(v.uint64())));
                 break;
             }
             case 8:{
-                qobject_cast<QSpinBox *>(widget_map[k])->setValue(std::round(static_cast<double>(v.fl()) * 1e14) / 1e14);
+                qobject_cast<QDoubleSpinBox *>(widget_map[k])->setValue(std::round(v.dob()));
                 break;
             }
         }
         widget_map[k]->blockSignals(false);
     }
-    void insert_attribute(std::string k, DSR::Attribute v)
+    void insert_attribute(const std::string& k, DSR::Attribute&& v)
     {
-        insertRow( rowCount() );
-        QTableWidgetItem *item =new QTableWidgetItem(QString::fromStdString(k));
-        item->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
-        setItem(rowCount()-1, 0, item);
+        bool inserted = true;
+
+        int rc = rowCount();
+        insertRow( rc );
+
         switch (v.selected()) {
             case 0: {
                 QLineEdit *ledit = new QLineEdit(QString::fromStdString(v.str()));
-                setCellWidget(rowCount() - 1, 1, ledit);
+                setCellWidget(rc, 1, ledit);
                 widget_map[k] = ledit;
-                connect(ledit, &QLineEdit::textChanged, this, [this, k](QString text){
+                connect(ledit, &QLineEdit::textChanged, this, [this, k](const QString& text){
                     std::optional<Node> n = graph->get_node(node_id);
                     graph->runtime_checked_update_attrib_by_name(n.value(), k, text.toStdString());
                 });
@@ -381,7 +390,7 @@ class DoTableStuff : public  QTableWidget
                 spin->setMinimum(-10000);
                 spin->setMaximum(10000);
                 spin->setValue(v.dec());
-                setCellWidget(rowCount() - 1, 1, spin);
+                setCellWidget(rc, 1, spin);
                 widget_map[k] = spin;
                 connect(spin, QOverload<int>::of(&QSpinBox::valueChanged), this, [this, k](int value){
                     std::optional<Node> n = graph->get_node(node_id);
@@ -394,7 +403,7 @@ class DoTableStuff : public  QTableWidget
                 spin->setMinimum(-10000);
                 spin->setMaximum(10000);
                 spin->setValue(std::round(static_cast<double>(v.fl()) * 1000000) / 1000000);
-                setCellWidget(rowCount() - 1, 1, spin);
+                setCellWidget(rc, 1, spin);
                 widget_map[k] = spin;
                 connect(spin, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, [this, k](double value){
                      std::optional<Node> n = graph->get_node(node_id);
@@ -406,16 +415,18 @@ class DoTableStuff : public  QTableWidget
                 QWidget *widget = new QWidget();
                 QHBoxLayout *layout = new QHBoxLayout;
                 widget->setLayout(layout);
-                if (!v.float_vec().empty()) {
-                    for (std::size_t i = 0; i < v.float_vec().size(); ++i) {
+                if (!v.float_vec().empty() and v.float_vec().size() <= 10) {
+                    for (float i : v.float_vec()) {
                         QDoubleSpinBox *spin = new QDoubleSpinBox();
                         spin->setMinimum(-10000);
                         spin->setMaximum(10000);
-                        spin->setValue(v.float_vec()[i]);
+                        spin->setValue(i);
                         layout->addWidget(spin);
                     }
-                    setCellWidget(rowCount() - 1, 1, widget);
+                    setCellWidget(rc, 1, widget);
                     widget_map[k] = widget;
+                } else {
+                    inserted = false;
                 }
                 break;
             }
@@ -424,9 +435,9 @@ class DoTableStuff : public  QTableWidget
                 combo->addItem("true");
                 combo->addItem("false");
                 combo->setCurrentText(v.bl() ? "true" : "false");
-                setCellWidget(rowCount() - 1, 1, combo);
+                setCellWidget(rc, 1, combo);
                 widget_map[k] = combo;
-                connect(combo, &QComboBox::currentTextChanged, this, [this, k](QString value){
+                connect(combo, &QComboBox::currentTextChanged, this, [this, k](const QString& value){
                     std::optional<Node> n = graph->get_node(node_id);
                     bool val = ( value == "true");
                     graph->runtime_checked_update_attrib_by_name(n.value(), k, val);
@@ -435,16 +446,22 @@ class DoTableStuff : public  QTableWidget
             }
             case 5:
             {
-//TODO: binary data must not be shown
-/*                std::ostringstream oss;
-                if(!v.byte_vec().empty()) {
-                    std::copy(v.byte_vec().begin(), v.byte_vec().end() - 1, std::ostream_iterator<uint8_t>(oss, ","));
-                    oss << v.byte_vec().back();
+                QWidget *widget = new QWidget();
+                QHBoxLayout *layout = new QHBoxLayout;
+                widget->setLayout(layout);
+                if (!v.byte_vec().empty() and v.byte_vec().size() <= 10) {
+                    for (unsigned char i : v.byte_vec()) {
+                        QSpinBox *spin = new QSpinBox();
+                        spin->setMinimum(0);
+                        spin->setMaximum(255);
+                        spin->setValue(i);
+                        layout->addWidget(spin);
+                    }
+                    setCellWidget(rc, 1, widget);
+                    widget_map[k] = widget;
+                } else {
+                    inserted = false;
                 }
-                QLineEdit *ledit = new QLineEdit(QString::fromStdString(oss.str()));
-                setCellWidget(rowCount() - 1, 1, ledit);
-                widget_map[k] = ledit;
-                */
                 break;
             }
             case 6:
@@ -452,8 +469,8 @@ class DoTableStuff : public  QTableWidget
                 QSpinBox *spin = new QSpinBox();
                 spin->setMinimum(0);
                 spin->setMaximum(10000);
-                spin->setValue(v.uint());
-                setCellWidget(rowCount() - 1, 1, spin);
+                spin->setValue((int)v.uint());
+                setCellWidget(rc, 1, spin);
                 widget_map[k] = spin;
                 connect(spin, QOverload<int>::of(&QSpinBox::valueChanged), this, [this, k](int value){
                     std::optional<Node> n = graph->get_node(node_id);
@@ -463,16 +480,9 @@ class DoTableStuff : public  QTableWidget
             }
             case 7:
             {
-                QDoubleSpinBox *spin = new QDoubleSpinBox();
-                spin->setMinimum(0);
-                spin->setMaximum(10000);
-                spin->setValue(v.uint64());
-                setCellWidget(rowCount() - 1, 1, spin);
-                widget_map[k] = spin;
-                connect(spin, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, [this, k](double value){
-                    std::optional<Node> n = graph->get_node(node_id);
-                    graph->runtime_checked_update_attrib_by_name(n.value(), k, (uint64_t)value);
-                });
+                QLineEdit *ledit = new QLineEdit(QString::fromStdString(std::to_string(v.uint64())));
+                setCellWidget(rc, 1, ledit);
+                widget_map[k] = ledit;
                 break;
             }
             case 8:
@@ -480,8 +490,8 @@ class DoTableStuff : public  QTableWidget
                 QDoubleSpinBox *spin = new QDoubleSpinBox();
                 spin->setMinimum(-10000);
                 spin->setMaximum(10000);
-                spin->setValue(std::round(static_cast<double>(v.fl()) * 1000000) / 1000000);
-                setCellWidget(rowCount() - 1, 1, spin);
+                spin->setValue(v.dob());
+                setCellWidget(rc, 1, spin);
                 widget_map[k] = spin;
                 connect(spin, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, [this, k](double value){
                     std::optional<Node> n = graph->get_node(node_id);
@@ -489,6 +499,16 @@ class DoTableStuff : public  QTableWidget
                 });
                 break;
             }
+        }
+
+        if (inserted)
+        {
+            auto *item =new QTableWidgetItem(QString::fromStdString(k));
+            item->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
+            setItem(rc, 0, item);
+
+        } else {
+            removeRow(rc+1);
         }
     }
 };
@@ -498,7 +518,7 @@ class GraphNode : public QObject, public QGraphicsEllipseItem
     Q_OBJECT
     Q_PROPERTY(QColor node_color READ _node_color WRITE set_node_color)
 	public:
-    GraphNode(std::shared_ptr<DSR::GraphViewer> graph_viewer_);
+    explicit GraphNode(std::shared_ptr<DSR::GraphViewer> graph_viewer_);
 
     //std::string name_in_graph;
     std::uint64_t id_in_graph;

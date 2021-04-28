@@ -50,8 +50,8 @@ namespace DSR
             void add_or_assign_node_SLOT(const std::uint64_t id, const std::string &type);
             void add_or_assign_edge_SLOT(const std::uint64_t from, const std::uint64_t to, const std::string& type);
 			void del_edge_SLOT(const std::uint64_t from, const std::uint64_t to,  const std::string &edge_tag);
-			void del_node_SLOT(int id);
-			void hide_show_node_SLOT(int id, bool visible);
+			void del_node_SLOT(uint64_t id);
+			void hide_show_node_SLOT(uint64_t id, bool visible);
 			// Others
 			void toggle_animation(bool state);
 			void reload(QWidget * widget);
