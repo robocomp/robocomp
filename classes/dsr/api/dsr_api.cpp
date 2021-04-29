@@ -737,13 +737,15 @@ inline void DSRGraph::update_maps_node_delete(uint64_t id, const std::optional<C
 
         if (nodeType.find(n->type()) != nodeType.end())
             nodeType[n->type()].erase(id);
+        if (nodeType[n->type()].empty()) nodeType.erase(n->type());
 
         for (const auto &[k, v] : n->fano()) {
             edges[{id, v.read_reg().to()}].erase(k.second);
-            if (edges[{id, k.first}].empty()) edges.erase({id, k.first});
             edgeType[k.second].erase({id, k.first});
             to_edges[k.first].erase({id, k.second});
+            if (edges[{id, k.first}].empty()) edges.erase({id, k.first});
             if (to_edges[k.first].empty()) to_edges.erase(k.first);
+            if (edgeType[k.second].empty()) edgeType.erase(k.second);
         }
     }
 }
@@ -767,16 +769,21 @@ inline void DSRGraph::update_maps_edge_delete(uint64_t from, uint64_t to, const 
         edges.erase({from, to});
         edgeType[key].erase({from, to});
         auto ed = to_edges[to];
-        for (auto[t, k] : ed) {
+        for (auto[t, k] : ed)
+        {
             if (t == from)
                 to_edges[to].erase({from, k});
         }
+        if (edges[{from, to}].empty()) edges.erase({from, to});
+        if (to_edges[to].empty()) to_edges.erase(to);
+        if (edgeType[key].empty()) edgeType.erase(key);
     } else {
         edges[{from, to}].erase(key);
-        if (edges[{from, to}].empty()) edges.erase({from, to});
         to_edges[to].erase({from, key});
-        if (to_edges[to].empty()) to_edges.erase(to);
         edgeType[key].erase({from, to});
+        if (edges[{from, to}].empty()) edges.erase({from, to});
+        if (to_edges[to].empty()) to_edges.erase(to);
+        if (edgeType[key].empty()) edgeType.erase(key);
     }
 }
 
