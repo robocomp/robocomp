@@ -298,7 +298,7 @@ void GraphViewer::del_edge_SLOT(const std::uint64_t from, const std::uint64_t to
 }
 
 
-void GraphViewer::del_node_SLOT(int id)
+void GraphViewer::del_node_SLOT(uint64_t id)
 {
     qDebug()<<__FUNCTION__<<":"<<__LINE__;
     try {
@@ -313,7 +313,7 @@ void GraphViewer::del_node_SLOT(int id)
 
 }
 
-void GraphViewer::hide_show_node_SLOT(int id, bool visible)
+void GraphViewer::hide_show_node_SLOT(uint64_t id, bool visible)
 {
 	auto item = gmap[id];
 	item->setVisible(visible);
