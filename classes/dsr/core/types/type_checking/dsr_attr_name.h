@@ -140,6 +140,8 @@ REGISTER_TYPE(ps_intimate_y_pos, std::reference_wrapper<const std::vector<float>
 REGISTER_TYPE(obj_width, int, false)
 REGISTER_TYPE(obj_height, int, false)
 REGISTER_TYPE(obj_depth, int, false)
+REGISTER_TYPE(obj_visible, int, false)
+
 /*
  * camera
  * */
