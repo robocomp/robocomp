@@ -14,7 +14,7 @@ Reimplementation from https://github.com/CBaquero/delta-enabled-crdts
 #include <string>
 #include <iostream>
 #include <type_traits>
-
+#include <cassert>
 
 using key_type = uint64_t;
 
@@ -144,7 +144,7 @@ public:
         // DC
         // Set
         for (const auto &e : o.dc)
-            insertdot(e, false);
+            insertdot(e, false); 
 
         compact();
     }
@@ -497,6 +497,7 @@ public:
         r.dk = dk.rmv();
         a.dk = dk.add(id, val);
         r.join(std::move(a));
+        assert(r.dk.ds.size() <= 1);
         return r;
     }
 
@@ -505,6 +506,7 @@ public:
         r.dk = dk.rmv();
         a.dk = dk.add(id, std::move(val));
         r.join(std::move(a));
+        assert(r.dk.ds.size() <= 1);
         return r;
     }
 
@@ -534,6 +536,7 @@ public:
 
     void join(mvreg<V> &&o) {
         dk.join_replace_conflict(std::move(o.dk));
+        assert(dk.ds.size() <= 1);
     }
 
     bool operator==(const mvreg &rhs) const {

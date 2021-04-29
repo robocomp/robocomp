@@ -230,6 +230,7 @@ namespace DSR {
             m_to = edge.to();
             m_type = edge.type();
             for (const auto &[k,v] : edge.attrs()) {
+                assert(v.dk.ds.size() > 0);
                 m_attrs[k] = v.dk.ds.begin()->second;
             }
 
@@ -244,6 +245,7 @@ namespace DSR {
             m_to = attr.to();
             m_type = attr.type();
             for (const auto &[k,v] : attr.attrs()) {
+                assert(v.dk.ds.size() > 0);
                 m_attrs[k] = v.dk.ds.begin()->second;
             }
             return *this;
@@ -384,9 +386,11 @@ namespace DSR {
             m_name = node.name();
             m_type = node.type();
             for (const auto &[k,v] : node.attrs()) {
+                assert(v.dk.ds.size() > 0);
                 m_attrs[k] = v.dk.ds.begin()->second;
             }
             for (const auto &[k,v] : node.fano()) {
+                assert(v.dk.ds.size() > 0);
                 m_fano[k] = v.dk.ds.begin()->second;
             }
         }
@@ -401,9 +405,11 @@ namespace DSR {
             m_name = node.name();
             m_type = node.type();
             for (const auto &[k,v] : node.attrs()) {
+                assert(v.dk.ds.size() > 0);
                 m_attrs[k] = v.dk.ds.begin()->second;
             }
             for (const auto &[k,v] : node.fano()) {
+                assert(v.dk.ds.size() > 0);
                 m_fano[k] = v.dk.ds.begin()->second;
             }
 
