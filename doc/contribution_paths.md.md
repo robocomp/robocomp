@@ -19,7 +19,7 @@ mkdir build; cd build; cmake -DDSR=TRUE -DFCL_SUPPORT=TRUE .. ; make clean ; mak
 
 In the main brach of robocomp, DSR needs to be installed separatly:
 ```
-cd classes/dsr/; mkdir build ; cmake .. ; make clean ; make -j10; sudo make install
+cd classes/dsr/; mkdir build ; cmake .. ; make clean ; make -j10; sudo make install ; sudo ldconfig
 ```
 
 Now you can download the robocomop/dsr-graph repository:
@@ -37,5 +37,5 @@ https://github.com/robocomp/robocomp/blob/development/doc/DSR-start.md
 
 > Written with [StackEdit](https://stackedit.io/).
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTE0MTQ0NTU1MThdfQ==
+eyJoaXN0b3J5IjpbLTIxODE2MzExMCwtMTQxNDQ1NTUxOF19
 -->
