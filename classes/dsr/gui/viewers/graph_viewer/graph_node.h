@@ -60,7 +60,7 @@ class DoLaserStuff : public QGraphicsView
     void closeEvent (QCloseEvent *event) override 
     {
       disconnect(graph.get(), 0, this, 0);
-      graph.reset();
+      //graph.reset();
     };
 
   public slots:
@@ -140,8 +140,8 @@ class DoRGBDStuff : public QWidget
     void closeEvent (QCloseEvent *event)
     {
         disconnect(graph.get(), 0, this, 0);
-        graph.reset();
-        cam.reset();
+        //graph.reset();
+        //cam.reset();
     };
 
   public slots:
@@ -290,7 +290,7 @@ class DoTableStuff : public  QTableWidget
     void closeEvent (QCloseEvent *event)
     {
         disconnect(graph.get(), 0, this, 0);
-        graph.reset();
+        //graph.reset();
     };
   private:
     std::shared_ptr<DSR::DSRGraph> graph;

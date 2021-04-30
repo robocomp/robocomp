@@ -41,7 +41,7 @@ GraphViewer::~GraphViewer()
 {
     qDebug() << __FUNCTION__ << "Destroy";
     qDebug()  << "GraphViewer: " << G.use_count();
-    G.reset();
+    //G.reset();
     gmap.clear();
 	gmap_edges.clear();
     type_id_map.clear();
