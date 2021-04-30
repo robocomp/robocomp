@@ -36,9 +36,6 @@ At this point, if you are still not involved in the DSR development, you would p
 https://github.com/robocomp/robocomp/blob/development/doc/DSR-start.md
 
 > Written with [StackEdit](https://stackedit.io/).
-
-
-> Written with [StackEdit](https://stackedit.io/).
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTczMzY1NjgzOF19
+eyJoaXN0b3J5IjpbLTE0MTQ0NTU1MThdfQ==
 -->
