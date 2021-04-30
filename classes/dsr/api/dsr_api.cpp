@@ -1106,17 +1106,22 @@ void DSRGraph::node_subscription_thread(bool showReceived) {
                                                  DSR::DSRGraph *graph) {
 
         try {
-            eprosima::fastdds::dds::SampleInfo m_info;
-            IDL::MvregNode sample;
-            while (reader->take_next_sample(&sample, &m_info) == ReturnCode_t::RETCODE_OK) {
-                if (m_info.instance_state == eprosima::fastdds::dds::ALIVE_INSTANCE_STATE) {
-                    if (sample.agent_id() != agent_id) {
-                        if (showReceived) {
-                            qDebug() << name << " Received:" << std::to_string(sample.id()).c_str() << " node from: "
-                                     << m_info.sample_identity.writer_guid().entityId.value;
+            while (true)
+            {
+                eprosima::fastdds::dds::SampleInfo m_info;
+                IDL::MvregNode sample;
+                if (reader->take_next_sample(&sample, &m_info) == ReturnCode_t::RETCODE_OK) {
+                    if (m_info.instance_state == eprosima::fastdds::dds::ALIVE_INSTANCE_STATE) {
+                        if (sample.agent_id() != agent_id) {
+                            if (showReceived) {
+                                qDebug() << name << " Received:" << std::to_string(sample.id()).c_str() << " node from: "
+                                        << m_info.sample_identity.writer_guid().entityId.value;
+                            }
+                            tp.spawn_task(&DSRGraph::join_delta_node, this, std::move(sample));
                         }
-                        tp.spawn_task(&DSRGraph::join_delta_node, this, std::move(sample));
                     }
+                } else {
+                    break;
                 }
             }
         }
@@ -1133,17 +1138,22 @@ void DSRGraph::edge_subscription_thread(bool showReceived) {
     auto lambda_general_topic = [&, name = name, showReceived = showReceived](eprosima::fastdds::dds::DataReader *reader,
                                                  DSR::DSRGraph *graph) {
         try {
-            eprosima::fastdds::dds::SampleInfo m_info;
-            IDL::MvregEdge sample;
-            while (reader->take_next_sample(&sample, &m_info) == ReturnCode_t::RETCODE_OK) {
-                if (m_info.instance_state == eprosima::fastdds::dds::ALIVE_INSTANCE_STATE) {
-                    if (sample.agent_id() != agent_id) {
-                        if (showReceived) {
-                            qDebug() << name << " Received:" << std::to_string(sample.id()).c_str() << " node from: "
-                                     << m_info.sample_identity.writer_guid().entityId.value;
+            while (true)
+            {
+                eprosima::fastdds::dds::SampleInfo m_info;
+                IDL::MvregEdge sample;
+                if (reader->take_next_sample(&sample, &m_info) == ReturnCode_t::RETCODE_OK) {
+                    if (m_info.instance_state == eprosima::fastdds::dds::ALIVE_INSTANCE_STATE) {
+                        if (sample.agent_id() != agent_id) {
+                            if (showReceived) {
+                                qDebug() << name << " Received:" << std::to_string(sample.id()).c_str() << " node from: "
+                                        << m_info.sample_identity.writer_guid().entityId.value;
+                            }
+                            tp.spawn_task(&DSRGraph::join_delta_edge, this, std::move(sample));
                         }
-                        tp.spawn_task(&DSRGraph::join_delta_edge, this, std::move(sample));
                     }
+                } else {
+                    break;
                 }
             }
         }
@@ -1161,21 +1171,26 @@ void DSRGraph::edge_attrs_subscription_thread(bool showReceived) {
                                                  DSR::DSRGraph *graph) {
 
         try {
-            eprosima::fastdds::dds::SampleInfo m_info;
-            IDL::MvregEdgeAttrVec samples;
-            while (reader->take_next_sample(&samples, &m_info) == ReturnCode_t::RETCODE_OK) {
-                if (m_info.instance_state == eprosima::fastdds::dds::ALIVE_INSTANCE_STATE) {
-                    if (showReceived) {
-                        qDebug() << name << " Received:" << samples.vec().size() << " edge attr from: "
-                                 << m_info.sample_identity.writer_guid().entityId.value;
-                    }
-                    for (auto &&sample: samples.vec()) {
-                        if (sample.agent_id() != agent_id
-                            and graph->ignored_attributes.find(sample.attr_name().data()) == ignored_attributes.end()) {
-                            //PRINT_TIME("edge", sample);
-                            tp.spawn_task(&DSRGraph::join_delta_edge_attr, this, std::move(sample));
+            while (true)
+            {
+                eprosima::fastdds::dds::SampleInfo m_info;
+                IDL::MvregEdgeAttrVec samples;
+                if (reader->take_next_sample(&samples, &m_info) == ReturnCode_t::RETCODE_OK) {
+                    if (m_info.instance_state == eprosima::fastdds::dds::ALIVE_INSTANCE_STATE) {
+                        if (showReceived) {
+                            qDebug() << name << " Received:" << samples.vec().size() << " edge attr from: "
+                                    << m_info.sample_identity.writer_guid().entityId.value;
+                        }
+                        for (auto &&sample: samples.vec()) {
+                            if (sample.agent_id() != agent_id
+                                and graph->ignored_attributes.find(sample.attr_name().data()) == ignored_attributes.end()) {
+                                //PRINT_TIME("edge", sample);
+                                tp.spawn_task(&DSRGraph::join_delta_edge_attr, this, std::move(sample));
+                            }
                         }
                     }
+                } else {
+                    break;
                 }
             }
         }
@@ -1197,21 +1212,26 @@ void DSRGraph::node_attrs_subscription_thread(bool showReceived) {
                                                  DSR::DSRGraph *graph) {
 
         try {
-            eprosima::fastdds::dds::SampleInfo m_info;
-            IDL::MvregNodeAttrVec samples;
-            while (reader->take_next_sample(&samples, &m_info) == ReturnCode_t::RETCODE_OK) {
-                if (m_info.instance_state == eprosima::fastdds::dds::ALIVE_INSTANCE_STATE) {
-                    if (showReceived) {
-                        qDebug() << name << " Received:" << samples.vec().size() << " node attrs from: "
-                                 << m_info.sample_identity.writer_guid().entityId.value;
-                    }
+            while (true)
+            {
+                eprosima::fastdds::dds::SampleInfo m_info;
+                IDL::MvregNodeAttrVec samples;
+                if (reader->take_next_sample(&samples, &m_info) == ReturnCode_t::RETCODE_OK) {
+                    if (m_info.instance_state == eprosima::fastdds::dds::ALIVE_INSTANCE_STATE) {
+                        if (showReceived) {
+                            qDebug() << name << " Received:" << samples.vec().size() << " node attrs from: "
+                                    << m_info.sample_identity.writer_guid().entityId.value;
+                        }
 
-                    for (auto &&s: samples.vec()) {
-                        if (s.agent_id() != agent_id and
-                            graph->ignored_attributes.find(s.attr_name().data()) == ignored_attributes.end()) {
-                            tp.spawn_task(&DSRGraph::join_delta_node_attr, this, std::move(s));
+                        for (auto &&s: samples.vec()) {
+                            if (s.agent_id() != agent_id and
+                                graph->ignored_attributes.find(s.attr_name().data()) == ignored_attributes.end()) {
+                                tp.spawn_task(&DSRGraph::join_delta_node_attr, this, std::move(s));
+                            }
                         }
                     }
+                } else {
+                    break;
                 }
             }
         }
@@ -1228,32 +1248,38 @@ void DSRGraph::node_attrs_subscription_thread(bool showReceived) {
 void DSRGraph::fullgraph_server_thread() {
     auto lambda_graph_request = [&](eprosima::fastdds::dds::DataReader *reader, DSR::DSRGraph *graph) {
 
-        eprosima::fastdds::dds::SampleInfo m_info;
-        IDL::GraphRequest sample;
 
-        while (reader->take_next_sample(&sample, &m_info) == ReturnCode_t::RETCODE_OK) {
-            if (m_info.instance_state == eprosima::fastdds::dds::ALIVE_INSTANCE_STATE) {
-                std::unique_lock<std::mutex> lck(participant_set_mutex);
-                if (static_cast<uint32_t>(sample.id()) != agent_id /*&& participant_set.find(("Participant_" + std::to_string(sample.id()))) == participant_set.end()*/) {
 
-                    qDebug() << " Received Full Graph request: from "
-                             << m_info.sample_identity.writer_guid().entityId.value;
-                    participant_set.insert(("Participant_" + std::to_string(sample.id())));
-                    lck.unlock();
-                    IDL::OrMap mp;
-                    mp.id(graph->get_agent_id());
-                    mp.m(graph->Map());
-                    dsrpub_request_answer.write(&mp);
+        while (true)
+        {
+            eprosima::fastdds::dds::SampleInfo m_info;
+            IDL::GraphRequest sample;
+            if (reader->take_next_sample(&sample, &m_info) == ReturnCode_t::RETCODE_OK) {
+                if (m_info.instance_state == eprosima::fastdds::dds::ALIVE_INSTANCE_STATE) {
+                    std::unique_lock<std::mutex> lck(participant_set_mutex);
+                    if (static_cast<uint32_t>(sample.id()) != agent_id /*&& participant_set.find(("Participant_" + std::to_string(sample.id()))) == participant_set.end()*/) {
 
-                    qDebug() << "Full graph written";
+                        qDebug() << " Received Full Graph request: from "
+                                << m_info.sample_identity.writer_guid().entityId.value;
+                        participant_set.insert(("Participant_" + std::to_string(sample.id())));
+                        lck.unlock();
+                        IDL::OrMap mp;
+                        mp.id(graph->get_agent_id());
+                        mp.m(graph->Map());
+                        dsrpub_request_answer.write(&mp);
 
-                } /*else {
-                    lck.unlock();
+                        qDebug() << "Full graph written";
 
-                    IDL::OrMap mp;
-                    mp.id(-1);
-                    dsrpub_request_answer.write(&mp);
-                }*/
+                    } /*else {
+                        lck.unlock();
+
+                        IDL::OrMap mp;
+                        mp.id(-1);
+                        dsrpub_request_answer.write(&mp);
+                    }*/
+                }
+            } else {
+                break;
             }
         }
     };
@@ -1269,26 +1295,33 @@ std::pair<bool, bool> DSRGraph::fullgraph_request_thread() {
     bool repeated = false;
     auto lambda_request_answer = [&](eprosima::fastdds::dds::DataReader *reader, DSR::DSRGraph *graph) {
 
-        eprosima::fastdds::dds::SampleInfo m_info;
-        IDL::OrMap sample;
 
-        while (reader->take_next_sample(&sample, &m_info) == ReturnCode_t::RETCODE_OK) {
-            if (m_info.instance_state == eprosima::fastdds::dds::ALIVE_INSTANCE_STATE) {
-                if (sample.id() != graph->get_agent_id()) {
-                    if (sample.id() != static_cast<uint32_t>(-1)) {
-                        qDebug() << " Received Full Graph from " << m_info.sample_identity.writer_guid().entityId.value
-                                 << " whith "
-                                 << sample.m().size() << " elements";
-                        tp.spawn_task(&DSRGraph::join_full_graph, this, std::move(sample));
-                        qDebug() << "Synchronized.";
-                        sync = true;
-                        break;
-                    }
-                    else
-                    {
-                        repeated = true;
+        while (true)
+        {
+            eprosima::fastdds::dds::SampleInfo m_info;
+            IDL::OrMap sample;
+
+        
+            if (reader->take_next_sample(&sample, &m_info) == ReturnCode_t::RETCODE_OK) {
+                if (m_info.instance_state == eprosima::fastdds::dds::ALIVE_INSTANCE_STATE) {
+                    if (sample.id() != graph->get_agent_id()) {
+                        if (sample.id() != static_cast<uint32_t>(-1)) {
+                            qDebug() << " Received Full Graph from " << m_info.sample_identity.writer_guid().entityId.value
+                                    << " whith "
+                                    << sample.m().size() << " elements";
+                            tp.spawn_task(&DSRGraph::join_full_graph, this, std::move(sample));
+                            qDebug() << "Synchronized.";
+                            sync = true;
+                            break;
+                        }
+                        else
+                        {
+                            repeated = true;
+                        }
                     }
                 }
+            } else {
+                break;
             }
         }
     };
