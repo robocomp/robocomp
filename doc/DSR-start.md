@@ -37,7 +37,7 @@ Step 2.
     ```bash
     cd ~/robocomp/components/dsr-graph/robots_pyrep/viriatoPyrep
     cmake .
-    make
+     make -j$(nproc)
     export COPPELIASIM_ROOT="Enter CoppeliaSim path here"
     bash run.sh
      ```
@@ -51,7 +51,7 @@ Step 3.
     ```bash
     cd ~/robocomp/components/dsr-graph/components/idserver
     cmake .
-    make
+     make -j$(nproc)
     ./bin/idserver etc/config
     ```
 
@@ -64,7 +64,7 @@ Step 4.
      ```bash
      cd ~/robocomp/components/dsr-graph/components/viriatoDSR
      cmake .
-     make
+      make -j$(nproc)
      ./bin/viriatoDSR etc/config
      ```  
 
