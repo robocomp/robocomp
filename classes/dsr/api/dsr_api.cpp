@@ -31,7 +31,7 @@ DSRGraph::DSRGraph(uint64_t root, std::string name, int id, const std::string &d
     graph_root = root;
     nodes = Nodes(graph_root);
     utils = std::make_unique<Utilities>(this);
-    qDebug() << "Agent name: " << QString::fromStdString(agent_name);
+    //qDebug() << "Agent name: " << QString::fromStdString(agent_name);
 
     // RTPS Create participant
     auto[suc, participant_handle] = dsrparticipant.init(agent_id, all_same_host,
