@@ -574,10 +574,14 @@ void QScene2dViewer::set_draw_people_spaces(bool draw)
 void QScene2dViewer::draw_laser()
 {
     static std::vector<QGraphicsEllipseItem*> points;
-    if (laser_polygon != nullptr)
+    if (laser_polygon != nullptr){
         scene.removeItem(laser_polygon);
-    for(auto p : points)
+        delete laser_polygon;
+    }
+    for(auto p : points){
         scene.removeItem(p);
+        delete p;
+    }
     points.clear();
 
     if(not this->drawlaser)
@@ -619,8 +623,10 @@ void QScene2dViewer::draw_person_space(QGraphicsItem *sceneItem,Node &node){
     //remove previous spaces
     for(auto child: sceneItem->childItems())
     {
-        if((QGraphicsPolygonItem *)child != nullptr)
+        if((QGraphicsPolygonItem *)child != nullptr){
             scene.removeItem(child);
+            delete child;
+        }
     }
     draw_space("social", "Blue", -7, node,  sceneItem);
     draw_space("personal", "Green", -6, node,  sceneItem);
@@ -652,11 +658,13 @@ void QScene2dViewer::set_draw_axis(bool visible)
 void QScene2dViewer::draw_axis()
 {
     if(this->drawaxis) {
+        delete_axis = false;
         scene.addItem(axis_center);
         scene.addItem(axis_x);
         scene.addItem(axis_y);
     }
     else{
+        delete_axis = true;
         scene.removeItem(axis_center);
         scene.removeItem(axis_x);
         scene.removeItem(axis_y);

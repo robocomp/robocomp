@@ -49,8 +49,9 @@ GraphViewer::~GraphViewer()
 	for(int i = 0; i < allGraphicsItems.size(); i++)
 	{
 		QGraphicsItem *graphicItem = allGraphicsItems[i];
-		if(graphicItem->scene() == &scene)
+		if(graphicItem->scene() == &scene){
 			scene.removeItem(graphicItem);
+		}
 
 	}
 	scene.clear();

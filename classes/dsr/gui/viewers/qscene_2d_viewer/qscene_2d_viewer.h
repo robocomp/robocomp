@@ -41,6 +41,7 @@ namespace DSR
         private:
             QGraphicsItem *robot = nullptr;
             QGraphicsItem *laser_polygon = nullptr;
+            bool delete_axis = false;
             QGraphicsRectItem *axis_center = nullptr, *axis_x = nullptr, *axis_y = nullptr;
             QMenu *contextMenu, *showMenu;
             bool drawlaser = false;
@@ -60,6 +61,13 @@ namespace DSR
             QScene2dViewer(std::shared_ptr<DSR::DSRGraph> G_, QWidget *parent=0);
             ~QScene2dViewer() {
                 qDebug() << "QScene2dViewer: " << G.use_count() ;
+
+                if (delete_axis)
+                {
+                    delete axis_center;
+                    delete axis_y;
+                    delete axis_x;
+                }
                 G.reset();
             }
             void set_draw_laser(bool draw);
