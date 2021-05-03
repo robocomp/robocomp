@@ -26,6 +26,7 @@
 #include <QMouseEvent>
 #include <QGLWidget>
 #include <QResizeEvent>
+#include <QMenu>
 
 
 class GraphNode;
