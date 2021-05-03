@@ -278,17 +278,26 @@ QRectF GraphEdge::boundingRect() const
 //    }
 }
 
-//QPainterPath GraphEdge::shape() const
-//{
-//    QPainterPath path;
-//    path.addPolygon(tag_polygon);
-//    return path;
-//}
+/*
+QPainterPath GraphEdge::shape() const
+{
+    QPainterPath path;
+    QPainterPathStroker stroker;
+    stroker.setWidth(30);
+    path.moveTo(line().p1());
+    path.lineTo(line().p2());
+    return stroker.createStroke(path);
+}
+ */
 
 void GraphEdge::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget*)
 {
-    if (source->collidesWithItem(dest))
+
+    if (!source || !dest)
         return;
+
+    //if (source->collidesWithItem(dest))
+    //    return;
 
     QPen myPen = pen();
     myPen.setColor(color);

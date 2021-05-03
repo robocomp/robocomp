@@ -145,7 +145,7 @@ public:
 
 private:
 
-    bool ItoO(const I &&iTypeData, O &oTypeData, const std::function<void( I &&, O &)>& t = empty_fn)
+    bool ItoO(I &&iTypeData, O &oTypeData, const std::function<void( I &&, O &)>& t = empty_fn)
     {
         //Si es el mismo tipo o es convertible de I a O
         if constexpr (std::is_same<I, O>::value || std::is_convertible<I, O>::value)

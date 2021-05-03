@@ -302,10 +302,5 @@ REGISTER_TYPE(imu_sensor_tick, float, false)
 REGISTER_TYPE(test_double_type, double, false) //remove
 REGISTER_TYPE(test_uint32_type, uint32_t , false) //remove
 
-/*
- * Room
- * */
-REGISTER_TYPE(delimiting_polygon_x, std::reference_wrapper<const std::vector<float>>, false);
-REGISTER_TYPE(delimiting_polygon_y, std::reference_wrapper<const std::vector<float>>, false);
 
 #endif //DSR_ATTR_NAME_H

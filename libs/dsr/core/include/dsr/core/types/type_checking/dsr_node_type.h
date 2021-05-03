@@ -89,7 +89,6 @@ REGISTER_NODE_TYPE(path_to_target)
 REGISTER_NODE_TYPE(intention)
 REGISTER_NODE_TYPE(rgbd)
 REGISTER_NODE_TYPE(pan_tilt)
-REGISTER_NODE_TYPE(grid)
 
 //melex-rodao types
 REGISTER_NODE_TYPE(road)
