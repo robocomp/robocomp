@@ -85,13 +85,15 @@ namespace DSR
 			std::map<QString, WidgetContainer *> widgets;
 			std::map<view, WidgetContainer *> widgets_by_type;
 			QWidget * main_widget;
-
+            QPoint * object_position;
+            uint64_t object_id;
 		public slots:
 			void saveGraphSLOT();		
 //			void toggleSimulationSLOT();
 			void restart_app(bool);
 			void switch_view(bool state, WidgetContainer* container);
             void compute();
+            void qscene2d_object_position(int pos_x, int pos_y, uint64_t  node_id);
 		signals:
 			void saveGraphSIGNAL();
 			void closeWindowSIGNAL();

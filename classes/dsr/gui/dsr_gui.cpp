@@ -169,7 +169,8 @@ DSRViewer::DSRViewer(QMainWindow * widget, std::shared_ptr<DSR::DSRGraph> G_, in
 	});
 
 	main_widget = nullptr;
-	initialize_views(options, main);
+    object_position =  nullptr;
+    initialize_views(options, main);
     timer = new QTimer();
     alive_timer.start();
     timer->start(500);
@@ -312,7 +313,7 @@ void DSRViewer::initialize_views(int options, view central){
 //	connection of tree to graph signals
 	if(docks.count(QString("Tree"))==1) {
 		if (this->main_widget) {
-			auto graph_widget = qobject_cast<GraphViewer*>(this->main_widget);
+            auto graph_widget = qobject_cast<GraphViewer*>(this->main_widget);
 			if (graph_widget) {
 				TreeViewer* tree_widget = qobject_cast<TreeViewer*>(docks["Tree"]->widget());
 				DSRViewer::connect(
@@ -324,6 +325,12 @@ void DSRViewer::initialize_views(int options, view central){
 			}
 		}
 	}
+//  connection of 2d scene signals
+    if(docks.count(QString("2D"))==1) {
+        std::cout<<"connect 2D"<<std::endl;
+        QScene2dViewer* qscene_widget = qobject_cast<QScene2dViewer*>(docks["2D"]->widget());
+        DSRViewer::connect(qscene_widget, &QScene2dViewer::mouse_right_click, this, &DSRViewer::qscene2d_object_position);
+    }
 	if((docks.size())>0 or central!=none)
 	{
 		window->show();
@@ -467,7 +474,20 @@ void DSRViewer::compute()
     std::stringstream memory_usage;
     memory_usage << std::fixed << std::setprecision(2) << get_memory_usage()/1024.f;
     std::string status = "ALIVE TIME: " + std::to_string(alive_timer.elapsed()/1000) + "s CPU: " + cpu_usage.str() + " Memory: " + memory_usage.str() + "MB ";
+    if (object_position != nullptr)
+    {
+        status += " Object pose: (" + std::to_string(object_position->x()) + ", " + std::to_string(object_position->y()) + ") ID: " + std::to_string(object_id);
+    }
     this->window->statusBar()->showMessage(QString::fromStdString(status)); 
+}
+
+void DSRViewer::qscene2d_object_position(int pos_x, int pos_y, uint64_t  node_id)
+{
+    if (object_position == nullptr)
+        object_position = new QPoint();
+    object_position->setX(pos_x);
+    object_position->setY(pos_y);
+    object_id = node_id;
 }
 
 /////////////////////////
