@@ -553,6 +553,9 @@ namespace DSR
         //////////////////////////////////////////////////////////////////////////
         // Cache maps
         ///////////////////////////////////////////////////////////////////////////
+
+        //TODO: Move this to a class
+        mutable std::shared_mutex _mutex_cache_maps;
         std::unordered_set<uint64_t> deleted;     // deleted nodes, used to avoid insertion after remove.
         std::unordered_map<std::string, uint64_t> name_map;     // mapping between name and id of nodes.
         std::unordered_map<uint64_t, std::string> id_map;       // mapping between id and name of nodes.
@@ -584,7 +587,6 @@ namespace DSR
         // Other methods
         //////////////////////////////////////////////////////////////////////////
         std::map<uint64_t , IDL::MvregNode> Map();
-
 
 
         template <typename name, typename Type, typename =  std::enable_if_t<crdt_node_or_edge<Type>> >
@@ -663,6 +665,7 @@ namespace DSR
         void join_full_graph(IDL::OrMap &&full_graph);
 
         //Custom function for each rtps topic
+        //TODO: Move this to a class
         class NewMessageFunctor {
         public:
             DSRGraph *graph{};
@@ -678,6 +681,7 @@ namespace DSR
         };
 
         //Custom function for each rtps topic
+        //TODO: Move this to a class
         class ParticipantChangeFunctor {
         public:
             DSRGraph *graph{};
@@ -694,11 +698,14 @@ namespace DSR
                 f(graph, std::forward<eprosima::fastrtps::rtps::ParticipantDiscoveryInfo&&>(info));
             };
         };
+
+
         //Threads
         std::pair<bool, bool> start_fullgraph_request_thread();
         void start_fullgraph_server_thread();
         void start_subscription_threads(bool showReceived);
 
+        //TODO: Maybe we don't need this threads
         std::thread delta_node_thread, delta_edge_thread, delta_node_attrs_thread, delta_edge_attrs_thread, fullgraph_thread;
 
         // Threads handlers
@@ -711,6 +718,7 @@ namespace DSR
         mutable std::mutex mtx_entity_creation;
 
         // RTSP participant
+        //TODO: Move this to a class?
         DSRParticipant dsrparticipant;
         mutable std::mutex participant_set_mutex;
         std::unordered_set<std::string> participant_set;

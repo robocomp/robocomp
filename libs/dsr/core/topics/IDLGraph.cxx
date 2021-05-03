@@ -26,6 +26,7 @@ namespace { char dummy; }
 
 #include <dsr/core/topics/IDLGraph.h>
 #include <fastcdr/Cdr.h>
+#include <cassert>
 
 #include <fastcdr/exceptions/BadParamException.h>
 using namespace eprosima::fastcdr::exception;
@@ -2506,6 +2507,8 @@ namespace IDL {
 
     void MvregNodeAttr::serialize(eprosima::fastcdr::Cdr &scdr) const {
 
+        assert(m_dk.ds().size() <= 1);
+
         scdr << m_id;
         scdr << m_node;
         scdr << m_attr_name;
@@ -2520,6 +2523,9 @@ namespace IDL {
         dcdr >> m_attr_name;
         dcdr >> m_dk;
         dcdr >> m_agent_id;
+
+        assert(m_dk.ds().size() <= 1);
+
     }
 
 /*!

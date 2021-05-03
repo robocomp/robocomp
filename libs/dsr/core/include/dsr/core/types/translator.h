@@ -6,6 +6,7 @@
 #define CONVERTER_H
 
 #include "user_types.h"
+#include <cassert>
 
 namespace DSR {
 

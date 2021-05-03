@@ -140,6 +140,9 @@ REGISTER_TYPE(ps_intimate_y_pos, std::reference_wrapper<const std::vector<float>
 REGISTER_TYPE(obj_width, int, false)
 REGISTER_TYPE(obj_height, int, false)
 REGISTER_TYPE(obj_depth, int, false)
+REGISTER_TYPE(obj_visible, int, false)
+REGISTER_TYPE(projected_bounding_box, std::reference_wrapper<const std::vector<float>>, true)
+
 /*
  * camera
  * */
@@ -217,7 +220,18 @@ REGISTER_TYPE(path_target_y, float, false)
  * */
 REGISTER_TYPE(battery_load, int, false);
 
-/* * * * * * * * * * *  
+/*
+ * Wifi signal
+ * */
+REGISTER_TYPE(wifi_signal, int, false);
+
+/*
+ * Room
+ * */
+REGISTER_TYPE(delimiting_polygon_x, std::reference_wrapper<const std::vector<float>>, false);
+REGISTER_TYPE(delimiting_polygon_y, std::reference_wrapper<const std::vector<float>>, false);
+
+/* * * * * * * * * * *
  * MELEX-RODAO ATTR  *
  * * * * * * * * * * */
 

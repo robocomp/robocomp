@@ -80,7 +80,7 @@ public:
     void closeEvent (QCloseEvent *event) override
     {
         disconnect(graph.get(), 0, this, 0);
-        graph.reset();
+        //graph.reset();
         QTableWidget::closeEvent(event);
     };
 
@@ -265,7 +265,7 @@ public:
     };
     void closeEvent (QCloseEvent *event) override
     {
-        graph.reset();
+        //graph.reset();
         disconnect(graph.get(), 0, this, 0);
     };
 public slots:

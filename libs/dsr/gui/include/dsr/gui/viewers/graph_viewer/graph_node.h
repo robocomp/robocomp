@@ -61,7 +61,7 @@ class DoLaserStuff : public QGraphicsView
     void closeEvent (QCloseEvent *event) override 
     {
       disconnect(graph.get(), nullptr, this, nullptr);
-      graph.reset();
+      //graph.reset();
     };
 
   public slots:
@@ -141,8 +141,8 @@ class DoRGBDStuff : public QWidget
     void closeEvent (QCloseEvent *event) override
     {
         disconnect(graph.get(), nullptr, this, nullptr);
-        graph.reset();
-        cam.reset();
+        //graph.reset();
+        //cam.reset();
     };
 
   public slots:
@@ -248,7 +248,7 @@ class DoTableStuff : public  QTableWidget
             {
                 auto value = attrs.find(attrib_name);
                 if (value != attrs.end()) {
-                    auto &av = value->second;
+                    auto &&av = value->second;
                     if (widget_map.count(attrib_name)) {
                         update_attribute_value(attrib_name, std::move(av));
                     } else {
@@ -266,7 +266,7 @@ class DoTableStuff : public  QTableWidget
         std::optional<Node> n = graph->get_node(node_id);
         if (n.has_value())
         {
-            for (auto &[k, v] : n.value().attrs()) {
+            for (auto &&[k, v] : n.value().attrs()) {
                 if(widget_map.count( k )) {
                     update_attribute_value(k, std::move(v));
                 }
@@ -290,7 +290,7 @@ class DoTableStuff : public  QTableWidget
     void closeEvent (QCloseEvent *event) override
     {
         disconnect(graph.get(), nullptr, this, nullptr);
-        graph.reset();
+        //graph.reset();
     };
   private:
     std::shared_ptr<DSR::DSRGraph> graph;
@@ -309,7 +309,7 @@ class DoTableStuff : public  QTableWidget
         this->setMinimumWidth(width);
         this->setMinimumHeight(height);
     }
-    void update_attribute_value(const std::string& k, DSR::Attribute&& v)
+    void update_attribute_value(const std::string &k, DSR::Attribute &&v)
     {
         widget_map[k]->blockSignals(true);
         switch (v.selected()) {
@@ -326,8 +326,8 @@ class DoTableStuff : public  QTableWidget
                 break;
             }
             case 3: {
-                auto * widget = qobject_cast<QWidget*>(widget_map[k]);
-                auto * layout = widget->layout();
+                //auto * widget = qobject_cast<QWidget*>(widget_map[k]);
+                //auto * layout = widget->layout();
                 //Esto no esta bien. No se controlan nuevos elementos, ni borrados, etc.
                 /*if (!v.float_vec().empty() and v.float_vec().size() <= 10) {
                     for (size_t i = 0 ; i < v.float_vec().size(); ++i) {
@@ -341,8 +341,8 @@ class DoTableStuff : public  QTableWidget
                 break;
             }
             case 5: {
-                auto * widget = qobject_cast<QWidget*>(widget_map[k]);
-                auto * layout = widget->layout();
+                //auto * widget = qobject_cast<QWidget*>(widget_map[k]);
+                //auto * layout = widget->layout();
                 //Esto no esta bien. No se controlan nuevos elementos, ni borrados, etc.
                 /*if (!v.byte_vec().empty() and v.byte_vec().size() <= 10) {
                     for (size_t i = 0 ; i < v.byte_vec().size(); ++i) {
@@ -366,7 +366,7 @@ class DoTableStuff : public  QTableWidget
         }
         widget_map[k]->blockSignals(false);
     }
-    void insert_attribute(const std::string& k, DSR::Attribute&& v)
+    void insert_attribute(const std::string &k, DSR::Attribute &&v)
     {
         bool inserted = true;
 
@@ -510,6 +510,7 @@ class DoTableStuff : public  QTableWidget
         } else {
             removeRow(rc+1);
         }
+
     }
 };
 

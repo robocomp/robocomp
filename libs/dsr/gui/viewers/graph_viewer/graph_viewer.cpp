@@ -42,7 +42,7 @@ GraphViewer::~GraphViewer()
 {
     qDebug() << __FUNCTION__ << "Destroy";
     qDebug()  << "GraphViewer: " << G.use_count();
-    G.reset();
+    //G.reset();
     gmap.clear();
 	gmap_edges.clear();
     type_id_map.clear();
@@ -50,8 +50,9 @@ GraphViewer::~GraphViewer()
 	for(int i = 0; i < allGraphicsItems.size(); i++)
 	{
 		QGraphicsItem *graphicItem = allGraphicsItems[i];
-		if(graphicItem->scene() == &scene)
+		if(graphicItem->scene() == &scene){
 			scene.removeItem(graphicItem);
+		}
 
 	}
 	scene.clear();

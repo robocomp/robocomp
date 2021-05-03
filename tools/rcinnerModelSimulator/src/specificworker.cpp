@@ -44,9 +44,9 @@ SpecificWorker::SpecificWorker(MapPrx& _mprx, Ice::CommunicatorPtr _communicator
 	QGLFormat fmt;
 	fmt.setDoubleBuffer(true);
 	QGLFormat::setDefaultFormat(fmt);
-	viewer = new OsgView(frameOSG);
+        viewer = new OsgView(frameOSG);
 	
-	// create InnerModelViewer
+        // create InnerModelViewer
 	imv = std::make_shared<InnerModelViewer>(innerModel, "root", viewer->getRootGroup());
 
 	// view manipulator
