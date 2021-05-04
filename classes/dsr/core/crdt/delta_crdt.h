@@ -269,8 +269,9 @@ public:
                 // dot only at this
                 if (o.c.dotin(it->first)) { // other knows dot, must delete here
                     ds.erase(it++);
-                } else // keep it
+                } else {// keep it
                     ++it;
+                }
             } else if (ito != o.ds.end() && (it == ds.end() || ito->first < it->first)) {
                 // dot only at other
                 if (!c.dotin(ito->first) || ds.empty()) { // If I dont know, import
@@ -281,11 +282,11 @@ public:
                 // dot in both
                 //replace in case of conflict if the agent id has a lower value
                 if (it->second.agent_id() > ito->second.agent_id() && *it != *ito) {
-                    ds.erase(it);
+                    it = ds.erase(it);
                     ds.insert(std::move(*ito));
+                } else {
+                    ++it;
                 }
-                //}
-                ++it;
                 ++ito;
             }
         } while (it != ds.end() || ito != o.ds.end());

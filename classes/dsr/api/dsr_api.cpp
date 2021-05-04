@@ -1099,16 +1099,16 @@ void DSRGraph::join_full_graph(IDL::OrMap &&full_graph) {
     for (auto &[signal, id, type, nd] : updates)
         if (signal) {
             //check what change is joined
-            if (nd->attrs() != nodes[id].read_reg().attrs()) {
+            if (!nd.has_value() || nd->attrs() != nodes[id].read_reg().attrs()) {
                 emit update_node_signal(id, nodes[id].read_reg().type());
-            } else if (nd != nodes[id].read_reg()) {
+            } else if (nd.value() != nodes[id].read_reg()) {
                 auto iter = nodes[id].read_reg().fano();
                 for (const auto &[k, v] : nd->fano()) {
                     if (iter.find(k) == iter.end())
                             emit del_edge_signal(id, k.first, k.second);
                 }
                 for (const auto &[k, v] : iter) {
-                    if (nd->fano().find(k) == nd->fano().end() or nd->fano()[k] != v)
+                    if (auto it = nd->fano().find(k); it == nd->fano().end() or it->second != v)
                             emit update_edge_signal(id, k.first, k.second);
                 }
             }
