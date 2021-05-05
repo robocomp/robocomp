@@ -428,11 +428,12 @@ std::optional<std::tuple<float,float,float>> CameraAPI::get_roi_depth(const std:
     auto right = (int)roi.max().x(); auto top = (int)roi.max().y();  // botom has higher numeric value. rows start in 0 up
     if(left<right and bot>top)
     {
+        
         auto size = (right - left) * (bot - top);
         std::vector<float> values(size);
         std::size_t k = 0;
-        for (int i = left; i < right; i++)
-            for (int j = top; j < bot; j++)
+        for (int i = top; i < bot; i++)
+            for (int j = left; j < right; j++)
                 values[k++] = depth[i * width + j];
 
         //auto mv = std::ranges::min(values);
