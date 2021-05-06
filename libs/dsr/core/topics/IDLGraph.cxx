@@ -3617,7 +3617,7 @@ namespace IDL {
  * @brief This function sets a value in member id
  * @param _id New value for member id
  */
-    void GraphRequest::id(int32_t _id) {
+    void GraphRequest::id(uint32_t _id) {
         m_id = _id;
     }
 
@@ -3625,7 +3625,7 @@ namespace IDL {
  * @brief This function returns the value of member id
  * @return Value of member id
  */
-    int32_t GraphRequest::id() const {
+    uint32_t GraphRequest::id() const {
         return m_id;
     }
 
@@ -3633,7 +3633,7 @@ namespace IDL {
  * @brief This function returns a reference to member id
  * @return Reference to member id
  */
-    int32_t &GraphRequest::id() {
+    uint32_t &GraphRequest::id() {
         return m_id;
     }
 
