@@ -50,6 +50,7 @@ REGISTER_EDGE_TYPE(front)
 REGISTER_EDGE_TYPE(interacting)
 REGISTER_EDGE_TYPE(interactive)
 REGISTER_EDGE_TYPE(thinks)
+REGISTER_EDGE_TYPE(goto_action)
 
 
 #endif //DSR_EDGE_TYPE_H
