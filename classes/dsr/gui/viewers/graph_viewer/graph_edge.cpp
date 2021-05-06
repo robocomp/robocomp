@@ -191,13 +191,15 @@ void GraphEdge::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event)
 	static std::unique_ptr<QWidget> do_stuff;
 	const auto graph = source->getGraphViewer()->getGraph();
 	if( event->button()== Qt::RightButton)
-	{
-		if(tag == "RT" or tag == "looking-at")
-			do_stuff = std::make_unique<DoRTStuff2>(graph, source->id_in_graph, dest->id_in_graph, tag.toStdString());
-	}
-	animation->start();
-	update();
-	QGraphicsLineItem::mouseDoubleClickEvent(event);
+    {
+        if (tag == "RT" or tag == "looking-at")
+            do_stuff = std::make_unique<DoRTStuff2>(graph, source->id_in_graph, dest->id_in_graph, tag.toStdString());
+        else
+            do_stuff = std::make_unique<DoTableEdgeStuff>(graph, source->id_in_graph, dest->id_in_graph, tag.toStdString());
+        animation->start();
+        update();
+        QGraphicsLineItem::mouseDoubleClickEvent(event);
+    }
 }
 
 
