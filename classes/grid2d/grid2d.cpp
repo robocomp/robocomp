@@ -192,8 +192,8 @@ std::list<QPointF> Grid<T>::computePath(const QPointF &source_, const QPointF &t
                 active_vertices.erase({min_distance[ed.second.id], ed.first});
                 min_distance[ed.second.id] = min_distance[fmap[where].id] + ed.second.cost;
                 previous[ed.second.id] = std::make_pair(fmap[where].id, where);
-                active_vertices.insert({min_distance[ed.second.id], ed.first}); // Djikstra
-                //active_vertices.insert( { min_distance[ed.second.id] + heuristicL2(ed.first, target), ed.first } ); //A*
+                //active_vertices.insert({min_distance[ed.second.id], ed.first}); // Djikstra
+                active_vertices.insert( { min_distance[ed.second.id] + heuristicL2(ed.first, target), ed.first } ); //A*
             }
         }
     }
