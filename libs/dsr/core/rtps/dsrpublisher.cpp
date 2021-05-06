@@ -52,8 +52,6 @@ std::tuple<bool, eprosima::fastdds::dds::Publisher*, eprosima::fastdds::dds::Dat
 
     }
 
-
-
     ThroughputControllerDescriptor PublisherThroughputController{30000000, 1000};
     dataWriterQos.throughput_controller() = PublisherThroughputController;
 

@@ -90,6 +90,7 @@ std::tuple<bool, eprosima::fastdds::dds::DomainParticipant*> DSRParticipant::ini
         qDebug() << "Error creating participant, retrying. [" << retry <<"/5]";
     }
 
+
     if(mp_participant == nullptr)
     {
         qFatal("Could not create particpant after 5 attemps");

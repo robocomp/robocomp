@@ -108,13 +108,13 @@ namespace DSR
         std::unique_ptr<RT_API> get_rt_api() { return std::make_unique<RT_API>(this); };
 
         // Innermodel CameraAPI
-//        std::unique_ptr<CameraAPI> get_camera_api(const DSR::Node & camera_node) { return std::make_unique<CameraAPI>(this, camera_node); };
         std::unique_ptr<CameraAPI> get_camera_api(const DSR::Node &camera_node) { return std::make_unique<CameraAPI>(this, camera_node); };
 
 
-        /**
-         * CORE
-         **/
+        //////////////////////////////////////////////////////
+        ///  Core API
+        //////////////////////////////////////////////////////
+
         // Nodes
         std::optional<Node> get_node(const std::string &name);
         std::optional<Node> get_node(uint64_t id);
@@ -134,9 +134,9 @@ namespace DSR
         /**CORE END**/
 
 
-        /**
-         * CONVENIENCE METHODS
-         **/
+        //////////////////////////////////////////////////////
+        ///  CONVENIENCE METHODS
+        //////////////////////////////////////////////////////
         // Nodes
         std::optional<Node> get_node_root() { return get_node("world"); };
         std::vector<Node> get_nodes_by_type(const std::string &type);
@@ -477,30 +477,6 @@ namespace DSR
         }
 
         /////////////////////////////////////////////////
-        /// AUXILIARY IMAGES SUB-API
-        /////////////////////////////////////////////////
-        //std::optional<std::reference_wrapper<const std::vector<uint8_t>>> get_rgb_image(const Node &n) const;
-        //std::optional<std::vector<float>> get_depth_image(const Node &n); //return a copy
-        //std::optional<std::reference_wrapper<const std::vector<uint8_t>>> get_depth_image(const Node &n) const;
-        //subsampling: 0,1,2,.. means all, one of two, one of three...
-        //std::optional<std::vector<std::tuple<float,float,float>>>  get_pointcloud(const Node &n, const std::string target_frame_node = "", unsigned short subsampling=1);
-        //std::optional<std::vector<uint8_t>> get_depth_as_gray_image(const Node &n) const;
-        /**AUXILIARY Images SUB-API**/
-
-        /////////////////////////////////////////////////
-        /// AUXILIARY RT SUB-API
-        /////////////////////////////////////////////////
-
-        //void insert_or_assign_edge_RT(Node &n, uint32_t to, const std::vector<float> &trans, const std::vector<float> &rot_euler);
-        //void insert_or_assign_edge_RT(Node &n, uint32_t to, std::vector<float> &&trans, std::vector<float> &&rot_euler);
-        //static std::optional<Edge> get_edge_RT(const Node &n, uint32_t to);
-        //std::optional<RTMat> get_edge_RT_as_RTMat(const Edge &edge);
-        //std::optional<RTMat> get_RT_pose_from_parent(const Node &n);
-        //std::optional<Mat::RTMat> get_edge_RT_as_rtmat(const Edge &edge);
-        /**AUXILIARY RT SUB-API**/
-
-
-        /////////////////////////////////////////////////
         /// AUXILIARY IO SUB-API
         /////////////////////////////////////////////////
         void print()                                            { utils->print(); };
@@ -524,8 +500,8 @@ namespace DSR
                     return node.id();
                 }
                 return {};
-            }); };
-        /**AUXILIARY IO SUB-API**/
+            });
+        };
 
         //////////////////////////////////////////////////
         ///// PRIVATE COPY
@@ -533,17 +509,27 @@ namespace DSR
         std::unique_ptr<DSRGraph> G_copy();
         bool is_copy() const;
 
+        //////////////////////////////////////////////////
+        ///// Agents info
+        /////////////////////////////////////////////////
+        std::vector<std::string> get_connected_agents()
+        {
+            std::unique_lock<std::mutex> lck(participant_set_mutex);
+            std::vector<std::string> ret_vec(participant_set.size());
+            for (auto &[k, _]: participant_set)
+            {
+                ret_vec.emplace_back(k);
+            }
+            return ret_vec;
+        }
     private:
 
         DSRGraph(const DSRGraph& G);
         Nodes nodes;
-        uint64_t graph_root;
         mutable std::shared_mutex _mutex;
-        std::string filter;
         const uint32_t agent_id;
-        std::string agent_name;
+        const std::string agent_name;
         std::unique_ptr<Utilities> utils;
-        //RoboCompDSRGetID::DSRGetIDPrxPtr dsr_getid_proxy; // proxy to obtain unique node ids
         const bool copy;
         std::unordered_set<std::string_view> ignored_attributes;
         ThreadPool tp;
@@ -554,7 +540,6 @@ namespace DSR
         // Cache maps
         ///////////////////////////////////////////////////////////////////////////
 
-        //TODO: Move this to a class
         mutable std::shared_mutex _mutex_cache_maps;
         std::unordered_set<uint64_t> deleted;     // deleted nodes, used to avoid insertion after remove.
         std::unordered_map<std::string, uint64_t> name_map;     // mapping between name and id of nodes.
@@ -665,7 +650,6 @@ namespace DSR
         void join_full_graph(IDL::OrMap &&full_graph);
 
         //Custom function for each rtps topic
-        //TODO: Move this to a class
         class NewMessageFunctor {
         public:
             DSRGraph *graph{};
@@ -681,7 +665,6 @@ namespace DSR
         };
 
         //Custom function for each rtps topic
-        //TODO: Move this to a class
         class ParticipantChangeFunctor {
         public:
             DSRGraph *graph{};
@@ -700,15 +683,10 @@ namespace DSR
         };
 
 
-        //Threads
+        //Threads handlers
         std::pair<bool, bool> start_fullgraph_request_thread();
         void start_fullgraph_server_thread();
         void start_subscription_threads(bool showReceived);
-
-        //TODO: Maybe we don't need this threads
-        std::thread delta_node_thread, delta_edge_thread, delta_node_attrs_thread, delta_edge_attrs_thread, fullgraph_thread;
-
-        // Threads handlers
         void node_subscription_thread(bool showReceived);
         void edge_subscription_thread(bool showReceived);
         void node_attrs_subscription_thread(bool showReceived);
@@ -717,15 +695,17 @@ namespace DSR
         std::pair<bool, bool> fullgraph_request_thread();
         mutable std::mutex mtx_entity_creation;
 
+
         // RTSP participant
         //TODO: Move this to a class?
         DSRParticipant dsrparticipant;
+        std::unordered_map<std::string, bool> participant_set;
+
         mutable std::mutex participant_set_mutex;
-        std::unordered_set<std::string> participant_set;
+
         DSRPublisher dsrpub_node;
         DSRSubscriber dsrsub_node;
         NewMessageFunctor dsrpub_call_node;
-
 
         DSRPublisher dsrpub_edge;
         DSRSubscriber dsrsub_edge;
@@ -747,7 +727,7 @@ namespace DSR
         DSRPublisher dsrpub_request_answer;
         NewMessageFunctor dsrpub_request_answer_call;
 
-    signals:                                                                  // for graphics update
+    signals:
         void update_node_signal(uint64_t, const std::string &type); // REMOVE type
 
         void update_attrs_signal(uint64_t id, const std::map<std::string, Attribute> &attribs);//DEPRECATED //Signal to show node attribs.

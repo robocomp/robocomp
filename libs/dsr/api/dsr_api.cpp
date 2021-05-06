@@ -28,8 +28,7 @@ DSRGraph::DSRGraph(uint64_t root, std::string name, int id, const std::string &d
         : agent_id(id), agent_name(std::move(name)), copy(false), tp(5), same_host(all_same_host), generator(id)
 {
 
-    graph_root = root;
-    nodes = Nodes(graph_root);
+    nodes = Nodes();
     utils = std::make_unique<Utilities>(this);
     qDebug() << "Agent name: " << QString::fromStdString(agent_name);
 
@@ -38,8 +37,17 @@ DSRGraph::DSRGraph(uint64_t root, std::string name, int id, const std::string &d
                                                         ParticipantChangeFunctor(this, [&](DSR::DSRGraph *graph,
                                                                 eprosima::fastrtps::rtps::ParticipantDiscoveryInfo&& info)
                                                                 {
-                                                                    std::unique_lock<std::mutex> lck(participant_set_mutex);
-                                                                    graph->participant_set.erase(info.info.m_participantName.to_string());
+                                                                    if (info.status == eprosima::fastrtps::rtps::ParticipantDiscoveryInfo::DISCOVERED_PARTICIPANT)
+                                                                    {
+                                                                        std::unique_lock<std::mutex> lck(participant_set_mutex);
+                                                                        graph->participant_set.insert({info.info.m_participantName.to_string(), false});
+                                                                    }
+                                                                    else if (info.status == eprosima::fastrtps::rtps::ParticipantDiscoveryInfo::REMOVED_PARTICIPANT ||
+                                                                             info.status == eprosima::fastrtps::rtps::ParticipantDiscoveryInfo::DROPPED_PARTICIPANT)
+                                                                    {
+                                                                        std::unique_lock<std::mutex> lck(participant_set_mutex);
+                                                                        graph->participant_set.erase(info.info.m_participantName.to_string());
+                                                                    }
                                                                 }));
 
     // RTPS Initialize publisher with general topic
@@ -84,13 +92,13 @@ DSRGraph::DSRGraph(uint64_t root, std::string name, int id, const std::string &d
         {
             dsrparticipant.remove_participant_and_entities(); // Remove a Participant and all associated publishers and subscribers.
 
-            //if (repeated)
-            //{
-            //    qFatal("%s", (std::string("There is already an agent connected with the id: ") + std::to_string(agent_id)).c_str());
-            //}
-            //else {
-                qFatal("DSRGraph aborting: could not get DSR from the network after timeout");  //JC ¿se pueden limpiar aquí cosas antes de salir?
-            //}
+            if (repeated)
+            {
+                qFatal("%s", (std::string("There is already an agent connected with the id: ") + std::to_string(agent_id)).c_str());
+            }
+            else {
+                qFatal("DSRGraph aborting: could not get DSR from the network after timeout");
+            }
         }
     }
     qDebug() << __FUNCTION__ << "Constructor finished OK";
@@ -1123,15 +1131,15 @@ std::pair<bool, bool> DSRGraph::start_fullgraph_request_thread() {
 }
 
 void DSRGraph::start_fullgraph_server_thread() {
-    fullgraph_thread = std::thread(&DSRGraph::fullgraph_server_thread, this);
+    auto fullgraph_thread = std::thread(&DSRGraph::fullgraph_server_thread, this);
     if (fullgraph_thread.joinable()) fullgraph_thread.join();
 }
 
 void DSRGraph::start_subscription_threads(bool showReceived) {
-    delta_node_thread = std::thread(&DSRGraph::node_subscription_thread, this, showReceived);
-    delta_edge_thread = std::thread(&DSRGraph::edge_subscription_thread, this, showReceived);
-    delta_node_attrs_thread = std::thread(&DSRGraph::node_attrs_subscription_thread, this, showReceived);
-    delta_edge_attrs_thread = std::thread(&DSRGraph::edge_attrs_subscription_thread, this, showReceived);
+    auto delta_node_thread = std::thread(&DSRGraph::node_subscription_thread, this, showReceived);
+    auto delta_edge_thread = std::thread(&DSRGraph::edge_subscription_thread, this, showReceived);
+    auto delta_node_attrs_thread = std::thread(&DSRGraph::node_attrs_subscription_thread, this, showReceived);
+    auto delta_edge_attrs_thread = std::thread(&DSRGraph::edge_attrs_subscription_thread, this, showReceived);
 
     if (delta_node_thread.joinable()) delta_node_thread.join();
     if (delta_edge_thread.joinable()) delta_edge_thread.join();
@@ -1296,21 +1304,30 @@ void DSRGraph::node_attrs_subscription_thread(bool showReceived) {
 void DSRGraph::fullgraph_server_thread() {
     auto lambda_graph_request = [&](eprosima::fastdds::dds::DataReader *reader, DSR::DSRGraph *graph) {
 
-
-
         while (true)
         {
             eprosima::fastdds::dds::SampleInfo m_info;
             IDL::GraphRequest sample;
             if (reader->take_next_sample(&sample, &m_info) == ReturnCode_t::RETCODE_OK) {
                 if (m_info.instance_state == eprosima::fastdds::dds::ALIVE_INSTANCE_STATE) {
-                    std::unique_lock<std::mutex> lck(participant_set_mutex);
-                    if (static_cast<uint32_t>(sample.id()) != agent_id /*&& participant_set.find(("Participant_" + std::to_string(sample.id()))) == participant_set.end()*/) {
+                    {
+                        std::unique_lock<std::mutex> lck(participant_set_mutex);
+                        if (auto it = participant_set.find(("Participant_" + std::to_string(sample.id())));
+                            it != participant_set.end() and it->second)
+                        {
+                            lck.unlock();
+                            IDL::OrMap mp; mp.id(-1);
+                            dsrpub_request_answer.write(&mp);
+                            continue;
+                        } else {
+                            it->second = true;
+                            lck.unlock();
+                        }
+                    }
+                    if (static_cast<uint32_t>(sample.id()) != agent_id ) {
 
                         qDebug() << " Received Full Graph request: from "
                                 << m_info.sample_identity.writer_guid().entityId.value;
-                        participant_set.insert(("Participant_" + std::to_string(sample.id())));
-                        lck.unlock();
                         IDL::OrMap mp;
                         mp.id(graph->get_agent_id());
                         mp.m(graph->Map());
@@ -1318,13 +1335,7 @@ void DSRGraph::fullgraph_server_thread() {
 
                         qDebug() << "Full graph written";
 
-                    } /*else {
-                        lck.unlock();
-
-                        IDL::OrMap mp;
-                        mp.id(-1);
-                        dsrpub_request_answer.write(&mp);
-                    }*/
+                    }
                 }
             } else {
                 break;
@@ -1343,13 +1354,10 @@ std::pair<bool, bool> DSRGraph::fullgraph_request_thread() {
     bool repeated = false;
     auto lambda_request_answer = [&](eprosima::fastdds::dds::DataReader *reader, DSR::DSRGraph *graph) {
 
-
         while (true)
         {
             eprosima::fastdds::dds::SampleInfo m_info;
             IDL::OrMap sample;
-
-
             if (reader->take_next_sample(&sample, &m_info) == ReturnCode_t::RETCODE_OK) {
                 if (m_info.instance_state == eprosima::fastdds::dds::ALIVE_INSTANCE_STATE) {
                     if (sample.id() != graph->get_agent_id()) {
@@ -1404,9 +1412,6 @@ std::pair<bool, bool> DSRGraph::fullgraph_request_thread() {
     dsrparticipant.delete_publisher(dsrparticipant.getGraphRequestTopic()->get_name());
     dsrparticipant.delete_subscriber(dsrparticipant.getGraphTopic()->get_name());
 
-    //dsrpub_graph_request.remove_publisher();
-    //dsrsub_request_answer.remove_subscriber();
-
     return { sync, repeated };
 }
 
@@ -1419,7 +1424,6 @@ DSRGraph::DSRGraph(const DSRGraph &G) : agent_id(G.agent_id), copy(true), tp(1),
     std::shared_lock<std::shared_mutex> lock(_mutex);
     std::shared_lock<std::shared_mutex> lock_cache(_mutex_cache_maps);
     nodes = G.nodes;
-    graph_root = G.graph_root;
     utils = std::make_unique<Utilities>(this);
     id_map = G.id_map;
     deleted = G.deleted;
