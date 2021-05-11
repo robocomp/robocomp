@@ -567,5 +567,5 @@ class GraphNode : public QObject, public QGraphicsEllipseItem
     QMenu *contextMenu = nullptr;
     std::unique_ptr<QWidget> do_stuff;
 };
-
+Q_DECLARE_METATYPE(DSR::Node);
 #endif // GRAPHNODE_H

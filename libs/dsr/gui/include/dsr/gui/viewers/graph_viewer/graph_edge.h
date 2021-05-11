@@ -428,6 +428,6 @@ protected:
 //    QLineF calculateArrowLine(const QPainterPath &path, bool first, const QLineF &direction) const;
 
 };
-
+Q_DECLARE_METATYPE(DSR::Edge);
 
 #endif // GRAPHEDGE_H
