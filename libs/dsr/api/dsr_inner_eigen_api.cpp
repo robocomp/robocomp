@@ -21,7 +21,7 @@ InnerEigenAPI::InnerEigenAPI(DSR::DSRGraph *G_)
 std::optional<Mat::RTMat> InnerEigenAPI::get_transformation_matrix(const std::string &dest, const std::string &orig)
 {
    KeyTransform key = std::make_tuple(dest, orig);
-    if( TransformCache::iterator it = cache.find(key) ; it != cache.end())
+    if( auto it = cache.find(key) ; it != cache.end())
         return it->second;
     else
     {
@@ -32,14 +32,14 @@ std::optional<Mat::RTMat> InnerEigenAPI::get_transformation_matrix(const std::st
         auto bn = G->get_node(dest);
         if ( not an.has_value() or  not bn.has_value())
         {
-            qWarning() << __FUNCTION__ << " origen or dest nodes do not exist: " << QString::fromStdString(orig) << QString::fromStdString(dest);
+            qWarning() << __FUNCTION__ << ":"<<__LINE__<< " origen or dest nodes do not exist: " << QString::fromStdString(orig) << QString::fromStdString(dest);
             return {};
         }
         auto a = an.value(); auto b = bn.value();
         int minLevel = std::min(G->get_node_level(a).value_or(-1), G->get_node_level(b).value_or(-1));
         if (minLevel == -1)
         {
-            qWarning() << __FUNCTION__ << " Incorrect level in one origin or dest nodes: " << QString::fromStdString(orig) << QString::fromStdString(dest);
+            qWarning() << __FUNCTION__ << ":"<<__LINE__ << " Incorrect level in one origin or dest nodes: " << QString::fromStdString(orig) << QString::fromStdString(dest);
             return {};
         }
         while (G->get_node_level(a).value_or(-1) >= minLevel)
@@ -48,8 +48,13 @@ std::optional<Mat::RTMat> InnerEigenAPI::get_transformation_matrix(const std::st
             auto p_node = G->get_parent_node(a);
             if( not p_node.has_value())
                 break;
-            auto edge_rt = rt->get_edge_RT(p_node.value(), a.id()).value();
-            auto rtmat = rt->get_edge_RT_as_rtmat(edge_rt).value();
+            auto edge_rt = rt->get_edge_RT(p_node.value(), a.id());
+            if (not edge_rt.has_value())
+            {
+                qWarning() << __FUNCTION__ << ":"<<__LINE__<< " Cannot find RT edge between Parent (" << QString::fromStdString(p_node->name()) << ", " << p_node->id() <<") and son (" << QString::fromStdString(a.name()) << ", " << a.id() <<") nodes going from: " << QString::fromStdString(orig) << " to: " << QString::fromStdString(dest);
+                return {};
+            }
+            auto rtmat = rt->get_edge_RT_as_rtmat(edge_rt.value()).value();
             atotal = rtmat * atotal;
             node_map[p_node.value().id()].push_back(key); // update node cache reference
             a = p_node.value();
@@ -60,8 +65,13 @@ std::optional<Mat::RTMat> InnerEigenAPI::get_transformation_matrix(const std::st
             auto p_node = G->get_parent_node(b);
             if(not p_node.has_value())
                 break;
-            auto edge_rt = rt->get_edge_RT(p_node.value(), b.id()).value();
-            auto rtmat = rt->get_edge_RT_as_rtmat(edge_rt).value();
+            auto edge_rt = rt->get_edge_RT(p_node.value(), b.id());
+            if (not edge_rt.has_value())
+            {
+                qWarning() << __FUNCTION__ << ":"<<__LINE__ << " Cannot find RT edge between Parent (" << QString::fromStdString(p_node->name()) << ", " << p_node->id() <<") and son (" << QString::fromStdString(a.name()) << ", " << a.id() <<") nodes going from: " << QString::fromStdString(orig) << " to: " << QString::fromStdString(dest);
+                return {};
+            }
+            auto rtmat = rt->get_edge_RT_as_rtmat(edge_rt.value()).value();
             btotal = rtmat * btotal;
             node_map[p_node.value().id()].push_back(key); // update node cache reference
             b = p_node.value();
@@ -74,10 +84,20 @@ std::optional<Mat::RTMat> InnerEigenAPI::get_transformation_matrix(const std::st
             if(p_node.has_value() and q_node.has_value())
             {
                 //qDebug() << "listas A&B" << p_node.value().id() << q_node.value().id();
-                auto a_edge_rt = rt->get_edge_RT(p_node.value(), a.id()).value();
-                auto b_edge_rt = rt->get_edge_RT(q_node.value(), b.id()).value();
-                auto a_rtmat = rt->get_edge_RT_as_rtmat(a_edge_rt).value();
-                auto b_rtmat = rt->get_edge_RT_as_rtmat(b_edge_rt).value();
+                auto a_edge_rt = rt->get_edge_RT(p_node.value(), a.id());
+                if (not a_edge_rt.has_value())
+                {
+                    qWarning() << __FUNCTION__ << ":"<<__LINE__ << " Cannot find RT edge between Parent (" << QString::fromStdString(p_node->name()) << ", " << p_node->id() <<") and son (" << QString::fromStdString(a.name()) << ", " << a.id() <<") nodes going from: " << QString::fromStdString(orig) << " to: " << QString::fromStdString(dest);
+                    return {};
+                }
+                auto b_edge_rt = rt->get_edge_RT(q_node.value(), b.id());
+                if (not b_edge_rt.has_value())
+                {
+                    qWarning() << __FUNCTION__ << ":"<<__LINE__ << " Cannot find RT edge between Parent (" << QString::fromStdString(p_node->name()) << ", " << p_node->id() <<") and son (" << QString::fromStdString(a.name()) << ", " << a.id() <<") nodes going from: " << QString::fromStdString(orig) << " to: " << QString::fromStdString(dest);
+                    return {};
+                }
+                auto a_rtmat = rt->get_edge_RT_as_rtmat(a_edge_rt.value()).value();
+                auto b_rtmat = rt->get_edge_RT_as_rtmat(b_edge_rt.value()).value();
                 atotal = a_rtmat * atotal;
                 btotal = b_rtmat * btotal;
                 node_map[p_node.value().id()].push_back(key); // update node cache reference
@@ -87,14 +107,14 @@ std::optional<Mat::RTMat> InnerEigenAPI::get_transformation_matrix(const std::st
             }
             else
             {
-                qWarning() << __FUNCTION__ << " non existing nodes while merging to common ancestor" << QString::fromStdString(a.name()) << QString::fromStdString(b.name());
+                qWarning() << __FUNCTION__ << ":"<<__LINE__<< " non existing nodes while merging to common ancestor" << QString::fromStdString(a.name()) << QString::fromStdString(b.name());
                 return {};
             }
         }
         // update node cache reference
-        int32_t dst_id = G->get_node(dest).value().id();
+        uint64_t dst_id = G->get_node(dest).value().id();
         node_map[dst_id].push_back(key);
-        int32_t orig_id = G->get_node(orig).value().id();
+        uint64_t orig_id = G->get_node(orig).value().id();
         node_map[orig_id].push_back(key);
 
         // update cache
@@ -179,11 +199,11 @@ std::optional<Mat::Vector6d> InnerEigenAPI::transform_axis(const std::string &de
         return {};
  }
 
-    std::optional<Mat::Vector6d> InnerEigenAPI::transform_axis( const std::string &dest,  const std::string & orig)
- {
+std::optional<Mat::Vector6d> InnerEigenAPI::transform_axis( const std::string &dest,  const std::string & orig)
+{
     Mat::Vector6d v;
-	return transform_axis(dest, v.Zero(), orig);
- }
+	return transform_axis(dest, Mat::Vector6d::Zero(), orig);
+}
 
 ////////////////////////////////////////////////////////////////////////
 /// SLOTS ==> used to remove cached transforms when node/edge changes
@@ -210,10 +230,10 @@ void InnerEigenAPI::del_edge_slot(const uint64_t from, const uint64_t to, const 
 }
 void InnerEigenAPI::remove_cache_entry(const uint64_t id)
 {
-    NodeReference::iterator it = node_map.find(id);
+    auto it = node_map.find(id);
     if(it != node_map.end())
     {
-        for(KeyTransform key: it->second)
+        for(const KeyTransform& key: it->second)
         {
             cache.erase(key);
         }
