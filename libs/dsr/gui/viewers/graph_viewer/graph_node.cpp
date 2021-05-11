@@ -21,9 +21,8 @@
 
 GraphNode::GraphNode(std::shared_ptr<DSR::GraphViewer> graph_viewer_): QGraphicsEllipseItem(0,0,30,30), dsr_to_graph_viewer(graph_viewer_)
 {
-    setFlag(ItemIsMovable);
-    setFlag(ItemSendsGeometryChanges);
-    setFlag(QGraphicsItem::ItemIsFocusable);
+    auto flags = ItemIsMovable | ItemIsSelectable | ItemSendsGeometryChanges | ItemUsesExtendedStyleOption | ItemIsFocusable;
+    setFlags(flags);
     setCacheMode(DeviceCoordinateCache);
     setAcceptHoverEvents(true);
     setZValue(-1);
@@ -187,7 +186,10 @@ void GraphNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
         gradient.setColorAt(1, QColor(node_brush.color().dark(200)));
     }
     painter->setBrush(gradient);
-    painter->setPen(QPen(Qt::black, 0));
+    if(isSelected())
+        painter->setPen(QPen(Qt::green, 0, Qt::DashLine));
+    else
+        painter->setPen(QPen(Qt::black, 0));
     painter->drawEllipse(-10, -10, 20, 20);
 }
 
