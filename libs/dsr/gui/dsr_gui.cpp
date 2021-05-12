@@ -331,9 +331,9 @@ void DSRViewer::initialize_views(int options, view central){
         QScene2dViewer* qscene_widget = qobject_cast<QScene2dViewer*>(docks["2D"]->widget());
         DSRViewer::connect(qscene_widget, &QScene2dViewer::mouse_right_click, this, &DSRViewer::qscene2d_object_position);
     }
-	if((docks.size())>0 or central!=none)
+	if((widgets.size())>0 or docks.size()>0 or main_widget!=nullptr)
 	{
-		window->show();
+		window->showMaximized();
 	}
 	else {
 		window->showMinimized();
