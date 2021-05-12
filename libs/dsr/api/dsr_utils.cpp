@@ -45,7 +45,7 @@ void Utilities::read_from_json_file(const std::string &json_file_path,  const st
     for (const QString &key : symbolMap.keys())
     {
         QJsonObject sym_obj = symbolMap[key].toObject();
-        int id = sym_obj.value("id").toInt();
+        uint64_t id = sym_obj.value("id").toString().toULongLong();
         std::string type = sym_obj.value("type").toString().toStdString();
         std::string name = sym_obj.value("name").toString().toStdString();
 
@@ -63,10 +63,10 @@ void Utilities::read_from_json_file(const std::string &json_file_path,  const st
 
         // node atributes
         QVariantMap attributesMap = sym_obj.value("attribute").toObject().toVariantMap();
-        for (QVariantMap::const_iterator iter = attributesMap.begin(); iter != attributesMap.end(); ++iter) {
+        for (QVariantMap::const_iterator iter = attributesMap.cbegin(); iter != attributesMap.cend(); ++iter) {
             std::string attr_key = iter.key().toStdString();
             QVariant attr_value = iter.value().toMap()["value"];
-            int attr_type = iter.value().toMap()["type"].toInt();
+            uint32_t attr_type = iter.value().toMap()["type"].toUInt();
 
             switch (attr_type) {
                 case 0: {
@@ -104,7 +104,7 @@ void Utilities::read_from_json_file(const std::string &json_file_path,  const st
                     break;
                 }
                 case 7: {
-                    G->runtime_checked_add_attrib_local(n,  attr_key,  static_cast<std::uint64_t>(attr_value.toUInt()));
+                    G->runtime_checked_add_attrib_local(n,  attr_key,  static_cast<std::uint64_t>(attr_value.toString().toULongLong()));
                     break;
                 }
                 default:
@@ -121,8 +121,8 @@ void Utilities::read_from_json_file(const std::string &json_file_path,  const st
     for (const auto &linkValue : linksArray)
     {
             QJsonObject link_obj = linkValue.toObject();
-            int srcn = link_obj.value("src").toInt();
-            int dstn = link_obj.value("dst").toInt();
+            uint64_t srcn = link_obj.value("src").toString().toULongLong();
+            uint64_t dstn = link_obj.value("dst").toString().toULongLong();
             std::string edgeName = link_obj.value("label").toString().toStdString();
             std::map<std::string, CRDTAttribute> attrs;
 
@@ -138,7 +138,7 @@ void Utilities::read_from_json_file(const std::string &json_file_path,  const st
             {
                 std::string attr_key = iter.key().toStdString();
                 QVariant attr_value = iter.value().toMap()["value"];
-                int attr_type = iter.value().toMap()["type"].toInt();
+                uint32_t attr_type = iter.value().toMap()["type"].toUInt();
 
                 CRDTAttribute av;
                 av.type(attr_type);
@@ -200,8 +200,8 @@ void Utilities::read_from_json_file(const std::string &json_file_path,  const st
 QJsonObject Utilities::Edge_to_QObject(const Edge& edge)
 {
     QJsonObject link;
-    link["src"] = static_cast<int>(edge.from());
-    link["dst"] = static_cast<int>(edge.to());
+    link["src"] = QString::number(edge.from());
+    link["dst"] = QString::number(edge.to());
     link["label"] = QString::fromStdString(edge.type());
 
     QJsonObject lattrsObject;
@@ -239,7 +239,7 @@ QJsonObject Utilities::Edge_to_QObject(const Edge& edge)
                 val = static_cast<std::int32_t>(std::get<std::uint32_t>(value.value()));
                 break;
             case 7:
-                val = static_cast<qint64>(std::get<std::uint64_t>(value.value())); //This should be quint64 but QJsonValue not allow it.
+                val = QString::number(std::get<std::uint64_t>(value.value())); //This should be quint64 but QJsonValue not allow it.
                 break;
         }
         content["type"] = static_cast<qint64>(value.value().index());
@@ -253,7 +253,7 @@ QJsonObject Utilities::Edge_to_QObject(const Edge& edge)
 QJsonObject Utilities::Node_to_QObject(const Node& node, bool skip_content)
 {
     QJsonObject symbol;
-    symbol["id"] = static_cast<qint64>(node.id());
+    symbol["id"] = QString::number(node.id());
     symbol["type"] = QString::fromStdString(node.type());
     symbol["name"] = QString::fromStdString(node.name());
     // symbol attribute
@@ -297,7 +297,7 @@ QJsonObject Utilities::Node_to_QObject(const Node& node, bool skip_content)
                 val = static_cast<std::int32_t>(std::get<std::uint32_t>(value.value()));
                 break;
             case 7:
-                val = static_cast<qint64>(std::get<std::uint64_t>(value.value()));
+                val = QString::number(std::get<std::uint64_t>(value.value()));
                 break;
 
         }
@@ -322,7 +322,6 @@ QJsonDocument Utilities::DSRGraph_to_QJsonDocument(DSR::DSRGraph *G_, const std:
     std::setlocale(LC_NUMERIC, "en_US.UTF-8");
     //create json object
     QJsonObject dsrObject;
-    QJsonArray linksArray;
     QJsonObject symbolsMap;
 
     for (const auto& kv : G_->getCopy()) {
