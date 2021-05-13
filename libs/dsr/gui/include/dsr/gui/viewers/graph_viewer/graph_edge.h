@@ -416,23 +416,15 @@ public:
 public slots:
     void update_combo(const QString& combo_text)
     {
-        qDebug()<<__FUNCTION__ <<combo_text;
         this->reference = to_string;
-        qDebug()<<__FUNCTION__ <<__LINE__;
         if (combo_text == "world")
         {
-            qDebug()<<__FUNCTION__ <<__LINE__;
-            auto patata = graph->get_node_root().value().name();
-//            qDebug()<<__FUNCTION__ <<__LINE__<<patata;
-            this->reference = graph->get_node_root().value().name();
-            qDebug()<<__FUNCTION__ <<__LINE__;
+            auto root_opt = graph->get_node_root();
+            if(root_opt.has_value())
+                this->reference = graph->get_node_root().value().name();
         }
-
-        qDebug()<<__FUNCTION__ <<__LINE__;
         generate_node_transform_list(this->reference, this->from_string);
-        qDebug()<<__FUNCTION__ <<__LINE__;
         add_or_assign_edge_slot(from, to, edge_type);
-        qDebug()<<__FUNCTION__ <<__LINE__;
     };
     void update_values()
     {
