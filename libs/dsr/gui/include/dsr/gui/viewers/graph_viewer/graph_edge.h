@@ -32,138 +32,273 @@
 
 using namespace DSR;
 
-class DoRTStuff : public  QTableWidget
+class DoTableEdgeStuff : public  QTableWidget
 {
-Q_OBJECT
-public:
-    DoRTStuff(std::shared_ptr<DSR::DSRGraph> graph_, const DSR::IDType &from_, const DSR::IDType &to_, std::string label_) :
-            graph(std::move(graph_)), rt(graph->get_rt_api()), from(from_), to(to_), label(std::move(label_))
-    {
-        qRegisterMetaType<DSR::IDType>("DSR::IDType");
-        qRegisterMetaType<uint64_t>("uint64_t");
-
-//      qRegisterMetaType<DSR::AttribsMap>("DSR::Attribs");
-
-        std::optional<Node> n = graph->get_node(from);
-        std::optional<Node> n2 = graph->get_node(to);
-        this->horizontalHeader()->hide();
-        this->verticalHeader()->hide();
-
-        if (n.has_value() &&  n2.has_value())
+    Q_OBJECT
+    public:
+        DoTableEdgeStuff(std::shared_ptr<DSR::DSRGraph> graph_, const DSR::IDType &from_, const DSR::IDType &to_, const std::string &label_) :
+                            graph(std::move(graph_)), from(from_), to(to_), edge_type(label_)
         {
-            //TODO: Comprobar esto
-            //setWindowModality(Qt::ApplicationModal);
-            setWindowTitle("RT: " + QString::fromStdString(n.value().name()) + "(" + QString::fromStdString(n.value().type()) + ") to " + QString::fromStdString(n2.value().name()) + "(" + QString::fromStdString(n2.value().type()) + ")");
-            setColumnCount(4);
-            setRowCount(9);
-            setHorizontalHeaderLabels(QStringList{"a", "b", "c", "d", "", "T", "", "R"});
-            setVerticalHeaderLabels(QStringList{"a", "b", "c", "d"});
-            horizontalHeader()->setStretchLastSection(true);
+            qRegisterMetaType<std::int32_t>("std::int32_t");
+            qRegisterMetaType<std::uint32_t>("std::uint32_t");
+            qRegisterMetaType<std::uint64_t>("std::uint64_t");
+            qRegisterMetaType<uint64_t>("uint64_t");
+            qRegisterMetaType<std::string>("std::string");
+            qRegisterMetaType<std::map<std::string, Attribute>>("Attribs");
+
+            //setWindowFlags(Qt::Widget | Qt::FramelessWindowHint);
+            std::optional<Node> from_node = graph->get_node(from);
+            std::optional<Node> to_node = graph->get_node(to);
+            std::optional<Edge> edge = graph->get_edge(from, to, edge_type);
+            qDebug()<<__FUNCTION__ <<" DoTableEdgeStuff"<<from_node.has_value()<<to_node.has_value()<<edge.has_value();
+            if (edge.has_value() and from_node.has_value() and to_node.has_value())
+            {
+                setWindowTitle("Edge " + QString::fromStdString(edge.value().type()) + " from [" + QString::number(from_node.value().id()) +
+                                "] to [" + QString::number(to_node.value().id()) + "]");
+                setColumnCount(2);
+                std::map<std::string, DSR::Attribute> attribs;
+                attribs = edge.value().attrs();
+                // show id type and name as attributes
+                //attribs["ID"] = Attribute(ValType(node_id), 0, 0);
+                attribs["type"] = Attribute(ValType(edge.value().type()), 0, 0);
+                //attribs["name"] = Attribute(ValType(edge.value().name()), 0, 0);
+                setHorizontalHeaderLabels(QStringList{"Key", "Value"});
+                for (auto &&[k, v] : attribs) {
+                 //TODO: check value range and attributes that could be editable
+                    insert_attribute(k, std::move(v));
+                }
+                horizontalHeader()->setStretchLastSection(true);
+                resize_widget();
+                //TODO: comprobar QObject::connect(graph.get(), &DSR::DSRGraph::update_attrs_signal, this, &DoTableStuff::drawSLOT);
+                //QObject::connect(graph.get(), &DSR::DSRGraph::update_node_signal, this, &DoTableStuff::update_node_slot);
+                //QObject::connect(graph.get(), &DSR::DSRGraph::update_node_signal, this, &DoTableStuff::update_node_slot);
+                QObject::connect(graph.get(), &DSR::DSRGraph::update_edge_attr_signal, this, &DoTableEdgeStuff::update_edge_attr_slot);
+                //QObject::connect(graph.get(), &DSR::DSRGraph::update_edge_signal, this, &DoTableStuff::add_or_assign_edge_slot);
+                show();
+            }
+        };
+
+    public slots:
+        void update_edge_attr_slot(uint64_t from, uint64_t to, const std::vector<std::string>& att_name)
+        {
+            if ((from != this->from) and (to != this->to))
+                return;
+            if( std::optional<Edge> edge = graph->get_edge(from, to, edge_type); (edge.has_value()))
+            {
+                auto &attrs = edge.value().attrs();
+                for (const std::string &attrib_name : att_name )
+                {
+                    if (auto value = attrs.find(attrib_name); value != attrs.end())
+                    {
+                        auto &&av = value->second;
+                        if (widget_map.count(attrib_name))
+                        {
+                            update_attribute_value(attrib_name, std::move(av));
+                        } else
+                        {
+                            insert_attribute(attrib_name, std::move(av));
+                        }
+                    }
+                }
+            }
+        }
+        void resizeEvent(QResizeEvent* event)
+        {
+            const auto &columns = columnCount();
+            for(auto &&index : iter::range(columns))
+                setColumnWidth(index, (width()-verticalHeader()->width()-4)/columns);
+        }
+
+        void closeEvent (QCloseEvent *event)
+        {
+            disconnect(graph.get(), 0, this, 0);
+        };
+    private:
+        std::shared_ptr<DSR::DSRGraph> graph;
+        std::uint64_t node_id;
+        uint64_t from, to;
+        std::string edge_type;
+        std::map<std::string, QWidget*> widget_map;
+        void resize_widget()
+        {
             resizeRowsToContents();
             resizeColumnsToContents();
-            int width = (this->model()->columnCount() - 1) + this->verticalHeader()->width();
-            int height = (this->model()->rowCount() - 1) + this->horizontalHeader()->height();
+            int width = (this->model()->columnCount() - 1) + this->verticalHeader()->width() + 4;
+            int height = (this->model()->rowCount() - 1) + this->horizontalHeader()->height() ;
             for(int column = 0; column < this->model()->columnCount(); column++)
                 width = width + this->columnWidth(column);
             for(int row = 0; row < this->model()->rowCount(); row++)
                 height = height + this->rowHeight(row);
             this->setMinimumWidth(width);
             this->setMinimumHeight(height);
-            QObject::connect(graph.get(), &DSR::DSRGraph::update_edge_signal, this, &DoRTStuff::drawSLOT);
-            drawSLOT(from, to);
-            show();
-            std::cout << __FILE__ << " " << __FUNCTION__ << " End ofDoRTStuff Constructor " << std::endl;
-            resize_widget();
         }
-    };
-
-    void closeEvent (QCloseEvent *event) override
-    {
-        disconnect(graph.get(), 0, this, 0);
-        //graph.reset();
-        QTableWidget::closeEvent(event);
-    };
-
-    void resizeEvent(QResizeEvent* event)
-    {
-        const auto &columns = columnCount();
-        for(auto &&index : iter::range(columns))
-            setColumnWidth(index, ((width()-verticalHeader()->width())/columns)-2);
-    }
-
-public slots:
-    void drawSLOT(const std::int32_t &from_, const std::int32_t &to_)
-    {
-        std::cout << __FILE__ << " " << __FUNCTION__ << std::endl;
-        if (from==from_ and to==to_)     //ADD LABEL
+        void update_attribute_value(const std::string &k, DSR::Attribute &&v)
         {
-            try {
-                std::optional<Node> node = graph->get_node(from);
-                if (node.has_value()) {
-                    auto mat = rt->get_edge_RT_as_rtmat(rt->get_edge_RT(node.value(), to).value()).value();
-                    // draw RT values
-                    for (auto i : iter::range(mat.rows()))
-                        for (auto j : iter::range(mat.cols()))
-                            if (item(i, j)==0)
-                                this->setItem(i, j, new QTableWidgetItem(QString::number(mat(i, j), 'f', 5)));
-                            else
-                                this->item(i, j)->setText(QString::number(mat(i, j), 'f', 5));
-                    // draw translation values
-                    auto trans = mat.translation();
-                    std::vector<QString> ts{"tx", "ty", "tz"};
-                    std::vector<QString> rs{"rx", "ry", "rz"};
-                    std::vector<double> rot(mat.rotation().data(), mat.rotation().data() + mat.rotation().size() );
-                    for (auto i: iter::range(3)) {
-                        if (this->item(4, i)==0) {
-                            auto green = new QTableWidgetItem();
-                            green->setBackground(QBrush(QColor("lightGreen")));
-                            this->setItem(4, i, green);
-                        }
-                        if (this->item(5, i)==nullptr)
-                            this->setItem(5, i, new QTableWidgetItem(ts[i]));
-                        else
-                            this->item(5, i)->setText(ts[i]);
-                        if (this->item(6, i)==nullptr)
-                            this->setItem(6, i, new QTableWidgetItem(QString::number(trans[i], 'f', 5)));
-                        else
-                            this->item(6, i)->setText(QString::number(trans[i], 'f', 5));
-                        if (this->item(7, i)==nullptr)
-                            this->setItem(7, i, new QTableWidgetItem(rs[i]));
-                        else
-                            this->item(7, i)->setText(rs[i]);
-                        if (this->item(8, i)==0)
-                            this->setItem(8, i, new QTableWidgetItem(QString::number(rot[i], 'f', 5)));
-                        else
-                            this->item(8, i)->setText(QString::number(rot[i], 'f', 5));
-                    }
+            widget_map[k]->blockSignals(true);
+            switch (v.selected()) {
+                case 0: {
+                    qobject_cast<QLineEdit *>(widget_map[k])->setText(QString::fromStdString(v.str()));
+                    break;
+                }
+                case 1: {
+                    qobject_cast<QSpinBox *>(widget_map[k])->setValue(v.dec());
+                    break;
+                }
+                case 2: {
+                    qobject_cast<QDoubleSpinBox *>(widget_map[k])->setValue(std::round(static_cast<double>(v.fl()) * 1000000) / 1000000);
+                    break;
+                }
+                case 3: {
+                    break;
+                }
+                case 4: {
+                    qobject_cast<QComboBox *>(widget_map[k])->setCurrentText(v.bl() ? "true" : "false");
+                    break;
+                }
+                case 5: {
+                    break;
+                }
+                case 6:{
+                    qobject_cast<QSpinBox *>(widget_map[k])->setValue(v.uint());
+                    break;
+                }
+                case 7:{
+                    qobject_cast<QLineEdit *>(widget_map[k])->setText(QString::fromStdString(std::to_string(v.uint64())));
+                    break;
                 }
             }
-            catch (const std::exception& e) {
-                std::cout << "Exception: " << e.what() << " Cannot find attribute named RT in edge going " << from
-                          << " to " << to << std::endl;
+            widget_map[k]->blockSignals(false);
+        }
+        void insert_attribute(const std::string &k, DSR::Attribute &&v)
+        {
+            bool inserted = true;
+
+            int rc = rowCount();
+            insertRow( rc );
+
+            switch (v.selected()) {
+                case 0: {
+                    QLineEdit *ledit = new QLineEdit(QString::fromStdString(v.str()));
+                    setCellWidget(rc, 1, ledit);
+                    widget_map[k] = ledit;
+                    connect(ledit, &QLineEdit::textChanged, this, [this, k](const QString& text){
+                        std::optional<Node> n = graph->get_node(node_id);
+                        graph->runtime_checked_update_attrib_by_name(n.value(), k, text.toStdString());
+                    });
+                    break;
+                }
+                case 1:
+                {
+                    QSpinBox *spin = new QSpinBox();
+                    spin->setMinimum(-100000);
+                    spin->setMaximum(100000);
+                    spin->setValue(v.dec());
+                    setCellWidget(rc, 1, spin);
+                    widget_map[k] = spin;
+                    connect(spin, QOverload<int>::of(&QSpinBox::valueChanged), this, [this, k](int value){
+                        std::optional<Node> n = graph->get_node(node_id);
+                        graph->runtime_checked_update_attrib_by_name(n.value(), k, value);
+                    });
+                    break;
+                }
+                case 2: {
+                    QDoubleSpinBox *spin = new QDoubleSpinBox();
+                    spin->setMinimum(-100000);
+                    spin->setMaximum(100000);
+                    spin->setValue(std::round(static_cast<double>(v.fl()) * 1000000) / 1000000);
+                    setCellWidget(rc, 1, spin);
+                    widget_map[k] = spin;
+                    connect(spin, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, [this, k](double value){
+                        std::optional<Node> n = graph->get_node(node_id);
+                        graph->runtime_checked_update_attrib_by_name(n.value(), k, (float)value);
+                    });
+                    break;
+                }
+                case 3: {
+                    QWidget *widget = new QWidget();
+                    QHBoxLayout *layout = new QHBoxLayout;
+                    widget->setLayout(layout);
+                    if (!v.float_vec().empty() and v.float_vec().size() <= 10) {
+                        for (float i : v.float_vec()) {
+                            QDoubleSpinBox *spin = new QDoubleSpinBox();
+                            spin->setMinimum(-100000);
+                            spin->setMaximum(100000);
+                            spin->setValue(i);
+                            layout->addWidget(spin);
+                        }
+                        setCellWidget(rc, 1, widget);
+                        widget_map[k] = widget;
+                    } else {
+                        inserted = false;
+                    }
+                    break;
+                }
+                case 4:{
+                    QComboBox *combo = new QComboBox();
+                    combo->addItem("true");
+                    combo->addItem("false");
+                    combo->setCurrentText(v.bl() ? "true" : "false");
+                    setCellWidget(rc, 1, combo);
+                    widget_map[k] = combo;
+                    connect(combo, &QComboBox::currentTextChanged, this, [this, k](const QString& value){
+                        std::optional<Node> n = graph->get_node(node_id);
+                        bool val = ( value == "true");
+                        graph->runtime_checked_update_attrib_by_name(n.value(), k, val);
+                    });
+                    break;
+                }
+                case 5:
+                {
+                    QWidget *widget = new QWidget();
+                    QHBoxLayout *layout = new QHBoxLayout;
+                    widget->setLayout(layout);
+                    if (!v.byte_vec().empty() and v.byte_vec().size() <= 10) {
+                        for (unsigned char i : v.byte_vec()) {
+                            QSpinBox *spin = new QSpinBox();
+                            spin->setMinimum(0);
+                            spin->setMaximum(255);
+                            spin->setValue(i);
+                            layout->addWidget(spin);
+                        }
+                        setCellWidget(rc, 1, widget);
+                        widget_map[k] = widget;
+                    } else {
+                        inserted = false;
+                    }
+                    break;
+                }
+                case 6:
+                {
+                    QSpinBox *spin = new QSpinBox();
+                    spin->setMinimum(0);
+                    spin->setMaximum(100000);
+                    spin->setValue((int)v.uint());
+                    setCellWidget(rc, 1, spin);
+                    widget_map[k] = spin;
+                    connect(spin, QOverload<int>::of(&QSpinBox::valueChanged), this, [this, k](int value){
+                        std::optional<Node> n = graph->get_node(node_id);
+                        graph->runtime_checked_update_attrib_by_name(n.value(), k, (unsigned int)value);
+                    });
+                    break;
+                }
+                case 7:{
+                    QLineEdit *ledit = new QLineEdit(QString::fromStdString(std::to_string(v.uint64())));
+                    setCellWidget(rc, 1, ledit);
+                    widget_map[k] = ledit;
+                    break;
+                }
+            }
+
+            if (inserted)
+            {
+                auto *item =new QTableWidgetItem(QString::fromStdString(k));
+                item->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
+                setItem(rc, 0, item);
+
+            } else {
+                removeRow(rc+1);
             }
         }
-        this->resize_widget();
-    }
-private:
-    std::shared_ptr<DSR::DSRGraph> graph;
-    std::unique_ptr<RT_API> rt;
-    int from, to;
-    std::string label;
-    void resize_widget()
-    {
-        resizeRowsToContents();
-        resizeColumnsToContents();
-        int width = (this->model()->columnCount() - 1) + this->verticalHeader()->width() + 4;
-        int height = (this->model()->rowCount() - 1) + this->horizontalHeader()->height() ;
-        for(int column = 0; column < this->model()->columnCount(); column++)
-            width = width + this->columnWidth(column) + 2;
-        for(int row = 0; row < this->model()->rowCount(); row++)
-            height = height + this->rowHeight(row) ;
-        if(abs(width-this->width())>1 or abs(height-this->height())>1) {
-            this->setFixedSize(QSize(width, height));
-        }
-    }
 };
 
 class DoRTStuff2 : public  QWidget
@@ -173,23 +308,29 @@ public:
     DoRTStuff2(std::shared_ptr<DSR::DSRGraph> graph_, const DSR::IDType &from_, const DSR::IDType &to_, const std::string &label_) :
             graph(std::move(graph_)), from(from_), to(to_), edge_type(label_)
     {
-        qRegisterMetaType<DSR::IDType>("DSR::IDType");
-        
+        qRegisterMetaType<std::int32_t>("std::int32_t");
+        qRegisterMetaType<std::uint32_t>("std::uint32_t");
+        qRegisterMetaType<std::uint64_t>("std::uint64_t");
+        qRegisterMetaType<uint64_t>("uint64_t");
+        qRegisterMetaType<std::string>("std::string");
+        qRegisterMetaType<std::map<std::string, Attribute>>("Attribs");
+
         connect(graph.get(), &DSR::DSRGraph::update_edge_signal, this, &DoRTStuff2::add_or_assign_edge_slot);
         //Inner Api
         inner_eigen = graph->get_inner_eigen_api();
-        
-        std::optional<Node> n = graph->get_node(from);
-        std::optional<Node> n2 = graph->get_node(to);
 
-        if (n.has_value() &&  n2.has_value())
+        std::optional<Node> from_node = graph->get_node(from);
+        std::optional<Node> to_node = graph->get_node(to);
+        std::optional<Edge> edge = graph->get_edge(from, to, edge_type);
+        qDebug()<<__FUNCTION__ <<from_node.has_value()<<to_node.has_value()<<edge.has_value();
+        if (edge.has_value() and from_node.has_value() and to_node.has_value())
         {
-            from_string = n2.value().name();
-            to_string = n.value().name();
-            
+            from_string = to_node.value().name();
+            to_string = from_node.value().name();
+
             //TODO: Comprobar esto
-            setWindowTitle("RT: " + QString::fromStdString(from_string) + "(" + QString::fromStdString(n.value().type()) + ") to " + QString::fromStdString(to_string) + "(" + QString::fromStdString(n2.value().type()) + ")");
-            
+            setWindowTitle("RT: " + QString::fromStdString(from_string) + "(" + QString::fromStdString(from_node.value().type()) + ") to " + QString::fromStdString(to_string) + "(" + QString::fromStdString(to_node.value().type()) + ")");
+            qDebug()<<__FUNCTION__ <<"RT: " + QString::fromStdString(from_string) + "(" + QString::fromStdString(from_node.value().type()) + ") to " + QString::fromStdString(to_string) + "(" + QString::fromStdString(to_node.value().type()) + ")";
             QVBoxLayout *vbox = new QVBoxLayout(this);
             //Reference combo
             QComboBox *references_cb = new QComboBox();
@@ -200,8 +341,9 @@ public:
             reference_layout->addWidget(new QLabel("Reference:"));
             reference_layout->addWidget(references_cb);
             vbox->addLayout(reference_layout);
-            
+
             //Add attribs to show
+            qDebug()<<__FUNCTION__ <<"Add atributes to show";
             int pos=0;
             for(std::vector<std::string> row : attrib_names)
             {
@@ -217,7 +359,8 @@ public:
                 }
                 vbox->addLayout(hlayout);
             }
-//TODO: temporary added to check yolo pose estimation
+            //TODO: temporary added to check yolo pose estimation
+            qDebug()<<__FUNCTION__ <<"Yolo pose";
             if (label_ == "looking-at")
             {
                 QHBoxLayout* looking_layout = new QHBoxLayout();
@@ -241,7 +384,9 @@ public:
                 }
                 std::cout<<"size"<<pos<<std::endl;
             }
+            qDebug()<<__FUNCTION__ <<"update combo";
             update_combo(references_cb->currentText());
+            qDebug()<<__FUNCTION__<<"To show";
             show();
         }
     };
@@ -271,11 +416,23 @@ public:
 public slots:
     void update_combo(const QString& combo_text)
     {
+        qDebug()<<__FUNCTION__ <<combo_text;
         this->reference = to_string;
+        qDebug()<<__FUNCTION__ <<__LINE__;
         if (combo_text == "world")
+        {
+            qDebug()<<__FUNCTION__ <<__LINE__;
+            auto patata = graph->get_node_root().value().name();
+//            qDebug()<<__FUNCTION__ <<__LINE__<<patata;
             this->reference = graph->get_node_root().value().name();
+            qDebug()<<__FUNCTION__ <<__LINE__;
+        }
+
+        qDebug()<<__FUNCTION__ <<__LINE__;
         generate_node_transform_list(this->reference, this->from_string);
+        qDebug()<<__FUNCTION__ <<__LINE__;
         add_or_assign_edge_slot(from, to, edge_type);
+        qDebug()<<__FUNCTION__ <<__LINE__;
     };
     void update_values()
     {
@@ -297,7 +454,7 @@ public slots:
         else
             std::cout<<"Error retriving RT data"<<std::endl;
     };
-    void add_or_assign_edge_slot(const std::int32_t from, const std::int32_t to, const std::string& edge_type)
+    void add_or_assign_edge_slot(const std::uint64_t from, const std::uint64_t to, const std::string& edge_type)
     {
         std::cout<<"edge-"<<edge_type<<std::endl;
         if(edge_type == "RT" or edge_type == "looking-at")
@@ -340,11 +497,11 @@ public slots:
             }
         }
     };
-    
+
 private:
     std::shared_ptr<DSR::DSRGraph> graph;
     std::shared_ptr<DSR::InnerEigenAPI> inner_eigen;
-    int from, to;
+    uint64_t from, to;
     std::string edge_type;
     std::string from_string;
     std::string to_string;

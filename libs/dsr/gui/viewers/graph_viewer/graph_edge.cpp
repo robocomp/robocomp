@@ -485,13 +485,20 @@ void GraphEdge::paint(QPainter* painter, const QStyleOptionGraphicsItem* option,
 void GraphEdge::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event)
 {
     qDebug() << __FILE__ << " " << __FUNCTION__ << "Edge from " << source->id_in_graph << " to " << dest->id_in_graph
-             << " tag: " ;
+             << " tag: " <<tag->text();
     static std::unique_ptr<QWidget> do_stuff;
     const auto graph = source->getGraphViewer()->getGraph();
     if (event->button()==Qt::RightButton) {
-        if (tag->text()=="RT" or tag->text()=="looking-at")
+        if (tag->text()=="RT" or tag->text()=="looking-at") {
+            qDebug() << __FILE__ << "DoRTStuff2";
             do_stuff = std::make_unique<DoRTStuff2>(graph, source->id_in_graph, dest->id_in_graph,
                     tag->text().toStdString());
+        }
+        else {
+            qDebug() << __FILE__ << "DoTableEdgeStuff";
+            do_stuff = std::make_unique<DoTableEdgeStuff>(graph, source->id_in_graph, dest->id_in_graph,
+                    tag->text().toStdString());
+        }
     }
     animation->start();
     update();
