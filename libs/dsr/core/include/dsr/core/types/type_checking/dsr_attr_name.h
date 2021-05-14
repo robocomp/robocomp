@@ -142,6 +142,8 @@ REGISTER_TYPE(obj_height, int, false)
 REGISTER_TYPE(obj_depth, int, false)
 REGISTER_TYPE(obj_visible, int, false)
 REGISTER_TYPE(projected_bounding_box, std::reference_wrapper<const std::vector<float>>, true)
+REGISTER_TYPE(unseen_time, int, false)
+
 
 /*
  * camera
