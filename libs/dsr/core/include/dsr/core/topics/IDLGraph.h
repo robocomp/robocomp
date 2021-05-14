@@ -1526,19 +1526,19 @@ namespace IDL {
          * @brief This function sets a value in member to
          * @param _to New value for member to
          */
-        eProsima_user_DllExport void to(uint32_t _to);
+        eProsima_user_DllExport void to(uint64_t _to);
 
         /*!
          * @brief This function returns the value of member to
          * @return Value of member to
          */
-        eProsima_user_DllExport uint32_t to() const;
+        eProsima_user_DllExport uint64_t to() const;
 
         /*!
          * @brief This function returns a reference to member to
          * @return Reference to member to
          */
-        eProsima_user_DllExport uint32_t &to();
+        eProsima_user_DllExport uint64_t &to();
 
         /*!
          * @brief This function copies the value in member type
@@ -1615,7 +1615,7 @@ namespace IDL {
         eProsima_user_DllExport void serializeKey(eprosima::fastcdr::Cdr &cdr) const;
 
     private:
-        uint32_t m_to;
+        uint64_t m_to;
         std::string m_type;
     };
 

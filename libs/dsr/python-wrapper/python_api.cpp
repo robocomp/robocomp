@@ -120,8 +120,6 @@ ValType convert_variant(const attribute_type & e)
 
 PYBIND11_MAKE_OPAQUE(std::map<std::pair<uint64_t, std::string>, Edge>)
 PYBIND11_MAKE_OPAQUE(std::map<std::string, Attribute>)
-//(std::vector<uint8_t>)
-//PYBIND11_MAKE_OPAQUE(std::vector<float>)
 
 
 PYBIND11_MODULE(pydsr, m) {
@@ -350,11 +348,11 @@ PYBIND11_MODULE(pydsr, m) {
                                           self.str(std::get<std::string>(val));
                                           break;
                                       case 1:
-                                          if (val.index() == 6) self.dec(std::get<uint64_t>(val));
+                                          if (val.index() == 6) self.dec(std::get<uint64_t>(val)); //This is intentional
                                           else self.dec(std::get<int32_t>(val));
                                           break;
                                       case 2:
-                                          if (val.index() == 7) self.fl(std::get<double>(val));
+                                          if (val.index() == 7) self.fl(std::get<double>(val)); //This is intentional
                                           else self.fl(std::get<float>(val));
                                           break;
                                       case 3:

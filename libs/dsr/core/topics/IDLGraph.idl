@@ -76,7 +76,7 @@
 	};
 
     struct EdgeKey {
-        unsigned long to;
+        unsigned long long to;
         string type;
     };
 
