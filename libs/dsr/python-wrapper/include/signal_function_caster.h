@@ -86,7 +86,7 @@ namespace pybind11::detail {
                 auto str = py::str(dict.begin()->second).cast<std::string>();
                 if ("<class 'int'>" == str)
                 {
-                    return load_alternative<std::function<void(std::uint32_t)>>(src, convert);
+                    return load_alternative<std::function<void(std::uint64_t)>>(src, convert);
                 }
             } else if (dict.size() >= 2) {
                 auto itr = dict.begin();
