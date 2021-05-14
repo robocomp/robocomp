@@ -333,7 +333,7 @@ void DSRViewer::initialize_views(int options, view central){
     }
 	if((widgets.size())>0 or docks.size()>0 or main_widget!=nullptr)
 	{
-		window->showMaximized();
+		window->show();
 	}
 	else {
 		window->showMinimized();
