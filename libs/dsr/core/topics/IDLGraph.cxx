@@ -2315,7 +2315,7 @@ namespace IDL {
         size_t initial_alignment = current_alignment;
 
 
-        current_alignment += 4 + eprosima::fastcdr::Cdr::alignment(current_alignment, 4);
+        current_alignment += 8 + eprosima::fastcdr::Cdr::alignment(current_alignment, 8);
 
 
         current_alignment += 4 + eprosima::fastcdr::Cdr::alignment(current_alignment, 4) + data.type().size() + 1;

@@ -1369,7 +1369,7 @@ std::pair<bool, bool> DSRGraph::fullgraph_request_thread() {
                             sync = true;
                             break;
                         }
-                        else
+                        else if (!sync)
                         {
                             repeated = true;
                         }
