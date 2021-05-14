@@ -2301,7 +2301,7 @@ namespace IDL {
         size_t initial_alignment = current_alignment;
 
 
-        current_alignment += 4 + eprosima::fastcdr::Cdr::alignment(current_alignment, 4);
+        current_alignment += 8 + eprosima::fastcdr::Cdr::alignment(current_alignment, 8);
 
 
         current_alignment += 4 + eprosima::fastcdr::Cdr::alignment(current_alignment, 4) + 255 + 1;
@@ -2340,7 +2340,7 @@ namespace IDL {
  * @brief This function sets a value in member to
  * @param _to New value for member to
  */
-    void EdgeKey::to(uint32_t _to) {
+    void EdgeKey::to(uint64_t _to) {
         m_to = _to;
     }
 
@@ -2348,7 +2348,7 @@ namespace IDL {
  * @brief This function returns the value of member to
  * @return Value of member to
  */
-    uint32_t EdgeKey::to() const {
+    uint64_t EdgeKey::to() const {
         return m_to;
     }
 
@@ -2356,7 +2356,7 @@ namespace IDL {
  * @brief This function returns a reference to member to
  * @return Reference to member to
  */
-    uint32_t &EdgeKey::to() {
+    uint64_t &EdgeKey::to() {
         return m_to;
     }
 

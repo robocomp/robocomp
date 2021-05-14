@@ -46,8 +46,6 @@
 
 #define TIMEOUT 5000
 
-
-
 namespace DSR
 {
     using Nodes = std::unordered_map<uint64_t , mvreg<CRDTNode>>;
