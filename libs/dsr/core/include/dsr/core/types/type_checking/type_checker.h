@@ -6,12 +6,12 @@
 #define TYPE_CHECKER_H
 
 #include<unordered_map>
+#include<unordered_set>
 #include<string_view>
 #include<functional>
 #include<any>
 #include<typeindex>
-//#include "dsr_node_type.h"
-//#include "dsr_edge_type.h"
+
 
 
 class attribute_types

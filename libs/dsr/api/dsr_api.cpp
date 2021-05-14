@@ -28,9 +28,8 @@ DSRGraph::DSRGraph(uint64_t root, std::string name, int id, const std::string &d
         : agent_id(id), agent_name(std::move(name)), copy(false), tp(5), same_host(all_same_host), generator(id)
 {
 
-    nodes = Nodes();
-    utils = std::make_unique<Utilities>(this);
     qDebug() << "Agent name: " << QString::fromStdString(agent_name);
+    utils =  std::make_unique<Utilities>(this);
 
     // RTPS Create participant
     auto[suc, participant_handle] = dsrparticipant.init(agent_id, all_same_host,

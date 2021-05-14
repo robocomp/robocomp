@@ -297,10 +297,26 @@ REGISTER_TYPE(imu_time_stamp, float, false)
 REGISTER_TYPE(imu_sensor_tick, float, false)
 
 
+/*
+ * Agents
+ * */
+REGISTER_TYPE(timestamp_agent, uint64_t, false)
+REGISTER_TYPE(timestamp_creation, uint64_t, false)
+REGISTER_TYPE(timestamp_alivetime, uint64_t, false)
+REGISTER_TYPE(agent_id, uint32_t , false)
+REGISTER_TYPE(agent_name, std::reference_wrapper<const std::string>, false)
+REGISTER_TYPE(active_agent, bool, false)
+REGISTER_TYPE(cpu_usage, float, false)
+REGISTER_TYPE(memory_usage, uint32_t , false)
+REGISTER_TYPE(num_procs, uint32_t, false)
+REGISTER_TYPE(agent_description, std::reference_wrapper<const std::string>, false)
 
 
+/* TESTS
+ * */
 REGISTER_TYPE(test_double_type, double, false) //remove
 REGISTER_TYPE(test_uint32_type, uint32_t , false) //remove
+
 
 
 #endif //DSR_ATTR_NAME_H
