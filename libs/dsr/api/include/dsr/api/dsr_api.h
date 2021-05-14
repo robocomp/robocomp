@@ -31,6 +31,7 @@
 #include <dsr/core/types/user_types.h>
 #include <dsr/core/types/translator.h>
 #include <dsr/api/dsr_inner_api.h>
+#include <dsr/api/dsr_agent_info_api.h>
 #include <dsr/api/dsr_inner_eigen_api.h>
 #include <dsr/api/dsr_camera_api.h>
 #include <dsr/api/dsr_rt_api.h>
@@ -72,8 +73,10 @@ namespace DSR
 
         // Utils
         bool empty(const uint64_t &id);
-        template <typename Ta, typename = std::enable_if_t<allowed_types<Ta>>>
-        std::tuple<std::string, std::string, int> nativetype_to_string(const Ta& t) {
+        template <typename Ta>
+        std::tuple<std::string, std::string, int> nativetype_to_string(const Ta& t)
+            requires(allowed_types<Ta>)
+        {
             if constexpr (std::is_same<std::remove_cv_t<std::remove_reference_t<Ta>>, std::string>::value)
             {
                 return  make_tuple("string", t,1);
@@ -156,8 +159,9 @@ namespace DSR
 
 
 
-        template <typename name, typename Type, typename =  std::enable_if_t<node_or_edge<Type>> >
+        template <typename name, typename Type>
         inline std::optional<decltype(name::type)> get_attrib_by_name(const Type &n)
+            requires(node_or_edge<Type>)
         {
             static_assert(is_attr_name<name>::value, "Invalid object type.");
             using name_type =  std::remove_reference_t<std::remove_cv_t<decltype(name::type)>>;
@@ -194,8 +198,10 @@ namespace DSR
         /**
          * LOCAL ATTRIBUTES MODIFICATION METHODS (for nodes and edges)
          **/
-        template<typename name, typename Type, typename = std::enable_if_t<any_node_or_edge<Type>>, class Ta, typename = std::enable_if_t<allowed_types<Ta>>>
-        inline void add_or_modify_attrib_local(Type &elem, const Ta &att_value) {
+        template<typename name, typename Type, class Ta>
+        inline void add_or_modify_attrib_local(Type &elem, const Ta &att_value)
+            requires(any_node_or_edge<Type>, allowed_types<Ta>)
+        {
 
             static_assert(is_attr_name<name>::value, "The type of name is invalid");
             static_assert(valid_type<name, Ta>(), "Name and att_value are not from the same type");
@@ -251,8 +257,10 @@ namespace DSR
             }
         }
 
-        template<typename Type, typename = std::enable_if_t<any_node_or_edge<Type>>, class Ta, typename = std::enable_if_t<allowed_types<Ta>>>
-        inline void runtime_checked_add_or_modify_attrib_local(Type &elem, const std::string &att_name, const Ta &att_value) {
+        template<typename Type, class Ta>
+        inline void runtime_checked_add_or_modify_attrib_local(Type &elem, const std::string &att_name, const Ta &att_value)
+            requires(any_node_or_edge<Type>, allowed_types<Ta>)
+        {
 
             if (!attribute_types::check_type(att_name.data(), att_value)) {
                 throw std::runtime_error(std::string("Invalid type in attribute ") + att_name + " - " + typeid(att_value).name() + " in: " + __FILE__  " "
@@ -307,23 +315,29 @@ namespace DSR
         }
 
 
-        template<typename name, typename Type, typename = std::enable_if_t<any_node_or_edge<Type>>, typename Ta, typename = std::enable_if_t<allowed_types<Ta>>>
-        bool add_attrib_local(Type &elem, const Ta &att_value) {
+        template<typename name, typename Type, typename Ta>
+        bool add_attrib_local(Type &elem, const Ta &att_value)
+            requires(any_node_or_edge<Type>, allowed_types<Ta>)
+        {
             static_assert(is_attr_name<name>::value, "Name attr is not valid");
             if (elem.attrs().find(name::attr_name.data()) != elem.attrs().end()) return false;
             add_or_modify_attrib_local<name>(elem, att_value);
             return true;
         };
 
-        template<typename Type, typename = std::enable_if_t<any_node_or_edge<Type>>, typename Ta, typename = std::enable_if_t<allowed_types<Ta>>>
-        bool runtime_checked_add_attrib_local(Type &elem, const std::string& att_name, const Ta &att_value) {
+        template<typename Type, typename Ta>
+        bool runtime_checked_add_attrib_local(Type &elem, const std::string& att_name, const Ta &att_value)
+            requires(any_node_or_edge<Type>, allowed_types<Ta>)
+        {
             if (elem.attrs().find(att_name) != elem.attrs().end()) return false;
             runtime_checked_add_or_modify_attrib_local(elem, att_name, att_value);
             return true;
         };
 
-        template<typename name, typename Type, typename = std::enable_if_t<any_node_or_edge<Type>>>
-        bool add_attrib_local(Type &elem, Attribute &attr) {
+        template<typename name, typename Type>
+        bool add_attrib_local(Type &elem, Attribute &attr)
+            requires(any_node_or_edge<Type>)
+        {
             static_assert(is_attr_name<name>::value, "Name attr is not valid");
             if (elem.attrs().find(name::attr_name.data()) != elem.attrs().end()) return false;
             attr.timestamp(get_unix_timestamp());
@@ -331,39 +345,49 @@ namespace DSR
             return true;
         };
 
-        template<typename Type, typename = std::enable_if_t<any_node_or_edge<Type>>>
-        bool runtime_checked_add_attrib_local(Type &elem, const std::string& att_name,  Attribute &attr) {
+        template<typename Type>
+        bool runtime_checked_add_attrib_local(Type &elem, const std::string& att_name,  Attribute &attr)
+            requires(any_node_or_edge<Type>)
+        {
             if (elem.attrs().find(att_name) != elem.attrs().end()) return false;
             attr.timestamp(get_unix_timestamp());
             elem.attrs()[att_name] = attr;
             return true;
         };
 
-        template<typename name, typename Type, typename = std::enable_if_t<any_node_or_edge<Type>>, typename Ta, typename = std::enable_if_t<allowed_types<Ta>>>
-        bool modify_attrib_local(Type &elem, const Ta &att_value) {
+        template<typename name, typename Type, typename Ta>
+        bool modify_attrib_local(Type &elem, const Ta &att_value)
+            requires(any_node_or_edge<Type>, allowed_types<Ta>)
+        {
             static_assert(is_attr_name<name>::value, "Name attr is not valid");
             if (elem.attrs().find(name::attr_name.data()) == elem.attrs().end()) return false;
             add_or_modify_attrib_local<name>(elem, att_value);
             return true;
         };
 
-        template<typename Type, typename = std::enable_if_t<any_node_or_edge<Type>>, typename Ta, typename = std::enable_if_t<allowed_types<Ta>>>
-        bool runtime_checked_modify_attrib_local(Type &elem,  const std::string& att_name, const Ta &att_value) {
+        template<typename Type, typename Ta>
+        bool runtime_checked_modify_attrib_local(Type &elem,  const std::string& att_name, const Ta &att_value)
+            requires(any_node_or_edge<Type>, allowed_types<Ta>)
+        {
             if (elem.attrs().find(att_name) == elem.attrs().end()) return false;
             runtime_checked_add_or_modify_attrib_local(elem, att_name, att_value);
             return true;
         };
 
-        template<typename name, typename Type, typename = std::enable_if_t<any_node_or_edge<Type>>>
-        bool remove_attrib_local(Type &elem) {
+        template<typename name, typename Type>
+        bool remove_attrib_local(Type &elem)
+            requires(any_node_or_edge<Type>)
+        {
             static_assert(is_attr_name<name>::value, "Name attr is not valid");
             if (elem.attrs().find(name::attr_name.data()) == elem.attrs().end()) return false;
             elem.attrs().erase(name::attr_name);
             return true;
         }
 
-        template< typename Type, typename = std::enable_if_t<any_node_or_edge<Type>>>
-        bool remove_attrib_local(Type &elem, const std::string& att_name) {
+        template< typename Type>
+        bool remove_attrib_local(Type &elem, const std::string& att_name)
+            requires(any_node_or_edge<Type>)
+        {
             if (elem.attrs().find(att_name) == elem.attrs().end()) return false;
             elem.attrs().erase(att_name);
             return true;
@@ -375,27 +399,28 @@ namespace DSR
         //  DISTRIBUTED ATTRIBUTE MODIFICATION METHODS (for nodes and edges)
         // ******************************************************************
 
-        template<typename name,
-                typename Ta, typename = std::enable_if_t<node_or_edge<Ta>>,
-                typename Va, typename = std::enable_if_t<allowed_types<Va>>>
-        void insert_or_assign_attrib(Ta &elem,  const Va &att_value) {
+        template<typename name, typename Ta, typename Va>
+        void insert_or_assign_attrib(Ta &elem,  const Va &att_value)
+            requires(node_or_edge<Ta>, allowed_types<Va>)
+        {
             static_assert(is_attr_name<name>::value, "Name attr is not valid");
             add_or_modify_attrib_local<name>(elem, att_value);
 
             /*return*/ reinsert_element(elem, "insert_or_assign_attrib()");
 
         }
-        template<typename Ta, typename = std::enable_if_t<node_or_edge<Ta>>,
-                typename Va, typename = std::enable_if_t<allowed_types<Va>>>
-        void runtime_checked_insert_or_assign_attrib_by_name(Ta &elem,  const std::string& att_name, const Va &att_value) {
+        template<typename Ta, typename Va>
+        void runtime_checked_insert_or_assign_attrib_by_name(Ta &elem,  const std::string& att_name, const Va &att_value)
+            requires(node_or_edge<Ta>, allowed_types<Va>)
+        {
             runtime_checked_add_or_modify_attrib_local(elem, att_name, att_value);
             reinsert_element(elem, "runtime_checked_insert_or_assign_attrib()");
         }
 
-        template<typename name,
-                typename Type, typename = std::enable_if_t<node_or_edge<Type>>,
-                typename Va, typename = std::enable_if_t<allowed_types<Va>>>
-        bool insert_attrib_by_name(Type &elem,  const Va &new_val) {
+        template<typename name,typename Type,typename Va>
+        bool insert_attrib_by_name(Type &elem,  const Va &new_val)
+            requires(node_or_edge<Type>, allowed_types<Va>)
+        {
             static_assert(is_attr_name<name>::value, "Name attr is not valid");
 
             bool res = add_attrib_local<name>(elem, new_val);
@@ -403,18 +428,19 @@ namespace DSR
             return reinsert_element(elem, "insert_attrib_by_name()");
         }
 
-        template<typename Type, typename = std::enable_if_t<node_or_edge<Type>>,
-                typename Va, typename = std::enable_if_t<allowed_types<Va>>>
-        bool runtime_checked_insert_attrib_by_name(Type &elem, const std::string& att_name,  const Va &new_val) {
+        template<typename Type, typename Va>
+        bool runtime_checked_insert_attrib_by_name(Type &elem, const std::string& att_name,  const Va &new_val)
+            requires(node_or_edge<Type>, allowed_types<Va>)
+        {
             bool res = runtime_checked_add_attrib_local(elem,att_name, new_val);
             if (!res) return false;
             return reinsert_element(elem, "unsafe_insert_attrib_by_name()");
         }
 
-        template<typename name,
-                typename Type, typename = std::enable_if_t<node_or_edge<Type>>,
-                typename Va, typename = std::enable_if_t<allowed_types<Va>>>
-        bool update_attrib_by_name(Type &elem,  const Va &new_val) {
+        template<typename name, typename Type, typename Va>
+        bool update_attrib_by_name(Type &elem,  const Va &new_val)
+            requires(node_or_edge<Type>, allowed_types<Va>)
+        {
             static_assert(is_attr_name<name>::value, "Name attr is not valid");
 
             bool res = modify_attrib_local<name>(elem, new_val);
@@ -423,17 +449,20 @@ namespace DSR
             return reinsert_element(elem, "update_attrib()");
         }
 
-        template<typename Type, typename = std::enable_if_t<node_or_edge<Type>>,
-                typename Va, typename = std::enable_if_t<allowed_types<Va>>>
-        bool runtime_checked_update_attrib_by_name(Type &elem, const std::string& att_name, const Va &new_val) {
+        template<typename Type, typename Va>
+        bool runtime_checked_update_attrib_by_name(Type &elem, const std::string& att_name, const Va &new_val)
+            requires(node_or_edge<Type>, allowed_types<Va>)
+        {
             bool res = runtime_checked_modify_attrib_local(elem, att_name, new_val);
             if (!res) return false;
 
             return reinsert_element(elem, "runtime_checked_update_attrib_by_name()");
         }
 
-        template<typename name, typename Type, typename = std::enable_if_t<node_or_edge<Type>>>
-        bool remove_attrib_by_name(Type &elem) {
+        template<typename name, typename Type>
+        bool remove_attrib_by_name(Type &elem)
+            requires(node_or_edge<Type>)
+        {
             static_assert(is_attr_name<name>::value, "Name attr is not valid");
             if (elem.attrs().find(name::attr_name.data()) == elem.attrs().end()) return false;
             elem.attrs().erase(name::attr_name.data());
@@ -441,8 +470,10 @@ namespace DSR
             return reinsert_element(elem, "remove_attrib_by_name()");
         }
 
-        template<typename Type, typename = std::enable_if_t<node_or_edge<Type>>>
-        bool remove_attrib_by_name(Type &elem, const std::string& att_name) {
+        template<typename Type>
+        bool remove_attrib_by_name(Type &elem, const std::string& att_name)
+            requires(node_or_edge<Type>)
+        {
             if (elem.attrs().find(att_name) == elem.attrs().end()) return false;
             elem.attrs().erase(att_name);
 
@@ -574,8 +605,9 @@ namespace DSR
         std::map<uint64_t , IDL::MvregNode> Map();
 
 
-        template <typename name, typename Type, typename =  std::enable_if_t<crdt_node_or_edge<Type>> >
+        template <typename name, typename Type>
         inline auto get_crdt_attrib_by_name(const Type &n)
+            requires(crdt_node_or_edge<Type>)
         {
             static_assert(is_attr_name<name>::value, "Invalid object type.");
             using name_type = typename std::remove_reference_t<std::remove_cv_t<decltype(name::type)>>;
