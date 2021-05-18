@@ -38,7 +38,6 @@ def get_command_return(command):
     (result, error) = proc.communicate()
     return result, error
 
-
 def get_last_child(pid):
     last_pid = pid
     while True:
@@ -97,51 +96,64 @@ class KonsoleSession:
         self.session_pid = dbus_session.processId()
         # Not executing the command
         self.child_pid = get_last_child(self.foreground_pid)
-        self.current_directory = ""
+        self.__current_directory = ""
         self.__last_command = ""
+        self.__running_command = ""
+
+
+    @property
+    def current_directory(self):
         if not isinstance(self.child_pid, int):
             print(
-                f"Terminal id {terminal_id} have more than one child for foreground pid {self.foreground_pid}"
+                f"Terminal id {self.terminal_id} have more than one child for foreground pid {self.foreground_pid}"
             )
             print("Can't find current directory")
         else:
             pwdx_command = "pwdx %s" % self.child_pid
             pwd, error = get_command_return(pwdx_command)
             pwd = pwd.split()[1].strip()
-            self.current_directory = pwd.decode("utf-8")
+            self.__current_directory = pwd.decode("utf-8")
+        return self.__current_directory
 
+    @property
     def last_command(self):
         if self.foreground_pid == self.session_pid:
             self.__last_command = self.get_last_executed_command(self.terminal_id)
         else:
-            ps_command = "ps -p %s -o cmd h" % self.child_pid
-            command, error = get_command_return(ps_command)
-            command = command.strip()
-            self.__last_command = command.decode("utf-8")
+            self.__last_command = self.running_command
         return self.__last_command
 
+    @property
+    def running_command(self):
+        if self.foreground_pid != self.session_pid:
+            ps_command = "pstree -p -A %s" % self.child_pid
+            command, error = get_command_return(ps_command)
+            self.__running_command = command.decode("utf-8").strip().split('(')[-2]
+        return self.__running_command
+
     def get_last_executed_command(self, terminal_id):
-
-        tmp_path = "/tmp/yaku_commands_%d.txt" % terminal_id
-        # WARNING: leading space character in echo command is imprtant to avoid this been saved in history
-        # https://stackoverflow.com/questions/6475524/how-do-i-prevent-commands-from-showing-up-in-bash-history
-        YakuakeDBus().sessions.runCommandInTerminal(
-            int(terminal_id), f" echo !:0 !:* > {tmp_path}"
-        )
-        sleep(0.1)
-
-        for retrie in range(5):
-            try:
-                with open(tmp_path) as command_file:
-                    file_lines = command_file.read().splitlines()
-                    if len(file_lines) > 0:
-                        return file_lines[0]
-                    # print("Tab title: %s \n\tId: %d \n\tLast Command: %s \n\tCurrent dir:%s\n" % (yakuake_tab.title,yakuake_tab.session_id, yakuake_tab.last_command, yakuake_tab.current_directory))
-                    break
-            except:
-                if retrie == 4:
-                    print('Could not get command from terminal "%s"' % str(terminal_id))
         return ""
+        # TODO: shell history is not related with each session. Need to find a different way to get the last executed command
+        # tmp_path = "/tmp/yaku_commands_%d.txt" % terminal_id
+        # # WARNING: leading space character in echo command is imprtant to avoid this been saved in history
+        # # https://stackoverflow.com/questions/6475524/how-do-i-prevent-commands-from-showing-up-in-bash-history
+        # YakuakeDBus().sessions.runCommandInTerminal(
+        #     int(terminal_id), f" echo !:0 !:* > {tmp_path}"
+        # )
+        # sleep(0.1)
+        #
+        # for retrie in range(5):
+        #     try:
+        #         with open(tmp_path) as command_file:
+        #             file_lines = command_file.read().splitlines()
+        #             if len(file_lines) > 0:
+        #                 return file_lines[0]
+        #             # print("Tab title: %s \n\tId: %d \n\tLast Command: %s \n\tCurrent dir:%s\n" % (yakuake_tab.title,yakuake_tab.session_id, yakuake_tab.last_command, yakuake_tab.current_directory))
+        #             break
+        #     except:
+        #         if retrie == 4:
+        #             print('Could not get command from terminal "%s"' % str(terminal_id))
+        # return ""
 
 
 class YakuakeSessionStack:
@@ -365,18 +377,7 @@ class YakuakeTabStack:
     def rename_all_tabs(self, name=None, append=False):
         self.load_open_tabs_info()
         for index, tab in self.tabs_by_index.items():
-            first_terminal = sorted(tab.terminals.items())[0][1]
-            pwd = first_terminal.current_directory
-            dir_name = os.path.basename(os.path.normpath(pwd))
-            if name is None:
-                final_name = dir_name
-            else:
-                if append:
-                    final_name = "%s - %s" % (dir_name.decode("utf-8"), name)
-                else:
-                    final_name = name
-            if len(tab.terminals) > 1:
-                final_name += "_+" + str(len(tab.terminals) - 1)
+            final_name = tab.get_new_title()
             YakuakeDBus().tabs.setTabTitle(tab.yakuake_session_id, final_name)
 
 
@@ -386,10 +387,11 @@ class YakuakeTab:
         self.yakuake_session_id = session_id
         self.terminal_ids = []
         self.terminals = {}
+        self.__last_command = None
+        self.__running_command = None
+        self.__current_directory = None
         self.title = ""
-        self.last_command = ""
         self.tmp_path = ""
-        self.__current_directory = ""
 
     @property
     def current_directory(self):
@@ -400,25 +402,93 @@ class YakuakeTab:
             ].current_directory
         return self.__current_directory
 
+    @property
+    def last_command(self):
+        if len(self.terminals) > 0:
+            lower_terminal_id = sorted(self.terminals)[0]
+            self.__last_command = self.terminals[
+                lower_terminal_id
+            ].last_command
+        return self.__last_command
+
+    @property
+    def running_command(self):
+        if len(self.terminals) > 0:
+            lower_terminal_id = sorted(self.terminals)[0]
+            self.__running_command = self.terminals[
+                lower_terminal_id
+            ].running_command
+        return self.__running_command
+
+    def get_new_title(self,  name=None, append=False):
+        pwd = self.current_directory
+        dir_name = os.path.basename(os.path.normpath(pwd))
+        if name is None:
+            final_name = dir_name
+            if self.last_command:
+                final_name += "_" + self.last_command
+            elif self.running_command:
+                final_name += "_" + self.running_command
+        else:
+            if append:
+                final_name = "%s - %s" % (dir_name.decode("utf-8"), name)
+            else:
+                final_name = name
+
+        if len(self.terminals) > 1:
+            final_name += "_+" + str(len(self.terminals) - 1)
+        self.title = final_name
+        return final_name
 
 class Yaku:
     def __init__(self):
         self.__dbus = dbus.SessionBus()
         self.session_stack = YakuakeSessionStack()
-        self.tabs_stack = YakuakeTabStack()
-        if len(self.tabs_stack.tabs_by_index) == 0:
-            self.tabs_stack.load_open_tabs_info()
+        self._tabs_stack = None
+        self.yakuake_process_id = self.get_yakuake_pid()
+        self.yakuake_shell_children = self.get_yakuake_children()
+
+    def get_yakuake_pid(self):
+        subprocess.check_output(["pidof", "yakuake"])
+
+    def get_yakuake_children(self):
+        yakuake_pid = self.get_yakuake_pid()
+        child_pids, _ = get_command_return("pgrep -P %s" % yakuake_pid)
+        child_pids = child_pids.decode("utf-8")
+        result = []
+        if "\n" in child_pids:
+            for child_pid in child_pids.split("\n"):
+                if child_pid == "":
+                    continue
+                more_childs = get_last_child(int(child_pid))
+                if isinstance(more_childs, list):
+                    result.extend(more_childs)
+                else:
+                    result.append(more_childs)
+        return result
+
 
     def toggle_window_state(self):
         self.__dbus.toggleWindowState()
+
+    @property
+    def tabs_stack(self):
+        if self._tabs_stack is None:
+            self._tabs_stack = YakuakeTabStack()
+            if len(self._tabs_stack.tabs_by_index) == 0:
+                self._tabs_stack.load_open_tabs_info()
+        return self._tabs_stack
 
     def rename_tab(self, name=None, append=False, session_id=None):
         if session_id is None:
             session_id = self.session_stack.active_session_id
         pwd = self.tabs_stack.tabs_by_session[session_id].current_directory
         dir_name = os.path.basename(os.path.normpath(pwd))
+        running_command = self.tabs_stack.tabs_by_session[session_id].runnng_command
         if name is None:
             final_name = dir_name
+            if running_command is not None:
+                final_name+="_"+running_command
         else:
             if append:
                 final_name = "%s - %s" % (dir_name.decode("utf-8"), name)
