@@ -331,12 +331,14 @@ void DSRViewer::initialize_views(int options, view central){
         QScene2dViewer* qscene_widget = qobject_cast<QScene2dViewer*>(docks["2D"]->widget());
         DSRViewer::connect(qscene_widget, &QScene2dViewer::mouse_right_click, this, &DSRViewer::qscene2d_object_position);
     }
-	if((widgets.size())>0 or docks.size()>0 or main_widget!=nullptr)
+	if(widgets.size()<=0 and docks.size()<=0 and main_widget==nullptr)
 	{
-		window->show();
+        qDebug()<<__FUNCTION__ <<"Minimize"<<widgets.size()<<docks.size()<<main_widget;
+        window->showMinimized();
 	}
 	else {
-		window->showMinimized();
+        qDebug()<<__FUNCTION__ <<"Normal Show";
+        window->show();
 	}
 }
 
@@ -425,6 +427,7 @@ void DSRViewer::add_custom_widget_to_dock(QString name, QWidget* custom_view){
 		previous = dock;
 	}
 	docks[name]->raise();
+    window->setWindowState(window->windowState() & ~Qt::WindowMinimized | Qt::WindowActive);
 }
 
 
