@@ -24,6 +24,7 @@
 #include <iostream>
 #include <cppitertools/range.hpp>
 
+
 GraphEdge::GraphEdge(GraphNode* sourceNode, GraphNode* destNode, const QString& edge_name)
         :QGraphicsLineItem(), arrowSize(10)
 {
@@ -33,11 +34,11 @@ GraphEdge::GraphEdge(GraphNode* sourceNode, GraphNode* destNode, const QString& 
     // non-movable but selectable
     auto flags = ItemIsSelectable | ItemSendsGeometryChanges | ItemUsesExtendedStyleOption;
     setFlags(flags);
-    tag = new QGraphicsSimpleTextItem(edge_name, this);
-    tag->setFlags(0);
-    tag->setCacheMode(DeviceCoordinateCache);
-    tag->setPen(Qt::NoPen);
-    tag->setAcceptedMouseButtons(Qt::NoButton);
+    tag = new QGraphicsTextItem(edge_name, this);
+    tag->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable);
+    tag->installEventFilter(this);
+//    tag->setCacheMode(DeviceCoordinateCache);
+//    tag->setPen(Qt::NoPen);
     if (edge_name=="RT") {
         color = "black";
     }
@@ -278,17 +279,6 @@ QRectF GraphEdge::boundingRect() const
 //    }
 }
 
-/*
-QPainterPath GraphEdge::shape() const
-{
-    QPainterPath path;
-    QPainterPathStroker stroker;
-    stroker.setWidth(30);
-    path.moveTo(line().p1());
-    path.lineTo(line().p2());
-    return stroker.createStroke(path);
-}
- */
 
 void GraphEdge::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget*)
 {
@@ -484,25 +474,45 @@ void GraphEdge::paint(QPainter* painter, const QStyleOptionGraphicsItem* option,
 
 void GraphEdge::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event)
 {
-    qDebug() << __FILE__ << " " << __FUNCTION__ << "Edge from " << source->id_in_graph << " to " << dest->id_in_graph
-             << " tag: " <<tag->text();
-    static std::unique_ptr<QWidget> do_stuff;
-    const auto graph = source->getGraphViewer()->getGraph();
     if (event->button()==Qt::RightButton) {
-        if (tag->text()=="RT" or tag->text()=="looking-at") {
-            qDebug() << __FILE__ << "DoRTStuff2";
-            do_stuff = std::make_unique<DoRTStuff2>(graph, source->id_in_graph, dest->id_in_graph,
-                    tag->text().toStdString());
-        }
-        else {
-            qDebug() << __FILE__ << "DoTableEdgeStuff";
-            do_stuff = std::make_unique<DoTableEdgeStuff>(graph, source->id_in_graph, dest->id_in_graph,
-                    tag->text().toStdString());
+        mouse_double_clicked();
+    }
+    QGraphicsLineItem::mouseDoubleClickEvent(event);
+}
+
+// For Tag Double click
+bool GraphEdge::eventFilter(QObject* object, QEvent* event)
+{
+    if(object == this->tag)
+    {
+        if(event->type() == QEvent::GraphicsSceneMouseDoubleClick){
+            auto mouseEvent = static_cast<QGraphicsSceneMouseEvent*>(event);
+            if (mouseEvent->button()==Qt::RightButton) {
+                mouse_double_clicked();
+            }
+            return true;
         }
     }
-    animation->start();
-    update();
-    QGraphicsLineItem::mouseDoubleClickEvent(event);
+    return false;
+}
+
+void GraphEdge::mouse_double_clicked()
+{
+    qDebug() << __FILE__ << " " << __FUNCTION__ << "Edge from " << this->source->id_in_graph << " to " << this->dest->id_in_graph
+             << " tag: " << this->tag->toPlainText();
+    static std::unique_ptr<QWidget> do_stuff;
+    const auto graph = this->source->getGraphViewer()->getGraph();
+
+    if (this->tag->toPlainText()=="RT" or this->tag->toPlainText()=="looking-at") {
+        do_stuff = std::make_unique<DoRTStuff2>(graph, this->source->id_in_graph, this->dest->id_in_graph,
+                this->tag->toPlainText().toStdString());
+    }
+    else {
+        do_stuff = std::make_unique<DoTableEdgeStuff>(graph, this->source->id_in_graph, this->dest->id_in_graph,
+                this->tag->toPlainText().toStdString());
+    }
+    this->animation->start();
+    this->update();
 }
 
 void GraphEdge::keyPressEvent(QKeyEvent* event)
@@ -537,7 +547,7 @@ void GraphEdge::update_edge_attr_slot(std::uint64_t from, std::uint64_t to, cons
     if ((from!=this->source->id_in_graph) or (to!=this->dest->id_in_graph))
         return;
     if (std::find(att_name.begin(), att_name.end(), "color")!=att_name.end()) {
-        std::optional<Edge> edge = source->getGraphViewer()->getGraph()->get_edge(from, to, tag->text().toStdString());
+        std::optional<Edge> edge = source->getGraphViewer()->getGraph()->get_edge(from, to, tag->toPlainText().toStdString());
         if (edge.has_value()) {
             auto& attrs = edge.value().attrs();
             auto value = attrs.find("color");

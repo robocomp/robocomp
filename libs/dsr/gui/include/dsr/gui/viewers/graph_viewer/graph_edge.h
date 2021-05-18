@@ -526,7 +526,7 @@ Q_PROPERTY(int edge_pen READ _edge_pen WRITE set_edge_pen)
 private:
     GraphNode *source, *dest;
     qreal arrowSize;
-    QGraphicsSimpleTextItem *tag;
+    QGraphicsTextItem *tag;
     QColor color;
 //    QGraphicsTextItem *rt_values = nullptr;
     QTableWidget *label = nullptr;
@@ -552,14 +552,16 @@ public:
 //    bool isValid() const	{ return source != NULL && dest != NULL; }
 //    bool isCircled() const	{ return isValid() && source == dest; }
 
-//protected:
-//    QPainterPath shape() const override;
+protected:
     QRectF boundingRect() const override;
 //    QRectF calculateBoundingRect() const;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
     void keyPressEvent(QKeyEvent *event) override;
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event) override;
     void update_edge_attr_slot(std::uint64_t from, std::uint64_t to, const std::vector<std::string>& att_name);
+    bool eventFilter(QObject* object, QEvent* event) override;
+private:
+    void mouse_double_clicked();
 
 protected:
 //    QPointF m_controlPoint, m_controlPos;
