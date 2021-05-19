@@ -204,7 +204,8 @@ void GraphViewer::add_or_assign_node_SLOT(uint64_t id, const std::string &type)
 			else if(type == "laser") color = "GreenYellow";
 			else if(type == "mesh") color = "LightBlue";
 			else if(type == "imu") color = "LightSalmon";*/
-			gnode->setColor(color);
+			gnode->set_color(color);
+			gnode->setType(type);
         }
         else
 		{

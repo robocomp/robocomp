@@ -15,6 +15,7 @@
  */
 
 #include <dsr/gui/viewers/graph_viewer/graph_node.h>
+#include <dsr/gui/viewers/graph_viewer/node_colors.h>
 
 #define NODE_POS_X -10
 #define NODE_POS_Y -10
@@ -27,7 +28,8 @@ GraphNode::GraphNode(std::shared_ptr<DSR::GraphViewer> graph_viewer_): QGraphics
     setAcceptHoverEvents(true);
     setZValue(-1);
     node_brush.setStyle(Qt::SolidPattern);
-	animation = new QPropertyAnimation(this, "node_color");
+
+    animation = new QPropertyAnimation(this, "node_color");
 	animation->setDuration(200);
 	animation->setStartValue(plain_color);
 	animation->setEndValue(dark_color);
@@ -56,19 +58,20 @@ void GraphNode::setType(const std::string &type_)
         contextMenu->addAction(stuff_action);
         connect(stuff_action, &QAction::triggered, this, [this, type_](){ this->show_stuff_widget(type_);});
     }
-    
+    auto pos = node_colors.find(type);
+    if(pos != node_colors.end())
+    {
+        auto color_name = pos->second;
+        qDebug()<<__FUNCTION__ <<"Setting color to"<<QString::fromStdString(color_name);
+        set_color(color_name);
+    }
+    else
+    {
+        qDebug()<<__FUNCTION__ <<"Setting color to default"<<plain_color;
+        set_color(plain_color.toStdString());
+    }
 }
 
-void GraphNode::setColor(const std::string &plain)
-{
-    QString c = QString::fromStdString(plain);
-	plain_color = c;
-	dark_color = "dark" + c;
-    animation->setStartValue(QColor("green").lighter());
-    animation->setEndValue(QColor(c));
-    node_brush.setColor(QColor(c));
-
-}
 
 void GraphNode::addEdge(GraphEdge *edge)
 {
@@ -182,7 +185,7 @@ void GraphNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
         gradient.setColorAt(0, QColor(Qt::gray).light(120));
     } else
 		{
-        gradient.setColorAt(0, QColor(node_brush.color()));
+        gradient.setColorAt(0, node_brush.color());
         gradient.setColorAt(1, QColor(node_brush.color().dark(200)));
     }
     painter->setBrush(gradient);
@@ -275,6 +278,16 @@ void GraphNode::set_node_color(const QColor& c)
     this->setBrush( node_brush );
 }
 
+void GraphNode::set_color(const std::string &plain)
+{
+    QString c = QString::fromStdString(plain);
+    plain_color = c;
+    dark_color = "dark" + c;
+    set_node_color(QColor(c));
+    animation->setStartValue(QColor("green").lighter());
+    animation->setEndValue(c);
+}
+
 /////////////////////////////////////////////////////////////////////////////////////////7
 ////
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -286,11 +299,11 @@ void GraphNode::update_node_attr_slot(std::uint64_t node_id, const std::vector<s
     {
         std::optional<Node> n = dsr_to_graph_viewer->getGraph()->get_node(node_id);
         if (n.has_value()) {
-            auto &attrs = n.value().attrs();
-            auto value = attrs.find("color");
-            if (value != attrs.end()) {
-                this->setColor(value->second.str());
-            }
+//            auto &attrs = n.value().attrs();
+//            auto value = attrs.find("color");
+//            if (value != attrs.end()) {
+//                this->setColor(value->second.str());
+//            }
         }
     }
 }

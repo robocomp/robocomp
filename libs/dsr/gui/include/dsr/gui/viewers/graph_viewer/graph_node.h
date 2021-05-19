@@ -539,9 +539,10 @@ class GraphNode : public QObject, public QGraphicsEllipseItem
     QRectF boundingRect() const override;
     QPainterPath shape() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
-    void setColor(const std::string &plain);
+
     std::shared_ptr<DSR::GraphViewer> getGraphViewer() const { return dsr_to_graph_viewer;};
     void set_node_color(const QColor& c);
+    void set_color(const std::string &plain);
     QColor _node_color();
     void change_detected();
 
