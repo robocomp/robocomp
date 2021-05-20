@@ -11,7 +11,7 @@
 static const std::map<std::string, std::string> edge_colors = {
         { "RT", "black"},
         { "reachable", "blue"},
-        { "in", "red"},
+        { "in", "brown"},
         { "knows", "blue"},
         { "transitable", "blue"},
         { "visible", "blue"},
@@ -22,16 +22,16 @@ static const std::map<std::string, std::string> edge_colors = {
         { "sitting", "blue"},
         { "standing", "blue"},
         { "close_to", "blue"},
-        { "has", "orange"},
+        { "has", "yellow"},
         { "blocked", "blue"},
         { "is_blocking", "blue"},
         { "is_near", "blue"},
         { "front", "blue"},
-        { "interacting", "red"},
+        { "interacting", "orange"},
         { "interactive", "blue"},
         { "thinks", "blue"},
-        { "goto_action", "blue"},
-        { "attention_action", "blue"}
+        { "goto_action", "green"},
+        { "attention_action", "magenta"}
 };
 
 #endif //DSR_EDGE_COLORS_H
