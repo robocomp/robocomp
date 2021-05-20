@@ -120,19 +120,20 @@ void QScene2dViewer::add_or_assign_edge_slot(const std::uint64_t  from, const st
 {
 //    qDebug()<<__FUNCTION__;
     //check if new edge connected any orphan nodes
-    std::map<uint64_t , std::string>::iterator it = orphand_nodes.find(to);
+    if (type == "RT") {
+        auto it = orphand_nodes.find(to);
 
-    if(it != orphand_nodes.end())
-    {
+        if (it != orphand_nodes.end()) {
 //        qDebug()<<"ORPHAND NODE FOUND"<<to;
-        add_or_assign_node_slot(it->first, it->second);
-        it = orphand_nodes.erase(it);
-    }
-    std::string edge_key = std::to_string(from) + "_" + std::to_string(to);
-    for (int node_id : edge_map[edge_key])
-    {
+            std::pair<uint64_t, std::string> key {it->first, it->second};
+            it = orphand_nodes.erase(it);
+            add_or_assign_node_slot(key.first, key.second);
+        }
+        std::string edge_key = std::to_string(from) + "_" + std::to_string(to);
+        for (int node_id : edge_map[edge_key]) {
 //        qDebug() << "******UPDATE EDGE "<<from << " " << to <<" update node " << node_id;
-        update_scene_object_pose(node_id);
+            update_scene_object_pose(node_id);
+        }
     }
 }
 
@@ -259,6 +260,12 @@ bool QScene2dViewer::is_drawable(std::list<uint64_t > parent_list)
 bool QScene2dViewer::check_RT_required_attributes(Node node)
 {
     try{
+        auto edges_to_n = G->get_edges_to_id(node.id());
+        if (not std::any_of(edges_to_n.begin(), edges_to_n.end(), [](const DSR::Edge &e) { return e.type() == "RT"; }) )
+        {
+            orphand_nodes[node.id()] = node.type(); // We don't
+            return false;
+        }
         std::optional<int> level = G->get_node_level(node);
         std::optional<uint64_t> parent = G->get_parent_id(node);
         std::optional<Mat::Vector6d> pose = innermodel->transform_axis("world", node.name());

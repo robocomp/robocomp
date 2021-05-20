@@ -39,7 +39,7 @@ std::optional<Mat::RTMat> InnerEigenAPI::get_transformation_matrix(const std::st
         int minLevel = std::min(G->get_node_level(a).value_or(-1), G->get_node_level(b).value_or(-1));
         if (minLevel == -1)
         {
-            qWarning() << __FUNCTION__ << ":"<<__LINE__ << " Incorrect level in one origin or dest nodes: " << QString::fromStdString(orig) << QString::fromStdString(dest);
+            qWarning() << __FUNCTION__ << ":"<<__LINE__ << " Incorrect level in one origin or dest nodes: " << QString::fromStdString(orig) << QString::fromStdString(dest) << ". The nodes may not have RT edges";
             return {};
         }
         while (G->get_node_level(a).value_or(-1) >= minLevel)
