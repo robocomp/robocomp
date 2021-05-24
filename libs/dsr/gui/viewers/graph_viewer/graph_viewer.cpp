@@ -251,7 +251,7 @@ void GraphViewer::add_or_assign_edge_SLOT(std::uint64_t from, std::uint64_t to, 
 {
 	try
     {
- 		//qDebug() << __FUNCTION__ << "edge id " << QString::fromStdString(edge_tag) << from << to;
+ 		qDebug() << __FUNCTION__ << "edge id " << QString::fromStdString(edge_tag) << from << to;
 		std::tuple<std::uint64_t, std::uint64_t, std::string> key = std::make_tuple(from, to, edge_tag);
 
 		if(gmap_edges.count(key) == 0) 

@@ -523,6 +523,13 @@ class GraphEdge : public QObject, public QGraphicsLineItem, public std::enable_s
 {
 Q_OBJECT
 Q_PROPERTY(int edge_pen READ _edge_pen WRITE set_edge_pen)
+protected:
+//    QPointF m_controlPoint, m_controlPos;
+//    QPainterPath m_shapeCachePath;
+//    QPolygon arrow_polygon_cache;
+    const int ARROW_SIZE = 6;
+    const int NODE_DIAMETER = 20;
+    const int NODE_RADIUS = NODE_DIAMETER/2;
 private:
     GraphNode *source, *dest;
     qreal arrowSize;
@@ -531,6 +538,7 @@ private:
 //    QGraphicsTextItem *rt_values = nullptr;
     QTableWidget *label = nullptr;
     int line_width;
+    int m_bendFactor = 0;
     QPropertyAnimation* animation;
 //    QPolygonF tag_polygon;
 //    bool graphic_debug;
@@ -549,6 +557,7 @@ public:
     int _edge_pen();
     void set_edge_pen(const int with);
     void change_detected();
+    void set_bend_factor(int bf);
 //    bool isValid() const	{ return source != NULL && dest != NULL; }
 //    bool isCircled() const	{ return isValid() && source == dest; }
 
@@ -562,14 +571,11 @@ protected:
     bool eventFilter(QObject* object, QEvent* event) override;
 private:
     void mouse_double_clicked();
+    void draw_arc(QPainter* painter) const;
+    void draw_arrows(QPainter* painter) const;
+    void draw_line(QPainter* painter) const;
 
-protected:
-//    QPointF m_controlPoint, m_controlPos;
-//    QPainterPath m_shapeCachePath;
-//    QPolygon arrow_polygon_cache;
-    const int ARROW_SIZE = 6;
-    const int NODE_DIAMETER = 20;
-    const int NODE_RADIUS = NODE_DIAMETER/2;
+
 
 
 

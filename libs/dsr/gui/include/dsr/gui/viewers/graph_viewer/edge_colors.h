@@ -9,7 +9,7 @@
 #include <string>
 
 static const std::map<std::string, std::string> edge_colors = {
-        { "RT", "black"},
+        { "RT", "purple"},
         { "reachable", "blue"},
         { "in", "brown"},
         { "knows", "blue"},

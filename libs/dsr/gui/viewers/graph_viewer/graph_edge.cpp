@@ -286,37 +286,19 @@ QRectF GraphEdge::boundingRect() const
 
 void GraphEdge::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget*)
 {
-
+    painter->save();
     if (!source || !dest)
         return;
 
     //if (source->collidesWithItem(dest))
     //    return;
 
-    QPen myPen = pen();
-    myPen.setColor(color);
-    qreal arrowSize = 6;
-    painter->setPen(myPen);
-    painter->setBrush(color);
+//    draw_line(painter);
+    draw_arrows(painter);
+    draw_arc(painter);
+    painter->restore();
 
-    painter->drawLine(line());
-
-    // Draw the arrows
-    double angle = std::atan2(-line().dy(), line().dx());
-
-    QPointF sourceArrowP1 = line().p1() + QPointF(sin(angle + M_PI / 3) * arrowSize,
-            cos(angle + M_PI / 3) * arrowSize);
-    QPointF sourceArrowP2 = line().p1() + QPointF(sin(angle + M_PI - M_PI / 3) * arrowSize,
-            cos(angle + M_PI - M_PI / 3) * arrowSize);
-    QPointF destArrowP1 = line().p2() + QPointF(sin(angle - M_PI / 3) * arrowSize,
-            cos(angle - M_PI / 3) * arrowSize);
-    QPointF destArrowP2 = line().p2() + QPointF(sin(angle - M_PI + M_PI / 3) * arrowSize,
-            cos(angle - M_PI + M_PI / 3) * arrowSize);
-
-    painter->setBrush(color);
-//    painter->drawPolygon(QPolygonF() << line().p1() << sourceArrowP1 << sourceArrowP2);
-    painter->drawPolygon(QPolygonF() << line().p2() << destArrowP1 << destArrowP2);
-//    if (!source || !dest)
+    //    if (!source || !dest)
 //        return;
 //
 //    // DEBUG
@@ -416,6 +398,63 @@ void GraphEdge::paint(QPainter* painter, const QStyleOptionGraphicsItem* option,
 ////    }
 //    }
 //    painter->restore();
+}
+void GraphEdge::draw_line(QPainter* painter) const
+{
+    QPen myPen = this->pen();
+    myPen.setColor(this->color);
+    painter->setPen(myPen);
+    painter->setBrush(this->color);
+
+    painter->drawLine(this->line());
+}
+void GraphEdge::draw_arrows(QPainter* painter) const
+{// Draw the arrows
+    double angle = atan2(-this->line().dy(), this->line().dx());
+
+//    QPointF sourceArrowP1 = this->line().p1() + QPointF(sin(angle + M_PI / 3) * this->ARROW_SIZE,
+//            cos(angle + M_PI / 3) * this->ARROW_SIZE);
+//    QPointF sourceArrowP2 = this->line().p1() + QPointF(sin(angle + M_PI - M_PI / 3) * this->ARROW_SIZE,
+//            cos(angle + M_PI - M_PI / 3) * this->ARROW_SIZE);
+    QPointF destArrowP1 = this->line().p2() + QPointF(sin(angle - M_PI / 3) * this->ARROW_SIZE,
+            cos(angle - M_PI / 3) * this->ARROW_SIZE);
+    QPointF destArrowP2 = this->line().p2() + QPointF(sin(angle - M_PI + M_PI / 3) * this->ARROW_SIZE,
+            cos(angle - M_PI + M_PI / 3) * this->ARROW_SIZE);
+
+    painter->setBrush(this->color);
+    painter->setPen(this->color);
+//    painter->drawPolygon(QPolygonF() << line().p1() << sourceArrowP1 << sourceArrowP2);
+    painter->drawPolygon(QPolygonF() << this->line().p2() << destArrowP1 << destArrowP2);
+}
+
+void GraphEdge::draw_arc(QPainter* painter) const
+{
+    auto m_controlPos = (this->line().p1() + this->line().p2()) / 2;
+    QPointF t1 = m_controlPos;
+    float posFactor = qAbs(m_bendFactor);
+
+    bool bendDirection = true;
+    if (m_bendFactor < 0)
+        bendDirection = !bendDirection;
+
+    QLineF f1(t1, this->line().p2());
+    f1.setAngle(bendDirection ? f1.angle() + 90 : f1.angle() - 90);
+    f1.setLength(f1.length() * 0.2 * posFactor);
+
+    m_controlPos = f1.p2();
+    auto m_controlPoint = m_controlPos - (t1 - m_controlPos) * 0.33;
+
+    auto path = QPainterPath();
+    path.moveTo(this->line().p1());
+    path.cubicTo(m_controlPoint, m_controlPoint, this->line().p2());
+    auto r = tag->boundingRect();
+    int w = r.width();
+    int h = r.height();
+    tag->setDefaultTextColor(this->color);
+    tag->setPos(m_controlPoint.x() - w / 2, m_controlPoint.y() - h / 2);
+    painter->setBrush(Qt::NoBrush);
+    painter->setPen(this->color);
+    painter->drawPath(path);
 }
 
 //void GraphEdge::drawArrow(QPainter* painter, const QStyleOptionGraphicsItem* /*option*/, bool first,
@@ -560,4 +599,9 @@ void GraphEdge::update_edge_attr_slot(std::uint64_t from, std::uint64_t to, cons
             }
         }
     }
+}
+void GraphEdge::set_bend_factor(int bf)
+{
+    qDebug()<<__FUNCTION__ <<bf;
+    m_bendFactor = bf;
 }

@@ -75,8 +75,31 @@ void GraphNode::setType(const std::string &type_)
 
 void GraphNode::addEdge(GraphEdge *edge)
 {
+    qDebug()<<"====================================";
+    int same_count = 0;
+    int bend_factor = 0;
+    // look for edges with the same dest
+    qDebug()<<__FUNCTION__ <<"Checking edges for node: "<<this->id_in_graph;
+    for (auto old_edge: edgeList)
+    {
+//        qDebug()<<__FUNCTION__ <<"\tExisting EDGE: "<<edge->sourceNode()->id_in_graph<<edge->destNode()->id_in_graph<<"OTHER: "<<old_edge->sourceNode()->id_in_graph<<old_edge->destNode()->id_in_graph;
+        qDebug()<<"\t"<<__FUNCTION__ <<"Existing EDGE: "<<old_edge->sourceNode()->id_in_graph<<"--"<<old_edge->destNode()->id_in_graph;
+        qDebug()<<"\t"<<__FUNCTION__ <<"     New EDGE: "<<edge->sourceNode()->id_in_graph<<"--"<<edge->destNode()->id_in_graph;
+        if((edge->sourceNode()->id_in_graph==old_edge->sourceNode()->id_in_graph or edge->sourceNode()->id_in_graph==old_edge->destNode()->id_in_graph)
+        and (edge->destNode()->id_in_graph==old_edge->sourceNode()->id_in_graph or edge->destNode()->id_in_graph==old_edge->destNode()->id_in_graph))
+        {
+//            https://www.wolframalpha.com/input/?i=0%2C+1%2C+-1%2C+2%2C+-2%2C+3%2C+-3
+            same_count++;
+            qDebug()<<"\t\t"<<__FUNCTION__ <<"SAME EDGE"<<same_count;
+        }
+    }
+    bend_factor = (pow(-1,same_count)*(-1 + pow(-1,same_count) - 2*same_count))/4;
+    qDebug()<<__FUNCTION__ <<__LINE__<<"ID: "<<id_in_graph<<"SAME: "<<same_count<<"FACTOR: "<<bend_factor;
+    edge->set_bend_factor(bend_factor);
     edgeList << edge;
+
     edge->adjust();
+    qDebug()<<"====================================";
 }
 
 void GraphNode::deleteEdge(GraphEdge *edge)
@@ -200,7 +223,8 @@ QVariant GraphNode::itemChange(GraphicsItemChange change, const QVariant &value)
 {
     switch (change) 
 	{
-        case ItemPositionChange:
+
+        case ItemPositionHasChanged:
         {
             foreach (GraphEdge *edge, edgeList)
                  edge->adjust(this, value.toPointF());
@@ -228,6 +252,7 @@ void GraphNode::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event)
 //    update();
     QGraphicsEllipseItem::mouseDoubleClickEvent(event);
 }
+
 
 void GraphNode::show_stuff_widget(const std::string &show_type)
 {
