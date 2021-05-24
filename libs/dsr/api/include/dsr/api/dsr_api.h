@@ -155,7 +155,25 @@ namespace DSR
         std::optional<std::map<std::pair<uint64_t, std::string>, Edge>> get_edges(uint64_t id);
 
 
+        template <typename name, typename Type>
+        inline std::optional<uint64_t> get_attrib_timestamp(const Type &n)
+            requires(node_or_edge<Type>, is_attr_name<name>::value)
+        {
+            auto &attrs = n.attrs();
+            auto value = attrs.find(name::attr_name.data());
+            if (value == attrs.end()) return {};
+            else return value->second.timestamp();
+        }
 
+        template <typename Type>
+        inline std::optional<uint64_t> get_attrib_timestamp_by_name(const Type &n, const std::string& att_name)
+            requires(node_or_edge<Type>)
+        {
+            auto &attrs = n.attrs();
+            auto value = attrs.find(att_name);
+            if (value == attrs.end()) return {};
+            else return value->second.timestamp();
+        }
 
         template <typename name, typename Type>
         inline std::optional<decltype(name::type)> get_attrib_by_name(const Type &n)

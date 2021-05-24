@@ -49,7 +49,7 @@ void Utilities::read_from_json_file(const std::string &json_file_path,  const st
         std::string type = sym_obj.value("type").toString().toStdString();
         std::string name = sym_obj.value("name").toString().toStdString();
 
-        if (id == -1)
+        if (id == ULLONG_MAX)
         {
             std::cout << __FILE__ << " " << __FUNCTION__ << " Invalid ID Node: " << std::to_string(id);
             continue;
