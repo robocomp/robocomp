@@ -16,7 +16,7 @@ class FPSCounter
 				cont = 0;
 			}
 			cont++;
-			return elapsed;
+			return count;
 		}
 		std::chrono::time_point<std::chrono::high_resolution_clock> begin;
 		std::uint32_t cont = 0;
