@@ -438,10 +438,10 @@ std::optional<std::tuple<float,float,float>> CameraAPI::get_roi_depth(const std:
 
         //auto mv = std::ranges::min(values);
         std::nth_element(values.begin(), values.begin() + values.size()/2, values.end());
-        const int px = (left + right) / 2;
-        const int py = (top + bot) / 2;
-        const auto mv = depth[py * width + px];
-        // const auto mv = values[values.size()/2];  //median
+        // const int px = (left + right) / 2;
+        // const int py = (top + bot) / 2;
+        // const auto mv = depth[py * width + px];
+        const auto mv = values[values.size()/2];  //median
         const auto Y = mv * 1000;
         const float cols = left + (right - left) / 2;
         const float rows = top + (bot - top) / 2;
