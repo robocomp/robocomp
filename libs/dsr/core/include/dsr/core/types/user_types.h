@@ -204,7 +204,7 @@ namespace DSR {
                                   m_agent_id(mAgentId)
         {
             if(!edge_types::check_type(m_type)) {
-                throw std::runtime_error("Error, " + m_type + " is not a valid edge type");
+                throw std::runtime_error("Error, \"" + m_type + "\" is not a valid edge type");
             }
         }
 
@@ -214,7 +214,7 @@ namespace DSR {
                                         m_agent_id(mAgentId)
         {
             if(!edge_types::check_type(m_type)) {
-                throw std::runtime_error("Error, " + m_type + " is not a valid edge type");
+                throw std::runtime_error("Error, \"" + m_type + "\" is not a valid edge type");
             }
         }
 
@@ -355,7 +355,7 @@ namespace DSR {
         [[deprecated("Use Node::create<example_node_type>(...)")]] Node(uint64_t mAgentId, std::string mType) : m_id(0), m_type(std::move(mType)), m_attrs{}, m_fano{}, m_agent_id(mAgentId)
         {
             if (!node_types::check_type(m_type)) {
-                throw std::runtime_error("Error, " + m_type + " is not a valid node type");
+                throw std::runtime_error("Error, \"" + m_type + "\" is not a valid node type");
             }
         }
 
@@ -365,7 +365,7 @@ namespace DSR {
                 : m_id(0), m_type(std::move(mType)), m_attrs{std::move(mAttrs)}, m_fano{std::move(mFano)}, m_agent_id(mAgentId)
         {
             if (!node_types::check_type(m_type)) {
-                throw std::runtime_error("Error, " + m_type + " is not a valid node type");
+                throw std::runtime_error("Error, \"" + m_type + "\" is not a valid node type");
             }
         }
 
