@@ -190,8 +190,8 @@ class DoTableEdgeStuff : public  QTableWidget
                 case 1:
                 {
                     QSpinBox *spin = new QSpinBox();
-                    spin->setMinimum(-100000);
-                    spin->setMaximum(100000);
+                    spin->setMinimum(std::numeric_limits<int>::min());
+                    spin->setMaximum(std::numeric_limits<int>::max());
                     spin->setValue(v.dec());
                     setCellWidget(rc, 1, spin);
                     widget_map[k] = spin;
@@ -271,7 +271,7 @@ class DoTableEdgeStuff : public  QTableWidget
                 {
                     QSpinBox *spin = new QSpinBox();
                     spin->setMinimum(0);
-                    spin->setMaximum(100000);
+                    spin->setMaximum(std::numeric_limits<uint32_t>::max());
                     spin->setValue((int)v.uint());
                     setCellWidget(rc, 1, spin);
                     widget_map[k] = spin;
@@ -296,7 +296,7 @@ class DoTableEdgeStuff : public  QTableWidget
                 setItem(rc, 0, item);
 
             } else {
-                removeRow(rc+1);
+                removeRow(rc);
             }
         }
 };

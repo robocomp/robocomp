@@ -163,7 +163,7 @@ class DoRGBDStuff : public QWidget
           std::optional<Node> n = (show_rgb->isChecked() or show_depth->isChecked()) ?  graph->get_node(id) :  std::nullopt;
           if (n.has_value()) {
               Node node = n.value();
-              auto t = get_unix_timestamp();
+              //auto t = get_unix_timestamp();
               //std::cout << "[DRAW IMG] " << timestamp << ", " << t << ": " << static_cast<double>(t - timestamp) / 1000000 << std::endl;
               if (cam == nullptr) {
                   if (graph->get_attrib_by_name<cam_rgb_focalx_att>(node).has_value())
@@ -409,8 +409,8 @@ class DoTableStuff : public  QTableWidget
             case 1:
             {
                 QSpinBox *spin = new QSpinBox();
-                spin->setMinimum(-10000);
-                spin->setMaximum(10000);
+                spin->setMinimum(std::numeric_limits<int>::min());
+                spin->setMaximum(std::numeric_limits<int>::max());
                 spin->setValue(v.dec());
                 setCellWidget(rc, 1, spin);
                 widget_map[k] = spin;
@@ -490,7 +490,7 @@ class DoTableStuff : public  QTableWidget
             {
                 QSpinBox *spin = new QSpinBox();
                 spin->setMinimum(0);
-                spin->setMaximum(10000);
+                spin->setMaximum(std::numeric_limits<uint32_t>::max());
                 spin->setValue((int)v.uint());
                 setCellWidget(rc, 1, spin);
                 widget_map[k] = spin;
@@ -530,7 +530,7 @@ class DoTableStuff : public  QTableWidget
             setItem(rc, 0, item);
 
         } else {
-            removeRow(rc+1);
+            removeRow(rc);
         }
 
     }
