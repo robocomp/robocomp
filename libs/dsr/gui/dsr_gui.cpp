@@ -481,6 +481,10 @@ void DSRViewer::compute()
     {
         status += " Object pose: (" + std::to_string(object_position->x()) + ", " + std::to_string(object_position->y()) + ") ID: " + std::to_string(object_id);
     }
+    if(external_hz!=-1)
+    {
+        status += " HZ: "+std::to_string(external_hz);
+    }
     this->window->statusBar()->showMessage(QString::fromStdString(status)); 
 }
 
@@ -501,5 +505,13 @@ void DSRViewer::keyPressEvent(QKeyEvent* event)
 {
 	if (event->key() == Qt::Key_Escape)
 		emit closeWindowSIGNAL();
+}
+float DSRViewer::getExternalHz() const
+{
+    return external_hz;
+}
+void DSRViewer::setExternalHz(float externalHz)
+{
+    external_hz = externalHz;
 }
 

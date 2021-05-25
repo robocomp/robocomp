@@ -36,75 +36,80 @@
 
 namespace DSR
 {
-	//////////////////////////////////////////////////////////////////////////////////////////////
-	/// Drawing controller to display the graph in real-time using RTPS 
-	//////////////////////////////////////////////////////////////////////////////////////////////
-	
-	class DSRViewer : public QObject
-	{
-		Q_OBJECT
-	public:
-		enum view
-		{
-			none = -1,
-			graph = (1 << 0),
-			osg = (1 << 1),
-			scene = (1 << 2),
-			tree = (1 << 3),
-		};
-		struct WidgetContainer
-		{
-			QString name;
-			view type;
-			QWidget * widget;
-			QDockWidget* dock;
-		};
+//////////////////////////////////////////////////////////////////////////////////////////////
+/// Drawing controller to display the graph in real-time using RTPS
+//////////////////////////////////////////////////////////////////////////////////////////////
 
-			DSRViewer(QMainWindow *window, std::shared_ptr<DSR::DSRGraph> G, int options, view main = view::none);
-			~DSRViewer();
-			QWidget* get_widget(view type);
-			QWidget* get_widget(QString  name);
-			void add_custom_widget_to_dock(QString name, QWidget* view);
+class DSRViewer : public QObject
+{
+Q_OBJECT
+public:
+    enum view
+    {
+        none = -1,
+        graph = (1 << 0),
+        osg = (1 << 1),
+        scene = (1 << 2),
+        tree = (1 << 3),
+    };
+    struct WidgetContainer
+    {
+        QString name;
+        view type;
+        QWidget * widget;
+        QDockWidget* dock;
+    };
 
-		protected:
-			virtual void keyPressEvent(QKeyEvent *event);
-		
-		private:
-			QTimer *timer;
-            QElapsedTimer alive_timer;            
-			std::shared_ptr<DSR::DSRGraph> G;
-			QMainWindow *window;
-			QMenu *viewMenu;
-			QMenu *fileMenu;
-			QMenu *forcesMenu;
+    DSRViewer(QMainWindow *window, std::shared_ptr<DSR::DSRGraph> G, int options, view main = view::none);
+    ~DSRViewer();
+    QWidget* get_widget(view type);
+    QWidget* get_widget(QString  name);
+    void add_custom_widget_to_dock(QString name, QWidget* view);
+    float getExternalHz() const;
+    void setExternalHz(float externalHz);
+
+protected:
+    virtual void keyPressEvent(QKeyEvent *event);
+
+private:
+    QTimer *timer;
+    QElapsedTimer alive_timer;
+    std::shared_ptr<DSR::DSRGraph> G;
+    QMainWindow *window;
+    QMenu *viewMenu;
+    QMenu *fileMenu;
+    QMenu *forcesMenu;
 //			std::shared_ptr<DSR::OSG3dViewer> dsr_to_osg_viewer;
 //			std::shared_ptr<DSR::QScene2dViewer> dsr_to_graphicscene_viewer;
 //			std::shared_ptr<DSR::GraphViewer> dsr_to_graph_viewer;
 //			std::shared_ptr<DSR::DSRtoTreeViewer> dsr_to_tree_viewer;
-			std::map<QString, QDockWidget *> docks;
-			std::map<QString, WidgetContainer *> widgets;
-			std::map<view, WidgetContainer *> widgets_by_type;
-			QWidget * main_widget;
-            QPoint * object_position;
-            uint64_t object_id;
-		public slots:
-			void saveGraphSLOT();		
-//			void toggleSimulationSLOT();
-			void restart_app(bool);
-			void switch_view(bool state, WidgetContainer* container);
-            void compute();
-            void qscene2d_object_position(int pos_x, int pos_y, uint64_t  node_id);
-		signals:
-			void saveGraphSIGNAL();
-			void closeWindowSIGNAL();
-			void resetViewer(QWidget* widget);
+    std::map<QString, QDockWidget *> docks;
+    std::map<QString, WidgetContainer *> widgets;
+    std::map<view, WidgetContainer *> widgets_by_type;
+    QWidget * main_widget;
+    QPoint * object_position;
+    uint64_t object_id;
+    float external_fps=-1;
+    float external_hz=-1;
 
-		private:
-			void create_dock_and_menu(QString name,  QWidget *view);
-			void initialize_views(int options, view main);
-			void initialize_file_menu();
-			QWidget * create_widget(view type);
-	};
+public slots:
+    void saveGraphSLOT();
+//			void toggleSimulationSLOT();
+    void restart_app(bool);
+    void switch_view(bool state, WidgetContainer* container);
+    void compute();
+    void qscene2d_object_position(int pos_x, int pos_y, uint64_t  node_id);
+signals:
+    void saveGraphSIGNAL();
+    void closeWindowSIGNAL();
+    void resetViewer(QWidget* widget);
+
+private:
+    void create_dock_and_menu(QString name,  QWidget *view);
+    void initialize_views(int options, view main);
+    void initialize_file_menu();
+    QWidget * create_widget(view type);
+};
 
 
 };
