@@ -65,8 +65,8 @@ public:
     QWidget* get_widget(view type);
     QWidget* get_widget(QString  name);
     void add_custom_widget_to_dock(QString name, QWidget* view);
-    float getExternalHz() const;
-    void setExternalHz(float externalHz);
+    float get_external_hz() const;
+    void set_external_hz(float external_hz);
 
 protected:
     virtual void keyPressEvent(QKeyEvent *event);
