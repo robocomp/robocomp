@@ -506,12 +506,12 @@ void DSRViewer::keyPressEvent(QKeyEvent* event)
 	if (event->key() == Qt::Key_Escape)
 		emit closeWindowSIGNAL();
 }
-float DSRViewer::getExternalHz() const
+float DSRViewer::get_external_hz() const
 {
     return external_hz;
 }
-void DSRViewer::setExternalHz(float externalHz)
+void DSRViewer::set_external_hz(float external_hz)
 {
-    external_hz = externalHz;
+    this->external_hz = external_hz;
 }
 
