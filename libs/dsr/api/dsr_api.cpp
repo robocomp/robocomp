@@ -990,7 +990,7 @@ void DSRGraph::join_delta_edge(IDL::MvregEdge &&mvreg) {
 }
 
 
-void DSRGraph::join_delta_node_attr(IDL::MvregNodeAttr &&mvreg) {
+std::optional<std::string> DSRGraph::join_delta_node_attr(IDL::MvregNodeAttr &&mvreg) {
 
     try {
         bool ok = false;
@@ -1024,8 +1024,9 @@ void DSRGraph::join_delta_node_attr(IDL::MvregNodeAttr &&mvreg) {
         }
 
         if (ok) {
-            emit update_node_signal(id, nodes[id].read_reg().type());
-            emit update_node_attr_signal(id, {att_name});
+            //emit update_node_signal(id, nodes[id].read_reg().type());
+            //emit update_node_attr_signal(id, {att_name});
+            return att_name;
         }
 
     } catch (const std::exception &e) {
@@ -1033,11 +1034,12 @@ void DSRGraph::join_delta_node_attr(IDL::MvregNodeAttr &&mvreg) {
                   << std::endl;
     }
 
+    return std::nullopt;
 
 }
 
 
-void DSRGraph::join_delta_edge_attr(IDL::MvregEdgeAttr &&mvreg) {
+std::optional<std::string> DSRGraph::join_delta_edge_attr(IDL::MvregEdgeAttr &&mvreg) {
     try {
         bool ok = false;
         auto from = mvreg.id();
@@ -1065,8 +1067,9 @@ void DSRGraph::join_delta_edge_attr(IDL::MvregEdgeAttr &&mvreg) {
         }
 
         if (ok) {
-            emit update_edge_signal(from, to, type);
-            emit update_edge_attr_signal(from, to, {att_name});
+            //emit update_edge_signal(from, to, type);
+            //emit update_edge_attr_signal(from, to, {att_name});
+            return att_name;
         }
 
     } catch (const std::exception &e) {
@@ -1074,7 +1077,7 @@ void DSRGraph::join_delta_edge_attr(IDL::MvregEdgeAttr &&mvreg) {
                   << std::endl;
     }
 
-
+    return std::nullopt;
 }
 
 void DSRGraph::join_full_graph(IDL::OrMap &&full_graph) {
@@ -1236,13 +1239,39 @@ void DSRGraph::edge_attrs_subscription_thread(bool showReceived) {
                             qDebug() << name << " Received:" << samples.vec().size() << " edge attr from: "
                                     << m_info.sample_identity.writer_guid().entityId.value;
                         }
-                        for (auto &&sample: samples.vec()) {
-                            if (sample.agent_id() != agent_id
-                                and graph->ignored_attributes.find(sample.attr_name().data()) == ignored_attributes.end()) {
-                                //PRINT_TIME("edge", sample);
-                                tp.spawn_task(&DSRGraph::join_delta_edge_attr, this, std::move(sample));
+                        tp.spawn_task([this, samples = std::move(samples)]() mutable {
+                            if (samples.vec().empty()) return;
+
+                            auto from = samples.vec().at(0).from();
+                            auto to = samples.vec().at(0).to();
+                            auto type = samples.vec().at(0).type();
+
+                            std::vector<std::future<std::optional<std::string>>> futures;
+
+                            for (auto &&sample: samples.vec()) {
+                                if (sample.agent_id() != agent_id
+                                    and ignored_attributes.find(sample.attr_name().data()) ==
+                                        ignored_attributes.end()) {
+                                    //PRINT_TIME("edge", sample);
+                                    futures.emplace_back(tp.spawn_task_waitable([this, sample = std::move(sample)]() mutable {
+                                            return join_delta_edge_attr(std::move(sample));
+                                    }));
+                                }
                             }
-                        }
+
+                            std::vector<std::string> sig (futures.size());
+                            for (auto &f: futures)
+                            {
+                                auto opt_str = f.get();
+                                if (opt_str.has_value())
+                                    sig.emplace_back(std::move(opt_str.value()));
+                            }
+
+
+                            emit update_edge_attr_signal(from, to, sig);
+                            emit update_edge_signal(from, to, type);
+
+                        });
                     }
                 } else {
                     break;
@@ -1263,7 +1292,7 @@ void DSRGraph::edge_attrs_subscription_thread(bool showReceived) {
 
 void DSRGraph::node_attrs_subscription_thread(bool showReceived) {
     auto name = __FUNCTION__;
-    auto lambda_general_topic = [&, name = name, showReceived = showReceived](eprosima::fastdds::dds::DataReader *reader,
+    auto lambda_general_topic = [this, name = name, showReceived = showReceived](eprosima::fastdds::dds::DataReader *reader,
                                                  DSR::DSRGraph *graph) {
 
         try {
@@ -1278,12 +1307,34 @@ void DSRGraph::node_attrs_subscription_thread(bool showReceived) {
                                     << m_info.sample_identity.writer_guid().entityId.value;
                         }
 
-                        for (auto &&s: samples.vec()) {
-                            if (s.agent_id() != agent_id and
-                                graph->ignored_attributes.find(s.attr_name().data()) == ignored_attributes.end()) {
-                                tp.spawn_task(&DSRGraph::join_delta_node_attr, this, std::move(s));
+                        tp.spawn_task([this, samples = std::move(samples)]() mutable {
+
+                            if (samples.vec().empty()) return;
+                            auto id = samples.vec().at(0).id();
+
+                            std::vector<std::future<std::optional<std::string>>> futures;
+                            for (auto &&s: samples.vec()) {
+                                if (s.agent_id() != agent_id and
+                                    ignored_attributes.find(s.attr_name().data()) == ignored_attributes.end()) {
+                                    futures.emplace_back(tp.spawn_task_waitable([this, samp{std::move(s)}]() mutable {
+                                        auto f = join_delta_node_attr(std::move(samp));
+                                        return f;
+                                    }));
+
+                                }
                             }
-                        }
+
+                            std::vector<std::string> sig (futures.size());
+                            for (auto &f: futures)
+                            {
+                                auto opt_str = f.get();
+                                if (opt_str.has_value())
+                                    sig.emplace_back(std::move(opt_str.value()));
+                            }
+
+                            emit update_node_attr_signal(id, sig);
+                            emit update_node_signal(id);
+                        });
                     }
                 } else {
                     break;

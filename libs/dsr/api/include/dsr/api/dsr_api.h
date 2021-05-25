@@ -693,8 +693,8 @@ namespace DSR
         ///////////////////////////////////////////////////////////////////////////
         void join_delta_node(IDL::MvregNode &&mvreg);
         void join_delta_edge(IDL::MvregEdge &&mvreg);
-        void join_delta_node_attr(IDL::MvregNodeAttr &&mvreg);
-        void join_delta_edge_attr(IDL::MvregEdgeAttr &&mvreg);
+        std::optional<std::string> join_delta_node_attr(IDL::MvregNodeAttr &&mvreg);
+        std::optional<std::string> join_delta_edge_attr(IDL::MvregEdgeAttr &&mvreg);
         void join_full_graph(IDL::OrMap &&full_graph);
 
         //Custom function for each rtps topic
@@ -776,16 +776,16 @@ namespace DSR
         NewMessageFunctor dsrpub_request_answer_call;
 
     signals:
-        void update_node_signal(uint64_t, const std::string &type); // REMOVE type
+        void update_node_signal(uint64_t, const std::string &type=""/*, uint64_t=0*/); // //TODO: REMOVE TYPE ARGUMENT.
 
-        void update_attrs_signal(uint64_t id, const std::map<std::string, Attribute> &attribs);//DEPRECATED //Signal to show node attribs.
-        void update_node_attr_signal(uint64_t id ,const std::vector<std::string>& att_names);
+        void update_attrs_signal(uint64_t id, const std::map<std::string, Attribute> &attribs/*, uint64_t=0*/); //TODO: REMOVE THIS.
+        void update_node_attr_signal(uint64_t id ,const std::vector<std::string>& att_names/*, uint64_t=0*/);
 
-        void update_edge_signal(uint64_t from, uint64_t to,  const std::string &type);                   // Signal to show edge attribs.
-        void update_edge_attr_signal(uint64_t from, uint64_t to, const std::vector<std::string>& att_name);
+        void update_edge_signal(uint64_t from, uint64_t to,  const std::string &type/*, uint64_t=0*/);                   // Signal to show edge attribs.
+        void update_edge_attr_signal(uint64_t from, uint64_t to, const std::vector<std::string>& att_name/*, uint64_t=0*/); //TODO: ADD EDGE_TYPE PARAM.
 
-        void del_edge_signal(uint64_t from, uint64_t to, const std::string &edge_tag); // Signal to del edge.
-        void del_node_signal(uint64_t from);                                                     // Signal to del node.
+        void del_edge_signal(uint64_t from, uint64_t to, const std::string &edge_tag/*, uint64_t=0*/); // Signal to del edge.
+        void del_node_signal(uint64_t from/*, uint64_t=0*/) ;                                                     // Signal to del node.
 
     };
 } // namespace CRDT
