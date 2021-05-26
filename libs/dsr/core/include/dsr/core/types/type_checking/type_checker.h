@@ -37,6 +37,13 @@ public:
         }
     }
 
+    static std::unordered_set<std::string_view> get_all()
+    {
+        std::unordered_set<std::string_view> types;
+        for(auto const& type_t: map_fn_)
+            types.emplace(type_t.first);
+        return types;
+    }
 
 };
 
@@ -56,6 +63,11 @@ public:
     {
         return set_type_.find(v) != set_type_.end();
     }
+
+    static std::unordered_set<std::string_view> get_all()
+    {
+        return set_type_;
+    }
 };
 
 class edge_types
@@ -73,6 +85,11 @@ public:
     static bool check_type(std::string_view v)
     {
         return set_type_.find(v) != set_type_.end();
+    }
+
+    static std::unordered_set<std::string_view> get_all()
+    {
+        return set_type_;
     }
 };
 
