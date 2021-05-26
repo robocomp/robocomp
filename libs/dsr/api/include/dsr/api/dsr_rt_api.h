@@ -23,8 +23,8 @@ namespace DSR
             std::optional<Edge> get_edge_RT(const Node &n, uint64_t to);
             std::optional<Mat::RTMat> get_RT_pose_from_parent(const Node &n);
             std::optional<Mat::RTMat> get_edge_RT_as_rtmat(const Edge &edge);
-            std::optional<Eigen::Vector3d> get_translation(const Node &n, uint64_t to);
-            std::optional<Eigen::Vector3d> get_translation(uint64_t node_id, uint64_t to);
+            std::optional<Eigen::Vector3d> get_translation(const Node &n, uint64_t to, float timestamp = -1);
+            std::optional<Eigen::Vector3d> get_translation(uint64_t node_id, uint64_t to, float timestamp = -1);
             // std::optional<Mat::RTMat> get_edge_RT_as_rtmat(const Node &n, uint32_t to);
             // std::optional<std::tuple<Mat::Vector3d, Mat::Quaterniond>> get_edge_RT_as_tr_plus_quaternion(const Edge &edge);
             // std::optional<Mat::MatXX> get_jacobian(const Node &base, const Node &tip)

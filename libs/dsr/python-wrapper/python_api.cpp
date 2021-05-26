@@ -576,8 +576,9 @@ PYBIND11_MODULE(pydsr, m) {
                 }
             }, "edge"_a)
             .def("get_translation", static_cast<std::optional<Eigen::Vector3d> (RT_API::*)(std::uint64_t,
-                                                                                           std::uint64_t)>(&RT_API::get_translation),
-                 "node_id"_a, "to"_a);
+                                                                                           std::uint64_t,
+                                                                                           float timestamp)>(&RT_API::get_translation),
+                 "node_id"_a, "to"_a, "timestamp"_a);
 
     py::class_<InnerEigenAPI>(m, "inner_api")
             .def(py::init([](DSRGraph &g) -> std::unique_ptr<InnerEigenAPI> {
@@ -617,8 +618,6 @@ PYBIND11_MODULE(pydsr, m) {
             .def("get_rotation_matrix", &InnerEigenAPI::get_rotation_matrix, "orig"_a, "dest"_a)
             .def("get_translation_vector", &InnerEigenAPI::get_translation_vector, "orig"_a, "dest"_a)
             .def("get_euler_xyz_angles", &InnerEigenAPI::get_euler_xyz_angles, "orig"_a, "dest"_a);
-
-
 
 
     /*

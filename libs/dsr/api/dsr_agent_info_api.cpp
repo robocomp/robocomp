@@ -108,6 +108,13 @@ namespace DSR {
             G->update_node(node_ref);
         } else
         {
+            // edge
+            std::uint64_t parent_id;
+            if(auto parent = G->get_node("mind"); parent.has_value())
+                parent_id = parent.value().id();
+            else parent_id = G->get_node_root().value().id();
+
+            // node
             DSR::Node new_node = Node::create<agent_node_type> ({}, {}, str);
             timestamp_start = get_unix_timestamp();
             G->add_or_modify_attrib_local<timestamp_agent_att>(new_node, timestamp_start);
@@ -115,6 +122,7 @@ namespace DSR {
             G->add_or_modify_attrib_local<timestamp_alivetime_att>(new_node, static_cast<uint64_t>(0));
             G->add_or_modify_attrib_local<agent_id_att>(new_node, static_cast<uint32_t>(G->get_agent_id()));
             G->add_or_modify_attrib_local<agent_name_att>(new_node, str);
+            G->add_or_modify_attrib_local<parent_att>(new_node, parent_id);
             G->add_or_modify_attrib_local<agent_description_att>(new_node, std::string{"TODO"});
             //CPU usage
             if (cpu >= 0.0)
@@ -131,8 +139,9 @@ namespace DSR {
             {
                 G->add_or_modify_attrib_local<num_procs_att>(new_node, static_cast<uint32_t>(nprocs));
             }
-
             G->insert_node(new_node);
+            DSR::Edge edge = DSR::Edge::create<has_edge_type>(parent_id, new_node.id());
+            G->insert_or_assign_edge(edge);
         }
     }
 }

@@ -106,6 +106,7 @@ REGISTER_TYPE(rt_rotation_euler_xyz_velocity, std::reference_wrapper<const std::
 REGISTER_TYPE(rt_timestamps, std::reference_wrapper<const std::vector<uint64_t>> , false)
 REGISTER_TYPE(rt_head_index, int, false)
 
+
 /*
  * looking-at
  * */

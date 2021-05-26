@@ -58,24 +58,37 @@ std::optional<Mat::RTMat>  RT_API::get_edge_RT_as_rtmat(const Edge &edge)
         return {};
 }
 
-std::optional<Eigen::Vector3d> RT_API::get_translation(const Node &n, uint64_t to)
+std::optional<Eigen::Vector3d> RT_API::get_translation(const Node &n, uint64_t to, float timestamp)
 {
+    static const int BLOCK_SIZE = 3;
     if( auto edge = get_edge_RT(n, to); edge.has_value())
-        if( auto tt =  G->get_attrib_by_name<rt_translation_att>(edge.value()); tt.has_value())
+    {
+        auto tt_o = G->get_attrib_by_name<rt_translation_att>(edge.value());
+        auto head_o = G->get_attrib_by_name<rt_head_index_att>(edge.value());
+        auto tstamps_o = G->get_attrib_by_name<rt_timestamps_att>(edge.value());
+        if (tt_o.has_value() and head_o.has_value() and tstamps_o.has_value())
         {
-            const auto &t = tt.value().get();
-            if (t.size() == 3)
-                return Eigen::Vector3d(t[0], t[1], t[2]);
+            const auto &tt = tt_o.value().get();
+            const auto head = head_o.value() * BLOCK_SIZE;
+            if (tt.size() >= 3 and timestamp == -1)
+                return Eigen::Vector3d(tt[head], tt[head+1], tt[head+2]);
             else
-                return {};
+            {
+                // get first index of tstamps whose value is greater than timestamp
+                const auto &tstamps = tstamps_o.value().get();
+                auto i = std::ranges::min_element(tstamps, [timestamp](float x, float y){ return fabs(x - timestamp) < fabs(y - timestamp); });
+                auto bix = std::distance(begin(tstamps), i) * BLOCK_SIZE;
+                return Eigen::Vector3d(tt[bix], tt[bix+1], tt[bix+2]);
+            }
         }
         else
             return {};
+    }
     else
         return {};
 }
 
-std::optional<Eigen::Vector3d> RT_API::get_translation(uint64_t node_id, uint64_t to)
+std::optional<Eigen::Vector3d> RT_API::get_translation(uint64_t node_id, uint64_t to, float timestamp)
 {
     if( const auto node = G->get_node(node_id); node.has_value())
         return get_translation(node.value(), to);
