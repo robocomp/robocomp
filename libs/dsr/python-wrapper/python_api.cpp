@@ -563,8 +563,8 @@ PYBIND11_MODULE(pydsr, m) {
                     return std::nullopt;
                 }
             }, "node"_a)
-            .def("get_edge_RT_as_rtmat", [](RT_API &self, Edge &e) -> std::optional<Eigen::Matrix<double, 4, 4>> {
-                auto tmp = self.get_edge_RT_as_rtmat(e);
+            .def("get_edge_RT_as_rtmat", [](RT_API &self, Edge &e, std::uint64_t t) -> std::optional<Eigen::Matrix<double, 4, 4>> {
+                auto tmp = self.get_edge_RT_as_rtmat(e, t);
                 if (tmp.has_value()) {
                     Eigen::Matrix<double, 4, 4> Trans;
                     Trans.setIdentity();   // Set to Identity to make bottom row of Matrix 0,0,0,1
@@ -574,10 +574,10 @@ PYBIND11_MODULE(pydsr, m) {
                 } else {
                     return std::nullopt;
                 }
-            }, "edge"_a)
+            }, "edge"_a, "timestamp"_a)
             .def("get_translation", static_cast<std::optional<Eigen::Vector3d> (RT_API::*)(std::uint64_t,
                                                                                            std::uint64_t,
-                                                                                           float timestamp)>(&RT_API::get_translation),
+                                                                                           std::uint64_t timestamp)>(&RT_API::get_translation),
                  "node_id"_a, "to"_a, "timestamp"_a);
 
     py::class_<InnerEigenAPI>(m, "inner_api")
@@ -585,26 +585,30 @@ PYBIND11_MODULE(pydsr, m) {
                 return g.get_inner_eigen_api();
             }), "graph"_a)
             .def("transform", static_cast<std::optional<Eigen::Vector3d> (InnerEigenAPI::*)(const std::string &,
-                                                                                            const std::string &)>(&InnerEigenAPI::transform),
-                 "orig"_a, "dest"_a)
+                                                                                            const std::string &,
+                                                                                            std::uint64_t timestamp)>(&InnerEigenAPI::transform),
+                 "orig"_a, "dest"_a, "timestamp"_a)
             .def("transform", static_cast<std::optional<Eigen::Vector3d> (InnerEigenAPI::*)(const std::string &,
                                                                                             const Mat::Vector3d &,
-                                                                                            const std::string &)>(&InnerEigenAPI::transform),
-                 "orig"_a, "vector"_a, "dest"_a)
+                                                                                            const std::string &,
+                                                                                            std::uint64_t timestamp)>(&InnerEigenAPI::transform),
+                 "orig"_a, "vector"_a, "dest"_a, "timestamp"_a)
 
             .def("transform_axis", static_cast<std::optional<Mat::Vector6d> (InnerEigenAPI::*)(const std::string &,
-                                                                                               const std::string &)>(&InnerEigenAPI::transform_axis),
-                 "orig"_a, "dest"_a)
+                                                                                               const std::string &,
+                                                                                               std::uint64_t timestamp)>(&InnerEigenAPI::transform_axis),
+                 "orig"_a, "dest"_a, "timestamp"_a)
             .def("transform_axis",
                  static_cast<std::optional<Mat::Vector6d> (InnerEigenAPI::*)(const std::string &, const Mat::Vector6d &,
-                                                                             const std::string &)>(&InnerEigenAPI::transform_axis),
-                 "orig"_a, "vector"_a, "dest"_a)
+                                                                             const std::string &,
+                                                                             std::uint64_t timestamp)>(&InnerEigenAPI::transform_axis),
+                 "orig"_a, "vector"_a, "dest"_a, "timestamp"_a)
 
 
             .def("get_transformation_matrix",
                  [](InnerEigenAPI &self, const std::string &dest,
-                    const std::string &orig) -> std::optional<Eigen::Matrix<double, 4, 4>> {
-                     auto tmp = self.get_transformation_matrix(dest, orig);
+                    const std::string &orig, std::uint64_t timestamp) -> std::optional<Eigen::Matrix<double, 4, 4>> {
+                     auto tmp = self.get_transformation_matrix(dest, orig, timestamp);
                      if (tmp.has_value()) {
                          Eigen::Matrix<double, 4, 4> Trans;
                          Trans.setIdentity();   // Set to Identity to make bottom row of Matrix 0,0,0,1
@@ -614,10 +618,10 @@ PYBIND11_MODULE(pydsr, m) {
                      } else {
                          return std::nullopt;
                      }
-                 }, "orig"_a, "dest"_a)
-            .def("get_rotation_matrix", &InnerEigenAPI::get_rotation_matrix, "orig"_a, "dest"_a)
-            .def("get_translation_vector", &InnerEigenAPI::get_translation_vector, "orig"_a, "dest"_a)
-            .def("get_euler_xyz_angles", &InnerEigenAPI::get_euler_xyz_angles, "orig"_a, "dest"_a);
+                 }, "orig"_a, "dest"_a, "timestamp"_a)
+            .def("get_rotation_matrix", &InnerEigenAPI::get_rotation_matrix, "orig"_a, "dest"_a, "timestamp"_a)
+            .def("get_translation_vector", &InnerEigenAPI::get_translation_vector, "orig"_a, "dest"_a, "timestamp"_a)
+            .def("get_euler_xyz_angles", &InnerEigenAPI::get_euler_xyz_angles, "orig"_a, "dest"_a, "timestamp"_a);
 
 
     /*

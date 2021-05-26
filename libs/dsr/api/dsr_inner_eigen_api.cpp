@@ -18,7 +18,7 @@ InnerEigenAPI::InnerEigenAPI(DSR::DSRGraph *G_)
 ////// TRANSFORMATION MATRIX
 ////////////////////////////////////////////////////////////////////////////////////////
 
-std::optional<Mat::RTMat> InnerEigenAPI::get_transformation_matrix(const std::string &dest, const std::string &orig)
+std::optional<Mat::RTMat> InnerEigenAPI::get_transformation_matrix(const std::string &dest, const std::string &orig, std::uint64_t timestamp)
 {
    KeyTransform key = std::make_tuple(dest, orig);
     if( auto it = cache.find(key) ; it != cache.end())
@@ -54,10 +54,13 @@ std::optional<Mat::RTMat> InnerEigenAPI::get_transformation_matrix(const std::st
                 qWarning() << __FUNCTION__ << ":"<<__LINE__<< " Cannot find RT edge between Parent (" << QString::fromStdString(p_node->name()) << ", " << p_node->id() <<") and son (" << QString::fromStdString(a.name()) << ", " << a.id() <<") nodes going from: " << QString::fromStdString(orig) << " to: " << QString::fromStdString(dest);
                 return {};
             }
-            auto rtmat = rt->get_edge_RT_as_rtmat(edge_rt.value()).value();
-            atotal = rtmat * atotal;
-            node_map[p_node.value().id()].push_back(key); // update node cache reference
-            a = p_node.value();
+            if( auto rtmat = rt->get_edge_RT_as_rtmat(edge_rt.value(), timestamp); rtmat.has_value())
+            {
+                atotal = rtmat.value() * atotal;
+                node_map[p_node.value().id()].push_back(key); // update node cache reference
+                a = p_node.value();
+            }
+            else return {};
         }
         while (G->get_node_level(b).value_or(-1) >= minLevel)
         {
@@ -71,10 +74,14 @@ std::optional<Mat::RTMat> InnerEigenAPI::get_transformation_matrix(const std::st
                 qWarning() << __FUNCTION__ << ":"<<__LINE__ << " Cannot find RT edge between Parent (" << QString::fromStdString(p_node->name()) << ", " << p_node->id() <<") and son (" << QString::fromStdString(a.name()) << ", " << a.id() <<") nodes going from: " << QString::fromStdString(orig) << " to: " << QString::fromStdString(dest);
                 return {};
             }
-            auto rtmat = rt->get_edge_RT_as_rtmat(edge_rt.value()).value();
-            btotal = rtmat * btotal;
-            node_map[p_node.value().id()].push_back(key); // update node cache reference
-            b = p_node.value();
+            if( auto rtmat = rt->get_edge_RT_as_rtmat(edge_rt.value(), timestamp); rtmat.has_value())
+            {
+                btotal = rtmat.value() * btotal;
+                node_map[p_node.value().id()].push_back(key); // update node cache reference
+                b = p_node.value();
+            }
+            else
+                return {};
         }
         // from min_level up tp the common ancestor
         while (a.id() != b.id())
@@ -96,14 +103,18 @@ std::optional<Mat::RTMat> InnerEigenAPI::get_transformation_matrix(const std::st
                     qWarning() << __FUNCTION__ << ":"<<__LINE__ << " Cannot find RT edge between Parent (" << QString::fromStdString(p_node->name()) << ", " << p_node->id() <<") and son (" << QString::fromStdString(a.name()) << ", " << a.id() <<") nodes going from: " << QString::fromStdString(orig) << " to: " << QString::fromStdString(dest);
                     return {};
                 }
-                auto a_rtmat = rt->get_edge_RT_as_rtmat(a_edge_rt.value()).value();
-                auto b_rtmat = rt->get_edge_RT_as_rtmat(b_edge_rt.value()).value();
-                atotal = a_rtmat * atotal;
-                btotal = b_rtmat * btotal;
-                node_map[p_node.value().id()].push_back(key); // update node cache reference
-                node_map[q_node.value().id()].push_back(key); // update node cache reference
-                a = p_node.value();
-                b = q_node.value();
+                auto a_rtmat = rt->get_edge_RT_as_rtmat(a_edge_rt.value(), timestamp);
+                auto b_rtmat = rt->get_edge_RT_as_rtmat(b_edge_rt.value(), timestamp);
+                if(a_rtmat.has_value() and b_rtmat.has_value())
+                {
+                    atotal = a_rtmat.value() * atotal;
+                    btotal = b_rtmat.value() * btotal;
+                    node_map[p_node.value().id()].push_back(key); // update node cache reference
+                    node_map[q_node.value().id()].push_back(key); // update node cache reference
+                    a = p_node.value();
+                    b = q_node.value();
+                }
+                else return {};
             }
             else
             {
@@ -124,9 +135,9 @@ std::optional<Mat::RTMat> InnerEigenAPI::get_transformation_matrix(const std::st
     }
 }
 
-std::optional<Mat::Rot3D> InnerEigenAPI::get_rotation_matrix(const std::string &dest, const std::string &orig)
+std::optional<Mat::Rot3D> InnerEigenAPI::get_rotation_matrix(const std::string &dest, const std::string &orig, std::uint64_t timestamp)
 {
-    if( auto r = get_transformation_matrix(dest, orig); r.has_value())
+    if( auto r = get_transformation_matrix(dest, orig, timestamp); r.has_value())
         return r.value().rotation();
     else
     {
@@ -135,9 +146,9 @@ std::optional<Mat::Rot3D> InnerEigenAPI::get_rotation_matrix(const std::string &
     }
 }
 
-std::optional<Mat::Vector3d> InnerEigenAPI::get_translation_vector(const std::string &dest, const std::string &orig)
+std::optional<Mat::Vector3d> InnerEigenAPI::get_translation_vector(const std::string &dest, const std::string &orig, std::uint64_t timestamp)
 {
-    if (auto r = get_transformation_matrix(dest, orig); r.has_value())
+    if (auto r = get_transformation_matrix(dest, orig, timestamp); r.has_value())
         return r.value().translation();
     else
     {
@@ -146,9 +157,9 @@ std::optional<Mat::Vector3d> InnerEigenAPI::get_translation_vector(const std::st
         return {};
     }
 }
-std::optional<Mat::Vector3d> InnerEigenAPI::get_euler_xyz_angles(const std::string &dest, const std::string &orig)
+std::optional<Mat::Vector3d> InnerEigenAPI::get_euler_xyz_angles(const std::string &dest, const std::string &orig, std::uint64_t timestamp)
 {
-    if( auto r = get_transformation_matrix(dest, orig); r.has_value())
+    if( auto r = get_transformation_matrix(dest, orig, timestamp); r.has_value())
         return r.value().rotation().eulerAngles(0,1,2);  //X Y Z order
     else
     {
@@ -160,10 +171,10 @@ std::optional<Mat::Vector3d> InnerEigenAPI::get_euler_xyz_angles(const std::stri
 ////////////////////////////////////////////////////////////////////////////////////////
 ////// TRANSFORM
 ////////////////////////////////////////////////////////////////////////////////////////
-std::optional<Mat::Vector3d> InnerEigenAPI::transform(const std::string &dest, const Mat::Vector3d &vector, const std::string &orig)
+std::optional<Mat::Vector3d> InnerEigenAPI::transform(const std::string &dest, const Mat::Vector3d &vector, const std::string &orig, std::uint64_t timestamp)
 {
     //std::cout <<__FUNCTION__ << " " << initVec << std::endl;
-    auto tm = get_transformation_matrix(dest, orig);
+    auto tm = get_transformation_matrix(dest, orig, timestamp);
     //std::cout << __FUNCTION__ << " " << tm.value().matrix().format(CleanFmt) << std::endl;
     if(tm.has_value())
     {
@@ -174,14 +185,14 @@ std::optional<Mat::Vector3d> InnerEigenAPI::transform(const std::string &dest, c
         return {};
 }
 
-std::optional<Mat::Vector3d> InnerEigenAPI::transform( const std::string &dest, const std::string & orig)
+std::optional<Mat::Vector3d> InnerEigenAPI::transform( const std::string &dest, const std::string & orig, std::uint64_t timestamp)
  {
- 	return transform(dest, Mat::Vector3d(0.,0.,0.), orig);
+ 	return transform(dest, Mat::Vector3d(0.,0.,0.), orig, timestamp);
  }
 
-std::optional<Mat::Vector6d> InnerEigenAPI::transform_axis(const std::string &dest, const Mat::Vector6d &vector, const std::string &orig)
+std::optional<Mat::Vector6d> InnerEigenAPI::transform_axis(const std::string &dest, const Mat::Vector6d &vector, const std::string &orig, std::uint64_t timestamp)
 {
-    auto tm = get_transformation_matrix(dest, orig);
+    auto tm = get_transformation_matrix(dest, orig, timestamp);
     if(tm.has_value())
     {
         const Mat::RTMat rtmat = tm.value();
@@ -199,10 +210,10 @@ std::optional<Mat::Vector6d> InnerEigenAPI::transform_axis(const std::string &de
         return {};
  }
 
-std::optional<Mat::Vector6d> InnerEigenAPI::transform_axis( const std::string &dest,  const std::string & orig)
+std::optional<Mat::Vector6d> InnerEigenAPI::transform_axis( const std::string &dest,  const std::string & orig, std::uint64_t timestamp)
 {
     Mat::Vector6d v;
-	return transform_axis(dest, Mat::Vector6d::Zero(), orig);
+	return transform_axis(dest, Mat::Vector6d::Zero(), orig, timestamp);
 }
 
 ////////////////////////////////////////////////////////////////////////

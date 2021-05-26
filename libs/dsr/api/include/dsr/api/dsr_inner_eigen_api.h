@@ -24,18 +24,18 @@ namespace DSR
             /////////////////////////////////////////////////
             /// Kinematic transformation methods
             ////////////////////////////////////////////////
-            std::optional<Mat::Vector3d> transform( const std::string &dest, const std::string &orig);
-            std::optional<Mat::Vector3d> transform( const std::string &dest, const Mat::Vector3d &vector, const std::string &orig);
-            std::optional<Mat::Vector6d> transform_axis(const std::string &dest, const std::string & orig);
-            std::optional<Mat::Vector6d> transform_axis(const std::string &dest, const Mat::Vector6d &vector, const std::string &orig);
+            std::optional<Mat::Vector3d> transform( const std::string &dest, const std::string &orig, std::uint64_t timestamp = 0);
+            std::optional<Mat::Vector3d> transform( const std::string &dest, const Mat::Vector3d &vector, const std::string &orig, std::uint64_t timestamp = 0);
+            std::optional<Mat::Vector6d> transform_axis(const std::string &dest, const std::string & orig, std::uint64_t timestamp = 0);
+            std::optional<Mat::Vector6d> transform_axis(const std::string &dest, const Mat::Vector6d &vector, const std::string &orig, std::uint64_t timestamp = 0);
 
             ////////////////////////////////////////////////
             /// Transformation matrix retrieval methods
             ////////////////////////////////////////////////
-            std::optional<Mat::RTMat> get_transformation_matrix(const std::string &dest, const std::string &orig);
-            std::optional<Mat::Rot3D> get_rotation_matrix(const std::string &dest, const std::string &orig);
-            std::optional<Mat::Vector3d> get_translation_vector(const std::string &dest, const std::string &orig);
-            std::optional<Mat::Vector3d> get_euler_xyz_angles(const std::string &dest, const std::string &orig);
+            std::optional<Mat::RTMat> get_transformation_matrix(const std::string &dest, const std::string &orig, std::uint64_t timestamp = 0);
+            std::optional<Mat::Rot3D> get_rotation_matrix(const std::string &dest, const std::string &orig, std::uint64_t timestamp = 0);
+            std::optional<Mat::Vector3d> get_translation_vector(const std::string &dest, const std::string &orig, std::uint64_t timestamp = 0);
+            std::optional<Mat::Vector3d> get_euler_xyz_angles(const std::string &dest, const std::string &orig, std::uint64_t timestamp = 0);
 
         public slots:
             void add_or_assign_edge_slot(const uint64_t from, const uint64_t to, const std::string& edge_type);
