@@ -16,10 +16,17 @@
 namespace DSR {
 
 
-    static constexpr std::array<std::string_view, 9> TYPENAMES_UNION = { "STRING", "INT", "FLOAT",
-                                                                        "FLOAT_VEC", "BOOL", "BYTE_VEC", "UINT", "UINT64", "DOUBLE"};
+    static constexpr std::array<std::string_view, 14> TYPENAMES_UNION = { "STRING", "INT", "FLOAT",
+                                                                        "FLOAT_VEC", "BOOL", "BYTE_VEC",
+                                                                        "UINT","UINT64", "DOUBLE",
+                                                                        "UINT64_VEC", "FLOAT_VEC2", "FLOAT_VEC3",
+                                                                          "FLOAT_VEC4", "FLOAT_VEC6"};
 
-    using ValType = std::variant<std::string, int32_t, float, std::vector<float>, bool, std::vector<uint8_t>, uint32_t, uint64_t, double>;
+    using ValType = std::variant<std::string, int32_t, float,
+                                std::vector<float>, bool, std::vector<uint8_t>,
+                                uint32_t, uint64_t, double, std::vector<uint64_t>,
+                                std::array<float, 2>, std::array<float, 3>,
+                                std::array<float, 4>, std::array<float, 6>>;
 
     enum Types : uint32_t {
         STRING = 0,
@@ -30,7 +37,12 @@ namespace DSR {
         BYTE_VEC = 5,
         UINT = 6,
         UINT64 = 7,
-        DOUBLE = 8
+        DOUBLE = 8,
+        U64_VEC = 9,
+        VEC2 = 10,
+        VEC3 = 11,
+        VEC4 = 12,
+        VEC6 = 13
     };
 
 
@@ -78,6 +90,26 @@ namespace DSR {
                     val = x.dob();
                     break;
                 }
+                case 9: {
+                    val = std::move(x.uint64_vec());
+                    break;
+                }
+                case 10: {
+                    val = std::move(x.vec_float2());
+                    break;
+                }
+                case 11: {
+                    val = std::move(x.vec_float3());
+                    break;
+                }
+                case 12: {
+                    val = std::move(x.vec_float4());
+                    break;
+                }
+                case 13: {
+                    val = std::move(x.vec_float6());
+                    break;
+                }
                 default:
                     break;
             }
@@ -123,7 +155,7 @@ namespace DSR {
             return *this;
         }
 
-        [[nodiscard]] int32_t selected() const;
+        [[nodiscard]] std::size_t selected() const;
 
         std::string &str();
 
@@ -173,14 +205,60 @@ namespace DSR {
 
         std::vector<uint8_t> &byte_vec();
 
-        [[nodiscard]] IDL::Val toIDLVal();
 
+        void u64_vec(const std::vector<uint64_t> &_uint64_vec);
+
+        void u64_vec(std::vector<uint64_t> &&_uint64_vec);
+
+        [[nodiscard]] const std::vector<uint64_t> &u64_vec() const;
+
+        std::vector<uint64_t> &u64_vec();
+
+
+
+         void vec2(const std::array<float, 2> &_vec_float2);
+
+         void vec2(std::array<float, 2> &&_vec_float2);
+
+        [[nodiscard]] const std::array<float, 2> &vec2() const;
+
+         std::array<float, 2> &vec2();
+
+
+
+         void vec3(const std::array<float, 3> &_vec_float3);
+
+         void vec3(std::array<float, 3> &&_vec_float3);
+
+        [[nodiscard]] const std::array<float, 3> &vec3() const;
+
+         std::array<float, 3> &vec3();
+
+
+         void vec4(const std::array<float, 4> &_vec_float4);
+
+         void vec4(std::array<float, 4> &&_vec_float4);
+
+        [[nodiscard]] const std::array<float, 4> &vec4() const;
+
+         std::array<float, 4> &vec4();
+
+
+         void vec6(const std::array<float, 6> &_vec_float6);
+
+         void vec6(std::array<float, 6> &&_vec_float6);
+
+        [[nodiscard]] const std::array<float, 6> &vec6() const;
+
+         std::array<float, 6> &vec6();
+
+        [[nodiscard]] IDL::Val toIDLVal();
 
 
         bool operator<(const CRDTValue &rhs) const
         {
 
-            if (static_cast<int32_t>(val.index()) != rhs.selected()) return false;
+            if (val.index() != rhs.selected()) return false;
 
             switch (val.index()) {
                 case 0:
@@ -203,6 +281,21 @@ namespace DSR {
                 }
                 case 8: {
                     return dob() < rhs.dob();
+                }
+                case 9: {
+                    return u64_vec() < rhs.u64_vec();
+                }
+                case 10: {
+                    return vec2() < rhs.vec2();
+                }
+                case 11: {
+                    return vec3() < rhs.vec3();
+                }
+                case 12: {
+                    return vec4() < rhs.vec4();
+                }
+                case 13: {
+                    return vec6() < rhs.vec6();
                 }
                 default:
                     return false;
@@ -227,7 +320,7 @@ namespace DSR {
         bool operator==(const CRDTValue &rhs) const
         {
 
-            if (static_cast<int32_t>(val.index()) != rhs.selected()) return false;
+            if (val.index() != rhs.selected()) return false;
             return val == rhs.val;
         }
 
@@ -273,6 +366,36 @@ namespace DSR {
                     break;
                 case 8:
                     os << " double: " << type.dob();
+                    break;
+                case 9:
+                    os << " u64_vec: [ ";
+                    for (const auto &k: type.u64_vec())
+                        os << k << ", ";
+                    os << "] ";
+                    break;
+                case 10:
+                    os << " vec2: [ ";
+                    for (const auto &k: type.vec2())
+                        os << k << ", ";
+                    os << "] ";
+                    break;
+                case 11:
+                    os << " vec3: [ ";
+                    for (const auto &k: type.vec3())
+                        os << k << ", ";
+                    os << "] ";
+                    break;
+                case 12:
+                    os << " vec4: [ ";
+                    for (const auto &k: type.vec4())
+                        os << k << ", ";
+                    os << "] ";
+                    break;
+                case 13:
+                    os << " vec6: [ ";
+                    for (const auto &k: type.vec6())
+                        os << k << ", ";
+                    os << "] ";
                     break;
                 default:
                     os << "INVALID TYPE";

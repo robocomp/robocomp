@@ -56,7 +56,7 @@ namespace DSR {
 
         void agent_id(uint32_t mAgentId);
 
-        [[nodiscard]] int32_t selected() const;
+        [[nodiscard]] std::size_t selected() const;
 
         std::string &str();
 
@@ -106,6 +106,50 @@ namespace DSR {
 
         std::vector<uint8_t> &byte_vec();
 
+        void u64_vec(const std::vector<uint64_t> &_uint64_vec);
+
+        void u64_vec(std::vector<uint64_t> &&_uint64_vec);
+
+        [[nodiscard]] const std::vector<uint64_t> &u64_vec() const;
+
+        std::vector<uint64_t> &u64_vec();
+
+
+        void vec2(const std::array<float, 2> &_vec_float2);
+
+        void vec2(std::array<float, 2> &&_vec_float2);
+
+        [[nodiscard]] const std::array<float, 2> &vec2() const;
+
+        std::array<float, 2> &vec2();
+
+
+        void vec3(const std::array<float, 3> &_vec_float3);
+
+        void vec3(std::array<float, 3> &&_vec_float3);
+
+        [[nodiscard]] const std::array<float, 3> &vec3() const;
+
+        std::array<float, 3> &vec3();
+
+
+        void vec4(const std::array<float, 4> &_vec_float4);
+
+        void vec4(std::array<float, 4> &&_vec_float4);
+
+        [[nodiscard]] const std::array<float, 4> &vec4() const;
+
+        std::array<float, 4> &vec4();
+
+
+        void vec6(const std::array<float, 6> &_vec_float6);
+
+        void vec6(std::array<float, 6> &&_vec_float6);
+
+        [[nodiscard]] const std::array<float, 6> &vec6() const;
+
+        std::array<float, 6> &vec6();
+
         friend std::ostream &operator<<(std::ostream &os, const Attribute &type)
         {
 
@@ -142,6 +186,36 @@ namespace DSR {
                     break;
                 case 8:
                     os << " double: " << std::get<double>(type.m_value);
+                    break;
+                case 9:
+                    os << " u64_vec: [ ";
+                    for (const auto &k: type.u64_vec())
+                        os << k << ", ";
+                    os << "] ";
+                    break;
+                case 10:
+                    os << " vec2: [ ";
+                    for (const auto &k: type.vec2())
+                        os << k << ", ";
+                    os << "] ";
+                    break;
+                case 11:
+                    os << " vec3: [ ";
+                    for (const auto &k: type.vec3())
+                        os << k << ", ";
+                    os << "] ";
+                    break;
+                case 12:
+                    os << " vec4: [ ";
+                    for (const auto &k: type.vec4())
+                        os << k << ", ";
+                    os << "] ";
+                    break;
+                case 13:
+                    os << " vec6: [ ";
+                    for (const auto &k: type.vec6())
+                        os << k << ", ";
+                    os << "] ";
                     break;
                 default:
                     os << "INVALID TYPE";

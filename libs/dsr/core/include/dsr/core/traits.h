@@ -26,7 +26,18 @@ concept allowed_types = std::is_same<std::int32_t, Va>::value ||
                         std::is_same<std::double_t, Va>::value ||
                         std::is_same<std::vector<float_t>, Va>::value ||
                         std::is_same<std::vector<uint8_t>, Va>::value ||
-                        std::is_same<bool, Va>::value;
+                        std::is_same<bool, Va>::value ||
+                        std::is_same<std::vector<uint64_t>, Va>::value ||
+                        std::is_same<std::array<float, 2>, Va>::value ||
+                        std::is_same<std::array<float, 3>, Va>::value ||
+                        std::is_same<std::array<float, 4>, Va>::value ||
+                        std::is_same<std::array<float, 6>, Va>::value ||
+                        std::is_same<std::reference_wrapper<const std::vector<uint64_t>>, Va>::value ||
+                        std::is_same<std::reference_wrapper<const std::array<float, 2>>, Va>::value ||
+                        std::is_same<std::reference_wrapper<const std::array<float, 3>>, Va>::value ||
+                        std::is_same<std::reference_wrapper<const std::array<float, 4>>, Va>::value ||
+                        std::is_same<std::reference_wrapper<const std::array<float, 6>>, Va>::value
+;
 
 
 template<typename Va>
@@ -44,20 +55,7 @@ template<typename Va>
 concept crdt_node_or_edge = std::is_same<DSR::CRDTNode, Va>::value ||
                             std::is_same<DSR::CRDTNode, Va>::value;;
 
-/*
-template<typename Va>
-concept allowed_return_types = std::is_same<std::int32_t, Va>::value ||
-                               std::is_same<std::uint32_t, Va>::value ||
-                               std::is_same<std::uint64_t, Va>::value ||
-                               std::is_same<std::string, Va>::value ||
-                               std::is_same<std::float_t, Va>::value ||
-                               std::is_same<std::double_t, Va>::value ||
-                               std::is_same<std::vector<float_t>, Va>::value ||
-                               std::is_same<std::vector<uint8_t>, Va>::value ||
-                               std::is_same<bool, Va>::value ||
-                               std::is_same<QVec, Va>::value ||
-                               std::is_same<QMat, Va>::value;
-*/
+
 
 //Comprueba si en el tipo T existen los attributos attr_type y attr_name
 template<typename, typename = void, typename = void>

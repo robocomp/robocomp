@@ -47,7 +47,7 @@ namespace DSR {
     }
 
 
-    [[nodiscard]] int32_t Attribute::selected() const
+    [[nodiscard]] std::size_t Attribute::selected() const
     {
         return m_value.index();
     }
@@ -230,6 +230,166 @@ namespace DSR {
                 ("VECTOR_BYTE is not selected, selected is " + std::string(TYPENAMES_UNION[m_value.index()])).data());
     }
 
+
+
+    void Attribute::u64_vec(const std::vector<uint64_t> &_uint64_vec)
+    {
+        m_value = _uint64_vec;
+    }
+
+    void Attribute::u64_vec(std::vector<uint64_t> &&_uint64_vec)
+    {
+        m_value = std::move(_uint64_vec);
+    }
+
+    [[nodiscard]] const std::vector<uint64_t> &Attribute::u64_vec() const
+    {
+        if (auto pval = std::get_if<std::vector<uint64_t >>(&m_value)) {
+            return *pval;
+        }
+        throw std::runtime_error(
+                ("U64_VEC is not selected, selected is " + std::string(TYPENAMES_UNION[m_value.index()])).data());
+
+    }
+
+    std::vector<uint64_t> &Attribute::u64_vec()
+    {
+        if (auto pval = std::get_if<std::vector<uint64_t >>(&m_value)) {
+            return *pval;
+        }
+        throw std::runtime_error(
+                ("U64_VEC is not selected, selected is " + std::string(TYPENAMES_UNION[m_value.index()])).data());
+    }
+
+
+
+    void Attribute::vec2(const std::array<float, 2> &_vec_float2)
+    {
+        m_value = _vec_float2;
+    }
+
+    void Attribute::vec2(std::array<float, 2> &&_vec_float2)
+    {
+        m_value = std::move(_vec_float2);
+    }
+
+    [[nodiscard]] const std::array<float, 2> &Attribute::vec2() const
+    {
+        if (auto pval = std::get_if<std::array<float, 2 >>(&m_value)) {
+            return *pval;
+        }
+        throw std::runtime_error(
+                ("VEC2 is not selected, selected is " + std::string(TYPENAMES_UNION[m_value.index()])).data());
+
+    }
+
+    std::array<float, 2> &Attribute::vec2()
+    {
+        if (auto pval = std::get_if<std::array<float, 2 >>(&m_value)) {
+            return *pval;
+        }
+        throw std::runtime_error(
+                ("VEC2 is not selected, selected is " + std::string(TYPENAMES_UNION[m_value.index()])).data());
+
+    }
+
+
+
+    void Attribute::vec3(const std::array<float, 3> &_vec_float3)
+    {
+        m_value = _vec_float3;
+    }
+
+    void Attribute::vec3(std::array<float, 3> &&_vec_float3)
+    {
+        m_value = std::move(_vec_float3);
+    }
+
+    [[nodiscard]] const std::array<float, 3> &Attribute::vec3() const
+    {
+        if (auto pval = std::get_if<std::array<float, 3 >>(&m_value)) {
+            return *pval;
+        }
+        throw std::runtime_error(
+                ("VEC3 is not selected, selected is " + std::string(TYPENAMES_UNION[m_value.index()])).data());
+
+    }
+
+    std::array<float, 3> &Attribute::vec3()
+    {
+        if (auto pval = std::get_if<std::array<float, 3 >>(&m_value)) {
+            return *pval;
+        }
+        throw std::runtime_error(
+                ("VEC3 is not selected, selected is " + std::string(TYPENAMES_UNION[m_value.index()])).data());
+
+
+    }
+
+
+    void Attribute::vec4(const std::array<float, 4> &_vec_float4)
+    {
+        m_value = _vec_float4;
+    }
+
+    void Attribute::vec4(std::array<float, 4> &&_vec_float4)
+    {
+        m_value = std::move(_vec_float4);
+    }
+
+    [[nodiscard]] const std::array<float, 4> &Attribute::vec4() const
+    {
+        if (auto pval = std::get_if<std::array<float, 4 >>(&m_value)) {
+            return *pval;
+        }
+        throw std::runtime_error(
+                ("VEC4 is not selected, selected is " + std::string(TYPENAMES_UNION[m_value.index()])).data());
+
+
+    }
+
+    std::array<float, 4> &Attribute::vec4()
+    {
+        if (auto pval = std::get_if<std::array<float, 4 >>(&m_value)) {
+            return *pval;
+        }
+        throw std::runtime_error(
+                ("VEC4 is not selected, selected is " + std::string(TYPENAMES_UNION[m_value.index()])).data());
+
+
+    }
+
+
+    void Attribute::vec6(const std::array<float, 6> &_vec_float6)
+    {
+        m_value = _vec_float6;
+    }
+
+    void Attribute::vec6(std::array<float, 6> &&_vec_float6)
+    {
+        m_value = std::move(_vec_float6);
+    }
+
+    [[nodiscard]] const std::array<float, 6> &Attribute::vec6() const
+    {
+        if (auto pval = std::get_if<std::array<float, 6 >>(&m_value)) {
+            return *pval;
+        }
+        throw std::runtime_error(
+                ("VEC6 is not selected, selected is " + std::string(TYPENAMES_UNION[m_value.index()])).data());
+
+
+    }
+
+    std::array<float, 6> &Attribute::vec6()
+    {
+        if (auto pval = std::get_if<std::array<float, 6 >>(&m_value)) {
+            return *pval;
+        }
+        throw std::runtime_error(
+                ("VEC6 is not selected, selected is " + std::string(TYPENAMES_UNION[m_value.index()])).data());
+
+    }
     /////////////////////////////////////////////////////
     /// Edge
     ////////////////////////////////////////////////////

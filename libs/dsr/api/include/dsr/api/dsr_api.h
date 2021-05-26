@@ -206,6 +206,16 @@ namespace DSR
                 return av.float_vec();
             else if constexpr (std::is_same_v< name_type,  std::reference_wrapper<const std::vector<uint8_t>>>)
                 return av.byte_vec();
+            else if constexpr (std::is_same_v< name_type,  std::reference_wrapper<const std::vector<uint64_t>>>)
+                return av.u64_vec();
+            else if constexpr (std::is_same_v< name_type,  std::reference_wrapper<const std::array<float, 2>>>)
+                return av.vec2();
+            else if constexpr (std::is_same_v< name_type,  std::reference_wrapper<const std::array<float, 3>>>)
+                return av.vec3();
+            else if constexpr (std::is_same_v< name_type,  std::reference_wrapper<const std::array<float, 4>>>)
+                return av.vec4();
+            else if constexpr (std::is_same_v< name_type,  std::reference_wrapper<const std::array<float, 6>>>)
+                return av.vec6();
             else {
                 throw std::logic_error("Unreachable");
             }
@@ -258,6 +268,21 @@ namespace DSR
                     } else if constexpr (std::is_same<double , Ta>::value) {
                         at.type(DOUBLE);
                         value.dob(att_value);
+                    } else if constexpr (std::is_same<std::vector<uint64_t>, Ta>::value) {
+                        at.type(U64_VEC);
+                        value.u64_vec(att_value);
+                    } else if constexpr (std::is_same<std::array<float, 2>, Ta>::value) {
+                        at.type(VEC2);
+                        value.vec2(att_value);
+                    } else if constexpr (std::is_same<std::array<float, 3>, Ta>::value) {
+                        at.type(VEC3);
+                        value.vec2(att_value);
+                    } else if constexpr (std::is_same<std::array<float, 3>, Ta>::value) {
+                        at.type(VEC4);
+                        value.vec2(att_value);
+                    } else if constexpr (std::is_same<std::array<float, 6>, Ta>::value) {
+                        at.type(VEC6);
+                        value.vec2(att_value);
                     }
 
                     at.val(std::move(value));
@@ -317,6 +342,21 @@ namespace DSR
                 } else if constexpr (std::is_same<double , Ta>::value) {
                     at.type(DOUBLE);
                     value.dob(att_value);
+                } else if constexpr (std::is_same<std::vector<uint64_t>, Ta>::value) {
+                    at.type(U64_VEC);
+                    value.u64_vec(att_value);
+                } else if constexpr (std::is_same<std::array<float, 2>, Ta>::value) {
+                    at.type(VEC2);
+                    value.vec2(att_value);
+                } else if constexpr (std::is_same<std::array<float, 3>, Ta>::value) {
+                    at.type(VEC3);
+                    value.vec2(att_value);
+                } else if constexpr (std::is_same<std::array<float, 3>, Ta>::value) {
+                    at.type(VEC4);
+                    value.vec2(att_value);
+                } else if constexpr (std::is_same<std::array<float, 6>, Ta>::value) {
+                    at.type(VEC6);
+                    value.vec2(att_value);
                 }
 
                 at.val(std::move(value));

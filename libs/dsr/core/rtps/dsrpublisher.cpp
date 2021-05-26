@@ -52,8 +52,8 @@ std::tuple<bool, eprosima::fastdds::dds::Publisher*, eprosima::fastdds::dds::Dat
 
     }
 
-    ThroughputControllerDescriptor PublisherThroughputController{30000000, 1000};
-    dataWriterQos.throughput_controller() = PublisherThroughputController;
+    //ThroughputControllerDescriptor PublisherThroughputController{30000000, 1000};
+    //dataWriterQos.throughput_controller() = PublisherThroughputController;
 
     if (isStreamData) {
         dataWriterQos.reliability().kind = eprosima::fastdds::dds::BEST_EFFORT_RELIABILITY_QOS;
@@ -65,10 +65,10 @@ std::tuple<bool, eprosima::fastdds::dds::Publisher*, eprosima::fastdds::dds::Dat
 
     // Check ACK for sended messages.
     dataWriterQos.reliable_writer_qos().times.heartbeatPeriod.seconds = 0;
-    dataWriterQos.reliable_writer_qos().times.heartbeatPeriod.nanosec = 50000000; //50 ms. This value should be more or less close to the sending frequency.
+    dataWriterQos.reliable_writer_qos().times.heartbeatPeriod.nanosec = 20000000; //20 ms. This value should be more or less close to the sending frequency.
 
     //Check latency
-    dataWriterQos.latency_budget().duration = {0,50000000}; //50ms;
+    dataWriterQos.latency_budget().duration = {0,10000000}; //10ms;
 
     //Invalidate data after 1 second. If we dont receive it after this time we probably won't get it.
     dataWriterQos.lifespan().duration = 1;

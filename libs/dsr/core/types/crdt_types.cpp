@@ -7,8 +7,8 @@
 #include <dsr/core/types/translator.h>
 
 namespace DSR {
-    
-    int32_t CRDTValue::selected() const 
+
+    std::size_t CRDTValue::selected() const
     {
         return val.index();
     }
@@ -191,6 +191,165 @@ namespace DSR {
                 ("VECTOR_BYTE is not selected, selected is " + std::string(TYPENAMES_UNION[val.index()])).data());
     }
 
+    void CRDTValue::u64_vec(const std::vector<uint64_t> &_uint64_vec)
+    {
+        val = _uint64_vec;
+    }
+
+    void CRDTValue::u64_vec(std::vector<uint64_t> &&_uint64_vec)
+    {
+        val = std::move(_uint64_vec);
+    }
+
+    [[nodiscard]] const std::vector<uint64_t> &CRDTValue::u64_vec() const
+    {
+        if (auto pval = std::get_if<std::vector<uint64_t >>(&val)) {
+            return *pval;
+        }
+        throw std::runtime_error(
+                ("U64_VEC is not selected, selected is " + std::string(TYPENAMES_UNION[val.index()])).data());
+
+    }
+
+    std::vector<uint64_t> &CRDTValue::u64_vec()
+    {
+        if (auto pval = std::get_if<std::vector<uint64_t >>(&val)) {
+            return *pval;
+        }
+        throw std::runtime_error(
+                ("U64_VEC is not selected, selected is " + std::string(TYPENAMES_UNION[val.index()])).data());
+    }
+
+
+
+    void CRDTValue::vec2(const std::array<float, 2> &_vec_float2)
+    {
+        val = _vec_float2;
+    }
+
+    void CRDTValue::vec2(std::array<float, 2> &&_vec_float2)
+    {
+        val = std::move(_vec_float2);
+    }
+
+    [[nodiscard]] const std::array<float, 2> &CRDTValue::vec2() const
+    {
+        if (auto pval = std::get_if<std::array<float, 2 >>(&val)) {
+            return *pval;
+        }
+        throw std::runtime_error(
+                ("VEC2 is not selected, selected is " + std::string(TYPENAMES_UNION[val.index()])).data());
+
+    }
+
+    std::array<float, 2> &CRDTValue::vec2()
+    {
+        if (auto pval = std::get_if<std::array<float, 2 >>(&val)) {
+            return *pval;
+        }
+        throw std::runtime_error(
+                ("VEC2 is not selected, selected is " + std::string(TYPENAMES_UNION[val.index()])).data());
+
+    }
+
+
+
+    void CRDTValue::vec3(const std::array<float, 3> &_vec_float3)
+    {
+        val = _vec_float3;
+    }
+
+    void CRDTValue::vec3(std::array<float, 3> &&_vec_float3)
+    {
+        val = std::move(_vec_float3);
+    }
+
+    [[nodiscard]] const std::array<float, 3> &CRDTValue::vec3() const
+    {
+        if (auto pval = std::get_if<std::array<float, 3 >>(&val)) {
+            return *pval;
+        }
+        throw std::runtime_error(
+                ("VEC3 is not selected, selected is " + std::string(TYPENAMES_UNION[val.index()])).data());
+
+    }
+
+    std::array<float, 3> &CRDTValue::vec3()
+    {
+        if (auto pval = std::get_if<std::array<float, 3 >>(&val)) {
+            return *pval;
+        }
+        throw std::runtime_error(
+                ("VEC3 is not selected, selected is " + std::string(TYPENAMES_UNION[val.index()])).data());
+
+
+    }
+
+
+    void CRDTValue::vec4(const std::array<float, 4> &_vec_float4)
+    {
+        val = _vec_float4;
+    }
+
+    void CRDTValue::vec4(std::array<float, 4> &&_vec_float4)
+    {
+        val = std::move(_vec_float4);
+    }
+
+    [[nodiscard]] const std::array<float, 4> &CRDTValue::vec4() const
+    {
+        if (auto pval = std::get_if<std::array<float, 4 >>(&val)) {
+            return *pval;
+        }
+        throw std::runtime_error(
+                ("VEC4 is not selected, selected is " + std::string(TYPENAMES_UNION[val.index()])).data());
+
+
+    }
+
+    std::array<float, 4> &CRDTValue::vec4()
+    {
+        if (auto pval = std::get_if<std::array<float, 4 >>(&val)) {
+            return *pval;
+        }
+        throw std::runtime_error(
+                ("VEC4 is not selected, selected is " + std::string(TYPENAMES_UNION[val.index()])).data());
+
+
+    }
+
+
+    void CRDTValue::vec6(const std::array<float, 6> &_vec_float6)
+    {
+        val = _vec_float6;
+    }
+
+    void CRDTValue::vec6(std::array<float, 6> &&_vec_float6)
+    {
+        val = std::move(_vec_float6);
+    }
+
+    [[nodiscard]] const std::array<float, 6> &CRDTValue::vec6() const
+    {
+        if (auto pval = std::get_if<std::array<float, 6 >>(&val)) {
+            return *pval;
+        }
+        throw std::runtime_error(
+                ("VEC6 is not selected, selected is " + std::string(TYPENAMES_UNION[val.index()])).data());
+
+
+    }
+
+    std::array<float, 6> &CRDTValue::vec6()
+    {
+        if (auto pval = std::get_if<std::array<float, 6 >>(&val)) {
+            return *pval;
+        }
+        throw std::runtime_error(
+                ("VEC6 is not selected, selected is " + std::string(TYPENAMES_UNION[val.index()])).data());
+
+    }
+
     IDL::Val CRDTValue::toIDLVal() 
     {
         IDL::Val value;
@@ -222,6 +381,21 @@ namespace DSR {
                 break;
             case 8:
                 value.dob(std::get<double>(val));
+                break;
+            case 9:
+                value.uint64_vec(std::get<std::vector<uint64_t>>(val));
+                break;
+            case 10:
+                value.vec_float2(std::get<std::array<float, 2>>(val));
+                break;
+            case 11:
+                value.vec_float3(std::get<std::array<float, 3>>(val));
+                break;
+            case 12:
+                value.vec_float4(std::get<std::array<float, 4>>(val));
+                break;
+            case 13:
+                value.vec_float6(std::get<std::array<float, 6>>(val));
                 break;
             default:
                 throw std::runtime_error(

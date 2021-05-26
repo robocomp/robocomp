@@ -59,7 +59,6 @@ static constexpr auto reg_fn = []() -> auto
 
 
 
-
 #define REGISTER_FN(x, it, stream)  \
                             [[maybe_unused]] inline bool x ##_b =  attribute_types::register_type( x##_str, reg_fn<it>(), stream);     \
                             \
@@ -71,6 +70,8 @@ static constexpr auto reg_fn = []() -> auto
                             REGISTER_FN(x, ot, stream) \
                             \
 
+
+#define COMMA_TEMPLATE() ,
 
 
 inline std::unordered_map<std::string_view, std::function<bool(const std::any&)>> attribute_types::map_fn_;
@@ -316,8 +317,19 @@ REGISTER_TYPE(agent_description, std::reference_wrapper<const std::string>, fals
 
 /* TESTS
  * */
+
+typedef std::array<float, 2> vec2;
+typedef std::array<float, 3> vec3;
+typedef std::array<float, 4> vec4;
+typedef std::array<float, 6> vec6;
+
 REGISTER_TYPE(test_double_type, double, false) //remove
 REGISTER_TYPE(test_uint32_type, uint32_t , false) //remove
+REGISTER_TYPE(test_uint64_vec_type, std::reference_wrapper<const std::vector<uint64_t>> , false)
+REGISTER_TYPE(test_vec2_type, std::reference_wrapper<const vec2> , false)
+REGISTER_TYPE(test_vec3_type, std::reference_wrapper<const vec3> , false)
+REGISTER_TYPE(test_vec4_type, std::reference_wrapper<const vec4> , false)
+REGISTER_TYPE(test_vec6_type, std::reference_wrapper<const vec6> , false)
 
 
 

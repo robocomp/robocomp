@@ -56,8 +56,7 @@ namespace IDL {
         m_dob = 0.0;
     }
 
-    Val::~Val() {
-    }
+    Val::~Val() = default;
 
     Val::Val(const Val &x) {
         m__d = x.m__d;
@@ -89,6 +88,21 @@ namespace IDL {
                 break;
             case 8:
                 m_dob = x.m_dob;
+                break;
+            case 9:
+                m_uint64_vec = x.m_uint64_vec;
+                break;
+            case 10:
+                m_vec_float2 = x.m_vec_float2;
+                break;
+            case 11:
+                m_vec_float3 = x.m_vec_float3;
+                break;
+            case 12:
+                m_vec_float4 = x.m_vec_float4;
+                break;
+            case 13:
+                m_vec_float6 = x.m_vec_float6;
                 break;
             default:
                 break;
@@ -126,6 +140,21 @@ namespace IDL {
             case 8:
                 m_dob = x.m_dob;
                 break;
+            case 9:
+                m_uint64_vec = std::move(x.m_uint64_vec);
+                break;
+            case 10:
+                m_vec_float2 = std::move(x.m_vec_float2);
+                break;
+            case 11:
+                m_vec_float3 = std::move(x.m_vec_float3);
+                break;
+            case 12:
+                m_vec_float4 = std::move(x.m_vec_float4);
+                break;
+            case 13:
+                m_vec_float6 = std::move(x.m_vec_float6);
+                break;
             default:
                 break;
         }
@@ -161,6 +190,21 @@ namespace IDL {
                 break;
             case 8:
                 m_dob = x.m_dob;
+                break;
+            case 9:
+                m_uint64_vec = x.m_uint64_vec;
+                break;
+            case 10:
+                m_vec_float2 = x.m_vec_float2;
+                break;
+            case 11:
+                m_vec_float3 = x.m_vec_float3;
+                break;
+            case 12:
+                m_vec_float4 = x.m_vec_float4;
+                break;
+            case 13:
+                m_vec_float6 = x.m_vec_float6;
                 break;
             default:
                 break;
@@ -199,6 +243,21 @@ namespace IDL {
                 break;
             case 8:
                 m_dob = x.m_dob;
+                break;
+            case 9:
+                m_uint64_vec = std::move(x.m_uint64_vec);
+                break;
+            case 10:
+                m_vec_float2 = std::move(x.m_vec_float2);
+                break;
+            case 11:
+                m_vec_float3 = std::move(x.m_vec_float3);
+                break;
+            case 12:
+                m_vec_float4 = std::move(x.m_vec_float4);
+                break;
+            case 13:
+                m_vec_float6 = std::move(x.m_vec_float6);
                 break;
             default:
                 break;
@@ -285,6 +344,46 @@ namespace IDL {
             case 8:
                 switch (__d) {
                     case 8:
+                        b = true;
+                        break;
+                    default:
+                        break;
+                }
+            case 9:
+                switch (__d) {
+                    case 9:
+                        b = true;
+                        break;
+                    default:
+                        break;
+                }
+            case 10:
+                switch (__d) {
+                    case 10:
+                        b = true;
+                        break;
+                    default:
+                        break;
+                }
+            case 11:
+                switch (__d) {
+                    case 11:
+                        b = true;
+                        break;
+                    default:
+                        break;
+                }
+            case 12:
+                switch (__d) {
+                    case 12:
+                        b = true;
+                        break;
+                    default:
+                        break;
+                }
+            case 13:
+                switch (__d) {
+                    case 13:
                         b = true;
                         break;
                     default:
@@ -675,6 +774,228 @@ namespace IDL {
         return m_dob;
     }
 
+    void Val::uint64_vec(const std::vector<uint64_t> &_uint64_vec) {
+        m_uint64_vec = _uint64_vec;
+        m__d = 9;
+    }
+
+    void Val::uint64_vec(std::vector<uint64_t> &&_uint64_vec) {
+        m_uint64_vec = std::move(_uint64_vec);
+        m__d = 9;
+    }
+
+    const std::vector<uint64_t> &Val::uint64_vec() const {
+        bool b = false;
+
+        switch (m__d) {
+            case 9:
+                b = true;
+                break;
+            default:
+                break;
+        }
+        if (!b) {
+            throw BadParamException("This member is not been selected");
+        }
+
+        return m_uint64_vec;
+    }
+
+    std::vector<uint64_t> &Val::uint64_vec() {
+        bool b = false;
+
+        switch (m__d) {
+            case 9:
+                b = true;
+                break;
+            default:
+                break;
+        }
+        if (!b) {
+            throw BadParamException("This member is not been selected");
+        }
+
+        return m_uint64_vec;
+    }
+
+
+    void Val::vec_float2(const std::array<float, 2> &_vec_float2) {
+        m_vec_float2 = _vec_float2;
+        m__d = 10;
+    }
+
+    void Val::vec_float2(std::array<float, 2> &&_vec_float2) {
+        m_vec_float2 = std::move(_vec_float2);
+        m__d = 10;
+    }
+
+    const std::array<float, 2> &Val::vec_float2() const {
+        bool b = false;
+
+        switch (m__d) {
+            case 10:
+                b = true;
+                break;
+            default:
+                break;
+        }
+        if (!b) {
+            throw BadParamException("This member is not been selected");
+        }
+
+        return m_vec_float2;
+    }
+
+    std::array<float, 2> &Val::vec_float2() {
+        bool b = false;
+
+        switch (m__d) {
+            case 10:
+                b = true;
+                break;
+            default:
+                break;
+        }
+        if (!b) {
+            throw BadParamException("This member is not been selected");
+        }
+
+        return m_vec_float2;
+    }
+
+
+    void Val::vec_float3(const std::array<float, 3> &_vec_float3) {
+        m_vec_float3 = _vec_float3;
+        m__d = 11;
+    }
+
+    void Val::vec_float3(std::array<float, 3> &&_vec_float3) {
+        m_vec_float3 = std::move(_vec_float3);
+        m__d = 11;
+    }
+
+    const std::array<float, 3> &Val::vec_float3() const {
+        bool b = false;
+
+        switch (m__d) {
+            case 11:
+                b = true;
+                break;
+            default:
+                break;
+        }
+        if (!b) {
+            throw BadParamException("This member is not been selected");
+        }
+
+        return m_vec_float3;
+    }
+
+    std::array<float, 3> &Val::vec_float3() {
+        bool b = false;
+
+        switch (m__d) {
+            case 11:
+                b = true;
+                break;
+            default:
+                break;
+        }
+        if (!b) {
+            throw BadParamException("This member is not been selected");
+        }
+
+        return m_vec_float3;
+    }
+
+    void Val::vec_float4(const std::array<float, 4> &_vec_float4) {
+        m_vec_float4 = _vec_float4;
+        m__d = 12;
+    }
+
+    void Val::vec_float4(std::array<float, 4> &&_vec_float4) {
+        m_vec_float4 = std::move(_vec_float4);
+        m__d = 12;
+    }
+
+    const std::array<float, 4> &Val::vec_float4() const {
+        bool b = false;
+
+        switch (m__d) {
+            case 12:
+                b = true;
+                break;
+            default:
+                break;
+        }
+        if (!b) {
+            throw BadParamException("This member is not been selected");
+        }
+
+        return m_vec_float4;
+    }
+
+    std::array<float, 4> &Val::vec_float4() {
+        bool b = false;
+
+        switch (m__d) {
+            case 12:
+                b = true;
+                break;
+            default:
+                break;
+        }
+        if (!b) {
+            throw BadParamException("This member is not been selected");
+        }
+
+        return m_vec_float4;
+    }
+
+    void Val::vec_float6(const std::array<float, 6> &_vec_float6) {
+        m_vec_float6 = _vec_float6;
+        m__d = 13;
+    }
+
+    void Val::vec_float6(std::array<float, 6> &&_vec_float6) {
+        m_vec_float6 = std::move(_vec_float6);
+        m__d = 13;
+    }
+
+    const std::array<float, 6> &Val::vec_float6() const {
+        bool b = false;
+
+        switch (m__d) {
+            case 13:
+                b = true;
+                break;
+            default:
+                break;
+        }
+        if (!b) {
+            throw BadParamException("This member is not been selected");
+        }
+
+        return m_vec_float6;
+    }
+
+    std::array<float, 6> &Val::vec_float6() {
+        bool b = false;
+
+        switch (m__d) {
+            case 13:
+                b = true;
+                break;
+            default:
+                break;
+        }
+        if (!b) {
+            throw BadParamException("This member is not been selected");
+        }
+
+        return m_vec_float6;
+    }
+
     size_t Val::getMaxCdrSerializedSize(size_t current_alignment) {
         size_t initial_alignment = current_alignment;
         size_t reset_alignment = 0;
@@ -765,6 +1086,58 @@ namespace IDL {
         if (union_max_size_serialized < reset_alignment)
             union_max_size_serialized = reset_alignment;
 
+        reset_alignment = current_alignment;
+
+        reset_alignment += 8 + eprosima::fastcdr::Cdr::alignment(reset_alignment, 8);
+
+        reset_alignment += (100 * 8) + eprosima::fastcdr::Cdr::alignment(reset_alignment, 8);
+
+
+        if (union_max_size_serialized < reset_alignment)
+            union_max_size_serialized = reset_alignment;
+
+
+        reset_alignment = current_alignment;
+
+        reset_alignment += 4 + eprosima::fastcdr::Cdr::alignment(reset_alignment, 4);
+
+        reset_alignment += (2 * 4) + eprosima::fastcdr::Cdr::alignment(reset_alignment, 4);
+
+
+        if (union_max_size_serialized < reset_alignment)
+            union_max_size_serialized = reset_alignment;
+
+
+        reset_alignment = current_alignment;
+
+        reset_alignment += 4 + eprosima::fastcdr::Cdr::alignment(reset_alignment, 4);
+
+        reset_alignment += (3 * 4) + eprosima::fastcdr::Cdr::alignment(reset_alignment, 4);
+
+
+        if (union_max_size_serialized < reset_alignment)
+            union_max_size_serialized = reset_alignment;
+
+        reset_alignment = current_alignment;
+
+        reset_alignment += 4 + eprosima::fastcdr::Cdr::alignment(reset_alignment, 4);
+
+        reset_alignment += (4 * 4) + eprosima::fastcdr::Cdr::alignment(reset_alignment, 4);
+
+
+        if (union_max_size_serialized < reset_alignment)
+            union_max_size_serialized = reset_alignment;
+
+        reset_alignment = current_alignment;
+
+        reset_alignment += 4 + eprosima::fastcdr::Cdr::alignment(reset_alignment, 4);
+
+        reset_alignment += (6 * 4) + eprosima::fastcdr::Cdr::alignment(reset_alignment, 4);
+
+
+        if (union_max_size_serialized < reset_alignment)
+            union_max_size_serialized = reset_alignment;
+
         return union_max_size_serialized - initial_alignment;
     }
 
@@ -821,6 +1194,41 @@ namespace IDL {
                 current_alignment += 8 + eprosima::fastcdr::Cdr::alignment(current_alignment, 8);
 
                 break;
+
+            case 9:
+
+                current_alignment += 8 + eprosima::fastcdr::Cdr::alignment(current_alignment, 8);
+
+                current_alignment +=
+                        (data.uint64_vec().size() * 8) + eprosima::fastcdr::Cdr::alignment(current_alignment, 8);
+            case 10:
+
+                current_alignment += 4 + eprosima::fastcdr::Cdr::alignment(current_alignment, 4);
+
+                current_alignment +=
+                        (4 * 2) + eprosima::fastcdr::Cdr::alignment(current_alignment, 4);
+            case 11:
+
+
+                current_alignment += 4 + eprosima::fastcdr::Cdr::alignment(current_alignment, 4);
+
+                current_alignment +=
+                        (4 * 3) + eprosima::fastcdr::Cdr::alignment(current_alignment, 4);
+            case 12:
+
+
+                current_alignment += 4 + eprosima::fastcdr::Cdr::alignment(current_alignment, 4);
+
+                current_alignment +=
+                        (4 * 4) + eprosima::fastcdr::Cdr::alignment(current_alignment, 4);
+            case 13:
+
+
+                current_alignment += 4 + eprosima::fastcdr::Cdr::alignment(current_alignment, 4);
+
+                current_alignment +=
+                        (4 * 4) + eprosima::fastcdr::Cdr::alignment(current_alignment, 4);
+
             default:
                 break;
         }
@@ -859,6 +1267,21 @@ namespace IDL {
             case 8:
                 scdr << m_dob;
                 break;
+            case 9:
+                scdr << m_uint64_vec;
+                break;
+            case 10:
+                scdr << m_vec_float2;
+                break;
+            case 11:
+                scdr << m_vec_float3;
+                break;
+            case 12:
+                scdr << m_vec_float4;
+                break;
+            case 13:
+                scdr << m_vec_float6;
+                break;
             default:
                 break;
         }
@@ -894,6 +1317,21 @@ namespace IDL {
                 break;
             case 8:
                 dcdr >> m_dob;
+                break;
+            case 9:
+                dcdr >> m_uint64_vec;
+                break;
+            case 10:
+                dcdr >> m_vec_float2;
+                break;
+            case 11:
+                dcdr >> m_vec_float3;
+                break;
+            case 12:
+                dcdr >> m_vec_float4;
+                break;
+            case 13:
+                dcdr >> m_vec_float6;
                 break;
             default:
                 break;

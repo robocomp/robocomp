@@ -315,6 +315,55 @@ namespace IDL {
 
         eProsima_user_DllExport double &dob();
 
+
+
+        eProsima_user_DllExport void uint64_vec(const std::vector<uint64_t> &_uint64_vec);
+
+        eProsima_user_DllExport void uint64_vec(std::vector<uint64_t> &&_uint64_vec);
+
+        eProsima_user_DllExport const std::vector<uint64_t> &uint64_vec() const;
+
+        eProsima_user_DllExport std::vector<uint64_t> &uint64_vec();
+
+
+
+        eProsima_user_DllExport void vec_float2(const std::array<float, 2> &_vec_float2);
+
+        eProsima_user_DllExport void vec_float2(std::array<float, 2> &&_vec_float2);
+
+        eProsima_user_DllExport const std::array<float, 2> &vec_float2() const;
+
+        eProsima_user_DllExport std::array<float, 2> &vec_float2();
+
+
+
+        eProsima_user_DllExport void vec_float3(const std::array<float, 3> &_vec_float3);
+
+        eProsima_user_DllExport void vec_float3(std::array<float, 3> &&_vec_float3);
+
+        eProsima_user_DllExport const std::array<float, 3> &vec_float3() const;
+
+        eProsima_user_DllExport std::array<float, 3> &vec_float3();
+
+
+        eProsima_user_DllExport void vec_float4(const std::array<float, 4> &_vec_float4);
+
+        eProsima_user_DllExport void vec_float4(std::array<float, 4> &&_vec_float4);
+
+        eProsima_user_DllExport const std::array<float, 4> &vec_float4() const;
+
+        eProsima_user_DllExport std::array<float, 4> &vec_float4();
+
+
+
+        eProsima_user_DllExport void vec_float6(const std::array<float, 6> &_vec_float6);
+
+        eProsima_user_DllExport void vec_float6(std::array<float, 6> &&_vec_float6);
+
+        eProsima_user_DllExport const std::array<float, 6> &vec_float6() const;
+
+        eProsima_user_DllExport std::array<float, 6> &vec_float6();
+
         /*!
          * @brief This function returns the maximum serialized size of an object
          * depending on the buffer alignment.
@@ -357,6 +406,12 @@ namespace IDL {
         uint32_t m_uint;
         uint64_t m_u64;
         double m_dob;
+        std::vector<uint64_t> m_uint64_vec;
+        std::array<float, 2> m_vec_float2;
+        std::array<float, 3> m_vec_float3;
+        std::array<float, 4> m_vec_float4;
+        std::array<float, 6> m_vec_float6;
+
     };
 
 /*!
