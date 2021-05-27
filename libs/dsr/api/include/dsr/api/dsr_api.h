@@ -62,7 +62,7 @@ namespace DSR
         public:
         size_t size();
         DSRGraph(uint64_t root, std::string name, int id, const std::string& dsr_input_file = std::string(), bool all_same_host = true);
-        ~DSRGraph();
+        ~DSRGraph() override;
 
 
         //////////////////////////////////////////////////////
@@ -71,44 +71,12 @@ namespace DSR
 
         // Utils
         bool empty(const uint64_t &id);
-        template <typename Ta>
-        std::tuple<std::string, std::string, int> nativetype_to_string(const Ta& t)
-            requires(allowed_types<Ta>)
-        {
-            if constexpr (std::is_same<std::remove_cv_t<std::remove_reference_t<Ta>>, std::string>::value)
-            {
-                return  make_tuple("string", t,1);
-            }
-            else if constexpr (std::is_same<std::remove_cv_t<std::remove_reference_t<Ta>>, std::vector<float>>::value)
-            {
-                std::string str;
-                for (auto &f : t)
-                    str += std::to_string(f) + " ";
-                return make_tuple("vector<float>", str += "\n", t.size());
-            } else if constexpr (std::is_same<Ta, std::vector<uint8_t>>::value)
-            {
-                std::string str;
-                for(auto &f : t)
-                    str += std::to_string(f) + " ";
-                return make_tuple("vector<uint8_t>",  str += "\n",t.size());
-            }
-            else return make_tuple(typeid(Ta).name(), std::to_string(t), 1);
-
-        }; //Used by viewer
-
         std::map<uint64_t, Node> getCopy() const;
         std::vector<uint64_t> getKeys() const;
 
-        // Innermodel API
-        std::unique_ptr<InnerAPI> get_inner_api()            { return std::make_unique<InnerAPI>(this); };
-
-        // Innermodel EigenAPI
+        [[deprecated("Use get_inner_eigen_api instead")]] std::unique_ptr<InnerAPI> get_inner_api() { return std::make_unique<InnerAPI>(this); };
         std::unique_ptr<InnerEigenAPI> get_inner_eigen_api() { return std::make_unique<InnerEigenAPI>(this); };
-
-        // Innermodel RT_API
         std::unique_ptr<RT_API> get_rt_api() { return std::make_unique<RT_API>(this); };
-
-        // Innermodel CameraAPI
         std::unique_ptr<CameraAPI> get_camera_api(const DSR::Node &camera_node) { return std::make_unique<CameraAPI>(this, camera_node); };
 
 
@@ -141,6 +109,7 @@ namespace DSR
         // Nodes
         std::optional<Node> get_node_root() { return get_node("world"); };
         std::vector<Node> get_nodes_by_type(const std::string &type);
+        std::vector<Node> get_nodes_by_types(const std::vector<std::string> &types);
         std::optional<std::string> get_name_from_id(uint64_t id);  // caché
         std::optional<uint64_t> get_id_from_name(const std::string &name);  // caché
         std::optional<std::int32_t> get_node_level(const Node &n);
@@ -462,7 +431,7 @@ namespace DSR
             static_assert(is_attr_name<name>::value, "Name attr is not valid");
             add_or_modify_attrib_local<name>(elem, att_value);
 
-            /*return*/ reinsert_element(elem, "insert_or_assign_attrib()");
+            reinsert_element(elem, "insert_or_assign_attrib()");
 
         }
         template<typename Ta, typename Va>
@@ -538,7 +507,9 @@ namespace DSR
 
         // Mixed
         inline uint64_t get_agent_id() const { return agent_id; };
+
         inline std::string get_agent_name() const { return agent_name; };
+
         void reset() {
             dsrparticipant.remove_participant_and_entities();
 

@@ -123,7 +123,7 @@ std::optional<DSR::Node> DSRGraph::get_node(const std::string &name)
     if (id.has_value())
     {
         std::optional<CRDTNode> n = get_(id.value());
-        if (n.has_value()) return Node(n.value());
+        if (n.has_value()) return Node(std::move(n.value()));
     }
     return {};
 }
@@ -396,12 +396,36 @@ bool DSRGraph::delete_node(uint64_t id) {
 
 std::vector<DSR::Node> DSRGraph::get_nodes_by_type(const std::string &type) {
     std::shared_lock<std::shared_mutex> lock(_mutex);
+    std::shared_lock<std::shared_mutex> lck(_mutex_cache_maps);
+
     std::vector<Node> nodes_;
-    if (nodeType.find(type) != nodeType.end()) {
-        for (auto &id: nodeType[type]) {
+    if (nodeType.find(type) != nodeType.end())
+    {
+        for (auto &id: nodeType[type])
+        {
             auto n = get_(id);
             if (n.has_value())
-                nodes_.emplace_back(n.value());
+                nodes_.emplace_back(std::move(n.value()));
+        }
+    }
+    return nodes_;
+}
+
+std::vector<DSR::Node> DSRGraph::get_nodes_by_types(const std::vector<std::string> &types) {
+    std::shared_lock<std::shared_mutex> lock(_mutex);
+    std::shared_lock<std::shared_mutex> lck(_mutex_cache_maps);
+
+    std::vector<Node> nodes_;
+    for (auto &type : types)
+    {
+        if (nodeType.find(type) != nodeType.end())
+        {
+            for (auto &id: nodeType[type])
+            {
+                auto n = get_(id);
+                if (n.has_value())
+                    nodes_.emplace_back(std::move(n.value()));
+            }
         }
     }
     return nodes_;
@@ -415,9 +439,6 @@ std::optional<CRDTEdge> DSRGraph::get_edge_(uint64_t from, uint64_t to, const st
     if (in(from) && in(to)) {
         auto n = get_(from);
         if (n.has_value()) {
-            IDL::EdgeKey ek;
-            ek.to(to);
-            ek.type(key);
             auto edge = n.value().fano().find({to, key});
             if (edge != n.value().fano().end()) {
                 return edge->second.read_reg();
@@ -455,9 +476,6 @@ std::optional<Edge> DSRGraph::get_edge(const Node &n, const std::string &to, con
 }
 
 std::optional<Edge> DSRGraph::get_edge(const Node &n, uint64_t to, const std::string &key) {
-    IDL::EdgeKey ek;
-    ek.to(to);
-    ek.type(key);
     return (n.fano().find({to, key}) != n.fano().end()) ?
            std::make_optional(n.fano().find({to, key})->second) :
            std::nullopt;
@@ -1310,7 +1328,10 @@ void DSRGraph::node_attrs_subscription_thread(bool showReceived) {
                         tp.spawn_task([this, samples = std::move(samples)]() mutable {
 
                             if (samples.vec().empty()) return;
+
                             auto id = samples.vec().at(0).id();
+                            auto itn = nodes.find(id);
+                            auto type = (itn != nodes.end()) ? itn->second.read_reg().type() : "";
 
                             std::vector<std::future<std::optional<std::string>>> futures;
                             for (auto &&s: samples.vec()) {
@@ -1333,7 +1354,7 @@ void DSRGraph::node_attrs_subscription_thread(bool showReceived) {
                             }
 
                             emit update_node_attr_signal(id, sig);
-                            emit update_node_signal(id);
+                            emit update_node_signal(id, type);
                         });
                     }
                 } else {
