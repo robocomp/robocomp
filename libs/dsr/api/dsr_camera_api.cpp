@@ -60,14 +60,14 @@ void CameraAPI::set_height( std::uint32_t h)
     centre_y = h/2;
 }
 
+// takes a point in camera's 3D coordinates:  Y pointing outwards  and Z upwards
 Eigen::Vector2d CameraAPI::project(const Eigen::Vector3d & p, int cx, int  cy) const
 {
     Eigen::Vector2d proj;
     if(cx==-1) cx=centre_x;
     if(cy==-1) cy=centre_y;
-    proj << focal_x * p.x() / p.y() + cx, -focal_y * p.z() / p.y() + cy;
+    proj << focal_x * p.x() / p.y() + cx, -focal_y * p.z() / p.y() + cy;  // Y grows dowwards in the image plane
     //proj << focal_x * /*(608/640) */ p.x() / p.y() + cx, -focal_y * (416./480) * p.z() / p.y() + cy;  //FIXXXXX IT
-
 
     return proj;
 }
