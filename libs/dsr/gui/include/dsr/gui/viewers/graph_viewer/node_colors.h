@@ -2,8 +2,8 @@
 // Created by robolab on 19/5/21.
 //
 
-#ifndef DSR_EDGE_COLORS_H
-#define DSR_EDGE_COLORS_H
+#ifndef DSR_NODE_COLORS_H
+#define DSR_NODE_COLORS_H
 
 #include <map>
 #include <string>
@@ -85,7 +85,7 @@ static const std::map<std::string, std::string> node_colors = {
         { "agent", "Gray"}
 };
 
-#endif //DSR_EDGE_COLORS_H
+#endif //DSR_NODE_COLORS_H
 
 // VALID COLOR NAMES https://www.w3.org/TR/2018/REC-css-color-3-20180619/
 //aliceblue

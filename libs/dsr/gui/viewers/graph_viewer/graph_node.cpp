@@ -15,7 +15,8 @@
  */
 
 #include <dsr/gui/viewers/graph_viewer/graph_node.h>
-#include <dsr/gui/viewers/graph_viewer/node_colors.h>
+//#include <dsr/gui/viewers/graph_viewer/node_colors.h>
+#include <dsr/gui/viewers/graph_viewer/graph_colors.h>
 
 #define NODE_POS_X -10
 #define NODE_POS_Y -10
@@ -58,18 +59,20 @@ void GraphNode::setType(const std::string &type_)
         contextMenu->addAction(stuff_action);
         connect(stuff_action, &QAction::triggered, this, [this, type_](){ this->show_stuff_widget(type_);});
     }
-    auto pos = node_colors.find(type);
-    if(pos != node_colors.end())
-    {
-        auto color_name = pos->second;
-        qDebug()<<__FUNCTION__ <<"Setting color to"<<QString::fromStdString(color_name);
-        set_color(color_name);
-    }
-    else
-    {
-        qDebug()<<__FUNCTION__ <<"Setting color to default"<<plain_color;
-        set_color(plain_color.toStdString());
-    }
+    auto color = GraphColors<DSR::Node>()[type];
+    set_color(color);
+//    auto pos = node_colors.find(type);
+//    if(pos != node_colors.end())
+//    {
+//        auto color_name = pos->second;
+//        qDebug()<<__FUNCTION__ <<"Setting color to"<<QString::fromStdString(color_name);
+//        set_color(color_name);
+//    }
+//    else
+//    {
+//        qDebug()<<__FUNCTION__ <<"Setting color to default"<<plain_color;
+//        set_color(plain_color.toStdString());
+//    }
 }
 
 

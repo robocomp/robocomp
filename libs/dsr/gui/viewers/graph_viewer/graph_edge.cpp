@@ -23,7 +23,8 @@
 #include <QGraphicsSceneMouseEvent>
 #include <iostream>
 #include <cppitertools/range.hpp>
-#include <dsr/gui/viewers/graph_viewer/edge_colors.h>
+#include <dsr/gui/viewers/graph_viewer/graph_colors.h>
+//#include <dsr/gui/viewers/graph_viewer/edge_colors.h>
 
 GraphEdge::GraphEdge(GraphNode* sourceNode, GraphNode* destNode, const QString& edge_name)
         :QGraphicsLineItem(), arrowSize(10)
@@ -39,16 +40,7 @@ GraphEdge::GraphEdge(GraphNode* sourceNode, GraphNode* destNode, const QString& 
     tag->installEventFilter(this);
 //    tag->setCacheMode(DeviceCoordinateCache);
 //    tag->setPen(Qt::NoPen);
-    auto pos = edge_colors.find(edge_name.toStdString());
-    if(pos != edge_colors.end())
-    {
-        auto color_name = pos->second;
-        color = QString::fromStdString(color_name);
-    }
-    else
-    {
-        color = "black";
-    }
+    color = QString::fromStdString(GraphColors<DSR::Edge>()[edge_name.toStdString()]);
     animation = new QPropertyAnimation(this, "edge_pen");
     animation->setDuration(200);
     animation->setStartValue(4);

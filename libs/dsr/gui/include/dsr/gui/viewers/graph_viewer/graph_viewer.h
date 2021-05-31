@@ -71,11 +71,11 @@ namespace DSR
 			QMenu *contextMenu, *showMenu;
 			std::map<std::string,std::set<std::uint64_t>> type_id_map;
 			int timerId = 0;
-            void createGraph();
             void showContextMenu(QMouseEvent *event);
 
 
     	protected:
+            void createGraph();
 			virtual void timerEvent(QTimerEvent *event);
 			virtual void mousePressEvent(QMouseEvent *event);
 
