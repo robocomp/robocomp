@@ -177,7 +177,9 @@ REGISTER_TYPE(cam_depth_width, int, false)
  * Robot
  * */
 
-REGISTER_TYPE(viriato_head_pan_tilt_nose_target, std::reference_wrapper<const std::vector<float>>, true)
+REGISTER_TYPE(viriato_head_pan_tilt_nose_pos_ref, std::reference_wrapper<const std::vector<float>>, true)
+REGISTER_TYPE(viriato_head_pan_tilt_nose_speed_ref, std::reference_wrapper<const std::vector<float>>, true)
+
 //REGISTER_TYPE(robot_current_advance_speed, std::reference_wrapper<const std::vector<float>>, true)
 //REGISTER_TYPE(robot_current_angular_speed, std::reference_wrapper<const std::vector<float>>, true)
 //REGISTER_TYPE(robot_current_side_speed, std::reference_wrapper<const std::vector<float>>, true)
