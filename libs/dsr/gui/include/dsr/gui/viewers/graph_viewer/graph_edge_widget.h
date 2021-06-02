@@ -42,11 +42,11 @@ public:
             }
             horizontalHeader()->setStretchLastSection(true);
             resize_widget();
-            //TODO: comprobar QObject::connect(graph.get(), &DSR::DSRGraph::update_attrs_signal, this, &DoTableStuff::drawSLOT);
-            //QObject::connect(graph.get(), &DSR::DSRGraph::update_node_signal, this, &DoTableStuff::update_node_slot);
-            //QObject::connect(graph.get(), &DSR::DSRGraph::update_node_signal, this, &DoTableStuff::update_node_slot);
+            //TODO: comprobar QObject::connect(graph.get(), &DSR::DSRGraph::update_attrs_signal, this, &GraphEdgeWidget::drawSLOT);
+            //QObject::connect(graph.get(), &DSR::DSRGraph::update_node_signal, this, &GraphEdgeWidget::update_node_slot);
+            //QObject::connect(graph.get(), &DSR::DSRGraph::update_node_signal, this, &GraphEdgeWidget::update_node_slot);
             QObject::connect(graph.get(), &DSR::DSRGraph::update_edge_attr_signal, this, &GraphEdgeWidget::update_edge_attr_slot);
-            //QObject::connect(graph.get(), &DSR::DSRGraph::update_edge_signal, this, &DoTableStuff::add_or_assign_edge_slot);
+            //QObject::connect(graph.get(), &DSR::DSRGraph::update_edge_signal, this, &GraphEdgeWidget::add_or_assign_edge_slot);
             show();
         }
     };

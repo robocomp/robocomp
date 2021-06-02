@@ -1,6 +1,7 @@
 #include <dsr/gui/viewers/qscene_2d_viewer/qscene_2d_viewer.h>
 #include <dsr/gui/viewers/graph_viewer/graph_node.h>
 #include <dsr/core/types/type_checking/dsr_attr_name.h>
+#include <dsr/gui/viewers/graph_viewer/graph_node_widget.h>
 
 using namespace DSR ;
 
@@ -552,14 +553,14 @@ void QScene2dViewer::mousePressEvent(QMouseEvent *event){
                 if (event->button() == Qt::MiddleButton) {
                     if (nodes.size() == 1) {
                         static std::unique_ptr<QWidget> do_stuff;
-                        do_stuff = std::make_unique<DoTableStuff>(G, nodes.first());
+                        do_stuff = std::make_unique<GraphNodeWidget>(G, nodes.first());
                     } else {
                         bool ok;
                         QString node_name = QInputDialog::getItem(this, tr("Show node content"), tr("Node:"),
                                                                   z_order.values(), 0, false, &ok);
                         if (ok) {
                             static std::unique_ptr<QWidget> do_stuff;
-                            do_stuff = std::make_unique<DoTableStuff>(G, nodes[node_name]);
+                            do_stuff = std::make_unique<GraphNodeWidget>(G, nodes[node_name]);
                         }
                     }
                 }
