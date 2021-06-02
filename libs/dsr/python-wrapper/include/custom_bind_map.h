@@ -149,7 +149,7 @@ namespace pybind11 {
                            }
                            break;
                        default:
-                           throw std::runtime_error("Invalid attribute type for attribute ." + k);
+                           throw std::runtime_error("[Not implemented type]. Invalid type for attribute ." + k + ". Selected type is: " + TYPENAMES_UNION[v.selected()].data());
                    }
 
                     if (correct_type) {
@@ -157,8 +157,7 @@ namespace pybind11 {
                         if (it != m.end()) it->second = v;
                         else m.emplace(k, v);
                     } else {
-                        throw std::runtime_error("Invalid attribute type for attribute ." + k);
-
+                        throw std::runtime_error("Invalid type for attribute ." + k + ". Selected typeis: " + TYPENAMES_UNION[v.selected()].data());
                     }
 
                }
