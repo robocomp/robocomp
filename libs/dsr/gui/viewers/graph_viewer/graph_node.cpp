@@ -17,6 +17,9 @@
 #include <dsr/gui/viewers/graph_viewer/graph_node.h>
 //#include <dsr/gui/viewers/graph_viewer/node_colors.h>
 #include <dsr/gui/viewers/graph_viewer/graph_colors.h>
+#include <dsr/gui/viewers/graph_viewer/graph_node_laser_widget.h>
+#include <dsr/gui/viewers/graph_viewer/graph_node_widget.h>
+#include <dsr/gui/viewers/graph_viewer/graph_node_rgbd_widget.h>
 
 #define NODE_POS_X -10
 #define NODE_POS_Y -10
@@ -262,11 +265,11 @@ void GraphNode::show_stuff_widget(const std::string &show_type)
     //static std::unique_ptr<QWidget> do_stuff;
     const auto graph = dsr_to_graph_viewer->getGraph();
     if(show_type=="laser")
-        do_stuff = std::make_unique<DoLaserStuff>(graph, id_in_graph);
+        do_stuff = std::make_unique<GraphNodeLaserWidget>(graph, id_in_graph);
     else if(show_type=="rgbd")
-        do_stuff = std::make_unique<DoRGBDStuff>(graph, id_in_graph);
+        do_stuff = std::make_unique<GraphNodeRGBDWidget>(graph, id_in_graph);
     else
-        do_stuff = std::make_unique<DoTableStuff>(graph, id_in_graph);
+        do_stuff = std::make_unique<GraphNodeWidget>(graph, id_in_graph);
 
 }
 

@@ -32,7 +32,7 @@ public:
             from_string = to_node.value().name();
             to_string = from_node.value().name();
 
-            //TODO: Comprobar esto
+            //TODO: Check this
             setWindowTitle("RT: " + QString::fromStdString(from_string) + "(" + QString::fromStdString(from_node.value().type()) + ") to " + QString::fromStdString(to_string) + "(" + QString::fromStdString(to_node.value().type()) + ")");
             qDebug()<<__FUNCTION__ <<"RT: " + QString::fromStdString(from_string) + "(" + QString::fromStdString(from_node.value().type()) + ") to " + QString::fromStdString(to_string) + "(" + QString::fromStdString(to_node.value().type()) + ")";
             QVBoxLayout *vbox = new QVBoxLayout(this);
