@@ -24,6 +24,8 @@
 #include <iostream>
 #include <cppitertools/range.hpp>
 #include <dsr/gui/viewers/graph_viewer/graph_colors.h>
+#include <dsr/gui/viewers/graph_viewer/graph_edge_widget.h>
+#include <dsr/gui/viewers/graph_viewer/graph_edge_rt_widget.h>
 //#include <dsr/gui/viewers/graph_viewer/edge_colors.h>
 
 GraphEdge::GraphEdge(GraphNode* sourceNode, GraphNode* destNode, const QString& edge_name)
@@ -539,11 +541,11 @@ void GraphEdge::mouse_double_clicked()
     const auto graph = this->source->getGraphViewer()->getGraph();
 
     if (this->tag->toPlainText()=="RT" or this->tag->toPlainText()=="looking-at") {
-        do_stuff = std::make_unique<DoRTStuff2>(graph, this->source->id_in_graph, this->dest->id_in_graph,
+        do_stuff = std::make_unique<GraphEdgeRTWidget>(graph, this->source->id_in_graph, this->dest->id_in_graph,
                 this->tag->toPlainText().toStdString());
     }
     else {
-        do_stuff = std::make_unique<DoTableEdgeStuff>(graph, this->source->id_in_graph, this->dest->id_in_graph,
+        do_stuff = std::make_unique<GraphEdgeWidget>(graph, this->source->id_in_graph, this->dest->id_in_graph,
                 this->tag->toPlainText().toStdString());
     }
     this->animation->start();
