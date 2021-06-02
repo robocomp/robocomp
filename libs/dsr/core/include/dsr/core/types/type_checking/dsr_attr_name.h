@@ -142,6 +142,7 @@ REGISTER_TYPE(ps_intimate_y_pos, std::reference_wrapper<const std::vector<float>
 /*
  * Object
  * */
+REGISTER_TYPE(obj_id, int, false)
 REGISTER_TYPE(obj_width, int, false)
 REGISTER_TYPE(obj_height, int, false)
 REGISTER_TYPE(obj_depth, int, false)
@@ -151,6 +152,14 @@ REGISTER_TYPE(obj_interaction_shape, std::reference_wrapper<const std::string>, 
 REGISTER_TYPE(obj_visible, int, false)
 REGISTER_TYPE(projected_bounding_box, std::reference_wrapper<const std::vector<float>>, true)
 REGISTER_TYPE(unseen_time, int, false)
+/*
+ * Object affordances
+ * 
+ **/
+REGISTER_TYPE(aff_x_pos, std::reference_wrapper<const std::vector<float>>, true)
+REGISTER_TYPE(aff_y_pos, std::reference_wrapper<const std::vector<float>>, true)
+
+REGISTER_TYPE(aff_interacting, bool, true)
 
 
 /*
