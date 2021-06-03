@@ -24,7 +24,7 @@
 #define NODE_POS_X -10
 #define NODE_POS_Y -10
 
-GraphNode::GraphNode(std::shared_ptr<DSR::GraphViewer> graph_viewer_): QGraphicsEllipseItem(0,0,30,30), dsr_to_graph_viewer(graph_viewer_)
+GraphNode::GraphNode(std::shared_ptr<DSR::GraphViewer> graph_viewer_):QGraphicsEllipseItem(0,0,30,30), graph_viewer(graph_viewer_)
 {
     auto flags = ItemIsMovable | ItemIsSelectable | ItemSendsGeometryChanges | ItemUsesExtendedStyleOption | ItemIsFocusable;
     setFlags(flags);
@@ -57,10 +57,10 @@ void GraphNode::setType(const std::string &type_)
         contextMenu = new QMenu();
         QAction *table_action = new QAction("View table");
         contextMenu->addAction(table_action);
-        connect(table_action, &QAction::triggered, this, [this](){ this->show_stuff_widget("table");});
+        connect(table_action, &QAction::triggered, this, [this](){ this->show_node_widget("table");});
         QAction *stuff_action = new QAction("View data");
         contextMenu->addAction(stuff_action);
-        connect(stuff_action, &QAction::triggered, this, [this, type_](){ this->show_stuff_widget(type_);});
+        connect(stuff_action, &QAction::triggered, this, [this, type_](){ this->show_node_widget(type_);});
     }
     auto color = GraphColors<DSR::Node>()[type];
     set_color(color);
@@ -88,17 +88,19 @@ void GraphNode::addEdge(GraphEdge *edge)
     qDebug()<<__FUNCTION__ <<"Checking edges for node: "<<this->id_in_graph;
     for (auto old_edge: edgeList)
     {
+        if(old_edge == edge)
+            throw std::runtime_error("Trying to add an already existing edge " + std::to_string(edge->sourceNode()->id_in_graph)+"--"+std::to_string(edge->destNode()->id_in_graph));
 //        qDebug()<<__FUNCTION__ <<"\tExisting EDGE: "<<edge->sourceNode()->id_in_graph<<edge->destNode()->id_in_graph<<"OTHER: "<<old_edge->sourceNode()->id_in_graph<<old_edge->destNode()->id_in_graph;
         qDebug()<<"\t"<<__FUNCTION__ <<"Existing EDGE: "<<old_edge->sourceNode()->id_in_graph<<"--"<<old_edge->destNode()->id_in_graph;
         qDebug()<<"\t"<<__FUNCTION__ <<"     New EDGE: "<<edge->sourceNode()->id_in_graph<<"--"<<edge->destNode()->id_in_graph;
         if((edge->sourceNode()->id_in_graph==old_edge->sourceNode()->id_in_graph or edge->sourceNode()->id_in_graph==old_edge->destNode()->id_in_graph)
         and (edge->destNode()->id_in_graph==old_edge->sourceNode()->id_in_graph or edge->destNode()->id_in_graph==old_edge->destNode()->id_in_graph))
         {
-//            https://www.wolframalpha.com/input/?i=0%2C+1%2C+-1%2C+2%2C+-2%2C+3%2C+-3
             same_count++;
             qDebug()<<"\t\t"<<__FUNCTION__ <<"SAME EDGE"<<same_count;
         }
     }
+    //            https://www.wolframalpha.com/input/?i=0%2C+1%2C+-1%2C+2%2C+-2%2C+3%2C+-3
     bend_factor = (pow(-1,same_count)*(-1 + pow(-1,same_count) - 2*same_count))/4;
     qDebug()<<__FUNCTION__ <<__LINE__<<"ID: "<<id_in_graph<<"SAME: "<<same_count<<"FACTOR: "<<bend_factor;
     edge->set_bend_factor(bend_factor);
@@ -106,6 +108,7 @@ void GraphNode::addEdge(GraphEdge *edge)
 
     edge->adjust();
     qDebug()<<"====================================";
+
 }
 
 void GraphNode::deleteEdge(GraphEdge *edge)
@@ -130,7 +133,7 @@ void GraphNode::calculateForces()
     qreal xvel = 0;
     qreal yvel = 0;
     //foreach (QGraphicsItem *item, scene()->items()) 
-    for( auto &[k,node] : dsr_to_graph_viewer->getGMap())
+    for( auto &[k,node] : graph_viewer->getGMap())
 	{
         //GraphNode *node = qgraphicsitem_cast<GraphNode *>(item);
         //if (!node)
@@ -163,7 +166,7 @@ void GraphNode::calculateForces()
     }
 
     // Subtract force from central pos pulling item to the center of the image
-    QPointF to_central_point = mapFromItem(dsr_to_graph_viewer->getCentralPoint(), 0, 0);
+    QPointF to_central_point = mapFromItem(graph_viewer->getCentralPoint(), 0, 0);
     xvel += to_central_point.x() / (weight/2) ;
     yvel += to_central_point.y() / (weight/2) ;
 
@@ -253,23 +256,23 @@ void GraphNode::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event)
         if (contextMenu != nullptr)
             contextMenu->exec(event->screenPos());
         else
-            show_stuff_widget("table");
+            show_node_widget("table");
     }
 //    update();
     QGraphicsEllipseItem::mouseDoubleClickEvent(event);
 }
 
 
-void GraphNode::show_stuff_widget(const std::string &show_type)
+void GraphNode::show_node_widget(const std::string &show_type)
 {
     //static std::unique_ptr<QWidget> do_stuff;
-    const auto graph = dsr_to_graph_viewer->getGraph();
+    const auto graph = graph_viewer->getGraph();
     if(show_type=="laser")
-        do_stuff = std::make_unique<GraphNodeLaserWidget>(graph, id_in_graph);
+        node_widget = std::make_unique<GraphNodeLaserWidget>(graph, id_in_graph);
     else if(show_type=="rgbd")
-        do_stuff = std::make_unique<GraphNodeRGBDWidget>(graph, id_in_graph);
+        node_widget = std::make_unique<GraphNodeRGBDWidget>(graph, id_in_graph);
     else
-        do_stuff = std::make_unique<GraphNodeWidget>(graph, id_in_graph);
+        node_widget = std::make_unique<GraphNodeWidget>(graph, id_in_graph);
 
 }
 
@@ -282,7 +285,7 @@ void GraphNode::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
      if( event->button()== Qt::LeftButton)
     {
-        auto g = dsr_to_graph_viewer->getGraph();
+        auto g = graph_viewer->getGraph();
         qDebug() << __FILE__ <<":"<<__FUNCTION__<< " node id in graphnode: " << id_in_graph ;
         std::optional<Node> n = g->get_node(id_in_graph);
         if (n.has_value()) {
@@ -328,7 +331,7 @@ void GraphNode::update_node_attr_slot(std::uint64_t node_id, const std::vector<s
         return;
     if(std::find(type.begin(), type.end(), "color") != type.end())
     {
-        std::optional<Node> n = dsr_to_graph_viewer->getGraph()->get_node(node_id);
+        std::optional<Node> n = graph_viewer->getGraph()->get_node(node_id);
         if (n.has_value()) {
 //            auto &attrs = n.value().attrs();
 //            auto value = attrs.find("color");

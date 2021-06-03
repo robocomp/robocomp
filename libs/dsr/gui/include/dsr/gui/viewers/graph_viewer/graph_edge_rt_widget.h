@@ -5,6 +5,8 @@
 #ifndef DSR_GRAPHEDGERTWIDGET_H
 #define DSR_GRAPHEDGERTWIDGET_H
 
+#include <QLabel>
+
 class GraphEdgeRTWidget : public  QWidget
 {
     Q_OBJECT
@@ -17,15 +19,15 @@ public:
         qRegisterMetaType<std::uint64_t>("std::uint64_t");
         qRegisterMetaType<uint64_t>("uint64_t");
         qRegisterMetaType<std::string>("std::string");
-        qRegisterMetaType<std::map<std::string, Attribute>>("Attribs");
+        qRegisterMetaType<std::map<std::string, DSR::Attribute>>("Attribs");
 
         connect(graph.get(), &DSR::DSRGraph::update_edge_signal, this, &GraphEdgeRTWidget::add_or_assign_edge_slot);
         //Inner Api
         inner_eigen = graph->get_inner_eigen_api();
 
-        std::optional<Node> from_node = graph->get_node(from);
-        std::optional<Node> to_node = graph->get_node(to);
-        std::optional<Edge> edge = graph->get_edge(from, to, edge_type);
+        std::optional<DSR::Node> from_node = graph->get_node(from);
+        std::optional<DSR::Node> to_node = graph->get_node(to);
+        std::optional<DSR::Edge> edge = graph->get_edge(from, to, edge_type);
         qDebug()<<__FUNCTION__ <<from_node.has_value()<<to_node.has_value()<<edge.has_value();
         if (edge.has_value() and from_node.has_value() and to_node.has_value())
         {

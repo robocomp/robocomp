@@ -6,6 +6,7 @@
 #include <dsr/gui/viewers/graph_viewer/graph_node.h>
 #include <dsr/gui/viewers/graph_viewer/graph_edge.h>
 #include <dsr/gui/viewers/graph_viewer/graph_viewer.h>
+#include <QMessageBox>
 
 using namespace DSR ;
 
@@ -269,9 +270,16 @@ void GraphViewer::add_or_assign_edge_SLOT(std::uint64_t from, std::uint64_t to, 
 
 GraphEdge* GraphViewer::new_visual_edge(GraphNode *sourceNode, GraphNode *destNode, const QString &edge_name)
 {
-    auto gedge = new GraphEdge(sourceNode, destNode, edge_name);
-    scene.addItem(gedge);
-    return gedge;
+    try {
+        auto gedge = new GraphEdge(sourceNode, destNode, edge_name);
+        scene.addItem(gedge);
+        return gedge;
+    }
+    catch(const std::runtime_error &e)
+    {
+        QMessageBox::warning(this,"Error creating edge", e.what());
+        return nullptr;
+    }
 }
 
 GraphEdge* GraphViewer::new_visual_edge(std::uint64_t from, std::uint64_t to, const std::string &edge_tag)

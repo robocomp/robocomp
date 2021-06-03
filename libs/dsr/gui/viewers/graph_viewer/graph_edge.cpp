@@ -61,8 +61,6 @@ GraphEdge::GraphEdge(GraphNode* sourceNode, GraphNode* destNode, const QString& 
     source->addEdge(this);
     dest->addEdge(this);
     // label
-
-
 //    m_itemFlags = CF_Mutual_Arrows;
     adjust();
     QObject::connect(source->getGraphViewer()->getGraph().get(), &DSR::DSRGraph::update_edge_attr_signal, this,
