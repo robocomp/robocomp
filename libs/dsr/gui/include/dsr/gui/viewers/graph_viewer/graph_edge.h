@@ -87,6 +87,9 @@ public:
     void set_bend_factor(int bf);
 //    bool isValid() const	{ return source != NULL && dest != NULL; }
 //    bool isCircled() const	{ return isValid() && source == dest; }
+    bool operator==(const GraphEdge& other){
+        return ((source == other.source) and (dest == other.dest) and (tag->toPlainText() == other.tag->toPlainText()));
+    };
 
 protected:
     QRectF boundingRect() const override;
@@ -112,6 +115,5 @@ private:
 //    QLineF calculateArrowLine(const QPainterPath &path, bool first, const QLineF &direction) const;
 
 };
-Q_DECLARE_METATYPE(DSR::Edge);
-
+//Q_DECLARE_METATYPE(DSR::Edge);
 #endif // GRAPHEDGE_H
