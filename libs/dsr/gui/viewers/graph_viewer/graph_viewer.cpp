@@ -139,8 +139,6 @@ void GraphViewer::timerEvent(QTimerEvent *event)
 //////////////////////////////////////////////////////////////////////////////////////
 void GraphViewer::add_or_assign_node_SLOT(uint64_t id, const std::string &type)
 {
-	//qDebug() << __FUNCTION__ << "node id " << id<<", type "<<QString::fromUtf8(type.c_str());
-															// CAMBIAR a sharer_ptr
     GraphNode *gnode;
     auto name_op = G->get_name_from_id(id);
     auto name = name_op.value_or("No_name");
@@ -151,60 +149,9 @@ void GraphViewer::add_or_assign_node_SLOT(uint64_t id, const std::string &type)
             qDebug()<<__FUNCTION__<<"##### New node";
             gnode = this->new_visual_node(id, type, name, false);
             gmap.insert(std::pair(id, gnode));
-            // //left table filling only if it is new
-            // tableWidgetNodes->setColumnCount(1);
-            // tableWidgetNodes->setHorizontalHeaderLabels(QStringList{"type"});
-            // tableWidgetNodes->verticalHeader()->setVisible(false);
-            // tableWidgetNodes->setShowGrid(false);
-            // nodes_types_list << QString::fromStdString(type);
-            // nodes_types_list.removeDuplicates();
-            // int i = 0;
-            // tableWidgetNodes->clearContents();
-            // tableWidgetNodes->setRowCount(nodes_types_list.size());
-            // for (auto &s : nodes_types_list)
-			// {
-            //     tableWidgetNodes->setItem(i, 0, new QTableWidgetItem(s));
-            //     tableWidgetNodes->item(i, 0)->setIcon(QPixmap::fromImage(QImage("../../dsr/greenBall.png")));
-            //     i++;
-            // }
-            // tableWidgetNodes->horizontalHeader()->setStretchLastSection(true);
-            // tableWidgetNodes->resizeRowsToContents();
-            // tableWidgetNodes->resizeColumnsToContents();
-            // tableWidgetNodes->show();
 
-            // connect QTableWidget itemClicked to hide/show nodes of selected type and nodes fanning into it
-            // disconnect(tableWidgetNodes, &QTableWidget::itemClicked, nullptr, nullptr);
-            // connect(tableWidgetNodes, &QTableWidget::itemClicked, this, [this](const auto &item)
-            // {
-            //     static bool visible = true;
-            //     qDebug() << __FILE__ << " " << __FUNCTION__ << "hide or show all nodes of type " << item->text().toStdString() ;
-            //     for (auto &[k, v] : gmap)
-            //         if (item->text().toStdString() == v->getType()) {
-            //             v->setVisible(!v->isVisible());
-            //             for (const auto &gedge: gmap.at(k)->edgeList)
-            //                 gedge->setVisible(!gedge->isVisible());
-            //         }
-            //     visible = !visible;
-            //     if (visible)
-            //         tableWidgetNodes->item(item->row(), 0)->setIcon(
-            //                 QPixmap::fromImage(QImage("../../dsr/greenBall.png")));
-            //     else
-            //         tableWidgetNodes->item(item->row(), 0)->setIcon(
-            //                 QPixmap::fromImage(QImage("../../dsr/redBall.png")));
-            // }, Qt::UniqueConnection);
-		
-            //color is read from node attribute
             std::string color("coral");
             color = G->get_attrib_by_name<color_att>(n.value()).value_or(color);
-/* 
-			std::string color = "coral";
-			if(type == "world") color = "SeaGreen";
-			else if(type == "transform") color = "SteelBlue";
-			else if(type == "plane") color = "Khaki";
-			else if(type == "differentialrobot") color = "GoldenRod";
-			else if(type == "laser") color = "GreenYellow";
-			else if(type == "mesh") color = "LightBlue";
-			else if(type == "imu") color = "LightSalmon";*/
 			gnode->set_color(color);
 			gnode->setType(type);
         }
@@ -232,7 +179,7 @@ void GraphViewer::add_or_assign_node_SLOT(uint64_t id, const std::string &type)
 			gnode->setPos(posx, posy);
 		}
 
-        emit G->update_attrs_signal(id, n.value().attrs());
+        //emit G->update_node_attr_signal(id, {});
     }
 }
 
@@ -291,7 +238,7 @@ GraphEdge* GraphViewer::new_visual_edge(std::uint64_t from, std::uint64_t to, co
     return gedge;
 }
 
-void GraphViewer::del_edge_SLOT(const std::uint64_t from, const std::uint64_t to, const std::string &edge_tag)
+void GraphViewer::del_edge_SLOT(std::uint64_t from, std::uint64_t to, const std::string &edge_tag)
 {
     qDebug()<<__FUNCTION__<<":"<<__LINE__;
 	try {

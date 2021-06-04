@@ -152,7 +152,7 @@ public slots:
         else
             std::cout<<"Error retriving RT data"<<std::endl;
     };
-    void add_or_assign_edge_slot(const std::uint64_t from, const std::uint64_t to, const std::string& edge_type)
+    void add_or_assign_edge_slot( std::uint64_t from,  std::uint64_t to, const std::string& edge_type)
     {
         std::cout<<"edge-"<<edge_type<<std::endl;
         if(edge_type == "RT" or edge_type == "looking-at")

@@ -39,7 +39,7 @@ using callback_types = std::variant<
         std::function<void(std::uint64_t, const std::string &)>,
         std::function<void(std::uint64_t, const std::vector<std::string> &)>,
         std::function<void(std::uint64_t, std::uint64_t, const std::string &)>,
-        std::function<void(std::uint64_t, std::uint64_t, const std::vector<std::string> &)>,
+        std::function<void(std::uint64_t, std::uint64_t, const std::string &, const std::vector<std::string> &)>,
         std::function<void(std::uint64_t)>
 >;
 
@@ -56,9 +56,7 @@ using attribute_type = std::variant<std::string,
                                     int32_t,
                                     uint32_t>;
 
-static constexpr std::array<std::string_view, 11> attribute_type_TYPENAMES_UNION = { "STRING", "BOOL", "NUMPY_BYTE_VEC", "BYTE_VEC",
-                                                                                    "NUMPY_FLOAT_VEC", "FLOAT_VEC", "UINT64", "DOUBLE", "FLOAT",
-                                                                     "INT", "UINT"};
+
 
 
 template<typename T>
@@ -225,10 +223,10 @@ PYBIND11_MODULE(pydsr, m) {
             case UPDATE_EDGE_ATTR:
                 try {
                     QObject::connect(G, &DSR::DSRGraph::update_edge_attr_signal,
-                                     std::get<std::function<void(std::uint64_t, std::uint64_t,
+                                     std::get<std::function<void(std::uint64_t, std::uint64_t, const std::string&,
                                                                  const std::vector<std::string> &)>>(fn_callback));
                 } catch (std::exception &e) {
-                    std::cout << "Update Edge Attribute Callback must be (int, int, [str])\n " << std::endl;
+                    std::cout << "Update Edge Attribute Callback must be (int, int, str, [str])\n " << std::endl;
                     throw e;
                 }
                 break;

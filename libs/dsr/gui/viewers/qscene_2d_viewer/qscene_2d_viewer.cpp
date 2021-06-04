@@ -8,7 +8,7 @@ using namespace DSR ;
 QScene2dViewer::QScene2dViewer(std::shared_ptr<DSR::DSRGraph> G_, QWidget *parent) : AbstractGraphicViewer(parent)
 {
     qDebug()<<"***************INIT QScene2dViewer********************";
-    G = G_;
+    G = std::move(G_);
     this->setMinimumSize(400,400);
     scene.setItemIndexMethod(QGraphicsScene::NoIndex);
     this->scale(1, -1);
@@ -86,7 +86,7 @@ void QScene2dViewer::create_graph()
 ///// SLOTS
 //////////////////////////////////////////////////////////////////////////////////////
 
-void QScene2dViewer::add_or_assign_node_slot(const std::uint64_t  id, const std::string &type)
+void QScene2dViewer::add_or_assign_node_slot(std::uint64_t  id, const std::string &type)
 {
 //    qDebug()<<"*************************";
 //    qDebug() << __FUNCTION__ ;
@@ -117,7 +117,7 @@ void QScene2dViewer::add_or_assign_node_slot(const std::uint64_t  id, const std:
 
     }
 }
-void QScene2dViewer::add_or_assign_edge_slot(const std::uint64_t  from, const std::uint64_t  to, const std::string& type)
+void QScene2dViewer::add_or_assign_edge_slot(std::uint64_t  from, std::uint64_t  to, const std::string& type)
 {
 //    qDebug()<<__FUNCTION__;
     //check if new edge connected any orphan nodes
@@ -139,7 +139,7 @@ void QScene2dViewer::add_or_assign_edge_slot(const std::uint64_t  from, const st
 }
 
 //Compute 2d projection and zvalue
-void QScene2dViewer::get_2d_projection(std::string node_name, std::vector<int> size, QPolygon &polygon, int &zvalue)
+void QScene2dViewer::get_2d_projection(const std::string& node_name, std::vector<int> size, QPolygon &polygon, int &zvalue)
 {
     QVector<QPoint> polygon_vec;
     zvalue = -99999;
@@ -164,7 +164,7 @@ void QScene2dViewer::get_2d_projection(std::string node_name, std::vector<int> s
 } 
 
 
-void QScene2dViewer::add_or_assign_rect(Node &node, std::string color, std::string texture, int width, int height, int depth)
+void QScene2dViewer::add_or_assign_rect(Node &node, const std::string& color, const std::string& texture, int width, int height, int depth)
 {
 
     //Calculate polygon
@@ -181,7 +181,7 @@ void QScene2dViewer::add_or_assign_rect(Node &node, std::string color, std::stri
 
     //texture
     QBrush brush = QBrush(QColor(QString::fromStdString(color)));
-    if (texture != "")
+    if (!texture.empty())
     {
         // GCC > 8
         if(std::filesystem::exists(texture))
@@ -470,7 +470,7 @@ void QScene2dViewer::update_scene_object_pose(std::uint64_t  node_id)
     }
 }
 
-void QScene2dViewer::del_node_slot(const std::uint64_t  id)
+void QScene2dViewer::del_node_slot(std::uint64_t  id)
 {
 //qDebug() << "********************************";
 //qDebug() << __FUNCTION__ ;
@@ -498,7 +498,7 @@ void QScene2dViewer::del_node_slot(const std::uint64_t  id)
     //TODO: check what happens with rt edges
 }
 
-void QScene2dViewer::del_edge_slot(const std::uint64_t  from, const std::uint64_t  to, const std::string &edge_tag) {
+void QScene2dViewer::del_edge_slot(std::uint64_t  from, std::uint64_t  to, const std::string &edge_tag) {
 //    qDebug() << "********************************";
 //    qDebug() << __FUNCTION__;
 
@@ -641,7 +641,7 @@ void QScene2dViewer::draw_person_space(QGraphicsItem *sceneItem,Node &node){
     draw_space("intimate", "Orange", -5, node,  sceneItem);
 }
 
-void QScene2dViewer::draw_space(std::string name, std::string color_, int zvalue, Node &node, QGraphicsItem* parent){
+void QScene2dViewer::draw_space(const std::string& name, const std::string& color_, int zvalue, Node &node, QGraphicsItem* parent){
     if (node.attrs().find( name+"_x_pos") != node.attrs().end() and node.attrs().find( name+"_y_pos") != node.attrs().end()) {
         const auto x_pos = node.attrs().at(name+"_x_pos").float_vec();
         const auto y_pos = node.attrs().at(name+"_y_pos").float_vec();;

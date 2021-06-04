@@ -18,15 +18,12 @@ Reimplementation from https://github.com/CBaquero/delta-enabled-crdts
 
 using key_type = uint64_t;
 
-
 // Autonomous causal context, for context sharing in maps
 class dot_context {
 public:
-    
+
     std::map<key_type, int> cc; // Compact causal context
     std::set<std::pair<key_type, int> > dc; // Dot cloud
-
-
 
     dot_context &operator=(const dot_context &o) {
         if (&o == this) return *this;
@@ -35,16 +32,11 @@ public:
         return *this;
     }
 
-    dot_context &operator=(dot_context &&o) {
+    dot_context &operator=(dot_context &&o) noexcept {
         if (&o == this) return *this;
         cc = std::move(o.cc);
         dc = std::move(o.dc);
         return *this;
-    }
-
-    void setContext(std::map<key_type, int> &cc_, std::set<std::pair<key_type, int> > &dc_) {
-        cc = cc_;
-        dc = dc_;
     }
 
     void setContext(std::map<key_type, int> &&cc_, std::set<std::pair<key_type, int> > &&dc_) {
@@ -52,15 +44,8 @@ public:
         dc = std::move(dc_);
     }
 
-    const std::map<key_type, int>& compact_causal_context() {
-        return cc;
-    }
 
-    const std::set<std::pair<key_type, int> >& dot_cloud() {
-        return dc;
-    }
-
-    bool dotin(const std::pair<key_type, int> &d) const {
+    [[nodiscard]] bool dotin(const std::pair<key_type, int> &d) const {
         const auto itm = cc.find(d.first);
         if (itm != cc.end() && d.second <= itm->second) return true;
         if (not dc.empty() and d.second < dc.rbegin()->second) return true;
@@ -112,6 +97,14 @@ public:
         }
     }
 
+    void insertdot(std::pair<key_type, int> &&d, bool compactnow = true) {
+        // Set
+        dc.emplace(std::move(d));
+        if (compactnow) {
+            compact();
+        }
+    }
+
     void insertdot(const std::pair<key_type, int> &d, bool compactnow = true) {
         // Set
         dc.insert(d);
@@ -144,7 +137,7 @@ public:
         // DC
         // Set
         for (const auto &e : o.dc)
-            insertdot(e, false); 
+            insertdot(e, false);
 
         compact();
     }
@@ -161,8 +154,6 @@ public:
         output << ")";
         return output;
     }
-
-
 
     bool operator==(const dot_context &rhs) const {
         return cc == rhs.cc &&
@@ -199,18 +190,12 @@ public:
 template<typename T>
 class dot_kernel {
 public:
-    
+
     std::map<std::pair<key_type, int>, T> ds;  // Map of dots to vals
     dot_context c;
 
     // if no causal context supplied, used base one
-    dot_kernel() {}
-
-    // if supplied, use a shared causal context
-    dot_kernel(const dot_context &jointc)
-    {
-        c = jointc;
-    }
+    dot_kernel() = default;
 
     dot_kernel(const dot_kernel &o)
     {
@@ -218,15 +203,10 @@ public:
         c = o.c;
     }
 
-    dot_kernel(dot_kernel &&o)
+    dot_kernel(dot_kernel &&o) noexcept
     {
         ds = std::move(o.ds);
         c = std::move(o.c);
-    }
-
-    dot_kernel(dot_context &&jointc)
-    {
-        c = std::move(jointc);
     }
 
     dot_kernel<T> &operator=(const dot_kernel<T> &o)
@@ -237,7 +217,7 @@ public:
         return *this;
     }
 
-    dot_kernel<T> &operator=(dot_kernel<T> &&o)
+    dot_kernel<T> &operator=(dot_kernel<T> &&o) noexcept
     {
         if (&o == this) return *this;
         ds = std::move(o.ds);
@@ -246,14 +226,9 @@ public:
     }
 
 
-    void dot_map(std::map<std::pair<key_type, int>, T> &ds_)
-    { 
-        ds = ds_; 
-    }
-
     void dot_map(std::map<std::pair<key_type, int>, T> &&ds_)
-    { 
-        ds = std::move(ds_); 
+    {
+        ds = std::move(ds_);
     }
 
     void join_replace_conflict(dot_kernel<T> &&o) {
@@ -316,73 +291,8 @@ public:
         // add under new dot
         ds.insert(std::pair<std::pair<key_type , int>, T>(dot, val));
         // make delta
-        res.ds.insert(std::pair<std::pair<key_type , int>, T>(dot, val));
-        res.c.insertdot(dot);
-        return res;
-    }
-
-    // Add that returns the added dot, instead of kernel delta
-    std::pair<key_type , int> dotadd(const key_type &id, const T &val) {
-        // get new dot
-        std::pair<key_type , int> dot = c.makedot(id);
-        // add under new dot
-        ds.insert(std::pair<std::pair<key_type , int>, T>(dot, val));
-        return dot;
-    }
-
-
-    void clean() {
-
-        std::map<key_type , int> x;
-        for (auto dsit = ds.begin(); dsit != ds.end(); dsit++) {
-            if (x.find(dsit->first.first) != x.end()) // match
-            {
-                if (x[dsit->first.first] < dsit->first.second) {
-                    x[dsit->first.first] = dsit->first.second;
-                }
-            } else {
-                x.insert(dsit->first);
-            }
-        }
-
-        for (auto dsit = ds.begin(); dsit != ds.end();) {
-            if (x[dsit->first.first] != dsit->first.second)
-                ds.erase(dsit++);
-            else {
-                ++dsit;
-            }
-        }
-
-    }
-
-
-    dot_kernel<T> rmv(const T &val)  // remove all dots matching value
-    {
-        dot_kernel<T> res;
-        for (auto dsit = ds.begin(); dsit != ds.end();) {
-            if (dsit->second == val) // match
-            {
-                res.c.insertdot(dsit->first, false); // result knows removed dots
-                ds.erase(dsit++);
-            } else
-                ++dsit;
-        }
-        res.c.compact(); // Maybe several dots there, so atempt compactation
-        return res;
-    }
-
-
-    dot_kernel<T> rmv(const std::pair<key_type , int> &dot)  // remove a dot
-    {
-        dot_kernel<T> res;
-        auto dsit = ds.find(dot);
-        if (dsit != ds.end()) // found it
-        {
-            res.c.insertdot(dsit->first, false); // result knows removed dots
-            ds.erase(dsit++);
-        }
-        ////cout <<__PRETTY_FUNCTION__ <<":"<<__LINE__<< " " << res << endl;
-        res.c.compact(); // Atempt compactation
+        res.ds.emplace(dot, std::move(val));
+        res.c.insertdot(std::move(dot));
         return res;
     }
 
@@ -408,12 +318,8 @@ public:
         return output;
     }
 
-
-
     bool operator==(const dot_kernel &rhs) const {
-        return ds == rhs.ds;// &&
-        //cbase == rhs.cbase &&
-        //c == rhs.c;
+        return ds == rhs.ds;
     }
 
     bool operator!=(const dot_kernel &rhs) const {
@@ -439,11 +345,6 @@ public:
     }
 };
 
-
-
-
-
-
 template<typename V>
 class mvreg    // Multi-value register, Optimized
 {
@@ -458,7 +359,7 @@ public:
         id = o.id;
     }
 
-    mvreg(mvreg &&o) {
+    mvreg(mvreg &&o) noexcept {
         dk = std::move(o.dk);
         id = o.id;
     }
@@ -470,7 +371,7 @@ public:
         return *this;
     }
 
-    mvreg &operator=(mvreg &&o) {
+    mvreg &operator=(mvreg &&o) noexcept {
         if (&o == this) return *this;
         dk = std::move(o.dk);
         id = o.id;
@@ -481,16 +382,8 @@ public:
         return dk.c;
     }
 
-    dot_context &context() const {
+    [[nodiscard]] const dot_context &context() const {
         return dk.c;
-    }
-
-    void set_context(const dot_context &cbase) {
-        dk.c = cbase;
-    }
-
-    void set_context(dot_context &&cbase) {
-        dk.c = std::move(cbase);
     }
 
     mvreg<V> write(const V &val) {
@@ -512,13 +405,14 @@ public:
     }
 
     const V &read_reg() const {
+        assert(dk.ds.size() >= 1);
         return dk.ds.begin()->second;
     }
 
     V &read_reg() {
+        assert(dk.ds.size() >= 1);
         return dk.ds.begin()->second;
     }
-
 
     bool empty() {
         return dk.ds.empty();

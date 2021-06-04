@@ -58,7 +58,7 @@ namespace DSR
             std::set<uint64_t > ignore_nodes;
             std::map<uint64_t , std::string> orphand_nodes; //nodes without RT edge must be revisited
         public:
-            QScene2dViewer(std::shared_ptr<DSR::DSRGraph> G_, QWidget *parent=0);
+            QScene2dViewer(std::shared_ptr<DSR::DSRGraph> G_, QWidget *parent=nullptr);
             ~QScene2dViewer() {
                 qDebug() << "QScene2dViewer: " << G.use_count() ;
 
@@ -75,16 +75,16 @@ namespace DSR
             void set_draw_axis(bool draw);
             QGraphicsItem* get_robot_polygon() const { return robot;};
         public slots:   // From G
-            void add_or_assign_node_slot(const std::uint64_t  id, const std::string &type);
-            void add_or_assign_edge_slot(const std::uint64_t  from, const std::uint64_t  to, const std::string& type);
-            void del_node_slot(const std::uint64_t  id);
-            void del_edge_slot(const std::uint64_t  from, const std::uint64_t  to, const std::string &edge_tag);
+            void add_or_assign_node_slot(std::uint64_t  id, const std::string &type);
+            void add_or_assign_edge_slot(std::uint64_t  from, std::uint64_t  to, const std::string& type);
+            void del_node_slot(std::uint64_t  id);
+            void del_edge_slot(std::uint64_t  from, std::uint64_t  to, const std::string &edge_tag);
             void reload(QWidget* widget);
         private:
             void create_graph();
             std::list<uint64_t > get_parent_list(std::uint64_t  node_id);
             void update_edge_chain(std::list<uint64_t > parent_list);
-            void get_2d_projection(std::string node_name, std::vector<int> size, QPolygon &polygon, int &zvalue);
+            void get_2d_projection(const std::string& node_name, std::vector<int> size, QPolygon &polygon, int &zvalue);
             bool is_drawable(std::list<uint64_t > parent_list);
             bool check_RT_required_attributes(Node node);
 
@@ -93,14 +93,14 @@ namespace DSR
             void add_or_assign_mesh(Node &node);     
             void add_or_assign_robot(Node &node);
 
-            void add_or_assign_rect(Node &node, std::string color, std::string texture, int width, int height, int depth);
+            void add_or_assign_rect(Node &node, const std::string& color, const std::string& texture, int width, int height, int depth);
             
             void update_scene_object_pose(std::uint64_t  node_id);
 
             void draw_laser();
             void draw_axis();
             void draw_person_space(QGraphicsItem *sceneItem,Node &node);
-            void draw_space(std::string name, std::string color_, int zvalue, Node &node, QGraphicsItem* parent);
+            void draw_space(const std::string& name, const std::string& color_, int zvalue, Node &node, QGraphicsItem* parent);
             void showContextMenu(QMouseEvent *event);
         signals:
             void mouse_right_click(int pos_x, int pos_y, uint64_t  node_id);

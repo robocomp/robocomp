@@ -38,9 +38,9 @@ namespace DSR
             std::optional<Mat::Vector3d> get_euler_xyz_angles(const std::string &dest, const std::string &orig, std::uint64_t timestamp = 0);
 
         public slots:
-            void add_or_assign_edge_slot(const uint64_t from, const uint64_t to, const std::string& edge_type);
-            void del_node_slot(const uint64_t id);
-            void del_edge_slot(const uint64_t from, const uint64_t to, const std::string &edge_type);
+            void add_or_assign_edge_slot(uint64_t from, uint64_t to, const std::string& edge_type);
+            void del_node_slot(uint64_t id);
+            void del_edge_slot(uint64_t from, uint64_t to, const std::string &edge_type);
 
         private:
             DSR::DSRGraph *G;

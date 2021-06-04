@@ -52,7 +52,7 @@ public:
     };
 
 public slots:
-            void update_edge_attr_slot(uint64_t from, uint64_t to, const std::vector<std::string>& att_name)
+            void update_edge_attr_slot(uint64_t from, uint64_t to, const std::string& type, const std::vector<std::string>& att_name)
     {
         if ((from != this->from) and (to != this->to))
             return;
@@ -156,7 +156,8 @@ private:
             widget_map[k] = ledit;
             connect(ledit, &QLineEdit::textChanged, this, [this, k](const QString& text){
                 std::optional<Node> n = graph->get_node(node_id);
-                graph->runtime_checked_update_attrib_by_name(n.value(), k, text.toStdString());
+                graph->runtime_checked_modify_attrib_local(n.value(), k, text.toStdString());
+                graph->update_node(n.value());
             });
             break;
         }
@@ -170,7 +171,8 @@ private:
             widget_map[k] = spin;
             connect(spin, QOverload<int>::of(&QSpinBox::valueChanged), this, [this, k](int value){
                 std::optional<Node> n = graph->get_node(node_id);
-                graph->runtime_checked_update_attrib_by_name(n.value(), k, value);
+                graph->runtime_checked_modify_attrib_local(n.value(), k, value);
+                graph->update_node(n.value());
             });
             break;
         }
@@ -183,7 +185,8 @@ private:
             widget_map[k] = spin;
             connect(spin, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, [this, k](double value){
                 std::optional<Node> n = graph->get_node(node_id);
-                graph->runtime_checked_update_attrib_by_name(n.value(), k, (float)value);
+                graph->runtime_checked_modify_attrib_local(n.value(), k, (float)value);
+                graph->update_node(n.value());
             });
             break;
         }
@@ -216,7 +219,8 @@ private:
             connect(combo, &QComboBox::currentTextChanged, this, [this, k](const QString& value){
                 std::optional<Node> n = graph->get_node(node_id);
                 bool val = ( value == "true");
-                graph->runtime_checked_update_attrib_by_name(n.value(), k, val);
+                graph->runtime_checked_modify_attrib_local(n.value(), k, val);
+                graph->update_node(n.value());
             });
             break;
         }
@@ -250,7 +254,8 @@ private:
             widget_map[k] = spin;
             connect(spin, QOverload<int>::of(&QSpinBox::valueChanged), this, [this, k](int value){
                 std::optional<Node> n = graph->get_node(node_id);
-                graph->runtime_checked_update_attrib_by_name(n.value(), k, (unsigned int)value);
+                graph->runtime_checked_modify_attrib_local(n.value(), k, (unsigned int)value);
+                graph->update_node(n.value());
             });
             break;
         }

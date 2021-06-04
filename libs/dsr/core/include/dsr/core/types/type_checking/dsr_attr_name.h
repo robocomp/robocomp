@@ -27,7 +27,7 @@
 //Define el tipo utilizado para validar los tipos de atributos durante la compilación
 template<const std::string_view& n, typename Tn>
 struct Attr {
-    static constexpr bool attr_type = std::bool_constant<allowed_types<Tn>>();
+    static constexpr bool attr_type = std::bool_constant<allowed_types<unwrap_reference_wrapper_t<Tn>>>();
     static constexpr std::string_view attr_name = std::string_view(n);
     static Tn type;
 };

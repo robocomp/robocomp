@@ -72,7 +72,6 @@ namespace DSR
         // Utils
         bool empty(const uint64_t &id);
         std::map<uint64_t, Node> getCopy() const;
-        std::vector<uint64_t> getKeys() const;
 
         [[deprecated("Use get_inner_eigen_api instead")]] std::unique_ptr<InnerAPI> get_inner_api() { return std::make_unique<InnerAPI>(this); };
         std::unique_ptr<InnerEigenAPI> get_inner_eigen_api() { return std::make_unique<InnerEigenAPI>(this); };
@@ -110,12 +109,12 @@ namespace DSR
         std::optional<Node> get_node_root() { return get_node("world"); };
         std::vector<Node> get_nodes_by_type(const std::string &type);
         std::vector<Node> get_nodes_by_types(const std::vector<std::string> &types);
-        std::optional<std::string> get_name_from_id(uint64_t id);  // caché
-        std::optional<uint64_t> get_id_from_name(const std::string &name);  // caché
+        std::optional<std::string> get_name_from_id(uint64_t id);
+        std::optional<uint64_t> get_id_from_name(const std::string &name);
         std::optional<std::int32_t> get_node_level(const Node &n);
         std::optional<uint64_t> get_parent_id(const Node &n);
         std::optional<Node> get_parent_node(const Node &n);
-        static std::string get_node_type(Node &n);
+        [[deprecated("Use node.type() instead")]]static std::string get_node_type(Node &n);
 
         // Edges
         std::vector<Edge> get_edges_by_type(const std::string &type);
@@ -125,8 +124,8 @@ namespace DSR
 
 
         template <typename name, typename Type>
-        inline std::optional<uint64_t> get_attrib_timestamp(const Type &n)
-            requires(node_or_edge<Type>, is_attr_name<name>::value)
+        std::optional<uint64_t> get_attrib_timestamp(const Type &n)
+            requires(node_or_edge<Type>, is_attr_name<name>)
         {
             auto &attrs = n.attrs();
             auto value = attrs.find(name::attr_name.data());
@@ -135,7 +134,7 @@ namespace DSR
         }
 
         template <typename Type>
-        inline std::optional<uint64_t> get_attrib_timestamp_by_name(const Type &n, const std::string& att_name)
+        std::optional<uint64_t> get_attrib_timestamp_by_name(const Type &n, const std::string& att_name)
             requires(node_or_edge<Type>)
         {
             auto &attrs = n.attrs();
@@ -144,13 +143,12 @@ namespace DSR
             else return value->second.timestamp();
         }
 
+
         template <typename name, typename Type>
         inline std::optional<decltype(name::type)> get_attrib_by_name(const Type &n)
-            requires(node_or_edge<Type>)
+            requires(any_node_or_edge<Type>, is_attr_name<name>)
         {
-            static_assert(is_attr_name<name>::value, "Invalid object type.");
             using name_type =  std::remove_reference_t<std::remove_cv_t<decltype(name::type)>>;
-
 
             auto &attrs = n.attrs();
             auto value = attrs.find(name::attr_name.data());
@@ -159,11 +157,11 @@ namespace DSR
             const auto &av = value->second;
             if constexpr (std::is_same_v< name_type, float>)
                 return av.fl();
-            else if constexpr (std::is_same_v< name_type,  double>)
+            else if constexpr (std::is_same_v< name_type, double>)
                 return av.dob();
-            else if constexpr (std::is_same_v< name_type,  std::reference_wrapper<const std::string>>)
+            else if constexpr (std::is_same_v< name_type, std::reference_wrapper<const std::string>>)
                 return av.str();
-            else if constexpr (std::is_same_v< name_type,  std::int32_t>)
+            else if constexpr (std::is_same_v< name_type, std::int32_t>)
                 return av.dec();
             else if constexpr (std::is_same_v< name_type, std::uint32_t>)
                 return av.uint();
@@ -171,104 +169,71 @@ namespace DSR
                 return av.uint64();
             else if constexpr (std::is_same_v< name_type, bool>)
                 return av.bl();
-            else if constexpr (std::is_same_v< name_type,  std::reference_wrapper<const std::vector<float>>>)
+            else if constexpr (std::is_same_v< name_type, std::reference_wrapper<const std::vector<float>>>)
                 return av.float_vec();
-            else if constexpr (std::is_same_v< name_type,  std::reference_wrapper<const std::vector<uint8_t>>>)
+            else if constexpr (std::is_same_v< name_type, std::reference_wrapper<const std::vector<uint8_t>>>)
                 return av.byte_vec();
-            else if constexpr (std::is_same_v< name_type,  std::reference_wrapper<const std::vector<uint64_t>>>)
+            else if constexpr (std::is_same_v< name_type, std::reference_wrapper<const std::vector<uint64_t>>>)
                 return av.u64_vec();
-            else if constexpr (std::is_same_v< name_type,  std::reference_wrapper<const std::array<float, 2>>>)
+            else if constexpr (std::is_same_v< name_type, std::reference_wrapper<const std::array<float, 2>>>)
                 return av.vec2();
-            else if constexpr (std::is_same_v< name_type,  std::reference_wrapper<const std::array<float, 3>>>)
+            else if constexpr (std::is_same_v< name_type, std::reference_wrapper<const std::array<float, 3>>>)
                 return av.vec3();
-            else if constexpr (std::is_same_v< name_type,  std::reference_wrapper<const std::array<float, 4>>>)
+            else if constexpr (std::is_same_v< name_type, std::reference_wrapper<const std::array<float, 4>>>)
                 return av.vec4();
-            else if constexpr (std::is_same_v< name_type,  std::reference_wrapper<const std::array<float, 6>>>)
+            else if constexpr (std::is_same_v< name_type, std::reference_wrapper<const std::array<float, 6>>>)
                 return av.vec6();
             else {
-                throw std::logic_error("Unreachable");
+                []<bool flag = false>() { static_assert(flag, "Unreachable"); }();
             }
         }
 
+        template <typename name>
+        inline std::optional<std::remove_cvref_t<unwrap_reference_wrapper_t<decltype(name::type)>>> get_attrib_by_name(uint64_t id)
+        requires(is_attr_name<name>)
+        {
+            std::shared_lock<std::shared_mutex> lock(_mutex);
+            std::optional<CRDTNode> n = get_(id);
+            if (n.has_value()) {
+                auto tmp = get_attrib_by_name<name>(n.value());
+                if (tmp.has_value())
+                {
+                    if constexpr(is_reference_wrapper<decltype(name::type)>::value) {
+                        return tmp.value().get();
+                    } else {
+                        return tmp;
+                    }
+                }
+            }
+            return {};
+        }
         /**
          * LOCAL ATTRIBUTES MODIFICATION METHODS (for nodes and edges)
          **/
         template<typename name, typename Type, class Ta>
-        inline void add_or_modify_attrib_local(Type &elem, const Ta &att_value)
-            requires(any_node_or_edge<Type>, allowed_types<Ta>)
+        inline void add_or_modify_attrib_local(Type &elem, Ta && att_value)
+            requires(any_node_or_edge<Type>, allowed_types<Ta>, is_attr_name<name>, valid_type<name, Ta>())
         {
 
-            static_assert(is_attr_name<name>::value, "The type of name is invalid");
-            static_assert(valid_type<name, Ta>(), "Name and att_value are not from the same type");
-
-            constexpr bool result = valid_type<name, Ta>();
-            if constexpr(result) {
-                if constexpr (std::is_same_v<Type, Node> || std::is_same_v<Type, Edge>) {
-                    Attribute at(att_value, get_unix_timestamp(), agent_id);
-                    elem.attrs().insert_or_assign(name::attr_name.data(), at);
-                } else {
-                    CRDTAttribute at;
-                    CRDTValue value;
-                    if constexpr (std::is_same<std::string, Ta>::value ||
-                                  std::is_same<const std::string &, Ta>::value) {
-                        at.type(STRING);
-                        value.str(att_value);
-                    } else if constexpr (std::is_same<std::int32_t, Ta>::value) {
-                        at.type(INT);
-                        value.dec(att_value);
-                    } else if constexpr (std::is_same<float, Ta>::value) {
-                        at.type(FLOAT);
-                        value.fl(att_value);
-                    } else if constexpr (std::is_same<std::vector<float_t>, Ta>::value) {
-                        at.type(FLOAT_VEC);
-                        value.float_vec(att_value);
-                    } else if constexpr (std::is_same<std::vector<uint8_t>, Ta>::value) {
-                        at.type(BYTE_VEC);
-                        value.byte_vec(att_value);
-                    } else if constexpr (std::is_same<bool, Ta>::value) {
-                        at.type(BOOL);
-                        value.bl(att_value);
-                    } else if constexpr (std::is_same<std::uint32_t, Ta>::value) {
-                        at.type(UINT);
-                        value.uint(att_value);
-                    } else if constexpr (std::is_same<std::uint64_t , Ta>::value) {
-                        at.type(UINT64);
-                        value.uint64(att_value);
-                    } else if constexpr (std::is_same<double , Ta>::value) {
-                        at.type(DOUBLE);
-                        value.dob(att_value);
-                    } else if constexpr (std::is_same<std::vector<uint64_t>, Ta>::value) {
-                        at.type(U64_VEC);
-                        value.u64_vec(att_value);
-                    } else if constexpr (std::is_same<std::array<float, 2>, Ta>::value) {
-                        at.type(VEC2);
-                        value.vec2(att_value);
-                    } else if constexpr (std::is_same<std::array<float, 3>, Ta>::value) {
-                        at.type(VEC3);
-                        value.vec2(att_value);
-                    } else if constexpr (std::is_same<std::array<float, 3>, Ta>::value) {
-                        at.type(VEC4);
-                        value.vec2(att_value);
-                    } else if constexpr (std::is_same<std::array<float, 6>, Ta>::value) {
-                        at.type(VEC6);
-                        value.vec2(att_value);
-                    }
-
-                    at.val(std::move(value));
-                    at.timestamp(get_unix_timestamp());
-                    if (elem.attrs().find(name::attr_name.data()) == elem.attrs().end()) {
-                        mvreg<CRDTAttribute> mv;
-                        elem.attrs().insert(make_pair(name::attr_name, mv));
-                    }
-                    elem.attrs()[name::attr_name.data()].write(at);
+            if constexpr (std::is_same_v<Type, Node> || std::is_same_v<Type, Edge>)
+            {
+                Attribute at(std::forward<Ta>(att_value), get_unix_timestamp(), agent_id);
+                elem.attrs().insert_or_assign(name::attr_name.data(), at);
+            } else
+            {
+                CRDTAttribute at;
+                at.value(std::forward<Ta>(att_value));
+                at.timestamp(get_unix_timestamp());
+                if (elem.attrs().find(name::attr_name.data()) == elem.attrs().end()) {
+                    mvreg<CRDTAttribute> mv;
+                    elem.attrs().insert(make_pair(name::attr_name, mv));
                 }
-            }  else {
-                static_assert(result, "Error, wrong type");
+                elem.attrs().at(name::attr_name.data()).write(at);
             }
         }
 
         template<typename Type, class Ta>
-        inline void runtime_checked_add_or_modify_attrib_local(Type &elem, const std::string &att_name, const Ta &att_value)
+        inline void runtime_checked_add_or_modify_attrib_local(Type &elem, const std::string &att_name, Ta &&att_value)
             requires(any_node_or_edge<Type>, allowed_types<Ta>)
         {
 
@@ -278,92 +243,44 @@ namespace DSR
             }
 
             if constexpr (std::is_same_v<Type, Node> || std::is_same_v<Type, Edge>) {
-                Attribute at(att_value, get_unix_timestamp(), agent_id);
+                Attribute at(std::forward<Ta>(att_value), get_unix_timestamp(), agent_id);
                 elem.attrs().insert_or_assign(att_name, at);
             } else {
                 CRDTAttribute at;
-                CRDTValue value;
-                if constexpr (std::is_same<std::string, Ta>::value ||
-                              std::is_same<const std::string &, Ta>::value) {
-                    at.type(STRING);
-                    value.str(att_value);
-                } else if constexpr (std::is_same<std::int32_t, Ta>::value) {
-                    at.type(INT);
-                    value.dec(att_value);
-                } else if constexpr (std::is_same<float, Ta>::value) {
-                    at.type(FLOAT);
-                    value.fl(att_value);
-                } else if constexpr (std::is_same<std::vector<float_t>, Ta>::value) {
-                    at.type(FLOAT_VEC);
-                    value.float_vec(att_value);
-                } else if constexpr (std::is_same<std::vector<uint8_t>, Ta>::value) {
-                    at.type(BYTE_VEC);
-                    value.byte_vec(att_value);
-                } else if constexpr (std::is_same<bool, Ta>::value) {
-                    at.type(BOOL);
-                    value.bl(att_value);
-                } else if constexpr (std::is_same<std::uint32_t, Ta>::value) {
-                    at.type(UINT);
-                    value.uint(att_value);
-                } else if constexpr (std::is_same<std::uint64_t , Ta>::value) {
-                    at.type(UINT64);
-                    value.uint64(att_value);
-                } else if constexpr (std::is_same<double , Ta>::value) {
-                    at.type(DOUBLE);
-                    value.dob(att_value);
-                } else if constexpr (std::is_same<std::vector<uint64_t>, Ta>::value) {
-                    at.type(U64_VEC);
-                    value.u64_vec(att_value);
-                } else if constexpr (std::is_same<std::array<float, 2>, Ta>::value) {
-                    at.type(VEC2);
-                    value.vec2(att_value);
-                } else if constexpr (std::is_same<std::array<float, 3>, Ta>::value) {
-                    at.type(VEC3);
-                    value.vec2(att_value);
-                } else if constexpr (std::is_same<std::array<float, 3>, Ta>::value) {
-                    at.type(VEC4);
-                    value.vec2(att_value);
-                } else if constexpr (std::is_same<std::array<float, 6>, Ta>::value) {
-                    at.type(VEC6);
-                    value.vec2(att_value);
-                }
-
-                at.val(std::move(value));
+                at.value(std::forward<Ta>(att_value));
                 at.timestamp(get_unix_timestamp());
                 if (elem.attrs().find(att_name) == elem.attrs().end()) {
                     mvreg<CRDTAttribute> mv;
                     elem.attrs().insert(make_pair(att_name, mv));
                 }
-                elem.attrs()[att_name].write(at);
+                elem.attrs().at(att_name).write(at);
             }
 
         }
 
 
         template<typename name, typename Type, typename Ta>
-        bool add_attrib_local(Type &elem, const Ta &att_value)
-            requires(any_node_or_edge<Type>, allowed_types<Ta>)
+        bool add_attrib_local(Type &elem, Ta &&att_value)
+            requires(any_node_or_edge<Type>, allowed_types<Ta>, is_attr_name<name>)
         {
-            static_assert(is_attr_name<name>::value, "Name attr is not valid");
             if (elem.attrs().find(name::attr_name.data()) != elem.attrs().end()) return false;
-            add_or_modify_attrib_local<name>(elem, att_value);
+            add_or_modify_attrib_local<name>(elem, std::forward<Ta>(att_value));
             return true;
         };
 
         template<typename Type, typename Ta>
-        bool runtime_checked_add_attrib_local(Type &elem, const std::string& att_name, const Ta &att_value)
+        bool runtime_checked_add_attrib_local(Type &elem, const std::string& att_name, Ta &&att_value)
             requires(any_node_or_edge<Type>, allowed_types<Ta>)
         {
             if (elem.attrs().find(att_name) != elem.attrs().end()) return false;
-            runtime_checked_add_or_modify_attrib_local(elem, att_name, att_value);
+            runtime_checked_add_or_modify_attrib_local(elem, att_name, std::forward<Ta>(att_value));
             return true;
         };
 
         template<typename name, typename Type>
         bool add_attrib_local(Type &elem, Attribute &attr)
-            requires(any_node_or_edge<Type>)
+            requires(any_node_or_edge<Type>, is_attr_name<name>)
         {
-            static_assert(is_attr_name<name>::value, "Name attr is not valid");
             if (elem.attrs().find(name::attr_name.data()) != elem.attrs().end()) return false;
             attr.timestamp(get_unix_timestamp());
             elem.attrs()[name::attr_name] = attr;
@@ -374,6 +291,7 @@ namespace DSR
         bool runtime_checked_add_attrib_local(Type &elem, const std::string& att_name,  Attribute &attr)
             requires(any_node_or_edge<Type>)
         {
+            //TODO: Check Attribute type.
             if (elem.attrs().find(att_name) != elem.attrs().end()) return false;
             attr.timestamp(get_unix_timestamp());
             elem.attrs()[att_name] = attr;
@@ -381,29 +299,27 @@ namespace DSR
         };
 
         template<typename name, typename Type, typename Ta>
-        bool modify_attrib_local(Type &elem, const Ta &att_value)
-            requires(any_node_or_edge<Type>, allowed_types<Ta>)
+        bool modify_attrib_local(Type &elem, Ta &&att_value)
+            requires(any_node_or_edge<Type>, allowed_types<Ta>, is_attr_name<name>)
         {
-            static_assert(is_attr_name<name>::value, "Name attr is not valid");
             if (elem.attrs().find(name::attr_name.data()) == elem.attrs().end()) return false;
-            add_or_modify_attrib_local<name>(elem, att_value);
+            add_or_modify_attrib_local<name>(elem, std::forward<Ta>(att_value));
             return true;
         };
 
         template<typename Type, typename Ta>
-        bool runtime_checked_modify_attrib_local(Type &elem,  const std::string& att_name, const Ta &att_value)
+        bool runtime_checked_modify_attrib_local(Type &elem,  const std::string& att_name, Ta &&att_value)
             requires(any_node_or_edge<Type>, allowed_types<Ta>)
         {
             if (elem.attrs().find(att_name) == elem.attrs().end()) return false;
-            runtime_checked_add_or_modify_attrib_local(elem, att_name, att_value);
+            runtime_checked_add_or_modify_attrib_local(elem, att_name, std::forward<Ta>(att_value));
             return true;
         };
 
         template<typename name, typename Type>
         bool remove_attrib_local(Type &elem)
-            requires(any_node_or_edge<Type>)
+            requires(any_node_or_edge<Type>, is_attr_name<name>)
         {
-            static_assert(is_attr_name<name>::value, "Name attr is not valid");
             if (elem.attrs().find(name::attr_name.data()) == elem.attrs().end()) return false;
             elem.attrs().erase(name::attr_name);
             return true;
@@ -418,99 +334,70 @@ namespace DSR
             return true;
         }
 
-
-
-        // ******************************************************************
-        //  DISTRIBUTED ATTRIBUTE MODIFICATION METHODS (for nodes and edges)
-        // ******************************************************************
-
-        template<typename name, typename Ta, typename Va>
-        void insert_or_assign_attrib(Ta &elem,  const Va &att_value)
-            requires(node_or_edge<Ta>, allowed_types<Va>)
+    private:
+        template <typename name, typename Type>
+        inline auto get_crdt_attrib_by_name(const Type &n)
+            requires(crdt_node_or_edge<Type>, is_attr_name<name>)
         {
-            static_assert(is_attr_name<name>::value, "Name attr is not valid");
-            add_or_modify_attrib_local<name>(elem, att_value);
+            using name_type = typename std::remove_reference_t<std::remove_cv_t<decltype(name::type)>>;
 
-            reinsert_element(elem, "insert_or_assign_attrib()");
+            auto &attrs = n.attrs();
+            auto value = attrs.find(name::attr_name.data());
+
+            if constexpr(is_reference_wrapper<name_type>::value) {
+                using ret_type = std::optional<decltype(name_type::type)>;
+                if (value == attrs.end()) return ret_type();
+                auto av = *value->second.read().begin();
+
+                if constexpr (std::is_same_v<name_type, std::reference_wrapper<const std::string>> )
+                    return ret_type(av.str());
+                else if constexpr (std::is_same_v<name_type, std::reference_wrapper<const std::vector<float>>>)
+                    return ret_type(av.float_vec());
+                else if constexpr (std::is_same_v<name_type, std::reference_wrapper<const std::vector<uint8_t>>>)
+                    return ret_type(av.byte_vec());
+                else if constexpr (std::is_same_v< name_type, std::reference_wrapper<const std::vector<uint64_t>>>)
+                    return ret_type(av.u64_vec());
+                else if constexpr (std::is_same_v< name_type, std::reference_wrapper<const std::array<float, 2>>>)
+                    return ret_type(av.vec2());
+                else if constexpr (std::is_same_v< name_type, std::reference_wrapper<const std::array<float, 3>>>)
+                    return ret_type(av.vec3());
+                else if constexpr (std::is_same_v< name_type, std::reference_wrapper<const std::array<float, 4>>>)
+                    return ret_type(av.vec4());
+                else if constexpr (std::is_same_v< name_type, std::reference_wrapper<const std::array<float, 6>>>)
+                    return ret_type(av.vec6());
+                else
+                    []<bool flag = false>() { static_assert(flag, "Unreachable"); }();
+            } else {
+                using ret_type = std::optional<name_type>;
+                if (value == attrs.end()) return ret_type();
+                auto av = value->second.read_reg();
+
+                if constexpr (std::is_same_v< name_type, float>)
+                    return ret_type(av.fl());
+                else if constexpr (std::is_same_v< name_type, std::int32_t>)
+                    return ret_type(av.dec());
+                else if constexpr (std::is_same_v< name_type, std::uint32_t>)
+                    return ret_type(av.uint());
+                else if constexpr (std::is_same_v< name_type, std::uint64_t>)
+                    return ret_type(av.uint64());
+                else if constexpr (std::is_same_v< name_type, bool>)
+                    return ret_type(av.bl());
+                else if constexpr (std::is_same_v< name_type, double>)
+                    return ret_type(av.dob());
+                else
+                    []<bool flag = false>() { static_assert(flag, "Unreachable"); }();
+            }
 
         }
-        template<typename Ta, typename Va>
-        void runtime_checked_insert_or_assign_attrib_by_name(Ta &elem,  const std::string& att_name, const Va &att_value)
-            requires(node_or_edge<Ta>, allowed_types<Va>)
-        {
-            runtime_checked_add_or_modify_attrib_local(elem, att_name, att_value);
-            reinsert_element(elem, "runtime_checked_insert_or_assign_attrib()");
-        }
 
-        template<typename name,typename Type,typename Va>
-        bool insert_attrib_by_name(Type &elem,  const Va &new_val)
-            requires(node_or_edge<Type>, allowed_types<Va>)
-        {
-            static_assert(is_attr_name<name>::value, "Name attr is not valid");
-
-            bool res = add_attrib_local<name>(elem, new_val);
-            if (!res) return false;
-            return reinsert_element(elem, "insert_attrib_by_name()");
-        }
-
-        template<typename Type, typename Va>
-        bool runtime_checked_insert_attrib_by_name(Type &elem, const std::string& att_name,  const Va &new_val)
-            requires(node_or_edge<Type>, allowed_types<Va>)
-        {
-            bool res = runtime_checked_add_attrib_local(elem,att_name, new_val);
-            if (!res) return false;
-            return reinsert_element(elem, "unsafe_insert_attrib_by_name()");
-        }
-
-        template<typename name, typename Type, typename Va>
-        bool update_attrib_by_name(Type &elem,  const Va &new_val)
-            requires(node_or_edge<Type>, allowed_types<Va>)
-        {
-            static_assert(is_attr_name<name>::value, "Name attr is not valid");
-
-            bool res = modify_attrib_local<name>(elem, new_val);
-            if (!res) return false;
-
-            return reinsert_element(elem, "update_attrib()");
-        }
-
-        template<typename Type, typename Va>
-        bool runtime_checked_update_attrib_by_name(Type &elem, const std::string& att_name, const Va &new_val)
-            requires(node_or_edge<Type>, allowed_types<Va>)
-        {
-            bool res = runtime_checked_modify_attrib_local(elem, att_name, new_val);
-            if (!res) return false;
-
-            return reinsert_element(elem, "runtime_checked_update_attrib_by_name()");
-        }
-
-        template<typename name, typename Type>
-        bool remove_attrib_by_name(Type &elem)
-            requires(node_or_edge<Type>)
-        {
-            static_assert(is_attr_name<name>::value, "Name attr is not valid");
-            if (elem.attrs().find(name::attr_name.data()) == elem.attrs().end()) return false;
-            elem.attrs().erase(name::attr_name.data());
-
-            return reinsert_element(elem, "remove_attrib_by_name()");
-        }
-
-        template<typename Type>
-        bool remove_attrib_by_name(Type &elem, const std::string& att_name)
-            requires(node_or_edge<Type>)
-        {
-            if (elem.attrs().find(att_name) == elem.attrs().end()) return false;
-            elem.attrs().erase(att_name);
-
-            return reinsert_element(elem, "remove_attrib_by_name()");
-        }
+    public:
 
         // Mixed
         inline uint64_t get_agent_id() const { return agent_id; };
-
         inline std::string get_agent_name() const { return agent_name; };
 
-        void reset() {
+        void reset()
+        {
             dsrparticipant.remove_participant_and_entities();
 
             nodes.clear();
@@ -529,8 +416,9 @@ namespace DSR
         ///  Attribute filters
         //////////////////////////////////////////////////////
         template<typename ... Att>
-        constexpr void set_ignored_attributes() {
-            static_assert((is_attr_name<Att>::value && ...));
+        constexpr void set_ignored_attributes()
+        {
+            static_assert((is_attr_name<Att> && ...));
             (ignored_attributes.insert(Att::attr_name), ...);
         }
 
@@ -542,10 +430,15 @@ namespace DSR
         void print_node(const Node &node)                       { utils->print_node(node); };
         void print_node(uint64_t id)                            { utils->print_node(id); };
         void print_RT(uint64_t root)                      const { utils->print_RT(root); };
-        void write_to_json_file(const std::string &file, const std::vector<std::string> &skip_node_content = {})  const {
+
+        void write_to_json_file(const std::string &file, const std::vector<std::string> &skip_node_content = {})  const
+        {
             utils->write_to_json_file(file, skip_node_content); };
-        void read_from_json_file(const std::string &file) {
-            utils->read_from_json_file(file, [&] (const Node& node) -> std::optional<uint64_t> {
+
+        void read_from_json_file(const std::string &file)
+        {
+            utils->read_from_json_file(file, [&] (const Node& node) -> std::optional<uint64_t>
+            {
                 bool r = false;
                 {
                     std::unique_lock<std::shared_mutex> lock(_mutex);
@@ -567,6 +460,7 @@ namespace DSR
         std::unique_ptr<DSRGraph> G_copy();
         bool is_copy() const;
 
+
         //////////////////////////////////////////////////
         ///// Agents info
         /////////////////////////////////////////////////
@@ -580,15 +474,20 @@ namespace DSR
             }
             return ret_vec;
         }
+
     private:
 
-        DSRGraph(const DSRGraph& G);
+        DSRGraph(const DSRGraph& G); //Private constructor for DSRCopy
+
         Nodes nodes;
         mutable std::shared_mutex _mutex;
+        mutable std::shared_mutex _mutex_cache_maps;
+        mutable std::mutex mtx_entity_creation;
+
         const uint32_t agent_id;
         const std::string agent_name;
-        std::unique_ptr<Utilities> utils;
         const bool copy;
+        std::unique_ptr<Utilities> utils;
         std::unordered_set<std::string_view> ignored_attributes;
         ThreadPool tp;
         bool same_host;
@@ -598,7 +497,6 @@ namespace DSR
         // Cache maps
         ///////////////////////////////////////////////////////////////////////////
 
-        mutable std::shared_mutex _mutex_cache_maps;
         std::unordered_set<uint64_t> deleted;     // deleted nodes, used to avoid insertion after remove.
         std::unordered_map<std::string, uint64_t> name_map;     // mapping between name and id of nodes.
         std::unordered_map<uint64_t, std::string> id_map;       // mapping between id and name of nodes.
@@ -616,88 +514,18 @@ namespace DSR
         //////////////////////////////////////////////////////////////////////////
         // Non-blocking graph operations
         //////////////////////////////////////////////////////////////////////////
-        std::optional<CRDTNode> get(uint64_t id);
-        bool in(uint64_t id) const;
         std::optional<CRDTNode> get_(uint64_t id);
         std::optional<CRDTEdge> get_edge_(uint64_t from, uint64_t to, const std::string &key);
-        std::tuple<bool, std::optional<IDL::MvregNode>> insert_node_(const CRDTNode &node);
-        std::tuple<bool, std::optional<std::vector<IDL::MvregNodeAttr>>> update_node_(const CRDTNode &node);
+        std::tuple<bool, std::optional<IDL::MvregNode>> insert_node_(CRDTNode &&node);
+        std::tuple<bool, std::optional<std::vector<IDL::MvregNodeAttr>>> update_node_(CRDTNode &&node);
         std::tuple<bool, std::vector<std::tuple<uint64_t, uint64_t, std::string>>, std::optional<IDL::MvregNode>, std::vector<IDL::MvregEdge>> delete_node_(uint64_t id);
         std::optional<IDL::MvregEdge> delete_edge_(uint64_t from, uint64_t t, const std::string &key);
-        std::tuple<bool, std::optional<IDL::MvregEdge>, std::optional<std::vector<IDL::MvregEdgeAttr>>> insert_or_assign_edge_(const CRDTEdge &attrs, uint64_t from, uint64_t to);
+        std::tuple<bool, std::optional<IDL::MvregEdge>, std::optional<std::vector<IDL::MvregEdgeAttr>>> insert_or_assign_edge_(CRDTEdge &&attrs, uint64_t from, uint64_t to);
 
         //////////////////////////////////////////////////////////////////////////
         // Other methods
         //////////////////////////////////////////////////////////////////////////
         std::map<uint64_t , IDL::MvregNode> Map();
-
-
-        template <typename name, typename Type>
-        inline auto get_crdt_attrib_by_name(const Type &n)
-            requires(crdt_node_or_edge<Type>)
-        {
-            static_assert(is_attr_name<name>::value, "Invalid object type.");
-            using name_type = typename std::remove_reference_t<std::remove_cv_t<decltype(name::type)>>;
-
-            auto &attrs = n.attrs();
-            auto value = attrs.find(name::attr_name.data());
-
-            if constexpr(is_reference_wrapper<name_type>::value) {
-                using ret_type = std::optional<decltype(name_type::type)>;
-                if (value == attrs.end()) return ret_type();
-                auto av = *value->second.read().begin();
-
-                if constexpr (std::is_same_v<name_type, std::reference_wrapper<const std::string>> )
-                    return ret_type(av.val().str());
-                else if constexpr (std::is_same_v<name_type, std::reference_wrapper<const std::vector<float>>>)
-                    return ret_type(av.val().float_vec());
-                else if constexpr (std::is_same_v<name_type, std::reference_wrapper<const std::vector<uint8_t>>>)
-                    return ret_type(av.val().byte_vec());
-                else {
-                    throw std::logic_error("Unreachable");
-                }
-            } else {
-                using ret_type = std::optional<name_type>;
-                if (value == attrs.end()) return ret_type();
-                auto av = value->second.read_reg();
-
-                if constexpr (std::is_same_v< name_type, float>)
-                    return ret_type(av.val().fl());
-                else if constexpr (std::is_same_v< name_type,  std::int32_t>)
-                    return ret_type(av.val().dec());
-                else if constexpr (std::is_same_v< name_type, std::uint32_t>)
-                    return ret_type(av.val().uint());
-                else if constexpr (std::is_same_v< name_type, std::uint64_t>)
-                    return ret_type(av.val().uint64());
-                else if constexpr (std::is_same_v< name_type, bool>)
-                    return ret_type(av.val().bl());
-                else {
-                    throw std::logic_error("Unreachable");
-                }
-            }
-
-        }
-
-        template<typename Type>
-        inline constexpr bool reinsert_element(Type elem, const std::string &s) {
-            // insert node
-            if constexpr (std::is_same<Node, Type>::value) {
-                if (update_node(elem))
-                    return true;
-                else
-                    throw std::runtime_error(
-                            "Could not insert Node " + std::to_string(elem.id()) + " in G in " + s);
-            }
-            // insert edge
-            else if constexpr (std::is_same<Edge, Type>::value) {
-                if (insert_or_assign_edge(elem))
-                    return true;
-                else
-                    throw std::runtime_error("Could not insert edge " + std::to_string(elem.from()) +
-                                             " in G " + s);
-            } else
-                throw std::logic_error("Unreachable");
-        }
 
         //////////////////////////////////////////////////////////////////////////
         // CRDT join operations
@@ -752,7 +580,6 @@ namespace DSR
         void edge_attrs_subscription_thread(bool showReceived);
         void fullgraph_server_thread();
         std::pair<bool, bool> fullgraph_request_thread();
-        mutable std::mutex mtx_entity_creation;
 
 
         // RTSP participant
@@ -787,16 +614,14 @@ namespace DSR
         NewMessageFunctor dsrpub_request_answer_call;
 
     signals:
-        void update_node_signal(uint64_t, const std::string &type=""/*, uint64_t=0*/); // //TODO: REMOVE TYPE ARGUMENT.
-
-        void update_attrs_signal(uint64_t id, const std::map<std::string, Attribute> &attribs/*, uint64_t=0*/); //TODO: REMOVE THIS.
+        void update_node_signal(uint64_t, const std::string &type/*, uint64_t=0*/);
         void update_node_attr_signal(uint64_t id ,const std::vector<std::string>& att_names/*, uint64_t=0*/);
 
-        void update_edge_signal(uint64_t from, uint64_t to,  const std::string &type/*, uint64_t=0*/);                   // Signal to show edge attribs.
-        void update_edge_attr_signal(uint64_t from, uint64_t to, const std::vector<std::string>& att_name/*, uint64_t=0*/); //TODO: ADD EDGE_TYPE PARAM.
+        void update_edge_signal(uint64_t from, uint64_t to, const std::string &type/*, uint64_t=0*/);
+        void update_edge_attr_signal(uint64_t from, uint64_t to, const std::string &type, const std::vector<std::string>& att_name/*, uint64_t=0*/);
 
-        void del_edge_signal(uint64_t from, uint64_t to, const std::string &edge_tag/*, uint64_t=0*/); // Signal to del edge.
-        void del_node_signal(uint64_t from/*, uint64_t=0*/) ;                                                     // Signal to del node.
+        void del_edge_signal(uint64_t from, uint64_t to, const std::string &edge_tag/*, uint64_t=0*/);
+        void del_node_signal(uint64_t id/*, uint64_t=0*/) ;
 
     };
 } // namespace CRDT

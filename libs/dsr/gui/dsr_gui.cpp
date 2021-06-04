@@ -27,9 +27,9 @@
 #include <dsr/gui/viewers/graph_viewer/graph_node.h>
 #include <dsr/gui/viewers/graph_viewer/graph_edge.h>
 #include <unistd.h>
-#include "stdlib.h"
-#include "stdio.h"
-#include "string.h"
+#include <cstdlib>
+#include <cstdio>
+#include <cstring>
 #include "sys/times.h"
 #include "sys/vtimes.h"
 
@@ -69,7 +69,7 @@ int get_memory_usage()
     int result = -1;
     char line[128];
 
-    while (fgets(line, 128, file) != NULL){
+    while (fgets(line, 128, file) != nullptr){
         if (strncmp(line, "VmRSS:", 6) == 0){
             result = parseLine(line);
             break;
@@ -304,7 +304,7 @@ void DSRViewer::initialize_views(int options, view central){
 
 //	Tabification of current docks
 	QDockWidget * previous = nullptr;
-	for(auto dock: docks) {
+	for(auto &dock: docks) {
 		if (previous)
 			window->tabifyDockWidget(previous, dock.second);
 		previous = dock.second;
@@ -350,7 +350,7 @@ QWidget* DSRViewer::get_widget(view type)
 	return nullptr;
 }
 
-QWidget* DSRViewer::get_widget(QString name)
+QWidget* DSRViewer::get_widget(const QString& name)
 {
 	if(widgets.count(name)!=0)
 		return widgets[name]->widget;
@@ -384,7 +384,7 @@ QWidget* DSRViewer::create_widget(view type){
 	return widget_view;
 }
 
-void DSRViewer::create_dock_and_menu(QString name, QWidget* view){
+void DSRViewer::create_dock_and_menu(const QString& name, QWidget* view){
 //	TODO: Check if name exists in docks
 	QDockWidget* dock_widget;
 	if(this->docks.count(name)) {
@@ -410,7 +410,7 @@ void DSRViewer::create_dock_and_menu(QString name, QWidget* view){
 	dock_widget->raise();
 }
 
-void DSRViewer::add_custom_widget_to_dock(QString name, QWidget* custom_view){
+void DSRViewer::add_custom_widget_to_dock(const QString& name, QWidget* custom_view){
 	WidgetContainer * widget_c = new WidgetContainer();
 	widget_c->name = name;
 	widget_c->type = view::none;
@@ -427,7 +427,7 @@ void DSRViewer::add_custom_widget_to_dock(QString name, QWidget* custom_view){
 		previous = dock;
 	}
 	docks[name]->raise();
-    window->setWindowState(window->windowState() & ~Qt::WindowMinimized | Qt::WindowActive);
+    window->setWindowState((window->windowState() & ~Qt::WindowMinimized) | Qt::WindowActive);
 }
 
 

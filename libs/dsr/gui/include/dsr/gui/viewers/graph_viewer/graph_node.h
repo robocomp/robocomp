@@ -71,7 +71,7 @@ public:
     std::uint64_t id_in_graph;
     QList<GraphEdge *> edgeList;
 
-    explicit GraphNode(std::shared_ptr<DSR::GraphViewer> graph_viewer_);
+    explicit GraphNode(const std::shared_ptr<DSR::GraphViewer>& graph_viewer_);
 
     void addEdge(GraphEdge *edge);
     void deleteEdge(GraphEdge *edge);

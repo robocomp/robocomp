@@ -172,11 +172,11 @@ void RT_API::insert_or_assign_edge_RT(Node &n, uint64_t to, const std::vector<fl
     std::optional<CRDTNode> to_n;
     {
         std::unique_lock<std::shared_mutex> lock(G->_mutex);
-        if (G->in(to))
+        if (G->nodes.contains(to))
         {
             CRDTEdge e; e.to(to);  e.from(n.id()); e.type("RT"); e.agent_id(G->agent_id);
-            CRDTAttribute tr; tr.type(3); tr.val(CRDTValue(trans)); tr.timestamp(get_unix_timestamp());
-            CRDTAttribute rot; rot.type(3); rot.val(CRDTValue(rot_euler)); rot.timestamp(get_unix_timestamp());
+            CRDTAttribute tr(trans, get_unix_timestamp(), 0);
+            CRDTAttribute rot(rot_euler, get_unix_timestamp(), 0);
             auto [it, new_el] = e.attrs().emplace("rt_rotation_euler_xyz", mvreg<CRDTAttribute> ());
             it->second.write(std::move(rot));
             auto [it2, new_el2] = e.attrs().emplace("rt_translation", mvreg<CRDTAttribute> ());
@@ -211,15 +211,15 @@ void RT_API::insert_or_assign_edge_RT(Node &n, uint64_t to, const std::vector<fl
             if (n.fano().find({to, "RT"}) == n.fano().end())
             {
                 //Create -> from: IDL::MvregEdge, to: vector<IDL::MvregNodeAttr>
-                std::tie(r1, node1_insert, std::ignore) = G->insert_or_assign_edge_(e, n.id(), to);
-                if (!no_send) std::tie(r2, node2) = G->update_node_(to_n.value());
+                std::tie(r1, node1_insert, std::ignore) = G->insert_or_assign_edge_(std::move(e), n.id(), to);
+                if (!no_send) std::tie(r2, node2) = G->update_node_(std::move(to_n.value()));
 
             }
             else
             {
                 //Update -> from: IDL::MvregEdgeAttr, to: vector<IDL::MvregNodeAttr>
-                std::tie(r1, std::ignore, node1_update) = G->insert_or_assign_edge_(e, n.id(), to);
-                if (!no_send) std::tie(r2, node2) = G->update_node_(to_n.value());
+                std::tie(r1, std::ignore, node1_update) = G->insert_or_assign_edge_(std::move(e), n.id(), to);
+                if (!no_send) std::tie(r2, node2) = G->update_node_(std::move(to_n.value()));
 
             }
             if (!r1)
@@ -250,7 +250,7 @@ void RT_API::insert_or_assign_edge_RT(Node &n, uint64_t to, const std::vector<fl
 
         if (!no_send and node2.has_value()) G->dsrpub_node_attrs.write(&node2.value());
 
-        emit G->update_edge_attr_signal(n.id(), to,{"rt_rotation_euler_xyz", "rt_translation"});
+        emit G->update_edge_attr_signal(n.id(), to, "RT" ,{"rt_rotation_euler_xyz", "rt_translation"});
         emit G->update_edge_signal(n.id(), to, "RT");
         if (!no_send)
         {
@@ -272,11 +272,11 @@ void RT_API::insert_or_assign_edge_RT(Node &n, uint64_t to, std::vector<float> &
     std::optional<CRDTNode> to_n;
     {
         std::unique_lock<std::shared_mutex> lock(G->_mutex);
-        if (G->in(to))
+        if (G->nodes.contains(to))
         {
             CRDTEdge e; e.to(to);  e.from(n.id()); e.type("RT"); e.agent_id(G->agent_id);
-            CRDTAttribute tr; tr.type(3); tr.val(CRDTValue(std::move(trans))); tr.timestamp(get_unix_timestamp());
-            CRDTAttribute rot; rot.type(3); rot.val(CRDTValue(std::move(rot_euler))); rot.timestamp(get_unix_timestamp());
+            CRDTAttribute tr;  tr.value(std::move(trans)); tr.timestamp(get_unix_timestamp());
+            CRDTAttribute rot; rot.value(std::move(rot_euler)); rot.timestamp(get_unix_timestamp());
             auto [it, new_el] = e.attrs().emplace("rt_rotation_euler_xyz", mvreg<CRDTAttribute> ());
             it->second.write(std::move(rot));
             auto [it2, new_el2] = e.attrs().emplace("rt_translation", mvreg<CRDTAttribute> ());
@@ -312,15 +312,15 @@ void RT_API::insert_or_assign_edge_RT(Node &n, uint64_t to, std::vector<float> &
             if (n.fano().find({to, "RT"}) == n.fano().end())
             {
                 //Create -> from: IDL::MvregEdge, to: vector<IDL::MvregNodeAttr>
-                std::tie(r1, node1_insert, std::ignore) = G->insert_or_assign_edge_(e, n.id(), to);
-                if (!no_send) std::tie(r2, node2) = G->update_node_(to_n.value());
+                std::tie(r1, node1_insert, std::ignore) = G->insert_or_assign_edge_(std::move(e), n.id(), to);
+                if (!no_send) std::tie(r2, node2) = G->update_node_(std::move(to_n.value()));
 
             }
             else
             {
                 //Update -> from: IDL::MvregEdgeAttr, to: vector<IDL::MvregNodeAttr>
-                std::tie(r1, std::ignore, node1_update) = G->insert_or_assign_edge_(e, n.id(), to);
-                if (!no_send) std::tie(r2, node2) = G->update_node_(to_n.value());
+                std::tie(r1, std::ignore, node1_update) = G->insert_or_assign_edge_(std::move(e), n.id(), to);
+                if (!no_send) std::tie(r2, node2) = G->update_node_(std::move(to_n.value()));
 
             }
             if (!r1)
@@ -350,7 +350,7 @@ void RT_API::insert_or_assign_edge_RT(Node &n, uint64_t to, std::vector<float> &
 
         if (!no_send and node2.has_value()) G->dsrpub_node_attrs.write(&node2.value());
 
-        emit G->update_edge_attr_signal(n.id(), to,{"rt_rotation_euler_xyz", "rt_translation"});
+        emit G->update_edge_attr_signal(n.id(), to, "RT",{"rt_rotation_euler_xyz", "rt_translation"});
         emit G->update_edge_signal(n.id(), to, "RT");
         if (!no_send)
         {

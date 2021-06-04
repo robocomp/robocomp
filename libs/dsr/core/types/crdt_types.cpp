@@ -8,483 +8,36 @@
 
 namespace DSR {
 
-    std::size_t CRDTValue::selected() const
-    {
-        return val.index();
-    }
-
-    std::string &CRDTValue::str() 
-    {
-        if (auto pval = std::get_if<std::string>(&val)) {
-            return *pval;
-        }
-        throw std::runtime_error(
-                ("STRING is not selected, selected is " + std::string(TYPENAMES_UNION[val.index()])).data());
-
-    }
-
-    const std::string &CRDTValue::str() const 
-    {
-        if (auto pval = std::get_if<std::string>(&val)) {
-            return *pval;
-        }
-        throw std::runtime_error(
-                ("STRING is not selected, selected is " + std::string(TYPENAMES_UNION[val.index()])).data());
-
-    }
-
-    void CRDTValue::str(const std::string &_str) 
-    {
-        val = _str;
-    }
-
-    void CRDTValue::str(std::string &&_str) 
-    {
-        val = std::move(_str);
-    }
-
-    void CRDTValue::dec(int32_t _dec) 
-    {
-        val = _dec;
-    }
-
-    int32_t CRDTValue::dec() const 
-    {
-        if (auto pval = std::get_if<int32_t>(&val)) {
-            return *pval;
-        }
-        throw std::runtime_error(
-                ("INT is not selected, selected is " + std::string(TYPENAMES_UNION[val.index()])).data());
-
-    }
-
-    void CRDTValue::uint(uint32_t _uint) 
-    {
-        val = _uint;
-    }
-
-    uint32_t CRDTValue::uint() const 
-    {
-        if (auto pval = std::get_if<uint32_t>(&val)) {
-            return *pval;
-        }
-        throw std::runtime_error(
-                ("UINT is not selected, selected is " + std::string(TYPENAMES_UNION[val.index()])).data());
-
-    }
-
-    void CRDTValue::uint64(uint64_t _uint64)
-    {
-        val = _uint64;
-    }
-
-    uint64_t CRDTValue::uint64() const
-    {
-        if (auto pval = std::get_if<uint64_t>(&val)) {
-            return *pval;
-        }
-        throw std::runtime_error(
-                ("UINT64 is not selected, selected is " + std::string(TYPENAMES_UNION[val.index()])).data());
-
-    }
-    
-    void CRDTValue::fl(float _fl) 
-    {
-        val = _fl;
-    }
-
-    float CRDTValue::fl() const 
-    {
-        if (auto pval = std::get_if<float>(&val)) {
-            return *pval;
-        }
-
-        throw std::runtime_error(
-                ("FLOAT is not selected, selected is " + std::string(TYPENAMES_UNION[val.index()])).data());
-    }
-
-    void CRDTValue::dob(double _dob)
-    {
-        val = _dob;
-    }
-
-    double CRDTValue::dob() const
-    {
-        if (auto pval = std::get_if<double>(&val)) {
-            return *pval;
-        }
-
-        throw std::runtime_error(
-                ("DOUBLE is not selected, selected is " + std::string(TYPENAMES_UNION[val.index()])).data());
-    }
-
-    void CRDTValue::float_vec(const std::vector<float> &_float_vec) 
-    {
-        val = _float_vec;
-    }
-
-    void CRDTValue::float_vec(std::vector<float> &&_float_vec) 
-    {
-        val = std::move(_float_vec);
-    }
-
-    const std::vector<float> &CRDTValue::float_vec() const 
-    {
-        if (auto pval = std::get_if<std::vector<float>>(&val)) {
-            return *pval;
-        }
-        throw std::runtime_error(
-                ("VECTOR_FLOAT is not selected, selected is " + std::string(TYPENAMES_UNION[val.index()])).data());
-    }
-
-    std::vector<float> &CRDTValue::float_vec() 
+    CRDTEdge::CRDTEdge (IDL::IDLEdge &&x) noexcept
     {
 
-        if (auto pval = std::get_if<std::vector<float>>(&val)) {
-            return *pval;
-        }
-        throw std::runtime_error(
-                ("VECTOR_FLOAT is not selected, selected is " + std::string(TYPENAMES_UNION[val.index()])).data());
-    }
-
-    void CRDTValue::bl(bool _bl) 
-    {
-        val = _bl;
-    }
-
-    bool CRDTValue::bl() const 
-    {
-
-        if (auto pval = std::get_if<bool>(&val)) {
-            return *pval;
-        }
-        throw std::runtime_error(
-                ("BOOL is not selected, selected is " + std::string(TYPENAMES_UNION[val.index()])).data());
-    }
-
-    void CRDTValue::byte_vec(const std::vector<uint8_t> &_float_vec) 
-    {
-        val = _float_vec;
-    }
-
-    void CRDTValue::byte_vec(std::vector<uint8_t> &&_float_vec) 
-    {
-        val = std::move(_float_vec);
-    }
-
-    const std::vector<uint8_t> &CRDTValue::byte_vec() const 
-    {
-        if (auto pval = std::get_if<std::vector<uint8_t>>(&val)) {
-            return *pval;
-        }
-        throw std::runtime_error(
-                ("VECTOR_BYTE is not selected, selected is " + std::string(TYPENAMES_UNION[val.index()])).data());
-    }
-
-    std::vector<uint8_t> &CRDTValue::byte_vec() 
-    {
-
-        if (auto pval = std::get_if<std::vector<uint8_t >>(&val)) {
-            return *pval;
-        }
-        throw std::runtime_error(
-                ("VECTOR_BYTE is not selected, selected is " + std::string(TYPENAMES_UNION[val.index()])).data());
-    }
-
-    void CRDTValue::u64_vec(const std::vector<uint64_t> &_uint64_vec)
-    {
-        val = _uint64_vec;
-    }
-
-    void CRDTValue::u64_vec(std::vector<uint64_t> &&_uint64_vec)
-    {
-        val = std::move(_uint64_vec);
-    }
-
-    [[nodiscard]] const std::vector<uint64_t> &CRDTValue::u64_vec() const
-    {
-        if (auto pval = std::get_if<std::vector<uint64_t >>(&val)) {
-            return *pval;
-        }
-        throw std::runtime_error(
-                ("U64_VEC is not selected, selected is " + std::string(TYPENAMES_UNION[val.index()])).data());
-
-    }
-
-    std::vector<uint64_t> &CRDTValue::u64_vec()
-    {
-        if (auto pval = std::get_if<std::vector<uint64_t >>(&val)) {
-            return *pval;
-        }
-        throw std::runtime_error(
-                ("U64_VEC is not selected, selected is " + std::string(TYPENAMES_UNION[val.index()])).data());
-    }
-
-
-
-    void CRDTValue::vec2(const std::array<float, 2> &_vec_float2)
-    {
-        val = _vec_float2;
-    }
-
-    void CRDTValue::vec2(std::array<float, 2> &&_vec_float2)
-    {
-        val = std::move(_vec_float2);
-    }
-
-    [[nodiscard]] const std::array<float, 2> &CRDTValue::vec2() const
-    {
-        if (auto pval = std::get_if<std::array<float, 2 >>(&val)) {
-            return *pval;
-        }
-        throw std::runtime_error(
-                ("VEC2 is not selected, selected is " + std::string(TYPENAMES_UNION[val.index()])).data());
-
-    }
-
-    std::array<float, 2> &CRDTValue::vec2()
-    {
-        if (auto pval = std::get_if<std::array<float, 2 >>(&val)) {
-            return *pval;
-        }
-        throw std::runtime_error(
-                ("VEC2 is not selected, selected is " + std::string(TYPENAMES_UNION[val.index()])).data());
-
-    }
-
-
-
-    void CRDTValue::vec3(const std::array<float, 3> &_vec_float3)
-    {
-        val = _vec_float3;
-    }
-
-    void CRDTValue::vec3(std::array<float, 3> &&_vec_float3)
-    {
-        val = std::move(_vec_float3);
-    }
-
-    [[nodiscard]] const std::array<float, 3> &CRDTValue::vec3() const
-    {
-        if (auto pval = std::get_if<std::array<float, 3 >>(&val)) {
-            return *pval;
-        }
-        throw std::runtime_error(
-                ("VEC3 is not selected, selected is " + std::string(TYPENAMES_UNION[val.index()])).data());
-
-    }
-
-    std::array<float, 3> &CRDTValue::vec3()
-    {
-        if (auto pval = std::get_if<std::array<float, 3 >>(&val)) {
-            return *pval;
-        }
-        throw std::runtime_error(
-                ("VEC3 is not selected, selected is " + std::string(TYPENAMES_UNION[val.index()])).data());
-
-
-    }
-
-
-    void CRDTValue::vec4(const std::array<float, 4> &_vec_float4)
-    {
-        val = _vec_float4;
-    }
-
-    void CRDTValue::vec4(std::array<float, 4> &&_vec_float4)
-    {
-        val = std::move(_vec_float4);
-    }
-
-    [[nodiscard]] const std::array<float, 4> &CRDTValue::vec4() const
-    {
-        if (auto pval = std::get_if<std::array<float, 4 >>(&val)) {
-            return *pval;
-        }
-        throw std::runtime_error(
-                ("VEC4 is not selected, selected is " + std::string(TYPENAMES_UNION[val.index()])).data());
-
-
-    }
-
-    std::array<float, 4> &CRDTValue::vec4()
-    {
-        if (auto pval = std::get_if<std::array<float, 4 >>(&val)) {
-            return *pval;
-        }
-        throw std::runtime_error(
-                ("VEC4 is not selected, selected is " + std::string(TYPENAMES_UNION[val.index()])).data());
-
-
-    }
-
-
-    void CRDTValue::vec6(const std::array<float, 6> &_vec_float6)
-    {
-        val = _vec_float6;
-    }
-
-    void CRDTValue::vec6(std::array<float, 6> &&_vec_float6)
-    {
-        val = std::move(_vec_float6);
-    }
-
-    [[nodiscard]] const std::array<float, 6> &CRDTValue::vec6() const
-    {
-        if (auto pval = std::get_if<std::array<float, 6 >>(&val)) {
-            return *pval;
-        }
-        throw std::runtime_error(
-                ("VEC6 is not selected, selected is " + std::string(TYPENAMES_UNION[val.index()])).data());
-
-
-    }
-
-    std::array<float, 6> &CRDTValue::vec6()
-    {
-        if (auto pval = std::get_if<std::array<float, 6 >>(&val)) {
-            return *pval;
-        }
-        throw std::runtime_error(
-                ("VEC6 is not selected, selected is " + std::string(TYPENAMES_UNION[val.index()])).data());
-
-    }
-
-    IDL::Val CRDTValue::toIDLVal() 
-    {
-        IDL::Val value;
-
-        switch (val.index()) {
-            case 0:
-                value.str(std::get<std::string>(val));
-                break;
-            case 1:
-                value.dec(std::get<int32_t>(val));
-                break;
-            case 2:
-                value.fl(std::get<float>(val));
-                break;
-            case 3:
-                value.float_vec(std::get<std::vector<float>>(val));
-                break;
-            case 4:
-                value.bl(std::get<bool>(val));
-                break;
-            case 5:
-                value.byte_vec(std::get<std::vector<uint8_t>>(val));
-                break;
-            case 6:
-                value.uint(std::get<std::uint32_t>(val));
-                break;
-            case 7:
-                value.u64(std::get<std::uint64_t>(val));
-                break;
-            case 8:
-                value.dob(std::get<double>(val));
-                break;
-            case 9:
-                value.uint64_vec(std::get<std::vector<uint64_t>>(val));
-                break;
-            case 10:
-                value.vec_float2(std::get<std::array<float, 2>>(val));
-                break;
-            case 11:
-                value.vec_float3(std::get<std::array<float, 3>>(val));
-                break;
-            case 12:
-                value.vec_float4(std::get<std::array<float, 4>>(val));
-                break;
-            case 13:
-                value.vec_float6(std::get<std::array<float, 6>>(val));
-                break;
-            default:
-                throw std::runtime_error(
-                        ("Error converting CRDT::CRDTAttribute to IDL::Attrib. The CRDTAttribute is uninitialized. " +
-                         std::to_string(__LINE__) + " " + __FILE__).data());
-        }
-
-        return value;
-    }
-    
-    void CRDTAttribute::type(uint32_t _type) 
-    {
-        m_type = _type;
-    }
-    
-    uint32_t CRDTAttribute::type() const 
-    {
-        return m_type;
-    }
-
-    void CRDTAttribute::timestamp(uint64_t _time) 
-    {
-        m_timestamp = _time;
-    }
-
-
-    uint64_t CRDTAttribute::timestamp() const 
-    {
-        return m_timestamp;
-    }
-
-
-    void CRDTAttribute::val(IDL::Val &&CRDTValue_) 
-    {
-        m_Value = CRDTValue(std::move(CRDTValue_));
-    }
-
-    void CRDTAttribute::val(CRDTValue &&CRDTValue_) 
-    {
-        m_Value = std::move(CRDTValue_);
-    }
-
-    const CRDTValue &CRDTAttribute::val() const 
-    {
-        return m_Value;
-    }
-
-    CRDTValue &CRDTAttribute::val() 
-    {
-        return m_Value;
-    }
-
-    void CRDTAttribute::agent_id(uint32_t _agent_id) 
-    {
-        m_agent_id = _agent_id;
-    }
-
-    uint32_t CRDTAttribute::agent_id() const 
-    {
-        return m_agent_id;
-    }
-
-    IDL::Attrib CRDTAttribute::toIDLAttrib() 
-    {
-        IDL::Attrib att;
-        att.timestamp(m_timestamp);
-        att.type(m_type);
-        att.value(m_Value.toIDLVal());
-        att.agent_id(m_agent_id);
-        return att;
-    }
-
-
-    CRDTEdge &CRDTEdge::operator=(IDL::IDLEdge &&x) 
-    {
-
-        m_to = *(uint64_t*)&x.to();
+        m_to = x.to();
         m_type = std::move(x.type());
-        m_from = *(uint64_t *)&x.from();
+        m_from = x.from();
         if (!x.attrs().empty()) {
             for (auto&[k, v] : x.attrs()) {
-                m_attrs[k] = translate_edge_attr_mvIDL_to_CRDT(std::move(v));
+                m_attrs.emplace(k , IDLEdgeAttr_to_CRDT(std::move(v)));
+            }
+        }
+        m_agent_id = x.agent_id();
+
+    }
+
+    CRDTEdge &CRDTEdge::operator=(IDL::IDLEdge &&x)
+    {
+
+        m_to = x.to();
+        m_type = std::move(x.type());
+        m_from = x.from();
+        if (!x.attrs().empty()) {
+            for (auto&[k, v] : x.attrs()) {
+                m_attrs.emplace(k , IDLEdgeAttr_to_CRDT(std::move(v)));
             }
         }
         m_agent_id = x.agent_id();
 
         return *this;
     }
-
 
     void CRDTEdge::to(uint64_t  _to)
     {
@@ -495,7 +48,6 @@ namespace DSR {
     {
         return m_to;
     }
-
 
     void CRDTEdge::type(const std::string &_type) 
     {
@@ -583,7 +135,7 @@ namespace DSR {
             edgeAttr.agent_id(v.read_reg().agent_id());
             edgeAttr.id(id);
 
-            edge.attrs()[k] = edgeAttr;
+            edge.attrs().emplace(k, std::move(edgeAttr));
         }
         return edge;
     }
@@ -593,27 +145,14 @@ namespace DSR {
     {
         m_type = std::move(x.type());
         m_name = std::move(x.name());
-        m_id = *(uint64_t *)&x.id();
+        m_id = x.id();
         m_agent_id = x.agent_id();
         for (auto&[k, v] : x.attrs()) {
-            m_attrs[k] = translate_node_attr_mvIDL_to_CRDT(std::move(v));
+            m_attrs.emplace(k, IDLNodeAttr_to_CRDT(std::move(v)));
         }
         for (auto&[k, v] : x.fano()) {
-            m_fano[make_pair(k.to(), k.type())] = translate_edge_mvIDL_to_CRDT(std::move(v));
-        }
-    }
-
-    CRDTNode::CRDTNode(IDL::IDLNode& x)
-    {
-        m_type = x.type();
-        m_name = x.name();
-        m_id = *(uint64_t *)&x.id();
-        m_agent_id = x.agent_id();
-        for (auto&[k, v] : x.attrs()) {
-            m_attrs[k] = translate_node_attr_mvIDL_to_CRDT(std::move(v));
-        }
-        for (auto&[k, v] : x.fano()) {
-            m_fano[make_pair(k.to(), k.type())] = translate_edge_mvIDL_to_CRDT(std::move(v));
+            m_fano.emplace(std::pair<uint64_t, std::string>{k.to(), k.type()},
+                           IDLEdge_to_CRDT(std::move(v)));
         }
     }
 
@@ -739,7 +278,7 @@ namespace DSR {
             nodeAttr.id(id);
             nodeAttr.attr_name(k);
             nodeAttr.agent_id(v.read_reg().agent_id());
-            node.attrs()[k] = nodeAttr;
+            node.attrs().emplace(k, std::move(nodeAttr));
         }
 
         for (auto &[k, v] : m_fano) {
@@ -762,7 +301,7 @@ namespace DSR {
             IDL::EdgeKey ek;
             ek.to(k.first);
             ek.type(k.second);
-            node.fano()[ek] = mvregCRDTEdge;
+            node.fano().emplace(ek, std::move(mvregCRDTEdge));
         }
         return node;
     }

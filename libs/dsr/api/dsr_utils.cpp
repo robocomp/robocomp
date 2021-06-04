@@ -140,11 +140,6 @@ void Utilities::read_from_json_file(const std::string &json_file_path,  const st
                 QVariant attr_value = iter.value().toMap()["value"];
                 uint32_t attr_type = iter.value().toMap()["type"].toUInt();
 
-                CRDTAttribute av;
-                av.type(attr_type);
-                CRDTValue value;
-                CRDTAttribute at;
-
 
                 switch (attr_type) {
                     case 0: {
@@ -163,7 +158,7 @@ void Utilities::read_from_json_file(const std::string &json_file_path,  const st
                         std::vector<float> v;
                         for (const QVariant &val : attr_value.toList())
                             v.push_back(val.toFloat());
-                        G->runtime_checked_add_attrib_local(edge, attr_key,   v);
+                        G->runtime_checked_add_attrib_local(edge, attr_key, std::move(v));
                         break;
                     }
                     case 4: {
@@ -174,7 +169,7 @@ void Utilities::read_from_json_file(const std::string &json_file_path,  const st
                         std::vector<uint8_t> v;
                         for (const QVariant &val : attr_value.toList())
                             v.push_back(static_cast<uint8_t>(val.toUInt()));
-                        G->runtime_checked_add_attrib_local(edge, attr_key,   v);
+                        G->runtime_checked_add_attrib_local(edge, attr_key, std::move(v));
                         break;
                     }
                     case 6: {
@@ -418,7 +413,7 @@ void Utilities::print_RT(const uint64_t  id)
     std::cout << "-------------- End printing RT tree ------------------" << std::endl;
 }
 
-void Utilities::print_RT(const Node& node)
+void Utilities::print_RT(const Node& node) //TODO: Is this function Ok?
 {
     for(auto &edge: DSR::DSRGraph::get_node_edges_by_type(node, "RT"))
 	{

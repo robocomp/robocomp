@@ -23,7 +23,7 @@ using callback_types = std::variant<
         std::function<void(std::uint64_t, const std::string &)>,
         std::function<void(std::uint64_t, const std::vector<std::string> &)>,
         std::function<void(std::uint64_t, std::uint64_t, const std::string &)>,
-        std::function<void(std::uint64_t, std::uint64_t, const std::vector<std::string> &)>,
+        std::function<void(std::uint64_t, std::uint64_t, const std::string&, const std::vector<std::string> &)>,
         std::function<void(std::uint64_t)>
 >;
 
@@ -42,7 +42,7 @@ namespace pybind11::detail {
         make_caster<std::function<void(std::uint64_t, std::uint64_t,
         const std::string &)>>::name,
         make_caster<std::function<void(std::uint64_t, std::uint64_t,
-        const std::vector<std::string> &)>>::name,
+                                       const std::string &,const std::vector<std::string> &)>>::name,
         make_caster<std::function<void(std::uint64_t)>>::name) + _("]"));
 
 
@@ -100,12 +100,16 @@ namespace pybind11::detail {
                     return load_alternative<std::function<void(std::uint64_t, const std::string &)>>(src, convert);
                 } else if ("<class 'int'>" == py::str(itr->second).cast<std::string>()) {
                     itr++;
-                    if ("[<class 'str'>]" == py::str(itr->second).cast<std::string>())
+                    if ("<class 'str'>" == py::str(itr->second).cast<std::string>())
                     {
-                        return load_alternative<std::function<void(std::uint64_t, std::uint64_t, const std::vector<std::string> &)>>(src, convert);
-                    } else if ("<class 'str'>" == py::str(itr->second).cast<std::string>())
-                    {
-                        return load_alternative<std::function<void(std::uint64_t, std::uint64_t, const std::string &)>>(src, convert);
+                        itr++;
+                        if (itr == dict.end()) {
+                            return load_alternative<std::function<void(std::uint64_t, std::uint64_t, const std::string &)>>(src, convert);
+                        }
+                        else if ("[<class 'str'>]" == py::str(itr->second).cast<std::string>())
+                        {
+                            return load_alternative<std::function<void(std::uint64_t, std::uint64_t, const std::string &, const std::vector<std::string> &)>>(src, convert);
+                        }
                     }
                 }
                 return false;

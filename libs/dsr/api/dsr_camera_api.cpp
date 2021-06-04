@@ -268,7 +268,7 @@ std::optional<std::vector<std::tuple<float,float,float>>>  CameraAPI::get_pointc
                         int FOCAL = focal->second.dec();
                         FOCAL = (int) ((WIDTH / 2) / atan(0.52));  // ÑAPA QUITAR
                         int STEP = subsampling;
-                        float depth, X, Y, Z;
+                        float /*depth,*/ X, Y, Z;
                         int cols, rows;
                         std::size_t SIZE = tmp.size() / sizeof(float);
                         std::vector<std::tuple<float, float, float>> result(SIZE);

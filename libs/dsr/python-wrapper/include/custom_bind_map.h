@@ -16,6 +16,12 @@
 
 #pragma pop_macro("slots")
 
+inline static constexpr std::array<std::string_view, 11> attribute_type_TYPENAMES_UNION = { "STRING", "BOOL", "NUMPY_BYTE_VEC", "BYTE_VEC",
+                                                                                     "NUMPY_FLOAT_VEC", "FLOAT_VEC", "UINT64", "DOUBLE", "FLOAT",
+                                                                                     "INT", "UINT"};
+
+
+
 namespace pybind11 {
 
     template<typename Map, typename holder_type = std::unique_ptr<Map>, typename... Args>
@@ -149,7 +155,7 @@ namespace pybind11 {
                            }
                            break;
                        default:
-                           throw std::runtime_error("[Not implemented type]. Invalid type for attribute ." + k + ". Selected type is: " + TYPENAMES_UNION[v.selected()].data());
+                           throw std::runtime_error("[Not implemented type]. Invalid type for attribute ." + k + ". Selected type is: " + attribute_type_TYPENAMES_UNION[v.selected()].data());
                    }
 
                     if (correct_type) {
@@ -157,7 +163,7 @@ namespace pybind11 {
                         if (it != m.end()) it->second = v;
                         else m.emplace(k, v);
                     } else {
-                        throw std::runtime_error("Invalid type for attribute ." + k + ". Selected typeis: " + TYPENAMES_UNION[v.selected()].data());
+                        throw std::runtime_error("Invalid type for attribute ." + k + ". Selected type is: " + attribute_type_TYPENAMES_UNION[v.selected()].data());
                     }
 
                }

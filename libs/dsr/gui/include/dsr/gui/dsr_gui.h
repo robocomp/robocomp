@@ -63,8 +63,8 @@ public:
     DSRViewer(QMainWindow *window, std::shared_ptr<DSR::DSRGraph> G, int options, view main = view::none);
     ~DSRViewer();
     QWidget* get_widget(view type);
-    QWidget* get_widget(QString  name);
-    void add_custom_widget_to_dock(QString name, QWidget* view);
+    QWidget* get_widget(const QString& name);
+    void add_custom_widget_to_dock(const QString& name, QWidget* view);
     float get_external_hz() const;
     void set_external_hz(float external_hz);
 
@@ -105,7 +105,7 @@ signals:
     void resetViewer(QWidget* widget);
 
 private:
-    void create_dock_and_menu(QString name,  QWidget *view);
+    void create_dock_and_menu(const QString& name,  QWidget *view);
     void initialize_views(int options, view main);
     void initialize_file_menu();
     QWidget * create_widget(view type);

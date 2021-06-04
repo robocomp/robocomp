@@ -15,12 +15,35 @@ target_sources(dsr_core
         PRIVATE
         types/crdt_types.cpp
         types/user_types.cpp
+        types/common_types.cpp
+        include/dsr/core/types/crdt_types.h
+        include/dsr/core/types/user_types.h
+        include/dsr/core/types/common_types.h
+        include/dsr/core/types/translator.h
+        include/dsr/core/types/type_checking/dsr_attr_name.h
+        include/dsr/core/types/type_checking/dsr_edge_type.h
+        include/dsr/core/types/type_checking/dsr_node_type.h
+        include/dsr/core/types/type_checking/type_checker.h
+
         rtps/dsrpublisher.cpp
         rtps/dsrsubscriber.cpp
         rtps/dsrparticipant.cpp
+        include/dsr/core/rtps/dsrparticipant.h
+        include/dsr/core/rtps/dsrpublisher.h
+        include/dsr/core/rtps/dsrsubscriber.h
+
         topics/IDLGraphPubSubTypes.cxx
         topics/IDLGraph.cxx
+        include/dsr/core/topics/IDLGraph.h
+        include/dsr/core/topics/IDLGraphPubSubTypes.h
+
+        include/dsr/core/crdt/delta_crdt.h
+
+        include/dsr/core/id_generator.h
         id_generator.cpp
+
+        include/dsr/core/traits.h
+        include/dsr/core/utils.h
         )
 
 

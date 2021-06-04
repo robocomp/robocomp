@@ -22,7 +22,7 @@
 #include <dsr/gui/viewers/graph_viewer/graph_node_rgbd_widget.h>
 
 
-GraphNode::GraphNode(std::shared_ptr<DSR::GraphViewer>
+GraphNode::GraphNode(const std::shared_ptr<DSR::GraphViewer>&
         graph_viewer_):QGraphicsEllipseItem(0,0,DEFAULT_DIAMETER,DEFAULT_DIAMETER), graph_viewer(graph_viewer_)
 {
     auto flags = ItemIsMovable | ItemIsSelectable | ItemSendsGeometryChanges | ItemUsesExtendedStyleOption | ItemIsFocusable;
