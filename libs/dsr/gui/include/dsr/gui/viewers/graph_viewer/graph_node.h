@@ -17,6 +17,8 @@
 #ifndef GRAPHNODE_H
 #define GRAPHNODE_H
 
+static const int animation_time = 200;
+static const double force_velocity_factor = 150.0;
 #include <QGraphicsEllipseItem>
 #include <QTableWidget>
 #include <QGraphicsScene>
@@ -58,6 +60,14 @@ private:
     std::set<std::string> cached_edge_types;
 
 public:
+    static constexpr int DEFAULT_DIAMETER = 20;
+    static constexpr int DEFAULT_RADIUS = DEFAULT_DIAMETER/2;
+    static constexpr int ANIMATION_REPEAT = 3;
+    static constexpr int EDGE_PULL_FACTOR = 10;
+    static constexpr int SCENE_MARGIN = 10;
+    static constexpr Qt::GlobalColor SUNKEN_COLOR = Qt::darkGray;
+    static constexpr int LUMINOSITY_FACTOR = 200;
+
     std::uint64_t id_in_graph;
     QList<GraphEdge *> edgeList;
 

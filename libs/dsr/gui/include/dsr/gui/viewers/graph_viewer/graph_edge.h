@@ -55,8 +55,7 @@ protected:
 //    QPainterPath m_shapeCachePath;
 //    QPolygon arrow_polygon_cache;
     const int ARROW_SIZE = 6;
-    const int NODE_DIAMETER = 20;
-    const int NODE_RADIUS = NODE_DIAMETER/2;
+
 private:
     GraphNode *source, *dest;
     qreal arrowSize;

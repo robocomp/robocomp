@@ -87,8 +87,8 @@ void GraphEdge::adjust(GraphNode* node, QPointF pos)
 
     prepareGeometryChange();
     tag->setPos(line().center());
-    if (length > qreal(20.)) {
-        QPointF edgeOffset((the_line.dx() * 10) / length, (the_line.dy() * 10) / length);
+    if (length > qreal(GraphNode::DEFAULT_DIAMETER)) {
+        QPointF edgeOffset((the_line.dx() * GraphNode::DEFAULT_RADIUS) / length, (the_line.dy() * GraphNode::DEFAULT_RADIUS) / length);
         QPointF sourcePoint = the_line.p1() + edgeOffset;
         QPointF destPoint = the_line.p2() - edgeOffset;
         setLine(QLineF(sourcePoint, destPoint));

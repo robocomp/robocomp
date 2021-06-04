@@ -21,10 +21,9 @@
 #include <dsr/gui/viewers/graph_viewer/graph_node_widget.h>
 #include <dsr/gui/viewers/graph_viewer/graph_node_rgbd_widget.h>
 
-#define NODE_POS_X -10
-#define NODE_POS_Y -10
 
-GraphNode::GraphNode(std::shared_ptr<DSR::GraphViewer> graph_viewer_):QGraphicsEllipseItem(0,0,30,30), graph_viewer(graph_viewer_)
+GraphNode::GraphNode(std::shared_ptr<DSR::GraphViewer>
+        graph_viewer_):QGraphicsEllipseItem(0,0,DEFAULT_DIAMETER,DEFAULT_DIAMETER), graph_viewer(graph_viewer_)
 {
     auto flags = ItemIsMovable | ItemIsSelectable | ItemSendsGeometryChanges | ItemUsesExtendedStyleOption | ItemIsFocusable;
     setFlags(flags);
@@ -34,10 +33,10 @@ GraphNode::GraphNode(std::shared_ptr<DSR::GraphViewer> graph_viewer_):QGraphicsE
     node_brush.setStyle(Qt::SolidPattern);
 
     animation = new QPropertyAnimation(this, "node_color");
-	animation->setDuration(200);
+	animation->setDuration(animation_time);
 	animation->setStartValue(plain_color);
 	animation->setEndValue(dark_color);
-	animation->setLoopCount(3);
+	animation->setLoopCount(ANIMATION_REPEAT);
     QObject::connect(graph_viewer_->getGraph().get(), &DSR::DSRGraph::update_node_attr_signal, this, &GraphNode::update_node_attr_slot);
 }
 
@@ -45,7 +44,7 @@ void GraphNode::setTag(const std::string &tag_)
 {
     QString c = QString::fromStdString(tag_);
 	tag = new QGraphicsSimpleTextItem(c, this);
-	tag->setX(20);	
+	tag->setX(DEFAULT_DIAMETER);
 	tag->setY(-10);
 }
 
@@ -64,18 +63,6 @@ void GraphNode::setType(const std::string &type_)
     }
     auto color = GraphColors<DSR::Node>()[type];
     set_color(color);
-//    auto pos = node_colors.find(type);
-//    if(pos != node_colors.end())
-//    {
-//        auto color_name = pos->second;
-//        qDebug()<<__FUNCTION__ <<"Setting color to"<<QString::fromStdString(color_name);
-//        set_color(color_name);
-//    }
-//    else
-//    {
-//        qDebug()<<__FUNCTION__ <<"Setting color to default"<<plain_color;
-//        set_color(plain_color.toStdString());
-//    }
 }
 
 
@@ -146,13 +133,13 @@ void GraphNode::calculateForces()
         double l = 2.0 * (dx * dx + dy * dy);
         if (l > 0) 
 		{
-            xvel += (dx * 150.0) / l;
-            yvel += (dy * 150.0) / l;
+            xvel += (dx * force_velocity_factor) / l;
+            yvel += (dy * force_velocity_factor) / l;
         }
     }
 
     // Now subtract all forces pulling items together
-    double weight = (edgeList.size() + 1) * 10;
+    double weight = (edgeList.size() + 1) * EDGE_PULL_FACTOR;
     foreach (GraphEdge *edge, edgeList) 
 	{
         QPointF vec;
@@ -176,8 +163,8 @@ void GraphNode::calculateForces()
 
     QRectF sceneRect = scene()->sceneRect();
     newPos = pos() + QPointF(xvel, yvel);
-    newPos.setX(qMin(qMax(newPos.x(), sceneRect.left() + 10), sceneRect.right() - 10));
-    newPos.setY(qMin(qMax(newPos.y(), sceneRect.top() + 10), sceneRect.bottom() - 10));
+    newPos.setX(qMin(qMax(newPos.x(), sceneRect.left() + SCENE_MARGIN), sceneRect.right() - SCENE_MARGIN));
+    newPos.setY(qMin(qMax(newPos.y(), sceneRect.top() + SCENE_MARGIN), sceneRect.bottom() - SCENE_MARGIN));
 }
 
 bool GraphNode::advancePosition()
@@ -192,40 +179,43 @@ bool GraphNode::advancePosition()
 QRectF GraphNode::boundingRect() const
 {
     qreal adjust = 2;
-    return QRectF( -10 - adjust, -10 - adjust, 23 + adjust, 23 + adjust);
+    return QRectF(
+            -DEFAULT_RADIUS - adjust,
+            -DEFAULT_RADIUS - adjust,
+            DEFAULT_DIAMETER + 3 + adjust,
+            DEFAULT_DIAMETER + 3 + adjust
+            );
 }
 
 QPainterPath GraphNode::shape() const
 {
     QPainterPath path;
-    path.addEllipse(-10, -10, 20, 20);
+    path.addEllipse(-DEFAULT_RADIUS, -DEFAULT_RADIUS, DEFAULT_DIAMETER, DEFAULT_DIAMETER);
     return path;
 }
 
 void GraphNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *)
 {
     painter->setPen(Qt::NoPen);
-    painter->setBrush(Qt::darkGray);
-    painter->drawEllipse(-7, -7, 20, 20);
+    painter->setBrush(SUNKEN_COLOR);
+//    painter->drawEllipse(-7, -7, node_width, node_width);
 
     QRadialGradient gradient(-3, -3, 10);
     if (option->state & QStyle::State_Sunken)
-		{
-        gradient.setCenter(3, 3);
-        gradient.setFocalPoint(3, 3);
-        gradient.setColorAt(1, QColor(Qt::lightGray).light(120));
-        gradient.setColorAt(0, QColor(Qt::gray).light(120));
+    {
+        gradient.setColorAt(0, QColor(Qt::darkGray).light(LUMINOSITY_FACTOR));
+        gradient.setColorAt(1, QColor(Qt::darkGray));
     } else
 		{
         gradient.setColorAt(0, node_brush.color());
-        gradient.setColorAt(1, QColor(node_brush.color().dark(200)));
+        gradient.setColorAt(1, QColor(node_brush.color().dark(LUMINOSITY_FACTOR)));
     }
     painter->setBrush(gradient);
     if(isSelected())
         painter->setPen(QPen(Qt::green, 0, Qt::DashLine));
     else
         painter->setPen(QPen(Qt::black, 0));
-    painter->drawEllipse(-10, -10, 20, 20);
+    painter->drawEllipse(-DEFAULT_RADIUS, -DEFAULT_RADIUS, DEFAULT_DIAMETER, DEFAULT_DIAMETER);
 }
 
 QVariant GraphNode::itemChange(GraphicsItemChange change, const QVariant &value)
@@ -329,17 +319,17 @@ void GraphNode::update_node_attr_slot(std::uint64_t node_id, const std::vector<s
 {
     if (node_id != this->id_in_graph)
         return;
-    if(std::find(type.begin(), type.end(), "color") != type.end())
-    {
-        std::optional<Node> n = graph_viewer->getGraph()->get_node(node_id);
-        if (n.has_value()) {
-//            auto &attrs = n.value().attrs();
-//            auto value = attrs.find("color");
-//            if (value != attrs.end()) {
-//                this->setColor(value->second.str());
-//            }
-        }
-    }
+//    if(std::find(type.begin(), type.end(), "color") != type.end())
+//    {
+//        std::optional<Node> n = graph_viewer->getGraph()->get_node(node_id);
+//        if (n.has_value()) {
+////            auto &attrs = n.value().attrs();
+////            auto value = attrs.find("color");
+////            if (value != attrs.end()) {
+////                this->setColor(value->second.str());
+////            }
+//        }
+//    }
 }
 /* void GraphNode::NodeAttrsChangedSLOT(const DSR::IDType &node, const DSR::Attribs &attr)
  {
