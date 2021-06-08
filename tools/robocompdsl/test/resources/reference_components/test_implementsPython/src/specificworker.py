@@ -19,8 +19,6 @@
 #    along with RoboComp.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-from PySide2.QtCore import QTimer
-from PySide2.QtWidgets import QApplication
 from rich.console import Console
 from genericworker import *
 
@@ -57,9 +55,10 @@ class SpecificWorker(GenericWorker):
         return True
 
 
-    @QtCore.Slot()
+
     def compute(self):
         print('SpecificWorker.compute...')
+        while True: pass
         # computeCODE
         # try:
         #   self.differentialrobot_proxy.setSpeedBase(100, 0)
@@ -77,7 +76,9 @@ class SpecificWorker(GenericWorker):
         return True
 
     def startup_check(self):
-        QTimer.singleShot(200, QApplication.instance().quit)
+        import time
+        time.sleep(0.2)
+        exit()
 
     # =============== Slots methods for State Machine ===================
     # ===================================================================

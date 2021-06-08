@@ -19,7 +19,6 @@
 #    along with RoboComp.  If not, see <http://www.gnu.org/licenses/>.
 
 import sys, Ice, os
-from PySide2 import QtWidgets, QtCore
 
 ROBOCOMP = ''
 try:
@@ -37,7 +36,7 @@ ${ui_import}
 
 class GenericWorker(${qt_class_type}):
 
-    kill = QtCore.Signal()
+    ${qt_kill_signal}
     ${statemachine_signals}
 
     def __init__(self, mprx):
@@ -47,22 +46,10 @@ class GenericWorker(${qt_class_type}):
         ${publishes_proxies}
         ${gui_setup}
 
-        self.mutex = QtCore.QMutex(QtCore.QMutex.Recursive)
-        self.Period = 30
-        self.timer = QtCore.QTimer(self)
-
         ${statemachine_states_creation}
 
     ${statemachine_slots_creation}
-    @QtCore.Slot()
-    def killYourSelf(self):
-        rDebug("Killing myself")
-        self.kill.emit()
 
-    # \brief Change compute period
-    # @param per Period in ms
-    @QtCore.Slot(int)
-    def setPeriod(self, p):
-        print("Period changed", p)
-        self.Period = p
-        self.timer.start(self.Period)
+    ${kill_yourself_method}
+
+    ${set_period_method}

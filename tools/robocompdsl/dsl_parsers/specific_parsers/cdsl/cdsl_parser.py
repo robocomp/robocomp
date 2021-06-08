@@ -21,10 +21,10 @@ class CDSLParser(DSLParserTemplate):
         QUOTE = Suppress(Word("\""))
 
         # keywords
-        (IMPORT, COMMUNICATIONS, LANGUAGE, COMPONENT, CPP, CPP11, GUI, QWIDGET, QMAINWINDOW, QDIALOG, QT,
+        (IMPORT, COMMUNICATIONS, LANGUAGE, COMPONENT, CPP, CPP11, GUI, QWIDGET, QMAINWINDOW, QDIALOG, NO_GUI, QT,
          PYTHON, REQUIRES, IMPLEMENTS, SUBSCRIBESTO, PUBLISHES, OPTIONS, TRUE, FALSE,
          INNERMODELVIEWER, STATEMACHINE, VISUAL, AGMAGENT, AGM2AGENT, AGM2AGENTICE, DSR, ICE, ROS) = list(map(CaselessKeyword, """
-        import communications language component cpp cpp11 gui QWidget QMainWindow QDialog Qt 
+        import communications language component cpp cpp11 gui QWidget QMainWindow QDialog no_gui Qt 
         python requires implements subscribesTo publishes options true false
         InnerModelViewer statemachine visual agmagent agm2agent agm2agentice dsr ice ros""".split()))
 
@@ -63,8 +63,11 @@ class CDSLParser(DSLParserTemplate):
         language = LANGUAGE.suppress() - language_options - SEMI
 
         # GUI
-        gui_options = QWIDGET | QMAINWINDOW | QDIALOG
-        gui = Group(Optional(GUI.suppress() - QT('type') + OPAR - gui_options('gui_options') - CPAR + SEMI))
+        gui_options = (QWIDGET | QMAINWINDOW | QDIALOG)
+        qt_gui = (QT + OPAR - gui_options('widget') - CPAR)
+        gui_type = (qt_gui | NO_GUI)
+        gui = Group(Optional(GUI.suppress() - gui_type('type') + SEMI))
+
         # additional options
         valid_options = INNERMODELVIEWER | AGMAGENT | DSR
         options = Group(Optional(OPTIONS.suppress() - delimitedList(valid_options)) + SEMI)
@@ -146,12 +149,15 @@ class CDSLParser(DSLParserTemplate):
         # GUI
         component.gui = None
         try:
-            ui_type = parsing_result['component']['content']['gui']['type']
-            ui_widget = parsing_result['component']['content']['gui']['gui_options']
-            if ui_type.lower() == 'qt' and ui_widget in ['QWidget', 'QMainWindow', 'QDialog']:
-                component.gui = [ui_type, ui_widget]
+            ui_type = parsing_result['component']['content']['gui']['type'][0]
+            if ui_type.lower() == 'qt':
+                ui_widget = parsing_result['component']['content']['gui']['widget']
+                if ui_widget in ['QWidget', 'QMainWindow', 'QDialog']:
+                    component.gui = [ui_type, ui_widget]
+                else:
+                    component.gui = [ui_type, 'QMainWindow']
             else:
-                raise ValueError('Wrong UI specification %s' % parsing_result['properties']['gui'])
+                ui_widget = parsing_result['component']['content']['gui']['widget']
         except KeyError:
             pass
 
