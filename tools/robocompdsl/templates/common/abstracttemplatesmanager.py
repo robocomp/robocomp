@@ -3,6 +3,7 @@ import os
 from abc import ABC
 from collections import ChainMap
 from string import Template
+import re
 
 from dsl_parsers.parsing_utils import communication_is_ice
 import rich
@@ -75,7 +76,7 @@ class CustomTemplate(Template):
                              self.pattern)
         substituted = self.pattern.sub(convert, self.template)
         # The only way to remove extra lines that template leaves.
-        return substituted.replace('<LINEREMOVE>\n', '')
+        return re.sub('<LINEREMOVE>.*\n', '', substituted)
 
     def identifiers(self):
         identifiers = []
