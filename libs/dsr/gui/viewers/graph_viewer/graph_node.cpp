@@ -92,7 +92,7 @@ void GraphNode::addEdge(GraphEdge *edge)
     qDebug()<<__FUNCTION__ <<__LINE__<<"ID: "<<id_in_graph<<"SAME: "<<same_count<<"FACTOR: "<<bend_factor;
     edge->set_bend_factor(bend_factor);
     edgeList << edge;
-
+    
     edge->adjust();
     qDebug()<<"====================================";
 

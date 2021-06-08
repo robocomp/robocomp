@@ -203,7 +203,7 @@ void GraphViewer::add_or_assign_edge_SLOT(std::uint64_t from, std::uint64_t to, 
 		std::tuple<std::uint64_t, std::uint64_t, std::string> key = std::make_tuple(from, to, edge_tag);
 
 		if(gmap_edges.count(key) == 0) 
-		{ 		
+		{
 
 			auto item = this->new_visual_edge(from, to, edge_tag);
 			gmap_edges.insert(std::make_pair(key, item));
@@ -231,8 +231,11 @@ GraphEdge* GraphViewer::new_visual_edge(GraphNode *sourceNode, GraphNode *destNo
 
 GraphEdge* GraphViewer::new_visual_edge(std::uint64_t from, std::uint64_t to, const std::string &edge_tag)
 {
+
     auto sourceNode = gmap.at(from);
     auto destNode = gmap.at(to);
+
+
     auto gedge = new GraphEdge(sourceNode, destNode, edge_tag.c_str());
     scene.addItem(gedge);
     return gedge;
@@ -263,11 +266,10 @@ void GraphViewer::del_node_SLOT(uint64_t id)
     qDebug()<<__FUNCTION__<<":"<<__LINE__;
     try {
         while (gmap.count(id) > 0) {
-        	auto item = gmap.at(id);
+            auto item = gmap.at(id);
             scene.removeItem(item);
             delete item;
             gmap.erase(id);
-
         }
     } catch(const std::exception &e) { std::cout << e.what() <<" Error  "<<__FUNCTION__<<":"<<__LINE__<< std::endl;}
 

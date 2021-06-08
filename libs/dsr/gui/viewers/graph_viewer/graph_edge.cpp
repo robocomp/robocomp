@@ -58,8 +58,15 @@ GraphEdge::GraphEdge(GraphNode* sourceNode, GraphNode* destNode, const QString& 
     setAcceptHoverEvents(true);
     source = sourceNode;
     dest = destNode;
-    source->addEdge(this);
-    dest->addEdge(this);
+
+    if (source->id_in_graph == destNode->id_in_graph) {
+
+        source->addEdge(this);
+
+    } else {
+        source->addEdge(this);
+        dest->addEdge(this);
+    }
     // label
 
 
@@ -68,6 +75,7 @@ GraphEdge::GraphEdge(GraphNode* sourceNode, GraphNode* destNode, const QString& 
     QObject::connect(source->getGraphViewer()->getGraph().get(), &DSR::DSRGraph::update_edge_attr_signal, this,
             &GraphEdge::update_edge_attr_slot);
 }
+
 
 GraphNode* GraphEdge::sourceNode() const
 {
