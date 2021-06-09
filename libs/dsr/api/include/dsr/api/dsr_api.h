@@ -489,7 +489,7 @@ namespace DSR
         const bool copy;
         std::unique_ptr<Utilities> utils;
         std::unordered_set<std::string_view> ignored_attributes;
-        ThreadPool tp;
+        ThreadPool tp, tp_delta_attr;
         bool same_host;
         id_generator generator;
 

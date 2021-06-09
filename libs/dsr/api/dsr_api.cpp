@@ -25,7 +25,7 @@ using namespace std::literals;
 /////////////////////////////////////////////////
 
 DSRGraph::DSRGraph(uint64_t root, std::string name, int id, const std::string &dsr_input_file, bool all_same_host)
-        : agent_id(id), agent_name(std::move(name)), copy(false), tp(5), same_host(all_same_host), generator(id)
+        : agent_id(id), agent_name(std::move(name)), copy(false), tp(5), tp_delta_attr(1), same_host(all_same_host), generator(id)
 {
 
     qDebug() << "Agent name: " << QString::fromStdString(agent_name);
@@ -908,6 +908,7 @@ void DSRGraph::join_delta_node(IDL::MvregNode &&mvreg)
             std::unique_lock<std::shared_mutex> lock(_mutex);
             if (not deleted.contains(id)) {
                 joined = true;
+                //maybe_deleted_node = (nodes[id].empty()) ? std::nullopt : std::make_optional(nodes.at(id).read_reg());
                 nodes[id].join(std::move(crdt_delta));
                 if (nodes.at(id).empty() or d_empty) {
                     nodes.erase(id);
@@ -1237,7 +1238,7 @@ void DSRGraph::edge_attrs_subscription_thread(bool showReceived)
                             qDebug() << name << " Received:" << samples.vec().size() << " edge attr from: "
                                     << m_info.sample_identity.writer_guid().entityId.value;
                         }
-                        tp.spawn_task([this, samples = std::move(samples)]() mutable {
+                        tp_delta_attr.spawn_task([this, samples = std::move(samples)]() mutable {
                             if (samples.vec().empty()) return;
 
                             auto from = samples.vec().at(0).from();
@@ -1302,7 +1303,7 @@ void DSRGraph::node_attrs_subscription_thread(bool showReceived)
                                     << m_info.sample_identity.writer_guid().entityId.value;
                         }
 
-                        tp.spawn_task([this, samples = std::move(samples)]() mutable {
+                        tp_delta_attr.spawn_task([this, samples = std::move(samples)]() mutable {
 
                             if (samples.vec().empty()) return;
 
