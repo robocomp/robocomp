@@ -6,7 +6,6 @@ Component testcomp
     {
         implements HandDetection;
     };
-	language Python;
-	statemachine "statemachine.smdsl";
+    language Python;
 };
 
