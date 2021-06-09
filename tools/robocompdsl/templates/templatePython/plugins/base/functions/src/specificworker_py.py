@@ -165,8 +165,12 @@ class src_specificworker_py(TemplateDict):
 
     def timeout_compute_connect(self):
         result = ""
-        if self.component.statemachine is None:
+        if self.component.statemachine is None and self.component.gui is not None:
             result += "self.timer.timeout.connect(self.compute)\n"
+        if self.component.gui is not None:
+            result += "self.timer.start(self.Period)\n"
+        else:
+            result += "pass\n"
         return result
 
     def interface_specific_comment(self):

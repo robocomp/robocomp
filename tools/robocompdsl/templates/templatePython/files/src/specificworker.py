@@ -42,7 +42,6 @@ class SpecificWorker(GenericWorker):
             self.startup_check()
         else:
             ${timeout_compute_connect}
-            self.timer.start(self.Period)
             ${statemachine_start_and_destroy}
 
     def __del__(self):
