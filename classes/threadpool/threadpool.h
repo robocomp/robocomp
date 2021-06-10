@@ -166,7 +166,7 @@ public:
 
     template <typename Function, typename... Arguments>
     void spawn_task(Function &&fn, Arguments &&... args)
-        requires (only_rvalues<Function&&>,  only_rvalues<Arguments&& ...>, std::is_invocable<Function &&, Arguments &&...>::value)
+        requires (only_rvalues<Arguments&& ...> && std::is_invocable<Function &&, Arguments &&...>::value)
     {
         std::unique_lock<std::mutex> task_queue_lock(tp_mutex, std::defer_lock);
         task_queue_lock.lock();
@@ -178,7 +178,7 @@ public:
 
     template <typename Function, typename... Arguments>
     auto spawn_task_waitable(Function &&fn, Arguments &&... args)
-        requires (only_rvalues<Function&&>,  only_rvalues<Arguments&& ...>, std::is_invocable<Function &&, Arguments &&...>::value)
+        requires (only_rvalues<Arguments&& ...> && std::is_invocable<Function &&, Arguments &&...>::value)
     {
         std::unique_lock<std::mutex> task_queue_lock(tp_mutex, std::defer_lock);
 
