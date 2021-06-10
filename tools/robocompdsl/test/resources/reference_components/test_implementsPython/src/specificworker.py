@@ -39,9 +39,7 @@ class SpecificWorker(GenericWorker):
         if startup_check:
             self.startup_check()
         else:
-            self.timer.start(self.Period)
-            self.defaultMachine.start()
-            self.destroyed.connect(self.t_compute_to_finalize)
+            pass
 
     def __del__(self):
         console.print('SpecificWorker destructor')
@@ -80,39 +78,6 @@ class SpecificWorker(GenericWorker):
         time.sleep(0.2)
         exit()
 
-    # =============== Slots methods for State Machine ===================
-    # ===================================================================
-
-    #
-    # sm_initialize
-    #
-    @QtCore.Slot()
-    def sm_initialize(self):
-        print("Entered state initialize")
-        self.t_initialize_to_compute.emit()
-        pass
-    
-
-    #
-    # sm_compute
-    #
-    @QtCore.Slot()
-    def sm_compute(self):
-        print("Entered state compute")
-        self.compute()
-        pass
-
-
-    #
-    # sm_finalize
-    #
-    @QtCore.Slot()
-    def sm_finalize(self):
-        print("Entered state finalize")
-        pass
-
-    # =================================================================
-    # =================================================================
 
 
     # =============== Methods for Component Implements ==================

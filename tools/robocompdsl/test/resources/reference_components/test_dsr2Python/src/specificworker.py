@@ -57,8 +57,7 @@ class SpecificWorker(GenericWorker):
         if startup_check:
             self.startup_check()
         else:
-            self.timer.timeout.connect(self.compute)
-            self.timer.start(self.Period)
+            pass
 
     def __del__(self):
         console.print('SpecificWorker destructor')
