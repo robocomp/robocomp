@@ -31,11 +31,11 @@ DSRParticipant::~DSRParticipant()
 
 }
 
-std::tuple<bool, eprosima::fastdds::dds::DomainParticipant*> DSRParticipant::init(uint32_t agent_id, int localhost, std::function<void(eprosima::fastrtps::rtps::ParticipantDiscoveryInfo&&)> fn)
+std::tuple<bool, eprosima::fastdds::dds::DomainParticipant*> DSRParticipant::init(uint32_t agent_id, const std::string& agent_name, int localhost, std::function<void(eprosima::fastrtps::rtps::ParticipantDiscoveryInfo&&)> fn)
 {
     // Create RTPSParticipant     
     DomainParticipantQos PParam;
-    PParam.name(("Participant_" + std::to_string(agent_id)).data());  //You can put here the name you want
+    PParam.name(("Participant_" + std::to_string(agent_id)+ " ( " + agent_name + " )").data() );
 
 
     //Disable the built-in Transport Layer.
@@ -79,7 +79,7 @@ std::tuple<bool, eprosima::fastdds::dds::DomainParticipant*> DSRParticipant::ini
             static_cast<eprosima::fastrtps::rtps::ParticipantFilteringFlags_t>(
             eprosima::fastrtps::rtps::ParticipantFilteringFlags_t::FILTER_SAME_PROCESS);
 
-    PParam.wire_protocol().builtin.discovery_config.leaseDuration = eprosima::fastrtps::c_TimeInfinite;
+    PParam.wire_protocol().builtin.discovery_config.leaseDuration = /*eprosima::fastrtps::c_TimeInfinite;*/ Duration_t(6);
     PParam.wire_protocol().builtin.discovery_config.leaseDuration_announcementperiod =
             eprosima::fastrtps::Duration_t(3, 0);
 

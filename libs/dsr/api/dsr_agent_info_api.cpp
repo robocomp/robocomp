@@ -10,14 +10,18 @@ namespace DSR {
 
     void AgentInfoAPI::stopTimer()
     {
-        timer.stop();
+        timer.stop_timer();
     }
 
-    void AgentInfoAPI::setPriod(uint32_t period_)
+    bool AgentInfoAPI::isRunning()
+    {
+        return timer.is_running();
+    }
+    /*void AgentInfoAPI::setPriod(uint32_t period_)
     {
         period = period_;
         timer.setInterval(static_cast<int32_t>(period_));
-    }
+    }*/
 
     std::string AgentInfoAPI::exec(const char* cmd)
     {
@@ -35,7 +39,7 @@ namespace DSR {
 
     void AgentInfoAPI::create_or_update_agent()
     {
-        auto str = G->get_agent_name();
+        auto str = "Participant_" + std::to_string(G->get_agent_id()) + " ( " + G->get_agent_name() + " )";
         pid_t pid = getpid();
 
         int nprocs = -1;

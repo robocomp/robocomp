@@ -18,7 +18,7 @@ class DSRParticipant
 public:
     DSRParticipant();
     virtual ~DSRParticipant();
-    [[nodiscard]] std::tuple<bool, eprosima::fastdds::dds::DomainParticipant *> init(uint32_t agent_id, int localhost, std::function<void(eprosima::fastrtps::rtps::ParticipantDiscoveryInfo&&)> fn);
+    [[nodiscard]] std::tuple<bool, eprosima::fastdds::dds::DomainParticipant *> init(uint32_t agent_id, const std::string& agent_name, int localhost, std::function<void(eprosima::fastrtps::rtps::ParticipantDiscoveryInfo&&)> fn);
     [[nodiscard]] const eprosima::fastrtps::rtps::GUID_t& getID() const;
     [[nodiscard]] const char *getNodeTopicName()     const { return dsrgraphType->getName();}
     [[nodiscard]] const char *getRequestTopicName()  const { return graphrequestType->getName();}

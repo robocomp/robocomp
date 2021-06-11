@@ -32,13 +32,14 @@ DSRGraph::DSRGraph(uint64_t root, std::string name, int id, const std::string &d
     utils =  std::make_unique<Utilities>(this);
 
     // RTPS Create participant
-    auto[suc, participant_handle] = dsrparticipant.init(agent_id, all_same_host,
+    auto[suc, participant_handle] = dsrparticipant.init(agent_id, agent_name, all_same_host,
                                                         ParticipantChangeFunctor(this, [&](DSR::DSRGraph *graph,
                                                                 eprosima::fastrtps::rtps::ParticipantDiscoveryInfo&& info)
                                                                 {
                                                                     if (info.status == eprosima::fastrtps::rtps::ParticipantDiscoveryInfo::DISCOVERED_PARTICIPANT)
                                                                     {
                                                                         std::unique_lock<std::mutex> lck(participant_set_mutex);
+                                                                        //std::cout << "Se conecto " <<info.info.m_participantName.to_string() << std::endl;
                                                                         graph->participant_set.insert({info.info.m_participantName.to_string(), false});
                                                                     }
                                                                     else if (info.status == eprosima::fastrtps::rtps::ParticipantDiscoveryInfo::REMOVED_PARTICIPANT ||
@@ -46,6 +47,8 @@ DSRGraph::DSRGraph(uint64_t root, std::string name, int id, const std::string &d
                                                                     {
                                                                         std::unique_lock<std::mutex> lck(participant_set_mutex);
                                                                         graph->participant_set.erase(info.info.m_participantName.to_string());
+                                                                        //std::cout << "Se desconectó uno"<<info.info.m_participantName.to_string() <<  std::endl;
+                                                                        graph->delete_node(info.info.m_participantName.to_string());
                                                                     }
                                                                 }));
 
@@ -1362,7 +1365,7 @@ void DSRGraph::fullgraph_server_thread()
                 if (m_info.instance_state == eprosima::fastdds::dds::ALIVE_INSTANCE_STATE) {
                     {
                         std::unique_lock<std::mutex> lck(participant_set_mutex);
-                        if (auto it = participant_set.find(("Participant_" + std::to_string(sample.id())));
+                        if (auto it = participant_set.find(sample.from());
                             it != participant_set.end() and it->second)
                         {
                             lck.unlock();
@@ -1443,7 +1446,7 @@ std::pair<bool, bool> DSRGraph::fullgraph_request_thread()
     qDebug() << " Requesting the complete graph ";
 
     IDL::GraphRequest gr;
-    gr.from(std::to_string(agent_id));
+    gr.from( dsrparticipant.getParticipant()->get_qos().name().to_string());
     gr.id(agent_id);
     dsrpub_graph_request.write(&gr);
 

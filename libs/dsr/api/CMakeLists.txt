@@ -15,6 +15,7 @@ find_package(cppitertools)
 set(headers_to_moc
         include/dsr/api/dsr_api.h
         include/dsr/api/dsr_inner_eigen_api.h
+        include/dsr/api/dsr_agent_info_api.h
         )
 
 add_library(dsr_api SHARED )
