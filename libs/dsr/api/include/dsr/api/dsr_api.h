@@ -125,7 +125,7 @@ namespace DSR
 
         template <typename name, typename Type>
         std::optional<uint64_t> get_attrib_timestamp(const Type &n)
-            requires(node_or_edge<Type>, is_attr_name<name>)
+            requires(node_or_edge<Type> and is_attr_name<name>)
         {
             auto &attrs = n.attrs();
             auto value = attrs.find(name::attr_name.data());
@@ -146,7 +146,7 @@ namespace DSR
 
         template <typename name, typename Type>
         inline std::optional<decltype(name::type)> get_attrib_by_name(const Type &n)
-            requires(any_node_or_edge<Type>, is_attr_name<name>)
+            requires(any_node_or_edge<Type> and is_attr_name<name>)
         {
             using name_type =  std::remove_reference_t<std::remove_cv_t<decltype(name::type)>>;
 
@@ -212,7 +212,7 @@ namespace DSR
          **/
         template<typename name, typename Type, class Ta>
         inline void add_or_modify_attrib_local(Type &elem, Ta && att_value)
-            requires(any_node_or_edge<Type>, allowed_types<Ta>, is_attr_name<name>, valid_type<name, Ta>())
+            requires(any_node_or_edge<Type> and allowed_types<Ta> and is_attr_name<name> and valid_type<name, Ta>())
         {
 
             if constexpr (std::is_same_v<Type, Node> || std::is_same_v<Type, Edge>)
@@ -234,7 +234,7 @@ namespace DSR
 
         template<typename Type, class Ta>
         inline void runtime_checked_add_or_modify_attrib_local(Type &elem, const std::string &att_name, Ta &&att_value)
-            requires(any_node_or_edge<Type>, allowed_types<Ta>)
+            requires(any_node_or_edge<Type> and allowed_types<Ta>)
         {
 
             if (!attribute_types::check_type(att_name.data(), att_value)) {
@@ -261,7 +261,7 @@ namespace DSR
 
         template<typename name, typename Type, typename Ta>
         bool add_attrib_local(Type &elem, Ta &&att_value)
-            requires(any_node_or_edge<Type>, allowed_types<Ta>, is_attr_name<name>)
+            requires(any_node_or_edge<Type> and allowed_types<Ta> and is_attr_name<name>)
         {
             if (elem.attrs().find(name::attr_name.data()) != elem.attrs().end()) return false;
             add_or_modify_attrib_local<name>(elem, std::forward<Ta>(att_value));
@@ -270,7 +270,7 @@ namespace DSR
 
         template<typename Type, typename Ta>
         bool runtime_checked_add_attrib_local(Type &elem, const std::string& att_name, Ta &&att_value)
-            requires(any_node_or_edge<Type>, allowed_types<Ta>)
+            requires(any_node_or_edge<Type> and allowed_types<Ta>)
         {
             if (elem.attrs().find(att_name) != elem.attrs().end()) return false;
             runtime_checked_add_or_modify_attrib_local(elem, att_name, std::forward<Ta>(att_value));
@@ -279,7 +279,7 @@ namespace DSR
 
         template<typename name, typename Type>
         bool add_attrib_local(Type &elem, Attribute &attr)
-            requires(any_node_or_edge<Type>, is_attr_name<name>)
+            requires(any_node_or_edge<Type> and is_attr_name<name>)
         {
             if (elem.attrs().find(name::attr_name.data()) != elem.attrs().end()) return false;
             attr.timestamp(get_unix_timestamp());
@@ -300,7 +300,7 @@ namespace DSR
 
         template<typename name, typename Type, typename Ta>
         bool modify_attrib_local(Type &elem, Ta &&att_value)
-            requires(any_node_or_edge<Type>, allowed_types<Ta>, is_attr_name<name>)
+            requires(any_node_or_edge<Type> and allowed_types<Ta> and is_attr_name<name>)
         {
             if (elem.attrs().find(name::attr_name.data()) == elem.attrs().end()) return false;
             add_or_modify_attrib_local<name>(elem, std::forward<Ta>(att_value));
@@ -309,7 +309,7 @@ namespace DSR
 
         template<typename Type, typename Ta>
         bool runtime_checked_modify_attrib_local(Type &elem,  const std::string& att_name, Ta &&att_value)
-            requires(any_node_or_edge<Type>, allowed_types<Ta>)
+            requires(any_node_or_edge<Type> and allowed_types<Ta>)
         {
             if (elem.attrs().find(att_name) == elem.attrs().end()) return false;
             runtime_checked_add_or_modify_attrib_local(elem, att_name, std::forward<Ta>(att_value));
@@ -318,7 +318,7 @@ namespace DSR
 
         template<typename name, typename Type>
         bool remove_attrib_local(Type &elem)
-            requires(any_node_or_edge<Type>, is_attr_name<name>)
+            requires(any_node_or_edge<Type> and is_attr_name<name>)
         {
             if (elem.attrs().find(name::attr_name.data()) == elem.attrs().end()) return false;
             elem.attrs().erase(name::attr_name);
@@ -337,7 +337,7 @@ namespace DSR
     private:
         template <typename name, typename Type>
         inline auto get_crdt_attrib_by_name(const Type &n)
-            requires(crdt_node_or_edge<Type>, is_attr_name<name>)
+            requires(crdt_node_or_edge<Type> and is_attr_name<name>)
         {
             using name_type = typename std::remove_reference_t<std::remove_cv_t<decltype(name::type)>>;
 
