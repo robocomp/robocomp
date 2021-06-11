@@ -42,8 +42,7 @@ Tested in Ubuntu 18.04, 19.10, 20.04 and 20.10.
 
 
 ## Requirements
-Make sure you have installed the following packages from the Ubuntu repository (to copy and paste in a terminal use zash):
-
+Make sure you have installed the following packages from the Ubuntu repository:
 ```bash
 sudo DEBIAN_FRONTEND=noninteractive apt-get update && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends  \
       ca-certificates \
@@ -74,6 +73,12 @@ sudo DEBIAN_FRONTEND=noninteractive apt-get update && sudo DEBIAN_FRONTEND=nonin
       zeroc-ice-all-dev \
       zeroc-icebox 
 
+sudo pip3 install pyside2 rich argcomplete prompt_toolkit
+
+```
+
+And to install the needed python packages:
+```bash
 sudo pip3 install pyside2 rich argcomplete prompt_toolkit
 
 ```
