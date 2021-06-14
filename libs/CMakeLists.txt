@@ -27,18 +27,18 @@ target_link_libraries(testlibs
 
 IF(DSR)
     add_subdirectory(dsr)
-#     find_package(Qt5 COMPONENTS Widgets REQUIRED)
-#     add_executable(testdsr)
-#     target_sources(testdsr
-#             PRIVATE
-#             test_dsr.cpp
-#             )
-# 
-#     target_link_libraries(testdsr
-#             PRIVATE
-#             Robocomp::dsr_api
-#             Robocomp::dsr_gui
-#             Qt5::Widgets
+    find_package(Qt5 COMPONENTS Widgets REQUIRED)
+    add_executable(testdsr)
+    target_sources(testdsr
+            PRIVATE
+            test_dsr.cpp
+            )
+
+    target_link_libraries(testdsr
+            PRIVATE
+            Robocomp::dsr_api
+            Robocomp::dsr_gui
+            Qt5::Widgets
             )
 ENDIF(DSR)
 
