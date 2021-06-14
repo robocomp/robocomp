@@ -9,22 +9,6 @@ sudo apt install libeigen3-dev
 sudo apt install python3-dev python3-pybind11
 sudo apt install cmake gcc-10 g++-10
 
-while true; do
-    read -p "Install pybind with conda?(Press Yy if using python with anaconda) [Yy/Nn]
-    " yn
-    case $yn in
-        [Yy]* ) option=1; break;;
-        [Nn]* ) option=0; echo "Not installing pybind using conda. The instalation process will keep going."; break;;
-        * ) echo "Please answer yes or no.";;
-    esac
-done
-
-if [ "$option" -eq "1" ]; then
-        
-        echo -e $cyan"Installing pybind using conda,please wait..." 
-        conda install -c conda-forge pybind11
-fi
-
 sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 1
 sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-10 1
 
