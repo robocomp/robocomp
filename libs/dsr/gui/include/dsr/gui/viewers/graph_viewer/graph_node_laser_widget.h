@@ -63,7 +63,7 @@ class GraphNodeLaserWidget : public QGraphicsView
     };
 
   public slots:
-    void drawLaserSLOT( int id, const std::string &type )
+    void drawLaserSLOT( std::uint64_t id, const std::string &type )
     {
       if( id != node_id )
         return;
@@ -98,7 +98,7 @@ class GraphNodeLaserWidget : public QGraphicsView
   private:
     QGraphicsScene scene;
     std::shared_ptr<DSR::DSRGraph> graph;
-    std::int32_t node_id;
+    std::uint64_t node_id;
 };
 
 #endif // GRAPHNODELASERWIDGET_H
