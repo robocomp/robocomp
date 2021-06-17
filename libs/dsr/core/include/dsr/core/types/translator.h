@@ -36,6 +36,8 @@ namespace DSR {
 
         delta_crdt.id(id);
         delta_crdt.agent_id(agent_id);
+        delta_crdt.timestamp(get_unix_timestamp());
+
         return delta_crdt;
     }
 
@@ -91,6 +93,7 @@ namespace DSR {
         delta_crdt.from(from);
         delta_crdt.to(to);
         delta_crdt.agent_id(agent_id);
+        delta_crdt.timestamp(get_unix_timestamp());
         return delta_crdt;
 
     }
@@ -148,6 +151,7 @@ namespace DSR {
         delta_crdt.attr_name(attr);
         delta_crdt.node(node);
         delta_crdt.agent_id(agent_id);
+        delta_crdt.timestamp(get_unix_timestamp());
 
         return delta_crdt;
     }
@@ -228,6 +232,7 @@ namespace DSR {
         delta_crdt.type(type);
         delta_crdt.id(from);
         delta_crdt.agent_id(agent_id);
+        delta_crdt.timestamp(get_unix_timestamp());
 
         return delta_crdt;
     }
