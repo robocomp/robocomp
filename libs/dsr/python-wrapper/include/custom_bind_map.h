@@ -16,9 +16,12 @@
 
 #pragma pop_macro("slots")
 
-inline static constexpr std::array<std::string_view, 11> attribute_type_TYPENAMES_UNION = { "STRING", "BOOL", "NUMPY_BYTE_VEC", "BYTE_VEC",
-                                                                                     "NUMPY_FLOAT_VEC", "FLOAT_VEC", "UINT64", "DOUBLE", "FLOAT",
-                                                                                     "INT", "UINT"};
+inline static constexpr std::array<std::string_view, 17> attribute_type_TYPENAMES_UNION =
+        { "STRING", "BOOL", "NUMPY_BYTE_VEC", "BYTE_VEC",
+        "NUMPY_FLOAT_VEC", "FLOAT_VEC", "UINT64", "DOUBLE",
+        "FLOAT","INT", "UINT", "NUMPY_U64_VEC",
+        "UINT64_VEC", "FLOAT_VEC2", "FLOAT_VEC3",
+        "FLOAT_VEC4", "FLOAT_VEC6"};
 
 
 
@@ -95,6 +98,7 @@ namespace pybind11 {
                [](Map &m, const KeyType &k, const MappedType &v) {
 
                    bool correct_type = false;
+
                    switch (v.selected())
                    {
                        case 0:
@@ -107,13 +111,62 @@ namespace pybind11 {
                            correct_type = attribute_types::check_type((k).data(), v.fl());
                            break;
                        case 3:
-                           correct_type = attribute_types::check_type((k).data(), v.float_vec());
+                           if (attribute_types::check_type((k).data(), v.float_vec())) {
+                               correct_type = true;
+                           } else if (std::array<float, 2> tmp{}; attribute_types::check_type(k.data(), tmp))
+                           {
+                               tmp = {v.float_vec()[0], v.float_vec()[1]};
+                               auto it = m.find(k);
+                               auto new_val = v;
+                               new_val.vec2(tmp);
+                               if (it != m.end()) it->second = new_val;
+                               else m.emplace(k, new_val);
+                               return;
+                           } else if (std::array<float, 3> tmp{}; attribute_types::check_type(k.data(), tmp))
+                           {
+                               tmp = {v.float_vec()[0], v.float_vec()[1], v.float_vec()[2]};
+                               auto it = m.find(k);
+                               auto new_val = v;
+                               new_val.vec3(tmp);
+                               if (it != m.end()) it->second = new_val;
+                               else m.emplace(k, new_val);
+                               return;
+                           } else if (std::array<float, 4> tmp{}; attribute_types::check_type(k.data(), tmp))
+                           {
+                               tmp = {v.float_vec()[0], v.float_vec()[1], v.float_vec()[2],v.float_vec()[3]};
+                               auto it = m.find(k);
+                               auto new_val = v;
+                               new_val.vec4(tmp);
+                               if (it != m.end()) it->second = new_val;
+                               else m.emplace(k, new_val);
+                               return;
+                           } else if (std::array<float, 6> tmp{}; attribute_types::check_type(k.data(), tmp))
+                           {
+                               tmp = {v.float_vec()[0], v.float_vec()[1], v.float_vec()[2],v.float_vec()[3], v.float_vec()[4], v.float_vec()[5]};
+                               auto it = m.find(k);
+                               auto new_val = v;
+                               new_val.vec6(tmp);
+                               if (it != m.end()) it->second = new_val;
+                               else m.emplace(k, new_val);
+                               return;
+                           }
                            break;
                        case 4:
                            correct_type = attribute_types::check_type((k).data(), v.bl());
                            break;
                        case 5:
-                           correct_type = attribute_types::check_type((k).data(), v.byte_vec());
+                           if (attribute_types::check_type((k).data(), v.byte_vec())) {
+                               correct_type = true;
+                           } else if (std::vector<uint64_t> tmp{}; attribute_types::check_type(k.data(), tmp))
+                           {
+                               tmp = std::vector<uint64_t>{v.byte_vec().begin(), v.byte_vec().end()};
+                               auto it = m.find(k);
+                               auto new_val = v;
+                               new_val.u64_vec(tmp);
+                               if (it != m.end()) it->second = new_val;
+                               else m.emplace(k, new_val);
+                               return;
+                           }
                            break;
                        case 6: //probably not going through this branch
                            correct_type = attribute_types::check_type((k).data(), v.uint());
@@ -154,8 +207,23 @@ namespace pybind11 {
                                return;
                            }
                            break;
+                       case 9:
+                           correct_type = attribute_types::check_type((k).data(), v.u64_vec());
+                           break;
+                       case 10:
+                           correct_type = attribute_types::check_type((k).data(), v.vec2());
+                           break;
+                       case 11:
+                           correct_type = attribute_types::check_type((k).data(), v.vec3());
+                           break;
+                       case 12:
+                           correct_type = attribute_types::check_type((k).data(), v.vec4());
+                           break;
+                       case 13:
+                           correct_type = attribute_types::check_type((k).data(), v.vec6());
+                           break;
                        default:
-                           throw std::runtime_error("[Not implemented type]. Invalid type for attribute ." + k + ". Selected type is: " + attribute_type_TYPENAMES_UNION[v.selected()].data());
+                           throw std::runtime_error("[Not implemented type] Invalid type for attribute [" + k + "]. Selected type is: " + DSR::TYPENAMES_UNION[v.selected()].data());
                    }
 
                     if (correct_type) {
@@ -163,7 +231,7 @@ namespace pybind11 {
                         if (it != m.end()) it->second = v;
                         else m.emplace(k, v);
                     } else {
-                        throw std::runtime_error("Invalid type for attribute ." + k + ". Selected type is: " + attribute_type_TYPENAMES_UNION[v.selected()].data());
+                        throw std::runtime_error("Invalid type for attribute [" + k + "]. Selected type is: " + DSR::TYPENAMES_UNION[v.selected()].data());
                     }
 
                }

@@ -54,32 +54,47 @@ using attribute_type = std::variant<std::string,
                                     double,
                                     float,
                                     int32_t,
-                                    uint32_t>;
+                                    uint32_t,
+                                    py::array_t<uint64_t>,
+                                    std::vector<uint64_t>,
+                                    std::array<float, 2>,
+                                    std::array<float, 3>,
+                                    std::array<float, 4>,
+                                    std::array<float, 6>>;
 
 
 
 
-template<typename T>
+template<std::size_t idx, typename T>
 ValType convert_variant_fn(const attribute_type & e)
 {
+    ValType vout;
     if constexpr (std::is_same_v<T, py::array_t<uint8_t>>)
     {
         auto tmp = std::get<py::array_t<uint8_t>>(e);
         const auto size = tmp.size();
         py::buffer_info x = tmp.request();
-        return ValType(std::vector<uint8_t>{static_cast<uint8_t *>(x.ptr), static_cast<uint8_t *>(x.ptr) + size});
+        vout.emplace<idx>(std::vector<uint8_t>{static_cast<uint8_t *>(x.ptr), static_cast<uint8_t *>(x.ptr) + size});
     } else if constexpr (std::is_same_v<T, py::array_t<float>>)
     {
         auto tmp = std::get<py::array_t<float>>(e);
         const auto size = tmp.size();
         py::buffer_info x = tmp.request();
-        return ValType(std::vector<float>{static_cast<float *>(x.ptr), static_cast<float *>(x.ptr) + size});
+        vout.emplace<idx>(std::vector<float>{static_cast<float *>(x.ptr), static_cast<float *>(x.ptr) + size});
+    } else if constexpr (std::is_same_v<T, py::array_t<uint64_t>>)
+    {
+        auto tmp = std::get<py::array_t<uint64_t>>(e);
+        const auto size = tmp.size();
+        py::buffer_info x = tmp.request();
+        vout.emplace<idx>(std::vector<uint64_t>{static_cast<uint64_t *>(x.ptr), static_cast<uint64_t *>(x.ptr) + size});
     }
     else
     {
         auto x = std::get<T>(e);
-        return ValType(x);
+        vout.emplace<idx>(x);
     }
+
+    return vout;
 };
 
 
@@ -99,17 +114,30 @@ ValType convert_variant(const attribute_type & e)
                                                                t::INT,
                                                                t::UINT };
     */
-    constexpr std::array<conver_fn, 11> cast = { convert_variant_fn<std::string>,
-                                                 convert_variant_fn<bool>,
-                                                 convert_variant_fn<py::array_t<uint8_t>>,
-                                                 convert_variant_fn<std::vector<uint8_t>>,
-                                                 convert_variant_fn<py::array_t<float>>,
-                                                 convert_variant_fn<std::vector<float>>,
-                                                 convert_variant_fn<uint64_t>,
-                                                 convert_variant_fn<double>,
-                                                 convert_variant_fn<float>,
-                                                 convert_variant_fn<int32_t>,
-                                                 convert_variant_fn<uint32_t>
+    /*
+         using ValType = std::variant<std::string, int32_t, float,
+            std::vector<float>, bool, std::vector<uint8_t>,
+            uint32_t, uint64_t, double, std::vector<uint64_t>,
+            std::array<float, 2>, std::array<float, 3>,
+            std::array<float, 4>, std::array<float, 6>>;
+     * */
+    constexpr std::array<conver_fn, 17> cast = { convert_variant_fn<0, std::string>,
+                                                 convert_variant_fn<4, bool>,
+                                                 convert_variant_fn<5, py::array_t<uint8_t>>,
+                                                 convert_variant_fn<5, std::vector<uint8_t>>,
+                                                 convert_variant_fn<3, py::array_t<float>>,
+                                                 convert_variant_fn<3, std::vector<float>>,
+                                                 convert_variant_fn<7, uint64_t>,
+                                                 convert_variant_fn<8, double>,
+                                                 convert_variant_fn<2, float>,
+                                                 convert_variant_fn<1, int32_t>,
+                                                 convert_variant_fn<6, uint32_t>,
+                                                 convert_variant_fn<9, py::array_t<uint64_t>>,
+                                                 convert_variant_fn<9, std::vector<uint64_t>>,
+                                                 convert_variant_fn<10, std::array<float, 2>>,
+                                                 convert_variant_fn<11, std::array<float, 3>>,
+                                                 convert_variant_fn<12, std::array<float, 4>>,
+                                                 convert_variant_fn<13, std::array<float, 6>>
                                              };
 
     const auto idx = e.index(); //idx_ValType.at(e.index());
@@ -124,7 +152,6 @@ PYBIND11_MODULE(pydsr, m) {
 
     py::bind_map<std::map<std::pair<uint64_t, std::string>, Edge>>(m, "MapStringEdge");
     py::bind_dsr_map<std::map<std::string, Attribute>>(m, "MapStringAttribute");
-    //py::bind_vector<std::vector<uint8_t>>(m, "ByteVec");
 
     m.doc() = "DSR Api for python";
 
@@ -270,41 +297,7 @@ PYBIND11_MODULE(pydsr, m) {
 
                 std::stringstream out;
                 out << " < ";
-                switch (self.selected()) {
-                    case 0:
-                        out << std::get<std::string>(self.value());
-                        break;
-                    case 1:
-                        out << std::to_string(std::get<int32_t>(self.value()));
-                        break;
-                    case 2:
-                        out << std::get<float>(self.value());
-                        break;
-                    case 3:
-                        out << "[ ";
-                        for (const auto &k: std::get<std::vector<float>>(self.value()))
-                            out << std::to_string(k) + ", ";
-                        out << "] ";
-                        break;
-                    case 4:
-                        out << (std::get<bool>(self.value()) ? " TRUE" : " FALSE");
-                        break;
-                    case 5:
-                        out << "[ ";
-                        for (const uint8_t k: std::get<std::vector<uint8_t>>(self.value()))
-                            out << std::to_string(static_cast<uint32_t>(k)) + ", ";
-                        out << "] ";
-                        break;
-                    case 6:
-                        out << std::to_string(std::get<uint32_t>(self.value()));
-                        break;
-                    case 7:
-                        out << std::to_string(std::get<uint64_t>(self.value()));
-                        break;
-                    case 8:
-                        out << std::to_string(std::get<double>(self.value()));
-                        break;
-                }
+                out << self;
                 out << " >";
                 return out.str();
             })
@@ -333,6 +326,16 @@ PYBIND11_MODULE(pydsr, m) {
                                       return self.uint64();
                                   case 8:
                                       return self.dob();
+                                  case 9:
+                                      return py::array_t<uint64_t> {static_cast<ssize_t>(self.u64_vec().size()), self.u64_vec().data()};
+                                  case 10:
+                                      return py::array_t<float> { 2, self.vec2().data()};
+                                  case 11:
+                                      return py::array_t<float> { 3, self.vec3().data()};
+                                  case 12:
+                                      return py::array_t<float> { 4, self.vec4().data()};
+                                  case 13:
+                                      return py::array_t<float> { 6, self.vec6().data()};
                                   default:
                                       throw std::runtime_error("Unreachable");
                               }
@@ -383,6 +386,98 @@ PYBIND11_MODULE(pydsr, m) {
                                           break;
                                       case 8:
                                           self.dob(std::get<double>(val));
+                                          break;
+                                      case 9:
+                                          if (val.index() == 11) {
+                                              auto tmp = std::get<py::array_t<uint64_t>>(val);
+                                              const auto size = tmp.size();
+                                              py::buffer_info x = tmp.request();
+                                              self.u64_vec(std::vector<uint64_t>{static_cast<uint64_t *>(x.ptr), static_cast<uint64_t *>(x.ptr) + size});
+                                          } else if (val.index() == 3) {
+                                              auto tmp = std::get<std::vector<uint8_t>>(val);
+                                              self.u64_vec(std::vector<uint64_t>{tmp.begin(), tmp.end()});
+                                          }
+                                          else self.u64_vec(std::get<std::vector<uint64_t>>(val));
+                                          break;
+                                      case 10:
+                                          if (val.index() == 4) {
+                                              auto tmp = std::get<py::array_t<float>>(val);
+                                              if (tmp.size() == 2) {
+                                                  py::buffer_info x = tmp.request();
+                                                  self.vec2(std::array<float, 2>{static_cast<float *>(x.ptr)[0],
+                                                                                 static_cast<float *>(x.ptr)[1]});
+
+                                              } else throw;
+                                          }else if (val.index() == 5) {
+                                              auto tmp = std::get<std::vector<float>>(val);
+                                              self.vec2(std::array<float, 2>{tmp[0], tmp[1]});
+                                          }
+                                          else self.vec2(std::get<std::array<float, 2>>(val));
+                                          break;
+                                      case 11:
+                                          if (val.index() == 4) {
+                                              auto tmp = std::get<py::array_t<float>>(val);
+                                              if (tmp.size() == 3) {
+                                                  py::buffer_info x = tmp.request();
+                                                  self.vec3(std::array<float, 3>{static_cast<float *>(x.ptr)[0],
+                                                                                 static_cast<float *>(x.ptr)[1],
+                                                                                 static_cast<float *>(x.ptr)[2]});
+
+                                              } else throw;
+                                          } else if (val.index() == 5) {
+                                              auto tmp = std::get<std::vector<float>>(val);
+                                              self.vec3(std::array<float, 3>{tmp[0],
+                                                                             tmp[1],
+                                                                             tmp[2]});
+
+                                          }
+                                          else self.vec3(std::get<std::array<float, 3>>(val));
+                                          break;
+                                      case 12:
+                                          if (val.index() == 4) {
+                                              auto tmp = std::get<py::array_t<float>>(val);
+                                              if (tmp.size() == 4) {
+                                                  py::buffer_info x = tmp.request();
+                                                  self.vec4(std::array<float, 4>{static_cast<float *>(x.ptr)[0],
+                                                                                 static_cast<float *>(x.ptr)[1],
+                                                                                 static_cast<float *>(x.ptr)[2],
+                                                                                 static_cast<float *>(x.ptr)[3]});
+
+                                              } else throw;
+                                          }else if (val.index() == 5) {
+                                              auto tmp = std::get<std::vector<float>>(val);
+                                              self.vec4(std::array<float, 4>{tmp[0],
+                                                                             tmp[1],
+                                                                             tmp[2],
+                                                                             tmp[3]});
+
+                                          }
+                                          else self.vec4(std::get<std::array<float, 4>>(val));
+                                          break;
+                                      case 13:
+                                          if (val.index() == 4) {
+                                              auto tmp = std::get<py::array_t<float>>(val);
+                                              if (tmp.size() == 6) {
+                                                  py::buffer_info x = tmp.request();
+                                                  self.vec6(std::array<float, 6>{static_cast<float *>(x.ptr)[0],
+                                                                                 static_cast<float *>(x.ptr)[1],
+                                                                                 static_cast<float *>(x.ptr)[2],
+                                                                                 static_cast<float *>(x.ptr)[3],
+                                                                                 static_cast<float *>(x.ptr)[4],
+                                                                                 static_cast<float *>(x.ptr)[5]});
+
+                                              } else throw;
+                                          } else if (val.index() == 5) {
+                                              auto tmp = std::get<std::vector<float>>(val);
+                                              self.vec6(std::array<float, 6>{tmp[0],
+                                                                             tmp[1],
+                                                                             tmp[2],
+                                                                             tmp[3],
+                                                                             tmp[4],
+                                                                             tmp[5]});
+
+                                          }
+                                          else self.vec6(std::get<std::array<float, 6>>(val));
                                           break;
                                       default:
                                           throw std::runtime_error("Attributes cannot change type. Selected type is " +
