@@ -87,7 +87,7 @@ class GraphNodeRGBDWidget : public QWidget
               //rgb
               if (rgb and update_rgb) {
                   if (show_rgb->isChecked()) {
-                      const auto rgb_data = cam->get_rgb_image();
+                      const auto rgb_data = graph->get_attrib_by_name<cam_rgb_att>(node);//cam->get_rgb_image();
                       const auto rgb_width = graph->get_attrib_by_name<cam_rgb_width_att>(node);
                       const auto rgb_height = graph->get_attrib_by_name<cam_rgb_height_att>(node);
 

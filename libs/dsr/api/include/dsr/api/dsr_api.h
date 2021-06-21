@@ -146,20 +146,23 @@ namespace DSR
 
         template <typename name, typename Type>
         inline std::optional<decltype(name::type)> get_attrib_by_name(const Type &n)
-            requires(any_node_or_edge<Type> and is_attr_name<name>)
-        {
-            using name_type =  std::remove_reference_t<std::remove_cv_t<decltype(name::type)>>;
+            requires(any_node_or_edge<Type> and is_attr_name<name>) {
+            using name_type = std::remove_cv_t<unwrap_reference_wrapper_t<std::remove_reference_t<std::remove_cv_t<decltype(name::type)>>>>;
 
             auto &attrs = n.attrs();
             auto value = attrs.find(name::attr_name.data());
             if (value == attrs.end()) return {};
 
-            const auto &av = value->second;
+            const auto &av = [&]() -> const DSR::Attribute& {
+                if constexpr (node_or_edge<Type>) return value->second;
+                else return value->second.read_reg();
+            }();
+
             if constexpr (std::is_same_v< name_type, float>)
                 return av.fl();
             else if constexpr (std::is_same_v< name_type, double>)
                 return av.dob();
-            else if constexpr (std::is_same_v< name_type, std::reference_wrapper<const std::string>>)
+            else if constexpr (std::is_same_v< name_type, std::string>)
                 return av.str();
             else if constexpr (std::is_same_v< name_type, std::int32_t>)
                 return av.dec();
@@ -169,19 +172,19 @@ namespace DSR
                 return av.uint64();
             else if constexpr (std::is_same_v< name_type, bool>)
                 return av.bl();
-            else if constexpr (std::is_same_v< name_type, std::reference_wrapper<const std::vector<float>>>)
+            else if constexpr (std::is_same_v< name_type, std::vector<float>>)
                 return av.float_vec();
-            else if constexpr (std::is_same_v< name_type, std::reference_wrapper<const std::vector<uint8_t>>>)
+            else if constexpr (std::is_same_v< name_type, std::vector<uint8_t>>)
                 return av.byte_vec();
-            else if constexpr (std::is_same_v< name_type, std::reference_wrapper<const std::vector<uint64_t>>>)
+            else if constexpr (std::is_same_v< name_type, std::vector<uint64_t>>)
                 return av.u64_vec();
-            else if constexpr (std::is_same_v< name_type, std::reference_wrapper<const std::array<float, 2>>>)
+            else if constexpr (std::is_same_v< name_type, std::array<float, 2>>)
                 return av.vec2();
-            else if constexpr (std::is_same_v< name_type, std::reference_wrapper<const std::array<float, 3>>>)
+            else if constexpr (std::is_same_v< name_type, std::array<float, 3>>)
                 return av.vec3();
-            else if constexpr (std::is_same_v< name_type, std::reference_wrapper<const std::array<float, 4>>>)
+            else if constexpr (std::is_same_v< name_type, std::array<float, 4>>)
                 return av.vec4();
-            else if constexpr (std::is_same_v< name_type, std::reference_wrapper<const std::array<float, 6>>>)
+            else if constexpr (std::is_same_v< name_type, std::array<float, 6>>)
                 return av.vec6();
             else {
                 []<bool flag = false>() { static_assert(flag, "Unreachable"); }();
@@ -192,6 +195,7 @@ namespace DSR
         inline std::optional<std::remove_cvref_t<unwrap_reference_wrapper_t<decltype(name::type)>>> get_attrib_by_name(uint64_t id)
         requires(is_attr_name<name>)
         {
+            using ret_type = std::remove_cvref_t<unwrap_reference_wrapper_t<decltype(name::type)>>;
             std::shared_lock<std::shared_mutex> lock(_mutex);
             std::optional<CRDTNode> n = get_(id);
             if (n.has_value()) {
@@ -199,9 +203,9 @@ namespace DSR
                 if (tmp.has_value())
                 {
                     if constexpr(is_reference_wrapper<decltype(name::type)>::value) {
-                        return tmp.value().get();
+                        return ret_type{tmp.value().get()};
                     } else {
-                        return tmp;
+                        return ret_type{tmp};
                     }
                 }
             }
@@ -291,7 +295,7 @@ namespace DSR
         bool runtime_checked_add_attrib_local(Type &elem, const std::string& att_name,  Attribute &attr)
             requires(any_node_or_edge<Type>)
         {
-            //TODO: Check Attribute type.
+            //TODO: Check Attribute type? Or is checked when creating and Attribute
             if (elem.attrs().find(att_name) != elem.attrs().end()) return false;
             attr.timestamp(get_unix_timestamp());
             elem.attrs()[att_name] = attr;
@@ -321,7 +325,7 @@ namespace DSR
             requires(any_node_or_edge<Type> and is_attr_name<name>)
         {
             if (elem.attrs().find(name::attr_name.data()) == elem.attrs().end()) return false;
-            elem.attrs().erase(name::attr_name);
+            elem.attrs().erase(name::attr_name.data());
             return true;
         }
 
@@ -337,9 +341,9 @@ namespace DSR
     private:
         template <typename name, typename Type>
         inline auto get_crdt_attrib_by_name(const Type &n)
-            requires(crdt_node_or_edge<Type> and is_attr_name<name>)
+            requires(crdt_node_or_edge<Type> and is_attr_name<name>) //TODO: DEPRECATE THIS?
         {
-            using name_type = typename std::remove_reference_t<std::remove_cv_t<decltype(name::type)>>;
+            using name_type = std::remove_cv_t<unwrap_reference_wrapper_t<std::remove_reference_t<std::remove_cv_t<decltype(name::type)>>>>;
 
             auto &attrs = n.attrs();
             auto value = attrs.find(name::attr_name.data());
