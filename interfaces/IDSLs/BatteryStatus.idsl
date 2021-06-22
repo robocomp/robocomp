@@ -1,9 +1,15 @@
 module RoboCompBatteryStatus
 {
   exception HardwareFailedException { string what; };
+
+  enum BatteryStates { Charging, Charged, Disconnected };
+
   struct TBattery
   {
     float percentage;
+    BatteryStates state;
+    float voltage;
+    float current;
   };
 
   interface BatteryStatus
