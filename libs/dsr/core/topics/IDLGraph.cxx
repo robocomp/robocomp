@@ -2093,6 +2093,8 @@ namespace IDL {
         m_attr_name = x.m_attr_name;
         m_dk = x.m_dk;
         m_agent_id = x.m_agent_id;
+        m_timestamp = x.m_timestamp;
+
     }
 
     MvregEdgeAttr::MvregEdgeAttr(MvregEdgeAttr &&x) {
@@ -2103,6 +2105,8 @@ namespace IDL {
         m_attr_name = std::move(x.m_attr_name);
         m_dk = std::move(x.m_dk);
         m_agent_id = x.m_agent_id;
+        m_timestamp = x.m_timestamp;
+
     }
 
     MvregEdgeAttr &MvregEdgeAttr::operator=(const MvregEdgeAttr &x) {
@@ -2114,6 +2118,7 @@ namespace IDL {
         m_attr_name = x.m_attr_name;
         m_dk = x.m_dk;
         m_agent_id = x.m_agent_id;
+        m_timestamp = x.m_timestamp;
 
         return *this;
     }
@@ -2127,8 +2132,18 @@ namespace IDL {
         m_attr_name = std::move(x.m_attr_name);
         m_dk = std::move(x.m_dk);
         m_agent_id = x.m_agent_id;
+        m_timestamp = x.m_timestamp;
 
         return *this;
+    }
+
+
+    void MvregEdgeAttr::timestamp(uint64_t _timestamp) {
+        m_timestamp = _timestamp;
+    }
+
+    uint64_t MvregEdgeAttr::timestamp() {
+        return m_timestamp;
     }
 
     size_t MvregEdgeAttr::getMaxCdrSerializedSize(size_t current_alignment) {
@@ -2150,6 +2165,8 @@ namespace IDL {
 
         current_alignment += DotKernelAttr::getMaxCdrSerializedSize(current_alignment);
         current_alignment += 4 + eprosima::fastcdr::Cdr::alignment(current_alignment, 4);
+
+        current_alignment += 8 + eprosima::fastcdr::Cdr::alignment(current_alignment, 8);
 
 
         return current_alignment - initial_alignment;
@@ -2176,6 +2193,7 @@ namespace IDL {
         current_alignment += DotKernelAttr::getCdrSerializedSize(data.dk(), current_alignment);
         current_alignment += 4 + eprosima::fastcdr::Cdr::alignment(current_alignment, 4);
 
+        current_alignment += 8 + eprosima::fastcdr::Cdr::alignment(current_alignment, 8);
 
         return current_alignment - initial_alignment;
     }
@@ -2189,6 +2207,7 @@ namespace IDL {
         scdr << m_attr_name;
         scdr << m_dk;
         scdr << m_agent_id;
+        scdr << m_timestamp;
     }
 
     void MvregEdgeAttr::deserialize(eprosima::fastcdr::Cdr &dcdr) {
@@ -2200,6 +2219,7 @@ namespace IDL {
         dcdr >> m_attr_name;
         dcdr >> m_dk;
         dcdr >> m_agent_id;
+        dcdr >> m_timestamp;
     }
 
 /*!
@@ -2872,6 +2892,8 @@ namespace IDL {
         m_attr_name = x.m_attr_name;
         m_dk = x.m_dk;
         m_agent_id = x.m_agent_id;
+        m_timestamp = x.m_timestamp;
+
     }
 
     MvregNodeAttr::MvregNodeAttr(MvregNodeAttr &&x) {
@@ -2880,6 +2902,8 @@ namespace IDL {
         m_attr_name = std::move(x.m_attr_name);
         m_dk = std::move(x.m_dk);
         m_agent_id = x.m_agent_id;
+        m_timestamp = x.m_timestamp;
+
     }
 
     MvregNodeAttr &MvregNodeAttr::operator=(const MvregNodeAttr &x) {
@@ -2889,6 +2913,7 @@ namespace IDL {
         m_attr_name = x.m_attr_name;
         m_dk = x.m_dk;
         m_agent_id = x.m_agent_id;
+        m_timestamp = x.m_timestamp;
 
         return *this;
     }
@@ -2900,9 +2925,27 @@ namespace IDL {
         m_attr_name = std::move(x.m_attr_name);
         m_dk = std::move(x.m_dk);
         m_agent_id = x.m_agent_id;
+        m_timestamp = x.m_timestamp;
 
         return *this;
     }
+
+        /*!
+     * @brief This function sets a value in member timestamp
+     * @param _timestamp New value for member timestamp
+     */
+    void MvregNodeAttr::timestamp(uint64_t _timestamp) {
+        m_timestamp = _timestamp;
+    }
+
+    /*!
+     * @brief This function returns the value of member timestamp
+     * @return Value of member timestamp
+     */
+    uint64_t MvregNodeAttr::timestamp()  {
+        return m_timestamp;
+    }
+
 
     size_t MvregNodeAttr::getMaxCdrSerializedSize(size_t current_alignment) {
         size_t initial_alignment = current_alignment;
@@ -2919,6 +2962,7 @@ namespace IDL {
         current_alignment += DotKernelAttr::getMaxCdrSerializedSize(current_alignment);
         current_alignment += 4 + eprosima::fastcdr::Cdr::alignment(current_alignment, 4);
 
+        current_alignment += 8 + eprosima::fastcdr::Cdr::alignment(current_alignment, 8);
 
         return current_alignment - initial_alignment;
     }
@@ -2939,6 +2983,7 @@ namespace IDL {
         current_alignment += DotKernelAttr::getCdrSerializedSize(data.dk(), current_alignment);
         current_alignment += 4 + eprosima::fastcdr::Cdr::alignment(current_alignment, 4);
 
+        current_alignment += 8 + eprosima::fastcdr::Cdr::alignment(current_alignment, 8);
 
         return current_alignment - initial_alignment;
     }
@@ -2952,6 +2997,7 @@ namespace IDL {
         scdr << m_attr_name;
         scdr << m_dk;
         scdr << m_agent_id;
+        scdr << m_timestamp;
     }
 
     void MvregNodeAttr::deserialize(eprosima::fastcdr::Cdr &dcdr) {
@@ -2961,6 +3007,7 @@ namespace IDL {
         dcdr >> m_attr_name;
         dcdr >> m_dk;
         dcdr >> m_agent_id;
+        dcdr >> m_timestamp;
 
         assert(m_dk.ds().size() <= 1);
 
@@ -3317,6 +3364,8 @@ namespace IDL {
         m_type = x.m_type;
         m_dk = x.m_dk;
         m_agent_id = x.m_agent_id;
+        m_timestamp = x.m_timestamp;
+
     }
 
     MvregEdge::MvregEdge(MvregEdge &&x) {
@@ -3326,6 +3375,8 @@ namespace IDL {
         m_type = std::move(x.m_type);
         m_dk = std::move(x.m_dk);
         m_agent_id = x.m_agent_id;
+        m_timestamp = x.m_timestamp;
+
     }
 
     MvregEdge &MvregEdge::operator=(const MvregEdge &x) {
@@ -3336,6 +3387,7 @@ namespace IDL {
         m_type = x.m_type;
         m_dk = x.m_dk;
         m_agent_id = x.m_agent_id;
+        m_timestamp = x.m_timestamp;
 
         return *this;
     }
@@ -3348,8 +3400,17 @@ namespace IDL {
         m_type = std::move(x.m_type);
         m_dk = std::move(x.m_dk);
         m_agent_id = x.m_agent_id;
+        m_timestamp = x.m_timestamp;
 
         return *this;
+    }
+
+    void MvregEdge::timestamp(uint64_t _timestamp) {
+        m_timestamp = _timestamp;
+    }
+
+    uint64_t MvregEdge::timestamp()  {
+        return m_timestamp;
     }
 
     size_t MvregEdge::getMaxCdrSerializedSize(size_t current_alignment) {
@@ -3370,6 +3431,7 @@ namespace IDL {
         current_alignment += DotKernelEdge::getMaxCdrSerializedSize(current_alignment);
         current_alignment += 4 + eprosima::fastcdr::Cdr::alignment(current_alignment, 4);
 
+        current_alignment += 8 + eprosima::fastcdr::Cdr::alignment(current_alignment, 8);
 
         return current_alignment - initial_alignment;
     }
@@ -3393,6 +3455,7 @@ namespace IDL {
         current_alignment += DotKernelEdge::getCdrSerializedSize(data.dk(), current_alignment);
         current_alignment += 4 + eprosima::fastcdr::Cdr::alignment(current_alignment, 4);
 
+        current_alignment += 8 + eprosima::fastcdr::Cdr::alignment(current_alignment, 8);
 
         return current_alignment - initial_alignment;
     }
@@ -3405,6 +3468,7 @@ namespace IDL {
         scdr << m_type;
         scdr << m_dk;
         scdr << m_agent_id;
+        scdr << m_timestamp;
     }
 
     void MvregEdge::deserialize(eprosima::fastcdr::Cdr &dcdr) {
@@ -3415,6 +3479,7 @@ namespace IDL {
         dcdr >> m_type;
         dcdr >> m_dk;
         dcdr >> m_agent_id;
+        dcdr >> m_timestamp;
     }
 
 /*!
@@ -4281,12 +4346,14 @@ namespace IDL {
         m_id = x.m_id;
         m_dk = x.m_dk;
         m_agent_id = x.m_agent_id;
+        m_timestamp = x.m_timestamp;
     }
 
     MvregNode::MvregNode(MvregNode &&x) {
         m_id = x.m_id;
         m_dk = std::move(x.m_dk);
         m_agent_id = x.m_agent_id;
+        m_timestamp = x.m_timestamp;
     }
 
     MvregNode &MvregNode::operator=(const MvregNode &x) {
@@ -4294,6 +4361,7 @@ namespace IDL {
         m_id = x.m_id;
         m_dk = x.m_dk;
         m_agent_id = x.m_agent_id;
+        m_timestamp = x.m_timestamp;
 
         return *this;
     }
@@ -4303,8 +4371,17 @@ namespace IDL {
         m_id = x.m_id;
         m_dk = std::move(x.m_dk);
         m_agent_id = x.m_agent_id;
+        m_timestamp = x.m_timestamp;
 
         return *this;
+    }
+
+    void MvregNode::timestamp(uint64_t _timestamp) {
+        m_timestamp = _timestamp;
+    }
+
+    uint64_t MvregNode::timestamp()  {
+        return m_timestamp;
     }
 
     size_t MvregNode::getMaxCdrSerializedSize(size_t current_alignment) {
@@ -4317,6 +4394,7 @@ namespace IDL {
         current_alignment += DotKernel::getMaxCdrSerializedSize(current_alignment);
         current_alignment += 4 + eprosima::fastcdr::Cdr::alignment(current_alignment, 4);
 
+        current_alignment += 8 + eprosima::fastcdr::Cdr::alignment(current_alignment, 8);
 
         return current_alignment - initial_alignment;
     }
@@ -4332,6 +4410,7 @@ namespace IDL {
         current_alignment += DotKernel::getCdrSerializedSize(data.dk(), current_alignment);
         current_alignment += 4 + eprosima::fastcdr::Cdr::alignment(current_alignment, 4);
 
+        current_alignment += 8 + eprosima::fastcdr::Cdr::alignment(current_alignment, 8);
 
         return current_alignment - initial_alignment;
     }
@@ -4341,6 +4420,7 @@ namespace IDL {
         scdr << m_id;
         scdr << m_dk;
         scdr << m_agent_id;
+        scdr << m_timestamp;
     }
 
     void MvregNode::deserialize(eprosima::fastcdr::Cdr &dcdr) {
@@ -4348,6 +4428,7 @@ namespace IDL {
         dcdr >> m_id;
         dcdr >> m_dk;
         dcdr >> m_agent_id;
+        dcdr >> m_timestamp;
     }
 
 /*!

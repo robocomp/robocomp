@@ -1296,6 +1296,9 @@ namespace IDL {
          */
         eProsima_user_DllExport void serializeKey(eprosima::fastcdr::Cdr &cdr) const;
 
+        eProsima_user_DllExport void timestamp(uint64_t _timestamp);
+
+        eProsima_user_DllExport uint64_t timestamp() ;
     private:
         uint64_t m_id;
         uint64_t m_from;
@@ -1304,6 +1307,7 @@ namespace IDL {
         std::string m_attr_name;
         DotKernelAttr m_dk;
         uint32_t m_agent_id;
+        uint64_t m_timestamp;
     };
 
 /*!
@@ -1868,12 +1872,16 @@ namespace IDL {
          */
         eProsima_user_DllExport void serializeKey(eprosima::fastcdr::Cdr &cdr) const;
 
+        eProsima_user_DllExport void timestamp(uint64_t _timestamp);
+
+        eProsima_user_DllExport uint64_t timestamp() ;
     private:
         uint64_t m_id;
         uint64_t m_node;
         std::string m_attr_name;
         DotKernelAttr m_dk;
         uint32_t m_agent_id;
+        uint64_t m_timestamp;
     };
 
 /*!
@@ -2232,6 +2240,10 @@ namespace IDL {
          */
         eProsima_user_DllExport void serializeKey(eprosima::fastcdr::Cdr &cdr) const;
 
+        eProsima_user_DllExport void timestamp(uint64_t _timestamp);
+
+        eProsima_user_DllExport uint64_t timestamp() ;
+
     private:
         uint64_t m_id;
         uint64_t m_from;
@@ -2239,6 +2251,7 @@ namespace IDL {
         std::string m_type;
         DotKernelEdge m_dk;
         uint32_t m_agent_id;
+        uint64_t m_timestamp;
     };
 
 /*!
@@ -2857,6 +2870,12 @@ namespace IDL {
         eProsima_user_DllExport uint32_t &agent_id();
 
 
+        eProsima_user_DllExport void timestamp(uint64_t _timestamp);
+
+
+        eProsima_user_DllExport uint64_t timestamp() ;
+
+
         /*!
          * @brief This function returns the maximum serialized size of an object
          * depending on the buffer alignment.
@@ -2886,8 +2905,6 @@ namespace IDL {
          */
         eProsima_user_DllExport void deserialize(eprosima::fastcdr::Cdr &cdr);
 
-
-
         /*!
          * @brief This function returns the maximum serialized size of the Key of an object
          * depending on the buffer alignment.
@@ -2911,6 +2928,7 @@ namespace IDL {
         uint64_t m_id;
         DotKernel m_dk;
         uint32_t m_agent_id;
+        uint64_t m_timestamp;
     };
 
 /*!
